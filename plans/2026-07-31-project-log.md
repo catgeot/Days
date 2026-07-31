@@ -44,3 +44,10 @@
 - **에이전트**: tip 올릴 때 `geoPuzzleDeployLog.js` 맨 위 append 필수 — 패널 문구가 안 바뀌면 배포 미반영.
 - tip `d2954bd` · PR [#31](https://github.com/catgeot/Days/pull/31) · 로컬 QA: 일본 정답 → 진 보라 면 · 배포 패널 `12:30 UTC` 확인.
 - QA: 고정 Preview `…geography-puzzle-plan-62e0…/play/geo` — 패널에 `2026-07-31 12:30 UTC` · 정답 시 **진 보라** 면.
+
+## 범지구적 퍼즐 — Preview에서 필 안 보임 (globe draping)
+
+- **사람 보고**: 배포 로그는 보임 · 채움 없음.
+- **원인 추정**: PC `projection: globe`에서 fill이 위성에 가려지거나 안 그림. 로컬 QA는 좁은 창→mercator라 통과.
+- **수정**: 퍼즐 **항상 mercator** · vector fill + GeoJSON(타일 query / bbox 폴백) · 배포 패널에 `필 jp · layer ok` 진단.
+- QA: 패널 `12:45 UTC` · 정답 후 진단 `필 jp` + 보라 면(또는 bbox 면).

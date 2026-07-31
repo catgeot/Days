@@ -5,6 +5,11 @@
  */
 export const GEO_PUZZLE_DEPLOY_LOG = [
   {
+    at: '2026-07-31 12:45 UTC',
+    summary: '퍼즐 지도 mercator 고정 + GeoJSON 필 폴백',
+    detail: 'PC globe에서 위성에 fill이 가려짐. 평면 고정·vector+GeoJSON(bbox) 이중 채움·진단 줄.',
+  },
+  {
     at: '2026-07-31 12:30 UTC',
     summary: '보라 필 상수 실제 적용 + 화면 배포 로그',
     detail: 'PLACED_FILL_COLOR가 paint에 안 묶여 cyan 고정이던 버그 수정. 배포 패널로 tip 확인.',

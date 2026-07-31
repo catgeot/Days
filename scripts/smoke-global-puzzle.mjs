@@ -185,6 +185,8 @@ check('placed fill color constant is wired (not dead)', async () => {
   assert.match(src, /const PLACED_FILL_COLOR = '#5b21b6'/);
   assert.match(src, /'fill-color': PLACED_FILL_COLOR/);
   assert.match(src, /safeSetPaint\(map, PLACED_FILL, 'fill-color', PLACED_FILL_COLOR\)/);
+  assert.match(src, /const PUZZLE_PROJECTION = 'mercator'/);
+  assert.match(src, /PLACED_GEOJSON_SOURCE/);
   assert.doesNotMatch(src, /fill-color': '#22d3ee'/);
 });
 

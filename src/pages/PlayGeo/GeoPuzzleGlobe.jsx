@@ -1,17 +1,18 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import Map from 'react-map-gl/mapbox';
 import { GLOBE_COUNTRY_CATALOG } from '../Home/lib/globeCountryCatalog.js';
 import { MAPBOX_ATTRIBUTION_LINKS } from '../../data/mapboxAttribution.js';
-import { useCoarsePointer } from '../../shared/hooks/useMobileInputViewport.js';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 const MAP_STYLE = 'mapbox://styles/mapbox/satellite-streets-v12';
 const COUNTRIES_SOURCE = 'gateo-geo-puzzle-countries';
+const PLACED_GEOJSON_SOURCE = 'gateo-geo-puzzle-placed-geojson';
 const HIT_FILL = 'gateo-geo-puzzle-hit-fill';
 const PLACED_FILL = 'gateo-geo-puzzle-placed-fill';
 const PLACED_LINE = 'gateo-geo-puzzle-placed-line';
-const PLACED_EXTRUSION = 'gateo-geo-puzzle-placed-extrusion';
+const PLACED_GEO_FILL = 'gateo-geo-puzzle-placed-geo-fill';
+const PLACED_GEO_LINE = 'gateo-geo-puzzle-placed-geo-line';
 const SLOT_LINE = 'gateo-geo-puzzle-slot-line';
 const SLOT_FILL = 'gateo-geo-puzzle-slot-fill';
 const HINT_FILL = 'gateo-geo-puzzle-hint-fill';
@@ -21,33 +22,18 @@ export const GEO_PUZZLE_HIT_LAYER = HIT_FILL;
 
 /** 정답 채움 — 위성 위에서 구분되는 진 보라 */
 const PLACED_FILL_COLOR = '#5b21b6';
-const PLACED_FILL_OPACITY = 0.78;
+const PLACED_FILL_OPACITY = 0.82;
+
+/** 퍼즐은 항상 mercator — globe에서 fill이 위성에 가려지거나 안 그려지는 기기 대응 */
+const PUZZLE_PROJECTION = 'mercator';
 
 const DEFAULT_VIEW = {
   longitude: 140,
   latitude: 20,
-  zoom: 1.35,
+  zoom: 1.55,
   pitch: 0,
   bearing: 0,
 };
-
-/** iOS Safari 등 모바일 글로브에서 country fill이 안 그려지는 경우가 많아 평면 투영 사용 */
-function usePreferFlatMap() {
-  const coarse = useCoarsePointer();
-  const [narrow, setNarrow] = useState(() => {
-    if (typeof window === 'undefined') return true;
-    return window.matchMedia('(max-width: 1023px)').matches;
-  });
-  useEffect(() => {
-    if (typeof window === 'undefined') return undefined;
-    const mq = window.matchMedia('(max-width: 1023px)');
-    const sync = () => setNarrow(mq.matches);
-    sync();
-    mq.addEventListener('change', sync);
-    return () => mq.removeEventListener('change', sync);
-  }, []);
-  return Boolean(coarse || narrow);
-}
 
 const CAPTION_LINKS = MAPBOX_ATTRIBUTION_LINKS.filter(
   (item) => item.label === '© Mapbox' || item.label === '© OpenStreetMap',
@@ -85,12 +71,32 @@ function ensureCountriesSource(map) {
   });
 }
 
-/** 초기 MVP(ef6be28)와 동일한 ISO 필터 — 그때 필이 동작했음 */
+function ensurePlacedGeoJsonSource(map) {
+  if (map.getSource(PLACED_GEOJSON_SOURCE)) return;
+  map.addSource(PLACED_GEOJSON_SOURCE, {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: [] },
+  });
+}
+
+/** 홈 하이라이트와 동일한 ISO 매칭(대소문자·worldview) */
 function multiIsoFilter(isos) {
   const list = [...new Set((isos || []).map((s) => String(s).toUpperCase()).filter(Boolean))];
   if (!list.length) {
     return ['==', ['get', 'iso_3166_1'], '__none__'];
   }
+  const isoAny = [
+    'any',
+    ...list.flatMap((iso) => {
+      const low = iso.toLowerCase();
+      return [
+        ['==', ['get', 'iso_3166_1'], iso],
+        ['==', ['get', 'iso_3166_1'], low],
+        ['in', iso, ['to-string', ['coalesce', ['get', 'iso_3166_1'], '']]],
+        ['in', low, ['to-string', ['coalesce', ['get', 'iso_3166_1'], '']]],
+      ];
+    }),
+  ];
   return [
     'all',
     [
@@ -98,23 +104,19 @@ function multiIsoFilter(isos) {
       ['!', ['has', 'worldview']],
       ['==', ['get', 'worldview'], 'all'],
       ['in', 'US', ['to-string', ['get', 'worldview']]],
+      ['in', 'us', ['to-string', ['get', 'worldview']]],
     ],
-    [
-      'match',
-      ['upcase', ['to-string', ['get', 'iso_3166_1']]],
-      list,
-      true,
-      false,
-    ],
+    isoAny,
   ];
 }
 
 function safeSetFilter(map, layerId, filter) {
-  if (!map.getLayer(layerId)) return;
+  if (!map.getLayer(layerId)) return false;
   try {
     map.setFilter(layerId, filter);
+    return true;
   } catch {
-    /* ignore */
+    return false;
   }
 }
 
@@ -127,157 +129,241 @@ function safeSetPaint(map, layerId, prop, value) {
   }
 }
 
-function ensurePlacedLayers(map) {
-  ensureCountriesSource(map);
-  if (!map.getLayer(HIT_FILL)) {
-    map.addLayer({
-      id: HIT_FILL,
-      type: 'fill',
-      source: COUNTRIES_SOURCE,
-      'source-layer': 'country_boundaries',
-      paint: {
-        'fill-color': '#000000',
-        'fill-opacity': 0.01,
-        'fill-emissive-strength': 1,
-      },
-      filter: [
-        'any',
-        ['!', ['has', 'worldview']],
-        ['==', ['get', 'worldview'], 'all'],
-        ['in', 'US', ['to-string', ['get', 'worldview']]],
-      ],
-    });
-  }
-  if (!map.getLayer(SLOT_FILL)) {
-    map.addLayer({
-      id: SLOT_FILL,
-      type: 'fill',
-      source: COUNTRIES_SOURCE,
-      'source-layer': 'country_boundaries',
-      paint: {
-        'fill-color': '#ffffff',
-        'fill-opacity': 0.1,
-        'fill-emissive-strength': 1,
-      },
-      filter: multiIsoFilter([]),
-    });
-  }
-  if (!map.getLayer(SLOT_LINE)) {
-    map.addLayer({
-      id: SLOT_LINE,
-      type: 'line',
-      source: COUNTRIES_SOURCE,
-      'source-layer': 'country_boundaries',
-      paint: {
-        'line-color': '#ffffff',
-        'line-width': 1.1,
-        'line-opacity': 0.4,
-        'line-emissive-strength': 1,
-      },
-      filter: multiIsoFilter([]),
-    });
-  }
-  if (!map.getLayer(PLACED_FILL)) {
-    map.addLayer({
-      id: PLACED_FILL,
-      type: 'fill',
-      source: COUNTRIES_SOURCE,
-      'source-layer': 'country_boundaries',
-      paint: {
-        'fill-color': PLACED_FILL_COLOR,
-        'fill-opacity': PLACED_FILL_OPACITY,
-        'fill-emissive-strength': 1,
-      },
-      filter: multiIsoFilter([]),
-    });
-  }
-  // 데스크톱 글로브 보조 — 모바일(mercator)에서는 fill만으로 충분
-  if (!map.getLayer(PLACED_EXTRUSION)) {
+function addFillLayer(map, spec) {
+  if (map.getLayer(spec.id)) return true;
+  const withEmissive = {
+    ...spec,
+    paint: { ...spec.paint, 'fill-emissive-strength': 1 },
+  };
+  try {
+    map.addLayer(withEmissive);
+    return Boolean(map.getLayer(spec.id));
+  } catch {
     try {
-      map.addLayer({
-        id: PLACED_EXTRUSION,
-        type: 'fill-extrusion',
-        source: COUNTRIES_SOURCE,
-        'source-layer': 'country_boundaries',
-        paint: {
-          'fill-extrusion-color': PLACED_FILL_COLOR,
-          'fill-extrusion-opacity': PLACED_FILL_OPACITY,
-          'fill-extrusion-height': 80000,
-          'fill-extrusion-base': 0,
-          'fill-extrusion-emissive-strength': 1,
-        },
-        filter: multiIsoFilter([]),
-      });
+      map.addLayer(spec);
+      return Boolean(map.getLayer(spec.id));
     } catch {
-      /* older GL without extrusion emissive — retry without */
-      try {
-        map.addLayer({
-          id: PLACED_EXTRUSION,
-          type: 'fill-extrusion',
-          source: COUNTRIES_SOURCE,
-          'source-layer': 'country_boundaries',
-          paint: {
-            'fill-extrusion-color': PLACED_FILL_COLOR,
-            'fill-extrusion-opacity': PLACED_FILL_OPACITY,
-            'fill-extrusion-height': 80000,
-            'fill-extrusion-base': 0,
-          },
-          filter: multiIsoFilter([]),
-        });
-      } catch {
-        /* ignore */
-      }
+      return false;
     }
-  }
-  if (!map.getLayer(PLACED_LINE)) {
-    map.addLayer({
-      id: PLACED_LINE,
-      type: 'line',
-      source: COUNTRIES_SOURCE,
-      'source-layer': 'country_boundaries',
-      paint: {
-        'line-color': '#fbbf24',
-        'line-width': 2,
-        'line-opacity': 0.95,
-        'line-emissive-strength': 1,
-      },
-      filter: multiIsoFilter([]),
-    });
-  }
-  if (!map.getLayer(HINT_FILL)) {
-    map.addLayer({
-      id: HINT_FILL,
-      type: 'fill',
-      source: COUNTRIES_SOURCE,
-      'source-layer': 'country_boundaries',
-      paint: {
-        'fill-color': '#fbbf24',
-        'fill-opacity': 0.4,
-        'fill-emissive-strength': 1,
-      },
-      filter: multiIsoFilter([]),
-    });
-  }
-  if (!map.getLayer(HINT_LINE)) {
-    map.addLayer({
-      id: HINT_LINE,
-      type: 'line',
-      source: COUNTRIES_SOURCE,
-      'source-layer': 'country_boundaries',
-      paint: {
-        'line-color': '#fde68a',
-        'line-width': 2.2,
-        'line-opacity': 0.95,
-        'line-emissive-strength': 1,
-      },
-      filter: multiIsoFilter([]),
-    });
   }
 }
 
+function addLineLayer(map, spec) {
+  if (map.getLayer(spec.id)) return true;
+  const withEmissive = {
+    ...spec,
+    paint: { ...spec.paint, 'line-emissive-strength': 1 },
+  };
+  try {
+    map.addLayer(withEmissive);
+    return Boolean(map.getLayer(spec.id));
+  } catch {
+    try {
+      map.addLayer(spec);
+      return Boolean(map.getLayer(spec.id));
+    } catch {
+      return false;
+    }
+  }
+}
+
+function bboxFeature(countryId, bbox) {
+  if (!Array.isArray(bbox) || bbox.length < 4) return null;
+  const [w, s, e, n] = bbox.map(Number);
+  if (![w, s, e, n].every(Number.isFinite)) return null;
+  return {
+    type: 'Feature',
+    properties: { id: countryId },
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[
+        [w, s],
+        [e, s],
+        [e, n],
+        [w, n],
+        [w, s],
+      ]],
+    },
+  };
+}
+
+function collectPlacedGeoFeatures(map, filledIds) {
+  const features = [];
+  const seen = new Set();
+  const filledIsos = new Set(
+    (filledIds || [])
+      .map((id) => String(GLOBE_COUNTRY_CATALOG[id]?.iso || '').toUpperCase())
+      .filter(Boolean),
+  );
+
+  if (filledIsos.size && map.getSource(COUNTRIES_SOURCE)) {
+    try {
+      const queried = map.querySourceFeatures(COUNTRIES_SOURCE, {
+        sourceLayer: 'country_boundaries',
+        filter: multiIsoFilter([...filledIsos]),
+      });
+      for (const f of queried || []) {
+        if (!f?.geometry) continue;
+        const key = `${f.properties?.iso_3166_1 || ''}:${f.id ?? JSON.stringify(f.geometry).slice(0, 48)}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        features.push({
+          type: 'Feature',
+          properties: { iso: f.properties?.iso_3166_1 || '' },
+          geometry: f.geometry,
+        });
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+
+  // 타일 미도착·query 빈 경우 bbox 사각형이라도 보이게 (채움 폴백)
+  if (!features.length) {
+    for (const id of filledIds || []) {
+      const c = GLOBE_COUNTRY_CATALOG[id];
+      const feat = bboxFeature(id, c?.bbox);
+      if (feat) features.push(feat);
+    }
+  }
+  return features;
+}
+
+function ensurePlacedLayers(map) {
+  ensureCountriesSource(map);
+  ensurePlacedGeoJsonSource(map);
+
+  addFillLayer(map, {
+    id: HIT_FILL,
+    type: 'fill',
+    source: COUNTRIES_SOURCE,
+    'source-layer': 'country_boundaries',
+    paint: {
+      'fill-color': '#000000',
+      'fill-opacity': 0.01,
+    },
+    filter: [
+      'any',
+      ['!', ['has', 'worldview']],
+      ['==', ['get', 'worldview'], 'all'],
+      ['in', 'US', ['to-string', ['get', 'worldview']]],
+    ],
+  });
+
+  addFillLayer(map, {
+    id: SLOT_FILL,
+    type: 'fill',
+    source: COUNTRIES_SOURCE,
+    'source-layer': 'country_boundaries',
+    paint: {
+      'fill-color': '#ffffff',
+      'fill-opacity': 0.12,
+    },
+    filter: multiIsoFilter([]),
+  });
+
+  addLineLayer(map, {
+    id: SLOT_LINE,
+    type: 'line',
+    source: COUNTRIES_SOURCE,
+    'source-layer': 'country_boundaries',
+    paint: {
+      'line-color': '#ffffff',
+      'line-width': 1.2,
+      'line-opacity': 0.45,
+    },
+    filter: multiIsoFilter([]),
+  });
+
+  addFillLayer(map, {
+    id: PLACED_FILL,
+    type: 'fill',
+    source: COUNTRIES_SOURCE,
+    'source-layer': 'country_boundaries',
+    paint: {
+      'fill-color': PLACED_FILL_COLOR,
+      'fill-opacity': PLACED_FILL_OPACITY,
+    },
+    filter: multiIsoFilter([]),
+  });
+
+  addLineLayer(map, {
+    id: PLACED_LINE,
+    type: 'line',
+    source: COUNTRIES_SOURCE,
+    'source-layer': 'country_boundaries',
+    paint: {
+      'line-color': '#fbbf24',
+      'line-width': 2.2,
+      'line-opacity': 0.95,
+    },
+    filter: multiIsoFilter([]),
+  });
+
+  addFillLayer(map, {
+    id: PLACED_GEO_FILL,
+    type: 'fill',
+    source: PLACED_GEOJSON_SOURCE,
+    paint: {
+      'fill-color': PLACED_FILL_COLOR,
+      'fill-opacity': PLACED_FILL_OPACITY,
+    },
+  });
+
+  addLineLayer(map, {
+    id: PLACED_GEO_LINE,
+    type: 'line',
+    source: PLACED_GEOJSON_SOURCE,
+    paint: {
+      'line-color': '#fbbf24',
+      'line-width': 2.4,
+      'line-opacity': 0.98,
+    },
+  });
+
+  addFillLayer(map, {
+    id: HINT_FILL,
+    type: 'fill',
+    source: COUNTRIES_SOURCE,
+    'source-layer': 'country_boundaries',
+    paint: {
+      'fill-color': '#fbbf24',
+      'fill-opacity': 0.42,
+    },
+    filter: multiIsoFilter([]),
+  });
+
+  addLineLayer(map, {
+    id: HINT_LINE,
+    type: 'line',
+    source: COUNTRIES_SOURCE,
+    'source-layer': 'country_boundaries',
+    paint: {
+      'line-color': '#fde68a',
+      'line-width': 2.2,
+      'line-opacity': 0.95,
+    },
+    filter: multiIsoFilter([]),
+  });
+}
+
+function buildFillDiag(map, filledIds) {
+  const filled = filledIds || [];
+  const isos = filled
+    .map((id) => GLOBE_COUNTRY_CATALOG[id]?.iso)
+    .filter(Boolean)
+    .join(',');
+  return {
+    filled: filled.join(',') || '—',
+    isos: isos || '—',
+    placedLayer: map?.getLayer?.(PLACED_FILL) ? 'ok' : 'missing',
+    geoLayer: map?.getLayer?.(PLACED_GEO_FILL) ? 'ok' : 'missing',
+    projection: PUZZLE_PROJECTION,
+  };
+}
+
 /**
- * #31 전용 게임 글로브 — 초기 MVP filledIds→setFilter.
- * 모바일은 mercator(필 안정) · 데스크톱은 globe.
+ * #31 전용 게임 지도 — mercator 고정 · vector fill + GeoJSON 폴백.
  */
 export default function GeoPuzzleGlobe({
   filledIds = [],
@@ -287,13 +373,8 @@ export default function GeoPuzzleGlobe({
   onMapReady,
   onMapClick,
   onProjectionChange,
+  onFillDiag,
 }) {
-  const preferFlat = usePreferFlatMap();
-  const projection = preferFlat ? 'mercator' : 'globe';
-  const initialView = useMemo(
-    () => (preferFlat ? { ...DEFAULT_VIEW, zoom: 1.55 } : DEFAULT_VIEW),
-    [preferFlat],
-  );
   const mapRef = useRef(null);
   const readyRef = useRef(false);
   const onMapClickRef = useRef(onMapClick);
@@ -301,17 +382,23 @@ export default function GeoPuzzleGlobe({
   const filledRef = useRef(filledIds);
   const slotRef = useRef(slotIds);
   const hintRef = useRef(hintCountryId);
+  const onFillDiagRef = useRef(onFillDiag);
   filledRef.current = filledIds;
   slotRef.current = slotIds;
   hintRef.current = hintCountryId;
+  onFillDiagRef.current = onFillDiag;
 
   useEffect(() => {
-    onProjectionChange?.(projection);
-  }, [onProjectionChange, projection]);
+    onProjectionChange?.(PUZZLE_PROJECTION);
+  }, [onProjectionChange]);
 
   const syncFills = useCallback((map) => {
     if (!map) return;
-    ensurePlacedLayers(map);
+    try {
+      ensurePlacedLayers(map);
+    } catch {
+      /* ignore */
+    }
     const filled = filledRef.current || [];
     const slots = slotRef.current || [];
     const hintId = hintRef.current;
@@ -327,48 +414,37 @@ export default function GeoPuzzleGlobe({
       ? GLOBE_COUNTRY_CATALOG[hintId]?.iso
       : null;
 
-    // setFilter는 paint와 분리 — paint 실패가 필 동기화를 막지 않게 (초기 MVP 경로)
     const placedFilter = multiIsoFilter(filledIsos);
     safeSetFilter(map, PLACED_FILL, placedFilter);
-    safeSetFilter(map, PLACED_EXTRUSION, placedFilter);
     safeSetFilter(map, PLACED_LINE, placedFilter);
     safeSetFilter(map, SLOT_FILL, multiIsoFilter(slotIsos));
     safeSetFilter(map, SLOT_LINE, multiIsoFilter(slotIsos));
     safeSetFilter(map, HINT_FILL, multiIsoFilter(hintIso ? [hintIso] : []));
     safeSetFilter(map, HINT_LINE, multiIsoFilter(hintIso ? [hintIso] : []));
 
-    safeSetPaint(map, PLACED_FILL, 'fill-emissive-strength', 1);
     safeSetPaint(map, PLACED_FILL, 'fill-opacity', PLACED_FILL_OPACITY);
     safeSetPaint(map, PLACED_FILL, 'fill-color', PLACED_FILL_COLOR);
-    // 모바일 mercator에서는 extrusion 숨김(필만) · 데스크톱 글로브만 보조
-    if (map.getLayer(PLACED_EXTRUSION)) {
+    safeSetPaint(map, PLACED_GEO_FILL, 'fill-opacity', PLACED_FILL_OPACITY);
+    safeSetPaint(map, PLACED_GEO_FILL, 'fill-color', PLACED_FILL_COLOR);
+
+    const geoFeatures = collectPlacedGeoFeatures(map, filled);
+    const geoSource = map.getSource(PLACED_GEOJSON_SOURCE);
+    if (geoSource?.setData) {
       try {
-        const isGlobe = map.getProjection?.()?.name === 'globe';
-        map.setLayoutProperty(
-          PLACED_EXTRUSION,
-          'visibility',
-          isGlobe ? 'visible' : 'none',
-        );
+        geoSource.setData({ type: 'FeatureCollection', features: geoFeatures });
       } catch {
         /* ignore */
       }
     }
-    safeSetPaint(map, PLACED_EXTRUSION, 'fill-extrusion-color', PLACED_FILL_COLOR);
-    safeSetPaint(map, PLACED_EXTRUSION, 'fill-extrusion-emissive-strength', 1);
-    safeSetPaint(map, PLACED_EXTRUSION, 'fill-extrusion-opacity', PLACED_FILL_OPACITY);
-    safeSetPaint(map, HINT_FILL, 'fill-emissive-strength', 1);
-    safeSetPaint(map, SLOT_FILL, 'fill-emissive-strength', 1);
-    safeSetPaint(map, PLACED_LINE, 'line-emissive-strength', 1);
-    safeSetPaint(map, HINT_LINE, 'line-emissive-strength', 1);
-    safeSetPaint(map, SLOT_LINE, 'line-emissive-strength', 1);
 
     for (const id of [
       HIT_FILL,
       SLOT_FILL,
       SLOT_LINE,
       PLACED_FILL,
-      PLACED_EXTRUSION,
       PLACED_LINE,
+      PLACED_GEO_FILL,
+      PLACED_GEO_LINE,
       HINT_FILL,
       HINT_LINE,
     ]) {
@@ -379,6 +455,8 @@ export default function GeoPuzzleGlobe({
         /* ignore */
       }
     }
+
+    onFillDiagRef.current?.(buildFillDiag(map, filled));
   }, []);
 
   const flyToCountry = useCallback((countryId) => {
@@ -414,23 +492,12 @@ export default function GeoPuzzleGlobe({
     syncFills(map);
   }, [filledIds, slotIds, hintCountryId, syncFills]);
 
-  useEffect(() => {
-    const map = mapRef.current?.getMap?.();
-    if (!map || !readyRef.current || !map.setProjection) return;
-    try {
-      map.setProjection(projection);
-      syncFills(map);
-    } catch {
-      /* ignore */
-    }
-  }, [projection, syncFills]);
-
   const handleLoad = useCallback(() => {
     const map = mapRef.current?.getMap?.();
     if (!map) return;
     readyRef.current = true;
     try {
-      map.setProjection?.(projection);
+      map.setProjection?.(PUZZLE_PROJECTION);
     } catch {
       /* ignore */
     }
@@ -442,7 +509,9 @@ export default function GeoPuzzleGlobe({
       flyToCountry,
       queryIsoAtPoint: (point) => {
         try {
-          const features = map.queryRenderedFeatures(point, { layers: [HIT_FILL] });
+          const features = map.queryRenderedFeatures(point, {
+            layers: [HIT_FILL, SLOT_FILL, PLACED_FILL].filter((id) => map.getLayer(id)),
+          });
           const props = features?.[0]?.properties || {};
           const raw = props.iso_3166_1 || '';
           const iso = String(raw).toUpperCase().slice(0, 2);
@@ -459,12 +528,15 @@ export default function GeoPuzzleGlobe({
       syncFills(map);
     });
 
-    // country-boundaries 타일 도착 후 필터 재적용 (Preview·저속망)
     map.on('sourcedata', (evt) => {
       if (evt?.sourceId !== COUNTRIES_SOURCE || !evt?.isSourceLoaded) return;
       syncFills(map);
     });
-  }, [flyToCountry, onMapReady, projection, syncFills]);
+
+    map.on('idle', () => {
+      if ((filledRef.current || []).length) syncFills(map);
+    });
+  }, [flyToCountry, onMapReady, syncFills]);
 
   const handleClick = useCallback((evt) => {
     const handler = onMapClickRef.current;
@@ -495,8 +567,8 @@ export default function GeoPuzzleGlobe({
         ref={mapRef}
         mapboxAccessToken={MAPBOX_TOKEN}
         mapStyle={MAP_STYLE}
-        projection={projection}
-        initialViewState={initialView}
+        projection={PUZZLE_PROJECTION}
+        initialViewState={DEFAULT_VIEW}
         style={{ width: '100%', height: '100%' }}
         attributionControl={{ compact: true }}
         onLoad={handleLoad}

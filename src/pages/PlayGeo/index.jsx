@@ -84,6 +84,7 @@ export default function GeoPuzzlePage() {
   const [hintCountryId, setHintCountryId] = useState(null);
   const [flashMiss, setFlashMiss] = useState(false);
   const [mapProjection, setMapProjection] = useState('');
+  const [fillDiag, setFillDiag] = useState(null);
 
   const continent = useMemo(
     () => campaign.find((c) => c.id === continentId) || campaign[0],
@@ -286,9 +287,14 @@ export default function GeoPuzzlePage() {
           onMapReady={onMapReady}
           onMapClick={handleMapClick}
           onProjectionChange={setMapProjection}
+          onFillDiag={setFillDiag}
         />
 
-        <PuzzleDeployLog filledCount={filledIds.length} projection={mapProjection} />
+        <PuzzleDeployLog
+          filledCount={filledIds.length}
+          projection={mapProjection}
+          fillDiag={fillDiag}
+        />
 
         {session.feedback ? (
           <div className="pointer-events-none absolute left-1/2 top-3 z-20 max-w-[90%] -translate-x-1/2 rounded-full border border-white/20 bg-black/75 px-3 py-1.5 text-center text-[11px] text-white backdrop-blur-md break-keep">
