@@ -176,19 +176,32 @@ export const getReviewPrompt = (locationName, rating, content) => {
 };
 
 // 🚨 [Fix/New] 큐레이션 전용 프롬프트 (excludeList 매개변수 추가 및 영문 검색어 강제)
-export const getCurationPrompt = (validReports, validSaved, excludeList = []) => {
-  const userDataText = `
-    [사용자의 과거 기록] ${validReports.map(r => `- ${r.location}`).join(', ')}
-    [사용자의 북마크] ${validSaved.map(s => `- ${s.destination}`).join(', ')}
+export const getCurationPrompt = (validReports = [], validSaved = [], excludeList = []) => {
+  const reportLines = (validReports || [])
+    .map((r) => String(r?.location || '').trim())
+    .filter(Boolean)
+    .map((loc) => `- ${loc}`);
+  const savedLines = (validSaved || [])
+    .map((s) => String(s?.destination || '').trim())
+    .filter(Boolean)
+    .map((dest) => `- ${dest}`);
+  const hasTasteData = reportLines.length > 0 || savedLines.length > 0;
+
+  const userDataText = hasTasteData
+    ? `
+    [사용자의 과거 기록] ${reportLines.length ? reportLines.join(', ') : '(없음)'}
+    [사용자의 북마크] ${savedLines.length ? savedLines.join(', ') : '(없음)'}
+  `
+    : `
+    [취향 데이터] 없음 (비로그인·기록 없음). 특정 사용자 이력에 맞추지 말고, 대중에게 덜 알려진 숨겨진 낙원 1곳을 자유롭게 추천하세요.
   `;
 
-  // 🚨 [New] 중복 추천 방지 제약 조건 생성
   const excludeText = excludeList.length > 0
     ? `\n🚨 [강제 제외 장소]: ${excludeList.join(', ')} (이 장소들은 이번 세션에서 이미 추천했으므로 절대로 다시 추천하지 마세요.)`
     : '';
 
   return `당신은 세계 곳곳의 숨겨진 명소를 잘 아는 GATEO의 수석 여행 큐레이터입니다.
-대중에게 덜 알려졌으나, 사용자의 취향에 완벽히 맞는 숨겨진 낙원 딱 1곳을 추천하세요.
+대중에게 덜 알려졌으나${hasTasteData ? ', 사용자의 취향에 완벽히 맞는' : ''} 숨겨진 낙원 딱 1곳을 추천하세요.
 
 [사용자 취향 데이터]
 ${userDataText}${excludeText}
