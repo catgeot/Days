@@ -10,4 +10,4 @@
 - **Preview (고정, 머지 전)**: https://days-git-cursor-cloud-rules-8320-catgeots-projects.vercel.app/qa
 - **규칙**: [`AGENTS.md`](../AGENTS.md) Cloud · [`cloud-preview-continuity.md`](./cloud-preview-continuity.md)
 - **코드**: `/qa` 목록 · `vercel.json` `/qa/puzzle` · Preview 작업 로그(주제 종료 `active: false`)
-- **상태**: main 머지해 PROD에 규칙·짧은 QA 링크 적용
+- **상태**: ✅ main 머지 `d92cf9c` (PR [#44](https://github.com/catgeot/Days/pull/44)) · PROD `/qa/puzzle` → 퍼즐 Preview 307 확인
