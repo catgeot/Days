@@ -4,14 +4,13 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: true,
+  active: false,
   title: 'Cloud 작업 규칙',
   sessionNo: 1,
-  sessionPhase: '짧은 QA 링크',
-  branch: 'cursor/cloud-preview-continuity-8320',
-  previewPath: '/korea',
-  /** 테스터 공유용 — www.gateo.kr/qa/<slug> (main 반영 후) */
-  qaShareSlug: 'cloud-rules',
+  sessionPhase: 'main 반영',
+  branch: 'cursor/cloud-rules-8320',
+  previewPath: '/qa',
+  qaShareSlug: 'puzzle',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -24,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-01-short-branch-main',
+    session: 'Cloud 작업 규칙 #1, main 반영',
+    title: '짧은 브랜치명 · main 머지',
+    detail:
+      '고정 브랜치를 cursor/cloud-rules-8320 으로 짧게 맞춤. 테스터 공유는 www.gateo.kr/qa/puzzle · 목록 /qa. 규칙을 main에 반영하고 이 주제 Preview 작업 로그는 종료(active=false).',
+    at: '2026-08-01',
+  },
   {
     id: '2026-08-01-qa-short-link',
     session: 'Cloud 작업 규칙 #1, 짧은 QA 링크',

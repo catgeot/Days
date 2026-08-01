@@ -4,11 +4,6 @@
       "source": "/qa/puzzle",
       "destination": "https://days-git-cursor-geography-puzzle-plan-62e0-catgeots-projects.vercel.app/play/geo",
       "permanent": false
-    },
-    {
-      "source": "/qa/cloud-rules",
-      "destination": "https://days-git-cursor-cloud-preview-continuity-8320-catgeots-projects.vercel.app/korea",
-      "permanent": false
     }
   ],
   "rewrites": [

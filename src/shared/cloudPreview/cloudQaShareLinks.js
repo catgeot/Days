@@ -15,14 +15,6 @@ export const CLOUD_QA_SHARE_LINKS = [
       'https://days-git-cursor-geography-puzzle-plan-62e0-catgeots-projects.vercel.app/play/geo',
     active: true,
   },
-  {
-    slug: 'cloud-rules',
-    label: 'Cloud 작업 규칙',
-    branch: 'cursor/cloud-preview-continuity-8320',
-    destination:
-      'https://days-git-cursor-cloud-preview-continuity-8320-catgeots-projects.vercel.app/korea',
-    active: true,
-  },
 ];
 
 export function cloudQaShareUrl(slug) {
