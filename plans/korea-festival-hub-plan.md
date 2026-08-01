@@ -1,7 +1,7 @@
 # 국내 여행지 특화 — TourAPI 축제·지역 허브 플랜
 
-**실행 환경 (확정 · 2026-07-24)**: **로컬(데스크톱) 전용**. Cursor Cloud 트랙은 **중단** (진행 가시성 부족).  
-**SSOT**: 본 파일 · 일지 [`2026-07-24-project-log.md`](./2026-07-24-project-log.md) 「국내축제」절.
+**실행 환경**: 로컬·Cloud 모두 가능. Cloud 이어하기는 [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) — 세션 표기 `축제 페이지 #N, …` · **고정 브랜치·동일 Preview URL** · Preview 우측 작업 로그 · 턴 종료 Preview 링크.  
+**SSOT**: 본 파일 · 일지 [`2026-07-29-project-log.md`](./2026-07-29-project-log.md) 「국내축제」절 · Cloud 규칙 [`AGENTS.md`](../AGENTS.md).
 
 | 세션 | 상태 | 다음 |
 |------|------|------|
@@ -16,11 +16,11 @@
 
 ---
 
-## 0. 로컬 재시작 규칙 (필독)
+## 0. 세션 재시작 규칙 (필독)
 
-1. **Cloud 채팅·에이전트는 무시**한다. 새 작업은 **로컬 Cursor 채팅**만.
-2. **진행 확인 = git**. 세션 끝나면 반드시 **커밋**(로직/SSOT·일지). UI만 조율 중일 때는 디자인 게이트(사람 QA 후 커밋).
-3. **한 채팅 = 한 세션 ID** (`국내축제-S1` …). 세션을 합치지 않는다.
+1. **Cloud**로 이어갈 때는 [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) — 표기 `축제 페이지 #N, …` · **고정 브랜치·동일 Preview** · 작업 로그 append · 턴 종료 Preview 링크.
+2. **진행 확인 = git + Preview**. 세션 끝나면 반드시 **커밋**(로직/SSOT·일지). Cloud feature는 Preview용 push. UI만 로컬 조율 중일 때는 디자인 게이트(사람 QA 후 커밋).
+3. **한 채팅 = 한 세션 표기** (`축제 페이지 #N, 단계`). 세션을 합치지 않는다.
 4. 읽을 것: 본 플랜 **해당 세션 절만** + 일지 「국내축제」최신 절 + `.ai-context` 1.5.1·TourAPI 금지 1~2줄. 전반 탐색 금지.
 5. 키: 로컬 `.env.local`의 `TOUR_API_SERVICE_KEY` (또는 Edge 경유 시 Supabase URL+ANON). **`VITE_`로 Tour 키 노출 금지**.
 
