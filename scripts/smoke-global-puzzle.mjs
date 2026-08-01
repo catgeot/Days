@@ -187,7 +187,33 @@ check('placed fill color constant is wired (not dead)', async () => {
   assert.match(src, /safeSetPaint\(map, PLACED_FILL, 'fill-color', PLACED_FILL_COLOR\)/);
   assert.match(src, /const PUZZLE_PROJECTION = 'mercator'/);
   assert.match(src, /PLACED_GEOJSON_SOURCE/);
+  assert.match(src, /PLACED_OUTLINE_SOURCE/);
+  assert.match(src, /dissolvePlacedOutline/);
   assert.doesNotMatch(src, /fill-color': '#22d3ee'/);
+});
+
+check('dissolve outline merges adjacent pieces (no per-country stroke)', async () => {
+  const { dissolvePlacedOutline } = await import('../src/pages/PlayGeo/lib/dissolvePlacedOutline.js');
+  const a = {
+    type: 'Feature',
+    properties: { id: 'a' },
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[[0, 0], [2, 0], [2, 2], [0, 2], [0, 0]]],
+    },
+  };
+  const b = {
+    type: 'Feature',
+    properties: { id: 'b' },
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[[2, 0], [4, 0], [4, 2], [2, 2], [2, 0]]],
+    },
+  };
+  const out = dissolvePlacedOutline([a, b]);
+  assert.ok(out?.geometry);
+  assert.ok(out.geometry.type === 'Polygon' || out.geometry.type === 'MultiPolygon');
+  assert.equal(out.properties?.role, 'placed-outline');
 });
 
 check('deploy log has latest entry for on-screen QA', async () => {

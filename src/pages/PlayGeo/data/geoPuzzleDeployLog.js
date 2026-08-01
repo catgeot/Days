@@ -5,6 +5,11 @@
  */
 export const GEO_PUZZLE_DEPLOY_LOG = [
   {
+    at: '2026-08-01 03:45 UTC',
+    summary: '퍼즐 조각=Mapbox 경계 · 조립 윤곽만 선',
+    detail: '나라마다 line 그리면 접경 이중. 필은 country-boundaries, 주황선은 union 외곽 1회.',
+  },
+  {
     at: '2026-07-31 21:20 UTC',
     summary: '외곽선 정리 — 본토·주요 섬만 · 선 얇게',
     detail: '필·경계는 동일 GeoJSON. 작은 섬 조각·두꺼운 line이 겹쳐 지저분해 보임. 조각 축소·line 1.35.',

@@ -3,12 +3,14 @@ import Map from 'react-map-gl/mapbox';
 import { GLOBE_COUNTRY_CATALOG } from '../Home/lib/globeCountryCatalog.js';
 import { MAPBOX_ATTRIBUTION_LINKS } from '../../data/mapboxAttribution.js';
 import { getGeoPuzzleCountryPolygon } from './data/geoPuzzleCountryPolygons.js';
+import { dissolvePlacedOutline } from './lib/dissolvePlacedOutline.js';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 const MAP_STYLE = 'mapbox://styles/mapbox/satellite-streets-v12';
 const COUNTRIES_SOURCE = 'gateo-geo-puzzle-countries';
 const PLACED_GEOJSON_SOURCE = 'gateo-geo-puzzle-placed-geojson';
+const PLACED_OUTLINE_SOURCE = 'gateo-geo-puzzle-placed-outline';
 const HIT_FILL = 'gateo-geo-puzzle-hit-fill';
 const PLACED_FILL = 'gateo-geo-puzzle-placed-fill';
 const PLACED_LINE = 'gateo-geo-puzzle-placed-line';
@@ -73,14 +75,21 @@ function ensureCountriesSource(map) {
 }
 
 function ensurePlacedGeoJsonSource(map) {
-  if (map.getSource(PLACED_GEOJSON_SOURCE)) return;
-  map.addSource(PLACED_GEOJSON_SOURCE, {
-    type: 'geojson',
-    data: { type: 'FeatureCollection', features: [] },
-  });
+  if (!map.getSource(PLACED_GEOJSON_SOURCE)) {
+    map.addSource(PLACED_GEOJSON_SOURCE, {
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features: [] },
+    });
+  }
+  if (!map.getSource(PLACED_OUTLINE_SOURCE)) {
+    map.addSource(PLACED_OUTLINE_SOURCE, {
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features: [] },
+    });
+  }
 }
 
-/** 홈 하이라이트와 동일한 ISO 매칭(대소문자·worldview) */
+/** Mapbox country-boundaries — 홈 하이라이트와 동일(worldview·disputed·ISO) */
 function multiIsoFilter(isos) {
   const list = [...new Set((isos || []).map((s) => String(s).toUpperCase()).filter(Boolean))];
   if (!list.length) {
@@ -93,13 +102,12 @@ function multiIsoFilter(isos) {
       return [
         ['==', ['get', 'iso_3166_1'], iso],
         ['==', ['get', 'iso_3166_1'], low],
-        ['in', iso, ['to-string', ['coalesce', ['get', 'iso_3166_1'], '']]],
-        ['in', low, ['to-string', ['coalesce', ['get', 'iso_3166_1'], '']]],
       ];
     }),
   ];
   return [
     'all',
+    ['==', ['get', 'disputed'], 'false'],
     [
       'any',
       ['!', ['has', 'worldview']],
@@ -181,6 +189,20 @@ function collectPlacedGeoFeatures(filledIds) {
     });
   }
   return features;
+}
+
+/** Mapbox 타일이 로드돼 정답 ISO 피처가 있으면 벡터 필 사용 */
+function vectorPlacedReady(map, filledIsos) {
+  if (!map?.getSource?.(COUNTRIES_SOURCE) || !filledIsos?.length) return false;
+  try {
+    const queried = map.querySourceFeatures(COUNTRIES_SOURCE, {
+      sourceLayer: 'country_boundaries',
+      filter: multiIsoFilter(filledIsos),
+    });
+    return (queried || []).length > 0;
+  } catch {
+    return false;
+  }
 }
 
 function ensurePlacedLayers(map) {
@@ -267,15 +289,15 @@ function ensurePlacedLayers(map) {
   addLineLayer(map, {
     id: PLACED_GEO_LINE,
     type: 'line',
-    source: PLACED_GEOJSON_SOURCE,
+    source: PLACED_OUTLINE_SOURCE,
     layout: {
       'line-join': 'round',
       'line-cap': 'round',
     },
     paint: {
       'line-color': '#fbbf24',
-      'line-width': 1.35,
-      'line-opacity': 0.78,
+      'line-width': 1.5,
+      'line-opacity': 0.85,
     },
   });
 
@@ -309,21 +331,22 @@ function buildFillDiag(map, filledIds) {
   const filled = filledIds || [];
   const isos = filled
     .map((id) => GLOBE_COUNTRY_CATALOG[id]?.iso)
-    .filter(Boolean)
-    .join(',');
+    .filter(Boolean);
   const polyN = filled.filter((id) => getGeoPuzzleCountryPolygon(id)).length;
+  const useVector = vectorPlacedReady(map, isos);
   return {
     filled: filled.join(',') || '—',
-    isos: isos || '—',
+    isos: isos.join(',') || '—',
     placedLayer: map?.getLayer?.(PLACED_FILL) ? 'ok' : 'missing',
     geoLayer: map?.getLayer?.(PLACED_GEO_FILL) ? 'ok' : 'missing',
     poly: `${polyN}/${filled.length || 0}`,
+    fill: useVector ? 'mapbox' : 'geo',
     projection: PUZZLE_PROJECTION,
   };
 }
 
 /**
- * #31 전용 게임 지도 — mercator 고정 · 캠페인 GeoJSON 폴리곤 필(벡터는 폴백).
+ * #31 전용 게임 지도 — mercator · Mapbox 경계 필(조각) · union 조립 윤곽.
  */
 export default function GeoPuzzleGlobe({
   filledIds = [],
@@ -376,19 +399,21 @@ export default function GeoPuzzleGlobe({
 
     const placedFilter = multiIsoFilter(filledIsos);
     safeSetFilter(map, PLACED_FILL, placedFilter);
-    safeSetFilter(map, PLACED_LINE, placedFilter);
+    safeSetFilter(map, PLACED_LINE, multiIsoFilter([]));
     safeSetFilter(map, SLOT_FILL, multiIsoFilter(slotIsos));
     safeSetFilter(map, SLOT_LINE, multiIsoFilter(slotIsos));
     safeSetFilter(map, HINT_FILL, multiIsoFilter(hintIso ? [hintIso] : []));
     safeSetFilter(map, HINT_LINE, multiIsoFilter(hintIso ? [hintIso] : []));
 
     const geoFeatures = collectPlacedGeoFeatures(filled);
-    // SSOT 폴리곤이 있으면 GeoJSON 필만 보이게(벡터와 이중 채움 방지)
-    const geoOpacity = geoFeatures.length ? PLACED_FILL_OPACITY : 0;
-    const vectorOpacity = geoFeatures.length ? 0 : PLACED_FILL_OPACITY;
+    const outline = dissolvePlacedOutline(geoFeatures);
+    // Mapbox 경계 타일 = 퍼즐 조각(접경 공유). 타일 없으면 GeoJSON 필 폴백.
+    const useVector = vectorPlacedReady(map, filledIsos);
+    const vectorOpacity = useVector ? PLACED_FILL_OPACITY : 0;
+    const geoOpacity = !useVector && geoFeatures.length ? PLACED_FILL_OPACITY : 0;
     safeSetPaint(map, PLACED_FILL, 'fill-opacity', vectorOpacity);
     safeSetPaint(map, PLACED_FILL, 'fill-color', PLACED_FILL_COLOR);
-    safeSetPaint(map, PLACED_LINE, 'line-opacity', geoFeatures.length ? 0 : 0.95);
+    safeSetPaint(map, PLACED_LINE, 'line-opacity', 0);
     safeSetPaint(map, PLACED_GEO_FILL, 'fill-opacity', geoOpacity);
     safeSetPaint(map, PLACED_GEO_FILL, 'fill-color', PLACED_FILL_COLOR);
 
@@ -396,6 +421,18 @@ export default function GeoPuzzleGlobe({
     if (geoSource?.setData) {
       try {
         geoSource.setData({ type: 'FeatureCollection', features: geoFeatures });
+      } catch {
+        /* ignore */
+      }
+    }
+    // 조립 윤곽 1개만 — 나라별 line이면 접경이 이중
+    const outlineSource = map.getSource(PLACED_OUTLINE_SOURCE);
+    if (outlineSource?.setData) {
+      try {
+        outlineSource.setData({
+          type: 'FeatureCollection',
+          features: outline ? [outline] : [],
+        });
       } catch {
         /* ignore */
       }
