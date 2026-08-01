@@ -105,9 +105,9 @@ function multiIsoFilter(isos) {
       ];
     }),
   ];
+  // disputed 제외 시 접경 분쟁 띠가 빈 틈으로 보임 → 퍼즐 필에서는 포함
   return [
     'all',
-    ['==', ['get', 'disputed'], 'false'],
     [
       'any',
       ['!', ['has', 'worldview']],
@@ -407,32 +407,30 @@ export default function GeoPuzzleGlobe({
 
     const geoFeatures = collectPlacedGeoFeatures(filled);
     const outline = dissolvePlacedOutline(geoFeatures);
-    // Mapbox 경계 타일 = 퍼즐 조각(접경 공유). 타일 없으면 GeoJSON 필 폴백.
+    // Mapbox 경계 타일 = 퍼즐 조각(접경 공유). 타일 없으면 조립(union) 필 폴백.
     const useVector = vectorPlacedReady(map, filledIsos);
     const vectorOpacity = useVector ? PLACED_FILL_OPACITY : 0;
-    const geoOpacity = !useVector && geoFeatures.length ? PLACED_FILL_OPACITY : 0;
+    const geoOpacity = !useVector && outline ? PLACED_FILL_OPACITY : 0;
     safeSetPaint(map, PLACED_FILL, 'fill-opacity', vectorOpacity);
     safeSetPaint(map, PLACED_FILL, 'fill-color', PLACED_FILL_COLOR);
     safeSetPaint(map, PLACED_LINE, 'line-opacity', 0);
     safeSetPaint(map, PLACED_GEO_FILL, 'fill-opacity', geoOpacity);
     safeSetPaint(map, PLACED_GEO_FILL, 'fill-color', PLACED_FILL_COLOR);
 
+    // 나라별 GeoJSON을 그대로 채우면 간소화 틈이 빈 공간으로 보임 → union 한 덩어리만
+    const assembled = outline ? [outline] : [];
     const geoSource = map.getSource(PLACED_GEOJSON_SOURCE);
     if (geoSource?.setData) {
       try {
-        geoSource.setData({ type: 'FeatureCollection', features: geoFeatures });
+        geoSource.setData({ type: 'FeatureCollection', features: assembled });
       } catch {
         /* ignore */
       }
     }
-    // 조립 윤곽 1개만 — 나라별 line이면 접경이 이중
     const outlineSource = map.getSource(PLACED_OUTLINE_SOURCE);
     if (outlineSource?.setData) {
       try {
-        outlineSource.setData({
-          type: 'FeatureCollection',
-          features: outline ? [outline] : [],
-        });
+        outlineSource.setData({ type: 'FeatureCollection', features: assembled });
       } catch {
         /* ignore */
       }

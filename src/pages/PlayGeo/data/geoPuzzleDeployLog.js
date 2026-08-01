@@ -5,6 +5,11 @@
  */
 export const GEO_PUZZLE_DEPLOY_LOG = [
   {
+    at: '2026-08-01 03:55 UTC',
+    summary: '접경 빈 틈 메움 — union 필 · disputed 포함',
+    detail: '빈 공간=나라 폴리곤 틈(간소화/분쟁띠). 조립 필로 채우고 Mapbox disputed 제외 해제.',
+  },
+  {
     at: '2026-08-01 03:45 UTC',
     summary: '퍼즐 조각=Mapbox 경계 · 조립 윤곽만 선',
     detail: '나라마다 line 그리면 접경 이중. 필은 country-boundaries, 주황선은 union 외곽 1회.',
