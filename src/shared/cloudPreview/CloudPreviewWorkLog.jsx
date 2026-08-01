@@ -5,6 +5,7 @@ import {
   cloudPreviewSessionLabel,
   cloudPreviewWorkLog,
 } from './cloudPreviewWorkLog';
+import { cloudQaShareUrl } from './cloudQaShareLinks';
 import { isCloudPreviewSurface } from './isCloudPreviewSurface';
 
 export default function CloudPreviewWorkLog() {
@@ -23,6 +24,9 @@ export default function CloudPreviewWorkLog() {
   if (!visible) return null;
 
   const sessionLabel = cloudPreviewSessionLabel();
+  const shareUrl = cloudPreviewProject.qaShareSlug
+    ? cloudQaShareUrl(cloudPreviewProject.qaShareSlug)
+    : null;
 
   return (
     <div
@@ -42,6 +46,15 @@ export default function CloudPreviewWorkLog() {
               <p className="truncate text-[11px] text-slate-500">
                 QA {cloudPreviewProject.previewPath}
               </p>
+              {shareUrl && (
+                <a
+                  href={shareUrl}
+                  className="mt-1 block truncate text-[11px] font-medium text-sky-700 hover:underline"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  공유 {shareUrl.replace(/^https:\/\//, '')}
+                </a>
+              )}
             </div>
             <button
               type="button"

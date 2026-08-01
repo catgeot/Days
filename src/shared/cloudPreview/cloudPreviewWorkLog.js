@@ -7,9 +7,11 @@ export const cloudPreviewProject = {
   active: true,
   title: 'Cloud 작업 규칙',
   sessionNo: 1,
-  sessionPhase: '이어하기·Preview 고정',
+  sessionPhase: '짧은 QA 링크',
   branch: 'cursor/cloud-preview-continuity-8320',
   previewPath: '/korea',
+  /** 테스터 공유용 — www.gateo.kr/qa/<slug> (main 반영 후) */
+  qaShareSlug: 'cloud-rules',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -22,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-01-qa-short-link',
+    session: 'Cloud 작업 규칙 #1, 짧은 QA 링크',
+    title: '테스터용 짧은 QA 링크',
+    detail:
+      '긴 Vercel 주소 대신 www.gateo.kr/qa/<slug> 로 공유합니다. 예: /qa/puzzle → 퍼즐 Preview. 목록은 /qa · SSOT는 cloudQaShareLinks.js · vercel.json redirects와 동기화.',
+    at: '2026-08-01',
+  },
   {
     id: '2026-08-01-cloud-continuity',
     session: 'Cloud 작업 규칙 #1, 이어하기·Preview 고정',
