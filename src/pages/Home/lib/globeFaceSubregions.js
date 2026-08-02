@@ -3,6 +3,7 @@
  * 대면(권역≠테마)·면 배타는 [`globeFaceRegions.js`](./globeFaceRegions.js) 유지.
  * 소권역끼리도 배타. 짧은 면(≤ SUBREGION_CHIP_MIN_COUNTRIES)은 칩 생략.
  * 정의에 없는 면 나라는 「기타」로 흡수(누락 숨김 방지 · 「전체」칩 없음).
+ * 중분류 나라 목록 순서: 시드·인기 순이 아니라 좌표 nearest-neighbor 연쇄(인접국 느낌).
  */
 
 import { GLOBE_CATEGORY_IDS } from './globeCategoryFocus.js';
@@ -10,6 +11,57 @@ import { getFaceRegionsForCategory } from './globeFaceRegions.js';
 
 /** 이 수 미만이면 소분류 칩 숨김 (정확히 N개면 칩 표시) */
 export const SUBREGION_CHIP_MIN_COUNTRIES = 12;
+
+function lngDelta(a, b) {
+  const abs = Math.abs(a - b);
+  return Math.min(abs, 360 - abs);
+}
+
+/** 대략적 지리 거리(도 단위) — 경도 wrap 반영 */
+export function regionCoordDistance(a, b) {
+  if (!a || !b) return Number.POSITIVE_INFINITY;
+  const dLat = (Number(a.lat) || 0) - (Number(b.lat) || 0);
+  const dLng = lngDelta(Number(a.lng) || 0, Number(b.lng) || 0);
+  return Math.hypot(dLat, dLng);
+}
+
+/**
+ * 중분류 안 나라 나열 — 시작국에서 가장 가까운 미방문국을 이어 붙임(greedy).
+ * 국경 그래프가 아니라 카탈로그 좌표 기준이라 섬·해외영토는 근사 hop.
+ * @param {{ id: string, labelKo?: string, lat?: number, lng?: number }[]} regions
+ * @param {string | null | undefined} preferredStartId 소권역 정의 첫 id (예: 한국·태국·프랑스)
+ */
+export function orderRegionsByNeighborChain(regions, preferredStartId = null) {
+  if (!Array.isArray(regions) || regions.length <= 1) return regions ? [...regions] : [];
+
+  const remaining = [...regions];
+  let startIdx = 0;
+  if (preferredStartId) {
+    const i = remaining.findIndex((r) => r.id === preferredStartId);
+    if (i >= 0) startIdx = i;
+  }
+  const ordered = [remaining.splice(startIdx, 1)[0]];
+
+  while (remaining.length > 0) {
+    const cur = ordered[ordered.length - 1];
+    let bestIdx = 0;
+    let bestDist = Number.POSITIVE_INFINITY;
+    for (let i = 0; i < remaining.length; i += 1) {
+      const d = regionCoordDistance(cur, remaining[i]);
+      if (d < bestDist) {
+        bestDist = d;
+        bestIdx = i;
+      } else if (d === bestDist) {
+        const a = remaining[i]?.labelKo || remaining[i]?.id || '';
+        const b = remaining[bestIdx]?.labelKo || remaining[bestIdx]?.id || '';
+        if (a.localeCompare(b, 'ko') < 0) bestIdx = i;
+      }
+    }
+    ordered.push(remaining.splice(bestIdx, 1)[0]);
+  }
+
+  return ordered;
+}
 
 /**
  * @typedef {{ id: string, labelKo: string, countryIds: string[] }} GlobeFaceSubregion
@@ -206,7 +258,9 @@ export function getFaceRegionsForSubregion(category, subregionId) {
   if (!sub) return regions;
 
   const allowed = new Set(sub.countryIds);
-  return regions.filter((r) => allowed.has(r.id));
+  const filtered = regions.filter((r) => allowed.has(r.id));
+  const preferredStartId = sub.countryIds.find((id) => allowed.has(id)) || null;
+  return orderRegionsByNeighborChain(filtered, preferredStartId);
 }
 
 /**
