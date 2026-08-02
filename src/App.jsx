@@ -10,6 +10,7 @@ import DashboardLayout from './pages/DailyReport/layout/DailyLayout';
 import Home from './pages/Home';
 import PlaceCard from './components/PlaceCard/index';
 import KoreaFestivalHub from './pages/Korea';
+import QaShareIndex from './pages/QaShare';
 
 import Dashboard from './pages/DailyReport/Dashboard';
 import Curation from './pages/DailyReport/Curation';
@@ -23,6 +24,7 @@ import Login from './shared/Auth/Login';
 import Signup from './shared/Auth/SignUp';
 import ForgotPassword from './shared/Auth/ForgotPassWord';
 import UpdatePassword from './shared/Auth/UpdatePassword';
+import CloudPreviewWorkLog from './shared/cloudPreview/CloudPreviewWorkLog';
 
 function RouteTracker() {
   const location = useLocation();
@@ -55,6 +57,7 @@ function App() {
         <RouteTracker />
         <ReportProvider>
           <Analytics />
+          <CloudPreviewWorkLog />
           <Routes>
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />}>
@@ -66,6 +69,7 @@ function App() {
                 <Route path="explore/:filter1/:filter2" element={null} />
               </Route>
               <Route path="/korea" element={<KoreaFestivalHub />} />
+              <Route path="/qa" element={<QaShareIndex />} />
             </Route>
 
             <Route path="/blog" element={<DashboardLayout />}>

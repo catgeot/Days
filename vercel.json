@@ -1,4 +1,21 @@
 {
+  "redirects": [
+    {
+      "source": "/qa/package",
+      "destination": "https://days-git-cursor-mrt-package-strip-18d2-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/globe",
+      "destination": "https://days-git-cursor-globe-neighbor-list-15b3-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/qa/puzzle",
+      "destination": "https://days-git-cursor-geography-puzzle-plan-62e0-catgeots-projects.vercel.app/play/geo",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",

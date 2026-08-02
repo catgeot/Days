@@ -2,6 +2,13 @@
 
 직전: [`2026-07-30-project-log.md`](./2026-07-30-project-log.md)
 
+## Cloud · Preview URL 고정 (main)
+
+- **규칙**: 이어하기 시 열린 feature 브랜치 **재사용** · 세션마다 새 `cursor/…-xxxx` 금지.
+- Mapbox에는 Vercel **git Preview URL**(`…-git-<branch>-….vercel.app`)만 1회 등록 · 해시 배포 URL 금지.
+- SSOT: [`AGENTS.md`](../AGENTS.md) Cloud「고정 브랜치 · Mapbox Preview URL」· `.ai-context` **1.5.2** · Rule `gateo-project-context`.
+- **의도**: Cloud가 `main`을 읽을 때부터 적용되도록 docs를 main에 반영.
+
 ## 블로그 AI 큐레이션 → 장소/지구본/무니 연결
 
 **상태**: tip · Preview QA 대기
@@ -23,7 +30,7 @@
 
 | | |
 |--|--|
-| 조치 | 낙원 탐색 로그인 게이트 제거 · 비로그인은 취향 데이터 없이 자유 추천 · 북마크만 로그인 유지 |
+| 조치 | 낙원 탐색 로그인 게이트 제거 · 비로그인도 취향 데이터 없이 자유 추천 · 북마크만 로그인 유지 |
 | 파일 | `AICurationCard.jsx` · `useLogbookAI.js` · `prompts.js` |
 
 **QA**: 로그아웃 상태 `/blog` → 도구 → 낙원 탐색 시작 → 결과·CTA 동작 · 북마크는 로그인 안내

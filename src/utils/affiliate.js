@@ -11,6 +11,15 @@ import {
   resolveRentalPickupBannerInfo,
 } from './rentalAirportMatch.js';
 
+export {
+  buildMrtPkcHomeUrl,
+  buildMrtPkcSearchUrl,
+  buildMrtPkcPromotionGroupUrl,
+  buildMrtPkcUrlForLocation,
+  resolveMrtPackageThemeHref,
+  resolveMrtPackageThemeForLocation,
+} from './mrtPackageLinks.js';
+
 // Klook direct affiliate parameters (managed in one place)
 export const KLOOK_AID = '118544';
 export const KLOOK_DEFAULT_AD_ID = '1256120';

@@ -13,6 +13,7 @@ import {
   MapPin,
   Plane,
   Ticket,
+  Luggage,
   Users,
   X,
 } from 'lucide-react';
@@ -30,6 +31,14 @@ import {
   normalizeMrtStayDates,
 } from '../../../utils/fetchMrtStays';
 import { canShowMrtTnaStrip } from '../../../utils/mrtTnaQuery';
+import {
+  canShowMrtPackageStrip,
+  resolveMrtPackageSearchKeyword,
+} from '../../../utils/mrtPackageQuery';
+import {
+  buildMrtPkcUrlForLocation,
+  formatMrtPackageProductCtaLabel,
+} from '../../../utils/mrtPackageLinks';
 import {
   MRT_STAY_LOW_COUNT,
   TRIPCOM_HOTEL_TRACKING,
@@ -750,26 +759,69 @@ function StayMrtMoreFooter({ href, compact = false }) {
 function StaySwitchToTourFooter({ onSwitch, compact = false }) {
   if (typeof onSwitch !== 'function') return null;
   return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        onSwitch();
+      }}
+      className={`inline-flex max-w-full items-center justify-center gap-2 rounded-xl border border-orange-300/40 bg-orange-500/15 font-semibold text-orange-50 shadow-[0_2px_12px_rgba(249,115,22,0.12)] backdrop-blur-sm transition-colors hover:border-orange-200/55 hover:bg-orange-500/25 active:scale-[0.98] ${
+        compact
+          ? 'px-3.5 py-2.5 text-[12px]'
+          : 'px-4 py-3 text-[13px]'
+      }`}
+    >
+      <Ticket size={compact ? 15 : 16} className="shrink-0 text-orange-200/90" strokeWidth={2.25} aria-hidden />
+      <span className="break-keep">주변 즐길거리를 탐색해 보세요</span>
+    </button>
+  );
+}
+
+/** 숙소 모달 하단 — 패키지 /pkc 검색 (목록 API 없음 · 새 탭) */
+function StayPackageMoreFooter({ location, compact = false }) {
+  if (!canShowMrtPackageStrip(location)) return null;
+  const keyword = resolveMrtPackageSearchKeyword(location);
+  const href = buildMrtPkcUrlForLocation(location, {
+    utmContent: 'stay-package-more',
+  });
+  if (!href) return null;
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer sponsored"
+      onClick={(e) => e.stopPropagation()}
+      className={`inline-flex max-w-full items-center justify-center gap-2 rounded-xl border border-teal-300/40 bg-teal-500/15 font-semibold text-teal-50 shadow-[0_2px_12px_rgba(20,184,166,0.12)] backdrop-blur-sm transition-colors hover:border-teal-200/55 hover:bg-teal-500/25 active:scale-[0.98] ${
+        compact
+          ? 'px-3.5 py-2.5 text-[12px]'
+          : 'px-4 py-3 text-[13px]'
+      }`}
+    >
+      <Luggage
+        size={compact ? 15 : 16}
+        className="shrink-0 text-teal-200/90"
+        strokeWidth={2.25}
+        aria-hidden
+      />
+      <span className="break-keep">{formatMrtPackageProductCtaLabel(keyword)}</span>
+      <ExternalLink size={compact ? 12 : 14} className="shrink-0 opacity-80" aria-hidden />
+    </a>
+  );
+}
+
+function StayModalExtraFooter({ location, onSwitchToTour, showPeerTourCta, compact = false }) {
+  const showPackage = canShowMrtPackageStrip(location);
+  if (!showPackage && !showPeerTourCta) return null;
+  return (
     <div
-      className={`flex w-full flex-col items-center border-t border-white/10 ${
+      className={`flex w-full flex-col items-center gap-3 border-t border-white/10 ${
         compact ? 'mt-5 pt-4' : 'mt-6 pt-5'
       }`}
     >
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          onSwitch();
-        }}
-        className={`inline-flex max-w-full items-center justify-center gap-2 rounded-xl border border-orange-300/40 bg-orange-500/15 font-semibold text-orange-50 shadow-[0_2px_12px_rgba(249,115,22,0.12)] backdrop-blur-sm transition-colors hover:border-orange-200/55 hover:bg-orange-500/25 active:scale-[0.98] ${
-          compact
-            ? 'px-3.5 py-2.5 text-[12px]'
-            : 'px-4 py-3 text-[13px]'
-        }`}
-      >
-        <Ticket size={compact ? 15 : 16} className="shrink-0 text-orange-200/90" strokeWidth={2.25} aria-hidden />
-        <span className="break-keep">주변 즐길거리를 탐색해 보세요</span>
-      </button>
+      {showPackage ? <StayPackageMoreFooter location={location} compact={compact} /> : null}
+      {showPeerTourCta ? (
+        <StaySwitchToTourFooter onSwitch={onSwitchToTour} compact={compact} />
+      ) : null}
     </div>
   );
 }
@@ -1540,9 +1592,11 @@ export default function GlobeStayStrip({
       ) : null}
       {status === 'empty' || status === 'error' ? emptyState : null}
       {desktopList}
-      {showPeerTourCta ? (
-        <StaySwitchToTourFooter onSwitch={onSwitchToTour} />
-      ) : null}
+      <StayModalExtraFooter
+        location={location}
+        onSwitchToTour={onSwitchToTour}
+        showPeerTourCta={showPeerTourCta}
+      />
     </div>
   );
 
@@ -1714,9 +1768,12 @@ export default function GlobeStayStrip({
                   ) : null}
                 </>
               ) : null}
-              {showPeerTourCta ? (
-                <StaySwitchToTourFooter onSwitch={onSwitchToTour} compact />
-              ) : null}
+              <StayModalExtraFooter
+                location={location}
+                onSwitchToTour={onSwitchToTour}
+                showPeerTourCta={showPeerTourCta}
+                compact
+              />
             </div>
             <button
               type="button"
