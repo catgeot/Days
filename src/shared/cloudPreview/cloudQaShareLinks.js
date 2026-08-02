@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'globe',
+    label: '지구본 나라 목록',
+    branch: 'cursor/globe-neighbor-list-15b3',
+    destination:
+      'https://days-git-cursor-globe-neighbor-list-15b3-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
     slug: 'puzzle',
     label: '퍼즐 게임',
     branch: 'cursor/geography-puzzle-plan-62e0',

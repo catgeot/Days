@@ -21,3 +21,13 @@
 | Cloud 최소 검증 | AGENTS — 도메인 smoke 또는 `npm run build` |
 | 비오케 Cloud PR | AGENTS Preview 표 — PR 없으면 생성 |
 | stale handoff | `2026-05-22-ai-chat-booking-cta-handoff` 「요청 시만 commit」→ 1.5.1 포인터 |
+
+## 지구본 나라 목록 #1, 인접국 연쇄 정렬
+
+**상태**: feature `cursor/globe-neighbor-list-15b3` · Preview QA 대기
+
+- **기존 기준**: 중분류 목록 = 면 시드(`GLOBE_FACE_PRIORITY`) 순 + 나머지 앵커 거리·인기·가나다 → 인접국 느낌이 약함
+- **변경**: `getFaceRegionsForSubregion`이 좌표 nearest-neighbor 연쇄로 재정렬 · 시작국은 소권역 정의 첫 id
+- **검증**: `npm run smoke:globe-face-neighbor-order` · `smoke:place-label-slug` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/globe` (PROD redirect는 main 반영 후) · git Preview `…-git-cursor-globe-neighbor-list-15b3-….vercel.app/`
+- **QA**: 홈 → 권역 → 중분류 → 나라 칩을 위에서 아래로 눌러 인접 느낌이 이어지는지
