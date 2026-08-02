@@ -52,18 +52,48 @@ function flyMapToContinent(map, continentCountryIds) {
   let lng = 0;
   let lat = 0;
   let n = 0;
+  let minLng = Infinity;
+  let minLat = Infinity;
+  let maxLng = -Infinity;
+  let maxLat = -Infinity;
+  let hasBbox = false;
   for (const id of continentCountryIds) {
     const c = GLOBE_COUNTRY_CATALOG[id];
     if (!c) continue;
     lng += c.lng;
     lat += c.lat;
     n += 1;
+    if (Array.isArray(c.bbox) && c.bbox.length === 4) {
+      hasBbox = true;
+      minLng = Math.min(minLng, c.bbox[0]);
+      minLat = Math.min(minLat, c.bbox[1]);
+      maxLng = Math.max(maxLng, c.bbox[2]);
+      maxLat = Math.max(maxLat, c.bbox[3]);
+    }
   }
   if (!n) return;
   try {
+    // PC 와이드에서 zoom 1.x flyTo → 월드 복제. fitBounds로 대륙만 프레이밍.
+    if (hasBbox && Number.isFinite(minLng)) {
+      map.fitBounds(
+        [
+          [minLng, minLat],
+          [maxLng, maxLat],
+        ],
+        {
+          padding: { top: 56, bottom: 56, left: 64, right: 64 },
+          maxZoom: continentCountryIds.length <= 8 ? 3.6 : 2.9,
+          duration: 900,
+          pitch: 0,
+          bearing: 0,
+          essential: true,
+        },
+      );
+      return;
+    }
     map.flyTo({
       center: [lng / n, lat / n],
-      zoom: continentCountryIds.length <= 8 ? 2.6 : 1.8,
+      zoom: continentCountryIds.length <= 8 ? 2.8 : 2.35,
       duration: 900,
       essential: true,
     });

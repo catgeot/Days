@@ -65,16 +65,41 @@ function simplifyGeometry(geometry) {
   }
   if (type === 'MultiPolygon') {
     // 작은 섬·조각까지 외곽선을 그리면 필 안쪽에 선이 겹쳐 지저분해짐 → 본토·주요 섬만
+    // 본토에서 멀리 떨어진 해외령(예: 프랑스령 기아나)은 제외
     const scored = (coordinates || [])
       .map((poly) => {
         const outer = poly?.[0];
-        return { poly, area: ringArea(outer) };
+        const area = ringArea(outer);
+        let cx = 0;
+        let cy = 0;
+        let n = 0;
+        for (const [x, y] of outer || []) {
+          if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+          cx += x;
+          cy += y;
+          n += 1;
+        }
+        return {
+          poly,
+          area,
+          cx: n ? cx / n : 0,
+          cy: n ? cy / n : 0,
+        };
       })
       .filter((p) => p.area > 0)
       .sort((a, b) => b.area - a.area);
     const maxArea = scored[0]?.area || 0;
+    const main = scored[0];
     const kept = scored
-      .filter((p, idx) => idx === 0 || p.area / maxArea >= 0.005)
+      .filter((p, idx) => {
+        if (idx === 0) return true;
+        if (p.area / maxArea < 0.005) return false;
+        if (!main) return true;
+        const dLng = Math.abs(p.cx - main.cx);
+        const dLat = Math.abs(p.cy - main.cy);
+        // ~25° 이상 떨어진 조각은 해외령으로 보고 버림
+        return Math.hypot(Math.min(dLng, 360 - dLng), dLat) < 25;
+      })
       .slice(0, 8);
     const polys = [];
     for (const { poly, area } of kept) {

@@ -31,12 +31,16 @@ const PLACED_FILL_OPACITY = 0.82;
 const PUZZLE_PROJECTION = 'mercator';
 
 const DEFAULT_VIEW = {
-  longitude: 140,
-  latitude: 20,
-  zoom: 1.55,
+  longitude: 105,
+  latitude: 28,
+  zoom: 2.35,
   pitch: 0,
   bearing: 0,
 };
+
+/** PC 와이드에서 zoom≈1 mercator가 월드 복제(남미·남극 타일)로 보이는 것 방지 */
+const PUZZLE_MIN_ZOOM = 1.45;
+const PUZZLE_MAX_ZOOM = 8;
 
 const CAPTION_LINKS = MAPBOX_ATTRIBUTION_LINKS.filter(
   (item) => item.label === '© Mapbox' || item.label === '© OpenStreetMap',
@@ -570,6 +574,9 @@ export default function GeoPuzzleGlobe({
         initialViewState={DEFAULT_VIEW}
         style={{ width: '100%', height: '100%' }}
         attributionControl={{ compact: true }}
+        renderWorldCopies={false}
+        minZoom={PUZZLE_MIN_ZOOM}
+        maxZoom={PUZZLE_MAX_ZOOM}
         onLoad={handleLoad}
         onClick={handleClick}
         dragRotate={false}

@@ -86,3 +86,9 @@
 - **git Preview**: https://days-git-cursor-geography-puzzle-plan-62e0-catgeots-projects.vercel.app/play/geo
 - **변경**: 오세아니아 → 유럽(8국) · 완료 ✓ 대륙 칩/안내 탭 시 피스 복구 재도전 · 배포 `2026-08-02 03:55 UTC`
 - **VERIFY**: `audit:geo-puzzle` · `smoke:global-puzzle` · `build` PASS
+
+## 퍼즐 게임 #1, PC 지도 월드복제 수정
+
+- **보고**: PC에서 남미·남극만 좌우 반복 · 모바일 정상
+- **원인**: mercator + 낮은 zoom + 기본 `renderWorldCopies` → 와이드 PC에서 월드 타일
+- **수정**: `renderWorldCopies=false` · `minZoom=1.45` · 대륙 `fitBounds` · FR 해외령(기아나) 폴리곤 제외 · 배포 `04:05 UTC`

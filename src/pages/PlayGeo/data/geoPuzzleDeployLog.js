@@ -5,6 +5,11 @@
  */
 export const GEO_PUZZLE_DEPLOY_LOG = [
   {
+    at: '2026-08-02 04:05 UTC',
+    summary: 'PC 지도 월드 복제 방지',
+    detail: '와이드 mercator에서 남미·남극이 좌우 반복되던 문제. renderWorldCopies off · minZoom · 대륙 fitBounds.',
+  },
+  {
     at: '2026-08-02 03:55 UTC',
     summary: '오세아니아→유럽 · 완료 대륙 재도전',
     detail: '섬 밀집 오세아니아를 유럽(8국)으로 교체. 완료 ✓ 대륙 칩/안내 탭 시 피스 복구·재도전.',

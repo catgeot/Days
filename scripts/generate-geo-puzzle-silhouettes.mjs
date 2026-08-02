@@ -68,11 +68,21 @@ function ringsToSvg(rings) {
       const xs = r.map((c) => c[0]);
       const ys = r.map((c) => c[1]);
       const area = (Math.max(...xs) - Math.min(...xs)) * (Math.max(...ys) - Math.min(...ys));
-      return { ring: simplifyRing(r, area > 40 ? 36 : area > 5 ? 24 : 14), area };
+      const cx = xs.reduce((a, b) => a + b, 0) / xs.length;
+      const cy = ys.reduce((a, b) => a + b, 0) / ys.length;
+      return { ring: simplifyRing(r, area > 40 ? 36 : area > 5 ? 24 : 14), area, cx, cy };
     })
-    .sort((a, b) => b.area - a.area)
-    .slice(0, 10);
-  const norm = scored.length ? scored.map((s) => s.ring) : rings.map(normalizeRingLng).map((r) => simplifyRing(r, 20));
+    .sort((a, b) => b.area - a.area);
+  const main = scored[0];
+  const near = scored.filter((s, idx) => {
+    if (idx === 0 || !main) return true;
+    const dLng = Math.abs(s.cx - main.cx);
+    const dLat = Math.abs(s.cy - main.cy);
+    return Math.hypot(Math.min(dLng, 360 - dLng), dLat) < 25;
+  }).slice(0, 10);
+  const norm = near.length
+    ? near.map((s) => s.ring)
+    : rings.map(normalizeRingLng).map((r) => simplifyRing(r, 20));
   let minX = Infinity;
   let minY = Infinity;
   let maxX = -Infinity;
