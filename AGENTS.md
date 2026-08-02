@@ -22,14 +22,15 @@
 
 ## 커밋·푸시 (검증 게이트)
 
-의도: 스모크/테스트 없이 깨진 로직을 커밋·푸시하던 것을 막기 위함.  
+의도(둘): (1) 스모크 없이 깨진 로직 커밋·푸시 방지 · (2) **로컬**에서 색·폰트 등 UI 미세 조율마다 커밋이 쌓이는 것 방지.  
 **요청 여부가 아니라 검증·이상 없음**이 게이트다 (`.ai-context` **1.5.1**). 「요청 시에만 commit」보다 **게이트 우선**(로직·SSOT).
 
 - 관련 audit/스모크/테스트 **PASS** · 알려진 깨짐 없음 → **커밋 OK**(한글 메시지 · 사용자 요청 불필요) — **로직·SSOT·버그픽스** (**기존 비주얼 유지**한 채 연결·동작만)
-- **디자인·소소한 UI**: **사람이 조율을 요청·승인한 경우만** working tree에서 이어감 · 조율 중 **커밋 보류** → **사람 QA 확정 후** 커밋. 「커밋 보류」≠ 미승인 리디자인 허가 (`.ai-context` **§4.1 5** / **1.5.1**). **Cloud feature 브랜치**는 아래 Cloud 절(Vercel Preview) 우선
-- **브랜치**: 짧은 수정은 **`main` 직행** · 대형/장기/충돌 위험만 feature(+PR). 상세 `.ai-context` **1.5.2**
+- **디자인·소소한 UI · 로컬**: 사람 조율 승인 후 working tree에서 이어감 · 조율 중 **커밋 보류** → 사람 QA 확정 후 **1회(또는 소수)** 커밋. 「커밋 보류」≠ 리디자인 허가 (`.ai-context` **§4.1 5** / **1.5.1**)
+- **디자인·소소한 UI · Cloud feature**: 아래 Cloud 절 — Preview 로드를 위해 **매 턴 커밋·push**(로컬 커밋 보류를 적용하지 않음)
+- **브랜치**: 짧은 수정은 **`main` 직행** · 대형/장기/충돌 위험·Cloud UI는 feature(+PR). 상세 `.ai-context` **1.5.2**
 - Cloud 오케스트레이터는 **§3.4**(커밋·push·PR)
-- **금지**: 검증 생략 · FAIL tip/코드 커밋·푸시 · 미확정 디자인 수시 커밋 · UI 임의 변경 · 사람 승인 없는 `main` 원격 push · force-push to main
+- **금지**: 검증 생략 · FAIL tip/코드 커밋·푸시 · **로컬** 미확정 UI 수시 커밋 · UI 임의 변경 · 사람 승인 없는 `main` 원격 push · force-push to main
 
 
 ## 검증 커맨드 (자주 씀)
@@ -67,16 +68,17 @@ npm run smoke:place-label-slug   # 지구본 라벨 slug/name_en · 무니 역�
 
 ### Feature 브랜치 · Vercel Preview (사람 QA 경로)
 
-사람이 Cloud 작업을 **확인하는 기본 경로**는 로컬 미리보기가 아니라 **해당 feature 브랜치의 Vercel Preview**(예: 축제 브랜치 git Preview → `/korea`)다.
+사람이 Cloud 작업을 **확인하는 기본 경로**는 로컬 미리보기가 아니라 **해당 feature 브랜치의 Vercel Preview**(예: 축제 브랜치 git Preview → `/korea`)다.  
+**push가 없으면 Preview가 갱신되지 않아 테스트 페이지를 로드할 수 없다** → Cloud feature에서는 로컬의 「UI 커밋 보류」를 **적용하지 않음**.
 
 | | 규칙 |
 |--|------|
-| **세션 종료** | 관련 검증·빌드 오류 **없음** → **한글 커밋 + `git push`** (사람 「커밋해」 대기 금지) → 위 **턴 종료 링크** |
-| **디자인·UI 조율** | Cloud feature 브랜치에서는 **커밋 보류하지 않음**. Preview에 올라가야 사람이 본다. |
+| **매 턴** | 작업분 반영 후 관련 검증·빌드 오류 **없음** → **한글 커밋 + `git push`**(사람 「커밋해」 대기 금지) → 위 **턴 종료 링크**. 턴을 커밋 없이 끝내지 않음 |
+| **디자인·UI 조율** | 색·폰트·배치 조율이라도 **매 턴 커밋·push**. Preview에 올라가야 사람이 본다. PR 없으면 생성·있으면 같은 PR에 push |
 | **「완료」** | push ≠ PROD 완료. 사람 Preview QA OK 전 **완료 단정·main 병합 금지** |
 | **시작 브랜치** | 제시어/PR·열린 feature·일지의 고정 브랜치가 있으면 **그 브랜치로 checkout** 후 작업. `main`만 떠 있으면 fetch 후 **기존 feature**로 이동(아래 고정 브랜치) |
 
-**금지**: 오류/FAIL 상태로 push · force-push to main · 사람 승인 없이 `main` 원격 push · Preview 없이 「로컬에서만 보고 끝」으로 Cloud UI 세션 종료 · 세션마다 새 Preview 호스트 부여
+**금지**: 오류/FAIL 상태로 push · force-push to main · 사람 승인 없이 `main` 원격 push · 커밋·push 없이 「로컬에서만 보고 끝」으로 Cloud UI 턴/세션 종료 · 세션마다 새 Preview 호스트 부여
 
 ### 고정 브랜치 · Mapbox Preview URL (전 주제)
 
