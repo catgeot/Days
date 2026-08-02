@@ -8,6 +8,7 @@ import {
   buildMrtPkcSearchUrl,
   buildMrtPkcPromotionGroupUrl,
   buildMrtPkcUrlForLocation,
+  formatMrtPackageProductCtaLabel,
   resolveMrtPackageThemeHref,
   resolveMrtPackageThemeForLocation,
 } from '../src/utils/mrtPackageLinks.js';
@@ -72,5 +73,8 @@ const unknownDomestic = {
   slug: 'daehwari',
 };
 assert.equal(canShowMrtPackageStrip(unknownDomestic), false);
+
+assert.equal(formatMrtPackageProductCtaLabel('더블린'), '더블린 패키지 상품보기');
+assert.equal(formatMrtPackageProductCtaLabel(''), '패키지 상품보기');
 
 console.log('smoke-mrt-package-links: PASS');

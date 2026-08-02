@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: 'MRT 패키지 연결',
-  sessionNo: 2,
-  sessionPhase: '써머리 탭·모달 폐기',
+  sessionNo: 3,
+  sessionPhase: '숙소·투어 패키지 CTA',
   branch: 'cursor/mrt-package-strip-18d2',
   previewPath: '/',
   qaShareSlug: 'package',
@@ -24,11 +24,19 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-02-mrt-package-stay-tour-cta',
+    session: 'MRT 패키지 연결 #3, 숙소·투어 패키지 CTA',
+    title: '숙소·투어 「패키지 상품보기」 CTA',
+    detail:
+      '투어 모달 문구를 「{지역} 패키지 상품보기」로 바꿨고, 숙소 모달 하단에도 같은 CTA를 넣었습니다. 더블린 등 해외 장소에서 숙소·투어 모달 하단에 「더블린 패키지 상품보기」가 보이는지 확인해 주세요.',
+    at: '2026-08-02',
+  },
+  {
     id: '2026-08-02-mrt-package-summary-revert',
     session: 'MRT 패키지 연결 #2, 써머리 탭·모달 폐기',
     title: '써머리 패키지 탭·모달 제거',
     detail:
-      '패키지 목록 API가 없어 써머리 「패키지」탭과 모달을 폐기했습니다. 탐색 홈 CTA 재연결과 투어 모달 「패키지 더보기」딥링크는 그대로입니다. 써머리에 패키지 탭이 없는지, 탐색·투어 더보기는 이전과 같이 열리는지 확인해 주세요.',
+      '패키지 목록 API가 없어 써머리 「패키지」탭과 모달을 폐기했습니다. 탐색 홈 CTA 재연결과 투어 모달 패키지 딥링크는 유지됩니다.',
     at: '2026-08-02',
   },
   {

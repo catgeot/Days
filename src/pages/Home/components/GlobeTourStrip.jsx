@@ -4,7 +4,10 @@ import { ArrowUp, BedDouble, ChevronRight, ExternalLink, Luggage, MapPin, Ticket
 import GetYourGuideActivitiesWidget from '../../../components/PlaceCard/tabs/planner/components/GetYourGuideActivitiesWidget';
 import MrtTnaActivitiesWidget from '../../../components/PlaceCard/tabs/planner/components/MrtTnaActivitiesWidget';
 import { buildGygActivitiesSearchQuery } from '../../../components/PlaceCard/tabs/planner/locationRules';
-import { buildMrtPkcUrlForLocation } from '../../../utils/mrtPackageLinks';
+import {
+  buildMrtPkcUrlForLocation,
+  formatMrtPackageProductCtaLabel,
+} from '../../../utils/mrtPackageLinks';
 import { canShowMrtStayStrip } from '../../../utils/mrtStayQuery';
 import {
   canShowMrtPackageStrip,
@@ -129,9 +132,7 @@ function TourPackageMoreFooter({ location }) {
       className="inline-flex max-w-full items-center justify-center gap-2 rounded-xl border border-teal-300/40 bg-teal-500/15 px-4 py-3 text-[13px] font-semibold text-teal-50 shadow-[0_2px_12px_rgba(20,184,166,0.12)] backdrop-blur-sm transition-colors hover:border-teal-200/55 hover:bg-teal-500/25 active:scale-[0.98]"
     >
       <Luggage size={16} className="shrink-0 text-teal-200/90" strokeWidth={2.25} aria-hidden />
-      <span className="break-keep">
-        {keyword ? `${keyword} 패키지 더보기` : '패키지 더보기'}
-      </span>
+      <span className="break-keep">{formatMrtPackageProductCtaLabel(keyword)}</span>
       <ExternalLink size={14} className="shrink-0 opacity-80" aria-hidden />
     </a>
   );

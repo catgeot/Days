@@ -97,3 +97,9 @@ export function resolveMrtPackageThemeForLocation(location, options = {}) {
   if (!key) return null;
   return resolveMrtPackageThemeHref(key, options);
 }
+
+/** 숙소·투어 모달 CTA 문구 — 예: `더블린 패키지 상품보기` */
+export function formatMrtPackageProductCtaLabel(keyword) {
+  const k = String(keyword ?? '').trim();
+  return k ? `${k} 패키지 상품보기` : '패키지 상품보기';
+}
