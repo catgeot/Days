@@ -8,12 +8,20 @@ const Curation = () => {
     <div className="min-h-screen bg-white text-gray-900 font-sans relative">
       <div className="max-w-7xl mx-auto pt-8 px-4 sm:px-6 pb-20">
         <div className="mb-6 border-b border-gray-100 pb-6">
-          <Link
-            to="/blog"
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-blue-600 transition-colors mb-4"
-          >
-            <ArrowLeft size={14} /> LogBook
-          </Link>
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-blue-600 transition-colors"
+            >
+              <ArrowLeft size={14} /> 홈
+            </Link>
+            <Link
+              to="/blog"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-blue-600 transition-colors"
+            >
+              LogBook
+            </Link>
+          </div>
           <div className="flex items-center gap-2 mb-1">
             <Sparkles className="text-blue-500" size={22} />
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">AI 큐레이션</h1>

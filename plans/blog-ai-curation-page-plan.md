@@ -1,8 +1,10 @@
 # 블로그 AI 큐레이션 페이지 — 인페이지 콘텐츠 허브
 
-**상태**: Phase B+C tip · Preview QA 대기  
+**상태**: Phase B+C + 홈 진입 · Preview QA 대기  
+**세션**: `AI 큐레이션 #3, 홈 진입 연결`  
 **제시어**: `큐레이션-이어하기` · `@plans/blog-ai-curation-page-plan.md`  
-**브랜치**: `cursor/blog-ai-curation-links-5aff` · tip `559ab4d` · PR [#42](https://github.com/catgeot/Days/pull/42) (기반 Phase A [#38](https://github.com/catgeot/Days/pull/38))
+**브랜치**: `cursor/blog-ai-curation-links-5aff` · PR [#42](https://github.com/catgeot/Days/pull/42) (기반 Phase A [#38](https://github.com/catgeot/Days/pull/38))  
+**공유**: `https://www.gateo.kr/qa/curation`
 
 ---
 
