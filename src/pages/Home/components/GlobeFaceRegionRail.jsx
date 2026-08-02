@@ -257,7 +257,7 @@ export default function GlobeFaceRegionRail({
     thumbTop: 0,
     thumbHeight: 100,
   });
-  /** 모바일: 세부 메뉴 토글 기준으로 하단 정렬 · 위쪽 스크롤 */
+  /** 모바일: 짧은 목록은 하단 고정 배치 유지 · 스크롤은 항상 상단에서 시작 */
   const anchorListToBottom = subregionPlacement === 'none';
 
   const updateScrollHint = useCallback(() => {
@@ -293,12 +293,10 @@ export default function GlobeFaceRegionRail({
   useEffect(() => {
     const el = listRef.current;
     if (el) {
-      el.scrollTop = anchorListToBottom
-        ? Math.max(0, el.scrollHeight - el.clientHeight)
-        : 0;
+      el.scrollTop = 0;
     }
     updateScrollHint();
-  }, [category, regions.length, activeSubregionId, anchorListToBottom, updateScrollHint]);
+  }, [category, regions.length, activeSubregionId, updateScrollHint]);
 
   useEffect(() => {
     const el = listRef.current;

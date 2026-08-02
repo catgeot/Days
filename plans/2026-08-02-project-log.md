@@ -24,10 +24,19 @@
 
 ## 지구본 나라 목록 #1, 인접국 연쇄 정렬
 
-**상태**: feature `cursor/globe-neighbor-list-15b3` · Preview QA 대기
+**상태**: ✅ main `#45` · 고정 브랜치 재사용 중
 
 - **기존 기준**: 중분류 목록 = 면 시드(`GLOBE_FACE_PRIORITY`) 순 + 나머지 앵커 거리·인기·가나다 → 인접국 느낌이 약함
 - **변경**: `getFaceRegionsForSubregion`이 좌표 nearest-neighbor 연쇄로 재정렬 · 시작국은 소권역 정의 첫 id
 - **검증**: `npm run smoke:globe-face-neighbor-order` · `smoke:place-label-slug` · `npm run build`
-- **공유**: `https://www.gateo.kr/qa/globe` (PROD redirect는 main 반영 후) · git Preview `…-git-cursor-globe-neighbor-list-15b3-….vercel.app/`
-- **QA**: 홈 → 권역 → 중분류 → 나라 칩을 위에서 아래로 눌러 인접 느낌이 이어지는지
+- **공유**: `https://www.gateo.kr/qa/globe` · git Preview `…-git-cursor-globe-neighbor-list-15b3-….vercel.app/`
+
+## 지구본 나라 목록 #2, 스크롤 상단 시작
+
+**상태**: feature `cursor/globe-neighbor-list-15b3` · Preview QA 대기
+
+- **이슈**: 긴 나라 리스트가 하단 기준으로 열려 위로 스크롤해야 했음
+- **변경**: `GlobeFaceRegionRail` — `justify-end` 하단 배치는 유지 · 초기 `scrollTop`만 0(상단)
+- **검증**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/globe` · git Preview `…-git-cursor-globe-neighbor-list-15b3-….vercel.app/`
+- **QA**: 홈→권역→중분류에서 긴 목록이 위에서 보이고 아래로 스크롤되는지 · 짧은 목록은 하단 고정인지
