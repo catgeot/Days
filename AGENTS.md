@@ -73,10 +73,13 @@ npm run smoke:place-label-slug   # 지구본 라벨 slug/name_en · 무니 역�
 
 | | 규칙 |
 |--|------|
-| **매 턴** | 작업분 반영 후 관련 검증·빌드 오류 **없음** → **한글 커밋 + `git push`**(사람 「커밋해」 대기 금지) → 위 **턴 종료 링크**. 턴을 커밋 없이 끝내지 않음 |
-| **디자인·UI 조율** | 색·폰트·배치 조율이라도 **매 턴 커밋·push**. Preview에 올라가야 사람이 본다. PR 없으면 생성·있으면 같은 PR에 push |
+| **매 턴** | 작업분 반영 후 **최소 검증**(아래) PASS · 오류 없음 → **한글 커밋 + `git push`**(사람 「커밋해」 대기 금지) → 위 **턴 종료 링크**. 턴을 커밋 없이 끝내지 않음 |
+| **디자인·UI 조율** | 색·폰트·배치 조율이라도 **매 턴 커밋·push**. Preview에 올라가야 사람이 본다 |
+| **PR** | feature면 **PR 없으면 `gh pr create`** · 있으면 같은 PR에 push(오케 §3.4와 동일 · 비오케 Cloud UI도) |
 | **「완료」** | push ≠ PROD 완료. 사람 Preview QA OK 전 **완료 단정·main 병합 금지** |
-| **시작 브랜치** | 제시어/PR·열린 feature·일지의 고정 브랜치가 있으면 **그 브랜치로 checkout** 후 작업. `main`만 떠 있으면 fetch 후 **기존 feature**로 이동(아래 고정 브랜치) |
+| **시작 브랜치** | 제시어/PR·열린 feature·일지의 고정 브랜치가 있으면 **그 브랜치로 checkout**. UI·Preview 필요한데 open feature 없고 `main`만 떠 있으면 **짧은 feature 생성 후** 작업(아래 고정 브랜치) |
+
+**최소 검증 (Cloud · push 전)**: 해당 도메인 audit/smoke가 있으면 그것 · 없으면 `npm run build`(또는 Vite 빌드 오류 없음) 1회. FAIL이면 push 금지.
 
 **금지**: 오류/FAIL 상태로 push · force-push to main · 사람 승인 없이 `main` 원격 push · 커밋·push 없이 「로컬에서만 보고 끝」으로 Cloud UI 턴/세션 종료 · 세션마다 새 Preview 호스트 부여
 
@@ -95,10 +98,17 @@ Vercel은 **배포 해시 URL**(푸시마다 변경)과 **브랜치 git Preview 
 
 플랫폼이 세션용 브랜치 접미사를 제안해도, **이어하기·Mapbox QA 중이면 기존 고정 브랜치가 우선**이다. 실수로 새 브랜치를 만들었으면 tip을 고정 브랜치에 fast-forward/push 하고 Mapbox·사람은 고정 URL만 안내.
 
+### Cloud에서 브랜치 선택
+
+| 작업 종류 | 브랜치 · push |
+|-----------|----------------|
+| 짧은 SSOT·버그픽스·문서 | **`main` 커밋 OK** · `main` **원격 push는 사람 요청 시만** |
+| UI 조율 · Preview QA · 대형/장기 · Cloud 오케 tip | **feature** · **매 턴 커밋·push** · PR(없으면 생성) |
+
 ### 브랜치·병합
 
-- **기본**: 버그픽스·SSOT·소소한 UI는 **`main`에서 작업·커밋**. 사람 요청 시 `main` push OK (`.ai-context` **1.5.2**).
-- **브랜치·PR**: 새 페이지·대형 기능·장시간·충돌 위험·Cloud 오케·Cloud UI 조율·사람이 명시한 경우. **열린 feature가 있으면 그 브랜치를 재사용**(위 고정 브랜치).
+- **기본(로컬)**: 버그픽스·SSOT·소소한 UI는 **`main`에서 작업·커밋**. 사람 요청 시 `main` push OK (`.ai-context` **1.5.2**).
+- **브랜치·PR**: 새 페이지·대형 기능·장시간·충돌 위험·Cloud 오케·Cloud UI Preview·사람이 명시한 경우. **열린 feature가 있으면 그 브랜치를 재사용**(위 고정 브랜치).
 - **금지**: force-push to main · 사람 승인 없이 에이전트가 임의로 `main` push · **같은 주제로 세션마다 새 Preview 브랜치 남발**. feature는 Preview → 사람 QA → 병합.
 
 - Edge(`supabase functions deploy …`)는 코드 수정과 별개. Secrets·로그인 없으면 **배포는 보류**하고 일지/핸드오프에 명령만 남긴다.

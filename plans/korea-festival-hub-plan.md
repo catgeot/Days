@@ -1,7 +1,7 @@
 # 국내 여행지 특화 — TourAPI 축제·지역 허브 플랜
 
-**실행 환경**: 로컬·Cloud 모두 가능. Cloud 이어하기는 [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) — 세션 표기 `축제 페이지 #N, …` · **고정 브랜치·동일 Preview URL** · Preview 우측 작업 로그 · 턴 종료 Preview 링크.  
-**SSOT**: 본 파일 · 일지 [`2026-07-29-project-log.md`](./2026-07-29-project-log.md) 「국내축제」절 · Cloud 규칙 [`AGENTS.md`](../AGENTS.md).
+**실행 환경 (2026-08-02 갱신)**: **로컬 우선**(SSOT·로직·짧은 픽스). **Cloud UI 조율**은 [`AGENTS.md`](../AGENTS.md) Cloud + [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) — feature · **매 턴 커밋·push** · 고정 Preview · `/qa/…` (구「Cloud 중단」폐기).  
+**SSOT**: 본 파일 · 일지 [`2026-08-02-project-log.md`](./2026-08-02-project-log.md) · [`2026-07-30`](./2026-07-30-project-log.md) 「국내축제」.
 
 | 세션 | 상태 | 다음 |
 |------|------|------|
@@ -16,13 +16,13 @@
 
 ---
 
-## 0. 세션 재시작 규칙 (필독)
+## 0. 실행 규칙 (필독)
 
-1. **Cloud**로 이어갈 때는 [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) — 표기 `축제 페이지 #N, …` · **고정 브랜치·동일 Preview** · 작업 로그 append · 턴 종료 Preview 링크.
-2. **진행 확인 = git + Preview**. 세션 끝나면 반드시 **커밋**(로직/SSOT·일지). Cloud feature는 Preview용 push. UI만 로컬 조율 중일 때는 디자인 게이트(사람 QA 후 커밋).
-3. **한 채팅 = 한 세션 표기** (`축제 페이지 #N, 단계`). 세션을 합치지 않는다.
+1. **기본 = 로컬** Cursor 채팅. **Cloud UI**는 사람 제시어/브랜치가 있을 때만 — AGENTS Cloud + [`cloud-preview-continuity.md`](./cloud-preview-continuity.md)(표기 `축제 페이지 #N, …` · 고정 Preview · 매 턴 push). 「Cloud 무시」는 **폐기**.
+2. **진행 확인 = git(+ Cloud면 Preview)**. 로직/SSOT·일지: 검증 PASS 후 커밋(`.ai-context` **1.5.1**). **로컬 UI** 조율: 커밋 보류→사람 QA 후. **Cloud feature UI**: 매 턴 커밋·push.
+3. **한 채팅 = 한 세션 표기** (`축제 페이지 #N, 단계` 또는 `국내축제-S…`). 세션을 합치지 않는다.
 4. 읽을 것: 본 플랜 **해당 세션 절만** + 일지 「국내축제」최신 절 + `.ai-context` 1.5.1·TourAPI 금지 1~2줄. 전반 탐색 금지.
-5. 키: 로컬 `.env.local`의 `TOUR_API_SERVICE_KEY` (또는 Edge 경유 시 Supabase URL+ANON). **`VITE_`로 Tour 키 노출 금지**.
+5. 키: 로컬 `.env.local`의 `TOUR_API_SERVICE_KEY` (또는 Edge 경유 시 Supabase URL+ANON). Cloud는 Secrets. **`VITE_`로 Tour 키 노출 금지**.
 
 ```mermaid
 flowchart TD
@@ -86,8 +86,8 @@ MVP: LIVE + sessionStorage. 쿼터 이슈 시 S4.
 
 | | 방침 |
 |--|------|
-| **Cursor Cloud** | **사용 안 함** (가시성 문제로 중단). 재개하려면 사람 명시 + 매 턴 커밋·push 필수. |
-| **오케스트레이터** | S1~S3a **비적합**. S3b만 다배치면 **로컬**에서 워커2 또는 **솔로 배치**(시드→시도 순)로 충분. Cloud 오케스트레이터는 선택·나중. |
+| **Cursor Cloud** | **UI Preview 조율 OK** — feature 브랜치 · 매 턴 커밋·push · Vercel Preview([`AGENTS.md`](../AGENTS.md)). SSOT/짧은 로직은 **로컬·`main` 우선**. |
+| **오케스트레이터** | S1~S3a **비적합**. S3b류 다배치는 **로컬** 워커2 또는 솔로 배치로 충분. Cloud 오케는 사람 명시 시에만. |
 
 ---
 

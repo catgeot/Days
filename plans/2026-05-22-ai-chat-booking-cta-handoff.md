@@ -674,7 +674,7 @@ userText + chatHistory + location(slug) + essentialGuide
 
 - `travelSpotFerries.json` · `travelSpotTransport.json` · `travelSpotAirports.json` **직접 수정 금지**
 - UI 레이아웃 대变更 **사용자 승인 후**
-- commit·배포 **요청 시만**
+- commit·push: `.ai-context` **1.5.1**(검증 게이트 · 로컬 UI 보류 / Cloud feature 매 턴 push). Edge·PROD 배포는 사람 요청·Secrets 있을 때
 - AI **URL 환각 금지** — resolver·툴킷 pre_travel·OFFICIAL_VISA_LINKS만
 
 ---
