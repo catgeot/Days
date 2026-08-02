@@ -1,55 +1,93 @@
 /**
- * 마이리얼트립 /pkc 패키지 단축 URL SSOT (에디터스 픽 CTA).
- * 트립링크 iframe/모달과 무관 — 새 탭으로만 연다.
+ * 마이리얼트립 /pkc 패키지 SSOT.
+ * 목록 API 없음 → 웹 검색·기획전·홈 딥링크 + mylink 추적.
  *
- * 드리프트 주의:
- * - MRT 쪽 분류명(「특가」「단거리」등)은 마케팅 용어라 언제든 바뀔 수 있음.
- * - 표시명만 바뀌고 shortUrl이 유지될 수도, 새 페이지·새 단축으로 갈 수도 있음 → 보장 없음.
- * - CTA 문구·URL 불일치 의심 시 단축을 직접 열어 랜딩을 확인하고 이 파일만 갱신.
- * - 일본 섹션 CTA「특가」는 MRT 랜딩 표기를 따른 것(취지는 일본 패키지).
+ * 2026-08-02: myrealt.rip 테마 단축 중 일본(dVEgd5)이 교원 기획전(KYOWON_JAPAN2606)으로만
+ * 이어져 일반 일본 패키지와 어긋남 → `/pkc/search?q=`·검증된 promotionGroupId로 재연결.
+ * 홈 단축(fOey96)의 mylink_id는 숙소·검색 추적 SSOT로 유지.
  */
 
+/** 패키지 허브 */
+export const MRT_PKC_HOME_URL = 'https://www.myrealtrip.com/pkc';
+
+/**
+ * 단축 URL이 랜딩하던 기획전 ID (2026-08-02 리다이렉트 확인).
+ * 일본은 캠페인 프로모션이라 검색어로 대체.
+ */
+export const MRT_PKC_PROMOTION_GROUP_IDS = {
+  familyShortHaul: '5',
+  southeastAsia: '6',
+  europe: '28',
+  regionalDeparture: '14',
+};
+
+/** @deprecated 보관 — 테마 CTA는 {@link MRT_PACKAGE_THEME_LINKS} 의 target 사용 */
 export const MRT_PACKAGE_SHORT_URLS = {
-  /** 단거리 가족 (동남아·일본, 4시간 이내) — 랜딩: 가족여행 안성맞춤 */
   familyShortHaul: 'https://myrealt.rip/dVHNd0',
-  /** 동남아 패키지 (휴양 등) */
   southeastAsia: 'https://myrealt.rip/dVDy3a',
-  /** 유럽 패키지 */
   europe: 'https://myrealt.rip/dVE182',
-  /** 일본 패키지 (MRT 표기: 특가) */
   japan: 'https://myrealt.rip/dVEgd5',
-  /** 홈 단축 — 폴백·스마트 링크용 (제휴홈에서 재조회 불가 → short+mylink_id 함께 보관) */
   home: 'https://myrealt.rip/fOey96',
-  /** 지방 출발 — 보관만 */
   regionalDeparture: 'https://myrealt.rip/dVEE92',
-  /** 홈쇼핑 — 보관만 */
   homeShopping: 'https://myrealt.rip/dVEo96',
 };
 
 /**
  * 홈 단축(`home` → myrealt.rip/fOey96) 리다이렉트의 mylink_id.
  * 검색·숙소 목록 등 비항공 MRT URL에 `?mylink_id=`+`utm_source=mktpartner`로 제휴 추적.
- * 파트너 페이지에서 링크를 만들 때마다 ID는 달라질 수 있으나 동일 계정으로 인정됨.
  * @see https://docs.myrealtrip.com/#/api/partner-api/마이-링크
  */
 export const MRT_HOME_MYLINK_ID = '2640202';
 
-/** 에디터스 픽 테마 → CTA 문구 + 단축 URL */
-export const MRT_PACKAGE_THEME_LINKS = {
+/**
+ * 에디터스 픽·써머리 테마 → 안정 딥링크 스펙.
+ * kind: promotionGroup | search | home
+ */
+export const MRT_PACKAGE_THEME_TARGETS = {
   family: {
-    shortUrl: MRT_PACKAGE_SHORT_URLS.familyShortHaul,
+    kind: 'promotionGroup',
+    promotionGroupId: MRT_PKC_PROMOTION_GROUP_IDS.familyShortHaul,
+    searchFallback: '가족여행',
     ctaLabel: '동남아·일본 패키지',
   },
   japan: {
-    shortUrl: MRT_PACKAGE_SHORT_URLS.japan,
-    ctaLabel: '일본 특가 패키지',
+    kind: 'search',
+    q: '일본',
+    ctaLabel: '일본 패키지',
   },
   longhaul: {
-    shortUrl: MRT_PACKAGE_SHORT_URLS.europe,
+    kind: 'promotionGroup',
+    promotionGroupId: MRT_PKC_PROMOTION_GROUP_IDS.europe,
+    searchFallback: '유럽',
     ctaLabel: '유럽 패키지',
   },
   resort: {
-    shortUrl: MRT_PACKAGE_SHORT_URLS.southeastAsia,
+    kind: 'promotionGroup',
+    promotionGroupId: MRT_PKC_PROMOTION_GROUP_IDS.southeastAsia,
+    searchFallback: '동남아',
     ctaLabel: '동남아 휴양 패키지',
+  },
+};
+
+/**
+ * @deprecated {@link resolveMrtPackageThemeHref} 사용. 하위 호환용 shortUrl 필드.
+ * 런타임에 affiliate 빌더로 채우려면 SearchDiscovery에서 resolve 호출.
+ */
+export const MRT_PACKAGE_THEME_LINKS = {
+  family: {
+    shortUrl: `${MRT_PKC_HOME_URL}/search?promotionGroupId=${MRT_PKC_PROMOTION_GROUP_IDS.familyShortHaul}`,
+    ctaLabel: MRT_PACKAGE_THEME_TARGETS.family.ctaLabel,
+  },
+  japan: {
+    shortUrl: `${MRT_PKC_HOME_URL}/search?q=${encodeURIComponent('일본')}`,
+    ctaLabel: MRT_PACKAGE_THEME_TARGETS.japan.ctaLabel,
+  },
+  longhaul: {
+    shortUrl: `${MRT_PKC_HOME_URL}/search?promotionGroupId=${MRT_PKC_PROMOTION_GROUP_IDS.europe}`,
+    ctaLabel: MRT_PACKAGE_THEME_TARGETS.longhaul.ctaLabel,
+  },
+  resort: {
+    shortUrl: `${MRT_PKC_HOME_URL}/search?promotionGroupId=${MRT_PKC_PROMOTION_GROUP_IDS.southeastAsia}`,
+    ctaLabel: MRT_PACKAGE_THEME_TARGETS.resort.ctaLabel,
   },
 };
