@@ -2,6 +2,18 @@
 
 직전: [`2026-07-30-project-log.md`](./2026-07-30-project-log.md)
 
+## MRT 패키지 연결 #1, 써머리·탐색 재연결
+
+**상태**: feature `cursor/mrt-package-strip-18d2` · Preview QA 대기
+
+- **API**: Partner에 패키지 목록 없음 → `/pkc`·`/pkc/search` 딥링크 + mylink
+- **A**: 써머리 좌측 「패키지」탭(투어 위) + 모달(장소 검색·테마·홈 CTA)
+- **B**: 투어 모달 하단 「패키지 더보기」
+- **탐색**: 일본 단축→교원 캠페인 어긋남 → `q=일본` · 가족/유럽/휴양은 검증된 promotionGroup · 선두 카드=패키지 홈
+- **검증**: `npm run smoke:mrt-package` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/package` · git Preview `…-git-cursor-mrt-package-strip-18d2-….vercel.app/`
+- **QA**: 해외 장소 패키지 탭·투어 하단 CTA · 탐색 일본/가족/유럽/휴양 CTA 새 탭
+
 ## 에이전트 규칙 — 로컬 UI 커밋 보류 vs Cloud 매 턴 push
 
 **상태**: ✅ `8a6bc24` · `main` ahead 1 (push는 사람 요청 시)

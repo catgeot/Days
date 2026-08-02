@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '지구본 나라 목록',
-  sessionNo: 2,
-  sessionPhase: '스크롤 상단 시작',
-  branch: 'cursor/globe-neighbor-list-15b3',
+  title: 'MRT 패키지 연결',
+  sessionNo: 1,
+  sessionPhase: '써머리·탐색 재연결',
+  branch: 'cursor/mrt-package-strip-18d2',
   previewPath: '/',
-  qaShareSlug: 'globe',
+  qaShareSlug: 'package',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -24,43 +24,11 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
-    id: '2026-08-02-country-scroll-top',
-    session: '지구본 나라 목록 #2, 스크롤 상단 시작',
-    title: '나라 리스트 스크롤을 상단에서 시작',
+    id: '2026-08-02-mrt-package-strip',
+    session: 'MRT 패키지 연결 #1, 써머리·탐색 재연결',
+    title: '패키지 탭·투어 더보기·탐색 CTA 재연결',
     detail:
-      '나라가 많아 스크롤이 생길 때 기본 위치를 하단이 아니라 상단으로 맞췄습니다. 짧은 목록의 하단 고정 배치는 그대로입니다. 홈→권역→중분류에서 긴 나라 목록이 위에서부터 보이고 아래로 스크롤되는지 확인해 주세요.',
+      '써머리 좌측에 「패키지」탭(투어 찾기 위)과 모달을 추가했습니다. 투어 모달 하단에 「패키지 더보기」가 있습니다. 탐색 홈 테마 CTA는 만료·캠페인 단축 대신 /pkc 검색·기획전·패키지 홈으로 이어집니다. 해외 장소 카드에서 패키지 탭·투어 하단 CTA를, 탐색에서 일본·가족·유럽·휴양 CTA를 확인해 주세요.',
     at: '2026-08-02',
-  },
-  {
-    id: '2026-08-02-neighbor-chain',
-    session: '지구본 나라 목록 #1, 인접국 연쇄 정렬',
-    title: '중분류 나라 목록을 인접국 연쇄로 정렬',
-    detail:
-      '중분류(소권역) 안 나라 칩 순서를 시드·인기 순에서 좌표 nearest-neighbor 연쇄로 바꿨습니다. 시작국은 소권역 정의 첫 id(한국·태국·프랑스 등)를 유지합니다. 홈에서 권역→중분류→나라 칩을 위에서 아래로 눌러 인접 느낌이 이어지는지 확인해 주세요.',
-    at: '2026-08-02',
-  },
-  {
-    id: '2026-08-01-short-branch-main',
-    session: 'Cloud 작업 규칙 #1, main 반영',
-    title: '짧은 브랜치명 · main 머지',
-    detail:
-      '고정 브랜치를 cursor/cloud-rules-8320 으로 짧게 맞춤. 테스터 공유는 www.gateo.kr/qa/puzzle · 목록 /qa. 규칙을 main에 반영하고 이 주제 Preview 작업 로그는 종료(active=false).',
-    at: '2026-08-01',
-  },
-  {
-    id: '2026-08-01-qa-short-link',
-    session: 'Cloud 작업 규칙 #1, 짧은 QA 링크',
-    title: '테스터용 짧은 QA 링크',
-    detail:
-      '긴 Vercel 주소 대신 www.gateo.kr/qa/<slug> 로 공유합니다. 예: /qa/puzzle → 퍼즐 Preview. 목록은 /qa · SSOT는 cloudQaShareLinks.js · vercel.json redirects와 동기화.',
-    at: '2026-08-01',
-  },
-  {
-    id: '2026-08-01-cloud-continuity',
-    session: 'Cloud 작업 규칙 #1, 이어하기·Preview 고정',
-    title: 'Cloud 이어하기·작업 로그 규칙',
-    detail:
-      '같은 주제는 고정 브랜치·동일 git Preview URL을 재사용합니다. 세션 표기는 「주제 #N, 단계」형식입니다. Preview 우측 「작업 로그」에 이번 적용분을 남기고, 턴 종료 시 Preview 링크를 제공합니다.',
-    at: '2026-08-01',
   },
 ];

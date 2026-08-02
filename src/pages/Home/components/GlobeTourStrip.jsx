@@ -1,10 +1,15 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { ArrowUp, BedDouble, ChevronRight, MapPin, Ticket, X } from 'lucide-react';
+import { ArrowUp, BedDouble, ChevronRight, ExternalLink, Luggage, MapPin, Ticket, X } from 'lucide-react';
 import GetYourGuideActivitiesWidget from '../../../components/PlaceCard/tabs/planner/components/GetYourGuideActivitiesWidget';
 import MrtTnaActivitiesWidget from '../../../components/PlaceCard/tabs/planner/components/MrtTnaActivitiesWidget';
 import { buildGygActivitiesSearchQuery } from '../../../components/PlaceCard/tabs/planner/locationRules';
+import { buildMrtPkcUrlForLocation } from '../../../utils/mrtPackageLinks';
 import { canShowMrtStayStrip } from '../../../utils/mrtStayQuery';
+import {
+  canShowMrtPackageStrip,
+  resolveMrtPackageSearchKeyword,
+} from '../../../utils/mrtPackageQuery';
 import { canShowMrtTnaStrip } from '../../../utils/mrtTnaQuery';
 import Logo from './Logo';
 
@@ -93,19 +98,42 @@ function TourPanelIntro() {
 function TourSwitchToStayFooter({ onSwitch }) {
   if (typeof onSwitch !== 'function') return null;
   return (
-    <div className="mt-6 flex w-full flex-col items-center border-t border-white/10 pt-5">
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          onSwitch();
-        }}
-        className="inline-flex max-w-full items-center justify-center gap-2 rounded-xl border border-amber-300/40 bg-amber-500/15 px-4 py-3 text-[13px] font-semibold text-amber-50 shadow-[0_2px_12px_rgba(245,158,11,0.12)] backdrop-blur-sm transition-colors hover:border-amber-200/55 hover:bg-amber-500/25 active:scale-[0.98]"
-      >
-        <BedDouble size={16} className="shrink-0 text-amber-200/90" strokeWidth={2.25} aria-hidden />
-        <span className="break-keep">편하게 묵을 숙소를 알아보세요</span>
-      </button>
-    </div>
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        onSwitch();
+      }}
+      className="inline-flex max-w-full items-center justify-center gap-2 rounded-xl border border-amber-300/40 bg-amber-500/15 px-4 py-3 text-[13px] font-semibold text-amber-50 shadow-[0_2px_12px_rgba(245,158,11,0.12)] backdrop-blur-sm transition-colors hover:border-amber-200/55 hover:bg-amber-500/25 active:scale-[0.98]"
+    >
+      <BedDouble size={16} className="shrink-0 text-amber-200/90" strokeWidth={2.25} aria-hidden />
+      <span className="break-keep">편하게 묵을 숙소를 알아보세요</span>
+    </button>
+  );
+}
+
+/** 투어 모달 하단 — 패키지 /pkc 검색 (목록 API 없음 · 새 탭) */
+function TourPackageMoreFooter({ location }) {
+  if (!canShowMrtPackageStrip(location)) return null;
+  const keyword = resolveMrtPackageSearchKeyword(location);
+  const href = buildMrtPkcUrlForLocation(location, {
+    utmContent: 'tour-package-more',
+  });
+  if (!href) return null;
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer sponsored"
+      onClick={(e) => e.stopPropagation()}
+      className="inline-flex max-w-full items-center justify-center gap-2 rounded-xl border border-teal-300/40 bg-teal-500/15 px-4 py-3 text-[13px] font-semibold text-teal-50 shadow-[0_2px_12px_rgba(20,184,166,0.12)] backdrop-blur-sm transition-colors hover:border-teal-200/55 hover:bg-teal-500/25 active:scale-[0.98]"
+    >
+      <Luggage size={16} className="shrink-0 text-teal-200/90" strokeWidth={2.25} aria-hidden />
+      <span className="break-keep">
+        {keyword ? `${keyword} 패키지 더보기` : '패키지 더보기'}
+      </span>
+      <ExternalLink size={14} className="shrink-0 opacity-80" aria-hidden />
+    </a>
   );
 }
 
@@ -169,6 +197,8 @@ export default function GlobeTourStrip({
     ]
   );
   const showPeerStayCta = Boolean(onSwitchToStay) && peerStayEligible;
+  const showPackageMore = canShowMrtPackageStrip(location);
+  const showTourFooter = showPackageMore || showPeerStayCta;
   const name = location?.name || '';
   const placeKey = `${location?.slug || ''}|${name}|${location?.lat}|${location?.lng}|${useMrtTna ? 'mrt' : 'gyg'}`;
   const mobileOpen = !isLg && listFullscreen;
@@ -367,8 +397,13 @@ export default function GlobeTourStrip({
               <style>{tourScrollCss}</style>
               {useMrtTna ? null : <TourPanelIntro />}
               {widget}
-              {showPeerStayCta ? (
-                <TourSwitchToStayFooter onSwitch={onSwitchToStay} />
+              {showTourFooter ? (
+                <div className="mt-6 flex w-full flex-col items-center gap-3 border-t border-white/10 pt-5">
+                  {showPackageMore ? <TourPackageMoreFooter location={location} /> : null}
+                  {showPeerStayCta ? (
+                    <TourSwitchToStayFooter onSwitch={onSwitchToStay} />
+                  ) : null}
+                </div>
               ) : null}
             </div>
             <button
@@ -411,8 +446,13 @@ export default function GlobeTourStrip({
               <style>{tourScrollCss}</style>
               {useMrtTna ? null : <TourPanelIntro />}
               {widget}
-              {showPeerStayCta ? (
-                <TourSwitchToStayFooter onSwitch={onSwitchToStay} />
+              {showTourFooter ? (
+                <div className="mt-6 flex w-full flex-col items-center gap-3 border-t border-white/10 pt-5">
+                  {showPackageMore ? <TourPackageMoreFooter location={location} /> : null}
+                  {showPeerStayCta ? (
+                    <TourSwitchToStayFooter onSwitch={onSwitchToStay} />
+                  ) : null}
+                </div>
               ) : null}
             </div>
             <button
