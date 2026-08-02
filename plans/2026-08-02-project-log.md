@@ -33,7 +33,7 @@
 
 ## 지구본 나라 목록 #2, 스크롤 상단 시작
 
-**상태**: feature `cursor/globe-neighbor-list-15b3` · Preview QA 대기
+**상태**: feature `cursor/globe-neighbor-list-15b3` · `8bfbbf0` · PR [#46](https://github.com/catgeot/Days/pull/46) · Preview QA 대기
 
 - **이슈**: 긴 나라 리스트가 하단 기준으로 열려 위로 스크롤해야 했음
 - **변경**: `GlobeFaceRegionRail` — `justify-end` 하단 배치는 유지 · 초기 `scrollTop`만 0(상단)
