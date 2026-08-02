@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '지구본 나라 목록',
-  sessionNo: 1,
-  sessionPhase: '인접국 연쇄 정렬',
+  sessionNo: 2,
+  sessionPhase: '스크롤 상단 시작',
   branch: 'cursor/globe-neighbor-list-15b3',
   previewPath: '/',
   qaShareSlug: 'globe',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-02-country-scroll-top',
+    session: '지구본 나라 목록 #2, 스크롤 상단 시작',
+    title: '나라 리스트 스크롤을 상단에서 시작',
+    detail:
+      '나라가 많아 스크롤이 생길 때 기본 위치를 하단이 아니라 상단으로 맞췄습니다. 짧은 목록의 하단 고정 배치는 그대로입니다. 홈→권역→중분류에서 긴 나라 목록이 위에서부터 보이고 아래로 스크롤되는지 확인해 주세요.',
+    at: '2026-08-02',
+  },
   {
     id: '2026-08-02-neighbor-chain',
     session: '지구본 나라 목록 #1, 인접국 연쇄 정렬',
