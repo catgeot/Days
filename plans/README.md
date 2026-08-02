@@ -15,6 +15,7 @@
 - **동명 리/읍/면/동·bare 화이트리스트 검색 다후보 ✅**: [`ko-homonym-ri-search-disambiguation-plan.md`](./ko-homonym-ri-search-disambiguation-plan.md) · [`ko-homonym-search-expand-plan.md`](./ko-homonym-search-expand-plan.md) · PR [#37](https://github.com/catgeot/Days/pull/37) MERGED · `smoke:ko-homonym-ri-search`
 - **국내 명소 tip 좌표 TourAPI 보정 (다음 세션)**: [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) · 제시어 `TourAPI-명소좌표-이어하기`
 - **국내 MRT TNA 인근 (Phase 4 ✅ · C표 32)**: [`mrt-tna-nearby-expand-plan.md`](./mrt-tna-nearby-expand-plan.md) · 일지 `2026-07-30`
+- **블로그 AI 큐레이션 인페이지 허브 (Phase B+C tip · Preview QA)**: [`blog-ai-curation-page-plan.md`](./blog-ai-curation-page-plan.md) · 제시어 `큐레이션-이어하기` · 일지 `2026-07-31`
 - **일별 작업 로그**: `YYYY-MM-DD-project-log.md`  
   - 최신: [`2026-08-02-project-log.md`](./2026-08-02-project-log.md) · 직전 [`2026-08-01-project-log.md`](./2026-08-01-project-log.md)  
 

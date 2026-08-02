@@ -13,6 +13,7 @@ import KoreaFestivalHub from './pages/Korea';
 import QaShareIndex from './pages/QaShare';
 
 import Dashboard from './pages/DailyReport/Dashboard';
+import Curation from './pages/DailyReport/Curation';
 import Write from './pages/DailyReport/Write';
 import Detail from './pages/DailyReport/Detail';
 import PublicViewer from './pages/DailyReport/PublicViewer';
@@ -73,6 +74,7 @@ function App() {
 
             <Route path="/blog" element={<DashboardLayout />}>
               <Route index element={<Dashboard />} />
+              <Route path="curation" element={<Curation />} />
               <Route path="write" element={<Write />} />
               <Route path="write/:id" element={<Write />} />
               <Route path=":id" element={<Detail />} />

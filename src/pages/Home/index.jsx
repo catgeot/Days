@@ -56,6 +56,10 @@ import {
   clearPlaceReturnTo,
   peekPlaceReturnTo,
 } from './lib/placeReturnTo';
+import {
+  consumeCurationHomeOpen,
+  hasValidCurationCoords,
+} from './lib/curationPlaceBridge';
 
 const DEFAULT_GLOBE_THEME = 'deep';
 
@@ -350,6 +354,34 @@ function Home() {
     if (!hasValidCoords(loc)) return;
     lastGlobeFocusRef.current = loc;
   }, []);
+
+  // 블로그 AI 큐레이션 → 홈 써머리(±무니) 핸드오프
+  useEffect(() => {
+    const pending = consumeCurationHomeOpen();
+    if (!pending?.location || !hasValidCurationCoords(pending.location)) return;
+
+    const pin = healPlaceholderCountry(
+      mergeCanonicalTravelSpot({
+        ...pending.location,
+        type: pending.location.type || 'temp-base',
+        category: pending.location.category || category,
+      }),
+    );
+
+    pendingGlobeHomeFocusRef.current = pin;
+    rememberGlobeFocus(pin);
+    selectedLocationRef.current = pin;
+    handleLocationSelect(pin);
+
+    if (pending.openMooni) {
+      const boundSpot = buildMooniBoundSpotFromLocation(pin);
+      if (boundSpot?.name) {
+        window.setTimeout(() => {
+          handleStartChat('MOONi', { boundSpot });
+        }, 280);
+      }
+    }
+  }, [category, handleLocationSelect, handleStartChat, rememberGlobeFocus]);
 
   useEffect(() => {
     if (!selectedLocation) {

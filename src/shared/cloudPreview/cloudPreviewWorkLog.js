@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: 'MRT 패키지 연결',
+  title: 'AI 큐레이션',
   sessionNo: 3,
-  sessionPhase: '숙소·투어 패키지 CTA',
-  branch: 'cursor/mrt-package-strip-18d2',
-  previewPath: '/',
-  qaShareSlug: 'package',
+  sessionPhase: '홈 진입 연결',
+  branch: 'cursor/blog-ai-curation-links-5aff',
+  previewPath: '/blog/curation',
+  qaShareSlug: 'curation',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -24,27 +24,27 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
-    id: '2026-08-02-mrt-package-stay-tour-cta',
-    session: 'MRT 패키지 연결 #3, 숙소·투어 패키지 CTA',
-    title: '숙소·투어 「패키지 상품보기」 CTA',
+    id: '2026-08-02-curation-home-entry',
+    session: 'AI 큐레이션 #3, 홈 진입 연결',
+    title: '홈 → AI 큐레이션 바로가기',
     detail:
-      '투어 모달 문구를 「{지역} 패키지 상품보기」로 바꿨고, 숙소 모달 하단에도 같은 CTA를 넣었습니다. 더블린 등 해외 장소에서 숙소·투어 모달 하단에 「더블린 패키지 상품보기」가 보이는지 확인해 주세요.',
+      '홈 로고 아래 「AI 큐레이션」칩으로 /blog/curation에 바로 들어갈 수 있습니다. 낙원 탐색·리치 팁·나의 목록·「전체 지도에서 보기」홈 복귀를 확인해 주세요.',
     at: '2026-08-02',
   },
   {
-    id: '2026-08-02-mrt-package-summary-revert',
-    session: 'MRT 패키지 연결 #2, 써머리 탭·모달 폐기',
-    title: '써머리 패키지 탭·모달 제거',
+    id: '2026-07-31-curation-hub-bc',
+    session: 'AI 큐레이션 #2, 인페이지 허브',
+    title: '/blog/curation 인페이지 허브',
     detail:
-      '패키지 목록 API가 없어 써머리 「패키지」탭과 모달을 폐기했습니다. 탐색 홈 CTA 재연결과 투어 모달 패키지 딥링크는 유지됩니다.',
-    at: '2026-08-02',
+      '전용 페이지에서 낙원 탐색·whyHidden/bestSeason/tips·나의 큐레이션 목록 복원을 담았습니다. 지구본·장소카드 CTA는 보조입니다.',
+    at: '2026-07-31',
   },
   {
-    id: '2026-08-02-mrt-package-strip',
-    session: 'MRT 패키지 연결 #1, 써머리·탐색 재연결',
-    title: '탐색 CTA 재연결 · (이후 써머리 탭 폐기)',
+    id: '2026-07-31-curation-phase-a',
+    session: 'AI 큐레이션 #1, 연결·비로그인',
+    title: '지구본·장소카드·무니 연결',
     detail:
-      '탐색 홈 테마 CTA를 /pkc 검색·기획전·패키지 홈으로 재연결했습니다. 써머리 패키지 탭·모달은 #2에서 폐기.',
-    at: '2026-08-02',
+      '큐레이션 결과를 홈 써머리·장소카드·무니로 넘기고, 비로그인 탐색·이미지/좌표 로직을 고쳤습니다.',
+    at: '2026-07-31',
   },
 ];
