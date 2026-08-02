@@ -5,6 +5,11 @@
  */
 export const GEO_PUZZLE_DEPLOY_LOG = [
   {
+    at: '2026-08-02 03:55 UTC',
+    summary: '오세아니아→유럽 · 완료 대륙 재도전',
+    detail: '섬 밀집 오세아니아를 유럽(8국)으로 교체. 완료 ✓ 대륙 칩/안내 탭 시 피스 복구·재도전.',
+  },
+  {
     at: '2026-08-01 03:55 UTC',
     summary: '접경 빈 틈 메움 — union 필 · disputed 포함',
     detail: '빈 공간=나라 폴리곤 틈(간소화/분쟁띠). 조립 필로 채우고 Mapbox disputed 제외 해제.',

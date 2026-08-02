@@ -225,6 +225,18 @@ export default function GeoPuzzlePage() {
   };
 
   const handleSelectContinent = (id) => {
+    const next = campaign.find((c) => c.id === id);
+    const playable = listContinentCountryIds(next || { subregions: [] }).filter((cid) =>
+      isPuzzleCountryPlayable(cid),
+    );
+    const fullyCleared =
+      playable.length > 0 && playable.every((cid) => filledIds.includes(cid));
+    // 완료 ✓ 대륙도 클릭하면 피스 복구해 재도전 (별 기록은 유지)
+    if (fullyCleared) {
+      setFilledIds((prev) => prev.filter((fid) => !playable.includes(fid)));
+      setSession(createIdleSession());
+      setHintCountryId(null);
+    }
     setContinentId(id);
   };
 
@@ -315,12 +327,23 @@ export default function GeoPuzzlePage() {
           {campaign.map((c) => {
             const ids = listContinentCountryIds(c).filter((id) => isPuzzleCountryPlayable(id));
             const active = c.id === continent?.id;
-            const cleared = ids.length > 0 && ids.every((id) => filledIds.includes(id));
+            const cleared =
+              ids.length > 0 && ids.every((id) => progress.countries?.[id]?.cleared);
+            const trayEmpty =
+              ids.length > 0 && ids.every((id) => filledIds.includes(id));
             return (
               <button
                 key={c.id}
                 type="button"
                 onClick={() => handleSelectContinent(c.id)}
+                aria-label={
+                  cleared && trayEmpty
+                    ? `${c.labelKo} 완료 · 다시 도전`
+                    : cleared
+                      ? `${c.labelKo} 완료`
+                      : c.labelKo
+                }
+                title={cleared && trayEmpty ? '다시 도전' : undefined}
                 className={`shrink-0 rounded-full border px-3 py-1.5 text-[11px] font-medium break-keep ${
                   active
                     ? 'border-cyan-400/70 bg-cyan-500/25 text-cyan-50'
@@ -421,9 +444,13 @@ export default function GeoPuzzlePage() {
               </p>
             ) : null}
             {playableIds.length && !trayIds.length ? (
-              <p className="py-3 text-xs text-amber-200/90 break-keep">
-                이 대륙 피스를 모두 채웠습니다.
-              </p>
+              <button
+                type="button"
+                onClick={() => handleSelectContinent(continent?.id)}
+                className="py-3 text-left text-xs text-amber-200/90 break-keep underline-offset-2 hover:underline"
+              >
+                이 대륙 피스를 모두 채웠습니다 · 탭하면 다시 도전
+              </button>
             ) : null}
           </div>
         ) : null}

@@ -77,3 +77,12 @@
 - **사람**: 경계 사이 빈 공간은 무엇인가?
 - **답**: 바다 아님. 나라 폴리곤이 안 맞닿는 **틈**(GeoJSON 간소화 슬iver / Mapbox disputed 제외 띠).
 - **수정**: 폴백 필도 union 한 덩어리 · placed 필터에서 disputed 제외 해제 · 배포 `03:55 UTC`.
+
+## 퍼즐 게임 #1, 대륙교체·재도전
+
+- **세션**: `퍼즐 게임 #1, 대륙교체·재도전`
+- **고정 브랜치**: `cursor/geography-puzzle-plan-62e0` · PR [#31](https://github.com/catgeot/Days/pull/31)
+- **공유**: https://www.gateo.kr/qa/puzzle
+- **git Preview**: https://days-git-cursor-geography-puzzle-plan-62e0-catgeots-projects.vercel.app/play/geo
+- **변경**: 오세아니아 → 유럽(8국) · 완료 ✓ 대륙 칩/안내 탭 시 피스 복구 재도전 · 배포 `2026-08-02 03:55 UTC`
+- **VERIFY**: `audit:geo-puzzle` · `smoke:global-puzzle` · `build` PASS

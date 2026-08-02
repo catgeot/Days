@@ -13,10 +13,15 @@ const outPath = path.join(__dirname, '../src/pages/PlayGeo/data/geoPuzzleCountry
 
 const ISO_ALIASES = {
   TW: ['TW', 'CN-TW', 'TWN'],
+  FR: ['FR'],
 };
 
 function featureIso(props = {}) {
-  return String(props['ISO3166-1-Alpha-2'] || props.ISO_A2 || props.iso_a2 || '').toUpperCase();
+  const raw = String(props['ISO3166-1-Alpha-2'] || props.ISO_A2 || props.iso_a2 || '').toUpperCase();
+  if (raw && raw !== '-99') return raw;
+  const wb = String(props.WB_A2 || props.wb_a2 || '').toUpperCase();
+  if (wb && wb !== '-99') return wb;
+  return raw;
 }
 
 function ringArea(ring) {
@@ -130,7 +135,13 @@ for (const id of ids) {
     if (feature) break;
   }
   if (!feature && country.iso === 'TW') {
-    feature = [...byIso.values()].find((f) => /taiwan/i.test(f.properties?.name || ''));
+    feature = [...byIso.values()].find((f) => /taiwan/i.test(f.properties?.NAME || f.properties?.name || ''));
+  }
+  if (!feature && country.iso === 'FR') {
+    feature = (gj.features || []).find((f) => {
+      const p = f.properties || {};
+      return /^france$/i.test(String(p.ADMIN || p.NAME || p.name || ''));
+    });
   }
   if (!feature) {
     missing.push(`${id}:${country.iso}`);

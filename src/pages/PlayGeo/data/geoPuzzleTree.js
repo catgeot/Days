@@ -37,18 +37,15 @@ export const GEO_PUZZLE_CONTINENTS = [
     ],
   },
   {
-    id: 'oceania',
-    labelKo: '오세아니아',
-    labelEn: 'Oceania',
+    id: 'europe',
+    labelKo: '유럽',
+    labelEn: 'Europe',
     subregions: [
       {
-        id: 'oceania_all',
-        labelKo: '오세아니아',
-        labelEn: 'Oceania',
-        countryIds: [
-          'au', 'nz', 'fj', 'pg', 'sb', 'vu', 'nc', 'pf', 'to', 'ws',
-          'ck', 'ki', 'nr', 'tv', 'fm', 'mh', 'pw', 'gu', 'mp', 'pn',
-        ],
+        id: 'western_europe',
+        labelKo: '서유럽·중부',
+        labelEn: 'Western & Central Europe',
+        countryIds: ['fr', 'de', 'gb', 'it', 'es', 'pt', 'pl', 'nl'],
       },
     ],
   },
