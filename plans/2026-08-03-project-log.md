@@ -2,6 +2,15 @@
 
 직전: [`2026-08-02-project-log.md`](./2026-08-02-project-log.md)
 
+## 테마여행 #1, 플랜 설계
+
+**상태**: feature `cursor/korea-theme-plan-4160` · Pre-S0 문서만 · 구현 브랜치 아님
+
+- **산출**: [`korea-theme-travel-plan.md`](./korea-theme-travel-plan.md) — `/themes/korea` 허브 · 모듈 5(축제·10대·명승·방방곡곡·패키지) · S0~S9 세션표·제시어·가드
+- **결정 대기(S0)**: 홈 진입 · 10대 10곳 · 모듈 순서 · 패키지 국내 딥링크
+- **다음**: S0 사람 합의 후 구현은 `cursor/korea-theme` · `/korea` 축제는 링크만
+- **금지**: 미합의 UI 착수 · 축제 feature와 브랜치 혼용
+
 ## 축제 페이지 #2, 칩 아이콘 통일
 
 **상태**: feature `cursor/korea-time-list-16a3` · PR [#56](https://github.com/catgeot/Days/pull/56) · SHA `36cb9e11` · Preview QA 대기
