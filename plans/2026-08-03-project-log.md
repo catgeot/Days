@@ -4,7 +4,7 @@
 
 ## 테마여행 #5, 명승지
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `23f04f08` · Preview QA 대기
 
 - **한 일**: curated 20 · overrides→`koreaScenicSpots.json` · `/korea/theme/scenic` · 권역 필터 · place 복귀 path
 - **VERIFY**: `npm run audit:korea-scenic-spots` · `npm run smoke:korea-scenic-spots` · `npm run build`
@@ -56,7 +56,7 @@
 
 ## 테마여행 #2, 셸 라우트
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `23f04f08` · Preview QA 대기
 
 - **한 일**: `/korea/theme` 셸 · 홈 진입 「한국의 테마 여행」 · `placeReturnTo` · `/qa/korea-theme`+vercel · 작업로그
 - **VERIFY**: `npm run build`
