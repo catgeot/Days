@@ -349,11 +349,11 @@ curated 12~24 + /korea/theme/scenic. TourAPI 라이브 대량 목록 금지.
 | **VERIFY** | `smoke:korea-area-codes` 회귀 · 서울/제주/부산 경로 |
 | **금지** | 축제 지도 임베드 · hub JSON 직접 대량 편집 |
 
-**채팅명**: `테마여행 #6, 방방곡곡`  
+**채팅명**: `테마여행 #7, 방방곡곡`  
 **첫 메시지**
 
 ```
-테마여행 #6, 방방곡곡
+테마여행 #7, 방방곡곡
 @plans/korea-theme-travel-plan.md S5만
 areaCode+KR hub→/korea/theme/regions. /korea 지도 코드 수정 금지.
 ```
@@ -368,11 +368,11 @@ areaCode+KR hub→/korea/theme/regions. /korea 지도 코드 수정 금지.
 | **VERIFY** | 제주 검색 LIVE · mylink 파라미터 · build |
 | **금지** | 가짜 카드 목록 · `q=부산` 국내 목적지 오표기 |
 
-**채팅명**: `테마여행 #7, 패키지`  
+**채팅명**: `테마여행 #8, 패키지`  
 **첫 메시지**
 
 ```
-테마여행 #7, 패키지
+테마여행 #8, 패키지
 @plans/korea-theme-travel-plan.md S6·§3.4만
 MRT 제주 search+pkc 홈 CTA. 목록 API·q=부산 국내표기 금지.
 ```
@@ -387,11 +387,11 @@ MRT 제주 search+pkc 홈 CTA. 목록 API·q=부산 국내표기 금지.
 | **VERIFY** | theme↔korea 왕복 · korea 단독 회귀 |
 | **금지** | 축제 칩/지도/필터 로직 변경 |
 
-**채팅명**: `테마여행 #8, 축제 연결`  
+**채팅명**: `테마여행 #9, 축제 연결`  
 **첫 메시지**
 
 ```
-테마여행 #8, 축제 연결
+테마여행 #9, 축제 연결
 @plans/korea-theme-travel-plan.md S7만
 복귀·카피만. 축제 칩/지도/필터 로직 변경 금지.
 ```
@@ -402,11 +402,11 @@ MRT 제주 search+pkc 홈 CTA. 목록 API·q=부산 국내표기 금지.
 
 Helmet · sitemap에 `/korea/theme` 및 하위 · `/qa/korea-theme` 최종.
 
-**채팅명**: `테마여행 #9, SEO·QA링크`  
+**채팅명**: `테마여행 #10, SEO·QA링크`  
 **첫 메시지**
 
 ```
-테마여행 #9, SEO·QA링크
+테마여행 #10, SEO·QA링크
 @plans/korea-theme-travel-plan.md S8만
 Helmet·sitemap·/qa/korea-theme. releaseNotes 파일 수정 금지.
 ```
@@ -417,11 +417,11 @@ Helmet·sitemap·/qa/korea-theme. releaseNotes 파일 수정 금지.
 
 사람 Preview OK → releaseNotes **초안만 제안** → 합의 후 반영 · main 병합.
 
-**채팅명**: `테마여행 #10, 폴리시·릴리스`  
+**채팅명**: `테마여행 #11, 폴리시·릴리스`  
 **첫 메시지**
 
 ```
-테마여행 #10, 폴리시·릴리스
+테마여행 #11, 폴리시·릴리스
 @plans/korea-theme-travel-plan.md S9·§7만
 Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일 금지).
 ```
@@ -438,6 +438,7 @@ Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일
 | MRT `q=부산` 오해 | 국내 CTA에서 제외 |
 | Preview 난립 | `cursor/korea-theme` 고정 |
 | 축제 feature 충돌 | 브랜치 분리 · path 링크만 |
+| PlaceCard←theme 목록 복귀 | S4 후 `#6 뒤로복귀` · `navigate(returnTo)` · 절경 전용 상세 비범위 |
 
 ---
 
