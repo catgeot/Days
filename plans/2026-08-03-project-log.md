@@ -4,7 +4,7 @@
 
 ## 지구본 나라 목록 #5, 중동 이스라엘·요르단
 
-**상태**: feature `cursor/globe-neighbor-list-15b3` · Preview QA 대기
+**상태**: feature `cursor/globe-neighbor-list-15b3` · PR [#55](https://github.com/catgeot/Days/pull/55) · SHA `b918094` · Preview QA 대기
 
 - **이슈**: 중동 리스트에 이스라엘 없음 — `il`/`jo`가 아프리카「북아프리카·레반트」에 있었음
 - **변경**: 아시아 면·중동 소권역으로 이동 · 북아프리카 라벨에서 「레반트」 제거
