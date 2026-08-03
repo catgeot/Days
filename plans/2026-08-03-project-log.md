@@ -4,7 +4,7 @@
 
 ## 테마여행 #10, SEO·QA링크
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `932af69e` · Preview QA 대기
 
 - **한 일**: vite·`public/sitemap.xml`에 `/korea/theme`+하위 4 · 홈 SEO 히든 링크 · Helmet 유지 · `/qa/korea-theme`·vercel redirect 최종 · 작업로그 #10 · `previewPath=/korea/theme`
 - **VERIFY**: `npm run build`
