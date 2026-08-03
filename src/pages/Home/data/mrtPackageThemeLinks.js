@@ -67,7 +67,27 @@ export const MRT_PACKAGE_THEME_TARGETS = {
     searchFallback: '동남아',
     ctaLabel: '동남아 휴양 패키지',
   },
+  /** 한국의 테마여행 `/korea/theme/packages` — P0 */
+  koreaJeju: {
+    kind: 'search',
+    q: '제주',
+    ctaLabel: '제주 패키지',
+  },
+  /** 한국의 테마여행 — P1 패키지 홈 (`/pkc`) */
+  koreaHome: {
+    kind: 'home',
+    ctaLabel: 'MRT 패키지 둘러보기',
+  },
+  /** 한국의 테마여행 — P2 (2026-08-03 LIVE `/pkc/search?q=경주` 확인) */
+  koreaGyeongju: {
+    kind: 'search',
+    q: '경주',
+    ctaLabel: '경주 패키지',
+  },
 };
+
+/** `/korea/theme/packages` CTA 키 순서 (부산 q 금지 · 가짜 상품 카드 금지) */
+export const KOREA_THEME_PACKAGE_KEYS = ['koreaJeju', 'koreaHome', 'koreaGyeongju'];
 
 /**
  * @deprecated {@link resolveMrtPackageThemeHref} 사용. 하위 호환용 shortUrl 필드.

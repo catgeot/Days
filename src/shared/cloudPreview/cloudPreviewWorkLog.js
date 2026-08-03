@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 7,
-  sessionPhase: '방방곡곡',
+  sessionNo: 8,
+  sessionPhase: '패키지',
   branch: 'cursor/korea-theme',
-  previewPath: '/korea/theme/regions',
+  previewPath: '/korea/theme/packages',
   qaShareSlug: 'korea-theme',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-03-korea-theme-packages',
+    session: '테마여행 #8, 패키지',
+    title: '패키지 MRT CTA (제주·홈·경주)',
+    detail:
+      '/korea/theme/packages에 제주 검색·패키지 홈·경주 검색 CTA를 올렸습니다. 누르면 마이리얼트립이 새 탭으로 열립니다. 가짜 상품 카드는 없습니다. 테마→패키지 상품에서 세 링크와 mylink를 확인해 주세요.',
+    at: '2026-08-03',
+  },
   {
     id: '2026-08-03-korea-theme-regions',
     session: '테마여행 #7, 방방곡곡',

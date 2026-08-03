@@ -2,6 +2,23 @@
 
 직전: [`2026-08-02-project-log.md`](./2026-08-02-project-log.md)
 
+## 테마여행 #8, 패키지
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **한 일**: `/korea/theme/packages` · MRT CTA P0 제주·P1 홈·P2 경주(LIVE 200) · `koreaJeju`/`koreaHome`/`koreaGyeongju` · 새 탭 · 가짜 카드 없음
+- **VERIFY**: `npm run smoke:mrt-package` · `npm run build` · LIVE `q=제주`/`q=경주`/`/pkc`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/packages`
+- **QA**: 테마→패키지 상품→제주/홈/경주 CTA→새 탭 MRT·mylink
+- **다음**: S7 축제 연결
+
+```
+테마여행 #9, 축제 연결
+```
+
+- **금지 3**: 가짜 상품 카드 · `q=부산` 국내 목적지 오표기 · 축제 `/korea` 칩/지도 로직 변경
+
 ## 테마여행 #7, 방방곡곡
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `e50ac4e3` · Preview QA 대기

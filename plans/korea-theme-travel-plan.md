@@ -21,7 +21,7 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 5 | S4 | `테마여행 #5, 명승지` | ✅ Preview QA |
 | 6 | (핫픽스) | `테마여행 #6, 뒤로복귀` | ✅ Preview QA |
 | 7 | S5 | `테마여행 #7, 방방곡곡` | ✅ Preview QA |
-| 8 | S6 | `테마여행 #8, 패키지` | ⏳ 다음 |
+| 8 | S6 | `테마여행 #8, 패키지` | ⏳ Preview QA |
 | 9 | S7 | `테마여행 #9, 축제 연결` | ⏳ |
 | 10 | S8 | `테마여행 #10, SEO·QA링크` | ⏳ |
 | 11 | S9 | `테마여행 #11, 폴리시·릴리스` | ⏳ |
@@ -38,7 +38,7 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **S4** 명승지 페이지 | ✅ Preview QA | curated 20 → `/korea/theme/scenic` | #6 뒤로복귀 |
 | **#6** PlaceCard 뒤로복귀 | ✅ Preview QA | `navigate(returnTo)` · TypeError 가드 | S5 |
 | **S5** 방방곡곡 페이지 | ✅ Preview QA | 시도·hub → `/korea/theme/regions` | S6 |
-| **S6** 패키지 페이지 | ⏳ | MRT CTA → `/korea/theme/packages` | S7 |
+| **S6** 패키지 페이지 | ⏳ Preview QA | MRT CTA(제주·홈·경주) → `/korea/theme/packages` | S7 |
 | **S7** 축제 연결 다듬기 | ⏳ | `/korea` 딥링크·복귀 | S8 |
 | **S8** SEO·sitemap·QA | ⏳ | Helmet·sitemap·`/qa/korea-theme` | S9 |
 | **S9** 폴리시·릴리스 | ⏳ | 사람 QA → releaseNotes 1회 제안 | main 병합 |
@@ -357,12 +357,12 @@ modules+타일+order. 축제=/korea. 다른 테마는 빈 페이지 라우트만
 
 ---
 
-### S6 — 패키지 페이지 ⏳
+### S6 — 패키지 페이지 ⏳ Preview QA
 
 | | |
 |--|--|
-| **산출** | `/korea/theme/packages` · §3.4 P0+P1(+P2 VERIFY 후) · `resolveMrtPackageThemeHref` 확장 · 새 탭 |
-| **VERIFY** | 제주 검색 LIVE · mylink 파라미터 · build |
+| **산출** | `/korea/theme/packages` · §3.4 P0+P1+P2 · `koreaJeju`/`koreaHome`/`koreaGyeongju` · 새 탭 |
+| **VERIFY** | `smoke:mrt-package` · 제주·경주 LIVE 200 · mylink · build |
 | **금지** | 가짜 카드 목록 · `q=부산` 국내 목적지 오표기 |
 
 **채팅명**: `테마여행 #8, 패키지`  

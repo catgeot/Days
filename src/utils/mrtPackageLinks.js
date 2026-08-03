@@ -60,7 +60,7 @@ export function buildMrtPkcPromotionGroupUrl(promotionGroupId, options = {}) {
 
 /**
  * 테마 키 → 제휴 URL + CTA 문구.
- * @param {'family'|'japan'|'longhaul'|'resort'} themeKey
+ * @param {'family'|'japan'|'longhaul'|'resort'|'koreaJeju'|'koreaHome'|'koreaGyeongju'} themeKey
  */
 export function resolveMrtPackageThemeHref(themeKey, options = {}) {
   const target = MRT_PACKAGE_THEME_TARGETS[themeKey];
@@ -74,6 +74,8 @@ export function resolveMrtPackageThemeHref(themeKey, options = {}) {
     url = buildMrtPkcPromotionGroupUrl(target.promotionGroupId, utm);
   } else if (target.kind === 'search') {
     url = buildMrtPkcSearchUrl(target.q || target.searchFallback, utm);
+  } else if (target.kind === 'home') {
+    url = buildMrtPkcHomeUrl(utm);
   }
   return { url, ctaLabel: target.ctaLabel };
 }

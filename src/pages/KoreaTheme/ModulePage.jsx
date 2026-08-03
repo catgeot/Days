@@ -13,6 +13,10 @@ export default function KoreaThemeModulePage() {
     return <Navigate to="/korea/theme" replace />;
   }
 
+  if (mod.id === 'packages') {
+    return <Navigate to="/korea/theme/packages" replace />;
+  }
+
   return (
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
       <SEO
