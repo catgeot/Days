@@ -2,14 +2,21 @@
 
 직전: [`2026-08-02-project-log.md`](./2026-08-02-project-log.md)
 
+## 테마여행 #1, S0 합의 반영
+
+**상태**: feature `cursor/korea-theme-plan-4160` · PR [#57](https://github.com/catgeot/Days/pull/57) · 플랜만 · 구현은 `cursor/korea-theme`
+
+- **경로**: `/korea/theme` (+ `top10`/`scenic`/`regions`/`packages`) · 축제 `/korea` 유지
+- **홈**: C — 「테마여행」추가 · 기존 국내/축제 유지
+- **순서**: SSOT `order`로 차후 조정 · 테마=페이지
+- **10대**: 웹+TourAPI+hub · S3 확정 · 시드 초안(한라산·성산·설악·순천만·주상절리·해운대·불국사·내장산·보성·통영)
+- **패키지 MRT**: P0 `q=제주`(LIVE) · P1 `/pkc` 홈 · P2 `q=경주` · `q=부산`은 출발지 오탐으로 보류
+- **다음**: S1 셸 — 제시어는 플랜 S1 블록
+- **금지**: 축제 코드 수정 · 플랜 브랜치에서 UI 구현
+
 ## 테마여행 #1, 플랜 설계
 
-**상태**: feature `cursor/korea-theme-plan-4160` · Pre-S0 문서만 · 구현 브랜치 아님
-
-- **산출**: [`korea-theme-travel-plan.md`](./korea-theme-travel-plan.md) — `/themes/korea` 허브 · 모듈 5(축제·10대·명승·방방곡곡·패키지) · S0~S9 세션표·제시어·가드
-- **결정 대기(S0)**: 홈 진입 · 10대 10곳 · 모듈 순서 · 패키지 국내 딥링크
-- **다음**: S0 사람 합의 후 구현은 `cursor/korea-theme` · `/korea` 축제는 링크만
-- **금지**: 미합의 UI 착수 · 축제 feature와 브랜치 혼용
+**상태**: ✅ Pre-S0 → S0로 이관 (위 절)
 
 ## 축제 페이지 #2, 칩 아이콘 통일
 
