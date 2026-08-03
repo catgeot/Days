@@ -2,6 +2,23 @@
 
 직전: [`2026-08-02-project-log.md`](./2026-08-02-project-log.md)
 
+## 테마여행 #10, SEO·QA링크
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **한 일**: vite·`public/sitemap.xml`에 `/korea/theme`+하위 4 · 홈 SEO 히든 링크 · Helmet 유지 · `/qa/korea-theme`·vercel redirect 최종 · 작업로그 #10 · `previewPath=/korea/theme`
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme`
+- **QA**: 우측 작업 로그·공유 링크 · `/korea/theme`·top10·scenic·regions·packages title · sitemap 항목
+- **다음**: S9 폴리시·릴리스
+
+```
+테마여행 #11, 폴리시·릴리스
+```
+
+- **금지 3**: releaseNotes 파일 수정 · UI 리디자인 · 세션마다 새 Preview 브랜치
+
 ## 테마여행 #9, 축제 연결
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `f025536e` · Preview QA 대기

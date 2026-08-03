@@ -23,7 +23,7 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 7 | S5 | `테마여행 #7, 방방곡곡` | ✅ Preview QA |
 | 8 | S6 | `테마여행 #8, 패키지` | ✅ Preview QA |
 | 9 | S7 | `테마여행 #9, 축제 연결` | ⏳ Preview QA |
-| 10 | S8 | `테마여행 #10, SEO·QA링크` | ⏳ |
+| 10 | S8 | `테마여행 #10, SEO·QA링크` | ✅ Preview QA |
 | 11 | S9 | `테마여행 #11, 폴리시·릴리스` | ⏳ |
 
 이어하기·핫픽스만 할 때: `테마여행 #N, {짧은 수정}` (`N` = 그 주제의 **다음** 순번). 세션마다 새 `#1` 금지.
@@ -40,7 +40,7 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **S5** 방방곡곡 페이지 | ✅ Preview QA | 시도·hub → `/korea/theme/regions` | S6 |
 | **S6** 패키지 페이지 | ✅ Preview QA | MRT CTA(제주·홈·경주) → `/korea/theme/packages` | S7 |
 | **S7** 축제 연결 다듬기 | ⏳ Preview QA | `/korea?from=theme` · 복귀 한 줄 | S8 |
-| **S8** SEO·sitemap·QA | ⏳ | Helmet·sitemap·`/qa/korea-theme` | S9 |
+| **S8** SEO·sitemap·QA | ✅ Preview QA | Helmet·sitemap·`/qa/korea-theme` | S9 |
 | **S9** 폴리시·릴리스 | ⏳ | 사람 QA → releaseNotes 1회 제안 | main 병합 |
 
 ---
@@ -395,7 +395,7 @@ MRT 제주 search+pkc 홈 CTA. 목록 API·q=부산 국내표기 금지.
 
 ---
 
-### S8 — SEO · sitemap · QA ⏳
+### S8 — SEO · sitemap · QA ✅ Preview QA
 
 Helmet · sitemap에 `/korea/theme` 및 하위 · `/qa/korea-theme` 최종.
 
@@ -446,7 +446,7 @@ Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일
 - [x] 10대 10곳 → place → 테마 복귀 (`#6` navigate(returnTo) · Preview QA)
 - [ ] 명승 ≥12 · 방방곡곡 시도→hub→place
 - [ ] 패키지 MRT(제주 등) + mylink
-- [ ] `/qa/korea-theme` · 고정 Preview
+- [x] `/qa/korea-theme` · 고정 Preview (S1·S8 최종 · sitemap/Helmet)
 - [ ] audit/smoke/build PASS · 키 미노출
 - [ ] 사람 QA 전 완료·main 병합 단정 없음
 

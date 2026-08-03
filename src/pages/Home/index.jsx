@@ -1208,6 +1208,14 @@ function Home() {
         <Link to="/explore/oceania">오세아니아</Link>
         <Link to="/explore/africa">아프리카</Link>
         <Link to="/explore/middle-east">중동</Link>
+
+        {/* 국내 축제·테마여행 */}
+        <Link to="/korea">국내 축제</Link>
+        <Link to="/korea/theme">한국의 테마여행</Link>
+        <Link to="/korea/theme/top10">한국의 10대 절경</Link>
+        <Link to="/korea/theme/scenic">한국의 명승지</Link>
+        <Link to="/korea/theme/regions">방방곡곡</Link>
+        <Link to="/korea/theme/packages">패키지 상품</Link>
       </div>
     </div>
     </FlightCinemaProvider>

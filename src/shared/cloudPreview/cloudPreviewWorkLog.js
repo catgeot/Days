@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 9,
-  sessionPhase: '축제 연결',
+  sessionNo: 10,
+  sessionPhase: 'SEO·QA링크',
   branch: 'cursor/korea-theme',
-  previewPath: '/korea',
+  previewPath: '/korea/theme',
   qaShareSlug: 'korea-theme',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-03-korea-theme-seo-qa',
+    session: '테마여행 #10, SEO·QA링크',
+    title: '테마 SEO·sitemap · /qa/korea-theme',
+    detail:
+      '테마 랜딩·하위 페이지 Helmet을 유지하고, sitemap·vite에 /korea/theme·top10·scenic·regions·packages를 넣었습니다. 공유는 https://www.gateo.kr/qa/korea-theme → Preview /korea/theme 입니다. 우측 작업 로그의공유 링크·각 테마 URL을 확인해 주세요.',
+    at: '2026-08-03',
+  },
   {
     id: '2026-08-03-korea-theme-festival-link',
     session: '테마여행 #9, 축제 연결',

@@ -33,8 +33,15 @@ const exploreRoutes = [
   '/explore/middle-east',
 ];
 
-// 국내 축제 허브
-const koreaRoutes = ['/korea'];
+// 국내 축제 허브 + 테마여행 디렉터리
+const koreaRoutes = [
+  '/korea',
+  '/korea/theme',
+  '/korea/theme/top10',
+  '/korea/theme/scenic',
+  '/korea/theme/regions',
+  '/korea/theme/packages',
+];
 
 const dynamicRoutes = [...placeRoutes, ...exploreRoutes, ...koreaRoutes];
 
