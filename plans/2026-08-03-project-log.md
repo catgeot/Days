@@ -2,6 +2,13 @@
 
 직전: [`2026-08-02-project-log.md`](./2026-08-02-project-log.md)
 
+## 푸터 법적 공지 #3, 아동 개인정보 문구
+
+**상태**: ⏳ feature `cursor/footer-child-privacy-edfa`
+
+- Privacy §8: 「고의로 수집하지 않음」단정 → 주 이용 대상 아님·나이 미확인·확인/보호자 요청 시 이메일로 삭제 로 정정 (가입에 연령 게이트 없음)
+- Preview: `https://days-git-cursor-footer-child-privacy-edfa-catgeots-projects.vercel.app`
+
 ## 푸터 법적 공지 #2, Privacy·제휴라벨
 
 **상태**: ✅ `main` 머지·푸시 `719d868` · PR [#51](https://github.com/catgeot/Days/pull/51) MERGED · PROD 배포 SUCCESS
