@@ -15,8 +15,8 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | #N | 플랜 | 채팅명 (복붙) | 상태 |
 |----|------|---------------|------|
 | 1 | Pre-S0·S0 | `테마여행 #1, 플랜·S0 합의` | ✅ |
-| 2 | S1 | `테마여행 #2, 셸 라우트` | ⏳ 다음 |
-| 3 | S2 | `테마여행 #3, 모듈 SSOT` | ⏳ |
+| 2 | S1 | `테마여행 #2, 셸 라우트` | ✅ |
+| 3 | S2 | `테마여행 #3, 모듈 SSOT` | ⏳ 다음 |
 | 4 | S3 | `테마여행 #4, 10대 절경` | ⏳ |
 | 5 | S4 | `테마여행 #5, 명승지` | ⏳ |
 | 6 | S5 | `테마여행 #6, 방방곡곡` | ⏳ |
@@ -258,11 +258,11 @@ koreaGyeongju: { kind: 'search', q: '경주', ctaLabel: '경주 패키지' }, //
 
 ---
 
-### S1 — 셸·라우트·홈 진입 ⏳
+### S1 — 셸·라우트·홈 진입 ✅
 
 | | |
 |--|--|
-| **환경** | Cloud · **새** `cursor/korea-theme` (플랜 브랜치에서 이관·또는 main 기반) |
+| **환경** | Cloud · `cursor/korea-theme` |
 | **산출** | Route `/korea/theme` · 셸(헤더·타일 자리) · 홈「테마여행」링크 · `placeReturnTo` · 작업로그 · `/qa/korea-theme`+vercel redirect |
 | **금지** | 축제 `/korea` 로직 수정 · 모듈 본문 · releaseNotes |
 | **VERIFY** | `npm run build` · Preview `/korea/theme` · 홈→진입→뒤로 |

@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/korea-theme",
+      "destination": "https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme",
+      "permanent": false
+    },
+    {
       "source": "/qa/korea",
       "destination": "https://days-git-cursor-korea-time-list-16a3-catgeots-projects.vercel.app/korea",
       "permanent": false

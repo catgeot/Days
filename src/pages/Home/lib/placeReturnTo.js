@@ -1,5 +1,12 @@
 const KEY = 'gateo:place-return-to';
-const ALLOWED = new Set(['/korea']);
+const ALLOWED = new Set([
+  '/korea',
+  '/korea/theme',
+  '/korea/theme/top10',
+  '/korea/theme/scenic',
+  '/korea/theme/regions',
+  '/korea/theme/packages',
+]);
 
 function isAllowed(path) {
   return typeof path === 'string' && ALLOWED.has(path);

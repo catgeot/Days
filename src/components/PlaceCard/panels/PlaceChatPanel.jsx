@@ -176,14 +176,19 @@ const PlaceChatPanel = React.memo(({
                     if (typeof idx === 'number' && idx > 0) {
                         const prevPath = pathByHistoryIdxRef.current.get(idx - 1);
                         // 탭·명소 간 / 축제홈(returnTo) 복귀는 -1.
+                        const isKoreaReturn =
+                          prevPath === '/korea' ||
+                          prevPath.startsWith('/korea?') ||
+                          prevPath === '/korea/theme' ||
+                          prevPath.startsWith('/korea/theme/') ||
+                          prevPath.startsWith('/korea/theme?');
                         if (
                             typeof prevPath === 'string' &&
                             (prevPath.startsWith('/place/') ||
                               prevPath.startsWith('/explore') ||
-                              prevPath === '/korea' ||
-                              prevPath.startsWith('/korea?'))
+                              isKoreaReturn)
                         ) {
-                            if (returnTo && (prevPath === '/korea' || prevPath.startsWith('/korea?'))) {
+                            if (returnTo && isKoreaReturn) {
                                 clearPlaceReturnTo();
                             }
                             navigate(-1);

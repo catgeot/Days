@@ -2,6 +2,23 @@
 
 직전: [`2026-08-02-project-log.md`](./2026-08-02-project-log.md)
 
+## 테마여행 #2, 셸 라우트
+
+**상태**: feature `cursor/korea-theme` · Preview QA 대기
+
+- **한 일**: `/korea/theme` 셸(헤더·타일 자리) · App Route · 홈「테마여행」링크 · `placeReturnTo` theme path · `/qa/korea-theme`+vercel · 작업로그
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme`
+- **QA**: 홈→테마여행→`/korea/theme`→홈으로 · 축제 링크 유지 · `/korea` 미변경
+- **다음**: S2 모듈 SSOT
+
+```
+테마여행 #3, 모듈 SSOT
+```
+
+- **금지 3**: 축제 `/korea` 로직 수정 · 모듈 본문 대량 · releaseNotes
+
 ## 테마여행 #1, main 반영 (Cloud 전 주제)
 
 - **`main` push** `060e97c3` (fast-forward) — Cloud 채팅명 제시어 규칙 + 테마 플랜이 **origin/main**에 있음

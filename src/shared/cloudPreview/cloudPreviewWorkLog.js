@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '축제 페이지',
+  title: '테마여행',
   sessionNo: 2,
-  sessionPhase: '칩 아이콘 통일',
-  branch: 'cursor/korea-time-list-16a3',
-  previewPath: '/korea',
-  qaShareSlug: 'korea',
+  sessionPhase: '셸 라우트',
+  branch: 'cursor/korea-theme',
+  previewPath: '/korea/theme',
+  qaShareSlug: 'korea-theme',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-03-korea-theme-shell',
+    session: '테마여행 #2, 셸 라우트',
+    title: '/korea/theme 셸·홈 진입',
+    detail:
+      '테마여행 랜딩 껍데기와 홈「테마여행」링크, /qa/korea-theme 공유 링크를 넣었습니다. Preview에서 /korea/theme이 뜨고 홈→테마여행→홈으로가 되는지 확인해 주세요. 모듈 타일은 다음 세션입니다.',
+    at: '2026-08-03',
+  },
   {
     id: '2026-08-03-korea-chip-icons',
     session: '축제 페이지 #2, 칩 아이콘 통일',
