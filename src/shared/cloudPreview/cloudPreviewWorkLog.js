@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '지구본 나라 목록',
-  sessionNo: 6,
-  sessionPhase: '이스라엘 하이라이트 fill',
-  branch: 'cursor/globe-neighbor-list-15b3',
-  previewPath: '/',
-  qaShareSlug: 'globe',
+  title: '축제 페이지',
+  sessionNo: 2,
+  sessionPhase: '칩 아이콘 통일',
+  branch: 'cursor/korea-time-list-16a3',
+  previewPath: '/korea',
+  qaShareSlug: 'korea',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-03-korea-chip-icons',
+    session: '축제 페이지 #2, 칩 아이콘 통일',
+    title: '시간·지역·테마 상하 칩 아이콘 통일',
+    detail:
+      '대분류(지금·지역·테마)와 하위 칩이 같은 아이콘을 쓰도록 맞췄습니다. 시간은 달력, 지역은 핀, 테마는 스파클입니다. /korea에서 대분류를 눌러 하위 목록이 같은 아이콘인지 확인해 주세요.',
+    at: '2026-08-03',
+  },
   {
     id: '2026-08-03-globe-il-highlight-fill',
     session: '지구본 나라 목록 #6, 이스라엘 하이라이트 fill',
