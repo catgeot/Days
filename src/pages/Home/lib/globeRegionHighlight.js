@@ -517,11 +517,10 @@ export function setRegionHighlight(map, region) {
       setVisibility(map, REGION_HIGHLIGHT_FILL_ID, 'visible');
     }
 
-    // 앰버 국경선(Streets admin0) — 육지 접경 시인성 · 섬 전체 윤곽은 그리지 않음
+    // 앰버 국경: halo·solid는 비분쟁만(분쟁 halo는 IL 등 fill보다 큰 빈 외곽을 만듦). 분쟁은 dashed만.
     if (hasAdmin) {
       const solid = admin0IsoFilter(iso, { disputed: false });
       const disputed = admin0IsoFilter(iso, { disputed: true });
-      const any = admin0IsoFilter(iso);
 
       try {
         map.setPaintProperty(REGION_HIGHLIGHT_HALO_ID, 'line-opacity', haloOpacity);
@@ -531,7 +530,7 @@ export function setRegionHighlight(map, region) {
         // ignore
       }
 
-      setLayerFilter(map, REGION_HIGHLIGHT_HALO_ID, any);
+      setLayerFilter(map, REGION_HIGHLIGHT_HALO_ID, solid);
       setLayerFilter(map, REGION_HIGHLIGHT_LINE_ID, solid);
       setLayerFilter(map, REGION_HIGHLIGHT_DISPUTED_ID, disputed);
 

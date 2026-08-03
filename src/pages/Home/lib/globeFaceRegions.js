@@ -25,7 +25,7 @@ export const GLOBE_FACE_PRIORITY = {
   /** 한국 중심 아시아·남태평양(+중앙·서아시아) */
   paradise: [
     'kr', 'jp', 'tw', 'cn', 'th', 'vn', 'ph', 'id', 'my', 'sg', 'kh', 'au', 'nz', 'mv', 'hi', 'um',
-    'ae', 'ir', 'sa', 'qa', 'kw', 'bh', 'om', 'ye', 'iq', 'sy', 'lb', 'ps',
+    'ae', 'ir', 'sa', 'qa', 'kw', 'bh', 'om', 'ye', 'iq', 'sy', 'lb', 'il', 'jo', 'ps',
     'kz', 'uz', 'tm', 'tj', 'kg', 'az', 'am', 'ge',
     'pk', 'af', 'bd', 'bt', 'tl', 'kp', 'pg', 'mh', 'tv',
   ],
@@ -33,7 +33,6 @@ export const GLOBE_FACE_PRIORITY = {
   nature: [
     'ke', 'tz', 'za', 'eg', 'na', 'mg', 'et', 'zm', 'mu', 'sc', 'ma',
     'ng', 'gh', 'cd', 'dz', 'tn', 'ly', 'sd', 'ao', 'cm',
-    'il', 'jo',
   ],
   /** 유럽·북극(그린란드·스발바르) */
   urban: [

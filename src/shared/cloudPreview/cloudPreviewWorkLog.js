@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '지구본 나라 목록',
-  sessionNo: 4,
-  sessionPhase: '중분류 좌우 스크롤',
+  sessionNo: 6,
+  sessionPhase: '이스라엘 하이라이트 fill',
   branch: 'cursor/globe-neighbor-list-15b3',
   previewPath: '/',
   qaShareSlug: 'globe',
@@ -23,6 +23,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-03-globe-il-highlight-fill',
+    session: '지구본 나라 목록 #6, 이스라엘 하이라이트 fill',
+    title: '이스라엘 선택 시 빈 외곽(halo) 수정',
+    detail:
+      '중동에 넣은 뒤 이스라엘을 고르면 분쟁 경계 halo가 fill보다 크게 남아 안이 비어 보였습니다. halo를 비분쟁 국경에 맞추고, 소권역 바 중복 sync로 fill이 지워지던 것도 막았습니다. 홈→휴양→중동→이스라엘에서 보라 fill이 국경 안에 채워지는지 확인해 주세요.',
+    at: '2026-08-03',
+  },
+  {
+    id: '2026-08-03-globe-me-israel-jordan',
+    session: '지구본 나라 목록 #5, 중동 이스라엘·요르단',
+    title: '이스라엘·요르단을 아시아 중동으로',
+    detail:
+      '아프리카「북아프리카·레반트」에 있던 이스라엘·요르단을 아시아「중동」으로 옮겼습니다. 북아프리카 칩 라벨도 정리했습니다. 홈→도시(아시아)→중동에서 이스라엘·요르단이 보이는지 확인해 주세요.',
+    at: '2026-08-03',
+  },
   {
     id: '2026-08-03-globe-mid-hscroll-full',
     session: '지구본 나라 목록 #4, 중분류 좌우 스크롤',

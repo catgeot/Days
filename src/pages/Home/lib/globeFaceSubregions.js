@@ -101,7 +101,7 @@ export const GLOBE_FACE_SUBREGIONS = {
       id: 'middle_east',
       labelKo: '중동',
       countryIds: [
-        'ae', 'ir', 'sa', 'qa', 'kw', 'bh', 'om', 'ye', 'iq', 'sy', 'lb', 'ps',
+        'ae', 'ir', 'sa', 'qa', 'kw', 'bh', 'om', 'ye', 'iq', 'sy', 'lb', 'il', 'jo', 'ps',
       ],
     },
     {
@@ -135,8 +135,8 @@ export const GLOBE_FACE_SUBREGIONS = {
     },
     {
       id: 'north_africa',
-      labelKo: '북아프리카·레반트',
-      countryIds: ['eg', 'ma', 'eh', 'il', 'jo', 'dz', 'tn', 'ly', 'sd'],
+      labelKo: '북아프리카',
+      countryIds: ['eg', 'ma', 'eh', 'dz', 'tn', 'ly', 'sd'],
     },
     {
       id: 'west_africa',
