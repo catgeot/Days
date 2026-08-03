@@ -11,13 +11,14 @@
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/top10`
 - **QA**: 테마→10대 절경→항목→place→뒤로 목록 · 공식기관 사칭 문구 없음
-- **다음**: S4 명승지
+- **사람 결정 (2026-08-03)**: PlaceCard 뒤로→절경 목록 복귀 버그 있음 · **전용 상세 페이지는 만들지 않음** · **S4 명승 진행 후** `navigate(returnTo)` 핫픽스
+- **다음**: S4 명승지 → (이어서) 뒤로복귀 핫픽스
 
 ```
 테마여행 #5, 명승지
 ```
 
-- **금지 3**: 축제 `/korea` 로직 수정 · 공식 10대 사칭 · 세션 중 10곳 교체
+- **금지 3**: 축제 `/korea` 로직 수정 · 공식 10대 사칭 · 세션 중 10곳 교체 · 절경 전용 상세 신설
 
 ## 테마여행 #3, 모듈 SSOT
 
