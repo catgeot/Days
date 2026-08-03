@@ -18,8 +18,8 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 2 | S1 | `테마여행 #2, 셸 라우트` | ✅ |
 | 3 | S2 | `테마여행 #3, 모듈 SSOT` | ✅ |
 | 4 | S3 | `테마여행 #4, 10대 절경` | ✅ Preview QA |
-| 5 | S4 | `테마여행 #5, 명승지` | ⏳ 다음 |
-| 6 | (핫픽스) | `테마여행 #6, 뒤로복귀` | ⏳ S4 후 · PlaceCard→theme 목록 |
+| 5 | S4 | `테마여행 #5, 명승지` | ✅ Preview QA |
+| 6 | (핫픽스) | `테마여행 #6, 뒤로복귀` | ⏳ 다음 · PlaceCard→theme 목록 |
 | 7 | S5 | `테마여행 #7, 방방곡곡` | ⏳ |
 | 8 | S6 | `테마여행 #8, 패키지` | ⏳ |
 | 9 | S7 | `테마여행 #9, 축제 연결` | ⏳ |
@@ -35,7 +35,7 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **S1** 셸·라우트·홈 진입 | ✅ | `/korea/theme` MVP 껍데기 | S2 |
 | **S2** 테마 카탈로그 SSOT | ✅ | modules + 랜딩 타일(`order` 가변) | S3 |
 | **S3** 10대 절경 페이지 | ✅ Preview QA | 조사→SSOT→`/korea/theme/top10` | S4 |
-| **S4** 명승지 페이지 | ⏳ | curated → `/korea/theme/scenic` | S5 |
+| **S4** 명승지 페이지 | ✅ Preview QA | curated 20 → `/korea/theme/scenic` | #6 뒤로복귀 |
 | **S5** 방방곡곡 페이지 | ⏳ | 시도·hub → `/korea/theme/regions` | S6 |
 | **S6** 패키지 페이지 | ⏳ | MRT CTA → `/korea/theme/packages` | S7 |
 | **S7** 축제 연결 다듬기 | ⏳ | `/korea` 딥링크·복귀 | S8 |
@@ -320,24 +320,14 @@ modules+타일+order. 축제=/korea. 다른 테마는 빈 페이지 라우트만
 
 ---
 
-### S4 — 명승지 페이지 ⏳
+### S4 — 명승지 페이지 ✅ Preview QA
 
 | | |
 |--|--|
-| **산출** | curated 12~24 · `/korea/theme/scenic` · 시도 필터 최소 |
-| **원칙** | 품질>수량 · 이 세션 TourAPI 라이브 대량 목록 금지(개별 검증용 조회는 OK) |
-| **VERIFY** | audit · smoke 샘플5 · build |
-| **S4 직후** | PlaceCard 뒤로→`/korea/theme/{top10,scenic,…}` `navigate(returnTo)` 핫픽스 (채팅명 예: `테마여행 #6, 뒤로복귀`) |
-
-**채팅명**: `테마여행 #5, 명승지`  
-**첫 메시지**
-
-```
-테마여행 #5, 명승지
-@plans/korea-theme-travel-plan.md S4만
-curated 12~24 + /korea/theme/scenic. TourAPI 라이브 대량 목록 금지.
-뒤로복귀 핫픽스는 S4 후 (#6).
-```
+| **산출** | curated 20 · `/korea/theme/scenic` · 권역 필터 |
+| **원칙** | 품질>수량 · TourAPI 라이브 대량 목록 금지 |
+| **VERIFY** | `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · build |
+| **S4 직후** | PlaceCard 뒤로→`/korea/theme/{top10,scenic,…}` `navigate(returnTo)` 핫픽스 (`테마여행 #6, 뒤로복귀`) |
 
 ---
 

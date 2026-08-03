@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 4,
-  sessionPhase: '10대 절경',
+  sessionNo: 5,
+  sessionPhase: '명승지',
   branch: 'cursor/korea-theme',
-  previewPath: '/korea/theme/top10',
+  previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-03-korea-theme-scenic',
+    session: '테마여행 #5, 명승지',
+    title: '명승지 curated 20 + 권역 필터',
+    detail:
+      '경복궁·하회·채석강·천지연 등 20곳을 /korea/theme/scenic에 올렸습니다. 권역(수도권·강원·충청·전라·경상·제주) 필터와 place 이동을 확인해 주세요. PlaceCard 뒤로복귀 핫픽스는 다음 세션입니다.',
+    at: '2026-08-03',
+  },
   {
     id: '2026-08-03-korea-theme-top10',
     session: '테마여행 #4, 10대 절경',

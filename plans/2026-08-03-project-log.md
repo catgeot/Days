@@ -2,6 +2,23 @@
 
 직전: [`2026-08-02-project-log.md`](./2026-08-02-project-log.md)
 
+## 테마여행 #5, 명승지
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **한 일**: curated 20 · overrides→`koreaScenicSpots.json` · `/korea/theme/scenic` · 권역 필터 · place 복귀 path
+- **VERIFY**: `npm run audit:korea-scenic-spots` · `npm run smoke:korea-scenic-spots` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **QA**: 테마→명승지→권역 칩→항목→place · 「GATEO 선정」고지
+- **다음**: PlaceCard `navigate(returnTo)` 뒤로복귀 핫픽스
+
+```
+테마여행 #6, 뒤로복귀
+```
+
+- **금지 3**: 축제 `/korea` 로직 수정 · TourAPI 라이브 대량 목록 · 절경 전용 상세 신설
+
 ## 테마여행 #4, 10대 절경
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `f4235f96` · Preview QA 대기
