@@ -63,8 +63,8 @@ const ToolkitCard = ({
                     </span>
                 )}
                 {isSponsored && (
-                    <span className="bg-fuchsia-50 text-fuchsia-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-fuchsia-100 uppercase tracking-wider group-hover:bg-fuchsia-100 transition-colors" title="파트너사 제휴 링크로, 사이트 운영에 도움이 됩니다.">
-                        Sponsored
+                    <span className="bg-fuchsia-50 text-fuchsia-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-fuchsia-100 tracking-wider group-hover:bg-fuchsia-100 transition-colors" title="파트너사 제휴광고 연결로, 사이트 운영에 도움이 됩니다.">
+                        제휴광고
                     </span>
                 )}
             </div>

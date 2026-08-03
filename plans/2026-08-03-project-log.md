@@ -2,6 +2,16 @@
 
 직전: [`2026-08-02-project-log.md`](./2026-08-02-project-log.md)
 
+## 푸터 법적 공지 #2, Privacy·제휴라벨
+
+**상태**: ⏳ PR [#51](https://github.com/catgeot/Days/pull/51) · `99a4a90` · feature `cursor/footer-legal-edfa`
+
+- Privacy: 「서비스 내 계정 삭제 기능」→ 이메일(`admin@gateo.kr`) 요청으로 정정
+- UI: 사용자 노출 「제휴링크」·툴킷 Sponsored 뱃지 → 「제휴광고」 통일 (GYG/MRT 등 파트너 브랜드·Sponsored 병기는 약관 「또는 제휴사 브랜드」로 유지)
+- **Preview 장애**: 긴 브랜치 git 호스트 첫 라벨 69자(DNS 상한 63) → `ERR_NAME_RESOLUTION_FAILED` → `cursor/footer-legal-edfa`로 이전 · 구 PR #50·긴 브랜치 삭제
+- Preview: `https://days-git-cursor-footer-legal-edfa-catgeots-projects.vercel.app` (DNS·Vercel SUCCESS)
+- QA: Privacy · 플래너 제휴광고 뱃지
+
 ## 푸터 법적 공지 #1, About·Terms·Privacy 정합
 
 **상태**: ✅ `main` 머지·푸시 `c305b8a` · PR [#49](https://github.com/catgeot/Days/pull/49)
