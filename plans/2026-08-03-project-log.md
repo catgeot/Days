@@ -4,7 +4,7 @@
 
 ## 푸터 법적 공지 #1, About·Terms·Privacy 정합
 
-**상태**: feature `cursor/footer-legal-review-a8a5` · Preview QA 대기
+**상태**: Draft PR [#49](https://github.com/catgeot/Days/pull/49) · tip `c1bdd4b` · Preview QA 대기
 
 - **리스크**: About「비상업적」·「Project Days」·약관「중개·판매 없음」이 실제 제휴 수수료·GATEO 브랜드·GA/Mapbox 수집과 불일치
 - **변경**: `footerData.js` About/Terms/Privacy/Contact 개정 · LogoPanel 저작권 · `index.html` author · TripLinkModal「중개」표현 정리
