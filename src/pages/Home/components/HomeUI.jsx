@@ -201,15 +201,15 @@ const HomeUI = React.memo(({
         </div>
       </div>
 
-      {/* 모바일 하단 스택 — 나라/세부칩/카테고리 (세이프영역까지 하향) */}
+      {/* 모바일 하단 스택 — 나라/세부칩/카테고리 (중분류 바는 뷰포트 폭) */}
       {!isTourCinema && (
       <div className={`fixed z-50 left-[max(0.25rem,env(safe-area-inset-left,0px))] bottom-[max(0.5rem,env(safe-area-inset-bottom,0px))]
-         w-[calc(100vw-7rem)] max-w-[calc(100vw-7rem)] min-w-0 flex flex-col items-start gap-1.5 pointer-events-none md:hidden
+         flex flex-col items-start gap-1.5 pointer-events-none overflow-visible md:hidden
          ${isPlaceCardVisible && !isFlightCinema ? 'max-lg:hidden' : ''}
          ${isFlightCinema ? 'max-lg:hidden' : ''}`}
       >
         {!hideExploreChrome && faceRegionsOpen && selectedCategory && (
-          <div className="flex w-full min-w-0 flex-col items-start gap-1.5 animate-fade-in-right">
+          <div className="flex flex-col items-start gap-1.5 animate-fade-in-right">
             {mobileRegionsExpanded ? (
               <GlobeFaceRegionRail
                 category={selectedCategory}
@@ -269,7 +269,7 @@ const HomeUI = React.memo(({
                 category={selectedCategory}
                 selectedSubregionId={selectedFaceSubregionId}
                 onSelectSubregion={onFaceSubregionSelect}
-                className="w-full min-w-0 animate-fade-in-up"
+                className="w-[calc(100vw-0.5rem-env(safe-area-inset-left,0px)-env(safe-area-inset-right,0px))] min-w-0 animate-fade-in-up"
               />
             ) : null}
           </div>

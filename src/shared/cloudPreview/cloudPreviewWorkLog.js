@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-03-globe-mid-hscroll-full',
+    session: '지구본 나라 목록 #4, 중분류 좌우 스크롤',
+    title: '중분류 스크롤 바를 화면 거의 전체 폭으로',
+    detail:
+      '중분류 바가 좌측 절반에 묶이던 것을 뷰포트 폭으로 풀었습니다. 나라·카테고리 칩은 왼쪽 그대로입니다. 홈(모바일)→도시에서 중분류 바가 화면 가로로 넓게 보이는지 확인해 주세요.',
+    at: '2026-08-03',
+  },
+  {
     id: '2026-08-03-globe-mid-hscroll',
     session: '지구본 나라 목록 #4, 중분류 좌우 스크롤',
     title: '모바일 중분류 칩 좌우 스크롤 복구',

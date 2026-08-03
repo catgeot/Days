@@ -154,7 +154,7 @@ export function GlobeFaceSubregionBar({
   const tone = CATEGORY_CHIP[category] || CATEGORY_CHIP.paradise;
 
   return (
-    <div className={`pointer-events-auto flex w-full min-w-0 max-w-full flex-col ${className}`}>
+    <div className={`pointer-events-auto flex min-w-0 flex-col ${className}`}>
       <GlassScrollStyles />
       <div
         className={`flex w-full min-w-0 flex-col rounded-2xl border border-white/15 bg-black/55 px-2 pt-1.5 backdrop-blur-xl shadow-lg ${
