@@ -4,7 +4,7 @@
 
 ## 지구본 나라 목록 #4, 중분류 좌우 스크롤
 
-**상태**: feature `cursor/globe-neighbor-list-15b3` · PR [#54](https://github.com/catgeot/Days/pull/54) · Preview QA 대기
+**상태**: feature `cursor/globe-neighbor-list-15b3` · PR [#54](https://github.com/catgeot/Days/pull/54) · SHA `51440dd` · Preview QA 대기
 
 - **이슈**: 중분류 좌우 스크롤 불가 → 이어 좌측 ~1/2 폭에 치우침
 - **변경**: 스크롤포트 `min-w-0` 복구 · 중분류 바만 `100vw` 거의 전체 폭(나라·카테고리는 좌측 유지)
