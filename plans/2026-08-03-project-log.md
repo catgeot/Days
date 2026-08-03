@@ -2,6 +2,11 @@
 
 직전: [`2026-08-02-project-log.md`](./2026-08-02-project-log.md)
 
+## 테마여행 #1, 채팅명 복붙표
+
+- 플랜 상단에 `테마여행 #2~#10` 채팅명·첫 메시지 블록 추가 (cloud-preview 규칙)
+- 다음 채팅명: `테마여행 #2, 셸 라우트`
+
 ## 테마여행 #1, S0 합의 반영
 
 **상태**: feature `cursor/korea-theme-plan-4160` · PR [#57](https://github.com/catgeot/Days/pull/57) · 플랜만 · 구현은 `cursor/korea-theme`

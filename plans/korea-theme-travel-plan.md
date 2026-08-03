@@ -1,10 +1,30 @@
 # 한국의 테마여행 — 세션별 실행 플랜
 
-**세션 표기**: `테마여행 #N, {단계}`  
+**세션 표기**: `테마여행 #N, {단계}` ([`cloud-preview-continuity.md`](./cloud-preview-continuity.md))  
 **고정 브랜치 (구현)**: `cursor/korea-theme`  
 **공유 slug (구현 시)**: `/qa/korea-theme` → Preview `/korea/theme`  
 **관련 기존 트랙**: [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) (`/korea` 축제 · **건드리지 않고 연결만**)  
 **Cloud 연속성**: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) · [`AGENTS.md`](../AGENTS.md)
+
+### 채팅명 복붙 (Cursor 새 채팅 제목)
+
+형식: **`테마여행 #{N}, {단계}`** — `#N`은 Cloud 세션 순번(플랜 S번호와 별개).  
+아래 **한 줄만** 채팅명에 붙여넣기. 본문 첫 메시지에는 같은 줄 + `@plans/korea-theme-travel-plan.md` 해당 절.
+
+| #N | 플랜 | 채팅명 (복붙) | 상태 |
+|----|------|---------------|------|
+| 1 | Pre-S0·S0 | `테마여행 #1, 플랜·S0 합의` | ✅ |
+| 2 | S1 | `테마여행 #2, 셸 라우트` | ⏳ 다음 |
+| 3 | S2 | `테마여행 #3, 모듈 SSOT` | ⏳ |
+| 4 | S3 | `테마여행 #4, 10대 절경` | ⏳ |
+| 5 | S4 | `테마여행 #5, 명승지` | ⏳ |
+| 6 | S5 | `테마여행 #6, 방방곡곡` | ⏳ |
+| 7 | S6 | `테마여행 #7, 패키지` | ⏳ |
+| 8 | S7 | `테마여행 #8, 축제 연결` | ⏳ |
+| 9 | S8 | `테마여행 #9, SEO·QA링크` | ⏳ |
+| 10 | S9 | `테마여행 #10, 폴리시·릴리스` | ⏳ |
+
+이어하기·핫픽스만 할 때: `테마여행 #N, {짧은 수정}` (`N` = 그 주제의 **다음** 순번). 세션마다 새 `#1` 금지.
 
 | 세션 | 상태 | 산출 | 다음 |
 |------|------|------|------|
@@ -246,10 +266,11 @@ koreaGyeongju: { kind: 'search', q: '경주', ctaLabel: '경주 패키지' }, //
 | **금지** | 축제 `/korea` 로직 수정 · 모듈 본문 · releaseNotes |
 | **VERIFY** | `npm run build` · Preview `/korea/theme` · 홈→진입→뒤로 |
 
-**제시어**
+**채팅명**: `테마여행 #2, 셸 라우트`  
+**첫 메시지**
 
 ```
-테마여행 #2, S1 셸 라우트
+테마여행 #2, 셸 라우트
 @plans/korea-theme-travel-plan.md S1만
 브랜치 cursor/korea-theme. /korea/theme 껍데기+홈「테마여행」+/qa/korea-theme.
 축제 /korea 코드 수정 금지. build PASS 후 매 턴 push.
@@ -265,10 +286,11 @@ koreaGyeongju: { kind: 'search', q: '경주', ctaLabel: '경주 패키지' }, //
 | **VERIFY** | `audit:korea-theme-modules` · build |
 | **금지** | top10 본문 대량 · UI 리디자인 |
 
-**제시어**
+**채팅명**: `테마여행 #3, 모듈 SSOT`  
+**첫 메시지**
 
 ```
-테마여행 #3, S2 모듈 SSOT
+테마여행 #3, 모듈 SSOT
 @plans/korea-theme-travel-plan.md S2만
 modules+타일+order. 축제=/korea. 다른 테마는 빈 페이지 라우트만.
 ```
@@ -283,10 +305,11 @@ modules+타일+order. 축제=/korea. 다른 테마는 빈 페이지 라우트만
 | **VERIFY** | audit · smoke(10 resolve) · build · Preview |
 | **금지** | 공식기관 사칭 · 축제 코드 수정 · 11개+ |
 
-**제시어**
+**채팅명**: `테마여행 #4, 10대 절경`  
+**첫 메시지**
 
 ```
-테마여행 #4, S3 10대 절경
+테마여행 #4, 10대 절경
 @plans/korea-theme-travel-plan.md S3·§3.3만
 웹+TourAPI+hub로 10 확정→/korea/theme/top10. 시드 초안 조정 OK.
 ```
@@ -301,6 +324,15 @@ modules+타일+order. 축제=/korea. 다른 테마는 빈 페이지 라우트만
 | **원칙** | 품질>수량 · 이 세션 TourAPI 라이브 대량 목록 금지(개별 검증용 조회는 OK) |
 | **VERIFY** | audit · smoke 샘플5 · build |
 
+**채팅명**: `테마여행 #5, 명승지`  
+**첫 메시지**
+
+```
+테마여행 #5, 명승지
+@plans/korea-theme-travel-plan.md S4만
+curated 12~24 + /korea/theme/scenic. TourAPI 라이브 대량 목록 금지.
+```
+
 ---
 
 ### S5 — 방방곡곡 페이지 ⏳
@@ -310,6 +342,15 @@ modules+타일+order. 축제=/korea. 다른 테마는 빈 페이지 라우트만
 | **산출** | `/korea/theme/regions` · areaCode→KR hub→place |
 | **VERIFY** | `smoke:korea-area-codes` 회귀 · 서울/제주/부산 경로 |
 | **금지** | 축제 지도 임베드 · hub JSON 직접 대량 편집 |
+
+**채팅명**: `테마여행 #6, 방방곡곡`  
+**첫 메시지**
+
+```
+테마여행 #6, 방방곡곡
+@plans/korea-theme-travel-plan.md S5만
+areaCode+KR hub→/korea/theme/regions. /korea 지도 코드 수정 금지.
+```
 
 ---
 
@@ -321,12 +362,13 @@ modules+타일+order. 축제=/korea. 다른 테마는 빈 페이지 라우트만
 | **VERIFY** | 제주 검색 LIVE · mylink 파라미터 · build |
 | **금지** | 가짜 카드 목록 · `q=부산` 국내 목적지 오표기 |
 
-**제시어**
+**채팅명**: `테마여행 #7, 패키지`  
+**첫 메시지**
 
 ```
-테마여행 #7, S6 패키지
+테마여행 #7, 패키지
 @plans/korea-theme-travel-plan.md S6·§3.4만
-MRT 제주 search+pkc 홈 CTA. 목록 API 금지.
+MRT 제주 search+pkc 홈 CTA. 목록 API·q=부산 국내표기 금지.
 ```
 
 ---
@@ -339,17 +381,44 @@ MRT 제주 search+pkc 홈 CTA. 목록 API 금지.
 | **VERIFY** | theme↔korea 왕복 · korea 단독 회귀 |
 | **금지** | 축제 칩/지도/필터 로직 변경 |
 
+**채팅명**: `테마여행 #8, 축제 연결`  
+**첫 메시지**
+
+```
+테마여행 #8, 축제 연결
+@plans/korea-theme-travel-plan.md S7만
+복귀·카피만. 축제 칩/지도/필터 로직 변경 금지.
+```
+
 ---
 
 ### S8 — SEO · sitemap · QA ⏳
 
 Helmet · sitemap에 `/korea/theme` 및 하위 · `/qa/korea-theme` 최종.
 
+**채팅명**: `테마여행 #9, SEO·QA링크`  
+**첫 메시지**
+
+```
+테마여행 #9, SEO·QA링크
+@plans/korea-theme-travel-plan.md S8만
+Helmet·sitemap·/qa/korea-theme. releaseNotes 파일 수정 금지.
+```
+
 ---
 
 ### S9 — 폴리시 · QA · 릴리스 ⏳
 
 사람 Preview OK → releaseNotes **초안만 제안** → 합의 후 반영 · main 병합.
+
+**채팅명**: `테마여행 #10, 폴리시·릴리스`  
+**첫 메시지**
+
+```
+테마여행 #10, 폴리시·릴리스
+@plans/korea-theme-travel-plan.md S9·§7만
+Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일 금지).
+```
 
 ---
 
