@@ -4,9 +4,10 @@
 
 ## 푸터 법적 공지 #3, 아동 개인정보 문구
 
-**상태**: ⏳ PR [#52](https://github.com/catgeot/Days/pull/52) · `fa7eded` · feature `cursor/footer-child-privacy-edfa`
+**상태**: ⏳ PR [#52](https://github.com/catgeot/Days/pull/52) · feature `cursor/footer-child-privacy-edfa`
 
-- Privacy §8: 「고의로 수집하지 않음」단정 → 주 이용 대상 아님·나이 미확인·확인/보호자 요청 시 이메일로 삭제 로 정정 (가입에 연령 게이트 없음)
+- Privacy §8: 14세는 **콘텐츠 금지**가 아니라 **회원 개인정보·보호자 동의**(개인정보보호법) 이슈로 구분
+- 공개 여행 정보 열람은 나이 제한 없음 · 만 14세 미만 계정 개인정보는 보호자 동의 필요·현재 동의 UI 없음·확인/요청 시 이메일 삭제
 - Preview: `https://days-git-cursor-footer-child-privacy-edfa-catgeots-projects.vercel.app`
 
 ## 푸터 법적 공지 #2, Privacy·제휴라벨
