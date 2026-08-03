@@ -4,7 +4,7 @@
 
 ## 지구본 나라 목록 #6, 이스라엘 하이라이트 fill
 
-**상태**: feature `cursor/globe-neighbor-list-15b3` · PR [#55](https://github.com/catgeot/Days/pull/55) · Preview QA 대기
+**상태**: feature `cursor/globe-neighbor-list-15b3` · PR [#55](https://github.com/catgeot/Days/pull/55) · SHA `25c8092` · Preview QA 대기
 
 - **이슈**: 중동 편입 후 이스라엘 선택 시 노란 외곽만 크고 보라 fill이 비어 보임
 - **원인**: 나라 하이라이트 halo가 분쟁 admin선까지 포함 · 소권역 바(모바일·PC) 중복 sync가 동일 id로 `clearRegionFocus`
