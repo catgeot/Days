@@ -4,7 +4,7 @@
 
 ## 테마여행 #2, 셸 라우트
 
-**상태**: feature `cursor/korea-theme` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `0d74def6` · Preview QA 대기
 
 - **한 일**: `/korea/theme` 셸(헤더·타일 자리) · App Route · 홈「테마여행」링크 · `placeReturnTo` theme path · `/qa/korea-theme`+vercel · 작업로그
 - **VERIFY**: `npm run build`
