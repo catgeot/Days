@@ -17,8 +17,8 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 1 | Pre-S0·S0 | `테마여행 #1, 플랜·S0 합의` | ✅ |
 | 2 | S1 | `테마여행 #2, 셸 라우트` | ✅ |
 | 3 | S2 | `테마여행 #3, 모듈 SSOT` | ✅ |
-| 4 | S3 | `테마여행 #4, 10대 절경` | ⏳ 다음 |
-| 5 | S4 | `테마여행 #5, 명승지` | ⏳ |
+| 4 | S3 | `테마여행 #4, 10대 절경` | ✅ Preview QA |
+| 5 | S4 | `테마여행 #5, 명승지` | ⏳ 다음 |
 | 6 | S5 | `테마여행 #6, 방방곡곡` | ⏳ |
 | 7 | S6 | `테마여행 #7, 패키지` | ⏳ |
 | 8 | S7 | `테마여행 #8, 축제 연결` | ⏳ |
@@ -33,7 +33,7 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **S0** 제품·IA 합의 | ✅ 2026-08-03 | 경로·홈·모듈페이지·패키지·브랜치 | S1 |
 | **S1** 셸·라우트·홈 진입 | ✅ | `/korea/theme` MVP 껍데기 | S2 |
 | **S2** 테마 카탈로그 SSOT | ✅ | modules + 랜딩 타일(`order` 가변) | S3 |
-| **S3** 10대 절경 페이지 | ⏳ | 조사→SSOT→`/korea/theme/top10` | S4 |
+| **S3** 10대 절경 페이지 | ✅ Preview QA | 조사→SSOT→`/korea/theme/top10` | S4 |
 | **S4** 명승지 페이지 | ⏳ | curated → `/korea/theme/scenic` | S5 |
 | **S5** 방방곡곡 페이지 | ⏳ | 시도·hub → `/korea/theme/regions` | S6 |
 | **S6** 패키지 페이지 | ⏳ | MRT CTA → `/korea/theme/packages` | S7 |
@@ -298,13 +298,14 @@ modules+타일+order. 축제=/korea. 다른 테마는 빈 페이지 라우트만
 
 ---
 
-### S3 — 10대 절경 페이지 ⏳
+### S3 — 10대 절경 페이지 ✅ Preview QA
 
 | | |
 |--|--|
-| **산출** | §3.3 A–E 조사 · TourAPI 검증 · overrides 10 · `/korea/theme/top10` · place 복귀 · 「GATEO 선정」 |
-| **VERIFY** | audit · smoke(10 resolve) · build · Preview |
+| **산출** | §3.3 A–E 조사 · hub exact 10 · overrides→json · `/korea/theme/top10` · place 복귀 · 「GATEO 선정」 |
+| **VERIFY** | `audit:korea-top10-scenic` · `smoke:korea-top10-scenic` · build · Preview |
 | **금지** | 공식기관 사칭 · 축제 코드 수정 · 11개+ |
+| **확정 10** | 한라산국립공원 · 성산일출봉 · 설악산(권금성) · 순천만습지 · 주상절리대 · 해운대·광안 · 불국사·석굴암 · 내장산국립공원 · 보성녹차밭 · 통영·한려(케이블카) |
 
 **채팅명**: `테마여행 #4, 10대 절경`  
 **첫 메시지**
@@ -471,6 +472,6 @@ Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일
 | 1 | 랜딩 경로 | `/korea/theme` (+ `/korea/theme/{top10,scenic,regions,packages}`) | ✅ |
 | 2 | 홈 진입 | C: 「테마여행」추가 + 기존 국내/축제 유지 | ✅ |
 | 3 | 모듈 순서 | `order`로 차후 조정 · 테마=페이지 | ✅ |
-| 4 | 10대 | 웹+TourAPI+hub · S3 확정 · §3.3 시드 | ✅ 방법 / ⏳ 최종10 |
+| 4 | 10대 | 웹+TourAPI+hub · S3 확정 · §3.3 시드 | ✅ 방법 / ✅ 최종10 (Preview QA) |
 | 5 | 패키지 | MRT §3.4 P0 제주·P1 홈·P2 경주 | ✅ 방향 |
 | 6 | 브랜치 | `cursor/korea-theme` | ✅ |

@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 3,
-  sessionPhase: '모듈 SSOT',
+  sessionNo: 4,
+  sessionPhase: '10대 절경',
   branch: 'cursor/korea-theme',
-  previewPath: '/korea/theme',
+  previewPath: '/korea/theme/top10',
   qaShareSlug: 'korea-theme',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-03-korea-theme-top10',
+    session: '테마여행 #4, 10대 절경',
+    title: 'GATEO 선정 10대 절경 페이지',
+    detail:
+      '한라산·성산·설악·순천만·주상절리·해운대·불국사·내장산·보성·통영 10곳을 /korea/theme/top10에 올렸습니다. 항목을 누르면 place로 가고, 뒤로 오면 이 목록으로 돌아옵니다. 「GATEO 선정」 고지를 확인해 주세요.',
+    at: '2026-08-03',
+  },
   {
     id: '2026-08-03-korea-theme-modules',
     session: '테마여행 #3, 모듈 SSOT',

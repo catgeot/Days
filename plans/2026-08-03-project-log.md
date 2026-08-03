@@ -2,6 +2,23 @@
 
 직전: [`2026-08-02-project-log.md`](./2026-08-02-project-log.md)
 
+## 테마여행 #4, 10대 절경
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **한 일**: §3.3 GATEO 10 확정 · overrides→`koreaTop10Scenic.json` · `/korea/theme/top10` · place 복귀 · 「GATEO 선정」고지
+- **VERIFY**: `npm run audit:korea-top10-scenic` · `npm run smoke:korea-top10-scenic` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/top10`
+- **QA**: 테마→10대 절경→항목→place→뒤로 목록 · 공식기관 사칭 문구 없음
+- **다음**: S4 명승지
+
+```
+테마여행 #5, 명승지
+```
+
+- **금지 3**: 축제 `/korea` 로직 수정 · 공식 10대 사칭 · 세션 중 10곳 교체
+
 ## 테마여행 #3, 모듈 SSOT
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `5e192245` · Preview QA 대기
