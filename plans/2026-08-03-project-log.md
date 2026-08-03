@@ -4,7 +4,7 @@
 
 ## 축제 페이지 #2, 칩 아이콘 통일
 
-**상태**: feature `cursor/korea-time-list-16a3` · SHA `7eb5dbf9` · Preview QA 대기
+**상태**: feature `cursor/korea-time-list-16a3` · PR [#56](https://github.com/catgeot/Days/pull/56) · SHA `36cb9e11` · Preview QA 대기
 
 - **요청**: 시간·지역·테마 대분류와 하위 칩이 같은 아이콘으로 종속 관계가 보이게
 - **변경**: `CalendarDays` / `MapPin` / `Sparkles` — 대분류·하위(전국·테마 전체 포함) 동일 아이콘
