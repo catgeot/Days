@@ -4,7 +4,7 @@
 
 ## 테마여행 #8, 패키지
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `8e4ec525` · Preview QA 대기
 
 - **한 일**: `/korea/theme/packages` · MRT CTA P0 제주·P1 홈·P2 경주(LIVE 200) · `koreaJeju`/`koreaHome`/`koreaGyeongju` · 새 탭 · 가짜 카드 없음
 - **VERIFY**: `npm run smoke:mrt-package` · `npm run build` · LIVE `q=제주`/`q=경주`/`/pkc`
