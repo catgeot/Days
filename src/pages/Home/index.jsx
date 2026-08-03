@@ -294,8 +294,16 @@ function Home() {
     setCategoryFaceEpoch((epoch) => epoch + 1);
   }, [category, faceRegionsOpen, flightCinemaActive, globeMode]);
 
+  const selectedFaceSubregionIdRef = useRef(selectedFaceSubregionId);
+  selectedFaceSubregionIdRef.current = selectedFaceSubregionId;
+
   const handleFaceSubregionSelect = useCallback((subregionId) => {
-    setSelectedFaceSubregionId(subregionId || null);
+    const next = subregionId || null;
+    // 모바일·PC 소권역 바가 둘 다 기본값을 sync할 때 동일 id로 clear되면
+    // 방금 고른 나라 fill이 바로 사라진다.
+    if (selectedFaceSubregionIdRef.current === next) return;
+    selectedFaceSubregionIdRef.current = next;
+    setSelectedFaceSubregionId(next);
     setSelectedFaceRegionId(null);
     globeRef.current?.clearRegionFocus?.();
   }, []);

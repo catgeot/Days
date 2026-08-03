@@ -2,6 +2,17 @@
 
 직전: [`2026-08-02-project-log.md`](./2026-08-02-project-log.md)
 
+## 지구본 나라 목록 #6, 이스라엘 하이라이트 fill
+
+**상태**: feature `cursor/globe-neighbor-list-15b3` · PR [#55](https://github.com/catgeot/Days/pull/55) · Preview QA 대기
+
+- **이슈**: 중동 편입 후 이스라엘 선택 시 노란 외곽만 크고 보라 fill이 비어 보임
+- **원인**: 나라 하이라이트 halo가 분쟁 admin선까지 포함 · 소권역 바(모바일·PC) 중복 sync가 동일 id로 `clearRegionFocus`
+- **변경**: halo/solid = 비분쟁만 · 분쟁은 dashed 유지 · 동일 소권역 재선택 시 clear 스킵
+- **검증**: `npm run smoke:globe-face-neighbor-order` · `smoke:place-label-slug` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/globe` · git Preview `https://days-git-cursor-globe-neighbor-list-15b3-catgeots-projects.vercel.app/`
+- **QA**: 홈→휴양→중동→이스라엘 — 보라 fill이 국경 안에 채워지는지(요르단과 비교)
+
 ## 지구본 나라 목록 #5, 중동 이스라엘·요르단
 
 **상태**: feature `cursor/globe-neighbor-list-15b3` · PR [#55](https://github.com/catgeot/Days/pull/55) · SHA `b918094` · Preview QA 대기
