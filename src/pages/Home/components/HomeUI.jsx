@@ -204,12 +204,12 @@ const HomeUI = React.memo(({
       {/* 모바일 하단 스택 — 나라/세부칩/카테고리 (세이프영역까지 하향) */}
       {!isTourCinema && (
       <div className={`fixed z-50 left-[max(0.25rem,env(safe-area-inset-left,0px))] bottom-[max(0.5rem,env(safe-area-inset-bottom,0px))]
-         w-auto max-w-[calc(100vw-7rem)] flex flex-col items-start gap-1.5 pointer-events-none md:hidden
+         w-[calc(100vw-7rem)] max-w-[calc(100vw-7rem)] min-w-0 flex flex-col items-start gap-1.5 pointer-events-none md:hidden
          ${isPlaceCardVisible && !isFlightCinema ? 'max-lg:hidden' : ''}
          ${isFlightCinema ? 'max-lg:hidden' : ''}`}
       >
         {!hideExploreChrome && faceRegionsOpen && selectedCategory && (
-          <div className="flex flex-col items-start gap-1.5 animate-fade-in-right">
+          <div className="flex w-full min-w-0 flex-col items-start gap-1.5 animate-fade-in-right">
             {mobileRegionsExpanded ? (
               <GlobeFaceRegionRail
                 category={selectedCategory}
@@ -269,7 +269,7 @@ const HomeUI = React.memo(({
                 category={selectedCategory}
                 selectedSubregionId={selectedFaceSubregionId}
                 onSelectSubregion={onFaceSubregionSelect}
-                className="animate-fade-in-up"
+                className="w-full min-w-0 animate-fade-in-up"
               />
             ) : null}
           </div>

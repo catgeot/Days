@@ -2,9 +2,19 @@
 
 직전: [`2026-08-02-project-log.md`](./2026-08-02-project-log.md)
 
-## 지구본 나라 목록 #3, 중분류·소국 재편
+## 지구본 나라 목록 #4, 중분류 좌우 스크롤
 
 **상태**: feature `cursor/globe-neighbor-list-15b3` · Preview QA 대기
+
+- **이슈**: 모바일 중분류 칩이 좌우 나열인데 `inline-flex`로 칩 너비만큼 늘어나 스크롤포트가 생기지 않음(페이지 `overflow-hidden`에 잘림)
+- **변경**: `GlobeFaceSubregionBar`·하단 스택에 `w-full min-w-0` · `overflow-x-auto`/`touch-pan-x` · 고정폭 `calc(100vw-7rem)`
+- **검증**: `npm run smoke:globe-face-neighbor-order` · `smoke:place-label-slug` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/globe` · git Preview `…-git-cursor-globe-neighbor-list-15b3-….vercel.app/`
+- **QA**: 홈(모바일)→도시→중분류 칩을 좌우로 밀어 「소국·공국」·「북극·도서」까지 보이는지
+
+## 지구본 나라 목록 #3, 중분류·소국 재편
+
+**상태**: ✅ `main` 머지 · PR [#53](https://github.com/catgeot/Days/pull/53)
 
 - **이슈**: 인접국 연쇄만으로는 소국·공국이 본토 흐름 중간에 끼고, 「서·남유럽」 등 큰 중분류가 직관을 해침
 - **변경**: `GLOBE_FACE_SUBREGIONS` — 유럽을 서/영국/남/북/중부/발칸·동/소국·공국/북극으로 분할 · 아시아는 동남아·남아시아·중동·중앙아시아 · 아프리카는 동·남·인도양·북·서·중부
