@@ -2,6 +2,12 @@
 
 직전: [`2026-08-02-project-log.md`](./2026-08-02-project-log.md)
 
+## 테마여행 #1, main 반영 (Cloud 전 주제)
+
+- **`main` push** `060e97c3` (fast-forward) — Cloud 채팅명 제시어 규칙 + 테마 플랜이 **origin/main**에 있음
+- 다른 Cloud 작업이 **main 기준**으로 뜨면 `AGENTS.md` · `cloud-preview-continuity` §1.1 적용
+- PR [#57](https://github.com/catgeot/Days/pull/57) tip과 동일 SHA
+
 ## 테마여행 #1, Cloud 채팅명 제시어 규칙
 
 - [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) **§1.1·§5** · `AGENTS.md` Cloud 행 · `.ai-context` 1.5.2 · Rule 한 줄 — 다음 채팅명 한 줄 펜스·제시어 1행 동일
@@ -11,6 +17,7 @@
 ```
 테마여행 #2, 셸 라우트
 ```
+
 
 ## 테마여행 #1, 채팅명 복붙표
 
