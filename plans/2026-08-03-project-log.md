@@ -4,13 +4,12 @@
 
 ## 푸터 법적 공지 #1, About·Terms·Privacy 정합
 
-**상태**: Draft PR [#49](https://github.com/catgeot/Days/pull/49) · tip `c1bdd4b` · Preview QA 대기
+**상태**: ✅ `main` 머지·푸시 `c305b8a` · PR [#49](https://github.com/catgeot/Days/pull/49)
 
 - **리스크**: About「비상업적」·「Project Days」·약관「중개·판매 없음」이 실제 제휴 수수료·GATEO 브랜드·GA/Mapbox 수집과 불일치
 - **변경**: `footerData.js` About/Terms/Privacy/Contact 개정 · LogoPanel 저작권 · `index.html` author · TripLinkModal「중개」표현 정리
-- **브랜치**: `cursor/footer-legal-review-a8a5` · git Preview: `https://days-git-cursor-footer-legal-review-a8a5-catgeots-projects.vercel.app`
-- **QA**: 로고 패널 → About Us / Terms / Privacy / Contact · 「비상업적」없음 · 제휴광고·수수료 고지 · GA/Mapbox/Supabase 명시
-- **사람 확인 권장**: 사업자등록번호·대표자 실명 표기 여부(개인 운영이면 미기재 유지 OK) · Updates `notice` 릴리스 노트 넣을지
+- **PROD**: https://www.gateo.kr — 로고 패널 → About Us / Terms / Privacy
+- **사람 후속(선택)**: 사업자등록번호·대표자 실명 표기 · Updates `notice` 릴리스 노트
 
 ## 축제 페이지 #1, 시간 탭 실제 건수
 
