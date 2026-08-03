@@ -16,8 +16,8 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 |----|------|---------------|------|
 | 1 | Pre-S0·S0 | `테마여행 #1, 플랜·S0 합의` | ✅ |
 | 2 | S1 | `테마여행 #2, 셸 라우트` | ✅ |
-| 3 | S2 | `테마여행 #3, 모듈 SSOT` | ⏳ 다음 |
-| 4 | S3 | `테마여행 #4, 10대 절경` | ⏳ |
+| 3 | S2 | `테마여행 #3, 모듈 SSOT` | ✅ |
+| 4 | S3 | `테마여행 #4, 10대 절경` | ⏳ 다음 |
 | 5 | S4 | `테마여행 #5, 명승지` | ⏳ |
 | 6 | S5 | `테마여행 #6, 방방곡곡` | ⏳ |
 | 7 | S6 | `테마여행 #7, 패키지` | ⏳ |
@@ -31,8 +31,8 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 |------|------|------|------|
 | **Pre-S0** 플랜 저장소 반영 | ✅ | IA·세션표·가드 | S0 |
 | **S0** 제품·IA 합의 | ✅ 2026-08-03 | 경로·홈·모듈페이지·패키지·브랜치 | S1 |
-| **S1** 셸·라우트·홈 진입 | ⏳ | `/korea/theme` MVP 껍데기 | S2 |
-| **S2** 테마 카탈로그 SSOT | ⏳ | modules + 랜딩 타일(`order` 가변) | S3 |
+| **S1** 셸·라우트·홈 진입 | ✅ | `/korea/theme` MVP 껍데기 | S2 |
+| **S2** 테마 카탈로그 SSOT | ✅ | modules + 랜딩 타일(`order` 가변) | S3 |
 | **S3** 10대 절경 페이지 | ⏳ | 조사→SSOT→`/korea/theme/top10` | S4 |
 | **S4** 명승지 페이지 | ⏳ | curated → `/korea/theme/scenic` | S5 |
 | **S5** 방방곡곡 페이지 | ⏳ | 시도·hub → `/korea/theme/regions` | S6 |
@@ -279,7 +279,7 @@ koreaGyeongju: { kind: 'search', q: '경주', ctaLabel: '경주 패키지' }, //
 
 ---
 
-### S2 — 모듈 SSOT + 랜딩 타일 ⏳
+### S2 — 모듈 SSOT + 랜딩 타일 ✅
 
 | | |
 |--|--|

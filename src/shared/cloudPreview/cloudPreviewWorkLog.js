@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 2,
-  sessionPhase: '셸 라우트',
+  sessionNo: 3,
+  sessionPhase: '모듈 SSOT',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-03-korea-theme-modules',
+    session: '테마여행 #3, 모듈 SSOT',
+    title: '모듈 SSOT·랜딩 타일 5개',
+    detail:
+      '축제·10대 절경·명승지·방방곡곡·패키지 타일을 order SSOT로 연결했습니다. 축제는 /korea, 나머지는 빈 페이지 라우트입니다. Preview /korea/theme에서 타일 순서·이동을 확인해 주세요.',
+    at: '2026-08-03',
+  },
   {
     id: '2026-08-03-korea-theme-home-label',
     session: '테마여행 #2, 셸 라우트',

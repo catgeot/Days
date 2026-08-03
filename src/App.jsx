@@ -11,6 +11,7 @@ import Home from './pages/Home';
 import PlaceCard from './components/PlaceCard/index';
 import KoreaFestivalHub from './pages/Korea';
 import KoreaThemeLanding from './pages/KoreaTheme';
+import KoreaThemeModulePage from './pages/KoreaTheme/ModulePage';
 import QaShareIndex from './pages/QaShare';
 
 import Dashboard from './pages/DailyReport/Dashboard';
@@ -68,6 +69,7 @@ function App() {
                 <Route path="explore/:filter1" element={null} />
                 <Route path="explore/:filter1/:filter2" element={null} />
               </Route>
+              <Route path="/korea/theme/:moduleId" element={<KoreaThemeModulePage />} />
               <Route path="/korea/theme" element={<KoreaThemeLanding />} />
               <Route path="/korea" element={<KoreaFestivalHub />} />
               <Route path="/qa" element={<QaShareIndex />} />

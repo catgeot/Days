@@ -24,6 +24,8 @@
     "generate:korea-area-codes": "node scripts/generate-korea-area-codes.mjs",
     "audit:korea-area-codes": "node scripts/audit-korea-area-codes.mjs",
     "smoke:korea-area-codes": "node scripts/smoke-korea-area-codes.mjs",
+    "generate:korea-theme-modules": "node scripts/generate-korea-theme-modules.mjs",
+    "audit:korea-theme-modules": "node scripts/audit-korea-theme-modules.mjs",
     "smoke:korea-festival-personal": "node scripts/smoke-korea-festival-personal.mjs",
     "generate:tourapi": "node scripts/generate-travel-spot-tourapi.mjs",
     "audit:tourapi": "node scripts/audit-tourapi-content-ids.mjs",

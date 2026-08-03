@@ -1,7 +1,26 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { CalendarDays, Home, LayoutGrid } from 'lucide-react';
+import {
+  CalendarDays,
+  Home,
+  Landmark,
+  LayoutGrid,
+  Map,
+  Mountain,
+  Package,
+} from 'lucide-react';
 import SEO from '../../components/SEO';
+import { listKoreaThemeModules } from '../Home/lib/koreaThemeModules';
+
+const MODULE_ICONS = {
+  calendar: CalendarDays,
+  mountain: Mountain,
+  landmark: Landmark,
+  map: Map,
+  package: Package,
+};
+
+const MODULES = listKoreaThemeModules();
 
 export default function KoreaThemeLanding() {
   const navigate = useNavigate();
@@ -54,7 +73,7 @@ export default function KoreaThemeLanding() {
 
       <main className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto w-full max-w-3xl px-3 py-6 md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl">
-          <section aria-labelledby="korea-theme-modules-heading" className="space-y-3">
+          <section aria-labelledby="korea-theme-modules-heading" className="space-y-4">
             <div className="flex items-center gap-2 text-stone-700">
               <LayoutGrid size={18} className="text-amber-700" aria-hidden="true" />
               <h2
@@ -65,14 +84,33 @@ export default function KoreaThemeLanding() {
               </h2>
             </div>
             <p className="text-sm leading-relaxed text-stone-600 break-keep">
-              축제·10대 절경·명승지·방방곡곡·패키지 타일은 다음 세션에서 연결합니다.
+              관심 테마를 골라 이어가세요. 순서는 나중에 바꿀 수 있습니다.
             </p>
-            <div
-              className="rounded-2xl border border-dashed border-stone-300 bg-white/70 px-4 py-10 text-center text-sm text-stone-500"
-              aria-hidden="true"
-            >
-              모듈 타일 자리
-            </div>
+            <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {MODULES.map((mod) => {
+                const Icon = MODULE_ICONS[mod.icon] || LayoutGrid;
+                return (
+                  <li key={mod.id}>
+                    <Link
+                      to={mod.path}
+                      className="flex h-full items-start gap-3 rounded-2xl border border-stone-200/90 bg-white px-4 py-3.5 shadow-sm transition-colors hover:border-amber-300/80 hover:bg-amber-50/40"
+                    >
+                      <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-amber-200/80 bg-amber-50 text-amber-800">
+                        <Icon size={18} aria-hidden="true" />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-sm font-extrabold tracking-tight text-stone-900 break-keep">
+                          {mod.label}
+                        </span>
+                        <span className="mt-0.5 block text-xs leading-relaxed text-stone-600 break-keep">
+                          {mod.blurb}
+                        </span>
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
           </section>
         </div>
       </main>

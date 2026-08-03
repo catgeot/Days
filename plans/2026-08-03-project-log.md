@@ -2,6 +2,23 @@
 
 직전: [`2026-08-02-project-log.md`](./2026-08-02-project-log.md)
 
+## 테마여행 #3, 모듈 SSOT
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **한 일**: modules overrides→json→`audit:korea-theme-modules` · 랜딩 타일 5 · 축제→`/korea` · top10/scenic/regions/packages 빈 페이지
+- **VERIFY**: `npm run audit:korea-theme-modules` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme`
+- **QA**: `/korea/theme` 타일 5·order · 축제→`/korea` · 나머지 빈 페이지·테마로 복귀
+- **다음**: S3 10대 절경
+
+```
+테마여행 #4, 10대 절경
+```
+
+- **금지 3**: 축제 `/korea` 로직 수정 · top10 본문 대량 · UI 리디자인
+
 ## 테마여행 #2, 셸 라우트
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
