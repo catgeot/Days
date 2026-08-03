@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '축제 페이지',
-  sessionNo: 2,
-  sessionPhase: '칩 아이콘 통일',
-  branch: 'cursor/korea-time-list-16a3',
-  previewPath: '/korea',
-  qaShareSlug: 'korea',
+  title: '독도 검색',
+  sessionNo: 1,
+  sessionPhase: '허브 SSOT',
+  branch: 'cursor/dokdo-search-a849',
+  previewPath: '/',
+  qaShareSlug: 'dokdo',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-03-dokdo-hub-ssot',
+    session: '독도 검색 #1, 허브 SSOT',
+    title: '독도 검색 시 별도 허브로 표시',
+    detail:
+      '「독도」검색이 울릉독도박물관 부분일치로 울릉만 뜨던 문제를 고쳤습니다. cityAttractionHubs에 dokdo 허브(독도등대·동도·서도·독도접안시설)를 추가했습니다. 홈 검색에 「독도」를 입력·Enter 하면 독도가 맨 앞에 나오는지 확인해 주세요. 울릉도·울릉독도박물관은 그대로입니다.',
+    at: '2026-08-03',
+  },
   {
     id: '2026-08-03-korea-chip-icons',
     session: '축제 페이지 #2, 칩 아이콘 통일',

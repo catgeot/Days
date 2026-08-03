@@ -3448,6 +3448,50 @@
     ]
   },
   {
+    "hubId": "dokdo",
+    "name": "독도",
+    "name_en": "Dokdo",
+    "country": "대한민국",
+    "country_en": "South Korea",
+    "lat": 37.2394,
+    "lng": 131.8689,
+    "aliases": [
+      "dokdo",
+      "독도섬",
+      "Dokdo Island"
+    ],
+    "attractions": [
+      {
+        "name": "독도등대",
+        "name_en": "Dokdo Lighthouse",
+        "kind": "landmark",
+        "lat": 37.2392,
+        "lng": 131.87
+      },
+      {
+        "name": "동도",
+        "name_en": "Dongdo",
+        "kind": "landmark",
+        "lat": 37.2394,
+        "lng": 131.8689
+      },
+      {
+        "name": "서도",
+        "name_en": "Seodo",
+        "kind": "landmark",
+        "lat": 37.242,
+        "lng": 131.8653
+      },
+      {
+        "name": "독도접안시설",
+        "name_en": "Dokdo Landing Facility",
+        "kind": "landmark",
+        "lat": 37.2397,
+        "lng": 131.8672
+      }
+    ]
+  },
+  {
     "hubId": "ganghwa",
     "name": "강화",
     "name_en": "Ganghwa",
