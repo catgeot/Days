@@ -4,10 +4,11 @@
 
 ## 푸터 법적 공지 #2, Privacy·제휴라벨
 
-**상태**: ⏳ feature `cursor/footer-privacy-affiliate-label-edfa` · Preview QA
+**상태**: ⏳ PR [#50](https://github.com/catgeot/Days/pull/50) · `70ac045` · feature `cursor/footer-privacy-affiliate-label-edfa`
 
 - Privacy: 「서비스 내 계정 삭제 기능」→ 이메일(`admin@gateo.kr`) 요청으로 정정
 - UI: 사용자 노출 「제휴링크」·툴킷 Sponsored 뱃지 → 「제휴광고」 통일 (GYG/MRT 등 파트너 브랜드·Sponsored 병기는 약관 「또는 제휴사 브랜드」로 유지)
+- Preview: `https://days-git-cursor-footer-privacy-affiliate-label-edfa-catgeots-projects.vercel.app`
 - QA: 로고 패널 → Privacy · 플래너 Trip.com/툴킷 뱃지 · `npm run build` PASS
 
 ## 푸터 법적 공지 #1, About·Terms·Privacy 정합
