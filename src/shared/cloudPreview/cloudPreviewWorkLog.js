@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 6,
-  sessionPhase: '뒤로복귀',
+  sessionNo: 7,
+  sessionPhase: '방방곡곡',
   branch: 'cursor/korea-theme',
-  previewPath: '/korea/theme/top10',
+  previewPath: '/korea/theme/regions',
   qaShareSlug: 'korea-theme',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-03-korea-theme-regions',
+    session: '테마여행 #7, 방방곡곡',
+    title: '방방곡곡 시도→hub→place',
+    detail:
+      '시도 칩(서울·부산·제주 등)과 areaCode 연결 hub 목록을 /korea/theme/regions에 올렸습니다. hub를 누르면 place로 가고, 뒤로 오면 이 목록으로 돌아옵니다. 축제 지도는 건드리지 않았습니다.',
+    at: '2026-08-03',
+  },
   {
     id: '2026-08-03-korea-theme-place-return',
     session: '테마여행 #6, 뒤로복귀',

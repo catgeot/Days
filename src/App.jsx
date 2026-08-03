@@ -14,6 +14,7 @@ import KoreaThemeLanding from './pages/KoreaTheme';
 import KoreaThemeModulePage from './pages/KoreaTheme/ModulePage';
 import KoreaThemeTop10Page from './pages/KoreaTheme/Top10Page';
 import KoreaThemeScenicPage from './pages/KoreaTheme/ScenicPage';
+import KoreaThemeRegionsPage from './pages/KoreaTheme/RegionsPage';
 import QaShareIndex from './pages/QaShare';
 
 import Dashboard from './pages/DailyReport/Dashboard';
@@ -73,6 +74,7 @@ function App() {
               </Route>
               <Route path="/korea/theme/top10" element={<KoreaThemeTop10Page />} />
               <Route path="/korea/theme/scenic" element={<KoreaThemeScenicPage />} />
+              <Route path="/korea/theme/regions" element={<KoreaThemeRegionsPage />} />
               <Route path="/korea/theme/:moduleId" element={<KoreaThemeModulePage />} />
               <Route path="/korea/theme" element={<KoreaThemeLanding />} />
               <Route path="/korea" element={<KoreaFestivalHub />} />

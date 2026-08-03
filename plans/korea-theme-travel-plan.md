@@ -20,8 +20,8 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 4 | S3 | `테마여행 #4, 10대 절경` | ✅ Preview QA |
 | 5 | S4 | `테마여행 #5, 명승지` | ✅ Preview QA |
 | 6 | (핫픽스) | `테마여행 #6, 뒤로복귀` | ✅ Preview QA |
-| 7 | S5 | `테마여행 #7, 방방곡곡` | ⏳ |
-| 8 | S6 | `테마여행 #8, 패키지` | ⏳ |
+| 7 | S5 | `테마여행 #7, 방방곡곡` | ✅ Preview QA |
+| 8 | S6 | `테마여행 #8, 패키지` | ⏳ 다음 |
 | 9 | S7 | `테마여행 #9, 축제 연결` | ⏳ |
 | 10 | S8 | `테마여행 #10, SEO·QA링크` | ⏳ |
 | 11 | S9 | `테마여행 #11, 폴리시·릴리스` | ⏳ |
@@ -37,7 +37,7 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **S3** 10대 절경 페이지 | ✅ Preview QA | 조사→SSOT→`/korea/theme/top10` | S4 |
 | **S4** 명승지 페이지 | ✅ Preview QA | curated 20 → `/korea/theme/scenic` | #6 뒤로복귀 |
 | **#6** PlaceCard 뒤로복귀 | ✅ Preview QA | `navigate(returnTo)` · TypeError 가드 | S5 |
-| **S5** 방방곡곡 페이지 | ⏳ | 시도·hub → `/korea/theme/regions` | S6 |
+| **S5** 방방곡곡 페이지 | ✅ Preview QA | 시도·hub → `/korea/theme/regions` | S6 |
 | **S6** 패키지 페이지 | ⏳ | MRT CTA → `/korea/theme/packages` | S7 |
 | **S7** 축제 연결 다듬기 | ⏳ | `/korea` 딥링크·복귀 | S8 |
 | **S8** SEO·sitemap·QA | ⏳ | Helmet·sitemap·`/qa/korea-theme` | S9 |
@@ -345,22 +345,15 @@ modules+타일+order. 축제=/korea. 다른 테마는 빈 페이지 라우트만
 
 ---
 
-### S5 — 방방곡곡 페이지 ⏳
+### S5 — 방방곡곡 페이지 ✅ Preview QA
 
 | | |
 |--|--|
-| **산출** | `/korea/theme/regions` · areaCode→KR hub→place |
-| **VERIFY** | `smoke:korea-area-codes` 회귀 · 서울/제주/부산 경로 |
+| **산출** | `/korea/theme/regions` · areaCode→KR hub→place · 시도 칩 |
+| **VERIFY** | `smoke:korea-area-codes` · `smoke:korea-theme-regions` · build |
 | **금지** | 축제 지도 임베드 · hub JSON 직접 대량 편집 |
 
-**채팅명**: `테마여행 #7, 방방곡곡`  
-**첫 메시지**
-
-```
-테마여행 #7, 방방곡곡
-@plans/korea-theme-travel-plan.md S5만
-areaCode+KR hub→/korea/theme/regions. /korea 지도 코드 수정 금지.
-```
+**채팅명**: `테마여행 #7, 방방곡곡`
 
 ---
 

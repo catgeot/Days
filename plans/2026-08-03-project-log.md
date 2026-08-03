@@ -2,6 +2,23 @@
 
 직전: [`2026-08-02-project-log.md`](./2026-08-02-project-log.md)
 
+## 테마여행 #7, 방방곡곡
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA _(push 후)_ · Preview QA 대기
+
+- **한 일**: `/korea/theme/regions` · 시도 칩(areaCode SSOT) → KR hub 목록 → place · 복귀 path · `smoke:korea-theme-regions`
+- **VERIFY**: `npm run smoke:korea-area-codes` · `npm run smoke:korea-theme-regions` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/regions`
+- **QA**: 테마→방방곡곡→서울/부산/제주 칩→hub→place→뒤로 목록
+- **다음**: S6 패키지
+
+```
+테마여행 #8, 패키지
+```
+
+- **금지 3**: 축제 `/korea` 지도·칩 로직 수정 · hub JSON 직접 대량 편집 · `q=부산` 국내 목적지 오표기(패키지 세션)
+
 ## 테마여행 #6, 뒤로복귀
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `e71df1aa` · Preview QA 대기
