@@ -3,7 +3,7 @@
 ## 지금 쓰는 것
 
 - **프로젝트 컨텍스트(매 세션 권장)**: 루트의 [`.ai-context.md`](../.ai-context.md)
-- **Cloud 이어하기 · Preview 연속성**: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) · [`AGENTS.md`](../AGENTS.md) Cloud (세션 표기·고정 Preview·작업 로그)
+- **Cloud 이어하기 · Preview 연속성**: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) · [`AGENTS.md`](../AGENTS.md) Cloud (세션 표기·**채팅명 제시어 §1.1**·고정 Preview·작업 로그)
 - **오케스트레이터 (다배치 SSOT)**: [`orchestrator-method.md`](./orchestrator-method.md) · 제시어 `오케스트레이터`
 - **명소 hub 사전 큐**: [`city-attraction-hub-queue.md`](./city-attraction-hub-queue.md) (R48–R61 **소진** · tip 550 hub)
 - **여행지·도착 공항 운영**: [`travel-spots-management.md`](./travel-spots-management.md) (추가·헬스체크·공항 매핑)

@@ -2,6 +2,16 @@
 
 직전: [`2026-08-02-project-log.md`](./2026-08-02-project-log.md)
 
+## 테마여행 #1, Cloud 채팅명 제시어 규칙
+
+- [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) **§1.1·§5** · `AGENTS.md` Cloud 행 · `.ai-context` 1.5.2 · Rule 한 줄 — 다음 채팅명 한 줄 펜스·제시어 1행 동일
+- 테마 플랜 복붙표는 동 규칙 준수
+- 다음 채팅명:
+
+```
+테마여행 #2, 셸 라우트
+```
+
 ## 테마여행 #1, 채팅명 복붙표
 
 - 플랜 상단에 `테마여행 #2~#10` 채팅명·첫 메시지 블록 추가 (cloud-preview 규칙)

@@ -8,8 +8,9 @@
 
 ### 채팅명 복붙 (Cursor 새 채팅 제목)
 
+Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) **§1.1** · [`AGENTS.md`](../AGENTS.md) Cloud「채팅명 제시어」.  
 형식: **`테마여행 #{N}, {단계}`** — `#N`은 Cloud 세션 순번(플랜 S번호와 별개).  
-아래 **한 줄만** 채팅명에 붙여넣기. 본문 첫 메시지에는 같은 줄 + `@plans/korea-theme-travel-plan.md` 해당 절.
+아래 **한 줄만** 채팅 제목/런칭에 붙여넣기. 본문 첫 메시지 **1행**도 동일 문자열.
 
 | #N | 플랜 | 채팅명 (복붙) | 상태 |
 |----|------|---------------|------|
