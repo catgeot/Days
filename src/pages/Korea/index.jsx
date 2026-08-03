@@ -17,6 +17,7 @@ import {
   Maximize2,
   Minimize2,
   Search,
+  Sparkles,
   Star,
   Undo2,
   X,
@@ -238,6 +239,19 @@ function majorChipClass(panelOpen) {
       ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
       : 'bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100'
   }`;
+}
+
+/** 시간·지역·테마 — 대분류·하위 칩이 같은 아이콘으로 종속 관계 표시 */
+const CHIP_PANEL_ICONS = {
+  time: CalendarDays,
+  region: MapPin,
+  taste: Sparkles,
+};
+
+function ChipPanelIcon({ panel, size = 12 }) {
+  const Icon = CHIP_PANEL_ICONS[panel];
+  if (!Icon) return null;
+  return <Icon size={size} className="shrink-0 opacity-90" aria-hidden="true" />;
 }
 
 function flapChipClass(active) {
@@ -1583,6 +1597,7 @@ export default function KoreaFestivalHub() {
                     aria-pressed={chipPanel === 'time'}
                     aria-label={`시간 대분류 · ${timeMajorLabel}`}
                   >
+                    <ChipPanelIcon panel="time" size={13} />
                     {timeMajorLabel}
                   </button>
                   <button
@@ -1592,6 +1607,7 @@ export default function KoreaFestivalHub() {
                     aria-pressed={chipPanel === 'region'}
                     aria-label={`지역 대분류 · ${regionMajorLabel}`}
                   >
+                    <ChipPanelIcon panel="region" size={13} />
                     {regionMajorLabel}
                   </button>
                   <button
@@ -1601,6 +1617,7 @@ export default function KoreaFestivalHub() {
                     aria-pressed={chipPanel === 'taste'}
                     aria-label={`테마 대분류 · ${tasteMajorLabel}`}
                   >
+                    <ChipPanelIcon panel="taste" size={13} />
                     {tasteMajorLabel}
                   </button>
                 </div>
@@ -1630,6 +1647,7 @@ export default function KoreaFestivalHub() {
                       className={chipClass(timeTab === t.id)}
                       aria-pressed={timeTab === t.id}
                     >
+                      <ChipPanelIcon panel="time" />
                       {t.label}
                       <span className="opacity-70">
                         {timeChipCounts[t.id] ?? 0}
@@ -1644,6 +1662,7 @@ export default function KoreaFestivalHub() {
                       className={chipClass(areaCode === 'all')}
                       aria-pressed={areaCode === 'all'}
                     >
+                      <ChipPanelIcon panel="region" />
                       전국
                     </button>
                     {sidoChips.map((s) => (
@@ -1654,6 +1673,7 @@ export default function KoreaFestivalHub() {
                         className={chipClass(areaCode === s.id)}
                         aria-pressed={areaCode === s.id}
                       >
+                        <ChipPanelIcon panel="region" />
                         {s.label}
                         <span className="opacity-70">{s.count}</span>
                       </button>
@@ -1668,6 +1688,7 @@ export default function KoreaFestivalHub() {
                       className={chipClass(tasteId === 'all')}
                       aria-pressed={tasteId === 'all'}
                     >
+                      <ChipPanelIcon panel="taste" />
                       테마 전체
                     </button>
                     {tasteChips.map((t) => (
@@ -1678,6 +1699,7 @@ export default function KoreaFestivalHub() {
                         className={chipClass(tasteId === t.id)}
                         aria-pressed={tasteId === t.id}
                       >
+                        <ChipPanelIcon panel="taste" />
                         {t.label}
                         <span className="opacity-70">{t.count}</span>
                       </button>
