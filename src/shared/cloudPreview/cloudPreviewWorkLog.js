@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '지구본 나라 목록',
-  sessionNo: 4,
-  sessionPhase: '중분류 좌우 스크롤',
+  sessionNo: 5,
+  sessionPhase: '중동 이스라엘·요르단',
   branch: 'cursor/globe-neighbor-list-15b3',
   previewPath: '/',
   qaShareSlug: 'globe',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-03-globe-me-israel-jordan',
+    session: '지구본 나라 목록 #5, 중동 이스라엘·요르단',
+    title: '이스라엘·요르단을 아시아 중동으로',
+    detail:
+      '아프리카「북아프리카·레반트」에 있던 이스라엘·요르단을 아시아「중동」으로 옮겼습니다. 북아프리카 칩 라벨도 정리했습니다. 홈→도시(아시아)→중동에서 이스라엘·요르단이 보이는지 확인해 주세요.',
+    at: '2026-08-03',
+  },
   {
     id: '2026-08-03-globe-mid-hscroll-full',
     session: '지구본 나라 목록 #4, 중분류 좌우 스크롤',
