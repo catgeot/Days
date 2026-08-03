@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-03-korea-theme-home-label',
+    session: '테마여행 #2, 셸 라우트',
+    title: '홈 진입 버튼 문구',
+    detail:
+      '홈 진입 링크 라벨을 「한국의 테마 여행」으로 바꿨습니다. 로고 아래에서 축제 링크와 함께 보이는지 확인해 주세요.',
+    at: '2026-08-03',
+  },
+  {
     id: '2026-08-03-korea-theme-shell',
     session: '테마여행 #2, 셸 라우트',
     title: '/korea/theme 셸·홈 진입',

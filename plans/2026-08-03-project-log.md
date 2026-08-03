@@ -4,13 +4,13 @@
 
 ## 테마여행 #2, 셸 라우트
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `0d74def6` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
 
-- **한 일**: `/korea/theme` 셸(헤더·타일 자리) · App Route · 홈「테마여행」링크 · `placeReturnTo` theme path · `/qa/korea-theme`+vercel · 작업로그
+- **한 일**: `/korea/theme` 셸 · 홈 진입 「한국의 테마 여행」 · `placeReturnTo` · `/qa/korea-theme`+vercel · 작업로그
 - **VERIFY**: `npm run build`
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme`
-- **QA**: 홈→테마여행→`/korea/theme`→홈으로 · 축제 링크 유지 · `/korea` 미변경
+- **QA**: 홈→「한국의 테마 여행」→`/korea/theme`→홈으로 · 축제 링크 유지
 - **다음**: S2 모듈 SSOT
 
 ```
