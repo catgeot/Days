@@ -4,7 +4,7 @@
 
 ## 테마여행 #3, 모듈 SSOT
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `5e192245` · Preview QA 대기
 
 - **한 일**: modules overrides→json→`audit:korea-theme-modules` · 랜딩 타일 5 · 축제→`/korea` · top10/scenic/regions/packages 빈 페이지
 - **VERIFY**: `npm run audit:korea-theme-modules` · `npm run build`
