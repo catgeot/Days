@@ -4,7 +4,7 @@
 
 ## 테마여행 #7, 방방곡곡
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA _(push 후)_ · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `7f76a3b1` · Preview QA 대기
 
 - **한 일**: `/korea/theme/regions` · 시도 칩(areaCode SSOT) → KR hub 목록 → place · 복귀 path · `smoke:korea-theme-regions`
 - **VERIFY**: `npm run smoke:korea-area-codes` · `npm run smoke:korea-theme-regions` · `npm run build`
