@@ -3,7 +3,8 @@
  * 대면(권역≠테마)·면 배타는 [`globeFaceRegions.js`](./globeFaceRegions.js) 유지.
  * 소권역끼리도 배타. 짧은 면(≤ SUBREGION_CHIP_MIN_COUNTRIES)은 칩 생략.
  * 정의에 없는 면 나라는 「기타」로 흡수(누락 숨김 방지 · 「전체」칩 없음).
- * 중분류 나라 목록 순서: 시드·인기 순이 아니라 좌표 nearest-neighbor 연쇄(인접국 느낌).
+ * 중분류는 UN 관례에 묶지 않고 여행 직관 권역으로 추가·분할 가능(소국·공국 등).
+ * 중분류 안 나라 목록 순서: 시드·인기 순이 아니라 좌표 nearest-neighbor 연쇄(인접국 느낌).
  */
 
 import { GLOBE_CATEGORY_IDS } from './globeCategoryFocus.js';
@@ -76,12 +77,16 @@ export const GLOBE_FACE_SUBREGIONS = {
       countryIds: ['kr', 'jp', 'tw', 'cn', 'mn', 'ru', 'kp'],
     },
     {
-      id: 'se_sasia',
-      labelKo: '동남아·남아시아',
+      id: 'se_asia',
+      labelKo: '동남아시아',
       countryIds: [
         'th', 'vn', 'ph', 'id', 'my', 'sg', 'kh', 'la', 'mm', 'bn', 'tl',
-        'in', 'np', 'lk', 'mv', 'bd', 'bt', 'pk', 'af',
       ],
+    },
+    {
+      id: 's_asia',
+      labelKo: '남아시아',
+      countryIds: ['in', 'np', 'lk', 'mv', 'bd', 'bt', 'pk', 'af'],
     },
     {
       id: 'pacific',
@@ -93,12 +98,16 @@ export const GLOBE_FACE_SUBREGIONS = {
       ],
     },
     {
-      id: 'central_west_asia',
-      labelKo: '중앙·서아시아',
+      id: 'middle_east',
+      labelKo: '중동',
       countryIds: [
         'ae', 'ir', 'sa', 'qa', 'kw', 'bh', 'om', 'ye', 'iq', 'sy', 'lb', 'ps',
-        'kz', 'uz', 'tm', 'tj', 'kg', 'az', 'am', 'ge',
       ],
+    },
+    {
+      id: 'central_asia',
+      labelKo: '중앙아시아·코카서스',
+      countryIds: ['kz', 'uz', 'tm', 'tj', 'kg', 'az', 'am', 'ge'],
     },
     {
       id: 'other',
@@ -108,21 +117,33 @@ export const GLOBE_FACE_SUBREGIONS = {
   ],
   nature: [
     {
-      id: 'east_south',
-      labelKo: '동·남아프리카',
+      id: 'east_africa',
+      labelKo: '동아프리카',
       countryIds: [
-        'ke', 'tz', 'za', 'na', 'mg', 'et', 'zm', 'mu', 'sc', 're', 'io',
-        'ug', 'rw', 'bi', 'ss', 'so', 'dj', 'er', 'mw', 'mz', 'zw', 'bw',
-        'ls', 'sz', 'km', 'yt',
+        'ke', 'tz', 'ug', 'rw', 'bi', 'et', 'ss', 'so', 'dj', 'er', 'mw',
       ],
     },
     {
-      id: 'north_west',
-      labelKo: '북·서아프리카',
+      id: 'southern_africa',
+      labelKo: '남아프리카',
+      countryIds: ['za', 'na', 'zm', 'mz', 'zw', 'bw', 'ls', 'sz'],
+    },
+    {
+      id: 'indian_ocean',
+      labelKo: '인도양 도서',
+      countryIds: ['mg', 'mu', 'sc', 're', 'io', 'km', 'yt'],
+    },
+    {
+      id: 'north_africa',
+      labelKo: '북아프리카·레반트',
+      countryIds: ['eg', 'ma', 'eh', 'il', 'jo', 'dz', 'tn', 'ly', 'sd'],
+    },
+    {
+      id: 'west_africa',
+      labelKo: '서아프리카',
       countryIds: [
-        'eg', 'ma', 'cv', 'eh', 'ml', 'il', 'jo', 'sh',
-        'dz', 'tn', 'ly', 'sd', 'mr', 'sn', 'gm', 'gw', 'gn', 'sl', 'lr',
-        'ci', 'gh', 'tg', 'bj', 'ng', 'ne', 'bf', 'td',
+        'ng', 'gh', 'ci', 'sn', 'ml', 'mr', 'gm', 'gw', 'gn', 'sl', 'lr',
+        'tg', 'bj', 'ne', 'bf', 'td', 'cv', 'sh',
       ],
     },
     {
@@ -140,21 +161,42 @@ export const GLOBE_FACE_SUBREGIONS = {
   ],
   urban: [
     {
-      id: 'west_south',
-      labelKo: '서·남유럽',
+      id: 'west_europe',
+      labelKo: '서유럽',
+      countryIds: ['fr', 'be', 'nl', 'lu', 'ch', 'at', 'de'],
+    },
+    {
+      id: 'british_isles',
+      labelKo: '영국·아일랜드',
+      countryIds: ['gb', 'eng', 'sct', 'wls', 'nir', 'ie'],
+    },
+    {
+      id: 'south_europe',
+      labelKo: '남유럽',
+      countryIds: ['es', 'pt', 'it', 'gr', 'mt', 'cy', 'tr'],
+    },
+    {
+      id: 'north_europe',
+      labelKo: '북유럽',
+      countryIds: ['no', 'se', 'dk', 'fi', 'ee', 'lv', 'lt', 'fo'],
+    },
+    {
+      id: 'central_europe',
+      labelKo: '중부유럽',
+      countryIds: ['pl', 'cz', 'sk', 'hu'],
+    },
+    {
+      id: 'balkans_east',
+      labelKo: '발칸·동유럽',
       countryIds: [
-        'fr', 'gb', 'eng', 'sct', 'wls', 'nir', 'it', 'es', 'pt', 'gr', 'ch', 'hr', 'tr', 'be', 'nl',
-        'at', 'si', 'va', 'me', 'mt', 'ie',
-        'lu', 'mc', 'ad', 'li', 'sm', 'al', 'mk', 'xk', 'rs', 'ba', 'bg', 'ro', 'cy',
+        'hr', 'si', 'ba', 'rs', 'me', 'al', 'mk', 'xk',
+        'ro', 'bg', 'ua', 'by', 'md',
       ],
     },
     {
-      id: 'north_east',
-      labelKo: '북·동유럽',
-      countryIds: [
-        'no', 'de', 'cz', 'dk', 'se', 'pl', 'hu', 'fi',
-        'ee', 'lv', 'lt', 'sk', 'ua', 'by', 'md', 'fo',
-      ],
+      id: 'microstates',
+      labelKo: '소국·공국',
+      countryIds: ['sm', 'va', 'mc', 'li', 'ad'],
     },
     {
       id: 'arctic',

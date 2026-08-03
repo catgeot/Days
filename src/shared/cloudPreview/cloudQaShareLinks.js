@@ -8,6 +8,22 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'korea',
+    label: '축제 페이지',
+    branch: 'cursor/korea-time-list-16a3',
+    destination:
+      'https://days-git-cursor-korea-time-list-16a3-catgeots-projects.vercel.app/korea',
+    active: true,
+  },
+  {
+    slug: 'package',
+    label: 'MRT 패키지 연결',
+    branch: 'cursor/mrt-package-strip-18d2',
+    destination:
+      'https://days-git-cursor-mrt-package-strip-18d2-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
     slug: 'globe',
     label: '지구본 나라 목록',
     branch: 'cursor/globe-neighbor-list-15b3',

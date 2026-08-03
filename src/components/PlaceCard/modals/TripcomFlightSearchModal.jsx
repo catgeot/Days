@@ -73,7 +73,7 @@ const TripcomFlightSearchModal = ({
             >
                 <div className="relative shrink-0 border-b border-gray-100 bg-gradient-to-r from-sky-50 to-blue-50 px-3 py-2.5">
                     <span className="pointer-events-none absolute right-12 top-2 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white">
-                        제휴링크
+                        제휴광고
                     </span>
                     <div className="flex items-center gap-2.5 pr-10">
                         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-100 text-sky-600">

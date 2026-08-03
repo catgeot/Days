@@ -3,11 +3,12 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Search, X, Compass, Globe2, Layers, Map, ArrowUp, Users, Palmtree, Waves, Landmark } from 'lucide-react';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { TRIPLINK_PACKAGES, TRIPLINK_PACKAGES_ENABLED } from '../data/tripLinkPackages';
-import { MRT_PACKAGE_THEME_LINKS } from '../data/mrtPackageThemeLinks';
+import { MRT_PACKAGE_THEME_TARGETS } from '../data/mrtPackageThemeLinks';
 import { isIslandExploreSpot } from '../lib/islandExploreSpots';
+import { resolveMrtPackageThemeHref, buildMrtPkcHomeUrl } from '../../../utils/mrtPackageLinks';
 
 // 분리된 컴포넌트 및 유틸리티 import
-import { CONTINENTS, THEMES, CATEGORY_LABELS, CATEGORY_COLORS, TRIPCOM_EXPLORE_LEADING_CARD } from './SearchDiscovery/constants';
+import { CONTINENTS, THEMES, CATEGORY_LABELS, CATEGORY_COLORS, MRT_EXPLORE_LEADING_PACKAGE } from './SearchDiscovery/constants';
 import { getDailySeed, shuffleWithSeed } from './SearchDiscovery/utils';
 import SpotThumbnailCard from './SearchDiscovery/SpotThumbnailCard';
 import CurationSection from './SearchDiscovery/CurationSection';
@@ -732,45 +733,48 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
           />
           <CurationSection
             title="가볍고 가까운, 완벽한 가족 여행"
-            subtitle={`4시간 이내 단거리 ${MRT_PACKAGE_THEME_LINKS.family.ctaLabel}`}
+            subtitle={`4시간 이내 단거리 ${MRT_PACKAGE_THEME_TARGETS.family.ctaLabel}`}
             icon={<div className="p-2 bg-yellow-500/10 rounded-xl border border-yellow-500/20"><Users className="text-yellow-400" size={24} /></div>}
             spots={curationData.trending}
-            leadingPackage={TRIPCOM_EXPLORE_LEADING_CARD}
-            packageLinkUrl={MRT_PACKAGE_THEME_LINKS.family.shortUrl}
-            packageCtaLabel={MRT_PACKAGE_THEME_LINKS.family.ctaLabel}
+            leadingPackage={{
+              ...MRT_EXPLORE_LEADING_PACKAGE,
+              url: buildMrtPkcHomeUrl({ utmContent: 'explore-leading-pkc' }),
+            }}
+            packageLinkUrl={resolveMrtPackageThemeHref('family', { utmContent: 'explore-family' })?.url}
+            packageCtaLabel={MRT_PACKAGE_THEME_TARGETS.family.ctaLabel}
             delayClass="animation-delay-100"
             onSelectSpot={handleSpotSelect}
             onMoreClick={() => handleFilterModeChange('continent')}
           />
           <CurationSection
-            title="가까운 일본, 특가 패키지"
-            subtitle={`항공·호텔 묶음 ${MRT_PACKAGE_THEME_LINKS.japan.ctaLabel}`}
+            title="가까운 일본, 패키지"
+            subtitle={`항공·호텔 묶음 ${MRT_PACKAGE_THEME_TARGETS.japan.ctaLabel}`}
             icon={<div className="p-2 bg-rose-500/10 rounded-xl border border-rose-500/20"><Landmark className="text-rose-400" size={24} /></div>}
             spots={curationData.japan}
-            packageLinkUrl={MRT_PACKAGE_THEME_LINKS.japan.shortUrl}
-            packageCtaLabel={MRT_PACKAGE_THEME_LINKS.japan.ctaLabel}
+            packageLinkUrl={resolveMrtPackageThemeHref('japan', { utmContent: 'explore-japan' })?.url}
+            packageCtaLabel={MRT_PACKAGE_THEME_TARGETS.japan.ctaLabel}
             delayClass="animation-delay-150"
             onSelectSpot={handleSpotSelect}
             onMoreClick={() => handleFilterModeChange('continent')}
           />
           <CurationSection
             title="유럽 & 장거리 일주"
-            subtitle={`교통·언어 걱정 없는 ${MRT_PACKAGE_THEME_LINKS.longhaul.ctaLabel} 여행`}
+            subtitle={`교통·언어 걱정 없는 ${MRT_PACKAGE_THEME_TARGETS.longhaul.ctaLabel} 여행`}
             icon={<div className="p-2 bg-blue-500/10 rounded-xl border border-blue-500/20"><Globe2 className="text-blue-400" size={24} /></div>}
             spots={curationData.city}
-            packageLinkUrl={MRT_PACKAGE_THEME_LINKS.longhaul.shortUrl}
-            packageCtaLabel={MRT_PACKAGE_THEME_LINKS.longhaul.ctaLabel}
+            packageLinkUrl={resolveMrtPackageThemeHref('longhaul', { utmContent: 'explore-europe' })?.url}
+            packageCtaLabel={MRT_PACKAGE_THEME_TARGETS.longhaul.ctaLabel}
             delayClass="animation-delay-200"
             onSelectSpot={handleSpotSelect}
             onMoreClick={() => handleThemeSelect('urban')}
           />
           <CurationSection
             title="일상의 탈출, 에어텔/올인클루시브"
-            subtitle={`비행·숙소·픽업 포함 ${MRT_PACKAGE_THEME_LINKS.resort.ctaLabel}`}
+            subtitle={`비행·숙소·픽업 포함 ${MRT_PACKAGE_THEME_TARGETS.resort.ctaLabel}`}
             icon={<div className="p-2 bg-cyan-500/10 rounded-xl border border-cyan-500/20"><Palmtree className="text-cyan-400" size={24} /></div>}
             spots={curationData.healing}
-            packageLinkUrl={MRT_PACKAGE_THEME_LINKS.resort.shortUrl}
-            packageCtaLabel={MRT_PACKAGE_THEME_LINKS.resort.ctaLabel}
+            packageLinkUrl={resolveMrtPackageThemeHref('resort', { utmContent: 'explore-resort' })?.url}
+            packageCtaLabel={MRT_PACKAGE_THEME_TARGETS.resort.ctaLabel}
             delayClass="animation-delay-300"
             onSelectSpot={handleSpotSelect}
             onMoreClick={() => handleThemeSelect('paradise')}

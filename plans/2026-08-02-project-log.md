@@ -2,6 +2,23 @@
 
 직전: [`2026-07-30-project-log.md`](./2026-07-30-project-log.md)
 
+## MRT 패키지 연결 #3, 숙소·투어 패키지 CTA
+
+**상태**: feature `cursor/mrt-package-strip-18d2` · Preview QA 대기
+
+- 투어 CTA 문구: `{지역} 패키지 상품보기` (예: 더블린 패키지 상품보기)
+- 숙소 모달 하단에도 동일 CTA 신설 (간접 진입)
+- 탐색 CTA·써머리 탭 폐기 상태 유지
+- **공유**: `https://www.gateo.kr/qa/package`
+
+## MRT 패키지 연결 #1–2, 탐색 재연결·써머리 폐기
+
+**상태**: ✅ 탐색 OK · 써머리 탭/모달 폐기
+
+- **탐색 ✅**: 일본 `q=일본` · 가족/유럽/휴양 promotionGroup · 선두=패키지 홈
+- **써머리 패키지 탭·모달**: 목록 API 부재 → 폐기
+- **공유**: `https://www.gateo.kr/qa/package` · git Preview `…-git-cursor-mrt-package-strip-18d2-….vercel.app/`
+
 ## 에이전트 규칙 — 로컬 UI 커밋 보류 vs Cloud 매 턴 push
 
 **상태**: ✅ `8a6bc24` · `main` ahead 1 (push는 사람 요청 시)

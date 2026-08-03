@@ -100,10 +100,9 @@ function buildIndexListHeadline({
  *   areaCode: string,
  *   cityName: string,
  *   count: number,
- *   capped: boolean,
  * }} p
  */
-function buildPanelListMeta({ areaCode, cityName, count, capped }) {
+function buildPanelListMeta({ areaCode, cityName, count }) {
   const sido = sidoListPhrase(areaCode);
   const city = cityListPhrase(cityName);
   const place = [sido, city].filter(Boolean).join(' · ');
@@ -112,13 +111,24 @@ function buildPanelListMeta({ areaCode, cityName, count, capped }) {
   bits.push(`${count}건`);
   if (place && !city) bits.push(`${subregionUnitLabel(areaCode)}별`);
   else if (!place) bits.push('지역 그룹');
-  if (capped) bits.push(`${PANEL_LIMIT}건까지`);
   return bits.join(' · ');
+}
+
+/**
+ * @param {object} a
+ * @param {object} b
+ */
+function compareFestivalsByStart(a, b) {
+  const as = String(a?.eventStartDate || '');
+  const bs = String(b?.eventStartDate || '');
+  return (
+    as.localeCompare(bs) ||
+    String(a?.title || '').localeCompare(String(b?.title || ''), 'ko')
+  );
 }
 
 /** @typedef {'time' | 'region' | 'taste'} ChipPanelId */
 
-const PANEL_LIMIT = 48;
 const NEAR_KM = NEAR_FESTIVAL_KM;
 
 /** Strict Mode 재마운트에도 진입 GPS는 JS 세션당 1회(첫 시도) */
@@ -811,11 +821,20 @@ export default function KoreaFestivalHub() {
   }, [nearRanked]);
 
   const panelItems = useMemo(() => {
-    if (nearBaseItems) {
-      return nearBaseItems.slice(0, PANEL_LIMIT);
-    }
-    return filteredItems.slice(0, PANEL_LIMIT);
+    if (nearBaseItems) return nearBaseItems;
+    return [...filteredItems].sort(compareFestivalsByStart);
   }, [nearBaseItems, filteredItems]);
+
+  const timeChipCounts = useMemo(() => {
+    /** @type {Record<string, number>} */
+    const counts = {};
+    const regionBase = filterByRegion(items, { areaCode, cityName });
+    const pool = filterByTaste(regionBase, tasteId);
+    for (const t of timeTabs) {
+      counts[t.id] = filterByTimeTab(t.id, pool, now).length;
+    }
+    return counts;
+  }, [items, areaCode, cityName, tasteId, timeTabs, now]);
 
   const panelGroups = useMemo(() => {
     if (nearBaseItems) {
@@ -848,7 +867,10 @@ export default function KoreaFestivalHub() {
             a.minKm - b.minKm || a.label.localeCompare(b.label, 'ko'),
         );
     }
-    return groupFestivalsForList(panelItems, { areaCode });
+    return groupFestivalsForList(panelItems, { areaCode }).map((g) => ({
+      ...g,
+      items: [...g.items].sort(compareFestivalsByStart),
+    }));
   }, [nearBaseItems, panelItems, areaCode, nearKmByContentId]);
 
   const flapChildChips = useMemo(() => {
@@ -1120,18 +1142,13 @@ export default function KoreaFestivalHub() {
 
   const panelListMeta = useMemo(() => {
     if (nearBaseItems && nearLabel) {
-      const n = panelItems.length;
-      const total = nearBaseItems.length;
-      return total > PANEL_LIMIT
-        ? `${NEAR_KM}km 안 ${n}건 · ${PANEL_LIMIT}건까지`
-        : `${NEAR_KM}km 안 ${n}건`;
+      return `${NEAR_KM}km 안 ${panelItems.length}건`;
     }
     if (nearActive && nearMsg) return nearMsg;
     return buildPanelListMeta({
       areaCode,
       cityName,
       count: panelItems.length,
-      capped: filteredItems.length > PANEL_LIMIT,
     });
   }, [
     nearBaseItems,
@@ -1141,7 +1158,6 @@ export default function KoreaFestivalHub() {
     areaCode,
     cityName,
     panelItems.length,
-    filteredItems.length,
   ]);
 
   const selectTime = (id) => {
@@ -1615,6 +1631,9 @@ export default function KoreaFestivalHub() {
                       aria-pressed={timeTab === t.id}
                     >
                       {t.label}
+                      <span className="opacity-70">
+                        {timeChipCounts[t.id] ?? 0}
+                      </span>
                     </button>
                   ))}
                 {chipPanel === 'region' && (
