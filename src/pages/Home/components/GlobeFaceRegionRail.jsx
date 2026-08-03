@@ -154,16 +154,16 @@ export function GlobeFaceSubregionBar({
   const tone = CATEGORY_CHIP[category] || CATEGORY_CHIP.paradise;
 
   return (
-    <div className={`pointer-events-auto inline-flex max-w-full flex-col ${className}`}>
+    <div className={`pointer-events-auto flex min-w-0 flex-col ${className}`}>
       <GlassScrollStyles />
       <div
-        className={`inline-flex max-w-full flex-col rounded-2xl border border-white/15 bg-black/55 px-2 pt-1.5 backdrop-blur-xl shadow-lg ${
+        className={`flex w-full min-w-0 flex-col rounded-2xl border border-white/15 bg-black/55 px-2 pt-1.5 backdrop-blur-xl shadow-lg ${
           scrollUi.scrollable ? 'pb-2' : 'pb-1.5'
         }`}
       >
         <div
           ref={barRef}
-          className={`inline-flex max-w-full gap-1.5 overflow-x-scroll ${CUSTOM_SCROLL_CLASS}`}
+          className={`flex w-full min-w-0 gap-1.5 overflow-x-auto overscroll-x-contain touch-pan-x ${CUSTOM_SCROLL_CLASS}`}
           role="listbox"
           aria-label="소권역"
           onScroll={updateScrollUi}

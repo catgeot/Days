@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '지구본 나라 목록',
-  sessionNo: 3,
-  sessionPhase: '중분류·소국 재편',
+  sessionNo: 4,
+  sessionPhase: '중분류 좌우 스크롤',
   branch: 'cursor/globe-neighbor-list-15b3',
   previewPath: '/',
   qaShareSlug: 'globe',
@@ -23,6 +23,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-03-globe-mid-hscroll-full',
+    session: '지구본 나라 목록 #4, 중분류 좌우 스크롤',
+    title: '중분류 스크롤 바를 화면 거의 전체 폭으로',
+    detail:
+      '중분류 바가 좌측 절반에 묶이던 것을 뷰포트 폭으로 풀었습니다. 나라·카테고리 칩은 왼쪽 그대로입니다. 홈(모바일)→도시에서 중분류 바가 화면 가로로 넓게 보이는지 확인해 주세요.',
+    at: '2026-08-03',
+  },
+  {
+    id: '2026-08-03-globe-mid-hscroll',
+    session: '지구본 나라 목록 #4, 중분류 좌우 스크롤',
+    title: '모바일 중분류 칩 좌우 스크롤 복구',
+    detail:
+      '중분류 칩이 가로로 늘어나 잘리던 문제를 min-w-0·너비 고정으로 고쳤습니다. 홈→도시(유럽)에서 서유럽~소국·공국 칩을 좌우로 밀어 끝까지 보이는지 확인해 주세요.',
+    at: '2026-08-03',
+  },
   {
     id: '2026-08-03-globe-mid-microstates',
     session: '지구본 나라 목록 #3, 중분류·소국 재편',
