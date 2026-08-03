@@ -4,10 +4,11 @@
 
 ## 축제 페이지 #2, 칩 아이콘 통일
 
-**상태**: feature `cursor/korea-time-list-16a3` · Preview QA 대기
+**상태**: feature `cursor/korea-time-list-16a3` · SHA `7eb5dbf9` · Preview QA 대기
 
 - **요청**: 시간·지역·테마 대분류와 하위 칩이 같은 아이콘으로 종속 관계가 보이게
 - **변경**: `CalendarDays` / `MapPin` / `Sparkles` — 대분류·하위(전국·테마 전체 포함) 동일 아이콘
+- **검증**: `npm run build`
 - **공유**: `https://www.gateo.kr/qa/korea` · git Preview `https://days-git-cursor-korea-time-list-16a3-catgeots-projects.vercel.app/korea`
 - **QA**: `/korea` — 시간 대분류·지금/주말/이번 달 달력 아이콘 · 지역 핀 · 테마 스파클
 
