@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: 'MRT 패키지 연결',
-  sessionNo: 3,
-  sessionPhase: '숙소·투어 패키지 CTA',
-  branch: 'cursor/mrt-package-strip-18d2',
-  previewPath: '/',
-  qaShareSlug: 'package',
+  title: '축제 페이지',
+  sessionNo: 1,
+  sessionPhase: '시간 탭 실제 건수',
+  branch: 'cursor/korea-time-list-16a3',
+  previewPath: '/korea',
+  qaShareSlug: 'korea',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -24,27 +24,11 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
-    id: '2026-08-02-mrt-package-stay-tour-cta',
-    session: 'MRT 패키지 연결 #3, 숙소·투어 패키지 CTA',
-    title: '숙소·투어 「패키지 상품보기」 CTA',
+    id: '2026-08-03-korea-time-list-actual-counts',
+    session: '축제 페이지 #1, 시간 탭 실제 건수',
+    title: '시간 탭 목록·건수 실제 반영',
     detail:
-      '투어 모달 문구를 「{지역} 패키지 상품보기」로 바꿨고, 숙소 모달 하단에도 같은 CTA를 넣었습니다. 더블린 등 해외 장소에서 숙소·투어 모달 하단에 「더블린 패키지 상품보기」가 보이는지 확인해 주세요.',
-    at: '2026-08-02',
-  },
-  {
-    id: '2026-08-02-mrt-package-summary-revert',
-    session: 'MRT 패키지 연결 #2, 써머리 탭·모달 폐기',
-    title: '써머리 패키지 탭·모달 제거',
-    detail:
-      '패키지 목록 API가 없어 써머리 「패키지」탭과 모달을 폐기했습니다. 탐색 홈 CTA 재연결과 투어 모달 패키지 딥링크는 유지됩니다.',
-    at: '2026-08-02',
-  },
-  {
-    id: '2026-08-02-mrt-package-strip',
-    session: 'MRT 패키지 연결 #1, 써머리·탐색 재연결',
-    title: '탐색 CTA 재연결 · (이후 써머리 탭 폐기)',
-    detail:
-      '탐색 홈 테마 CTA를 /pkc 검색·기획전·패키지 홈으로 재연결했습니다. 써머리 패키지 탭·모달은 #2에서 폐기.',
-    at: '2026-08-02',
+      '목록 48건 상한을 제거해 지금·주말·이번 달·계절 탭이 필터 결과 전체를 보여 줍니다. 메타·시간 칩에 실제 건수, 리스트는 시작일 순입니다. /korea에서 탭을 바꿔 건수가 달라지는지 확인해 주세요.',
+    at: '2026-08-03',
   },
 ];
