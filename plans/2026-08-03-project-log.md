@@ -2,6 +2,17 @@
 
 직전: [`2026-08-02-project-log.md`](./2026-08-02-project-log.md)
 
+## 지구본 나라 목록 #3, 중분류·소국 재편
+
+**상태**: feature `cursor/globe-neighbor-list-15b3` · Preview QA 대기
+
+- **이슈**: 인접국 연쇄만으로는 소국·공국이 본토 흐름 중간에 끼고, 「서·남유럽」 등 큰 중분류가 직관을 해침
+- **변경**: `GLOBE_FACE_SUBREGIONS` — 유럽을 서/영국/남/북/중부/발칸·동/소국·공국/북극으로 분할 · 아시아는 동남아·남아시아·중동·중앙아시아 · 아프리카는 동·남·인도양·북·서·중부
+- **유지**: 5대면(대분류) · 중분류 안 nearest-neighbor 연쇄 · 면 배타
+- **검증**: `npm run smoke:globe-face-neighbor-order` · `smoke:place-label-slug` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/globe` · git Preview `…-git-cursor-globe-neighbor-list-15b3-….vercel.app/`
+- **QA**: 홈→도시→「소국·공국」·「서유럽」 칩 · 아시아·아프리카 중분류 라벨·나열 흐름
+
 ## 푸터 법적 공지 #3, 아동 개인정보 문구
 
 **상태**: ✅ `main` 머지·푸시 `a823292` · PR [#52](https://github.com/catgeot/Days/pull/52) MERGED · PROD 배포 SUCCESS

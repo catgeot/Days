@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '축제 페이지',
-  sessionNo: 1,
-  sessionPhase: '시간 탭 실제 건수',
-  branch: 'cursor/korea-time-list-16a3',
-  previewPath: '/korea',
-  qaShareSlug: 'korea',
+  title: '지구본 나라 목록',
+  sessionNo: 3,
+  sessionPhase: '중분류·소국 재편',
+  branch: 'cursor/globe-neighbor-list-15b3',
+  previewPath: '/',
+  qaShareSlug: 'globe',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -24,11 +24,27 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
-    id: '2026-08-03-korea-time-list-actual-counts',
-    session: '축제 페이지 #1, 시간 탭 실제 건수',
-    title: '시간 탭 목록·건수 실제 반영',
+    id: '2026-08-03-globe-mid-microstates',
+    session: '지구본 나라 목록 #3, 중분류·소국 재편',
+    title: '중분류를 직관 권역으로 나누고 소국·공국 분리',
     detail:
-      '목록 48건 상한을 제거해 지금·주말·이번 달·계절 탭이 필터 결과 전체를 보여 줍니다. 메타·시간 칩에 실제 건수, 리스트는 시작일 순입니다. /korea에서 탭을 바꿔 건수가 달라지는지 확인해 주세요.',
+      '유럽은 서유럽·영국·남유럽·북유럽·중동유럽·소국·공국·북극으로 나누고, 아시아도 동남아/남아시아·중동/중앙아시아로 쪼갰습니다. 중분류 안 나열은 인접국 연쇄를 유지합니다. 홈→도시(유럽)에서 소국·공국 칩과 흐름을 확인해 주세요.',
     at: '2026-08-03',
+  },
+  {
+    id: '2026-08-02-country-scroll-top',
+    session: '지구본 나라 목록 #2, 스크롤 상단 시작',
+    title: '나라 리스트 스크롤을 상단에서 시작',
+    detail:
+      '나라가 많아 스크롤이 생길 때 기본 위치를 하단이 아니라 상단으로 맞췄습니다. 짧은 목록의 하단 고정 배치는 그대로입니다. 홈→권역→중분류에서 긴 나라 목록이 위에서부터 보이고 아래로 스크롤되는지 확인해 주세요.',
+    at: '2026-08-02',
+  },
+  {
+    id: '2026-08-02-neighbor-chain',
+    session: '지구본 나라 목록 #1, 인접국 연쇄 정렬',
+    title: '중분류 나라 목록을 인접국 연쇄로 정렬',
+    detail:
+      '중분류 나라 목록을 인기·시드 순이 아니라 좌표 기준 인접국 연쇄로 이어 보이게 바꿨습니다. 홈→권역→중분류에서 목록이 이웃 나라끼리 이어지는지 확인해 주세요.',
+    at: '2026-08-02',
   },
 ];
