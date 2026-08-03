@@ -1,10 +1,11 @@
 /**
- * 방방곡곡 areaCode→hub→place 경로 스모크 (서울/부산/제주).
+ * 방방곡곡 areaCode→hub 명소→place 경로 스모크 (서울/부산/제주).
  *
  *   npm run smoke:korea-theme-regions
  */
 import {
   listKoreaThemeAreas,
+  listKoreaThemeRegionAttractions,
   listKoreaThemeRegionHubs,
 } from '../src/pages/Home/lib/koreaThemeRegions.js';
 import { resolveHubPlaceFromSlug } from '../src/pages/Home/lib/cityAttractionHubs.js';
@@ -25,28 +26,32 @@ const areas = listKoreaThemeAreas();
 assert(areas.length >= 16, `areas ≥16 (got ${areas.length})`);
 
 const cases = [
-  ['1', 'seoul', '서울'],
-  ['6', 'busan', '부산'],
-  ['39', 'jeju', '제주'],
+  ['1', 'seoul', '서울', '경복궁'],
+  ['6', 'busan', '부산', '해운대해수욕장'],
+  ['39', 'jeju', '제주', '한라산국립공원'],
 ];
 
-for (const [areaCode, hubId, label] of cases) {
+for (const [areaCode, hubId, label, sampleName] of cases) {
   const area = areas.find((a) => a.areaCode === areaCode);
   assert(Boolean(area), `${label} area present`);
-  assert(area?.name === label || Boolean(area), `${label} name`);
 
   const ids = hubIdsForArea(areaCode);
   assert(ids.includes(hubId), `hubIdsForArea(${areaCode}) includes ${hubId}`);
 
   const hubs = listKoreaThemeRegionHubs(areaCode);
-  assert(hubs.length >= 1, `${label} hubs ≥1`);
-  const hit = hubs.find((h) => h.hubId === hubId);
-  assert(Boolean(hit), `${label} list includes ${hubId}`);
-  if (!hit) continue;
+  assert(hubs.some((h) => h.hubId === hubId), `${label} hubs include ${hubId}`);
 
-  assert(hit.placeSlug === hubId, `${hubId} placeSlug`);
-  const place = resolveHubPlaceFromSlug(hit.placeSlug);
-  assert(Boolean(place), `/place/${hubId} resolves`);
+  const attractions = listKoreaThemeRegionAttractions(areaCode);
+  assert(attractions.length >= 3, `${label} attractions ≥3 (got ${attractions.length})`);
+
+  const sample = attractions.find((a) => a.name === sampleName);
+  assert(Boolean(sample), `${label} list includes ${sampleName}`);
+  if (!sample) continue;
+
+  assert(Boolean(sample.placeSlug), `${sampleName} placeSlug`);
+  const place = resolveHubPlaceFromSlug(sample.placeSlug);
+  assert(Boolean(place), `/place/${sample.placeSlug} resolves (${sampleName})`);
+  assert(place?.name === sampleName, `resolved name ${sampleName}`);
 }
 
 if (failed) {

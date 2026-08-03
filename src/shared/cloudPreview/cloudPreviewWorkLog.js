@@ -26,9 +26,9 @@ export const cloudPreviewWorkLog = [
   {
     id: '2026-08-03-korea-theme-regions',
     session: '테마여행 #7, 방방곡곡',
-    title: '방방곡곡 시도→hub→place',
+    title: '방방곡곡 시도→명소 목록→place',
     detail:
-      '시도 칩(서울·부산·제주 등)과 areaCode 연결 hub 목록을 /korea/theme/regions에 올렸습니다. hub를 누르면 place로 가고, 뒤로 오면 이 목록으로 돌아옵니다. 축제 지도는 건드리지 않았습니다.',
+      '시도 칩을 고르면 hub 요약이 아니라 그 지역 큐레이션 명소가 리스트로 나옵니다. 서울이면 경복궁·남산타워 등 항목을 누르세요. place에서 뒤로 오면 목록으로 돌아옵니다.',
     at: '2026-08-03',
   },
   {

@@ -4,13 +4,13 @@
 
 ## 테마여행 #7, 방방곡곡
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `7f76a3b1` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA _(push 후)_ · Preview QA 대기
 
-- **한 일**: `/korea/theme/regions` · 시도 칩(areaCode SSOT) → KR hub 목록 → place · 복귀 path · `smoke:korea-theme-regions`
+- **한 일**: `/korea/theme/regions` · 시도 칩 → **hub 명소 리스트**(서울=경복궁 등) → place · hub 요약 행 제거 · `smoke:korea-theme-regions` 명소 resolve
 - **VERIFY**: `npm run smoke:korea-area-codes` · `npm run smoke:korea-theme-regions` · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/regions`
-- **QA**: 테마→방방곡곡→서울/부산/제주 칩→hub→place→뒤로 목록
+- **QA**: 테마→방방곡곡→서울 칩→경복궁 등 목록→항목→place→뒤로
 - **다음**: S6 패키지
 
 ```
