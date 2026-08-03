@@ -4,7 +4,7 @@
 
 ## 테마여행 #7, 방방곡곡
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA _(push 후)_ · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `e50ac4e3` · Preview QA 대기
 
 - **한 일**: `/korea/theme/regions` · 시도 칩 → **hub 명소 리스트**(서울=경복궁 등) → place · hub 요약 행 제거 · `smoke:korea-theme-regions` 명소 resolve
 - **VERIFY**: `npm run smoke:korea-area-codes` · `npm run smoke:korea-theme-regions` · `npm run build`
