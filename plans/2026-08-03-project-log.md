@@ -4,7 +4,7 @@
 
 ## 테마여행 #4, 10대 절경
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `f4235f96` · Preview QA 대기
 
 - **한 일**: §3.3 GATEO 10 확정 · overrides→`koreaTop10Scenic.json` · `/korea/theme/top10` · place 복귀 · 「GATEO 선정」고지
 - **VERIFY**: `npm run audit:korea-top10-scenic` · `npm run smoke:korea-top10-scenic` · `npm run build`
