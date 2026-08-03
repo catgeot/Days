@@ -4,7 +4,7 @@
 
 ## 테마여행 #6, 뒤로복귀
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `e71df1aa` · Preview QA 대기
 
 - **한 일**: PlaceChatPanel·`leavePlaceCard` → `navigate(returnTo)` · `isKoreaPlaceReturnPath`로 `prevPath` undefined TypeError 가드
 - **VERIFY**: `npm run build`
