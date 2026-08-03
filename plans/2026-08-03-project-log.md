@@ -2,6 +2,23 @@
 
 직전: [`2026-08-02-project-log.md`](./2026-08-02-project-log.md)
 
+## 테마여행 #9, 축제 연결
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **한 일**: 테마 타일·헤더「축제」→ `/korea?from=theme` · 축제 헤더「← 테마여행으로」한 줄 → `/korea/theme` · 칩/지도/필터 미변경 · 홈「국내」단독 회귀
+- **VERIFY**: (커밋 전) `audit:korea-theme-modules` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme` → 축제 → 복귀
+- **QA**: 테마→축제 타일/헤더→복귀 한 줄→테마 · `/korea` 직접 진입 시 한 줄 없음
+- **다음**: S8 SEO·QA링크
+
+```
+테마여행 #10, SEO·QA링크
+```
+
+- **금지 3**: 축제 칩/지도/필터 로직 변경 · releaseNotes · 세션마다 새 Preview 브랜치
+
 ## 테마여행 #8, 패키지
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `8e4ec525` · Preview QA 대기

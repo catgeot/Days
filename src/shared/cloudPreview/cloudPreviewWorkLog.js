@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 8,
-  sessionPhase: '패키지',
+  sessionNo: 9,
+  sessionPhase: '축제 연결',
   branch: 'cursor/korea-theme',
-  previewPath: '/korea/theme/packages',
+  previewPath: '/korea',
   qaShareSlug: 'korea-theme',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-03-korea-theme-festival-link',
+    session: '테마여행 #9, 축제 연결',
+    title: '테마↔축제 복귀 (?from=theme)',
+    detail:
+      '테마 랜딩의 축제 타일·헤더「축제」가 /korea?from=theme으로 이어집니다. 축제 헤더에 「← 테마여행으로」 한 줄이 보이고, 누르면 /korea/theme으로 돌아옵니다. 홈「국내」·/korea 단독 진입에는 한 줄이 없습니다. 칩·지도·필터는 그대로입니다.',
+    at: '2026-08-03',
+  },
   {
     id: '2026-08-03-korea-theme-packages',
     session: '테마여행 #8, 패키지',

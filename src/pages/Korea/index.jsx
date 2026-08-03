@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowUp,
   CalendarDays,
@@ -602,6 +602,8 @@ function FestivalRow({
 
 export default function KoreaFestivalHub() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const fromTheme = searchParams.get('from') === 'theme';
   const now = useMemo(() => new Date(), []);
 
   const [timeTab, setTimeTab] = useState('now');
@@ -1545,6 +1547,19 @@ export default function KoreaFestivalHub() {
                 )}
               </div>
             </div>
+
+            {fromTheme && !mapImmersive ? (
+              <p className="mt-1.5 text-xs leading-relaxed text-stone-600 break-keep">
+                <Link
+                  to="/korea/theme"
+                  className="font-bold text-amber-800 hover:underline"
+                >
+                  ← 테마여행으로
+                </Link>
+                <span className="text-stone-400"> · </span>
+                축제 일정·지도는 여기서 이어갑니다
+              </p>
+            ) : null}
 
             {searchOpen && (
               <form

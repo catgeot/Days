@@ -47,7 +47,7 @@ export default function KoreaThemeLanding() {
               </div>
               <div className="flex shrink-0 items-center gap-2">
                 <Link
-                  to="/korea"
+                  to="/korea?from=theme"
                   aria-label="한국의 축제로"
                   title="축제"
                   className="flex items-center gap-1 rounded-full border border-amber-300/80 bg-amber-50 px-2.5 py-1.5 text-xs font-bold text-amber-900 hover:bg-amber-100"
@@ -92,7 +92,11 @@ export default function KoreaThemeLanding() {
                 return (
                   <li key={mod.id}>
                     <Link
-                      to={mod.path}
+                      to={
+                        mod.id === 'festivals'
+                          ? '/korea?from=theme'
+                          : mod.path
+                      }
                       className="flex h-full items-start gap-3 rounded-2xl border border-stone-200/90 bg-white px-4 py-3.5 shadow-sm transition-colors hover:border-amber-300/80 hover:bg-amber-50/40"
                     >
                       <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-amber-200/80 bg-amber-50 text-amber-800">

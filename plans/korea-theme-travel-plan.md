@@ -21,8 +21,8 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 5 | S4 | `테마여행 #5, 명승지` | ✅ Preview QA |
 | 6 | (핫픽스) | `테마여행 #6, 뒤로복귀` | ✅ Preview QA |
 | 7 | S5 | `테마여행 #7, 방방곡곡` | ✅ Preview QA |
-| 8 | S6 | `테마여행 #8, 패키지` | ⏳ Preview QA |
-| 9 | S7 | `테마여행 #9, 축제 연결` | ⏳ |
+| 8 | S6 | `테마여행 #8, 패키지` | ✅ Preview QA |
+| 9 | S7 | `테마여행 #9, 축제 연결` | ⏳ Preview QA |
 | 10 | S8 | `테마여행 #10, SEO·QA링크` | ⏳ |
 | 11 | S9 | `테마여행 #11, 폴리시·릴리스` | ⏳ |
 
@@ -38,8 +38,8 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **S4** 명승지 페이지 | ✅ Preview QA | curated 20 → `/korea/theme/scenic` | #6 뒤로복귀 |
 | **#6** PlaceCard 뒤로복귀 | ✅ Preview QA | `navigate(returnTo)` · TypeError 가드 | S5 |
 | **S5** 방방곡곡 페이지 | ✅ Preview QA | 시도·hub → `/korea/theme/regions` | S6 |
-| **S6** 패키지 페이지 | ⏳ Preview QA | MRT CTA(제주·홈·경주) → `/korea/theme/packages` | S7 |
-| **S7** 축제 연결 다듬기 | ⏳ | `/korea` 딥링크·복귀 | S8 |
+| **S6** 패키지 페이지 | ✅ Preview QA | MRT CTA(제주·홈·경주) → `/korea/theme/packages` | S7 |
+| **S7** 축제 연결 다듬기 | ⏳ Preview QA | `/korea?from=theme` · 복귀 한 줄 | S8 |
 | **S8** SEO·sitemap·QA | ⏳ | Helmet·sitemap·`/qa/korea-theme` | S9 |
 | **S9** 폴리시·릴리스 | ⏳ | 사람 QA → releaseNotes 1회 제안 | main 병합 |
 
@@ -376,11 +376,11 @@ MRT 제주 search+pkc 홈 CTA. 목록 API·q=부산 국내표기 금지.
 
 ---
 
-### S7 — 축제 연결 다듬기 ⏳
+### S7 — 축제 연결 다듬기 ⏳ Preview QA
 
 | | |
 |--|--|
-| **산출** | 테마→`/korea` 복귀(`/korea/theme`) · (선택) `?from=theme` 한 줄 |
+| **산출** | 테마→`/korea?from=theme` · 헤더「← 테마여행으로」복귀 · 단독 `/korea` 무변화 |
 | **VERIFY** | theme↔korea 왕복 · korea 단독 회귀 |
 | **금지** | 축제 칩/지도/필터 로직 변경 |
 
