@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 5,
-  sessionPhase: '명승지',
+  sessionNo: 6,
+  sessionPhase: '뒤로복귀',
   branch: 'cursor/korea-theme',
-  previewPath: '/korea/theme/scenic',
+  previewPath: '/korea/theme/top10',
   qaShareSlug: 'korea-theme',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-03-korea-theme-place-return',
+    session: '테마여행 #6, 뒤로복귀',
+    title: 'PlaceCard→테마 목록 navigate(returnTo)',
+    detail:
+      '테마·명승 목록에서 place로 들어간 뒤 뒤로를 누르면 목록으로 돌아가도록 고쳤습니다. 이전 경로가 없을 때 startsWith 오류로 버튼이 죽던 문제도 함께 막았습니다. /korea/theme/top10·scenic → 항목 → place → 뒤로를 확인해 주세요.',
+    at: '2026-08-03',
+  },
   {
     id: '2026-08-03-korea-theme-scenic',
     session: '테마여행 #5, 명승지',

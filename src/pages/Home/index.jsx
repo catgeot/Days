@@ -438,11 +438,6 @@ function Home() {
     const returnTo = peekPlaceReturnTo(routeLocation.state);
     if (returnTo) {
       clearPlaceReturnTo();
-      const idx = window.history.state?.idx;
-      if (typeof idx === 'number' && idx > 0) {
-        navigate(-1);
-        return;
-      }
       navigate(returnTo);
       return;
     }

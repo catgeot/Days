@@ -19,7 +19,7 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 3 | S2 | `테마여행 #3, 모듈 SSOT` | ✅ |
 | 4 | S3 | `테마여행 #4, 10대 절경` | ✅ Preview QA |
 | 5 | S4 | `테마여행 #5, 명승지` | ✅ Preview QA |
-| 6 | (핫픽스) | `테마여행 #6, 뒤로복귀` | ⏳ 다음 · PlaceCard→theme 목록 |
+| 6 | (핫픽스) | `테마여행 #6, 뒤로복귀` | ✅ Preview QA |
 | 7 | S5 | `테마여행 #7, 방방곡곡` | ⏳ |
 | 8 | S6 | `테마여행 #8, 패키지` | ⏳ |
 | 9 | S7 | `테마여행 #9, 축제 연결` | ⏳ |
@@ -36,6 +36,7 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **S2** 테마 카탈로그 SSOT | ✅ | modules + 랜딩 타일(`order` 가변) | S3 |
 | **S3** 10대 절경 페이지 | ✅ Preview QA | 조사→SSOT→`/korea/theme/top10` | S4 |
 | **S4** 명승지 페이지 | ✅ Preview QA | curated 20 → `/korea/theme/scenic` | #6 뒤로복귀 |
+| **#6** PlaceCard 뒤로복귀 | ✅ Preview QA | `navigate(returnTo)` · TypeError 가드 | S5 |
 | **S5** 방방곡곡 페이지 | ⏳ | 시도·hub → `/korea/theme/regions` | S6 |
 | **S6** 패키지 페이지 | ⏳ | MRT CTA → `/korea/theme/packages` | S7 |
 | **S7** 축제 연결 다듬기 | ⏳ | `/korea` 딥링크·복귀 | S8 |
@@ -307,7 +308,7 @@ modules+타일+order. 축제=/korea. 다른 테마는 빈 페이지 라우트만
 | **VERIFY** | `audit:korea-top10-scenic` · `smoke:korea-top10-scenic` · build · Preview |
 | **금지** | 공식기관 사칭 · 축제 코드 수정 · 11개+ |
 | **확정 10** | 한라산국립공원 · 성산일출봉 · 설악산(권금성) · 순천만습지 · 주상절리대 · 해운대·광안 · 불국사·석굴암 · 내장산국립공원 · 보성녹차밭 · 통영·한려(케이블카) |
-| **후속 (사람)** | PlaceCard←목록 복귀 버그 · **S4 명승 후** 핫픽스 · 절경 전용 상세 **비범위** |
+| **후속** | PlaceCard←목록 복귀 → `#6`에서 `navigate(returnTo)` 핫픽스 · 절경 전용 상세 **비범위** |
 
 **채팅명**: `테마여행 #4, 10대 절경`  
 **첫 메시지**
@@ -327,7 +328,20 @@ modules+타일+order. 축제=/korea. 다른 테마는 빈 페이지 라우트만
 | **산출** | curated 20 · `/korea/theme/scenic` · 권역 필터 |
 | **원칙** | 품질>수량 · TourAPI 라이브 대량 목록 금지 |
 | **VERIFY** | `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · build |
-| **S4 직후** | PlaceCard 뒤로→`/korea/theme/{top10,scenic,…}` `navigate(returnTo)` 핫픽스 (`테마여행 #6, 뒤로복귀`) |
+| **S4 직후** | `#6 뒤로복귀` ✅ |
+
+---
+
+### #6 — PlaceCard 뒤로복귀 ✅ Preview QA
+
+| | |
+|--|--|
+| **산출** | PlaceChatPanel·`leavePlaceCard` → `navigate(returnTo)` · `isKoreaPlaceReturnPath` 가드 |
+| **원인** | 테마→place 직후 `prevPath` 미기록 시 `.startsWith` TypeError로 뒤로 버튼 실패 |
+| **VERIFY** | `npm run build` · Preview top10/scenic→place→뒤로 |
+| **금지** | 축제 `/korea` 필터 로직 수정 · 절경 전용 상세 신설 |
+
+**채팅명**: `테마여행 #6, 뒤로복귀`
 
 ---
 
@@ -428,7 +442,7 @@ Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일
 | MRT `q=부산` 오해 | 국내 CTA에서 제외 |
 | Preview 난립 | `cursor/korea-theme` 고정 |
 | 축제 feature 충돌 | 브랜치 분리 · path 링크만 |
-| PlaceCard←theme 목록 복귀 | S4 후 `#6 뒤로복귀` · `navigate(returnTo)` · 절경 전용 상세 비범위 |
+| PlaceCard←theme 목록 복귀 | `#6` ✅ `navigate(returnTo)` · 절경 전용 상세 비범위 |
 
 ---
 
@@ -436,7 +450,7 @@ Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일
 
 - [ ] `/korea/theme`에서 모듈 타일 → 각 테마 페이지(또는 축제 `/korea`) 진입
 - [ ] `/korea` 축제 회귀 없음
-- [ ] 10대 10곳 → place → 테마 복귀
+- [x] 10대 10곳 → place → 테마 복귀 (`#6` navigate(returnTo) · Preview QA)
 - [ ] 명승 ≥12 · 방방곡곡 시도→hub→place
 - [ ] 패키지 MRT(제주 등) + mylink
 - [ ] `/qa/korea-theme` · 고정 Preview

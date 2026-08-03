@@ -12,6 +12,18 @@ function isAllowed(path) {
   return typeof path === 'string' && ALLOWED.has(path);
 }
 
+/** @param {unknown} path */
+export function isKoreaPlaceReturnPath(path) {
+  return (
+    typeof path === 'string' &&
+    (path === '/korea' ||
+      path.startsWith('/korea?') ||
+      path === '/korea/theme' ||
+      path.startsWith('/korea/theme/') ||
+      path.startsWith('/korea/theme?'))
+  );
+}
+
 /** @param {string} path */
 export function setPlaceReturnTo(path) {
   if (!isAllowed(path)) return;
