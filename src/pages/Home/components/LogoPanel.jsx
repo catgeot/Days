@@ -187,7 +187,7 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
             <span className="text-gray-800">|</span>
             <button onClick={() => handleOpenFooter('contact')} className="hover:text-white transition-colors">Contact</button>
           </div>
-          <p className="text-center text-[8px] text-gray-700 mt-3 tracking-widest">© 2026 PROJECT DAYS.</p>
+          <p className="text-center text-[8px] text-gray-700 mt-3 tracking-widest">© 2026 GATEO · Project Days</p>
         </div>
       </div>
 
