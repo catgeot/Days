@@ -29,7 +29,8 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 13 | (보강) | `테마여행 #13, 여행코스 보강` | ⏳ Preview QA |
 | 14 | (코스 모달·칩) | `테마여행 #14, 코스 상세 모달` 등 | ✅ Preview QA |
 | 15 | S11 | `테마여행 #15, 테마 상세 모달` | ⏳ Preview QA |
-| 16 | S9 | `테마여행 #16, 폴리시·릴리스` | ⏳ |
+| 16 | (SSOT) | `테마여행 #16, 명승 contentId 보강` | ⏳ 다음 |
+| 17 | S9 | `테마여행 #17, 폴리시·릴리스` | ⏳ |
 
 이어하기·핫픽스만 할 때: `테마여행 #N, {짧은 수정}` (`N` = 그 주제의 **다음** 순번). 세션마다 새 `#1` 금지.
 
@@ -49,7 +50,8 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **#11** TourAPI 리서치 | ✅ | type 25 코스·12 검증 가능 확인 | S10 |
 | **S10** 여행코스·명승 확장 | ⏳ Preview QA | `/korea/theme/courses` · 명승 34 | #13 코스 보강 |
 | **#13~#14** 코스 사진·모달·칩 | ✅ Preview QA | 목록↔모달 분리 · 0건 칩 숨김 | S11 |
-| **S11** 테마 상세 모달 | ⏳ Preview QA | top10·scenic·regions 클릭→모달(축제/코스 벤치) | S9 |
+| **S11** 테마 상세 모달 | ⏳ Preview QA | top10·scenic·regions 클릭→모달(축제/코스 벤치) | #16 contentId |
+| **#16** 명승 contentId 보강 | ⏳ | scenic(·top10) overrides에 검증 contentId | S9 |
 | **S9** 폴리시·릴리스 | ⏳ | 사람 QA → releaseNotes 1회 제안 | main 병합 |
 
 ---
@@ -197,7 +199,7 @@ flowchart TD
 | 모듈 | 1차(즉시) | 2차(LIVE) | contentId 없을 때 |
 |------|-----------|-----------|-------------------|
 | top10 | rank·name·region·blurb·hub | Tour type12 detail(있으면) | SSOT만 · 「Tour 상세 없음」한 줄 |
-| scenic | name·region·blurb·hub | 동일 | SSOT만 · overrides에 contentId 보강은 별 세션 |
+| scenic | name·region·blurb·hub | 동일 | SSOT만 · **contentId 보강 = #16** (§S11.1) |
 | regions | name·kind·hub·nameEn | hub attraction에 contentId 있으면 LIVE · 없으면 SSOT/hub 필드만 | 대량 searchKeyword **금지** |
 | courses | (기존) | type25 detail | 유지 |
 
@@ -523,7 +525,7 @@ Helmet·sitemap·/qa/korea-theme. releaseNotes 파일 수정 금지.
 | **산출** | `ThemeSpotDetailModal` · attraction detail fetch(type12) · Top10/Scenic/Regions 클릭 연결 · 안내 카피(「장소 카드로」→「눌러 상세」) · smoke 최소 |
 | **VERIFY** | `npm run build` · (가능 시) smoke: contentId 있는 top10 1건 LIVE detail · Preview top10/scenic/regions |
 | **금지** | `/korea` 축제 로직 수정 · Place 1차 복귀 · 라이브 대량 목록 · releaseNotes 무단 · 새 Preview 브랜치 |
-| **후속** | contentId 없는 명승·regions 보강은 별 세션(SSOT만으로도 모달 성립) · 폴리시=#16 |
+| **후속** | 명승 contentId 보강 = **#16** (§S11.1) · 폴리시=#17 |
 
 **구현 순서 (한 세션 #15 권장 · 길면 A→B 분할)**
 
@@ -546,15 +548,75 @@ Place 1차 금지·2차 CTA만. /korea 축제 코드 수정 금지. build PASS �
 
 ---
 
+### S11.1 — 명승 contentId 보강 ⏳ (#16)
+
+**한 줄**: TourAPI에 없는 게 아니라 **scenic overrides의 `contentId`가 비어 있음**. 모달은 runtime `searchKeyword`를 쓰지 않음 → **overrides에 검증된 id를 채운 뒤** generate.
+
+| | |
+|--|--|
+| **환경** | Cloud · `cursor/korea-theme` · PR #58 |
+| **원인** | `ThemeSpotDetailModal` → spot.`contentId`만 LIVE. 34곳 중 14만 채움(20 null) |
+| **정식 경로** | `scripts/data/korea-scenic-spots-overrides.mjs` → `npm run generate:korea-scenic-spots` → `audit:korea-scenic-spots` |
+| **보조 힌트** | `travelSpotTourApi.json`에 이미 있는 id(아래 표) — **복사 후보일 뿐** · 모달 runtime 폴백 추가 **비권장**(이번 세션) |
+| **조회** | Edge `tourapi-proxy` `searchKeyword`(type12) + `detailCommon`으로 title·좌표 확인 후 overrides 기입 |
+| **금지** | 목록 UI에서 대량 LIVE 검색 · JSON spots 직접 편집 · `/korea` 축제 수정 · 새 Preview 브랜치 · releaseNotes |
+| **VERIFY** | `generate` · `audit:korea-scenic-spots` · `smoke:korea-theme-spot-modal` · `npm run build` · Preview `/scenic` 경복궁 등 |
+| **후속** | (여유 시) top10 null 5곳 동일 패턴 · regions는 hub에 contentId 없음 → 별도 · 폴리시=#17 |
+
+**contentId null 명승 20 (2026-08-04 tip)**
+
+| id | name | hub | travelSpotTourApi 힌트 |
+|----|------|-----|------------------------|
+| gyeongbokgung | 경복궁 | seoul | **126508** |
+| changdeokgung | 창덕궁 | seoul | — (searchKeyword 노이즈↑ · detailCommon으로 확정) |
+| suwon-hwaseong | 수원화성 | suwon | — |
+| namhansanseong | 남한산성 | seongnam | attractionName=`성남 남한산성` |
+| nami-island | 남이섬 | chuncheon | **128019** (`namiseom`) |
+| gyeongpodae | 경포대 | gangneung | **125790** |
+| jeongdongjin | 정동진 | gangneung | — |
+| naksansa | 낙산사 | sokcho | — |
+| jeonju-hanok | 전주한옥마을 | jeonju | — (키워드 노이즈↑) |
+| juknokwon | 죽녹원 | damyang | — |
+| naganeupseong | 낙안읍성 | suncheon | attraction=`낙안읍성민속마을` |
+| chaeseokgang | 채석강 | buan | — |
+| maisan | 마이산 | jinan | — |
+| cheomseongdae | 첨성대 | gyeongju | LIVE 후보 **126207** (확정 전 detailCommon) |
+| haeinsa | 해인사 | hapcheon | — (식당 노이즈↑ · 본사/사찰 고르기) |
+| hahoe-village | 안동 하회마을 | andong | — |
+| taejongdae | 태종대 | busan | — |
+| dodamsambong | 도담삼봉 | danyang | — |
+| taean-coast | 태안해안국립공원 | taean | — |
+| cheonjiyeon | 천지연폭포 | seogwipo | LIVE 후보 **126438** |
+
+**절차 (에이전트)**
+
+1. 위 표 순으로 `searchKeyword` → 후보 중 **관광지 type12·제목 일치·좌표≈hub** 고르기 · 애매하면 skip(null 유지)  
+2. `detailCommon` 1회로 title 확인  
+3. overrides `contentId` 기입 → `generate:korea-scenic-spots` → audit  
+4. (선택) top10 null: 순천만·주상절리·내장산·보성녹차·통영 한려 — 같은 패턴  
+5. Preview `/korea/theme/scenic` 경복궁·남이섬 모달 LIVE · 작업로그 · push
+
+**채팅명**: `테마여행 #16, 명승 contentId 보강`  
+**첫 메시지**
+
+```
+테마여행 #16, 명승 contentId 보강
+@plans/korea-theme-travel-plan.md S11.1만
+브랜치 cursor/korea-theme. scenic overrides contentId 20곳 검증·채움.
+runtime searchKeyword 금지 · generate→audit→smoke→build 후 push.
+```
+
+---
+
 ### S9 — 폴리시 · QA · 릴리스 ⏳
 
 사람 Preview OK → releaseNotes **초안만 제안** → 합의 후 반영 · main 병합.
 
-**채팅명**: `테마여행 #16, 폴리시·릴리스`  
+**채팅명**: `테마여행 #17, 폴리시·릴리스`  
 **첫 메시지**
 
 ```
-테마여행 #16, 폴리시·릴리스
+테마여행 #17, 폴리시·릴리스
 @plans/korea-theme-travel-plan.md S9·§7만
 Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일 금지).
 ```

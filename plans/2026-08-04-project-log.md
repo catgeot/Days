@@ -2,6 +2,21 @@
 
 직전: [`2026-08-03-project-log.md`](./2026-08-03-project-log.md)
 
+## 테마여행 #15, 명승 contentId 핸드오프
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · 플랜·일지만 · Preview 불변
+
+- **이슈**: 명승 모달「Tour 상세 없음」= API 부재가 아니라 **scenic overrides `contentId` null**(20/34)
+- **한 일**: 플랜 **§S11.1** + 채팅명표 **#16 보강 / #17 폴리시** · null 20곳 표·절차·가드 잠금
+- **다음 세션 읽을 것**: 플랜 S11.1만 · overrides `korea-scenic-spots-overrides.mjs` · (힌트) `travelSpotTourApi.json`
+- **금지 3**: runtime 대량 searchKeyword · JSON spots 직접 편집 · `/korea` 축제 수정
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+
+```
+테마여행 #16, 명승 contentId 보강
+```
+
 ## 테마여행 #15, 테마 상세 모달
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `35d1df8b` · Preview QA 대기
@@ -11,10 +26,10 @@
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/top10`
 - **QA**: top10 한라산→모달·Tour 개요 · contentId 없는 항목은 SSOT만 · scenic/regions 동일 · 「장소 카드 보기」→place→테마 복귀 · Esc/닫기
-- **다음**: 폴리시·릴리스
+- **다음**: 명승 contentId 보강(#16) → 폴리시(#17)
 
 ```
-테마여행 #16, 폴리시·릴리스
+테마여행 #16, 명승 contentId 보강
 ```
 
 ## 테마여행 #14, 테마 상세 페이지 (플랜)
