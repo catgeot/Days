@@ -39,8 +39,17 @@ const data = JSON.parse(readFileSync(JSON_PATH, 'utf8'));
 const spots = data.spots || [];
 const byId = new Map(spots.map((s) => [s.id, s]));
 
-assert(spots.length >= 12 && spots.length <= 24, `count 12–24 (got ${spots.length})`);
+assert(spots.length >= 12 && spots.length <= 40, `count 12–40 (got ${spots.length})`);
 assert(data.meta?.curation === 'GATEO', 'GATEO curation label');
+
+const NEW_SAMPLES = ['bukchon', 'gamcheon', 'seokguram', 'seonginbong'];
+for (const id of NEW_SAMPLES) {
+  const spot = byId.get(id);
+  assert(Boolean(spot), `expanded sample present: ${id}`);
+  if (spot?.contentId) {
+    assert(/^\d+$/.test(String(spot.contentId)), `${id} contentId digits`);
+  }
+}
 
 for (const id of SAMPLE_IDS) {
   const spot = byId.get(id);

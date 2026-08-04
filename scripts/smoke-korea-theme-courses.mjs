@@ -1,0 +1,92 @@
+/**
+ * 테마여행 여행코스 모듈 스모크 — 라우트 SSOT + (옵션) TourAPI LIVE.
+ *
+ *   npm run smoke:korea-theme-courses
+ *   TOURAPI_SMOKE_LIVE=1 npm run smoke:korea-theme-courses
+ */
+import { readFileSync } from 'fs';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const root = join(__dirname, '..');
+
+let failed = 0;
+function assert(cond, msg) {
+  if (!cond) {
+    failed += 1;
+    console.error(`FAIL  ${msg}`);
+    return false;
+  }
+  console.log(`OK    ${msg}`);
+  return true;
+}
+
+function mainOffline() {
+  const modules = JSON.parse(
+    readFileSync(join(root, 'src/pages/Home/data/koreaThemeModules.json'), 'utf8'),
+  );
+  const courses = (modules.modules || []).find((m) => m.id === 'courses');
+  assert(Boolean(courses), 'modules include courses');
+  assert(courses?.path === '/korea/theme/courses', 'courses path');
+  assert(courses?.enabled === true, 'courses enabled');
+  assert(courses?.icon === 'route', 'courses icon route');
+
+  const appSrc = readFileSync(join(root, 'src/App.jsx'), 'utf8');
+  assert(appSrc.includes('/korea/theme/courses'), 'App route courses');
+  assert(appSrc.includes('KoreaThemeCoursesPage'), 'App imports CoursesPage');
+
+  const returnTo = readFileSync(
+    join(root, 'src/pages/Home/lib/placeReturnTo.js'),
+    'utf8',
+  );
+  assert(returnTo.includes("'/korea/theme/courses'"), 'placeReturnTo allows courses');
+
+  const fetchSrc = readFileSync(join(root, 'src/utils/fetchTourApiCourses.js'), 'utf8');
+  assert(fetchSrc.includes("contentTypeId: COURSE_CONTENT_TYPE_ID"), 'fetch uses type 25');
+  assert(fetchSrc.includes("'25'"), 'COURSE_CONTENT_TYPE_ID 25');
+}
+
+async function mainLive() {
+  const url = (process.env.VITE_SUPABASE_URL || '').trim();
+  const anon = (process.env.VITE_SUPABASE_ANON_KEY || '').trim();
+  if (!url || !anon) {
+    assert(false, 'LIVE needs VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY');
+    return;
+  }
+  const res = await fetch(`${url.replace(/\/$/, '')}/functions/v1/tourapi-proxy`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${anon}`,
+      apikey: anon,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      action: 'areaBasedList',
+      areaCode: '32',
+      contentTypeId: '25',
+      numOfRows: 5,
+      pageNo: 1,
+    }),
+  });
+  assert(res.status === 200, `LIVE HTTP ${res.status}`);
+  const data = await res.json();
+  assert(data?.ok === true, `LIVE ok (${data?.message || data?.error || '-'})`);
+  assert((data?.items?.length || 0) >= 1, `LIVE gangwon courses ≥1 (raw=${data?.rawCount})`);
+  const hit = data.items[0];
+  assert(Boolean(hit?.contentId), `LIVE contentId (${hit?.title || '-'})`);
+  assert(String(hit?.contentTypeId) === '25', 'LIVE contentTypeId 25');
+}
+
+mainOffline();
+if (process.env.TOURAPI_SMOKE_LIVE === '1') {
+  await mainLive();
+} else {
+  console.log('(LIVE skipped — set TOURAPI_SMOKE_LIVE=1)');
+}
+
+if (failed) {
+  console.error(`\n${failed} smoke assertion(s) failed`);
+  process.exit(1);
+}
+console.log('\nkorea-theme-courses SMOKE OK');

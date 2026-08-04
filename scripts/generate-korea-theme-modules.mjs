@@ -11,8 +11,22 @@ import { KOREA_THEME_MODULE_OVERRIDES } from './data/korea-theme-modules-overrid
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUTPUT_PATH = join(__dirname, '../src/pages/Home/data/koreaThemeModules.json');
 
-const ALLOWED_IDS = new Set(['festivals', 'top10', 'scenic', 'regions', 'packages']);
-const ALLOWED_ICONS = new Set(['calendar', 'mountain', 'landmark', 'map', 'package']);
+const ALLOWED_IDS = new Set([
+  'festivals',
+  'top10',
+  'scenic',
+  'courses',
+  'regions',
+  'packages',
+]);
+const ALLOWED_ICONS = new Set([
+  'calendar',
+  'mountain',
+  'landmark',
+  'route',
+  'map',
+  'package',
+]);
 
 /** @param {typeof KOREA_THEME_MODULE_OVERRIDES} src */
 function normalizeModules(src) {

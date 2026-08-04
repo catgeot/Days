@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-03T18:10:31.701Z",
-    "moduleCount": 5,
+    "generatedAt": "2026-08-04T03:59:18.018Z",
+    "moduleCount": 6,
     "source": "scripts/data/korea-theme-modules-overrides.mjs"
   },
   "modules": [
@@ -32,6 +32,15 @@
       "enabled": true,
       "path": "/korea/theme/scenic",
       "icon": "landmark"
+    },
+    {
+      "id": "courses",
+      "label": "여행코스",
+      "blurb": "TourAPI 지역별 추천 코스·구간",
+      "order": 35,
+      "enabled": true,
+      "path": "/korea/theme/courses",
+      "icon": "route"
     },
     {
       "id": "regions",

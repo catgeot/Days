@@ -10,8 +10,22 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const JSON_PATH = join(__dirname, '../src/pages/Home/data/koreaThemeModules.json');
 
-const REQUIRED_IDS = ['festivals', 'top10', 'scenic', 'regions', 'packages'];
-const ALLOWED_ICONS = new Set(['calendar', 'mountain', 'landmark', 'map', 'package']);
+const REQUIRED_IDS = [
+  'festivals',
+  'top10',
+  'scenic',
+  'courses',
+  'regions',
+  'packages',
+];
+const ALLOWED_ICONS = new Set([
+  'calendar',
+  'mountain',
+  'landmark',
+  'route',
+  'map',
+  'package',
+]);
 
 let failed = 0;
 function assert(cond, msg) {

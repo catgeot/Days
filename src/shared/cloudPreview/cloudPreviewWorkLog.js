@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 10,
-  sessionPhase: 'SEO·QA링크',
+  sessionNo: 12,
+  sessionPhase: '여행코스·명승확장',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-04-korea-theme-courses-scenic',
+    session: '테마여행 #12, 여행코스·명승확장',
+    title: '여행코스 모듈 + 명승 34곳',
+    detail:
+      'TourAPI contentType 25 여행코스 페이지(/korea/theme/courses)를 넣었습니다. 시도 칩→코스 목록→개요·구간 펼침입니다. 명승지는 TourAPI 키워드(12) 검증으로 14곳을 더해 34곳입니다. 테마 랜딩에 「여행코스」 타일·명승 목록·강원 등 코스 시도를 확인해 주세요.',
+    at: '2026-08-04',
+  },
   {
     id: '2026-08-03-korea-theme-seo-qa',
     session: '테마여행 #10, SEO·QA링크',

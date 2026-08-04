@@ -190,6 +190,20 @@ function normalizeItem(
   const infotext = pickStr(item, "infotext", "infoText");
   const serialnum = pickStr(item, "serialnum", "serialNum");
   const fldgubun = pickStr(item, "fldgubun", "fldGubun");
+  const subnum = pickStr(item, "subnum", "subNum");
+  const subcontentid = pickStr(item, "subcontentid", "subContentId");
+  const subname = pickStr(item, "subname", "subName");
+  const subdetailoverview = pickStr(
+    item,
+    "subdetailoverview",
+    "subDetailOverview",
+  );
+  const subdetailimg = pickStr(item, "subdetailimg", "subDetailImg");
+  const subdetailalt = pickStr(item, "subdetailalt", "subDetailAlt");
+  const distance = pickStr(item, "distance");
+  const schedule = pickStr(item, "schedule");
+  const taketime = pickStr(item, "taketime", "takeTime");
+  const theme = pickStr(item, "theme");
 
   const out: Record<string, unknown> = {};
   if (contentId) out.contentId = contentId;
@@ -235,6 +249,16 @@ function normalizeItem(
   if (infotext) out.infotext = infotext;
   if (serialnum) out.serialnum = serialnum;
   if (fldgubun) out.fldgubun = fldgubun;
+  if (subnum) out.subnum = subnum;
+  if (subcontentid) out.subcontentid = subcontentid;
+  if (subname) out.subname = subname;
+  if (subdetailoverview) out.subdetailoverview = subdetailoverview;
+  if (subdetailimg) out.subdetailimg = subdetailimg;
+  if (subdetailalt) out.subdetailalt = subdetailalt;
+  if (distance) out.distance = distance;
+  if (schedule) out.schedule = schedule;
+  if (taketime) out.taketime = taketime;
+  if (theme) out.theme = theme;
 
   if (action === "searchPhoto") {
     const imageUrl = galWebImageUrl || firstimage;

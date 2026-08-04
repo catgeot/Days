@@ -46,6 +46,15 @@ export const KOREA_THEME_MODULE_OVERRIDES = {
       icon: 'landmark',
     },
     {
+      id: 'courses',
+      label: '여행코스',
+      blurb: 'TourAPI 지역별 추천 코스·구간',
+      order: 35,
+      enabled: true,
+      path: '/korea/theme/courses',
+      icon: 'route',
+    },
+    {
       id: 'regions',
       label: '방방곡곡',
       blurb: '시도·도시 허브로 이어가는 국내 여행',

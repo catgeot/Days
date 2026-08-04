@@ -33,6 +33,7 @@
     "audit:korea-scenic-spots": "node scripts/audit-korea-scenic-spots.mjs",
     "smoke:korea-scenic-spots": "node scripts/smoke-korea-scenic-spots.mjs",
     "smoke:korea-theme-regions": "node scripts/smoke-korea-theme-regions.mjs",
+    "smoke:korea-theme-courses": "node scripts/smoke-korea-theme-courses.mjs",
     "smoke:korea-festival-personal": "node scripts/smoke-korea-festival-personal.mjs",
     "generate:tourapi": "node scripts/generate-travel-spot-tourapi.mjs",
     "audit:tourapi": "node scripts/audit-tourapi-content-ids.mjs",

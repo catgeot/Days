@@ -24,7 +24,9 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 8 | S6 | `테마여행 #8, 패키지` | ✅ Preview QA |
 | 9 | S7 | `테마여행 #9, 축제 연결` | ⏳ Preview QA |
 | 10 | S8 | `테마여행 #10, SEO·QA링크` | ✅ Preview QA |
-| 11 | S9 | `테마여행 #11, 폴리시·릴리스` | ⏳ |
+| 11 | (리서치) | `테마여행 #11, 투어 API` | ✅ |
+| 12 | S10 | `테마여행 #12, 여행코스·명승확장` | ⏳ Preview QA |
+| 13 | S9 | `테마여행 #13, 폴리시·릴리스` | ⏳ |
 
 이어하기·핫픽스만 할 때: `테마여행 #N, {짧은 수정}` (`N` = 그 주제의 **다음** 순번). 세션마다 새 `#1` 금지.
 
@@ -40,7 +42,9 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **S5** 방방곡곡 페이지 | ✅ Preview QA | 시도·hub → `/korea/theme/regions` | S6 |
 | **S6** 패키지 페이지 | ✅ Preview QA | MRT CTA(제주·홈·경주) → `/korea/theme/packages` | S7 |
 | **S7** 축제 연결 다듬기 | ⏳ Preview QA | `/korea?from=theme` · 복귀 한 줄 | S8 |
-| **S8** SEO·sitemap·QA | ✅ Preview QA | Helmet·sitemap·`/qa/korea-theme` | S9 |
+| **S8** SEO·sitemap·QA | ✅ Preview QA | Helmet·sitemap·`/qa/korea-theme` | S10 |
+| **#11** TourAPI 리서치 | ✅ | type 25 코스·12 검증 가능 확인 | S10 |
+| **S10** 여행코스·명승 확장 | ⏳ Preview QA | `/korea/theme/courses` · 명승 34 | S9 |
 | **S9** 폴리시·릴리스 | ⏳ | 사람 QA → releaseNotes 1회 제안 | main 병합 |
 
 ---
@@ -88,6 +92,7 @@ flowchart TD
 | **`/korea/theme`** | 테마여행 **랜딩**(모듈 타일) |
 | **`/korea/theme/top10`** | 한국의 10대 절경 |
 | **`/korea/theme/scenic`** | 한국의 명승지 |
+| **`/korea/theme/courses`** | 여행코스 (TourAPI 25) |
 | **`/korea/theme/regions`** | 방방곡곡 |
 | **`/korea/theme/packages`** | 패키지 상품 |
 | **`/korea`** | 한국의 축제 (기존 · **경로 유지**) |
@@ -105,17 +110,18 @@ flowchart TD
 
 - 각 테마는 **페이지 수준** (`/korea/theme/...`). 랜딩은 타일만.
 - **타일 노출 순서**는 SSOT `order` 필드로 관리 → **나중에 자유롭게 재정렬**(S0에서 최종 순서 고정 안 함).
-- S2 초기 시드 `order`(임시, 변경 OK): `festivals` 10 · `top10` 20 · `scenic` 30 · `regions` 40 · `packages` 50.
+- 시드 `order`(임시, 변경 OK): `festivals` 10 · `top10` 20 · `scenic` 30 · `courses` 35 · `regions` 40 · `packages` 50.
 
 | id | 라벨 | 경로 | 데이터 |
 |----|------|------|--------|
 | `festivals` | 한국의 축제 | → `/korea` | 기존 TourAPI·축제 허브 |
 | `top10` | 한국의 10대 절경 | `/korea/theme/top10` | curated SSOT · 조사+TourAPI 검증 |
-| `scenic` | 한국의 명승지 | `/korea/theme/scenic` | curated + KR hub |
+| `scenic` | 한국의 명승지 | `/korea/theme/scenic` | curated + KR hub · TourAPI 12 키워드 검증 후 확장 |
+| `courses` | 여행코스 | `/korea/theme/courses` | TourAPI `areaBasedList` contentTypeId=**25** 라이브 |
 | `regions` | 방방곡곡 | `/korea/theme/regions` | areaCode + KR hub≈210 |
 | `packages` | 패키지 상품 | `/korea/theme/packages` | MRT `/pkc` 딥링크 |
 
-**2차 후보 (S9 이후 · 지금 구현 금지)**: 계절·미식·트레킹·섬·온천·세계유산·축제로드 · TourAPI 12번 라이브 대량 목록.
+**2차 후보 (S9 이후)**: 계절·미식·트레킹·섬·온천·세계유산·축제로드 · TourAPI 12번 **라이브 대량** 목록(명승 curated 확장은 S10에서 허용).
 
 ### 1.5 비범위
 
@@ -158,7 +164,7 @@ flowchart TD
 | `src/pages/Home/data/koreaThemeModules.json` | generate |
 | `scripts/data/korea-top10-scenic-overrides.mjs` | 순위·이름·hubId/attraction·한줄·tour contentId optional |
 | `src/pages/Home/data/koreaTop10Scenic.json` | generate |
-| `scripts/data/korea-scenic-spots-overrides.mjs` | 명승 12~24 |
+| `scripts/data/korea-scenic-spots-overrides.mjs` | 명승 12~40 (S10: 34) |
 | `src/pages/Home/data/koreaScenicSpots.json` | generate |
 | `scripts/data/korea-theme-package-targets-overrides.mjs` (또는 `mrtPackageThemeLinks` 확장) | 국내 MRT CTA |
 | `src/pages/KoreaTheme/` | 랜딩 + 모듈 페이지 |
@@ -410,15 +416,28 @@ Helmet·sitemap·/qa/korea-theme. releaseNotes 파일 수정 금지.
 
 ---
 
+### S10 — 여행코스 · 명승 확장 ⏳ Preview QA
+
+| | |
+|--|--|
+| **산출** | 모듈 `courses` · `/korea/theme/courses` (TourAPI 25 라이브) · 명승 curated 34 · proxy 코스 필드 · smoke |
+| **VERIFY** | `audit:korea-theme-modules` · `audit/smoke:korea-scenic-spots` · `smoke:korea-theme-courses`(+LIVE) · build |
+| **주의** | 서울·제주 type25 등록 수 적음 · Edge proxy 코스 필드 배포됨(2026-08-04) |
+| **금지** | 축제 `/korea` 로직 수정 · 12번 라이브 대량 목록 UI · releaseNotes 무단 반영 |
+
+**채팅명**: `테마여행 #12, 여행코스·명승확장`
+
+---
+
 ### S9 — 폴리시 · QA · 릴리스 ⏳
 
 사람 Preview OK → releaseNotes **초안만 제안** → 합의 후 반영 · main 병합.
 
-**채팅명**: `테마여행 #11, 폴리시·릴리스`  
+**채팅명**: `테마여행 #13, 폴리시·릴리스`  
 **첫 메시지**
 
 ```
-테마여행 #11, 폴리시·릴리스
+테마여행 #13, 폴리시·릴리스
 @plans/korea-theme-travel-plan.md S9·§7만
 Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일 금지).
 ```
@@ -444,7 +463,7 @@ Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일
 - [ ] `/korea/theme`에서 모듈 타일 → 각 테마 페이지(또는 축제 `/korea`) 진입
 - [ ] `/korea` 축제 회귀 없음
 - [x] 10대 10곳 → place → 테마 복귀 (`#6` navigate(returnTo) · Preview QA)
-- [ ] 명승 ≥12 · 방방곡곡 시도→hub→place
+- [ ] 명승 ≥12 (목표 30+) · 여행코스 type25 · 방방곡곡 시도→hub→place
 - [ ] 패키지 MRT(제주 등) + mylink
 - [x] `/qa/korea-theme` · 고정 Preview (S1·S8 최종 · sitemap/Helmet)
 - [ ] audit/smoke/build PASS · 키 미노출

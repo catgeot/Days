@@ -4,6 +4,7 @@ const ALLOWED = new Set([
   '/korea/theme',
   '/korea/theme/top10',
   '/korea/theme/scenic',
+  '/korea/theme/courses',
   '/korea/theme/regions',
   '/korea/theme/packages',
 ]);

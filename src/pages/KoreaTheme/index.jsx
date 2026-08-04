@@ -8,6 +8,7 @@ import {
   Map,
   Mountain,
   Package,
+  Route,
 } from 'lucide-react';
 import SEO from '../../components/SEO';
 import { listKoreaThemeModules } from '../Home/lib/koreaThemeModules';
@@ -16,6 +17,7 @@ const MODULE_ICONS = {
   calendar: CalendarDays,
   mountain: Mountain,
   landmark: Landmark,
+  route: Route,
   map: Map,
   package: Package,
 };
@@ -29,7 +31,7 @@ export default function KoreaThemeLanding() {
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
       <SEO
         title="한국의 테마여행"
-        description="축제·절경·명승·지역·패키지 등 한국 테마여행 디렉터리. GATEO에서 테마별로 이어갑니다."
+        description="축제·절경·명승·여행코스·지역·패키지 등 한국 테마여행 디렉터리. GATEO에서 테마별로 이어갑니다."
         url="/korea/theme"
       />
 
