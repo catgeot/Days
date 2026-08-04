@@ -4,11 +4,11 @@
 
 ## 테마여행 #18, 테마 연결
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA(전략·매처 · UI는 #19)
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `d113fae8` · Preview QA(전략·매처 · UI는 #19)
 
 - **한 일**: 플랜 **§2.5·S12** 잠금 · `koreaThemeCrossLinks.js`(멤버십·sameHub·nearby·stay/tna·package·deep-link) · `smoke:korea-theme-cross-links` · 채팅명표 #18 전략/#19 레일/#20 폴리시
 - **조인키**: hubId+placeSlug > hubId > areaCode > lat/lng · 권역 라벨은 폴백만
-- **VERIFY**: `npm run smoke:korea-theme-cross-links` · `npm run build`
+- **VERIFY**: `npm run smoke:korea-theme-cross-links` · `npm run build` PASS
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/top10`
 - **QA**: Preview UI 변화 없음(레일은 #19) · 전략 문서 §2.5 · smoke PASS
