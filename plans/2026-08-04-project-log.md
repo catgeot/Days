@@ -4,7 +4,7 @@
 
 ## 테마여행 #14, 모달 전면·하단 버튼
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `9df5f2cd` · Preview QA 대기
 
 - **요청**: 모바일 전면 활용 · 사방 패딩으로 뒤 목록 인지 · 하단 닫기·위로
 - **한 일**: 모달 `h-full` + 사방 ~10px/safe-area 패딩 · 하단 「위로」「닫기」 · 상단 X 유지
