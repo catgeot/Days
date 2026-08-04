@@ -4,7 +4,7 @@
 
 ## 테마여행 #14, 코스 소개 문구
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `fb804dde` · Preview QA 대기
 
 - **한 일**: `/korea/theme/courses` 안내를 「한국관광공사 공개 여행코스입니다.」로 간략화
 - **VERIFY**: `npm run build`
