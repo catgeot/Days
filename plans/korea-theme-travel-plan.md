@@ -27,7 +27,9 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 11 | (리서치) | `테마여행 #11, 투어 API` | ✅ |
 | 12 | S10 | `테마여행 #12, 여행코스·명승확장` | ⏳ Preview QA |
 | 13 | (보강) | `테마여행 #13, 여행코스 보강` | ⏳ Preview QA |
-| 14 | S9 | `테마여행 #14, 폴리시·릴리스` | ⏳ |
+| 14 | (코스 모달·칩) | `테마여행 #14, 코스 상세 모달` 등 | ✅ Preview QA |
+| 15 | S11 | `테마여행 #15, 테마 상세 모달` | ⏳ 다음 (플랜 잠금) |
+| 16 | S9 | `테마여행 #16, 폴리시·릴리스` | ⏳ |
 
 이어하기·핫픽스만 할 때: `테마여행 #N, {짧은 수정}` (`N` = 그 주제의 **다음** 순번). 세션마다 새 `#1` 금지.
 
@@ -46,7 +48,8 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **S8** SEO·sitemap·QA | ✅ Preview QA | Helmet·sitemap·`/qa/korea-theme` | S10 |
 | **#11** TourAPI 리서치 | ✅ | type 25 코스·12 검증 가능 확인 | S10 |
 | **S10** 여행코스·명승 확장 | ⏳ Preview QA | `/korea/theme/courses` · 명승 34 | #13 코스 보강 |
-| **#13** 여행코스 사진 보강 | ⏳ Preview QA | 대표·구간 사진·갤러리 (동영상 API 없음) | S9 |
+| **#13~#14** 코스 사진·모달·칩 | ✅ Preview QA | 목록↔모달 분리 · 0건 칩 숨김 | S11 |
+| **S11** 테마 상세 모달 | ⏳ 플랜 | top10·scenic·regions 클릭→모달(축제/코스 벤치) | S9 |
 | **S9** 폴리시·릴리스 | ⏳ | 사람 QA → releaseNotes 1회 제안 | main 병합 |
 
 ---
@@ -75,7 +78,9 @@ flowchart TD
   S5 --> S6[S6_packages]
   S6 --> S7[S7_festival_link]
   S7 --> S8[S8_SEO]
-  S8 --> S9[S9_QA]
+  S8 --> S10[S10_courses]
+  S10 --> S11[S11_theme_modal]
+  S11 --> S9[S9_QA]
 ```
 
 ---
@@ -147,12 +152,77 @@ flowchart TD
 ### 2.2 테마 페이지 공통
 
 - 뒤로 → `/korea/theme`
-- place 이동 시 `setPlaceReturnTo('/korea/theme/…')` (해당 모듈 path)
+- **목록 1차 클릭 = 상세 모달**(S11) — 지구본·`/place` 직행 금지(1차 CTA)
+- place는 모달 안 **2차 CTA**만 (`setPlaceReturnTo` + `navigate`) — 예약·갤러리 등 PlaceCard가 필요할 때
 - 모바일 1열 / PC는 기존 패턴
 
 ### 2.3 홈
 
 - `placeReturnTo` ALLOWED에 `/korea/theme` 및 모듈 path 추가(또는 prefix 허용 검토 — **최소는 exact path 목록**).
+
+### 2.4 테마 상세 모달 (S11 · 제품 피벗) ✅ 방향 잠금 2026-08-04
+
+**한 줄**: 여행코스(`CourseDetailModal`)·축제(`FestivalDetailSheet`)처럼, **테마 목록에서 항목을 누르면 모달 본문에 기본 정보를 모두 나열**한다. 목록 스크롤이 place/지구본으로 끊기지 않게 한다.
+
+| | 현재 (변경 전) | 목표 (S11) |
+|--|----------------|------------|
+| **10대 절경** `/top10` | 행 클릭 → `/place/:slug` | 행 클릭 → **모달** (SSOT+Tour type12) |
+| **명승지** `/scenic` | 행 클릭 → `/place/:slug` | 행 클릭 → **모달** |
+| **방방곡곡** `/regions` | 시도 칩=필터 · 명소 행 → `/place` | 칩=필터 유지 · 명소 행 → **모달** |
+| **여행코스** `/courses` | 이미 모달 (#14) | **유지** · 크롬 패턴 재사용 |
+| **패키지·축제** | 외부/기존 | 비범위 |
+
+**벤치마크 (복사·리팩터 금지 · 패턴만)**
+
+| 참조 | 가져올 것 | 가져오지 말 것 |
+|------|-----------|----------------|
+| `FestivalDetailSheet` | 모달 본문에 개요·주소·전화·이용·홈페이지·사진 나열 · Esc/배경 닫기 · 위로 | 축제 탭/즐겨찾기/동영상/지도 로직 이식 · `/korea` 코드 수정 |
+| `CoursesPage` `CourseDetailModal` | 전면 모달 크롬(사방 패딩·상단 X·하단 위로/닫기) · 목록↔상세 분리 | type25 구간(ol) 강제 · accordion 부활 |
+
+**모달 본문 필드 (명소·명승 공통 · type12 기준)**
+
+| 구역 | 출처 | 비고 |
+|------|------|------|
+| 제목 · 권역/시도 | SSOT / hub | 즉시 표시 |
+| GATEO 한 줄(blurb) | SSOT | contentId 없어도 표시 |
+| 히어로·갤러리 | Tour `detailCommon`/`detailImage` · 없으면 플레이스홀더 | https 정규화 |
+| 개요 | `detailCommon.overview` | stripHtml |
+| 주소 · 전화 · 홈페이지 | common | 전화 `tel:` · 홈페이지 새 탭 |
+| 이용·휴무·주차 등 | `detailIntro`(contentTypeId **12**) | 빈 필드 숨김 |
+| 부가 설명 | `detailInfo` 행 | 중복 개요 스킵(축제와 동일 휴리스틱 OK) |
+| **장소 카드 보기**(2차) | `placeSlug` 있을 때만 | `returnTo` = 현재 모듈 path |
+
+**데이터 전략**
+
+| 모듈 | 1차(즉시) | 2차(LIVE) | contentId 없을 때 |
+|------|-----------|-----------|-------------------|
+| top10 | rank·name·region·blurb·hub | Tour type12 detail(있으면) | SSOT만 · 「Tour 상세 없음」한 줄 |
+| scenic | name·region·blurb·hub | 동일 | SSOT만 · overrides에 contentId 보강은 별 세션 |
+| regions | name·kind·hub·nameEn | hub attraction에 contentId 있으면 LIVE · 없으면 SSOT/hub 필드만 | 대량 searchKeyword **금지** |
+| courses | (기존) | type25 detail | 유지 |
+
+**공유 컴포넌트 (안)**
+
+- `src/pages/KoreaTheme/ThemeSpotDetailModal.jsx` — 크롬은 Courses 모달과 동일 계열
+- `src/utils/fetchTourApiAttractionDetail.js` (또는 courses 파일 옆) — `detailCommon`+`detailIntro(12)`+`detailInfo`+`detailImage` 병렬 · 축제 `festivalDetail` 액션 **재사용 가능하면** 읽기만, `/korea` UI 수정 금지
+- top10/scenic/regions는 `selectedId` + open/close만 · Place 직행 `openSpot` 제거(1차)
+
+**가드**
+
+- 지구본 홈·`navigate('/')`를 목록 클릭에 연결 **금지**
+- PlaceCard 1차 진입 **금지** (2차 CTA만)
+- `FestivalDetailSheet`·축제 칩/지도 **리팩터 금지**
+- Tour 키 `VITE_` 금지 · 라이브 대량 목록 UI 금지
+- UI 임의 리디자인 금지 — 기존 stone/amber 톤·코스 모달 크롬 유지
+- `#6` returnTo 가드는 **2차 CTA**용으로 유지
+
+```mermaid
+flowchart LR
+  list[Theme_list_row] --> modal[ThemeSpotDetailModal]
+  modal -->|optional_CTA| place[PlaceCard]
+  modal -->|close| list
+  courses[Courses_row] --> courseModal[CourseDetailModal]
+```
 
 ---
 
@@ -316,7 +386,7 @@ modules+타일+order. 축제=/korea. 다른 테마는 빈 페이지 라우트만
 | **VERIFY** | `audit:korea-top10-scenic` · `smoke:korea-top10-scenic` · build · Preview |
 | **금지** | 공식기관 사칭 · 축제 코드 수정 · 11개+ |
 | **확정 10** | 한라산국립공원 · 성산일출봉 · 설악산(권금성) · 순천만습지 · 주상절리대 · 해운대·광안 · 불국사·석굴암 · 내장산국립공원 · 보성녹차밭 · 통영·한려(케이블카) |
-| **후속** | PlaceCard←목록 복귀 → `#6`에서 `navigate(returnTo)` 핫픽스 · 절경 전용 상세 **비범위** |
+| **후속** | PlaceCard←목록 복귀 → `#6` · **상세 모달은 S11로 피벗**(§2.4) |
 
 **채팅명**: `테마여행 #4, 10대 절경`  
 **첫 메시지**
@@ -347,7 +417,7 @@ modules+타일+order. 축제=/korea. 다른 테마는 빈 페이지 라우트만
 | **산출** | PlaceChatPanel·`leavePlaceCard` → `navigate(returnTo)` · `isKoreaPlaceReturnPath` 가드 |
 | **원인** | 테마→place 직후 `prevPath` 미기록 시 `.startsWith` TypeError로 뒤로 버튼 실패 |
 | **VERIFY** | `npm run build` · Preview top10/scenic→place→뒤로 |
-| **금지** | 축제 `/korea` 필터 로직 수정 · 절경 전용 상세 신설 |
+| **금지** | 축제 `/korea` 필터 로직 수정 · (당시) 절경 전용 상세 — **철회 → S11** |
 
 **채팅명**: `테마여행 #6, 뒤로복귀`
 
@@ -444,15 +514,47 @@ Helmet·sitemap·/qa/korea-theme. releaseNotes 파일 수정 금지.
 
 ---
 
+### S11 — 테마 상세 모달 ⏳ 플랜 잠금 (구현 = #15)
+
+| | |
+|--|--|
+| **환경** | Cloud · 고정 `cursor/korea-theme` · PR #58 |
+| **제품** | §2.4 — 목록 1차=모달 · Place=2차 CTA · 축제/코스 벤치 · 지구본 직행 금지 |
+| **산출** | `ThemeSpotDetailModal` · attraction detail fetch(type12) · Top10/Scenic/Regions 클릭 연결 · 안내 카피(「장소 카드로」→「눌러 상세」) · smoke 최소 |
+| **VERIFY** | `npm run build` · (가능 시) smoke: contentId 있는 top10 1건 LIVE detail · Preview top10/scenic/regions |
+| **금지** | `/korea` 축제 로직 수정 · Place 1차 복귀 · 라이브 대량 목록 · releaseNotes 무단 · 새 Preview 브랜치 |
+| **후속** | contentId 없는 명승·regions 보강은 별 세션(SSOT만으로도 모달 성립) · 폴리시=#16 |
+
+**구현 순서 (한 세션 #15 권장 · 길면 A→B 분할)**
+
+| 단계 | 작업 | Done |
+|------|------|------|
+| A | 공유 모달 크롬(코스와 동일) + SSOT 필드만 렌더 | top10 클릭→모달·Esc 닫기 |
+| B | Tour type12 detail fetch + 개요/주소/이용/사진 | contentId 있는 항목 LIVE |
+| C | scenic·regions 동일 연결 · 2차「장소 카드」CTA | place returnTo 유지 |
+| D | 카피·작업로그·smoke · push | Preview QA 링크 |
+
+**채팅명**: `테마여행 #15, 테마 상세 모달`  
+**첫 메시지**
+
+```
+테마여행 #15, 테마 상세 모달
+@plans/korea-theme-travel-plan.md S11·§2.4만
+브랜치 cursor/korea-theme. top10·scenic·regions 목록→모달(축제/코스 벤치).
+Place 1차 금지·2차 CTA만. /korea 축제 코드 수정 금지. build PASS 후 매 턴 push.
+```
+
+---
+
 ### S9 — 폴리시 · QA · 릴리스 ⏳
 
 사람 Preview OK → releaseNotes **초안만 제안** → 합의 후 반영 · main 병합.
 
-**채팅명**: `테마여행 #14, 폴리시·릴리스`  
+**채팅명**: `테마여행 #16, 폴리시·릴리스`  
 **첫 메시지**
 
 ```
-테마여행 #14, 폴리시·릴리스
+테마여행 #16, 폴리시·릴리스
 @plans/korea-theme-travel-plan.md S9·§7만
 Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일 금지).
 ```
@@ -469,7 +571,9 @@ Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일
 | MRT `q=부산` 오해 | 국내 CTA에서 제외 |
 | Preview 난립 | `cursor/korea-theme` 고정 |
 | 축제 feature 충돌 | 브랜치 분리 · path 링크만 |
-| PlaceCard←theme 목록 복귀 | `#6` ✅ `navigate(returnTo)` · 절경 전용 상세 비범위 |
+| PlaceCard←theme 목록 복귀 | `#6` ✅ · **S11 이후 1차는 모달** · place는 2차 CTA+returnTo |
+| contentId 공백 | 모달은 SSOT로 성립 · LIVE는 있을 때만 · 대량 키워드 검색 금지 |
+| 모달 3중 구현 | `ThemeSpotDetailModal` 1개 공유 · Courses 모달은 type25 전용 유지 OK |
 
 ---
 
@@ -477,8 +581,9 @@ Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일
 
 - [ ] `/korea/theme`에서 모듈 타일 → 각 테마 페이지(또는 축제 `/korea`) 진입
 - [ ] `/korea` 축제 회귀 없음
-- [x] 10대 10곳 → place → 테마 복귀 (`#6` navigate(returnTo) · Preview QA)
-- [ ] 명승 ≥12 (목표 30+) · 여행코스 type25 · 방방곡곡 시도→hub→place
+- [x] 10대 10곳 → place → 테마 복귀 (`#6` · 레거시 경로 · Preview QA)
+- [ ] **S11**: top10·scenic·regions 목록 → **상세 모달**(개요·기본정보) · Place는 2차
+- [ ] 명승 ≥12 (목표 30+) · 여행코스 type25 모달 · 방방곡곡 시도 칩→명소 목록
 - [ ] 패키지 MRT(제주 등) + mylink
 - [x] `/qa/korea-theme` · 고정 Preview (S1·S8 최종 · sitemap/Helmet)
 - [ ] audit/smoke/build PASS · 키 미노출
