@@ -4,7 +4,7 @@
 
 ## 테마여행 #14, 코스 상세 모달
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `7bdf3516` · Preview QA 대기
 
 - **요청**: 인라인 펼침으로 목록·본문이 이어져 읽기 피로 → 리스트와 상세 분리
 - **한 일**: `/korea/theme/courses` — 목록 클릭 → 모달(개요·사진·구간) · 닫기/배경/Esc → 목록 복귀 · 인라인 accordion 제거
