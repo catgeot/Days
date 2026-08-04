@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Home, Landmark } from 'lucide-react';
 import SEO from '../../components/SEO';
@@ -7,7 +7,7 @@ import {
   listKoreaScenicRegions,
   listKoreaScenicSpots,
 } from '../Home/lib/koreaScenicSpots';
-import { setPlaceReturnTo } from '../Home/lib/placeReturnTo';
+import ThemeSpotDetailModal from './ThemeSpotDetailModal';
 
 const DISCLAIMER = koreaScenicSpotsDisclaimer();
 const REGIONS = listKoreaScenicRegions();
@@ -16,19 +16,17 @@ const RETURN_TO = '/korea/theme/scenic';
 export default function KoreaThemeScenicPage() {
   const navigate = useNavigate();
   const [region, setRegion] = useState('전체');
+  const [selectedId, setSelectedId] = useState(null);
   const spots = listKoreaScenicSpots(region);
-
-  const openSpot = (placeSlug) => {
-    if (!placeSlug) return;
-    setPlaceReturnTo(RETURN_TO);
-    navigate(`/place/${placeSlug}`, { state: { returnTo: RETURN_TO } });
-  };
+  const selectedSpot =
+    listKoreaScenicSpots().find((s) => s.id === selectedId) || null;
+  const closeModal = useCallback(() => setSelectedId(null), []);
 
   return (
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
       <SEO
         title="한국의 명승지 · 한국의 테마여행"
-        description="GATEO가 고른 한국 명승·풍경. 권역 필터로 궁궐·사찰·해안·마을을 이어갑니다."
+        description="GATEO가 고른 한국 명승·풍경. 권역 필터로 궁궐·사찰·해안·마을 상세를 모달로 봅니다."
         url={RETURN_TO}
       />
 
@@ -83,6 +81,9 @@ export default function KoreaThemeScenicPage() {
               </h2>
             </div>
             <p className="text-sm leading-relaxed text-stone-600 break-keep">{DISCLAIMER}</p>
+            <p className="text-xs text-stone-500 break-keep">
+              항목을 누르면 상세를 봅니다. 장소 카드는 상세에서 이어갈 수 있습니다.
+            </p>
 
             <div
               role="group"
@@ -95,7 +96,10 @@ export default function KoreaThemeScenicPage() {
                   <button
                     key={r}
                     type="button"
-                    onClick={() => setRegion(r)}
+                    onClick={() => {
+                      setRegion(r);
+                      setSelectedId(null);
+                    }}
                     aria-pressed={active}
                     className={
                       active
@@ -114,7 +118,7 @@ export default function KoreaThemeScenicPage() {
                 <li key={spot.id}>
                   <button
                     type="button"
-                    onClick={() => openSpot(spot.placeSlug)}
+                    onClick={() => setSelectedId(spot.id)}
                     className="flex w-full items-start gap-3 rounded-2xl border border-stone-200/90 bg-white px-4 py-3.5 text-left shadow-sm transition-colors hover:border-amber-300/80 hover:bg-amber-50/40"
                   >
                     <span className="min-w-0 flex-1">
@@ -141,6 +145,22 @@ export default function KoreaThemeScenicPage() {
           </section>
         </div>
       </main>
+
+      {selectedSpot ? (
+        <ThemeSpotDetailModal
+          spot={{
+            id: selectedSpot.id,
+            name: selectedSpot.name,
+            subtitle: selectedSpot.region,
+            blurb: selectedSpot.blurb,
+            placeSlug: selectedSpot.placeSlug,
+            contentId: selectedSpot.contentId,
+          }}
+          eyebrow="명승지 상세"
+          returnTo={RETURN_TO}
+          onClose={closeModal}
+        />
+      ) : null}
     </div>
   );
 }

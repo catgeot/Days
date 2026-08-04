@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Home, Mountain } from 'lucide-react';
 import SEO from '../../components/SEO';
@@ -6,7 +6,7 @@ import {
   koreaTop10ScenicDisclaimer,
   listKoreaTop10Scenic,
 } from '../Home/lib/koreaTop10Scenic';
-import { setPlaceReturnTo } from '../Home/lib/placeReturnTo';
+import ThemeSpotDetailModal from './ThemeSpotDetailModal';
 
 const SPOTS = listKoreaTop10Scenic();
 const DISCLAIMER = koreaTop10ScenicDisclaimer();
@@ -14,18 +14,16 @@ const RETURN_TO = '/korea/theme/top10';
 
 export default function KoreaThemeTop10Page() {
   const navigate = useNavigate();
+  const [selectedId, setSelectedId] = useState(null);
 
-  const openSpot = (placeSlug) => {
-    if (!placeSlug) return;
-    setPlaceReturnTo(RETURN_TO);
-    navigate(`/place/${placeSlug}`, { state: { returnTo: RETURN_TO } });
-  };
+  const selectedSpot = SPOTS.find((s) => s.id === selectedId) || null;
+  const closeModal = useCallback(() => setSelectedId(null), []);
 
   return (
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
       <SEO
         title="한국의 10대 절경 · 한국의 테마여행"
-        description="GATEO가 고른 한국 대표 절경 열 곳. 한라산·성산일출봉·설악산·순천만 등 명소로 이어갑니다."
+        description="GATEO가 고른 한국 대표 절경 열 곳. 한라산·성산일출봉·설악산·순천만 등 명소 상세를 모달로 봅니다."
         url={RETURN_TO}
       />
 
@@ -80,13 +78,16 @@ export default function KoreaThemeTop10Page() {
               </h2>
             </div>
             <p className="text-sm leading-relaxed text-stone-600 break-keep">{DISCLAIMER}</p>
+            <p className="text-xs text-stone-500 break-keep">
+              항목을 누르면 상세를 봅니다. 장소 카드는 상세에서 이어갈 수 있습니다.
+            </p>
 
             <ol className="space-y-2">
               {SPOTS.map((spot) => (
                 <li key={spot.id}>
                   <button
                     type="button"
-                    onClick={() => openSpot(spot.placeSlug)}
+                    onClick={() => setSelectedId(spot.id)}
                     className="flex w-full items-start gap-3 rounded-2xl border border-stone-200/90 bg-white px-4 py-3.5 text-left shadow-sm transition-colors hover:border-amber-300/80 hover:bg-amber-50/40"
                   >
                     <span
@@ -115,6 +116,22 @@ export default function KoreaThemeTop10Page() {
           </section>
         </div>
       </main>
+
+      {selectedSpot ? (
+        <ThemeSpotDetailModal
+          spot={{
+            id: selectedSpot.id,
+            name: selectedSpot.name,
+            subtitle: selectedSpot.region,
+            blurb: selectedSpot.blurb,
+            placeSlug: selectedSpot.placeSlug,
+            contentId: selectedSpot.contentId,
+          }}
+          eyebrow="10대 절경 상세"
+          returnTo={RETURN_TO}
+          onClose={closeModal}
+        />
+      ) : null}
     </div>
   );
 }

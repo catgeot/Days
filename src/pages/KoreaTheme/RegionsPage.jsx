@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Home, Map } from 'lucide-react';
 import SEO from '../../components/SEO';
@@ -6,7 +6,7 @@ import {
   listKoreaThemeAreas,
   listKoreaThemeRegionAttractions,
 } from '../Home/lib/koreaThemeRegions';
-import { setPlaceReturnTo } from '../Home/lib/placeReturnTo';
+import ThemeSpotDetailModal from './ThemeSpotDetailModal';
 
 const AREAS = listKoreaThemeAreas();
 const RETURN_TO = '/korea/theme/regions';
@@ -15,21 +15,18 @@ const DEFAULT_AREA = AREAS[0]?.areaCode || '1';
 export default function KoreaThemeRegionsPage() {
   const navigate = useNavigate();
   const [areaCode, setAreaCode] = useState(DEFAULT_AREA);
+  const [selectedId, setSelectedId] = useState(null);
   const attractions = listKoreaThemeRegionAttractions(areaCode);
   const activeArea = AREAS.find((a) => a.areaCode === areaCode);
   const multiHub = new Set(attractions.map((a) => a.hubId)).size > 1;
-
-  const openAttraction = (placeSlug) => {
-    if (!placeSlug) return;
-    setPlaceReturnTo(RETURN_TO);
-    navigate(`/place/${placeSlug}`, { state: { returnTo: RETURN_TO } });
-  };
+  const selectedSpot = attractions.find((s) => s.id === selectedId) || null;
+  const closeModal = useCallback(() => setSelectedId(null), []);
 
   return (
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
       <SEO
         title="방방곡곡 · 한국의 테마여행"
-        description="시도별 큐레이션 명소 목록. 서울·부산·제주 등 지역을 고르면 명소로 이어갑니다."
+        description="시도별 큐레이션 명소 목록. 서울·부산·제주 등 지역을 고르면 명소 상세를 모달로 봅니다."
         url={RETURN_TO}
       />
 
@@ -84,7 +81,7 @@ export default function KoreaThemeRegionsPage() {
               </h2>
             </div>
             <p className="text-sm leading-relaxed text-stone-600 break-keep">
-              지역을 고르면 그곳의 큐레이션 명소가 목록으로 나옵니다. 항목을 누르면 장소 카드로 이어갑니다.
+              지역을 고르면 그곳의 큐레이션 명소가 목록으로 나옵니다. 항목을 누르면 상세를 봅니다.
             </p>
 
             <div
@@ -98,7 +95,10 @@ export default function KoreaThemeRegionsPage() {
                   <button
                     key={area.areaCode}
                     type="button"
-                    onClick={() => setAreaCode(area.areaCode)}
+                    onClick={() => {
+                      setAreaCode(area.areaCode);
+                      setSelectedId(null);
+                    }}
                     aria-pressed={active}
                     className={
                       active
@@ -121,7 +121,7 @@ export default function KoreaThemeRegionsPage() {
                 <li key={spot.id}>
                   <button
                     type="button"
-                    onClick={() => openAttraction(spot.placeSlug)}
+                    onClick={() => setSelectedId(spot.id)}
                     className="flex w-full items-start gap-3 rounded-2xl border border-stone-200/90 bg-white px-4 py-3.5 text-left shadow-sm transition-colors hover:border-amber-300/80 hover:bg-amber-50/40"
                   >
                     <span className="min-w-0 flex-1">
@@ -152,6 +152,24 @@ export default function KoreaThemeRegionsPage() {
           </section>
         </div>
       </main>
+
+      {selectedSpot ? (
+        <ThemeSpotDetailModal
+          spot={{
+            id: selectedSpot.id,
+            name: selectedSpot.name,
+            subtitle: multiHub
+              ? `${selectedSpot.hubName} · ${selectedSpot.kindLabel}`
+              : selectedSpot.kindLabel || selectedSpot.areaName,
+            blurb: selectedSpot.nameEn || selectedSpot.areaName,
+            placeSlug: selectedSpot.placeSlug,
+            contentId: null,
+          }}
+          eyebrow="방방곡곡 상세"
+          returnTo={RETURN_TO}
+          onClose={closeModal}
+        />
+      ) : null}
     </div>
   );
 }

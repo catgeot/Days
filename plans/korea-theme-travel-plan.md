@@ -28,7 +28,7 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 12 | S10 | `테마여행 #12, 여행코스·명승확장` | ⏳ Preview QA |
 | 13 | (보강) | `테마여행 #13, 여행코스 보강` | ⏳ Preview QA |
 | 14 | (코스 모달·칩) | `테마여행 #14, 코스 상세 모달` 등 | ✅ Preview QA |
-| 15 | S11 | `테마여행 #15, 테마 상세 모달` | ⏳ 다음 (플랜 잠금) |
+| 15 | S11 | `테마여행 #15, 테마 상세 모달` | ⏳ Preview QA |
 | 16 | S9 | `테마여행 #16, 폴리시·릴리스` | ⏳ |
 
 이어하기·핫픽스만 할 때: `테마여행 #N, {짧은 수정}` (`N` = 그 주제의 **다음** 순번). 세션마다 새 `#1` 금지.
@@ -49,7 +49,7 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **#11** TourAPI 리서치 | ✅ | type 25 코스·12 검증 가능 확인 | S10 |
 | **S10** 여행코스·명승 확장 | ⏳ Preview QA | `/korea/theme/courses` · 명승 34 | #13 코스 보강 |
 | **#13~#14** 코스 사진·모달·칩 | ✅ Preview QA | 목록↔모달 분리 · 0건 칩 숨김 | S11 |
-| **S11** 테마 상세 모달 | ⏳ 플랜 | top10·scenic·regions 클릭→모달(축제/코스 벤치) | S9 |
+| **S11** 테마 상세 모달 | ⏳ Preview QA | top10·scenic·regions 클릭→모달(축제/코스 벤치) | S9 |
 | **S9** 폴리시·릴리스 | ⏳ | 사람 QA → releaseNotes 1회 제안 | main 병합 |
 
 ---
@@ -514,7 +514,7 @@ Helmet·sitemap·/qa/korea-theme. releaseNotes 파일 수정 금지.
 
 ---
 
-### S11 — 테마 상세 모달 ⏳ 플랜 잠금 (구현 = #15)
+### S11 — 테마 상세 모달 ⏳ Preview QA (구현 = #15)
 
 | | |
 |--|--|
@@ -529,10 +529,10 @@ Helmet·sitemap·/qa/korea-theme. releaseNotes 파일 수정 금지.
 
 | 단계 | 작업 | Done |
 |------|------|------|
-| A | 공유 모달 크롬(코스와 동일) + SSOT 필드만 렌더 | top10 클릭→모달·Esc 닫기 |
-| B | Tour type12 detail fetch + 개요/주소/이용/사진 | contentId 있는 항목 LIVE |
-| C | scenic·regions 동일 연결 · 2차「장소 카드」CTA | place returnTo 유지 |
-| D | 카피·작업로그·smoke · push | Preview QA 링크 |
+| A | 공유 모달 크롬(코스와 동일) + SSOT 필드만 렌더 | ✅ top10 클릭→모달·Esc 닫기 |
+| B | Tour type12 detail fetch + 개요/주소/이용/사진 | ✅ contentId 있는 항목 LIVE |
+| C | scenic·regions 동일 연결 · 2차「장소 카드」CTA | ✅ place returnTo 유지 |
+| D | 카피·작업로그·smoke · push | ⏳ Preview QA |
 
 **채팅명**: `테마여행 #15, 테마 상세 모달`  
 **첫 메시지**
@@ -582,7 +582,7 @@ Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일
 - [ ] `/korea/theme`에서 모듈 타일 → 각 테마 페이지(또는 축제 `/korea`) 진입
 - [ ] `/korea` 축제 회귀 없음
 - [x] 10대 10곳 → place → 테마 복귀 (`#6` · 레거시 경로 · Preview QA)
-- [ ] **S11**: top10·scenic·regions 목록 → **상세 모달**(개요·기본정보) · Place는 2차
+- [x] **S11**: top10·scenic·regions 목록 → **상세 모달**(개요·기본정보) · Place는 2차 (Preview QA)
 - [ ] 명승 ≥12 (목표 30+) · 여행코스 type25 모달 · 방방곡곡 시도 칩→명소 목록
 - [ ] 패키지 MRT(제주 등) + mylink
 - [x] `/qa/korea-theme` · 고정 Preview (S1·S8 최종 · sitemap/Helmet)

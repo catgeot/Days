@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 14,
-  sessionPhase: '코스 지역칩 정리',
+  sessionNo: 15,
+  sessionPhase: '테마 상세 모달',
   branch: 'cursor/korea-theme',
-  previewPath: '/korea/theme/courses',
+  previewPath: '/korea/theme/top10',
   qaShareSlug: 'korea-theme',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-04-korea-theme-spot-modal',
+    session: '테마여행 #15, 테마 상세 모달',
+    title: '10대·명승·방방곡곡 → 상세 모달',
+    detail:
+      '목록 클릭이 Place로 바로 가지 않고 상세 모달(개요·주소·이용·사진)을 엽니다. contentId가 있으면 Tour type12 LIVE, 없으면 GATEO 안내만. 모달 안 「장소 카드 보기」가 2차 CTA입니다. /korea/theme/top10 · scenic · regions에서 확인해 주세요.',
+    at: '2026-08-04',
+  },
   {
     id: '2026-08-04-korea-theme-courses-chips',
     session: '테마여행 #14, 코스 지역칩 정리',
