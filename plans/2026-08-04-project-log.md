@@ -2,6 +2,22 @@
 
 직전: [`2026-08-03-project-log.md`](./2026-08-03-project-log.md)
 
+## 테마여행 #18, 테마 연결
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA(전략·매처 · UI는 #19)
+
+- **한 일**: 플랜 **§2.5·S12** 잠금 · `koreaThemeCrossLinks.js`(멤버십·sameHub·nearby·stay/tna·package·deep-link) · `smoke:korea-theme-cross-links` · 채팅명표 #18 전략/#19 레일/#20 폴리시
+- **조인키**: hubId+placeSlug > hubId > areaCode > lat/lng · 권역 라벨은 폴백만
+- **VERIFY**: `npm run smoke:korea-theme-cross-links` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/top10`
+- **QA**: Preview UI 변화 없음(레일은 #19) · 전략 문서 §2.5 · smoke PASS
+- **다음**: 크로스 레일 UI(#19)
+
+```
+테마여행 #19, 크로스 레일
+```
+
 ## 테마여행 #17, 상세 정보 전수보강
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `1456073b` · Preview QA 대기
@@ -13,11 +29,7 @@
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/regions`
 - **QA**: top10 순천만·주상절리·보성 · regions 서울 경복궁·부산 자갈치 · MISS는 Place CTA
-- **다음**: 폴리시·릴리스(#18)
-
-```
-테마여행 #18, 폴리시·릴리스
-```
+- **다음**: 테마 연결(#18) → 완료 · 이어서 크로스 레일(#19)
 
 ## 테마여행 #16, 명승 contentId 보강
 

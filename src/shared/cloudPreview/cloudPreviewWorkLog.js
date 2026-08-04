@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 17,
-  sessionPhase: '상세 정보 전수보강',
+  sessionNo: 18,
+  sessionPhase: '테마 연결',
   branch: 'cursor/korea-theme',
-  previewPath: '/korea/theme/regions',
+  previewPath: '/korea/theme/top10',
   qaShareSlug: 'korea-theme',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-04-korea-theme-cross-links',
+    session: '테마여행 #18, 테마 연결',
+    title: '테마 크로스 연결 전략·매처',
+    detail:
+      '절경·명승·방방곡곡이 숙소·투어·축제·코스·인근 hub와 같은 조인키(hub/area/좌표)로 맞물리도록 전략(§2.5)과 매처를 잠갔습니다. 모달 하단 레일 UI는 다음 세션(#19). Preview 동작은 #17과 동일합니다.',
+    at: '2026-08-04',
+  },
   {
     id: '2026-08-04-korea-theme-detail-fill',
     session: '테마여행 #17, 상세 정보 전수보강',

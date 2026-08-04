@@ -31,7 +31,9 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 15 | S11 | `테마여행 #15, 테마 상세 모달` | ⏳ Preview QA |
 | 16 | (SSOT) | `테마여행 #16, 명승 contentId 보강` | ✅ Preview QA |
 | 17 | (SSOT) | `테마여행 #17, 상세 정보 전수보강` | ⏳ Preview QA |
-| 18 | S9 | `테마여행 #18, 폴리시·릴리스` | ⏳ 다음 |
+| 18 | S12 전략 | `테마여행 #18, 테마 연결` | ⏳ 다음 |
+| 19 | S12 UI | `테마여행 #19, 크로스 레일` | ⏳ |
+| 20 | S9 | `테마여행 #20, 폴리시·릴리스` | ⏳ |
 
 이어하기·핫픽스만 할 때: `테마여행 #N, {짧은 수정}` (`N` = 그 주제의 **다음** 순번). 세션마다 새 `#1` 금지.
 
@@ -53,8 +55,9 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **#13~#14** 코스 사진·모달·칩 | ✅ Preview QA | 목록↔모달 분리 · 0건 칩 숨김 | S11 |
 | **S11** 테마 상세 모달 | ⏳ Preview QA | top10·scenic·regions 클릭→모달(축제/코스 벤치) | #16 contentId |
 | **#16** 명승 contentId 보강 | ✅ Preview QA | scenic 34/34 contentId | #17 |
-| **#17** 상세 정보 전수보강 | ⏳ Preview QA | top10 10/10 · regions Tour SSOT · 빈모달 가드 | S9 |
-| **S9** 폴리시·릴리스 | ⏳ | 사람 QA → releaseNotes 1회 제안 | main 병합 |
+| **#17** 상세 정보 전수보강 | ⏳ Preview QA | top10 10/10 · regions Tour SSOT · 빈모달 가드 | S12 |
+| **S12** 테마 크로스 연결 | ⏳ | §2.5 전략+#18 lib/smoke → #19 모달 레일 | S9 |
+| **S9** 폴리시·릴리스 | ⏳ | 사람 QA → releaseNotes 1회 제안 (#20) | main 병합 |
 
 ---
 
@@ -84,7 +87,8 @@ flowchart TD
   S7 --> S8[S8_SEO]
   S8 --> S10[S10_courses]
   S10 --> S11[S11_theme_modal]
-  S11 --> S9[S9_QA]
+  S11 --> S12[S12_cross_links]
+  S12 --> S9[S9_QA]
 ```
 
 ---
@@ -226,6 +230,90 @@ flowchart LR
   modal -->|optional_CTA| place[PlaceCard]
   modal -->|close| list
   courses[Courses_row] --> courseModal[CourseDetailModal]
+```
+
+### 2.5 테마 크로스 연결 (S12 · 전략 잠금 2026-08-04)
+
+**한 줄**: 절경·명승·방방곡곡 본문(상세 모달)에서 **숙소·투어(TNA)·축제·여행코스·인근 hub·다른 테마 소속**이 같은 조인키로 서로 맞물리게 한다. 새 거대 그래프 SSOT를 만들지 않고, **기존 hub / areaCode / placeSlug / MRT resolver / 축제 nearby**를 재사용한다.
+
+#### 2.5.1 조인키 (우선순위)
+
+| 순위 | 키 | 쓰는 곳 | 비고 |
+|------|----|---------|------|
+| 1 | `hubId` + `placeSlug` | top10·scenic·regions 멤버십 | 동일 명소 exact |
+| 2 | `hubId` | 같은 도시 다른 명소 · 패키지(제주/경주) | `cityAttractionHubs` |
+| 3 | TourAPI `areaCode` | 축제·코스·방방곡곡 deep-link | hub→`areaCodeForHubId` 우선 · 권역 라벨 폴백 |
+| 4 | `lat`/`lng` | 인근 hub (haversine) | `nearbyHubsForFestival` 패턴 재사용 |
+| 5 | `contentId` | Tour LIVE 상세만 | 크로스 매칭 1차가 아님 |
+
+**금지**: `region` 한글 라벨만으로 축제/코스를 매칭(권역≠시도). 라벨→area 표는 deep-link 폴백만.
+
+#### 2.5.2 교차 엣지 (무엇을 어디에)
+
+| From ↓ \\ To → | 숙소(MRT) | 투어(TNA) | 축제 `/korea` | 여행코스 | 방방곡곡 | 인근 hub | 다른 테마 |
+|----------------|-----------|-----------|---------------|----------|----------|----------|-----------|
+| top10 / scenic / regions **모달** | ✅ stay query | ✅ tna query | ✅ `?from=theme&area=` | ✅ `?area=` | ✅ `?area=` | ✅ geo+sido | ✅ 멤버십·sameHub |
+| courses 모달 | 후속(area→hub) | 후속 | 링크만 | — | `?area=` | 후속 | 후속 |
+| 축제 시트 | Place 경유 유지 | Place 경유 | — | 링크만 | 기존 nearby hub | ✅ 기존 | 테마 복귀 유지 |
+| packages | 외부 MRT | — | — | — | — | — | 제주/경주 키만 |
+
+#### 2.5.3 매칭 규칙
+
+1. **멤버십**: generate JSON을 복제하지 않음. 런타임 `buildThemeMembershipIndex()`가 top10+scenic+regions를 `placeSlug`로 합친다 → `inTop10` / `inScenic` / `inRegions`.
+2. **sameHub**: 동일 `hubId`의 다른 placeSlug (자기 제외 · 기본 4).
+3. **nearbyHubs**: spot lat/lng(+area) → `nearbyHubsForFestival` 재사용 · 자기 hub 제외 · 기본 4 · maxKm 120.
+4. **숙소·투어**: `buildThemeSpotLocation(spot)` → 기존 `resolveMrtStayQuery` / `resolveMrtTnaQuery` (PlaceCard와 동일 키워드 래더). 테마 전용 키워드 SSOT **신규 금지**(필요 시 기존 override만).
+5. **패키지**: hub `jeju`/`seogwipo`→`koreaJeju` · `gyeongju`→`koreaGyeongju` · 그 외 **CTA 숨김**(`q=부산`류 오탐 방지 · 홈 CTA는 패키지 페이지에만).
+6. **deep-link**:  
+   - 축제 `/korea?from=theme&area={areaCode}`  
+   - 코스 `/korea/theme/courses?area=`  
+   - 방방곡곡 `/korea/theme/regions?area=`  
+   **#18**: 매처·URL 생성까지. **#19**: 모달 레일 UI + regions/courses/축제 `area` 쿼리 수신(최소 · 축제 칩/지도 로직 리팩터 금지).
+
+#### 2.5.4 UI 표면 (모달 하단 레일 · #19)
+
+`ThemeSpotDetailModal` 본문 **아래**에 섹션 단위로 붙인다(카드 남발·히어로 오버레이 금지 · 기존 stone/amber 톤).
+
+| 섹션 | 내용 | 빈 때 |
+|------|------|-------|
+| 이 장소가 속한 테마 | top10/명승/방방곡곡 칩 → 해당 모듈 path | 모듈 0이면 숨김 |
+| 같은 도시 명소 | sameHub 이름 링크(모달 전환 또는 모듈 deep-link) | 0이면 숨김 |
+| 인근 여행지 | nearbyHubs → `/place/:hubId` (2차·returnTo 유지) | 0이면 숨김 |
+| 숙소 · 투어 | Place 2차 CTA 안내 또는 기존 strip 패턴 **읽기만 연결** | keyword 없으면 숨김 |
+| 축제 · 코스 | deep-link 버튼 2개 | area 없으면 from=theme만 |
+| 패키지 | packageCta 있을 때만 새 탭 | 없으면 숨김 |
+
+**1차 클릭 = 모달 유지**. 지구본 직행 금지. Place/외부는 명시 CTA만.
+
+#### 2.5.5 코드 SSOT
+
+| 파일 | 역할 |
+|------|------|
+| `src/pages/Home/lib/koreaThemeCrossLinks.js` | 조인·멤버십·deep-link·stay/tna/package 번들 |
+| `npm run smoke:korea-theme-cross-links` | 오프라인 검증 |
+| (후속 #19) `ThemeSpotDetailModal` 레일 | UI만 · 매처 로직 복제 금지 |
+
+#### 2.5.6 가드
+
+- `/korea` 축제 칩·지도·캐시 **리팩터 금지** — `area` 쿼리 **수신 1줄**만 허용(없으면 무시)
+- 새 크로스 JSON 대량 curated **금지** (런타임 인덱스)
+- MRT/`VITE_` 키 노출 금지 · 가짜 숙소/투어 카드 목록 금지
+- relatedPlaces(태그 교집합) 를 테마 인근의 1차로 쓰지 않음
+- UI 임의 리디자인 금지
+
+```mermaid
+flowchart TD
+  spot[Theme_spot] --> keys[hubId_placeSlug_area_latlng]
+  keys --> mem[membership_index]
+  keys --> stay[resolveMrtStayQuery]
+  keys --> tna[resolveMrtTnaQuery]
+  keys --> near[nearbyHubsForFestival]
+  keys --> deep[deep_links_festival_courses_regions]
+  mem --> rail[Modal_cross_rail_hash19]
+  stay --> rail
+  tna --> rail
+  near --> rail
+  deep --> rail
 ```
 
 ---
@@ -651,15 +739,48 @@ runtime searchKeyword 금지 · generate→audit→smoke→build 후 push.
 
 ---
 
+### S12 — 테마 크로스 연결 ⏳ (#18 전략 · #19 UI)
+
+| | |
+|--|--|
+| **환경** | Cloud · `cursor/korea-theme` · PR #58 |
+| **제품** | §2.5 — 모달에서 숙소·투어·축제·코스·인근·테마 멤버십 교차 |
+| **#18 산출** | §2.5 잠금 · `koreaThemeCrossLinks.js` · `smoke:korea-theme-cross-links` · 일지·작업로그 |
+| **#19 산출** | 모달 레일 UI · regions/courses(/korea area 수신 최소) · Preview QA |
+| **VERIFY (#18)** | `npm run smoke:korea-theme-cross-links` · `npm run build` |
+| **금지** | 축제 필터/지도 리팩터 · 새 크로스 JSON 대량 · 가짜 상품 카드 · releaseNotes · 새 Preview 브랜치 |
+
+**채팅명 (#18)**: `테마여행 #18, 테마 연결`  
+**첫 메시지**
+
+```
+테마여행 #18, 테마 연결
+@plans/korea-theme-travel-plan.md S12·§2.5만
+브랜치 cursor/korea-theme. 크로스 조인키·매처·deep-link 전략 잠금+lib/smoke.
+모달 UI 레일은 #19. /korea 축제 로직 수정 금지. smoke·build 후 push.
+```
+
+**채팅명 (#19 UI)**: `테마여행 #19, 크로스 레일`  
+**첫 메시지**
+
+```
+테마여행 #19, 크로스 레일
+@plans/korea-theme-travel-plan.md S12·§2.5.4만
+ThemeSpotDetailModal에 cross-links 레일. area 쿼리 수신 최소.
+축제 칩/지도 리팩터 금지. smoke·build 후 push.
+```
+
+---
+
 ### S9 — 폴리시 · QA · 릴리스 ⏳
 
 사람 Preview OK → releaseNotes **초안만 제안** → 합의 후 반영 · main 병합.
 
-**채팅명**: `테마여행 #18, 폴리시·릴리스`  
+**채팅명**: `테마여행 #20, 폴리시·릴리스`  
 **첫 메시지**
 
 ```
-테마여행 #18, 폴리시·릴리스
+테마여행 #20, 폴리시·릴리스
 @plans/korea-theme-travel-plan.md S9·§7만
 Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일 금지).
 ```
@@ -679,6 +800,7 @@ Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일
 | PlaceCard←theme 목록 복귀 | `#6` ✅ · **S11 이후 1차는 모달** · place는 2차 CTA+returnTo |
 | contentId 공백 | 모달은 SSOT로 성립 · LIVE는 있을 때만 · 대량 키워드 검색 금지 |
 | 모달 3중 구현 | `ThemeSpotDetailModal` 1개 공유 · Courses 모달은 type25 전용 유지 OK |
+| 테마 간 단절 | §2.5 조인키(hub/area/geo) · 크로스 JSON 남발 금지 · 축제 로직 비침투 |
 
 ---
 
@@ -693,6 +815,7 @@ Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일
 - [x] `/qa/korea-theme` · 고정 Preview (S1·S8 최종 · sitemap/Helmet)
 - [ ] audit/smoke/build PASS · 키 미노출
 - [ ] 사람 QA 전 완료·main 병합 단정 없음
+- [ ] **S12**: 모달에서 숙소·투어·축제·코스·인근·테마 멤버십 교차(매처 #18 · UI #19 Preview QA)
 
 ---
 
