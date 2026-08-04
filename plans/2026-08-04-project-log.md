@@ -4,7 +4,7 @@
 
 ## 테마여행 #13, 여행코스 보강
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `ba38e569` · Preview QA 대기
 
 - **한 일**: 옆 썸네일 제거 → 카드 상단 전폭(16:9) 매거진 사진 + 제목 · 펼침 시 구간도 전폭 사진→명→설명 · TourAPI 이미지/https
 - **동영상**: type25 API에 동영상 URL 없음 → 미연동
@@ -19,7 +19,7 @@
 
 ## 테마여행 #12, 여행코스·명승확장
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `a795a2f6` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `a795a2f6` · **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `ba38e569` · Preview QA 대기
 
 - **여행코스**: TourAPI `contentTypeId=25` 라이브 → `/korea/theme/courses` (시도 칩·목록·개요/구간 펼침) · 모듈 타일 `courses`
 - **명승**: TourAPI `searchKeyword`(12) 검증 후 14곳 추가 → **34곳** (상한 40) · contentId 기록
