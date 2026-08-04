@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-03T18:24:49.388Z",
+    "generatedAt": "2026-08-04T17:59:13.117Z",
     "count": 10,
     "curation": "GATEO",
     "disclaimer": "GATEO 선정 — 공식 국가 지정 10대가 아닙니다.",
@@ -62,7 +62,7 @@
       "placeSlug": "suncheon-bay-wetland",
       "lat": 34.8858016084,
       "lng": 127.5092830428,
-      "contentId": null
+      "contentId": "126730"
     },
     {
       "rank": 5,
@@ -76,7 +76,7 @@
       "placeSlug": "jusangjeolli-cliff",
       "lat": 33.2375,
       "lng": 126.425,
-      "contentId": null
+      "contentId": "127053"
     },
     {
       "rank": 6,
@@ -118,7 +118,7 @@
       "placeSlug": "naejangsan-national-park",
       "lat": 35.4692113,
       "lng": 126.8420935,
-      "contentId": null
+      "contentId": "126237"
     },
     {
       "rank": 9,
@@ -132,7 +132,7 @@
       "placeSlug": "boseong-green-tea-plantation",
       "lat": 34.72,
       "lng": 127.08,
-      "contentId": null
+      "contentId": "127869"
     },
     {
       "rank": 10,
@@ -146,7 +146,7 @@
       "placeSlug": "tongyeong-cable-car",
       "lat": 34.8265982066,
       "lng": 128.4250764551,
-      "contentId": null
+      "contentId": "533874"
     }
   ]
 }

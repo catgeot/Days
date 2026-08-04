@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 16,
-  sessionPhase: '명승 contentId 보강',
+  sessionNo: 17,
+  sessionPhase: '상세 정보 전수보강',
   branch: 'cursor/korea-theme',
-  previewPath: '/korea/theme/scenic',
+  previewPath: '/korea/theme/regions',
   qaShareSlug: 'korea-theme',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-04-korea-theme-detail-fill',
+    session: '테마여행 #17, 상세 정보 전수보강',
+    title: 'top10·방방곡곡 Tour 상세 전수보강',
+    detail:
+      '10대 절경 contentId 10/10, 명승 34/34 유지, 방방곡곡은 Tour SSOT로 약 76% LIVE 연결(나머지는 GATEO 안내+장소 카드). /korea/theme/top10 · scenic · regions에서 모달 개요·사진이 비지 않는지 확인해 주세요.',
+    at: '2026-08-04',
+  },
   {
     id: '2026-08-04-korea-theme-scenic-contentid',
     session: '테마여행 #16, 명승 contentId 보강',

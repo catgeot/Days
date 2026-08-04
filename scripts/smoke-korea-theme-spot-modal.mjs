@@ -8,6 +8,10 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { listKoreaTop10Scenic } from '../src/pages/Home/lib/koreaTop10Scenic.js';
 import { listKoreaScenicSpots } from '../src/pages/Home/lib/koreaScenicSpots.js';
+import {
+  listKoreaThemeAreas,
+  listKoreaThemeRegionAttractions,
+} from '../src/pages/Home/lib/koreaThemeRegions.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -26,15 +30,15 @@ function assert(cond, msg) {
 const top10 = listKoreaTop10Scenic();
 assert(top10.length === 10, `top10 has 10 spots (got ${top10.length})`);
 assert(
-  top10.some((s) => s.contentId && /^\d+$/.test(String(s.contentId))),
-  'top10 has at least one contentId for LIVE detail',
+  top10.every((s) => s.contentId && /^\d+$/.test(String(s.contentId))),
+  'top10 all 10 have contentId for LIVE detail',
 );
 
 const scenic = listKoreaScenicSpots();
 assert(scenic.length >= 12, `scenic ≥12 (got ${scenic.length})`);
 assert(
-  scenic.some((s) => s.contentId && /^\d+$/.test(String(s.contentId))),
-  'scenic has at least one contentId',
+  scenic.every((s) => s.contentId && /^\d+$/.test(String(s.contentId))),
+  `scenic all have contentId (got ${scenic.filter((s) => s.contentId).length}/${scenic.length})`,
 );
 
 const fetchSrc = readFileSync(
@@ -76,6 +80,33 @@ for (const [file, label] of [
     `${label} copy mentions detail modal`,
   );
 }
+
+const regionsSrc = readFileSync(
+  join(root, 'src/pages/KoreaTheme/RegionsPage.jsx'),
+  'utf8',
+);
+assert(
+  regionsSrc.includes('contentId: selectedSpot.contentId'),
+  'regions passes contentId into modal (not hardcoded null)',
+);
+
+let regionTotal = 0;
+let regionWithId = 0;
+for (const area of listKoreaThemeAreas()) {
+  for (const a of listKoreaThemeRegionAttractions(area.areaCode)) {
+    regionTotal += 1;
+    if (a.contentId && /^\d+$/.test(String(a.contentId))) regionWithId += 1;
+  }
+}
+assert(regionTotal >= 100, `regions attractions ≥100 (got ${regionTotal})`);
+assert(
+  regionWithId / regionTotal >= 0.6,
+  `regions contentId coverage ≥60% (got ${regionWithId}/${regionTotal})`,
+);
+assert(
+  listKoreaThemeRegionAttractions('1').some((a) => a.contentId),
+  '서울 region sample has at least one contentId',
+);
 
 if (failed) {
   console.error(`\n${failed} smoke assertion(s) failed`);

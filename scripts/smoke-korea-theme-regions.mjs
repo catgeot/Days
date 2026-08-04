@@ -49,6 +49,10 @@ for (const [areaCode, hubId, label, sampleName] of cases) {
   if (!sample) continue;
 
   assert(Boolean(sample.placeSlug), `${sampleName} placeSlug`);
+  assert(
+    Boolean(sample.contentId) && /^\d+$/.test(String(sample.contentId)),
+    `${sampleName} contentId for Tour detail`,
+  );
   const place = resolveHubPlaceFromSlug(sample.placeSlug);
   assert(Boolean(place), `/place/${sample.placeSlug} resolves (${sampleName})`);
   assert(place?.name === sampleName, `resolved name ${sampleName}`);

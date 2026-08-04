@@ -2,6 +2,23 @@
 
 직전: [`2026-08-03-project-log.md`](./2026-08-03-project-log.md)
 
+## 테마여행 #17, 상세 정보 전수보강
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **전수**: scenic **34/34** · top10 **10/10**(null 5 채움·교체 불필요) · regions **149/196**(76%) Tour contentId
+- **한 일**: top10 overrides 5곳 · `koreaThemeRegionTour` SSOT+fill 스크립트 · RegionsPage contentId 연결 · detailIntro type12/14 대응 · 빈 모달 카피·Place CTA · 대안 경로 플랜 §S11.2
+- **MISS 47**: Tour 공백/오탐 위험 → GATEO blurb+「장소 카드 보기」(홍대·레고랜드 등)
+- **VERIFY**: `generate/audit:korea-theme-region-tour` · `smoke:korea-theme-spot-modal` · `smoke:korea-theme-regions` · top10/scenic audit·smoke · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/regions`
+- **QA**: top10 순천만·주상절리·보성 · regions 서울 경복궁·부산 자갈치 · MISS는 Place CTA
+- **다음**: 폴리시·릴리스(#18)
+
+```
+테마여행 #18, 폴리시·릴리스
+```
+
 ## 테마여행 #16, 명승 contentId 보강
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `a533a627` · Preview QA 대기

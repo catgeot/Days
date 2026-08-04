@@ -2,6 +2,7 @@ import { supabase } from '../shared/api/supabase';
 
 const INVOKE_TIMEOUT_MS = 12_000;
 const ATTRACTION_CONTENT_TYPE_ID = '12';
+const INTRO_TYPE_CANDIDATES = ['12', '14', '28', '38'];
 
 /**
  * @template T
@@ -77,18 +78,10 @@ export async function fetchTourApiAttractionDetail(opts) {
   const contentId = String(opts?.contentId ?? '').trim();
   if (!/^\d{1,32}$/.test(contentId)) return null;
 
-  const [common, intro, info, images] = await Promise.all([
+  const preferredType = String(opts?.contentTypeId || '').trim();
+
+  const [common, images] = await Promise.all([
     invokeTourApi('detailCommon', { contentId }),
-    invokeTourApi('detailIntro', {
-      contentId,
-      contentTypeId: ATTRACTION_CONTENT_TYPE_ID,
-    }),
-    invokeTourApi('detailInfo', {
-      contentId,
-      contentTypeId: ATTRACTION_CONTENT_TYPE_ID,
-      numOfRows: 30,
-      pageNo: 1,
-    }),
     invokeTourApi('detailImage', {
       contentId,
       numOfRows: 12,
@@ -97,8 +90,38 @@ export async function fetchTourApiAttractionDetail(opts) {
   ]);
 
   const commonItem = common?.items?.[0] || null;
-  const introItem = intro?.items?.[0] || null;
-  const infoItems = Array.isArray(info?.items) ? info.items : [];
+  const typeFromCommon = String(commonItem?.contentTypeId || '').trim();
+  const typeOrder = [
+    ...new Set(
+      [
+        preferredType,
+        typeFromCommon,
+        ATTRACTION_CONTENT_TYPE_ID,
+        ...INTRO_TYPE_CANDIDATES,
+      ].filter((t) => /^\d{1,4}$/.test(t)),
+    ),
+  ];
+
+  let introItem = null;
+  let infoItems = [];
+  for (const contentTypeId of typeOrder) {
+    const [intro, info] = await Promise.all([
+      invokeTourApi('detailIntro', { contentId, contentTypeId }),
+      invokeTourApi('detailInfo', {
+        contentId,
+        contentTypeId,
+        numOfRows: 30,
+        pageNo: 1,
+      }),
+    ]);
+    const candidateIntro = intro?.items?.[0] || null;
+    const candidateInfo = Array.isArray(info?.items) ? info.items : [];
+    if (candidateIntro || candidateInfo.length > 0) {
+      introItem = candidateIntro;
+      infoItems = candidateInfo;
+      break;
+    }
+  }
 
   if (!commonItem && !introItem && infoItems.length === 0) return null;
 

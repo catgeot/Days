@@ -1,10 +1,28 @@
 import koreaAreaCodes from '../data/koreaAreaCodes.json' with { type: 'json' };
+import koreaThemeRegionTour from '../data/koreaThemeRegionTour.json' with { type: 'json' };
 import {
   getKindLabel,
   placeUrlSlug,
   resolveCityAttractionHub,
 } from './cityAttractionHubs.js';
 import { hubIdsForArea } from '../../Korea/koreaHubSeeds.js';
+import { resolveTourApiPlace } from '../../../utils/tourApiMatch.js';
+
+function resolveRegionAttractionContentId(attractionId, placeSlug, name) {
+  const fromTheme = koreaThemeRegionTour?.byAttractionId?.[attractionId];
+  const themeId = String(fromTheme?.contentId || '').trim();
+  if (/^\d{1,32}$/.test(themeId)) return themeId;
+
+  const bySlug = resolveTourApiPlace(placeSlug);
+  const slugId = String(bySlug?.contentId || '').trim();
+  if (/^\d{1,32}$/.test(slugId)) return slugId;
+
+  const byName = resolveTourApiPlace(name);
+  const nameId = String(byName?.contentId || '').trim();
+  if (/^\d{1,32}$/.test(nameId)) return nameId;
+
+  return null;
+}
 
 /**
  * @typedef {{
@@ -37,6 +55,8 @@ import { hubIdsForArea } from '../../Korea/koreaHubSeeds.js';
  *   hubName: string,
  *   areaCode: string,
  *   areaName: string,
+ *   contentId: string | null,
+ *   blurb: string,
  * }} KoreaThemeRegionAttraction
  */
 
@@ -110,16 +130,21 @@ export function listKoreaThemeRegionAttractions(areaCode) {
       const id = `${hubId}:${placeSlug}`;
       if (seen.has(id)) continue;
       seen.add(id);
+      const name = String(attraction.name);
+      const nameEn = String(attraction.name_en || '');
+      const kindLabel = getKindLabel(attraction.kind);
       out.push({
         id,
-        name: String(attraction.name),
-        nameEn: String(attraction.name_en || ''),
-        kindLabel: getKindLabel(attraction.kind),
+        name,
+        nameEn,
+        kindLabel,
         placeSlug,
         hubId,
         hubName,
         areaCode: code,
         areaName,
+        contentId: resolveRegionAttractionContentId(id, placeSlug, name),
+        blurb: [kindLabel, nameEn || areaName].filter(Boolean).join(' · '),
       });
     }
   }

@@ -60,7 +60,7 @@ export const KOREA_TOP10_SCENIC_OVERRIDES = {
       region: '전라',
       hubId: 'suncheon',
       attractionName: '순천만습지',
-      contentId: null,
+      contentId: '126730',
     },
     {
       rank: 5,
@@ -70,7 +70,8 @@ export const KOREA_TOP10_SCENIC_OVERRIDES = {
       region: '제주',
       hubId: 'seogwipo',
       attractionName: '주상절리대',
-      contentId: null,
+      // Tour title: 대포주상절리
+      contentId: '127053',
     },
     {
       rank: 6,
@@ -100,7 +101,7 @@ export const KOREA_TOP10_SCENIC_OVERRIDES = {
       region: '전라',
       hubId: 'jeongeup',
       attractionName: '내장산국립공원',
-      contentId: null,
+      contentId: '126237',
     },
     {
       rank: 9,
@@ -110,7 +111,8 @@ export const KOREA_TOP10_SCENIC_OVERRIDES = {
       region: '전라',
       hubId: 'boseong',
       attractionName: '보성녹차밭',
-      contentId: null,
+      // Tour title: 대한다원 (보성 녹차밭 대표)
+      contentId: '127869',
     },
     {
       rank: 10,
@@ -120,7 +122,7 @@ export const KOREA_TOP10_SCENIC_OVERRIDES = {
       region: '경상',
       hubId: 'tongyeong',
       attractionName: '통영케이블카',
-      contentId: null,
+      contentId: '533874',
     },
   ],
 };

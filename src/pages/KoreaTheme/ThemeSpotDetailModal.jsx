@@ -329,7 +329,9 @@ export default function ThemeSpotDetailModal({
 
             {!detailLoading && !hasContentId ? (
               <p className="text-xs text-stone-500 break-keep">
-                Tour 상세 없음 — GATEO 안내만 표시합니다.
+                {spot.placeSlug
+                  ? '관광공사 Tour 상세는 아직 연결되지 않았습니다. 아래 장소 카드에서 이어서 볼 수 있습니다.'
+                  : 'Tour 상세 없음 — GATEO 안내만 표시합니다.'}
               </p>
             ) : null}
 

@@ -161,9 +161,9 @@ export default function KoreaThemeRegionsPage() {
             subtitle: multiHub
               ? `${selectedSpot.hubName} · ${selectedSpot.kindLabel}`
               : selectedSpot.kindLabel || selectedSpot.areaName,
-            blurb: selectedSpot.nameEn || selectedSpot.areaName,
+            blurb: selectedSpot.blurb || selectedSpot.nameEn || selectedSpot.areaName,
             placeSlug: selectedSpot.placeSlug,
-            contentId: null,
+            contentId: selectedSpot.contentId,
           }}
           eyebrow="방방곡곡 상세"
           returnTo={RETURN_TO}

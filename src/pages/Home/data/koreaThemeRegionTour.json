@@ -1,0 +1,606 @@
+{
+  "meta": {
+    "version": 1,
+    "generatedAt": "2026-08-04T18:25:14.664Z",
+    "count": 149,
+    "source": "scripts/data/korea-theme-region-tour-overrides.mjs"
+  },
+  "byAttractionId": {
+    "andong:bongjeongsa": {
+      "contentId": "126158",
+      "tourTitle": "봉정사 [유네스코 세계유산]"
+    },
+    "andong:byeongsan-seowon": {
+      "contentId": "126227",
+      "tourTitle": "병산서원 [유네스코 세계유산]"
+    },
+    "andong:dosan-seowon": {
+      "contentId": "126200",
+      "tourTitle": "도산서원 [유네스코 세계유산]"
+    },
+    "andong:hahoe-folk-village": {
+      "contentId": "894027",
+      "tourTitle": "안동 하회마을 [유네스코 세계유산]"
+    },
+    "andong:woryeonggyo-bridge": {
+      "contentId": "988449",
+      "tourTitle": "월영교"
+    },
+    "boryeong:boryeong-coal-museum": {
+      "contentId": "2470406",
+      "tourTitle": "보령석탄박물관"
+    },
+    "boryeong:daecheon-beach": {
+      "contentId": "127866",
+      "tourTitle": "대천해수욕장"
+    },
+    "boryeong:gaehwa-art-park": {
+      "contentId": "129439",
+      "tourTitle": "개화예술공원"
+    },
+    "boryeong:muchangpo-beach": {
+      "contentId": "125841",
+      "tourTitle": "무창포해수욕장"
+    },
+    "boryeong:muchangpo-miracle-sea-road": {
+      "contentId": "125841",
+      "tourTitle": "무창포해수욕장"
+    },
+    "busan:gamcheon-culture-village": {
+      "contentId": "1997221",
+      "tourTitle": "부산 감천문화마을"
+    },
+    "busan:gwangalli-beach": {
+      "contentId": "126078",
+      "tourTitle": "광안리해수욕장"
+    },
+    "busan:haedong-yonggungsa": {
+      "contentId": "126848",
+      "tourTitle": "해동용궁사"
+    },
+    "busan:haeundae-beach": {
+      "contentId": "126081",
+      "tourTitle": "해운대해수욕장"
+    },
+    "busan:jagalchi-market": {
+      "contentId": "132190",
+      "tourTitle": "부산 자갈치시장"
+    },
+    "busan:taejongdae": {
+      "contentId": "126658",
+      "tourTitle": "태종대"
+    },
+    "busan:yongdusan-park": {
+      "contentId": "126121",
+      "tourTitle": "용두산공원"
+    },
+    "cheongju:cheongnamdae": {
+      "contentId": "127916",
+      "tourTitle": "청남대"
+    },
+    "cheongju:munam-ecological-park": {
+      "contentId": "2714557",
+      "tourTitle": "문암생태공원"
+    },
+    "cheongju:suamgol": {
+      "contentId": "2044362",
+      "tourTitle": "수암골전망대"
+    },
+    "chuncheon:animation-museum": {
+      "contentId": "130472",
+      "tourTitle": "춘천 애니메이션박물관·토이로봇관"
+    },
+    "chuncheon:gongjicheon": {
+      "contentId": "2710586",
+      "tourTitle": "공지천유원지"
+    },
+    "chuncheon:kim-you-jeong-literature-village": {
+      "contentId": "127933",
+      "tourTitle": "김유정문학촌"
+    },
+    "chuncheon:nami-island": {
+      "contentId": "128019",
+      "tourTitle": "남이섬"
+    },
+    "chuncheon:soyanggang-skywalk": {
+      "contentId": "2396037",
+      "tourTitle": "소양강스카이워크"
+    },
+    "daegu:83-tower": {
+      "contentId": "1614282",
+      "tourTitle": "이월드 83타워"
+    },
+    "daegu:apsan-park": {
+      "contentId": "126132",
+      "tourTitle": "대구앞산공원"
+    },
+    "daegu:dongseong-ro": {
+      "contentId": "2599899",
+      "tourTitle": "대구 동성로거리"
+    },
+    "daejeon:expo-science-park": {
+      "contentId": "125994",
+      "tourTitle": "대전엑스포과학공원"
+    },
+    "daejeon:hanbat-arboretum": {
+      "contentId": "741658",
+      "tourTitle": "한밭수목원"
+    },
+    "daejeon:ppuri-park": {
+      "contentId": "126838",
+      "tourTitle": "뿌리공원"
+    },
+    "daejeon:yuseong-hot-springs": {
+      "contentId": "2760707",
+      "tourTitle": "유성온천공원"
+    },
+    "damyang:damyang-lake": {
+      "contentId": "126323",
+      "tourTitle": "담양호"
+    },
+    "damyang:juknokwon": {
+      "contentId": "128834",
+      "tourTitle": "죽녹원"
+    },
+    "damyang:korea-bamboo-museum": {
+      "contentId": "129777",
+      "tourTitle": "한국대나무박물관"
+    },
+    "damyang:soswaewon": {
+      "contentId": "126374",
+      "tourTitle": "담양 소쇄원"
+    },
+    "gangneung:anmok-beach": {
+      "contentId": "127722",
+      "tourTitle": "안목해변"
+    },
+    "gangneung:gyeongpo-beach": {
+      "contentId": "128758",
+      "tourTitle": "경포해수욕장"
+    },
+    "gangneung:gyeongpodae": {
+      "contentId": "125790",
+      "tourTitle": "강릉 경포대"
+    },
+    "gangneung:jeongdongjin": {
+      "contentId": "3545967",
+      "tourTitle": "정동진"
+    },
+    "gangneung:jumunjin-port": {
+      "contentId": "1625166",
+      "tourTitle": "주문진항"
+    },
+    "gangneung:ojukheon": {
+      "contentId": "129784",
+      "tourTitle": "강릉 오죽헌·시립박물관"
+    },
+    "gapyeong:cheongpyeong-lake": {
+      "contentId": "125517",
+      "tourTitle": "청평호반"
+    },
+    "gapyeong:garden-of-morning-calm": {
+      "contentId": "126668",
+      "tourTitle": "아침고요수목원"
+    },
+    "gapyeong:homyeong-lake": {
+      "contentId": "603727",
+      "tourTitle": "호명호수공원"
+    },
+    "gapyeong:jarasum": {
+      "contentId": "1437418",
+      "tourTitle": "자라섬"
+    },
+    "gapyeong:petite-france": {
+      "contentId": "604009",
+      "tourTitle": "쁘띠프랑스"
+    },
+    "gapyeong:yeonin-mountain": {
+      "contentId": "126859",
+      "tourTitle": "연인산도립공원"
+    },
+    "geoje:gujora-beach": {
+      "contentId": "583071",
+      "tourTitle": "구조라해수욕장"
+    },
+    "geoje:haegeumgang": {
+      "contentId": "126224",
+      "tourTitle": "거제도 해금강"
+    },
+    "geoje:jisimdo": {
+      "contentId": "128035",
+      "tourTitle": "지심도"
+    },
+    "geoje:oedo-botania": {
+      "contentId": "126581",
+      "tourTitle": "외도 보타니아"
+    },
+    "gongju:geumgang-singwan-park": {
+      "contentId": "2756156",
+      "tourTitle": "금강신관공원"
+    },
+    "gongju:gongju-national-museum": {
+      "contentId": "129787",
+      "tourTitle": "국립공주박물관"
+    },
+    "gongju:gongsanseong": {
+      "contentId": "3038480",
+      "tourTitle": "공산성 광복루"
+    },
+    "gongju:magoksa": {
+      "contentId": "125894",
+      "tourTitle": "마곡사 [유네스코 세계유산]"
+    },
+    "gongju:seokjangni-museum": {
+      "contentId": "1184872",
+      "tourTitle": "석장리박물관"
+    },
+    "gongju:tomb-of-king-muryeong": {
+      "contentId": "126681",
+      "tourTitle": "공주 무령왕릉과 왕릉원[유네스코 세계유산]"
+    },
+    "gunsan:eunpa-lake-park": {
+      "contentId": "126322",
+      "tourTitle": "은파호수공원"
+    },
+    "gunsan:gunsan-modern-history-museum": {
+      "contentId": "1684836",
+      "tourTitle": "군산근대역사박물관"
+    },
+    "gunsan:jinpo-maritime-theme-park": {
+      "contentId": "923263",
+      "tourTitle": "진포해양테마공원"
+    },
+    "gunsan:seonyudo": {
+      "contentId": "226923",
+      "tourTitle": "선유도"
+    },
+    "gwangju:asia-culture-center": {
+      "contentId": "2009775",
+      "tourTitle": "국립아시아문화전당"
+    },
+    "gwangju:chungjang-ro": {
+      "contentId": "1330521",
+      "tourTitle": "충장로"
+    },
+    "gwangju:mudeungsan-national-park": {
+      "contentId": "127575",
+      "tourTitle": "무등산국립공원(광주)"
+    },
+    "gyeongju:bulguksa": {
+      "contentId": "126166",
+      "tourTitle": "경주 불국사 [유네스코 세계유산]"
+    },
+    "gyeongju:cheomseongdae": {
+      "contentId": "126207",
+      "tourTitle": "경주 첨성대"
+    },
+    "gyeongju:daereungwon": {
+      "contentId": "1492402",
+      "tourTitle": "경주 대릉원 일원"
+    },
+    "gyeongju:donggung-palace-and-wolji-pond": {
+      "contentId": "128526",
+      "tourTitle": "경주 동궁과 월지"
+    },
+    "gyeongju:hwangnidangil": {
+      "contentId": "2658227",
+      "tourTitle": "경주 황리단길"
+    },
+    "gyeongju:seokguram": {
+      "contentId": "126216",
+      "tourTitle": "경주 석굴암 [유네스코 세계유산]"
+    },
+    "gyeongju:underwater-tomb-of-king-munmu": {
+      "contentId": "126218",
+      "tourTitle": "경주 문무대왕릉"
+    },
+    "incheon:eulwangni-beach": {
+      "contentId": "128767",
+      "tourTitle": "을왕리해수욕장"
+    },
+    "incheon:incheon-chinatown": {
+      "contentId": "264512",
+      "tourTitle": "인천 차이나타운"
+    },
+    "incheon:jeondeungsa": {
+      "contentId": "125534",
+      "tourTitle": "강화 전등사"
+    },
+    "incheon:songdo-central-park": {
+      "contentId": "2465107",
+      "tourTitle": "송도 센트럴파크"
+    },
+    "incheon:wolmido": {
+      "contentId": "127585",
+      "tourTitle": "월미도"
+    },
+    "jeju:dongmun-traditional-market": {
+      "contentId": "1013246",
+      "tourTitle": "동문재래시장"
+    },
+    "jeju:hallasan-national-park": {
+      "contentId": "127635",
+      "tourTitle": "한라산"
+    },
+    "jeju:hamdeok-beach": {
+      "contentId": "126451",
+      "tourTitle": "함덕해수욕장 (함덕 서우봉 해변)"
+    },
+    "jeju:hyeopjae-beach": {
+      "contentId": "127490",
+      "tourTitle": "협재해수욕장"
+    },
+    "jeju:jeju-stone-park": {
+      "contentId": "1544730",
+      "tourTitle": "제주돌문화공원"
+    },
+    "jeju:manjanggul-cave": {
+      "contentId": "126452",
+      "tourTitle": "만장굴 (제주도 국가지질공원)"
+    },
+    "jeju:yongduam-rock": {
+      "contentId": "228853",
+      "tourTitle": "용두암"
+    },
+    "jeonju:deokjin-park": {
+      "contentId": "126320",
+      "tourTitle": "덕진공원"
+    },
+    "jeonju:gyeonggijeon": {
+      "contentId": "147656",
+      "tourTitle": "전주 경기전"
+    },
+    "jeonju:jeondong-cathedral": {
+      "contentId": "250331",
+      "tourTitle": "전주전동성당"
+    },
+    "jeonju:jeonju-hanok-village": {
+      "contentId": "264284",
+      "tourTitle": "전북 전주 한옥마을 [슬로시티]"
+    },
+    "jeonju:nambu-market": {
+      "contentId": "132326",
+      "tourTitle": "전주 남부시장"
+    },
+    "jeonju:omokdae": {
+      "contentId": "126621",
+      "tourTitle": "오목대와 이목대"
+    },
+    "jinju:chokseongnu": {
+      "contentId": "126217",
+      "tourTitle": "촉석루"
+    },
+    "jinju:jinju-fortress": {
+      "contentId": "126833",
+      "tourTitle": "진주성"
+    },
+    "jinju:jinju-national-museum": {
+      "contentId": "129774",
+      "tourTitle": "국립진주박물관"
+    },
+    "jinju:jinyang-lake": {
+      "contentId": "126137",
+      "tourTitle": "진양호"
+    },
+    "mokpo:mokpo-modern-history-museum": {
+      "contentId": "2607311",
+      "tourTitle": "목포근대역사관 1관"
+    },
+    "mokpo:peace-plaza-mokpo": {
+      "contentId": "2663184",
+      "tourTitle": "목포평화광장"
+    },
+    "mokpo:samhakdo": {
+      "contentId": "127550",
+      "tourTitle": "삼학도"
+    },
+    "mokpo:yudalsan": {
+      "contentId": "126257",
+      "tourTitle": "유달산"
+    },
+    "namhae:namhae-german-village": {
+      "contentId": "129489",
+      "tourTitle": "남해독일마을"
+    },
+    "namhae:sangju-eunmorae-beach": {
+      "contentId": "126084",
+      "tourTitle": "상주은모래비치"
+    },
+    "pohang:bogyeongsa": {
+      "contentId": "126179",
+      "tourTitle": "보경사"
+    },
+    "pohang:jukdo-market": {
+      "contentId": "132366",
+      "tourTitle": "죽도시장"
+    },
+    "pohang:space-walk": {
+      "contentId": "2784715",
+      "tourTitle": "환호공원 스페이스워크"
+    },
+    "pohang:yeongildae-beach": {
+      "contentId": "127698",
+      "tourTitle": "영일대해수욕장"
+    },
+    "pyeongchang:woljeongsa": {
+      "contentId": "2799163",
+      "tourTitle": "월정사부도군"
+    },
+    "seoul:bukchon-hanok-village": {
+      "contentId": "126537",
+      "tourTitle": "북촌한옥마을"
+    },
+    "seoul:changdeokgung-palace": {
+      "contentId": "127642",
+      "tourTitle": "창덕궁과 후원 [유네스코 세계유산]"
+    },
+    "seoul:dongdaemun-design-plaza": {
+      "contentId": "2470006",
+      "tourTitle": "동대문디자인플라자(DDP)"
+    },
+    "seoul:gyeongbokgung-palace": {
+      "contentId": "126508",
+      "tourTitle": "경복궁"
+    },
+    "seoul:insadong": {
+      "contentId": "264353",
+      "tourTitle": "인사동"
+    },
+    "seoul:n-seoul-tower": {
+      "contentId": "126535",
+      "tourTitle": "남산서울타워"
+    },
+    "sokcho:gwongeumseong": {
+      "contentId": "127586",
+      "tourTitle": "설악산 국립공원(외설악)"
+    },
+    "sokcho:naksansa": {
+      "contentId": "125773",
+      "tourTitle": "낙산사"
+    },
+    "sokcho:sokcho-beach": {
+      "contentId": "125707",
+      "tourTitle": "속초해수욕장"
+    },
+    "sokcho:sokcho-jungang-market": {
+      "contentId": "1260275",
+      "tourTitle": "속초관광수산시장"
+    },
+    "sokcho:yeonggeumjeong": {
+      "contentId": "125779",
+      "tourTitle": "영금정"
+    },
+    "suncheon:jorye-lake-park": {
+      "contentId": "2737298",
+      "tourTitle": "조례호수공원"
+    },
+    "suncheon:naganeupseong-folk-village": {
+      "contentId": "127931",
+      "tourTitle": "순천 낙안읍성"
+    },
+    "suncheon:seonamsa": {
+      "contentId": "126267",
+      "tourTitle": "선암사계곡"
+    },
+    "suncheon:suncheon-bay-national-garden": {
+      "contentId": "1919548",
+      "tourTitle": "순천만국가정원"
+    },
+    "suncheon:suncheon-bay-wetland": {
+      "contentId": "126730",
+      "tourTitle": "순천만습지"
+    },
+    "suncheon:suncheon-waeseong": {
+      "contentId": "126749",
+      "tourTitle": "순천왜성"
+    },
+    "suwon:gwanggyo-lake-park": {
+      "contentId": "2662855",
+      "tourTitle": "광교호수공원"
+    },
+    "suwon:hwahongmun": {
+      "contentId": "264394",
+      "tourTitle": "화홍문(華虹門)"
+    },
+    "suwon:hwaseong-fortress": {
+      "contentId": "125555",
+      "tourTitle": "수원 화성 [유네스코 세계유산]"
+    },
+    "suwon:hwaseong-haenggung": {
+      "contentId": "129437",
+      "tourTitle": "화성행궁"
+    },
+    "suwon:suwon-hwaseong-museum": {
+      "contentId": "1921150",
+      "tourTitle": "수원화성박물관"
+    },
+    "suwon:yunggeolleung": {
+      "contentId": "3456908",
+      "tourTitle": "화성 융건릉"
+    },
+    "taean:anmyeondo-arboretum": {
+      "contentId": "2606922",
+      "tourTitle": "안면도수목원"
+    },
+    "taean:chollipo-arboretum": {
+      "contentId": "127820",
+      "tourTitle": "천리포수목원"
+    },
+    "taean:kkotji-beach": {
+      "contentId": "126695",
+      "tourTitle": "꽃지해수욕장"
+    },
+    "taean:mallipo-beach": {
+      "contentId": "125842",
+      "tourTitle": "만리포해수욕장"
+    },
+    "taean:mongsanpo-beach": {
+      "contentId": "125845",
+      "tourTitle": "몽산포해수욕장"
+    },
+    "taean:taeanhaean-national-park": {
+      "contentId": "125818",
+      "tourTitle": "태안해안국립공원"
+    },
+    "tongyeong:dongpirang-mural-village": {
+      "contentId": "753306",
+      "tourTitle": "동피랑마을"
+    },
+    "tongyeong:tongyeong-cable-car": {
+      "contentId": "533874",
+      "tourTitle": "통영케이블카"
+    },
+    "ulsan:daewangam-park": {
+      "contentId": "127515",
+      "tourTitle": "대왕암공원"
+    },
+    "ulsan:ganjeolgot": {
+      "contentId": "128022",
+      "tourTitle": "간절곶"
+    },
+    "ulsan:jangsaengpo-whale-culture-village": {
+      "contentId": "2381176",
+      "tourTitle": "장생포 고래문화마을"
+    },
+    "ulsan:taehwagang-national-garden": {
+      "contentId": "128202",
+      "tourTitle": "태화강 국가정원"
+    },
+    "ulsan:ulsan-petroglyph-museum": {
+      "contentId": "634337",
+      "tourTitle": "울산암각화박물관"
+    },
+    "yangyang:hajodae-beach": {
+      "contentId": "125701",
+      "tourTitle": "하조대해수욕장"
+    },
+    "yangyang:naksan-beach": {
+      "contentId": "125702",
+      "tourTitle": "낙산해수욕장"
+    },
+    "yangyang:seorak-beach": {
+      "contentId": "2710820",
+      "tourTitle": "설악해수욕장"
+    },
+    "yangyang:surfyy-beach": {
+      "contentId": "2501905",
+      "tourTitle": "서피비치"
+    },
+    "yeosu:dolsan-park": {
+      "contentId": "128755",
+      "tourTitle": "돌산공원"
+    },
+    "yeosu:hyangiram": {
+      "contentId": "127715",
+      "tourTitle": "향일암(여수)"
+    },
+    "yeosu:odongdo": {
+      "contentId": "129152",
+      "tourTitle": "오동도 등대"
+    },
+    "yeosu:yi-sun-sin-square": {
+      "contentId": "2612869",
+      "tourTitle": "이순신광장"
+    }
+  }
+}

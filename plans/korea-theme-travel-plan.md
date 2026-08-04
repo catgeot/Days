@@ -30,7 +30,8 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 14 | (코스 모달·칩) | `테마여행 #14, 코스 상세 모달` 등 | ✅ Preview QA |
 | 15 | S11 | `테마여행 #15, 테마 상세 모달` | ⏳ Preview QA |
 | 16 | (SSOT) | `테마여행 #16, 명승 contentId 보강` | ✅ Preview QA |
-| 17 | S9 | `테마여행 #17, 폴리시·릴리스` | ⏳ 다음 |
+| 17 | (SSOT) | `테마여행 #17, 상세 정보 전수보강` | ⏳ Preview QA |
+| 18 | S9 | `테마여행 #18, 폴리시·릴리스` | ⏳ 다음 |
 
 이어하기·핫픽스만 할 때: `테마여행 #N, {짧은 수정}` (`N` = 그 주제의 **다음** 순번). 세션마다 새 `#1` 금지.
 
@@ -51,7 +52,8 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **S10** 여행코스·명승 확장 | ⏳ Preview QA | `/korea/theme/courses` · 명승 34 | #13 코스 보강 |
 | **#13~#14** 코스 사진·모달·칩 | ✅ Preview QA | 목록↔모달 분리 · 0건 칩 숨김 | S11 |
 | **S11** 테마 상세 모달 | ⏳ Preview QA | top10·scenic·regions 클릭→모달(축제/코스 벤치) | #16 contentId |
-| **#16** 명승 contentId 보강 | ✅ Preview QA | scenic 34/34 contentId | S9 |
+| **#16** 명승 contentId 보강 | ✅ Preview QA | scenic 34/34 contentId | #17 |
+| **#17** 상세 정보 전수보강 | ⏳ Preview QA | top10 10/10 · regions Tour SSOT · 빈모달 가드 | S9 |
 | **S9** 폴리시·릴리스 | ⏳ | 사람 QA → releaseNotes 1회 제안 | main 병합 |
 
 ---
@@ -608,15 +610,56 @@ runtime searchKeyword 금지 · generate→audit→smoke→build 후 push.
 
 ---
 
+### S11.2 — 상세 정보 전수보강 ⏳ Preview QA (#17)
+
+**한 줄**: top10·scenic·regions를 전수 조사해 Tour contentId를 채우고, 없는 항목은 Place CTA·SSOT로 **빈 모달이 되지 않게** 한다.
+
+| 모듈 | 조사 결과 (#17) | 조치 |
+|------|-----------------|------|
+| **scenic** | 34/34 contentId (#16) | 유지 |
+| **top10** | null 5 → **10/10** | overrides 채움(순천만 `126730`·대포주상절리 `127053`·내장산 `126237`·대한다원 `127869`·통영케이블카 `533874`) · **교체 불필요** |
+| **regions** | 하드코딩 `contentId:null` → SSOT 연결 | `korea-theme-region-tour-overrides` ≈149/196 · type12/14/시장38 · 허브 주소 검증 |
+
+**빈 상세 방지**
+
+1. contentId 있으면 Tour LIVE (type은 `detailCommon.contentTypeId` 우선)  
+2. 없으면 GATEO blurb + 「장소 카드 보기」 CTA (placeSlug 필수)  
+3. runtime 대량 `searchKeyword` **금지** — 오프라인 `fill:korea-theme-region-tour`만
+
+**대안 경로 (Tour 공백·오탐 시 · 조사 메모)**
+
+| 경로 | 용도 | 비고 |
+|------|------|------|
+| **TourAPI KorService2** (현재) | type12/14/25/28/38… | Edge `tourapi-proxy` · 키 `VITE_` 금지 |
+| TourAPI **PhotoGallery** (`searchPhoto`) | 이미지 보강 | 개요 없음 · 갤러리 트랙과 공유 |
+| **문화재청** OpenAPI (종목·명승) | 지정 문화재·명승 해설 | 명승 공식 목록·해설 · Tour와 id 다름 · 후속 후보 |
+| **지자체 관광 OpenAPI**/포털 | 시·도 자체 명소 | 스키마 분절 · curated 소량만 적합 |
+| **VisitKorea / 한국관광 100선** | 선정·카피 근거 | API보다 큐레이션 근거용 (10대 §3.3) |
+| **PlaceCard / hub SSOT** | Tour 공백 시 상세 | 모달 2차 CTA · 갤러리·지도는 place |
+
+**VERIFY**: `generate:korea-top10-scenic` · `generate/audit:korea-theme-region-tour` · `smoke:korea-theme-spot-modal` · `smoke:korea-theme-regions` · `npm run build`
+
+**채팅명**: `테마여행 #17, 상세 정보 전수보강`  
+**첫 메시지**
+
+```
+테마여행 #17, 상세 정보 전수보강
+@plans/korea-theme-travel-plan.md S11.2만
+브랜치 cursor/korea-theme. top10·regions Tour contentId 전수보강.
+빈 모달 금지 · runtime 대량 searchKeyword 금지 · build 후 push.
+```
+
+---
+
 ### S9 — 폴리시 · QA · 릴리스 ⏳
 
 사람 Preview OK → releaseNotes **초안만 제안** → 합의 후 반영 · main 병합.
 
-**채팅명**: `테마여행 #17, 폴리시·릴리스`  
+**채팅명**: `테마여행 #18, 폴리시·릴리스`  
 **첫 메시지**
 
 ```
-테마여행 #17, 폴리시·릴리스
+테마여행 #18, 폴리시·릴리스
 @plans/korea-theme-travel-plan.md S9·§7만
 Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일 금지).
 ```
