@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-04-korea-theme-courses-magazine',
+    session: '테마여행 #13, 여행코스 보강',
+    title: '여행코스 매거진형 전폭 사진',
+    detail:
+      '옆 작은 썸네일을 없애고, 각 코스 카드 상단에 본문 넓이(16:9) 사진을 둔 뒤 제목이 이어지게 바꿨습니다. 펼치면 구간도 전폭 사진→구간명→설명 순입니다. /korea/theme/courses에서 강원 코스 카드 레이아웃을 확인해 주세요.',
+    at: '2026-08-04',
+  },
+  {
     id: '2026-08-04-korea-theme-courses-media',
     session: '테마여행 #13, 여행코스 보강',
     title: '여행코스 사진(대표·구간) 표시',

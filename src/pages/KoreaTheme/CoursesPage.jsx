@@ -194,7 +194,7 @@ export default function KoreaThemeCoursesPage() {
               </p>
             ) : null}
 
-            <ul className="space-y-2">
+            <ul className="space-y-5">
               {courses.map((course) => {
                 const id = String(course.contentId || '');
                 const open = openId === id;
@@ -205,43 +205,46 @@ export default function KoreaThemeCoursesPage() {
                   toHttps(detail?.imageUrl) ||
                   (detail?.galleryUrls?.[0] ? toHttps(detail.galleryUrls[0]) : '') ||
                   thumb;
-                const gallery = Array.isArray(detail?.galleryUrls)
-                  ? detail.galleryUrls.map(toHttps).filter(Boolean)
-                  : hero
-                    ? [hero]
-                    : [];
+                const galleryExtra = (
+                  Array.isArray(detail?.galleryUrls)
+                    ? detail.galleryUrls.map(toHttps).filter(Boolean)
+                    : []
+                ).filter((url) => url && url !== hero);
                 return (
-                  <li key={id || course.title}>
+                  <li
+                    key={id || course.title}
+                    className="overflow-hidden rounded-2xl border border-stone-200/90 bg-white shadow-sm"
+                  >
                     <button
                       type="button"
                       onClick={() => toggleCourse(course)}
-                      className="flex w-full items-stretch gap-3 rounded-2xl border border-stone-200/90 bg-white p-2.5 text-left shadow-sm transition-colors hover:border-amber-300/80 hover:bg-amber-50/40 sm:p-3"
+                      className="w-full text-left transition-colors hover:bg-amber-50/30"
                     >
-                      {thumb ? (
+                      {thumb || hero ? (
                         <img
-                          src={thumb}
+                          src={hero || thumb}
                           alt=""
-                          className="h-[4.5rem] w-[6.5rem] shrink-0 rounded-xl object-cover sm:h-20 sm:w-28"
+                          className="aspect-[16/9] w-full object-cover sm:aspect-[2/1]"
                           loading="lazy"
                         />
                       ) : (
-                        <span className="flex h-[4.5rem] w-[6.5rem] shrink-0 items-center justify-center rounded-xl border border-amber-200/80 bg-amber-50 text-amber-800 sm:h-20 sm:w-28">
-                          <Route size={20} aria-hidden="true" />
+                        <span className="flex aspect-[16/9] w-full items-center justify-center bg-amber-50 text-amber-800 sm:aspect-[2/1]">
+                          <Route size={28} aria-hidden="true" />
                         </span>
                       )}
-                      <span className="flex min-w-0 flex-1 flex-col justify-center py-0.5 pr-1">
-                        <span className="flex items-start justify-between gap-2">
-                          <span className="text-sm font-extrabold tracking-tight text-stone-900 break-keep">
+                      <span className="block px-4 py-3.5 sm:px-5">
+                        <span className="flex items-start justify-between gap-3">
+                          <span className="text-base font-extrabold tracking-tight text-stone-900 break-keep sm:text-lg">
                             {course.title}
                           </span>
                           {open ? (
-                            <ChevronUp size={16} className="mt-0.5 shrink-0 text-stone-400" />
+                            <ChevronUp size={18} className="mt-1 shrink-0 text-stone-400" />
                           ) : (
-                            <ChevronDown size={16} className="mt-0.5 shrink-0 text-stone-400" />
+                            <ChevronDown size={18} className="mt-1 shrink-0 text-stone-400" />
                           )}
                         </span>
                         {course.addr1 ? (
-                          <span className="mt-0.5 block text-xs text-stone-500 break-keep">
+                          <span className="mt-1 block text-xs text-stone-500 break-keep">
                             {course.addr1}
                           </span>
                         ) : null}
@@ -249,100 +252,86 @@ export default function KoreaThemeCoursesPage() {
                     </button>
 
                     {open ? (
-                      <div className="mt-1 overflow-hidden rounded-2xl border border-stone-200/80 bg-stone-50/80">
+                      <div className="border-t border-stone-200/80 bg-stone-50/60">
                         {detailLoading ? (
-                          <p className="px-4 py-3 text-xs text-stone-500">상세를 불러오는 중…</p>
+                          <p className="px-4 py-3 text-xs text-stone-500 sm:px-5">
+                            상세를 불러오는 중…
+                          </p>
                         ) : null}
                         {!detailLoading && detail?.empty ? (
-                          <p className="px-4 py-3 text-xs text-stone-500 break-keep">
+                          <p className="px-4 py-3 text-xs text-stone-500 break-keep sm:px-5">
                             상세 정보를 가져오지 못했습니다.
                           </p>
                         ) : null}
                         {!detailLoading && detail && !detail.empty ? (
-                          <div className="space-y-3">
-                            {hero ? (
-                              <img
-                                src={hero}
-                                alt=""
-                                className="max-h-56 w-full object-cover sm:max-h-72"
-                                loading="lazy"
-                              />
+                          <div className="space-y-4 px-4 py-4 sm:px-5">
+                            {(detail.theme ||
+                              detail.schedule ||
+                              detail.distance ||
+                              detail.taketime) && (
+                              <p className="text-[11px] font-semibold text-amber-900/90 break-keep">
+                                {[
+                                  detail.theme,
+                                  detail.schedule,
+                                  detail.distance,
+                                  detail.taketime,
+                                ]
+                                  .filter(Boolean)
+                                  .join(' · ')}
+                              </p>
+                            )}
+                            {detail.overview ? (
+                              <p className="whitespace-pre-line text-sm leading-relaxed text-stone-600 break-keep">
+                                {stripHtml(detail.overview)}
+                              </p>
                             ) : null}
-                            <div className="space-y-3 px-4 pb-3 pt-1">
-                              {(detail.theme ||
-                                detail.schedule ||
-                                detail.distance ||
-                                detail.taketime) && (
-                                <p className="text-[11px] font-semibold text-amber-900/90 break-keep">
-                                  {[
-                                    detail.theme,
-                                    detail.schedule,
-                                    detail.distance,
-                                    detail.taketime,
-                                  ]
-                                    .filter(Boolean)
-                                    .join(' · ')}
-                                </p>
-                              )}
-                              {detail.overview ? (
-                                <p className="whitespace-pre-line text-xs leading-relaxed text-stone-600 break-keep">
-                                  {stripHtml(detail.overview)}
-                                </p>
-                              ) : null}
-                              {gallery.length > 1 ? (
-                                <div
-                                  className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1"
-                                  aria-label="코스 사진"
-                                >
-                                  {gallery.map((url) => (
-                                    <img
-                                      key={url}
-                                      src={url}
-                                      alt=""
-                                      className="h-16 w-24 shrink-0 rounded-lg object-cover ring-1 ring-stone-200/80"
-                                      loading="lazy"
-                                    />
-                                  ))}
-                                </div>
-                              ) : null}
-                              {detail.segments?.length ? (
-                                <ol className="space-y-3 border-t border-stone-200/80 pt-3">
-                                  {detail.segments.map((seg, idx) => {
-                                    const segImg = toHttps(seg.subdetailimg);
-                                    return (
-                                      <li
-                                        key={`${id}-${seg.subnum ?? idx}`}
-                                        className="flex gap-3 text-xs"
-                                      >
-                                        {segImg ? (
-                                          <img
-                                            src={segImg}
-                                            alt={seg.subdetailalt || seg.subname || ''}
-                                            className="h-16 w-20 shrink-0 rounded-lg object-cover ring-1 ring-stone-200/70"
-                                            loading="lazy"
-                                          />
-                                        ) : null}
-                                        <div className="min-w-0 flex-1">
-                                          <p className="font-bold text-stone-800 break-keep">
-                                            {Number(seg.subnum ?? idx) + 1}.{' '}
-                                            {seg.subname || '구간'}
-                                          </p>
-                                          {seg.subdetailoverview ? (
-                                            <p className="mt-0.5 whitespace-pre-line leading-relaxed text-stone-600 break-keep">
-                                              {stripHtml(seg.subdetailoverview)}
-                                            </p>
-                                          ) : null}
-                                        </div>
-                                      </li>
-                                    );
-                                  })}
-                                </ol>
-                              ) : detail.overview ? null : (
-                                <p className="text-[11px] text-stone-500 break-keep">
-                                  이 코스의 구간 상세는 아직 없습니다.
-                                </p>
-                              )}
-                            </div>
+                            {galleryExtra.length > 0 ? (
+                              <div className="space-y-2" aria-label="코스 사진">
+                                {galleryExtra.map((url) => (
+                                  <img
+                                    key={url}
+                                    src={url}
+                                    alt=""
+                                    className="aspect-[16/9] w-full object-cover sm:aspect-[2/1]"
+                                    loading="lazy"
+                                  />
+                                ))}
+                              </div>
+                            ) : null}
+                            {detail.segments?.length ? (
+                              <ol className="space-y-5 border-t border-stone-200/80 pt-4">
+                                {detail.segments.map((seg, idx) => {
+                                  const segImg = toHttps(seg.subdetailimg);
+                                  return (
+                                    <li
+                                      key={`${id}-${seg.subnum ?? idx}`}
+                                      className="space-y-2 text-sm"
+                                    >
+                                      {segImg ? (
+                                        <img
+                                          src={segImg}
+                                          alt={seg.subdetailalt || seg.subname || ''}
+                                          className="aspect-[16/9] w-full object-cover sm:aspect-[2/1]"
+                                          loading="lazy"
+                                        />
+                                      ) : null}
+                                      <p className="font-bold text-stone-800 break-keep">
+                                        {Number(seg.subnum ?? idx) + 1}. {seg.subname || '구간'}
+                                      </p>
+                                      {seg.subdetailoverview ? (
+                                        <p className="whitespace-pre-line text-sm leading-relaxed text-stone-600 break-keep">
+                                          {stripHtml(seg.subdetailoverview)}
+                                        </p>
+                                      ) : null}
+                                    </li>
+                                  );
+                                })}
+                              </ol>
+                            ) : detail.overview ? null : (
+                              <p className="text-[11px] text-stone-500 break-keep">
+                                이 코스의 구간 상세는 아직 없습니다.
+                              </p>
+                            )}
                           </div>
                         ) : null}
                       </div>

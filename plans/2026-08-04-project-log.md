@@ -4,13 +4,13 @@
 
 ## 테마여행 #13, 여행코스 보강
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `cfd30d42` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
 
-- **한 일**: TourAPI 코스 대표·구간 사진(`subdetailimg`)·갤러리 스트립을 펼침 UI에 표시 · 목록 썸네일 확대 · https 정규화
-- **동영상**: type25 API에 동영상 URL 없음 → 미연동 (YouTube 추정 검색 범위 밖)
+- **한 일**: 옆 썸네일 제거 → 카드 상단 전폭(16:9) 매거진 사진 + 제목 · 펼침 시 구간도 전폭 사진→명→설명 · TourAPI 이미지/https
+- **동영상**: type25 API에 동영상 URL 없음 → 미연동
 - **VERIFY**: `smoke:korea-theme-courses`(+LIVE) · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/korea-theme` · git Preview `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/courses`
-- **QA**: 강원 코스 펼침 → 히어로·구간 사진 · 가로 갤러리
+- **QA**: 강원 코스 카드 — 사진이 제목 위 전폭인지 · 펼침 구간 전폭 사진
 - **다음**: Preview QA → `테마여행 #14, 폴리시·릴리스`
 
 ```

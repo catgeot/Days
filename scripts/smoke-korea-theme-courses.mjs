@@ -52,6 +52,8 @@ function mainOffline() {
   const pageSrc = readFileSync(join(root, 'src/pages/KoreaTheme/CoursesPage.jsx'), 'utf8');
   assert(pageSrc.includes('galleryUrls'), 'CoursesPage renders gallery');
   assert(pageSrc.includes('subdetailimg'), 'CoursesPage renders segment photos');
+  assert(pageSrc.includes('aspect-[16/9]'), 'CoursesPage magazine full-width photo');
+  assert(!pageSrc.includes('h-[4.5rem] w-[6.5rem]'), 'CoursesPage no side thumbnail');
 }
 
 async function mainLive() {
