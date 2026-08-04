@@ -4,7 +4,7 @@
 
 ## 테마여행 #16, 명승 contentId 보강
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `a533a627` · Preview QA 대기
 
 - **한 일**: scenic overrides null 20곳 → TourAPI `searchKeyword`+`detailCommon` 검증 후 contentId 채움 (**34/34**) · generate/audit/smoke · 작업로그 #16
 - **확정 예**: 경복궁 `126508` · 창덕궁 `127642` · 수원화성 `125555` · 전주한옥마을 `264284` · 남이섬 `128019`
