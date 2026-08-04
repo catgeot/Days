@@ -4,7 +4,7 @@
 
 ## 테마여행 #12, 여행코스·명승확장
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `a795a2f6` · Preview QA 대기
 
 - **여행코스**: TourAPI `contentTypeId=25` 라이브 → `/korea/theme/courses` (시도 칩·목록·개요/구간 펼침) · 모듈 타일 `courses`
 - **명승**: TourAPI `searchKeyword`(12) 검증 후 14곳 추가 → **34곳** (상한 40) · contentId 기록
