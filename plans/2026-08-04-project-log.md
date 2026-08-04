@@ -4,7 +4,7 @@
 
 ## 테마여행 #14, 코스 지역칩 정리
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `347e6b2f` · Preview QA 대기
 
 - **요청**: 0건 칩 숨김 · 소량 코스 권역은 별도 칩으로 묶기
 - **한 일**: 권역별 rawCount 조회 → 0건 제외 · ≥3 단독 · 1~2「기타」병합 · `koreaThemeCourseChips.js`
