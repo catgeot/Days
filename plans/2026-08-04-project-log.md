@@ -4,11 +4,13 @@
 
 ## 테마여행 #14, 테마 상세 페이지 (플랜)
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · 플랜만 · Preview 불변
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `1dac3266` · 플랜만 · Preview 불변
 
 - **요청**: 10대·명승·방방곡곡도 여행코스/축제처럼 목록 클릭→상세 모달 · Place/지구본 1차 금지
 - **한 일**: `korea-theme-travel-plan.md` **§2.4·S11** 잠금 · 채팅명표 #15 구현·#16 폴리시 · README 갱신
 - **방향**: `ThemeSpotDetailModal` 공유 · Tour type12 LIVE(있으면) · Place=2차 CTA · `/korea` 미수정
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme`
 - **다음**: 구현 세션
 
 ```
