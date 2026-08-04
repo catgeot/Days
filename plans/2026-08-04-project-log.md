@@ -4,7 +4,7 @@
 
 ## 테마여행 #15, 테마 상세 모달
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `35d1df8b` · Preview QA 대기
 
 - **한 일**: `ThemeSpotDetailModal` · `fetchTourApiAttractionDetail`(type12) · top10/scenic/regions 목록→모달 · Place=2차 CTA · `smoke:korea-theme-spot-modal`
 - **VERIFY**: `npm run smoke:korea-theme-spot-modal` · `npm run build`
