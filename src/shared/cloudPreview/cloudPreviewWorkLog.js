@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 18,
-  sessionPhase: '테마 연결',
+  sessionNo: 19,
+  sessionPhase: '크로스 레일',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/top10',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-04-korea-theme-cross-rail',
+    session: '테마여행 #19, 크로스 레일',
+    title: '상세 모달 하단 크로스 레일',
+    detail:
+      '절경·명승·방방곡곡 상세 모달 아래에 속한 테마·같은 도시·인근·숙소/투어·축제/코스·패키지 연결을 붙였습니다. 축제·코스·방방곡곡은 ?area=로 해당 시도를 엽니다. /korea/theme/top10에서 한라산 모달을 스크롤해 레일을 확인해 주세요.',
+    at: '2026-08-04',
+  },
   {
     id: '2026-08-04-korea-theme-cross-links',
     session: '테마여행 #18, 테마 연결',

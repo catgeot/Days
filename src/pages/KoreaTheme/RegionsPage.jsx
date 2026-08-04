@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Home, Map } from 'lucide-react';
 import SEO from '../../components/SEO';
 import {
@@ -12,9 +12,16 @@ const AREAS = listKoreaThemeAreas();
 const RETURN_TO = '/korea/theme/regions';
 const DEFAULT_AREA = AREAS[0]?.areaCode || '1';
 
+function areaFromSearch(searchParams) {
+  const q = String(searchParams.get('area') || '').trim();
+  if (q && AREAS.some((a) => a.areaCode === q)) return q;
+  return DEFAULT_AREA;
+}
+
 export default function KoreaThemeRegionsPage() {
   const navigate = useNavigate();
-  const [areaCode, setAreaCode] = useState(DEFAULT_AREA);
+  const [searchParams] = useSearchParams();
+  const [areaCode, setAreaCode] = useState(() => areaFromSearch(searchParams));
   const [selectedId, setSelectedId] = useState(null);
   const attractions = listKoreaThemeRegionAttractions(areaCode);
   const activeArea = AREAS.find((a) => a.areaCode === areaCode);
@@ -164,6 +171,10 @@ export default function KoreaThemeRegionsPage() {
             blurb: selectedSpot.blurb || selectedSpot.nameEn || selectedSpot.areaName,
             placeSlug: selectedSpot.placeSlug,
             contentId: selectedSpot.contentId,
+            hubId: selectedSpot.hubId,
+            region: selectedSpot.areaName,
+            areaCode: selectedSpot.areaCode || areaCode,
+            nameEn: selectedSpot.nameEn,
           }}
           eyebrow="방방곡곡 상세"
           returnTo={RETURN_TO}

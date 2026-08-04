@@ -604,6 +604,8 @@ export default function KoreaFestivalHub() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const fromTheme = searchParams.get('from') === 'theme';
+  /** 테마 크로스 레일 deep-link — 칩/지도 리팩터 없이 area만 수신 */
+  const themeAreaParam = String(searchParams.get('area') || '').trim();
   const now = useMemo(() => new Date(), []);
 
   const [timeTab, setTimeTab] = useState('now');
@@ -653,6 +655,17 @@ export default function KoreaFestivalHub() {
   const mountLocTriedRef = useRef(false);
   const mainScrollRef = useRef(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const themeAreaAppliedRef = useRef(false);
+
+  useEffect(() => {
+    if (themeAreaAppliedRef.current) return;
+    if (!themeAreaParam || themeAreaParam === 'all') return;
+    if (!/^\d{1,2}$/.test(themeAreaParam)) return;
+    themeAreaAppliedRef.current = true;
+    userRegionOverrideRef.current = true;
+    setAreaCode(themeAreaParam);
+    setCityName('all');
+  }, [themeAreaParam]);
 
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 1024px)');

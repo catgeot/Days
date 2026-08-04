@@ -126,6 +126,11 @@ export default function KoreaThemeTop10Page() {
             blurb: selectedSpot.blurb,
             placeSlug: selectedSpot.placeSlug,
             contentId: selectedSpot.contentId,
+            hubId: selectedSpot.hubId,
+            region: selectedSpot.region,
+            nameEn: selectedSpot.attractionNameEn,
+            lat: selectedSpot.lat,
+            lng: selectedSpot.lng,
           }}
           eyebrow="10대 절경 상세"
           returnTo={RETURN_TO}

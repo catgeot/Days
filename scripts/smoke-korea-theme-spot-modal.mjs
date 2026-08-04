@@ -63,6 +63,10 @@ assert(modalSrc.includes('장소 카드 보기'), 'modal has place CTA');
 assert(modalSrc.includes('setPlaceReturnTo'), 'modal sets returnTo');
 assert(modalSrc.includes('Escape'), 'modal Esc close');
 assert(modalSrc.includes('fetchTourApiAttractionDetail'), 'modal loads Tour detail');
+assert(modalSrc.includes('resolveThemeCrossLinks'), 'modal wires cross-links matcher');
+assert(modalSrc.includes('이 장소가 속한 테마'), 'modal cross rail membership section');
+assert(modalSrc.includes('이 지역 축제'), 'modal cross rail festival deep-link');
+assert(modalSrc.includes('이 지역 여행코스'), 'modal cross rail courses deep-link');
 
 for (const [file, label] of [
   ['Top10Page.jsx', 'top10'],
@@ -88,6 +92,34 @@ const regionsSrc = readFileSync(
 assert(
   regionsSrc.includes('contentId: selectedSpot.contentId'),
   'regions passes contentId into modal (not hardcoded null)',
+);
+assert(
+  regionsSrc.includes('hubId: selectedSpot.hubId'),
+  'regions passes hubId for cross rail',
+);
+assert(
+  regionsSrc.includes("searchParams.get('area')") ||
+    regionsSrc.includes('areaFromSearch'),
+  'regions reads ?area= deep-link',
+);
+
+const coursesSrc = readFileSync(
+  join(root, 'src/pages/KoreaTheme/CoursesPage.jsx'),
+  'utf8',
+);
+assert(
+  coursesSrc.includes("searchParams.get('area')"),
+  'courses reads ?area= deep-link',
+);
+assert(
+  coursesSrc.includes('pickChipIdForArea'),
+  'courses maps area query to chip',
+);
+
+const koreaSrc = readFileSync(join(root, 'src/pages/Korea/index.jsx'), 'utf8');
+assert(
+  koreaSrc.includes("searchParams.get('area')"),
+  'festival hub reads ?area= (theme deep-link, no chip refactor)',
 );
 
 let regionTotal = 0;

@@ -31,9 +31,9 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 15 | S11 | `테마여행 #15, 테마 상세 모달` | ⏳ Preview QA |
 | 16 | (SSOT) | `테마여행 #16, 명승 contentId 보강` | ✅ Preview QA |
 | 17 | (SSOT) | `테마여행 #17, 상세 정보 전수보강` | ⏳ Preview QA |
-| 18 | S12 전략 | `테마여행 #18, 테마 연결` | ⏳ 다음 |
-| 19 | S12 UI | `테마여행 #19, 크로스 레일` | ⏳ |
-| 20 | S9 | `테마여행 #20, 폴리시·릴리스` | ⏳ |
+| 18 | S12 전략 | `테마여행 #18, 테마 연결` | ✅ Preview QA |
+| 19 | S12 UI | `테마여행 #19, 크로스 레일` | ⏳ Preview QA |
+| 20 | S9 | `테마여행 #20, 폴리시·릴리스` | ⏳ 다음 |
 
 이어하기·핫픽스만 할 때: `테마여행 #N, {짧은 수정}` (`N` = 그 주제의 **다음** 순번). 세션마다 새 `#1` 금지.
 
@@ -56,7 +56,7 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **S11** 테마 상세 모달 | ⏳ Preview QA | top10·scenic·regions 클릭→모달(축제/코스 벤치) | #16 contentId |
 | **#16** 명승 contentId 보강 | ✅ Preview QA | scenic 34/34 contentId | #17 |
 | **#17** 상세 정보 전수보강 | ⏳ Preview QA | top10 10/10 · regions Tour SSOT · 빈모달 가드 | S12 |
-| **S12** 테마 크로스 연결 | ⏳ | §2.5 전략+#18 lib/smoke → #19 모달 레일 | S9 |
+| **S12** 테마 크로스 연결 | ⏳ Preview QA | §2.5+#18 매처 · #19 모달 레일·area 수신 | S9 |
 | **S9** 폴리시·릴리스 | ⏳ | 사람 QA → releaseNotes 1회 제안 (#20) | main 병합 |
 
 ---
@@ -748,6 +748,7 @@ runtime searchKeyword 금지 · generate→audit→smoke→build 후 push.
 | **#18 산출** | §2.5 잠금 · `koreaThemeCrossLinks.js` · `smoke:korea-theme-cross-links` · 일지·작업로그 |
 | **#19 산출** | 모달 레일 UI · regions/courses(/korea area 수신 최소) · Preview QA |
 | **VERIFY (#18)** | `npm run smoke:korea-theme-cross-links` · `npm run build` |
+| **VERIFY (#19)** | `smoke:korea-theme-cross-links` · `smoke:korea-theme-spot-modal` · `npm run build` |
 | **금지** | 축제 필터/지도 리팩터 · 새 크로스 JSON 대량 · 가짜 상품 카드 · releaseNotes · 새 Preview 브랜치 |
 
 **채팅명 (#18)**: `테마여행 #18, 테마 연결`  

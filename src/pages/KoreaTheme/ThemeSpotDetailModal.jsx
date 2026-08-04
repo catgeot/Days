@@ -1,8 +1,255 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowUp, ExternalLink, Landmark, Phone, X } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  ArrowUp,
+  ExternalLink,
+  Landmark,
+  MapPin,
+  Phone,
+  Route,
+  Sparkles,
+  X,
+} from 'lucide-react';
 import { setPlaceReturnTo } from '../Home/lib/placeReturnTo';
+import { resolveThemeCrossLinks } from '../Home/lib/koreaThemeCrossLinks';
 import { fetchTourApiAttractionDetail } from '../../utils/fetchTourApiAttractionDetail';
+import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
+import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
+
+const MODULE_CHIP = {
+  top10: { label: '10대 절경', path: '/korea/theme/top10' },
+  scenic: { label: '명승지', path: '/korea/theme/scenic' },
+  regions: { label: '방방곡곡', path: '/korea/theme/regions' },
+};
+
+function CrossRailSection({ title, children }) {
+  if (!children) return null;
+  return (
+    <section className="space-y-2 border-t border-stone-200/80 pt-4">
+      <h3 className="text-[11px] font-bold uppercase tracking-[0.14em] text-stone-500">
+        {title}
+      </h3>
+      {children}
+    </section>
+  );
+}
+
+function CrossChipLink({ to, children }) {
+  return (
+    <Link
+      to={to}
+      className="inline-flex items-center rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs font-semibold text-stone-700 hover:border-amber-300/80 hover:bg-amber-50"
+    >
+      {children}
+    </Link>
+  );
+}
+
+function CrossTextLink({ to, children, onClick }) {
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className="block w-full rounded-xl border border-stone-200/90 bg-white px-3 py-2 text-left text-sm font-semibold text-stone-800 hover:border-amber-300/80 hover:bg-amber-50/50"
+      >
+        {children}
+      </button>
+    );
+  }
+  return (
+    <Link
+      to={to}
+      className="block rounded-xl border border-stone-200/90 bg-white px-3 py-2 text-sm font-semibold text-stone-800 hover:border-amber-300/80 hover:bg-amber-50/50"
+    >
+      {children}
+    </Link>
+  );
+}
+
+/**
+ * §2.5.4 모달 하단 크로스 레일 — 매처는 koreaThemeCrossLinks만 사용.
+ */
+function ThemeSpotCrossRail({ spot, detail, returnTo, onClose }) {
+  const navigate = useNavigate();
+
+  const crossSpot = useMemo(() => {
+    if (!spot) return null;
+    const fromDetailLat = Number(detail?.mapy);
+    const fromDetailLng = Number(detail?.mapx);
+    const lat = Number(spot.lat);
+    const lng = Number(spot.lng);
+    return {
+      hubId: spot.hubId,
+      placeSlug: spot.placeSlug,
+      name: spot.name,
+      nameEn: spot.nameEn,
+      region: spot.region,
+      areaCode: spot.areaCode,
+      lat: Number.isFinite(lat) ? lat : fromDetailLat,
+      lng: Number.isFinite(lng) ? lng : fromDetailLng,
+      mapx: detail?.mapx,
+      mapy: detail?.mapy,
+      contentId: spot.contentId,
+    };
+  }, [spot, detail]);
+
+  const cross = useMemo(
+    () => resolveThemeCrossLinks(crossSpot),
+    [crossSpot],
+  );
+
+  if (!spot || !cross) return null;
+
+  const moduleChips = (cross.membership?.modules || [])
+    .map((id) => MODULE_CHIP[id])
+    .filter(Boolean)
+    .map((m) => {
+      if (m.path === '/korea/theme/regions' && cross.deepLinks?.regions) {
+        return { ...m, path: cross.deepLinks.regions };
+      }
+      return m;
+    });
+
+  const stayHref = cross.stay?.keyword
+    ? getMrtAccommodationSearchUrl(cross.stay.keyword, { isDomestic: true })
+    : '';
+  const tnaHref = cross.tna?.keyword
+    ? buildMrtTnaSearchMoreUrl(cross.tna.keyword)
+    : '';
+
+  const openNearbyPlace = (hubId) => {
+    const slug = String(hubId || '').trim().toLowerCase();
+    if (!slug || !returnTo) return;
+    setPlaceReturnTo(returnTo);
+    onClose?.();
+    navigate(`/place/${slug}`, { state: { returnTo } });
+  };
+
+  const hasAny =
+    moduleChips.length > 0 ||
+    cross.sameHub.length > 0 ||
+    cross.nearbyHubs.length > 0 ||
+    stayHref ||
+    tnaHref ||
+    cross.deepLinks?.festivals ||
+    cross.deepLinks?.courses ||
+    cross.packageCta;
+
+  if (!hasAny) return null;
+
+  return (
+    <div className="space-y-4" aria-label="관련 테마·여행 연결">
+      {moduleChips.length > 0 ? (
+        <CrossRailSection title="이 장소가 속한 테마">
+          <div className="flex flex-wrap gap-1.5">
+            {moduleChips.map((m) => (
+              <CrossChipLink key={m.path + m.label} to={m.path}>
+                {m.label}
+              </CrossChipLink>
+            ))}
+          </div>
+        </CrossRailSection>
+      ) : null}
+
+      {cross.sameHub.length > 0 ? (
+        <CrossRailSection title="같은 도시 명소">
+          <ul className="space-y-1.5">
+            {cross.sameHub.map((row) => (
+              <li key={row.placeSlug}>
+                <CrossTextLink to={row.pathHint}>{row.name}</CrossTextLink>
+              </li>
+            ))}
+          </ul>
+        </CrossRailSection>
+      ) : null}
+
+      {cross.nearbyHubs.length > 0 ? (
+        <CrossRailSection title="인근 여행지">
+          <ul className="space-y-1.5">
+            {cross.nearbyHubs.map((h) => (
+              <li key={h.hubId}>
+                <CrossTextLink
+                  onClick={() => openNearbyPlace(h.hubId)}
+                >
+                  <span className="inline-flex items-center gap-1.5">
+                    <MapPin size={14} className="text-amber-700" aria-hidden="true" />
+                    {h.name}
+                  </span>
+                </CrossTextLink>
+              </li>
+            ))}
+          </ul>
+        </CrossRailSection>
+      ) : null}
+
+      {stayHref || tnaHref ? (
+        <CrossRailSection title="숙소 · 투어">
+          <div className="flex flex-col gap-1.5 sm:flex-row sm:flex-wrap">
+            {stayHref ? (
+              <a
+                href={stayHref}
+                target="_blank"
+                rel="noopener noreferrer sponsored"
+                className="inline-flex items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-950 hover:bg-amber-100"
+              >
+                숙소 · {cross.stay.keyword}
+                <ExternalLink size={12} aria-hidden="true" />
+              </a>
+            ) : null}
+            {tnaHref ? (
+              <a
+                href={tnaHref}
+                target="_blank"
+                rel="noopener noreferrer sponsored"
+                className="inline-flex items-center justify-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-stone-100"
+              >
+                투어 · {cross.tna.keyword}
+                <ExternalLink size={12} aria-hidden="true" />
+              </a>
+            ) : null}
+          </div>
+          <p className="text-[11px] leading-relaxed text-stone-500 break-keep">
+            예약·가격은 장소 카드에서도 이어갈 수 있습니다.
+          </p>
+        </CrossRailSection>
+      ) : null}
+
+      <CrossRailSection title="축제 · 여행코스">
+        <div className="flex flex-col gap-1.5 sm:flex-row sm:flex-wrap">
+          <Link
+            to={cross.deepLinks.festivals}
+            className="inline-flex items-center justify-center gap-1.5 rounded-full border border-stone-200 bg-white px-3 py-2 text-xs font-bold text-stone-800 hover:border-amber-300/80 hover:bg-amber-50"
+          >
+            <Sparkles size={13} className="text-amber-700" aria-hidden="true" />
+            이 지역 축제
+          </Link>
+          <Link
+            to={cross.deepLinks.courses}
+            className="inline-flex items-center justify-center gap-1.5 rounded-full border border-stone-200 bg-white px-3 py-2 text-xs font-bold text-stone-800 hover:border-amber-300/80 hover:bg-amber-50"
+          >
+            <Route size={13} className="text-amber-700" aria-hidden="true" />
+            이 지역 여행코스
+          </Link>
+        </div>
+      </CrossRailSection>
+
+      {cross.packageCta?.url ? (
+        <CrossRailSection title="패키지">
+          <a
+            href={cross.packageCta.url}
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
+          >
+            {cross.packageCta.ctaLabel || '패키지 보기'}
+            <ExternalLink size={14} aria-hidden="true" />
+          </a>
+        </CrossRailSection>
+      ) : null}
+    </div>
+  );
+}
 
 function stripHtml(raw) {
   return String(raw || '')
@@ -110,6 +357,12 @@ const INTRO_FIELDS = [
  *     blurb?: string,
  *     placeSlug?: string | null,
  *     contentId?: string | null,
+ *     hubId?: string | null,
+ *     region?: string | null,
+ *     areaCode?: string | number | null,
+ *     nameEn?: string | null,
+ *     lat?: number | null,
+ *     lng?: number | null,
  *   } | null,
  *   eyebrow?: string,
  *   returnTo: string,
@@ -403,6 +656,13 @@ export default function ThemeSpotDetailModal({
                 <ExternalLink size={14} aria-hidden="true" />
               </button>
             ) : null}
+
+            <ThemeSpotCrossRail
+              spot={spot}
+              detail={detail}
+              returnTo={returnTo}
+              onClose={onClose}
+            />
           </div>
         </div>
 

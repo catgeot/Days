@@ -2,6 +2,21 @@
 
 직전: [`2026-08-03-project-log.md`](./2026-08-03-project-log.md)
 
+## 테마여행 #19, 크로스 레일
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **한 일**: `ThemeSpotDetailModal` 하단 크로스 레일(§2.5.4) · top10/scenic/regions에 hub·좌표 전달 · regions/courses/`/korea` `?area=` 수신(축제 칩·지도 미개편) · 작업로그 #19
+- **VERIFY**: `npm run smoke:korea-theme-cross-links` · `npm run smoke:korea-theme-spot-modal` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/top10`
+- **QA**: top10 한라산 모달 스크롤 → 테마 칩·같은 도시·인근·숙소/투어·축제/코스 · 축제 링크는 `?from=theme&area=` · 제주면 패키지 CTA
+- **다음**: 폴리시·릴리스(#20)
+
+```
+테마여행 #20, 폴리시·릴리스
+```
+
 ## 테마여행 #18, 테마 연결
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `d113fae8` · Preview QA(전략·매처 · UI는 #19)

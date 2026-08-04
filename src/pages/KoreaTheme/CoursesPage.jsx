@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, ArrowUp, Home, Route, X } from 'lucide-react';
 import SEO from '../../components/SEO';
 import {
@@ -249,8 +249,20 @@ function pickDefaultChipId(chips) {
   return chips[0]?.id || null;
 }
 
+/** deep-link `?area=` → 단독 칩 또는 기타 칩 */
+function pickChipIdForArea(chips, areaCode) {
+  const code = String(areaCode || '').trim();
+  if (!code || !Array.isArray(chips) || chips.length === 0) return null;
+  if (chips.some((c) => c.id === code)) return code;
+  const other = chips.find((c) => c.id === COURSE_OTHER_CHIP_ID);
+  if (other?.areaCodes?.includes(code)) return COURSE_OTHER_CHIP_ID;
+  return null;
+}
+
 export default function KoreaThemeCoursesPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const areaFromQuery = String(searchParams.get('area') || '').trim();
   const [chips, setChips] = useState([]);
   const [chipsLoading, setChipsLoading] = useState(true);
   const [selectedChipId, setSelectedChipId] = useState(null);
@@ -278,6 +290,8 @@ export default function KoreaThemeCoursesPage() {
       setChips(nextChips);
       setSelectedChipId((prev) => {
         if (prev && nextChips.some((c) => c.id === prev)) return prev;
+        const fromQuery = pickChipIdForArea(nextChips, areaFromQuery);
+        if (fromQuery) return fromQuery;
         return pickDefaultChipId(nextChips);
       });
       setChipsLoading(false);
@@ -286,7 +300,7 @@ export default function KoreaThemeCoursesPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [areaFromQuery]);
 
   useEffect(() => {
     const chip = chips.find((c) => c.id === selectedChipId) || null;
