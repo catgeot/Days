@@ -4,7 +4,7 @@
 
 ## 테마여행 #17, 상세 정보 전수보강
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `1456073b` · Preview QA 대기
 
 - **전수**: scenic **34/34** · top10 **10/10**(null 5 채움·교체 불필요) · regions **149/196**(76%) Tour contentId
 - **한 일**: top10 overrides 5곳 · `koreaThemeRegionTour` SSOT+fill 스크립트 · RegionsPage contentId 연결 · detailIntro type12/14 대응 · 빈 모달 카피·Place CTA · 대안 경로 플랜 §S11.2
