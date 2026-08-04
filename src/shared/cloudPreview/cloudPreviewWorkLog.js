@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
   sessionNo: 14,
-  sessionPhase: '코스 소개 문구',
+  sessionPhase: '코스 지역칩 정리',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/courses',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-04-korea-theme-courses-chips',
+    session: '테마여행 #14, 코스 지역칩 정리',
+    title: '0건 숨김 · 소량은 기타 칩',
+    detail:
+      '여행코스 지역칩에서 0건 권역은 숨기고, 1~2건 소량 권역은 「기타」 한 칩으로 묶었습니다(3건 이상만 단독). /korea/theme/courses에서 서울·제주가 없고 기타에 충북·경북 등이 묶이는지 확인해 주세요.',
+    at: '2026-08-04',
+  },
   {
     id: '2026-08-04-korea-theme-courses-copy-short',
     session: '테마여행 #14, 코스 소개 문구',

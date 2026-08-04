@@ -2,6 +2,22 @@
 
 직전: [`2026-08-03-project-log.md`](./2026-08-03-project-log.md)
 
+## 테마여행 #14, 코스 지역칩 정리
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **요청**: 0건 칩 숨김 · 소량 코스 권역은 별도 칩으로 묶기
+- **한 일**: 권역별 rawCount 조회 → 0건 제외 · ≥3 단독 · 1~2「기타」병합 · `koreaThemeCourseChips.js`
+- **VERIFY**: `smoke:korea-theme-courses` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/courses`
+- **QA**: 서울·제주 칩 없음 · 기타에 충북·경북·대구·부산 · 단독은 경기·강원 등
+- **다음**: Preview QA → 폴리시·릴리스
+
+```
+테마여행 #15, 폴리시·릴리스
+```
+
 ## 테마여행 #14, 코스 소개 문구
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `fb804dde` · Preview QA 대기
@@ -11,10 +27,10 @@
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/courses`
 - **QA**: 상단 제목·한 줄 소개만 보이는지
-- **다음**: Preview QA → 폴리시·릴리스
+- **다음**: 지역칩 0건/소량 정리
 
 ```
-테마여행 #15, 폴리시·릴리스
+테마여행 #14, 코스 지역칩 정리
 ```
 
 ## 테마여행 #14, 모달 전면·하단 버튼

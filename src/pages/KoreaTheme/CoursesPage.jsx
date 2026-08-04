@@ -2,20 +2,21 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowUp, Home, Route, X } from 'lucide-react';
 import SEO from '../../components/SEO';
+import {
+  buildCourseAreaChips,
+  COURSE_OTHER_CHIP_ID,
+} from '../Home/lib/koreaThemeCourseChips';
 import { listKoreaThemeAreas } from '../Home/lib/koreaThemeRegions';
 import {
   fetchTourApiCourseDetail,
+  fetchTourApiTravelCourseAreaCounts,
   fetchTourApiTravelCourses,
 } from '../../utils/fetchTourApiCourses';
 
 const RETURN_TO = '/korea/theme/courses';
 const AREAS = listKoreaThemeAreas();
-/** 코스가 비교적 많은 권역을 기본으로 */
-const DEFAULT_AREA =
-  AREAS.find((a) => a.areaCode === '32')?.areaCode ||
-  AREAS.find((a) => a.areaCode === '31')?.areaCode ||
-  AREAS[0]?.areaCode ||
-  '32';
+/** 코스가 비교적 많은 권역을 기본 후보로 */
+const PREFERRED_DEFAULT_AREAS = ['31', '32', '2'];
 
 function stripHtml(html) {
   if (!html) return '';
@@ -241,9 +242,18 @@ function CourseDetailModal({
   );
 }
 
+function pickDefaultChipId(chips) {
+  for (const code of PREFERRED_DEFAULT_AREAS) {
+    if (chips.some((c) => c.id === code)) return code;
+  }
+  return chips[0]?.id || null;
+}
+
 export default function KoreaThemeCoursesPage() {
   const navigate = useNavigate();
-  const [areaCode, setAreaCode] = useState(DEFAULT_AREA);
+  const [chips, setChips] = useState([]);
+  const [chipsLoading, setChipsLoading] = useState(true);
+  const [selectedChipId, setSelectedChipId] = useState(null);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -251,11 +261,43 @@ export default function KoreaThemeCoursesPage() {
   const [detailById, setDetailById] = useState({});
   const [detailLoadingId, setDetailLoadingId] = useState(null);
 
-  const activeArea = AREAS.find((a) => a.areaCode === areaCode);
+  const activeChip = chips.find((c) => c.id === selectedChipId) || null;
   const selectedCourse =
     courses.find((c) => String(c.contentId || '') === selectedId) || null;
 
   useEffect(() => {
+    let cancelled = false;
+    setChipsLoading(true);
+
+    (async () => {
+      const counts = await fetchTourApiTravelCourseAreaCounts(AREAS, {
+        concurrency: 5,
+      });
+      if (cancelled) return;
+      const nextChips = buildCourseAreaChips(counts);
+      setChips(nextChips);
+      setSelectedChipId((prev) => {
+        if (prev && nextChips.some((c) => c.id === prev)) return prev;
+        return pickDefaultChipId(nextChips);
+      });
+      setChipsLoading(false);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    const chip = chips.find((c) => c.id === selectedChipId) || null;
+    if (!selectedChipId || !chip) {
+      if (!chipsLoading) {
+        setCourses([]);
+        setLoading(false);
+      }
+      return undefined;
+    }
+
     let cancelled = false;
     setLoading(true);
     setError(null);
@@ -263,26 +305,45 @@ export default function KoreaThemeCoursesPage() {
     setCourses([]);
 
     (async () => {
-      const data = await fetchTourApiTravelCourses({
-        areaCode,
-        numOfRows: 30,
-        pageNo: 1,
-      });
+      const results = await Promise.all(
+        chip.areaCodes.map((code) =>
+          fetchTourApiTravelCourses({
+            areaCode: code,
+            numOfRows: 30,
+            pageNo: 1,
+          }),
+        ),
+      );
       if (cancelled) return;
-      if (!data) {
+
+      if (results.every((r) => !r)) {
         setError('여행코스를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.');
         setCourses([]);
         setLoading(false);
         return;
       }
-      setCourses(Array.isArray(data.items) ? data.items : []);
+
+      const seen = new Set();
+      /** @type {any[]} */
+      const merged = [];
+      results.forEach((data, idx) => {
+        const areaCode = chip.areaCodes[idx];
+        const areaName = chip.areaNames[idx] || areaCode;
+        for (const item of data?.items || []) {
+          const id = String(item?.contentId || '');
+          if (!id || seen.has(id)) continue;
+          seen.add(id);
+          merged.push({ ...item, _areaCode: areaCode, _areaName: areaName });
+        }
+      });
+      setCourses(merged);
       setLoading(false);
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [areaCode]);
+  }, [selectedChipId, chips, chipsLoading]);
 
   const openCourse = async (course) => {
     const id = String(course.contentId || '');
@@ -297,6 +358,15 @@ export default function KoreaThemeCoursesPage() {
   };
 
   const closeModal = useCallback(() => setSelectedId(null), []);
+
+  const countLabel = (() => {
+    if (chipsLoading || !activeChip) return chipsLoading ? '지역 확인 중…' : '지역';
+    if (activeChip.id === COURSE_OTHER_CHIP_ID) {
+      const regions = activeChip.areaNames.join('·');
+      return `기타(${regions}) · ${loading ? '불러오는 중…' : `${courses.length}개`}`;
+    }
+    return `${activeChip.label} · ${loading ? '불러오는 중…' : `${courses.length}개`}`;
+  })();
 
   return (
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
@@ -361,35 +431,46 @@ export default function KoreaThemeCoursesPage() {
             </p>
 
             <div role="group" aria-label="시도 필터" className="flex flex-wrap gap-1.5">
-              {AREAS.map((area) => {
-                const active = areaCode === area.areaCode;
+              {chipsLoading ? (
+                <span className="text-xs text-stone-500">코스가 있는 지역을 확인하는 중…</span>
+              ) : null}
+              {!chipsLoading && chips.length === 0 ? (
+                <span className="text-xs text-stone-500">표시할 지역이 없습니다.</span>
+              ) : null}
+              {chips.map((chip) => {
+                const active = selectedChipId === chip.id;
                 return (
                   <button
-                    key={area.areaCode}
+                    key={chip.id}
                     type="button"
-                    onClick={() => setAreaCode(area.areaCode)}
+                    onClick={() => setSelectedChipId(chip.id)}
                     aria-pressed={active}
+                    title={
+                      chip.id === COURSE_OTHER_CHIP_ID
+                        ? chip.areaNames.join(', ')
+                        : undefined
+                    }
                     className={
                       active
                         ? 'rounded-full border border-amber-400/90 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-950'
                         : 'rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50'
                     }
                   >
-                    {area.name}
+                    {chip.label}
                   </button>
                 );
               })}
             </div>
 
-            <p className="text-xs font-semibold text-stone-500">
-              {activeArea?.name || '지역'} · {loading ? '불러오는 중…' : `${courses.length}개`}
+            <p className="text-xs font-semibold text-stone-500 break-keep">
+              {countLabel}
             </p>
 
             {error ? (
               <p className="text-sm text-rose-700 break-keep">{error}</p>
             ) : null}
 
-            {!loading && !error && courses.length === 0 ? (
+            {!chipsLoading && !loading && !error && courses.length === 0 ? (
               <p className="text-sm text-stone-500 break-keep">
                 이 지역에 등록된 여행코스가 아직 없습니다. 다른 시도를 골라 보세요.
               </p>
@@ -426,6 +507,11 @@ export default function KoreaThemeCoursesPage() {
                         <span className="text-base font-extrabold tracking-tight text-stone-900 break-keep sm:text-lg">
                           {course.title}
                         </span>
+                        {activeChip?.id === COURSE_OTHER_CHIP_ID && course._areaName ? (
+                          <span className="mt-1 block text-[11px] font-semibold text-amber-800/90">
+                            {course._areaName}
+                          </span>
+                        ) : null}
                         {course.addr1 ? (
                           <span className="mt-1 block text-xs text-stone-500 break-keep">
                             {course.addr1}

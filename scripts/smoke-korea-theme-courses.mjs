@@ -7,6 +7,11 @@
 import { readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import {
+  buildCourseAreaChips,
+  COURSE_CHIP_STANDALONE_MIN,
+  COURSE_OTHER_CHIP_ID,
+} from '../src/pages/Home/lib/koreaThemeCourseChips.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -23,6 +28,33 @@ function assert(cond, msg) {
 }
 
 function mainOffline() {
+  const chips = buildCourseAreaChips([
+    { areaCode: '1', name: '서울', count: 0 },
+    { areaCode: '31', name: '경기', count: 12 },
+    { areaCode: '32', name: '강원', count: 10 },
+    { areaCode: '33', name: '충북', count: 2 },
+    { areaCode: '4', name: '대구', count: 1 },
+    { areaCode: '39', name: '제주', count: 0 },
+  ]);
+  assert(COURSE_CHIP_STANDALONE_MIN === 3, 'standalone min is 3');
+  assert(
+    chips.every((c) => c.id !== '1' && c.id !== '39'),
+    'zero-count areas omitted from chips',
+  );
+  assert(
+    chips.some((c) => c.id === '31') && chips.some((c) => c.id === '32'),
+    'standalone areas keep own chips',
+  );
+  const other = chips.find((c) => c.id === COURSE_OTHER_CHIP_ID);
+  assert(Boolean(other), 'sparse areas merge into 기타 chip');
+  assert(
+    other?.count === 3 &&
+      other.areaCodes.includes('33') &&
+      other.areaCodes.includes('4'),
+    '기타 chip aggregates sparse counts',
+  );
+  assert(other?.label === '기타', '기타 chip label');
+
   const modules = JSON.parse(
     readFileSync(join(root, 'src/pages/Home/data/koreaThemeModules.json'), 'utf8'),
   );
@@ -61,6 +93,12 @@ function mainOffline() {
   assert(pageSrc.includes('위로'), 'CoursesPage modal top button label');
   assert(pageSrc.includes('닫기'), 'CoursesPage modal close label');
   assert(pageSrc.includes('safe-area-inset'), 'CoursesPage modal edge padding');
+  assert(pageSrc.includes('buildCourseAreaChips'), 'CoursesPage builds chips from counts');
+  assert(pageSrc.includes('COURSE_OTHER_CHIP_ID'), 'CoursesPage uses 기타 chip id');
+  assert(
+    fetchSrc.includes('fetchTourApiTravelCourseAreaCounts'),
+    'fetch exposes area count probe',
+  );
 }
 
 async function mainLive() {

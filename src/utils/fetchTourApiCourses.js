@@ -71,6 +71,52 @@ export async function fetchTourApiTravelCourses(opts) {
   });
 }
 
+/**
+ * 권역별 여행코스 건수(rawCount). numOfRows=1로 가볍게 조회.
+ * @param {{ areaCode: string, name?: string }[]} areas
+ * @param {{ concurrency?: number }} [opts]
+ * @returns {Promise<{ areaCode: string, name: string, count: number }[]>}
+ */
+export async function fetchTourApiTravelCourseAreaCounts(areas, opts = {}) {
+  const list = Array.isArray(areas) ? areas : [];
+  const concurrency = Math.max(1, Math.min(Number(opts.concurrency) || 5, 8));
+  /** @type {{ areaCode: string, name: string, count: number }[]} */
+  const out = [];
+  let idx = 0;
+
+  async function worker() {
+    while (idx < list.length) {
+      const cur = list[idx];
+      idx += 1;
+      const areaCode = String(cur?.areaCode || '').trim();
+      const name = String(cur?.name || areaCode);
+      if (!areaCode) continue;
+      const data = await fetchTourApiTravelCourses({
+        areaCode,
+        numOfRows: 1,
+        pageNo: 1,
+      });
+      const count = data
+        ? Number(data.rawCount ?? data.items?.length ?? 0) || 0
+        : 0;
+      out.push({ areaCode, name, count });
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, list.length || 1) }, () =>
+      worker(),
+    ),
+  );
+
+  const order = new Map(list.map((a, i) => [String(a.areaCode), i]));
+  out.sort(
+    (a, b) =>
+      (order.get(a.areaCode) ?? 0) - (order.get(b.areaCode) ?? 0),
+  );
+  return out;
+}
+
 function toHttps(url) {
   const s = String(url || '').trim();
   if (!s) return null;
