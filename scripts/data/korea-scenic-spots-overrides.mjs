@@ -29,7 +29,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '수도권',
       hubId: 'seoul',
       attractionName: '경복궁',
-      contentId: null,
+      contentId: '126508',
     },
     {
       order: 20,
@@ -39,7 +39,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '수도권',
       hubId: 'seoul',
       attractionName: '창덕궁',
-      contentId: null,
+      contentId: '127642',
     },
     {
       order: 30,
@@ -49,7 +49,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '수도권',
       hubId: 'suwon',
       attractionName: '수원화성',
-      contentId: null,
+      contentId: '125555',
     },
     {
       order: 40,
@@ -59,7 +59,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '수도권',
       hubId: 'seongnam',
       attractionName: '성남 남한산성',
-      contentId: null,
+      contentId: '125449',
     },
     {
       order: 50,
@@ -69,7 +69,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '강원',
       hubId: 'chuncheon',
       attractionName: '남이섬',
-      contentId: null,
+      contentId: '128019',
     },
     {
       order: 60,
@@ -79,7 +79,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '강원',
       hubId: 'gangneung',
       attractionName: '경포대',
-      contentId: null,
+      contentId: '125790',
     },
     {
       order: 70,
@@ -89,7 +89,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '강원',
       hubId: 'gangneung',
       attractionName: '정동진',
-      contentId: null,
+      contentId: '3545967',
     },
     {
       order: 80,
@@ -99,7 +99,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '강원',
       hubId: 'sokcho',
       attractionName: '낙산사',
-      contentId: null,
+      contentId: '125773',
     },
     {
       order: 90,
@@ -109,7 +109,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'jeonju',
       attractionName: '전주한옥마을',
-      contentId: null,
+      contentId: '264284',
     },
     {
       order: 100,
@@ -119,7 +119,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'damyang',
       attractionName: '죽녹원',
-      contentId: null,
+      contentId: '128834',
     },
     {
       order: 110,
@@ -129,7 +129,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'suncheon',
       attractionName: '낙안읍성민속마을',
-      contentId: null,
+      contentId: '127931',
     },
     {
       order: 120,
@@ -139,7 +139,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'buan',
       attractionName: '채석강',
-      contentId: null,
+      contentId: '128982',
     },
     {
       order: 130,
@@ -149,7 +149,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'jinan',
       attractionName: '마이산',
-      contentId: null,
+      contentId: '126235',
     },
     {
       order: 140,
@@ -159,7 +159,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'gyeongju',
       attractionName: '첨성대',
-      contentId: null,
+      contentId: '126207',
     },
     {
       order: 150,
@@ -169,7 +169,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'hapcheon',
       attractionName: '해인사',
-      contentId: null,
+      contentId: '126175',
     },
     {
       order: 160,
@@ -179,7 +179,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'andong',
       attractionName: '안동 하회마을',
-      contentId: null,
+      contentId: '894027',
     },
     {
       order: 170,
@@ -189,7 +189,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'busan',
       attractionName: '태종대',
-      contentId: null,
+      contentId: '126658',
     },
     {
       order: 180,
@@ -199,7 +199,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'danyang',
       attractionName: '도담삼봉',
-      contentId: null,
+      contentId: '125913',
     },
     {
       order: 190,
@@ -209,7 +209,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'taean',
       attractionName: '태안해안국립공원',
-      contentId: null,
+      contentId: '125818',
     },
     {
       order: 200,
@@ -219,7 +219,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '제주',
       hubId: 'seogwipo',
       attractionName: '천지연폭포',
-      contentId: null,
+      contentId: '126438',
     },
     {
       order: 210,

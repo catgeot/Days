@@ -29,8 +29,8 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 13 | (보강) | `테마여행 #13, 여행코스 보강` | ⏳ Preview QA |
 | 14 | (코스 모달·칩) | `테마여행 #14, 코스 상세 모달` 등 | ✅ Preview QA |
 | 15 | S11 | `테마여행 #15, 테마 상세 모달` | ⏳ Preview QA |
-| 16 | (SSOT) | `테마여행 #16, 명승 contentId 보강` | ⏳ 다음 |
-| 17 | S9 | `테마여행 #17, 폴리시·릴리스` | ⏳ |
+| 16 | (SSOT) | `테마여행 #16, 명승 contentId 보강` | ✅ Preview QA |
+| 17 | S9 | `테마여행 #17, 폴리시·릴리스` | ⏳ 다음 |
 
 이어하기·핫픽스만 할 때: `테마여행 #N, {짧은 수정}` (`N` = 그 주제의 **다음** 순번). 세션마다 새 `#1` 금지.
 
@@ -51,7 +51,7 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **S10** 여행코스·명승 확장 | ⏳ Preview QA | `/korea/theme/courses` · 명승 34 | #13 코스 보강 |
 | **#13~#14** 코스 사진·모달·칩 | ✅ Preview QA | 목록↔모달 분리 · 0건 칩 숨김 | S11 |
 | **S11** 테마 상세 모달 | ⏳ Preview QA | top10·scenic·regions 클릭→모달(축제/코스 벤치) | #16 contentId |
-| **#16** 명승 contentId 보강 | ⏳ | scenic(·top10) overrides에 검증 contentId | S9 |
+| **#16** 명승 contentId 보강 | ✅ Preview QA | scenic 34/34 contentId | S9 |
 | **S9** 폴리시·릴리스 | ⏳ | 사람 QA → releaseNotes 1회 제안 | main 병합 |
 
 ---
@@ -548,14 +548,14 @@ Place 1차 금지·2차 CTA만. /korea 축제 코드 수정 금지. build PASS �
 
 ---
 
-### S11.1 — 명승 contentId 보강 ⏳ (#16)
+### S11.1 — 명승 contentId 보강 ✅ Preview QA (#16)
 
 **한 줄**: TourAPI에 없는 게 아니라 **scenic overrides의 `contentId`가 비어 있음**. 모달은 runtime `searchKeyword`를 쓰지 않음 → **overrides에 검증된 id를 채운 뒤** generate.
 
 | | |
 |--|--|
 | **환경** | Cloud · `cursor/korea-theme` · PR #58 |
-| **원인** | `ThemeSpotDetailModal` → spot.`contentId`만 LIVE. 34곳 중 14만 채움(20 null) |
+| **원인** | `ThemeSpotDetailModal` → spot.`contentId`만 LIVE. 34곳 중 14만 채움(20 null) → **#16에서 34/34** |
 | **정식 경로** | `scripts/data/korea-scenic-spots-overrides.mjs` → `npm run generate:korea-scenic-spots` → `audit:korea-scenic-spots` |
 | **보조 힌트** | `travelSpotTourApi.json`에 이미 있는 id(아래 표) — **복사 후보일 뿐** · 모달 runtime 폴백 추가 **비권장**(이번 세션) |
 | **조회** | Edge `tourapi-proxy` `searchKeyword`(type12) + `detailCommon`으로 title·좌표 확인 후 overrides 기입 |
@@ -563,30 +563,30 @@ Place 1차 금지·2차 CTA만. /korea 축제 코드 수정 금지. build PASS �
 | **VERIFY** | `generate` · `audit:korea-scenic-spots` · `smoke:korea-theme-spot-modal` · `npm run build` · Preview `/scenic` 경복궁 등 |
 | **후속** | (여유 시) top10 null 5곳 동일 패턴 · regions는 hub에 contentId 없음 → 별도 · 폴리시=#17 |
 
-**contentId null 명승 20 (2026-08-04 tip)**
+**contentId 채움 20 (#16 · searchKeyword+detailCommon 검증)**
 
-| id | name | hub | travelSpotTourApi 힌트 |
-|----|------|-----|------------------------|
-| gyeongbokgung | 경복궁 | seoul | **126508** |
-| changdeokgung | 창덕궁 | seoul | — (searchKeyword 노이즈↑ · detailCommon으로 확정) |
-| suwon-hwaseong | 수원화성 | suwon | — |
-| namhansanseong | 남한산성 | seongnam | attractionName=`성남 남한산성` |
-| nami-island | 남이섬 | chuncheon | **128019** (`namiseom`) |
-| gyeongpodae | 경포대 | gangneung | **125790** |
-| jeongdongjin | 정동진 | gangneung | — |
-| naksansa | 낙산사 | sokcho | — |
-| jeonju-hanok | 전주한옥마을 | jeonju | — (키워드 노이즈↑) |
-| juknokwon | 죽녹원 | damyang | — |
-| naganeupseong | 낙안읍성 | suncheon | attraction=`낙안읍성민속마을` |
-| chaeseokgang | 채석강 | buan | — |
-| maisan | 마이산 | jinan | — |
-| cheomseongdae | 첨성대 | gyeongju | LIVE 후보 **126207** (확정 전 detailCommon) |
-| haeinsa | 해인사 | hapcheon | — (식당 노이즈↑ · 본사/사찰 고르기) |
-| hahoe-village | 안동 하회마을 | andong | — |
-| taejongdae | 태종대 | busan | — |
-| dodamsambong | 도담삼봉 | danyang | — |
-| taean-coast | 태안해안국립공원 | taean | — |
-| cheonjiyeon | 천지연폭포 | seogwipo | LIVE 후보 **126438** |
+| id | name | contentId | Tour title (확정) |
+|----|------|-----------|-------------------|
+| gyeongbokgung | 경복궁 | **126508** | 경복궁 |
+| changdeokgung | 창덕궁 | **127642** | 창덕궁과 후원 [유네스코 세계유산] |
+| suwon-hwaseong | 수원화성 | **125555** | 수원 화성 [유네스코 세계유산] |
+| namhansanseong | 남한산성 | **125449** | 남한산성도립공원 [유네스코 세계유산] |
+| nami-island | 남이섬 | **128019** | 남이섬 |
+| gyeongpodae | 경포대 | **125790** | 강릉 경포대 |
+| jeongdongjin | 정동진 | **3545967** | 정동진 |
+| naksansa | 낙산사 | **125773** | 낙산사 |
+| jeonju-hanok | 전주한옥마을 | **264284** | 전북 전주 한옥마을 [슬로시티] |
+| juknokwon | 죽녹원 | **128834** | 죽녹원 |
+| naganeupseong | 낙안읍성 | **127931** | 순천 낙안읍성 |
+| chaeseokgang | 채석강 | **128982** | 채석강 (전북 서해안 국가지질공원) |
+| maisan | 마이산 | **126235** | 마이산도립공원 |
+| cheomseongdae | 첨성대 | **126207** | 경주 첨성대 |
+| haeinsa | 해인사 | **126175** | 해인사(합천) |
+| hahoe-village | 안동 하회마을 | **894027** | 안동 하회마을 [유네스코 세계유산] |
+| taejongdae | 태종대 | **126658** | 태종대 |
+| dodamsambong | 도담삼봉 | **125913** | 도담삼봉 |
+| taean-coast | 태안해안국립공원 | **125818** | 태안해안국립공원 |
+| cheonjiyeon | 천지연폭포 | **126438** | 천지연폭포 |
 
 **절차 (에이전트)**
 

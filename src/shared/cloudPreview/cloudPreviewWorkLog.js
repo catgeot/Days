@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 15,
-  sessionPhase: '테마 상세 모달',
+  sessionNo: 16,
+  sessionPhase: '명승 contentId 보강',
   branch: 'cursor/korea-theme',
-  previewPath: '/korea/theme/top10',
+  previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-04-korea-theme-scenic-contentid',
+    session: '테마여행 #16, 명승 contentId 보강',
+    title: '명승 34곳 contentId 전부 채움',
+    detail:
+      'scenic overrides null 20곳을 TourAPI searchKeyword+detailCommon으로 검증해 채웠습니다(34/34). /korea/theme/scenic에서 경복궁·남이섬·수원화성 등 모달에 Tour 개요·사진이 뜨는지 확인해 주세요.',
+    at: '2026-08-04',
+  },
   {
     id: '2026-08-04-korea-theme-spot-modal',
     session: '테마여행 #15, 테마 상세 모달',

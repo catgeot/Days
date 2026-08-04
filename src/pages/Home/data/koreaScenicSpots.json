@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-04T03:59:18.132Z",
+    "generatedAt": "2026-08-04T12:46:39.807Z",
     "count": 34,
     "curation": "GATEO",
     "disclaimer": "GATEO 선정 명승 — 공식 지정 목록 전체가 아닙니다.",
@@ -28,7 +28,7 @@
       "placeSlug": "gyeongbokgung-palace",
       "lat": 37.5796,
       "lng": 126.977,
-      "contentId": null
+      "contentId": "126508"
     },
     {
       "order": 20,
@@ -42,7 +42,7 @@
       "placeSlug": "changdeokgung-palace",
       "lat": 37.5823872,
       "lng": 126.9917013,
-      "contentId": null
+      "contentId": "127642"
     },
     {
       "order": 30,
@@ -56,7 +56,7 @@
       "placeSlug": "hwaseong-fortress",
       "lat": 37.2867876,
       "lng": 127.0114366,
-      "contentId": null
+      "contentId": "125555"
     },
     {
       "order": 40,
@@ -70,7 +70,7 @@
       "placeSlug": "namhansanseong-seongnam",
       "lat": 37.4653973,
       "lng": 127.1735631,
-      "contentId": null
+      "contentId": "125449"
     },
     {
       "order": 50,
@@ -84,7 +84,7 @@
       "placeSlug": "nami-island",
       "lat": 37.7962650518221,
       "lng": 127.525489199882,
-      "contentId": null
+      "contentId": "128019"
     },
     {
       "order": 60,
@@ -98,7 +98,7 @@
       "placeSlug": "gyeongpodae",
       "lat": 37.795,
       "lng": 128.8965,
-      "contentId": null
+      "contentId": "125790"
     },
     {
       "order": 70,
@@ -112,7 +112,7 @@
       "placeSlug": "jeongdongjin",
       "lat": 37.6914144167,
       "lng": 129.032603586,
-      "contentId": null
+      "contentId": "3545967"
     },
     {
       "order": 80,
@@ -126,7 +126,7 @@
       "placeSlug": "naksansa",
       "lat": 38.124506,
       "lng": 128.6291359,
-      "contentId": null
+      "contentId": "125773"
     },
     {
       "order": 90,
@@ -140,7 +140,7 @@
       "placeSlug": "jeonju-hanok-village",
       "lat": 35.815,
       "lng": 127.1535,
-      "contentId": null
+      "contentId": "264284"
     },
     {
       "order": 100,
@@ -154,7 +154,7 @@
       "placeSlug": "juknokwon",
       "lat": 35.327758323916,
       "lng": 126.985559013142,
-      "contentId": null
+      "contentId": "128834"
     },
     {
       "order": 110,
@@ -168,7 +168,7 @@
       "placeSlug": "naganeupseong-folk-village",
       "lat": 34.9064508,
       "lng": 127.3400983,
-      "contentId": null
+      "contentId": "127931"
     },
     {
       "order": 120,
@@ -182,7 +182,7 @@
       "placeSlug": "chaeseokgang",
       "lat": 35.6270358,
       "lng": 126.4681785,
-      "contentId": null
+      "contentId": "128982"
     },
     {
       "order": 130,
@@ -196,7 +196,7 @@
       "placeSlug": "maisan",
       "lat": 36.0445306,
       "lng": 127.4593222,
-      "contentId": null
+      "contentId": "126235"
     },
     {
       "order": 140,
@@ -210,7 +210,7 @@
       "placeSlug": "cheomseongdae",
       "lat": 35.8347,
       "lng": 129.219,
-      "contentId": null
+      "contentId": "126207"
     },
     {
       "order": 150,
@@ -224,7 +224,7 @@
       "placeSlug": "haeinsa",
       "lat": 35.801,
       "lng": 128.098,
-      "contentId": null
+      "contentId": "126175"
     },
     {
       "order": 160,
@@ -238,7 +238,7 @@
       "placeSlug": "hahoe-folk-village",
       "lat": 36.5390268,
       "lng": 128.5180947,
-      "contentId": null
+      "contentId": "894027"
     },
     {
       "order": 170,
@@ -252,7 +252,7 @@
       "placeSlug": "taejongdae",
       "lat": 35.05969491904282,
       "lng": 129.07980569117214,
-      "contentId": null
+      "contentId": "126658"
     },
     {
       "order": 180,
@@ -266,7 +266,7 @@
       "placeSlug": "dodamsambong-peaks",
       "lat": 37.0002949216,
       "lng": 128.3448007565,
-      "contentId": null
+      "contentId": "125913"
     },
     {
       "order": 190,
@@ -280,7 +280,7 @@
       "placeSlug": "taeanhaean-national-park",
       "lat": 36.7464233166,
       "lng": 126.2924752192,
-      "contentId": null
+      "contentId": "125818"
     },
     {
       "order": 200,
@@ -294,7 +294,7 @@
       "placeSlug": "cheonjiyeon-waterfall",
       "lat": 33.2447452147,
       "lng": 126.559561883,
-      "contentId": null
+      "contentId": "126438"
     },
     {
       "order": 210,

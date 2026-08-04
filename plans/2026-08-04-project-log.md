@@ -2,6 +2,22 @@
 
 직전: [`2026-08-03-project-log.md`](./2026-08-03-project-log.md)
 
+## 테마여행 #16, 명승 contentId 보강
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **한 일**: scenic overrides null 20곳 → TourAPI `searchKeyword`+`detailCommon` 검증 후 contentId 채움 (**34/34**) · generate/audit/smoke · 작업로그 #16
+- **확정 예**: 경복궁 `126508` · 창덕궁 `127642` · 수원화성 `125555` · 전주한옥마을 `264284` · 남이섬 `128019`
+- **VERIFY**: `generate:korea-scenic-spots` · `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-theme-spot-modal` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **QA**: 명승 목록→경복궁·남이섬·수원화성 모달 Tour 개요·사진 · 「Tour 상세 없음」사라짐
+- **다음**: 폴리시·릴리스(#17) · (여유) top10 null 5곳
+
+```
+테마여행 #17, 폴리시·릴리스
+```
+
 ## 테마여행 #15, 명승 contentId 핸드오프
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · 플랜·일지만 · Preview 불변
