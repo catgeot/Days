@@ -2,6 +2,22 @@
 
 직전: [`2026-08-03-project-log.md`](./2026-08-03-project-log.md)
 
+## 테마여행 #14, 모달 전면·하단 버튼
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **요청**: 모바일 전면 활용 · 사방 패딩으로 뒤 목록 인지 · 하단 닫기·위로
+- **한 일**: 모달 `h-full` + 사방 ~10px/safe-area 패딩 · 하단 「위로」「닫기」 · 상단 X 유지
+- **VERIFY**: `smoke:korea-theme-courses` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/courses`
+- **QA**: 모바일에서 모달 가장자리로 목록 비침 · 위로 스크롤 · 하단 닫기
+- **다음**: Preview QA → 폴리시·릴리스
+
+```
+테마여행 #15, 폴리시·릴리스
+```
+
 ## 테마여행 #14, 코스 상세 모달
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `7bdf3516` · Preview QA 대기
@@ -12,10 +28,10 @@
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/courses`
 - **QA**: 강원 코스 클릭→모달 · 닫기 후 목록 유지 · 스크롤 피로감 감소
-- **다음**: Preview QA → 폴리시·릴리스
+- **다음**: 모달 전면·하단 버튼 조율
 
 ```
-테마여행 #15, 폴리시·릴리스
+테마여행 #14, 모달 전면·하단 버튼
 ```
 
 ## 테마여행 #13, 여행코스 보강

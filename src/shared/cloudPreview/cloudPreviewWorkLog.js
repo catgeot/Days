@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
   sessionNo: 14,
-  sessionPhase: '코스 상세 모달',
+  sessionPhase: '모달 전면·하단 버튼',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/courses',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-04-korea-theme-courses-modal-chrome',
+    session: '테마여행 #14, 모달 전면·하단 버튼',
+    title: '모달 전면 + 사방 패딩·위로·닫기',
+    detail:
+      '모바일에서 모달이 화면 거의 전체를 쓰고, 사방에 얇은 패딩으로 뒤 목록이 보이게 했습니다. 하단에 「위로」「닫기」 버튼을 넣었습니다. /korea/theme/courses에서 코스를 열어 확인해 주세요.',
+    at: '2026-08-04',
+  },
   {
     id: '2026-08-04-korea-theme-courses-modal',
     session: '테마여행 #14, 코스 상세 모달',

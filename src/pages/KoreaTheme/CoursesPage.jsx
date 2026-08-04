@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Home, Route, X } from 'lucide-react';
+import { ArrowLeft, ArrowUp, Home, Route, X } from 'lucide-react';
 import SEO from '../../components/SEO';
 import { listKoreaThemeAreas } from '../Home/lib/koreaThemeRegions';
 import {
@@ -44,6 +44,8 @@ function CourseDetailModal({
   detailLoading,
   onClose,
 }) {
+  const scrollRef = useRef(null);
+
   useEffect(() => {
     const onKey = (event) => {
       if (event.key === 'Escape') onClose();
@@ -56,6 +58,14 @@ function CourseDetailModal({
       document.body.style.overflow = prev;
     };
   }, [onClose]);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: 0 });
+  }, [course?.contentId]);
+
+  const scrollToTop = () => {
+    scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   if (!course) return null;
 
@@ -73,12 +83,12 @@ function CourseDetailModal({
 
   return (
     <div
-      className="fixed inset-0 z-40 flex items-end justify-center bg-stone-900/35 backdrop-blur-sm p-0 md:items-center md:p-4"
+      className="fixed inset-0 z-40 flex items-stretch justify-center bg-stone-900/40 backdrop-blur-[2px] p-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] pb-[max(0.625rem,env(safe-area-inset-bottom))] pl-[max(0.625rem,env(safe-area-inset-left))] pr-[max(0.625rem,env(safe-area-inset-right))] md:items-center md:p-5"
       onClick={onClose}
       role="presentation"
     >
       <div
-        className="relative flex max-h-[92dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-3xl border border-stone-200 bg-white text-stone-900 shadow-2xl md:max-h-[90dvh] md:max-w-2xl md:rounded-3xl lg:max-w-3xl"
+        className="relative flex h-full w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white text-stone-900 shadow-2xl md:h-auto md:max-h-[min(90dvh,52rem)] md:max-w-2xl md:rounded-3xl lg:max-w-3xl"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -109,7 +119,10 @@ function CourseDetailModal({
           </button>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain custom-scrollbar">
+        <div
+          ref={scrollRef}
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain custom-scrollbar"
+        >
           {hero ? (
             <img
               src={hero}
@@ -203,6 +216,25 @@ function CourseDetailModal({
               </>
             ) : null}
           </div>
+        </div>
+
+        <div className="flex shrink-0 items-center gap-2 border-t border-stone-200/80 bg-white px-3 py-2.5 sm:px-4">
+          <button
+            type="button"
+            onClick={scrollToTop}
+            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm font-bold text-stone-700 hover:bg-stone-100"
+          >
+            <ArrowUp size={16} aria-hidden="true" />
+            위로
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
+          >
+            <X size={16} aria-hidden="true" />
+            닫기
+          </button>
         </div>
       </div>
     </div>

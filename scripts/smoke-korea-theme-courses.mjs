@@ -57,6 +57,10 @@ function mainOffline() {
   assert(pageSrc.includes('role="dialog"'), 'CoursesPage detail modal dialog');
   assert(pageSrc.includes('CourseDetailModal'), 'CoursesPage CourseDetailModal');
   assert(!pageSrc.includes('ChevronDown'), 'CoursesPage no accordion chevron');
+  assert(pageSrc.includes('scrollToTop'), 'CoursesPage modal scroll-to-top');
+  assert(pageSrc.includes('위로'), 'CoursesPage modal top button label');
+  assert(pageSrc.includes('닫기'), 'CoursesPage modal close label');
+  assert(pageSrc.includes('safe-area-inset'), 'CoursesPage modal edge padding');
 }
 
 async function mainLive() {
