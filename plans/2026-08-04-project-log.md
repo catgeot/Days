@@ -4,7 +4,7 @@
 
 ## 테마여행 #19, 크로스 레일
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `1481ca7b` · Preview QA 대기
 
 - **한 일**: `ThemeSpotDetailModal` 하단 크로스 레일(§2.5.4) · top10/scenic/regions에 hub·좌표 전달 · regions/courses/`/korea` `?area=` 수신(축제 칩·지도 미개편) · 작업로그 #19
 - **VERIFY**: `npm run smoke:korea-theme-cross-links` · `npm run smoke:korea-theme-spot-modal` · `npm run build`
