@@ -26,7 +26,8 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 10 | S8 | `테마여행 #10, SEO·QA링크` | ✅ Preview QA |
 | 11 | (리서치) | `테마여행 #11, 투어 API` | ✅ |
 | 12 | S10 | `테마여행 #12, 여행코스·명승확장` | ⏳ Preview QA |
-| 13 | S9 | `테마여행 #13, 폴리시·릴리스` | ⏳ |
+| 13 | (보강) | `테마여행 #13, 여행코스 보강` | ⏳ Preview QA |
+| 14 | S9 | `테마여행 #14, 폴리시·릴리스` | ⏳ |
 
 이어하기·핫픽스만 할 때: `테마여행 #N, {짧은 수정}` (`N` = 그 주제의 **다음** 순번). 세션마다 새 `#1` 금지.
 
@@ -44,7 +45,8 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **S7** 축제 연결 다듬기 | ⏳ Preview QA | `/korea?from=theme` · 복귀 한 줄 | S8 |
 | **S8** SEO·sitemap·QA | ✅ Preview QA | Helmet·sitemap·`/qa/korea-theme` | S10 |
 | **#11** TourAPI 리서치 | ✅ | type 25 코스·12 검증 가능 확인 | S10 |
-| **S10** 여행코스·명승 확장 | ⏳ Preview QA | `/korea/theme/courses` · 명승 34 | S9 |
+| **S10** 여행코스·명승 확장 | ⏳ Preview QA | `/korea/theme/courses` · 명승 34 | #13 코스 보강 |
+| **#13** 여행코스 사진 보강 | ⏳ Preview QA | 대표·구간 사진·갤러리 (동영상 API 없음) | S9 |
 | **S9** 폴리시·릴리스 | ⏳ | 사람 QA → releaseNotes 1회 제안 | main 병합 |
 
 ---
@@ -429,15 +431,28 @@ Helmet·sitemap·/qa/korea-theme. releaseNotes 파일 수정 금지.
 
 ---
 
+### #13 — 여행코스 사진 보강 ⏳ Preview QA
+
+| | |
+|--|--|
+| **산출** | 코스 목록 썸네일 확대 · 펼침 히어로·갤러리·구간 `subdetailimg` · smoke LIVE 구간사진 |
+| **VERIFY** | `smoke:korea-theme-courses`(+LIVE) · build |
+| **주의** | TourAPI type25 **동영상 필드 없음** · YouTube 추정 검색은 범위 밖 |
+| **금지** | 축제 로직 변경 · releaseNotes 무단 · 세션마다 새 Preview 브랜치 |
+
+**채팅명**: `테마여행 #13, 여행코스 보강`
+
+---
+
 ### S9 — 폴리시 · QA · 릴리스 ⏳
 
 사람 Preview OK → releaseNotes **초안만 제안** → 합의 후 반영 · main 병합.
 
-**채팅명**: `테마여행 #13, 폴리시·릴리스`  
+**채팅명**: `테마여행 #14, 폴리시·릴리스`  
 **첫 메시지**
 
 ```
-테마여행 #13, 폴리시·릴리스
+테마여행 #14, 폴리시·릴리스
 @plans/korea-theme-travel-plan.md S9·§7만
 Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일 금지).
 ```

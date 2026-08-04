@@ -26,6 +26,18 @@ function stripHtml(html) {
     .trim();
 }
 
+function toHttps(url) {
+  const s = String(url || '').trim();
+  if (!s) return '';
+  if (s.startsWith('//')) return `https:${s}`;
+  if (s.startsWith('http://')) return `https://${s.slice('http://'.length)}`;
+  return s;
+}
+
+function courseThumb(course) {
+  return toHttps(course?.imageUrl || course?.firstimage || '');
+}
+
 export default function KoreaThemeCoursesPage() {
   const navigate = useNavigate();
   const [areaCode, setAreaCode] = useState(DEFAULT_AREA);
@@ -143,8 +155,8 @@ export default function KoreaThemeCoursesPage() {
             </div>
             <p className="text-sm leading-relaxed text-stone-600 break-keep">
               한국관광공사 공개 여행코스입니다. 시도를 고르면 해당 지역 코스 목록이 열리고, 항목을
-              누르면 개요·구간을 볼 수 있습니다. 서울·제주 등 일부 권역은 등록 코스가 적을 수
-              있습니다.
+              누르면 사진·개요·구간을 볼 수 있습니다. 서울·제주 등 일부 권역은 등록 코스가 적을 수
+              있습니다. (공식 API에 동영상은 없습니다.)
             </p>
 
             <div role="group" aria-label="시도 필터" className="flex flex-wrap gap-1.5">
@@ -188,26 +200,36 @@ export default function KoreaThemeCoursesPage() {
                 const open = openId === id;
                 const detail = detailById[id];
                 const detailLoading = detailLoadingId === id;
+                const thumb = courseThumb(course);
+                const hero =
+                  toHttps(detail?.imageUrl) ||
+                  (detail?.galleryUrls?.[0] ? toHttps(detail.galleryUrls[0]) : '') ||
+                  thumb;
+                const gallery = Array.isArray(detail?.galleryUrls)
+                  ? detail.galleryUrls.map(toHttps).filter(Boolean)
+                  : hero
+                    ? [hero]
+                    : [];
                 return (
                   <li key={id || course.title}>
                     <button
                       type="button"
                       onClick={() => toggleCourse(course)}
-                      className="flex w-full items-start gap-3 rounded-2xl border border-stone-200/90 bg-white px-4 py-3.5 text-left shadow-sm transition-colors hover:border-amber-300/80 hover:bg-amber-50/40"
+                      className="flex w-full items-stretch gap-3 rounded-2xl border border-stone-200/90 bg-white p-2.5 text-left shadow-sm transition-colors hover:border-amber-300/80 hover:bg-amber-50/40 sm:p-3"
                     >
-                      {course.imageUrl || course.firstimage ? (
+                      {thumb ? (
                         <img
-                          src={course.imageUrl || course.firstimage}
+                          src={thumb}
                           alt=""
-                          className="mt-0.5 h-14 w-14 shrink-0 rounded-xl object-cover"
+                          className="h-[4.5rem] w-[6.5rem] shrink-0 rounded-xl object-cover sm:h-20 sm:w-28"
                           loading="lazy"
                         />
                       ) : (
-                        <span className="mt-0.5 flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-amber-200/80 bg-amber-50 text-amber-800">
-                          <Route size={18} aria-hidden="true" />
+                        <span className="flex h-[4.5rem] w-[6.5rem] shrink-0 items-center justify-center rounded-xl border border-amber-200/80 bg-amber-50 text-amber-800 sm:h-20 sm:w-28">
+                          <Route size={20} aria-hidden="true" />
                         </span>
                       )}
-                      <span className="min-w-0 flex-1">
+                      <span className="flex min-w-0 flex-1 flex-col justify-center py-0.5 pr-1">
                         <span className="flex items-start justify-between gap-2">
                           <span className="text-sm font-extrabold tracking-tight text-stone-900 break-keep">
                             {course.title}
@@ -227,52 +249,100 @@ export default function KoreaThemeCoursesPage() {
                     </button>
 
                     {open ? (
-                      <div className="mt-1 rounded-2xl border border-stone-200/80 bg-stone-50/80 px-4 py-3">
+                      <div className="mt-1 overflow-hidden rounded-2xl border border-stone-200/80 bg-stone-50/80">
                         {detailLoading ? (
-                          <p className="text-xs text-stone-500">상세를 불러오는 중…</p>
+                          <p className="px-4 py-3 text-xs text-stone-500">상세를 불러오는 중…</p>
                         ) : null}
                         {!detailLoading && detail?.empty ? (
-                          <p className="text-xs text-stone-500 break-keep">
+                          <p className="px-4 py-3 text-xs text-stone-500 break-keep">
                             상세 정보를 가져오지 못했습니다.
                           </p>
                         ) : null}
                         {!detailLoading && detail && !detail.empty ? (
                           <div className="space-y-3">
-                            {(detail.theme ||
-                              detail.schedule ||
-                              detail.distance ||
-                              detail.taketime) && (
-                              <p className="text-[11px] font-semibold text-amber-900/90 break-keep">
-                                {[detail.theme, detail.schedule, detail.distance, detail.taketime]
-                                  .filter(Boolean)
-                                  .join(' · ')}
-                              </p>
-                            )}
-                            {detail.overview ? (
-                              <p className="whitespace-pre-line text-xs leading-relaxed text-stone-600 break-keep">
-                                {stripHtml(detail.overview)}
-                              </p>
+                            {hero ? (
+                              <img
+                                src={hero}
+                                alt=""
+                                className="max-h-56 w-full object-cover sm:max-h-72"
+                                loading="lazy"
+                              />
                             ) : null}
-                            {detail.segments?.length ? (
-                              <ol className="space-y-2 border-t border-stone-200/80 pt-2">
-                                {detail.segments.map((seg, idx) => (
-                                  <li key={`${id}-${seg.subnum ?? idx}`} className="text-xs">
-                                    <p className="font-bold text-stone-800 break-keep">
-                                      {Number(seg.subnum ?? idx) + 1}. {seg.subname || '구간'}
-                                    </p>
-                                    {seg.subdetailoverview ? (
-                                      <p className="mt-0.5 whitespace-pre-line leading-relaxed text-stone-600 break-keep">
-                                        {stripHtml(seg.subdetailoverview)}
-                                      </p>
-                                    ) : null}
-                                  </li>
-                                ))}
-                              </ol>
-                            ) : detail.overview ? null : (
-                              <p className="text-[11px] text-stone-500 break-keep">
-                                이 코스의 구간 상세는 아직 없습니다.
-                              </p>
-                            )}
+                            <div className="space-y-3 px-4 pb-3 pt-1">
+                              {(detail.theme ||
+                                detail.schedule ||
+                                detail.distance ||
+                                detail.taketime) && (
+                                <p className="text-[11px] font-semibold text-amber-900/90 break-keep">
+                                  {[
+                                    detail.theme,
+                                    detail.schedule,
+                                    detail.distance,
+                                    detail.taketime,
+                                  ]
+                                    .filter(Boolean)
+                                    .join(' · ')}
+                                </p>
+                              )}
+                              {detail.overview ? (
+                                <p className="whitespace-pre-line text-xs leading-relaxed text-stone-600 break-keep">
+                                  {stripHtml(detail.overview)}
+                                </p>
+                              ) : null}
+                              {gallery.length > 1 ? (
+                                <div
+                                  className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1"
+                                  aria-label="코스 사진"
+                                >
+                                  {gallery.map((url) => (
+                                    <img
+                                      key={url}
+                                      src={url}
+                                      alt=""
+                                      className="h-16 w-24 shrink-0 rounded-lg object-cover ring-1 ring-stone-200/80"
+                                      loading="lazy"
+                                    />
+                                  ))}
+                                </div>
+                              ) : null}
+                              {detail.segments?.length ? (
+                                <ol className="space-y-3 border-t border-stone-200/80 pt-3">
+                                  {detail.segments.map((seg, idx) => {
+                                    const segImg = toHttps(seg.subdetailimg);
+                                    return (
+                                      <li
+                                        key={`${id}-${seg.subnum ?? idx}`}
+                                        className="flex gap-3 text-xs"
+                                      >
+                                        {segImg ? (
+                                          <img
+                                            src={segImg}
+                                            alt={seg.subdetailalt || seg.subname || ''}
+                                            className="h-16 w-20 shrink-0 rounded-lg object-cover ring-1 ring-stone-200/70"
+                                            loading="lazy"
+                                          />
+                                        ) : null}
+                                        <div className="min-w-0 flex-1">
+                                          <p className="font-bold text-stone-800 break-keep">
+                                            {Number(seg.subnum ?? idx) + 1}.{' '}
+                                            {seg.subname || '구간'}
+                                          </p>
+                                          {seg.subdetailoverview ? (
+                                            <p className="mt-0.5 whitespace-pre-line leading-relaxed text-stone-600 break-keep">
+                                              {stripHtml(seg.subdetailoverview)}
+                                            </p>
+                                          ) : null}
+                                        </div>
+                                      </li>
+                                    );
+                                  })}
+                                </ol>
+                              ) : detail.overview ? null : (
+                                <p className="text-[11px] text-stone-500 break-keep">
+                                  이 코스의 구간 상세는 아직 없습니다.
+                                </p>
+                              )}
+                            </div>
                           </div>
                         ) : null}
                       </div>

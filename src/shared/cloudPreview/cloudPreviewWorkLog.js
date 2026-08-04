@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 12,
-  sessionPhase: '여행코스·명승확장',
+  sessionNo: 13,
+  sessionPhase: '여행코스 보강',
   branch: 'cursor/korea-theme',
-  previewPath: '/korea/theme',
+  previewPath: '/korea/theme/courses',
   qaShareSlug: 'korea-theme',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-04-korea-theme-courses-media',
+    session: '테마여행 #13, 여행코스 보강',
+    title: '여행코스 사진(대표·구간) 표시',
+    detail:
+      '여행코스 펼침에 TourAPI 대표 사진·구간별 사진·갤러리 스트립을 넣었습니다. 목록 썸네일도 키웠습니다. 공식 API에 동영상은 없어 사진은 관광공사 이미지만 씁니다. /korea/theme/courses에서 강원 코스를 펼쳐 구간 사진을 확인해 주세요.',
+    at: '2026-08-04',
+  },
   {
     id: '2026-08-04-korea-theme-courses-scenic',
     session: '테마여행 #12, 여행코스·명승확장',

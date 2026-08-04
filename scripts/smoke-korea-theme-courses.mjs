@@ -45,6 +45,13 @@ function mainOffline() {
   const fetchSrc = readFileSync(join(root, 'src/utils/fetchTourApiCourses.js'), 'utf8');
   assert(fetchSrc.includes("contentTypeId: COURSE_CONTENT_TYPE_ID"), 'fetch uses type 25');
   assert(fetchSrc.includes("'25'"), 'COURSE_CONTENT_TYPE_ID 25');
+  assert(fetchSrc.includes("detailImage"), 'course detail fetches detailImage');
+  assert(fetchSrc.includes('subdetailimg'), 'course detail keeps segment images');
+  assert(fetchSrc.includes('galleryUrls'), 'course detail exposes galleryUrls');
+
+  const pageSrc = readFileSync(join(root, 'src/pages/KoreaTheme/CoursesPage.jsx'), 'utf8');
+  assert(pageSrc.includes('galleryUrls'), 'CoursesPage renders gallery');
+  assert(pageSrc.includes('subdetailimg'), 'CoursesPage renders segment photos');
 }
 
 async function mainLive() {
@@ -76,6 +83,31 @@ async function mainLive() {
   const hit = data.items[0];
   assert(Boolean(hit?.contentId), `LIVE contentId (${hit?.title || '-'})`);
   assert(String(hit?.contentTypeId) === '25', 'LIVE contentTypeId 25');
+  assert(
+    Boolean(hit?.imageUrl || hit?.firstimage),
+    `LIVE list image (${hit?.title || '-'})`,
+  );
+
+  const infoRes = await fetch(`${url.replace(/\/$/, '')}/functions/v1/tourapi-proxy`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${anon}`,
+      apikey: anon,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      action: 'detailInfo',
+      contentId: hit.contentId,
+      contentTypeId: '25',
+      numOfRows: 30,
+      pageNo: 1,
+    }),
+  });
+  assert(infoRes.status === 200, `LIVE detailInfo HTTP ${infoRes.status}`);
+  const info = await infoRes.json();
+  assert(info?.ok === true, 'LIVE detailInfo ok');
+  const withImg = (info?.items || []).filter((it) => it?.subdetailimg);
+  assert(withImg.length >= 1, `LIVE segment photos ≥1 (got ${withImg.length})`);
 }
 
 mainOffline();
