@@ -4,7 +4,7 @@
 
 ## 테마여행 #13, 여행코스 보강
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `cfd30d42` · Preview QA 대기
 
 - **한 일**: TourAPI 코스 대표·구간 사진(`subdetailimg`)·갤러리 스트립을 펼침 UI에 표시 · 목록 썸네일 확대 · https 정규화
 - **동영상**: type25 API에 동영상 URL 없음 → 미연동 (YouTube 추정 검색 범위 밖)
