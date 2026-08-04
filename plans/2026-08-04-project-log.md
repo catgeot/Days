@@ -2,6 +2,21 @@
 
 직전: [`2026-08-03-project-log.md`](./2026-08-03-project-log.md)
 
+## 테마여행 #14, 코스 소개 문구
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **한 일**: `/korea/theme/courses` 안내를 「한국관광공사 공개 여행코스입니다.」로 간략화
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/courses`
+- **QA**: 상단 제목·한 줄 소개만 보이는지
+- **다음**: Preview QA → 폴리시·릴리스
+
+```
+테마여행 #15, 폴리시·릴리스
+```
+
 ## 테마여행 #14, 모달 전면·하단 버튼
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `9df5f2cd` · Preview QA 대기
@@ -12,10 +27,10 @@
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/courses`
 - **QA**: 모바일에서 모달 가장자리로 목록 비침 · 위로 스크롤 · 하단 닫기
-- **다음**: Preview QA → 폴리시·릴리스
+- **다음**: 소개 문구 간략화
 
 ```
-테마여행 #15, 폴리시·릴리스
+테마여행 #14, 코스 소개 문구
 ```
 
 ## 테마여행 #14, 코스 상세 모달

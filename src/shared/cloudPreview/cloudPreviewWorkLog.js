@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
   sessionNo: 14,
-  sessionPhase: '모달 전면·하단 버튼',
+  sessionPhase: '코스 소개 문구',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/courses',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-04-korea-theme-courses-copy-short',
+    session: '테마여행 #14, 코스 소개 문구',
+    title: '여행코스 소개 문구 간략화',
+    detail:
+      'TourAPI 여행코스 안내를 「한국관광공사 공개 여행코스입니다.」한 줄로 줄였습니다. /korea/theme/courses 상단 문구를 확인해 주세요.',
+    at: '2026-08-04',
+  },
   {
     id: '2026-08-04-korea-theme-courses-modal-chrome',
     session: '테마여행 #14, 모달 전면·하단 버튼',

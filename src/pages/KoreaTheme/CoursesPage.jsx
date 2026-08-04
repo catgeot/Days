@@ -357,9 +357,7 @@ export default function KoreaThemeCoursesPage() {
               </h2>
             </div>
             <p className="text-sm leading-relaxed text-stone-600 break-keep">
-              한국관광공사 공개 여행코스입니다. 시도를 고르면 해당 지역 코스 목록이 열리고, 항목을
-              누르면 사진·개요·구간을 모달로 볼 수 있습니다. 서울·제주 등 일부 권역은 등록 코스가
-              적을 수 있습니다. (공식 API에 동영상은 없습니다.)
+              한국관광공사 공개 여행코스입니다.
             </p>
 
             <div role="group" aria-label="시도 필터" className="flex flex-wrap gap-1.5">
