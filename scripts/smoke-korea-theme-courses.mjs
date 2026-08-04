@@ -54,6 +54,9 @@ function mainOffline() {
   assert(pageSrc.includes('subdetailimg'), 'CoursesPage renders segment photos');
   assert(pageSrc.includes('aspect-[16/9]'), 'CoursesPage magazine full-width photo');
   assert(!pageSrc.includes('h-[4.5rem] w-[6.5rem]'), 'CoursesPage no side thumbnail');
+  assert(pageSrc.includes('role="dialog"'), 'CoursesPage detail modal dialog');
+  assert(pageSrc.includes('CourseDetailModal'), 'CoursesPage CourseDetailModal');
+  assert(!pageSrc.includes('ChevronDown'), 'CoursesPage no accordion chevron');
 }
 
 async function mainLive() {

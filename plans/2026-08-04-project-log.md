@@ -2,6 +2,22 @@
 
 직전: [`2026-08-03-project-log.md`](./2026-08-03-project-log.md)
 
+## 테마여행 #14, 코스 상세 모달
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **요청**: 인라인 펼침으로 목록·본문이 이어져 읽기 피로 → 리스트와 상세 분리
+- **한 일**: `/korea/theme/courses` — 목록 클릭 → 모달(개요·사진·구간) · 닫기/배경/Esc → 목록 복귀 · 인라인 accordion 제거
+- **VERIFY**: `smoke:korea-theme-courses` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/courses`
+- **QA**: 강원 코스 클릭→모달 · 닫기 후 목록 유지 · 스크롤 피로감 감소
+- **다음**: Preview QA → 폴리시·릴리스
+
+```
+테마여행 #15, 폴리시·릴리스
+```
+
 ## 테마여행 #13, 여행코스 보강
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `ba38e569` · Preview QA 대기
@@ -11,10 +27,10 @@
 - **VERIFY**: `smoke:korea-theme-courses`(+LIVE) · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/korea-theme` · git Preview `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/courses`
 - **QA**: 강원 코스 카드 — 사진이 제목 위 전폭인지 · 펼침 구간 전폭 사진
-- **다음**: Preview QA → `테마여행 #14, 폴리시·릴리스`
+- **다음**: #14 모달 분리 반영
 
 ```
-테마여행 #14, 폴리시·릴리스
+테마여행 #14, 코스 상세 모달
 ```
 
 ## 테마여행 #12, 여행코스·명승확장

@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 13,
-  sessionPhase: '여행코스 보강',
+  sessionNo: 14,
+  sessionPhase: '코스 상세 모달',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/courses',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-04-korea-theme-courses-modal',
+    session: '테마여행 #14, 코스 상세 모달',
+    title: '여행코스 목록·상세 모달 분리',
+    detail:
+      '코스를 펼쳐 아래에 붙이던 방식을 없애고, 목록 클릭 시 모달로 개요·사진·구간을 보여 줍니다. 닫기·배경·Esc로 목록으로 돌아갑니다. /korea/theme/courses에서 강원 코스를 눌러 모달·닫기를 확인해 주세요.',
+    at: '2026-08-04',
+  },
   {
     id: '2026-08-04-korea-theme-courses-magazine',
     session: '테마여행 #13, 여행코스 보강',
