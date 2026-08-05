@@ -23,10 +23,7 @@ import {
   X,
 } from 'lucide-react';
 import SEO from '../../components/SEO';
-import { listCityAttractionHubs } from '../Home/lib/cityAttractionHubs';
-import { setPlaceReturnTo } from '../Home/lib/placeReturnTo';
 import { ThemeFestivalBackLink } from '../KoreaTheme/ThemeModuleBackButton';
-import { isDomesticKoreaLocation } from '../../utils/tourApiMatch';
 import { resolveKoreaAreaFromCoords } from './resolveKoreaAreaFromCoords';
 import { festivalLngLat } from './koreaFestivalCorridors';
 import {
@@ -44,7 +41,6 @@ import {
   sidoListPhrase,
   subregionUnitLabel,
 } from './festivalRegionTags';
-import { nearbyHubsForFestival } from './nearbyFestivalHubs';
 import {
   groupFestivalsByCity,
   groupFestivalsBySido,
@@ -681,17 +677,6 @@ export default function KoreaFestivalHub() {
   const [favoriteList, setFavoriteList] = useState(() => loadFavorites());
   const [viewedList, setViewedList] = useState(() => loadViewed());
 
-  const krHubById = useMemo(() => {
-    const map = new Map();
-    for (const hub of listCityAttractionHubs()) {
-      if (!isDomesticKoreaLocation(hub) || !hub.hubId) continue;
-      map.set(String(hub.hubId).toLowerCase(), hub);
-    }
-    return map;
-  }, []);
-
-  const krHubList = useMemo(() => [...krHubById.values()], [krHubById]);
-
   const loadFestivals = useCallback(async (force = false) => {
     setLoading(true);
     setError('');
@@ -1010,11 +995,6 @@ export default function KoreaFestivalHub() {
     cityName,
     afterRegion,
   ]);
-
-  const selectedHubs = useMemo(() => {
-    if (!selected) return [];
-    return nearbyHubsForFestival(selected, krHubList);
-  }, [selected, krHubList]);
 
   const dismissLocHint = useCallback(() => {
     setLocHintDismissed(true);
@@ -2127,14 +2107,9 @@ export default function KoreaFestivalHub() {
       {selected && (
         <FestivalDetailSheet
           item={selected}
-          hubs={selectedHubs}
           favorited={favoriteIds.has(String(selected.contentId))}
           onToggleFavorite={handleToggleFavorite}
           onClose={() => setSelected(null)}
-          onOpenHub={(hubId) => {
-            setPlaceReturnTo('/korea');
-            navigate(`/place/${hubId}`, { state: { returnTo: '/korea' } });
-          }}
         />
       )}
     </div>

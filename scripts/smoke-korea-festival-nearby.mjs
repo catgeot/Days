@@ -91,6 +91,22 @@ assert(
   !sheetSrc.includes('KoreaFestivalMap'),
   'FestivalDetailSheet does not touch map component',
 );
+assert(
+  sheetSrc.includes('listKoreaScenicSpots'),
+  'FestivalDetailSheet lists scenic spots for festival region',
+);
+assert(
+  sheetSrc.includes('인근 명승지'),
+  'FestivalDetailSheet shows 인근 명승지 (not hub place cards)',
+);
+assert(
+  sheetSrc.includes('/korea/theme/scenic'),
+  'FestivalDetailSheet links to scenic page',
+);
+assert(
+  !sheetSrc.includes('onOpenHub'),
+  'FestivalDetailSheet no longer opens place cards via hub',
+);
 
 const nearbySrc = readFileSync(
   join(root, 'src/utils/fetchNearbyTourAttractions.js'),

@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-05-korea-theme-festival-scenic-link',
+    session: '테마여행 #28, 맛집 주변 API',
+    title: '축제 인근을 명승지로',
+    detail:
+      '축제 상세의 「인근 여행지」hub→장소카드 연결을 없애고, 축제 권역의 GATEO 명승 목록과 「○○ 명승지 더보기」(/korea/theme/scenic?region=…)로 바꿨습니다. Preview /korea 축제 상세에서 확인해 주세요.',
+    at: '2026-08-05',
+  },
+  {
     id: '2026-08-05-korea-theme-food-cross-attractions',
     session: '테마여행 #28, 맛집 주변 API',
     title: '맛집 상세·주변 관광지 크로스',

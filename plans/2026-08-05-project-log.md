@@ -8,9 +8,10 @@
 
 - **한 일**: `tourapi-proxy` `locationBasedList`(+메모리 TTL) · `fetchNearbyTourRestaurants`(type39) · 축제 상세·`ThemeSpotDetailModal` 「주변 맛집」 · 맛집 intro 필드 · `smoke:korea-nearby-restaurants` · Edge deploy 완료
 - **크로스**: 맛집 본문에서 hub「인근 여행지」제거 · DB 「주변 관광지」목록으로 맛집↔관광지 교차
+- **축제 인근**: hub→장소카드 제거 · 권역 GATEO 명승 목록 + `/korea/theme/scenic?region=` 더보기
 - **금지 준수**: 맛집 전량 DB 없음 · 축제 지도·칩 미터치 · top10/regions 미확장
 - **VERIFY**: `smoke:korea-nearby-restaurants` · `smoke:korea-festival-nearby` · `smoke:tourapi` · `npm run build`
-- **QA 추가**: 축제 → 주변 맛집 → 상세에 「주변 관광지」·「인근 여행지」없음
+- **QA 추가**: 축제 → 「인근 명승지」목록·더보기 → 명승 페이지 · 맛집 상세 「주변 관광지」
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea`
 - **작업 로그**: Preview 우측 「축제·명소 주변 맛집(API)」

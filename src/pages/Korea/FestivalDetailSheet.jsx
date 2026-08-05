@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   ArrowUp,
   CalendarDays,
@@ -24,8 +25,15 @@ import {
   fetchNearbyTourRestaurants,
   RESTAURANT_CONTENT_TYPE_ID,
 } from '../../utils/fetchNearbyTourRestaurants';
+import { listKoreaScenicSpots } from '../Home/lib/koreaScenicSpots';
+import { scenicRegionForAreaCode } from '../Home/lib/koreaTourAttractionMap';
+import { pushThemeNavBack } from '../Home/lib/koreaThemeNavBack';
 import { festivalLngLat } from './koreaFestivalCorridors';
 import ThemeSpotDetailModal from '../KoreaTheme/ThemeSpotDetailModal';
+
+const SCENIC_PATH = '/korea/theme/scenic';
+const FESTIVAL_RETURN = '/korea';
+const SCENIC_LIST_LIMIT = 8;
 
 function formatYmdLabel(ymd) {
   const s = String(ymd || '');
@@ -212,24 +220,40 @@ function googleSearchUrl(title) {
   return `https://www.google.com/search?q=${encodeURIComponent(q)}&hl=ko`;
 }
 
+function toScenicModalSpot(spot) {
+  if (!spot) return null;
+  return {
+    id: spot.id || spot.contentId,
+    name: spot.name,
+    subtitle: spot.region || '',
+    blurb: spot.blurb,
+    placeSlug: spot.placeSlug,
+    contentId: spot.contentId,
+    contentTypeId: '12',
+    hubId: spot.hubId,
+    region: spot.region,
+    nameEn: spot.attractionNameEn || null,
+    lat: spot.lat,
+    lng: spot.lng,
+    areaCode: spot.areaCode || null,
+  };
+}
+
 /**
  * @param {{
  *   item: Record<string, unknown>,
- *   hubs: Array<{ hubId: string, name: string }>,
  *   favorited?: boolean,
  *   onToggleFavorite?: (item: Record<string, unknown>) => void,
  *   onClose: () => void,
- *   onOpenHub: (hubId: string) => void,
  * }} props
  */
 export default function FestivalDetailSheet({
   item,
-  hubs = [],
   favorited = false,
   onToggleFavorite,
   onClose,
-  onOpenHub,
 }) {
+  const navigate = useNavigate();
   const [intro, setIntro] = useState(null);
   const [common, setCommon] = useState(null);
   const [infoItems, setInfoItems] = useState([]);
@@ -250,8 +274,35 @@ export default function FestivalDetailSheet({
   const [nearbyFood, setNearbyFood] = useState([]);
   const [nearbyFoodStatus, setNearbyFoodStatus] = useState('idle');
   const [selectedNearby, setSelectedNearby] = useState(null);
+  const [selectedScenic, setSelectedScenic] = useState(null);
   const sheetScrollRef = useRef(null);
   const tabListRef = useRef(null);
+
+  const scenicRegion = useMemo(() => {
+    const code = item?.areaCode ?? item?.areacode;
+    return scenicRegionForAreaCode(code);
+  }, [item?.areaCode, item?.areacode]);
+
+  const scenicSpots = useMemo(() => {
+    if (!scenicRegion) return [];
+    return listKoreaScenicSpots(scenicRegion).slice(0, SCENIC_LIST_LIMIT);
+  }, [scenicRegion]);
+
+  const scenicPageHref = useMemo(() => {
+    if (!scenicRegion) return SCENIC_PATH;
+    return `${SCENIC_PATH}?region=${encodeURIComponent(scenicRegion)}`;
+  }, [scenicRegion]);
+
+  const openScenicPage = () => {
+    const back = {
+      path: FESTIVAL_RETURN,
+      label: String(item?.title || '축제').trim() || '축제',
+      moduleLabel: '축제',
+    };
+    pushThemeNavBack(back);
+    onClose();
+    navigate(scenicPageHref, { state: { themeBack: back } });
+  };
 
   useEffect(() => {
     if (!item?.contentId) {
@@ -274,6 +325,7 @@ export default function FestivalDetailSheet({
       setNearbyFood([]);
       setNearbyFoodStatus('idle');
       setSelectedNearby(null);
+      setSelectedScenic(null);
       return undefined;
     }
 
@@ -298,6 +350,7 @@ export default function FestivalDetailSheet({
     setNearbyFood([]);
     setNearbyFoodStatus('idle');
     setSelectedNearby(null);
+    setSelectedScenic(null);
 
     (async () => {
       const contentId = item.contentId;
@@ -342,7 +395,7 @@ export default function FestivalDetailSheet({
           setLightboxOpen(false);
           return;
         }
-        if (selectedNearby) return;
+        if (selectedNearby || selectedScenic) return;
         onClose();
         return;
       }
@@ -355,7 +408,13 @@ export default function FestivalDetailSheet({
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [lightboxOpen, imageUrls.length, onClose, selectedNearby]);
+  }, [
+    lightboxOpen,
+    imageUrls.length,
+    onClose,
+    selectedNearby,
+    selectedScenic,
+  ]);
 
   useEffect(() => {
     if (!item?.contentId) return undefined;
@@ -775,7 +834,7 @@ export default function FestivalDetailSheet({
             <div className="space-y-3">
               {overview && <DetailRow label="개요">{overview}</DetailRow>}
 
-              {(intro || hubs.length > 0) && (
+              {(intro || scenicRegion) && (
                 <div
                   className={[
                     'space-y-3',
@@ -845,23 +904,46 @@ export default function FestivalDetailSheet({
                 </div>
               )}
 
-              {hubs.length > 0 && (
+              {scenicRegion && (
                 <div className="space-y-2 pt-1">
                   <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
-                    인근 여행지
+                    인근 명승지
                   </p>
-                  <div className="flex flex-wrap gap-2">
-                    {hubs.map((hub) => (
-                      <button
-                        key={hub.hubId}
-                        type="button"
-                        onClick={() => onOpenHub(hub.hubId)}
-                        className="px-3 py-1.5 rounded-full text-xs font-bold border border-stone-200 bg-stone-50 text-stone-800 hover:bg-amber-50 hover:border-amber-300 transition-colors"
-                      >
-                        {hub.name}
-                      </button>
-                    ))}
-                  </div>
+                  {scenicSpots.length > 0 && (
+                    <ul className="space-y-2" aria-label={`${scenicRegion} 명승지`}>
+                      {scenicSpots.map((spot) => (
+                        <li key={spot.id || spot.contentId}>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedScenic(spot)}
+                            className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                          >
+                            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800">
+                              <Landmark size={18} aria-hidden="true" />
+                            </div>
+                            <span className="min-w-0 flex-1">
+                              <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
+                                {spot.name}
+                              </span>
+                              <span className="mt-0.5 block text-[11px] text-stone-500 break-keep">
+                                {[spot.region, spot.blurb]
+                                  .filter(Boolean)
+                                  .join(' · ')}
+                              </span>
+                            </span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <button
+                    type="button"
+                    onClick={openScenicPage}
+                    className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
+                  >
+                    {scenicRegion} 명승지 더보기
+                    <ExternalLink size={14} aria-hidden="true" />
+                  </button>
                 </div>
               )}
 
@@ -1167,6 +1249,16 @@ export default function FestivalDetailSheet({
           returnTo="/korea"
           overlayZClass="z-50"
           onClose={() => setSelectedNearby(null)}
+        />
+      )}
+
+      {selectedScenic && (
+        <ThemeSpotDetailModal
+          spot={toScenicModalSpot(selectedScenic)}
+          eyebrow="인근 명승지"
+          returnTo="/korea"
+          overlayZClass="z-50"
+          onClose={() => setSelectedScenic(null)}
         />
       )}
 
