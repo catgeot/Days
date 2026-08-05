@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 22,
-  sessionPhase: '명승지 위치 정보',
+  sessionNo: 25,
+  sessionPhase: '제품 흐름 재잠금',
   branch: 'cursor/korea-theme',
-  previewPath: '/korea/theme/scenic',
+  previewPath: '/korea/theme',
   qaShareSlug: 'korea-theme',
 };
 
@@ -24,11 +24,19 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-05-korea-theme-product-flow',
+    session: '테마여행 #25, 제품 흐름 재잠금',
+    title: '명승 본선·DB·보류 모듈 플랜',
+    detail:
+      '국내 관광지(type12)를 DB에 두고 주 1회 갱신하는 흐름으로 플랜을 잠갔습니다. 명승이 본선이고, 축제 주변 관광지·맛집 API·MRT 상품지 큐레이션·코스 연동을 이어갑니다. 10대 절경·방방곡곡은 보류입니다. 구현은 다음 세션(국내여행지 DB)입니다.',
+    at: '2026-08-05',
+  },
+  {
     id: '2026-08-05-korea-theme-scenic-tourapi-probe',
     session: '테마여행 #22, 명승지 위치 정보',
     title: '명승 TourAPI 규모·위치 프로브',
     detail:
-      'TourAPI 관광지(type12) 전국 약 7,294건·목록에 mapx/mapy 좌표가 있음을 LIVE로 확인했습니다. 명승 페이지는 축제·코스처럼 TourAPI 전량 탐색(시도 단위)으로 가도록 플랜에 잠갔습니다. 구현은 다음 세션입니다. /korea/theme/scenic 현재는 curated 34곳입니다.',
+      'TourAPI 관광지(type12) 전국 약 7,294건·목록에 mapx/mapy 좌표가 있음을 LIVE로 확인했습니다. 이후 #25에서 DB·주간 sync·명승 본선으로 제품 흐름을 재잠갔습니다. /korea/theme/scenic 현재는 curated 34곳입니다.',
     at: '2026-08-05',
   },
   {

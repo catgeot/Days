@@ -2,21 +2,29 @@
 
 직전: [`2026-08-04-project-log.md`](./2026-08-04-project-log.md)
 
-## 테마여행 #22, 명승지 위치 정보
+## 테마여행 #25, 제품 흐름 재잠금
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · 리서치·플랜 잠금 (UI 전량 미구현)
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · 플랜만 (구현=#23)
 
-- **LIVE**: TourAPI type12 전국 ≈**7,294** (시도 17 합) · A01 자연≈2,098 · A02 인문≈5,196 · 목록 `mapx`/`mapy` 있음(서울 100/100)
-- **현재 UI**: curated scenic **34** (contentId·좌표 전수)
-- **잠금**: 축제처럼 **전량 탐색** · UX는 코스식 **시도 단위** · curated=추천 레일(선택) · S13=`테마여행 #23`
-- **스크립트**: `node scripts/probe-tourapi-scenic-counts.mjs`
+- **본선**: type12 → Supabase · **주1회** sync · `/scenic` 명승 · 축제 **주변 관광지** · 맛집 **API만** · MRT **상품 있는 여행지** 큐레이션
+- **연동**: 맛집·레포츠·문화·축제 → 명승 · 코스는 축제·주변·맛집과 유지·강화
+- **보류**: 10대 절경 · 방방곡곡 (코드 유지 · 확장 중지)
+- **SSOT**: `korea-theme-travel-plan.md` **§1.0 · §3.5 · S13**
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
-- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme`
 - **다음**:
 
 ```
-테마여행 #23, 명승 TourAPI 전량
+테마여행 #23, 국내여행지 DB
 ```
+
+## 테마여행 #22, 명승지 위치 정보
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · 리서치 ✅ · 제품은 #25로 승격
+
+- **LIVE**: TourAPI type12 전국 ≈**7,294** · 목록 `mapx`/`mapy` · 신규 드묾·수정 다수
+- **스크립트**: `node scripts/probe-tourapi-scenic-counts.mjs`
+- **다음**: #25 제품 흐름 → #23 DB 구현
 
 ## 테마여행 #21, 테마간 이동 개선
 
