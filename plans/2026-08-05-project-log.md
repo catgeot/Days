@@ -4,7 +4,7 @@
 
 ## 테마여행 #23, 국내여행지 DB
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `3d4f251d` · Preview QA 대기
 
 - **한 일**: `tourapi_attraction` 마이그레이션 · `sync:tourapi-attractions`(시도 17·목록만) active=**7294** · `/scenic` GATEO 레일+DB 목록·페이지네이션 · `fetchNearbyTourAttractions` 훅 · Edge normalize cat/modifiedtime
 - **VERIFY**: `TOURAPI_ATTRACTION_MIN_ACTIVE=5000 npm run smoke:tourapi-attractions` · scenic/spot-modal/nav-back · `npm run build`
