@@ -10,6 +10,7 @@ import {
   ArrowUp,
   CalendarDays,
   Home,
+  Landmark,
   Loader2,
   LocateFixed,
   Map as MapIcon,
@@ -1429,6 +1430,15 @@ export default function KoreaFestivalHub() {
                 </h1>
               </div>
               <div className="flex shrink-0 items-center gap-2">
+                <Link
+                  to="/korea/theme/scenic"
+                  aria-label="한국의 명승으로"
+                  title="명승"
+                  className="flex items-center gap-1 rounded-full border border-amber-300/80 bg-amber-50 px-2.5 py-1.5 text-xs font-bold text-amber-900 hover:bg-amber-100"
+                >
+                  <Landmark size={14} aria-hidden="true" />
+                  명승
+                </Link>
                 <form
                   className="hidden w-64 xl:w-72 lg:block"
                   onSubmit={(e) => {

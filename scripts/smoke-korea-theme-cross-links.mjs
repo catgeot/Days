@@ -12,6 +12,7 @@ import {
   buildThemeMembershipIndex,
   getThemeMembership,
   listSameHubCrossSpots,
+  resolveFestivalThemeCrossLinks,
   resolveThemeCrossLinks,
   resolveThemePackageKey,
   resolveThemeSpotAreaCode,
@@ -97,6 +98,24 @@ const seoulSpot = {
 const seoulBundle = resolveThemeCrossLinks(seoulSpot);
 assert(seoulBundle.areaCode === '1', 'seoul areaCode 1');
 assert(seoulBundle.packageCta == null, 'seoul has no city package CTA (avoid false busan-like)');
+
+const jejuFest = resolveFestivalThemeCrossLinks(
+  {
+    title: '제주 불꽃축제',
+    areaCode: '39',
+    mapx: 126.5312,
+    mapy: 33.4996,
+    contentId: '9999999',
+  },
+  { region: '제주' },
+);
+assert(jejuFest.areaCode === '39', 'festival cross area 39');
+assert(jejuFest.stay?.keyword, `festival stay keyword (got ${jejuFest.stay?.keyword})`);
+assert(jejuFest.packageCta?.key === 'koreaJeju', 'festival jeju package koreaJeju');
+assert(
+  jejuFest.deepLinks.scenic.includes('region='),
+  'festival scenic deep link keeps region',
+);
 
 const libSrc = readFileSync(
   join(root, 'src/pages/Home/lib/koreaThemeCrossLinks.js'),

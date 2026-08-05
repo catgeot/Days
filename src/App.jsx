@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
 import { HelmetProvider } from 'react-helmet-async';
 
@@ -12,10 +12,7 @@ import PlaceCard from './components/PlaceCard/index';
 import KoreaFestivalHub from './pages/Korea';
 import KoreaThemeLanding from './pages/KoreaTheme';
 import KoreaThemeModulePage from './pages/KoreaTheme/ModulePage';
-import KoreaThemeTop10Page from './pages/KoreaTheme/Top10Page';
 import KoreaThemeScenicPage from './pages/KoreaTheme/ScenicPage';
-import KoreaThemeRegionsPage from './pages/KoreaTheme/RegionsPage';
-import KoreaThemePackagesPage from './pages/KoreaTheme/PackagesPage';
 import KoreaThemeCoursesPage from './pages/KoreaTheme/CoursesPage';
 import QaShareIndex from './pages/QaShare';
 
@@ -74,11 +71,20 @@ function App() {
                 <Route path="explore/:filter1" element={null} />
                 <Route path="explore/:filter1/:filter2" element={null} />
               </Route>
-              <Route path="/korea/theme/top10" element={<KoreaThemeTop10Page />} />
+              <Route
+                path="/korea/theme/top10"
+                element={<Navigate to="/korea/theme/scenic" replace />}
+              />
               <Route path="/korea/theme/scenic" element={<KoreaThemeScenicPage />} />
               <Route path="/korea/theme/courses" element={<KoreaThemeCoursesPage />} />
-              <Route path="/korea/theme/regions" element={<KoreaThemeRegionsPage />} />
-              <Route path="/korea/theme/packages" element={<KoreaThemePackagesPage />} />
+              <Route
+                path="/korea/theme/regions"
+                element={<Navigate to="/korea/theme/scenic" replace />}
+              />
+              <Route
+                path="/korea/theme/packages"
+                element={<Navigate to="/korea/theme/scenic" replace />}
+              />
               <Route path="/korea/theme/:moduleId" element={<KoreaThemeModulePage />} />
               <Route path="/korea/theme" element={<KoreaThemeLanding />} />
               <Route path="/korea" element={<KoreaFestivalHub />} />

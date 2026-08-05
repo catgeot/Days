@@ -40,56 +40,27 @@ import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
 import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
 
 const MODULE_CHIP = {
-  top10: { label: '10대 절경', path: '/korea/theme/top10' },
   scenic: { label: '명승지', path: '/korea/theme/scenic' },
-  regions: { label: '방방곡곡', path: '/korea/theme/regions' },
 };
 
-function membershipDeepPath(moduleId, membership, fallbackArea) {
-  if (!membership) return MODULE_CHIP[moduleId]?.path || '/korea/theme';
-  if (moduleId === 'top10' && membership.top10?.id) {
-    return buildThemeModulePath('/korea/theme/top10', {
-      spotId: membership.top10.id,
-    });
-  }
+const ACTIVE_MODULE_CHIPS = new Set(['scenic']);
+
+function membershipDeepPath(moduleId, membership) {
+  if (!membership) return MODULE_CHIP[moduleId]?.path || '/korea/theme/scenic';
   if (moduleId === 'scenic' && membership.scenic?.id) {
     return buildThemeModulePath('/korea/theme/scenic', {
       spotId: membership.scenic.id,
     });
   }
-  if (moduleId === 'regions' && membership.regionAttraction?.id) {
-    const area =
-      membership.regionAttraction.areaCode ||
-      fallbackArea ||
-      null;
-    return buildThemeModulePath('/korea/theme/regions', {
-      areaCode: area,
-      spotId: membership.regionAttraction.id,
-    });
-  }
-  if (moduleId === 'regions' && fallbackArea) {
-    return buildThemeModulePath('/korea/theme/regions', {
-      areaCode: fallbackArea,
-    });
-  }
-  return MODULE_CHIP[moduleId]?.path || '/korea/theme';
+  return MODULE_CHIP[moduleId]?.path || '/korea/theme/scenic';
 }
 
 function sameHubDeepPath(row) {
   const mem = getThemeMembership(row.placeSlug);
-  if (mem?.top10?.id) {
-    return buildThemeModulePath('/korea/theme/top10', { spotId: mem.top10.id });
-  }
   if (mem?.scenic?.id) {
     return buildThemeModulePath('/korea/theme/scenic', { spotId: mem.scenic.id });
   }
-  if (mem?.regionAttraction?.id) {
-    return buildThemeModulePath('/korea/theme/regions', {
-      areaCode: mem.regionAttraction.areaCode,
-      spotId: mem.regionAttraction.id,
-    });
-  }
-  return row.pathHint || '/korea/theme';
+  return '/korea/theme/scenic';
 }
 
 function CrossRailSection({ title, children }) {
@@ -198,13 +169,14 @@ function ThemeSpotCrossRail({
   if (!spot || !cross) return null;
 
   const moduleChips = (cross.membership?.modules || [])
+    .filter((id) => ACTIVE_MODULE_CHIPS.has(id))
     .map((id) => {
       const chip = MODULE_CHIP[id];
       if (!chip) return null;
       return {
         id,
         label: chip.label,
-        path: membershipDeepPath(id, membership, cross.areaCode),
+        path: membershipDeepPath(id, membership),
       };
     })
     .filter(Boolean);

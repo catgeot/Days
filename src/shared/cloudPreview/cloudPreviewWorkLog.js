@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 33,
-  sessionPhase: '페이지 정리',
+  sessionNo: 34,
+  sessionPhase: '투톱 크로스 네비',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-05-korea-theme-two-top-cross-nav',
+    session: '테마여행 #34, 투톱 크로스 네비',
+    title: '축제↔명승 상호 네비 · 상세 크로스 정합',
+    detail:
+      '축제 헤더에 「명승」칩을 상시 노출하고, 축제 상세에도 숙소·투어·패키지 매칭 CTA를 붙였습니다. `/korea/theme/top10|regions|packages`는 명승으로 리다이렉트하며, 명승 모달은 레거시 10대·방방곡곡 딥링크를 숨깁니다. Preview에서 `/korea`↔명승 왕복·축제 상세 레일·레거시 URL 리다이렉트를 확인해 주세요.',
+    at: '2026-08-05',
+  },
   {
     id: '2026-08-05-korea-theme-two-top-ia',
     session: '테마여행 #33, 페이지 정리',

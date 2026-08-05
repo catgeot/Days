@@ -2,6 +2,36 @@
 
 직전: [`2026-08-04-project-log.md`](./2026-08-04-project-log.md)
 
+## 테마여행 #34, 투톱 크로스 네비
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **한 일**: 축제 헤더「명승」상시 칩 · 축제 상세 숙소·투어·패키지(`resolveFestivalThemeCrossLinks`) · `/top10|regions|packages` → scenic 리다이렉트 · 모달 레거시 멤버십 딥링크 숨김 · `/qa/korea-theme`→scenic · 작업 로그 #34
+- **금지 준수**: 축제 지도·칩 리팩터 없음 · top10/regions 콘텐츠 확장 없음 · 가짜 패키지 카드 없음 · releaseNotes 미작성
+- **VERIFY**: `smoke:korea-theme-nav-back` · `smoke:korea-theme-cross-links` · `smoke:korea-festival-nearby` · `smoke:korea-nearby-restaurants` · `smoke:korea-nearby-leisure-culture` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「축제↔명승 상호 네비 · 상세 크로스 정합」
+- **QA**: `/korea`↔명승 칩 왕복 · 제주 등 축제 상세 숙소/패키지 · `/korea/theme/packages` 리다이렉트
+
+### 테마여행 · 에이전트 핸드오프 → `#35` (S9 후보)
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #35, 폴리시·릴리스` |
+| **브랜치** | `cursor/korea-theme` (고정) |
+| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
+| **읽을 것 3** | ① 본 절 ② 플랜 §1.0·§1.6·S9 ③ #34 산출 |
+| **금지 3** | 축제 지도·칩 리팩터 · top10/regions 탑레벨 부활 · 합의 전 releaseNotes · UI 임의 리디자인 |
+| **후보** | S9 폴리시·릴리스(사람 Preview QA 후) · 축제 회귀 점검 |
+| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #35, 폴리시·릴리스
+```
+
 ## 테마여행 #33, 페이지 정리
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `420fe9f8` · Preview QA 대기
@@ -13,24 +43,6 @@
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
 - **작업 로그**: Preview 우측 「축제·명승 투톱 · 탑레벨 정리」
-
-### 테마여행 · 에이전트 핸드오프 → `#34`
-
-| | |
-|--|--|
-| **세션 표기** | `테마여행 #34, 투톱 크로스 네비` |
-| **브랜치** | `cursor/korea-theme` (고정) |
-| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
-| **읽을 것 3** | ① 본 절 ② 플랜 §1.0·§1.6·#34 ③ #33 산출 |
-| **금지 3** | 축제 지도·칩 리팩터 · top10/regions 콘텐츠 확장 · 가짜 패키지 카드 · UI 임의 리디자인 |
-| **후보** | packages/top10/regions → scenic 리다이렉트 · 상세 레일 양페이지 정합 · S9 폴리시 |
-| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
-
-**다음 채팅명 (복붙)**:
-
-```
-테마여행 #34, 투톱 크로스 네비
-```
 
 ## 테마여행 #32, MRT 상품지
 

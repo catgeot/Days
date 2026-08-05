@@ -9,10 +9,10 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'korea-theme',
-    label: '테마여행',
+    label: '한국의 명승',
     branch: 'cursor/korea-theme',
     destination:
-      'https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme',
+      'https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic',
     active: true,
   },
   {

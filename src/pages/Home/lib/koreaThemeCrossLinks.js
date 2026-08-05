@@ -431,3 +431,94 @@ export function resolveThemeCrossLinks(spot, opts = {}) {
     packageCta,
   };
 }
+
+function hubListForArea(areaCode) {
+  const ids = areaCode ? hubIdsForArea(areaCode) : hubIdsForArea('all');
+  return ids
+    .map((id) => {
+      const hub = resolveCityAttractionHub(id);
+      if (!hub) return null;
+      return {
+        hubId: String(hub.hubId || id).toLowerCase(),
+        name: String(hub.name || id),
+        lat: Number(hub.lat),
+        lng: Number(hub.lng),
+      };
+    })
+    .filter(Boolean);
+}
+
+/**
+ * 축제 상세용 크로스 번들 — 인근 hub로 숙소·투어·패키지 매칭 (#34).
+ * 지도·칩 로직은 건드리지 않음.
+ *
+ * @param {Record<string, unknown> | null | undefined} item TourAPI festival item
+ * @param {{ region?: string, areaCode?: string | number, utmContentPrefix?: string }} [opts]
+ */
+export function resolveFestivalThemeCrossLinks(item, opts = {}) {
+  if (!item) return resolveThemeCrossLinks(null);
+
+  const areaCode =
+    opts.areaCode != null && String(opts.areaCode).trim() !== ''
+      ? String(opts.areaCode).trim()
+      : resolveThemeSpotAreaCode({
+          areaCode: item.areaCode ?? item.areacode,
+          region: opts.region,
+        });
+
+  let hubList = hubListForArea(areaCode);
+  if (!hubList.length) hubList = hubListForArea(null);
+
+  const nearby = nearbyHubsForFestival(
+    { ...item, areaCode: areaCode || item.areaCode || item.areacode },
+    hubList,
+    { limit: 12 },
+  );
+
+  const nearestHubId = nearby[0]?.hubId || null;
+  let packageHubId = null;
+  for (const h of nearby) {
+    if (resolveThemePackageKey({ hubId: h.hubId })) {
+      packageHubId = h.hubId;
+      break;
+    }
+  }
+
+  const cross = resolveThemeCrossLinks(
+    {
+      hubId: nearestHubId,
+      areaCode,
+      region: opts.region,
+      name: item.title,
+      lat: undefined,
+      lng: undefined,
+      mapx: item.mapx,
+      mapy: item.mapy,
+      contentId: item.contentId,
+    },
+    {
+      hubList,
+      utmContentPrefix: opts.utmContentPrefix || 'korea-festival-cross',
+    },
+  );
+
+  if (!cross.packageCta && packageHubId && packageHubId !== nearestHubId) {
+    const pkgOnly = resolveThemeCrossLinks(
+      { hubId: packageHubId, areaCode, region: opts.region },
+      {
+        hubList,
+        utmContentPrefix: opts.utmContentPrefix || 'korea-festival-cross',
+      },
+    );
+    if (pkgOnly.packageCta) cross.packageCta = pkgOnly.packageCta;
+  }
+
+  if (opts.region) {
+    cross.deepLinks = {
+      ...cross.deepLinks,
+      scenic: `/korea/theme/scenic?region=${encodeURIComponent(String(opts.region))}`,
+    };
+  }
+
+  return cross;
+}

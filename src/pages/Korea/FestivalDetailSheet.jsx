@@ -41,7 +41,10 @@ import {
 import { fetchTourApiCourseDetail } from '../../utils/fetchTourApiCourses';
 import { listKoreaScenicSpots } from '../Home/lib/koreaScenicSpots';
 import { scenicRegionForAreaCode } from '../Home/lib/koreaTourAttractionMap';
+import { resolveFestivalThemeCrossLinks } from '../Home/lib/koreaThemeCrossLinks';
 import { pushThemeNavBack } from '../Home/lib/koreaThemeNavBack';
+import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
+import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
 import { festivalLngLat } from './koreaFestivalCorridors';
 import { detectSidoCode } from './festivalRegionTags';
 import ThemeSpotDetailModal from '../KoreaTheme/ThemeSpotDetailModal';
@@ -334,6 +337,25 @@ export default function FestivalDetailSheet({
     if (!scenicRegion) return SCENIC_PATH;
     return `${SCENIC_PATH}?region=${encodeURIComponent(scenicRegion)}`;
   }, [scenicRegion]);
+
+  const festivalCross = useMemo(
+    () =>
+      resolveFestivalThemeCrossLinks(item, {
+        areaCode: festivalAreaCode,
+        region: scenicRegion || undefined,
+        utmContentPrefix: 'korea-festival-cross',
+      }),
+    [item, festivalAreaCode, scenicRegion],
+  );
+
+  const festivalStayHref = festivalCross?.stay?.keyword
+    ? getMrtAccommodationSearchUrl(festivalCross.stay.keyword, {
+        isDomestic: true,
+      })
+    : '';
+  const festivalTnaHref = festivalCross?.tna?.keyword
+    ? buildMrtTnaSearchMoreUrl(festivalCross.tna.keyword)
+    : '';
 
   const openScenicPage = () => {
     const back = {
@@ -1088,6 +1110,60 @@ export default function FestivalDetailSheet({
                     {scenicRegion} 명승지 더보기
                     <ExternalLink size={14} aria-hidden="true" />
                   </button>
+                </div>
+              )}
+
+              {(festivalStayHref ||
+                festivalTnaHref ||
+                festivalCross?.packageCta?.url) && (
+                <div className="space-y-3 pt-1">
+                  {festivalStayHref || festivalTnaHref ? (
+                    <div className="space-y-2">
+                      <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
+                        숙소 · 투어
+                      </p>
+                      <div className="flex flex-col gap-1.5 sm:flex-row sm:flex-wrap">
+                        {festivalStayHref ? (
+                          <a
+                            href={festivalStayHref}
+                            target="_blank"
+                            rel="noopener noreferrer sponsored"
+                            className="inline-flex items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-950 hover:bg-amber-100"
+                          >
+                            숙소 · {festivalCross.stay.keyword}
+                            <ExternalLink size={12} aria-hidden="true" />
+                          </a>
+                        ) : null}
+                        {festivalTnaHref ? (
+                          <a
+                            href={festivalTnaHref}
+                            target="_blank"
+                            rel="noopener noreferrer sponsored"
+                            className="inline-flex items-center justify-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-stone-100"
+                          >
+                            투어 · {festivalCross.tna.keyword}
+                            <ExternalLink size={12} aria-hidden="true" />
+                          </a>
+                        ) : null}
+                      </div>
+                    </div>
+                  ) : null}
+                  {festivalCross?.packageCta?.url ? (
+                    <div className="space-y-2">
+                      <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
+                        패키지
+                      </p>
+                      <a
+                        href={festivalCross.packageCta.url}
+                        target="_blank"
+                        rel="noopener noreferrer sponsored"
+                        className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
+                      >
+                        {festivalCross.packageCta.ctaLabel || '패키지 보기'}
+                        <ExternalLink size={14} aria-hidden="true" />
+                      </a>
+                    </div>
+                  ) : null}
                 </div>
               )}
 

@@ -115,29 +115,57 @@ const modalSrc = readFileSync(
 );
 assert(modalSrc.includes('pushThemeNavBack'), 'modal pushes theme nav back');
 assert(modalSrc.includes('themeBack'), 'modal navigates with themeBack state');
+assert(
+  !modalSrc.includes("path: '/korea/theme/top10'") &&
+    !modalSrc.includes("path: '/korea/theme/regions'"),
+  'modal chips no longer deep-link top10/regions',
+);
 
-for (const file of [
-  'Top10Page.jsx',
-  'ScenicPage.jsx',
-  'RegionsPage.jsx',
-  'CoursesPage.jsx',
-  'PackagesPage.jsx',
-]) {
+for (const file of ['ScenicPage.jsx', 'CoursesPage.jsx']) {
   const src = readFileSync(join(root, 'src/pages/KoreaTheme', file), 'utf8');
   assert(src.includes('ThemeModuleBackButton'), `${file} uses ThemeModuleBackButton`);
   assert(src.includes('ThemeNavBackHint'), `${file} shows ThemeNavBackHint`);
 }
 
-const top10 = readFileSync(
-  join(root, 'src/pages/KoreaTheme/Top10Page.jsx'),
-  'utf8',
-);
-assert(top10.includes("searchParams.get('spot')"), 'top10 syncs ?spot=');
+const appSrc = readFileSync(join(root, 'src/App.jsx'), 'utf8');
+for (const legacy of ['top10', 'regions', 'packages']) {
+  assert(
+    appSrc.includes(`path="/korea/theme/${legacy}"`) &&
+      appSrc.includes('Navigate to="/korea/theme/scenic"'),
+    `legacy /korea/theme/${legacy} redirects to scenic`,
+  );
+}
 
 const korea = readFileSync(join(root, 'src/pages/Korea/index.jsx'), 'utf8');
 assert(
   korea.includes('ThemeFestivalBackLink'),
   'festival from=theme uses ThemeFestivalBackLink',
+);
+assert(
+  korea.includes('to="/korea/theme/scenic"') && korea.includes('명승'),
+  'festival header has 명승 mutual chip',
+);
+
+const festSheet = readFileSync(
+  join(root, 'src/pages/Korea/FestivalDetailSheet.jsx'),
+  'utf8',
+);
+assert(
+  festSheet.includes('resolveFestivalThemeCrossLinks'),
+  'festival detail wires theme cross links',
+);
+assert(
+  festSheet.includes('숙소 · 투어') && festSheet.includes('패키지'),
+  'festival detail has stay/tna/package rails',
+);
+
+const crossLib = readFileSync(
+  join(root, 'src/pages/Home/lib/koreaThemeCrossLinks.js'),
+  'utf8',
+);
+assert(
+  crossLib.includes('export function resolveFestivalThemeCrossLinks'),
+  'festival cross helper exported',
 );
 
 if (failed) {
