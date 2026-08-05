@@ -130,19 +130,19 @@ const HomeUI = React.memo(({
                 </span>
               </Link>
               <Link
-                to="/korea/theme"
+                to="/korea/theme/scenic"
                 className="group flex w-full max-w-[14rem] items-center gap-2.5 rounded-xl border border-emerald-400/40 bg-black/60 px-2.5 py-2 shadow-[0_0_18px_rgba(52,211,153,0.18)] backdrop-blur-md transition-all hover:border-emerald-300/65 hover:bg-black/75"
-                aria-label="한국의 테마 여행으로 이동"
+                aria-label="한국의 명승으로 이동"
               >
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-emerald-400/35 bg-emerald-500/15 text-emerald-300 group-hover:bg-emerald-500/25">
                   <Map size={16} aria-hidden="true" />
                 </span>
                 <span className="min-w-0 flex flex-col leading-tight">
                   <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
-                    한국의 테마 여행
+                    한국의 명승
                   </span>
                   <span className="truncate text-[10px] text-emerald-100/85">
-                    절경 · 명승 · 지역
+                    관광지 · 맛집 · 숙소
                   </span>
                 </span>
               </Link>

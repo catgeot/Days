@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Home, Landmark } from 'lucide-react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { CalendarDays, ChevronLeft, ChevronRight, Home, Landmark } from 'lucide-react';
 import SEO from '../../components/SEO';
 import {
   koreaScenicSpotsDisclaimer,
@@ -168,7 +168,7 @@ export default function KoreaThemeScenicPage() {
   return (
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
       <SEO
-        title="한국의 명승지 · 한국의 테마여행"
+        title="한국의 명승"
         description="국내 관광지 카탈로그와 GATEO 선정 명승. 권역 필터로 상세를 모달로 봅니다."
         url={RETURN_TO}
       />
@@ -179,13 +179,22 @@ export default function KoreaThemeScenicPage() {
             <div className="flex items-center gap-2">
               <div className="min-w-0 flex-1">
                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-700">
-                  Korea · Theme · GATEO
+                  Korea · Scenic
                 </p>
                 <h1 className="truncate text-base font-extrabold tracking-tight md:text-lg lg:text-xl">
-                  한국의 명승지
+                  한국의 명승
                 </h1>
               </div>
               <div className="flex shrink-0 items-center gap-2">
+                <Link
+                  to="/korea?from=theme"
+                  aria-label="한국의 축제로"
+                  title="축제"
+                  className="flex items-center gap-1 rounded-full border border-amber-300/80 bg-amber-50 px-2.5 py-1.5 text-xs font-bold text-amber-900 hover:bg-amber-100"
+                >
+                  <CalendarDays size={14} aria-hidden="true" />
+                  축제
+                </Link>
                 <ThemeModuleBackButton />
                 <button
                   type="button"

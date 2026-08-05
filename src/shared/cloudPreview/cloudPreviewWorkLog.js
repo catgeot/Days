@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 32,
-  sessionPhase: 'MRT 상품지',
+  sessionNo: 33,
+  sessionPhase: '페이지 정리',
   branch: 'cursor/korea-theme',
-  previewPath: '/korea/theme/packages',
+  previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-05-korea-theme-two-top-ia',
+    session: '테마여행 #33, 페이지 정리',
+    title: '축제·명승 투톱 · 탑레벨 정리',
+    detail:
+      '제품명을 「한국의 명승」으로 바꾸고 축제(`/korea`)·명승(`/korea/theme/scenic`) 투톱으로 잠갔습니다. 10대 절경·방방곡곡·패키지(·코스)는 랜딩 타일에서 숨겼고, 패키지·숙소·투어는 상세 매칭으로만 이어집니다. 홈 진입·명승 헤더「축제」칩·플랜 §1.0을 Preview에서 확인해 주세요.',
+    at: '2026-08-05',
+  },
   {
     id: '2026-08-05-korea-theme-mrt-package-destinations',
     session: '테마여행 #32, MRT 상품지',

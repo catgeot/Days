@@ -19,7 +19,7 @@ function useThemeNavBackAction() {
   const goBack = useCallback(() => {
     const entry = resolveThemeNavBack(location.state);
     if (!entry?.path) {
-      navigate('/korea/theme');
+      navigate('/korea/theme/scenic');
       return;
     }
     const top = peekThemeNavBack();
@@ -30,7 +30,7 @@ function useThemeNavBackAction() {
   return { back, goBack };
 }
 
-/** 모듈 헤더 좌측 복귀 — 크로스 이동 후엔 「이전」, 아니면 「테마」 */
+/** 모듈 헤더 좌측 복귀 — 크로스 이동 후엔 「이전」, 아니면 「명승」 */
 export default function ThemeModuleBackButton() {
   const { back, goBack } = useThemeNavBackAction();
 
@@ -52,13 +52,13 @@ export default function ThemeModuleBackButton() {
 
   return (
     <Link
-      to="/korea/theme"
-      aria-label="테마여행으로"
-      title="테마여행"
+      to="/korea/theme/scenic"
+      aria-label="한국의 명승으로"
+      title="한국의 명승"
       className={BTN_CLASS}
     >
       <ArrowLeft size={14} aria-hidden="true" />
-      테마
+      명승
     </Link>
   );
 }
@@ -97,17 +97,17 @@ export function ThemeFestivalBackLink() {
         onClick={goBack}
         className="font-bold text-amber-800 hover:underline"
       >
-        ← {label || '이전 테마로'}
+        ← {label || '이전 명승으로'}
       </button>
     );
   }
 
   return (
     <Link
-      to="/korea/theme"
+      to="/korea/theme/scenic"
       className="font-bold text-amber-800 hover:underline"
     >
-      ← 테마여행으로
+      ← 명승으로
     </Link>
   );
 }

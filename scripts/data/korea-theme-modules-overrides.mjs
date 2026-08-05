@@ -1,8 +1,9 @@
 /**
- * 한국의 테마여행 모듈 카탈로그 SSOT.
+ * 한국의 명승 · 축제 투톱 모듈 SSOT (#33).
  * `npm run generate:korea-theme-modules` → koreaThemeModules.json
  *
- * order로 랜딩 타일 순서를 나중에 재정렬한다.
+ * 탑레벨 노출: festivals · scenic 만.
+ * top10 / regions / packages / courses = enabled:false (라우트·deep-link용 유지).
  *
  * @type {{
  *   modules: Array<{
@@ -28,19 +29,10 @@ export const KOREA_THEME_MODULE_OVERRIDES = {
       icon: 'calendar',
     },
     {
-      id: 'top10',
-      label: '한국의 10대 절경',
-      blurb: 'GATEO가 고른 대표 절경 열 곳',
-      order: 20,
-      enabled: true,
-      path: '/korea/theme/top10',
-      icon: 'mountain',
-    },
-    {
       id: 'scenic',
-      label: '한국의 명승지',
-      blurb: '권역별 명승·풍경 큐레이션',
-      order: 30,
+      label: '한국의 명승',
+      blurb: '관광지·맛집·숙소·투어로 이어가는 명승',
+      order: 20,
       enabled: true,
       path: '/korea/theme/scenic',
       icon: 'landmark',
@@ -48,27 +40,36 @@ export const KOREA_THEME_MODULE_OVERRIDES = {
     {
       id: 'courses',
       label: '여행코스',
-      blurb: 'TourAPI 지역별 추천 코스·구간',
-      order: 35,
-      enabled: true,
+      blurb: '상세에서 이어가는 추천 코스',
+      order: 90,
+      enabled: false,
       path: '/korea/theme/courses',
       icon: 'route',
+    },
+    {
+      id: 'top10',
+      label: '한국의 10대 절경',
+      blurb: 'GATEO가 고른 대표 절경 열 곳',
+      order: 91,
+      enabled: false,
+      path: '/korea/theme/top10',
+      icon: 'mountain',
     },
     {
       id: 'regions',
       label: '방방곡곡',
       blurb: '시도·도시 허브로 이어가는 국내 여행',
-      order: 40,
-      enabled: true,
+      order: 92,
+      enabled: false,
       path: '/korea/theme/regions',
       icon: 'map',
     },
     {
       id: 'packages',
       label: '패키지 상품',
-      blurb: 'MRT 국내 패키지·에어텔 둘러보기',
-      order: 50,
-      enabled: true,
+      blurb: '상세에서 매칭되는 MRT 패키지',
+      order: 93,
+      enabled: false,
       path: '/korea/theme/packages',
       icon: 'package',
     },

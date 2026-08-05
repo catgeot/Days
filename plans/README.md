@@ -11,7 +11,7 @@
 - **사이트 점검·헬스 모니터링**: [`site-health-monitoring-plan.md`](./site-health-monitoring-plan.md) (스모크·E2E·Billing 알림·구현 Phase 0~3)
 - **TourAPI 국내 관광 (3단계 ⏳ · 시드40·v1.7 · UI/릴리스 합의)**: [`tourapi-edge-proxy-plan.md`](./tourapi-edge-proxy-plan.md) · 제시어 `TourAPI-이어하기` · 일지 핸드오프
 - **국내 축제·지역 허브 `/korea` (리스트 우선 · tip `d32894e`)** : [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) · 일지 `2026-07-29`
-- **한국의 테마여행 `/korea/theme` (#25 제품 흐름 재잠금 · **다음 #23 국내여행지 DB**)**: [`korea-theme-travel-plan.md`](./korea-theme-travel-plan.md) §1.0·S13 · 일지 `2026-08-05` 핸드오프 · 브랜치 `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58)
+- **한국의 명승 · 축제 투톱** (`/korea` + `/korea/theme/scenic` · **#33 IA 잠금** · 다음 **#34 크로스 네비**): [`korea-theme-travel-plan.md`](./korea-theme-travel-plan.md) §1.0 · 일지 `2026-08-05` · 브랜치 `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58)
 - **국내 MRT 읍·면 감사·city=리 군선두 ✅**: [`mrt-stay-admin-gap-audit-plan.md`](./mrt-stay-admin-gap-audit-plan.md) §5.1–§5.2 · `npm run audit:mrt-stay-admin-gaps` · RISK **0** · keyword 군 선두
 - **동명 리/읍/면/동·bare 화이트리스트 검색 다후보 ✅**: [`ko-homonym-ri-search-disambiguation-plan.md`](./ko-homonym-ri-search-disambiguation-plan.md) · [`ko-homonym-search-expand-plan.md`](./ko-homonym-search-expand-plan.md) · PR [#37](https://github.com/catgeot/Days/pull/37) MERGED · `smoke:ko-homonym-ri-search`
 - **국내 명소 tip 좌표 TourAPI 보정 (다음 세션)**: [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) · 제시어 `TourAPI-명소좌표-이어하기`

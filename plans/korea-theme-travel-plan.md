@@ -1,9 +1,10 @@
-# 한국의 테마여행 — 세션별 실행 플랜
+# 한국의 명승 · 축제 투톱 — 세션별 실행 플랜
 
-**세션 표기**: `테마여행 #N, {단계}` ([`cloud-preview-continuity.md`](./cloud-preview-continuity.md))  
+**제품명**: **한국의 명승** (구「테마여행」·`/korea/theme`) + **한국의 축제**(`/korea`) = **투톱**  
+**세션 표기**: `테마여행 #N, {단계}` — 순번 연속(주제 접두 유지 · 제품 카피는 명승) ([`cloud-preview-continuity.md`](./cloud-preview-continuity.md))  
 **고정 브랜치 (구현)**: `cursor/korea-theme`  
-**공유 slug (구현 시)**: `/qa/korea-theme` → Preview `/korea/theme`  
-**관련 기존 트랙**: [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) (`/korea` 축제 · **건드리지 않고 연결만**)  
+**공유 slug**: `/qa/korea-theme` → Preview `/korea/theme` · `/korea/theme/scenic`  
+**관련 기존 트랙**: [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) (`/korea` 축제 · **지도·칩 코어 리팩터 금지** · 상세 크로스·네비만)  
 **Cloud 연속성**: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) · [`AGENTS.md`](../AGENTS.md)
 
 ### 채팅명 복붙 (Cursor 새 채팅 제목)
@@ -44,6 +45,9 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 29 | (축제) | `테마여행 #29, 축제 본문 인근 여행지` | ⏳ Preview QA |
 | 30 | (주변) | `테마여행 #30, 레포츠·문화 주변` | ⏳ Preview QA |
 | 31 | (코스) | `테마여행 #31, 코스↔축제` | ⏳ Preview QA |
+| 32 | (MRT) | `테마여행 #32, MRT 상품지` | ⏳ Preview QA |
+| 33 | (IA) | `테마여행 #33, 페이지 정리` | ✅ 본 절 · 투톱 잠금 |
+| 34 | (네비) | `테마여행 #34, 투톱 크로스 네비` | ⏳ 다음 |
 
 이어하기·핫픽스만 할 때: `테마여행 #N, {짧은 수정}` (`N` = 그 주제의 **다음** 순번). 세션마다 새 `#1` 금지.
 
@@ -76,7 +80,9 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **#28** 맛집 주변 API | ⏳ Preview QA | locationBasedList type39 · 축제/명소 주변 맛집 | #30 |
 | **#30** 레포츠·문화 주변 | ⏳ Preview QA | locationBasedList type28/14 · 축제/명소 주변 | #31 |
 | **#31** 코스↔축제 | ⏳ Preview QA | 축제→인근 코스 · 코스→인근 축제 · deep-link | #32 |
-| **#32** MRT 상품지 | ⏳ Preview QA | LIVE 확인 국내 목적지 큐레이션 · 경주/부산 제외 | S9 |
+| **#32** MRT 상품지 | ⏳ Preview QA | LIVE 확인 국내 목적지 큐레이션 · 경주/부산 제외 | #33 |
+| **#33** 페이지 정리 · 투톱 IA | ✅ 2026-08-05 | §1.0 재잠금 · top10/방방곡곡/패키지 **탑레벨 제거** · 축제↔명승 | #34 |
+| **#34** 투톱 크로스 네비 | ⏳ | 상세 내 주변·맛집·레포츠·문화·패키지·숙소·투어·복귀 네비 정합 | S9 |
 | **S9** 폴리시·릴리스 | ⏳ | 사람 QA → releaseNotes 1회 제안 (#24) | main 병합 |
 
 ---
@@ -85,7 +91,7 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 
 1. **한 채팅 = 한 세션 표기** (`테마여행 #N, …`). 세션을 합치지 않는다.
 2. **읽을 것 (이어하기)**: 본 플랜 **해당 세션 절만** + 일지 「테마여행」최신 절 + `.ai-context` 1.5.1·§4.1 UI 금지 1~2줄. 전반 탐색·`travelSpots.js` 전체 스캔 금지.
-3. **`/korea` 축제 트랙과 분리**: 축제 지도·칩·캐시·TourAPI 프록시를 **리팩터/리디자인하지 않음**. 테마 허브는 **링크·복귀·카피**로만 연결. **경로 `/korea` 자체는 유지**(축제의 자리).
+3. **투톱 · 축제 코어 보호**: 축제 지도·칩·캐시 코어 **리팩터/리디자인 금지**. 명승↔축제는 **상세 크로스·헤더 네비·복귀**로 연결. **경로 `/korea` 유지**(축제 자리).
 4. **브랜치**: 구현은 **짧은** `cursor/korea-theme` 한 번 생성 후 재사용. 플랜 문서 PR 브랜치(`cursor/korea-theme-plan-4160`)와 구현 브랜치를 섞지 않는다.
 5. **Cloud feature**: 매 턴 최소 검증 PASS → 커밋·push · PR 유지 · 턴 종료에 `/qa/korea-theme` + git Preview URL.
 6. **로컬 UI 조율**: 합의된 톤 조율은 커밋 보류 → 사람 QA 후. 「커밋 보류」≠ 리디자인 허가.
@@ -96,109 +102,129 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 
 ```mermaid
 flowchart TD
-  catalog[S13_type12_DB_weekly] --> scenic[scenic_명승_본선]
-  catalog --> festNear[korea_축제_주변_관광지]
-  scenic --> foodApi[맛집39_API호출]
-  scenic --> leis[레포츠28_문화14]
-  scenic --> festLink[축제15_연결]
-  courses[courses_유지] --> festNear
-  courses --> foodApi
-  mrt[MRT_패키지_상품있는곳_큐레이션] --> packages[packages]
-  top10[top10_보류] -.-> scenic
-  regions[regions_보류] -.-> scenic
-  scenic --> S9[S9_QA]
-  packages --> S9
-  courses --> S9
+  fest[korea_축제_투톱] --> detailF[축제_상세]
+  scenic[명승_투톱_scenic] --> detailS[명승_상세]
+  catalog[S13_type12_DB] --> scenic
+  catalog --> detailF
+  detailF --> cross[크로스_주변맛집레포츠문화]
+  detailS --> cross
+  cross --> stay[숙소_MRT]
+  cross --> tna[투어_TNA]
+  cross --> pkg[패키지_매칭노출]
+  cross --> course[코스_딥링크]
+  detailF <-->|상호네비| detailS
+  top10[top10_제거] -.-> x1[노출금지]
+  regions[regions_제거] -.-> x1
+  packagesPage[packages_페이지_제거] -.-> x1
 ```
 
 ---
 
 ## 1. 제품 결론
 
-### 1.0 제품 흐름 재잠금 (#25 · 2026-08-05) — **현재 SSOT**
+### 1.0 투톱 IA 재잠금 (#33 · 2026-08-05) — **현재 SSOT**
 
-사람이 잠근 본선 흐름:
+**#25를 대체한다.** (#25의 DB·맛집 API·MRT 큐레이션 기술 방향은 유지 · **페이지 IA만 교체**)
 
-1. **국내 여행지(TourAPI type12 ≈7천)를 Supabase에 데이터화·저장**
-2. **주 1회** 목록 갱신 (월 1회도 허용 · 신규 드묾·수정 위주)
-3. **축제 페이지** — 축제장 좌표 기준 **주변 관광지** 목록에 활용
-4. **맛집(type39)** — 전량 DB 금지 · **필요 시 API 호출**(반경·상세)
-5. **마이리얼트립 국내 패키지** — 상품이 있는 여행지만 **별도 큐레이션**으로 패키지 모듈에 활용
-6. **명승지(`/scenic`) = 테마여행 본선 페이지** — 맛집·레포츠·문화시설·축제와 연동
-7. **10대 절경 · 방방곡곡 — 보류** (라우트·코드 유지 · 신규 기능·확장 중지 · 랜딩 타일 `enabled`/order로 숨김 또는 후순위)
-8. **여행코스 — 유지** · 축제·주변 여행지·맛집과 연동하는 방향으로 다듬기
+사람이 잠근 방향:
 
-| 축 | 저장 | 갱신 | 소비처 |
-|----|------|------|--------|
-| 관광지 12 | **Supabase** | 주1회 | 명승·축제 주변·검색·(추후)내위치/리스트 |
-| 축제 15 | 기존 festival 캐시 | 기존 | `/korea` · 명승/코스 크로스 |
-| 맛집 39 | 저장 안 함 | LIVE API | 축제/명승/코스 **주변** |
-| 레포츠 28 · 문화 14 | 1차는 API 또는 소량 캐시 | 필요 시 | 명승 연동 |
-| 코스 25 | 라이브(소량≈49) | 기존 | `/courses` · 축제·주변 연동 |
-| MRT 패키지 | 큐레이션 SSOT | 상품 확인 후 | `/packages` · 상품 있는 여행지만 |
+1. **「테마여행」제품명 → 「한국의 명승」**
+2. **투톱**: **축제 페이지**(`/korea`) · **명승 페이지**(`/korea/theme/scenic`, 랜딩 `/korea/theme`은 명승으로 정리)
+3. **탑레벨 항목 제거**: **10대 절경** · **방방곡곡** · **패키지**(별도 모듈 페이지)
+4. **각 페이지(축제·명승) 상세 안에서** 상호 크로스 체크·노출:
+   - 주변 관광지
+   - 맛집 정보
+   - 레포츠 · 문화 정보
+   - 패키지 **매칭** 노출 (페이지가 아니라 CTA)
+   - 숙소 · 투어 정보 노출
+   - 상세 페이지(모달) 구성
+5. **길을 잃지 않는 네비**: 축제↔명승 상호 링크 · 상세→목록 복귀 · 크로스 이동 시 `ThemeNavBack`/`returnTo` · 이전 상세 복원
 
-**지구본·`cityAttractionHubs`**: 국내 Tour DB와 **역할 분리** 유지(hub=도시/해외·place · Tour DB=국내 관광 POI). 즉시 지구본 전면 교체 금지 · 추후 검색/리스트 연동만.
+| 축 | 역할 (#33) |
+|----|------------|
+| **축제 `/korea`** | 투톱 A · 일정·지도·상세 · 주변/맛집/레포츠/문화/코스·패키지·숙소·투어 **상세 내** |
+| **명승 `/korea/theme/scenic`** | 투톱 B · Tour DB type12 본선 · 동일 상세 크로스 구성 |
+| 패키지 | **별도 페이지 제거** · hub/지역 매칭 시 상세 CTA만 (#32 큐레이션 재사용) |
+| 여행코스 | **탑레벨 타일 제거** · 상세 deep-link(`/courses`)·모달 유지 |
+| 10대 · 방방곡곡 | **탑레벨 제거** · 라우트/SSOT 코드는 삭제하지 않음(`enabled:false`) · 신규 노출·확장 금지 |
+| 숙소·투어 | Place/MRT 기존 resolver · 상세 레일만 |
+
+**기술 유지 (#25~#32)**: type12 Supabase 주1회 · 맛집39/레포츠28/문화14는 LIVE API · MRT 상품지 큐레이션 · 축제 지도·칩 코어 리팩터 금지.
 
 ### 1.1 한 줄
 
-**「한국의 테마여행」= `/korea/theme` + 명승(본선)·코스·패키지·축제(`/korea`) 연결.**  
-국내 관광지는 DB 카탈로그, 맛집은 API, 10대/방방곡곡은 보류.
+**「한국의 축제」+「한국의 명승」투톱.**  
+주변·맛집·레포츠·문화·패키지·숙소·투어는 **각 상세에서 크로스**하고, 10대·방방곡곡·패키지 **모듈 페이지는 제거**.
 
 ### 1.2 라우트
 
-| 경로 | 역할 | #25 |
+| 경로 | 역할 | #33 |
 |------|------|-----|
-| **`/korea/theme`** | 테마여행 **랜딩**(모듈 타일) | 유지 |
-| **`/korea/theme/scenic`** | **한국의 명승지 = 본선** (Tour DB + 연동) | ✅ 본선 |
-| **`/korea/theme/courses`** | 여행코스 · 축제/주변/맛집 연동 | ✅ 유지·강화 |
-| **`/korea/theme/packages`** | MRT · **상품 있는 여행지 큐레이션** | ✅ 유지·강화 |
-| **`/korea`** | 축제 · **주변 관광지(DB)** (#26) | ✅ 연결 |
-| `/korea/theme/top10` | 10대 절경 | ⏸ **보류** |
-| `/korea/theme/regions` | 방방곡곡 | ⏸ **보류** |
-| `/place/:slug` | 명소·hub 상세 | 유지 |
+| **`/korea`** | **투톱 A · 축제** | ✅ |
+| **`/korea/theme/scenic`** | **투톱 B · 명승** | ✅ |
+| **`/korea/theme`** | 랜딩 → **명승으로 정리**(리다이렉트 또는 타일 최소화: 축제·명승만) | ✅ 정리 |
+| `/korea/theme/courses` | 코스 모달·deep-link 수신 | 유지 · **탑레벨 비노출** |
+| `/korea/theme/packages` | 레거시 | ❌ **탑레벨 제거** · 리다이렉트(명승) 또는 비노출 |
+| `/korea/theme/top10` | 레거시 | ❌ **제거(비노출)** |
+| `/korea/theme/regions` | 레거시 | ❌ **제거(비노출)** |
+| `/place/:slug` | Place 2차 | 유지 |
 
-**라우팅 가드**: `App.jsx`에서 `/korea/theme`·`/korea/theme/:moduleId`를 `/korea`와 **형제 Route**로 등록. `/korea` 축제 컴포넌트를 테마 셸로 바꾸지 않음. 보류 모듈은 **삭제하지 않고** 타일 off 또는 후순위.
+**라우팅 가드**: `/korea` 축제 컴포넌트를 명승 셸로 바꾸지 않음. 제거 모듈은 **코드 삭제보다 `enabled:false`+네비 숨김** 우선(되돌리기·deep-link 안전).
 
-### 1.3 홈 진입 (확정 = 권장안 C)
+### 1.3 홈 진입 (#33)
 
-- 기존 「국내」→ `/korea`(축제) **유지**
-- **「테마여행」** 링크 **추가** → `/korea/theme`
-- 기존 버튼 교체·리디자인 금지
+- 「국내」/축제 → `/korea` **유지**
+- 구「테마여행」라벨 → **「한국의 명승」** → `/korea/theme`(→명승) 또는 `/korea/theme/scenic`
+- 홈에 10대·방방곡곡·패키지 진입 **추가 금지**
+- 기존 버튼 **리디자인 금지**(라벨·링크 목표만 교체)
 
-### 1.4 모듈 · 순서 (#25)
+### 1.4 모듈 · 순서 (#33)
 
-- 타일 `order`/`enabled`로 조정. 보류 모듈은 `enabled: false` 또는 order 뒤로.
-- 권장 시드: `festivals` 10 · `scenic` 20 · `courses` 30 · `packages` 40 · (`top10`/`regions` 보류·비노출 또는 90+)
+| id | 라벨 | 경로 | enabled | 비고 |
+|----|------|------|---------|------|
+| `festivals` | 한국의 축제 | `/korea` | ✅ | 투톱 A (랜딩에 둘 때만) |
+| `scenic` | **한국의 명승** | `/korea/theme/scenic` | ✅ | 투톱 B |
+| `courses` | 여행코스 | `/korea/theme/courses` | ❌ 타일 | deep-link만 |
+| `packages` | 패키지 상품 | `/korea/theme/packages` | ❌ | 상세 매칭만 |
+| `top10` | 10대 절경 | `/korea/theme/top10` | ❌ | 제거 |
+| `regions` | 방방곡곡 | `/korea/theme/regions` | ❌ | 제거 |
 
-| id | 라벨 | 경로 | 데이터 · #25 |
-|----|------|------|----------------|
-| `festivals` | 한국의 축제 | → `/korea` | 기존 + **주변 관광지(DB type12)** |
-| `scenic` | 한국의 명승지 | `/korea/theme/scenic` | **Tour DB type12** · 맛집 API · 레포츠/문화/축제 연동 |
-| `courses` | 여행코스 | `/korea/theme/courses` | type25 유지 · 축제·주변 여행지·맛집 연동 |
-| `packages` | 패키지 상품 | `/korea/theme/packages` | MRT · **상품 확인된 여행지만** 큐레이션 |
-| `top10` | 10대 절경 | `/korea/theme/top10` | ⏸ 보류 (코드·SSOT 유지) |
-| `regions` | 방방곡곡 | `/korea/theme/regions` | ⏸ 보류 (코드·SSOT 유지) |
+### 1.5 비범위 (#33)
 
-### 1.5 비범위 (#25)
-
-- `/korea` 축제 **지도·칩 코어 로직** 리팩터/리디자인 (주변 관광지 **연결만** 허용)
+- `/korea` 축제 **지도·칩 코어** 리팩터/리디자인
+- top10·regions·packages **탑레벨 부활** · 신규 확장
+- 맛집/레포츠/문화/코스 **전량 DB**
+- 패키지 **가짜 상품 카드 목록** · `q=부산`/`q=경주` CTA
 - `travelSpots.js` 전체 스캔 · 지구본 hub 전면 교체
-- 맛집 type39 **전량 DB 적재** (API 호출만)
-- 10대·방방곡곡 **신규 확장** (보류 해제 전까지)
-- 숙박 type32 전량 목록 · 자동 코스 플래너
-- 새 디자인 시스템·홈 리디자인
+- 홈·PlaceCard **임의 리디자인**
 - 오케 다배치(기본 솔로 · 사람 명시 시만)
 
----
+### 1.6 상세 크로스 · 네비 (목표 · #34에서 정합)
+
+축제 상세 · 명승 상세가 **같은 정보 축**을 공유하고 서로 넘나든다.
+
+| 표면 | 축제 상세 | 명승 상세 | 네비 가드 |
+|------|-----------|-----------|-----------|
+| 주변 관광지 | DB nearby (#26) | DB/목록·nearby | 클릭→모달 · 닫기=목록/시트 |
+| 맛집 | type39 API (#28) | 동일 | 맛집→주변 관광지 크로스 |
+| 레포츠·문화 | type28/14 (#30) | 동일 | 상세→관광지 크로스 |
+| 여행코스 | 인근 코스 (#31) | 코스 deep-link | 모달 · 이전 복귀 |
+| 패키지 | 권역/hub 매칭 시 CTA | 동일 (#32 키) | 새 탭 · 페이지 진입 아님 |
+| 숙소·투어 | MRT stay/TNA | 동일 | 키워드 없으면 숨김 |
+| 상대 투톱 | 「명승」더보기/`scenic?region=` | 「축제」`/korea?…` | from/return 유지 |
+| 상세 구성 | FestivalDetailSheet | ThemeSpotDetailModal | 1차=모달/시트 · Place=2차 |
+
+**길을 잃지 않기**: `koreaThemeNavBack` · `placeReturnTo` · `?from=` · 「이전」복원(#21) · 헤더에 **축제|명승** 상호 칩.
 
 ## 2. 정보구조 · UX
 
-### 2.1 랜딩 `/korea/theme`
+### 2.1 랜딩 `/korea/theme` (#33)
 
 | 구역 | 내용 | 가드 |
 |------|------|------|
-| 헤더 | 홈·(선택)축제 바로가기 · 타이틀「한국의 테마여행」 | 히어로에 통계·일정·주소 금지 |
-| 모듈 타일 | `order` 정렬 · 아이콘+라벨+한 줄 | 카드 남발 지양 · `/korea` 톤 조화 |
+| 헤더 | 홈 · **축제** 바로가기 · 타이틀「**한국의 명승**」 | 구「테마여행」카피 폐기 · 히어로 통계 금지 |
+| 본문 | **명승으로 정리** — scenic 리다이렉트 **또는** 타일 최대 2(축제·명승) | top10/regions/packages/courses 타일 **금지** |
+| 상호 | 축제 헤더↔명승 헤더 칩 | 길을 잃지 않게 from/return |
 
 ### 2.2 테마 페이지 공통
 
@@ -277,7 +303,7 @@ flowchart LR
 
 ### 2.5 테마 크로스 연결 (S12 · 전략 잠금 2026-08-04)
 
-**한 줄**: 절경·명승·방방곡곡 본문(상세 모달)에서 **숙소·투어(TNA)·축제·여행코스·인근 hub·다른 테마 소속**이 같은 조인키로 서로 맞물리게 한다. 새 거대 그래프 SSOT를 만들지 않고, **기존 hub / areaCode / placeSlug / MRT resolver / 축제 nearby**를 재사용한다.
+**한 줄 (#33)**: **축제·명승 상세**에서 **주변 관광지·맛집·레포츠·문화·패키지 매칭·숙소·투어·코스**가 같은 조인키로 맞물린다. top10/방방곡곡/패키지 **페이지 멤버십 레일은 축소·비노출**. 새 거대 그래프 SSOT 금지 — **기존 hub / areaCode / placeSlug / MRT / nearby** 재사용.
 
 #### 2.5.1 조인키 (우선순위)
 
@@ -888,14 +914,12 @@ Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일
 
 ---
 
-### #25 — 제품 흐름 재잠금 ✅
+### #25 — 제품 흐름 재잠금 ✅ (기술 · **IA는 #33이 대체**)
 
-본문 **§1.0**이 SSOT. 요약:
+기술 요약(유지): 국내여행지 DB · 주1회 · 축제 주변 · 맛집 API · MRT 상품지 큐레이션.  
+**페이지 IA**: #25의「코스·패키지 모듈 유지 · top10/regions 보류」→ **#33 투톱**으로 승격·대체.
 
-- 국내여행지 DB · 주1회 · 축제 주변 · 맛집 API · MRT 상품지 큐레이션  
-- 명승=본선(맛집·레포츠·문화·축제 연동) · 코스 유지·연동 · **top10/regions 보류**
-
-**채팅명**: `테마여행 #25, 제품 흐름 재잠금` (본 세션 · 문서만)
+**채팅명**: `테마여행 #25, 제품 흐름 재잠금` (문서 · 완료)
 
 ---
 
@@ -963,11 +987,48 @@ scenic이 DB 읽기. 맛집 전량 DB 금지. top10/regions 보류. 축제 지�
 
 ---
 
+### #33 — 페이지 정리 · 투톱 IA ✅
+
+| | |
+|--|--|
+| **산출** | §1.0 재잠금 · 채팅표 #33/#34 · 모듈 `enabled`로 top10·regions·packages·courses 타일 제거 · 홈/랜딩 카피「한국의 명승」 · README·일지 |
+| **다음** | **#34** 투톱 크로스 네비 정합(상세 레일·상호 칩·packages/top10/regions 진입 리다이렉트·스모크) |
+| **금지** | 축제 지도·칩 리팩터 · 제거 모듈 코드 강제 삭제(enabled/네비만) · 홈 리디자인 · releaseNotes |
+| **VERIFY** | `audit:korea-theme-modules` · `smoke:korea-theme-cross-links` · `npm run build` · Preview 홈→명승·축제 |
+
+**채팅명**: `테마여행 #33, 페이지 정리`  
+**첫 메시지**
+
+```
+테마여행 #33, 페이지 정리
+@plans/korea-theme-travel-plan.md §1.0·#33만
+브랜치 cursor/korea-theme. 테마여행→한국의 명승 투톱(축제/명승).
+10대·방방곡곡·패키지 탑레벨 제거. 상세 크로스·네비 방향 잠금.
+```
+
+### #34 — 투톱 크로스 네비 ⏳
+
+| | |
+|--|--|
+| **산출** | 축제↔명승 헤더 상호 칩 · 상세 레일(주변·맛집·레포츠·문화·패키지·숙소·투어) 양페이지 정합 · `/packages`·`/top10`·`/regions` → scenic 리다이렉트(또는 410 안내) · nav-back 라벨「명승」 |
+| **VERIFY** | `smoke:korea-theme-nav-back` · cross-links · festival-nearby · nearby restaurants/leisure · build · Preview 왕복 |
+| **금지** | 축제 지도·칩 리팩터 · 가짜 패키지 카드 · top10/regions 콘텐츠 확장 · UI 임의 리디자인 |
+
+**채팅명**: `테마여행 #34, 투톱 크로스 네비`  
+**첫 메시지**
+
+```
+테마여행 #34, 투톱 크로스 네비
+@plans/korea-theme-travel-plan.md §1.0·§1.6·#34만
+브랜치 cursor/korea-theme. 축제↔명승 상호 네비·상세 크로스 정합.
+packages/top10/regions 탑레벨 진입 정리. 지도·칩 리팩터 금지.
+```
+
 ## 6. 리스크 · 가드
 
 | 리스크 | 대응 |
 |--------|------|
-| `/korea` vs `/korea/theme` 혼동 | 카피: 테마여행(디렉터리) / 축제(일정·지도) |
+| `/korea` vs 명승 혼동 | 카피: **축제**(일정·지도) / **명승**(관광지 본선) · 구「테마여행」폐기 |
 | RR 라우트 충돌 | theme path를 명시 Route로 등록 |
 | 10대 논쟁 | GATEO 선정 · S3 확정 후 세션 중 교체 금지 |
 | MRT `q=부산` 오해 | 국내 CTA에서 제외 |
@@ -979,14 +1040,16 @@ scenic이 DB 읽기. 맛집 전량 DB 금지. top10/regions 보류. 축제 지�
 | 테마 간 단절 | §2.5 조인키(hub/area/geo) · 크로스 JSON 남발 금지 · 축제 로직 비침투 |
 | 명승 type12 ≈7k | **DB+주간 sync** · curated 7천 시드 금지 · 평소 LIVE 최소화 |
 | 맛집 쿼터 | type39 **전량 DB 금지** · 주변 API만 · proxy locationBased 추가 시 캐시/TTL |
-| top10/regions 보류 | 타일 off · 코드 삭제 금지 · 보류 해제 전 확장 금지 |
+| top10/regions/packages 제거 | 타일·홈 **비노출** · 코드 삭제 금지 · 탑레벨 부활 금지 · 패키지는 상세 매칭만 |
 | 명승=선발만 오해 | 카피: 국내 관광지 카탈로그 탐색 + (선택) GATEO 추천 |
 
 ---
 
 ## 7. 성공 기준 (MVP)
 
-- [ ] `/korea/theme`에서 모듈 타일 → 각 테마 페이지(또는 축제 `/korea`) 진입
+- [x] **#33**: 투톱 IA 잠금 · 10대·방방곡곡·패키지 탑레벨 제거 · 제품명「한국의 명승」
+- [ ] **#34**: 축제↔명승 상호 네비 · 상세 크로스(주변·맛집·레포츠·문화·패키지·숙소·투어)로 길 안 잃음
+- [ ] 홈에서 축제·명승만 명확 진입 · 제거 모듈 타일 없음
 - [ ] `/korea` 축제 회귀 없음
 - [x] 10대 10곳 → place → 테마 복귀 (`#6` · 레거시 경로 · Preview QA)
 - [x] **S11**: top10·scenic·regions 목록 → **상세 모달**(개요·기본정보) · Place는 2차 (Preview QA)
@@ -996,7 +1059,7 @@ scenic이 DB 읽기. 맛집 전량 DB 금지. top10/regions 보류. 축제 지�
 - [x] **#28**: 맛집 type39 주변 API · 축제/명소 연결 (Preview QA)
 - [x] **#30**: 레포츠28·문화14 주변 API · 축제/명소 연결 (Preview QA)
 - [x] **#31**: 코스↔축제 양방향 · areaBased type25 · festival deep-link (Preview QA)
-- [x] **#25**: top10/regions 타일 보류 · 명승 본선 · 코스·패키지 방향 유지 (플랜)
+- [x] **#25→#33**: 기술(#25) 유지 · IA는 투톱·탑레벨 제거로 승격
 - [x] 패키지 MRT 상품지 큐레이션(제주·여수·울릉도·강원·순천·홍도·백령 + 홈) · mylink (#32)
 - [x] `/qa/korea-theme` · 고정 Preview (S1·S8 최종 · sitemap/Helmet)
 - [ ] audit/smoke/build PASS · 키 미노출
@@ -1020,13 +1083,14 @@ scenic이 DB 읽기. 맛집 전량 DB 금지. top10/regions 보류. 축제 지�
 
 ---
 
-## 9. S0 결정표 (잠금)
+## 9. 결정표 (잠금)
 
 | # | 질문 | 결정 | 상태 |
 |---|------|------|------|
-| 1 | 랜딩 경로 | `/korea/theme` (+ `/korea/theme/{top10,scenic,regions,packages}`) | ✅ |
-| 2 | 홈 진입 | C: 「테마여행」추가 + 기존 국내/축제 유지 | ✅ |
-| 3 | 모듈 순서 | `order`로 차후 조정 · 테마=페이지 | ✅ |
-| 4 | 10대 | 웹+TourAPI+hub · S3 확정 · §3.3 시드 | ✅ 방법 / ✅ 최종10 (Preview QA) |
-| 5 | 패키지 | MRT §3.4 P0 제주·P1 홈·P2 경주 | ✅ 방향 |
+| 1 | 제품 축 | **축제 + 명승 투톱** (#33) | ✅ |
+| 2 | 경로 | `/korea` · `/korea/theme/scenic`(명승) · 랜딩 정리 | ✅ |
+| 3 | 홈 진입 | 축제 유지 + **「한국의 명승」**(구 테마여행) | ✅ #33 |
+| 4 | 제거 | **10대 · 방방곡곡 · 패키지 페이지** 탑레벨 비노출 | ✅ #33 |
+| 5 | 패키지·코스·숙소·투어 | **상세 매칭/크로스만** | ✅ 방향 · #34 정합 |
 | 6 | 브랜치 | `cursor/korea-theme` | ✅ |
+| — | (구 S0) 테마 모듈 디렉터리 | **폐기** — #25 보류안도 #33이 대체 | 폐기 |

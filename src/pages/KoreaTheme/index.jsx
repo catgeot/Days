@@ -35,8 +35,8 @@ export default function KoreaThemeLanding() {
   return (
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
       <SEO
-        title="한국의 테마여행"
-        description="축제·절경·명승·여행코스·지역·패키지 등 한국 테마여행 디렉터리. GATEO에서 테마별로 이어갑니다."
+        title="한국의 명승"
+        description="한국의 축제와 명승 투톱. 명승에서 주변 관광지·맛집·숙소·투어로 이어갑니다."
         url="/korea/theme"
       />
 
@@ -46,10 +46,10 @@ export default function KoreaThemeLanding() {
             <div className="flex items-center gap-2">
               <div className="min-w-0 flex-1">
                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-700">
-                  Korea · Theme
+                  Korea · Scenic
                 </p>
                 <h1 className="truncate text-base font-extrabold tracking-tight md:text-lg lg:text-xl">
-                  한국의 테마여행
+                  한국의 명승
                 </h1>
               </div>
               <div className="flex shrink-0 items-center gap-2">
@@ -87,11 +87,11 @@ export default function KoreaThemeLanding() {
                 id="korea-theme-modules-heading"
                 className="text-sm font-bold tracking-tight md:text-base"
               >
-                테마 모듈
+                축제 · 명승
               </h2>
             </div>
             <p className="text-sm leading-relaxed text-stone-600 break-keep">
-              관심 테마를 골라 이어가세요. 순서는 나중에 바꿀 수 있습니다.
+              축제와 명승 두 축으로 이어가세요. 맛집·숙소·투어·패키지는 각 상세에서 만납니다.
             </p>
             <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {MODULES.map((mod) => {

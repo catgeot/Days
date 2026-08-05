@@ -2,9 +2,9 @@ const KEY = 'gateo:theme-nav-back-stack';
 const MAX_DEPTH = 8;
 
 const MODULE_LABEL_BY_PATH = {
-  '/korea/theme': '테마여행',
+  '/korea/theme': '한국의 명승',
   '/korea/theme/top10': '10대 절경',
-  '/korea/theme/scenic': '명승지',
+  '/korea/theme/scenic': '한국의 명승',
   '/korea/theme/courses': '여행코스',
   '/korea/theme/regions': '방방곡곡',
   '/korea/theme/packages': '패키지',
