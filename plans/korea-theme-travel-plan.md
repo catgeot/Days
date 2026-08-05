@@ -62,8 +62,8 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **#17** 상세 정보 전수보강 | ⏳ Preview QA | top10 10/10 · regions Tour SSOT · 빈모달 가드 | S12 |
 | **S12** 테마 크로스 연결 | ⏳ Preview QA | §2.5+#18 매처 · #19 모달 레일·area 수신 | #20 가독성 |
 | **#20** 상세 본문 가독성 | ⏳ Preview QA | DetailRow 세로 배치(소제목↓본문) | S9 |
-| **#21** 테마간 이전 복귀 | ⏳ Preview QA | 크로스 이동 후 「이전」·?spot= 모달 복원 | #22 |
-| **S9** 폴리시·릴리스 | ⏳ | 사람 QA → releaseNotes 1회 제안 (#22) | main 병합 |
+| **#21** 테마간 이전 복귀 | ⏳ Preview QA | 크로스 이동 후 「이전」·?spot= 모달 복원 | #22 명승 리서치 |
+| **S9** 폴리시·릴리스 | ⏳ | 사람 QA → releaseNotes 1회 제안 (#24) | main 병합 |
 
 ---
 
@@ -814,11 +814,11 @@ ThemeSpotDetailModal에 cross-links 레일. area 쿼리 수신 최소.
 사람 Preview OK → releaseNotes **초안만 제안** → 합의 후 반영 · main 병합.  
 **순서**: 명승 TourAPI 전량(S13) Preview QA 후 권장.
 
-**채팅명**: `테마여행 #22, 폴리시·릴리스`  
+**채팅명**: `테마여행 #24, 폴리시·릴리스`  
 **첫 메시지**
 
 ```
-테마여행 #22, 폴리시·릴리스
+테마여행 #24, 폴리시·릴리스
 @plans/korea-theme-travel-plan.md S9·§7만
 Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일 금지).
 ```
