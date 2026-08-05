@@ -16,6 +16,10 @@ import {
 import {
   fetchKoreaTourAttractionById,
   fetchKoreaTourAttractions,
+  labelScenicAreaCode,
+  listScenicRegionAreas,
+  normalizeScenicAreaCode,
+  scenicAreaCodeForHubId,
   SCENIC_REGION_ORDER,
 } from '../Home/lib/koreaTourAttractions';
 import { reconcileThemeNavBack } from '../Home/lib/koreaThemeNavBack';
@@ -37,7 +41,7 @@ function toModalSpot(spot) {
   return {
     id: spot.id,
     name: spot.name,
-    subtitle: spot.region,
+    subtitle: spot.areaLabel || spot.region,
     blurb: spot.blurb,
     placeSlug: spot.placeSlug,
     contentId: spot.contentId,
@@ -55,17 +59,30 @@ function resolveRegion(raw) {
   return DEFAULT_REGION;
 }
 
+function spotRegionLabel(spot) {
+  if (!spot) return '';
+  if (spot.areaLabel) return `${spot.region} · ${spot.areaLabel}`;
+  return spot.region || '';
+}
+
 export default function KoreaThemeScenicPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const region = resolveRegion(searchParams.get('region'));
+  const areaCode = normalizeScenicAreaCode(region, searchParams.get('area'));
   const cat1 =
     normalizeTourAttractionCat1(searchParams.get('cat1')) || DEFAULT_CAT1;
   const cat2 = normalizeTourAttractionCat2(cat1, searchParams.get('cat2'));
   const selectedId = searchParams.get('spot');
   const page = Math.max(Number(searchParams.get('page') || '1') || 1, 1);
 
-  const curatedSpots = useMemo(() => listKoreaScenicSpots(region), [region]);
+  const areaChips = useMemo(() => listScenicRegionAreas(region), [region]);
+
+  const curatedSpots = useMemo(() => {
+    const inRegion = listKoreaScenicSpots(region);
+    if (!areaCode) return inRegion;
+    return inRegion.filter((s) => scenicAreaCodeForHubId(s.hubId) === areaCode);
+  }, [region, areaCode]);
 
   const [dbSpots, setDbSpots] = useState([]);
   const [dbCount, setDbCount] = useState(0);
@@ -82,6 +99,7 @@ export default function KoreaThemeScenicPage() {
 
   useEffect(() => {
     const rawRegion = searchParams.get('region');
+    const rawArea = searchParams.get('area');
     const rawCat1 = searchParams.get('cat1');
     const rawCat2 = searchParams.get('cat2');
     const next = new URLSearchParams(searchParams);
@@ -89,6 +107,10 @@ export default function KoreaThemeScenicPage() {
 
     if (!rawRegion || rawRegion === '전체' || !SCENIC_REGION_ORDER.includes(rawRegion)) {
       next.set('region', region);
+      changed = true;
+    }
+    if (rawArea && !normalizeScenicAreaCode(region, rawArea)) {
+      next.delete('area');
       changed = true;
     }
     if (!normalizeTourAttractionCat1(rawCat1)) {
@@ -107,13 +129,14 @@ export default function KoreaThemeScenicPage() {
   useEffect(() => {
     const params = new URLSearchParams();
     if (region) params.set('region', region);
+    if (areaCode) params.set('area', areaCode);
     if (cat1) params.set('cat1', cat1);
     if (cat2) params.set('cat2', cat2);
     if (selectedId) params.set('spot', selectedId);
     if (page > 1) params.set('page', String(page));
     const q = params.toString();
     reconcileThemeNavBack(q ? `${RETURN_TO}?${q}` : RETURN_TO);
-  }, [region, cat1, cat2, selectedId, page]);
+  }, [region, areaCode, cat1, cat2, selectedId, page]);
 
   useEffect(() => {
     let cancelled = false;
@@ -121,6 +144,7 @@ export default function KoreaThemeScenicPage() {
     setDbError(null);
     fetchKoreaTourAttractions({
       region,
+      areaCode,
       cat1,
       cat2,
       limit: PAGE_SIZE,
@@ -141,7 +165,7 @@ export default function KoreaThemeScenicPage() {
     return () => {
       cancelled = true;
     };
-  }, [region, cat1, cat2, page]);
+  }, [region, areaCode, cat1, cat2, page]);
 
   useEffect(() => {
     let cancelled = false;
@@ -172,11 +196,25 @@ export default function KoreaThemeScenicPage() {
     (r) => {
       const next = new URLSearchParams(searchParams);
       next.set('region', resolveRegion(r));
+      next.delete('area');
       next.delete('spot');
       next.delete('page');
       setSearchParams(next, { replace: true });
     },
     [searchParams, setSearchParams],
+  );
+
+  const setArea = useCallback(
+    (code) => {
+      const next = new URLSearchParams(searchParams);
+      const normalized = normalizeScenicAreaCode(region, code);
+      if (!normalized || normalized === areaCode) next.delete('area');
+      else next.set('area', normalized);
+      next.delete('spot');
+      next.delete('page');
+      setSearchParams(next, { replace: true });
+    },
+    [searchParams, setSearchParams, region, areaCode],
   );
 
   const setCat1 = useCallback(
@@ -285,29 +323,57 @@ export default function KoreaThemeScenicPage() {
 
       <main className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto w-full max-w-3xl space-y-8 px-3 py-6 md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl">
-          <div
-            role="group"
-            aria-label="권역 필터"
-            className="flex flex-wrap gap-1.5"
-          >
-            {regionChips.map((r) => {
-              const active = region === r;
-              return (
-                <button
-                  key={r}
-                  type="button"
-                  onClick={() => setRegion(r)}
-                  aria-pressed={active}
-                  className={
-                    active
-                      ? 'rounded-full border border-amber-400/90 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-950'
-                      : 'rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50'
-                  }
-                >
-                  {r}
-                </button>
-              );
-            })}
+          <div className="space-y-2">
+            <div
+              role="group"
+              aria-label="권역 대분류"
+              className="flex flex-wrap gap-1.5"
+            >
+              {regionChips.map((r) => {
+                const active = region === r;
+                return (
+                  <button
+                    key={r}
+                    type="button"
+                    onClick={() => setRegion(r)}
+                    aria-pressed={active}
+                    className={
+                      active
+                        ? 'rounded-full border border-amber-400/90 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-950'
+                        : 'rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50'
+                    }
+                  >
+                    {r}
+                  </button>
+                );
+              })}
+            </div>
+            {areaChips.length > 1 ? (
+              <div
+                role="group"
+                aria-label={`${region} 시도 소분류`}
+                className="flex flex-wrap gap-1.5 pl-0.5"
+              >
+                {areaChips.map((chip) => {
+                  const active = areaCode === chip.code;
+                  return (
+                    <button
+                      key={chip.code}
+                      type="button"
+                      onClick={() => setArea(chip.code)}
+                      aria-pressed={active}
+                      className={
+                        active
+                          ? 'rounded-full border border-stone-400 bg-stone-800 px-2.5 py-0.5 text-[11px] font-bold text-white'
+                          : 'rounded-full border border-stone-200 bg-stone-50 px-2.5 py-0.5 text-[11px] font-semibold text-stone-600 hover:bg-stone-100'
+                      }
+                    >
+                      {chip.label}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : null}
           </div>
 
           <section aria-labelledby="korea-scenic-curated-heading" className="space-y-4">
@@ -336,7 +402,12 @@ export default function KoreaThemeScenicPage() {
                           {spot.name}
                         </span>
                         <span className="text-[11px] font-semibold text-stone-500">
-                          {spot.region}
+                          {spotRegionLabel({
+                            region: spot.region,
+                            areaLabel: labelScenicAreaCode(
+                              scenicAreaCodeForHubId(spot.hubId),
+                            ),
+                          })}
                         </span>
                       </span>
                       <span className="mt-0.5 block text-xs leading-relaxed text-stone-600 break-keep">
@@ -348,7 +419,11 @@ export default function KoreaThemeScenicPage() {
               ))}
             </ul>
             {curatedSpots.length === 0 ? (
-              <p className="text-sm text-stone-500 break-keep">이 권역에 해당하는 선정 명승이 없습니다.</p>
+              <p className="text-sm text-stone-500 break-keep">
+                {areaCode
+                  ? '이 시도에 해당하는 선정 명승이 없습니다. 다른 시도를 골라 보세요.'
+                  : '이 권역에 해당하는 선정 명승이 없습니다.'}
+              </p>
             ) : null}
           </section>
 
@@ -368,7 +443,7 @@ export default function KoreaThemeScenicPage() {
               ) : null}
             </div>
             <p className="text-xs text-stone-500 break-keep">
-              한국관광공사 TourAPI 관광지 종목(대분류·소분류)으로 나눈 카탈로그입니다. 항목을 누르면 상세를 봅니다.
+              선택한 권역·시도 아래 TourAPI 종목(대분류·소분류)으로 나눈 카탈로그입니다. 항목을 누르면 상세를 봅니다.
             </p>
 
             <div className="space-y-2">
@@ -434,7 +509,7 @@ export default function KoreaThemeScenicPage() {
             ) : null}
             {dbStatus === 'empty' ? (
               <p className="text-sm text-stone-500 break-keep">
-                이 권역·종목에 해당하는 관광지가 없습니다. 다른 소분류를 골라 보세요.
+                이 권역·시도·종목에 해당하는 관광지가 없습니다. 다른 소분류를 골라 보세요.
               </p>
             ) : null}
 
@@ -453,7 +528,7 @@ export default function KoreaThemeScenicPage() {
                             {spot.name}
                           </span>
                           <span className="text-[11px] font-semibold text-stone-500">
-                            {spot.region}
+                            {spotRegionLabel(spot)}
                           </span>
                         </span>
                         <span className="mt-0.5 block text-xs leading-relaxed text-stone-600 break-keep">

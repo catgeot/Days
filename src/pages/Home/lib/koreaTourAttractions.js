@@ -4,16 +4,24 @@ import {
   normalizeTourAttractionCat2,
 } from './koreaTourAttractionCategories';
 import {
+  labelScenicAreaCode,
+  listScenicRegionAreas,
   mapTourAttractionRow,
+  normalizeScenicAreaCode,
   SCENIC_REGION_AREA_CODES,
   SCENIC_REGION_ORDER,
+  scenicAreaCodeForHubId,
   scenicRegionForAreaCode,
 } from './koreaTourAttractionMap';
 
 export {
+  labelScenicAreaCode,
+  listScenicRegionAreas,
   mapTourAttractionRow,
+  normalizeScenicAreaCode,
   SCENIC_REGION_AREA_CODES,
   SCENIC_REGION_ORDER,
+  scenicAreaCodeForHubId,
   scenicRegionForAreaCode,
 };
 
@@ -23,6 +31,7 @@ const LIST_SELECT =
 /**
  * @param {{
  *   region?: string | null,
+ *   areaCode?: string | null,
  *   areaCodes?: string[] | null,
  *   cat1?: string | null,
  *   cat2?: string | null,
@@ -33,9 +42,14 @@ const LIST_SELECT =
 export async function fetchKoreaTourAttractions(opts = {}) {
   const limit = Math.min(Math.max(Number(opts.limit) || 40, 1), 100);
   const offset = Math.max(Number(opts.offset) || 0, 0);
+  const region =
+    opts.region && opts.region !== '전체' ? String(opts.region).trim() : null;
+  const areaCode = normalizeScenicAreaCode(region, opts.areaCode);
   let areaCodes = Array.isArray(opts.areaCodes) ? opts.areaCodes.filter(Boolean) : null;
-  if ((!areaCodes || !areaCodes.length) && opts.region && opts.region !== '전체') {
-    areaCodes = SCENIC_REGION_AREA_CODES[opts.region] || null;
+  if (areaCode) {
+    areaCodes = [areaCode];
+  } else if ((!areaCodes || !areaCodes.length) && region) {
+    areaCodes = SCENIC_REGION_AREA_CODES[region] || null;
   }
   const cat1 = normalizeTourAttractionCat1(opts.cat1);
   const cat2 = normalizeTourAttractionCat2(cat1, opts.cat2);

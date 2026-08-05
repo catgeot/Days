@@ -13,6 +13,13 @@ import {
   TOUR_ATTRACTION_CAT1,
   TOUR_ATTRACTION_CAT2_BY_CAT1,
 } from '../src/pages/Home/lib/koreaTourAttractionCategories.js';
+import {
+  labelScenicAreaCode,
+  listScenicRegionAreas,
+  normalizeScenicAreaCode,
+  scenicAreaCodeForHubId,
+  scenicRegionForAreaCode,
+} from '../src/pages/Home/lib/koreaTourAttractionMap.js';
 import { createClient } from '@supabase/supabase-js';
 
 let failed = 0;
@@ -50,6 +57,23 @@ assert(listTourAttractionCat2('A02').length === 5, 'list cat2 for A02');
 assert(labelTourAttractionCat1('A01') === '자연', 'label cat1');
 assert(labelTourAttractionCat2('A02', 'A0205') === '건축·조형물', 'label cat2');
 
+const capitalAreas = listScenicRegionAreas('수도권');
+assert(capitalAreas.length === 3, `수도권 시도=3 (got ${capitalAreas.length})`);
+assert(
+  capitalAreas.every((a) => a.code && a.label),
+  '수도권 시도 chips code+label',
+);
+assert(normalizeScenicAreaCode('수도권', '1') === '1', 'normalize area under region');
+assert(
+  normalizeScenicAreaCode('수도권', '32') === null,
+  'reject area outside parent region',
+);
+assert(scenicRegionForAreaCode('1') === '수도권', 'area inherits parent region');
+assert(labelScenicAreaCode('1') === '서울', 'label area 서울');
+assert(labelScenicAreaCode('8') === '세종', 'label area 세종 fallback');
+assert(scenicAreaCodeForHubId('seoul') === '1', 'hub→area seoul');
+assert(scenicAreaCodeForHubId('suwon') === '31', 'hub→area suwon');
+
 const url = String(process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '').trim();
 const anon = String(process.env.VITE_SUPABASE_ANON_KEY || '').trim();
 
@@ -76,6 +100,17 @@ if (url && anon) {
     .in('area_code', ['1', '2', '31']);
   assert(!e2, `DB cat2 filter (${e2?.message || 'ok'})`);
   assert(typeof c2 === 'number' && c2 >= 1, `수도권·역사관광지 ≥1 (got ${c2})`);
+
+  const { count: seoul, error: e3 } = await sb
+    .from('tourapi_attraction')
+    .select('content_id', { count: 'exact', head: true })
+    .eq('active', true)
+    .eq('content_type_id', '12')
+    .eq('area_code', '1')
+    .eq('cat1', 'A01');
+  assert(!e3, `DB area inherit filter (${e3?.message || 'ok'})`);
+  assert(typeof seoul === 'number' && seoul >= 1, `서울·자연 ≥1 (got ${seoul})`);
+  assert(seoul <= count, `서울 ⊆ 수도권 자연 (${seoul}≤${count})`);
 } else {
   console.log('SKIP  DB filter (no supabase env)');
 }

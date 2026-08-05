@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
   sessionNo: 35,
-  sessionPhase: '페이지 최적화',
+  sessionPhase: '페이지 최적화 · 권역 승계',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-05-korea-theme-scenic-region-inherit',
+    session: '테마여행 #35, 페이지 최적화',
+    title: '권역 대분류 → 시도 소분류 승계',
+    detail:
+      '명승 권역(수도권·충청 등) 아래에 속한 시도 칩(서울·인천·경기…)을 두고, 선정 명승·전국 관광지·종목 필터가 상위 권역을 승계해 좁혀집니다. Preview에서 수도권→서울→자연 순으로 목록이 줄어드는지 확인해 주세요.',
+    at: '2026-08-05',
+  },
   {
     id: '2026-08-05-korea-theme-scenic-page-optimize',
     session: '테마여행 #35, 페이지 최적화',

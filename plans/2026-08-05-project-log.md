@@ -4,15 +4,14 @@
 
 ## 테마여행 #35, 페이지 최적화
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `7054ff5d` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
 
-- **한 일**: 명승 권역 칩「전체」제거(기본 수도권) · 전국 관광지 TourAPI 종목 대분류(자연·인문)·소분류 칩 · `?cat1=`/`?cat2=` · `smoke:korea-scenic-categories`
+- **한 일**: 명승 권역 칩「전체」제거(기본 수도권) · 전국 관광지 TourAPI 종목 대분류(자연·인문)·소분류 칩 · **권역 대분류→시도 소분류 승계**(`?area=`) · 선정 명승 hub→area 필터 · `smoke:korea-scenic-categories`
 - **금지 준수**: 축제 지도·칩 리팩터 없음 · top10/regions 탑레벨 부활 없음 · releaseNotes 미작성
-- **VERIFY**: `smoke:korea-scenic-categories` · `smoke:korea-scenic-spots` · `npm run build` PASS
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
-- **작업 로그**: Preview 우측 「명승 지역칩·관광공사 종목 분리」
-- **QA**: 권역 칩에「전체」없음 · 대분류→소분류 전환 시 목록·건수 · `?region=제주` 딥링크
+- **작업 로그**: Preview 우측 「권역 대분류 → 시도 소분류 승계」
+- **QA**: 수도권→서울 시 목록 축소 · 권역 밖 area 거부 · 종목 필터도 동일 권역·시도 유지 · `?region=제주` 딥링크
 
 ### 테마여행 · 에이전트 핸드오프 → `#36`
 
