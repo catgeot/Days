@@ -311,6 +311,26 @@ function normalizeItem(
   );
   const kidsfacility = pickStr(item, "kidsfacility", "kidsFacility");
   const discountinfofood = pickStr(item, "discountinfofood", "discountInfoFood");
+  const usefee = pickStr(item, "usefee", "useFee");
+  const usefeeleports = pickStr(item, "usefeeleports", "useFeeLeports");
+  const usetimeculture = pickStr(item, "usetimeculture", "useTimeCulture");
+  const restdateculture = pickStr(item, "restdateculture", "restDateCulture");
+  const parkingculture = pickStr(item, "parkingculture", "parkingCulture");
+  const infocenterculture = pickStr(
+    item,
+    "infocenterculture",
+    "infoCenterCulture",
+  );
+  const usetimeleports = pickStr(item, "usetimeleports", "useTimeLeports");
+  const restdateleports = pickStr(item, "restdateleports", "restDateLeports");
+  const parkingleports = pickStr(item, "parkingleports", "parkingLeports");
+  const infocenterleports = pickStr(
+    item,
+    "infocenterleports",
+    "infoCenterLeports",
+  );
+  const openperiod = pickStr(item, "openperiod", "openPeriod");
+  const reservation = pickStr(item, "reservation");
 
   const out: Record<string, unknown> = {};
   if (contentId) out.contentId = contentId;
@@ -397,6 +417,18 @@ function normalizeItem(
   if (chkcreditcardfood) out.chkcreditcardfood = chkcreditcardfood;
   if (kidsfacility) out.kidsfacility = kidsfacility;
   if (discountinfofood) out.discountinfofood = discountinfofood;
+  if (usefee) out.usefee = usefee;
+  if (usefeeleports) out.usefeeleports = usefeeleports;
+  if (usetimeculture) out.usetimeculture = usetimeculture;
+  if (restdateculture) out.restdateculture = restdateculture;
+  if (parkingculture) out.parkingculture = parkingculture;
+  if (infocenterculture) out.infocenterculture = infocenterculture;
+  if (usetimeleports) out.usetimeleports = usetimeleports;
+  if (restdateleports) out.restdateleports = restdateleports;
+  if (parkingleports) out.parkingleports = parkingleports;
+  if (infocenterleports) out.infocenterleports = infocenterleports;
+  if (openperiod) out.openperiod = openperiod;
+  if (reservation) out.reservation = reservation;
 
   if (action === "searchPhoto") {
     const imageUrl = galWebImageUrl || firstimage;

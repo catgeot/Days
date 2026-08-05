@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 29,
-  sessionPhase: '축제 본문 인근 여행지',
+  sessionNo: 30,
+  sessionPhase: '레포츠·문화 주변',
   branch: 'cursor/korea-theme',
   previewPath: '/korea',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-05-korea-theme-nearby-leisure-culture',
+    session: '테마여행 #30, 레포츠·문화 주변',
+    title: '축제·명소 주변 레포츠·문화(API)',
+    detail:
+      '축제 상세·테마 상세 모달에 TourAPI 레포츠(type28)·문화시설(type14) 주변 목록을 locationBasedList로 연결했습니다. 전량 DB는 하지 않았고, 레포츠/문화 상세에서는 hub 대신 DB 주변 관광지로 크로스합니다. Preview /korea 축제 상세와 명승 상세에서 「주변 레포츠」「주변 문화」를 확인해 주세요.',
+    at: '2026-08-05',
+  },
   {
     id: '2026-08-05-korea-theme-festival-scenic-addr-fallback',
     session: '테마여행 #29, 축제 본문 인근 여행지',

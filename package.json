@@ -45,6 +45,7 @@
     "smoke:korea-festival-personal": "node scripts/smoke-korea-festival-personal.mjs",
     "smoke:korea-festival-nearby": "node scripts/smoke-korea-festival-nearby.mjs",
     "smoke:korea-nearby-restaurants": "node scripts/smoke-korea-nearby-restaurants.mjs",
+    "smoke:korea-nearby-leisure-culture": "node scripts/smoke-korea-nearby-leisure-culture.mjs",
     "generate:tourapi": "node scripts/generate-travel-spot-tourapi.mjs",
     "audit:tourapi": "node scripts/audit-tourapi-content-ids.mjs",
     "audit:mrt-stays": "node scripts/audit-mrt-stay-coverage.mjs",

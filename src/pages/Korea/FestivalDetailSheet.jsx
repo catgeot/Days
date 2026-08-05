@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowUp,
+  Bike,
+  Building2,
   CalendarDays,
   ChevronLeft,
   ChevronRight,
@@ -25,6 +27,12 @@ import {
   fetchNearbyTourRestaurants,
   RESTAURANT_CONTENT_TYPE_ID,
 } from '../../utils/fetchNearbyTourRestaurants';
+import {
+  CULTURE_CONTENT_TYPE_ID,
+  fetchNearbyTourCulture,
+  fetchNearbyTourLeports,
+  LEPORTS_CONTENT_TYPE_ID,
+} from '../../utils/fetchNearbyTourLeisureCulture';
 import { listKoreaScenicSpots } from '../Home/lib/koreaScenicSpots';
 import { scenicRegionForAreaCode } from '../Home/lib/koreaTourAttractionMap';
 import { pushThemeNavBack } from '../Home/lib/koreaThemeNavBack';
@@ -189,6 +197,14 @@ function nearbyPlaceLabel(spot) {
   return String(spot?.locality || spot?.region || '').trim();
 }
 
+function nearbyEyebrow(spot) {
+  const t = String(spot?.contentTypeId || '');
+  if (t === RESTAURANT_CONTENT_TYPE_ID) return '주변 맛집';
+  if (t === LEPORTS_CONTENT_TYPE_ID) return '주변 레포츠';
+  if (t === CULTURE_CONTENT_TYPE_ID) return '주변 문화';
+  return '주변 관광지';
+}
+
 function toNearbyModalSpot(spot) {
   if (!spot) return null;
   const place = nearbyPlaceLabel(spot);
@@ -274,6 +290,10 @@ export default function FestivalDetailSheet({
   const [nearbyStatus, setNearbyStatus] = useState('idle');
   const [nearbyFood, setNearbyFood] = useState([]);
   const [nearbyFoodStatus, setNearbyFoodStatus] = useState('idle');
+  const [nearbyLeports, setNearbyLeports] = useState([]);
+  const [nearbyLeportsStatus, setNearbyLeportsStatus] = useState('idle');
+  const [nearbyCulture, setNearbyCulture] = useState([]);
+  const [nearbyCultureStatus, setNearbyCultureStatus] = useState('idle');
   const [selectedNearby, setSelectedNearby] = useState(null);
   const [selectedScenic, setSelectedScenic] = useState(null);
   const sheetScrollRef = useRef(null);
@@ -427,12 +447,18 @@ export default function FestivalDetailSheet({
       setNearbyStatus('nocoords');
       setNearbyFood([]);
       setNearbyFoodStatus('nocoords');
+      setNearbyLeports([]);
+      setNearbyLeportsStatus('nocoords');
+      setNearbyCulture([]);
+      setNearbyCultureStatus('nocoords');
       return undefined;
     }
 
     let cancelled = false;
     setNearbyStatus('loading');
     setNearbyFoodStatus('loading');
+    setNearbyLeportsStatus('loading');
+    setNearbyCultureStatus('loading');
     fetchNearbyTourAttractions({
       lat: pt.lat,
       lng: pt.lng,
@@ -458,6 +484,32 @@ export default function FestivalDetailSheet({
       if (res?.error) setNearbyFoodStatus('error');
       else if (!spots.length) setNearbyFoodStatus('empty');
       else setNearbyFoodStatus('ok');
+    });
+    fetchNearbyTourLeports({
+      lat: pt.lat,
+      lng: pt.lng,
+      radiusKm: 5,
+      limit: 6,
+    }).then((res) => {
+      if (cancelled) return;
+      const spots = Array.isArray(res?.spots) ? res.spots : [];
+      setNearbyLeports(spots);
+      if (res?.error) setNearbyLeportsStatus('error');
+      else if (!spots.length) setNearbyLeportsStatus('empty');
+      else setNearbyLeportsStatus('ok');
+    });
+    fetchNearbyTourCulture({
+      lat: pt.lat,
+      lng: pt.lng,
+      radiusKm: 5,
+      limit: 6,
+    }).then((res) => {
+      if (cancelled) return;
+      const spots = Array.isArray(res?.spots) ? res.spots : [];
+      setNearbyCulture(spots);
+      if (res?.error) setNearbyCultureStatus('error');
+      else if (!spots.length) setNearbyCultureStatus('empty');
+      else setNearbyCultureStatus('ok');
     });
 
     return () => {
@@ -1073,6 +1125,142 @@ export default function FestivalDetailSheet({
                   )}
                 </div>
               )}
+
+              {nearbyLeportsStatus !== 'idle' &&
+                nearbyLeportsStatus !== 'nocoords' && (
+                  <div className="space-y-2 pt-1">
+                    <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
+                      주변 레포츠
+                    </p>
+                    {nearbyLeportsStatus === 'loading' && (
+                      <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
+                        <Loader2
+                          size={16}
+                          className="animate-spin"
+                          aria-hidden="true"
+                        />
+                        주변 레포츠 불러오는 중…
+                      </div>
+                    )}
+                    {nearbyLeportsStatus === 'error' &&
+                      nearbyLeports.length === 0 && (
+                        <p className="text-xs text-stone-500">
+                          주변 레포츠를 불러오지 못했습니다.
+                        </p>
+                      )}
+                    {nearbyLeportsStatus === 'empty' && (
+                      <p className="text-xs text-stone-500">
+                        반경 5km 안 TourAPI 레포츠가 없습니다.
+                      </p>
+                    )}
+                    {nearbyLeports.length > 0 && (
+                      <ul className="space-y-2" aria-label="축제 주변 레포츠">
+                        {nearbyLeports.map((spot) => {
+                          const thumb = toHttps(spot.firstImage);
+                          const dist = formatDistKm(spot.distKm);
+                          const place = nearbyPlaceLabel(spot);
+                          return (
+                            <li key={`leports-${spot.contentId || spot.id}`}>
+                              <button
+                                type="button"
+                                onClick={() => setSelectedNearby(spot)}
+                                className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                              >
+                                {thumb ? (
+                                  <img
+                                    src={thumb}
+                                    alt=""
+                                    className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
+                                  />
+                                ) : (
+                                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-sky-800">
+                                    <Bike size={18} aria-hidden="true" />
+                                  </div>
+                                )}
+                                <span className="min-w-0 flex-1">
+                                  <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
+                                    {spot.name}
+                                  </span>
+                                  <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
+                                    {[place, dist].filter(Boolean).join(' · ')}
+                                  </span>
+                                </span>
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </div>
+                )}
+
+              {nearbyCultureStatus !== 'idle' &&
+                nearbyCultureStatus !== 'nocoords' && (
+                  <div className="space-y-2 pt-1">
+                    <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
+                      주변 문화
+                    </p>
+                    {nearbyCultureStatus === 'loading' && (
+                      <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
+                        <Loader2
+                          size={16}
+                          className="animate-spin"
+                          aria-hidden="true"
+                        />
+                        주변 문화시설 불러오는 중…
+                      </div>
+                    )}
+                    {nearbyCultureStatus === 'error' &&
+                      nearbyCulture.length === 0 && (
+                        <p className="text-xs text-stone-500">
+                          주변 문화시설을 불러오지 못했습니다.
+                        </p>
+                      )}
+                    {nearbyCultureStatus === 'empty' && (
+                      <p className="text-xs text-stone-500">
+                        반경 5km 안 TourAPI 문화시설이 없습니다.
+                      </p>
+                    )}
+                    {nearbyCulture.length > 0 && (
+                      <ul className="space-y-2" aria-label="축제 주변 문화">
+                        {nearbyCulture.map((spot) => {
+                          const thumb = toHttps(spot.firstImage);
+                          const dist = formatDistKm(spot.distKm);
+                          const place = nearbyPlaceLabel(spot);
+                          return (
+                            <li key={`culture-${spot.contentId || spot.id}`}>
+                              <button
+                                type="button"
+                                onClick={() => setSelectedNearby(spot)}
+                                className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                              >
+                                {thumb ? (
+                                  <img
+                                    src={thumb}
+                                    alt=""
+                                    className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
+                                  />
+                                ) : (
+                                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-800">
+                                    <Building2 size={18} aria-hidden="true" />
+                                  </div>
+                                )}
+                                <span className="min-w-0 flex-1">
+                                  <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
+                                    {spot.name}
+                                  </span>
+                                  <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
+                                    {[place, dist].filter(Boolean).join(' · ')}
+                                  </span>
+                                </span>
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </div>
+                )}
             </div>
           )}
 
@@ -1243,12 +1431,7 @@ export default function FestivalDetailSheet({
       {selectedNearby && (
         <ThemeSpotDetailModal
           spot={toNearbyModalSpot(selectedNearby)}
-          eyebrow={
-            String(selectedNearby.contentTypeId || '') ===
-            RESTAURANT_CONTENT_TYPE_ID
-              ? '주변 맛집'
-              : '주변 관광지'
-          }
+          eyebrow={nearbyEyebrow(selectedNearby)}
           returnTo="/korea"
           overlayZClass="z-50"
           onClose={() => setSelectedNearby(null)}
