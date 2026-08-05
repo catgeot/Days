@@ -4,7 +4,7 @@
 
 ## 테마여행 #26, 축제 주변 관광지
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `28b5f61f` · Preview QA 대기
 
 - **한 일**: 축제 상세(안내 탭)에 `fetchNearbyTourAttractions`(반경 8km) 목록 · 클릭→`ThemeSpotDetailModal`(z-50) · 지도·칩 미터치 · `smoke:korea-festival-nearby`
 - **VERIFY**: `smoke:korea-festival-nearby` · `smoke:korea-theme-spot-modal` · `smoke:tourapi-attractions` · `npm run build` PASS
