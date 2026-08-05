@@ -997,6 +997,7 @@ scenic이 DB 읽기. 맛집 전량 DB 금지. top10/regions 보류. 축제 지�
 - [x] **#26**: 축제 상세 주변 관광지(DB) · ThemeSpotDetailModal (Preview QA)
 - [x] **#28**: 맛집 type39 주변 API · 축제/명소 연결 (Preview QA)
 - [x] **#30**: 레포츠28·문화14 주변 API · 축제/명소 연결 (Preview QA)
+- [x] **#31**: 코스↔축제 양방향 · areaBased type25 · festival deep-link (Preview QA)
 - [x] **#25**: top10/regions 타일 보류 · 명승 본선 · 코스·패키지 방향 유지 (플랜)
 - [ ] 패키지 MRT(제주 등) + mylink
 - [x] `/qa/korea-theme` · 고정 Preview (S1·S8 최종 · sitemap/Helmet)

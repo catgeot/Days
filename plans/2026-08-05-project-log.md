@@ -4,7 +4,7 @@
 
 ## 테마여행 #31, 코스↔축제
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `ead46f99` · Preview QA 대기
 
 - **한 일**: `fetchNearbyTourCourses`(type25 areaBased+거리) · `fetchNearbyFestivals`(festivalWindow 캐시) · 축제 상세「인근 여행코스」+`CourseDetailModal` · 코스 상세「인근 축제」·`/korea?festival=` · `/courses?course=` · `smoke:korea-course-festival`
 - **금지 준수**: 축제 지도·칩 미터치 · 코스/축제 전량 DB 없음 · top10/regions 미확장 · locationBasedList type25 비의존(실측 0건)
