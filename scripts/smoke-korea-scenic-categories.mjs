@@ -19,6 +19,7 @@ import {
   normalizeScenicAreaCode,
   scenicAreaCodeForHubId,
   scenicRegionForAreaCode,
+  SCENIC_REGION_AREA_CODES,
 } from '../src/pages/Home/lib/koreaTourAttractionMap.js';
 import { createClient } from '@supabase/supabase-js';
 
@@ -111,6 +112,34 @@ if (url && anon) {
   assert(!e3, `DB area inherit filter (${e3?.message || 'ok'})`);
   assert(typeof seoul === 'number' && seoul >= 1, `서울·자연 ≥1 (got ${seoul})`);
   assert(seoul <= count, `서울 ⊆ 수도권 자연 (${seoul}≤${count})`);
+
+  // 칩 건수와 동일 필터(권역 area_codes · cat1) — UI fetchScenicFilterChipCounts 의미 검증
+  const capitalCodes = SCENIC_REGION_AREA_CODES.수도권 || [];
+  const { count: chipRegion, error: eChipRegion } = await sb
+    .from('tourapi_attraction')
+    .select('content_id', { count: 'exact', head: true })
+    .eq('active', true)
+    .eq('content_type_id', '12')
+    .eq('cat1', 'A01')
+    .in('area_code', capitalCodes);
+  assert(!eChipRegion, `chip region count (${eChipRegion?.message || 'ok'})`);
+  assert(
+    chipRegion === count,
+    `권역 칩 건수 = 목록 필터 (${chipRegion}===${count})`,
+  );
+
+  const { count: chipCat2, error: eChipCat2 } = await sb
+    .from('tourapi_attraction')
+    .select('content_id', { count: 'exact', head: true })
+    .eq('active', true)
+    .eq('content_type_id', '12')
+    .eq('cat2', 'A0101')
+    .eq('area_code', '1');
+  assert(!eChipCat2, `chip cat2 count (${eChipCat2?.message || 'ok'})`);
+  assert(
+    typeof chipCat2 === 'number' && chipCat2 >= 0 && chipCat2 <= seoul,
+    `서울·자연관광지 칩 ⊆ 서울·자연 (${chipCat2}≤${seoul})`,
+  );
 } else {
   console.log('SKIP  DB filter (no supabase env)');
 }

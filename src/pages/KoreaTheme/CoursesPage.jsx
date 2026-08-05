@@ -277,11 +277,16 @@ export default function KoreaThemeCoursesPage() {
                     }
                     className={
                       active
-                        ? 'rounded-full border border-amber-400/90 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-950'
-                        : 'rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50'
+                        ? 'inline-flex items-center gap-1 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-950'
+                        : 'inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50'
                     }
                   >
-                    {chip.label}
+                    <span>{chip.label}</span>
+                    {Number.isFinite(chip.count) ? (
+                      <span className="opacity-70 tabular-nums">
+                        {chip.count.toLocaleString('ko-KR')}
+                      </span>
+                    ) : null}
                   </button>
                 );
               })}

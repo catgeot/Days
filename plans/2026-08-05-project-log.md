@@ -2,6 +2,36 @@
 
 직전: [`2026-08-04-project-log.md`](./2026-08-04-project-log.md)
 
+## 테마여행 #36, 페이지 최적화
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **한 일**: 명승 권역·시도·종목(대·소분류) 칩 안에 DB 관광지 건수 표시 · 코스 지역 칩에도 `count` 노출 · `fetchScenicFilterChipCounts` · `smoke:korea-scenic-categories` 칩 필터 의미 검증
+- **금지 준수**: 축제 지도·칩 리팩터 없음 · top10/regions 탑레벨 부활 없음 · releaseNotes 미작성
+- **VERIFY**: `smoke:korea-scenic-categories` · `npm run build` PASS
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「필터 칩에 항목 수 표시」
+- **QA**: 권역/시도/종목 칩 숫자 · 목록 「N곳」과 활성 필터 일치 · 코스 칩 건수
+
+### 테마여행 · 에이전트 핸드오프 → `#37`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #37, 폴리시·릴리스` |
+| **브랜치** | `cursor/korea-theme` (고정) |
+| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
+| **읽을 것 3** | ① 본 절 ② 플랜 §1.0·§1.6·S9 ③ #36 산출 |
+| **금지 3** | 축제 지도·칩 리팩터 · top10/regions 탑레벨 부활 · 합의 전 releaseNotes · UI 임의 리디자인 |
+| **후보** | S9 폴리시·릴리스(사람 Preview QA 후) · 축제 회귀 점검 |
+| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #37, 폴리시·릴리스
+```
+
 ## 테마여행 #35, 페이지 최적화
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `0457c82f` · Preview QA 대기
@@ -13,24 +43,6 @@
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
 - **작업 로그**: Preview 우측 「권역 대분류 → 시도 소분류 승계」
 - **QA**: 수도권→서울 시 목록 축소 · 권역 밖 area 거부 · 종목 필터도 동일 권역·시도 유지 · `?region=제주` 딥링크
-
-### 테마여행 · 에이전트 핸드오프 → `#36`
-
-| | |
-|--|--|
-| **세션 표기** | `테마여행 #36, 폴리시·릴리스` |
-| **브랜치** | `cursor/korea-theme` (고정) |
-| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
-| **읽을 것 3** | ① 본 절 ② 플랜 §1.0·§1.6·S9 ③ #35 산출 |
-| **금지 3** | 축제 지도·칩 리팩터 · top10/regions 탑레벨 부활 · 합의 전 releaseNotes · UI 임의 리디자인 |
-| **후보** | S9 폴리시·릴리스(사람 Preview QA 후) · 축제 회귀 점검 |
-| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
-
-**다음 채팅명 (복붙)**:
-
-```
-테마여행 #36, 폴리시·릴리스
-```
 
 ## 테마여행 #34, 투톱 크로스 네비
 

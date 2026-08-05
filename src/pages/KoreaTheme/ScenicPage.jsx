@@ -16,6 +16,7 @@ import {
 import {
   fetchKoreaTourAttractionById,
   fetchKoreaTourAttractions,
+  fetchScenicFilterChipCounts,
   labelScenicAreaCode,
   listScenicRegionAreas,
   normalizeScenicAreaCode,
@@ -35,6 +36,21 @@ const CURATED_ALL = listKoreaScenicSpots();
 const PAGE_SIZE = 40;
 const DEFAULT_REGION = SCENIC_REGION_ORDER[0];
 const DEFAULT_CAT1 = TOUR_ATTRACTION_CAT1[0]?.code || 'A01';
+
+function chipCountLabel(count) {
+  if (count == null || !Number.isFinite(count)) return null;
+  return Number(count).toLocaleString('ko-KR');
+}
+
+function FilterChipLabel({ label, count }) {
+  const n = chipCountLabel(count);
+  return (
+    <span className="inline-flex items-center gap-1">
+      <span>{label}</span>
+      {n != null ? <span className="opacity-70 tabular-nums">{n}</span> : null}
+    </span>
+  );
+}
 
 function toModalSpot(spot) {
   if (!spot) return null;
@@ -89,6 +105,12 @@ export default function KoreaThemeScenicPage() {
   const [dbStatus, setDbStatus] = useState('loading');
   const [dbError, setDbError] = useState(null);
   const [selectedSpot, setSelectedSpot] = useState(null);
+  const [chipCounts, setChipCounts] = useState({
+    regionCounts: {},
+    areaCounts: {},
+    cat1Counts: {},
+    cat2Counts: {},
+  });
 
   const regionChips = useMemo(() => {
     const set = new Set([...CURATED_REGIONS, ...SCENIC_REGION_ORDER]);
@@ -96,6 +118,22 @@ export default function KoreaThemeScenicPage() {
   }, []);
 
   const cat2Chips = useMemo(() => listTourAttractionCat2(cat1), [cat1]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchScenicFilterChipCounts({ region, areaCode, cat1, cat2 }).then((res) => {
+      if (cancelled) return;
+      setChipCounts({
+        regionCounts: res.regionCounts || {},
+        areaCounts: res.areaCounts || {},
+        cat1Counts: res.cat1Counts || {},
+        cat2Counts: res.cat2Counts || {},
+      });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [region, areaCode, cat1, cat2]);
 
   useEffect(() => {
     const rawRegion = searchParams.get('region');
@@ -339,11 +377,14 @@ export default function KoreaThemeScenicPage() {
                     aria-pressed={active}
                     className={
                       active
-                        ? 'rounded-full border border-amber-400/90 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-950'
-                        : 'rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50'
+                        ? 'inline-flex items-center gap-1 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-950'
+                        : 'inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50'
                     }
                   >
-                    {r}
+                    <FilterChipLabel
+                      label={r}
+                      count={chipCounts.regionCounts[r]}
+                    />
                   </button>
                 );
               })}
@@ -364,11 +405,14 @@ export default function KoreaThemeScenicPage() {
                       aria-pressed={active}
                       className={
                         active
-                          ? 'rounded-full border border-stone-400 bg-stone-800 px-2.5 py-0.5 text-[11px] font-bold text-white'
-                          : 'rounded-full border border-stone-200 bg-stone-50 px-2.5 py-0.5 text-[11px] font-semibold text-stone-600 hover:bg-stone-100'
+                          ? 'inline-flex items-center gap-1 rounded-full border border-stone-400 bg-stone-800 px-2.5 py-0.5 text-[11px] font-bold text-white'
+                          : 'inline-flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-0.5 text-[11px] font-semibold text-stone-600 hover:bg-stone-100'
                       }
                     >
-                      {chip.label}
+                      <FilterChipLabel
+                        label={chip.label}
+                        count={chipCounts.areaCounts[chip.code]}
+                      />
                     </button>
                   );
                 })}
@@ -462,11 +506,14 @@ export default function KoreaThemeScenicPage() {
                       aria-pressed={active}
                       className={
                         active
-                          ? 'rounded-full border border-amber-400/90 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-950'
-                          : 'rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50'
+                          ? 'inline-flex items-center gap-1 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-950'
+                          : 'inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50'
                       }
                     >
-                      {chip.label}
+                      <FilterChipLabel
+                        label={chip.label}
+                        count={chipCounts.cat1Counts[chip.code]}
+                      />
                     </button>
                   );
                 })}
@@ -487,11 +534,14 @@ export default function KoreaThemeScenicPage() {
                         aria-pressed={active}
                         className={
                           active
-                            ? 'rounded-full border border-stone-400 bg-stone-800 px-2.5 py-0.5 text-[11px] font-bold text-white'
-                            : 'rounded-full border border-stone-200 bg-stone-50 px-2.5 py-0.5 text-[11px] font-semibold text-stone-600 hover:bg-stone-100'
+                            ? 'inline-flex items-center gap-1 rounded-full border border-stone-400 bg-stone-800 px-2.5 py-0.5 text-[11px] font-bold text-white'
+                            : 'inline-flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-0.5 text-[11px] font-semibold text-stone-600 hover:bg-stone-100'
                         }
                       >
-                        {chip.label}
+                        <FilterChipLabel
+                          label={chip.label}
+                          count={chipCounts.cat2Counts[chip.code]}
+                        />
                       </button>
                     );
                   })}
