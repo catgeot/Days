@@ -4,11 +4,12 @@
 
 ## 테마여행 #29, 축제 본문 인근 여행지
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `1470d0e8` · Preview QA 대기
 
 - **이슈**: #28에서 hub→장소카드 대신 「인근 명승지」로 바꿨다고 했으나 Preview에 안 보임
 - **원인**: (1) tip `d39d03c4` Vercel Preview 미배포 · (2) 축제 아이템에 `areaCode`가 비어 `scenicRegion` null → 섹션 미표시
 - **수정**: `detectSidoCode(addr1)` 폴백 · smoke에 영월→강원 회귀 · 작업 로그 #29
+- **VERIFY**: `smoke:korea-festival-nearby` · `npm run build` PASS
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea`
 - **QA**: `/korea` 축제 상세 → 「인근 명승지」(GATEO) · 「○○ 명승지 더보기」→ `/korea/theme/scenic?region=` · hub 칩/장소카드 없음
