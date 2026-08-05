@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 25,
-  sessionPhase: '제품 흐름 재잠금',
+  sessionNo: 23,
+  sessionPhase: '국내여행지 DB',
   branch: 'cursor/korea-theme',
-  previewPath: '/korea/theme',
+  previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-05-korea-theme-attraction-db',
+    session: '테마여행 #23, 국내여행지 DB',
+    title: 'type12 Supabase·scenic DB 목록',
+    detail:
+      'TourAPI 관광지(type12)를 tourapi_attraction에 적재하고 주 1회 sync 스크립트로 갱신합니다. /korea/theme/scenic은 GATEO 선정 레일 + 전국 관광지(DB) 목록을 보여 줍니다. 맛집 전량 DB·축제 지도 리팩터는 하지 않았습니다. Preview에서 명승 페이지 목록·상세 모달을 확인해 주세요.',
+    at: '2026-08-05',
+  },
   {
     id: '2026-08-05-korea-theme-product-flow',
     session: '테마여행 #25, 제품 흐름 재잠금',

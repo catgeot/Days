@@ -36,7 +36,7 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 20 | (핫픽스) | `테마여행 #20, 본문 가독성 개선` | ⏳ Preview QA |
 | 21 | (핫픽스) | `테마여행 #21, 테마간 이동 개선` | ⏳ Preview QA |
 | 22 | (리서치) | `테마여행 #22, 명승지 위치 정보` | ✅ LIVE 프로브 |
-| 23 | S13 | `테마여행 #23, 국내여행지 DB` | ⏳ 다음 (구현) |
+| 23 | S13 | `테마여행 #23, 국내여행지 DB` | ⏳ Preview QA |
 | 24 | S9 | `테마여행 #24, 폴리시·릴리스` | ⏳ (본선 후) |
 | 25 | (제품) | `테마여행 #25, 제품 흐름 재잠금` | ✅ 본 절 |
 
@@ -66,7 +66,7 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **#21** 테마간 이전 복귀 | ⏳ Preview QA | 크로스 이동 후 「이전」·?spot= 모달 복원 | #22 명승 리서치 |
 | **#22** 명승·Tour 규모 리서치 | ✅ | type12≈7294·좌표·쿼터·DB 방향 | #25 |
 | **#25** 제품 흐름 재잠금 | ✅ 2026-08-05 | §1.0 · top10/regions 보류 · 명승=본선 | S13=#23 |
-| **S13** 국내여행지 DB | ⏳ | type12 Supabase · 주1회 sync · scenic/축제 주변 | S14+ |
+| **S13** 국내여행지 DB | ⏳ Preview QA | `tourapi_attraction` active≈7294 · scenic DB 목록 · nearby 훅 | #26 축제 주변 |
 | **S9** 폴리시·릴리스 | ⏳ | 사람 QA → releaseNotes 1회 제안 (#24) | main 병합 |
 
 ---
@@ -892,16 +892,16 @@ Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일
 
 ---
 
-### S13 — 국내여행지 DB · 명승 본선 ⏳
+### S13 — 국내여행지 DB · 명승 본선 ⏳ Preview QA (#23)
 
 | | |
 |--|--|
-| **산출** | type12 → Supabase 적재·주간 sync 스크립트/Edge · `/scenic`이 DB를 읽음 · (최소) 축제 상세에 주변 관광지 연결 훅 |
-| **후속(같은 본선)** | 맛집 API 주변 · 레포츠/문화 칩 · 코스↔축제/주변 연동 · MRT 상품지 큐레이션 · 랜딩에서 top10/regions 타일 보류 |
-| **VERIFY** | sync 후 active≈7k · scenic이 DB 목록≥1 · smoke · build |
+| **산출** | `tourapi_attraction` · `npm run sync:tourapi-attractions` · `/scenic` GATEO 레일+DB 목록 · `fetchNearbyTourAttractions` 훅 |
+| **후속(같은 본선)** | #26 축제 주변 UI · 맛집 API 주변 · 레포츠/문화 · 코스↔축제 · MRT 상품지 · 랜딩 top10/regions 보류 |
+| **VERIFY** | active≈7294 · `smoke:tourapi-attractions` · scenic/spot-modal/nav-back · build |
 | **금지** | 맛집 전량 DB · top10/regions 신규 확장 · 축제 지도 리팩터 · `VITE_` Tour 키 · curated JSON에 7천 시드 |
-| **쿼터** | 개발 1000/일 · **목록 전수 ≈ 시도 17회**(`numOfRows` 크게) · detail 전수 금지 · 일지 핸드오프 참고 |
-| **핸드오프** | [`2026-08-05-project-log.md`](./2026-08-05-project-log.md) 「테마여행 · 에이전트 핸드오프 → #23」 |
+| **쿼터** | 목록 전수 ≈ 시도 17회 · detail 전수 금지 |
+| **핸드오프** | [`2026-08-05-project-log.md`](./2026-08-05-project-log.md) 「테마여행 · 에이전트 핸드오프 → #26」 |
 
 **채팅명**: `테마여행 #23, 국내여행지 DB`  
 **첫 메시지**
@@ -945,8 +945,8 @@ scenic이 DB 읽기. 맛집 전량 DB 금지. top10/regions 보류. 축제 지�
 - [x] 10대 10곳 → place → 테마 복귀 (`#6` · 레거시 경로 · Preview QA)
 - [x] **S11**: top10·scenic·regions 목록 → **상세 모달**(개요·기본정보) · Place는 2차 (Preview QA)
 - [x] 명승 curated ≥12 (현재 34 · contentId 전수) · 여행코스 type25 모달 · 방방곡곡 시도 칩→명소 목록
-- [ ] **S13**: type12 Supabase · 주간 sync · scenic DB 소비 · 축제 주변 관광지 훅
-- [ ] **#25**: top10/regions 타일 보류 · 명승 본선 · 코스·패키지 방향 유지
+- [x] **S13**: type12 Supabase · 주간 sync · scenic DB 소비 · nearby 훅 (축제 UI 연결=#26)
+- [x] **#25**: top10/regions 타일 보류 · 명승 본선 · 코스·패키지 방향 유지 (플랜)
 - [ ] 패키지 MRT(제주 등) + mylink
 - [x] `/qa/korea-theme` · 고정 Preview (S1·S8 최종 · sitemap/Helmet)
 - [ ] audit/smoke/build PASS · 키 미노출

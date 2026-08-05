@@ -160,6 +160,10 @@ function normalizeItem(
   const eventEndDate = pickStr(item, "eventenddate", "eventEndDate");
   const areaCode = pickStr(item, "areacode", "areaCode");
   const sigunguCode = pickStr(item, "sigungucode", "sigunguCode");
+  const cat1 = pickStr(item, "cat1");
+  const cat2 = pickStr(item, "cat2");
+  const cat3 = pickStr(item, "cat3");
+  const modifiedtime = pickStr(item, "modifiedtime", "modifiedTime");
   const tel = pickStr(item, "tel");
   const code = pickStr(item, "code");
   const name = pickStr(item, "name");
@@ -227,6 +231,10 @@ function normalizeItem(
   if (eventEndDate) out.eventEndDate = eventEndDate;
   if (areaCode) out.areaCode = areaCode;
   if (sigunguCode) out.sigunguCode = sigunguCode;
+  if (cat1) out.cat1 = cat1;
+  if (cat2) out.cat2 = cat2;
+  if (cat3) out.cat3 = cat3;
+  if (modifiedtime) out.modifiedtime = modifiedtime;
   if (tel) out.tel = tel;
   if (code) out.code = code;
   if (name) out.name = name;
