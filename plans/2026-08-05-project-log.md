@@ -4,7 +4,7 @@
 
 ## 테마여행 #25, 제품 흐름 재잠금
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `3fddd82c` · 플랜만 (구현=#23)
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `56e65bc4` · 플랜·핸드오프 (구현=#23)
 
 - **본선**: type12 → Supabase · **주1회** sync · `/scenic` 명승 · 축제 **주변 관광지** · 맛집 **API만** · MRT **상품 있는 여행지** 큐레이션
 - **연동**: 맛집·레포츠·문화·축제 → 명승 · 코스는 축제·주변·맛집과 유지·강화
@@ -21,7 +21,7 @@
 | **세션 표기** | `테마여행 #23, 국내여행지 DB` |
 | **브랜치** | `cursor/korea-theme` (고정 · 새 브랜치 금지) |
 | **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
-| **tip SHA** | `3fddd82c` (#25 플랜) |
+| **tip SHA** | `56e65bc4` (#25 플랜 + #23 핸드오프) |
 | **읽을 것 3** | ① 본 절 핸드오프 ② 플랜 **§1.0 · §3.5 · S13**만 ③ 축제 캐시 참고 `tourapi_festival_cache` / Edge `festivalWindow` |
 | **금지 3** | 맛집 type39 전량 DB · top10/regions 신규 확장 · `/korea` 축제 지도·칩 리팩터 · `VITE_` Tour 키 · curated JSON에 7천 시드 |
 | **이번 목표** | type12 목록 → Supabase 적재 + sync(주1회 골격) · `/scenic`이 DB 읽기(최소) · (여유 시) 축제 주변 관광지 훅 |
