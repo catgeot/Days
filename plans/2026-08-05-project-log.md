@@ -4,7 +4,7 @@
 
 ## 테마여행 #30, 레포츠·문화 주변
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `29926846` · Preview QA 대기
 
 - **한 일**: `fetchNearbyTourLeports`(28) · `fetchNearbyTourCulture`(14) · 축제 상세·`ThemeSpotDetailModal` 「주변 레포츠」「주변 문화」 · 레포츠/문화 상세는 hub 대신 DB 「주변 관광지」 크로스 · proxy intro 필드 · `smoke:korea-nearby-leisure-culture`
 - **금지 준수**: 축제 지도·칩 미터치 · 맛집/레포츠/문화 전량 DB 없음 · top10/regions 미확장
