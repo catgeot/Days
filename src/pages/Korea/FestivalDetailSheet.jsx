@@ -171,12 +171,17 @@ function formatDistKm(km) {
   return `${km < 10 ? km.toFixed(1) : Math.round(km)}km`;
 }
 
+function nearbyPlaceLabel(spot) {
+  return String(spot?.locality || spot?.region || '').trim();
+}
+
 function toNearbyModalSpot(spot) {
   if (!spot) return null;
+  const place = nearbyPlaceLabel(spot);
   return {
     id: spot.id || spot.contentId,
     name: spot.name,
-    subtitle: [spot.region, formatDistKm(spot.distKm)].filter(Boolean).join(' · '),
+    subtitle: [place, formatDistKm(spot.distKm)].filter(Boolean).join(' · '),
     blurb: spot.blurb,
     placeSlug: spot.placeSlug,
     contentId: spot.contentId,
@@ -858,6 +863,7 @@ export default function FestivalDetailSheet({
                       {nearbySpots.map((spot) => {
                         const thumb = toHttps(spot.firstImage);
                         const dist = formatDistKm(spot.distKm);
+                        const place = nearbyPlaceLabel(spot);
                         return (
                           <li key={spot.contentId || spot.id}>
                             <button
@@ -880,8 +886,8 @@ export default function FestivalDetailSheet({
                                 <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
                                   {spot.name}
                                 </span>
-                                <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums">
-                                  {[dist, spot.region].filter(Boolean).join(' · ')}
+                                <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
+                                  {[place, dist].filter(Boolean).join(' · ')}
                                 </span>
                               </span>
                             </button>

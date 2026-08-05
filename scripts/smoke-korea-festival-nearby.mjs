@@ -12,6 +12,7 @@ import { fileURLToPath } from 'url';
 import { createClient } from '@supabase/supabase-js';
 import { mapTourAttractionRow } from '../src/pages/Home/lib/koreaTourAttractionMap.js';
 import { isNearbyTourAttractionTitle } from '../src/pages/Home/lib/koreaTourAttractionNearbyFilter.js';
+import { formatTourAttractionLocality } from '../src/pages/Home/lib/koreaTourAttractionLocality.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -43,6 +44,31 @@ assert(
   'keep ordinary scenic name',
 );
 
+assert(
+  formatTourAttractionLocality(
+    '강원특별자치도 영월군 영월읍 방절리 263-4',
+  ) === '영월군 영월읍 방절리',
+  'locality yeongwol eup ri',
+);
+assert(
+  formatTourAttractionLocality(
+    '강원특별자치도 영월군 김삿갓면 옥동장터길 36',
+  ) === '영월군 김삿갓면',
+  'locality yeongwol myeon (stop at street)',
+);
+assert(
+  formatTourAttractionLocality(
+    '서울특별시 양천구 신정동 162-56',
+  ) === '양천구 신정동',
+  'locality seoul gu dong',
+);
+assert(
+  formatTourAttractionLocality(
+    '서울특별시 강남구 압구정로 161 (압구정동)',
+  ) === '강남구 압구정동',
+  'locality from parenthetical dong',
+);
+
 const sheetSrc = readFileSync(
   join(root, 'src/pages/Korea/FestivalDetailSheet.jsx'),
   'utf8',
@@ -52,6 +78,10 @@ assert(
   'FestivalDetailSheet imports fetchNearbyTourAttractions',
 );
 assert(sheetSrc.includes('주변 관광지'), 'FestivalDetailSheet shows 주변 관광지');
+assert(
+  sheetSrc.includes('nearbyPlaceLabel') || sheetSrc.includes('locality'),
+  'FestivalDetailSheet shows locality not only broad region',
+);
 assert(
   sheetSrc.includes('ThemeSpotDetailModal'),
   'FestivalDetailSheet opens ThemeSpotDetailModal',

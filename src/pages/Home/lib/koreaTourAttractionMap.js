@@ -1,3 +1,7 @@
+import { formatTourAttractionLocality } from './koreaTourAttractionLocality.js';
+
+export { formatTourAttractionLocality } from './koreaTourAttractionLocality.js';
+
 export const SCENIC_REGION_AREA_CODES = {
   수도권: ['1', '2', '31'],
   강원: ['32'],
@@ -33,6 +37,7 @@ export function scenicRegionForAreaCode(areaCode) {
  *   name: string,
  *   blurb: string,
  *   region: string,
+ *   locality: string,
  *   hubId: string | null,
  *   attractionName: string,
  *   attractionNameEn: string | null,
@@ -58,12 +63,16 @@ export function mapTourAttractionRow(row) {
   const region = scenicRegionForAreaCode(areaCode) || '기타';
   const lat = Number(row?.mapy);
   const lng = Number(row?.mapx);
-  const addr = [row?.addr1, row?.addr2].filter(Boolean).join(' ').trim();
+  const addr1 = row?.addr1 != null ? String(row.addr1) : '';
+  const addr2 = row?.addr2 != null ? String(row.addr2) : '';
+  const addr = [addr1, addr2].filter(Boolean).join(' ').trim();
+  const locality = formatTourAttractionLocality(addr1, addr2);
   return {
     id: contentId,
     name: title,
     blurb: addr || 'TourAPI 관광지',
     region,
+    locality,
     hubId: null,
     attractionName: title,
     attractionNameEn: null,

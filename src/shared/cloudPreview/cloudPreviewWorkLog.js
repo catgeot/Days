@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-05-korea-theme-festival-nearby-locality',
+    session: '테마여행 #26, 축제 주변 관광지',
+    title: '주변 목록 지역을 읍·면·동·리로',
+    detail:
+      '주변 관광지 부제를 「강원」같은 권역 대신 주소의 시·군·읍·면·동·리(예: 영월군 영월읍 방절리)로 표기합니다. Preview /korea 축제 상세 목록에서 위치를 가늠할 수 있는지 확인해 주세요.',
+    at: '2026-08-05',
+  },
+  {
     id: '2026-08-05-korea-theme-festival-nearby-filter',
     session: '테마여행 #26, 축제 주변 관광지',
     title: '주변 관광지 선별(화장실·일반교회 제외)',

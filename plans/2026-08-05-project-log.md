@@ -8,11 +8,12 @@
 
 - **한 일**: 축제 상세(안내 탭)에 `fetchNearbyTourAttractions`(반경 8km) 목록 · 클릭→`ThemeSpotDetailModal`(z-50) · 지도·칩 미터치 · `smoke:korea-festival-nearby`
 - **선별**: `koreaTourAttractionNearbyFilter` — 화장실·일반 교회/성당 제외 · 성지·문화재·성공회·제일교회 등 명소 표기만 유지
-- **VERIFY**: `smoke:korea-festival-nearby` · `smoke:korea-theme-spot-modal` · `smoke:tourapi-attractions` · `npm run build` PASS
+- **지역 표기**: `formatTourAttractionLocality` — 권역(강원) 대신 시·군·읍·면·동·리 (예: 영월군 영월읍 방절리)
+- **VERIFY**: `smoke:korea-festival-nearby` · `npm run build` PASS
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea`
-- **작업 로그**: Preview 우측 「주변 관광지 선별(화장실·일반교회 제외)」
-- **QA**: `/korea` 축제(강릉 등) → 「주변 관광지」에 강릉교회·해변 화장실 없음 · 명소만 · 모달 Esc 후 시트 유지
+- **작업 로그**: Preview 우측 「주변 목록 지역을 읍·면·동·리로」
+- **QA**: `/korea` 영월 축제 → 「주변 관광지」부제가 영월군 ○○면/읍/리 · 교회·화장실 없음
 - **다음**: 맛집 API 주변 · 레포츠/문화 · 코스↔축제 · MRT 상품지 (#27 후보) · 선별 규칙 추가 요청 시 필터만 확장
 
 ### 테마여행 · 에이전트 핸드오프 → `#27`
