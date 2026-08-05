@@ -11,10 +11,10 @@
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/top10`
 - **QA**: top10 한라산 모달 스크롤 → 테마 칩·같은 도시·인근·숙소/투어·축제/코스 · 축제 링크는 `?from=theme&area=` · 제주면 패키지 CTA
-- **다음**: 폴리시·릴리스(#20)
+- **다음**: 본문 가독성(#20) · 폴리시(#21)
 
 ```
-테마여행 #20, 폴리시·릴리스
+테마여행 #20, 본문 가독성 개선
 ```
 
 ## 테마여행 #18, 테마 연결

@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 19,
-  sessionPhase: '크로스 레일',
+  sessionNo: 20,
+  sessionPhase: '본문 가독성 개선',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/top10',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-05-korea-theme-detail-stack',
+    session: '테마여행 #20, 본문 가독성 개선',
+    title: '상세 본문 소제목 아래 배치',
+    detail:
+      '테마 상세 모달에서 개요·주소·이용 시간 등 소제목과 본문이 좌우로 갈라지던 레이아웃을, 소제목 아래 본문이 오는 세로 배치로 바꿨습니다. 좁은 모바일에서 본문 폭이 넓어집니다. /korea/theme/top10에서 한라산 등 모달을 열어 확인해 주세요.',
+    at: '2026-08-05',
+  },
   {
     id: '2026-08-04-korea-theme-cross-rail',
     session: '테마여행 #19, 크로스 레일',

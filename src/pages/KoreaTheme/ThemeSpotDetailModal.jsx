@@ -324,8 +324,10 @@ function textsSimilarOrEqual(a, b) {
 function DetailRow({ label, children }) {
   if (!children) return null;
   return (
-    <div className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-x-3 gap-y-1 text-sm sm:grid-cols-[5.5rem_minmax(0,1fr)]">
-      <dt className="pt-0.5 text-[11px] font-bold text-stone-500">{label}</dt>
+    <div className="space-y-1 text-sm">
+      <dt className="text-[11px] font-bold tracking-wide text-stone-500">
+        {label}
+      </dt>
       <dd className="min-w-0 whitespace-pre-line leading-relaxed text-stone-700 break-keep">
         {children}
       </dd>
@@ -589,7 +591,7 @@ export default function ThemeSpotDetailModal({
             ) : null}
 
             {!detailLoading && detail ? (
-              <dl className="space-y-3">
+              <dl className="space-y-4">
                 {overview ? <DetailRow label="개요">{overview}</DetailRow> : null}
                 {address ? <DetailRow label="주소">{address}</DetailRow> : null}
                 {tel ? (
