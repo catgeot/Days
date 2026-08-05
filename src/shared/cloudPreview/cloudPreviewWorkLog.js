@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-05-korea-theme-food-cross-attractions',
+    session: '테마여행 #28, 맛집 주변 API',
+    title: '맛집 상세·주변 관광지 크로스',
+    detail:
+      '맛집 상세에서 hub「인근 여행지」를 빼고 DB 주변 관광지 목록을 보여 맛집↔관광지 크로스 확인이 되게 했습니다. Preview /korea 축제 → 주변 맛집 → 상세에서 「주변 관광지」를 확인해 주세요.',
+    at: '2026-08-05',
+  },
+  {
     id: '2026-08-05-korea-theme-nearby-restaurants',
     session: '테마여행 #28, 맛집 주변 API',
     title: '축제·명소 주변 맛집(API)',

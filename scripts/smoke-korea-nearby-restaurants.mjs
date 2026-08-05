@@ -85,6 +85,20 @@ assert(
   'ThemeSpotDetailModal fetches nearby restaurants',
 );
 assert(
+  modalSrc.includes('fetchNearbyTourAttractions'),
+  'ThemeSpotDetailModal fetches nearby attractions for restaurants',
+);
+assert(
+  modalSrc.includes('hideNearbyHubs'),
+  'restaurant modal hides hub 인근 여행지',
+);
+assert(
+  modalSrc.includes('맛집 주변 관광지') ||
+    (modalSrc.includes("eyebrow=\"주변 관광지\"") &&
+      modalSrc.includes('isRestaurant')),
+  'restaurant body shows 주변 관광지 for cross-check',
+);
+assert(
   modalSrc.includes('RESTAURANT_CONTENT_TYPE_ID'),
   'ThemeSpotDetailModal skips food recursion for type39',
 );

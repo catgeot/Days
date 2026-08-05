@@ -23,6 +23,7 @@ import {
   themeModuleLabelForPath,
 } from '../Home/lib/koreaThemeNavBack';
 import { fetchTourApiAttractionDetail } from '../../utils/fetchTourApiAttractionDetail';
+import { fetchNearbyTourAttractions } from '../../utils/fetchNearbyTourAttractions';
 import {
   fetchNearbyTourRestaurants,
   RESTAURANT_CONTENT_TYPE_ID,
@@ -121,8 +122,15 @@ function CrossTextButton({ onClick, children }) {
 
 /**
  * §2.5.4 모달 하단 크로스 레일 — 매처는 koreaThemeCrossLinks만 사용.
+ * 맛집 본문에서는 hub「인근 여행지」대신 DB 주변 관광지로 크로스(#28).
  */
-function ThemeSpotCrossRail({ spot, detail, returnTo, onClose }) {
+function ThemeSpotCrossRail({
+  spot,
+  detail,
+  returnTo,
+  onClose,
+  hideNearbyHubs = false,
+}) {
   const navigate = useNavigate();
 
   const crossSpot = useMemo(() => {
@@ -215,10 +223,12 @@ function ThemeSpotCrossRail({ spot, detail, returnTo, onClose }) {
     navigate(`/place/${slug}`, { state: { returnTo: placeReturnPath } });
   };
 
+  const showNearbyHubs = !hideNearbyHubs && cross.nearbyHubs.length > 0;
+
   const hasAny =
     moduleChips.length > 0 ||
     cross.sameHub.length > 0 ||
-    cross.nearbyHubs.length > 0 ||
+    showNearbyHubs ||
     stayHref ||
     tnaHref ||
     cross.deepLinks?.festivals ||
@@ -260,7 +270,7 @@ function ThemeSpotCrossRail({ spot, detail, returnTo, onClose }) {
         </CrossRailSection>
       ) : null}
 
-      {cross.nearbyHubs.length > 0 ? (
+      {showNearbyHubs ? (
         <CrossRailSection title="인근 여행지">
           <ul className="space-y-1.5">
             {cross.nearbyHubs.map((h) => (
@@ -518,6 +528,26 @@ function toFoodModalSpot(spot) {
   };
 }
 
+function toAttractionModalSpot(spot) {
+  if (!spot) return null;
+  const place = foodPlaceLabel(spot);
+  return {
+    id: spot.id || spot.contentId,
+    name: spot.name,
+    subtitle: [place, formatDistKm(spot.distKm)].filter(Boolean).join(' · '),
+    blurb: spot.blurb,
+    placeSlug: spot.placeSlug,
+    contentId: spot.contentId,
+    contentTypeId: '12',
+    hubId: spot.hubId,
+    region: spot.region,
+    nameEn: spot.attractionNameEn || null,
+    lat: spot.lat,
+    lng: spot.lng,
+    areaCode: spot.areaCode,
+  };
+}
+
 /**
  * @param {{
  *   spot: {
@@ -555,11 +585,14 @@ export default function ThemeSpotDetailModal({
   const [detailError, setDetailError] = useState('');
   const [nearbyFood, setNearbyFood] = useState([]);
   const [nearbyFoodStatus, setNearbyFoodStatus] = useState('idle');
+  const [nearbyAttractions, setNearbyAttractions] = useState([]);
+  const [nearbyAttractionsStatus, setNearbyAttractionsStatus] = useState('idle');
   const [selectedFood, setSelectedFood] = useState(null);
+  const [selectedAttraction, setSelectedAttraction] = useState(null);
 
   const isRestaurant =
     String(spot?.contentTypeId || '') === RESTAURANT_CONTENT_TYPE_ID;
-  const nestedFoodZ =
+  const nestedChildZ =
     overlayZClass === 'z-50' || overlayZClass === 'z-[50]'
       ? 'z-[55]'
       : 'z-50';
@@ -567,7 +600,7 @@ export default function ThemeSpotDetailModal({
   useEffect(() => {
     const onKey = (event) => {
       if (event.key === 'Escape') {
-        if (selectedFood) return;
+        if (selectedFood || selectedAttraction) return;
         onClose();
       }
     };
@@ -578,7 +611,7 @@ export default function ThemeSpotDetailModal({
       window.removeEventListener('keydown', onKey);
       document.body.style.overflow = prev;
     };
-  }, [onClose, selectedFood]);
+  }, [onClose, selectedFood, selectedAttraction]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0 });
@@ -627,9 +660,12 @@ export default function ThemeSpotDetailModal({
 
   useEffect(() => {
     setSelectedFood(null);
-    if (!spot || isRestaurant) {
+    setSelectedAttraction(null);
+    if (!spot) {
       setNearbyFood([]);
-      setNearbyFoodStatus(isRestaurant ? 'idle' : 'idle');
+      setNearbyFoodStatus('idle');
+      setNearbyAttractions([]);
+      setNearbyAttractionsStatus('idle');
       return undefined;
     }
 
@@ -639,6 +675,37 @@ export default function ThemeSpotDetailModal({
     const lng = Number(spot.lng);
     const useLat = Number.isFinite(lat) ? lat : fromDetailLat;
     const useLng = Number.isFinite(lng) ? lng : fromDetailLng;
+
+    if (isRestaurant) {
+      setNearbyFood([]);
+      setNearbyFoodStatus('idle');
+      if (!Number.isFinite(useLat) || !Number.isFinite(useLng)) {
+        setNearbyAttractions([]);
+        setNearbyAttractionsStatus(detailLoading ? 'idle' : 'nocoords');
+        return undefined;
+      }
+      let cancelled = false;
+      setNearbyAttractionsStatus('loading');
+      fetchNearbyTourAttractions({
+        lat: useLat,
+        lng: useLng,
+        radiusKm: 8,
+        limit: 8,
+      }).then((res) => {
+        if (cancelled) return;
+        const spots = Array.isArray(res?.spots) ? res.spots : [];
+        setNearbyAttractions(spots);
+        if (res?.error) setNearbyAttractionsStatus('error');
+        else if (!spots.length) setNearbyAttractionsStatus('empty');
+        else setNearbyAttractionsStatus('ok');
+      });
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    setNearbyAttractions([]);
+    setNearbyAttractionsStatus('idle');
     if (!Number.isFinite(useLat) || !Number.isFinite(useLng)) {
       setNearbyFood([]);
       setNearbyFoodStatus(detailLoading ? 'idle' : 'nocoords');
@@ -978,11 +1045,77 @@ export default function ThemeSpotDetailModal({
                 </section>
               )}
 
+            {isRestaurant &&
+              nearbyAttractionsStatus !== 'idle' &&
+              nearbyAttractionsStatus !== 'nocoords' && (
+                <section className="space-y-2 border-t border-stone-200/80 pt-4">
+                  <h3 className="text-[11px] font-bold uppercase tracking-[0.14em] text-stone-500">
+                    주변 관광지
+                  </h3>
+                  {nearbyAttractionsStatus === 'loading' && (
+                    <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
+                      <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+                      주변 관광지 불러오는 중…
+                    </div>
+                  )}
+                  {nearbyAttractionsStatus === 'error' &&
+                    nearbyAttractions.length === 0 && (
+                      <p className="text-xs text-stone-500">
+                        주변 관광지를 불러오지 못했습니다.
+                      </p>
+                    )}
+                  {nearbyAttractionsStatus === 'empty' && (
+                    <p className="text-xs text-stone-500">
+                      반경 8km 안 등록된 관광지가 없습니다.
+                    </p>
+                  )}
+                  {nearbyAttractions.length > 0 && (
+                    <ul className="space-y-2" aria-label="맛집 주변 관광지">
+                      {nearbyAttractions.map((attr) => {
+                        const thumb = toHttps(attr.firstImage);
+                        const dist = formatDistKm(attr.distKm);
+                        const place = foodPlaceLabel(attr);
+                        return (
+                          <li key={attr.contentId || attr.id}>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedAttraction(attr)}
+                              className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                            >
+                              {thumb ? (
+                                <img
+                                  src={thumb}
+                                  alt=""
+                                  className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
+                                />
+                              ) : (
+                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800">
+                                  <Landmark size={18} aria-hidden="true" />
+                                </div>
+                              )}
+                              <span className="min-w-0 flex-1">
+                                <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
+                                  {attr.name}
+                                </span>
+                                <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
+                                  {[place, dist].filter(Boolean).join(' · ')}
+                                </span>
+                              </span>
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </section>
+              )}
+
             <ThemeSpotCrossRail
               spot={spot}
               detail={detail}
               returnTo={returnTo}
               onClose={onClose}
+              hideNearbyHubs={isRestaurant}
             />
           </div>
         </div>
@@ -1012,8 +1145,17 @@ export default function ThemeSpotDetailModal({
           spot={toFoodModalSpot(selectedFood)}
           eyebrow="주변 맛집"
           returnTo={returnTo}
-          overlayZClass={nestedFoodZ}
+          overlayZClass={nestedChildZ}
           onClose={() => setSelectedFood(null)}
+        />
+      ) : null}
+      {selectedAttraction ? (
+        <ThemeSpotDetailModal
+          spot={toAttractionModalSpot(selectedAttraction)}
+          eyebrow="주변 관광지"
+          returnTo={returnTo}
+          overlayZClass={nestedChildZ}
+          onClose={() => setSelectedAttraction(null)}
         />
       ) : null}
     </div>
