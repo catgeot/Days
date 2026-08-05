@@ -4,10 +4,11 @@
 
 ## 테마여행 #35, 페이지 최적화
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `0457c82f` · Preview QA 대기
 
 - **한 일**: 명승 권역 칩「전체」제거(기본 수도권) · 전국 관광지 TourAPI 종목 대분류(자연·인문)·소분류 칩 · **권역 대분류→시도 소분류 승계**(`?area=`) · 선정 명승 hub→area 필터 · `smoke:korea-scenic-categories`
 - **금지 준수**: 축제 지도·칩 리팩터 없음 · top10/regions 탑레벨 부활 없음 · releaseNotes 미작성
+- **VERIFY**: `smoke:korea-scenic-categories` · `npm run build` PASS
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
 - **작업 로그**: Preview 우측 「권역 대분류 → 시도 소분류 승계」
