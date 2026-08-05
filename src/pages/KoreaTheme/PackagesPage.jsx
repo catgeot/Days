@@ -22,7 +22,7 @@ export default function KoreaThemePackagesPage() {
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
       <SEO
         title="패키지 상품 · 한국의 테마여행"
-        description="마이리얼트립 국내 패키지·에어텔 딥링크. 제주·경주 검색과 패키지 홈으로 이어갑니다."
+        description="마이리얼트립 국내 패키지·에어텔. 상품이 확인된 여행지(제주·여수·울릉도·강원 등)와 패키지 홈으로 이어갑니다."
         url={RETURN_TO}
       />
 
@@ -70,8 +70,8 @@ export default function KoreaThemePackagesPage() {
               </h2>
             </div>
             <p className="text-sm leading-relaxed text-stone-600 break-keep">
-              관심 지역을 고르면 마이리얼트립 패키지 검색·홈으로 이어집니다. 상품 목록은 제휴사
-              페이지에서 확인하세요.
+              마이리얼트립에 국내 패키지·에어텔이 있는 여행지만 모았습니다. 지역을 고르면 검색
+              페이지로 이어지고, 상품·일정은 제휴사에서 확인하세요.
             </p>
 
             <ul className="space-y-2">

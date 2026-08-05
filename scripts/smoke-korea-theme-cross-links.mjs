@@ -69,12 +69,22 @@ assert(Array.isArray(bundle.nearbyHubs), 'nearbyHubs array');
 const gyeongjuScenic = listKoreaScenicSpots().find((s) => s.hubId === 'gyeongju');
 if (gyeongjuScenic) {
   assert(
-    resolveThemePackageKey(gyeongjuScenic) === 'koreaGyeongju',
-    'gyeongju scenic → koreaGyeongju',
+    resolveThemePackageKey(gyeongjuScenic) == null,
+    'gyeongju scenic → no package CTA (LIVE 상주 오탐)',
   );
 } else {
   console.log('SKIP  no gyeongju scenic for package key');
 }
+
+const yeosuSpot = { hubId: 'yeosu', placeSlug: 'yeosu', name: '여수', region: '전라' };
+assert(resolveThemePackageKey(yeosuSpot) === 'koreaYeosu', 'yeosu → koreaYeosu');
+assert(
+  resolveThemeCrossLinks(yeosuSpot).packageCta?.key === 'koreaYeosu',
+  'yeosu packageCta',
+);
+
+const ulleungSpot = { hubId: 'ulleung', placeSlug: 'ulleung', name: '울릉', region: '경상' };
+assert(resolveThemePackageKey(ulleungSpot) === 'koreaUlleungdo', 'ulleung → koreaUlleungdo');
 
 const seoulSpot = {
   hubId: 'seoul',

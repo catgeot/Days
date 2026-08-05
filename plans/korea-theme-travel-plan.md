@@ -75,7 +75,8 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **#26** 축제 주변 관광지 | ⏳ Preview QA | 축제 상세 INFO · nearby DB · ThemeSpotDetailModal | #28 |
 | **#28** 맛집 주변 API | ⏳ Preview QA | locationBasedList type39 · 축제/명소 주변 맛집 | #30 |
 | **#30** 레포츠·문화 주변 | ⏳ Preview QA | locationBasedList type28/14 · 축제/명소 주변 | #31 |
-| **#31** 코스↔축제 | ⏳ Preview QA | 축제→인근 코스 · 코스→인근 축제 · deep-link | MRT 상품지 · S9 |
+| **#31** 코스↔축제 | ⏳ Preview QA | 축제→인근 코스 · 코스→인근 축제 · deep-link | #32 |
+| **#32** MRT 상품지 | ⏳ Preview QA | LIVE 확인 국내 목적지 큐레이션 · 경주/부산 제외 | S9 |
 | **S9** 폴리시·릴리스 | ⏳ | 사람 QA → releaseNotes 1회 제안 (#24) | main 병합 |
 
 ---
@@ -424,25 +425,22 @@ hub 매칭 확인됨(2026-08-03):
 
 목록 API 없음. **안정 딥링크 = `/pkc/search?q=`** (+ 기존 `mylink_id`·`utm_source=mktpartner`).
 
-| 우선 | CTA 라벨(안) | 타깃 | LIVE 메모 (2026-08-03) |
-|------|--------------|------|------------------------|
-| **P0** | 제주 패키지 | `kind:search` `q=제주` | `/pkc/search?q=제주` — 제주 에어텔·패키지 다수 확인 |
-| **P1** | 패키지 홈 | `kind:home` `/pkc` | 칩「올인원제주여행」등 **UI 칩은 휘발** → SSOT에 칩명 의존 금지 |
-| **P2** | 경주 패키지 | `q=경주` | 검색 페이지 존재 · 상품 수 변동 → S6에서 건수 재확인 |
-| **보류** | `q=부산` | — | **출발지=부산 해외패키지**가 섞임 · 국내 목적지 CTA로 부적합 |
-| **선택** | 시즌 기획전 | `https://www.myrealtrip.com/promotions/…` | 티켓/액티비티 중심인 경우 많음 · **패키지 모듈과 혼동 금지**. 넣으려면 `expires` 필드+일지 |
+| 우선 | CTA 라벨 | 타깃 | LIVE 메모 (2026-08-05 · #32) |
+|------|----------|------|------------------------------|
+| ✅ | 제주 패키지 | `q=제주` | 에어텔·패키지 다수 |
+| ✅ | 여수 패키지 | `q=여수` | 섬박람회·당일/1박 패키지 |
+| ✅ | 울릉도 패키지 | `q=울릉도` | 포항·묵호 선박 패키지 (`q=울릉`은 0건) |
+| ✅ | 강원 패키지 | `regionCategoryCode=GANGWONDO` | 삼척/동해·원주/횡성 (`q=강원`은 상주 오탐) |
+| ✅ | 순천 패키지 | `q=순천` | 여수/순천 결합 |
+| ✅ | 홍도·흑산 | `q=홍도` | 목포항 출발 |
+| ✅ | 백령도 패키지 | `q=백령도` | 인천 출발 국내 |
+| ✅ | 패키지 홈 | `kind:home` `/pkc` | 둘러보기 · UI 칩명 의존 금지 |
+| ❌ | `q=경주` | — | **상주 당일여행 오탐** · 큐레이션 제외 (#32) |
+| ❌ | `q=부산` | — | **출발지=부산 해외패키지** 혼입 |
 
-**권장 S6 SSOT 키**
+SSOT: [`mrtPackageThemeLinks.js`](../src/pages/Home/data/mrtPackageThemeLinks.js) `KOREA_THEME_PACKAGE_KEYS` · hub 매핑 [`koreaThemeCrossLinks.js`](../src/pages/Home/lib/koreaThemeCrossLinks.js) · 프로브 `node scripts/probe-mrt-korea-package-destinations.mjs`.
 
-```js
-// mrtPackageThemeLinks 확장 예
-koreaJeju: { kind: 'search', q: '제주', ctaLabel: '제주 패키지' },
-koreaHome: { kind: 'home', ctaLabel: 'MRT 패키지 둘러보기' },
-koreaGyeongju: { kind: 'search', q: '경주', ctaLabel: '경주 패키지' }, // P2 · VERIFY 후 enabled
-```
-
-**금지**: 단축 URL 추측 · 가짜 상품 카드 목록 · `q=부산`을 국내 목적지처럼 표기.
-
+**금지**: 단축 URL 추측 · 가짜 상품 카드 목록 · `q=부산`/`q=경주`를 국내 목적지 CTA로 표기.
 ### 3.5 국내 여행지 카탈로그 — type12 → Supabase (#22·#25 · S13)
 
 | | |
@@ -999,7 +997,7 @@ scenic이 DB 읽기. 맛집 전량 DB 금지. top10/regions 보류. 축제 지�
 - [x] **#30**: 레포츠28·문화14 주변 API · 축제/명소 연결 (Preview QA)
 - [x] **#31**: 코스↔축제 양방향 · areaBased type25 · festival deep-link (Preview QA)
 - [x] **#25**: top10/regions 타일 보류 · 명승 본선 · 코스·패키지 방향 유지 (플랜)
-- [ ] 패키지 MRT(제주 등) + mylink
+- [x] 패키지 MRT 상품지 큐레이션(제주·여수·울릉도·강원·순천·홍도·백령 + 홈) · mylink (#32)
 - [x] `/qa/korea-theme` · 고정 Preview (S1·S8 최종 · sitemap/Helmet)
 - [ ] audit/smoke/build PASS · 키 미노출
 - [ ] 사람 QA 전 완료·main 병합 단정 없음

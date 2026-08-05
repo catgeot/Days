@@ -67,27 +67,68 @@ export const MRT_PACKAGE_THEME_TARGETS = {
     searchFallback: '동남아',
     ctaLabel: '동남아 휴양 패키지',
   },
-  /** 한국의 테마여행 `/korea/theme/packages` — P0 */
+  /**
+   * 한국의 테마여행 `/korea/theme/packages` — 국내 **목적지**만.
+   * LIVE 검증: `api3.myrealtrip.com/pkc/api/v1/products/search?q=` totalCount + 제목 국내 매칭
+   * (2026-08-05). `q=부산`·출발지 해외패키지 · `q=경주`(상주 오탐) 제외.
+   */
   koreaJeju: {
     kind: 'search',
     q: '제주',
     ctaLabel: '제주 패키지',
   },
-  /** 한국의 테마여행 — P1 패키지 홈 (`/pkc`) */
+  koreaYeosu: {
+    kind: 'search',
+    q: '여수',
+    ctaLabel: '여수 패키지',
+  },
+  koreaUlleungdo: {
+    kind: 'search',
+    q: '울릉도',
+    ctaLabel: '울릉도 패키지',
+  },
+  /** `q=강원`은 상주 오탐 섞임 → 권역 코드(LIVE total=2·삼척·원주) */
+  koreaGangwon: {
+    kind: 'regionCategory',
+    regionCategoryCode: 'GANGWONDO',
+    ctaLabel: '강원 패키지',
+  },
+  koreaSuncheon: {
+    kind: 'search',
+    q: '순천',
+    ctaLabel: '순천 패키지',
+  },
+  koreaHongdo: {
+    kind: 'search',
+    q: '홍도',
+    ctaLabel: '홍도·흑산 패키지',
+  },
+  koreaBaengnyeong: {
+    kind: 'search',
+    q: '백령도',
+    ctaLabel: '백령도 패키지',
+  },
+  /** 패키지 홈 (`/pkc`) — 목적지 큐레이션과 별도 둘러보기 */
   koreaHome: {
     kind: 'home',
     ctaLabel: 'MRT 패키지 둘러보기',
   },
-  /** 한국의 테마여행 — P2 (2026-08-03 LIVE `/pkc/search?q=경주` 확인) */
-  koreaGyeongju: {
-    kind: 'search',
-    q: '경주',
-    ctaLabel: '경주 패키지',
-  },
 };
 
-/** `/korea/theme/packages` CTA 키 순서 (부산 q 금지 · 가짜 상품 카드 금지) */
-export const KOREA_THEME_PACKAGE_KEYS = ['koreaJeju', 'koreaHome', 'koreaGyeongju'];
+/**
+ * `/korea/theme/packages` CTA 키 순서.
+ * 부산 q·가짜 상품 카드·경주(LIVE 오탐) 금지.
+ */
+export const KOREA_THEME_PACKAGE_KEYS = [
+  'koreaJeju',
+  'koreaYeosu',
+  'koreaUlleungdo',
+  'koreaGangwon',
+  'koreaSuncheon',
+  'koreaHongdo',
+  'koreaBaengnyeong',
+  'koreaHome',
+];
 
 /**
  * @deprecated {@link resolveMrtPackageThemeHref} 사용. 하위 호환용 shortUrl 필드.

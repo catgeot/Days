@@ -22,6 +22,7 @@
     "smoke:mrt-stay": "node scripts/smoke-mrt-stay-queries.mjs",
     "smoke:mrt-tna": "node scripts/smoke-mrt-tna-queries.mjs",
     "smoke:mrt-package": "node scripts/smoke-mrt-package-links.mjs",
+    "probe:mrt-korea-packages": "node scripts/probe-mrt-korea-package-destinations.mjs",
     "smoke:ko-homonym-ri-search": "node scripts/smoke-ko-homonym-ri-search.mjs",
     "generate:korea-area-codes": "node scripts/generate-korea-area-codes.mjs",
     "audit:korea-area-codes": "node scripts/audit-korea-area-codes.mjs",

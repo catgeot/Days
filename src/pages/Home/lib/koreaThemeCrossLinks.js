@@ -35,10 +35,24 @@ export const THEME_REGION_LABEL_TO_AREA = {
   제주: '39',
 };
 
+/** hubId → 상품 LIVE 확인된 국내 패키지 테마 키 (부산·경주 오탐 제외) */
 const PACKAGE_BY_HUB = {
   jeju: 'koreaJeju',
   seogwipo: 'koreaJeju',
-  gyeongju: 'koreaGyeongju',
+  yeosu: 'koreaYeosu',
+  namhae: 'koreaYeosu',
+  suncheon: 'koreaSuncheon',
+  ulleung: 'koreaUlleungdo',
+  pohang: 'koreaUlleungdo',
+  mokpo: 'koreaHongdo',
+  gangneung: 'koreaGangwon',
+  sokcho: 'koreaGangwon',
+  samcheok: 'koreaGangwon',
+  donghae: 'koreaGangwon',
+  wonju: 'koreaGangwon',
+  hoengseong: 'koreaGangwon',
+  pyeongchang: 'koreaGangwon',
+  chuncheon: 'koreaGangwon',
 };
 
 const DEFAULT_NEARBY_LIMIT = 4;
@@ -276,7 +290,7 @@ export function buildThemeSpotLocation(spot) {
 
 /**
  * @param {{ hubId?: string }} spot
- * @returns {'koreaJeju' | 'koreaGyeongju' | null}
+ * @returns {string | null} MRT_PACKAGE_THEME_TARGETS 키
  */
 export function resolveThemePackageKey(spot) {
   const hid = normId(spot?.hubId);

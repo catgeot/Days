@@ -59,8 +59,21 @@ export function buildMrtPkcPromotionGroupUrl(promotionGroupId, options = {}) {
 }
 
 /**
+ * 패키지 권역(`/pkc/search?regionCategoryCode=`) + mylink.
+ * @param {string} regionCategoryCode 예: GANGWONDO
+ */
+export function buildMrtPkcRegionCategoryUrl(regionCategoryCode, options = {}) {
+  const code = String(regionCategoryCode ?? '').trim();
+  if (!code) return buildMrtPkcHomeUrl(options);
+  return withMylink(
+    `${MRT_PKC_HOME_URL}/search?regionCategoryCode=${encodeURIComponent(code)}`,
+    options
+  );
+}
+
+/**
  * 테마 키 → 제휴 URL + CTA 문구.
- * @param {'family'|'japan'|'longhaul'|'resort'|'koreaJeju'|'koreaHome'|'koreaGyeongju'} themeKey
+ * @param {string} themeKey MRT_PACKAGE_THEME_TARGETS 키
  */
 export function resolveMrtPackageThemeHref(themeKey, options = {}) {
   const target = MRT_PACKAGE_THEME_TARGETS[themeKey];
@@ -72,6 +85,8 @@ export function resolveMrtPackageThemeHref(themeKey, options = {}) {
   let url = buildMrtPkcHomeUrl(utm);
   if (target.kind === 'promotionGroup' && target.promotionGroupId) {
     url = buildMrtPkcPromotionGroupUrl(target.promotionGroupId, utm);
+  } else if (target.kind === 'regionCategory' && target.regionCategoryCode) {
+    url = buildMrtPkcRegionCategoryUrl(target.regionCategoryCode, utm);
   } else if (target.kind === 'search') {
     url = buildMrtPkcSearchUrl(target.q || target.searchFallback, utm);
   } else if (target.kind === 'home') {

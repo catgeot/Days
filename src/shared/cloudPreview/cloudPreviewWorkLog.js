@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 31,
-  sessionPhase: '코스↔축제',
+  sessionNo: 32,
+  sessionPhase: 'MRT 상품지',
   branch: 'cursor/korea-theme',
-  previewPath: '/korea',
+  previewPath: '/korea/theme/packages',
   qaShareSlug: 'korea-theme',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-05-korea-theme-mrt-package-destinations',
+    session: '테마여행 #32, MRT 상품지',
+    title: 'MRT 상품 있는 여행지 큐레이션',
+    detail:
+      '마이리얼트립 LIVE 검색으로 국내 패키지·에어텔이 있는 여행지만 `/korea/theme/packages`에 올렸습니다(제주·여수·울릉도·강원·순천·홍도·흑산·백령도). 경주는 상주 오탐으로 제외했고, 부산(출발지 해외패키지)도 넣지 않았습니다. 명승·테마 상세의 패키지 CTA도 같은 hub 매핑을 씁니다. Preview 테마→패키지 상품에서 목록과 mylink를 확인해 주세요.',
+    at: '2026-08-05',
+  },
   {
     id: '2026-08-05-korea-theme-course-festival',
     session: '테마여행 #31, 코스↔축제',
