@@ -4,7 +4,7 @@
 
 ## 테마여행 #33, 페이지 정리
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `420fe9f8` · Preview QA 대기
 
 - **한 일**: 플랜 §1.0을 **축제·명승 투톱**으로 재잠금 · 제품명「한국의 명승」 · 10대·방방곡곡·패키지(·코스) 타일 `enabled:false` · 홈/랜딩/명승 헤더·복귀 카피 정리 · 작업 로그 #33
 - **방향**: 상세에서 주변·맛집·레포츠·문화·패키지 매칭·숙소·투어 크로스 · 길을 잃지 않는 네비(#34)
