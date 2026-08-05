@@ -4,10 +4,12 @@ import {
   ArrowUp,
   ExternalLink,
   Landmark,
+  Loader2,
   MapPin,
   Phone,
   Route,
   Sparkles,
+  Utensils,
   X,
 } from 'lucide-react';
 import { setPlaceReturnTo } from '../Home/lib/placeReturnTo';
@@ -21,6 +23,10 @@ import {
   themeModuleLabelForPath,
 } from '../Home/lib/koreaThemeNavBack';
 import { fetchTourApiAttractionDetail } from '../../utils/fetchTourApiAttractionDetail';
+import {
+  fetchNearbyTourRestaurants,
+  RESTAURANT_CONTENT_TYPE_ID,
+} from '../../utils/fetchNearbyTourRestaurants';
 import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
 import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
 
@@ -455,9 +461,23 @@ function DetailRow({ label, children }) {
 
 const INTRO_FIELDS = [
   ['infocenter', '문의'],
+  ['infocenterfood', '문의'],
   ['usetime', '이용 시간'],
+  ['opentimefood', '영업 시간'],
   ['restdate', '휴무일'],
+  ['restdatefood', '휴무일'],
   ['parking', '주차'],
+  ['parkingfood', '주차'],
+  ['firstmenu', '대표 메뉴'],
+  ['treatmenu', '취급 메뉴'],
+  ['reservationfood', '예약'],
+  ['packing', '포장'],
+  ['scalefood', '규모'],
+  ['seatingtype', '좌석'],
+  ['smoking', '흡연'],
+  ['kidsfacility', '놀이시설'],
+  ['discountinfofood', '할인'],
+  ['chkcreditcardfood', '신용카드'],
   ['useseason', '이용 시기'],
   ['opendate', '개장'],
   ['expguide', '체험 안내'],
@@ -468,6 +488,36 @@ const INTRO_FIELDS = [
   ['chkcreditcard', '신용카드'],
 ];
 
+function formatDistKm(km) {
+  if (!Number.isFinite(km)) return '';
+  if (km < 1) return `${Math.max(1, Math.round(km * 1000))}m`;
+  return `${km < 10 ? km.toFixed(1) : Math.round(km)}km`;
+}
+
+function foodPlaceLabel(spot) {
+  return String(spot?.locality || spot?.region || '').trim();
+}
+
+function toFoodModalSpot(spot) {
+  if (!spot) return null;
+  const place = foodPlaceLabel(spot);
+  return {
+    id: spot.id || spot.contentId,
+    name: spot.name,
+    subtitle: [place, formatDistKm(spot.distKm)].filter(Boolean).join(' · '),
+    blurb: spot.blurb,
+    placeSlug: spot.placeSlug,
+    contentId: spot.contentId,
+    contentTypeId: RESTAURANT_CONTENT_TYPE_ID,
+    hubId: spot.hubId,
+    region: spot.region,
+    nameEn: spot.attractionNameEn || null,
+    lat: spot.lat,
+    lng: spot.lng,
+    areaCode: spot.areaCode,
+  };
+}
+
 /**
  * @param {{
  *   spot: {
@@ -477,6 +527,7 @@ const INTRO_FIELDS = [
  *     blurb?: string,
  *     placeSlug?: string | null,
  *     contentId?: string | null,
+ *     contentTypeId?: string | null,
  *     hubId?: string | null,
  *     region?: string | null,
  *     areaCode?: string | number | null,
@@ -502,10 +553,23 @@ export default function ThemeSpotDetailModal({
   const [detail, setDetail] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState('');
+  const [nearbyFood, setNearbyFood] = useState([]);
+  const [nearbyFoodStatus, setNearbyFoodStatus] = useState('idle');
+  const [selectedFood, setSelectedFood] = useState(null);
+
+  const isRestaurant =
+    String(spot?.contentTypeId || '') === RESTAURANT_CONTENT_TYPE_ID;
+  const nestedFoodZ =
+    overlayZClass === 'z-50' || overlayZClass === 'z-[50]'
+      ? 'z-[55]'
+      : 'z-50';
 
   useEffect(() => {
     const onKey = (event) => {
-      if (event.key === 'Escape') onClose();
+      if (event.key === 'Escape') {
+        if (selectedFood) return;
+        onClose();
+      }
     };
     window.addEventListener('keydown', onKey);
     const prev = document.body.style.overflow;
@@ -514,7 +578,7 @@ export default function ThemeSpotDetailModal({
       window.removeEventListener('keydown', onKey);
       document.body.style.overflow = prev;
     };
-  }, [onClose]);
+  }, [onClose, selectedFood]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0 });
@@ -542,7 +606,10 @@ export default function ThemeSpotDetailModal({
     setDetailLoading(true);
 
     (async () => {
-      const data = await fetchTourApiAttractionDetail({ contentId });
+      const data = await fetchTourApiAttractionDetail({
+        contentId,
+        contentTypeId: spot.contentTypeId || undefined,
+      });
       if (cancelled) return;
       setDetailLoading(false);
       if (!data) {
@@ -556,7 +623,57 @@ export default function ThemeSpotDetailModal({
     return () => {
       cancelled = true;
     };
-  }, [spot?.id, spot?.contentId]);
+  }, [spot?.id, spot?.contentId, spot?.contentTypeId]);
+
+  useEffect(() => {
+    setSelectedFood(null);
+    if (!spot || isRestaurant) {
+      setNearbyFood([]);
+      setNearbyFoodStatus(isRestaurant ? 'idle' : 'idle');
+      return undefined;
+    }
+
+    const fromDetailLat = Number(detail?.mapy);
+    const fromDetailLng = Number(detail?.mapx);
+    const lat = Number(spot.lat);
+    const lng = Number(spot.lng);
+    const useLat = Number.isFinite(lat) ? lat : fromDetailLat;
+    const useLng = Number.isFinite(lng) ? lng : fromDetailLng;
+    if (!Number.isFinite(useLat) || !Number.isFinite(useLng)) {
+      setNearbyFood([]);
+      setNearbyFoodStatus(detailLoading ? 'idle' : 'nocoords');
+      return undefined;
+    }
+
+    let cancelled = false;
+    setNearbyFoodStatus('loading');
+    fetchNearbyTourRestaurants({
+      lat: useLat,
+      lng: useLng,
+      radiusKm: 3,
+      limit: 6,
+    }).then((res) => {
+      if (cancelled) return;
+      const spots = Array.isArray(res?.spots) ? res.spots : [];
+      setNearbyFood(spots);
+      if (res?.error) setNearbyFoodStatus('error');
+      else if (!spots.length) setNearbyFoodStatus('empty');
+      else setNearbyFoodStatus('ok');
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    spot?.id,
+    spot?.lat,
+    spot?.lng,
+    spot?.contentTypeId,
+    isRestaurant,
+    detail?.mapx,
+    detail?.mapy,
+    detailLoading,
+  ]);
 
   const overview = useMemo(
     () => stripHtml(detail?.overview || ''),
@@ -689,8 +806,18 @@ export default function ThemeSpotDetailModal({
               className="aspect-[16/9] w-full object-cover sm:aspect-[2/1]"
             />
           ) : (
-            <div className="flex aspect-[16/9] w-full items-center justify-center bg-amber-50 text-amber-800 sm:aspect-[2/1]">
-              <Landmark size={28} aria-hidden="true" />
+            <div
+              className={`flex aspect-[16/9] w-full items-center justify-center sm:aspect-[2/1] ${
+                isRestaurant
+                  ? 'bg-orange-50 text-orange-800'
+                  : 'bg-amber-50 text-amber-800'
+              }`}
+            >
+              {isRestaurant ? (
+                <Utensils size={28} aria-hidden="true" />
+              ) : (
+                <Landmark size={28} aria-hidden="true" />
+              )}
             </div>
           )}
 
@@ -787,6 +914,70 @@ export default function ThemeSpotDetailModal({
               </button>
             ) : null}
 
+            {!isRestaurant &&
+              nearbyFoodStatus !== 'idle' &&
+              nearbyFoodStatus !== 'nocoords' && (
+                <section className="space-y-2 border-t border-stone-200/80 pt-4">
+                  <h3 className="text-[11px] font-bold uppercase tracking-[0.14em] text-stone-500">
+                    주변 맛집
+                  </h3>
+                  {nearbyFoodStatus === 'loading' && (
+                    <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
+                      <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+                      주변 맛집 불러오는 중…
+                    </div>
+                  )}
+                  {nearbyFoodStatus === 'error' && nearbyFood.length === 0 && (
+                    <p className="text-xs text-stone-500">
+                      주변 맛집을 불러오지 못했습니다.
+                    </p>
+                  )}
+                  {nearbyFoodStatus === 'empty' && (
+                    <p className="text-xs text-stone-500">
+                      반경 3km 안 TourAPI 맛집이 없습니다.
+                    </p>
+                  )}
+                  {nearbyFood.length > 0 && (
+                    <ul className="space-y-2" aria-label="주변 맛집">
+                      {nearbyFood.map((food) => {
+                        const thumb = toHttps(food.firstImage);
+                        const dist = formatDistKm(food.distKm);
+                        const place = foodPlaceLabel(food);
+                        return (
+                          <li key={food.contentId || food.id}>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedFood(food)}
+                              className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                            >
+                              {thumb ? (
+                                <img
+                                  src={thumb}
+                                  alt=""
+                                  className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
+                                />
+                              ) : (
+                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-800">
+                                  <Utensils size={18} aria-hidden="true" />
+                                </div>
+                              )}
+                              <span className="min-w-0 flex-1">
+                                <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
+                                  {food.name}
+                                </span>
+                                <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
+                                  {[place, dist].filter(Boolean).join(' · ')}
+                                </span>
+                              </span>
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </section>
+              )}
+
             <ThemeSpotCrossRail
               spot={spot}
               detail={detail}
@@ -815,6 +1006,16 @@ export default function ThemeSpotDetailModal({
           </button>
         </div>
       </div>
+
+      {selectedFood ? (
+        <ThemeSpotDetailModal
+          spot={toFoodModalSpot(selectedFood)}
+          eyebrow="주변 맛집"
+          returnTo={returnTo}
+          overlayZClass={nestedFoodZ}
+          onClose={() => setSelectedFood(null)}
+        />
+      ) : null}
     </div>
   );
 }

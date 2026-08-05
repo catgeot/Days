@@ -68,7 +68,8 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **#22** 명승·Tour 규모 리서치 | ✅ | type12≈7294·좌표·쿼터·DB 방향 | #25 |
 | **#25** 제품 흐름 재잠금 | ✅ 2026-08-05 | §1.0 · top10/regions 보류 · 명승=본선 | S13=#23 |
 | **S13** 국내여행지 DB | ⏳ Preview QA | `tourapi_attraction` active≈7294 · scenic DB 목록 · nearby 훅 | #26 ✅ 축제 연결 |
-| **#26** 축제 주변 관광지 | ⏳ Preview QA | 축제 상세 INFO · nearby DB · ThemeSpotDetailModal | 맛집 API 등 |
+| **#26** 축제 주변 관광지 | ⏳ Preview QA | 축제 상세 INFO · nearby DB · ThemeSpotDetailModal | #28 |
+| **#28** 맛집 주변 API | ⏳ Preview QA | locationBasedList type39 · 축제/명소 주변 맛집 | 레포츠·문화 등 |
 | **S9** 폴리시·릴리스 | ⏳ | 사람 QA → releaseNotes 1회 제안 (#24) | main 병합 |
 
 ---
@@ -932,6 +933,19 @@ scenic이 DB 읽기. 맛집 전량 DB 금지. top10/regions 보류. 축제 지�
 
 ---
 
+### #28 — 맛집 주변 API ⏳ Preview QA
+
+| | |
+|--|--|
+| **산출** | `locationBasedList` proxy · `fetchNearbyTourRestaurants` · 축제/명소 「주변 맛집」 · type39 상세 intro |
+| **VERIFY** | `npm run smoke:korea-nearby-restaurants` · `smoke:korea-festival-nearby` · `smoke:tourapi` · build |
+| **금지** | 맛집 type39 전량 DB · `/korea` 축제 지도·칩 리팩터 · top10/regions 확장 |
+| **핸드오프** | [`2026-08-05-project-log.md`](./2026-08-05-project-log.md) 「테마여행 · 에이전트 핸드오프 → #29」 |
+
+**채팅명**: `테마여행 #28, 맛집 주변 API`
+
+---
+
 ## 6. 리스크 · 가드
 
 | 리스크 | 대응 |
@@ -962,6 +976,7 @@ scenic이 DB 읽기. 맛집 전량 DB 금지. top10/regions 보류. 축제 지�
 - [x] 명승 curated ≥12 (현재 34 · contentId 전수) · 여행코스 type25 모달 · 방방곡곡 시도 칩→명소 목록
 - [x] **S13**: type12 Supabase · 주간 sync · scenic DB 소비 · nearby 훅 (축제 UI 연결=#26)
 - [x] **#26**: 축제 상세 주변 관광지(DB) · ThemeSpotDetailModal (Preview QA)
+- [x] **#28**: 맛집 type39 주변 API · 축제/명소 연결 (Preview QA)
 - [x] **#25**: top10/regions 타일 보류 · 명승 본선 · 코스·패키지 방향 유지 (플랜)
 - [ ] 패키지 MRT(제주 등) + mylink
 - [x] `/qa/korea-theme` · 고정 Preview (S1·S8 최종 · sitemap/Helmet)

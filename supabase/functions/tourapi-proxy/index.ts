@@ -17,6 +17,7 @@ const ACTIONS = {
   searchPhoto: { base: PHOTO_BASE, path: "gallerySearchList1" },
   searchFestival: { base: KOR_BASE, path: "searchFestival2" },
   areaBasedList: { base: KOR_BASE, path: "areaBasedList2" },
+  locationBasedList: { base: KOR_BASE, path: "locationBasedList2" },
   areaCode: { base: KOR_BASE, path: "areaCode2" },
   detailIntro: { base: KOR_BASE, path: "detailIntro2" },
   detailInfo: { base: KOR_BASE, path: "detailInfo2" },
@@ -31,6 +32,17 @@ const MAX_KEYWORD_LEN = 80;
 const MAX_CONTENT_ID_LEN = 32;
 const DEFAULT_ROWS = 10;
 const MAX_ROWS = 50;
+const MAX_LOCATION_RADIUS_M = 20_000;
+const LOCATION_CACHE_TTL_MS = 30 * 60 * 1000;
+const LOCATION_CACHE_MAX = 80;
+
+type LocationCacheEntry = {
+  at: number;
+  payload: Record<string, unknown>;
+};
+
+/** Edge 인스턴스 메모리 — locationBased 쿼터 완화(재시작 시 소멸). */
+const locationBasedCache = new Map<string, LocationCacheEntry>();
 
 const LIST_FRESH_MS = 12 * 60 * 60 * 1000;
 const LIST_STALE_MS = 7 * 24 * 60 * 60 * 1000;
@@ -133,6 +145,66 @@ function guardContentTypeId(contentTypeId: unknown): string {
   return id;
 }
 
+function guardMapCoord(value: unknown, field: string): string {
+  if (value == null || value === "") {
+    throw new Error(`${field} is required`);
+  }
+  const n = Number(value);
+  if (!Number.isFinite(n)) {
+    throw new Error(`${field} must be a number`);
+  }
+  if (field === "mapX" && (n < -180 || n > 180)) {
+    throw new Error("mapX out of range");
+  }
+  if (field === "mapY" && (n < -90 || n > 90)) {
+    throw new Error("mapY out of range");
+  }
+  return String(n);
+}
+
+function guardRadiusMeters(value: unknown): string {
+  const n = Math.floor(Number(value));
+  if (!Number.isFinite(n) || n < 1) {
+    throw new Error("radius is required (meters)");
+  }
+  return String(Math.min(n, MAX_LOCATION_RADIUS_M));
+}
+
+function guardArrange(value: unknown): string {
+  const s = String(value ?? "E").trim().toUpperCase();
+  if (!/^[A-Z]$/.test(s)) return "E";
+  return s;
+}
+
+function locationCacheKey(query: Record<string, string>): string {
+  const mapX = Number(query.mapX).toFixed(3);
+  const mapY = Number(query.mapY).toFixed(3);
+  const radius = query.radius || "";
+  const type = query.contentTypeId || "all";
+  const rows = query.numOfRows || String(DEFAULT_ROWS);
+  const page = query.pageNo || "1";
+  const arrange = query.arrange || "E";
+  return `loc:${type}:${mapX}:${mapY}:${radius}:${rows}:${page}:${arrange}`;
+}
+
+function readLocationCache(key: string): Record<string, unknown> | null {
+  const hit = locationBasedCache.get(key);
+  if (!hit) return null;
+  if (Date.now() - hit.at > LOCATION_CACHE_TTL_MS) {
+    locationBasedCache.delete(key);
+    return null;
+  }
+  return hit.payload;
+}
+
+function writeLocationCache(key: string, payload: Record<string, unknown>) {
+  if (locationBasedCache.size >= LOCATION_CACHE_MAX) {
+    const oldest = locationBasedCache.keys().next().value;
+    if (oldest) locationBasedCache.delete(oldest);
+  }
+  locationBasedCache.set(key, { at: Date.now(), payload });
+}
+
 function normalizeItem(
   action: Action,
   item: Record<string, unknown>,
@@ -204,10 +276,41 @@ function normalizeItem(
   );
   const subdetailimg = pickStr(item, "subdetailimg", "subDetailImg");
   const subdetailalt = pickStr(item, "subdetailalt", "subDetailAlt");
-  const distance = pickStr(item, "distance");
+  const distance = pickStr(item, "distance", "dist");
   const schedule = pickStr(item, "schedule");
   const taketime = pickStr(item, "taketime", "takeTime");
   const theme = pickStr(item, "theme");
+  const addr2 = pickStr(item, "addr2");
+  const infocenter = pickStr(item, "infocenter", "infoCenter");
+  const usetime = pickStr(item, "usetime", "useTime");
+  const restdate = pickStr(item, "restdate", "restDate");
+  const parking = pickStr(item, "parking");
+  const useseason = pickStr(item, "useseason", "useSeason");
+  const opendate = pickStr(item, "opendate", "openDate");
+  const expguide = pickStr(item, "expguide", "expGuide");
+  const expagerange = pickStr(item, "expagerange", "expAgeRange");
+  const accomcount = pickStr(item, "accomcount", "accomCount");
+  const chkbabycarriage = pickStr(item, "chkbabycarriage", "chkBabyCarriage");
+  const chkpet = pickStr(item, "chkpet", "chkPet");
+  const chkcreditcard = pickStr(item, "chkcreditcard", "chkCreditCard");
+  const firstmenu = pickStr(item, "firstmenu", "firstMenu");
+  const treatmenu = pickStr(item, "treatmenu", "treatMenu");
+  const opentimefood = pickStr(item, "opentimefood", "openTimeFood");
+  const restdatefood = pickStr(item, "restdatefood", "restDateFood");
+  const parkingfood = pickStr(item, "parkingfood", "parkingFood");
+  const reservationfood = pickStr(item, "reservationfood", "reservationFood");
+  const packing = pickStr(item, "packing");
+  const scalefood = pickStr(item, "scalefood", "scaleFood");
+  const seatingtype = pickStr(item, "seatingtype", "seatingType", "seat");
+  const smoking = pickStr(item, "smoking");
+  const infocenterfood = pickStr(item, "infocenterfood", "infoCenterFood");
+  const chkcreditcardfood = pickStr(
+    item,
+    "chkcreditcardfood",
+    "chkCreditCardFood",
+  );
+  const kidsfacility = pickStr(item, "kidsfacility", "kidsFacility");
+  const discountinfofood = pickStr(item, "discountinfofood", "discountInfoFood");
 
   const out: Record<string, unknown> = {};
   if (contentId) out.contentId = contentId;
@@ -224,6 +327,7 @@ function normalizeItem(
   if (overview) out.overview = overview;
   if (homepage) out.homepage = homepage;
   if (addr1) out.addr1 = addr1;
+  if (addr2) out.addr2 = addr2;
   if (mapx) out.mapx = mapx;
   if (mapy) out.mapy = mapy;
   if (contentTypeId) out.contentTypeId = contentTypeId;
@@ -267,6 +371,32 @@ function normalizeItem(
   if (schedule) out.schedule = schedule;
   if (taketime) out.taketime = taketime;
   if (theme) out.theme = theme;
+  if (infocenter) out.infocenter = infocenter;
+  if (usetime) out.usetime = usetime;
+  if (restdate) out.restdate = restdate;
+  if (parking) out.parking = parking;
+  if (useseason) out.useseason = useseason;
+  if (opendate) out.opendate = opendate;
+  if (expguide) out.expguide = expguide;
+  if (expagerange) out.expagerange = expagerange;
+  if (accomcount) out.accomcount = accomcount;
+  if (chkbabycarriage) out.chkbabycarriage = chkbabycarriage;
+  if (chkpet) out.chkpet = chkpet;
+  if (chkcreditcard) out.chkcreditcard = chkcreditcard;
+  if (firstmenu) out.firstmenu = firstmenu;
+  if (treatmenu) out.treatmenu = treatmenu;
+  if (opentimefood) out.opentimefood = opentimefood;
+  if (restdatefood) out.restdatefood = restdatefood;
+  if (parkingfood) out.parkingfood = parkingfood;
+  if (reservationfood) out.reservationfood = reservationfood;
+  if (packing) out.packing = packing;
+  if (scalefood) out.scalefood = scalefood;
+  if (seatingtype) out.seatingtype = seatingtype;
+  if (smoking) out.smoking = smoking;
+  if (infocenterfood) out.infocenterfood = infocenterfood;
+  if (chkcreditcardfood) out.chkcreditcardfood = chkcreditcardfood;
+  if (kidsfacility) out.kidsfacility = kidsfacility;
+  if (discountinfofood) out.discountinfofood = discountinfofood;
 
   if (action === "searchPhoto") {
     const imageUrl = galWebImageUrl || firstimage;
@@ -416,6 +546,22 @@ function buildUpstreamQuery(
       if (contentTypeId) q.contentTypeId = contentTypeId;
       const sigunguCode = optionalCode(body.sigunguCode, "sigunguCode");
       if (sigunguCode) q.sigunguCode = sigunguCode;
+      return q;
+    }
+    case "locationBasedList": {
+      const mapX = guardMapCoord(body.mapX ?? body.mapx, "mapX");
+      const mapY = guardMapCoord(body.mapY ?? body.mapy, "mapY");
+      const radius = guardRadiusMeters(body.radius);
+      const q: Record<string, string> = {
+        mapX,
+        mapY,
+        radius,
+        numOfRows,
+        pageNo,
+        arrange: guardArrange(body.arrange),
+      };
+      const contentTypeId = optionalCode(body.contentTypeId, "contentTypeId");
+      if (contentTypeId) q.contentTypeId = contentTypeId;
       return q;
     }
     case "areaCode": {
@@ -880,6 +1026,15 @@ serve(async (req) => {
     const typedAction = action as Action;
 
     const query = buildUpstreamQuery(typedAction, body);
+
+    if (typedAction === "locationBasedList") {
+      const cacheKey = locationCacheKey(query);
+      const cached = readLocationCache(cacheKey);
+      if (cached) {
+        return jsonResponse({ ...cached, cached: true });
+      }
+    }
+
     let result: Awaited<ReturnType<typeof callTourApi>>;
     try {
       result = await callTourApi(typedAction, query, serviceKey);
@@ -911,13 +1066,19 @@ serve(async (req) => {
       });
     }
 
-    return jsonResponse({
-      ok: true,
+    const okPayload = {
+      ok: true as const,
       action: typedAction,
       items: result.items,
       rawCount: result.rawCount,
       resultCode: result.resultCode,
-    });
+    };
+
+    if (typedAction === "locationBasedList") {
+      writeLocationCache(locationCacheKey(query), okPayload);
+    }
+
+    return jsonResponse(okPayload);
   } catch (error) {
     const err = error as Error;
     console.error("[tourapi-proxy]", err.message);

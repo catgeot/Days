@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 26,
-  sessionPhase: '축제 주변 관광지',
+  sessionNo: 28,
+  sessionPhase: '맛집 주변 API',
   branch: 'cursor/korea-theme',
   previewPath: '/korea',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-05-korea-theme-nearby-restaurants',
+    session: '테마여행 #28, 맛집 주변 API',
+    title: '축제·명소 주변 맛집(API)',
+    detail:
+      '축제 상세·테마 상세 모달에 TourAPI 맛집(type39) 주변 목록을 locationBasedList로 연결했습니다. 전량 DB 적재는 하지 않았고, Edge에 짧은 TTL 캐시를 둡니다. Preview /korea 축제 상세와 명승 상세에서 「주변 맛집」을 확인해 주세요.',
+    at: '2026-08-05',
+  },
   {
     id: '2026-08-05-korea-theme-homepage-label',
     session: '테마여행 #26, 축제 주변 관광지',

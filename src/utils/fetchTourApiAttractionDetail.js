@@ -2,7 +2,8 @@ import { supabase } from '../shared/api/supabase';
 
 const INVOKE_TIMEOUT_MS = 12_000;
 const ATTRACTION_CONTENT_TYPE_ID = '12';
-const INTRO_TYPE_CANDIDATES = ['12', '14', '28', '38'];
+const RESTAURANT_CONTENT_TYPE_ID = '39';
+const INTRO_TYPE_CANDIDATES = ['12', '14', '28', '38', '39'];
 
 /**
  * @template T
@@ -71,8 +72,8 @@ function pickImageUrl(...candidates) {
 }
 
 /**
- * 관광지(type12) 상세 — 개요·이용·부가정보·사진.
- * @param {{ contentId: string | number }} opts
+ * 관광지·맛집 등 상세 — 개요·이용·부가정보·사진.
+ * @param {{ contentId: string | number, contentTypeId?: string | number }} opts
  */
 export async function fetchTourApiAttractionDetail(opts) {
   const contentId = String(opts?.contentId ?? '').trim();
@@ -161,4 +162,4 @@ export async function fetchTourApiAttractionDetail(opts) {
   };
 }
 
-export { ATTRACTION_CONTENT_TYPE_ID };
+export { ATTRACTION_CONTENT_TYPE_ID, RESTAURANT_CONTENT_TYPE_ID };
