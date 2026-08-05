@@ -2,6 +2,36 @@
 
 직전: [`2026-08-04-project-log.md`](./2026-08-04-project-log.md)
 
+## 테마여행 #32, MRT 상품지
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `69d67e50` · Preview QA 대기
+
+- **한 일**: LIVE `api3…/products/search`로 국내 목적지 확인 → `KOREA_THEME_PACKAGE_KEYS` 확장(제주·여수·울릉도·강원·순천·홍도·백령·홈) · hub→패키지 CTA 매핑 · 경주(상주 오탐)·부산 제외 · `probe:mrt-korea-packages` · packages 카피
+- **금지 준수**: 가짜 상품 카드 없음 · 축제 지도·칩 미터치 · top10/regions 미확장 · 맛집/레포츠/문화/코스 전량 DB 없음
+- **VERIFY**: `MRT_PACKAGE_LIVE=1 npm run smoke:mrt-package` · `smoke:korea-theme-cross-links` · `npm run probe:mrt-korea-packages` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/packages`
+- **작업 로그**: Preview 우측 「MRT 상품 있는 여행지 큐레이션」
+- **QA**: `/korea/theme/packages` 목적지 CTA·mylink · 여수/울릉 등 명승 상세 패키지 버튼 · 경주 상세에 패키지 CTA 없음
+
+### 테마여행 · 에이전트 핸드오프 → `#33`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #33, …` |
+| **브랜치** | `cursor/korea-theme` (고정) |
+| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
+| **읽을 것 3** | ① 본 절 ② #32 산출 ③ 플랜 §1.0 |
+| **금지 3** | 축제 지도·칩 리팩터 · 맛집/레포츠/문화/코스 전량 DB · top10/regions 확장 · `q=부산`/`q=경주` CTA |
+| **후보** | S9 폴리시·릴리스 · Edge tourapi-proxy intro 재배포 · 상품지 LIVE 재검증 |
+| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/packages` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #33, 폴리시·릴리스
+```
+
 ## 테마여행 #31, 코스↔축제
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `ead46f99` · Preview QA 대기
