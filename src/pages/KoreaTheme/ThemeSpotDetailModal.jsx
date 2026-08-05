@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   ArrowUp,
   ExternalLink,
@@ -11,7 +11,15 @@ import {
   X,
 } from 'lucide-react';
 import { setPlaceReturnTo } from '../Home/lib/placeReturnTo';
-import { resolveThemeCrossLinks } from '../Home/lib/koreaThemeCrossLinks';
+import {
+  getThemeMembership,
+  resolveThemeCrossLinks,
+} from '../Home/lib/koreaThemeCrossLinks';
+import {
+  buildThemeModulePath,
+  pushThemeNavBack,
+  themeModuleLabelForPath,
+} from '../Home/lib/koreaThemeNavBack';
 import { fetchTourApiAttractionDetail } from '../../utils/fetchTourApiAttractionDetail';
 import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
 import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
@@ -21,6 +29,53 @@ const MODULE_CHIP = {
   scenic: { label: '명승지', path: '/korea/theme/scenic' },
   regions: { label: '방방곡곡', path: '/korea/theme/regions' },
 };
+
+function membershipDeepPath(moduleId, membership, fallbackArea) {
+  if (!membership) return MODULE_CHIP[moduleId]?.path || '/korea/theme';
+  if (moduleId === 'top10' && membership.top10?.id) {
+    return buildThemeModulePath('/korea/theme/top10', {
+      spotId: membership.top10.id,
+    });
+  }
+  if (moduleId === 'scenic' && membership.scenic?.id) {
+    return buildThemeModulePath('/korea/theme/scenic', {
+      spotId: membership.scenic.id,
+    });
+  }
+  if (moduleId === 'regions' && membership.regionAttraction?.id) {
+    const area =
+      membership.regionAttraction.areaCode ||
+      fallbackArea ||
+      null;
+    return buildThemeModulePath('/korea/theme/regions', {
+      areaCode: area,
+      spotId: membership.regionAttraction.id,
+    });
+  }
+  if (moduleId === 'regions' && fallbackArea) {
+    return buildThemeModulePath('/korea/theme/regions', {
+      areaCode: fallbackArea,
+    });
+  }
+  return MODULE_CHIP[moduleId]?.path || '/korea/theme';
+}
+
+function sameHubDeepPath(row) {
+  const mem = getThemeMembership(row.placeSlug);
+  if (mem?.top10?.id) {
+    return buildThemeModulePath('/korea/theme/top10', { spotId: mem.top10.id });
+  }
+  if (mem?.scenic?.id) {
+    return buildThemeModulePath('/korea/theme/scenic', { spotId: mem.scenic.id });
+  }
+  if (mem?.regionAttraction?.id) {
+    return buildThemeModulePath('/korea/theme/regions', {
+      areaCode: mem.regionAttraction.areaCode,
+      spotId: mem.regionAttraction.id,
+    });
+  }
+  return row.pathHint || '/korea/theme';
+}
 
 function CrossRailSection({ title, children }) {
   if (!children) return null;
@@ -34,36 +89,27 @@ function CrossRailSection({ title, children }) {
   );
 }
 
-function CrossChipLink({ to, children }) {
+function CrossChipButton({ onClick, children }) {
   return (
-    <Link
-      to={to}
+    <button
+      type="button"
+      onClick={onClick}
       className="inline-flex items-center rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs font-semibold text-stone-700 hover:border-amber-300/80 hover:bg-amber-50"
     >
       {children}
-    </Link>
+    </button>
   );
 }
 
-function CrossTextLink({ to, children, onClick }) {
-  if (onClick) {
-    return (
-      <button
-        type="button"
-        onClick={onClick}
-        className="block w-full rounded-xl border border-stone-200/90 bg-white px-3 py-2 text-left text-sm font-semibold text-stone-800 hover:border-amber-300/80 hover:bg-amber-50/50"
-      >
-        {children}
-      </button>
-    );
-  }
+function CrossTextButton({ onClick, children }) {
   return (
-    <Link
-      to={to}
-      className="block rounded-xl border border-stone-200/90 bg-white px-3 py-2 text-sm font-semibold text-stone-800 hover:border-amber-300/80 hover:bg-amber-50/50"
+    <button
+      type="button"
+      onClick={onClick}
+      className="block w-full rounded-xl border border-stone-200/90 bg-white px-3 py-2 text-left text-sm font-semibold text-stone-800 hover:border-amber-300/80 hover:bg-amber-50/50"
     >
       {children}
-    </Link>
+    </button>
   );
 }
 
@@ -99,17 +145,47 @@ function ThemeSpotCrossRail({ spot, detail, returnTo, onClose }) {
     [crossSpot],
   );
 
+  const membership = useMemo(
+    () => getThemeMembership(spot?.placeSlug),
+    [spot?.placeSlug],
+  );
+
+  const backEntry = useMemo(() => {
+    if (!spot || !returnTo) return null;
+    const path = buildThemeModulePath(returnTo, {
+      spotId: spot.id,
+      areaCode: spot.areaCode,
+    });
+    return {
+      path,
+      label: spot.name,
+      moduleLabel: themeModuleLabelForPath(returnTo),
+    };
+  }, [spot, returnTo]);
+
+  const goThemePath = (to) => {
+    if (!to) return;
+    if (backEntry) {
+      pushThemeNavBack(backEntry);
+      navigate(to, { state: { themeBack: backEntry } });
+      return;
+    }
+    navigate(to);
+  };
+
   if (!spot || !cross) return null;
 
   const moduleChips = (cross.membership?.modules || [])
-    .map((id) => MODULE_CHIP[id])
-    .filter(Boolean)
-    .map((m) => {
-      if (m.path === '/korea/theme/regions' && cross.deepLinks?.regions) {
-        return { ...m, path: cross.deepLinks.regions };
-      }
-      return m;
-    });
+    .map((id) => {
+      const chip = MODULE_CHIP[id];
+      if (!chip) return null;
+      return {
+        id,
+        label: chip.label,
+        path: membershipDeepPath(id, membership, cross.areaCode),
+      };
+    })
+    .filter(Boolean);
 
   const stayHref = cross.stay?.keyword
     ? getMrtAccommodationSearchUrl(cross.stay.keyword, { isDomestic: true })
@@ -118,12 +194,19 @@ function ThemeSpotCrossRail({ spot, detail, returnTo, onClose }) {
     ? buildMrtTnaSearchMoreUrl(cross.tna.keyword)
     : '';
 
+  const placeReturnPath =
+    backEntry?.path ||
+    buildThemeModulePath(returnTo, {
+      spotId: spot.id,
+      areaCode: spot.areaCode,
+    });
+
   const openNearbyPlace = (hubId) => {
     const slug = String(hubId || '').trim().toLowerCase();
-    if (!slug || !returnTo) return;
-    setPlaceReturnTo(returnTo);
+    if (!slug || !placeReturnPath) return;
+    setPlaceReturnTo(placeReturnPath);
     onClose?.();
-    navigate(`/place/${slug}`, { state: { returnTo } });
+    navigate(`/place/${slug}`, { state: { returnTo: placeReturnPath } });
   };
 
   const hasAny =
@@ -144,9 +227,12 @@ function ThemeSpotCrossRail({ spot, detail, returnTo, onClose }) {
         <CrossRailSection title="이 장소가 속한 테마">
           <div className="flex flex-wrap gap-1.5">
             {moduleChips.map((m) => (
-              <CrossChipLink key={m.path + m.label} to={m.path}>
+              <CrossChipButton
+                key={m.id + m.path}
+                onClick={() => goThemePath(m.path)}
+              >
                 {m.label}
-              </CrossChipLink>
+              </CrossChipButton>
             ))}
           </div>
         </CrossRailSection>
@@ -157,7 +243,11 @@ function ThemeSpotCrossRail({ spot, detail, returnTo, onClose }) {
           <ul className="space-y-1.5">
             {cross.sameHub.map((row) => (
               <li key={row.placeSlug}>
-                <CrossTextLink to={row.pathHint}>{row.name}</CrossTextLink>
+                <CrossTextButton
+                  onClick={() => goThemePath(sameHubDeepPath(row))}
+                >
+                  {row.name}
+                </CrossTextButton>
               </li>
             ))}
           </ul>
@@ -169,14 +259,12 @@ function ThemeSpotCrossRail({ spot, detail, returnTo, onClose }) {
           <ul className="space-y-1.5">
             {cross.nearbyHubs.map((h) => (
               <li key={h.hubId}>
-                <CrossTextLink
-                  onClick={() => openNearbyPlace(h.hubId)}
-                >
+                <CrossTextButton onClick={() => openNearbyPlace(h.hubId)}>
                   <span className="inline-flex items-center gap-1.5">
                     <MapPin size={14} className="text-amber-700" aria-hidden="true" />
                     {h.name}
                   </span>
-                </CrossTextLink>
+                </CrossTextButton>
               </li>
             ))}
           </ul>
@@ -217,20 +305,22 @@ function ThemeSpotCrossRail({ spot, detail, returnTo, onClose }) {
 
       <CrossRailSection title="축제 · 여행코스">
         <div className="flex flex-col gap-1.5 sm:flex-row sm:flex-wrap">
-          <Link
-            to={cross.deepLinks.festivals}
+          <button
+            type="button"
+            onClick={() => goThemePath(cross.deepLinks.festivals)}
             className="inline-flex items-center justify-center gap-1.5 rounded-full border border-stone-200 bg-white px-3 py-2 text-xs font-bold text-stone-800 hover:border-amber-300/80 hover:bg-amber-50"
           >
             <Sparkles size={13} className="text-amber-700" aria-hidden="true" />
             이 지역 축제
-          </Link>
-          <Link
-            to={cross.deepLinks.courses}
+          </button>
+          <button
+            type="button"
+            onClick={() => goThemePath(cross.deepLinks.courses)}
             className="inline-flex items-center justify-center gap-1.5 rounded-full border border-stone-200 bg-white px-3 py-2 text-xs font-bold text-stone-800 hover:border-amber-300/80 hover:bg-amber-50"
           >
             <Route size={13} className="text-amber-700" aria-hidden="true" />
             이 지역 여행코스
-          </Link>
+          </button>
         </div>
       </CrossRailSection>
 
@@ -507,8 +597,12 @@ export default function ThemeSpotDetailModal({
   const openPlace = () => {
     const slug = String(spot.placeSlug || '').trim();
     if (!slug || !returnTo) return;
-    setPlaceReturnTo(returnTo);
-    navigate(`/place/${slug}`, { state: { returnTo } });
+    const placeReturnPath = buildThemeModulePath(returnTo, {
+      spotId: spot.id,
+      areaCode: spot.areaCode,
+    });
+    setPlaceReturnTo(placeReturnPath);
+    navigate(`/place/${slug}`, { state: { returnTo: placeReturnPath } });
   };
 
   return (

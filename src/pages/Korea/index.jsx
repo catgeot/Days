@@ -25,6 +25,7 @@ import {
 import SEO from '../../components/SEO';
 import { listCityAttractionHubs } from '../Home/lib/cityAttractionHubs';
 import { setPlaceReturnTo } from '../Home/lib/placeReturnTo';
+import { ThemeFestivalBackLink } from '../KoreaTheme/ThemeModuleBackButton';
 import { isDomesticKoreaLocation } from '../../utils/tourApiMatch';
 import { resolveKoreaAreaFromCoords } from './resolveKoreaAreaFromCoords';
 import { festivalLngLat } from './koreaFestivalCorridors';
@@ -1563,12 +1564,7 @@ export default function KoreaFestivalHub() {
 
             {fromTheme && !mapImmersive ? (
               <p className="mt-1.5 text-xs leading-relaxed text-stone-600 break-keep">
-                <Link
-                  to="/korea/theme"
-                  className="font-bold text-amber-800 hover:underline"
-                >
-                  ← 테마여행으로
-                </Link>
+                <ThemeFestivalBackLink />
                 <span className="text-stone-400"> · </span>
                 축제 일정·지도는 여기서 이어갑니다
               </p>

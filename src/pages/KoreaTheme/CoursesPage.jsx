@@ -1,17 +1,21 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, ArrowUp, Home, Route, X } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { ArrowUp, Home, Route, X } from 'lucide-react';
 import SEO from '../../components/SEO';
 import {
   buildCourseAreaChips,
   COURSE_OTHER_CHIP_ID,
 } from '../Home/lib/koreaThemeCourseChips';
 import { listKoreaThemeAreas } from '../Home/lib/koreaThemeRegions';
+import { reconcileThemeNavBack } from '../Home/lib/koreaThemeNavBack';
 import {
   fetchTourApiCourseDetail,
   fetchTourApiTravelCourseAreaCounts,
   fetchTourApiTravelCourses,
 } from '../../utils/fetchTourApiCourses';
+import ThemeModuleBackButton, {
+  ThemeNavBackHint,
+} from './ThemeModuleBackButton';
 
 const RETURN_TO = '/korea/theme/courses';
 const AREAS = listKoreaThemeAreas();
@@ -273,6 +277,13 @@ export default function KoreaThemeCoursesPage() {
   const [detailById, setDetailById] = useState({});
   const [detailLoadingId, setDetailLoadingId] = useState(null);
 
+  useEffect(() => {
+    const path = areaFromQuery
+      ? `${RETURN_TO}?area=${encodeURIComponent(areaFromQuery)}`
+      : RETURN_TO;
+    reconcileThemeNavBack(path);
+  }, [areaFromQuery]);
+
   const activeChip = chips.find((c) => c.id === selectedChipId) || null;
   const selectedCourse =
     courses.find((c) => String(c.contentId || '') === selectedId) || null;
@@ -403,15 +414,7 @@ export default function KoreaThemeCoursesPage() {
                 </h1>
               </div>
               <div className="flex shrink-0 items-center gap-2">
-                <Link
-                  to="/korea/theme"
-                  aria-label="테마여행으로"
-                  title="테마여행"
-                  className="flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs font-bold text-stone-700 hover:bg-stone-100"
-                >
-                  <ArrowLeft size={14} aria-hidden="true" />
-                  테마
-                </Link>
+                <ThemeModuleBackButton />
                 <button
                   type="button"
                   onClick={() => navigate('/')}
@@ -424,6 +427,7 @@ export default function KoreaThemeCoursesPage() {
                 </button>
               </div>
             </div>
+            <ThemeNavBackHint />
           </div>
         </div>
       </header>

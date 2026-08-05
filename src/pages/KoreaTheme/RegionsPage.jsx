@@ -1,11 +1,18 @@
-import React, { useCallback, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Home, Map } from 'lucide-react';
+import React, { useCallback, useEffect, useMemo } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Home, Map } from 'lucide-react';
 import SEO from '../../components/SEO';
 import {
   listKoreaThemeAreas,
   listKoreaThemeRegionAttractions,
 } from '../Home/lib/koreaThemeRegions';
+import {
+  buildThemeModulePath,
+  reconcileThemeNavBack,
+} from '../Home/lib/koreaThemeNavBack';
+import ThemeModuleBackButton, {
+  ThemeNavBackHint,
+} from './ThemeModuleBackButton';
 import ThemeSpotDetailModal from './ThemeSpotDetailModal';
 
 const AREAS = listKoreaThemeAreas();
@@ -20,14 +27,51 @@ function areaFromSearch(searchParams) {
 
 export default function KoreaThemeRegionsPage() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const [areaCode, setAreaCode] = useState(() => areaFromSearch(searchParams));
-  const [selectedId, setSelectedId] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const areaCode = areaFromSearch(searchParams);
+  const selectedId = searchParams.get('spot');
   const attractions = listKoreaThemeRegionAttractions(areaCode);
   const activeArea = AREAS.find((a) => a.areaCode === areaCode);
   const multiHub = new Set(attractions.map((a) => a.hubId)).size > 1;
-  const selectedSpot = attractions.find((s) => s.id === selectedId) || null;
-  const closeModal = useCallback(() => setSelectedId(null), []);
+  const selectedSpot = useMemo(
+    () => attractions.find((s) => s.id === selectedId) || null,
+    [attractions, selectedId],
+  );
+
+  useEffect(() => {
+    reconcileThemeNavBack(
+      buildThemeModulePath(RETURN_TO, {
+        areaCode,
+        spotId: selectedId,
+      }),
+    );
+  }, [areaCode, selectedId]);
+
+  const setAreaCode = useCallback(
+    (code) => {
+      const next = new URLSearchParams();
+      next.set('area', code);
+      setSearchParams(next, { replace: true });
+    },
+    [setSearchParams],
+  );
+
+  const openSpot = useCallback(
+    (id) => {
+      const next = new URLSearchParams(searchParams);
+      next.set('area', areaCode);
+      next.set('spot', id);
+      setSearchParams(next, { replace: false });
+    },
+    [areaCode, searchParams, setSearchParams],
+  );
+
+  const closeModal = useCallback(() => {
+    const next = new URLSearchParams(searchParams);
+    next.set('area', areaCode);
+    next.delete('spot');
+    setSearchParams(next, { replace: true });
+  }, [areaCode, searchParams, setSearchParams]);
 
   return (
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
@@ -50,15 +94,7 @@ export default function KoreaThemeRegionsPage() {
                 </h1>
               </div>
               <div className="flex shrink-0 items-center gap-2">
-                <Link
-                  to="/korea/theme"
-                  aria-label="테마여행으로"
-                  title="테마여행"
-                  className="flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs font-bold text-stone-700 hover:bg-stone-100"
-                >
-                  <ArrowLeft size={14} aria-hidden="true" />
-                  테마
-                </Link>
+                <ThemeModuleBackButton />
                 <button
                   type="button"
                   onClick={() => navigate('/')}
@@ -71,6 +107,7 @@ export default function KoreaThemeRegionsPage() {
                 </button>
               </div>
             </div>
+            <ThemeNavBackHint />
           </div>
         </div>
       </header>
@@ -102,10 +139,7 @@ export default function KoreaThemeRegionsPage() {
                   <button
                     key={area.areaCode}
                     type="button"
-                    onClick={() => {
-                      setAreaCode(area.areaCode);
-                      setSelectedId(null);
-                    }}
+                    onClick={() => setAreaCode(area.areaCode)}
                     aria-pressed={active}
                     className={
                       active
@@ -128,7 +162,7 @@ export default function KoreaThemeRegionsPage() {
                 <li key={spot.id}>
                   <button
                     type="button"
-                    onClick={() => setSelectedId(spot.id)}
+                    onClick={() => openSpot(spot.id)}
                     className="flex w-full items-start gap-3 rounded-2xl border border-stone-200/90 bg-white px-4 py-3.5 text-left shadow-sm transition-colors hover:border-amber-300/80 hover:bg-amber-50/40"
                   >
                     <span className="min-w-0 flex-1">

@@ -34,7 +34,8 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 18 | S12 전략 | `테마여행 #18, 테마 연결` | ✅ Preview QA |
 | 19 | S12 UI | `테마여행 #19, 크로스 레일` | ⏳ Preview QA |
 | 20 | (핫픽스) | `테마여행 #20, 본문 가독성 개선` | ⏳ Preview QA |
-| 21 | S9 | `테마여행 #21, 폴리시·릴리스` | ⏳ 다음 |
+| 21 | (핫픽스) | `테마여행 #21, 테마간 이동 개선` | ⏳ Preview QA |
+| 22 | S9 | `테마여행 #22, 폴리시·릴리스` | ⏳ 다음 |
 
 이어하기·핫픽스만 할 때: `테마여행 #N, {짧은 수정}` (`N` = 그 주제의 **다음** 순번). 세션마다 새 `#1` 금지.
 
@@ -59,7 +60,8 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **#17** 상세 정보 전수보강 | ⏳ Preview QA | top10 10/10 · regions Tour SSOT · 빈모달 가드 | S12 |
 | **S12** 테마 크로스 연결 | ⏳ Preview QA | §2.5+#18 매처 · #19 모달 레일·area 수신 | #20 가독성 |
 | **#20** 상세 본문 가독성 | ⏳ Preview QA | DetailRow 세로 배치(소제목↓본문) | S9 |
-| **S9** 폴리시·릴리스 | ⏳ | 사람 QA → releaseNotes 1회 제안 (#21) | main 병합 |
+| **#21** 테마간 이전 복귀 | ⏳ Preview QA | 크로스 이동 후 「이전」·?spot= 모달 복원 | #22 |
+| **S9** 폴리시·릴리스 | ⏳ | 사람 QA → releaseNotes 1회 제안 (#22) | main 병합 |
 
 ---
 
@@ -775,15 +777,30 @@ ThemeSpotDetailModal에 cross-links 레일. area 쿼리 수신 최소.
 
 ---
 
+### #21 — 테마간 이동 · 이전 복귀 ⏳ Preview QA
+
+| | |
+|--|--|
+| **산출** | `koreaThemeNavBack` 스택 · `ThemeModuleBackButton`/힌트 · 모달 크로스 push · `?spot=` 복원 · placeReturnTo 쿼리 · 축제 from=theme 직전 상세 |
+| **VERIFY** | `npm run smoke:korea-theme-nav-back` · `smoke:korea-theme-spot-modal` · `npm run build` |
+| **금지** | UI 리디자인 · 축제 칩/지도 리팩터 · releaseNotes 무단 반영 |
+
+**채팅명**: `테마여행 #21, 테마간 이동 개선`
+
+```
+테마여행 #21, 테마간 이동 개선
+브랜치 cursor/korea-theme. 크로스 이동 후 이전 테마·상세 복귀.
+```
+
 ### S9 — 폴리시 · QA · 릴리스 ⏳
 
 사람 Preview OK → releaseNotes **초안만 제안** → 합의 후 반영 · main 병합.
 
-**채팅명**: `테마여행 #21, 폴리시·릴리스`  
+**채팅명**: `테마여행 #22, 폴리시·릴리스`  
 **첫 메시지**
 
 ```
-테마여행 #21, 폴리시·릴리스
+테마여행 #22, 폴리시·릴리스
 @plans/korea-theme-travel-plan.md S9·§7만
 Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일 금지).
 ```

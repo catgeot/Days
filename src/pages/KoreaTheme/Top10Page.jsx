@@ -1,11 +1,15 @@
-import React, { useCallback, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Home, Mountain } from 'lucide-react';
+import React, { useCallback, useEffect, useMemo } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Home, Mountain } from 'lucide-react';
 import SEO from '../../components/SEO';
 import {
   koreaTop10ScenicDisclaimer,
   listKoreaTop10Scenic,
 } from '../Home/lib/koreaTop10Scenic';
+import { reconcileThemeNavBack } from '../Home/lib/koreaThemeNavBack';
+import ThemeModuleBackButton, {
+  ThemeNavBackHint,
+} from './ThemeModuleBackButton';
 import ThemeSpotDetailModal from './ThemeSpotDetailModal';
 
 const SPOTS = listKoreaTop10Scenic();
@@ -14,10 +18,35 @@ const RETURN_TO = '/korea/theme/top10';
 
 export default function KoreaThemeTop10Page() {
   const navigate = useNavigate();
-  const [selectedId, setSelectedId] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedId = searchParams.get('spot');
 
-  const selectedSpot = SPOTS.find((s) => s.id === selectedId) || null;
-  const closeModal = useCallback(() => setSelectedId(null), []);
+  const selectedSpot = useMemo(
+    () => SPOTS.find((s) => s.id === selectedId) || null,
+    [selectedId],
+  );
+
+  useEffect(() => {
+    const path = selectedId
+      ? `${RETURN_TO}?spot=${encodeURIComponent(selectedId)}`
+      : RETURN_TO;
+    reconcileThemeNavBack(path);
+  }, [selectedId]);
+
+  const openSpot = useCallback(
+    (id) => {
+      const next = new URLSearchParams(searchParams);
+      next.set('spot', id);
+      setSearchParams(next, { replace: false });
+    },
+    [searchParams, setSearchParams],
+  );
+
+  const closeModal = useCallback(() => {
+    const next = new URLSearchParams(searchParams);
+    next.delete('spot');
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams]);
 
   return (
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
@@ -40,15 +69,7 @@ export default function KoreaThemeTop10Page() {
                 </h1>
               </div>
               <div className="flex shrink-0 items-center gap-2">
-                <Link
-                  to="/korea/theme"
-                  aria-label="테마여행으로"
-                  title="테마여행"
-                  className="flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs font-bold text-stone-700 hover:bg-stone-100"
-                >
-                  <ArrowLeft size={14} aria-hidden="true" />
-                  테마
-                </Link>
+                <ThemeModuleBackButton />
                 <button
                   type="button"
                   onClick={() => navigate('/')}
@@ -61,6 +82,7 @@ export default function KoreaThemeTop10Page() {
                 </button>
               </div>
             </div>
+            <ThemeNavBackHint />
           </div>
         </div>
       </header>
@@ -87,7 +109,7 @@ export default function KoreaThemeTop10Page() {
                 <li key={spot.id}>
                   <button
                     type="button"
-                    onClick={() => setSelectedId(spot.id)}
+                    onClick={() => openSpot(spot.id)}
                     className="flex w-full items-start gap-3 rounded-2xl border border-stone-200/90 bg-white px-4 py-3.5 text-left shadow-sm transition-colors hover:border-amber-300/80 hover:bg-amber-50/40"
                   >
                     <span

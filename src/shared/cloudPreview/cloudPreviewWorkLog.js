@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 20,
-  sessionPhase: '본문 가독성 개선',
+  sessionNo: 21,
+  sessionPhase: '테마간 이동 개선',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/top10',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-05-korea-theme-nav-back',
+    session: '테마여행 #21, 테마간 이동 개선',
+    title: '크로스 이동 후 이전 테마·상세 복귀',
+    detail:
+      '상세 모달에서 다른 테마·축제·코스로 이동하면 「이전」과 이전 상태 표기(예: 보성녹차밭 · 10대 절경)로 직전 상세까지 돌아갑니다. 목록은 ?spot=으로 모달을 복원합니다. /korea/theme/top10에서 보성녹차밭 → 축제/명승 등 → 이전을 눌러 확인해 주세요.',
+    at: '2026-08-05',
+  },
   {
     id: '2026-08-05-korea-theme-detail-stack',
     session: '테마여행 #20, 본문 가독성 개선',

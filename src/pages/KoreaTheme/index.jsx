@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   CalendarDays,
@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import SEO from '../../components/SEO';
 import { listKoreaThemeModules } from '../Home/lib/koreaThemeModules';
+import { clearThemeNavBack } from '../Home/lib/koreaThemeNavBack';
 
 const MODULE_ICONS = {
   calendar: CalendarDays,
@@ -26,6 +27,10 @@ const MODULES = listKoreaThemeModules();
 
 export default function KoreaThemeLanding() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    clearThemeNavBack();
+  }, []);
 
   return (
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">

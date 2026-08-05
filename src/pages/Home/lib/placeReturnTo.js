@@ -1,5 +1,5 @@
 const KEY = 'gateo:place-return-to';
-const ALLOWED = new Set([
+const ALLOWED_EXACT = new Set([
   '/korea',
   '/korea/theme',
   '/korea/theme/top10',
@@ -9,8 +9,19 @@ const ALLOWED = new Set([
   '/korea/theme/packages',
 ]);
 
+/**
+ * @param {unknown} path
+ * @returns {path is string}
+ */
 function isAllowed(path) {
-  return typeof path === 'string' && ALLOWED.has(path);
+  if (typeof path !== 'string' || !path.startsWith('/')) return false;
+  if (ALLOWED_EXACT.has(path)) return true;
+  const pathname = path.split('?')[0];
+  if (pathname === '/korea') return true;
+  if (pathname === '/korea/theme' || pathname.startsWith('/korea/theme/')) {
+    return ALLOWED_EXACT.has(pathname) || pathname === '/korea/theme';
+  }
+  return false;
 }
 
 /** @param {unknown} path */

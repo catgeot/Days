@@ -1,14 +1,22 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, Home, Package } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ExternalLink, Home, Package } from 'lucide-react';
 import SEO from '../../components/SEO';
 import { listKoreaThemePackageCtas } from '../Home/lib/koreaThemePackages';
+import { reconcileThemeNavBack } from '../Home/lib/koreaThemeNavBack';
+import ThemeModuleBackButton, {
+  ThemeNavBackHint,
+} from './ThemeModuleBackButton';
 
 const RETURN_TO = '/korea/theme/packages';
 const CTAS = listKoreaThemePackageCtas();
 
 export default function KoreaThemePackagesPage() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    reconcileThemeNavBack(RETURN_TO);
+  }, []);
 
   return (
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
@@ -31,15 +39,7 @@ export default function KoreaThemePackagesPage() {
                 </h1>
               </div>
               <div className="flex shrink-0 items-center gap-2">
-                <Link
-                  to="/korea/theme"
-                  aria-label="테마여행으로"
-                  title="테마여행"
-                  className="flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs font-bold text-stone-700 hover:bg-stone-100"
-                >
-                  <ArrowLeft size={14} aria-hidden="true" />
-                  테마
-                </Link>
+                <ThemeModuleBackButton />
                 <button
                   type="button"
                   onClick={() => navigate('/')}
@@ -52,6 +52,7 @@ export default function KoreaThemePackagesPage() {
                 </button>
               </div>
             </div>
+            <ThemeNavBackHint />
           </div>
         </div>
       </header>
