@@ -4,11 +4,11 @@
 
 ## 테마여행 #34, 투톱 크로스 네비
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `ffdb3f0e` · Preview QA 대기
 
 - **한 일**: 축제 헤더「명승」상시 칩 · 축제 상세 숙소·투어·패키지(`resolveFestivalThemeCrossLinks`) · `/top10|regions|packages` → scenic 리다이렉트 · 모달 레거시 멤버십 딥링크 숨김 · `/qa/korea-theme`→scenic · 작업 로그 #34
 - **금지 준수**: 축제 지도·칩 리팩터 없음 · top10/regions 콘텐츠 확장 없음 · 가짜 패키지 카드 없음 · releaseNotes 미작성
-- **VERIFY**: `smoke:korea-theme-nav-back` · `smoke:korea-theme-cross-links` · `smoke:korea-festival-nearby` · `smoke:korea-nearby-restaurants` · `smoke:korea-nearby-leisure-culture` · `npm run build`
+- **VERIFY**: `smoke:korea-theme-nav-back` · `smoke:korea-theme-cross-links` · `smoke:korea-festival-nearby` · `smoke:korea-nearby-restaurants` · `smoke:korea-nearby-leisure-culture` · `npm run build` PASS
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
 - **작업 로그**: Preview 우측 「축제↔명승 상호 네비 · 상세 크로스 정합」
