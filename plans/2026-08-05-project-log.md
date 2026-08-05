@@ -4,7 +4,7 @@
 
 ## 테마여행 #36, 페이지 최적화
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `eb059a73` · Preview QA 대기
 
 - **한 일**: 명승 권역·시도·종목(대·소분류) 칩 안에 DB 관광지 건수 표시 · 코스 지역 칩에도 `count` 노출 · `fetchScenicFilterChipCounts` · `smoke:korea-scenic-categories` 칩 필터 의미 검증
 - **금지 준수**: 축제 지도·칩 리팩터 없음 · top10/regions 탑레벨 부활 없음 · releaseNotes 미작성
