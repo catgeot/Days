@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 23,
-  sessionPhase: '국내여행지 DB',
+  sessionNo: 26,
+  sessionPhase: '축제 주변 관광지',
   branch: 'cursor/korea-theme',
-  previewPath: '/korea/theme/scenic',
+  previewPath: '/korea',
   qaShareSlug: 'korea-theme',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-05-korea-theme-festival-nearby',
+    session: '테마여행 #26, 축제 주변 관광지',
+    title: '축제 상세·주변 관광지(DB)',
+    detail:
+      '축제 상세 안내 탭에 축제장 좌표 기준 tourapi_attraction 주변 관광지(반경 8km) 목록을 연결했습니다. 항목을 누르면 기존 테마 상세 모달이 열립니다. 축제 지도·칩 로직은 손대지 않았습니다. Preview /korea에서 축제 하나를 열어 「주변 관광지」를 확인해 주세요.',
+    at: '2026-08-05',
+  },
   {
     id: '2026-08-05-korea-theme-attraction-db',
     session: '테마여행 #23, 국내여행지 DB',

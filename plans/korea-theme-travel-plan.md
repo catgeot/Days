@@ -39,6 +39,7 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 23 | S13 | `테마여행 #23, 국내여행지 DB` | ⏳ Preview QA |
 | 24 | S9 | `테마여행 #24, 폴리시·릴리스` | ⏳ (본선 후) |
 | 25 | (제품) | `테마여행 #25, 제품 흐름 재잠금` | ✅ 본 절 |
+| 26 | (축제) | `테마여행 #26, 축제 주변 관광지` | ⏳ Preview QA |
 
 이어하기·핫픽스만 할 때: `테마여행 #N, {짧은 수정}` (`N` = 그 주제의 **다음** 순번). 세션마다 새 `#1` 금지.
 
@@ -66,7 +67,8 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **#21** 테마간 이전 복귀 | ⏳ Preview QA | 크로스 이동 후 「이전」·?spot= 모달 복원 | #22 명승 리서치 |
 | **#22** 명승·Tour 규모 리서치 | ✅ | type12≈7294·좌표·쿼터·DB 방향 | #25 |
 | **#25** 제품 흐름 재잠금 | ✅ 2026-08-05 | §1.0 · top10/regions 보류 · 명승=본선 | S13=#23 |
-| **S13** 국내여행지 DB | ⏳ Preview QA | `tourapi_attraction` active≈7294 · scenic DB 목록 · nearby 훅 | #26 축제 주변 |
+| **S13** 국내여행지 DB | ⏳ Preview QA | `tourapi_attraction` active≈7294 · scenic DB 목록 · nearby 훅 | #26 ✅ 축제 연결 |
+| **#26** 축제 주변 관광지 | ⏳ Preview QA | 축제 상세 INFO · nearby DB · ThemeSpotDetailModal | 맛집 API 등 |
 | **S9** 폴리시·릴리스 | ⏳ | 사람 QA → releaseNotes 1회 제안 (#24) | main 병합 |
 
 ---
@@ -142,7 +144,7 @@ flowchart TD
 | **`/korea/theme/scenic`** | **한국의 명승지 = 본선** (Tour DB + 연동) | ✅ 본선 |
 | **`/korea/theme/courses`** | 여행코스 · 축제/주변/맛집 연동 | ✅ 유지·강화 |
 | **`/korea/theme/packages`** | MRT · **상품 있는 여행지 큐레이션** | ✅ 유지·강화 |
-| **`/korea`** | 축제 · **주변 관광지(DB)** 추가 예정 | ✅ 연결 |
+| **`/korea`** | 축제 · **주변 관광지(DB)** (#26) | ✅ 연결 |
 | `/korea/theme/top10` | 10대 절경 | ⏸ **보류** |
 | `/korea/theme/regions` | 방방곡곡 | ⏸ **보류** |
 | `/place/:slug` | 명소·hub 상세 | 유지 |
@@ -917,6 +919,19 @@ scenic이 DB 읽기. 맛집 전량 DB 금지. top10/regions 보류. 축제 지�
 
 ---
 
+### #26 — 축제 주변 관광지 ⏳ Preview QA
+
+| | |
+|--|--|
+| **산출** | `FestivalDetailSheet` INFO 탭 · `fetchNearbyTourAttractions`(8km) · 클릭→`ThemeSpotDetailModal` |
+| **VERIFY** | `npm run smoke:korea-festival-nearby` · `smoke:tourapi-attractions` · `smoke:korea-theme-spot-modal` · build |
+| **금지** | `/korea` 축제 지도·칩 리팩터 · 맛집 type39 전량 DB · top10/regions 확장 |
+| **핸드오프** | [`2026-08-05-project-log.md`](./2026-08-05-project-log.md) 「테마여행 · 에이전트 핸드오프 → #27」 |
+
+**채팅명**: `테마여행 #26, 축제 주변 관광지`
+
+---
+
 ## 6. 리스크 · 가드
 
 | 리스크 | 대응 |
@@ -946,6 +961,7 @@ scenic이 DB 읽기. 맛집 전량 DB 금지. top10/regions 보류. 축제 지�
 - [x] **S11**: top10·scenic·regions 목록 → **상세 모달**(개요·기본정보) · Place는 2차 (Preview QA)
 - [x] 명승 curated ≥12 (현재 34 · contentId 전수) · 여행코스 type25 모달 · 방방곡곡 시도 칩→명소 목록
 - [x] **S13**: type12 Supabase · 주간 sync · scenic DB 소비 · nearby 훅 (축제 UI 연결=#26)
+- [x] **#26**: 축제 상세 주변 관광지(DB) · ThemeSpotDetailModal (Preview QA)
 - [x] **#25**: top10/regions 타일 보류 · 명승 본선 · 코스·패키지 방향 유지 (플랜)
 - [ ] 패키지 MRT(제주 등) + mylink
 - [x] `/qa/korea-theme` · 고정 Preview (S1·S8 최종 · sitemap/Helmet)

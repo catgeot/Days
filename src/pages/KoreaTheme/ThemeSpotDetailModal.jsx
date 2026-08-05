@@ -459,6 +459,7 @@ const INTRO_FIELDS = [
  *   eyebrow?: string,
  *   returnTo: string,
  *   onClose: () => void,
+ *   overlayZClass?: string,
  * }} props
  */
 export default function ThemeSpotDetailModal({
@@ -466,6 +467,7 @@ export default function ThemeSpotDetailModal({
   eyebrow = '테마 상세',
   returnTo,
   onClose,
+  overlayZClass = 'z-40',
 }) {
   const navigate = useNavigate();
   const scrollRef = useRef(null);
@@ -607,8 +609,11 @@ export default function ThemeSpotDetailModal({
 
   return (
     <div
-      className="fixed inset-0 z-40 flex items-stretch justify-center bg-stone-900/40 backdrop-blur-[2px] p-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] pb-[max(0.625rem,env(safe-area-inset-bottom))] pl-[max(0.625rem,env(safe-area-inset-left))] pr-[max(0.625rem,env(safe-area-inset-right))] md:items-center md:p-5"
-      onClick={onClose}
+      className={`fixed inset-0 ${overlayZClass} flex items-stretch justify-center bg-stone-900/40 backdrop-blur-[2px] p-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] pb-[max(0.625rem,env(safe-area-inset-bottom))] pl-[max(0.625rem,env(safe-area-inset-left))] pr-[max(0.625rem,env(safe-area-inset-right))] md:items-center md:p-5`}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClose();
+      }}
       role="presentation"
     >
       <div
