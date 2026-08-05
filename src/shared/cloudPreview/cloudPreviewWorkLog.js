@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-05-korea-theme-festival-nearby-filter',
+    session: '테마여행 #26, 축제 주변 관광지',
+    title: '주변 관광지 선별(화장실·일반교회 제외)',
+    detail:
+      '축제 주변 관광지에서 화장실·일반 교회/성당을 제외하고, 성지·문화재·성공회·제일교회 등 명소 표기가 있는 종교 시설만 남깁니다. Preview /korea 축제 상세 「주변 관광지」에서 강릉교회·해변 화장실이 안 보이는지 확인해 주세요.',
+    at: '2026-08-05',
+  },
+  {
     id: '2026-08-05-korea-theme-festival-nearby',
     session: '테마여행 #26, 축제 주변 관광지',
     title: '축제 상세·주변 관광지(DB)',

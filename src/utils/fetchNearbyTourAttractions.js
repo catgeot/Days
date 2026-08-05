@@ -1,9 +1,10 @@
 import { supabase } from '../shared/api/supabase';
 import { mapTourAttractionRow } from '../pages/Home/lib/koreaTourAttractionMap';
+import { isNearbyTourAttractionCandidate } from '../pages/Home/lib/koreaTourAttractionNearbyFilter';
 
 /**
  * 축제장 등 좌표 기준 주변 type12 (DB) — 목록 bbox 근사.
- * 축제 지도 리팩터 없이 훅만 제공.
+ * 편의시설·일반 교회는 필터로 제외. 축제 지도 리팩터 없음.
  *
  * @param {{
  *   lat: number,
@@ -35,7 +36,7 @@ export async function fetchNearbyTourAttractions(opts) {
     .lte('mapy', lat + dLat)
     .gte('mapx', lng - dLng)
     .lte('mapx', lng + dLng)
-    .limit(80);
+    .limit(120);
 
   if (error) {
     console.warn('[nearbyTourAttractions]', error.message || error);
@@ -45,6 +46,7 @@ export async function fetchNearbyTourAttractions(opts) {
   const r2 = radiusKm * radiusKm;
   const scored = [];
   for (const row of data || []) {
+    if (!isNearbyTourAttractionCandidate(row)) continue;
     const spot = mapTourAttractionRow(row);
     if (!spot || spot.lat == null || spot.lng == null) continue;
     const dy = (spot.lat - lat) * 111;

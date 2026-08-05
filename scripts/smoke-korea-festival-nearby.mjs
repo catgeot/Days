@@ -11,6 +11,7 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { createClient } from '@supabase/supabase-js';
 import { mapTourAttractionRow } from '../src/pages/Home/lib/koreaTourAttractionMap.js';
+import { isNearbyTourAttractionTitle } from '../src/pages/Home/lib/koreaTourAttractionNearbyFilter.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -25,6 +26,22 @@ function assert(cond, msg) {
   console.log(`OK    ${msg}`);
   return true;
 }
+
+assert(!isNearbyTourAttractionTitle('강문해변화장실'), 'drop toilet title');
+assert(!isNearbyTourAttractionTitle('강릉교회'), 'drop ordinary church');
+assert(!isNearbyTourAttractionTitle('역삼동성당'), 'drop ordinary cathedral');
+assert(
+  isNearbyTourAttractionTitle('구 철원제일교회'),
+  'keep heritage-marked church',
+);
+assert(
+  isNearbyTourAttractionTitle('언양성당 성지'),
+  'keep sanctuary / 성지',
+);
+assert(
+  isNearbyTourAttractionTitle('경포대'),
+  'keep ordinary scenic name',
+);
 
 const sheetSrc = readFileSync(
   join(root, 'src/pages/Korea/FestivalDetailSheet.jsx'),
@@ -54,6 +71,10 @@ assert(
   'nearby reads tourapi_attraction',
 );
 assert(nearbySrc.includes('content_type_id'), 'nearby filters type12');
+assert(
+  nearbySrc.includes('isNearbyTourAttractionCandidate'),
+  'nearby applies curation filter',
+);
 
 const modalSrc = readFileSync(
   join(root, 'src/pages/KoreaTheme/ThemeSpotDetailModal.jsx'),
@@ -110,13 +131,14 @@ if (url && anon) {
     const r2 = radiusKm * radiusKm;
     let hits = 0;
     for (const row of nearRows || []) {
+      if (!isNearbyTourAttractionTitle(row.title)) continue;
       const spot = mapTourAttractionRow(row);
       if (!spot || spot.lat == null || spot.lng == null) continue;
       const dy = (spot.lat - lat) * 111;
       const dx = (spot.lng - lng) * 111 * cos;
       if (dy * dy + dx * dx <= r2) hits += 1;
     }
-    assert(hits >= 1, `nearby LIVE ≥1 (got ${hits})`);
+    assert(hits >= 1, `nearby LIVE curated ≥1 (got ${hits})`);
   } else {
     console.log('SKIP  nearby LIVE (no geo sample)');
   }
