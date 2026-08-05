@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 21,
-  sessionPhase: '테마간 이동 개선',
+  sessionNo: 22,
+  sessionPhase: '명승지 위치 정보',
   branch: 'cursor/korea-theme',
-  previewPath: '/korea/theme/top10',
+  previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-05-korea-theme-scenic-tourapi-probe',
+    session: '테마여행 #22, 명승지 위치 정보',
+    title: '명승 TourAPI 규모·위치 프로브',
+    detail:
+      'TourAPI 관광지(type12) 전국 약 7,294건·목록에 mapx/mapy 좌표가 있음을 LIVE로 확인했습니다. 명승 페이지는 축제·코스처럼 TourAPI 전량 탐색(시도 단위)으로 가도록 플랜에 잠갔습니다. 구현은 다음 세션입니다. /korea/theme/scenic 현재는 curated 34곳입니다.',
+    at: '2026-08-05',
+  },
   {
     id: '2026-08-05-korea-theme-nav-back',
     session: '테마여행 #21, 테마간 이동 개선',

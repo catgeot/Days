@@ -35,7 +35,9 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 19 | S12 UI | `테마여행 #19, 크로스 레일` | ⏳ Preview QA |
 | 20 | (핫픽스) | `테마여행 #20, 본문 가독성 개선` | ⏳ Preview QA |
 | 21 | (핫픽스) | `테마여행 #21, 테마간 이동 개선` | ⏳ Preview QA |
-| 22 | S9 | `테마여행 #22, 폴리시·릴리스` | ⏳ 다음 |
+| 22 | (리서치) | `테마여행 #22, 명승지 위치 정보` | ✅ LIVE 프로브 |
+| 23 | S13 | `테마여행 #23, 명승 TourAPI 전량` | ⏳ 다음 |
+| 24 | S9 | `테마여행 #24, 폴리시·릴리스` | ⏳ (명승 라이브 후)
 
 이어하기·핫픽스만 할 때: `테마여행 #N, {짧은 수정}` (`N` = 그 주제의 **다음** 순번). 세션마다 새 `#1` 금지.
 
@@ -135,12 +137,13 @@ flowchart TD
 |----|------|------|--------|
 | `festivals` | 한국의 축제 | → `/korea` | 기존 TourAPI·축제 허브 |
 | `top10` | 한국의 10대 절경 | `/korea/theme/top10` | curated SSOT · 조사+TourAPI 검증 |
-| `scenic` | 한국의 명승지 | `/korea/theme/scenic` | curated + KR hub · TourAPI 12 키워드 검증 후 확장 |
+| `scenic` | 한국의 명승지 | `/korea/theme/scenic` | **TourAPI 12 라이브 전량**(#22 잠금 · #23 구현) · curated 34는 추천 레일(선택) |
 | `courses` | 여행코스 | `/korea/theme/courses` | TourAPI `areaBasedList` contentTypeId=**25** 라이브 |
 | `regions` | 방방곡곡 | `/korea/theme/regions` | areaCode + KR hub≈210 |
 | `packages` | 패키지 상품 | `/korea/theme/packages` | MRT `/pkc` 딥링크 |
 
-**2차 후보 (S9 이후)**: 계절·미식·트레킹·섬·온천·세계유산·축제로드 · TourAPI 12번 **라이브 대량** 목록(명승 curated 확장은 S10에서 허용).
+**2차 후보 (S13 이후)**: 계절·미식·트레킹·섬·온천·세계유산·축제로드.  
+**명승 TourAPI 12 라이브**는 #22에서 규모·위치 필드 확인 후 **본선 승격**(아래 §3.5 · S13).
 
 ### 1.5 비범위
 
@@ -404,6 +407,20 @@ koreaGyeongju: { kind: 'search', q: '경주', ctaLabel: '경주 패키지' }, //
 ```
 
 **금지**: 단축 URL 추측 · 가짜 상품 카드 목록 · `q=부산`을 국내 목적지처럼 표기.
+
+### 3.5 명승지 — TourAPI type12 전량 (#22 잠금 · S13)
+
+| | |
+|--|--|
+| **소스** | TourAPI `areaBasedList2` · `contentTypeId=12` |
+| **규모** | 전국 ≈**7,294**(시도 합) · curated SSOT 34는 추천 보조 |
+| **위치** | 목록 `mapx`/`mapy` · `addr1` (상세 추가 조회 없이 지도·핀 가능) |
+| **UX** | 축제식 **탐색 전량** · 코스식 **시도 단위 fetch**(전국 단일 덤프 금지) |
+| **필터(선택)** | cat1 A01/A02 · cat2 자연/역사/휴양… — proxy에 query 전달 필요 |
+| **상세** | 기존 type12 모달/`fetchTourApiAttractionDetail` 재사용 |
+| **비범위** | 숙박(32)·음식(39) 목록 · 축제 Edge 캐시 스키마 재사용 강제 |
+
+재현 스크립트: [`scripts/probe-tourapi-scenic-counts.mjs`](../scripts/probe-tourapi-scenic-counts.mjs).
 
 ---
 
@@ -794,7 +811,8 @@ ThemeSpotDetailModal에 cross-links 레일. area 쿼리 수신 최소.
 
 ### S9 — 폴리시 · QA · 릴리스 ⏳
 
-사람 Preview OK → releaseNotes **초안만 제안** → 합의 후 반영 · main 병합.
+사람 Preview OK → releaseNotes **초안만 제안** → 합의 후 반영 · main 병합.  
+**순서**: 명승 TourAPI 전량(S13) Preview QA 후 권장.
 
 **채팅명**: `테마여행 #22, 폴리시·릴리스`  
 **첫 메시지**
@@ -803,6 +821,55 @@ ThemeSpotDetailModal에 cross-links 레일. area 쿼리 수신 최소.
 테마여행 #22, 폴리시·릴리스
 @plans/korea-theme-travel-plan.md S9·§7만
 Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일 금지).
+```
+
+---
+
+### #22 — 명승지 TourAPI·위치 리서치 ✅
+
+**동기**: 축제처럼 탐색형 방문 — curated 34만이 아니라 TourAPI가 주는 명승·관광지를 넓게 보고 싶다.  
+**프로브 일시**: 2026-08-05 · `KorService2` `areaBasedList2` · 시도 17개 합산 · `TOUR_API_SERVICE_KEY` LIVE.
+
+| 구분 | 건수 | 비고 |
+|------|------|------|
+| **contentTypeId=12 관광지 전국** | **≈7,294** | 축제 롤링(~220) · 코스 type25(~49) 대비 대량 |
+| cat1 `A01` 자연 | ≈2,098 | |
+| cat1 `A02` 인문 | ≈5,196 | |
+| cat2 `A0101` 자연관광지 | ≈1,985 | 국립공원·산·해안·섬 등 |
+| cat2 `A0201` 역사관광지 | ≈2,491 | 고궁·성·사찰·유적 등 |
+| cat2 휴양/체험/산업/조형 | ≈2,705 | A0202~A0205 |
+| 현재 curated scenic SSOT | **34** | contentId·lat/lng 전수 |
+
+**위치 정보**: 목록 응답에 `mapx`/`mapy`(경·위도)·`addr1`·`areacode`·`sigungucode`가 **기본 포함**. 서울 샘플 100/100 좌표 있음 · 이미지 `firstimage` 대부분. 상세는 기존 `detailCommon`/`detailIntro`(type12)와 동일.
+
+**cat1 (type12)**: `A01` 자연 · `A02` 인문.  
+**cat2**: `A0101` 자연관광지 · `A0102` 관광자원 · `A0201` 역사 · `A0202` 휴양 · `A0203` 체험 · `A0204` 산업 · `A0205` 건축/조형물.
+
+**제품 잠금 (#22)**: 축제·여행코스처럼 **TourAPI가 주는 type12를 권역 탐색으로 전량 노출**한다. curated 34는 「GATEO 추천」보조 레일로 유지 가능(삭제 아님). 전국 한 번에 7천 건 덤프 UI 금지 → **시도(areaCode) 단위 로드**(코스 페이지 패턴) + 선택적 cat 칩.
+
+**기술 갭**: Edge `tourapi-proxy` `areaBasedList`에 `cat1`/`cat2`/`cat3` 옵션 없음 → S13에서 추가. 키 브라우저 노출 금지 · 축제 `/korea` 로직 비침투.
+
+재현: `node scripts/probe-tourapi-scenic-counts.mjs` (키 있을 때 LIVE).
+
+---
+
+### S13 — 명승 TourAPI 전량 탐색 ⏳
+
+| | |
+|--|--|
+| **산출** | `/korea/theme/scenic` = type12 라이브(시도 칩·목록·좌표 기반 지도 또는 리스트) · 모달 상세 재사용 · (선택) curated 추천 레일 · proxy cat 필터 |
+| **벤치** | 축제 = 전량 탐색 UX · 코스 = areaBasedList+시도 칩 |
+| **VERIFY** | 시도 2곳(서울·제주) LIVE 목록≥1 · mapx/mapy 파싱 · smoke · build |
+| **금지** | 축제 칩/지도 리팩터 · `VITE_` Tour 키 · 전국 단일 응답 강제 · curated JSON 직접 7천 시드 |
+
+**채팅명**: `테마여행 #23, 명승 TourAPI 전량`  
+**첫 메시지**
+
+```
+테마여행 #23, 명승 TourAPI 전량
+@plans/korea-theme-travel-plan.md S13·§3.5·#22만
+브랜치 cursor/korea-theme. scenic=TourAPI 12 라이브(시도 단위).
+proxy cat 옵션·목록 mapx/mapy. curated는 추천 레일만. 축제 코드 수정 금지.
 ```
 
 ---
@@ -821,6 +888,8 @@ Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일
 | contentId 공백 | 모달은 SSOT로 성립 · LIVE는 있을 때만 · 대량 키워드 검색 금지 |
 | 모달 3중 구현 | `ThemeSpotDetailModal` 1개 공유 · Courses 모달은 type25 전용 유지 OK |
 | 테마 간 단절 | §2.5 조인키(hub/area/geo) · 크로스 JSON 남발 금지 · 축제 로직 비침투 |
+| 명승 type12 ≈7k | 시도 단위 로드 · 페이지네이션 · curated 7천 시드 금지 · Edge 쿼터 주의 |
+| 명승=선발만 오해 | 카피: TourAPI·visitkorea 목록 탐색 + (선택) GATEO 추천 레일 |
 
 ---
 
@@ -830,7 +899,8 @@ Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일
 - [ ] `/korea` 축제 회귀 없음
 - [x] 10대 10곳 → place → 테마 복귀 (`#6` · 레거시 경로 · Preview QA)
 - [x] **S11**: top10·scenic·regions 목록 → **상세 모달**(개요·기본정보) · Place는 2차 (Preview QA)
-- [ ] 명승 ≥12 (목표 30+) · 여행코스 type25 모달 · 방방곡곡 시도 칩→명소 목록
+- [x] 명승 curated ≥12 (현재 34 · contentId 전수) · 여행코스 type25 모달 · 방방곡곡 시도 칩→명소 목록
+- [ ] **S13**: 명승 type12 라이브 전량(시도 단위) · 목록 좌표 표시/활용
 - [ ] 패키지 MRT(제주 등) + mylink
 - [x] `/qa/korea-theme` · 고정 Preview (S1·S8 최종 · sitemap/Helmet)
 - [ ] audit/smoke/build PASS · 키 미노출
