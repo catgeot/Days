@@ -898,17 +898,21 @@ Preview QA·폴리시. releaseNotes는 초안만 채팅 제안(합의 전 파일
 |--|--|
 | **산출** | type12 → Supabase 적재·주간 sync 스크립트/Edge · `/scenic`이 DB를 읽음 · (최소) 축제 상세에 주변 관광지 연결 훅 |
 | **후속(같은 본선)** | 맛집 API 주변 · 레포츠/문화 칩 · 코스↔축제/주변 연동 · MRT 상품지 큐레이션 · 랜딩에서 top10/regions 타일 보류 |
-| **VERIFY** | sync dry-run 건수≈7k · scenic이 DB 목록≥1 · smoke · build |
+| **VERIFY** | sync 후 active≈7k · scenic이 DB 목록≥1 · smoke · build |
 | **금지** | 맛집 전량 DB · top10/regions 신규 확장 · 축제 지도 리팩터 · `VITE_` Tour 키 · curated JSON에 7천 시드 |
+| **쿼터** | 개발 1000/일 · **목록 전수 ≈ 시도 17회**(`numOfRows` 크게) · detail 전수 금지 · 일지 핸드오프 참고 |
+| **핸드오프** | [`2026-08-05-project-log.md`](./2026-08-05-project-log.md) 「테마여행 · 에이전트 핸드오프 → #23」 |
 
 **채팅명**: `테마여행 #23, 국내여행지 DB`  
 **첫 메시지**
 
 ```
 테마여행 #23, 국내여행지 DB
+@plans/2026-08-05-project-log.md 「테마여행 · 에이전트 핸드오프」
 @plans/korea-theme-travel-plan.md S13·§1.0·§3.5만
-브랜치 cursor/korea-theme. type12→Supabase·주1회 sync.
-scenic이 DB 읽기. 맛집 전량 DB 금지·API만. top10/regions 보류 유지.
+브랜치 cursor/korea-theme 고정. type12→Supabase·주1회 sync(목록만·시도≈17회).
+scenic이 DB 읽기. 맛집 전량 DB 금지. top10/regions 보류. 축제 지도 리팩터 금지.
+쿼터 1000/일·detail 전수 금지. smoke·build 후 push.
 ```
 
 ---
