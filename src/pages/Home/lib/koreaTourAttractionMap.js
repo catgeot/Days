@@ -47,6 +47,9 @@ export function scenicRegionForAreaCode(areaCode) {
  *   contentId: string,
  *   firstImage: string | null,
  *   areaCode: string | null,
+ *   cat1: string | null,
+ *   cat2: string | null,
+ *   cat3: string | null,
  *   source: 'db',
  * }} KoreaTourAttractionSpot
  */
@@ -67,6 +70,9 @@ export function mapTourAttractionRow(row) {
   const addr2 = row?.addr2 != null ? String(row.addr2) : '';
   const addr = [addr1, addr2].filter(Boolean).join(' ').trim();
   const locality = formatTourAttractionLocality(addr1, addr2);
+  const cat1 = row?.cat1 != null ? String(row.cat1).trim() || null : null;
+  const cat2 = row?.cat2 != null ? String(row.cat2).trim() || null : null;
+  const cat3 = row?.cat3 != null ? String(row.cat3).trim() || null : null;
   return {
     id: contentId,
     name: title,
@@ -82,6 +88,9 @@ export function mapTourAttractionRow(row) {
     contentId,
     firstImage: row?.first_image ? String(row.first_image) : null,
     areaCode,
+    cat1,
+    cat2,
+    cat3,
     source: 'db',
   };
 }

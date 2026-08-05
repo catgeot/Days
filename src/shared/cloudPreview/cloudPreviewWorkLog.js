@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 34,
-  sessionPhase: '투톱 크로스 네비',
+  sessionNo: 35,
+  sessionPhase: '페이지 최적화',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-05-korea-theme-scenic-page-optimize',
+    session: '테마여행 #35, 페이지 최적화',
+    title: '명승 지역칩·관광공사 종목 분리',
+    detail:
+      '명승 권역 칩에서 「전체」를 빼고 기본 권역(수도권)을 씁니다. 전국 관광지 목록은 한국관광공사 TourAPI 대분류(자연·인문) 아래 소분류(자연관광지·역사관광지 등) 칩으로 걸러 봅니다. Preview `/korea/theme/scenic`에서 권역·대분류·소분류 전환과 목록 건수를 확인해 주세요.',
+    at: '2026-08-05',
+  },
   {
     id: '2026-08-05-korea-theme-two-top-cross-nav',
     session: '테마여행 #34, 투톱 크로스 네비',

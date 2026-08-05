@@ -8,6 +8,12 @@ import {
   listKoreaScenicSpots,
 } from '../Home/lib/koreaScenicSpots';
 import {
+  listTourAttractionCat2,
+  normalizeTourAttractionCat1,
+  normalizeTourAttractionCat2,
+  TOUR_ATTRACTION_CAT1,
+} from '../Home/lib/koreaTourAttractionCategories';
+import {
   fetchKoreaTourAttractionById,
   fetchKoreaTourAttractions,
   SCENIC_REGION_ORDER,
@@ -23,6 +29,8 @@ const CURATED_REGIONS = listKoreaScenicRegions();
 const RETURN_TO = '/korea/theme/scenic';
 const CURATED_ALL = listKoreaScenicSpots();
 const PAGE_SIZE = 40;
+const DEFAULT_REGION = SCENIC_REGION_ORDER[0];
+const DEFAULT_CAT1 = TOUR_ATTRACTION_CAT1[0]?.code || 'A01';
 
 function toModalSpot(spot) {
   if (!spot) return null;
@@ -41,17 +49,23 @@ function toModalSpot(spot) {
   };
 }
 
+function resolveRegion(raw) {
+  const value = String(raw || '').trim();
+  if (value && SCENIC_REGION_ORDER.includes(value)) return value;
+  return DEFAULT_REGION;
+}
+
 export default function KoreaThemeScenicPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const region = searchParams.get('region') || '전체';
+  const region = resolveRegion(searchParams.get('region'));
+  const cat1 =
+    normalizeTourAttractionCat1(searchParams.get('cat1')) || DEFAULT_CAT1;
+  const cat2 = normalizeTourAttractionCat2(cat1, searchParams.get('cat2'));
   const selectedId = searchParams.get('spot');
   const page = Math.max(Number(searchParams.get('page') || '1') || 1, 1);
 
-  const curatedSpots = useMemo(
-    () => listKoreaScenicSpots(region === '전체' ? null : region),
-    [region],
-  );
+  const curatedSpots = useMemo(() => listKoreaScenicSpots(region), [region]);
 
   const [dbSpots, setDbSpots] = useState([]);
   const [dbCount, setDbCount] = useState(0);
@@ -59,14 +73,47 @@ export default function KoreaThemeScenicPage() {
   const [dbError, setDbError] = useState(null);
   const [selectedSpot, setSelectedSpot] = useState(null);
 
+  const regionChips = useMemo(() => {
+    const set = new Set([...CURATED_REGIONS, ...SCENIC_REGION_ORDER]);
+    return SCENIC_REGION_ORDER.filter((r) => set.has(r));
+  }, []);
+
+  const cat2Chips = useMemo(() => listTourAttractionCat2(cat1), [cat1]);
+
+  useEffect(() => {
+    const rawRegion = searchParams.get('region');
+    const rawCat1 = searchParams.get('cat1');
+    const rawCat2 = searchParams.get('cat2');
+    const next = new URLSearchParams(searchParams);
+    let changed = false;
+
+    if (!rawRegion || rawRegion === '전체' || !SCENIC_REGION_ORDER.includes(rawRegion)) {
+      next.set('region', region);
+      changed = true;
+    }
+    if (!normalizeTourAttractionCat1(rawCat1)) {
+      next.set('cat1', cat1);
+      changed = true;
+    }
+    if (rawCat2 && !normalizeTourAttractionCat2(cat1, rawCat2)) {
+      next.delete('cat2');
+      changed = true;
+    }
+    if (changed) {
+      setSearchParams(next, { replace: true });
+    }
+  }, [searchParams, setSearchParams, region, cat1]);
+
   useEffect(() => {
     const params = new URLSearchParams();
-    if (region && region !== '전체') params.set('region', region);
+    if (region) params.set('region', region);
+    if (cat1) params.set('cat1', cat1);
+    if (cat2) params.set('cat2', cat2);
     if (selectedId) params.set('spot', selectedId);
     if (page > 1) params.set('page', String(page));
     const q = params.toString();
     reconcileThemeNavBack(q ? `${RETURN_TO}?${q}` : RETURN_TO);
-  }, [region, selectedId, page]);
+  }, [region, cat1, cat2, selectedId, page]);
 
   useEffect(() => {
     let cancelled = false;
@@ -74,6 +121,8 @@ export default function KoreaThemeScenicPage() {
     setDbError(null);
     fetchKoreaTourAttractions({
       region,
+      cat1,
+      cat2,
       limit: PAGE_SIZE,
       offset: (page - 1) * PAGE_SIZE,
     }).then((res) => {
@@ -92,7 +141,7 @@ export default function KoreaThemeScenicPage() {
     return () => {
       cancelled = true;
     };
-  }, [region, page]);
+  }, [region, cat1, cat2, page]);
 
   useEffect(() => {
     let cancelled = false;
@@ -122,13 +171,37 @@ export default function KoreaThemeScenicPage() {
   const setRegion = useCallback(
     (r) => {
       const next = new URLSearchParams(searchParams);
-      if (!r || r === '전체') next.delete('region');
-      else next.set('region', r);
+      next.set('region', resolveRegion(r));
       next.delete('spot');
       next.delete('page');
       setSearchParams(next, { replace: true });
     },
     [searchParams, setSearchParams],
+  );
+
+  const setCat1 = useCallback(
+    (code) => {
+      const next = new URLSearchParams(searchParams);
+      next.set('cat1', normalizeTourAttractionCat1(code) || DEFAULT_CAT1);
+      next.delete('cat2');
+      next.delete('spot');
+      next.delete('page');
+      setSearchParams(next, { replace: true });
+    },
+    [searchParams, setSearchParams],
+  );
+
+  const setCat2 = useCallback(
+    (code) => {
+      const next = new URLSearchParams(searchParams);
+      const normalized = normalizeTourAttractionCat2(cat1, code);
+      if (!normalized || normalized === cat2) next.delete('cat2');
+      else next.set('cat2', normalized);
+      next.delete('spot');
+      next.delete('page');
+      setSearchParams(next, { replace: true });
+    },
+    [searchParams, setSearchParams, cat1, cat2],
   );
 
   const setPage = useCallback(
@@ -157,19 +230,16 @@ export default function KoreaThemeScenicPage() {
     setSearchParams(next, { replace: true });
   }, [searchParams, setSearchParams]);
 
-  const regionChips = useMemo(() => {
-    const set = new Set([...CURATED_REGIONS, ...SCENIC_REGION_ORDER]);
-    return SCENIC_REGION_ORDER.filter((r) => set.has(r));
-  }, []);
-
   const totalPages = Math.max(1, Math.ceil(dbCount / PAGE_SIZE));
   const modalSpot = toModalSpot(selectedSpot);
+  const activeCat1Label =
+    TOUR_ATTRACTION_CAT1.find((c) => c.code === cat1)?.label || '종목';
 
   return (
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
       <SEO
         title="한국의 명승"
-        description="국내 관광지 카탈로그와 GATEO 선정 명승. 권역 필터로 상세를 모달로 봅니다."
+        description="국내 관광지 카탈로그와 GATEO 선정 명승. 권역·종목 필터로 상세를 모달로 봅니다."
         url={RETURN_TO}
       />
 
@@ -220,7 +290,7 @@ export default function KoreaThemeScenicPage() {
             aria-label="권역 필터"
             className="flex flex-wrap gap-1.5"
           >
-            {['전체', ...regionChips].map((r) => {
+            {regionChips.map((r) => {
               const active = region === r;
               return (
                 <button
@@ -298,8 +368,61 @@ export default function KoreaThemeScenicPage() {
               ) : null}
             </div>
             <p className="text-xs text-stone-500 break-keep">
-              TourAPI 관광지 목록을 주 1회 동기화한 카탈로그입니다. 항목을 누르면 상세를 봅니다.
+              한국관광공사 TourAPI 관광지 종목(대분류·소분류)으로 나눈 카탈로그입니다. 항목을 누르면 상세를 봅니다.
             </p>
+
+            <div className="space-y-2">
+              <div
+                role="group"
+                aria-label="관광 종목 대분류"
+                className="flex flex-wrap gap-1.5"
+              >
+                {TOUR_ATTRACTION_CAT1.map((chip) => {
+                  const active = cat1 === chip.code;
+                  return (
+                    <button
+                      key={chip.code}
+                      type="button"
+                      onClick={() => setCat1(chip.code)}
+                      aria-pressed={active}
+                      className={
+                        active
+                          ? 'rounded-full border border-amber-400/90 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-950'
+                          : 'rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50'
+                      }
+                    >
+                      {chip.label}
+                    </button>
+                  );
+                })}
+              </div>
+              {cat2Chips.length > 0 ? (
+                <div
+                  role="group"
+                  aria-label={`${activeCat1Label} 소분류`}
+                  className="flex flex-wrap gap-1.5 pl-0.5"
+                >
+                  {cat2Chips.map((chip) => {
+                    const active = cat2 === chip.code;
+                    return (
+                      <button
+                        key={chip.code}
+                        type="button"
+                        onClick={() => setCat2(chip.code)}
+                        aria-pressed={active}
+                        className={
+                          active
+                            ? 'rounded-full border border-stone-400 bg-stone-800 px-2.5 py-0.5 text-[11px] font-bold text-white'
+                            : 'rounded-full border border-stone-200 bg-stone-50 px-2.5 py-0.5 text-[11px] font-semibold text-stone-600 hover:bg-stone-100'
+                        }
+                      >
+                        {chip.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : null}
+            </div>
 
             {dbStatus === 'loading' ? (
               <p className="text-sm text-stone-500 break-keep">불러오는 중…</p>
@@ -311,7 +434,7 @@ export default function KoreaThemeScenicPage() {
             ) : null}
             {dbStatus === 'empty' ? (
               <p className="text-sm text-stone-500 break-keep">
-                아직 동기화된 관광지가 없습니다. 주간 sync 후 표시됩니다.
+                이 권역·종목에 해당하는 관광지가 없습니다. 다른 소분류를 골라 보세요.
               </p>
             ) : null}
 
