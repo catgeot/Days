@@ -13,6 +13,7 @@ import {
   Loader2,
   MapPin,
   Phone,
+  Route,
   Star,
   Utensils,
   X,
@@ -33,14 +34,21 @@ import {
   fetchNearbyTourLeports,
   LEPORTS_CONTENT_TYPE_ID,
 } from '../../utils/fetchNearbyTourLeisureCulture';
+import {
+  COURSE_CONTENT_TYPE_ID,
+  fetchNearbyTourCourses,
+} from '../../utils/fetchNearbyTourCourses';
+import { fetchTourApiCourseDetail } from '../../utils/fetchTourApiCourses';
 import { listKoreaScenicSpots } from '../Home/lib/koreaScenicSpots';
 import { scenicRegionForAreaCode } from '../Home/lib/koreaTourAttractionMap';
 import { pushThemeNavBack } from '../Home/lib/koreaThemeNavBack';
 import { festivalLngLat } from './koreaFestivalCorridors';
 import { detectSidoCode } from './festivalRegionTags';
 import ThemeSpotDetailModal from '../KoreaTheme/ThemeSpotDetailModal';
+import CourseDetailModal from '../KoreaTheme/CourseDetailModal';
 
 const SCENIC_PATH = '/korea/theme/scenic';
+const COURSES_PATH = '/korea/theme/courses';
 const FESTIVAL_RETURN = '/korea';
 const SCENIC_LIST_LIMIT = 8;
 
@@ -202,6 +210,7 @@ function nearbyEyebrow(spot) {
   if (t === RESTAURANT_CONTENT_TYPE_ID) return '주변 맛집';
   if (t === LEPORTS_CONTENT_TYPE_ID) return '주변 레포츠';
   if (t === CULTURE_CONTENT_TYPE_ID) return '주변 문화';
+  if (t === COURSE_CONTENT_TYPE_ID) return '인근 여행코스';
   return '주변 관광지';
 }
 
@@ -294,17 +303,27 @@ export default function FestivalDetailSheet({
   const [nearbyLeportsStatus, setNearbyLeportsStatus] = useState('idle');
   const [nearbyCulture, setNearbyCulture] = useState([]);
   const [nearbyCultureStatus, setNearbyCultureStatus] = useState('idle');
+  const [nearbyCourses, setNearbyCourses] = useState([]);
+  const [nearbyCoursesStatus, setNearbyCoursesStatus] = useState('idle');
   const [selectedNearby, setSelectedNearby] = useState(null);
   const [selectedScenic, setSelectedScenic] = useState(null);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [courseDetail, setCourseDetail] = useState(null);
+  const [courseDetailLoading, setCourseDetailLoading] = useState(false);
   const sheetScrollRef = useRef(null);
   const tabListRef = useRef(null);
 
-  const scenicRegion = useMemo(() => {
+  const festivalAreaCode = useMemo(() => {
     // searchFestival2 응답에 areaCode가 비는 경우가 많아 addr1 시도 감지 폴백
     const code =
       item?.areaCode ?? item?.areacode ?? detectSidoCode(item?.addr1);
-    return scenicRegionForAreaCode(code);
+    return code != null ? String(code).trim() : '';
   }, [item?.areaCode, item?.areacode, item?.addr1]);
+
+  const scenicRegion = useMemo(
+    () => scenicRegionForAreaCode(festivalAreaCode),
+    [festivalAreaCode],
+  );
 
   const scenicSpots = useMemo(() => {
     if (!scenicRegion) return [];
@@ -327,6 +346,34 @@ export default function FestivalDetailSheet({
     navigate(scenicPageHref, { state: { themeBack: back } });
   };
 
+  const coursesPageHref = useMemo(() => {
+    if (!festivalAreaCode) return COURSES_PATH;
+    return `${COURSES_PATH}?area=${encodeURIComponent(festivalAreaCode)}`;
+  }, [festivalAreaCode]);
+
+  const openCoursesPage = () => {
+    const back = {
+      path: FESTIVAL_RETURN,
+      label: String(item?.title || '축제').trim() || '축제',
+      moduleLabel: '축제',
+    };
+    pushThemeNavBack(back);
+    onClose();
+    navigate(coursesPageHref, { state: { themeBack: back } });
+  };
+
+  const openCourseModal = async (spot) => {
+    if (!spot?.contentId) return;
+    setSelectedCourse(spot);
+    setCourseDetail(null);
+    setCourseDetailLoading(true);
+    const detail = await fetchTourApiCourseDetail({
+      contentId: spot.contentId,
+    });
+    setCourseDetail(detail || { empty: true });
+    setCourseDetailLoading(false);
+  };
+
   useEffect(() => {
     if (!item?.contentId) {
       setIntro(null);
@@ -347,8 +394,13 @@ export default function FestivalDetailSheet({
       setNearbyStatus('idle');
       setNearbyFood([]);
       setNearbyFoodStatus('idle');
+      setNearbyCourses([]);
+      setNearbyCoursesStatus('idle');
       setSelectedNearby(null);
       setSelectedScenic(null);
+      setSelectedCourse(null);
+      setCourseDetail(null);
+      setCourseDetailLoading(false);
       return undefined;
     }
 
@@ -372,8 +424,13 @@ export default function FestivalDetailSheet({
     setNearbyStatus('idle');
     setNearbyFood([]);
     setNearbyFoodStatus('idle');
+    setNearbyCourses([]);
+    setNearbyCoursesStatus('idle');
     setSelectedNearby(null);
     setSelectedScenic(null);
+    setSelectedCourse(null);
+    setCourseDetail(null);
+    setCourseDetailLoading(false);
 
     (async () => {
       const contentId = item.contentId;
@@ -418,7 +475,7 @@ export default function FestivalDetailSheet({
           setLightboxOpen(false);
           return;
         }
-        if (selectedNearby || selectedScenic) return;
+        if (selectedNearby || selectedScenic || selectedCourse) return;
         onClose();
         return;
       }
@@ -437,6 +494,7 @@ export default function FestivalDetailSheet({
     onClose,
     selectedNearby,
     selectedScenic,
+    selectedCourse,
   ]);
 
   useEffect(() => {
@@ -451,71 +509,102 @@ export default function FestivalDetailSheet({
       setNearbyLeportsStatus('nocoords');
       setNearbyCulture([]);
       setNearbyCultureStatus('nocoords');
+    } else {
+      let cancelled = false;
+      setNearbyStatus('loading');
+      setNearbyFoodStatus('loading');
+      setNearbyLeportsStatus('loading');
+      setNearbyCultureStatus('loading');
+      fetchNearbyTourAttractions({
+        lat: pt.lat,
+        lng: pt.lng,
+        radiusKm: 8,
+        limit: 8,
+      }).then((res) => {
+        if (cancelled) return;
+        const spots = Array.isArray(res?.spots) ? res.spots : [];
+        setNearbySpots(spots);
+        if (res?.error) setNearbyStatus('error');
+        else if (!spots.length) setNearbyStatus('empty');
+        else setNearbyStatus('ok');
+      });
+      fetchNearbyTourRestaurants({
+        lat: pt.lat,
+        lng: pt.lng,
+        radiusKm: 3,
+        limit: 8,
+      }).then((res) => {
+        if (cancelled) return;
+        const spots = Array.isArray(res?.spots) ? res.spots : [];
+        setNearbyFood(spots);
+        if (res?.error) setNearbyFoodStatus('error');
+        else if (!spots.length) setNearbyFoodStatus('empty');
+        else setNearbyFoodStatus('ok');
+      });
+      fetchNearbyTourLeports({
+        lat: pt.lat,
+        lng: pt.lng,
+        radiusKm: 5,
+        limit: 6,
+      }).then((res) => {
+        if (cancelled) return;
+        const spots = Array.isArray(res?.spots) ? res.spots : [];
+        setNearbyLeports(spots);
+        if (res?.error) setNearbyLeportsStatus('error');
+        else if (!spots.length) setNearbyLeportsStatus('empty');
+        else setNearbyLeportsStatus('ok');
+      });
+      fetchNearbyTourCulture({
+        lat: pt.lat,
+        lng: pt.lng,
+        radiusKm: 5,
+        limit: 6,
+      }).then((res) => {
+        if (cancelled) return;
+        const spots = Array.isArray(res?.spots) ? res.spots : [];
+        setNearbyCulture(spots);
+        if (res?.error) setNearbyCultureStatus('error');
+        else if (!spots.length) setNearbyCultureStatus('empty');
+        else setNearbyCultureStatus('ok');
+      });
+
+      return () => {
+        cancelled = true;
+      };
+    }
+    return undefined;
+  }, [item?.contentId, item?.mapx, item?.mapy]);
+
+  useEffect(() => {
+    if (!item?.contentId) return undefined;
+    if (!festivalAreaCode) {
+      setNearbyCourses([]);
+      setNearbyCoursesStatus('noarea');
       return undefined;
     }
 
+    const pt = festivalLngLat(item?.mapx, item?.mapy);
     let cancelled = false;
-    setNearbyStatus('loading');
-    setNearbyFoodStatus('loading');
-    setNearbyLeportsStatus('loading');
-    setNearbyCultureStatus('loading');
-    fetchNearbyTourAttractions({
-      lat: pt.lat,
-      lng: pt.lng,
-      radiusKm: 8,
-      limit: 8,
-    }).then((res) => {
-      if (cancelled) return;
-      const spots = Array.isArray(res?.spots) ? res.spots : [];
-      setNearbySpots(spots);
-      if (res?.error) setNearbyStatus('error');
-      else if (!spots.length) setNearbyStatus('empty');
-      else setNearbyStatus('ok');
-    });
-    fetchNearbyTourRestaurants({
-      lat: pt.lat,
-      lng: pt.lng,
-      radiusKm: 3,
-      limit: 8,
-    }).then((res) => {
-      if (cancelled) return;
-      const spots = Array.isArray(res?.spots) ? res.spots : [];
-      setNearbyFood(spots);
-      if (res?.error) setNearbyFoodStatus('error');
-      else if (!spots.length) setNearbyFoodStatus('empty');
-      else setNearbyFoodStatus('ok');
-    });
-    fetchNearbyTourLeports({
-      lat: pt.lat,
-      lng: pt.lng,
-      radiusKm: 5,
+    setNearbyCoursesStatus('loading');
+    fetchNearbyTourCourses({
+      lat: pt?.lat,
+      lng: pt?.lng,
+      areaCode: festivalAreaCode,
+      radiusKm: 80,
       limit: 6,
     }).then((res) => {
       if (cancelled) return;
       const spots = Array.isArray(res?.spots) ? res.spots : [];
-      setNearbyLeports(spots);
-      if (res?.error) setNearbyLeportsStatus('error');
-      else if (!spots.length) setNearbyLeportsStatus('empty');
-      else setNearbyLeportsStatus('ok');
-    });
-    fetchNearbyTourCulture({
-      lat: pt.lat,
-      lng: pt.lng,
-      radiusKm: 5,
-      limit: 6,
-    }).then((res) => {
-      if (cancelled) return;
-      const spots = Array.isArray(res?.spots) ? res.spots : [];
-      setNearbyCulture(spots);
-      if (res?.error) setNearbyCultureStatus('error');
-      else if (!spots.length) setNearbyCultureStatus('empty');
-      else setNearbyCultureStatus('ok');
+      setNearbyCourses(spots);
+      if (res?.error) setNearbyCoursesStatus('error');
+      else if (!spots.length) setNearbyCoursesStatus('empty');
+      else setNearbyCoursesStatus('ok');
     });
 
     return () => {
       cancelled = true;
     };
-  }, [item?.contentId, item?.mapx, item?.mapy]);
+  }, [item?.contentId, item?.mapx, item?.mapy, festivalAreaCode]);
 
   const overview = useMemo(
     () => stripHtml(common?.overview || ''),
@@ -1002,6 +1091,82 @@ export default function FestivalDetailSheet({
                 </div>
               )}
 
+              {nearbyCoursesStatus !== 'idle' &&
+                nearbyCoursesStatus !== 'noarea' && (
+                  <div className="space-y-2 pt-1">
+                    <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
+                      인근 여행코스
+                    </p>
+                    {nearbyCoursesStatus === 'loading' && (
+                      <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
+                        <Loader2
+                          size={16}
+                          className="animate-spin"
+                          aria-hidden="true"
+                        />
+                        인근 여행코스 불러오는 중…
+                      </div>
+                    )}
+                    {nearbyCoursesStatus === 'error' &&
+                      nearbyCourses.length === 0 && (
+                        <p className="text-xs text-stone-500">
+                          인근 여행코스를 불러오지 못했습니다.
+                        </p>
+                      )}
+                    {nearbyCoursesStatus === 'empty' && (
+                      <p className="text-xs text-stone-500">
+                        이 시도에 등록된 여행코스가 없습니다.
+                      </p>
+                    )}
+                    {nearbyCourses.length > 0 && (
+                      <ul className="space-y-2" aria-label="축제 인근 여행코스">
+                        {nearbyCourses.map((spot) => {
+                          const thumb = toHttps(spot.firstImage);
+                          const dist = formatDistKm(spot.distKm);
+                          const place = nearbyPlaceLabel(spot);
+                          return (
+                            <li key={`course-${spot.contentId || spot.id}`}>
+                              <button
+                                type="button"
+                                onClick={() => openCourseModal(spot)}
+                                className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                              >
+                                {thumb ? (
+                                  <img
+                                    src={thumb}
+                                    alt=""
+                                    className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
+                                  />
+                                ) : (
+                                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-800">
+                                    <Route size={18} aria-hidden="true" />
+                                  </div>
+                                )}
+                                <span className="min-w-0 flex-1">
+                                  <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
+                                    {spot.name}
+                                  </span>
+                                  <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
+                                    {[place, dist].filter(Boolean).join(' · ')}
+                                  </span>
+                                </span>
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                    <button
+                      type="button"
+                      onClick={openCoursesPage}
+                      className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
+                    >
+                      여행코스 더보기
+                      <ExternalLink size={14} aria-hidden="true" />
+                    </button>
+                  </div>
+                )}
+
               {nearbyStatus !== 'idle' && nearbyStatus !== 'nocoords' && (
                 <div className="space-y-2 pt-1">
                   <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
@@ -1445,6 +1610,24 @@ export default function FestivalDetailSheet({
           returnTo="/korea"
           overlayZClass="z-50"
           onClose={() => setSelectedScenic(null)}
+        />
+      )}
+
+      {selectedCourse && (
+        <CourseDetailModal
+          course={{
+            ...selectedCourse,
+            title: selectedCourse.title || selectedCourse.name,
+            areaCode: selectedCourse.areaCode || festivalAreaCode,
+          }}
+          detail={courseDetail}
+          detailLoading={courseDetailLoading}
+          overlayZClass="z-50"
+          onClose={() => {
+            setSelectedCourse(null);
+            setCourseDetail(null);
+            setCourseDetailLoading(false);
+          }}
         />
       )}
 

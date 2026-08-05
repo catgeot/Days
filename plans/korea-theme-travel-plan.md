@@ -43,7 +43,7 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 28 | (맛집) | `테마여행 #28, 맛집 주변 API` | ⏳ Preview QA |
 | 29 | (축제) | `테마여행 #29, 축제 본문 인근 여행지` | ⏳ Preview QA |
 | 30 | (주변) | `테마여행 #30, 레포츠·문화 주변` | ⏳ Preview QA |
-| 31 | (다음) | `테마여행 #31, 코스↔축제` | ⏳ |
+| 31 | (코스) | `테마여행 #31, 코스↔축제` | ⏳ Preview QA |
 
 이어하기·핫픽스만 할 때: `테마여행 #N, {짧은 수정}` (`N` = 그 주제의 **다음** 순번). 세션마다 새 `#1` 금지.
 
@@ -74,7 +74,8 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **S13** 국내여행지 DB | ⏳ Preview QA | `tourapi_attraction` active≈7294 · scenic DB 목록 · nearby 훅 | #26 ✅ 축제 연결 |
 | **#26** 축제 주변 관광지 | ⏳ Preview QA | 축제 상세 INFO · nearby DB · ThemeSpotDetailModal | #28 |
 | **#28** 맛집 주변 API | ⏳ Preview QA | locationBasedList type39 · 축제/명소 주변 맛집 | #30 |
-| **#30** 레포츠·문화 주변 | ⏳ Preview QA | locationBasedList type28/14 · 축제/명소 주변 | 코스↔축제 · MRT |
+| **#30** 레포츠·문화 주변 | ⏳ Preview QA | locationBasedList type28/14 · 축제/명소 주변 | #31 |
+| **#31** 코스↔축제 | ⏳ Preview QA | 축제→인근 코스 · 코스→인근 축제 · deep-link | MRT 상품지 · S9 |
 | **S9** 폴리시·릴리스 | ⏳ | 사람 QA → releaseNotes 1회 제안 (#24) | main 병합 |
 
 ---

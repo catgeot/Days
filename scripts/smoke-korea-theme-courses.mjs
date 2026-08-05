@@ -82,19 +82,35 @@ function mainOffline() {
   assert(fetchSrc.includes('galleryUrls'), 'course detail exposes galleryUrls');
 
   const pageSrc = readFileSync(join(root, 'src/pages/KoreaTheme/CoursesPage.jsx'), 'utf8');
-  assert(pageSrc.includes('galleryUrls'), 'CoursesPage renders gallery');
-  assert(pageSrc.includes('subdetailimg'), 'CoursesPage renders segment photos');
+  assert(pageSrc.includes('CourseDetailModal'), 'CoursesPage uses CourseDetailModal');
   assert(pageSrc.includes('aspect-[16/9]'), 'CoursesPage magazine full-width photo');
   assert(!pageSrc.includes('h-[4.5rem] w-[6.5rem]'), 'CoursesPage no side thumbnail');
-  assert(pageSrc.includes('role="dialog"'), 'CoursesPage detail modal dialog');
-  assert(pageSrc.includes('CourseDetailModal'), 'CoursesPage CourseDetailModal');
   assert(!pageSrc.includes('ChevronDown'), 'CoursesPage no accordion chevron');
-  assert(pageSrc.includes('scrollToTop'), 'CoursesPage modal scroll-to-top');
-  assert(pageSrc.includes('위로'), 'CoursesPage modal top button label');
-  assert(pageSrc.includes('닫기'), 'CoursesPage modal close label');
-  assert(pageSrc.includes('safe-area-inset'), 'CoursesPage modal edge padding');
   assert(pageSrc.includes('buildCourseAreaChips'), 'CoursesPage builds chips from counts');
   assert(pageSrc.includes('COURSE_OTHER_CHIP_ID'), 'CoursesPage uses 기타 chip id');
+  assert(
+    pageSrc.includes("searchParams.get('course')") ||
+      pageSrc.includes('courseFromQuery'),
+    'CoursesPage accepts course deep-link',
+  );
+
+  const modalSrc = readFileSync(
+    join(root, 'src/pages/KoreaTheme/CourseDetailModal.jsx'),
+    'utf8',
+  );
+  assert(modalSrc.includes('galleryUrls'), 'CourseDetailModal renders gallery');
+  assert(modalSrc.includes('subdetailimg'), 'CourseDetailModal renders segment photos');
+  assert(modalSrc.includes('role="dialog"'), 'CourseDetailModal dialog');
+  assert(modalSrc.includes('scrollToTop'), 'CourseDetailModal scroll-to-top');
+  assert(modalSrc.includes('위로'), 'CourseDetailModal top button label');
+  assert(modalSrc.includes('닫기'), 'CourseDetailModal close label');
+  assert(modalSrc.includes('safe-area-inset'), 'CourseDetailModal edge padding');
+  assert(modalSrc.includes('인근 축제'), 'CourseDetailModal shows nearby festivals');
+  assert(
+    modalSrc.includes('fetchNearbyFestivals'),
+    'CourseDetailModal fetches nearby festivals',
+  );
+
   assert(
     fetchSrc.includes('fetchTourApiTravelCourseAreaCounts'),
     'fetch exposes area count probe',

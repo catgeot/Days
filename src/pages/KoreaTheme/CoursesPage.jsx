@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowUp, Home, Route, X } from 'lucide-react';
+import { Home, Route } from 'lucide-react';
 import SEO from '../../components/SEO';
 import {
   buildCourseAreaChips,
@@ -16,20 +16,12 @@ import {
 import ThemeModuleBackButton, {
   ThemeNavBackHint,
 } from './ThemeModuleBackButton';
+import CourseDetailModal from './CourseDetailModal';
 
 const RETURN_TO = '/korea/theme/courses';
 const AREAS = listKoreaThemeAreas();
 /** 코스가 비교적 많은 권역을 기본 후보로 */
 const PREFERRED_DEFAULT_AREAS = ['31', '32', '2'];
-
-function stripHtml(html) {
-  if (!html) return '';
-  return String(html)
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<[^>]+>/g, '')
-    .replace(/&nbsp;/g, ' ')
-    .trim();
-}
 
 function toHttps(url) {
   const s = String(url || '').trim();
@@ -41,209 +33,6 @@ function toHttps(url) {
 
 function courseThumb(course) {
   return toHttps(course?.imageUrl || course?.firstimage || '');
-}
-
-function CourseDetailModal({
-  course,
-  detail,
-  detailLoading,
-  onClose,
-}) {
-  const scrollRef = useRef(null);
-
-  useEffect(() => {
-    const onKey = (event) => {
-      if (event.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      window.removeEventListener('keydown', onKey);
-      document.body.style.overflow = prev;
-    };
-  }, [onClose]);
-
-  useEffect(() => {
-    scrollRef.current?.scrollTo({ top: 0 });
-  }, [course?.contentId]);
-
-  const scrollToTop = () => {
-    scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  if (!course) return null;
-
-  const id = String(course.contentId || '');
-  const thumb = courseThumb(course);
-  const hero =
-    toHttps(detail?.imageUrl) ||
-    (detail?.galleryUrls?.[0] ? toHttps(detail.galleryUrls[0]) : '') ||
-    thumb;
-  const galleryExtra = (
-    Array.isArray(detail?.galleryUrls)
-      ? detail.galleryUrls.map(toHttps).filter(Boolean)
-      : []
-  ).filter((url) => url && url !== hero);
-
-  return (
-    <div
-      className="fixed inset-0 z-40 flex items-stretch justify-center bg-stone-900/40 backdrop-blur-[2px] p-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] pb-[max(0.625rem,env(safe-area-inset-bottom))] pl-[max(0.625rem,env(safe-area-inset-left))] pr-[max(0.625rem,env(safe-area-inset-right))] md:items-center md:p-5"
-      onClick={onClose}
-      role="presentation"
-    >
-      <div
-        className="relative flex h-full w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white text-stone-900 shadow-2xl md:h-auto md:max-h-[min(90dvh,52rem)] md:max-w-2xl md:rounded-3xl lg:max-w-3xl"
-        onClick={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="korea-course-modal-title"
-      >
-        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-stone-200/80 px-4 py-3.5 sm:px-5">
-          <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-700">
-              여행코스 상세
-            </p>
-            <h2
-              id="korea-course-modal-title"
-              className="mt-0.5 text-base font-extrabold tracking-tight text-stone-900 break-keep sm:text-lg"
-            >
-              {course.title}
-            </h2>
-            {course.addr1 ? (
-              <p className="mt-1 text-xs text-stone-500 break-keep">{course.addr1}</p>
-            ) : null}
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="닫기"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100"
-          >
-            <X size={18} aria-hidden="true" />
-          </button>
-        </div>
-
-        <div
-          ref={scrollRef}
-          className="min-h-0 flex-1 overflow-y-auto overscroll-contain custom-scrollbar"
-        >
-          {hero ? (
-            <img
-              src={hero}
-              alt=""
-              className="aspect-[16/9] w-full object-cover sm:aspect-[2/1]"
-            />
-          ) : (
-            <div className="flex aspect-[16/9] w-full items-center justify-center bg-amber-50 text-amber-800 sm:aspect-[2/1]">
-              <Route size={28} aria-hidden="true" />
-            </div>
-          )}
-
-          <div className="space-y-4 px-4 py-4 sm:px-5">
-            {detailLoading ? (
-              <p className="text-xs text-stone-500">상세를 불러오는 중…</p>
-            ) : null}
-            {!detailLoading && detail?.empty ? (
-              <p className="text-xs text-stone-500 break-keep">
-                상세 정보를 가져오지 못했습니다.
-              </p>
-            ) : null}
-            {!detailLoading && detail && !detail.empty ? (
-              <>
-                {(detail.theme ||
-                  detail.schedule ||
-                  detail.distance ||
-                  detail.taketime) && (
-                  <p className="text-[11px] font-semibold text-amber-900/90 break-keep">
-                    {[
-                      detail.theme,
-                      detail.schedule,
-                      detail.distance,
-                      detail.taketime,
-                    ]
-                      .filter(Boolean)
-                      .join(' · ')}
-                  </p>
-                )}
-                {detail.overview ? (
-                  <p className="whitespace-pre-line text-sm leading-relaxed text-stone-600 break-keep">
-                    {stripHtml(detail.overview)}
-                  </p>
-                ) : null}
-                {galleryExtra.length > 0 ? (
-                  <div className="space-y-2" aria-label="코스 사진">
-                    {galleryExtra.map((url) => (
-                      <img
-                        key={url}
-                        src={url}
-                        alt=""
-                        className="aspect-[16/9] w-full object-cover sm:aspect-[2/1]"
-                        loading="lazy"
-                      />
-                    ))}
-                  </div>
-                ) : null}
-                {detail.segments?.length ? (
-                  <ol className="space-y-5 border-t border-stone-200/80 pt-4">
-                    {detail.segments.map((seg, idx) => {
-                      const segImg = toHttps(seg.subdetailimg);
-                      return (
-                        <li
-                          key={`${id}-${seg.subnum ?? idx}`}
-                          className="space-y-2 text-sm"
-                        >
-                          {segImg ? (
-                            <img
-                              src={segImg}
-                              alt={seg.subdetailalt || seg.subname || ''}
-                              className="aspect-[16/9] w-full object-cover sm:aspect-[2/1]"
-                              loading="lazy"
-                            />
-                          ) : null}
-                          <p className="font-bold text-stone-800 break-keep">
-                            {Number(seg.subnum ?? idx) + 1}. {seg.subname || '구간'}
-                          </p>
-                          {seg.subdetailoverview ? (
-                            <p className="whitespace-pre-line text-sm leading-relaxed text-stone-600 break-keep">
-                              {stripHtml(seg.subdetailoverview)}
-                            </p>
-                          ) : null}
-                        </li>
-                      );
-                    })}
-                  </ol>
-                ) : detail.overview ? null : (
-                  <p className="text-[11px] text-stone-500 break-keep">
-                    이 코스의 구간 상세는 아직 없습니다.
-                  </p>
-                )}
-              </>
-            ) : null}
-          </div>
-        </div>
-
-        <div className="flex shrink-0 items-center gap-2 border-t border-stone-200/80 bg-white px-3 py-2.5 sm:px-4">
-          <button
-            type="button"
-            onClick={scrollToTop}
-            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm font-bold text-stone-700 hover:bg-stone-100"
-          >
-            <ArrowUp size={16} aria-hidden="true" />
-            위로
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
-          >
-            <X size={16} aria-hidden="true" />
-            닫기
-          </button>
-        </div>
-      </div>
-    </div>
-  );
 }
 
 function pickDefaultChipId(chips) {
@@ -267,6 +56,9 @@ export default function KoreaThemeCoursesPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const areaFromQuery = String(searchParams.get('area') || '').trim();
+  const courseFromQuery = String(
+    searchParams.get('course') || searchParams.get('spot') || '',
+  ).trim();
   const [chips, setChips] = useState([]);
   const [chipsLoading, setChipsLoading] = useState(true);
   const [selectedChipId, setSelectedChipId] = useState(null);
@@ -276,6 +68,7 @@ export default function KoreaThemeCoursesPage() {
   const [selectedId, setSelectedId] = useState(null);
   const [detailById, setDetailById] = useState({});
   const [detailLoadingId, setDetailLoadingId] = useState(null);
+  const courseQueryAppliedRef = useRef('');
 
   useEffect(() => {
     const path = areaFromQuery
@@ -370,17 +163,31 @@ export default function KoreaThemeCoursesPage() {
     };
   }, [selectedChipId, chips, chipsLoading]);
 
-  const openCourse = async (course) => {
-    const id = String(course.contentId || '');
-    if (!id) return;
-    setSelectedId(id);
-    if (detailById[id]) return;
+  const openCourse = useCallback(
+    async (course) => {
+      const id = String(course.contentId || '');
+      if (!id) return;
+      setSelectedId(id);
+      if (detailById[id]) return;
 
-    setDetailLoadingId(id);
-    const detail = await fetchTourApiCourseDetail({ contentId: id });
-    setDetailById((prev) => ({ ...prev, [id]: detail || { empty: true } }));
-    setDetailLoadingId(null);
-  };
+      setDetailLoadingId(id);
+      const detail = await fetchTourApiCourseDetail({ contentId: id });
+      setDetailById((prev) => ({ ...prev, [id]: detail || { empty: true } }));
+      setDetailLoadingId(null);
+    },
+    [detailById],
+  );
+
+  useEffect(() => {
+    if (!courseFromQuery || loading || !courses.length) return;
+    if (courseQueryAppliedRef.current === courseFromQuery) return;
+    const hit = courses.find(
+      (c) => String(c.contentId || '') === courseFromQuery,
+    );
+    if (!hit) return;
+    courseQueryAppliedRef.current = courseFromQuery;
+    openCourse(hit);
+  }, [courseFromQuery, loading, courses, openCourse]);
 
   const closeModal = useCallback(() => setSelectedId(null), []);
 

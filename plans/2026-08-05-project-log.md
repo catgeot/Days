@@ -2,6 +2,36 @@
 
 직전: [`2026-08-04-project-log.md`](./2026-08-04-project-log.md)
 
+## 테마여행 #31, 코스↔축제
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **한 일**: `fetchNearbyTourCourses`(type25 areaBased+거리) · `fetchNearbyFestivals`(festivalWindow 캐시) · 축제 상세「인근 여행코스」+`CourseDetailModal` · 코스 상세「인근 축제」·`/korea?festival=` · `/courses?course=` · `smoke:korea-course-festival`
+- **금지 준수**: 축제 지도·칩 미터치 · 코스/축제 전량 DB 없음 · top10/regions 미확장 · locationBasedList type25 비의존(실측 0건)
+- **VERIFY**: `smoke:korea-course-festival` · `smoke:korea-theme-courses` · `smoke:korea-festival-nearby` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea`
+- **작업 로그**: Preview 우측 「코스↔축제 양방향 연결」
+- **QA**: `/korea` 축제 상세 → 「인근 여행코스」·모달·더보기 · `/korea/theme/courses` 코스 상세 → 「인근 축제」·딥링크
+
+### 테마여행 · 에이전트 핸드오프 → `#32`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #32, …` |
+| **브랜치** | `cursor/korea-theme` (고정) |
+| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
+| **읽을 것 3** | ① 본 절 ② #31 산출 ③ 플랜 §1.0 |
+| **금지 3** | 축제 지도·칩 리팩터 · 맛집/레포츠/문화/코스 전량 DB · top10/regions 확장 |
+| **후보** | MRT 상품지 큐레이션 · Edge tourapi-proxy intro 재배포 · S9 폴리시 |
+| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #32, MRT 상품지
+```
+
 ## 테마여행 #30, 레포츠·문화 주변
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `29926846` · Preview QA 대기

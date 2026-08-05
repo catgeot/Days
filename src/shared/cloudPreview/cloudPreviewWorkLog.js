@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 30,
-  sessionPhase: '레포츠·문화 주변',
+  sessionNo: 31,
+  sessionPhase: '코스↔축제',
   branch: 'cursor/korea-theme',
   previewPath: '/korea',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-05-korea-theme-course-festival',
+    session: '테마여행 #31, 코스↔축제',
+    title: '코스↔축제 양방향 연결',
+    detail:
+      '축제 상세에 시도 기준 「인근 여행코스」목록·코스 모달을 붙이고, 코스 상세에는 festivalWindow 캐시로 「인근 축제」·`/korea?festival=` 딥링크를 연결했습니다. type25는 locationBasedList가 비는 경우가 많아 areaBasedList+거리 정렬을 씁니다. Preview /korea 축제 상세와 /korea/theme/courses 코스 상세에서 확인해 주세요.',
+    at: '2026-08-05',
+  },
   {
     id: '2026-08-05-korea-theme-nearby-leisure-culture',
     session: '테마여행 #30, 레포츠·문화 주변',
