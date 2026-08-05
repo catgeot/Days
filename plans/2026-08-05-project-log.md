@@ -4,7 +4,7 @@
 
 ## 테마여행 #20, 본문 가독성 개선
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `49f2d2db` · Preview QA 대기
 
 - **한 일**: `ThemeSpotDetailModal` `DetailRow` 좌우 2열 → 소제목 아래 본문 세로 배치 · 행 간격 `space-y-4` · 작업로그 #20 · 플랜 채팅명표 #21=폴리시
 - **VERIFY**: `npm run smoke:korea-theme-spot-modal` · `npm run build`
