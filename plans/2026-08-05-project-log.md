@@ -4,9 +4,9 @@
 
 ## 테마여행 #28, 맛집 주변 API
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `42a3082b` · Preview QA 대기
 
-- **한 일**: `tourapi-proxy` `locationBasedList`(+메모리 TTL) · `fetchNearbyTourRestaurants`(type39) · 축제 상세·`ThemeSpotDetailModal` 「주변 맛집」 · 맛집 intro 필드 · `smoke:korea-nearby-restaurants`
+- **한 일**: `tourapi-proxy` `locationBasedList`(+메모리 TTL) · `fetchNearbyTourRestaurants`(type39) · 축제 상세·`ThemeSpotDetailModal` 「주변 맛집」 · 맛집 intro 필드 · `smoke:korea-nearby-restaurants` · Edge deploy 완료
 - **금지 준수**: 맛집 전량 DB 없음 · 축제 지도·칩 미터치 · top10/regions 미확장
 - **VERIFY**: `smoke:korea-nearby-restaurants` · `smoke:korea-festival-nearby` · `smoke:tourapi` · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
