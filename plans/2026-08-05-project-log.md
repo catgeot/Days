@@ -2,6 +2,37 @@
 
 직전: [`2026-08-04-project-log.md`](./2026-08-04-project-log.md)
 
+## 테마여행 #30, 레포츠·문화 주변
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **한 일**: `fetchNearbyTourLeports`(28) · `fetchNearbyTourCulture`(14) · 축제 상세·`ThemeSpotDetailModal` 「주변 레포츠」「주변 문화」 · 레포츠/문화 상세는 hub 대신 DB 「주변 관광지」 크로스 · proxy intro 필드 · `smoke:korea-nearby-leisure-culture`
+- **금지 준수**: 축제 지도·칩 미터치 · 맛집/레포츠/문화 전량 DB 없음 · top10/regions 미확장
+- **VERIFY**: `smoke:korea-nearby-leisure-culture`(LIVE 28·14 OK) · `smoke:korea-nearby-restaurants` · `smoke:korea-festival-nearby` · `npm run build`
+- **Edge**: intro 필드 normalize 반영 시 `npx supabase functions deploy tourapi-proxy --no-verify-jwt` (목록 locationBased는 기존 배포로 LIVE 확인됨)
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea`
+- **작업 로그**: Preview 우측 「축제·명소 주변 레포츠·문화(API)」
+- **QA**: `/korea` 축제 상세 → 「주변 레포츠」「주변 문화」 · 클릭→상세 · 상세에서 「주변 관광지」 · 명승 모달에도 동일
+
+### 테마여행 · 에이전트 핸드오프 → `#31`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #31, …` |
+| **브랜치** | `cursor/korea-theme` (고정) |
+| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
+| **읽을 것 3** | ① 본 절 ② #30 산출 ③ 플랜 §1.0 |
+| **금지 3** | 축제 지도·칩 리팩터 · 맛집/레포츠/문화 전량 DB · top10/regions 확장 |
+| **후보** | 코스↔축제 · MRT 상품지 큐레이션 · Edge tourapi-proxy 재배포(intro) |
+| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #31, 코스↔축제
+```
+
 ## 테마여행 #29, 축제 본문 인근 여행지
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `1470d0e8` · Preview QA 대기
@@ -13,24 +44,6 @@
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea`
 - **QA**: `/korea` 축제 상세 → 「인근 명승지」(GATEO) · 「○○ 명승지 더보기」→ `/korea/theme/scenic?region=` · hub 칩/장소카드 없음
-
-### 테마여행 · 에이전트 핸드오프 → `#30`
-
-| | |
-|--|--|
-| **세션 표기** | `테마여행 #30, …` |
-| **브랜치** | `cursor/korea-theme` (고정) |
-| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
-| **읽을 것 3** | ① 본 절 ② #28·#29 산출 ③ 플랜 §1.0 |
-| **금지 3** | 축제 지도·칩 리팩터 · 맛집 전량 DB · top10/regions 확장 |
-| **후보** | 레포츠/문화 주변 · 코스↔축제 · MRT 상품지 |
-| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea` |
-
-**다음 채팅명 (복붙)**:
-
-```
-테마여행 #30, 레포츠·문화 주변
-```
 
 ## 테마여행 #28, 맛집 주변 API
 

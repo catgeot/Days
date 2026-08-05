@@ -40,6 +40,10 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 24 | S9 | `테마여행 #24, 폴리시·릴리스` | ⏳ (본선 후) |
 | 25 | (제품) | `테마여행 #25, 제품 흐름 재잠금` | ✅ 본 절 |
 | 26 | (축제) | `테마여행 #26, 축제 주변 관광지` | ⏳ Preview QA |
+| 28 | (맛집) | `테마여행 #28, 맛집 주변 API` | ⏳ Preview QA |
+| 29 | (축제) | `테마여행 #29, 축제 본문 인근 여행지` | ⏳ Preview QA |
+| 30 | (주변) | `테마여행 #30, 레포츠·문화 주변` | ⏳ Preview QA |
+| 31 | (다음) | `테마여행 #31, 코스↔축제` | ⏳ |
 
 이어하기·핫픽스만 할 때: `테마여행 #N, {짧은 수정}` (`N` = 그 주제의 **다음** 순번). 세션마다 새 `#1` 금지.
 
@@ -69,7 +73,8 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | **#25** 제품 흐름 재잠금 | ✅ 2026-08-05 | §1.0 · top10/regions 보류 · 명승=본선 | S13=#23 |
 | **S13** 국내여행지 DB | ⏳ Preview QA | `tourapi_attraction` active≈7294 · scenic DB 목록 · nearby 훅 | #26 ✅ 축제 연결 |
 | **#26** 축제 주변 관광지 | ⏳ Preview QA | 축제 상세 INFO · nearby DB · ThemeSpotDetailModal | #28 |
-| **#28** 맛집 주변 API | ⏳ Preview QA | locationBasedList type39 · 축제/명소 주변 맛집 | 레포츠·문화 등 |
+| **#28** 맛집 주변 API | ⏳ Preview QA | locationBasedList type39 · 축제/명소 주변 맛집 | #30 |
+| **#30** 레포츠·문화 주변 | ⏳ Preview QA | locationBasedList type28/14 · 축제/명소 주변 | 코스↔축제 · MRT |
 | **S9** 폴리시·릴리스 | ⏳ | 사람 QA → releaseNotes 1회 제안 (#24) | main 병합 |
 
 ---
@@ -946,6 +951,19 @@ scenic이 DB 읽기. 맛집 전량 DB 금지. top10/regions 보류. 축제 지�
 
 ---
 
+### #30 — 레포츠·문화 주변 ⏳ Preview QA
+
+| | |
+|--|--|
+| **산출** | `fetchNearbyTourLeports`(28) · `fetchNearbyTourCulture`(14) · 축제/명소 「주변 레포츠」「주변 문화」 · 상세↔관광지 크로스 · intro 필드 |
+| **VERIFY** | `npm run smoke:korea-nearby-leisure-culture` · restaurants/festival nearby · build |
+| **금지** | 레포츠/문화 전량 DB · `/korea` 축제 지도·칩 리팩터 · top10/regions 확장 |
+| **핸드오프** | [`2026-08-05-project-log.md`](./2026-08-05-project-log.md) 「테마여행 · 에이전트 핸드오프 → #31」 |
+
+**채팅명**: `테마여행 #30, 레포츠·문화 주변`
+
+---
+
 ## 6. 리스크 · 가드
 
 | 리스크 | 대응 |
@@ -977,6 +995,7 @@ scenic이 DB 읽기. 맛집 전량 DB 금지. top10/regions 보류. 축제 지�
 - [x] **S13**: type12 Supabase · 주간 sync · scenic DB 소비 · nearby 훅 (축제 UI 연결=#26)
 - [x] **#26**: 축제 상세 주변 관광지(DB) · ThemeSpotDetailModal (Preview QA)
 - [x] **#28**: 맛집 type39 주변 API · 축제/명소 연결 (Preview QA)
+- [x] **#30**: 레포츠28·문화14 주변 API · 축제/명소 연결 (Preview QA)
 - [x] **#25**: top10/regions 타일 보류 · 명승 본선 · 코스·패키지 방향 유지 (플랜)
 - [ ] 패키지 MRT(제주 등) + mylink
 - [x] `/qa/korea-theme` · 고정 Preview (S1·S8 최종 · sitemap/Helmet)
