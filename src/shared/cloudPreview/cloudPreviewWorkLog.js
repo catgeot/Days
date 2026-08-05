@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-05-korea-theme-homepage-label',
+    session: '테마여행 #26, 축제 주변 관광지',
+    title: '상세 홈페이지를 짧은 라벨로',
+    detail:
+      '테마 상세 모달 홈페이지에 긴 URL 대신 「국가유산청」처럼 짧은 라벨을 보여 줍니다. 링크는 그대로 열립니다. Preview에서 자규루 및 관풍헌 등 상세의 홈페이지 표기를 확인해 주세요.',
+    at: '2026-08-05',
+  },
+  {
     id: '2026-08-05-korea-theme-festival-nearby-locality',
     session: '테마여행 #26, 축제 주변 관광지',
     title: '주변 목록 지역을 읍·면·동·리로',

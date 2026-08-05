@@ -395,6 +395,34 @@ function normalizeHomepage(raw) {
   return '';
 }
 
+/**
+ * 클릭용 짧은 라벨 — 긴 query URL을 그대로 노출하지 않음.
+ * @param {string} href
+ */
+function homepageDisplayLabel(href) {
+  const raw = String(href || '').trim();
+  if (!raw) return '공식 홈페이지';
+  let host = '';
+  try {
+    host = new URL(raw).hostname.replace(/^www\./i, '').toLowerCase();
+  } catch {
+    host = raw
+      .replace(/^https?:\/\//i, '')
+      .split('/')[0]
+      .replace(/^www\./i, '')
+      .toLowerCase();
+  }
+  if (!host) return '공식 홈페이지';
+  if (host.endsWith('heritage.go.kr') || host.endsWith('cha.go.kr')) {
+    return '국가유산청';
+  }
+  if (host.endsWith('visitkorea.or.kr')) return '대한민국 구석구석';
+  if (host.endsWith('mcst.go.kr')) return '문화체육관광부';
+  if (host.endsWith('korea.kr')) return '대한민국 정책브리핑';
+  if (host.length > 40) return '공식 홈페이지';
+  return host;
+}
+
 function normalizeCompareText(raw) {
   return stripHtml(raw)
     .replace(/\s+/g, '')
@@ -710,9 +738,10 @@ export default function ThemeSpotDetailModal({
                       href={homepage}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 font-semibold text-amber-900 underline-offset-2 hover:underline break-all"
+                      title={homepage}
+                      className="inline-flex items-center gap-1 font-semibold text-amber-900 underline-offset-2 hover:underline break-keep"
                     >
-                      {homepage.replace(/^https?:\/\//i, '')}
+                      {homepageDisplayLabel(homepage)}
                       <ExternalLink size={13} aria-hidden="true" />
                     </a>
                   </DetailRow>

@@ -9,7 +9,8 @@
 - **한 일**: 축제 상세(안내 탭)에 `fetchNearbyTourAttractions`(반경 8km) 목록 · 클릭→`ThemeSpotDetailModal`(z-50) · 지도·칩 미터치 · `smoke:korea-festival-nearby`
 - **선별**: `koreaTourAttractionNearbyFilter` — 화장실·일반 교회/성당 제외 · 성지·문화재·성공회·제일교회 등 명소 표기만 유지
 - **지역 표기**: `formatTourAttractionLocality` — 권역(강원) 대신 시·군·읍·면·동·리 (예: 영월군 영월읍 방절리)
-- **VERIFY**: `smoke:korea-festival-nearby` · `npm run build` PASS
+- **홈페이지 라벨**: 상세 모달에서 긴 URL 대신 `국가유산청` 등 짧은 표기 (href 유지)
+- **VERIFY**: `smoke:korea-festival-nearby` · `smoke:korea-theme-spot-modal` · `npm run build` PASS
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea`
 - **작업 로그**: Preview 우측 「주변 목록 지역을 읍·면·동·리로」

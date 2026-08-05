@@ -67,6 +67,12 @@ assert(modalSrc.includes('resolveThemeCrossLinks'), 'modal wires cross-links mat
 assert(modalSrc.includes('이 장소가 속한 테마'), 'modal cross rail membership section');
 assert(modalSrc.includes('이 지역 축제'), 'modal cross rail festival deep-link');
 assert(modalSrc.includes('이 지역 여행코스'), 'modal cross rail courses deep-link');
+assert(modalSrc.includes('homepageDisplayLabel'), 'modal short homepage label helper');
+assert(modalSrc.includes('국가유산청'), 'modal maps heritage.go.kr to 국가유산청');
+assert(
+  !modalSrc.includes("homepage.replace(/^https?:\\/\\//i, '')"),
+  'modal does not dump raw homepage URL as label',
+);
 
 for (const [file, label] of [
   ['Top10Page.jsx', 'top10'],
