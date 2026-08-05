@@ -10,9 +10,14 @@ import { readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { createClient } from '@supabase/supabase-js';
-import { mapTourAttractionRow } from '../src/pages/Home/lib/koreaTourAttractionMap.js';
+import {
+  mapTourAttractionRow,
+  scenicRegionForAreaCode,
+} from '../src/pages/Home/lib/koreaTourAttractionMap.js';
 import { isNearbyTourAttractionTitle } from '../src/pages/Home/lib/koreaTourAttractionNearbyFilter.js';
 import { formatTourAttractionLocality } from '../src/pages/Home/lib/koreaTourAttractionLocality.js';
+import { listKoreaScenicSpots } from '../src/pages/Home/lib/koreaScenicSpots.js';
+import { detectSidoCode } from '../src/pages/Korea/festivalRegionTags.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -104,8 +109,26 @@ assert(
   'FestivalDetailSheet links to scenic page',
 );
 assert(
+  sheetSrc.includes('detectSidoCode'),
+  'FestivalDetailSheet falls back to addr1 sido when areaCode missing',
+);
+assert(
   !sheetSrc.includes('onOpenHub'),
   'FestivalDetailSheet no longer opens place cards via hub',
+);
+
+const yeongwolCode = detectSidoCode('강원특별자치도 영월군 영월읍 하송리');
+assert(yeongwolCode === '32', 'detectSidoCode yeongwol → 32');
+const yeongwolRegion = scenicRegionForAreaCode(yeongwolCode);
+assert(yeongwolRegion === '강원', 'scenic region for yeongwol is 강원');
+assert(
+  listKoreaScenicSpots(yeongwolRegion).length > 0,
+  'GATEO scenic list non-empty for 강원',
+);
+assert(
+  scenicRegionForAreaCode(null) == null &&
+    scenicRegionForAreaCode(detectSidoCode('')) == null,
+  'no region when areaCode and addr1 both empty',
 );
 
 const nearbySrc = readFileSync(

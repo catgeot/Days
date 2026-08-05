@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 28,
-  sessionPhase: '맛집 주변 API',
+  sessionNo: 29,
+  sessionPhase: '축제 본문 인근 여행지',
   branch: 'cursor/korea-theme',
   previewPath: '/korea',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-05-korea-theme-festival-scenic-addr-fallback',
+    session: '테마여행 #29, 축제 본문 인근 여행지',
+    title: '인근 명승지 addr1 폴백·Preview 재배포',
+    detail:
+      '축제 목록에 areaCode가 비어 「인근 명승지」가 안 뜨던 문제를 addr1→시도 감지로 고쳤습니다. hub→장소카드는 없습니다. Preview /korea 축제 상세에서 「인근 명승지」목록과 「○○ 명승지 더보기」를 확인해 주세요.',
+    at: '2026-08-05',
+  },
   {
     id: '2026-08-05-korea-theme-festival-scenic-link',
     session: '테마여행 #28, 맛집 주변 API',

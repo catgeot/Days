@@ -29,6 +29,7 @@ import { listKoreaScenicSpots } from '../Home/lib/koreaScenicSpots';
 import { scenicRegionForAreaCode } from '../Home/lib/koreaTourAttractionMap';
 import { pushThemeNavBack } from '../Home/lib/koreaThemeNavBack';
 import { festivalLngLat } from './koreaFestivalCorridors';
+import { detectSidoCode } from './festivalRegionTags';
 import ThemeSpotDetailModal from '../KoreaTheme/ThemeSpotDetailModal';
 
 const SCENIC_PATH = '/korea/theme/scenic';
@@ -279,9 +280,11 @@ export default function FestivalDetailSheet({
   const tabListRef = useRef(null);
 
   const scenicRegion = useMemo(() => {
-    const code = item?.areaCode ?? item?.areacode;
+    // searchFestival2 응답에 areaCode가 비는 경우가 많아 addr1 시도 감지 폴백
+    const code =
+      item?.areaCode ?? item?.areacode ?? detectSidoCode(item?.addr1);
     return scenicRegionForAreaCode(code);
-  }, [item?.areaCode, item?.areacode]);
+  }, [item?.areaCode, item?.areacode, item?.addr1]);
 
   const scenicSpots = useMemo(() => {
     if (!scenicRegion) return [];
