@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 48,
-  sessionPhase: '명소목록',
+  sessionNo: 49,
+  sessionPhase: '내주변 목록',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-06-korea-theme-scenic-nearby-list',
+    session: '테마여행 #49, 내주변 목록',
+    title: '내 주변 명소·명승·관광지 거리순',
+    detail:
+      '축제홈과 같이 「내 주변」으로 GPS를 받아 80km 안 GATEO 선정 명소·국가유산 명승·TourAPI 관광지를 가까운 순으로 나열합니다. Preview에서 위치 허용→거리 배지·건수 문구·닫기 후 권역 칩 복귀를 확인해 주세요.',
+    at: '2026-08-06',
+  },
   {
     id: '2026-08-06-korea-theme-gateo-myeongso-expand',
     session: '테마여행 #48, 명소목록',

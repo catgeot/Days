@@ -1,6 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { CalendarDays, ChevronLeft, ChevronRight, Home, Landmark } from 'lucide-react';
+import {
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  Home,
+  Landmark,
+  Loader2,
+  LocateFixed,
+} from 'lucide-react';
 import SEO from '../../components/SEO';
 import {
   koreaScenicSpotsDisclaimer,
@@ -30,16 +38,26 @@ import {
   normalizeScenicAreaCode,
   scenicAreaCodeForHubId,
   scenicLocalityQueryForHubName,
+  scenicRegionForAreaCode,
   SCENIC_REGION_ORDER,
 } from '../Home/lib/koreaTourAttractions';
 import { resolveCityAttractionHub } from '../Home/lib/cityAttractionHubs';
 import { reconcileThemeNavBack } from '../Home/lib/koreaThemeNavBack';
 import { formatScenicSpotPlaceLabel } from '../Home/lib/scenicSpotPlaceLabel';
+import { resolveKoreaAreaFromCoords } from '../Korea/resolveKoreaAreaFromCoords';
+import {
+  formatDistanceKm,
+  NEAR_SCENIC_KM,
+  rankNearbyScenicSpots,
+} from './nearbyScenicRank';
 import { scenicDbCatalogHeading } from './scenicCatalogHeading';
 import ThemeModuleBackButton, {
   ThemeNavBackHint,
 } from './ThemeModuleBackButton';
 import ThemeSpotDetailModal from './ThemeSpotDetailModal';
+
+const NEAR_KM = NEAR_SCENIC_KM;
+const NEAR_DB_LIMIT = 100;
 
 const DISCLAIMER = koreaScenicSpotsDisclaimer();
 const HERITAGE_DISCLAIMER = koreaHeritageScenicDisclaimer();
@@ -72,6 +90,47 @@ function FilterChipLabel({ label, count }) {
       <span>{label}</span>
       {n != null ? <span className="opacity-70 tabular-nums">{n}</span> : null}
     </span>
+  );
+}
+
+function kmByIdFromRanked(ranked) {
+  /** @type {Map<string, number>} */
+  const map = new Map();
+  for (const row of ranked || []) {
+    const id = row?.item?.id;
+    if (id == null || !Number.isFinite(row.km)) continue;
+    map.set(String(id), row.km);
+  }
+  return map;
+}
+
+function ScenicListRow({ spot, distanceKm, onOpen }) {
+  const distanceLabel = formatDistanceKm(distanceKm);
+  return (
+    <button
+      type="button"
+      onClick={() => onOpen(spot.id)}
+      className="flex w-full items-start gap-3 rounded-2xl border border-stone-200/90 bg-white px-4 py-3.5 text-left shadow-sm transition-colors hover:border-amber-300/80 hover:bg-amber-50/40"
+    >
+      <span className="min-w-0 flex-1">
+        <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+          <span className="text-sm font-extrabold tracking-tight text-stone-900 break-keep">
+            {spot.name}
+          </span>
+          <span className="text-[11px] font-semibold text-stone-500">
+            {formatScenicSpotPlaceLabel(spot)}
+          </span>
+          {distanceLabel ? (
+            <span className="shrink-0 rounded-full bg-stone-100 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-stone-600">
+              {distanceLabel}
+            </span>
+          ) : null}
+        </span>
+        <span className="mt-0.5 block text-xs leading-relaxed text-stone-600 break-keep">
+          {spot.blurb}
+        </span>
+      </span>
+    </button>
   );
 }
 
@@ -134,9 +193,26 @@ export default function KoreaThemeScenicPage() {
   const selectedId = searchParams.get('spot');
   const page = Math.max(Number(searchParams.get('page') || '1') || 1, 1);
 
+  const [nearOrigin, setNearOrigin] = useState(null);
+  const [nearLabel, setNearLabel] = useState('');
+  const [nearBusy, setNearBusy] = useState(false);
+  const [nearMsg, setNearMsg] = useState('');
+
+  const nearActive = Boolean(nearOrigin && nearLabel);
   const areaChips = useMemo(() => listScenicRegionAreas(region), [region]);
 
+  const curatedNearRanked = useMemo(() => {
+    if (!nearOrigin) return null;
+    return rankNearbyScenicSpots(
+      CURATED_ALL,
+      nearOrigin.lat,
+      nearOrigin.lng,
+      NEAR_KM,
+    );
+  }, [nearOrigin]);
+
   const curatedSpots = useMemo(() => {
+    if (curatedNearRanked) return curatedNearRanked.map((row) => row.item);
     if (hubId) {
       return CURATED_ALL.filter(
         (s) => String(s.hubId || '').trim().toLowerCase() === hubId,
@@ -145,16 +221,35 @@ export default function KoreaThemeScenicPage() {
     const inRegion = listKoreaScenicSpots(region);
     if (!areaCode) return inRegion;
     return inRegion.filter((s) => scenicAreaCodeForHubId(s.hubId) === areaCode);
-  }, [region, areaCode, hubId]);
+  }, [curatedNearRanked, region, areaCode, hubId]);
 
-  const heritageSpots = useMemo(
-    () =>
-      listKoreaHeritageScenic({
-        region,
-        areaCode,
-        localityQuery,
-      }),
-    [region, areaCode, localityQuery],
+  const curatedKmById = useMemo(
+    () => kmByIdFromRanked(curatedNearRanked),
+    [curatedNearRanked],
+  );
+
+  const heritageNearRanked = useMemo(() => {
+    if (!nearOrigin) return null;
+    return rankNearbyScenicSpots(
+      listKoreaHeritageScenic(),
+      nearOrigin.lat,
+      nearOrigin.lng,
+      NEAR_KM,
+    );
+  }, [nearOrigin]);
+
+  const heritageSpots = useMemo(() => {
+    if (heritageNearRanked) return heritageNearRanked.map((row) => row.item);
+    return listKoreaHeritageScenic({
+      region,
+      areaCode,
+      localityQuery,
+    });
+  }, [heritageNearRanked, region, areaCode, localityQuery]);
+
+  const heritageKmById = useMemo(
+    () => kmByIdFromRanked(heritageNearRanked),
+    [heritageNearRanked],
   );
 
   const heritageAreaCounts = useMemo(
@@ -179,6 +274,7 @@ export default function KoreaThemeScenicPage() {
   const [scopeCount, setScopeCount] = useState(0);
   const [dbStatus, setDbStatus] = useState('loading');
   const [dbError, setDbError] = useState(null);
+  const [dbKmById, setDbKmById] = useState(() => new Map());
   const [selectedSpot, setSelectedSpot] = useState(null);
   const [chipCounts, setChipCounts] = useState({
     regionCounts: {},
@@ -186,6 +282,13 @@ export default function KoreaThemeScenicPage() {
     cat1Counts: {},
     cat2Counts: {},
   });
+
+  const clearNear = useCallback(() => {
+    setNearOrigin(null);
+    setNearLabel('');
+    setNearMsg('');
+    setDbKmById(new Map());
+  }, []);
 
   const regionChips = useMemo(() => {
     const set = new Set([...CURATED_REGIONS, ...SCENIC_REGION_ORDER]);
@@ -282,16 +385,40 @@ export default function KoreaThemeScenicPage() {
     let cancelled = false;
     setDbStatus('loading');
     setDbError(null);
+    const fetchLimit = nearActive ? NEAR_DB_LIMIT : PAGE_SIZE;
+    const fetchOffset = nearActive ? 0 : (page - 1) * PAGE_SIZE;
     fetchKoreaTourAttractions({
       region,
-      areaCode,
+      areaCode: nearActive ? null : areaCode,
       cat1,
       cat2,
-      localityQuery,
-      limit: PAGE_SIZE,
-      offset: (page - 1) * PAGE_SIZE,
+      localityQuery: nearActive ? null : localityQuery,
+      limit: fetchLimit,
+      offset: fetchOffset,
     }).then((res) => {
       if (cancelled) return;
+      if (nearActive && nearOrigin) {
+        const ranked = rankNearbyScenicSpots(
+          res.spots || [],
+          nearOrigin.lat,
+          nearOrigin.lng,
+          NEAR_KM,
+        );
+        const spots = ranked.map((row) => row.item);
+        setDbSpots(spots);
+        setDbCount(spots.length);
+        setDbKmById(kmByIdFromRanked(ranked));
+        if (res.error) {
+          setDbStatus('error');
+          setDbError(res.error);
+        } else if (spots.length === 0) {
+          setDbStatus('empty');
+        } else {
+          setDbStatus('ok');
+        }
+        return;
+      }
+      setDbKmById(new Map());
       setDbSpots(res.spots || []);
       setDbCount(res.count || 0);
       if (res.error) {
@@ -306,7 +433,33 @@ export default function KoreaThemeScenicPage() {
     return () => {
       cancelled = true;
     };
-  }, [region, areaCode, cat1, cat2, localityQuery, page]);
+  }, [region, areaCode, cat1, cat2, localityQuery, page, nearActive, nearOrigin]);
+
+  useEffect(() => {
+    if (!nearActive) return;
+    const curatedN = curatedSpots.length;
+    const heritageN = heritageSpots.length;
+    const dbN = dbStatus === 'loading' ? null : dbSpots.length;
+    const known = curatedN + heritageN + (dbN ?? 0);
+    if (dbN == null) {
+      setNearMsg(
+        `${nearLabel} 주변 · ${NEAR_KM}km 안 명소 ${curatedN} · 명승 ${heritageN} · 관광지 확인 중…`,
+      );
+      return;
+    }
+    setNearMsg(
+      known > 0
+        ? `${nearLabel} 주변 · ${NEAR_KM}km 안 명소 ${curatedN} · 명승 ${heritageN} · 관광지 ${dbN}`
+        : `${NEAR_KM}km 안 명소·명승·관광지가 없습니다. 권역 칩으로 둘러보세요.`,
+    );
+  }, [
+    nearActive,
+    nearLabel,
+    curatedSpots.length,
+    heritageSpots.length,
+    dbSpots.length,
+    dbStatus,
+  ]);
 
   useEffect(() => {
     let cancelled = false;
@@ -339,15 +492,17 @@ export default function KoreaThemeScenicPage() {
   }, [selectedId, dbSpots]);
 
   const clearHub = useCallback(() => {
+    clearNear();
     const next = new URLSearchParams(searchParams);
     next.delete('hub');
     next.delete('spot');
     next.delete('page');
     setSearchParams(next, { replace: true });
-  }, [searchParams, setSearchParams]);
+  }, [searchParams, setSearchParams, clearNear]);
 
   const setRegion = useCallback(
     (r) => {
+      clearNear();
       const next = new URLSearchParams(searchParams);
       next.set('region', resolveRegion(r));
       next.delete('area');
@@ -356,11 +511,12 @@ export default function KoreaThemeScenicPage() {
       next.delete('page');
       setSearchParams(next, { replace: true });
     },
-    [searchParams, setSearchParams],
+    [searchParams, setSearchParams, clearNear],
   );
 
   const setArea = useCallback(
     (code) => {
+      clearNear();
       const next = new URLSearchParams(searchParams);
       const normalized = normalizeScenicAreaCode(region, code);
       if (!normalized || normalized === areaCode) next.delete('area');
@@ -370,8 +526,73 @@ export default function KoreaThemeScenicPage() {
       next.delete('page');
       setSearchParams(next, { replace: true });
     },
-    [searchParams, setSearchParams, region, areaCode],
+    [searchParams, setSearchParams, region, areaCode, clearNear],
   );
+
+  const applyUserLocation = useCallback(
+    (lat, lng) => {
+      const hubResolved = resolveKoreaAreaFromCoords(lat, lng);
+      if (!hubResolved) {
+        setNearLabel('');
+        setNearOrigin(null);
+        setNearMsg('국내 위치를 찾지 못했습니다. 권역 칩으로 골라 보세요.');
+        return false;
+      }
+      const nextRegion =
+        scenicRegionForAreaCode(hubResolved.areaCode) || DEFAULT_REGION;
+      const nextArea =
+        normalizeScenicAreaCode(nextRegion, hubResolved.areaCode) || null;
+      const next = new URLSearchParams(searchParams);
+      next.set('region', nextRegion);
+      if (nextArea) next.set('area', nextArea);
+      else next.delete('area');
+      next.delete('hub');
+      next.delete('spot');
+      next.delete('page');
+      setSearchParams(next, { replace: true });
+      setNearOrigin({ lat, lng });
+      setNearLabel(hubResolved.hubName || '');
+      setNearMsg('주변 목록을 정리하는 중…');
+      return true;
+    },
+    [searchParams, setSearchParams],
+  );
+
+  const handleNearMe = useCallback(() => {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      setNearLabel('');
+      setNearOrigin(null);
+      setNearMsg('이 기기에서는 위치 정보를 사용할 수 없습니다.');
+      return;
+    }
+    setNearBusy(true);
+    setNearLabel('');
+    setNearMsg('위치를 확인하는 중…');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setNearBusy(false);
+        applyUserLocation(pos.coords.latitude, pos.coords.longitude);
+      },
+      (err) => {
+        setNearBusy(false);
+        setNearLabel('');
+        setNearOrigin(null);
+        const code = err?.code;
+        if (code === 1) {
+          setNearMsg(
+            '위치 권한이 필요합니다. 브라우저에서 위치를 허용해 주세요.',
+          );
+        } else if (code === 3) {
+          setNearMsg('위치 확인이 지연되었습니다. 잠시 후 다시 시도해 주세요.');
+        } else {
+          setNearMsg(
+            '위치를 가져오지 못했습니다. 권한·네트워크를 확인해 주세요.',
+          );
+        }
+      },
+      { enableHighAccuracy: false, timeout: 15_000, maximumAge: 120_000 },
+    );
+  }, [applyUserLocation]);
 
   const setCat1 = useCallback(
     (code) => {
@@ -424,10 +645,13 @@ export default function KoreaThemeScenicPage() {
     setSearchParams(next, { replace: true });
   }, [searchParams, setSearchParams]);
 
-  const totalPages = Math.max(1, Math.ceil(dbCount / PAGE_SIZE));
+  const totalPages = nearActive
+    ? 1
+    : Math.max(1, Math.ceil(dbCount / PAGE_SIZE));
   const modalSpot = toModalSpot(selectedSpot);
   const activeCat1Label =
     TOUR_ATTRACTION_CAT1.find((c) => c.code === cat1)?.label || '종목';
+  const listHeadline = nearActive ? `${nearLabel} 주변` : '한국의 명승';
 
   return (
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
@@ -446,7 +670,7 @@ export default function KoreaThemeScenicPage() {
                   Korea · Scenic
                 </p>
                 <h1 className="truncate text-base font-extrabold tracking-tight md:text-lg lg:text-xl">
-                  한국의 명승
+                  {listHeadline}
                 </h1>
               </div>
               <div className="flex shrink-0 items-center gap-2">
@@ -480,33 +704,74 @@ export default function KoreaThemeScenicPage() {
       <main className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto w-full max-w-3xl space-y-8 px-3 py-6 md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl">
           <div className="space-y-2">
-            <div
-              role="group"
-              aria-label="권역 대분류"
-              className="flex flex-wrap gap-1.5"
-            >
-              {regionChips.map((r) => {
-                const active = region === r;
-                return (
-                  <button
-                    key={r}
-                    type="button"
-                    onClick={() => setRegion(r)}
-                    aria-pressed={active}
-                    className={
-                      active
-                        ? 'inline-flex items-center gap-1 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-950'
-                        : 'inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50'
-                    }
-                  >
-                    <FilterChipLabel
-                      label={r}
-                      count={HERITAGE_REGION_COUNTS[r]}
-                    />
-                  </button>
-                );
-              })}
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div
+                role="group"
+                aria-label="권역 대분류"
+                className="flex min-w-0 flex-1 flex-wrap gap-1.5"
+              >
+                {regionChips.map((r) => {
+                  const active = !nearActive && region === r;
+                  return (
+                    <button
+                      key={r}
+                      type="button"
+                      onClick={() => setRegion(r)}
+                      aria-pressed={active}
+                      className={
+                        active
+                          ? 'inline-flex items-center gap-1 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-950'
+                          : 'inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50'
+                      }
+                    >
+                      <FilterChipLabel
+                        label={r}
+                        count={HERITAGE_REGION_COUNTS[r]}
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+              <button
+                type="button"
+                onClick={handleNearMe}
+                disabled={nearBusy}
+                aria-label="내 주변 명소·명승·관광지 불러오기"
+                title="내 주변"
+                aria-pressed={nearActive}
+                className={`shrink-0 flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold disabled:opacity-60 ${
+                  nearActive
+                    ? 'border-amber-500 bg-amber-500 text-white hover:bg-amber-600'
+                    : 'border-amber-500/40 bg-amber-500 text-white hover:bg-amber-600'
+                }`}
+              >
+                {nearBusy ? (
+                  <Loader2 size={14} className="animate-spin" aria-hidden="true" />
+                ) : (
+                  <LocateFixed size={14} aria-hidden="true" />
+                )}
+                내 주변
+              </button>
             </div>
+            {nearMsg ? (
+              <div
+                role="status"
+                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-amber-200 bg-amber-50/90 px-3 py-2"
+              >
+                <p className="text-[12px] font-bold leading-snug text-amber-950 break-keep">
+                  {nearMsg}
+                </p>
+                {!nearBusy ? (
+                  <button
+                    type="button"
+                    onClick={clearNear}
+                    className="shrink-0 rounded-full px-2 py-1 text-[11px] font-semibold text-amber-800/70 hover:bg-amber-100/80"
+                  >
+                    닫기
+                  </button>
+                ) : null}
+              </div>
+            ) : null}
             {areaChips.length > 1 ? (
               <div
                 role="group"
@@ -570,35 +835,23 @@ export default function KoreaThemeScenicPage() {
             <ul className="space-y-2">
               {curatedSpots.map((spot) => (
                 <li key={`c-${spot.id}`}>
-                  <button
-                    type="button"
-                    onClick={() => openSpot(spot.id)}
-                    className="flex w-full items-start gap-3 rounded-2xl border border-stone-200/90 bg-white px-4 py-3.5 text-left shadow-sm transition-colors hover:border-amber-300/80 hover:bg-amber-50/40"
-                  >
-                    <span className="min-w-0 flex-1">
-                      <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                        <span className="text-sm font-extrabold tracking-tight text-stone-900 break-keep">
-                          {spot.name}
-                        </span>
-                        <span className="text-[11px] font-semibold text-stone-500">
-                          {formatScenicSpotPlaceLabel(spot)}
-                        </span>
-                      </span>
-                      <span className="mt-0.5 block text-xs leading-relaxed text-stone-600 break-keep">
-                        {spot.blurb}
-                      </span>
-                    </span>
-                  </button>
+                  <ScenicListRow
+                    spot={spot}
+                    distanceKm={curatedKmById.get(String(spot.id))}
+                    onOpen={openSpot}
+                  />
                 </li>
               ))}
             </ul>
             {curatedSpots.length === 0 ? (
               <p className="text-sm text-stone-500 break-keep">
-                {hubId
-                  ? `${hubName || '이 여행지'}에 해당하는 선정 명소가 없습니다. 아래 국가유산 명승을 둘러보세요.`
-                  : areaCode
-                    ? '이 시도에 해당하는 선정 명소가 없습니다. 다른 시도를 골라 보세요.'
-                    : '이 권역에 해당하는 선정 명소가 없습니다.'}
+                {nearActive
+                  ? `${NEAR_KM}km 안 선정 명소가 없습니다. 아래 국가유산 명승을 둘러보세요.`
+                  : hubId
+                    ? `${hubName || '이 여행지'}에 해당하는 선정 명소가 없습니다. 아래 국가유산 명승을 둘러보세요.`
+                    : areaCode
+                      ? '이 시도에 해당하는 선정 명소가 없습니다. 다른 시도를 골라 보세요.'
+                      : '이 권역에 해당하는 선정 명소가 없습니다.'}
               </p>
             ) : null}
           </section>
@@ -621,33 +874,21 @@ export default function KoreaThemeScenicPage() {
             <p className="text-xs text-stone-500 break-keep">{HERITAGE_DISCLAIMER}</p>
             {heritageSpots.length === 0 ? (
               <p className="text-sm text-stone-500 break-keep">
-                {hubId
-                  ? `${hubName || '이 여행지'}에 해당하는 국가유산 명승이 없습니다. 시·군 필터를 해제해 보세요.`
-                  : '이 권역·시도에 해당하는 국가유산 명승이 없습니다.'}
+                {nearActive
+                  ? `${NEAR_KM}km 안 국가유산 명승이 없습니다.`
+                  : hubId
+                    ? `${hubName || '이 여행지'}에 해당하는 국가유산 명승이 없습니다. 시·군 필터를 해제해 보세요.`
+                    : '이 권역·시도에 해당하는 국가유산 명승이 없습니다.'}
               </p>
             ) : (
               <ul className="space-y-2">
                 {heritageSpots.map((spot) => (
                   <li key={`h-${spot.id}`}>
-                    <button
-                      type="button"
-                      onClick={() => openSpot(spot.id)}
-                      className="flex w-full items-start gap-3 rounded-2xl border border-stone-200/90 bg-white px-4 py-3.5 text-left shadow-sm transition-colors hover:border-amber-300/80 hover:bg-amber-50/40"
-                    >
-                      <span className="min-w-0 flex-1">
-                        <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                          <span className="text-sm font-extrabold tracking-tight text-stone-900 break-keep">
-                            {spot.name}
-                          </span>
-                          <span className="text-[11px] font-semibold text-stone-500">
-                            {formatScenicSpotPlaceLabel(spot)}
-                          </span>
-                        </span>
-                        <span className="mt-0.5 block text-xs leading-relaxed text-stone-600 break-keep">
-                          {spot.blurb}
-                        </span>
-                      </span>
-                    </button>
+                    <ScenicListRow
+                      spot={spot}
+                      distanceKm={heritageKmById.get(String(spot.id))}
+                      onOpen={openSpot}
+                    />
                   </li>
                 ))}
               </ul>
@@ -662,18 +903,28 @@ export default function KoreaThemeScenicPage() {
               >
                 {catalogHeading}
               </h2>
-              {scopeCount > 0 || dbStatus === 'ok' || dbCount > 0 ? (
-                <p className="text-xs font-semibold text-stone-500 tabular-nums">
-                  {(scopeCount > 0 ? scopeCount : dbCount).toLocaleString('ko-KR')}
-                  곳
-                  {totalPages > 1 ? ` · ${page}/${totalPages}` : ''}
-                </p>
-              ) : null}
+              {nearActive
+                ? dbStatus !== 'loading' && (
+                    <p className="text-xs font-semibold text-stone-500 tabular-nums">
+                      {dbCount.toLocaleString('ko-KR')}곳 · 가까운 순
+                    </p>
+                  )
+                : scopeCount > 0 || dbStatus === 'ok' || dbCount > 0 ? (
+                    <p className="text-xs font-semibold text-stone-500 tabular-nums">
+                      {(scopeCount > 0 ? scopeCount : dbCount).toLocaleString(
+                        'ko-KR',
+                      )}
+                      곳
+                      {totalPages > 1 ? ` · ${page}/${totalPages}` : ''}
+                    </p>
+                  ) : null}
             </div>
             <p className="text-xs text-stone-500 break-keep">
-              {hubId
-                ? `${hubName} 주소 기준 TourAPI 관광지(지정 명승과 별개)입니다. 대표 이미지가 있는 곳을 먼저·최근 수정일 순으로 나열합니다.`
-                : 'TourAPI 관광지(지정 명승과 별개)입니다. 대표 이미지가 있는 곳을 먼저·최근 수정일 순으로 나열합니다. 아래 종목으로 목록을 나눕니다.'}
+              {nearActive
+                ? `현재 위치 ${NEAR_KM}km 안 TourAPI 관광지(지정 명승과 별개)입니다. 가까운 순으로 나열합니다.`
+                : hubId
+                  ? `${hubName} 주소 기준 TourAPI 관광지(지정 명승과 별개)입니다. 대표 이미지가 있는 곳을 먼저·최근 수정일 순으로 나열합니다.`
+                  : 'TourAPI 관광지(지정 명승과 별개)입니다. 대표 이미지가 있는 곳을 먼저·최근 수정일 순으로 나열합니다. 아래 종목으로 목록을 나눕니다.'}
             </p>
 
             <div className="space-y-2">
@@ -745,9 +996,11 @@ export default function KoreaThemeScenicPage() {
             ) : null}
             {dbStatus === 'empty' ? (
               <p className="text-sm text-stone-500 break-keep">
-                {hubId
-                  ? `${hubName}에 해당하는 관광지가 없습니다. 시·군 필터를 해제하거나 다른 종목을 골라 보세요.`
-                  : '이 권역·시도·종목에 해당하는 관광지가 없습니다. 다른 소분류를 골라 보세요.'}
+                {nearActive
+                  ? `${NEAR_KM}km 안 관광지가 없습니다. 다른 종목을 골라 보세요.`
+                  : hubId
+                    ? `${hubName}에 해당하는 관광지가 없습니다. 시·군 필터를 해제하거나 다른 종목을 골라 보세요.`
+                    : '이 권역·시도·종목에 해당하는 관광지가 없습니다. 다른 소분류를 골라 보세요.'}
               </p>
             ) : null}
 
@@ -755,31 +1008,17 @@ export default function KoreaThemeScenicPage() {
               <ul className="space-y-2">
                 {dbSpots.map((spot) => (
                   <li key={`d-${spot.id}`}>
-                    <button
-                      type="button"
-                      onClick={() => openSpot(spot.id)}
-                      className="flex w-full items-start gap-3 rounded-2xl border border-stone-200/90 bg-white px-4 py-3.5 text-left shadow-sm transition-colors hover:border-amber-300/80 hover:bg-amber-50/40"
-                    >
-                      <span className="min-w-0 flex-1">
-                        <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                          <span className="text-sm font-extrabold tracking-tight text-stone-900 break-keep">
-                            {spot.name}
-                          </span>
-                          <span className="text-[11px] font-semibold text-stone-500">
-                            {formatScenicSpotPlaceLabel(spot)}
-                          </span>
-                        </span>
-                        <span className="mt-0.5 block text-xs leading-relaxed text-stone-600 break-keep">
-                          {spot.blurb}
-                        </span>
-                      </span>
-                    </button>
+                    <ScenicListRow
+                      spot={spot}
+                      distanceKm={dbKmById.get(String(spot.id))}
+                      onOpen={openSpot}
+                    />
                   </li>
                 ))}
               </ul>
             ) : null}
 
-            {totalPages > 1 && dbSpots.length > 0 ? (
+            {!nearActive && totalPages > 1 && dbSpots.length > 0 ? (
               <div className="flex items-center justify-between gap-2 pt-1">
                 <button
                   type="button"

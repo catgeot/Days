@@ -2,6 +2,36 @@
 
 직전: [`2026-08-05-project-log.md`](./2026-08-05-project-log.md)
 
+## 테마여행 #49, 내주변 목록
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **요청**: 내주변 명소·관광지를 축제홈과 같은 위치 기반 리스트 나열로
+- **한 일**: 「내 주변」GPS · 80km 반경 · GATEO 선정 명소·국가유산 명승·TourAPI 관광지 거리순 · 거리 배지 · 권역 칩 시 해제 · `nearbyScenicRank` + smoke
+- **VERIFY**: `npm run smoke:korea-scenic-nearby` · `smoke:korea-heritage-scenic` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「내 주변 명소·명승·관광지 거리순」
+- **QA**: 위치 허용→제목「{hub} 주변」·거리 km·섹션별 건수·닫기/권역 칩으로 복귀
+
+### 테마여행 · 에이전트 핸드오프 → `#50`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #50, Preview QA 반영` |
+| **브랜치** | `cursor/korea-theme` (고정) |
+| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
+| **읽을 것 3** | ① 본 절 ② #49 내주변 ③ 플랜 §1.0 |
+| **금지 3** | 축제 지도·칩 리팩터 · Tour 대량 자동 승격 · UI 임의 리디자인 |
+| **후보** | Preview QA · S9 |
+| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #50, Preview QA 반영
+```
+
 ## 테마여행 #48, 명소목록
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `77d62393` · Preview QA 대기
@@ -13,24 +43,6 @@
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
 - **작업 로그**: Preview 우측 「GATEO 선정 명소 라벨·목록 확장」
 - **QA**: 선정 명소 제목·권역별 수량·성산일출봉/해운대/한라산 등 신규 상세
-
-### 테마여행 · 에이전트 핸드오프 → `#49`
-
-| | |
-|--|--|
-| **세션 표기** | `테마여행 #49, Preview QA 반영` |
-| **브랜치** | `cursor/korea-theme` (고정) |
-| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
-| **읽을 것 3** | ① 본 절 ② #48 명소 97 ③ 플랜 §1.0 |
-| **금지 3** | Tour 대량 자동 승격 · 국가유산 명승과 큐레이션 혼동 · UI 임의 리디자인 |
-| **후보** | Preview QA · 명소 추가 후보 · S9 |
-| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
-
-**다음 채팅명 (복붙)**:
-
-```
-테마여행 #49, Preview QA 반영
-```
 
 ## 테마여행 #47, 국가유산 명승 상세 보강
 
