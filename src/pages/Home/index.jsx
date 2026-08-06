@@ -30,7 +30,7 @@ import {
   overlaySessionCuration,
   resolvePlaceTargetFromSlug,
 } from './lib/placeRouteHydrate';
-import { getSystemPrompt } from './lib/prompts';
+import { getSystemPrompt, PERSONA_TYPES } from './lib/prompts';
 import { persistMooniLastChatId } from './lib/tripChatUtils';
 import { enrichLocationWithRentalAirport } from '../../utils/rentalAirportMatch.js';
 import {
@@ -323,6 +323,17 @@ function Home() {
       boundSpot,
     });
   }, [handleStartChat, selectedLocation]);
+
+  useEffect(() => {
+    const st = routeLocation.state;
+    if (!st?.openMooni || !st?.boundSpot?.name) return;
+    const boundSpot = st.boundSpot;
+    navigate('.', { replace: true, state: {} });
+    handleStartChat('MOONi', {
+      persona: PERSONA_TYPES.GENERAL,
+      boundSpot,
+    });
+  }, [routeLocation.state, navigate, handleStartChat]);
 
   /** 무니 인트로 → 장소카드/검색 desc 재사용 */
   const handlePlaceIntroReady = useCallback(({ summary, placeName }) => {

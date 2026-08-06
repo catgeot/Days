@@ -8,22 +8,25 @@ import {
   Landmark,
   Loader2,
   MapPin,
+  MessageCircle,
   Phone,
   Route,
   Sparkles,
   Utensils,
   X,
+  Youtube,
 } from 'lucide-react';
-import { setPlaceReturnTo } from '../Home/lib/placeReturnTo';
 import {
   getThemeMembership,
   resolveThemeCrossLinks,
+  scenicHomePathForHubId,
 } from '../Home/lib/koreaThemeCrossLinks';
 import {
   buildThemeModulePath,
   pushThemeNavBack,
   themeModuleLabelForPath,
 } from '../Home/lib/koreaThemeNavBack';
+import { buildMooniBoundSpotFromLocation } from '../Home/lib/placeChatIntro';
 import { fetchTourApiAttractionDetail } from '../../utils/fetchTourApiAttractionDetail';
 import { fetchNearbyTourAttractions } from '../../utils/fetchNearbyTourAttractions';
 import {
@@ -36,8 +39,19 @@ import {
   fetchNearbyTourLeports,
   LEPORTS_CONTENT_TYPE_ID,
 } from '../../utils/fetchNearbyTourLeisureCulture';
+import {
+  fetchScenicSpotVideos,
+  SCENIC_VIDEOS_MAX,
+  SCENIC_VIDEOS_PAGE,
+} from '../../utils/fetchScenicSpotVideos';
 import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
 import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
+
+function youtubeThumb(videoId) {
+  const id = String(videoId || '').trim();
+  if (!id) return '';
+  return `https://img.youtube.com/vi/${id}/mqdefault.jpg`;
+}
 
 const MODULE_CHIP = {
   scenic: { label: '명승지', path: '/korea/theme/scenic' },
@@ -194,19 +208,19 @@ function ThemeSpotCrossRail({
     ? buildMrtTnaSearchMoreUrl(cross.tna.keyword)
     : '';
 
-  const placeReturnPath =
-    backEntry?.path ||
-    buildThemeModulePath(returnTo, {
-      spotId: spot.id,
-      areaCode: spot.areaCode,
-    });
-
-  const openNearbyPlace = (hubId) => {
-    const slug = String(hubId || '').trim().toLowerCase();
-    if (!slug || !placeReturnPath) return;
-    setPlaceReturnTo(placeReturnPath);
+  const openNearbyScenicHome = (hub) => {
+    const path =
+      String(hub?.scenicPath || '').trim() ||
+      scenicHomePathForHubId(hub?.hubId);
+    if (!path) return;
+    if (backEntry) {
+      pushThemeNavBack(backEntry);
+      onClose?.();
+      navigate(path, { state: { themeBack: backEntry } });
+      return;
+    }
     onClose?.();
-    navigate(`/place/${slug}`, { state: { returnTo: placeReturnPath } });
+    navigate(path);
   };
 
   const showNearbyHubs = !hideNearbyHubs && cross.nearbyHubs.length > 0;
@@ -261,10 +275,13 @@ function ThemeSpotCrossRail({
           <ul className="space-y-1.5">
             {cross.nearbyHubs.map((h) => (
               <li key={h.hubId}>
-                <CrossTextButton onClick={() => openNearbyPlace(h.hubId)}>
+                <CrossTextButton onClick={() => openNearbyScenicHome(h)}>
                   <span className="inline-flex items-center gap-1.5">
                     <MapPin size={14} className="text-amber-700" aria-hidden="true" />
                     {h.name}
+                    <span className="text-[11px] font-medium text-stone-500">
+                      명승지
+                    </span>
                   </span>
                 </CrossTextButton>
               </li>
@@ -299,9 +316,6 @@ function ThemeSpotCrossRail({
               </a>
             ) : null}
           </div>
-          <p className="text-[11px] leading-relaxed text-stone-500 break-keep">
-            예약·가격은 장소 카드에서도 이어갈 수 있습니다.
-          </p>
         </CrossRailSection>
       ) : null}
 
@@ -593,6 +607,12 @@ export default function ThemeSpotDetailModal({
   const [selectedLeports, setSelectedLeports] = useState(null);
   const [selectedCulture, setSelectedCulture] = useState(null);
   const [selectedAttraction, setSelectedAttraction] = useState(null);
+  const [videosOpen, setVideosOpen] = useState(false);
+  const [videos, setVideos] = useState([]);
+  const [videosLoading, setVideosLoading] = useState(false);
+  const [videosError, setVideosError] = useState('');
+  const [videosLoadedFor, setVideosLoadedFor] = useState('');
+  const [videosExpanded, setVideosExpanded] = useState(false);
 
   const spotType = String(spot?.contentTypeId || '');
   const isRestaurant = spotType === RESTAURANT_CONTENT_TYPE_ID;
@@ -607,6 +627,10 @@ export default function ThemeSpotDetailModal({
   useEffect(() => {
     const onKey = (event) => {
       if (event.key === 'Escape') {
+        if (videosOpen) {
+          setVideosOpen(false);
+          return;
+        }
         if (
           selectedFood ||
           selectedLeports ||
@@ -627,6 +651,7 @@ export default function ThemeSpotDetailModal({
     };
   }, [
     onClose,
+    videosOpen,
     selectedFood,
     selectedLeports,
     selectedCulture,
@@ -635,6 +660,12 @@ export default function ThemeSpotDetailModal({
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0 });
+    setVideosOpen(false);
+    setVideos([]);
+    setVideosError('');
+    setVideosLoadedFor('');
+    setVideosExpanded(false);
+    setVideosLoading(false);
   }, [spot?.id]);
 
   useEffect(() => {
@@ -854,32 +885,112 @@ export default function ThemeSpotDetailModal({
     return out;
   }, [detail?.infoItems, overview]);
 
+  useEffect(() => {
+    if (!videosOpen || !spot?.name) return;
+    const contentId = String(spot.contentId || '').trim();
+    const cacheKey =
+      String(spot.placeSlug || spot.hubId || spot.id || '').trim() || '';
+    const loadKey = /^\d{1,32}$/.test(contentId) ? contentId : cacheKey;
+    if (!loadKey || videosLoadedFor === loadKey) return;
+
+    let cancelled = false;
+    setVideosLoading(true);
+    setVideosError('');
+
+    (async () => {
+      const result = await fetchScenicSpotVideos({
+        contentId: /^\d{1,32}$/.test(contentId) ? contentId : null,
+        title: String(spot.name),
+        titleEn: spot.nameEn || null,
+        cacheKey: cacheKey || null,
+      });
+      if (cancelled) return;
+      setVideosLoadedFor(loadKey);
+      setVideosLoading(false);
+      setVideosExpanded(false);
+      if (!result.ok) {
+        setVideos([]);
+        setVideosError('관련 영상을 찾지 못했습니다.');
+        return;
+      }
+      const list = Array.isArray(result.videos)
+        ? result.videos.slice(0, SCENIC_VIDEOS_MAX)
+        : [];
+      setVideos(list);
+      if (!list.length) {
+        setVideosError('관련 영상을 찾지 못했습니다.');
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    videosOpen,
+    spot?.name,
+    spot?.nameEn,
+    spot?.contentId,
+    spot?.placeSlug,
+    spot?.hubId,
+    spot?.id,
+    videosLoadedFor,
+  ]);
+
   if (!spot) return null;
 
   const hasContentId = /^\d{1,32}$/.test(String(spot.contentId || '').trim());
   const hero =
     toHttps(detail?.imageUrl) ||
     (detail?.galleryUrls?.[0] ? toHttps(detail.galleryUrls[0]) : '');
-  const galleryExtra = (
-    Array.isArray(detail?.galleryUrls)
-      ? detail.galleryUrls.map(toHttps).filter(Boolean)
-      : []
-  ).filter((url) => url && url !== hero);
 
   const scrollToTop = () => {
     scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const openPlace = () => {
-    const slug = String(spot.placeSlug || '').trim();
-    if (!slug || !returnTo) return;
-    const placeReturnPath = buildThemeModulePath(returnTo, {
+  const openMooni = () => {
+    const lat = Number(spot.lat);
+    const lng = Number(spot.lng);
+    const fromDetailLat = Number(detail?.mapy);
+    const fromDetailLng = Number(detail?.mapx);
+    const boundSpot = buildMooniBoundSpotFromLocation({
+      name: spot.name,
+      slug: spot.placeSlug || spot.hubId || null,
+      name_en: spot.nameEn || null,
+      country: '대한민국',
+      country_en: 'South Korea',
+      lat: Number.isFinite(lat)
+        ? lat
+        : Number.isFinite(fromDetailLat)
+          ? fromDetailLat
+          : null,
+      lng: Number.isFinite(lng)
+        ? lng
+        : Number.isFinite(fromDetailLng)
+          ? fromDetailLng
+          : null,
+    });
+    if (!boundSpot?.name) return;
+    const returnPath = buildThemeModulePath(returnTo, {
       spotId: spot.id,
       areaCode: spot.areaCode,
     });
-    setPlaceReturnTo(placeReturnPath);
-    navigate(`/place/${slug}`, { state: { returnTo: placeReturnPath } });
+    onClose?.();
+    navigate('/', {
+      state: {
+        openMooni: true,
+        boundSpot,
+        returnTo: returnPath,
+      },
+    });
   };
+
+  const visibleVideos = videosExpanded
+    ? videos
+    : videos.slice(0, SCENIC_VIDEOS_PAGE);
+  const canLoadMoreVideos =
+    !videosLoading &&
+    !videosExpanded &&
+    videos.length > SCENIC_VIDEOS_PAGE;
 
   return (
     <div
@@ -967,9 +1078,7 @@ export default function ThemeSpotDetailModal({
 
             {!detailLoading && !hasContentId ? (
               <p className="text-xs text-stone-500 break-keep">
-                {spot.placeSlug
-                  ? '관광공사 Tour 상세는 아직 연결되지 않았습니다. 아래 장소 카드에서 이어서 볼 수 있습니다.'
-                  : 'Tour 상세 없음 — GATEO 안내만 표시합니다.'}
+                Tour 상세 없음 — GATEO 안내와 아래 무니·영상으로 이어갈 수 있습니다.
               </p>
             ) : null}
 
@@ -1018,30 +1127,29 @@ export default function ThemeSpotDetailModal({
               </dl>
             ) : null}
 
-            {galleryExtra.length > 0 ? (
-              <div className="space-y-2" aria-label="명소 사진">
-                {galleryExtra.map((url) => (
-                  <img
-                    key={url}
-                    src={url}
-                    alt=""
-                    className="aspect-[16/9] w-full object-cover sm:aspect-[2/1]"
-                    loading="lazy"
-                  />
-                ))}
+            <section className="space-y-2 border-t border-stone-200/80 pt-4">
+              <h3 className="text-[11px] font-bold uppercase tracking-[0.14em] text-stone-500">
+                더 알아보기
+              </h3>
+              <div className="flex flex-col gap-1.5 sm:flex-row sm:flex-wrap">
+                <button
+                  type="button"
+                  onClick={openMooni}
+                  className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
+                >
+                  <MessageCircle size={15} aria-hidden="true" />
+                  무니에게 묻기
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setVideosOpen(true)}
+                  className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm font-bold text-stone-800 hover:border-amber-300/80 hover:bg-amber-50"
+                >
+                  <Youtube size={15} className="text-red-600" aria-hidden="true" />
+                  유튜브 영상
+                </button>
               </div>
-            ) : null}
-
-            {spot.placeSlug ? (
-              <button
-                type="button"
-                onClick={openPlace}
-                className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
-              >
-                장소 카드 보기
-                <ExternalLink size={14} aria-hidden="true" />
-              </button>
-            ) : null}
+            </section>
 
             {!isApiPoiCross &&
               nearbyFoodStatus !== 'idle' &&
@@ -1367,6 +1475,102 @@ export default function ThemeSpotDetailModal({
           overlayZClass={nestedChildZ}
           onClose={() => setSelectedAttraction(null)}
         />
+      ) : null}
+
+      {videosOpen ? (
+        <div
+          className={`fixed inset-0 ${nestedChildZ} flex items-stretch justify-center bg-stone-900/40 backdrop-blur-[2px] p-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] pb-[max(0.625rem,env(safe-area-inset-bottom))] pl-[max(0.625rem,env(safe-area-inset-left))] pr-[max(0.625rem,env(safe-area-inset-right))] md:items-center md:p-5`}
+          onClick={(e) => {
+            e.stopPropagation();
+            setVideosOpen(false);
+          }}
+          role="presentation"
+        >
+          <div
+            className="relative flex h-full w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white text-stone-900 shadow-2xl md:h-auto md:max-h-[min(90dvh,40rem)] md:rounded-3xl"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="korea-theme-spot-videos-title"
+          >
+            <div className="flex shrink-0 items-start justify-between gap-3 border-b border-stone-200/80 px-4 py-3.5 sm:px-5">
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-700">
+                  관련 영상
+                </p>
+                <h2
+                  id="korea-theme-spot-videos-title"
+                  className="mt-0.5 text-base font-extrabold tracking-tight text-stone-900 break-keep sm:text-lg"
+                >
+                  {spot.name}
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setVideosOpen(false)}
+                aria-label="닫기"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100"
+              >
+                <X size={18} aria-hidden="true" />
+              </button>
+            </div>
+            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5 custom-scrollbar">
+              {videosLoading && (
+                <div className="flex items-center gap-2 text-sm text-stone-500 py-2">
+                  <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+                  영상 불러오는 중…
+                </div>
+              )}
+              {!videosLoading && videosError && videos.length === 0 && (
+                <p className="text-xs text-stone-500">{videosError}</p>
+              )}
+              {!videosLoading && videos.length > 0 && (
+                <>
+                  <ul className="space-y-2" aria-label="관련 유튜브 영상">
+                    {visibleVideos.map((video) => {
+                      const id = String(video?.id || '').trim();
+                      if (!id) return null;
+                      const thumb = youtubeThumb(id);
+                      const href = `https://www.youtube.com/watch?v=${id}`;
+                      return (
+                        <li key={id}>
+                          <a
+                            href={href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                          >
+                            {thumb ? (
+                              <img
+                                src={thumb}
+                                alt=""
+                                className="h-16 w-28 shrink-0 rounded-xl object-cover bg-stone-200"
+                              />
+                            ) : (
+                              <div className="h-16 w-28 shrink-0 rounded-xl bg-stone-200" />
+                            )}
+                            <span className="min-w-0 flex-1 text-sm font-bold text-stone-800 leading-snug line-clamp-3 break-keep">
+                              {video.title || 'YouTube 영상'}
+                            </span>
+                          </a>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  {canLoadMoreVideos && (
+                    <button
+                      type="button"
+                      onClick={() => setVideosExpanded(true)}
+                      className="w-full py-2.5 rounded-2xl text-sm font-bold border border-stone-200 bg-stone-50 text-stone-800 hover:bg-stone-100"
+                    >
+                      동영상 더보기
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        </div>
       ) : null}
     </div>
   );

@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 41,
-  sessionPhase: '목록 시도·도시 표기',
+  sessionNo: 42,
+  sessionPhase: '명승 인근 여행지',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-06-korea-theme-scenic-nearby-mooni-videos',
+    session: '테마여행 #42, 명승 인근 여행지',
+    title: '인근 여행지→명승 홈 · 무니·유튜브',
+    detail:
+      '명승 상세 「인근 여행지」(보령·공주·태안 등)가 장소 카드가 아니라 해당 지역 명승지 홈으로 갑니다. 본문의 「장소 카드 보기」와 오탐 많은 추가 사진은 빼고, 축제 본문과 비슷하게 「무니에게 묻기」·「유튜브 영상」모달로 이어집니다. Preview에서 명승 상세→인근·무니·영상을 확인해 주세요.',
+    at: '2026-08-06',
+  },
   {
     id: '2026-08-06-korea-theme-scenic-place-label',
     session: '테마여행 #41, 목록 시도·도시 표기',

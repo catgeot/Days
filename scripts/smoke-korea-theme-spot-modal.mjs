@@ -59,8 +59,12 @@ const modalSrc = readFileSync(
   join(root, 'src/pages/KoreaTheme/ThemeSpotDetailModal.jsx'),
   'utf8',
 );
-assert(modalSrc.includes('장소 카드 보기'), 'modal has place CTA');
-assert(modalSrc.includes('setPlaceReturnTo'), 'modal sets returnTo');
+assert(modalSrc.includes('무니에게 묻기'), 'modal has Mooni CTA');
+assert(modalSrc.includes('유튜브 영상'), 'modal has YouTube CTA');
+assert(modalSrc.includes('fetchScenicSpotVideos'), 'modal loads scenic videos');
+assert(modalSrc.includes('scenicHomePathForHubId'), 'nearby hubs open scenic home');
+assert(!modalSrc.includes('장소 카드 보기'), 'modal does not link to place card');
+assert(!modalSrc.includes('setPlaceReturnTo'), 'modal does not set place returnTo');
 assert(modalSrc.includes('Escape'), 'modal Esc close');
 assert(modalSrc.includes('fetchTourApiAttractionDetail'), 'modal loads Tour detail');
 assert(modalSrc.includes('resolveThemeCrossLinks'), 'modal wires cross-links matcher');
@@ -86,7 +90,9 @@ for (const [file, label] of [
     `${label} does not navigate to place on list click`,
   );
   assert(
-    src.includes('항목을 누르면 상세') || src.includes('상세를 봅니다'),
+    src.includes('항목을 누르면 상세') ||
+      src.includes('상세를 봅니다') ||
+      src.includes('상세를 모달로'),
     `${label} copy mentions detail modal`,
   );
 }

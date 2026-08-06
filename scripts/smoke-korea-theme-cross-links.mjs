@@ -16,6 +16,7 @@ import {
   resolveThemeCrossLinks,
   resolveThemePackageKey,
   resolveThemeSpotAreaCode,
+  scenicHomePathForHubId,
   THEME_REGION_LABEL_TO_AREA,
 } from '../src/pages/Home/lib/koreaThemeCrossLinks.js';
 import { extractTourAttractionSigungu } from '../src/pages/Home/lib/koreaTourAttractionLocality.js';
@@ -67,6 +68,29 @@ assert(bundle.tna?.keyword, `tna keyword (got ${bundle.tna?.keyword})`);
 assert(resolveThemePackageKey(hallasan) === 'koreaJeju', 'hallasan package koreaJeju');
 assert(bundle.packageCta?.key === 'koreaJeju', 'bundle packageCta koreaJeju');
 assert(Array.isArray(bundle.nearbyHubs), 'nearbyHubs array');
+assert(
+  scenicHomePathForHubId('boryeong').includes('region='),
+  'boryeong scenic home has region',
+);
+assert(
+  scenicHomePathForHubId('boryeong').includes('area='),
+  'boryeong scenic home has area',
+);
+assert(
+  !scenicHomePathForHubId('boryeong').includes('/place/'),
+  'boryeong scenic home is not place card',
+);
+if (bundle.nearbyHubs.length > 0) {
+  assert(
+    bundle.nearbyHubs.every(
+      (h) =>
+        typeof h.scenicPath === 'string' &&
+        h.scenicPath.startsWith('/korea/theme/scenic') &&
+        !h.placePath,
+    ),
+    'nearbyHubs expose scenicPath (no placePath)',
+  );
+}
 
 const gyeongjuScenic = listKoreaScenicSpots().find((s) => s.hubId === 'gyeongju');
 if (gyeongjuScenic) {
