@@ -61,6 +61,13 @@ const modalSrc = readFileSync(
 );
 assert(modalSrc.includes('무니에게 묻기'), 'modal has Mooni CTA');
 assert(modalSrc.includes('유튜브 영상'), 'modal has YouTube CTA');
+assert(modalSrc.includes('MooniBoundChatHost'), 'modal hosts Mooni chat in-place');
+assert(modalSrc.includes('setMooniOpen(true)'), 'Mooni opens without leaving theme route');
+assert(
+  !modalSrc.includes("navigate('/',") && !modalSrc.includes('navigate("/",'),
+  'modal does not navigate to globe home for Mooni',
+);
+assert(!modalSrc.includes('openMooni: true'), 'modal does not use Home openMooni route state');
 assert(modalSrc.includes('fetchScenicSpotVideos'), 'modal loads scenic videos');
 assert(modalSrc.includes('scenicHomePathForHubId'), 'nearby hubs open scenic home');
 assert(modalSrc.includes('galleryUrls'), 'modal keeps Tour gallery photos');

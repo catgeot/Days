@@ -30,6 +30,7 @@ import {
   themeModuleLabelForPath,
 } from '../Home/lib/koreaThemeNavBack';
 import { buildMooniBoundSpotFromLocation } from '../Home/lib/placeChatIntro';
+import MooniBoundChatHost from '../Home/components/MooniBoundChatHost';
 import { useLightboxPinchTransform } from '../../components/PlaceCard/common/useLightboxPinchTransform';
 import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
 import { fetchTourApiAttractionDetail } from '../../utils/fetchTourApiAttractionDetail';
@@ -622,6 +623,8 @@ export default function ThemeSpotDetailModal({
   const [videosError, setVideosError] = useState('');
   const [videosLoadedFor, setVideosLoadedFor] = useState('');
   const [videosExpanded, setVideosExpanded] = useState(false);
+  const [mooniOpen, setMooniOpen] = useState(false);
+  const [mooniBound, setMooniBound] = useState(null);
   const [activeImage, setActiveImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const heroSwipeStartRef = useRef(null);
@@ -762,6 +765,11 @@ export default function ThemeSpotDetailModal({
   useEffect(() => {
     const onKey = (event) => {
       if (event.key === 'Escape') {
+        if (mooniOpen) {
+          setMooniOpen(false);
+          setMooniBound(null);
+          return;
+        }
         if (lightboxOpen) {
           closeLightbox();
           return;
@@ -794,6 +802,7 @@ export default function ThemeSpotDetailModal({
     };
   }, [
     onClose,
+    mooniOpen,
     lightboxOpen,
     closeLightbox,
     videosOpen,
@@ -1125,18 +1134,8 @@ export default function ThemeSpotDetailModal({
           : null,
     });
     if (!boundSpot?.name) return;
-    const returnPath = buildThemeModulePath(returnTo, {
-      spotId: spot.id,
-      areaCode: spot.areaCode,
-    });
-    onClose?.();
-    navigate('/', {
-      state: {
-        openMooni: true,
-        boundSpot,
-        returnTo: returnPath,
-      },
-    });
+    setMooniBound(boundSpot);
+    setMooniOpen(true);
   };
 
   const visibleVideos = videosExpanded
@@ -1152,6 +1151,7 @@ export default function ThemeSpotDetailModal({
       className={`fixed inset-0 ${overlayZClass} flex items-stretch justify-center bg-stone-900/40 backdrop-blur-[2px] p-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] pb-[max(0.625rem,env(safe-area-inset-bottom))] pl-[max(0.625rem,env(safe-area-inset-left))] pr-[max(0.625rem,env(safe-area-inset-right))] md:items-center md:p-5`}
       onClick={(e) => {
         e.stopPropagation();
+        if (mooniOpen || videosOpen || lightboxOpen) return;
         onClose();
       }}
       role="presentation"
@@ -1855,6 +1855,15 @@ export default function ThemeSpotDetailModal({
           </div>
         </div>
       ) : null}
+
+      <MooniBoundChatHost
+        isOpen={mooniOpen}
+        boundSpot={mooniBound}
+        onClose={() => {
+          setMooniOpen(false);
+          setMooniBound(null);
+        }}
+      />
     </div>
   );
 }

@@ -2,6 +2,38 @@
 
 직전: [`2026-08-05-project-log.md`](./2026-08-05-project-log.md)
 
+## 테마여행 #44, 무니에게 묻기
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **요청**: 「무니에게 묻기」클릭 시 지구본 홈을 거치지 말고 채팅이 바로 뜨고, 닫으면 이전 명승 상세로 복귀
+- **원인**: 테마 라우트가 Home 밖이라 `navigate('/')` + `openMooni` state로 ChatModal을 열었고, 닫기 시 `returnTo` 미연결
+- **한 일**: `MooniBoundChatHost` — 현재 라우트에서 ChatModal · `ThemeSpotDetailModal`은 상세를 닫지 않고 오버레이 · Esc/닫기→상세 유지 · 작업 로그
+- **금지 준수**: 축제 지도·칩 리팩터 없음 · top10/regions 탑레벨 부활 없음 · releaseNotes 미작성 · UI 임의 리디자인 없음
+- **VERIFY**: `smoke:korea-theme-spot-modal` · `npm run build` PASS
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「무니 채팅을 명승 상세에서 바로 열기」
+- **QA**: 명승 상세→무니에게 묻기→채팅 즉시 · 지구본 깜빡임 없음 · 닫기→같은 상세
+
+### 테마여행 · 에이전트 핸드오프 → `#45`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #45, Preview QA 반영` |
+| **브랜치** | `cursor/korea-theme` (고정) |
+| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
+| **읽을 것 3** | ① 본 절 ② #44 무니 in-place ③ 플랜 §1.0·S9 |
+| **금지 3** | 축제 지도·칩 리팩터 · top10/regions 탑레벨 부활 · 합의 전 releaseNotes · UI 임의 리디자인 |
+| **후보** | Preview QA 피드백 · S9 폴리시·릴리스 |
+| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #45, Preview QA 반영
+```
+
 ## 테마여행 #43, 명승 사진 복구·스와이프
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `465cf906` · Preview QA 대기
@@ -14,24 +46,6 @@
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
 - **작업 로그**: Preview 우측 「명승 본문 사진 복구·쓸어 넘기기」
 - **QA**: 명승 상세에 사진 그리드 · 탭→확대보기 스와이프 · 장소 카드 CTA 없음 · 무니·유튜브 유지
-
-### 테마여행 · 에이전트 핸드오프 → `#44`
-
-| | |
-|--|--|
-| **세션 표기** | `테마여행 #44, Preview QA 반영` |
-| **브랜치** | `cursor/korea-theme` (고정) |
-| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
-| **읽을 것 3** | ① 본 절 ② #42·#43 산출 ③ 플랜 §1.0·S9 |
-| **금지 3** | 축제 지도·칩 리팩터 · top10/regions 탑레벨 부활 · 합의 전 releaseNotes · UI 임의 리디자인 |
-| **후보** | Preview QA 피드백 · S9 폴리시·릴리스 |
-| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
-
-**다음 채팅명 (복붙)**:
-
-```
-테마여행 #44, Preview QA 반영
-```
 
 ## 테마여행 #42, 명승 인근 여행지
 

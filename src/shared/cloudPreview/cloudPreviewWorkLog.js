@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 43,
-  sessionPhase: '명승 사진 복구·스와이프',
+  sessionNo: 44,
+  sessionPhase: '무니에게 묻기',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-06-korea-theme-mooni-inplace',
+    session: '테마여행 #44, 무니에게 묻기',
+    title: '무니 채팅을 명승 상세에서 바로 열기',
+    detail:
+      '「무니에게 묻기」가 지구본 홈으로 갔다가 채팅이 뜨던 흐름을 없앴습니다. 명승 상세 위에서 바로 채팅 모달이 열리고, 닫으면 다시 그 상세로 돌아갑니다. Preview 명승 상세→무니→닫기를 확인해 주세요.',
+    at: '2026-08-06',
+  },
   {
     id: '2026-08-06-korea-theme-scenic-photo-swipe',
     session: '테마여행 #43, 명승 사진 복구·스와이프',
