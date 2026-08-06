@@ -4,7 +4,7 @@
 
 ## 테마여행 #43, 명승 사진 복구·스와이프
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `465cf906` · Preview QA 대기
 
 - **요청**: #42 오해 정정 — 명승 본문 Tour 사진은 유지 · 오탐은 장소카드 갤러리 이유 · 사진 리스트 클릭 시 쓸어 넘기기
 - **한 일**: 본문 사진 그리드 복구 · 대표/리스트→확대보기 · 좌우 스와이프·화살표·핀치(축제 #3 패턴) · 작업 로그
