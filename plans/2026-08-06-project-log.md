@@ -4,7 +4,7 @@
 
 ## 테마여행 #45, 인근 여행지 hub 명승 홈
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `73f47f55` · Preview QA 대기
 
 - **요청**: 명승 본문 인근 여행지 클릭 시 해당 도시 명승 홈으로 가야 하는데, 이전 진입(같은 시도) 명승 홈으로 연결됨
 - **원인**: `scenicHomePathForHubId`가 시도(area)까지만 붙여 보령·공주·태안이 동일 URL
