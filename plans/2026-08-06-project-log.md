@@ -4,7 +4,7 @@
 
 ## 테마여행 #37, 페이지 최적화
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `0edd6348` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `17d83aa5` (기능 `0edd6348`) · Preview QA 대기
 
 - **한 일**: 명승 DB 목록 제목을 상단 권역·시도에 맞춤(`강원도 관광지` 등) · 옆 수량은 종목 필터 없는 **지역 전체** 건수 · `scenicDbCatalogHeading` · smoke 보강
 - **금지 준수**: 축제 지도·칩 리팩터 없음 · top10/regions 탑레벨 부활 없음 · releaseNotes 미작성
