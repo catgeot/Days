@@ -4,7 +4,7 @@
 
 ## 테마여행 #41, 목록 시도·도시 표기
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `4fa8d08e` · Preview QA 대기
 
 - **요청**: 목록 우측이 「수도권 서울」「강원 강원」「전라 전북」처럼 권역·시도라 직관적이지 않음 → 「강원 춘천」「경북 경주」
 - **한 일**: `formatScenicSpotPlaceLabel` — 시도+도시(주소 시군/hub) · 서울=도시 중복 시 한 번 · curated hub 시도 폴백 · smoke · 작업 로그
