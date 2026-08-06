@@ -4,7 +4,7 @@
 
 ## 테마여행 #44, 무니에게 묻기
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `8bd6efca` · Preview QA 대기
 
 - **요청**: 「무니에게 묻기」클릭 시 지구본 홈을 거치지 말고 채팅이 바로 뜨고, 닫으면 이전 명승 상세로 복귀
 - **원인**: 테마 라우트가 Home 밖이라 `navigate('/')` + `openMooni` state로 ChatModal을 열었고, 닫기 시 `returnTo` 미연결
