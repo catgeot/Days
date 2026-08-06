@@ -14,6 +14,7 @@ import {
   TOUR_ATTRACTION_CAT1,
 } from '../Home/lib/koreaTourAttractionCategories';
 import {
+  countKoreaTourAttractions,
   fetchKoreaTourAttractionById,
   fetchKoreaTourAttractions,
   fetchScenicFilterChipCounts,
@@ -24,6 +25,7 @@ import {
   SCENIC_REGION_ORDER,
 } from '../Home/lib/koreaTourAttractions';
 import { reconcileThemeNavBack } from '../Home/lib/koreaThemeNavBack';
+import { scenicDbCatalogHeading } from './scenicCatalogHeading';
 import ThemeModuleBackButton, {
   ThemeNavBackHint,
 } from './ThemeModuleBackButton';
@@ -102,6 +104,7 @@ export default function KoreaThemeScenicPage() {
 
   const [dbSpots, setDbSpots] = useState([]);
   const [dbCount, setDbCount] = useState(0);
+  const [scopeCount, setScopeCount] = useState(0);
   const [dbStatus, setDbStatus] = useState('loading');
   const [dbError, setDbError] = useState(null);
   const [selectedSpot, setSelectedSpot] = useState(null);
@@ -118,6 +121,10 @@ export default function KoreaThemeScenicPage() {
   }, []);
 
   const cat2Chips = useMemo(() => listTourAttractionCat2(cat1), [cat1]);
+  const catalogHeading = useMemo(
+    () => scenicDbCatalogHeading(region, areaCode),
+    [region, areaCode],
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -134,6 +141,17 @@ export default function KoreaThemeScenicPage() {
       cancelled = true;
     };
   }, [region, areaCode, cat1, cat2]);
+
+  useEffect(() => {
+    let cancelled = false;
+    countKoreaTourAttractions({ region, areaCode }).then((res) => {
+      if (cancelled) return;
+      setScopeCount(res.count || 0);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [region, areaCode]);
 
   useEffect(() => {
     const rawRegion = searchParams.get('region');
@@ -477,17 +495,18 @@ export default function KoreaThemeScenicPage() {
                 id="korea-scenic-db-heading"
                 className="text-sm font-bold tracking-tight text-stone-800 md:text-base"
               >
-                전국 관광지
+                {catalogHeading}
               </h2>
-              {dbStatus === 'ok' || dbCount > 0 ? (
-                <p className="text-xs font-semibold text-stone-500">
-                  {dbCount.toLocaleString('ko-KR')}곳
+              {scopeCount > 0 || dbStatus === 'ok' || dbCount > 0 ? (
+                <p className="text-xs font-semibold text-stone-500 tabular-nums">
+                  {(scopeCount > 0 ? scopeCount : dbCount).toLocaleString('ko-KR')}
+                  곳
                   {totalPages > 1 ? ` · ${page}/${totalPages}` : ''}
                 </p>
               ) : null}
             </div>
             <p className="text-xs text-stone-500 break-keep">
-              선택한 권역·시도 아래 TourAPI 종목(대분류·소분류)으로 나눈 카탈로그입니다. 항목을 누르면 상세를 봅니다.
+              선택한 권역·시도 전체 수량이며, 아래 TourAPI 종목(대분류·소분류)으로 목록을 나눕니다. 항목을 누르면 상세를 봅니다.
             </p>
 
             <div className="space-y-2">

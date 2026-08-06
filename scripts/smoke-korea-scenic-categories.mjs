@@ -21,6 +21,7 @@ import {
   scenicRegionForAreaCode,
   SCENIC_REGION_AREA_CODES,
 } from '../src/pages/Home/lib/koreaTourAttractionMap.js';
+import { scenicDbCatalogHeading } from '../src/pages/KoreaTheme/scenicCatalogHeading.js';
 import { createClient } from '@supabase/supabase-js';
 
 let failed = 0;
@@ -74,6 +75,27 @@ assert(labelScenicAreaCode('1') === '서울', 'label area 서울');
 assert(labelScenicAreaCode('8') === '세종', 'label area 세종 fallback');
 assert(scenicAreaCodeForHubId('seoul') === '1', 'hub→area seoul');
 assert(scenicAreaCodeForHubId('suwon') === '31', 'hub→area suwon');
+
+assert(
+  scenicDbCatalogHeading('강원', null) === '강원도 관광지',
+  '강원 권역 → 강원도 관광지',
+);
+assert(
+  scenicDbCatalogHeading('제주', null) === '제주도 관광지',
+  '제주 권역 → 제주도 관광지',
+);
+assert(
+  scenicDbCatalogHeading('수도권', null) === '수도권 관광지',
+  '수도권 권역 → 수도권 관광지',
+);
+assert(
+  scenicDbCatalogHeading('수도권', '1') === '서울특별시 관광지',
+  '시도 선택 → 서울특별시 관광지',
+);
+assert(
+  scenicDbCatalogHeading('수도권', '31') === '경기도 관광지',
+  '시도 선택 → 경기도 관광지',
+);
 
 const url = String(process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '').trim();
 const anon = String(process.env.VITE_SUPABASE_ANON_KEY || '').trim();
@@ -139,6 +161,32 @@ if (url && anon) {
   assert(
     typeof chipCat2 === 'number' && chipCat2 >= 0 && chipCat2 <= seoul,
     `서울·자연관광지 칩 ⊆ 서울·자연 (${chipCat2}≤${seoul})`,
+  );
+
+  const gangwonCodes = SCENIC_REGION_AREA_CODES.강원 || [];
+  const { count: gangwonAll, error: eGangwon } = await sb
+    .from('tourapi_attraction')
+    .select('content_id', { count: 'exact', head: true })
+    .eq('active', true)
+    .eq('content_type_id', '12')
+    .in('area_code', gangwonCodes);
+  assert(!eGangwon, `강원 전체 수량 (${eGangwon?.message || 'ok'})`);
+  assert(
+    typeof gangwonAll === 'number' && gangwonAll >= 1,
+    `강원도 전체 관광지 ≥1 (got ${gangwonAll})`,
+  );
+
+  const { count: gangwonCat1, error: eGangwonCat1 } = await sb
+    .from('tourapi_attraction')
+    .select('content_id', { count: 'exact', head: true })
+    .eq('active', true)
+    .eq('content_type_id', '12')
+    .eq('cat1', 'A01')
+    .in('area_code', gangwonCodes);
+  assert(!eGangwonCat1, `강원·자연 (${eGangwonCat1?.message || 'ok'})`);
+  assert(
+    typeof gangwonCat1 === 'number' && gangwonCat1 <= gangwonAll,
+    `강원 종목 ⊆ 강원 전체 (${gangwonCat1}≤${gangwonAll})`,
   );
 } else {
   console.log('SKIP  DB filter (no supabase env)');

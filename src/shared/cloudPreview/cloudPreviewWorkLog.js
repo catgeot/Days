@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 36,
-  sessionPhase: '페이지 최적화 · 칩 건수',
+  sessionNo: 37,
+  sessionPhase: '페이지 최적화 · 지역 명칭',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-06-korea-theme-scenic-catalog-heading',
+    session: '테마여행 #37, 페이지 최적화',
+    title: '지역 대분류에 맞춘 관광지 명칭·전체 수량',
+    detail:
+      '상단 권역·시도를 바꾸면 목록 제목이 「전국 관광지」가 아니라 「강원도 관광지」「수도권 관광지」처럼 맞춰집니다. 옆 수량은 종목 필터와 무관한 해당 지역 전체 건수입니다. Preview `/korea/theme/scenic`에서 강원·제주·수도권→서울을 눌러 확인해 주세요.',
+    at: '2026-08-06',
+  },
   {
     id: '2026-08-05-korea-theme-scenic-chip-counts',
     session: '테마여행 #36, 페이지 최적화',
