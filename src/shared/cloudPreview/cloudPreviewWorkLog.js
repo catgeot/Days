@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '독도 검색',
-  sessionNo: 1,
-  sessionPhase: '허브 SSOT',
-  branch: 'cursor/dokdo-search-a849',
-  previewPath: '/',
-  qaShareSlug: 'dokdo',
+  title: '축제 페이지',
+  sessionNo: 3,
+  sessionPhase: '사진 스와이프·홈 줌 리셋',
+  branch: 'cursor/korea-photo-swipe-7d94',
+  previewPath: '/korea',
+  qaShareSlug: 'korea',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-06-korea-photo-swipe',
+    session: '축제 페이지 #3, 사진 스와이프·홈 줌 리셋',
+    title: '축제 사진 쓸어 넘기기 · 홈 확대 잔상 수정',
+    detail:
+      '상세 본문·확대보기에서 좌우로 쓸어 사진을 넘길 수 있게 했습니다. 확대보기는 핀치가 페이지가 아니라 사진만 확대되고, 닫거나 홈으로 나갈 때 iOS 페이지 줌을 되돌립니다. /korea에서 축제 카드→사진 넘기기→확대 후 닫기→홈으로 진입해 지구본이 정상 배율인지 확인해 주세요.',
+    at: '2026-08-06',
+  },
   {
     id: '2026-08-03-dokdo-hub-ssot',
     session: '독도 검색 #1, 허브 SSOT',
