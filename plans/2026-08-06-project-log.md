@@ -4,7 +4,7 @@
 
 ## 테마여행 #49, 내주변 목록
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `e8d1e629` · Preview QA 대기
 
 - **요청**: 내주변 명소·관광지를 축제홈과 같은 위치 기반 리스트 나열로
 - **한 일**: 「내 주변」GPS · 80km 반경 · GATEO 선정 명소·국가유산 명승·TourAPI 관광지 거리순 · 거리 배지 · 권역 칩 시 해제 · `nearbyScenicRank` + smoke
