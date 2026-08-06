@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 38,
-  sessionPhase: '페이지 최적화 · 목록 정렬',
+  sessionNo: 39,
+  sessionPhase: '페이지 최적화 · 권역 전체 수량',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-06-korea-theme-scenic-region-chip-total',
+    session: '테마여행 #39, 페이지 최적화',
+    title: '권역·시도 칩에 지역 전체 수량',
+    detail:
+      '최상단 권역(수도권·강원…)과 시도 칩 숫자는 종목(자연·인문) 필터와 무관한 해당 지역 전체 관광지 수입니다. 종목 칩만 필터된 수량을 보여 줍니다. Preview에서 자연/인문을 바꿔도 권역 칩 숫자가 그대로인지 확인해 주세요.',
+    at: '2026-08-06',
+  },
   {
     id: '2026-08-06-korea-theme-scenic-list-sort',
     session: '테마여행 #38, 페이지 최적화',

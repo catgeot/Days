@@ -117,7 +117,9 @@ export async function countKoreaTourAttractions(opts = {}) {
 }
 
 /**
- * 필터 칩용 건수 — 다른 차원은 현재 선택 유지, 해당 차원만 칩별로 집계.
+ * 필터 칩용 건수.
+ * - 권역(최상단 대분류)·시도: 종목 무관 **지역 전체** 수량
+ * - 종목 대·소분류: 현재 권역·시도 아래 해당 종목 수량
  * @param {{
  *   region?: string | null,
  *   areaCode?: string | null,
@@ -153,11 +155,7 @@ export async function fetchScenicFilterChipCounts(opts = {}) {
 
   const jobs = [
     ...SCENIC_REGION_ORDER.map(async (r) => {
-      const { count, error } = await countKoreaTourAttractions({
-        region: r,
-        cat1,
-        cat2,
-      });
+      const { count, error } = await countKoreaTourAttractions({ region: r });
       if (error) errors.push(error);
       regionCounts[r] = count;
     }),
@@ -165,8 +163,6 @@ export async function fetchScenicFilterChipCounts(opts = {}) {
       const { count, error } = await countKoreaTourAttractions({
         region,
         areaCode: a.code,
-        cat1,
-        cat2,
       });
       if (error) errors.push(error);
       areaCounts[a.code] = count;

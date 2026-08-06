@@ -135,19 +135,30 @@ if (url && anon) {
   assert(typeof seoul === 'number' && seoul >= 1, `서울·자연 ≥1 (got ${seoul})`);
   assert(seoul <= count, `서울 ⊆ 수도권 자연 (${seoul}≤${count})`);
 
-  // 칩 건수와 동일 필터(권역 area_codes · cat1) — UI fetchScenicFilterChipCounts 의미 검증
+  // 권역·시도 칩 = 종목 무관 지역 전체 · 종목 칩만 필터 수량
   const capitalCodes = SCENIC_REGION_AREA_CODES.수도권 || [];
-  const { count: chipRegion, error: eChipRegion } = await sb
+  const { count: chipRegionAll, error: eChipRegion } = await sb
     .from('tourapi_attraction')
     .select('content_id', { count: 'exact', head: true })
     .eq('active', true)
     .eq('content_type_id', '12')
-    .eq('cat1', 'A01')
     .in('area_code', capitalCodes);
-  assert(!eChipRegion, `chip region count (${eChipRegion?.message || 'ok'})`);
+  assert(!eChipRegion, `chip region total (${eChipRegion?.message || 'ok'})`);
   assert(
-    chipRegion === count,
-    `권역 칩 건수 = 목록 필터 (${chipRegion}===${count})`,
+    typeof chipRegionAll === 'number' && chipRegionAll >= count,
+    `권역 칩 전체 ≥ 종목 필터 (${chipRegionAll}≥${count})`,
+  );
+
+  const { count: seoulAll, error: eSeoulAll } = await sb
+    .from('tourapi_attraction')
+    .select('content_id', { count: 'exact', head: true })
+    .eq('active', true)
+    .eq('content_type_id', '12')
+    .eq('area_code', '1');
+  assert(!eSeoulAll, `chip area total (${eSeoulAll?.message || 'ok'})`);
+  assert(
+    typeof seoulAll === 'number' && seoulAll >= seoul,
+    `시도 칩 전체 ≥ 종목 필터 (${seoulAll}≥${seoul})`,
   );
 
   const { count: chipCat2, error: eChipCat2 } = await sb
