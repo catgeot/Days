@@ -4,7 +4,7 @@
 
 ## 테마여행 #42, 명승 인근 여행지
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `40a72bf8` · Preview QA 대기
 
 - **요청**: 인근 여행지(보령·공주·태안)→장소 카드 대신 해당 지역 명승지 홈 · 본문 장소 카드 링크·오탐 사진 제거 · 무니·유튜브(축제 본문형) 모달
 - **한 일**: `scenicHomePathForHubId` · nearbyHubs→scenic 홈 · 「장소 카드 보기」/추가 갤러리 제거 · 「무니에게 묻기」(홈 ChatModal) · 유튜브 모달(`fetchScenicSpotVideos`) · 작업 로그
