@@ -1,5 +1,5 @@
 /**
- * 명승지 SSOT audit — count / order / hub resolve / placeSlug / regions.
+ * GATEO 선정 명소 SSOT audit — count / order / hub resolve / placeSlug / regions.
  *
  *   npm run audit:korea-scenic-spots
  */
@@ -12,7 +12,7 @@ const JSON_PATH = join(__dirname, '../src/pages/Home/data/koreaScenicSpots.json'
 const HUBS_PATH = join(__dirname, '../src/pages/Home/data/cityAttractionHubs.json');
 
 const MIN_COUNT = 12;
-const MAX_COUNT = 40;
+const MAX_COUNT = 100;
 const ALLOWED_REGIONS = new Set(['제주', '강원', '전라', '경상', '수도권', '충청']);
 
 let failed = 0;

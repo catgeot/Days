@@ -433,7 +433,7 @@ export default function KoreaThemeScenicPage() {
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
       <SEO
         title="한국의 명승"
-        description="국가유산청 지정 명승과 GATEO 선정 명승. 권역별로 상세를 모달로 봅니다."
+        description="국가유산청 지정 명승과 GATEO 선정 명소. 권역별로 상세를 모달로 봅니다."
         url={RETURN_TO}
       />
 
@@ -562,7 +562,7 @@ export default function KoreaThemeScenicPage() {
                 id="korea-scenic-curated-heading"
                 className="text-sm font-bold tracking-tight md:text-base"
               >
-                GATEO 선정 명승
+                GATEO 선정 명소
               </h2>
             </div>
             <p className="text-sm leading-relaxed text-stone-600 break-keep">{DISCLAIMER}</p>
@@ -595,10 +595,10 @@ export default function KoreaThemeScenicPage() {
             {curatedSpots.length === 0 ? (
               <p className="text-sm text-stone-500 break-keep">
                 {hubId
-                  ? `${hubName || '이 여행지'}에 해당하는 선정 명승이 없습니다. 아래 국가유산 명승을 둘러보세요.`
+                  ? `${hubName || '이 여행지'}에 해당하는 선정 명소가 없습니다. 아래 국가유산 명승을 둘러보세요.`
                   : areaCode
-                    ? '이 시도에 해당하는 선정 명승이 없습니다. 다른 시도를 골라 보세요.'
-                    : '이 권역에 해당하는 선정 명승이 없습니다.'}
+                    ? '이 시도에 해당하는 선정 명소가 없습니다. 다른 시도를 골라 보세요.'
+                    : '이 권역에 해당하는 선정 명소가 없습니다.'}
               </p>
             ) : null}
           </section>
@@ -809,7 +809,7 @@ export default function KoreaThemeScenicPage() {
         <ThemeSpotDetailModal
           spot={modalSpot}
           eyebrow={
-            modalSpot?.source === 'cha' ? '국가유산 명승' : '명승지 상세'
+            modalSpot?.source === 'cha' ? '국가유산 명승' : '명소 상세'
           }
           returnTo={listReturnTo}
           onClose={closeModal}

@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 47,
-  sessionPhase: '국가유산 명승 상세 보강',
+  sessionNo: 48,
+  sessionPhase: '명소목록',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-06-korea-theme-gateo-myeongso-expand',
+    session: '테마여행 #48, 명소목록',
+    title: 'GATEO 선정 명소 라벨·목록 확장',
+    detail:
+      '큐레이션 라벨을 「GATEO 선정 명소」로 바꾸고, hub exact+TourAPI contentId 검증으로 34곳→97곳으로 확장했습니다(수도권17·강원11·충청9·전라20·경상29·제주11). Preview에서 선정 명소 섹션 제목·권역별 목록·상세 모달을 확인해 주세요.',
+    at: '2026-08-06',
+  },
   {
     id: '2026-08-06-korea-theme-cha-heritage-detail',
     session: '테마여행 #47, 국가유산 명승 상세 보강',

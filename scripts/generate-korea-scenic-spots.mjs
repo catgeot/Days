@@ -1,5 +1,5 @@
 /**
- * 명승지 SSOT → koreaScenicSpots.json
+ * GATEO 선정 명소 SSOT → koreaScenicSpots.json
  *
  *   npm run generate:korea-scenic-spots
  */
@@ -13,7 +13,7 @@ const OUTPUT_PATH = join(__dirname, '../src/pages/Home/data/koreaScenicSpots.jso
 const HUBS_PATH = join(__dirname, '../src/pages/Home/data/cityAttractionHubs.json');
 
 const MIN_COUNT = 12;
-const MAX_COUNT = 40;
+const MAX_COUNT = 100;
 const ALLOWED_REGIONS = new Set(['제주', '강원', '전라', '경상', '수도권', '충청']);
 
 function toUrlSlug(nameEn) {
@@ -162,7 +162,7 @@ function main() {
       generatedAt: new Date().toISOString(),
       count: spots.length,
       curation: 'GATEO',
-      disclaimer: 'GATEO 선정 명승 — 공식 지정 목록 전체가 아닙니다.',
+      disclaimer: 'GATEO 선정 명소 — 공식 지정 목록이 아닙니다. 많이 찾는 인기 관광지를 골랐습니다.',
       source: 'scripts/data/korea-scenic-spots-overrides.mjs',
       regions,
     },
