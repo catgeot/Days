@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 42,
-  sessionPhase: '명승 인근 여행지',
+  sessionNo: 43,
+  sessionPhase: '명승 사진 복구·스와이프',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -24,11 +24,19 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-06-korea-theme-scenic-photo-swipe',
+    session: '테마여행 #43, 명승 사진 복구·스와이프',
+    title: '명승 본문 사진 복구·쓸어 넘기기',
+    detail:
+      '명승 본문 Tour 사진은 유지합니다(#42에서 잘못 제거한 부분 복구). 사진 리스트·대표 사진을 누르면 확대보기에서 좌우 쓸어 넘기기·화살표로 볼 수 있습니다. 장소 카드 링크만 무니·유튜브로 대체한 상태입니다. Preview 명승 상세에서 사진·스와이프를 확인해 주세요.',
+    at: '2026-08-06',
+  },
+  {
     id: '2026-08-06-korea-theme-scenic-nearby-mooni-videos',
     session: '테마여행 #42, 명승 인근 여행지',
     title: '인근 여행지→명승 홈 · 무니·유튜브',
     detail:
-      '명승 상세 「인근 여행지」(보령·공주·태안 등)가 장소 카드가 아니라 해당 지역 명승지 홈으로 갑니다. 본문의 「장소 카드 보기」와 오탐 많은 추가 사진은 빼고, 축제 본문과 비슷하게 「무니에게 묻기」·「유튜브 영상」모달로 이어집니다. Preview에서 명승 상세→인근·무니·영상을 확인해 주세요.',
+      '명승 상세 「인근 여행지」(보령·공주·태안 등)가 장소 카드가 아니라 해당 지역 명승지 홈으로 갑니다. 본문 「장소 카드 보기」만 무니·유튜브로 바꿨습니다(본문 Tour 사진은 #43에서 복구). Preview에서 명승 상세→인근·무니·영상을 확인해 주세요.',
     at: '2026-08-06',
   },
   {

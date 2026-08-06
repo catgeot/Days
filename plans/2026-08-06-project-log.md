@@ -2,27 +2,27 @@
 
 직전: [`2026-08-05-project-log.md`](./2026-08-05-project-log.md)
 
-## 테마여행 #42, 명승 인근 여행지
+## 테마여행 #43, 명승 사진 복구·스와이프
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `40a72bf8` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
 
-- **요청**: 인근 여행지(보령·공주·태안)→장소 카드 대신 해당 지역 명승지 홈 · 본문 장소 카드 링크·오탐 사진 제거 · 무니·유튜브(축제 본문형) 모달
-- **한 일**: `scenicHomePathForHubId` · nearbyHubs→scenic 홈 · 「장소 카드 보기」/추가 갤러리 제거 · 「무니에게 묻기」(홈 ChatModal) · 유튜브 모달(`fetchScenicSpotVideos`) · 작업 로그
-- **금지 준수**: 축제 지도·칩 리팩터 없음 · top10/regions 탑레벨 부활 없음 · releaseNotes 미작성 · UI 임의 리디자인 없음
-- **VERIFY**: `smoke:korea-theme-cross-links` · `smoke:korea-theme-spot-modal` · `npm run build` PASS
+- **요청**: #42 오해 정정 — 명승 본문 Tour 사진은 유지 · 오탐은 장소카드 갤러리 이유 · 사진 리스트 클릭 시 쓸어 넘기기
+- **한 일**: 본문 사진 그리드 복구 · 대표/리스트→확대보기 · 좌우 스와이프·화살표·핀치(축제 #3 패턴) · 작업 로그
+- **금지 준수**: 축제 지도·칩 리팩터 없음 · top10/regions 탑레벨 부활 없음 · releaseNotes 미작성
+- **VERIFY**: `smoke:korea-theme-spot-modal` · `npm run build` PASS
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
-- **작업 로그**: Preview 우측 「인근 여행지→명승 홈 · 무니·유튜브」
-- **QA**: 명승 상세→인근 보령 등→충청/충남 명승 홈 · 장소 카드 CTA 없음 · 무니·유튜브 모달
+- **작업 로그**: Preview 우측 「명승 본문 사진 복구·쓸어 넘기기」
+- **QA**: 명승 상세에 사진 그리드 · 탭→확대보기 스와이프 · 장소 카드 CTA 없음 · 무니·유튜브 유지
 
-### 테마여행 · 에이전트 핸드오프 → `#43`
+### 테마여행 · 에이전트 핸드오프 → `#44`
 
 | | |
 |--|--|
-| **세션 표기** | `테마여행 #43, Preview QA 반영` |
+| **세션 표기** | `테마여행 #44, Preview QA 반영` |
 | **브랜치** | `cursor/korea-theme` (고정) |
 | **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
-| **읽을 것 3** | ① 본 절 ② 플랜 §1.0·§1.6·S9 ③ #42 산출 |
+| **읽을 것 3** | ① 본 절 ② #42·#43 산출 ③ 플랜 §1.0·S9 |
 | **금지 3** | 축제 지도·칩 리팩터 · top10/regions 탑레벨 부활 · 합의 전 releaseNotes · UI 임의 리디자인 |
 | **후보** | Preview QA 피드백 · S9 폴리시·릴리스 |
 | **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
@@ -30,8 +30,21 @@
 **다음 채팅명 (복붙)**:
 
 ```
-테마여행 #43, Preview QA 반영
+테마여행 #44, Preview QA 반영
 ```
+
+## 테마여행 #42, 명승 인근 여행지
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `40a72bf8` · Preview QA 대기
+
+- **요청**: 인근 여행지(보령·공주·태안)→장소 카드 대신 해당 지역 명승지 홈 · 본문 장소 카드 링크를 무니·유튜브로 대체(본문 Tour 사진은 #43에서 복구)
+- **한 일**: `scenicHomePathForHubId` · nearbyHubs→scenic 홈 · 「장소 카드 보기」제거 · 「무니에게 묻기」·유튜브 모달 · 작업 로그
+- **금지 준수**: 축제 지도·칩 리팩터 없음 · top10/regions 탑레벨 부활 없음 · releaseNotes 미작성 · UI 임의 리디자인 없음
+- **VERIFY**: `smoke:korea-theme-cross-links` · `smoke:korea-theme-spot-modal` · `npm run build` PASS
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「인근 여행지→명승 홈 · 무니·유튜브」
+- **QA**: 명승 상세→인근 보령 등→충청/충남 명승 홈 · 장소 카드 CTA 없음 · 무니·유튜브 모달
 
 ## 테마여행 #41, 목록 시도·도시 표기
 

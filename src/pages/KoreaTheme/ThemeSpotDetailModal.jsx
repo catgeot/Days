@@ -1,9 +1,12 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowUp,
   Bike,
   Building2,
+  ChevronLeft,
+  ChevronRight,
+  Expand,
   ExternalLink,
   Landmark,
   Loader2,
@@ -27,6 +30,8 @@ import {
   themeModuleLabelForPath,
 } from '../Home/lib/koreaThemeNavBack';
 import { buildMooniBoundSpotFromLocation } from '../Home/lib/placeChatIntro';
+import { useLightboxPinchTransform } from '../../components/PlaceCard/common/useLightboxPinchTransform';
+import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
 import { fetchTourApiAttractionDetail } from '../../utils/fetchTourApiAttractionDetail';
 import { fetchNearbyTourAttractions } from '../../utils/fetchNearbyTourAttractions';
 import {
@@ -46,6 +51,10 @@ import {
 } from '../../utils/fetchScenicSpotVideos';
 import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
 import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
+
+/** 본문·확대보기 — 가로 스와이프 vs 세로 스크롤·탭 */
+const PHOTO_SWIPE_THRESHOLD_PX = 48;
+const PHOTO_SWIPE_DIRECTION_RATIO = 1.25;
 
 function youtubeThumb(videoId) {
   const id = String(videoId || '').trim();
@@ -613,6 +622,11 @@ export default function ThemeSpotDetailModal({
   const [videosError, setVideosError] = useState('');
   const [videosLoadedFor, setVideosLoadedFor] = useState('');
   const [videosExpanded, setVideosExpanded] = useState(false);
+  const [activeImage, setActiveImage] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const heroSwipeStartRef = useRef(null);
+  const suppressHeroTapRef = useRef(false);
+  const lightboxSwipeStartRef = useRef(null);
 
   const spotType = String(spot?.contentTypeId || '');
   const isRestaurant = spotType === RESTAURANT_CONTENT_TYPE_ID;
@@ -623,10 +637,135 @@ export default function ThemeSpotDetailModal({
     overlayZClass === 'z-50' || overlayZClass === 'z-[50]'
       ? 'z-[55]'
       : 'z-50';
+  const lightboxZ =
+    overlayZClass === 'z-50' || overlayZClass === 'z-[50]'
+      ? 'z-[60]'
+      : 'z-[55]';
+
+  const imageUrls = useMemo(() => {
+    const heroUrl = toHttps(detail?.imageUrl);
+    const gallery = Array.isArray(detail?.galleryUrls)
+      ? detail.galleryUrls.map(toHttps).filter(Boolean)
+      : [];
+    const out = [];
+    const seen = new Set();
+    for (const url of [heroUrl, ...gallery]) {
+      if (!url || seen.has(url)) continue;
+      seen.add(url);
+      out.push(url);
+    }
+    return out;
+  }, [detail]);
+
+  const {
+    transformStyle: lightboxTransformStyle,
+    isZoomed: isLightboxZoomed,
+    reset: resetLightboxPinch,
+    onPinchTouchStart,
+    onPinchTouchMove,
+    onPinchTouchEnd,
+    onPinchTouchCancel,
+  } = useLightboxPinchTransform(activeImage);
+
+  const closeLightbox = useCallback(() => {
+    setLightboxOpen(false);
+    resetLightboxPinch();
+    resetIosZoomAfterInput();
+  }, [resetLightboxPinch]);
+
+  const openLightboxAt = useCallback(
+    (index) => {
+      if (!imageUrls.length) return;
+      const next = Math.max(0, Math.min(imageUrls.length - 1, Number(index) || 0));
+      setActiveImage(next);
+      setLightboxOpen(true);
+    },
+    [imageUrls.length],
+  );
+
+  const stepLightbox = useCallback(
+    (delta) => {
+      if (imageUrls.length < 2) return;
+      setActiveImage((i) => (i + delta + imageUrls.length) % imageUrls.length);
+    },
+    [imageUrls.length],
+  );
+
+  const consumeHorizontalSwipe = useCallback(
+    (start, endX, endY) => {
+      if (!start || imageUrls.length < 2) return false;
+      const dx = endX - start.x;
+      const dy = endY - start.y;
+      if (Math.abs(dx) < PHOTO_SWIPE_THRESHOLD_PX) return false;
+      if (Math.abs(dx) < Math.abs(dy) * PHOTO_SWIPE_DIRECTION_RATIO) return false;
+      stepLightbox(dx > 0 ? -1 : 1);
+      return true;
+    },
+    [imageUrls.length, stepLightbox],
+  );
+
+  const onHeroTouchStart = useCallback((e) => {
+    if (e.touches.length !== 1) return;
+    const t = e.touches[0];
+    heroSwipeStartRef.current = { x: t.clientX, y: t.clientY };
+    suppressHeroTapRef.current = false;
+  }, []);
+
+  const onHeroTouchEnd = useCallback(
+    (e) => {
+      const start = heroSwipeStartRef.current;
+      heroSwipeStartRef.current = null;
+      const t = e.changedTouches?.[0];
+      if (!t) return;
+      if (consumeHorizontalSwipe(start, t.clientX, t.clientY)) {
+        suppressHeroTapRef.current = true;
+      }
+    },
+    [consumeHorizontalSwipe],
+  );
+
+  const onHeroTouchCancel = useCallback(() => {
+    heroSwipeStartRef.current = null;
+  }, []);
+
+  const onLightboxTouchStart = useCallback(
+    (e) => {
+      onPinchTouchStart(e);
+      if (e.touches.length !== 1 || isLightboxZoomed()) {
+        lightboxSwipeStartRef.current = null;
+        return;
+      }
+      const t = e.touches[0];
+      lightboxSwipeStartRef.current = { x: t.clientX, y: t.clientY };
+    },
+    [isLightboxZoomed, onPinchTouchStart],
+  );
+
+  const onLightboxTouchEnd = useCallback(
+    (e) => {
+      onPinchTouchEnd(e);
+      const start = lightboxSwipeStartRef.current;
+      lightboxSwipeStartRef.current = null;
+      if (!start || isLightboxZoomed()) return;
+      const t = e.changedTouches?.[0];
+      if (!t) return;
+      consumeHorizontalSwipe(start, t.clientX, t.clientY);
+    },
+    [consumeHorizontalSwipe, isLightboxZoomed, onPinchTouchEnd],
+  );
+
+  const onLightboxTouchCancel = useCallback(() => {
+    onPinchTouchCancel();
+    lightboxSwipeStartRef.current = null;
+  }, [onPinchTouchCancel]);
 
   useEffect(() => {
     const onKey = (event) => {
       if (event.key === 'Escape') {
+        if (lightboxOpen) {
+          closeLightbox();
+          return;
+        }
         if (videosOpen) {
           setVideosOpen(false);
           return;
@@ -640,7 +779,11 @@ export default function ThemeSpotDetailModal({
           return;
         }
         onClose();
+        return;
       }
+      if (!lightboxOpen || imageUrls.length < 2) return;
+      if (event.key === 'ArrowLeft') stepLightbox(-1);
+      else if (event.key === 'ArrowRight') stepLightbox(1);
     };
     window.addEventListener('keydown', onKey);
     const prev = document.body.style.overflow;
@@ -651,7 +794,11 @@ export default function ThemeSpotDetailModal({
     };
   }, [
     onClose,
+    lightboxOpen,
+    closeLightbox,
     videosOpen,
+    imageUrls.length,
+    stepLightbox,
     selectedFood,
     selectedLeports,
     selectedCulture,
@@ -666,7 +813,16 @@ export default function ThemeSpotDetailModal({
     setVideosLoadedFor('');
     setVideosExpanded(false);
     setVideosLoading(false);
-  }, [spot?.id]);
+    setActiveImage(0);
+    setLightboxOpen(false);
+    resetLightboxPinch();
+  }, [spot?.id, resetLightboxPinch]);
+
+  useEffect(() => {
+    if (activeImage >= imageUrls.length) {
+      setActiveImage(0);
+    }
+  }, [activeImage, imageUrls.length]);
 
   useEffect(() => {
     if (!spot) {
@@ -939,9 +1095,8 @@ export default function ThemeSpotDetailModal({
   if (!spot) return null;
 
   const hasContentId = /^\d{1,32}$/.test(String(spot.contentId || '').trim());
-  const hero =
-    toHttps(detail?.imageUrl) ||
-    (detail?.galleryUrls?.[0] ? toHttps(detail.galleryUrls[0]) : '');
+  const hero = imageUrls[activeImage] || imageUrls[0] || '';
+  const galleryList = imageUrls;
 
   const scrollToTop = () => {
     scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1040,11 +1195,41 @@ export default function ThemeSpotDetailModal({
           className="min-h-0 flex-1 overflow-y-auto overscroll-contain custom-scrollbar"
         >
           {hero ? (
-            <img
-              src={hero}
-              alt=""
-              className="aspect-[16/9] w-full object-cover sm:aspect-[2/1]"
-            />
+            <button
+              type="button"
+              onClick={() => {
+                if (suppressHeroTapRef.current) {
+                  suppressHeroTapRef.current = false;
+                  return;
+                }
+                openLightboxAt(activeImage);
+              }}
+              onTouchStart={onHeroTouchStart}
+              onTouchEnd={onHeroTouchEnd}
+              onTouchCancel={onHeroTouchCancel}
+              className="group relative block w-full touch-pan-y text-left"
+              aria-label={
+                imageUrls.length > 1
+                  ? '사진 확대보기 · 좌우로 쓸어 넘기기'
+                  : '사진 확대보기'
+              }
+            >
+              <img
+                src={hero}
+                alt=""
+                draggable={false}
+                className="aspect-[16/9] w-full object-cover pointer-events-none select-none sm:aspect-[2/1]"
+              />
+              <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-stone-900/55 px-2.5 py-1 text-[11px] font-bold text-white opacity-95 group-hover:bg-stone-900/70">
+                <Expand size={13} aria-hidden="true" />
+                확대보기
+              </span>
+              {imageUrls.length > 1 ? (
+                <span className="absolute bottom-3 right-3 rounded-full bg-stone-900/55 px-2 py-0.5 text-[10px] font-bold text-white tabular-nums">
+                  {activeImage + 1}/{imageUrls.length}
+                </span>
+              ) : null}
+            </button>
           ) : (
             <div
               className={`flex aspect-[16/9] w-full items-center justify-center sm:aspect-[2/1] ${
@@ -1125,6 +1310,32 @@ export default function ThemeSpotDetailModal({
                   </DetailRow>
                 ))}
               </dl>
+            ) : null}
+
+            {galleryList.length > 0 ? (
+              <div className="space-y-2" aria-label="명소 사진">
+                <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-stone-500">
+                  사진 {galleryList.length}장
+                </p>
+                <div className="grid grid-cols-3 gap-2">
+                  {galleryList.map((url, index) => (
+                    <button
+                      key={`${url}-${index}`}
+                      type="button"
+                      onClick={() => openLightboxAt(index)}
+                      className="relative aspect-square overflow-hidden rounded-xl border border-stone-200 bg-stone-100"
+                      aria-label={`사진 ${index + 1} 확대보기`}
+                    >
+                      <img
+                        src={url}
+                        alt=""
+                        className="absolute inset-0 h-full w-full object-cover"
+                        loading="lazy"
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
             ) : null}
 
             <section className="space-y-2 border-t border-stone-200/80 pt-4">
@@ -1475,6 +1686,78 @@ export default function ThemeSpotDetailModal({
           overlayZClass={nestedChildZ}
           onClose={() => setSelectedAttraction(null)}
         />
+      ) : null}
+
+      {lightboxOpen && hero ? (
+        <div
+          className={`fixed inset-0 ${lightboxZ} flex items-center justify-center bg-stone-950/90 p-3 md:p-8`}
+          onClick={(e) => {
+            e.stopPropagation();
+            closeLightbox();
+          }}
+          role="presentation"
+        >
+          <div
+            className="relative flex h-full w-full max-w-6xl flex-col"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label="사진 확대보기"
+          >
+            <div className="flex shrink-0 items-center justify-between gap-3 pb-3">
+              <p className="text-sm font-bold text-white/90 tabular-nums">
+                {imageUrls.length > 1
+                  ? `${activeImage + 1} / ${imageUrls.length}`
+                  : '사진'}
+              </p>
+              <button
+                type="button"
+                onClick={closeLightbox}
+                aria-label="확대보기 닫기"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white hover:bg-white/20"
+              >
+                <X size={20} aria-hidden="true" />
+              </button>
+            </div>
+            <div className="relative min-h-0 flex-1">
+              <div
+                className="flex h-full items-center justify-center touch-none"
+                onTouchStart={onLightboxTouchStart}
+                onTouchMove={onPinchTouchMove}
+                onTouchEnd={onLightboxTouchEnd}
+                onTouchCancel={onLightboxTouchCancel}
+              >
+                <img
+                  src={hero}
+                  alt=""
+                  draggable={false}
+                  style={lightboxTransformStyle}
+                  className="max-h-full max-w-full object-contain select-none"
+                />
+              </div>
+              {imageUrls.length > 1 ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => stepLightbox(-1)}
+                    aria-label="이전 사진"
+                    className="absolute left-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-stone-900/55 text-white hover:bg-stone-900/75 md:left-2"
+                  >
+                    <ChevronLeft size={22} aria-hidden="true" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => stepLightbox(1)}
+                    aria-label="다음 사진"
+                    className="absolute right-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-stone-900/55 text-white hover:bg-stone-900/75 md:right-2"
+                  >
+                    <ChevronRight size={22} aria-hidden="true" />
+                  </button>
+                </>
+              ) : null}
+            </div>
+          </div>
+        </div>
       ) : null}
 
       {videosOpen ? (
