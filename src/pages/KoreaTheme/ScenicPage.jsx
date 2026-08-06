@@ -506,7 +506,7 @@ export default function KoreaThemeScenicPage() {
               ) : null}
             </div>
             <p className="text-xs text-stone-500 break-keep">
-              선택한 권역·시도 전체 수량이며, 아래 TourAPI 종목(대분류·소분류)으로 목록을 나눕니다. 항목을 누르면 상세를 봅니다.
+              선택한 권역·시도 전체 수량이며, 대표 이미지가 있는 곳을 먼저·최근 수정일 순으로 나열합니다. 아래 종목으로 목록을 나눕니다.
             </p>
 
             <div className="space-y-2">

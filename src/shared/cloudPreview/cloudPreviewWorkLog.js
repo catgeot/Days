@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 37,
-  sessionPhase: '페이지 최적화 · 지역 명칭',
+  sessionNo: 38,
+  sessionPhase: '페이지 최적화 · 목록 정렬',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-06-korea-theme-scenic-list-sort',
+    session: '테마여행 #38, 페이지 최적화',
+    title: '관광지 목록 · 이미지 우선·수정일순',
+    detail:
+      '명승 DB 관광지 목록을 대표 이미지가 있는 항목 먼저, 그다음 TourAPI 수정일(최신순)으로 나열합니다. 이미지가 없는 항목은 뒤에 이어집니다. Preview `/korea/theme/scenic`에서 강원 등 목록 상단에 사진 있는 최근 수정 관광지가 오는지 확인해 주세요.',
+    at: '2026-08-06',
+  },
   {
     id: '2026-08-06-korea-theme-scenic-catalog-heading',
     session: '테마여행 #37, 페이지 최적화',

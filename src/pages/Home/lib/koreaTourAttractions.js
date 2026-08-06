@@ -28,7 +28,7 @@ export {
 };
 
 const LIST_SELECT =
-  'content_id, title, addr1, addr2, area_code, mapx, mapy, first_image, active, cat1, cat2, cat3';
+  'content_id, title, addr1, addr2, area_code, mapx, mapy, first_image, active, cat1, cat2, cat3, modified_time';
 
 /**
  * @param {{
@@ -55,6 +55,40 @@ function resolveAttractionFilters(opts = {}) {
 }
 
 /**
+ * @param {*} q
+ * @param {{ areaCodes?: string[] | null, cat1?: string | null, cat2?: string | null }} filters
+ */
+function applyAttractionListFilters(q, filters) {
+  let next = q;
+  if (filters.areaCodes?.length) {
+    next = next.in('area_code', filters.areaCodes);
+  }
+  if (filters.cat2) {
+    next = next.eq('cat2', filters.cat2);
+  } else if (filters.cat1) {
+    next = next.eq('cat1', filters.cat1);
+  }
+  return next;
+}
+
+/** 수정일 내림차순 · 동률은 제목순 (TourAPI modifiedtime=YYYYMMDDHHMMSS 텍스트 정렬) */
+function applyAttractionListOrder(q) {
+  return q
+    .order('modified_time', { ascending: false, nullsFirst: false })
+    .order('title', { ascending: true });
+}
+
+/** 대표 이미지 있음 */
+function applyHasImageFilter(q) {
+  return q.not('first_image', 'is', null).neq('first_image', '');
+}
+
+/** 대표 이미지 없음 */
+function applyNoImageFilter(q) {
+  return q.or('first_image.is.null,first_image.eq.');
+}
+
+/**
  * @param {{
  *   region?: string | null,
  *   areaCode?: string | null,
@@ -65,22 +99,14 @@ function resolveAttractionFilters(opts = {}) {
  * @returns {Promise<{ count: number, error: string | null }>}
  */
 export async function countKoreaTourAttractions(opts = {}) {
-  const { areaCodes, cat1, cat2 } = resolveAttractionFilters(opts);
+  const filters = resolveAttractionFilters(opts);
 
   let q = supabase
     .from('tourapi_attraction')
     .select('content_id', { count: 'exact', head: true })
     .eq('active', true)
     .eq('content_type_id', '12');
-
-  if (areaCodes?.length) {
-    q = q.in('area_code', areaCodes);
-  }
-  if (cat2) {
-    q = q.eq('cat2', cat2);
-  } else if (cat1) {
-    q = q.eq('cat1', cat1);
-  }
+  q = applyAttractionListFilters(q, filters);
 
   const { count, error } = await q;
   if (error) {
@@ -190,32 +216,77 @@ export async function fetchScenicFilterChipCounts(opts = {}) {
 export async function fetchKoreaTourAttractions(opts = {}) {
   const limit = Math.min(Math.max(Number(opts.limit) || 40, 1), 100);
   const offset = Math.max(Number(opts.offset) || 0, 0);
-  const { areaCodes, cat1, cat2 } = resolveAttractionFilters(opts);
+  const filters = resolveAttractionFilters(opts);
 
-  let q = supabase
-    .from('tourapi_attraction')
-    .select(LIST_SELECT, { count: 'exact' })
-    .eq('active', true)
-    .eq('content_type_id', '12')
-    .order('title', { ascending: true })
-    .range(offset, offset + limit - 1);
+  const baseCount = () =>
+    applyAttractionListFilters(
+      supabase
+        .from('tourapi_attraction')
+        .select('content_id', { count: 'exact', head: true })
+        .eq('active', true)
+        .eq('content_type_id', '12'),
+      filters,
+    );
 
-  if (areaCodes?.length) {
-    q = q.in('area_code', areaCodes);
-  }
-  if (cat2) {
-    q = q.eq('cat2', cat2);
-  } else if (cat1) {
-    q = q.eq('cat1', cat1);
+  const baseList = () =>
+    applyAttractionListOrder(
+      applyAttractionListFilters(
+        supabase
+          .from('tourapi_attraction')
+          .select(LIST_SELECT)
+          .eq('active', true)
+          .eq('content_type_id', '12'),
+        filters,
+      ),
+    );
+
+  const { count: totalCount, error: totalErr } = await baseCount();
+  if (totalErr) {
+    console.warn('[koreaTourAttractions]', totalErr.message || totalErr);
+    return { spots: [], count: 0, error: totalErr.message || String(totalErr) };
   }
 
-  const { data, error, count } = await q;
-  if (error) {
-    console.warn('[koreaTourAttractions]', error.message || error);
-    return { spots: [], count: 0, error: error.message || String(error) };
+  const { count: withImageCountRaw, error: withErr } = await applyHasImageFilter(
+    baseCount(),
+  );
+  if (withErr) {
+    console.warn('[koreaTourAttractions] with-image count', withErr.message || withErr);
+    return { spots: [], count: 0, error: withErr.message || String(withErr) };
   }
-  const spots = (data || []).map(mapTourAttractionRow).filter(Boolean);
-  return { spots, count: count ?? spots.length, error: null };
+
+  const withImageCount = withImageCountRaw ?? 0;
+  /** @type {Record<string, unknown>[]} */
+  const rows = [];
+
+  if (offset < withImageCount) {
+    const take = Math.min(limit, withImageCount - offset);
+    const { data, error } = await applyHasImageFilter(baseList()).range(
+      offset,
+      offset + take - 1,
+    );
+    if (error) {
+      console.warn('[koreaTourAttractions]', error.message || error);
+      return { spots: [], count: 0, error: error.message || String(error) };
+    }
+    rows.push(...(data || []));
+  }
+
+  if (rows.length < limit) {
+    const withoutOffset = Math.max(0, offset - withImageCount);
+    const take = limit - rows.length;
+    const { data, error } = await applyNoImageFilter(baseList()).range(
+      withoutOffset,
+      withoutOffset + take - 1,
+    );
+    if (error) {
+      console.warn('[koreaTourAttractions]', error.message || error);
+      return { spots: [], count: 0, error: error.message || String(error) };
+    }
+    rows.push(...(data || []));
+  }
+
+  const spots = rows.map(mapTourAttractionRow).filter(Boolean);
+  return { spots, count: totalCount ?? spots.length, error: null };
 }
 
 /**
