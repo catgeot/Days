@@ -15,7 +15,10 @@ import {
   scenicRegionForAreaCode,
 } from '../src/pages/Home/lib/koreaTourAttractionMap.js';
 import { isNearbyTourAttractionTitle } from '../src/pages/Home/lib/koreaTourAttractionNearbyFilter.js';
-import { formatTourAttractionLocality } from '../src/pages/Home/lib/koreaTourAttractionLocality.js';
+import {
+  extractTourAttractionSigungu,
+  formatTourAttractionLocality,
+} from '../src/pages/Home/lib/koreaTourAttractionLocality.js';
 import { listKoreaScenicSpots } from '../src/pages/Home/lib/koreaScenicSpots.js';
 import { detectSidoCode } from '../src/pages/Korea/festivalRegionTags.js';
 
@@ -72,6 +75,16 @@ assert(
     '서울특별시 강남구 압구정로 161 (압구정동)',
   ) === '강남구 압구정동',
   'locality from parenthetical dong',
+);
+assert(
+  extractTourAttractionSigungu(
+    '강원특별자치도 영월군 영월읍 방절리 263-4',
+  ) === '영월군',
+  'sigungu yeongwol',
+);
+assert(
+  extractTourAttractionSigungu('서울특별시 양천구 신정동 162-56') === '양천구',
+  'sigungu seoul gu',
 );
 
 const sheetSrc = readFileSync(

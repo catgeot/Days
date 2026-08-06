@@ -118,6 +118,8 @@ function ThemeSpotCrossRail({
     const fromDetailLng = Number(detail?.mapx);
     const lat = Number(spot.lat);
     const lng = Number(spot.lng);
+    const addr1 = String(detail?.addr1 || spot.addr1 || '').trim();
+    const addr2 = String(detail?.addr2 || spot.addr2 || '').trim();
     return {
       hubId: spot.hubId,
       placeSlug: spot.placeSlug,
@@ -125,6 +127,10 @@ function ThemeSpotCrossRail({
       nameEn: spot.nameEn,
       region: spot.region,
       areaCode: spot.areaCode,
+      areaLabel: spot.areaLabel,
+      locality: spot.locality,
+      addr1: addr1 || undefined,
+      addr2: addr2 || undefined,
       lat: Number.isFinite(lat) ? lat : fromDetailLat,
       lng: Number.isFinite(lng) ? lng : fromDetailLng,
       mapx: detail?.mapx,
@@ -513,6 +519,10 @@ function toTypedModalSpot(spot, contentTypeId) {
     contentTypeId: contentTypeId || spot.contentTypeId || null,
     hubId: spot.hubId,
     region: spot.region,
+    locality: spot.locality,
+    areaLabel: spot.areaLabel,
+    addr1: spot.addr1,
+    addr2: spot.addr2,
     nameEn: spot.attractionNameEn || null,
     lat: spot.lat,
     lng: spot.lng,

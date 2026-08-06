@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 39,
-  sessionPhase: '페이지 최적화 · 권역 전체 수량',
+  sessionNo: 40,
+  sessionPhase: '숙소·투어 지역 검색',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-06-korea-theme-stay-tna-region-keyword',
+    session: '테마여행 #40, 숙소·투어 지역 검색',
+    title: '숙소·투어 링크를 지역명으로',
+    detail:
+      '주변 관광지·맛집 등 상세의 숙소·투어 CTA가 관광지 이름(예: 생명건강 과학원)이 아니라 주소의 시·군(예: 춘천)으로 MRT 검색합니다. Preview에서 명승→주변 관광지→숙소·투어 문구와 검색 결과를 확인해 주세요.',
+    at: '2026-08-06',
+  },
   {
     id: '2026-08-06-korea-theme-scenic-region-chip-total',
     session: '테마여행 #39, 페이지 최적화',

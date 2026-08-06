@@ -71,6 +71,8 @@ function mapRestaurantItem(item, originLat, originLng) {
     blurb: addr || 'TourAPI 맛집',
     region,
     locality,
+    addr1: addr1 || null,
+    addr2: addr2 || null,
     hubId: null,
     attractionName: title,
     attractionNameEn: null,

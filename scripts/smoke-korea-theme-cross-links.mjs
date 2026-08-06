@@ -18,6 +18,7 @@ import {
   resolveThemeSpotAreaCode,
   THEME_REGION_LABEL_TO_AREA,
 } from '../src/pages/Home/lib/koreaThemeCrossLinks.js';
+import { extractTourAttractionSigungu } from '../src/pages/Home/lib/koreaTourAttractionLocality.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -117,6 +118,36 @@ assert(
   'festival scenic deep link keeps region',
 );
 
+assert(
+  extractTourAttractionSigungu('강원특별자치도 춘천시 동면 순환로 1150') ===
+    '춘천시',
+  'sigungu from addr1 → 춘천시',
+);
+
+const poiNoHub = {
+  name: '생명건강 과학원',
+  hubId: null,
+  placeSlug: null,
+  region: '강원',
+  locality: '춘천시 동면',
+  addr1: '강원특별자치도 춘천시 동면 순환로 1150',
+  lat: 37.88,
+  lng: 127.73,
+};
+const poiBundle = resolveThemeCrossLinks(poiNoHub);
+assert(
+  poiBundle.stay?.keyword === '춘천' || poiBundle.stay?.keyword === '춘천시',
+  `POI stay uses region not title (got ${poiBundle.stay?.keyword})`,
+);
+assert(
+  poiBundle.stay?.keyword !== '생명건강 과학원',
+  'POI stay keyword is not attraction title',
+);
+assert(
+  poiBundle.tna?.keyword === '춘천' || poiBundle.tna?.keyword === '춘천시',
+  `POI tna uses region not title (got ${poiBundle.tna?.keyword})`,
+);
+
 const libSrc = readFileSync(
   join(root, 'src/pages/Home/lib/koreaThemeCrossLinks.js'),
   'utf8',
@@ -124,6 +155,7 @@ const libSrc = readFileSync(
 assert(libSrc.includes('nearbyHubsForFestival'), 'reuses festival nearby matcher');
 assert(libSrc.includes('resolveMrtStayQuery'), 'wires stay query');
 assert(libSrc.includes('resolveMrtTnaQuery'), 'wires tna query');
+assert(libSrc.includes('extractTourAttractionSigungu'), 'uses addr→sigungu for MRT');
 assert(!libSrc.includes('VITE_'), 'no VITE_ secrets in cross-links lib');
 
 const planSrc = readFileSync(join(root, 'plans/korea-theme-travel-plan.md'), 'utf8');

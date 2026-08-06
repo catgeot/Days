@@ -140,6 +140,8 @@ export function mapTourAttractionRow(row) {
     blurb: addr || 'TourAPI 관광지',
     region,
     locality,
+    addr1: addr1 || null,
+    addr2: addr2 || null,
     hubId: null,
     attractionName: title,
     attractionNameEn: null,

@@ -85,6 +85,8 @@ function mapNearbyItem(item, originLat, originLng, contentTypeId) {
     blurb: addr || meta?.blurb || 'TourAPI',
     region,
     locality,
+    addr1: addr1 || null,
+    addr2: addr2 || null,
     hubId: null,
     attractionName: title,
     attractionNameEn: null,

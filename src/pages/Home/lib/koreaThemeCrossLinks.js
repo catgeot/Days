@@ -3,8 +3,12 @@ import { listKoreaScenicSpots } from './koreaScenicSpots.js';
 import { listKoreaThemeRegionAttractions } from './koreaThemeRegions.js';
 import { areaCodeForHubId, hubIdsForArea } from '../../Korea/koreaHubSeeds.js';
 import { resolveCityAttractionHub } from './cityAttractionHubs.js';
+import { extractTourAttractionSigungu } from './koreaTourAttractionLocality.js';
 import { nearbyHubsForFestival } from '../../Korea/nearbyFestivalHubs.js';
-import { resolveMrtStayQuery } from '../../../utils/mrtStayQuery.js';
+import {
+  resolveMrtStayQuery,
+  stripKoAdminSuffix,
+} from '../../../utils/mrtStayQuery.js';
 import { resolveMrtTnaQuery } from '../../../utils/mrtTnaQuery.js';
 import { resolveMrtPackageThemeHref } from '../../../utils/mrtPackageLinks.js';
 
@@ -268,12 +272,36 @@ export function listNearbyHubsForThemeSpot(spot, hubList, opts = {}) {
 
 /**
  * PlaceCard/MRT 쿼리용 location 골격 (숙소·투어).
- * @param {{ hubId?: string, placeSlug?: string, name?: string, nameEn?: string, lat?: number, lng?: number }} spot
+ * 관광지 POI 제목 대신 hub·시군구·areaLabel을 parentCity로 올려 지역 검색한다.
+ * @param {{
+ *   hubId?: string,
+ *   placeSlug?: string,
+ *   name?: string,
+ *   nameEn?: string,
+ *   lat?: number,
+ *   lng?: number,
+ *   addr1?: string,
+ *   addr2?: string,
+ *   locality?: string,
+ *   areaLabel?: string,
+ * }} spot
  */
 export function buildThemeSpotLocation(spot) {
   const hubId = normId(spot?.hubId);
   const placeSlug = normSlug(spot?.placeSlug) || hubId;
   const hub = hubId ? resolveCityAttractionHub(hubId) : null;
+  const fromAddr =
+    extractTourAttractionSigungu(spot?.addr1, spot?.addr2) ||
+    extractTourAttractionSigungu(spot?.locality) ||
+    '';
+  const areaLabel = String(spot?.areaLabel || '').trim();
+  // hub·시군 축약(춘천시→춘천) 우선 — POI 제목은 name에만 두고 검색 선두로 쓰지 않음
+  const parentCity =
+    hub?.name ||
+    stripKoAdminSuffix(fromAddr) ||
+    fromAddr ||
+    areaLabel ||
+    undefined;
   return {
     slug: placeSlug || hubId,
     hubId,
@@ -284,7 +312,7 @@ export function buildThemeSpotLocation(spot) {
     country_en: 'South Korea',
     lat: Number(spot?.lat) || Number(hub?.lat) || undefined,
     lng: Number(spot?.lng) || Number(hub?.lng) || undefined,
-    parentCity: hub?.name || undefined,
+    parentCity,
   };
 }
 
@@ -310,6 +338,10 @@ export function resolveThemePackageKey(spot) {
  *   lat?: number,
  *   lng?: number,
  *   contentId?: string | null,
+ *   addr1?: string,
+ *   addr2?: string,
+ *   locality?: string,
+ *   areaLabel?: string,
  * }} spot
  * @param {{ hubList?: Array<{ hubId: string, name: string, lat?: number, lng?: number }>, utmContentPrefix?: string }} [opts]
  */

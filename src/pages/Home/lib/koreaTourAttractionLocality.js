@@ -56,3 +56,31 @@ export function formatTourAttractionLocality(addr1, addr2) {
 
   return parts.slice(0, 3).join(' ');
 }
+
+/**
+ * 주소·locality에서 MRT 숙소/투어 검색용 시·군·구만 추출.
+ * POI 제목(예: 생명건강 과학원) 대신 지역(예: 춘천시)으로 검색하게 한다.
+ *
+ * @param {string | null | undefined} addr1
+ * @param {string | null | undefined} [addr2]
+ * @returns {string}
+ */
+export function extractTourAttractionSigungu(addr1, addr2) {
+  const locality = formatTourAttractionLocality(addr1, addr2);
+  if (!locality) return '';
+  for (const tok of locality.split(/\s+/)) {
+    if (SIGUNGU_RE.test(tok)) return tok;
+  }
+  const raw = [addr1, addr2]
+    .map((s) => String(s || '').trim())
+    .filter(Boolean)
+    .join(' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!raw) return '';
+  const body = raw.replace(SIDO_PREFIX_RE, '').trim();
+  for (const tok of body.split(/\s+/)) {
+    if (SIGUNGU_RE.test(tok)) return tok;
+  }
+  return '';
+}
