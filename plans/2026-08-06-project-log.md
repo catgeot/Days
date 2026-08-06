@@ -2,6 +2,39 @@
 
 직전: [`2026-08-05-project-log.md`](./2026-08-05-project-log.md)
 
+## 테마여행 #46, 명승지 목록 · TourAPI 수량
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip (본 커밋) · 조사 답변 · 제품 변경 없음
+
+- **요청**: TourAPI 명승지 수량 · GATEO 선정만 보이니 지역별 Tour 분류로 보강
+- **LIVE 프로브** (`probe-tourapi-scenic-counts.mjs` · 2026-08-06): type12 전국 **7,274** · A01 자연 **2,095** · A02 인문 **5,179**
+- **DB** (`tourapi_attraction` active): **7,294** · 권역 수도권 1,465 · 강원 732 · 충청 1,262 · 전라 1,467 · 경상 2,025 · 제주 343
+- **GATEO 선정**: curated **34** (권역 불균등 — 충청 2·강원 4 등)
+- **이미 있는 보강**: `/korea/theme/scenic` 하단 = TourDB 권역·시도·종목(cat1/cat2) 목록 · #23/#35
+- **Tour에 「명승」contentType 없음** — 본선은 type12 관광지 + 자연/인문 분류
+- **다음 후보(사람 선택)**: (A) UI만 안내 강화 · (B) 선정 레일 권역별 추가 큐레이션 · (C) 기본 종목을 자연관광지 등으로
+- **VERIFY**: `smoke:tourapi-attractions` PASS · LIVE probe OK
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+
+### 테마여행 · 에이전트 핸드오프 → `#47`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #47, 명승 목록 보강` |
+| **브랜치** | `cursor/korea-theme` (고정) |
+| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
+| **읽을 것 3** | ① 본 절 ② 플랜 §3.5·#22 ③ ScenicPage GATEO+DB 이중 목록 |
+| **금지 3** | curated에 type12 7천 전량 시드 · 축제 지도 리팩터 · 합의 전 releaseNotes · UI 임의 리디자인 |
+| **후보** | 사람 선택 A/B/C · 또는 Preview QA·S9 |
+| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #47, 명승 목록 보강
+```
+
 ## 테마여행 #45, 인근 여행지 hub 명승 홈
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `73f47f55` · Preview QA 대기
