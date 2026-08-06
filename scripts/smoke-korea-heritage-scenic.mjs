@@ -1,0 +1,56 @@
+#!/usr/bin/env node
+/**
+ * 국가유산 명승 SSOT smoke
+ *
+ *   npm run smoke:korea-heritage-scenic
+ */
+import assert from 'assert';
+import { readFileSync } from 'fs';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+import {
+  countKoreaHeritageScenicByRegion,
+  getKoreaHeritageScenicById,
+  listKoreaHeritageScenic,
+  koreaHeritageScenicCount,
+} from '../src/pages/Home/lib/koreaHeritageScenic.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const JSON_PATH = join(
+  __dirname,
+  '../src/pages/Home/data/koreaHeritageScenic.json',
+);
+const PAGE = join(__dirname, '../src/pages/KoreaTheme/ScenicPage.jsx');
+const MODAL = join(
+  __dirname,
+  '../src/pages/KoreaTheme/ThemeSpotDetailModal.jsx',
+);
+
+const raw = JSON.parse(readFileSync(JSON_PATH, 'utf8'));
+const pageSrc = readFileSync(PAGE, 'utf8');
+const modalSrc = readFileSync(MODAL, 'utf8');
+
+assert.equal(raw?.meta?.kdcd, '15', 'kdcd=15 명승');
+assert.ok(raw.meta.count >= 100, `count>=100 (got ${raw.meta.count})`);
+assert.equal(koreaHeritageScenicCount(), raw.meta.count, 'lib count');
+assert.equal(raw.spots.length, raw.meta.count, 'spots length');
+
+const byRegion = countKoreaHeritageScenicByRegion();
+let sum = 0;
+for (const n of Object.values(byRegion)) sum += n;
+assert.equal(sum, raw.meta.count, 'region sum');
+
+const gangwon = listKoreaHeritageScenic({ region: '강원' });
+assert.ok(gangwon.length >= 20, `강원>=20 (got ${gangwon.length})`);
+
+const sample = raw.spots.find((s) => s.content && s.imageUrl && s.lat);
+assert.ok(sample, 'sample with content+image+coords');
+assert.equal(getKoreaHeritageScenicById(sample.id)?.id, sample.id, 'getById');
+
+assert.ok(pageSrc.includes('국가유산 명승'), 'ScenicPage heritage section');
+assert.ok(pageSrc.includes('listKoreaHeritageScenic'), 'ScenicPage uses lib');
+assert.ok(modalSrc.includes("spot.source === 'cha'"), 'modal CHA detail');
+
+console.log(
+  `smoke:korea-heritage-scenic PASS count=${raw.meta.count} 강원=${gangwon.length}`,
+);

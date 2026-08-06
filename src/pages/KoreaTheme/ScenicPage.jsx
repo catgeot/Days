@@ -8,6 +8,14 @@ import {
   listKoreaScenicSpots,
 } from '../Home/lib/koreaScenicSpots';
 import {
+  countKoreaHeritageScenicByRegion,
+  countKoreaHeritageScenicByTourArea,
+  getKoreaHeritageScenicById,
+  koreaHeritageScenicCount,
+  koreaHeritageScenicDisclaimer,
+  listKoreaHeritageScenic,
+} from '../Home/lib/koreaHeritageScenic';
+import {
   listTourAttractionCat2,
   normalizeTourAttractionCat1,
   normalizeTourAttractionCat2,
@@ -34,6 +42,9 @@ import ThemeModuleBackButton, {
 import ThemeSpotDetailModal from './ThemeSpotDetailModal';
 
 const DISCLAIMER = koreaScenicSpotsDisclaimer();
+const HERITAGE_DISCLAIMER = koreaHeritageScenicDisclaimer();
+const HERITAGE_TOTAL = koreaHeritageScenicCount();
+const HERITAGE_REGION_COUNTS = countKoreaHeritageScenicByRegion();
 const CURATED_REGIONS = listKoreaScenicRegions();
 const RETURN_TO = '/korea/theme/scenic';
 const CURATED_ALL = listKoreaScenicSpots();
@@ -84,6 +95,10 @@ function toModalSpot(spot) {
     nameEn: spot.attractionNameEn || spot.nameEn || null,
     lat: spot.lat,
     lng: spot.lng,
+    source: spot.source || null,
+    content: spot.content || null,
+    imageUrl: spot.imageUrl || null,
+    homepage: spot.homepage || null,
   };
 }
 
@@ -120,6 +135,21 @@ export default function KoreaThemeScenicPage() {
     if (!areaCode) return inRegion;
     return inRegion.filter((s) => scenicAreaCodeForHubId(s.hubId) === areaCode);
   }, [region, areaCode, hubId]);
+
+  const heritageSpots = useMemo(
+    () =>
+      listKoreaHeritageScenic({
+        region,
+        areaCode,
+        localityQuery,
+      }),
+    [region, areaCode, localityQuery],
+  );
+
+  const heritageAreaCounts = useMemo(
+    () => countKoreaHeritageScenicByTourArea(region),
+    [region],
+  );
 
   const listReturnTo = useMemo(() => {
     const params = new URLSearchParams();
@@ -278,6 +308,11 @@ export default function KoreaThemeScenicPage() {
       setSelectedSpot(curated);
       return undefined;
     }
+    const heritage = getKoreaHeritageScenicById(selectedId);
+    if (heritage) {
+      setSelectedSpot(heritage);
+      return undefined;
+    }
     const fromPage = dbSpots.find((s) => s.id === selectedId);
     if (fromPage) {
       setSelectedSpot(fromPage);
@@ -387,7 +422,7 @@ export default function KoreaThemeScenicPage() {
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
       <SEO
         title="한국의 명승"
-        description="국내 관광지 카탈로그와 GATEO 선정 명승. 권역·종목 필터로 상세를 모달로 봅니다."
+        description="국가유산청 지정 명승과 GATEO 선정 명승. 권역별로 상세를 모달로 봅니다."
         url={RETURN_TO}
       />
 
@@ -455,7 +490,7 @@ export default function KoreaThemeScenicPage() {
                   >
                     <FilterChipLabel
                       label={r}
-                      count={chipCounts.regionCounts[r]}
+                      count={HERITAGE_REGION_COUNTS[r]}
                     />
                   </button>
                 );
@@ -483,7 +518,7 @@ export default function KoreaThemeScenicPage() {
                     >
                       <FilterChipLabel
                         label={chip.label}
-                        count={chipCounts.areaCounts[chip.code]}
+                        count={heritageAreaCounts[chip.code]}
                       />
                     </button>
                   );
@@ -549,12 +584,63 @@ export default function KoreaThemeScenicPage() {
             {curatedSpots.length === 0 ? (
               <p className="text-sm text-stone-500 break-keep">
                 {hubId
-                  ? `${hubName || '이 여행지'}에 해당하는 선정 명승이 없습니다. 아래 관광지를 둘러보세요.`
+                  ? `${hubName || '이 여행지'}에 해당하는 선정 명승이 없습니다. 아래 국가유산 명승을 둘러보세요.`
                   : areaCode
                     ? '이 시도에 해당하는 선정 명승이 없습니다. 다른 시도를 골라 보세요.'
                     : '이 권역에 해당하는 선정 명승이 없습니다.'}
               </p>
             ) : null}
+          </section>
+
+          <section aria-labelledby="korea-scenic-heritage-heading" className="space-y-4">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <h2
+                id="korea-scenic-heritage-heading"
+                className="text-sm font-bold tracking-tight text-stone-800 md:text-base"
+              >
+                국가유산 명승
+              </h2>
+              <p className="text-xs font-semibold text-stone-500 tabular-nums">
+                {heritageSpots.length.toLocaleString('ko-KR')}곳
+                {heritageSpots.length !== HERITAGE_TOTAL
+                  ? ` · 전국 ${HERITAGE_TOTAL.toLocaleString('ko-KR')}`
+                  : ''}
+              </p>
+            </div>
+            <p className="text-xs text-stone-500 break-keep">{HERITAGE_DISCLAIMER}</p>
+            {heritageSpots.length === 0 ? (
+              <p className="text-sm text-stone-500 break-keep">
+                {hubId
+                  ? `${hubName || '이 여행지'}에 해당하는 국가유산 명승이 없습니다. 시·군 필터를 해제해 보세요.`
+                  : '이 권역·시도에 해당하는 국가유산 명승이 없습니다.'}
+              </p>
+            ) : (
+              <ul className="space-y-2">
+                {heritageSpots.map((spot) => (
+                  <li key={`h-${spot.id}`}>
+                    <button
+                      type="button"
+                      onClick={() => openSpot(spot.id)}
+                      className="flex w-full items-start gap-3 rounded-2xl border border-stone-200/90 bg-white px-4 py-3.5 text-left shadow-sm transition-colors hover:border-amber-300/80 hover:bg-amber-50/40"
+                    >
+                      <span className="min-w-0 flex-1">
+                        <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                          <span className="text-sm font-extrabold tracking-tight text-stone-900 break-keep">
+                            {spot.name}
+                          </span>
+                          <span className="text-[11px] font-semibold text-stone-500">
+                            {formatScenicSpotPlaceLabel(spot)}
+                          </span>
+                        </span>
+                        <span className="mt-0.5 block text-xs leading-relaxed text-stone-600 break-keep">
+                          {spot.blurb}
+                        </span>
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
 
           <section aria-labelledby="korea-scenic-db-heading" className="space-y-4">
@@ -575,8 +661,8 @@ export default function KoreaThemeScenicPage() {
             </div>
             <p className="text-xs text-stone-500 break-keep">
               {hubId
-                ? `${hubName} 주소 기준으로 거른 관광지입니다. 대표 이미지가 있는 곳을 먼저·최근 수정일 순으로 나열합니다.`
-                : '선택한 권역·시도 전체 수량이며, 대표 이미지가 있는 곳을 먼저·최근 수정일 순으로 나열합니다. 아래 종목으로 목록을 나눕니다.'}
+                ? `${hubName} 주소 기준 TourAPI 관광지(지정 명승과 별개)입니다. 대표 이미지가 있는 곳을 먼저·최근 수정일 순으로 나열합니다.`
+                : 'TourAPI 관광지(지정 명승과 별개)입니다. 대표 이미지가 있는 곳을 먼저·최근 수정일 순으로 나열합니다. 아래 종목으로 목록을 나눕니다.'}
             </p>
 
             <div className="space-y-2">

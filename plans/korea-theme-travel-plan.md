@@ -804,7 +804,7 @@ runtime searchKeyword 금지 · generate→audit→smoke→build 후 push.
 |------|------|------|
 | **TourAPI KorService2** (현재) | type12/14/25/28/38… | Edge `tourapi-proxy` · 키 `VITE_` 금지 |
 | TourAPI **PhotoGallery** (`searchPhoto`) | 이미지 보강 | 개요 없음 · 갤러리 트랙과 공유 |
-| **문화재청** OpenAPI (종목·명승) | 지정 문화재·명승 해설 | 명승 공식 목록·해설 · Tour와 id 다름 · 후속 후보 |
+| **국가유산청** OpenAPI (`ccbaKdcd=15` 명승) | 지정 명승 공식 목록·해설 | **#46 본선** · `sync:cha-scenic` → `koreaHeritageScenic.json` · 현행≈141(해제 제외) · Tour type12와 별개 |
 | **지자체 관광 OpenAPI**/포털 | 시·도 자체 명소 | 스키마 분절 · curated 소량만 적합 |
 | **VisitKorea / 한국관광 100선** | 선정·카피 근거 | API보다 큐레이션 근거용 (10대 §3.3) |
 | **PlaceCard / hub SSOT** | Tour 공백 시 상세 | 모달 2차 CTA · 갤러리·지도는 place |

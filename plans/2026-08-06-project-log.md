@@ -2,37 +2,38 @@
 
 직전: [`2026-08-05-project-log.md`](./2026-08-05-project-log.md)
 
-## 테마여행 #46, 명승지 목록 · TourAPI 수량
+## 테마여행 #46, 국가유산 명승 목록
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip (본 커밋) · 조사 답변 · 제품 변경 없음
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip (본 커밋) · Preview QA 대기
 
-- **요청**: TourAPI 명승지 수량 · GATEO 선정만 보이니 지역별 Tour 분류로 보강
-- **LIVE 프로브** (`probe-tourapi-scenic-counts.mjs` · 2026-08-06): type12 전국 **7,274** · A01 자연 **2,095** · A02 인문 **5,179**
-- **DB** (`tourapi_attraction` active): **7,294** · 권역 수도권 1,465 · 강원 732 · 충청 1,262 · 전라 1,467 · 경상 2,025 · 제주 343
-- **GATEO 선정**: curated **34** (권역 불균등 — 충청 2·강원 4 등)
-- **이미 있는 보강**: `/korea/theme/scenic` 하단 = TourDB 권역·시도·종목(cat1/cat2) 목록 · #23/#35
-- **Tour에 「명승」contentType 없음** — 본선은 type12 관광지 + 자연/인문 분류
-- **다음 후보(사람 선택)**: (A) UI만 안내 강화 · (B) 선정 레일 권역별 추가 큐레이션 · (C) 기본 종목을 자연관광지 등으로
-- **VERIFY**: `smoke:tourapi-attractions` PASS · LIVE probe OK
+- **요청**: TourAPI가 아니라 네이버/국가유산청 OpenAPI **명승**으로 지역 목록 보강
+- **소스**: `SearchKindOpenapiList/Dt` · `ccbaKdcd=15` · 키 불필요 · 브라우저 직접 호출 불가 → `npm run sync:cha-scenic`
+- **수량**: 현행(해제 제외) **141** · 권역 강원26·전라46·경상37·충청13·수도권10·제주9
+- **한 일**: `koreaHeritageScenic.json` · lib · ScenicPage「국가유산 명승」· 모달 CHA 상세 · 권역 칩=명승 건수 · Tour type12는 보조 목록으로 유지
+- **네이버 「전체 29」**: 필터/내주변 등 UI 조각일 수 있음 · 공식 API 전국 현행은 141
+- **금지 준수**: 축제 지도 리팩터 없음 · top10/regions 탑레벨 부활 없음 · releaseNotes 미작성
+- **VERIFY**: `smoke:korea-heritage-scenic` · `smoke:korea-theme-spot-modal` · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「국가유산청 지정 명승 141곳 연결」
+- **QA**: 권역 칩 숫자=명승 · GATEO 아래「국가유산 명승」· 항목 상세 개요/사진/국가유산청 링크 · Tour 관광지는 그 아래
 
 ### 테마여행 · 에이전트 핸드오프 → `#47`
 
 | | |
 |--|--|
-| **세션 표기** | `테마여행 #47, 명승 목록 보강` |
+| **세션 표기** | `테마여행 #47, Preview QA 반영` |
 | **브랜치** | `cursor/korea-theme` (고정) |
 | **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
-| **읽을 것 3** | ① 본 절 ② 플랜 §3.5·#22 ③ ScenicPage GATEO+DB 이중 목록 |
-| **금지 3** | curated에 type12 7천 전량 시드 · 축제 지도 리팩터 · 합의 전 releaseNotes · UI 임의 리디자인 |
-| **후보** | 사람 선택 A/B/C · 또는 Preview QA·S9 |
+| **읽을 것 3** | ① 본 절 ② `sync:cha-scenic` / `koreaHeritageScenic` ③ 플랜 문화재→국가유산 절 |
+| **금지 3** | curated에 type12 7천 시드 · 축제 지도 리팩터 · 합의 전 releaseNotes · UI 임의 리디자인 |
+| **후보** | Preview QA · CHA 이미지 갤러리 · Tour 목록 축소/숨김 · S9 |
 | **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
 
 **다음 채팅명 (복붙)**:
 
 ```
-테마여행 #47, 명승 목록 보강
+테마여행 #47, Preview QA 반영
 ```
 
 ## 테마여행 #45, 인근 여행지 hub 명승 홈

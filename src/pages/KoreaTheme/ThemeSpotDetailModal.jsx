@@ -841,6 +841,28 @@ export default function ThemeSpotDetailModal({
       return undefined;
     }
 
+    if (spot.source === 'cha') {
+      const overview = String(spot.content || spot.blurb || '').trim();
+      const imageUrl = String(spot.imageUrl || '').trim() || null;
+      const addr1 = String(spot.addr1 || '').trim() || null;
+      const homepage = String(spot.homepage || '').trim() || null;
+      setDetail({
+        title: spot.name,
+        overview: overview || null,
+        imageUrl,
+        galleryUrls: imageUrl ? [imageUrl] : [],
+        addr1,
+        addr2: null,
+        homepage,
+        tel: null,
+        mapx: Number.isFinite(Number(spot.lng)) ? Number(spot.lng) : null,
+        mapy: Number.isFinite(Number(spot.lat)) ? Number(spot.lat) : null,
+      });
+      setDetailLoading(false);
+      setDetailError('');
+      return undefined;
+    }
+
     const contentId = String(spot.contentId || '').trim();
     if (!/^\d{1,32}$/.test(contentId)) {
       setDetail(null);
@@ -872,7 +894,20 @@ export default function ThemeSpotDetailModal({
     return () => {
       cancelled = true;
     };
-  }, [spot?.id, spot?.contentId, spot?.contentTypeId]);
+  }, [
+    spot?.id,
+    spot?.contentId,
+    spot?.contentTypeId,
+    spot?.source,
+    spot?.content,
+    spot?.blurb,
+    spot?.imageUrl,
+    spot?.addr1,
+    spot?.homepage,
+    spot?.lat,
+    spot?.lng,
+    spot?.name,
+  ]);
 
   useEffect(() => {
     setSelectedFood(null);

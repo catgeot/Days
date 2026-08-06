@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 45,
-  sessionPhase: '인근 여행지 hub 명승 홈',
+  sessionNo: 46,
+  sessionPhase: '국가유산 명승 목록',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-06-korea-theme-cha-heritage-scenic',
+    session: '테마여행 #46, 국가유산 명승 목록',
+    title: '국가유산청 지정 명승 141곳 연결',
+    detail:
+      '네이버·국가유산청 OpenAPI 명승(종목코드 15)을 동기화해 `/korea/theme/scenic`에 「국가유산 명승」목록을 넣었습니다. GATEO 선정은 유지하고, TourAPI 관광지는 아래 보조 목록으로 둡니다. Preview에서 권역 칩 숫자·명승 상세(개요·사진·국가유산청 링크)를 확인해 주세요.',
+    at: '2026-08-06',
+  },
   {
     id: '2026-08-06-korea-theme-nearby-hub-scenic-home',
     session: '테마여행 #45, 인근 여행지 hub 명승 홈',
