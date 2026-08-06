@@ -4,7 +4,7 @@
 
 ## 테마여행 #46, 국가유산 명승 목록
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip (본 커밋) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `e27ff84a` · Preview QA 대기
 
 - **요청**: TourAPI가 아니라 네이버/국가유산청 OpenAPI **명승**으로 지역 목록 보강
 - **소스**: `SearchKindOpenapiList/Dt` · `ccbaKdcd=15` · 키 불필요 · 브라우저 직접 호출 불가 → `npm run sync:cha-scenic`
