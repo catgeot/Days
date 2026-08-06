@@ -19,10 +19,12 @@ const OUTPUT_PATH = join(
 
 const LIST_URL = 'https://www.khs.go.kr/cha/SearchKindOpenapiList.do';
 const DETAIL_URL = 'https://www.khs.go.kr/cha/SearchKindOpenapiDt.do';
+const IMAGE_URL = 'https://www.khs.go.kr/cha/SearchImageOpenapi.do';
 const KDCD = '15';
 const PAGE_UNIT = 100;
-const DETAIL_SLEEP_MS = 80;
-const CONTENT_MAX = 2400;
+const DETAIL_SLEEP_MS = 70;
+const CONTENT_MAX = 3200;
+const GALLERY_MAX = 10;
 
 /** CHA 시도코드 → gateo 권역 (51=강원특별자치 · 52=전북특별자치 포함) */
 const CHA_CTCD_REGION = {
@@ -153,6 +155,41 @@ async function fetchDetail(ctcd, asno) {
   return fetchText(u.toString());
 }
 
+async function fetchImages(ctcd, asno) {
+  const u = new URL(IMAGE_URL);
+  u.searchParams.set('ccbaKdcd', KDCD);
+  u.searchParams.set('ccbaCtcd', ctcd);
+  u.searchParams.set('ccbaAsno', asno);
+  return fetchText(u.toString());
+}
+
+function formatDesignatedAt(raw) {
+  const s = String(raw || '').replace(/\D/g, '');
+  if (s.length !== 8) return raw || null;
+  return `${s.slice(0, 4)}.${s.slice(4, 6)}.${s.slice(6, 8)}`;
+}
+
+function designationNo(asno) {
+  const n = Number.parseInt(String(asno || '').slice(0, 6), 10);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+function parseGallery(xml) {
+  const urls = [];
+  const seen = new Set();
+  const re =
+    /<imageUrl>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/imageUrl>/gi;
+  let m;
+  while ((m = re.exec(xml))) {
+    const https = toHttps(stripCdata(m[1]));
+    if (!https || seen.has(https)) continue;
+    seen.add(https);
+    urls.push(https);
+    if (urls.length >= GALLERY_MAX) break;
+  }
+  return urls;
+}
+
 function mapListItem(block) {
   const ctcd = tag(block, 'ccbaCtcd');
   const asno = tag(block, 'ccbaAsno');
@@ -228,29 +265,55 @@ async function main() {
         const addr1 = tag(item, 'ccbaLcad') || null;
         const asdt = tag(item, 'ccbaAsdt') || null;
         const quan = tag(item, 'ccbaQuan') || null;
+        const gcode = tag(item, 'gcodeName') || null;
+        const bcode = tag(item, 'bcodeName') || null;
         const mcode = tag(item, 'mcodeName') || null;
-        spot.blurb = content ? truncate(content, 120) : `${spot.areaLabel || ''} 국가유산 명승`.trim();
+        const scode = tag(item, 'scodeName') || null;
+        const poss = tag(item, 'ccbaPoss') || null;
+        const admin = tag(item, 'ccbaAdmin') || null;
+        const hanja = tag(item, 'ccbaMnm2') || spot.nameHanja;
+        spot.nameHanja = hanja || null;
+        spot.blurb = content
+          ? truncate(content, 120)
+          : `${spot.areaLabel || ''} 국가유산 명승`.trim();
         spot.content = content || null;
         spot.imageUrl = imageUrl;
         spot.addr1 = addr1;
-        spot.designatedAt = asdt;
+        spot.designatedAt = formatDesignatedAt(asdt);
+        spot.designatedAtRaw = asdt || null;
+        spot.designationNo = designationNo(spot.asno);
         spot.quantity = quan;
+        spot.heritageType = gcode;
+        spot.heritageKind = bcode;
         spot.category = mcode;
+        spot.subCategory = scode || null;
+        spot.owner = poss && poss !== '미상' ? poss : poss || null;
+        spot.manager = admin || null;
         const dlat = Number(tag(xml, 'latitude') || tag(item, 'latitude'));
         const dlng = Number(tag(xml, 'longitude') || tag(item, 'longitude'));
         if ((!spot.lat || !spot.lng) && Number.isFinite(dlat) && Number.isFinite(dlng)) {
           spot.lat = dlat;
           spot.lng = dlng;
         }
+
+        await sleep(DETAIL_SLEEP_MS);
+        const imgXml = await fetchImages(spot.ctcd, spot.asno);
+        const gallery = parseGallery(imgXml);
+        if (imageUrl && !gallery.includes(imageUrl)) gallery.unshift(imageUrl);
+        spot.galleryUrls = gallery.slice(0, GALLERY_MAX);
+        if (!spot.imageUrl && spot.galleryUrls[0]) {
+          spot.imageUrl = spot.galleryUrls[0];
+        }
       } catch (err) {
         console.warn(`detail fail ${spot.id}:`, err?.message || err);
         spot.blurb = `${spot.areaLabel || ''} 국가유산 명승`.trim();
         spot.content = null;
         spot.imageUrl = null;
+        spot.galleryUrls = [];
         spot.addr1 = null;
       }
       if (i % 20 === 0 || i === spots.length) {
-        console.log(`detail ${i}/${spots.length}`);
+        console.log(`detail+images ${i}/${spots.length}`);
       }
       await sleep(DETAIL_SLEEP_MS);
     }
@@ -259,6 +322,7 @@ async function main() {
       spot.blurb = `${spot.areaLabel || ''} 국가유산 명승`.trim();
       spot.content = null;
       spot.imageUrl = null;
+      spot.galleryUrls = [];
       spot.addr1 = null;
     }
   }
@@ -273,11 +337,11 @@ async function main() {
       version: 1,
       generatedAt: new Date().toISOString(),
       count: spots.length,
-      source: '국가유산청 OpenAPI SearchKindOpenapiList/Dt',
+      source: '국가유산청 OpenAPI SearchKindOpenapiList/Dt + SearchImageOpenapi',
       kdcd: KDCD,
       kdcdLabel: '명승',
       disclaimer:
-        '국가유산청 지정 명승 목록입니다. GATEO 선정과 별개이며, 해제 지정은 제외합니다.',
+        '국가유산청 지정 명승 목록입니다. 지정일·면적·분류·해설·사진은 국가유산청 Open API 기준이며, 해제 지정은 제외합니다.',
       byRegion,
       skipDetail,
     },

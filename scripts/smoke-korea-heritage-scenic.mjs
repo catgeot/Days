@@ -46,11 +46,22 @@ assert.ok(gangwon.length >= 20, `강원>=20 (got ${gangwon.length})`);
 const sample = raw.spots.find((s) => s.content && s.imageUrl && s.lat);
 assert.ok(sample, 'sample with content+image+coords');
 assert.equal(getKoreaHeritageScenicById(sample.id)?.id, sample.id, 'getById');
+assert.ok(sample.designatedAt, 'designatedAt');
+assert.ok(sample.quantity, 'quantity');
+assert.ok(sample.category || sample.heritageKind, 'category');
+assert.ok(
+  Array.isArray(sample.galleryUrls) && sample.galleryUrls.length >= 1,
+  'galleryUrls',
+);
+const multi = raw.spots.filter((s) => (s.galleryUrls || []).length > 1);
+assert.ok(multi.length >= 80, `multi-image spots≥80 (got ${multi.length})`);
 
 assert.ok(pageSrc.includes('국가유산 명승'), 'ScenicPage heritage section');
 assert.ok(pageSrc.includes('listKoreaHeritageScenic'), 'ScenicPage uses lib');
 assert.ok(modalSrc.includes("spot.source === 'cha'"), 'modal CHA detail');
+assert.ok(modalSrc.includes('heritageMeta'), 'modal heritage meta rows');
+assert.ok(modalSrc.includes('지정번호'), 'modal designation no');
 
 console.log(
-  `smoke:korea-heritage-scenic PASS count=${raw.meta.count} 강원=${gangwon.length}`,
+  `smoke:korea-heritage-scenic PASS count=${raw.meta.count} 강원=${gangwon.length} gallery>1=${multi.length}`,
 );

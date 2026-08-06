@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 46,
-  sessionPhase: '국가유산 명승 목록',
+  sessionNo: 47,
+  sessionPhase: '국가유산 명승 상세 보강',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-06-korea-theme-cha-heritage-detail',
+    session: '테마여행 #47, 국가유산 명승 상세 보강',
+    title: '지정 명승 상세·사진 갤러리 보강',
+    detail:
+      '국가 지정 명승 상세에 지정번호·한자명·지정일·분류·면적·소유·관리와 국가유산청 사진 여러 장을 넣었습니다. Preview에서 국가유산 명승 하나를 열어 개요 아래 메타와 사진 N장을 확인해 주세요.',
+    at: '2026-08-06',
+  },
   {
     id: '2026-08-06-korea-theme-cha-heritage-scenic',
     session: '테마여행 #46, 국가유산 명승 목록',

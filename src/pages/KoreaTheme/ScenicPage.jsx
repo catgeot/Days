@@ -98,7 +98,18 @@ function toModalSpot(spot) {
     source: spot.source || null,
     content: spot.content || null,
     imageUrl: spot.imageUrl || null,
+    galleryUrls: Array.isArray(spot.galleryUrls) ? spot.galleryUrls : null,
     homepage: spot.homepage || null,
+    nameHanja: spot.nameHanja || null,
+    designatedAt: spot.designatedAt || null,
+    designationNo: spot.designationNo || null,
+    quantity: spot.quantity || null,
+    heritageType: spot.heritageType || null,
+    heritageKind: spot.heritageKind || null,
+    category: spot.category || null,
+    subCategory: spot.subCategory || null,
+    owner: spot.owner || null,
+    manager: spot.manager || null,
   };
 }
 
@@ -797,7 +808,9 @@ export default function KoreaThemeScenicPage() {
       {modalSpot ? (
         <ThemeSpotDetailModal
           spot={modalSpot}
-          eyebrow="명승지 상세"
+          eyebrow={
+            modalSpot?.source === 'cha' ? '국가유산 명승' : '명승지 상세'
+          }
           returnTo={listReturnTo}
           onClose={closeModal}
         />

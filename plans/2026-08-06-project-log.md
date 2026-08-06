@@ -2,6 +2,36 @@
 
 직전: [`2026-08-05-project-log.md`](./2026-08-05-project-log.md)
 
+## 테마여행 #47, 국가유산 명승 상세 보강
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip (본 커밋) · Preview QA 대기
+
+- **요청**: 국가 지정 명승인데 정보가 더 있어야 함
+- **한 일**: detail+`SearchImageOpenapi` sync · 지정번호·한자·지정일·분류·면적·소유·관리 · 사진 평균≈6.5장 · 모달 메타/갤러리 표시 · eyebrow「국가유산 명승」
+- **VERIFY**: `smoke:korea-heritage-scenic` · `smoke:korea-theme-spot-modal` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「지정 명승 상세·사진 갤러리 보강」
+- **QA**: 국가유산 명승→상세에서 개요 아래 지정 메타·사진 여러 장·국가유산청 링크
+
+### 테마여행 · 에이전트 핸드오프 → `#48`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #48, Preview QA 반영` |
+| **브랜치** | `cursor/korea-theme` (고정) |
+| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
+| **읽을 것 3** | ① 본 절 ② #46 목록 ③ `sync:cha-scenic` |
+| **금지 3** | curated 7천 시드 · 축제 지도 리팩터 · 합의 전 releaseNotes · UI 임의 리디자인 |
+| **후보** | Preview QA · Tour 보조 목록 축소 · S9 |
+| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #48, Preview QA 반영
+```
+
 ## 테마여행 #46, 국가유산 명승 목록
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `e27ff84a` · Preview QA 대기
@@ -17,24 +47,7 @@
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
 - **작업 로그**: Preview 우측 「국가유산청 지정 명승 141곳 연결」
 - **QA**: 권역 칩 숫자=명승 · GATEO 아래「국가유산 명승」· 항목 상세 개요/사진/국가유산청 링크 · Tour 관광지는 그 아래
-
-### 테마여행 · 에이전트 핸드오프 → `#47`
-
-| | |
-|--|--|
-| **세션 표기** | `테마여행 #47, Preview QA 반영` |
-| **브랜치** | `cursor/korea-theme` (고정) |
-| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
-| **읽을 것 3** | ① 본 절 ② `sync:cha-scenic` / `koreaHeritageScenic` ③ 플랜 문화재→국가유산 절 |
-| **금지 3** | curated에 type12 7천 시드 · 축제 지도 리팩터 · 합의 전 releaseNotes · UI 임의 리디자인 |
-| **후보** | Preview QA · CHA 이미지 갤러리 · Tour 목록 축소/숨김 · S9 |
-| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
-
-**다음 채팅명 (복붙)**:
-
-```
-테마여행 #47, Preview QA 반영
-```
+- **후속**: ✅ #47 상세·갤러리 보강
 
 ## 테마여행 #45, 인근 여행지 hub 명승 홈
 

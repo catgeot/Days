@@ -844,19 +844,45 @@ export default function ThemeSpotDetailModal({
     if (spot.source === 'cha') {
       const overview = String(spot.content || spot.blurb || '').trim();
       const imageUrl = String(spot.imageUrl || '').trim() || null;
+      const galleryFromSpot = Array.isArray(spot.galleryUrls)
+        ? spot.galleryUrls.map((u) => String(u || '').trim()).filter(Boolean)
+        : [];
+      const galleryUrls = [...galleryFromSpot];
+      if (imageUrl && !galleryUrls.includes(imageUrl)) galleryUrls.unshift(imageUrl);
       const addr1 = String(spot.addr1 || '').trim() || null;
       const homepage = String(spot.homepage || '').trim() || null;
+      const heritageMeta = [
+        spot.designationNo
+          ? { label: '지정번호', text: `명승 제${spot.designationNo}호` }
+          : null,
+        spot.nameHanja ? { label: '한자명', text: String(spot.nameHanja) } : null,
+        spot.designatedAt
+          ? { label: '지정일', text: String(spot.designatedAt) }
+          : null,
+        spot.heritageType || spot.heritageKind || spot.category
+          ? {
+              label: '분류',
+              text: [spot.heritageType, spot.heritageKind, spot.category, spot.subCategory]
+                .filter(Boolean)
+                .join(' · '),
+            }
+          : null,
+        spot.quantity ? { label: '면적', text: String(spot.quantity) } : null,
+        spot.owner ? { label: '소유', text: String(spot.owner) } : null,
+        spot.manager ? { label: '관리', text: String(spot.manager) } : null,
+      ].filter(Boolean);
       setDetail({
         title: spot.name,
         overview: overview || null,
-        imageUrl,
-        galleryUrls: imageUrl ? [imageUrl] : [],
+        imageUrl: imageUrl || galleryUrls[0] || null,
+        galleryUrls,
         addr1,
         addr2: null,
         homepage,
         tel: null,
         mapx: Number.isFinite(Number(spot.lng)) ? Number(spot.lng) : null,
         mapy: Number.isFinite(Number(spot.lat)) ? Number(spot.lat) : null,
+        heritageMeta,
       });
       setDetailLoading(false);
       setDetailError('');
@@ -902,11 +928,22 @@ export default function ThemeSpotDetailModal({
     spot?.content,
     spot?.blurb,
     spot?.imageUrl,
+    spot?.galleryUrls,
     spot?.addr1,
     spot?.homepage,
     spot?.lat,
     spot?.lng,
     spot?.name,
+    spot?.nameHanja,
+    spot?.designatedAt,
+    spot?.designationNo,
+    spot?.quantity,
+    spot?.heritageType,
+    spot?.heritageKind,
+    spot?.category,
+    spot?.subCategory,
+    spot?.owner,
+    spot?.manager,
   ]);
 
   useEffect(() => {
@@ -1282,7 +1319,7 @@ export default function ThemeSpotDetailModal({
           )}
 
           <div className="space-y-4 px-4 py-4 sm:px-5">
-            {spot.blurb ? (
+            {spot.source !== 'cha' && spot.blurb ? (
               <p className="text-sm font-semibold leading-relaxed text-amber-950/90 break-keep">
                 {spot.blurb}
               </p>
@@ -1296,7 +1333,7 @@ export default function ThemeSpotDetailModal({
               <p className="text-xs text-stone-500 break-keep">{detailError}</p>
             ) : null}
 
-            {!detailLoading && !hasContentId ? (
+            {!detailLoading && !hasContentId && spot.source !== 'cha' ? (
               <p className="text-xs text-stone-500 break-keep">
                 Tour 상세 없음 — GATEO 안내와 아래 무니·영상으로 이어갈 수 있습니다.
               </p>
@@ -1305,6 +1342,13 @@ export default function ThemeSpotDetailModal({
             {!detailLoading && detail ? (
               <dl className="space-y-4">
                 {overview ? <DetailRow label="개요">{overview}</DetailRow> : null}
+                {Array.isArray(detail.heritageMeta)
+                  ? detail.heritageMeta.map((row) => (
+                      <DetailRow key={row.label} label={row.label}>
+                        {row.text}
+                      </DetailRow>
+                    ))
+                  : null}
                 {address ? <DetailRow label="주소">{address}</DetailRow> : null}
                 {tel ? (
                   <DetailRow label="전화">
