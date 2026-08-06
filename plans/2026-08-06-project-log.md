@@ -4,7 +4,7 @@
 
 ## 테마여행 #47, 국가유산 명승 상세 보강
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip (본 커밋) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `35d28ace` · Preview QA 대기
 
 - **요청**: 국가 지정 명승인데 정보가 더 있어야 함
 - **한 일**: detail+`SearchImageOpenapi` sync · 지정번호·한자·지정일·분류·면적·소유·관리 · 사진 평균≈6.5장 · 모달 메타/갤러리 표시 · eyebrow「국가유산 명승」
