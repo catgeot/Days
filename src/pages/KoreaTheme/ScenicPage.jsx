@@ -21,8 +21,10 @@ import {
   listScenicRegionAreas,
   normalizeScenicAreaCode,
   scenicAreaCodeForHubId,
+  scenicLocalityQueryForHubName,
   SCENIC_REGION_ORDER,
 } from '../Home/lib/koreaTourAttractions';
+import { resolveCityAttractionHub } from '../Home/lib/cityAttractionHubs';
 import { reconcileThemeNavBack } from '../Home/lib/koreaThemeNavBack';
 import { formatScenicSpotPlaceLabel } from '../Home/lib/scenicSpotPlaceLabel';
 import { scenicDbCatalogHeading } from './scenicCatalogHeading';
@@ -38,6 +40,14 @@ const CURATED_ALL = listKoreaScenicSpots();
 const PAGE_SIZE = 40;
 const DEFAULT_REGION = SCENIC_REGION_ORDER[0];
 const DEFAULT_CAT1 = TOUR_ATTRACTION_CAT1[0]?.code || 'A01';
+
+function normalizeScenicHubParam(raw) {
+  const id = String(raw || '')
+    .trim()
+    .toLowerCase();
+  if (!id) return null;
+  return resolveCityAttractionHub(id) ? id : null;
+}
 
 function chipCountLabel(count) {
   if (count == null || !Number.isFinite(count)) return null;
@@ -86,6 +96,10 @@ function resolveRegion(raw) {
 export default function KoreaThemeScenicPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const hubId = normalizeScenicHubParam(searchParams.get('hub'));
+  const hub = hubId ? resolveCityAttractionHub(hubId) : null;
+  const hubName = hub ? String(hub.name || hubId) : '';
+  const localityQuery = scenicLocalityQueryForHubName(hubName);
   const region = resolveRegion(searchParams.get('region'));
   const areaCode = normalizeScenicAreaCode(region, searchParams.get('area'));
   const cat1 =
@@ -97,10 +111,27 @@ export default function KoreaThemeScenicPage() {
   const areaChips = useMemo(() => listScenicRegionAreas(region), [region]);
 
   const curatedSpots = useMemo(() => {
+    if (hubId) {
+      return CURATED_ALL.filter(
+        (s) => String(s.hubId || '').trim().toLowerCase() === hubId,
+      );
+    }
     const inRegion = listKoreaScenicSpots(region);
     if (!areaCode) return inRegion;
     return inRegion.filter((s) => scenicAreaCodeForHubId(s.hubId) === areaCode);
-  }, [region, areaCode]);
+  }, [region, areaCode, hubId]);
+
+  const listReturnTo = useMemo(() => {
+    const params = new URLSearchParams();
+    if (region) params.set('region', region);
+    if (areaCode) params.set('area', areaCode);
+    if (hubId) params.set('hub', hubId);
+    if (cat1) params.set('cat1', cat1);
+    if (cat2) params.set('cat2', cat2);
+    if (page > 1) params.set('page', String(page));
+    const q = params.toString();
+    return q ? `${RETURN_TO}?${q}` : RETURN_TO;
+  }, [region, areaCode, hubId, cat1, cat2, page]);
 
   const [dbSpots, setDbSpots] = useState([]);
   const [dbCount, setDbCount] = useState(0);
@@ -122,13 +153,19 @@ export default function KoreaThemeScenicPage() {
 
   const cat2Chips = useMemo(() => listTourAttractionCat2(cat1), [cat1]);
   const catalogHeading = useMemo(
-    () => scenicDbCatalogHeading(region, areaCode),
-    [region, areaCode],
+    () => scenicDbCatalogHeading(region, areaCode, hubName || null),
+    [region, areaCode, hubName],
   );
 
   useEffect(() => {
     let cancelled = false;
-    fetchScenicFilterChipCounts({ region, areaCode, cat1, cat2 }).then((res) => {
+    fetchScenicFilterChipCounts({
+      region,
+      areaCode,
+      cat1,
+      cat2,
+      localityQuery,
+    }).then((res) => {
       if (cancelled) return;
       setChipCounts({
         regionCounts: res.regionCounts || {},
@@ -140,24 +177,25 @@ export default function KoreaThemeScenicPage() {
     return () => {
       cancelled = true;
     };
-  }, [region, areaCode, cat1, cat2]);
+  }, [region, areaCode, cat1, cat2, localityQuery]);
 
   useEffect(() => {
     let cancelled = false;
-    countKoreaTourAttractions({ region, areaCode }).then((res) => {
+    countKoreaTourAttractions({ region, areaCode, localityQuery }).then((res) => {
       if (cancelled) return;
       setScopeCount(res.count || 0);
     });
     return () => {
       cancelled = true;
     };
-  }, [region, areaCode]);
+  }, [region, areaCode, localityQuery]);
 
   useEffect(() => {
     const rawRegion = searchParams.get('region');
     const rawArea = searchParams.get('area');
     const rawCat1 = searchParams.get('cat1');
     const rawCat2 = searchParams.get('cat2');
+    const rawHub = searchParams.get('hub');
     const next = new URLSearchParams(searchParams);
     let changed = false;
 
@@ -167,6 +205,10 @@ export default function KoreaThemeScenicPage() {
     }
     if (rawArea && !normalizeScenicAreaCode(region, rawArea)) {
       next.delete('area');
+      changed = true;
+    }
+    if (rawHub && !normalizeScenicHubParam(rawHub)) {
+      next.delete('hub');
       changed = true;
     }
     if (!normalizeTourAttractionCat1(rawCat1)) {
@@ -183,16 +225,17 @@ export default function KoreaThemeScenicPage() {
   }, [searchParams, setSearchParams, region, cat1]);
 
   useEffect(() => {
-    const params = new URLSearchParams();
-    if (region) params.set('region', region);
-    if (areaCode) params.set('area', areaCode);
-    if (cat1) params.set('cat1', cat1);
-    if (cat2) params.set('cat2', cat2);
-    if (selectedId) params.set('spot', selectedId);
-    if (page > 1) params.set('page', String(page));
-    const q = params.toString();
-    reconcileThemeNavBack(q ? `${RETURN_TO}?${q}` : RETURN_TO);
-  }, [region, areaCode, cat1, cat2, selectedId, page]);
+    if (!selectedId) {
+      reconcileThemeNavBack(listReturnTo);
+      return;
+    }
+    const q = listReturnTo.includes('?')
+      ? listReturnTo.slice(listReturnTo.indexOf('?') + 1)
+      : '';
+    const params = new URLSearchParams(q);
+    params.set('spot', selectedId);
+    reconcileThemeNavBack(`${RETURN_TO}?${params.toString()}`);
+  }, [listReturnTo, selectedId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -203,6 +246,7 @@ export default function KoreaThemeScenicPage() {
       areaCode,
       cat1,
       cat2,
+      localityQuery,
       limit: PAGE_SIZE,
       offset: (page - 1) * PAGE_SIZE,
     }).then((res) => {
@@ -221,7 +265,7 @@ export default function KoreaThemeScenicPage() {
     return () => {
       cancelled = true;
     };
-  }, [region, areaCode, cat1, cat2, page]);
+  }, [region, areaCode, cat1, cat2, localityQuery, page]);
 
   useEffect(() => {
     let cancelled = false;
@@ -248,11 +292,20 @@ export default function KoreaThemeScenicPage() {
     };
   }, [selectedId, dbSpots]);
 
+  const clearHub = useCallback(() => {
+    const next = new URLSearchParams(searchParams);
+    next.delete('hub');
+    next.delete('spot');
+    next.delete('page');
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams]);
+
   const setRegion = useCallback(
     (r) => {
       const next = new URLSearchParams(searchParams);
       next.set('region', resolveRegion(r));
       next.delete('area');
+      next.delete('hub');
       next.delete('spot');
       next.delete('page');
       setSearchParams(next, { replace: true });
@@ -266,6 +319,7 @@ export default function KoreaThemeScenicPage() {
       const normalized = normalizeScenicAreaCode(region, code);
       if (!normalized || normalized === areaCode) next.delete('area');
       else next.set('area', normalized);
+      next.delete('hub');
       next.delete('spot');
       next.delete('page');
       setSearchParams(next, { replace: true });
@@ -436,6 +490,23 @@ export default function KoreaThemeScenicPage() {
                 })}
               </div>
             ) : null}
+            {hubId && hubName ? (
+              <div
+                role="status"
+                className="flex flex-wrap items-center gap-2 pl-0.5 pt-0.5"
+              >
+                <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/90 bg-amber-50 px-2.5 py-0.5 text-[11px] font-bold text-amber-950">
+                  {hubName} 명승
+                </span>
+                <button
+                  type="button"
+                  onClick={clearHub}
+                  className="text-[11px] font-semibold text-stone-500 underline-offset-2 hover:text-stone-800 hover:underline"
+                >
+                  시·군 필터 해제
+                </button>
+              </div>
+            ) : null}
           </div>
 
           <section aria-labelledby="korea-scenic-curated-heading" className="space-y-4">
@@ -477,9 +548,11 @@ export default function KoreaThemeScenicPage() {
             </ul>
             {curatedSpots.length === 0 ? (
               <p className="text-sm text-stone-500 break-keep">
-                {areaCode
-                  ? '이 시도에 해당하는 선정 명승이 없습니다. 다른 시도를 골라 보세요.'
-                  : '이 권역에 해당하는 선정 명승이 없습니다.'}
+                {hubId
+                  ? `${hubName || '이 여행지'}에 해당하는 선정 명승이 없습니다. 아래 관광지를 둘러보세요.`
+                  : areaCode
+                    ? '이 시도에 해당하는 선정 명승이 없습니다. 다른 시도를 골라 보세요.'
+                    : '이 권역에 해당하는 선정 명승이 없습니다.'}
               </p>
             ) : null}
           </section>
@@ -501,7 +574,9 @@ export default function KoreaThemeScenicPage() {
               ) : null}
             </div>
             <p className="text-xs text-stone-500 break-keep">
-              선택한 권역·시도 전체 수량이며, 대표 이미지가 있는 곳을 먼저·최근 수정일 순으로 나열합니다. 아래 종목으로 목록을 나눕니다.
+              {hubId
+                ? `${hubName} 주소 기준으로 거른 관광지입니다. 대표 이미지가 있는 곳을 먼저·최근 수정일 순으로 나열합니다.`
+                : '선택한 권역·시도 전체 수량이며, 대표 이미지가 있는 곳을 먼저·최근 수정일 순으로 나열합니다. 아래 종목으로 목록을 나눕니다.'}
             </p>
 
             <div className="space-y-2">
@@ -573,7 +648,9 @@ export default function KoreaThemeScenicPage() {
             ) : null}
             {dbStatus === 'empty' ? (
               <p className="text-sm text-stone-500 break-keep">
-                이 권역·시도·종목에 해당하는 관광지가 없습니다. 다른 소분류를 골라 보세요.
+                {hubId
+                  ? `${hubName}에 해당하는 관광지가 없습니다. 시·군 필터를 해제하거나 다른 종목을 골라 보세요.`
+                  : '이 권역·시도·종목에 해당하는 관광지가 없습니다. 다른 소분류를 골라 보세요.'}
               </p>
             ) : null}
 
@@ -635,7 +712,7 @@ export default function KoreaThemeScenicPage() {
         <ThemeSpotDetailModal
           spot={modalSpot}
           eyebrow="명승지 상세"
-          returnTo={RETURN_TO}
+          returnTo={listReturnTo}
           onClose={closeModal}
         />
       ) : null}

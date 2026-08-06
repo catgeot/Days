@@ -77,6 +77,18 @@ assert(
   'boryeong scenic home has area',
 );
 assert(
+  scenicHomePathForHubId('boryeong').includes('hub=boryeong'),
+  'boryeong scenic home has hub=boryeong',
+);
+assert(
+  scenicHomePathForHubId('gongju').includes('hub=gongju'),
+  'gongju scenic home has hub=gongju',
+);
+assert(
+  scenicHomePathForHubId('boryeong') !== scenicHomePathForHubId('gongju'),
+  'same-sido hubs get distinct scenic homes',
+);
+assert(
   !scenicHomePathForHubId('boryeong').includes('/place/'),
   'boryeong scenic home is not place card',
 );
@@ -86,9 +98,15 @@ if (bundle.nearbyHubs.length > 0) {
       (h) =>
         typeof h.scenicPath === 'string' &&
         h.scenicPath.startsWith('/korea/theme/scenic') &&
+        String(h.scenicPath).includes(`hub=${h.hubId}`) &&
         !h.placePath,
     ),
-    'nearbyHubs expose scenicPath (no placePath)',
+    'nearbyHubs expose hub-scoped scenicPath (no placePath)',
+  );
+  const paths = new Set(bundle.nearbyHubs.map((h) => h.scenicPath));
+  assert(
+    paths.size === bundle.nearbyHubs.length,
+    'nearby scenicPaths are unique per hub',
   );
 }
 

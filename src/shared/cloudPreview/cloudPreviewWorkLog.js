@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 44,
-  sessionPhase: '무니에게 묻기',
+  sessionNo: 45,
+  sessionPhase: '인근 여행지 hub 명승 홈',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-06-korea-theme-nearby-hub-scenic-home',
+    session: '테마여행 #45, 인근 여행지 hub 명승 홈',
+    title: '인근 여행지를 시·군 명승 홈으로',
+    detail:
+      '명승 상세 「인근 여행지」(보령·공주·태안 등)가 같은 충남 목록으로 뭉개지던 문제를 고쳤습니다. 각 도시마다 hub 필터가 붙은 명승 홈으로 이동하고, 선정 명승·관광지 목록도 그 시·군 주소로 거릅니다. Preview에서 명승 상세→인근 보령/공주가 서로 다른 목록인지 확인해 주세요.',
+    at: '2026-08-06',
+  },
   {
     id: '2026-08-06-korea-theme-mooni-inplace',
     session: '테마여행 #44, 무니에게 묻기',

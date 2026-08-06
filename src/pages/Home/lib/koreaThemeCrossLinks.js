@@ -5,6 +5,7 @@ import { areaCodeForHubId, hubIdsForArea } from '../../Korea/koreaHubSeeds.js';
 import { resolveCityAttractionHub } from './cityAttractionHubs.js';
 import { extractTourAttractionSigungu } from './koreaTourAttractionLocality.js';
 import {
+  SCENIC_REGION_ORDER,
   scenicAreaCodeForHubId,
   scenicRegionForAreaCode,
 } from './koreaTourAttractionMap.js';
@@ -245,20 +246,27 @@ export function listSameHubCrossSpots(hubId, opts = {}) {
 }
 
 /**
- * hub → 해당 지역 명승지 홈 (`/korea/theme/scenic?region=&area=`).
- * 국내 hub는 장소 카드 대신 명승 목록으로 이어간다.
+ * hub → 해당 시·군 명승지 홈 (`/korea/theme/scenic?region=&area=&hub=`).
+ * 시도(area)만 쓰면 보령·공주·태안이 같은 홈으로 뭉개지므로 hub를 반드시 붙인다.
  * @param {string | null | undefined} hubId
  * @returns {string}
  */
 export function scenicHomePathForHubId(hubId) {
   const hid = normId(hubId);
   if (!hid) return '/korea/theme/scenic';
+  if (!resolveCityAttractionHub(hid)) return '/korea/theme/scenic';
   const areaCode =
     scenicAreaCodeForHubId(hid) || areaCodeForHubId(hid) || null;
-  const region = scenicRegionForAreaCode(areaCode);
-  if (!region) return '/korea/theme/scenic';
-  const params = new URLSearchParams({ region });
-  if (areaCode) params.set('area', String(areaCode));
+  let region = scenicRegionForAreaCode(areaCode);
+  if (!region) {
+    const curated = listKoreaScenicSpots().find((s) => normId(s.hubId) === hid);
+    const label = String(curated?.region || '').trim();
+    if (label && SCENIC_REGION_ORDER.includes(label)) region = label;
+  }
+  const params = new URLSearchParams();
+  if (region) params.set('region', region);
+  if (areaCode && region) params.set('area', String(areaCode));
+  params.set('hub', hid);
   return `/korea/theme/scenic?${params.toString()}`;
 }
 

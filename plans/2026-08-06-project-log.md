@@ -2,6 +2,38 @@
 
 직전: [`2026-08-05-project-log.md`](./2026-08-05-project-log.md)
 
+## 테마여행 #45, 인근 여행지 hub 명승 홈
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **요청**: 명승 본문 인근 여행지 클릭 시 해당 도시 명승 홈으로 가야 하는데, 이전 진입(같은 시도) 명승 홈으로 연결됨
+- **원인**: `scenicHomePathForHubId`가 시도(area)까지만 붙여 보령·공주·태안이 동일 URL
+- **한 일**: path에 `hub=` · ScenicPage 시·군 필터(선정+DB addr) · 목록 제목·칩·작업 로그
+- **금지 준수**: 축제 지도·칩 리팩터 없음 · top10/regions 탑레벨 부활 없음 · releaseNotes 미작성 · UI 임의 리디자인 없음
+- **VERIFY**: `smoke:korea-theme-cross-links` · `smoke:korea-scenic-categories` · `smoke:korea-theme-spot-modal` · `npm run build` PASS
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「인근 여행지를 시·군 명승 홈으로」
+- **QA**: 명승 상세→인근 보령 vs 공주가 서로 다른 목록 · 「보령 명승」칩·시·군 필터 해제
+
+### 테마여행 · 에이전트 핸드오프 → `#46`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #46, Preview QA 반영` |
+| **브랜치** | `cursor/korea-theme` (고정) |
+| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
+| **읽을 것 3** | ① 본 절 ② #45 hub 명승 홈 ③ 플랜 §1.0·S9 |
+| **금지 3** | 축제 지도·칩 리팩터 · top10/regions 탑레벨 부활 · 합의 전 releaseNotes · UI 임의 리디자인 |
+| **후보** | Preview QA 피드백 · S9 폴리시·릴리스 |
+| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #46, Preview QA 반영
+```
+
 ## 테마여행 #44, 무니에게 묻기
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `8bd6efca` · Preview QA 대기

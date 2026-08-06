@@ -31,12 +31,29 @@ const LIST_SELECT =
   'content_id, title, addr1, addr2, area_code, mapx, mapy, first_image, active, cat1, cat2, cat3, modified_time';
 
 /**
+ * hub 시·군명 → addr1 ilike 패턴 (보령 / 보령시 / 보령군).
+ * PostgREST `.or()` 특수문자 제거.
+ * @param {string | null | undefined} hubName
+ * @returns {string | null}
+ */
+export function scenicLocalityQueryForHubName(hubName) {
+  const raw = String(hubName || '').trim();
+  if (!raw) return null;
+  const bare = raw
+    .replace(/(특별자치시|광역시|특별시|자치시|시|군|구)$/u, '')
+    .replace(/[,.()%]/g, '')
+    .trim();
+  return bare.length >= 2 ? bare : null;
+}
+
+/**
  * @param {{
  *   region?: string | null,
  *   areaCode?: string | null,
  *   areaCodes?: string[] | null,
  *   cat1?: string | null,
  *   cat2?: string | null,
+ *   localityQuery?: string | null,
  * }} [opts]
  */
 function resolveAttractionFilters(opts = {}) {
@@ -51,17 +68,29 @@ function resolveAttractionFilters(opts = {}) {
   }
   const cat1 = normalizeTourAttractionCat1(opts.cat1);
   const cat2 = normalizeTourAttractionCat2(cat1, opts.cat2);
-  return { region, areaCode, areaCodes, cat1, cat2 };
+  const localityQuery = scenicLocalityQueryForHubName(opts.localityQuery);
+  return { region, areaCode, areaCodes, cat1, cat2, localityQuery };
 }
 
 /**
  * @param {*} q
- * @param {{ areaCodes?: string[] | null, cat1?: string | null, cat2?: string | null }} filters
+ * @param {{
+ *   areaCodes?: string[] | null,
+ *   cat1?: string | null,
+ *   cat2?: string | null,
+ *   localityQuery?: string | null,
+ * }} filters
  */
 function applyAttractionListFilters(q, filters) {
   let next = q;
   if (filters.areaCodes?.length) {
     next = next.in('area_code', filters.areaCodes);
+  }
+  if (filters.localityQuery) {
+    const qLoc = filters.localityQuery;
+    next = next.or(
+      `addr1.ilike.%${qLoc}%,addr1.ilike.%${qLoc}시%,addr1.ilike.%${qLoc}군%`,
+    );
   }
   if (filters.cat2) {
     next = next.eq('cat2', filters.cat2);
@@ -95,6 +124,7 @@ function applyNoImageFilter(q) {
  *   areaCodes?: string[] | null,
  *   cat1?: string | null,
  *   cat2?: string | null,
+ *   localityQuery?: string | null,
  * }} [opts]
  * @returns {Promise<{ count: number, error: string | null }>}
  */
@@ -119,12 +149,13 @@ export async function countKoreaTourAttractions(opts = {}) {
 /**
  * 필터 칩용 건수.
  * - 권역(최상단 대분류)·시도: 종목 무관 **지역 전체** 수량
- * - 종목 대·소분류: 현재 권역·시도 아래 해당 종목 수량
+ * - 종목 대·소분류: 현재 권역·시도(·시군 hub) 아래 해당 종목 수량
  * @param {{
  *   region?: string | null,
  *   areaCode?: string | null,
  *   cat1?: string | null,
  *   cat2?: string | null,
+ *   localityQuery?: string | null,
  * }} [opts]
  * @returns {Promise<{
  *   regionCounts: Record<string, number>,
@@ -140,6 +171,7 @@ export async function fetchScenicFilterChipCounts(opts = {}) {
   const areaCode = normalizeScenicAreaCode(region, opts.areaCode);
   const cat1 = normalizeTourAttractionCat1(opts.cat1);
   const cat2 = normalizeTourAttractionCat2(cat1, opts.cat2);
+  const localityQuery = scenicLocalityQueryForHubName(opts.localityQuery);
 
   /** @type {Record<string, number>} */
   const regionCounts = {};
@@ -172,6 +204,7 @@ export async function fetchScenicFilterChipCounts(opts = {}) {
         region,
         areaCode,
         cat1: c.code,
+        localityQuery,
       });
       if (error) errors.push(error);
       cat1Counts[c.code] = count;
@@ -182,6 +215,7 @@ export async function fetchScenicFilterChipCounts(opts = {}) {
         areaCode,
         cat1,
         cat2: c.code,
+        localityQuery,
       });
       if (error) errors.push(error);
       cat2Counts[c.code] = count;
@@ -205,6 +239,7 @@ export async function fetchScenicFilterChipCounts(opts = {}) {
  *   areaCodes?: string[] | null,
  *   cat1?: string | null,
  *   cat2?: string | null,
+ *   localityQuery?: string | null,
  *   limit?: number,
  *   offset?: number,
  * }} [opts]

@@ -96,6 +96,14 @@ assert(
   scenicDbCatalogHeading('수도권', '31') === '경기도 관광지',
   '시도 선택 → 경기도 관광지',
 );
+assert(
+  scenicDbCatalogHeading('충청', '34', '보령') === '보령 관광지',
+  'hub 시·군 → 보령 관광지',
+);
+assert(
+  scenicDbCatalogHeading('충청', '34', '공주') === '공주 관광지',
+  'hub 시·군 → 공주 관광지',
+);
 
 const url = String(process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '').trim();
 const anon = String(process.env.VITE_SUPABASE_ANON_KEY || '').trim();
