@@ -18,13 +18,13 @@ import {
   fetchKoreaTourAttractionById,
   fetchKoreaTourAttractions,
   fetchScenicFilterChipCounts,
-  labelScenicAreaCode,
   listScenicRegionAreas,
   normalizeScenicAreaCode,
   scenicAreaCodeForHubId,
   SCENIC_REGION_ORDER,
 } from '../Home/lib/koreaTourAttractions';
 import { reconcileThemeNavBack } from '../Home/lib/koreaThemeNavBack';
+import { formatScenicSpotPlaceLabel } from '../Home/lib/scenicSpotPlaceLabel';
 import { scenicDbCatalogHeading } from './scenicCatalogHeading';
 import ThemeModuleBackButton, {
   ThemeNavBackHint,
@@ -56,10 +56,11 @@ function FilterChipLabel({ label, count }) {
 
 function toModalSpot(spot) {
   if (!spot) return null;
+  const placeLabel = formatScenicSpotPlaceLabel(spot);
   return {
     id: spot.id,
     name: spot.name,
-    subtitle: spot.areaLabel || spot.region,
+    subtitle: placeLabel || spot.areaLabel || spot.region,
     blurb: spot.blurb,
     placeSlug: spot.placeSlug,
     contentId: spot.contentId,
@@ -80,12 +81,6 @@ function resolveRegion(raw) {
   const value = String(raw || '').trim();
   if (value && SCENIC_REGION_ORDER.includes(value)) return value;
   return DEFAULT_REGION;
-}
-
-function spotRegionLabel(spot) {
-  if (!spot) return '';
-  if (spot.areaLabel) return `${spot.region} · ${spot.areaLabel}`;
-  return spot.region || '';
 }
 
 export default function KoreaThemeScenicPage() {
@@ -469,12 +464,7 @@ export default function KoreaThemeScenicPage() {
                           {spot.name}
                         </span>
                         <span className="text-[11px] font-semibold text-stone-500">
-                          {spotRegionLabel({
-                            region: spot.region,
-                            areaLabel: labelScenicAreaCode(
-                              scenicAreaCodeForHubId(spot.hubId),
-                            ),
-                          })}
+                          {formatScenicSpotPlaceLabel(spot)}
                         </span>
                       </span>
                       <span className="mt-0.5 block text-xs leading-relaxed text-stone-600 break-keep">
@@ -602,7 +592,7 @@ export default function KoreaThemeScenicPage() {
                             {spot.name}
                           </span>
                           <span className="text-[11px] font-semibold text-stone-500">
-                            {spotRegionLabel(spot)}
+                            {formatScenicSpotPlaceLabel(spot)}
                           </span>
                         </span>
                         <span className="mt-0.5 block text-xs leading-relaxed text-stone-600 break-keep">

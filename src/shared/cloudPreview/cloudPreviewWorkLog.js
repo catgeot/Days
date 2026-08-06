@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 40,
-  sessionPhase: '숙소·투어 지역 검색',
+  sessionNo: 41,
+  sessionPhase: '목록 시도·도시 표기',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-06-korea-theme-scenic-place-label',
+    session: '테마여행 #41, 목록 시도·도시 표기',
+    title: '명승 목록을 시도·도시로 표기',
+    detail:
+      '목록 이름 옆 표기를 「수도권 · 서울」「강원 · 강원」같은 권역·시도 대신 「강원 춘천」「경북 경주」「서울 종로」처럼 시도+도시로 바꿨습니다. Preview `/korea/theme/scenic`에서 선정 명승·관광지 목록을 확인해 주세요.',
+    at: '2026-08-06',
+  },
   {
     id: '2026-08-06-korea-theme-stay-tna-region-keyword',
     session: '테마여행 #40, 숙소·투어 지역 검색',

@@ -2,6 +2,37 @@
 
 직전: [`2026-08-05-project-log.md`](./2026-08-05-project-log.md)
 
+## 테마여행 #41, 목록 시도·도시 표기
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **요청**: 목록 우측이 「수도권 서울」「강원 강원」「전라 전북」처럼 권역·시도라 직관적이지 않음 → 「강원 춘천」「경북 경주」
+- **한 일**: `formatScenicSpotPlaceLabel` — 시도+도시(주소 시군/hub) · 서울=도시 중복 시 한 번 · curated hub 시도 폴백 · smoke · 작업 로그
+- **금지 준수**: 축제 지도·칩 리팩터 없음 · top10/regions 탑레벨 부활 없음 · releaseNotes 미작성
+- **VERIFY**: `smoke:korea-scenic-place-label` · `smoke:korea-scenic-categories` · `npm run build` PASS
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「명승 목록을 시도·도시로 표기」
+- **QA**: 남이섬→강원 춘천 · 석굴암→경북 경주 · DB 목록도 시도+도시 · 「수도권 · 서울」형태 없음
+
+### 테마여행 · 에이전트 핸드오프 → `#42`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #42, 폴리시·릴리스` |
+| **브랜치** | `cursor/korea-theme` (고정) |
+| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
+| **읽을 것 3** | ① 본 절 ② 플랜 §1.0·§1.6·S9 ③ #41 산출 |
+| **금지 3** | 축제 지도·칩 리팩터 · top10/regions 탑레벨 부활 · 합의 전 releaseNotes · UI 임의 리디자인 |
+| **후보** | S9 폴리시·릴리스(사람 Preview QA 후) · 축제 회귀 점검 |
+| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #42, 폴리시·릴리스
+```
+
 ## 테마여행 #40, 숙소·투어 지역 검색
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `a7fa172a` · Preview QA 대기
@@ -14,24 +45,6 @@
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
 - **작업 로그**: Preview 우측 「숙소·투어 링크를 지역명으로」
 - **QA**: 명승→주변 관광지→「숙소 · 춘천」처럼 시·군 · MRT에 해당 지역 숙소/투어
-
-### 테마여행 · 에이전트 핸드오프 → `#41`
-
-| | |
-|--|--|
-| **세션 표기** | `테마여행 #41, 폴리시·릴리스` |
-| **브랜치** | `cursor/korea-theme` (고정) |
-| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
-| **읽을 것 3** | ① 본 절 ② 플랜 §1.0·§1.6·S9 ③ #40 산출 |
-| **금지 3** | 축제 지도·칩 리팩터 · top10/regions 탑레벨 부활 · 합의 전 releaseNotes · UI 임의 리디자인 |
-| **후보** | S9 폴리시·릴리스(사람 Preview QA 후) · 축제 회귀 점검 |
-| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
-
-**다음 채팅명 (복붙)**:
-
-```
-테마여행 #41, 폴리시·릴리스
-```
 
 ## 테마여행 #39, 페이지 최적화
 

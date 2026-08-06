@@ -36,6 +36,7 @@
     "audit:korea-scenic-spots": "node scripts/audit-korea-scenic-spots.mjs",
     "smoke:korea-scenic-spots": "node scripts/smoke-korea-scenic-spots.mjs",
     "smoke:korea-scenic-categories": "node scripts/smoke-korea-scenic-categories.mjs",
+    "smoke:korea-scenic-place-label": "node scripts/smoke-korea-scenic-place-label.mjs",
     "generate:korea-theme-region-tour": "node scripts/generate-korea-theme-region-tour.mjs",
     "audit:korea-theme-region-tour": "node scripts/audit-korea-theme-region-tour.mjs",
     "smoke:korea-theme-regions": "node scripts/smoke-korea-theme-regions.mjs",
