@@ -4,11 +4,11 @@
 
 ## 테마여행 #38, 페이지 최적화
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `e78def51` · Preview QA 대기
 
 - **한 일**: 명승 DB 목록 정렬을 **대표 이미지 우선 → 수정일 내림차순**(동률 제목순)으로 변경 · 페이지네이션은 이미지 버킷→무이미지 버킷 이어붙임 · smoke 보강
 - **금지 준수**: 축제 지도·칩 리팩터 없음 · top10/regions 탑레벨 부활 없음 · releaseNotes 미작성
-- **VERIFY**: `smoke:korea-scenic-categories` · `npm run build`
+- **VERIFY**: `smoke:korea-scenic-categories` · `npm run build` PASS
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
 - **작업 로그**: Preview 우측 「관광지 목록 · 이미지 우선·수정일순」
