@@ -4,7 +4,7 @@
 
 ## 테마여행 #48, 명소목록
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `77d62393` · Preview QA 대기
 
 - **요청**: GATEO 큐레이션 라벨을 명소로 · 권장 방식으로 목록 최대 확장
 - **한 일**: 「GATEO 선정 명소」라벨/디스클레이머 · curated 34→97 · hub exact+TourAPI contentId · audit 상한 100 · 작업로그 #48
