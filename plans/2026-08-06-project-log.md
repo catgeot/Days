@@ -4,7 +4,7 @@
 
 ## 테마여행 #40, 숙소·투어 지역 검색
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `a7fa172a` · Preview QA 대기
 
 - **요청**: 주변 관광지 상세 숙소·투어 CTA가 관광지명(예: 생명건강 과학원)으로 검색되어 상품이 안 나옴 → 지역 검색으로
 - **한 일**: `addr1`/`locality`→시·군 추출(`extractTourAttractionSigungu`) · `buildThemeSpotLocation` parentCity 우선 · 모달/목록에 addr·locality 전달 · 작업 로그
