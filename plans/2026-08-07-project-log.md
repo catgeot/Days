@@ -4,15 +4,15 @@
 
 ## 테마여행 #52, 명소 분류 최적화
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `f3ac4a61` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
 
-- **요청**: 대분류 클릭 시 같은 경주 명소가 흩어짐 → 동일 권역 뭉침 · 중분류 칩은 분류명 대신 지역명(경북·경남)
-- **한 일**: `sortScenicSpotsByPlaceCluster` — 선정·유산 목록 시도→시·군 뭉침 · DB `area_code`+`addr1` 정렬 · TourAPI cat2(자연관광지 등) 칩 제거 · 지역 중분류 칩 유지 · `smoke:korea-scenic-place-cluster` · 작업로그
+- **요청**: 대분류 클릭 시 같은 경주 명소가 흩어짐 → 동일 권역 뭉침 · (후속) TourAPI 분류는 기존 유지
+- **한 일**: `sortScenicSpotsByPlaceCluster` — 선정·유산 목록 시도→시·군 뭉침 · DB `area_code`+`addr1` 정렬 · TourAPI cat1/cat2 칩·필터는 기존 방식 유지 · `smoke:korea-scenic-place-cluster` · 작업로그
 - **VERIFY**: `smoke:korea-scenic-place-cluster` · `smoke:korea-scenic-place-label` · `smoke:korea-scenic-categories` · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
-- **작업 로그**: Preview 우측 「동일 지역 뭉침 · 중분류를 지역명으로」
-- **QA**: `/korea/theme/scenic?region=경상` → 경주 선정 명소 연속 · 중분류=대구·부산·울산·경북·경남 · 자연관광지 칩 없음
+- **작업 로그**: Preview 우측 「동일 지역 뭉침 · TourAPI 분류 유지」
+- **QA**: `/korea/theme/scenic?region=경상` → 경주 선정 명소 연속 · 시도 칩(경북·경남) · 종목 소분류(자연관광지 등) 그대로
 
 ### 테마여행 · 에이전트 핸드오프 → `#53`
 

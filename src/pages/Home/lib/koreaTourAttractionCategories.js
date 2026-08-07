@@ -1,7 +1,6 @@
 /**
  * TourAPI contentType 12(관광지) 서비스 분류 — 한국관광공사 cat1/cat2.
- * UI 중분류는 지역(시도) 칩을 쓰고, cat1(자연·인문)만 종목 대분류로 노출.
- * cat2 SSOT는 필터·스모크용으로 유지.
+ * 대분류(cat1) 아래 중분류(cat2)를 UI 소분류로 씀.
  */
 
 /** @typedef {{ code: string, label: string }} TourCatChip */

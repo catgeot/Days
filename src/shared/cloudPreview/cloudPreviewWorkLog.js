@@ -26,9 +26,9 @@ export const cloudPreviewWorkLog = [
   {
     id: '2026-08-07-korea-theme-scenic-place-cluster',
     session: '테마여행 #52, 명소 분류 최적화',
-    title: '동일 지역 뭉침 · 중분류를 지역명으로',
+    title: '동일 지역 뭉침 · TourAPI 분류 유지',
     detail:
-      '권역·종목을 고르면 같은 시·군(예: 경주) 명소가 흩어지지 않고 뭉쳐 나열됩니다. TourAPI 분류명(자연관광지 등) 중분류 칩은 제거하고, 경북·경남처럼 지역명 중분류만 둡니다. Preview `/korea/theme/scenic?region=경상`에서 확인해 주세요.',
+      '권역을 고르면 같은 시·군(예: 경주) 명소가 흩어지지 않고 뭉쳐 나열됩니다. TourAPI 종목 대·소분류(자연·인문·자연관광지 등) 칩은 기존처럼 유지합니다. Preview `/korea/theme/scenic?region=경상`에서 확인해 주세요.',
     at: '2026-08-07',
   },
   {
