@@ -13,7 +13,7 @@ export default function KoreaThemeModulePage() {
   const mod = getKoreaThemeModule(moduleId);
 
   if (!mod || mod.id === 'festivals' || !mod.enabled) {
-    return <Navigate to="/korea/theme" replace />;
+    return <Navigate to="/korea/theme/scenic" replace />;
   }
 
   if (mod.id === 'packages') {

@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 65,
-  sessionPhase: '파트 부연 설명 간략화',
+  sessionNo: 66,
+  sessionPhase: '명승 메인 · 홈 투톱',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-scenic-main-dual-entry',
+    session: '테마여행 #66, 명승 메인 · 홈 투톱',
+    title: '명승 메인 · 지구본 축제/명승 투톱',
+    detail:
+      '테마 허브(`/korea/theme`)를 명승 페이지로 리다이렉트하고, 지구본 홈에서 「한국의 축제」「한국의 명승」으로 각각 들어가게 고정했습니다. Preview 홈→축제·명승, `/korea/theme`→명승 이동을 확인해 주세요.',
+    at: '2026-08-07',
+  },
+  {
+    id: '2026-08-07-korea-theme-scenic-section-blurbs',
+    session: '테마여행 #65, 파트 부연 설명 간략화',
+    title: '명승 페이지 파트 부연 간략화',
+    detail:
+      'GATEO 선정·국가유산 명승·관광지 각 파트 부연을 한 문장으로 줄였습니다. Preview `/korea/theme/scenic`에서 세 목록 설명이 짧은지 확인해 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-scenic-chip-scrollbar-amber',
     session: '테마여행 #64, 분류칩 스크롤바 색상',

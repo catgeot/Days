@@ -1223,7 +1223,6 @@ function Home() {
         {/* 국내 축제·명승 투톱 */}
         <Link to="/korea">한국의 축제</Link>
         <Link to="/korea/theme/scenic">한국의 명승</Link>
-        <Link to="/korea/theme">한국의 명승 허브</Link>
       </div>
     </div>
     </FlightCinemaProvider>

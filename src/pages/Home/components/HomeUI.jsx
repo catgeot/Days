@@ -115,14 +115,14 @@ const HomeUI = React.memo(({
               <Link
                 to="/korea"
                 className="group flex w-full max-w-[14rem] items-center gap-2.5 rounded-xl border border-amber-400/45 bg-black/60 px-2.5 py-2 shadow-[0_0_18px_rgba(245,158,11,0.22)] backdrop-blur-md transition-all hover:border-amber-300/70 hover:bg-black/75"
-                aria-label="한국의 축제 현장으로 이동"
+                aria-label="한국의 축제로 이동"
               >
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-amber-400/35 bg-amber-500/15 text-amber-300 group-hover:bg-amber-500/25">
                   <CalendarDays size={16} aria-hidden="true" />
                 </span>
                 <span className="min-w-0 flex flex-col leading-tight">
                   <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
-                    한국의 축제 현장
+                    한국의 축제
                   </span>
                   <span className="truncate text-[10px] text-amber-100/85">
                     지금 · 지도에서 찾기
@@ -142,7 +142,7 @@ const HomeUI = React.memo(({
                     한국의 명승
                   </span>
                   <span className="truncate text-[10px] text-emerald-100/85">
-                    관광지 · 맛집 · 숙소
+                    선정 · 명승 · 관광지
                   </span>
                 </span>
               </Link>

@@ -2,6 +2,36 @@
 
 직전: [`2026-08-06-project-log.md`](./2026-08-06-project-log.md)
 
+## 테마여행 #66, 명승 메인 · 홈 투톱
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **요청**: 테마 허브 대신 명승을 메인 · 지구본에서 축제·명승 각각 진입
+- **한 일**: `/korea/theme` → scenic 리다이렉트 · 허브 언마운트 · 홈 라벨「한국의 축제」「한국의 명승」투톱 고정 · nav-back 기본경로 scenic
+- **VERIFY**: `npm run smoke:korea-theme-nav-back` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/` (홈) · `/korea` · `/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「명승 메인 · 지구본 축제/명승 투톱」
+- **QA**: 홈→축제·명승 · `/korea/theme`이 명승으로 이동
+
+### 테마여행 · 에이전트 핸드오프 → `#67`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #67, Preview QA 반영` |
+| **브랜치** | `cursor/korea-theme` (고정) |
+| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
+| **읽을 것 3** | ① 본 절 ② #66 투톱 ③ #65 부연 |
+| **금지 3** | 축제 지도 리팩터 · top10/regions 탑레벨 부활 · UI 임의 리디자인 |
+| **후보** | Preview QA · S9 |
+| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #67, Preview QA 반영
+```
+
 ## 테마여행 #65, 파트 부연 설명 간략화
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `494482b0` · Preview QA 대기
@@ -14,23 +44,7 @@
 - **작업 로그**: Preview 우측 「명승 페이지 파트 부연 간략화」
 - **QA**: 세 목록 부연이 한 문장인지 확인
 
-### 테마여행 · 에이전트 핸드오프 → `#66`
-
-| | |
-|--|--|
-| **세션 표기** | `테마여행 #66, Preview QA 반영` |
-| **브랜치** | `cursor/korea-theme` (고정) |
-| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
-| **읽을 것 3** | ① 본 절 ② #65 부연 ③ #64 스크롤바 색 |
-| **금지 3** | 축제 지도 리팩터 · top10/regions 탑레벨 부활 · UI 임의 리디자인 |
-| **후보** | Preview QA · S9 |
-| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
-
-**다음 채팅명 (복붙)**:
-
-```
-테마여행 #66, Preview QA 반영
-```
+### 테마여행 · 에이전트 핸드오프 → `#66` (완료 → 위 #66 절)
 
 ## 테마여행 #64, 분류칩 스크롤바 색상
 

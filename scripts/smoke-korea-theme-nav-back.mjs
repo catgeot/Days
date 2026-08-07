@@ -135,6 +135,33 @@ for (const legacy of ['top10', 'regions', 'packages']) {
     `legacy /korea/theme/${legacy} redirects to scenic`,
   );
 }
+assert(
+  !appSrc.includes('KoreaThemeLanding'),
+  'hub landing component not mounted',
+);
+assert(appSrc.includes('path="/korea/theme"'), '/korea/theme route present');
+assert(
+  (appSrc.match(/Navigate to="\/korea\/theme\/scenic"/g) || []).length >= 4,
+  '/korea/theme + legacy modules redirect to scenic',
+);
+
+const homeUi = readFileSync(
+  join(root, 'src/pages/Home/components/HomeUI.jsx'),
+  'utf8',
+);
+assert(
+  homeUi.includes('to="/korea"') &&
+    homeUi.includes('한국의 축제') &&
+    homeUi.includes('to="/korea/theme/scenic"') &&
+    homeUi.includes('한국의 명승'),
+  'globe home has festival + scenic dual entry',
+);
+assert(
+  !homeUi.includes('to="/korea/theme"\n') &&
+    !homeUi.includes("to='/korea/theme'") &&
+    !homeUi.includes('to="/korea/theme" '),
+  'globe home does not link bare /korea/theme hub',
+);
 
 const korea = readFileSync(join(root, 'src/pages/Korea/index.jsx'), 'utf8');
 assert(

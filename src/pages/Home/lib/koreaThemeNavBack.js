@@ -16,7 +16,7 @@ const MODULE_LABEL_BY_PATH = {
  */
 export function buildThemeModulePath(basePath, opts = {}) {
   const base = String(basePath || '').trim();
-  if (!base) return '/korea/theme';
+  if (!base) return '/korea/theme/scenic';
   let pathname = base;
   let existing = '';
   const qIdx = base.indexOf('?');
