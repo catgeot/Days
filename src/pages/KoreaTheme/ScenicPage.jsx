@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
+  ArrowUp,
   ChevronLeft,
   ChevronRight,
   Home,
@@ -436,6 +437,8 @@ export default function KoreaThemeScenicPage() {
   const [searchDraft, setSearchDraft] = useState('');
   /** 확정된 검색어 — 입력창을 비워도 리스트 필터 유지 · 분류 칩으로 결과 분해 */
   const [searchApplied, setSearchApplied] = useState('');
+  const mainScrollRef = useRef(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   const searchFilter = searchDraft.trim() || searchApplied.trim();
   const searchActive = searchFilter.length > 0;
@@ -830,6 +833,18 @@ export default function KoreaThemeScenicPage() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [searchActive, selectedId, closeSearch]);
+
+  useEffect(() => {
+    const el = mainScrollRef.current;
+    if (!el || selectedId) {
+      setShowScrollTop(false);
+      return undefined;
+    }
+    const onScroll = () => setShowScrollTop(el.scrollTop > 180);
+    onScroll();
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, [selectedId, searchActive]);
 
   const resetListPage = useCallback(() => {
     if (page <= 1 && !searchParams.get('spot')) return;
@@ -1718,6 +1733,7 @@ export default function KoreaThemeScenicPage() {
         role={searchActive ? 'presentation' : undefined}
       >
         <main
+          ref={searchActive ? undefined : mainScrollRef}
           className={
             searchActive
               ? 'relative mx-auto flex h-full w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white text-stone-900 shadow-2xl md:rounded-3xl lg:max-w-6xl xl:max-w-7xl'
@@ -1755,6 +1771,7 @@ export default function KoreaThemeScenicPage() {
             </div>
           ) : null}
           <div
+            ref={searchActive ? mainScrollRef : undefined}
             className={
               searchActive ? 'min-h-0 flex-1 overflow-y-auto' : undefined
             }
@@ -2271,6 +2288,27 @@ export default function KoreaThemeScenicPage() {
           </div>
         </main>
       </div>
+
+      <button
+        type="button"
+        aria-label="맨 위로"
+        onClick={() => {
+          mainScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        className={`fixed bottom-[max(1.25rem,calc(env(safe-area-inset-bottom)+0.75rem))] right-3 z-40 flex h-11 items-center gap-1 rounded-full border border-amber-400/60 bg-amber-500 px-3.5 text-white shadow-[0_4px_18px_rgba(245,158,11,0.45)] transition-all duration-300 md:hidden ${
+          showScrollTop && !selectedId
+            ? 'pointer-events-auto translate-y-0 opacity-100'
+            : 'pointer-events-none translate-y-3 opacity-0'
+        }`}
+      >
+        <ArrowUp
+          size={18}
+          strokeWidth={2.5}
+          className="shrink-0"
+          aria-hidden="true"
+        />
+        <span className="text-xs font-bold">위로</span>
+      </button>
 
       {modalSpot ? (
         <ThemeSpotDetailModal

@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 62,
-  sessionPhase: '명소홈 개선',
+  sessionNo: 63,
+  sessionPhase: '본문 맨 위 버튼',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-scenic-scroll-top',
+    session: '테마여행 #63, 본문 맨 위 버튼',
+    title: '본문 스크롤 맨 위 버튼',
+    detail:
+      '축제 홈과 같은 「위로」버튼을 명소 홈 본문·검색 모달 스크롤에 넣었습니다. 조금 내리면 우측 하단에 나타나고, 누르면 맨 위로 갑니다. Preview `/korea/theme/scenic`에서 목록을 내린 뒤 「위로」를 눌러 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-scenic-home-search-modal',
     session: '테마여행 #62, 명소홈 개선',

@@ -52,6 +52,8 @@ assert.ok(
   pageSrc.includes('korea-scenic-search-modal-title'),
   'search results render as modal',
 );
+assert.ok(pageSrc.includes('aria-label="맨 위로"'), 'scroll-to-top FAB');
+assert.ok(pageSrc.includes('mainScrollRef'), 'scroll container ref');
 assert.ok(
   !pageSrc.includes('aria-label="한국의 축제로"'),
   'scenic home header has no festival chip',

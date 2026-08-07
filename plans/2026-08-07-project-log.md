@@ -2,6 +2,36 @@
 
 직전: [`2026-08-06-project-log.md`](./2026-08-06-project-log.md)
 
+## 테마여행 #63, 본문 맨 위 버튼
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **요청**: 본문 스크롤 맨 위 버튼
+- **한 일**: 축제 홈과 동일 「위로」FAB · 본문·검색 모달 스크롤 연동 · 상세 열리면 숨김 · 모바일(`md:hidden`)
+- **VERIFY**: `npm run smoke:korea-scenic-search` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「본문 스크롤 맨 위 버튼」
+- **QA**: 목록 스크롤 → 「위로」·검색 모달에서도 동일
+
+### 테마여행 · 에이전트 핸드오프 → `#64`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #64, Preview QA 반영` |
+| **브랜치** | `cursor/korea-theme` (고정) |
+| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
+| **읽을 것 3** | ① 본 절 ② #63 맨 위 버튼 ③ #62 검색 모달 |
+| **금지 3** | 축제 지도 리팩터 · top10/regions 탑레벨 부활 · UI 임의 리디자인 |
+| **후보** | Preview QA · S9 |
+| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #64, Preview QA 반영
+```
+
 ## 테마여행 #62, 명소홈 개선 — 헤더·검색 모달
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `e44d012b` · Preview QA 대기
@@ -14,23 +44,7 @@
 - **작업 로그**: Preview 우측 「헤더 칩 정리 · 검색 결과 모달」
 - **QA**: 헤더에 축제·명승 없음 · 검색 → 모달 · X/배경/Escape로 목록 복귀
 
-### 테마여행 · 에이전트 핸드오프 → `#63`
-
-| | |
-|--|--|
-| **세션 표기** | `테마여행 #63, Preview QA 반영` |
-| **브랜치** | `cursor/korea-theme` (고정) |
-| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
-| **읽을 것 3** | ① 본 절 ② #62 검색 모달 ③ #61 cat1 자동 |
-| **금지 3** | 축제 지도 리팩터 · top10/regions 탑레벨 부활 · UI 임의 리디자인 |
-| **후보** | Preview QA · S9 |
-| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
-
-**다음 채팅명 (복붙)**:
-
-```
-테마여행 #63, Preview QA 반영
-```
+### 테마여행 · 에이전트 핸드오프 → `#63` (완료 → 위 #63 절)
 
 ## 테마여행 #61, 검색 관광지 0건 — 종목 자동 전환
 
