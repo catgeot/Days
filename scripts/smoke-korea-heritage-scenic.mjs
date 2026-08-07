@@ -68,6 +68,10 @@ assert.ok(!pageSrc.includes('aria-label="권역 대분류"'), 'no page-top herit
 assert.ok(pageSrc.includes('keepChipByCount'), 'hide zero-count chips helper');
 assert.ok(pageSrc.includes('chipLabelsEqual'), 'hide same mid/small label helper');
 assert.ok(pageSrc.includes('curatedHubChipsVisible'), 'curated hub chips filtered');
+assert.ok(
+  pageSrc.includes('시도가 1개면') || pageSrc.includes('listKoreaScenicHubChips(region, null)'),
+  'single-area region keeps hub chips',
+);
 assert.ok(pageSrc.includes('tourCat3ChipsVisible'), 'tour cat3 zero-count filtered');
 assert.ok(modalSrc.includes("spot.source === 'cha'"), 'modal CHA detail');
 assert.ok(modalSrc.includes('heritageMeta'), 'modal heritage meta rows');

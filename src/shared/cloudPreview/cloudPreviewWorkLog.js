@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
   sessionNo: 54,
-  sessionPhase: '분류칩 0건·동일라벨 정리',
+  sessionPhase: '강원 소분류칩 복구',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-scenic-gangwon-hub-chips',
+    session: '테마여행 #54, 강원 소분류칩 복구',
+    title: '강원·제주 여행지 소분류 복구',
+    detail:
+      '시도가 하나인 권역(강원·제주)에서는 시도 선택 없이도 강릉·속초·춘천·서귀포 같은 여행지 소분류 칩이 다시 보입니다. Preview에서 강원·제주 명소 칩을 확인해 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-scenic-chip-zero-dup-hide',
     session: '테마여행 #54, 분류칩 0건·동일라벨 정리',

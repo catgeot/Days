@@ -298,14 +298,27 @@ export default function KoreaThemeScenicPage() {
   );
 
   const curatedHubChipsVisible = useMemo(() => {
-    if (!areaCode) return [];
-    const areaLabel = labelScenicAreaCode(areaCode);
-    return curatedHubChips.filter((chip) => {
+    const hasMidRow = curatedAreaChips.length > 1;
+    // 수도권처럼 시도 중분류가 있으면, 시도 선택 후에만 여행지 소분류
+    if (hasMidRow && !areaCode) return [];
+    // 강원·제주처럼 시도가 1개면 권역 전체 hub를 소분류로 (area 미매핑 hub 포함)
+    const hubs = hasMidRow
+      ? curatedHubChips
+      : listKoreaScenicHubChips(region, null);
+    const parentLabel =
+      hasMidRow && areaCode ? labelScenicAreaCode(areaCode) : null;
+    const soleAreaLabel = !hasMidRow
+      ? curatedAreaChips[0]?.label || null
+      : null;
+    return hubs.filter((chip) => {
       if ((chip.count || 0) <= 0) return false;
-      if (areaLabel && chipLabelsEqual(chip.label, areaLabel)) return false;
+      if (parentLabel && chipLabelsEqual(chip.label, parentLabel)) return false;
+      if (soleAreaLabel && chipLabelsEqual(chip.label, soleAreaLabel)) {
+        return false;
+      }
       return true;
     });
-  }, [curatedHubChips, areaCode]);
+  }, [curatedHubChips, curatedAreaChips, areaCode, region]);
 
   const heritageAreaCounts = useMemo(
     () => countKoreaHeritageScenicByTourArea(region),

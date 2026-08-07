@@ -115,6 +115,18 @@ assert(
   seoulHubs.every((h) => h.label !== '서울') || seoulHubs.length <= 1,
   '서울 시도=서울 여행지 동일 라벨은 UI에서 숨김 대상',
 );
+const gangwonHubs = listKoreaScenicHubChips('강원', null);
+assert(
+  gangwonHubs.length >= 3 &&
+    gangwonHubs.some((h) => h.hubId === 'gangneung'),
+  `강원 소분류(여행지)≥3 (got ${gangwonHubs.length})`,
+);
+const jejuHubs = listKoreaScenicHubChips('제주', null);
+assert(
+  jejuHubs.some((h) => h.hubId === 'seogwipo') &&
+    jejuHubs.some((h) => h.hubId === 'jeju'),
+  '제주 소분류에 서귀포·제주시',
+);
 
 if (failed) {
   console.error(`\n${failed} smoke assertion(s) failed`);

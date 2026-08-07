@@ -2,6 +2,17 @@
 
 직전: [`2026-08-06-project-log.md`](./2026-08-06-project-log.md)
 
+## 테마여행 #54, 강원 소분류칩 복구
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **요청**: 수정 후 강원 소분류칩 사라짐
+- **한 일**: 시도 중분류가 1개인 권역(강원·제주)은 시도 선택 없이도 여행지 hub 소분류 표시 · smoke·작업로그
+- **VERIFY**: `smoke:korea-scenic-spots` · `smoke:korea-heritage-scenic` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **QA**: 강원 → 강릉·속초·춘천 등 · 제주 → 서귀포·제주시 · 수도권은 시도 선택 후에만 여행지 칩
+
 ## 테마여행 #54, 분류칩 0건·동일라벨 정리
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `a1c28948` · Preview QA 대기
