@@ -4,7 +4,7 @@
 
 ## 테마여행 #54, 강원 소분류칩 복구
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `793c4117` · Preview QA 대기
 
 - **요청**: 수정 후 강원 소분류칩 사라짐
 - **한 일**: 시도 중분류가 1개인 권역(강원·제주)은 시도 선택 없이도 여행지 hub 소분류 표시 · smoke·작업로그
