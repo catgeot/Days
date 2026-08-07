@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 58,
-  sessionPhase: '검색 기능 도입',
+  sessionNo: 59,
+  sessionPhase: '검색 기능 테스트',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-scenic-search-chips',
+    session: '테마여행 #59, 검색 기능 테스트',
+    title: '검색 결과 → 분류 칩으로 분해',
+    detail:
+      '검색 후 긴 목록을 권역·시도·종목 칩으로 나눕니다. 검색을 유지한 채 칩을 바꿔 구간별로 확인할 수 있습니다. Preview `/korea/theme/scenic`에서 「경복궁」「경포」검색 후 칩을 눌러 보세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-scenic-search',
     session: '테마여행 #58, 검색 기능 도입',

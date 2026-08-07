@@ -48,6 +48,29 @@ assert.ok(pageSrc.includes('명소·지역 검색'), 'ScenicPage search placehol
 assert.ok(pageSrc.includes('searchQuery'), 'ScenicPage DB searchQuery');
 assert.ok(pageSrc.includes('commitSearch'), 'ScenicPage commitSearch');
 assert.ok(pageSrc.includes('closeSearch'), 'ScenicPage closeSearch');
+assert.ok(pageSrc.includes('curatedSearchPool'), 'search pool for curated');
+assert.ok(pageSrc.includes('heritageSearchPool'), 'search pool for heritage');
+assert.ok(pageSrc.includes('pickRegionForSearchMatches'), 'commit picks region');
+assert.ok(
+  pageSrc.includes('종목 칩으로 나눠 확인'),
+  'search keeps category chips',
+);
+assert.ok(
+  pageSrc.includes('분류 칩으로 결과 분해'),
+  'search comment mentions chip breakdown',
+);
+const setRegionBlock = pageSrc.slice(
+  pageSrc.indexOf('const setRegion = useCallback'),
+  pageSrc.indexOf('const setArea = useCallback'),
+);
+assert.ok(
+  setRegionBlock.length > 0 && !setRegionBlock.includes('clearSearchFilter'),
+  'region chip must not clear search',
+);
+assert.ok(
+  filterScenicSpotsByQuery(curated, '경복궁').some((s) => s.region === '수도권'),
+  '경복궁 matches include 수도권',
+);
 
 const libSrc = readFileSync(
   join(__dirname, '../src/pages/Home/lib/koreaTourAttractions.js'),
@@ -55,5 +78,17 @@ const libSrc = readFileSync(
 );
 assert.ok(libSrc.includes('title.ilike.'), 'DB title ilike');
 assert.ok(libSrc.includes('searchQuery'), 'fetch accepts searchQuery');
+const chipCountFn = libSrc.slice(
+  libSrc.indexOf('export async function fetchScenicFilterChipCounts'),
+  libSrc.indexOf('export async function fetchKoreaTourAttractions'),
+);
+assert.ok(
+  chipCountFn.includes('sanitizeScenicDbSearchQuery(opts.searchQuery)'),
+  'chip counts accept searchQuery',
+);
+assert.ok(
+  chipCountFn.includes('searchQuery,'),
+  'region/cat chip counts pass searchQuery',
+);
 
 console.log('smoke-korea-scenic-search: PASS');

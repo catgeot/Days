@@ -202,6 +202,7 @@ export async function fetchScenicFilterChipCounts(opts = {}) {
   const cat1 = normalizeTourAttractionCat1(opts.cat1);
   const cat2 = normalizeTourAttractionCat2(cat1, opts.cat2);
   const localityQuery = scenicLocalityQueryForHubName(opts.localityQuery);
+  const searchQuery = sanitizeScenicDbSearchQuery(opts.searchQuery) || null;
 
   /** @type {Record<string, number>} */
   const regionCounts = {};
@@ -219,7 +220,10 @@ export async function fetchScenicFilterChipCounts(opts = {}) {
 
   const jobs = [
     ...SCENIC_REGION_ORDER.map(async (r) => {
-      const { count, error } = await countKoreaTourAttractions({ region: r });
+      const { count, error } = await countKoreaTourAttractions({
+        region: r,
+        searchQuery,
+      });
       if (error) errors.push(error);
       regionCounts[r] = count;
     }),
@@ -227,6 +231,7 @@ export async function fetchScenicFilterChipCounts(opts = {}) {
       const { count, error } = await countKoreaTourAttractions({
         region,
         areaCode: a.code,
+        searchQuery,
       });
       if (error) errors.push(error);
       areaCounts[a.code] = count;
@@ -237,6 +242,7 @@ export async function fetchScenicFilterChipCounts(opts = {}) {
         areaCode,
         cat1: c.code,
         localityQuery,
+        searchQuery,
       });
       if (error) errors.push(error);
       cat1Counts[c.code] = count;
@@ -248,6 +254,7 @@ export async function fetchScenicFilterChipCounts(opts = {}) {
         cat1,
         cat2: c.code,
         localityQuery,
+        searchQuery,
       });
       if (error) errors.push(error);
       cat2Counts[c.code] = count;
@@ -260,6 +267,7 @@ export async function fetchScenicFilterChipCounts(opts = {}) {
         cat2,
         cat3: c.code,
         localityQuery,
+        searchQuery,
       });
       if (error) errors.push(error);
       cat3Counts[c.code] = count;
