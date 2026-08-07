@@ -4,7 +4,7 @@
 
 ## 테마여행 #53, TourAPI 소분류 칩 세분화
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `d4ee30ed` · Preview QA 대기
 
 - **요청**: 관광지 종목 칩이 광범위해 목록 확인이 어려움 → 소중분류를 더 세분
 - **한 일**: TourAPI `cat3` SSOT·필터·칩 — 중분류(자연관광지 등) 선택 시 산·해수욕장·사찰·공원 등 소분류 칩 · `?cat3=` · 칩 건수 · `smoke:korea-scenic-categories` · 작업로그
