@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 63,
-  sessionPhase: '메인 머지·테스트',
-  branch: 'main',
-  previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'korea-theme',
+  sessionNo: 67,
+  sessionPhase: '홈 투톱 부제 제거',
+  branch: 'cursor/home-korea-links-e814',
+  previewPath: '/',
+  qaShareSlug: 'home-korea',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-home-korea-links-subtitle-67',
+    session: '테마여행 #67, 홈 투톱 부제 제거',
+    title: '지구본 홈 축제·명승 버튼 부제 제거',
+    detail:
+      '홈 좌상단 「한국의 축제」「한국의 명승」진입 버튼에서 부제(지금 · 지도에서 찾기 / 선정 · 명승 · 관광지)를 빼고 제목만 남겼습니다. Preview 홈에서 두 버튼이 간소한지 확인해 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-main-merge-63',
     session: '테마여행 #63, 메인 머지·테스트',
