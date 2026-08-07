@@ -4,7 +4,7 @@
 
 ## 테마여행 #65, 파트 부연 설명 간략화
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `494482b0` · Preview QA 대기
 
 - **요청**: 명승 페이지 각 파트 부연을 짧게
 - **한 일**: GATEO「많이 찾는 인기 관광지를 골랐습니다.」· 명승「국가유산청 지정 명승 목록입니다.」· 관광지「한국관광공사 선정 관광지입니다.」
