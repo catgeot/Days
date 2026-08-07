@@ -2,33 +2,32 @@
 
 직전: [`2026-08-06-project-log.md`](./2026-08-06-project-log.md)
 
-## 테마여행 #67, 홈 투톱 부제 제거
+## 테마여행 #67, 홈·축제 헤더 간소화
 
-**상태**: feature `cursor/home-korea-links-e814` · Preview QA 대기
+**상태**: ✅ PR [#62](https://github.com/catgeot/Days/pull/62)·[#63](https://github.com/catgeot/Days/pull/63) → `main` · `/qa/home-korea` → PROD `/korea`
 
-- **요청**: 지구본 홈 축제·명승 진입 버튼 부제 제거로 간소화
-- **한 일**: `HomeUI` 투톱에서 「지금 · 지도에서 찾기」「선정 · 명승 · 관광지」제거 · 제목+아이콘만 · `/qa/home-korea` 추가
-- **VERIFY**: `npm run build`
-- **공유**: `https://www.gateo.kr/qa/home-korea` (main 반영 후) · git Preview 홈
-- **Preview**: `https://days-git-cursor-home-korea-links-e814-catgeots-projects.vercel.app/`
-- **작업 로그**: Preview 우측 「지구본 홈 축제·명승 버튼 부제 제거」
-- **QA**: 홈 좌상단 두 버튼이 제목만인지 · 축제/명승 링크 동작
+- **요청**: 지구본 홈 투톱 부제 제거 · 축제 홈 헤더 명승 링크 버튼 제거
+- **한 일**: `HomeUI` 부제 제거(#62) · `/korea` 헤더 「명승」칩 제거(#63) · QA 링크 PROD
+- **VERIFY**: `npm run build` · Vercel checks PASS
+- **공유/PROD**: `https://www.gateo.kr/qa/home-korea` · `https://www.gateo.kr/` · `https://www.gateo.kr/korea`
+- **QA**: 홈 투톱 제목만 · `/korea` 헤더에 명승 칩 없음
 
 ### 테마여행 · 에이전트 핸드오프 → `#68`
 
 | | |
 |--|--|
-| **세션 표기** | `테마여행 #68, Preview QA 반영` |
-| **브랜치** | `cursor/home-korea-links-e814` (고정) |
-| **읽을 것 3** | ① 본 절 ② `HomeUI` 투톱 ③ Preview 홈 |
+| **세션 표기** | `테마여행 #68, PROD QA` |
+| **브랜치** | `main` |
+| **PR** | [#62](https://github.com/catgeot/Days/pull/62)·[#63](https://github.com/catgeot/Days/pull/63) MERGED |
+| **읽을 것 3** | ① 본 절 ② PROD 홈 ③ PROD `/korea` |
 | **금지 3** | 축제 지도 리팩터 · UI 임의 리디자인 · releaseNotes 무단 반영 |
-| **후보** | Preview QA · main 병합 |
-| **공유/Preview** | `https://www.gateo.kr/qa/home-korea` · git Preview `/` |
+| **후보** | 사람 PROD QA |
+| **공유/PROD** | `https://www.gateo.kr/qa/home-korea` · `https://www.gateo.kr/korea` |
 
 **다음 채팅명 (복붙)**:
 
 ```
-테마여행 #68, Preview QA 반영
+테마여행 #68, PROD QA
 ```
 
 ## 릴리스 노트 — 한국의 명승 (사용자 문구)
