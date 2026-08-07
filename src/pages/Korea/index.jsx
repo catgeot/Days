@@ -25,6 +25,8 @@ import {
 } from 'lucide-react';
 import SEO from '../../components/SEO';
 import { ThemeFestivalBackLink } from '../KoreaTheme/ThemeModuleBackButton';
+import { setPlaceReturnTo } from '../Home/lib/placeReturnTo';
+import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
 import { resolveKoreaAreaFromCoords } from './resolveKoreaAreaFromCoords';
 import { festivalLngLat } from './koreaFestivalCorridors';
 import {
@@ -607,6 +609,26 @@ export default function KoreaFestivalHub() {
   /** 코스→축제 상세 deep-link — 칩/지도 리팩터 없이 contentId만 수신 */
   const festivalFromQuery = String(searchParams.get('festival') || '').trim();
   const now = useMemo(() => new Date(), []);
+
+  const goHome = useCallback(() => {
+    try {
+      sessionStorage.setItem('gateo_reset_viewport', '1');
+    } catch {
+      /* ignore quota / private mode */
+    }
+    resetIosZoomAfterInput();
+    navigate('/');
+  }, [navigate]);
+
+  useEffect(() => {
+    return () => {
+      try {
+        sessionStorage.setItem('gateo_reset_viewport', '1');
+      } catch {
+        /* ignore */
+      }
+    };
+  }, []);
 
   const [timeTab, setTimeTab] = useState('now');
   const [tasteId, setTasteId] = useState('all');
@@ -1554,7 +1576,7 @@ export default function KoreaFestivalHub() {
                 ) : (
                   <button
                     type="button"
-                    onClick={() => navigate('/')}
+                    onClick={goHome}
                     aria-label="홈으로"
                     title="홈으로"
                     className="flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs font-bold text-stone-700 hover:bg-stone-100"
@@ -2133,7 +2155,15 @@ export default function KoreaFestivalHub() {
           item={selected}
           favorited={favoriteIds.has(String(selected.contentId))}
           onToggleFavorite={handleToggleFavorite}
-          onClose={() => setSelected(null)}
+          onClose={() => {
+            resetIosZoomAfterInput();
+            setSelected(null);
+          }}
+          onOpenHub={(hubId) => {
+            resetIosZoomAfterInput();
+            setPlaceReturnTo('/korea');
+            navigate(`/place/${hubId}`, { state: { returnTo: '/korea' } });
+          }}
         />
       )}
     </div>

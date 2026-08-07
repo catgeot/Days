@@ -1,0 +1,46 @@
+﻿# 출처: 한국관광공사 TourAPI(국문 관광정보) 기반 매핑
+# 서비스: gateo.kr — 국내 여행지 갤러리·명소 매칭용 contentId/검색키워드
+# 비고: API키·개인정보·원본 사진 미포함. 개방 가능한 식별자·키워드만 포함.
+slug,title,contentId,photoKeyword,photoKeywords,aliases,verifiedAt
+bukchon-hanok,북촌한옥마을,126537,북촌한옥마을,북촌한옥마을 전경|북촌 한옥,북촌한옥마을|북촌|Bukchon Hanok Village,2026-07-23
+bulguksa,경주 불국사,126166,불국사,불국사 전경|경주 불국사,불국사|경주 불국사|Bulguksa,2026-07-23
+changgyeonggung,창경궁,126511,창경궁,창경궁 전경|창경궁 야경,창경궁|Changgyeonggung,2026-07-23
+ddp,동대문디자인플라자,2470006,동대문디자인플라자,동대문디자인플라자 전경|DDP,동대문디자인플라자|DDP|Dongdaemun Design Plaza,2026-07-23
+deoksugung,덕수궁,126509,덕수궁,덕수궁 전경|덕수궁 야경,덕수궁|Deoksugung,2026-07-23
+gwangalli-beach,광안리해수욕장,126078,광안리해수욕장,광안리 야경|광안리 전경,광안리|광안리해수욕장|Gwangalli Beach,2026-07-23
+gwanghwamun,광화문,126512,광화문,광화문 광장|광화문 전경,광화문|광화문광장|Gwanghwamun,2026-07-23
+gyeongbokgung,경복궁,126508,경복궁,경복궁 전경|경복궁 근정전|경복궁 야경,경복궁|Gyeongbokgung|Gyeongbokgung Palace,2026-07-23
+gyeongpodae,강릉 경포대,125790,경포대,강릉 경포대|경포대 전경,경포대|강릉 경포대|Gyeongpodae,2026-07-23
+haeundae-beach,해운대해수욕장,126081,해운대해수욕장,해운대 전경|해운대 야경,해운대|해운대해수욕장|Haeundae Beach,2026-07-23
+hallasan,한라산,127635,한라산,한라산 백록담|한라산 전경,한라산|Hallasan,2026-07-23
+heunginjimun,흥인지문,126514,흥인지문,흥인지문 전경|동대문,흥인지문|동대문|Heunginjimun,2026-07-23
+jongmyo,종묘,126510,종묘,종묘 전경,종묘|Jongmyo,2026-07-23
+lotte-world-tower,롯데월드타워,2492348,롯데월드타워,롯데월드타워 야경|롯데월드타워 전경,롯데월드타워|서울스카이|Lotte World Tower,2026-07-23
+n-seoul-tower,남산서울타워,126535,남산서울타워,남산서울타워 야경|남산타워 전경,남산서울타워|남산타워|N Seoul Tower|Namsan Tower,2026-07-23
+namiseom,남이섬,128019,남이섬,남이섬 메타세쿼이아|짚와이어_남이섬,남이섬|Namiseom|Nami Island,2026-07-23
+ojukeon,강릉 오죽헌,129784,오죽헌,오죽헌 전경|강릉 오죽헌,오죽헌|강릉 오죽헌|Ojukheon,2026-07-23
+seongsan-ilchulbong,성산일출봉,126435,성산일출봉,성산일출봉 일출|성산일출봉 전경,성산일출봉|Seongsan Ilchulbong,2026-07-23
+seoraksan,설악산 국립공원,127586,설악산,설악산 전경|설악산 권금성,설악산|설악산 국립공원|Seoraksan,2026-07-23
+busan,부산,,부산,부산 전경|부산 야경|광안대교,부산|Busan,2026-07-23
+changdeokgung,창덕궁,,창덕궁,창덕궁 전경|창덕궁 후원,창덕궁|Changdeokgung,2026-07-23
+chuncheon,춘천,,춘천,,춘천|Chuncheon,2026-07-23
+daegu,대구,,대구,,대구|Daegu,2026-07-23
+daejeon,대전,,대전,,대전|Daejeon,2026-07-23
+ganghwa,강화,,강화,,강화|강화도|Ganghwa,2026-07-23
+gangneung,강릉,,강릉,,강릉|Gangneung,2026-07-23
+gongjicheon,공지천,,공지천,공지천 벚꽃,공지천|Gongjicheon|Gongji Stream,2026-07-23
+gwangju,광주,,광주,,광주|Gwangju,2026-07-23
+gyeongju,경주,,경주,,경주|Gyeongju,2026-07-23
+incheon,인천,,인천,,인천|Incheon,2026-07-23
+jeju,제주,,제주,성산일출봉 전경|한라산 전경|제주 해변,제주|제주시|제주도|Jeju,2026-07-23
+jeonju,전주,,전주,,전주|Jeonju,2026-07-23
+pohang,포항,,포항,,포항|Pohang,2026-07-23
+seogwipo,서귀포,,서귀포,,서귀포|Seogwipo,2026-07-23
+seoul,서울,,서울,서울 전경|서울 야경|남산서울타워 야경,서울|Seoul,2026-07-23
+sokcho,속초,,속초,,속초|Sokcho,2026-07-23
+suwon,수원,,수원,,수원|Suwon,2026-07-23
+tongyeong,통영,,통영,,통영|Tongyeong,2026-07-23
+ulleung,울릉,,울릉도,,울릉|울릉도|Ulleung,2026-07-23
+ulsan,울산,,울산,,울산|Ulsan,2026-07-23
+yanggu,양구,,양구,양구 전경|박수근미술관|두타연|을지전망대,양구|양구군|Yanggu,2026-07-24
+yeosu,여수,,여수,,여수|Yeosu,2026-07-23

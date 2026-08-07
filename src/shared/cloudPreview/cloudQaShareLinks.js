@@ -26,9 +26,9 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'korea',
     label: '축제 페이지',
-    branch: 'cursor/korea-time-list-16a3',
+    branch: 'cursor/korea-photo-swipe-7d94',
     destination:
-      'https://days-git-cursor-korea-time-list-16a3-catgeots-projects.vercel.app/korea',
+      'https://days-git-cursor-korea-photo-swipe-7d94-catgeots-projects.vercel.app/korea',
     active: true,
   },
   {

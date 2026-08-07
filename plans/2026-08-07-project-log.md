@@ -428,3 +428,13 @@
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea`
 - **작업 로그**: Preview 우측 「축제 상세 인근 라벨을 명소로」
 - **QA**: `/korea` 축제 상세 → 「인근 명소」·목록·「○○ 명소 더보기」·항목 상세 eyebrow
+## QA 단축링크 `/qa/korea-theme` PROD 복구
+
+**상태**: `main` · tip `c559d5c2` · Vercel PROD 배포 후 확인
+
+- **증상**: `www.gateo.kr/qa/korea-theme` → gateo.kr 유지 · 검은 화면
+- **원인**: PROD `vercel.json`에 `/qa/korea-theme` redirect 없음 → SPA rewrite → 미등록 라우트
+- **한 일**: vercel redirect 추가 · `cloudQaShareLinks` korea-theme · `/qa/:slug` 클라이언트 폴백
+- **VERIFY**: `npm run build` · 배포 후 `curl -sI https://www.gateo.kr/qa/korea-theme` → Preview로 307/302
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowUp,
@@ -53,11 +53,15 @@ import {
 } from '../KoreaTheme/nearbyScenicRank';
 import ThemeSpotDetailModal from '../KoreaTheme/ThemeSpotDetailModal';
 import CourseDetailModal from '../KoreaTheme/CourseDetailModal';
+import { useLightboxPinchTransform } from '../../components/PlaceCard/common/useLightboxPinchTransform';
+import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
 
 const SCENIC_PATH = '/korea/theme/scenic';
 const COURSES_PATH = '/korea/theme/courses';
 const FESTIVAL_RETURN = '/korea';
 const SCENIC_LIST_LIMIT = 8;
+const PHOTO_SWIPE_THRESHOLD_PX = 48;
+const PHOTO_SWIPE_DIRECTION_RATIO = 1.25;
 
 function formatYmdLabel(ymd) {
   const s = String(ymd || '');
@@ -285,6 +289,7 @@ export default function FestivalDetailSheet({
   favorited = false,
   onToggleFavorite,
   onClose,
+  onOpenHub: _onOpenHub,
 }) {
   const navigate = useNavigate();
   const [intro, setIntro] = useState(null);
@@ -318,6 +323,9 @@ export default function FestivalDetailSheet({
   const [courseDetail, setCourseDetail] = useState(null);
   const [courseDetailLoading, setCourseDetailLoading] = useState(false);
   const sheetScrollRef = useRef(null);
+  const heroSwipeStartRef = useRef(null);
+  const lightboxSwipeStartRef = useRef(null);
+  const suppressHeroTapRef = useRef(false);
   const tabListRef = useRef(null);
 
   const festivalAreaCode = useMemo(() => {
@@ -507,11 +515,93 @@ export default function FestivalDetailSheet({
     };
   }, [item?.contentId, item?.contentTypeId]);
 
+  const {
+    transformStyle: lightboxTransformStyle,
+    isZoomed: isLightboxZoomed,
+    reset: resetLightboxPinch,
+    onPinchTouchStart,
+    onPinchTouchMove,
+    onPinchTouchEnd,
+    onPinchTouchCancel,
+  } = useLightboxPinchTransform(activeImage);
+
+  const closeLightbox = useCallback(() => {
+    setLightboxOpen(false);
+    resetLightboxPinch();
+    resetIosZoomAfterInput();
+  }, [resetLightboxPinch]);
+
+  const openLightbox = useCallback(() => {
+    if (!imageUrls[activeImage] && !imageUrls[0]) return;
+    setLightboxOpen(true);
+  }, [activeImage, imageUrls]);
+
+  const stepLightbox = useCallback((delta) => {
+    if (imageUrls.length < 2) return;
+    setActiveImage((i) => (i + delta + imageUrls.length) % imageUrls.length);
+  }, [imageUrls.length]);
+
+  const consumeHorizontalSwipe = useCallback((start, endX, endY) => {
+    if (!start || imageUrls.length < 2) return false;
+    const dx = endX - start.x;
+    const dy = endY - start.y;
+    if (Math.abs(dx) < PHOTO_SWIPE_THRESHOLD_PX) return false;
+    if (Math.abs(dx) < Math.abs(dy) * PHOTO_SWIPE_DIRECTION_RATIO) return false;
+    stepLightbox(dx > 0 ? -1 : 1);
+    return true;
+  }, [imageUrls.length, stepLightbox]);
+
+  const onHeroTouchStart = useCallback((e) => {
+    if (e.touches.length !== 1) return;
+    const t = e.touches[0];
+    heroSwipeStartRef.current = { x: t.clientX, y: t.clientY };
+    suppressHeroTapRef.current = false;
+  }, []);
+
+  const onHeroTouchEnd = useCallback((e) => {
+    const start = heroSwipeStartRef.current;
+    heroSwipeStartRef.current = null;
+    const t = e.changedTouches?.[0];
+    if (!t) return;
+    if (consumeHorizontalSwipe(start, t.clientX, t.clientY)) {
+      suppressHeroTapRef.current = true;
+    }
+  }, [consumeHorizontalSwipe]);
+
+  const onHeroTouchCancel = useCallback(() => {
+    heroSwipeStartRef.current = null;
+  }, []);
+
+  const onLightboxTouchStart = useCallback((e) => {
+    onPinchTouchStart(e);
+    if (e.touches.length !== 1 || isLightboxZoomed()) {
+      lightboxSwipeStartRef.current = null;
+      return;
+    }
+    const t = e.touches[0];
+    lightboxSwipeStartRef.current = { x: t.clientX, y: t.clientY };
+  }, [isLightboxZoomed, onPinchTouchStart]);
+
+  const onLightboxTouchEnd = useCallback((e) => {
+    onPinchTouchEnd(e);
+    const start = lightboxSwipeStartRef.current;
+    lightboxSwipeStartRef.current = null;
+    if (!start || isLightboxZoomed()) return;
+    const t = e.changedTouches?.[0];
+    if (!t) return;
+    consumeHorizontalSwipe(start, t.clientX, t.clientY);
+  }, [consumeHorizontalSwipe, isLightboxZoomed, onPinchTouchEnd]);
+
+  const onLightboxTouchCancel = useCallback(() => {
+    onPinchTouchCancel();
+    lightboxSwipeStartRef.current = null;
+  }, [onPinchTouchCancel]);
+
   useEffect(() => {
     const onKey = (event) => {
       if (event.key === 'Escape') {
         if (lightboxOpen) {
-          setLightboxOpen(false);
+          closeLightbox();
           return;
         }
         if (selectedNearby || selectedScenic || selectedCourse) return;
@@ -520,9 +610,9 @@ export default function FestivalDetailSheet({
       }
       if (!lightboxOpen || imageUrls.length < 2) return;
       if (event.key === 'ArrowLeft') {
-        setActiveImage((i) => (i - 1 + imageUrls.length) % imageUrls.length);
+        stepLightbox(-1);
       } else if (event.key === 'ArrowRight') {
-        setActiveImage((i) => (i + 1) % imageUrls.length);
+        stepLightbox(1);
       }
     };
     window.addEventListener('keydown', onKey);
@@ -534,6 +624,8 @@ export default function FestivalDetailSheet({
     selectedNearby,
     selectedScenic,
     selectedCourse,
+    closeLightbox,
+    stepLightbox,
   ]);
 
   useEffect(() => {
@@ -785,15 +877,6 @@ export default function FestivalDetailSheet({
     Boolean(sponsor2) &&
     normalizeCompareText(sponsor2) !== normalizeCompareText(sponsor1);
 
-  const openLightbox = () => {
-    if (!hero) return;
-    setLightboxOpen(true);
-  };
-  const stepLightbox = (delta) => {
-    if (imageUrls.length < 2) return;
-    setActiveImage((i) => (i + delta + imageUrls.length) % imageUrls.length);
-  };
-
   const scrollTabsIntoView = () => {
     const sheet = sheetScrollRef.current;
     const tabs = tabListRef.current;
@@ -849,14 +932,28 @@ export default function FestivalDetailSheet({
           <div className="relative flex shrink-0 flex-col md:w-[46%] lg:w-1/2 md:min-h-0 md:self-stretch bg-stone-100">
             <button
               type="button"
-              onClick={openLightbox}
-              className="group relative flex w-full items-center justify-center bg-stone-200/70 text-left md:min-h-0 md:flex-1 md:overflow-hidden"
-              aria-label="사진 확대보기"
+              onClick={() => {
+                if (suppressHeroTapRef.current) {
+                  suppressHeroTapRef.current = false;
+                  return;
+                }
+                openLightbox();
+              }}
+              onTouchStart={onHeroTouchStart}
+              onTouchEnd={onHeroTouchEnd}
+              onTouchCancel={onHeroTouchCancel}
+              className="group relative flex w-full items-center justify-center bg-stone-200/70 text-left touch-pan-y md:min-h-0 md:flex-1 md:overflow-hidden"
+              aria-label={
+                imageUrls.length > 1
+                  ? '사진 확대보기 · 좌우로 쓸어 넘기기'
+                  : '사진 확대보기'
+              }
             >
               <img
                 src={hero}
                 alt=""
-                className="h-auto w-full max-h-[min(52vh,28rem)] object-contain md:max-h-full md:h-full md:w-full"
+                draggable={false}
+                className="h-auto w-full max-h-[min(52vh,28rem)] object-contain pointer-events-none select-none md:max-h-full md:h-full md:w-full"
               />
               <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-stone-900/55 px-2.5 py-1 text-[11px] font-bold text-white opacity-95 group-hover:bg-stone-900/70">
                 <Expand size={13} aria-hidden="true" />
@@ -1742,7 +1839,7 @@ export default function FestivalDetailSheet({
           className="fixed inset-0 z-[60] flex items-center justify-center bg-stone-950/90 p-3 md:p-8"
           onClick={(e) => {
             e.stopPropagation();
-            setLightboxOpen(false);
+            closeLightbox();
           }}
           role="presentation"
         >
@@ -1761,7 +1858,7 @@ export default function FestivalDetailSheet({
               </p>
               <button
                 type="button"
-                onClick={() => setLightboxOpen(false)}
+                onClick={closeLightbox}
                 aria-label="확대보기 닫기"
                 className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white hover:bg-white/20"
               >
@@ -1770,11 +1867,19 @@ export default function FestivalDetailSheet({
             </div>
 
             <div className="relative min-h-0 flex-1">
-              <div className="flex h-full items-center justify-center">
+              <div
+                className="flex h-full items-center justify-center touch-none"
+                onTouchStart={onLightboxTouchStart}
+                onTouchMove={onPinchTouchMove}
+                onTouchEnd={onLightboxTouchEnd}
+                onTouchCancel={onLightboxTouchCancel}
+              >
                 <img
                   src={hero}
                   alt=""
-                  className="max-h-full max-w-full object-contain"
+                  draggable={false}
+                  style={lightboxTransformStyle}
+                  className="max-h-full max-w-full object-contain select-none"
                 />
               </div>
               {imageUrls.length > 1 && (

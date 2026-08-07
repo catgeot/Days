@@ -151,6 +151,15 @@
 ```
 
 - **금지 3**: 축제 `/korea` 로직 수정 · 모듈 본문 대량 · releaseNotes
+## 독도 검색 #1, 허브 SSOT
+
+**상태**: feature `cursor/dokdo-search-a849` · Preview QA 대기
+
+- **이슈**: 「독도」검색 시 별도 표시 없음 — `울릉독도박물관`.includes(`독도`)로 울릉 클러스터만 노출
+- **변경**: `cityAttractionHubs`에 `dokdo` 허브(독도·Dokdo · 독도등대·동도·서도·독도접안시설) 추가 · travelSpots blocklist 유지
+- **검증**: `npm run audit:city-attraction-hubs` · resolve 시뮬레이션(독도 exactHub · 울릉도/울릉독도박물관 유지)
+- **공유**: `https://www.gateo.kr/qa/dokdo` · git Preview `https://days-git-cursor-dokdo-search-a849-catgeots-projects.vercel.app/`
+- **QA**: 홈 검색「독도」→ 독도 허브·명소 · 「울릉도」·「울릉독도박물관」회귀
 
 ## 테마여행 #1, main 반영 (Cloud 전 주제)
 
