@@ -4,7 +4,7 @@
 
 ## 테마여행 #56, QA 단축링크 검은 화면
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip _(push 후)_ · **main vercel redirect 배포 필요**
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `dad8c9d1` · **main vercel redirect 배포 필요**
 
 - **증상**: `www.gateo.kr/qa/korea-theme` → 주소는 gateo.kr 유지 · 검은 화면
 - **원인**: PROD(`main`) `vercel.json`에 `/qa/korea-theme` 없음 → SPA rewrite → `/qa/:slug` 라우트 없음 → `index.css` 검정 배경만
