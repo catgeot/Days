@@ -4,7 +4,7 @@
 
 ## 테마여행 #57, 같은 도시 명소 deep-link
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `fb7b47d9` · Preview QA 대기
 
 - **증상**: 유성온천 본문 「같은 도시 명소」클릭 시 명소 홈으로 복귀
 - **원인**: regions-only 멤버십이 `/korea/theme/scenic` bare로 폴백
