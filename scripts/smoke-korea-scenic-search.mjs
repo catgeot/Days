@@ -55,6 +55,11 @@ assert.ok(
 assert.ok(pageSrc.includes('aria-label="맨 위로"'), 'scroll-to-top FAB');
 assert.ok(pageSrc.includes('mainScrollRef'), 'scroll container ref');
 assert.ok(
+  pageSrc.includes('bg-amber-500 shadow-sm') &&
+    pageSrc.includes('bg-amber-100 ring-1 ring-amber-300/50'),
+  'chip horizontal scrollbar uses amber track/thumb',
+);
+assert.ok(
   !pageSrc.includes('aria-label="한국의 축제로"'),
   'scenic home header has no festival chip',
 );

@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 63,
-  sessionPhase: '본문 맨 위 버튼',
+  sessionNo: 64,
+  sessionPhase: '분류칩 스크롤바 색상',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-scenic-chip-scrollbar-amber',
+    session: '테마여행 #64, 분류칩 스크롤바 색상',
+    title: '분류칩 가로 스크롤바 앰버',
+    detail:
+      '분류칩 커스텀 가로 스크롤바를 회색에서 앰버(트랙 연한 앰버·썸 amber-500)로 바꿨습니다. Preview `/korea/theme/scenic`에서 넘치는 칩 행 아래 바 색을 확인해 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-scenic-scroll-top',
     session: '테마여행 #63, 본문 맨 위 버튼',
