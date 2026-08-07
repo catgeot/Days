@@ -4,7 +4,7 @@
 
 ## QA 단축링크 `/qa/korea-theme` PROD 복구
 
-**상태**: `main` · tip _(push 후)_ · Vercel PROD 배포 후 확인
+**상태**: `main` · tip `c559d5c2` · Vercel PROD 배포 후 확인
 
 - **증상**: `www.gateo.kr/qa/korea-theme` → gateo.kr 유지 · 검은 화면
 - **원인**: PROD `vercel.json`에 `/qa/korea-theme` redirect 없음 → SPA rewrite → 미등록 라우트
