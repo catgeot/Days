@@ -2,6 +2,36 @@
 
 직전: [`2026-08-06-project-log.md`](./2026-08-06-project-log.md)
 
+## 테마여행 #54, 명소·명승 분류 최적화
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **요청**: 명소 상단이 명승 칩 → 명승 칩은 명승 리스트로 · 명소 칩 신설 · 둘 다 중·소 세분
+- **한 일**: 페이지 상단 권역 칩 제거 · GATEO 명소=권역→시도→여행지 · 국가유산 명승=권역→시도→경관유형(`?hcat=`) · 건수는 각 섹션 SSOT · smoke·작업로그
+- **VERIFY**: `smoke:korea-heritage-scenic` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-categories` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「명소·명승 섹션별 대·중·소 분류칩」
+- **QA**: `/korea/theme/scenic` → 명소 권역/시도/여행지 · 명승 권역/시도/자연·문화·역사문화 · 관광지 TourAPI 칩 유지
+
+### 테마여행 · 에이전트 핸드오프 → `#55`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #55, Preview QA 반영` |
+| **브랜치** | `cursor/korea-theme` (고정) |
+| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
+| **읽을 것 3** | ① 본 절 ② #54 분류칩 ③ 플랜 §1.0 |
+| **금지 3** | 축제 지도 리팩터 · top10/regions 탑레벨 부활 · UI 임의 리디자인 |
+| **후보** | Preview QA · S9 |
+| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #55, Preview QA 반영
+```
+
 ## 테마여행 #53, TourAPI 소분류 칩 세분화
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `d4ee30ed` · Preview QA 대기
@@ -13,24 +43,6 @@
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
 - **작업 로그**: Preview 우측 「관광지 중분류 아래 소분류(산·사찰 등) 칩」
 - **QA**: `/korea/theme/scenic` → 자연→자연관광지→해수욕장/산 · 인문→역사관광지→사찰 · 목록·건수 축소
-
-### 테마여행 · 에이전트 핸드오프 → `#54`
-
-| | |
-|--|--|
-| **세션 표기** | `테마여행 #54, Preview QA 반영` |
-| **브랜치** | `cursor/korea-theme` (고정) |
-| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
-| **읽을 것 3** | ① 본 절 ② #53 cat3 칩 ③ 플랜 §1.0 |
-| **금지 3** | 축제 지도 리팩터 · top10/regions 탑레벨 부활 · UI 임의 리디자인 |
-| **후보** | Preview QA · S9 |
-| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
-
-**다음 채팅명 (복붙)**:
-
-```
-테마여행 #54, Preview QA 반영
-```
 
 ## 테마여행 #52, 명소 분류 최적화
 

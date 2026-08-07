@@ -12,6 +12,11 @@ import {
   resolveHubAttraction,
   resolveHubPlaceFromSlug,
 } from '../src/pages/Home/lib/cityAttractionHubs.js';
+import {
+  countKoreaScenicSpotsByRegion,
+  countKoreaScenicSpotsByTourArea,
+  listKoreaScenicHubChips,
+} from '../src/pages/Home/lib/koreaScenicSpots.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const JSON_PATH = join(__dirname, '../src/pages/Home/data/koreaScenicSpots.json');
@@ -86,6 +91,19 @@ for (const id of SAMPLE_IDS) {
     `${id} slug hydrates attraction ${spot.attractionName}`,
   );
 }
+
+const curatedRegionCounts = countKoreaScenicSpotsByRegion();
+assert(
+  (curatedRegionCounts['경상'] || 0) >= 20,
+  `명소 권역 칩 경상≥20 (got ${curatedRegionCounts['경상']})`,
+);
+const gyeongArea = countKoreaScenicSpotsByTourArea('경상');
+assert((gyeongArea['35'] || 0) >= 5, `명소 경북 중분류≥5 (got ${gyeongArea['35']})`);
+const gyeongHubs = listKoreaScenicHubChips('경상', '35');
+assert(
+  gyeongHubs.some((h) => h.hubId === 'gyeongju' && h.count >= 3),
+  '명소 소분류에 경주≥3',
+);
 
 if (failed) {
   console.error(`\n${failed} smoke assertion(s) failed`);

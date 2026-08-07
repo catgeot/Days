@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 53,
-  sessionPhase: 'TourAPI 소분류 칩 세분화',
+  sessionNo: 54,
+  sessionPhase: '명소, 명승 분류 최적화',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-scenic-curated-heritage-chips',
+    session: '테마여행 #54, 명소, 명승 분류 최적화',
+    title: '명소·명승 섹션별 대·중·소 분류칩',
+    detail:
+      '페이지 상단 명승 건수 칩을 없애고, GATEO 선정 명소는 권역→시도→여행지 칩으로, 국가유산 명승은 권역→시도→경관유형(자연·문화·역사문화) 칩으로 나눕니다. Preview `/korea/theme/scenic`에서 명소·명승 각 리스트 상단 칩을 확인해 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-scenic-cat3-chips',
     session: '테마여행 #53, TourAPI 소분류 칩 세분화',
