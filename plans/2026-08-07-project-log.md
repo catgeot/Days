@@ -2,18 +2,28 @@
 
 직전: [`2026-08-06-project-log.md`](./2026-08-06-project-log.md)
 
-## 테마여행 #57, 같은 도시 Tour contentId
+## 테마여행 #57, 같은 도시 — 정보 있는 추천만
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `41e1ec00` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
 
-- **증상**: 계족산 황톳길 본문 「Tour 상세 없음」
-- **원인**: hub 명소에 Tour `contentId` 미매핑 → LIVE detail 조회 불가(폴백 문구)
-- **한 일**: `daejeon:gyejoksan-hwangtotgil`→`705678`(장동산림욕장) · `daejeon:daejeon-central-market`→`1434477`(대전 중앙시장) · 비-명승 sameHub는 **중첩 모달+contentId**(GATEO 이름 유지) · generate region-tour
+- **요청**: 연결처보다 「왜 추천됐는지」·정보 없으면 목록에 올리지 말 것
+- **한 일**: sameHub는 **curated 명승** 또는 **Tour contentId** 있을 때만 노출 · contentId 없는 hub 명소(계족산 황톳길 등) 제외 · 장동산림욕장 오매핑 제거 · 신중앙시장(대전 중앙시장 id)은 유지
 - **VERIFY**: `npm run smoke:korea-theme-cross-links` · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
-- **작업 로그**: Preview 우측 「계족산·신중앙시장 Tour contentId 채움」
-- **QA**: 유성온천 → 계족산(개요 표시) · 신중앙시장(개요 표시) · 한밭 회귀
+- **작업 로그**: Preview 우측 「같은 도시 명소 — 상세 있는 곳만 추천」
+- **QA**: 유성온천 「같은 도시 명소」에 계족산 없음 · 한밭·엑스포·신중앙(정보 있는 항목)만
+
+## 테마여행 #57, 같은 도시 Tour contentId
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `41e1ec00` · **정책 변경(위 절): 빈 상세는 비추천**
+
+- **증상**: 계족산 황톳길 본문 「Tour 상세 없음」
+- **원인**: hub 명소에 Tour `contentId` 미매핑 → LIVE detail 조회 불가
+- **한 일**(철회 일부): 장동산림욕장 별칭 매핑은 제거 · 신중앙시장 id는 유지 · 이후 「정보 있는 추천만」으로 정리
+- **VERIFY**: `npm run smoke:korea-theme-cross-links` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
 
 ## 테마여행 #57, 같은 도시 명소 → 명승 전용
 

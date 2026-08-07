@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
   sessionNo: 57,
-  sessionPhase: '같은 도시 Tour contentId',
+  sessionPhase: '같은 도시 정보 있는 추천만',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-samehub-require-detail',
+    session: '테마여행 #57, 같은 도시 정보 있는 추천만',
+    title: '같은 도시 명소 — 상세 있는 곳만 추천',
+    detail:
+      '정보가 없는 장소는 「같은 도시 명소」에 올리지 않습니다. curated 명승이거나 Tour contentId가 있을 때만 노출합니다. 계족산 황톳길처럼 Tour 상세가 없는 hub 명소는 목록에서 빠집니다. Preview 유성온천 레일에서 빈 상세로 이어지는 항목이 없는지 확인해 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-samehub-tour-contentid',
     session: '테마여행 #57, 같은 도시 Tour contentId',

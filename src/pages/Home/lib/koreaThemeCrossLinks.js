@@ -240,7 +240,8 @@ export function sameHubMembershipDeepPath(membership) {
 }
 
 /**
- * 비-명승 sameHub → 중첩 모달 spot (GATEO 이름 유지 · contentId 있으면 Tour LIVE).
+ * 비-명승 sameHub → 중첩 모달 spot.
+ * Tour contentId가 있을 때만 반환 — 상세 정보 없으면 추천 목록에 올리지 않는다.
  * @param {{
  *   placeSlug?: string,
  *   hubId?: string,
@@ -264,6 +265,8 @@ export function sameHubMembershipModalSpot(membership) {
     membership.scenic?.contentId,
     src.contentId,
   );
+  // 정보(Tour LIVE) 없으면 추천하지 않음 — 빈 「Tour 상세 없음」모달 금지
+  if (!contentId) return null;
   const hubId = normId(membership.hubId || src.hubId);
   const hub = hubId ? resolveCityAttractionHub(hubId) : null;
   const hubAttr = (hub?.attractions || []).find(
@@ -292,6 +295,7 @@ export function sameHubMembershipModalSpot(membership) {
 
 /**
  * 같은 hub의 다른 테마 명소 (자기 제외).
+ * 상세를 열 수 있는 항목만 — curated 명승 또는 Tour contentId 있는 hub 명소.
  * @param {string} hubId
  * @param {{ excludePlaceSlug?: string, limit?: number }} [opts]
  */

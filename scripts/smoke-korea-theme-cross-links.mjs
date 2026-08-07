@@ -156,12 +156,14 @@ assert(
   sameHubMembershipDeepPath(getThemeMembership('expo-science-park')) == null,
   'regions-only has no scenic deepPath',
 );
-const gyejok = yuseongSame.find((r) => r.placeSlug === 'gyejoksan-hwangtotgil');
 assert(
-  gyejok?.deepPath == null &&
-    gyejok?.modalSpot?.name === '계족산 황톳길' &&
-    gyejok?.modalSpot?.contentId === '705678',
-  `gyejok modalSpot+contentId (got ${JSON.stringify(gyejok?.modalSpot)})`,
+  !yuseongSame.some((r) => r.placeSlug === 'gyejoksan-hwangtotgil'),
+  'gyejoksan without Tour contentId is not recommended in sameHub',
+);
+assert(
+  sameHubMembershipModalSpot(getThemeMembership('gyejoksan-hwangtotgil')) ==
+    null,
+  'gyejoksan modalSpot null when no contentId',
 );
 const market = sameHubMembershipModalSpot(
   getThemeMembership('daejeon-central-market'),
@@ -171,9 +173,21 @@ assert(
   `central market modalSpot+contentId (got ${JSON.stringify(market)})`,
 );
 assert(
+  yuseongSame.some((r) => r.placeSlug === 'daejeon-central-market'),
+  'central market with Tour contentId is recommended',
+);
+assert(
   sameHubMembershipDeepPath(getThemeMembership('daejeon-central-market')) ==
     null,
   'central market has no dead regions deepPath',
+);
+assert(
+  yuseongSame.every(
+    (r) =>
+      r.deepPath ||
+      (r.modalSpot && /^\d{1,32}$/.test(String(r.modalSpot.contentId || ''))),
+  ),
+  'every sameHub row is openable (scenic deepPath or Tour contentId)',
 );
 
 const yeosuSpot = { hubId: 'yeosu', placeSlug: 'yeosu', name: '여수', region: '전라' };
