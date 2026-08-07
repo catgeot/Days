@@ -4,12 +4,12 @@
 
 ## 테마여행 #61, 검색 관광지 0건 — 종목 자동 전환
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip _(push 후)_ · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `33889759` · Preview QA 대기
 
 - **증상**: 「경포」검색 → 명소 2·명승 1·**관광지 0**
 - **원인**: TourAPI에 경포 매칭 2건(강원·**인문 A02**) 있으나 기본 종목 **자연(A01)** 유지 → 리스트 0 · 단일 종목이면 칩도 숨김
 - **한 일**: 검색 중 현재 cat1 건수 0이면 결과 있는 첫 종목으로 자동 전환
-- **VERIFY**: _(아래)_
+- **VERIFY**: `npm run smoke:korea-scenic-search` · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
 - **작업 로그**: Preview 우측 「검색 관광지 — 0건 종목 자동 전환」
