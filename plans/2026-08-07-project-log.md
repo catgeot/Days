@@ -4,15 +4,15 @@
 
 ## 테마여행 #56, 명소 · 리스트 대표 사진
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `20ee7141` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip _(push 후)_ · Preview QA 대기
 
-- **요청**: 명소·명승·관광지 리스트에 대표 사진 포함
-- **한 일**: `ScenicListRow` 썸네일 · 명승 `imageUrl`/`galleryUrls` · 관광지 `firstImage` · 선정 명소는 contentId→TourAPI `first_image` 일괄 조회 · 작업 로그
-- **VERIFY**: `npm run build` PASS
+- **요청**: 명소·명승·관광지 리스트에 대표 사진 포함 → 후속 메모리 캐시
+- **한 일**: `ScenicListRow` 썸네일 · 명승 `imageUrl`/`galleryUrls` · 관광지 `firstImage` · 선정 명소 contentId→`first_image` 일괄 조회 · **세션 메모리 캐시**(hit 재호출 없음·동기 peek) · 작업 로그
+- **VERIFY**: `npm run build`
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
-- **작업 로그**: Preview 우측 「명소·명승·관광지 리스트 대표 사진」
-- **QA**: `/korea/theme/scenic` — 세 목록 행에 대표 사진 · 이미지 없는 항목은 아이콘 플레이스홀더
+- **작업 로그**: Preview 우측 「선정 명소 썸네일 메모리 캐시」
+- **QA**: `/korea/theme/scenic` — 세 목록 사진 · 수도권↔강원 전환 시 이미 본 명소 썸네일 즉시 유지(네트워크 재호출 없음)
 
 ### 테마여행 · 에이전트 핸드오프 → `#57`
 

@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
   sessionNo: 56,
-  sessionPhase: '명소',
+  sessionPhase: '명소 썸네일 캐시',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-scenic-thumb-memcache',
+    session: '테마여행 #56, 명소 썸네일 캐시',
+    title: '선정 명소 썸네일 메모리 캐시',
+    detail:
+      '선정 명소 first_image를 세션 메모리에 캐시합니다. 이미 본 contentId는 권역·시도 칩을 다시 골라도 Supabase를 재호출하지 않고 바로 표시합니다. Preview에서 수도권↔강원 전환 시 썸네일이 즉시 유지되는지 확인해 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-scenic-list-thumbs',
     session: '테마여행 #56, 명소',

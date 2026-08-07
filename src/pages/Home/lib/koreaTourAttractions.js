@@ -369,42 +369,111 @@ export async function fetchKoreaTourAttractionById(contentId) {
 
 const FIRST_IMAGE_CHUNK = 80;
 
+/** @type {Map<string, string>} contentId → first_image (세션 메모리) */
+const firstImageCache = new Map();
+/** first_image 없음으로 확인된 contentId (재조회 방지) */
+const firstImageMiss = new Set();
+/** @type {Map<string, Promise<void>>} */
+const firstImageInflight = new Map();
+
 /**
- * GATEO 선정 명소 등 contentId 목록 → TourAPI first_image 맵.
  * @param {Array<string | null | undefined>} contentIds
- * @returns {Promise<Map<string, string>>}
+ * @returns {string[]}
  */
-export async function fetchKoreaTourAttractionFirstImagesByIds(contentIds) {
-  /** @type {Map<string, string>} */
-  const out = new Map();
-  const ids = [
+function normalizeTourAttractionContentIds(contentIds) {
+  return [
     ...new Set(
       (Array.isArray(contentIds) ? contentIds : [])
         .map((id) => String(id || '').trim())
         .filter((id) => /^\d{1,32}$/.test(id)),
     ),
   ];
-  if (!ids.length) return out;
+}
 
-  for (let i = 0; i < ids.length; i += FIRST_IMAGE_CHUNK) {
-    const chunk = ids.slice(i, i + FIRST_IMAGE_CHUNK);
-    const { data, error } = await supabase
-      .from('tourapi_attraction')
-      .select('content_id, first_image')
-      .in('content_id', chunk)
-      .eq('active', true);
-    if (error) {
-      console.warn(
-        '[koreaTourAttractions] firstImages',
-        error.message || error,
-      );
-      continue;
-    }
-    for (const row of data || []) {
-      const id = String(row?.content_id || '').trim();
-      const url = String(row?.first_image || '').trim();
-      if (id && url) out.set(id, url);
-    }
+/**
+ * 메모리 캐시만 동기 조회 (네트워크 없음).
+ * @param {Array<string | null | undefined>} contentIds
+ * @returns {Map<string, string>}
+ */
+export function peekKoreaTourAttractionFirstImagesByIds(contentIds) {
+  /** @type {Map<string, string>} */
+  const out = new Map();
+  for (const id of normalizeTourAttractionContentIds(contentIds)) {
+    const url = firstImageCache.get(id);
+    if (url) out.set(id, url);
   }
   return out;
+}
+
+/**
+ * @param {string[]} ids
+ * @returns {Promise<void>}
+ */
+async function loadMissingTourAttractionFirstImages(ids) {
+  const missing = ids.filter(
+    (id) => !firstImageCache.has(id) && !firstImageMiss.has(id),
+  );
+  if (!missing.length) return;
+
+  const key = missing.slice().sort().join(',');
+  const existing = firstImageInflight.get(key);
+  if (existing) {
+    await existing;
+    return;
+  }
+
+  const task = (async () => {
+    for (let i = 0; i < missing.length; i += FIRST_IMAGE_CHUNK) {
+      const chunk = missing.slice(i, i + FIRST_IMAGE_CHUNK);
+      const { data, error } = await supabase
+        .from('tourapi_attraction')
+        .select('content_id, first_image')
+        .in('content_id', chunk)
+        .eq('active', true);
+      if (error) {
+        console.warn(
+          '[koreaTourAttractions] firstImages',
+          error.message || error,
+        );
+        continue;
+      }
+      /** @type {Set<string>} */
+      const seen = new Set();
+      for (const row of data || []) {
+        const id = String(row?.content_id || '').trim();
+        const url = String(row?.first_image || '').trim();
+        if (!id) continue;
+        seen.add(id);
+        if (url) {
+          firstImageCache.set(id, url);
+          firstImageMiss.delete(id);
+        } else {
+          firstImageMiss.add(id);
+        }
+      }
+      for (const id of chunk) {
+        if (!seen.has(id) && !firstImageCache.has(id)) {
+          firstImageMiss.add(id);
+        }
+      }
+    }
+  })().finally(() => {
+    firstImageInflight.delete(key);
+  });
+
+  firstImageInflight.set(key, task);
+  await task;
+}
+
+/**
+ * GATEO 선정 명소 등 contentId 목록 → TourAPI first_image 맵.
+ * 세션 메모리 캐시 — 이미 본 id는 재호출하지 않음.
+ * @param {Array<string | null | undefined>} contentIds
+ * @returns {Promise<Map<string, string>>}
+ */
+export async function fetchKoreaTourAttractionFirstImagesByIds(contentIds) {
+  const ids = normalizeTourAttractionContentIds(contentIds);
+  if (!ids.length) return new Map();
+  await loadMissingTourAttractionFirstImages(ids);
+  return peekKoreaTourAttractionFirstImagesByIds(ids);
 }

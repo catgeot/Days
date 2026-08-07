@@ -48,6 +48,7 @@ import {
   fetchKoreaTourAttractionById,
   fetchKoreaTourAttractionFirstImagesByIds,
   fetchKoreaTourAttractions,
+  peekKoreaTourAttractionFirstImagesByIds,
   fetchScenicFilterChipCounts,
   labelScenicAreaCode,
   listScenicRegionAreas,
@@ -412,29 +413,52 @@ export default function KoreaThemeScenicPage() {
     const ids = curatedSpots
       .map((s) => String(s.contentId || '').trim())
       .filter((id) => /^\d{1,32}$/.test(id));
-    if (!ids.length) {
-      setCuratedImageByContentId(new Map());
-      return undefined;
+    if (!ids.length) return undefined;
+
+    const peeked = peekKoreaTourAttractionFirstImagesByIds(ids);
+    if (peeked.size) {
+      setCuratedImageByContentId((prev) => {
+        if (!prev.size) return peeked;
+        const next = new Map(prev);
+        for (const [id, url] of peeked) next.set(id, url);
+        return next;
+      });
     }
+
     fetchKoreaTourAttractionFirstImagesByIds(ids).then((map) => {
-      if (!cancelled) setCuratedImageByContentId(map);
+      if (cancelled || !map.size) return;
+      setCuratedImageByContentId((prev) => {
+        let changed = false;
+        const next = new Map(prev);
+        for (const [id, url] of map) {
+          if (next.get(id) !== url) {
+            next.set(id, url);
+            changed = true;
+          }
+        }
+        return changed ? next : prev;
+      });
     });
     return () => {
       cancelled = true;
     };
   }, [curatedSpots]);
 
-  const curatedSpotsWithThumbs = useMemo(
-    () =>
-      curatedSpots.map((spot) => {
-        const contentId = String(spot.contentId || '').trim();
-        const firstImage =
-          curatedImageByContentId.get(contentId) || spot.firstImage || null;
-        if (!firstImage) return spot;
-        return { ...spot, firstImage, imageUrl: spot.imageUrl || firstImage };
-      }),
-    [curatedSpots, curatedImageByContentId],
-  );
+  const curatedSpotsWithThumbs = useMemo(() => {
+    const peeked = peekKoreaTourAttractionFirstImagesByIds(
+      curatedSpots.map((s) => s.contentId),
+    );
+    return curatedSpots.map((spot) => {
+      const contentId = String(spot.contentId || '').trim();
+      const firstImage =
+        curatedImageByContentId.get(contentId) ||
+        peeked.get(contentId) ||
+        spot.firstImage ||
+        null;
+      if (!firstImage) return spot;
+      return { ...spot, firstImage, imageUrl: spot.imageUrl || firstImage };
+    });
+  }, [curatedSpots, curatedImageByContentId]);
 
   const heritageNearRanked = useMemo(() => {
     if (!nearOrigin) return null;
