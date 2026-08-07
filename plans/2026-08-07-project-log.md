@@ -4,11 +4,11 @@
 
 ## 테마여행 #56, 명소 · 리스트 대표 사진
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip _(push 후)_ · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `20ee7141` · Preview QA 대기
 
 - **요청**: 명소·명승·관광지 리스트에 대표 사진 포함
 - **한 일**: `ScenicListRow` 썸네일 · 명승 `imageUrl`/`galleryUrls` · 관광지 `firstImage` · 선정 명소는 contentId→TourAPI `first_image` 일괄 조회 · 작업 로그
-- **VERIFY**: `npm run build`
+- **VERIFY**: `npm run build` PASS
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
 - **작업 로그**: Preview 우측 「명소·명승·관광지 리스트 대표 사진」
