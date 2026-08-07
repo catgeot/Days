@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 49,
-  sessionPhase: '내주변 목록',
+  sessionNo: 50,
+  sessionPhase: '인근 명승지 라벨 정리',
   branch: 'cursor/korea-theme',
-  previewPath: '/korea/theme/scenic',
+  previewPath: '/korea',
   qaShareSlug: 'korea-theme',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-festival-nearby-myeongso-label',
+    session: '테마여행 #50, 인근 명승지 라벨 정리',
+    title: '축제 상세 인근 라벨을 명소로',
+    detail:
+      '축제 상세 본문의 「인근 명승지」·「○○ 명승지 더보기」·상세 eyebrow를 GATEO 선정 명소 목록에 맞게 「인근 명소」·「○○ 명소 더보기」로 바꿨습니다. Preview /korea 축제 상세에서 라벨과 목록이 맞는지 확인해 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-06-korea-theme-scenic-nearby-list',
     session: '테마여행 #49, 내주변 목록',

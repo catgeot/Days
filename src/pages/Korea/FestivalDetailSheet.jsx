@@ -1073,10 +1073,10 @@ export default function FestivalDetailSheet({
               {scenicRegion && (
                 <div className="space-y-2 pt-1">
                   <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
-                    인근 명승지
+                    인근 명소
                   </p>
                   {scenicSpots.length > 0 && (
-                    <ul className="space-y-2" aria-label={`${scenicRegion} 명승지`}>
+                    <ul className="space-y-2" aria-label={`${scenicRegion} 명소`}>
                       {scenicSpots.map((spot) => (
                         <li key={spot.id || spot.contentId}>
                           <button
@@ -1107,7 +1107,7 @@ export default function FestivalDetailSheet({
                     onClick={openScenicPage}
                     className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
                   >
-                    {scenicRegion} 명승지 더보기
+                    {scenicRegion} 명소 더보기
                     <ExternalLink size={14} aria-hidden="true" />
                   </button>
                 </div>
@@ -1682,7 +1682,7 @@ export default function FestivalDetailSheet({
       {selectedScenic && (
         <ThemeSpotDetailModal
           spot={toScenicModalSpot(selectedScenic)}
-          eyebrow="인근 명승지"
+          eyebrow="인근 명소"
           returnTo="/korea"
           overlayZClass="z-50"
           onClose={() => setSelectedScenic(null)}
