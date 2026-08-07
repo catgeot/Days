@@ -52,7 +52,7 @@ export function labelScenicAreaCode(areaCode) {
 }
 
 /**
- * 권역(대분류)에 속한 시도(소분류) 칩 — 상위 권역을 승계.
+ * 권역(대분류)에 속한 지역 중분류 칩(경북·경남 등) — 상위 권역을 승계.
  * @param {string | null | undefined} region
  * @returns {ScenicAreaChip[]}
  */

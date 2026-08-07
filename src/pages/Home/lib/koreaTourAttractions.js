@@ -1,6 +1,5 @@
 import { supabase } from '../../../shared/api/supabase';
 import {
-  listTourAttractionCat2,
   normalizeTourAttractionCat1,
   normalizeTourAttractionCat2,
   TOUR_ATTRACTION_CAT1,
@@ -100,9 +99,11 @@ function applyAttractionListFilters(q, filters) {
   return next;
 }
 
-/** 수정일 내림차순 · 동률은 제목순 (TourAPI modifiedtime=YYYYMMDDHHMMSS 텍스트 정렬) */
+/** 동일 시도·주소(시군)끼리 뭉친 뒤 최근 수정·제목순 */
 function applyAttractionListOrder(q) {
   return q
+    .order('area_code', { ascending: true, nullsFirst: false })
+    .order('addr1', { ascending: true, nullsFirst: false })
     .order('modified_time', { ascending: false, nullsFirst: false })
     .order('title', { ascending: true });
 }
@@ -148,20 +149,18 @@ export async function countKoreaTourAttractions(opts = {}) {
 
 /**
  * 필터 칩용 건수.
- * - 권역(최상단 대분류)·시도: 종목 무관 **지역 전체** 수량
- * - 종목 대·소분류: 현재 권역·시도(·시군 hub) 아래 해당 종목 수량
+ * - 권역(최상단 대분류)·지역 중분류(시도): 종목 무관 **지역 전체** 수량
+ * - 종목 대분류: 현재 권역·시도(·시군 hub) 아래 해당 종목 수량
  * @param {{
  *   region?: string | null,
  *   areaCode?: string | null,
  *   cat1?: string | null,
- *   cat2?: string | null,
  *   localityQuery?: string | null,
  * }} [opts]
  * @returns {Promise<{
  *   regionCounts: Record<string, number>,
  *   areaCounts: Record<string, number>,
  *   cat1Counts: Record<string, number>,
- *   cat2Counts: Record<string, number>,
  *   error: string | null,
  * }>}
  */
@@ -169,8 +168,6 @@ export async function fetchScenicFilterChipCounts(opts = {}) {
   const region =
     opts.region && opts.region !== '전체' ? String(opts.region).trim() : null;
   const areaCode = normalizeScenicAreaCode(region, opts.areaCode);
-  const cat1 = normalizeTourAttractionCat1(opts.cat1);
-  const cat2 = normalizeTourAttractionCat2(cat1, opts.cat2);
   const localityQuery = scenicLocalityQueryForHubName(opts.localityQuery);
 
   /** @type {Record<string, number>} */
@@ -179,8 +176,6 @@ export async function fetchScenicFilterChipCounts(opts = {}) {
   const areaCounts = {};
   /** @type {Record<string, number>} */
   const cat1Counts = {};
-  /** @type {Record<string, number>} */
-  const cat2Counts = {};
 
   /** @type {string[]} */
   const errors = [];
@@ -209,17 +204,6 @@ export async function fetchScenicFilterChipCounts(opts = {}) {
       if (error) errors.push(error);
       cat1Counts[c.code] = count;
     }),
-    ...listTourAttractionCat2(cat1).map(async (c) => {
-      const { count, error } = await countKoreaTourAttractions({
-        region,
-        areaCode,
-        cat1,
-        cat2: c.code,
-        localityQuery,
-      });
-      if (error) errors.push(error);
-      cat2Counts[c.code] = count;
-    }),
   ];
 
   await Promise.all(jobs);
@@ -227,7 +211,6 @@ export async function fetchScenicFilterChipCounts(opts = {}) {
     regionCounts,
     areaCounts,
     cat1Counts,
-    cat2Counts,
     error: errors[0] || null,
   };
 }

@@ -12,6 +12,7 @@ const HUB_SIDO_FALLBACK = {
   buan: '전북',
   jinan: '전북',
   hapcheon: '경남',
+  hadong: '경남',
   danyang: '충북',
   seogwipo: '제주',
   ulleung: '경북',

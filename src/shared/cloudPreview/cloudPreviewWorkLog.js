@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 51,
-  sessionPhase: '인근 명소 거리순',
+  sessionNo: 52,
+  sessionPhase: '명소 분류 최적화',
   branch: 'cursor/korea-theme',
-  previewPath: '/korea',
+  previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-scenic-place-cluster',
+    session: '테마여행 #52, 명소 분류 최적화',
+    title: '동일 지역 뭉침 · 중분류를 지역명으로',
+    detail:
+      '권역·종목을 고르면 같은 시·군(예: 경주) 명소가 흩어지지 않고 뭉쳐 나열됩니다. TourAPI 분류명(자연관광지 등) 중분류 칩은 제거하고, 경북·경남처럼 지역명 중분류만 둡니다. Preview `/korea/theme/scenic?region=경상`에서 확인해 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-festival-nearby-distance-sort',
     session: '테마여행 #51, 인근 명소 거리순',

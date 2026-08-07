@@ -39,6 +39,7 @@
     "smoke:korea-scenic-spots": "node scripts/smoke-korea-scenic-spots.mjs",
     "smoke:korea-scenic-categories": "node scripts/smoke-korea-scenic-categories.mjs",
     "smoke:korea-scenic-place-label": "node scripts/smoke-korea-scenic-place-label.mjs",
+    "smoke:korea-scenic-place-cluster": "node scripts/smoke-korea-scenic-place-cluster.mjs",
     "smoke:korea-scenic-nearby": "node scripts/smoke-korea-scenic-nearby.mjs",
     "generate:korea-theme-region-tour": "node scripts/generate-korea-theme-region-tour.mjs",
     "audit:korea-theme-region-tour": "node scripts/audit-korea-theme-region-tour.mjs",

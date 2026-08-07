@@ -210,36 +210,43 @@ if (url && anon) {
 
   const { data: withImg, error: eWithImg } = await sb
     .from('tourapi_attraction')
-    .select('content_id, first_image, modified_time, title')
+    .select('content_id, first_image, modified_time, title, area_code, addr1')
     .eq('active', true)
     .eq('content_type_id', '12')
-    .in('area_code', gangwonCodes)
+    .in('area_code', [...(SCENIC_REGION_AREA_CODES.경상 || [])])
     .eq('cat1', 'A01')
     .not('first_image', 'is', null)
     .neq('first_image', '')
+    .order('area_code', { ascending: true, nullsFirst: false })
+    .order('addr1', { ascending: true, nullsFirst: false })
     .order('modified_time', { ascending: false, nullsFirst: false })
     .order('title', { ascending: true })
-    .limit(8);
-  assert(!eWithImg, `이미지 우선 정렬 쿼리 (${eWithImg?.message || 'ok'})`);
+    .limit(24);
+  assert(!eWithImg, `지역 뭉침 정렬 쿼리 (${eWithImg?.message || 'ok'})`);
   assert(
     Array.isArray(withImg) && withImg.length >= 1,
-    `강원·자연·이미지≥1 (got ${withImg?.length ?? 0})`,
+    `경상·자연·이미지≥1 (got ${withImg?.length ?? 0})`,
   );
   assert(
     (withImg || []).every((r) => String(r.first_image || '').trim()),
     '이미지 버킷 행에 first_image 있음',
   );
-  const times = (withImg || [])
-    .map((r) => String(r.modified_time || ''))
-    .filter(Boolean);
-  let modDesc = true;
-  for (let i = 1; i < times.length; i += 1) {
-    if (times[i] > times[i - 1]) {
-      modDesc = false;
-      break;
+  const areaSeq = (withImg || []).map((r) => String(r.area_code || ''));
+  const seenArea = new Set();
+  let areaMonotone = true;
+  let prevArea = '';
+  for (const code of areaSeq) {
+    if (!code) continue;
+    if (code !== prevArea) {
+      if (seenArea.has(code)) {
+        areaMonotone = false;
+        break;
+      }
+      seenArea.add(code);
+      prevArea = code;
     }
   }
-  assert(modDesc, '이미지 버킷 modified_time 내림차순');
+  assert(areaMonotone, '이미지 버킷 area_code가 구간으로 뭉침');
 } else {
   console.log('SKIP  DB filter (no supabase env)');
 }
