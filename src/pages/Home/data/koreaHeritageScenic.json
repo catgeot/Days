@@ -15,7 +15,10 @@
       "제주": 9,
       "충청": 13
     },
-    "skipDetail": false
+    "skipDetail": false,
+    "thumbCount": 141,
+    "thumbsSource": "scripts/data/korea-heritage-scenic-thumbs.json",
+    "thumbsUpdatedAt": "2026-08-07T13:12:23.124Z"
   },
   "spots": [
     {
@@ -55,7 +58,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628925.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628926.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628927.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/60/3460260_image2_1.jpg"
     },
     {
       "id": "cha-1353201060000",
@@ -93,7 +97,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628920.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628921.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021041309231000.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/1628918.jpg"
     },
     {
       "id": "cha-1353200290000",
@@ -131,7 +136,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628815.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628816.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628817.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/74/2739274_image2_1.jpg"
     },
     {
       "id": "cha-1353200740000",
@@ -174,7 +180,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628876.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628877.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628878.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/50/3501750_image2_1.jpg"
     },
     {
       "id": "cha-1353200370000",
@@ -217,7 +224,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628825.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628826.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628827.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/42/3474442_image2_1.jpg"
     },
     {
       "id": "cha-1353200010000",
@@ -256,7 +264,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628765.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628766.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628767.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/42/3029842_image2_1.jpg"
     },
     {
       "id": "cha-1353201290000",
@@ -292,7 +301,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021122310171900.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021122310180500.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/202112231019020a.JPG"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/92/3034092_image2_1.jpg"
     },
     {
       "id": "cha-1353200280000",
@@ -335,7 +345,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628805.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628806.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628807.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/03/3394103_image2_1.JPG"
     },
     {
       "id": "cha-1353201030000",
@@ -369,7 +380,8 @@
       "manager": "강원도",
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628916.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/1628916.jpg"
     },
     {
       "id": "cha-1353201040000",
@@ -403,7 +415,8 @@
       "manager": "인제군",
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628917.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/12/3070412_image2_1.jpg"
     },
     {
       "id": "cha-1353200970000",
@@ -437,7 +450,8 @@
       "manager": "인제군",
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628910.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/91/3042591_image2_1.jpg"
     },
     {
       "id": "cha-1353200950000",
@@ -471,7 +485,8 @@
       "manager": "속초시",
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628908.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/1628908.jpg"
     },
     {
       "id": "cha-1353201010000",
@@ -505,7 +520,8 @@
       "manager": "속초시",
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628914.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/1628914.jpg"
     },
     {
       "id": "cha-1353200990000",
@@ -539,7 +555,8 @@
       "manager": "인제군",
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628912.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/1628912.jpg"
     },
     {
       "id": "cha-1353200980000",
@@ -573,7 +590,8 @@
       "manager": "인제군",
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628911.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/58/3042058_image2_1.jpg"
     },
     {
       "id": "cha-1353201020000",
@@ -607,7 +625,8 @@
       "manager": "인제군",
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628915.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/1628915.jpg"
     },
     {
       "id": "cha-1353201000000",
@@ -641,7 +660,8 @@
       "manager": "강원도",
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628913.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/91/3494891_image2_1.jpg"
     },
     {
       "id": "cha-1353200960000",
@@ -675,7 +695,8 @@
       "manager": "속초시",
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628909.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/06/3502106_image2_1.jpg"
     },
     {
       "id": "cha-1353200270000",
@@ -718,7 +739,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628791.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628792.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628793.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/80/3506380_image2_1.jpg"
     },
     {
       "id": "cha-1353200680000",
@@ -753,7 +775,8 @@
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628841.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628842.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/18/3518018_image2_1.jpg"
     },
     {
       "id": "cha-1353200760000",
@@ -796,7 +819,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628905.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628906.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628907.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/09/4041409_image2_1.png"
     },
     {
       "id": "cha-1353200140000",
@@ -839,7 +863,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628775.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628776.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628777.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/54/3493254_image2_1.jpg"
     },
     {
       "id": "cha-1353200500000",
@@ -880,7 +905,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628838.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628839.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628840.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/65/4041365_image2_1.jpg"
     },
     {
       "id": "cha-1353200750000",
@@ -922,7 +948,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628895.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628896.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628897.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/34/2922034_image2_1.jpg"
     },
     {
       "id": "cha-1353200700000",
@@ -965,7 +992,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628850.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628851.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628852.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/1628843.jpg"
     },
     {
       "id": "cha-1353200730000",
@@ -1006,7 +1034,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628866.gif",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628867.gif",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628868.gif"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/56/4057456_image2_1.jpg"
     },
     {
       "id": "cha-1353800620000",
@@ -1040,7 +1069,8 @@
       "manager": "합천군,해인사",
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629247.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/96/4058196_image2_1.jpg"
     },
     {
       "id": "cha-1353800020000",
@@ -1076,7 +1106,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629202.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629203.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629204.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/71/3519171_image2_1.jpg"
     },
     {
       "id": "cha-1353800530000",
@@ -1118,7 +1149,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629244.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629245.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629246.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/47/4094947_image2_1.JPG"
     },
     {
       "id": "cha-1353800880000",
@@ -1159,7 +1191,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629321.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629322.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629323.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/67/4094967_image2_1.JPG"
     },
     {
       "id": "cha-1353700520000",
@@ -1202,7 +1235,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2023030711151701.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2023030711152001.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2023030711152301.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/59/3566259_image2_1.jpg"
     },
     {
       "id": "cha-1353800150000",
@@ -1245,7 +1279,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629212.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629213.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629214.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/1629205.jpg"
     },
     {
       "id": "cha-1353800390000",
@@ -1284,7 +1319,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629235.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629236.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629237.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/19/1293619_image2_1.jpg"
     },
     {
       "id": "cha-1353800710000",
@@ -1324,7 +1360,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629252.gif",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629253.gif",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629254.gif"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/73/2628873_image2_1.jpg"
     },
     {
       "id": "cha-1353700310000",
@@ -1367,7 +1404,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629171.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629172.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021040614473800.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/1629166.jpg"
     },
     {
       "id": "cha-1353700320000",
@@ -1410,7 +1448,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021040615074501.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021040615074502.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021040615074602.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/43/3517143_image2_1.jpg"
     },
     {
       "id": "cha-1353800870000",
@@ -1451,7 +1490,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629313.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629314.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629315.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/1629308.jpg"
     },
     {
       "id": "cha-1353700230000",
@@ -1490,7 +1530,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629150.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629151.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629152.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/82/2745982_image2_1.jpg"
     },
     {
       "id": "cha-1353700600000",
@@ -1528,7 +1569,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021040708375300.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021040708375301.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021040708375302.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/96/3531096_image2_1.jpg"
     },
     {
       "id": "cha-1352100170000",
@@ -1571,7 +1613,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628717.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628718.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628719.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/83/3506383_image2_1.jpg"
     },
     {
       "id": "cha-1352100240000",
@@ -1608,7 +1651,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628723.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628724.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628725.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/20/3496820_image2_1.jpg"
     },
     {
       "id": "cha-1353800180000",
@@ -1651,7 +1695,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629227.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629228.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629229.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/17/3515717_image2_1.jpg"
     },
     {
       "id": "cha-1352510280001",
@@ -1688,7 +1733,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2025102809273991.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2025102809273993.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2025102809273890.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/64/3096264_image2_1.jpg"
     },
     {
       "id": "cha-1353700820000",
@@ -1729,7 +1775,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021040715352301.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021041309112500.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021041309112501.JPG"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/13/3533213_image2_1.jpg"
     },
     {
       "id": "cha-1353700260000",
@@ -1772,7 +1819,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021040715034601.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021040715034602.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021040715034604.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/42/3402542_image2_1.jpg"
     },
     {
       "id": "cha-1353701320000",
@@ -1810,7 +1858,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2022030409565100.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2022030409573500.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2022030409580100.JPG"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/2022030409580100.JPG"
     },
     {
       "id": "cha-1353700190000",
@@ -1853,7 +1902,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021041209060002.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021041209060003.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021041209060101.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/88/3542688_image2_1.jpg"
     },
     {
       "id": "cha-1353700510000",
@@ -1894,7 +1944,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021041209155301.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021041209155303.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021041209155402.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/13/3533213_image2_1.jpg"
     },
     {
       "id": "cha-1353700160000",
@@ -1937,7 +1988,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629141.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629142.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021041208550400.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/07/3542707_image2_1.jpg"
     },
     {
       "id": "cha-1352601200000",
@@ -1980,7 +2032,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/202104281717040b.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021042817170501.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021042817170503.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/2021042817153100.png"
     },
     {
       "id": "cha-1353700060000",
@@ -2023,7 +2076,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629115.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629116.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629117.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/1629108.jpg"
     },
     {
       "id": "cha-1353700300000",
@@ -2062,7 +2116,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629161.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629162.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629163.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/74/2739274_image2_1.jpg"
     },
     {
       "id": "cha-1353801330000",
@@ -2102,7 +2157,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2023041316051800.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2023041316052800.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2023041316054600.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/2023040617364600.jpg"
     },
     {
       "id": "cha-1353800720000",
@@ -2145,7 +2201,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629262.gif",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629263.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629264.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/94/4010394_image2_1.jpg"
     },
     {
       "id": "cha-1353801370000",
@@ -2184,7 +2241,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2024010510030504.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2024010510030506.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2024010510030400.JPG"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/2024010510030401.JPG"
     },
     {
       "id": "cha-1353801300000",
@@ -2219,7 +2277,8 @@
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021122310150808.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021122310154900.JPG"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/88/4046188_image2_1.jpg"
     },
     {
       "id": "cha-1353701050000",
@@ -2254,7 +2313,8 @@
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629200.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629201.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/71/3526071_image2_1.jpg"
     },
     {
       "id": "cha-1353700110000",
@@ -2297,7 +2357,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629129.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629130.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629131.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/75/3536675_image2_1.jpg"
     },
     {
       "id": "cha-1353701240000",
@@ -2331,7 +2392,8 @@
       "manager": "칠곡군",
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021091716320300.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/2021091716320300.jpg"
     },
     {
       "id": "cha-1353701250000",
@@ -2374,7 +2436,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021120616344800.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021120616344801.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021120616344803.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/50/3494150_image2_1.jpg"
     },
     {
       "id": "cha-1353700810000",
@@ -2417,7 +2480,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629191.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629192.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629193.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/1629188.jpg"
     },
     {
       "id": "cha-1353800850000",
@@ -2460,7 +2524,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629288.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629289.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629290.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/62/3538262_image2_1.jpg"
     },
     {
       "id": "cha-1353800860000",
@@ -2503,7 +2568,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629303.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629304.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629305.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/87/4085387_image2_1.JPG"
     },
     {
       "id": "cha-1353101310000",
@@ -2540,7 +2606,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2022011314120300.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2022011314122400.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2022011314124400.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/2022011314124400.jpg"
     },
     {
       "id": "cha-1353101090000",
@@ -2575,7 +2642,8 @@
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628760.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628761.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/1628760.jpg"
     },
     {
       "id": "cha-1353100100000",
@@ -2616,7 +2684,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628753.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628754.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628755.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/71/4008971_image2_1.jpg"
     },
     {
       "id": "cha-1351100670000",
@@ -2659,7 +2728,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628697.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628698.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628699.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/1628690.jpg"
     },
     {
       "id": "cha-1351100360000",
@@ -2698,7 +2768,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628687.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628688.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628689.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/1628684.jpg"
     },
     {
       "id": "cha-1351101180000",
@@ -2740,7 +2811,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2020090216475307.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/202009021647530d.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/202009021647530f.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/77/3537777_image2_1.jpg"
     },
     {
       "id": "cha-1353101350000",
@@ -2775,7 +2847,8 @@
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/2023081616513700.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2023081616513600.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/19/2744219_image2_1.jpg"
     },
     {
       "id": "cha-1352300080000",
@@ -2818,7 +2891,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628733.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628734.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628735.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/07/2918007_image2_1.JPG"
     },
     {
       "id": "cha-1353100940000",
@@ -2853,7 +2927,8 @@
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628758.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628759.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/94/3496594_image2_1.jpg"
     },
     {
       "id": "cha-1353100930000",
@@ -2896,7 +2971,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2023030711052900.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2023030711053100.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2023030711053300.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/23/3496623_image2_1.jpg"
     },
     {
       "id": "cha-1352504040001",
@@ -2933,7 +3009,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2025040409533193.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2025040409533195.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2025040409533090.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/2025040409533193.jpg"
     },
     {
       "id": "cha-1353601150000",
@@ -2969,7 +3046,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2019031112361500.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2019031112373800.png",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2019031112373801.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/77/3537777_image2_1.jpg"
     },
     {
       "id": "cha-1353501260000",
@@ -3012,7 +3090,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021120615090202.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021120615090203.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021120615101200.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/53/3518653_image2_1.jpg"
     },
     {
       "id": "cha-1353500540000",
@@ -3053,7 +3132,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021051009334604.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021051009334605.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021051009334702.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/92/1976292_image2_1.jpg"
     },
     {
       "id": "cha-1353601210000",
@@ -3094,7 +3174,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021061016215405.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021061016215407.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021061016215409.JPG"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/2021061016215401.jpg"
     },
     {
       "id": "cha-1353601360000",
@@ -3133,7 +3214,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2023122810153600.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2023122810155100.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2023122810142200.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/13/3530113_image2_1.jpg"
     },
     {
       "id": "cha-1352401070000",
@@ -3170,7 +3252,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628745.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628746.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628747.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/80/3028480_image2_1.jpg"
     },
     {
       "id": "cha-1353500330000",
@@ -3213,7 +3296,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629001.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629002.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629003.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/15/4060015_image2_1.jpg"
     },
     {
       "id": "cha-1353601110000",
@@ -3256,7 +3340,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021042708434401.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021042708434402.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021042708434600.JPG"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/2027779.jpg"
     },
     {
       "id": "cha-1353501130000",
@@ -3299,7 +3384,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2018060817255400.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2018060817262500.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2018060817264800.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/2018060814560900.jpg"
     },
     {
       "id": "cha-1353501390000",
@@ -3333,7 +3419,8 @@
       "manager": "김＊＊＊",
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/no_image.gif"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/no_image.gif"
     },
     {
       "id": "cha-1353600580000",
@@ -3368,7 +3455,8 @@
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629064.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629065.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/13/3533213_image2_1.jpg"
     },
     {
       "id": "cha-1353600400000",
@@ -3408,7 +3496,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629056.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629057.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629058.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/74/3532174_image2_1.jpg"
     },
     {
       "id": "cha-1353600570000",
@@ -3442,7 +3531,8 @@
       "manager": "담양군",
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629063.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/49/3568249_image2_1.jpg"
     },
     {
       "id": "cha-1353600660000",
@@ -3485,7 +3575,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629078.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629079.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629080.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/44/3582144_image2_1.jpg"
     },
     {
       "id": "cha-1353601140000",
@@ -3519,7 +3610,8 @@
       "manager": "화순군",
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/2018122817150100.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/64/2614864_image2_1.bmp"
     },
     {
       "id": "cha-1353500550000",
@@ -3553,7 +3645,8 @@
       "manager": "무주군",
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629007.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/33/3304433_image2_1.jpg"
     },
     {
       "id": "cha-1353500560000",
@@ -3587,7 +3680,8 @@
       "manager": "무주군",
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629008.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/33/3304433_image2_1.jpg"
     },
     {
       "id": "cha-1353600340000",
@@ -3626,7 +3720,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629038.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629039.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629040.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/60/3495160_image2_1.jpg"
     },
     {
       "id": "cha-1352511250002",
@@ -3669,7 +3764,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2025112716312902.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2025112716312904.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2025112716313001.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/2025112716312902.jpg"
     },
     {
       "id": "cha-1353501230000",
@@ -3712,7 +3808,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021061016434106.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021061016434108.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021061016434109.JPG"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/2021061016434000.jpg"
     },
     {
       "id": "cha-1353501160000",
@@ -3750,7 +3847,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2020042216422802.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2020042216422803.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2020042216422805.JPG"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/01/3423201_image2_1.jpg"
     },
     {
       "id": "cha-1353500130000",
@@ -3793,7 +3891,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628981.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628982.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628983.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/36/3558136_image2_1.jpg"
     },
     {
       "id": "cha-1353601270000",
@@ -3830,7 +3929,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021122310241601.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021122310253300.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021122310253301.JPG"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/2021122310253300.JPG"
     },
     {
       "id": "cha-1353601280000",
@@ -3866,7 +3966,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021122310210800.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021122310215101.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021122310215103.JPG"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/2021122310215101.JPG"
     },
     {
       "id": "cha-1353600250000",
@@ -3909,7 +4010,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021050310283600.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021050310283602.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021050310283603.JPG"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/13/3533213_image2_1.jpg"
     },
     {
       "id": "cha-1353600410000",
@@ -3952,7 +4054,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021050310372202.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021050310372301.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021050310372302.JPG"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/76/1971676_image2_1.jpg"
     },
     {
       "id": "cha-1353601170000",
@@ -3992,7 +4095,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2020090215281207.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2020090215281208.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2020090215281209.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/74/4054474_image2_1.jpg"
     },
     {
       "id": "cha-1352511250001",
@@ -4035,7 +4139,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2025112518113391.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2025112518113393.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2025112518113491.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/2025112518112991.JPG"
     },
     {
       "id": "cha-1353601340000",
@@ -4072,7 +4177,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2023040617273900.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2023041316071400.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2023041316074900.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/2023040617271700.jpg"
     },
     {
       "id": "cha-1353600070000",
@@ -4109,7 +4215,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629019.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629020.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629021.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/1629018.jpg"
     },
     {
       "id": "cha-1352412020001",
@@ -4147,7 +4254,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2024120309100490.png",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2024120309102390.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2024120309073790.png"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/2024120309090890.jpg"
     },
     {
       "id": "cha-1353600220000",
@@ -4185,7 +4293,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629028.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629029.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629030.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/38/3057538_image2_1.jpg"
     },
     {
       "id": "cha-1353601380000",
@@ -4222,7 +4331,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2024022214265901.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2024022214280600.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2024022214253900.JPG"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/2024022214265900.jpg"
     },
     {
       "id": "cha-1353600030000",
@@ -4265,7 +4375,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629016.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629017.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021050408413400.JPG"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/68/4072568_image2_1.jpg"
     },
     {
       "id": "cha-1353501220000",
@@ -4305,7 +4416,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021061016345600.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021061016345601.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021061016345603.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/95/3505995_image2_1.jpg"
     },
     {
       "id": "cha-1353600380000",
@@ -4348,7 +4460,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629048.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629049.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629050.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/1629045.jpg"
     },
     {
       "id": "cha-1353601190000",
@@ -4386,7 +4499,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021032511090900.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021032511095400.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021032511104500.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/42/2704942_image2_1.jpg"
     },
     {
       "id": "cha-1353600650000",
@@ -4429,7 +4543,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021050310540101.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021050310540102.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021050310540200.JPG"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/62/4054662_image2_1.jpg"
     },
     {
       "id": "cha-1353600640000",
@@ -4472,7 +4587,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021042708244001.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021042708244002.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021042708244003.JPG"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/65/3563965_image2_1.jpg"
     },
     {
       "id": "cha-1353600800000",
@@ -4515,7 +4631,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629088.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629089.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629090.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/23/3469523_image2_1.jpg"
     },
     {
       "id": "cha-1353600090000",
@@ -4552,7 +4669,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629023.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629024.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629025.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/1629022.jpg"
     },
     {
       "id": "cha-1353500120000",
@@ -4594,7 +4712,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628971.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628972.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628973.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/34/3511834_image2_1.jpg"
     },
     {
       "id": "cha-1353600590000",
@@ -4633,7 +4752,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021032612195500.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021050609233400.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021050609233401.JPG"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/2021032612195500.jpg"
     },
     {
       "id": "cha-1353600890000",
@@ -4676,7 +4796,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629105.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629106.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629107.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/13/3533213_image2_1.jpg"
     },
     {
       "id": "cha-1353601120000",
@@ -4719,7 +4840,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2017021307223804.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2017021307223805.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2017021307223806.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/55/3348155_image2_1.JPG"
     },
     {
       "id": "cha-1353900830000",
@@ -4762,7 +4884,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629398.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629399.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629400.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/60/3523460_image2_1.jpg"
     },
     {
       "id": "cha-1353900840000",
@@ -4805,7 +4928,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629411.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629412.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629413.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/72/3528372_image2_1.jpg"
     },
     {
       "id": "cha-1353900920000",
@@ -4840,7 +4964,8 @@
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629423.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629424.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/02/1802002_image2_1.jpg"
     },
     {
       "id": "cha-1353900770000",
@@ -4883,7 +5008,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629340.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629341.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629342.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/61/3536261_image2_1.jpg"
     },
     {
       "id": "cha-1353900780000",
@@ -4926,7 +5052,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629366.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629367.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629368.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/61/3536261_image2_1.jpg"
     },
     {
       "id": "cha-1353900790000",
@@ -4969,7 +5096,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629386.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629387.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629388.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/61/3536261_image2_1.jpg"
     },
     {
       "id": "cha-1353900430000",
@@ -5009,7 +5137,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629330.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629331.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629332.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/61/3536261_image2_1.jpg"
     },
     {
       "id": "cha-1353900000090",
@@ -5044,7 +5173,8 @@
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629324.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629325.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/95/3035595_image2_1.jpg"
     },
     {
       "id": "cha-1353900910000",
@@ -5079,7 +5209,8 @@
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629421.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1629422.jpg"
-      ]
+      ],
+      "thumbUrl": "https://www.khs.go.kr/unisearch/images/scenic_site/1629421.jpg"
     },
     {
       "id": "cha-1353400210000",
@@ -5118,7 +5249,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628962.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021041308591200.JPG",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021041308591201.JPG"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/38/3534838_image2_1.jpg"
     },
     {
       "id": "cha-1353301100000",
@@ -5161,7 +5293,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2027604.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2027606.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2027607.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/84/3059184_image2_1.jpg"
     },
     {
       "id": "cha-1353300460000",
@@ -5196,7 +5329,8 @@
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628948.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628949.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/68/176668_image2_1.jpg"
     },
     {
       "id": "cha-1353300440000",
@@ -5239,7 +5373,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2023030711104901.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2023030711105900.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2023030711110200.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/29/4085729_image2_1.jpg"
     },
     {
       "id": "cha-1353300470000",
@@ -5274,7 +5409,8 @@
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628950.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628951.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/69/4085169_image2_1.jpg"
     },
     {
       "id": "cha-1353300450000",
@@ -5310,7 +5446,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628945.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628946.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628947.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/31/4068231_image2_1.jpg"
     },
     {
       "id": "cha-1353400630000",
@@ -5353,7 +5490,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021051710151002.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021051710151003.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2021051710151004.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/97/3568197_image2_1.jpg"
     },
     {
       "id": "cha-1353300610000",
@@ -5389,7 +5527,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628956.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628957.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628958.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/90/3029790_image2_1.jpg"
     },
     {
       "id": "cha-1353400690000",
@@ -5432,7 +5571,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/2025032113182303.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2025032113182401.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/2025032113182403.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/16/3444316_image2_1.jpg"
     },
     {
       "id": "cha-1353300480000",
@@ -5467,7 +5607,8 @@
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628952.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628953.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/90/3480590_image2_1.jpg"
     },
     {
       "id": "cha-1353300200000",
@@ -5506,7 +5647,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628931.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628932.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628933.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/09/3309809_image2_1.JPG"
     },
     {
       "id": "cha-1353300490000",
@@ -5541,7 +5683,8 @@
       "galleryUrls": [
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628954.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628955.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/57/3581757_image2_1.jpg"
     },
     {
       "id": "cha-1353300420000",
@@ -5581,7 +5724,8 @@
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628938.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628939.jpg",
         "https://www.khs.go.kr/unisearch/images/scenic_site/1628940.jpg"
-      ]
+      ],
+      "thumbUrl": "https://tong.visitkorea.or.kr/cms/resource/17/3561117_image2_1.JPG"
     }
   ]
 }

@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
   sessionNo: 56,
-  sessionPhase: '명소 썸네일 SSOT',
+  sessionPhase: '명승 썸네일',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-heritage-thumbs',
+    session: '테마여행 #56, 명승 썸네일',
+    title: '명승 목록 가벼운 썸네일 141/141',
+    detail:
+      '국가유산 명승은 SSOT에 사진은 있었지만 KHS 원본이 수 MB라 목록에서 안 뜨는 경우가 많았습니다. TourAPI·경량 KHS·갤러리 최소본으로 thumbUrl 141/141을 넣고 목록이 그걸 먼저 쓰도록 했습니다. Preview 명승 목록 썸네일을 확인해 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-scenic-image-ssot',
     session: '테마여행 #56, 명소 썸네일 SSOT',

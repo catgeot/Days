@@ -20,6 +20,7 @@
     "sync:tourapi-attractions": "node scripts/sync-tourapi-attractions.mjs",
     "smoke:tourapi-attractions": "node scripts/smoke-tourapi-attractions.mjs",
     "sync:cha-scenic": "node scripts/sync-cha-scenic.mjs",
+    "fill:korea-heritage-scenic-thumbs": "node scripts/fill-korea-heritage-scenic-thumbs.mjs",
     "smoke:korea-heritage-scenic": "node scripts/smoke-korea-heritage-scenic.mjs",
     "smoke:mrt-stay": "node scripts/smoke-mrt-stay-queries.mjs",
     "smoke:mrt-tna": "node scripts/smoke-mrt-tna-queries.mjs",

@@ -7,7 +7,7 @@
  *
  * 키 불필요. 브라우저 직접 호출 불가 → 배치 sync 후 정적 SSOT.
  */
-import { writeFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -16,6 +16,24 @@ const OUTPUT_PATH = join(
   __dirname,
   '../src/pages/Home/data/koreaHeritageScenic.json',
 );
+const THUMBS_PATH = join(__dirname, 'data/korea-heritage-scenic-thumbs.json');
+
+function loadThumbUrlById() {
+  try {
+    const raw = JSON.parse(readFileSync(THUMBS_PATH, 'utf8'));
+    return raw?.byId && typeof raw.byId === 'object' ? raw.byId : {};
+  } catch {
+    return {};
+  }
+}
+
+function toHttps(url) {
+  const s = String(url || '').trim();
+  if (!s) return null;
+  if (s.startsWith('//')) return `https:${s}`;
+  if (s.startsWith('http://')) return `https://${s.slice('http://'.length)}`;
+  return s;
+}
 
 const LIST_URL = 'https://www.khs.go.kr/cha/SearchKindOpenapiList.do';
 const DETAIL_URL = 'https://www.khs.go.kr/cha/SearchKindOpenapiDt.do';
@@ -332,12 +350,22 @@ async function main() {
     byRegion[s.region] = (byRegion[s.region] || 0) + 1;
   }
 
+  const thumbById = loadThumbUrlById();
+  let thumbCount = 0;
+  for (const s of spots) {
+    const thumbUrl = toHttps(thumbById[s.id]);
+    s.thumbUrl = thumbUrl;
+    if (thumbUrl) thumbCount += 1;
+  }
+
   const payload = {
     meta: {
       version: 1,
       generatedAt: new Date().toISOString(),
       count: spots.length,
+      thumbCount,
       source: '국가유산청 OpenAPI SearchKindOpenapiList/Dt + SearchImageOpenapi',
+      thumbsSource: 'scripts/data/korea-heritage-scenic-thumbs.json',
       kdcd: KDCD,
       kdcdLabel: '명승',
       disclaimer:

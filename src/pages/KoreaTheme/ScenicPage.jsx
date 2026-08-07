@@ -250,16 +250,31 @@ function toHttps(url) {
   return s;
 }
 
-function spotListThumbUrl(spot) {
-  const gallery0 = Array.isArray(spot?.galleryUrls)
-    ? spot.galleryUrls[0]
-    : null;
-  return toHttps(spot?.imageUrl || spot?.firstImage || gallery0 || '');
+function spotListThumbCandidates(spot) {
+  const gallery = Array.isArray(spot?.galleryUrls) ? spot.galleryUrls : [];
+  const raw = [
+    spot?.thumbUrl,
+    spot?.firstImage,
+    spot?.imageUrl,
+    ...gallery,
+  ];
+  /** @type {string[]} */
+  const out = [];
+  const seen = new Set();
+  for (const item of raw) {
+    const url = toHttps(item);
+    if (!url || seen.has(url)) continue;
+    seen.add(url);
+    out.push(url);
+  }
+  return out;
 }
 
 function ScenicListRow({ spot, distanceKm, onOpen }) {
   const distanceLabel = formatDistanceKm(distanceKm);
-  const thumb = spotListThumbUrl(spot);
+  const candidates = spotListThumbCandidates(spot);
+  const [thumbIndex, setThumbIndex] = useState(0);
+  const thumb = candidates[thumbIndex] || '';
   return (
     <button
       type="button"
@@ -268,10 +283,14 @@ function ScenicListRow({ spot, distanceKm, onOpen }) {
     >
       {thumb ? (
         <img
+          key={thumb}
           src={thumb}
           alt=""
           loading="lazy"
           decoding="async"
+          onError={() => {
+            setThumbIndex((i) => i + 1);
+          }}
           className="h-16 w-16 shrink-0 rounded-xl object-cover bg-stone-200 sm:h-[4.5rem] sm:w-[4.5rem]"
         />
       ) : (

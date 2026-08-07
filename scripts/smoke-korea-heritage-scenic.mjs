@@ -58,6 +58,14 @@ assert.ok(
 const multi = raw.spots.filter((s) => (s.galleryUrls || []).length > 1);
 assert.ok(multi.length >= 80, `multi-image spots≥80 (got ${multi.length})`);
 
+const withThumb = raw.spots.filter((s) => String(s.thumbUrl || '').trim()).length;
+assert.ok(
+  withThumb >= Math.floor(raw.spots.length * 0.95),
+  `thumbUrl ≥95% (got ${withThumb}/${raw.spots.length})`,
+);
+assert.ok(pageSrc.includes('thumbUrl'), 'ScenicPage uses thumbUrl');
+assert.ok(pageSrc.includes('spotListThumbCandidates'), 'list thumb fallbacks');
+
 assert.ok(pageSrc.includes('국가유산 명승'), 'ScenicPage heritage section');
 assert.ok(pageSrc.includes('listKoreaHeritageScenic'), 'ScenicPage uses lib');
 assert.ok(pageSrc.includes('명승 권역 대분류'), 'heritage region chips in section');

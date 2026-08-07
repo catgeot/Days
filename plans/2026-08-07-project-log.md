@@ -2,6 +2,19 @@
 
 직전: [`2026-08-06-project-log.md`](./2026-08-06-project-log.md)
 
+## 테마여행 #56, 명승 목록 썸네일
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip _(push 후)_ · Preview QA 대기
+
+- **증상**: 국가유산 명승 목록에 썸네일이 비는 항목이 많음
+- **원인**: SSOT `imageUrl`은 141/141 있으나 KHS 원본이 평균 ~1.4MB·최대 15MB → 목록 로드 실패/지연
+- **한 일**: `thumbUrl` SSOT(TourAPI firstimage 우선 · 경량 KHS · 갤러리 최소본) **141/141** · 목록이 `thumbUrl` 우선·`onError` 폴백 · `sync:cha-scenic`이 thumbs 맵 유지
+- **VERIFY**: `npm run smoke:korea-heritage-scenic` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「명승 목록 가벼운 썸네일 141/141」
+- **QA**: 명승 목록 썸네일 · 상세 모달 KHS 갤러리 회귀
+
 ## 테마여행 #56, 명소 썸네일 SSOT
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `adf34494` · Preview QA 대기
