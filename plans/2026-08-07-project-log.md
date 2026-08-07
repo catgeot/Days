@@ -2,6 +2,36 @@
 
 직전: [`2026-08-06-project-log.md`](./2026-08-06-project-log.md)
 
+## 테마여행 #55, 분류칩 가로 스크롤
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **요청**: 명소·명승·관광지 대·중·소 분류칩이 길어질 때 줄바꿈 대신 한 행 가로 스크롤 · 커스텀 스크롤바 항시 시인
+- **한 일**: `FilterChipRow` — `flex-nowrap` + `overflow-x-scroll` · 석재톤 커스텀 가로 스크롤바 · 칩 `shrink-0` · 작업 로그
+- **VERIFY**: (푸시 전) `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「대·중·소 분류칩 가로 스크롤」
+- **QA**: 강원 명소 소분류·수도권 시도·관광지 cat3가 한 행에서 좌우 스크롤되는지 · 스크롤바 항상 보이는지
+
+### 테마여행 · 에이전트 핸드오프 → `#56`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #56, Preview QA 반영` |
+| **브랜치** | `cursor/korea-theme` (고정) |
+| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
+| **읽을 것 3** | ① 본 절 ② #55 가로 스크롤 ③ 플랜 §1.0 |
+| **금지 3** | 축제 지도 리팩터 · top10/regions 탑레벨 부활 · UI 임의 리디자인 |
+| **후보** | Preview QA · S9 |
+| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #56, Preview QA 반영
+```
+
 ## 테마여행 #54, 강원 소분류칩 복구
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `793c4117` · Preview QA 대기

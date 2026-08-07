@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 54,
-  sessionPhase: '강원 소분류칩 복구',
+  sessionNo: 55,
+  sessionPhase: '분류칩 가로 스크롤',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-scenic-chip-hscroll',
+    session: '테마여행 #55, 분류칩 가로 스크롤',
+    title: '대·중·소 분류칩 가로 스크롤',
+    detail:
+      '명소·명승·관광지 각 대·중·소 분류칩이 줄바꿈하지 않고 한 행에서 가로 스크롤됩니다. 아래에 시인성 있는 커스텀 스크롤바가 항상 보이며, 좌우로 더 있는 칩을 확인할 수 있습니다. Preview `/korea/theme/scenic`에서 강원·수도권·관광지 소분류를 확인해 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-scenic-gangwon-hub-chips',
     session: '테마여행 #54, 강원 소분류칩 복구',

@@ -113,6 +113,25 @@ function FilterChipLabel({ label, count }) {
   );
 }
 
+const FILTER_CHIP_ROW_CLASS =
+  'korea-scenic-chip-row flex min-w-0 flex-nowrap items-center gap-1.5 overflow-x-scroll overscroll-x-contain touch-pan-x pb-1.5 [&>button]:shrink-0';
+
+function FilterChipRow({ 'aria-label': ariaLabel, className = '', children }) {
+  return (
+    <div
+      role="group"
+      aria-label={ariaLabel}
+      className={
+        className
+          ? `${FILTER_CHIP_ROW_CLASS} ${className}`
+          : FILTER_CHIP_ROW_CLASS
+      }
+    >
+      {children}
+    </div>
+  );
+}
+
 function kmByIdFromRanked(ranked) {
   /** @type {Map<string, number>} */
   const map = new Map();
@@ -875,6 +894,29 @@ export default function KoreaThemeScenicPage() {
         description="국가유산청 지정 명승과 GATEO 선정 명소. 권역별로 상세를 모달로 봅니다."
         url={RETURN_TO}
       />
+      <style>{`
+        .korea-scenic-chip-row {
+          scrollbar-width: thin;
+          scrollbar-color: rgb(120 113 108) rgb(231 229 228);
+        }
+        .korea-scenic-chip-row::-webkit-scrollbar {
+          height: 8px;
+          display: block;
+        }
+        .korea-scenic-chip-row::-webkit-scrollbar-track {
+          margin: 0 2px;
+          background: rgb(231 229 228);
+          border-radius: 9999px;
+        }
+        .korea-scenic-chip-row::-webkit-scrollbar-thumb {
+          background: rgb(120 113 108);
+          border-radius: 9999px;
+          border: 2px solid rgb(231 229 228);
+        }
+        .korea-scenic-chip-row::-webkit-scrollbar-thumb:hover {
+          background: rgb(87 83 78);
+        }
+      `}</style>
 
       <header className="relative z-30 shrink-0 border-b border-stone-200/80 bg-stone-100/95 pt-[max(0.5rem,env(safe-area-inset-top,0px))] backdrop-blur-md">
         <div className="mx-auto w-full max-w-3xl px-3 pb-2.5 md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl">
@@ -976,11 +1018,7 @@ export default function KoreaThemeScenicPage() {
 
             {!nearActive ? (
               <div className="space-y-2">
-                <div
-                  role="group"
-                  aria-label="명소 권역 대분류"
-                  className="flex flex-wrap gap-1.5"
-                >
+                <FilterChipRow aria-label="명소 권역 대분류">
                   {regionChips.map((r) => {
                     const active = region === r;
                     return (
@@ -1002,12 +1040,11 @@ export default function KoreaThemeScenicPage() {
                       </button>
                     );
                   })}
-                </div>
+                </FilterChipRow>
                 {curatedAreaChips.length > 1 ? (
-                  <div
-                    role="group"
+                  <FilterChipRow
                     aria-label="명소 시도 중분류"
-                    className="flex flex-wrap gap-1.5 pl-0.5"
+                    className="pl-0.5"
                   >
                     {curatedAreaChips.map((chip) => {
                       const active = areaCode === chip.code;
@@ -1030,13 +1067,12 @@ export default function KoreaThemeScenicPage() {
                         </button>
                       );
                     })}
-                  </div>
+                  </FilterChipRow>
                 ) : null}
                 {curatedHubChipsVisible.length > 1 ? (
-                  <div
-                    role="group"
+                  <FilterChipRow
                     aria-label="명소 여행지 소분류"
-                    className="flex flex-wrap gap-1.5 pl-1"
+                    className="pl-1"
                   >
                     {curatedHubChipsVisible.map((chip) => {
                       const active = hubId === chip.hubId;
@@ -1059,7 +1095,7 @@ export default function KoreaThemeScenicPage() {
                         </button>
                       );
                     })}
-                  </div>
+                  </FilterChipRow>
                 ) : null}
               </div>
             ) : null}
@@ -1107,11 +1143,7 @@ export default function KoreaThemeScenicPage() {
 
             {!nearActive ? (
               <div className="space-y-2">
-                <div
-                  role="group"
-                  aria-label="명승 권역 대분류"
-                  className="flex flex-wrap gap-1.5"
-                >
+                <FilterChipRow aria-label="명승 권역 대분류">
                   {regionChips.map((r) => {
                     const active = region === r;
                     return (
@@ -1133,12 +1165,11 @@ export default function KoreaThemeScenicPage() {
                       </button>
                     );
                   })}
-                </div>
+                </FilterChipRow>
                 {heritageAreaChips.length > 1 ? (
-                  <div
-                    role="group"
+                  <FilterChipRow
                     aria-label="명승 시도 중분류"
-                    className="flex flex-wrap gap-1.5 pl-0.5"
+                    className="pl-0.5"
                   >
                     {heritageAreaChips.map((chip) => {
                       const active = areaCode === chip.code;
@@ -1161,13 +1192,12 @@ export default function KoreaThemeScenicPage() {
                         </button>
                       );
                     })}
-                  </div>
+                  </FilterChipRow>
                 ) : null}
                 {heritageCategoryChipsVisible.length > 0 ? (
-                  <div
-                    role="group"
+                  <FilterChipRow
                     aria-label="명승 경관 소분류"
-                    className="flex flex-wrap gap-1.5 pl-1"
+                    className="pl-1"
                   >
                     {heritageCategoryChipsVisible.map((chip) => {
                       const active = heritageCategory === chip.code;
@@ -1190,7 +1220,7 @@ export default function KoreaThemeScenicPage() {
                         </button>
                       );
                     })}
-                  </div>
+                  </FilterChipRow>
                 ) : null}
                 {hubId && hubName ? (
                   <div
@@ -1271,11 +1301,7 @@ export default function KoreaThemeScenicPage() {
 
             <div className="space-y-2">
               {tourCat1ChipsVisible.length > 0 ? (
-                <div
-                  role="group"
-                  aria-label="관광 종목 대분류"
-                  className="flex flex-wrap gap-1.5"
-                >
+                <FilterChipRow aria-label="관광 종목 대분류">
                   {tourCat1ChipsVisible.map((chip) => {
                     const active = cat1 === chip.code;
                     return (
@@ -1297,13 +1323,12 @@ export default function KoreaThemeScenicPage() {
                       </button>
                     );
                   })}
-                </div>
+                </FilterChipRow>
               ) : null}
               {tourCat2ChipsVisible.length > 0 ? (
-                <div
-                  role="group"
+                <FilterChipRow
                   aria-label={`${activeCat1Label} 중분류`}
-                  className="flex flex-wrap gap-1.5 pl-0.5"
+                  className="pl-0.5"
                 >
                   {tourCat2ChipsVisible.map((chip) => {
                     const active = cat2 === chip.code;
@@ -1326,13 +1351,12 @@ export default function KoreaThemeScenicPage() {
                       </button>
                     );
                   })}
-                </div>
+                </FilterChipRow>
               ) : null}
               {tourCat3ChipsVisible.length > 0 ? (
-                <div
-                  role="group"
+                <FilterChipRow
                   aria-label={`${activeCat2Label} 소분류`}
-                  className="flex flex-wrap gap-1.5 pl-1"
+                  className="pl-1"
                 >
                   {tourCat3ChipsVisible.map((chip) => {
                     const active = cat3 === chip.code;
@@ -1355,7 +1379,7 @@ export default function KoreaThemeScenicPage() {
                       </button>
                     );
                   })}
-                </div>
+                </FilterChipRow>
               ) : null}
             </div>
 
