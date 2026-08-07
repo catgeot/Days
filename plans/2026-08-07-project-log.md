@@ -34,7 +34,7 @@
 
 ## 테마여행 #62, 명소홈 개선 — 헤더·검색 모달
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `e44d012b` · tip `ebb454c1` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `e44d012b` · Preview QA 대기
 
 - **요청**: 명소 홈 헤더 「축제」「명승」제거 · 검색 결과를 모달로 · 닫기는 모달 닫기 UX
 - **한 일**: 헤더 칩 제거(`onlyWhenBack`으로 자기「명승」링크 숨김) · 검색 활성 시 본문을 dialog 모달로 · 배경/X/Escape 닫기 · 상세는 검색 모달 위(`z-50`)
@@ -48,7 +48,7 @@
 
 ## 테마여행 #61, 검색 관광지 0건 — 종목 자동 전환
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `33889759` · tip `ebb454c1` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `33889759` · Preview QA 대기
 
 - **증상**: 「경포」검색 → 명소 2·명승 1·**관광지 0**
 - **원인**: TourAPI에 경포 매칭 2건(강원·**인문 A02**) 있으나 기본 종목 **자연(A01)** 유지 → 리스트 0 · 단일 종목이면 칩도 숨김
@@ -63,7 +63,7 @@
 
 ## 테마여행 #60, 검색 기능 개선 — 결과 창 닫기
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `25a47cf0` · tip `ebb454c1` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `25a47cf0` · Preview QA 대기
 
 - **요청**: 검색 닫기가 X로 변한 돋보기 클릭 → **결과 창 닫기**로 직관화
 - **한 일**: 검색 활성 시 헤더·본문 「닫기」로 결과 해제 · 모바일 돋보기는 검색창 열기/수정만(결과 닫기 아님) · Escape는 검색창만 닫음
@@ -75,7 +75,7 @@
 
 ## 테마여행 #59, 검색 기능 테스트 — 분류 칩 분해
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `c491cb60` · tip `ebb454c1` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `c491cb60` · Preview QA 대기
 
 - **요청**: 검색 후 긴 리스트 → 분류 칩별로 확인 · 0건 칩 숨김
 - **한 일**: 검색 중에도 권역·시도·종목 칩 유지 · 칩이 검색을 지우지 않음 · 검색 풀∩칩 필터 · TourAPI `searchQuery`+cat/region · **섹션별 0건·단일 분류 칩 숨김**(「고성」명소 0·명승 강원 1권역만)
@@ -87,7 +87,7 @@
 
 ## 테마여행 #58, 검색 기능 도입
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `d45c6b1d` · tip `ebb454c1` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `d45c6b1d` · Preview QA 대기
 
 - **요청**: 명소 홈에 검색 기능
 - **한 일**: `/korea/theme/scenic` 헤더 검색(축제와 동일 UX) · GATEO 선정·국가유산 명승 클라이언트 필터 · TourAPI DB `title`/`addr1` ilike 전국 검색 · `smoke:korea-scenic-search`
@@ -107,7 +107,7 @@
 
 ## 테마여행 #57, 같은 도시 — 정보 있는 추천만
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `611865bf` · tip `ebb454c1` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `611865bf` · Preview QA 대기
 
 - **요청**: 연결처보다 「왜 추천됐는지」·정보 없으면 목록에 올리지 말 것
 - **한 일**: sameHub는 **curated 명승** 또는 **Tour contentId** 있을 때만 노출 · contentId 없는 hub 명소(계족산 황톳길 등) 제외 · 장동산림욕장 오매핑 제거 · 신중앙시장(대전 중앙시장 id)은 유지
@@ -172,7 +172,7 @@
 
 ## 테마여행 #56, 명승 목록 썸네일
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `a8b42d40` · tip `ebb454c1` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `a8b42d40` · Preview QA 대기
 
 - **증상**: 국가유산 명승 목록에 썸네일이 비는 항목이 많음
 - **원인**: SSOT `imageUrl`은 141/141 있으나 KHS 원본이 평균 ~1.4MB·최대 15MB → 목록 로드 실패/지연
@@ -185,7 +185,7 @@
 
 ## 테마여행 #56, 명소 썸네일 SSOT
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `adf34494` · tip `ebb454c1` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `adf34494` · Preview QA 대기
 
 - **증상**: GATEO 선정 명소 목록에 썸네일 없는 항목이 많음
 - **원인**: `tourapi_attraction`에 curated contentId **29/97**만 존재(이미지 26) — 런타임 DB 조회로는 대부분 miss
@@ -210,7 +210,7 @@
 
 ## 테마여행 #56, 명소 · 리스트 대표 사진
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `cd55c0bf` · tip `ebb454c1` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `cd55c0bf` · Preview QA 대기
 
 - **요청**: 명소·명승·관광지 리스트에 대표 사진 포함 → 후속 메모리 캐시 → **후속 SSOT bake(위 절)**
 - **한 일**: `ScenicListRow` 썸네일 · 명승 `imageUrl`/`galleryUrls` · 관광지 `firstImage` · 선정 명소 contentId→`first_image` 일괄 조회 · **세션 메모리 캐시**(hit 재호출 없음·동기 peek) · 작업 로그
@@ -240,7 +240,7 @@
 
 ## 테마여행 #55, 분류칩 가로 스크롤
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `5b4be43f` · tip `ebb454c1` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `5b4be43f` · Preview QA 대기
 
 - **요청**: 명소·명승·관광지 대·중·소 분류칩이 길어질 때 줄바꿈 대신 한 행 가로 스크롤 · 커스텀 스크롤바 항시 시인
 - **한 일**: `FilterChipRow` — 한 행 가로 스크롤 · OS 바 숨김 · **넘침 시 커스텀 트랙·썸 항시** · 좌·우 페이드(더 있음 표시) · 작업 로그
@@ -271,7 +271,7 @@
 
 ## 테마여행 #54, 강원 소분류칩 복구
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `793c4117` · tip `ebb454c1` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `793c4117` · Preview QA 대기
 
 - **요청**: 수정 후 강원 소분류칩 사라짐
 - **한 일**: 시도 중분류가 1개인 권역(강원·제주)은 시도 선택 없이도 여행지 hub 소분류 표시 · smoke·작업로그
@@ -282,7 +282,7 @@
 
 ## 테마여행 #54, 분류칩 0건·동일라벨 정리
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `a1c28948` · tip `ebb454c1` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `a1c28948` · Preview QA 대기
 
 - **요청**: 중·소칩 수량 0 숨김 · 중·소 동일 라벨 불필요
 - **한 일**: 명소/명승/TourAPI 칩에서 count=0 제외 · 명소 여행지 칩은 시도 선택 후·시도명과 다른 라벨만 · 상위와 같은 라벨 소분류 숨김 · smoke·작업로그
@@ -312,7 +312,7 @@
 
 ## 테마여행 #54, 명소·명승 분류 최적화
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `978bee36` · tip `ebb454c1` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `978bee36` · Preview QA 대기
 
 - **요청**: 명소 상단이 명승 칩 → 명승 칩은 명승 리스트로 · 명소 칩 신설 · 둘 다 중·소 세분
 - **한 일**: 페이지 상단 권역 칩 제거 · GATEO 명소=권역→시도→여행지 · 국가유산 명승=권역→시도→경관유형(`?hcat=`) · 건수는 각 섹션 SSOT · smoke·작업로그
@@ -324,7 +324,7 @@
 
 ## 테마여행 #53, TourAPI 소분류 칩 세분화
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `d4ee30ed` · tip `ebb454c1` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `d4ee30ed` · Preview QA 대기
 
 - **요청**: 관광지 종목 칩이 광범위해 목록 확인이 어려움 → 소중분류를 더 세분
 - **한 일**: TourAPI `cat3` SSOT·필터·칩 — 중분류(자연관광지 등) 선택 시 산·해수욕장·사찰·공원 등 소분류 칩 · `?cat3=` · 칩 건수 · `smoke:korea-scenic-categories` · 작업로그
@@ -336,7 +336,7 @@
 
 ## 테마여행 #52, 명소 분류 최적화
 
-**상태**: feature `cursor/korea-theme` · **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `5b4be43f` · tip `ebb454c1` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `5b4be43f` · Preview QA 대기
 
 - **요청**: 대분류 클릭 시 같은 경주 명소가 흩어짐 → 동일 권역 뭉침 · (후속) TourAPI 분류는 기존 유지
 - **한 일**: `sortScenicSpotsByPlaceCluster` — 선정·유산 목록 시도→시·군 뭉침 · DB `area_code`+`addr1` 정렬 · TourAPI cat1/cat2 칩·필터는 기존 방식 유지 · `smoke:korea-scenic-place-cluster` · 작업로그
@@ -366,7 +366,7 @@
 
 ## 테마여행 #51, 인근 명소 거리순
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `5a0d1336` · tip `ebb454c1` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `5a0d1336` · Preview QA 대기
 
 - **요청**: 인근 명소를 축제장에서 가까운 순으로 정렬해 일정 감각이 나게
 - **한 일**: `FestivalDetailSheet` — `festivalLngLat` + `rankSpotsByDistance` · km 배지 · 좌표 없으면 기존 order · smoke #51 보강 · 작업로그
@@ -378,7 +378,7 @@
 
 ## 테마여행 #50, 인근 명승지 라벨 정리
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `5a0d1336` · tip `ebb454c1` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `5a0d1336` · Preview QA 대기
 
 - **요청**: 축제홈 본문 「인근 명승지」라벨인데 목록은 GATEO 선정 명소
 - **한 일**: `FestivalDetailSheet` 섹션·aria·더보기·모달 eyebrow를 「인근 명소」/「○○ 명소 더보기」로 정합 · 작업로그 #50
