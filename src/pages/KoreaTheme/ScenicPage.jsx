@@ -1440,6 +1440,28 @@ export default function KoreaThemeScenicPage() {
     [searchParams, setSearchParams],
   );
 
+  /** 검색 중 기본 종목(자연)에 0건이면 결과 있는 첫 종목으로 전환 — 「경포」=인문만 등 */
+  useEffect(() => {
+    if (!searchActive || !dbSearchActive) return;
+    const counts = chipCounts.cat1Counts || {};
+    const loaded = TOUR_ATTRACTION_CAT1.some((c) =>
+      Number.isFinite(Number(counts[c.code])),
+    );
+    if (!loaded) return;
+    if ((Number(counts[cat1]) || 0) > 0) return;
+    const next = TOUR_ATTRACTION_CAT1.find(
+      (c) => (Number(counts[c.code]) || 0) > 0,
+    );
+    if (!next || next.code === cat1) return;
+    setCat1(next.code);
+  }, [
+    searchActive,
+    dbSearchActive,
+    chipCounts.cat1Counts,
+    cat1,
+    setCat1,
+  ]);
+
   const setCat2 = useCallback(
     (code) => {
       const next = new URLSearchParams(searchParams);

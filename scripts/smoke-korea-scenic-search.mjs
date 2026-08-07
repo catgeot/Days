@@ -65,6 +65,10 @@ assert.ok(
   pageSrc.includes('해당 섹션 매칭이 있는 권역만'),
   'per-section region chips during search',
 );
+assert.ok(
+  pageSrc.includes('결과 있는 첫 종목으로 전환'),
+  'search auto-picks cat1 with matches',
+);
 const goseongHeritage = filterScenicSpotsByQuery(heritage, '고성');
 assert.equal(filterScenicSpotsByQuery(curated, '고성').length, 0, '고성 curated 0');
 assert.ok(goseongHeritage.length >= 2, '고성 heritage ≥2');

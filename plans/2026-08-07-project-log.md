@@ -2,6 +2,37 @@
 
 직전: [`2026-08-06-project-log.md`](./2026-08-06-project-log.md)
 
+## 테마여행 #61, 검색 관광지 0건 — 종목 자동 전환
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip _(push 후)_ · Preview QA 대기
+
+- **증상**: 「경포」검색 → 명소 2·명승 1·**관광지 0**
+- **원인**: TourAPI에 경포 매칭 2건(강원·**인문 A02**) 있으나 기본 종목 **자연(A01)** 유지 → 리스트 0 · 단일 종목이면 칩도 숨김
+- **한 일**: 검색 중 현재 cat1 건수 0이면 결과 있는 첫 종목으로 자동 전환
+- **VERIFY**: _(아래)_
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「검색 관광지 — 0건 종목 자동 전환」
+- **QA**: 「경포」→ 관광지 경포호수광장·호린파크 등 · 진짜 매칭 없으면 0건 유지
+
+### 테마여행 · 에이전트 핸드오프 → `#62`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #62, Preview QA 반영` |
+| **브랜치** | `cursor/korea-theme` (고정) |
+| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
+| **읽을 것 3** | ① 본 절 ② #61 cat1 자동 ③ #60 결과 닫기 |
+| **금지 3** | 축제 지도 리팩터 · top10/regions 탑레벨 부활 · UI 임의 리디자인 |
+| **후보** | Preview QA · S9 |
+| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #62, Preview QA 반영
+```
+
 ## 테마여행 #60, 검색 기능 개선 — 결과 창 닫기
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `25a47cf0` · Preview QA 대기
@@ -13,24 +44,6 @@
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
 - **작업 로그**: Preview 우측 「검색 결과 닫기(결과 창)」
 - **QA**: 검색 → 헤더/배너 「닫기」로 목록 복귀 · 돋보기로 검색어 수정 가능
-
-### 테마여행 · 에이전트 핸드오프 → `#61`
-
-| | |
-|--|--|
-| **세션 표기** | `테마여행 #61, Preview QA 반영` |
-| **브랜치** | `cursor/korea-theme` (고정) |
-| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
-| **읽을 것 3** | ① 본 절 ② #60 결과 닫기 ③ #59 칩 분해 |
-| **금지 3** | 축제 지도 리팩터 · top10/regions 탑레벨 부활 · UI 임의 리디자인 |
-| **후보** | Preview QA · S9 |
-| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
-
-**다음 채팅명 (복붙)**:
-
-```
-테마여행 #61, Preview QA 반영
-```
 
 ## 테마여행 #59, 검색 기능 테스트 — 분류 칩 분해
 

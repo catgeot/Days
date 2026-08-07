@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 60,
-  sessionPhase: '검색 기능 개선',
+  sessionNo: 61,
+  sessionPhase: '검색 관광지 종목 자동 전환',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-scenic-search-cat1-auto',
+    session: '테마여행 #61, 검색 관광지 종목 자동 전환',
+    title: '검색 관광지 — 0건 종목 자동 전환',
+    detail:
+      '「경포」처럼 TourAPI 매칭이 인문(A02)만 있을 때 기본 종목 자연(A01)에 묶여 0건으로 보이던 문제를 고쳤습니다. 검색 중 현재 종목이 0이면 결과가 있는 첫 종목으로 전환합니다. Preview에서 「경포」검색 후 관광지(경포호수광장 등)가 보이는지 확인해 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-scenic-search-close-results',
     session: '테마여행 #60, 검색 기능 개선',
