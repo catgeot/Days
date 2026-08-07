@@ -4,7 +4,7 @@
 
 ## 테마여행 #56, 명소 썸네일 SSOT
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip _(push 후)_ · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `adf34494` · Preview QA 대기
 
 - **증상**: GATEO 선정 명소 목록에 썸네일 없는 항목이 많음
 - **원인**: `tourapi_attraction`에 curated contentId **29/97**만 존재(이미지 26) — 런타임 DB 조회로는 대부분 miss
