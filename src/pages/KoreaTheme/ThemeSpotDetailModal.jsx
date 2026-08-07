@@ -124,6 +124,7 @@ function ThemeSpotCrossRail({
   detail,
   returnTo,
   onClose,
+  onOpenSameHub,
   hideNearbyHubs = false,
 }) {
   const navigate = useNavigate();
@@ -261,7 +262,15 @@ function ThemeSpotCrossRail({
           <ul className="space-y-1.5">
             {cross.sameHub.map((row) => (
               <li key={row.placeSlug}>
-                <CrossTextButton onClick={() => goThemePath(row.deepPath)}>
+                <CrossTextButton
+                  onClick={() => {
+                    if (row.deepPath) {
+                      goThemePath(row.deepPath);
+                      return;
+                    }
+                    if (row.modalSpot) onOpenSameHub?.(row.modalSpot);
+                  }}
+                >
                   {row.name}
                 </CrossTextButton>
               </li>
@@ -607,6 +616,7 @@ export default function ThemeSpotDetailModal({
   const [selectedLeports, setSelectedLeports] = useState(null);
   const [selectedCulture, setSelectedCulture] = useState(null);
   const [selectedAttraction, setSelectedAttraction] = useState(null);
+  const [selectedSameHub, setSelectedSameHub] = useState(null);
   const [videosOpen, setVideosOpen] = useState(false);
   const [videos, setVideos] = useState([]);
   const [videosLoading, setVideosLoading] = useState(false);
@@ -941,6 +951,7 @@ export default function ThemeSpotDetailModal({
     setSelectedLeports(null);
     setSelectedCulture(null);
     setSelectedAttraction(null);
+    setSelectedSameHub(null);
     if (!spot) {
       setNearbyFood([]);
       setNearbyFoodStatus('idle');
@@ -1695,6 +1706,7 @@ export default function ThemeSpotDetailModal({
               detail={detail}
               returnTo={returnTo}
               onClose={onClose}
+              onOpenSameHub={setSelectedSameHub}
               hideNearbyHubs={isApiPoiCross}
             />
           </div>
@@ -1754,6 +1766,15 @@ export default function ThemeSpotDetailModal({
           returnTo={returnTo}
           overlayZClass={nestedChildZ}
           onClose={() => setSelectedAttraction(null)}
+        />
+      ) : null}
+      {selectedSameHub ? (
+        <ThemeSpotDetailModal
+          spot={selectedSameHub}
+          eyebrow="같은 도시 명소"
+          returnTo={returnTo}
+          overlayZClass={nestedChildZ}
+          onClose={() => setSelectedSameHub(null)}
         />
       ) : null}
 

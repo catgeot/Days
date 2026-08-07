@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
   sessionNo: 57,
-  sessionPhase: '같은 도시 명소 deep-link',
+  sessionPhase: '같은 도시 명소 명승 전용',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-samehub-scenic-only',
+    session: '테마여행 #57, 같은 도시 명소 명승 전용',
+    title: '같은 도시 명소 → 명승 spot/중첩 모달',
+    detail:
+      '방방곡곡·top10 라우트는 명승으로 리다이렉트되며 query가 사라져 홈으로 떨어졌습니다. 같은 도시 명소는 명승 ?spot=(id|contentId) 또는 contentId 없으면 중첩 모달로만 엽니다. Preview 유성온천에서 한밭·엑스포·계족산·신중앙시장을 확인해 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-samehub-deeplink',
     session: '테마여행 #57, 같은 도시 명소 deep-link',

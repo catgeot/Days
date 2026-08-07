@@ -17,6 +17,7 @@ import {
   resolveThemePackageKey,
   resolveThemeSpotAreaCode,
   sameHubMembershipDeepPath,
+  sameHubMembershipModalSpot,
   scenicHomePathForHubId,
   THEME_REGION_LABEL_TO_AREA,
 } from '../src/pages/Home/lib/koreaThemeCrossLinks.js';
@@ -130,12 +131,14 @@ assert(yuseongSame.length > 0, 'yuseong sameHub non-empty');
 assert(
   yuseongSame.every(
     (row) =>
-      typeof row.deepPath === 'string' &&
-      row.deepPath.includes('spot=') &&
-      row.deepPath !== '/korea/theme/scenic' &&
-      !row.deepPath.endsWith('/korea/theme/scenic'),
+      (typeof row.deepPath === 'string' &&
+        row.deepPath.startsWith('/korea/theme/scenic?') &&
+        row.deepPath.includes('spot=') &&
+        !row.deepPath.includes('/regions') &&
+        !row.deepPath.includes('/top10')) ||
+      (row.modalSpot && row.modalSpot.name),
   ),
-  'yuseong sameHub deepPath always opens a spot (never scenic home)',
+  'yuseong sameHub opens scenic spot or nested modal (never regions/top10/home)',
 );
 const hanbat = yuseongSame.find((r) => r.placeSlug === 'hanbat-arboretum');
 assert(
@@ -144,16 +147,28 @@ assert(
 );
 const expo = yuseongSame.find((r) => r.placeSlug === 'expo-science-park');
 assert(
-  Boolean(expo?.deepPath?.startsWith('/korea/theme/regions?')) &&
-    expo.deepPath.includes('spot=daejeon%3Aexpo-science-park') &&
-    expo.deepPath.includes('area=3'),
-  `expo deepPath regions+area+spot (got ${expo?.deepPath})`,
+  expo?.deepPath === '/korea/theme/scenic?spot=125994',
+  `expo deepPath scenic contentId (got ${expo?.deepPath})`,
 );
 assert(
-  sameHubMembershipDeepPath(getThemeMembership('expo-science-park'))?.includes(
-    'spot=',
-  ),
-  'sameHubMembershipDeepPath regions-only has spot',
+  sameHubMembershipDeepPath(getThemeMembership('expo-science-park')) ===
+    '/korea/theme/scenic?spot=125994',
+  'sameHubMembershipDeepPath regions-only → scenic contentId',
+);
+const gyejok = yuseongSame.find((r) => r.placeSlug === 'gyejoksan-hwangtotgil');
+assert(
+  gyejok?.deepPath == null && gyejok?.modalSpot?.name === '계족산 황톳길',
+  `gyejok uses nested modalSpot (got deep=${gyejok?.deepPath} name=${gyejok?.modalSpot?.name})`,
+);
+assert(
+  sameHubMembershipModalSpot(getThemeMembership('daejeon-central-market'))
+    ?.name === '신중앙시장',
+  'central market modalSpot name',
+);
+assert(
+  sameHubMembershipDeepPath(getThemeMembership('daejeon-central-market')) ==
+    null,
+  'central market has no dead regions deepPath',
 );
 
 const yeosuSpot = { hubId: 'yeosu', placeSlug: 'yeosu', name: '여수', region: '전라' };

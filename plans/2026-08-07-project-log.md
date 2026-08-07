@@ -2,18 +2,29 @@
 
 직전: [`2026-08-06-project-log.md`](./2026-08-06-project-log.md)
 
-## 테마여행 #57, 같은 도시 명소 deep-link
+## 테마여행 #57, 같은 도시 명소 → 명승 전용
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `fb7b47d9` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
 
-- **증상**: 유성온천 본문 「같은 도시 명소」클릭 시 명소 홈으로 복귀
-- **원인**: regions-only 멤버십이 `/korea/theme/scenic` bare로 폴백
-- **한 일**: `sameHubMembershipDeepPath` · sameHub에 `deepPath`(scenic/top10/regions+spot) · 모달은 `row.deepPath`만 사용 · smoke(유성온천)
+- **증상**: 한밭수목원만 정상 · 엑스포/계족산/신중앙시장 클릭 시 명소 홈
+- **원인**: `/korea/theme/regions|top10`이 명승으로 리다이렉트되며 `spot` query 소실
+- **한 일**: sameHub는 **명승 `?spot=`(curated id · Tour contentId)** 만 · contentId 없으면 **중첩 모달(SSOT)** · regions/top10 deep-link 금지 · smoke
 - **VERIFY**: `npm run smoke:korea-theme-cross-links` · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
-- **작업 로그**: Preview 우측 「같은 도시 명소 → 해당 상세(홈 폴백 제거)」
-- **QA**: 유성온천 → 한밭수목원(명승 상세) · 엑스포과학공원(방방곡곡 상세)
+- **작업 로그**: Preview 우측 「같은 도시 명소 → 명승 spot/중첩 모달」
+- **QA**: 유성온천 → 한밭(명승) · 엑스포(`spot=125994`) · 계족산·신중앙(중첩 모달)
+
+## 테마여행 #57, 같은 도시 명소 deep-link
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `fb7b47d9` · **후속 수정(위 절)**
+
+- **증상**: 유성온천 본문 「같은 도시 명소」클릭 시 명소 홈으로 복귀
+- **원인**: regions-only 멤버십이 `/korea/theme/scenic` bare로 폴백 → 이후 regions URL도 리다이렉트로 동일 증상
+- **한 일**(1차): `sameHubMembershipDeepPath` · 모달 `row.deepPath` — **regions 경로 포함(오판)**
+- **VERIFY**: `npm run smoke:korea-theme-cross-links` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
 
 ### 테마여행 · 에이전트 핸드오프 → `#58`
 
