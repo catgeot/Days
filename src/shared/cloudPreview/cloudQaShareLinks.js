@@ -10,9 +10,8 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'korea-theme',
     label: '한국의 명승',
-    branch: 'cursor/korea-theme',
-    destination:
-      'https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/korea/theme/scenic',
     active: true,
   },
   {

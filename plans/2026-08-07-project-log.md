@@ -2,6 +2,35 @@
 
 직전: [`2026-08-06-project-log.md`](./2026-08-06-project-log.md)
 
+## 테마여행 #63, 메인 머지·테스트
+
+**상태**: ✅ PR [#58](https://github.com/catgeot/Days/pull/58) MERGED → `main` `a572eed7` · PROD 배포·로컬 QA PASS
+
+- **한 일**: `cursor/korea-theme` ← main 충돌 해소(독도·축제 스와이프·QA redirect) · 스와이프/핀치 이식 · PR ready → merge · `/qa/korea-theme` → PROD scenic
+- **VERIFY**: `smoke:korea-theme-nav-back` · `smoke:korea-scenic-search` · `smoke:korea-scenic-nearby` · `npm run build`
+- **로컬 QA**: 홈 투톱 · `/korea/theme`→scenic · `/korea` 축제 목록 PASS (HTTPS Vite)
+- **PROD**: 번들에 `한국의 명승`·`/korea/theme/scenic` 확인 · `/qa/korea-theme` 307
+- **공유**: `https://www.gateo.kr/qa/korea-theme` → `/korea/theme/scenic`
+- **PROD**: `https://www.gateo.kr/` · `/korea` · `/korea/theme/scenic`
+
+### 테마여행 · 에이전트 핸드오프 → `#67` (후속 폴리시·릴리스)
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #67, 폴리시·릴리스` |
+| **브랜치** | `main` (feature 병합 완료 · 후속은 main 또는 새 짧은 feature) |
+| **PR** | [#58](https://github.com/catgeot/Days/pull/58) MERGED |
+| **읽을 것 3** | ① 본 절 ② 플랜 S9 ③ PROD `/korea/theme/scenic` |
+| **금지 3** | 축제 지도·칩 리팩터 · UI 임의 리디자인 · releaseNotes 무단 반영 |
+| **후보** | 사람 PROD QA · releaseNotes 초안 합의 |
+| **공유/PROD** | `https://www.gateo.kr/qa/korea-theme` · `https://www.gateo.kr/korea/theme/scenic` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #67, 폴리시·릴리스
+```
+
 ## 테마여행 #66, 명승 메인 · 홈 투톱
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `28106ba5` · Preview QA 대기

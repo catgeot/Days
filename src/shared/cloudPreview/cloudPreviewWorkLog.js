@@ -6,9 +6,9 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 66,
-  sessionPhase: '명승 메인 · 홈 투톱',
-  branch: 'cursor/korea-theme',
+  sessionNo: 63,
+  sessionPhase: '메인 머지·테스트',
+  branch: 'main',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
 };
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-main-merge-63',
+    session: '테마여행 #63, 메인 머지·테스트',
+    title: '명승 투톱 main 병합 · PROD QA',
+    detail:
+      'PR #58을 main에 병합했습니다. 홈 투톱·`/korea`·`/korea/theme`→scenic·축제 상세를 로컬·PROD 번들에서 확인했습니다. `/qa/korea-theme`은 PROD 명승 경로로 연결됩니다.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-scenic-main-dual-entry',
     session: '테마여행 #66, 명승 메인 · 홈 투톱',
