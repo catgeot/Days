@@ -4,7 +4,7 @@
 
 ## 테마여행 #66, 명승 메인 · 홈 투톱
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `28106ba5` · Preview QA 대기
 
 - **요청**: 테마 허브 대신 명승을 메인 · 지구본에서 축제·명승 각각 진입
 - **한 일**: `/korea/theme` → scenic 리다이렉트 · 허브 언마운트 · 홈 라벨「한국의 축제」「한국의 명승」투톱 고정 · nav-back 기본경로 scenic
