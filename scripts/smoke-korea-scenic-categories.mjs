@@ -7,11 +7,15 @@
 import {
   labelTourAttractionCat1,
   labelTourAttractionCat2,
+  labelTourAttractionCat3,
   listTourAttractionCat2,
+  listTourAttractionCat3,
   normalizeTourAttractionCat1,
   normalizeTourAttractionCat2,
+  normalizeTourAttractionCat3,
   TOUR_ATTRACTION_CAT1,
   TOUR_ATTRACTION_CAT2_BY_CAT1,
+  TOUR_ATTRACTION_CAT3_BY_CAT2,
 } from '../src/pages/Home/lib/koreaTourAttractionCategories.js';
 import {
   labelScenicAreaCode,
@@ -58,6 +62,34 @@ assert(
 assert(listTourAttractionCat2('A02').length === 5, 'list cat2 for A02');
 assert(labelTourAttractionCat1('A01') === '자연', 'label cat1');
 assert(labelTourAttractionCat2('A02', 'A0205') === '건축·조형물', 'label cat2');
+assert(
+  (TOUR_ATTRACTION_CAT3_BY_CAT2.A0101 || []).length >= 15,
+  'A0101 cat3 ≥15 (산·해수욕장 등)',
+);
+assert(
+  (TOUR_ATTRACTION_CAT3_BY_CAT2.A0201 || []).length === 10,
+  'A0201 cat3 =10',
+);
+assert(
+  normalizeTourAttractionCat3('A01', 'A0101', 'A01010400') === 'A01010400',
+  'normalize cat3 산',
+);
+assert(
+  normalizeTourAttractionCat3('A01', 'A0101', 'A02010800') === null,
+  'reject cat3 outside mid',
+);
+assert(
+  listTourAttractionCat3('A01', null).length === 0,
+  'cat3 empty without cat2',
+);
+assert(
+  listTourAttractionCat3('A02', 'A0201').some((c) => c.code === 'A02010800'),
+  'list cat3 includes 사찰',
+);
+assert(
+  labelTourAttractionCat3('A01', 'A0101', 'A01011200') === '해수욕장',
+  'label cat3 해수욕장',
+);
 
 const capitalAreas = listScenicRegionAreas('수도권');
 assert(capitalAreas.length === 3, `수도권 시도=3 (got ${capitalAreas.length})`);
@@ -180,6 +212,19 @@ if (url && anon) {
   assert(
     typeof chipCat2 === 'number' && chipCat2 >= 0 && chipCat2 <= seoul,
     `서울·자연관광지 칩 ⊆ 서울·자연 (${chipCat2}≤${seoul})`,
+  );
+
+  const { count: chipCat3, error: eChipCat3 } = await sb
+    .from('tourapi_attraction')
+    .select('content_id', { count: 'exact', head: true })
+    .eq('active', true)
+    .eq('content_type_id', '12')
+    .eq('cat3', 'A01010400')
+    .eq('area_code', '1');
+  assert(!eChipCat3, `chip cat3 count (${eChipCat3?.message || 'ok'})`);
+  assert(
+    typeof chipCat3 === 'number' && chipCat3 >= 0 && chipCat3 <= chipCat2,
+    `서울·산 칩 ⊆ 서울·자연관광지 (${chipCat3}≤${chipCat2})`,
   );
 
   const gangwonCodes = SCENIC_REGION_AREA_CODES.강원 || [];

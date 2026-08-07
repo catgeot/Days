@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 52,
-  sessionPhase: '명소 분류 최적화',
+  sessionNo: 53,
+  sessionPhase: 'TourAPI 소분류 칩 세분화',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-scenic-cat3-chips',
+    session: '테마여행 #53, TourAPI 소분류 칩 세분화',
+    title: '관광지 중분류 아래 소분류(산·사찰 등) 칩',
+    detail:
+      'TourAPI cat3를 열어 중분류(자연관광지·역사관광지 등)를 고르면 산·해수욕장·사찰·공원 같은 소분류 칩으로 목록을 더 좁힐 수 있습니다. Preview `/korea/theme/scenic`에서 자연→자연관광지→해수욕장 순으로 확인해 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-scenic-place-cluster',
     session: '테마여행 #52, 명소 분류 최적화',

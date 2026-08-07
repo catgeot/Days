@@ -1,8 +1,10 @@
 import { supabase } from '../../../shared/api/supabase';
 import {
   listTourAttractionCat2,
+  listTourAttractionCat3,
   normalizeTourAttractionCat1,
   normalizeTourAttractionCat2,
+  normalizeTourAttractionCat3,
   TOUR_ATTRACTION_CAT1,
 } from './koreaTourAttractionCategories';
 import {
@@ -53,6 +55,7 @@ export function scenicLocalityQueryForHubName(hubName) {
  *   areaCodes?: string[] | null,
  *   cat1?: string | null,
  *   cat2?: string | null,
+ *   cat3?: string | null,
  *   localityQuery?: string | null,
  * }} [opts]
  */
@@ -68,8 +71,9 @@ function resolveAttractionFilters(opts = {}) {
   }
   const cat1 = normalizeTourAttractionCat1(opts.cat1);
   const cat2 = normalizeTourAttractionCat2(cat1, opts.cat2);
+  const cat3 = normalizeTourAttractionCat3(cat1, cat2, opts.cat3);
   const localityQuery = scenicLocalityQueryForHubName(opts.localityQuery);
-  return { region, areaCode, areaCodes, cat1, cat2, localityQuery };
+  return { region, areaCode, areaCodes, cat1, cat2, cat3, localityQuery };
 }
 
 /**
@@ -78,6 +82,7 @@ function resolveAttractionFilters(opts = {}) {
  *   areaCodes?: string[] | null,
  *   cat1?: string | null,
  *   cat2?: string | null,
+ *   cat3?: string | null,
  *   localityQuery?: string | null,
  * }} filters
  */
@@ -92,7 +97,9 @@ function applyAttractionListFilters(q, filters) {
       `addr1.ilike.%${qLoc}%,addr1.ilike.%${qLoc}시%,addr1.ilike.%${qLoc}군%`,
     );
   }
-  if (filters.cat2) {
+  if (filters.cat3) {
+    next = next.eq('cat3', filters.cat3);
+  } else if (filters.cat2) {
     next = next.eq('cat2', filters.cat2);
   } else if (filters.cat1) {
     next = next.eq('cat1', filters.cat1);
@@ -126,6 +133,7 @@ function applyNoImageFilter(q) {
  *   areaCodes?: string[] | null,
  *   cat1?: string | null,
  *   cat2?: string | null,
+ *   cat3?: string | null,
  *   localityQuery?: string | null,
  * }} [opts]
  * @returns {Promise<{ count: number, error: string | null }>}
@@ -151,12 +159,13 @@ export async function countKoreaTourAttractions(opts = {}) {
 /**
  * 필터 칩용 건수.
  * - 권역(최상단 대분류)·시도: 종목 무관 **지역 전체** 수량
- * - 종목 대·소분류: 현재 권역·시도(·시군 hub) 아래 해당 종목 수량
+ * - 종목 대·중·소분류: 현재 권역·시도(·시군 hub) 아래 해당 종목 수량
  * @param {{
  *   region?: string | null,
  *   areaCode?: string | null,
  *   cat1?: string | null,
  *   cat2?: string | null,
+ *   cat3?: string | null,
  *   localityQuery?: string | null,
  * }} [opts]
  * @returns {Promise<{
@@ -164,6 +173,7 @@ export async function countKoreaTourAttractions(opts = {}) {
  *   areaCounts: Record<string, number>,
  *   cat1Counts: Record<string, number>,
  *   cat2Counts: Record<string, number>,
+ *   cat3Counts: Record<string, number>,
  *   error: string | null,
  * }>}
  */
@@ -183,6 +193,8 @@ export async function fetchScenicFilterChipCounts(opts = {}) {
   const cat1Counts = {};
   /** @type {Record<string, number>} */
   const cat2Counts = {};
+  /** @type {Record<string, number>} */
+  const cat3Counts = {};
 
   /** @type {string[]} */
   const errors = [];
@@ -222,6 +234,18 @@ export async function fetchScenicFilterChipCounts(opts = {}) {
       if (error) errors.push(error);
       cat2Counts[c.code] = count;
     }),
+    ...listTourAttractionCat3(cat1, cat2).map(async (c) => {
+      const { count, error } = await countKoreaTourAttractions({
+        region,
+        areaCode,
+        cat1,
+        cat2,
+        cat3: c.code,
+        localityQuery,
+      });
+      if (error) errors.push(error);
+      cat3Counts[c.code] = count;
+    }),
   ];
 
   await Promise.all(jobs);
@@ -230,6 +254,7 @@ export async function fetchScenicFilterChipCounts(opts = {}) {
     areaCounts,
     cat1Counts,
     cat2Counts,
+    cat3Counts,
     error: errors[0] || null,
   };
 }
@@ -241,6 +266,7 @@ export async function fetchScenicFilterChipCounts(opts = {}) {
  *   areaCodes?: string[] | null,
  *   cat1?: string | null,
  *   cat2?: string | null,
+ *   cat3?: string | null,
  *   localityQuery?: string | null,
  *   limit?: number,
  *   offset?: number,
