@@ -4,7 +4,7 @@
 
 ## 테마여행 #54, 분류칩 0건·동일라벨 정리
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `a1c28948` · Preview QA 대기
 
 - **요청**: 중·소칩 수량 0 숨김 · 중·소 동일 라벨 불필요
 - **한 일**: 명소/명승/TourAPI 칩에서 count=0 제외 · 명소 여행지 칩은 시도 선택 후·시도명과 다른 라벨만 · 상위와 같은 라벨 소분류 숨김 · smoke·작업로그
