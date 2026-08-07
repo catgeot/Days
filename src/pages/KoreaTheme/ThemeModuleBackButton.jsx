@@ -30,8 +30,11 @@ function useThemeNavBackAction() {
   return { back, goBack };
 }
 
-/** 모듈 헤더 좌측 복귀 — 크로스 이동 후엔 「이전」, 아니면 「명승」 */
-export default function ThemeModuleBackButton() {
+/**
+ * 모듈 헤더 복귀 — 크로스 이동 후엔 「이전」, 아니면 「명승」.
+ * `onlyWhenBack`: 명승 홈처럼 기본 「명승」 자기 링크가 불필요할 때.
+ */
+export default function ThemeModuleBackButton({ onlyWhenBack = false }) {
   const { back, goBack } = useThemeNavBackAction();
 
   if (back?.path) {
@@ -49,6 +52,8 @@ export default function ThemeModuleBackButton() {
       </button>
     );
   }
+
+  if (onlyWhenBack) return null;
 
   return (
     <Link

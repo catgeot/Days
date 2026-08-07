@@ -6,9 +6,8 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  CalendarDays,
   ChevronLeft,
   ChevronRight,
   Home,
@@ -821,6 +820,17 @@ export default function KoreaThemeScenicPage() {
     clearNear();
   }, [clearSearchFilter, clearNear]);
 
+  useEffect(() => {
+    if (!searchActive || selectedId) return undefined;
+    const onKey = (e) => {
+      if (e.key !== 'Escape') return;
+      e.preventDefault();
+      closeSearch();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [searchActive, selectedId, closeSearch]);
+
   const resetListPage = useCallback(() => {
     if (page <= 1 && !searchParams.get('spot')) return;
     const next = new URLSearchParams(searchParams);
@@ -1527,11 +1537,7 @@ export default function KoreaThemeScenicPage() {
     TOUR_ATTRACTION_CAT1.find((c) => c.code === cat1)?.label || '종목';
   const activeCat2Label =
     cat2Chips.find((c) => c.code === cat2)?.label || '중분류';
-  const listHeadline = searchActive
-    ? `검색 · ${searchFilter}`
-    : nearActive
-      ? `${nearLabel} 주변`
-      : '한국의 명승';
+  const listHeadline = nearActive ? `${nearLabel} 주변` : '한국의 명승';
   const catalogHeadingLabel = searchActive
     ? `검색 · ${searchFilter}`
     : catalogHeading;
@@ -1569,15 +1575,6 @@ export default function KoreaThemeScenicPage() {
                 </h1>
               </div>
               <div className="flex shrink-0 items-center gap-2">
-                <Link
-                  to="/korea?from=theme"
-                  aria-label="한국의 축제로"
-                  title="축제"
-                  className="flex items-center gap-1 rounded-full border border-amber-300/80 bg-amber-50 px-2.5 py-1.5 text-xs font-bold text-amber-900 hover:bg-amber-100"
-                >
-                  <CalendarDays size={14} aria-hidden="true" />
-                  축제
-                </Link>
                 <form
                   className="hidden w-56 xl:w-64 lg:block"
                   onSubmit={(e) => {
@@ -1654,19 +1651,7 @@ export default function KoreaThemeScenicPage() {
                     <Search size={15} aria-hidden="true" />
                   )}
                 </button>
-                {searchActive ? (
-                  <button
-                    type="button"
-                    onClick={closeSearch}
-                    aria-label="검색 결과 닫기"
-                    title="검색 결과 닫기"
-                    className="flex items-center gap-1 rounded-full border border-amber-400 bg-amber-50 px-2.5 py-1.5 text-xs font-bold text-amber-900 hover:bg-amber-100"
-                  >
-                    <X size={14} aria-hidden="true" />
-                    닫기
-                  </button>
-                ) : null}
-                <ThemeModuleBackButton />
+                <ThemeModuleBackButton onlyWhenBack />
                 <button
                   type="button"
                   onClick={() => navigate('/')}
@@ -1723,69 +1708,107 @@ export default function KoreaThemeScenicPage() {
         </div>
       </header>
 
-      <main className="min-h-0 flex-1 overflow-y-auto">
-        <div className="mx-auto w-full max-w-3xl space-y-8 px-3 py-6 md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl">
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center justify-end gap-2">
+      <div
+        className={
+          searchActive
+            ? 'relative z-20 flex min-h-0 flex-1 flex-col bg-stone-900/40 p-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] pl-[max(0.625rem,env(safe-area-inset-left))] pr-[max(0.625rem,env(safe-area-inset-right))]'
+            : 'contents'
+        }
+        onClick={searchActive ? closeSearch : undefined}
+        role={searchActive ? 'presentation' : undefined}
+      >
+        <main
+          className={
+            searchActive
+              ? 'relative mx-auto flex h-full w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white text-stone-900 shadow-2xl md:rounded-3xl lg:max-w-6xl xl:max-w-7xl'
+              : 'min-h-0 flex-1 overflow-y-auto'
+          }
+          onClick={searchActive ? (e) => e.stopPropagation() : undefined}
+          role={searchActive ? 'dialog' : undefined}
+          aria-modal={searchActive ? true : undefined}
+          aria-labelledby={
+            searchActive ? 'korea-scenic-search-modal-title' : undefined
+          }
+        >
+          {searchActive ? (
+            <div className="flex shrink-0 items-start justify-between gap-3 border-b border-stone-200/80 px-4 py-3.5 sm:px-5">
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-700">
+                  검색
+                </p>
+                <h2
+                  id="korea-scenic-search-modal-title"
+                  className="mt-0.5 text-base font-extrabold tracking-tight text-stone-900 break-keep sm:text-lg"
+                >
+                  「{searchFilter}」검색 결과
+                </h2>
+              </div>
               <button
                 type="button"
-                onClick={handleNearMe}
-                disabled={nearBusy}
-                aria-label="내 주변 명소·명승·관광지 불러오기"
-                title="내 주변"
-                aria-pressed={nearActive}
-                className={`shrink-0 flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold disabled:opacity-60 ${
-                  nearActive
-                    ? 'border-amber-500 bg-amber-500 text-white hover:bg-amber-600'
-                    : 'border-amber-500/40 bg-amber-500 text-white hover:bg-amber-600'
-                }`}
+                onClick={closeSearch}
+                aria-label="검색 결과 닫기"
+                title="검색 결과 닫기"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100"
               >
-                {nearBusy ? (
-                  <Loader2 size={14} className="animate-spin" aria-hidden="true" />
-                ) : (
-                  <LocateFixed size={14} aria-hidden="true" />
-                )}
-                내 주변
+                <X size={16} aria-hidden="true" />
               </button>
             </div>
-            {searchActive ? (
-              <div
-                role="status"
-                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-amber-200 bg-amber-50/90 px-3 py-2"
-              >
-                <p className="text-[12px] font-bold leading-snug text-amber-950 break-keep">
-                  「{searchFilter}」검색 결과
-                </p>
-                <button
-                  type="button"
-                  onClick={closeSearch}
-                  aria-label="검색 결과 닫기"
-                  className="shrink-0 rounded-full border border-amber-300/80 bg-white/80 px-2.5 py-1 text-[11px] font-bold text-amber-900 hover:bg-amber-100"
-                >
-                  닫기
-                </button>
-              </div>
-            ) : null}
-            {nearMsg ? (
-              <div
-                role="status"
-                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-amber-200 bg-amber-50/90 px-3 py-2"
-              >
-                <p className="text-[12px] font-bold leading-snug text-amber-950 break-keep">
-                  {nearMsg}
-                </p>
-                {!nearBusy ? (
-                  <button
-                    type="button"
-                    onClick={clearNear}
-                    className="shrink-0 rounded-full px-2 py-1 text-[11px] font-semibold text-amber-800/70 hover:bg-amber-100/80"
-                  >
-                    닫기
-                  </button>
-                ) : null}
-              </div>
-            ) : null}
-          </div>
+          ) : null}
+          <div
+            className={
+              searchActive ? 'min-h-0 flex-1 overflow-y-auto' : undefined
+            }
+          >
+            <div className="mx-auto w-full max-w-3xl space-y-8 px-3 py-6 md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl">
+              {!searchActive ? (
+                <div className="space-y-2">
+                  <div className="flex flex-wrap items-center justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={handleNearMe}
+                      disabled={nearBusy}
+                      aria-label="내 주변 명소·명승·관광지 불러오기"
+                      title="내 주변"
+                      aria-pressed={nearActive}
+                      className={`shrink-0 flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold disabled:opacity-60 ${
+                        nearActive
+                          ? 'border-amber-500 bg-amber-500 text-white hover:bg-amber-600'
+                          : 'border-amber-500/40 bg-amber-500 text-white hover:bg-amber-600'
+                      }`}
+                    >
+                      {nearBusy ? (
+                        <Loader2
+                          size={14}
+                          className="animate-spin"
+                          aria-hidden="true"
+                        />
+                      ) : (
+                        <LocateFixed size={14} aria-hidden="true" />
+                      )}
+                      내 주변
+                    </button>
+                  </div>
+                  {nearMsg ? (
+                    <div
+                      role="status"
+                      className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-amber-200 bg-amber-50/90 px-3 py-2"
+                    >
+                      <p className="text-[12px] font-bold leading-snug text-amber-950 break-keep">
+                        {nearMsg}
+                      </p>
+                      {!nearBusy ? (
+                        <button
+                          type="button"
+                          onClick={clearNear}
+                          className="shrink-0 rounded-full px-2 py-1 text-[11px] font-semibold text-amber-800/70 hover:bg-amber-100/80"
+                        >
+                          닫기
+                        </button>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
 
           <section aria-labelledby="korea-scenic-curated-heading" className="space-y-4">
             <div className="flex items-center gap-2 text-stone-700">
@@ -2244,8 +2267,10 @@ export default function KoreaThemeScenicPage() {
               </div>
             ) : null}
           </section>
-        </div>
-      </main>
+            </div>
+          </div>
+        </main>
+      </div>
 
       {modalSpot ? (
         <ThemeSpotDetailModal
@@ -2255,6 +2280,7 @@ export default function KoreaThemeScenicPage() {
           }
           returnTo={listReturnTo}
           onClose={closeModal}
+          overlayZClass={searchActive ? 'z-50' : 'z-40'}
         />
       ) : null}
     </div>

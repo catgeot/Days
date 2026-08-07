@@ -2,6 +2,36 @@
 
 직전: [`2026-08-06-project-log.md`](./2026-08-06-project-log.md)
 
+## 테마여행 #62, 명소홈 개선 — 헤더·검색 모달
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **요청**: 명소 홈 헤더 「축제」「명승」제거 · 검색 결과를 모달로 · 닫기는 모달 닫기 UX
+- **한 일**: 헤더 칩 제거(`onlyWhenBack`으로 자기「명승」링크 숨김) · 검색 활성 시 본문을 dialog 모달로 · 배경/X/Escape 닫기 · 상세는 검색 모달 위(`z-50`)
+- **VERIFY**: `npm run smoke:korea-scenic-search` · `smoke:korea-scenic-nearby` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「헤더 칩 정리 · 검색 결과 모달」
+- **QA**: 헤더에 축제·명승 없음 · 검색 → 모달 · X/배경/Escape로 목록 복귀
+
+### 테마여행 · 에이전트 핸드오프 → `#63`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #63, Preview QA 반영` |
+| **브랜치** | `cursor/korea-theme` (고정) |
+| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
+| **읽을 것 3** | ① 본 절 ② #62 검색 모달 ③ #61 cat1 자동 |
+| **금지 3** | 축제 지도 리팩터 · top10/regions 탑레벨 부활 · UI 임의 리디자인 |
+| **후보** | Preview QA · S9 |
+| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #63, Preview QA 반영
+```
+
 ## 테마여행 #61, 검색 관광지 0건 — 종목 자동 전환
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `33889759` · Preview QA 대기
@@ -15,23 +45,7 @@
 - **작업 로그**: Preview 우측 「검색 관광지 — 0건 종목 자동 전환」
 - **QA**: 「경포」→ 관광지 경포호수광장·호린파크 등 · 진짜 매칭 없으면 0건 유지
 
-### 테마여행 · 에이전트 핸드오프 → `#62`
-
-| | |
-|--|--|
-| **세션 표기** | `테마여행 #62, Preview QA 반영` |
-| **브랜치** | `cursor/korea-theme` (고정) |
-| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
-| **읽을 것 3** | ① 본 절 ② #61 cat1 자동 ③ #60 결과 닫기 |
-| **금지 3** | 축제 지도 리팩터 · top10/regions 탑레벨 부활 · UI 임의 리디자인 |
-| **후보** | Preview QA · S9 |
-| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
-
-**다음 채팅명 (복붙)**:
-
-```
-테마여행 #62, Preview QA 반영
-```
+### 테마여행 · 에이전트 핸드오프 → `#62` (완료 → 위 #62 절)
 
 ## 테마여행 #60, 검색 기능 개선 — 결과 창 닫기
 

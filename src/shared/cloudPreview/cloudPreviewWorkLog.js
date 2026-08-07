@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 61,
-  sessionPhase: '검색 관광지 종목 자동 전환',
+  sessionNo: 62,
+  sessionPhase: '명소홈 개선',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-scenic-home-search-modal',
+    session: '테마여행 #62, 명소홈 개선',
+    title: '헤더 칩 정리 · 검색 결과 모달',
+    detail:
+      '명소 홈 헤더의 「축제」「명승」버튼을 없앴습니다. 검색 결과는 본문 대신 모달로 열고, 배경·X·Escape로 닫습니다. Preview `/korea/theme/scenic`에서 검색 후 모달 닫기를 확인해 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-scenic-search-cat1-auto',
     session: '테마여행 #61, 검색 관광지 종목 자동 전환',

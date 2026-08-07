@@ -48,6 +48,18 @@ assert.ok(pageSrc.includes('명소·지역 검색'), 'ScenicPage search placehol
 assert.ok(pageSrc.includes('searchQuery'), 'ScenicPage DB searchQuery');
 assert.ok(pageSrc.includes('commitSearch'), 'ScenicPage commitSearch');
 assert.ok(pageSrc.includes('closeSearch'), 'ScenicPage closeSearch');
+assert.ok(
+  pageSrc.includes('korea-scenic-search-modal-title'),
+  'search results render as modal',
+);
+assert.ok(
+  !pageSrc.includes('aria-label="한국의 축제로"'),
+  'scenic home header has no festival chip',
+);
+assert.ok(
+  pageSrc.includes('onlyWhenBack'),
+  'scenic home hides default 명승 self-link',
+);
 assert.ok(pageSrc.includes('curatedSearchPool'), 'search pool for curated');
 assert.ok(pageSrc.includes('heritageSearchPool'), 'search pool for heritage');
 assert.ok(pageSrc.includes('pickRegionForSearchMatches'), 'commit picks region');
