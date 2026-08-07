@@ -4,7 +4,7 @@
 
 ## 테마여행 #57, 같은 도시 — 정보 있는 추천만
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `611865bf` · Preview QA 대기
 
 - **요청**: 연결처보다 「왜 추천됐는지」·정보 없으면 목록에 올리지 말 것
 - **한 일**: sameHub는 **curated 명승** 또는 **Tour contentId** 있을 때만 노출 · contentId 없는 hub 명소(계족산 황톳길 등) 제외 · 장동산림욕장 오매핑 제거 · 신중앙시장(대전 중앙시장 id)은 유지
