@@ -4,7 +4,7 @@
 
 ## 테마여행 #57, 같은 도시 Tour contentId
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `41e1ec00` · Preview QA 대기
 
 - **증상**: 계족산 황톳길 본문 「Tour 상세 없음」
 - **원인**: hub 명소에 Tour `contentId` 미매핑 → LIVE detail 조회 불가(폴백 문구)
