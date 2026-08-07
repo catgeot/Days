@@ -50,6 +50,7 @@ import {
   fetchKoreaTourAttractionById,
   fetchKoreaTourAttractionFirstImagesByIds,
   fetchKoreaTourAttractions,
+  fetchKoreaTourAttractionsNear,
   peekKoreaTourAttractionFirstImagesByIds,
   fetchScenicFilterChipCounts,
   labelScenicAreaCode,
@@ -1171,33 +1172,18 @@ export default function KoreaThemeScenicPage() {
     }
     setDbStatus('loading');
     setDbError(null);
-    const fetchLimit = nearActive ? NEAR_DB_LIMIT : PAGE_SIZE;
-    const fetchOffset = nearActive ? 0 : (page - 1) * PAGE_SIZE;
-    const fetchOpts = dbSearchActive
-      ? {
-          searchQuery: dbSearchFilter,
-          region,
-          areaCode,
-          cat1,
-          cat2,
-          cat3,
-          localityQuery: hubId ? localityQuery : null,
-          limit: fetchLimit,
-          offset: fetchOffset,
-        }
-      : {
-          region,
-          areaCode: nearActive ? null : areaCode,
-          cat1,
-          cat2,
-          cat3,
-          localityQuery: nearActive ? null : localityQuery,
-          limit: fetchLimit,
-          offset: fetchOffset,
-        };
-    fetchKoreaTourAttractions(fetchOpts).then((res) => {
-      if (cancelled) return;
-      if (nearActive && nearOrigin) {
+
+    if (nearActive && nearOrigin) {
+      fetchKoreaTourAttractionsNear({
+        lat: nearOrigin.lat,
+        lng: nearOrigin.lng,
+        radiusKm: NEAR_KM,
+        limit: NEAR_DB_LIMIT,
+        cat1,
+        cat2,
+        cat3,
+      }).then((res) => {
+        if (cancelled) return;
         const ranked = rankNearbyScenicSpots(
           res.spots || [],
           nearOrigin.lat,
@@ -1216,8 +1202,38 @@ export default function KoreaThemeScenicPage() {
         } else {
           setDbStatus('ok');
         }
-        return;
-      }
+      });
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    const fetchLimit = PAGE_SIZE;
+    const fetchOffset = (page - 1) * PAGE_SIZE;
+    const fetchOpts = dbSearchActive
+      ? {
+          searchQuery: dbSearchFilter,
+          region,
+          areaCode,
+          cat1,
+          cat2,
+          cat3,
+          localityQuery: hubId ? localityQuery : null,
+          limit: fetchLimit,
+          offset: fetchOffset,
+        }
+      : {
+          region,
+          areaCode,
+          cat1,
+          cat2,
+          cat3,
+          localityQuery: localityQuery,
+          limit: fetchLimit,
+          offset: fetchOffset,
+        };
+    fetchKoreaTourAttractions(fetchOpts).then((res) => {
+      if (cancelled) return;
       setDbKmById(new Map());
       setDbSpots(res.spots || []);
       setDbCount(res.count || 0);

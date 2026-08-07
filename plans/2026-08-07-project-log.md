@@ -2,6 +2,36 @@
 
 직전: [`2026-08-06-project-log.md`](./2026-08-06-project-log.md)
 
+## 테마여행 #69, 내주변 관내 관광지
+
+**상태**: feature `cursor/scenic-nearby-a8ec` · Preview QA 대기
+
+- **증상**: 화천 「내 주변」에 양구·속초만 보이고 화천 관내(붕어섬 등) 관광지 누락
+- **원인**: 권역 TourAPI 목록 앞부분만 가져온 뒤 80km 거리 필터 → 주소 정렬상 화천이 샘플 밖
+- **한 일**: `fetchKoreaTourAttractionsNear` bbox→거리순 · ScenicPage 내 주변 경로 교체 · smoke LIVE 화천 관내 · `/qa/scenic-nearby`
+- **VERIFY**: `npm run smoke:korea-scenic-nearby` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-nearby`
+- **Preview**: `https://days-git-cursor-scenic-nearby-a8ec-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「내 주변 관광지 — 좌표 bbox 거리순」
+- **QA**: 화천(또는 해당 GPS) 내 주변 → 관광지 최근접이 화천 관내(낭천산림욕장·붕어섬 등)
+
+### 테마여행 · 에이전트 핸드오프 → `#70`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #70, Preview QA 반영` |
+| **브랜치** | `cursor/scenic-nearby-a8ec` (고정) |
+| **읽을 것 3** | ① 본 절 ② ScenicPage near fetch ③ smoke LIVE 화천 |
+| **금지 3** | 축제 지도 리팩터 · UI 임의 리디자인 · releaseNotes 무단 반영 |
+| **후보** | Preview QA · main 병합 |
+| **공유/Preview** | `https://www.gateo.kr/qa/scenic-nearby` · git Preview `/korea/theme/scenic` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #70, Preview QA 반영
+```
+
 ## 테마여행 #67, 홈·축제 헤더 간소화
 
 **상태**: ✅ PR [#62](https://github.com/catgeot/Days/pull/62)·[#63](https://github.com/catgeot/Days/pull/63) → `main` · `/qa/home-korea` → PROD `/korea`

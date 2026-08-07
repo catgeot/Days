@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 67,
-  sessionPhase: '메인 반영',
-  branch: 'main',
-  previewPath: '/korea',
-  qaShareSlug: 'home-korea',
+  sessionNo: 69,
+  sessionPhase: '내주변 관내 관광지',
+  branch: 'cursor/scenic-nearby-a8ec',
+  previewPath: '/korea/theme/scenic',
+  qaShareSlug: 'scenic-nearby',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-scenic-nearby-hwacheon-69',
+    session: '테마여행 #69, 내주변 관내 관광지',
+    title: '내 주변 관광지 — 좌표 bbox 거리순',
+    detail:
+      '명승 「내 주변」관광지가 권역 목록 샘플을 거리로만 걸러 화천 관내(붕어섬 등)가 빠지던 문제를 고쳤습니다. GPS 좌표 bbox로 조회한 뒤 거리순으로 보여 주세요. Preview `/korea/theme/scenic` → 내 주변.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-home-korea-links-main-67',
     session: '테마여행 #67, 메인 반영',

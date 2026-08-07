@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'scenic-nearby',
+    label: '명승 내주변 관내 관광지',
+    branch: 'cursor/scenic-nearby-a8ec',
+    destination:
+      'https://days-git-cursor-scenic-nearby-a8ec-catgeots-projects.vercel.app/korea/theme/scenic',
+    active: true,
+  },
+  {
     slug: 'home-korea',
     label: '홈·축제 헤더 간소화',
     branch: 'main',
