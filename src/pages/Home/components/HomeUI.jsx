@@ -114,36 +114,26 @@ const HomeUI = React.memo(({
             <>
               <Link
                 to="/korea"
-                className="group flex w-full max-w-[14rem] items-center gap-2.5 rounded-xl border border-amber-400/45 bg-black/60 px-2.5 py-2 shadow-[0_0_18px_rgba(245,158,11,0.22)] backdrop-blur-md transition-all hover:border-amber-300/70 hover:bg-black/75"
+                className="group flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-amber-400/45 bg-black/60 px-2.5 py-1.5 shadow-[0_0_18px_rgba(245,158,11,0.22)] backdrop-blur-md transition-all hover:border-amber-300/70 hover:bg-black/75"
                 aria-label="한국의 축제로 이동"
               >
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-amber-400/35 bg-amber-500/15 text-amber-300 group-hover:bg-amber-500/25">
-                  <CalendarDays size={16} aria-hidden="true" />
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-amber-400/35 bg-amber-500/15 text-amber-300 group-hover:bg-amber-500/25">
+                  <CalendarDays size={15} aria-hidden="true" />
                 </span>
-                <span className="min-w-0 flex flex-col leading-tight">
-                  <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
-                    한국의 축제
-                  </span>
-                  <span className="truncate text-[10px] text-amber-100/85">
-                    지금 · 지도에서 찾기
-                  </span>
+                <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
+                  한국의 축제
                 </span>
               </Link>
               <Link
                 to="/korea/theme/scenic"
-                className="group flex w-full max-w-[14rem] items-center gap-2.5 rounded-xl border border-emerald-400/40 bg-black/60 px-2.5 py-2 shadow-[0_0_18px_rgba(52,211,153,0.18)] backdrop-blur-md transition-all hover:border-emerald-300/65 hover:bg-black/75"
+                className="group flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-emerald-400/40 bg-black/60 px-2.5 py-1.5 shadow-[0_0_18px_rgba(52,211,153,0.18)] backdrop-blur-md transition-all hover:border-emerald-300/65 hover:bg-black/75"
                 aria-label="한국의 명승으로 이동"
               >
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-emerald-400/35 bg-emerald-500/15 text-emerald-300 group-hover:bg-emerald-500/25">
-                  <Map size={16} aria-hidden="true" />
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-emerald-400/35 bg-emerald-500/15 text-emerald-300 group-hover:bg-emerald-500/25">
+                  <Map size={15} aria-hidden="true" />
                 </span>
-                <span className="min-w-0 flex flex-col leading-tight">
-                  <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
-                    한국의 명승
-                  </span>
-                  <span className="truncate text-[10px] text-emerald-100/85">
-                    선정 · 명승 · 관광지
-                  </span>
+                <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
+                  한국의 명승
                 </span>
               </Link>
             </>
