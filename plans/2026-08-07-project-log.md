@@ -4,11 +4,11 @@
 
 ## 테마여행 #60, 검색 기능 개선 — 결과 창 닫기
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip _(push 후)_ · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `25a47cf0` · Preview QA 대기
 
 - **요청**: 검색 닫기가 X로 변한 돋보기 클릭 → **결과 창 닫기**로 직관화
 - **한 일**: 검색 활성 시 헤더·본문 「닫기」로 결과 해제 · 모바일 돋보기는 검색창 열기/수정만(결과 닫기 아님) · Escape는 검색창만 닫음
-- **VERIFY**: _(아래)_
+- **VERIFY**: `npm run smoke:korea-scenic-search` · `smoke:korea-scenic-nearby` · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
 - **작업 로그**: Preview 우측 「검색 결과 닫기(결과 창)」
