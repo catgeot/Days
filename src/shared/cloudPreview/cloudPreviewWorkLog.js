@@ -7,8 +7,8 @@ export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
   sessionNo: 67,
-  sessionPhase: '축제 헤더 명승 버튼 제거',
-  branch: 'cursor/home-korea-links-e814',
+  sessionPhase: '메인 반영',
+  branch: 'main',
   previewPath: '/korea',
   qaShareSlug: 'home-korea',
 };
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-home-korea-links-main-67',
+    session: '테마여행 #67, 메인 반영',
+    title: '홈·축제 헤더 간소화 main 병합',
+    detail:
+      'PR #62·#63을 main에 반영했습니다. 홈 투톱 부제 제거·축제 헤더 「명승」칩 제거를 PROD에서 확인해 주세요. `/qa/home-korea` → PROD `/korea`.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-festival-header-scenic-chip-67',
     session: '테마여행 #67, 축제 헤더 명승 버튼 제거',

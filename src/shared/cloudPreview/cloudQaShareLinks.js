@@ -10,9 +10,8 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'home-korea',
     label: '홈·축제 헤더 간소화',
-    branch: 'cursor/home-korea-links-e814',
-    destination:
-      'https://days-git-cursor-home-korea-links-e814-catgeots-projects.vercel.app/korea',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/korea',
     active: true,
   },
   {

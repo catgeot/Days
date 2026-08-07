@@ -4,32 +4,30 @@
 
 ## 테마여행 #67, 홈·축제 헤더 간소화
 
-**상태**: feature `cursor/home-korea-links-e814` · [#62](https://github.com/catgeot/Days/pull/62) MERGED(홈 부제) · 헤더 칩 PR 대기 · tip `9d3b6906`
+**상태**: ✅ PR [#62](https://github.com/catgeot/Days/pull/62)·[#63](https://github.com/catgeot/Days/pull/63) → `main` · `/qa/home-korea` → PROD `/korea`
 
 - **요청**: 지구본 홈 투톱 부제 제거 · 축제 홈 헤더 명승 링크 버튼 제거
-- **한 일**: `HomeUI` 부제 제거(#62) · `/korea` 헤더 「명승」칩 제거 · `/qa/home-korea` → Preview `/korea`
-- **VERIFY**: `npm run build`
-- **공유**: `https://www.gateo.kr/qa/home-korea` (main 반영 후)
-- **Preview**: `https://days-git-cursor-home-korea-links-e814-catgeots-projects.vercel.app/korea`
-- **작업 로그**: Preview 우측 「축제 홈 헤더 명승 링크 제거」
-- **QA**: `/korea` 헤더에 명승 칩 없음 · `from=theme` 시 「← 명승으로」텍스트 링크는 유지
+- **한 일**: `HomeUI` 부제 제거(#62) · `/korea` 헤더 「명승」칩 제거(#63) · QA 링크 PROD
+- **VERIFY**: `npm run build` · Vercel checks PASS
+- **공유/PROD**: `https://www.gateo.kr/qa/home-korea` · `https://www.gateo.kr/` · `https://www.gateo.kr/korea`
+- **QA**: 홈 투톱 제목만 · `/korea` 헤더에 명승 칩 없음
 
 ### 테마여행 · 에이전트 핸드오프 → `#68`
 
 | | |
 |--|--|
-| **세션 표기** | `테마여행 #68, Preview QA 반영` |
-| **브랜치** | `cursor/home-korea-links-e814` (고정) |
-| **PR** | [#63](https://github.com/catgeot/Days/pull/63) · [#62](https://github.com/catgeot/Days/pull/62) MERGED |
-| **읽을 것 3** | ① 본 절 ② `HomeUI` 투톱 ③ `/korea` 헤더 |
+| **세션 표기** | `테마여행 #68, PROD QA` |
+| **브랜치** | `main` |
+| **PR** | [#62](https://github.com/catgeot/Days/pull/62)·[#63](https://github.com/catgeot/Days/pull/63) MERGED |
+| **읽을 것 3** | ① 본 절 ② PROD 홈 ③ PROD `/korea` |
 | **금지 3** | 축제 지도 리팩터 · UI 임의 리디자인 · releaseNotes 무단 반영 |
-| **후보** | Preview QA · main 병합 |
-| **공유/Preview** | `https://www.gateo.kr/qa/home-korea` · git Preview `/korea` |
+| **후보** | 사람 PROD QA |
+| **공유/PROD** | `https://www.gateo.kr/qa/home-korea` · `https://www.gateo.kr/korea` |
 
 **다음 채팅명 (복붙)**:
 
 ```
-테마여행 #68, Preview QA 반영
+테마여행 #68, PROD QA
 ```
 
 ## 릴리스 노트 — 한국의 명승 (사용자 문구)
