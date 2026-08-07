@@ -4,7 +4,7 @@
 
 ## 테마여행 #59, 검색 기능 테스트 — 분류 칩 분해
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `2dbf81e8` · Preview QA 대기
 
 - **요청**: 검색 후 긴 리스트 → 분류 칩별로 확인
 - **한 일**: 검색 중에도 권역·시도·종목 칩 유지 · 칩이 검색을 지우지 않음 · 검색 풀∩칩 필터 · TourAPI `searchQuery`+cat/region · 칩 카운트에 검색어 반영 · commit 시 매칭 권역 자동 선택
