@@ -128,6 +128,16 @@ assert(
   '제주 소분류에 서귀포·제주시',
 );
 
+const withImage = spots.filter((s) => String(s.imageUrl || '').trim()).length;
+assert(
+  withImage >= Math.floor(spots.length * 0.85),
+  `선정 명소 imageUrl ≥85% (got ${withImage}/${spots.length})`,
+);
+for (const id of ['gyeongbokgung', 'nami-island', 'haeinsa', 'seongsan-ilchulbong']) {
+  const spot = byId.get(id);
+  assert(Boolean(String(spot?.imageUrl || '').trim()), `${id} has imageUrl`);
+}
+
 if (failed) {
   console.error(`\n${failed} smoke assertion(s) failed`);
   process.exit(1);

@@ -1,11 +1,13 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-06T20:02:20.181Z",
+    "generatedAt": "2026-08-07T12:52:34.311Z",
     "count": 97,
+    "imageCount": 97,
     "curation": "GATEO",
     "disclaimer": "GATEO 선정 명소 — 공식 지정 목록이 아닙니다. 많이 찾는 인기 관광지를 골랐습니다.",
     "source": "scripts/data/korea-scenic-spots-overrides.mjs",
+    "imagesSource": "scripts/data/korea-scenic-spot-images.json",
     "regions": [
       "수도권",
       "강원",
@@ -28,7 +30,8 @@
       "placeSlug": "gyeongbokgung-palace",
       "lat": 37.5796,
       "lng": 126.977,
-      "contentId": "126508"
+      "contentId": "126508",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/98/3487598_image2_1.jpg"
     },
     {
       "order": 20,
@@ -42,7 +45,8 @@
       "placeSlug": "changdeokgung-palace",
       "lat": 37.5823872,
       "lng": 126.9917013,
-      "contentId": "127642"
+      "contentId": "127642",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/09/3511909_image2_1.jpg"
     },
     {
       "order": 30,
@@ -56,7 +60,8 @@
       "placeSlug": "hwaseong-fortress",
       "lat": 37.2867876,
       "lng": 127.0114366,
-      "contentId": "125555"
+      "contentId": "125555",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/97/3478597_image2_1.jpg"
     },
     {
       "order": 40,
@@ -70,7 +75,8 @@
       "placeSlug": "namhansanseong-seongnam",
       "lat": 37.4653973,
       "lng": 127.1735631,
-      "contentId": "125449"
+      "contentId": "125449",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/56/2612856_image2_1.jpg"
     },
     {
       "order": 50,
@@ -84,7 +90,8 @@
       "placeSlug": "nami-island",
       "lat": 37.7962650518221,
       "lng": 127.525489199882,
-      "contentId": "128019"
+      "contentId": "128019",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/45/4067545_image2_1.jpg"
     },
     {
       "order": 60,
@@ -98,7 +105,8 @@
       "placeSlug": "gyeongpodae",
       "lat": 37.795,
       "lng": 128.8965,
-      "contentId": "125790"
+      "contentId": "125790",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/52/3501452_image2_1.jpg"
     },
     {
       "order": 70,
@@ -112,7 +120,8 @@
       "placeSlug": "jeongdongjin",
       "lat": 37.6914144167,
       "lng": 129.032603586,
-      "contentId": "3545967"
+      "contentId": "3545967",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/82/3534482_image2_1.jpg"
     },
     {
       "order": 80,
@@ -126,7 +135,8 @@
       "placeSlug": "naksansa",
       "lat": 38.124506,
       "lng": 128.6291359,
-      "contentId": "125773"
+      "contentId": "125773",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/41/4064941_image2_1.jpg"
     },
     {
       "order": 90,
@@ -140,7 +150,8 @@
       "placeSlug": "jeonju-hanok-village",
       "lat": 35.815,
       "lng": 127.1535,
-      "contentId": "264284"
+      "contentId": "264284",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/67/3516667_image2_1.jpg"
     },
     {
       "order": 100,
@@ -154,7 +165,8 @@
       "placeSlug": "juknokwon",
       "lat": 35.327758323916,
       "lng": 126.985559013142,
-      "contentId": "128834"
+      "contentId": "128834",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/36/4017136_image2_1.jpg"
     },
     {
       "order": 110,
@@ -168,7 +180,8 @@
       "placeSlug": "naganeupseong-folk-village",
       "lat": 34.9064508,
       "lng": 127.3400983,
-      "contentId": "127931"
+      "contentId": "127931",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/51/3497851_image2_1.jpg"
     },
     {
       "order": 120,
@@ -182,7 +195,8 @@
       "placeSlug": "chaeseokgang",
       "lat": 35.6270358,
       "lng": 126.4681785,
-      "contentId": "128982"
+      "contentId": "128982",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/44/3356644_image2_1.jpg"
     },
     {
       "order": 130,
@@ -196,7 +210,8 @@
       "placeSlug": "maisan",
       "lat": 36.0445306,
       "lng": 127.4593222,
-      "contentId": "126235"
+      "contentId": "126235",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/66/3540866_image2_1.jpg"
     },
     {
       "order": 140,
@@ -210,7 +225,8 @@
       "placeSlug": "cheomseongdae",
       "lat": 35.8347,
       "lng": 129.219,
-      "contentId": "126207"
+      "contentId": "126207",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/81/3554381_image2_1.jpg"
     },
     {
       "order": 150,
@@ -224,7 +240,8 @@
       "placeSlug": "haeinsa",
       "lat": 35.801,
       "lng": 128.098,
-      "contentId": "126175"
+      "contentId": "126175",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/27/4092527_image2_1.jpg"
     },
     {
       "order": 160,
@@ -238,7 +255,8 @@
       "placeSlug": "hahoe-folk-village",
       "lat": 36.5390268,
       "lng": 128.5180947,
-      "contentId": "894027"
+      "contentId": "894027",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/62/4059762_image2_1.jpg"
     },
     {
       "order": 170,
@@ -252,7 +270,8 @@
       "placeSlug": "taejongdae",
       "lat": 35.05969491904282,
       "lng": 129.07980569117214,
-      "contentId": "126658"
+      "contentId": "126658",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/83/3506383_image2_1.jpg"
     },
     {
       "order": 180,
@@ -266,7 +285,8 @@
       "placeSlug": "dodamsambong-peaks",
       "lat": 37.0002949216,
       "lng": 128.3448007565,
-      "contentId": "125913"
+      "contentId": "125913",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/29/4085729_image2_1.jpg"
     },
     {
       "order": 190,
@@ -280,7 +300,8 @@
       "placeSlug": "taeanhaean-national-park",
       "lat": 36.7464233166,
       "lng": 126.2924752192,
-      "contentId": "125818"
+      "contentId": "125818",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/94/1962094_image2_1.jpg"
     },
     {
       "order": 200,
@@ -294,7 +315,8 @@
       "placeSlug": "cheonjiyeon-waterfall",
       "lat": 33.2447452147,
       "lng": 126.559561883,
-      "contentId": "126438"
+      "contentId": "126438",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/43/4094043_image2_1.jpg"
     },
     {
       "order": 210,
@@ -308,7 +330,8 @@
       "placeSlug": "bukchon-hanok-village",
       "lat": 37.5790529392,
       "lng": 126.9867060298,
-      "contentId": "126537"
+      "contentId": "126537",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/04/3304404_image2_1.jpg"
     },
     {
       "order": 220,
@@ -322,7 +345,8 @@
       "placeSlug": "jeondeungsa",
       "lat": 37.632,
       "lng": 126.4845,
-      "contentId": "125534"
+      "contentId": "125534",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/86/4061486_image2_1.jpg"
     },
     {
       "order": 230,
@@ -336,7 +360,8 @@
       "placeSlug": "gamcheon-culture-village",
       "lat": 35.0963371,
       "lng": 129.0087897,
-      "contentId": "1997221"
+      "contentId": "1997221",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/91/3365491_image2_1.jpg"
     },
     {
       "order": 240,
@@ -350,7 +375,8 @@
       "placeSlug": "haedong-yonggungsa",
       "lat": 35.1882428912,
       "lng": 129.2235301928,
-      "contentId": "126848"
+      "contentId": "126848",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/35/3499335_image2_1.jpg"
     },
     {
       "order": 250,
@@ -364,7 +390,8 @@
       "placeSlug": "yongduam-rock",
       "lat": 33.5147812884,
       "lng": 126.5125098697,
-      "contentId": "228853"
+      "contentId": "228853",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/68/3011868_image2_1.jpg"
     },
     {
       "order": 260,
@@ -378,7 +405,8 @@
       "placeSlug": "jeongbang-waterfall",
       "lat": 33.2447479529,
       "lng": 126.5730501303,
-      "contentId": "126437"
+      "contentId": "126437",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/32/3052932_image2_1.jpg"
     },
     {
       "order": 270,
@@ -392,7 +420,8 @@
       "placeSlug": "hyangiram",
       "lat": 34.5915967,
       "lng": 127.8038089,
-      "contentId": "127715"
+      "contentId": "127715",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/91/4077491_image2_1.JPG"
     },
     {
       "order": 280,
@@ -406,7 +435,8 @@
       "placeSlug": "mudeungsan-national-park",
       "lat": 35.1283952,
       "lng": 126.9960781,
-      "contentId": "127575"
+      "contentId": "127575",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/66/3495266_image2_1.jpg"
     },
     {
       "order": 290,
@@ -420,7 +450,8 @@
       "placeSlug": "seokguram",
       "lat": 35.7948,
       "lng": 129.3495,
-      "contentId": "126216"
+      "contentId": "126216",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/69/3581269_image2_1.jpg"
     },
     {
       "order": 300,
@@ -434,7 +465,8 @@
       "placeSlug": "donggung-palace-and-wolji-pond",
       "lat": 35.8345,
       "lng": 129.2265,
-      "contentId": "128526"
+      "contentId": "128526",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/62/2612562_image2_1.jpg"
     },
     {
       "order": 310,
@@ -448,7 +480,8 @@
       "placeSlug": "daereungwon",
       "lat": 35.8389484,
       "lng": 129.2119324,
-      "contentId": "1492402"
+      "contentId": "1492402",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/71/4056771_image2_1.jpg"
     },
     {
       "order": 320,
@@ -462,7 +495,8 @@
       "placeSlug": "ganjeolgot",
       "lat": 35.3589668021,
       "lng": 129.3605738299,
-      "contentId": "128022"
+      "contentId": "128022",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/50/3583350_image2_1.jpg"
     },
     {
       "order": 330,
@@ -476,7 +510,8 @@
       "placeSlug": "taehwagang-national-garden",
       "lat": 35.549,
       "lng": 129.295,
-      "contentId": "128202"
+      "contentId": "128202",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/43/3422843_image2_1.png"
     },
     {
       "order": 340,
@@ -490,7 +525,8 @@
       "placeSlug": "seonginbong",
       "lat": 37.498,
       "lng": 130.867,
-      "contentId": "127503"
+      "contentId": "127503",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/33/3516833_image2_1.jpg"
     },
     {
       "order": 350,
@@ -504,7 +540,8 @@
       "placeSlug": "seongsan-ilchulbong",
       "lat": 33.4588891,
       "lng": 126.9408178,
-      "contentId": "126435"
+      "contentId": "126435",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/82/2944282_image2_1.bmp"
     },
     {
       "order": 360,
@@ -518,7 +555,8 @@
       "placeSlug": "gwongeumseong",
       "lat": 38.163732,
       "lng": 128.4849601,
-      "contentId": "125798"
+      "contentId": "125798",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/36/3564436_image2_1.jpg"
     },
     {
       "order": 370,
@@ -532,7 +570,8 @@
       "placeSlug": "suncheon-bay-wetland",
       "lat": 34.8858016084,
       "lng": 127.5092830428,
-      "contentId": "126730"
+      "contentId": "126730",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/14/4088614_image2_1.jpg"
     },
     {
       "order": 380,
@@ -546,7 +585,8 @@
       "placeSlug": "jusangjeolli-cliff",
       "lat": 33.2375,
       "lng": 126.425,
-      "contentId": "1074432"
+      "contentId": "1074432",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/23/3029123_image2_1.jpg"
     },
     {
       "order": 390,
@@ -560,7 +600,8 @@
       "placeSlug": "haeundae-beach",
       "lat": 35.1590840227225,
       "lng": 129.160278564827,
-      "contentId": "126081"
+      "contentId": "126081",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/34/3090534_image2_1.JPG"
     },
     {
       "order": 400,
@@ -574,7 +615,8 @@
       "placeSlug": "bulguksa",
       "lat": 35.7889948,
       "lng": 129.3308902,
-      "contentId": "126166"
+      "contentId": "126166",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/70/3506170_image2_1.jpg"
     },
     {
       "order": 410,
@@ -588,7 +630,8 @@
       "placeSlug": "naejangsan-national-park",
       "lat": 35.4692113,
       "lng": 126.8420935,
-      "contentId": "126237"
+      "contentId": "126237",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/88/4039488_image2_1.jpg"
     },
     {
       "order": 420,
@@ -602,7 +645,8 @@
       "placeSlug": "tongyeong-cable-car",
       "lat": 34.8265982066,
       "lng": 128.4250764551,
-      "contentId": "533874"
+      "contentId": "533874",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/35/3478735_image2_1.jpg"
     },
     {
       "order": 430,
@@ -616,7 +660,8 @@
       "placeSlug": "n-seoul-tower",
       "lat": 37.5510545366352,
       "lng": 126.987882083295,
-      "contentId": "126535"
+      "contentId": "126535",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/70/3089670_image2_1.jpg"
     },
     {
       "order": 440,
@@ -630,7 +675,8 @@
       "placeSlug": "insadong",
       "lat": 37.574,
       "lng": 126.985,
-      "contentId": "264353"
+      "contentId": "264353",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/03/3412103_image2_1.JPG"
     },
     {
       "order": 450,
@@ -644,7 +690,8 @@
       "placeSlug": "dongdaemun-design-plaza",
       "lat": 37.566107632,
       "lng": 127.0095709797,
-      "contentId": "2470006"
+      "contentId": "2470006",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/06/3539606_image2_1.jpg"
     },
     {
       "order": 460,
@@ -658,7 +705,8 @@
       "placeSlug": "wolmido",
       "lat": 37.4722,
       "lng": 126.6001,
-      "contentId": "127585"
+      "contentId": "127585",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/94/3518594_image2_1.jpg"
     },
     {
       "order": 470,
@@ -672,7 +720,8 @@
       "placeSlug": "hwaseong-haenggung",
       "lat": 37.2818163237,
       "lng": 127.0163732353,
-      "contentId": "129437"
+      "contentId": "129437",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/62/4078262_image2_1.jpg"
     },
     {
       "order": 480,
@@ -686,7 +735,8 @@
       "placeSlug": "garden-of-morning-calm",
       "lat": 37.7439580438,
       "lng": 127.3525384875,
-      "contentId": "126668"
+      "contentId": "126668",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/38/4079238_image2_1.jpg"
     },
     {
       "order": 490,
@@ -700,7 +750,8 @@
       "placeSlug": "gyeongpo-beach",
       "lat": 37.8034055083,
       "lng": 128.9102102476,
-      "contentId": "128758"
+      "contentId": "128758",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/25/4075925_image2_1.jpg"
     },
     {
       "order": 500,
@@ -714,7 +765,8 @@
       "placeSlug": "yeonggeumjeong",
       "lat": 38.2118201,
       "lng": 128.6014768,
-      "contentId": "125779"
+      "contentId": "125779",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/01/3576201_image2_1.jpg"
     },
     {
       "order": 510,
@@ -728,7 +780,8 @@
       "placeSlug": "soyanggang-skywalk",
       "lat": 37.8932774475,
       "lng": 127.7236633086,
-      "contentId": "2396037"
+      "contentId": "2396037",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/64/4087664_image2_1.jpg"
     },
     {
       "order": 520,
@@ -742,7 +795,8 @@
       "placeSlug": "jangho-port",
       "lat": 37.2859,
       "lng": 129.3142,
-      "contentId": "125711"
+      "contentId": "125711",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/64/3478664_image2_1.jpg"
     },
     {
       "order": 530,
@@ -756,7 +810,8 @@
       "placeSlug": "daecheon-beach",
       "lat": 36.3103,
       "lng": 126.5136,
-      "contentId": "127866"
+      "contentId": "127866",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/66/3513866_image2_1.jpg"
     },
     {
       "order": 540,
@@ -770,7 +825,8 @@
       "placeSlug": "gongsanseong",
       "lat": 36.4631426,
       "lng": 127.1264411,
-      "contentId": "126897"
+      "contentId": "125949",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/41/3404541_image2_1.jpg"
     },
     {
       "order": 550,
@@ -784,7 +840,8 @@
       "placeSlug": "baekje-cultural-land",
       "lat": 36.3065343564356,
       "lng": 126.906760402927,
-      "contentId": "1103949"
+      "contentId": "1103949",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/13/3578213_image2_1.jpg"
     },
     {
       "order": 560,
@@ -798,7 +855,8 @@
       "placeSlug": "cheongnamdae",
       "lat": 36.4628,
       "lng": 127.4918,
-      "contentId": "127916"
+      "contentId": "127916",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/44/3502344_image2_1.jpg"
     },
     {
       "order": 570,
@@ -812,7 +870,8 @@
       "placeSlug": "uirimji-reservoir",
       "lat": 37.174,
       "lng": 128.208,
-      "contentId": "2751857"
+      "contentId": "2751857",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/63/3569763_image2_1.jpg"
     },
     {
       "order": 580,
@@ -826,7 +885,8 @@
       "placeSlug": "hanbat-arboretum",
       "lat": 36.3685826107,
       "lng": 127.3862516305,
-      "contentId": "741658"
+      "contentId": "741658",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/22/3514122_image2_1.jpg"
     },
     {
       "order": 590,
@@ -840,7 +900,8 @@
       "placeSlug": "odongdo",
       "lat": 34.745035,
       "lng": 127.7670926,
-      "contentId": "129152"
+      "contentId": "129152",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/34/3019934_image2_1.jpg"
     },
     {
       "order": 600,
@@ -854,7 +915,8 @@
       "placeSlug": "suncheon-bay-national-garden",
       "lat": 34.92860320639828,
       "lng": 127.4996986297289,
-      "contentId": "1919548"
+      "contentId": "1919548",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/68/3479268_image2_1.jpg"
     },
     {
       "order": 610,
@@ -868,7 +930,8 @@
       "placeSlug": "gyeonggijeon",
       "lat": 35.8155,
       "lng": 127.1498,
-      "contentId": "147656"
+      "contentId": "147656",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/45/3365745_image2_1.jpg"
     },
     {
       "order": 620,
@@ -882,7 +945,8 @@
       "placeSlug": "jeondong-cathedral",
       "lat": 35.81382028840563,
       "lng": 127.14928411955064,
-      "contentId": "250331"
+      "contentId": "250331",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/71/4094271_image2_1.jpg"
     },
     {
       "order": 630,
@@ -896,7 +960,8 @@
       "placeSlug": "yudalsan",
       "lat": 34.7899134,
       "lng": 126.3726439,
-      "contentId": "126257"
+      "contentId": "126257",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/11/4067011_image2_1.JPG"
     },
     {
       "order": 640,
@@ -910,7 +975,8 @@
       "placeSlug": "gwanghalluwon",
       "lat": 35.403321,
       "lng": 127.379445,
-      "contentId": "126397"
+      "contentId": "126397",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/15/4060015_image2_1.jpg"
     },
     {
       "order": 650,
@@ -924,7 +990,8 @@
       "placeSlug": "wando-tower",
       "lat": 34.3102860244624,
       "lng": 126.7662771324,
-      "contentId": "632089"
+      "contentId": "632089",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/46/3079246_image2_1.jpg"
     },
     {
       "order": 660,
@@ -938,7 +1005,8 @@
       "placeSlug": "seonyudo",
       "lat": 35.8102049733,
       "lng": 126.4124052922,
-      "contentId": "226923"
+      "contentId": "226923",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/11/3362711_image2_1.JPG"
     },
     {
       "order": 670,
@@ -952,7 +1020,8 @@
       "placeSlug": "gwangalli-beach",
       "lat": 35.1531932737,
       "lng": 129.1189760936,
-      "contentId": "126078"
+      "contentId": "126078",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/45/3311245_image2_1.jpg"
     },
     {
       "order": 680,
@@ -966,7 +1035,8 @@
       "placeSlug": "hwangnidangil",
       "lat": 35.8365,
       "lng": 129.2115,
-      "contentId": "2658227"
+      "contentId": "2658227",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/62/3480062_image2_1.jpg"
     },
     {
       "order": 690,
@@ -980,7 +1050,8 @@
       "placeSlug": "underwater-tomb-of-king-munmu",
       "lat": 35.7381286,
       "lng": 129.4868756,
-      "contentId": "126218"
+      "contentId": "126218",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/08/3534308_image2_1.jpg"
     },
     {
       "order": 700,
@@ -994,7 +1065,8 @@
       "placeSlug": "byeongsan-seowon",
       "lat": 36.5402566465,
       "lng": 128.5528129272,
-      "contentId": "126227"
+      "contentId": "126227",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/11/4064711_image2_1.JPG"
     },
     {
       "order": 710,
@@ -1008,7 +1080,8 @@
       "placeSlug": "apsan-park",
       "lat": 35.828974648,
       "lng": 128.5890300481,
-      "contentId": "126132"
+      "contentId": "126132",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/43/3338343_image2_1.jpg"
     },
     {
       "order": 720,
@@ -1022,7 +1095,8 @@
       "placeSlug": "daewangam-park",
       "lat": 35.4904590082,
       "lng": 129.4352747432,
-      "contentId": "127515"
+      "contentId": "127515",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/16/3583516_image2_1.jpg"
     },
     {
       "order": 730,
@@ -1036,7 +1110,8 @@
       "placeSlug": "jinju-fortress",
       "lat": 35.1897050218524,
       "lng": 128.080253761737,
-      "contentId": "126833"
+      "contentId": "126833",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/65/4062165_image2_1.JPG"
     },
     {
       "order": 740,
@@ -1050,7 +1125,8 @@
       "placeSlug": "choi-champan-house",
       "lat": 35.155594,
       "lng": 127.68809,
-      "contentId": "127664"
+      "contentId": "127664",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/77/3305577_image2_1.jpg"
     },
     {
       "order": 750,
@@ -1064,7 +1140,8 @@
       "placeSlug": "hamdeok-beach",
       "lat": 33.5439000013,
       "lng": 126.668356772,
-      "contentId": "126451"
+      "contentId": "126451",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/00/3354600_image2_1.jpg"
     },
     {
       "order": 760,
@@ -1078,7 +1155,8 @@
       "placeSlug": "hyeopjae-beach",
       "lat": 33.393776477,
       "lng": 126.239441896,
-      "contentId": "127490"
+      "contentId": "127490",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/66/3096066_image2_1.jpg"
     },
     {
       "order": 770,
@@ -1092,7 +1170,8 @@
       "placeSlug": "manjanggul-cave",
       "lat": 33.5280164989348,
       "lng": 126.770664622639,
-      "contentId": "126452"
+      "contentId": "126452",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/55/3354155_image2_1.jpg"
     },
     {
       "order": 780,
@@ -1106,7 +1185,8 @@
       "placeSlug": "seopjikoji",
       "lat": 33.430250088,
       "lng": 126.9280674087,
-      "contentId": "127813"
+      "contentId": "127813",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/83/2513483_image2_1.jpg"
     },
     {
       "order": 790,
@@ -1120,7 +1200,8 @@
       "placeSlug": "hallasan-national-park",
       "lat": 33.3799212,
       "lng": 126.538011,
-      "contentId": "127635"
+      "contentId": "127635",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/41/3460441_image2_1.jpg"
     },
     {
       "order": 800,
@@ -1134,7 +1215,8 @@
       "placeSlug": "boseong-green-tea-plantation",
       "lat": 34.72,
       "lng": 127.08,
-      "contentId": "127869"
+      "contentId": "127869",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/20/4061220_image2_1.jpg"
     },
     {
       "order": 810,
@@ -1148,7 +1230,8 @@
       "placeSlug": "incheon-chinatown",
       "lat": 37.4756,
       "lng": 126.6175,
-      "contentId": "264512"
+      "contentId": "264512",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/85/4061685_image2_1.jpg"
     },
     {
       "order": 820,
@@ -1162,7 +1245,8 @@
       "placeSlug": "songdo-central-park",
       "lat": 37.3937611252816,
       "lng": 126.64462119093,
-      "contentId": "2465107"
+      "contentId": "2465107",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/19/3512919_image2_1.jpg"
     },
     {
       "order": 830,
@@ -1176,7 +1260,8 @@
       "placeSlug": "oedo-botania",
       "lat": 34.7692662,
       "lng": 128.7119207,
-      "contentId": "126581"
+      "contentId": "126581",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/24/3543324_image2_1.jpg"
     },
     {
       "order": 840,
@@ -1190,7 +1275,8 @@
       "placeSlug": "dongpirang-mural-village",
       "lat": 34.8455,
       "lng": 128.4245,
-      "contentId": "753306"
+      "contentId": "753306",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/53/3355053_image2_1.jpg"
     },
     {
       "order": 850,
@@ -1204,7 +1290,8 @@
       "placeSlug": "jungmun-saekdal-beach",
       "lat": 33.2445,
       "lng": 126.4108,
-      "contentId": "126449"
+      "contentId": "126449",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/13/3552513_image2_1.jpg"
     },
     {
       "order": 860,
@@ -1218,7 +1305,8 @@
       "placeSlug": "kim-kwang-seok-street",
       "lat": 35.8605,
       "lng": 128.6065,
-      "contentId": "1871383"
+      "contentId": "1871383",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/95/2947395_image2_1.jpg"
     },
     {
       "order": 870,
@@ -1232,7 +1320,8 @@
       "placeSlug": "heyri-art-valley",
       "lat": 37.7880092899503,
       "lng": 126.69929799395,
-      "contentId": "128168"
+      "contentId": "128168",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/81/4057581_image2_1.jpg"
     },
     {
       "order": 880,
@@ -1246,7 +1335,8 @@
       "placeSlug": "donghae-mukho-lighthouse",
       "lat": 37.5548307473,
       "lng": 129.1184741143,
-      "contentId": "129176"
+      "contentId": "129176",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/84/2741884_image2_1.jpg"
     },
     {
       "order": 890,
@@ -1260,7 +1350,8 @@
       "placeSlug": "soswaewon",
       "lat": 35.1836283,
       "lng": 127.0121775,
-      "contentId": "126374"
+      "contentId": "126374",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/74/3532174_image2_1.jpg"
     },
     {
       "order": 900,
@@ -1274,7 +1365,8 @@
       "placeSlug": "hwaeomsa",
       "lat": 35.25541933990802,
       "lng": 127.49723307855737,
-      "contentId": "127923"
+      "contentId": "127923",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/65/3563965_image2_1.jpg"
     },
     {
       "order": 910,
@@ -1288,7 +1380,8 @@
       "placeSlug": "imjingak",
       "lat": 37.8922987,
       "lng": 126.7440013,
-      "contentId": "127548"
+      "contentId": "127548",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/31/3497231_image2_1.jpg"
     },
     {
       "order": 920,
@@ -1302,7 +1395,8 @@
       "placeSlug": "haegeumgang",
       "lat": 34.7327358,
       "lng": 128.6839848,
-      "contentId": "126224"
+      "contentId": "126224",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/71/3519171_image2_1.jpg"
     },
     {
       "order": 930,
@@ -1316,7 +1410,8 @@
       "placeSlug": "eulwangni-beach",
       "lat": 37.445948,
       "lng": 126.372722,
-      "contentId": "128767"
+      "contentId": "128767",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/78/3518478_image2_1.jpg"
     },
     {
       "order": 940,
@@ -1330,7 +1425,8 @@
       "placeSlug": "anmok-beach",
       "lat": 37.7722617595,
       "lng": 128.9482754051,
-      "contentId": "127722"
+      "contentId": "127722",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/58/4075958_image2_1.jpg"
     },
     {
       "order": 950,
@@ -1344,7 +1440,8 @@
       "placeSlug": "yuseong-hot-springs",
       "lat": 36.355,
       "lng": 127.345,
-      "contentId": "125858"
+      "contentId": "125858",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/42/3035142_image2_1.JPG"
     },
     {
       "order": 960,
@@ -1358,7 +1455,8 @@
       "placeSlug": "palgongsan-gatbawi",
       "lat": 35.9814948,
       "lng": 128.7367522,
-      "contentId": "126019"
+      "contentId": "126019",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/99/3028999_image2_1.jpg"
     },
     {
       "order": 970,
@@ -1372,7 +1470,8 @@
       "placeSlug": "homi-cape-sunrise-square",
       "lat": 36.0767516,
       "lng": 129.5700631,
-      "contentId": "127131"
+      "contentId": "127131",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/52/4056752_image2_1.jpg"
     }
   ]
 }

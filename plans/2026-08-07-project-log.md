@@ -2,14 +2,27 @@
 
 직전: [`2026-08-06-project-log.md`](./2026-08-06-project-log.md)
 
+## 테마여행 #56, 명소 썸네일 SSOT
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip _(push 후)_ · Preview QA 대기
+
+- **증상**: GATEO 선정 명소 목록에 썸네일 없는 항목이 많음
+- **원인**: `tourapi_attraction`에 curated contentId **29/97**만 존재(이미지 26) — 런타임 DB 조회로는 대부분 miss
+- **한 일**: `fill:korea-scenic-spot-images` (DB→detailCommon/detailImage→관련 contentId) · `korea-scenic-spot-images.json` · generate `imageUrl` **97/97** · 공산성 contentId `125949` 정정 · smoke≥85%
+- **VERIFY**: `npm run smoke:korea-scenic-spots` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「선정 명소 대표 사진 SSOT 97/97」
+- **QA**: 선정 명소 목록 썸네일 전 항목 · 명승/관광지 회귀
+
 ## 테마여행 #56, QA 단축링크 검은 화면
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `dad8c9d1` · **main vercel redirect 배포 필요**
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `dad8c9d1` · **main 핫픽스 배포됨** (`2ba026f7`)
 
 - **증상**: `www.gateo.kr/qa/korea-theme` → 주소는 gateo.kr 유지 · 검은 화면
 - **원인**: PROD(`main`) `vercel.json`에 `/qa/korea-theme` 없음 → SPA rewrite → `/qa/:slug` 라우트 없음 → `index.css` 검정 배경만
 - **한 일**: `/qa/:slug` 클라이언트 폴백(`QaShareRedirect`) · SSOT·vercel에 korea-theme(+dokdo 유지) · **main에 redirect 커밋·push**
-- **VERIFY**: `npm run build` · `curl -sI https://www.gateo.kr/qa/korea-theme` → 307/302 to Preview
+- **VERIFY**: `curl -sI https://www.gateo.kr/qa/korea-theme` → **307** Preview
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
 - **참고**: Preview에 Vercel SSO가 켜져 있으면 리다이렉트 후에도 로그인 화면이 날 수 있음(별건)
@@ -18,7 +31,7 @@
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `cd55c0bf` · Preview QA 대기
 
-- **요청**: 명소·명승·관광지 리스트에 대표 사진 포함 → 후속 메모리 캐시
+- **요청**: 명소·명승·관광지 리스트에 대표 사진 포함 → 후속 메모리 캐시 → **후속 SSOT bake(위 절)**
 - **한 일**: `ScenicListRow` 썸네일 · 명승 `imageUrl`/`galleryUrls` · 관광지 `firstImage` · 선정 명소 contentId→`first_image` 일괄 조회 · **세션 메모리 캐시**(hit 재호출 없음·동기 peek) · 작업 로그
 - **VERIFY**: `npm run build` PASS
 - **공유**: `https://www.gateo.kr/qa/korea-theme`

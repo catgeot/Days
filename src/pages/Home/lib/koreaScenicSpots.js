@@ -19,6 +19,7 @@ import {
  *   lat: number,
  *   lng: number,
  *   contentId: string | null,
+ *   imageUrl: string | null,
  * }} KoreaScenicSpot
  */
 

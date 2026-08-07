@@ -558,7 +558,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'gongju',
       attractionName: '공산성',
-      contentId: '126897',
+      contentId: '125949',
     },
     {
       order: 550,

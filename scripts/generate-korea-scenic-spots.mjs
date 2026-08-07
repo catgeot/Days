@@ -11,6 +11,24 @@ import { KOREA_SCENIC_SPOTS_OVERRIDES } from './data/korea-scenic-spots-override
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUTPUT_PATH = join(__dirname, '../src/pages/Home/data/koreaScenicSpots.json');
 const HUBS_PATH = join(__dirname, '../src/pages/Home/data/cityAttractionHubs.json');
+const IMAGES_PATH = join(__dirname, 'data/korea-scenic-spot-images.json');
+
+function loadImageUrlById() {
+  try {
+    const raw = JSON.parse(readFileSync(IMAGES_PATH, 'utf8'));
+    return raw?.byId && typeof raw.byId === 'object' ? raw.byId : {};
+  } catch {
+    return {};
+  }
+}
+
+function toHttps(url) {
+  const s = String(url || '').trim();
+  if (!s) return null;
+  if (s.startsWith('//')) return `https:${s}`;
+  if (s.startsWith('http://')) return `https://${s.slice('http://'.length)}`;
+  return s;
+}
 
 const MIN_COUNT = 12;
 const MAX_COUNT = 100;
@@ -49,7 +67,7 @@ function loadHubIndex() {
 }
 
 /** @param {typeof KOREA_SCENIC_SPOTS_OVERRIDES} src */
-function normalizeSpots(src, hubIndex) {
+function normalizeSpots(src, hubIndex, imageUrlById = {}) {
   if (!src || typeof src !== 'object') {
     throw new Error('[korea-scenic-spots] overrides must be object');
   }
@@ -132,6 +150,8 @@ function normalizeSpots(src, hubIndex) {
       }
     }
 
+    const imageUrl = toHttps(imageUrlById[id] || raw.imageUrl);
+
     spots.push({
       order,
       id,
@@ -145,6 +165,7 @@ function normalizeSpots(src, hubIndex) {
       lat,
       lng,
       contentId,
+      imageUrl,
     });
   }
 
@@ -154,22 +175,28 @@ function normalizeSpots(src, hubIndex) {
 
 function main() {
   const hubIndex = loadHubIndex();
-  const spots = normalizeSpots(KOREA_SCENIC_SPOTS_OVERRIDES, hubIndex);
+  const imageUrlById = loadImageUrlById();
+  const spots = normalizeSpots(KOREA_SCENIC_SPOTS_OVERRIDES, hubIndex, imageUrlById);
+  const withImage = spots.filter((s) => s.imageUrl).length;
   const regions = [...new Set(spots.map((s) => s.region))];
   const payload = {
     meta: {
       version: 1,
       generatedAt: new Date().toISOString(),
       count: spots.length,
+      imageCount: withImage,
       curation: 'GATEO',
       disclaimer: 'GATEO 선정 명소 — 공식 지정 목록이 아닙니다. 많이 찾는 인기 관광지를 골랐습니다.',
       source: 'scripts/data/korea-scenic-spots-overrides.mjs',
+      imagesSource: 'scripts/data/korea-scenic-spot-images.json',
       regions,
     },
     spots,
   };
   writeFileSync(OUTPUT_PATH, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
-  console.log(`[korea-scenic-spots] wrote ${spots.length} spots → ${OUTPUT_PATH}`);
+  console.log(
+    `[korea-scenic-spots] wrote ${spots.length} spots (${withImage} with imageUrl) → ${OUTPUT_PATH}`,
+  );
 }
 
 main();

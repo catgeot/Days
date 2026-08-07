@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
   sessionNo: 56,
-  sessionPhase: 'QA 단축링크 폴백',
+  sessionPhase: '명소 썸네일 SSOT',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-scenic-image-ssot',
+    session: '테마여행 #56, 명소 썸네일 SSOT',
+    title: '선정 명소 대표 사진 SSOT 97/97',
+    detail:
+      '선정 명소 썸네일이 비던 원인(tourapi_attraction에 contentId 미동기화)을 TourAPI detailCommon/detailImage로 채워 SSOT imageUrl 97/97을 넣었습니다. Preview `/korea/theme/scenic`에서 GATEO 선정 명소 목록에 대표 사진이 빠짐없이 보이는지 확인해 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-qa-share-redirect-fallback',
     session: '테마여행 #56, QA 단축링크 폴백',
