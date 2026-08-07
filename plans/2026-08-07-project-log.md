@@ -4,7 +4,7 @@
 
 ## 테마여행 #58, 검색 기능 도입
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `d45c6b1d` · Preview QA 대기
 
 - **요청**: 명소 홈에 검색 기능
 - **한 일**: `/korea/theme/scenic` 헤더 검색(축제와 동일 UX) · GATEO 선정·국가유산 명승 클라이언트 필터 · TourAPI DB `title`/`addr1` ilike 전국 검색 · `smoke:korea-scenic-search`
