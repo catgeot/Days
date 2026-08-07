@@ -4,7 +4,7 @@
 
 ## 테마여행 #62, 명소홈 개선 — 헤더·검색 모달
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `e44d012b` · Preview QA 대기
 
 - **요청**: 명소 홈 헤더 「축제」「명승」제거 · 검색 결과를 모달로 · 닫기는 모달 닫기 UX
 - **한 일**: 헤더 칩 제거(`onlyWhenBack`으로 자기「명승」링크 숨김) · 검색 활성 시 본문을 dialog 모달로 · 배경/X/Escape 닫기 · 상세는 검색 모달 위(`z-50`)
