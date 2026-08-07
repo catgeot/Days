@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
 import { HelmetProvider } from 'react-helmet-async';
 
@@ -10,6 +10,9 @@ import DashboardLayout from './pages/DailyReport/layout/DailyLayout';
 import Home from './pages/Home';
 import PlaceCard from './components/PlaceCard/index';
 import KoreaFestivalHub from './pages/Korea';
+import KoreaThemeModulePage from './pages/KoreaTheme/ModulePage';
+import KoreaThemeScenicPage from './pages/KoreaTheme/ScenicPage';
+import KoreaThemeCoursesPage from './pages/KoreaTheme/CoursesPage';
 import QaShareIndex from './pages/QaShare';
 import QaShareRedirect from './pages/QaShare/QaShareRedirect';
 
@@ -68,6 +71,25 @@ function App() {
                 <Route path="explore/:filter1" element={null} />
                 <Route path="explore/:filter1/:filter2" element={null} />
               </Route>
+              <Route
+                path="/korea/theme/top10"
+                element={<Navigate to="/korea/theme/scenic" replace />}
+              />
+              <Route path="/korea/theme/scenic" element={<KoreaThemeScenicPage />} />
+              <Route path="/korea/theme/courses" element={<KoreaThemeCoursesPage />} />
+              <Route
+                path="/korea/theme/regions"
+                element={<Navigate to="/korea/theme/scenic" replace />}
+              />
+              <Route
+                path="/korea/theme/packages"
+                element={<Navigate to="/korea/theme/scenic" replace />}
+              />
+              <Route path="/korea/theme/:moduleId" element={<KoreaThemeModulePage />} />
+              <Route
+                path="/korea/theme"
+                element={<Navigate to="/korea/theme/scenic" replace />}
+              />
               <Route path="/korea" element={<KoreaFestivalHub />} />
               <Route path="/qa/:slug" element={<QaShareRedirect />} />
               <Route path="/qa" element={<QaShareIndex />} />

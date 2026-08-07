@@ -2,6 +2,155 @@
 
 직전: [`2026-08-02-project-log.md`](./2026-08-02-project-log.md)
 
+## 테마여행 #10, SEO·QA링크
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `932af69e` · Preview QA 대기
+
+- **한 일**: vite·`public/sitemap.xml`에 `/korea/theme`+하위 4 · 홈 SEO 히든 링크 · Helmet 유지 · `/qa/korea-theme`·vercel redirect 최종 · 작업로그 #10 · `previewPath=/korea/theme`
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme`
+- **QA**: 우측 작업 로그·공유 링크 · `/korea/theme`·top10·scenic·regions·packages title · sitemap 항목
+- **다음**: S9 폴리시·릴리스
+
+```
+테마여행 #11, 폴리시·릴리스
+```
+
+- **금지 3**: releaseNotes 파일 수정 · UI 리디자인 · 세션마다 새 Preview 브랜치
+
+## 테마여행 #9, 축제 연결
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `f025536e` · Preview QA 대기
+
+- **한 일**: 테마 타일·헤더「축제」→ `/korea?from=theme` · 축제 헤더「← 테마여행으로」한 줄 → `/korea/theme` · 칩/지도/필터 미변경 · 홈「국내」단독 회귀
+- **VERIFY**: `audit:korea-theme-modules` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme` → 축제 → 복귀
+- **QA**: 테마→축제 타일/헤더→복귀 한 줄→테마 · `/korea` 직접 진입 시 한 줄 없음
+- **다음**: S8 SEO·QA링크
+
+```
+테마여행 #10, SEO·QA링크
+```
+
+- **금지 3**: 축제 칩/지도/필터 로직 변경 · releaseNotes · 세션마다 새 Preview 브랜치
+
+## 테마여행 #8, 패키지
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `8e4ec525` · Preview QA 대기
+
+- **한 일**: `/korea/theme/packages` · MRT CTA P0 제주·P1 홈·P2 경주(LIVE 200) · `koreaJeju`/`koreaHome`/`koreaGyeongju` · 새 탭 · 가짜 카드 없음
+- **VERIFY**: `npm run smoke:mrt-package` · `npm run build` · LIVE `q=제주`/`q=경주`/`/pkc`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/packages`
+- **QA**: 테마→패키지 상품→제주/홈/경주 CTA→새 탭 MRT·mylink
+- **다음**: S7 축제 연결
+
+```
+테마여행 #9, 축제 연결
+```
+
+- **금지 3**: 가짜 상품 카드 · `q=부산` 국내 목적지 오표기 · 축제 `/korea` 칩/지도 로직 변경
+
+## 테마여행 #7, 방방곡곡
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `e50ac4e3` · Preview QA 대기
+
+- **한 일**: `/korea/theme/regions` · 시도 칩 → **hub 명소 리스트**(서울=경복궁 등) → place · hub 요약 행 제거 · `smoke:korea-theme-regions` 명소 resolve
+- **VERIFY**: `npm run smoke:korea-area-codes` · `npm run smoke:korea-theme-regions` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/regions`
+- **QA**: 테마→방방곡곡→서울 칩→경복궁 등 목록→항목→place→뒤로
+- **다음**: S6 패키지
+
+```
+테마여행 #8, 패키지
+```
+
+- **금지 3**: 축제 `/korea` 지도·칩 로직 수정 · hub JSON 직접 대량 편집 · `q=부산` 국내 목적지 오표기(패키지 세션)
+
+## 테마여행 #6, 뒤로복귀
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `e71df1aa` · Preview QA 대기
+
+- **한 일**: PlaceChatPanel·`leavePlaceCard` → `navigate(returnTo)` · `isKoreaPlaceReturnPath`로 `prevPath` undefined TypeError 가드
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/top10`
+- **QA**: top10·scenic → 항목 → place → 뒤로 → 해당 목록
+- **다음**: S5 방방곡곡
+
+```
+테마여행 #7, 방방곡곡
+```
+
+- **금지 3**: 축제 `/korea` 로직 수정 · 절경 전용 상세 신설 · UI 리디자인
+
+## 테마여행 #5, 명승지
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `23f04f08` · Preview QA 대기
+
+- **한 일**: curated 20 · overrides→`koreaScenicSpots.json` · `/korea/theme/scenic` · 권역 필터 · place 복귀 path
+- **VERIFY**: `npm run audit:korea-scenic-spots` · `npm run smoke:korea-scenic-spots` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **QA**: 테마→명승지→권역 칩→항목→place · 「GATEO 선정」고지
+- **다음**: PlaceCard `navigate(returnTo)` 뒤로복귀 핫픽스 → `#6`에서 처리
+
+- **금지 3**: 축제 `/korea` 로직 수정 · TourAPI 라이브 대량 목록 · 절경 전용 상세 신설
+
+## 테마여행 #4, 10대 절경
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `f4235f96` · Preview QA 대기
+
+- **한 일**: §3.3 GATEO 10 확정 · overrides→`koreaTop10Scenic.json` · `/korea/theme/top10` · place 복귀 · 「GATEO 선정」고지
+- **VERIFY**: `npm run audit:korea-top10-scenic` · `npm run smoke:korea-top10-scenic` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/top10`
+- **QA**: 테마→10대 절경→항목→place→뒤로 목록 · 공식기관 사칭 문구 없음
+- **사람 결정 (2026-08-03)**: PlaceCard 뒤로→절경 목록 복귀 버그 있음 · **전용 상세 페이지는 만들지 않음** · **S4 명승 진행 후** `navigate(returnTo)` 핫픽스
+- **다음**: S4 명승지 → (이어서) 뒤로복귀 핫픽스
+
+```
+테마여행 #5, 명승지
+```
+
+- **금지 3**: 축제 `/korea` 로직 수정 · 공식 10대 사칭 · 세션 중 10곳 교체 · 절경 전용 상세 신설
+
+## 테마여행 #3, 모듈 SSOT
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `5e192245` · Preview QA 대기
+
+- **한 일**: modules overrides→json→`audit:korea-theme-modules` · 랜딩 타일 5 · 축제→`/korea` · top10/scenic/regions/packages 빈 페이지
+- **VERIFY**: `npm run audit:korea-theme-modules` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme`
+- **QA**: `/korea/theme` 타일 5·order · 축제→`/korea` · 나머지 빈 페이지·테마로 복귀
+- **다음**: S3 10대 절경
+
+```
+테마여행 #4, 10대 절경
+```
+
+- **금지 3**: 축제 `/korea` 로직 수정 · top10 본문 대량 · UI 리디자인
+
+## 테마여행 #2, 셸 라우트
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `23f04f08` · Preview QA 대기
+
+- **한 일**: `/korea/theme` 셸 · 홈 진입 「한국의 테마 여행」 · `placeReturnTo` · `/qa/korea-theme`+vercel · 작업로그
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme`
+- **QA**: 홈→「한국의 테마 여행」→`/korea/theme`→홈으로 · 축제 링크 유지
+- **다음**: S2 모듈 SSOT
+
+```
+테마여행 #3, 모듈 SSOT
+```
+
+- **금지 3**: 축제 `/korea` 로직 수정 · 모듈 본문 대량 · releaseNotes
 ## 독도 검색 #1, 허브 SSOT
 
 **상태**: feature `cursor/dokdo-search-a849` · Preview QA 대기

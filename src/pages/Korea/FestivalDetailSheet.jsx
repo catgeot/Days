@@ -1,15 +1,21 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   ArrowUp,
+  Bike,
+  Building2,
   CalendarDays,
   ChevronLeft,
   ChevronRight,
   ExternalLink,
   Expand,
+  Landmark,
   Loader2,
   MapPin,
   Phone,
+  Route,
   Star,
+  Utensils,
   X,
 } from 'lucide-react';
 import {
@@ -17,10 +23,43 @@ import {
   fetchTourApiFestivalImages,
 } from '../../utils/fetchTourApiFestivals';
 import { fetchFestivalVideos, FESTIVAL_VIDEOS_MAX, FESTIVAL_VIDEOS_PAGE } from '../../utils/fetchFestivalVideos';
+import { fetchNearbyTourAttractions } from '../../utils/fetchNearbyTourAttractions';
+import {
+  fetchNearbyTourRestaurants,
+  RESTAURANT_CONTENT_TYPE_ID,
+} from '../../utils/fetchNearbyTourRestaurants';
+import {
+  CULTURE_CONTENT_TYPE_ID,
+  fetchNearbyTourCulture,
+  fetchNearbyTourLeports,
+  LEPORTS_CONTENT_TYPE_ID,
+} from '../../utils/fetchNearbyTourLeisureCulture';
+import {
+  COURSE_CONTENT_TYPE_ID,
+  fetchNearbyTourCourses,
+} from '../../utils/fetchNearbyTourCourses';
+import { fetchTourApiCourseDetail } from '../../utils/fetchTourApiCourses';
+import { listKoreaScenicSpots } from '../Home/lib/koreaScenicSpots';
+import { scenicRegionForAreaCode } from '../Home/lib/koreaTourAttractionMap';
+import { resolveFestivalThemeCrossLinks } from '../Home/lib/koreaThemeCrossLinks';
+import { pushThemeNavBack } from '../Home/lib/koreaThemeNavBack';
+import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
+import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
+import { festivalLngLat } from './koreaFestivalCorridors';
+import { detectSidoCode } from './festivalRegionTags';
+import {
+  formatDistanceKm,
+  rankSpotsByDistance,
+} from '../KoreaTheme/nearbyScenicRank';
+import ThemeSpotDetailModal from '../KoreaTheme/ThemeSpotDetailModal';
+import CourseDetailModal from '../KoreaTheme/CourseDetailModal';
 import { useLightboxPinchTransform } from '../../components/PlaceCard/common/useLightboxPinchTransform';
 import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
 
-/** 본문·확대보기 — 가로 스와이프 vs 세로 스크롤·탭 */
+const SCENIC_PATH = '/korea/theme/scenic';
+const COURSES_PATH = '/korea/theme/courses';
+const FESTIVAL_RETURN = '/korea';
+const SCENIC_LIST_LIMIT = 8;
 const PHOTO_SWIPE_THRESHOLD_PX = 48;
 const PHOTO_SWIPE_DIRECTION_RATIO = 1.25;
 
@@ -167,6 +206,45 @@ function festivalSearchQuery(title) {
   return s || String(title || '').trim();
 }
 
+function formatDistKm(km) {
+  if (!Number.isFinite(km)) return '';
+  if (km < 1) return `${Math.max(1, Math.round(km * 1000))}m`;
+  return `${km < 10 ? km.toFixed(1) : Math.round(km)}km`;
+}
+
+function nearbyPlaceLabel(spot) {
+  return String(spot?.locality || spot?.region || '').trim();
+}
+
+function nearbyEyebrow(spot) {
+  const t = String(spot?.contentTypeId || '');
+  if (t === RESTAURANT_CONTENT_TYPE_ID) return '주변 맛집';
+  if (t === LEPORTS_CONTENT_TYPE_ID) return '주변 레포츠';
+  if (t === CULTURE_CONTENT_TYPE_ID) return '주변 문화';
+  if (t === COURSE_CONTENT_TYPE_ID) return '인근 여행코스';
+  return '주변 관광지';
+}
+
+function toNearbyModalSpot(spot) {
+  if (!spot) return null;
+  const place = nearbyPlaceLabel(spot);
+  return {
+    id: spot.id || spot.contentId,
+    name: spot.name,
+    subtitle: [place, formatDistKm(spot.distKm)].filter(Boolean).join(' · '),
+    blurb: spot.blurb,
+    placeSlug: spot.placeSlug,
+    contentId: spot.contentId,
+    contentTypeId: spot.contentTypeId || null,
+    hubId: spot.hubId,
+    region: spot.region,
+    nameEn: spot.attractionNameEn || null,
+    lat: spot.lat,
+    lng: spot.lng,
+    areaCode: spot.areaCode,
+  };
+}
+
 function naverSearchUrl(title) {
   const q = festivalSearchQuery(title);
   if (!q) return '';
@@ -179,24 +257,41 @@ function googleSearchUrl(title) {
   return `https://www.google.com/search?q=${encodeURIComponent(q)}&hl=ko`;
 }
 
+function toScenicModalSpot(spot) {
+  if (!spot) return null;
+  return {
+    id: spot.id || spot.contentId,
+    name: spot.name,
+    subtitle: spot.region || '',
+    blurb: spot.blurb,
+    placeSlug: spot.placeSlug,
+    contentId: spot.contentId,
+    contentTypeId: '12',
+    hubId: spot.hubId,
+    region: spot.region,
+    nameEn: spot.attractionNameEn || null,
+    lat: spot.lat,
+    lng: spot.lng,
+    areaCode: spot.areaCode || null,
+  };
+}
+
 /**
  * @param {{
  *   item: Record<string, unknown>,
- *   hubs: Array<{ hubId: string, name: string }>,
  *   favorited?: boolean,
  *   onToggleFavorite?: (item: Record<string, unknown>) => void,
  *   onClose: () => void,
- *   onOpenHub: (hubId: string) => void,
  * }} props
  */
 export default function FestivalDetailSheet({
   item,
-  hubs = [],
   favorited = false,
   onToggleFavorite,
   onClose,
-  onOpenHub,
+  onOpenHub: _onOpenHub,
 }) {
+  const navigate = useNavigate();
   const [intro, setIntro] = useState(null);
   const [common, setCommon] = useState(null);
   const [infoItems, setInfoItems] = useState([]);
@@ -212,11 +307,119 @@ export default function FestivalDetailSheet({
   const [videosLoadedFor, setVideosLoadedFor] = useState('');
   const [videosExpanded, setVideosExpanded] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [nearbySpots, setNearbySpots] = useState([]);
+  const [nearbyStatus, setNearbyStatus] = useState('idle');
+  const [nearbyFood, setNearbyFood] = useState([]);
+  const [nearbyFoodStatus, setNearbyFoodStatus] = useState('idle');
+  const [nearbyLeports, setNearbyLeports] = useState([]);
+  const [nearbyLeportsStatus, setNearbyLeportsStatus] = useState('idle');
+  const [nearbyCulture, setNearbyCulture] = useState([]);
+  const [nearbyCultureStatus, setNearbyCultureStatus] = useState('idle');
+  const [nearbyCourses, setNearbyCourses] = useState([]);
+  const [nearbyCoursesStatus, setNearbyCoursesStatus] = useState('idle');
+  const [selectedNearby, setSelectedNearby] = useState(null);
+  const [selectedScenic, setSelectedScenic] = useState(null);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [courseDetail, setCourseDetail] = useState(null);
+  const [courseDetailLoading, setCourseDetailLoading] = useState(false);
   const sheetScrollRef = useRef(null);
-  const tabListRef = useRef(null);
   const heroSwipeStartRef = useRef(null);
   const lightboxSwipeStartRef = useRef(null);
   const suppressHeroTapRef = useRef(false);
+  const tabListRef = useRef(null);
+
+  const festivalAreaCode = useMemo(() => {
+    // searchFestival2 응답에 areaCode가 비는 경우가 많아 addr1 시도 감지 폴백
+    const code =
+      item?.areaCode ?? item?.areacode ?? detectSidoCode(item?.addr1);
+    return code != null ? String(code).trim() : '';
+  }, [item?.areaCode, item?.areacode, item?.addr1]);
+
+  const scenicRegion = useMemo(
+    () => scenicRegionForAreaCode(festivalAreaCode),
+    [festivalAreaCode],
+  );
+
+  const scenicSpotsRanked = useMemo(() => {
+    if (!scenicRegion) return [];
+    const spots = listKoreaScenicSpots(scenicRegion);
+    const origin = festivalLngLat(item?.mapx, item?.mapy);
+    if (!origin) {
+      return spots.slice(0, SCENIC_LIST_LIMIT).map((spot) => ({
+        spot,
+        km: null,
+      }));
+    }
+    return rankSpotsByDistance(spots, origin.lat, origin.lng)
+      .slice(0, SCENIC_LIST_LIMIT)
+      .map(({ item: spot, km }) => ({
+        spot,
+        km: Number.isFinite(km) ? km : null,
+      }));
+  }, [scenicRegion, item?.mapx, item?.mapy]);
+
+  const scenicPageHref = useMemo(() => {
+    if (!scenicRegion) return SCENIC_PATH;
+    return `${SCENIC_PATH}?region=${encodeURIComponent(scenicRegion)}`;
+  }, [scenicRegion]);
+
+  const festivalCross = useMemo(
+    () =>
+      resolveFestivalThemeCrossLinks(item, {
+        areaCode: festivalAreaCode,
+        region: scenicRegion || undefined,
+        utmContentPrefix: 'korea-festival-cross',
+      }),
+    [item, festivalAreaCode, scenicRegion],
+  );
+
+  const festivalStayHref = festivalCross?.stay?.keyword
+    ? getMrtAccommodationSearchUrl(festivalCross.stay.keyword, {
+        isDomestic: true,
+      })
+    : '';
+  const festivalTnaHref = festivalCross?.tna?.keyword
+    ? buildMrtTnaSearchMoreUrl(festivalCross.tna.keyword)
+    : '';
+
+  const openScenicPage = () => {
+    const back = {
+      path: FESTIVAL_RETURN,
+      label: String(item?.title || '축제').trim() || '축제',
+      moduleLabel: '축제',
+    };
+    pushThemeNavBack(back);
+    onClose();
+    navigate(scenicPageHref, { state: { themeBack: back } });
+  };
+
+  const coursesPageHref = useMemo(() => {
+    if (!festivalAreaCode) return COURSES_PATH;
+    return `${COURSES_PATH}?area=${encodeURIComponent(festivalAreaCode)}`;
+  }, [festivalAreaCode]);
+
+  const openCoursesPage = () => {
+    const back = {
+      path: FESTIVAL_RETURN,
+      label: String(item?.title || '축제').trim() || '축제',
+      moduleLabel: '축제',
+    };
+    pushThemeNavBack(back);
+    onClose();
+    navigate(coursesPageHref, { state: { themeBack: back } });
+  };
+
+  const openCourseModal = async (spot) => {
+    if (!spot?.contentId) return;
+    setSelectedCourse(spot);
+    setCourseDetail(null);
+    setCourseDetailLoading(true);
+    const detail = await fetchTourApiCourseDetail({
+      contentId: spot.contentId,
+    });
+    setCourseDetail(detail || { empty: true });
+    setCourseDetailLoading(false);
+  };
 
   useEffect(() => {
     if (!item?.contentId) {
@@ -234,6 +437,17 @@ export default function FestivalDetailSheet({
       setVideosError('');
       setVideosLoadedFor('');
       setVideosExpanded(false);
+      setNearbySpots([]);
+      setNearbyStatus('idle');
+      setNearbyFood([]);
+      setNearbyFoodStatus('idle');
+      setNearbyCourses([]);
+      setNearbyCoursesStatus('idle');
+      setSelectedNearby(null);
+      setSelectedScenic(null);
+      setSelectedCourse(null);
+      setCourseDetail(null);
+      setCourseDetailLoading(false);
       return undefined;
     }
 
@@ -253,6 +467,17 @@ export default function FestivalDetailSheet({
     setVideosError('');
     setVideosLoadedFor('');
     setVideosExpanded(false);
+    setNearbySpots([]);
+    setNearbyStatus('idle');
+    setNearbyFood([]);
+    setNearbyFoodStatus('idle');
+    setNearbyCourses([]);
+    setNearbyCoursesStatus('idle');
+    setSelectedNearby(null);
+    setSelectedScenic(null);
+    setSelectedCourse(null);
+    setCourseDetail(null);
+    setCourseDetailLoading(false);
 
     (async () => {
       const contentId = item.contentId;
@@ -289,6 +514,228 @@ export default function FestivalDetailSheet({
       cancelled = true;
     };
   }, [item?.contentId, item?.contentTypeId]);
+
+  const {
+    transformStyle: lightboxTransformStyle,
+    isZoomed: isLightboxZoomed,
+    reset: resetLightboxPinch,
+    onPinchTouchStart,
+    onPinchTouchMove,
+    onPinchTouchEnd,
+    onPinchTouchCancel,
+  } = useLightboxPinchTransform(activeImage);
+
+  const closeLightbox = useCallback(() => {
+    setLightboxOpen(false);
+    resetLightboxPinch();
+    resetIosZoomAfterInput();
+  }, [resetLightboxPinch]);
+
+  const openLightbox = useCallback(() => {
+    if (!imageUrls[activeImage] && !imageUrls[0]) return;
+    setLightboxOpen(true);
+  }, [activeImage, imageUrls]);
+
+  const stepLightbox = useCallback((delta) => {
+    if (imageUrls.length < 2) return;
+    setActiveImage((i) => (i + delta + imageUrls.length) % imageUrls.length);
+  }, [imageUrls.length]);
+
+  const consumeHorizontalSwipe = useCallback((start, endX, endY) => {
+    if (!start || imageUrls.length < 2) return false;
+    const dx = endX - start.x;
+    const dy = endY - start.y;
+    if (Math.abs(dx) < PHOTO_SWIPE_THRESHOLD_PX) return false;
+    if (Math.abs(dx) < Math.abs(dy) * PHOTO_SWIPE_DIRECTION_RATIO) return false;
+    stepLightbox(dx > 0 ? -1 : 1);
+    return true;
+  }, [imageUrls.length, stepLightbox]);
+
+  const onHeroTouchStart = useCallback((e) => {
+    if (e.touches.length !== 1) return;
+    const t = e.touches[0];
+    heroSwipeStartRef.current = { x: t.clientX, y: t.clientY };
+    suppressHeroTapRef.current = false;
+  }, []);
+
+  const onHeroTouchEnd = useCallback((e) => {
+    const start = heroSwipeStartRef.current;
+    heroSwipeStartRef.current = null;
+    const t = e.changedTouches?.[0];
+    if (!t) return;
+    if (consumeHorizontalSwipe(start, t.clientX, t.clientY)) {
+      suppressHeroTapRef.current = true;
+    }
+  }, [consumeHorizontalSwipe]);
+
+  const onHeroTouchCancel = useCallback(() => {
+    heroSwipeStartRef.current = null;
+  }, []);
+
+  const onLightboxTouchStart = useCallback((e) => {
+    onPinchTouchStart(e);
+    if (e.touches.length !== 1 || isLightboxZoomed()) {
+      lightboxSwipeStartRef.current = null;
+      return;
+    }
+    const t = e.touches[0];
+    lightboxSwipeStartRef.current = { x: t.clientX, y: t.clientY };
+  }, [isLightboxZoomed, onPinchTouchStart]);
+
+  const onLightboxTouchEnd = useCallback((e) => {
+    onPinchTouchEnd(e);
+    const start = lightboxSwipeStartRef.current;
+    lightboxSwipeStartRef.current = null;
+    if (!start || isLightboxZoomed()) return;
+    const t = e.changedTouches?.[0];
+    if (!t) return;
+    consumeHorizontalSwipe(start, t.clientX, t.clientY);
+  }, [consumeHorizontalSwipe, isLightboxZoomed, onPinchTouchEnd]);
+
+  const onLightboxTouchCancel = useCallback(() => {
+    onPinchTouchCancel();
+    lightboxSwipeStartRef.current = null;
+  }, [onPinchTouchCancel]);
+
+  useEffect(() => {
+    const onKey = (event) => {
+      if (event.key === 'Escape') {
+        if (lightboxOpen) {
+          closeLightbox();
+          return;
+        }
+        if (selectedNearby || selectedScenic || selectedCourse) return;
+        onClose();
+        return;
+      }
+      if (!lightboxOpen || imageUrls.length < 2) return;
+      if (event.key === 'ArrowLeft') {
+        stepLightbox(-1);
+      } else if (event.key === 'ArrowRight') {
+        stepLightbox(1);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [
+    lightboxOpen,
+    imageUrls.length,
+    onClose,
+    selectedNearby,
+    selectedScenic,
+    selectedCourse,
+    closeLightbox,
+    stepLightbox,
+  ]);
+
+  useEffect(() => {
+    if (!item?.contentId) return undefined;
+    const pt = festivalLngLat(item?.mapx, item?.mapy);
+    if (!pt) {
+      setNearbySpots([]);
+      setNearbyStatus('nocoords');
+      setNearbyFood([]);
+      setNearbyFoodStatus('nocoords');
+      setNearbyLeports([]);
+      setNearbyLeportsStatus('nocoords');
+      setNearbyCulture([]);
+      setNearbyCultureStatus('nocoords');
+    } else {
+      let cancelled = false;
+      setNearbyStatus('loading');
+      setNearbyFoodStatus('loading');
+      setNearbyLeportsStatus('loading');
+      setNearbyCultureStatus('loading');
+      fetchNearbyTourAttractions({
+        lat: pt.lat,
+        lng: pt.lng,
+        radiusKm: 8,
+        limit: 8,
+      }).then((res) => {
+        if (cancelled) return;
+        const spots = Array.isArray(res?.spots) ? res.spots : [];
+        setNearbySpots(spots);
+        if (res?.error) setNearbyStatus('error');
+        else if (!spots.length) setNearbyStatus('empty');
+        else setNearbyStatus('ok');
+      });
+      fetchNearbyTourRestaurants({
+        lat: pt.lat,
+        lng: pt.lng,
+        radiusKm: 3,
+        limit: 8,
+      }).then((res) => {
+        if (cancelled) return;
+        const spots = Array.isArray(res?.spots) ? res.spots : [];
+        setNearbyFood(spots);
+        if (res?.error) setNearbyFoodStatus('error');
+        else if (!spots.length) setNearbyFoodStatus('empty');
+        else setNearbyFoodStatus('ok');
+      });
+      fetchNearbyTourLeports({
+        lat: pt.lat,
+        lng: pt.lng,
+        radiusKm: 5,
+        limit: 6,
+      }).then((res) => {
+        if (cancelled) return;
+        const spots = Array.isArray(res?.spots) ? res.spots : [];
+        setNearbyLeports(spots);
+        if (res?.error) setNearbyLeportsStatus('error');
+        else if (!spots.length) setNearbyLeportsStatus('empty');
+        else setNearbyLeportsStatus('ok');
+      });
+      fetchNearbyTourCulture({
+        lat: pt.lat,
+        lng: pt.lng,
+        radiusKm: 5,
+        limit: 6,
+      }).then((res) => {
+        if (cancelled) return;
+        const spots = Array.isArray(res?.spots) ? res.spots : [];
+        setNearbyCulture(spots);
+        if (res?.error) setNearbyCultureStatus('error');
+        else if (!spots.length) setNearbyCultureStatus('empty');
+        else setNearbyCultureStatus('ok');
+      });
+
+      return () => {
+        cancelled = true;
+      };
+    }
+    return undefined;
+  }, [item?.contentId, item?.mapx, item?.mapy]);
+
+  useEffect(() => {
+    if (!item?.contentId) return undefined;
+    if (!festivalAreaCode) {
+      setNearbyCourses([]);
+      setNearbyCoursesStatus('noarea');
+      return undefined;
+    }
+
+    const pt = festivalLngLat(item?.mapx, item?.mapy);
+    let cancelled = false;
+    setNearbyCoursesStatus('loading');
+    fetchNearbyTourCourses({
+      lat: pt?.lat,
+      lng: pt?.lng,
+      areaCode: festivalAreaCode,
+      radiusKm: 80,
+      limit: 6,
+    }).then((res) => {
+      if (cancelled) return;
+      const spots = Array.isArray(res?.spots) ? res.spots : [];
+      setNearbyCourses(spots);
+      if (res?.error) setNearbyCoursesStatus('error');
+      else if (!spots.length) setNearbyCoursesStatus('empty');
+      else setNearbyCoursesStatus('ok');
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [item?.contentId, item?.mapx, item?.mapy, festivalAreaCode]);
 
   const overview = useMemo(
     () => stripHtml(common?.overview || ''),
@@ -412,109 +859,6 @@ export default function FestivalDetailSheet({
     el.addEventListener('scroll', onScroll, { passive: true });
     return () => el.removeEventListener('scroll', onScroll);
   }, [item?.contentId]);
-
-  const {
-    transformStyle: lightboxTransformStyle,
-    isZoomed: isLightboxZoomed,
-    reset: resetLightboxPinch,
-    onPinchTouchStart,
-    onPinchTouchMove,
-    onPinchTouchEnd,
-    onPinchTouchCancel,
-  } = useLightboxPinchTransform(activeImage);
-
-  const closeLightbox = useCallback(() => {
-    setLightboxOpen(false);
-    resetLightboxPinch();
-    resetIosZoomAfterInput();
-  }, [resetLightboxPinch]);
-
-  const openLightbox = useCallback(() => {
-    if (!imageUrls[activeImage] && !imageUrls[0]) return;
-    setLightboxOpen(true);
-  }, [activeImage, imageUrls]);
-
-  const stepLightbox = useCallback((delta) => {
-    if (imageUrls.length < 2) return;
-    setActiveImage((i) => (i + delta + imageUrls.length) % imageUrls.length);
-  }, [imageUrls.length]);
-
-  const consumeHorizontalSwipe = useCallback((start, endX, endY) => {
-    if (!start || imageUrls.length < 2) return false;
-    const dx = endX - start.x;
-    const dy = endY - start.y;
-    if (Math.abs(dx) < PHOTO_SWIPE_THRESHOLD_PX) return false;
-    if (Math.abs(dx) < Math.abs(dy) * PHOTO_SWIPE_DIRECTION_RATIO) return false;
-    stepLightbox(dx > 0 ? -1 : 1);
-    return true;
-  }, [imageUrls.length, stepLightbox]);
-
-  const onHeroTouchStart = useCallback((e) => {
-    if (e.touches.length !== 1) return;
-    const t = e.touches[0];
-    heroSwipeStartRef.current = { x: t.clientX, y: t.clientY };
-    suppressHeroTapRef.current = false;
-  }, []);
-
-  const onHeroTouchEnd = useCallback((e) => {
-    const start = heroSwipeStartRef.current;
-    heroSwipeStartRef.current = null;
-    const t = e.changedTouches?.[0];
-    if (!t) return;
-    if (consumeHorizontalSwipe(start, t.clientX, t.clientY)) {
-      suppressHeroTapRef.current = true;
-    }
-  }, [consumeHorizontalSwipe]);
-
-  const onHeroTouchCancel = useCallback(() => {
-    heroSwipeStartRef.current = null;
-  }, []);
-
-  const onLightboxTouchStart = useCallback((e) => {
-    onPinchTouchStart(e);
-    if (e.touches.length !== 1 || isLightboxZoomed()) {
-      lightboxSwipeStartRef.current = null;
-      return;
-    }
-    const t = e.touches[0];
-    lightboxSwipeStartRef.current = { x: t.clientX, y: t.clientY };
-  }, [isLightboxZoomed, onPinchTouchStart]);
-
-  const onLightboxTouchEnd = useCallback((e) => {
-    onPinchTouchEnd(e);
-    const start = lightboxSwipeStartRef.current;
-    lightboxSwipeStartRef.current = null;
-    if (!start || isLightboxZoomed()) return;
-    const t = e.changedTouches?.[0];
-    if (!t) return;
-    consumeHorizontalSwipe(start, t.clientX, t.clientY);
-  }, [consumeHorizontalSwipe, isLightboxZoomed, onPinchTouchEnd]);
-
-  const onLightboxTouchCancel = useCallback(() => {
-    onPinchTouchCancel();
-    lightboxSwipeStartRef.current = null;
-  }, [onPinchTouchCancel]);
-
-  useEffect(() => {
-    const onKey = (event) => {
-      if (event.key === 'Escape') {
-        if (lightboxOpen) {
-          closeLightbox();
-          return;
-        }
-        onClose();
-        return;
-      }
-      if (!lightboxOpen || imageUrls.length < 2) return;
-      if (event.key === 'ArrowLeft') {
-        stepLightbox(-1);
-      } else if (event.key === 'ArrowRight') {
-        stepLightbox(1);
-      }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [lightboxOpen, imageUrls.length, onClose, closeLightbox, stepLightbox]);
 
   if (!item) return null;
 
@@ -770,7 +1114,7 @@ export default function FestivalDetailSheet({
             <div className="space-y-3">
               {overview && <DetailRow label="개요">{overview}</DetailRow>}
 
-              {(intro || hubs.length > 0) && (
+              {(intro || scenicRegion) && (
                 <div
                   className={[
                     'space-y-3',
@@ -840,25 +1184,451 @@ export default function FestivalDetailSheet({
                 </div>
               )}
 
-              {hubs.length > 0 && (
+              {scenicRegion && (
                 <div className="space-y-2 pt-1">
                   <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
-                    인근 여행지
+                    인근 명소
                   </p>
-                  <div className="flex flex-wrap gap-2">
-                    {hubs.map((hub) => (
-                      <button
-                        key={hub.hubId}
-                        type="button"
-                        onClick={() => onOpenHub(hub.hubId)}
-                        className="px-3 py-1.5 rounded-full text-xs font-bold border border-stone-200 bg-stone-50 text-stone-800 hover:bg-amber-50 hover:border-amber-300 transition-colors"
-                      >
-                        {hub.name}
-                      </button>
-                    ))}
-                  </div>
+                  {scenicSpotsRanked.length > 0 && (
+                    <ul
+                      className="space-y-2"
+                      aria-label={`${scenicRegion} 명소 축제장에서 가까운 순`}
+                    >
+                      {scenicSpotsRanked.map(({ spot, km }) => {
+                        const distanceLabel = formatDistanceKm(km);
+                        return (
+                          <li key={spot.id || spot.contentId}>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedScenic(spot)}
+                              className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                            >
+                              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800">
+                                <Landmark size={18} aria-hidden="true" />
+                              </div>
+                              <span className="min-w-0 flex-1">
+                                <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                                  <span className="text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
+                                    {spot.name}
+                                  </span>
+                                  {distanceLabel ? (
+                                    <span className="shrink-0 rounded-full bg-stone-100 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-stone-600">
+                                      {distanceLabel}
+                                    </span>
+                                  ) : null}
+                                </span>
+                                <span className="mt-0.5 block text-[11px] text-stone-500 break-keep">
+                                  {[spot.region, spot.blurb]
+                                    .filter(Boolean)
+                                    .join(' · ')}
+                                </span>
+                              </span>
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                  <button
+                    type="button"
+                    onClick={openScenicPage}
+                    className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
+                  >
+                    {scenicRegion} 명소 더보기
+                    <ExternalLink size={14} aria-hidden="true" />
+                  </button>
                 </div>
               )}
+
+              {(festivalStayHref ||
+                festivalTnaHref ||
+                festivalCross?.packageCta?.url) && (
+                <div className="space-y-3 pt-1">
+                  {festivalStayHref || festivalTnaHref ? (
+                    <div className="space-y-2">
+                      <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
+                        숙소 · 투어
+                      </p>
+                      <div className="flex flex-col gap-1.5 sm:flex-row sm:flex-wrap">
+                        {festivalStayHref ? (
+                          <a
+                            href={festivalStayHref}
+                            target="_blank"
+                            rel="noopener noreferrer sponsored"
+                            className="inline-flex items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-950 hover:bg-amber-100"
+                          >
+                            숙소 · {festivalCross.stay.keyword}
+                            <ExternalLink size={12} aria-hidden="true" />
+                          </a>
+                        ) : null}
+                        {festivalTnaHref ? (
+                          <a
+                            href={festivalTnaHref}
+                            target="_blank"
+                            rel="noopener noreferrer sponsored"
+                            className="inline-flex items-center justify-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-stone-100"
+                          >
+                            투어 · {festivalCross.tna.keyword}
+                            <ExternalLink size={12} aria-hidden="true" />
+                          </a>
+                        ) : null}
+                      </div>
+                    </div>
+                  ) : null}
+                  {festivalCross?.packageCta?.url ? (
+                    <div className="space-y-2">
+                      <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
+                        패키지
+                      </p>
+                      <a
+                        href={festivalCross.packageCta.url}
+                        target="_blank"
+                        rel="noopener noreferrer sponsored"
+                        className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
+                      >
+                        {festivalCross.packageCta.ctaLabel || '패키지 보기'}
+                        <ExternalLink size={14} aria-hidden="true" />
+                      </a>
+                    </div>
+                  ) : null}
+                </div>
+              )}
+
+              {nearbyCoursesStatus !== 'idle' &&
+                nearbyCoursesStatus !== 'noarea' && (
+                  <div className="space-y-2 pt-1">
+                    <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
+                      인근 여행코스
+                    </p>
+                    {nearbyCoursesStatus === 'loading' && (
+                      <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
+                        <Loader2
+                          size={16}
+                          className="animate-spin"
+                          aria-hidden="true"
+                        />
+                        인근 여행코스 불러오는 중…
+                      </div>
+                    )}
+                    {nearbyCoursesStatus === 'error' &&
+                      nearbyCourses.length === 0 && (
+                        <p className="text-xs text-stone-500">
+                          인근 여행코스를 불러오지 못했습니다.
+                        </p>
+                      )}
+                    {nearbyCoursesStatus === 'empty' && (
+                      <p className="text-xs text-stone-500">
+                        이 시도에 등록된 여행코스가 없습니다.
+                      </p>
+                    )}
+                    {nearbyCourses.length > 0 && (
+                      <ul className="space-y-2" aria-label="축제 인근 여행코스">
+                        {nearbyCourses.map((spot) => {
+                          const thumb = toHttps(spot.firstImage);
+                          const dist = formatDistKm(spot.distKm);
+                          const place = nearbyPlaceLabel(spot);
+                          return (
+                            <li key={`course-${spot.contentId || spot.id}`}>
+                              <button
+                                type="button"
+                                onClick={() => openCourseModal(spot)}
+                                className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                              >
+                                {thumb ? (
+                                  <img
+                                    src={thumb}
+                                    alt=""
+                                    className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
+                                  />
+                                ) : (
+                                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-800">
+                                    <Route size={18} aria-hidden="true" />
+                                  </div>
+                                )}
+                                <span className="min-w-0 flex-1">
+                                  <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
+                                    {spot.name}
+                                  </span>
+                                  <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
+                                    {[place, dist].filter(Boolean).join(' · ')}
+                                  </span>
+                                </span>
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                    <button
+                      type="button"
+                      onClick={openCoursesPage}
+                      className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
+                    >
+                      여행코스 더보기
+                      <ExternalLink size={14} aria-hidden="true" />
+                    </button>
+                  </div>
+                )}
+
+              {nearbyStatus !== 'idle' && nearbyStatus !== 'nocoords' && (
+                <div className="space-y-2 pt-1">
+                  <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
+                    주변 관광지
+                  </p>
+                  {nearbyStatus === 'loading' && (
+                    <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
+                      <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+                      주변 관광지 불러오는 중…
+                    </div>
+                  )}
+                  {nearbyStatus === 'error' && nearbySpots.length === 0 && (
+                    <p className="text-xs text-stone-500">
+                      주변 관광지를 불러오지 못했습니다.
+                    </p>
+                  )}
+                  {nearbyStatus === 'empty' && (
+                    <p className="text-xs text-stone-500">
+                      반경 8km 안 등록된 관광지가 없습니다.
+                    </p>
+                  )}
+                  {nearbySpots.length > 0 && (
+                    <ul className="space-y-2" aria-label="축제 주변 관광지">
+                      {nearbySpots.map((spot) => {
+                        const thumb = toHttps(spot.firstImage);
+                        const dist = formatDistKm(spot.distKm);
+                        const place = nearbyPlaceLabel(spot);
+                        return (
+                          <li key={spot.contentId || spot.id}>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedNearby(spot)}
+                              className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                            >
+                              {thumb ? (
+                                <img
+                                  src={thumb}
+                                  alt=""
+                                  className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
+                                />
+                              ) : (
+                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800">
+                                  <Landmark size={18} aria-hidden="true" />
+                                </div>
+                              )}
+                              <span className="min-w-0 flex-1">
+                                <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
+                                  {spot.name}
+                                </span>
+                                <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
+                                  {[place, dist].filter(Boolean).join(' · ')}
+                                </span>
+                              </span>
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </div>
+              )}
+
+              {nearbyFoodStatus !== 'idle' && nearbyFoodStatus !== 'nocoords' && (
+                <div className="space-y-2 pt-1">
+                  <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
+                    주변 맛집
+                  </p>
+                  {nearbyFoodStatus === 'loading' && (
+                    <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
+                      <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+                      주변 맛집 불러오는 중…
+                    </div>
+                  )}
+                  {nearbyFoodStatus === 'error' && nearbyFood.length === 0 && (
+                    <p className="text-xs text-stone-500">
+                      주변 맛집을 불러오지 못했습니다.
+                    </p>
+                  )}
+                  {nearbyFoodStatus === 'empty' && (
+                    <p className="text-xs text-stone-500">
+                      반경 3km 안 TourAPI 맛집이 없습니다.
+                    </p>
+                  )}
+                  {nearbyFood.length > 0 && (
+                    <ul className="space-y-2" aria-label="축제 주변 맛집">
+                      {nearbyFood.map((spot) => {
+                        const thumb = toHttps(spot.firstImage);
+                        const dist = formatDistKm(spot.distKm);
+                        const place = nearbyPlaceLabel(spot);
+                        return (
+                          <li key={`food-${spot.contentId || spot.id}`}>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedNearby(spot)}
+                              className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                            >
+                              {thumb ? (
+                                <img
+                                  src={thumb}
+                                  alt=""
+                                  className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
+                                />
+                              ) : (
+                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-800">
+                                  <Utensils size={18} aria-hidden="true" />
+                                </div>
+                              )}
+                              <span className="min-w-0 flex-1">
+                                <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
+                                  {spot.name}
+                                </span>
+                                <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
+                                  {[place, dist].filter(Boolean).join(' · ')}
+                                </span>
+                              </span>
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </div>
+              )}
+
+              {nearbyLeportsStatus !== 'idle' &&
+                nearbyLeportsStatus !== 'nocoords' && (
+                  <div className="space-y-2 pt-1">
+                    <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
+                      주변 레포츠
+                    </p>
+                    {nearbyLeportsStatus === 'loading' && (
+                      <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
+                        <Loader2
+                          size={16}
+                          className="animate-spin"
+                          aria-hidden="true"
+                        />
+                        주변 레포츠 불러오는 중…
+                      </div>
+                    )}
+                    {nearbyLeportsStatus === 'error' &&
+                      nearbyLeports.length === 0 && (
+                        <p className="text-xs text-stone-500">
+                          주변 레포츠를 불러오지 못했습니다.
+                        </p>
+                      )}
+                    {nearbyLeportsStatus === 'empty' && (
+                      <p className="text-xs text-stone-500">
+                        반경 5km 안 TourAPI 레포츠가 없습니다.
+                      </p>
+                    )}
+                    {nearbyLeports.length > 0 && (
+                      <ul className="space-y-2" aria-label="축제 주변 레포츠">
+                        {nearbyLeports.map((spot) => {
+                          const thumb = toHttps(spot.firstImage);
+                          const dist = formatDistKm(spot.distKm);
+                          const place = nearbyPlaceLabel(spot);
+                          return (
+                            <li key={`leports-${spot.contentId || spot.id}`}>
+                              <button
+                                type="button"
+                                onClick={() => setSelectedNearby(spot)}
+                                className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                              >
+                                {thumb ? (
+                                  <img
+                                    src={thumb}
+                                    alt=""
+                                    className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
+                                  />
+                                ) : (
+                                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-sky-800">
+                                    <Bike size={18} aria-hidden="true" />
+                                  </div>
+                                )}
+                                <span className="min-w-0 flex-1">
+                                  <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
+                                    {spot.name}
+                                  </span>
+                                  <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
+                                    {[place, dist].filter(Boolean).join(' · ')}
+                                  </span>
+                                </span>
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </div>
+                )}
+
+              {nearbyCultureStatus !== 'idle' &&
+                nearbyCultureStatus !== 'nocoords' && (
+                  <div className="space-y-2 pt-1">
+                    <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
+                      주변 문화
+                    </p>
+                    {nearbyCultureStatus === 'loading' && (
+                      <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
+                        <Loader2
+                          size={16}
+                          className="animate-spin"
+                          aria-hidden="true"
+                        />
+                        주변 문화시설 불러오는 중…
+                      </div>
+                    )}
+                    {nearbyCultureStatus === 'error' &&
+                      nearbyCulture.length === 0 && (
+                        <p className="text-xs text-stone-500">
+                          주변 문화시설을 불러오지 못했습니다.
+                        </p>
+                      )}
+                    {nearbyCultureStatus === 'empty' && (
+                      <p className="text-xs text-stone-500">
+                        반경 5km 안 TourAPI 문화시설이 없습니다.
+                      </p>
+                    )}
+                    {nearbyCulture.length > 0 && (
+                      <ul className="space-y-2" aria-label="축제 주변 문화">
+                        {nearbyCulture.map((spot) => {
+                          const thumb = toHttps(spot.firstImage);
+                          const dist = formatDistKm(spot.distKm);
+                          const place = nearbyPlaceLabel(spot);
+                          return (
+                            <li key={`culture-${spot.contentId || spot.id}`}>
+                              <button
+                                type="button"
+                                onClick={() => setSelectedNearby(spot)}
+                                className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                              >
+                                {thumb ? (
+                                  <img
+                                    src={thumb}
+                                    alt=""
+                                    className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
+                                  />
+                                ) : (
+                                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-800">
+                                    <Building2 size={18} aria-hidden="true" />
+                                  </div>
+                                )}
+                                <span className="min-w-0 flex-1">
+                                  <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
+                                    {spot.name}
+                                  </span>
+                                  <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
+                                    {[place, dist].filter(Boolean).join(' · ')}
+                                  </span>
+                                </span>
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </div>
+                )}
             </div>
           )}
 
@@ -1026,9 +1796,47 @@ export default function FestivalDetailSheet({
         <span className="text-xs font-bold">위로</span>
       </button>
 
+      {selectedNearby && (
+        <ThemeSpotDetailModal
+          spot={toNearbyModalSpot(selectedNearby)}
+          eyebrow={nearbyEyebrow(selectedNearby)}
+          returnTo="/korea"
+          overlayZClass="z-50"
+          onClose={() => setSelectedNearby(null)}
+        />
+      )}
+
+      {selectedScenic && (
+        <ThemeSpotDetailModal
+          spot={toScenicModalSpot(selectedScenic)}
+          eyebrow="인근 명소"
+          returnTo="/korea"
+          overlayZClass="z-50"
+          onClose={() => setSelectedScenic(null)}
+        />
+      )}
+
+      {selectedCourse && (
+        <CourseDetailModal
+          course={{
+            ...selectedCourse,
+            title: selectedCourse.title || selectedCourse.name,
+            areaCode: selectedCourse.areaCode || festivalAreaCode,
+          }}
+          detail={courseDetail}
+          detailLoading={courseDetailLoading}
+          overlayZClass="z-50"
+          onClose={() => {
+            setSelectedCourse(null);
+            setCourseDetail(null);
+            setCourseDetailLoading(false);
+          }}
+        />
+      )}
+
       {lightboxOpen && hero && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/90 p-3 md:p-8"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-stone-950/90 p-3 md:p-8"
           onClick={(e) => {
             e.stopPropagation();
             closeLightbox();

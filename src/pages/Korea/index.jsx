@@ -5,11 +5,12 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowUp,
   CalendarDays,
   Home,
+  Landmark,
   Loader2,
   LocateFixed,
   Map as MapIcon,
@@ -23,9 +24,8 @@ import {
   X,
 } from 'lucide-react';
 import SEO from '../../components/SEO';
-import { listCityAttractionHubs } from '../Home/lib/cityAttractionHubs';
+import { ThemeFestivalBackLink } from '../KoreaTheme/ThemeModuleBackButton';
 import { setPlaceReturnTo } from '../Home/lib/placeReturnTo';
-import { isDomesticKoreaLocation } from '../../utils/tourApiMatch';
 import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
 import { resolveKoreaAreaFromCoords } from './resolveKoreaAreaFromCoords';
 import { festivalLngLat } from './koreaFestivalCorridors';
@@ -44,7 +44,6 @@ import {
   sidoListPhrase,
   subregionUnitLabel,
 } from './festivalRegionTags';
-import { nearbyHubsForFestival } from './nearbyFestivalHubs';
 import {
   groupFestivalsByCity,
   groupFestivalsBySido,
@@ -603,6 +602,12 @@ function FestivalRow({
 
 export default function KoreaFestivalHub() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const fromTheme = searchParams.get('from') === 'theme';
+  /** 테마 크로스 레일 deep-link — 칩/지도 리팩터 없이 area만 수신 */
+  const themeAreaParam = String(searchParams.get('area') || '').trim();
+  /** 코스→축제 상세 deep-link — 칩/지도 리팩터 없이 contentId만 수신 */
+  const festivalFromQuery = String(searchParams.get('festival') || '').trim();
   const now = useMemo(() => new Date(), []);
 
   const goHome = useCallback(() => {
@@ -672,6 +677,29 @@ export default function KoreaFestivalHub() {
   const mountLocTriedRef = useRef(false);
   const mainScrollRef = useRef(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const themeAreaAppliedRef = useRef(false);
+  const festivalQueryAppliedRef = useRef('');
+
+  useEffect(() => {
+    if (themeAreaAppliedRef.current) return;
+    if (!themeAreaParam || themeAreaParam === 'all') return;
+    if (!/^\d{1,2}$/.test(themeAreaParam)) return;
+    themeAreaAppliedRef.current = true;
+    userRegionOverrideRef.current = true;
+    setAreaCode(themeAreaParam);
+    setCityName('all');
+  }, [themeAreaParam]);
+
+  useEffect(() => {
+    if (!festivalFromQuery || loading || !items.length) return;
+    if (festivalQueryAppliedRef.current === festivalFromQuery) return;
+    const hit = items.find(
+      (row) => String(row?.contentId || '') === festivalFromQuery,
+    );
+    if (!hit) return;
+    festivalQueryAppliedRef.current = festivalFromQuery;
+    setSelected(hit);
+  }, [festivalFromQuery, loading, items]);
 
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 1024px)');
@@ -685,17 +713,6 @@ export default function KoreaFestivalHub() {
   );
   const [favoriteList, setFavoriteList] = useState(() => loadFavorites());
   const [viewedList, setViewedList] = useState(() => loadViewed());
-
-  const krHubById = useMemo(() => {
-    const map = new Map();
-    for (const hub of listCityAttractionHubs()) {
-      if (!isDomesticKoreaLocation(hub) || !hub.hubId) continue;
-      map.set(String(hub.hubId).toLowerCase(), hub);
-    }
-    return map;
-  }, []);
-
-  const krHubList = useMemo(() => [...krHubById.values()], [krHubById]);
 
   const loadFestivals = useCallback(async (force = false) => {
     setLoading(true);
@@ -1015,11 +1032,6 @@ export default function KoreaFestivalHub() {
     cityName,
     afterRegion,
   ]);
-
-  const selectedHubs = useMemo(() => {
-    if (!selected) return [];
-    return nearbyHubsForFestival(selected, krHubList);
-  }, [selected, krHubList]);
 
   const dismissLocHint = useCallback(() => {
     setLocHintDismissed(true);
@@ -1440,6 +1452,15 @@ export default function KoreaFestivalHub() {
                 </h1>
               </div>
               <div className="flex shrink-0 items-center gap-2">
+                <Link
+                  to="/korea/theme/scenic"
+                  aria-label="한국의 명승으로"
+                  title="명승"
+                  className="flex items-center gap-1 rounded-full border border-amber-300/80 bg-amber-50 px-2.5 py-1.5 text-xs font-bold text-amber-900 hover:bg-amber-100"
+                >
+                  <Landmark size={14} aria-hidden="true" />
+                  명승
+                </Link>
                 <form
                   className="hidden w-64 xl:w-72 lg:block"
                   onSubmit={(e) => {
@@ -1566,6 +1587,14 @@ export default function KoreaFestivalHub() {
                 )}
               </div>
             </div>
+
+            {fromTheme && !mapImmersive ? (
+              <p className="mt-1.5 text-xs leading-relaxed text-stone-600 break-keep">
+                <ThemeFestivalBackLink />
+                <span className="text-stone-400"> · </span>
+                축제 일정·지도는 여기서 이어갑니다
+              </p>
+            ) : null}
 
             {searchOpen && (
               <form
@@ -2124,7 +2153,6 @@ export default function KoreaFestivalHub() {
       {selected && (
         <FestivalDetailSheet
           item={selected}
-          hubs={selectedHubs}
           favorited={favoriteIds.has(String(selected.contentId))}
           onToggleFavorite={handleToggleFavorite}
           onClose={() => {
