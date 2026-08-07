@@ -4,15 +4,15 @@
 
 ## 테마여행 #59, 검색 기능 테스트 — 분류 칩 분해
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `2dbf81e8` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
 
-- **요청**: 검색 후 긴 리스트 → 분류 칩별로 확인
-- **한 일**: 검색 중에도 권역·시도·종목 칩 유지 · 칩이 검색을 지우지 않음 · 검색 풀∩칩 필터 · TourAPI `searchQuery`+cat/region · 칩 카운트에 검색어 반영 · commit 시 매칭 권역 자동 선택
+- **요청**: 검색 후 긴 리스트 → 분류 칩별로 확인 · 0건 칩 숨김
+- **한 일**: 검색 중에도 권역·시도·종목 칩 유지 · 칩이 검색을 지우지 않음 · 검색 풀∩칩 필터 · TourAPI `searchQuery`+cat/region · **섹션별 0건·단일 분류 칩 숨김**(「고성」명소 0·명승 강원 1권역만)
 - **VERIFY**: `npm run smoke:korea-scenic-search` · `smoke:korea-scenic-nearby` · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
-- **작업 로그**: Preview 우측 「검색 결과 → 분류 칩으로 분해」
-- **QA**: 「경복궁」「경포」검색 → 권역·종목 칩으로 나눠 보기 · 칩 바꿔도 검색 유지
+- **작업 로그**: Preview 우측 「검색 0건·단일 분류 칩 숨김」
+- **QA**: 「고성」→ 명소 칩 없음 · 명승 2건·불필요 칩 없음 · 「경복궁」은 칩으로 분해
 
 ### 테마여행 · 에이전트 핸드오프 → `#60`
 

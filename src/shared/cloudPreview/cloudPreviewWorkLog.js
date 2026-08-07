@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-07-korea-theme-scenic-search-chips-empty',
+    session: '테마여행 #59, 검색 기능 테스트',
+    title: '검색 0건·단일 분류 칩 숨김',
+    detail:
+      '「고성」처럼 명소 0건이면 칩을 숨기고, 명승이 한 권역·한 경관뿐이면 분해 불가 칩도 숨깁니다. 결과가 있는 칩만 남깁니다. Preview에서 「고성」검색을 확인해 주세요.',
+    at: '2026-08-07',
+  },
+  {
     id: '2026-08-07-korea-theme-scenic-search-chips',
     session: '테마여행 #59, 검색 기능 테스트',
     title: '검색 결과 → 분류 칩으로 분해',

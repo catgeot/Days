@@ -59,6 +59,19 @@ assert.ok(
   pageSrc.includes('분류 칩으로 결과 분해'),
   'search comment mentions chip breakdown',
 );
+assert.ok(pageSrc.includes('showCuratedFilterChips'), 'hide curated chips if empty');
+assert.ok(pageSrc.includes('showHeritageFilterChips'), 'hide heritage chips if empty');
+assert.ok(
+  pageSrc.includes('해당 섹션 매칭이 있는 권역만'),
+  'per-section region chips during search',
+);
+const goseongHeritage = filterScenicSpotsByQuery(heritage, '고성');
+assert.equal(filterScenicSpotsByQuery(curated, '고성').length, 0, '고성 curated 0');
+assert.ok(goseongHeritage.length >= 2, '고성 heritage ≥2');
+assert.ok(
+  new Set(goseongHeritage.map((s) => s.region)).size === 1,
+  '고성 heritage single region → no region chip row',
+);
 const setRegionBlock = pageSrc.slice(
   pageSrc.indexOf('const setRegion = useCallback'),
   pageSrc.indexOf('const setArea = useCallback'),

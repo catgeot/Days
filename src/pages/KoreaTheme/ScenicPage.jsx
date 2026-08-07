@@ -892,38 +892,111 @@ export default function KoreaThemeScenicPage() {
     return SCENIC_REGION_ORDER.filter((r) => set.has(r));
   }, []);
 
+  /** 검색 중: 해당 섹션 매칭이 있는 권역만 (0건·타 섹션 혼입 금지) */
+  const curatedRegionChipsVisible = useMemo(() => {
+    if (!searchActive) return regionChips;
+    return regionChips.filter(
+      (r) => (curatedRegionCountsForChips[r] || 0) > 0,
+    );
+  }, [searchActive, regionChips, curatedRegionCountsForChips]);
+
+  const heritageRegionChipsVisible = useMemo(() => {
+    if (!searchActive) return regionChips;
+    return regionChips.filter(
+      (r) => (heritageRegionCountsForChips[r] || 0) > 0,
+    );
+  }, [searchActive, regionChips, heritageRegionCountsForChips]);
+
+  const curatedAreaChipsForRow = useMemo(
+    () => (curatedAreaChips.length > 1 ? curatedAreaChips : []),
+    [curatedAreaChips],
+  );
+
+  const curatedHubChipsForRow = useMemo(
+    () => (curatedHubChipsVisible.length > 1 ? curatedHubChipsVisible : []),
+    [curatedHubChipsVisible],
+  );
+
+  const heritageAreaChipsForRow = useMemo(
+    () => (heritageAreaChips.length > 1 ? heritageAreaChips : []),
+    [heritageAreaChips],
+  );
+
+  /** 검색 중 경관 칩이 1개뿐이면 분해 불가 → 숨김 */
+  const heritageCategoryChipsForRow = useMemo(() => {
+    if (!searchActive) return heritageCategoryChipsVisible;
+    return heritageCategoryChipsVisible.length > 1
+      ? heritageCategoryChipsVisible
+      : [];
+  }, [searchActive, heritageCategoryChipsVisible]);
+
+  const showCuratedFilterChips =
+    !nearActive &&
+    (!searchActive ||
+      ((curatedSearchPool?.length || 0) > 0 &&
+        (curatedRegionChipsVisible.length > 1 ||
+          curatedAreaChipsForRow.length > 0 ||
+          curatedHubChipsForRow.length > 0)));
+
+  const showHeritageFilterChips =
+    !nearActive &&
+    (!searchActive ||
+      ((heritageSearchPool?.length || 0) > 0 &&
+        (heritageRegionChipsVisible.length > 1 ||
+          heritageAreaChipsForRow.length > 0 ||
+          heritageCategoryChipsForRow.length > 0 ||
+          Boolean(hubId && hubName))));
+
   const cat2Chips = useMemo(() => listTourAttractionCat2(cat1), [cat1]);
   const cat3Chips = useMemo(
     () => listTourAttractionCat3(cat1, cat2),
     [cat1, cat2],
   );
 
+  /** 검색 중에는 건수 확정(>0)만 · 로딩(undefined) 칩 나열 금지 */
+  const keepTourChipByCount = useCallback(
+    (count) => {
+      if (searchActive) {
+        return Number.isFinite(Number(count)) && Number(count) > 0;
+      }
+      return keepChipByCount(count);
+    },
+    [searchActive],
+  );
+
   const tourCat1ChipsVisible = useMemo(
     () =>
       TOUR_ATTRACTION_CAT1.filter((chip) =>
-        keepChipByCount(chipCounts.cat1Counts[chip.code]),
+        keepTourChipByCount(chipCounts.cat1Counts[chip.code]),
       ),
-    [chipCounts.cat1Counts],
+    [chipCounts.cat1Counts, keepTourChipByCount],
   );
 
   const tourCat2ChipsVisible = useMemo(() => {
     const majorLabel =
       TOUR_ATTRACTION_CAT1.find((c) => c.code === cat1)?.label || '';
     return cat2Chips.filter((chip) => {
-      if (!keepChipByCount(chipCounts.cat2Counts[chip.code])) return false;
+      if (!keepTourChipByCount(chipCounts.cat2Counts[chip.code])) return false;
       if (majorLabel && chipLabelsEqual(chip.label, majorLabel)) return false;
       return true;
     });
-  }, [cat2Chips, chipCounts.cat2Counts, cat1]);
+  }, [cat2Chips, chipCounts.cat2Counts, cat1, keepTourChipByCount]);
 
   const tourCat3ChipsVisible = useMemo(() => {
     const midLabel = cat2Chips.find((c) => c.code === cat2)?.label || '';
     return cat3Chips.filter((chip) => {
-      if (!keepChipByCount(chipCounts.cat3Counts[chip.code])) return false;
+      if (!keepTourChipByCount(chipCounts.cat3Counts[chip.code])) return false;
       if (midLabel && chipLabelsEqual(chip.label, midLabel)) return false;
       return true;
     });
-  }, [cat3Chips, chipCounts.cat3Counts, cat2Chips, cat2]);
+  }, [cat3Chips, chipCounts.cat3Counts, cat2Chips, cat2, keepTourChipByCount]);
+
+  const showTourFilterChips =
+    !nearActive &&
+    (!searchActive ||
+      tourCat1ChipsVisible.length > 1 ||
+      tourCat2ChipsVisible.length > 1 ||
+      tourCat3ChipsVisible.length > 1);
 
   const catalogHeading = useMemo(
     () => scenicDbCatalogHeading(region, areaCode, hubName || null),
@@ -1679,46 +1752,40 @@ export default function KoreaThemeScenicPage() {
             </div>
             <p className="text-sm leading-relaxed text-stone-600 break-keep">{DISCLAIMER}</p>
 
-            {!nearActive ? (
+            {showCuratedFilterChips ? (
               <div className="space-y-2">
-                <FilterChipRow aria-label="명소 권역 대분류">
-                  {regionChips
-                    .filter((r) =>
-                      searchActive
-                        ? r === region ||
-                          keepChipByCount(curatedRegionCountsForChips[r]) ||
-                          keepChipByCount(heritageRegionCountsForChips[r]) ||
-                          keepChipByCount(chipCounts.regionCounts[r])
-                        : true,
-                    )
-                    .map((r) => {
-                    const active = region === r;
-                    return (
-                      <button
-                        key={`c-r-${r}`}
-                        type="button"
-                        onClick={() => setRegion(r)}
-                        aria-pressed={active}
-                        className={
-                          active
-                            ? 'inline-flex items-center gap-1 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-950'
-                            : 'inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50'
-                        }
-                      >
-                        <FilterChipLabel
-                          label={r}
-                          count={curatedRegionCountsForChips[r]}
-                        />
-                      </button>
-                    );
-                  })}
-                </FilterChipRow>
-                {curatedAreaChips.length > 1 ? (
+                {(!searchActive || curatedRegionChipsVisible.length > 1) &&
+                curatedRegionChipsVisible.length > 0 ? (
+                  <FilterChipRow aria-label="명소 권역 대분류">
+                    {curatedRegionChipsVisible.map((r) => {
+                      const active = region === r;
+                      return (
+                        <button
+                          key={`c-r-${r}`}
+                          type="button"
+                          onClick={() => setRegion(r)}
+                          aria-pressed={active}
+                          className={
+                            active
+                              ? 'inline-flex items-center gap-1 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-950'
+                              : 'inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50'
+                          }
+                        >
+                          <FilterChipLabel
+                            label={r}
+                            count={curatedRegionCountsForChips[r]}
+                          />
+                        </button>
+                      );
+                    })}
+                  </FilterChipRow>
+                ) : null}
+                {curatedAreaChipsForRow.length > 0 ? (
                   <FilterChipRow
                     aria-label="명소 시도 중분류"
                     className="pl-0.5"
                   >
-                    {curatedAreaChips.map((chip) => {
+                    {curatedAreaChipsForRow.map((chip) => {
                       const active = areaCode === chip.code;
                       return (
                         <button
@@ -1741,12 +1808,12 @@ export default function KoreaThemeScenicPage() {
                     })}
                   </FilterChipRow>
                 ) : null}
-                {curatedHubChipsVisible.length > 1 ? (
+                {curatedHubChipsForRow.length > 0 ? (
                   <FilterChipRow
                     aria-label="명소 여행지 소분류"
                     className="pl-1"
                   >
-                    {curatedHubChipsVisible.map((chip) => {
+                    {curatedHubChipsForRow.map((chip) => {
                       const active = hubId === chip.hubId;
                       return (
                         <button
@@ -1786,7 +1853,9 @@ export default function KoreaThemeScenicPage() {
             {curatedSpots.length === 0 ? (
               <p className="text-sm text-stone-500 break-keep">
                 {searchActive
-                  ? `「${searchFilter}」·이 분류에 해당하는 선정 명소가 없습니다. 다른 권역·시도 칩을 골라 보세요.`
+                  ? (curatedSearchPool?.length || 0) > 0
+                    ? `「${searchFilter}」·이 분류에 해당하는 선정 명소가 없습니다. 다른 권역·시도 칩을 골라 보세요.`
+                    : `「${searchFilter}」에 해당하는 선정 명소가 없습니다.`
                   : nearActive
                     ? `${NEAR_KM}km 안 선정 명소가 없습니다. 아래 국가유산 명승을 둘러보세요.`
                     : hubId
@@ -1815,46 +1884,40 @@ export default function KoreaThemeScenicPage() {
             </div>
             <p className="text-xs text-stone-500 break-keep">{HERITAGE_DISCLAIMER}</p>
 
-            {!nearActive ? (
+            {showHeritageFilterChips ? (
               <div className="space-y-2">
-                <FilterChipRow aria-label="명승 권역 대분류">
-                  {regionChips
-                    .filter((r) =>
-                      searchActive
-                        ? r === region ||
-                          keepChipByCount(heritageRegionCountsForChips[r]) ||
-                          keepChipByCount(curatedRegionCountsForChips[r]) ||
-                          keepChipByCount(chipCounts.regionCounts[r])
-                        : true,
-                    )
-                    .map((r) => {
-                    const active = region === r;
-                    return (
-                      <button
-                        key={`h-r-${r}`}
-                        type="button"
-                        onClick={() => setRegion(r)}
-                        aria-pressed={active}
-                        className={
-                          active
-                            ? 'inline-flex items-center gap-1 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-950'
-                            : 'inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50'
-                        }
-                      >
-                        <FilterChipLabel
-                          label={r}
-                          count={heritageRegionCountsForChips[r]}
-                        />
-                      </button>
-                    );
-                  })}
-                </FilterChipRow>
-                {heritageAreaChips.length > 1 ? (
+                {(!searchActive || heritageRegionChipsVisible.length > 1) &&
+                heritageRegionChipsVisible.length > 0 ? (
+                  <FilterChipRow aria-label="명승 권역 대분류">
+                    {heritageRegionChipsVisible.map((r) => {
+                      const active = region === r;
+                      return (
+                        <button
+                          key={`h-r-${r}`}
+                          type="button"
+                          onClick={() => setRegion(r)}
+                          aria-pressed={active}
+                          className={
+                            active
+                              ? 'inline-flex items-center gap-1 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-950'
+                              : 'inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50'
+                          }
+                        >
+                          <FilterChipLabel
+                            label={r}
+                            count={heritageRegionCountsForChips[r]}
+                          />
+                        </button>
+                      );
+                    })}
+                  </FilterChipRow>
+                ) : null}
+                {heritageAreaChipsForRow.length > 0 ? (
                   <FilterChipRow
                     aria-label="명승 시도 중분류"
                     className="pl-0.5"
                   >
-                    {heritageAreaChips.map((chip) => {
+                    {heritageAreaChipsForRow.map((chip) => {
                       const active = areaCode === chip.code;
                       return (
                         <button
@@ -1877,12 +1940,12 @@ export default function KoreaThemeScenicPage() {
                     })}
                   </FilterChipRow>
                 ) : null}
-                {heritageCategoryChipsVisible.length > 0 ? (
+                {heritageCategoryChipsForRow.length > 0 ? (
                   <FilterChipRow
                     aria-label="명승 경관 소분류"
                     className="pl-1"
                   >
-                    {heritageCategoryChipsVisible.map((chip) => {
+                    {heritageCategoryChipsForRow.map((chip) => {
                       const active = heritageCategory === chip.code;
                       return (
                         <button
@@ -1928,7 +1991,9 @@ export default function KoreaThemeScenicPage() {
             {heritageSpots.length === 0 ? (
               <p className="text-sm text-stone-500 break-keep">
                 {searchActive
-                  ? `「${searchFilter}」·이 분류에 해당하는 국가유산 명승이 없습니다. 다른 권역·경관 칩을 골라 보세요.`
+                  ? (heritageSearchPool?.length || 0) > 0
+                    ? `「${searchFilter}」·이 분류에 해당하는 국가유산 명승이 없습니다. 다른 권역·경관 칩을 골라 보세요.`
+                    : `「${searchFilter}」에 해당하는 국가유산 명승이 없습니다.`
                   : nearActive
                     ? `${NEAR_KM}km 안 국가유산 명승이 없습니다.`
                     : hubId
@@ -1986,9 +2051,10 @@ export default function KoreaThemeScenicPage() {
                     : 'TourAPI 관광지(지정 명승과 별개)입니다. 대표 이미지가 있는 곳을 먼저·같은 시·군끼리 묶어 나열합니다. 아래 종목으로 목록을 나눕니다.'}
             </p>
 
-            {!nearActive ? (
+            {showTourFilterChips ? (
             <div className="space-y-2">
-              {tourCat1ChipsVisible.length > 0 ? (
+              {(!searchActive || tourCat1ChipsVisible.length > 1) &&
+              tourCat1ChipsVisible.length > 0 ? (
                 <FilterChipRow aria-label="관광 종목 대분류">
                   {tourCat1ChipsVisible.map((chip) => {
                     const active = cat1 === chip.code;
@@ -2013,7 +2079,8 @@ export default function KoreaThemeScenicPage() {
                   })}
                 </FilterChipRow>
               ) : null}
-              {tourCat2ChipsVisible.length > 0 ? (
+              {(!searchActive || tourCat2ChipsVisible.length > 1) &&
+              tourCat2ChipsVisible.length > 0 ? (
                 <FilterChipRow
                   aria-label={`${activeCat1Label} 중분류`}
                   className="pl-0.5"
@@ -2041,7 +2108,8 @@ export default function KoreaThemeScenicPage() {
                   })}
                 </FilterChipRow>
               ) : null}
-              {tourCat3ChipsVisible.length > 0 ? (
+              {(!searchActive || tourCat3ChipsVisible.length > 1) &&
+              tourCat3ChipsVisible.length > 0 ? (
                 <FilterChipRow
                   aria-label={`${activeCat2Label} 소분류`}
                   className="pl-1"
