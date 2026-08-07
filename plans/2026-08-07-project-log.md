@@ -2,6 +2,36 @@
 
 직전: [`2026-08-06-project-log.md`](./2026-08-06-project-log.md)
 
+## 테마여행 #58, 검색 기능 도입
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **요청**: 명소 홈에 검색 기능
+- **한 일**: `/korea/theme/scenic` 헤더 검색(축제와 동일 UX) · GATEO 선정·국가유산 명승 클라이언트 필터 · TourAPI DB `title`/`addr1` ilike 전국 검색 · `smoke:korea-scenic-search`
+- **VERIFY**: `npm run smoke:korea-scenic-search` · `smoke:korea-scenic-nearby` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「명소 홈 검색」
+- **QA**: 「경복궁」「경포」검색 · 지우기·칩 복귀 · 모바일 돋보기
+
+### 테마여행 · 에이전트 핸드오프 → `#59`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #59, Preview QA 반영` |
+| **브랜치** | `cursor/korea-theme` (고정) |
+| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
+| **읽을 것 3** | ① 본 절 ② #58 검색 ③ 플랜 §1.0 |
+| **금지 3** | 축제 지도 리팩터 · top10/regions 탑레벨 부활 · UI 임의 리디자인 |
+| **후보** | Preview QA · S9 |
+| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #59, Preview QA 반영
+```
+
 ## 테마여행 #57, 같은 도시 — 정보 있는 추천만
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `611865bf` · Preview QA 대기

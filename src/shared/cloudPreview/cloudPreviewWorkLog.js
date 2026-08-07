@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 57,
-  sessionPhase: '같은 도시 정보 있는 추천만',
+  sessionNo: 58,
+  sessionPhase: '검색 기능 도입',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-scenic-search',
+    session: '테마여행 #58, 검색 기능 도입',
+    title: '명소 홈 검색 (선정·명승·관광지)',
+    detail:
+      '명승 홈 헤더에 축제와 같은 검색창을 넣었습니다. 명소명·지역으로 GATEO 선정·국가유산 명승·TourAPI 관광지를 전국에서 찾습니다. Preview `/korea/theme/scenic`에서 「경복궁」「경포」를 검색해 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-samehub-require-detail',
     session: '테마여행 #57, 같은 도시 정보 있는 추천만',

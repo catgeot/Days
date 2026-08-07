@@ -17,6 +17,7 @@ import {
   scenicAreaCodeForHubId,
   scenicRegionForAreaCode,
 } from './koreaTourAttractionMap';
+import { sanitizeScenicDbSearchQuery } from './scenicSearch';
 
 export {
   labelScenicAreaCode,
@@ -57,9 +58,11 @@ export function scenicLocalityQueryForHubName(hubName) {
  *   cat2?: string | null,
  *   cat3?: string | null,
  *   localityQuery?: string | null,
+ *   searchQuery?: string | null,
  * }} [opts]
  */
 function resolveAttractionFilters(opts = {}) {
+  const searchQuery = sanitizeScenicDbSearchQuery(opts.searchQuery);
   const region =
     opts.region && opts.region !== '전체' ? String(opts.region).trim() : null;
   const areaCode = normalizeScenicAreaCode(region, opts.areaCode);
@@ -73,7 +76,16 @@ function resolveAttractionFilters(opts = {}) {
   const cat2 = normalizeTourAttractionCat2(cat1, opts.cat2);
   const cat3 = normalizeTourAttractionCat3(cat1, cat2, opts.cat3);
   const localityQuery = scenicLocalityQueryForHubName(opts.localityQuery);
-  return { region, areaCode, areaCodes, cat1, cat2, cat3, localityQuery };
+  return {
+    region,
+    areaCode,
+    areaCodes,
+    cat1,
+    cat2,
+    cat3,
+    localityQuery,
+    searchQuery: searchQuery || null,
+  };
 }
 
 /**
@@ -84,6 +96,7 @@ function resolveAttractionFilters(opts = {}) {
  *   cat2?: string | null,
  *   cat3?: string | null,
  *   localityQuery?: string | null,
+ *   searchQuery?: string | null,
  * }} filters
  */
 function applyAttractionListFilters(q, filters) {
@@ -96,6 +109,10 @@ function applyAttractionListFilters(q, filters) {
     next = next.or(
       `addr1.ilike.%${qLoc}%,addr1.ilike.%${qLoc}시%,addr1.ilike.%${qLoc}군%`,
     );
+  }
+  if (filters.searchQuery) {
+    const qText = filters.searchQuery;
+    next = next.or(`title.ilike.%${qText}%,addr1.ilike.%${qText}%`);
   }
   if (filters.cat3) {
     next = next.eq('cat3', filters.cat3);
@@ -135,6 +152,7 @@ function applyNoImageFilter(q) {
  *   cat2?: string | null,
  *   cat3?: string | null,
  *   localityQuery?: string | null,
+ *   searchQuery?: string | null,
  * }} [opts]
  * @returns {Promise<{ count: number, error: string | null }>}
  */
@@ -268,6 +286,7 @@ export async function fetchScenicFilterChipCounts(opts = {}) {
  *   cat2?: string | null,
  *   cat3?: string | null,
  *   localityQuery?: string | null,
+ *   searchQuery?: string | null,
  *   limit?: number,
  *   offset?: number,
  * }} [opts]
