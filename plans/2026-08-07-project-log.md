@@ -4,7 +4,7 @@
 
 ## 테마여행 #56, 명승 목록 썸네일
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip _(push 후)_ · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `a8b42d40` · Preview QA 대기
 
 - **증상**: 국가유산 명승 목록에 썸네일이 비는 항목이 많음
 - **원인**: SSOT `imageUrl`은 141/141 있으나 KHS 원본이 평균 ~1.4MB·최대 15MB → 목록 로드 실패/지연
