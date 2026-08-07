@@ -2,7 +2,7 @@
   "redirects": [
     {
       "source": "/qa/home-korea",
-      "destination": "https://days-git-cursor-home-korea-links-e814-catgeots-projects.vercel.app/",
+      "destination": "https://days-git-cursor-home-korea-links-e814-catgeots-projects.vercel.app/korea",
       "permanent": false
     },
     {

@@ -9,10 +9,10 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'home-korea',
-    label: '홈 축제·명승 버튼',
+    label: '홈·축제 헤더 간소화',
     branch: 'cursor/home-korea-links-e814',
     destination:
-      'https://days-git-cursor-home-korea-links-e814-catgeots-projects.vercel.app/',
+      'https://days-git-cursor-home-korea-links-e814-catgeots-projects.vercel.app/korea',
     active: true,
   },
   {
