@@ -2,6 +2,36 @@
 
 직전: [`2026-08-06-project-log.md`](./2026-08-06-project-log.md)
 
+## 테마여행 #60, 검색 기능 개선 — 결과 창 닫기
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip _(push 후)_ · Preview QA 대기
+
+- **요청**: 검색 닫기가 X로 변한 돋보기 클릭 → **결과 창 닫기**로 직관화
+- **한 일**: 검색 활성 시 헤더·본문 「닫기」로 결과 해제 · 모바일 돋보기는 검색창 열기/수정만(결과 닫기 아님) · Escape는 검색창만 닫음
+- **VERIFY**: _(아래)_
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「검색 결과 닫기(결과 창)」
+- **QA**: 검색 → 헤더/배너 「닫기」로 목록 복귀 · 돋보기로 검색어 수정 가능
+
+### 테마여행 · 에이전트 핸드오프 → `#61`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #61, Preview QA 반영` |
+| **브랜치** | `cursor/korea-theme` (고정) |
+| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
+| **읽을 것 3** | ① 본 절 ② #60 결과 닫기 ③ #59 칩 분해 |
+| **금지 3** | 축제 지도 리팩터 · top10/regions 탑레벨 부활 · UI 임의 리디자인 |
+| **후보** | Preview QA · S9 |
+| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #61, Preview QA 반영
+```
+
 ## 테마여행 #59, 검색 기능 테스트 — 분류 칩 분해
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `c491cb60` · Preview QA 대기
@@ -13,24 +43,6 @@
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
 - **작업 로그**: Preview 우측 「검색 0건·단일 분류 칩 숨김」
 - **QA**: 「고성」→ 명소 칩 없음 · 명승 2건·불필요 칩 없음 · 「경복궁」은 칩으로 분해
-
-### 테마여행 · 에이전트 핸드오프 → `#60`
-
-| | |
-|--|--|
-| **세션 표기** | `테마여행 #60, Preview QA 반영` |
-| **브랜치** | `cursor/korea-theme` (고정) |
-| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
-| **읽을 것 3** | ① 본 절 ② #59 칩 분해 ③ #58 검색 |
-| **금지 3** | 축제 지도 리팩터 · top10/regions 탑레벨 부활 · UI 임의 리디자인 |
-| **후보** | Preview QA · S9 |
-| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
-
-**다음 채팅명 (복붙)**:
-
-```
-테마여행 #60, Preview QA 반영
-```
 
 ## 테마여행 #58, 검색 기능 도입
 

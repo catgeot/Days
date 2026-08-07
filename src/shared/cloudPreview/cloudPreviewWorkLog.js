@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 59,
-  sessionPhase: '검색 기능 테스트',
+  sessionNo: 60,
+  sessionPhase: '검색 기능 개선',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-scenic-search-close-results',
+    session: '테마여행 #60, 검색 기능 개선',
+    title: '검색 결과 닫기(결과 창)',
+    detail:
+      '검색 후 닫기는 X로 바뀐 돋보기가 아니라 헤더·본문 「닫기」로 결과 창을 닫습니다. 돋보기는 검색창 열기·수정용으로 유지됩니다. Preview에서 검색 후 「닫기」를 눌러 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-scenic-search-chips-empty',
     session: '테마여행 #59, 검색 기능 테스트',

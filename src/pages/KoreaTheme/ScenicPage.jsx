@@ -1602,8 +1602,8 @@ export default function KoreaThemeScenicPage() {
                       <button
                         type="button"
                         onClick={closeSearch}
-                        aria-label="검색 지우기"
-                        title="검색 지우기"
+                        aria-label="검색 결과 닫기"
+                        title="검색 결과 닫기"
                         className="shrink-0 flex h-6 w-6 items-center justify-center rounded-full text-stone-500 hover:bg-stone-200/80 hover:text-stone-800"
                       >
                         <X size={13} aria-hidden="true" />
@@ -1614,28 +1614,36 @@ export default function KoreaThemeScenicPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (searchOpen || searchActive) closeSearch();
+                    if (searchOpen) setSearchOpen(false);
                     else setSearchOpen(true);
                   }}
-                  aria-label={
-                    searchOpen || searchActive ? '검색 닫기' : '명소·명승 검색'
-                  }
-                  aria-pressed={searchOpen || searchActive}
-                  title={
-                    searchOpen || searchActive ? '검색 닫기' : '명소·명승 검색'
-                  }
+                  aria-label={searchOpen ? '검색창 닫기' : '명소·명승 검색'}
+                  aria-pressed={searchOpen}
+                  title={searchOpen ? '검색창 닫기' : '명소·명승 검색'}
                   className={`flex h-9 w-9 items-center justify-center rounded-full border lg:hidden ${
                     searchOpen || searchActive
                       ? 'border-amber-400 bg-amber-50 text-amber-800'
                       : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
                   }`}
                 >
-                  {searchOpen || searchActive ? (
+                  {searchOpen ? (
                     <X size={15} aria-hidden="true" />
                   ) : (
                     <Search size={15} aria-hidden="true" />
                   )}
                 </button>
+                {searchActive ? (
+                  <button
+                    type="button"
+                    onClick={closeSearch}
+                    aria-label="검색 결과 닫기"
+                    title="검색 결과 닫기"
+                    className="flex items-center gap-1 rounded-full border border-amber-400 bg-amber-50 px-2.5 py-1.5 text-xs font-bold text-amber-900 hover:bg-amber-100"
+                  >
+                    <X size={14} aria-hidden="true" />
+                    닫기
+                  </button>
+                ) : null}
                 <ThemeModuleBackButton />
                 <button
                   type="button"
@@ -1668,8 +1676,7 @@ export default function KoreaThemeScenicPage() {
                   onKeyDown={(e) => {
                     if (e.key === 'Escape') {
                       e.preventDefault();
-                      if (searchActive) closeSearch();
-                      else setSearchOpen(false);
+                      setSearchOpen(false);
                     }
                   }}
                   placeholder={
@@ -1719,6 +1726,24 @@ export default function KoreaThemeScenicPage() {
                 내 주변
               </button>
             </div>
+            {searchActive ? (
+              <div
+                role="status"
+                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-amber-200 bg-amber-50/90 px-3 py-2"
+              >
+                <p className="text-[12px] font-bold leading-snug text-amber-950 break-keep">
+                  「{searchFilter}」검색 결과
+                </p>
+                <button
+                  type="button"
+                  onClick={closeSearch}
+                  aria-label="검색 결과 닫기"
+                  className="shrink-0 rounded-full border border-amber-300/80 bg-white/80 px-2.5 py-1 text-[11px] font-bold text-amber-900 hover:bg-amber-100"
+                >
+                  닫기
+                </button>
+              </div>
+            ) : null}
             {nearMsg ? (
               <div
                 role="status"
