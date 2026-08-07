@@ -222,8 +222,8 @@ function firstTourContentId(...candidates) {
 
 /**
  * 멤버십 → 명승 페이지 spot deep-link.
- * top10/regions 페이지는 명승으로 리다이렉트되며 query가 떨어져 홈으로 가므로 사용 금지.
- * scenic id 또는 Tour contentId만 `/korea/theme/scenic?spot=` 로 연다.
+ * curated scenic id만 URL로 연다. regions/top10 페이지는 리다이렉트로 spot이 사라지고,
+ * Tour contentId URL은 제목이 Tour 공식명으로 바뀌므로 비-명승은 중첩 모달(modalSpot)을 쓴다.
  * @param {{
  *   scenic?: { id?: string, contentId?: string | null } | null,
  *   top10?: { id?: string, contentId?: string | null } | null,
@@ -233,25 +233,14 @@ function firstTourContentId(...candidates) {
  * @returns {string | null}
  */
 export function sameHubMembershipDeepPath(membership) {
-  if (!membership) return null;
-  if (membership.scenic?.id) {
-    return buildThemeModulePath('/korea/theme/scenic', {
-      spotId: membership.scenic.id,
-    });
-  }
-  const contentId = firstTourContentId(
-    membership.top10?.contentId,
-    membership.regionAttraction?.contentId,
-    membership.scenic?.contentId,
-  );
-  if (contentId) {
-    return buildThemeModulePath('/korea/theme/scenic', { spotId: contentId });
-  }
-  return null;
+  if (!membership?.scenic?.id) return null;
+  return buildThemeModulePath('/korea/theme/scenic', {
+    spotId: membership.scenic.id,
+  });
 }
 
 /**
- * contentId 없는 hub 명소 → 중첩 모달용 SSOT spot (방방곡곡 페이지 비노출 대응).
+ * 비-명승 sameHub → 중첩 모달 spot (GATEO 이름 유지 · contentId 있으면 Tour LIVE).
  * @param {{
  *   placeSlug?: string,
  *   hubId?: string,
@@ -265,32 +254,39 @@ export function sameHubMembershipDeepPath(membership) {
 export function sameHubMembershipModalSpot(membership) {
   if (!membership) return null;
   const src =
-    membership.scenic || membership.top10 || membership.regionAttraction;
+    membership.regionAttraction || membership.top10 || membership.scenic;
   if (!src) return null;
   const name = String(membership.name || src.name || '').trim();
   if (!name) return null;
   const contentId = firstTourContentId(
-    src.contentId,
-    membership.scenic?.contentId,
-    membership.top10?.contentId,
     membership.regionAttraction?.contentId,
+    membership.top10?.contentId,
+    membership.scenic?.contentId,
+    src.contentId,
   );
+  const hubId = normId(membership.hubId || src.hubId);
+  const hub = hubId ? resolveCityAttractionHub(hubId) : null;
+  const hubAttr = (hub?.attractions || []).find(
+    (a) => String(a?.name || '').trim() === name,
+  );
+  const lat = Number(hubAttr?.lat ?? src.lat);
+  const lng = Number(hubAttr?.lng ?? src.lng);
   return {
     id: String(src.id || membership.placeSlug || name),
     name,
     subtitle: String(
-      src.hubName || src.areaName || src.region || src.areaLabel || '',
+      src.hubName || src.areaName || src.region || src.areaLabel || hub?.name || '',
     ).trim() || undefined,
     blurb: src.blurb || undefined,
     placeSlug: membership.placeSlug || src.placeSlug || null,
     contentId,
-    hubId: membership.hubId || src.hubId || null,
+    hubId: hubId || null,
     region: src.region || src.areaName || null,
     areaCode: src.areaCode ?? null,
     areaLabel: src.areaLabel || src.areaName || null,
-    nameEn: src.nameEn || src.attractionNameEn || null,
-    lat: Number.isFinite(Number(src.lat)) ? Number(src.lat) : null,
-    lng: Number.isFinite(Number(src.lng)) ? Number(src.lng) : null,
+    nameEn: src.nameEn || src.attractionNameEn || hubAttr?.name_en || null,
+    lat: Number.isFinite(lat) ? lat : null,
+    lng: Number.isFinite(lng) ? lng : null,
   };
 }
 

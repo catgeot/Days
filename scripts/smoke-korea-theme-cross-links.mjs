@@ -147,23 +147,28 @@ assert(
 );
 const expo = yuseongSame.find((r) => r.placeSlug === 'expo-science-park');
 assert(
-  expo?.deepPath === '/korea/theme/scenic?spot=125994',
-  `expo deepPath scenic contentId (got ${expo?.deepPath})`,
+  expo?.deepPath == null &&
+    expo?.modalSpot?.contentId === '125994' &&
+    expo?.modalSpot?.name === '엑스포과학공원',
+  `expo nested modal keeps GATEO name + Tour contentId (got ${JSON.stringify(expo?.modalSpot)})`,
 );
 assert(
-  sameHubMembershipDeepPath(getThemeMembership('expo-science-park')) ===
-    '/korea/theme/scenic?spot=125994',
-  'sameHubMembershipDeepPath regions-only → scenic contentId',
+  sameHubMembershipDeepPath(getThemeMembership('expo-science-park')) == null,
+  'regions-only has no scenic deepPath',
 );
 const gyejok = yuseongSame.find((r) => r.placeSlug === 'gyejoksan-hwangtotgil');
 assert(
-  gyejok?.deepPath == null && gyejok?.modalSpot?.name === '계족산 황톳길',
-  `gyejok uses nested modalSpot (got deep=${gyejok?.deepPath} name=${gyejok?.modalSpot?.name})`,
+  gyejok?.deepPath == null &&
+    gyejok?.modalSpot?.name === '계족산 황톳길' &&
+    gyejok?.modalSpot?.contentId === '705678',
+  `gyejok modalSpot+contentId (got ${JSON.stringify(gyejok?.modalSpot)})`,
+);
+const market = sameHubMembershipModalSpot(
+  getThemeMembership('daejeon-central-market'),
 );
 assert(
-  sameHubMembershipModalSpot(getThemeMembership('daejeon-central-market'))
-    ?.name === '신중앙시장',
-  'central market modalSpot name',
+  market?.name === '신중앙시장' && market?.contentId === '1434477',
+  `central market modalSpot+contentId (got ${JSON.stringify(market)})`,
 );
 assert(
   sameHubMembershipDeepPath(getThemeMembership('daejeon-central-market')) ==

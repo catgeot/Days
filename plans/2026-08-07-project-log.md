@@ -2,18 +2,31 @@
 
 직전: [`2026-08-06-project-log.md`](./2026-08-06-project-log.md)
 
+## 테마여행 #57, 같은 도시 Tour contentId
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **증상**: 계족산 황톳길 본문 「Tour 상세 없음」
+- **원인**: hub 명소에 Tour `contentId` 미매핑 → LIVE detail 조회 불가(폴백 문구)
+- **한 일**: `daejeon:gyejoksan-hwangtotgil`→`705678`(장동산림욕장) · `daejeon:daejeon-central-market`→`1434477`(대전 중앙시장) · 비-명승 sameHub는 **중첩 모달+contentId**(GATEO 이름 유지) · generate region-tour
+- **VERIFY**: `npm run smoke:korea-theme-cross-links` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「계족산·신중앙시장 Tour contentId 채움」
+- **QA**: 유성온천 → 계족산(개요 표시) · 신중앙시장(개요 표시) · 한밭 회귀
+
 ## 테마여행 #57, 같은 도시 명소 → 명승 전용
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `15289334` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `15289334` · **후속 contentId(위 절)**
 
 - **증상**: 한밭수목원만 정상 · 엑스포/계족산/신중앙시장 클릭 시 명소 홈
 - **원인**: `/korea/theme/regions|top10`이 명승으로 리다이렉트되며 `spot` query 소실
-- **한 일**: sameHub는 **명승 `?spot=`(curated id · Tour contentId)** 만 · contentId 없으면 **중첩 모달(SSOT)** · regions/top10 deep-link 금지 · smoke
+- **한 일**: sameHub는 **명승 `?spot=`** 또는 **중첩 모달** · regions/top10 deep-link 금지
 - **VERIFY**: `npm run smoke:korea-theme-cross-links` · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
 - **작업 로그**: Preview 우측 「같은 도시 명소 → 명승 spot/중첩 모달」
-- **QA**: 유성온천 → 한밭(명승) · 엑스포(`spot=125994`) · 계족산·신중앙(중첩 모달)
+- **QA**: 유성온천 → 한밭(명승) · 엑스포 · 계족산·신중앙(중첩 모달)
 
 ## 테마여행 #57, 같은 도시 명소 deep-link
 

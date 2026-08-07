@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-04T18:25:14.664Z",
-    "count": 149,
+    "generatedAt": "2026-08-07T13:37:02.484Z",
+    "count": 151,
     "source": "scripts/data/korea-theme-region-tour-overrides.mjs"
   },
   "byAttractionId": {
@@ -122,9 +122,17 @@
       "contentId": "125994",
       "tourTitle": "대전엑스포과학공원"
     },
+    "daejeon:gyejoksan-hwangtotgil": {
+      "contentId": "705678",
+      "tourTitle": "장동산림욕장"
+    },
     "daejeon:hanbat-arboretum": {
       "contentId": "741658",
       "tourTitle": "한밭수목원"
+    },
+    "daejeon:daejeon-central-market": {
+      "contentId": "1434477",
+      "tourTitle": "대전 중앙시장"
     },
     "daejeon:ppuri-park": {
       "contentId": "126838",

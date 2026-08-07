@@ -36,7 +36,15 @@ export const KOREA_THEME_REGION_TOUR_OVERRIDES = {
     'daegu:apsan-park': { contentId: '126132', tourTitle: '대구앞산공원' },
     'daegu:dongseong-ro': { contentId: '2599899', tourTitle: '대구 동성로거리' },
     'daejeon:expo-science-park': { contentId: '125994', tourTitle: '대전엑스포과학공원' },
+    'daejeon:gyejoksan-hwangtotgil': {
+      contentId: '705678',
+      tourTitle: '장동산림욕장',
+    },
     'daejeon:hanbat-arboretum': { contentId: '741658', tourTitle: '한밭수목원' },
+    'daejeon:daejeon-central-market': {
+      contentId: '1434477',
+      tourTitle: '대전 중앙시장',
+    },
     'daejeon:ppuri-park': { contentId: '126838', tourTitle: '뿌리공원' },
     'daejeon:yuseong-hot-springs': { contentId: '2760707', tourTitle: '유성온천공원' },
     'damyang:damyang-lake': { contentId: '126323', tourTitle: '담양호' },

@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
   sessionNo: 57,
-  sessionPhase: '같은 도시 명소 명승 전용',
+  sessionPhase: '같은 도시 Tour contentId',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-samehub-tour-contentid',
+    session: '테마여행 #57, 같은 도시 Tour contentId',
+    title: '계족산·신중앙시장 Tour contentId 채움',
+    detail:
+      '같은 도시 명소 본문이 비던 이유는 Tour contentId가 없어 LIVE 상세를 못 불러와서입니다. 계족산 황톳길→장동산림욕장(705678), 신중앙시장→대전 중앙시장(1434477)을 SSOT에 넣고 중첩 모달로 Tour 개요를 엽니다. Preview 유성온천→계족산·신중앙시장 본문을 확인해 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-samehub-scenic-only',
     session: '테마여행 #57, 같은 도시 명소 명승 전용',
