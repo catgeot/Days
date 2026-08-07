@@ -4,7 +4,7 @@
 
 ## 테마여행 #57, 같은 도시 명소 → 명승 전용
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `15289334` · Preview QA 대기
 
 - **증상**: 한밭수목원만 정상 · 엑스포/계족산/신중앙시장 클릭 시 명소 홈
 - **원인**: `/korea/theme/regions|top10`이 명승으로 리다이렉트되며 `spot` query 소실
