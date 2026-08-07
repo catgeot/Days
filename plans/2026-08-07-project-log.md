@@ -8,7 +8,7 @@
 
 - **요청**: 명소·명승·관광지 대·중·소 분류칩이 길어질 때 줄바꿈 대신 한 행 가로 스크롤 · 커스텀 스크롤바 항시 시인
 - **한 일**: `FilterChipRow` — 한 행 가로 스크롤 · OS 바 숨김 · **넘침 시 커스텀 트랙·썸 항시** · 좌·우 페이드(더 있음 표시) · 작업 로그
-- **후속**: 스크롤할 때만 보이던 OS 오버레이 바 → 커스텀 바로 교체 · 바 높이 `h-2`→`h-1.5`
+- **후속**: 스크롤할 때만 보이던 OS 오버레이 바 → 커스텀 바로 교체 · 바 높이 `h-2`→`h-1.5`→`h-1`
 - **VERIFY**: `npm run build` PASS
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
