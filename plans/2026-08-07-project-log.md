@@ -4,11 +4,11 @@
 
 ## 테마여행 #55, 분류칩 가로 스크롤
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `ea2de81e` · Preview QA 대기
 
 - **요청**: 명소·명승·관광지 대·중·소 분류칩이 길어질 때 줄바꿈 대신 한 행 가로 스크롤 · 커스텀 스크롤바 항시 시인
 - **한 일**: `FilterChipRow` — `flex-nowrap` + `overflow-x-scroll` · 석재톤 커스텀 가로 스크롤바 · 칩 `shrink-0` · 작업 로그
-- **VERIFY**: (푸시 전) `npm run build`
+- **VERIFY**: `npm run build` PASS
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
 - **작업 로그**: Preview 우측 「대·중·소 분류칩 가로 스크롤」
