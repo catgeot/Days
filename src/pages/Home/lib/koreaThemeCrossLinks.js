@@ -16,6 +16,7 @@ import {
 } from '../../../utils/mrtStayQuery.js';
 import { resolveMrtTnaQuery } from '../../../utils/mrtTnaQuery.js';
 import { resolveMrtPackageThemeHref } from '../../../utils/mrtPackageLinks.js';
+import { buildThemeModulePath } from './koreaThemeNavBack.js';
 
 /**
  * GATEO 권역 라벨(top10/scenic `region`) → TourAPI 시도 areaCode.
@@ -212,6 +213,44 @@ export function getThemeMembership(placeSlug) {
 }
 
 /**
+ * 멤버십 → 같은 도시 명소 클릭 deep-link (모달 spot 포함).
+ * scenic → top10 → regions 순. 명소 홈(`/korea/theme/scenic` bare) 폴백 금지.
+ * @param {{
+ *   scenic?: { id?: string } | null,
+ *   top10?: { id?: string } | null,
+ *   regionAttraction?: { id?: string, areaCode?: string | number, hubId?: string } | null,
+ *   hubId?: string,
+ * } | null | undefined} membership
+ * @returns {string | null}
+ */
+export function sameHubMembershipDeepPath(membership) {
+  if (!membership) return null;
+  if (membership.scenic?.id) {
+    return buildThemeModulePath('/korea/theme/scenic', {
+      spotId: membership.scenic.id,
+    });
+  }
+  if (membership.top10?.id) {
+    return buildThemeModulePath('/korea/theme/top10', {
+      spotId: membership.top10.id,
+    });
+  }
+  const region = membership.regionAttraction;
+  if (region?.id) {
+    const areaCode =
+      region.areaCode != null && String(region.areaCode).trim() !== ''
+        ? String(region.areaCode).trim()
+        : resolveThemeSpotAreaCode(region) ||
+          resolveThemeSpotAreaCode({ hubId: membership.hubId });
+    return buildThemeModulePath('/korea/theme/regions', {
+      spotId: region.id,
+      areaCode,
+    });
+  }
+  return null;
+}
+
+/**
  * 같은 hub의 다른 테마 명소 (자기 제외).
  * @param {string} hubId
  * @param {{ excludePlaceSlug?: string, limit?: number }} [opts]
@@ -229,16 +268,19 @@ export function listSameHubCrossSpots(hubId, opts = {}) {
     if (exclude && slug === exclude) continue;
     const row = byPlaceSlug.get(slug);
     if (!row) continue;
+    const deepPath = sameHubMembershipDeepPath(row);
+    if (!deepPath) continue;
     out.push({
       placeSlug: row.placeSlug,
       hubId: row.hubId,
       name: row.name,
       modules: row.modules.slice(),
-      pathHint: row.top10
-        ? '/korea/theme/top10'
-        : row.scenic
-          ? '/korea/theme/scenic'
+      pathHint: row.scenic
+        ? '/korea/theme/scenic'
+        : row.top10
+          ? '/korea/theme/top10'
           : '/korea/theme/regions',
+      deepPath,
     });
     if (out.length >= limit) break;
   }

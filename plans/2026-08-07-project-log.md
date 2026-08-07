@@ -2,6 +2,37 @@
 
 직전: [`2026-08-06-project-log.md`](./2026-08-06-project-log.md)
 
+## 테마여행 #57, 같은 도시 명소 deep-link
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **증상**: 유성온천 본문 「같은 도시 명소」클릭 시 명소 홈으로 복귀
+- **원인**: regions-only 멤버십이 `/korea/theme/scenic` bare로 폴백
+- **한 일**: `sameHubMembershipDeepPath` · sameHub에 `deepPath`(scenic/top10/regions+spot) · 모달은 `row.deepPath`만 사용 · smoke(유성온천)
+- **VERIFY**: `npm run smoke:korea-theme-cross-links` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「같은 도시 명소 → 해당 상세(홈 폴백 제거)」
+- **QA**: 유성온천 → 한밭수목원(명승 상세) · 엑스포과학공원(방방곡곡 상세)
+
+### 테마여행 · 에이전트 핸드오프 → `#58`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #58, Preview QA 반영` |
+| **브랜치** | `cursor/korea-theme` (고정) |
+| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
+| **읽을 것 3** | ① 본 절 ② #57 sameHub ③ 플랜 §2.5 |
+| **금지 3** | 축제 지도 리팩터 · top10/regions 탑레벨 부활 · UI 임의 리디자인 |
+| **후보** | Preview QA · S9 |
+| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #58, Preview QA 반영
+```
+
 ## 테마여행 #56, 명승 목록 썸네일
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `a8b42d40` · Preview QA 대기

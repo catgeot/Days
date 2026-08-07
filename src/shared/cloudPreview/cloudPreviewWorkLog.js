@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 56,
-  sessionPhase: '명승 썸네일',
+  sessionNo: 57,
+  sessionPhase: '같은 도시 명소 deep-link',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-samehub-deeplink',
+    session: '테마여행 #57, 같은 도시 명소 deep-link',
+    title: '같은 도시 명소 → 해당 상세(홈 폴백 제거)',
+    detail:
+      '유성온천처럼 regions-only 같은 도시 명소를 누르면 명승 홈으로 떨어지던 문제를 고쳤습니다. scenic/top10/regions 멤버십에 맞는 spot deep-link로 엽니다. Preview에서 유성온천 → 한밭수목원·엑스포과학공원 클릭을 확인해 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-heritage-thumbs',
     session: '테마여행 #56, 명승 썸네일',

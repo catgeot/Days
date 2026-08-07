@@ -16,6 +16,7 @@ import {
   resolveThemeCrossLinks,
   resolveThemePackageKey,
   resolveThemeSpotAreaCode,
+  sameHubMembershipDeepPath,
   scenicHomePathForHubId,
   THEME_REGION_LABEL_TO_AREA,
 } from '../src/pages/Home/lib/koreaThemeCrossLinks.js';
@@ -119,6 +120,41 @@ if (gyeongjuScenic) {
 } else {
   console.log('SKIP  no gyeongju scenic for package key');
 }
+
+const yuseong = listKoreaScenicSpots().find((s) => s.id === 'yuseong-hot-springs');
+assert(Boolean(yuseong), 'scenic yuseong-hot-springs exists');
+const yuseongSame = listSameHubCrossSpots(yuseong.hubId, {
+  excludePlaceSlug: yuseong.placeSlug,
+});
+assert(yuseongSame.length > 0, 'yuseong sameHub non-empty');
+assert(
+  yuseongSame.every(
+    (row) =>
+      typeof row.deepPath === 'string' &&
+      row.deepPath.includes('spot=') &&
+      row.deepPath !== '/korea/theme/scenic' &&
+      !row.deepPath.endsWith('/korea/theme/scenic'),
+  ),
+  'yuseong sameHub deepPath always opens a spot (never scenic home)',
+);
+const hanbat = yuseongSame.find((r) => r.placeSlug === 'hanbat-arboretum');
+assert(
+  hanbat?.deepPath === '/korea/theme/scenic?spot=hanbat-arboretum',
+  `hanbat deepPath scenic spot (got ${hanbat?.deepPath})`,
+);
+const expo = yuseongSame.find((r) => r.placeSlug === 'expo-science-park');
+assert(
+  Boolean(expo?.deepPath?.startsWith('/korea/theme/regions?')) &&
+    expo.deepPath.includes('spot=daejeon%3Aexpo-science-park') &&
+    expo.deepPath.includes('area=3'),
+  `expo deepPath regions+area+spot (got ${expo?.deepPath})`,
+);
+assert(
+  sameHubMembershipDeepPath(getThemeMembership('expo-science-park'))?.includes(
+    'spot=',
+  ),
+  'sameHubMembershipDeepPath regions-only has spot',
+);
 
 const yeosuSpot = { hubId: 'yeosu', placeSlug: 'yeosu', name: '여수', region: '전라' };
 assert(resolveThemePackageKey(yeosuSpot) === 'koreaYeosu', 'yeosu → koreaYeosu');

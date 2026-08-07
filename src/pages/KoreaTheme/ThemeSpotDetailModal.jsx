@@ -79,14 +79,6 @@ function membershipDeepPath(moduleId, membership) {
   return MODULE_CHIP[moduleId]?.path || '/korea/theme/scenic';
 }
 
-function sameHubDeepPath(row) {
-  const mem = getThemeMembership(row.placeSlug);
-  if (mem?.scenic?.id) {
-    return buildThemeModulePath('/korea/theme/scenic', { spotId: mem.scenic.id });
-  }
-  return '/korea/theme/scenic';
-}
-
 function CrossRailSection({ title, children }) {
   if (!children) return null;
   return (
@@ -269,9 +261,7 @@ function ThemeSpotCrossRail({
           <ul className="space-y-1.5">
             {cross.sameHub.map((row) => (
               <li key={row.placeSlug}>
-                <CrossTextButton
-                  onClick={() => goThemePath(sameHubDeepPath(row))}
-                >
+                <CrossTextButton onClick={() => goThemePath(row.deepPath)}>
                   {row.name}
                 </CrossTextButton>
               </li>
