@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-07-korea-theme-scenic-chip-hscroll-thinner',
+    session: '테마여행 #55, 분류칩 가로 스크롤',
+    title: '분류칩 스크롤바 한 단계 얇게',
+    detail:
+      '분류칩 커스텀 가로 스크롤바 높이를 h-2→h-1.5로 한 단계 줄였습니다. Preview에서 넘치는 칩 행 아래 바 두께를 확인해 주세요.',
+    at: '2026-08-07',
+  },
+  {
     id: '2026-08-07-korea-theme-scenic-chip-hscroll-persist',
     session: '테마여행 #55, 분류칩 가로 스크롤',
     title: '분류칩 스크롤바·좌우 페이드 항시',

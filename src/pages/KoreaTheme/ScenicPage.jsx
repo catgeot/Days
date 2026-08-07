@@ -212,7 +212,7 @@ function FilterChipRow({ 'aria-label': ariaLabel, className = '', children }) {
       </div>
       {edge.overflow ? (
         <div
-          className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-stone-300/95 ring-1 ring-stone-400/30"
+          className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-stone-300/95 ring-1 ring-stone-400/30"
           aria-hidden="true"
           title="좌우로 스크롤해 더 많은 분류를 볼 수 있습니다"
         >
