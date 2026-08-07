@@ -2,6 +2,13 @@
 
 직전: [`2026-08-06-project-log.md`](./2026-08-06-project-log.md)
 
+## 릴리스 노트 — 한국의 명승 (사용자 문구)
+
+**상태**: `main` `5d4df41f` · `releaseNotes.js` 반영
+
+- 제목: 「한국의 명소를 축제와 함께 둘러볼 수 있어요」
+- 홈 투톱·명승 목록·검색·상세 연결을 일반 사용자 말투로 안내
+
 ## 테마여행 #63, 메인 머지·테스트
 
 **상태**: ✅ PR [#58](https://github.com/catgeot/Days/pull/58) MERGED → `main` `a572eed7` · PROD 배포·로컬 QA PASS
