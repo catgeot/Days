@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
   sessionNo: 54,
-  sessionPhase: '명소, 명승 분류 최적화',
+  sessionPhase: '분류칩 0건·동일라벨 정리',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-scenic-chip-zero-dup-hide',
+    session: '테마여행 #54, 분류칩 0건·동일라벨 정리',
+    title: '0건 칩·중소수 동일 라벨 숨김',
+    detail:
+      '중·소분류에서 수량이 0인 칩과, 중분류와 같은 라벨의 소분류(예: 서울→서울)를 숨깁니다. 명소 여행지 칩은 시도를 고른 뒤에만 보입니다. Preview에서 수도권·관광지 종목 칩을 확인해 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-scenic-curated-heritage-chips',
     session: '테마여행 #54, 명소, 명승 분류 최적화',

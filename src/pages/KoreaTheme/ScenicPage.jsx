@@ -41,6 +41,7 @@ import {
   fetchKoreaTourAttractionById,
   fetchKoreaTourAttractions,
   fetchScenicFilterChipCounts,
+  labelScenicAreaCode,
   listScenicRegionAreas,
   normalizeScenicAreaCode,
   scenicAreaCodeForHubId,
@@ -90,6 +91,16 @@ function normalizeScenicHubParam(raw) {
 function chipCountLabel(count) {
   if (count == null || !Number.isFinite(count)) return null;
   return Number(count).toLocaleString('ko-KR');
+}
+
+/** 명시적 0만 숨김 · 로딩(undefined)은 유지 */
+function keepChipByCount(count) {
+  if (count == null || !Number.isFinite(Number(count))) return true;
+  return Number(count) > 0;
+}
+
+function chipLabelsEqual(a, b) {
+  return String(a || '').trim() === String(b || '').trim();
 }
 
 function FilterChipLabel({ label, count }) {
@@ -280,9 +291,31 @@ export default function KoreaThemeScenicPage() {
     [region, areaCode],
   );
 
+  const curatedAreaChips = useMemo(
+    () =>
+      areaChips.filter((chip) => (curatedAreaCounts[chip.code] || 0) > 0),
+    [areaChips, curatedAreaCounts],
+  );
+
+  const curatedHubChipsVisible = useMemo(() => {
+    if (!areaCode) return [];
+    const areaLabel = labelScenicAreaCode(areaCode);
+    return curatedHubChips.filter((chip) => {
+      if ((chip.count || 0) <= 0) return false;
+      if (areaLabel && chipLabelsEqual(chip.label, areaLabel)) return false;
+      return true;
+    });
+  }, [curatedHubChips, areaCode]);
+
   const heritageAreaCounts = useMemo(
     () => countKoreaHeritageScenicByTourArea(region),
     [region],
+  );
+
+  const heritageAreaChips = useMemo(
+    () =>
+      areaChips.filter((chip) => (heritageAreaCounts[chip.code] || 0) > 0),
+    [areaChips, heritageAreaCounts],
   );
 
   const heritageCategoryChips = useMemo(
@@ -294,6 +327,22 @@ export default function KoreaThemeScenicPage() {
       }),
     [region, areaCode, localityQuery],
   );
+
+  const heritageCategoryChipsVisible = useMemo(() => {
+    const midLabels = new Set(
+      heritageAreaChips
+        .map((chip) => String(chip.label || '').trim())
+        .filter(Boolean),
+    );
+    const activeMidLabel = areaCode ? labelScenicAreaCode(areaCode) : null;
+    return heritageCategoryChips.filter((chip) => {
+      if ((chip.count || 0) <= 0) return false;
+      const label = String(chip.label || '').trim();
+      if (activeMidLabel && chipLabelsEqual(label, activeMidLabel)) return false;
+      if (midLabels.has(label)) return false;
+      return true;
+    });
+  }, [heritageCategoryChips, heritageAreaChips, areaCode]);
 
   const listReturnTo = useMemo(() => {
     const params = new URLSearchParams();
@@ -341,6 +390,34 @@ export default function KoreaThemeScenicPage() {
     () => listTourAttractionCat3(cat1, cat2),
     [cat1, cat2],
   );
+
+  const tourCat1ChipsVisible = useMemo(
+    () =>
+      TOUR_ATTRACTION_CAT1.filter((chip) =>
+        keepChipByCount(chipCounts.cat1Counts[chip.code]),
+      ),
+    [chipCounts.cat1Counts],
+  );
+
+  const tourCat2ChipsVisible = useMemo(() => {
+    const majorLabel =
+      TOUR_ATTRACTION_CAT1.find((c) => c.code === cat1)?.label || '';
+    return cat2Chips.filter((chip) => {
+      if (!keepChipByCount(chipCounts.cat2Counts[chip.code])) return false;
+      if (majorLabel && chipLabelsEqual(chip.label, majorLabel)) return false;
+      return true;
+    });
+  }, [cat2Chips, chipCounts.cat2Counts, cat1]);
+
+  const tourCat3ChipsVisible = useMemo(() => {
+    const midLabel = cat2Chips.find((c) => c.code === cat2)?.label || '';
+    return cat3Chips.filter((chip) => {
+      if (!keepChipByCount(chipCounts.cat3Counts[chip.code])) return false;
+      if (midLabel && chipLabelsEqual(chip.label, midLabel)) return false;
+      return true;
+    });
+  }, [cat3Chips, chipCounts.cat3Counts, cat2Chips, cat2]);
+
   const catalogHeading = useMemo(
     () => scenicDbCatalogHeading(region, areaCode, hubName || null),
     [region, areaCode, hubName],
@@ -913,13 +990,13 @@ export default function KoreaThemeScenicPage() {
                     );
                   })}
                 </div>
-                {areaChips.length > 1 ? (
+                {curatedAreaChips.length > 1 ? (
                   <div
                     role="group"
                     aria-label="명소 시도 중분류"
                     className="flex flex-wrap gap-1.5 pl-0.5"
                   >
-                    {areaChips.map((chip) => {
+                    {curatedAreaChips.map((chip) => {
                       const active = areaCode === chip.code;
                       return (
                         <button
@@ -942,13 +1019,13 @@ export default function KoreaThemeScenicPage() {
                     })}
                   </div>
                 ) : null}
-                {curatedHubChips.length > 1 ? (
+                {curatedHubChipsVisible.length > 1 ? (
                   <div
                     role="group"
                     aria-label="명소 여행지 소분류"
                     className="flex flex-wrap gap-1.5 pl-1"
                   >
-                    {curatedHubChips.map((chip) => {
+                    {curatedHubChipsVisible.map((chip) => {
                       const active = hubId === chip.hubId;
                       return (
                         <button
@@ -1044,13 +1121,13 @@ export default function KoreaThemeScenicPage() {
                     );
                   })}
                 </div>
-                {areaChips.length > 1 ? (
+                {heritageAreaChips.length > 1 ? (
                   <div
                     role="group"
                     aria-label="명승 시도 중분류"
                     className="flex flex-wrap gap-1.5 pl-0.5"
                   >
-                    {areaChips.map((chip) => {
+                    {heritageAreaChips.map((chip) => {
                       const active = areaCode === chip.code;
                       return (
                         <button
@@ -1073,13 +1150,13 @@ export default function KoreaThemeScenicPage() {
                     })}
                   </div>
                 ) : null}
-                {heritageCategoryChips.length > 0 ? (
+                {heritageCategoryChipsVisible.length > 0 ? (
                   <div
                     role="group"
                     aria-label="명승 경관 소분류"
                     className="flex flex-wrap gap-1.5 pl-1"
                   >
-                    {heritageCategoryChips.map((chip) => {
+                    {heritageCategoryChipsVisible.map((chip) => {
                       const active = heritageCategory === chip.code;
                       return (
                         <button
@@ -1180,40 +1257,42 @@ export default function KoreaThemeScenicPage() {
             </p>
 
             <div className="space-y-2">
-              <div
-                role="group"
-                aria-label="관광 종목 대분류"
-                className="flex flex-wrap gap-1.5"
-              >
-                {TOUR_ATTRACTION_CAT1.map((chip) => {
-                  const active = cat1 === chip.code;
-                  return (
-                    <button
-                      key={chip.code}
-                      type="button"
-                      onClick={() => setCat1(chip.code)}
-                      aria-pressed={active}
-                      className={
-                        active
-                          ? 'inline-flex items-center gap-1 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-950'
-                          : 'inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50'
-                      }
-                    >
-                      <FilterChipLabel
-                        label={chip.label}
-                        count={chipCounts.cat1Counts[chip.code]}
-                      />
-                    </button>
-                  );
-                })}
-              </div>
-              {cat2Chips.length > 0 ? (
+              {tourCat1ChipsVisible.length > 0 ? (
+                <div
+                  role="group"
+                  aria-label="관광 종목 대분류"
+                  className="flex flex-wrap gap-1.5"
+                >
+                  {tourCat1ChipsVisible.map((chip) => {
+                    const active = cat1 === chip.code;
+                    return (
+                      <button
+                        key={chip.code}
+                        type="button"
+                        onClick={() => setCat1(chip.code)}
+                        aria-pressed={active}
+                        className={
+                          active
+                            ? 'inline-flex items-center gap-1 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-950'
+                            : 'inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50'
+                        }
+                      >
+                        <FilterChipLabel
+                          label={chip.label}
+                          count={chipCounts.cat1Counts[chip.code]}
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : null}
+              {tourCat2ChipsVisible.length > 0 ? (
                 <div
                   role="group"
                   aria-label={`${activeCat1Label} 중분류`}
                   className="flex flex-wrap gap-1.5 pl-0.5"
                 >
-                  {cat2Chips.map((chip) => {
+                  {tourCat2ChipsVisible.map((chip) => {
                     const active = cat2 === chip.code;
                     return (
                       <button
@@ -1236,13 +1315,13 @@ export default function KoreaThemeScenicPage() {
                   })}
                 </div>
               ) : null}
-              {cat3Chips.length > 0 ? (
+              {tourCat3ChipsVisible.length > 0 ? (
                 <div
                   role="group"
                   aria-label={`${activeCat2Label} 소분류`}
                   className="flex flex-wrap gap-1.5 pl-1"
                 >
-                  {cat3Chips.map((chip) => {
+                  {tourCat3ChipsVisible.map((chip) => {
                     const active = cat3 === chip.code;
                     return (
                       <button

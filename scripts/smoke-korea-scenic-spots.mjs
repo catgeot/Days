@@ -104,6 +104,17 @@ assert(
   gyeongHubs.some((h) => h.hubId === 'gyeongju' && h.count >= 3),
   '명소 소분류에 경주≥3',
 );
+const capitalAreas = countKoreaScenicSpotsByTourArea('수도권');
+assert((capitalAreas['1'] || 0) > 0, '수도권 서울 명소>0');
+assert(
+  Object.values(capitalAreas).every((n) => n > 0),
+  '명소 시도 건수는 양수만(0 칩 없음)',
+);
+const seoulHubs = listKoreaScenicHubChips('수도권', '1');
+assert(
+  seoulHubs.every((h) => h.label !== '서울') || seoulHubs.length <= 1,
+  '서울 시도=서울 여행지 동일 라벨은 UI에서 숨김 대상',
+);
 
 if (failed) {
   console.error(`\n${failed} smoke assertion(s) failed`);

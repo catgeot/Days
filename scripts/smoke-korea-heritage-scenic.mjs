@@ -65,6 +65,10 @@ assert.ok(pageSrc.includes('명승 경관 소분류'), 'heritage category chips'
 assert.ok(pageSrc.includes('명소 권역 대분류'), 'curated region chips');
 assert.ok(pageSrc.includes('명소 여행지 소분류'), 'curated hub chips');
 assert.ok(!pageSrc.includes('aria-label="권역 대분류"'), 'no page-top heritage chips');
+assert.ok(pageSrc.includes('keepChipByCount'), 'hide zero-count chips helper');
+assert.ok(pageSrc.includes('chipLabelsEqual'), 'hide same mid/small label helper');
+assert.ok(pageSrc.includes('curatedHubChipsVisible'), 'curated hub chips filtered');
+assert.ok(pageSrc.includes('tourCat3ChipsVisible'), 'tour cat3 zero-count filtered');
 assert.ok(modalSrc.includes("spot.source === 'cha'"), 'modal CHA detail');
 assert.ok(modalSrc.includes('heritageMeta'), 'modal heritage meta rows');
 assert.ok(modalSrc.includes('지정번호'), 'modal designation no');
