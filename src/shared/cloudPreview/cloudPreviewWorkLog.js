@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-07-korea-theme-scenic-chip-hscroll-persist',
+    session: '테마여행 #55, 분류칩 가로 스크롤',
+    title: '분류칩 스크롤바·좌우 페이드 항시',
+    detail:
+      'OS 오버레이 스크롤바 대신 커스텀 트랙·썸을 넘침 시 항상 표시하고, 좌·우에 더 있을 때 페이드로 알려 줍니다. Preview `/korea/theme/scenic`에서 강원 소분류·관광지 cat3를 확인해 주세요.',
+    at: '2026-08-07',
+  },
+  {
     id: '2026-08-07-korea-theme-scenic-chip-hscroll',
     session: '테마여행 #55, 분류칩 가로 스크롤',
     title: '대·중·소 분류칩 가로 스크롤',

@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   CalendarDays,
@@ -113,21 +120,111 @@ function FilterChipLabel({ label, count }) {
   );
 }
 
-const FILTER_CHIP_ROW_CLASS =
-  'korea-scenic-chip-row flex min-w-0 flex-nowrap items-center gap-1.5 overflow-x-scroll overscroll-x-contain touch-pan-x pb-1.5 [&>button]:shrink-0';
-
 function FilterChipRow({ 'aria-label': ariaLabel, className = '', children }) {
+  const scrollerRef = useRef(null);
+  const trackRef = useRef(null);
+  const [edge, setEdge] = useState({
+    overflow: false,
+    left: false,
+    right: false,
+    thumbWidthPct: 100,
+    thumbLeftPct: 0,
+  });
+
+  const syncScrollEdges = useCallback(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    const maxScroll = Math.max(0, scrollWidth - clientWidth);
+    const overflow = maxScroll > 2;
+    const ratio = scrollWidth > 0 ? clientWidth / scrollWidth : 1;
+    const thumbWidthPct = overflow
+      ? Math.max(18, Math.min(100, ratio * 100))
+      : 100;
+    const thumbLeftPct = overflow
+      ? (scrollLeft / maxScroll) * (100 - thumbWidthPct)
+      : 0;
+    setEdge({
+      overflow,
+      left: overflow && scrollLeft > 2,
+      right: overflow && scrollLeft < maxScroll - 2,
+      thumbWidthPct,
+      thumbLeftPct,
+    });
+  }, []);
+
+  useLayoutEffect(() => {
+    syncScrollEdges();
+  }, [syncScrollEdges, children]);
+
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return undefined;
+    syncScrollEdges();
+    el.addEventListener('scroll', syncScrollEdges, { passive: true });
+    const ro = new ResizeObserver(() => syncScrollEdges());
+    ro.observe(el);
+    const track = trackRef.current;
+    if (track) ro.observe(track);
+    const mo = new MutationObserver(() => syncScrollEdges());
+    mo.observe(el, { childList: true, subtree: true, characterData: true });
+    window.addEventListener('resize', syncScrollEdges);
+    return () => {
+      el.removeEventListener('scroll', syncScrollEdges);
+      ro.disconnect();
+      mo.disconnect();
+      window.removeEventListener('resize', syncScrollEdges);
+    };
+  }, [syncScrollEdges, children]);
+
   return (
     <div
-      role="group"
-      aria-label={ariaLabel}
       className={
-        className
-          ? `${FILTER_CHIP_ROW_CLASS} ${className}`
-          : FILTER_CHIP_ROW_CLASS
+        className ? `relative min-w-0 ${className}` : 'relative min-w-0'
       }
     >
-      {children}
+      <div className="relative min-w-0">
+        <div
+          ref={scrollerRef}
+          role="group"
+          aria-label={ariaLabel}
+          className="korea-scenic-chip-row min-w-0 overflow-x-auto overscroll-x-contain touch-pan-x"
+        >
+          <div
+            ref={trackRef}
+            className="flex w-max min-w-full flex-nowrap items-center gap-1.5 [&>button]:shrink-0"
+          >
+            {children}
+          </div>
+        </div>
+        {edge.left ? (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 left-0 z-[1] w-8 bg-gradient-to-r from-stone-100 via-stone-100/90 to-transparent"
+          />
+        ) : null}
+        {edge.right ? (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 right-0 z-[1] w-8 bg-gradient-to-l from-stone-100 via-stone-100/90 to-transparent"
+          />
+        ) : null}
+      </div>
+      {edge.overflow ? (
+        <div
+          className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-stone-300/95 ring-1 ring-stone-400/30"
+          aria-hidden="true"
+          title="좌우로 스크롤해 더 많은 분류를 볼 수 있습니다"
+        >
+          <div
+            className="h-full rounded-full bg-stone-600 shadow-sm"
+            style={{
+              width: `${edge.thumbWidthPct}%`,
+              marginLeft: `${edge.thumbLeftPct}%`,
+            }}
+          />
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -895,26 +992,15 @@ export default function KoreaThemeScenicPage() {
         url={RETURN_TO}
       />
       <style>{`
+        /* OS 오버레이 스크롤바는 숨기고, FilterChipRow 커스텀 바가 항시 시인 */
         .korea-scenic-chip-row {
-          scrollbar-width: thin;
-          scrollbar-color: rgb(120 113 108) rgb(231 229 228);
+          scrollbar-width: none;
+          -ms-overflow-style: none;
         }
         .korea-scenic-chip-row::-webkit-scrollbar {
-          height: 8px;
-          display: block;
-        }
-        .korea-scenic-chip-row::-webkit-scrollbar-track {
-          margin: 0 2px;
-          background: rgb(231 229 228);
-          border-radius: 9999px;
-        }
-        .korea-scenic-chip-row::-webkit-scrollbar-thumb {
-          background: rgb(120 113 108);
-          border-radius: 9999px;
-          border: 2px solid rgb(231 229 228);
-        }
-        .korea-scenic-chip-row::-webkit-scrollbar-thumb:hover {
-          background: rgb(87 83 78);
+          display: none;
+          width: 0;
+          height: 0;
         }
       `}</style>
 

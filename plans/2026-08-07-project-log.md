@@ -4,15 +4,16 @@
 
 ## 테마여행 #55, 분류칩 가로 스크롤
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `ea2de81e` · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
 
 - **요청**: 명소·명승·관광지 대·중·소 분류칩이 길어질 때 줄바꿈 대신 한 행 가로 스크롤 · 커스텀 스크롤바 항시 시인
-- **한 일**: `FilterChipRow` — `flex-nowrap` + `overflow-x-scroll` · 석재톤 커스텀 가로 스크롤바 · 칩 `shrink-0` · 작업 로그
-- **VERIFY**: `npm run build` PASS
+- **한 일**: `FilterChipRow` — 한 행 가로 스크롤 · OS 바 숨김 · **넘침 시 커스텀 트랙·썸 항시** · 좌·우 페이드(더 있음 표시) · 작업 로그
+- **후속**: 스크롤할 때만 보이던 OS 오버레이 바 → 커스텀 바로 교체
+- **VERIFY**: `npm run build`
 - **공유**: `https://www.gateo.kr/qa/korea-theme`
 - **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
-- **작업 로그**: Preview 우측 「대·중·소 분류칩 가로 스크롤」
-- **QA**: 강원 명소 소분류·수도권 시도·관광지 cat3가 한 행에서 좌우 스크롤되는지 · 스크롤바 항상 보이는지
+- **작업 로그**: Preview 우측 「분류칩 스크롤바·좌우 페이드 항시」
+- **QA**: 넘치는 칩 행에서 스크롤바(트랙·썸)가 스크롤 안 해도 보이는지 · 우측/좌측 페이드로 더 있음이 보이는지
 
 ### 테마여행 · 에이전트 핸드오프 → `#56`
 
