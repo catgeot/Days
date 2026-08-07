@@ -4,7 +4,7 @@
 
 ## 테마여행 #69, 내주변 관내 관광지
 
-**상태**: feature `cursor/scenic-nearby-a8ec` · Preview QA 대기
+**상태**: feature `cursor/scenic-nearby-a8ec` · PR [#64](https://github.com/catgeot/Days/pull/64) · tip `17b66374` · Preview QA 대기
 
 - **증상**: 화천 「내 주변」에 양구·속초만 보이고 화천 관내(붕어섬 등) 관광지 누락
 - **원인**: 권역 TourAPI 목록 앞부분만 가져온 뒤 80km 거리 필터 → 주소 정렬상 화천이 샘플 밖
@@ -21,6 +21,7 @@
 |--|--|
 | **세션 표기** | `테마여행 #70, Preview QA 반영` |
 | **브랜치** | `cursor/scenic-nearby-a8ec` (고정) |
+| **PR** | [#64](https://github.com/catgeot/Days/pull/64) |
 | **읽을 것 3** | ① 본 절 ② ScenicPage near fetch ③ smoke LIVE 화천 |
 | **금지 3** | 축제 지도 리팩터 · UI 임의 리디자인 · releaseNotes 무단 반영 |
 | **후보** | Preview QA · main 병합 |
