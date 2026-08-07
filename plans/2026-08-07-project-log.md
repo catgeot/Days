@@ -2,6 +2,36 @@
 
 직전: [`2026-08-06-project-log.md`](./2026-08-06-project-log.md)
 
+## 테마여행 #56, 명소 · 리스트 대표 사진
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip _(push 후)_ · Preview QA 대기
+
+- **요청**: 명소·명승·관광지 리스트에 대표 사진 포함
+- **한 일**: `ScenicListRow` 썸네일 · 명승 `imageUrl`/`galleryUrls` · 관광지 `firstImage` · 선정 명소는 contentId→TourAPI `first_image` 일괄 조회 · 작업 로그
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「명소·명승·관광지 리스트 대표 사진」
+- **QA**: `/korea/theme/scenic` — 세 목록 행에 대표 사진 · 이미지 없는 항목은 아이콘 플레이스홀더
+
+### 테마여행 · 에이전트 핸드오프 → `#57`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #57, Preview QA 반영` |
+| **브랜치** | `cursor/korea-theme` (고정) |
+| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
+| **읽을 것 3** | ① 본 절 ② #56 리스트 사진 ③ 플랜 §1.0 |
+| **금지 3** | 축제 지도 리팩터 · top10/regions 탑레벨 부활 · UI 임의 리디자인 |
+| **후보** | Preview QA · S9 |
+| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #57, Preview QA 반영
+```
+
 ## 테마여행 #55, 분류칩 가로 스크롤
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `5b4be43f` · Preview QA 대기

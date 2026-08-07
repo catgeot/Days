@@ -46,6 +46,7 @@ import {
 import {
   countKoreaTourAttractions,
   fetchKoreaTourAttractionById,
+  fetchKoreaTourAttractionFirstImagesByIds,
   fetchKoreaTourAttractions,
   fetchScenicFilterChipCounts,
   labelScenicAreaCode,
@@ -240,15 +241,47 @@ function kmByIdFromRanked(ranked) {
   return map;
 }
 
+function toHttps(url) {
+  const s = String(url || '').trim();
+  if (!s) return '';
+  if (s.startsWith('//')) return `https:${s}`;
+  if (s.startsWith('http://')) return `https://${s.slice('http://'.length)}`;
+  return s;
+}
+
+function spotListThumbUrl(spot) {
+  const gallery0 = Array.isArray(spot?.galleryUrls)
+    ? spot.galleryUrls[0]
+    : null;
+  return toHttps(spot?.imageUrl || spot?.firstImage || gallery0 || '');
+}
+
 function ScenicListRow({ spot, distanceKm, onOpen }) {
   const distanceLabel = formatDistanceKm(distanceKm);
+  const thumb = spotListThumbUrl(spot);
   return (
     <button
       type="button"
       onClick={() => onOpen(spot.id)}
-      className="flex w-full items-start gap-3 rounded-2xl border border-stone-200/90 bg-white px-4 py-3.5 text-left shadow-sm transition-colors hover:border-amber-300/80 hover:bg-amber-50/40"
+      className="flex w-full items-start gap-3 rounded-2xl border border-stone-200/90 bg-white p-2.5 text-left shadow-sm transition-colors hover:border-amber-300/80 hover:bg-amber-50/40 sm:px-3 sm:py-3"
     >
-      <span className="min-w-0 flex-1">
+      {thumb ? (
+        <img
+          src={thumb}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          className="h-16 w-16 shrink-0 rounded-xl object-cover bg-stone-200 sm:h-[4.5rem] sm:w-[4.5rem]"
+        />
+      ) : (
+        <div
+          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-stone-100 text-stone-400 sm:h-[4.5rem] sm:w-[4.5rem]"
+          aria-hidden="true"
+        >
+          <Landmark size={20} />
+        </div>
+      )}
+      <span className="min-w-0 flex-1 py-0.5">
         <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
           <span className="text-sm font-extrabold tracking-tight text-stone-900 break-keep">
             {spot.name}
@@ -262,7 +295,7 @@ function ScenicListRow({ spot, distanceKm, onOpen }) {
             </span>
           ) : null}
         </span>
-        <span className="mt-0.5 block text-xs leading-relaxed text-stone-600 break-keep">
+        <span className="mt-0.5 block text-xs leading-relaxed text-stone-600 break-keep line-clamp-2">
           {spot.blurb}
         </span>
       </span>
@@ -292,7 +325,7 @@ function toModalSpot(spot) {
     lng: spot.lng,
     source: spot.source || null,
     content: spot.content || null,
-    imageUrl: spot.imageUrl || null,
+    imageUrl: spot.imageUrl || spot.firstImage || null,
     galleryUrls: Array.isArray(spot.galleryUrls) ? spot.galleryUrls : null,
     homepage: spot.homepage || null,
     nameHanja: spot.nameHanja || null,
@@ -368,6 +401,39 @@ export default function KoreaThemeScenicPage() {
   const curatedKmById = useMemo(
     () => kmByIdFromRanked(curatedNearRanked),
     [curatedNearRanked],
+  );
+
+  const [curatedImageByContentId, setCuratedImageByContentId] = useState(
+    () => new Map(),
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    const ids = curatedSpots
+      .map((s) => String(s.contentId || '').trim())
+      .filter((id) => /^\d{1,32}$/.test(id));
+    if (!ids.length) {
+      setCuratedImageByContentId(new Map());
+      return undefined;
+    }
+    fetchKoreaTourAttractionFirstImagesByIds(ids).then((map) => {
+      if (!cancelled) setCuratedImageByContentId(map);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [curatedSpots]);
+
+  const curatedSpotsWithThumbs = useMemo(
+    () =>
+      curatedSpots.map((spot) => {
+        const contentId = String(spot.contentId || '').trim();
+        const firstImage =
+          curatedImageByContentId.get(contentId) || spot.firstImage || null;
+        if (!firstImage) return spot;
+        return { ...spot, firstImage, imageUrl: spot.imageUrl || firstImage };
+      }),
+    [curatedSpots, curatedImageByContentId],
   );
 
   const heritageNearRanked = useMemo(() => {
@@ -749,7 +815,13 @@ export default function KoreaThemeScenicPage() {
     }
     const curated = CURATED_ALL.find((s) => s.id === selectedId);
     if (curated) {
-      setSelectedSpot(curated);
+      const contentId = String(curated.contentId || '').trim();
+      const firstImage = curatedImageByContentId.get(contentId) || null;
+      setSelectedSpot(
+        firstImage
+          ? { ...curated, firstImage, imageUrl: firstImage }
+          : curated,
+      );
       return undefined;
     }
     const heritage = getKoreaHeritageScenicById(selectedId);
@@ -759,17 +831,25 @@ export default function KoreaThemeScenicPage() {
     }
     const fromPage = dbSpots.find((s) => s.id === selectedId);
     if (fromPage) {
-      setSelectedSpot(fromPage);
+      setSelectedSpot(
+        fromPage.firstImage && !fromPage.imageUrl
+          ? { ...fromPage, imageUrl: fromPage.firstImage }
+          : fromPage,
+      );
       return undefined;
     }
     fetchKoreaTourAttractionById(selectedId).then((spot) => {
       if (cancelled) return;
-      setSelectedSpot(spot);
+      setSelectedSpot(
+        spot?.firstImage && !spot.imageUrl
+          ? { ...spot, imageUrl: spot.firstImage }
+          : spot,
+      );
     });
     return () => {
       cancelled = true;
     };
-  }, [selectedId, dbSpots]);
+  }, [selectedId, dbSpots, curatedImageByContentId]);
 
   const clearHub = useCallback(() => {
     clearNear();
@@ -1187,7 +1267,7 @@ export default function KoreaThemeScenicPage() {
             ) : null}
 
             <ul className="space-y-2">
-              {curatedSpots.map((spot) => (
+              {curatedSpotsWithThumbs.map((spot) => (
                 <li key={`c-${spot.id}`}>
                   <ScenicListRow
                     spot={spot}

@@ -366,3 +366,45 @@ export async function fetchKoreaTourAttractionById(contentId) {
   }
   return data ? mapTourAttractionRow(data) : null;
 }
+
+const FIRST_IMAGE_CHUNK = 80;
+
+/**
+ * GATEO 선정 명소 등 contentId 목록 → TourAPI first_image 맵.
+ * @param {Array<string | null | undefined>} contentIds
+ * @returns {Promise<Map<string, string>>}
+ */
+export async function fetchKoreaTourAttractionFirstImagesByIds(contentIds) {
+  /** @type {Map<string, string>} */
+  const out = new Map();
+  const ids = [
+    ...new Set(
+      (Array.isArray(contentIds) ? contentIds : [])
+        .map((id) => String(id || '').trim())
+        .filter((id) => /^\d{1,32}$/.test(id)),
+    ),
+  ];
+  if (!ids.length) return out;
+
+  for (let i = 0; i < ids.length; i += FIRST_IMAGE_CHUNK) {
+    const chunk = ids.slice(i, i + FIRST_IMAGE_CHUNK);
+    const { data, error } = await supabase
+      .from('tourapi_attraction')
+      .select('content_id, first_image')
+      .in('content_id', chunk)
+      .eq('active', true);
+    if (error) {
+      console.warn(
+        '[koreaTourAttractions] firstImages',
+        error.message || error,
+      );
+      continue;
+    }
+    for (const row of data || []) {
+      const id = String(row?.content_id || '').trim();
+      const url = String(row?.first_image || '').trim();
+      if (id && url) out.set(id, url);
+    }
+  }
+  return out;
+}

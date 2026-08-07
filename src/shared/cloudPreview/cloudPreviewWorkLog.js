@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 55,
-  sessionPhase: '분류칩 가로 스크롤',
+  sessionNo: 56,
+  sessionPhase: '명소',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-scenic-list-thumbs',
+    session: '테마여행 #56, 명소',
+    title: '명소·명승·관광지 리스트 대표 사진',
+    detail:
+      '명승·관광지·GATEO 선정 명소 목록 각 행에 대표 사진 썸네일을 넣었습니다. 명소는 TourAPI contentId로 first_image를 불러오고, 명승은 국가유산청 이미지, 관광지는 DB first_image를 씁니다. Preview `/korea/theme/scenic`에서 세 목록의 사진을 확인해 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-scenic-chip-hscroll-h1',
     session: '테마여행 #55, 분류칩 가로 스크롤',
