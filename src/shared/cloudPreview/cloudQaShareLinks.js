@@ -16,6 +16,14 @@ export const CLOUD_QA_SHARE_LINKS = [
     active: true,
   },
   {
+    slug: 'dokdo',
+    label: '독도 검색',
+    branch: 'cursor/dokdo-search-a849',
+    destination:
+      'https://days-git-cursor-dokdo-search-a849-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
     slug: 'korea',
     label: '축제 페이지',
     branch: 'cursor/korea-time-list-16a3',
@@ -51,6 +59,21 @@ export const CLOUD_QA_SHARE_LINKS = [
 
 export function cloudQaShareUrl(slug) {
   return `${CLOUD_QA_SHARE_ORIGIN}/qa/${slug}`;
+}
+
+/**
+ * @param {string | null | undefined} slug
+ * @returns {{ slug: string, label: string, branch: string, destination: string, active: boolean } | null}
+ */
+export function resolveCloudQaShareLink(slug) {
+  const key = String(slug || '')
+    .trim()
+    .toLowerCase();
+  if (!key) return null;
+  return (
+    CLOUD_QA_SHARE_LINKS.find((link) => link.active && link.slug === key) ||
+    null
+  );
 }
 
 export function activeCloudQaShareLinks() {

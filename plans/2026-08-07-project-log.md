@@ -2,6 +2,18 @@
 
 직전: [`2026-08-06-project-log.md`](./2026-08-06-project-log.md)
 
+## 테마여행 #56, QA 단축링크 검은 화면
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip _(push 후)_ · **main vercel redirect 배포 필요**
+
+- **증상**: `www.gateo.kr/qa/korea-theme` → 주소는 gateo.kr 유지 · 검은 화면
+- **원인**: PROD(`main`) `vercel.json`에 `/qa/korea-theme` 없음 → SPA rewrite → `/qa/:slug` 라우트 없음 → `index.css` 검정 배경만
+- **한 일**: `/qa/:slug` 클라이언트 폴백(`QaShareRedirect`) · SSOT·vercel에 korea-theme(+dokdo 유지) · **main에 redirect 커밋·push**
+- **VERIFY**: `npm run build` · `curl -sI https://www.gateo.kr/qa/korea-theme` → 307/302 to Preview
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **참고**: Preview에 Vercel SSO가 켜져 있으면 리다이렉트 후에도 로그인 화면이 날 수 있음(별건)
+
 ## 테마여행 #56, 명소 · 리스트 대표 사진
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `cd55c0bf` · Preview QA 대기

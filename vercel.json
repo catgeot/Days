@@ -6,6 +6,11 @@
       "permanent": false
     },
     {
+      "source": "/qa/dokdo",
+      "destination": "https://days-git-cursor-dokdo-search-a849-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
       "source": "/qa/korea",
       "destination": "https://days-git-cursor-korea-time-list-16a3-catgeots-projects.vercel.app/korea",
       "permanent": false

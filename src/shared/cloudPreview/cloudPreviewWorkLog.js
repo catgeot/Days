@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
   sessionNo: 56,
-  sessionPhase: '명소 썸네일 캐시',
+  sessionPhase: 'QA 단축링크 폴백',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-qa-share-redirect-fallback',
+    session: '테마여행 #56, QA 단축링크 폴백',
+    title: '/qa/:slug 클라이언트 폴백',
+    detail:
+      'PROD vercel redirect가 아직 없는 slug로 들어오면 검은 화면 대신 Preview로 이동합니다. `/qa/korea-theme`는 main 배포 후 서버 리다이렉트도 동작합니다. 단축 링크로 명승 Preview가 열리는지 확인해 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-scenic-thumb-memcache',
     session: '테마여행 #56, 명소 썸네일 캐시',
