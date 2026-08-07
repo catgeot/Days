@@ -186,7 +186,7 @@ function main() {
       count: spots.length,
       imageCount: withImage,
       curation: 'GATEO',
-      disclaimer: 'GATEO 선정 명소 — 공식 지정 목록이 아닙니다. 많이 찾는 인기 관광지를 골랐습니다.',
+      disclaimer: '많이 찾는 인기 관광지를 골랐습니다.',
       source: 'scripts/data/korea-scenic-spots-overrides.mjs',
       imagesSource: 'scripts/data/korea-scenic-spot-images.json',
       regions,

@@ -368,8 +368,7 @@ async function main() {
       thumbsSource: 'scripts/data/korea-heritage-scenic-thumbs.json',
       kdcd: KDCD,
       kdcdLabel: '명승',
-      disclaimer:
-        '국가유산청 지정 명승 목록입니다. 지정일·면적·분류·해설·사진은 국가유산청 Open API 기준이며, 해제 지정은 제외합니다.',
+      disclaimer: '국가유산청 지정 명승 목록입니다.',
       byRegion,
       skipDetail,
     },

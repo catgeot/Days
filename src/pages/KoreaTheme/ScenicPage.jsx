@@ -2129,13 +2129,7 @@ export default function KoreaThemeScenicPage() {
                   ) : null}
             </div>
             <p className="text-xs text-stone-500 break-keep">
-              {searchActive
-                ? `「${searchFilter}」검색 결과입니다. 아래 종목 칩으로 나눠 확인하세요. TourAPI 관광지(지정 명승과 별개) 제목·주소로 찾습니다.`
-                : nearActive
-                  ? `현재 위치 ${NEAR_KM}km 안 TourAPI 관광지(지정 명승과 별개)입니다. 가까운 순으로 나열합니다.`
-                  : hubId
-                    ? `${hubName} 주소 기준 TourAPI 관광지(지정 명승과 별개)입니다. 같은 시·군끼리 묶어 나열합니다.`
-                    : 'TourAPI 관광지(지정 명승과 별개)입니다. 대표 이미지가 있는 곳을 먼저·같은 시·군끼리 묶어 나열합니다. 아래 종목으로 목록을 나눕니다.'}
+              한국관광공사 선정 관광지입니다.
             </p>
 
             {showTourFilterChips ? (

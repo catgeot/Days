@@ -52,7 +52,10 @@ function main() {
 
   assert(data.meta?.version === 1, 'meta.version === 1');
   assert(data.meta?.curation === 'GATEO', 'meta.curation === GATEO');
-  assert(String(data.meta?.disclaimer || '').includes('GATEO'), 'meta.disclaimer mentions GATEO');
+  assert(
+    String(data.meta?.disclaimer || '').includes('인기 관광지'),
+    'meta.disclaimer is short curated blurb',
+  );
   assert(Array.isArray(spots), 'spots is array');
   assert(
     spots.length >= MIN_COUNT && spots.length <= MAX_COUNT,

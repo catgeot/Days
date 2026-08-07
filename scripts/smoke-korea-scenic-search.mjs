@@ -71,7 +71,11 @@ assert.ok(pageSrc.includes('curatedSearchPool'), 'search pool for curated');
 assert.ok(pageSrc.includes('heritageSearchPool'), 'search pool for heritage');
 assert.ok(pageSrc.includes('pickRegionForSearchMatches'), 'commit picks region');
 assert.ok(
-  pageSrc.includes('종목 칩으로 나눠 확인'),
+  pageSrc.includes('한국관광공사 선정 관광지입니다.'),
+  'tour catalog blurb is short',
+);
+assert.ok(
+  pageSrc.includes('showTourFilterChips'),
   'search keeps category chips',
 );
 assert.ok(

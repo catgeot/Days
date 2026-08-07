@@ -2,6 +2,36 @@
 
 직전: [`2026-08-06-project-log.md`](./2026-08-06-project-log.md)
 
+## 테마여행 #65, 파트 부연 설명 간략화
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+
+- **요청**: 명승 페이지 각 파트 부연을 짧게
+- **한 일**: GATEO「많이 찾는 인기 관광지를 골랐습니다.」· 명승「국가유산청 지정 명승 목록입니다.」· 관광지「한국관광공사 선정 관광지입니다.」
+- **VERIFY**: `npm run smoke:korea-scenic-search` · `smoke:korea-scenic-spots` · `audit:korea-scenic-spots` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: Preview 우측 「명승 페이지 파트 부연 간략화」
+- **QA**: 세 목록 부연이 한 문장인지 확인
+
+### 테마여행 · 에이전트 핸드오프 → `#66`
+
+| | |
+|--|--|
+| **세션 표기** | `테마여행 #66, Preview QA 반영` |
+| **브랜치** | `cursor/korea-theme` (고정) |
+| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
+| **읽을 것 3** | ① 본 절 ② #65 부연 ③ #64 스크롤바 색 |
+| **금지 3** | 축제 지도 리팩터 · top10/regions 탑레벨 부활 · UI 임의 리디자인 |
+| **후보** | Preview QA · S9 |
+| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
+
+**다음 채팅명 (복붙)**:
+
+```
+테마여행 #66, Preview QA 반영
+```
+
 ## 테마여행 #64, 분류칩 스크롤바 색상
 
 **상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `b03eda51` · Preview QA 대기
@@ -14,23 +44,7 @@
 - **작업 로그**: Preview 우측 「분류칩 가로 스크롤바 앰버」
 - **QA**: 넘치는 칩 행 아래 바가 앰버인지 확인
 
-### 테마여행 · 에이전트 핸드오프 → `#65`
-
-| | |
-|--|--|
-| **세션 표기** | `테마여행 #65, Preview QA 반영` |
-| **브랜치** | `cursor/korea-theme` (고정) |
-| **PR** | [#58](https://github.com/catgeot/Days/pull/58) |
-| **읽을 것 3** | ① 본 절 ② #64 스크롤바 색 ③ #63 맨 위 버튼 |
-| **금지 3** | 축제 지도 리팩터 · top10/regions 탑레벨 부활 · UI 임의 리디자인 |
-| **후보** | Preview QA · S9 |
-| **공유/Preview** | `https://www.gateo.kr/qa/korea-theme` · git Preview `/korea/theme/scenic` |
-
-**다음 채팅명 (복붙)**:
-
-```
-테마여행 #65, Preview QA 반영
-```
+### 테마여행 · 에이전트 핸드오프 → `#65` (완료 → 위 #65 절)
 
 ## 테마여행 #63, 본문 맨 위 버튼
 

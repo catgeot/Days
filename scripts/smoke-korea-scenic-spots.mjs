@@ -47,8 +47,8 @@ const byId = new Map(spots.map((s) => [s.id, s]));
 assert(spots.length >= 12 && spots.length <= 100, `count 12–100 (got ${spots.length})`);
 assert(data.meta?.curation === 'GATEO', 'GATEO curation label');
 assert(
-  String(data.meta?.disclaimer || '').includes('명소'),
-  'disclaimer labels curated list as 명소',
+  String(data.meta?.disclaimer || '').includes('인기 관광지'),
+  'disclaimer is short curated blurb',
 );
 
 const NEW_SAMPLES = [

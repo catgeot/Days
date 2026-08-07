@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 64,
-  sessionPhase: '분류칩 스크롤바 색상',
+  sessionNo: 65,
+  sessionPhase: '파트 부연 설명 간략화',
   branch: 'cursor/korea-theme',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'korea-theme',
