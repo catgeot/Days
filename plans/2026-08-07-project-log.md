@@ -4,7 +4,7 @@
 
 ## 테마여행 #50, 인근 명승지 라벨 정리
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `8a039c12` · Preview QA 대기
 
 - **요청**: 축제홈 본문 「인근 명승지」라벨인데 목록은 GATEO 선정 명소
 - **한 일**: `FestivalDetailSheet` 섹션·aria·더보기·모달 eyebrow를 「인근 명소」/「○○ 명소 더보기」로 정합 · 작업로그 #50
