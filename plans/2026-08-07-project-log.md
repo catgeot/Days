@@ -4,7 +4,7 @@
 
 ## 테마여행 #52, 명소 분류 최적화
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `f3ac4a61` · Preview QA 대기
 
 - **요청**: 대분류 클릭 시 같은 경주 명소가 흩어짐 → 동일 권역 뭉침 · 중분류 칩은 분류명 대신 지역명(경북·경남)
 - **한 일**: `sortScenicSpotsByPlaceCluster` — 선정·유산 목록 시도→시·군 뭉침 · DB `area_code`+`addr1` 정렬 · TourAPI cat2(자연관광지 등) 칩 제거 · 지역 중분류 칩 유지 · `smoke:korea-scenic-place-cluster` · 작업로그
