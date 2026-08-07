@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'korea-theme',
+    label: '한국의 명승',
+    branch: 'cursor/korea-theme',
+    destination:
+      'https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic',
+    active: true,
+  },
+  {
     slug: 'dokdo',
     label: '독도 검색',
     branch: 'cursor/dokdo-search-a849',
@@ -51,6 +59,21 @@ export const CLOUD_QA_SHARE_LINKS = [
 
 export function cloudQaShareUrl(slug) {
   return `${CLOUD_QA_SHARE_ORIGIN}/qa/${slug}`;
+}
+
+/**
+ * @param {string | null | undefined} slug
+ * @returns {{ slug: string, label: string, branch: string, destination: string, active: boolean } | null}
+ */
+export function resolveCloudQaShareLink(slug) {
+  const key = String(slug || '')
+    .trim()
+    .toLowerCase();
+  if (!key) return null;
+  return (
+    CLOUD_QA_SHARE_LINKS.find((link) => link.active && link.slug === key) ||
+    null
+  );
 }
 
 export function activeCloudQaShareLinks() {
