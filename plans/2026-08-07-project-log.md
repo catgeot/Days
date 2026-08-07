@@ -4,7 +4,7 @@
 
 ## 테마여행 #64, 분류칩 스크롤바 색상
 
-**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · Preview QA 대기
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · tip `b03eda51` · Preview QA 대기
 
 - **요청**: 분류칩 가로 스크롤바 색상 변경
 - **한 일**: 커스텀 바 트랙 `amber-100` · 썸 `amber-500` (기존 stone 회색)
