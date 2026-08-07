@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 50,
-  sessionPhase: '인근 명승지 라벨 정리',
+  sessionNo: 51,
+  sessionPhase: '인근 명소 거리순',
   branch: 'cursor/korea-theme',
   previewPath: '/korea',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-07-korea-theme-festival-nearby-distance-sort',
+    session: '테마여행 #51, 인근 명소 거리순',
+    title: '인근 명소를 축제장 가까운 순으로',
+    detail:
+      '축제 상세 「인근 명소」를 축제장 좌표 기준 가까운 순으로 정렬하고 km 배지를 붙였습니다. Preview /korea 축제 상세에서 목록이 가까운 순·거리 표기인지 확인해 주세요.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-korea-theme-festival-nearby-myeongso-label',
     session: '테마여행 #50, 인근 명승지 라벨 정리',

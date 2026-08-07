@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
  * 테마여행 #49 — 명승 홈 내 주변(거리순) 스모크.
+ * 테마여행 #51 — 축제 상세 인근 명소도 축제장 거리순.
  *
  *   npm run smoke:korea-scenic-nearby
  */
@@ -14,12 +15,18 @@ import {
   formatDistanceKm,
   NEAR_SCENIC_KM,
   rankNearbyScenicSpots,
+  rankSpotsByDistance,
   scenicSpotLngLat,
 } from '../src/pages/KoreaTheme/nearbyScenicRank.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PAGE = join(__dirname, '../src/pages/KoreaTheme/ScenicPage.jsx');
+const FESTIVAL_SHEET = join(
+  __dirname,
+  '../src/pages/Korea/FestivalDetailSheet.jsx',
+);
 const pageSrc = readFileSync(PAGE, 'utf8');
+const festivalSheetSrc = readFileSync(FESTIVAL_SHEET, 'utf8');
 
 assert.equal(NEAR_SCENIC_KM, 80, 'NEAR_SCENIC_KM=80 (축제와 동일)');
 assert.equal(formatDistanceKm(0.42), '0.4km', 'sub-km format');
@@ -72,6 +79,37 @@ assert.ok(pageSrc.includes('NEAR_SCENIC_KM') || pageSrc.includes('NEAR_KM'), 'NE
 assert.ok(pageSrc.includes('formatDistanceKm'), 'distance label');
 assert.ok(pageSrc.includes('resolveKoreaAreaFromCoords'), 'GPS→hub');
 
+const gangwon = listKoreaScenicSpots('강원');
+assert.ok(gangwon.length >= 3, `강원 선정 명소≥3 (got ${gangwon.length})`);
+const rankedFromFestival = rankSpotsByDistance(
+  gangwon,
+  gangneung.lat,
+  gangneung.lng,
+);
+assert.ok(rankedFromFestival.length >= 3, '축제장 기준 강원 랭크≥3');
+for (let i = 1; i < rankedFromFestival.length; i += 1) {
+  assert.ok(
+    rankedFromFestival[i].km >= rankedFromFestival[i - 1].km,
+    '축제장→명소 distance ascending',
+  );
+}
+assert.ok(
+  rankedFromFestival[0].km < rankedFromFestival.at(-1).km,
+  '축제장 기준 거리가 모두 같지 않음',
+);
+assert.ok(
+  festivalSheetSrc.includes('rankSpotsByDistance'),
+  'FestivalDetailSheet ranks scenic by festival coords',
+);
+assert.ok(
+  festivalSheetSrc.includes('formatDistanceKm'),
+  'FestivalDetailSheet distance badge',
+);
+assert.ok(
+  festivalSheetSrc.includes('festivalLngLat'),
+  'FestivalDetailSheet uses festivalLngLat',
+);
+
 console.log(
-  `OK  smoke:korea-scenic-nearby — curated ${nearCurated.length} · heritage ${nearHeritage.length} within ${NEAR_SCENIC_KM}km of Seoul`,
+  `OK  smoke:korea-scenic-nearby — curated ${nearCurated.length} · heritage ${nearHeritage.length} within ${NEAR_SCENIC_KM}km of Seoul · festival-rank first ${rankedFromFestival[0].km.toFixed(1)}km`,
 );

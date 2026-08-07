@@ -47,6 +47,10 @@ import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
 import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
 import { festivalLngLat } from './koreaFestivalCorridors';
 import { detectSidoCode } from './festivalRegionTags';
+import {
+  formatDistanceKm,
+  rankSpotsByDistance,
+} from '../KoreaTheme/nearbyScenicRank';
 import ThemeSpotDetailModal from '../KoreaTheme/ThemeSpotDetailModal';
 import CourseDetailModal from '../KoreaTheme/CourseDetailModal';
 
@@ -328,10 +332,23 @@ export default function FestivalDetailSheet({
     [festivalAreaCode],
   );
 
-  const scenicSpots = useMemo(() => {
+  const scenicSpotsRanked = useMemo(() => {
     if (!scenicRegion) return [];
-    return listKoreaScenicSpots(scenicRegion).slice(0, SCENIC_LIST_LIMIT);
-  }, [scenicRegion]);
+    const spots = listKoreaScenicSpots(scenicRegion);
+    const origin = festivalLngLat(item?.mapx, item?.mapy);
+    if (!origin) {
+      return spots.slice(0, SCENIC_LIST_LIMIT).map((spot) => ({
+        spot,
+        km: null,
+      }));
+    }
+    return rankSpotsByDistance(spots, origin.lat, origin.lng)
+      .slice(0, SCENIC_LIST_LIMIT)
+      .map(({ item: spot, km }) => ({
+        spot,
+        km: Number.isFinite(km) ? km : null,
+      }));
+  }, [scenicRegion, item?.mapx, item?.mapy]);
 
   const scenicPageHref = useMemo(() => {
     if (!scenicRegion) return SCENIC_PATH;
@@ -1075,31 +1092,44 @@ export default function FestivalDetailSheet({
                   <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
                     인근 명소
                   </p>
-                  {scenicSpots.length > 0 && (
-                    <ul className="space-y-2" aria-label={`${scenicRegion} 명소`}>
-                      {scenicSpots.map((spot) => (
-                        <li key={spot.id || spot.contentId}>
-                          <button
-                            type="button"
-                            onClick={() => setSelectedScenic(spot)}
-                            className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
-                          >
-                            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800">
-                              <Landmark size={18} aria-hidden="true" />
-                            </div>
-                            <span className="min-w-0 flex-1">
-                              <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
-                                {spot.name}
+                  {scenicSpotsRanked.length > 0 && (
+                    <ul
+                      className="space-y-2"
+                      aria-label={`${scenicRegion} 명소 축제장에서 가까운 순`}
+                    >
+                      {scenicSpotsRanked.map(({ spot, km }) => {
+                        const distanceLabel = formatDistanceKm(km);
+                        return (
+                          <li key={spot.id || spot.contentId}>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedScenic(spot)}
+                              className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                            >
+                              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800">
+                                <Landmark size={18} aria-hidden="true" />
+                              </div>
+                              <span className="min-w-0 flex-1">
+                                <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                                  <span className="text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
+                                    {spot.name}
+                                  </span>
+                                  {distanceLabel ? (
+                                    <span className="shrink-0 rounded-full bg-stone-100 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-stone-600">
+                                      {distanceLabel}
+                                    </span>
+                                  ) : null}
+                                </span>
+                                <span className="mt-0.5 block text-[11px] text-stone-500 break-keep">
+                                  {[spot.region, spot.blurb]
+                                    .filter(Boolean)
+                                    .join(' · ')}
+                                </span>
                               </span>
-                              <span className="mt-0.5 block text-[11px] text-stone-500 break-keep">
-                                {[spot.region, spot.blurb]
-                                  .filter(Boolean)
-                                  .join(' · ')}
-                              </span>
-                            </span>
-                          </button>
-                        </li>
-                      ))}
+                            </button>
+                          </li>
+                        );
+                      })}
                     </ul>
                   )}
                   <button
