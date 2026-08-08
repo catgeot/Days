@@ -4,15 +4,16 @@
 
 ## 테마여행 #73, 인근여행지 홈 스크롤
 
-**상태**: feature `cursor/scenic-home-scroll-8482` · Preview QA 대기
+**상태**: feature `cursor/scenic-home-scroll-8482` · PR [#68](https://github.com/catgeot/Days/pull/68) · 로컬 QA OK · Preview 사람 QA 대기
 
 - **증상**: 관광지 본문 「인근 여행지」(비와야 폭포→양양 명승지) 클릭 시 양양 명승 홈 상단이 아니라 관광지 리스트 중간으로 착지
 - **원인**: 같은 `ScenicPage`가 마운트 유지된 채 hub URL만 바뀌어 `mainScrollRef.scrollTop`이 이전 목록 위치로 남음
 - **한 일**: hub·region·area 변경 시(분류칩 pin 없을 때만) 본문 스크롤 0으로 리셋
+- **VERIFY**: `npm run build` · 로컬 북한산 백련사→인근 서울 hub 상단 착지 · 서울 칩 스크롤 핀 회귀 OK
 - **공유**: `https://www.gateo.kr/qa/scenic-home-scroll`
 - **Preview**: `https://days-git-cursor-scenic-home-scroll-8482-catgeots-projects.vercel.app/korea/theme/scenic`
 - **작업 로그**: 「인근 여행지→명승 홈 상단 착지」
-- **QA**: 명승홈→관광지(비와야 폭포)→인근 양양 명승지 → 홈 상단(헤더·선정 명소)인지 확인 · 분류칩 클릭 스크롤 고정은 회귀 없음
+- **QA(사람)**: 명승홈→관광지(비와야 폭포)→인근 양양 명승지 → 홈 상단 · 분류칩 고정 회귀 없음
 
 ## 테마여행 #72, 분류칩 스크롤 고정
 
