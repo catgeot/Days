@@ -4,7 +4,7 @@
 
 ## 테마여행 #78, 빈 hub 명소 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#73](https://github.com/catgeot/Days/pull/73) · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#73](https://github.com/catgeot/Days/pull/73) · tip `bf236719` · Preview 사람 QA 대기
 
 - **한 일**: 큐 구 R01 — 평창 4(월정사·대관령 양떼목장·오대산 선재길·이효석문학관) · 남해 4(독일마을·상주은모래비치·보리암·이순신순국공원) · Tour contentId·썸네일 109/109 · 큐 잔여 119·14라운드 재번호
 - **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `npm run build`
