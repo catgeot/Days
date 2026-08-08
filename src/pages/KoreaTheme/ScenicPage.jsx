@@ -2239,7 +2239,11 @@ export default function KoreaThemeScenicPage() {
                 GATEO 선정 명소
               </h2>
             </div>
-            <p className="text-sm leading-relaxed text-stone-600 break-keep">{DISCLAIMER}</p>
+            {curatedSpots.length > 0 ? (
+              <p className="text-sm leading-relaxed text-stone-600 break-keep">
+                {DISCLAIMER}
+              </p>
+            ) : null}
 
             {showCuratedFilterChips ? (
               <div className="space-y-2">
@@ -2362,17 +2366,17 @@ export default function KoreaThemeScenicPage() {
               <p className="text-sm text-stone-500 break-keep">
                 {searchActive
                   ? (curatedSearchPool?.length || 0) > 0
-                    ? `「${searchFilter}」·이 분류에 해당하는 선정 명소가 없습니다. 다른 권역·시도 칩을 골라 보세요.`
-                    : `「${searchFilter}」에 해당하는 선정 명소가 없습니다.`
+                    ? `「${searchFilter}」·이 분류에는 선정 명소가 없습니다. 다른 권역·시도 칩을 골라 보세요.`
+                    : `「${searchFilter}」와 맞는 선정 명소가 없습니다.`
                   : nearActive
                     ? (curatedNearPool?.length || 0) > 0
-                      ? `${NEAR_KM}km 안·이 분류에 해당하는 선정 명소가 없습니다. 다른 여행지 칩을 골라 보세요.`
-                      : `${NEAR_KM}km 안 선정 명소가 없습니다. 아래 국가유산 명승을 둘러보세요.`
+                      ? `${NEAR_KM}km 안·이 분류에는 선정 명소가 없습니다. 다른 여행지 칩을 골라 보세요.`
+                      : `${NEAR_KM}km 안에는 선정 명소가 없습니다. 아래 국가유산 명승을 둘러보세요.`
                     : hubId
-                      ? `${hubName || '이 여행지'}에 해당하는 선정 명소가 없습니다. 아래 국가유산 명승을 둘러보세요.`
+                      ? `${hubName || '이 여행지'}에는 아직 GATEO 선정 명소가 없습니다. 아래 국가유산 명승을 둘러보세요.`
                       : areaCode
-                        ? '이 시도에 해당하는 선정 명소가 없습니다. 다른 시도를 골라 보세요.'
-                        : '이 권역에 해당하는 선정 명소가 없습니다.'}
+                        ? '이 시도에는 아직 선정 명소가 없습니다. 다른 시도를 골라 보세요.'
+                        : '이 권역에는 아직 선정 명소가 없습니다.'}
               </p>
             ) : null}
           </section>

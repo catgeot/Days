@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-08-scenic-empty-hub-copy-75b',
+    session: '테마여행 #75, 빈 hub 선정 칩 숨김',
+    title: '빈 hub GATEO 선정 문구 정리',
+    detail:
+      '선정 명소가 없을 때 「많이 찾는 인기 관광지를 골랐습니다」 소개가 빈 안내와 겹치던 부분을 없애고, 「양양에는 아직 GATEO 선정 명소가 없습니다…」처럼 안내 문구만 남겼습니다. Preview에서 양양 명승지 GATEO 선정 섹션 카피를 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
     id: '2026-08-08-scenic-empty-hub-chips-75',
     session: '테마여행 #75, 빈 hub 선정 칩 숨김',
     title: '선정 명소 없는 시·군 — 분류칩 숨김',
