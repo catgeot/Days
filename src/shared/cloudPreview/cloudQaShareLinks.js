@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'scenic-empty-chips',
+    label: '빈 hub 선정 칩 숨김',
+    branch: 'cursor/scenic-empty-chips-1837',
+    destination:
+      'https://days-git-cursor-scenic-empty-chips-1837-catgeots-projects.vercel.app/korea/theme/scenic',
+    active: true,
+  },
+  {
     slug: 'scenic-search-clear',
     label: '인근 여행지→검색 잔존 해제',
     branch: 'cursor/scenic-search-clear-f5a5',
