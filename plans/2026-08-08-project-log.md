@@ -4,7 +4,7 @@
 
 ## 테마여행 #86, 빈 hub 명소 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip _(push 후)_ · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `3c405d29` · Preview 사람 QA 대기
 
 - **한 일**: 큐 R01 워커A — 연천5·철원4·동두천4·이천4·평택4 **전수** GATEO 선정 · Tour contentId 18/21 · 썸네일 293/293 · 경기·강원 시도 색인 · 큐 잔여 87
 - **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `npm run build`
