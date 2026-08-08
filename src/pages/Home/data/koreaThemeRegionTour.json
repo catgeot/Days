@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-08T21:39:30.621Z",
-    "count": 170,
+    "generatedAt": "2026-08-08T22:04:09.711Z",
+    "count": 199,
     "source": "scripts/data/korea-theme-region-tour-overrides.mjs"
   },
   "byAttractionId": {
@@ -49,6 +49,30 @@
     "ansan:sihwa-lake-ansan": {
       "contentId": "128065",
       "tourTitle": "시화호"
+    },
+    "anseong:anseong-chiljangsa": {
+      "contentId": "125536",
+      "tourTitle": "칠장사(안성)"
+    },
+    "anseong:anseong-jukjusanseong": {
+      "contentId": "128287",
+      "tourTitle": "죽주산성"
+    },
+    "anseong:anseong-matchum-land": {
+      "contentId": "2525563",
+      "tourTitle": "안성맞춤랜드"
+    },
+    "anseong:anseong-matchum-museum": {
+      "contentId": "130440",
+      "tourTitle": "안성맞춤박물관"
+    },
+    "anseong:anseong-mirinae-shrine": {
+      "contentId": "127556",
+      "tourTitle": "미리내성지"
+    },
+    "anseong:anseong-seounsan": {
+      "contentId": "125478",
+      "tourTitle": "서운산"
     },
     "boryeong:boryeong-coal-museum": {
       "contentId": "2470406",
@@ -142,6 +166,10 @@
       "contentId": "2599899",
       "tourTitle": "대구 동성로거리"
     },
+    "daejeon:daejeon-central-market": {
+      "contentId": "1434477",
+      "tourTitle": "대전 중앙시장"
+    },
     "daejeon:expo-science-park": {
       "contentId": "125994",
       "tourTitle": "대전엑스포과학공원"
@@ -149,10 +177,6 @@
     "daejeon:hanbat-arboretum": {
       "contentId": "741658",
       "tourTitle": "한밭수목원"
-    },
-    "daejeon:daejeon-central-market": {
-      "contentId": "1434477",
-      "tourTitle": "대전 중앙시장"
     },
     "daejeon:ppuri-park": {
       "contentId": "126838",
@@ -186,13 +210,13 @@
       "contentId": "128030",
       "tourTitle": "강화 초지진"
     },
-    "ganghwa:gapgot-dondae": {
-      "contentId": "1254680",
-      "tourTitle": "갑곶돈대"
-    },
     "ganghwa:ganghwa-peace-observatory": {
       "contentId": "631066",
       "tourTitle": "강화도제적봉 평화전망대"
+    },
+    "ganghwa:gapgot-dondae": {
+      "contentId": "1254680",
+      "tourTitle": "갑곶돈대"
     },
     "ganghwa:goryeogungji": {
       "contentId": "127184",
@@ -270,6 +294,34 @@
       "contentId": "126581",
       "tourTitle": "외도 보타니아"
     },
+    "gimpo:aegibong-peace-eco-park": {
+      "contentId": "125454",
+      "tourTitle": "애기봉평화생태공원"
+    },
+    "gimpo:art-village-gimpo": {
+      "contentId": "2633971",
+      "tourTitle": "김포 아트빌리지"
+    },
+    "gimpo:daemyeong-port-gimpo": {
+      "contentId": "228863",
+      "tourTitle": "김포 대명항"
+    },
+    "gimpo:gimpo-hangang-bird-eco-park": {
+      "contentId": "2653096",
+      "tourTitle": "김포한강야생조류생태공원"
+    },
+    "gimpo:gimpo-hyanggyo": {
+      "contentId": "125558",
+      "tourTitle": "김포향교"
+    },
+    "gimpo:gimpo-international-sculpture-park": {
+      "contentId": "127960",
+      "tourTitle": "김포국제조각공원"
+    },
+    "gimpo:munsusanseong-fortress": {
+      "contentId": "125544",
+      "tourTitle": "김포 문수산성"
+    },
     "gongju:geumgang-singwan-park": {
       "contentId": "2756156",
       "tourTitle": "금강신관공원"
@@ -293,6 +345,30 @@
     "gongju:tomb-of-king-muryeong": {
       "contentId": "126681",
       "tourTitle": "공주 무령왕릉과 왕릉원[유네스코 세계유산]"
+    },
+    "goyang:goyang-aram-nuri-arts-center": {
+      "contentId": "2892126",
+      "tourTitle": "고양아람누리 아람미술관"
+    },
+    "goyang:goyang-childrens-museum": {
+      "contentId": "2551413",
+      "tourTitle": "고양어린이박물관"
+    },
+    "goyang:haengju-mountain-fortress": {
+      "contentId": "125562",
+      "tourTitle": "행주산성"
+    },
+    "goyang:ilsan-lake-park": {
+      "contentId": "127197",
+      "tourTitle": "일산호수공원"
+    },
+    "goyang:songam-space-center": {
+      "contentId": "250376",
+      "tourTitle": "송암스페이스센터"
+    },
+    "goyang:wonmont-water-park-goyang": {
+      "contentId": "1845517",
+      "tourTitle": "원마운트 스노우파크"
     },
     "gunsan:eunpa-lake-park": {
       "contentId": "126322",
@@ -322,6 +398,30 @@
       "contentId": "127575",
       "tourTitle": "무등산국립공원(광주)"
     },
+    "gwangmyeong:chunghyeon-museum": {
+      "contentId": "130707",
+      "tourTitle": "충현박물관"
+    },
+    "gwangmyeong:dodeoksan-gwangmyeong": {
+      "contentId": "2736048",
+      "tourTitle": "도덕산공원"
+    },
+    "gwangmyeong:gureumsan-gwangmyeong": {
+      "contentId": "2733419",
+      "tourTitle": "구름산 산림욕장(구름산 도시자연공원)"
+    },
+    "gwangmyeong:gwangmyeong-cave": {
+      "contentId": "2649975",
+      "tourTitle": "광명동굴"
+    },
+    "gwangmyeong:gwangmyeong-speedom": {
+      "contentId": "999751",
+      "tourTitle": "광명스피돔"
+    },
+    "gwangmyeong:gwangmyeong-upcycle-art-center": {
+      "contentId": "2034106",
+      "tourTitle": "광명업사이클아트센터"
+    },
     "gyeongju:bulguksa": {
       "contentId": "126166",
       "tourTitle": "경주 불국사 [유네스코 세계유산]"
@@ -349,6 +449,22 @@
     "gyeongju:underwater-tomb-of-king-munmu": {
       "contentId": "126218",
       "tourTitle": "경주 문무대왕릉"
+    },
+    "hanam:geomdansan": {
+      "contentId": "750824",
+      "tourTitle": "검단산"
+    },
+    "hanam:hanam-history-museum": {
+      "contentId": "130726",
+      "tourTitle": "하남역사박물관"
+    },
+    "hanam:hanam-misa-hangang-park": {
+      "contentId": "2900511",
+      "tourTitle": "미사한강공원2호"
+    },
+    "hanam:iseongsanseong-fortress": {
+      "contentId": "529248",
+      "tourTitle": "하남 이성산성"
     },
     "incheon:eulwangni-beach": {
       "contentId": "128767",
@@ -530,10 +646,6 @@
       "contentId": "127586",
       "tourTitle": "설악산 국립공원(외설악)"
     },
-    "yangyang:naksansa": {
-      "contentId": "125773",
-      "tourTitle": "낙산사"
-    },
     "sokcho:sokcho-beach": {
       "contentId": "125707",
       "tourTitle": "속초해수욕장"
@@ -657,6 +769,10 @@
     "yangyang:naksan-beach": {
       "contentId": "125702",
       "tourTitle": "낙산해수욕장"
+    },
+    "yangyang:naksansa": {
+      "contentId": "125773",
+      "tourTitle": "낙산사"
     },
     "yangyang:seorak-beach": {
       "contentId": "2710820",

@@ -2,6 +2,22 @@
 
 직전: [`2026-08-07-project-log.md`](./2026-08-07-project-log.md)
 
+## 테마여행 #80, 빈 hub 명소 보강
+
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#73](https://github.com/catgeot/Days/pull/73) · Preview 사람 QA 대기
+
+- **한 일**: 큐 R01 워커A — 김포7·고양7·광명7·하남7·안성6 **전수** GATEO 선정 · Tour contentId·썸네일 162/162 · 큐 잔여 112
+- **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
+- **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=gimpo` · `?hub=goyang` · `?hub=gwangmyeong` · `?hub=hanam` · `?hub=anseong`
+- **작업 로그**: 「김포·고양·광명·하남·안성 GATEO 선정 전수」
+- **남은 일**: 큐 R01 잔여(안양·부천·남양주·포천·시흥…) 전수 · 사람 Preview QA
+- **다음 채팅명**:
+
+```
+테마여행 #81, 빈 hub 명소 보강
+```
+
 ## 테마여행 #79, 빈 hub 명소 보강
 
 **상태**: feature `cursor/scenic-yangyang-b772` · PR [#73](https://github.com/catgeot/Days/pull/73) · tip `84461cba` · Preview 사람 QA 대기

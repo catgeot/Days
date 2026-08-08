@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 79,
+  sessionNo: 80,
   sessionPhase: '빈 hub 명소 보강',
   branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?hub=ansan',
+  previewPath: '/korea/theme/scenic?hub=gimpo',
   qaShareSlug: 'scenic-hub-fill',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-08-scenic-hub-fill-r01a-80',
+    session: '테마여행 #80, 빈 hub 명소 보강',
+    title: '김포·고양·광명·하남·안성 GATEO 선정 전수',
+    detail:
+      '큐 R01 워커A 빈 hub 다섯 곳에 hub attractions 전수를 GATEO 선정에 넣었습니다(김포7·고양7·광명7·하남7·안성6 · 전체 162·이미지 162). Preview에서 /korea/theme/scenic?hub=gimpo · ?hub=goyang · ?hub=gwangmyeong · ?hub=hanam · ?hub=anseong 선정 목록을 확인해 주세요.',
+    at: '2026-08-08',
+  },
   {
     id: '2026-08-08-scenic-hub-fill-full-79b',
     session: '테마여행 #79, 빈 hub 명소 보강',

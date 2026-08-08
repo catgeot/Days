@@ -9,10 +9,10 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'scenic-hub-fill',
-    label: '빈 hub 명소 보강 (안산·강화)',
+    label: '빈 hub 명소 보강 (김포·고양…)',
     branch: 'cursor/scenic-yangyang-b772',
     destination:
-      'https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=ansan',
+      'https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=gimpo',
     active: true,
   },
   {

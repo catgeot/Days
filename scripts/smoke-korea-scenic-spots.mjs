@@ -72,6 +72,11 @@ const NEW_SAMPLES = [
   'ansan-reed-wetland-park',
   'bomunsa-ganghwa',
   'chojijin',
+  'aegibong-peace-eco-park',
+  'ilsan-lake-park',
+  'gwangmyeong-cave',
+  'geomdansan',
+  'anseong-matchum-land',
 ];
 for (const id of NEW_SAMPLES) {
   const spot = byId.get(id);

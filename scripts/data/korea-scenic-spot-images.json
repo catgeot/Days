@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-08T21:39:37.394Z",
-    "count": 128,
+    "updatedAt": "2026-08-08T22:05:01.427Z",
+    "count": 162,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -133,6 +133,40 @@
     "seokmodo": "https://tong.visitkorea.or.kr/cms/resource/00/3523000_image2_1.jpg",
     "yangyang-traditional-market": "https://tong.visitkorea.or.kr/cms/resource/04/4068204_image2_1.jpg",
     "bomunsa-ganghwa": "https://tong.visitkorea.or.kr/cms/resource/75/3523075_image2_1.jpg",
-    "chojijin": "https://tong.visitkorea.or.kr/cms/resource_photo/29/4079229_image2_1.JPG"
+    "chojijin": "https://tong.visitkorea.or.kr/cms/resource_photo/29/4079229_image2_1.JPG",
+    "gimpo-international-sculpture-park": "https://tong.visitkorea.or.kr/cms/resource/78/3467378_image2_1.JPG",
+    "gimpo-hyanggyo": "https://tong.visitkorea.or.kr/cms/resource/32/3547032_image2_1.jpg",
+    "daemyeong-port-gimpo": "https://tong.visitkorea.or.kr/cms/resource/34/3501734_image2_1.jpg",
+    "dodeoksan-gwangmyeong": "https://tong.visitkorea.or.kr/cms/resource/00/3527200_image2_1.jpg",
+    "iseongsanseong-fortress": "https://tong.visitkorea.or.kr/cms/resource/29/3566829_image2_1.jpg",
+    "hanam-misa-hangang-park": "https://tong.visitkorea.or.kr/cms/resource/99/2900499_image2_1.jpg",
+    "anseong-jukjusanseong": "https://tong.visitkorea.or.kr/cms/resource/81/3558781_image2_1.jpg",
+    "aegibong-peace-eco-park": "https://tong.visitkorea.or.kr/cms/resource/92/4062892_image2_1.JPG",
+    "art-village-gimpo": "https://tong.visitkorea.or.kr/cms/resource/68/3527768_image2_1.jpg",
+    "gimpo-hangang-bird-eco-park": "https://tong.visitkorea.or.kr/cms/resource/75/4062875_image2_1.JPG",
+    "munsusanseong-fortress": "https://tong.visitkorea.or.kr/cms/resource/76/3507176_image2_1.jpg",
+    "goyang-aram-nuri-arts-center": "https://tong.visitkorea.or.kr/cms/resource/17/2892117_image2_1.jpg",
+    "songam-space-center": "https://tong.visitkorea.or.kr/cms/resource/03/3335103_image2_1.jpg",
+    "goyang-childrens-museum": "https://tong.visitkorea.or.kr/cms/resource/41/4070841_image2_1.jpg",
+    "wonmont-water-park-goyang": "https://tong.visitkorea.or.kr/cms/resource/26/3079526_image2_1.jpg",
+    "ilsan-lake-park": "https://tong.visitkorea.or.kr/cms/resource_photo/83/3553283_image2_1.jpg",
+    "haengju-mountain-fortress": "https://tong.visitkorea.or.kr/cms/resource/20/4075820_image2_1.jpg",
+    "chunghyeon-museum": "https://tong.visitkorea.or.kr/cms/resource/10/3563410_image2_1.jpg",
+    "gwangmyeong-upcycle-art-center": "https://tong.visitkorea.or.kr/cms/resource/57/3567457_image2_1.jpg",
+    "gwangmyeong-cave": "https://tong.visitkorea.or.kr/cms/resource/27/4095727_image2_1.jpg",
+    "gwangmyeong-speedom": "https://tong.visitkorea.or.kr/cms/resource/39/3025639_image2_1.jpg",
+    "hanam-history-museum": "https://tong.visitkorea.or.kr/cms/resource/40/3078540_image2_1.jpg",
+    "anseong-mirinae-shrine": "https://tong.visitkorea.or.kr/cms/resource/77/3558777_image2_1.jpg",
+    "anseong-seounsan": "https://tong.visitkorea.or.kr/cms/resource/80/3517680_image2_1.jpg",
+    "anseong-chiljangsa": "https://tong.visitkorea.or.kr/cms/resource/63/3480763_image2_1.jpg",
+    "anseong-matchum-land": "https://tong.visitkorea.or.kr/cms/resource/79/3429479_image2_1.jpg",
+    "anseong-matchum-museum": "https://tong.visitkorea.or.kr/cms/resource/17/2996017_image2_1.jpg",
+    "starfield-hanam": "https://tong.visitkorea.or.kr/cms/resource/99/2900499_image2_1.jpg",
+    "hanam-deokpung-market": "https://tong.visitkorea.or.kr/cms/resource/76/2902476_image2_1.jpg",
+    "kintex-goyang": "https://tong.visitkorea.or.kr/cms/resource_photo/83/3553283_image2_1.jpg",
+    "anyangcheon-eco-park-gwangmyeong": "https://tong.visitkorea.or.kr/cms/resource/27/4095727_image2_1.jpg",
+    "geomdansan": "https://tong.visitkorea.or.kr/cms/resource/29/3566829_image2_1.jpg",
+    "gureumsan-gwangmyeong": "https://tong.visitkorea.or.kr/cms/resource/00/3527200_image2_1.jpg",
+    "hanam-gyosan-neighborhood-park": "https://tong.visitkorea.or.kr/cms/resource/40/3078540_image2_1.jpg"
   }
 }

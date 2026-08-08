@@ -132,6 +132,13 @@ const RELATED_IMAGE_CONTENT_IDS = {
   'yongpyong-resort': '136089', // 모나용평 — 용평리조트 Tour 본명 부재 시
   'pyeongchang-olympic-plaza': '3448238', // 인근 알펜시아 — 올림픽기념관 Tour 부재 시
   'ansan-culture-plaza': '2615489', // 화랑유원지 — 문화광장 Tour type12 부재 시
+  'gureumsan-gwangmyeong': '2736048', // 도덕산공원 — 구름산 Tour firstimage 부재 시
+  geomdansan: '529248', // 이성산성 — 검단산 Tour firstimage 부재 시
+  'kintex-goyang': '127197', // 일산호수공원 — 킨텍스 Tour type12 부재 시
+  'anyangcheon-eco-park-gwangmyeong': '2649975', // 광명동굴 — 안양천생태공원 Tour 부재 시
+  'starfield-hanam': '2900511', // 미사한강공원 — 스타필드 Tour type12 부재 시
+  'hanam-deokpung-market': '2902497', // 덕풍공원 — 시장 Tour type12 부재 시
+  'hanam-gyosan-neighborhood-park': '130726', // 하남역사박물관 — 교산공원 Tour 부재 시
 };
 
 async function mapPool(items, worker, size) {
