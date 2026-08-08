@@ -4,16 +4,16 @@
 
 ## 테마여행 #72, 분류칩 스크롤 고정
 
-**상태**: feature `cursor/scenic-chip-jump-0e9a` · PR [#66](https://github.com/catgeot/Days/pull/66) · tip `072169ed` · Preview QA 대기
+**상태**: feature `cursor/scenic-chip-jump-0e9a` · PR [#66](https://github.com/catgeot/Days/pull/66) · Preview QA 대기
 
-- **증상**: 명승홈 각 파트 분류칩(예: 수도권→서울) 클릭 시 스크롤이 서울 관광지 리스트 중간으로 튐
-- **원인**: 칩 필터로 위 목록 높이가 줄어도 `scrollTop`·스크롤 앵커가 유지되어 아래 관광지 구간이 뷰포트로 올라옴
-- **한 일**: 칩 클릭 시 `data-chip-pin`으로 뷰포트 오프셋 저장 → 레이아웃 후 스크롤 보정 · 목록 `overflow-anchor: none`
-- **VERIFY**: `npm run build` · 로컬 UI: 명승/선정 서울 칩 클릭 시 칩 위치 유지(PASS)
+- **증상**: 명승홈 각 파트 분류칩(예: 수도권→서울) 클릭 시 스크롤이 서울 관광지 리스트 중간으로 튐 · 관광지 칩은 결과 1~2건일 때 하단으로 붙음
+- **원인**: 위 목록 축소 시 scrollTop/앵커 유지 · 관광지 짧은 목록은 maxScroll 부족으로 칩을 중간/상단에 둘 여백이 없음
+- **한 일**: `data-chip-pin` 스크롤 보정 · 목록 `overflow-anchor: none` · 관광지 ≤3건/empty 시 본문 `pb-[max(8rem,60vh)]`
+- **VERIFY**: `npm run build` · 로컬 UI: 명승/선정 서울 칩 PASS · 관광지 짧은 목록 여백 확인
 - **공유**: `https://www.gateo.kr/qa/scenic-chip`
 - **Preview**: `https://days-git-cursor-scenic-chip-jump-0e9a-catgeots-projects.vercel.app/korea/theme/scenic`
-- **작업 로그**: Preview 우측 「분류칩 클릭 시 스크롤 점프 방지」
-- **QA**: 수도권→서울·강원→강릉 등 중분류 칩 · 명소/명승/관광지 각 칩 — 클릭한 칩이 제자리에 남는지
+- **작업 로그**: 「분류칩 클릭 시 스크롤 점프 방지」·「관광지 1~2건일 때 칩 하단 고정」
+- **QA**: 수도권→서울 · 관광지 종목 칩으로 목록 1~2건 — 칩이 화면 아래로 붙지 않는지
 
 ### 테마여행 · 에이전트 핸드오프 → `#73`
 

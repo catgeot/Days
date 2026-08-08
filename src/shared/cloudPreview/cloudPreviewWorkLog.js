@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
   sessionNo: 72,
-  sessionPhase: '분류칩 스크롤 고정',
+  sessionPhase: '관광지 짧은목록 여백',
   branch: 'cursor/scenic-chip-jump-0e9a',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-chip',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-08-scenic-chip-short-list-pad-72',
+    session: '테마여행 #72, 관광지 짧은목록 여백',
+    title: '관광지 1~2건일 때 칩 하단 고정',
+    detail:
+      '관광지 분류칩 결과기 1~2건이면 하단 스크롤 여백이 없어 칩이 화면 아래로 붙던 문제를 고쳤습니다. 짧은 목록일 때 본문 하단 패딩을 늘려 칩 위치를 유지합니다. Preview에서 종목 칩으로 목록을 아주 짧게 줄여 확인해 주세요.',
+    at: '2026-08-08',
+  },
   {
     id: '2026-08-08-scenic-chip-scroll-pin-72',
     session: '테마여행 #72, 분류칩 스크롤 고정',

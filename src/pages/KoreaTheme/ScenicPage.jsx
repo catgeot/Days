@@ -1027,9 +1027,21 @@ export default function KoreaThemeScenicPage() {
     if (!el) return;
     const rootRect = root.getBoundingClientRect();
     const elRect = el.getBoundingClientRect();
-    const delta = elRect.top - rootRect.top - pin.viewportOffset;
+    const desired = Math.max(12, pin.viewportOffset);
+    const delta = elRect.top - rootRect.top - desired;
     if (Math.abs(delta) > 1) {
       root.scrollTop += delta;
+    }
+    // 짧은 목록으로 maxScroll이 부족하면 칩을 뷰 상단 근처로 붙임
+    const afterRoot = root.getBoundingClientRect();
+    const afterEl = el.getBoundingClientRect();
+    const actual = afterEl.top - afterRoot.top;
+    if (actual - desired > 12) {
+      const fallback = Math.min(desired, 64);
+      const delta2 = actual - fallback;
+      if (Math.abs(delta2) > 1) {
+        root.scrollTop += delta2;
+      }
     }
   }, []);
 
@@ -2118,7 +2130,15 @@ export default function KoreaThemeScenicPage() {
               searchActive ? 'min-h-0 flex-1 overflow-y-auto' : undefined
             }
           >
-            <div className="mx-auto w-full max-w-3xl space-y-8 px-3 py-6 md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl">
+            <div
+              className={`mx-auto w-full max-w-3xl space-y-8 px-3 pt-6 md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl ${
+                dbStatus === 'empty' ||
+                dbStatus === 'error' ||
+                dbSpots.length <= 3
+                  ? 'pb-[max(8rem,60vh)]'
+                  : 'pb-6'
+              }`}
+            >
               {!searchActive ? (
                 <div className="space-y-2">
                   <div className="flex flex-wrap items-center justify-end gap-2">
