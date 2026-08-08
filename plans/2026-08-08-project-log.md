@@ -4,7 +4,7 @@
 
 ## 테마여행 #82, 선정 hub 시도 색인
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#74](https://github.com/catgeot/Days/pull/74) · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#74](https://github.com/catgeot/Days/pull/74) · tip `ac717999` · Preview 사람 QA 대기
 
 - **한 일**: 선정 있는데 `koreaAreaCodes` 미등재 hub **30**곳 시도 색인(경기15·인천 강화·제주 서귀포 등) · hub 보강 큐/리포트/draft·테마플랜에 **색인 필수** 단계 · smoke로 선정 hub 전수 링크 검증
 - **VERIFY**: `generate`/`audit`/`smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `smoke:korea-scenic-hub-fill` · `smoke:korea-scenic-spots` · `npm run build`
