@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-07T12:52:34.311Z",
-    "count": 97,
-    "imageCount": 97,
+    "generatedAt": "2026-08-08T21:01:31.321Z",
+    "count": 101,
+    "imageCount": 101,
     "curation": "GATEO",
     "disclaimer": "많이 찾는 인기 관광지를 골랐습니다.",
     "source": "scripts/data/korea-scenic-spots-overrides.mjs",
@@ -129,7 +129,7 @@
       "name": "낙산사",
       "blurb": "동해 절벽 위 관음성 — 바다와 사찰",
       "region": "강원",
-      "hubId": "sokcho",
+      "hubId": "yangyang",
       "attractionName": "낙산사",
       "attractionNameEn": "Naksansa",
       "placeSlug": "naksansa",
@@ -1472,6 +1472,66 @@
       "lng": 129.5700631,
       "contentId": "127131",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/52/4056752_image2_1.jpg"
+    },
+    {
+      "order": 980,
+      "id": "surfyy-beach",
+      "name": "서피비치",
+      "blurb": "양양 서핑 상징 — 동해 파도와 해변 카페",
+      "region": "강원",
+      "hubId": "yangyang",
+      "attractionName": "서피비치",
+      "attractionNameEn": "Surfyy Beach",
+      "placeSlug": "surfyy-beach",
+      "lat": 38.0735,
+      "lng": 128.6685,
+      "contentId": "2501905",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/90/2745190_image2_1.jpg"
+    },
+    {
+      "order": 990,
+      "id": "hajodae-beach",
+      "name": "하조대해수욕장",
+      "blurb": "기암과 송림이 어울리는 관동 해안",
+      "region": "강원",
+      "hubId": "yangyang",
+      "attractionName": "하조대해수욕장",
+      "attractionNameEn": "Hajodae Beach",
+      "placeSlug": "hajodae-beach",
+      "lat": 38.0229894402,
+      "lng": 128.7242655472,
+      "contentId": "125701",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/73/2745273_image2_1.jpg"
+    },
+    {
+      "order": 1000,
+      "id": "naksan-beach",
+      "name": "낙산해수욕장",
+      "blurb": "낙산사 아래 동해 백사장",
+      "region": "강원",
+      "hubId": "yangyang",
+      "attractionName": "낙산해수욕장",
+      "attractionNameEn": "Naksan Beach",
+      "placeSlug": "naksan-beach",
+      "lat": 38.11733156584656,
+      "lng": 128.63355006579656,
+      "contentId": "125702",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/68/2929768_image2_1.jpg"
+    },
+    {
+      "order": 1010,
+      "id": "seorak-beach",
+      "name": "설악해수욕장",
+      "blurb": "설악 자락과 맞닿은 양양 해변",
+      "region": "강원",
+      "hubId": "yangyang",
+      "attractionName": "설악해수욕장",
+      "attractionNameEn": "Seorak Beach",
+      "placeSlug": "seorak-beach",
+      "lat": 38.1301333481,
+      "lng": 128.6227575205,
+      "contentId": "2710820",
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/22/2745222_image2_1.jpg"
     }
   ]
 }

@@ -2,6 +2,23 @@
 
 직전: [`2026-08-07-project-log.md`](./2026-08-07-project-log.md)
 
+## 테마여행 #77, 명소 보강
+
+**상태**: feature `cursor/scenic-yangyang-b772` · Preview 사람 QA 대기
+
+- **증상**: 양양 명승 홈 GATEO 선정 명소 0건 → 탐색 끊김 (hub attractions는 있으나 curated SSOT 미등재 · 낙산사는 속초 hub)
+- **한 일**: 낙산사 hub/선정을 양양으로 이전 · 서피·하조대·낙산·설악 해수욕장 선정 추가(101) · 상한 150 · Tour 썸네일 채움 · `/qa/scenic-yangyang`
+- **VERIFY**: `npm run audit:korea-scenic-spots` · `audit:city-attraction-hubs` · `audit:korea-theme-region-tour` · `smoke:korea-scenic-spots` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-yangyang`
+- **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=yangyang`
+- **작업 로그**: 「양양 GATEO 선정 명소 5곳」
+- **남은 일**: 빈 hub 다수(평창·남해·강화 등) 권역별 선정 보강 배치 · 사람 Preview QA
+- **다음 채팅명**:
+
+```
+테마여행 #78, 빈 hub 명소 보강
+```
+
 ## 테마여행 #76, 상세 가로 스크롤
 
 **상태**: feature `cursor/scenic-detail-overflow-3f84` · PR [#72](https://github.com/catgeot/Days/pull/72) · Preview 사람 QA 대기

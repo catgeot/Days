@@ -48,6 +48,9 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 32 | (MRT) | `테마여행 #32, MRT 상품지` | ⏳ Preview QA |
 | 33 | (IA) | `테마여행 #33, 페이지 정리` | ✅ 본 절 · 투톱 잠금 |
 | 34 | (네비) | `테마여행 #34, 투톱 크로스 네비` | ✅ Preview QA |
+| 75 | (빈 hub) | `테마여행 #75, 빈 hub 선정 칩 숨김` | ✅ main |
+| 76 | (핫픽스) | `테마여행 #76, 상세 가로 스크롤` | ⏳ Preview QA |
+| 77 | (SSOT) | `테마여행 #77, 명소 보강` | ⏳ Preview QA |
 
 이어하기·핫픽스만 할 때: `테마여행 #N, {짧은 수정}` (`N` = 그 주제의 **다음** 순번). 세션마다 새 `#1` 금지.
 

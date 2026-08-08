@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-07T13:41:26.517Z",
+    "generatedAt": "2026-08-08T21:01:19.004Z",
     "count": 150,
     "source": "scripts/data/korea-theme-region-tour-overrides.mjs"
   },
@@ -458,7 +458,7 @@
       "contentId": "127586",
       "tourTitle": "설악산 국립공원(외설악)"
     },
-    "sokcho:naksansa": {
+    "yangyang:naksansa": {
       "contentId": "125773",
       "tourTitle": "낙산사"
     },

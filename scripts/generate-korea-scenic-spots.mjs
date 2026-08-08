@@ -31,7 +31,7 @@ function toHttps(url) {
 }
 
 const MIN_COUNT = 12;
-const MAX_COUNT = 100;
+const MAX_COUNT = 150;
 const ALLOWED_REGIONS = new Set(['제주', '강원', '전라', '경상', '수도권', '충청']);
 
 function toUrlSlug(nameEn) {

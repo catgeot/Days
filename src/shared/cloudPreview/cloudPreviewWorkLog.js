@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 76,
-  sessionPhase: '상세 가로 스크롤',
-  branch: 'cursor/scenic-detail-overflow-3f84',
-  previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'scenic-detail-overflow',
+  sessionNo: 77,
+  sessionPhase: '명소 보강',
+  branch: 'cursor/scenic-yangyang-b772',
+  previewPath: '/korea/theme/scenic?hub=yangyang',
+  qaShareSlug: 'scenic-yangyang',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-08-scenic-yangyang-77',
+    session: '테마여행 #77, 명소 보강',
+    title: '양양 GATEO 선정 명소 5곳',
+    detail:
+      '양양 명승 홈에 GATEO 선정 명소가 0건이던 문제를 채웠습니다. 낙산사(속초→양양)·서피비치·하조대·낙산·설악 해수욕장을 선정 목록에 넣었습니다. Preview에서 /korea/theme/scenic?hub=yangyang 의 GATEO 선정에 5건이 보이는지 확인해 주세요.',
+    at: '2026-08-08',
+  },
   {
     id: '2026-08-08-scenic-detail-overflow-76',
     session: '테마여행 #76, 상세 가로 스크롤',

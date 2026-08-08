@@ -123,7 +123,7 @@ export const KOREA_THEME_REGION_TOUR_OVERRIDES = {
     'seoul:insadong': { contentId: '264353', tourTitle: '인사동' },
     'seoul:n-seoul-tower': { contentId: '126535', tourTitle: '남산서울타워' },
     'sokcho:gwongeumseong': { contentId: '127586', tourTitle: '설악산 국립공원(외설악)' },
-    'sokcho:naksansa': { contentId: '125773', tourTitle: '낙산사' },
+    'yangyang:naksansa': { contentId: '125773', tourTitle: '낙산사' },
     'sokcho:sokcho-beach': { contentId: '125707', tourTitle: '속초해수욕장' },
     'sokcho:sokcho-jungang-market': { contentId: '1260275', tourTitle: '속초관광수산시장' },
     'sokcho:yeonggeumjeong': { contentId: '125779', tourTitle: '영금정' },

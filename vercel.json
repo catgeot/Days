@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/scenic-yangyang",
+      "destination": "https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=yangyang",
+      "permanent": false
+    },
+    {
       "source": "/qa/scenic-detail-overflow",
       "destination": "https://days-git-cursor-scenic-detail-overflow-3f84-catgeots-projects.vercel.app/korea/theme/scenic",
       "permanent": false

@@ -12,7 +12,8 @@ const JSON_PATH = join(__dirname, '../src/pages/Home/data/koreaScenicSpots.json'
 const HUBS_PATH = join(__dirname, '../src/pages/Home/data/cityAttractionHubs.json');
 
 const MIN_COUNT = 12;
-const MAX_COUNT = 100;
+/** 권역·시군 hub 보강 여유 (품질 게이트는 hub exact + contentId) */
+const MAX_COUNT = 150;
 const ALLOWED_REGIONS = new Set(['제주', '강원', '전라', '경상', '수도권', '충청']);
 
 let failed = 0;

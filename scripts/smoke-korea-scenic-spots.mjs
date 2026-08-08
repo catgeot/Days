@@ -44,7 +44,7 @@ const data = JSON.parse(readFileSync(JSON_PATH, 'utf8'));
 const spots = data.spots || [];
 const byId = new Map(spots.map((s) => [s.id, s]));
 
-assert(spots.length >= 12 && spots.length <= 100, `count 12–100 (got ${spots.length})`);
+assert(spots.length >= 12 && spots.length <= 150, `count 12–150 (got ${spots.length})`);
 assert(data.meta?.curation === 'GATEO', 'GATEO curation label');
 assert(
   String(data.meta?.disclaimer || '').includes('인기 관광지'),
@@ -121,6 +121,15 @@ assert(
     gangwonHubs.some((h) => h.hubId === 'gangneung'),
   `강원 소분류(여행지)≥3 (got ${gangwonHubs.length})`,
 );
+assert(
+  gangwonHubs.some((h) => h.hubId === 'yangyang' && h.count >= 4),
+  `강원 소분류에 양양≥4 (got ${JSON.stringify(gangwonHubs.find((h) => h.hubId === 'yangyang'))})`,
+);
+for (const id of ['naksansa', 'surfyy-beach', 'hajodae-beach', 'naksan-beach', 'seorak-beach']) {
+  const spot = byId.get(id);
+  assert(Boolean(spot), `양양 선정 명소 present: ${id}`);
+  assert(spot?.hubId === 'yangyang', `${id} hubId === yangyang`);
+}
 const jejuHubs = listKoreaScenicHubChips('제주', null);
 assert(
   jejuHubs.some((h) => h.hubId === 'seogwipo') &&

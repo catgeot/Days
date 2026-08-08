@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-07T12:52:34.249Z",
-    "count": 97,
+    "updatedAt": "2026-08-08T21:01:31.287Z",
+    "count": 101,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -102,6 +102,10 @@
     "seopjikoji": "https://tong.visitkorea.or.kr/cms/resource/83/2513483_image2_1.jpg",
     "incheon-chinatown": "https://tong.visitkorea.or.kr/cms/resource/85/4061685_image2_1.jpg",
     "gongsanseong": "https://tong.visitkorea.or.kr/cms/resource_photo/41/3404541_image2_1.jpg",
-    "dongpirang-mural-village": "https://tong.visitkorea.or.kr/cms/resource/53/3355053_image2_1.jpg"
+    "dongpirang-mural-village": "https://tong.visitkorea.or.kr/cms/resource/53/3355053_image2_1.jpg",
+    "hajodae-beach": "https://tong.visitkorea.or.kr/cms/resource/73/2745273_image2_1.jpg",
+    "seorak-beach": "https://tong.visitkorea.or.kr/cms/resource/22/2745222_image2_1.jpg",
+    "surfyy-beach": "https://tong.visitkorea.or.kr/cms/resource/90/2745190_image2_1.jpg",
+    "naksan-beach": "https://tong.visitkorea.or.kr/cms/resource/68/2929768_image2_1.jpg"
   }
 }
