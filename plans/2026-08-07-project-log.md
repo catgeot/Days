@@ -2,18 +2,18 @@
 
 직전: [`2026-08-06-project-log.md`](./2026-08-06-project-log.md)
 
-## 테마여행 #70, 검색 화천 권역
+## 테마여행 #70, 검색 화천 권역 · 전수검증
 
-**상태**: feature `cursor/scenic-nearby-a8ec` · PR [#64](https://github.com/catgeot/Days/pull/64) · tip `ae9bebfc` · Preview QA 대기
+**상태**: feature `cursor/scenic-nearby-a8ec` · PR [#64](https://github.com/catgeot/Days/pull/64) · Preview QA 대기
 
 - **증상**: 「화천」검색 → 선정 명소·명승 0(정상) · **관광지도 0**(비정상 · DB 35건)
 - **원인**: 권역 자동선택이 명소·명승만 보고 수도권 유지 → TourAPI가 수도권으로 조회
-- **한 일**: 명소·명승 0이면 TourAPI 권역 건수로 전환 · chipCounts 권역 자동 폴백 · smoke
+- **한 일**: 명소·명승 0이면 TourAPI 권역 전환 · **국내 hub 208 전수** → 동일 버그 **35곳**(철원·산청·청주·익산 등) · 최다 건수 권역으로 승격(성주·함안·독도 오탐 5건 보정) · smoke
 - **VERIFY**: `npm run smoke:korea-scenic-search` · `smoke:korea-scenic-nearby` · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/scenic-nearby`
 - **Preview**: `https://days-git-cursor-scenic-nearby-a8ec-catgeots-projects.vercel.app/korea/theme/scenic`
-- **작업 로그**: Preview 우측 「검색 — 관광지 전용 지명 권역 자동」
-- **QA**: 「화천」검색 → 권역 강원 · 관광지 붕어섬·낭천산림욕장 등 · 명소/명승 0 문구 유지
+- **작업 로그**: Preview 우측 「검색 권역 — hub 전수·최다 건수」
+- **QA**: 「화천」「철원」「산청」「성주」「독도」검색 → 본 권역 관광지 · 명소/명승 0이면 그 문구 유지
 
 ### 테마여행 · 에이전트 핸드오프 → `#71`
 

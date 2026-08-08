@@ -58,3 +58,25 @@ export function filterScenicSpotsByQuery(items, query) {
   if (!q) return Array.isArray(items) ? items : [];
   return (items || []).filter((item) => spotMatchesScenicQuery(item, q));
 }
+
+/**
+ * TourAPI 권역 건수 → 최다 권역 (동점이면 regionOrder 앞쪽).
+ * 부분일치 오탐(성주→보령 성주면, 함안로 등)보다 본 지역 건수를 고른다.
+ *
+ * @param {string[]} regionOrder
+ * @param {Record<string, number> | null | undefined} regionCounts
+ * @param {string} fallback
+ */
+export function pickBestRegionByCounts(regionOrder, regionCounts, fallback) {
+  const order = Array.isArray(regionOrder) ? regionOrder : [];
+  let best = null;
+  let bestN = 0;
+  for (const r of order) {
+    const n = Number(regionCounts?.[r]) || 0;
+    if (n > bestN) {
+      bestN = n;
+      best = r;
+    }
+  }
+  return best || fallback;
+}

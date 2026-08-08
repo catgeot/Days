@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
   sessionNo: 70,
-  sessionPhase: '검색 화천 권역',
+  sessionPhase: '검색 권역 전수검증',
   branch: 'cursor/scenic-nearby-a8ec',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-nearby',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-08-scenic-search-region-audit-70',
+    session: '테마여행 #70, 검색 권역 전수검증',
+    title: '검색 권역 — hub 전수·최다 건수',
+    detail:
+      '국내 hub 208곳 감사: 화천형(명소·명승0·타권역 TourAPI) 35곳. 권역을 최다 건수로 골라 성주·함안·독도 오탐(보령 성주면·함안로 등)도 본 지역으로 갑니다. 「화천」「성주」「독도」검색을 확인해 주세요.',
+    at: '2026-08-08',
+  },
   {
     id: '2026-08-08-scenic-search-hwacheon-region-70',
     session: '테마여행 #70, 검색 화천 권역',

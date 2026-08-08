@@ -72,7 +72,10 @@ import {
   rankNearbyScenicSpots,
 } from './nearbyScenicRank';
 import { scenicDbCatalogHeading } from './scenicCatalogHeading';
-import { filterScenicSpotsByQuery } from '../Home/lib/scenicSearch';
+import {
+  filterScenicSpotsByQuery,
+  pickBestRegionByCounts,
+} from '../Home/lib/scenicSearch';
 import ThemeModuleBackButton, {
   ThemeNavBackHint,
 } from './ThemeModuleBackButton';
@@ -158,12 +161,13 @@ function pickRegionForSearchMatches(curatedMatches, heritageMatches, fallback) {
   return best || resolveRegion(fallback);
 }
 
-/** TourAPI 권역 건수에서 결과 있는 첫 권역 (명소·명승 0건일 때 · 「화천」등) */
+/** TourAPI 권역 건수에서 최다 권역 (명소·명승 0건일 때 · 「화천」「성주」등) */
 function pickRegionFromTourCounts(regionCounts, fallback) {
-  const best = SCENIC_REGION_ORDER.find(
-    (r) => (Number(regionCounts?.[r]) || 0) > 0,
+  return pickBestRegionByCounts(
+    SCENIC_REGION_ORDER,
+    regionCounts,
+    resolveRegion(fallback),
   );
-  return best || resolveRegion(fallback);
 }
 
 function FilterChipLabel({ label, count }) {
@@ -1536,8 +1540,8 @@ export default function KoreaThemeScenicPage() {
   ]);
 
   /**
-   * 검색 중 현 권역 TourAPI 0건 · 명소·명승도 전국 0이면
-   * 결과 있는 첫 권역으로 전환 — 「화천」=강원만 등
+   * 검색 중 명소·명승 전국 0이면 TourAPI 최다 권역으로 전환.
+   * 현 권역에 오탐 소수만 있어도(성주→보령 성주면) 본 지역 권역으로 승격.
    */
   useEffect(() => {
     if (!searchActive || !dbSearchActive) return;
@@ -1548,9 +1552,11 @@ export default function KoreaThemeScenicPage() {
       Number.isFinite(Number(counts[r])),
     );
     if (!loaded) return;
-    if ((Number(counts[region]) || 0) > 0) return;
     const next = pickRegionFromTourCounts(counts, region);
     if (!next || next === region) return;
+    const curN = Number(counts[region]) || 0;
+    const nextN = Number(counts[next]) || 0;
+    if (nextN <= curN) return;
     setRegion(next);
   }, [
     searchActive,
