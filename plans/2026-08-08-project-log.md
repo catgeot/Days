@@ -2,6 +2,20 @@
 
 직전: [`2026-08-07-project-log.md`](./2026-08-07-project-log.md)
 
+## 테마여행 #76, 상세 가로 스크롤
+
+**상태**: feature `cursor/scenic-detail-overflow-3f84` · PR [#72](https://github.com/catgeot/Days/pull/72) · Preview 사람 QA 대기
+
+- **증상**: 관광지「낙산도립공원」본문 아래 세로 스크롤 시 좌우 롤링(가로 넘침)
+- **원인**: TourAPI `입산통제 구간` 등에 긴 URL·공백 없는 토큰 → `break-keep`만으로는 줄바꿈 불가 · 스크롤 영역 `overflow-x` 미차단
+- **유사**: 도립/국립공원 info의 URL·긴 등산로명(예: 덕유산 종주코스 문자열) · 코스 모달 overview도 동일 패턴
+- **한 일**: `ThemeSpotDetailModal` DetailRow·스크롤에 `break-words`+`overflow-x-hidden` · `CourseDetailModal` 동일 · QA `/qa/scenic-detail-overflow`
+- **VERIFY**: `npm run smoke:theme-detail-text-overflow` · `npm run build` · 로컬 Preview 낙산도립공원 입산통제 URL 줄바꿈·가로 스크롤 없음
+- **공유**: `https://www.gateo.kr/qa/scenic-detail-overflow`
+- **Preview**: `https://days-git-cursor-scenic-detail-overflow-3f84-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: 「관광지 상세 가로 롤링 방지」
+- **QA(사람)**: 명승홈→검색/관광지「낙산도립공원」→본문 아래(입산통제) 세로 스크롤 · 좌우 롤링 없음
+
 ## 테마여행 #75, 빈 hub 선정 칩 숨김
 
 **상태**: main 반영 완료 · PR [#70](https://github.com/catgeot/Days/pull/70) · [#71](https://github.com/catgeot/Days/pull/71)

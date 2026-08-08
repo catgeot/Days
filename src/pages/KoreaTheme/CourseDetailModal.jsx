@@ -226,7 +226,7 @@ export default function CourseDetailModal({
 
         <div
           ref={scrollRef}
-          className="min-h-0 flex-1 overflow-y-auto overscroll-contain custom-scrollbar"
+          className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain custom-scrollbar"
         >
           {hero ? (
             <img
@@ -240,7 +240,7 @@ export default function CourseDetailModal({
             </div>
           )}
 
-          <div className="space-y-4 px-4 py-4 sm:px-5">
+          <div className="min-w-0 space-y-4 px-4 py-4 sm:px-5">
             {detailLoading ? (
               <p className="text-xs text-stone-500">상세를 불러오는 중…</p>
             ) : null}
@@ -255,7 +255,7 @@ export default function CourseDetailModal({
                   detail.schedule ||
                   detail.distance ||
                   detail.taketime) && (
-                  <p className="text-[11px] font-semibold text-amber-900/90 break-keep">
+                  <p className="text-[11px] font-semibold text-amber-900/90 break-keep break-words">
                     {[
                       detail.theme,
                       detail.schedule,
@@ -267,7 +267,7 @@ export default function CourseDetailModal({
                   </p>
                 )}
                 {detail.overview ? (
-                  <p className="whitespace-pre-line text-sm leading-relaxed text-stone-600 break-keep">
+                  <p className="min-w-0 max-w-full whitespace-pre-line text-sm leading-relaxed text-stone-600 break-keep break-words">
                     {stripHtml(detail.overview)}
                   </p>
                 ) : null}
@@ -305,7 +305,7 @@ export default function CourseDetailModal({
                             {Number(seg.subnum ?? idx) + 1}. {seg.subname || '구간'}
                           </p>
                           {seg.subdetailoverview ? (
-                            <p className="whitespace-pre-line text-sm leading-relaxed text-stone-600 break-keep">
+                            <p className="min-w-0 max-w-full whitespace-pre-line text-sm leading-relaxed text-stone-600 break-keep break-words">
                               {stripHtml(seg.subdetailoverview)}
                             </p>
                           ) : null}
