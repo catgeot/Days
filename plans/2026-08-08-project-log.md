@@ -4,16 +4,16 @@
 
 ## 테마여행 #75, 빈 hub 선정 칩 숨김
 
-**상태**: feature `cursor/scenic-empty-chips-1837` · PR [#70](https://github.com/catgeot/Days/pull/70) · Preview 사람 QA 대기
+**상태**: main 반영 완료 · PR [#70](https://github.com/catgeot/Days/pull/70) · [#71](https://github.com/catgeot/Days/pull/71)
 
 - **증상**: 비와야 폭포→인근「양양 명승지」진입 시 GATEO 선정 명소가 0건인데도 수도권·강원·강릉 등 분류칩+수량이 표시되어 혼란
 - **원인**: `showCuratedFilterChips`가 비검색 시 항상 true → hub 빈 목록에도 권역·타 여행지 칩 노출
-- **한 일**: hub 선정 명소 0건·비검색이면 선정 분류칩 숨김 · 빈 목록 시 「골랐습니다」 소개 숨김 · 안내 문구를 「○에는 아직 GATEO 선정 명소가 없습니다…」로 정리
+- **한 일**: hub 선정 명소 0건·비검색이면 선정 분류칩 숨김 · 빈 목록 시 「골랐습니다」 소개 숨김 · 안내 문구 정리 · 명소·명승·관광지 제목 아이콘(Landmark/Mountain/MapPin)으로 구분
 - **VERIFY**: `npm run smoke:korea-scenic-search` · `npm run build`
-- **공유**: `https://www.gateo.kr/qa/scenic-empty-chips`
-- **Preview**: `https://days-git-cursor-scenic-empty-chips-1837-catgeots-projects.vercel.app/korea/theme/scenic`
-- **작업 로그**: 「선정 명소 없는 시·군 — 분류칩 숨김」·「빈 hub GATEO 선정 문구 정리」
-- **QA(사람)**: 명승홈→비와야 폭포→양양 명승지 → GATEO 선정에 칩·「골랐습니다」 없음 · 「아직…없습니다」 안내만 · 국가유산 명승은 정상
+- **공유**: `https://www.gateo.kr/qa/scenic-empty-chips` → PROD
+- **PROD**: `https://www.gateo.kr/korea/theme/scenic`
+- **작업 로그**: 「분류칩 숨김」·「문구 정리」·「제목 아이콘」·「main 반영」
+- **QA(사람)**: PROD 명승홈·양양 hub → GATEO 칩·「골랐습니다」 없음 · 세 제목 아이콘 구분
 
 ## 테마여행 #74, 인근여행지 검색 잔존
 

@@ -95,6 +95,14 @@ assert.ok(
     pageSrc.includes('curatedSpots.length > 0 ? ('),
   'empty hub copy skips “골랐습니다” blurb',
 );
+assert.ok(
+  pageSrc.includes('Landmark') &&
+    pageSrc.includes('Mountain') &&
+    pageSrc.includes('MapPin') &&
+    pageSrc.includes('text-emerald-800') &&
+    pageSrc.includes('text-sky-800'),
+  'three section titles use distinct icons',
+);
 assert.ok(pageSrc.includes('showHeritageFilterChips'), 'hide heritage chips if empty');
 assert.ok(
   pageSrc.includes('해당 섹션 매칭이 있는 권역만'),

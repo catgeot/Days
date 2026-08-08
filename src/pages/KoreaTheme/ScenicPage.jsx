@@ -15,6 +15,8 @@ import {
   Landmark,
   Loader2,
   LocateFixed,
+  MapPin,
+  Mountain,
   Search,
   X,
 } from 'lucide-react';
@@ -2382,13 +2384,20 @@ export default function KoreaThemeScenicPage() {
           </section>
 
           <section aria-labelledby="korea-scenic-heritage-heading" className="space-y-4">
-            <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <h2
-                id="korea-scenic-heritage-heading"
-                className="text-sm font-bold tracking-tight text-stone-800 md:text-base"
-              >
-                국가유산 명승
-              </h2>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2 text-stone-800">
+                <Mountain
+                  size={18}
+                  className="text-emerald-800"
+                  aria-hidden="true"
+                />
+                <h2
+                  id="korea-scenic-heritage-heading"
+                  className="text-sm font-bold tracking-tight md:text-base"
+                >
+                  국가유산 명승
+                </h2>
+              </div>
               <p className="text-xs font-semibold text-stone-500 tabular-nums">
                 {heritageSpots.length.toLocaleString('ko-KR')}곳
                 {heritageSpots.length !== HERITAGE_TOTAL
@@ -2556,13 +2565,20 @@ export default function KoreaThemeScenicPage() {
           </section>
 
           <section aria-labelledby="korea-scenic-db-heading" className="space-y-4">
-            <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <h2
-                id="korea-scenic-db-heading"
-                className="text-sm font-bold tracking-tight text-stone-800 md:text-base"
-              >
-                {catalogHeadingLabel}
-              </h2>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2 text-stone-800">
+                <MapPin
+                  size={18}
+                  className="text-sky-800"
+                  aria-hidden="true"
+                />
+                <h2
+                  id="korea-scenic-db-heading"
+                  className="text-sm font-bold tracking-tight md:text-base"
+                >
+                  {catalogHeadingLabel}
+                </h2>
+              </div>
               {nearActive
                 ? dbStatus !== 'loading' && (
                     <p className="text-xs font-semibold text-stone-500 tabular-nums">
