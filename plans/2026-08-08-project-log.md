@@ -4,7 +4,7 @@
 
 ## 테마여행 #71, 내주변 분류칩
 
-**상태**: feature `cursor/scenic-nearby-a8ec` · Preview QA 대기
+**상태**: feature `cursor/scenic-nearby-a8ec` · PR [#65](https://github.com/catgeot/Days/pull/65) · tip `ada41940` · Preview QA 대기
 
 - **증상**: 명승홈 「내 주변」에 분류칩이 없어 긴 목록만 노출 → 탐색 제한
 - **원인**: `show*FilterChips`가 `!nearActive`로 칩 숨김 · hub/경관 칩 클릭 시 `clearNear()`
@@ -21,6 +21,7 @@
 |--|--|
 | **세션 표기** | `테마여행 #72, Preview QA 반영` |
 | **브랜치** | `cursor/scenic-nearby-a8ec` (고정) |
+| **PR** | [#65](https://github.com/catgeot/Days/pull/65) |
 | **읽을 것 3** | ① 본 절 ② ScenicPage near chips ③ smoke nearby |
 | **금지 3** | 축제 지도 리팩터 · UI 임의 리디자인 · releaseNotes 무단 반영 |
 | **후보** | Preview QA · main 병합 |
