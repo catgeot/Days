@@ -13,8 +13,10 @@ import { listKoreaHeritageScenic } from '../src/pages/Home/lib/koreaHeritageScen
 import {
   filterScenicSpotsByQuery,
   normalizeScenicQuery,
+  pickBestRegionByCounts,
   sanitizeScenicDbSearchQuery,
 } from '../src/pages/Home/lib/scenicSearch.js';
+import { SCENIC_REGION_ORDER } from '../src/pages/Home/lib/koreaTourAttractionMap.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PAGE = join(__dirname, '../src/pages/KoreaTheme/ScenicPage.jsx');
@@ -91,6 +93,71 @@ assert.ok(
 assert.ok(
   pageSrc.includes('결과 있는 첫 종목으로 전환'),
   'search auto-picks cat1 with matches',
+);
+assert.ok(
+  pageSrc.includes('pickRegionFromTourCounts'),
+  'search can pick region from TourAPI counts',
+);
+assert.ok(
+  pageSrc.includes('pickBestRegionByCounts'),
+  'search uses max-count region pick',
+);
+assert.ok(
+  pageSrc.includes('화천') && pageSrc.includes('TourAPI'),
+  'search auto-picks region when curated/heritage empty (화천→강원)',
+);
+assert.equal(
+  filterScenicSpotsByQuery(curated, '화천').length,
+  0,
+  '화천 curated 0 (TourAPI-only locality)',
+);
+assert.equal(
+  filterScenicSpotsByQuery(heritage, '화천').length,
+  0,
+  '화천 heritage 0 (TourAPI-only locality)',
+);
+
+// 국내 hub 감사에서 드러난 오탐: 첫 권역이 아니라 최다 권역
+assert.equal(
+  pickBestRegionByCounts(
+    SCENIC_REGION_ORDER,
+    { 수도권: 0, 강원: 0, 충청: 7, 전라: 0, 경상: 26, 제주: 0 },
+    '수도권',
+  ),
+  '경상',
+  '성주형: 보령 성주면(7)보다 성주군(26)',
+);
+assert.equal(
+  pickBestRegionByCounts(
+    SCENIC_REGION_ORDER,
+    { 수도권: 0, 강원: 0, 충청: 0, 전라: 1, 경상: 26, 제주: 0 },
+    '수도권',
+  ),
+  '경상',
+  '함안형: 함안로(1)보다 함안군(26)',
+);
+assert.equal(
+  pickBestRegionByCounts(
+    SCENIC_REGION_ORDER,
+    { 수도권: 0, 강원: 1, 충청: 0, 전라: 0, 경상: 20, 제주: 0 },
+    '수도권',
+  ),
+  '경상',
+  '독도형: 체험관(1)보다 울릉·독도(20)',
+);
+assert.equal(
+  pickBestRegionByCounts(
+    SCENIC_REGION_ORDER,
+    { 수도권: 0, 강원: 35, 충청: 0, 전라: 0, 경상: 1, 제주: 0 },
+    '수도권',
+  ),
+  '강원',
+  '화천형: 강원 35',
+);
+assert.equal(
+  pickBestRegionByCounts(SCENIC_REGION_ORDER, { 수도권: 0, 강원: 0 }, '수도권'),
+  '수도권',
+  '전부 0이면 fallback',
 );
 const goseongHeritage = filterScenicSpotsByQuery(heritage, '고성');
 assert.equal(filterScenicSpotsByQuery(curated, '고성').length, 0, '고성 curated 0');

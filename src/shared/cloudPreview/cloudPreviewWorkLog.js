@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 67,
-  sessionPhase: '메인 반영',
-  branch: 'main',
-  previewPath: '/korea',
-  qaShareSlug: 'home-korea',
+  sessionNo: 70,
+  sessionPhase: '검색 권역 전수검증',
+  branch: 'cursor/scenic-nearby-a8ec',
+  previewPath: '/korea/theme/scenic',
+  qaShareSlug: 'scenic-nearby',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,30 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-08-scenic-search-region-audit-70',
+    session: '테마여행 #70, 검색 권역 전수검증',
+    title: '검색 권역 — hub 전수·최다 건수',
+    detail:
+      '국내 hub 208곳 감사: 화천형(명소·명승0·타권역 TourAPI) 35곳. 권역을 최다 건수로 골라 성주·함안·독도 오탐(보령 성주면·함안로 등)도 본 지역으로 갑니다. 「화천」「성주」「독도」검색을 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-search-hwacheon-region-70',
+    session: '테마여행 #70, 검색 화천 권역',
+    title: '검색 — 관광지 전용 지명 권역 자동',
+    detail:
+      '「화천」처럼 선정 명소·명승 0건인 검색어가 수도권에 남아 관광지 0건이 되던 문제를 고쳤습니다. TourAPI 권역 건수로 강원 등으로 자동 전환됩니다. Preview에서 「화천」검색 → 관광지 목록 확인.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-07-scenic-nearby-hwacheon-69',
+    session: '테마여행 #69, 내주변 관내 관광지',
+    title: '내 주변 관광지 — 좌표 bbox 거리순',
+    detail:
+      '명승 「내 주변」관광지가 권역 목록 샘플을 거리로만 걸러 화천 관내(붕어섬 등)가 빠지던 문제를 고쳤습니다. GPS 좌표 bbox로 조회한 뒤 거리순으로 보여 주세요. Preview `/korea/theme/scenic` → 내 주변.',
+    at: '2026-08-07',
+  },
   {
     id: '2026-08-07-home-korea-links-main-67',
     session: '테마여행 #67, 메인 반영',

@@ -50,6 +50,7 @@ import {
   fetchKoreaTourAttractionById,
   fetchKoreaTourAttractionFirstImagesByIds,
   fetchKoreaTourAttractions,
+  fetchKoreaTourAttractionsNear,
   peekKoreaTourAttractionFirstImagesByIds,
   fetchScenicFilterChipCounts,
   labelScenicAreaCode,
@@ -71,7 +72,10 @@ import {
   rankNearbyScenicSpots,
 } from './nearbyScenicRank';
 import { scenicDbCatalogHeading } from './scenicCatalogHeading';
-import { filterScenicSpotsByQuery } from '../Home/lib/scenicSearch';
+import {
+  filterScenicSpotsByQuery,
+  pickBestRegionByCounts,
+} from '../Home/lib/scenicSearch';
 import ThemeModuleBackButton, {
   ThemeNavBackHint,
 } from './ThemeModuleBackButton';
@@ -155,6 +159,15 @@ function pickRegionForSearchMatches(curatedMatches, heritageMatches, fallback) {
   }
   const best = SCENIC_REGION_ORDER.find((r) => (counts[r] || 0) > 0);
   return best || resolveRegion(fallback);
+}
+
+/** TourAPI 권역 건수에서 최다 권역 (명소·명승 0건일 때 · 「화천」「성주」등) */
+function pickRegionFromTourCounts(regionCounts, fallback) {
+  return pickBestRegionByCounts(
+    SCENIC_REGION_ORDER,
+    regionCounts,
+    resolveRegion(fallback),
+  );
 }
 
 function FilterChipLabel({ label, count }) {
@@ -878,21 +891,45 @@ export default function KoreaThemeScenicPage() {
         listKoreaHeritageScenic(),
         q,
       );
-      const nextRegion = pickRegionForSearchMatches(
+      const fallbackRegion = searchParams.get('region');
+      let nextRegion = pickRegionForSearchMatches(
         curatedMatches,
         heritageMatches,
-        searchParams.get('region'),
+        fallbackRegion,
       );
-      const next = new URLSearchParams(searchParams);
-      next.set('region', nextRegion);
-      next.delete('area');
-      next.delete('hub');
-      next.delete('hcat');
-      next.delete('cat2');
-      next.delete('cat3');
-      next.delete('page');
-      next.delete('spot');
-      setSearchParams(next, { replace: true });
+
+      const applyRegionParams = (regionName) => {
+        const next = new URLSearchParams(searchParams);
+        next.set('region', regionName);
+        next.delete('area');
+        next.delete('hub');
+        next.delete('hcat');
+        next.delete('cat2');
+        next.delete('cat3');
+        next.delete('page');
+        next.delete('spot');
+        setSearchParams(next, { replace: true });
+      };
+
+      // 명소·명승 0건이면 TourAPI 권역 건수로 고름 (화천→강원)
+      if (curatedMatches.length === 0 && heritageMatches.length === 0) {
+        applyRegionParams(nextRegion);
+        Promise.all(
+          SCENIC_REGION_ORDER.map(async (r) => {
+            const { count } = await countKoreaTourAttractions({
+              region: r,
+              searchQuery: q,
+            });
+            return { r, count: count || 0 };
+          }),
+        ).then((rows) => {
+          const counts = Object.fromEntries(rows.map((row) => [row.r, row.count]));
+          const tourRegion = pickRegionFromTourCounts(counts, nextRegion);
+          if (tourRegion !== nextRegion) applyRegionParams(tourRegion);
+        });
+      } else {
+        applyRegionParams(nextRegion);
+      }
     } else {
       resetListPage();
     }
@@ -1171,33 +1208,18 @@ export default function KoreaThemeScenicPage() {
     }
     setDbStatus('loading');
     setDbError(null);
-    const fetchLimit = nearActive ? NEAR_DB_LIMIT : PAGE_SIZE;
-    const fetchOffset = nearActive ? 0 : (page - 1) * PAGE_SIZE;
-    const fetchOpts = dbSearchActive
-      ? {
-          searchQuery: dbSearchFilter,
-          region,
-          areaCode,
-          cat1,
-          cat2,
-          cat3,
-          localityQuery: hubId ? localityQuery : null,
-          limit: fetchLimit,
-          offset: fetchOffset,
-        }
-      : {
-          region,
-          areaCode: nearActive ? null : areaCode,
-          cat1,
-          cat2,
-          cat3,
-          localityQuery: nearActive ? null : localityQuery,
-          limit: fetchLimit,
-          offset: fetchOffset,
-        };
-    fetchKoreaTourAttractions(fetchOpts).then((res) => {
-      if (cancelled) return;
-      if (nearActive && nearOrigin) {
+
+    if (nearActive && nearOrigin) {
+      fetchKoreaTourAttractionsNear({
+        lat: nearOrigin.lat,
+        lng: nearOrigin.lng,
+        radiusKm: NEAR_KM,
+        limit: NEAR_DB_LIMIT,
+        cat1,
+        cat2,
+        cat3,
+      }).then((res) => {
+        if (cancelled) return;
         const ranked = rankNearbyScenicSpots(
           res.spots || [],
           nearOrigin.lat,
@@ -1216,8 +1238,38 @@ export default function KoreaThemeScenicPage() {
         } else {
           setDbStatus('ok');
         }
-        return;
-      }
+      });
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    const fetchLimit = PAGE_SIZE;
+    const fetchOffset = (page - 1) * PAGE_SIZE;
+    const fetchOpts = dbSearchActive
+      ? {
+          searchQuery: dbSearchFilter,
+          region,
+          areaCode,
+          cat1,
+          cat2,
+          cat3,
+          localityQuery: hubId ? localityQuery : null,
+          limit: fetchLimit,
+          offset: fetchOffset,
+        }
+      : {
+          region,
+          areaCode,
+          cat1,
+          cat2,
+          cat3,
+          localityQuery: localityQuery,
+          limit: fetchLimit,
+          offset: fetchOffset,
+        };
+    fetchKoreaTourAttractions(fetchOpts).then((res) => {
+      if (cancelled) return;
       setDbKmById(new Map());
       setDbSpots(res.spots || []);
       setDbCount(res.count || 0);
@@ -1485,6 +1537,35 @@ export default function KoreaThemeScenicPage() {
     chipCounts.cat1Counts,
     cat1,
     setCat1,
+  ]);
+
+  /**
+   * 검색 중 명소·명승 전국 0이면 TourAPI 최다 권역으로 전환.
+   * 현 권역에 오탐 소수만 있어도(성주→보령 성주면) 본 지역 권역으로 승격.
+   */
+  useEffect(() => {
+    if (!searchActive || !dbSearchActive) return;
+    if ((curatedSearchPool?.length || 0) > 0) return;
+    if ((heritageSearchPool?.length || 0) > 0) return;
+    const counts = chipCounts.regionCounts || {};
+    const loaded = SCENIC_REGION_ORDER.some((r) =>
+      Number.isFinite(Number(counts[r])),
+    );
+    if (!loaded) return;
+    const next = pickRegionFromTourCounts(counts, region);
+    if (!next || next === region) return;
+    const curN = Number(counts[region]) || 0;
+    const nextN = Number(counts[next]) || 0;
+    if (nextN <= curN) return;
+    setRegion(next);
+  }, [
+    searchActive,
+    dbSearchActive,
+    curatedSearchPool,
+    heritageSearchPool,
+    chipCounts.regionCounts,
+    region,
+    setRegion,
   ]);
 
   const setCat2 = useCallback(
