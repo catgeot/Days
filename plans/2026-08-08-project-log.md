@@ -2,6 +2,19 @@
 
 직전: [`2026-08-07-project-log.md`](./2026-08-07-project-log.md)
 
+## 테마여행 #74, 인근여행지 검색 잔존
+
+**상태**: feature `cursor/scenic-search-clear-f5a5` · Preview 사람 QA 대기
+
+- **증상**: 명승홈 검색(비와야)→본문→인근「양양 명승지」클릭 시 검색 모달에 「비와야」잔존·빈 결과로 탐색 끊김
+- **원인**: `ScenicPage` 검색 state가 마운트 유지된 채 hub URL만 바뀜 → 검색 모달+hub 필터로 Tour/선정 0건
+- **한 일**: 인근 hub 이동 시 `clearScenicSearch` navigate state → 명승 홈에서 검색 필터·모달 해제
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-search-clear`
+- **Preview**: `https://days-git-cursor-scenic-search-clear-f5a5-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: 「인근 여행지→검색 모달 잔존 해제」
+- **QA(사람)**: 명승홈→검색 비와야→비와야 폭포→인근 양양 명승지 → 양양 목록(검색 모달 없음)
+
 ## 테마여행 #73, 인근여행지 홈 스크롤
 
 **상태**: feature `cursor/scenic-home-scroll-8482` · PR [#68](https://github.com/catgeot/Days/pull/68) · 로컬 QA OK · Preview 사람 QA 대기

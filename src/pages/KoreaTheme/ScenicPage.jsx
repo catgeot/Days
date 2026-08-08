@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowUp,
   ChevronLeft,
@@ -492,6 +492,7 @@ function resolveRegion(raw) {
 
 export default function KoreaThemeScenicPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const hubId = normalizeScenicHubParam(searchParams.get('hub'));
   const hub = hubId ? resolveCityAttractionHub(hubId) : null;
@@ -990,6 +991,33 @@ export default function KoreaThemeScenicPage() {
     clearSearchFilter();
     clearNear();
   }, [clearSearchFilter, clearNear]);
+
+  // 인근 여행지→시·군 명승 홈: 검색 모달·검색어 잔존으로 빈 결과 나는 것 방지
+  useEffect(() => {
+    const st = location.state;
+    if (!st || typeof st !== 'object' || !st.clearScenicSearch) return;
+    clearSearchFilter();
+    const nextState = { ...st };
+    delete nextState.clearScenicSearch;
+    navigate(
+      {
+        pathname: location.pathname,
+        search: location.search,
+        hash: location.hash,
+      },
+      {
+        replace: true,
+        state: Object.keys(nextState).length > 0 ? nextState : null,
+      },
+    );
+  }, [
+    location.state,
+    location.pathname,
+    location.search,
+    location.hash,
+    clearSearchFilter,
+    navigate,
+  ]);
 
   useEffect(() => {
     if (!searchActive || selectedId) return undefined;

@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 73,
-  sessionPhase: '인근여행지 홈 스크롤',
-  branch: 'cursor/scenic-home-scroll-8482',
+  sessionNo: 74,
+  sessionPhase: '인근여행지 검색 잔존',
+  branch: 'cursor/scenic-search-clear-f5a5',
   previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'scenic-home-scroll',
+  qaShareSlug: 'scenic-search-clear',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-08-scenic-nearby-search-clear-74',
+    session: '테마여행 #74, 인근여행지 검색 잔존',
+    title: '인근 여행지→검색 모달 잔존 해제',
+    detail:
+      '명승 홈에서 검색(예: 비와야)→본문→「인근 여행지 ○○ 명승지」로 이동할 때 이전 검색어·검색 모달이 남아 빈 결과가 나오던 문제를 고쳤습니다. 인근 hub 홈으로 갈 때 검색을 닫고 해당 시·군 목록이 보이게 합니다. Preview에서 비와야 검색→비와야 폭포→양양 명승지를 눌러 양양 목록이 뜨는지 확인해 주세요.',
+    at: '2026-08-08',
+  },
   {
     id: '2026-08-08-scenic-nearby-home-scroll-73',
     session: '테마여행 #73, 인근여행지 홈 스크롤',
