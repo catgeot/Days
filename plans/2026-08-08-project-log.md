@@ -4,7 +4,7 @@
 
 ## 테마여행 #74, 인근여행지 검색 잔존
 
-**상태**: feature `cursor/scenic-search-clear-f5a5` · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-search-clear-f5a5` · PR [#69](https://github.com/catgeot/Days/pull/69) · Preview 사람 QA 대기
 
 - **증상**: 명승홈 검색(비와야)→본문→인근「양양 명승지」클릭 시 검색 모달에 「비와야」잔존·빈 결과로 탐색 끊김
 - **원인**: `ScenicPage` 검색 state가 마운트 유지된 채 hub URL만 바뀜 → 검색 모달+hub 필터로 Tour/선정 0건
