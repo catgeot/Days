@@ -4,7 +4,7 @@
 
 ## 테마여행 #79, 빈 hub 명소 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#73](https://github.com/catgeot/Days/pull/73) · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#73](https://github.com/catgeot/Days/pull/73) · tip `84461cba` · Preview 사람 QA 대기
 
 - **한 일 (초기)**: 큐 R01 앞 — 안산·강화 각 4곳 → 이후 **전수 정책**으로 수정
 - **정책**: draft **개수 기본 상한 제거**(hub attractions 전수 · `--per-hub`는 의도적 상한만) · 실행문서 [`korea-scenic-hub-fill-queue.md`](./korea-scenic-hub-fill-queue.md) · README
