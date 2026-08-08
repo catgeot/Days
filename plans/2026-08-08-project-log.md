@@ -4,7 +4,7 @@
 
 ## 테마여행 #77, 명소 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#73](https://github.com/catgeot/Days/pull/73) · Preview 사람 QA 대기
 
 - **증상**: 양양 명승 홈 GATEO 선정 명소 0건 → 탐색 끊김 (hub attractions는 있으나 curated SSOT 미등재 · 낙산사는 속초 hub)
 - **한 일**: 낙산사 hub/선정을 양양으로 이전 · 서피·하조대·낙산·설악 해수욕장 선정 추가(101) · 상한 150 · Tour 썸네일 채움 · `/qa/scenic-yangyang`
