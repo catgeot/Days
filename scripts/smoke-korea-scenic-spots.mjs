@@ -44,7 +44,7 @@ const data = JSON.parse(readFileSync(JSON_PATH, 'utf8'));
 const spots = data.spots || [];
 const byId = new Map(spots.map((s) => [s.id, s]));
 
-assert(spots.length >= 12 && spots.length <= 150, `count 12–150 (got ${spots.length})`);
+assert(spots.length >= 12, `count ≥12 (got ${spots.length})`);
 assert(data.meta?.curation === 'GATEO', 'GATEO curation label');
 assert(
   String(data.meta?.disclaimer || '').includes('인기 관광지'),

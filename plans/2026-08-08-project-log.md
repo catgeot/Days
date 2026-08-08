@@ -7,12 +7,13 @@
 **상태**: feature `cursor/scenic-yangyang-b772` · PR [#73](https://github.com/catgeot/Days/pull/73) · Preview 사람 QA 대기
 
 - **증상**: 양양 명승 홈 GATEO 선정 명소 0건 → 탐색 끊김 (hub attractions는 있으나 curated SSOT 미등재 · 낙산사는 속초 hub)
-- **한 일**: 낙산사 hub/선정을 양양으로 이전 · 서피·하조대·낙산·설악 해수욕장 선정 추가(101) · 상한 150 · Tour 썸네일 채움 · `/qa/scenic-yangyang`
-- **VERIFY**: `npm run audit:korea-scenic-spots` · `audit:city-attraction-hubs` · `audit:korea-theme-region-tour` · `smoke:korea-scenic-spots` · `npm run build`
+- **한 일**: 낙산사 hub/선정을 양양으로 이전 · 서피·하조대·낙산·설악 해수욕장 선정 추가(101) · Tour 썸네일 · `/qa/scenic-yangyang`
+- **이어서**: 선정 **수량 상한 해제** · 빈 hub 리포트/`draft`/`smoke:korea-scenic-hub-fill` · 큐 [`korea-scenic-hub-fill-queue.md`](./korea-scenic-hub-fill-queue.md) 15라운드(빈 121)
+- **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/scenic-yangyang`
 - **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=yangyang`
-- **작업 로그**: 「양양 GATEO 선정 명소 5곳」
-- **남은 일**: 빈 hub 다수(평창·남해·강화 등) 권역별 선정 보강 배치 · 사람 Preview QA
+- **작업 로그**: 「양양 GATEO 선정 명소 5곳」·「선정 상한 해제·권역 보강 큐」
+- **남은 일**: 큐 R01(평창·남해)부터 배치 보강 · 사람 Preview QA
 - **다음 채팅명**:
 
 ```

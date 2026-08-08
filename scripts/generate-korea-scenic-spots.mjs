@@ -31,7 +31,6 @@ function toHttps(url) {
 }
 
 const MIN_COUNT = 12;
-const MAX_COUNT = 150;
 const ALLOWED_REGIONS = new Set(['제주', '강원', '전라', '경상', '수도권', '충청']);
 
 function toUrlSlug(nameEn) {
@@ -72,9 +71,9 @@ function normalizeSpots(src, hubIndex, imageUrlById = {}) {
     throw new Error('[korea-scenic-spots] overrides must be object');
   }
   const list = src.spots;
-  if (!Array.isArray(list) || list.length < MIN_COUNT || list.length > MAX_COUNT) {
+  if (!Array.isArray(list) || list.length < MIN_COUNT) {
     throw new Error(
-      `[korea-scenic-spots] spots must be ${MIN_COUNT}–${MAX_COUNT} (got ${list?.length})`,
+      `[korea-scenic-spots] spots must be ≥${MIN_COUNT} (got ${list?.length})`,
     );
   }
 

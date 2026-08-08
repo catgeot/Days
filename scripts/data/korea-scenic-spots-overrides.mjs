@@ -2,8 +2,10 @@
  * 한국의 명소 — GATEO curated SSOT.
  * `npm run generate:korea-scenic-spots` → koreaScenicSpots.json
  *
- * 품질>수량 · hub attraction exact + TourAPI contentId 검증.
+ * hub attraction exact + TourAPI contentId 검증 · 수량 상한 없음.
  * attractionName = hub attractions[].name exact (부분 매칭 금지)
+ * 권역 보강: `npm run report:korea-scenic-empty-hubs` · `draft:korea-scenic-hub-batch`
+ * 큐: plans/korea-scenic-hub-fill-queue.md
  *
  * @type {{
  *   spots: Array<{

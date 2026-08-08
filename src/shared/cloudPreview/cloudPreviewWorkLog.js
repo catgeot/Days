@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-08-scenic-fill-tools-77b',
+    session: '테마여행 #77, 명소 보강',
+    title: '선정 상한 해제·권역 보강 큐',
+    detail:
+      'GATEO 선정 수량 상한을 없애고, 빈 hub 리포트·초안 배치·15라운드 큐를 넣었습니다. 다음 세션은 R01(평창·남해)부터 draft→generate→이미지 채움으로 이어가면 됩니다. Preview 양양 선정 5건은 그대로 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
     id: '2026-08-08-scenic-yangyang-77',
     session: '테마여행 #77, 명소 보강',
     title: '양양 GATEO 선정 명소 5곳',
