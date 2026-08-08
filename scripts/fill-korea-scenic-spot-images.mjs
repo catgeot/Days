@@ -125,6 +125,9 @@ const RELATED_IMAGE_CONTENT_IDS = {
   jeongdongjin: '128757', // 정동진해변
   'incheon-chinatown': '125519', // 자유공원(인천) — 차이나타운 인접
   'dongpirang-mural-village': '2605111', // 서피랑 마을(통영 벽화 언덕) — 동피랑 Tour 이미지 부재 시
+  'ganghwa-peace-observatory': '1254680', // 갑곶돈대 — 제적봉 전망대 Tour firstimage 부재 시
+  goryeogungji: '125534', // 전등사 — 고려궁지 Tour firstimage 부재 시(강화 역사권)
+  manisan: '3061182', // 마니산국민관광지 — 마니산(강화) Tour firstimage 부재 시
 };
 
 async function mapPool(items, worker, size) {

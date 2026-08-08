@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-08T21:15:41.780Z",
-    "count": 109,
+    "updatedAt": "2026-08-08T21:26:06.992Z",
+    "count": 117,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -114,6 +114,14 @@
     "lee-hyo-seok-literature-museum": "https://tong.visitkorea.or.kr/cms/resource/70/3318470_image2_1.jpg",
     "sangju-eunmorae-beach": "https://tong.visitkorea.or.kr/cms/resource/01/3583201_image2_1.jpg",
     "geumsan-boriam": "https://tong.visitkorea.or.kr/cms/resource/04/4082704_image2_1.jpg",
-    "namhae-german-village": "https://tong.visitkorea.or.kr/cms/resource/79/3304479_image2_1.jpg"
+    "namhae-german-village": "https://tong.visitkorea.or.kr/cms/resource/79/3304479_image2_1.jpg",
+    "byeolmangseong-fortress": "https://tong.visitkorea.or.kr/cms/resource/35/3558735_image2_1.jpg",
+    "gapgot-dondae": "https://tong.visitkorea.or.kr/cms/resource/71/3364171_image2_1.jpg",
+    "daebudo": "https://tong.visitkorea.or.kr/cms/resource/18/3489718_image2_1.jpg",
+    "sihwa-lake-ansan": "https://tong.visitkorea.or.kr/cms/resource/46/3529446_image2_1.jpg",
+    "seongho-park-ansan": "https://tong.visitkorea.or.kr/cms/resource/05/3042405_image2_1.JPG",
+    "ganghwa-peace-observatory": "https://tong.visitkorea.or.kr/cms/resource/71/3364171_image2_1.jpg",
+    "goryeogungji": "https://tong.visitkorea.or.kr/cms/resource/86/4061486_image2_1.jpg",
+    "manisan": "https://tong.visitkorea.or.kr/cms/resource/92/3000992_image2_1.jpg"
   }
 }

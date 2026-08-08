@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-08T21:15:37.611Z",
-    "count": 155,
+    "generatedAt": "2026-08-08T21:25:57.400Z",
+    "count": 163,
     "source": "scripts/data/korea-theme-region-tour-overrides.mjs"
   },
   "byAttractionId": {
@@ -25,6 +25,22 @@
     "andong:woryeonggyo-bridge": {
       "contentId": "988449",
       "tourTitle": "월영교"
+    },
+    "ansan:byeolmangseong-fortress": {
+      "contentId": "128062",
+      "tourTitle": "별망성지"
+    },
+    "ansan:daebudo": {
+      "contentId": "126844",
+      "tourTitle": "대부도"
+    },
+    "ansan:seongho-park-ansan": {
+      "contentId": "128826",
+      "tourTitle": "성호공원"
+    },
+    "ansan:sihwa-lake-ansan": {
+      "contentId": "128065",
+      "tourTitle": "시화호"
     },
     "boryeong:boryeong-coal-museum": {
       "contentId": "2470406",
@@ -153,6 +169,22 @@
     "damyang:soswaewon": {
       "contentId": "126374",
       "tourTitle": "담양 소쇄원"
+    },
+    "ganghwa:gapgot-dondae": {
+      "contentId": "1254680",
+      "tourTitle": "갑곶돈대"
+    },
+    "ganghwa:ganghwa-peace-observatory": {
+      "contentId": "631066",
+      "tourTitle": "강화도제적봉 평화전망대"
+    },
+    "ganghwa:goryeogungji": {
+      "contentId": "127184",
+      "tourTitle": "고려궁지"
+    },
+    "ganghwa:manisan": {
+      "contentId": "125468",
+      "tourTitle": "마니산(강화)"
     },
     "gangneung:anmok-beach": {
       "contentId": "127722",

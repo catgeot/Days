@@ -64,6 +64,10 @@ const NEW_SAMPLES = [
   'daegwallyeong-sheep-farm',
   'namhae-german-village',
   'geumsan-boriam',
+  'daebudo',
+  'byeolmangseong-fortress',
+  'gapgot-dondae',
+  'manisan',
 ];
 for (const id of NEW_SAMPLES) {
   const spot = byId.get(id);

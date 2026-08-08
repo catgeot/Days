@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 78,
+  sessionNo: 79,
   sessionPhase: '빈 hub 명소 보강',
   branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?hub=pyeongchang',
+  previewPath: '/korea/theme/scenic?hub=ansan',
   qaShareSlug: 'scenic-hub-fill',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-08-scenic-hub-fill-r01-79',
+    session: '테마여행 #79, 빈 hub 명소 보강',
+    title: '안산·강화 GATEO 선정 8곳',
+    detail:
+      '큐 R01 앞쪽 빈 hub 안산·강화에 GATEO 선정 명소를 각 4곳 넣었습니다(전체 117·이미지 117). 안산=대부도·별망성지·성호공원·시화호, 강화=갑곶돈대·평화전망대·고려궁지·마니산. Preview에서 /korea/theme/scenic?hub=ansan · ?hub=ganghwa 선정 목록을 확인해 주세요.',
+    at: '2026-08-08',
+  },
   {
     id: '2026-08-08-scenic-hub-fill-r01-78',
     session: '테마여행 #78, 빈 hub 명소 보강',
