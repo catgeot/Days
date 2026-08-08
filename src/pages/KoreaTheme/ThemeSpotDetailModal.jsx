@@ -309,7 +309,7 @@ function ThemeSpotCrossRail({
                 href={stayHref}
                 target="_blank"
                 rel="noopener noreferrer sponsored"
-                className="inline-flex items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-950 hover:bg-amber-100"
+                className="inline-flex max-w-full min-w-0 items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-950 hover:bg-amber-100 break-keep break-words"
               >
                 숙소 · {cross.stay.keyword}
                 <ExternalLink size={12} aria-hidden="true" />
@@ -320,7 +320,7 @@ function ThemeSpotCrossRail({
                 href={tnaHref}
                 target="_blank"
                 rel="noopener noreferrer sponsored"
-                className="inline-flex items-center justify-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-stone-100"
+                className="inline-flex max-w-full min-w-0 items-center justify-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-stone-100 break-keep break-words"
               >
                 투어 · {cross.tna.keyword}
                 <ExternalLink size={12} aria-hidden="true" />
@@ -466,16 +466,18 @@ function textsSimilarOrEqual(a, b) {
   return false;
 }
 
+/** TourAPI 본문 — keep-all + 긴 URL·공백 없는 구간은 break-words로 가로 넘침 방지 */
+const DETAIL_BODY_TEXT_CLASS =
+  'min-w-0 max-w-full whitespace-pre-line leading-relaxed text-stone-700 break-keep break-words';
+
 function DetailRow({ label, children }) {
   if (!children) return null;
   return (
-    <div className="space-y-1 text-sm">
+    <div className="min-w-0 space-y-1 text-sm">
       <dt className="text-[11px] font-bold tracking-wide text-stone-500">
         {label}
       </dt>
-      <dd className="min-w-0 whitespace-pre-line leading-relaxed text-stone-700 break-keep">
-        {children}
-      </dd>
+      <dd className={DETAIL_BODY_TEXT_CLASS}>{children}</dd>
     </div>
   );
 }
@@ -1267,7 +1269,7 @@ export default function ThemeSpotDetailModal({
 
         <div
           ref={scrollRef}
-          className="min-h-0 flex-1 overflow-y-auto overscroll-contain custom-scrollbar"
+          className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain custom-scrollbar"
         >
           {hero ? (
             <button
@@ -1321,9 +1323,9 @@ export default function ThemeSpotDetailModal({
             </div>
           )}
 
-          <div className="space-y-4 px-4 py-4 sm:px-5">
+          <div className="min-w-0 space-y-4 px-4 py-4 sm:px-5">
             {spot.source !== 'cha' && spot.blurb ? (
-              <p className="text-sm font-semibold leading-relaxed text-amber-950/90 break-keep">
+              <p className="text-sm font-semibold leading-relaxed text-amber-950/90 break-keep break-words">
                 {spot.blurb}
               </p>
             ) : null}
@@ -1343,7 +1345,7 @@ export default function ThemeSpotDetailModal({
             ) : null}
 
             {!detailLoading && detail ? (
-              <dl className="space-y-4">
+              <dl className="min-w-0 space-y-4">
                 {overview ? <DetailRow label="개요">{overview}</DetailRow> : null}
                 {Array.isArray(detail.heritageMeta)
                   ? detail.heritageMeta.map((row) => (
@@ -1371,7 +1373,7 @@ export default function ThemeSpotDetailModal({
                       target="_blank"
                       rel="noopener noreferrer"
                       title={homepage}
-                      className="inline-flex items-center gap-1 font-semibold text-amber-900 underline-offset-2 hover:underline break-keep"
+                      className="inline-flex max-w-full min-w-0 items-center gap-1 font-semibold text-amber-900 underline-offset-2 hover:underline break-keep break-words"
                     >
                       {homepageDisplayLabel(homepage)}
                       <ExternalLink size={13} aria-hidden="true" />
@@ -1889,7 +1891,7 @@ export default function ThemeSpotDetailModal({
                 <X size={18} aria-hidden="true" />
               </button>
             </div>
-            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5 custom-scrollbar">
+            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overflow-x-hidden overscroll-contain px-4 py-4 sm:px-5 custom-scrollbar">
               {videosLoading && (
                 <div className="flex items-center gap-2 text-sm text-stone-500 py-2">
                   <Loader2 size={16} className="animate-spin" aria-hidden="true" />

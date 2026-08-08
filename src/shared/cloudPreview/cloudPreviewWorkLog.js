@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 75,
-  sessionPhase: '빈 hub 선정 칩 숨김',
-  branch: 'main',
+  sessionNo: 76,
+  sessionPhase: '상세 가로 스크롤',
+  branch: 'cursor/scenic-detail-overflow-3f84',
   previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'scenic-empty-chips',
+  qaShareSlug: 'scenic-detail-overflow',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-08-scenic-detail-overflow-76',
+    session: '테마여행 #76, 상세 가로 스크롤',
+    title: '관광지 상세 가로 롤링 방지',
+    detail:
+      '낙산도립공원 등 TourAPI 본문의 긴 URL·공백 없는 구간이 break-keep만으로 가로 넘침을 만들던 문제를 고쳤습니다. 상세·코스 모달에 break-words·overflow-x-hidden을 적용했습니다. Preview에서 낙산도립공원 본문 아래(입산통제 구간)를 세로 스크롤하며 좌우 롤링이 없는지 확인해 주세요.',
+    at: '2026-08-08',
+  },
   {
     id: '2026-08-08-scenic-empty-chips-main-75',
     session: '테마여행 #75, main 병합',
