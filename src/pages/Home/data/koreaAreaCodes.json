@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-08T23:43:31.832Z",
+    "generatedAt": "2026-08-08T23:51:15.414Z",
     "areaCount": 16,
-    "hubLinkCount": 82,
+    "hubLinkCount": 87,
     "source": "scripts/data/korea-area-code-overrides.mjs"
   },
   "defaultHubIds": [
@@ -93,7 +93,8 @@
         "yeoncheon",
         "dongducheon",
         "icheon",
-        "pyeongtaek"
+        "pyeongtaek",
+        "yangju"
       ]
     },
     "32": {
@@ -106,7 +107,11 @@
         "yangyang",
         "donghae",
         "samcheok",
-        "cheorwon"
+        "cheorwon",
+        "wonju",
+        "inje",
+        "yeongwol",
+        "goseong"
       ]
     },
     "33": {
@@ -220,6 +225,7 @@
     "dongducheon": "31",
     "icheon": "31",
     "pyeongtaek": "31",
+    "yangju": "31",
     "gangneung": "32",
     "sokcho": "32",
     "chuncheon": "32",
@@ -228,6 +234,10 @@
     "donghae": "32",
     "samcheok": "32",
     "cheorwon": "32",
+    "wonju": "32",
+    "inje": "32",
+    "yeongwol": "32",
+    "goseong": "32",
     "cheongju": "33",
     "danyang": "33",
     "jecheon": "33",

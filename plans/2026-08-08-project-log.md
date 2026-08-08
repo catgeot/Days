@@ -2,6 +2,22 @@
 
 직전: [`2026-08-07-project-log.md`](./2026-08-07-project-log.md)
 
+## 테마여행 #87, 빈 hub 명소 보강
+
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip _(push 후)_ · Preview 사람 QA 대기
+
+- **한 일**: 큐 R01 잔여+R02 앞 — 원주4·양주4·인제7·영월7·고성6 **전수** GATEO 선정 · Tour contentId 28/28 · 썸네일 321/321 · 경기·강원 시도 색인 · 큐 잔여 82
+- **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
+- **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=wonju` · `?hub=yangju` · `?hub=inje` · `?hub=yeongwol` · `?hub=goseong`
+- **작업 로그**: 「원주·양주·인제·영월·고성 GATEO 선정 전수」
+- **남은 일**: 큐 R01(홍천·양구·정선·태백·울진…) 전수 · 사람 Preview QA
+- **다음 채팅명**:
+
+```
+테마여행 #88, 빈 hub 명소 보강
+```
+
 ## 테마여행 #86, 빈 hub 명소 보강
 
 **상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `3c405d29` · Preview 사람 QA 대기
@@ -11,12 +27,8 @@
 - **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
 - **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=yeoncheon` · `?hub=cheorwon` · `?hub=dongducheon` · `?hub=icheon` · `?hub=pyeongtaek`
 - **작업 로그**: 「연천·철원·동두천·이천·평택 GATEO 선정 전수」
-- **남은 일**: 큐 R01 잔여(원주·양주…) 전수 · 사람 Preview QA
-- **다음 채팅명**:
-
-```
-테마여행 #87, 빈 hub 명소 보강
-```
+- **남은 일**: ✅ #87 원주·양주·인제·영월·고성 전수 · 사람 Preview QA
+- **다음 채팅명**: `테마여행 #87, 빈 hub 명소 보강` → 완료(위 #87 절)
 
 ## 테마여행 #85, 빈 hub 명소 보강
 

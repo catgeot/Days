@@ -64,6 +64,7 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'dongducheon',
         'icheon',
         'pyeongtaek',
+        'yangju',
       ],
     },
     32: {
@@ -77,6 +78,10 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'donghae',
         'samcheok',
         'cheorwon',
+        'wonju',
+        'inje',
+        'yeongwol',
+        'goseong',
       ],
     },
     33: {

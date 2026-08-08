@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-08T23:44:05.005Z",
-    "count": 293,
+    "updatedAt": "2026-08-08T23:51:26.425Z",
+    "count": 321,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -298,6 +298,34 @@
     "icheon-city-museum": "https://tong.visitkorea.or.kr/cms/resource/65/3023965_image2_1.jpg",
     "pyeongtaek-jinwicheon-eco-park": "https://tong.visitkorea.or.kr/cms/resource/71/3523971_image2_1.jpg",
     "bosan-foreigners-street": "https://tong.visitkorea.or.kr/cms/resource_photo/03/3474003_image2_1.jpg",
-    "freedom-protection-peace-museum": "https://tong.visitkorea.or.kr/cms/resource_photo/03/3474003_image2_1.jpg"
+    "freedom-protection-peace-museum": "https://tong.visitkorea.or.kr/cms/resource_photo/03/3474003_image2_1.jpg",
+    "okjeong-lake-park-yangju": "https://tong.visitkorea.or.kr/cms/resource/81/3409281_image2_1.jpg",
+    "jangheung-tourist-area-yangju": "https://tong.visitkorea.or.kr/cms/resource/63/3067663_image2_1.jpg",
+    "hoeamsa-temple-site-yangju": "https://tong.visitkorea.or.kr/cms/resource/65/3350065_image2_1.jpg",
+    "naerincheon": "https://tong.visitkorea.or.kr/cms/resource/66/2616266_image2_1.bmp",
+    "sibiseonnyeotang-valley": "https://tong.visitkorea.or.kr/cms/resource/58/3042058_image2_1.jpg",
+    "gossi-cave": "https://tong.visitkorea.or.kr/cms/resource/87/3374987_image2_1.JPG",
+    "donggang-river": "https://tong.visitkorea.or.kr/cms/resource/13/3379313_image2_1.JPG",
+    "korean-peninsula-landform": "https://tong.visitkorea.or.kr/cms/resource/34/2922034_image2_1.jpg",
+    "goseong-unification-observatory": "https://tong.visitkorea.or.kr/cms/resource/54/2599054_image2_1.jpg",
+    "songjiho-beach": "https://tong.visitkorea.or.kr/cms/resource/14/3516814_image2_1.jpg",
+    "guryongsa": "https://tong.visitkorea.or.kr/cms/resource/48/3523748_image2_1.jpg",
+    "museum-san": "https://tong.visitkorea.or.kr/cms/resource/08/3584408_image2_1.jpg",
+    "wonju-hanji-theme-park": "https://tong.visitkorea.or.kr/cms/resource/63/3558463_image2_1.JPG",
+    "chiaksan-national-park": "https://tong.visitkorea.or.kr/cms/resource/26/4057126_image2_1.jpg",
+    "baekdamsa": "https://tong.visitkorea.or.kr/cms/resource/31/4074631_image2_1.jpg",
+    "bangtaesan-recreation-forest": "https://tong.visitkorea.or.kr/cms/resource_photo/55/3540655_image2_1.jpg",
+    "yongneup-of-mt-daeam": "https://tong.visitkorea.or.kr/cms/resource_photo/11/3590111_image2_1.jpg",
+    "jang-ucchin-museum-of-art-yangju": "https://tong.visitkorea.or.kr/cms/resource/67/3331967_image2_1.jpg",
+    "wondae-birch-forest": "https://tong.visitkorea.or.kr/cms/resource/33/3558333_image2_1.jpg",
+    "seondol-rock": "https://tong.visitkorea.or.kr/cms/resource/09/4041409_image2_1.png",
+    "inje-speedium": "https://tong.visitkorea.or.kr/cms/resource/15/2598215_image2_1.png",
+    "byeolmaro-observatory": "https://tong.visitkorea.or.kr/cms/resource/41/3499341_image2_1.jpg",
+    "cheongnyeongpo": "https://tong.visitkorea.or.kr/cms/resource/65/4041365_image2_1.jpg",
+    "geojin-port": "https://tong.visitkorea.or.kr/cms/resource/50/3515850_image2_1.jpg",
+    "ayajin-beach": "https://tong.visitkorea.or.kr/cms/resource/82/3516882_image2_1.jpg",
+    "yeongwol-jangneung": "https://tong.visitkorea.or.kr/cms/resource/15/4041415_image2_1.png",
+    "hwajinpo-lake": "https://tong.visitkorea.or.kr/cms/resource/80/4059880_image2_1.jpg",
+    "dmz-museum": "https://tong.visitkorea.or.kr/cms/resource/51/2921751_image2_1.jpg"
   }
 }

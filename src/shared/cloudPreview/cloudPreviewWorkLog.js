@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 86,
+  sessionNo: 87,
   sessionPhase: '빈 hub 명소 보강',
   branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?hub=yeoncheon',
+  previewPath: '/korea/theme/scenic?hub=wonju',
   qaShareSlug: 'scenic-hub-fill',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-08-scenic-hub-fill-r01-87',
+    session: '테마여행 #87, 빈 hub 명소 보강',
+    title: '원주·양주·인제·영월·고성 GATEO 선정 전수',
+    detail:
+      '큐 R01 잔여(원주·양주)와 R02 앞(인제·영월·고성) 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(원주4·양주4·인제7·영월7·고성6 · Tour contentId 28/28). 경기·강원 시도 색인에도 동시 등록했습니다. Preview에서 /korea/theme/scenic?hub=wonju · ?hub=yangju · ?hub=inje · ?hub=yeongwol · ?hub=goseong 선정 목록을 확인해 주세요.',
+    at: '2026-08-08',
+  },
   {
     id: '2026-08-08-scenic-hub-fill-r01a-86',
     session: '테마여행 #86, 빈 hub 명소 보강',

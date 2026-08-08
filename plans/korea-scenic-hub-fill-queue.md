@@ -1,9 +1,9 @@
 # GATEO 선정 명소 — 권역·시군 hub 보강 큐
 
 **생성**: `npm run report:korea-scenic-empty-hubs -- --write-queue` (이 파일 덮어씀)
-**스냅샷**: 빈 hub **87** · 선정 hub **82** · maxOrder **2930**
+**스냅샷**: 빈 hub **82** · 선정 hub **87** · maxOrder **3210**
 
-**완료**: `#77`~`#85` · `#86` 연천·철원·동두천·이천·평택 전수 → 아래 표는 잔여 재번호.
+**완료**: `#77`~`#86` · `#87` 원주·양주·인제·영월·고성 전수 → 아래 표는 잔여 재번호.
 
 ## 사용법
 
@@ -21,32 +21,23 @@
 
 | R | 워커A | 워커B | 권역 | 상태 |
 |---|-------|-------|------|------|
-| **R01** | `wonju` · `yangju` | — | 수도권 | ⬜ |
-| **R02** | `inje` · `yeongwol` · `goseong` · `hongcheon` · `yanggu` | `jeongseon` · `taebaek` · `uljin` · `hoengseong` · `hwacheon` | 강원 | ⬜ |
-| **R03** | `chungju` · `jeungpyeong` · `sejong` · `seosan` · `boeun` | `cheongyang` · `dangjin` · `goesan` · `gyeryong` · `mungyeong` | 충청 | ⬜ |
-| **R04** | `yeongdong` · `bonghwa` · `eumseong` · `geumsan` · `hongseong` | `nonsan` · `okcheon` · `yeongi` · `yesan` | 충청 | ⬜ |
-| **R05** | `wanju` · `gokseong` · `jangsu` · `seocheon` · `gangjin` | `gochang` · `goheung` · `hamyang` · `hwasun` · `imsil` | 전라 | ⬜ |
-| **R06** | `jangheung` · `jangseong` · `jindo` · `naju` · `sinan` | `sunchang` · `yeonggwang` · `gimje` · `haenam` · `hampyeong` | 전라 | ⬜ |
-| **R07** | `iksan` · `muan` · `muju` · `yeongam` | — | 전라 | ⬜ |
-| **R08** | `geochang` · `ulju` · `gimhae` · `gunwi` · `sangju` | `yangsan` · `changwon` · `cheongdo` · `dalseong` · `gijang` | 경상 | ⬜ |
-| **R09** | `goseongnam` · `gumi` · `haman` · `miryang` · `sacheon` | `uiseong` · `yecheon` · `yeongcheon` · `yeongju` · `changnyeong` | 경상 | ⬜ |
-| **R10** | `cheongsong` · `chilgok` · `dokdo` · `gimcheon` · `goryeong` | `gwangyang` · `gyeongsan` · `sancheong` · `seongju` · `uiryeong` | 경상 | ⬜ |
-| **R11** | `yeongdeok` · `yeongyang` | — | 경상 | ⬜ |
+| **R01** | `hongcheon` · `yanggu` · `jeongseon` · `taebaek` · `uljin` | `hoengseong` · `hwacheon` | 강원 | ⬜ |
+| **R02** | `chungju` · `jeungpyeong` · `sejong` · `seosan` · `boeun` | `cheongyang` · `dangjin` · `goesan` · `gyeryong` · `mungyeong` | 충청 | ⬜ |
+| **R03** | `yeongdong` · `bonghwa` · `eumseong` · `geumsan` · `hongseong` | `nonsan` · `okcheon` · `yeongi` · `yesan` | 충청 | ⬜ |
+| **R04** | `wanju` · `gokseong` · `jangsu` · `seocheon` · `gangjin` | `gochang` · `goheung` · `hamyang` · `hwasun` · `imsil` | 전라 | ⬜ |
+| **R05** | `jangheung` · `jangseong` · `jindo` · `naju` · `sinan` | `sunchang` · `yeonggwang` · `gimje` · `haenam` · `hampyeong` | 전라 | ⬜ |
+| **R06** | `iksan` · `muan` · `muju` · `yeongam` | — | 전라 | ⬜ |
+| **R07** | `geochang` · `ulju` · `gimhae` · `gunwi` · `sangju` | `yangsan` · `changwon` · `cheongdo` · `dalseong` · `gijang` | 경상 | ⬜ |
+| **R08** | `goseongnam` · `gumi` · `haman` · `miryang` · `sacheon` | `uiseong` · `yecheon` · `yeongcheon` · `yeongju` · `changnyeong` | 경상 | ⬜ |
+| **R09** | `cheongsong` · `chilgok` · `dokdo` · `gimcheon` · `goryeong` | `gwangyang` · `gyeongsan` · `sancheong` · `seongju` · `uiryeong` | 경상 | ⬜ |
+| **R10** | `yeongdeok` · `yeongyang` | — | 경상 | ⬜ |
 
-**합계**: 11 라운드 · hub 87.
+**합계**: 10 라운드 · hub 82.
 
 ## 권역별 잔여
 
-### 수도권 (2)
+### 강원 (7)
 
-- `wonju` 원주 — attr 4 · Tour contentId 0
-- `yangju` 양주 — attr 4 · Tour contentId 0
-
-### 강원 (10)
-
-- `inje` 인제 — attr 7 · Tour contentId 0
-- `yeongwol` 영월 — attr 7 · Tour contentId 0
-- `goseong` 고성 — attr 6 · Tour contentId 0
 - `hongcheon` 홍천 — attr 6 · Tour contentId 0
 - `yanggu` 양구 — attr 6 · Tour contentId 0
 - `jeongseon` 정선 — attr 5 · Tour contentId 0
