@@ -516,6 +516,10 @@ export default function KoreaThemeScenicPage() {
   /** 확정된 검색어 — 입력창을 비워도 리스트 필터 유지 · 분류 칩으로 결과 분해 */
   const [searchApplied, setSearchApplied] = useState('');
   const mainScrollRef = useRef(null);
+  /** 분류칩 클릭 직후 목록 높이 변화로 스크롤이 튀지 않게 칩 위치 고정 */
+  const chipScrollPinRef = useRef(null);
+  const chipScrollPinGenRef = useRef(0);
+  const chipScrollPinClearTimerRef = useRef(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   const searchFilter = searchDraft.trim() || searchApplied.trim();
@@ -532,6 +536,41 @@ export default function KoreaThemeScenicPage() {
   const dbSearchActive = dbSearchFilter.length > 0;
   const nearActive = Boolean(nearOrigin && nearLabel) && !searchActive;
   const areaChips = useMemo(() => listScenicRegionAreas(region), [region]);
+
+  const scheduleChipScrollPinClear = useCallback((gen) => {
+    if (chipScrollPinClearTimerRef.current) {
+      window.clearTimeout(chipScrollPinClearTimerRef.current);
+    }
+    chipScrollPinClearTimerRef.current = window.setTimeout(() => {
+      if (chipScrollPinRef.current?.gen === gen) {
+        chipScrollPinRef.current = null;
+      }
+      chipScrollPinClearTimerRef.current = 0;
+    }, 180);
+  }, []);
+
+  const runWithChipScrollPin = useCallback(
+    (anchorEl, apply) => {
+      const root = mainScrollRef.current;
+      if (root && anchorEl instanceof HTMLElement) {
+        const pinKey = anchorEl.getAttribute('data-chip-pin');
+        if (pinKey) {
+          const rootRect = root.getBoundingClientRect();
+          const elRect = anchorEl.getBoundingClientRect();
+          const gen = chipScrollPinGenRef.current + 1;
+          chipScrollPinGenRef.current = gen;
+          chipScrollPinRef.current = {
+            pinKey,
+            viewportOffset: elRect.top - rootRect.top,
+            gen,
+          };
+          scheduleChipScrollPinClear(gen);
+        }
+      }
+      apply();
+    },
+    [scheduleChipScrollPinClear],
+  );
 
   const curatedSearchPool = useMemo(() => {
     if (!searchActive) return null;
@@ -974,6 +1013,47 @@ export default function KoreaThemeScenicPage() {
     el.addEventListener('scroll', onScroll, { passive: true });
     return () => el.removeEventListener('scroll', onScroll);
   }, [selectedId, searchActive]);
+
+  const restoreChipScrollPin = useCallback(() => {
+    const pin = chipScrollPinRef.current;
+    if (!pin) return;
+    const root = mainScrollRef.current;
+    if (!root) return;
+    const escaped =
+      typeof CSS !== 'undefined' && typeof CSS.escape === 'function'
+        ? CSS.escape(pin.pinKey)
+        : pin.pinKey.replace(/["\\]/g, '\\$&');
+    const el = root.querySelector(`[data-chip-pin="${escaped}"]`);
+    if (!el) return;
+    const rootRect = root.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    const delta = elRect.top - rootRect.top - pin.viewportOffset;
+    if (Math.abs(delta) > 1) {
+      root.scrollTop += delta;
+    }
+  }, []);
+
+  useLayoutEffect(() => {
+    const pin = chipScrollPinRef.current;
+    if (!pin) return;
+    restoreChipScrollPin();
+    scheduleChipScrollPinClear(pin.gen);
+  }, [
+    restoreChipScrollPin,
+    scheduleChipScrollPinClear,
+    region,
+    areaCode,
+    hubId,
+    heritageCategory,
+    cat1,
+    cat2,
+    cat3,
+    nearActive,
+    dbStatus,
+    dbSpots,
+    curatedSpots,
+    heritageSpots,
+  ]);
 
   const resetListPage = useCallback(() => {
     if (page <= 1 && !searchParams.get('spot')) return;
@@ -2109,11 +2189,17 @@ export default function KoreaThemeScenicPage() {
                   <FilterChipRow aria-label="명소 권역 대분류">
                     {curatedRegionChipsVisible.map((r) => {
                       const active = region === r;
+                      const pinKey = `c-r-${r}`;
                       return (
                         <button
-                          key={`c-r-${r}`}
+                          key={pinKey}
                           type="button"
-                          onClick={() => setRegion(r)}
+                          data-chip-pin={pinKey}
+                          onClick={(e) =>
+                            runWithChipScrollPin(e.currentTarget, () =>
+                              setRegion(r),
+                            )
+                          }
                           aria-pressed={active}
                           className={
                             active
@@ -2137,11 +2223,17 @@ export default function KoreaThemeScenicPage() {
                   >
                     {curatedAreaChipsForRow.map((chip) => {
                       const active = areaCode === chip.code;
+                      const pinKey = `c-a-${chip.code}`;
                       return (
                         <button
-                          key={`c-a-${chip.code}`}
+                          key={pinKey}
                           type="button"
-                          onClick={() => setArea(chip.code)}
+                          data-chip-pin={pinKey}
+                          onClick={(e) =>
+                            runWithChipScrollPin(e.currentTarget, () =>
+                              setArea(chip.code),
+                            )
+                          }
                           aria-pressed={active}
                           className={
                             active
@@ -2165,11 +2257,17 @@ export default function KoreaThemeScenicPage() {
                   >
                     {curatedHubChipsForRow.map((chip) => {
                       const active = hubId === chip.hubId;
+                      const pinKey = `c-h-${chip.hubId}`;
                       return (
                         <button
-                          key={`c-h-${chip.hubId}`}
+                          key={pinKey}
                           type="button"
-                          onClick={() => setHub(chip.hubId)}
+                          data-chip-pin={pinKey}
+                          onClick={(e) =>
+                            runWithChipScrollPin(e.currentTarget, () =>
+                              setHub(chip.hubId),
+                            )
+                          }
                           aria-pressed={active}
                           className={
                             active
@@ -2189,9 +2287,9 @@ export default function KoreaThemeScenicPage() {
               </div>
             ) : null}
 
-            <ul className="space-y-2">
+            <ul className="space-y-2 [overflow-anchor:none]">
               {curatedSpotsWithThumbs.map((spot) => (
-                <li key={`c-${spot.id}`}>
+                <li key={`c-${spot.id}`} className="[overflow-anchor:none]">
                   <ScenicListRow
                     spot={spot}
                     distanceKm={curatedKmById.get(String(spot.id))}
@@ -2244,11 +2342,17 @@ export default function KoreaThemeScenicPage() {
                   <FilterChipRow aria-label="명승 권역 대분류">
                     {heritageRegionChipsVisible.map((r) => {
                       const active = region === r;
+                      const pinKey = `h-r-${r}`;
                       return (
                         <button
-                          key={`h-r-${r}`}
+                          key={pinKey}
                           type="button"
-                          onClick={() => setRegion(r)}
+                          data-chip-pin={pinKey}
+                          onClick={(e) =>
+                            runWithChipScrollPin(e.currentTarget, () =>
+                              setRegion(r),
+                            )
+                          }
                           aria-pressed={active}
                           className={
                             active
@@ -2272,11 +2376,17 @@ export default function KoreaThemeScenicPage() {
                   >
                     {heritageAreaChipsForRow.map((chip) => {
                       const active = areaCode === chip.code;
+                      const pinKey = `h-a-${chip.code}`;
                       return (
                         <button
-                          key={`h-a-${chip.code}`}
+                          key={pinKey}
                           type="button"
-                          onClick={() => setArea(chip.code)}
+                          data-chip-pin={pinKey}
+                          onClick={(e) =>
+                            runWithChipScrollPin(e.currentTarget, () =>
+                              setArea(chip.code),
+                            )
+                          }
                           aria-pressed={active}
                           className={
                             active
@@ -2300,11 +2410,17 @@ export default function KoreaThemeScenicPage() {
                   >
                     {heritageCategoryChipsForRow.map((chip) => {
                       const active = heritageCategory === chip.code;
+                      const pinKey = `h-c-${chip.code}`;
                       return (
                         <button
-                          key={`h-c-${chip.code}`}
+                          key={pinKey}
                           type="button"
-                          onClick={() => setHeritageCategory(chip.code)}
+                          data-chip-pin={pinKey}
+                          onClick={(e) =>
+                            runWithChipScrollPin(e.currentTarget, () =>
+                              setHeritageCategory(chip.code),
+                            )
+                          }
                           aria-pressed={active}
                           className={
                             active
@@ -2331,7 +2447,10 @@ export default function KoreaThemeScenicPage() {
                     </span>
                     <button
                       type="button"
-                      onClick={clearHub}
+                      data-chip-pin="h-clear-hub"
+                      onClick={(e) =>
+                        runWithChipScrollPin(e.currentTarget, () => clearHub())
+                      }
                       className="text-[11px] font-semibold text-stone-500 underline-offset-2 hover:text-stone-800 hover:underline"
                     >
                       시·군 필터 해제
@@ -2358,9 +2477,9 @@ export default function KoreaThemeScenicPage() {
                         : '이 권역·시도에 해당하는 국가유산 명승이 없습니다.'}
               </p>
             ) : (
-              <ul className="space-y-2">
+              <ul className="space-y-2 [overflow-anchor:none]">
                 {heritageSpots.map((spot) => (
-                  <li key={`h-${spot.id}`}>
+                  <li key={`h-${spot.id}`} className="[overflow-anchor:none]">
                     <ScenicListRow
                       spot={spot}
                       distanceKm={heritageKmById.get(String(spot.id))}
@@ -2409,11 +2528,17 @@ export default function KoreaThemeScenicPage() {
                 <FilterChipRow aria-label="관광 종목 대분류">
                   {tourCat1ChipsVisible.map((chip) => {
                     const active = cat1 === chip.code;
+                    const pinKey = `t-c1-${chip.code}`;
                     return (
                       <button
-                        key={chip.code}
+                        key={pinKey}
                         type="button"
-                        onClick={() => setCat1(chip.code)}
+                        data-chip-pin={pinKey}
+                        onClick={(e) =>
+                          runWithChipScrollPin(e.currentTarget, () =>
+                            setCat1(chip.code),
+                          )
+                        }
                         aria-pressed={active}
                         className={
                           active
@@ -2440,11 +2565,17 @@ export default function KoreaThemeScenicPage() {
                 >
                   {tourCat2ChipsVisible.map((chip) => {
                     const active = cat2 === chip.code;
+                    const pinKey = `t-c2-${chip.code}`;
                     return (
                       <button
-                        key={chip.code}
+                        key={pinKey}
                         type="button"
-                        onClick={() => setCat2(chip.code)}
+                        data-chip-pin={pinKey}
+                        onClick={(e) =>
+                          runWithChipScrollPin(e.currentTarget, () =>
+                            setCat2(chip.code),
+                          )
+                        }
                         aria-pressed={active}
                         className={
                           active
@@ -2471,11 +2602,17 @@ export default function KoreaThemeScenicPage() {
                 >
                   {tourCat3ChipsVisible.map((chip) => {
                     const active = cat3 === chip.code;
+                    const pinKey = `t-c3-${chip.code}`;
                     return (
                       <button
-                        key={chip.code}
+                        key={pinKey}
                         type="button"
-                        onClick={() => setCat3(chip.code)}
+                        data-chip-pin={pinKey}
+                        onClick={(e) =>
+                          runWithChipScrollPin(e.currentTarget, () =>
+                            setCat3(chip.code),
+                          )
+                        }
                         aria-pressed={active}
                         className={
                           active
@@ -2518,9 +2655,9 @@ export default function KoreaThemeScenicPage() {
             ) : null}
 
             {dbSpots.length > 0 ? (
-              <ul className="space-y-2">
+              <ul className="space-y-2 [overflow-anchor:none]">
                 {dbSpots.map((spot) => (
-                  <li key={`d-${spot.id}`}>
+                  <li key={`d-${spot.id}`} className="[overflow-anchor:none]">
                     <ScenicListRow
                       spot={spot}
                       distanceKm={dbKmById.get(String(spot.id))}

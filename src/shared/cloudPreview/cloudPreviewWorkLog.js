@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 71,
-  sessionPhase: '내주변 분류칩',
-  branch: 'cursor/scenic-nearby-a8ec',
+  sessionNo: 72,
+  sessionPhase: '분류칩 스크롤 고정',
+  branch: 'cursor/scenic-chip-jump-0e9a',
   previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'scenic-nearby',
+  qaShareSlug: 'scenic-chip',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-08-scenic-chip-scroll-pin-72',
+    session: '테마여행 #72, 분류칩 스크롤 고정',
+    title: '분류칩 클릭 시 스크롤 점프 방지',
+    detail:
+      '명소·명승·관광지 각 파트 분류칩을 누르면 위 목록 높이가 줄어 스크롤이 관광지 리스트 중간으로 튀던 문제를 고쳤습니다. 클릭한 칩 위치를 고정합니다. Preview `/korea/theme/scenic` → 수도권·서울 칩.',
+    at: '2026-08-08',
+  },
   {
     id: '2026-08-08-scenic-nearby-category-chips-71',
     session: '테마여행 #71, 내주변 분류칩',
