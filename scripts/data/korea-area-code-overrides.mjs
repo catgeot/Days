@@ -58,6 +58,8 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'gwangju_gi',
         'hwaseong',
         'osan',
+        'uijeongbu',
+        'yeoju',
       ],
     },
     32: {
@@ -72,8 +74,14 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'samcheok',
       ],
     },
-    33: { name: '충북', hubIds: ['cheongju', 'danyang', 'jecheon'] },
-    34: { name: '충남', hubIds: ['boryeong', 'gongju', 'taean', 'buyeo'] },
+    33: {
+      name: '충북',
+      hubIds: ['cheongju', 'danyang', 'jecheon', 'jincheon'],
+    },
+    34: {
+      name: '충남',
+      hubIds: ['boryeong', 'gongju', 'taean', 'buyeo', 'asan', 'cheonan'],
+    },
     35: {
       name: '경북',
       hubIds: ['gyeongju', 'andong', 'pohang', 'ulleung'],

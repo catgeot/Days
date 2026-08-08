@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 84,
+  sessionNo: 85,
   sessionPhase: '빈 hub 명소 보강',
   branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?hub=gwacheon',
+  previewPath: '/korea/theme/scenic?hub=jincheon',
   qaShareSlug: 'scenic-hub-fill',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-08-scenic-hub-fill-r01a-85',
+    session: '테마여행 #85, 빈 hub 명소 보강',
+    title: '진천·아산·천안·의정부·여주 GATEO 선정 전수',
+    detail:
+      '큐 R01 워커A 빈 hub 다섯 곳에 hub attractions 전수를 GATEO 선정에 넣었습니다(진천7·아산5·천안5·의정부5·여주5 · 전체 272·이미지 272 · Tour contentId 25/27). 경기·충북·충남 시도 색인에도 동시 등록했습니다. Preview에서 /korea/theme/scenic?hub=jincheon · ?hub=asan · ?hub=cheonan · ?hub=uijeongbu · ?hub=yeoju 선정 목록을 확인해 주세요.',
+    at: '2026-08-08',
+  },
   {
     id: '2026-08-08-scenic-hub-fill-r01b-84',
     session: '테마여행 #84, 빈 hub 명소 보강',

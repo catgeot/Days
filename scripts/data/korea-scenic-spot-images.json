@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-08T22:43:00.385Z",
-    "count": 245,
+    "updatedAt": "2026-08-08T22:49:35.014Z",
+    "count": 272,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -250,6 +250,33 @@
     "osancheon": "https://tong.visitkorea.or.kr/cms/resource/05/4079305_image2_1.jpg",
     "gwacheon-civic-center": "https://tong.visitkorea.or.kr/cms/resource/92/4065392_image2_1.jpg",
     "osan-malgeumteo-park": "https://tong.visitkorea.or.kr/cms/resource/05/4079305_image2_1.jpg",
-    "daecheongdo-ongjin": "https://tong.visitkorea.or.kr/cms/resource/31/2799731_image2_1.jpg"
+    "daecheongdo-ongjin": "https://tong.visitkorea.or.kr/cms/resource/31/2799731_image2_1.jpg",
+    "mihocheon-ecological-park": "https://tong.visitkorea.or.kr/cms/resource/74/3064574_image2_1.JPG",
+    "baekgok-reservoir": "https://tong.visitkorea.or.kr/cms/resource/74/3064574_image2_1.JPG",
+    "botapsa-temple": "https://tong.visitkorea.or.kr/cms/resource/15/3560215_image2_1.jpg",
+    "saenggeo-jincheon-resort": "https://tong.visitkorea.or.kr/cms/resource/00/3465400_image2_1.JPG",
+    "jincheon-hyanggyo": "https://tong.visitkorea.or.kr/cms/resource/03/3341303_image2_1.JPG",
+    "onyang-hot-spring-street": "https://tong.visitkorea.or.kr/cms/resource/40/3570140_image2_1.jpg",
+    "gakwonsa": "https://tong.visitkorea.or.kr/cms/resource/30/3535030_image2_1.jpg",
+    "byeongcheon-sundae-street": "https://tong.visitkorea.or.kr/cms/resource/07/3337207_image2_1.JPG",
+    "cheonan-samgeori-park": "https://tong.visitkorea.or.kr/cms/resource/32/3560232_image2_1.JPG",
+    "jikdong-neighborhood-park": "https://tong.visitkorea.or.kr/cms/resource/24/3409024_image2_1.jpg",
+    "hoeryongsa-temple": "https://tong.visitkorea.or.kr/cms/resource/80/3533080_image2_1.JPG",
+    "silleuksa": "https://tong.visitkorea.or.kr/cms/resource/35/3078435_image2_1.jpg",
+    "yeoju-premium-outlets": "https://tong.visitkorea.or.kr/cms/resource/35/3078435_image2_1.jpg",
+    "pasaseong-fortress": "https://tong.visitkorea.or.kr/cms/resource/37/3060337_image2_1.jpg",
+    "jincheon-nongdari-bridge": "https://tong.visitkorea.or.kr/cms/resource/05/4058305_image2_1.JPG",
+    "asan-hyeonchungsa": "https://tong.visitkorea.or.kr/cms/resource_photo/40/3473040_image2_1.jpg",
+    "jincheon-bell-museum": "https://tong.visitkorea.or.kr/cms/resource/66/4083166_image2_1.jpg",
+    "sinjeong-lake": "https://tong.visitkorea.or.kr/cms/resource/67/3031267_image2_1.jpg",
+    "onyang-folk-museum": "https://tong.visitkorea.or.kr/cms/resource/80/3558580_image2_1.jpg",
+    "onyang-oncheon-market": "https://tong.visitkorea.or.kr/cms/resource/70/3060070_image2_1.jpg",
+    "independence-hall-of-korea": "https://tong.visitkorea.or.kr/cms/resource/21/3450021_image2_1.jpg",
+    "uijeongbu-budae-jjigae-street": "https://tong.visitkorea.or.kr/cms/resource/97/3083097_image2_1.png",
+    "uijeongbu-arts-center": "https://tong.visitkorea.or.kr/cms/resource/00/3072800_image2_1.jpg",
+    "yeoju-gangcheon-island": "https://tong.visitkorea.or.kr/cms/resource/38/3547138_image2_1.jpg",
+    "cheonbosan": "https://tong.visitkorea.or.kr/cms/resource/07/3499207_image2_1.jpg",
+    "yeoju-royal-tomb-of-king-sejong": "https://tong.visitkorea.or.kr/cms/resource/40/4062540_image2_1.jpg",
+    "cheonan-jungang-market": "https://tong.visitkorea.or.kr/cms/resource/32/3560232_image2_1.JPG"
   }
 }

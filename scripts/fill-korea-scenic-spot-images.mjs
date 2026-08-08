@@ -152,6 +152,9 @@ const RELATED_IMAGE_CONTENT_IDS = {
   'gwacheon-civic-center': '660722', // 국립과천과학관 — 시민회관 Tour firstimage 부재 시
   'daecheongdo-ongjin': '2664266', // 대청도 옥죽동 해안사구 — 대청도 Tour firstimage 부재 시
   'osan-malgeumteo-park': '128986', // 물향기수목원 — 맑음터공원 Tour firstimage 부재 시
+  'mihocheon-ecological-park': '127789', // 백곡저수지 — 미호천생태공원 Tour 부재 시
+  'yeoju-premium-outlets': '126557', // 신륵사관광지 — 여주아울렛 Tour type12 부재 시
+  'cheonan-jungang-market': '126922', // 천안삼거리공원 — 중앙시장 Tour firstimage 부재 시
 };
 
 async function mapPool(items, worker, size) {
