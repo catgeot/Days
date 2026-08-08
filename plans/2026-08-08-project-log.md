@@ -4,7 +4,7 @@
 
 ## 테마여행 #75, 빈 hub 선정 칩 숨김
 
-**상태**: feature `cursor/scenic-empty-chips-1837` · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-empty-chips-1837` · PR [#70](https://github.com/catgeot/Days/pull/70) · Preview 사람 QA 대기
 
 - **증상**: 비와야 폭포→인근「양양 명승지」진입 시 GATEO 선정 명소가 0건인데도 수도권·강원·강릉 등 분류칩+수량이 표시되어 혼란
 - **원인**: `showCuratedFilterChips`가 비검색 시 항상 true → hub 빈 목록에도 권역·타 여행지 칩 노출
