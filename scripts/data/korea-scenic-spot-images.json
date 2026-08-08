@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-08T22:05:01.427Z",
-    "count": 162,
+    "updatedAt": "2026-08-08T22:17:42.006Z",
+    "count": 192,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -167,6 +167,36 @@
     "anyangcheon-eco-park-gwangmyeong": "https://tong.visitkorea.or.kr/cms/resource/27/4095727_image2_1.jpg",
     "geomdansan": "https://tong.visitkorea.or.kr/cms/resource/29/3566829_image2_1.jpg",
     "gureumsan-gwangmyeong": "https://tong.visitkorea.or.kr/cms/resource/00/3527200_image2_1.jpg",
-    "hanam-gyosan-neighborhood-park": "https://tong.visitkorea.or.kr/cms/resource/40/3078540_image2_1.jpg"
+    "hanam-gyosan-neighborhood-park": "https://tong.visitkorea.or.kr/cms/resource/40/3078540_image2_1.jpg",
+    "anyangsa-temple": "https://tong.visitkorea.or.kr/cms/resource/18/3068018_image2_1.JPG",
+    "pyeongchon-central-park": "https://tong.visitkorea.or.kr/cms/resource/21/3023821_image2_1.JPG",
+    "bucheon-central-park": "https://tong.visitkorea.or.kr/cms/resource/28/3037328_image2_1.jpg",
+    "bucheon-city-hall-lake-park": "https://tong.visitkorea.or.kr/cms/resource/95/3037395_image2_1.jpg",
+    "woongjin-playdoci": "https://tong.visitkorea.or.kr/cms/resource/85/3300185_image2_1.jpg",
+    "wonmisan-bucheon": "https://tong.visitkorea.or.kr/cms/resource/80/3508080_image2_1.jpg",
+    "namyangju-chukryeongsan": "https://tong.visitkorea.or.kr/cms/resource/15/3077115_image2_1.jpg",
+    "sujongsa-temple": "https://tong.visitkorea.or.kr/cms/resource/37/3381937_image2_1.JPG",
+    "ungilsan": "https://tong.visitkorea.or.kr/cms/resource/21/3077121_image2_1.jpg",
+    "sanjeong-lake": "https://tong.visitkorea.or.kr/cms/resource/47/3022447_image2_1.jpg",
+    "anyang-art-park": "https://tong.visitkorea.or.kr/cms/resource/17/4090517_image2_1.jpg",
+    "anyangcheon-eco-park": "https://tong.visitkorea.or.kr/cms/resource/77/3023877_image2_1.JPG",
+    "anyang-museum": "https://tong.visitkorea.or.kr/cms/resource/81/3003381_image2_1.jpg",
+    "korea-manhwa-museum": "https://tong.visitkorea.or.kr/cms/resource/25/3352425_image2_1.jpg",
+    "namyangju-garden-of-water": "https://tong.visitkorea.or.kr/cms/resource_photo/26/4063126_image2_1.jpg",
+    "songnae-eoulmadang": "https://tong.visitkorea.or.kr/cms/resource/58/2735258_image2_1.jpg",
+    "sareung-royal-tomb": "https://tong.visitkorea.or.kr/cms/resource/85/3500285_image2_1.jpg",
+    "hongyureung-royal-tombs": "https://tong.visitkorea.or.kr/cms/resource/06/3500306_image2_1.jpg",
+    "korea-national-arboretum": "https://tong.visitkorea.or.kr/cms/resource/63/3493563_image2_1.jpg",
+    "biduginaeng-falls": "https://tong.visitkorea.or.kr/cms/resource/83/3496483_image2_1.jpg",
+    "pocheon-art-valley": "https://tong.visitkorea.or.kr/cms/resource_photo/11/3512111_image2_1.jpg",
+    "siheung-soft-town": "https://tong.visitkorea.or.kr/cms/resource/11/3304111_image2_1.JPG",
+    "siheung-gaetgol-eco-park": "https://tong.visitkorea.or.kr/cms/resource/11/3304111_image2_1.JPG",
+    "siheung-city-hall-lake": "https://tong.visitkorea.or.kr/cms/resource/79/3490179_image2_1.jpg",
+    "herb-island": "https://tong.visitkorea.or.kr/cms/resource/47/3575647_image2_1.jpg",
+    "oido-island-siheung": "https://tong.visitkorea.or.kr/cms/resource/09/3505209_image2_1.jpg",
+    "wolgot-port-siheung": "https://tong.visitkorea.or.kr/cms/resource/03/4066803_image2_1.jpg",
+    "neunggok-historic-park": "https://tong.visitkorea.or.kr/cms/resource/09/3505209_image2_1.jpg",
+    "anyang-central-market": "https://tong.visitkorea.or.kr/cms/resource/17/4090517_image2_1.jpg",
+    "myeongseongsan": "https://tong.visitkorea.or.kr/cms/resource/47/3022447_image2_1.jpg"
   }
 }

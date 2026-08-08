@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-07-24T12:42:16.711Z",
+    "generatedAt": "2026-08-08T22:25:57.704Z",
     "areaCount": 16,
-    "hubLinkCount": 32,
+    "hubLinkCount": 62,
     "source": "scripts/data/korea-area-code-overrides.mjs"
   },
   "defaultHubIds": [
@@ -26,7 +26,8 @@
     "2": {
       "name": "인천",
       "hubIds": [
-        "incheon"
+        "incheon",
+        "ganghwa"
       ]
     },
     "3": {
@@ -63,7 +64,20 @@
       "name": "경기",
       "hubIds": [
         "suwon",
-        "gapyeong"
+        "gapyeong",
+        "ansan",
+        "anseong",
+        "anyang",
+        "bucheon",
+        "gimpo",
+        "goyang",
+        "gwangmyeong",
+        "hanam",
+        "namyangju",
+        "paju",
+        "pocheon",
+        "seongnam",
+        "siheung"
       ]
     },
     "32": {
@@ -73,13 +87,17 @@
         "sokcho",
         "chuncheon",
         "pyeongchang",
-        "yangyang"
+        "yangyang",
+        "donghae",
+        "samcheok"
       ]
     },
     "33": {
       "name": "충북",
       "hubIds": [
-        "cheongju"
+        "cheongju",
+        "danyang",
+        "jecheon"
       ]
     },
     "34": {
@@ -87,7 +105,8 @@
       "hubIds": [
         "boryeong",
         "gongju",
-        "taean"
+        "taean",
+        "buyeo"
       ]
     },
     "35": {
@@ -95,7 +114,8 @@
       "hubIds": [
         "gyeongju",
         "andong",
-        "pohang"
+        "pohang",
+        "ulleung"
       ]
     },
     "36": {
@@ -104,14 +124,20 @@
         "tongyeong",
         "jinju",
         "geoje",
-        "namhae"
+        "namhae",
+        "hadong",
+        "hapcheon"
       ]
     },
     "37": {
       "name": "전북",
       "hubIds": [
         "jeonju",
-        "gunsan"
+        "gunsan",
+        "buan",
+        "jeongeup",
+        "jinan",
+        "namwon"
       ]
     },
     "38": {
@@ -120,19 +146,24 @@
         "yeosu",
         "suncheon",
         "mokpo",
-        "damyang"
+        "damyang",
+        "boseong",
+        "gurye",
+        "wando"
       ]
     },
     "39": {
       "name": "제주",
       "hubIds": [
-        "jeju"
+        "jeju",
+        "seogwipo"
       ]
     }
   },
   "byHubId": {
     "seoul": "1",
     "incheon": "2",
+    "ganghwa": "2",
     "daejeon": "3",
     "daegu": "4",
     "gwangju": "5",
@@ -140,28 +171,57 @@
     "ulsan": "7",
     "suwon": "31",
     "gapyeong": "31",
+    "ansan": "31",
+    "anseong": "31",
+    "anyang": "31",
+    "bucheon": "31",
+    "gimpo": "31",
+    "goyang": "31",
+    "gwangmyeong": "31",
+    "hanam": "31",
+    "namyangju": "31",
+    "paju": "31",
+    "pocheon": "31",
+    "seongnam": "31",
+    "siheung": "31",
     "gangneung": "32",
     "sokcho": "32",
     "chuncheon": "32",
     "pyeongchang": "32",
     "yangyang": "32",
+    "donghae": "32",
+    "samcheok": "32",
     "cheongju": "33",
+    "danyang": "33",
+    "jecheon": "33",
     "boryeong": "34",
     "gongju": "34",
     "taean": "34",
+    "buyeo": "34",
     "gyeongju": "35",
     "andong": "35",
     "pohang": "35",
+    "ulleung": "35",
     "tongyeong": "36",
     "jinju": "36",
     "geoje": "36",
     "namhae": "36",
+    "hadong": "36",
+    "hapcheon": "36",
     "jeonju": "37",
     "gunsan": "37",
+    "buan": "37",
+    "jeongeup": "37",
+    "jinan": "37",
+    "namwon": "37",
     "yeosu": "38",
     "suncheon": "38",
     "mokpo": "38",
     "damyang": "38",
-    "jeju": "39"
+    "boseong": "38",
+    "gurye": "38",
+    "wando": "38",
+    "jeju": "39",
+    "seogwipo": "39"
   }
 }

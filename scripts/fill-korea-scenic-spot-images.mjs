@@ -139,6 +139,10 @@ const RELATED_IMAGE_CONTENT_IDS = {
   'starfield-hanam': '2900511', // 미사한강공원 — 스타필드 Tour type12 부재 시
   'hanam-deokpung-market': '2902497', // 덕풍공원 — 시장 Tour type12 부재 시
   'hanam-gyosan-neighborhood-park': '130726', // 하남역사박물관 — 교산공원 Tour 부재 시
+  'neunggok-historic-park': '128109', // 오이도 — 능곡/선사 Tour firstimage 부재 시
+  'siheung-soft-town': '756625', // 시흥갯골생태공원 — 소프트타운 Tour 부재 시
+  'anyang-central-market': '125514', // 안양예술공원 — 중앙시장 Tour firstimage 부재 시
+  myeongseongsan: '125523', // 산정호수 — 명성산 Tour firstimage 부재 시
 };
 
 async function mapPool(items, worker, size) {
