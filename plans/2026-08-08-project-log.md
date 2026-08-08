@@ -4,7 +4,7 @@
 
 ## 테마여행 #80, 빈 hub 명소 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#73](https://github.com/catgeot/Days/pull/73) · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#73](https://github.com/catgeot/Days/pull/73) · tip `f83d5daf` · Preview 사람 QA 대기
 
 - **한 일**: 큐 R01 워커A — 김포7·고양7·광명7·하남7·안성6 **전수** GATEO 선정 · Tour contentId·썸네일 162/162 · 큐 잔여 112
 - **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `npm run build`
