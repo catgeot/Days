@@ -7,8 +7,8 @@ export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
   sessionNo: 72,
-  sessionPhase: '관광지 짧은목록 여백',
-  branch: 'cursor/scenic-chip-jump-0e9a',
+  sessionPhase: 'main 병합',
+  branch: 'main',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-chip',
 };
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-08-scenic-chip-main-merge-72',
+    session: '테마여행 #72, main 병합',
+    title: '분류칩 스크롤 수정 main 반영',
+    detail:
+      '사람 QA 확인 후 PR #66·#67을 main에 반영했습니다. `/qa/scenic-chip`·`/qa/scenic-nearby`는 PROD 명승 경로로 연결됩니다. www.gateo.kr/korea/theme/scenic 에서 분류칩·짧은 목록을 확인해 주세요.',
+    at: '2026-08-08',
+  },
   {
     id: '2026-08-08-scenic-chip-short-list-pad-72',
     session: '테마여행 #72, 관광지 짧은목록 여백',

@@ -10,17 +10,15 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'scenic-chip',
     label: '명승 분류칩 스크롤 고정',
-    branch: 'cursor/scenic-chip-jump-0e9a',
-    destination:
-      'https://days-git-cursor-scenic-chip-jump-0e9a-catgeots-projects.vercel.app/korea/theme/scenic',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/korea/theme/scenic',
     active: true,
   },
   {
     slug: 'scenic-nearby',
     label: '명승 내주변 관내 관광지',
-    branch: 'cursor/scenic-nearby-a8ec',
-    destination:
-      'https://days-git-cursor-scenic-nearby-a8ec-catgeots-projects.vercel.app/korea/theme/scenic',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/korea/theme/scenic',
     active: true,
   },
   {
