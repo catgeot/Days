@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 74,
-  sessionPhase: '인근여행지 검색 잔존',
-  branch: 'cursor/scenic-search-clear-f5a5',
+  sessionNo: 75,
+  sessionPhase: '빈 hub 선정 칩 숨김',
+  branch: 'cursor/scenic-empty-chips-1837',
   previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'scenic-search-clear',
+  qaShareSlug: 'scenic-empty-chips',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-08-scenic-empty-hub-chips-75',
+    session: '테마여행 #75, 빈 hub 선정 칩 숨김',
+    title: '선정 명소 없는 시·군 — 분류칩 숨김',
+    detail:
+      '인근 여행지로 양양처럼 GATEO 선정 명소가 0건인 시·군 홈에 들어갔을 때, 「해당 명소가 없습니다」 안내 위에 수도권·강원·강릉 등 타지 수량 칩이 보이던 혼란을 없앴습니다. 선정 명소가 없으면 분류칩을 숨기고 아래 국가유산 명승으로 안내합니다. Preview에서 비와야 폭포→양양 명승지 → GATEO 선정에 칩이 없는지 확인해 주세요.',
+    at: '2026-08-08',
+  },
   {
     id: '2026-08-08-scenic-nearby-search-clear-74',
     session: '테마여행 #74, 인근여행지 검색 잔존',

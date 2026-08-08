@@ -1239,13 +1239,16 @@ export default function KoreaThemeScenicPage() {
       : [];
   }, [searchActive, nearActive, heritageCategoryChipsVisible]);
 
+  // 시·군 hub에 선정 명소 0건이면 권역·타 여행지 수량 칩이 빈 안내와 충돌
   const showCuratedFilterChips = nearActive
     ? curatedHubChipsForRow.length > 0
-    : !searchActive ||
-      ((curatedSearchPool?.length || 0) > 0 &&
-        (curatedRegionChipsVisible.length > 1 ||
-          curatedAreaChipsForRow.length > 0 ||
-          curatedHubChipsForRow.length > 0));
+    : Boolean(hubId) && curatedSpots.length === 0 && !searchActive
+      ? false
+      : !searchActive ||
+        ((curatedSearchPool?.length || 0) > 0 &&
+          (curatedRegionChipsVisible.length > 1 ||
+            curatedAreaChipsForRow.length > 0 ||
+            curatedHubChipsForRow.length > 0));
 
   const showHeritageFilterChips = nearActive
     ? heritageCategoryChipsForRow.length > 0

@@ -85,6 +85,11 @@ assert.ok(
   'search comment mentions chip breakdown',
 );
 assert.ok(pageSrc.includes('showCuratedFilterChips'), 'hide curated chips if empty');
+assert.ok(
+  pageSrc.includes('시·군 hub에 선정 명소 0건이면') &&
+    pageSrc.includes('Boolean(hubId) && curatedSpots.length === 0 && !searchActive'),
+  'hub with 0 curated spots hides region/hub chips',
+);
 assert.ok(pageSrc.includes('showHeritageFilterChips'), 'hide heritage chips if empty');
 assert.ok(
   pageSrc.includes('해당 섹션 매칭이 있는 권역만'),
