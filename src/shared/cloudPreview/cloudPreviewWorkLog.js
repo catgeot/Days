@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-08-scenic-section-icons-75c',
+    session: '테마여행 #75, 빈 hub 선정 칩 숨김',
+    title: '명소·명승·관광지 제목 아이콘',
+    detail:
+      '명승 홈 세 목록 제목에 아이콘을 맞춰 구분을 살짝 키웠습니다. GATEO 선정=랜드마크(호박), 국가유산 명승=산(초록), 관광지=핀(하늘). Preview에서 세 제목 시인성을 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
     id: '2026-08-08-scenic-empty-hub-copy-75b',
     session: '테마여행 #75, 빈 hub 선정 칩 숨김',
     title: '빈 hub GATEO 선정 문구 정리',
