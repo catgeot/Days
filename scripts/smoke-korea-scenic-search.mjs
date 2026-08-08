@@ -92,6 +92,24 @@ assert.ok(
   pageSrc.includes('결과 있는 첫 종목으로 전환'),
   'search auto-picks cat1 with matches',
 );
+assert.ok(
+  pageSrc.includes('pickRegionFromTourCounts'),
+  'search can pick region from TourAPI counts',
+);
+assert.ok(
+  pageSrc.includes('화천') && pageSrc.includes('TourAPI 권역'),
+  'search auto-picks region when curated/heritage empty (화천→강원)',
+);
+assert.equal(
+  filterScenicSpotsByQuery(curated, '화천').length,
+  0,
+  '화천 curated 0 (TourAPI-only locality)',
+);
+assert.equal(
+  filterScenicSpotsByQuery(heritage, '화천').length,
+  0,
+  '화천 heritage 0 (TourAPI-only locality)',
+);
 const goseongHeritage = filterScenicSpotsByQuery(heritage, '고성');
 assert.equal(filterScenicSpotsByQuery(curated, '고성').length, 0, '고성 curated 0');
 assert.ok(goseongHeritage.length >= 2, '고성 heritage ≥2');

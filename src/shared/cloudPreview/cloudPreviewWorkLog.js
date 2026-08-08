@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 69,
-  sessionPhase: '내주변 관내 관광지',
+  sessionNo: 70,
+  sessionPhase: '검색 화천 권역',
   branch: 'cursor/scenic-nearby-a8ec',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-nearby',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-08-scenic-search-hwacheon-region-70',
+    session: '테마여행 #70, 검색 화천 권역',
+    title: '검색 — 관광지 전용 지명 권역 자동',
+    detail:
+      '「화천」처럼 선정 명소·명승 0건인 검색어가 수도권에 남아 관광지 0건이 되던 문제를 고쳤습니다. TourAPI 권역 건수로 강원 등으로 자동 전환됩니다. Preview에서 「화천」검색 → 관광지 목록 확인.',
+    at: '2026-08-08',
+  },
   {
     id: '2026-08-07-scenic-nearby-hwacheon-69',
     session: '테마여행 #69, 내주변 관내 관광지',

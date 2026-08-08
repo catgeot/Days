@@ -158,6 +158,14 @@ function pickRegionForSearchMatches(curatedMatches, heritageMatches, fallback) {
   return best || resolveRegion(fallback);
 }
 
+/** TourAPI 권역 건수에서 결과 있는 첫 권역 (명소·명승 0건일 때 · 「화천」등) */
+function pickRegionFromTourCounts(regionCounts, fallback) {
+  const best = SCENIC_REGION_ORDER.find(
+    (r) => (Number(regionCounts?.[r]) || 0) > 0,
+  );
+  return best || resolveRegion(fallback);
+}
+
 function FilterChipLabel({ label, count }) {
   const n = chipCountLabel(count);
   return (
@@ -879,21 +887,45 @@ export default function KoreaThemeScenicPage() {
         listKoreaHeritageScenic(),
         q,
       );
-      const nextRegion = pickRegionForSearchMatches(
+      const fallbackRegion = searchParams.get('region');
+      let nextRegion = pickRegionForSearchMatches(
         curatedMatches,
         heritageMatches,
-        searchParams.get('region'),
+        fallbackRegion,
       );
-      const next = new URLSearchParams(searchParams);
-      next.set('region', nextRegion);
-      next.delete('area');
-      next.delete('hub');
-      next.delete('hcat');
-      next.delete('cat2');
-      next.delete('cat3');
-      next.delete('page');
-      next.delete('spot');
-      setSearchParams(next, { replace: true });
+
+      const applyRegionParams = (regionName) => {
+        const next = new URLSearchParams(searchParams);
+        next.set('region', regionName);
+        next.delete('area');
+        next.delete('hub');
+        next.delete('hcat');
+        next.delete('cat2');
+        next.delete('cat3');
+        next.delete('page');
+        next.delete('spot');
+        setSearchParams(next, { replace: true });
+      };
+
+      // 명소·명승 0건이면 TourAPI 권역 건수로 고름 (화천→강원)
+      if (curatedMatches.length === 0 && heritageMatches.length === 0) {
+        applyRegionParams(nextRegion);
+        Promise.all(
+          SCENIC_REGION_ORDER.map(async (r) => {
+            const { count } = await countKoreaTourAttractions({
+              region: r,
+              searchQuery: q,
+            });
+            return { r, count: count || 0 };
+          }),
+        ).then((rows) => {
+          const counts = Object.fromEntries(rows.map((row) => [row.r, row.count]));
+          const tourRegion = pickRegionFromTourCounts(counts, nextRegion);
+          if (tourRegion !== nextRegion) applyRegionParams(tourRegion);
+        });
+      } else {
+        applyRegionParams(nextRegion);
+      }
     } else {
       resetListPage();
     }
@@ -1501,6 +1533,33 @@ export default function KoreaThemeScenicPage() {
     chipCounts.cat1Counts,
     cat1,
     setCat1,
+  ]);
+
+  /**
+   * 검색 중 현 권역 TourAPI 0건 · 명소·명승도 전국 0이면
+   * 결과 있는 첫 권역으로 전환 — 「화천」=강원만 등
+   */
+  useEffect(() => {
+    if (!searchActive || !dbSearchActive) return;
+    if ((curatedSearchPool?.length || 0) > 0) return;
+    if ((heritageSearchPool?.length || 0) > 0) return;
+    const counts = chipCounts.regionCounts || {};
+    const loaded = SCENIC_REGION_ORDER.some((r) =>
+      Number.isFinite(Number(counts[r])),
+    );
+    if (!loaded) return;
+    if ((Number(counts[region]) || 0) > 0) return;
+    const next = pickRegionFromTourCounts(counts, region);
+    if (!next || next === region) return;
+    setRegion(next);
+  }, [
+    searchActive,
+    dbSearchActive,
+    curatedSearchPool,
+    heritageSearchPool,
+    chipCounts.regionCounts,
+    region,
+    setRegion,
   ]);
 
   const setCat2 = useCallback(
