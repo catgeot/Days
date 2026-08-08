@@ -4,7 +4,7 @@
 
 ## 테마여행 #79, 빈 hub 명소 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#73](https://github.com/catgeot/Days/pull/73) · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#73](https://github.com/catgeot/Days/pull/73) · tip `426503ff` · Preview 사람 QA 대기
 
 - **한 일**: 큐 R01 앞 — 안산 4(대부도·별망성지·성호공원·시화호) · 강화 4(갑곶돈대·평화전망대·고려궁지·마니산) · Tour contentId·썸네일 117/117 · 큐 잔여 117·14라운드 재번호
 - **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `npm run build`
