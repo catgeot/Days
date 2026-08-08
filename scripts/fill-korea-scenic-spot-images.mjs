@@ -155,6 +155,10 @@ const RELATED_IMAGE_CONTENT_IDS = {
   'mihocheon-ecological-park': '127789', // 백곡저수지 — 미호천생태공원 Tour 부재 시
   'yeoju-premium-outlets': '126557', // 신륵사관광지 — 여주아울렛 Tour type12 부재 시
   'cheonan-jungang-market': '126922', // 천안삼거리공원 — 중앙시장 Tour firstimage 부재 시
+  'bosan-foreigners-street': '127513', // 소요산국민관광지 — 보산동 거리 Tour 부재 시
+  'freedom-protection-peace-museum': '127513', // 소요산국민관광지 — 박물관 Tour firstimage 부재 시
+  'starlight-garden-universe': '1624755', // 설봉공원 — 별빛정원우주 Tour 부재 시
+  'pyeongtaek-mir-island': '2741612', // 평택호예술공원 — 미르섬 Tour 부재 시
 };
 
 async function mapPool(items, worker, size) {

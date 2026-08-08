@@ -60,6 +60,10 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'osan',
         'uijeongbu',
         'yeoju',
+        'yeoncheon',
+        'dongducheon',
+        'icheon',
+        'pyeongtaek',
       ],
     },
     32: {
@@ -72,6 +76,7 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'yangyang',
         'donghae',
         'samcheok',
+        'cheorwon',
       ],
     },
     33: {

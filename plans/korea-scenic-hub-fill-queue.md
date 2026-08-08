@@ -1,9 +1,9 @@
 # GATEO 선정 명소 — 권역·시군 hub 보강 큐
 
 **생성**: `npm run report:korea-scenic-empty-hubs -- --write-queue` (이 파일 덮어씀)
-**스냅샷**: 빈 hub **92** · 선정 hub **77** · maxOrder **2720**
+**스냅샷**: 빈 hub **87** · 선정 hub **82** · maxOrder **2930**
 
-**완료**: `#77`~`#84` · `#85` 진천·아산·천안·의정부·여주 전수 → 아래 표는 잔여 재번호.
+**완료**: `#77`~`#85` · `#86` 연천·철원·동두천·이천·평택 전수 → 아래 표는 잔여 재번호.
 
 ## 사용법
 
@@ -21,7 +21,7 @@
 
 | R | 워커A | 워커B | 권역 | 상태 |
 |---|-------|-------|------|------|
-| **R01** | `yeoncheon` · `cheorwon` · `dongducheon` · `icheon` · `pyeongtaek` | `wonju` · `yangju` | 수도권 | ⬜ |
+| **R01** | `wonju` · `yangju` | — | 수도권 | ⬜ |
 | **R02** | `inje` · `yeongwol` · `goseong` · `hongcheon` · `yanggu` | `jeongseon` · `taebaek` · `uljin` · `hoengseong` · `hwacheon` | 강원 | ⬜ |
 | **R03** | `chungju` · `jeungpyeong` · `sejong` · `seosan` · `boeun` | `cheongyang` · `dangjin` · `goesan` · `gyeryong` · `mungyeong` | 충청 | ⬜ |
 | **R04** | `yeongdong` · `bonghwa` · `eumseong` · `geumsan` · `hongseong` | `nonsan` · `okcheon` · `yeongi` · `yesan` | 충청 | ⬜ |
@@ -33,17 +33,12 @@
 | **R10** | `cheongsong` · `chilgok` · `dokdo` · `gimcheon` · `goryeong` | `gwangyang` · `gyeongsan` · `sancheong` · `seongju` · `uiryeong` | 경상 | ⬜ |
 | **R11** | `yeongdeok` · `yeongyang` | — | 경상 | ⬜ |
 
-**합계**: 11 라운드 · hub 92.
+**합계**: 11 라운드 · hub 87.
 
 ## 권역별 잔여
 
-### 수도권 (7)
+### 수도권 (2)
 
-- `yeoncheon` 연천 — attr 5 · Tour contentId 0
-- `cheorwon` 철원 — attr 4 · Tour contentId 0
-- `dongducheon` 동두천 — attr 4 · Tour contentId 0
-- `icheon` 이천 — attr 4 · Tour contentId 0
-- `pyeongtaek` 평택 — attr 4 · Tour contentId 0
 - `wonju` 원주 — attr 4 · Tour contentId 0
 - `yangju` 양주 — attr 4 · Tour contentId 0
 

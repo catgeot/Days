@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-08T22:49:35.014Z",
-    "count": 272,
+    "updatedAt": "2026-08-08T23:44:05.005Z",
+    "count": 293,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -277,6 +277,27 @@
     "yeoju-gangcheon-island": "https://tong.visitkorea.or.kr/cms/resource/38/3547138_image2_1.jpg",
     "cheonbosan": "https://tong.visitkorea.or.kr/cms/resource/07/3499207_image2_1.jpg",
     "yeoju-royal-tomb-of-king-sejong": "https://tong.visitkorea.or.kr/cms/resource/40/4062540_image2_1.jpg",
-    "cheonan-jungang-market": "https://tong.visitkorea.or.kr/cms/resource/32/3560232_image2_1.JPG"
+    "cheonan-jungang-market": "https://tong.visitkorea.or.kr/cms/resource/32/3560232_image2_1.JPG",
+    "yeoncheon-sunguijeon": "https://tong.visitkorea.or.kr/cms/resource/92/3381592_image2_1.JPG",
+    "yeoncheon-jaein-falls": "https://tong.visitkorea.or.kr/cms/resource/05/3532805_image2_1.jpg",
+    "goseokjeong": "https://tong.visitkorea.or.kr/cms/resource/67/3351667_image2_1.jpg",
+    "cheorwon-labor-party-building": "https://tong.visitkorea.or.kr/cms/resource/55/3577155_image2_1.jpg",
+    "cheorwon-second-tunnel": "https://tong.visitkorea.or.kr/cms/resource/92/3344292_image2_1.JPG",
+    "dongducheon-natural-recreation-forest": "https://tong.visitkorea.or.kr/cms/resource/18/2661418_image2_1.jpg",
+    "pyeongtaek-mir-island": "https://tong.visitkorea.or.kr/cms/resource/82/3096782_image2_1.jpg",
+    "pyeongtaek-lake-resort": "https://tong.visitkorea.or.kr/cms/resource/70/3514170_image2_1.jpg",
+    "yeoncheon-horogoru": "https://tong.visitkorea.or.kr/cms/resource/56/3332556_image2_1.jpg",
+    "yeoncheon-taepung-observatory": "https://tong.visitkorea.or.kr/cms/resource/15/4089415_image2_1.jpeg",
+    "dopiansa": "https://tong.visitkorea.or.kr/cms/resource/95/3493995_image2_1.jpg",
+    "jeongok-prehistory-museum": "https://tong.visitkorea.or.kr/cms/resource/81/2642381_image2_1.jpg",
+    "soyosan": "https://tong.visitkorea.or.kr/cms/resource_photo/03/3474003_image2_1.jpg",
+    "seolbong-park": "https://tong.visitkorea.or.kr/cms/resource/89/4056989_image2_1.jpg",
+    "baeksa-cornus-village": "https://tong.visitkorea.or.kr/cms/resource/94/3490694_image2_1.jpg",
+    "starlight-garden-universe": "https://tong.visitkorea.or.kr/cms/resource/89/4056989_image2_1.jpg",
+    "pyeongtaek-international-central-market": "https://tong.visitkorea.or.kr/cms/resource/87/3523987_image2_1.jpg",
+    "icheon-city-museum": "https://tong.visitkorea.or.kr/cms/resource/65/3023965_image2_1.jpg",
+    "pyeongtaek-jinwicheon-eco-park": "https://tong.visitkorea.or.kr/cms/resource/71/3523971_image2_1.jpg",
+    "bosan-foreigners-street": "https://tong.visitkorea.or.kr/cms/resource_photo/03/3474003_image2_1.jpg",
+    "freedom-protection-peace-museum": "https://tong.visitkorea.or.kr/cms/resource_photo/03/3474003_image2_1.jpg"
   }
 }
