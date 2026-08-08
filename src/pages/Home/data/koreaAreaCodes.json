@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-08T22:35:19.946Z",
+    "generatedAt": "2026-08-08T22:42:22.723Z",
     "areaCount": 16,
-    "hubLinkCount": 67,
+    "hubLinkCount": 72,
     "source": "scripts/data/korea-area-code-overrides.mjs"
   },
   "defaultHubIds": [
@@ -27,7 +27,8 @@
       "name": "인천",
       "hubIds": [
         "incheon",
-        "ganghwa"
+        "ganghwa",
+        "ongjin"
       ]
     },
     "3": {
@@ -82,7 +83,11 @@
         "siheung",
         "uiwang",
         "yangpyeong",
-        "yongin"
+        "yongin",
+        "gwacheon",
+        "gwangju_gi",
+        "hwaseong",
+        "osan"
       ]
     },
     "32": {
@@ -169,6 +174,7 @@
     "seoul": "1",
     "incheon": "2",
     "ganghwa": "2",
+    "ongjin": "2",
     "daejeon": "3",
     "daegu": "4",
     "gwangju": "5",
@@ -194,6 +200,10 @@
     "uiwang": "31",
     "yangpyeong": "31",
     "yongin": "31",
+    "gwacheon": "31",
+    "gwangju_gi": "31",
+    "hwaseong": "31",
+    "osan": "31",
     "gangneung": "32",
     "sokcho": "32",
     "chuncheon": "32",

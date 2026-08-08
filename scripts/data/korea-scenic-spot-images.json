@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-08T22:35:44.302Z",
-    "count": 220,
+    "updatedAt": "2026-08-08T22:43:00.385Z",
+    "count": 245,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -225,6 +225,31 @@
     "yangpyeong-wild-flower-arboretum": "https://tong.visitkorea.or.kr/cms/resource/90/3447890_image2_1.jpg",
     "uiwang-rail-park": "https://tong.visitkorea.or.kr/cms/resource/45/3549045_image2_1.jpg",
     "gunpo-sanbon-market": "https://tong.visitkorea.or.kr/cms/resource/75/4078075_image2_1.jpg",
-    "yongmunsa": "https://tong.visitkorea.or.kr/cms/resource/68/3556368_image2_1.jpg"
+    "yongmunsa": "https://tong.visitkorea.or.kr/cms/resource/68/3556368_image2_1.jpg",
+    "seoul-land-gwacheon": "https://tong.visitkorea.or.kr/cms/resource/43/3345743_image2_1.jpg",
+    "namhansanseong-gwangju-gi": "https://tong.visitkorea.or.kr/cms/resource/56/2612856_image2_1.jpg",
+    "gyeongan-wetland-ecological-park": "https://tong.visitkorea.or.kr/cms/resource/08/3527208_image2_1.jpg",
+    "jungdae-mulbit-park": "https://tong.visitkorea.or.kr/cms/resource/49/3527249_image2_1.jpg",
+    "gungpyeong-beach-hwaseong": "https://tong.visitkorea.or.kr/cms/resource/29/3031629_image2_1.JPG",
+    "dongtan-lake-park": "https://tong.visitkorea.or.kr/cms/resource/18/3058418_image2_1.jpg",
+    "jebudo-island": "https://tong.visitkorea.or.kr/cms/resource/89/3330989_image2_1.jpg",
+    "ueumdo-hwaseong": "https://tong.visitkorea.or.kr/cms/resource/36/3551736_image2_1.jpg",
+    "malgeunnuri-park-gwacheon": "https://tong.visitkorea.or.kr/cms/resource_photo/23/3539123_image2_1.jpg",
+    "gwacheon-national-science-museum": "https://tong.visitkorea.or.kr/cms/resource/92/4065392_image2_1.jpg",
+    "seoul-grand-park-gwacheon": "https://tong.visitkorea.or.kr/cms/resource_photo/23/3539123_image2_1.jpg",
+    "gonjiam-ceramic-park": "https://tong.visitkorea.or.kr/cms/resource_photo/52/3404852_image2_1.jpg",
+    "jeongok-port-hwaseong": "https://tong.visitkorea.or.kr/cms/resource/54/4059254_image2_1.jpg",
+    "hwadamsup": "https://tong.visitkorea.or.kr/cms/resource/32/3482332_image2_1.PNG",
+    "baengnyeongdo-ongjin": "https://tong.visitkorea.or.kr/cms/resource/45/3497845_image2_1.jpg",
+    "jangbongdo-ongjin": "https://tong.visitkorea.or.kr/cms/resource/85/4059985_image2_1.jpg",
+    "deokjeokdo-ongjin": "https://tong.visitkorea.or.kr/cms/resource/02/2676402_image2_1.jpg",
+    "jawoldo-ongjin": "https://tong.visitkorea.or.kr/cms/resource/00/3511200_image2_1.jpg",
+    "osan-doksanseong": "https://tong.visitkorea.or.kr/cms/resource/89/3350089_image2_1.jpg",
+    "osan-semadae": "https://tong.visitkorea.or.kr/cms/resource/89/3350089_image2_1.jpg",
+    "mulhyanggi-arboretum": "https://tong.visitkorea.or.kr/cms/resource/05/4079305_image2_1.jpg",
+    "osancheon": "https://tong.visitkorea.or.kr/cms/resource/05/4079305_image2_1.jpg",
+    "gwacheon-civic-center": "https://tong.visitkorea.or.kr/cms/resource/92/4065392_image2_1.jpg",
+    "osan-malgeumteo-park": "https://tong.visitkorea.or.kr/cms/resource/05/4079305_image2_1.jpg",
+    "daecheongdo-ongjin": "https://tong.visitkorea.or.kr/cms/resource/31/2799731_image2_1.jpg"
   }
 }

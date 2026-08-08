@@ -147,6 +147,11 @@ const RELATED_IMAGE_CONTENT_IDS = {
   'uiwang-rail-park': '2546506', // 왕송호수캠핑장 — 레일파크 Tour type12 부재 시
   'yangpyeong-wild-flower-arboretum': '407051', // 세미원 — 들꽃수목원 Tour 부재 시
   'gunpo-sanbon-market': '2751298', // 철쭉동산 — 산본시장 Tour type12 부재 시
+  'malgeunnuri-park-gwacheon': '126712', // 서울대공원 — 맑은누리공원 Tour 부재 시
+  osancheon: '128986', // 물향기수목원 — 오산천 Tour 부재 시
+  'gwacheon-civic-center': '660722', // 국립과천과학관 — 시민회관 Tour firstimage 부재 시
+  'daecheongdo-ongjin': '2664266', // 대청도 옥죽동 해안사구 — 대청도 Tour firstimage 부재 시
+  'osan-malgeumteo-park': '128986', // 물향기수목원 — 맑음터공원 Tour firstimage 부재 시
 };
 
 async function mapPool(items, worker, size) {

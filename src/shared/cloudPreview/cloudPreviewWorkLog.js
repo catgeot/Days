@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 83,
+  sessionNo: 84,
   sessionPhase: '빈 hub 명소 보강',
   branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?hub=uiwang',
+  previewPath: '/korea/theme/scenic?hub=gwacheon',
   qaShareSlug: 'scenic-hub-fill',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-08-scenic-hub-fill-r01b-84',
+    session: '테마여행 #84, 빈 hub 명소 보강',
+    title: '과천·경기광주·화성·옹진·오산 GATEO 선정 전수',
+    detail:
+      '큐 R01 잔여 빈 hub 다섯 곳에 hub attractions 전수를 GATEO 선정에 넣었습니다(과천5·경기광주5·화성5·옹진5·오산5 · 전체 245·이미지 245 · Tour contentId 23/25). 경기·인천 시도 색인에도 동시 등록했습니다. Preview에서 /korea/theme/scenic?hub=gwacheon · ?hub=gwangju_gi · ?hub=hwaseong · ?hub=ongjin · ?hub=osan 선정 목록을 확인해 주세요.',
+    at: '2026-08-08',
+  },
   {
     id: '2026-08-08-scenic-hub-fill-r01a-83',
     session: '테마여행 #83, 빈 hub 명소 보강',
