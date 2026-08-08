@@ -143,6 +143,10 @@ const RELATED_IMAGE_CONTENT_IDS = {
   'siheung-soft-town': '756625', // 시흥갯골생태공원 — 소프트타운 Tour 부재 시
   'anyang-central-market': '125514', // 안양예술공원 — 중앙시장 Tour firstimage 부재 시
   myeongseongsan: '125523', // 산정호수 — 명성산 Tour firstimage 부재 시
+  yongmunsa: '3537762', // 양평 용문사 은행나무 — 용문사(용문산) Tour firstimage 부재 시
+  'uiwang-rail-park': '2546506', // 왕송호수캠핑장 — 레일파크 Tour type12 부재 시
+  'yangpyeong-wild-flower-arboretum': '407051', // 세미원 — 들꽃수목원 Tour 부재 시
+  'gunpo-sanbon-market': '2751298', // 철쭉동산 — 산본시장 Tour type12 부재 시
 };
 
 async function mapPool(items, worker, size) {

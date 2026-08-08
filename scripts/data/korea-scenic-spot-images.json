@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-08T22:17:42.006Z",
-    "count": 192,
+    "updatedAt": "2026-08-08T22:35:44.302Z",
+    "count": 220,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -197,6 +197,34 @@
     "wolgot-port-siheung": "https://tong.visitkorea.or.kr/cms/resource/03/4066803_image2_1.jpg",
     "neunggok-historic-park": "https://tong.visitkorea.or.kr/cms/resource/09/3505209_image2_1.jpg",
     "anyang-central-market": "https://tong.visitkorea.or.kr/cms/resource/17/4090517_image2_1.jpg",
-    "myeongseongsan": "https://tong.visitkorea.or.kr/cms/resource/47/3022447_image2_1.jpg"
+    "myeongseongsan": "https://tong.visitkorea.or.kr/cms/resource/47/3022447_image2_1.jpg",
+    "semiwon-garden": "https://tong.visitkorea.or.kr/cms/resource/90/3447890_image2_1.jpg",
+    "waujeongsa-temple-yongin": "https://tong.visitkorea.or.kr/cms/resource/70/3570870_image2_1.jpg",
+    "gunpo-surisan": "https://tong.visitkorea.or.kr/cms/resource/42/3535642_image2_1.JPG",
+    "wangsong-lake": "https://tong.visitkorea.or.kr/cms/resource/45/3549045_image2_1.jpg",
+    "baegun-lake-uiwang": "https://tong.visitkorea.or.kr/cms/resource/06/3508506_image2_1.jpg",
+    "cheonggyesa-temple-uiwang": "https://tong.visitkorea.or.kr/cms/resource/48/4080448_image2_1.jpg",
+    "barasan-uiwang": "https://tong.visitkorea.or.kr/cms/resource/78/4077178_image2_1.jpg",
+    "korean-railway-museum": "https://tong.visitkorea.or.kr/cms/resource/03/3058303_image2_1.JPG",
+    "dumulmeori": "https://tong.visitkorea.or.kr/cms/resource/94/3513794_image2_1.jpg",
+    "yangpyeong-clear-water-market": "https://tong.visitkorea.or.kr/cms/resource/74/2364874_image2_1.jpg",
+    "yangpyeong-art-museum": "https://tong.visitkorea.or.kr/cms/resource/07/3038307_image2_1.jpg",
+    "everland": "https://tong.visitkorea.or.kr/cms/resource/53/3486453_image2_1.jpg",
+    "seokseongsan-yongin": "https://tong.visitkorea.or.kr/cms/resource/70/3560570_image2_1.jpg",
+    "bojeong-dong-cafe-street": "https://tong.visitkorea.or.kr/cms/resource/63/3078463_image2_1.jpg",
+    "korean-folk-village": "https://tong.visitkorea.or.kr/cms/resource/87/3563987_image2_1.jpg",
+    "banwol-lake": "https://tong.visitkorea.or.kr/cms/resource/75/3523675_image2_1.jpg",
+    "cheoljuk-garden": "https://tong.visitkorea.or.kr/cms/resource/75/4078075_image2_1.jpg",
+    "chomakgol-eco-park": "https://tong.visitkorea.or.kr/cms/resource/83/4078083_image2_1.jpg",
+    "yongin-natural-recreation-forest": "https://tong.visitkorea.or.kr/cms/resource/69/3493769_image2_1.jpg",
+    "guri-wangsukcheon-eco-park": "https://tong.visitkorea.or.kr/cms/resource/49/3520149_image2_1.jpg",
+    "guri-traditional-market": "https://tong.visitkorea.or.kr/cms/resource/21/3090921_image2_1.JPG",
+    "guri-tower": "https://tong.visitkorea.or.kr/cms/resource/74/3303974_image2_1.jpg",
+    "donggureung-royal-tombs": "https://tong.visitkorea.or.kr/cms/resource/04/4066104_image2_1.jpg",
+    "guri-hangang-civic-park": "https://tong.visitkorea.or.kr/cms/resource/23/4066023_image2_1.jpg",
+    "yangpyeong-wild-flower-arboretum": "https://tong.visitkorea.or.kr/cms/resource/90/3447890_image2_1.jpg",
+    "uiwang-rail-park": "https://tong.visitkorea.or.kr/cms/resource/45/3549045_image2_1.jpg",
+    "gunpo-sanbon-market": "https://tong.visitkorea.or.kr/cms/resource/75/4078075_image2_1.jpg",
+    "yongmunsa": "https://tong.visitkorea.or.kr/cms/resource/68/3556368_image2_1.jpg"
   }
 }

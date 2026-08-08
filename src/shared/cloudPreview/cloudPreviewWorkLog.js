@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 82,
-  sessionPhase: '선정 hub 시도 색인',
+  sessionNo: 83,
+  sessionPhase: '빈 hub 명소 보강',
   branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?region=%EC%88%98%EB%8F%84%EA%B6%8C&area=31',
+  previewPath: '/korea/theme/scenic?hub=uiwang',
   qaShareSlug: 'scenic-hub-fill',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-08-scenic-hub-fill-r01a-83',
+    session: '테마여행 #83, 빈 hub 명소 보강',
+    title: '의왕·양평·용인·군포·구리 GATEO 선정 전수',
+    detail:
+      '큐 R01 워커A 빈 hub 다섯 곳에 hub attractions 전수를 GATEO 선정에 넣었습니다(의왕6·양평6·용인6·군포5·구리5 · 전체 220·이미지 220). 경기 시도 색인에도 동시 등록했습니다. Preview에서 /korea/theme/scenic?hub=uiwang · ?hub=yangpyeong · ?hub=yongin · ?hub=gunpo · ?hub=guri 선정 목록을 확인해 주세요.',
+    at: '2026-08-08',
+  },
   {
     id: '2026-08-08-scenic-area-index-82',
     session: '테마여행 #82, 선정 hub 시도 색인',

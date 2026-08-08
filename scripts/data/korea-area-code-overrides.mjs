@@ -42,6 +42,8 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'bucheon',
         'gimpo',
         'goyang',
+        'gunpo',
+        'guri',
         'gwangmyeong',
         'hanam',
         'namyangju',
@@ -49,6 +51,9 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'pocheon',
         'seongnam',
         'siheung',
+        'uiwang',
+        'yangpyeong',
+        'yongin',
       ],
     },
     32: {

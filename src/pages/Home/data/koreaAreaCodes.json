@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-08T22:25:57.704Z",
+    "generatedAt": "2026-08-08T22:35:19.946Z",
     "areaCount": 16,
-    "hubLinkCount": 62,
+    "hubLinkCount": 67,
     "source": "scripts/data/korea-area-code-overrides.mjs"
   },
   "defaultHubIds": [
@@ -71,13 +71,18 @@
         "bucheon",
         "gimpo",
         "goyang",
+        "gunpo",
+        "guri",
         "gwangmyeong",
         "hanam",
         "namyangju",
         "paju",
         "pocheon",
         "seongnam",
-        "siheung"
+        "siheung",
+        "uiwang",
+        "yangpyeong",
+        "yongin"
       ]
     },
     "32": {
@@ -177,6 +182,8 @@
     "bucheon": "31",
     "gimpo": "31",
     "goyang": "31",
+    "gunpo": "31",
+    "guri": "31",
     "gwangmyeong": "31",
     "hanam": "31",
     "namyangju": "31",
@@ -184,6 +191,9 @@
     "pocheon": "31",
     "seongnam": "31",
     "siheung": "31",
+    "uiwang": "31",
+    "yangpyeong": "31",
+    "yongin": "31",
     "gangneung": "32",
     "sokcho": "32",
     "chuncheon": "32",
