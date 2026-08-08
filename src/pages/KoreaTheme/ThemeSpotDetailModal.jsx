@@ -216,14 +216,16 @@ function ThemeSpotCrossRail({
       String(hub?.scenicPath || '').trim() ||
       scenicHomePathForHubId(hub?.hubId);
     if (!path) return;
+    // 검색 모달이 열린 채 hub만 바뀌면 이전 검색어로 빈 결과가 남음
+    const navState = { clearScenicSearch: true };
     if (backEntry) {
       pushThemeNavBack(backEntry);
       onClose?.();
-      navigate(path, { state: { themeBack: backEntry } });
+      navigate(path, { state: { ...navState, themeBack: backEntry } });
       return;
     }
     onClose?.();
-    navigate(path);
+    navigate(path, { state: navState });
   };
 
   const showNearbyHubs = !hideNearbyHubs && cross.nearbyHubs.length > 0;
