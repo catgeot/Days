@@ -4,7 +4,7 @@
 
 ## 테마여행 #70, 검색 화천 권역
 
-**상태**: feature `cursor/scenic-nearby-a8ec` · PR [#64](https://github.com/catgeot/Days/pull/64) · Preview QA 대기
+**상태**: feature `cursor/scenic-nearby-a8ec` · PR [#64](https://github.com/catgeot/Days/pull/64) · tip `ae9bebfc` · Preview QA 대기
 
 - **증상**: 「화천」검색 → 선정 명소·명승 0(정상) · **관광지도 0**(비정상 · DB 35건)
 - **원인**: 권역 자동선택이 명소·명승만 보고 수도권 유지 → TourAPI가 수도권으로 조회
