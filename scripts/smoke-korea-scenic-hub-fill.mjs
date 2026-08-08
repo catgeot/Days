@@ -3,12 +3,29 @@
  *
  *   npm run smoke:korea-scenic-hub-fill
  */
+import { readFileSync } from 'fs';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 import {
   buildScenicFillRounds,
   draftScenicSpotsForHubs,
   isDistrictHub,
   listEmptyScenicHubs,
 } from './lib/koreaScenicHubFill.mjs';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const areaCodes = JSON.parse(
+  readFileSync(
+    join(__dirname, '../src/pages/Home/data/koreaAreaCodes.json'),
+    'utf8',
+  ),
+);
+const scenic = JSON.parse(
+  readFileSync(
+    join(__dirname, '../src/pages/Home/data/koreaScenicSpots.json'),
+    'utf8',
+  ),
+);
 
 let failed = 0;
 function assert(cond, msg) {
@@ -92,6 +109,26 @@ assert(
 assert(
   !empty.some((h) => h.district),
   '기본 목록에 자치구 없음',
+);
+
+const byHubId = areaCodes?.byHubId && typeof areaCodes.byHubId === 'object'
+  ? areaCodes.byHubId
+  : {};
+const curatedHubIds = [
+  ...new Set(
+    (Array.isArray(scenic?.spots) ? scenic.spots : [])
+      .map((s) =>
+        String(s?.hubId || '')
+          .trim()
+          .toLowerCase(),
+      )
+      .filter(Boolean),
+  ),
+];
+const unlinked = curatedHubIds.filter((id) => byHubId[id] == null);
+assert(
+  unlinked.length === 0,
+  `선정 hub 전부 area 색인 (missing: ${unlinked.slice(0, 8).join(',') || 'none'})`,
 );
 
 const rounds = buildScenicFillRounds(empty, { batchSize: 10 });

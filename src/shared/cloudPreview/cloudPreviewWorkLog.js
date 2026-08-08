@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 81,
-  sessionPhase: '빈 hub 명소 보강',
+  sessionNo: 82,
+  sessionPhase: '선정 hub 시도 색인',
   branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?hub=anyang',
+  previewPath: '/korea/theme/scenic?region=%EC%88%98%EB%8F%84%EA%B6%8C&area=31',
   qaShareSlug: 'scenic-hub-fill',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-08-scenic-area-index-82',
+    session: '테마여행 #82, 선정 hub 시도 색인',
+    title: '보강 hub → 시도 색인 · 분류칩 복구',
+    detail:
+      '선정 명소가 있는데 koreaAreaCodes에 없던 hub 30곳을 시도 색인에 넣었습니다(경기·인천 강화·제주 서귀포 등). 수도권→경기 칩에서 김포·고양·안양 등 여행지 소분류가 보입니다. hub 보강 큐 사용법에 색인 필수 단계를 고정했습니다.',
+    at: '2026-08-08',
+  },
   {
     id: '2026-08-08-scenic-hub-fill-r01b-81',
     session: '테마여행 #81, 빈 hub 명소 보강',

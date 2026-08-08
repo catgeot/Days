@@ -107,6 +107,10 @@ assert(labelScenicAreaCode('1') === '서울', 'label area 서울');
 assert(labelScenicAreaCode('8') === '세종', 'label area 세종 fallback');
 assert(scenicAreaCodeForHubId('seoul') === '1', 'hub→area seoul');
 assert(scenicAreaCodeForHubId('suwon') === '31', 'hub→area suwon');
+assert(scenicAreaCodeForHubId('gimpo') === '31', 'hub→area gimpo');
+assert(scenicAreaCodeForHubId('anyang') === '31', 'hub→area anyang');
+assert(scenicAreaCodeForHubId('ganghwa') === '2', 'hub→area ganghwa');
+assert(scenicAreaCodeForHubId('seogwipo') === '39', 'hub→area seogwipo');
 
 assert(
   scenicDbCatalogHeading('강원', null) === '강원도 관광지',

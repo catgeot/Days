@@ -416,7 +416,7 @@ JSON **직접 편집 금지** → overrides → generate → audit.
 | 기존 | 용도 |
 |------|------|
 | KR hub (`country: 대한민국`) ≈210 | regions·scenic·top10 연결 |
-| `koreaAreaCodes` | 방방곡곡 |
+| `koreaAreaCodes` | 방방곡곡 · **명소 중·소분류 칩**(hubId→areaCode). 선정 hub 보강 시 [`korea-area-code-overrides.mjs`](../scripts/data/korea-area-code-overrides.mjs)에 hubId append → `generate:korea-area-codes` 필수([`korea-scenic-hub-fill-queue.md`](./korea-scenic-hub-fill-queue.md) 사용법 §3) |
 | `/korea` festival stack | 축제 |
 | `mrtPackageLinks` / `mrtPackageThemeLinks` | 패키지 mylink |
 | PlaceCard·gallery | 상세 |

@@ -2,6 +2,22 @@
 
 직전: [`2026-08-07-project-log.md`](./2026-08-07-project-log.md)
 
+## 테마여행 #82, 선정 hub 시도 색인
+
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#74](https://github.com/catgeot/Days/pull/74) · Preview 사람 QA 대기
+
+- **한 일**: 선정 있는데 `koreaAreaCodes` 미등재 hub **30**곳 시도 색인(경기15·인천 강화·제주 서귀포 등) · hub 보강 큐/리포트/draft·테마플랜에 **색인 필수** 단계 · smoke로 선정 hub 전수 링크 검증
+- **VERIFY**: `generate`/`audit`/`smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `smoke:korea-scenic-hub-fill` · `smoke:korea-scenic-spots` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
+- **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?region=%EC%88%98%EB%8F%84%EA%B6%8C&area=31`
+- **작업 로그**: 「보강 hub → 시도 색인 · 분류칩 복구」
+- **남은 일**: 큐 R01 잔여(의왕·양평…) 전수 보강 시 **색인 동시** · 사람 Preview QA
+- **다음 채팅명**:
+
+```
+테마여행 #83, 빈 hub 명소 보강
+```
+
 ## 테마여행 #81, 빈 hub 명소 보강
 
 **상태**: feature `cursor/scenic-yangyang-b772` · PR [#74](https://github.com/catgeot/Days/pull/74) · tip `2bf923fc` · Preview 사람 QA 대기

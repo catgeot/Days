@@ -6,7 +6,9 @@
  *   npm run draft:korea-scenic-hub-batch -- --hubs=ansan --per-hub=3   # 의도적 상한만
  *
  * 기본: hub attractions **전수**(개수 상한 없음). 이미 선정된 hub는 미등재만.
- * 출력은 stdout. overrides에 수동 append 후 generate · fill images · audit.
+ * 출력은 stdout. scenic overrides에 수동 append 후 generate · fill images · audit.
+ * **시도 색인**: hubId가 `korea-area-code-overrides.mjs`에 없으면 areas에 append →
+ *   `npm run generate:korea-area-codes` (중·소분류 칩용 · 생략 금지).
  * blurb은 자리표시 — 검수 시 다듬기. contentId null은 Tour 조회 후 채움.
  */
 import {
@@ -49,6 +51,7 @@ if (opts.help || opts.hubs.length === 0) {
 
 기본: hub attractions 전수(개수 상한 없음). --per-hub는 의도적 상한일 때만.
 이미 선정된 hub는 미등재 명소만 초안.
+hub 보강 후: korea-area-code-overrides에 hubId 색인 → generate:korea-area-codes.
 
 Empty hub snapshot: npm run report:korea-scenic-empty-hubs`);
   if (opts.hubs.length === 0 && !opts.help) {
