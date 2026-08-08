@@ -1,9 +1,9 @@
 # GATEO 선정 명소 — 권역·시군 hub 보강 큐
 
 **생성**: `npm run report:korea-scenic-empty-hubs -- --write-queue` (이 파일 덮어씀)
-**스냅샷**: 빈 hub **112** · 선정 hub **57** · maxOrder **1620**
+**스냅샷**: 빈 hub **107** · 선정 hub **62** · maxOrder **1920**
 
-**완료**: `#77` 양양 · `#78` 평창·남해 · `#79` 안산·강화 + 전수 · `#80` R01-A 김포·고양·광명·하남·안성 전수 → 아래 표는 잔여 재번호.
+**완료**: `#77` 양양 · `#78` 평창·남해 · `#79` 안산·강화 + 전수 · `#80` 김포·고양·광명·하남·안성 · `#81` 안양·부천·남양주·포천·시흥 전수 → 아래 표는 잔여 재번호.
 
 ## 사용법
 
@@ -20,32 +20,26 @@
 
 | R | 워커A | 워커B | 권역 | 상태 |
 |---|-------|-------|------|------|
-| **R01** | `anyang` · `bucheon` · `namyangju` · `pocheon` · `siheung` | `uiwang` · `yangpyeong` · `yongin` · `gunpo` · `guri` | 수도권 | ⬜ |
-| **R02** | `gwacheon` · `gwangju_gi` · `hwaseong` · `ongjin` · `osan` | `uijeongbu` · `yeoju` · `yeoncheon` · `cheorwon` · `dongducheon` | 수도권 | ⬜ |
-| **R03** | `icheon` · `pyeongtaek` · `yangju` | — | 수도권 | ⬜ |
-| **R04** | `inje` · `yeongwol` · `goseong` · `hongcheon` · `yanggu` | `jeongseon` · `taebaek` · `hoengseong` · `hwacheon` · `wonju` | 강원 | ⬜ |
-| **R05** | `jincheon` · `chungju` · `jeungpyeong` · `sejong` · `seosan` | `asan` · `boeun` · `cheonan` · `cheongyang` · `dangjin` | 충청 | ⬜ |
-| **R06** | `goesan` · `gyeryong` · `yeongdong` · `eumseong` · `geumsan` | `hongseong` · `nonsan` · `okcheon` · `yeongi` · `yesan` | 충청 | ⬜ |
-| **R07** | `wanju` · `gokseong` · `jangsu` · `seocheon` · `gangjin` | `gochang` · `goheung` · `hwasun` · `imsil` · `jangheung` | 전라 | ⬜ |
-| **R08** | `jangseong` · `jindo` · `naju` · `sinan` · `sunchang` | `yeonggwang` · `gimje` · `gwangyang` · `haenam` · `hampyeong` | 전라 | ⬜ |
-| **R09** | `iksan` · `muan` · `muju` · `yeongam` | — | 전라 | ⬜ |
-| **R10** | `geochang` · `ulju` · `gimhae` · `gunwi` · `sangju` | `yangsan` · `changwon` · `cheongdo` · `dalseong` · `gijang` | 경상 | ⬜ |
-| **R11** | `goseongnam` · `gumi` · `haman` · `hamyang` · `miryang` | `mungyeong` · `sacheon` · `uiseong` · `uljin` · `yecheon` | 경상 | ⬜ |
-| **R12** | `yeongcheon` · `yeongju` · `bonghwa` · `changnyeong` · `cheongsong` | `chilgok` · `gimcheon` · `goryeong` · `gyeongsan` · `sancheong` | 경상 | ⬜ |
-| **R13** | `seongju` · `uiryeong` · `yeongdeok` · `yeongyang` | — | 경상 | ⬜ |
-| **R14** | `dokdo` | — | 미정 | ⬜ |
+| **R01** | `uiwang` · `yangpyeong` · `yongin` · `gunpo` · `guri` | `gwacheon` · `gwangju_gi` · `hwaseong` · `ongjin` · `osan` | 수도권 | ⬜ |
+| **R02** | `uijeongbu` · `yeoju` · `yeoncheon` · `cheorwon` · `dongducheon` | `icheon` · `pyeongtaek` · `yangju` | 수도권 | ⬜ |
+| **R03** | `inje` · `yeongwol` · `goseong` · `hongcheon` · `yanggu` | `jeongseon` · `taebaek` · `hoengseong` · `hwacheon` · `wonju` | 강원 | ⬜ |
+| **R04** | `jincheon` · `chungju` · `jeungpyeong` · `sejong` · `seosan` | `asan` · `boeun` · `cheonan` · `cheongyang` · `dangjin` | 충청 | ⬜ |
+| **R05** | `goesan` · `gyeryong` · `yeongdong` · `eumseong` · `geumsan` | `hongseong` · `nonsan` · `okcheon` · `yeongi` · `yesan` | 충청 | ⬜ |
+| **R06** | `wanju` · `gokseong` · `jangsu` · `seocheon` · `gangjin` | `gochang` · `goheung` · `hwasun` · `imsil` · `jangheung` | 전라 | ⬜ |
+| **R07** | `jangseong` · `jindo` · `naju` · `sinan` · `sunchang` | `yeonggwang` · `gimje` · `gwangyang` · `haenam` · `hampyeong` | 전라 | ⬜ |
+| **R08** | `iksan` · `muan` · `muju` · `yeongam` | — | 전라 | ⬜ |
+| **R09** | `geochang` · `ulju` · `gimhae` · `gunwi` · `sangju` | `yangsan` · `changwon` · `cheongdo` · `dalseong` · `gijang` | 경상 | ⬜ |
+| **R10** | `goseongnam` · `gumi` · `haman` · `hamyang` · `miryang` | `mungyeong` · `sacheon` · `uiseong` · `uljin` · `yecheon` | 경상 | ⬜ |
+| **R11** | `yeongcheon` · `yeongju` · `bonghwa` · `changnyeong` · `cheongsong` | `chilgok` · `gimcheon` · `goryeong` · `gyeongsan` · `sancheong` | 경상 | ⬜ |
+| **R12** | `seongju` · `uiryeong` · `yeongdeok` · `yeongyang` | — | 경상 | ⬜ |
+| **R13** | `dokdo` | — | 미정 | ⬜ |
 
-**합계**: 14 라운드 · hub 112.
+**합계**: 13 라운드 · hub 107.
 
 ## 권역별 잔여
 
-### 수도권 (23)
+### 수도권 (18)
 
-- `anyang` 안양 — attr 6 · Tour contentId 0
-- `bucheon` 부천 — attr 6 · Tour contentId 0
-- `namyangju` 남양주 — attr 6 · Tour contentId 0
-- `pocheon` 포천 — attr 6 · Tour contentId 0
-- `siheung` 시흥 — attr 6 · Tour contentId 0
 - `uiwang` 의왕 — attr 6 · Tour contentId 0
 - `yangpyeong` 양평 — attr 6 · Tour contentId 0
 - `yongin` 용인 — attr 6 · Tour contentId 0
