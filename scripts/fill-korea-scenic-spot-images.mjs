@@ -125,6 +125,20 @@ const RELATED_IMAGE_CONTENT_IDS = {
   jeongdongjin: '128757', // 정동진해변
   'incheon-chinatown': '125519', // 자유공원(인천) — 차이나타운 인접
   'dongpirang-mural-village': '2605111', // 서피랑 마을(통영 벽화 언덕) — 동피랑 Tour 이미지 부재 시
+  'ganghwa-peace-observatory': '1254680', // 갑곶돈대 — 제적봉 전망대 Tour firstimage 부재 시
+  goryeogungji: '125534', // 전등사 — 고려궁지 Tour firstimage 부재 시(강화 역사권)
+  manisan: '3061182', // 마니산국민관광지 — 마니산(강화) Tour firstimage 부재 시
+  'alpensia-resort': '3448238', // 알펜시아 스키역사관 — 리조트 본체 Tour type12 부재 시
+  'yongpyong-resort': '136089', // 모나용평 — 용평리조트 Tour 본명 부재 시
+  'pyeongchang-olympic-plaza': '3448238', // 인근 알펜시아 — 올림픽기념관 Tour 부재 시
+  'ansan-culture-plaza': '2615489', // 화랑유원지 — 문화광장 Tour type12 부재 시
+  'gureumsan-gwangmyeong': '2736048', // 도덕산공원 — 구름산 Tour firstimage 부재 시
+  geomdansan: '529248', // 이성산성 — 검단산 Tour firstimage 부재 시
+  'kintex-goyang': '127197', // 일산호수공원 — 킨텍스 Tour type12 부재 시
+  'anyangcheon-eco-park-gwangmyeong': '2649975', // 광명동굴 — 안양천생태공원 Tour 부재 시
+  'starfield-hanam': '2900511', // 미사한강공원 — 스타필드 Tour type12 부재 시
+  'hanam-deokpung-market': '2902497', // 덕풍공원 — 시장 Tour type12 부재 시
+  'hanam-gyosan-neighborhood-park': '130726', // 하남역사박물관 — 교산공원 Tour 부재 시
 };
 
 async function mapPool(items, worker, size) {
@@ -156,9 +170,15 @@ async function main() {
   for (const spot of spots) {
     const id = String(spot?.id || '').trim();
     const contentId = String(spot?.contentId || '').trim();
-    if (!id || !/^\d{1,32}$/.test(contentId)) continue;
+    const relatedOnly = RELATED_IMAGE_CONTENT_IDS[id];
+    if (!id) continue;
+    if (!/^\d{1,32}$/.test(contentId) && !relatedOnly) continue;
     if (!force && toHttps(byId[id] || spot.imageUrl)) continue;
-    need.push({ id, contentId, name: String(spot.name || id) });
+    need.push({
+      id,
+      contentId: /^\d{1,32}$/.test(contentId) ? contentId : relatedOnly,
+      name: String(spot.name || id),
+    });
   }
 
   const targets = limit > 0 ? need.slice(0, limit) : need;

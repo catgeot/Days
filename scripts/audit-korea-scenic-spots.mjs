@@ -12,7 +12,6 @@ const JSON_PATH = join(__dirname, '../src/pages/Home/data/koreaScenicSpots.json'
 const HUBS_PATH = join(__dirname, '../src/pages/Home/data/cityAttractionHubs.json');
 
 const MIN_COUNT = 12;
-const MAX_COUNT = 100;
 const ALLOWED_REGIONS = new Set(['제주', '강원', '전라', '경상', '수도권', '충청']);
 
 let failed = 0;
@@ -57,10 +56,7 @@ function main() {
     'meta.disclaimer is short curated blurb',
   );
   assert(Array.isArray(spots), 'spots is array');
-  assert(
-    spots.length >= MIN_COUNT && spots.length <= MAX_COUNT,
-    `count ${MIN_COUNT}–${MAX_COUNT} (got ${spots.length})`,
-  );
+  assert(spots.length >= MIN_COUNT, `count ≥${MIN_COUNT} (got ${spots.length})`);
   assert(data.meta?.count === spots.length, 'meta.count === spots.length');
 
   const hubIndex = new Map();

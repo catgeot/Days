@@ -8,6 +8,22 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'scenic-hub-fill',
+    label: '빈 hub 명소 보강 (김포·고양…)',
+    branch: 'cursor/scenic-yangyang-b772',
+    destination:
+      'https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=gimpo',
+    active: true,
+  },
+  {
+    slug: 'scenic-yangyang',
+    label: '양양 GATEO 선정 명소',
+    branch: 'cursor/scenic-yangyang-b772',
+    destination:
+      'https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=yangyang',
+    active: true,
+  },
+  {
     slug: 'scenic-detail-overflow',
     label: '관광지 상세 가로 스크롤',
     branch: 'cursor/scenic-detail-overflow-3f84',

@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 76,
-  sessionPhase: '상세 가로 스크롤',
-  branch: 'cursor/scenic-detail-overflow-3f84',
-  previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'scenic-detail-overflow',
+  sessionNo: 80,
+  sessionPhase: '빈 hub 명소 보강',
+  branch: 'cursor/scenic-yangyang-b772',
+  previewPath: '/korea/theme/scenic?hub=gimpo',
+  qaShareSlug: 'scenic-hub-fill',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,54 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-08-scenic-hub-fill-r01a-80',
+    session: '테마여행 #80, 빈 hub 명소 보강',
+    title: '김포·고양·광명·하남·안성 GATEO 선정 전수',
+    detail:
+      '큐 R01 워커A 빈 hub 다섯 곳에 hub attractions 전수를 GATEO 선정에 넣었습니다(김포7·고양7·광명7·하남7·안성6 · 전체 162·이미지 162). Preview에서 /korea/theme/scenic?hub=gimpo · ?hub=goyang · ?hub=gwangmyeong · ?hub=hanam · ?hub=anseong 선정 목록을 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-hub-fill-full-79b',
+    session: '테마여행 #79, 빈 hub 명소 보강',
+    title: '선정=hub 명소 전수 · 보강 hub 채움',
+    detail:
+      'draft 기본 상한(per-hub=4)을 없애 hub attractions 전수로 바꿨습니다. 이미 보강한 양양·평창·남해·안산·강화도 남은 명소를 모두 넣어 각 hub 전수(양양7·평창7·남해4·안산7·강화7)입니다(전체 128·이미지 128). Preview에서 해당 hub 선정 건수를 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-hub-fill-r01-79',
+    session: '테마여행 #79, 빈 hub 명소 보강',
+    title: '안산·강화 GATEO 선정 8곳',
+    detail:
+      '큐 R01 앞쪽 빈 hub 안산·강화에 GATEO 선정 명소를 각 4곳 넣었습니다(전체 117·이미지 117). 안산=대부도·별망성지·성호공원·시화호, 강화=갑곶돈대·평화전망대·고려궁지·마니산. Preview에서 /korea/theme/scenic?hub=ansan · ?hub=ganghwa 선정 목록을 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-hub-fill-r01-78',
+    session: '테마여행 #78, 빈 hub 명소 보강',
+    title: '평창·남해 GATEO 선정 8곳',
+    detail:
+      '빈 hub였던 평창·남해에 GATEO 선정 명소를 각 4곳 넣었습니다(전체 109·이미지 109). 평창=월정사·대관령 양떼목장·오대산 선재길·이효석문학관, 남해=독일마을·상주은모래비치·보리암·이순신순국공원. Preview에서 /korea/theme/scenic?hub=pyeongchang · ?hub=namhae 선정 목록을 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-fill-tools-77b',
+    session: '테마여행 #77, 명소 보강',
+    title: '선정 상한 해제·권역 보강 큐',
+    detail:
+      'GATEO 선정 수량 상한을 없애고, 빈 hub 리포트·초안 배치·15라운드 큐를 넣었습니다. 다음 세션은 R01(평창·남해)부터 draft→generate→이미지 채움으로 이어가면 됩니다. Preview 양양 선정 5건은 그대로 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
+    id: '2026-08-08-scenic-yangyang-77',
+    session: '테마여행 #77, 명소 보강',
+    title: '양양 GATEO 선정 명소 5곳',
+    detail:
+      '양양 명승 홈에 GATEO 선정 명소가 0건이던 문제를 채웠습니다. 낙산사(속초→양양)·서피비치·하조대·낙산·설악 해수욕장을 선정 목록에 넣었습니다. Preview에서 /korea/theme/scenic?hub=yangyang 의 GATEO 선정에 5건이 보이는지 확인해 주세요.',
+    at: '2026-08-08',
+  },
   {
     id: '2026-08-08-scenic-detail-overflow-76',
     session: '테마여행 #76, 상세 가로 스크롤',

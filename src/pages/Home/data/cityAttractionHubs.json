@@ -27,13 +27,6 @@
         "lng": 128.5897997
       },
       {
-        "name": "낙산사",
-        "name_en": "Naksansa",
-        "kind": "temple",
-        "lat": 38.124506,
-        "lng": 128.6291359
-      },
-      {
         "name": "외옹치해수욕장",
         "name_en": "Oeongchi Beach",
         "kind": "beach",
@@ -2156,6 +2149,13 @@
       "양양군"
     ],
     "attractions": [
+      {
+        "name": "낙산사",
+        "name_en": "Naksansa",
+        "kind": "temple",
+        "lat": 38.124506,
+        "lng": 128.6291359
+      },
       {
         "name": "서피비치",
         "name_en": "Surfyy Beach",
