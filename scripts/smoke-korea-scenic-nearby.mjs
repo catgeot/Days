@@ -87,6 +87,28 @@ assert.ok(
   pageSrc.includes('fetchKoreaTourAttractionsNear'),
   'ScenicPage near uses bbox distance fetch (not region sample)',
 );
+assert.ok(
+  pageSrc.includes('NEAR_DB_POOL_LIMIT') && pageSrc.includes('NEAR_DB_LIST_LIMIT'),
+  'near tour pool + list limits',
+);
+assert.ok(
+  pageSrc.includes('countTourCatsFromNearSpots') &&
+    pageSrc.includes('heritageCategoryChipsFromSpots'),
+  'near mode builds category chips from nearby pools',
+);
+assert.ok(
+  pageSrc.includes('showTourFilterChips = nearActive'),
+  'near mode shows tour category chips',
+);
+assert.ok(
+  pageSrc.includes('showCuratedFilterChips = nearActive') &&
+    pageSrc.includes('showHeritageFilterChips = nearActive'),
+  'near mode shows curated hub + heritage category chips',
+);
+assert.ok(
+  pageSrc.includes('if (!nearActive) clearNear()'),
+  'hub/heritage chip click keeps near mode',
+);
 
 const libPath = join(__dirname, '../src/pages/Home/lib/koreaTourAttractions.js');
 const libSrc = readFileSync(libPath, 'utf8');

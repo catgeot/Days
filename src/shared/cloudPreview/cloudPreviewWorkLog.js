@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 70,
-  sessionPhase: '검색 권역 전수검증',
+  sessionNo: 71,
+  sessionPhase: '내주변 분류칩',
   branch: 'cursor/scenic-nearby-a8ec',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-nearby',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-08-scenic-nearby-category-chips-71',
+    session: '테마여행 #71, 내주변 분류칩',
+    title: '내 주변 — 분류칩으로 목록 분할',
+    detail:
+      '명승 「내 주변」에서 분류칩이 없어 긴 목록만 보이던 문제를 고쳤습니다. 선정 명소는 여행지 칩, 국가유산 명승은 경관 칩, 관광지는 종목(대·중·소) 칩으로 주변 풀을 나눠 짧게 탐색합니다. Preview `/korea/theme/scenic` → 내 주변 → 칩.',
+    at: '2026-08-08',
+  },
   {
     id: '2026-08-08-scenic-search-region-audit-70',
     session: '테마여행 #70, 검색 권역 전수검증',
