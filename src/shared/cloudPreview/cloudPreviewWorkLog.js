@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 72,
-  sessionPhase: 'main 병합',
-  branch: 'main',
+  sessionNo: 73,
+  sessionPhase: '인근여행지 홈 스크롤',
+  branch: 'cursor/scenic-home-scroll-8482',
   previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'scenic-chip',
+  qaShareSlug: 'scenic-home-scroll',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-08-scenic-nearby-home-scroll-73',
+    session: '테마여행 #73, 인근여행지 홈 스크롤',
+    title: '인근 여행지→명승 홈 상단 착지',
+    detail:
+      '관광지 본문 「인근 여행지」(예: 양양 명승지)로 다른 시·군 명승 홈에 들어가면 목록 중간으로 떨어지던 문제를 고쳤습니다. hub·권역·시도가 URL로 바뀔 때 본문을 맨 위로 올립니다(분류칩 클릭 위치 고정은 유지). Preview에서 비와야 폭포 등 상세→인근 양양 명승지를 눌러 홈 상단인지 확인해 주세요.',
+    at: '2026-08-08',
+  },
   {
     id: '2026-08-08-scenic-chip-main-merge-72',
     session: '테마여행 #72, main 병합',

@@ -1067,6 +1067,15 @@ export default function KoreaThemeScenicPage() {
     heritageSpots,
   ]);
 
+  // 인근 여행지→다른 hub 홈 등 URL 필터 전환 시 목록 스크롤 유지 방지
+  // 분류칩 클릭은 chipScrollPinRef가 잡히므로 여기서 건너뜀
+  useLayoutEffect(() => {
+    if (chipScrollPinRef.current) return;
+    const root = mainScrollRef.current;
+    if (!root) return;
+    if (root.scrollTop !== 0) root.scrollTop = 0;
+  }, [region, areaCode, hubId]);
+
   const resetListPage = useCallback(() => {
     if (page <= 1 && !searchParams.get('spot')) return;
     const next = new URLSearchParams(searchParams);
