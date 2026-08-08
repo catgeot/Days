@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-08T21:01:19.004Z",
-    "count": 150,
+    "generatedAt": "2026-08-08T21:15:37.611Z",
+    "count": 155,
     "source": "scripts/data/korea-theme-region-tour-overrides.mjs"
   },
   "byAttractionId": {
@@ -402,9 +402,17 @@
       "contentId": "126257",
       "tourTitle": "유달산"
     },
+    "namhae:geumsan-boriam": {
+      "contentId": "126149",
+      "tourTitle": "금산 보리암(남해)"
+    },
     "namhae:namhae-german-village": {
       "contentId": "129489",
       "tourTitle": "남해독일마을"
+    },
+    "namhae:namhae-yi-sun-sin-memorial-park": {
+      "contentId": "129480",
+      "tourTitle": "남해 관음포 이충무공 유적"
     },
     "namhae:sangju-eunmorae-beach": {
       "contentId": "126084",
@@ -426,9 +434,21 @@
       "contentId": "127698",
       "tourTitle": "영일대해수욕장"
     },
+    "pyeongchang:daegwallyeong-sheep-farm": {
+      "contentId": "129263",
+      "tourTitle": "대관령양떼목장"
+    },
+    "pyeongchang:lee-hyo-seok-literature-museum": {
+      "contentId": "130415",
+      "tourTitle": "이효석 문학관"
+    },
+    "pyeongchang:odaesan-seonjae-trail": {
+      "contentId": "2022311",
+      "tourTitle": "오대산 선재길"
+    },
     "pyeongchang:woljeongsa": {
-      "contentId": "2799163",
-      "tourTitle": "월정사부도군"
+      "contentId": "125772",
+      "tourTitle": "월정사·월정사 전나무숲"
     },
     "seoul:bukchon-hanok-village": {
       "contentId": "126537",

@@ -60,6 +60,10 @@ const NEW_SAMPLES = [
   'haeundae-beach',
   'hallasan-national-park',
   'n-seoul-tower',
+  'woljeongsa',
+  'daegwallyeong-sheep-farm',
+  'namhae-german-village',
+  'geumsan-boriam',
 ];
 for (const id of NEW_SAMPLES) {
   const spot = byId.get(id);

@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-08T21:01:31.287Z",
-    "count": 101,
+    "updatedAt": "2026-08-08T21:15:41.780Z",
+    "count": 109,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -106,6 +106,14 @@
     "hajodae-beach": "https://tong.visitkorea.or.kr/cms/resource/73/2745273_image2_1.jpg",
     "seorak-beach": "https://tong.visitkorea.or.kr/cms/resource/22/2745222_image2_1.jpg",
     "surfyy-beach": "https://tong.visitkorea.or.kr/cms/resource/90/2745190_image2_1.jpg",
-    "naksan-beach": "https://tong.visitkorea.or.kr/cms/resource/68/2929768_image2_1.jpg"
+    "naksan-beach": "https://tong.visitkorea.or.kr/cms/resource/68/2929768_image2_1.jpg",
+    "namhae-yi-sun-sin-memorial-park": "https://tong.visitkorea.or.kr/cms/resource/55/3553955_image2_1.jpg",
+    "daegwallyeong-sheep-farm": "https://tong.visitkorea.or.kr/cms/resource/99/3486899_image2_1.jpg",
+    "woljeongsa": "https://tong.visitkorea.or.kr/cms/resource/54/3304054_image2_1.jpg",
+    "odaesan-seonjae-trail": "https://tong.visitkorea.or.kr/cms/resource/80/3534880_image2_1.jpg",
+    "lee-hyo-seok-literature-museum": "https://tong.visitkorea.or.kr/cms/resource/70/3318470_image2_1.jpg",
+    "sangju-eunmorae-beach": "https://tong.visitkorea.or.kr/cms/resource/01/3583201_image2_1.jpg",
+    "geumsan-boriam": "https://tong.visitkorea.or.kr/cms/resource/04/4082704_image2_1.jpg",
+    "namhae-german-village": "https://tong.visitkorea.or.kr/cms/resource/79/3304479_image2_1.jpg"
   }
 }

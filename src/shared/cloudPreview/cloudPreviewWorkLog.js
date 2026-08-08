@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 77,
-  sessionPhase: '명소 보강',
+  sessionNo: 78,
+  sessionPhase: '빈 hub 명소 보강',
   branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?hub=yangyang',
-  qaShareSlug: 'scenic-yangyang',
+  previewPath: '/korea/theme/scenic?hub=pyeongchang',
+  qaShareSlug: 'scenic-hub-fill',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-08-scenic-hub-fill-r01-78',
+    session: '테마여행 #78, 빈 hub 명소 보강',
+    title: '평창·남해 GATEO 선정 8곳',
+    detail:
+      '빈 hub였던 평창·남해에 GATEO 선정 명소를 각 4곳 넣었습니다(전체 109·이미지 109). 평창=월정사·대관령 양떼목장·오대산 선재길·이효석문학관, 남해=독일마을·상주은모래비치·보리암·이순신순국공원. Preview에서 /korea/theme/scenic?hub=pyeongchang · ?hub=namhae 선정 목록을 확인해 주세요.',
+    at: '2026-08-08',
+  },
   {
     id: '2026-08-08-scenic-fill-tools-77b',
     session: '테마여행 #77, 명소 보강',

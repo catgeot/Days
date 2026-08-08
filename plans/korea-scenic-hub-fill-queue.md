@@ -1,7 +1,9 @@
 # GATEO 선정 명소 — 권역·시군 hub 보강 큐
 
 **생성**: `npm run report:korea-scenic-empty-hubs -- --write-queue` (이 파일 덮어씀)
-**스냅샷**: 빈 hub **121** · 선정 hub **48** · maxOrder **1010**
+**스냅샷**: 빈 hub **119** · 선정 hub **50** · maxOrder **1090**
+
+**완료**: `#77` 양양 · `#78` 평창·남해(구 R01) → 아래 표는 잔여 재번호.
 
 ## 사용법
 
@@ -15,23 +17,22 @@
 
 | R | 워커A | 워커B | 권역 | 상태 |
 |---|-------|-------|------|------|
-| **R01** | `pyeongchang` · `namhae` | — | 강원·경상 | ⬜ |
-| **R02** | `ansan` · `ganghwa` · `gimpo` · `goyang` · `gwangmyeong` | `hanam` · `anseong` · `anyang` · `bucheon` · `namyangju` | 수도권 | ⬜ |
-| **R03** | `pocheon` · `siheung` · `uiwang` · `yangpyeong` · `yongin` | `gunpo` · `guri` · `gwacheon` · `gwangju_gi` · `hwaseong` | 수도권 | ⬜ |
-| **R04** | `ongjin` · `osan` · `uijeongbu` · `yeoju` · `yeoncheon` | `cheorwon` · `dongducheon` · `icheon` · `pyeongtaek` · `yangju` | 수도권 | ⬜ |
-| **R05** | `inje` · `yeongwol` · `goseong` · `hongcheon` · `yanggu` | `jeongseon` · `taebaek` · `hoengseong` · `hwacheon` · `wonju` | 강원 | ⬜ |
-| **R06** | `jincheon` · `chungju` · `jeungpyeong` · `sejong` · `seosan` | `asan` · `boeun` · `cheonan` · `cheongyang` · `dangjin` | 충청 | ⬜ |
-| **R07** | `goesan` · `gyeryong` · `yeongdong` · `eumseong` · `geumsan` | `hongseong` · `nonsan` · `okcheon` · `yeongi` · `yesan` | 충청 | ⬜ |
-| **R08** | `wanju` · `gokseong` · `jangsu` · `seocheon` · `gangjin` | `gochang` · `goheung` · `hwasun` · `imsil` · `jangheung` | 전라 | ⬜ |
-| **R09** | `jangseong` · `jindo` · `naju` · `sinan` · `sunchang` | `yeonggwang` · `gimje` · `gwangyang` · `haenam` · `hampyeong` | 전라 | ⬜ |
-| **R10** | `iksan` · `muan` · `muju` · `yeongam` | — | 전라 | ⬜ |
-| **R11** | `geochang` · `ulju` · `gimhae` · `gunwi` · `sangju` | `yangsan` · `changwon` · `cheongdo` · `dalseong` · `gijang` | 경상 | ⬜ |
-| **R12** | `goseongnam` · `gumi` · `haman` · `hamyang` · `miryang` | `mungyeong` · `sacheon` · `uiseong` · `uljin` · `yecheon` | 경상 | ⬜ |
-| **R13** | `yeongcheon` · `yeongju` · `bonghwa` · `changnyeong` · `cheongsong` | `chilgok` · `gimcheon` · `goryeong` · `gyeongsan` · `sancheong` | 경상 | ⬜ |
-| **R14** | `seongju` · `uiryeong` · `yeongdeok` · `yeongyang` | — | 경상 | ⬜ |
-| **R15** | `dokdo` | — | 미정 | ⬜ |
+| **R01** | `ansan` · `ganghwa` · `gimpo` · `goyang` · `gwangmyeong` | `hanam` · `anseong` · `anyang` · `bucheon` · `namyangju` | 수도권 | ⬜ |
+| **R02** | `pocheon` · `siheung` · `uiwang` · `yangpyeong` · `yongin` | `gunpo` · `guri` · `gwacheon` · `gwangju_gi` · `hwaseong` | 수도권 | ⬜ |
+| **R03** | `ongjin` · `osan` · `uijeongbu` · `yeoju` · `yeoncheon` | `cheorwon` · `dongducheon` · `icheon` · `pyeongtaek` · `yangju` | 수도권 | ⬜ |
+| **R04** | `inje` · `yeongwol` · `goseong` · `hongcheon` · `yanggu` | `jeongseon` · `taebaek` · `hoengseong` · `hwacheon` · `wonju` | 강원 | ⬜ |
+| **R05** | `jincheon` · `chungju` · `jeungpyeong` · `sejong` · `seosan` | `asan` · `boeun` · `cheonan` · `cheongyang` · `dangjin` | 충청 | ⬜ |
+| **R06** | `goesan` · `gyeryong` · `yeongdong` · `eumseong` · `geumsan` | `hongseong` · `nonsan` · `okcheon` · `yeongi` · `yesan` | 충청 | ⬜ |
+| **R07** | `wanju` · `gokseong` · `jangsu` · `seocheon` · `gangjin` | `gochang` · `goheung` · `hwasun` · `imsil` · `jangheung` | 전라 | ⬜ |
+| **R08** | `jangseong` · `jindo` · `naju` · `sinan` · `sunchang` | `yeonggwang` · `gimje` · `gwangyang` · `haenam` · `hampyeong` | 전라 | ⬜ |
+| **R09** | `iksan` · `muan` · `muju` · `yeongam` | — | 전라 | ⬜ |
+| **R10** | `geochang` · `ulju` · `gimhae` · `gunwi` · `sangju` | `yangsan` · `changwon` · `cheongdo` · `dalseong` · `gijang` | 경상 | ⬜ |
+| **R11** | `goseongnam` · `gumi` · `haman` · `hamyang` · `miryang` | `mungyeong` · `sacheon` · `uiseong` · `uljin` · `yecheon` | 경상 | ⬜ |
+| **R12** | `yeongcheon` · `yeongju` · `bonghwa` · `changnyeong` · `cheongsong` | `chilgok` · `gimcheon` · `goryeong` · `gyeongsan` · `sancheong` | 경상 | ⬜ |
+| **R13** | `seongju` · `uiryeong` · `yeongdeok` · `yeongyang` | — | 경상 | ⬜ |
+| **R14** | `dokdo` | — | 미정 | ⬜ |
 
-**합계**: 15 라운드 · hub 121.
+**합계**: 14 라운드 · hub 119.
 
 ## 권역별 잔여
 
@@ -68,9 +69,8 @@
 - `pyeongtaek` 평택 — attr 4 · Tour contentId 0
 - `yangju` 양주 — attr 4 · Tour contentId 0
 
-### 강원 (11)
+### 강원 (10)
 
-- `pyeongchang` 평창 — attr 7 · Tour contentId 1 · **P0**
 - `inje` 인제 — attr 7 · Tour contentId 0
 - `yeongwol` 영월 — attr 7 · Tour contentId 0
 - `goseong` 고성 — attr 6 · Tour contentId 0
@@ -132,9 +132,8 @@
 - `muju` 무주 — attr 4 · Tour contentId 0
 - `yeongam` 영암 — attr 4 · Tour contentId 0
 
-### 경상 (35)
+### 경상 (34)
 
-- `namhae` 남해 — attr 4 · Tour contentId 2 · **P0**
 - `geochang` 거창 — attr 7 · Tour contentId 0
 - `ulju` 울주 — attr 7 · Tour contentId 0
 - `gimhae` 김해 — attr 6 · Tour contentId 0

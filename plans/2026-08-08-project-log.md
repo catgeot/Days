@@ -2,6 +2,22 @@
 
 직전: [`2026-08-07-project-log.md`](./2026-08-07-project-log.md)
 
+## 테마여행 #78, 빈 hub 명소 보강
+
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#73](https://github.com/catgeot/Days/pull/73) · Preview 사람 QA 대기
+
+- **한 일**: 큐 구 R01 — 평창 4(월정사·대관령 양떼목장·오대산 선재길·이효석문학관) · 남해 4(독일마을·상주은모래비치·보리암·이순신순국공원) · Tour contentId·썸네일 109/109 · 큐 잔여 119·14라운드 재번호
+- **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
+- **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=pyeongchang` · `?hub=namhae`
+- **작업 로그**: 「평창·남해 GATEO 선정 8곳」
+- **남은 일**: 큐 새 R01(수도권 안산·강화…) · 사람 Preview QA
+- **다음 채팅명**:
+
+```
+테마여행 #79, 빈 hub 명소 보강
+```
+
 ## 테마여행 #77, 명소 보강
 
 **상태**: feature `cursor/scenic-yangyang-b772` · PR [#73](https://github.com/catgeot/Days/pull/73) · Preview 사람 QA 대기
@@ -13,12 +29,8 @@
 - **공유**: `https://www.gateo.kr/qa/scenic-yangyang`
 - **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=yangyang`
 - **작업 로그**: 「양양 GATEO 선정 명소 5곳」·「선정 상한 해제·권역 보강 큐」
-- **남은 일**: 큐 R01(평창·남해)부터 배치 보강 · 사람 Preview QA
-- **다음 채팅명**:
-
-```
-테마여행 #78, 빈 hub 명소 보강
-```
+- **남은 일**: ✅ #78 평창·남해 보강 · 사람 Preview QA
+- **다음 채팅명**: `테마여행 #78, 빈 hub 명소 보강` → 완료(위 #78 절)
 
 ## 테마여행 #76, 상세 가로 스크롤
 
