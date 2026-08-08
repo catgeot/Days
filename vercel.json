@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/scenic-home-scroll",
+      "destination": "https://days-git-cursor-scenic-home-scroll-8482-catgeots-projects.vercel.app/korea/theme/scenic",
+      "permanent": false
+    },
+    {
       "source": "/qa/scenic-chip",
       "destination": "https://www.gateo.kr/korea/theme/scenic",
       "permanent": false
