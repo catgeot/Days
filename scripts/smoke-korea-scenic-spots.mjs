@@ -68,6 +68,10 @@ const NEW_SAMPLES = [
   'byeolmangseong-fortress',
   'gapgot-dondae',
   'manisan',
+  'jukdo-beach',
+  'ansan-reed-wetland-park',
+  'bomunsa-ganghwa',
+  'chojijin',
 ];
 for (const id of NEW_SAMPLES) {
   const spot = byId.get(id);

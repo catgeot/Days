@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-08-scenic-hub-fill-full-79b',
+    session: '테마여행 #79, 빈 hub 명소 보강',
+    title: '선정=hub 명소 전수 · 보강 hub 채움',
+    detail:
+      'draft 기본 상한(per-hub=4)을 없애 hub attractions 전수로 바꿨습니다. 이미 보강한 양양·평창·남해·안산·강화도 남은 명소를 모두 넣어 각 hub 전수(양양7·평창7·남해4·안산7·강화7)입니다(전체 128·이미지 128). Preview에서 해당 hub 선정 건수를 확인해 주세요.',
+    at: '2026-08-08',
+  },
+  {
     id: '2026-08-08-scenic-hub-fill-r01-79',
     session: '테마여행 #79, 빈 hub 명소 보강',
     title: '안산·강화 GATEO 선정 8곳',

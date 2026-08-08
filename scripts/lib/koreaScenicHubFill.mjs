@@ -227,13 +227,39 @@ export function listEmptyScenicHubs(opts = {}) {
   return { empty, maxOrder: ctx.maxOrder, curatedHubs: ctx.curatedCount.size };
 }
 
+function normalizeAttractionKey(s) {
+  return String(s ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '');
+}
+
 /**
+ * hub attractions → 선정 초안.
+ * 기본: 해당 hub의 attractions **전수**(개수 상한 없음).
+ * 이미 선정된 hub는 **미등재 명소만** append.
+ *
  * @param {string[]} hubIds
- * @param {{ perHub?: number, startOrder?: number }} [opts]
+ * @param {{ perHub?: number | null, startOrder?: number }} [opts]
+ *   `perHub` — 의도적 상한일 때만. 생략/null/≤0 = 전수.
  */
 export function draftScenicSpotsForHubs(hubIds, opts = {}) {
-  const perHub = Math.max(1, Number(opts.perHub) || 4);
+  const perHubRaw = opts.perHub;
+  const perHub =
+    perHubRaw == null || Number(perHubRaw) <= 0
+      ? null
+      : Math.max(1, Number(perHubRaw));
   const ctx = loadScenicFillContext();
+  /** @type {Set<string>} hubId::attractionName */
+  const curatedAttractionKeys = new Set();
+  for (const s of Array.isArray(ctx.scenic?.spots) ? ctx.scenic.spots : []) {
+    const hid = String(s?.hubId || '')
+      .trim()
+      .toLowerCase();
+    const an = normalizeAttractionKey(s?.attractionName || s?.name);
+    if (hid && an) curatedAttractionKeys.add(`${hid}::${an}`);
+  }
+
   let order = Number.isInteger(opts.startOrder)
     ? opts.startOrder
     : ctx.maxOrder + 10;
@@ -254,11 +280,6 @@ export function draftScenicSpotsForHubs(hubIds, opts = {}) {
       skipped.push({ hubId, reason: 'hub-not-found-or-not-kr' });
       continue;
     }
-    const existing = ctx.curatedCount.get(hubId) || 0;
-    if (existing > 0) {
-      skipped.push({ hubId, reason: `already-curated:${existing}` });
-      continue;
-    }
     if (isDistrictHub(hub)) {
       skipped.push({ hubId, reason: 'district-hub' });
       continue;
@@ -270,12 +291,23 @@ export function draftScenicSpotsForHubs(hubIds, opts = {}) {
       continue;
     }
 
-    const candidates = listHubAttractionCandidates(hub, ctx.byAttractionId).slice(
-      0,
-      perHub,
+    let candidates = listHubAttractionCandidates(hub, ctx.byAttractionId).filter(
+      (c) =>
+        !curatedAttractionKeys.has(
+          `${hubId}::${normalizeAttractionKey(c.name)}`,
+        ),
     );
+    if (perHub != null) candidates = candidates.slice(0, perHub);
+
+    const existing = ctx.curatedCount.get(hubId) || 0;
     if (candidates.length === 0) {
-      skipped.push({ hubId, reason: 'no-attractions' });
+      skipped.push({
+        hubId,
+        reason:
+          existing > 0
+            ? `already-complete:${existing}`
+            : 'no-attractions',
+      });
       continue;
     }
 
@@ -296,6 +328,7 @@ export function draftScenicSpotsForHubs(hubIds, opts = {}) {
           attractionKey: c.attractionKey,
           needsBlurbPolish: true,
           needsContentId: !c.contentId,
+          fillMissing: existing > 0,
         },
       });
       order += 10;

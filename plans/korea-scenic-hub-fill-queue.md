@@ -3,15 +3,18 @@
 **생성**: `npm run report:korea-scenic-empty-hubs -- --write-queue` (이 파일 덮어씀)
 **스냅샷**: 빈 hub **117** · 선정 hub **52** · maxOrder **1170**
 
-**완료**: `#77` 양양 · `#78` 평창·남해 · `#79` 안산·강화(구 R01 앞) → 아래 표는 잔여 재번호.
+**완료**: `#77` 양양 · `#78` 평창·남해 · `#79` 안산·강화 + **보강 hub attractions 전수**(양양7·평창7·남해4·안산7·강화7) → 아래 표는 잔여 재번호.
 
 ## 사용법
 
-1. 아래 **다음 미완료 라운드**의 hubId를 워커 A/B에 전달 (각 최대 5).
+1. 아래 **다음 미완료 라운드**의 hubId를 워커 A/B에 전달 (각 최대 5 hub · **명소 개수 상한 아님**).
 2. 초안: `npm run draft:korea-scenic-hub-batch -- --hubs=<A목록>` → overrides에 append · blurb·contentId 검수.
+   - **기본 = hub `attractions` 전수** (개수 기본 상한 없음 · `--per-hub=4` 같은 기본값 금지).
+   - `--per-hub=N`은 사람이 **의도적으로** 줄일 때만.
+   - 이미 선정된 hub를 다시 넣으면 **미등재 명소만** append.
 3. `npm run generate:korea-scenic-spots` → `fill:korea-scenic-spot-images` → `audit`/`smoke:korea-scenic-spots`.
 4. 완료 라운드는 표에서 ✅ · 이 파일을 `--write-queue`로 재생성하면 잔여만 남음.
-5. **제외**: 자치구(…구) hub · 이미 선정 있는 hub.
+5. **제외**: 자치구(…구) hub · (빈 hub 큐 목록에서만) 이미 선정 있는 hub.
 
 ## 라운드 (워커A 5 + 워커B 5)
 

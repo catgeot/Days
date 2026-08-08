@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-08T21:26:06.992Z",
-    "count": 117,
+    "updatedAt": "2026-08-08T21:39:37.394Z",
+    "count": 128,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -122,6 +122,17 @@
     "seongho-park-ansan": "https://tong.visitkorea.or.kr/cms/resource/05/3042405_image2_1.JPG",
     "ganghwa-peace-observatory": "https://tong.visitkorea.or.kr/cms/resource/71/3364171_image2_1.jpg",
     "goryeogungji": "https://tong.visitkorea.or.kr/cms/resource/86/4061486_image2_1.jpg",
-    "manisan": "https://tong.visitkorea.or.kr/cms/resource/92/3000992_image2_1.jpg"
+    "manisan": "https://tong.visitkorea.or.kr/cms/resource/92/3000992_image2_1.jpg",
+    "jukdo-beach": "https://tong.visitkorea.or.kr/cms/resource/07/2738607_image2_1.jpg",
+    "alpensia-resort": "https://tong.visitkorea.or.kr/cms/resource/53/3453253_image2_1.jpg",
+    "yongpyong-resort": "https://tong.visitkorea.or.kr/cms/resource/52/3356152_image2_1.jpg",
+    "pyeongchang-olympic-plaza": "https://tong.visitkorea.or.kr/cms/resource/53/3453253_image2_1.jpg",
+    "ansan-culture-plaza": "https://tong.visitkorea.or.kr/cms/resource/67/2593767_image2_1.jpg",
+    "hwarang-recreation-area": "https://tong.visitkorea.or.kr/cms/resource/67/2593767_image2_1.jpg",
+    "ansan-reed-wetland-park": "https://tong.visitkorea.or.kr/cms/resource/67/3078367_image2_1.jpg",
+    "seokmodo": "https://tong.visitkorea.or.kr/cms/resource/00/3523000_image2_1.jpg",
+    "yangyang-traditional-market": "https://tong.visitkorea.or.kr/cms/resource/04/4068204_image2_1.jpg",
+    "bomunsa-ganghwa": "https://tong.visitkorea.or.kr/cms/resource/75/3523075_image2_1.jpg",
+    "chojijin": "https://tong.visitkorea.or.kr/cms/resource_photo/29/4079229_image2_1.JPG"
   }
 }

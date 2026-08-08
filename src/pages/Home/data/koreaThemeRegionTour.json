@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-08T21:25:57.400Z",
-    "count": 163,
+    "generatedAt": "2026-08-08T21:39:30.621Z",
+    "count": 170,
     "source": "scripts/data/korea-theme-region-tour-overrides.mjs"
   },
   "byAttractionId": {
@@ -26,6 +26,10 @@
       "contentId": "988449",
       "tourTitle": "월영교"
     },
+    "ansan:ansan-reed-wetland-park": {
+      "contentId": "128066",
+      "tourTitle": "안산갈대습지공원"
+    },
     "ansan:byeolmangseong-fortress": {
       "contentId": "128062",
       "tourTitle": "별망성지"
@@ -33,6 +37,10 @@
     "ansan:daebudo": {
       "contentId": "126844",
       "tourTitle": "대부도"
+    },
+    "ansan:hwarang-recreation-area": {
+      "contentId": "2615489",
+      "tourTitle": "화랑유원지"
     },
     "ansan:seongho-park-ansan": {
       "contentId": "128826",
@@ -170,6 +178,14 @@
       "contentId": "126374",
       "tourTitle": "담양 소쇄원"
     },
+    "ganghwa:bomunsa-ganghwa": {
+      "contentId": "125533",
+      "tourTitle": "보문사(강화)"
+    },
+    "ganghwa:chojijin": {
+      "contentId": "128030",
+      "tourTitle": "강화 초지진"
+    },
     "ganghwa:gapgot-dondae": {
       "contentId": "1254680",
       "tourTitle": "갑곶돈대"
@@ -185,6 +201,10 @@
     "ganghwa:manisan": {
       "contentId": "125468",
       "tourTitle": "마니산(강화)"
+    },
+    "ganghwa:seokmodo": {
+      "contentId": "127801",
+      "tourTitle": "석모도"
     },
     "gangneung:anmok-beach": {
       "contentId": "127722",
@@ -630,6 +650,10 @@
       "contentId": "125701",
       "tourTitle": "하조대해수욕장"
     },
+    "yangyang:jukdo-beach": {
+      "contentId": "125720",
+      "tourTitle": "죽도해수욕장"
+    },
     "yangyang:naksan-beach": {
       "contentId": "125702",
       "tourTitle": "낙산해수욕장"
@@ -641,6 +665,10 @@
     "yangyang:surfyy-beach": {
       "contentId": "2501905",
       "tourTitle": "서피비치"
+    },
+    "yangyang:yangyang-traditional-market": {
+      "contentId": "131998",
+      "tourTitle": "양양전통시장 (4, 9일)"
     },
     "yeosu:dolsan-park": {
       "contentId": "128755",

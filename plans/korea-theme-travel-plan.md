@@ -52,7 +52,7 @@ Cloud 규칙 SSOT: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md
 | 76 | (핫픽스) | `테마여행 #76, 상세 가로 스크롤` | ⏳ Preview QA |
 | 77 | (SSOT) | `테마여행 #77, 명소 보강` | ⏳ Preview QA · 상한 해제·보강 큐 |
 | 78 | (SSOT) | `테마여행 #78, 빈 hub 명소 보강` | ⏳ Preview QA · 평창·남해 |
-| 79 | (SSOT) | `테마여행 #79, 빈 hub 명소 보강` | ⏳ Preview QA · 안산·강화 · 큐 잔여 117 |
+| 79 | (SSOT) | `테마여행 #79, 빈 hub 명소 보강` | ⏳ Preview QA · 전수 정책(양양·평창·남해·안산·강화) · 큐 잔여 117 |
 
 이어하기·핫픽스만 할 때: `테마여행 #N, {짧은 수정}` (`N` = 그 주제의 **다음** 순번). 세션마다 새 `#1` 금지.
 

@@ -63,29 +63,33 @@ assert(
 
 const already = draftScenicSpotsForHubs(['yangyang']);
 assert(
-  already.drafts.length === 0 && already.skipped.some((s) => s.hubId === 'yangyang'),
-  'yangyang draft skipped (already curated)',
+  already.drafts.length === 0 &&
+    already.skipped.some(
+      (s) => s.hubId === 'yangyang' && String(s.reason).startsWith('already-complete'),
+    ),
+  'yangyang already-complete (전수 선정)',
 );
 
-const target = empty.find((h) => h.attractions > 0);
+const target = empty.find((h) => h.attractions >= 5);
 if (target) {
-  const { drafts, skipped } = draftScenicSpotsForHubs([target.hubId], {
-    perHub: 2,
-  });
+  const full = draftScenicSpotsForHubs([target.hubId]);
   assert(
-    drafts.length > 0 || skipped.length > 0,
-    `draft ${target.hubId} produces drafts or skip`,
+    full.drafts.length === target.attractions,
+    `default drafts ALL attractions for ${target.hubId} (got ${full.drafts.length}, hub has ${target.attractions}) — no per-hub=4 default`,
   );
-  if (drafts.length) {
-    assert(
-      drafts.every((d) => d.hubId === target.hubId && d.region && d.attractionName),
-      `${target.hubId} draft fields`,
-    );
-    assert(
-      drafts.every((d) => d.order > maxOrder),
-      'draft orders after maxOrder',
-    );
-  }
+  const capped = draftScenicSpotsForHubs([target.hubId], { perHub: 2 });
+  assert(
+    capped.drafts.length === 2,
+    `--per-hub=2 caps ${target.hubId} to 2`,
+  );
+  assert(
+    full.drafts.every((d) => d.hubId === target.hubId && d.region && d.attractionName),
+    `${target.hubId} draft fields`,
+  );
+  assert(
+    full.drafts.every((d) => d.order > maxOrder),
+    'draft orders after maxOrder',
+  );
 }
 
 if (failed) {

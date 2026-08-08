@@ -2,8 +2,10 @@
  * 빈 hub → korea-scenic-spots-overrides 초안 조각.
  *
  *   npm run draft:korea-scenic-hub-batch -- --hubs=pyeongchang,namhae
- *   npm run draft:korea-scenic-hub-batch -- --hubs=pyeongchang --per-hub=3 --json
+ *   npm run draft:korea-scenic-hub-batch -- --hubs=ansan --json
+ *   npm run draft:korea-scenic-hub-batch -- --hubs=ansan --per-hub=3   # 의도적 상한만
  *
+ * 기본: hub attractions **전수**(개수 상한 없음). 이미 선정된 hub는 미등재만.
  * 출력은 stdout. overrides에 수동 append 후 generate · fill images · audit.
  * blurb은 자리표시 — 검수 시 다듬기. contentId null은 Tour 조회 후 채움.
  */
@@ -13,8 +15,8 @@ import {
 } from './lib/koreaScenicHubFill.mjs';
 
 function parseArgs(argv) {
-  /** @type {{ hubs: string[], perHub: number, json: boolean, startOrder: number | null }} */
-  const out = { hubs: [], perHub: 4, json: false, startOrder: null };
+  /** @type {{ hubs: string[], perHub: number | null, json: boolean, startOrder: number | null, help?: boolean }} */
+  const out = { hubs: [], perHub: null, json: false, startOrder: null };
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i];
     if (a === '--json') out.json = true;
@@ -26,7 +28,8 @@ function parseArgs(argv) {
         .filter(Boolean);
     } else if (a === '--per-hub' || a.startsWith('--per-hub=')) {
       const v = a.includes('=') ? a.split('=')[1] : argv[++i];
-      out.perHub = Math.max(1, Number(v) || 4);
+      const n = Number(v);
+      out.perHub = Number.isFinite(n) && n > 0 ? Math.max(1, n) : null;
     } else if (a === '--start-order' || a.startsWith('--start-order=')) {
       const v = a.includes('=') ? a.split('=')[1] : argv[++i];
       out.startOrder = Number(v);
@@ -41,7 +44,11 @@ const opts = parseArgs(process.argv.slice(2));
 if (opts.help || opts.hubs.length === 0) {
   console.log(`Usage:
   npm run draft:korea-scenic-hub-batch -- --hubs=pyeongchang,namhae
-  npm run draft:korea-scenic-hub-batch -- --hubs=pyeongchang --per-hub=3 --json
+  npm run draft:korea-scenic-hub-batch -- --hubs=ansan --json
+  npm run draft:korea-scenic-hub-batch -- --hubs=ansan --per-hub=3
+
+기본: hub attractions 전수(개수 상한 없음). --per-hub는 의도적 상한일 때만.
+이미 선정된 hub는 미등재 명소만 초안.
 
 Empty hub snapshot: npm run report:korea-scenic-empty-hubs`);
   if (opts.hubs.length === 0 && !opts.help) {
@@ -100,5 +107,7 @@ console.log(
     .join('\n'),
 );
 console.error(
-  `[draft] ${drafts.length} spots · hubs=${opts.hubs.join(',')} · nextOrder=${nextOrder}`,
+  `[draft] ${drafts.length} spots · hubs=${opts.hubs.join(',')} · nextOrder=${nextOrder}${
+    opts.perHub != null ? ` · perHub=${opts.perHub}` : ' · perHub=all'
+  }`,
 );

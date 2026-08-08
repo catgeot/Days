@@ -4,14 +4,16 @@
 
 ## 테마여행 #79, 빈 hub 명소 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#73](https://github.com/catgeot/Days/pull/73) · tip `426503ff` · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#73](https://github.com/catgeot/Days/pull/73) · Preview 사람 QA 대기
 
-- **한 일**: 큐 R01 앞 — 안산 4(대부도·별망성지·성호공원·시화호) · 강화 4(갑곶돈대·평화전망대·고려궁지·마니산) · Tour contentId·썸네일 117/117 · 큐 잔여 117·14라운드 재번호
+- **한 일 (초기)**: 큐 R01 앞 — 안산·강화 각 4곳 → 이후 **전수 정책**으로 수정
+- **정책**: draft **개수 기본 상한 제거**(hub attractions 전수 · `--per-hub`는 의도적 상한만) · 실행문서 [`korea-scenic-hub-fill-queue.md`](./korea-scenic-hub-fill-queue.md) · README
+- **전수 채움**: 양양 7 · 평창 7 · 남해 4 · 안산 7 · 강화 7 · 선정 **128**/이미지 **128**
 - **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
-- **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=ansan` · `?hub=ganghwa`
-- **작업 로그**: 「안산·강화 GATEO 선정 8곳」
-- **남은 일**: 큐 새 R01(김포·고양…) · 사람 Preview QA
+- **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=ansan` · `?hub=ganghwa` · `?hub=yangyang` · `?hub=pyeongchang`
+- **작업 로그**: 「안산·강화 GATEO 선정 8곳」·「선정=hub 명소 전수 · 보강 hub 채움」
+- **남은 일**: 큐 R01(김포·고양…)도 **전수**로 · 사람 Preview QA
 - **다음 채팅명**:
 
 ```
