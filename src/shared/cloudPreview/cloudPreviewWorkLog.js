@@ -8,7 +8,7 @@ export const cloudPreviewProject = {
   title: '테마여행',
   sessionNo: 75,
   sessionPhase: '빈 hub 선정 칩 숨김',
-  branch: 'cursor/scenic-empty-chips-1837',
+  branch: 'main',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-empty-chips',
 };
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-08-scenic-empty-chips-main-75',
+    session: '테마여행 #75, main 병합',
+    title: '빈 hub·제목 아이콘 main 반영',
+    detail:
+      '선정 명소 없는 시·군 분류칩 숨김·문구 정리(#70)와 명소·명승·관광지 제목 아이콘(#71)을 main에 반영했습니다. `/qa/scenic-empty-chips`는 PROD 명승 경로로 연결됩니다. www.gateo.kr/korea/theme/scenic 에서 확인해 주세요.',
+    at: '2026-08-08',
+  },
   {
     id: '2026-08-08-scenic-section-icons-75c',
     session: '테마여행 #75, 빈 hub 선정 칩 숨김',

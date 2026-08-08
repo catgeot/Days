@@ -9,10 +9,9 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'scenic-empty-chips',
-    label: '빈 hub 선정 칩 숨김',
-    branch: 'cursor/scenic-empty-chips-1837',
-    destination:
-      'https://days-git-cursor-scenic-empty-chips-1837-catgeots-projects.vercel.app/korea/theme/scenic',
+    label: '빈 hub 선정 칩·제목 아이콘',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/korea/theme/scenic',
     active: true,
   },
   {
