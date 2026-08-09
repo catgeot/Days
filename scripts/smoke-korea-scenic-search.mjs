@@ -201,9 +201,14 @@ assert.ok(
 );
 assert.ok(
   pageSrc.includes("next.set('cregion'") &&
-    pageSrc.includes("next.set('hregion'") &&
-    pageSrc.includes("next.set('tregion'"),
+  pageSrc.includes("next.set('hregion'") &&
+  pageSrc.includes("next.set('tregion'"),
   'pod chip writes use cregion/hregion/tregion',
+);
+assert(
+  pageSrc.includes("next.set('ccluster'") ||
+    pageSrc.includes('ccluster'),
+  '명소 파드 has ccluster 세권 param',
 );
 assert.ok(
   filterScenicSpotsByQuery(curated, '경복궁').some((s) => s.region === '수도권'),

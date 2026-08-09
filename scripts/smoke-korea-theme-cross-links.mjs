@@ -87,6 +87,10 @@ assert(
   'boryeong scenic home has hub=boryeong',
 );
 assert(
+  scenicHomePathForHubId('boryeong').includes('ccluster=cn-west'),
+  'scenic home seeds ccluster for 보령',
+);
+assert(
   scenicHomePathForHubId('gongju').includes('hub=gongju'),
   'gongju scenic home has hub=gongju',
 );

@@ -2,17 +2,28 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
-## 테마여행 #111, 명소 중분류 체계
+## 테마여행 #112, 세권 칩 SSOT·UI
 
-**상태**: feature `cursor/scenic-mid-cluster-67a8` · PR [#78](https://github.com/catgeot/Days/pull/78) · **경기 동서남북 합의** · UI 미구현
+**상태**: feature `cursor/scenic-mid-cluster-67a8` · PR [#78](https://github.com/catgeot/Days/pull/78) · Preview QA 대기
 
-- **한 일**: 세권 계층 · **경기=동서남북 합의** · 타 시도 **실제 분류 사례** 조사 후 제안표(강원 관행4·전북 공식 동부권·경북 3대문화권·경남 남해안/지리산/낙동 등) · [`korea-scenic-mid-cluster-plan.md`](./korea-scenic-mid-cluster-plan.md) §2.2~
-- **남은 일**: 타 시도 제안 합의 · #112 SSOT·칩 UI
+- **한 일**: 세권표 합의분 SSOT·generate/audit · 명소 파드 `ccluster` 칩·기본값·hub 경로 시드 · QA `/qa/scenic-mid-cluster`
+- **VERIFY**: `audit/smoke:korea-scenic-clusters` · `smoke:korea-scenic-categories` · `smoke:korea-theme-cross-links` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-mid-cluster`
+- **Preview**: `https://days-git-cursor-scenic-mid-cluster-67a8-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: 「명소 세권(경기 동서남북 등) 칩」
+- **남은 일**: 사람 Preview QA (수도권→경기→북부 · 강원→영서)
 - **다음 채팅명**:
 
 ```
-테마여행 #112, 세권 칩 SSOT·UI
+테마여행 #113, 세권 칩 QA
 ```
+
+## 테마여행 #111, 명소 중분류 체계
+
+**상태**: feature `cursor/scenic-mid-cluster-67a8` · PR [#78](https://github.com/catgeot/Days/pull/78) · 표 합의 → #112 구현
+
+- **한 일**: 세권 계층 · 경기 동서남북 · 타 시도 실제 분류 제안표 합의
+- **다음**: #112 SSOT·UI
 
 ## 테마여행 #110, 분류칩 기본 중소수
 

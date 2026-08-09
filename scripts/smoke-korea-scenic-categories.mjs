@@ -119,8 +119,26 @@ assert(
     '강원 시도 1개 → area 기본 없음',
   );
   assert(
-    curatedGangwon.hubId === 'yangyang',
-    `강원 긴 목록 → 첫 소분류 양양 (got ${curatedGangwon.hubId})`,
+    curatedGangwon.clusterId === 'gw-yeongseo',
+    `강원 세권 기본=영서 (got ${curatedGangwon.clusterId})`,
+  );
+  assert(
+    curatedGangwon.hubId === 'hongcheon',
+    `강원 영서 긴 목록 → 첫 hub 홍천 (got ${curatedGangwon.hubId})`,
+  );
+  const {
+    listKoreaScenicClusterChips,
+  } = await import('../src/pages/Home/lib/koreaScenicSpots.js');
+  const ggClusters = listKoreaScenicClusterChips('수도권', '31');
+  assert(ggClusters.length === 4, `경기 세권=4 (got ${ggClusters.length})`);
+  assert(
+    ggClusters.map((c) => c.id).join(',') ===
+      'gg-north,gg-east,gg-west,gg-south',
+    '경기 세권 순서 북·동·서·남',
+  );
+  assert(
+    !ggClusters.some((c) => c.count > 50),
+    '경기 세권 단건 과다(<50) 방지',
   );
   const heritageCap = resolveDefaultHeritageChips('수도권');
   assert(

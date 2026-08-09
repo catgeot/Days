@@ -4,8 +4,13 @@
 import {
   countKoreaScenicSpotsByRegion,
   countKoreaScenicSpotsByTourArea,
+  listKoreaScenicClusterChips,
   listKoreaScenicHubChips,
 } from '../Home/lib/koreaScenicSpots.js';
+import {
+  areaHasScenicClusters,
+  resolveScenicClusterAreaCode,
+} from '../Home/lib/koreaScenicClusters.js';
 import {
   countKoreaHeritageScenicByRegion,
   countKoreaHeritageScenicByTourArea,
@@ -29,8 +34,8 @@ function chipLabelsEqual(a, b) {
 }
 
 /**
- * @param {{ code: string, label: string, count?: number }[]} chips
- * @returns {{ code: string, label: string, count?: number } | null}
+ * @param {{ code?: string, hubId?: string, id?: string, label: string, count?: number }[]} chips
+ * @returns {{ code?: string, hubId?: string, id?: string, label: string, count?: number } | null}
  */
 export function pickFirstChipNearTarget(chips) {
   const list = (chips || []).filter((c) => (Number(c.count) || 0) > 0);
@@ -85,9 +90,28 @@ export function listCountForRegionArea(
 }
 
 /**
+ * 세권 기본값 — 해당 시도(또는 단일 시도 권역)에 세권이 있으면 첫 칩.
+ * @param {string} region
+ * @param {string | null | undefined} areaCode
+ * @returns {string | null}
+ */
+export function pickDefaultClusterId(region, areaCode) {
+  const clusterArea = resolveScenicClusterAreaCode(region, areaCode);
+  if (!clusterArea || !areaHasScenicClusters(clusterArea)) return null;
+  const midChips = listAreaChipsWithCounts(
+    region,
+    countKoreaScenicSpotsByTourArea(region),
+  );
+  if (midChips.length > 1 && !areaCode) return null;
+  const chips = listKoreaScenicClusterChips(region, clusterArea);
+  return chips[0]?.id || null;
+}
+
+/**
  * 명소 여행지 소분류 — 목록이 soft max 초과일 때만.
  * @param {string} region
  * @param {string | null | undefined} areaCode
+ * @param {string | null | undefined} clusterId
  * @param {Record<string, number> | null | undefined} areaCounts
  * @param {Record<string, number> | null | undefined} regionCounts
  * @returns {string | null}
@@ -95,24 +119,51 @@ export function listCountForRegionArea(
 export function pickDefaultCuratedHubId(
   region,
   areaCode,
+  clusterId,
   areaCounts,
   regionCounts,
 ) {
+  // 구 시그니처 호환: (region, area, areaCounts, regionCounts)
+  if (
+    clusterId &&
+    typeof clusterId === 'object' &&
+    !Array.isArray(clusterId)
+  ) {
+    regionCounts = areaCounts;
+    areaCounts = clusterId;
+    clusterId = null;
+  }
+
   const midChips = listAreaChipsWithCounts(region, areaCounts);
   const hasMidRow = midChips.length > 1;
   if (hasMidRow && !areaCode) return null;
-  const n = listCountForRegionArea(
-    region,
-    areaCode,
-    areaCounts,
-    regionCounts,
-  );
+
+  const clusterArea = resolveScenicClusterAreaCode(region, areaCode);
+  const hasClusterRow = areaHasScenicClusters(clusterArea);
+  if (hasClusterRow && !clusterId) return null;
+
+  let n;
+  if (clusterId && clusterArea) {
+    const chip = listKoreaScenicClusterChips(region, clusterArea).find(
+      (c) => c.id === clusterId,
+    );
+    n = Number(chip?.count) || 0;
+  } else {
+    n = listCountForRegionArea(
+      region,
+      areaCode,
+      areaCounts,
+      regionCounts,
+    );
+  }
   if (n <= DEFAULT_LIST_SOFT_MAX) return null;
 
   const hubs = (
-    hasMidRow
-      ? listKoreaScenicHubChips(region, areaCode)
-      : listKoreaScenicHubChips(region, null)
+    hasClusterRow
+      ? listKoreaScenicHubChips(region, clusterArea, clusterId)
+      : hasMidRow
+        ? listKoreaScenicHubChips(region, areaCode)
+        : listKoreaScenicHubChips(region, null)
   ).filter((chip) => (chip.count || 0) > 0);
 
   const parentLabel =
@@ -162,6 +213,7 @@ export function pickDefaultHeritageCategory(region, areaCode, listCount) {
  * @param {string} region
  * @returns {{
  *   areaCode: string | null,
+ *   clusterId: string | null,
  *   hubId: string | null,
  * }}
  */
@@ -169,13 +221,15 @@ export function resolveDefaultCuratedChips(region) {
   const areaCounts = countKoreaScenicSpotsByTourArea(region);
   const regionCounts = countKoreaScenicSpotsByRegion();
   const areaCode = pickDefaultAreaCode(region, areaCounts);
+  const clusterId = pickDefaultClusterId(region, areaCode);
   const hubId = pickDefaultCuratedHubId(
     region,
     areaCode,
+    clusterId,
     areaCounts,
     regionCounts,
   );
-  return { areaCode, hubId };
+  return { areaCode, clusterId, hubId };
 }
 
 /**
@@ -195,7 +249,6 @@ export function resolveDefaultHeritageChips(region) {
     areaCounts,
     regionCounts,
   );
-  // 시도 필터 후 실제 건수(미매핑 제외)로 한 번 더 확인
   const scoped = listKoreaHeritageScenic({
     region,
     areaCode: areaCode || null,
@@ -244,7 +297,6 @@ export function resolveDefaultTourCatChips(cat1, cat2, cat3, chipCounts) {
   let changed = false;
 
   if (!nextCat2) {
-    // 중분류는 첫 칩(수량>0) — 긴 목록이면 아래에서 소분류로 좁힘
     const pick = listTourAttractionCat2(cat1).find(
       (c) => (Number(cat2Counts[c.code]) || 0) > 0,
     );

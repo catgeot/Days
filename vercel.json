@@ -36,6 +36,11 @@
       "permanent": false
     },
     {
+      "source": "/qa/scenic-mid-cluster",
+      "destination": "https://days-git-cursor-scenic-mid-cluster-67a8-catgeots-projects.vercel.app/korea/theme/scenic",
+      "permanent": false
+    },
+    {
       "source": "/qa/scenic-default-chip",
       "destination": "https://days-git-cursor-scenic-default-chip-6098-catgeots-projects.vercel.app/korea/theme/scenic",
       "permanent": false
