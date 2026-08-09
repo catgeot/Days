@@ -4,7 +4,7 @@
 
 ## 테마여행 #89, 네이버 검색 쿼리
 
-**상태**: feature `cursor/scenic-food-naver-link-b366` · PR [#76](https://github.com/catgeot/Days/pull/76) · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-food-naver-link-b366` · PR [#76](https://github.com/catgeot/Days/pull/76) · tip `e79b5a1a` · Preview 사람 QA 대기
 
 - **한 일**: 네이버 쿼리 분기 — **맛집만 지역+상호** · 관광지·명소·명승·레포츠·문화는 **고유명만**
 - **VERIFY**: `npm run build`
