@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 82,
-  sessionPhase: '선정 hub 시도 색인',
-  branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?region=%EC%88%98%EB%8F%84%EA%B6%8C&area=31',
-  qaShareSlug: 'scenic-hub-fill',
+  sessionNo: 89,
+  sessionPhase: '네이버 검색 쿼리',
+  branch: 'cursor/scenic-food-naver-link-b366',
+  previewPath: '/korea/theme/scenic',
+  qaShareSlug: 'scenic-food-naver',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,62 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-naver-query-89',
+    session: '테마여행 #89, 네이버 검색 쿼리',
+    title: '명소는 고유명 · 맛집만 지역+상호',
+    detail:
+      '네이버 검색 쿼리를 나눴습니다. 관광지·명소·명승·레포츠·문화는 이름만, 맛집만 지역+상호로 검색해 플레이스/본문 직행이 잘 되게 했습니다. Preview에서 명소·맛집 각각 검색 결과를 비교해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-naver-expand-88',
+    session: '테마여행 #88, 네이버 링크 확장',
+    title: '레포츠·관광지·문화에도 네이버 칩',
+    detail:
+      '명승·관광지·레포츠·문화·맛집 상세에 동일 위치(개요 아래·주소 위)로 「네이버 상세정보 보기」를 넣었습니다. Preview에서 주변 관광지·레포츠·문화 상세에도 칩이 보이는지 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-naver-pos-87',
+    session: '테마여행 #87, 네이버 버튼 위치',
+    title: '개요 아래·주소 위로 이동',
+    detail:
+      '네이버 상세정보 보기 버튼을 개요 바로 아래·주소 위로 옮겨, 주소·문의·영업시간 흐름을 끊지 않게 했습니다. Preview에서 맛집 상세 순서를 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-naver-copy-86',
+    session: '테마여행 #86, 네이버 문구·위치',
+    title: '네이버 상세정보 보기 · 전화 아래',
+    detail:
+      '버튼 문구를 「네이버 상세정보 보기」로 바꾸고, 상세 본문에서 전화번호 바로 아래로 옮겼습니다. Preview에서 맛집 상세 전화→네이버 칩 순서를 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-naver-compact-85',
+    session: '테마여행 #85, 네이버 버튼 컴팩트',
+    title: '네이버로 이동 버튼 축소',
+    detail:
+      '네이버 이동 버튼을 한 줄 칩(N · 네이버로 이동 · 외부아이콘)으로 줄였습니다. Preview에서 맛집 상세 본문 버튼 크기를 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-naver-btn-84',
+    session: '테마여행 #84, 네이버 이동 버튼',
+    title: '네이버로 이동 CTA 버튼',
+    detail:
+      '맛집 상세의 네이버 링크를 텍스트 링크에서 「N · 네이버로 이동 · 새 탭에서 네이버 검색」 CTA 버튼으로 바꿨습니다. Preview에서 주변 맛집 상세의 초록 버튼을 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-food-naver-83',
+    session: '테마여행 #83, 맛집 네이버 링크',
+    title: '맛집 상세 → 네이버에서 보기',
+    detail:
+      '명승·축제 연계 맛집 상세 본문에 지역+상호 네이버 검색 링크(「네이버에서 보기」)를 넣었습니다. Preview에서 명승 상세→주변 맛집→상세 본문의 네이버 링크를 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-08-scenic-area-index-82',
     session: '테마여행 #82, 선정 hub 시도 색인',

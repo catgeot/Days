@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'scenic-food-naver',
+    label: '맛집 상세 네이버 링크',
+    branch: 'cursor/scenic-food-naver-link-b366',
+    destination:
+      'https://days-git-cursor-scenic-food-naver-link-b366-catgeots-projects.vercel.app/korea/theme/scenic',
+    active: true,
+  },
+  {
     slug: 'scenic-hub-fill',
     label: '선정 hub 시도 색인·분류칩',
     branch: 'cursor/scenic-yangyang-b772',
