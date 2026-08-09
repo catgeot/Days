@@ -375,11 +375,16 @@ export async function fetchKoreaTourAttractions(opts = {}) {
   return { spots, count: totalCount ?? spots.length, error: null };
 }
 
-/** 내 주변 bbox 후보 상한 — 거리순으로 자른 뒤 limit 적용 */
-const NEAR_BBOX_FETCH_CAP = 500;
+/**
+ * 내 주변 bbox 페이지·상한.
+ * 단일 limit(구 500)이면 서울·화천·양구처럼 bbox 후보가 많을 때
+ * DB 앞쪽만 가져와 관내 최근접이 샘플에서 빠진다 → range 페이지네이션.
+ */
+const NEAR_BBOX_PAGE = 1000;
+const NEAR_BBOX_FETCH_CAP = 3000;
 
 /**
- * 좌표 기준 주변 type12 (bbox → 거리순).
+ * 좌표 기준 주변 type12 (bbox 전수 → 거리순).
  * 권역 목록 샘플 후 거리 필터하면 화천처럼 관내·최근접이 빠질 수 있어 별도 경로.
  *
  * @param {{
@@ -409,31 +414,39 @@ export async function fetchKoreaTourAttractionsNear(opts = {}) {
   const cos = Math.cos((lat * Math.PI) / 180);
   const dLng = radiusKm / (111 * Math.max(Math.abs(cos), 0.2));
 
-  let q = supabase
-    .from('tourapi_attraction')
-    .select(LIST_SELECT)
-    .eq('active', true)
-    .eq('content_type_id', '12')
-    .gte('mapy', lat - dLat)
-    .lte('mapy', lat + dLat)
-    .gte('mapx', lng - dLng)
-    .lte('mapx', lng + dLng)
-    .limit(NEAR_BBOX_FETCH_CAP);
+  /** @type {Record<string, unknown>[]} */
+  const rows = [];
+  for (let from = 0; from < NEAR_BBOX_FETCH_CAP; from += NEAR_BBOX_PAGE) {
+    const to = Math.min(from + NEAR_BBOX_PAGE, NEAR_BBOX_FETCH_CAP) - 1;
+    let q = supabase
+      .from('tourapi_attraction')
+      .select(LIST_SELECT)
+      .eq('active', true)
+      .eq('content_type_id', '12')
+      .gte('mapy', lat - dLat)
+      .lte('mapy', lat + dLat)
+      .gte('mapx', lng - dLng)
+      .lte('mapx', lng + dLng)
+      .range(from, to);
 
-  if (cat3) q = q.eq('cat3', cat3);
-  else if (cat2) q = q.eq('cat2', cat2);
-  else if (cat1) q = q.eq('cat1', cat1);
+    if (cat3) q = q.eq('cat3', cat3);
+    else if (cat2) q = q.eq('cat2', cat2);
+    else if (cat1) q = q.eq('cat1', cat1);
 
-  const { data, error } = await q;
-  if (error) {
-    console.warn('[koreaTourAttractions] near', error.message || error);
-    return { spots: [], count: 0, error: error.message || String(error) };
+    const { data, error } = await q;
+    if (error) {
+      console.warn('[koreaTourAttractions] near', error.message || error);
+      return { spots: [], count: 0, error: error.message || String(error) };
+    }
+    const batch = data || [];
+    rows.push(...batch);
+    if (batch.length < NEAR_BBOX_PAGE) break;
   }
 
   const r2 = radiusKm * radiusKm;
   /** @type {{ spot: object, distKm: number }[]} */
   const scored = [];
-  for (const row of data || []) {
+  for (const row of rows) {
     const spot = mapTourAttractionRow(row);
     if (!spot || spot.lat == null || spot.lng == null) continue;
     const dy = (spot.lat - lat) * 111;

@@ -2,6 +2,24 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
+## 테마여행 #114, 내주변 양구 관내 누락
+
+**상태**: feature `cursor/scenic-nearby-yanggu-7658` · Preview QA 대기
+
+- **증상**: 양구 「내 주변」관광지에서 관내 제외된 것처럼 인제 등이 먼저 노출
+- **원인**: bbox 후보 806건인데 `limit 500`만 가져와 거리순 전에 관내 누락
+- **한 일**: `fetchKoreaTourAttractionsNear` range 페이지네이션(페이지 1000·상한 3000) · smoke LIVE 양구 관내 · `/qa/scenic-nearby` Preview 재연결
+- **VERIFY**: `smoke:korea-scenic-nearby` (LIVE 양구 양구향교 0.2km) · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-nearby`
+- **Preview**: `https://days-git-cursor-scenic-nearby-yanggu-7658-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: 「내 주변 관광지 — bbox 페이지네이션」
+- **남은 일**: 사람 Preview QA (양구 위치 → 관광지 최근접이 관내)
+- **다음 채팅명**:
+
+```
+테마여행 #115, 내주변 양구 QA
+```
+
 ## 테마여행 #113, 세권 칩 메인 반영 전 점검
 
 **상태**: feature `cursor/scenic-mid-cluster-67a8` · PR [#78](https://github.com/catgeot/Days/pull/78) · tip `54c6b4ed` · **기술 GO · 사람 Preview 확인 후 merge**
