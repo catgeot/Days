@@ -185,7 +185,10 @@ assert.equal(
 const goseongCurated = filterScenicSpotsByQuery(curated, '고성');
 const goseongHeritage = filterScenicSpotsByQuery(heritage, '고성');
 assert.ok(goseongCurated.length >= 1, '고성 curated ≥1 (강원·경상 hub)');
-assert.ok(goseongHeritage.length >= 2, '고성 heritage ≥2');
+assert.ok(
+  goseongHeritage.length >= 1,
+  '고성 heritage ≥1 (고성군 주소 · blurb 오탐 제외)',
+);
 assert.ok(
   new Set(goseongHeritage.map((s) => s.region)).size === 1,
   '고성 heritage single region → no region chip row',
@@ -213,6 +216,35 @@ assert(
 assert.ok(
   filterScenicSpotsByQuery(curated, '경복궁').some((s) => s.region === '수도권'),
   '경복궁 matches include 수도권',
+);
+
+// 주남: 2글자 본명 선두 일치 · 제주남쪽/광주남한 오탐 제외
+const junamHits = filterScenicSpotsByQuery(curated, '주남');
+assert.ok(
+  junamHits.some((s) => s.id === 'changwon-junam-reservoir'),
+  '주남 → 창원 주남저수지',
+);
+assert.ok(
+  !junamHits.some((s) => String(s.name || '').includes('천지연')),
+  '주남 ≠ 천지연(제주남쪽 blurb 오탐)',
+);
+assert.ok(
+  !junamHits.some((s) => String(s.name || '').includes('남한산성')),
+  '주남 ≠ 남한산성(광주남한 오탐)',
+);
+assert.ok(
+  filterScenicSpotsByQuery(curated, '주남 저수지').some(
+    (s) => s.id === 'changwon-junam-reservoir',
+  ),
+  '주남 저수지 → 창원 주남저수지',
+);
+assert.ok(
+  pageSrc.includes('pickBestRegionByCounts'),
+  'spot region pick uses max-count helper',
+);
+assert.ok(
+  pageSrc.includes('최다 권역'),
+  'pickRegionFromSpotMatches comment mentions max-count',
 );
 
 const libSrc = readFileSync(

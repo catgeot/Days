@@ -518,8 +518,12 @@ function pickRegionFromSpotMatches(matches, fallback) {
   for (const s of matches || []) {
     if (counts[s.region] != null) counts[s.region] += 1;
   }
-  const best = SCENIC_REGION_ORDER.find((r) => (counts[r] || 0) > 0);
-  return best || resolveRegion(fallback);
+  // 첫 권역이 아니라 최다 권역 (주남→제주남쪽 오탐으로 제주/수도권이 잡히던 것 방지)
+  return pickBestRegionByCounts(
+    SCENIC_REGION_ORDER,
+    counts,
+    resolveRegion(fallback),
+  );
 }
 
 export default function KoreaThemeScenicPage() {

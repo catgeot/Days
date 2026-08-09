@@ -2,6 +2,16 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
+## 테마여행 #116, 「주남」검색 오탐
+
+**상태**: feature `cursor/scenic-contentid-f876` · PR [#81](https://github.com/catgeot/Days/pull/81) · Preview QA 대기
+
+- **증상**: 「주남」검색 시 주남저수지 미노출 · 「주남 저수지」는 OK
+- **원인**: 2글자가 blurb「제주남쪽」·이름「광주남한」에 부분일치 → 권역이 제주/수도권으로 치우침
+- **한 일**: `scenicSearch` 2글자=본명 선두·시군 주소 · `pickRegionFromSpotMatches` 최다 권역 · smoke 「주남」
+- **VERIFY**: `smoke:korea-scenic-search` · `npm run build`
+- **다음 채팅명**: (contentId 잔여는 아래 #116 절)
+
 ## 테마여행 #116, 잔여 contentId 보강
 
 **상태**: feature `cursor/scenic-contentid-f876` · PR [#81](https://github.com/catgeot/Days/pull/81) · tip `19a386a4` · Preview QA 대기  

@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-09-scenic-search-junam-116',
+    session: '테마여행 #116, 잔여 contentId 보강',
+    title: '「주남」검색 → 주남저수지',
+    detail:
+      '2글자 검색이 「제주남쪽」「광주남한」에 걸려 권역이 제주/수도권으로 가며 주남저수지가 안 보이던 문제를 고쳤습니다. 본명 선두·시군 주소 위주로 맞추고, Preview에서 「주남」검색 시 창원 주남저수지가 나오는지 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
     id: '2026-08-09-scenic-contentid-116',
     session: '테마여행 #116, 잔여 contentId 보강',
     title: '잔여 contentId 18곳 추가 채움',
