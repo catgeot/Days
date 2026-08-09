@@ -533,6 +533,26 @@ function foodPlaceLabel(spot) {
   return String(spot?.locality || spot?.region || '').trim();
 }
 
+/**
+ * 맛집 → 네이버 검색(지역+상호). place id 식당홈은 TourAPI에 없어 검색으로 연결.
+ * @param {{ name?: string, locality?: string, region?: string } | null} spot
+ * @param {{ addr1?: string, addr2?: string } | null} [detail]
+ */
+function restaurantNaverSearchUrl(spot, detail) {
+  const name = String(spot?.name || '').trim();
+  if (!name) return '';
+  const locality = String(spot?.locality || '').trim();
+  const region = String(spot?.region || '').trim();
+  const addrHint = String(detail?.addr1 || '')
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .join(' ');
+  const place = locality || addrHint || region;
+  const q = [place, name].filter(Boolean).join(' ');
+  return `https://search.naver.com/search.naver?query=${encodeURIComponent(q)}`;
+}
+
 function toTypedModalSpot(spot, contentTypeId) {
   if (!spot) return null;
   const place = foodPlaceLabel(spot);
@@ -1093,6 +1113,11 @@ export default function ThemeSpotDetailModal({
     return [a1, a2].filter(Boolean).join(' ');
   }, [detail?.addr1, detail?.addr2]);
 
+  const naverRestaurantUrl = useMemo(
+    () => (isRestaurant ? restaurantNaverSearchUrl(spot, detail) : ''),
+    [isRestaurant, spot, detail],
+  );
+
   const tel = String(detail?.tel || '').trim();
 
   const introRows = useMemo(() => {
@@ -1380,6 +1405,19 @@ export default function ThemeSpotDetailModal({
                     </a>
                   </DetailRow>
                 ) : null}
+                {naverRestaurantUrl ? (
+                  <DetailRow label="네이버">
+                    <a
+                      href={naverRestaurantUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex max-w-full min-w-0 items-center gap-1 font-semibold text-amber-900 underline-offset-2 hover:underline break-keep break-words"
+                    >
+                      네이버에서 보기
+                      <ExternalLink size={13} aria-hidden="true" />
+                    </a>
+                  </DetailRow>
+                ) : null}
                 {introRows.map((row) => (
                   <DetailRow key={row.key} label={row.label}>
                     {row.text}
@@ -1394,6 +1432,18 @@ export default function ThemeSpotDetailModal({
                   </DetailRow>
                 ))}
               </dl>
+            ) : null}
+
+            {(detailLoading || !detail) && naverRestaurantUrl ? (
+              <a
+                href={naverRestaurantUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:border-amber-300 transition-colors"
+              >
+                <ExternalLink size={12} aria-hidden="true" />
+                네이버에서 보기
+              </a>
             ) : null}
 
             {galleryList.length > 0 ? (

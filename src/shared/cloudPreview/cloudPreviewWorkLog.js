@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 82,
-  sessionPhase: '선정 hub 시도 색인',
-  branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?region=%EC%88%98%EB%8F%84%EA%B6%8C&area=31',
-  qaShareSlug: 'scenic-hub-fill',
+  sessionNo: 83,
+  sessionPhase: '맛집 네이버 링크',
+  branch: 'cursor/scenic-food-naver-link-b366',
+  previewPath: '/korea/theme/scenic',
+  qaShareSlug: 'scenic-food-naver',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-food-naver-83',
+    session: '테마여행 #83, 맛집 네이버 링크',
+    title: '맛집 상세 → 네이버에서 보기',
+    detail:
+      '명승·축제 연계 맛집 상세 본문에 지역+상호 네이버 검색 링크(「네이버에서 보기」)를 넣었습니다. Preview에서 명승 상세→주변 맛집→상세 본문의 네이버 링크를 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-08-scenic-area-index-82',
     session: '테마여행 #82, 선정 hub 시도 색인',
