@@ -2,6 +2,22 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
+## 테마여행 #110, 분류칩 기본 중소수
+
+**상태**: feature `cursor/scenic-default-chip-6098` · Preview QA 대기
+
+- **한 일**: 명승 홈 기본값을 권역 전체(수도권 179) 대신 **첫 시도 중분류(서울)** 로 · 목록이 길면 소분류(~10건) · 명소·명승·관광지 파드 공통 · 같은 칩 재클릭으로 권역 전체 해제 방지
+- **VERIFY**: `smoke:korea-scenic-categories` · `smoke:korea-scenic-search` · `smoke:korea-theme-cross-links` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-default-chip`
+- **Preview**: `https://days-git-cursor-scenic-default-chip-6098-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: 「기본값=첫 중·소분류(~10건)」
+- **남은 일**: 사람 Preview QA (진입 시 서울·짧은 목록 · 강원→양양 · 관광지 종목 소분류)
+- **다음 채팅명**:
+
+```
+테마여행 #111, 분류칩 기본값 QA
+```
+
 ## 명승 분류칩 파드 분리
 
 **상태**: `main` tip `8eb63843` · `origin/main` push ✅ · 세션 종료
