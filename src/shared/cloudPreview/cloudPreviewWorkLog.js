@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 96,
+  sessionNo: 97,
   sessionPhase: '빈 hub 명소 보강',
   branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?hub=naju',
+  previewPath: '/korea/theme/scenic?hub=haenam',
   qaShareSlug: 'scenic-hub-fill',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-97',
+    session: '테마여행 #97, 빈 hub 명소 보강',
+    title: '해남·함평·익산·무안·무주 GATEO 선정 전수',
+    detail:
+      '큐 R01 전라 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(해남4·함평4·익산4·무안4·무주4 · Tour contentId 13/20 · 썸네일 549/567). 전북·전남 시도 색인에도 동시 등록했습니다. Tour LIVE 429로 locationBasedList·DB·related 폴백을 썼습니다. Preview에서 /korea/theme/scenic?hub=haenam · ?hub=hampyeong · ?hub=iksan · ?hub=muan · ?hub=muju 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-hub-fill-r01-96',
     session: '테마여행 #96, 빈 hub 명소 보강',

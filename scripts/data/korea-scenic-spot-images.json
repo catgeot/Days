@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-09T01:08:24.448Z",
-    "count": 529,
+    "updatedAt": "2026-08-09T01:18:36.928Z",
+    "count": 549,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -534,6 +534,26 @@
     "gimje-old-downtown": "https://tong.visitkorea.or.kr/cms/resource/00/3556600_image2_1.jpg",
     "moaksan": "https://tong.visitkorea.or.kr/cms/resource/09/3055809_image2_1.jpg",
     "byeokgolje": "https://tong.visitkorea.or.kr/cms/resource/30/3363530_image2_1.JPG",
-    "purple-island": "https://tong.visitkorea.or.kr/cms/resource/96/3558996_image2_1.jpg"
+    "purple-island": "https://tong.visitkorea.or.kr/cms/resource/96/3558996_image2_1.jpg",
+    "gocheonam-bird-sanctuary": "https://tong.visitkorea.or.kr/cms/resource/62/3381362_image2_1.JPG",
+    "daeheungsa": "https://tong.visitkorea.or.kr/cms/resource/83/3564383_image2_1.jpg",
+    "duryunsan": "https://tong.visitkorea.or.kr/cms/resource/83/3564383_image2_1.jpg",
+    "dolmeori-beach": "https://tong.visitkorea.or.kr/cms/resource/55/3381355_image2_1.JPG",
+    "yongcheonsa-hampyeong": "https://tong.visitkorea.or.kr/cms/resource/70/3061070_image2_1.jpg",
+    "hampyeong-expo-park": "https://tong.visitkorea.or.kr/cms/resource/05/3536105_image2_1.jpg",
+    "hampyeong-eco-park": "https://tong.visitkorea.or.kr/cms/resource/05/3536105_image2_1.jpg",
+    "mireuksa-temple-site": "https://tong.visitkorea.or.kr/cms/resource/79/3361079_image2_1.JPG",
+    "wanggung-ri-historic-site": "https://tong.visitkorea.or.kr/cms/resource/27/3564127_image2_1.jpg",
+    "ungpo-tourist-site": "https://tong.visitkorea.or.kr/cms/resource/54/3564054_image2_1.jpg",
+    "doripo-beach": "https://tong.visitkorea.or.kr/cms/resource/51/3535751_image2_1.jpg",
+    "muan-hwangto-tidal-flat-land": "https://tong.visitkorea.or.kr/cms/resource/91/3535791_image2_1.jpg",
+    "beopcheonsa-muan": "https://tong.visitkorea.or.kr/cms/resource/04/3381504_image2_1.JPG",
+    "hoesan-white-lotus-pond": "https://tong.visitkorea.or.kr/cms/resource/09/3535609_image2_1.jpg",
+    "deogyusan-national-park": "https://tong.visitkorea.or.kr/cms/resource/44/3533344_image2_1.jpg",
+    "muju-gucheondong": "https://tong.visitkorea.or.kr/cms/resource/33/3304433_image2_1.jpg",
+    "muju-deogyusan-resort": "https://tong.visitkorea.or.kr/cms/resource/44/3533344_image2_1.jpg",
+    "haenam-dinosaur-museum": "https://tong.visitkorea.or.kr/cms/resource/45/3564445_image2_1.jpg",
+    "taekwondowon": "https://tong.visitkorea.or.kr/cms/resource/33/3304433_image2_1.jpg",
+    "hamrasan": "https://tong.visitkorea.or.kr/cms/resource/58/3578358_image2_1.jpg"
   }
 }

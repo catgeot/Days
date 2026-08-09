@@ -2,21 +2,33 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
+## 테마여행 #97, 빈 hub 명소 보강
+
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip _(push 후)_ · Preview 사람 QA 대기
+
+- **한 일**: 큐 R01 전라 — 해남4·함평4·익산4·무안4·무주4 **전수** GATEO 선정 · Tour contentId 13/20 · 썸네일 549/567 · 전북·전남 시도 색인 · Tour LIVE 429 → locationBasedList·DB·related 폴백 · 큐 잔여 32
+- **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
+- **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=haenam` · `?hub=hampyeong` · `?hub=iksan` · `?hub=muan` · `?hub=muju`
+- **작업 로그**: 「해남·함평·익산·무안·무주 GATEO 선정 전수」
+- **남은 일**: 큐 R01 잔여(영암) + 경상(거창·울주…) 전수 · 사람 Preview QA
+- **다음 채팅명**:
+
+```
+테마여행 #98, 빈 hub 명소 보강
+```
+
 ## 테마여행 #96, 빈 hub 명소 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `f6103bec` · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `f6103bec` · ✅ #97 해남·함평·익산·무안·무주
 
 - **한 일**: 큐 R01 전라 — 나주5·신안5·순창5·영광5·김제4 **전수** GATEO 선정 · Tour contentId 12/24 · 썸네일 529/547 · 전북·전남 시도 색인 · Tour LIVE 검색 공백 → DB·related 폴백 · 큐 잔여 37
 - **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
 - **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=naju` · `?hub=sinan` · `?hub=sunchang` · `?hub=yeonggwang` · `?hub=gimje`
 - **작업 로그**: 「나주·신안·순창·영광·김제 GATEO 선정 전수」
-- **남은 일**: 큐 R01 전라 잔여(해남·함평·익산·무안·무주…) 전수 · 사람 Preview QA
-- **다음 채팅명**:
-
-```
-테마여행 #97, 빈 hub 명소 보강
-```
+- **남은 일**: ✅ #97 해남·함평·익산·무안·무주 전수 · 사람 Preview QA
+- **다음 채팅명**: `테마여행 #97, 빈 hub 명소 보강` → 완료(위 #97 절)
 
 ## 테마여행 #95, 빈 hub 명소 보강
 

@@ -212,6 +212,13 @@ const RELATED_IMAGE_CONTENT_IDS = {
   'chilsan-tower': '2751332', // 백암해안전망대 — 칠산타워 Tour type12 부재 시
   'gimje-old-downtown': '1599176', // 김제동헌 — 구도심 Tour type12 부재 시
   byeokgolje: '228895', // 김제평야 — 벽골제 Tour type12 부재 시
+  daeheungsa: '126241', // 두륜산도립공원 — 대흥사 Tour type12 본명 부재 시(대흥사길)
+  'hampyeong-expo-park': '129235', // 함평자연생태공원 — 엑스포공원 Tour type12 부재 시
+  'mireuksa-temple-site': '1314389', // 미륵사지 당간지주 — 미륵사지 본체 Tour 부재 시
+  'ungpo-tourist-site': '1935998', // 산들강웅포마을 — 웅포관광지 Tour type12 부재 시
+  hamrasan: '1046086', // 함라산길 — 함라산 Tour type12 부재 시
+  'muju-deogyusan-resort': '126238', // 덕유산국립공원 — 리조트 Tour type12 부재 시
+  taekwondowon: '127031', // 무주 구천동 33경 — 태권도원 Tour type12 부재 시
 };
 
 async function mapPool(items, worker, size) {
