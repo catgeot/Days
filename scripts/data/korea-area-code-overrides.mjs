@@ -141,6 +141,10 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'gunwi',
         'cheongdo',
         'gumi',
+        'uiseong',
+        'yecheon',
+        'yeongcheon',
+        'yeongju',
       ],
     },
     36: {
@@ -161,6 +165,7 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'haman',
         'miryang',
         'sacheon',
+        'changnyeong',
       ],
     },
     37: {

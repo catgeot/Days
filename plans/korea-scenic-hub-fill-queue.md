@@ -1,7 +1,7 @@
 # GATEO 선정 명소 — 권역·시군 hub 보강 큐
 
 **생성**: `npm run report:korea-scenic-empty-hubs -- --write-queue` (이 파일 덮어씀)
-**스냅샷**: 빈 hub **17** · 선정 hub **152** · maxOrder **6480**
+**스냅샷**: 빈 hub **12** · 선정 hub **157** · maxOrder **6720**
 
 ## 사용법
 
@@ -19,20 +19,15 @@
 
 | R | 워커A | 워커B | 권역 | 상태 |
 |---|-------|-------|------|------|
-| **R01** | `uiseong` · `yecheon` · `yeongcheon` · `yeongju` · `changnyeong` | `cheongsong` · `chilgok` · `dokdo` · `gimcheon` · `goryeong` | 경상 | ⬜ |
-| **R02** | `gwangyang` · `gyeongsan` · `sancheong` · `seongju` · `uiryeong` | `yeongdeok` · `yeongyang` | 경상 | ⬜ |
+| **R01** | `cheongsong` · `chilgok` · `dokdo` · `gimcheon` · `goryeong` | `gwangyang` · `gyeongsan` · `sancheong` · `seongju` · `uiryeong` | 경상 | ⬜ |
+| **R02** | `yeongdeok` · `yeongyang` | — | 경상 | ⬜ |
 
-**합계**: 2 라운드 · hub 17.
+**합계**: 2 라운드 · hub 12.
 
 ## 권역별 잔여
 
-### 경상 (17)
+### 경상 (12)
 
-- `uiseong` 의성 — attr 5 · Tour contentId 0
-- `yecheon` 예천 — attr 5 · Tour contentId 0
-- `yeongcheon` 영천 — attr 5 · Tour contentId 0
-- `yeongju` 영주 — attr 5 · Tour contentId 0
-- `changnyeong` 창녕 — attr 4 · Tour contentId 0
 - `cheongsong` 청송 — attr 4 · Tour contentId 0
 - `chilgok` 칠곡 — attr 4 · Tour contentId 0
 - `dokdo` 독도 — attr 4 · Tour contentId 0

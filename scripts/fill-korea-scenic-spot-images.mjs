@@ -249,6 +249,21 @@ const RELATED_IMAGE_CONTENT_IDS = {
   'sacheon-nosan-park': '2785763', // 삼천포 팔포항 — 노산공원 Tour type12 부재 시
   'samcheonpo-bridge': '127181', // 삼천포유람선 — 삼천포대교 Tour type12 부재 시
   'sacheon-waryongsan': '2785763', // 삼천포 팔포항 — 와룡산 Tour firstimage 부재 시
+  gounsa: '2781613', // 산운마을 — 고운사 Tour type12 부재 시(의성)
+  geumseongsan: '2781613', // 산운마을 — 금성산 Tour type12 부재 시(의성 금성)
+  'uiseong-garlic-theme-park': '126075', // 빙계계곡 — 마늘테마공원 Tour type12 부재 시
+  'yecheon-museum': '128135', // 초간정 — 예천박물관 Tour type12 부재 시
+  'yonggung-market': '126734', // 회룡포 — 용궁시장 Tour type12 부재 시(용궁면)
+  'starlight-theme-park-yeongcheon': '606248', // 보현산별빛테마마을 — 별빛테마공원 Tour 부재 시
+  'bohyeonsan-observatory': '606248', // 보현산별빛테마마을 — 천문대 Tour type12 부재 시
+  'museom-village': '2961095', // 선비세상 — 무섬마을 Tour type12 부재 시
+  buseoksa: '2961095', // 선비세상 — 부석사 Tour type12 부재 시(영주)
+  'seonbi-village': '2961095', // 선비세상 — 선비촌 Tour type12 부재 시
+  'sosu-seowon': '2961095', // 선비세상 — 소수서원 Tour type12 부재 시
+  'manokjeong-park-changnyeong': '2774931', // 우포출렁다리 — 만옥정공원 Tour 부재 시
+  'upo-wetland-changnyeong': '2774931', // 우포출렁다리 — 우포늪 Tour type12 부재 시
+  'hawangsan-changnyeong': '2774931', // 우포출렁다리 — 화왕산 Tour type12 부재 시
+  'changnyeong-museum': '2774931', // 우포출렁다리 — 창녕박물관 Tour 부재 시
 };
 
 async function mapPool(items, worker, size) {

@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-09T02:14:15.862Z",
+    "generatedAt": "2026-08-09T02:43:41.130Z",
     "areaCount": 17,
-    "hubLinkCount": 152,
+    "hubLinkCount": 157,
     "source": "scripts/data/korea-area-code-overrides.mjs"
   },
   "defaultHubIds": [
@@ -179,7 +179,11 @@
         "bonghwa",
         "gunwi",
         "cheongdo",
-        "gumi"
+        "gumi",
+        "uiseong",
+        "yecheon",
+        "yeongcheon",
+        "yeongju"
       ]
     },
     "36": {
@@ -199,7 +203,8 @@
         "goseongnam",
         "haman",
         "miryang",
-        "sacheon"
+        "sacheon",
+        "changnyeong"
       ]
     },
     "37": {
@@ -356,6 +361,10 @@
     "gunwi": "35",
     "cheongdo": "35",
     "gumi": "35",
+    "uiseong": "35",
+    "yecheon": "35",
+    "yeongcheon": "35",
+    "yeongju": "35",
     "tongyeong": "36",
     "jinju": "36",
     "geoje": "36",
@@ -371,6 +380,7 @@
     "haman": "36",
     "miryang": "36",
     "sacheon": "36",
+    "changnyeong": "36",
     "jeonju": "37",
     "gunsan": "37",
     "buan": "37",

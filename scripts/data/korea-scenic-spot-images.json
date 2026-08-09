@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-09T02:14:20.710Z",
-    "count": 611,
+    "updatedAt": "2026-08-09T02:49:11.092Z",
+    "count": 635,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -616,6 +616,30 @@
     "sacheon-nosan-park": "https://tong.visitkorea.or.kr/cms/resource/70/2797970_image2_1.JPG",
     "korea-aerospace-museum-sacheon": "https://tong.visitkorea.or.kr/cms/resource/29/3505529_image2_1.jpg",
     "samcheonpo-bridge": "https://tong.visitkorea.or.kr/cms/resource/11/3510411_image2_1.jpg",
-    "sacheon-waryongsan": "https://tong.visitkorea.or.kr/cms/resource/70/2797970_image2_1.JPG"
+    "sacheon-waryongsan": "https://tong.visitkorea.or.kr/cms/resource/70/2797970_image2_1.JPG",
+    "gounsa": "https://tong.visitkorea.or.kr/cms/resource/14/3406114_image2_1.jpg",
+    "geumseongsan": "https://tong.visitkorea.or.kr/cms/resource/14/3406114_image2_1.jpg",
+    "binggye-valley": "https://tong.visitkorea.or.kr/cms/resource/62/3542362_image2_1.jpg",
+    "sanun-village": "https://tong.visitkorea.or.kr/cms/resource/14/3406114_image2_1.jpg",
+    "uiseong-garlic-theme-park": "https://tong.visitkorea.or.kr/cms/resource/62/3542362_image2_1.jpg",
+    "yecheon-yongmunsa": "https://tong.visitkorea.or.kr/cms/resource/59/3542659_image2_1.jpg",
+    "yecheon-museum": "https://tong.visitkorea.or.kr/cms/resource/99/3542699_image2_1.jpg",
+    "yonggung-market": "https://tong.visitkorea.or.kr/cms/resource/07/3542707_image2_1.jpg",
+    "choganjeong-pavilion": "https://tong.visitkorea.or.kr/cms/resource/99/3542699_image2_1.jpg",
+    "hoeryongpo": "https://tong.visitkorea.or.kr/cms/resource/07/3542707_image2_1.jpg",
+    "starlight-theme-park-yeongcheon": "https://tong.visitkorea.or.kr/cms/resource/67/3590967_image2_1.jpg",
+    "bohyeonsan-observatory": "https://tong.visitkorea.or.kr/cms/resource/67/3590967_image2_1.jpg",
+    "eunhaesa-yeongcheon": "https://tong.visitkorea.or.kr/cms/resource/49/3034849_image2_1.jpg",
+    "imgogang-recreation-area": "https://tong.visitkorea.or.kr/cms/resource/41/3542441_image2_1.jpg",
+    "imgo-seowon-yeongcheon": "https://tong.visitkorea.or.kr/cms/resource/85/3542185_image2_1.jpg",
+    "museom-village": "https://tong.visitkorea.or.kr/cms/resource/51/3588851_image2_1.jpg",
+    "buseoksa": "https://tong.visitkorea.or.kr/cms/resource/51/3588851_image2_1.jpg",
+    "seonbi-village": "https://tong.visitkorea.or.kr/cms/resource/51/3588851_image2_1.jpg",
+    "sosu-seowon": "https://tong.visitkorea.or.kr/cms/resource/51/3588851_image2_1.jpg",
+    "yeongju-korean-seonbi-culture-village": "https://tong.visitkorea.or.kr/cms/resource/51/3588851_image2_1.jpg",
+    "manokjeong-park-changnyeong": "https://tong.visitkorea.or.kr/cms/resource/28/3537928_image2_1.jpg",
+    "upo-wetland-changnyeong": "https://tong.visitkorea.or.kr/cms/resource/28/3537928_image2_1.jpg",
+    "hawangsan-changnyeong": "https://tong.visitkorea.or.kr/cms/resource/28/3537928_image2_1.jpg",
+    "changnyeong-museum": "https://tong.visitkorea.or.kr/cms/resource/28/3537928_image2_1.jpg"
   }
 }
