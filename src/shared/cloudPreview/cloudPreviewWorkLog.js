@@ -6,7 +6,7 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 114,
+  sessionNo: 116,
   sessionPhase: '잔여 contentId 보강',
   branch: 'cursor/scenic-contentid-f876',
   previewPath: '/korea/theme/scenic',
@@ -23,6 +23,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-search-junam-116',
+    session: '테마여행 #116, 잔여 contentId 보강',
+    title: '「주남」검색 → 주남저수지',
+    detail:
+      '2글자 검색이 「제주남쪽」「광주남한」에 걸려 권역이 제주/수도권으로 가며 주남저수지가 안 보이던 문제를 고쳤습니다. 본명 선두·시군 주소 위주로 맞추고, Preview에서 「주남」검색 시 창원 주남저수지가 나오는지 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-contentid-116',
+    session: '테마여행 #116, 잔여 contentId 보강',
+    title: '잔여 contentId 18곳 추가 채움',
+    detail:
+      'alias·접미 비율·경남고성 주소 힌트·캠핑장/허브꼬리 오매칭 가드를 보강해 contentId 18곳 채움(627→645 · 잔여 null 75). 퍼플섬·주남저수지·제황산공원·고성공룡박물관·나로우주센터·칠곡보·부항댐·성밖숲 등. Preview에서 Tour LIVE 상세를 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-contentid-114',
     session: '테마여행 #114, 잔여 contentId 보강',
