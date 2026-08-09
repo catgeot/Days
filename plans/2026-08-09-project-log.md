@@ -2,6 +2,22 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
+## 테마여행 #117, 검색 아이콘 포커스
+
+**상태**: feature `cursor/scenic-search-focus-9792` · Preview QA 대기
+
+- **한 일**: 모바일 검색 아이콘 클릭 시 입력창 즉시 focus(명승 `ScenicPage` · 축제 `Korea/index`) · `/qa/scenic-search-focus`
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-search-focus`
+- **Preview**: `https://days-git-cursor-scenic-search-focus-9792-catgeots-projects.vercel.app/korea/theme/scenic` · `/korea`
+- **작업 로그**: 「검색 아이콘 → 입력창 즉시 포커스」
+- **남은 일**: 사람 Preview QA(좁은 폭 · 아이콘 → 커서/키보드)
+- **다음 채팅명**:
+
+```
+테마여행 #118, (다음 과제)
+```
+
 ## 테마여행 #116, 「주남」검색 오탐
 
 **상태**: feature `cursor/scenic-contentid-f876` · PR [#81](https://github.com/catgeot/Days/pull/81) · Preview QA 대기

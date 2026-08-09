@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'scenic-search-focus',
+    label: '검색 아이콘 즉시 포커스',
+    branch: 'cursor/scenic-search-focus-9792',
+    destination:
+      'https://days-git-cursor-scenic-search-focus-9792-catgeots-projects.vercel.app/korea/theme/scenic',
+    active: true,
+  },
+  {
     slug: 'scenic-food-naver',
     label: '맛집 상세 네이버 링크',
     branch: 'main',

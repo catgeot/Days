@@ -674,10 +674,19 @@ export default function KoreaFestivalHub() {
   );
   const userRegionOverrideRef = useRef(false);
   const mountLocTriedRef = useRef(false);
+  const mobileSearchInputRef = useRef(null);
   const mainScrollRef = useRef(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const themeAreaAppliedRef = useRef(false);
   const festivalQueryAppliedRef = useRef('');
+
+  useEffect(() => {
+    if (!searchOpen) return undefined;
+    const t = window.setTimeout(() => {
+      mobileSearchInputRef.current?.focus();
+    }, 50);
+    return () => window.clearTimeout(t);
+  }, [searchOpen]);
 
   useEffect(() => {
     if (themeAreaAppliedRef.current) return;
@@ -1598,6 +1607,7 @@ export default function KoreaFestivalHub() {
                   축제 검색
                 </label>
                 <input
+                  ref={mobileSearchInputRef}
                   id="korea-festival-search"
                   type="search"
                   value={searchDraft}

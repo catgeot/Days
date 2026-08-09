@@ -563,6 +563,7 @@ export default function KoreaThemeScenicPage() {
   const [searchDraft, setSearchDraft] = useState('');
   /** 확정된 검색어 — 입력창을 비워도 리스트 필터 유지 · 분류 칩으로 결과 분해 */
   const [searchApplied, setSearchApplied] = useState('');
+  const mobileSearchInputRef = useRef(null);
   const mainScrollRef = useRef(null);
   /** 분류칩 클릭 직후 목록 높이 변화로 스크롤이 튀지 않게 칩 위치 고정 */
   const chipScrollPinRef = useRef(null);
@@ -573,6 +574,13 @@ export default function KoreaThemeScenicPage() {
   const searchFilter = searchDraft.trim() || searchApplied.trim();
   const searchActive = searchFilter.length > 0;
   const [dbSearchFilter, setDbSearchFilter] = useState('');
+  useEffect(() => {
+    if (!searchOpen) return undefined;
+    const t = window.setTimeout(() => {
+      mobileSearchInputRef.current?.focus();
+    }, 50);
+    return () => window.clearTimeout(t);
+  }, [searchOpen]);
   useEffect(() => {
     if (!searchActive) {
       setDbSearchFilter('');
@@ -2609,6 +2617,7 @@ export default function KoreaThemeScenicPage() {
                   명소·명승 검색
                 </label>
                 <input
+                  ref={mobileSearchInputRef}
                   id="korea-scenic-search"
                   type="search"
                   value={searchDraft}
