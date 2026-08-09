@@ -2,6 +2,15 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
+## 홈 PC 명승·테마 카테고리 겹침 (main · 로컬)
+
+**상태**: `main` · 로컬 검증
+
+- **요청**: PROD main 홈에서 축제/명승 투톱과 테마 카테고리·하위칩 겹침 · 스크롤바 없이 · Windows Vite default export 오류
+- **한 일**: PC 카테고리 레일 `top-[14.5rem] justify-start`(하위칩 위로 밀림 방지, `overflow-y-auto` 없음) · `App.jsx`에서 `CloudPreviewWorkLog.jsx` 명시 import(Windows 대소문자 충돌)
+- **VERIFY**: `npm run build`
+- **QA**: 로컬 `npm run dev` → PC 폭 홈 → 테마 클릭 후 명승과 겹침·전체 스크롤바 없는지
+
 ## 테마여행 #89, 네이버 검색 쿼리
 
 **상태**: feature `cursor/scenic-food-naver-link-b366` · PR [#76](https://github.com/catgeot/Days/pull/76) · tip `e79b5a1a` · Preview 사람 QA 대기

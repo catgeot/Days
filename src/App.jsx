@@ -27,7 +27,7 @@ import Login from './shared/Auth/Login';
 import Signup from './shared/Auth/SignUp';
 import ForgotPassword from './shared/Auth/ForgotPassWord';
 import UpdatePassword from './shared/Auth/UpdatePassword';
-import CloudPreviewWorkLog from './shared/cloudPreview/CloudPreviewWorkLog';
+import CloudPreviewWorkLog from './shared/cloudPreview/CloudPreviewWorkLog.jsx';
 
 function RouteTracker() {
   const location = useLocation();

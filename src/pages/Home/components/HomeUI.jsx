@@ -101,7 +101,7 @@ const HomeUI = React.memo(({
           aria-hidden="true"
         />
 
-        <div className="md:col-span-2 flex-shrink-0 flex flex-col items-start gap-2 animate-fade-in-down pt-2 md:pl-2 pointer-events-auto relative z-50">
+        <div className="md:col-span-2 flex-shrink-0 flex flex-col items-start gap-2 animate-fade-in-down pt-2 md:pl-2 pointer-events-auto relative z-[60]">
           <div
             onClick={onLogoClick}
             className="cursor-pointer group"
@@ -320,8 +320,8 @@ const HomeUI = React.memo(({
       </div>
       )}
 
-      {/* PC 좌측 — 카테고리 + 나라 칩 + 권역 범례 */}
-      <div className="hidden md:flex fixed left-6 top-[calc(50%+2rem)] -translate-y-1/2 z-[55] flex-col gap-3 pointer-events-none animate-fade-in-right">
+      {/* PC 좌측 — 카테고리 + 나라 칩 + 권역 범례 (투톱 아래 상단 고정 · 하위칩은 아래로만 확장 · 스크롤바 없음) */}
+      <div className="hidden md:flex fixed left-6 top-[14.5rem] z-[55] flex-col justify-start gap-3 pointer-events-none animate-fade-in-right">
         {!isTourCinema && (
           <div
             className={`pointer-events-auto flex flex-row items-start gap-2 ${
