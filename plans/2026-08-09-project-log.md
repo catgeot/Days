@@ -4,7 +4,7 @@
 
 ## 테마여행 #117, 검색 아이콘 포커스
 
-**상태**: feature `cursor/scenic-search-focus-9792` · Preview QA 대기
+**상태**: feature `cursor/scenic-search-focus-9792` · PR [#82](https://github.com/catgeot/Days/pull/82) · tip `fa43852a` · Preview QA 대기
 
 - **한 일**: 모바일 검색 아이콘 클릭 시 입력창 즉시 focus(명승 `ScenicPage` · 축제 `Korea/index`) · `/qa/scenic-search-focus`
 - **VERIFY**: `npm run build`
