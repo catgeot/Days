@@ -4,11 +4,11 @@
 
 ## 테마여행 #111, 명소 중분류 체계
 
-**상태**: feature `cursor/scenic-mid-cluster-67a8` · 방안 문서 · **사람 합의 대기** (UI 미구현)
+**상태**: feature `cursor/scenic-mid-cluster-67a8` · PR [#78](https://github.com/catgeot/Days/pull/78) · **경기 동서남북 합의** · UI 미구현
 
-- **한 일**: 명소 칩 과다(경기 156·hub 31 등) 점검 → **세권** 계층 신설안 · 8개 시도 세권표(배타 커버 검증) · [`korea-scenic-mid-cluster-plan.md`](./korea-scenic-mid-cluster-plan.md)
-- **요지**: `권역→시도→세권→hub` · 세권당 3~7칩·15~35건 · 서울·광역시·제주는 세권 생략
-- **남은 일**: 라벨·묶음 합의 → #112 SSOT·칩 UI
+- **한 일**: 세권 계층 방안 · 일반 분류 조사 후 **경기=북·동·서·남 4세권**(31→4) 잠금 · [`korea-scenic-mid-cluster-plan.md`](./korea-scenic-mid-cluster-plan.md) §2.1
+- **경기 소속**: 북(고양·파주·의정부·양주·동두천·포천·연천) · 동(하남·남양주·구리·가평·양평·여주·이천·광주) · 서(김포·부천·광명·시흥·안산·화성·평택) · 남(수원·성남·용인·안양·군포·의왕·과천·오산·안성)
+- **남은 일**: 타 시도 세권 확정 · #112 SSOT·칩 UI
 - **다음 채팅명**:
 
 ```
