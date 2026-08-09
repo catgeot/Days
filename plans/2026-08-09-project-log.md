@@ -4,7 +4,7 @@
 
 ## 테마여행 #97, 빈 hub 명소 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip _(push 후)_ · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `d7d9c21b` · Preview 사람 QA 대기
 
 - **한 일**: 큐 R01 전라 — 해남4·함평4·익산4·무안4·무주4 **전수** GATEO 선정 · Tour contentId 13/20 · 썸네일 549/567 · 전북·전남 시도 색인 · Tour LIVE 429 → locationBasedList·DB·related 폴백 · 큐 잔여 32
 - **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `npm run build`
