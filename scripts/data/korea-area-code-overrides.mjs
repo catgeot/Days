@@ -124,6 +124,7 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'hongseong',
         'nonsan',
         'yesan',
+        'seocheon',
       ],
     },
     35: {
@@ -148,6 +149,7 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'namhae',
         'hadong',
         'hapcheon',
+        'hamyang',
       ],
     },
     37: {
@@ -161,6 +163,7 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'namwon',
         'wanju',
         'jangsu',
+        'gochang',
       ],
     },
     38: {
@@ -174,6 +177,8 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'gurye',
         'wando',
         'gokseong',
+        'gangjin',
+        'goheung',
       ],
     },
     39: { name: '제주', hubIds: ['jeju', 'seogwipo'] },

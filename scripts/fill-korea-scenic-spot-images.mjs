@@ -173,6 +173,21 @@ const RELATED_IMAGE_CONTENT_IDS = {
   'jangsu-nuri-park': '2787949', // 장수물빛공원 — 누리파크 Tour type12 부재 시
   'jangsu-horse-riding-ranch': '606203', // 논개생가마을 — 승마장 Tour type12 부재 시
   jangansan: '1623888', // 방화동자연휴양림 — 장안산 Tour type12 부재 시
+  'maryang-camellia-forest': '2782229', // 마량포구 — 마량리동백숲 Tour type12 부재 시
+  'munheon-seowon-seocheon': '1954666', // 서천향교 — 문헌서원 Tour type12 부재 시
+  'seocheon-specialty-market': '3036904', // 국립생태원에코리움 — 특화시장 Tour 부재 시
+  'hansan-mosi-center': '605616', // 달고개모시마을 — 한산모시관 Tour type12 부재 시
+  'gaudo-island': '126645', // 강진만 — 가우도 Tour type12 부재 시
+  'gangjin-bay-ecological-park': '126645', // 강진만 — 생태공원 Tour type12 부재 시
+  dasanchodang: '2515265', // 강진 백운동별서정원 — 다산초당 Tour type12 부재 시
+  'gochang-eupseong': '2690525', // 고창읍성 도예체험장 — 읍성 본체 Tour 부재 시
+  seonunsa: '126236', // 선운산 — 선운사 Tour type12 부재 시
+  'namyeol-sunrise-beach': '129097', // 남열마을 — 남열해돋이 해변 Tour 부재 시
+  'nokdong-port': '2674017', // 팔영대교 — 녹동항 Tour type12 부재 시
+  'sorokdo-island': '127799', // 다도해해상국립공원(고흥) — 소록도 Tour 부재 시
+  'naro-space-center': '2379568', // 고흥우주천문과학관 — 나로우주센터 Tour 부재 시
+  'sangrim-park': '893974', // 개평한옥마을 — 상림공원 Tour type12 부재 시
+  'hamyang-jianjae': '128629', // 오도재·지리산조망공원 — 지안재 Tour 부재 시
 };
 
 async function mapPool(items, worker, size) {

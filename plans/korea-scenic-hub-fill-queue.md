@@ -1,9 +1,9 @@
 # GATEO 선정 명소 — 권역·시군 hub 보강 큐
 
 **생성**: `npm run report:korea-scenic-empty-hubs -- --write-queue` (이 파일 덮어씀)
-**스냅샷**: 빈 hub **52** · 선정 hub **117** · maxOrder **4720**
+**스냅샷**: 빈 hub **47** · 선정 hub **122** · maxOrder **4980**
 
-**완료**: `#77`~`#92` · `#93` 연기·예산·완주·곡성·장수 전수 → 아래 표는 잔여 재번호.
+**완료**: `#77`~`#93` · `#94` 서천·강진·고창·고흥·함양 전수 → 아래 표는 잔여 재번호.
 
 ## 사용법
 
@@ -21,25 +21,19 @@
 
 | R | 워커A | 워커B | 권역 | 상태 |
 |---|-------|-------|------|------|
-| **R01** | `seocheon` · `gangjin` · `gochang` · `goheung` · `hamyang` | `hwasun` · `imsil` · `jangheung` · `jangseong` · `jindo` | 전라 | ⬜ |
-| **R02** | `naju` · `sinan` · `sunchang` · `yeonggwang` · `gimje` | `haenam` · `hampyeong` · `iksan` · `muan` · `muju` | 전라 | ⬜ |
-| **R03** | `yeongam` | — | 전라 | ⬜ |
-| **R04** | `geochang` · `ulju` · `gimhae` · `gunwi` · `yangsan` | `changwon` · `cheongdo` · `dalseong` · `gijang` · `goseongnam` | 경상 | ⬜ |
-| **R05** | `gumi` · `haman` · `miryang` · `sacheon` · `uiseong` | `yecheon` · `yeongcheon` · `yeongju` · `changnyeong` · `cheongsong` | 경상 | ⬜ |
-| **R06** | `chilgok` · `dokdo` · `gimcheon` · `goryeong` · `gwangyang` | `gyeongsan` · `sancheong` · `seongju` · `uiryeong` · `yeongdeok` | 경상 | ⬜ |
-| **R07** | `yeongyang` | — | 경상 | ⬜ |
+| **R01** | `hwasun` · `imsil` · `jangheung` · `jangseong` · `jindo` | `naju` · `sinan` · `sunchang` · `yeonggwang` · `gimje` | 전라 | ⬜ |
+| **R02** | `haenam` · `hampyeong` · `iksan` · `muan` · `muju` | `yeongam` | 전라 | ⬜ |
+| **R03** | `geochang` · `ulju` · `gimhae` · `gunwi` · `yangsan` | `changwon` · `cheongdo` · `dalseong` · `gijang` · `goseongnam` | 경상 | ⬜ |
+| **R04** | `gumi` · `haman` · `miryang` · `sacheon` · `uiseong` | `yecheon` · `yeongcheon` · `yeongju` · `changnyeong` · `cheongsong` | 경상 | ⬜ |
+| **R05** | `chilgok` · `dokdo` · `gimcheon` · `goryeong` · `gwangyang` | `gyeongsan` · `sancheong` · `seongju` · `uiryeong` · `yeongdeok` | 경상 | ⬜ |
+| **R06** | `yeongyang` | — | 경상 | ⬜ |
 
-**합계**: 7 라운드 · hub 52.
+**합계**: 6 라운드 · hub 47.
 
 ## 권역별 잔여
 
-### 전라 (21)
+### 전라 (16)
 
-- `seocheon` 서천 — attr 6 · Tour contentId 0
-- `gangjin` 강진 — attr 5 · Tour contentId 0
-- `gochang` 고창 — attr 5 · Tour contentId 0
-- `goheung` 고흥 — attr 5 · Tour contentId 0
-- `hamyang` 함양 — attr 5 · Tour contentId 0
 - `hwasun` 화순 — attr 5 · Tour contentId 0
 - `imsil` 임실 — attr 5 · Tour contentId 0
 - `jangheung` 장흥 — attr 5 · Tour contentId 0

@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-09T00:46:19.385Z",
-    "count": 454,
+    "updatedAt": "2026-08-09T00:55:17.543Z",
+    "count": 480,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -459,6 +459,32 @@
     "jangansan": "https://tong.visitkorea.or.kr/cms/resource/01/3555101_image2_1.jpg",
     "sejong-national-arboretum-yeongi": "https://tong.visitkorea.or.kr/cms/resource/89/4065589_image2_1.jpg",
     "bear-tree-park-yeongi": "https://tong.visitkorea.or.kr/cms/resource/36/4058636_image2_1.jpg",
-    "dongaksan": "https://tong.visitkorea.or.kr/cms/resource/93/1606693_image2_1.jpg"
+    "dongaksan": "https://tong.visitkorea.or.kr/cms/resource/93/1606693_image2_1.jpg",
+    "national-institute-of-ecology": "https://tong.visitkorea.or.kr/cms/resource/06/3483706_image2_1.jpg",
+    "maryang-camellia-forest": "https://tong.visitkorea.or.kr/cms/resource/68/3401268_image2_1.jpg",
+    "munheon-seowon-seocheon": "https://tong.visitkorea.or.kr/cms/resource/51/3339751_image2_1.jpg",
+    "seocheon-specialty-market": "https://tong.visitkorea.or.kr/cms/resource/06/3483706_image2_1.jpg",
+    "sinseongri-reed-field": "https://tong.visitkorea.or.kr/cms/resource/64/3533664_image2_1.jpg",
+    "hansan-mosi-center": "https://tong.visitkorea.or.kr/cms/resource/46/3043846_image2_1.jpg",
+    "gaudo-island": "https://tong.visitkorea.or.kr/cms/resource/79/3538079_image2_1.jpg",
+    "gangjin-tea-plantation": "https://tong.visitkorea.or.kr/cms/resource/07/3558407_image2_1.jpg",
+    "gangjin-bay-ecological-park": "https://tong.visitkorea.or.kr/cms/resource/79/3538079_image2_1.jpg",
+    "geumgoksa-gangjin": "https://tong.visitkorea.or.kr/cms/resource/90/3558390_image2_1.jpg",
+    "dasanchodang": "https://tong.visitkorea.or.kr/cms/resource/77/3537777_image2_1.jpg",
+    "gochang-tidal-flat": "https://tong.visitkorea.or.kr/cms/resource/23/3083123_image2_1.jpg",
+    "gochang-dolmen-sites": "https://tong.visitkorea.or.kr/cms/resource/22/3018322_image2_1.jpg",
+    "gochang-eupseong": "https://tong.visitkorea.or.kr/cms/resource/28/3518628_image2_1.jpg",
+    "seonunsa": "https://tong.visitkorea.or.kr/cms/resource/64/2678864_image2_1.jpg",
+    "ungok-wetland": "https://tong.visitkorea.or.kr/cms/resource/63/3342463_image2_1.jpg",
+    "namyeol-sunrise-beach": "https://tong.visitkorea.or.kr/cms/resource/71/3522071_image2_1.jpg",
+    "nokdong-port": "https://tong.visitkorea.or.kr/cms/resource/13/3375913_image2_1.JPG",
+    "sorokdo-island": "https://tong.visitkorea.or.kr/cms/resource/55/3581055_image2_1.jpg",
+    "goheung-yuzu-park": "https://tong.visitkorea.or.kr/cms/resource/82/2043882_image2_1.jpg",
+    "naro-space-center": "https://tong.visitkorea.or.kr/cms/resource/68/3552768_image2_1.jpg",
+    "namgye-seowon": "https://tong.visitkorea.or.kr/cms/resource/32/3538332_image2_1.jpg",
+    "sangrim-park": "https://tong.visitkorea.or.kr/cms/resource/75/3538275_image2_1.jpg",
+    "gaepyeong-hanok-village": "https://tong.visitkorea.or.kr/cms/resource/75/3538275_image2_1.jpg",
+    "daebongsan-recreation-valley": "https://tong.visitkorea.or.kr/cms/resource/00/3531800_image2_1.jpg",
+    "hamyang-jianjae": "https://tong.visitkorea.or.kr/cms/resource/08/3538308_image2_1.jpg"
   }
 }

@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-09T00:46:15.224Z",
+    "generatedAt": "2026-08-09T00:55:14.676Z",
     "areaCount": 17,
-    "hubLinkCount": 117,
+    "hubLinkCount": 122,
     "source": "scripts/data/korea-area-code-overrides.mjs"
   },
   "defaultHubIds": [
@@ -159,7 +159,8 @@
         "geumsan",
         "hongseong",
         "nonsan",
-        "yesan"
+        "yesan",
+        "seocheon"
       ]
     },
     "35": {
@@ -183,7 +184,8 @@
         "geoje",
         "namhae",
         "hadong",
-        "hapcheon"
+        "hapcheon",
+        "hamyang"
       ]
     },
     "37": {
@@ -196,7 +198,8 @@
         "jinan",
         "namwon",
         "wanju",
-        "jangsu"
+        "jangsu",
+        "gochang"
       ]
     },
     "38": {
@@ -209,7 +212,9 @@
         "boseong",
         "gurye",
         "wando",
-        "gokseong"
+        "gokseong",
+        "gangjin",
+        "goheung"
       ]
     },
     "39": {
@@ -306,6 +311,7 @@
     "hongseong": "34",
     "nonsan": "34",
     "yesan": "34",
+    "seocheon": "34",
     "gyeongju": "35",
     "andong": "35",
     "pohang": "35",
@@ -320,6 +326,7 @@
     "namhae": "36",
     "hadong": "36",
     "hapcheon": "36",
+    "hamyang": "36",
     "jeonju": "37",
     "gunsan": "37",
     "buan": "37",
@@ -328,6 +335,7 @@
     "namwon": "37",
     "wanju": "37",
     "jangsu": "37",
+    "gochang": "37",
     "yeosu": "38",
     "suncheon": "38",
     "mokpo": "38",
@@ -336,6 +344,8 @@
     "gurye": "38",
     "wando": "38",
     "gokseong": "38",
+    "gangjin": "38",
+    "goheung": "38",
     "jeju": "39",
     "seogwipo": "39"
   }

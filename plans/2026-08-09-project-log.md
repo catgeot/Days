@@ -2,21 +2,33 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
+## 테마여행 #94, 빈 hub 명소 보강
+
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `(push 후)` · Preview 사람 QA 대기
+
+- **한 일**: 큐 R01 워커A — 서천6·강진5·고창5·고흥5·함양5 **전수** GATEO 선정 · Tour contentId 11/26 · 썸네일 480/498 · 충남·전북·전남·경남 시도 색인 · Tour LIVE 429 → DB·related 폴백 · 큐 잔여 47
+- **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
+- **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=seocheon` · `?hub=gangjin` · `?hub=gochang` · `?hub=goheung` · `?hub=hamyang`
+- **작업 로그**: 「서천·강진·고창·고흥·함양 GATEO 선정 전수」
+- **남은 일**: 큐 R01 전라 잔여(화순·임실…) 전수 · 사람 Preview QA
+- **다음 채팅명**:
+
+```
+테마여행 #95, 빈 hub 명소 보강
+```
+
 ## 테마여행 #93, 빈 hub 명소 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `a585811b` · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `a585811b` · ✅ #94 서천·강진·고창·고흥·함양
 
 - **한 일**: 큐 R01 잔여+전라 R02 앞 — 연기4·예산4·완주7·곡성6·장수6 **전수** GATEO 선정 · Tour contentId 19/27 · 썸네일 454/472 · 세종·충남·전북·전남 시도 색인 · 큐 잔여 52
 - **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
 - **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=yeongi` · `?hub=yesan` · `?hub=wanju` · `?hub=gokseong` · `?hub=jangsu`
 - **작업 로그**: 「연기·예산·완주·곡성·장수 GATEO 선정 전수」
-- **남은 일**: 큐 R01 전라 잔여(서천·강진…) 전수 · 사람 Preview QA
-- **다음 채팅명**:
-
-```
-테마여행 #94, 빈 hub 명소 보강
-```
+- **남은 일**: ✅ #94 서천·강진·고창·고흥·함양 전수 · 사람 Preview QA
+- **다음 채팅명**: `테마여행 #94, 빈 hub 명소 보강` → 완료(위 #94 절)
 
 ## 테마여행 #92, 빈 hub 명소 보강
 
