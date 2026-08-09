@@ -4,7 +4,7 @@
 
 ## 테마여행 #87, 네이버 버튼 위치
 
-**상태**: feature `cursor/scenic-food-naver-link-b366` · PR [#76](https://github.com/catgeot/Days/pull/76) · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-food-naver-link-b366` · PR [#76](https://github.com/catgeot/Days/pull/76) · tip `92a6fdfe` · Preview 사람 QA 대기
 
 - **한 일**: 네이버 칩을 **개요 아래 · 주소 위**로 이동 (주소·문의·영업시간 흐름 유지)
 - **VERIFY**: `npm run build`
