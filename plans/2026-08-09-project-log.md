@@ -2,21 +2,31 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
+## 테마여행 #89, 네이버 검색 쿼리
+
+**상태**: feature `cursor/scenic-food-naver-link-b366` · PR [#76](https://github.com/catgeot/Days/pull/76) · Preview 사람 QA 대기
+
+- **한 일**: 네이버 쿼리 분기 — **맛집만 지역+상호** · 관광지·명소·명승·레포츠·문화는 **고유명만**
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-food-naver`
+- **Preview**: `https://days-git-cursor-scenic-food-naver-link-b366-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: 「명소는 고유명 · 맛집만 지역+상호」
+- **남은 일**: 사람 Preview QA (명소 vs 맛집 검색 결과 비교)
+- **다음 채팅명**:
+
+```
+테마여행 #90, 빈 hub 명소 보강
+```
+
 ## 테마여행 #88, 네이버 링크 확장
 
-**상태**: feature `cursor/scenic-food-naver-link-b366` · PR [#76](https://github.com/catgeot/Days/pull/76) · tip `14c86f3b` · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-food-naver-link-b366` · PR [#76](https://github.com/catgeot/Days/pull/76) · tip `14c86f3b` · ✅ 쿼리 분기는 #89
 
 - **한 일**: 맛집뿐 아니라 **명승·관광지·레포츠·문화** 상세에도 동일 위치(개요 아래·주소 위) 「네이버 상세정보 보기」 노출
 - **VERIFY**: `npm run build`
 - **공유**: `https://www.gateo.kr/qa/scenic-food-naver`
 - **Preview**: `https://days-git-cursor-scenic-food-naver-link-b366-catgeots-projects.vercel.app/korea/theme/scenic`
 - **작업 로그**: 「레포츠·관광지·문화에도 네이버 칩」
-- **남은 일**: 사람 Preview QA
-- **다음 채팅명**:
-
-```
-테마여행 #89, 빈 hub 명소 보강
-```
 
 ## 테마여행 #87, 네이버 버튼 위치
 

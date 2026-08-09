@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 88,
-  sessionPhase: '네이버 링크 확장',
+  sessionNo: 89,
+  sessionPhase: '네이버 검색 쿼리',
   branch: 'cursor/scenic-food-naver-link-b366',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-food-naver',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-naver-query-89',
+    session: '테마여행 #89, 네이버 검색 쿼리',
+    title: '명소는 고유명 · 맛집만 지역+상호',
+    detail:
+      '네이버 검색 쿼리를 나눴습니다. 관광지·명소·명승·레포츠·문화는 이름만, 맛집만 지역+상호로 검색해 플레이스/본문 직행이 잘 되게 했습니다. Preview에서 명소·맛집 각각 검색 결과를 비교해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-naver-expand-88',
     session: '테마여행 #88, 네이버 링크 확장',

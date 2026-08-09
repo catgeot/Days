@@ -534,14 +534,26 @@ function foodPlaceLabel(spot) {
 }
 
 /**
- * 명소·맛집·레포츠·문화 등 → 네이버 검색(지역+이름).
- * place id 딥링크는 TourAPI에 없어 검색으로 연결.
- * @param {{ name?: string, locality?: string, region?: string, areaLabel?: string } | null} spot
+ * 네이버 검색 URL.
+ * 맛집(동명 많음)만 지역+상호 · 관광지·명소·명승·레포츠·문화는 고유명만
+ * (지역을 붙이면 본문/플레이스 직행이 깨지기 쉬움).
+ * @param {{
+ *   name?: string,
+ *   locality?: string,
+ *   region?: string,
+ *   areaLabel?: string,
+ *   contentTypeId?: string | null,
+ * } | null} spot
  * @param {{ addr1?: string, addr2?: string } | null} [detail]
  */
 function spotNaverSearchUrl(spot, detail) {
   const name = String(spot?.name || '').trim();
   if (!name) return '';
+  const isFood =
+    String(spot?.contentTypeId || '') === RESTAURANT_CONTENT_TYPE_ID;
+  if (!isFood) {
+    return `https://search.naver.com/search.naver?query=${encodeURIComponent(name)}`;
+  }
   const locality = String(spot?.locality || '').trim();
   const areaLabel = String(spot?.areaLabel || '').trim();
   const region = String(spot?.region || '').trim();
