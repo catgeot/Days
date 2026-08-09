@@ -561,7 +561,7 @@ function NaverOutboundButton({ href }) {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="네이버로 이동 · 새 탭에서 검색"
+      aria-label="네이버 상세정보 보기 · 새 탭에서 열기"
       className="inline-flex items-center gap-1.5 rounded-full border border-[#03C75A]/50 bg-[#E8F9EF] px-2.5 py-1.5 text-xs font-bold text-[#027A38] transition-colors hover:border-[#03C75A]/75 hover:bg-[#D9F5E5]"
     >
       <span
@@ -570,7 +570,7 @@ function NaverOutboundButton({ href }) {
       >
         N
       </span>
-      네이버로 이동
+      네이버 상세정보 보기
       <ExternalLink size={12} aria-hidden="true" />
     </a>
   );
@@ -1414,6 +1414,11 @@ export default function ThemeSpotDetailModal({
                     </a>
                   </DetailRow>
                 ) : null}
+                {naverSearchUrl ? (
+                  <div className="min-w-0 pt-0.5">
+                    <NaverOutboundButton href={naverSearchUrl} />
+                  </div>
+                ) : null}
                 {homepage ? (
                   <DetailRow label="홈페이지">
                     <a
@@ -1444,7 +1449,7 @@ export default function ThemeSpotDetailModal({
               </dl>
             ) : null}
 
-            {naverSearchUrl ? (
+            {(detailLoading || !detail) && naverSearchUrl ? (
               <NaverOutboundButton href={naverSearchUrl} />
             ) : null}
 
