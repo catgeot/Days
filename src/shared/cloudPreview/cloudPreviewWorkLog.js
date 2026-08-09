@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 105,
-  sessionPhase: '선정 contentId 보강',
+  sessionNo: 106,
+  sessionPhase: 'Preview QA 반영',
   branch: 'cursor/scenic-yangyang-b772',
   previewPath: '/korea/theme/scenic?hub=goyang&spot=kintex-goyang',
   qaShareSlug: 'scenic-hub-fill',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-preview-qa-106',
+    session: '테마여행 #106, Preview QA 반영',
+    title: '킨텍스 overview 모달 전달 수정',
+    detail:
+      'Preview QA에서 고양 킨텍스가 「Tour 상세 없음」만 보이던 원인을 고쳤습니다. toModalSpot이 SSOT overview를 모달에 넘기지 않아 curated 본문이 빠졌습니다. 이제 개요·썸네일이 표시되고 TourAPI 부재 안내 문장은 사용자 본문에서 숨깁니다. 아침고요수목원 주변 섹션은 #105 폴백으로 유지됩니다.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-contentid-105',
     session: '테마여행 #105, 선정 contentId 보강',

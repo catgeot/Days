@@ -384,6 +384,16 @@ function stripHtml(raw) {
     .trim();
 }
 
+/** SSOT curated overview — TourAPI 부재 안내 문장은 사용자 본문에서 제거 */
+function stripCuratedOverviewMeta(raw) {
+  return String(raw || '')
+    .replace(/[^.]*TourAPI[^.]*\./g, '')
+    .replace(/[^.]*Tour\s*관광지[^.]*\./g, '')
+    .replace(/[^.]*한국관광공사[^.]*상세가 없어[^.]*\./g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
 function toHttps(url) {
   const s = String(url || '').trim();
   if (!s) return '';
@@ -897,13 +907,21 @@ export default function ThemeSpotDetailModal({
     const contentId = String(spot.contentId || '').trim();
     if (!/^\d{1,32}$/.test(contentId)) {
       // Tour contentId 부재 — SSOT overview가 있으면 LIVE 대신 GATEO 안내 본문
-      const curatedOverview = String(spot.overview || '').trim();
+      const curatedOverview = stripCuratedOverviewMeta(spot.overview);
       if (curatedOverview) {
+        const imageUrl = String(spot.imageUrl || '').trim() || null;
+        const galleryFromSpot = Array.isArray(spot.galleryUrls)
+          ? spot.galleryUrls.map((u) => String(u || '').trim()).filter(Boolean)
+          : [];
+        const galleryUrls = [...galleryFromSpot];
+        if (imageUrl && !galleryUrls.includes(imageUrl)) {
+          galleryUrls.unshift(imageUrl);
+        }
         setDetail({
           title: spot.name,
           overview: curatedOverview,
-          imageUrl: spot.imageUrl || null,
-          galleryUrls: Array.isArray(spot.galleryUrls) ? spot.galleryUrls : [],
+          imageUrl: imageUrl || galleryUrls[0] || null,
+          galleryUrls,
           addr1: spot.addr1 || null,
           addr2: null,
           homepage: spot.homepage || null,

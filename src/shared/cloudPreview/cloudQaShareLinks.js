@@ -9,7 +9,7 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'scenic-hub-fill',
-    label: '선정 contentId·주변 폴백',
+    label: '킨텍스 overview·주변 폴백',
     branch: 'cursor/scenic-yangyang-b772',
     destination:
       'https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=goyang&spot=kintex-goyang',

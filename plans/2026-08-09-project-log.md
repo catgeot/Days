@@ -2,9 +2,26 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
+## 테마여행 #106, Preview QA 반영
+
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip (푸시 후) · Preview 사람 QA 대기
+
+- **원인**: #105 SSOT `overview`는 채워졌으나 `ScenicPage.toModalSpot`이 `overview`를 모달에 안 넘겨 킨텍스가 「Tour 상세 없음」만 표시
+- **한 일**: `toModalSpot`에 `overview` 전달 · curated 경로 이미지 정규화 · TourAPI 부재 안내 문장 사용자 본문에서 제거
+- **VERIFY**: (푸시 전 기록)
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
+- **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=goyang&spot=kintex-goyang` · `?hub=gapyeong&spot=garden-of-morning-calm`
+- **작업 로그**: 「킨텍스 overview 모달 전달 수정」
+- **남은 일**: 사람 Preview QA(킨텍스 개요·썸네일) · 잔여 contentId LIVE · 폴리시/릴리스
+- **다음 채팅명**:
+
+```
+테마여행 #107, 잔여 contentId 보강
+```
+
 ## 테마여행 #105, 선정 contentId 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `e075d138` · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `e075d138` · ✅ #106 overview 전달 수정
 
 - **원인**: (1) 아침고요 등 — TourAPI `locationBasedList` 일일 한도(429)로 주변 맛집·레포츠·문화 실패 · contentId `126668`은 정상 (2) 킨텍스 — Tour type12/14 본체 없음 → contentId null · 「Tour 상세 없음」
 - **한 일**: hub→시군구 SSOT(`koreaSigunguByHub`) · 주변 API `areaBasedList` 폴백 · Tour 부재 191곳 GATEO `overview` · 킨텍스 본문 보강 · 모달 curated overview
@@ -12,12 +29,7 @@
 - **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
 - **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=goyang&spot=kintex-goyang` · `?hub=gapyeong&spot=garden-of-morning-calm`
 - **작업 로그**: 「주변 areaBased 폴백 · Tour 부재 overview」
-- **남은 일**: 사람 Preview QA · searchKeyword 한도 회복 후 잔여 contentId LIVE 재시도 · 폴리시/릴리스
-- **다음 채팅명**:
-
-```
-테마여행 #106, Preview QA 반영
-```
+- **남은 일**: ✅ #106 overview 모달 전달
 
 ## 테마여행 #104, 빈 hub 명소 보강
 

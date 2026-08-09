@@ -470,6 +470,7 @@ function toModalSpot(spot) {
     lng: spot.lng,
     source: spot.source || null,
     content: spot.content || null,
+    overview: spot.overview || null,
     imageUrl: spot.imageUrl || spot.firstImage || null,
     galleryUrls: Array.isArray(spot.galleryUrls) ? spot.galleryUrls : null,
     homepage: spot.homepage || null,
