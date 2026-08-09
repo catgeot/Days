@@ -4,7 +4,7 @@
 
 ## 테마여행 #104, 빈 hub 명소 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip _(push 후)_ · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `daddc40a` · Preview 사람 QA 대기
 
 - **한 일**: 큐 잔여 경상 — 영덕4·영양4 **전수** GATEO 선정 · Tour contentId 2/8 · 썸네일 683/720 · 경북 시도 색인 · Tour LIVE 429 → DB·related 폴백 · **시·군 빈 hub 큐 소진(0)** · smoke `rounds=0` 허용
 - **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `npm run build`
