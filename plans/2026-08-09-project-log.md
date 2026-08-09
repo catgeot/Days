@@ -4,7 +4,7 @@
 
 ## 테마여행 #102, 빈 hub 명소 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip _(커밋 후)_ · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `5458f663` · Preview 사람 QA 대기
 
 - **한 일**: 큐 R01 경상 — 청송4·칠곡4·독도4·김천4·고령4 **전수** GATEO 선정 · Tour contentId 7/20 · 썸네일 655/692 · 경북 시도 색인(독도 포함) · Tour LIVE 공백·429 → locationBasedList·DB·related 폴백 · 큐 잔여 7
 - **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `npm run build`
