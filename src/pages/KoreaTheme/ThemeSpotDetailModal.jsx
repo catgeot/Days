@@ -534,11 +534,11 @@ function foodPlaceLabel(spot) {
 }
 
 /**
- * 맛집 → 네이버 검색(지역+상호). place id 식당홈은 TourAPI에 없어 검색으로 연결.
+ * Tour 장소 → 네이버 검색(지역+이름). place id 딥링크는 TourAPI에 없어 검색으로 연결.
  * @param {{ name?: string, locality?: string, region?: string } | null} spot
  * @param {{ addr1?: string, addr2?: string } | null} [detail]
  */
-function restaurantNaverSearchUrl(spot, detail) {
+function spotNaverSearchUrl(spot, detail) {
   const name = String(spot?.name || '').trim();
   if (!name) return '';
   const locality = String(spot?.locality || '').trim();
@@ -551,6 +551,40 @@ function restaurantNaverSearchUrl(spot, detail) {
   const place = locality || addrHint || region;
   const q = [place, name].filter(Boolean).join(' ');
   return `https://search.naver.com/search.naver?query=${encodeURIComponent(q)}`;
+}
+
+function NaverOutboundButton({ href }) {
+  const url = String(href || '').trim();
+  if (!url) return null;
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="네이버로 이동 · 새 탭에서 검색"
+      className="flex w-full items-center gap-3 rounded-2xl border border-[#03C75A]/45 bg-[#E8F9EF] px-3.5 py-3 text-left shadow-sm transition-colors hover:border-[#03C75A]/70 hover:bg-[#D9F5E5] sm:w-auto sm:min-w-[16rem]"
+    >
+      <span
+        className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#03C75A] text-sm font-black tracking-tight text-white"
+        aria-hidden="true"
+      >
+        N
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-bold text-[#027A38] break-keep">
+          네이버로 이동
+        </span>
+        <span className="mt-0.5 block text-[11px] font-semibold text-[#027A38]/75 break-keep">
+          새 탭에서 네이버 검색
+        </span>
+      </span>
+      <ExternalLink
+        size={16}
+        className="shrink-0 text-[#027A38]"
+        aria-hidden="true"
+      />
+    </a>
+  );
 }
 
 function toTypedModalSpot(spot, contentTypeId) {
@@ -1113,8 +1147,8 @@ export default function ThemeSpotDetailModal({
     return [a1, a2].filter(Boolean).join(' ');
   }, [detail?.addr1, detail?.addr2]);
 
-  const naverRestaurantUrl = useMemo(
-    () => (isRestaurant ? restaurantNaverSearchUrl(spot, detail) : ''),
+  const naverSearchUrl = useMemo(
+    () => (isRestaurant ? spotNaverSearchUrl(spot, detail) : ''),
     [isRestaurant, spot, detail],
   );
 
@@ -1405,19 +1439,6 @@ export default function ThemeSpotDetailModal({
                     </a>
                   </DetailRow>
                 ) : null}
-                {naverRestaurantUrl ? (
-                  <DetailRow label="네이버">
-                    <a
-                      href={naverRestaurantUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex max-w-full min-w-0 items-center gap-1 font-semibold text-amber-900 underline-offset-2 hover:underline break-keep break-words"
-                    >
-                      네이버에서 보기
-                      <ExternalLink size={13} aria-hidden="true" />
-                    </a>
-                  </DetailRow>
-                ) : null}
                 {introRows.map((row) => (
                   <DetailRow key={row.key} label={row.label}>
                     {row.text}
@@ -1434,16 +1455,13 @@ export default function ThemeSpotDetailModal({
               </dl>
             ) : null}
 
-            {(detailLoading || !detail) && naverRestaurantUrl ? (
-              <a
-                href={naverRestaurantUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:border-amber-300 transition-colors"
-              >
-                <ExternalLink size={12} aria-hidden="true" />
-                네이버에서 보기
-              </a>
+            {naverSearchUrl ? (
+              <div className="space-y-1.5">
+                <p className="text-[11px] font-bold tracking-wide text-stone-500">
+                  외부 검색
+                </p>
+                <NaverOutboundButton href={naverSearchUrl} />
+              </div>
             ) : null}
 
             {galleryList.length > 0 ? (

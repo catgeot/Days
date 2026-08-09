@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 83,
-  sessionPhase: '맛집 네이버 링크',
+  sessionNo: 84,
+  sessionPhase: '네이버 이동 버튼',
   branch: 'cursor/scenic-food-naver-link-b366',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-food-naver',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-naver-btn-84',
+    session: '테마여행 #84, 네이버 이동 버튼',
+    title: '네이버로 이동 CTA 버튼',
+    detail:
+      '맛집 상세의 네이버 링크를 텍스트 링크에서 「N · 네이버로 이동 · 새 탭에서 네이버 검색」 CTA 버튼으로 바꿨습니다. Preview에서 주변 맛집 상세의 초록 버튼을 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-food-naver-83',
     session: '테마여행 #83, 맛집 네이버 링크',
