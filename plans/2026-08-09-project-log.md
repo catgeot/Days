@@ -4,7 +4,7 @@
 
 ## 테마여행 #118, 명승 홈 즐겨찾기
 
-**상태**: feature `cursor/scenic-favorites-492c` · Preview QA 대기
+**상태**: feature `cursor/scenic-favorites-492c` · PR [#83](https://github.com/catgeot/Days/pull/83) · tip `c2684bb4` · Preview QA 대기
 
 - **한 일**: 명승 홈에 축제형 즐겨찾기 — `scenicPersonalStore`(localStorage) · 헤더 ★ 패널(즐겨찾기·본 항목) · 목록 행 ★ · 상세 모달 ★ · smoke `korea-scenic-personal`
 - **VERIFY**: `npm run smoke:korea-scenic-personal` · `npm run build`
