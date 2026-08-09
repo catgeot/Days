@@ -1,6 +1,10 @@
 import { supabase } from '../shared/api/supabase';
 import { formatTourAttractionLocality } from '../pages/Home/lib/koreaTourAttractionLocality';
 import { scenicRegionForAreaCode } from '../pages/Home/lib/koreaTourAttractionMap';
+import {
+  fetchNearbyTourAreaBasedFallback,
+  isTourApiQuotaError,
+} from './nearbyTourAreaFallback';
 
 export const RESTAURANT_CONTENT_TYPE_ID = '39';
 
@@ -91,12 +95,15 @@ function mapRestaurantItem(item, originLat, originLng) {
 
 /**
  * 축제장·명소 좌표 기준 주변 맛집(type39) — LIVE locationBasedList (전량 DB 금지).
+ * locationBasedList 한도(429) 실패 시 areaCode(+sigungu) areaBasedList 폴백.
  *
  * @param {{
  *   lat: number,
  *   lng: number,
  *   radiusKm?: number,
  *   limit?: number,
+ *   areaCode?: string | null,
+ *   sigunguCode?: string | null,
  * }} opts
  */
 export async function fetchNearbyTourRestaurants(opts) {
@@ -108,6 +115,28 @@ export async function fetchNearbyTourRestaurants(opts) {
   const radiusKm = Math.min(Math.max(Number(opts?.radiusKm) || 3, 0.5), 20);
   const limit = Math.min(Math.max(Number(opts?.limit) || 8, 1), 20);
   const radiusM = Math.min(Math.round(radiusKm * 1000), 20_000);
+  const areaCode = String(opts?.areaCode || '').trim();
+  const sigunguCode = String(opts?.sigunguCode || '').trim();
+
+  const runAreaFallback = async (reason) => {
+    if (!/^\d{1,10}$/.test(areaCode)) {
+      return { spots: [], error: reason || 'locationBasedList failed' };
+    }
+    console.warn(
+      '[nearbyTourRestaurants] areaBasedList fallback:',
+      reason || 'locationBasedList failed',
+    );
+    return fetchNearbyTourAreaBasedFallback({
+      lat,
+      lng,
+      areaCode,
+      sigunguCode: /^\d{1,10}$/.test(sigunguCode) ? sigunguCode : null,
+      contentTypeId: RESTAURANT_CONTENT_TYPE_ID,
+      radiusKm: Math.max(radiusKm, 8),
+      limit,
+      mapItem: mapRestaurantItem,
+    });
+  };
 
   try {
     const { data, error } = await withTimeout(
@@ -128,11 +157,14 @@ export async function fetchNearbyTourRestaurants(opts) {
     );
     if (error) {
       console.warn('[nearbyTourRestaurants]', error.message || error);
-      return { spots: [], error: error.message || String(error) };
+      return runAreaFallback(error.message || String(error));
     }
     if (!data?.ok) {
       const msg = data?.message || data?.error || 'locationBasedList failed';
       console.warn('[nearbyTourRestaurants]', msg);
+      if (isTourApiQuotaError(msg) || /^\d{1,10}$/.test(areaCode)) {
+        return runAreaFallback(msg);
+      }
       return { spots: [], error: msg };
     }
 
@@ -149,6 +181,6 @@ export async function fetchNearbyTourRestaurants(opts) {
     return { spots, error: null };
   } catch (err) {
     console.warn('[nearbyTourRestaurants]', err?.message || err);
-    return { spots: [], error: err?.message || String(err) };
+    return runAreaFallback(err?.message || String(err));
   }
 }

@@ -2,21 +2,34 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
+## 테마여행 #105, 선정 contentId 보강
+
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip (push 후) · Preview 사람 QA 대기
+
+- **원인**: (1) 아침고요 등 — TourAPI `locationBasedList` 일일 한도(429)로 주변 맛집·레포츠·문화 실패 · contentId `126668`은 정상 (2) 킨텍스 — Tour type12/14 본체 없음 → contentId null · 「Tour 상세 없음」
+- **한 일**: hub→시군구 SSOT(`koreaSigunguByHub`) · 주변 API `areaBasedList` 폴백 · Tour 부재 191곳 GATEO `overview` · 킨텍스 본문 보강 · 모달 curated overview
+- **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-nearby-restaurants` · `smoke:korea-nearby-leisure-culture` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
+- **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=goyang&spot=kintex-goyang` · `?hub=gapyeong&spot=garden-of-morning-calm`
+- **작업 로그**: 「주변 areaBased 폴백 · Tour 부재 overview」
+- **남은 일**: 사람 Preview QA · searchKeyword 한도 회복 후 잔여 contentId LIVE 재시도 · 폴리시/릴리스
+- **다음 채팅명**:
+
+```
+테마여행 #106, Preview QA 반영
+```
+
 ## 테마여행 #104, 빈 hub 명소 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `daddc40a` · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `daddc40a` · ✅ #105 주변 폴백·overview
 
 - **한 일**: 큐 잔여 경상 — 영덕4·영양4 **전수** GATEO 선정 · Tour contentId 2/8 · 썸네일 683/720 · 경북 시도 색인 · Tour LIVE 429 → DB·related 폴백 · **시·군 빈 hub 큐 소진(0)** · smoke `rounds=0` 허용
 - **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
 - **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=yeongdeok` · `?hub=yeongyang`
 - **작업 로그**: 「영덕·영양 GATEO 선정 전수 · 큐 소진」
-- **남은 일**: 사람 Preview QA · (후속) TODO contentId·Tour LIVE 보강 · 폴리시/릴리스
-- **다음 채팅명**:
-
-```
-테마여행 #105, 선정 contentId 보강
-```
+- **남은 일**: ✅ #105 주변 폴백·overview
+- **다음 채팅명**: `테마여행 #105, 선정 contentId 보강` → 완료(위 #105 절)
 
 ## 테마여행 #103, 빈 hub 명소 보강
 

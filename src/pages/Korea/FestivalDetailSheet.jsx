@@ -664,6 +664,7 @@ export default function FestivalDetailSheet({
         lng: pt.lng,
         radiusKm: 3,
         limit: 8,
+        areaCode: festivalAreaCode,
       }).then((res) => {
         if (cancelled) return;
         const spots = Array.isArray(res?.spots) ? res.spots : [];
@@ -677,6 +678,7 @@ export default function FestivalDetailSheet({
         lng: pt.lng,
         radiusKm: 5,
         limit: 6,
+        areaCode: festivalAreaCode,
       }).then((res) => {
         if (cancelled) return;
         const spots = Array.isArray(res?.spots) ? res.spots : [];
@@ -690,6 +692,7 @@ export default function FestivalDetailSheet({
         lng: pt.lng,
         radiusKm: 5,
         limit: 6,
+        areaCode: festivalAreaCode,
       }).then((res) => {
         if (cancelled) return;
         const spots = Array.isArray(res?.spots) ? res.spots : [];
@@ -704,7 +707,7 @@ export default function FestivalDetailSheet({
       };
     }
     return undefined;
-  }, [item?.contentId, item?.mapx, item?.mapy]);
+  }, [item?.contentId, item?.mapx, item?.mapy, festivalAreaCode]);
 
   useEffect(() => {
     if (!item?.contentId) return undefined;

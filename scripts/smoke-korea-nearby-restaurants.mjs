@@ -54,6 +54,10 @@ assert(
   'fetchNearbyTourRestaurants calls locationBasedList',
 );
 assert(
+  fetchSrc.includes('fetchNearbyTourAreaBasedFallback'),
+  'restaurants fall back to areaBasedList on locationBased failure',
+);
+assert(
   fetchSrc.includes("RESTAURANT_CONTENT_TYPE_ID = '39'"),
   'fetchNearbyTourRestaurants uses type39',
 );
@@ -83,6 +87,42 @@ const modalSrc = readFileSync(
 assert(
   modalSrc.includes('fetchNearbyTourRestaurants'),
   'ThemeSpotDetailModal fetches nearby restaurants',
+);
+assert(
+  modalSrc.includes('resolveTourAreaForHub'),
+  'ThemeSpotDetailModal resolves hub→sigungu for nearby fallback',
+);
+assert(
+  modalSrc.includes('spot.overview'),
+  'ThemeSpotDetailModal uses curated overview when contentId missing',
+);
+
+const sigungu = JSON.parse(
+  readFileSync(
+    join(root, 'src/pages/Home/data/koreaSigunguByHub.json'),
+    'utf8',
+  ),
+);
+assert(
+  sigungu?.byHubId?.gapyeong?.sigunguCode === '1',
+  'sigungu SSOT gapyeong → 1',
+);
+assert(
+  sigungu?.byHubId?.goyang?.sigunguCode === '2',
+  'sigungu SSOT goyang → 2',
+);
+
+const scenic = JSON.parse(
+  readFileSync(
+    join(root, 'src/pages/Home/data/koreaScenicSpots.json'),
+    'utf8',
+  ),
+);
+const kintex = (scenic.spots || []).find((s) => s.id === 'kintex-goyang');
+assert(Boolean(kintex?.overview), 'kintex-goyang has curated overview');
+assert(
+  kintex?.contentId == null,
+  'kintex-goyang contentId stays null (Tour type12 absent)',
 );
 assert(
   modalSrc.includes('fetchNearbyTourAttractions'),
@@ -144,6 +184,37 @@ if (url && anon) {
   } else if (!data?.ok) {
     if (/not configured|TOUR_API/i.test(errMsg)) {
       console.log(`SKIP  LIVE (${errMsg})`);
+    } else if (/429|LIMITED_NUMBER_OF_SERVICE_REQUESTS|일일 서비스 요청제한/i.test(errMsg)) {
+      // locationBased 일일 한도 → areaBasedList 폴백 경로 LIVE 검증 (가평)
+      const fb = await fetch(
+        `${url.replace(/\/$/, '')}/functions/v1/tourapi-proxy`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${anon}`,
+            apikey: anon,
+          },
+          body: JSON.stringify({
+            action: 'areaBasedList',
+            areaCode: '31',
+            sigunguCode: '1',
+            contentTypeId: '39',
+            numOfRows: 5,
+            pageNo: 1,
+            listYN: 'Y',
+            arrange: 'A',
+          }),
+        },
+      );
+      const fbData = await fb.json().catch(() => null);
+      assert(
+        fbData?.ok === true && Array.isArray(fbData.items),
+        `LIVE areaBasedList food fallback after locationBased 429 (ok=${fbData?.ok} msg=${fbData?.message || fbData?.error || '-'})`,
+      );
+      console.log(
+        `OK    LIVE locationBased 429 → areaBased food fallback count=${fbData.items.length}`,
+      );
     } else {
       assert(false, `LIVE locationBasedList (${errMsg || `HTTP ${res.status}`})`);
     }

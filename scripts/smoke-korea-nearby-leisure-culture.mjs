@@ -33,6 +33,10 @@ assert(
   'fetchNearbyTourLeisureCulture calls locationBasedList',
 );
 assert(
+  fetchSrc.includes('fetchNearbyTourAreaBasedFallback'),
+  'leports/culture fall back to areaBasedList on locationBased failure',
+);
+assert(
   fetchSrc.includes("LEPORTS_CONTENT_TYPE_ID = '28'"),
   'leports uses type28',
 );
@@ -142,6 +146,38 @@ async function liveCheck(contentTypeId, label) {
   if (!data?.ok) {
     if (/not configured|TOUR_API/i.test(errMsg)) {
       console.log(`SKIP  LIVE ${label} (${errMsg})`);
+      return;
+    }
+    if (/429|LIMITED_NUMBER_OF_SERVICE_REQUESTS|일일 서비스 요청제한/i.test(errMsg)) {
+      const fb = await fetch(
+        `${url.replace(/\/$/, '')}/functions/v1/tourapi-proxy`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${anon}`,
+            apikey: anon,
+          },
+          body: JSON.stringify({
+            action: 'areaBasedList',
+            areaCode: '31',
+            sigunguCode: '1',
+            contentTypeId,
+            numOfRows: 5,
+            pageNo: 1,
+            listYN: 'Y',
+            arrange: 'A',
+          }),
+        },
+      );
+      const fbData = await fb.json().catch(() => null);
+      assert(
+        fbData?.ok === true && Array.isArray(fbData.items),
+        `LIVE areaBasedList ${label} fallback after locationBased 429`,
+      );
+      console.log(
+        `OK    LIVE locationBased 429 → areaBased ${label} fallback count=${fbData.items.length}`,
+      );
       return;
     }
     assert(false, `LIVE ${label} locationBasedList (${errMsg || `HTTP ${res.status}`})`);

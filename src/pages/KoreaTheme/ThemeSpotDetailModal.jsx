@@ -52,6 +52,7 @@ import {
 } from '../../utils/fetchScenicSpotVideos';
 import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
 import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
+import { resolveTourAreaForHub } from '../Home/lib/koreaSigunguByHub';
 
 /** 본문·확대보기 — 가로 스와이프 vs 세로 스크롤·탭 */
 const PHOTO_SWIPE_THRESHOLD_PX = 48;
@@ -895,7 +896,28 @@ export default function ThemeSpotDetailModal({
 
     const contentId = String(spot.contentId || '').trim();
     if (!/^\d{1,32}$/.test(contentId)) {
-      setDetail(null);
+      // Tour contentId 부재 — SSOT overview가 있으면 LIVE 대신 GATEO 안내 본문
+      const curatedOverview = String(spot.overview || '').trim();
+      if (curatedOverview) {
+        setDetail({
+          title: spot.name,
+          overview: curatedOverview,
+          imageUrl: spot.imageUrl || null,
+          galleryUrls: Array.isArray(spot.galleryUrls) ? spot.galleryUrls : [],
+          addr1: spot.addr1 || null,
+          addr2: null,
+          homepage: spot.homepage || null,
+          tel: null,
+          mapx: Number.isFinite(Number(spot.lng)) ? Number(spot.lng) : null,
+          mapy: Number.isFinite(Number(spot.lat)) ? Number(spot.lat) : null,
+          heritageMeta: null,
+          intro: null,
+          infoItems: [],
+          curated: true,
+        });
+      } else {
+        setDetail(null);
+      }
       setDetailLoading(false);
       setDetailError('');
       return undefined;
@@ -931,6 +953,7 @@ export default function ThemeSpotDetailModal({
     spot?.source,
     spot?.content,
     spot?.blurb,
+    spot?.overview,
     spot?.imageUrl,
     spot?.galleryUrls,
     spot?.addr1,
@@ -1019,6 +1042,10 @@ export default function ThemeSpotDetailModal({
       return undefined;
     }
 
+    const tourArea = resolveTourAreaForHub(spot.hubId);
+    const areaCode = tourArea?.areaCode || null;
+    const sigunguCode = tourArea?.sigunguCode || null;
+
     let cancelled = false;
     setNearbyFoodStatus('loading');
     setNearbyLeportsStatus('loading');
@@ -1028,6 +1055,8 @@ export default function ThemeSpotDetailModal({
       lng: useLng,
       radiusKm: 3,
       limit: 6,
+      areaCode,
+      sigunguCode,
     }).then((res) => {
       if (cancelled) return;
       const spots = Array.isArray(res?.spots) ? res.spots : [];
@@ -1041,6 +1070,8 @@ export default function ThemeSpotDetailModal({
       lng: useLng,
       radiusKm: 5,
       limit: 5,
+      areaCode,
+      sigunguCode,
     }).then((res) => {
       if (cancelled) return;
       const spots = Array.isArray(res?.spots) ? res.spots : [];
@@ -1054,6 +1085,8 @@ export default function ThemeSpotDetailModal({
       lng: useLng,
       radiusKm: 5,
       limit: 5,
+      areaCode,
+      sigunguCode,
     }).then((res) => {
       if (cancelled) return;
       const spots = Array.isArray(res?.spots) ? res.spots : [];
@@ -1070,6 +1103,7 @@ export default function ThemeSpotDetailModal({
     spot?.id,
     spot?.lat,
     spot?.lng,
+    spot?.hubId,
     spot?.contentTypeId,
     isApiPoiCross,
     detail?.mapx,
@@ -1338,7 +1372,10 @@ export default function ThemeSpotDetailModal({
               <p className="text-xs text-stone-500 break-keep">{detailError}</p>
             ) : null}
 
-            {!detailLoading && !hasContentId && spot.source !== 'cha' ? (
+            {!detailLoading &&
+            !hasContentId &&
+            !detail &&
+            spot.source !== 'cha' ? (
               <p className="text-xs text-stone-500 break-keep">
                 Tour 상세 없음 — GATEO 안내와 아래 무니·영상으로 이어갈 수 있습니다.
               </p>

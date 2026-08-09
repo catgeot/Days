@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 104,
-  sessionPhase: '빈 hub 명소 보강',
+  sessionNo: 105,
+  sessionPhase: '선정 contentId 보강',
   branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?hub=yeongdeok',
+  previewPath: '/korea/theme/scenic?hub=goyang&spot=kintex-goyang',
   qaShareSlug: 'scenic-hub-fill',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-contentid-105',
+    session: '테마여행 #105, 선정 contentId 보강',
+    title: '주변 areaBased 폴백 · Tour 부재 overview',
+    detail:
+      'TourAPI locationBasedList 일일 한도(429)로 주변 맛집·레포츠·문화가 실패하던 문제를 시·군 areaBasedList 폴백으로 보완했습니다(가평·고양 시군구 SSOT). 킨텍스 등 Tour type12 부재 191곳은 contentId 대신 GATEO overview 본문을 채웠습니다. Preview에서 아침고요수목원·고양 킨텍스 상세의 주변 섹션과 킨텍스 개요를 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-hub-fill-r01-104',
     session: '테마여행 #104, 빈 hub 명소 보강',

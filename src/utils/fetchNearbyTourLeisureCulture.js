@@ -1,6 +1,10 @@
 import { supabase } from '../shared/api/supabase';
 import { formatTourAttractionLocality } from '../pages/Home/lib/koreaTourAttractionLocality';
 import { scenicRegionForAreaCode } from '../pages/Home/lib/koreaTourAttractionMap';
+import {
+  fetchNearbyTourAreaBasedFallback,
+  isTourApiQuotaError,
+} from './nearbyTourAreaFallback';
 
 export const LEPORTS_CONTENT_TYPE_ID = '28';
 export const CULTURE_CONTENT_TYPE_ID = '14';
@@ -105,6 +109,7 @@ function mapNearbyItem(item, originLat, originLng, contentTypeId) {
 
 /**
  * 축제장·명소 좌표 기준 주변 레포츠(28)·문화(14) — LIVE locationBasedList (전량 DB 금지).
+ * locationBasedList 한도(429) 실패 시 areaCode(+sigungu) areaBasedList 폴백.
  *
  * @param {{
  *   lat: number,
@@ -112,6 +117,8 @@ function mapNearbyItem(item, originLat, originLng, contentTypeId) {
  *   contentTypeId: string,
  *   radiusKm?: number,
  *   limit?: number,
+ *   areaCode?: string | null,
+ *   sigunguCode?: string | null,
  * }} opts
  */
 export async function fetchNearbyTourByContentType(opts) {
@@ -131,6 +138,29 @@ export async function fetchNearbyTourByContentType(opts) {
   const limit = Math.min(Math.max(Number(opts?.limit) || 6, 1), 20);
   const radiusM = Math.min(Math.round(radiusKm * 1000), 20_000);
   const meta = TYPE_META[contentTypeId];
+  const areaCode = String(opts?.areaCode || '').trim();
+  const sigunguCode = String(opts?.sigunguCode || '').trim();
+
+  const runAreaFallback = async (reason) => {
+    if (!/^\d{1,10}$/.test(areaCode)) {
+      return { spots: [], error: reason || 'locationBasedList failed' };
+    }
+    console.warn(
+      `[nearbyTour${meta.label}] areaBasedList fallback:`,
+      reason || 'locationBasedList failed',
+    );
+    return fetchNearbyTourAreaBasedFallback({
+      lat,
+      lng,
+      areaCode,
+      sigunguCode: /^\d{1,10}$/.test(sigunguCode) ? sigunguCode : null,
+      contentTypeId,
+      radiusKm: Math.max(radiusKm, 10),
+      limit,
+      mapItem: (item, oLat, oLng) =>
+        mapNearbyItem(item, oLat, oLng, contentTypeId),
+    });
+  };
 
   try {
     const { data, error } = await withTimeout(
@@ -151,11 +181,14 @@ export async function fetchNearbyTourByContentType(opts) {
     );
     if (error) {
       console.warn(`[nearbyTour${meta.label}]`, error.message || error);
-      return { spots: [], error: error.message || String(error) };
+      return runAreaFallback(error.message || String(error));
     }
     if (!data?.ok) {
       const msg = data?.message || data?.error || 'locationBasedList failed';
       console.warn(`[nearbyTour${meta.label}]`, msg);
+      if (isTourApiQuotaError(msg) || /^\d{1,10}$/.test(areaCode)) {
+        return runAreaFallback(msg);
+      }
       return { spots: [], error: msg };
     }
 
@@ -172,7 +205,7 @@ export async function fetchNearbyTourByContentType(opts) {
     return { spots, error: null };
   } catch (err) {
     console.warn(`[nearbyTour${meta.label}]`, err?.message || err);
-    return { spots: [], error: err?.message || String(err) };
+    return runAreaFallback(err?.message || String(err));
   }
 }
 

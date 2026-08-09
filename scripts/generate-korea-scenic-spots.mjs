@@ -149,6 +149,14 @@ function normalizeSpots(src, hubIndex, imageUrlById = {}) {
       }
     }
 
+    let overview = null;
+    if (raw.overview != null && String(raw.overview).trim()) {
+      overview = String(raw.overview).trim();
+      if (overview.length > 600) {
+        throw new Error(`[korea-scenic-spots] ${id}: overview max 600`);
+      }
+    }
+
     const imageUrl = toHttps(imageUrlById[id] || raw.imageUrl);
 
     spots.push({
@@ -164,6 +172,7 @@ function normalizeSpots(src, hubIndex, imageUrlById = {}) {
       lat,
       lng,
       contentId,
+      overview,
       imageUrl,
     });
   }

@@ -9,10 +9,10 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'scenic-hub-fill',
-    label: '선정 hub 시도 색인·분류칩',
+    label: '선정 contentId·주변 폴백',
     branch: 'cursor/scenic-yangyang-b772',
     destination:
-      'https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=yeongdeok',
+      'https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=goyang&spot=kintex-goyang',
     active: true,
   },
   {

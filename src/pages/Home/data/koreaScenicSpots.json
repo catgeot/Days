@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-09T03:52:51.659Z",
+    "generatedAt": "2026-08-09T05:25:12.668Z",
     "count": 720,
     "imageCount": 683,
     "curation": "GATEO",
@@ -31,6 +31,7 @@
       "lat": 37.5796,
       "lng": 126.977,
       "contentId": "126508",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/98/3487598_image2_1.jpg"
     },
     {
@@ -46,6 +47,7 @@
       "lat": 37.5823872,
       "lng": 126.9917013,
       "contentId": "127642",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/09/3511909_image2_1.jpg"
     },
     {
@@ -61,6 +63,7 @@
       "lat": 37.2867876,
       "lng": 127.0114366,
       "contentId": "125555",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/97/3478597_image2_1.jpg"
     },
     {
@@ -76,6 +79,7 @@
       "lat": 37.4653973,
       "lng": 127.1735631,
       "contentId": "125449",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/56/2612856_image2_1.jpg"
     },
     {
@@ -91,6 +95,7 @@
       "lat": 37.7962650518221,
       "lng": 127.525489199882,
       "contentId": "128019",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/45/4067545_image2_1.jpg"
     },
     {
@@ -106,6 +111,7 @@
       "lat": 37.795,
       "lng": 128.8965,
       "contentId": "125790",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/52/3501452_image2_1.jpg"
     },
     {
@@ -121,6 +127,7 @@
       "lat": 37.6914144167,
       "lng": 129.032603586,
       "contentId": "3545967",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/82/3534482_image2_1.jpg"
     },
     {
@@ -136,6 +143,7 @@
       "lat": 38.124506,
       "lng": 128.6291359,
       "contentId": "125773",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/41/4064941_image2_1.jpg"
     },
     {
@@ -151,6 +159,7 @@
       "lat": 35.815,
       "lng": 127.1535,
       "contentId": "264284",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/67/3516667_image2_1.jpg"
     },
     {
@@ -166,6 +175,7 @@
       "lat": 35.327758323916,
       "lng": 126.985559013142,
       "contentId": "128834",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/36/4017136_image2_1.jpg"
     },
     {
@@ -181,6 +191,7 @@
       "lat": 34.9064508,
       "lng": 127.3400983,
       "contentId": "127931",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/51/3497851_image2_1.jpg"
     },
     {
@@ -196,6 +207,7 @@
       "lat": 35.6270358,
       "lng": 126.4681785,
       "contentId": "128982",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/44/3356644_image2_1.jpg"
     },
     {
@@ -211,6 +223,7 @@
       "lat": 36.0445306,
       "lng": 127.4593222,
       "contentId": "126235",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/66/3540866_image2_1.jpg"
     },
     {
@@ -226,6 +239,7 @@
       "lat": 35.8347,
       "lng": 129.219,
       "contentId": "126207",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/81/3554381_image2_1.jpg"
     },
     {
@@ -241,6 +255,7 @@
       "lat": 35.801,
       "lng": 128.098,
       "contentId": "126175",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/27/4092527_image2_1.jpg"
     },
     {
@@ -256,6 +271,7 @@
       "lat": 36.5390268,
       "lng": 128.5180947,
       "contentId": "894027",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/62/4059762_image2_1.jpg"
     },
     {
@@ -271,6 +287,7 @@
       "lat": 35.05969491904282,
       "lng": 129.07980569117214,
       "contentId": "126658",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/83/3506383_image2_1.jpg"
     },
     {
@@ -286,6 +303,7 @@
       "lat": 37.0002949216,
       "lng": 128.3448007565,
       "contentId": "125913",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/29/4085729_image2_1.jpg"
     },
     {
@@ -301,6 +319,7 @@
       "lat": 36.7464233166,
       "lng": 126.2924752192,
       "contentId": "125818",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/94/1962094_image2_1.jpg"
     },
     {
@@ -316,6 +335,7 @@
       "lat": 33.2447452147,
       "lng": 126.559561883,
       "contentId": "126438",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/43/4094043_image2_1.jpg"
     },
     {
@@ -331,6 +351,7 @@
       "lat": 37.5790529392,
       "lng": 126.9867060298,
       "contentId": "126537",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/04/3304404_image2_1.jpg"
     },
     {
@@ -346,6 +367,7 @@
       "lat": 37.632,
       "lng": 126.4845,
       "contentId": "125534",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/86/4061486_image2_1.jpg"
     },
     {
@@ -361,6 +383,7 @@
       "lat": 35.0963371,
       "lng": 129.0087897,
       "contentId": "1997221",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/91/3365491_image2_1.jpg"
     },
     {
@@ -376,6 +399,7 @@
       "lat": 35.1882428912,
       "lng": 129.2235301928,
       "contentId": "126848",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/35/3499335_image2_1.jpg"
     },
     {
@@ -391,6 +415,7 @@
       "lat": 33.5147812884,
       "lng": 126.5125098697,
       "contentId": "228853",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/68/3011868_image2_1.jpg"
     },
     {
@@ -406,6 +431,7 @@
       "lat": 33.2447479529,
       "lng": 126.5730501303,
       "contentId": "126437",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/32/3052932_image2_1.jpg"
     },
     {
@@ -421,6 +447,7 @@
       "lat": 34.5915967,
       "lng": 127.8038089,
       "contentId": "127715",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/91/4077491_image2_1.JPG"
     },
     {
@@ -436,6 +463,7 @@
       "lat": 35.1283952,
       "lng": 126.9960781,
       "contentId": "127575",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/66/3495266_image2_1.jpg"
     },
     {
@@ -451,6 +479,7 @@
       "lat": 35.7948,
       "lng": 129.3495,
       "contentId": "126216",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/69/3581269_image2_1.jpg"
     },
     {
@@ -466,6 +495,7 @@
       "lat": 35.8345,
       "lng": 129.2265,
       "contentId": "128526",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/62/2612562_image2_1.jpg"
     },
     {
@@ -481,6 +511,7 @@
       "lat": 35.8389484,
       "lng": 129.2119324,
       "contentId": "1492402",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/71/4056771_image2_1.jpg"
     },
     {
@@ -496,6 +527,7 @@
       "lat": 35.3589668021,
       "lng": 129.3605738299,
       "contentId": "128022",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/50/3583350_image2_1.jpg"
     },
     {
@@ -511,6 +543,7 @@
       "lat": 35.549,
       "lng": 129.295,
       "contentId": "128202",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/43/3422843_image2_1.png"
     },
     {
@@ -526,6 +559,7 @@
       "lat": 37.498,
       "lng": 130.867,
       "contentId": "127503",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/33/3516833_image2_1.jpg"
     },
     {
@@ -541,6 +575,7 @@
       "lat": 33.4588891,
       "lng": 126.9408178,
       "contentId": "126435",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/82/2944282_image2_1.bmp"
     },
     {
@@ -556,6 +591,7 @@
       "lat": 38.163732,
       "lng": 128.4849601,
       "contentId": "125798",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/36/3564436_image2_1.jpg"
     },
     {
@@ -571,6 +607,7 @@
       "lat": 34.8858016084,
       "lng": 127.5092830428,
       "contentId": "126730",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/14/4088614_image2_1.jpg"
     },
     {
@@ -586,6 +623,7 @@
       "lat": 33.2375,
       "lng": 126.425,
       "contentId": "1074432",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/23/3029123_image2_1.jpg"
     },
     {
@@ -601,6 +639,7 @@
       "lat": 35.1590840227225,
       "lng": 129.160278564827,
       "contentId": "126081",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/34/3090534_image2_1.JPG"
     },
     {
@@ -616,6 +655,7 @@
       "lat": 35.7889948,
       "lng": 129.3308902,
       "contentId": "126166",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/70/3506170_image2_1.jpg"
     },
     {
@@ -631,6 +671,7 @@
       "lat": 35.4692113,
       "lng": 126.8420935,
       "contentId": "126237",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/88/4039488_image2_1.jpg"
     },
     {
@@ -646,6 +687,7 @@
       "lat": 34.8265982066,
       "lng": 128.4250764551,
       "contentId": "533874",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/35/3478735_image2_1.jpg"
     },
     {
@@ -661,6 +703,7 @@
       "lat": 37.5510545366352,
       "lng": 126.987882083295,
       "contentId": "126535",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/70/3089670_image2_1.jpg"
     },
     {
@@ -676,6 +719,7 @@
       "lat": 37.574,
       "lng": 126.985,
       "contentId": "264353",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/03/3412103_image2_1.JPG"
     },
     {
@@ -691,6 +735,7 @@
       "lat": 37.566107632,
       "lng": 127.0095709797,
       "contentId": "2470006",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/06/3539606_image2_1.jpg"
     },
     {
@@ -706,6 +751,7 @@
       "lat": 37.4722,
       "lng": 126.6001,
       "contentId": "127585",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/94/3518594_image2_1.jpg"
     },
     {
@@ -721,6 +767,7 @@
       "lat": 37.2818163237,
       "lng": 127.0163732353,
       "contentId": "129437",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/62/4078262_image2_1.jpg"
     },
     {
@@ -736,6 +783,7 @@
       "lat": 37.7439580438,
       "lng": 127.3525384875,
       "contentId": "126668",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/38/4079238_image2_1.jpg"
     },
     {
@@ -751,6 +799,7 @@
       "lat": 37.8034055083,
       "lng": 128.9102102476,
       "contentId": "128758",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/25/4075925_image2_1.jpg"
     },
     {
@@ -766,6 +815,7 @@
       "lat": 38.2118201,
       "lng": 128.6014768,
       "contentId": "125779",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/01/3576201_image2_1.jpg"
     },
     {
@@ -781,6 +831,7 @@
       "lat": 37.8932774475,
       "lng": 127.7236633086,
       "contentId": "2396037",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/64/4087664_image2_1.jpg"
     },
     {
@@ -796,6 +847,7 @@
       "lat": 37.2859,
       "lng": 129.3142,
       "contentId": "125711",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/64/3478664_image2_1.jpg"
     },
     {
@@ -811,6 +863,7 @@
       "lat": 36.3103,
       "lng": 126.5136,
       "contentId": "127866",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/66/3513866_image2_1.jpg"
     },
     {
@@ -826,6 +879,7 @@
       "lat": 36.4631426,
       "lng": 127.1264411,
       "contentId": "125949",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/41/3404541_image2_1.jpg"
     },
     {
@@ -841,6 +895,7 @@
       "lat": 36.3065343564356,
       "lng": 126.906760402927,
       "contentId": "1103949",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/13/3578213_image2_1.jpg"
     },
     {
@@ -856,6 +911,7 @@
       "lat": 36.4628,
       "lng": 127.4918,
       "contentId": "127916",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/44/3502344_image2_1.jpg"
     },
     {
@@ -871,6 +927,7 @@
       "lat": 37.174,
       "lng": 128.208,
       "contentId": "2751857",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/63/3569763_image2_1.jpg"
     },
     {
@@ -886,6 +943,7 @@
       "lat": 36.3685826107,
       "lng": 127.3862516305,
       "contentId": "741658",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/22/3514122_image2_1.jpg"
     },
     {
@@ -901,6 +959,7 @@
       "lat": 34.745035,
       "lng": 127.7670926,
       "contentId": "129152",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/34/3019934_image2_1.jpg"
     },
     {
@@ -916,6 +975,7 @@
       "lat": 34.92860320639828,
       "lng": 127.4996986297289,
       "contentId": "1919548",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/68/3479268_image2_1.jpg"
     },
     {
@@ -931,6 +991,7 @@
       "lat": 35.8155,
       "lng": 127.1498,
       "contentId": "147656",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/45/3365745_image2_1.jpg"
     },
     {
@@ -946,6 +1007,7 @@
       "lat": 35.81382028840563,
       "lng": 127.14928411955064,
       "contentId": "250331",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/71/4094271_image2_1.jpg"
     },
     {
@@ -961,6 +1023,7 @@
       "lat": 34.7899134,
       "lng": 126.3726439,
       "contentId": "126257",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/11/4067011_image2_1.JPG"
     },
     {
@@ -976,6 +1039,7 @@
       "lat": 35.403321,
       "lng": 127.379445,
       "contentId": "126397",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/15/4060015_image2_1.jpg"
     },
     {
@@ -991,6 +1055,7 @@
       "lat": 34.3102860244624,
       "lng": 126.7662771324,
       "contentId": "632089",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/46/3079246_image2_1.jpg"
     },
     {
@@ -1006,6 +1071,7 @@
       "lat": 35.8102049733,
       "lng": 126.4124052922,
       "contentId": "226923",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/11/3362711_image2_1.JPG"
     },
     {
@@ -1021,6 +1087,7 @@
       "lat": 35.1531932737,
       "lng": 129.1189760936,
       "contentId": "126078",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/45/3311245_image2_1.jpg"
     },
     {
@@ -1036,6 +1103,7 @@
       "lat": 35.8365,
       "lng": 129.2115,
       "contentId": "2658227",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/62/3480062_image2_1.jpg"
     },
     {
@@ -1051,6 +1119,7 @@
       "lat": 35.7381286,
       "lng": 129.4868756,
       "contentId": "126218",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/08/3534308_image2_1.jpg"
     },
     {
@@ -1066,6 +1135,7 @@
       "lat": 36.5402566465,
       "lng": 128.5528129272,
       "contentId": "126227",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/11/4064711_image2_1.JPG"
     },
     {
@@ -1081,6 +1151,7 @@
       "lat": 35.828974648,
       "lng": 128.5890300481,
       "contentId": "126132",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/43/3338343_image2_1.jpg"
     },
     {
@@ -1096,6 +1167,7 @@
       "lat": 35.4904590082,
       "lng": 129.4352747432,
       "contentId": "127515",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/16/3583516_image2_1.jpg"
     },
     {
@@ -1111,6 +1183,7 @@
       "lat": 35.1897050218524,
       "lng": 128.080253761737,
       "contentId": "126833",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/65/4062165_image2_1.JPG"
     },
     {
@@ -1126,6 +1199,7 @@
       "lat": 35.155594,
       "lng": 127.68809,
       "contentId": "127664",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/77/3305577_image2_1.jpg"
     },
     {
@@ -1141,6 +1215,7 @@
       "lat": 33.5439000013,
       "lng": 126.668356772,
       "contentId": "126451",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/00/3354600_image2_1.jpg"
     },
     {
@@ -1156,6 +1231,7 @@
       "lat": 33.393776477,
       "lng": 126.239441896,
       "contentId": "127490",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/66/3096066_image2_1.jpg"
     },
     {
@@ -1171,6 +1247,7 @@
       "lat": 33.5280164989348,
       "lng": 126.770664622639,
       "contentId": "126452",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/55/3354155_image2_1.jpg"
     },
     {
@@ -1186,6 +1263,7 @@
       "lat": 33.430250088,
       "lng": 126.9280674087,
       "contentId": "127813",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/83/2513483_image2_1.jpg"
     },
     {
@@ -1201,6 +1279,7 @@
       "lat": 33.3799212,
       "lng": 126.538011,
       "contentId": "127635",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/41/3460441_image2_1.jpg"
     },
     {
@@ -1216,6 +1295,7 @@
       "lat": 34.72,
       "lng": 127.08,
       "contentId": "127869",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/20/4061220_image2_1.jpg"
     },
     {
@@ -1231,6 +1311,7 @@
       "lat": 37.4756,
       "lng": 126.6175,
       "contentId": "264512",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/85/4061685_image2_1.jpg"
     },
     {
@@ -1246,6 +1327,7 @@
       "lat": 37.3937611252816,
       "lng": 126.64462119093,
       "contentId": "2465107",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/19/3512919_image2_1.jpg"
     },
     {
@@ -1261,6 +1343,7 @@
       "lat": 34.7692662,
       "lng": 128.7119207,
       "contentId": "126581",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/24/3543324_image2_1.jpg"
     },
     {
@@ -1276,6 +1359,7 @@
       "lat": 34.8455,
       "lng": 128.4245,
       "contentId": "753306",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/53/3355053_image2_1.jpg"
     },
     {
@@ -1291,6 +1375,7 @@
       "lat": 33.2445,
       "lng": 126.4108,
       "contentId": "126449",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/13/3552513_image2_1.jpg"
     },
     {
@@ -1306,6 +1391,7 @@
       "lat": 35.8605,
       "lng": 128.6065,
       "contentId": "1871383",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/95/2947395_image2_1.jpg"
     },
     {
@@ -1321,6 +1407,7 @@
       "lat": 37.7880092899503,
       "lng": 126.69929799395,
       "contentId": "128168",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/81/4057581_image2_1.jpg"
     },
     {
@@ -1336,6 +1423,7 @@
       "lat": 37.5548307473,
       "lng": 129.1184741143,
       "contentId": "129176",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/84/2741884_image2_1.jpg"
     },
     {
@@ -1351,6 +1439,7 @@
       "lat": 35.1836283,
       "lng": 127.0121775,
       "contentId": "126374",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/74/3532174_image2_1.jpg"
     },
     {
@@ -1366,6 +1455,7 @@
       "lat": 35.25541933990802,
       "lng": 127.49723307855737,
       "contentId": "127923",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/65/3563965_image2_1.jpg"
     },
     {
@@ -1381,6 +1471,7 @@
       "lat": 37.8922987,
       "lng": 126.7440013,
       "contentId": "127548",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/31/3497231_image2_1.jpg"
     },
     {
@@ -1396,6 +1487,7 @@
       "lat": 34.7327358,
       "lng": 128.6839848,
       "contentId": "126224",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/71/3519171_image2_1.jpg"
     },
     {
@@ -1411,6 +1503,7 @@
       "lat": 37.445948,
       "lng": 126.372722,
       "contentId": "128767",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/78/3518478_image2_1.jpg"
     },
     {
@@ -1426,6 +1519,7 @@
       "lat": 37.7722617595,
       "lng": 128.9482754051,
       "contentId": "127722",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/58/4075958_image2_1.jpg"
     },
     {
@@ -1441,6 +1535,7 @@
       "lat": 36.355,
       "lng": 127.345,
       "contentId": "125858",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/42/3035142_image2_1.JPG"
     },
     {
@@ -1456,6 +1551,7 @@
       "lat": 35.9814948,
       "lng": 128.7367522,
       "contentId": "126019",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/99/3028999_image2_1.jpg"
     },
     {
@@ -1471,6 +1567,7 @@
       "lat": 36.0767516,
       "lng": 129.5700631,
       "contentId": "127131",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/52/4056752_image2_1.jpg"
     },
     {
@@ -1486,6 +1583,7 @@
       "lat": 38.0735,
       "lng": 128.6685,
       "contentId": "2501905",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/90/2745190_image2_1.jpg"
     },
     {
@@ -1501,6 +1599,7 @@
       "lat": 38.0229894402,
       "lng": 128.7242655472,
       "contentId": "125701",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/73/2745273_image2_1.jpg"
     },
     {
@@ -1516,6 +1615,7 @@
       "lat": 38.11733156584656,
       "lng": 128.63355006579656,
       "contentId": "125702",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/68/2929768_image2_1.jpg"
     },
     {
@@ -1531,6 +1631,7 @@
       "lat": 38.1301333481,
       "lng": 128.6227575205,
       "contentId": "2710820",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/22/2745222_image2_1.jpg"
     },
     {
@@ -1546,6 +1647,7 @@
       "lat": 37.7319368,
       "lng": 128.5919951,
       "contentId": "125772",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/54/3304054_image2_1.jpg"
     },
     {
@@ -1561,6 +1663,7 @@
       "lat": 37.6895278,
       "lng": 128.7532957,
       "contentId": "129263",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/99/3486899_image2_1.jpg"
     },
     {
@@ -1576,6 +1679,7 @@
       "lat": 37.7311846077,
       "lng": 128.5925086732,
       "contentId": "2022311",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/80/3534880_image2_1.jpg"
     },
     {
@@ -1591,6 +1695,7 @@
       "lat": 37.6122245,
       "lng": 128.3682825,
       "contentId": "130415",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/70/3318470_image2_1.jpg"
     },
     {
@@ -1606,6 +1711,7 @@
       "lat": 34.7992332,
       "lng": 128.0401294,
       "contentId": "129489",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/79/3304479_image2_1.jpg"
     },
     {
@@ -1621,6 +1727,7 @@
       "lat": 34.720841,
       "lng": 127.988094,
       "contentId": "126084",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/01/3583201_image2_1.jpg"
     },
     {
@@ -1636,6 +1743,7 @@
       "lat": 34.7521584,
       "lng": 127.9829959,
       "contentId": "126149",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/04/4082704_image2_1.jpg"
     },
     {
@@ -1651,6 +1759,7 @@
       "lat": 34.828,
       "lng": 127.84,
       "contentId": "129480",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/55/3553955_image2_1.jpg"
     },
     {
@@ -1666,6 +1775,7 @@
       "lat": 37.2436681190706,
       "lng": 126.585257723861,
       "contentId": "126844",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/18/3489718_image2_1.jpg"
     },
     {
@@ -1681,6 +1791,7 @@
       "lat": 37.29982921,
       "lng": 126.7979338201,
       "contentId": "128062",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/35/3558735_image2_1.jpg"
     },
     {
@@ -1696,6 +1807,7 @@
       "lat": 37.31402570568867,
       "lng": 126.86103668377933,
       "contentId": "128826",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/05/3042405_image2_1.JPG"
     },
     {
@@ -1711,6 +1823,7 @@
       "lat": 37.297262,
       "lng": 126.6693532,
       "contentId": "128065",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/46/3529446_image2_1.jpg"
     },
     {
@@ -1726,6 +1839,7 @@
       "lat": 37.7335377029,
       "lng": 126.5171140395,
       "contentId": "1254680",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/71/3364171_image2_1.jpg"
     },
     {
@@ -1741,6 +1855,7 @@
       "lat": 37.73368168599644,
       "lng": 126.51644669989408,
       "contentId": "631066",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/71/3364171_image2_1.jpg"
     },
     {
@@ -1756,6 +1871,7 @@
       "lat": 37.7508294681445,
       "lng": 126.485422800679,
       "contentId": "127184",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/86/4061486_image2_1.jpg"
     },
     {
@@ -1771,6 +1887,7 @@
       "lat": 37.615542,
       "lng": 126.4296828,
       "contentId": "125468",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/92/3000992_image2_1.jpg"
     },
     {
@@ -1786,6 +1903,7 @@
       "lat": 37.9756155,
       "lng": 128.7595565,
       "contentId": "125720",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/07/2738607_image2_1.jpg"
     },
     {
@@ -1801,6 +1919,7 @@
       "lat": 38.0749601,
       "lng": 128.6233056,
       "contentId": "131998",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/04/4068204_image2_1.jpg"
     },
     {
@@ -1816,6 +1935,7 @@
       "lat": 37.658,
       "lng": 128.671,
       "contentId": null,
+      "overview": "평창 대관령의 종합 리조트 단지. 스키·콘서트·스포츠 시설이 모여 있으며 Tour 관광지 본명 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/53/3453253_image2_1.jpg"
     },
     {
@@ -1831,6 +1951,7 @@
       "lat": 37.6281511,
       "lng": 128.6777287,
       "contentId": null,
+      "overview": "평창 대관령의 대표 스키 리조트. 동계 스포츠와 사계절 휴양 시설로 알려져 있으며 Tour 관광지 본명 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/52/3356152_image2_1.jpg"
     },
     {
@@ -1846,6 +1967,7 @@
       "lat": 37.666856,
       "lng": 128.7066309,
       "contentId": null,
+      "overview": "2018 동계올림픽을 기리는 기념 공간. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/53/3453253_image2_1.jpg"
     },
     {
@@ -1861,6 +1983,7 @@
       "lat": 37.27433367068094,
       "lng": 126.84099486048167,
       "contentId": "128066",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/67/3078367_image2_1.jpg"
     },
     {
@@ -1876,6 +1999,7 @@
       "lat": 37.31048,
       "lng": 126.8299264,
       "contentId": null,
+      "overview": "중앙역 일대 — 축제·문화 행사의 열린 광장. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/67/2593767_image2_1.jpg"
     },
     {
@@ -1891,6 +2015,7 @@
       "lat": 37.3267818975,
       "lng": 126.8124400868,
       "contentId": "2615489",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/67/2593767_image2_1.jpg"
     },
     {
@@ -1906,6 +2031,7 @@
       "lat": 37.6882523,
       "lng": 126.3215578,
       "contentId": "125533",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/75/3523075_image2_1.jpg"
     },
     {
@@ -1921,6 +2047,7 @@
       "lat": 37.6977907,
       "lng": 126.3141632,
       "contentId": "127801",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/00/3523000_image2_1.jpg"
     },
     {
@@ -1936,6 +2063,7 @@
       "lat": 37.6325614284,
       "lng": 126.5322409778,
       "contentId": "128030",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/29/4079229_image2_1.JPG"
     },
     {
@@ -1951,6 +2079,7 @@
       "lat": 37.615,
       "lng": 126.72,
       "contentId": "127960",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/78/3467378_image2_1.JPG"
     },
     {
@@ -1966,6 +2095,7 @@
       "lat": 37.65478253960214,
       "lng": 126.69935100537751,
       "contentId": "2653096",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/75/4062875_image2_1.JPG"
     },
     {
@@ -1981,6 +2111,7 @@
       "lat": 37.6247065692,
       "lng": 126.7095744776,
       "contentId": "125558",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/32/3547032_image2_1.jpg"
     },
     {
@@ -1996,6 +2127,7 @@
       "lat": 37.6397071,
       "lng": 126.5416922,
       "contentId": "228863",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/34/3501734_image2_1.jpg"
     },
     {
@@ -2011,6 +2143,7 @@
       "lat": 37.6585,
       "lng": 126.68,
       "contentId": "125544",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/76/3507176_image2_1.jpg"
     },
     {
@@ -2026,6 +2159,7 @@
       "lat": 37.6155,
       "lng": 126.71,
       "contentId": "2633971",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/68/3527768_image2_1.jpg"
     },
     {
@@ -2041,6 +2175,7 @@
       "lat": 37.6895,
       "lng": 126.68,
       "contentId": "125454",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/92/4062892_image2_1.JPG"
     },
     {
@@ -2056,6 +2191,7 @@
       "lat": 37.6652142,
       "lng": 126.7483258,
       "contentId": null,
+      "overview": "고양 일산에 있는 대형 전시·컨벤션 센터로, 국제 전시회와 박람회·컨퍼런스가 열리는 수도권 대표 전시장이다. TourAPI 관광지 상세는 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/83/3553283_image2_1.jpg"
     },
     {
@@ -2071,6 +2207,7 @@
       "lat": 37.660973360108,
       "lng": 126.772797186522,
       "contentId": "2892126",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/17/2892117_image2_1.jpg"
     },
     {
@@ -2086,6 +2223,7 @@
       "lat": 37.6294199238,
       "lng": 126.830911845,
       "contentId": "2551413",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/41/4070841_image2_1.jpg"
     },
     {
@@ -2101,6 +2239,7 @@
       "lat": 37.73355330700013,
       "lng": 126.94482605606281,
       "contentId": "250376",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/03/3335103_image2_1.jpg"
     },
     {
@@ -2116,6 +2255,7 @@
       "lat": 37.6645353,
       "lng": 126.7543548,
       "contentId": "1845517",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/26/3079526_image2_1.jpg"
     },
     {
@@ -2131,6 +2271,7 @@
       "lat": 37.657058,
       "lng": 126.763855,
       "contentId": "127197",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/83/3553283_image2_1.jpg"
     },
     {
@@ -2146,6 +2287,7 @@
       "lat": 37.5960655816,
       "lng": 126.8264548944,
       "contentId": "125562",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/20/4075820_image2_1.jpg"
     },
     {
@@ -2161,6 +2303,7 @@
       "lat": 37.4406831,
       "lng": 126.8661594,
       "contentId": "2733419",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/00/3527200_image2_1.jpg"
     },
     {
@@ -2176,6 +2319,7 @@
       "lat": 37.4653398,
       "lng": 126.8571744,
       "contentId": "2736048",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/00/3527200_image2_1.jpg"
     },
     {
@@ -2191,6 +2335,7 @@
       "lat": 37.4647970389,
       "lng": 126.8463803693,
       "contentId": "999751",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/39/3025639_image2_1.jpg"
     },
     {
@@ -2206,6 +2351,7 @@
       "lat": 37.4355,
       "lng": 126.8855,
       "contentId": null,
+      "overview": "안양천 둔치 — 산책·체육 생태공원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/27/4095727_image2_1.jpg"
     },
     {
@@ -2221,6 +2367,7 @@
       "lat": 37.4335095727,
       "lng": 126.8782866731,
       "contentId": "130707",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/10/3563410_image2_1.jpg"
     },
     {
@@ -2236,6 +2383,7 @@
       "lat": 37.424301751228086,
       "lng": 126.86487703309331,
       "contentId": "2649975",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/27/4095727_image2_1.jpg"
     },
     {
@@ -2251,6 +2399,7 @@
       "lat": 37.4625588826,
       "lng": 126.8729446789,
       "contentId": "2034106",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/57/3567457_image2_1.jpg"
     },
     {
@@ -2266,6 +2415,7 @@
       "lat": 37.4580499,
       "lng": 127.187529,
       "contentId": "750824",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/29/3566829_image2_1.jpg"
     },
     {
@@ -2281,6 +2431,7 @@
       "lat": 37.5454452,
       "lng": 127.2240568,
       "contentId": null,
+      "overview": "하남 미사 일대의 대형 복합 쇼핑몰. 쇼핑·문화·여가가 한곳에 모인 생활 거점으로, Tour 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/99/2900499_image2_1.jpg"
     },
     {
@@ -2296,6 +2447,7 @@
       "lat": 37.5252072139,
       "lng": 127.1851617137,
       "contentId": "529248",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/29/3566829_image2_1.jpg"
     },
     {
@@ -2311,6 +2463,7 @@
       "lat": 37.5416211,
       "lng": 127.2027489,
       "contentId": null,
+      "overview": "하남 전통시장 — 골목 먹거리. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/76/2902476_image2_1.jpg"
     },
     {
@@ -2326,6 +2479,7 @@
       "lat": 37.563,
       "lng": 127.192,
       "contentId": "2900511",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/99/2900499_image2_1.jpg"
     },
     {
@@ -2341,6 +2495,7 @@
       "lat": 37.55,
       "lng": 127.21,
       "contentId": null,
+      "overview": "교산 신도시 근린공원 — 녹지 산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/40/3078540_image2_1.jpg"
     },
     {
@@ -2356,6 +2511,7 @@
       "lat": 37.545513569,
       "lng": 127.2061008962,
       "contentId": "130726",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/40/3078540_image2_1.jpg"
     },
     {
@@ -2371,6 +2527,7 @@
       "lat": 37.148430762561865,
       "lng": 127.25914201476876,
       "contentId": "127556",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/77/3558777_image2_1.jpg"
     },
     {
@@ -2386,6 +2543,7 @@
       "lat": 36.9304,
       "lng": 127.2966,
       "contentId": "125478",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/80/3517680_image2_1.jpg"
     },
     {
@@ -2401,6 +2559,7 @@
       "lat": 37.0895231758,
       "lng": 127.4298268955,
       "contentId": "128287",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/81/3558781_image2_1.jpg"
     },
     {
@@ -2416,6 +2575,7 @@
       "lat": 37.026453,
       "lng": 127.397885,
       "contentId": "125536",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/63/3480763_image2_1.jpg"
     },
     {
@@ -2431,6 +2591,7 @@
       "lat": 37.031919,
       "lng": 127.310201,
       "contentId": "2525563",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/79/3429479_image2_1.jpg"
     },
     {
@@ -2446,6 +2607,7 @@
       "lat": 37.01131785547584,
       "lng": 127.22835590312762,
       "contentId": "130440",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/17/2996017_image2_1.jpg"
     },
     {
@@ -2461,6 +2623,7 @@
       "lat": 37.4177462959,
       "lng": 126.917743214,
       "contentId": "3008259",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/81/3003381_image2_1.jpg"
     },
     {
@@ -2476,6 +2639,7 @@
       "lat": 37.4220525,
       "lng": 126.9234462,
       "contentId": "337412",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/18/3068018_image2_1.JPG"
     },
     {
@@ -2491,6 +2655,7 @@
       "lat": 37.419055390784784,
       "lng": 126.9195745452346,
       "contentId": "125514",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/17/4090517_image2_1.jpg"
     },
     {
@@ -2506,6 +2671,7 @@
       "lat": 37.3974940146321,
       "lng": 126.9194351625828,
       "contentId": "132346",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/17/4090517_image2_1.jpg"
     },
     {
@@ -2521,6 +2687,7 @@
       "lat": 37.4,
       "lng": 126.94,
       "contentId": "814153",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/77/3023877_image2_1.JPG"
     },
     {
@@ -2536,6 +2703,7 @@
       "lat": 37.3901883031,
       "lng": 126.9613442188,
       "contentId": "1624639",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/21/3023821_image2_1.JPG"
     },
     {
@@ -2551,6 +2719,7 @@
       "lat": 37.5045,
       "lng": 126.763,
       "contentId": "126704",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/28/3037328_image2_1.jpg"
     },
     {
@@ -2566,6 +2735,7 @@
       "lat": 37.5035,
       "lng": 126.7665,
       "contentId": "756618",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/95/3037395_image2_1.jpg"
     },
     {
@@ -2581,6 +2751,7 @@
       "lat": 37.4825574465,
       "lng": 126.7665704787,
       "contentId": "2734928",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/58/2735258_image2_1.jpg"
     },
     {
@@ -2596,6 +2767,7 @@
       "lat": 37.5014854032,
       "lng": 126.7441025547,
       "contentId": "558819",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/85/3300185_image2_1.jpg"
     },
     {
@@ -2611,6 +2783,7 @@
       "lat": 37.501555365,
       "lng": 126.7737137403,
       "contentId": "127943",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/80/3508080_image2_1.jpg"
     },
     {
@@ -2626,6 +2799,7 @@
       "lat": 37.50825125,
       "lng": 126.7422053159,
       "contentId": "2470347",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/25/3352425_image2_1.jpg"
     },
     {
@@ -2641,6 +2815,7 @@
       "lat": 37.58,
       "lng": 127.34,
       "contentId": "2602619",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/26/4063126_image2_1.jpg"
     },
     {
@@ -2656,6 +2831,7 @@
       "lat": 37.7527629,
       "lng": 127.333886,
       "contentId": "125459",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/15/3077115_image2_1.jpg"
     },
     {
@@ -2671,6 +2847,7 @@
       "lat": 37.64402204549423,
       "lng": 127.1979651798067,
       "contentId": "250408",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/85/3500285_image2_1.jpg"
     },
     {
@@ -2686,6 +2863,7 @@
       "lat": 37.5687820481,
       "lng": 127.3017415319,
       "contentId": "129516",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/37/3381937_image2_1.JPG"
     },
     {
@@ -2701,6 +2879,7 @@
       "lat": 37.5687820481,
       "lng": 127.3017415319,
       "contentId": "125458",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/21/3077121_image2_1.jpg"
     },
     {
@@ -2716,6 +2895,7 @@
       "lat": 37.6307661,
       "lng": 127.2105223,
       "contentId": "125548",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/06/3500306_image2_1.jpg"
     },
     {
@@ -2731,6 +2911,7 @@
       "lat": 37.7506,
       "lng": 127.1648,
       "contentId": "127497",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/63/3493563_image2_1.jpg"
     },
     {
@@ -2746,6 +2927,7 @@
       "lat": 38.0956743687,
       "lng": 127.3504217471,
       "contentId": "125469",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/47/3022447_image2_1.jpg"
     },
     {
@@ -2761,6 +2943,7 @@
       "lat": 38.0799425,
       "lng": 127.217124,
       "contentId": "2569476",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/83/3496483_image2_1.jpg"
     },
     {
@@ -2776,6 +2959,7 @@
       "lat": 38.0709559,
       "lng": 127.3209633,
       "contentId": "125523",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/47/3022447_image2_1.jpg"
     },
     {
@@ -2791,6 +2975,7 @@
       "lat": 37.9231386,
       "lng": 127.2372216,
       "contentId": "2464201",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/11/3512111_image2_1.jpg"
     },
     {
@@ -2806,6 +2991,7 @@
       "lat": 37.966180805650396,
       "lng": 127.13347323937533,
       "contentId": "127695",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/47/3575647_image2_1.jpg"
     },
     {
@@ -2821,6 +3007,7 @@
       "lat": 37.37,
       "lng": 126.81,
       "contentId": null,
+      "overview": "시흥 능곡 유적 — 선사·역사 공원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/09/3505209_image2_1.jpg"
     },
     {
@@ -2836,6 +3023,7 @@
       "lat": 37.379,
       "lng": 126.805,
       "contentId": null,
+      "overview": "시흥 소프트타운 — 지식산업 단지 거리. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/11/3304111_image2_1.JPG"
     },
     {
@@ -2851,6 +3039,7 @@
       "lat": 37.3895,
       "lng": 126.78,
       "contentId": "756625",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/11/3304111_image2_1.JPG"
     },
     {
@@ -2866,6 +3055,7 @@
       "lat": 37.38,
       "lng": 126.803,
       "contentId": "2747813",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/79/3490179_image2_1.jpg"
     },
     {
@@ -2881,6 +3071,7 @@
       "lat": 37.3619245,
       "lng": 126.7384943,
       "contentId": "128109",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/09/3505209_image2_1.jpg"
     },
     {
@@ -2896,6 +3087,7 @@
       "lat": 37.3872894928566,
       "lng": 126.740249744171,
       "contentId": "127614",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/03/4066803_image2_1.jpg"
     },
     {
@@ -2911,6 +3103,7 @@
       "lat": 37.3179102,
       "lng": 126.9458409,
       "contentId": "2546506",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/45/3549045_image2_1.jpg"
     },
     {
@@ -2926,6 +3119,7 @@
       "lat": 37.308749,
       "lng": 126.9507791,
       "contentId": null,
+      "overview": "의왕 왕송호수 일대의 레일바이크·레일파크 체험 공간. Tour 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/45/3549045_image2_1.jpg"
     },
     {
@@ -2941,6 +3135,7 @@
       "lat": 37.3731008542,
       "lng": 127.0193169915,
       "contentId": "2742259",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/78/4077178_image2_1.jpg"
     },
     {
@@ -2956,6 +3151,7 @@
       "lat": 37.380292,
       "lng": 127.002928,
       "contentId": "126705",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/06/3508506_image2_1.jpg"
     },
     {
@@ -2971,6 +3167,7 @@
       "lat": 37.4109024,
       "lng": 127.0352728,
       "contentId": "125530",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/48/4080448_image2_1.jpg"
     },
     {
@@ -2986,6 +3183,7 @@
       "lat": 37.3140179,
       "lng": 126.9508272,
       "contentId": "2463812",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/03/3058303_image2_1.JPG"
     },
     {
@@ -3001,6 +3199,7 @@
       "lat": 37.5642414,
       "lng": 127.3796079,
       "contentId": "128918",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/94/3513794_image2_1.jpg"
     },
     {
@@ -3016,6 +3215,7 @@
       "lat": 37.5421,
       "lng": 127.3172,
       "contentId": "407051",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/90/3447890_image2_1.jpg"
     },
     {
@@ -3031,6 +3231,7 @@
       "lat": 37.4886,
       "lng": 127.5254,
       "contentId": null,
+      "overview": "양평의 들꽃·정원 테마 수목원. 계절 꽃과 산책로로 알려진 명소로, Tour 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/90/3447890_image2_1.jpg"
     },
     {
@@ -3046,6 +3247,7 @@
       "lat": 37.4971520171,
       "lng": 127.4840159266,
       "contentId": "1926610",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/07/3038307_image2_1.jpg"
     },
     {
@@ -3061,6 +3263,7 @@
       "lat": 37.4899030049,
       "lng": 127.4920987358,
       "contentId": "131988",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/74/2364874_image2_1.jpg"
     },
     {
@@ -3076,6 +3279,7 @@
       "lat": 37.5452,
       "lng": 127.5684,
       "contentId": "125537",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/68/3556368_image2_1.jpg"
     },
     {
@@ -3091,6 +3295,7 @@
       "lat": 37.3211736204431,
       "lng": 127.110115610261,
       "contentId": "1053905",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/63/3078463_image2_1.jpg"
     },
     {
@@ -3106,6 +3311,7 @@
       "lat": 37.28925960959989,
       "lng": 127.21490203107045,
       "contentId": "127797",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/53/3486453_image2_1.jpg"
     },
     {
@@ -3121,6 +3327,7 @@
       "lat": 37.2716,
       "lng": 127.1729,
       "contentId": "3027640",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/70/3560570_image2_1.jpg"
     },
     {
@@ -3136,6 +3343,7 @@
       "lat": 37.1940861439,
       "lng": 127.2784626308,
       "contentId": "127675",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/70/3570870_image2_1.jpg"
     },
     {
@@ -3151,6 +3359,7 @@
       "lat": 37.3147911467191,
       "lng": 127.267789370109,
       "contentId": "809149",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/69/3493769_image2_1.jpg"
     },
     {
@@ -3166,6 +3375,7 @@
       "lat": 37.2594792,
       "lng": 127.1210423,
       "contentId": "125578",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/87/3563987_image2_1.jpg"
     },
     {
@@ -3181,6 +3391,7 @@
       "lat": 37.3700681,
       "lng": 126.9379774,
       "contentId": null,
+      "overview": "산본시장 — 군포 전통시장 골목. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/75/4078075_image2_1.jpg"
     },
     {
@@ -3196,6 +3407,7 @@
       "lat": 37.3504199,
       "lng": 126.9255584,
       "contentId": "125457",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/42/3535642_image2_1.JPG"
     },
     {
@@ -3211,6 +3423,7 @@
       "lat": 37.3236,
       "lng": 126.8885,
       "contentId": "2703447",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/75/3523675_image2_1.jpg"
     },
     {
@@ -3226,6 +3439,7 @@
       "lat": 37.354278817,
       "lng": 126.9258975396,
       "contentId": "2751298",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/75/4078075_image2_1.jpg"
     },
     {
@@ -3241,6 +3455,7 @@
       "lat": 37.3490695499,
       "lng": 126.9182751433,
       "contentId": "2751296",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/83/4078083_image2_1.jpg"
     },
     {
@@ -3256,6 +3471,7 @@
       "lat": 37.61,
       "lng": 127.15,
       "contentId": "2767686",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/49/3520149_image2_1.jpg"
     },
     {
@@ -3271,6 +3487,7 @@
       "lat": 37.59954276883985,
       "lng": 127.13990415013133,
       "contentId": "3090931",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/21/3090921_image2_1.JPG"
     },
     {
@@ -3286,6 +3503,7 @@
       "lat": 37.5888632453693,
       "lng": 127.160053754351,
       "contentId": "129554",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/74/3303974_image2_1.jpg"
     },
     {
@@ -3301,6 +3519,7 @@
       "lat": 37.5744784637,
       "lng": 127.1328627799,
       "contentId": "228874",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/23/4066023_image2_1.jpg"
     },
     {
@@ -3316,6 +3535,7 @@
       "lat": 37.6165166478735,
       "lng": 127.13727795889915,
       "contentId": "125545",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/04/4066104_image2_1.jpg"
     },
     {
@@ -3331,6 +3551,7 @@
       "lat": 37.4340909,
       "lng": 127.0202634,
       "contentId": "126719",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/43/3345743_image2_1.jpg"
     },
     {
@@ -3346,6 +3567,7 @@
       "lat": 37.4282000834531,
       "lng": 126.989202114595,
       "contentId": "130089",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/92/4065392_image2_1.jpg"
     },
     {
@@ -3361,6 +3583,7 @@
       "lat": 37.438119,
       "lng": 127.005777,
       "contentId": "660722",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/92/4065392_image2_1.jpg"
     },
     {
@@ -3376,6 +3599,7 @@
       "lat": 37.433,
       "lng": 126.995,
       "contentId": null,
+      "overview": "맑은누리공원 — 도심 숲 산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/23/3539123_image2_1.jpg"
     },
     {
@@ -3391,6 +3615,7 @@
       "lat": 37.4278367421,
       "lng": 127.0170994086,
       "contentId": "126712",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/23/3539123_image2_1.jpg"
     },
     {
@@ -3406,6 +3631,7 @@
       "lat": 37.4791368,
       "lng": 127.1801588,
       "contentId": "125449",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/56/2612856_image2_1.jpg"
     },
     {
@@ -3421,6 +3647,7 @@
       "lat": 37.4566834,
       "lng": 127.3028094,
       "contentId": "630741",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/08/3527208_image2_1.jpg"
     },
     {
@@ -3436,6 +3663,7 @@
       "lat": 37.3501268,
       "lng": 127.3307188,
       "contentId": "1903260",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/52/3404852_image2_1.jpg"
     },
     {
@@ -3451,6 +3679,7 @@
       "lat": 37.4005355,
       "lng": 127.2204536,
       "contentId": "2615479",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/49/3527249_image2_1.jpg"
     },
     {
@@ -3466,6 +3695,7 @@
       "lat": 37.3419823,
       "lng": 127.2885772,
       "contentId": "2436233",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/32/3482332_image2_1.PNG"
     },
     {
@@ -3481,6 +3711,7 @@
       "lat": 37.1255,
       "lng": 126.6755,
       "contentId": "1932009",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/29/3031629_image2_1.JPG"
     },
     {
@@ -3496,6 +3727,7 @@
       "lat": 37.2055,
       "lng": 127.0755,
       "contentId": "2654624",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/18/3058418_image2_1.jpg"
     },
     {
@@ -3511,6 +3743,7 @@
       "lat": 37.1686580243,
       "lng": 126.6244837546,
       "contentId": "125503",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/89/3330989_image2_1.jpg"
     },
     {
@@ -3526,6 +3759,7 @@
       "lat": 37.2870518725,
       "lng": 126.7390145317,
       "contentId": "2515730",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/36/3551736_image2_1.jpg"
     },
     {
@@ -3541,6 +3775,7 @@
       "lat": 37.1876,
       "lng": 126.6507,
       "contentId": "2514428",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/54/4059254_image2_1.jpg"
     },
     {
@@ -3556,6 +3791,7 @@
       "lat": 37.82,
       "lng": 124.7,
       "contentId": "128012",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/31/2799731_image2_1.jpg"
     },
     {
@@ -3571,6 +3807,7 @@
       "lat": 37.23,
       "lng": 126.15,
       "contentId": "125504",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/02/2676402_image2_1.jpg"
     },
     {
@@ -3586,6 +3823,7 @@
       "lat": 37.97,
       "lng": 124.67,
       "contentId": "125505",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/45/3497845_image2_1.jpg"
     },
     {
@@ -3601,6 +3839,7 @@
       "lat": 37.25,
       "lng": 126.31,
       "contentId": "2782195",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/00/3511200_image2_1.jpg"
     },
     {
@@ -3616,6 +3855,7 @@
       "lat": 37.5406127,
       "lng": 126.3360759,
       "contentId": "128005",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/85/4059985_image2_1.jpg"
     },
     {
@@ -3631,6 +3871,7 @@
       "lat": 37.1673721267,
       "lng": 127.0621968341,
       "contentId": "128986",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/05/4079305_image2_1.jpg"
     },
     {
@@ -3646,6 +3887,7 @@
       "lat": 37.1823666,
       "lng": 127.0206112,
       "contentId": "126845",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/89/3350089_image2_1.jpg"
     },
     {
@@ -3661,6 +3903,7 @@
       "lat": 37.137569,
       "lng": 127.064319,
       "contentId": "2733049",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/05/4079305_image2_1.jpg"
     },
     {
@@ -3676,6 +3919,7 @@
       "lat": 37.1828,
       "lng": 127.019,
       "contentId": "126845",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/89/3350089_image2_1.jpg"
     },
     {
@@ -3691,6 +3935,7 @@
       "lat": 37.3328665,
       "lng": 127.1651631,
       "contentId": null,
+      "overview": "오산천 — 하천·자전거 길. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/05/4079305_image2_1.jpg"
     },
     {
@@ -3706,6 +3951,7 @@
       "lat": 36.862,
       "lng": 127.478,
       "contentId": null,
+      "overview": "미호천생태공원 — 하천·습지 산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/74/3064574_image2_1.JPG"
     },
     {
@@ -3721,6 +3967,7 @@
       "lat": 36.8695620983,
       "lng": 127.4123207495,
       "contentId": "127789",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/74/3064574_image2_1.JPG"
     },
     {
@@ -3736,6 +3983,7 @@
       "lat": 36.8398864577,
       "lng": 127.341130762,
       "contentId": "128057",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/15/3560215_image2_1.jpg"
     },
     {
@@ -3751,6 +3999,7 @@
       "lat": 36.882,
       "lng": 127.421,
       "contentId": "2769739",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/00/3465400_image2_1.JPG"
     },
     {
@@ -3766,6 +4015,7 @@
       "lat": 36.8260662,
       "lng": 127.4933092,
       "contentId": "125973",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/05/4058305_image2_1.JPG"
     },
     {
@@ -3781,6 +4031,7 @@
       "lat": 36.8706753869,
       "lng": 127.4138267161,
       "contentId": "130773",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/66/4083166_image2_1.jpg"
     },
     {
@@ -3796,6 +4047,7 @@
       "lat": 36.8497064593,
       "lng": 127.4350442577,
       "contentId": "125914",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/03/3341303_image2_1.JPG"
     },
     {
@@ -3811,6 +4063,7 @@
       "lat": 36.7685526,
       "lng": 126.9745077,
       "contentId": "3031271",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/67/3031267_image2_1.jpg"
     },
     {
@@ -3826,6 +4079,7 @@
       "lat": 36.8065474284,
       "lng": 127.0311988349,
       "contentId": "125945",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/40/3473040_image2_1.jpg"
     },
     {
@@ -3841,6 +4095,7 @@
       "lat": 36.7920638071,
       "lng": 127.0074899199,
       "contentId": "130063",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/80/3558580_image2_1.jpg"
     },
     {
@@ -3856,6 +4111,7 @@
       "lat": 36.7872,
       "lng": 127.0048,
       "contentId": "125856",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/40/3570140_image2_1.jpg"
     },
     {
@@ -3871,6 +4127,7 @@
       "lat": 36.7833480876,
       "lng": 127.0043015565,
       "contentId": "132495",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/70/3060070_image2_1.jpg"
     },
     {
@@ -3886,6 +4143,7 @@
       "lat": 36.8338567886,
       "lng": 127.1964300734,
       "contentId": "125885",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/30/3535030_image2_1.jpg"
     },
     {
@@ -3901,6 +4159,7 @@
       "lat": 36.7586255622,
       "lng": 127.2964314761,
       "contentId": "699587",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/07/3337207_image2_1.JPG"
     },
     {
@@ -3916,6 +4175,7 @@
       "lat": 36.7818719998,
       "lng": 127.2303981117,
       "contentId": "129790",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/21/3450021_image2_1.jpg"
     },
     {
@@ -3931,6 +4191,7 @@
       "lat": 36.7840481316,
       "lng": 127.1681950985,
       "contentId": "126922",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/32/3560232_image2_1.JPG"
     },
     {
@@ -3946,6 +4207,7 @@
       "lat": 36.8023583,
       "lng": 127.1491953,
       "contentId": "2361452",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/32/3560232_image2_1.JPG"
     },
     {
@@ -3961,6 +4223,7 @@
       "lat": 37.7445653675759,
       "lng": 127.049126105515,
       "contentId": "612807",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/97/3083097_image2_1.png"
     },
     {
@@ -3976,6 +4239,7 @@
       "lat": 37.7332858581,
       "lng": 127.0345167201,
       "contentId": "130409",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/00/3072800_image2_1.jpg"
     },
     {
@@ -3991,6 +4255,7 @@
       "lat": 37.7404127721,
       "lng": 127.0326333546,
       "contentId": "3353324",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/24/3409024_image2_1.jpg"
     },
     {
@@ -4006,6 +4271,7 @@
       "lat": 37.763958,
       "lng": 127.0660928,
       "contentId": "3076879",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/07/3499207_image2_1.jpg"
     },
     {
@@ -4021,6 +4287,7 @@
       "lat": 37.720262256,
       "lng": 127.0279732457,
       "contentId": "488093",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/80/3533080_image2_1.JPG"
     },
     {
@@ -4036,6 +4303,7 @@
       "lat": 37.2976273,
       "lng": 127.6615659,
       "contentId": "126557",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/35/3078435_image2_1.jpg"
     },
     {
@@ -4051,6 +4319,7 @@
       "lat": 37.2339,
       "lng": 127.6956,
       "contentId": "3018216",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/38/3547138_image2_1.jpg"
     },
     {
@@ -4066,6 +4335,7 @@
       "lat": 37.2936234,
       "lng": 127.5706471,
       "contentId": "125573",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/40/4062540_image2_1.jpg"
     },
     {
@@ -4081,6 +4351,7 @@
       "lat": 37.2413722,
       "lng": 127.6125212,
       "contentId": null,
+      "overview": "여주프리미엄아울렛 — 쇼핑·나들이. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/35/3078435_image2_1.jpg"
     },
     {
@@ -4096,6 +4367,7 @@
       "lat": 37.4106520981,
       "lng": 127.5480181724,
       "contentId": "127392",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/37/3060337_image2_1.jpg"
     },
     {
@@ -4111,6 +4383,7 @@
       "lat": 38.0237675343,
       "lng": 126.9730250951,
       "contentId": "125540",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/92/3381592_image2_1.JPG"
     },
     {
@@ -4126,6 +4399,7 @@
       "lat": 38.068896,
       "lng": 127.133054,
       "contentId": "125496",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/05/3532805_image2_1.jpg"
     },
     {
@@ -4141,6 +4415,7 @@
       "lat": 38.130495671,
       "lng": 126.9732080143,
       "contentId": "127162",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/15/4089415_image2_1.jpeg"
     },
     {
@@ -4156,6 +4431,7 @@
       "lat": 37.9833987,
       "lng": 126.8627048,
       "contentId": "128647",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/56/3332556_image2_1.jpg"
     },
     {
@@ -4171,6 +4447,7 @@
       "lat": 38.0112734673,
       "lng": 127.0664418947,
       "contentId": "1284966",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/81/2642381_image2_1.jpg"
     },
     {
@@ -4186,6 +4463,7 @@
       "lat": 38.1848963,
       "lng": 127.2878604,
       "contentId": "2615225",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/67/3351667_image2_1.jpg"
     },
     {
@@ -4201,6 +4479,7 @@
       "lat": 38.2402466777359,
       "lng": 127.218278311256,
       "contentId": "125759",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/95/3493995_image2_1.jpg"
     },
     {
@@ -4216,6 +4495,7 @@
       "lat": 38.2552751974,
       "lng": 127.2019861959,
       "contentId": "264485",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/55/3577155_image2_1.jpg"
     },
     {
@@ -4231,6 +4511,7 @@
       "lat": 38.3095497,
       "lng": 127.3113703,
       "contentId": "264481",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/92/3344292_image2_1.JPG"
     },
     {
@@ -4246,6 +4527,7 @@
       "lat": 37.9055,
       "lng": 127.0555,
       "contentId": null,
+      "overview": "보산동 외국인거리 — 이색 골목. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/03/3474003_image2_1.jpg"
     },
     {
@@ -4261,6 +4543,7 @@
       "lat": 37.9424359268215,
       "lng": 127.0660131531,
       "contentId": "130685",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/03/3474003_image2_1.jpg"
     },
     {
@@ -4276,6 +4559,7 @@
       "lat": 37.8899222467,
       "lng": 127.1371333896,
       "contentId": "2661425",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/18/2661418_image2_1.jpg"
     },
     {
@@ -4291,6 +4575,7 @@
       "lat": 37.9480012,
       "lng": 127.0608178,
       "contentId": "127513",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/03/3474003_image2_1.jpg"
     },
     {
@@ -4306,6 +4591,7 @@
       "lat": 37.27966828086488,
       "lng": 127.4278678614609,
       "contentId": "1624755",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/89/4056989_image2_1.jpg"
     },
     {
@@ -4321,6 +4607,7 @@
       "lat": 37.1951,
       "lng": 127.3482,
       "contentId": "127978",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/94/3490694_image2_1.jpg"
     },
     {
@@ -4336,6 +4623,7 @@
       "lat": 37.1972,
       "lng": 127.4014,
       "contentId": null,
+      "overview": "별빛정원우주 — 야경·정원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/89/4056989_image2_1.jpg"
     },
     {
@@ -4351,6 +4639,7 @@
       "lat": 37.27489485805336,
       "lng": 127.42732257839558,
       "contentId": "3023991",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/65/3023965_image2_1.jpg"
     },
     {
@@ -4366,6 +4655,7 @@
       "lat": 37.08076145758263,
       "lng": 127.05272169004898,
       "contentId": "1914768",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/87/3523987_image2_1.jpg"
     },
     {
@@ -4381,6 +4671,7 @@
       "lat": 37.02,
       "lng": 127.08,
       "contentId": null,
+      "overview": "미르섬 — 안성천·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/82/3096782_image2_1.jpg"
     },
     {
@@ -4396,6 +4687,7 @@
       "lat": 37.05,
       "lng": 127.12,
       "contentId": "127176",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/71/3523971_image2_1.jpg"
     },
     {
@@ -4411,6 +4703,7 @@
       "lat": 36.96,
       "lng": 127.05,
       "contentId": "127562",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/70/3514170_image2_1.jpg"
     },
     {
@@ -4426,6 +4719,7 @@
       "lat": 37.3994509348789,
       "lng": 128.049844503067,
       "contentId": "125761",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/48/3523748_image2_1.jpg"
     },
     {
@@ -4441,6 +4735,7 @@
       "lat": 37.4153325754,
       "lng": 127.8234091043,
       "contentId": "2633832",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/08/3584408_image2_1.jpg"
     },
     {
@@ -4456,6 +4751,7 @@
       "lat": 37.3343754538755,
       "lng": 127.93539604152095,
       "contentId": "2470366",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/63/3558463_image2_1.JPG"
     },
     {
@@ -4471,6 +4767,7 @@
       "lat": 37.3355368,
       "lng": 128.049952,
       "contentId": "125587",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/26/4057126_image2_1.jpg"
     },
     {
@@ -4486,6 +4783,7 @@
       "lat": 37.8221988195,
       "lng": 127.0950336394,
       "contentId": "2751265",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/81/3409281_image2_1.jpg"
     },
     {
@@ -4501,6 +4799,7 @@
       "lat": 37.7255,
       "lng": 126.9855,
       "contentId": "127968",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/63/3067663_image2_1.jpg"
     },
     {
@@ -4516,6 +4815,7 @@
       "lat": 37.732870481,
       "lng": 126.9492661845,
       "contentId": "2790984",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/67/3331967_image2_1.jpg"
     },
     {
@@ -4531,6 +4831,7 @@
       "lat": 37.8454069,
       "lng": 127.1057166,
       "contentId": "126544",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/65/3350065_image2_1.jpg"
     },
     {
@@ -4546,6 +4847,7 @@
       "lat": 37.8794639,
       "lng": 128.2910615,
       "contentId": "125627",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/66/2616266_image2_1.bmp"
     },
     {
@@ -4561,6 +4863,7 @@
       "lat": 38.21,
       "lng": 128.12,
       "contentId": "128702",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/11/3590111_image2_1.jpg"
     },
     {
@@ -4576,6 +4879,7 @@
       "lat": 37.9223698456,
       "lng": 128.3995675048,
       "contentId": "126677",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/55/3540655_image2_1.jpg"
     },
     {
@@ -4591,6 +4895,7 @@
       "lat": 38.1651167536,
       "lng": 128.3743730289,
       "contentId": "125767",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/31/4074631_image2_1.jpg"
     },
     {
@@ -4606,6 +4911,7 @@
       "lat": 38.1818139,
       "lng": 128.3018336,
       "contentId": "125661",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/58/3042058_image2_1.jpg"
     },
     {
@@ -4621,6 +4927,7 @@
       "lat": 38.05,
       "lng": 128.25,
       "contentId": "1818945",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/33/3558333_image2_1.jpg"
     },
     {
@@ -4636,6 +4943,7 @@
       "lat": 38.0012086833,
       "lng": 128.2950634635,
       "contentId": "2433873",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/15/2598215_image2_1.png"
     },
     {
@@ -4651,6 +4959,7 @@
       "lat": 37.1293151,
       "lng": 128.5328946,
       "contentId": "125724",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/87/3374987_image2_1.JPG"
     },
     {
@@ -4666,6 +4975,7 @@
       "lat": 37.2875126,
       "lng": 128.5585002,
       "contentId": "2669251",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/13/3379313_image2_1.JPG"
     },
     {
@@ -4681,6 +4991,7 @@
       "lat": 37.198366,
       "lng": 128.486777,
       "contentId": "127740",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/41/3499341_image2_1.jpg"
     },
     {
@@ -4696,6 +5007,7 @@
       "lat": 37.2057245,
       "lng": 128.4330626,
       "contentId": "126887",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/09/4041409_image2_1.png"
     },
     {
@@ -4711,6 +5023,7 @@
       "lat": 37.1962741,
       "lng": 128.4525615,
       "contentId": "125794",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/15/4041415_image2_1.png"
     },
     {
@@ -4726,6 +5039,7 @@
       "lat": 37.1751636,
       "lng": 128.4446219,
       "contentId": "125785",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/65/4041365_image2_1.jpg"
     },
     {
@@ -4741,6 +5055,7 @@
       "lat": 37.2195343,
       "lng": 128.350964,
       "contentId": "779594",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/34/2922034_image2_1.jpg"
     },
     {
@@ -4756,6 +5071,7 @@
       "lat": 38.4464534613551,
       "lng": 128.459789156608,
       "contentId": "128749",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/50/3515850_image2_1.jpg"
     },
     {
@@ -4771,6 +5087,7 @@
       "lat": 38.5867125,
       "lng": 128.3748799,
       "contentId": "128171",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/54/2599054_image2_1.jpg"
     },
     {
@@ -4786,6 +5103,7 @@
       "lat": 38.34,
       "lng": 128.52,
       "contentId": "127874",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/14/3516814_image2_1.jpg"
     },
     {
@@ -4801,6 +5119,7 @@
       "lat": 38.275,
       "lng": 128.555,
       "contentId": "125684",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/82/3516882_image2_1.jpg"
     },
     {
@@ -4816,6 +5135,7 @@
       "lat": 38.4721639,
       "lng": 128.443693,
       "contentId": "125706",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/80/4059880_image2_1.jpg"
     },
     {
@@ -4831,6 +5151,7 @@
       "lat": 38.5763824,
       "lng": 128.3827044,
       "contentId": "778140",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/51/2921751_image2_1.jpg"
     },
     {
@@ -4846,6 +5167,7 @@
       "lat": 37.8655595924949,
       "lng": 127.979484575743,
       "contentId": "126905",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/60/3494160_image2_1.jpg"
     },
     {
@@ -4861,6 +5183,7 @@
       "lat": 37.8653759,
       "lng": 128.4641845,
       "contentId": "1837460",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/86/1732286_image2_1.jpg"
     },
     {
@@ -4876,6 +5199,7 @@
       "lat": 37.6987235582,
       "lng": 127.9592113786,
       "contentId": "125764",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/82/3532982_image2_1.jpg"
     },
     {
@@ -4891,6 +5215,7 @@
       "lat": 37.7030542408,
       "lng": 127.6951129928,
       "contentId": "1626062",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/45/3422445_image2_1.jpg"
     },
     {
@@ -4906,6 +5231,7 @@
       "lat": 37.6417686,
       "lng": 127.6874691,
       "contentId": "136636",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/17/4071117_image2_1.jpg"
     },
     {
@@ -4921,6 +5247,7 @@
       "lat": 37.830824,
       "lng": 128.4689196,
       "contentId": "1899635",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/70/3494170_image2_1.jpg"
     },
     {
@@ -4936,6 +5263,7 @@
       "lat": 38.0689307367,
       "lng": 128.0296771827,
       "contentId": "800067",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/47/4081747_image2_1.jpg"
     },
     {
@@ -4951,6 +5279,7 @@
       "lat": 38.2726591,
       "lng": 127.9939994,
       "contentId": "126603",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/00/4081700_image2_1.jpg"
     },
     {
@@ -4966,6 +5295,7 @@
       "lat": 38.0962972045,
       "lng": 127.9815974137,
       "contentId": "130493",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/78/3533378_image2_1.jpg"
     },
     {
@@ -4981,6 +5311,7 @@
       "lat": 38.328426,
       "lng": 128.1270817,
       "contentId": "125809",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/52/3500052_image2_1.jpg"
     },
     {
@@ -4996,6 +5327,7 @@
       "lat": 38.1306356264,
       "lng": 127.9828067282,
       "contentId": "2713392",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/23/4081723_image2_1.jpg"
     },
     {
@@ -5011,6 +5343,7 @@
       "lat": 38.2899471887,
       "lng": 128.1455432111,
       "contentId": "731520",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/63/3332763_image2_1.jpg"
     },
     {
@@ -5026,6 +5359,7 @@
       "lat": 37.2524,
       "lng": 128.7753,
       "contentId": "125616",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/52/3414852_image2_1.jpg"
     },
     {
@@ -5041,6 +5375,7 @@
       "lat": 37.4482,
       "lng": 128.6641,
       "contentId": "125777",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/44/4073444_image2_1.jpg"
     },
     {
@@ -5056,6 +5391,7 @@
       "lat": 37.1830427,
       "lng": 128.8926904,
       "contentId": "125765",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/52/3331952_image2_1.jpg"
     },
     {
@@ -5071,6 +5407,7 @@
       "lat": 37.20730902163462,
       "lng": 128.83908825325764,
       "contentId": "1362194",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/56/3578056_image2_1.jpg"
     },
     {
@@ -5086,6 +5423,7 @@
       "lat": 37.3508184512,
       "lng": 128.7905635121,
       "contentId": "128661",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/49/4090149_image2_1.jpg"
     },
     {
@@ -5101,6 +5439,7 @@
       "lat": 37.1929,
       "lng": 129.0378,
       "contentId": "127537",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/80/3588580_image2_1.jpg"
     },
     {
@@ -5116,6 +5455,7 @@
       "lat": 37.1144170486,
       "lng": 129.0372457998,
       "contentId": "2524183",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/33/3498233_image2_1.jpg"
     },
     {
@@ -5131,6 +5471,7 @@
       "lat": 37.0963949,
       "lng": 128.9165488,
       "contentId": "1704494",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/21/3506421_image2_1.jpg"
     },
     {
@@ -5146,6 +5487,7 @@
       "lat": 37.1173761,
       "lng": 128.9505568,
       "contentId": "2610078",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/67/3514067_image2_1.jpg"
     },
     {
@@ -5161,6 +5503,7 @@
       "lat": 37.1727622365,
       "lng": 128.9910509427,
       "contentId": "125740",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/02/3564402_image2_1.jpg"
     },
     {
@@ -5176,6 +5519,7 @@
       "lat": 36.941986394731835,
       "lng": 129.27902009739444,
       "contentId": "127921",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/16/3591016_image2_1.jpg"
     },
     {
@@ -5191,6 +5535,7 @@
       "lat": 36.8874,
       "lng": 129.2486,
       "contentId": null,
+      "overview": "금강소나무숲길 — 원시림 트레킹. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -5206,6 +5551,7 @@
       "lat": 37.0792073,
       "lng": 129.2842231,
       "contentId": "126114",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/33/3503533_image2_1.jpg"
     },
     {
@@ -5221,6 +5567,7 @@
       "lat": 36.9572250252,
       "lng": 129.379106233,
       "contentId": "126113",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/37/3459437_image2_1.jpg"
     },
     {
@@ -5236,6 +5583,7 @@
       "lat": 36.6750445745,
       "lng": 129.4420091571,
       "contentId": "129015",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/91/3038291_image2_1.JPG"
     },
     {
@@ -5251,6 +5599,7 @@
       "lat": 37.4090665582075,
       "lng": 128.1526685784584,
       "contentId": "128074",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/51/3577651_image2_1.jpg"
     },
     {
@@ -5266,6 +5615,7 @@
       "lat": 37.5224600610358,
       "lng": 128.291886878335,
       "contentId": "125266",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/63/4096163_image2_1.jpg"
     },
     {
@@ -5281,6 +5631,7 @@
       "lat": 37.6060632778332,
       "lng": 128.264539774299,
       "contentId": "125611",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/75/4068575_image2_1.jpg"
     },
     {
@@ -5296,6 +5647,7 @@
       "lat": 37.5466972,
       "lng": 128.038822,
       "contentId": "127809",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/83/2604883_image2_1.jpg"
     },
     {
@@ -5311,6 +5663,7 @@
       "lat": 38.026,
       "lng": 127.548,
       "contentId": "128094",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/19/2675219_image2_1.jpg"
     },
     {
@@ -5326,6 +5679,7 @@
       "lat": 38.1442141,
       "lng": 127.9081864,
       "contentId": "125801",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/25/2711025_image2_1.jpg"
     },
     {
@@ -5341,6 +5695,7 @@
       "lat": 38.2065846349,
       "lng": 127.8501282864,
       "contentId": "2744477",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/48/2745348_image2_1.JPG"
     },
     {
@@ -5356,6 +5711,7 @@
       "lat": 38.0944886,
       "lng": 127.6920794,
       "contentId": "128101",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/41/3484941_image2_1.JPG"
     },
     {
@@ -5371,6 +5727,7 @@
       "lat": 37.1081362,
       "lng": 127.8159288,
       "contentId": null,
+      "overview": "비내섬 — 남한강 생태섬. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -5386,6 +5743,7 @@
       "lat": 36.9432,
       "lng": 127.8854,
       "contentId": "2761695",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/71/3560671_image2_1.JPG"
     },
     {
@@ -5401,6 +5759,7 @@
       "lat": 37.0168489,
       "lng": 127.866461,
       "contentId": "128623",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/48/3535548_image2_1.jpg"
     },
     {
@@ -5416,6 +5775,7 @@
       "lat": 37.016135547587,
       "lng": 127.865440178499,
       "contentId": "130081",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/46/3560546_image2_1.JPG"
     },
     {
@@ -5431,6 +5791,7 @@
       "lat": 36.9804051,
       "lng": 128.0056412,
       "contentId": "125872",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/95/3560695_image2_1.JPG"
     },
     {
@@ -5446,6 +5807,7 @@
       "lat": 36.9880101,
       "lng": 127.8991792,
       "contentId": "125870",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/17/3561117_image2_1.JPG"
     },
     {
@@ -5461,6 +5823,7 @@
       "lat": 36.82,
       "lng": 127.61,
       "contentId": "2633956",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/87/3457387_image2_1.jpg"
     },
     {
@@ -5476,6 +5839,7 @@
       "lat": 36.79,
       "lng": 127.58,
       "contentId": "2732536",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/37/3570937_image2_1.jpg"
     },
     {
@@ -5491,6 +5855,7 @@
       "lat": 36.785,
       "lng": 127.59,
       "contentId": "2407325",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/20/4078020_image2_1.jpg"
     },
     {
@@ -5506,6 +5871,7 @@
       "lat": 36.81,
       "lng": 127.6,
       "contentId": "2633956",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/87/3457387_image2_1.jpg"
     },
     {
@@ -5521,6 +5887,7 @@
       "lat": 36.84,
       "lng": 127.62,
       "contentId": "1087114",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/46/4077446_image2_1.jpg"
     },
     {
@@ -5536,6 +5903,7 @@
       "lat": 36.7640907,
       "lng": 127.5956093,
       "contentId": "1938433",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/60/4078060_image2_1.jpg"
     },
     {
@@ -5551,6 +5919,7 @@
       "lat": 36.4955,
       "lng": 127.285,
       "contentId": "2675068",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/89/4065589_image2_1.jpg"
     },
     {
@@ -5566,6 +5935,7 @@
       "lat": 36.5015835,
       "lng": 127.2731994,
       "contentId": null,
+      "overview": "세종시에 있는 대통령기록관. 역대 대통령 기록과 전시를 만날 수 있으며 Tour 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -5581,6 +5951,7 @@
       "lat": 36.5054451,
       "lng": 127.2559983,
       "contentId": "1951612",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/09/3008609_image2_1.jpg"
     },
     {
@@ -5596,6 +5967,7 @@
       "lat": 36.6708422,
       "lng": 127.2094959,
       "contentId": "730441",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/36/4058636_image2_1.jpg"
     },
     {
@@ -5611,6 +5983,7 @@
       "lat": 36.4950339,
       "lng": 127.2758789,
       "contentId": "2758042",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/82/3522482_image2_1.jpg"
     },
     {
@@ -5626,6 +5999,7 @@
       "lat": 36.5020984,
       "lng": 127.2762464,
       "contentId": "1946955",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/76/3353976_image2_1.jpg"
     },
     {
@@ -5641,6 +6015,7 @@
       "lat": 36.60378976091961,
       "lng": 126.41140862077368,
       "contentId": "125880",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/19/3499219_image2_1.jpg"
     },
     {
@@ -5656,6 +6031,7 @@
       "lat": 36.7468958,
       "lng": 126.5902297,
       "contentId": "125908",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/46/3560046_image2_1.jpg"
     },
     {
@@ -5671,6 +6047,7 @@
       "lat": 36.703958,
       "lng": 126.4121032,
       "contentId": "125879",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/89/3567089_image2_1.jpg"
     },
     {
@@ -5686,6 +6063,7 @@
       "lat": 36.7132,
       "lng": 126.5493,
       "contentId": "125990",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/01/2671501_image2_1.jpg"
     },
     {
@@ -5701,6 +6079,7 @@
       "lat": 36.782599,
       "lng": 126.4558166,
       "contentId": null,
+      "overview": "동부시장 — 서산 전통시장. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -5716,6 +6095,7 @@
       "lat": 36.8084,
       "lng": 126.3668,
       "contentId": "126586",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/32/1919432_image2_1.jpg"
     },
     {
@@ -5731,6 +6111,7 @@
       "lat": 36.5438225,
       "lng": 127.8349663,
       "contentId": "125906",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/76/4077376_image2_1.jpg"
     },
     {
@@ -5746,6 +6127,7 @@
       "lat": 36.4887273864,
       "lng": 127.7421281216,
       "contentId": "125989",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/93/4058793_image2_1.png"
     },
     {
@@ -5761,6 +6143,7 @@
       "lat": 36.5333074,
       "lng": 127.8265805,
       "contentId": "1958113",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/84/3082484_image2_1.JPG"
     },
     {
@@ -5776,6 +6159,7 @@
       "lat": 36.567836,
       "lng": 127.862182,
       "contentId": "2604711",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/13/4008613_image2_1.jpg"
     },
     {
@@ -5791,6 +6175,7 @@
       "lat": 36.5175125652,
       "lng": 127.8154471804,
       "contentId": "126009",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/85/3571785_image2_1.jpg"
     },
     {
@@ -5806,6 +6191,7 @@
       "lat": 36.4336054,
       "lng": 126.7599886,
       "contentId": "127852",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/67/4075667_image2_1.jpg"
     },
     {
@@ -5821,6 +6207,7 @@
       "lat": 36.4462646,
       "lng": 127.0076234,
       "contentId": "128041",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/63/3497363_image2_1.jpg"
     },
     {
@@ -5836,6 +6223,7 @@
       "lat": 36.4173606,
       "lng": 126.8598514,
       "contentId": "125900",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/58/3476658_image2_1.jpg"
     },
     {
@@ -5851,6 +6239,7 @@
       "lat": 36.4355,
       "lng": 126.8755,
       "contentId": "1977629",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/57/4069057_image2_1.jpg"
     },
     {
@@ -5866,6 +6255,7 @@
       "lat": 36.4130234,
       "lng": 126.8848823,
       "contentId": "125819",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/67/3027467_image2_1.jpg"
     },
     {
@@ -5881,6 +6271,7 @@
       "lat": 36.8620572,
       "lng": 126.8361862,
       "contentId": "126847",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/76/3569276_image2_1.jpg"
     },
     {
@@ -5896,6 +6287,7 @@
       "lat": 36.8955,
       "lng": 126.6555,
       "contentId": "127707",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/98/3558398_image2_1.jpg"
     },
     {
@@ -5911,6 +6303,7 @@
       "lat": 36.9457603,
       "lng": 126.8519709,
       "contentId": null,
+      "overview": "당진항 — 서해 항구. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -5926,6 +6319,7 @@
       "lat": 36.948367696,
       "lng": 126.8321237196,
       "contentId": "250160",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/72/3023672_image2_1.JPG"
     },
     {
@@ -5941,6 +6335,7 @@
       "lat": 36.8204483065,
       "lng": 126.7857147254,
       "contentId": "125969",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/84/3535184_image2_1.jpg"
     },
     {
@@ -5956,6 +6351,7 @@
       "lat": 36.7488832,
       "lng": 127.8329624,
       "contentId": "1948361",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/29/3488229_image2_1.jpg"
     },
     {
@@ -5971,6 +6367,7 @@
       "lat": 36.835,
       "lng": 127.878,
       "contentId": "2379537",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/50/4041850_image2_1.jpg"
     },
     {
@@ -5986,6 +6383,7 @@
       "lat": 36.7612296,
       "lng": 127.8896301,
       "contentId": "125835",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/11/3534211_image2_1.jpg"
     },
     {
@@ -6001,6 +6399,7 @@
       "lat": 36.8116053214,
       "lng": 128.0470598431,
       "contentId": "125432",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/07/3058707_image2_1.JPG"
     },
     {
@@ -6016,6 +6415,7 @@
       "lat": 36.6688340823,
       "lng": 127.8133764693,
       "contentId": "127474",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/84/3059184_image2_1.jpg"
     },
     {
@@ -6031,6 +6431,7 @@
       "lat": 36.3481,
       "lng": 128.1881,
       "contentId": "126034",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/90/3082790_image2_1.jpg"
     },
     {
@@ -6046,6 +6447,7 @@
       "lat": 36.4582774,
       "lng": 128.2437677,
       "contentId": "126125",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/90/3082790_image2_1.jpg"
     },
     {
@@ -6061,6 +6463,7 @@
       "lat": 36.4458843813,
       "lng": 128.2567987281,
       "contentId": "2037694",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/37/3573537_image2_1.JPG"
     },
     {
@@ -6076,6 +6479,7 @@
       "lat": 36.458069341,
       "lng": 128.2405250433,
       "contentId": "1181485",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/33/3579433_image2_1.jpg"
     },
     {
@@ -6091,6 +6495,7 @@
       "lat": 36.434005,
       "lng": 128.249076,
       "contentId": null,
+      "overview": "상주보 — 낙동강 보·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -6106,6 +6511,7 @@
       "lat": 36.5322955079,
       "lng": 128.0391767916,
       "contentId": "252565",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/16/3579416_image2_1.jpg"
     },
     {
@@ -6121,6 +6527,7 @@
       "lat": 36.3650187978,
       "lng": 127.1875769727,
       "contentId": "125891",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/19/3533519_image2_1.jpg"
     },
     {
@@ -6136,6 +6543,7 @@
       "lat": 36.3664228,
       "lng": 127.2448838,
       "contentId": null,
+      "overview": "계룡산자연사박물관 — 화석·자연사. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -6151,6 +6559,7 @@
       "lat": 36.3568257226531,
       "lng": 127.232444467616,
       "contentId": "125817",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/73/3509273_image2_1.jpg"
     },
     {
@@ -6166,6 +6575,7 @@
       "lat": 36.3532371,
       "lng": 127.2197807,
       "contentId": "125893",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/71/3590671_image2_1.jpg"
     },
     {
@@ -6181,6 +6591,7 @@
       "lat": 36.3355165551,
       "lng": 127.1839253154,
       "contentId": "125889",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/72/3550972_image2_1.jpg"
     },
     {
@@ -6196,6 +6607,7 @@
       "lat": 36.761552,
       "lng": 128.077002,
       "contentId": "126017",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/17/4063417_image2_1.jpg"
     },
     {
@@ -6211,6 +6623,7 @@
       "lat": 36.7616532703,
       "lng": 128.0770030316,
       "contentId": "2610293",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/10/2947510_image2_1.jpg"
     },
     {
@@ -6226,6 +6639,7 @@
       "lat": 36.645264,
       "lng": 128.066415,
       "contentId": null,
+      "overview": "문경석탄박물관 — 탄광 역사. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -6241,6 +6655,7 @@
       "lat": 36.7,
       "lng": 128.15,
       "contentId": "2633894",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/57/3517057_image2_1.jpg"
     },
     {
@@ -6256,6 +6671,7 @@
       "lat": 36.6620739267,
       "lng": 128.1264681092,
       "contentId": "126570",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/80/3584880_image2_1.jpg"
     },
     {
@@ -6271,6 +6687,7 @@
       "lat": 36.210222,
       "lng": 127.704662,
       "contentId": "130443",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/81/3581881_image2_1.jpg"
     },
     {
@@ -6286,6 +6703,7 @@
       "lat": 36.1255,
       "lng": 127.8555,
       "contentId": "125839",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/27/3082527_image2_1.jpg"
     },
     {
@@ -6301,6 +6719,7 @@
       "lat": 36.1555,
       "lng": 127.7855,
       "contentId": "1855755",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/04/2949504_image2_1.jpg"
     },
     {
@@ -6316,6 +6735,7 @@
       "lat": 36.15813,
       "lng": 127.6104873,
       "contentId": "337518",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/44/3059844_image2_1.JPG"
     },
     {
@@ -6331,6 +6751,7 @@
       "lat": 36.22824,
       "lng": 127.88763,
       "contentId": "2606381",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/60/3543160_image2_1.jpg"
     },
     {
@@ -6346,6 +6767,7 @@
       "lat": 37.0080825871478,
       "lng": 128.829925664029,
       "contentId": "2508220",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/34/3073134_image2_1.jpg"
     },
     {
@@ -6361,6 +6783,7 @@
       "lat": 36.9325978,
       "lng": 129.0585784,
       "contentId": null,
+      "overview": "분천역 — V-train·산타마을. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -6376,6 +6799,7 @@
       "lat": 36.789,
       "lng": 128.919,
       "contentId": null,
+      "overview": "청량사 — 청량산 사찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -6391,6 +6815,7 @@
       "lat": 36.792,
       "lng": 128.917,
       "contentId": "126021",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/21/3042521_image2_1.jpg"
     },
     {
@@ -6406,6 +6831,7 @@
       "lat": 37.1218427,
       "lng": 127.6409584,
       "contentId": "1114686",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/53/3576253_image2_1.jpg"
     },
     {
@@ -6421,6 +6847,7 @@
       "lat": 36.992,
       "lng": 127.592,
       "contentId": null,
+      "overview": "금왕온천 — 음성 온천. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -6436,6 +6863,7 @@
       "lat": 36.955,
       "lng": 127.705,
       "contentId": null,
+      "overview": "수정산산림욕장 — 숲·산림욕. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -6451,6 +6879,7 @@
       "lat": 36.901,
       "lng": 127.652,
       "contentId": null,
+      "overview": "원남저수지 — 수변·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -6466,6 +6895,7 @@
       "lat": 36.0544668,
       "lng": 127.4759977,
       "contentId": "125888",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/65/3559665_image2_1.jpg"
     },
     {
@@ -6481,6 +6911,7 @@
       "lat": 36.0785,
       "lng": 127.4255,
       "contentId": "126572",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/98/3345298_image2_1.jpg"
     },
     {
@@ -6496,6 +6927,7 @@
       "lat": 36.0777085,
       "lng": 127.4585692,
       "contentId": "126811",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/65/3559665_image2_1.jpg"
     },
     {
@@ -6511,6 +6943,7 @@
       "lat": 36.1305992,
       "lng": 127.4927595,
       "contentId": null,
+      "overview": "칠백의총 — 임진왜란 충혼. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -6526,6 +6959,7 @@
       "lat": 36.5379350075214,
       "lng": 126.470993432407,
       "contentId": "129054",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/19/3338019_image2_1.jpg"
     },
     {
@@ -6541,6 +6975,7 @@
       "lat": 36.5225,
       "lng": 126.4825,
       "contentId": null,
+      "overview": "남당리 해안 — 갯벌·노을. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -6556,6 +6991,7 @@
       "lat": 36.644146801,
       "lng": 126.6495123169,
       "contentId": "125821",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/35/3340035_image2_1.jpg"
     },
     {
@@ -6571,6 +7007,7 @@
       "lat": 36.5997000641,
       "lng": 126.6611461613,
       "contentId": "2678981",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/77/2678977_image2_1.bmp"
     },
     {
@@ -6586,6 +7023,7 @@
       "lat": 36.2407281973,
       "lng": 127.2293710155,
       "contentId": "125899",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/77/3050177_image2_1.JPG"
     },
     {
@@ -6601,6 +7039,7 @@
       "lat": 36.1888348777,
       "lng": 127.1136855228,
       "contentId": "125905",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/30/3533430_image2_1.jpg"
     },
     {
@@ -6616,6 +7055,7 @@
       "lat": 36.1923939899,
       "lng": 127.1814015962,
       "contentId": null,
+      "overview": "백제군사박물관 — 계백·황산벌. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -6631,6 +7071,7 @@
       "lat": 36.1783768,
       "lng": 127.1798397,
       "contentId": "2719582",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/59/3577059_image2_1.jpg"
     },
     {
@@ -6646,6 +7087,7 @@
       "lat": 36.3519815498,
       "lng": 127.6645652307,
       "contentId": "2610563",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/16/3547416_image2_1.jpg"
     },
     {
@@ -6661,6 +7103,7 @@
       "lat": 36.3295181287,
       "lng": 127.5558725813,
       "contentId": null,
+      "overview": "이지당 — 옥천 정자. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -6676,6 +7119,7 @@
       "lat": 36.278,
       "lng": 127.565,
       "contentId": null,
+      "overview": "장계관광지 — 금강 변 휴양. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -6691,6 +7135,7 @@
       "lat": 36.3179368182,
       "lng": 127.5864648008,
       "contentId": "1954386",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/41/3336241_image2_1.jpg"
     },
     {
@@ -6706,6 +7151,7 @@
       "lat": 36.522,
       "lng": 127.265,
       "contentId": null,
+      "overview": "고복자연공원 — 호수·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/76/3353976_image2_1.jpg"
     },
     {
@@ -6721,6 +7167,7 @@
       "lat": 36.495,
       "lng": 127.285,
       "contentId": "2675068",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/89/4065589_image2_1.jpg"
     },
     {
@@ -6736,6 +7183,7 @@
       "lat": 36.565,
       "lng": 127.295,
       "contentId": "730441",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/36/4058636_image2_1.jpg"
     },
     {
@@ -6751,6 +7199,7 @@
       "lat": 36.599517,
       "lng": 127.2277144,
       "contentId": null,
+      "overview": "연기대첩비공원 — 역사·기념공원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/70/3342770_image2_1.JPG"
     },
     {
@@ -6766,6 +7215,7 @@
       "lat": 36.6655,
       "lng": 126.6355,
       "contentId": "125859",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/76/3055376_image2_1.jpg"
     },
     {
@@ -6781,6 +7231,7 @@
       "lat": 36.5855,
       "lng": 126.7955,
       "contentId": "128054",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/06/3488406_image2_1.jpg"
     },
     {
@@ -6796,6 +7247,7 @@
       "lat": 36.6618145,
       "lng": 126.6221048,
       "contentId": "125896",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/30/3560430_image2_1.jpg"
     },
     {
@@ -6811,6 +7263,7 @@
       "lat": 36.6825,
       "lng": 126.8455,
       "contentId": null,
+      "overview": "예산성지 — 순교 성지. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/39/3560639_image2_1.jpg"
     },
     {
@@ -6826,6 +7279,7 @@
       "lat": 35.9629766259,
       "lng": 127.2331252962,
       "contentId": "127533",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/67/3061367_image2_1.jpg"
     },
     {
@@ -6841,6 +7295,7 @@
       "lat": 36.124594,
       "lng": 127.3204771,
       "contentId": "128001",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/14/3345314_image2_1.jpg"
     },
     {
@@ -6856,6 +7311,7 @@
       "lat": 35.7285867,
       "lng": 127.0851739,
       "contentId": "127574",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/09/3055809_image2_1.jpg"
     },
     {
@@ -6871,6 +7327,7 @@
       "lat": 35.9,
       "lng": 127.11,
       "contentId": null,
+      "overview": "삼례문화예술촌 — 책·문화마을. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/10/3583610_image2_1.jpg"
     },
     {
@@ -6886,6 +7343,7 @@
       "lat": 35.85,
       "lng": 127.2,
       "contentId": "2705087",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/15/3360215_image2_1.JPG"
     },
     {
@@ -6901,6 +7359,7 @@
       "lat": 35.885567,
       "lng": 127.241796,
       "contentId": "126333",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/43/3583543_image2_1.jpg"
     },
     {
@@ -6916,6 +7375,7 @@
       "lat": 35.9104469175,
       "lng": 127.2571773196,
       "contentId": "126356",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/99/1605099_image2_1.jpg"
     },
     {
@@ -6931,6 +7391,7 @@
       "lat": 35.28,
       "lng": 127.29,
       "contentId": null,
+      "overview": "심청한옥마을 — 한옥·체험. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/46/3532346_image2_1.jpg"
     },
     {
@@ -6946,6 +7407,7 @@
       "lat": 35.2669741,
       "lng": 127.2576727,
       "contentId": "128083",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/93/1606693_image2_1.jpg"
     },
     {
@@ -6961,6 +7423,7 @@
       "lat": 35.2772028,
       "lng": 127.2637556,
       "contentId": "2014608",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/93/1606693_image2_1.jpg"
     },
     {
@@ -6976,6 +7439,7 @@
       "lat": 35.2775723415,
       "lng": 127.3082975874,
       "contentId": "128578",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/46/3532346_image2_1.jpg"
     },
     {
@@ -6991,6 +7455,7 @@
       "lat": 35.22,
       "lng": 127.38,
       "contentId": "128087",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/37/3530137_image2_1.jpg"
     },
     {
@@ -7006,6 +7471,7 @@
       "lat": 35.1319873337,
       "lng": 127.3863999806,
       "contentId": "126365",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/00/3533500_image2_1.jpg"
     },
     {
@@ -7021,6 +7487,7 @@
       "lat": 35.679166507928,
       "lng": 127.621211790151,
       "contentId": "606203",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/23/3557423_image2_1.jpg"
     },
     {
@@ -7036,6 +7503,7 @@
       "lat": 35.5921873324,
       "lng": 127.5013445805,
       "contentId": "2658237",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/72/3361772_image2_1.JPG"
     },
     {
@@ -7051,6 +7519,7 @@
       "lat": 35.61,
       "lng": 127.57,
       "contentId": "1623888",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/01/3555101_image2_1.jpg"
     },
     {
@@ -7066,6 +7535,7 @@
       "lat": 35.641078004,
       "lng": 127.5232574636,
       "contentId": null,
+      "overview": "장수누리파크 — 공원·레저. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/02/2791502_image2_1.jpg"
     },
     {
@@ -7081,6 +7551,7 @@
       "lat": 35.6999530574,
       "lng": 127.5106686951,
       "contentId": null,
+      "overview": "장수승마장 — 승마·체험. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/23/3557423_image2_1.jpg"
     },
     {
@@ -7096,6 +7567,7 @@
       "lat": 35.6252826672442,
       "lng": 127.54416775239,
       "contentId": null,
+      "overview": "장안산 — 장수 명산·단풍. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/01/3555101_image2_1.jpg"
     },
     {
@@ -7111,6 +7583,7 @@
       "lat": 36.0349778,
       "lng": 126.7190077,
       "contentId": "3036904",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/06/3483706_image2_1.jpg"
     },
     {
@@ -7126,6 +7599,7 @@
       "lat": 36.1255,
       "lng": 126.5155,
       "contentId": null,
+      "overview": "마량리동백숲 — 동백·바닷가 숲. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/68/3401268_image2_1.jpg"
     },
     {
@@ -7141,6 +7615,7 @@
       "lat": 36.0914851,
       "lng": 126.7855418,
       "contentId": null,
+      "overview": "문헌서원 — 서천 서원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/51/3339751_image2_1.jpg"
     },
     {
@@ -7156,6 +7631,7 @@
       "lat": 36.0749583627466,
       "lng": 126.686812625972,
       "contentId": null,
+      "overview": "서천특화시장 — 먹거리·특산. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/06/3483706_image2_1.jpg"
     },
     {
@@ -7171,6 +7647,7 @@
       "lat": 36.0668152,
       "lng": 126.862564,
       "contentId": "129457",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/64/3533664_image2_1.jpg"
     },
     {
@@ -7186,6 +7663,7 @@
       "lat": 36.0799890767,
       "lng": 126.7987165698,
       "contentId": null,
+      "overview": "한산모시관 — 모시 문화·전시. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/46/3043846_image2_1.jpg"
     },
     {
@@ -7201,6 +7679,7 @@
       "lat": 34.5283354655862,
       "lng": 126.77263792879,
       "contentId": null,
+      "overview": "가우도 — 출렁다리·섬 산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/79/3538079_image2_1.jpg"
     },
     {
@@ -7216,6 +7695,7 @@
       "lat": 34.64,
       "lng": 126.78,
       "contentId": "128151",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/07/3558407_image2_1.jpg"
     },
     {
@@ -7231,6 +7711,7 @@
       "lat": 34.62,
       "lng": 126.77,
       "contentId": null,
+      "overview": "강진만생태공원 — 갯벌·생태. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/79/3538079_image2_1.jpg"
     },
     {
@@ -7246,6 +7727,7 @@
       "lat": 34.6665888,
       "lng": 126.7776283,
       "contentId": "298106",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/90/3558390_image2_1.jpg"
     },
     {
@@ -7261,6 +7743,7 @@
       "lat": 34.58064974606685,
       "lng": 126.74507297037698,
       "contentId": null,
+      "overview": "다산초당 — 정약용 유배지. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/77/3537777_image2_1.jpg"
     },
     {
@@ -7276,6 +7759,7 @@
       "lat": 35.52,
       "lng": 126.5,
       "contentId": "2615234",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/23/3083123_image2_1.jpg"
     },
     {
@@ -7291,6 +7775,7 @@
       "lat": 35.45,
       "lng": 126.64,
       "contentId": "126547",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/22/3018322_image2_1.jpg"
     },
     {
@@ -7306,6 +7791,7 @@
       "lat": 35.4302857661164,
       "lng": 126.704391432351,
       "contentId": null,
+      "overview": "고창읍성 — 모양성·성곽. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/28/3518628_image2_1.jpg"
     },
     {
@@ -7321,6 +7807,7 @@
       "lat": 35.4969069,
       "lng": 126.5784721,
       "contentId": null,
+      "overview": "선운사 — 고창 고찰·동백. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/64/2678864_image2_1.jpg"
     },
     {
@@ -7336,6 +7823,7 @@
       "lat": 35.4481317,
       "lng": 126.6502863,
       "contentId": "2720432",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/63/3342463_image2_1.jpg"
     },
     {
@@ -7351,6 +7839,7 @@
       "lat": 34.55,
       "lng": 127.45,
       "contentId": null,
+      "overview": "남열해돋이해수욕장 — 일출·해변. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/71/3522071_image2_1.jpg"
     },
     {
@@ -7366,6 +7855,7 @@
       "lat": 34.5273999558578,
       "lng": 127.13265414656,
       "contentId": null,
+      "overview": "녹동항 — 고흥 항구·섬 관문. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/13/3375913_image2_1.JPG"
     },
     {
@@ -7381,6 +7871,7 @@
       "lat": 34.510324,
       "lng": 127.113864,
       "contentId": null,
+      "overview": "소록도 — 섬·역사. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/55/3581055_image2_1.jpg"
     },
     {
@@ -7396,6 +7887,7 @@
       "lat": 34.61,
       "lng": 127.28,
       "contentId": "250440",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/82/2043882_image2_1.jpg"
     },
     {
@@ -7411,6 +7903,7 @@
       "lat": 34.453525,
       "lng": 127.517777,
       "contentId": null,
+      "overview": "나로우주센터 — 우주발사·과학관. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/68/3552768_image2_1.jpg"
     },
     {
@@ -7426,6 +7919,7 @@
       "lat": 35.5488763,
       "lng": 127.783632,
       "contentId": "129700",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/32/3538332_image2_1.jpg"
     },
     {
@@ -7441,6 +7935,7 @@
       "lat": 35.526946,
       "lng": 127.718076,
       "contentId": null,
+      "overview": "상림공원 — 천년 숲·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/75/3538275_image2_1.jpg"
     },
     {
@@ -7456,6 +7951,7 @@
       "lat": 35.52,
       "lng": 127.75,
       "contentId": "893974",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/75/3538275_image2_1.jpg"
     },
     {
@@ -7471,6 +7967,7 @@
       "lat": 35.58,
       "lng": 127.68,
       "contentId": "2718744",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/00/3531800_image2_1.jpg"
     },
     {
@@ -7486,6 +7983,7 @@
       "lat": 35.473038,
       "lng": 127.702227,
       "contentId": null,
+      "overview": "지안재 — 지리산 가는 고갯길. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/08/3538308_image2_1.jpg"
     },
     {
@@ -7501,6 +7999,7 @@
       "lat": 35.1,
       "lng": 127.05,
       "contentId": null,
+      "overview": "만연산 치유숲 — 편백·숲길. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/98/2604598_image2_1.jpg"
     },
     {
@@ -7516,6 +8015,7 @@
       "lat": 35.05,
       "lng": 127.02,
       "contentId": "1915088",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/74/3583374_image2_1.jpg"
     },
     {
@@ -7531,6 +8031,7 @@
       "lat": 34.9255908663,
       "lng": 126.8804275401,
       "contentId": "126359",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/60/186260_image2_1.jpg"
     },
     {
@@ -7546,6 +8047,7 @@
       "lat": 35.163821,
       "lng": 127.084242,
       "contentId": null,
+      "overview": "화순적벽 — 붉은 절벽·명승. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/55/3348155_image2_1.JPG"
     },
     {
@@ -7561,6 +8063,7 @@
       "lat": 35.0596021,
       "lng": 126.981915,
       "contentId": null,
+      "overview": "화순온천 — 도곡 온천·스파. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/79/3348379_image2_1.JPG"
     },
     {
@@ -7576,6 +8079,7 @@
       "lat": 35.6724242759,
       "lng": 127.2745375809,
       "contentId": "126315",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/84/3536784_image2_1.jpg"
     },
     {
@@ -7591,6 +8095,7 @@
       "lat": 35.6422,
       "lng": 127.4284722,
       "contentId": null,
+      "overview": "성수산 — 산행·상이암. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/03/3363803_image2_1.JPG"
     },
     {
@@ -7606,6 +8111,7 @@
       "lat": 35.596187,
       "lng": 127.1119581,
       "contentId": "126551",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/41/3372641_image2_1.jpg"
     },
     {
@@ -7621,6 +8127,7 @@
       "lat": 35.636818565,
       "lng": 127.2948688768,
       "contentId": "2649950",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/31/3557431_image2_1.jpg"
     },
     {
@@ -7636,6 +8143,7 @@
       "lat": 35.6331736386,
       "lng": 127.30126679,
       "contentId": "2718832",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/80/3080980_image2_1.jpg"
     },
     {
@@ -7651,6 +8159,7 @@
       "lat": 34.80782,
       "lng": 126.8967307,
       "contentId": "126367",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/76/3308476_image2_1.jpg"
     },
     {
@@ -7666,6 +8175,7 @@
       "lat": 34.55,
       "lng": 127,
       "contentId": "126295",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/55/3535955_image2_1.jpg"
     },
     {
@@ -7681,6 +8191,7 @@
       "lat": 34.659393321,
       "lng": 126.8987991348,
       "contentId": "127632",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/69/3535969_image2_1.jpg"
     },
     {
@@ -7696,6 +8207,7 @@
       "lat": 34.6773052718,
       "lng": 126.9031288719,
       "contentId": null,
+      "overview": "장흥토요시장 — 장날·먹거리. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/49/3535949_image2_1.jpg"
     },
     {
@@ -7711,6 +8223,7 @@
       "lat": 34.6683133286,
       "lng": 126.9339887713,
       "contentId": null,
+      "overview": "편백숲 우드랜드 — 편백·숲체험. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/08/3060908_image2_1.jpg"
     },
     {
@@ -7726,6 +8239,7 @@
       "lat": 35.4317191,
       "lng": 126.80776,
       "contentId": null,
+      "overview": "백양사 — 백암산·단풍 고찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/18/3347418_image2_1.JPG"
     },
     {
@@ -7741,6 +8255,7 @@
       "lat": 35.35,
       "lng": 126.82,
       "contentId": null,
+      "overview": "산수유마을 — 봄꽃·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/33/3017733_image2_1.jpg"
     },
     {
@@ -7756,6 +8271,7 @@
       "lat": 35.3874941,
       "lng": 126.8394237,
       "contentId": "127719",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/79/3568279_image2_1.jpg"
     },
     {
@@ -7771,6 +8287,7 @@
       "lat": 35.2857867,
       "lng": 126.6853105,
       "contentId": null,
+      "overview": "평림댐 — 댐·물빛 산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/86/3568786_image2_1.jpg"
     },
     {
@@ -7786,6 +8303,7 @@
       "lat": 35.2507971,
       "lng": 126.741992,
       "contentId": null,
+      "overview": "황룡강 — 강변·노란꽃창포. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/60/3546860_image2_1.JPG"
     },
     {
@@ -7801,6 +8319,7 @@
       "lat": 34.2411375211,
       "lng": 126.0520835135,
       "contentId": "127549",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/31/2824531_image2_1.jpg"
     },
     {
@@ -7816,6 +8335,7 @@
       "lat": 34.4403388,
       "lng": 126.1022812,
       "contentId": "128224",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/23/3351423_image2_1.jpg"
     },
     {
@@ -7831,6 +8351,7 @@
       "lat": 34.50899,
       "lng": 126.33627,
       "contentId": "126424",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/53/3563653_image2_1.jpg"
     },
     {
@@ -7846,6 +8367,7 @@
       "lat": 34.4664128998,
       "lng": 126.308363669,
       "contentId": null,
+      "overview": "운림산방 — 남종화·명승. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/83/3557783_image2_1.jpg"
     },
     {
@@ -7861,6 +8383,7 @@
       "lat": 34.5660078857,
       "lng": 126.3025094229,
       "contentId": "2406053",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/31/3381331_image2_1.JPG"
     },
     {
@@ -7876,6 +8399,7 @@
       "lat": 35.0327357,
       "lng": 126.7167886,
       "contentId": "126412",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/03/3533503_image2_1.jpg"
     },
     {
@@ -7891,6 +8415,7 @@
       "lat": 35.0341103,
       "lng": 126.7668904,
       "contentId": null,
+      "overview": "나주배박물관 — 배 특산물·전시. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/70/3529470_image2_1.jpg"
     },
     {
@@ -7906,6 +8431,7 @@
       "lat": 35.0334136165,
       "lng": 126.7113701773,
       "contentId": null,
+      "overview": "나주향교 — 읍치 유교 공간. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/03/3533503_image2_1.jpg"
     },
     {
@@ -7921,6 +8447,7 @@
       "lat": 34.9083640892,
       "lng": 126.8243995729,
       "contentId": "126362",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/24/3529424_image2_1.jpg"
     },
     {
@@ -7936,6 +8463,7 @@
       "lat": 35.02,
       "lng": 126.79,
       "contentId": "2737308",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/70/3529470_image2_1.jpg"
     },
     {
@@ -7951,6 +8479,7 @@
       "lat": 35.1,
       "lng": 126.08,
       "contentId": "126271",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/95/3378795_image2_1.JPG"
     },
     {
@@ -7966,6 +8495,7 @@
       "lat": 34.9867941,
       "lng": 126.1609778,
       "contentId": "575607",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/74/3558674_image2_1.jpg"
     },
     {
@@ -7981,6 +8511,7 @@
       "lat": 34.8604657,
       "lng": 126.1942602,
       "contentId": null,
+      "overview": "천사대교 — 압해·암태 연결. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/57/3558957_image2_1.jpg"
     },
     {
@@ -7996,6 +8527,7 @@
       "lat": 34.7158005,
       "lng": 126.1141287,
       "contentId": null,
+      "overview": "퍼플섬 — 반월·박지 보라 섬. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/96/3558996_image2_1.jpg"
     },
     {
@@ -8011,6 +8543,7 @@
       "lat": 34.6608507,
       "lng": 125.4060994,
       "contentId": "126301",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/20/3572120_image2_1.jpg"
     },
     {
@@ -8026,6 +8559,7 @@
       "lat": 35.3986639,
       "lng": 127.0558051,
       "contentId": null,
+      "overview": "강천사 — 강천산 고찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/22/3055722_image2_1.jpg"
     },
     {
@@ -8041,6 +8575,7 @@
       "lat": 35.4,
       "lng": 127.05,
       "contentId": null,
+      "overview": "강천산 — 군립공원·계곡. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/22/3055722_image2_1.jpg"
     },
     {
@@ -8056,6 +8591,7 @@
       "lat": 35.39,
       "lng": 127.12,
       "contentId": "128422",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/01/3344101_image2_1.jpg"
     },
     {
@@ -8071,6 +8607,7 @@
       "lat": 35.35,
       "lng": 127.1,
       "contentId": "1611910",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/93/3359093_image2_1.JPG"
     },
     {
@@ -8086,6 +8623,7 @@
       "lat": 35.4989801303,
       "lng": 127.1180948404,
       "contentId": "716987",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/89/3519289_image2_1.jpg"
     },
     {
@@ -8101,6 +8639,7 @@
       "lat": 35.399729392,
       "lng": 126.4090769892,
       "contentId": "126289",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/63/3018763_image2_1.jpg"
     },
     {
@@ -8116,6 +8655,7 @@
       "lat": 35.32,
       "lng": 126.4,
       "contentId": null,
+      "overview": "백사장해수욕장 — 영광 백사장. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/63/3381963_image2_1.JPG"
     },
     {
@@ -8131,6 +8671,7 @@
       "lat": 35.2007326961184,
       "lng": 126.549453583343,
       "contentId": null,
+      "overview": "불갑사 — 불갑산 고찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/65/3379065_image2_1.JPG"
     },
     {
@@ -8146,6 +8687,7 @@
       "lat": 35.2223684433,
       "lng": 126.5155007132,
       "contentId": null,
+      "overview": "불갑저수지 — 산자락 수변. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/86/2825886_image2_1.jpg"
     },
     {
@@ -8161,6 +8703,7 @@
       "lat": 35.1686333574949,
       "lng": 126.360305672303,
       "contentId": null,
+      "overview": "칠산타워 — 칠산바다 전망. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/71/3381971_image2_1.JPG"
     },
     {
@@ -8176,6 +8719,7 @@
       "lat": 35.7227452882,
       "lng": 127.0534614685,
       "contentId": "126339",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/48/3533448_image2_1.jpg"
     },
     {
@@ -8191,6 +8735,7 @@
       "lat": 35.803,
       "lng": 126.881,
       "contentId": null,
+      "overview": "김제 구도심 — 읍치·골목. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/00/3556600_image2_1.jpg"
     },
     {
@@ -8206,6 +8751,7 @@
       "lat": 35.7285867,
       "lng": 127.0851739,
       "contentId": "127574",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/09/3055809_image2_1.jpg"
     },
     {
@@ -8221,6 +8767,7 @@
       "lat": 35.7536934,
       "lng": 126.8535019,
       "contentId": null,
+      "overview": "벽골제 — 고대 수리·들판. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/30/3363530_image2_1.JPG"
     },
     {
@@ -8236,6 +8783,7 @@
       "lat": 34.55,
       "lng": 126.45,
       "contentId": "128807",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/62/3381362_image2_1.JPG"
     },
     {
@@ -8251,6 +8799,7 @@
       "lat": 34.476,
       "lng": 126.616,
       "contentId": null,
+      "overview": "대흥사 — 두륜산 고찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/83/3564383_image2_1.jpg"
     },
     {
@@ -8266,6 +8815,7 @@
       "lat": 34.471912,
       "lng": 126.6375673,
       "contentId": "126241",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/83/3564383_image2_1.jpg"
     },
     {
@@ -8281,6 +8831,7 @@
       "lat": 34.5898990614,
       "lng": 126.4372969769,
       "contentId": "250467",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/45/3564445_image2_1.jpg"
     },
     {
@@ -8296,6 +8847,7 @@
       "lat": 35.0865542912,
       "lng": 126.4419067904,
       "contentId": "126291",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/55/3381355_image2_1.JPG"
     },
     {
@@ -8311,6 +8863,7 @@
       "lat": 35.1834513,
       "lng": 126.5450734,
       "contentId": "129246",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/70/3061070_image2_1.jpg"
     },
     {
@@ -8326,6 +8879,7 @@
       "lat": 35.0591629477591,
       "lng": 126.522198564875,
       "contentId": null,
+      "overview": "함평엑스포공원 — 나비·축제장. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/05/3536105_image2_1.jpg"
     },
     {
@@ -8341,6 +8895,7 @@
       "lat": 35.1350415336,
       "lng": 126.505713834,
       "contentId": "129235",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/05/3536105_image2_1.jpg"
     },
     {
@@ -8356,6 +8911,7 @@
       "lat": 36.0122101,
       "lng": 127.0306122,
       "contentId": null,
+      "overview": "미륵사지 — 백제 사찰터. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/79/3361079_image2_1.JPG"
     },
     {
@@ -8371,6 +8927,7 @@
       "lat": 35.9736104,
       "lng": 127.0550154,
       "contentId": "250462",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/27/3564127_image2_1.jpg"
     },
     {
@@ -8386,6 +8943,7 @@
       "lat": 36.0658071695707,
       "lng": 126.875436461417,
       "contentId": null,
+      "overview": "웅포관광지 — 금강 수변. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/54/3564054_image2_1.jpg"
     },
     {
@@ -8401,6 +8959,7 @@
       "lat": 36.0663505,
       "lng": 126.9007028,
       "contentId": null,
+      "overview": "함라산 — 익산 서북 전망. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/58/3578358_image2_1.jpg"
     },
     {
@@ -8416,6 +8975,7 @@
       "lat": 35.07,
       "lng": 126.28,
       "contentId": "126617",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/51/3535751_image2_1.jpg"
     },
     {
@@ -8431,6 +8991,7 @@
       "lat": 34.98,
       "lng": 126.4,
       "contentId": "1330332",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/91/3535791_image2_1.jpg"
     },
     {
@@ -8446,6 +9007,7 @@
       "lat": 34.9145422,
       "lng": 126.4564446,
       "contentId": "127705",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/04/3381504_image2_1.JPG"
     },
     {
@@ -8461,6 +9023,7 @@
       "lat": 34.99,
       "lng": 126.52,
       "contentId": "127603",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/09/3535609_image2_1.jpg"
     },
     {
@@ -8476,6 +9039,7 @@
       "lat": 35.8717337,
       "lng": 127.7701239,
       "contentId": "126238",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/44/3533344_image2_1.jpg"
     },
     {
@@ -8491,6 +9055,7 @@
       "lat": 35.89,
       "lng": 127.77,
       "contentId": "127031",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/33/3304433_image2_1.jpg"
     },
     {
@@ -8506,6 +9071,7 @@
       "lat": 35.881592,
       "lng": 127.7391107,
       "contentId": null,
+      "overview": "덕유산리조트 — 스키·곤돌라. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/44/3533344_image2_1.jpg"
     },
     {
@@ -8521,6 +9087,7 @@
       "lat": 36.0093077233,
       "lng": 127.7786573524,
       "contentId": null,
+      "overview": "태권도원 — 무주 세계도장. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/33/3304433_image2_1.jpg"
     },
     {
@@ -8536,6 +9103,7 @@
       "lat": 34.77,
       "lng": 126.68,
       "contentId": null,
+      "overview": "구림마을 — 영암 전통 마을. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -8551,6 +9119,7 @@
       "lat": 34.8,
       "lng": 126.7,
       "contentId": null,
+      "overview": "기찬랜드 — 영암 가족 공원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/96/3382096_image2_1.JPG"
     },
     {
@@ -8566,6 +9135,7 @@
       "lat": 34.7529543462267,
       "lng": 126.662903895273,
       "contentId": null,
+      "overview": "도갑사 — 월출산 자락 고찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -8581,6 +9151,7 @@
       "lat": 34.7752193625758,
       "lng": 126.721720023754,
       "contentId": null,
+      "overview": "월출산 — 천황봉·기암. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -8596,6 +9167,7 @@
       "lat": 35.6984819,
       "lng": 128.0229847,
       "contentId": null,
+      "overview": "가조온천 — 거창 온천휴양. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -8611,6 +9183,7 @@
       "lat": 35.8,
       "lng": 127.85,
       "contentId": null,
+      "overview": "고제 산수유마을 — 봄 노란 물결. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -8626,6 +9199,7 @@
       "lat": 35.78,
       "lng": 127.88,
       "contentId": null,
+      "overview": "월성리 계곡 — 거창 여름 피서. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -8641,6 +9215,7 @@
       "lat": 35.6535267,
       "lng": 127.9414049,
       "contentId": null,
+      "overview": "거창 창포원 — 수생·창포 정원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -8656,6 +9231,7 @@
       "lat": 35.6734631366,
       "lng": 127.9102618219,
       "contentId": null,
+      "overview": "거창박물관 — 거창 역사·민속. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -8671,6 +9247,7 @@
       "lat": 35.731,
       "lng": 127.761,
       "contentId": null,
+      "overview": "금원산 — 거창 휴양림·능선. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -8686,6 +9263,7 @@
       "lat": 35.7597812,
       "lng": 127.8344671,
       "contentId": "2632744",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/37/3570637_image2_1.JPG"
     },
     {
@@ -8701,6 +9279,7 @@
       "lat": 35.5479179,
       "lng": 129.0451136,
       "contentId": null,
+      "overview": "간월재 — 영남알프스 능선. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/02/3078002_image2_1.bmp"
     },
     {
@@ -8716,6 +9295,7 @@
       "lat": 35.5385,
       "lng": 129.0685,
       "contentId": "125418",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/87/3077987_image2_1.bmp"
     },
     {
@@ -8731,6 +9311,7 @@
       "lat": 35.5625,
       "lng": 129.2785,
       "contentId": "128208",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/17/3534617_image2_1.jpg"
     },
     {
@@ -8746,6 +9327,7 @@
       "lat": 35.3589668021,
       "lng": 129.3605738299,
       "contentId": "128022",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/50/3583350_image2_1.jpg"
     },
     {
@@ -8761,6 +9343,7 @@
       "lat": 35.5457278,
       "lng": 129.0943081,
       "contentId": "126722",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/35/3549535_image2_1.jpg"
     },
     {
@@ -8776,6 +9359,7 @@
       "lat": 35.5489863,
       "lng": 129.1159649,
       "contentId": null,
+      "overview": "작천정 — 울주 계곡 정자. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -8791,6 +9375,7 @@
       "lat": 35.3855,
       "lng": 129.3485,
       "contentId": null,
+      "overview": "진하해수욕장 — 울주 동해 해변. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -8806,6 +9391,7 @@
       "lat": 35.2502808,
       "lng": 128.8930789,
       "contentId": null,
+      "overview": "가야테마파크 — 김해 가야 역사. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -8821,6 +9407,7 @@
       "lat": 35.1810030421884,
       "lng": 128.829108851921,
       "contentId": null,
+      "overview": "롯데워터파크 — 김해 대형 워터파크. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -8836,6 +9423,7 @@
       "lat": 35.2353,
       "lng": 128.8784,
       "contentId": null,
+      "overview": "수로왕릉 — 가락국 시조릉. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -8851,6 +9439,7 @@
       "lat": 35.1982,
       "lng": 128.9094,
       "contentId": "2514460",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/53/3580653_image2_1.jpg"
     },
     {
@@ -8866,6 +9455,7 @@
       "lat": 35.2428847434,
       "lng": 128.877533008,
       "contentId": "127095",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/39/3539339_image2_1.jpg"
     },
     {
@@ -8881,6 +9471,7 @@
       "lat": 35.2506781,
       "lng": 128.7448197,
       "contentId": null,
+      "overview": "클레이아크 — 김해 도자미술관. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -8896,6 +9487,7 @@
       "lat": 36.1655,
       "lng": 128.6755,
       "contentId": null,
+      "overview": "삼국유사테마파크 — 군위 역사 테마. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -8911,6 +9503,7 @@
       "lat": 36.2636712,
       "lng": 128.4911008,
       "contentId": null,
+      "overview": "위천 — 군위 물길·산촌. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -8926,6 +9519,7 @@
       "lat": 36.1279055,
       "lng": 128.7788395,
       "contentId": "231913",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/73/3029873_image2_1.jpg"
     },
     {
@@ -8941,6 +9535,7 @@
       "lat": 36.013524,
       "lng": 128.6968594,
       "contentId": null,
+      "overview": "팔공산 — 군위 자락 명산. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -8956,6 +9551,7 @@
       "lat": 36.1455,
       "lng": 128.6955,
       "contentId": "128949",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/68/3571368_image2_1.jpg"
     },
     {
@@ -8971,6 +9567,7 @@
       "lat": 36.2255,
       "lng": 128.5855,
       "contentId": null,
+      "overview": "휘파람숲 — 군위 숲 산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
     {
@@ -8986,6 +9583,7 @@
       "lat": 35.4241303,
       "lng": 129.1044715,
       "contentId": null,
+      "overview": "내원사 — 양산 천성산 계곡 사찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/37/3532137_image2_1.jpg"
     },
     {
@@ -9001,6 +9599,7 @@
       "lat": 35.4246938361779,
       "lng": 128.983912618045,
       "contentId": null,
+      "overview": "에덴밸리 — 양산 스키·리조트. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/25/3532125_image2_1.jpg"
     },
     {
@@ -9016,6 +9615,7 @@
       "lat": 35.4015733,
       "lng": 129.1062817,
       "contentId": null,
+      "overview": "천성산 — 양산 고원·억새 능선. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/37/3532137_image2_1.jpg"
     },
     {
@@ -9031,6 +9631,7 @@
       "lat": 35.4881,
       "lng": 129.0644,
       "contentId": "2784332",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/25/3589825_image2_1.jpg"
     },
     {
@@ -9046,6 +9647,7 @@
       "lat": 35.4921,
       "lng": 129.0785,
       "contentId": null,
+      "overview": "통도환타지아 — 양산 테마파크. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/25/3589825_image2_1.jpg"
     },
     {
@@ -9061,6 +9663,7 @@
       "lat": 35.3969996749,
       "lng": 129.0864871696,
       "contentId": null,
+      "overview": "홍룡폭포 — 양산 폭포·계곡. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/37/3532137_image2_1.jpg"
     },
     {
@@ -9076,6 +9679,7 @@
       "lat": 35.2084,
       "lng": 128.5729,
       "contentId": null,
+      "overview": "가고파꼬부랑길 — 마산 언덕 골목. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/78/3565478_image2_1.JPG"
     },
     {
@@ -9091,6 +9695,7 @@
       "lat": 35.1486522,
       "lng": 128.6646636,
       "contentId": null,
+      "overview": "제황산공원 — 진해 항구 전망. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/69/3565769_image2_1.jpg"
     },
     {
@@ -9106,6 +9711,7 @@
       "lat": 35.229346668,
       "lng": 128.68710833,
       "contentId": "2863958",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/44/2863944_image2_1.JPG"
     },
     {
@@ -9121,6 +9727,7 @@
       "lat": 35.3182381,
       "lng": 128.675278,
       "contentId": null,
+      "overview": "주남저수지 — 창원 철새 도래지. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/81/3370281_image2_1.jpg"
     },
     {
@@ -9136,6 +9743,7 @@
       "lat": 35.149423,
       "lng": 128.659655,
       "contentId": null,
+      "overview": "진해군항제 — 창원 벚꽃 축제. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/69/3565769_image2_1.jpg"
     },
     {
@@ -9151,6 +9759,7 @@
       "lat": 35.6562737,
       "lng": 128.9362018,
       "contentId": "299997",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/14/3573014_image2_1.JPG"
     },
     {
@@ -9166,6 +9775,7 @@
       "lat": 35.6610955,
       "lng": 128.9602875,
       "contentId": null,
+      "overview": "운문사 — 청도 비구니 사찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/97/3578597_image2_1.jpg"
     },
     {
@@ -9181,6 +9791,7 @@
       "lat": 35.6752813,
       "lng": 128.6929875,
       "contentId": null,
+      "overview": "유등연지 — 청도 연꽃 연못. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/64/3033664_image2_1.JPG"
     },
     {
@@ -9196,6 +9807,7 @@
       "lat": 35.647,
       "lng": 128.68,
       "contentId": "2729992",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/64/3033664_image2_1.JPG"
     },
     {
@@ -9211,6 +9823,7 @@
       "lat": 35.6498326,
       "lng": 128.7056471,
       "contentId": "1621437",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/38/3429438_image2_1.JPG"
     },
     {
@@ -9226,6 +9839,7 @@
       "lat": 35.8485,
       "lng": 128.4585,
       "contentId": "1646676",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/04/3564704_image2_1.JPG"
     },
     {
@@ -9241,6 +9855,7 @@
       "lat": 35.6985,
       "lng": 128.4585,
       "contentId": "1970811",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/40/3570040_image2_1.jpg"
     },
     {
@@ -9256,6 +9871,7 @@
       "lat": 35.6900212,
       "lng": 128.5164806,
       "contentId": "127502",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/36/3550236_image2_1.jpg"
     },
     {
@@ -9271,6 +9887,7 @@
       "lat": 35.780801,
       "lng": 128.4803989,
       "contentId": "3024577",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/05/3024505_image2_1.JPG"
     },
     {
@@ -9286,6 +9903,7 @@
       "lat": 35.81437,
       "lng": 128.4835,
       "contentId": "2709514",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/57/3570057_image2_1.jpg"
     },
     {
@@ -9301,6 +9919,7 @@
       "lat": 35.3743156,
       "lng": 129.2329808,
       "contentId": "2758489",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/46/3342846_image2_1.jpg"
     },
     {
@@ -9316,6 +9935,7 @@
       "lat": 35.2845,
       "lng": 129.1685,
       "contentId": "2385686",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/91/3309791_image2_1.jpg"
     },
     {
@@ -9331,6 +9951,7 @@
       "lat": 35.1935,
       "lng": 129.2125,
       "contentId": null,
+      "overview": "오시리아 — 기장 관광단지. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/21/2815721_image2_1.jpg"
     },
     {
@@ -9346,6 +9967,7 @@
       "lat": 35.26,
       "lng": 129.2335,
       "contentId": null,
+      "overview": "일광해수욕장 — 기장 동해 해변. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/27/3334627_image2_1.jpg"
     },
     {
@@ -9361,6 +9983,7 @@
       "lat": 35.3213997,
       "lng": 129.2677023,
       "contentId": null,
+      "overview": "임랑해수욕장 — 기장 모래사장. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/36/3342836_image2_1.jpg"
     },
     {
@@ -9376,6 +9999,7 @@
       "lat": 34.9080412,
       "lng": 128.1485631,
       "contentId": null,
+      "overview": "고성 공룡박물관 — 해안 공룡발자국·전시. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/11/3348111_image2_1.jpg"
     },
     {
@@ -9391,6 +10015,7 @@
       "lat": 34.9789652,
       "lng": 128.2114399,
       "contentId": "128659",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/60/3497860_image2_1.jpg"
     },
     {
@@ -9406,6 +10031,7 @@
       "lat": 35.0808662,
       "lng": 128.2622806,
       "contentId": "128662",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/80/3491680_image2_1.jpg"
     },
     {
@@ -9421,6 +10047,7 @@
       "lat": 34.905,
       "lng": 128.16,
       "contentId": "128946",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/91/3349191_image2_1.jpg"
     },
     {
@@ -9436,6 +10063,7 @@
       "lat": 34.91,
       "lng": 128.145,
       "contentId": null,
+      "overview": "상족암 — 고성 해안 절벽·공룡발자국. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/11/3348111_image2_1.jpg"
     },
     {
@@ -9451,6 +10079,7 @@
       "lat": 36.0917364,
       "lng": 128.3001983,
       "contentId": "1118806",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/87/3041887_image2_1.jpg"
     },
     {
@@ -9466,6 +10095,7 @@
       "lat": 36.1445123,
       "lng": 128.3731378,
       "contentId": null,
+      "overview": "낙동강체육공원 — 구미 강변 체육·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/37/3029537_image2_1.jpg"
     },
     {
@@ -9481,6 +10111,7 @@
       "lat": 36.1132379,
       "lng": 128.3160597,
       "contentId": null,
+      "overview": "금오랜드 — 금오산 기슭 유원지. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/87/3041887_image2_1.jpg"
     },
     {
@@ -9496,6 +10127,7 @@
       "lat": 36.0943365,
       "lng": 128.4025421,
       "contentId": "1119452",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/37/3029537_image2_1.jpg"
     },
     {
@@ -9511,6 +10143,7 @@
       "lat": 36.1455,
       "lng": 128.3955,
       "contentId": "2757058",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/80/3349180_image2_1.jpg"
     },
     {
@@ -9526,6 +10159,7 @@
       "lat": 35.3352472,
       "lng": 128.3985107,
       "contentId": null,
+      "overview": "악양루 — 함안 남강 전망 누각. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/16/3538216_image2_1.jpg"
     },
     {
@@ -9541,6 +10175,7 @@
       "lat": 35.29,
       "lng": 128.42,
       "contentId": "2754745",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/15/2755215_image2_1.JPG"
     },
     {
@@ -9556,6 +10191,7 @@
       "lat": 35.32,
       "lng": 128.38,
       "contentId": "127970",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/18/3502918_image2_1.jpg"
     },
     {
@@ -9571,6 +10207,7 @@
       "lat": 35.2364029,
       "lng": 128.4688792,
       "contentId": "2652451",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/34/3070434_image2_1.JPG"
     },
     {
@@ -9586,6 +10223,7 @@
       "lat": 35.268941,
       "lng": 128.402916,
       "contentId": null,
+      "overview": "함안박물관 — 가야·함안 역사. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/15/2755215_image2_1.JPG"
     },
     {
@@ -9601,6 +10239,7 @@
       "lat": 35.5748544,
       "lng": 128.9856375,
       "contentId": "2629010",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/14/3521114_image2_1.jpg"
     },
     {
@@ -9616,6 +10255,7 @@
       "lat": 35.4915993,
       "lng": 128.7550955,
       "contentId": null,
+      "overview": "영남루 — 밀양강 위 누각. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/16/3582816_image2_1.jpg"
     },
     {
@@ -9631,6 +10271,7 @@
       "lat": 35.4453,
       "lng": 128.8042,
       "contentId": null,
+      "overview": "위양지 — 밀양 연못·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/49/3582749_image2_1.jpg"
     },
     {
@@ -9646,6 +10287,7 @@
       "lat": 35.5326461,
       "lng": 128.9594529,
       "contentId": null,
+      "overview": "표충사 — 재약산 자락 밀양 고찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/92/3374192_image2_1.JPG"
     },
     {
@@ -9661,6 +10303,7 @@
       "lat": 35.4917705422728,
       "lng": 128.756412618824,
       "contentId": null,
+      "overview": "밀양읍성 — 읍치 성곽 흔적. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/16/3582816_image2_1.jpg"
     },
     {
@@ -9676,6 +10319,7 @@
       "lat": 34.923092188313056,
       "lng": 128.03871436085691,
       "contentId": null,
+      "overview": "늑도 — 사천 섬·조개더미 유적. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/11/3510411_image2_1.jpg"
     },
     {
@@ -9691,6 +10335,7 @@
       "lat": 34.9243,
       "lng": 128.0741,
       "contentId": null,
+      "overview": "노산공원 — 사천 삼천포 해안 공원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/70/2797970_image2_1.JPG"
     },
     {
@@ -9706,6 +10351,7 @@
       "lat": 34.9808533,
       "lng": 128.0990438,
       "contentId": "129535",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/70/2797970_image2_1.JPG"
     },
     {
@@ -9721,6 +10367,7 @@
       "lat": 35.0716828,
       "lng": 128.0631926,
       "contentId": "2473002",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/29/3505529_image2_1.jpg"
     },
     {
@@ -9736,6 +10383,7 @@
       "lat": 34.9322,
       "lng": 128.0519,
       "contentId": null,
+      "overview": "삼천포대교 — 사천·남해 잇는 다리. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/11/3510411_image2_1.jpg"
     },
     {
@@ -9751,6 +10399,7 @@
       "lat": 36.4581461,
       "lng": 128.7496078,
       "contentId": null,
+      "overview": "고운사 — 의성 산중 고찰·단풍. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/14/3406114_image2_1.jpg"
     },
     {
@@ -9766,6 +10415,7 @@
       "lat": 36.38,
       "lng": 128.68,
       "contentId": null,
+      "overview": "금성산 — 의성 전망·등산. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/14/3406114_image2_1.jpg"
     },
     {
@@ -9781,6 +10431,7 @@
       "lat": 36.4,
       "lng": 128.55,
       "contentId": "126075",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/62/3542362_image2_1.jpg"
     },
     {
@@ -9796,6 +10447,7 @@
       "lat": 36.4,
       "lng": 128.65,
       "contentId": "2781613",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/14/3406114_image2_1.jpg"
     },
     {
@@ -9811,6 +10463,7 @@
       "lat": 36.36,
       "lng": 128.71,
       "contentId": null,
+      "overview": "마늘테마공원 — 의성 마늘·체험. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/62/3542362_image2_1.jpg"
     },
     {
@@ -9826,6 +10479,7 @@
       "lat": 36.7311168,
       "lng": 128.3689996,
       "contentId": "126163",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/59/3542659_image2_1.jpg"
     },
     {
@@ -9841,6 +10495,7 @@
       "lat": 36.6988248462356,
       "lng": 128.514423305395,
       "contentId": null,
+      "overview": "예천박물관 — 예천 역사·문화. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/99/3542699_image2_1.jpg"
     },
     {
@@ -9856,6 +10511,7 @@
       "lat": 36.6069246,
       "lng": 128.2766654,
       "contentId": null,
+      "overview": "용궁시장 — 예천 전통 시장. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/07/3542707_image2_1.jpg"
     },
     {
@@ -9871,6 +10527,7 @@
       "lat": 36.7013269461,
       "lng": 128.3818330867,
       "contentId": "128135",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/99/3542699_image2_1.jpg"
     },
     {
@@ -9886,6 +10543,7 @@
       "lat": 36.619575,
       "lng": 128.367378,
       "contentId": "126734",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/07/3542707_image2_1.jpg"
     },
     {
@@ -9901,6 +10559,7 @@
       "lat": 36.12,
       "lng": 128.96,
       "contentId": null,
+      "overview": "별빛테마공원 — 영천 야경·천체. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/67/3590967_image2_1.jpg"
     },
     {
@@ -9916,6 +10575,7 @@
       "lat": 36.1640698,
       "lng": 128.976682,
       "contentId": null,
+      "overview": "보현산천문대 — 영천 천체 관측. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/67/3590967_image2_1.jpg"
     },
     {
@@ -9931,6 +10591,7 @@
       "lat": 35.9919834,
       "lng": 128.7898616,
       "contentId": "128155",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/49/3034849_image2_1.jpg"
     },
     {
@@ -9946,6 +10607,7 @@
       "lat": 36.04,
       "lng": 128.945,
       "contentId": "2758262",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/41/3542441_image2_1.jpg"
     },
     {
@@ -9961,6 +10623,7 @@
       "lat": 36.0167326,
       "lng": 128.973464,
       "contentId": "126925",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/85/3542185_image2_1.jpg"
     },
     {
@@ -9976,6 +10639,7 @@
       "lat": 36.78,
       "lng": 128.52,
       "contentId": null,
+      "overview": "무섬마을 — 영주 외나무다리 마을. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/51/3588851_image2_1.jpg"
     },
     {
@@ -9991,6 +10655,7 @@
       "lat": 36.9973878,
       "lng": 128.6866489,
       "contentId": null,
+      "overview": "부석사 — 영주 화엄 고찰·무량수전. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/51/3588851_image2_1.jpg"
     },
     {
@@ -10006,6 +10671,7 @@
       "lat": 36.93,
       "lng": 128.52,
       "contentId": null,
+      "overview": "선비촌 — 영주 전통 한옥 마을. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/51/3588851_image2_1.jpg"
     },
     {
@@ -10021,6 +10687,7 @@
       "lat": 36.9252494012,
       "lng": 128.5790692856,
       "contentId": null,
+      "overview": "소수서원 — 영주 조선 서원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/51/3588851_image2_1.jpg"
     },
     {
@@ -10036,6 +10703,7 @@
       "lat": 36.82,
       "lng": 128.62,
       "contentId": "2961095",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/51/3588851_image2_1.jpg"
     },
     {
@@ -10051,6 +10719,7 @@
       "lat": 35.540651,
       "lng": 128.502155,
       "contentId": null,
+      "overview": "만옥정공원 — 창녕 도심 공원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/28/3537928_image2_1.jpg"
     },
     {
@@ -10066,6 +10735,7 @@
       "lat": 35.553,
       "lng": 128.415,
       "contentId": null,
+      "overview": "우포늪 — 창녕 생태 습지. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/28/3537928_image2_1.jpg"
     },
     {
@@ -10081,6 +10751,7 @@
       "lat": 35.5471482,
       "lng": 128.531694,
       "contentId": null,
+      "overview": "화왕산 — 창녕 억새·전망. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/28/3537928_image2_1.jpg"
     },
     {
@@ -10096,6 +10767,7 @@
       "lat": 35.545474,
       "lng": 128.505147,
       "contentId": null,
+      "overview": "창녕박물관 — 가야·창녕 역사. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/28/3537928_image2_1.jpg"
     },
     {
@@ -10111,6 +10783,7 @@
       "lat": 36.3965927808,
       "lng": 129.145407486,
       "contentId": "129063",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/31/3501031_image2_1.jpg"
     },
     {
@@ -10126,6 +10799,7 @@
       "lat": 36.35668,
       "lng": 129.15057,
       "contentId": null,
+      "overview": "주왕산 — 청송 기암·국립공원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/31/3501031_image2_1.jpg"
     },
     {
@@ -10141,6 +10815,7 @@
       "lat": 36.434,
       "lng": 129.055,
       "contentId": null,
+      "overview": "객주문학관 — 청송 문학·전시. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/31/3501031_image2_1.jpg"
     },
     {
@@ -10156,6 +10831,7 @@
       "lat": 36.3626471,
       "lng": 129.1900937,
       "contentId": null,
+      "overview": "주산지 — 청송 왕버들·호수. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/35/3407535_image2_1.jpg"
     },
     {
@@ -10171,6 +10847,7 @@
       "lat": 36.0197978,
       "lng": 128.5894708,
       "contentId": "126202",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/82/3538682_image2_1.jpg"
     },
     {
@@ -10186,6 +10863,7 @@
       "lat": 36.0155,
       "lng": 128.4255,
       "contentId": "2819158",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/52/3536352_image2_1.jpg"
     },
     {
@@ -10201,6 +10879,7 @@
       "lat": 36.0255,
       "lng": 128.3855,
       "contentId": null,
+      "overview": "숭산정원 — 칠곡 정원·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/48/3561648_image2_1.JPG"
     },
     {
@@ -10216,6 +10895,7 @@
       "lat": 36.0153023,
       "lng": 128.3973242,
       "contentId": null,
+      "overview": "칠곡보 — 낙동강 보·수변. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/52/3536352_image2_1.jpg"
     },
     {
@@ -10231,6 +10911,7 @@
       "lat": 37.2392,
       "lng": 131.87,
       "contentId": "129174",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/91/2726491_image2_1.jpg"
     },
     {
@@ -10246,6 +10927,7 @@
       "lat": 37.2397,
       "lng": 131.8672,
       "contentId": null,
+      "overview": "독도접안시설 — 동도 선착·접안. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/91/2726491_image2_1.jpg"
     },
     {
@@ -10261,6 +10943,7 @@
       "lat": 37.2394,
       "lng": 131.8689,
       "contentId": "126106",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/16/2653416_image2_1.jpg"
     },
     {
@@ -10276,6 +10959,7 @@
       "lat": 37.242,
       "lng": 131.8653,
       "contentId": null,
+      "overview": "서도 — 독도 서섬·암벽. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/16/2653416_image2_1.jpg"
     },
     {
@@ -10291,6 +10975,7 @@
       "lat": 36.1435304653,
       "lng": 128.0981128567,
       "contentId": null,
+      "overview": "연화지 — 김천 연꽃·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/81/3512881_image2_1.jpg"
     },
     {
@@ -10306,6 +10991,7 @@
       "lat": 35.9803203,
       "lng": 128.0040688,
       "contentId": null,
+      "overview": "부항댐 — 김천 호수·전망. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/31/3072931_image2_1.jpg"
     },
     {
@@ -10321,6 +11007,7 @@
       "lat": 36.1158453399,
       "lng": 128.0140211725,
       "contentId": "578954",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/81/3512881_image2_1.jpg"
     },
     {
@@ -10336,6 +11023,7 @@
       "lat": 36.1151102652,
       "lng": 128.0028192323,
       "contentId": null,
+      "overview": "직지사 — 김천 황악산 고찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/02/2794702_image2_1.jpg"
     },
     {
@@ -10351,6 +11039,7 @@
       "lat": 35.7185,
       "lng": 128.2555,
       "contentId": null,
+      "overview": "개진시장 — 고령 전통 시장. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/46/3516946_image2_1.jpg"
     },
     {
@@ -10366,6 +11055,7 @@
       "lat": 35.6955,
       "lng": 128.2955,
       "contentId": null,
+      "overview": "낙동강 전망 — 고령 강변 조망. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/46/3516946_image2_1.jpg"
     },
     {
@@ -10381,6 +11071,7 @@
       "lat": 35.7232,
       "lng": 128.2571,
       "contentId": null,
+      "overview": "대가야박물관 — 고령 가야 역사. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/25/2732625_image2_1.jpg"
     },
     {
@@ -10396,6 +11087,7 @@
       "lat": 35.7212108501,
       "lng": 128.2599377375,
       "contentId": "1067369",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/46/3516946_image2_1.jpg"
     },
     {
@@ -10411,6 +11103,7 @@
       "lat": 35.0782227,
       "lng": 127.717456,
       "contentId": "126669",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/19/3546319_image2_1.jpg"
     },
     {
@@ -10426,6 +11119,7 @@
       "lat": 35.1063783,
       "lng": 127.6213246,
       "contentId": null,
+      "overview": "백운산 — 광양 동곡·국립공원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/57/3345057_image2_1.JPG"
     },
     {
@@ -10441,6 +11135,7 @@
       "lat": 34.935,
       "lng": 127.695,
       "contentId": null,
+      "overview": "구봉산 케이블카 — 광양 전망·야경. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/61/3534661_image2_1.jpg"
     },
     {
@@ -10456,6 +11151,7 @@
       "lat": 34.9726221899202,
       "lng": 127.759631248697,
       "contentId": null,
+      "overview": "망덕포구 — 광양 섬진강 포구. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/19/3546319_image2_1.jpg"
     },
     {
@@ -10471,6 +11167,7 @@
       "lat": 35.8155,
       "lng": 128.8255,
       "contentId": null,
+      "overview": "계정숲 — 경산 천연기념물 숲. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/79/3541879_image2_1.jpg"
     },
     {
@@ -10486,6 +11183,7 @@
       "lat": 35.7804038,
       "lng": 128.8065831,
       "contentId": null,
+      "overview": "반곡지 — 경산 왕버들·저수지. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/79/3541879_image2_1.jpg"
     },
     {
@@ -10501,6 +11199,7 @@
       "lat": 35.8009036,
       "lng": 128.7979147,
       "contentId": null,
+      "overview": "삼성현역사문화공원 — 경산 원효·설총·일연. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/10/3385110_image2_1.JPG"
     },
     {
@@ -10516,6 +11215,7 @@
       "lat": 35.9362934,
       "lng": 128.7661815,
       "contentId": null,
+      "overview": "환성사 — 경산 팔공산 고찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/99/3028999_image2_1.jpg"
     },
     {
@@ -10531,6 +11231,7 @@
       "lat": 35.35,
       "lng": 127.88,
       "contentId": null,
+      "overview": "남사예담촌 — 산청 고가·담장 마을. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/93/3537993_image2_1.jpg"
     },
     {
@@ -10546,6 +11247,7 @@
       "lat": 35.41,
       "lng": 127.87,
       "contentId": "127633",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/65/3336365_image2_1.jpg"
     },
     {
@@ -10561,6 +11263,7 @@
       "lat": 35.4393076,
       "lng": 127.8280553,
       "contentId": null,
+      "overview": "동의보감촌 — 산청 한방·힐링. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/08/3341508_image2_1.jpg"
     },
     {
@@ -10576,6 +11279,7 @@
       "lat": 35.42,
       "lng": 127.86,
       "contentId": null,
+      "overview": "한방테마파크 — 산청 약초·체험. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/08/3341508_image2_1.jpg"
     },
     {
@@ -10591,6 +11295,7 @@
       "lat": 35.803262,
       "lng": 128.147799,
       "contentId": null,
+      "overview": "가야산 — 성주 국립공원·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/72/3047772_image2_1.jpg"
     },
     {
@@ -10606,6 +11311,7 @@
       "lat": 35.9034834,
       "lng": 128.1117824,
       "contentId": "127718",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/82/3047782_image2_1.jpg"
     },
     {
@@ -10621,6 +11327,7 @@
       "lat": 35.915522511036,
       "lng": 128.280109593585,
       "contentId": null,
+      "overview": "성밖숲 — 성주 왕버들 숲. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/74/3566074_image2_1.JPG"
     },
     {
@@ -10636,6 +11343,7 @@
       "lat": 35.8955,
       "lng": 128.2455,
       "contentId": null,
+      "overview": "한개마을 — 성주 전통 고가. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/74/3566074_image2_1.JPG"
     },
     {
@@ -10651,6 +11359,7 @@
       "lat": 35.3205,
       "lng": 128.2685,
       "contentId": null,
+      "overview": "곽재우기념관 — 의령 의병 역사. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/76/3375776_image2_1.JPG"
     },
     {
@@ -10666,6 +11375,7 @@
       "lat": 35.2955,
       "lng": 128.2755,
       "contentId": null,
+      "overview": "남강 전망 — 의령 강변 조망. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/63/3580463_image2_1.jpg"
     },
     {
@@ -10681,6 +11391,7 @@
       "lat": 35.3215,
       "lng": 128.2625,
       "contentId": null,
+      "overview": "의령 전통시장 — 오일장·먹거리. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/76/3375776_image2_1.JPG"
     },
     {
@@ -10696,6 +11407,7 @@
       "lat": 35.3355,
       "lng": 128.2455,
       "contentId": null,
+      "overview": "토요애랜드 — 의령 가족 체험. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/51/3029551_image2_1.jpg"
     },
     {
@@ -10711,6 +11423,7 @@
       "lat": 36.521,
       "lng": 129.441,
       "contentId": null,
+      "overview": "고래불해수욕장 — 영덕 동해 백사장. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/38/3042738_image2_1.JPG"
     },
     {
@@ -10726,6 +11439,7 @@
       "lat": 36.38,
       "lng": 129.4,
       "contentId": null,
+      "overview": "블루로드 — 영덕 해안 트레일. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/41/3576441_image2_1.jpg"
     },
     {
@@ -10741,6 +11455,7 @@
       "lat": 36.415,
       "lng": 129.425,
       "contentId": null,
+      "overview": "신재생에너지전시관 — 영덕 창포 에너지 체험. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/99/2795399_image2_1.jpg"
     },
     {
@@ -10756,6 +11471,7 @@
       "lat": 36.416,
       "lng": 129.43,
       "contentId": null,
+      "overview": "해맞이공원 — 영덕 동해 일출. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/60/3576460_image2_1.jpg"
     },
     {
@@ -10771,6 +11487,7 @@
       "lat": 36.65,
       "lng": 129.15,
       "contentId": "547873",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/24/3531124_image2_1.jpg"
     },
     {
@@ -10786,6 +11503,7 @@
       "lat": 36.85,
       "lng": 129.25,
       "contentId": "126069",
+      "overview": null,
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/41/3401841_image2_1.jpg"
     },
     {
@@ -10801,6 +11519,7 @@
       "lat": 36.68,
       "lng": 129.15,
       "contentId": null,
+      "overview": "외씨버선길 — 영양 트레킹 명승. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/27/3531127_image2_1.jpg"
     },
     {
@@ -10816,6 +11535,7 @@
       "lat": 36.8033,
       "lng": 129.1022,
       "contentId": null,
+      "overview": "일월산 — 영양 일출·정상 조망. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/32/3531132_image2_1.jpg"
     }
   ]
