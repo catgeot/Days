@@ -4,7 +4,7 @@
 
 ## 테마여행 #88, 빈 hub 명소 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip _(커밋 후)_ · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `425611ef` · Preview 사람 QA 대기
 
 - **한 일**: 큐 R01 강원 잔여 — 홍천6·양구6·정선5·태백5·울진5 **전수** GATEO 선정 · Tour contentId 26/27 · 썸네일 347/348 · 강원·경북(울진) 시도 색인 · 큐 잔여 77
 - **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `npm run build`
