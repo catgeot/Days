@@ -2,6 +2,22 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
+## 테마여행 #118, 명승 홈 즐겨찾기
+
+**상태**: feature `cursor/scenic-favorites-492c` · PR [#83](https://github.com/catgeot/Days/pull/83) · tip `c2684bb4` · Preview QA 대기
+
+- **한 일**: 명승 홈에 축제형 즐겨찾기 — `scenicPersonalStore`(localStorage) · 헤더 ★ 패널(즐겨찾기·본 항목) · 목록 행 ★ · 상세 모달 ★ · smoke `korea-scenic-personal`
+- **VERIFY**: `npm run smoke:korea-scenic-personal` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-favorites`
+- **Preview**: `https://days-git-cursor-scenic-favorites-492c-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: 「명승 홈 즐겨찾기·본 항목」
+- **남은 일**: 사람 Preview QA(★ 토글·패널·새로고침 유지)
+- **다음 채팅명**:
+
+```
+테마여행 #119, (다음 과제)
+```
+
 ## 테마여행 #117, 검색 아이콘 포커스
 
 **상태**: feature `cursor/scenic-search-focus-9792` · PR [#82](https://github.com/catgeot/Days/pull/82) · tip `d006d5f4` · Preview QA 대기
