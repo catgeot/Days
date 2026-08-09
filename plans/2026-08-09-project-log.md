@@ -2,39 +2,13 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
-## 홈 PC 나라칩 높이 완화 (main · 로컬)
+## 홈 PC 레이아웃 정리 (main · push ✅)
 
-**상태**: `main` · 로컬 검증
+**상태**: `main` tip `0fd834f` · `origin/main` push 완료 (세션 종료)
 
-- **요청**: PC에서 스크롤이 불필요할 정도로 리스트를 과도하게 줄임 → LOGIN/LOGBOOK과 일부 겹침만 피하면 됨
-- **한 일**: 데스크톱 리스트를 `calc(100dvh-14.5rem-6.5rem)`로 가용 높이 사용(20rem 상한 제거)
-- **QA**: 로컬 PC 홈에서 중동·오세아니아 — 불필요 스크롤 최소화 · LOGIN/LOGBOOK과 겹침 없는지
-
-## 홈 나라칩 「더보기」 힌트 제거 (main · 로컬)
-
-**상태**: `main` · 로컬 검증
-
-- **요청**: 스크롤 상하 「↑/↓ 더보기」 모바일·PC 모두 제거
-- **한 일**: `GlobeFaceRegionRail` 더보기 배지 제거(커스텀 스크롤바·페이드는 유지)
-- **QA**: 로컬 홈에서 긴 나라 목록 스크롤 시 상하 더보기 문구 없는지
-
-## 홈 PC 나라칩·LOGIN/LOGBOOK 겹침 (main · 로컬)
-
-**상태**: `main` · 로컬 검증
-
-- **요청**: 오세아니아·중동 등 긴 나라칩이 좌측 하단 LOGIN/LOGBOOK과 겹침
-- **한 일**: PC 나라 리스트 높이 `calc(100dvh-14.5rem-8.5rem)`·상한 22rem으로 제한(내부 스크롤) · footer z를 레일 위로
-- **VERIFY**: `npm run build`
-- **QA**: 로컬 홈 PC → Paradise 등에서 남태평양/중동 펼친 뒤 LOGIN·LOGBOOK과 겹치지 않는지
-
-## 홈 PC 명승·테마 카테고리 겹침 (main · 로컬)
-
-**상태**: `main` · tip `1edfc07`
-
-- **요청**: PROD main 홈에서 축제/명승 투톱과 테마 카테고리·하위칩 겹침 · 스크롤바 없이 · Windows Vite default export 오류
-- **한 일**: PC 카테고리 레일 `top-[14.5rem] justify-start`(하위칩 위로 밀림 방지, `overflow-y-auto` 없음) · `App.jsx`에서 `CloudPreviewWorkLog.jsx` 명시 import(Windows 대소문자 충돌)
-- **VERIFY**: `npm run build`
-- **QA**: 로컬 `npm run dev` → PC 폭 홈 → 테마 클릭 후 명승과 겹침·전체 스크롤바 없는지
+- **한 일**: (1) 투톱·테마 카테고리 겹침 → PC 레일 `top-[14.5rem] justify-start` (2) 나라칩·LOGIN/LOGBOOK → 가용 높이 `calc(100dvh-14.5rem-6.5rem)` (3) 「↑/↓ 더보기」제거 (4) Windows `CloudPreviewWorkLog.jsx` 명시 import
+- **커밋**: `1edfc07` · `15690f8` · `794e188` · `0fd834f`
+- **QA**: PROD/로컬 PC 홈 — 테마 펼침·중동/오세아니아 · LOGIN/LOGBOOK
 
 ## 테마여행 #89, 네이버 검색 쿼리
 
