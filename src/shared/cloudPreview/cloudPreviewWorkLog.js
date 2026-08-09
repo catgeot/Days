@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 67,
-  sessionPhase: '홈 명승·카테고리 겹침',
+  sessionNo: 68,
+  sessionPhase: '카테고리 하위칩 겹침',
   branch: 'cursor/korea-theme',
   previewPath: '/',
   qaShareSlug: 'korea-theme',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-korea-theme-home-category-chip-anchor',
+    session: '테마여행 #68, 카테고리 하위칩 겹침',
+    title: 'PC 카테고리 하위칩 펼침 시 상단 밀림 방지',
+    detail:
+      '테마 카테고리 클릭 후 나라/하위칩이 생기면 세로 중앙 정렬 때문에 레일이 위로 밀려 명승 버튼과 겹치던 문제를, 투톱 아래 상단 고정(`justify-start`)으로 바꿔 아래로만 확장되게 고쳤습니다. Preview 홈(PC)에서 카테고리 클릭 후에도 명승과 겹치지 않는지 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-korea-theme-home-scenic-category-clear',
     session: '테마여행 #67, 홈 명승·카테고리 겹침',

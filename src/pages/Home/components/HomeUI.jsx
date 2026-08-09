@@ -330,8 +330,8 @@ const HomeUI = React.memo(({
       </div>
       )}
 
-      {/* PC 좌측 — 카테고리 + 나라 칩 + 권역 범례 (로고·축제/명승 투톱 아래 밴드에만 세로 중앙) */}
-      <div className="hidden md:flex fixed left-6 top-[14.5rem] bottom-28 z-[55] flex-col justify-center gap-3 pointer-events-none animate-fade-in-right">
+      {/* PC 좌측 — 카테고리 + 나라 칩 + 권역 범례 (투톱 아래 상단 고정 · 하위칩은 아래로만 확장) */}
+      <div className="hidden md:flex fixed left-6 top-[14.5rem] bottom-28 z-[55] flex-col justify-start gap-3 overflow-y-auto overscroll-contain pointer-events-none animate-fade-in-right">
         {!isTourCinema && (
           <div
             className={`pointer-events-auto flex flex-row items-start gap-2 ${
