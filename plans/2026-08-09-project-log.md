@@ -4,7 +4,7 @@
 
 ## 테마여행 #117, 검색 아이콘 포커스
 
-**상태**: feature `cursor/scenic-search-focus-9792` · PR [#82](https://github.com/catgeot/Days/pull/82) · Preview QA 대기
+**상태**: feature `cursor/scenic-search-focus-9792` · PR [#82](https://github.com/catgeot/Days/pull/82) · tip `d006d5f4` · Preview QA 대기
 
 - **한 일**: 모바일 검색 아이콘 → 입력창 focus(명승·축제) · 1차 setTimeout은 제스처 밖으로 실패 → **flushSync+동기 focus**로 수정
 - **VERIFY**: `npm run build` · Playwright 좁은 폭 click→`document.activeElement` PASS
