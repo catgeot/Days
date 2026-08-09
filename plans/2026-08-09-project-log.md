@@ -4,7 +4,7 @@
 
 ## 테마여행 #92, 빈 hub 명소 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `(push 후)` · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `b43f9d2b` · Preview 사람 QA 대기
 
 - **한 일**: 큐 R01 충청 잔여 — 음성4·금산4·홍성4·논산4·옥천4 **전수** GATEO 선정 · Tour contentId 12/20 · 썸네일 427/445 · 충북·충남 시도 색인 · 큐 잔여 57
 - **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `npm run build`
