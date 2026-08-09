@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 87,
-  sessionPhase: '네이버 버튼 위치',
+  sessionNo: 88,
+  sessionPhase: '네이버 링크 확장',
   branch: 'cursor/scenic-food-naver-link-b366',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-food-naver',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-naver-expand-88',
+    session: '테마여행 #88, 네이버 링크 확장',
+    title: '레포츠·관광지·문화에도 네이버 칩',
+    detail:
+      '명승·관광지·레포츠·문화·맛집 상세에 동일 위치(개요 아래·주소 위)로 「네이버 상세정보 보기」를 넣었습니다. Preview에서 주변 관광지·레포츠·문화 상세에도 칩이 보이는지 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-naver-pos-87',
     session: '테마여행 #87, 네이버 버튼 위치',

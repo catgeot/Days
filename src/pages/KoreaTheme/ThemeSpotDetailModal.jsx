@@ -534,21 +534,23 @@ function foodPlaceLabel(spot) {
 }
 
 /**
- * Tour 장소 → 네이버 검색(지역+이름). place id 딥링크는 TourAPI에 없어 검색으로 연결.
- * @param {{ name?: string, locality?: string, region?: string } | null} spot
+ * 명소·맛집·레포츠·문화 등 → 네이버 검색(지역+이름).
+ * place id 딥링크는 TourAPI에 없어 검색으로 연결.
+ * @param {{ name?: string, locality?: string, region?: string, areaLabel?: string } | null} spot
  * @param {{ addr1?: string, addr2?: string } | null} [detail]
  */
 function spotNaverSearchUrl(spot, detail) {
   const name = String(spot?.name || '').trim();
   if (!name) return '';
   const locality = String(spot?.locality || '').trim();
+  const areaLabel = String(spot?.areaLabel || '').trim();
   const region = String(spot?.region || '').trim();
   const addrHint = String(detail?.addr1 || '')
     .trim()
     .split(/\s+/)
     .slice(0, 2)
     .join(' ');
-  const place = locality || addrHint || region;
+  const place = locality || areaLabel || addrHint || region;
   const q = [place, name].filter(Boolean).join(' ');
   return `https://search.naver.com/search.naver?query=${encodeURIComponent(q)}`;
 }
@@ -1137,8 +1139,8 @@ export default function ThemeSpotDetailModal({
   }, [detail?.addr1, detail?.addr2]);
 
   const naverSearchUrl = useMemo(
-    () => (isRestaurant ? spotNaverSearchUrl(spot, detail) : ''),
-    [isRestaurant, spot, detail],
+    () => spotNaverSearchUrl(spot, detail),
+    [spot, detail],
   );
 
   const tel = String(detail?.tel || '').trim();

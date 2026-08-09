@@ -2,21 +2,31 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
+## 테마여행 #88, 네이버 링크 확장
+
+**상태**: feature `cursor/scenic-food-naver-link-b366` · PR [#76](https://github.com/catgeot/Days/pull/76) · Preview 사람 QA 대기
+
+- **한 일**: 맛집뿐 아니라 **명승·관광지·레포츠·문화** 상세에도 동일 위치(개요 아래·주소 위) 「네이버 상세정보 보기」 노출
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-food-naver`
+- **Preview**: `https://days-git-cursor-scenic-food-naver-link-b366-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: 「레포츠·관광지·문화에도 네이버 칩」
+- **남은 일**: 사람 Preview QA
+- **다음 채팅명**:
+
+```
+테마여행 #89, 빈 hub 명소 보강
+```
+
 ## 테마여행 #87, 네이버 버튼 위치
 
-**상태**: feature `cursor/scenic-food-naver-link-b366` · PR [#76](https://github.com/catgeot/Days/pull/76) · tip `92a6fdfe` · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-food-naver-link-b366` · PR [#76](https://github.com/catgeot/Days/pull/76) · tip `92a6fdfe` · ✅ 확장은 #88
 
 - **한 일**: 네이버 칩을 **개요 아래 · 주소 위**로 이동 (주소·문의·영업시간 흐름 유지)
 - **VERIFY**: `npm run build`
 - **공유**: `https://www.gateo.kr/qa/scenic-food-naver`
 - **Preview**: `https://days-git-cursor-scenic-food-naver-link-b366-catgeots-projects.vercel.app/korea/theme/scenic`
 - **작업 로그**: 「개요 아래·주소 위로 이동」
-- **남은 일**: 사람 Preview QA · 레포츠·관광지 확장(합의 시)
-- **다음 채팅명**:
-
-```
-테마여행 #88, 빈 hub 명소 보강
-```
 
 ## 테마여행 #86, 네이버 문구·위치
 
