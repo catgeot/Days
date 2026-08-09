@@ -2,6 +2,19 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
+## 테마여행 #111, 명소 중분류 체계
+
+**상태**: feature `cursor/scenic-mid-cluster-67a8` · 방안 문서 · **사람 합의 대기** (UI 미구현)
+
+- **한 일**: 명소 칩 과다(경기 156·hub 31 등) 점검 → **세권** 계층 신설안 · 8개 시도 세권표(배타 커버 검증) · [`korea-scenic-mid-cluster-plan.md`](./korea-scenic-mid-cluster-plan.md)
+- **요지**: `권역→시도→세권→hub` · 세권당 3~7칩·15~35건 · 서울·광역시·제주는 세권 생략
+- **남은 일**: 라벨·묶음 합의 → #112 SSOT·칩 UI
+- **다음 채팅명**:
+
+```
+테마여행 #112, 세권 칩 SSOT·UI
+```
+
 ## 테마여행 #110, 분류칩 기본 중소수
 
 **상태**: feature `cursor/scenic-default-chip-6098` · PR [#77](https://github.com/catgeot/Days/pull/77) · tip `af587a5d` · Preview QA 대기
