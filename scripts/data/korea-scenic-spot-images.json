@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-09T00:00:14.338Z",
-    "count": 347,
+    "updatedAt": "2026-08-09T00:12:20.361Z",
+    "count": 371,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -352,6 +352,30 @@
     "deokgu-hot-springs": "https://tong.visitkorea.or.kr/cms/resource/33/3503533_image2_1.jpg",
     "taebaeksan-cheonjedan": "https://tong.visitkorea.or.kr/cms/resource/21/3506421_image2_1.jpg",
     "garisan-recreation-forest": "https://tong.visitkorea.or.kr/cms/resource/60/3494160_image2_1.jpg",
-    "yanggu-war-memorial-museum": "https://tong.visitkorea.or.kr/cms/resource/63/3332763_image2_1.jpg"
+    "yanggu-war-memorial-museum": "https://tong.visitkorea.or.kr/cms/resource/63/3332763_image2_1.jpg",
+    "hoengseong-lake": "https://tong.visitkorea.or.kr/cms/resource/83/2604883_image2_1.jpg",
+    "paroho-lake": "https://tong.visitkorea.or.kr/cms/resource/25/2711025_image2_1.jpg",
+    "hwacheon-bungeo-island": "https://tong.visitkorea.or.kr/cms/resource/41/3484941_image2_1.JPG",
+    "jongdaengi-forest-trail": "https://tong.visitkorea.or.kr/cms/resource/71/3560671_image2_1.JPG",
+    "jungangtap-historic-park": "https://tong.visitkorea.or.kr/cms/resource/48/3535548_image2_1.jpg",
+    "chungju-lake": "https://tong.visitkorea.or.kr/cms/resource/95/3560695_image2_1.JPG",
+    "tangeumdae": "https://tong.visitkorea.or.kr/cms/resource/17/3561117_image2_1.JPG",
+    "byeolcheonji-park-jeungpyeong": "https://tong.visitkorea.or.kr/cms/resource/37/3570937_image2_1.jpg",
+    "milmaru-observatory": "https://tong.visitkorea.or.kr/cms/resource/09/3008609_image2_1.jpg",
+    "sejong-lake-park": "https://tong.visitkorea.or.kr/cms/resource/76/3353976_image2_1.jpg",
+    "taegisan": "https://tong.visitkorea.or.kr/cms/resource/75/4068575_image2_1.jpg",
+    "bisugumi-valley": "https://tong.visitkorea.or.kr/cms/resource/19/2675219_image2_1.jpg",
+    "chungju-museum": "https://tong.visitkorea.or.kr/cms/resource/46/3560546_image2_1.JPG",
+    "peace-dam": "https://tong.visitkorea.or.kr/cms/resource/48/2745348_image2_1.JPG",
+    "anheung-steamed-bun-village": "https://tong.visitkorea.or.kr/cms/resource/51/3577651_image2_1.jpg",
+    "cheongtaesan-recreation-forest": "https://tong.visitkorea.or.kr/cms/resource/63/4096163_image2_1.jpg",
+    "bellfore-jeungpyeong": "https://tong.visitkorea.or.kr/cms/resource/87/3457387_image2_1.jpg",
+    "bokangcheon-poplar-forest": "https://tong.visitkorea.or.kr/cms/resource/20/4078020_image2_1.jpg",
+    "jwagusan-recreation-forest": "https://tong.visitkorea.or.kr/cms/resource/46/4077446_image2_1.jpg",
+    "eduparm-jeungpyeong": "https://tong.visitkorea.or.kr/cms/resource/87/3457387_image2_1.jpg",
+    "sejong-national-arboretum": "https://tong.visitkorea.or.kr/cms/resource/89/4065589_image2_1.jpg",
+    "jeungpyeong-folk-experience-museum": "https://tong.visitkorea.or.kr/cms/resource/60/4078060_image2_1.jpg",
+    "bear-tree-park": "https://tong.visitkorea.or.kr/cms/resource/36/4058636_image2_1.jpg",
+    "sejong-central-park": "https://tong.visitkorea.or.kr/cms/resource/82/3522482_image2_1.jpg"
   }
 }

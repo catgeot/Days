@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 88,
+  sessionNo: 89,
   sessionPhase: '빈 hub 명소 보강',
   branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?hub=hongcheon',
+  previewPath: '/korea/theme/scenic?hub=hoengseong',
   qaShareSlug: 'scenic-hub-fill',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-89',
+    session: '테마여행 #89, 빈 hub 명소 보강',
+    title: '횡성·화천·충주·증평·세종 GATEO 선정 전수',
+    detail:
+      '큐 R01 잔여(횡성·화천)와 R02 앞(충주·증평·세종) 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(횡성4·화천4·충주6·증평6·세종6 · Tour contentId 24/26 · 썸네일 371/374). 강원·충북·세종(area 8) 시도 색인에도 동시 등록했습니다. Preview에서 /korea/theme/scenic?hub=hoengseong · ?hub=hwacheon · ?hub=chungju · ?hub=jeungpyeong · ?hub=sejong 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-08-scenic-hub-fill-r01-88',
     session: '테마여행 #88, 빈 hub 명소 보강',

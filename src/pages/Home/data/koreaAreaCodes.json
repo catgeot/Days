@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-08T23:59:30.927Z",
-    "areaCount": 16,
-    "hubLinkCount": 92,
+    "generatedAt": "2026-08-09T00:11:59.334Z",
+    "areaCount": 17,
+    "hubLinkCount": 97,
     "source": "scripts/data/korea-area-code-overrides.mjs"
   },
   "defaultHubIds": [
@@ -61,6 +61,12 @@
         "ulsan"
       ]
     },
+    "8": {
+      "name": "세종",
+      "hubIds": [
+        "sejong"
+      ]
+    },
     "31": {
       "name": "경기",
       "hubIds": [
@@ -115,7 +121,9 @@
         "hongcheon",
         "yanggu",
         "jeongseon",
-        "taebaek"
+        "taebaek",
+        "hoengseong",
+        "hwacheon"
       ]
     },
     "33": {
@@ -124,7 +132,9 @@
         "cheongju",
         "danyang",
         "jecheon",
-        "jincheon"
+        "jincheon",
+        "chungju",
+        "jeungpyeong"
       ]
     },
     "34": {
@@ -200,6 +210,7 @@
     "gwangju": "5",
     "busan": "6",
     "ulsan": "7",
+    "sejong": "8",
     "suwon": "31",
     "gapyeong": "31",
     "ansan": "31",
@@ -247,10 +258,14 @@
     "yanggu": "32",
     "jeongseon": "32",
     "taebaek": "32",
+    "hoengseong": "32",
+    "hwacheon": "32",
     "cheongju": "33",
     "danyang": "33",
     "jecheon": "33",
     "jincheon": "33",
+    "chungju": "33",
+    "jeungpyeong": "33",
     "boryeong": "34",
     "gongju": "34",
     "taean": "34",

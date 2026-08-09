@@ -11,12 +11,8 @@
 - **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
 - **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=hongcheon` · `?hub=yangju` · `?hub=jeongseon` · `?hub=taebaek` · `?hub=uljin`
 - **작업 로그**: 「홍천·양구·정선·태백·울진 GATEO 선정 전수」
-- **남은 일**: 큐 R01(횡성·화천) + R02 충청 전수 · 사람 Preview QA
-- **다음 채팅명**:
-
-```
-테마여행 #89, 빈 hub 명소 보강
-```
+- **남은 일**: ✅ #89 횡성·화천·충주·증평·세종 전수 · 사람 Preview QA
+- **다음 채팅명**: `테마여행 #89, 빈 hub 명소 보강` → 완료(일지 `2026-08-09`)
 
 ## 테마여행 #87, 빈 hub 명소 보강
 
