@@ -71,7 +71,13 @@ assert.ok(
 );
 assert.ok(pageSrc.includes('curatedSearchPool'), 'search pool for curated');
 assert.ok(pageSrc.includes('heritageSearchPool'), 'search pool for heritage');
-assert.ok(pageSrc.includes('pickRegionForSearchMatches'), 'commit picks region');
+assert.ok(pageSrc.includes('pickRegionFromSpotMatches'), 'commit picks per-pod region');
+assert.ok(
+  pageSrc.includes('setCuratedRegion') &&
+    pageSrc.includes('setHeritageRegion') &&
+    pageSrc.includes('setTourRegion'),
+  'curated/heritage/tour region chips are independent',
+);
 assert.ok(
   pageSrc.includes('한국관광공사 선정 관광지입니다.'),
   'tour catalog blurb is short',
@@ -122,17 +128,16 @@ assert.ok(
 );
 assert.ok(
   pageSrc.includes('화천') && pageSrc.includes('TourAPI'),
-  'search auto-picks region when curated/heritage empty (화천→강원)',
+  'search auto-picks tour region when curated/heritage empty (화천→강원)',
 );
-assert.equal(
-  filterScenicSpotsByQuery(curated, '화천').length,
-  0,
-  '화천 curated 0 (TourAPI-only locality)',
+assert.ok(
+  filterScenicSpotsByQuery(curated, '화천').some((s) => s.hubId === 'hwacheon'),
+  '화천 curated includes hwacheon hub (붕어섬 등)',
 );
 assert.equal(
   filterScenicSpotsByQuery(heritage, '화천').length,
   0,
-  '화천 heritage 0 (TourAPI-only locality)',
+  '화천 heritage 0',
 );
 
 // 국내 hub 감사에서 드러난 오탐: 첫 권역이 아니라 최다 권역
@@ -177,20 +182,28 @@ assert.equal(
   '수도권',
   '전부 0이면 fallback',
 );
+const goseongCurated = filterScenicSpotsByQuery(curated, '고성');
 const goseongHeritage = filterScenicSpotsByQuery(heritage, '고성');
-assert.equal(filterScenicSpotsByQuery(curated, '고성').length, 0, '고성 curated 0');
+assert.ok(goseongCurated.length >= 1, '고성 curated ≥1 (강원·경상 hub)');
 assert.ok(goseongHeritage.length >= 2, '고성 heritage ≥2');
 assert.ok(
   new Set(goseongHeritage.map((s) => s.region)).size === 1,
   '고성 heritage single region → no region chip row',
 );
-const setRegionBlock = pageSrc.slice(
-  pageSrc.indexOf('const setRegion = useCallback'),
-  pageSrc.indexOf('const setArea = useCallback'),
+const setCuratedRegionBlock = pageSrc.slice(
+  pageSrc.indexOf('const setCuratedRegion = useCallback'),
+  pageSrc.indexOf('const setCuratedArea = useCallback'),
 );
 assert.ok(
-  setRegionBlock.length > 0 && !setRegionBlock.includes('clearSearchFilter'),
+  setCuratedRegionBlock.length > 0 &&
+    !setCuratedRegionBlock.includes('clearSearchFilter'),
   'region chip must not clear search',
+);
+assert.ok(
+  pageSrc.includes("next.set('cregion'") &&
+    pageSrc.includes("next.set('hregion'") &&
+    pageSrc.includes("next.set('tregion'"),
+  'pod chip writes use cregion/hregion/tregion',
 );
 assert.ok(
   filterScenicSpotsByQuery(curated, '경복궁').some((s) => s.region === '수도권'),

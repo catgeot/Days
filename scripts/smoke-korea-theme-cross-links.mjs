@@ -71,12 +71,16 @@ assert(resolveThemePackageKey(hallasan) === 'koreaJeju', 'hallasan package korea
 assert(bundle.packageCta?.key === 'koreaJeju', 'bundle packageCta koreaJeju');
 assert(Array.isArray(bundle.nearbyHubs), 'nearbyHubs array');
 assert(
-  scenicHomePathForHubId('boryeong').includes('region='),
-  'boryeong scenic home has region',
+  scenicHomePathForHubId('boryeong').includes('cregion=') &&
+    scenicHomePathForHubId('boryeong').includes('hregion=') &&
+    scenicHomePathForHubId('boryeong').includes('tregion='),
+  'boryeong scenic home has per-pod regions',
 );
 assert(
-  scenicHomePathForHubId('boryeong').includes('area='),
-  'boryeong scenic home has area',
+  scenicHomePathForHubId('boryeong').includes('carea=') &&
+    scenicHomePathForHubId('boryeong').includes('harea=') &&
+    scenicHomePathForHubId('boryeong').includes('tarea='),
+  'boryeong scenic home has per-pod areas',
 );
 assert(
   scenicHomePathForHubId('boryeong').includes('hub=boryeong'),

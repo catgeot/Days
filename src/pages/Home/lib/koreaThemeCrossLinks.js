@@ -330,7 +330,8 @@ export function listSameHubCrossSpots(hubId, opts = {}) {
 }
 
 /**
- * hub → 해당 시·군 명승지 홈 (`/korea/theme/scenic?region=&area=&hub=`).
+ * hub → 해당 시·군 명승지 홈.
+ * 명소·명승·관광지 파드 권역/시도를 같이 시드하고, hub는 명소 파드만 좁힌다.
  * 시도(area)만 쓰면 보령·공주·태안이 같은 홈으로 뭉개지므로 hub를 반드시 붙인다.
  * @param {string | null | undefined} hubId
  * @returns {string}
@@ -348,8 +349,17 @@ export function scenicHomePathForHubId(hubId) {
     if (label && SCENIC_REGION_ORDER.includes(label)) region = label;
   }
   const params = new URLSearchParams();
-  if (region) params.set('region', region);
-  if (areaCode && region) params.set('area', String(areaCode));
+  if (region) {
+    params.set('cregion', region);
+    params.set('hregion', region);
+    params.set('tregion', region);
+  }
+  if (areaCode && region) {
+    const area = String(areaCode);
+    params.set('carea', area);
+    params.set('harea', area);
+    params.set('tarea', area);
+  }
   params.set('hub', hid);
   return `/korea/theme/scenic?${params.toString()}`;
 }

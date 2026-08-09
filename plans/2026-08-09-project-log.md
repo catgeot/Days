@@ -2,6 +2,15 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
+## 명승 분류칩 파드 분리
+
+**상태**: `main` · 로직 커밋 (push 대기)
+
+- **증상**: 명소·명승·관광지 분류칩이 `?region=`/`?area=`·`hub` locality로 서로 승계됨
+- **한 일**: 파드별 `cregion/carea`·`hregion/harea`·`tregion/tarea` · hub는 명소만 · 관광지에 권역·시도 칩 · 레거시 region/area 시드 후 제거 · `scenicHomePathForHubId` 갱신
+- **VERIFY**: `smoke:korea-scenic-search` · `smoke:korea-theme-cross-links` · categories/nearby/heritage/spots/place-cluster · `npm run build`
+- **QA**: `/korea/theme/scenic` → 명소 강원 선택 시 명승·관광지 칩 유지 · hub 진입 시 명승에 「○○ 명승」뱃지 없음
+
 ## 테마여행 #108, main 병합·전반 점검
 
 **상태**: PR [#75](https://github.com/catgeot/Days/pull/75) **MERGED** · tip `887957da` · `origin/main` push ✅
