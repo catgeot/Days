@@ -4,7 +4,7 @@
 
 ## 명승 분류칩 파드 분리
 
-**상태**: `main` · 로직 커밋 (push 대기)
+**상태**: `main` tip `8eb63843` · `origin/main` push ✅ · 세션 종료
 
 - **증상**: 명소·명승·관광지 분류칩이 `?region=`/`?area=`·`hub` locality로 서로 승계됨
 - **한 일**: 파드별 `cregion/carea`·`hregion/harea`·`tregion/tarea` · hub는 명소만 · 관광지에 권역·시도 칩 · 레거시 region/area 시드 후 제거 · `scenicHomePathForHubId` 갱신
