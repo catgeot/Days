@@ -4,7 +4,7 @@
 
 ## 테마여행 #96, 빈 hub 명소 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `(push 후)` · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `f6103bec` · Preview 사람 QA 대기
 
 - **한 일**: 큐 R01 전라 — 나주5·신안5·순창5·영광5·김제4 **전수** GATEO 선정 · Tour contentId 12/24 · 썸네일 529/547 · 전북·전남 시도 색인 · Tour LIVE 검색 공백 → DB·related 폴백 · 큐 잔여 37
 - **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `npm run build`
