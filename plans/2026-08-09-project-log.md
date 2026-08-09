@@ -4,7 +4,7 @@
 
 ## 테마여행 #88, 네이버 링크 확장
 
-**상태**: feature `cursor/scenic-food-naver-link-b366` · PR [#76](https://github.com/catgeot/Days/pull/76) · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-food-naver-link-b366` · PR [#76](https://github.com/catgeot/Days/pull/76) · tip `14c86f3b` · Preview 사람 QA 대기
 
 - **한 일**: 맛집뿐 아니라 **명승·관광지·레포츠·문화** 상세에도 동일 위치(개요 아래·주소 위) 「네이버 상세정보 보기」 노출
 - **VERIFY**: `npm run build`
