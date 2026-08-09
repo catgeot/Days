@@ -3,9 +3,10 @@
  * 테마여행 #49 — 명승 홈 내 주변(거리순) 스모크.
  * 테마여행 #51 — 축제 상세 인근 명소도 축제장 거리순.
  * 테마여행 #69 — 내 주변 관광지 bbox(관내 최근접 포함).
+ * 테마여행 #114 — bbox range 페이지네이션(양구 등 밀집권역 관내 누락 방지).
  *
  *   npm run smoke:korea-scenic-nearby
- *   LIVE(옵션): VITE_SUPABASE_* — 화천 관내 관광지 최근접 검증
+ *   LIVE(옵션): VITE_SUPABASE_* — 화천·양구 관내 관광지 최근접 검증
  */
 import assert from 'assert';
 import { readFileSync } from 'fs';
@@ -117,6 +118,15 @@ assert.ok(
   'fetchKoreaTourAttractionsNear exported',
 );
 assert.ok(libSrc.includes('NEAR_BBOX_FETCH_CAP'), 'bbox fetch cap');
+assert.ok(libSrc.includes('NEAR_BBOX_PAGE'), 'bbox page size');
+assert.ok(
+  /NEAR_BBOX_FETCH_CAP\s*=\s*3000/.test(libSrc),
+  'NEAR_BBOX_FETCH_CAP>=3000 (single 500 drops rural nearest)',
+);
+assert.ok(
+  libSrc.includes('.range(from, to)') || libSrc.includes('.range(from,to)'),
+  'near bbox uses range pagination',
+);
 
 const gangwon = listKoreaScenicSpots('강원');
 assert.ok(gangwon.length >= 3, `강원 선정 명소≥3 (got ${gangwon.length})`);
@@ -154,40 +164,53 @@ const supabaseUrl = String(
 ).trim();
 const supabaseAnon = String(process.env.VITE_SUPABASE_ANON_KEY || '').trim();
 let liveNote = 'LIVE skipped';
-if (supabaseUrl && supabaseAnon) {
-  // Vite supabase 클라 대신 REST — Node에서 import.meta.env 회피
-  const hwacheon = { lat: 38.1063, lng: 127.7082 };
+
+/**
+ * PostgREST bbox 전수(페이지) → 원 거리순 — fetchKoreaTourAttractionsNear와 동일 계약.
+ * @param {{ lat: number, lng: number }} origin
+ * @param {string} [cat1]
+ */
+async function liveRankNearTour(origin, cat1) {
   const radiusKm = NEAR_SCENIC_KM;
   const dLat = radiusKm / 111;
-  const cos = Math.cos((hwacheon.lat * Math.PI) / 180);
+  const cos = Math.cos((origin.lat * Math.PI) / 180);
   const dLng = radiusKm / (111 * Math.max(Math.abs(cos), 0.2));
-  const u = new URL(`${supabaseUrl}/rest/v1/tourapi_attraction`);
-  u.searchParams.set('select', 'content_id,title,addr1,mapx,mapy,cat1');
-  u.searchParams.set('active', 'eq.true');
-  u.searchParams.set('content_type_id', 'eq.12');
-  u.searchParams.set('cat1', 'eq.A01');
-  u.searchParams.set(
-    'and',
-    `(mapy.gte.${hwacheon.lat - dLat},mapy.lte.${hwacheon.lat + dLat},mapx.gte.${hwacheon.lng - dLng},mapx.lte.${hwacheon.lng + dLng})`,
-  );
-  u.searchParams.set('limit', '500');
-  const res = await fetch(u, {
-    headers: {
-      apikey: supabaseAnon,
-      Authorization: `Bearer ${supabaseAnon}`,
-    },
-  });
-  assert.ok(res.ok, `화천 bbox HTTP ${res.status}`);
-  const rows = await res.json();
-  assert.ok(Array.isArray(rows), '화천 bbox rows array');
+  const page = 1000;
+  const cap = 3000;
+  /** @type {object[]} */
+  const rows = [];
+  for (let from = 0; from < cap; from += page) {
+    const u = new URL(`${supabaseUrl}/rest/v1/tourapi_attraction`);
+    u.searchParams.set('select', 'content_id,title,addr1,mapx,mapy,cat1');
+    u.searchParams.set('active', 'eq.true');
+    u.searchParams.set('content_type_id', 'eq.12');
+    if (cat1) u.searchParams.set('cat1', `eq.${cat1}`);
+    u.searchParams.set(
+      'and',
+      `(mapy.gte.${origin.lat - dLat},mapy.lte.${origin.lat + dLat},mapx.gte.${origin.lng - dLng},mapx.lte.${origin.lng + dLng})`,
+    );
+    u.searchParams.set('limit', String(page));
+    u.searchParams.set('offset', String(from));
+    const res = await fetch(u, {
+      headers: {
+        apikey: supabaseAnon,
+        Authorization: `Bearer ${supabaseAnon}`,
+      },
+    });
+    assert.ok(res.ok, `near bbox HTTP ${res.status} @${from}`);
+    const batch = await res.json();
+    assert.ok(Array.isArray(batch), 'near bbox rows array');
+    rows.push(...batch);
+    if (batch.length < page) break;
+  }
   const r2 = radiusKm * radiusKm;
   const scored = [];
   for (const row of rows) {
     const la = Number(row.mapy);
     const ln = Number(row.mapx);
     if (!Number.isFinite(la) || !Number.isFinite(ln)) continue;
-    const dy = (la - hwacheon.lat) * 111;
-    const dx = (ln - hwacheon.lng) * 111 * cos;
+    const dy = (la - origin.lat) * 111;
+    const dx = (ln - origin.lng) * 111 * cos;
     const dist2 = dy * dy + dx * dx;
     if (dist2 > r2) continue;
     scored.push({
@@ -197,17 +220,43 @@ if (supabaseUrl && supabaseAnon) {
     });
   }
   scored.sort((a, b) => a.distKm - b.distKm);
-  assert.ok(scored.length >= 5, `화천 80km 관광지≥5 (got ${scored.length})`);
-  const first = scored[0];
+  return { rows: rows.length, scored };
+}
+
+if (supabaseUrl && supabaseAnon) {
+  const hwacheon = { lat: 38.1063, lng: 127.7082 };
+  const { scored: hwScored } = await liveRankNearTour(hwacheon, 'A01');
+  assert.ok(hwScored.length >= 5, `화천 80km 관광지≥5 (got ${hwScored.length})`);
+  const hwFirst = hwScored[0];
   assert.ok(
-    /화천/.test(String(first?.addr1 || '')),
-    `화천 최근접이 관내여야 함 (got ${first?.title} · ${first?.addr1})`,
+    /화천/.test(String(hwFirst?.addr1 || '')),
+    `화천 최근접이 관내여야 함 (got ${hwFirst?.title} · ${hwFirst?.addr1})`,
   );
   assert.ok(
-    Number.isFinite(first?.distKm) && first.distKm < 10,
-    `화천 최근접 <10km (got ${first?.distKm})`,
+    Number.isFinite(hwFirst?.distKm) && hwFirst.distKm < 10,
+    `화천 최근접 <10km (got ${hwFirst?.distKm})`,
   );
-  liveNote = `LIVE 화천 first ${first.title} ${first.distKm.toFixed(1)}km · n=${scored.length}`;
+
+  // 양구: 단일 limit 500이면 인제·춘천만 남고 관내(0~수 km)가 샘플에서 빠짐
+  const yanggu = { lat: 38.1075, lng: 127.9897 };
+  const { rows: ygRows, scored: ygScored } = await liveRankNearTour(yanggu);
+  assert.ok(ygRows > 500, `양구 bbox 후보>500 (got ${ygRows}) — 페이지네이션 필요`);
+  assert.ok(ygScored.length >= 5, `양구 80km 관광지≥5 (got ${ygScored.length})`);
+  const ygFirst = ygScored[0];
+  assert.ok(
+    /양구/.test(String(ygFirst?.addr1 || '')),
+    `양구 최근접이 관내여야 함 (got ${ygFirst?.title} · ${ygFirst?.addr1})`,
+  );
+  assert.ok(
+    Number.isFinite(ygFirst?.distKm) && ygFirst.distKm < 5,
+    `양구 최근접 <5km (got ${ygFirst?.distKm})`,
+  );
+  assert.ok(
+    !/인제/.test(String(ygFirst?.addr1 || '')),
+    '양구 최근접이 인제면 안 됨',
+  );
+
+  liveNote = `LIVE 화천 ${hwFirst.title} ${hwFirst.distKm.toFixed(1)}km · 양구 ${ygFirst.title} ${ygFirst.distKm.toFixed(1)}km · n=${ygScored.length}`;
 }
 
 console.log(

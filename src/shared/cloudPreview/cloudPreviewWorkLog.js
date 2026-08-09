@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 113,
-  sessionPhase: '세권 칩 메인 반영 전 점검',
-  branch: 'cursor/scenic-mid-cluster-67a8',
+  sessionNo: 114,
+  sessionPhase: '내주변 양구 관내 누락',
+  branch: 'cursor/scenic-nearby-yanggu-7658',
   previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'scenic-mid-cluster',
+  qaShareSlug: 'scenic-nearby',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-nearby-yanggu-114',
+    session: '테마여행 #114, 내주변 양구 관내 누락',
+    title: '내 주변 관광지 — bbox 페이지네이션',
+    detail:
+      '양구 「내 주변」관광지에서 bbox 후보 806건 중 앞 500만 가져와 관내(0~수 km)가 빠지고 인제·춘천이 먼저 나오던 문제를 고쳤습니다. range 페이지네이션(최대 3000) 후 거리순. Preview에서 양구 GPS(또는 위치) → 관광지 최근접이 양구 관내인지 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-mid-cluster-113',
     session: '테마여행 #113, 세권 칩 메인 반영 전 점검',

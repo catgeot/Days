@@ -84,9 +84,10 @@ export const CLOUD_QA_SHARE_LINKS = [
   },
   {
     slug: 'scenic-nearby',
-    label: '명승 내주변 관내 관광지',
-    branch: 'main',
-    destination: 'https://www.gateo.kr/korea/theme/scenic',
+    label: '명승 내주변 관내 관광지(양구)',
+    branch: 'cursor/scenic-nearby-yanggu-7658',
+    destination:
+      'https://days-git-cursor-scenic-nearby-yanggu-7658-catgeots-projects.vercel.app/korea/theme/scenic',
     active: true,
   },
   {
