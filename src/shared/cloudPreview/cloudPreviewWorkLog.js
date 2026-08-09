@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 66,
-  sessionPhase: '명승 메인 · 홈 투톱',
+  sessionNo: 67,
+  sessionPhase: '홈 명승·카테고리 겹침',
   branch: 'cursor/korea-theme',
-  previewPath: '/korea/theme/scenic',
+  previewPath: '/',
   qaShareSlug: 'korea-theme',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-korea-theme-home-scenic-category-clear',
+    session: '테마여행 #67, 홈 명승·카테고리 겹침',
+    title: 'PC 홈 명승·테마 카테고리 겹침 해소',
+    detail:
+      '지구본 홈 PC에서 로고 아래 축제/명승 투톱과 좌측 테마 카테고리가 겹치지 않도록, 카테고리 레일을 투톱 아래 밴드에만 세로 중앙 배치했습니다. Preview 홈(PC 폭)에서 명승 버튼과 Paradise 등이 겹치지 않는지 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-07-korea-theme-scenic-main-dual-entry',
     session: '테마여행 #66, 명승 메인 · 홈 투톱',
