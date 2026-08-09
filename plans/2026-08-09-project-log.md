@@ -2,6 +2,26 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
+## 테마여행 #116, 잔여 contentId 보강
+
+**상태**: feature `cursor/scenic-contentid-f876` · tip (이 커밋) · Preview QA 대기  
+**참고**: #114 이후 잔여 null≈93 → alias·매칭 가드 보강 후 **18곳** 추가.
+
+- **한 일**: `fill:korea-scenic-spot-content-ids` — KEYWORD_ALIASES·접미 ratio 2.6·`hubHints`(경남 고성)·캠핑장/허브꼬리/약한 일반명 가드 · contentId **18곳** 채움(627→645 · 잔여 null 75)
+- **채움 예**: 퍼플섬 `578024` · 주남저수지 `126117` · 제황산공원 `126139` · 고성공룡박물관 `130540` · 나로우주센터 `751881` · 칠곡보 · 부항댐 · 성밖숲 · 위양지 · 작천정 · 원남저수지 · 금성산 · 금오랜드 · 만연산 · 평림댐 · 황룡강 · 불갑저수지 · 성주 가야산
+- **오매칭 반려**: 능곡동→오이도 · 계룡산자연사→공주 한국자연사박물관 · 스타필드→하남 동사지 · 강진만(만)≠생태공원
+- **MISS(유지 null)**: 킨텍스·스타필드·리조트·운문사(캠핑만)·미르섬(공주 동명)·백사장(태안) 등 Tour 미등재·타 지역 ≈75 · LIVE 429로 추가 keyword 중단
+- **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
+- **Preview**: `https://days-git-cursor-scenic-contentid-f876-catgeots-projects.vercel.app/korea/theme/scenic?hub=sinan&spot=purple-island` · `?hub=changwon&spot=changwon-junam-reservoir` · `?hub=goseongnam&spot=goseong-dinosaur-museum`
+- **작업 로그**: 「잔여 contentId 18곳 추가 채움」
+- **남은 일**: 사람 Preview QA · 잔여 null≈75(Tour 미등재·429 후속) · merge 후 `/qa/scenic-hub-fill`→PROD
+- **다음 채팅명**:
+
+```
+테마여행 #117, 잔여 contentId 보강
+```
+
 ## 테마여행 #114, 잔여 contentId 보강
 
 **상태**: feature `cursor/scenic-contentid-f876` · PR [#80](https://github.com/catgeot/Days/pull/80) · tip `0b195021` · Preview QA 대기  

@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-09T22:22:06.701Z",
+    "generatedAt": "2026-08-09T22:45:21.632Z",
     "count": 720,
     "imageCount": 683,
     "curation": "GATEO",
@@ -6878,7 +6878,7 @@
       "placeSlug": "wonnams-reservoir",
       "lat": 36.901,
       "lng": 127.652,
-      "contentId": null,
+      "contentId": "2770027",
       "overview": "원남저수지 — 수변·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -7902,7 +7902,7 @@
       "placeSlug": "naro-space-center",
       "lat": 34.453525,
       "lng": 127.517777,
-      "contentId": null,
+      "contentId": "751881",
       "overview": "나로우주센터 — 우주발사·과학관. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/68/3552768_image2_1.jpg"
     },
@@ -7998,7 +7998,7 @@
       "placeSlug": "manyeonsan-healing-forest",
       "lat": 35.1,
       "lng": 127.05,
-      "contentId": null,
+      "contentId": "128990",
       "overview": "만연산 치유숲 — 편백·숲길. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/98/2604598_image2_1.jpg"
     },
@@ -8286,7 +8286,7 @@
       "placeSlug": "pyeongnim-dam",
       "lat": 35.2857867,
       "lng": 126.6853105,
-      "contentId": null,
+      "contentId": "2742199",
       "overview": "평림댐 — 댐·물빛 산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/86/3568786_image2_1.jpg"
     },
@@ -8302,7 +8302,7 @@
       "placeSlug": "hwangryong-river",
       "lat": 35.2507971,
       "lng": 126.741992,
-      "contentId": null,
+      "contentId": "2742213",
       "overview": "황룡강 — 강변·노란꽃창포. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/60/3546860_image2_1.JPG"
     },
@@ -8526,7 +8526,7 @@
       "placeSlug": "purple-island",
       "lat": 34.7158005,
       "lng": 126.1141287,
-      "contentId": null,
+      "contentId": "578024",
       "overview": "퍼플섬 — 반월·박지 보라 섬. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/96/3558996_image2_1.jpg"
     },
@@ -8686,7 +8686,7 @@
       "placeSlug": "bulgap-reservoir",
       "lat": 35.2223684433,
       "lng": 126.5155007132,
-      "contentId": null,
+      "contentId": "1623859",
       "overview": "불갑저수지 — 산자락 수변. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/86/2825886_image2_1.jpg"
     },
@@ -9358,7 +9358,7 @@
       "placeSlug": "jakcheonjeong",
       "lat": 35.5489863,
       "lng": 129.1159649,
-      "contentId": null,
+      "contentId": "126064",
       "overview": "작천정 — 울주 계곡 정자. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -9694,7 +9694,7 @@
       "placeSlug": "jinhae-jehwangsan-park",
       "lat": 35.1486522,
       "lng": 128.6646636,
-      "contentId": null,
+      "contentId": "126139",
       "overview": "제황산공원 — 진해 항구 전망. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/69/3565769_image2_1.jpg"
     },
@@ -9726,7 +9726,7 @@
       "placeSlug": "changwon-junam-reservoir",
       "lat": 35.3182381,
       "lng": 128.675278,
-      "contentId": null,
+      "contentId": "126117",
       "overview": "주남저수지 — 창원 철새 도래지. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/81/3370281_image2_1.jpg"
     },
@@ -9998,7 +9998,7 @@
       "placeSlug": "goseong-dinosaur-museum",
       "lat": 34.9080412,
       "lng": 128.1485631,
-      "contentId": null,
+      "contentId": "130540",
       "overview": "고성 공룡박물관 — 해안 공룡발자국·전시. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/11/3348111_image2_1.jpg"
     },
@@ -10110,7 +10110,7 @@
       "placeSlug": "geumo-land",
       "lat": 36.1132379,
       "lng": 128.3160597,
-      "contentId": null,
+      "contentId": "2626809",
       "overview": "금오랜드 — 금오산 기슭 유원지. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/87/3041887_image2_1.jpg"
     },
@@ -10270,7 +10270,7 @@
       "placeSlug": "wiyangji-reservoir",
       "lat": 35.4453,
       "lng": 128.8042,
-      "contentId": null,
+      "contentId": "2545984",
       "overview": "위양지 — 밀양 연못·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/49/3582749_image2_1.jpg"
     },
@@ -10414,7 +10414,7 @@
       "placeSlug": "geumseongsan",
       "lat": 36.38,
       "lng": 128.68,
-      "contentId": null,
+      "contentId": "126921",
       "overview": "금성산 — 의성 전망·등산. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/14/3406114_image2_1.jpg"
     },
@@ -10894,7 +10894,7 @@
       "placeSlug": "chilgok-weir",
       "lat": 36.0153023,
       "lng": 128.3973242,
-      "contentId": null,
+      "contentId": "2674142",
       "overview": "칠곡보 — 낙동강 보·수변. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/52/3536352_image2_1.jpg"
     },
@@ -10990,7 +10990,7 @@
       "placeSlug": "buhang-dam-gimcheon",
       "lat": 35.9803203,
       "lng": 128.0040688,
-      "contentId": null,
+      "contentId": "2706622",
       "overview": "부항댐 — 김천 호수·전망. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/31/3072931_image2_1.jpg"
     },
@@ -11294,7 +11294,7 @@
       "placeSlug": "seongju-gayasan",
       "lat": 35.803262,
       "lng": 128.147799,
-      "contentId": null,
+      "contentId": "126023",
       "overview": "가야산 — 성주 국립공원·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/72/3047772_image2_1.jpg"
     },
@@ -11326,7 +11326,7 @@
       "placeSlug": "seongbak-forest-seongju",
       "lat": 35.915522511036,
       "lng": 128.280109593585,
-      "contentId": null,
+      "contentId": "1621189",
       "overview": "성밖숲 — 성주 왕버들 숲. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/74/3566074_image2_1.JPG"
     },

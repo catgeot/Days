@@ -65,6 +65,24 @@ const KEYWORD_ALIASES = {
   벽골제: ['벽골제'],
   백사장해수욕장: ['백사장해수욕장'],
   무주덕유산리조트: ['무주덕유산리조트'],
+  작천정: ['작괘천', '작천정계곡', '작괘천(작천정계곡)'],
+  '진해 제황산공원': ['제황산공원'],
+  '창원 주남저수지': ['주남저수지 철새도래지', '주남저수지'],
+  '고성 공룡박물관': ['고성공룡박물관', '고성 공룡박물관'],
+  '만연산 치유숲': ['만연산'],
+  퍼플섬: ['반월도·박지도', '반월도', '박지도', '퍼플섬'],
+  나로우주센터: ['나로우주센터 우주과학관', '나로우주센터'],
+  평림댐: ['평림댐 장미공원', '평림댐'],
+  황룡강: ['황룡강 생태공원', '황룡강'],
+  불갑저수지: ['불갑저수지 수변공원', '불갑저수지'],
+  칠곡보: ['칠곡보 생태공원', '칠곡보'],
+  부항댐: ['부항댐 출렁다리', '김천 부항댐 물 문화관', '부항댐'],
+  '성주 성밖숲': ['성주 경산리 성밖숲', '성밖숲'],
+  '성주 가야산': ['가야산', '가야산국립공원'],
+  '밀양 위양지': ['위양지', '위양지(위양지 이팝나무)'],
+  원남저수지: ['원남저수지', '원남저수지(원남제)', '원남제'],
+  금성산: ['금성산·비봉산(의성)', '금성산'],
+  금오랜드: ['금오랜드 놀이동산', '금오랜드'],
 };
 
 function sleep(ms) {
@@ -94,6 +112,23 @@ function hubToken(hub) {
     .replace(/(특별자치시|특별시|광역시|특별자치도|시|군|구)$/g, '');
 }
 
+/** addr/title 지역 힌트 — "경남 고성" → 경남고성·고성 */
+function hubHints(hub) {
+  const token = hubToken(hub);
+  const hints = new Set();
+  if (token && token.length >= 2) hints.add(token);
+  const region = token.match(/^(경기|경남|경북|전남|전북|충남|충북|강원|제주)(.+)$/);
+  if (region?.[2]?.length >= 2) hints.add(region[2]);
+  for (const a of hub?.aliases || []) {
+    const raw = String(a || '').replace(/\s+/g, '');
+    const stripped = raw.replace(/(시|군|구)$/g, '');
+    if (stripped.length >= 2) hints.add(stripped);
+    const bare = raw.replace(/^(경기|경남|경북|전남|전북|충남|충북|강원|제주)/, '');
+    if (bare.length >= 2 && bare !== raw) hints.add(bare.replace(/(시|군|구)$/g, ''));
+  }
+  return [...hints].filter((h) => h && h.length >= 2);
+}
+
 function haversineKm(lat1, lon1, lat2, lon2) {
   const toR = (d) => (d * Math.PI) / 180;
   const dLat = toR(lat2 - lat1);
@@ -108,6 +143,8 @@ function isCommercial(title, query) {
   if (/리조트/.test(query) && /스키장|눈썰매|루지|골프/.test(title)) return true;
   if (/리조트/.test(title) && /리조트/.test(query)) return false;
   if (/시장|마켓/.test(title) && /시장|마켓/.test(query)) return false;
+  // 본체 대신 캠핑장만 걸리는 오매칭 방지
+  if (/캠핑|야영|오토캠핑|캠프존/.test(title) && !/캠핑|야영/.test(query)) return true;
   return COMMERCIAL_RE.test(title);
 }
 
@@ -142,6 +179,9 @@ function scoreHit(query, item, hub, spot) {
   const q = norm(query);
   const t = norm(title);
   if (!q || !t || q.length < 2 || GENERIC_RE.test(q)) return 0;
+  // 허브명만 쿼리(예: 스타필드 하남 → 「하남」)로 엉뚱한 POI 매칭 금지
+  const hubNorms = hubHints(hub).map((h) => norm(h)).filter(Boolean);
+  if (hubNorms.includes(q)) return 0;
 
   const isMarket = /시장|마켓/.test(title) || /시장|마켓/.test(query);
   if (type && !['12', '14', '28'].includes(type) && !(type === '38' && isMarket)) {
@@ -153,11 +193,11 @@ function scoreHit(query, item, hub, spot) {
   if (t === q) score = 100;
   else if (t.startsWith(q) || q.startsWith(t)) {
     const ratio = Math.max(t.length, q.length) / Math.min(t.length, q.length);
-    // 주왕산국립공원 등 짧은 본명+접미는 위에서 stripAnnotations로 완화
-    if (ratio > 1.75) return 0;
+    // 주남저수지 철새도래지·칠곡보 생태공원 등 본명+시설 접미 허용
+    if (ratio > 2.6) return 0;
     score = 88;
   } else if (t.includes(q)) {
-    if (t.length / q.length > 1.85) return 0;
+    if (t.length / q.length > 2.6) return 0;
     score = 74;
   } else if (q.includes(t) && t.length >= 4) {
     if (q.length / t.length > 1.75) return 0;
@@ -170,6 +210,13 @@ function scoreHit(query, item, hub, spot) {
   if (/스키|눈썰매|루지|콘도|호텔|오션|역사관/.test(title) && !/스키|눈썰매/.test(query)) {
     return 0;
   }
+  // includes/약한 매칭만 — 「유적공원」「자연사박물관」 단독 쿼리 오매칭 방지
+  if (score <= 74) {
+    const weakGeneric =
+      q.length < 6 ||
+      (/박물관$|공원$|온천$|시장$|저수지$|기념관$/.test(q) && !t.startsWith(q) && t !== q);
+    if (weakGeneric) return 0;
+  }
 
   if (type === '12') score += 12;
   else if (type === '14') score += 10;
@@ -177,13 +224,10 @@ function scoreHit(query, item, hub, spot) {
   else if (type === '38' && isMarket) score += 8;
 
   const token = hubToken(hub);
-  const hints = [
-    token,
-    ...(hub?.aliases || []).map((a) => String(a).replace(/(시|군|구)$/g, '')),
-  ].filter((a) => a && a.length >= 2);
+  const hints = hubHints(hub);
   const addrOk = hints.some((h) => addr.includes(h));
   if (addrOk) score += 8;
-  else if (token && title.includes(token)) score += 4;
+  else if (hints.some((h) => title.includes(h))) score += 4;
   else if (Number.isFinite(spot.lat) && Number.isFinite(spot.lng)) {
     const lat = Number(item.mapy ?? item.lat);
     const lng = Number(item.mapx ?? item.lng);
@@ -214,14 +258,31 @@ function spotQueries(spot, hub) {
   for (const base of [...queries]) {
     for (const alias of KEYWORD_ALIASES[base] || []) queries.add(alias);
   }
-  const token = hubToken(hub);
-  if (token) {
-    for (const q of [...queries]) {
+  const stripTokens = new Set(hubHints(hub));
+  for (const q of [...queries]) {
+    for (const token of stripTokens) {
       const stripped = String(q)
-        .replace(new RegExp(`^${token}\\s*`), '')
+        .replace(new RegExp(`^${escapeRe(token)}\\s*`), '')
         .trim();
       if (stripped && stripped.length >= 2 && !GENERIC_RE.test(norm(stripped))) {
         queries.add(stripped);
+      }
+    }
+    // "진해 제황산공원" · "창원 주남저수지" → 뒤 토큰 (허브명만 남은 꼬리 제외)
+    const parts = String(q).trim().split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) {
+      const tail = parts.slice(1).join(' ');
+      const tailNorm = norm(tail);
+      const isHubTail = [...stripTokens].some(
+        (t) => norm(t) === tailNorm || tailNorm === norm(t).slice(0, tailNorm.length),
+      );
+      if (
+        tail.length >= 2 &&
+        !GENERIC_RE.test(tailNorm) &&
+        !isHubTail &&
+        tailNorm.length >= 3
+      ) {
+        queries.add(tail);
       }
     }
   }
