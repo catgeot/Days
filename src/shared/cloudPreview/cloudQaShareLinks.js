@@ -60,6 +60,14 @@ export const CLOUD_QA_SHARE_LINKS = [
     active: true,
   },
   {
+    slug: 'scenic-default-chip',
+    label: '명승 분류칩 기본 중·소분류',
+    branch: 'cursor/scenic-default-chip-6098',
+    destination:
+      'https://days-git-cursor-scenic-default-chip-6098-catgeots-projects.vercel.app/korea/theme/scenic',
+    active: true,
+  },
+  {
     slug: 'scenic-chip',
     label: '명승 분류칩 스크롤 고정',
     branch: 'main',

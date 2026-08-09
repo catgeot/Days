@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 108,
-  sessionPhase: 'main 병합·전반 점검',
-  branch: 'main',
+  sessionNo: 110,
+  sessionPhase: '분류칩 기본 중소수',
+  branch: 'cursor/scenic-default-chip-6098',
   previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'scenic-hub-fill',
+  qaShareSlug: 'scenic-default-chip',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-default-chip-110',
+    session: '테마여행 #110, 분류칩 기본 중소수',
+    title: '기본값=첫 중·소분류(~10건)',
+    detail:
+      '명승 홈 진입 시 권역 전체(예: 수도권 179) 대신 첫 시도 중분류(서울)를 기본으로 고릅니다. 목록이 길면 여행지·경관·종목 소분류를 ~10건 안팎으로 더 좁힙니다. 명소·명승·관광지 파드 모두 동일. Preview에서 /korea/theme/scenic 진입 시 서울 칩·짧은 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-hub-fill-merge-108',
     session: '테마여행 #108, main 병합·전반 점검',

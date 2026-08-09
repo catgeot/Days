@@ -75,6 +75,15 @@ import {
 } from './nearbyScenicRank';
 import { scenicDbCatalogHeading } from './scenicCatalogHeading';
 import {
+  listCountForRegionArea,
+  pickDefaultCuratedHubId,
+  pickDefaultHeritageCategory,
+  resolveDefaultCuratedChips,
+  resolveDefaultHeritageChips,
+  resolveDefaultTourAreaCode,
+  resolveDefaultTourCatChips,
+} from './scenicDefaultChips';
+import {
   filterScenicSpotsByQuery,
   pickBestRegionByCounts,
 } from '../Home/lib/scenicSearch';
@@ -1571,6 +1580,74 @@ export default function KoreaThemeScenicPage() {
       next.delete('cat3');
       changed = true;
     }
+
+    // 기본 중·소분류 — 권역 전체(긴 목록) 대신 첫 시도·필요 시 ~10건 소분류
+    if (!nearActive && !searchActive) {
+      const cRegion = resolveRegion(next.get('cregion'));
+      const hRegion = resolveRegion(next.get('hregion'));
+      const tRegion = resolveRegion(next.get('tregion'));
+      const curatedAreaCounts = countKoreaScenicSpotsByTourArea(cRegion);
+      const heritageAreaCounts = countKoreaHeritageScenicByTourArea(hRegion);
+      const curatedDef = resolveDefaultCuratedChips(cRegion);
+      const heritageDef = resolveDefaultHeritageChips(hRegion);
+
+      if (!next.get('carea') && curatedDef.areaCode) {
+        next.set('carea', curatedDef.areaCode);
+        changed = true;
+      }
+      const cAreaNow =
+        normalizeScenicAreaCode(cRegion, next.get('carea')) || null;
+      if (!next.get('hub')) {
+        const hubDef = pickDefaultCuratedHubId(
+          cRegion,
+          cAreaNow,
+          curatedAreaCounts,
+          CURATED_REGION_COUNTS,
+        );
+        if (hubDef && normalizeScenicHubParam(hubDef)) {
+          next.set('hub', hubDef);
+          changed = true;
+        }
+      }
+      if (!next.get('harea') && heritageDef.areaCode) {
+        next.set('harea', heritageDef.areaCode);
+        changed = true;
+      }
+      const hAreaNow =
+        normalizeScenicAreaCode(hRegion, next.get('harea')) || null;
+      if (!next.get('hcat')) {
+        const listCount = listCountForRegionArea(
+          hRegion,
+          hAreaNow,
+          heritageAreaCounts,
+          HERITAGE_REGION_COUNTS,
+        );
+        const catDef = pickDefaultHeritageCategory(
+          hRegion,
+          hAreaNow,
+          listCount,
+        );
+        if (catDef && normalizeHeritageCategory(catDef)) {
+          next.set('hcat', catDef);
+          changed = true;
+        }
+      }
+      if (!next.get('tarea')) {
+        // Tour 시도 건수는 비동기 — 동기 SSOT 순서로 첫 중분류(서울 등) 시드
+        const tourAreaDef =
+          resolveDefaultTourAreaCode(
+            tRegion,
+            Object.fromEntries(
+              listScenicRegionAreas(tRegion).map((a) => [a.code, 1]),
+            ),
+          ) || null;
+        if (tourAreaDef) {
+          next.set('tarea', tourAreaDef);
+          changed = true;
+        }
+      }
+    }
+
     if (changed) {
       setSearchParams(next, { replace: true });
     }
@@ -1582,6 +1659,8 @@ export default function KoreaThemeScenicPage() {
     cat2,
     heritageCategory,
     heritageCategoryChips,
+    nearActive,
+    searchActive,
   ]);
 
   useEffect(() => {
@@ -1811,10 +1890,14 @@ export default function KoreaThemeScenicPage() {
   const setCuratedRegion = useCallback(
     (r) => {
       clearNear();
+      const region = resolveRegion(r);
+      const def = resolveDefaultCuratedChips(region);
       const next = new URLSearchParams(searchParams);
-      next.set('cregion', resolveRegion(r));
-      next.delete('carea');
-      next.delete('hub');
+      next.set('cregion', region);
+      if (def.areaCode) next.set('carea', def.areaCode);
+      else next.delete('carea');
+      if (def.hubId) next.set('hub', def.hubId);
+      else next.delete('hub');
       next.delete('region');
       next.delete('area');
       next.delete('spot');
@@ -1827,11 +1910,19 @@ export default function KoreaThemeScenicPage() {
   const setCuratedArea = useCallback(
     (code) => {
       clearNear();
-      const next = new URLSearchParams(searchParams);
       const normalized = normalizeScenicAreaCode(curatedRegion, code);
-      if (!normalized || normalized === curatedArea) next.delete('carea');
-      else next.set('carea', normalized);
-      next.delete('hub');
+      if (!normalized || normalized === curatedArea) return;
+      const areaCounts = countKoreaScenicSpotsByTourArea(curatedRegion);
+      const hubDef = pickDefaultCuratedHubId(
+        curatedRegion,
+        normalized,
+        areaCounts,
+        CURATED_REGION_COUNTS,
+      );
+      const next = new URLSearchParams(searchParams);
+      next.set('carea', normalized);
+      if (hubDef) next.set('hub', hubDef);
+      else next.delete('hub');
       next.delete('region');
       next.delete('area');
       next.delete('spot');
@@ -1844,10 +1935,14 @@ export default function KoreaThemeScenicPage() {
   const setHeritageRegion = useCallback(
     (r) => {
       clearNear();
+      const region = resolveRegion(r);
+      const def = resolveDefaultHeritageChips(region);
       const next = new URLSearchParams(searchParams);
-      next.set('hregion', resolveRegion(r));
-      next.delete('harea');
-      next.delete('hcat');
+      next.set('hregion', region);
+      if (def.areaCode) next.set('harea', def.areaCode);
+      else next.delete('harea');
+      if (def.category) next.set('hcat', def.category);
+      else next.delete('hcat');
       next.delete('region');
       next.delete('area');
       next.delete('spot');
@@ -1860,10 +1955,24 @@ export default function KoreaThemeScenicPage() {
   const setHeritageArea = useCallback(
     (code) => {
       clearNear();
-      const next = new URLSearchParams(searchParams);
       const normalized = normalizeScenicAreaCode(heritageRegion, code);
-      if (!normalized || normalized === heritageArea) next.delete('harea');
-      else next.set('harea', normalized);
+      if (!normalized || normalized === heritageArea) return;
+      const areaCounts = countKoreaHeritageScenicByTourArea(heritageRegion);
+      const listCount = listCountForRegionArea(
+        heritageRegion,
+        normalized,
+        areaCounts,
+        HERITAGE_REGION_COUNTS,
+      );
+      const catDef = pickDefaultHeritageCategory(
+        heritageRegion,
+        normalized,
+        listCount,
+      );
+      const next = new URLSearchParams(searchParams);
+      next.set('harea', normalized);
+      if (catDef) next.set('hcat', catDef);
+      else next.delete('hcat');
       next.delete('region');
       next.delete('area');
       next.delete('spot');
@@ -1876,9 +1985,19 @@ export default function KoreaThemeScenicPage() {
   const setTourRegion = useCallback(
     (r) => {
       clearNear();
+      const region = resolveRegion(r);
       const next = new URLSearchParams(searchParams);
-      next.set('tregion', resolveRegion(r));
-      next.delete('tarea');
+      next.set('tregion', region);
+      const tourAreaDef = resolveDefaultTourAreaCode(
+        region,
+        Object.fromEntries(
+          listScenicRegionAreas(region).map((a) => [a.code, 1]),
+        ),
+      );
+      if (tourAreaDef) next.set('tarea', tourAreaDef);
+      else next.delete('tarea');
+      next.delete('cat2');
+      next.delete('cat3');
       next.delete('region');
       next.delete('area');
       next.delete('spot');
@@ -1891,10 +2010,12 @@ export default function KoreaThemeScenicPage() {
   const setTourArea = useCallback(
     (code) => {
       clearNear();
-      const next = new URLSearchParams(searchParams);
       const normalized = normalizeScenicAreaCode(tourRegion, code);
-      if (!normalized || normalized === tourArea) next.delete('tarea');
-      else next.set('tarea', normalized);
+      if (!normalized || normalized === tourArea) return;
+      const next = new URLSearchParams(searchParams);
+      next.set('tarea', normalized);
+      next.delete('cat2');
+      next.delete('cat3');
       next.delete('region');
       next.delete('area');
       next.delete('spot');
@@ -1908,10 +2029,10 @@ export default function KoreaThemeScenicPage() {
     (id) => {
       // 내 주변 중에는 hub 칩으로 풀만 좁힘 · near 유지
       if (!nearActive) clearNear();
-      const next = new URLSearchParams(searchParams);
       const normalized = normalizeScenicHubParam(id);
-      if (!normalized || normalized === hubId) next.delete('hub');
-      else next.set('hub', normalized);
+      if (!normalized || normalized === hubId) return;
+      const next = new URLSearchParams(searchParams);
+      next.set('hub', normalized);
       next.delete('spot');
       next.delete('page');
       setSearchParams(next, { replace: true });
@@ -1923,10 +2044,10 @@ export default function KoreaThemeScenicPage() {
     (code) => {
       // 내 주변 중에는 경관 칩으로 풀만 좁힘 · near 유지
       if (!nearActive) clearNear();
-      const next = new URLSearchParams(searchParams);
       const normalized = normalizeHeritageCategory(code);
-      if (!normalized || normalized === heritageCategory) next.delete('hcat');
-      else next.set('hcat', normalized);
+      if (!normalized || normalized === heritageCategory) return;
+      const next = new URLSearchParams(searchParams);
+      next.set('hcat', normalized);
       next.delete('spot');
       next.delete('page');
       setSearchParams(next, { replace: true });
@@ -2006,15 +2127,18 @@ export default function KoreaThemeScenicPage() {
 
   const setCat1 = useCallback(
     (code) => {
+      const normalized =
+        normalizeTourAttractionCat1(code) || DEFAULT_CAT1;
+      if (normalized === cat1) return;
       const next = new URLSearchParams(searchParams);
-      next.set('cat1', normalizeTourAttractionCat1(code) || DEFAULT_CAT1);
+      next.set('cat1', normalized);
       next.delete('cat2');
       next.delete('cat3');
       next.delete('spot');
       next.delete('page');
       setSearchParams(next, { replace: true });
     },
-    [searchParams, setSearchParams],
+    [searchParams, setSearchParams, cat1],
   );
 
   /** 검색·내 주변에서 기본 종목(자연)에 0건이면 결과 있는 첫 종목으로 전환 */
@@ -2075,15 +2199,11 @@ export default function KoreaThemeScenicPage() {
 
   const setCat2 = useCallback(
     (code) => {
-      const next = new URLSearchParams(searchParams);
       const normalized = normalizeTourAttractionCat2(cat1, code);
-      if (!normalized || normalized === cat2) {
-        next.delete('cat2');
-        next.delete('cat3');
-      } else {
-        next.set('cat2', normalized);
-        next.delete('cat3');
-      }
+      if (!normalized || normalized === cat2) return;
+      const next = new URLSearchParams(searchParams);
+      next.set('cat2', normalized);
+      next.delete('cat3');
       next.delete('spot');
       next.delete('page');
       setSearchParams(next, { replace: true });
@@ -2093,16 +2213,51 @@ export default function KoreaThemeScenicPage() {
 
   const setCat3 = useCallback(
     (code) => {
-      const next = new URLSearchParams(searchParams);
       const normalized = normalizeTourAttractionCat3(cat1, cat2, code);
-      if (!normalized || normalized === cat3) next.delete('cat3');
-      else next.set('cat3', normalized);
+      if (!normalized || normalized === cat3) return;
+      const next = new URLSearchParams(searchParams);
+      next.set('cat3', normalized);
       next.delete('spot');
       next.delete('page');
       setSearchParams(next, { replace: true });
     },
     [searchParams, setSearchParams, cat1, cat2, cat3],
   );
+
+  /** 관광지 종목 중·소분류 기본값 — 칩 건수 로드 후 첫 중분류·길면 소분류 */
+  useEffect(() => {
+    if (nearActive || searchActive) return;
+    const resolved = resolveDefaultTourCatChips(cat1, cat2, cat3, chipCounts);
+    if (!resolved.changed) return;
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        let changed = false;
+        if (resolved.cat2 && next.get('cat2') !== resolved.cat2) {
+          next.set('cat2', resolved.cat2);
+          changed = true;
+        }
+        if (resolved.cat3 && next.get('cat3') !== resolved.cat3) {
+          next.set('cat3', resolved.cat3);
+          changed = true;
+        }
+        if (!changed) return prev;
+        next.delete('spot');
+        next.delete('page');
+        return next;
+      },
+      { replace: true },
+    );
+  }, [
+    nearActive,
+    searchActive,
+    cat1,
+    cat2,
+    cat3,
+    chipCounts.cat2Counts,
+    chipCounts.cat3Counts,
+    setSearchParams,
+  ]);
 
   const setPage = useCallback(
     (p) => {
