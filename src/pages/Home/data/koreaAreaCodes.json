@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-09T02:58:45.911Z",
+    "generatedAt": "2026-08-09T03:43:41.336Z",
     "areaCount": 17,
-    "hubLinkCount": 162,
+    "hubLinkCount": 167,
     "source": "scripts/data/korea-area-code-overrides.mjs"
   },
   "defaultHubIds": [
@@ -188,7 +188,9 @@
         "chilgok",
         "dokdo",
         "gimcheon",
-        "goryeong"
+        "goryeong",
+        "gyeongsan",
+        "seongju"
       ]
     },
     "36": {
@@ -209,7 +211,9 @@
         "haman",
         "miryang",
         "sacheon",
-        "changnyeong"
+        "changnyeong",
+        "sancheong",
+        "uiryeong"
       ]
     },
     "37": {
@@ -254,7 +258,8 @@
         "haenam",
         "hampyeong",
         "muan",
-        "yeongam"
+        "yeongam",
+        "gwangyang"
       ]
     },
     "39": {
@@ -375,6 +380,8 @@
     "dokdo": "35",
     "gimcheon": "35",
     "goryeong": "35",
+    "gyeongsan": "35",
+    "seongju": "35",
     "tongyeong": "36",
     "jinju": "36",
     "geoje": "36",
@@ -391,6 +398,8 @@
     "miryang": "36",
     "sacheon": "36",
     "changnyeong": "36",
+    "sancheong": "36",
+    "uiryeong": "36",
     "jeonju": "37",
     "gunsan": "37",
     "buan": "37",
@@ -426,6 +435,7 @@
     "hampyeong": "38",
     "muan": "38",
     "yeongam": "38",
+    "gwangyang": "38",
     "jeju": "39",
     "seogwipo": "39"
   }

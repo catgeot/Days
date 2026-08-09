@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-09T02:58:49.156Z",
-    "count": 655,
+    "updatedAt": "2026-08-09T03:43:44.215Z",
+    "count": 675,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -660,6 +660,26 @@
     "gaejin-market-goryeong": "https://tong.visitkorea.or.kr/cms/resource/46/3516946_image2_1.jpg",
     "goryeong-nakdong-viewpoint": "https://tong.visitkorea.or.kr/cms/resource/46/3516946_image2_1.jpg",
     "daegaya-museum": "https://tong.visitkorea.or.kr/cms/resource/25/2732625_image2_1.jpg",
-    "daegaya-history-theme-park": "https://tong.visitkorea.or.kr/cms/resource/46/3516946_image2_1.jpg"
+    "daegaya-history-theme-park": "https://tong.visitkorea.or.kr/cms/resource/46/3516946_image2_1.jpg",
+    "gwangyang-maehwa-village": "https://tong.visitkorea.or.kr/cms/resource/19/3546319_image2_1.jpg",
+    "baegunsan-gwangyang": "https://tong.visitkorea.or.kr/cms/resource/57/3345057_image2_1.JPG",
+    "gubongsan-cable-car": "https://tong.visitkorea.or.kr/cms/resource/61/3534661_image2_1.jpg",
+    "mangdeok-port": "https://tong.visitkorea.or.kr/cms/resource/19/3546319_image2_1.jpg",
+    "gyejeong-forest": "https://tong.visitkorea.or.kr/cms/resource/79/3541879_image2_1.jpg",
+    "bangokji": "https://tong.visitkorea.or.kr/cms/resource/79/3541879_image2_1.jpg",
+    "samseonghyeon-history-park": "https://tong.visitkorea.or.kr/cms/resource/10/3385110_image2_1.JPG",
+    "hwanseongsa": "https://tong.visitkorea.or.kr/cms/resource/99/3028999_image2_1.jpg",
+    "namsa-yedamchon": "https://tong.visitkorea.or.kr/cms/resource/93/3537993_image2_1.jpg",
+    "gyeongho-river": "https://tong.visitkorea.or.kr/cms/resource/65/3336365_image2_1.jpg",
+    "sancheong-donguibogam-village": "https://tong.visitkorea.or.kr/cms/resource/08/3341508_image2_1.jpg",
+    "sancheong-herbal-theme-park": "https://tong.visitkorea.or.kr/cms/resource/08/3341508_image2_1.jpg",
+    "seongju-gayasan": "https://tong.visitkorea.or.kr/cms/resource/72/3047772_image2_1.jpg",
+    "dokyongsanseong-seongju": "https://tong.visitkorea.or.kr/cms/resource/82/3047782_image2_1.jpg",
+    "seongbak-forest-seongju": "https://tong.visitkorea.or.kr/cms/resource/74/3566074_image2_1.JPG",
+    "hangae-village-seongju": "https://tong.visitkorea.or.kr/cms/resource/74/3566074_image2_1.JPG",
+    "kwak-jae-woo-memorial-uiryeong": "https://tong.visitkorea.or.kr/cms/resource/76/3375776_image2_1.JPG",
+    "uiryeong-namgang-viewpoint": "https://tong.visitkorea.or.kr/cms/resource/63/3580463_image2_1.jpg",
+    "uiryeong-traditional-market": "https://tong.visitkorea.or.kr/cms/resource/76/3375776_image2_1.JPG",
+    "toyorae-land-uiryeong": "https://tong.visitkorea.or.kr/cms/resource/51/3029551_image2_1.jpg"
   }
 }

@@ -150,6 +150,8 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'dokdo',
         'gimcheon',
         'goryeong',
+        'gyeongsan',
+        'seongju',
       ],
     },
     36: {
@@ -171,6 +173,8 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'miryang',
         'sacheon',
         'changnyeong',
+        'sancheong',
+        'uiryeong',
       ],
     },
     37: {
@@ -216,6 +220,7 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'hampyeong',
         'muan',
         'yeongam',
+        'gwangyang',
       ],
     },
     39: { name: '제주', hubIds: ['jeju', 'seogwipo'] },

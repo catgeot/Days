@@ -277,6 +277,23 @@ const RELATED_IMAGE_CONTENT_IDS = {
   'gaejin-market-goryeong': '1067369', // 대가야 역사테마관광지 — 개진시장 Tour 부재 시
   'goryeong-nakdong-viewpoint': '1067369', // 대가야 역사테마관광지 — 낙동강 전망 Tour 부재 시
   'daegaya-museum': '2732615', // 대가야생활촌 — 대가야박물관 Tour type12 부재 시
+  'baegunsan-gwangyang': '2394017', // 백운산 구시폭포 — 백운산 Tour type12 부재 시
+  'gubongsan-cable-car': '2654617', // 구봉산 전망대 — 케이블카 Tour type12 부재 시
+  'mangdeok-port': '126669', // 광양 매화마을 — 망덕포구 Tour type12 부재 시
+  'gyejeong-forest': '2780010', // 남매지 — 계정숲 Tour type12 부재 시
+  bangokji: '2780010', // 남매지 — 반곡지 Tour type12 부재 시
+  'samseonghyeon-history-park': '3351914', // 자라지(삼성현공원로) — 삼성현공원 Tour 부재 시
+  hwanseongsa: '126019', // 팔공산 갓바위 — 환성사 Tour type12 부재 시
+  'namsa-yedamchon': '2786838', // 남사리 이씨고가 — 남사예담촌 Tour type12 부재 시
+  'sancheong-donguibogam-village': '2785985', // 덕양전(동의보감로) — 동의보감촌 Tour 부재 시
+  'sancheong-herbal-theme-park': '2785985', // 덕양전 — 한방테마파크 Tour type12 부재 시
+  'seongju-gayasan': '126941', // 대가천계곡(무흘구곡) — 가야산 Tour type12 부재 시
+  'seongbak-forest-seongju': '2738010', // 성주역사테마공원 — 성밖숲 Tour type12 부재 시
+  'hangae-village-seongju': '2738010', // 성주역사테마공원 — 한개마을 Tour type12 부재 시
+  'kwak-jae-woo-memorial-uiryeong': '1955440', // 의령향교 — 곽재우기념관 Tour type12 부재 시
+  'uiryeong-namgang-viewpoint': '127400', // 탑바위 — 남강 전망 Tour type12 부재 시
+  'uiryeong-traditional-market': '1955440', // 의령향교 — 전통시장 Tour type12 부재 시
+  'toyorae-land-uiryeong': '3029556', // 의령벽계관광지 — 토요애랜드 Tour type12 부재 시
 };
 
 async function mapPool(items, worker, size) {

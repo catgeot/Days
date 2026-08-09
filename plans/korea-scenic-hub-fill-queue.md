@@ -1,7 +1,7 @@
 # GATEO 선정 명소 — 권역·시군 hub 보강 큐
 
 **생성**: `npm run report:korea-scenic-empty-hubs -- --write-queue` (이 파일 덮어씀)
-**스냅샷**: 빈 hub **7** · 선정 hub **162** · maxOrder **6920**
+**스냅샷**: 빈 hub **2** · 선정 hub **167** · maxOrder **7120**
 
 ## 사용법
 
@@ -19,19 +19,14 @@
 
 | R | 워커A | 워커B | 권역 | 상태 |
 |---|-------|-------|------|------|
-| **R01** | `gwangyang` · `gyeongsan` · `sancheong` · `seongju` · `uiryeong` | `yeongdeok` · `yeongyang` | 경상 | ⬜ |
+| **R01** | `yeongdeok` · `yeongyang` | — | 경상 | ⬜ |
 
-**합계**: 1 라운드 · hub 7.
+**합계**: 1 라운드 · hub 2.
 
 ## 권역별 잔여
 
-### 경상 (7)
+### 경상 (2)
 
-- `gwangyang` 광양 — attr 4 · Tour contentId 0
-- `gyeongsan` 경산 — attr 4 · Tour contentId 0
-- `sancheong` 산청 — attr 4 · Tour contentId 0
-- `seongju` 성주 — attr 4 · Tour contentId 0
-- `uiryeong` 의령 — attr 4 · Tour contentId 0
 - `yeongdeok` 영덕 — attr 4 · Tour contentId 0
 - `yeongyang` 영양 — attr 4 · Tour contentId 0
 

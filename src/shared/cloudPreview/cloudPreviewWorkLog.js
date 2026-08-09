@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 102,
+  sessionNo: 103,
   sessionPhase: '빈 hub 명소 보강',
   branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?hub=cheongsong',
+  previewPath: '/korea/theme/scenic?hub=gwangyang',
   qaShareSlug: 'scenic-hub-fill',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-103',
+    session: '테마여행 #103, 빈 hub 명소 보강',
+    title: '광양·경산·산청·성주·의령 GATEO 선정 전수',
+    detail:
+      '큐 R01 전라·경상 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(광양4·경산4·산청4·성주4·의령4 · Tour contentId 3/20 · 썸네일 675/712). 전남·경북·경남 시도 색인에도 동시 등록했습니다. Tour LIVE 429 → DB·related 폴백을 썼습니다. Preview에서 /korea/theme/scenic?hub=gwangyang · ?hub=gyeongsan · ?hub=sancheong · ?hub=seongju · ?hub=uiryeong 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-hub-fill-r01-102',
     session: '테마여행 #102, 빈 hub 명소 보강',
