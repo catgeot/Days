@@ -562,27 +562,16 @@ function NaverOutboundButton({ href }) {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="네이버로 이동 · 새 탭에서 검색"
-      className="flex w-full items-center gap-3 rounded-2xl border border-[#03C75A]/45 bg-[#E8F9EF] px-3.5 py-3 text-left shadow-sm transition-colors hover:border-[#03C75A]/70 hover:bg-[#D9F5E5] sm:w-auto sm:min-w-[16rem]"
+      className="inline-flex items-center gap-1.5 rounded-full border border-[#03C75A]/50 bg-[#E8F9EF] px-2.5 py-1.5 text-xs font-bold text-[#027A38] transition-colors hover:border-[#03C75A]/75 hover:bg-[#D9F5E5]"
     >
       <span
-        className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#03C75A] text-sm font-black tracking-tight text-white"
+        className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] bg-[#03C75A] text-[9px] font-black leading-none text-white"
         aria-hidden="true"
       >
         N
       </span>
-      <span className="min-w-0 flex-1">
-        <span className="block text-sm font-bold text-[#027A38] break-keep">
-          네이버로 이동
-        </span>
-        <span className="mt-0.5 block text-[11px] font-semibold text-[#027A38]/75 break-keep">
-          새 탭에서 네이버 검색
-        </span>
-      </span>
-      <ExternalLink
-        size={16}
-        className="shrink-0 text-[#027A38]"
-        aria-hidden="true"
-      />
+      네이버로 이동
+      <ExternalLink size={12} aria-hidden="true" />
     </a>
   );
 }
@@ -1456,12 +1445,7 @@ export default function ThemeSpotDetailModal({
             ) : null}
 
             {naverSearchUrl ? (
-              <div className="space-y-1.5">
-                <p className="text-[11px] font-bold tracking-wide text-stone-500">
-                  외부 검색
-                </p>
-                <NaverOutboundButton href={naverSearchUrl} />
-              </div>
+              <NaverOutboundButton href={naverSearchUrl} />
             ) : null}
 
             {galleryList.length > 0 ? (

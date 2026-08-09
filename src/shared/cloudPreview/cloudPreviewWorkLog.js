@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 84,
-  sessionPhase: '네이버 이동 버튼',
+  sessionNo: 85,
+  sessionPhase: '네이버 버튼 컴팩트',
   branch: 'cursor/scenic-food-naver-link-b366',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-food-naver',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-naver-compact-85',
+    session: '테마여행 #85, 네이버 버튼 컴팩트',
+    title: '네이버로 이동 버튼 축소',
+    detail:
+      '네이버 이동 버튼을 한 줄 칩(N · 네이버로 이동 · 외부아이콘)으로 줄였습니다. Preview에서 맛집 상세 본문 버튼 크기를 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-naver-btn-84',
     session: '테마여행 #84, 네이버 이동 버튼',
