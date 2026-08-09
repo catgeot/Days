@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 103,
+  sessionNo: 104,
   sessionPhase: '빈 hub 명소 보강',
   branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?hub=gwangyang',
+  previewPath: '/korea/theme/scenic?hub=yeongdeok',
   qaShareSlug: 'scenic-hub-fill',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-104',
+    session: '테마여행 #104, 빈 hub 명소 보강',
+    title: '영덕·영양 GATEO 선정 전수 · 큐 소진',
+    detail:
+      '큐 잔여 영덕4·영양4 attractions 전수를 GATEO 선정에 넣었습니다(Tour contentId 2/8 · 썸네일 683/720). 경북 시도 색인에도 동시 등록했습니다. Tour LIVE 429 → DB·related 폴백 · 시·군 빈 hub 큐 0. Preview에서 /korea/theme/scenic?hub=yeongdeok · ?hub=yeongyang 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-hub-fill-r01-103',
     session: '테마여행 #103, 빈 hub 명소 보강',

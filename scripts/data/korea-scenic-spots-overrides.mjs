@@ -7149,5 +7149,85 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       attractionName: '의령 토요애랜드',
       contentId: null,
     }, // TODO contentId
+    {
+      order: 7130,
+      id: 'yeongdeok-goraebul-beach',
+      name: '영덕 고래불해수욕장',
+      blurb: '고래불해수욕장 — 영덕 동해 백사장',
+      region: '경상',
+      hubId: 'yeongdeok',
+      attractionName: '영덕 고래불해수욕장',
+      contentId: null,
+    }, // TODO contentId
+    {
+      order: 7140,
+      id: 'yeongdeok-blue-road',
+      name: '영덕 블루로드',
+      blurb: '블루로드 — 영덕 해안 트레일',
+      region: '경상',
+      hubId: 'yeongdeok',
+      attractionName: '영덕 블루로드',
+      contentId: null,
+    }, // TODO contentId
+    {
+      order: 7150,
+      id: 'yeongdeok-renewable-energy-exhibition-hall',
+      name: '영덕 신재생에너지전시관',
+      blurb: '신재생에너지전시관 — 영덕 창포 에너지 체험',
+      region: '경상',
+      hubId: 'yeongdeok',
+      attractionName: '영덕 신재생에너지전시관',
+      contentId: null,
+    }, // TODO contentId
+    {
+      order: 7160,
+      id: 'yeongdeok-sunrise-park',
+      name: '영덕 해맞이공원',
+      blurb: '해맞이공원 — 영덕 동해 일출',
+      region: '경상',
+      hubId: 'yeongdeok',
+      attractionName: '영덕 해맞이공원',
+      contentId: null,
+    }, // TODO contentId
+    {
+      order: 7170,
+      id: 'yeongyang-dudeul-village',
+      name: '영양 두들마을',
+      blurb: '두들마을 — 영양 석보 전통마을',
+      region: '경상',
+      hubId: 'yeongyang',
+      attractionName: '영양 두들마을',
+      contentId: '547873',
+    },
+    {
+      order: 7180,
+      id: 'yeongyang-subi-valley',
+      name: '영양 수비계곡',
+      blurb: '수비계곡 — 영양 수비 계곡·숲',
+      region: '경상',
+      hubId: 'yeongyang',
+      attractionName: '영양 수비계곡',
+      contentId: '126069',
+    },
+    {
+      order: 7190,
+      id: 'yeongyang-oessibeoseon-trail',
+      name: '영양 외씨버선길',
+      blurb: '외씨버선길 — 영양 트레킹 명승',
+      region: '경상',
+      hubId: 'yeongyang',
+      attractionName: '영양 외씨버선길',
+      contentId: null,
+    }, // TODO contentId
+    {
+      order: 7200,
+      id: 'yeongyang-ilwolsan',
+      name: '영양 일월산',
+      blurb: '일월산 — 영양 일출·정상 조망',
+      region: '경상',
+      hubId: 'yeongyang',
+      attractionName: '영양 일월산',
+      contentId: null,
+    }, // TODO contentId
   ],
 };

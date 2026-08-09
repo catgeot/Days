@@ -1,7 +1,9 @@
 # GATEO 선정 명소 — 권역·시군 hub 보강 큐
 
 **생성**: `npm run report:korea-scenic-empty-hubs -- --write-queue` (이 파일 덮어씀)
-**스냅샷**: 빈 hub **2** · 선정 hub **167** · maxOrder **7120**
+**스냅샷**: 빈 hub **0** · 선정 hub **169** · maxOrder **7200**
+
+**완료**: `#77`~`#104` 시·군 빈 hub 큐 **소진** (`#104` 영덕·영양) · tip 720 spots · 잔여 TODO contentId·Tour LIVE는 후속.
 
 ## 사용법
 
@@ -19,14 +21,8 @@
 
 | R | 워커A | 워커B | 권역 | 상태 |
 |---|-------|-------|------|------|
-| **R01** | `yeongdeok` · `yeongyang` | — | 경상 | ⬜ |
 
-**합계**: 1 라운드 · hub 2.
+**합계**: 0 라운드 · hub 0.
 
 ## 권역별 잔여
-
-### 경상 (2)
-
-- `yeongdeok` 영덕 — attr 4 · Tour contentId 0
-- `yeongyang` 영양 — attr 4 · Tour contentId 0
 

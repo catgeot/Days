@@ -12,7 +12,7 @@ export const CLOUD_QA_SHARE_LINKS = [
     label: '선정 hub 시도 색인·분류칩',
     branch: 'cursor/scenic-yangyang-b772',
     destination:
-      'https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?region=%EC%88%98%EB%8F%84%EA%B6%8C&area=31',
+      'https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=yeongdeok',
     active: true,
   },
   {

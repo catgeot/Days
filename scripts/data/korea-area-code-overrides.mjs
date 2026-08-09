@@ -152,6 +152,8 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'goryeong',
         'gyeongsan',
         'seongju',
+        'yeongdeok',
+        'yeongyang',
       ],
     },
     36: {

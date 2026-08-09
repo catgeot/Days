@@ -467,6 +467,14 @@ assert(
   '의령은 선정 있음 → 빈 목록 제외',
 );
 assert(
+  !empty.some((h) => h.hubId === 'yeongdeok'),
+  '영덕은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'yeongyang'),
+  '영양은 선정 있음 → 빈 목록 제외',
+);
+assert(
   !empty.some((h) => h.district),
   '기본 목록에 자치구 없음',
 );
@@ -492,11 +500,20 @@ assert(
 );
 
 const rounds = buildScenicFillRounds(empty, { batchSize: 10 });
-assert(rounds.length >= 1, `rounds≥1 (got ${rounds.length})`);
 assert(
-  rounds[0].workerA.length + rounds[0].workerB.length <= 10,
-  'R01 size≤10',
+  empty.length === 0 || rounds.length >= 1,
+  `rounds≥1 when empty>0 (empty=${empty.length}, rounds=${rounds.length})`,
 );
+assert(
+  empty.length > 0 || rounds.length === 0,
+  `빈 hub 0이면 rounds 0 (queue 소진 · rounds=${rounds.length})`,
+);
+if (rounds.length > 0) {
+  assert(
+    rounds[0].workerA.length + rounds[0].workerB.length <= 10,
+    'R01 size≤10',
+  );
+}
 
 const already = draftScenicSpotsForHubs(['yangyang']);
 assert(
@@ -505,6 +522,14 @@ assert(
       (s) => s.hubId === 'yangyang' && String(s.reason).startsWith('already-complete'),
     ),
   'yangyang already-complete (전수 선정)',
+);
+const yeongdeokDone = draftScenicSpotsForHubs(['yeongdeok', 'yeongyang']);
+assert(
+  yeongdeokDone.drafts.length === 0 &&
+    yeongdeokDone.skipped.filter((s) =>
+      String(s.reason).startsWith('already-complete'),
+    ).length === 2,
+  'yeongdeok·yeongyang already-complete (전수 선정)',
 );
 
 const target = empty.find((h) => h.attractions >= 5);

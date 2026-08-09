@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-09T03:43:44.215Z",
-    "count": 675,
+    "updatedAt": "2026-08-09T03:52:51.610Z",
+    "count": 683,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -680,6 +680,14 @@
     "kwak-jae-woo-memorial-uiryeong": "https://tong.visitkorea.or.kr/cms/resource/76/3375776_image2_1.JPG",
     "uiryeong-namgang-viewpoint": "https://tong.visitkorea.or.kr/cms/resource/63/3580463_image2_1.jpg",
     "uiryeong-traditional-market": "https://tong.visitkorea.or.kr/cms/resource/76/3375776_image2_1.JPG",
-    "toyorae-land-uiryeong": "https://tong.visitkorea.or.kr/cms/resource/51/3029551_image2_1.jpg"
+    "toyorae-land-uiryeong": "https://tong.visitkorea.or.kr/cms/resource/51/3029551_image2_1.jpg",
+    "yeongdeok-goraebul-beach": "https://tong.visitkorea.or.kr/cms/resource/38/3042738_image2_1.JPG",
+    "yeongdeok-blue-road": "https://tong.visitkorea.or.kr/cms/resource/41/3576441_image2_1.jpg",
+    "yeongdeok-renewable-energy-exhibition-hall": "https://tong.visitkorea.or.kr/cms/resource/99/2795399_image2_1.jpg",
+    "yeongdeok-sunrise-park": "https://tong.visitkorea.or.kr/cms/resource/60/3576460_image2_1.jpg",
+    "yeongyang-dudeul-village": "https://tong.visitkorea.or.kr/cms/resource/24/3531124_image2_1.jpg",
+    "yeongyang-subi-valley": "https://tong.visitkorea.or.kr/cms/resource/41/3401841_image2_1.jpg",
+    "yeongyang-oessibeoseon-trail": "https://tong.visitkorea.or.kr/cms/resource/27/3531127_image2_1.jpg",
+    "yeongyang-ilwolsan": "https://tong.visitkorea.or.kr/cms/resource/32/3531132_image2_1.jpg"
   }
 }

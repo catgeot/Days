@@ -294,6 +294,12 @@ const RELATED_IMAGE_CONTENT_IDS = {
   'uiryeong-namgang-viewpoint': '127400', // 탑바위 — 남강 전망 Tour type12 부재 시
   'uiryeong-traditional-market': '1955440', // 의령향교 — 전통시장 Tour type12 부재 시
   'toyorae-land-uiryeong': '3029556', // 의령벽계관광지 — 토요애랜드 Tour type12 부재 시
+  'yeongdeok-goraebul-beach': '126104', // 대진해수욕장 — 고래불 Tour type12 부재 시
+  'yeongdeok-blue-road': '2616062', // 영덕 해안도로 드라이브 — 블루로드 Tour 부재 시
+  'yeongdeok-renewable-energy-exhibition-hall': '2782636', // 별파랑공원 — 신재생전시관 Tour 부재 시
+  'yeongdeok-sunrise-park': '2616061', // 해파랑공원 — 해맞이공원 Tour type12 부재 시
+  'yeongyang-oessibeoseon-trail': '894008', // 영양 주실마을 — 외씨버선길 Tour 부재 시
+  'yeongyang-ilwolsan': '2043682', // 선바위관광지 — 일월산 Tour type12 부재 시
 };
 
 async function mapPool(items, worker, size) {
