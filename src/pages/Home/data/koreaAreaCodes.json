@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-09T01:39:34.545Z",
+    "generatedAt": "2026-08-09T01:47:42.993Z",
     "areaCount": 17,
-    "hubLinkCount": 142,
+    "hubLinkCount": 147,
     "source": "scripts/data/korea-area-code-overrides.mjs"
   },
   "defaultHubIds": [
@@ -40,7 +40,8 @@
     "4": {
       "name": "대구",
       "hubIds": [
-        "daegu"
+        "daegu",
+        "dalseong"
       ]
     },
     "5": {
@@ -52,7 +53,8 @@
     "6": {
       "name": "부산",
       "hubIds": [
-        "busan"
+        "busan",
+        "gijang"
       ]
     },
     "7": {
@@ -175,7 +177,8 @@
         "sangju",
         "mungyeong",
         "bonghwa",
-        "gunwi"
+        "gunwi",
+        "cheongdo"
       ]
     },
     "36": {
@@ -189,7 +192,9 @@
         "hapcheon",
         "hamyang",
         "geochang",
-        "gimhae"
+        "gimhae",
+        "yangsan",
+        "changwon"
       ]
     },
     "37": {
@@ -252,8 +257,10 @@
     "ongjin": "2",
     "daejeon": "3",
     "daegu": "4",
+    "dalseong": "4",
     "gwangju": "5",
     "busan": "6",
+    "gijang": "6",
     "ulsan": "7",
     "ulju": "7",
     "sejong": "8",
@@ -342,6 +349,7 @@
     "mungyeong": "35",
     "bonghwa": "35",
     "gunwi": "35",
+    "cheongdo": "35",
     "tongyeong": "36",
     "jinju": "36",
     "geoje": "36",
@@ -351,6 +359,8 @@
     "hamyang": "36",
     "geochang": "36",
     "gimhae": "36",
+    "yangsan": "36",
+    "changwon": "36",
     "jeonju": "37",
     "gunsan": "37",
     "buan": "37",

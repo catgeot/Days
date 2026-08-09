@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-09T01:39:37.281Z",
-    "count": 560,
+    "updatedAt": "2026-08-09T01:47:43.863Z",
+    "count": 586,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -565,6 +565,32 @@
     "bongha-village": "https://tong.visitkorea.or.kr/cms/resource/53/3580653_image2_1.jpg",
     "tomb-of-queen-suro": "https://tong.visitkorea.or.kr/cms/resource/39/3539339_image2_1.jpg",
     "ingaksa-gunwi": "https://tong.visitkorea.or.kr/cms/resource/73/3029873_image2_1.jpg",
-    "hanbam-village-gunwi": "https://tong.visitkorea.or.kr/cms/resource/68/3571368_image2_1.jpg"
+    "hanbam-village-gunwi": "https://tong.visitkorea.or.kr/cms/resource/68/3571368_image2_1.jpg",
+    "yangsan-naewonsa": "https://tong.visitkorea.or.kr/cms/resource/37/3532137_image2_1.jpg",
+    "eden-valley-resort": "https://tong.visitkorea.or.kr/cms/resource/25/3532125_image2_1.jpg",
+    "cheonseongsan": "https://tong.visitkorea.or.kr/cms/resource/37/3532137_image2_1.jpg",
+    "tongdosa": "https://tong.visitkorea.or.kr/cms/resource/25/3589825_image2_1.jpg",
+    "tongdo-fantasia": "https://tong.visitkorea.or.kr/cms/resource/25/3589825_image2_1.jpg",
+    "hongryong-falls": "https://tong.visitkorea.or.kr/cms/resource/37/3532137_image2_1.jpg",
+    "masan-gagopa-twisting-path": "https://tong.visitkorea.or.kr/cms/resource/78/3565478_image2_1.JPG",
+    "jinhae-jehwangsan-park": "https://tong.visitkorea.or.kr/cms/resource/69/3565769_image2_1.jpg",
+    "changwon-yongji-park": "https://tong.visitkorea.or.kr/cms/resource/44/2863944_image2_1.JPG",
+    "changwon-junam-reservoir": "https://tong.visitkorea.or.kr/cms/resource/81/3370281_image2_1.jpg",
+    "changwon-jinhae-gunhangje": "https://tong.visitkorea.or.kr/cms/resource/69/3565769_image2_1.jpg",
+    "daebisa-cheongdo": "https://tong.visitkorea.or.kr/cms/resource/14/3573014_image2_1.JPG",
+    "unmunsa-cheongdo": "https://tong.visitkorea.or.kr/cms/resource/97/3578597_image2_1.jpg",
+    "yudeung-yeonji-cheongdo": "https://tong.visitkorea.or.kr/cms/resource/64/3033664_image2_1.JPG",
+    "provence-cheongdo": "https://tong.visitkorea.or.kr/cms/resource/64/3033664_image2_1.JPG",
+    "cheongdo-eupseong": "https://tong.visitkorea.or.kr/cms/resource/38/3429438_image2_1.JPG",
+    "dalseong-wetland-eco-park": "https://tong.visitkorea.or.kr/cms/resource/04/3564704_image2_1.JPG",
+    "mabijeong-mural-village": "https://tong.visitkorea.or.kr/cms/resource/40/3570040_image2_1.jpg",
+    "biseulsan-recreation-forest": "https://tong.visitkorea.or.kr/cms/resource/36/3550236_image2_1.jpg",
+    "okyonji-songhae-park": "https://tong.visitkorea.or.kr/cms/resource/05/3024505_image2_1.JPG",
+    "hwawon-park": "https://tong.visitkorea.or.kr/cms/resource/57/3570057_image2_1.jpg",
+    "gijang-jangan-temple": "https://tong.visitkorea.or.kr/cms/resource/46/3342846_image2_1.jpg",
+    "ahopsan-forest": "https://tong.visitkorea.or.kr/cms/resource/91/3309791_image2_1.jpg",
+    "osiria-tourism-complex": "https://tong.visitkorea.or.kr/cms/resource/21/2815721_image2_1.jpg",
+    "ilgwang-beach": "https://tong.visitkorea.or.kr/cms/resource/27/3334627_image2_1.jpg",
+    "imrang-beach": "https://tong.visitkorea.or.kr/cms/resource/36/3342836_image2_1.jpg"
   }
 }

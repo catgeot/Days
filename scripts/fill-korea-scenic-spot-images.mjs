@@ -221,6 +221,20 @@ const RELATED_IMAGE_CONTENT_IDS = {
   taekwondowon: '127031', // 무주 구천동 33경 — 태권도원 Tour type12 부재 시
   'gichan-land': '2732489', // 가야금산조테마공원 — 기찬랜드 Tour type12 부재 시
   'ganwoljae-pass': '128213', // 간월산 — 간월재 Tour type12 부재 시
+  'yangsan-naewonsa': '347224', // 원효암(양산) — 내원사 Tour type12 부재 시(천성산)
+  'hongryong-falls': '347224', // 원효암(양산) — 홍룡폭포 Tour type12 부재 시
+  'eden-valley-resort': '127193', // 신흥사(양산) — 에덴밸리 Tour type12 부재 시
+  'tongdo-fantasia': '2784332', // 통도사 자장암 — 환타지아 Tour type12 부재 시
+  cheonseongsan: '347224', // 원효암(양산) — 천성산 Tour type12 부재 시
+  'changwon-junam-reservoir': '2606218', // 창원단감테마공원 — 주남저수지 Tour type12 부재 시
+  'jinhae-jehwangsan-park': '2614911', // 군항마을 역사길 — 제황산공원 Tour type12 부재 시
+  'masan-gagopa-twisting-path': '1905110', // 창동예술촌 — 가고파꼬부랑길 Tour type12 부재 시
+  'changwon-jinhae-gunhangje': '2614911', // 군항마을 역사길 — 군항제 Tour type12 부재 시
+  'unmunsa-cheongdo': '2753971', // 사리암 — 운문사 Tour type12 부재 시
+  'yudeung-yeonji-cheongdo': '2729992', // 청도 프로방스 — 유등연지 Tour type12 부재 시
+  'ilgwang-beach': '2775565', // 학리항 — 일광해수욕장 Tour type12 부재 시
+  'imrang-beach': '2758498', // 은진사 — 임랑해수욕장 Tour type12 부재 시
+  'osiria-tourism-complex': '2815627', // 롯데월드 어드벤처 부산 — 오시리아 Tour type12 부재 시
 };
 
 async function mapPool(items, worker, size) {

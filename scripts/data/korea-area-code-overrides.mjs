@@ -27,9 +27,9 @@ export const KOREA_AREA_CODE_OVERRIDES = {
     1: { name: '서울', hubIds: ['seoul'] },
     2: { name: '인천', hubIds: ['incheon', 'ganghwa', 'ongjin'] },
     3: { name: '대전', hubIds: ['daejeon'] },
-    4: { name: '대구', hubIds: ['daegu'] },
+    4: { name: '대구', hubIds: ['daegu', 'dalseong'] },
     5: { name: '광주', hubIds: ['gwangju'] },
-    6: { name: '부산', hubIds: ['busan'] },
+    6: { name: '부산', hubIds: ['busan', 'gijang'] },
     7: { name: '울산', hubIds: ['ulsan', 'ulju'] },
     8: { name: '세종', hubIds: ['sejong', 'yeongi'] },
     31: {
@@ -139,6 +139,7 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'mungyeong',
         'bonghwa',
         'gunwi',
+        'cheongdo',
       ],
     },
     36: {
@@ -153,6 +154,8 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'hamyang',
         'geochang',
         'gimhae',
+        'yangsan',
+        'changwon',
       ],
     },
     37: {
