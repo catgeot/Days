@@ -4,13 +4,13 @@
 
 ## 테마여행 #117, 검색 아이콘 포커스
 
-**상태**: feature `cursor/scenic-search-focus-9792` · PR [#82](https://github.com/catgeot/Days/pull/82) · tip `fa43852a` · Preview QA 대기
+**상태**: feature `cursor/scenic-search-focus-9792` · PR [#82](https://github.com/catgeot/Days/pull/82) · Preview QA 대기
 
-- **한 일**: 모바일 검색 아이콘 클릭 시 입력창 즉시 focus(명승 `ScenicPage` · 축제 `Korea/index`) · `/qa/scenic-search-focus`
-- **VERIFY**: `npm run build`
+- **한 일**: 모바일 검색 아이콘 → 입력창 focus(명승·축제) · 1차 setTimeout은 제스처 밖으로 실패 → **flushSync+동기 focus**로 수정
+- **VERIFY**: `npm run build` · Playwright 좁은 폭 click→`document.activeElement` PASS
 - **공유**: `https://www.gateo.kr/qa/scenic-search-focus`
 - **Preview**: `https://days-git-cursor-scenic-search-focus-9792-catgeots-projects.vercel.app/korea/theme/scenic` · `/korea`
-- **작업 로그**: 「검색 아이콘 → 입력창 즉시 포커스」
+- **작업 로그**: 「검색 포커스 — flushSync 수정」
 - **남은 일**: 사람 Preview QA(좁은 폭 · 아이콘 → 커서/키보드)
 - **다음 채팅명**:
 

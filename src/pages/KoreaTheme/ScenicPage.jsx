@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { flushSync } from 'react-dom';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowUp,
@@ -574,13 +575,6 @@ export default function KoreaThemeScenicPage() {
   const searchFilter = searchDraft.trim() || searchApplied.trim();
   const searchActive = searchFilter.length > 0;
   const [dbSearchFilter, setDbSearchFilter] = useState('');
-  useEffect(() => {
-    if (!searchOpen) return undefined;
-    const t = window.setTimeout(() => {
-      mobileSearchInputRef.current?.focus();
-    }, 50);
-    return () => window.clearTimeout(t);
-  }, [searchOpen]);
   useEffect(() => {
     if (!searchActive) {
       setDbSearchFilter('');
@@ -2574,8 +2568,15 @@ export default function KoreaThemeScenicPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (searchOpen) setSearchOpen(false);
-                    else setSearchOpen(true);
+                    if (searchOpen) {
+                      setSearchOpen(false);
+                      return;
+                    }
+                    // 클릭 제스처 안에서 mount+focus (setTimeout/useEffect는 모바일 키보드 차단)
+                    flushSync(() => {
+                      setSearchOpen(true);
+                    });
+                    mobileSearchInputRef.current?.focus();
                   }}
                   aria-label={searchOpen ? '검색창 닫기' : '명소·명승 검색'}
                   aria-pressed={searchOpen}

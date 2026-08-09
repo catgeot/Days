@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-09-scenic-search-focus-117b',
+    session: '테마여행 #117, 검색 아이콘 포커스',
+    title: '검색 포커스 — flushSync 수정',
+    detail:
+      '아이콘 클릭 후 setTimeout focus는 모바일에서 제스처 밖이라 커서가 안 들어갔습니다. 클릭 핸들러에서 flushSync로 검색바를 연 뒤 바로 focus 하도록 고쳤습니다. Preview에서 검색 아이콘 → 커서/키보드가 바로 뜨는지 다시 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
     id: '2026-08-09-scenic-search-focus-117',
     session: '테마여행 #117, 검색 아이콘 포커스',
     title: '검색 아이콘 → 입력창 즉시 포커스',
