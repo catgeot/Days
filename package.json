@@ -61,6 +61,7 @@
     "smoke:korea-theme-nav-back": "node scripts/smoke-korea-theme-nav-back.mjs",
     "fill:korea-theme-region-tour": "node scripts/fill-korea-theme-region-tour-ids.mjs",
     "smoke:korea-festival-personal": "node scripts/smoke-korea-festival-personal.mjs",
+    "smoke:korea-scenic-personal": "node scripts/smoke-korea-scenic-personal.mjs",
     "smoke:korea-festival-nearby": "node scripts/smoke-korea-festival-nearby.mjs",
     "smoke:korea-nearby-restaurants": "node scripts/smoke-korea-nearby-restaurants.mjs",
     "smoke:korea-nearby-leisure-culture": "node scripts/smoke-korea-nearby-leisure-culture.mjs",

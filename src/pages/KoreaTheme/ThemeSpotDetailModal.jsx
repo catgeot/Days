@@ -15,6 +15,7 @@ import {
   Phone,
   Route,
   Sparkles,
+  Star,
   Utensils,
   X,
   Youtube,
@@ -662,6 +663,8 @@ function toCultureModalSpot(spot) {
  *   returnTo: string,
  *   onClose: () => void,
  *   overlayZClass?: string,
+ *   favorited?: boolean,
+ *   onToggleFavorite?: (spot: Record<string, unknown>) => void,
  * }} props
  */
 export default function ThemeSpotDetailModal({
@@ -670,6 +673,8 @@ export default function ThemeSpotDetailModal({
   returnTo,
   onClose,
   overlayZClass = 'z-40',
+  favorited = false,
+  onToggleFavorite,
 }) {
   const navigate = useNavigate();
   const scrollRef = useRef(null);
@@ -1371,14 +1376,35 @@ export default function ThemeSpotDetailModal({
               </p>
             ) : null}
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="닫기"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100"
-          >
-            <X size={18} aria-hidden="true" />
-          </button>
+          <div className="flex shrink-0 items-center gap-1.5">
+            {onToggleFavorite ? (
+              <button
+                type="button"
+                onClick={() => onToggleFavorite(spot)}
+                aria-label={favorited ? '즐겨찾기 해제' : '즐겨찾기'}
+                aria-pressed={favorited}
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-600 hover:border-amber-300 hover:bg-amber-50"
+              >
+                <Star
+                  size={16}
+                  className={
+                    favorited
+                      ? 'fill-amber-400 text-amber-500'
+                      : 'text-stone-400'
+                  }
+                  aria-hidden="true"
+                />
+              </button>
+            ) : null}
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="닫기"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100"
+            >
+              <X size={18} aria-hidden="true" />
+            </button>
+          </div>
         </div>
 
         <div

@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 117,
-  sessionPhase: '검색 아이콘 포커스',
-  branch: 'cursor/scenic-search-focus-9792',
+  sessionNo: 118,
+  sessionPhase: '명승 홈 즐겨찾기',
+  branch: 'cursor/scenic-favorites-492c',
   previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'scenic-search-focus',
+  qaShareSlug: 'scenic-favorites',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-favorites-118',
+    session: '테마여행 #118, 명승 홈 즐겨찾기',
+    title: '명승 홈 즐겨찾기·본 항목',
+    detail:
+      '축제와 같이 헤더 ★로 즐겨찾기·본 항목 패널을 열고, 목록 행·상세 모달에서도 ★로 추가/해제할 수 있습니다(기기 localStorage). Preview에서 ★ 토글 → 헤더 ★로 목록 확인 → 새로고침 후에도 유지되는지 봐 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-search-focus-117b',
     session: '테마여행 #117, 검색 아이콘 포커스',

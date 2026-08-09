@@ -19,6 +19,7 @@ import {
   MapPin,
   Mountain,
   Search,
+  Star,
   X,
 } from 'lucide-react';
 import SEO from '../../components/SEO';
@@ -101,6 +102,14 @@ import ThemeModuleBackButton, {
   ThemeNavBackHint,
 } from './ThemeModuleBackButton';
 import ThemeSpotDetailModal from './ThemeSpotDetailModal';
+import {
+  groupScenicByRegion,
+  hydrateScenicRefs,
+  loadScenicFavorites,
+  loadScenicViewed,
+  pushScenicViewed,
+  toggleScenicFavorite,
+} from './scenicPersonalStore';
 
 const NEAR_KM = NEAR_SCENIC_KM;
 /** 내 주변 관광지 풀(칩 집계) · 종목 필터 전 bbox 거리순 */
@@ -398,56 +407,84 @@ function spotListThumbCandidates(spot) {
   return out;
 }
 
-function ScenicListRow({ spot, distanceKm, onOpen }) {
+function ScenicListRow({
+  spot,
+  distanceKm,
+  onOpen,
+  favorited = false,
+  onToggleFavorite,
+}) {
   const distanceLabel = formatDistanceKm(distanceKm);
   const candidates = spotListThumbCandidates(spot);
   const [thumbIndex, setThumbIndex] = useState(0);
   const thumb = candidates[thumbIndex] || '';
   return (
-    <button
-      type="button"
-      onClick={() => onOpen(spot.id)}
-      className="flex w-full items-start gap-3 rounded-2xl border border-stone-200/90 bg-white p-2.5 text-left shadow-sm transition-colors hover:border-amber-300/80 hover:bg-amber-50/40 sm:px-3 sm:py-3"
-    >
-      {thumb ? (
-        <img
-          key={thumb}
-          src={thumb}
-          alt=""
-          loading="lazy"
-          decoding="async"
-          onError={() => {
-            setThumbIndex((i) => i + 1);
-          }}
-          className="h-16 w-16 shrink-0 rounded-xl object-cover bg-stone-200 sm:h-[4.5rem] sm:w-[4.5rem]"
-        />
-      ) : (
-        <div
-          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-stone-100 text-stone-400 sm:h-[4.5rem] sm:w-[4.5rem]"
-          aria-hidden="true"
-        >
-          <Landmark size={20} />
-        </div>
-      )}
-      <span className="min-w-0 flex-1 py-0.5">
-        <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-          <span className="text-sm font-extrabold tracking-tight text-stone-900 break-keep">
-            {spot.name}
-          </span>
-          <span className="text-[11px] font-semibold text-stone-500">
-            {formatScenicSpotPlaceLabel(spot)}
-          </span>
-          {distanceLabel ? (
-            <span className="shrink-0 rounded-full bg-stone-100 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-stone-600">
-              {distanceLabel}
+    <div className="flex w-full items-stretch gap-1 rounded-2xl border border-stone-200/90 bg-white p-2.5 shadow-sm transition-colors hover:border-amber-300/80 hover:bg-amber-50/40 sm:px-3 sm:py-3">
+      <button
+        type="button"
+        onClick={() => onOpen(spot.id)}
+        className="flex min-w-0 flex-1 items-start gap-3 text-left"
+      >
+        {thumb ? (
+          <img
+            key={thumb}
+            src={thumb}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            onError={() => {
+              setThumbIndex((i) => i + 1);
+            }}
+            className="h-16 w-16 shrink-0 rounded-xl object-cover bg-stone-200 sm:h-[4.5rem] sm:w-[4.5rem]"
+          />
+        ) : (
+          <div
+            className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-stone-100 text-stone-400 sm:h-[4.5rem] sm:w-[4.5rem]"
+            aria-hidden="true"
+          >
+            <Landmark size={20} />
+          </div>
+        )}
+        <span className="min-w-0 flex-1 py-0.5">
+          <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+            <span className="text-sm font-extrabold tracking-tight text-stone-900 break-keep">
+              {spot.name}
             </span>
-          ) : null}
+            <span className="text-[11px] font-semibold text-stone-500">
+              {formatScenicSpotPlaceLabel(spot)}
+            </span>
+            {distanceLabel ? (
+              <span className="shrink-0 rounded-full bg-stone-100 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-stone-600">
+                {distanceLabel}
+              </span>
+            ) : null}
+          </span>
+          <span className="mt-0.5 block text-xs leading-relaxed text-stone-600 break-keep line-clamp-2">
+            {spot.blurb}
+          </span>
         </span>
-        <span className="mt-0.5 block text-xs leading-relaxed text-stone-600 break-keep line-clamp-2">
-          {spot.blurb}
-        </span>
-      </span>
-    </button>
+      </button>
+      {onToggleFavorite ? (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleFavorite(spot);
+          }}
+          aria-label={favorited ? '즐겨찾기 해제' : '즐겨찾기'}
+          aria-pressed={favorited}
+          className="my-auto flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-500 hover:border-amber-300 hover:bg-amber-50"
+        >
+          <Star
+            size={15}
+            className={
+              favorited ? 'fill-amber-400 text-amber-500' : 'text-stone-400'
+            }
+            aria-hidden="true"
+          />
+        </button>
+      ) : null}
+    </div>
   );
 }
 
@@ -1122,6 +1159,12 @@ export default function KoreaThemeScenicPage() {
   const [nearTourStatus, setNearTourStatus] = useState('idle');
   const [nearTourError, setNearTourError] = useState(null);
   const [selectedSpot, setSelectedSpot] = useState(null);
+  const [personalTab, setPersonalTab] = useState(null);
+  const [favoriteList, setFavoriteList] = useState(() => loadScenicFavorites());
+  const [favoriteIds, setFavoriteIds] = useState(
+    () => new Set(loadScenicFavorites().map((r) => String(r.id))),
+  );
+  const [viewedList, setViewedList] = useState(() => loadScenicViewed());
   const [chipCounts, setChipCounts] = useState({
     regionCounts: {},
     areaCounts: {},
@@ -2015,10 +2058,19 @@ export default function KoreaThemeScenicPage() {
       );
       return undefined;
     }
+    const savedRef =
+      favoriteList.find((s) => String(s.id) === String(selectedId)) ||
+      viewedList.find((s) => String(s.id) === String(selectedId)) ||
+      null;
+    if (savedRef) setSelectedSpot(savedRef);
     fetchKoreaTourAttractionById(selectedId).then((spot) => {
       if (cancelled) return;
+      if (!spot) {
+        if (!savedRef) setSelectedSpot(null);
+        return;
+      }
       setSelectedSpot(
-        spot?.firstImage && !spot.imageUrl
+        spot.firstImage && !spot.imageUrl
           ? { ...spot, imageUrl: spot.firstImage }
           : spot,
       );
@@ -2026,7 +2078,7 @@ export default function KoreaThemeScenicPage() {
     return () => {
       cancelled = true;
     };
-  }, [selectedId, dbSpots, curatedImageByContentId]);
+  }, [selectedId, dbSpots, curatedImageByContentId, favoriteList, viewedList]);
 
   const setCuratedRegion = useCallback(
     (r) => {
@@ -2449,13 +2501,87 @@ export default function KoreaThemeScenicPage() {
     [searchParams, setSearchParams],
   );
 
+  const scenicById = useMemo(() => {
+    /** @type {Map<string, Record<string, unknown>>} */
+    const map = new Map();
+    for (const s of CURATED_ALL) {
+      if (s?.id) map.set(String(s.id), s);
+    }
+    for (const s of listKoreaHeritageScenic()) {
+      if (s?.id) map.set(String(s.id), s);
+    }
+    for (const s of dbSpots) {
+      if (s?.id && !map.has(String(s.id))) map.set(String(s.id), s);
+    }
+    return map;
+  }, [dbSpots]);
+
+  const refreshFavorites = useCallback(() => {
+    const list = loadScenicFavorites();
+    setFavoriteList(list);
+    setFavoriteIds(new Set(list.map((r) => String(r.id))));
+  }, []);
+
+  const handleToggleFavorite = useCallback(
+    (spot) => {
+      toggleScenicFavorite(spot);
+      refreshFavorites();
+    },
+    [refreshFavorites],
+  );
+
+  const openPersonal = useCallback(
+    (tab) => {
+      setPersonalTab(tab);
+      clearNear();
+      clearSearchFilter();
+      const next = new URLSearchParams(searchParams);
+      next.delete('spot');
+      setSearchParams(next, { replace: true });
+      if (tab === 'favorites') refreshFavorites();
+      else setViewedList(loadScenicViewed());
+    },
+    [
+      clearNear,
+      clearSearchFilter,
+      refreshFavorites,
+      searchParams,
+      setSearchParams,
+    ],
+  );
+
+  const closePersonal = useCallback(() => {
+    setPersonalTab(null);
+  }, []);
+
+  const personalItems = useMemo(() => {
+    const refs =
+      personalTab === 'favorites'
+        ? favoriteList
+        : personalTab === 'viewed'
+          ? viewedList
+          : [];
+    return hydrateScenicRefs(refs, scenicById);
+  }, [personalTab, favoriteList, viewedList, scenicById]);
+
+  const personalGroups = useMemo(
+    () => groupScenicByRegion(personalItems),
+    [personalItems],
+  );
+
   const openSpot = useCallback(
     (id) => {
+      const key = String(id || '').trim();
+      if (!key) return;
+      const live = scenicById.get(key);
+      const fromPersonal = personalItems.find((s) => String(s.id) === key);
+      const refSpot = live || fromPersonal || { id: key, name: key };
+      setViewedList(pushScenicViewed(refSpot));
       const next = new URLSearchParams(searchParams);
-      next.set('spot', id);
+      next.set('spot', key);
       setSearchParams(next, { replace: false });
     },
-    [searchParams, setSearchParams],
+    [personalItems, scenicById, searchParams, setSearchParams],
   );
 
   const closeModal = useCallback(() => {
@@ -2593,6 +2719,32 @@ export default function KoreaThemeScenicPage() {
                     <Search size={15} aria-hidden="true" />
                   )}
                 </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    personalTab
+                      ? closePersonal()
+                      : openPersonal('favorites')
+                  }
+                  aria-label="즐겨찾기·본 항목"
+                  aria-pressed={personalTab != null}
+                  title="즐겨찾기·본 항목"
+                  className={`flex h-9 w-9 items-center justify-center rounded-full border ${
+                    personalTab != null
+                      ? 'border-amber-400 bg-amber-50 text-amber-800'
+                      : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
+                  }`}
+                >
+                  <Star
+                    size={15}
+                    className={
+                      personalTab != null || favoriteIds.size > 0
+                        ? 'fill-amber-400 text-amber-500'
+                        : ''
+                    }
+                    aria-hidden="true"
+                  />
+                </button>
                 <ThemeModuleBackButton onlyWhenBack />
                 <button
                   type="button"
@@ -2713,7 +2865,7 @@ export default function KoreaThemeScenicPage() {
                   : 'pb-6'
               }`}
             >
-              {!searchActive ? (
+              {!searchActive && personalTab == null ? (
                 <div className="space-y-2">
                   <div className="flex flex-wrap items-center justify-end gap-2">
                     <button
@@ -2763,6 +2915,89 @@ export default function KoreaThemeScenicPage() {
                 </div>
               ) : null}
 
+          {personalTab != null ? (
+            <section
+              aria-label="내 명소·명승 목록"
+              className="space-y-4"
+            >
+              <div className="flex flex-wrap items-end justify-between gap-2">
+                <div className="min-w-0">
+                  <h2 className="text-sm font-bold tracking-tight text-stone-900 md:text-base">
+                    {personalTab === 'favorites' ? '즐겨찾기' : '본 항목'}
+                  </h2>
+                  <p className="text-[11px] text-stone-500">
+                    {personalItems.length}건 · 권역 그룹
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={closePersonal}
+                  className="rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-[11px] font-bold text-stone-700 hover:bg-stone-100"
+                >
+                  목록으로
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => openPersonal('favorites')}
+                  className={
+                    personalTab === 'favorites'
+                      ? 'inline-flex items-center gap-1 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-950'
+                      : 'inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50'
+                  }
+                >
+                  즐겨찾기
+                  <span className="opacity-70">{favoriteList.length}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => openPersonal('viewed')}
+                  className={
+                    personalTab === 'viewed'
+                      ? 'inline-flex items-center gap-1 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-950'
+                      : 'inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50'
+                  }
+                >
+                  본 항목
+                  <span className="opacity-70">{viewedList.length}</span>
+                </button>
+              </div>
+              {personalItems.length === 0 ? (
+                <p className="text-sm text-stone-500 break-keep">
+                  {personalTab === 'favorites'
+                    ? '즐겨찾은 명소·명승이 없습니다. 목록이나 상세에서 ★로 추가해 보세요.'
+                    : '아직 본 항목이 없습니다. 카드를 열어 보면 여기에 쌓입니다.'}
+                </p>
+              ) : (
+                <div className="space-y-4">
+                  {personalGroups.map((group) => (
+                    <div key={group.id} className="space-y-2">
+                      <p className="px-0.5 text-[11px] font-bold tracking-wide text-stone-500">
+                        {group.label}
+                        <span className="ml-1 font-normal opacity-70">
+                          {group.items.length}
+                        </span>
+                      </p>
+                      <ul className="space-y-2">
+                        {group.items.map((spot) => (
+                          <li key={`p-${spot.id}`}>
+                            <ScenicListRow
+                              spot={spot}
+                              onOpen={openSpot}
+                              favorited={favoriteIds.has(String(spot.id))}
+                              onToggleFavorite={handleToggleFavorite}
+                            />
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          ) : (
+            <>
           <section aria-labelledby="korea-scenic-curated-heading" className="space-y-4">
             <div className="flex items-center gap-2 text-stone-700">
               <Landmark size={18} className="text-amber-700" aria-hidden="true" />
@@ -2926,6 +3161,8 @@ export default function KoreaThemeScenicPage() {
                     spot={spot}
                     distanceKm={curatedKmById.get(String(spot.id))}
                     onOpen={openSpot}
+                    favorited={favoriteIds.has(String(spot.id))}
+                    onToggleFavorite={handleToggleFavorite}
                   />
                 </li>
               ))}
@@ -3101,6 +3338,8 @@ export default function KoreaThemeScenicPage() {
                       spot={spot}
                       distanceKm={heritageKmById.get(String(spot.id))}
                       onOpen={openSpot}
+                      favorited={favoriteIds.has(String(spot.id))}
+                      onToggleFavorite={handleToggleFavorite}
                     />
                   </li>
                 ))}
@@ -3351,6 +3590,8 @@ export default function KoreaThemeScenicPage() {
                       spot={spot}
                       distanceKm={dbKmById.get(String(spot.id))}
                       onOpen={openSpot}
+                      favorited={favoriteIds.has(String(spot.id))}
+                      onToggleFavorite={handleToggleFavorite}
                     />
                   </li>
                 ))}
@@ -3380,6 +3621,8 @@ export default function KoreaThemeScenicPage() {
               </div>
             ) : null}
           </section>
+            </>
+          )}
             </div>
           </div>
         </main>
@@ -3415,6 +3658,10 @@ export default function KoreaThemeScenicPage() {
           returnTo={listReturnTo}
           onClose={closeModal}
           overlayZClass={searchActive ? 'z-50' : 'z-40'}
+          favorited={
+            modalSpot?.id != null && favoriteIds.has(String(modalSpot.id))
+          }
+          onToggleFavorite={handleToggleFavorite}
         />
       ) : null}
     </div>
