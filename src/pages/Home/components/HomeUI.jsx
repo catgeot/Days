@@ -401,7 +401,7 @@ const HomeUI = React.memo(({
         </div>
       )}
 
-      <footer className="fixed bottom-0 left-0 right-0 p-4 md:p-6 z-50 pointer-events-none">
+      <footer className="fixed bottom-0 left-0 right-0 p-4 md:p-6 z-[60] pointer-events-none">
         <div className="hidden md:flex absolute bottom-6 left-[8.75rem] items-end gap-4 pointer-events-auto">
           {user ? (
             <button onClick={onLogout} className="group flex items-center gap-2 pb-2 cursor-pointer focus:outline-none">

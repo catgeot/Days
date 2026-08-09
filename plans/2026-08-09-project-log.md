@@ -2,9 +2,18 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
-## 홈 PC 명승·테마 카테고리 겹침 (main · 로컬)
+## 홈 PC 나라칩·LOGIN/LOGBOOK 겹침 (main · 로컬)
 
 **상태**: `main` · 로컬 검증
+
+- **요청**: 오세아니아·중동 등 긴 나라칩이 좌측 하단 LOGIN/LOGBOOK과 겹침
+- **한 일**: PC 나라 리스트 높이 `calc(100dvh-14.5rem-8.5rem)`·상한 22rem으로 제한(내부 스크롤) · footer z를 레일 위로
+- **VERIFY**: `npm run build`
+- **QA**: 로컬 홈 PC → Paradise 등에서 남태평양/중동 펼친 뒤 LOGIN·LOGBOOK과 겹치지 않는지
+
+## 홈 PC 명승·테마 카테고리 겹침 (main · 로컬)
+
+**상태**: `main` · tip `1edfc07`
 
 - **요청**: PROD main 홈에서 축제/명승 투톱과 테마 카테고리·하위칩 겹침 · 스크롤바 없이 · Windows Vite default export 오류
 - **한 일**: PC 카테고리 레일 `top-[14.5rem] justify-start`(하위칩 위로 밀림 방지, `overflow-y-auto` 없음) · `App.jsx`에서 `CloudPreviewWorkLog.jsx` 명시 import(Windows 대소문자 충돌)
