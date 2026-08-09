@@ -4,7 +4,7 @@
 
 ## 테마여행 #93, 빈 hub 명소 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip _(push 후)_ · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `a585811b` · Preview 사람 QA 대기
 
 - **한 일**: 큐 R01 잔여+전라 R02 앞 — 연기4·예산4·완주7·곡성6·장수6 **전수** GATEO 선정 · Tour contentId 19/27 · 썸네일 454/472 · 세종·충남·전북·전남 시도 색인 · 큐 잔여 52
 - **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `npm run build`
