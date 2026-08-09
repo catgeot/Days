@@ -4,7 +4,7 @@
 
 ## 테마여행 #84, 네이버 이동 버튼
 
-**상태**: feature `cursor/scenic-food-naver-link-b366` · PR [#76](https://github.com/catgeot/Days/pull/76) · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-food-naver-link-b366` · PR [#76](https://github.com/catgeot/Days/pull/76) · tip `3582e24e` · Preview 사람 QA 대기
 
 - **한 일**: 맛집 상세 네이버 링크를 「N · 네이버로 이동 · 새 탭에서 네이버 검색」 CTA 버튼으로 교체 (초록 톤·외부이동 아이콘)
 - **VERIFY**: `npm run build`
