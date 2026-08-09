@@ -219,6 +219,8 @@ const RELATED_IMAGE_CONTENT_IDS = {
   hamrasan: '1046086', // 함라산길 — 함라산 Tour type12 부재 시
   'muju-deogyusan-resort': '126238', // 덕유산국립공원 — 리조트 Tour type12 부재 시
   taekwondowon: '127031', // 무주 구천동 33경 — 태권도원 Tour type12 부재 시
+  'gichan-land': '2732489', // 가야금산조테마공원 — 기찬랜드 Tour type12 부재 시
+  'ganwoljae-pass': '128213', // 간월산 — 간월재 Tour type12 부재 시
 };
 
 async function mapPool(items, worker, size) {

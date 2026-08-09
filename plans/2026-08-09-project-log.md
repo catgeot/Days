@@ -2,21 +2,32 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
+## 테마여행 #98, 빈 hub 명소 보강
+
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip (push 후) · Preview 사람 QA 대기
+
+- **한 일**: 큐 R01 전라 잔여+경상 — 영암4·거창7·울주7·김해6·군위6 **전수** GATEO 선정 · Tour contentId 9/30 · 썸네일 560/597 · 전남·경남·경북·울산 시도 색인 · Tour LIVE 429 → locationBasedList·DB·related 폴백 · 큐 잔여 27
+- **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
+- **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=yeongam` · `?hub=geochang` · `?hub=ulju` · `?hub=gimhae` · `?hub=gunwi`
+- **작업 로그**: 「영암·거창·울주·김해·군위 GATEO 선정 전수」
+- **남은 일**: 큐 경상 잔여(양산·창원…) 전수 · 사람 Preview QA
+- **다음 채팅명**:
+
+```
+테마여행 #99, 빈 hub 명소 보강
+```
+
 ## 테마여행 #97, 빈 hub 명소 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `d7d9c21b` · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `d7d9c21b` · ✅ #98 영암·거창·울주·김해·군위
 
 - **한 일**: 큐 R01 전라 — 해남4·함평4·익산4·무안4·무주4 **전수** GATEO 선정 · Tour contentId 13/20 · 썸네일 549/567 · 전북·전남 시도 색인 · Tour LIVE 429 → locationBasedList·DB·related 폴백 · 큐 잔여 32
 - **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
 - **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=haenam` · `?hub=hampyeong` · `?hub=iksan` · `?hub=muan` · `?hub=muju`
 - **작업 로그**: 「해남·함평·익산·무안·무주 GATEO 선정 전수」
-- **남은 일**: 큐 R01 잔여(영암) + 경상(거창·울주…) 전수 · 사람 Preview QA
-- **다음 채팅명**:
-
-```
-테마여행 #98, 빈 hub 명소 보강
-```
+- **다음 채팅명**: `테마여행 #98, 빈 hub 명소 보강` → 완료(위 #98 절)
 
 ## 테마여행 #96, 빈 hub 명소 보강
 

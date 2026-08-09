@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-09T01:18:36.928Z",
-    "count": 549,
+    "updatedAt": "2026-08-09T01:39:37.281Z",
+    "count": 560,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -554,6 +554,17 @@
     "muju-deogyusan-resort": "https://tong.visitkorea.or.kr/cms/resource/44/3533344_image2_1.jpg",
     "haenam-dinosaur-museum": "https://tong.visitkorea.or.kr/cms/resource/45/3564445_image2_1.jpg",
     "taekwondowon": "https://tong.visitkorea.or.kr/cms/resource/33/3304433_image2_1.jpg",
-    "hamrasan": "https://tong.visitkorea.or.kr/cms/resource/58/3578358_image2_1.jpg"
+    "hamrasan": "https://tong.visitkorea.or.kr/cms/resource/58/3578358_image2_1.jpg",
+    "gichan-land": "https://tong.visitkorea.or.kr/cms/resource/96/3382096_image2_1.JPG",
+    "suseungdae": "https://tong.visitkorea.or.kr/cms/resource/37/3570637_image2_1.JPG",
+    "ganwoljae-pass": "https://tong.visitkorea.or.kr/cms/resource/02/3078002_image2_1.bmp",
+    "shinbulsan-falls-resort": "https://tong.visitkorea.or.kr/cms/resource/87/3077987_image2_1.bmp",
+    "oegosan-onggi-village": "https://tong.visitkorea.or.kr/cms/resource/17/3534617_image2_1.jpg",
+    "ulju-ganjeolgot": "https://tong.visitkorea.or.kr/cms/resource/50/3583350_image2_1.jpg",
+    "amethyst-cave-country": "https://tong.visitkorea.or.kr/cms/resource/35/3549535_image2_1.jpg",
+    "bongha-village": "https://tong.visitkorea.or.kr/cms/resource/53/3580653_image2_1.jpg",
+    "tomb-of-queen-suro": "https://tong.visitkorea.or.kr/cms/resource/39/3539339_image2_1.jpg",
+    "ingaksa-gunwi": "https://tong.visitkorea.or.kr/cms/resource/73/3029873_image2_1.jpg",
+    "hanbam-village-gunwi": "https://tong.visitkorea.or.kr/cms/resource/68/3571368_image2_1.jpg"
   }
 }

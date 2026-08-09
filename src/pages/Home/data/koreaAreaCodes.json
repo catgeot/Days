@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-09T01:17:40.642Z",
+    "generatedAt": "2026-08-09T01:39:34.545Z",
     "areaCount": 17,
-    "hubLinkCount": 137,
+    "hubLinkCount": 142,
     "source": "scripts/data/korea-area-code-overrides.mjs"
   },
   "defaultHubIds": [
@@ -58,7 +58,8 @@
     "7": {
       "name": "울산",
       "hubIds": [
-        "ulsan"
+        "ulsan",
+        "ulju"
       ]
     },
     "8": {
@@ -173,7 +174,8 @@
         "uljin",
         "sangju",
         "mungyeong",
-        "bonghwa"
+        "bonghwa",
+        "gunwi"
       ]
     },
     "36": {
@@ -185,7 +187,9 @@
         "namhae",
         "hadong",
         "hapcheon",
-        "hamyang"
+        "hamyang",
+        "geochang",
+        "gimhae"
       ]
     },
     "37": {
@@ -229,7 +233,8 @@
         "yeonggwang",
         "haenam",
         "hampyeong",
-        "muan"
+        "muan",
+        "yeongam"
       ]
     },
     "39": {
@@ -250,6 +255,7 @@
     "gwangju": "5",
     "busan": "6",
     "ulsan": "7",
+    "ulju": "7",
     "sejong": "8",
     "yeongi": "8",
     "suwon": "31",
@@ -335,6 +341,7 @@
     "sangju": "35",
     "mungyeong": "35",
     "bonghwa": "35",
+    "gunwi": "35",
     "tongyeong": "36",
     "jinju": "36",
     "geoje": "36",
@@ -342,6 +349,8 @@
     "hadong": "36",
     "hapcheon": "36",
     "hamyang": "36",
+    "geochang": "36",
+    "gimhae": "36",
     "jeonju": "37",
     "gunsan": "37",
     "buan": "37",
@@ -376,6 +385,7 @@
     "haenam": "38",
     "hampyeong": "38",
     "muan": "38",
+    "yeongam": "38",
     "jeju": "39",
     "seogwipo": "39"
   }

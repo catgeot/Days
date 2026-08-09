@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 97,
+  sessionNo: 98,
   sessionPhase: '빈 hub 명소 보강',
   branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?hub=haenam',
+  previewPath: '/korea/theme/scenic?hub=yeongam',
   qaShareSlug: 'scenic-hub-fill',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-98',
+    session: '테마여행 #98, 빈 hub 명소 보강',
+    title: '영암·거창·울주·김해·군위 GATEO 선정 전수',
+    detail:
+      '큐 R01 전라 잔여+경상 앞 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(영암4·거창7·울주7·김해6·군위6 · Tour contentId 9/30 · 썸네일 560/597). 전남·경남·경북·울산 시도 색인에도 동시 등록했습니다. Tour LIVE searchKeyword 429로 locationBasedList·DB·related 폴백을 썼습니다. Preview에서 /korea/theme/scenic?hub=yeongam · ?hub=geochang · ?hub=ulju · ?hub=gimhae · ?hub=gunwi 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-hub-fill-r01-97',
     session: '테마여행 #97, 빈 hub 명소 보강',
