@@ -82,6 +82,10 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'inje',
         'yeongwol',
         'goseong',
+        'hongcheon',
+        'yanggu',
+        'jeongseon',
+        'taebaek',
       ],
     },
     33: {
@@ -94,7 +98,7 @@ export const KOREA_AREA_CODE_OVERRIDES = {
     },
     35: {
       name: '경북',
-      hubIds: ['gyeongju', 'andong', 'pohang', 'ulleung'],
+      hubIds: ['gyeongju', 'andong', 'pohang', 'ulleung', 'uljin'],
     },
     36: {
       name: '경남',

@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-08T23:51:26.425Z",
-    "count": 321,
+    "updatedAt": "2026-08-09T00:00:14.338Z",
+    "count": 347,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -326,6 +326,32 @@
     "ayajin-beach": "https://tong.visitkorea.or.kr/cms/resource/82/3516882_image2_1.jpg",
     "yeongwol-jangneung": "https://tong.visitkorea.or.kr/cms/resource/15/4041415_image2_1.png",
     "hwajinpo-lake": "https://tong.visitkorea.or.kr/cms/resource/80/4059880_image2_1.jpg",
-    "dmz-museum": "https://tong.visitkorea.or.kr/cms/resource/51/2921751_image2_1.jpg"
+    "dmz-museum": "https://tong.visitkorea.or.kr/cms/resource/51/2921751_image2_1.jpg",
+    "suta-temple": "https://tong.visitkorea.or.kr/cms/resource/82/3532982_image2_1.jpg",
+    "palbongsan-recreation-area": "https://tong.visitkorea.or.kr/cms/resource/45/3422445_image2_1.jpg",
+    "hwangji-pond": "https://tong.visitkorea.or.kr/cms/resource/02/3564402_image2_1.jpg",
+    "seongryugul-cave": "https://tong.visitkorea.or.kr/cms/resource/37/3459437_image2_1.jpg",
+    "hupo-beach": "https://tong.visitkorea.or.kr/cms/resource/91/3038291_image2_1.JPG",
+    "hongcheon-ginkgo-forest": "https://tong.visitkorea.or.kr/cms/resource/70/3494170_image2_1.jpg",
+    "sambong-mineral-spring": "https://tong.visitkorea.or.kr/cms/resource/86/1732286_image2_1.jpg",
+    "vivaldi-park": "https://tong.visitkorea.or.kr/cms/resource/17/4071117_image2_1.jpg",
+    "yanggu-geographic-center-observatory": "https://tong.visitkorea.or.kr/cms/resource/47/4081747_image2_1.jpg",
+    "yanggu-eulji-observatory": "https://tong.visitkorea.or.kr/cms/resource/52/3500052_image2_1.jpg",
+    "yanggu-dutayeon-valley": "https://tong.visitkorea.or.kr/cms/resource/00/4081700_image2_1.jpg",
+    "park-soo-keun-museum": "https://tong.visitkorea.or.kr/cms/resource/78/3533378_image2_1.jpg",
+    "yanggu-korean-peninsula-island": "https://tong.visitkorea.or.kr/cms/resource/23/4081723_image2_1.jpg",
+    "mindungsan": "https://tong.visitkorea.or.kr/cms/resource_photo/52/3414852_image2_1.jpg",
+    "auraji": "https://tong.visitkorea.or.kr/cms/resource_photo/44/4073444_image2_1.jpg",
+    "high1-resort": "https://tong.visitkorea.or.kr/cms/resource/56/3578056_image2_1.jpg",
+    "jeongamsa-temple": "https://tong.visitkorea.or.kr/cms/resource/52/3331952_image2_1.jpg",
+    "gumunso": "https://tong.visitkorea.or.kr/cms/resource/80/3588580_image2_1.jpg",
+    "cheoram-coal-mining-history-village": "https://tong.visitkorea.or.kr/cms/resource/33/3498233_image2_1.jpg",
+    "taebaek-coal-museum": "https://tong.visitkorea.or.kr/cms/resource/67/3514067_image2_1.jpg",
+    "hwaam-cave": "https://tong.visitkorea.or.kr/cms/resource/49/4090149_image2_1.jpg",
+    "bulyeongsa-temple": "https://tong.visitkorea.or.kr/cms/resource/16/3591016_image2_1.jpg",
+    "deokgu-hot-springs": "https://tong.visitkorea.or.kr/cms/resource/33/3503533_image2_1.jpg",
+    "taebaeksan-cheonjedan": "https://tong.visitkorea.or.kr/cms/resource/21/3506421_image2_1.jpg",
+    "garisan-recreation-forest": "https://tong.visitkorea.or.kr/cms/resource/60/3494160_image2_1.jpg",
+    "yanggu-war-memorial-museum": "https://tong.visitkorea.or.kr/cms/resource/63/3332763_image2_1.jpg"
   }
 }

@@ -207,6 +207,26 @@ assert(
   '고성은 선정 있음 → 빈 목록 제외',
 );
 assert(
+  !empty.some((h) => h.hubId === 'hongcheon'),
+  '홍천은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'yanggu'),
+  '양구는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'jeongseon'),
+  '정선은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'taebaek'),
+  '태백은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'uljin'),
+  '울진은 선정 있음 → 빈 목록 제외',
+);
+assert(
   !empty.some((h) => h.district),
   '기본 목록에 자치구 없음',
 );

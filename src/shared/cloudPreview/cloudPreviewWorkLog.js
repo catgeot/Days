@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 87,
+  sessionNo: 88,
   sessionPhase: '빈 hub 명소 보강',
   branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?hub=wonju',
+  previewPath: '/korea/theme/scenic?hub=hongcheon',
   qaShareSlug: 'scenic-hub-fill',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-08-scenic-hub-fill-r01-88',
+    session: '테마여행 #88, 빈 hub 명소 보강',
+    title: '홍천·양구·정선·태백·울진 GATEO 선정 전수',
+    detail:
+      '큐 R01 강원 잔여 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(홍천6·양구6·정선5·태백5·울진5 · Tour contentId 26/27 · 썸네일 347/348). 강원·경북(울진) 시도 색인에도 동시 등록했습니다. Preview에서 /korea/theme/scenic?hub=hongcheon · ?hub=yanggu · ?hub=jeongseon · ?hub=taebaek · ?hub=uljin 선정 목록을 확인해 주세요.',
+    at: '2026-08-08',
+  },
   {
     id: '2026-08-08-scenic-hub-fill-r01-87',
     session: '테마여행 #87, 빈 hub 명소 보강',

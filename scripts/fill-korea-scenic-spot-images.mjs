@@ -159,6 +159,8 @@ const RELATED_IMAGE_CONTENT_IDS = {
   'freedom-protection-peace-museum': '127513', // 소요산국민관광지 — 박물관 Tour firstimage 부재 시
   'starlight-garden-universe': '1624755', // 설봉공원 — 별빛정원우주 Tour 부재 시
   'pyeongtaek-mir-island': '2741612', // 평택호예술공원 — 미르섬 Tour 부재 시
+  'garisan-recreation-forest': '2372816', // 가리산 레포츠파크 — 휴양림 Tour firstimage 부재 시
+  'yanggu-war-memorial-museum': '130736', // 양구통일관 — 전쟁기념관 Tour firstimage 부재 시(동일 주소)
 };
 
 async function mapPool(items, worker, size) {
