@@ -4,7 +4,7 @@
 
 ## 테마여행 #100, 빈 hub 명소 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip _(push 후)_ · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `64cb54e6` · Preview 사람 QA 대기
 
 - **한 일**: 큐 R01 경상 — 고성5·구미5·함안5·밀양5·사천5 **전수** GATEO 선정 · Tour contentId 12/25 · 썸네일 611/648 · 경남·경북 시도 색인 · Tour LIVE 429 → locationBasedList·DB·related 폴백 · 큐 잔여 17
 - **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `npm run build`
