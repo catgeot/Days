@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 92,
+  sessionNo: 93,
   sessionPhase: '빈 hub 명소 보강',
   branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?hub=eumseong',
+  previewPath: '/korea/theme/scenic?hub=yeongi',
   qaShareSlug: 'scenic-hub-fill',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-93',
+    session: '테마여행 #93, 빈 hub 명소 보강',
+    title: '연기·예산·완주·곡성·장수 GATEO 선정 전수',
+    detail:
+      '큐 R01 잔여(연기·예산)와 전라 R02 앞(완주·곡성·장수) 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(연기4·예산4·완주7·곡성6·장수6 · Tour contentId 19/27 · 썸네일 454/472). 세종·충남·전북·전남 시도 색인에도 동시 등록했습니다. Preview에서 /korea/theme/scenic?hub=yeongi · ?hub=yesan · ?hub=wanju · ?hub=gokseong · ?hub=jangsu 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-hub-fill-r01-92',
     session: '테마여행 #92, 빈 hub 명소 보강',

@@ -164,6 +164,15 @@ const RELATED_IMAGE_CONTENT_IDS = {
   'yanggu-war-memorial-museum': '130736', // 양구통일관 — 전쟁기념관 Tour firstimage 부재 시(동일 주소)
   'yongbongsan-hongseong': '125427', // 용봉산자연휴양림 — 용봉산 Tour firstimage 부재 시
   'jinaksan-geumsan': '125888', // 보석사 — 진악산 Tour firstimage 부재 시(남이 인근)
+  'gobok-nature-park-yeongi': '1946955', // 세종호수공원 — 고복자연공원 Tour type12 부재 시
+  'yeongi-battle-memorial-park': '1954976', // 연기향교 — 연기대첩비공원 Tour type12 부재 시
+  'yesan-holy-site': '2771833', // 여사울성지 — 예산성지 Tour type12 부재 시
+  'samnye-culture-village': '2615341', // 삼례책마을 — 문화예술촌 Tour type12 부재 시
+  'gokseong-simcheong-hanok-village': '128578', // 섬진강기차마을 — 심청한옥마을 Tour 부재 시
+  dongaksan: '128083', // 도림사 계곡 — 동악산 Tour firstimage 부재 시
+  'jangsu-nuri-park': '2787949', // 장수물빛공원 — 누리파크 Tour type12 부재 시
+  'jangsu-horse-riding-ranch': '606203', // 논개생가마을 — 승마장 Tour type12 부재 시
+  jangansan: '1623888', // 방화동자연휴양림 — 장안산 Tour type12 부재 시
 };
 
 async function mapPool(items, worker, size) {

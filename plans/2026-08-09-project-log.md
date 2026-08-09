@@ -2,6 +2,22 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
+## 테마여행 #93, 빈 hub 명소 보강
+
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip _(push 후)_ · Preview 사람 QA 대기
+
+- **한 일**: 큐 R01 잔여+전라 R02 앞 — 연기4·예산4·완주7·곡성6·장수6 **전수** GATEO 선정 · Tour contentId 19/27 · 썸네일 454/472 · 세종·충남·전북·전남 시도 색인 · 큐 잔여 52
+- **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
+- **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=yeongi` · `?hub=yesan` · `?hub=wanju` · `?hub=gokseong` · `?hub=jangsu`
+- **작업 로그**: 「연기·예산·완주·곡성·장수 GATEO 선정 전수」
+- **남은 일**: 큐 R01 전라 잔여(서천·강진…) 전수 · 사람 Preview QA
+- **다음 채팅명**:
+
+```
+테마여행 #94, 빈 hub 명소 보강
+```
+
 ## 테마여행 #92, 빈 hub 명소 보강
 
 **상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `b43f9d2b` · Preview 사람 QA 대기
@@ -11,12 +27,8 @@
 - **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
 - **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=eumseong` · `?hub=geumsan` · `?hub=hongseong` · `?hub=nonsan` · `?hub=okcheon`
 - **작업 로그**: 「음성·금산·홍성·논산·옥천 GATEO 선정 전수」
-- **남은 일**: 큐 R01 잔여(연기·예산) + 전라 R02… 전수 · 사람 Preview QA
-- **다음 채팅명**:
-
-```
-테마여행 #93, 빈 hub 명소 보강
-```
+- **남은 일**: ✅ #93 연기·예산·완주·곡성·장수 전수 · 사람 Preview QA
+- **다음 채팅명**: `테마여행 #93, 빈 hub 명소 보강` → 완료(위 #93 절)
 
 ## 테마여행 #91, 빈 hub 명소 보강
 

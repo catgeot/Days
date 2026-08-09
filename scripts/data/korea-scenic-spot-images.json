@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-09T00:39:17.395Z",
-    "count": 427,
+    "updatedAt": "2026-08-09T00:46:19.385Z",
+    "count": 454,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -432,6 +432,33 @@
     "okcheon-dunjubong": "https://tong.visitkorea.or.kr/cms/resource/16/3547416_image2_1.jpg",
     "okcheon-hyanggyo": "https://tong.visitkorea.or.kr/cms/resource/41/3336241_image2_1.jpg",
     "jinaksan-geumsan": "https://tong.visitkorea.or.kr/cms/resource/65/3559665_image2_1.jpg",
-    "yongbongsan-hongseong": "https://tong.visitkorea.or.kr/cms/resource/35/3340035_image2_1.jpg"
+    "yongbongsan-hongseong": "https://tong.visitkorea.or.kr/cms/resource/35/3340035_image2_1.jpg",
+    "gobok-nature-park-yeongi": "https://tong.visitkorea.or.kr/cms/resource/76/3353976_image2_1.jpg",
+    "yeongi-battle-memorial-park": "https://tong.visitkorea.or.kr/cms/resource/70/3342770_image2_1.JPG",
+    "deoksan-hot-springs": "https://tong.visitkorea.or.kr/cms/resource/76/3055376_image2_1.jpg",
+    "yedang-lake": "https://tong.visitkorea.or.kr/cms/resource/06/3488406_image2_1.jpg",
+    "sudeoksa": "https://tong.visitkorea.or.kr/cms/resource/30/3560430_image2_1.jpg",
+    "yesan-holy-site": "https://tong.visitkorea.or.kr/cms/resource/39/3560639_image2_1.jpg",
+    "gosan-natural-recreation-forest": "https://tong.visitkorea.or.kr/cms/resource/67/3061367_image2_1.jpg",
+    "daedunsan": "https://tong.visitkorea.or.kr/cms/resource/14/3345314_image2_1.jpg",
+    "moaksan-wanju": "https://tong.visitkorea.or.kr/cms/resource/09/3055809_image2_1.jpg",
+    "samnye-culture-village": "https://tong.visitkorea.or.kr/cms/resource/10/3583610_image2_1.jpg",
+    "sangguan-cypress-forest": "https://tong.visitkorea.or.kr/cms/resource/15/3360215_image2_1.JPG",
+    "songgwangsa-wanju": "https://tong.visitkorea.or.kr/cms/resource/43/3583543_image2_1.jpg",
+    "wibongsa": "https://tong.visitkorea.or.kr/cms/resource/99/1605099_image2_1.jpg",
+    "gokseong-simcheong-hanok-village": "https://tong.visitkorea.or.kr/cms/resource/46/3532346_image2_1.jpg",
+    "dorimsa": "https://tong.visitkorea.or.kr/cms/resource/93/1606693_image2_1.jpg",
+    "seomjingang-train-village": "https://tong.visitkorea.or.kr/cms/resource/46/3532346_image2_1.jpg",
+    "amnok-recreation-area": "https://tong.visitkorea.or.kr/cms/resource/37/3530137_image2_1.jpg",
+    "taeansa": "https://tong.visitkorea.or.kr/cms/resource/00/3533500_image2_1.jpg",
+    "nongae-birthplace": "https://tong.visitkorea.or.kr/cms/resource/23/3557423_image2_1.jpg",
+    "tteunbong-spring": "https://tong.visitkorea.or.kr/cms/resource/72/3361772_image2_1.JPG",
+    "banghwadong-family-resort": "https://tong.visitkorea.or.kr/cms/resource/01/3555101_image2_1.jpg",
+    "jangsu-nuri-park": "https://tong.visitkorea.or.kr/cms/resource/02/2791502_image2_1.jpg",
+    "jangsu-horse-riding-ranch": "https://tong.visitkorea.or.kr/cms/resource/23/3557423_image2_1.jpg",
+    "jangansan": "https://tong.visitkorea.or.kr/cms/resource/01/3555101_image2_1.jpg",
+    "sejong-national-arboretum-yeongi": "https://tong.visitkorea.or.kr/cms/resource/89/4065589_image2_1.jpg",
+    "bear-tree-park-yeongi": "https://tong.visitkorea.or.kr/cms/resource/36/4058636_image2_1.jpg",
+    "dongaksan": "https://tong.visitkorea.or.kr/cms/resource/93/1606693_image2_1.jpg"
   }
 }

@@ -31,7 +31,7 @@ export const KOREA_AREA_CODE_OVERRIDES = {
     5: { name: '광주', hubIds: ['gwangju'] },
     6: { name: '부산', hubIds: ['busan'] },
     7: { name: '울산', hubIds: ['ulsan'] },
-    8: { name: '세종', hubIds: ['sejong'] },
+    8: { name: '세종', hubIds: ['sejong', 'yeongi'] },
     31: {
       name: '경기',
       hubIds: [
@@ -123,6 +123,7 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'geumsan',
         'hongseong',
         'nonsan',
+        'yesan',
       ],
     },
     35: {
@@ -158,6 +159,8 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'jeongeup',
         'jinan',
         'namwon',
+        'wanju',
+        'jangsu',
       ],
     },
     38: {
@@ -170,6 +173,7 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'boseong',
         'gurye',
         'wando',
+        'gokseong',
       ],
     },
     39: { name: '제주', hubIds: ['jeju', 'seogwipo'] },
