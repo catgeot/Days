@@ -4,7 +4,7 @@
 
 ## 테마여행 #105, 선정 contentId 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip (push 후) · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `e075d138` · Preview 사람 QA 대기
 
 - **원인**: (1) 아침고요 등 — TourAPI `locationBasedList` 일일 한도(429)로 주변 맛집·레포츠·문화 실패 · contentId `126668`은 정상 (2) 킨텍스 — Tour type12/14 본체 없음 → contentId null · 「Tour 상세 없음」
 - **한 일**: hub→시군구 SSOT(`koreaSigunguByHub`) · 주변 API `areaBasedList` 폴백 · Tour 부재 191곳 GATEO `overview` · 킨텍스 본문 보강 · 모달 curated overview
