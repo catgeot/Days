@@ -165,6 +165,8 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'jangsu',
         'gochang',
         'imsil',
+        'sunchang',
+        'gimje',
       ],
     },
     38: {
@@ -184,6 +186,9 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'jangheung',
         'jangseong',
         'jindo',
+        'naju',
+        'sinan',
+        'yeonggwang',
       ],
     },
     39: { name: '제주', hubIds: ['jeju', 'seogwipo'] },

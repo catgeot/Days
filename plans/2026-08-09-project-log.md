@@ -2,21 +2,33 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
+## 테마여행 #96, 빈 hub 명소 보강
+
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `(push 후)` · Preview 사람 QA 대기
+
+- **한 일**: 큐 R01 전라 — 나주5·신안5·순창5·영광5·김제4 **전수** GATEO 선정 · Tour contentId 12/24 · 썸네일 529/547 · 전북·전남 시도 색인 · Tour LIVE 검색 공백 → DB·related 폴백 · 큐 잔여 37
+- **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
+- **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=naju` · `?hub=sinan` · `?hub=sunchang` · `?hub=yeonggwang` · `?hub=gimje`
+- **작업 로그**: 「나주·신안·순창·영광·김제 GATEO 선정 전수」
+- **남은 일**: 큐 R01 전라 잔여(해남·함평·익산·무안·무주…) 전수 · 사람 Preview QA
+- **다음 채팅명**:
+
+```
+테마여행 #97, 빈 hub 명소 보강
+```
+
 ## 테마여행 #95, 빈 hub 명소 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `1ef6b753` · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `1ef6b753` · ✅ #96 나주·신안·순창·영광·김제
 
 - **한 일**: 큐 R01 전라 — 화순5·임실5·장흥5·장성5·진도5 **전수** GATEO 선정 · Tour contentId 14/25 · 썸네일 505/523 · 전북·전남 시도 색인 · Tour LIVE 429 → DB·related 폴백 · 큐 잔여 42
 - **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
 - **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=hwasun` · `?hub=imsil` · `?hub=jangheung` · `?hub=jangseong` · `?hub=jindo`
 - **작업 로그**: 「화순·임실·장흥·장성·진도 GATEO 선정 전수」
-- **남은 일**: 큐 R01 전라 잔여(나주·신안…) 전수 · 사람 Preview QA
-- **다음 채팅명**:
-
-```
-테마여행 #96, 빈 hub 명소 보강
-```
+- **남은 일**: ✅ #96 나주·신안·순창·영광·김제 전수 · 사람 Preview QA
+- **다음 채팅명**: `테마여행 #96, 빈 hub 명소 보강` → 완료(위 #96 절)
 
 ## 테마여행 #94, 빈 hub 명소 보강
 

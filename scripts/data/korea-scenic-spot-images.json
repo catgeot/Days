@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-09T01:03:01.211Z",
-    "count": 505,
+    "updatedAt": "2026-08-09T01:08:24.448Z",
+    "count": 529,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -510,6 +510,30 @@
     "yongjangsanseong": "https://tong.visitkorea.or.kr/cms/resource/53/3563653_image2_1.jpg",
     "unlimsanbang": "https://tong.visitkorea.or.kr/cms/resource/83/3557783_image2_1.jpg",
     "jindo-tower": "https://tong.visitkorea.or.kr/cms/resource/31/3381331_image2_1.JPG",
-    "unjusa": "https://tong.visitkorea.or.kr/cms/resource/60/186260_image2_1.jpg"
+    "unjusa": "https://tong.visitkorea.or.kr/cms/resource/60/186260_image2_1.jpg",
+    "geumseonggwan": "https://tong.visitkorea.or.kr/cms/resource/03/3533503_image2_1.jpg",
+    "naju-pear-museum": "https://tong.visitkorea.or.kr/cms/resource/70/3529470_image2_1.jpg",
+    "naju-hyanggyo": "https://tong.visitkorea.or.kr/cms/resource/03/3533503_image2_1.jpg",
+    "bulhoesa": "https://tong.visitkorea.or.kr/cms/resource/24/3529424_image2_1.jpg",
+    "bitgaram-lake-park": "https://tong.visitkorea.or.kr/cms/resource/70/3529470_image2_1.jpg",
+    "imjado-daegwang-beach": "https://tong.visitkorea.or.kr/cms/resource/95/3378795_image2_1.JPG",
+    "jeungdo": "https://tong.visitkorea.or.kr/cms/resource/74/3558674_image2_1.jpg",
+    "cheonsa-bridge": "https://tong.visitkorea.or.kr/cms/resource/57/3558957_image2_1.jpg",
+    "heuksando": "https://tong.visitkorea.or.kr/cms/resource/20/3572120_image2_1.jpg",
+    "gangcheonsa": "https://tong.visitkorea.or.kr/cms/resource/22/3055722_image2_1.jpg",
+    "gangcheonsan": "https://tong.visitkorea.or.kr/cms/resource/22/3055722_image2_1.jpg",
+    "sunchang-gochujang-folk-village": "https://tong.visitkorea.or.kr/cms/resource/01/3344101_image2_1.jpg",
+    "janggunmok": "https://tong.visitkorea.or.kr/cms/resource/93/3359093_image2_1.JPG",
+    "hoemun-mountain": "https://tong.visitkorea.or.kr/cms/resource/89/3519289_image2_1.jpg",
+    "gamami-beach": "https://tong.visitkorea.or.kr/cms/resource/63/3018763_image2_1.jpg",
+    "baeksajang-beach": "https://tong.visitkorea.or.kr/cms/resource/63/3381963_image2_1.JPG",
+    "bulgapsa": "https://tong.visitkorea.or.kr/cms/resource/65/3379065_image2_1.JPG",
+    "bulgap-reservoir": "https://tong.visitkorea.or.kr/cms/resource/86/2825886_image2_1.jpg",
+    "chilsan-tower": "https://tong.visitkorea.or.kr/cms/resource/71/3381971_image2_1.JPG",
+    "geumsansa": "https://tong.visitkorea.or.kr/cms/resource/48/3533448_image2_1.jpg",
+    "gimje-old-downtown": "https://tong.visitkorea.or.kr/cms/resource/00/3556600_image2_1.jpg",
+    "moaksan": "https://tong.visitkorea.or.kr/cms/resource/09/3055809_image2_1.jpg",
+    "byeokgolje": "https://tong.visitkorea.or.kr/cms/resource/30/3363530_image2_1.JPG",
+    "purple-island": "https://tong.visitkorea.or.kr/cms/resource/96/3558996_image2_1.jpg"
   }
 }

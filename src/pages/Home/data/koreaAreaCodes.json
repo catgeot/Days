@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-09T01:02:57.891Z",
+    "generatedAt": "2026-08-09T01:08:12.413Z",
     "areaCount": 17,
-    "hubLinkCount": 127,
+    "hubLinkCount": 132,
     "source": "scripts/data/korea-area-code-overrides.mjs"
   },
   "defaultHubIds": [
@@ -200,7 +200,9 @@
         "wanju",
         "jangsu",
         "gochang",
-        "imsil"
+        "imsil",
+        "sunchang",
+        "gimje"
       ]
     },
     "38": {
@@ -219,7 +221,10 @@
         "hwasun",
         "jangheung",
         "jangseong",
-        "jindo"
+        "jindo",
+        "naju",
+        "sinan",
+        "yeonggwang"
       ]
     },
     "39": {
@@ -342,6 +347,8 @@
     "jangsu": "37",
     "gochang": "37",
     "imsil": "37",
+    "sunchang": "37",
+    "gimje": "37",
     "yeosu": "38",
     "suncheon": "38",
     "mokpo": "38",
@@ -356,6 +363,9 @@
     "jangheung": "38",
     "jangseong": "38",
     "jindo": "38",
+    "naju": "38",
+    "sinan": "38",
+    "yeonggwang": "38",
     "jeju": "39",
     "seogwipo": "39"
   }

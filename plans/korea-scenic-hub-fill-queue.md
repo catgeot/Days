@@ -1,9 +1,9 @@
 # GATEO 선정 명소 — 권역·시군 hub 보강 큐
 
 **생성**: `npm run report:korea-scenic-empty-hubs -- --write-queue` (이 파일 덮어씀)
-**스냅샷**: 빈 hub **42** · 선정 hub **127** · maxOrder **5230**
+**스냅샷**: 빈 hub **37** · 선정 hub **132** · maxOrder **5470**
 
-**완료**: `#77`~`#94` · `#95` 화순·임실·장흥·장성·진도 전수 → 아래 표는 잔여 재번호.
+**완료**: `#77`~`#95` · `#96` 나주·신안·순창·영광·김제 전수 → 아래 표는 잔여 재번호.
 
 ## 사용법
 
@@ -21,24 +21,18 @@
 
 | R | 워커A | 워커B | 권역 | 상태 |
 |---|-------|-------|------|------|
-| **R01** | `naju` · `sinan` · `sunchang` · `yeonggwang` · `gimje` | `haenam` · `hampyeong` · `iksan` · `muan` · `muju` | 전라 | ⬜ |
-| **R02** | `yeongam` | — | 전라 | ⬜ |
-| **R03** | `geochang` · `ulju` · `gimhae` · `gunwi` · `yangsan` | `changwon` · `cheongdo` · `dalseong` · `gijang` · `goseongnam` | 경상 | ⬜ |
-| **R04** | `gumi` · `haman` · `miryang` · `sacheon` · `uiseong` | `yecheon` · `yeongcheon` · `yeongju` · `changnyeong` · `cheongsong` | 경상 | ⬜ |
-| **R05** | `chilgok` · `dokdo` · `gimcheon` · `goryeong` · `gwangyang` | `gyeongsan` · `sancheong` · `seongju` · `uiryeong` · `yeongdeok` | 경상 | ⬜ |
-| **R06** | `yeongyang` | — | 경상 | ⬜ |
+| **R01** | `haenam` · `hampyeong` · `iksan` · `muan` · `muju` | `yeongam` | 전라 | ⬜ |
+| **R02** | `geochang` · `ulju` · `gimhae` · `gunwi` · `yangsan` | `changwon` · `cheongdo` · `dalseong` · `gijang` · `goseongnam` | 경상 | ⬜ |
+| **R03** | `gumi` · `haman` · `miryang` · `sacheon` · `uiseong` | `yecheon` · `yeongcheon` · `yeongju` · `changnyeong` · `cheongsong` | 경상 | ⬜ |
+| **R04** | `chilgok` · `dokdo` · `gimcheon` · `goryeong` · `gwangyang` | `gyeongsan` · `sancheong` · `seongju` · `uiryeong` · `yeongdeok` | 경상 | ⬜ |
+| **R05** | `yeongyang` | — | 경상 | ⬜ |
 
-**합계**: 6 라운드 · hub 42.
+**합계**: 5 라운드 · hub 37.
 
 ## 권역별 잔여
 
-### 전라 (11)
+### 전라 (6)
 
-- `naju` 나주 — attr 5 · Tour contentId 0
-- `sinan` 신안 — attr 5 · Tour contentId 0
-- `sunchang` 순창 — attr 5 · Tour contentId 0
-- `yeonggwang` 영광 — attr 5 · Tour contentId 0
-- `gimje` 김제 — attr 4 · Tour contentId 0
 - `haenam` 해남 — attr 4 · Tour contentId 0
 - `hampyeong` 함평 — attr 4 · Tour contentId 0
 - `iksan` 익산 — attr 4 · Tour contentId 0

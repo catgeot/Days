@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 95,
+  sessionNo: 96,
   sessionPhase: '빈 hub 명소 보강',
   branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?hub=hwasun',
+  previewPath: '/korea/theme/scenic?hub=naju',
   qaShareSlug: 'scenic-hub-fill',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-96',
+    session: '테마여행 #96, 빈 hub 명소 보강',
+    title: '나주·신안·순창·영광·김제 GATEO 선정 전수',
+    detail:
+      '큐 R01 전라 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(나주5·신안5·순창5·영광5·김제4 · Tour contentId 12/24 · 썸네일 529/547). 전북·전남 시도 색인에도 동시 등록했습니다. Tour LIVE 검색 공백으로 DB·related 폴백을 썼습니다. Preview에서 /korea/theme/scenic?hub=naju · ?hub=sinan · ?hub=sunchang · ?hub=yeonggwang · ?hub=gimje 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-hub-fill-r01-95',
     session: '테마여행 #95, 빈 hub 명소 보강',

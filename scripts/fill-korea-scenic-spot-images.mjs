@@ -200,6 +200,18 @@ const RELATED_IMAGE_CONTENT_IDS = {
   'pyeongnim-dam': '2633951', // 장성호 수변길 — 평림댐 Tour type12 부재 시
   'hwangryong-river': '2741622', // 황금빛 출렁다리 — 황룡강 Tour type12 부재 시
   unlimsanbang: '127251', // 쌍계사(진도) — 운림산방 Tour type12 부재 시
+  'naju-pear-museum': '2737308', // 빛가람 호수공원 — 나주배박물관 Tour type12 부재 시
+  'naju-hyanggyo': '126412', // 나주 금성관 — 향교 Tour type12 부재 시
+  'cheonsa-bridge': '2750939', // 압해도선착장 — 천사대교 Tour type12 부재 시
+  'purple-island': '127758', // 암태도 — 퍼플섬(반월·박지) Tour type12 부재 시
+  gangcheonsa: '1625118', // 강천사계곡 — 강천사 Tour type12 부재 시
+  gangcheonsan: '1625118', // 강천사계곡 — 강천산 Tour type12 부재 시
+  'baeksajang-beach': '2715639', // 백수해안공원 — 백사장해수욕장 Tour 부재 시
+  bulgapsa: '126415', // 내산서원 — 불갑사 Tour type12 부재 시
+  'bulgap-reservoir': '2675000', // 물무산 행복숲 — 불갑저수지 Tour 부재 시
+  'chilsan-tower': '2751332', // 백암해안전망대 — 칠산타워 Tour type12 부재 시
+  'gimje-old-downtown': '1599176', // 김제동헌 — 구도심 Tour type12 부재 시
+  byeokgolje: '228895', // 김제평야 — 벽골제 Tour type12 부재 시
 };
 
 async function mapPool(items, worker, size) {
