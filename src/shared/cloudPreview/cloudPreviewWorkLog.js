@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 90,
+  sessionNo: 91,
   sessionPhase: '빈 hub 명소 보강',
   branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?hub=seosan',
+  previewPath: '/korea/theme/scenic?hub=sangju',
   qaShareSlug: 'scenic-hub-fill',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-91',
+    session: '테마여행 #91, 빈 hub 명소 보강',
+    title: '상주·계룡·문경·영동·봉화 GATEO 선정 전수',
+    detail:
+      '큐 R01 충청·경북 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(상주6·계룡5·문경5·영동5·봉화4 · Tour contentId 20/25 · 썸네일 415/425). 경북·충북·충남 시도 색인에도 동시 등록했습니다. Preview에서 /korea/theme/scenic?hub=sangju · ?hub=gyeryong · ?hub=mungyeong · ?hub=yeongdong · ?hub=bonghwa 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-hub-fill-r01-90',
     session: '테마여행 #90, 빈 hub 명소 보강',

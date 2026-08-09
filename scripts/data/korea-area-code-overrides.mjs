@@ -102,6 +102,7 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'jeungpyeong',
         'boeun',
         'goesan',
+        'yeongdong',
       ],
     },
     34: {
@@ -116,11 +117,21 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'seosan',
         'cheongyang',
         'dangjin',
+        'gyeryong',
       ],
     },
     35: {
       name: '경북',
-      hubIds: ['gyeongju', 'andong', 'pohang', 'ulleung', 'uljin'],
+      hubIds: [
+        'gyeongju',
+        'andong',
+        'pohang',
+        'ulleung',
+        'uljin',
+        'sangju',
+        'mungyeong',
+        'bonghwa',
+      ],
     },
     36: {
       name: '경남',

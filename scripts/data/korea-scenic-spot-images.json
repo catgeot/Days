@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-09T00:23:37.493Z",
-    "count": 395,
+    "updatedAt": "2026-08-09T00:32:22.468Z",
+    "count": 415,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -400,6 +400,26 @@
     "alps-village-cheongyang": "https://tong.visitkorea.or.kr/cms/resource/57/4069057_image2_1.jpg",
     "sanmak-i-old-trail": "https://tong.visitkorea.or.kr/cms/resource/29/3488229_image2_1.jpg",
     "seongbulsan-recreation-forest": "https://tong.visitkorea.or.kr/cms/resource/50/4041850_image2_1.jpg",
-    "janggoksa": "https://tong.visitkorea.or.kr/cms/resource_photo/58/3476658_image2_1.jpg"
+    "janggoksa": "https://tong.visitkorea.or.kr/cms/resource_photo/58/3476658_image2_1.jpg",
+    "gyeongcheondae": "https://tong.visitkorea.or.kr/cms/resource/90/3082790_image2_1.jpg",
+    "seongjubong-recreation-forest": "https://tong.visitkorea.or.kr/cms/resource/16/3579416_image2_1.jpg",
+    "gapsa": "https://tong.visitkorea.or.kr/cms/resource/19/3533519_image2_1.jpg",
+    "sinwonsa": "https://tong.visitkorea.or.kr/cms/resource/72/3550972_image2_1.jpg",
+    "mungyeong-saejae-open-set": "https://tong.visitkorea.or.kr/cms/resource/10/2947510_image2_1.jpg",
+    "jinnamgyoban": "https://tong.visitkorea.or.kr/cms/resource/80/3584880_image2_1.jpg",
+    "mulhan-valley": "https://tong.visitkorea.or.kr/cms/resource/27/3082527_image2_1.jpg",
+    "yeongguksa-yeongdong": "https://tong.visitkorea.or.kr/cms/resource/44/3059844_image2_1.JPG",
+    "wollyubong": "https://tong.visitkorea.or.kr/cms/resource/60/3543160_image2_1.jpg",
+    "cheongnyangsan": "https://tong.visitkorea.or.kr/cms/resource/21/3042521_image2_1.jpg",
+    "sangju-museum": "https://tong.visitkorea.or.kr/cms/resource/33/3579433_image2_1.jpg",
+    "gyeryongsan-national-park": "https://tong.visitkorea.or.kr/cms/resource/73/3509273_image2_1.jpg",
+    "nakdonggang-national-institute-of-biological-resources": "https://tong.visitkorea.or.kr/cms/resource/37/3573537_image2_1.JPG",
+    "donghaksa": "https://tong.visitkorea.or.kr/cms/resource/71/3590671_image2_1.jpg",
+    "mungyeong-saejae": "https://tong.visitkorea.or.kr/cms/resource/17/4063417_image2_1.jpg",
+    "mungyeong-omija-theme-park": "https://tong.visitkorea.or.kr/cms/resource/57/3517057_image2_1.jpg",
+    "baekdudaegan-national-arboretum": "https://tong.visitkorea.or.kr/cms/resource/34/3073134_image2_1.jpg",
+    "songho-resort": "https://tong.visitkorea.or.kr/cms/resource/04/2949504_image2_1.jpg",
+    "nangye-gugak-museum": "https://tong.visitkorea.or.kr/cms/resource/81/3581881_image2_1.jpg",
+    "gapjangsan": "https://tong.visitkorea.or.kr/cms/resource/90/3082790_image2_1.jpg"
   }
 }

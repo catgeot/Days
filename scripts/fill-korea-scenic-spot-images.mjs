@@ -122,6 +122,7 @@ async function fetchLiveFirstImage(contentId) {
  * (목록 썸네일용 · 명소 contentId SSOT는 overrides 유지)
  */
 const RELATED_IMAGE_CONTENT_IDS = {
+  gapjangsan: '126125', // 경천대 — 갑장산 Tour firstimage 부재 시
   jeongdongjin: '128757', // 정동진해변
   'incheon-chinatown': '125519', // 자유공원(인천) — 차이나타운 인접
   'dongpirang-mural-village': '2605111', // 서피랑 마을(통영 벽화 언덕) — 동피랑 Tour 이미지 부재 시
