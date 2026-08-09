@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-09T07:13:41.368Z",
+    "generatedAt": "2026-08-09T22:22:06.701Z",
     "count": 720,
     "imageCount": 683,
     "curation": "GATEO",
@@ -6798,7 +6798,7 @@
       "placeSlug": "cheongnyangsa",
       "lat": 36.789,
       "lng": 128.919,
-      "contentId": null,
+      "contentId": "126173",
       "overview": "청량사 — 청량산 사찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -6942,7 +6942,7 @@
       "placeSlug": "chilbaekuichong-geumsan",
       "lat": 36.1305992,
       "lng": 127.4927595,
-      "contentId": null,
+      "contentId": "125957",
       "overview": "칠백의총 — 임진왜란 충혼. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -7102,7 +7102,7 @@
       "placeSlug": "okcheon-ijidang",
       "lat": 36.3295181287,
       "lng": 127.5558725813,
-      "contentId": null,
+      "contentId": "753420",
       "overview": "이지당 — 옥천 정자. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -7118,7 +7118,7 @@
       "placeSlug": "okcheon-janggye-recreation-area",
       "lat": 36.278,
       "lng": 127.565,
-      "contentId": null,
+      "contentId": "2770314",
       "overview": "장계관광지 — 금강 변 휴양. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -7198,7 +7198,7 @@
       "placeSlug": "yeongi-battle-memorial-park",
       "lat": 36.599517,
       "lng": 127.2277144,
-      "contentId": null,
+      "contentId": "1951653",
       "overview": "연기대첩비공원 — 역사·기념공원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/70/3342770_image2_1.JPG"
     },
@@ -7326,7 +7326,7 @@
       "placeSlug": "samnye-culture-village",
       "lat": 35.9,
       "lng": 127.11,
-      "contentId": null,
+      "contentId": "2469088",
       "overview": "삼례문화예술촌 — 책·문화마을. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/10/3583610_image2_1.jpg"
     },
@@ -7534,7 +7534,7 @@
       "placeSlug": "jangsu-nuri-park",
       "lat": 35.641078004,
       "lng": 127.5232574636,
-      "contentId": null,
+      "contentId": "2606189",
       "overview": "장수누리파크 — 공원·레저. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/02/2791502_image2_1.jpg"
     },
@@ -7566,7 +7566,7 @@
       "placeSlug": "jangansan",
       "lat": 35.6252826672442,
       "lng": 127.54416775239,
-      "contentId": null,
+      "contentId": "126258",
       "overview": "장안산 — 장수 명산·단풍. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/01/3555101_image2_1.jpg"
     },
@@ -7614,7 +7614,7 @@
       "placeSlug": "munheon-seowon-seocheon",
       "lat": 36.0914851,
       "lng": 126.7855418,
-      "contentId": null,
+      "contentId": "125986",
       "overview": "문헌서원 — 서천 서원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/51/3339751_image2_1.jpg"
     },
@@ -7630,7 +7630,7 @@
       "placeSlug": "seocheon-specialty-market",
       "lat": 36.0749583627466,
       "lng": 126.686812625972,
-      "contentId": null,
+      "contentId": "132743",
       "overview": "서천특화시장 — 먹거리·특산. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/06/3483706_image2_1.jpg"
     },
@@ -7662,7 +7662,7 @@
       "placeSlug": "hansan-mosi-center",
       "lat": 36.0799890767,
       "lng": 126.7987165698,
-      "contentId": null,
+      "contentId": "2782184",
       "overview": "한산모시관 — 모시 문화·전시. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/46/3043846_image2_1.jpg"
     },
@@ -7678,7 +7678,7 @@
       "placeSlug": "gaudo-island",
       "lat": 34.5283354655862,
       "lng": 126.77263792879,
-      "contentId": null,
+      "contentId": "2024432",
       "overview": "가우도 — 출렁다리·섬 산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/79/3538079_image2_1.jpg"
     },
@@ -7742,7 +7742,7 @@
       "placeSlug": "dasanchodang",
       "lat": 34.58064974606685,
       "lng": 126.74507297037698,
-      "contentId": null,
+      "contentId": "126419",
       "overview": "다산초당 — 정약용 유배지. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/77/3537777_image2_1.jpg"
     },
@@ -7790,7 +7790,7 @@
       "placeSlug": "gochang-eupseong",
       "lat": 35.4302857661164,
       "lng": 126.704391432351,
-      "contentId": null,
+      "contentId": "126398",
       "overview": "고창읍성 — 모양성·성곽. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/28/3518628_image2_1.jpg"
     },
@@ -7806,7 +7806,7 @@
       "placeSlug": "seonunsa",
       "lat": 35.4969069,
       "lng": 126.5784721,
-      "contentId": null,
+      "contentId": "147548",
       "overview": "선운사 — 고창 고찰·동백. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/64/2678864_image2_1.jpg"
     },
@@ -7838,7 +7838,7 @@
       "placeSlug": "namyeol-sunrise-beach",
       "lat": 34.55,
       "lng": 127.45,
-      "contentId": null,
+      "contentId": "127546",
       "overview": "남열해돋이해수욕장 — 일출·해변. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/71/3522071_image2_1.jpg"
     },
@@ -7854,7 +7854,7 @@
       "placeSlug": "nokdong-port",
       "lat": 34.5273999558578,
       "lng": 127.13265414656,
-      "contentId": null,
+      "contentId": "250437",
       "overview": "녹동항 — 고흥 항구·섬 관문. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/13/3375913_image2_1.JPG"
     },
@@ -7870,7 +7870,7 @@
       "placeSlug": "sorokdo-island",
       "lat": 34.510324,
       "lng": 127.113864,
-      "contentId": null,
+      "contentId": "126285",
       "overview": "소록도 — 섬·역사. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/55/3581055_image2_1.jpg"
     },
@@ -7934,7 +7934,7 @@
       "placeSlug": "sangrim-park",
       "lat": 35.526946,
       "lng": 127.718076,
-      "contentId": null,
+      "contentId": "126861",
       "overview": "상림공원 — 천년 숲·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/75/3538275_image2_1.jpg"
     },
@@ -7982,7 +7982,7 @@
       "placeSlug": "hamyang-jianjae",
       "lat": 35.473038,
       "lng": 127.702227,
-      "contentId": null,
+      "contentId": "2715658",
       "overview": "지안재 — 지리산 가는 고갯길. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/08/3538308_image2_1.jpg"
     },
@@ -8222,7 +8222,7 @@
       "placeSlug": "jangheung-woodland",
       "lat": 34.6683133286,
       "lng": 126.9339887713,
-      "contentId": null,
+      "contentId": "2033464",
       "overview": "편백숲 우드랜드 — 편백·숲체험. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/08/3060908_image2_1.jpg"
     },
@@ -8238,7 +8238,7 @@
       "placeSlug": "baegyangsa",
       "lat": 35.4317191,
       "lng": 126.80776,
-      "contentId": null,
+      "contentId": "126341",
       "overview": "백양사 — 백암산·단풍 고찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/18/3347418_image2_1.JPG"
     },
@@ -8366,7 +8366,7 @@
       "placeSlug": "unlimsanbang",
       "lat": 34.4664128998,
       "lng": 126.308363669,
-      "contentId": null,
+      "contentId": "126375",
       "overview": "운림산방 — 남종화·명승. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/83/3557783_image2_1.jpg"
     },
@@ -8414,7 +8414,7 @@
       "placeSlug": "naju-pear-museum",
       "lat": 35.0341103,
       "lng": 126.7668904,
-      "contentId": null,
+      "contentId": "129781",
       "overview": "나주배박물관 — 배 특산물·전시. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/70/3529470_image2_1.jpg"
     },
@@ -8430,7 +8430,7 @@
       "placeSlug": "naju-hyanggyo",
       "lat": 35.0334136165,
       "lng": 126.7113701773,
-      "contentId": null,
+      "contentId": "127090",
       "overview": "나주향교 — 읍치 유교 공간. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/03/3533503_image2_1.jpg"
     },
@@ -8510,7 +8510,7 @@
       "placeSlug": "cheonsa-bridge",
       "lat": 34.8604657,
       "lng": 126.1942602,
-      "contentId": null,
+      "contentId": "2650824",
       "overview": "천사대교 — 압해·암태 연결. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/57/3558957_image2_1.jpg"
     },
@@ -8558,7 +8558,7 @@
       "placeSlug": "gangcheonsa",
       "lat": 35.3986639,
       "lng": 127.0558051,
-      "contentId": null,
+      "contentId": "126347",
       "overview": "강천사 — 강천산 고찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/22/3055722_image2_1.jpg"
     },
@@ -8574,7 +8574,7 @@
       "placeSlug": "gangcheonsan",
       "lat": 35.4,
       "lng": 127.05,
-      "contentId": null,
+      "contentId": "126249",
       "overview": "강천산 — 군립공원·계곡. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/22/3055722_image2_1.jpg"
     },
@@ -8670,7 +8670,7 @@
       "placeSlug": "bulgapsa",
       "lat": 35.2007326961184,
       "lng": 126.549453583343,
-      "contentId": null,
+      "contentId": "126349",
       "overview": "불갑사 — 불갑산 고찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/65/3379065_image2_1.JPG"
     },
@@ -8702,7 +8702,7 @@
       "placeSlug": "chilsan-tower",
       "lat": 35.1686333574949,
       "lng": 126.360305672303,
-      "contentId": null,
+      "contentId": "2684009",
       "overview": "칠산타워 — 칠산바다 전망. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/71/3381971_image2_1.JPG"
     },
@@ -8766,7 +8766,7 @@
       "placeSlug": "byeokgolje",
       "lat": 35.7536934,
       "lng": 126.8535019,
-      "contentId": null,
+      "contentId": "231895",
       "overview": "벽골제 — 고대 수리·들판. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/30/3363530_image2_1.JPG"
     },
@@ -8798,7 +8798,7 @@
       "placeSlug": "daeheungsa",
       "lat": 34.476,
       "lng": 126.616,
-      "contentId": null,
+      "contentId": "126373",
       "overview": "대흥사 — 두륜산 고찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/83/3564383_image2_1.jpg"
     },
@@ -8878,7 +8878,7 @@
       "placeSlug": "hampyeong-expo-park",
       "lat": 35.0591629477591,
       "lng": 126.522198564875,
-      "contentId": null,
+      "contentId": "130864",
       "overview": "함평엑스포공원 — 나비·축제장. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/05/3536105_image2_1.jpg"
     },
@@ -8910,7 +8910,7 @@
       "placeSlug": "mireuksa-temple-site",
       "lat": 36.0122101,
       "lng": 127.0306122,
-      "contentId": null,
+      "contentId": "127977",
       "overview": "미륵사지 — 백제 사찰터. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/79/3361079_image2_1.JPG"
     },
@@ -8958,7 +8958,7 @@
       "placeSlug": "hamrasan",
       "lat": 36.0663505,
       "lng": 126.9007028,
-      "contentId": null,
+      "contentId": "1046086",
       "overview": "함라산 — 익산 서북 전망. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/58/3578358_image2_1.jpg"
     },
@@ -9086,7 +9086,7 @@
       "placeSlug": "taekwondowon",
       "lat": 36.0093077233,
       "lng": 127.7786573524,
-      "contentId": null,
+      "contentId": "1904335",
       "overview": "태권도원 — 무주 세계도장. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/33/3304433_image2_1.jpg"
     },
@@ -9118,7 +9118,7 @@
       "placeSlug": "gichan-land",
       "lat": 34.8,
       "lng": 126.7,
-      "contentId": null,
+      "contentId": "771686",
       "overview": "기찬랜드 — 영암 가족 공원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/96/3382096_image2_1.JPG"
     },
@@ -9134,7 +9134,7 @@
       "placeSlug": "dogapsa",
       "lat": 34.7529543462267,
       "lng": 126.662903895273,
-      "contentId": null,
+      "contentId": "126361",
       "overview": "도갑사 — 월출산 자락 고찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -9150,7 +9150,7 @@
       "placeSlug": "wolchulsan-national-park",
       "lat": 34.7752193625758,
       "lng": 126.721720023754,
-      "contentId": null,
+      "contentId": "127672",
       "overview": "월출산 — 천황봉·기암. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -9214,7 +9214,7 @@
       "placeSlug": "geochang-iris-garden",
       "lat": 35.6535267,
       "lng": 127.9414049,
-      "contentId": null,
+      "contentId": "2755874",
       "overview": "거창 창포원 — 수생·창포 정원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -9246,7 +9246,7 @@
       "placeSlug": "geumwonsan",
       "lat": 35.731,
       "lng": 127.761,
-      "contentId": null,
+      "contentId": "127509",
       "overview": "금원산 — 거창 휴양림·능선. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -9278,7 +9278,7 @@
       "placeSlug": "ganwoljae-pass",
       "lat": 35.5479179,
       "lng": 129.0451136,
-      "contentId": null,
+      "contentId": "2723688",
       "overview": "간월재 — 영남알프스 능선. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/02/3078002_image2_1.bmp"
     },
@@ -9374,7 +9374,7 @@
       "placeSlug": "jinha-beach",
       "lat": 35.3855,
       "lng": 129.3485,
-      "contentId": null,
+      "contentId": "126096",
       "overview": "진하해수욕장 — 울주 동해 해변. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -9390,7 +9390,7 @@
       "placeSlug": "gimhae-gaya-theme-park",
       "lat": 35.2502808,
       "lng": 128.8930789,
-      "contentId": null,
+      "contentId": "2414696",
       "overview": "가야테마파크 — 김해 가야 역사. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -9406,7 +9406,7 @@
       "placeSlug": "gimhae-lotte-water-park",
       "lat": 35.1810030421884,
       "lng": 128.829108851921,
-      "contentId": null,
+      "contentId": "1921423",
       "overview": "롯데워터파크 — 김해 대형 워터파크. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -9422,7 +9422,7 @@
       "placeSlug": "tomb-of-king-suro",
       "lat": 35.2353,
       "lng": 128.8784,
-      "contentId": null,
+      "contentId": "126192",
       "overview": "수로왕릉 — 가락국 시조릉. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -9534,7 +9534,7 @@
       "placeSlug": "gunwi-palgongsan",
       "lat": 36.013524,
       "lng": 128.6968594,
-      "contentId": null,
+      "contentId": "126590",
       "overview": "팔공산 — 군위 자락 명산. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -9582,7 +9582,7 @@
       "placeSlug": "yangsan-naewonsa",
       "lat": 35.4241303,
       "lng": 129.1044715,
-      "contentId": null,
+      "contentId": "298342",
       "overview": "내원사 — 양산 천성산 계곡 사찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/37/3532137_image2_1.jpg"
     },
@@ -9614,7 +9614,7 @@
       "placeSlug": "cheonseongsan",
       "lat": 35.4015733,
       "lng": 129.1062817,
-      "contentId": null,
+      "contentId": "126045",
       "overview": "천성산 — 양산 고원·억새 능선. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/37/3532137_image2_1.jpg"
     },
@@ -9662,7 +9662,7 @@
       "placeSlug": "hongryong-falls",
       "lat": 35.3969996749,
       "lng": 129.0864871696,
-      "contentId": null,
+      "contentId": "126076",
       "overview": "홍룡폭포 — 양산 폭포·계곡. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/37/3532137_image2_1.jpg"
     },
@@ -9790,7 +9790,7 @@
       "placeSlug": "yudeung-yeonji-cheongdo",
       "lat": 35.6752813,
       "lng": 128.6929875,
-      "contentId": null,
+      "contentId": "1621347",
       "overview": "유등연지 — 청도 연꽃 연못. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/64/3033664_image2_1.JPG"
     },
@@ -9966,7 +9966,7 @@
       "placeSlug": "ilgwang-beach",
       "lat": 35.26,
       "lng": 129.2335,
-      "contentId": null,
+      "contentId": "126098",
       "overview": "일광해수욕장 — 기장 동해 해변. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/27/3334627_image2_1.jpg"
     },
@@ -9982,7 +9982,7 @@
       "placeSlug": "imrang-beach",
       "lat": 35.3213997,
       "lng": 129.2677023,
-      "contentId": null,
+      "contentId": "1939570",
       "overview": "임랑해수욕장 — 기장 모래사장. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/36/3342836_image2_1.jpg"
     },
@@ -10062,7 +10062,7 @@
       "placeSlug": "sangjokam-county-park",
       "lat": 34.91,
       "lng": 128.145,
-      "contentId": null,
+      "contentId": "126232",
       "overview": "상족암 — 고성 해안 절벽·공룡발자국. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/11/3348111_image2_1.jpg"
     },
@@ -10094,7 +10094,7 @@
       "placeSlug": "nakdong-river-sports-park-gumi",
       "lat": 36.1445123,
       "lng": 128.3731378,
-      "contentId": null,
+      "contentId": "3035970",
       "overview": "낙동강체육공원 — 구미 강변 체육·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/37/3029537_image2_1.jpg"
     },
@@ -10158,7 +10158,7 @@
       "placeSlug": "agyangnu-haman",
       "lat": 35.3352472,
       "lng": 128.3985107,
-      "contentId": null,
+      "contentId": "702331",
       "overview": "악양루 — 함안 남강 전망 누각. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/16/3538216_image2_1.jpg"
     },
@@ -10222,7 +10222,7 @@
       "placeSlug": "haman-museum",
       "lat": 35.268941,
       "lng": 128.402916,
-      "contentId": null,
+      "contentId": "130693",
       "overview": "함안박물관 — 가야·함안 역사. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/15/2755215_image2_1.JPG"
     },
@@ -10254,7 +10254,7 @@
       "placeSlug": "yeongnamnu-pavilion",
       "lat": 35.4915993,
       "lng": 128.7550955,
-      "contentId": null,
+      "contentId": "126206",
       "overview": "영남루 — 밀양강 위 누각. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/16/3582816_image2_1.jpg"
     },
@@ -10286,7 +10286,7 @@
       "placeSlug": "pyochungsa-temple",
       "lat": 35.5326461,
       "lng": 128.9594529,
-      "contentId": null,
+      "contentId": "126174",
       "overview": "표충사 — 재약산 자락 밀양 고찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/92/3374192_image2_1.JPG"
     },
@@ -10302,7 +10302,7 @@
       "placeSlug": "miryang-eupseong-fortress",
       "lat": 35.4917705422728,
       "lng": 128.756412618824,
-      "contentId": null,
+      "contentId": "2792873",
       "overview": "밀양읍성 — 읍치 성곽 흔적. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/16/3582816_image2_1.jpg"
     },
@@ -10318,7 +10318,7 @@
       "placeSlug": "neukdo",
       "lat": 34.923092188313056,
       "lng": 128.03871436085691,
-      "contentId": null,
+      "contentId": "2715624",
       "overview": "늑도 — 사천 섬·조개더미 유적. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/11/3510411_image2_1.jpg"
     },
@@ -10334,7 +10334,7 @@
       "placeSlug": "sacheon-nosan-park",
       "lat": 34.9243,
       "lng": 128.0741,
-      "contentId": null,
+      "contentId": "126123",
       "overview": "노산공원 — 사천 삼천포 해안 공원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/70/2797970_image2_1.JPG"
     },
@@ -10382,7 +10382,7 @@
       "placeSlug": "samcheonpo-bridge",
       "lat": 34.9322,
       "lng": 128.0519,
-      "contentId": null,
+      "contentId": "2514738",
       "overview": "삼천포대교 — 사천·남해 잇는 다리. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/11/3510411_image2_1.jpg"
     },
@@ -10398,7 +10398,7 @@
       "placeSlug": "gounsa",
       "lat": 36.4581461,
       "lng": 128.7496078,
-      "contentId": null,
+      "contentId": "126170",
       "overview": "고운사 — 의성 산중 고찰·단풍. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/14/3406114_image2_1.jpg"
     },
@@ -10494,7 +10494,7 @@
       "placeSlug": "yecheon-museum",
       "lat": 36.6988248462356,
       "lng": 128.514423305395,
-      "contentId": null,
+      "contentId": "2912292",
       "overview": "예천박물관 — 예천 역사·문화. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/99/3542699_image2_1.jpg"
     },
@@ -10638,7 +10638,7 @@
       "placeSlug": "museom-village",
       "lat": 36.78,
       "lng": 128.52,
-      "contentId": null,
+      "contentId": "894087",
       "overview": "무섬마을 — 영주 외나무다리 마을. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/51/3588851_image2_1.jpg"
     },
@@ -10654,7 +10654,7 @@
       "placeSlug": "buseoksa",
       "lat": 36.9973878,
       "lng": 128.6866489,
-      "contentId": null,
+      "contentId": "127669",
       "overview": "부석사 — 영주 화엄 고찰·무량수전. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/51/3588851_image2_1.jpg"
     },
@@ -10670,7 +10670,7 @@
       "placeSlug": "seonbi-village",
       "lat": 36.93,
       "lng": 128.52,
-      "contentId": null,
+      "contentId": "129430",
       "overview": "선비촌 — 영주 전통 한옥 마을. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/51/3588851_image2_1.jpg"
     },
@@ -10686,7 +10686,7 @@
       "placeSlug": "sosu-seowon",
       "lat": 36.9252494012,
       "lng": 128.5790692856,
-      "contentId": null,
+      "contentId": "126201",
       "overview": "소수서원 — 영주 조선 서원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/51/3588851_image2_1.jpg"
     },
@@ -10718,7 +10718,7 @@
       "placeSlug": "manokjeong-park-changnyeong",
       "lat": 35.540651,
       "lng": 128.502155,
-      "contentId": null,
+      "contentId": "128586",
       "overview": "만옥정공원 — 창녕 도심 공원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/28/3537928_image2_1.jpg"
     },
@@ -10734,7 +10734,7 @@
       "placeSlug": "upo-wetland-changnyeong",
       "lat": 35.553,
       "lng": 128.415,
-      "contentId": null,
+      "contentId": "126737",
       "overview": "우포늪 — 창녕 생태 습지. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/28/3537928_image2_1.jpg"
     },
@@ -10750,7 +10750,7 @@
       "placeSlug": "hawangsan-changnyeong",
       "lat": 35.5471482,
       "lng": 128.531694,
-      "contentId": null,
+      "contentId": "126038",
       "overview": "화왕산 — 창녕 억새·전망. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/28/3537928_image2_1.jpg"
     },
@@ -10766,7 +10766,7 @@
       "placeSlug": "changnyeong-museum",
       "lat": 35.545474,
       "lng": 128.505147,
-      "contentId": null,
+      "contentId": "130107",
       "overview": "창녕박물관 — 가야·창녕 역사. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/28/3537928_image2_1.jpg"
     },
@@ -10798,7 +10798,7 @@
       "placeSlug": "juwangsan",
       "lat": 36.35668,
       "lng": 129.15057,
-      "contentId": null,
+      "contentId": "126020",
       "overview": "주왕산 — 청송 기암·국립공원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/31/3501031_image2_1.jpg"
     },
@@ -10830,7 +10830,7 @@
       "placeSlug": "cheongsong-jusanji-reservoir",
       "lat": 36.3626471,
       "lng": 129.1900937,
-      "contentId": null,
+      "contentId": "126223",
       "overview": "주산지 — 청송 왕버들·호수. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/35/3407535_image2_1.jpg"
     },
@@ -10974,7 +10974,7 @@
       "placeSlug": "yeonhwaji-pond-gimcheon",
       "lat": 36.1435304653,
       "lng": 128.0981128567,
-      "contentId": null,
+      "contentId": "2709541",
       "overview": "연화지 — 김천 연꽃·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/81/3512881_image2_1.jpg"
     },
@@ -11022,7 +11022,7 @@
       "placeSlug": "jikjisa-temple",
       "lat": 36.1151102652,
       "lng": 128.0028192323,
-      "contentId": null,
+      "contentId": "126155",
       "overview": "직지사 — 김천 황악산 고찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/02/2794702_image2_1.jpg"
     },
@@ -11070,7 +11070,7 @@
       "placeSlug": "daegaya-museum",
       "lat": 35.7232,
       "lng": 128.2571,
-      "contentId": null,
+      "contentId": "130099",
       "overview": "대가야박물관 — 고령 가야 역사. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/25/2732625_image2_1.jpg"
     },
@@ -11118,7 +11118,7 @@
       "placeSlug": "baegunsan-gwangyang",
       "lat": 35.1063783,
       "lng": 127.6213246,
-      "contentId": null,
+      "contentId": "126255",
       "overview": "백운산 — 광양 동곡·국립공원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/57/3345057_image2_1.JPG"
     },
@@ -11150,7 +11150,7 @@
       "placeSlug": "mangdeok-port",
       "lat": 34.9726221899202,
       "lng": 127.759631248697,
-      "contentId": null,
+      "contentId": "2777995",
       "overview": "망덕포구 — 광양 섬진강 포구. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/19/3546319_image2_1.jpg"
     },
@@ -11166,7 +11166,7 @@
       "placeSlug": "gyejeong-forest",
       "lat": 35.8155,
       "lng": 128.8255,
-      "contentId": null,
+      "contentId": "2745623",
       "overview": "계정숲 — 경산 천연기념물 숲. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/79/3541879_image2_1.jpg"
     },
@@ -11182,7 +11182,7 @@
       "placeSlug": "bangokji",
       "lat": 35.7804038,
       "lng": 128.8065831,
-      "contentId": null,
+      "contentId": "2704119",
       "overview": "반곡지 — 경산 왕버들·저수지. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/79/3541879_image2_1.jpg"
     },
@@ -11230,7 +11230,7 @@
       "placeSlug": "namsa-yedamchon",
       "lat": 35.35,
       "lng": 127.88,
-      "contentId": null,
+      "contentId": "128440",
       "overview": "남사예담촌 — 산청 고가·담장 마을. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/93/3537993_image2_1.jpg"
     },
@@ -11262,7 +11262,7 @@
       "placeSlug": "sancheong-donguibogam-village",
       "lat": 35.4393076,
       "lng": 127.8280553,
-      "contentId": null,
+      "contentId": "2620990",
       "overview": "동의보감촌 — 산청 한방·힐링. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/08/3341508_image2_1.jpg"
     },
@@ -11342,7 +11342,7 @@
       "placeSlug": "hangae-village-seongju",
       "lat": 35.8955,
       "lng": 128.2455,
-      "contentId": null,
+      "contentId": "127717",
       "overview": "한개마을 — 성주 전통 고가. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/74/3566074_image2_1.JPG"
     },
@@ -11422,7 +11422,7 @@
       "placeSlug": "yeongdeok-goraebul-beach",
       "lat": 36.521,
       "lng": 129.441,
-      "contentId": null,
+      "contentId": "126103",
       "overview": "고래불해수욕장 — 영덕 동해 백사장. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/38/3042738_image2_1.JPG"
     },
@@ -11470,7 +11470,7 @@
       "placeSlug": "yeongdeok-sunrise-park",
       "lat": 36.416,
       "lng": 129.43,
-      "contentId": null,
+      "contentId": "127710",
       "overview": "해맞이공원 — 영덕 동해 일출. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/60/3576460_image2_1.jpg"
     },
@@ -11534,7 +11534,7 @@
       "placeSlug": "yeongyang-ilwolsan",
       "lat": 36.8033,
       "lng": 129.1022,
-      "contentId": null,
+      "contentId": "126043",
       "overview": "일월산 — 영양 일출·정상 조망. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/32/3531132_image2_1.jpg"
     }

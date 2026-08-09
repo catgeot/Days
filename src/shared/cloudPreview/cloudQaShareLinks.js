@@ -16,9 +16,10 @@ export const CLOUD_QA_SHARE_LINKS = [
   },
   {
     slug: 'scenic-hub-fill',
-    label: '빈 hub 보강·선정 명소 (main)',
-    branch: 'main',
-    destination: 'https://www.gateo.kr/korea/theme/scenic',
+    label: '선정 contentId 보강',
+    branch: 'cursor/scenic-contentid-f876',
+    destination:
+      'https://days-git-cursor-scenic-contentid-f876-catgeots-projects.vercel.app/korea/theme/scenic',
     active: true,
   },
   {

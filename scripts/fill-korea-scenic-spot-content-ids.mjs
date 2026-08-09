@@ -1,10 +1,13 @@
 /**
  * GATEO 선정 명소 — 잔여 contentId 보강.
- * searchKeyword 일일 한도(429)를 피하고 areaBasedList(시·군) + DB로 매칭.
+ * 1) DB 엄격 매칭 2) areaBasedList(시·군) 3) searchKeyword(잔여·addr/hub 검증)
+ * searchKeyword는 잔여만·throttle — 429 시 중단.
  *
  *   node scripts/fill-korea-scenic-spot-content-ids.mjs
  *   node scripts/fill-korea-scenic-spot-content-ids.mjs --dry-run
  *   node scripts/fill-korea-scenic-spot-content-ids.mjs --limit=30
+ *   node scripts/fill-korea-scenic-spot-content-ids.mjs --db-only
+ *   node scripts/fill-korea-scenic-spot-content-ids.mjs --keyword-only
  *
  * Auth: VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY
  * 쓰기: scripts/data/korea-scenic-spots-overrides.mjs → generate:korea-scenic-spots
@@ -30,6 +33,7 @@ const SUPABASE_ANON = (process.env.VITE_SUPABASE_ANON_KEY || '').trim();
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
 const dbOnly = args.includes('--db-only');
+const keywordOnly = args.includes('--keyword-only');
 const limitArg = args.find((a) => a.startsWith('--limit='));
 const limit = limitArg ? Number(limitArg.slice('--limit='.length)) || 0 : 0;
 
@@ -67,8 +71,17 @@ function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-function norm(s) {
+function stripAnnotations(s) {
   return String(s || '')
+    .replace(/\[[^\]]*\]/g, ' ')
+    .replace(/\([^)]*\)/g, ' ')
+    .replace(/유네스코\s*세계유산/g, ' ')
+    .replace(/국립공원|도립공원|군립공원/g, ' ')
+    .trim();
+}
+
+function norm(s) {
+  return stripAnnotations(s)
     .toLowerCase()
     .replace(/\s+/g, '')
     .replace(/[·.,()/\[\]]/g, '')
@@ -140,18 +153,23 @@ function scoreHit(query, item, hub, spot) {
   if (t === q) score = 100;
   else if (t.startsWith(q) || q.startsWith(t)) {
     const ratio = Math.max(t.length, q.length) / Math.min(t.length, q.length);
-    if (ratio > 1.55) return 0;
+    // 주왕산국립공원 등 짧은 본명+접미는 위에서 stripAnnotations로 완화
+    if (ratio > 1.75) return 0;
     score = 88;
   } else if (t.includes(q)) {
-    if (t.length / q.length > 1.7) return 0;
+    if (t.length / q.length > 1.85) return 0;
     score = 74;
   } else if (q.includes(t) && t.length >= 4) {
-    if (q.length / t.length > 1.7) return 0;
+    if (q.length / t.length > 1.75) return 0;
     score = 70;
   } else return 0;
 
   // 본체명보다 긴 부속 시설명 감점 (눈썰매장·스키역사관 등)
   if (t.length > q.length + 2) score -= Math.min(20, (t.length - q.length) * 2);
+  // 스키장·눈썰매·콘도 등 리조트 부속은 본체 매칭에서 제외
+  if (/스키|눈썰매|루지|콘도|호텔|오션|역사관/.test(title) && !/스키|눈썰매/.test(query)) {
+    return 0;
+  }
 
   if (type === '12') score += 12;
   else if (type === '14') score += 10;
@@ -263,6 +281,36 @@ async function fetchAreaItems(areaCode, sigunguCode) {
   return [...byId.values()];
 }
 
+async function fetchKeywordItems(keyword) {
+  const res = await tourEdge('searchKeyword', {
+    keyword: String(keyword),
+    numOfRows: 20,
+    pageNo: 1,
+  });
+  await sleep(220);
+  if (!res.ok) {
+    if (/429/.test(String(res.message || ''))) {
+      return { ok: false, rateLimited: true, items: [], message: res.message };
+    }
+    return { ok: false, rateLimited: false, items: [], message: res.message };
+  }
+  return { ok: true, rateLimited: false, items: res.items || [], message: 'OK' };
+}
+
+async function confirmDetail(contentId) {
+  const detail = await tourEdge('detailCommon', { contentId });
+  await sleep(120);
+  const row = detail.items?.[0];
+  const overview = String(row?.overview || '').trim();
+  const img = String(row?.firstimage || row?.imageUrl || '').trim();
+  if (!overview && !img) return null;
+  return {
+    tourTitle: String(row?.title || '').trim(),
+    overview,
+    img,
+  };
+}
+
 async function loadDbRows(sb) {
   const all = [];
   let from = 0;
@@ -345,42 +393,43 @@ async function main() {
   console.log(
     `[fill-scenic-contentId] overrideNull=${nullOverrideIds.size} targets=${targets.length}${
       dbOnly ? ' · db-only' : ''
-    }`,
+    }${keywordOnly ? ' · keyword-only' : ''}`,
   );
 
   const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
-  const dbRows = await loadDbRows(sb);
-  console.log(`[fill-scenic-contentId] DB rows=${dbRows.length}`);
-
   /** @type {Map<string, { contentId: string, tourTitle: string, score: number, src: string }>} */
   const hits = new Map();
 
-  // 1) offline DB pass — 전국 + hub 시군구 필터
-  for (const spot of targets) {
-    const hub = hubById.get(String(spot.hubId).toLowerCase()) || {
-      hubId: spot.hubId,
-      name: spot.hubId,
-    };
-    const sig = byHubSig[String(spot.hubId).toLowerCase()];
-    const scoped =
-      sig?.areaCode != null && sig.sigunguCode != null
-        ? dbRows.filter(
-            (r) =>
-              r.areaCode === String(sig.areaCode) &&
-              r.sigunguCode === String(sig.sigunguCode),
-          )
-        : dbRows;
-    const best =
-      pickBest(spot, hub, scoped) ||
-      (scoped !== dbRows ? pickBest(spot, hub, dbRows) : null);
-    if (best) {
-      hits.set(spot.id, { ...best, src: 'db' });
-      console.log(`OK  DB  ${spot.name} → ${best.contentId} ${best.tourTitle} (${best.score})`);
+  // 1) offline DB pass — 전국 + hub 시군구 필터 (--keyword-only면 생략)
+  if (!keywordOnly) {
+    const dbRows = await loadDbRows(sb);
+    console.log(`[fill-scenic-contentId] DB rows=${dbRows.length}`);
+    for (const spot of targets) {
+      const hub = hubById.get(String(spot.hubId).toLowerCase()) || {
+        hubId: spot.hubId,
+        name: spot.hubId,
+      };
+      const sig = byHubSig[String(spot.hubId).toLowerCase()];
+      const scoped =
+        sig?.areaCode != null && sig.sigunguCode != null
+          ? dbRows.filter(
+              (r) =>
+                r.areaCode === String(sig.areaCode) &&
+                r.sigunguCode === String(sig.sigunguCode),
+            )
+          : dbRows;
+      const best =
+        pickBest(spot, hub, scoped) ||
+        (scoped !== dbRows ? pickBest(spot, hub, dbRows) : null);
+      if (best) {
+        hits.set(spot.id, { ...best, src: 'db' });
+        console.log(`OK  DB  ${spot.name} → ${best.contentId} ${best.tourTitle} (${best.score})`);
+      }
     }
   }
 
-  // 2) areaBased LIVE per hub (searchKeyword 429 회피 · --db-only면 생략)
-  if (!dbOnly) {
+  // 2) areaBased LIVE per hub (--db-only / --keyword-only면 생략)
+  if (!dbOnly && !keywordOnly) {
     const byHub = new Map();
     for (const spot of targets) {
       if (hits.has(spot.id)) continue;
@@ -404,24 +453,66 @@ async function main() {
       for (const spot of spots) {
         const best = pickBest(spot, hub, items);
         if (!best) continue;
-        const detail = await tourEdge('detailCommon', { contentId: best.contentId });
-        await sleep(120);
-        const row = detail.items?.[0];
-        const overview = String(row?.overview || '').trim();
-        const img = String(row?.firstimage || row?.imageUrl || '').trim();
-        if (!overview && !img) {
+        const confirmed = await confirmDetail(best.contentId);
+        if (!confirmed) {
           console.log(`MISS detail empty ${spot.name} (${best.contentId})`);
           continue;
         }
         hits.set(spot.id, {
           ...best,
-          tourTitle: String(row?.title || best.tourTitle).trim(),
+          tourTitle: confirmed.tourTitle || best.tourTitle,
           src: 'areaBased',
         });
         console.log(
-          `OK  AREA ${spot.name} → ${best.contentId} ${row?.title || best.tourTitle} (${best.score})`,
+          `OK  AREA ${spot.name} → ${best.contentId} ${confirmed.tourTitle || best.tourTitle} (${best.score})`,
         );
       }
+    }
+  }
+
+  // 3) searchKeyword — areaBased에 없는 본명(유네스코·사찰 등). 잔여만 · 429면 중단
+  if (!dbOnly) {
+    const remain = targets.filter((s) => !hits.has(s.id));
+    console.log(`[fill-scenic-contentId] keyword pass remain=${remain.length}`);
+    let rateLimited = false;
+    for (const spot of remain) {
+      if (rateLimited) break;
+      const hub = hubById.get(String(spot.hubId).toLowerCase()) || {
+        hubId: spot.hubId,
+        name: spot.hubId,
+      };
+      const queries = spotQueries(spot, hub);
+      /** @type {{ contentId: string, tourTitle: string, score: number, query: string } | null} */
+      let best = null;
+      for (const q of queries) {
+        if (rateLimited) break;
+        const res = await fetchKeywordItems(q);
+        if (res.rateLimited) {
+          console.warn(`[keyword] 429 — stop keyword pass at ${spot.name}`);
+          rateLimited = true;
+          break;
+        }
+        if (!res.ok || !res.items.length) continue;
+        const hit = pickBest(spot, hub, res.items);
+        if (hit && (!best || hit.score > best.score)) best = hit;
+      }
+      if (!best) {
+        console.log(`MISS KW  ${spot.name}`);
+        continue;
+      }
+      const confirmed = await confirmDetail(best.contentId);
+      if (!confirmed) {
+        console.log(`MISS detail empty ${spot.name} (${best.contentId})`);
+        continue;
+      }
+      hits.set(spot.id, {
+        ...best,
+        tourTitle: confirmed.tourTitle || best.tourTitle,
+        src: 'keyword',
+      });
+      console.log(
+        `OK  KW   ${spot.name} → ${best.contentId} ${confirmed.tourTitle || best.tourTitle} (${best.score})`,
+      );
     }
   }
 

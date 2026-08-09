@@ -4295,7 +4295,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'bonghwa',
       attractionName: '청량사',
       overview: '청량사 — 청량산 사찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126173',
     }, // TODO contentId
     {
       order: 4250,
@@ -4389,7 +4389,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'geumsan',
       attractionName: '금산 칠백의총',
       overview: '칠백의총 — 임진왜란 충혼. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '125957',
     }, // TODO contentId
     {
       order: 4340,
@@ -4492,7 +4492,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'okcheon',
       attractionName: '옥천 이지당',
       overview: '이지당 — 옥천 정자. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '753420',
     }, // TODO contentId
     {
       order: 4440,
@@ -4503,7 +4503,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'okcheon',
       attractionName: '옥천 장계관광지',
       overview: '장계관광지 — 금강 변 휴양. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2770314',
     }, // TODO contentId
     {
       order: 4450,
@@ -4555,7 +4555,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'yeongi',
       attractionName: '연기대첩비공원',
       overview: '연기대첩비공원 — 역사·기념공원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '1951653',
     }, // TODO contentId
     {
       order: 4500,
@@ -4637,7 +4637,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'wanju',
       attractionName: '삼례문화예술촌',
       overview: '삼례문화예술촌 — 책·문화마을. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2469088',
     }, // TODO contentId
     {
       order: 4580,
@@ -4769,7 +4769,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'jangsu',
       attractionName: '장수누리파크',
       overview: '장수누리파크 — 공원·레저. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2606189',
     }, // TODO contentId
     {
       order: 4710,
@@ -4791,7 +4791,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'jangsu',
       attractionName: '장안산',
       overview: '장안산 — 장수 명산·단풍. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126258',
     }, // TODO contentId
 
     {
@@ -4824,7 +4824,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'seocheon',
       attractionName: '서천 문헌서원',
       overview: '문헌서원 — 서천 서원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '125986',
     }, // TODO contentId
     {
       order: 4760,
@@ -4835,7 +4835,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'seocheon',
       attractionName: '서천특화시장',
       overview: '서천특화시장 — 먹거리·특산. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '132743',
     }, // TODO contentId
     {
       order: 4770,
@@ -4856,7 +4856,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'seocheon',
       attractionName: '한산모시관',
       overview: '한산모시관 — 모시 문화·전시. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2782184',
     }, // TODO contentId
     {
       order: 4790,
@@ -4867,7 +4867,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gangjin',
       attractionName: '가우도',
       overview: '가우도 — 출렁다리·섬 산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2024432',
     }, // TODO contentId
     {
       order: 4800,
@@ -4909,7 +4909,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gangjin',
       attractionName: '다산초당',
       overview: '다산초당 — 정약용 유배지. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126419',
     }, // TODO contentId
     {
       order: 4840,
@@ -4940,7 +4940,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gochang',
       attractionName: '고창읍성',
       overview: '고창읍성 — 모양성·성곽. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126398',
     }, // TODO contentId
     {
       order: 4870,
@@ -4951,7 +4951,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gochang',
       attractionName: '선운사',
       overview: '선운사 — 고창 고찰·동백. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '147548',
     }, // TODO contentId
     {
       order: 4880,
@@ -4972,7 +4972,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'goheung',
       attractionName: '고흥 남열해돋이해수욕장',
       overview: '남열해돋이해수욕장 — 일출·해변. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '127546',
     }, // TODO contentId
     {
       order: 4900,
@@ -4983,7 +4983,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'goheung',
       attractionName: '고흥 녹동항',
       overview: '녹동항 — 고흥 항구·섬 관문. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '250437',
     }, // TODO contentId
     {
       order: 4910,
@@ -4994,7 +4994,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'goheung',
       attractionName: '고흥 소록도',
       overview: '소록도 — 섬·역사. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126285',
     }, // TODO contentId
     {
       order: 4920,
@@ -5036,7 +5036,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'hamyang',
       attractionName: '상림공원',
       overview: '상림공원 — 천년 숲·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126861',
     }, // TODO contentId
     {
       order: 4960,
@@ -5067,7 +5067,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'hamyang',
       attractionName: '함양 지안재',
       overview: '지안재 — 지리산 가는 고갯길. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2715658',
     }, // TODO contentId
     {
       order: 4990,
@@ -5223,7 +5223,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'jangheung',
       attractionName: '장흥 편백숲 우드랜드',
       overview: '편백숲 우드랜드 — 편백·숲체험. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2033464',
     }, // TODO contentId
     {
       order: 5140,
@@ -5234,7 +5234,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'jangseong',
       attractionName: '백양사',
       overview: '백양사 — 백암산·단풍 고찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126341',
     }, // TODO contentId
     {
       order: 5150,
@@ -5318,7 +5318,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'jindo',
       attractionName: '운림산방',
       overview: '운림산방 — 남종화·명승. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126375',
     }, // TODO contentId
     {
       order: 5230,
@@ -5349,7 +5349,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'naju',
       attractionName: '나주배박물관',
       overview: '나주배박물관 — 배 특산물·전시. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '129781',
     }, // TODO contentId
     {
       order: 5260,
@@ -5360,7 +5360,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'naju',
       attractionName: '나주향교',
       overview: '나주향교 — 읍치 유교 공간. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '127090',
     }, // TODO contentId
     {
       order: 5270,
@@ -5411,7 +5411,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'sinan',
       attractionName: '천사대교',
       overview: '천사대교 — 압해·암태 연결. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2650824',
     }, // TODO contentId
     {
       order: 5320,
@@ -5443,7 +5443,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'sunchang',
       attractionName: '강천사',
       overview: '강천사 — 강천산 고찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126347',
     }, // TODO contentId
     {
       order: 5350,
@@ -5454,7 +5454,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'sunchang',
       attractionName: '강천산',
       overview: '강천산 — 군립공원·계곡. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126249',
     }, // TODO contentId
     {
       order: 5360,
@@ -5516,7 +5516,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'yeonggwang',
       attractionName: '불갑사',
       overview: '불갑사 — 불갑산 고찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126349',
     }, // TODO contentId
     {
       order: 5420,
@@ -5538,7 +5538,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'yeonggwang',
       attractionName: '칠산타워',
       overview: '칠산타워 — 칠산바다 전망. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2684009',
     }, // TODO contentId
     {
       order: 5440,
@@ -5580,7 +5580,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gimje',
       attractionName: '벽골제',
       overview: '벽골제 — 고대 수리·들판. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '231895',
     }, // TODO contentId
     {
       order: 5480,
@@ -5601,7 +5601,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'haenam',
       attractionName: '대흥사',
       overview: '대흥사 — 두륜산 고찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126373',
     }, // TODO contentId
     {
       order: 5500,
@@ -5652,7 +5652,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'hampyeong',
       attractionName: '함평엑스포공원',
       overview: '함평엑스포공원 — 나비·축제장. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '130864',
     }, // TODO contentId
     {
       order: 5550,
@@ -5673,7 +5673,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'iksan',
       attractionName: '미륵사지',
       overview: '미륵사지 — 백제 사찰터. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '127977',
     }, // TODO contentId
     {
       order: 5570,
@@ -5705,7 +5705,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'iksan',
       attractionName: '함라산',
       overview: '함라산 — 익산 서북 전망. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '1046086',
     }, // TODO contentId
     {
       order: 5600,
@@ -5787,7 +5787,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'muju',
       attractionName: '태권도원',
       overview: '태권도원 — 무주 세계도장. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '1904335',
     }, // TODO contentId
 
     {
@@ -5810,7 +5810,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'yeongam',
       attractionName: '기찬랜드',
       overview: '기찬랜드 — 영암 가족 공원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '771686',
     }, // TODO contentId
     {
       order: 5700,
@@ -5821,7 +5821,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'yeongam',
       attractionName: '도갑사',
       overview: '도갑사 — 월출산 자락 고찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126361',
     }, // TODO contentId
     {
       order: 5710,
@@ -5832,7 +5832,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'yeongam',
       attractionName: '월출산국립공원',
       overview: '월출산 — 천황봉·기암. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '127672',
     }, // TODO contentId
     {
       order: 5720,
@@ -5876,7 +5876,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'geochang',
       attractionName: '거창 창포원',
       overview: '거창 창포원 — 수생·창포 정원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2755874',
     }, // TODO contentId
     {
       order: 5760,
@@ -5898,7 +5898,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'geochang',
       attractionName: '금원산',
       overview: '금원산 — 거창 휴양림·능선. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '127509',
     }, // TODO contentId
     {
       order: 5780,
@@ -5919,7 +5919,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'ulju',
       attractionName: '간월재',
       overview: '간월재 — 영남알프스 능선. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2723688',
     }, // TODO contentId
     {
       order: 5800,
@@ -5981,7 +5981,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'ulju',
       attractionName: '진하해수욕장',
       overview: '진하해수욕장 — 울주 동해 해변. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126096',
     }, // TODO contentId
     {
       order: 5860,
@@ -5992,7 +5992,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gimhae',
       attractionName: '김해 가야테마파크',
       overview: '가야테마파크 — 김해 가야 역사. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2414696',
     }, // TODO contentId
     {
       order: 5870,
@@ -6003,7 +6003,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gimhae',
       attractionName: '김해 롯데워터파크',
       overview: '롯데워터파크 — 김해 대형 워터파크. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '1921423',
     }, // TODO contentId
     {
       order: 5880,
@@ -6014,7 +6014,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gimhae',
       attractionName: '김해 수로왕릉',
       overview: '수로왕릉 — 가락국 시조릉. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126192',
     }, // TODO contentId
     {
       order: 5890,
@@ -6088,7 +6088,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gunwi',
       attractionName: '군위 팔공산',
       overview: '팔공산 — 군위 자락 명산. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126590',
     }, // TODO contentId
     {
       order: 5960,
@@ -6121,7 +6121,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'yangsan',
       attractionName: '양산 내원사',
       overview: '내원사 — 양산 천성산 계곡 사찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '298342',
     }, // TODO contentId
     {
       order: 5990,
@@ -6143,7 +6143,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'yangsan',
       attractionName: '천성산',
       overview: '천성산 — 양산 고원·억새 능선. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126045',
     }, // TODO contentId
     {
       order: 6010,
@@ -6175,7 +6175,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'yangsan',
       attractionName: '홍룡폭포',
       overview: '홍룡폭포 — 양산 폭포·계곡. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126076',
     }, // TODO contentId
     {
       order: 6040,
@@ -6261,7 +6261,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'cheongdo',
       attractionName: '청도 유등연지',
       overview: '유등연지 — 청도 연꽃 연못. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '1621347',
     }, // TODO contentId
     {
       order: 6120,
@@ -6373,7 +6373,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gijang',
       attractionName: '일광해수욕장',
       overview: '일광해수욕장 — 기장 동해 해변. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126098',
     }, // TODO contentId
     {
       order: 6230,
@@ -6384,7 +6384,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gijang',
       attractionName: '임랑해수욕장',
       overview: '임랑해수욕장 — 기장 모래사장. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '1939570',
     }, // TODO contentId
     {
       order: 6240,
@@ -6436,7 +6436,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'goseongnam',
       attractionName: '상족암군립공원',
       overview: '상족암 — 고성 해안 절벽·공룡발자국. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126232',
     }, // TODO contentId
     {
       order: 6290,
@@ -6457,7 +6457,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gumi',
       attractionName: '구미 낙동강체육공원',
       overview: '낙동강체육공원 — 구미 강변 체육·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '3035970',
     }, // TODO contentId
     {
       order: 6310,
@@ -6499,7 +6499,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'haman',
       attractionName: '함안 악양루',
       overview: '악양루 — 함안 남강 전망 누각. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '702331',
     }, // TODO contentId
     {
       order: 6350,
@@ -6540,7 +6540,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'haman',
       attractionName: '함안박물관',
       overview: '함안박물관 — 가야·함안 역사. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '130693',
     }, // TODO contentId
     {
       order: 6390,
@@ -6561,7 +6561,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'miryang',
       attractionName: '밀양 영남루',
       overview: '영남루 — 밀양강 위 누각. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126206',
     }, // TODO contentId
     {
       order: 6410,
@@ -6583,7 +6583,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'miryang',
       attractionName: '밀양 표충사',
       overview: '표충사 — 재약산 자락 밀양 고찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126174',
     }, // TODO contentId
     {
       order: 6430,
@@ -6594,7 +6594,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'miryang',
       attractionName: '밀양읍성',
       overview: '밀양읍성 — 읍치 성곽 흔적. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2792873',
     }, // TODO contentId
     {
       order: 6440,
@@ -6605,7 +6605,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'sacheon',
       attractionName: '늑도',
       overview: '늑도 — 사천 섬·조개더미 유적. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2715624',
     }, // TODO contentId
     {
       order: 6450,
@@ -6616,7 +6616,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'sacheon',
       attractionName: '사천 노산공원',
       overview: '노산공원 — 사천 삼천포 해안 공원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126123',
     }, // TODO contentId
     {
       order: 6460,
@@ -6647,7 +6647,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'sacheon',
       attractionName: '삼천포대교',
       overview: '삼천포대교 — 사천·남해 잇는 다리. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2514738',
     }, // TODO contentId
     {
       order: 6490,
@@ -6658,7 +6658,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'uiseong',
       attractionName: '고운사',
       overview: '고운사 — 의성 산중 고찰·단풍. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126170',
     }, // TODO contentId
     {
       order: 6500,
@@ -6721,7 +6721,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'yecheon',
       attractionName: '예천박물관',
       overview: '예천박물관 — 예천 역사·문화. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2912292',
     }, // TODO contentId
     {
       order: 6560,
@@ -6815,7 +6815,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'yeongju',
       attractionName: '무섬마을',
       overview: '무섬마을 — 영주 외나무다리 마을. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '894087',
     }, // TODO contentId
     {
       order: 6650,
@@ -6826,7 +6826,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'yeongju',
       attractionName: '부석사',
       overview: '부석사 — 영주 화엄 고찰·무량수전. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '127669',
     }, // TODO contentId
     {
       order: 6660,
@@ -6837,7 +6837,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'yeongju',
       attractionName: '선비촌',
       overview: '선비촌 — 영주 전통 한옥 마을. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '129430',
     }, // TODO contentId
     {
       order: 6670,
@@ -6848,7 +6848,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'yeongju',
       attractionName: '소수서원',
       overview: '소수서원 — 영주 조선 서원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126201',
     }, // TODO contentId
     {
       order: 6680,
@@ -6869,7 +6869,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'changnyeong',
       attractionName: '창녕 만옥정공원',
       overview: '만옥정공원 — 창녕 도심 공원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '128586',
     }, // TODO contentId
     {
       order: 6700,
@@ -6880,7 +6880,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'changnyeong',
       attractionName: '창녕 우포늪',
       overview: '우포늪 — 창녕 생태 습지. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126737',
     }, // TODO contentId
     {
       order: 6710,
@@ -6891,7 +6891,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'changnyeong',
       attractionName: '창녕 화왕산',
       overview: '화왕산 — 창녕 억새·전망. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126038',
     }, // TODO contentId
     {
       order: 6720,
@@ -6902,7 +6902,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'changnyeong',
       attractionName: '창녕박물관',
       overview: '창녕박물관 — 가야·창녕 역사. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '130107',
     }, // TODO contentId
     {
       order: 6730,
@@ -6923,7 +6923,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'cheongsong',
       attractionName: '주왕산',
       overview: '주왕산 — 청송 기암·국립공원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126020',
     }, // TODO contentId
     {
       order: 6750,
@@ -6945,7 +6945,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'cheongsong',
       attractionName: '청송 주산지',
       overview: '주산지 — 청송 왕버들·호수. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126223',
     }, // TODO contentId
     {
       order: 6770,
@@ -7040,7 +7040,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gimcheon',
       attractionName: '김천 연화지',
       overview: '연화지 — 김천 연꽃·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2709541',
     }, // TODO contentId
     {
       order: 6860,
@@ -7072,7 +7072,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gimcheon',
       attractionName: '직지사',
       overview: '직지사 — 김천 황악산 고찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126155',
     }, // TODO contentId
     {
       order: 6890,
@@ -7105,7 +7105,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'goryeong',
       attractionName: '고령 대가야박물관',
       overview: '대가야박물관 — 고령 가야 역사. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '130099',
     }, // TODO contentId
     {
       order: 6920,
@@ -7136,7 +7136,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gwangyang',
       attractionName: '광양 백운산',
       overview: '백운산 — 광양 동곡·국립공원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126255',
     }, // TODO contentId
     {
       order: 6950,
@@ -7158,7 +7158,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gwangyang',
       attractionName: '망덕포구',
       overview: '망덕포구 — 광양 섬진강 포구. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2777995',
     }, // TODO contentId
     {
       order: 6970,
@@ -7169,7 +7169,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gyeongsan',
       attractionName: '계정숲',
       overview: '계정숲 — 경산 천연기념물 숲. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2745623',
     }, // TODO contentId
     {
       order: 6980,
@@ -7180,7 +7180,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gyeongsan',
       attractionName: '반곡지',
       overview: '반곡지 — 경산 왕버들·저수지. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2704119',
     }, // TODO contentId
     {
       order: 6990,
@@ -7213,7 +7213,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'sancheong',
       attractionName: '남사예담촌',
       overview: '남사예담촌 — 산청 고가·담장 마을. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '128440',
     }, // TODO contentId
     {
       order: 7020,
@@ -7234,7 +7234,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'sancheong',
       attractionName: '산청 동의보감촌',
       overview: '동의보감촌 — 산청 한방·힐링. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2620990',
     }, // TODO contentId
     {
       order: 7040,
@@ -7288,7 +7288,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'seongju',
       attractionName: '성주 한개마을',
       overview: '한개마을 — 성주 전통 고가. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '127717',
     }, // TODO contentId
     {
       order: 7090,
@@ -7343,7 +7343,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'yeongdeok',
       attractionName: '영덕 고래불해수욕장',
       overview: '고래불해수욕장 — 영덕 동해 백사장. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126103',
     }, // TODO contentId
     {
       order: 7140,
@@ -7376,7 +7376,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'yeongdeok',
       attractionName: '영덕 해맞이공원',
       overview: '해맞이공원 — 영덕 동해 일출. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '127710',
     }, // TODO contentId
     {
       order: 7170,
@@ -7418,7 +7418,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'yeongyang',
       attractionName: '영양 일월산',
       overview: '일월산 — 영양 일출·정상 조망. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126043',
     }, // TODO contentId
   ],
 };
