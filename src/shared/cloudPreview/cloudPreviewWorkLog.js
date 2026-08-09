@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 86,
-  sessionPhase: '네이버 문구·위치',
+  sessionNo: 87,
+  sessionPhase: '네이버 버튼 위치',
   branch: 'cursor/scenic-food-naver-link-b366',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-food-naver',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-naver-pos-87',
+    session: '테마여행 #87, 네이버 버튼 위치',
+    title: '개요 아래·주소 위로 이동',
+    detail:
+      '네이버 상세정보 보기 버튼을 개요 바로 아래·주소 위로 옮겨, 주소·문의·영업시간 흐름을 끊지 않게 했습니다. Preview에서 맛집 상세 순서를 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-naver-copy-86',
     session: '테마여행 #86, 네이버 문구·위치',

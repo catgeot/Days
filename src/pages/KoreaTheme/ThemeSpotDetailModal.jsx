@@ -1395,6 +1395,11 @@ export default function ThemeSpotDetailModal({
             {!detailLoading && detail ? (
               <dl className="min-w-0 space-y-4">
                 {overview ? <DetailRow label="개요">{overview}</DetailRow> : null}
+                {naverSearchUrl ? (
+                  <div className="min-w-0">
+                    <NaverOutboundButton href={naverSearchUrl} />
+                  </div>
+                ) : null}
                 {Array.isArray(detail.heritageMeta)
                   ? detail.heritageMeta.map((row) => (
                       <DetailRow key={row.label} label={row.label}>
@@ -1413,11 +1418,6 @@ export default function ThemeSpotDetailModal({
                       {tel}
                     </a>
                   </DetailRow>
-                ) : null}
-                {naverSearchUrl ? (
-                  <div className="min-w-0 pt-0.5">
-                    <NaverOutboundButton href={naverSearchUrl} />
-                  </div>
                 ) : null}
                 {homepage ? (
                   <DetailRow label="홈페이지">
