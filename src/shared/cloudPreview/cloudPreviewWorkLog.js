@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 116,
-  sessionPhase: '잔여 contentId 보강',
-  branch: 'cursor/scenic-contentid-f876',
+  sessionNo: 117,
+  sessionPhase: '검색 아이콘 포커스',
+  branch: 'cursor/scenic-search-focus-9792',
   previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'scenic-hub-fill',
+  qaShareSlug: 'scenic-search-focus',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-search-focus-117b',
+    session: '테마여행 #117, 검색 아이콘 포커스',
+    title: '검색 포커스 — flushSync 수정',
+    detail:
+      '아이콘 클릭 후 setTimeout focus는 모바일에서 제스처 밖이라 커서가 안 들어갔습니다. 클릭 핸들러에서 flushSync로 검색바를 연 뒤 바로 focus 하도록 고쳤습니다. Preview에서 검색 아이콘 → 커서/키보드가 바로 뜨는지 다시 확인해 주세요.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-search-focus-117',
+    session: '테마여행 #117, 검색 아이콘 포커스',
+    title: '검색 아이콘 → 입력창 즉시 포커스',
+    detail:
+      '모바일에서 검색 아이콘을 누르면 검색바가 열리며 입력창에 바로 커서가 들어가도록 했습니다(명승·축제 동일). Preview에서 좁은 폭으로 검색 아이콘 → 키보드/커서 바로 뜨는지 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-search-junam-116',
     session: '테마여행 #116, 잔여 contentId 보강',

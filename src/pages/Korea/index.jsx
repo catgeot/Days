@@ -5,6 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { flushSync } from 'react-dom';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowUp,
@@ -674,6 +675,7 @@ export default function KoreaFestivalHub() {
   );
   const userRegionOverrideRef = useRef(false);
   const mountLocTriedRef = useRef(false);
+  const mobileSearchInputRef = useRef(null);
   const mainScrollRef = useRef(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const themeAreaAppliedRef = useRef(false);
@@ -1509,8 +1511,14 @@ export default function KoreaFestivalHub() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (searchOpen || searchActive) closeSearch();
-                    else setSearchOpen(true);
+                    if (searchOpen || searchActive) {
+                      closeSearch();
+                      return;
+                    }
+                    flushSync(() => {
+                      setSearchOpen(true);
+                    });
+                    mobileSearchInputRef.current?.focus();
                   }}
                   aria-label={
                     searchOpen || searchActive ? '검색 닫기' : '축제 검색'
@@ -1598,6 +1606,7 @@ export default function KoreaFestivalHub() {
                   축제 검색
                 </label>
                 <input
+                  ref={mobileSearchInputRef}
                   id="korea-festival-search"
                   type="search"
                   value={searchDraft}

@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { flushSync } from 'react-dom';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowUp,
@@ -563,6 +564,7 @@ export default function KoreaThemeScenicPage() {
   const [searchDraft, setSearchDraft] = useState('');
   /** 확정된 검색어 — 입력창을 비워도 리스트 필터 유지 · 분류 칩으로 결과 분해 */
   const [searchApplied, setSearchApplied] = useState('');
+  const mobileSearchInputRef = useRef(null);
   const mainScrollRef = useRef(null);
   /** 분류칩 클릭 직후 목록 높이 변화로 스크롤이 튀지 않게 칩 위치 고정 */
   const chipScrollPinRef = useRef(null);
@@ -2566,8 +2568,15 @@ export default function KoreaThemeScenicPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (searchOpen) setSearchOpen(false);
-                    else setSearchOpen(true);
+                    if (searchOpen) {
+                      setSearchOpen(false);
+                      return;
+                    }
+                    // 클릭 제스처 안에서 mount+focus (setTimeout/useEffect는 모바일 키보드 차단)
+                    flushSync(() => {
+                      setSearchOpen(true);
+                    });
+                    mobileSearchInputRef.current?.focus();
                   }}
                   aria-label={searchOpen ? '검색창 닫기' : '명소·명승 검색'}
                   aria-pressed={searchOpen}
@@ -2609,6 +2618,7 @@ export default function KoreaThemeScenicPage() {
                   명소·명승 검색
                 </label>
                 <input
+                  ref={mobileSearchInputRef}
                   id="korea-scenic-search"
                   type="search"
                   value={searchDraft}
