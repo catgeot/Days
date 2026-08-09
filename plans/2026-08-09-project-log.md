@@ -6,9 +6,8 @@
 
 **상태**: feature `cursor/scenic-mid-cluster-67a8` · PR [#78](https://github.com/catgeot/Days/pull/78) · **경기 동서남북 합의** · UI 미구현
 
-- **한 일**: 세권 계층 방안 · 일반 분류 조사 후 **경기=북·동·서·남 4세권**(31→4) 잠금 · [`korea-scenic-mid-cluster-plan.md`](./korea-scenic-mid-cluster-plan.md) §2.1
-- **경기 소속**: 북(고양·파주·의정부·양주·동두천·포천·연천) · 동(하남·남양주·구리·가평·양평·여주·이천·광주) · 서(김포·부천·광명·시흥·안산·화성·평택) · 남(수원·성남·용인·안양·군포·의왕·과천·오산·안성)
-- **남은 일**: 타 시도 세권 확정 · #112 SSOT·칩 UI
+- **한 일**: 세권 계층 · **경기=동서남북 합의** · 타 시도 **실제 분류 사례** 조사 후 제안표(강원 관행4·전북 공식 동부권·경북 3대문화권·경남 남해안/지리산/낙동 등) · [`korea-scenic-mid-cluster-plan.md`](./korea-scenic-mid-cluster-plan.md) §2.2~
+- **남은 일**: 타 시도 제안 합의 · #112 SSOT·칩 UI
 - **다음 채팅명**:
 
 ```
