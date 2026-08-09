@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-09T02:49:11.092Z",
-    "count": 635,
+    "updatedAt": "2026-08-09T02:58:49.156Z",
+    "count": 655,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -640,6 +640,26 @@
     "manokjeong-park-changnyeong": "https://tong.visitkorea.or.kr/cms/resource/28/3537928_image2_1.jpg",
     "upo-wetland-changnyeong": "https://tong.visitkorea.or.kr/cms/resource/28/3537928_image2_1.jpg",
     "hawangsan-changnyeong": "https://tong.visitkorea.or.kr/cms/resource/28/3537928_image2_1.jpg",
-    "changnyeong-museum": "https://tong.visitkorea.or.kr/cms/resource/28/3537928_image2_1.jpg"
+    "changnyeong-museum": "https://tong.visitkorea.or.kr/cms/resource/28/3537928_image2_1.jpg",
+    "daejeonsa-temple": "https://tong.visitkorea.or.kr/cms/resource/31/3501031_image2_1.jpg",
+    "juwangsan": "https://tong.visitkorea.or.kr/cms/resource/31/3501031_image2_1.jpg",
+    "cheongsong-gaekju-literature-museum": "https://tong.visitkorea.or.kr/cms/resource/31/3501031_image2_1.jpg",
+    "cheongsong-jusanji-reservoir": "https://tong.visitkorea.or.kr/cms/resource/35/3407535_image2_1.jpg",
+    "gasansanseong": "https://tong.visitkorea.or.kr/cms/resource/82/3538682_image2_1.jpg",
+    "maewon-village": "https://tong.visitkorea.or.kr/cms/resource/52/3536352_image2_1.jpg",
+    "sungshan-garden": "https://tong.visitkorea.or.kr/cms/resource/48/3561648_image2_1.JPG",
+    "chilgok-weir": "https://tong.visitkorea.or.kr/cms/resource/52/3536352_image2_1.jpg",
+    "dokdo-lighthouse": "https://tong.visitkorea.or.kr/cms/resource/91/2726491_image2_1.jpg",
+    "dokdo-landing-facility": "https://tong.visitkorea.or.kr/cms/resource/91/2726491_image2_1.jpg",
+    "dongdo": "https://tong.visitkorea.or.kr/cms/resource/16/2653416_image2_1.jpg",
+    "seodo": "https://tong.visitkorea.or.kr/cms/resource/16/2653416_image2_1.jpg",
+    "yeonhwaji-pond-gimcheon": "https://tong.visitkorea.or.kr/cms/resource/81/3512881_image2_1.jpg",
+    "buhang-dam-gimcheon": "https://tong.visitkorea.or.kr/cms/resource/31/3072931_image2_1.jpg",
+    "jikji-culture-park": "https://tong.visitkorea.or.kr/cms/resource/81/3512881_image2_1.jpg",
+    "jikjisa-temple": "https://tong.visitkorea.or.kr/cms/resource/02/2794702_image2_1.jpg",
+    "gaejin-market-goryeong": "https://tong.visitkorea.or.kr/cms/resource/46/3516946_image2_1.jpg",
+    "goryeong-nakdong-viewpoint": "https://tong.visitkorea.or.kr/cms/resource/46/3516946_image2_1.jpg",
+    "daegaya-museum": "https://tong.visitkorea.or.kr/cms/resource/25/2732625_image2_1.jpg",
+    "daegaya-history-theme-park": "https://tong.visitkorea.or.kr/cms/resource/46/3516946_image2_1.jpg"
   }
 }

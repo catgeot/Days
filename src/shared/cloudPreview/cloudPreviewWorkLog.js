@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 101,
+  sessionNo: 102,
   sessionPhase: '빈 hub 명소 보강',
   branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?hub=uiseong',
+  previewPath: '/korea/theme/scenic?hub=cheongsong',
   qaShareSlug: 'scenic-hub-fill',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-102',
+    session: '테마여행 #102, 빈 hub 명소 보강',
+    title: '청송·칠곡·독도·김천·고령 GATEO 선정 전수',
+    detail:
+      '큐 R01 경상 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(청송4·칠곡4·독도4·김천4·고령4 · Tour contentId 7/20 · 썸네일 655/692). 경북 시도 색인(독도 포함)에도 동시 등록했습니다. Tour LIVE searchKeyword 공백·429로 locationBasedList·DB·related 폴백을 썼습니다. Preview에서 /korea/theme/scenic?hub=cheongsong · ?hub=chilgok · ?hub=dokdo · ?hub=gimcheon · ?hub=goryeong 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-hub-fill-r01-101',
     session: '테마여행 #101, 빈 hub 명소 보강',

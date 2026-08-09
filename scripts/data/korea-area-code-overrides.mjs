@@ -145,6 +145,11 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'yecheon',
         'yeongcheon',
         'yeongju',
+        'cheongsong',
+        'chilgok',
+        'dokdo',
+        'gimcheon',
+        'goryeong',
       ],
     },
     36: {

@@ -2,21 +2,33 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
+## 테마여행 #102, 빈 hub 명소 보강
+
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip _(커밋 후)_ · Preview 사람 QA 대기
+
+- **한 일**: 큐 R01 경상 — 청송4·칠곡4·독도4·김천4·고령4 **전수** GATEO 선정 · Tour contentId 7/20 · 썸네일 655/692 · 경북 시도 색인(독도 포함) · Tour LIVE 공백·429 → locationBasedList·DB·related 폴백 · 큐 잔여 7
+- **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
+- **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=cheongsong` · `?hub=chilgok` · `?hub=dokdo` · `?hub=gimcheon` · `?hub=goryeong`
+- **작업 로그**: 「청송·칠곡·독도·김천·고령 GATEO 선정 전수」
+- **남은 일**: 큐 잔여 7(광양·경산·산청·성주·의령·영덕·영양) 전수 · 사람 Preview QA
+- **다음 채팅명**:
+
+```
+테마여행 #103, 빈 hub 명소 보강
+```
+
 ## 테마여행 #101, 빈 hub 명소 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `030fd568` · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `030fd568` · ✅ #102 청송·칠곡·독도·김천·고령
 
 - **한 일**: 큐 R01 경상 — 의성5·예천5·영천5·영주5·창녕4 **전수** GATEO 선정 · Tour contentId 9/24 · 썸네일 635/672 · 경북·경남 시도 색인 · Tour LIVE 429 → locationBasedList·DB·related 폴백 · 큐 잔여 12
 - **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
 - **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=uiseong` · `?hub=yecheon` · `?hub=yeongcheon` · `?hub=yeongju` · `?hub=changnyeong`
 - **작업 로그**: 「의성·예천·영천·영주·창녕 GATEO 선정 전수」
-- **남은 일**: 큐 경상 잔여(청송·칠곡·독도·김천·고령…) 전수 · 사람 Preview QA
-- **다음 채팅명**:
-
-```
-테마여행 #102, 빈 hub 명소 보강
-```
+- **남은 일**: ✅ #102 청송·칠곡·독도·김천·고령 전수 · 사람 Preview QA
+- **다음 채팅명**: `테마여행 #102, 빈 hub 명소 보강` → 완료(위 #102 절)
 
 ## 테마여행 #100, 빈 hub 명소 보강
 

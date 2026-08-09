@@ -264,6 +264,19 @@ const RELATED_IMAGE_CONTENT_IDS = {
   'upo-wetland-changnyeong': '2774931', // 우포출렁다리 — 우포늪 Tour type12 부재 시
   'hawangsan-changnyeong': '2774931', // 우포출렁다리 — 화왕산 Tour type12 부재 시
   'changnyeong-museum': '2774931', // 우포출렁다리 — 창녕박물관 Tour 부재 시
+  juwangsan: '129063', // 대전사 — 주왕산 Tour type12 부재 시
+  'cheongsong-gaekju-literature-museum': '129063', // 대전사 — 객주문학관 Tour type12 부재 시
+  'cheongsong-jusanji-reservoir': '126046', // 절골협곡 — 주산지 Tour type12 부재 시(주산지리)
+  'sungshan-garden': '2633896', // 가산수피아 — 숭산정원 Tour type12 부재 시
+  'chilgok-weir': '2819158', // 매원마을 — 칠곡보 Tour type12 부재 시
+  'dokdo-landing-facility': '129174', // 독도 등대 — 접안시설 Tour type12 부재 시
+  seodo: '126106', // 독도 — 서도 Tour type12 부재 시
+  'yeonhwaji-pond-gimcheon': '578954', // 직지문화공원 — 연화지 Tour type12 부재 시
+  'buhang-dam-gimcheon': '2706622', // 부항댐 출렁다리 — 부항댐 Tour type12 부재 시
+  'jikjisa-temple': '2781610', // 김천 친환경생태공원 — 직지사 Tour type12 부재 시(직지사길)
+  'gaejin-market-goryeong': '1067369', // 대가야 역사테마관광지 — 개진시장 Tour 부재 시
+  'goryeong-nakdong-viewpoint': '1067369', // 대가야 역사테마관광지 — 낙동강 전망 Tour 부재 시
+  'daegaya-museum': '2732615', // 대가야생활촌 — 대가야박물관 Tour type12 부재 시
 };
 
 async function mapPool(items, worker, size) {

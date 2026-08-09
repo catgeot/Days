@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-09T02:43:41.130Z",
+    "generatedAt": "2026-08-09T02:58:45.911Z",
     "areaCount": 17,
-    "hubLinkCount": 157,
+    "hubLinkCount": 162,
     "source": "scripts/data/korea-area-code-overrides.mjs"
   },
   "defaultHubIds": [
@@ -183,7 +183,12 @@
         "uiseong",
         "yecheon",
         "yeongcheon",
-        "yeongju"
+        "yeongju",
+        "cheongsong",
+        "chilgok",
+        "dokdo",
+        "gimcheon",
+        "goryeong"
       ]
     },
     "36": {
@@ -365,6 +370,11 @@
     "yecheon": "35",
     "yeongcheon": "35",
     "yeongju": "35",
+    "cheongsong": "35",
+    "chilgok": "35",
+    "dokdo": "35",
+    "gimcheon": "35",
+    "goryeong": "35",
     "tongyeong": "36",
     "jinju": "36",
     "geoje": "36",
