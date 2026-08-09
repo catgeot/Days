@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 112,
-  sessionPhase: '세권 칩 SSOT·UI',
+  sessionNo: 113,
+  sessionPhase: '세권 칩 메인 반영 전 점검',
   branch: 'cursor/scenic-mid-cluster-67a8',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-mid-cluster',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-mid-cluster-113',
+    session: '테마여행 #113, 세권 칩 메인 반영 전 점검',
+    title: '세권 칩 VERIFY·UI QA GO',
+    detail:
+      'main 반영 전 점검: SSOT cover·audit/smoke/build PASS · 서울 기본(세권 없음)→경기 북부·hub7→동부→강원 영서·홍천 · 명승/관광지 세권 없음. 사람 Preview OK 후 PR #78 merge.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-mid-cluster-112',
     session: '테마여행 #112, 세권 칩 SSOT·UI',
