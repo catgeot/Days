@@ -32,8 +32,8 @@ const CATEGORY_CHIP = {
 const GLASS_SCROLL_CLASS = 'globe-face-region-scroll';
 /** 나라·세부칩 — 네이티브 바 숨김 · 커스텀 스크롤바 항시 표시 */
 const CUSTOM_SCROLL_CLASS = 'globe-face-custom-scroll';
-/** PC — 로고·투톱(top 14.5rem)·하단 LOGIN/LOGBOOK·더보기 힌트 사이를 넘지 않게 (내용만 스크롤) */
-const RAIL_LIST_HEIGHT_DESKTOP = 'h-[min(calc(100dvh-14.5rem-11rem),20rem)]';
+/** PC — 로고·투톱(top 14.5rem)·하단 LOGIN/LOGBOOK 사이를 넘지 않게 (내용만 스크롤) */
+const RAIL_LIST_HEIGHT_DESKTOP = 'h-[min(calc(100dvh-14.5rem-8.5rem),20rem)]';
 /** 모바일 — 하단 카테고리·세부칩 위를 남기고도 스크롤이 답답하지 않게 */
 const RAIL_LIST_HEIGHT_MOBILE = 'h-[min(50vh,22rem)]';
 const RAIL_LIST_HEIGHT_MOBILE_FLAT = 'h-[min(58vh,26rem)]';
@@ -316,16 +316,8 @@ export default function GlobeFaceRegionRail({
 
   const tone = CATEGORY_CHIP[category] || CATEGORY_CHIP.paradise;
 
-  const moreHintClass =
-    'inline-flex h-5 shrink-0 items-center whitespace-nowrap rounded-full border border-amber-300/70 bg-amber-500/90 px-2 text-[9px] font-bold leading-none tracking-tight text-black shadow-[0_0_12px_rgba(245,158,11,0.55)]';
-
   const countryList = (
     <div className="flex flex-col items-center overflow-visible">
-      {scrollUi.scrollable ? (
-        <div className="flex h-5 w-full shrink-0 items-center justify-center" aria-hidden="true">
-          {scrollUi.moreAbove ? <span className={moreHintClass}>↑ 더보기</span> : null}
-        </div>
-      ) : null}
       <div className={`relative w-full ${resolvedListHeight}`}>
         <div
           ref={listRef}
@@ -389,11 +381,6 @@ export default function GlobeFaceRegionRail({
           </>
         ) : null}
       </div>
-      {scrollUi.scrollable ? (
-        <div className="flex h-5 w-full shrink-0 items-center justify-center" aria-hidden="true">
-          {scrollUi.moreBelow ? <span className={moreHintClass}>↓ 더보기</span> : null}
-        </div>
-      ) : null}
     </div>
   );
 
