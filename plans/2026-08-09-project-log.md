@@ -4,7 +4,7 @@
 
 ## 테마여행 #90, 빈 hub 명소 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip _(push 후)_ · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `19a2a3ea` · Preview 사람 QA 대기
 
 - **한 일**: 큐 R01 충청 — 서산6·보은5·청양5·당진5·괴산5 **전수** GATEO 선정 · Tour contentId 24/26 · 썸네일 395/400 · 충북·충남 시도 색인 · 큐 잔여 67
 - **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `npm run build`
