@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-09T00:55:17.543Z",
-    "count": 480,
+    "updatedAt": "2026-08-09T01:03:01.211Z",
+    "count": 505,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -485,6 +485,31 @@
     "sangrim-park": "https://tong.visitkorea.or.kr/cms/resource/75/3538275_image2_1.jpg",
     "gaepyeong-hanok-village": "https://tong.visitkorea.or.kr/cms/resource/75/3538275_image2_1.jpg",
     "daebongsan-recreation-valley": "https://tong.visitkorea.or.kr/cms/resource/00/3531800_image2_1.jpg",
-    "hamyang-jianjae": "https://tong.visitkorea.or.kr/cms/resource/08/3538308_image2_1.jpg"
+    "hamyang-jianjae": "https://tong.visitkorea.or.kr/cms/resource/08/3538308_image2_1.jpg",
+    "manyeonsan-healing-forest": "https://tong.visitkorea.or.kr/cms/resource/98/2604598_image2_1.jpg",
+    "seryangji": "https://tong.visitkorea.or.kr/cms/resource/74/3583374_image2_1.jpg",
+    "hwasun-jeokbyeok": "https://tong.visitkorea.or.kr/cms/resource/55/3348155_image2_1.JPG",
+    "hwasun-hot-spring": "https://tong.visitkorea.or.kr/cms/resource/79/3348379_image2_1.JPG",
+    "saseondae": "https://tong.visitkorea.or.kr/cms/resource/84/3536784_image2_1.jpg",
+    "seongsusan": "https://tong.visitkorea.or.kr/cms/resource/03/3363803_image2_1.JPG",
+    "okjeong-lake": "https://tong.visitkorea.or.kr/cms/resource/41/3372641_image2_1.jpg",
+    "imsil-cheese-village": "https://tong.visitkorea.or.kr/cms/resource/31/3557431_image2_1.jpg",
+    "imsil-cheese-theme-park": "https://tong.visitkorea.or.kr/cms/resource/80/3080980_image2_1.jpg",
+    "borimsa-temple": "https://tong.visitkorea.or.kr/cms/resource/76/3308476_image2_1.jpg",
+    "sumun-beach": "https://tong.visitkorea.or.kr/cms/resource/55/3535955_image2_1.jpg",
+    "tamjingang-river": "https://tong.visitkorea.or.kr/cms/resource/69/3535969_image2_1.jpg",
+    "jangheung-saturday-market": "https://tong.visitkorea.or.kr/cms/resource/49/3535949_image2_1.jpg",
+    "jangheung-woodland": "https://tong.visitkorea.or.kr/cms/resource/08/3060908_image2_1.jpg",
+    "baegyangsa": "https://tong.visitkorea.or.kr/cms/resource/18/3347418_image2_1.JPG",
+    "jangseong-cornus-village": "https://tong.visitkorea.or.kr/cms/resource/33/3017733_image2_1.jpg",
+    "jangseong-lake": "https://tong.visitkorea.or.kr/cms/resource/79/3568279_image2_1.jpg",
+    "pyeongnim-dam": "https://tong.visitkorea.or.kr/cms/resource/86/3568786_image2_1.jpg",
+    "hwangryong-river": "https://tong.visitkorea.or.kr/cms/resource/60/3546860_image2_1.JPG",
+    "gwanmaedo": "https://tong.visitkorea.or.kr/cms/resource/31/2824531_image2_1.jpg",
+    "sebang-sunset-observatory": "https://tong.visitkorea.or.kr/cms/resource/23/3351423_image2_1.jpg",
+    "yongjangsanseong": "https://tong.visitkorea.or.kr/cms/resource/53/3563653_image2_1.jpg",
+    "unlimsanbang": "https://tong.visitkorea.or.kr/cms/resource/83/3557783_image2_1.jpg",
+    "jindo-tower": "https://tong.visitkorea.or.kr/cms/resource/31/3381331_image2_1.JPG",
+    "unjusa": "https://tong.visitkorea.or.kr/cms/resource/60/186260_image2_1.jpg"
   }
 }

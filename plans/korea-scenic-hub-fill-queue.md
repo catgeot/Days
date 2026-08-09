@@ -1,9 +1,9 @@
 # GATEO 선정 명소 — 권역·시군 hub 보강 큐
 
 **생성**: `npm run report:korea-scenic-empty-hubs -- --write-queue` (이 파일 덮어씀)
-**스냅샷**: 빈 hub **47** · 선정 hub **122** · maxOrder **4980**
+**스냅샷**: 빈 hub **42** · 선정 hub **127** · maxOrder **5230**
 
-**완료**: `#77`~`#93` · `#94` 서천·강진·고창·고흥·함양 전수 → 아래 표는 잔여 재번호.
+**완료**: `#77`~`#94` · `#95` 화순·임실·장흥·장성·진도 전수 → 아래 표는 잔여 재번호.
 
 ## 사용법
 
@@ -21,24 +21,19 @@
 
 | R | 워커A | 워커B | 권역 | 상태 |
 |---|-------|-------|------|------|
-| **R01** | `hwasun` · `imsil` · `jangheung` · `jangseong` · `jindo` | `naju` · `sinan` · `sunchang` · `yeonggwang` · `gimje` | 전라 | ⬜ |
-| **R02** | `haenam` · `hampyeong` · `iksan` · `muan` · `muju` | `yeongam` | 전라 | ⬜ |
+| **R01** | `naju` · `sinan` · `sunchang` · `yeonggwang` · `gimje` | `haenam` · `hampyeong` · `iksan` · `muan` · `muju` | 전라 | ⬜ |
+| **R02** | `yeongam` | — | 전라 | ⬜ |
 | **R03** | `geochang` · `ulju` · `gimhae` · `gunwi` · `yangsan` | `changwon` · `cheongdo` · `dalseong` · `gijang` · `goseongnam` | 경상 | ⬜ |
 | **R04** | `gumi` · `haman` · `miryang` · `sacheon` · `uiseong` | `yecheon` · `yeongcheon` · `yeongju` · `changnyeong` · `cheongsong` | 경상 | ⬜ |
 | **R05** | `chilgok` · `dokdo` · `gimcheon` · `goryeong` · `gwangyang` | `gyeongsan` · `sancheong` · `seongju` · `uiryeong` · `yeongdeok` | 경상 | ⬜ |
 | **R06** | `yeongyang` | — | 경상 | ⬜ |
 
-**합계**: 6 라운드 · hub 47.
+**합계**: 6 라운드 · hub 42.
 
 ## 권역별 잔여
 
-### 전라 (16)
+### 전라 (11)
 
-- `hwasun` 화순 — attr 5 · Tour contentId 0
-- `imsil` 임실 — attr 5 · Tour contentId 0
-- `jangheung` 장흥 — attr 5 · Tour contentId 0
-- `jangseong` 장성 — attr 5 · Tour contentId 0
-- `jindo` 진도 — attr 5 · Tour contentId 0
 - `naju` 나주 — attr 5 · Tour contentId 0
 - `sinan` 신안 — attr 5 · Tour contentId 0
 - `sunchang` 순창 — attr 5 · Tour contentId 0

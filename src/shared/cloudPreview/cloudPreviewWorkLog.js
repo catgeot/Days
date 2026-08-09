@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 94,
+  sessionNo: 95,
   sessionPhase: '빈 hub 명소 보강',
   branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?hub=seocheon',
+  previewPath: '/korea/theme/scenic?hub=hwasun',
   qaShareSlug: 'scenic-hub-fill',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-95',
+    session: '테마여행 #95, 빈 hub 명소 보강',
+    title: '화순·임실·장흥·장성·진도 GATEO 선정 전수',
+    detail:
+      '큐 R01 전라 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(화순5·임실5·장흥5·장성5·진도5 · Tour contentId 14/25 · 썸네일 505/523). 전북·전남 시도 색인에도 동시 등록했습니다. Tour LIVE 429로 DB·related 폴백을 썼습니다. Preview에서 /korea/theme/scenic?hub=hwasun · ?hub=imsil · ?hub=jangheung · ?hub=jangseong · ?hub=jindo 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-hub-fill-r01-94',
     session: '테마여행 #94, 빈 hub 명소 보강',

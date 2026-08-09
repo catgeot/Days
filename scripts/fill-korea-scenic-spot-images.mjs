@@ -188,6 +188,18 @@ const RELATED_IMAGE_CONTENT_IDS = {
   'naro-space-center': '2379568', // 고흥우주천문과학관 — 나로우주센터 Tour 부재 시
   'sangrim-park': '893974', // 개평한옥마을 — 상림공원 Tour type12 부재 시
   'hamyang-jianjae': '128629', // 오도재·지리산조망공원 — 지안재 Tour 부재 시
+  'manyeonsan-healing-forest': '128990', // 만연산 — 치유숲 Tour type12 부재 시
+  unjusa: '2614841', // 운주사 층상응회암 — 운주사 firstimage 부재 시
+  'hwasun-jeokbyeok': '128991', // 물염적벽 — 화순적벽 Tour type12 부재 시
+  'hwasun-hot-spring': '127932', // 도곡 원네스 스파·리조트 — 화순온천 Tour 부재 시
+  seongsusan: '317571', // 상이암(임실) — 성수산 Tour type12 부재 시
+  'jangheung-saturday-market': '2783151', // 수문항 — 토요시장 Tour type12 부재 시
+  'jangheung-woodland': '125421', // 유치자연휴양림 — 편백숲 우드랜드 Tour 부재 시
+  baegyangsa: '126261', // 남창계곡 — 백양사 Tour type12 부재 시(백암산 권역)
+  'jangseong-cornus-village': '2990185', // 금곡영화마을 — 산수유마을 Tour 부재 시
+  'pyeongnim-dam': '2633951', // 장성호 수변길 — 평림댐 Tour type12 부재 시
+  'hwangryong-river': '2741622', // 황금빛 출렁다리 — 황룡강 Tour type12 부재 시
+  unlimsanbang: '127251', // 쌍계사(진도) — 운림산방 Tour type12 부재 시
 };
 
 async function mapPool(items, worker, size) {
