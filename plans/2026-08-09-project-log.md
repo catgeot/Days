@@ -4,7 +4,7 @@
 
 ## 테마여행 #86, 네이버 문구·위치
 
-**상태**: feature `cursor/scenic-food-naver-link-b366` · PR [#76](https://github.com/catgeot/Days/pull/76) · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-food-naver-link-b366` · PR [#76](https://github.com/catgeot/Days/pull/76) · tip `963c9cbd` · Preview 사람 QA 대기
 
 - **한 일**: 문구 「네이버 상세정보 보기」 · 상세 본문에서 **전화 바로 아래**로 이동
 - **VERIFY**: `npm run build`
