@@ -9,10 +9,10 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'scenic-hub-fill',
-    label: '킨텍스 overview·주변 폴백',
+    label: '잔여 contentId·Tour 상세',
     branch: 'cursor/scenic-yangyang-b772',
     destination:
-      'https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=goyang&spot=kintex-goyang',
+      'https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=pyeongchang&spot=pyeongchang-olympic-plaza',
     active: true,
   },
   {

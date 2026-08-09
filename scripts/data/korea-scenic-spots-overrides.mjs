@@ -1243,7 +1243,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'pyeongchang',
       attractionName: '평창올림픽기념관',
       overview: '2018 동계올림픽을 기리는 기념 공간. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2733036',
     },
     {
       order: 1230,
@@ -1972,7 +1972,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'uiwang',
       attractionName: '의왕 레일파크',
       overview: '의왕 왕송호수 일대의 레일바이크·레일파크 체험 공간. Tour 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2388712',
     },
     {
       order: 1950,
@@ -4461,7 +4461,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'nonsan',
       attractionName: '논산 백제군사박물관',
       overview: '백제군사박물관 — 계백·황산벌. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '130896',
     }, // TODO contentId
     {
       order: 4410,
@@ -4780,7 +4780,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'jangsu',
       attractionName: '장수승마장',
       overview: '장수승마장 — 승마·체험. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2787366',
     }, // TODO contentId
     {
       order: 4720,
@@ -5109,7 +5109,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'hwasun',
       attractionName: '화순 적벽',
       overview: '화순적벽 — 붉은 절벽·명승. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '128991',
     }, // TODO contentId
     {
       order: 5030,
@@ -5212,7 +5212,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'jangheung',
       attractionName: '장흥 토요시장',
       overview: '장흥토요시장 — 장날·먹거리. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '132409',
     }, // TODO contentId
     {
       order: 5130,
@@ -5776,7 +5776,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'muju',
       attractionName: '무주덕유산리조트',
       overview: '덕유산리조트 — 스키·곤돌라. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126718',
     }, // TODO contentId
     {
       order: 5670,
@@ -5887,7 +5887,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'geochang',
       attractionName: '거창박물관',
       overview: '거창박물관 — 거창 역사·민속. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '130084',
     }, // TODO contentId
     {
       order: 5770,
@@ -6045,7 +6045,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gimhae',
       attractionName: '클레이아크김해미술관',
       overview: '클레이아크 — 김해 도자미술관. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '130841',
     }, // TODO contentId
     {
       order: 5920,
@@ -6934,7 +6934,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'cheongsong',
       attractionName: '청송 객주문학관',
       overview: '객주문학관 — 청송 문학·전시. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '1927047',
     }, // TODO contentId
     {
       order: 6760,

@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 106,
-  sessionPhase: 'Preview QA 반영',
+  sessionNo: 107,
+  sessionPhase: '잔여 contentId 보강',
   branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?hub=goyang&spot=kintex-goyang',
+  previewPath: '/korea/theme/scenic?hub=pyeongchang&spot=pyeongchang-olympic-plaza',
   qaShareSlug: 'scenic-hub-fill',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-contentid-107',
+    session: '테마여행 #107, 잔여 contentId 보강',
+    title: 'areaBased·DB로 선정 contentId 10곳 채움',
+    detail:
+      'searchKeyword 429를 피해 areaBasedList(시·군)+DB 엄격 매칭으로 잔여 null 중 10곳에 Tour contentId를 채웠습니다(529→539). 창원 시군구 코드 수정(마산6→창원16)·연기/군위 색인 추가. fill:korea-scenic-spot-content-ids 스크립트 추가. Preview에서 평창올림픽기념관·의왕 레일파크·화순 적벽 등 Tour LIVE 상세를 확인해 주세요. 잔여 null≈181(Tour 본명 부재·한도).',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-preview-qa-106',
     session: '테마여행 #106, Preview QA 반영',

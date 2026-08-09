@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-09T05:25:12.668Z",
+    "generatedAt": "2026-08-09T07:13:41.368Z",
     "count": 720,
     "imageCount": 683,
     "curation": "GATEO",
@@ -1966,7 +1966,7 @@
       "placeSlug": "pyeongchang-olympic-plaza",
       "lat": 37.666856,
       "lng": 128.7066309,
-      "contentId": null,
+      "contentId": "2733036",
       "overview": "2018 동계올림픽을 기리는 기념 공간. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/53/3453253_image2_1.jpg"
     },
@@ -3118,7 +3118,7 @@
       "placeSlug": "uiwang-rail-park",
       "lat": 37.308749,
       "lng": 126.9507791,
-      "contentId": null,
+      "contentId": "2388712",
       "overview": "의왕 왕송호수 일대의 레일바이크·레일파크 체험 공간. Tour 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/45/3549045_image2_1.jpg"
     },
@@ -7054,7 +7054,7 @@
       "placeSlug": "baekje-military-museum-nonsan",
       "lat": 36.1923939899,
       "lng": 127.1814015962,
-      "contentId": null,
+      "contentId": "130896",
       "overview": "백제군사박물관 — 계백·황산벌. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -7550,7 +7550,7 @@
       "placeSlug": "jangsu-horse-riding-ranch",
       "lat": 35.6999530574,
       "lng": 127.5106686951,
-      "contentId": null,
+      "contentId": "2787366",
       "overview": "장수승마장 — 승마·체험. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/23/3557423_image2_1.jpg"
     },
@@ -8046,7 +8046,7 @@
       "placeSlug": "hwasun-jeokbyeok",
       "lat": 35.163821,
       "lng": 127.084242,
-      "contentId": null,
+      "contentId": "128991",
       "overview": "화순적벽 — 붉은 절벽·명승. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/55/3348155_image2_1.JPG"
     },
@@ -8206,7 +8206,7 @@
       "placeSlug": "jangheung-saturday-market",
       "lat": 34.6773052718,
       "lng": 126.9031288719,
-      "contentId": null,
+      "contentId": "132409",
       "overview": "장흥토요시장 — 장날·먹거리. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/49/3535949_image2_1.jpg"
     },
@@ -9070,7 +9070,7 @@
       "placeSlug": "muju-deogyusan-resort",
       "lat": 35.881592,
       "lng": 127.7391107,
-      "contentId": null,
+      "contentId": "126718",
       "overview": "덕유산리조트 — 스키·곤돌라. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/44/3533344_image2_1.jpg"
     },
@@ -9230,7 +9230,7 @@
       "placeSlug": "geochang-museum",
       "lat": 35.6734631366,
       "lng": 127.9102618219,
-      "contentId": null,
+      "contentId": "130084",
       "overview": "거창박물관 — 거창 역사·민속. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -9470,7 +9470,7 @@
       "placeSlug": "clayarch-gimhae-museum",
       "lat": 35.2506781,
       "lng": 128.7448197,
-      "contentId": null,
+      "contentId": "130841",
       "overview": "클레이아크 — 김해 도자미술관. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -10814,7 +10814,7 @@
       "placeSlug": "cheongsong-gaekju-literature-museum",
       "lat": 36.434,
       "lng": 129.055,
-      "contentId": null,
+      "contentId": "1927047",
       "overview": "객주문학관 — 청송 문학·전시. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/31/3501031_image2_1.jpg"
     },

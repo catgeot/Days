@@ -2,7 +2,7 @@
   "meta": {
     "version": 1,
     "generatedAt": "2026-08-09T05:22:57.937Z",
-    "hubCount": 160,
+    "hubCount": 162,
     "source": "TourAPI areaCode + cityAttractionHubs name match"
   },
   "byHubId": {
@@ -384,7 +384,7 @@
     },
     "changwon": {
       "areaCode": "36",
-      "sigunguCode": "6"
+      "sigunguCode": "16"
     },
     "miryang": {
       "areaCode": "36",
@@ -645,6 +645,14 @@
     "sejong": {
       "areaCode": "8",
       "sigunguCode": "1"
+    },
+    "yeongi": {
+      "areaCode": "8",
+      "sigunguCode": "1"
+    },
+    "gunwi": {
+      "areaCode": "4",
+      "sigunguCode": "9"
     }
   }
 }

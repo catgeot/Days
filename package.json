@@ -37,6 +37,7 @@
     "smoke:korea-top10-scenic": "node scripts/smoke-korea-top10-scenic.mjs",
     "generate:korea-scenic-spots": "node scripts/generate-korea-scenic-spots.mjs",
     "fill:korea-scenic-spot-images": "node scripts/fill-korea-scenic-spot-images.mjs",
+    "fill:korea-scenic-spot-content-ids": "node scripts/fill-korea-scenic-spot-content-ids.mjs",
     "audit:korea-scenic-spots": "node scripts/audit-korea-scenic-spots.mjs",
     "report:korea-scenic-empty-hubs": "node scripts/report-korea-scenic-empty-hubs.mjs",
     "draft:korea-scenic-hub-batch": "node scripts/draft-korea-scenic-hub-batch.mjs",

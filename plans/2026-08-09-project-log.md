@@ -2,9 +2,26 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
+## 테마여행 #107, 잔여 contentId 보강
+
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip (push 후) · Preview 사람 QA 대기
+
+- **한 일**: `fill:korea-scenic-spot-content-ids` — searchKeyword 429 회피 · areaBasedList(시·군)+DB 엄격 매칭으로 contentId **10곳** 채움(529→539 · 잔여 null 181) · 창원 시군구 6→16 · 연기/군위 색인 · 알펜시아 스키장 오매칭 제외
+- **채움 예**: 평창올림픽기념관 `2733036` · 의왕 레일파크 `2388712` · 화순 적벽(물염적벽) `128991` · 무주덕유산리조트 `126718` · 논산 백제군사박물관 · 장수승마장 · 장흥 토요시장 · 거창박물관 · 클레이아크김해 · 청송 객주문학관
+- **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `npm run build` · (nearby LIVE는 Tour timeout — 환경 한도)
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
+- **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=pyeongchang&spot=pyeongchang-olympic-plaza` · `?hub=uiwang&spot=uiwang-rail-park` · `?hub=hwasun&spot=hwasun-jeokbyeok`
+- **작업 로그**: 「areaBased·DB로 선정 contentId 10곳 채움」
+- **남은 일**: 잔여 null≈181(Tour 본명 부재·한도 해제 후 재실행) · 박물관 3곳 썸네일 LIVE · 폴리시/릴리스 · 사람 Preview QA
+- **다음 채팅명**:
+
+```
+테마여행 #108, 잔여 contentId 보강
+```
+
 ## 테마여행 #106, Preview QA 반영
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `1166719c` · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `1166719c` · ✅ #107 contentId 보강
 
 - **원인**: #105 SSOT `overview`는 채워졌으나 `ScenicPage.toModalSpot`이 `overview`를 모달에 안 넘겨 킨텍스가 「Tour 상세 없음」만 표시
 - **한 일**: `toModalSpot`에 `overview` 전달 · curated 경로 이미지 정규화 · TourAPI 부재 안내 문장 사용자 본문에서 제거
@@ -12,12 +29,8 @@
 - **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
 - **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=goyang&spot=kintex-goyang` · `?hub=gapyeong&spot=garden-of-morning-calm`
 - **작업 로그**: 「킨텍스 overview 모달 전달 수정」
-- **남은 일**: 사람 Preview QA(킨텍스 개요·썸네일) · 잔여 contentId LIVE · 폴리시/릴리스
-- **다음 채팅명**:
-
-```
-테마여행 #107, 잔여 contentId 보강
-```
+- **남은 일**: ✅ #107 잔여 contentId
+- **다음 채팅명**: `테마여행 #107, 잔여 contentId 보강` → 완료(위 #107 절)
 
 ## 테마여행 #105, 선정 contentId 보강
 
