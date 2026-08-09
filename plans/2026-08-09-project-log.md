@@ -4,7 +4,7 @@
 
 ## 테마여행 #114, 내주변 양구 관내 누락
 
-**상태**: feature `cursor/scenic-nearby-yanggu-7658` · Preview QA 대기
+**상태**: feature `cursor/scenic-nearby-yanggu-7658` · PR [#79](https://github.com/catgeot/Days/pull/79) · tip `5d6700fc` · Preview QA 대기
 
 - **증상**: 양구 「내 주변」관광지에서 관내 제외된 것처럼 인제 등이 먼저 노출
 - **원인**: bbox 후보 806건인데 `limit 500`만 가져와 거리순 전에 관내 누락
