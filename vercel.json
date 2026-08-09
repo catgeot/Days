@@ -1,13 +1,18 @@
 {
   "redirects": [
     {
+      "source": "/qa/scenic-food-naver",
+      "destination": "https://www.gateo.kr/korea/theme/scenic",
+      "permanent": false
+    },
+    {
       "source": "/qa/scenic-hub-fill",
-      "destination": "https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=pyeongchang&spot=pyeongchang-olympic-plaza",
+      "destination": "https://www.gateo.kr/korea/theme/scenic",
       "permanent": false
     },
     {
       "source": "/qa/scenic-yangyang",
-      "destination": "https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=yangyang",
+      "destination": "https://www.gateo.kr/korea/theme/scenic?hub=yangyang",
       "permanent": false
     },
     {

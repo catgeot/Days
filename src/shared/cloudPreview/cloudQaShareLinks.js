@@ -8,19 +8,24 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'scenic-food-naver',
+    label: '맛집 상세 네이버 링크',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/korea/theme/scenic',
+    active: true,
+  },
+  {
     slug: 'scenic-hub-fill',
-    label: '잔여 contentId·Tour 상세',
-    branch: 'cursor/scenic-yangyang-b772',
-    destination:
-      'https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=pyeongchang&spot=pyeongchang-olympic-plaza',
+    label: '빈 hub 보강·선정 명소 (main)',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/korea/theme/scenic',
     active: true,
   },
   {
     slug: 'scenic-yangyang',
     label: '양양 GATEO 선정 명소',
-    branch: 'cursor/scenic-yangyang-b772',
-    destination:
-      'https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=yangyang',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/korea/theme/scenic?hub=yangyang',
     active: true,
   },
   {

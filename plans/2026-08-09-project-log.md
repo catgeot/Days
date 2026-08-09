@@ -2,9 +2,105 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
+## 테마여행 #108, main 병합·전반 점검
+
+**상태**: PR [#75](https://github.com/catgeot/Days/pull/75) · `cursor/scenic-yangyang-b772` → **main** 병합
+
+- **판단**: 시·군 빈 hub 큐 **소진**(#104) · 기능/폴백(#105–#106) 포함 · 잔여는 Tour **contentId null ≈181**(일일 쿼터·본명 부재) 데이터만
+- **한 일**: main과 충돌 해소(일지·작업로그 · 네이버 #76 포함) 후 VERIFY · main 병합
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill` → PROD `/korea/theme/scenic`
+- **PROD**: `https://www.gateo.kr/korea/theme/scenic`
+- **남은 일**: Tour 한도 해제 후 `fill:korea-scenic-spot-content-ids` 잔여 · 박물관 썸네일 · 폴리시/릴리스 · 사람 전반 QA
+- **다음 채팅명**:
+
+```
+테마여행 #109, 잔여 contentId 보강
+```
+
+## 홈 PC 레이아웃 정리 (main · push ✅)
+
+**상태**: `main` tip `0fd834f` · `origin/main` push 완료 (세션 종료)
+
+- **한 일**: (1) 투톱·테마 카테고리 겹침 → PC 레일 `top-[14.5rem] justify-start` (2) 나라칩·LOGIN/LOGBOOK → 가용 높이 `calc(100dvh-14.5rem-6.5rem)` (3) 「↑/↓ 더보기」제거 (4) Windows `CloudPreviewWorkLog.jsx` 명시 import
+- **커밋**: `1edfc07` · `15690f8` · `794e188` · `0fd834f`
+- **QA**: PROD/로컬 PC 홈 — 테마 펼침·중동/오세아니아 · LOGIN/LOGBOOK
+
+## 테마여행 #89, 네이버 검색 쿼리
+
+**상태**: feature `cursor/scenic-food-naver-link-b366` · PR [#76](https://github.com/catgeot/Days/pull/76) · tip `e79b5a1a` · Preview 사람 QA 대기
+
+- **한 일**: 네이버 쿼리 분기 — **맛집만 지역+상호** · 관광지·명소·명승·레포츠·문화는 **고유명만**
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-food-naver`
+- **Preview**: `https://days-git-cursor-scenic-food-naver-link-b366-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: 「명소는 고유명 · 맛집만 지역+상호」
+- **남은 일**: 사람 Preview QA (명소 vs 맛집 검색 결과 비교) · ✅ hub 보강은 별도 #83–#107 → main(#108)
+- **다음 채팅명**: (hub 보강 큐는 #104 소진 · contentId는 #109)
+
+## 테마여행 #88, 네이버 링크 확장
+
+**상태**: feature `cursor/scenic-food-naver-link-b366` · PR [#76](https://github.com/catgeot/Days/pull/76) · tip `14c86f3b` · ✅ 쿼리 분기는 #89
+
+- **한 일**: 맛집뿐 아니라 **명승·관광지·레포츠·문화** 상세에도 동일 위치(개요 아래·주소 위) 「네이버 상세정보 보기」 노출
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-food-naver`
+- **Preview**: `https://days-git-cursor-scenic-food-naver-link-b366-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: 「레포츠·관광지·문화에도 네이버 칩」
+
+## 테마여행 #87, 네이버 버튼 위치
+
+**상태**: feature `cursor/scenic-food-naver-link-b366` · PR [#76](https://github.com/catgeot/Days/pull/76) · tip `92a6fdfe` · ✅ 확장은 #88
+
+- **한 일**: 네이버 칩을 **개요 아래 · 주소 위**로 이동 (주소·문의·영업시간 흐름 유지)
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-food-naver`
+- **Preview**: `https://days-git-cursor-scenic-food-naver-link-b366-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: 「개요 아래·주소 위로 이동」
+
+## 테마여행 #86, 네이버 문구·위치
+
+**상태**: feature `cursor/scenic-food-naver-link-b366` · PR [#76](https://github.com/catgeot/Days/pull/76) · tip `963c9cbd` · ✅ 위치 재조정은 #87
+
+- **한 일**: 문구 「네이버 상세정보 보기」 · 상세 본문에서 **전화 바로 아래**로 이동
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-food-naver`
+- **Preview**: `https://days-git-cursor-scenic-food-naver-link-b366-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: 「네이버 상세정보 보기 · 전화 아래」
+
+## 테마여행 #85, 네이버 버튼 컴팩트
+
+**상태**: feature `cursor/scenic-food-naver-link-b366` · PR [#76](https://github.com/catgeot/Days/pull/76) · tip `b63883b0` · ✅ 문구·위치는 #86
+
+- **한 일**: 네이버 이동 버튼을 한 줄 칩으로 축소 (보조문구·섹션 라벨 제거)
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-food-naver`
+- **Preview**: `https://days-git-cursor-scenic-food-naver-link-b366-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: 「네이버로 이동 버튼 축소」
+
+## 테마여행 #84, 네이버 이동 버튼
+
+**상태**: feature `cursor/scenic-food-naver-link-b366` · PR [#76](https://github.com/catgeot/Days/pull/76) · tip `3582e24e` · ✅ 컴팩트 조정은 #85
+
+- **한 일**: 맛집 상세 네이버 링크를 「N · 네이버로 이동 · 새 탭에서 네이버 검색」 CTA 버튼으로 교체 (초록 톤·외부이동 아이콘)
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-food-naver`
+- **Preview**: `https://days-git-cursor-scenic-food-naver-link-b366-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: 「네이버로 이동 CTA 버튼」
+
+## 테마여행 #83, 맛집 네이버 링크
+
+**상태**: feature `cursor/scenic-food-naver-link-b366` · PR [#76](https://github.com/catgeot/Days/pull/76) · tip `475fdebb` · Preview 사람 QA 대기
+
+- **한 일**: 명승·축제 연계 맛집 상세(`ThemeSpotDetailModal`) 본문에 지역+상호 네이버 검색 링크 「네이버에서 보기」 추가 (TourAPI에 place id 없어 검색 연결)
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-food-naver`
+- **Preview**: `https://days-git-cursor-scenic-food-naver-link-b366-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: 「맛집 상세 → 네이버에서 보기」
+- **남은 일**: ✅ #84 버튼 직관화
+
 ## 테마여행 #107, 잔여 contentId 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `b8d98cb4` · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `b8d98cb4` · ✅ #108 main 병합
 
 - **한 일**: `fill:korea-scenic-spot-content-ids` — searchKeyword 429 회피 · areaBasedList(시·군)+DB 엄격 매칭으로 contentId **10곳** 채움(529→539 · 잔여 null 181) · 창원 시군구 6→16 · 연기/군위 색인 · 알펜시아 스키장 오매칭 제외
 - **채움 예**: 평창올림픽기념관 `2733036` · 의왕 레일파크 `2388712` · 화순 적벽(물염적벽) `128991` · 무주덕유산리조트 `126718` · 논산 백제군사박물관 · 장수승마장 · 장흥 토요시장 · 거창박물관 · 클레이아크김해 · 청송 객주문학관
@@ -12,12 +108,8 @@
 - **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
 - **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=pyeongchang&spot=pyeongchang-olympic-plaza` · `?hub=uiwang&spot=uiwang-rail-park` · `?hub=hwasun&spot=hwasun-jeokbyeok`
 - **작업 로그**: 「areaBased·DB로 선정 contentId 10곳 채움」
-- **남은 일**: 잔여 null≈181(Tour 본명 부재·한도 해제 후 재실행) · 박물관 3곳 썸네일 LIVE · 폴리시/릴리스 · 사람 Preview QA
-- **다음 채팅명**:
-
-```
-테마여행 #108, 잔여 contentId 보강
-```
+- **남은 일**: ✅ #108 main 병합 · 잔여 null≈181은 후속
+- **다음 채팅명**: `테마여행 #108, main 병합·전반 점검` → 완료(위 #108 절)
 
 ## 테마여행 #106, Preview QA 반영
 

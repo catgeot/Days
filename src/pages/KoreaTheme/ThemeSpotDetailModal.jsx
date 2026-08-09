@@ -544,6 +544,63 @@ function foodPlaceLabel(spot) {
   return String(spot?.locality || spot?.region || '').trim();
 }
 
+/**
+ * 네이버 검색 URL.
+ * 맛집(동명 많음)만 지역+상호 · 관광지·명소·명승·레포츠·문화는 고유명만
+ * (지역을 붙이면 본문/플레이스 직행이 깨지기 쉬움).
+ * @param {{
+ *   name?: string,
+ *   locality?: string,
+ *   region?: string,
+ *   areaLabel?: string,
+ *   contentTypeId?: string | null,
+ * } | null} spot
+ * @param {{ addr1?: string, addr2?: string } | null} [detail]
+ */
+function spotNaverSearchUrl(spot, detail) {
+  const name = String(spot?.name || '').trim();
+  if (!name) return '';
+  const isFood =
+    String(spot?.contentTypeId || '') === RESTAURANT_CONTENT_TYPE_ID;
+  if (!isFood) {
+    return `https://search.naver.com/search.naver?query=${encodeURIComponent(name)}`;
+  }
+  const locality = String(spot?.locality || '').trim();
+  const areaLabel = String(spot?.areaLabel || '').trim();
+  const region = String(spot?.region || '').trim();
+  const addrHint = String(detail?.addr1 || '')
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .join(' ');
+  const place = locality || areaLabel || addrHint || region;
+  const q = [place, name].filter(Boolean).join(' ');
+  return `https://search.naver.com/search.naver?query=${encodeURIComponent(q)}`;
+}
+
+function NaverOutboundButton({ href }) {
+  const url = String(href || '').trim();
+  if (!url) return null;
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="네이버 상세정보 보기 · 새 탭에서 열기"
+      className="inline-flex items-center gap-1.5 rounded-full border border-[#03C75A]/50 bg-[#E8F9EF] px-2.5 py-1.5 text-xs font-bold text-[#027A38] transition-colors hover:border-[#03C75A]/75 hover:bg-[#D9F5E5]"
+    >
+      <span
+        className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] bg-[#03C75A] text-[9px] font-black leading-none text-white"
+        aria-hidden="true"
+      >
+        N
+      </span>
+      네이버 상세정보 보기
+      <ExternalLink size={12} aria-hidden="true" />
+    </a>
+  );
+}
+
 function toTypedModalSpot(spot, contentTypeId) {
   if (!spot) return null;
   const place = foodPlaceLabel(spot);
@@ -1145,6 +1202,11 @@ export default function ThemeSpotDetailModal({
     return [a1, a2].filter(Boolean).join(' ');
   }, [detail?.addr1, detail?.addr2]);
 
+  const naverSearchUrl = useMemo(
+    () => spotNaverSearchUrl(spot, detail),
+    [spot, detail],
+  );
+
   const tel = String(detail?.tel || '').trim();
 
   const introRows = useMemo(() => {
@@ -1402,6 +1464,11 @@ export default function ThemeSpotDetailModal({
             {!detailLoading && detail ? (
               <dl className="min-w-0 space-y-4">
                 {overview ? <DetailRow label="개요">{overview}</DetailRow> : null}
+                {naverSearchUrl ? (
+                  <div className="min-w-0">
+                    <NaverOutboundButton href={naverSearchUrl} />
+                  </div>
+                ) : null}
                 {Array.isArray(detail.heritageMeta)
                   ? detail.heritageMeta.map((row) => (
                       <DetailRow key={row.label} label={row.label}>
@@ -1449,6 +1516,10 @@ export default function ThemeSpotDetailModal({
                   </DetailRow>
                 ))}
               </dl>
+            ) : null}
+
+            {(detailLoading || !detail) && naverSearchUrl ? (
+              <NaverOutboundButton href={naverSearchUrl} />
             ) : null}
 
             {galleryList.length > 0 ? (
