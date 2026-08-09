@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 110,
-  sessionPhase: '분류칩 기본 중소수',
-  branch: 'cursor/scenic-default-chip-6098',
+  sessionNo: 113,
+  sessionPhase: '세권 칩 메인 반영 전 점검',
+  branch: 'cursor/scenic-mid-cluster-67a8',
   previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'scenic-default-chip',
+  qaShareSlug: 'scenic-mid-cluster',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-mid-cluster-113',
+    session: '테마여행 #113, 세권 칩 메인 반영 전 점검',
+    title: '세권 칩 VERIFY·UI QA GO',
+    detail:
+      'main 반영 전 점검: SSOT cover·audit/smoke/build PASS · 서울 기본(세권 없음)→경기 북부·hub7→동부→강원 영서·홍천 · 명승/관광지 세권 없음. 사람 Preview OK 후 PR #78 merge.',
+    at: '2026-08-09',
+  },
+  {
+    id: '2026-08-09-scenic-mid-cluster-112',
+    session: '테마여행 #112, 세권 칩 SSOT·UI',
+    title: '명소 세권(경기 동서남북 등) 칩',
+    detail:
+      '경기·강원·충청·전라·경상에 세권 중분류를 넣었습니다. 경기 선택 시 북·동·서·남 4칩 → 시·군 hub. 강원은 영서·영동·접경·산간. Preview에서 수도권→경기→북부, 강원→영서 흐름을 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-default-chip-110',
     session: '테마여행 #110, 분류칩 기본 중소수',

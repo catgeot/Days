@@ -1,0 +1,982 @@
+{
+  "meta": {
+    "version": 1,
+    "generatedAt": "2026-08-09T12:31:50.484Z",
+    "source": "scripts/data/korea-scenic-cluster-overrides.mjs"
+  },
+  "areas": {
+    "31": {
+      "clusters": [
+        {
+          "id": "gg-north",
+          "label": "북부",
+          "hubIds": [
+            "goyang",
+            "paju",
+            "uijeongbu",
+            "yangju",
+            "dongducheon",
+            "pocheon",
+            "yeoncheon"
+          ]
+        },
+        {
+          "id": "gg-east",
+          "label": "동부",
+          "hubIds": [
+            "hanam",
+            "namyangju",
+            "guri",
+            "gapyeong",
+            "yangpyeong",
+            "yeoju",
+            "icheon",
+            "gwangju_gi"
+          ]
+        },
+        {
+          "id": "gg-west",
+          "label": "서부",
+          "hubIds": [
+            "gimpo",
+            "bucheon",
+            "gwangmyeong",
+            "siheung",
+            "ansan",
+            "hwaseong",
+            "pyeongtaek"
+          ]
+        },
+        {
+          "id": "gg-south",
+          "label": "남부",
+          "hubIds": [
+            "suwon",
+            "seongnam",
+            "yongin",
+            "anyang",
+            "gunpo",
+            "uiwang",
+            "gwacheon",
+            "osan",
+            "anseong"
+          ]
+        }
+      ]
+    },
+    "32": {
+      "clusters": [
+        {
+          "id": "gw-yeongseo",
+          "label": "영서",
+          "hubIds": [
+            "chuncheon",
+            "hongcheon",
+            "hoengseong",
+            "wonju"
+          ]
+        },
+        {
+          "id": "gw-yeongdong",
+          "label": "영동",
+          "hubIds": [
+            "gangneung",
+            "sokcho",
+            "yangyang",
+            "goseong",
+            "donghae",
+            "samcheok"
+          ]
+        },
+        {
+          "id": "gw-border",
+          "label": "접경",
+          "hubIds": [
+            "cheorwon",
+            "hwacheon",
+            "yanggu",
+            "inje"
+          ]
+        },
+        {
+          "id": "gw-sangan",
+          "label": "산간",
+          "hubIds": [
+            "pyeongchang",
+            "jeongseon",
+            "yeongwol",
+            "taebaek"
+          ]
+        }
+      ]
+    },
+    "33": {
+      "clusters": [
+        {
+          "id": "cb-cheongju",
+          "label": "청주권",
+          "hubIds": [
+            "cheongju",
+            "jincheon",
+            "jeungpyeong",
+            "eumseong",
+            "goesan"
+          ]
+        },
+        {
+          "id": "cb-north",
+          "label": "북부",
+          "hubIds": [
+            "chungju",
+            "jecheon",
+            "danyang"
+          ]
+        },
+        {
+          "id": "cb-south",
+          "label": "남부",
+          "hubIds": [
+            "boeun",
+            "okcheon",
+            "yeongdong"
+          ]
+        }
+      ]
+    },
+    "34": {
+      "clusters": [
+        {
+          "id": "cn-north",
+          "label": "북부",
+          "hubIds": [
+            "cheonan",
+            "asan",
+            "dangjin"
+          ]
+        },
+        {
+          "id": "cn-west",
+          "label": "서해",
+          "hubIds": [
+            "seosan",
+            "taean",
+            "boryeong",
+            "seocheon"
+          ]
+        },
+        {
+          "id": "cn-naepo",
+          "label": "내포",
+          "hubIds": [
+            "hongseong",
+            "yesan",
+            "cheongyang"
+          ]
+        },
+        {
+          "id": "cn-baekje",
+          "label": "백제·내륙",
+          "hubIds": [
+            "gongju",
+            "buyeo",
+            "nonsan",
+            "gyeryong",
+            "geumsan"
+          ]
+        }
+      ]
+    },
+    "35": {
+      "clusters": [
+        {
+          "id": "gb-silla",
+          "label": "신라",
+          "hubIds": [
+            "gyeongju",
+            "pohang",
+            "gyeongsan",
+            "yeongcheon",
+            "cheongdo"
+          ]
+        },
+        {
+          "id": "gb-gaya",
+          "label": "가야·낙동",
+          "hubIds": [
+            "goryeong",
+            "sangju",
+            "chilgok",
+            "gumi",
+            "gimcheon",
+            "seongju"
+          ]
+        },
+        {
+          "id": "gb-confucian",
+          "label": "유교·북부",
+          "hubIds": [
+            "andong",
+            "yeongju",
+            "yecheon",
+            "mungyeong",
+            "uiseong",
+            "gunwi"
+          ]
+        },
+        {
+          "id": "gb-mountain",
+          "label": "산간·동해",
+          "hubIds": [
+            "bonghwa",
+            "yeongyang",
+            "cheongsong",
+            "yeongdeok",
+            "uljin",
+            "ulleung",
+            "dokdo"
+          ]
+        }
+      ]
+    },
+    "36": {
+      "clusters": [
+        {
+          "id": "gn-coast",
+          "label": "남해안",
+          "hubIds": [
+            "changwon",
+            "tongyeong",
+            "geoje",
+            "sacheon",
+            "goseongnam",
+            "namhae",
+            "hadong"
+          ]
+        },
+        {
+          "id": "gn-jiri",
+          "label": "지리산·서부",
+          "hubIds": [
+            "jinju",
+            "sancheong",
+            "hamyang",
+            "geochang",
+            "hapcheon"
+          ]
+        },
+        {
+          "id": "gn-nakdong",
+          "label": "낙동·중부",
+          "hubIds": [
+            "gimhae",
+            "yangsan",
+            "miryang",
+            "uiryeong",
+            "haman",
+            "changnyeong"
+          ]
+        }
+      ]
+    },
+    "37": {
+      "clusters": [
+        {
+          "id": "jb-jeonju",
+          "label": "전주권",
+          "hubIds": [
+            "jeonju",
+            "wanju",
+            "iksan",
+            "gimje"
+          ]
+        },
+        {
+          "id": "jb-west",
+          "label": "서부",
+          "hubIds": [
+            "gunsan",
+            "buan",
+            "gochang",
+            "jeongeup"
+          ]
+        },
+        {
+          "id": "jb-east",
+          "label": "동부",
+          "hubIds": [
+            "namwon",
+            "muju",
+            "jinan",
+            "jangsu",
+            "imsil",
+            "sunchang"
+          ]
+        }
+      ]
+    },
+    "38": {
+      "clusters": [
+        {
+          "id": "jn-east",
+          "label": "동부",
+          "hubIds": [
+            "yeosu",
+            "suncheon",
+            "gwangyang",
+            "gurye",
+            "gokseong"
+          ]
+        },
+        {
+          "id": "jn-north",
+          "label": "북부",
+          "hubIds": [
+            "naju",
+            "damyang",
+            "jangseong",
+            "hwasun",
+            "hampyeong",
+            "yeonggwang"
+          ]
+        },
+        {
+          "id": "jn-west",
+          "label": "서부",
+          "hubIds": [
+            "mokpo",
+            "muan",
+            "sinan",
+            "jindo",
+            "haenam",
+            "wando"
+          ]
+        },
+        {
+          "id": "jn-mid",
+          "label": "중남",
+          "hubIds": [
+            "gangjin",
+            "jangheung",
+            "boseong",
+            "goheung",
+            "yeongam"
+          ]
+        }
+      ]
+    }
+  },
+  "byHubId": {
+    "goyang": {
+      "areaCode": "31",
+      "clusterId": "gg-north"
+    },
+    "paju": {
+      "areaCode": "31",
+      "clusterId": "gg-north"
+    },
+    "uijeongbu": {
+      "areaCode": "31",
+      "clusterId": "gg-north"
+    },
+    "yangju": {
+      "areaCode": "31",
+      "clusterId": "gg-north"
+    },
+    "dongducheon": {
+      "areaCode": "31",
+      "clusterId": "gg-north"
+    },
+    "pocheon": {
+      "areaCode": "31",
+      "clusterId": "gg-north"
+    },
+    "yeoncheon": {
+      "areaCode": "31",
+      "clusterId": "gg-north"
+    },
+    "hanam": {
+      "areaCode": "31",
+      "clusterId": "gg-east"
+    },
+    "namyangju": {
+      "areaCode": "31",
+      "clusterId": "gg-east"
+    },
+    "guri": {
+      "areaCode": "31",
+      "clusterId": "gg-east"
+    },
+    "gapyeong": {
+      "areaCode": "31",
+      "clusterId": "gg-east"
+    },
+    "yangpyeong": {
+      "areaCode": "31",
+      "clusterId": "gg-east"
+    },
+    "yeoju": {
+      "areaCode": "31",
+      "clusterId": "gg-east"
+    },
+    "icheon": {
+      "areaCode": "31",
+      "clusterId": "gg-east"
+    },
+    "gwangju_gi": {
+      "areaCode": "31",
+      "clusterId": "gg-east"
+    },
+    "gimpo": {
+      "areaCode": "31",
+      "clusterId": "gg-west"
+    },
+    "bucheon": {
+      "areaCode": "31",
+      "clusterId": "gg-west"
+    },
+    "gwangmyeong": {
+      "areaCode": "31",
+      "clusterId": "gg-west"
+    },
+    "siheung": {
+      "areaCode": "31",
+      "clusterId": "gg-west"
+    },
+    "ansan": {
+      "areaCode": "31",
+      "clusterId": "gg-west"
+    },
+    "hwaseong": {
+      "areaCode": "31",
+      "clusterId": "gg-west"
+    },
+    "pyeongtaek": {
+      "areaCode": "31",
+      "clusterId": "gg-west"
+    },
+    "suwon": {
+      "areaCode": "31",
+      "clusterId": "gg-south"
+    },
+    "seongnam": {
+      "areaCode": "31",
+      "clusterId": "gg-south"
+    },
+    "yongin": {
+      "areaCode": "31",
+      "clusterId": "gg-south"
+    },
+    "anyang": {
+      "areaCode": "31",
+      "clusterId": "gg-south"
+    },
+    "gunpo": {
+      "areaCode": "31",
+      "clusterId": "gg-south"
+    },
+    "uiwang": {
+      "areaCode": "31",
+      "clusterId": "gg-south"
+    },
+    "gwacheon": {
+      "areaCode": "31",
+      "clusterId": "gg-south"
+    },
+    "osan": {
+      "areaCode": "31",
+      "clusterId": "gg-south"
+    },
+    "anseong": {
+      "areaCode": "31",
+      "clusterId": "gg-south"
+    },
+    "chuncheon": {
+      "areaCode": "32",
+      "clusterId": "gw-yeongseo"
+    },
+    "hongcheon": {
+      "areaCode": "32",
+      "clusterId": "gw-yeongseo"
+    },
+    "hoengseong": {
+      "areaCode": "32",
+      "clusterId": "gw-yeongseo"
+    },
+    "wonju": {
+      "areaCode": "32",
+      "clusterId": "gw-yeongseo"
+    },
+    "gangneung": {
+      "areaCode": "32",
+      "clusterId": "gw-yeongdong"
+    },
+    "sokcho": {
+      "areaCode": "32",
+      "clusterId": "gw-yeongdong"
+    },
+    "yangyang": {
+      "areaCode": "32",
+      "clusterId": "gw-yeongdong"
+    },
+    "goseong": {
+      "areaCode": "32",
+      "clusterId": "gw-yeongdong"
+    },
+    "donghae": {
+      "areaCode": "32",
+      "clusterId": "gw-yeongdong"
+    },
+    "samcheok": {
+      "areaCode": "32",
+      "clusterId": "gw-yeongdong"
+    },
+    "cheorwon": {
+      "areaCode": "32",
+      "clusterId": "gw-border"
+    },
+    "hwacheon": {
+      "areaCode": "32",
+      "clusterId": "gw-border"
+    },
+    "yanggu": {
+      "areaCode": "32",
+      "clusterId": "gw-border"
+    },
+    "inje": {
+      "areaCode": "32",
+      "clusterId": "gw-border"
+    },
+    "pyeongchang": {
+      "areaCode": "32",
+      "clusterId": "gw-sangan"
+    },
+    "jeongseon": {
+      "areaCode": "32",
+      "clusterId": "gw-sangan"
+    },
+    "yeongwol": {
+      "areaCode": "32",
+      "clusterId": "gw-sangan"
+    },
+    "taebaek": {
+      "areaCode": "32",
+      "clusterId": "gw-sangan"
+    },
+    "cheongju": {
+      "areaCode": "33",
+      "clusterId": "cb-cheongju"
+    },
+    "jincheon": {
+      "areaCode": "33",
+      "clusterId": "cb-cheongju"
+    },
+    "jeungpyeong": {
+      "areaCode": "33",
+      "clusterId": "cb-cheongju"
+    },
+    "eumseong": {
+      "areaCode": "33",
+      "clusterId": "cb-cheongju"
+    },
+    "goesan": {
+      "areaCode": "33",
+      "clusterId": "cb-cheongju"
+    },
+    "chungju": {
+      "areaCode": "33",
+      "clusterId": "cb-north"
+    },
+    "jecheon": {
+      "areaCode": "33",
+      "clusterId": "cb-north"
+    },
+    "danyang": {
+      "areaCode": "33",
+      "clusterId": "cb-north"
+    },
+    "boeun": {
+      "areaCode": "33",
+      "clusterId": "cb-south"
+    },
+    "okcheon": {
+      "areaCode": "33",
+      "clusterId": "cb-south"
+    },
+    "yeongdong": {
+      "areaCode": "33",
+      "clusterId": "cb-south"
+    },
+    "cheonan": {
+      "areaCode": "34",
+      "clusterId": "cn-north"
+    },
+    "asan": {
+      "areaCode": "34",
+      "clusterId": "cn-north"
+    },
+    "dangjin": {
+      "areaCode": "34",
+      "clusterId": "cn-north"
+    },
+    "seosan": {
+      "areaCode": "34",
+      "clusterId": "cn-west"
+    },
+    "taean": {
+      "areaCode": "34",
+      "clusterId": "cn-west"
+    },
+    "boryeong": {
+      "areaCode": "34",
+      "clusterId": "cn-west"
+    },
+    "seocheon": {
+      "areaCode": "34",
+      "clusterId": "cn-west"
+    },
+    "hongseong": {
+      "areaCode": "34",
+      "clusterId": "cn-naepo"
+    },
+    "yesan": {
+      "areaCode": "34",
+      "clusterId": "cn-naepo"
+    },
+    "cheongyang": {
+      "areaCode": "34",
+      "clusterId": "cn-naepo"
+    },
+    "gongju": {
+      "areaCode": "34",
+      "clusterId": "cn-baekje"
+    },
+    "buyeo": {
+      "areaCode": "34",
+      "clusterId": "cn-baekje"
+    },
+    "nonsan": {
+      "areaCode": "34",
+      "clusterId": "cn-baekje"
+    },
+    "gyeryong": {
+      "areaCode": "34",
+      "clusterId": "cn-baekje"
+    },
+    "geumsan": {
+      "areaCode": "34",
+      "clusterId": "cn-baekje"
+    },
+    "gyeongju": {
+      "areaCode": "35",
+      "clusterId": "gb-silla"
+    },
+    "pohang": {
+      "areaCode": "35",
+      "clusterId": "gb-silla"
+    },
+    "gyeongsan": {
+      "areaCode": "35",
+      "clusterId": "gb-silla"
+    },
+    "yeongcheon": {
+      "areaCode": "35",
+      "clusterId": "gb-silla"
+    },
+    "cheongdo": {
+      "areaCode": "35",
+      "clusterId": "gb-silla"
+    },
+    "goryeong": {
+      "areaCode": "35",
+      "clusterId": "gb-gaya"
+    },
+    "sangju": {
+      "areaCode": "35",
+      "clusterId": "gb-gaya"
+    },
+    "chilgok": {
+      "areaCode": "35",
+      "clusterId": "gb-gaya"
+    },
+    "gumi": {
+      "areaCode": "35",
+      "clusterId": "gb-gaya"
+    },
+    "gimcheon": {
+      "areaCode": "35",
+      "clusterId": "gb-gaya"
+    },
+    "seongju": {
+      "areaCode": "35",
+      "clusterId": "gb-gaya"
+    },
+    "andong": {
+      "areaCode": "35",
+      "clusterId": "gb-confucian"
+    },
+    "yeongju": {
+      "areaCode": "35",
+      "clusterId": "gb-confucian"
+    },
+    "yecheon": {
+      "areaCode": "35",
+      "clusterId": "gb-confucian"
+    },
+    "mungyeong": {
+      "areaCode": "35",
+      "clusterId": "gb-confucian"
+    },
+    "uiseong": {
+      "areaCode": "35",
+      "clusterId": "gb-confucian"
+    },
+    "gunwi": {
+      "areaCode": "35",
+      "clusterId": "gb-confucian"
+    },
+    "bonghwa": {
+      "areaCode": "35",
+      "clusterId": "gb-mountain"
+    },
+    "yeongyang": {
+      "areaCode": "35",
+      "clusterId": "gb-mountain"
+    },
+    "cheongsong": {
+      "areaCode": "35",
+      "clusterId": "gb-mountain"
+    },
+    "yeongdeok": {
+      "areaCode": "35",
+      "clusterId": "gb-mountain"
+    },
+    "uljin": {
+      "areaCode": "35",
+      "clusterId": "gb-mountain"
+    },
+    "ulleung": {
+      "areaCode": "35",
+      "clusterId": "gb-mountain"
+    },
+    "dokdo": {
+      "areaCode": "35",
+      "clusterId": "gb-mountain"
+    },
+    "changwon": {
+      "areaCode": "36",
+      "clusterId": "gn-coast"
+    },
+    "tongyeong": {
+      "areaCode": "36",
+      "clusterId": "gn-coast"
+    },
+    "geoje": {
+      "areaCode": "36",
+      "clusterId": "gn-coast"
+    },
+    "sacheon": {
+      "areaCode": "36",
+      "clusterId": "gn-coast"
+    },
+    "goseongnam": {
+      "areaCode": "36",
+      "clusterId": "gn-coast"
+    },
+    "namhae": {
+      "areaCode": "36",
+      "clusterId": "gn-coast"
+    },
+    "hadong": {
+      "areaCode": "36",
+      "clusterId": "gn-coast"
+    },
+    "jinju": {
+      "areaCode": "36",
+      "clusterId": "gn-jiri"
+    },
+    "sancheong": {
+      "areaCode": "36",
+      "clusterId": "gn-jiri"
+    },
+    "hamyang": {
+      "areaCode": "36",
+      "clusterId": "gn-jiri"
+    },
+    "geochang": {
+      "areaCode": "36",
+      "clusterId": "gn-jiri"
+    },
+    "hapcheon": {
+      "areaCode": "36",
+      "clusterId": "gn-jiri"
+    },
+    "gimhae": {
+      "areaCode": "36",
+      "clusterId": "gn-nakdong"
+    },
+    "yangsan": {
+      "areaCode": "36",
+      "clusterId": "gn-nakdong"
+    },
+    "miryang": {
+      "areaCode": "36",
+      "clusterId": "gn-nakdong"
+    },
+    "uiryeong": {
+      "areaCode": "36",
+      "clusterId": "gn-nakdong"
+    },
+    "haman": {
+      "areaCode": "36",
+      "clusterId": "gn-nakdong"
+    },
+    "changnyeong": {
+      "areaCode": "36",
+      "clusterId": "gn-nakdong"
+    },
+    "jeonju": {
+      "areaCode": "37",
+      "clusterId": "jb-jeonju"
+    },
+    "wanju": {
+      "areaCode": "37",
+      "clusterId": "jb-jeonju"
+    },
+    "iksan": {
+      "areaCode": "37",
+      "clusterId": "jb-jeonju"
+    },
+    "gimje": {
+      "areaCode": "37",
+      "clusterId": "jb-jeonju"
+    },
+    "gunsan": {
+      "areaCode": "37",
+      "clusterId": "jb-west"
+    },
+    "buan": {
+      "areaCode": "37",
+      "clusterId": "jb-west"
+    },
+    "gochang": {
+      "areaCode": "37",
+      "clusterId": "jb-west"
+    },
+    "jeongeup": {
+      "areaCode": "37",
+      "clusterId": "jb-west"
+    },
+    "namwon": {
+      "areaCode": "37",
+      "clusterId": "jb-east"
+    },
+    "muju": {
+      "areaCode": "37",
+      "clusterId": "jb-east"
+    },
+    "jinan": {
+      "areaCode": "37",
+      "clusterId": "jb-east"
+    },
+    "jangsu": {
+      "areaCode": "37",
+      "clusterId": "jb-east"
+    },
+    "imsil": {
+      "areaCode": "37",
+      "clusterId": "jb-east"
+    },
+    "sunchang": {
+      "areaCode": "37",
+      "clusterId": "jb-east"
+    },
+    "yeosu": {
+      "areaCode": "38",
+      "clusterId": "jn-east"
+    },
+    "suncheon": {
+      "areaCode": "38",
+      "clusterId": "jn-east"
+    },
+    "gwangyang": {
+      "areaCode": "38",
+      "clusterId": "jn-east"
+    },
+    "gurye": {
+      "areaCode": "38",
+      "clusterId": "jn-east"
+    },
+    "gokseong": {
+      "areaCode": "38",
+      "clusterId": "jn-east"
+    },
+    "naju": {
+      "areaCode": "38",
+      "clusterId": "jn-north"
+    },
+    "damyang": {
+      "areaCode": "38",
+      "clusterId": "jn-north"
+    },
+    "jangseong": {
+      "areaCode": "38",
+      "clusterId": "jn-north"
+    },
+    "hwasun": {
+      "areaCode": "38",
+      "clusterId": "jn-north"
+    },
+    "hampyeong": {
+      "areaCode": "38",
+      "clusterId": "jn-north"
+    },
+    "yeonggwang": {
+      "areaCode": "38",
+      "clusterId": "jn-north"
+    },
+    "mokpo": {
+      "areaCode": "38",
+      "clusterId": "jn-west"
+    },
+    "muan": {
+      "areaCode": "38",
+      "clusterId": "jn-west"
+    },
+    "sinan": {
+      "areaCode": "38",
+      "clusterId": "jn-west"
+    },
+    "jindo": {
+      "areaCode": "38",
+      "clusterId": "jn-west"
+    },
+    "haenam": {
+      "areaCode": "38",
+      "clusterId": "jn-west"
+    },
+    "wando": {
+      "areaCode": "38",
+      "clusterId": "jn-west"
+    },
+    "gangjin": {
+      "areaCode": "38",
+      "clusterId": "jn-mid"
+    },
+    "jangheung": {
+      "areaCode": "38",
+      "clusterId": "jn-mid"
+    },
+    "boseong": {
+      "areaCode": "38",
+      "clusterId": "jn-mid"
+    },
+    "goheung": {
+      "areaCode": "38",
+      "clusterId": "jn-mid"
+    },
+    "yeongam": {
+      "areaCode": "38",
+      "clusterId": "jn-mid"
+    }
+  }
+}

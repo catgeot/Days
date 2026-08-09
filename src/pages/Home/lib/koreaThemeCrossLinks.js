@@ -9,6 +9,7 @@ import {
   scenicAreaCodeForHubId,
   scenicRegionForAreaCode,
 } from './koreaTourAttractionMap.js';
+import { scenicClusterIdForHubId } from './koreaScenicClusters.js';
 import { nearbyHubsForFestival } from '../../Korea/nearbyFestivalHubs.js';
 import {
   resolveMrtStayQuery,
@@ -360,6 +361,8 @@ export function scenicHomePathForHubId(hubId) {
     params.set('harea', area);
     params.set('tarea', area);
   }
+  const clusterId = scenicClusterIdForHubId(hid);
+  if (clusterId) params.set('ccluster', clusterId);
   params.set('hub', hid);
   return `/korea/theme/scenic?${params.toString()}`;
 }

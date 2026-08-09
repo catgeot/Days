@@ -60,6 +60,14 @@ export const CLOUD_QA_SHARE_LINKS = [
     active: true,
   },
   {
+    slug: 'scenic-mid-cluster',
+    label: '명소 세권(동서남북) 칩',
+    branch: 'cursor/scenic-mid-cluster-67a8',
+    destination:
+      'https://days-git-cursor-scenic-mid-cluster-67a8-catgeots-projects.vercel.app/korea/theme/scenic',
+    active: true,
+  },
+  {
     slug: 'scenic-default-chip',
     label: '명승 분류칩 기본 중·소분류',
     branch: 'cursor/scenic-default-chip-6098',

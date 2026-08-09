@@ -2,6 +2,41 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
+## 테마여행 #113, 세권 칩 메인 반영 전 점검
+
+**상태**: feature `cursor/scenic-mid-cluster-67a8` · PR [#78](https://github.com/catgeot/Days/pull/78) · tip `54c6b4ed` · **기술 GO · 사람 Preview 확인 후 merge**
+
+- **한 일**: main 대비 충돌 없음(#110 포함 tip) · SSOT 8시도 hub 배타·전수 cover · 기본값(#110 연장) · Preview/로컬 UI 5항 QA
+- **VERIFY PASS**: `audit:korea-scenic-clusters` · `smoke:korea-scenic-clusters` · `smoke:korea-scenic-categories` · `smoke:korea-scenic-search` · `smoke:korea-theme-cross-links` · `smoke:korea-scenic-spots` · `npm run build`
+- **UI QA**: 서울 기본·세권 없음 → 경기 북부33·hub7 → 동부·하남/가평 → 강원 영서·홍천 → 명승/관광지 세권 없음
+- **공유**: `https://www.gateo.kr/qa/scenic-mid-cluster`
+- **Preview**: `https://days-git-cursor-scenic-mid-cluster-67a8-catgeots-projects.vercel.app/korea/theme/scenic`
+- **잔여(비차단)**: PR 본문 세권 개수 표기는 결합 라벨(백제·내륙 등)과 문구 어긋남 · 플랜 §2.2「합의 대기」헤더 stale · generate `generatedAt`만 재생성 drift
+- **남은 일**: 사람 Preview OK → PR #78 merge → `/qa/scenic-mid-cluster` PROD 전환
+- **다음 채팅명**:
+
+```
+테마여행 #114, 세권 칩 main 병합
+```
+
+## 테마여행 #112, 세권 칩 SSOT·UI
+
+**상태**: feature `cursor/scenic-mid-cluster-67a8` · PR [#78](https://github.com/catgeot/Days/pull/78) · ✅ #113 점검
+
+- **한 일**: 세권표 합의분 SSOT·generate/audit · 명소 파드 `ccluster` 칩·기본값·hub 경로 시드 · QA `/qa/scenic-mid-cluster`
+- **VERIFY**: `audit/smoke:korea-scenic-clusters` · `smoke:korea-scenic-categories` · `smoke:korea-theme-cross-links` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-mid-cluster`
+- **Preview**: `https://days-git-cursor-scenic-mid-cluster-67a8-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: 「명소 세권(경기 동서남북 등) 칩」
+- **남은 일**: ✅ #113 점검 · 사람 Preview 후 merge
+
+## 테마여행 #111, 명소 중분류 체계
+
+**상태**: feature `cursor/scenic-mid-cluster-67a8` · PR [#78](https://github.com/catgeot/Days/pull/78) · 표 합의 → #112 구현
+
+- **한 일**: 세권 계층 · 경기 동서남북 · 타 시도 실제 분류 제안표 합의
+- **다음**: #112 SSOT·UI
+
 ## 테마여행 #110, 분류칩 기본 중소수
 
 **상태**: feature `cursor/scenic-default-chip-6098` · PR [#77](https://github.com/catgeot/Days/pull/77) · tip `af587a5d` · Preview QA 대기

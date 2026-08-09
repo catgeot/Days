@@ -25,10 +25,18 @@ import {
   countKoreaScenicSpotsByRegion,
   countKoreaScenicSpotsByTourArea,
   koreaScenicSpotsDisclaimer,
+  listKoreaScenicClusterChips,
   listKoreaScenicHubChips,
   listKoreaScenicRegions,
   listKoreaScenicSpots,
 } from '../Home/lib/koreaScenicSpots';
+import {
+  areaHasScenicClusters,
+  hubMatchesScenicCluster,
+  normalizeScenicClusterId,
+  resolveScenicClusterAreaCode,
+  scenicClusterIdForHubId,
+} from '../Home/lib/koreaScenicClusters';
 import {
   countKoreaHeritageScenicByRegion,
   countKoreaHeritageScenicByTourArea,
@@ -76,6 +84,7 @@ import {
 import { scenicDbCatalogHeading } from './scenicCatalogHeading';
 import {
   listCountForRegionArea,
+  pickDefaultClusterId,
   pickDefaultCuratedHubId,
   pickDefaultHeritageCategory,
   resolveDefaultCuratedChips,
@@ -522,6 +531,14 @@ export default function KoreaThemeScenicPage() {
   const hubName = hub ? String(hub.name || hubId) : '';
   const curatedRegion = resolvePodRegion(searchParams, 'c');
   const curatedArea = resolvePodArea(searchParams, 'c', curatedRegion);
+  const curatedClusterArea = resolveScenicClusterAreaCode(
+    curatedRegion,
+    curatedArea,
+  );
+  const curatedCluster = normalizeScenicClusterId(
+    curatedClusterArea,
+    searchParams.get('ccluster'),
+  );
   const heritageRegion = resolvePodRegion(searchParams, 'h');
   const heritageArea = resolvePodArea(searchParams, 'h', heritageRegion);
   const tourRegion = resolvePodRegion(searchParams, 't');
@@ -649,6 +666,15 @@ export default function KoreaThemeScenicPage() {
             (s) => scenicAreaCodeForHubId(s.hubId) === curatedArea,
           );
         }
+        if (curatedCluster) {
+          list = list.filter((s) =>
+            hubMatchesScenicCluster(
+              s.hubId,
+              curatedClusterArea,
+              curatedCluster,
+            ),
+          );
+        }
       }
       return sortScenicSpotsByPlaceCluster(list);
     }
@@ -666,9 +692,14 @@ export default function KoreaThemeScenicPage() {
       );
     }
     const inRegion = listKoreaScenicSpots(curatedRegion);
-    const filtered = curatedArea
+    let filtered = curatedArea
       ? inRegion.filter((s) => scenicAreaCodeForHubId(s.hubId) === curatedArea)
       : inRegion;
+    if (curatedCluster) {
+      filtered = filtered.filter((s) =>
+        hubMatchesScenicCluster(s.hubId, curatedClusterArea, curatedCluster),
+      );
+    }
     return sortScenicSpotsByPlaceCluster(filtered);
   }, [
     searchActive,
@@ -676,6 +707,8 @@ export default function KoreaThemeScenicPage() {
     curatedNearPool,
     curatedRegion,
     curatedArea,
+    curatedCluster,
+    curatedClusterArea,
     hubId,
   ]);
 
@@ -830,6 +863,41 @@ export default function KoreaThemeScenicPage() {
     return countKoreaScenicSpotsByTourArea(curatedRegion);
   }, [searchActive, curatedSearchPool, curatedRegion]);
 
+  const curatedClusterChips = useMemo(() => {
+    if (nearActive) return [];
+    const hasMidRow = curatedAreaChipDefs.filter(
+      (chip) => (curatedAreaCounts[chip.code] || 0) > 0,
+    ).length > 1;
+    if (hasMidRow && !curatedArea) return [];
+    if (!areaHasScenicClusters(curatedClusterArea)) return [];
+    if (searchActive && curatedSearchPool) {
+      let spots = curatedSearchPool.filter((s) => s.region === curatedRegion);
+      if (curatedArea) {
+        spots = spots.filter(
+          (s) => scenicAreaCodeForHubId(s.hubId) === curatedArea,
+        );
+      }
+      return listKoreaScenicClusterChips(curatedRegion, curatedClusterArea)
+        .map((chip) => ({
+          ...chip,
+          count: spots.filter((s) =>
+            hubMatchesScenicCluster(s.hubId, curatedClusterArea, chip.id),
+          ).length,
+        }))
+        .filter((chip) => chip.count > 0);
+    }
+    return listKoreaScenicClusterChips(curatedRegion, curatedClusterArea);
+  }, [
+    nearActive,
+    curatedAreaChipDefs,
+    curatedAreaCounts,
+    curatedArea,
+    curatedClusterArea,
+    searchActive,
+    curatedSearchPool,
+    curatedRegion,
+  ]);
+
   const curatedHubChips = useMemo(() => {
     if (nearActive && curatedNearPool) {
       return hubChipsFromSpots(curatedNearPool);
@@ -841,9 +909,22 @@ export default function KoreaThemeScenicPage() {
           (s) => scenicAreaCodeForHubId(s.hubId) === curatedArea,
         );
       }
+      if (curatedCluster) {
+        spots = spots.filter((s) =>
+          hubMatchesScenicCluster(
+            s.hubId,
+            curatedClusterArea,
+            curatedCluster,
+          ),
+        );
+      }
       return hubChipsFromSpots(spots);
     }
-    return listKoreaScenicHubChips(curatedRegion, curatedArea);
+    return listKoreaScenicHubChips(
+      curatedRegion,
+      curatedArea || curatedClusterArea,
+      curatedCluster,
+    );
   }, [
     nearActive,
     curatedNearPool,
@@ -851,6 +932,8 @@ export default function KoreaThemeScenicPage() {
     curatedSearchPool,
     curatedRegion,
     curatedArea,
+    curatedCluster,
+    curatedClusterArea,
   ]);
 
   const curatedAreaChips = useMemo(() => {
@@ -867,16 +950,20 @@ export default function KoreaThemeScenicPage() {
       );
     }
     const hasMidRow = curatedAreaChips.length > 1;
-    // 수도권처럼 시도 중분류가 있으면, 시도 선택 후에만 여행지 소분류
+    const hasClusterRow = curatedClusterChips.length > 0;
+    // 수도권처럼 시도 중분류가 있으면, 시도 선택 후에만 하위 칩
     if (hasMidRow && !curatedArea) return [];
-    // 강원·제주처럼 시도가 1개면 권역 전체 hub를 소분류로 (area 미매핑 hub 포함)
-    const hubs = hasMidRow
+    // 세권이 있으면 세권 선택 후에만 여행지 소분류
+    if (hasClusterRow && !curatedCluster) return [];
+    const hubs = hasClusterRow
       ? curatedHubChips
-      : searchActive && curatedSearchPool
-        ? hubChipsFromSpots(
-            curatedSearchPool.filter((s) => s.region === curatedRegion),
-          )
-        : listKoreaScenicHubChips(curatedRegion, null);
+      : hasMidRow
+        ? curatedHubChips
+        : searchActive && curatedSearchPool
+          ? hubChipsFromSpots(
+              curatedSearchPool.filter((s) => s.region === curatedRegion),
+            )
+          : listKoreaScenicHubChips(curatedRegion, null);
     const parentLabel =
       hasMidRow && curatedArea ? labelScenicAreaCode(curatedArea) : null;
     const soleAreaLabel = !hasMidRow
@@ -895,7 +982,9 @@ export default function KoreaThemeScenicPage() {
     curatedNearPool,
     curatedHubChips,
     curatedAreaChips,
+    curatedClusterChips,
     curatedArea,
+    curatedCluster,
     curatedRegion,
     searchActive,
     curatedSearchPool,
@@ -987,6 +1076,7 @@ export default function KoreaThemeScenicPage() {
     const params = new URLSearchParams();
     if (curatedRegion) params.set('cregion', curatedRegion);
     if (curatedArea) params.set('carea', curatedArea);
+    if (curatedCluster) params.set('ccluster', curatedCluster);
     if (hubId) params.set('hub', hubId);
     if (heritageRegion) params.set('hregion', heritageRegion);
     if (heritageArea) params.set('harea', heritageArea);
@@ -1002,6 +1092,7 @@ export default function KoreaThemeScenicPage() {
   }, [
     curatedRegion,
     curatedArea,
+    curatedCluster,
     hubId,
     heritageRegion,
     heritageArea,
@@ -1142,6 +1233,7 @@ export default function KoreaThemeScenicPage() {
     scheduleChipScrollPinClear,
     curatedRegion,
     curatedArea,
+    curatedCluster,
     hubId,
     heritageRegion,
     heritageArea,
@@ -1165,7 +1257,14 @@ export default function KoreaThemeScenicPage() {
     const root = mainScrollRef.current;
     if (!root) return;
     if (root.scrollTop !== 0) root.scrollTop = 0;
-  }, [curatedRegion, curatedArea, hubId, heritageRegion, heritageArea]);
+  }, [
+    curatedRegion,
+    curatedArea,
+    curatedCluster,
+    hubId,
+    heritageRegion,
+    heritageArea,
+  ]);
 
   const resetListPage = useCallback(() => {
     if (page <= 1 && !searchParams.get('spot')) return;
@@ -1219,6 +1318,7 @@ export default function KoreaThemeScenicPage() {
         next.set('hregion', resolveRegion(heritageR));
         next.set('tregion', resolveRegion(tourR));
         next.delete('carea');
+        next.delete('ccluster');
         next.delete('harea');
         next.delete('tarea');
         next.delete('region');
@@ -1299,6 +1399,11 @@ export default function KoreaThemeScenicPage() {
     [curatedAreaChips],
   );
 
+  const curatedClusterChipsForRow = useMemo(
+    () => (curatedClusterChips.length > 1 ? curatedClusterChips : []),
+    [curatedClusterChips],
+  );
+
   const curatedHubChipsForRow = useMemo(
     () => (curatedHubChipsVisible.length > 1 ? curatedHubChipsVisible : []),
     [curatedHubChipsVisible],
@@ -1326,6 +1431,7 @@ export default function KoreaThemeScenicPage() {
         ((curatedSearchPool?.length || 0) > 0 &&
           (curatedRegionChipsVisible.length > 1 ||
             curatedAreaChipsForRow.length > 0 ||
+            curatedClusterChipsForRow.length > 0 ||
             curatedHubChipsForRow.length > 0));
 
   const showHeritageFilterChips = nearActive
@@ -1597,10 +1703,39 @@ export default function KoreaThemeScenicPage() {
       }
       const cAreaNow =
         normalizeScenicAreaCode(cRegion, next.get('carea')) || null;
+      const cClusterAreaNow = resolveScenicClusterAreaCode(cRegion, cAreaNow);
+      const hubClusterFromHub = hubId
+        ? scenicClusterIdForHubId(hubId)
+        : null;
+      if (
+        !next.get('ccluster') &&
+        (curatedDef.clusterId || hubClusterFromHub)
+      ) {
+        const seedCluster =
+          normalizeScenicClusterId(
+            cClusterAreaNow,
+            curatedDef.clusterId || hubClusterFromHub,
+          ) || null;
+        if (seedCluster) {
+          next.set('ccluster', seedCluster);
+          changed = true;
+        }
+      }
+      if (
+        next.get('ccluster') &&
+        !normalizeScenicClusterId(cClusterAreaNow, next.get('ccluster'))
+      ) {
+        next.delete('ccluster');
+        changed = true;
+      }
+      const cClusterNow =
+        normalizeScenicClusterId(cClusterAreaNow, next.get('ccluster')) ||
+        null;
       if (!next.get('hub')) {
         const hubDef = pickDefaultCuratedHubId(
           cRegion,
           cAreaNow,
+          cClusterNow,
           curatedAreaCounts,
           CURATED_REGION_COUNTS,
         );
@@ -1896,6 +2031,8 @@ export default function KoreaThemeScenicPage() {
       next.set('cregion', region);
       if (def.areaCode) next.set('carea', def.areaCode);
       else next.delete('carea');
+      if (def.clusterId) next.set('ccluster', def.clusterId);
+      else next.delete('ccluster');
       if (def.hubId) next.set('hub', def.hubId);
       else next.delete('hub');
       next.delete('region');
@@ -1913,14 +2050,18 @@ export default function KoreaThemeScenicPage() {
       const normalized = normalizeScenicAreaCode(curatedRegion, code);
       if (!normalized || normalized === curatedArea) return;
       const areaCounts = countKoreaScenicSpotsByTourArea(curatedRegion);
+      const clusterDef = pickDefaultClusterId(curatedRegion, normalized);
       const hubDef = pickDefaultCuratedHubId(
         curatedRegion,
         normalized,
+        clusterDef,
         areaCounts,
         CURATED_REGION_COUNTS,
       );
       const next = new URLSearchParams(searchParams);
       next.set('carea', normalized);
+      if (clusterDef) next.set('ccluster', clusterDef);
+      else next.delete('ccluster');
       if (hubDef) next.set('hub', hubDef);
       else next.delete('hub');
       next.delete('region');
@@ -1930,6 +2071,38 @@ export default function KoreaThemeScenicPage() {
       setSearchParams(next, { replace: true });
     },
     [searchParams, setSearchParams, curatedRegion, curatedArea, clearNear],
+  );
+
+  const setCuratedCluster = useCallback(
+    (id) => {
+      clearNear();
+      const normalized = normalizeScenicClusterId(curatedClusterArea, id);
+      if (!normalized || normalized === curatedCluster) return;
+      const areaCounts = countKoreaScenicSpotsByTourArea(curatedRegion);
+      const hubDef = pickDefaultCuratedHubId(
+        curatedRegion,
+        curatedArea,
+        normalized,
+        areaCounts,
+        CURATED_REGION_COUNTS,
+      );
+      const next = new URLSearchParams(searchParams);
+      next.set('ccluster', normalized);
+      if (hubDef) next.set('hub', hubDef);
+      else next.delete('hub');
+      next.delete('spot');
+      next.delete('page');
+      setSearchParams(next, { replace: true });
+    },
+    [
+      searchParams,
+      setSearchParams,
+      curatedRegion,
+      curatedArea,
+      curatedCluster,
+      curatedClusterArea,
+      clearNear,
+    ],
   );
 
   const setHeritageRegion = useCallback(
@@ -2655,6 +2828,40 @@ export default function KoreaThemeScenicPage() {
                           <FilterChipLabel
                             label={chip.label}
                             count={curatedAreaCounts[chip.code]}
+                          />
+                        </button>
+                      );
+                    })}
+                  </FilterChipRow>
+                ) : null}
+                {curatedClusterChipsForRow.length > 0 ? (
+                  <FilterChipRow
+                    aria-label="명소 세권 중분류"
+                    className="pl-0.5"
+                  >
+                    {curatedClusterChipsForRow.map((chip) => {
+                      const active = curatedCluster === chip.id;
+                      const pinKey = `c-c-${chip.id}`;
+                      return (
+                        <button
+                          key={pinKey}
+                          type="button"
+                          data-chip-pin={pinKey}
+                          onClick={(e) =>
+                            runWithChipScrollPin(e.currentTarget, () =>
+                              setCuratedCluster(chip.id),
+                            )
+                          }
+                          aria-pressed={active}
+                          className={
+                            active
+                              ? 'inline-flex items-center gap-1 rounded-full border border-stone-500 bg-stone-700 px-2.5 py-0.5 text-[11px] font-bold text-white'
+                              : 'inline-flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50/90 px-2.5 py-0.5 text-[11px] font-semibold text-stone-600 hover:bg-stone-100'
+                          }
+                        >
+                          <FilterChipLabel
+                            label={chip.label}
+                            count={chip.count}
                           />
                         </button>
                       );
