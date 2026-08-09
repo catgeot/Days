@@ -32,8 +32,8 @@ const CATEGORY_CHIP = {
 const GLASS_SCROLL_CLASS = 'globe-face-region-scroll';
 /** 나라·세부칩 — 네이티브 바 숨김 · 커스텀 스크롤바 항시 표시 */
 const CUSTOM_SCROLL_CLASS = 'globe-face-custom-scroll';
-/** PC — 로고·투톱(top 14.5rem)·하단 LOGIN/LOGBOOK 사이를 넘지 않게 (내용만 스크롤) */
-const RAIL_LIST_HEIGHT_DESKTOP = 'h-[min(calc(100dvh-14.5rem-8.5rem),20rem)]';
+/** PC — 투톱~LOGIN/LOGBOOK 사이 가용 높이 사용(여유 6.5rem만 하단 확보, 상한으로 과도 축소하지 않음) */
+const RAIL_LIST_HEIGHT_DESKTOP = 'h-[calc(100dvh-14.5rem-6.5rem)]';
 /** 모바일 — 하단 카테고리·세부칩 위를 남기고도 스크롤이 답답하지 않게 */
 const RAIL_LIST_HEIGHT_MOBILE = 'h-[min(50vh,22rem)]';
 const RAIL_LIST_HEIGHT_MOBILE_FLAT = 'h-[min(58vh,26rem)]';
