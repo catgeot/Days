@@ -7,10 +7,10 @@ export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
   sessionNo: 114,
-  sessionPhase: '내주변 양구 관내 누락',
-  branch: 'cursor/scenic-nearby-yanggu-7658',
+  sessionPhase: '잔여 contentId 보강',
+  branch: 'cursor/scenic-contentid-f876',
   previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'scenic-nearby',
+  qaShareSlug: 'scenic-hub-fill',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-contentid-114',
+    session: '테마여행 #114, 잔여 contentId 보강',
+    title: 'searchKeyword로 선정 contentId 88곳 채움',
+    detail:
+      'areaBased만으로는 Tour 본명이 안 잡혀 0건이었습니다. 주석·(지역)·국립공원 접미를 정규화하고 searchKeyword 잔여 패스를 추가해 contentId 88곳 채움(539→627 · 잔여 null 93). 진도 시군구 1→21 교정. Preview에서 부석사·선운사·고창읍성·우포늪·직지사 Tour LIVE 상세를 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-nearby-yanggu-114',
     session: '테마여행 #114, 내주변 양구 관내 누락',

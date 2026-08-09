@@ -2,6 +2,25 @@
 
 직전: [`2026-08-08-project-log.md`](./2026-08-08-project-log.md)
 
+## 테마여행 #114, 잔여 contentId 보강
+
+**상태**: feature `cursor/scenic-contentid-f876` · PR [#80](https://github.com/catgeot/Days/pull/80) · tip `0b195021` · Preview QA 대기  
+**참고**: 채팅명 #114(contentId). 같은 날 #114 양구 세션과 번호 겹침 · #108 핸드오프의 #109 슬롯 작업.
+
+- **한 일**: `fill:korea-scenic-spot-content-ids` — areaBased 0건 → **searchKeyword 잔여 패스**·주석/(지역)/국립공원 정규화로 contentId **88곳** 채움(539→627 · 잔여 null 93) · 진도 시군구 1→21 · `--keyword-only` 플래그
+- **채움 예**: 부석사 `127669` · 선운사 `147548` · 고창읍성 `126398` · 벽골제 · 우포늪 · 직지사 · 천사대교 · 대흥사 · 미륵사지 · 백양사 · 불갑사 · 소수서원 · 주왕산
+- **MISS(유지 null)**: 킨텍스·스타필드·알펜시아/용평(본명 type12 부재)·로컬 공원·시장 등 Tour 미등재 ≈93
+- **VERIFY**: `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
+- **Preview**: `https://days-git-cursor-scenic-contentid-f876-catgeots-projects.vercel.app/korea/theme/scenic?hub=yeongju&spot=buseoksa` · `?hub=gochang&spot=seonunsa` · `?hub=changnyeong&spot=upo-wetland-changnyeong`
+- **작업 로그**: 「searchKeyword로 선정 contentId 88곳 채움」
+- **남은 일**: 사람 Preview QA · 잔여 null≈93(Tour 본명 부재·상업시설) · merge 후 `/qa/scenic-hub-fill`→PROD
+- **다음 채팅명**:
+
+```
+테마여행 #116, 잔여 contentId 보강
+```
+
 ## 테마여행 #114, 내주변 양구 관내 누락
 
 **상태**: feature `cursor/scenic-nearby-yanggu-7658` · PR [#79](https://github.com/catgeot/Days/pull/79) · tip `73c0ef44` · Preview QA 대기
