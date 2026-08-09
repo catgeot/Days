@@ -1,9 +1,9 @@
 # GATEO 선정 명소 — 권역·시군 hub 보강 큐
 
 **생성**: `npm run report:korea-scenic-empty-hubs -- --write-queue` (이 파일 덮어씀)
-**스냅샷**: 빈 hub **62** · 선정 hub **107** · maxOrder **4250**
+**스냅샷**: 빈 hub **57** · 선정 hub **112** · maxOrder **4450**
 
-**완료**: `#77`~`#90` · `#91` 상주·계룡·문경·영동·봉화 전수 → 아래 표는 잔여 재번호.
+**완료**: `#77`~`#91` · `#92` 음성·금산·홍성·논산·옥천 전수 → 아래 표는 잔여 재번호.
 
 ## 사용법
 
@@ -21,7 +21,7 @@
 
 | R | 워커A | 워커B | 권역 | 상태 |
 |---|-------|-------|------|------|
-| **R01** | `eumseong` · `geumsan` · `hongseong` · `nonsan` · `okcheon` | `yeongi` · `yesan` | 충청 | ⬜ |
+| **R01** | `yeongi` · `yesan` | — | 충청 | ⬜ |
 | **R02** | `wanju` · `gokseong` · `jangsu` · `seocheon` · `gangjin` | `gochang` · `goheung` · `hamyang` · `hwasun` · `imsil` | 전라 | ⬜ |
 | **R03** | `jangheung` · `jangseong` · `jindo` · `naju` · `sinan` | `sunchang` · `yeonggwang` · `gimje` · `haenam` · `hampyeong` | 전라 | ⬜ |
 | **R04** | `iksan` · `muan` · `muju` · `yeongam` | — | 전라 | ⬜ |
@@ -30,17 +30,12 @@
 | **R07** | `chilgok` · `dokdo` · `gimcheon` · `goryeong` · `gwangyang` | `gyeongsan` · `sancheong` · `seongju` · `uiryeong` · `yeongdeok` | 경상 | ⬜ |
 | **R08** | `yeongyang` | — | 경상 | ⬜ |
 
-**합계**: 8 라운드 · hub 62.
+**합계**: 8 라운드 · hub 57.
 
 ## 권역별 잔여
 
-### 충청 (7)
+### 충청 (2)
 
-- `eumseong` 음성 — attr 4 · Tour contentId 0
-- `geumsan` 금산 — attr 4 · Tour contentId 0
-- `hongseong` 홍성 — attr 4 · Tour contentId 0
-- `nonsan` 논산 — attr 4 · Tour contentId 0
-- `okcheon` 옥천 — attr 4 · Tour contentId 0
 - `yeongi` 연기 — attr 4 · Tour contentId 0
 - `yesan` 예산 — attr 4 · Tour contentId 0
 

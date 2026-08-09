@@ -103,6 +103,8 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'boeun',
         'goesan',
         'yeongdong',
+        'eumseong',
+        'okcheon',
       ],
     },
     34: {
@@ -118,6 +120,9 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'cheongyang',
         'dangjin',
         'gyeryong',
+        'geumsan',
+        'hongseong',
+        'nonsan',
       ],
     },
     35: {

@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-09T00:32:03.786Z",
+    "generatedAt": "2026-08-09T00:38:57.460Z",
     "areaCount": 17,
-    "hubLinkCount": 107,
+    "hubLinkCount": 112,
     "source": "scripts/data/korea-area-code-overrides.mjs"
   },
   "defaultHubIds": [
@@ -137,7 +137,9 @@
         "jeungpyeong",
         "boeun",
         "goesan",
-        "yeongdong"
+        "yeongdong",
+        "eumseong",
+        "okcheon"
       ]
     },
     "34": {
@@ -152,7 +154,10 @@
         "seosan",
         "cheongyang",
         "dangjin",
-        "gyeryong"
+        "gyeryong",
+        "geumsan",
+        "hongseong",
+        "nonsan"
       ]
     },
     "35": {
@@ -279,6 +284,8 @@
     "boeun": "33",
     "goesan": "33",
     "yeongdong": "33",
+    "eumseong": "33",
+    "okcheon": "33",
     "boryeong": "34",
     "gongju": "34",
     "taean": "34",
@@ -289,6 +296,9 @@
     "cheongyang": "34",
     "dangjin": "34",
     "gyeryong": "34",
+    "geumsan": "34",
+    "hongseong": "34",
+    "nonsan": "34",
     "gyeongju": "35",
     "andong": "35",
     "pohang": "35",

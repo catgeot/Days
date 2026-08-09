@@ -162,6 +162,8 @@ const RELATED_IMAGE_CONTENT_IDS = {
   'pyeongtaek-mir-island': '2741612', // 평택호예술공원 — 미르섬 Tour 부재 시
   'garisan-recreation-forest': '2372816', // 가리산 레포츠파크 — 휴양림 Tour firstimage 부재 시
   'yanggu-war-memorial-museum': '130736', // 양구통일관 — 전쟁기념관 Tour firstimage 부재 시(동일 주소)
+  'yongbongsan-hongseong': '125427', // 용봉산자연휴양림 — 용봉산 Tour firstimage 부재 시
+  'jinaksan-geumsan': '125888', // 보석사 — 진악산 Tour firstimage 부재 시(남이 인근)
 };
 
 async function mapPool(items, worker, size) {

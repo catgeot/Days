@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 91,
+  sessionNo: 92,
   sessionPhase: '빈 hub 명소 보강',
   branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?hub=sangju',
+  previewPath: '/korea/theme/scenic?hub=eumseong',
   qaShareSlug: 'scenic-hub-fill',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-92',
+    session: '테마여행 #92, 빈 hub 명소 보강',
+    title: '음성·금산·홍성·논산·옥천 GATEO 선정 전수',
+    detail:
+      '큐 R01 충청 잔여 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(음성4·금산4·홍성4·논산4·옥천4 · Tour contentId 12/20 · 썸네일 427/445). 충북·충남 시도 색인에도 동시 등록했습니다. Preview에서 /korea/theme/scenic?hub=eumseong · ?hub=geumsan · ?hub=hongseong · ?hub=nonsan · ?hub=okcheon 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-hub-fill-r01-91',
     session: '테마여행 #91, 빈 hub 명소 보강',
