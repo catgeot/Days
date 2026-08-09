@@ -4,7 +4,7 @@
 
 ## 테마여행 #110, 분류칩 기본 중소수
 
-**상태**: feature `cursor/scenic-default-chip-6098` · Preview QA 대기
+**상태**: feature `cursor/scenic-default-chip-6098` · PR [#77](https://github.com/catgeot/Days/pull/77) · tip `af587a5d` · Preview QA 대기
 
 - **한 일**: 명승 홈 기본값을 권역 전체(수도권 179) 대신 **첫 시도 중분류(서울)** 로 · 목록이 길면 소분류(~10건) · 명소·명승·관광지 파드 공통 · 같은 칩 재클릭으로 권역 전체 해제 방지
 - **VERIFY**: `smoke:korea-scenic-categories` · `smoke:korea-scenic-search` · `smoke:korea-theme-cross-links` · `npm run build`
