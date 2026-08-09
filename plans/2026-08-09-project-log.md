@@ -4,7 +4,7 @@
 
 ## 테마여행 #116, 잔여 contentId 보강
 
-**상태**: feature `cursor/scenic-contentid-f876` · tip (이 커밋) · Preview QA 대기  
+**상태**: feature `cursor/scenic-contentid-f876` · PR [#81](https://github.com/catgeot/Days/pull/81) · tip `19a386a4` · Preview QA 대기  
 **참고**: #114 이후 잔여 null≈93 → alias·매칭 가드 보강 후 **18곳** 추가.
 
 - **한 일**: `fill:korea-scenic-spot-content-ids` — KEYWORD_ALIASES·접미 ratio 2.6·`hubHints`(경남 고성)·캠핑장/허브꼬리/약한 일반명 가드 · contentId **18곳** 채움(627→645 · 잔여 null 75)
