@@ -4,7 +4,7 @@
 
 ## 테마여행 #114, 잔여 contentId 보강
 
-**상태**: feature `cursor/scenic-contentid-f876` · tip (push 후) · Preview QA 대기  
+**상태**: feature `cursor/scenic-contentid-f876` · tip `ddad1c4a` · Preview QA 대기  
 **참고**: 채팅명 #114(contentId). 같은 날 #114 양구 세션과 번호 겹침 · #108 핸드오프의 #109 슬롯 작업.
 
 - **한 일**: `fill:korea-scenic-spot-content-ids` — areaBased 0건 → **searchKeyword 잔여 패스**·주석/(지역)/국립공원 정규화로 contentId **88곳** 채움(539→627 · 잔여 null 93) · 진도 시군구 1→21 · `--keyword-only` 플래그
