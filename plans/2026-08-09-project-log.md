@@ -4,11 +4,12 @@
 
 ## 테마여행 #108, main 병합·전반 점검
 
-**상태**: PR [#75](https://github.com/catgeot/Days/pull/75) · `cursor/scenic-yangyang-b772` → **main** 병합
+**상태**: PR [#75](https://github.com/catgeot/Days/pull/75) **MERGED** · tip `887957da` · `origin/main` push ✅
 
 - **판단**: 시·군 빈 hub 큐 **소진**(#104) · 기능/폴백(#105–#106) 포함 · 잔여는 Tour **contentId null ≈181**(일일 쿼터·본명 부재) 데이터만
-- **한 일**: main과 충돌 해소(일지·작업로그 · 네이버 #76 포함) 후 VERIFY · main 병합
-- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill` → PROD `/korea/theme/scenic`
+- **한 일**: main과 충돌 해소(일지·작업로그 · 네이버 #76 포함) · VERIFY PASS · main fast-forward push · `/qa/scenic-hub-fill`→PROD
+- **VERIFY**: `audit`/`smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `smoke:korea-area-codes` · `smoke:korea-scenic-categories` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
 - **PROD**: `https://www.gateo.kr/korea/theme/scenic`
 - **남은 일**: Tour 한도 해제 후 `fill:korea-scenic-spot-content-ids` 잔여 · 박물관 썸네일 · 폴리시/릴리스 · 사람 전반 QA
 - **다음 채팅명**:

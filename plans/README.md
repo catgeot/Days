@@ -6,7 +6,7 @@
 - **Cloud 이어하기 · Preview 연속성**: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) · [`AGENTS.md`](../AGENTS.md) Cloud (세션 표기·**채팅명 제시어 §1.1**·고정 Preview·작업 로그)
 - **오케스트레이터 (다배치 SSOT)**: [`orchestrator-method.md`](./orchestrator-method.md) · 제시어 `오케스트레이터`
 - **명소 hub 사전 큐**: [`city-attraction-hub-queue.md`](./city-attraction-hub-queue.md) (R48–R61 **소진** · tip 550 hub)
-- **GATEO 선정 명소 권역 보강 큐**: [`korea-scenic-hub-fill-queue.md`](./korea-scenic-hub-fill-queue.md) · `npm run report:korea-scenic-empty-hubs -- --write-queue` · `draft:korea-scenic-hub-batch` (**hub attractions 전수** · 개수 기본 상한 없음) · **보강 시 `korea-area-code-overrides` 시도 색인 필수** → `generate:korea-area-codes`
+- **GATEO 선정 명소 권역 보강 큐 ✅ 소진 (main #108)**: [`korea-scenic-hub-fill-queue.md`](./korea-scenic-hub-fill-queue.md) · 잔여 TODO = Tour contentId(~181) · `fill:korea-scenic-spot-content-ids`
 - **여행지·도착 공항 운영**: [`travel-spots-management.md`](./travel-spots-management.md) (추가·헬스체크·공항 매핑)
 - **항공 경로 DB (우선)**: [`flight-route-database-plan.md`](./flight-route-database-plan.md) · **Heuristic SSOT (다음)**: [`flight-route-heuristic-ssot-plan.md`](./flight-route-heuristic-ssot-plan.md) · **비-ICN 라우팅**: [`flight-route-non-icn-routing-plan.md`](./flight-route-non-icn-routing-plan.md) (OurAirports·Supabase · **Phase 0~4 v2.2 ✅** · **Heuristic+GATN seed ⏳**)
 - **사이트 점검·헬스 모니터링**: [`site-health-monitoring-plan.md`](./site-health-monitoring-plan.md) (스모크·E2E·Billing 알림·구현 Phase 0~3)
