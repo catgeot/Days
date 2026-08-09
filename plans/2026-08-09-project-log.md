@@ -4,11 +4,11 @@
 
 ## 테마여행 #106, Preview QA 반영
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip (푸시 후) · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `1166719c` · Preview 사람 QA 대기
 
 - **원인**: #105 SSOT `overview`는 채워졌으나 `ScenicPage.toModalSpot`이 `overview`를 모달에 안 넘겨 킨텍스가 「Tour 상세 없음」만 표시
 - **한 일**: `toModalSpot`에 `overview` 전달 · curated 경로 이미지 정규화 · TourAPI 부재 안내 문장 사용자 본문에서 제거
-- **VERIFY**: (푸시 전 기록)
+- **VERIFY**: `npm run build` · 로컬 HTTPS 킨텍스 모달(개요·썸네일·Tour 없음 문구 제거)
 - **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
 - **Preview**: `https://days-git-cursor-scenic-yangyang-b772-catgeots-projects.vercel.app/korea/theme/scenic?hub=goyang&spot=kintex-goyang` · `?hub=gapyeong&spot=garden-of-morning-calm`
 - **작업 로그**: 「킨텍스 overview 모달 전달 수정」
