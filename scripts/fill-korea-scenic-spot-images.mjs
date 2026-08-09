@@ -235,6 +235,20 @@ const RELATED_IMAGE_CONTENT_IDS = {
   'ilgwang-beach': '2775565', // 학리항 — 일광해수욕장 Tour type12 부재 시
   'imrang-beach': '2758498', // 은진사 — 임랑해수욕장 Tour type12 부재 시
   'osiria-tourism-complex': '2815627', // 롯데월드 어드벤처 부산 — 오시리아 Tour type12 부재 시
+  'goseong-dinosaur-museum': '2759606', // 고성 솔섬 — 공룡박물관 Tour type12 부재 시
+  'sangjokam-county-park': '2759606', // 고성 솔섬 — 상족암군립공원 Tour type12 부재 시
+  'geumo-land': '1118806', // 금오산성 — 금오랜드 Tour type12 부재 시
+  'nakdong-river-sports-park-gumi': '1119452', // 동락공원 — 낙동강체육공원 Tour type12 부재 시
+  'agyangnu-haman': '2663204', // 악양생태공원 — 악양루 Tour type12 부재 시
+  'haman-museum': '2754745', // 함안 연꽃테마파크 — 박물관 Tour type12 부재 시
+  'yeongnamnu-pavilion': '2793042', // 천진궁 — 영남루 Tour type12 부재 시(밀양 읍치)
+  'wiyangji-reservoir': '2742647', // 금시당유원지 — 위양지 Tour type12 부재 시
+  'pyochungsa-temple': '1960069', // 표충서원 — 표충사 Tour type12 부재 시
+  'miryang-eupseong-fortress': '2793042', // 천진궁 — 밀양읍성 Tour type12 부재 시
+  neukdo: '127181', // 삼천포유람선 — 늑도 Tour type12 부재 시
+  'sacheon-nosan-park': '2785763', // 삼천포 팔포항 — 노산공원 Tour type12 부재 시
+  'samcheonpo-bridge': '127181', // 삼천포유람선 — 삼천포대교 Tour type12 부재 시
+  'sacheon-waryongsan': '2785763', // 삼천포 팔포항 — 와룡산 Tour firstimage 부재 시
 };
 
 async function mapPool(items, worker, size) {

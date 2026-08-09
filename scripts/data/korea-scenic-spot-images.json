@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-09T01:47:43.863Z",
-    "count": 586,
+    "updatedAt": "2026-08-09T02:14:20.710Z",
+    "count": 611,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -591,6 +591,31 @@
     "ahopsan-forest": "https://tong.visitkorea.or.kr/cms/resource/91/3309791_image2_1.jpg",
     "osiria-tourism-complex": "https://tong.visitkorea.or.kr/cms/resource/21/2815721_image2_1.jpg",
     "ilgwang-beach": "https://tong.visitkorea.or.kr/cms/resource/27/3334627_image2_1.jpg",
-    "imrang-beach": "https://tong.visitkorea.or.kr/cms/resource/36/3342836_image2_1.jpg"
+    "imrang-beach": "https://tong.visitkorea.or.kr/cms/resource/36/3342836_image2_1.jpg",
+    "goseong-dinosaur-museum": "https://tong.visitkorea.or.kr/cms/resource/11/3348111_image2_1.jpg",
+    "munsusam-goseong": "https://tong.visitkorea.or.kr/cms/resource/60/3497860_image2_1.jpg",
+    "okcheonsa-goseong": "https://tong.visitkorea.or.kr/cms/resource/80/3491680_image2_1.jpg",
+    "hakdong-village-goseong": "https://tong.visitkorea.or.kr/cms/resource/91/3349191_image2_1.jpg",
+    "sangjokam-county-park": "https://tong.visitkorea.or.kr/cms/resource/11/3348111_image2_1.jpg",
+    "geumosan-gumi": "https://tong.visitkorea.or.kr/cms/resource/87/3041887_image2_1.jpg",
+    "nakdong-river-sports-park-gumi": "https://tong.visitkorea.or.kr/cms/resource/37/3029537_image2_1.jpg",
+    "geumo-land": "https://tong.visitkorea.or.kr/cms/resource/87/3041887_image2_1.jpg",
+    "dongnak-park": "https://tong.visitkorea.or.kr/cms/resource/37/3029537_image2_1.jpg",
+    "saemaul-undong-theme-park": "https://tong.visitkorea.or.kr/cms/resource/80/3349180_image2_1.jpg",
+    "agyangnu-haman": "https://tong.visitkorea.or.kr/cms/resource/16/3538216_image2_1.jpg",
+    "haman-lotus-theme-park": "https://tong.visitkorea.or.kr/cms/resource/15/2755215_image2_1.JPG",
+    "ipgok-county-park-haman": "https://tong.visitkorea.or.kr/cms/resource/18/3502918_image2_1.jpg",
+    "ipgok-reservoir-haman": "https://tong.visitkorea.or.kr/cms/resource/34/3070434_image2_1.JPG",
+    "haman-museum": "https://tong.visitkorea.or.kr/cms/resource/15/2755215_image2_1.JPG",
+    "eoreumgol-ice-valley": "https://tong.visitkorea.or.kr/cms/resource/14/3521114_image2_1.jpg",
+    "yeongnamnu-pavilion": "https://tong.visitkorea.or.kr/cms/resource/16/3582816_image2_1.jpg",
+    "wiyangji-reservoir": "https://tong.visitkorea.or.kr/cms/resource/49/3582749_image2_1.jpg",
+    "pyochungsa-temple": "https://tong.visitkorea.or.kr/cms/resource/92/3374192_image2_1.JPG",
+    "miryang-eupseong-fortress": "https://tong.visitkorea.or.kr/cms/resource/16/3582816_image2_1.jpg",
+    "neukdo": "https://tong.visitkorea.or.kr/cms/resource/11/3510411_image2_1.jpg",
+    "sacheon-nosan-park": "https://tong.visitkorea.or.kr/cms/resource/70/2797970_image2_1.JPG",
+    "korea-aerospace-museum-sacheon": "https://tong.visitkorea.or.kr/cms/resource/29/3505529_image2_1.jpg",
+    "samcheonpo-bridge": "https://tong.visitkorea.or.kr/cms/resource/11/3510411_image2_1.jpg",
+    "sacheon-waryongsan": "https://tong.visitkorea.or.kr/cms/resource/70/2797970_image2_1.JPG"
   }
 }

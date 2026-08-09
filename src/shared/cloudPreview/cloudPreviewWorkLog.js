@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 99,
+  sessionNo: 100,
   sessionPhase: '빈 hub 명소 보강',
   branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?hub=yangsan',
+  previewPath: '/korea/theme/scenic?hub=goseongnam',
   qaShareSlug: 'scenic-hub-fill',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-100',
+    session: '테마여행 #100, 빈 hub 명소 보강',
+    title: '고성·구미·함안·밀양·사천 GATEO 선정 전수',
+    detail:
+      '큐 R01 경상 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(고성5·구미5·함안5·밀양5·사천5 · Tour contentId 12/25 · 썸네일 611/648). 경남·경북 시도 색인에도 동시 등록했습니다. Tour LIVE searchKeyword 429로 locationBasedList·DB·related 폴백을 썼습니다. Preview에서 /korea/theme/scenic?hub=goseongnam · ?hub=gumi · ?hub=haman · ?hub=miryang · ?hub=sacheon 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-hub-fill-r01-99',
     session: '테마여행 #99, 빈 hub 명소 보강',

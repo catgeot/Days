@@ -1,7 +1,7 @@
 # GATEO 선정 명소 — 권역·시군 hub 보강 큐
 
 **생성**: `npm run report:korea-scenic-empty-hubs -- --write-queue` (이 파일 덮어씀)
-**스냅샷**: 빈 hub **22** · 선정 hub **147** · maxOrder **6230**
+**스냅샷**: 빈 hub **17** · 선정 hub **152** · maxOrder **6480**
 
 ## 사용법
 
@@ -19,21 +19,15 @@
 
 | R | 워커A | 워커B | 권역 | 상태 |
 |---|-------|-------|------|------|
-| **R01** | `goseongnam` · `gumi` · `haman` · `miryang` · `sacheon` | `uiseong` · `yecheon` · `yeongcheon` · `yeongju` · `changnyeong` | 경상 | ⬜ |
-| **R02** | `cheongsong` · `chilgok` · `dokdo` · `gimcheon` · `goryeong` | `gwangyang` · `gyeongsan` · `sancheong` · `seongju` · `uiryeong` | 경상 | ⬜ |
-| **R03** | `yeongdeok` · `yeongyang` | — | 경상 | ⬜ |
+| **R01** | `uiseong` · `yecheon` · `yeongcheon` · `yeongju` · `changnyeong` | `cheongsong` · `chilgok` · `dokdo` · `gimcheon` · `goryeong` | 경상 | ⬜ |
+| **R02** | `gwangyang` · `gyeongsan` · `sancheong` · `seongju` · `uiryeong` | `yeongdeok` · `yeongyang` | 경상 | ⬜ |
 
-**합계**: 3 라운드 · hub 22.
+**합계**: 2 라운드 · hub 17.
 
 ## 권역별 잔여
 
-### 경상 (22)
+### 경상 (17)
 
-- `goseongnam` 경남 고성 — attr 5 · Tour contentId 0
-- `gumi` 구미 — attr 5 · Tour contentId 0
-- `haman` 함안 — attr 5 · Tour contentId 0
-- `miryang` 밀양 — attr 5 · Tour contentId 0
-- `sacheon` 사천 — attr 5 · Tour contentId 0
 - `uiseong` 의성 — attr 5 · Tour contentId 0
 - `yecheon` 예천 — attr 5 · Tour contentId 0
 - `yeongcheon` 영천 — attr 5 · Tour contentId 0

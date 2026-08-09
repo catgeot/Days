@@ -140,6 +140,7 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'bonghwa',
         'gunwi',
         'cheongdo',
+        'gumi',
       ],
     },
     36: {
@@ -156,6 +157,10 @@ export const KOREA_AREA_CODE_OVERRIDES = {
         'gimhae',
         'yangsan',
         'changwon',
+        'goseongnam',
+        'haman',
+        'miryang',
+        'sacheon',
       ],
     },
     37: {
