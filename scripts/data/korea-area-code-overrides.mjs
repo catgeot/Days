@@ -93,11 +93,30 @@ export const KOREA_AREA_CODE_OVERRIDES = {
     },
     33: {
       name: '충북',
-      hubIds: ['cheongju', 'danyang', 'jecheon', 'jincheon', 'chungju', 'jeungpyeong'],
+      hubIds: [
+        'cheongju',
+        'danyang',
+        'jecheon',
+        'jincheon',
+        'chungju',
+        'jeungpyeong',
+        'boeun',
+        'goesan',
+      ],
     },
     34: {
       name: '충남',
-      hubIds: ['boryeong', 'gongju', 'taean', 'buyeo', 'asan', 'cheonan'],
+      hubIds: [
+        'boryeong',
+        'gongju',
+        'taean',
+        'buyeo',
+        'asan',
+        'cheonan',
+        'seosan',
+        'cheongyang',
+        'dangjin',
+      ],
     },
     35: {
       name: '경북',

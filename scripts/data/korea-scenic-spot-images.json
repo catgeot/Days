@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-09T00:12:20.361Z",
-    "count": 371,
+    "updatedAt": "2026-08-09T00:23:37.493Z",
+    "count": 395,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -376,6 +376,30 @@
     "sejong-national-arboretum": "https://tong.visitkorea.or.kr/cms/resource/89/4065589_image2_1.jpg",
     "jeungpyeong-folk-experience-museum": "https://tong.visitkorea.or.kr/cms/resource/60/4078060_image2_1.jpg",
     "bear-tree-park": "https://tong.visitkorea.or.kr/cms/resource/36/4058636_image2_1.jpg",
-    "sejong-central-park": "https://tong.visitkorea.or.kr/cms/resource/82/3522482_image2_1.jpg"
+    "sejong-central-park": "https://tong.visitkorea.or.kr/cms/resource/82/3522482_image2_1.jpg",
+    "seosan-buseoksa": "https://tong.visitkorea.or.kr/cms/resource/89/3567089_image2_1.jpg",
+    "songnisan": "https://tong.visitkorea.or.kr/cms/resource/84/3082484_image2_1.JPG",
+    "jeongipumsong-pine": "https://tong.visitkorea.or.kr/cms/resource/85/3571785_image2_1.jpg",
+    "modeoksa": "https://tong.visitkorea.or.kr/cms/resource/63/3497363_image2_1.jpg",
+    "mount-chilgap": "https://tong.visitkorea.or.kr/cms/resource/67/3027467_image2_1.jpg",
+    "naval-park-dangjin": "https://tong.visitkorea.or.kr/cms/resource/98/3558398_image2_1.jpg",
+    "seohae-bridge": "https://tong.visitkorea.or.kr/cms/resource/72/3023672_image2_1.JPG",
+    "solmoe-holy-ground": "https://tong.visitkorea.or.kr/cms/resource/84/3535184_image2_1.jpg",
+    "ssanggok-valley": "https://tong.visitkorea.or.kr/cms/resource/11/3534211_image2_1.jpg",
+    "joryeongsan-recreation-forest": "https://tong.visitkorea.or.kr/cms/resource/07/3058707_image2_1.JPG",
+    "hwayanggugok": "https://tong.visitkorea.or.kr/cms/resource/84/3059184_image2_1.jpg",
+    "ganwolam": "https://tong.visitkorea.or.kr/cms/resource/19/3499219_image2_1.jpg",
+    "seosan-haemieupseong": "https://tong.visitkorea.or.kr/cms/resource/01/2671501_image2_1.jpg",
+    "palbongsan": "https://tong.visitkorea.or.kr/cms/resource/32/1919432_image2_1.jpg",
+    "gaesimsa": "https://tong.visitkorea.or.kr/cms/resource/46/3560046_image2_1.jpg",
+    "beopjusa-temple": "https://tong.visitkorea.or.kr/cms/resource/76/4077376_image2_1.jpg",
+    "samnyeonsanseong-fortress": "https://tong.visitkorea.or.kr/cms/resource/93/4058793_image2_1.png",
+    "goun-botanical-garden": "https://tong.visitkorea.or.kr/cms/resource/67/4075667_image2_1.jpg",
+    "munjangdae-peak": "https://tong.visitkorea.or.kr/cms/resource/13/4008613_image2_1.jpg",
+    "sapgyo-lake-dangjin": "https://tong.visitkorea.or.kr/cms/resource/76/3569276_image2_1.jpg",
+    "alps-village-cheongyang": "https://tong.visitkorea.or.kr/cms/resource/57/4069057_image2_1.jpg",
+    "sanmak-i-old-trail": "https://tong.visitkorea.or.kr/cms/resource/29/3488229_image2_1.jpg",
+    "seongbulsan-recreation-forest": "https://tong.visitkorea.or.kr/cms/resource/50/4041850_image2_1.jpg",
+    "janggoksa": "https://tong.visitkorea.or.kr/cms/resource_photo/58/3476658_image2_1.jpg"
   }
 }

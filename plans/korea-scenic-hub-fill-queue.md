@@ -1,9 +1,9 @@
 # GATEO 선정 명소 — 권역·시군 hub 보강 큐
 
 **생성**: `npm run report:korea-scenic-empty-hubs -- --write-queue` (이 파일 덮어씀)
-**스냅샷**: 빈 hub **72** · 선정 hub **97** · maxOrder **3740**
+**스냅샷**: 빈 hub **67** · 선정 hub **102** · maxOrder **4000**
 
-**완료**: `#77`~`#88` · `#89` 횡성·화천·충주·증평·세종 전수 → 아래 표는 잔여 재번호.
+**완료**: `#77`~`#89` · `#90` 서산·보은·청양·당진·괴산 전수 → 아래 표는 잔여 재번호.
 
 ## 사용법
 
@@ -21,33 +21,29 @@
 
 | R | 워커A | 워커B | 권역 | 상태 |
 |---|-------|-------|------|------|
-| **R01** | `seosan` · `boeun` · `cheongyang` · `dangjin` · `goesan` | `gyeryong` · `mungyeong` · `yeongdong` · `bonghwa` · `eumseong` | 충청 | ⬜ |
-| **R02** | `geumsan` · `hongseong` · `nonsan` · `okcheon` · `yeongi` | `yesan` | 충청 | ⬜ |
+| **R01** | `sangju` · `gyeryong` · `mungyeong` · `yeongdong` · `bonghwa` | `eumseong` · `geumsan` · `gimcheon` · `hongseong` · `nonsan` | 충청 | ⬜ |
+| **R02** | `okcheon` · `yeongi` · `yesan` | — | 충청 | ⬜ |
 | **R03** | `wanju` · `gokseong` · `jangsu` · `seocheon` · `gangjin` | `gochang` · `goheung` · `hamyang` · `hwasun` · `imsil` | 전라 | ⬜ |
 | **R04** | `jangheung` · `jangseong` · `jindo` · `naju` · `sinan` | `sunchang` · `yeonggwang` · `gimje` · `haenam` · `hampyeong` | 전라 | ⬜ |
 | **R05** | `iksan` · `muan` · `muju` · `yeongam` | — | 전라 | ⬜ |
-| **R06** | `geochang` · `ulju` · `gimhae` · `gunwi` · `sangju` | `yangsan` · `changwon` · `cheongdo` · `dalseong` · `gijang` | 경상 | ⬜ |
-| **R07** | `goseongnam` · `gumi` · `haman` · `miryang` · `sacheon` | `uiseong` · `yecheon` · `yeongcheon` · `yeongju` · `changnyeong` | 경상 | ⬜ |
-| **R08** | `cheongsong` · `chilgok` · `dokdo` · `gimcheon` · `goryeong` | `gwangyang` · `gyeongsan` · `sancheong` · `seongju` · `uiryeong` | 경상 | ⬜ |
-| **R09** | `yeongdeok` · `yeongyang` | — | 경상 | ⬜ |
+| **R06** | `geochang` · `ulju` · `gimhae` · `gunwi` · `yangsan` | `changwon` · `cheongdo` · `dalseong` · `gijang` · `goseongnam` | 경상 | ⬜ |
+| **R07** | `gumi` · `haman` · `miryang` · `sacheon` · `uiseong` | `yecheon` · `yeongcheon` · `yeongju` · `changnyeong` · `cheongsong` | 경상 | ⬜ |
+| **R08** | `chilgok` · `dokdo` · `goryeong` · `gwangyang` · `gyeongsan` | `sancheong` · `seongju` · `uiryeong` · `yeongdeok` · `yeongyang` | 경상 | ⬜ |
 
-**합계**: 9 라운드 · hub 72.
+**합계**: 8 라운드 · hub 67.
 
 ## 권역별 잔여
 
-### 충청 (16)
+### 충청 (13)
 
-- `seosan` 서산 — attr 6 · Tour contentId 0
-- `boeun` 보은 — attr 5 · Tour contentId 0
-- `cheongyang` 청양 — attr 5 · Tour contentId 0
-- `dangjin` 당진 — attr 5 · Tour contentId 0
-- `goesan` 괴산 — attr 5 · Tour contentId 0
+- `sangju` 상주 — attr 6 · Tour contentId 0
 - `gyeryong` 계룡 — attr 5 · Tour contentId 0
 - `mungyeong` 문경 — attr 5 · Tour contentId 0
 - `yeongdong` 영동 — attr 5 · Tour contentId 0
 - `bonghwa` 봉화 — attr 4 · Tour contentId 0
 - `eumseong` 음성 — attr 4 · Tour contentId 0
 - `geumsan` 금산 — attr 4 · Tour contentId 0
+- `gimcheon` 김천 — attr 4 · Tour contentId 0
 - `hongseong` 홍성 — attr 4 · Tour contentId 0
 - `nonsan` 논산 — attr 4 · Tour contentId 0
 - `okcheon` 옥천 — attr 4 · Tour contentId 0
@@ -81,13 +77,12 @@
 - `muju` 무주 — attr 4 · Tour contentId 0
 - `yeongam` 영암 — attr 4 · Tour contentId 0
 
-### 경상 (32)
+### 경상 (30)
 
 - `geochang` 거창 — attr 7 · Tour contentId 0
 - `ulju` 울주 — attr 7 · Tour contentId 0
 - `gimhae` 김해 — attr 6 · Tour contentId 0
 - `gunwi` 군위 — attr 6 · Tour contentId 0
-- `sangju` 상주 — attr 6 · Tour contentId 0
 - `yangsan` 양산 — attr 6 · Tour contentId 0
 - `changwon` 창원 — attr 5 · Tour contentId 0
 - `cheongdo` 청도 — attr 5 · Tour contentId 0
@@ -106,7 +101,6 @@
 - `cheongsong` 청송 — attr 4 · Tour contentId 0
 - `chilgok` 칠곡 — attr 4 · Tour contentId 0
 - `dokdo` 독도 — attr 4 · Tour contentId 0
-- `gimcheon` 김천 — attr 4 · Tour contentId 0
 - `goryeong` 고령 — attr 4 · Tour contentId 0
 - `gwangyang` 광양 — attr 4 · Tour contentId 0
 - `gyeongsan` 경산 — attr 4 · Tour contentId 0

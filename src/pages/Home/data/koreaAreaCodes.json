@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-09T00:11:59.334Z",
+    "generatedAt": "2026-08-09T00:23:28.213Z",
     "areaCount": 17,
-    "hubLinkCount": 97,
+    "hubLinkCount": 102,
     "source": "scripts/data/korea-area-code-overrides.mjs"
   },
   "defaultHubIds": [
@@ -134,7 +134,9 @@
         "jecheon",
         "jincheon",
         "chungju",
-        "jeungpyeong"
+        "jeungpyeong",
+        "boeun",
+        "goesan"
       ]
     },
     "34": {
@@ -145,7 +147,10 @@
         "taean",
         "buyeo",
         "asan",
-        "cheonan"
+        "cheonan",
+        "seosan",
+        "cheongyang",
+        "dangjin"
       ]
     },
     "35": {
@@ -266,12 +271,17 @@
     "jincheon": "33",
     "chungju": "33",
     "jeungpyeong": "33",
+    "boeun": "33",
+    "goesan": "33",
     "boryeong": "34",
     "gongju": "34",
     "taean": "34",
     "buyeo": "34",
     "asan": "34",
     "cheonan": "34",
+    "seosan": "34",
+    "cheongyang": "34",
+    "dangjin": "34",
     "gyeongju": "35",
     "andong": "35",
     "pohang": "35",

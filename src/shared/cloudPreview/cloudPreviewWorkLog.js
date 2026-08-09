@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 89,
+  sessionNo: 90,
   sessionPhase: '빈 hub 명소 보강',
   branch: 'cursor/scenic-yangyang-b772',
-  previewPath: '/korea/theme/scenic?hub=hoengseong',
+  previewPath: '/korea/theme/scenic?hub=seosan',
   qaShareSlug: 'scenic-hub-fill',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-09-scenic-hub-fill-r01-90',
+    session: '테마여행 #90, 빈 hub 명소 보강',
+    title: '서산·보은·청양·당진·괴산 GATEO 선정 전수',
+    detail:
+      '큐 R01 충청 다섯 hub attractions 전수를 GATEO 선정에 넣었습니다(서산6·보은5·청양5·당진5·괴산5 · Tour contentId 24/26 · 썸네일 395/400). 충북·충남 시도 색인에도 동시 등록했습니다. Preview에서 /korea/theme/scenic?hub=seosan · ?hub=boeun · ?hub=cheongyang · ?hub=dangjin · ?hub=goesan 선정 목록을 확인해 주세요.',
+    at: '2026-08-09',
+  },
   {
     id: '2026-08-09-scenic-hub-fill-r01-89',
     session: '테마여행 #89, 빈 hub 명소 보강',
