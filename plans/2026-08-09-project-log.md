@@ -4,7 +4,7 @@
 
 ## 테마여행 #107, 잔여 contentId 보강
 
-**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip (push 후) · Preview 사람 QA 대기
+**상태**: feature `cursor/scenic-yangyang-b772` · PR [#75](https://github.com/catgeot/Days/pull/75) · tip `b8d98cb4` · Preview 사람 QA 대기
 
 - **한 일**: `fill:korea-scenic-spot-content-ids` — searchKeyword 429 회피 · areaBasedList(시·군)+DB 엄격 매칭으로 contentId **10곳** 채움(529→539 · 잔여 null 181) · 창원 시군구 6→16 · 연기/군위 색인 · 알펜시아 스키장 오매칭 제외
 - **채움 예**: 평창올림픽기념관 `2733036` · 의왕 레일파크 `2388712` · 화순 적벽(물염적벽) `128991` · 무주덕유산리조트 `126718` · 논산 백제군사박물관 · 장수승마장 · 장흥 토요시장 · 거창박물관 · 클레이아크김해 · 청송 객주문학관
