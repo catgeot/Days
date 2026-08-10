@@ -19,6 +19,8 @@ import {
   LocateFixed,
   Map as MapIcon,
   MapPin,
+  Maximize2,
+  Minimize2,
   Mountain,
   Search,
   Star,
@@ -437,23 +439,56 @@ function spotListThumbCandidates(spot) {
   return out;
 }
 
+function ListLargeToggleButton({ listLarge, onToggle }) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-label={listLarge ? '리스트 기본 크기로' : '리스트 크게 보기'}
+      title={listLarge ? '기본 크기' : '크게 보기'}
+      aria-pressed={listLarge}
+      className={`shrink-0 inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-bold ${
+        listLarge
+          ? 'border-amber-400/90 bg-amber-50 text-amber-950'
+          : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
+      }`}
+    >
+      {listLarge ? (
+        <Minimize2 size={13} aria-hidden="true" />
+      ) : (
+        <Maximize2 size={13} aria-hidden="true" />
+      )}
+      {listLarge ? '기본' : '크게'}
+    </button>
+  );
+}
+
 function ScenicListRow({
   spot,
   distanceKm,
   onOpen,
   favorited = false,
   onToggleFavorite,
+  large = false,
 }) {
   const distanceLabel = formatDistanceKm(distanceKm);
   const candidates = spotListThumbCandidates(spot);
   const [thumbIndex, setThumbIndex] = useState(0);
   const thumb = candidates[thumbIndex] || '';
   return (
-    <div className="flex w-full items-stretch gap-1 rounded-2xl border border-stone-200/90 bg-white p-2.5 shadow-sm transition-colors hover:border-amber-300/80 hover:bg-amber-50/40 sm:px-3 sm:py-3">
+    <div
+      className={`flex w-full items-stretch rounded-2xl border border-stone-200/90 bg-white shadow-sm transition-colors hover:border-amber-300/80 hover:bg-amber-50/40 ${
+        large
+          ? 'gap-2 p-3.5 sm:px-4 sm:py-3.5'
+          : 'gap-1 p-2.5 sm:px-3 sm:py-3'
+      }`}
+    >
       <button
         type="button"
         onClick={() => onOpen(spot.id)}
-        className="flex min-w-0 flex-1 items-start gap-3 text-left"
+        className={`flex min-w-0 flex-1 items-start text-left ${
+          large ? 'gap-3.5' : 'gap-3'
+        }`}
       >
         {thumb ? (
           <img
@@ -465,31 +500,59 @@ function ScenicListRow({
             onError={() => {
               setThumbIndex((i) => i + 1);
             }}
-            className="h-16 w-16 shrink-0 rounded-xl object-cover bg-stone-200 sm:h-[4.5rem] sm:w-[4.5rem]"
+            className={`shrink-0 rounded-xl object-cover bg-stone-200 ${
+              large
+                ? 'h-24 w-24 sm:h-28 sm:w-28'
+                : 'h-16 w-16 sm:h-[4.5rem] sm:w-[4.5rem]'
+            }`}
           />
         ) : (
           <div
-            className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-stone-100 text-stone-400 sm:h-[4.5rem] sm:w-[4.5rem]"
+            className={`flex shrink-0 items-center justify-center rounded-xl bg-stone-100 text-stone-400 ${
+              large
+                ? 'h-24 w-24 sm:h-28 sm:w-28'
+                : 'h-16 w-16 sm:h-[4.5rem] sm:w-[4.5rem]'
+            }`}
             aria-hidden="true"
           >
-            <Landmark size={20} />
+            <Landmark size={large ? 26 : 20} />
           </div>
         )}
-        <span className="min-w-0 flex-1 py-0.5">
+        <span className={`min-w-0 flex-1 py-0.5 ${large ? 'space-y-1' : ''}`}>
           <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-            <span className="text-sm font-extrabold tracking-tight text-stone-900 break-keep">
+            <span
+              className={`font-extrabold tracking-tight text-stone-900 break-keep ${
+                large
+                  ? 'text-[15px] leading-snug sm:text-base'
+                  : 'text-sm'
+              }`}
+            >
               {spot.name}
             </span>
-            <span className="text-[11px] font-semibold text-stone-500">
+            <span
+              className={`font-semibold text-stone-500 ${
+                large ? 'text-xs' : 'text-[11px]'
+              }`}
+            >
               {formatScenicSpotPlaceLabel(spot)}
             </span>
             {distanceLabel ? (
-              <span className="shrink-0 rounded-full bg-stone-100 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-stone-600">
+              <span
+                className={`shrink-0 rounded-full bg-stone-100 font-bold tabular-nums text-stone-600 ${
+                  large
+                    ? 'px-2 py-0.5 text-[11px]'
+                    : 'px-1.5 py-0.5 text-[10px]'
+                }`}
+              >
                 {distanceLabel}
               </span>
             ) : null}
           </span>
-          <span className="mt-0.5 block text-xs leading-relaxed text-stone-600 break-keep line-clamp-2">
+          <span
+            className={`mt-0.5 block leading-relaxed text-stone-600 break-keep line-clamp-2 ${
+              large ? 'text-sm' : 'text-xs'
+            }`}
+          >
             {spot.blurb}
           </span>
         </span>
@@ -503,10 +566,12 @@ function ScenicListRow({
           }}
           aria-label={favorited ? '즐겨찾기 해제' : '즐겨찾기'}
           aria-pressed={favorited}
-          className="my-auto flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-500 hover:border-amber-300 hover:bg-amber-50"
+          className={`my-auto flex shrink-0 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-500 hover:border-amber-300 hover:bg-amber-50 ${
+            large ? 'h-10 w-10' : 'h-9 w-9'
+          }`}
         >
           <Star
-            size={15}
+            size={large ? 17 : 15}
             className={
               favorited ? 'fill-amber-400 text-amber-500' : 'text-stone-400'
             }
@@ -1196,6 +1261,8 @@ export default function KoreaThemeScenicPage() {
   );
   /** null | curated | heritage | tour | personal — 파드별 목록↔지도 */
   const [mapPod, setMapPod] = useState(null);
+  /** 리스트 행·썸네일 확대 (축제홈과 동일) */
+  const [listLarge, setListLarge] = useState(false);
   const [openPods, setOpenPods] = useState({
     curated: true,
     heritage: false,
@@ -3433,6 +3500,10 @@ export default function KoreaThemeScenicPage() {
                   </p>
                 </div>
                 <div className="flex shrink-0 flex-wrap items-center gap-1.5">
+                  <ListLargeToggleButton
+                    listLarge={listLarge}
+                    onToggle={() => setListLarge((v) => !v)}
+                  />
                   <button
                     type="button"
                     onClick={() => togglePodMap('personal')}
@@ -3503,11 +3574,12 @@ export default function KoreaThemeScenicPage() {
                           {group.items.length}
                         </span>
                       </p>
-                      <ul className="space-y-2">
+                      <ul className={listLarge ? 'space-y-3' : 'space-y-2'}>
                         {group.items.map((spot) => (
                           <li key={`p-${spot.id}`}>
                             <ScenicListRow
                               spot={spot}
+                              large={listLarge}
                               onOpen={openSpot}
                               favorited={favoriteIds.has(String(spot.id))}
                               onToggleFavorite={handleToggleFavorite}
@@ -3550,23 +3622,29 @@ export default function KoreaThemeScenicPage() {
                 </span>
               </button>
               {openPods.curated ? (
-                <button
-                  type="button"
-                  onClick={() => togglePodMap('curated')}
-                  aria-label={
-                    mapPod === 'curated' ? '명소 목록으로' : '명소 지도로'
-                  }
-                  title={mapPod === 'curated' ? '명소' : '지도'}
-                  aria-pressed={mapPod === 'curated'}
-                  className={`shrink-0 inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-bold ${
-                    mapPod === 'curated'
-                      ? 'border-amber-400/90 bg-amber-50 text-amber-950'
-                      : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
-                  }`}
-                >
-                  <MapIcon size={13} aria-hidden="true" />
-                  {mapPod === 'curated' ? '명소' : '지도'}
-                </button>
+                <div className="flex shrink-0 items-center gap-1.5">
+                  <ListLargeToggleButton
+                    listLarge={listLarge}
+                    onToggle={() => setListLarge((v) => !v)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => togglePodMap('curated')}
+                    aria-label={
+                      mapPod === 'curated' ? '명소 목록으로' : '명소 지도로'
+                    }
+                    title={mapPod === 'curated' ? '명소' : '지도'}
+                    aria-pressed={mapPod === 'curated'}
+                    className={`shrink-0 inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-bold ${
+                      mapPod === 'curated'
+                        ? 'border-amber-400/90 bg-amber-50 text-amber-950'
+                        : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
+                    }`}
+                  >
+                    <MapIcon size={13} aria-hidden="true" />
+                    {mapPod === 'curated' ? '명소' : '지도'}
+                  </button>
+                </div>
               ) : null}
             </div>
             {openPods.curated ? (
@@ -3717,11 +3795,14 @@ export default function KoreaThemeScenicPage() {
               </div>
             ) : null}
 
-            <ul className="space-y-2 [overflow-anchor:none]">
+            <ul
+              className={`${listLarge ? 'space-y-3' : 'space-y-2'} [overflow-anchor:none]`}
+            >
               {curatedSpotsWithThumbs.map((spot) => (
                 <li key={`c-${spot.id}`} className="[overflow-anchor:none]">
                   <ScenicListRow
                     spot={spot}
+                    large={listLarge}
                     distanceKm={curatedKmById.get(String(spot.id))}
                     onOpen={openSpot}
                     favorited={favoriteIds.has(String(spot.id))}
@@ -3786,23 +3867,29 @@ export default function KoreaThemeScenicPage() {
                 </span>
               </button>
               {openPods.heritage ? (
-                <button
-                  type="button"
-                  onClick={() => togglePodMap('heritage')}
-                  aria-label={
-                    mapPod === 'heritage' ? '명승 목록으로' : '명승 지도로'
-                  }
-                  title={mapPod === 'heritage' ? '명승' : '지도'}
-                  aria-pressed={mapPod === 'heritage'}
-                  className={`shrink-0 inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-bold ${
-                    mapPod === 'heritage'
-                      ? 'border-amber-400/90 bg-amber-50 text-amber-950'
-                      : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
-                  }`}
-                >
-                  <MapIcon size={13} aria-hidden="true" />
-                  {mapPod === 'heritage' ? '명승' : '지도'}
-                </button>
+                <div className="flex shrink-0 items-center gap-1.5">
+                  <ListLargeToggleButton
+                    listLarge={listLarge}
+                    onToggle={() => setListLarge((v) => !v)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => togglePodMap('heritage')}
+                    aria-label={
+                      mapPod === 'heritage' ? '명승 목록으로' : '명승 지도로'
+                    }
+                    title={mapPod === 'heritage' ? '명승' : '지도'}
+                    aria-pressed={mapPod === 'heritage'}
+                    className={`shrink-0 inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-bold ${
+                      mapPod === 'heritage'
+                        ? 'border-amber-400/90 bg-amber-50 text-amber-950'
+                        : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
+                    }`}
+                  >
+                    <MapIcon size={13} aria-hidden="true" />
+                    {mapPod === 'heritage' ? '명승' : '지도'}
+                  </button>
+                </div>
               ) : null}
             </div>
             {openPods.heritage ? (
@@ -3930,11 +4017,14 @@ export default function KoreaThemeScenicPage() {
                       : '이 권역·시도에 해당하는 국가유산 명승이 없습니다.'}
               </p>
             ) : (
-              <ul className="space-y-2 [overflow-anchor:none]">
+              <ul
+                className={`${listLarge ? 'space-y-3' : 'space-y-2'} [overflow-anchor:none]`}
+              >
                 {heritageSpots.map((spot) => (
                   <li key={`h-${spot.id}`} className="[overflow-anchor:none]">
                     <ScenicListRow
                       spot={spot}
+                      large={listLarge}
                       distanceKm={heritageKmById.get(String(spot.id))}
                       onOpen={openSpot}
                       favorited={favoriteIds.has(String(spot.id))}
@@ -3992,23 +4082,29 @@ export default function KoreaThemeScenicPage() {
                     ) : null}
               </button>
               {openPods.tour ? (
-                <button
-                  type="button"
-                  onClick={() => togglePodMap('tour')}
-                  aria-label={
-                    mapPod === 'tour' ? '관광지 목록으로' : '관광지 지도로'
-                  }
-                  title={mapPod === 'tour' ? '관광지' : '지도'}
-                  aria-pressed={mapPod === 'tour'}
-                  className={`shrink-0 inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-bold ${
-                    mapPod === 'tour'
-                      ? 'border-amber-400/90 bg-amber-50 text-amber-950'
-                      : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
-                  }`}
-                >
-                  <MapIcon size={13} aria-hidden="true" />
-                  {mapPod === 'tour' ? '관광지' : '지도'}
-                </button>
+                <div className="flex shrink-0 items-center gap-1.5">
+                  <ListLargeToggleButton
+                    listLarge={listLarge}
+                    onToggle={() => setListLarge((v) => !v)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => togglePodMap('tour')}
+                    aria-label={
+                      mapPod === 'tour' ? '관광지 목록으로' : '관광지 지도로'
+                    }
+                    title={mapPod === 'tour' ? '관광지' : '지도'}
+                    aria-pressed={mapPod === 'tour'}
+                    className={`shrink-0 inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-bold ${
+                      mapPod === 'tour'
+                        ? 'border-amber-400/90 bg-amber-50 text-amber-950'
+                        : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
+                    }`}
+                  >
+                    <MapIcon size={13} aria-hidden="true" />
+                    {mapPod === 'tour' ? '관광지' : '지도'}
+                  </button>
+                </div>
               ) : null}
             </div>
             {openPods.tour ? (
@@ -4218,11 +4314,14 @@ export default function KoreaThemeScenicPage() {
             ) : null}
 
             {dbSpots.length > 0 ? (
-              <ul className="space-y-2 [overflow-anchor:none]">
+              <ul
+                className={`${listLarge ? 'space-y-3' : 'space-y-2'} [overflow-anchor:none]`}
+              >
                 {dbSpots.map((spot) => (
                   <li key={`d-${spot.id}`} className="[overflow-anchor:none]">
                     <ScenicListRow
                       spot={spot}
+                      large={listLarge}
                       distanceKm={dbKmById.get(String(spot.id))}
                       onOpen={openSpot}
                       favorited={favoriteIds.has(String(spot.id))}
