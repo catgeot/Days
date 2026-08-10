@@ -1,7 +1,7 @@
 # GATEO 선정 명소 — 권역·시군 hub 보강 큐
 
 **생성**: `npm run report:korea-scenic-empty-hubs -- --write-queue` (이 파일 덮어씀)
-**스냅샷**: 빈 hub **0** · 선정 hub **173** · tip spots **777**
+**스냅샷**: 빈 hub **0** · 선정 hub **169** · tip spots **777**
 
 **완료**: `#77`~`#104` 시·군 빈 hub 큐 **소진** (`#104` 영덕·영양).  
 **소량 hub** (= 빈 hub 큐에서 **제외된** curated>0 · 건수 적은 hub만 · **빈 hub 졸업지 재팽창 금지** · **명소 억지 추가 금지**, 기존 `attractions` 미등재만):  
