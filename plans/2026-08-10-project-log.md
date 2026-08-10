@@ -2,9 +2,25 @@
 
 직전: [`2026-08-09-project-log.md`](./2026-08-09-project-log.md)
 
+## 테마여행 #122, 경로 바 시인성
+
+**상태**: feature `cursor/scenic-map-a086` · Preview QA 대기
+
+- **한 일**: 지도 드릴다운 상단 「상위」·경로 바 시인성 — 불투명 배경·호박 테두리·큰 「상위」버튼·경로를 칩형으로
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-map`
+- **Preview**: `https://days-git-cursor-scenic-map-a086-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: 「지도 상위·경로 바 시인성」
+- **남은 일**: 사람 Preview QA · main 병합
+- **다음 채팅명**:
+
+```
+테마여행 #123, (다음 과제)
+```
+
 ## 테마여행 #121, 지도 드릴다운 칩
 
-**상태**: PR [#85](https://github.com/catgeot/Days/pull/85) **MERGED** · `origin/main` `de54fbe0` · `/qa/scenic-map`→PROD
+**상태**: PR [#85](https://github.com/catgeot/Days/pull/85) **MERGED** · `origin/main` `de54fbe0` · → #122 시인성
 
 - **한 일**: 명소 지도를 **대(권역)→중(시도·세권)→소(여행지 hub)** 지도 위 칩 드릴다운으로 재설계 · hub 도달 시에만 핀 · 목록 URL 기본칩과 분리된 `curatedMapDrill` · 닫을 때 URL 동기화 · smoke 확장 · **main 병합**
 - **VERIFY**: `npm run smoke:korea-scenic-map` · `npm run build` PASS

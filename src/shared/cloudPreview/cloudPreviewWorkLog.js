@@ -4,11 +4,11 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: false,
+  active: true,
   title: '테마여행',
-  sessionNo: 121,
-  sessionPhase: '지도 드릴다운 main',
-  branch: 'main',
+  sessionNo: 122,
+  sessionPhase: '경로 바 시인성',
+  branch: 'cursor/scenic-map-a086',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-map',
 };
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-10-scenic-map-122',
+    session: '테마여행 #122, 경로 바 시인성',
+    title: '지도 상위·경로 바 시인성',
+    detail:
+      '드릴다운 상단 「상위」·경로 바 대비를 올렸습니다(불투명 배경·호박 테두리·큰 「상위」버튼·경로 칩). Preview에서 권역→중→소로 들어간 뒤 상위/경로가 잘 보이는지 확인해 주세요.',
+    at: '2026-08-10',
+  },
   {
     id: '2026-08-10-scenic-map-121-main',
     session: '테마여행 #121, 지도 드릴다운 main',
