@@ -4,11 +4,11 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: false,
+  active: true,
   title: '테마여행',
-  sessionNo: 125,
-  sessionPhase: '안내 문구 main',
-  branch: 'main',
+  sessionNo: 126,
+  sessionPhase: '명승·관광지 지도 드릴다운',
+  branch: 'cursor/scenic-map-drill-f70d',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-map',
 };
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-10-scenic-map-126',
+    session: '테마여행 #126, 명승·관광지 지도 드릴다운',
+    title: '명승·관광지 지도 대→중→소 드릴다운',
+    detail:
+      '명승·관광지 「지도」도 명소처럼 목록에서 고른 칩 지역 핀이 아니라, 대분류(권역)부터 지도 위 칩으로 좁힙니다. 명승은 권역→시도→경관, 관광지는 권역→시도→종목 대·중·소 후 핀입니다. Preview에서 명승/관광지 지도 → 권역 칩 → 하위 → 핀을 확인해 주세요.',
+    at: '2026-08-10',
+  },
   {
     id: '2026-08-10-scenic-map-125-main',
     session: '테마여행 #125, 안내 문구 main',

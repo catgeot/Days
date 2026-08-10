@@ -196,10 +196,10 @@ function applyFocusCamera(map, focusView, opts = {}) {
 }
 
 function drillChipClass(kind) {
-  if (kind === 'region') {
+  if (kind === 'region' || kind === 'cat1') {
     return 'rounded-full border border-amber-300/90 bg-amber-500 px-3 py-1.5 text-xs font-bold text-[#1b1410] shadow-[0_4px_14px_rgba(0,0,0,0.35)] hover:bg-amber-400';
   }
-  if (kind === 'area' || kind === 'cluster') {
+  if (kind === 'area' || kind === 'cluster' || kind === 'cat2') {
     return 'rounded-full border border-stone-200/90 bg-stone-900/90 px-2.5 py-1 text-[11px] font-bold text-amber-50 shadow-[0_4px_14px_rgba(0,0,0,0.4)] backdrop-blur-sm hover:bg-stone-800';
   }
   return 'rounded-full border border-amber-200/80 bg-[#fff7ed]/95 px-2 py-0.5 text-[10px] font-bold text-amber-950 shadow-[0_3px_12px_rgba(0,0,0,0.35)] hover:bg-amber-100';

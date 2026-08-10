@@ -32,12 +32,24 @@ import {
 } from './koreaScenicMapData';
 import {
   buildCuratedMapDrill,
+  buildHeritageMapDrill,
+  drillDownHeritageMap,
   drillDownScenicMap,
+  drillUpHeritageMap,
   drillUpScenicMap,
+  EMPTY_HERITAGE_MAP_DRILL,
   EMPTY_SCENIC_MAP_DRILL,
   focusViewForMapDrill,
+  normalizeHeritageMapDrill,
   normalizeScenicMapDrill,
 } from './koreaScenicMapDrill';
+import {
+  buildTourMapDrill,
+  drillDownTourMap,
+  drillUpTourMap,
+  EMPTY_TOUR_MAP_DRILL,
+  normalizeTourMapDrill,
+} from './koreaTourMapDrill';
 import {
   countKoreaScenicSpotsByRegion,
   countKoreaScenicSpotsByTourArea,
@@ -140,7 +152,10 @@ const CURATED_REGION_COUNTS = countKoreaScenicSpotsByRegion();
 const CURATED_REGIONS = listKoreaScenicRegions();
 const RETURN_TO = '/korea/theme/scenic';
 const CURATED_ALL = listKoreaScenicSpots();
+const HERITAGE_ALL = listKoreaHeritageScenic();
 const PAGE_SIZE = 40;
+/** 관광지 지도 드릴 리프에서 불러올 핀 상한 */
+const TOUR_MAP_PIN_LIMIT = 200;
 const DEFAULT_REGION = SCENIC_REGION_ORDER[0];
 const DEFAULT_CAT1 = TOUR_ATTRACTION_CAT1[0]?.code || 'A01';
 
@@ -1187,10 +1202,26 @@ export default function KoreaThemeScenicPage() {
     tour: false,
   });
   const [mapSessionKey, setMapSessionKey] = useState(0);
-  /** 명소 지도 드릴다운(목록 URL 기본칩과 분리) */
+  /** 명소·명승·관광지 지도 드릴다운(목록 URL 기본칩과 분리) */
   const [curatedMapDrill, setCuratedMapDrill] = useState(() => ({
     ...EMPTY_SCENIC_MAP_DRILL,
   }));
+  const [heritageMapDrill, setHeritageMapDrill] = useState(() => ({
+    ...EMPTY_HERITAGE_MAP_DRILL,
+  }));
+  const [tourMapDrill, setTourMapDrill] = useState(() => ({
+    ...EMPTY_TOUR_MAP_DRILL,
+  }));
+  const [tourMapCounts, setTourMapCounts] = useState({
+    regionCounts: {},
+    areaCounts: {},
+    cat1Counts: {},
+    cat2Counts: {},
+    cat3Counts: {},
+  });
+  const [tourMapCountsReady, setTourMapCountsReady] = useState(false);
+  const [tourMapPins, setTourMapPins] = useState([]);
+  const [tourMapPinsStatus, setTourMapPinsStatus] = useState('idle');
   /** @type {[object | null, function]} */
   const [mapFocusView, setMapFocusView] = useState(null);
   const mapOpen = mapPod != null;
@@ -2608,21 +2639,112 @@ export default function KoreaThemeScenicPage() {
     [curatedMapDrill],
   );
 
-  /** 지도 핀 — 명소는 hub까지 드릴 후 · 기타 파드는 목록 핀 */
+  const heritageMapModel = useMemo(
+    () => buildHeritageMapDrill(HERITAGE_ALL, heritageMapDrill),
+    [heritageMapDrill],
+  );
+
+  const tourMapModel = useMemo(
+    () =>
+      buildTourMapDrill(tourMapDrill, tourMapCounts, {
+        countsReady: tourMapCountsReady,
+      }),
+    [tourMapDrill, tourMapCounts, tourMapCountsReady],
+  );
+
+  /** 관광지 지도 칩 건수 — 드릴 scope 기준(목록 URL 칩과 분리) */
+  useEffect(() => {
+    if (mapPod !== 'tour') return undefined;
+    let cancelled = false;
+    setTourMapCountsReady(false);
+    const d = normalizeTourMapDrill(tourMapDrill);
+    fetchScenicFilterChipCounts({
+      region: d.region,
+      areaCode: d.area,
+      cat1: d.cat1,
+      cat2: d.cat2,
+      cat3: d.cat3,
+    }).then((res) => {
+      if (cancelled) return;
+      setTourMapCounts({
+        regionCounts: res.regionCounts || {},
+        areaCounts: res.areaCounts || {},
+        cat1Counts: res.cat1Counts || {},
+        cat2Counts: res.cat2Counts || {},
+        cat3Counts: res.cat3Counts || {},
+      });
+      setTourMapCountsReady(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [mapPod, tourMapDrill]);
+
+  const tourMapFetchKey = useMemo(() => {
+    if (!tourMapModel.showSpotPins || !tourMapModel.fetchFilters) return '';
+    const f = tourMapModel.fetchFilters;
+    return [
+      f.region || '',
+      f.areaCode || '',
+      f.cat1 || '',
+      f.cat2 || '',
+      f.cat3 || '',
+    ].join('|');
+  }, [tourMapModel.showSpotPins, tourMapModel.fetchFilters]);
+
+  /** 관광지 지도 핀 — 리프(소분류) 도달 시에만 */
+  useEffect(() => {
+    if (mapPod !== 'tour') {
+      setTourMapPins([]);
+      setTourMapPinsStatus('idle');
+      return undefined;
+    }
+    if (!tourMapFetchKey || !tourMapModel.fetchFilters) {
+      setTourMapPins([]);
+      setTourMapPinsStatus('idle');
+      return undefined;
+    }
+    let cancelled = false;
+    setTourMapPinsStatus('loading');
+    const f = tourMapModel.fetchFilters;
+    fetchKoreaTourAttractions({
+      region: f.region,
+      areaCode: f.areaCode,
+      cat1: f.cat1,
+      cat2: f.cat2,
+      cat3: f.cat3,
+      limit: TOUR_MAP_PIN_LIMIT,
+      offset: 0,
+    }).then((res) => {
+      if (cancelled) return;
+      setTourMapPins(res.spots || []);
+      setTourMapPinsStatus(res.error ? 'error' : 'ok');
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [mapPod, tourMapFetchKey, tourMapModel.fetchFilters]);
+
+  /** 지도 핀 — 명소·명승·관광지는 드릴 리프에서만 · 개인은 목록 */
   const mapItems = useMemo(() => {
     if (mapPod === 'personal') return personalItems;
     if (mapPod === 'curated') {
       return curatedMapModel.showSpotPins ? curatedMapModel.scopeSpots : [];
     }
-    if (mapPod === 'heritage') return heritageSpots;
-    if (mapPod === 'tour') return dbSpots;
+    if (mapPod === 'heritage') {
+      return heritageMapModel.showSpotPins ? heritageMapModel.scopeSpots : [];
+    }
+    if (mapPod === 'tour') {
+      return tourMapModel.showSpotPins ? tourMapPins : [];
+    }
     return [];
   }, [
     mapPod,
     personalItems,
     curatedMapModel,
-    heritageSpots,
-    dbSpots,
+    heritageMapModel,
+    tourMapModel,
+    tourMapPins,
   ]);
 
   useEffect(() => {
@@ -2636,9 +2758,31 @@ export default function KoreaThemeScenicPage() {
       );
       return;
     }
+    if (mapPod === 'heritage') {
+      setMapFocusView(
+        focusViewForMapDrill(
+          heritageMapModel.chips,
+          heritageMapModel.scopeSpots,
+        ),
+      );
+      return;
+    }
+    if (mapPod === 'tour') {
+      setMapFocusView(
+        focusViewForMapDrill(tourMapModel.chips, tourMapPins),
+      );
+      return;
+    }
     const view = focusViewFromScenicItems(mapItems);
     setMapFocusView(view || KOREA_SCENIC_MAP_OVERVIEW);
-  }, [mapPod, mapItems, curatedMapModel]);
+  }, [
+    mapPod,
+    mapItems,
+    curatedMapModel,
+    heritageMapModel,
+    tourMapModel,
+    tourMapPins,
+  ]);
 
   /** 검색·내 주변은 결과 누락 방지로 세 파드 펼침(다중 펼침 유지) */
   useEffect(() => {
@@ -2671,35 +2815,89 @@ export default function KoreaThemeScenicPage() {
     [searchParams, setSearchParams],
   );
 
-  const closeMap = useCallback(() => {
-    if (mapPod === 'curated') {
-      syncCuratedMapDrillToUrl(curatedMapDrill);
+  const syncHeritageMapDrillToUrl = useCallback(
+    (drill) => {
+      const d = normalizeHeritageMapDrill(drill);
+      if (!d.region) return;
+      const next = new URLSearchParams(searchParams);
+      next.set('hregion', d.region);
+      if (d.area) next.set('harea', d.area);
+      else next.delete('harea');
+      if (d.category) next.set('hcat', d.category);
+      else next.delete('hcat');
+      next.delete('spot');
+      setSearchParams(next, { replace: true });
+    },
+    [searchParams, setSearchParams],
+  );
+
+  const syncTourMapDrillToUrl = useCallback(
+    (drill, fetchFilters = null) => {
+      const d = normalizeTourMapDrill(drill);
+      const region = d.region || fetchFilters?.region || null;
+      if (!region) return;
+      const area = d.area || fetchFilters?.areaCode || null;
+      const nextCat1 = d.cat1 || fetchFilters?.cat1 || null;
+      const nextCat2 = d.cat2 || fetchFilters?.cat2 || null;
+      const nextCat3 = d.cat3 || fetchFilters?.cat3 || null;
+      const next = new URLSearchParams(searchParams);
+      next.set('tregion', region);
+      if (area) next.set('tarea', area);
+      else next.delete('tarea');
+      if (nextCat1) next.set('cat1', nextCat1);
+      else next.delete('cat1');
+      if (nextCat2) next.set('cat2', nextCat2);
+      else next.delete('cat2');
+      if (nextCat3) next.set('cat3', nextCat3);
+      else next.delete('cat3');
+      next.delete('page');
+      next.delete('spot');
+      setSearchParams(next, { replace: true });
+    },
+    [searchParams, setSearchParams],
+  );
+
+  const syncActiveMapDrillToUrl = useCallback(() => {
+    if (mapPod === 'curated') syncCuratedMapDrillToUrl(curatedMapDrill);
+    else if (mapPod === 'heritage') {
+      syncHeritageMapDrillToUrl(heritageMapDrill);
+    } else if (mapPod === 'tour') {
+      syncTourMapDrillToUrl(tourMapDrill, tourMapModel.fetchFilters);
     }
+  }, [
+    mapPod,
+    curatedMapDrill,
+    heritageMapDrill,
+    tourMapDrill,
+    tourMapModel.fetchFilters,
+    syncCuratedMapDrillToUrl,
+    syncHeritageMapDrillToUrl,
+    syncTourMapDrillToUrl,
+  ]);
+
+  const closeMap = useCallback(() => {
+    syncActiveMapDrillToUrl();
     setMapPod(null);
-  }, [mapPod, curatedMapDrill, syncCuratedMapDrillToUrl]);
+  }, [syncActiveMapDrillToUrl]);
 
   const togglePodOpen = useCallback(
     (pod) => {
       setOpenPods((prev) => {
         const nextOpen = !prev[pod];
         if (!nextOpen && mapPod === pod) {
-          if (pod === 'curated') {
-            syncCuratedMapDrillToUrl(curatedMapDrill);
-          }
+          syncActiveMapDrillToUrl();
           setMapPod(null);
         }
         return { ...prev, [pod]: nextOpen };
       });
     },
-    [mapPod, curatedMapDrill, syncCuratedMapDrillToUrl],
+    [mapPod, syncActiveMapDrillToUrl],
   );
 
   const togglePodMap = useCallback(
     (pod) => {
       if (mapPod === pod) {
-        if (pod === 'curated') {
-          syncCuratedMapDrillToUrl(curatedMapDrill);
-        }
+        syncActiveMapDrillToUrl();
         setMapPod(null);
         return;
       }
@@ -2708,6 +2906,19 @@ export default function KoreaThemeScenicPage() {
       }
       if (pod === 'curated') {
         setCuratedMapDrill({ ...EMPTY_SCENIC_MAP_DRILL });
+      } else if (pod === 'heritage') {
+        setHeritageMapDrill({ ...EMPTY_HERITAGE_MAP_DRILL });
+      } else if (pod === 'tour') {
+        setTourMapDrill({ ...EMPTY_TOUR_MAP_DRILL });
+        setTourMapCounts({
+          regionCounts: {},
+          areaCounts: {},
+          cat1Counts: {},
+          cat2Counts: {},
+          cat3Counts: {},
+        });
+        setTourMapCountsReady(false);
+        setTourMapPins([]);
       }
       setMapSessionKey((k) => k + 1);
       requestAnimationFrame(() => {
@@ -2715,7 +2926,7 @@ export default function KoreaThemeScenicPage() {
       });
       setMapPod(pod);
     },
-    [mapPod, curatedMapDrill, syncCuratedMapDrillToUrl],
+    [mapPod, syncActiveMapDrillToUrl],
   );
 
   const handleCuratedMapDrillChip = useCallback((chip) => {
@@ -2733,6 +2944,118 @@ export default function KoreaThemeScenicPage() {
       setCuratedMapDrill(normalizeScenicMapDrill(crumb.drill));
     },
     [curatedMapModel.crumbs],
+  );
+
+  const handleHeritageMapDrillChip = useCallback((chip) => {
+    setHeritageMapDrill((prev) => drillDownHeritageMap(prev, chip));
+  }, []);
+
+  const handleHeritageMapDrillUp = useCallback(() => {
+    setHeritageMapDrill((prev) => drillUpHeritageMap(prev));
+  }, []);
+
+  const handleHeritageMapDrillCrumb = useCallback(
+    (index) => {
+      const crumb = heritageMapModel.crumbs[index];
+      if (!crumb) return;
+      setHeritageMapDrill(normalizeHeritageMapDrill(crumb.drill));
+    },
+    [heritageMapModel.crumbs],
+  );
+
+  const handleTourMapDrillChip = useCallback((chip) => {
+    setTourMapDrill((prev) => drillDownTourMap(prev, chip));
+  }, []);
+
+  const handleTourMapDrillUp = useCallback(() => {
+    setTourMapDrill((prev) => drillUpTourMap(prev));
+  }, []);
+
+  const handleTourMapDrillCrumb = useCallback(
+    (index) => {
+      const crumb = tourMapModel.crumbs[index];
+      if (!crumb) return;
+      setTourMapDrill(normalizeTourMapDrill(crumb.drill));
+    },
+    [tourMapModel.crumbs],
+  );
+
+  const activeMapDrillChips = useMemo(() => {
+    if (mapPod === 'curated') return curatedMapModel.chips;
+    if (mapPod === 'heritage') return heritageMapModel.chips;
+    if (mapPod === 'tour') return tourMapModel.chips;
+    return null;
+  }, [mapPod, curatedMapModel, heritageMapModel, tourMapModel]);
+
+  const activeMapDrillCrumbs = useMemo(() => {
+    if (mapPod === 'curated') return curatedMapModel.crumbs;
+    if (mapPod === 'heritage') return heritageMapModel.crumbs;
+    if (mapPod === 'tour') return tourMapModel.crumbs;
+    return null;
+  }, [mapPod, curatedMapModel, heritageMapModel, tourMapModel]);
+
+  const activeMapDrillLevelLabel = useMemo(() => {
+    if (mapPod === 'curated') return curatedMapModel.levelLabel;
+    if (mapPod === 'heritage') return heritageMapModel.levelLabel;
+    if (mapPod === 'tour') {
+      if (tourMapModel.showSpotPins && tourMapPinsStatus === 'loading') {
+        return '불러오는 중…';
+      }
+      return tourMapModel.levelLabel;
+    }
+    return '';
+  }, [
+    mapPod,
+    curatedMapModel,
+    heritageMapModel,
+    tourMapModel,
+    tourMapPinsStatus,
+  ]);
+
+  const activeMapShowSpotPins = useMemo(() => {
+    if (mapPod === 'curated') return curatedMapModel.showSpotPins;
+    if (mapPod === 'heritage') return heritageMapModel.showSpotPins;
+    if (mapPod === 'tour') return tourMapModel.showSpotPins;
+    return true;
+  }, [mapPod, curatedMapModel, heritageMapModel, tourMapModel]);
+
+  const handleActiveMapDrillChip = useCallback(
+    (chip) => {
+      if (mapPod === 'curated') handleCuratedMapDrillChip(chip);
+      else if (mapPod === 'heritage') handleHeritageMapDrillChip(chip);
+      else if (mapPod === 'tour') handleTourMapDrillChip(chip);
+    },
+    [
+      mapPod,
+      handleCuratedMapDrillChip,
+      handleHeritageMapDrillChip,
+      handleTourMapDrillChip,
+    ],
+  );
+
+  const handleActiveMapDrillUp = useCallback(() => {
+    if (mapPod === 'curated') handleCuratedMapDrillUp();
+    else if (mapPod === 'heritage') handleHeritageMapDrillUp();
+    else if (mapPod === 'tour') handleTourMapDrillUp();
+  }, [
+    mapPod,
+    handleCuratedMapDrillUp,
+    handleHeritageMapDrillUp,
+    handleTourMapDrillUp,
+  ]);
+
+  const handleActiveMapDrillCrumb = useCallback(
+    (index) => {
+      if (mapPod === 'curated') handleCuratedMapDrillCrumb(index);
+      else if (mapPod === 'heritage') handleHeritageMapDrillCrumb(index);
+      else if (mapPod === 'tour') handleTourMapDrillCrumb(index);
+    },
+    [
+      mapPod,
+      handleCuratedMapDrillCrumb,
+      handleHeritageMapDrillCrumb,
+      handleTourMapDrillCrumb,
+    ],
   );
 
   const openSpot = useCallback(
@@ -3973,31 +4296,27 @@ export default function KoreaThemeScenicPage() {
             historyKey={
               mapPod === 'curated'
                 ? `${mapSessionKey}:curated:${curatedMapDrill.region || ''}:${curatedMapDrill.area || ''}:${curatedMapDrill.cluster || ''}:${curatedMapDrill.hub || ''}`
-                : `${mapSessionKey}:${mapPod}:${personalTab || ''}:${searchFilter}:${hubId || ''}:${curatedRegion}:${heritageRegion}:${cat1}:${page}`
+                : mapPod === 'heritage'
+                  ? `${mapSessionKey}:heritage:${heritageMapDrill.region || ''}:${heritageMapDrill.area || ''}:${heritageMapDrill.category || ''}`
+                  : mapPod === 'tour'
+                    ? `${mapSessionKey}:tour:${tourMapDrill.region || ''}:${tourMapDrill.area || ''}:${tourMapDrill.cat1 || ''}:${tourMapDrill.cat2 || ''}:${tourMapDrill.cat3 || ''}`
+                    : `${mapSessionKey}:${mapPod}:${personalTab || ''}:${searchFilter}:${hubId || ''}`
             }
             layoutKey={`immersive:${mapPod}`}
             onSelectPoint={(spotId) => openSpot(spotId)}
-            drillChips={
-              mapPod === 'curated' ? curatedMapModel.chips : null
-            }
+            drillChips={activeMapDrillChips}
             onSelectDrillChip={
-              mapPod === 'curated' ? handleCuratedMapDrillChip : undefined
+              activeMapDrillChips ? handleActiveMapDrillChip : undefined
             }
-            drillCrumbs={
-              mapPod === 'curated' ? curatedMapModel.crumbs : null
-            }
+            drillCrumbs={activeMapDrillCrumbs}
             onDrillCrumb={
-              mapPod === 'curated' ? handleCuratedMapDrillCrumb : undefined
+              activeMapDrillCrumbs ? handleActiveMapDrillCrumb : undefined
             }
             onDrillUp={
-              mapPod === 'curated' ? handleCuratedMapDrillUp : undefined
+              activeMapDrillCrumbs ? handleActiveMapDrillUp : undefined
             }
-            drillLevelLabel={
-              mapPod === 'curated' ? curatedMapModel.levelLabel : ''
-            }
-            showSpotPins={
-              mapPod === 'curated' ? curatedMapModel.showSpotPins : true
-            }
+            drillLevelLabel={activeMapDrillLevelLabel}
+            showSpotPins={activeMapShowSpotPins}
           />
         </div>
       ) : null}

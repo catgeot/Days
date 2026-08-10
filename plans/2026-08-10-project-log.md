@@ -2,6 +2,22 @@
 
 직전: [`2026-08-09-project-log.md`](./2026-08-09-project-log.md)
 
+## 테마여행 #126, 명승·관광지 지도 드릴다운
+
+**상태**: feature `cursor/scenic-map-drill-f70d` · PR [#89](https://github.com/catgeot/Days/pull/89) · `/qa/scenic-map`
+
+- **한 일**: 명승·관광지 지도를 명소와 같이 **목록 선택 칩 무시 · 대분류(권역)부터 드릴다운** — 명승 권역→시도→경관→핀 · 관광지 권역→시도→종목 대·중·소→핀 · 닫을 때 URL 동기화 · smoke 확장
+- **VERIFY**: `npm run smoke:korea-scenic-map` · `npm run build` PASS
+- **공유**: `https://www.gateo.kr/qa/scenic-map`
+- **Preview**: `https://days-git-cursor-scenic-map-drill-f70d-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: 「명승·관광지 지도 대→중→소 드릴다운」
+- **남은 일**: 사람 Preview QA · 내 주변 GPS 지도 연동(선택)
+- **다음 채팅명**:
+
+```
+테마여행 #127, (다음 과제)
+```
+
 ## 테마여행 #125, 상태바 안내 문구 제거
 
 **상태**: PR [#88](https://github.com/catgeot/Days/pull/88) **MERGED** · `origin/main` `ae6a6473` · `/qa/scenic-map`→PROD

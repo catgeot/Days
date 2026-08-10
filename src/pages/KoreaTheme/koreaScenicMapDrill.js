@@ -1,6 +1,7 @@
 /**
- * 명소 지도 드릴다운 — 대(권역) → 중(시도·세권) → 소(여행지 hub) → 핀.
- * 목록 URL 기본칩(#110)과 분리된 지도 전용 scope.
+ * 명소·명승 지도 드릴다운 — 목록 URL 기본칩과 분리된 지도 전용 scope.
+ * 명소: 대(권역) → 중(시도·세권) → 소(여행지 hub) → 핀
+ * 명승: 대(권역) → 중(시도) → 소(경관) → 핀
  */
 import {
   countKoreaScenicSpotsByTourArea,
@@ -15,9 +16,16 @@ import {
   resolveScenicClusterAreaCode,
 } from '../Home/lib/koreaScenicClusters.js';
 import {
+  heritageTourAreaCodeForSpot,
+  HERITAGE_CATEGORY_ORDER,
+  listKoreaHeritageScenic,
+  normalizeHeritageCategory,
+} from '../Home/lib/koreaHeritageScenic.js';
+import {
   labelScenicAreaCode,
   listScenicRegionAreas,
   scenicAreaCodeForHubId,
+  SCENIC_REGION_ORDER,
 } from '../Home/lib/koreaTourAttractionMap.js';
 import { scenicSpotLngLat } from './nearbyScenicRank.js';
 import {
@@ -46,6 +54,14 @@ export const EMPTY_SCENIC_MAP_DRILL = Object.freeze({
   area: null,
   cluster: null,
   hub: null,
+});
+
+/** @typedef {{ region: string | null, area: string | null, category: string | null }} HeritageMapDrillState */
+
+export const EMPTY_HERITAGE_MAP_DRILL = Object.freeze({
+  region: null,
+  area: null,
+  category: null,
 });
 
 /**
@@ -467,4 +483,252 @@ export function focusViewForMapDrill(chips, scopeSpots) {
     return focusViewFromScenicItems(scopeSpots) || KOREA_SCENIC_MAP_OVERVIEW;
   }
   return KOREA_SCENIC_MAP_OVERVIEW;
+}
+
+/**
+ * @param {HeritageMapDrillState | null | undefined} drill
+ * @returns {HeritageMapDrillState}
+ */
+export function normalizeHeritageMapDrill(drill) {
+  return {
+    region: drill?.region ? String(drill.region) : null,
+    area: drill?.area ? String(drill.area) : null,
+    category: normalizeHeritageCategory(drill?.category),
+  };
+}
+
+/**
+ * @param {object[]} [allSpots]
+ * @param {HeritageMapDrillState | null | undefined} drill
+ * @returns {{
+ *   chips: ScenicMapDrillChip[],
+ *   showSpotPins: boolean,
+ *   crumbs: { id: string, label: string, drill: HeritageMapDrillState }[],
+ *   scopeSpots: object[],
+ *   levelLabel: string,
+ * }}
+ */
+export function buildHeritageMapDrill(allSpots, drill) {
+  const d = normalizeHeritageMapDrill(drill);
+  const catalog =
+    Array.isArray(allSpots) && allSpots.length
+      ? allSpots
+      : listKoreaHeritageScenic();
+
+  /** @type {{ id: string, label: string, drill: HeritageMapDrillState }[]} */
+  const crumbs = [
+    { id: 'root', label: '전체', drill: { ...EMPTY_HERITAGE_MAP_DRILL } },
+  ];
+
+  if (!d.region) {
+    /** @type {ScenicMapDrillChip[]} */
+    const chips = [];
+    for (const region of SCENIC_REGION_ORDER) {
+      const members = catalog.filter((s) => s.region === region);
+      const chip = chipFromMembers(members, {
+        id: `region:${region}`,
+        kind: 'region',
+        label: region,
+        region,
+      });
+      if (chip) chips.push(chip);
+    }
+    return {
+      chips,
+      showSpotPins: false,
+      crumbs,
+      scopeSpots: catalog,
+      levelLabel: '대분류(권역)',
+    };
+  }
+
+  crumbs.push({
+    id: `region:${d.region}`,
+    label: d.region,
+    drill: { region: d.region, area: null, category: null },
+  });
+
+  const inRegion = catalog.filter((s) => s.region === d.region);
+  const areaChipsMeta = listScenicRegionAreas(d.region)
+    .map((a) => ({
+      ...a,
+      members: inRegion.filter((s) => heritageTourAreaCodeForSpot(s) === a.code),
+    }))
+    .filter((a) => a.members.length > 0);
+
+  if (!d.area && !d.category) {
+    if (areaChipsMeta.length > 1) {
+      /** @type {ScenicMapDrillChip[]} */
+      const chips = [];
+      for (const a of areaChipsMeta) {
+        const chip = chipFromMembers(a.members, {
+          id: `area:${a.code}`,
+          kind: 'area',
+          label: a.label,
+          count: a.members.length,
+          region: d.region,
+          area: a.code,
+        });
+        if (chip) chips.push(chip);
+      }
+      return {
+        chips,
+        showSpotPins: false,
+        crumbs,
+        scopeSpots: inRegion,
+        levelLabel: '중분류(시도)',
+      };
+    }
+
+    const onlyArea = areaChipsMeta[0]?.code || null;
+    const catScope = onlyArea
+      ? inRegion.filter((s) => heritageTourAreaCodeForSpot(s) === onlyArea)
+      : inRegion;
+    /** @type {ScenicMapDrillChip[]} */
+    const chips = [];
+    for (const cat of HERITAGE_CATEGORY_ORDER) {
+      const members = catScope.filter(
+        (s) => normalizeHeritageCategory(s.category) === cat,
+      );
+      const chip = chipFromMembers(members, {
+        id: `category:${cat}`,
+        kind: 'category',
+        label: cat,
+        region: d.region,
+        area: onlyArea || undefined,
+        category: cat,
+      });
+      if (chip) chips.push(chip);
+    }
+    if (chips.length > 1) {
+      return {
+        chips,
+        showSpotPins: false,
+        crumbs,
+        scopeSpots: catScope,
+        levelLabel: '소분류(경관)',
+      };
+    }
+    return {
+      chips: [],
+      showSpotPins: true,
+      crumbs,
+      scopeSpots: catScope,
+      levelLabel: '명승',
+    };
+  }
+
+  if (d.area) {
+    const areaLabel = labelScenicAreaCode(d.area) || d.area;
+    crumbs.push({
+      id: `area:${d.area}`,
+      label: areaLabel,
+      drill: { region: d.region, area: d.area, category: null },
+    });
+  }
+
+  const inArea = d.area
+    ? inRegion.filter((s) => heritageTourAreaCodeForSpot(s) === d.area)
+    : inRegion;
+
+  if (d.area && !d.category) {
+    /** @type {ScenicMapDrillChip[]} */
+    const chips = [];
+    for (const cat of HERITAGE_CATEGORY_ORDER) {
+      const members = inArea.filter(
+        (s) => normalizeHeritageCategory(s.category) === cat,
+      );
+      const chip = chipFromMembers(members, {
+        id: `category:${cat}`,
+        kind: 'category',
+        label: cat,
+        region: d.region,
+        area: d.area,
+        category: cat,
+      });
+      if (chip) chips.push(chip);
+    }
+    if (chips.length > 1) {
+      return {
+        chips,
+        showSpotPins: false,
+        crumbs,
+        scopeSpots: inArea,
+        levelLabel: '소분류(경관)',
+      };
+    }
+    return {
+      chips: [],
+      showSpotPins: true,
+      crumbs,
+      scopeSpots: inArea,
+      levelLabel: '명승',
+    };
+  }
+
+  crumbs.push({
+    id: `category:${d.category}`,
+    label: d.category,
+    drill: { ...d },
+  });
+  const scopeSpots = inArea.filter(
+    (s) => normalizeHeritageCategory(s.category) === d.category,
+  );
+  return {
+    chips: [],
+    showSpotPins: true,
+    crumbs,
+    scopeSpots,
+    levelLabel: '명승',
+  };
+}
+
+/**
+ * @param {HeritageMapDrillState} drill
+ * @param {ScenicMapDrillChip} chip
+ * @returns {HeritageMapDrillState}
+ */
+export function drillDownHeritageMap(drill, chip) {
+  const d = normalizeHeritageMapDrill(drill);
+  if (!chip) return d;
+  if (chip.kind === 'region') {
+    return {
+      region: chip.region || chip.label,
+      area: null,
+      category: null,
+    };
+  }
+  if (chip.kind === 'area') {
+    return {
+      region: chip.region || d.region,
+      area: chip.area || null,
+      category: null,
+    };
+  }
+  if (chip.kind === 'category') {
+    return {
+      region: chip.region || d.region,
+      area: chip.area || d.area,
+      category: normalizeHeritageCategory(chip.category || chip.label),
+    };
+  }
+  return d;
+}
+
+/**
+ * @param {HeritageMapDrillState} drill
+ * @returns {HeritageMapDrillState}
+ */
+export function drillUpHeritageMap(drill) {
+  const d = normalizeHeritageMapDrill(drill);
+  if (d.category) {
+    return { region: d.region, area: d.area, category: null };
+  }
+  if (d.area) {
+    return { region: d.region, area: null, category: null };
+  }
+  if (d.region) {
+    return { ...EMPTY_HERITAGE_MAP_DRILL };
+  }
+  return { ...EMPTY_HERITAGE_MAP_DRILL };
 }
