@@ -4,7 +4,7 @@
 
 ## 테마여행 #126, 명승·관광지 지도 드릴다운
 
-**상태**: feature `cursor/scenic-map-drill-f70d` · PR 준비 · `/qa/scenic-map`
+**상태**: feature `cursor/scenic-map-drill-f70d` · PR [#89](https://github.com/catgeot/Days/pull/89) · `/qa/scenic-map`
 
 - **한 일**: 명승·관광지 지도를 명소와 같이 **목록 선택 칩 무시 · 대분류(권역)부터 드릴다운** — 명승 권역→시도→경관→핀 · 관광지 권역→시도→종목 대·중·소→핀 · 닫을 때 URL 동기화 · smoke 확장
 - **VERIFY**: `npm run smoke:korea-scenic-map` · `npm run build` PASS
