@@ -4,10 +4,10 @@
 
 ## 테마여행 #131, 소량 hub 보강
 
-**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#95](https://github.com/catgeot/Days/pull/95) · Preview QA 대기  
+**상태**: feature `cursor/scenic-thin-hubs-beea` · 교정 PR [#96](https://github.com/catgeot/Days/pull/96) · (#95 MERGED 후 범위 교정) · Preview QA 대기  
 **세션**: `테마여행 #131, 소량 hub 보강`
 
-- **한 일**: **교정** — 소량 hub = 빈 hub 큐 **제외**(이미 curated>0)만. 빈 hub 졸업지(원주·횡성·화천 #87·#89) 재팽창·명소 억지 추가 **되돌림**. 강릉은 기존 hub attractions 미등재 **오죽헌·주문진항**만 append(752→754)
+- **한 일**: **교정** — 소량 hub = 빈 hub 큐 **제외**(이미 curated>0)만. 빈 hub 졸업지(원주·횡성·화천 #87·#89) 재팽창·명소 억지 추가 **되돌림**(main 772→754). 강릉은 기존 hub attractions 미등재 **오죽헌·주문진항**만 유지
 - **규칙**: 빈 hub 보강 대상 재작업 금지 · attractions를 무리하게 늘리지 않음(품질)
 - **VERIFY**: `audit:city-attraction-hubs` · `audit`/`smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
