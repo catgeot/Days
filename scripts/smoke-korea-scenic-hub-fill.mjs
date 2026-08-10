@@ -26,6 +26,12 @@ const scenic = JSON.parse(
     'utf8',
   ),
 );
+const hubsFile = JSON.parse(
+  readFileSync(
+    join(__dirname, '../src/pages/Home/data/cityAttractionHubs.json'),
+    'utf8',
+  ),
+);
 
 let failed = 0;
 function assert(cond, msg) {
@@ -554,15 +560,44 @@ if (target) {
   );
 }
 
+// 소량 hub = 빈 hub 큐에서 제외된(이미 curated>0) hub만.
+// 빈 hub 보강 졸업지(원주·횡성·화천 등) 재팽창·명소 억지 추가 금지.
 const thinHubMin = {
   chuncheon: 11,
   sokcho: 9,
   donghae: 8,
   samcheok: 10,
-  gangneung: 11,
-  wonju: 9,
-  hoengseong: 8,
-  hwacheon: 8,
+  gangneung: 6,
+  pohang: 6,
+  mokpo: 7,
+  ulleung: 7,
+  gapyeong: 7,
+  gongju: 7,
+  hapcheon: 7,
+  taean: 6,
+  buyeo: 6,
+  boseong: 6,
+  buan: 6,
+  namwon: 6,
+  hadong: 6,
+  cheongju: 6,
+  gwangju: 6,
+  jeongeup: 6,
+  seongnam: 6,
+  boryeong: 4,
+  danyang: 5,
+  gunsan: 5,
+  gurye: 5,
+  jecheon: 5,
+  jinju: 5,
+  wando: 5,
+  jinan: 4,
+};
+const thinHubExactAttr = {
+  // 빈 hub(#87·#89) 졸업 — attractions 전수 유지, #131 재보강 회귀 방지
+  wonju: 4,
+  hoengseong: 4,
+  hwacheon: 4,
 };
 const curatedByHub = new Map();
 for (const s of Array.isArray(scenic?.spots) ? scenic.spots : []) {
@@ -575,6 +610,21 @@ for (const s of Array.isArray(scenic?.spots) ? scenic.spots : []) {
 for (const [hubId, min] of Object.entries(thinHubMin)) {
   const n = curatedByHub.get(hubId) || 0;
   assert(n >= min, `소량 hub ${hubId} ≥${min} (got ${n})`);
+}
+const hubArr = Array.isArray(hubsFile) ? hubsFile : [];
+for (const [hubId, exact] of Object.entries(thinHubExactAttr)) {
+  const hub = hubArr.find(
+    (h) =>
+      String(h?.hubId || '')
+        .trim()
+        .toLowerCase() === hubId,
+  );
+  const attr = Array.isArray(hub?.attractions) ? hub.attractions.length : 0;
+  const curated = curatedByHub.get(hubId) || 0;
+  assert(
+    attr === exact && curated === exact,
+    `빈hub졸업 ${hubId} attr=curated=${exact} (attr ${attr} curated ${curated}) — 재팽창 금지`,
+  );
 }
 
 if (failed) {

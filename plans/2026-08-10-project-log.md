@@ -2,17 +2,126 @@
 
 직전: [`2026-08-09-project-log.md`](./2026-08-09-project-log.md)
 
-## 테마여행 #131, 소량 hub 보강
+## 테마여행 #137, 소량 hub 보강
 
-**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#95](https://github.com/catgeot/Days/pull/95) · Preview QA 대기  
-**세션**: `테마여행 #131, 소량 hub 보강`
+**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · tip `c4cb181d` · Preview QA 대기  
+**세션**: `테마여행 #137, 소량 hub 보강`
 
-- **한 일**: 강원 **소량 hub** 보강 — 강릉·원주·횡성·화천 `cityAttractionHubs` 명소 추가 + GATEO 선정 **20곳** append(752→772) · contentId DB 4곳 채움(keyword 429 잔여) · `/qa/scenic-hub-fill` 동일 Preview
+- **한 일**: curated **1** hub 소량 보강 — 제천·진주·완도·진안 `cityAttractionHubs` **기존 attractions 미등재만** GATEO 선정 **15곳** append(854→869) · attractions 억지 추가 없음 · contentId DB/수동 6곳(송계계곡·진양호동물원·용담호·운일암반일암·은수사 등 · 잔여 null 7 · 월악산 약초마을 오탐 제외 · keyword 429)
+- **규칙**: #131 교정 유지 — 빈 hub 졸업지 재팽창 금지 · 미등재 draft만
 - **VERIFY**: `audit:city-attraction-hubs` · `audit`/`smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
-- **Preview**: `https://days-git-cursor-scenic-thin-hubs-beea-catgeots-projects.vercel.app/korea/theme/scenic?hub=gangneung` · `?hub=wonju` · `?hub=hoengseong` · `?hub=hwacheon`
-- **작업 로그**: 「강릉·원주·횡성·화천 소량 hub 명소 보강」
-- **남은 일**: 사람 Preview QA · 타 소량 hub(철원·태백·정선 등) · Tour 미등재·429 contentId
+- **Preview**: `https://days-git-cursor-scenic-thin-hubs-beea-catgeots-projects.vercel.app/korea/theme/scenic?hub=jecheon` · `?hub=jinju` · `?hub=wando` · `?hub=jinan`
+- **작업 로그**: 「제천·진주·완도·진안 미등재 명소 draft」
+- **남은 일**: 사람 Preview QA · curated **1** 미등재 큐 **소진** · 다음 curated **2–3** 미등재(거제·안동·대전·파주 등) · Tour 미등재·429 contentId
+- **다음 채팅명**:
+
+```
+테마여행 #138, 소량 hub 보강
+```
+
+## 테마여행 #136, 소량 hub 보강
+
+**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · tip `c17af102` · Preview QA 대기  
+**세션**: `테마여행 #136, 소량 hub 보강`
+
+- **한 일**: curated **1** hub 소량 보강 — 보령·단양·군산·구례 `cityAttractionHubs` **기존 attractions 미등재만** GATEO 선정 **15곳** append(839→854) · 보령 hub 중복명 「무창포해수욕장」(신비의바닷길) 스킵 · attractions 억지 추가 없음 · contentId DB 3곳(온달관광지·경암동철길마을·구례수목원 · 잔여 null 6 · keyword 429)
+- **규칙**: #131 교정 유지 — 빈 hub 졸업지 재팽창 금지 · 미등재 draft만
+- **VERIFY**: `audit:city-attraction-hubs` · `audit`/`smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
+- **Preview**: `https://days-git-cursor-scenic-thin-hubs-beea-catgeots-projects.vercel.app/korea/theme/scenic?hub=boryeong` · `?hub=danyang` · `?hub=gunsan` · `?hub=gurye`
+- **작업 로그**: 「보령·단양·군산·구례 미등재 명소 draft」
+- **남은 일**: ✅ #137 제천·진주·완도·진안 미등재 draft
+- **다음 채팅명**:
+
+```
+테마여행 #137, 소량 hub 보강
+```
+
+## 테마여행 #135, 소량 hub 보강
+
+**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · tip `a9fbac7a` · Preview QA 대기  
+**세션**: `테마여행 #135, 소량 hub 보강`
+
+- **한 일**: curated **1** hub 소량 보강 — 청주·광주·정읍·성남 `cityAttractionHubs` **기존 attractions 미등재만** GATEO 선정 **20곳** append(819→839) · attractions 억지 추가 없음 · contentId DB 4곳(잔여 null 12 · keyword 429)
+- **규칙**: #131 교정 유지 — 빈 hub 졸업지 재팽창 금지 · 미등재 draft만
+- **VERIFY**: `audit:city-attraction-hubs` · `audit`/`smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
+- **Preview**: `https://days-git-cursor-scenic-thin-hubs-beea-catgeots-projects.vercel.app/korea/theme/scenic?hub=cheongju` · `?hub=gwangju` · `?hub=jeongeup` · `?hub=seongnam`
+- **작업 로그**: 「청주·광주·정읍·성남 미등재 명소 draft」
+- **남은 일**: ✅ #136 보령·단양·군산·구례 미등재 draft
+- **다음 채팅명**:
+
+```
+테마여행 #136, 소량 hub 보강
+```
+
+## 테마여행 #134, 소량 hub 보강
+
+**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · tip `4b94f30a` · Preview QA 대기  
+**세션**: `테마여행 #134, 소량 hub 보강`
+
+- **한 일**: curated **1** hub 소량 보강 — 보성·부안·남원·하동 `cityAttractionHubs` **기존 attractions 미등재만** GATEO 선정 **20곳** append(799→819) · attractions 억지 추가 없음 · contentId DB/AREA 6곳(잔여 null 14 · keyword 429)
+- **규칙**: #131 교정 유지 — 빈 hub 졸업지 재팽창 금지 · 미등재 draft만
+- **VERIFY**: `audit:city-attraction-hubs` · `audit`/`smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
+- **Preview**: `https://days-git-cursor-scenic-thin-hubs-beea-catgeots-projects.vercel.app/korea/theme/scenic?hub=boseong` · `?hub=buan` · `?hub=namwon` · `?hub=hadong`
+- **작업 로그**: 「보성·부안·남원·하동 미등재 명소 draft」
+- **남은 일**: ✅ #135 청주·광주·정읍·성남 미등재 draft
+- **다음 채팅명**:
+
+```
+테마여행 #135, 소량 hub 보강
+```
+
+## 테마여행 #133, 소량 hub 보강
+
+**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · tip `17c7cc66` · Preview QA 대기  
+**세션**: `테마여행 #133, 소량 hub 보강`
+
+- **한 일**: curated **1** hub 소량 보강 — 공주·합천·태안·부여 `cityAttractionHubs` **기존 attractions 미등재만** GATEO 선정 **22곳** append(777→799) · attractions 억지 추가 없음 · contentId DB 2곳(황매산·낙화암 · 잔여 null 10 · keyword 429)
+- **규칙**: #131 교정 유지 — 빈 hub 졸업지 재팽창 금지 · 미등재 draft만
+- **VERIFY**: `audit:city-attraction-hubs` · `audit`/`smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
+- **Preview**: `https://days-git-cursor-scenic-thin-hubs-beea-catgeots-projects.vercel.app/korea/theme/scenic?hub=gongju` · `?hub=hapcheon` · `?hub=taean` · `?hub=buyeo`
+- **작업 로그**: 「공주·합천·태안·부여 미등재 명소 draft」
+- **남은 일**: ✅ #134 보성·부안·남원·하동 미등재 draft
+- **다음 채팅명**:
+
+```
+테마여행 #134, 소량 hub 보강
+```
+
+## 테마여행 #132, 소량 hub 보강
+
+**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · tip `e79aea3d` · Preview QA 대기  
+**세션**: `테마여행 #132, 소량 hub 보강`
+
+- **한 일**: curated **1** hub 소량 보강 — 포항·목포·울릉·가평 `cityAttractionHubs` **기존 attractions 미등재만** GATEO 선정 **23곳** append(754→777) · attractions 억지 추가 없음 · contentId DB/수동 일부(잔여 null 4 · keyword 429)
+- **규칙**: #131 교정 유지 — 빈 hub 졸업지 재팽창 금지 · 미등재 draft만
+- **VERIFY**: `audit:city-attraction-hubs` · `audit`/`smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
+- **Preview**: `https://days-git-cursor-scenic-thin-hubs-beea-catgeots-projects.vercel.app/korea/theme/scenic?hub=pohang` · `?hub=mokpo` · `?hub=ulleung` · `?hub=gapyeong`
+- **작업 로그**: 「포항·목포·울릉·가평 미등재 명소 draft」
+- **남은 일**: ✅ #133 공주·합천·태안·부여 미등재 draft
+- **다음 채팅명**:
+
+```
+테마여행 #133, 소량 hub 보강
+```
+
+## 테마여행 #131, 소량 hub 보강
+
+**상태**: feature `cursor/scenic-thin-hubs-beea` · 교정 PR [#96](https://github.com/catgeot/Days/pull/96) · (#95 MERGED 후 범위 교정) · Preview QA 대기  
+**세션**: `테마여행 #131, 소량 hub 보강`
+
+- **한 일**: **교정** — 소량 hub = 빈 hub 큐 **제외**(이미 curated>0)만. 빈 hub 졸업지(원주·횡성·화천 #87·#89) 재팽창·명소 억지 추가 **되돌림**(main 772→754). 강릉은 기존 hub attractions 미등재 **오죽헌·주문진항**만 유지
+- **규칙**: 빈 hub 보강 대상 재작업 금지 · attractions를 무리하게 늘리지 않음(품질)
+- **VERIFY**: `audit:city-attraction-hubs` · `audit`/`smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
+- **Preview**: `https://days-git-cursor-scenic-thin-hubs-beea-catgeots-projects.vercel.app/korea/theme/scenic?hub=gangneung`
+- **작업 로그**: 「소량 hub 범위 교정 · 강릉 미등재 2곳만」
+- **남은 일**: ✅ #132 포항·목포·울릉·가평 미등재 draft
 - **다음 채팅명**:
 
 ```
