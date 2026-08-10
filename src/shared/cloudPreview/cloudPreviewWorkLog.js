@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 129,
-  sessionPhase: '상태바 main',
-  branch: 'main',
+  sessionNo: 130,
+  sessionPhase: '소량 hub 보강',
+  branch: 'cursor/scenic-thin-hubs-beea',
   previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'scenic-map',
+  qaShareSlug: 'scenic-hub-fill',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-10-scenic-thin-hubs-130',
+    session: '테마여행 #130, 소량 hub 보강',
+    title: '춘천·속초·동해·삼척 소량 hub 명소 보강',
+    detail:
+      '빈 hub 큐는 이미 소진된 상태에서, 소량만 남아 있던 강원 4개 hub에 cityAttractionHubs 명소 추가 + GATEO 선정 32곳을 append했습니다(춘천 2→11 · 속초 2→9 · 동해 1→8 · 삼척 1→10). Preview에서 `/korea/theme/scenic?hub=chuncheon` · `sokcho` · `donghae` · `samcheok` 목록·지도를 확인해 주세요.',
+    at: '2026-08-10',
+  },
   {
     id: '2026-08-10-scenic-map-crumb-129-main',
     session: '테마여행 #129, 상태바 main',

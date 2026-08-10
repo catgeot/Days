@@ -3,8 +3,9 @@
 **생성**: `npm run report:korea-scenic-empty-hubs -- --write-queue` (이 파일 덮어씀)
 **스냅샷**: 빈 hub **0** · 선정 hub **169** · maxOrder **7200**
 
-**완료**: `#77`~`#104` 시·군 빈 hub 큐 **소진** (`#104` 영덕·영양) · tip 720 spots.  
-**contentId**: `#107` 10곳 · `#114` searchKeyword **88곳**(627/720 · 잔여 null≈93 · Tour 미등재·상업시설).
+**완료**: `#77`~`#104` 시·군 빈 hub 큐 **소진** (`#104` 영덕·영양).  
+**소량 hub**: `#130` 춘천·속초·동해·삼척 — hub attractions 보강 + 선정 **32곳** append · tip **752** spots.  
+**contentId**: `#107` 10곳 · `#114` searchKeyword **88곳** · `#116` +18 · `#130` 강원4 hub 일부(Tour 미등재 잔여).
 
 ## 사용법
 

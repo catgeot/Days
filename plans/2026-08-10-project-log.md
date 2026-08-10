@@ -2,6 +2,23 @@
 
 직전: [`2026-08-09-project-log.md`](./2026-08-09-project-log.md)
 
+## 테마여행 #130, 소량 hub 보강
+
+**상태**: feature `cursor/scenic-thin-hubs-beea` · Preview QA 대기  
+**세션**: `테마여행 #130, 소량 hub 보강`
+
+- **한 일**: 빈 hub 큐 소진 후 **소량 hub** 보강 — 춘천·속초·동해·삼척 `cityAttractionHubs` 명소 추가 + GATEO 선정 **32곳** append(720→752) · contentId 일부 채움 · `/qa/scenic-hub-fill` Preview 재연결 · fill `--hubs=`
+- **VERIFY**: `audit:city-attraction-hubs` · `audit`/`smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
+- **Preview**: `https://days-git-cursor-scenic-thin-hubs-beea-catgeots-projects.vercel.app/korea/theme/scenic?hub=chuncheon` · `?hub=sokcho` · `?hub=donghae` · `?hub=samcheok`
+- **작업 로그**: 「춘천·속초·동해·삼척 소량 hub 명소 보강」
+- **남은 일**: 사람 Preview QA · 타 소량 hub(강릉·원주 등) · Tour 미등재 contentId
+- **다음 채팅명**:
+
+```
+테마여행 #131, 소량 hub 보강
+```
+
 ## 테마여행 #129, 상태바 세권
 
 **상태**: PR [#94](https://github.com/catgeot/Days/pull/94) **MERGED** · `origin/main` `98e6b46e` · `/qa/scenic-map`→PROD

@@ -8,6 +8,7 @@
  *   node scripts/fill-korea-scenic-spot-content-ids.mjs --limit=30
  *   node scripts/fill-korea-scenic-spot-content-ids.mjs --db-only
  *   node scripts/fill-korea-scenic-spot-content-ids.mjs --keyword-only
+ *   node scripts/fill-korea-scenic-spot-content-ids.mjs --hubs=chuncheon,sokcho
  *
  * Auth: VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY
  * 쓰기: scripts/data/korea-scenic-spots-overrides.mjs → generate:korea-scenic-spots
@@ -36,6 +37,16 @@ const dbOnly = args.includes('--db-only');
 const keywordOnly = args.includes('--keyword-only');
 const limitArg = args.find((a) => a.startsWith('--limit='));
 const limit = limitArg ? Number(limitArg.slice('--limit='.length)) || 0 : 0;
+const hubsArg = args.find((a) => a.startsWith('--hubs='));
+const hubsFilter = hubsArg
+  ? new Set(
+      hubsArg
+        .slice('--hubs='.length)
+        .split(/[,|\s]+/)
+        .map((s) => s.trim().toLowerCase())
+        .filter(Boolean),
+    )
+  : null;
 
 const GENERIC_RE =
   /^(성지|적벽|공원|시장|해변|해수욕장|폭포|산|강|댐|섬|마을|박물관|기념관|타워|다리|온천|리조트|숲|계곡|체육공원)$/;
@@ -447,14 +458,19 @@ async function main() {
   const overridesSrc = readFileSync(OVERRIDES_PATH, 'utf8');
   const nullOverrideIds = nullIdsFromOverrides(overridesSrc);
 
-  const nulls = (scenic.spots || []).filter(
-    (s) => nullOverrideIds.has(s.id) || !s.contentId,
-  ).filter((s) => nullOverrideIds.has(s.id));
+  const nulls = (scenic.spots || [])
+    .filter((s) => nullOverrideIds.has(s.id) || !s.contentId)
+    .filter((s) => nullOverrideIds.has(s.id))
+    .filter((s) =>
+      hubsFilter
+        ? hubsFilter.has(String(s.hubId || '').trim().toLowerCase())
+        : true,
+    );
   const targets = limit > 0 ? nulls.slice(0, limit) : nulls;
   console.log(
     `[fill-scenic-contentId] overrideNull=${nullOverrideIds.size} targets=${targets.length}${
-      dbOnly ? ' · db-only' : ''
-    }${keywordOnly ? ' · keyword-only' : ''}`,
+      hubsFilter ? ` · hubs=${[...hubsFilter].join(',')}` : ''
+    }${dbOnly ? ' · db-only' : ''}${keywordOnly ? ' · keyword-only' : ''}`,
   );
 
   const sb = createClient(SUPABASE_URL, SUPABASE_ANON);

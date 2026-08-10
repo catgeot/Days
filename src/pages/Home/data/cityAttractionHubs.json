@@ -46,6 +46,34 @@
         "kind": "landmark",
         "lat": 38.2118201,
         "lng": 128.6014768
+      },
+      {
+        "name": "아바이마을",
+        "name_en": "Abai Village",
+        "kind": "neighborhood",
+        "lat": 38.2045,
+        "lng": 128.5948
+      },
+      {
+        "name": "속초등대전망대",
+        "name_en": "Sokcho Lighthouse Observatory",
+        "kind": "viewpoint",
+        "lat": 38.2148,
+        "lng": 128.5985
+      },
+      {
+        "name": "대포항",
+        "name_en": "Daepo Port",
+        "kind": "viewpoint",
+        "lat": 38.1748,
+        "lng": 128.6065
+      },
+      {
+        "name": "청초호",
+        "name_en": "Cheongcho Lake",
+        "kind": "park",
+        "lat": 38.2005,
+        "lng": 128.5802
       }
     ]
   },
@@ -1941,6 +1969,34 @@
         "kind": "landmark",
         "lat": 37.884728,
         "lng": 127.698461
+      },
+      {
+        "name": "제이드가든",
+        "name_en": "Jade Garden",
+        "kind": "park",
+        "lat": 37.8069,
+        "lng": 127.6348
+      },
+      {
+        "name": "구봉산전망대",
+        "name_en": "Gubongsan Observatory",
+        "kind": "viewpoint",
+        "lat": 37.8895,
+        "lng": 127.6985
+      },
+      {
+        "name": "청평사",
+        "name_en": "Cheongpyeongsa",
+        "kind": "temple",
+        "lat": 37.9863,
+        "lng": 127.8089
+      },
+      {
+        "name": "삼악산호수케이블카",
+        "name_en": "Samaksan Lake Cable Car",
+        "kind": "viewpoint",
+        "lat": 37.8735,
+        "lng": 127.6789
       }
     ]
   },
@@ -9402,6 +9458,27 @@
         "kind": "park",
         "lat": 37.4744522275525,
         "lng": 129.159685344531
+      },
+      {
+        "name": "삼척해양레일바이크",
+        "name_en": "Samcheok Ocean Rail Bike",
+        "kind": "landmark",
+        "lat": 37.3825,
+        "lng": 129.2345
+      },
+      {
+        "name": "대금굴",
+        "name_en": "Daeguemgul Cave",
+        "kind": "landmark",
+        "lat": 37.327,
+        "lng": 129.0485
+      },
+      {
+        "name": "궁촌해수욕장",
+        "name_en": "Gungchon Beach",
+        "kind": "beach",
+        "lat": 37.3208,
+        "lng": 129.2685
       }
     ]
   },
@@ -9943,6 +10020,34 @@
         "kind": "park",
         "lat": 37.463117,
         "lng": 129.019319
+      },
+      {
+        "name": "추암촛대바위",
+        "name_en": "Chuam Candle Rock",
+        "kind": "landmark",
+        "lat": 37.4786,
+        "lng": 129.1594
+      },
+      {
+        "name": "천곡황금박쥐동굴",
+        "name_en": "Cheongok Golden Bat Cave",
+        "kind": "landmark",
+        "lat": 37.5156,
+        "lng": 129.1217
+      },
+      {
+        "name": "묵호항",
+        "name_en": "Mukho Port",
+        "kind": "viewpoint",
+        "lat": 37.5518,
+        "lng": 129.1165
+      },
+      {
+        "name": "도째비골스카이밸리",
+        "name_en": "Dotjaebi Sky Valley",
+        "kind": "viewpoint",
+        "lat": 37.5498,
+        "lng": 129.1162
       }
     ]
   },

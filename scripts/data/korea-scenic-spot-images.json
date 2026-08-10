@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-09T03:52:51.610Z",
-    "count": 683,
+    "updatedAt": "2026-08-10T08:01:19.767Z",
+    "count": 717,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -688,6 +688,40 @@
     "yeongyang-dudeul-village": "https://tong.visitkorea.or.kr/cms/resource/24/3531124_image2_1.jpg",
     "yeongyang-subi-valley": "https://tong.visitkorea.or.kr/cms/resource/41/3401841_image2_1.jpg",
     "yeongyang-oessibeoseon-trail": "https://tong.visitkorea.or.kr/cms/resource/27/3531127_image2_1.jpg",
-    "yeongyang-ilwolsan": "https://tong.visitkorea.or.kr/cms/resource/32/3531132_image2_1.jpg"
+    "yeongyang-ilwolsan": "https://tong.visitkorea.or.kr/cms/resource/32/3531132_image2_1.jpg",
+    "baekje-military-museum-nonsan": "https://tong.visitkorea.or.kr/cms/resource/49/3577049_image2_1.jpg",
+    "chilbaekuichong-geumsan": "https://tong.visitkorea.or.kr/cms/resource/50/3578350_image2_1.jpg",
+    "cheongnyangsa": "https://tong.visitkorea.or.kr/cms/resource/81/3528381_image2_1.jpg",
+    "wonnams-reservoir": "https://tong.visitkorea.or.kr/cms/resource/76/4085476_image2_1.jpg",
+    "okcheon-ijidang": "https://tong.visitkorea.or.kr/cms/resource/26/4071826_image2_1.jpg",
+    "dogapsa": "https://tong.visitkorea.or.kr/cms/resource/56/4059056_image2_1.jpg",
+    "wolchulsan-national-park": "https://tong.visitkorea.or.kr/cms/resource/37/3587037_image2_1.jpg",
+    "okcheon-janggye-recreation-area": "https://tong.visitkorea.or.kr/cms/resource_photo/22/3438322_image2_1.jpg",
+    "geochang-iris-garden": "https://tong.visitkorea.or.kr/cms/resource/03/4007903_image2_1.jpg",
+    "geochang-museum": "https://tong.visitkorea.or.kr/cms/resource/64/3374064_image2_1.JPG",
+    "jakcheonjeong": "https://tong.visitkorea.or.kr/cms/resource/99/3512199_image2_1.jpg",
+    "geumwonsan": "https://tong.visitkorea.or.kr/cms/resource/09/3502509_image2_1.jpg",
+    "jinha-beach": "https://tong.visitkorea.or.kr/cms/resource/33/3060633_image2_1.jpg",
+    "gimhae-gaya-theme-park": "https://tong.visitkorea.or.kr/cms/resource/37/3534537_image2_1.jpg",
+    "tomb-of-king-suro": "https://tong.visitkorea.or.kr/cms/resource/45/3510645_image2_1.jpg",
+    "gunwi-palgongsan": "https://tong.visitkorea.or.kr/cms/resource/14/4087614_image2_1.jpg",
+    "gongjicheon": "https://tong.visitkorea.or.kr/cms/resource/79/4087379_image2_1.jpg",
+    "clayarch-gimhae-museum": "https://tong.visitkorea.or.kr/cms/resource/43/3535043_image2_1.jpg",
+    "kim-you-jeong-literature-village": "https://tong.visitkorea.or.kr/cms/resource/96/4067696_image2_1.jpg",
+    "animation-museum": "https://tong.visitkorea.or.kr/cms/resource/05/2743005_image2_1.jpg",
+    "sokcho-jungang-market": "https://tong.visitkorea.or.kr/cms/resource/67/4041467_image2_1.jpg",
+    "sokcho-beach": "https://tong.visitkorea.or.kr/cms/resource/06/4095606_image2_1.jpg",
+    "gubongsan-observatory": "https://tong.visitkorea.or.kr/cms/resource/54/529954_image2_1.jpg",
+    "samaksan-lake-cable-car": "https://tong.visitkorea.or.kr/cms/resource/00/3578100_image2_1.jpg",
+    "chuncheon-myeongdong-street": "https://tong.visitkorea.or.kr/cms/resource/43/3578143_image2_1.jpg",
+    "oeongchi-beach": "https://tong.visitkorea.or.kr/cms/resource/66/3492866_image2_1.jpg",
+    "dotjaebi-sky-valley": "https://tong.visitkorea.or.kr/cms/resource/05/3534505_image2_1.jpg",
+    "donghae-mureung-valley": "https://tong.visitkorea.or.kr/cms/resource/53/3544453_image2_1.jpg",
+    "mukho-port": "https://tong.visitkorea.or.kr/cms/resource/55/3423355_image2_1.jpg",
+    "cheongok-golden-bat-cave": "https://tong.visitkorea.or.kr/cms/resource/19/2741919_image2_1.jpg",
+    "chuam-candle-rock": "https://tong.visitkorea.or.kr/cms/resource/83/2921483_image2_1.jpg",
+    "gungchon-beach": "https://tong.visitkorea.or.kr/cms/resource/48/3040348_image2_1.jpg",
+    "maengbang-beach": "https://tong.visitkorea.or.kr/cms/resource/95/2921595_image2_1.jpg",
+    "haesindang-park": "https://tong.visitkorea.or.kr/cms/resource/87/3376587_image2_1.jpg"
   }
 }
