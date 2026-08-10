@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-10T21:39:33.104Z",
-    "count": 870,
-    "imageCount": 777,
+    "generatedAt": "2026-08-10T22:33:33.027Z",
+    "count": 871,
+    "imageCount": 778,
     "curation": "GATEO",
     "disclaimer": "많이 찾는 인기 관광지를 골랐습니다.",
     "source": "scripts/data/korea-scenic-spots-overrides.mjs",
@@ -13937,6 +13937,22 @@
       "contentId": null,
       "overview": "강원 양구 동면의 공립 수목원(옛 양구자연생태공원). 생태식물원·DMZ 야생화 분재원 일대를 산책하는 명소로, 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
+    },
+    {
+      "order": 8710,
+      "id": "yanggu-porcelain-museum",
+      "name": "양구백자박물관",
+      "blurb": "양구백자박물관 — 방산 백자·공방",
+      "region": "강원",
+      "hubId": "yanggu",
+      "attractionName": "양구백자박물관",
+      "attractionNameEn": "Yanggu Porcelain Museum",
+      "placeSlug": "yanggu-porcelain-museum",
+      "lat": 38.2072701825,
+      "lng": 127.9514018354,
+      "contentId": "731454",
+      "overview": null,
+      "imageUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/89/3513089_image2_1.jpg"
     }
   ]
 }

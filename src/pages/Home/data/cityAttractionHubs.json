@@ -11973,6 +11973,13 @@
         "kind": "park",
         "lat": 38.189998,
         "lng": 128.073998
+      },
+      {
+        "name": "양구백자박물관",
+        "name_en": "Yanggu Porcelain Museum",
+        "kind": "museum",
+        "lat": 38.2072701825,
+        "lng": 127.9514018354
       }
     ]
   },

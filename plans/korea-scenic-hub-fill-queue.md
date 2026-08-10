@@ -1,7 +1,7 @@
 # GATEO 선정 명소 — 권역·시군 hub 보강 큐
 
 **생성**: `npm run report:korea-scenic-empty-hubs -- --write-queue` (이 파일 덮어씀)
-**스냅샷**: 빈 hub **0** · 선정 hub **169** · tip spots **870**
+**스냅샷**: 빈 hub **0** · 선정 hub **169** · tip spots **871**
 
 **완료**: `#77`~`#104` 시·군 빈 hub 큐 **소진** (`#104` 영덕·영양).  
 **소량 hub** (= 빈 hub 큐에서 **제외된** curated>0 · 건수 적은 hub만 · **빈 hub 졸업지 재팽창 금지** · **명소 억지 추가 금지**, 기존 `attractions` 미등재만):  
@@ -14,6 +14,7 @@
 - `#136` 보령·단양·군산·구례 curated1 → 미등재 draft **+15**(839→854 · 보령 중복명 무창포 1건 스킵)  
 - `#137` 제천·진주·완도·진안 curated1 → 미등재 draft **+15**(854→869)  
 - `#138` 양구 **양구 수목원** hub attractions + GATEO 선정 **+1**(869→870 · Tour contentId 미등재 null)  
+- `#139` 양구 **양구백자박물관** hub + GATEO **+1**(870→871 · contentId `731454` · Tour LIVE 있음·DB sync 누락)  
 **contentId**: `#107` 10곳 · `#114` searchKeyword **88곳** · `#116` +18 · `#132`–`#137` DB/수동 일부(Tour 미등재·429 잔여).
 
 ## 사용법

@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 138,
-  sessionPhase: '양구수목원 등록',
+  sessionNo: 139,
+  sessionPhase: '양구백자박물관 등록',
   branch: 'cursor/yanggu-arboretum-7807',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-hub-fill',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-10-yanggu-porcelain-139',
+    session: '테마여행 #139, 양구백자박물관 등록',
+    title: '양구백자박물관 hub·GATEO 선정 등록',
+    detail:
+      '양구백자박물관을 yanggu hub attractions와 koreaScenicSpots에 추가했습니다(870→871 · Tour contentId 731454 · detailImage 썸네일). Tour LIVE에는 있으나 tourapi_attraction DB sync에는 없던 사례입니다. Preview에서 검색「양구백자박물관」·`/korea/theme/scenic?hub=yanggu`를 확인해 주세요.',
+    at: '2026-08-10',
+  },
   {
     id: '2026-08-10-yanggu-arboretum-138',
     session: '테마여행 #138, 양구수목원 등록',
