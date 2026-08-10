@@ -4,7 +4,7 @@
 
 ## 테마여행 #137, 소량 hub 보강
 
-**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · Preview QA 대기  
+**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · tip `c4cb181d` · Preview QA 대기  
 **세션**: `테마여행 #137, 소량 hub 보강`
 
 - **한 일**: curated **1** hub 소량 보강 — 제천·진주·완도·진안 `cityAttractionHubs` **기존 attractions 미등재만** GATEO 선정 **15곳** append(854→869) · attractions 억지 추가 없음 · contentId DB/수동 6곳(송계계곡·진양호동물원·용담호·운일암반일암·은수사 등 · 잔여 null 7 · 월악산 약초마을 오탐 제외 · keyword 429)
