@@ -4,7 +4,7 @@
 
 ## 테마여행 #129, 상태바 세권
 
-**상태**: feature `cursor/scenic-chip-spread-8d91` · [PR #93](https://github.com/catgeot/Days/pull/93) · `/qa/scenic-map`
+**상태**: feature `cursor/scenic-chip-spread-8d91` · [PR #94](https://github.com/catgeot/Days/pull/94) · tip `70eac566` · `/qa/scenic-map`
 
 - **한 일**: 지도 상태바에서 **세권(4권역) 크럼 누락** 수정 — hub·핀 단계에도 영서/북부 등 유지 · 강원 단일 시도 「강원」중복 제거 · 세권 상위 drillUp 시 area 클리어
 - **VERIFY**: `npm run smoke:korea-scenic-map` · `npm run build` PASS
