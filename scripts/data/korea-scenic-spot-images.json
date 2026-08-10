@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-10T11:09:32.810Z",
-    "count": 747,
+    "updatedAt": "2026-08-10T11:24:08.745Z",
+    "count": 753,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -752,6 +752,12 @@
     "kkotji-beach": "https://tong.visitkorea.or.kr/cms/resource/64/4060364_image2_1.jpg",
     "chollipo-arboretum": "https://tong.visitkorea.or.kr/cms/resource/72/3493772_image2_1.jpg",
     "hwangmaesan": "https://tong.visitkorea.or.kr/cms/resource/29/3588329_image2_1.jpg",
-    "nakhwaam": "https://tong.visitkorea.or.kr/cms/resource/72/3335172_image2_1.jpg"
+    "nakhwaam": "https://tong.visitkorea.or.kr/cms/resource/72/3335172_image2_1.jpg",
+    "jeamsan-recreation-forest": "https://tong.visitkorea.or.kr/cms/resource/66/3511566_image2_1.jpg",
+    "gyeokpo-beach": "https://tong.visitkorea.or.kr/cms/resource/55/3522155_image2_1.jpg",
+    "naesosa": "https://tong.visitkorea.or.kr/cms/resource/09/3519909_image2_1.jpg",
+    "byeonsanbando-national-park": "https://tong.visitkorea.or.kr/cms/resource/48/3351048_image2_1.jpeg",
+    "namwon-manin-cemetery": "https://tong.visitkorea.or.kr/cms/resource/81/3557381_image2_1.jpg",
+    "botjae-pass": "https://tong.visitkorea.or.kr/cms/resource/74/3511574_image2_1.jpg"
   }
 }

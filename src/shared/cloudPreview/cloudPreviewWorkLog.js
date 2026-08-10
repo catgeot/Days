@@ -6,7 +6,7 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 133,
+  sessionNo: 134,
   sessionPhase: '소량 hub 보강',
   branch: 'cursor/scenic-thin-hubs-beea',
   previewPath: '/korea/theme/scenic',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-10-scenic-thin-hubs-134',
+    session: '테마여행 #134, 소량 hub 보강',
+    title: '보성·부안·남원·하동 미등재 명소 draft',
+    detail:
+      'curated 1 hub 4곳의 기존 cityAttractionHubs attractions 미등재분만 GATEO 선정 20곳을 append했습니다(799→819 · 보성·부안·남원·하동 각 1→6). attractions 억지 추가는 없습니다. Preview에서 `/korea/theme/scenic?hub=boseong` · `buan` · `namwon` · `hadong` 목록·지도를 확인해 주세요.',
+    at: '2026-08-10',
+  },
   {
     id: '2026-08-10-scenic-thin-hubs-133',
     session: '테마여행 #133, 소량 hub 보강',

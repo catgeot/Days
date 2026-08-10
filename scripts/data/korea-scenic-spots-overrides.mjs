@@ -8210,5 +8210,205 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       attractionName: '정림사지 오층석탑',
       contentId: null,
     }, // TODO contentId
+    {
+      order: 8000,
+      id: 'boseong-ginkgo-forest',
+      name: '보성군립은행나무숲',
+      blurb: '보성군립은행나무숲 — 노란 은행 터널 산책',
+      region: '전라',
+      hubId: 'boseong',
+      attractionName: '보성군립은행나무숲',
+      contentId: null,
+    }, // TODO contentId
+    {
+      order: 8010,
+      id: 'botjae-pass',
+      name: '봇재',
+      blurb: '봇재 — 보성 녹차밭 전망 고개',
+      region: '전라',
+      hubId: 'boseong',
+      attractionName: '봇재',
+      contentId: '2782527',
+    }, // TODO contentId
+    {
+      order: 8020,
+      id: 'yulpo-beach',
+      name: '율포해수욕장',
+      blurb: '율포해수욕장 — 보성 녹차·해변 휴양',
+      region: '전라',
+      hubId: 'boseong',
+      attractionName: '율포해수욕장',
+      contentId: null,
+    }, // TODO contentId
+    {
+      order: 8030,
+      id: 'jeamsan-recreation-forest',
+      name: '제암산자연휴양림',
+      blurb: '제암산자연휴양림 — 보성 숲 트레킹·숙박',
+      region: '전라',
+      hubId: 'boseong',
+      attractionName: '제암산자연휴양림',
+      contentId: '125425',
+    }, // TODO contentId
+    {
+      order: 8040,
+      id: 'korea-tea-museum',
+      name: '한국차박물관',
+      blurb: '한국차박물관 — 보성 차 문화 전시',
+      region: '전라',
+      hubId: 'boseong',
+      attractionName: '한국차박물관',
+      contentId: null,
+    }, // TODO contentId
+    {
+      order: 8050,
+      id: 'gyeokpo-beach',
+      name: '격포해수욕장',
+      blurb: '격포해수욕장 — 변산 채석강 옆 해변',
+      region: '전라',
+      hubId: 'buan',
+      attractionName: '격포해수욕장',
+      contentId: '126288',
+    }, // TODO contentId
+    {
+      order: 8060,
+      id: 'naesosa',
+      name: '내소사',
+      blurb: '내소사 — 변산 전나무 숲길 고찰',
+      region: '전라',
+      hubId: 'buan',
+      attractionName: '내소사',
+      contentId: '1608731',
+    }, // TODO contentId
+    {
+      order: 8070,
+      id: 'byeonsanbando-national-park',
+      name: '변산반도국립공원',
+      blurb: '변산반도국립공원 — 서해 국립공원 절경',
+      region: '전라',
+      hubId: 'buan',
+      attractionName: '변산반도국립공원',
+      contentId: '126239',
+    }, // TODO contentId
+    {
+      order: 8080,
+      id: 'saemangeum',
+      name: '새만금',
+      blurb: '새만금 — 세계 최장 방조제 조망',
+      region: '전라',
+      hubId: 'buan',
+      attractionName: '새만금',
+      contentId: null,
+    }, // TODO contentId
+    {
+      order: 8090,
+      id: 'jikso-falls',
+      name: '직소폭포',
+      blurb: '직소폭포 — 변산 직소보 계곡 폭포',
+      region: '전라',
+      hubId: 'buan',
+      attractionName: '직소폭포',
+      contentId: null,
+    }, // TODO contentId
+    {
+      order: 8100,
+      id: 'gyoryongsanseong',
+      name: '교룡산성',
+      blurb: '교룡산성 — 남원 산성·전망 트레킹',
+      region: '전라',
+      hubId: 'namwon',
+      attractionName: '교룡산성',
+      contentId: null,
+    }, // TODO contentId
+    {
+      order: 8110,
+      id: 'namwon-manin-cemetery',
+      name: '남원 만인의총',
+      blurb: '남원 만인의총 — 임진왜란 순국 유적',
+      region: '전라',
+      hubId: 'namwon',
+      attractionName: '남원 만인의총',
+      contentId: '126381',
+    }, // TODO contentId
+    {
+      order: 8120,
+      id: 'baemsagol-valley',
+      name: '지리산 뱀사골',
+      blurb: '지리산 뱀사골 — 남원 계곡 트레킹',
+      region: '전라',
+      hubId: 'namwon',
+      attractionName: '지리산 뱀사골',
+      contentId: null,
+    }, // TODO contentId
+    {
+      order: 8130,
+      id: 'chunhyang-theme-park',
+      name: '춘향테마파크',
+      blurb: '춘향테마파크 — 춘향전 테마 공원',
+      region: '전라',
+      hubId: 'namwon',
+      attractionName: '춘향테마파크',
+      contentId: null,
+    }, // TODO contentId
+    {
+      order: 8140,
+      id: 'honbul-literature-museum',
+      name: '혼불문학관',
+      blurb: '혼불문학관 — 최명희 문학 전시',
+      region: '전라',
+      hubId: 'namwon',
+      attractionName: '혼불문학관',
+      contentId: null,
+    }, // TODO contentId
+    {
+      order: 8150,
+      id: 'ssanggyesa',
+      name: '쌍계사',
+      blurb: '쌍계사 — 하동 지리산 고찰·차밭',
+      region: '경상',
+      hubId: 'hadong',
+      attractionName: '쌍계사',
+      contentId: null,
+    }, // TODO contentId
+    {
+      order: 8160,
+      id: 'akyang-persimmon-village',
+      name: '악양 대봉감마을',
+      blurb: '악양 대봉감마을 — 섬진강 감 마을 풍경',
+      region: '경상',
+      hubId: 'hadong',
+      attractionName: '악양 대봉감마을',
+      contentId: null,
+    }, // TODO contentId
+    {
+      order: 8170,
+      id: 'hadong-pine-forest',
+      name: '하동송림',
+      blurb: '하동송림 — 섬진강 변 소나무 숲',
+      region: '경상',
+      hubId: 'hadong',
+      attractionName: '하동송림',
+      contentId: null,
+    }, // TODO contentId
+    {
+      order: 8180,
+      id: 'hadong-wild-tea-museum',
+      name: '하동야생차박물관',
+      blurb: '하동야생차박물관 — 야생차 문화 전시',
+      region: '경상',
+      hubId: 'hadong',
+      attractionName: '하동야생차박물관',
+      contentId: null,
+    }, // TODO contentId
+    {
+      order: 8190,
+      id: 'hwagae-market',
+      name: '화개장터',
+      blurb: '화개장터 — 섬진강 전통 장터·벚길',
+      region: '경상',
+      hubId: 'hadong',
+      attractionName: '화개장터',
+      contentId: null,
+    }, // TODO contentId
   ],
 };
