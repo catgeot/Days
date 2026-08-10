@@ -4,19 +4,20 @@
 
 ## 테마여행 #125, 상태바 안내 문구 제거
 
-**상태**: feature `cursor/scenic-map-a086` · PR [#88](https://github.com/catgeot/Days/pull/88) · tip `a343e07f` · Preview QA 대기
+**상태**: PR [#88](https://github.com/catgeot/Days/pull/88) **MERGED** · `origin/main` `ae6a6473` · `/qa/scenic-map`→PROD
 
-- **한 일**: 지도 경로 바 하단 안내 문구(「칩을 눌러 좁히세요」등) **제거**
+- **한 일**: 지도 경로 바 하단 안내 문구(「칩을 눌러 좁히세요」등) **제거** · **main 병합**
 - **VERIFY**: `npm run build`
 - **공유**: `https://www.gateo.kr/qa/scenic-map`
-- **Preview**: `https://days-git-cursor-scenic-map-a086-catgeots-projects.vercel.app/korea/theme/scenic`
-- **작업 로그**: 「상태바 하단 안내 문구 제거」
-- **남은 일**: 사람 Preview QA · main 병합
+- **PROD**: `https://www.gateo.kr/korea/theme/scenic`
+- **작업 로그**: 「상태바 안내 문구 제거 main 병합」
+- **남은 일**: (선택) 명승·관광지 지도 드릴다운 · 내 주변 GPS 지도 연동 · 사람 PROD QA
 - **다음 채팅명**:
 
 ```
 테마여행 #126, (다음 과제)
 ```
+
 
 
 ## 테마여행 #124, 상태바 검정 텍스트
