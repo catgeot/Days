@@ -6,7 +6,7 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 136,
+  sessionNo: 137,
   sessionPhase: '소량 hub 보강',
   branch: 'cursor/scenic-thin-hubs-beea',
   previewPath: '/korea/theme/scenic',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-10-scenic-thin-hubs-137',
+    session: '테마여행 #137, 소량 hub 보강',
+    title: '제천·진주·완도·진안 미등재 명소 draft',
+    detail:
+      'curated 1 hub 4곳의 기존 cityAttractionHubs attractions 미등재분만 GATEO 선정 15곳을 append했습니다(854→869 · 제천·진주·완도 각 1→5 · 진안 1→4). attractions 억지 추가는 없습니다. Preview에서 `/korea/theme/scenic?hub=jecheon` · `jinju` · `wando` · `jinan` 목록·지도를 확인해 주세요.',
+    at: '2026-08-10',
+  },
   {
     id: '2026-08-10-scenic-thin-hubs-136',
     session: '테마여행 #136, 소량 hub 보강',

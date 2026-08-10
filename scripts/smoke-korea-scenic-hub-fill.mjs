@@ -588,6 +588,10 @@ const thinHubMin = {
   danyang: 5,
   gunsan: 5,
   gurye: 5,
+  jecheon: 5,
+  jinju: 5,
+  wando: 5,
+  jinan: 4,
 };
 const thinHubExactAttr = {
   // 빈 hub(#87·#89) 졸업 — attractions 전수 유지, #131 재보강 회귀 방지

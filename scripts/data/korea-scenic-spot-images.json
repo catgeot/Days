@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-10T12:14:44.717Z",
-    "count": 769,
+    "updatedAt": "2026-08-10T12:51:49.879Z",
+    "count": 777,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -774,6 +774,14 @@
     "eunpa-lake-park": "https://tong.visitkorea.or.kr/cms/resource/83/4087583_image2_1.jpg",
     "jinpo-maritime-theme-park": "https://tong.visitkorea.or.kr/cms/resource/53/2649953_image2_1.jpg",
     "ondal-tourist-site": "https://tong.visitkorea.or.kr/cms/resource/17/3537517_image2_1.jpg",
-    "gyeongam-dong-railroad-village": "https://tong.visitkorea.or.kr/cms/resource/50/3080250_image2_1.JPG"
+    "gyeongam-dong-railroad-village": "https://tong.visitkorea.or.kr/cms/resource/50/3080250_image2_1.JPG",
+    "chokseongnu": "https://tong.visitkorea.or.kr/cms/resource/29/3349329_image2_1.jpg",
+    "jinju-national-museum": "https://tong.visitkorea.or.kr/cms/resource/08/3557008_image2_1.jpg",
+    "jinyang-lake": "https://tong.visitkorea.or.kr/cms/resource/68/3524868_image2_1.jpg",
+    "songgye-valley": "https://tong.visitkorea.or.kr/cms/resource/71/3348771_image2_1.JPG",
+    "yongdam-lake": "https://tong.visitkorea.or.kr/cms/resource/86/2656786_image2_1.jpg",
+    "jinan-eunsusa": "https://tong.visitkorea.or.kr/cms/resource/30/3520730_image2_1.jpg",
+    "unilam-banilam": "https://tong.visitkorea.or.kr/cms/resource/64/3555164_image2_1.jpg",
+    "jinyangho-zoo": "https://tong.visitkorea.or.kr/cms/resource/25/3065525_image2_1.jpg"
   }
 }
