@@ -31,10 +31,10 @@ export const CLOUD_QA_SHARE_LINKS = [
   },
   {
     slug: 'scenic-map',
-    label: '명승 홈 지도 드릴다운',
-    branch: 'cursor/scenic-map-drill-f70d',
+    label: '명승 홈 지도 칩 분포',
+    branch: 'cursor/scenic-chip-spread-8d91',
     destination:
-      'https://days-git-cursor-scenic-map-drill-f70d-catgeots-projects.vercel.app/korea/theme/scenic',
+      'https://days-git-cursor-scenic-chip-spread-8d91-catgeots-projects.vercel.app/korea/theme/scenic',
     active: true,
   },
   {

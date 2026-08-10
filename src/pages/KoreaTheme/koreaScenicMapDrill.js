@@ -86,6 +86,78 @@ export function centroidOfScenicSpots(spots) {
 }
 
 /**
+ * 근접한 지도 드릴 칩을 살짝 펼쳐 숫자·라벨이 한 점으로 뭉치지 않게 함.
+ * 원 좌표(centroid)는 유지하되, 화면상 겹치는 그룹만 원형 fan-out.
+ * @template {{ id: string, lng: number, lat: number }} T
+ * @param {T[]} chips
+ * @param {number} [minSepDeg] 이내를 겹침으로 본다 (≈시·군 인접)
+ * @returns {T[]}
+ */
+export function spreadNearbyMapChips(chips, minSepDeg = 0.085) {
+  if (!Array.isArray(chips) || chips.length < 2) return chips || [];
+  const n = chips.length;
+  /** @type {number[]} */
+  const parent = Array.from({ length: n }, (_, i) => i);
+  const find = (i) => {
+    let x = i;
+    while (parent[x] !== x) x = parent[x];
+    let y = i;
+    while (parent[y] !== y) {
+      const p = parent[y];
+      parent[y] = x;
+      y = p;
+    }
+    return x;
+  };
+  const unite = (a, b) => {
+    const ra = find(a);
+    const rb = find(b);
+    if (ra !== rb) parent[rb] = ra;
+  };
+  const minSep2 = minSepDeg * minSepDeg;
+  for (let i = 0; i < n; i += 1) {
+    for (let j = i + 1; j < n; j += 1) {
+      const dLng = chips[i].lng - chips[j].lng;
+      const dLat = chips[i].lat - chips[j].lat;
+      if (dLng * dLng + dLat * dLat <= minSep2) unite(i, j);
+    }
+  }
+  /** @type {Map<number, number[]>} */
+  const groups = new Map();
+  for (let i = 0; i < n; i += 1) {
+    const r = find(i);
+    const list = groups.get(r);
+    if (list) list.push(i);
+    else groups.set(r, [i]);
+  }
+  /** @type {T[]} */
+  const out = chips.map((c) => ({ ...c }));
+  for (const idxs of groups.values()) {
+    if (idxs.length < 2) continue;
+    let lng = 0;
+    let lat = 0;
+    for (const i of idxs) {
+      lng += chips[i].lng;
+      lat += chips[i].lat;
+    }
+    lng /= idxs.length;
+    lat /= idxs.length;
+    const radius = Math.max(minSepDeg * 0.55, 0.05);
+    const m = idxs.length;
+    for (let k = 0; k < m; k += 1) {
+      const angle = (2 * Math.PI * k) / m - Math.PI / 2;
+      const i = idxs[k];
+      out[i] = {
+        ...out[i],
+        lng: lng + Math.cos(angle) * radius,
+        lat: lat + Math.sin(angle) * radius * 0.75,
+      };
+    }
+  }
+  return out;
+}
+
+/**
  * @param {ScenicMapDrillState | null | undefined} drill
  * @returns {ScenicMapDrillState}
  */

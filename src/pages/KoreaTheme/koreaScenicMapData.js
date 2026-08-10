@@ -6,6 +6,12 @@ const KR_VIEW = {
   zoom: 5.6,
 };
 
+/** hub·경관 리프(대개 ≤20)는 숫자 뭉치 대신 개별 핀으로 윤곽을 보여 줌 */
+export const SCENIC_MAP_CLUSTER_MIN_POINTS = 21;
+/** 넓은 뷰에서만 약하게 묶음 · 도시 줌(≈11) 전에 개별 핀으로 풀림 */
+export const SCENIC_MAP_CLUSTER_RADIUS = 26;
+export const SCENIC_MAP_CLUSTER_MAX_ZOOM = 10;
+
 /**
  * 명승 좌표 bbox → 지도 포커스
  * @param {object[]} items
@@ -32,14 +38,19 @@ export function focusViewFromScenicItems(items) {
     south = Math.min(south, lat);
     north = Math.max(north, lat);
   }
-  const padLng = Math.max((east - west) * 0.18, 0.04);
-  const padLat = Math.max((north - south) * 0.18, 0.04);
+  const spanLng = east - west;
+  const spanLat = north - south;
+  const span = Math.max(spanLng, spanLat);
+  const padLng = Math.max(spanLng * 0.22, span < 0.12 ? 0.08 : 0.05);
+  const padLat = Math.max(spanLat * 0.22, span < 0.12 ? 0.08 : 0.05);
+  /** 좁은 도시 스팬은 과도 줌인 대신 윤곽이 보이도록 maxZoom 완화 */
+  const maxZoom = span < 0.08 ? 10.2 : span < 0.18 ? 10.8 : 11.5;
   return {
     west: west - padLng,
     south: south - padLat,
     east: east + padLng,
     north: north + padLat,
-    maxZoom: 11.5,
+    maxZoom,
   };
 }
 

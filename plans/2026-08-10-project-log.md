@@ -2,6 +2,22 @@
 
 직전: [`2026-08-09-project-log.md`](./2026-08-09-project-log.md)
 
+## 테마여행 #128, 지도 칩 분포
+
+**상태**: feature `cursor/scenic-chip-spread-8d91` · [PR #93](https://github.com/catgeot/Days/pull/93) · tip `3be763b8` · `/qa/scenic-map`
+
+- **한 일**: 명승홈 지도에서 hub 등 소량 핀이 2·3·5·7 숫자로 뭉치던 문제 — **≤20곳은 클러스터 끔** · 반경/maxZoom 완화 · 근접 드릴 칩 fan-out · 좁은 스팬 과줌인 완화
+- **VERIFY**: `npm run smoke:korea-scenic-map` · `npm run build` PASS
+- **공유**: `https://www.gateo.kr/qa/scenic-map`
+- **Preview**: `https://days-git-cursor-scenic-chip-spread-8d91-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: 「명승 지도 — 숫자 뭉치↓ · 윤곽 핀」
+- **남은 일**: 사람 Preview QA · main 병합
+- **다음 채팅명**:
+
+```
+테마여행 #129, (다음 과제)
+```
+
 ## 브랜드 SEO #2, 축제·명승 허브
 
 **상태**: PR [#92](https://github.com/catgeot/Days/pull/92) **MERGED** · `origin/main` `f8726f7b` · `/qa/korea-seo`→PROD
