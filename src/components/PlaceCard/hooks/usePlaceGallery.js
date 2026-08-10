@@ -689,8 +689,8 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       } else {
         console.warn(`⚠️ 검색 최종 실패. 기본 Fallback 이미지를 렌더링합니다.`);
         const fallbackImgs = [
-          { id: 'fallback-1', urls: { regular: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80' }, user: { name: 'Project Days Default' } },
-          { id: 'fallback-2', urls: { regular: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=800&q=80' }, user: { name: 'Project Days Default' } }
+          { id: 'fallback-1', urls: { regular: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80' }, user: { name: 'GATEO Default' } },
+          { id: 'fallback-2', urls: { regular: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=800&q=80' }, user: { name: 'GATEO Default' } }
         ];
         if (!isStale()) processAndSetImages(fallbackImgs);
       }
@@ -792,7 +792,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       const a = document.createElement('a');
       a.href = blobUrl;
 
-      const authorName = imageObj.user?.name ? imageObj.user.name.replace(/\s+/g, '_') : 'Project_Days';
+      const authorName = imageObj.user?.name ? imageObj.user.name.replace(/\s+/g, '_') : 'GATEO';
       const idStr = imageObj.id?.toString() || '';
       const sourceSuffix = idStr.startsWith('pexels')
         ? 'pexels'

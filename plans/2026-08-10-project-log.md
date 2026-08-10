@@ -2,6 +2,22 @@
 
 직전: [`2026-08-09-project-log.md`](./2026-08-09-project-log.md)
 
+## 브랜드 SEO #1, Days→GATEO
+
+**상태**: feature `cursor/gateo-brand-seo-8220` · PR [#90](https://github.com/catgeot/Days/pull/90) · tip `d60de7ef` · Preview QA 대기
+
+- **한 일**: 검색 노출 원인인 Helmet `siteName`「Days - 세상의 모든 여행지」→ GATEO · `index.html` author · About/약관/개인정보「Project Days」·로고 저작권·갤러리 utm/fallback · e2e 타이틀 정합 · `/qa/brand`
+- **VERIFY**: `npm run build` PASS
+- **공유**: `https://www.gateo.kr/qa/brand`
+- **Preview**: `https://days-git-cursor-gateo-brand-seo-8220-catgeots-projects.vercel.app/`
+- **작업 로그**: 「검색·문서 타이틀 Days → GATEO」
+- **남은 일**: 사람 Preview QA · main 병합 후 검색엔진 재크롤(캐시 지연 가능)
+- **다음 채팅명**:
+
+```
+브랜드 SEO #2, (다음 과제)
+```
+
 ## 테마여행 #126, 명승·관광지 지도 드릴다운
 
 **상태**: feature `cursor/scenic-map-drill-f70d` · PR [#89](https://github.com/catgeot/Days/pull/89) · `/qa/scenic-map`
