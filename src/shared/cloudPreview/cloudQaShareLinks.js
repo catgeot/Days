@@ -61,10 +61,10 @@ export const CLOUD_QA_SHARE_LINKS = [
   },
   {
     slug: 'scenic-hub-fill',
-    label: '선정 contentId 보강',
-    branch: 'cursor/scenic-contentid-f876',
+    label: '소량 hub 명소 보강',
+    branch: 'cursor/scenic-thin-hubs-beea',
     destination:
-      'https://days-git-cursor-scenic-contentid-f876-catgeots-projects.vercel.app/korea/theme/scenic',
+      'https://days-git-cursor-scenic-thin-hubs-beea-catgeots-projects.vercel.app/korea/theme/scenic',
     active: true,
   },
   {

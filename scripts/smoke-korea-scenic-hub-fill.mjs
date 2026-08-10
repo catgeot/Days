@@ -554,6 +554,29 @@ if (target) {
   );
 }
 
+const thinHubMin = {
+  chuncheon: 11,
+  sokcho: 9,
+  donghae: 8,
+  samcheok: 10,
+  gangneung: 11,
+  wonju: 9,
+  hoengseong: 8,
+  hwacheon: 8,
+};
+const curatedByHub = new Map();
+for (const s of Array.isArray(scenic?.spots) ? scenic.spots : []) {
+  const hid = String(s?.hubId || '')
+    .trim()
+    .toLowerCase();
+  if (!hid) continue;
+  curatedByHub.set(hid, (curatedByHub.get(hid) || 0) + 1);
+}
+for (const [hubId, min] of Object.entries(thinHubMin)) {
+  const n = curatedByHub.get(hubId) || 0;
+  assert(n >= min, `소량 hub ${hubId} ≥${min} (got ${n})`);
+}
+
 if (failed) {
   console.error(`\n${failed} smoke assertion(s) failed`);
   process.exit(1);

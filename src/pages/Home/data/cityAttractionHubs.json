@@ -46,6 +46,34 @@
         "kind": "landmark",
         "lat": 38.2118201,
         "lng": 128.6014768
+      },
+      {
+        "name": "아바이마을",
+        "name_en": "Abai Village",
+        "kind": "neighborhood",
+        "lat": 38.2045,
+        "lng": 128.5948
+      },
+      {
+        "name": "속초등대전망대",
+        "name_en": "Sokcho Lighthouse Observatory",
+        "kind": "viewpoint",
+        "lat": 38.2148,
+        "lng": 128.5985
+      },
+      {
+        "name": "대포항",
+        "name_en": "Daepo Port",
+        "kind": "viewpoint",
+        "lat": 38.1748,
+        "lng": 128.6065
+      },
+      {
+        "name": "청초호",
+        "name_en": "Cheongcho Lake",
+        "kind": "park",
+        "lat": 38.2005,
+        "lng": 128.5802
       }
     ]
   },
@@ -834,6 +862,41 @@
         "kind": "market",
         "lat": 37.8875872848439,
         "lng": 128.829873624106
+      },
+      {
+        "name": "선교장",
+        "name_en": "Seongyojang",
+        "kind": "landmark",
+        "lat": 37.7865,
+        "lng": 128.8825
+      },
+      {
+        "name": "정동심곡바다부채길",
+        "name_en": "Jeongdong Simgok Coastal Trail",
+        "kind": "viewpoint",
+        "lat": 37.6805,
+        "lng": 129.0445
+      },
+      {
+        "name": "하슬라아트월드",
+        "name_en": "Haslla Art World",
+        "kind": "museum",
+        "lat": 37.7068,
+        "lng": 129.0123
+      },
+      {
+        "name": "솔향수목원",
+        "name_en": "Solhyang Arboretum",
+        "kind": "park",
+        "lat": 37.7365,
+        "lng": 128.8662
+      },
+      {
+        "name": "경포호",
+        "name_en": "Gyeongpo Lake",
+        "kind": "park",
+        "lat": 37.7975,
+        "lng": 128.9085
       }
     ]
   },
@@ -1941,6 +2004,34 @@
         "kind": "landmark",
         "lat": 37.884728,
         "lng": 127.698461
+      },
+      {
+        "name": "제이드가든",
+        "name_en": "Jade Garden",
+        "kind": "park",
+        "lat": 37.8069,
+        "lng": 127.6348
+      },
+      {
+        "name": "구봉산전망대",
+        "name_en": "Gubongsan Observatory",
+        "kind": "viewpoint",
+        "lat": 37.8895,
+        "lng": 127.6985
+      },
+      {
+        "name": "청평사",
+        "name_en": "Cheongpyeongsa",
+        "kind": "temple",
+        "lat": 37.9863,
+        "lng": 127.8089
+      },
+      {
+        "name": "삼악산호수케이블카",
+        "name_en": "Samaksan Lake Cable Car",
+        "kind": "viewpoint",
+        "lat": 37.8735,
+        "lng": 127.6789
       }
     ]
   },
@@ -8895,6 +8986,41 @@
         "kind": "temple",
         "lat": 37.3994509348789,
         "lng": 128.049844503067
+      },
+      {
+        "name": "간현관광지",
+        "name_en": "Ganhyeon Tourist Site",
+        "kind": "viewpoint",
+        "lat": 37.3688,
+        "lng": 127.8375
+      },
+      {
+        "name": "소금산그랜드밸리",
+        "name_en": "Sogeumsan Grand Valley",
+        "kind": "viewpoint",
+        "lat": 37.3672,
+        "lng": 127.8312
+      },
+      {
+        "name": "용소막성당",
+        "name_en": "Yongsomak Cathedral",
+        "kind": "landmark",
+        "lat": 37.2478,
+        "lng": 127.9208
+      },
+      {
+        "name": "백운산자연휴양림",
+        "name_en": "Baegunsan Recreation Forest",
+        "kind": "park",
+        "lat": 37.2635,
+        "lng": 128.0385
+      },
+      {
+        "name": "칠봉약수관광지",
+        "name_en": "Chilbong Mineral Spring",
+        "kind": "park",
+        "lat": 37.3815,
+        "lng": 127.9525
       }
     ]
   },
@@ -9402,6 +9528,27 @@
         "kind": "park",
         "lat": 37.4744522275525,
         "lng": 129.159685344531
+      },
+      {
+        "name": "삼척해양레일바이크",
+        "name_en": "Samcheok Ocean Rail Bike",
+        "kind": "landmark",
+        "lat": 37.3825,
+        "lng": 129.2345
+      },
+      {
+        "name": "대금굴",
+        "name_en": "Daeguemgul Cave",
+        "kind": "landmark",
+        "lat": 37.327,
+        "lng": 129.0485
+      },
+      {
+        "name": "궁촌해수욕장",
+        "name_en": "Gungchon Beach",
+        "kind": "beach",
+        "lat": 37.3208,
+        "lng": 129.2685
       }
     ]
   },
@@ -9943,6 +10090,34 @@
         "kind": "park",
         "lat": 37.463117,
         "lng": 129.019319
+      },
+      {
+        "name": "추암촛대바위",
+        "name_en": "Chuam Candle Rock",
+        "kind": "landmark",
+        "lat": 37.4786,
+        "lng": 129.1594
+      },
+      {
+        "name": "천곡황금박쥐동굴",
+        "name_en": "Cheongok Golden Bat Cave",
+        "kind": "landmark",
+        "lat": 37.5156,
+        "lng": 129.1217
+      },
+      {
+        "name": "묵호항",
+        "name_en": "Mukho Port",
+        "kind": "viewpoint",
+        "lat": 37.5518,
+        "lng": 129.1165
+      },
+      {
+        "name": "도째비골스카이밸리",
+        "name_en": "Dotjaebi Sky Valley",
+        "kind": "viewpoint",
+        "lat": 37.5498,
+        "lng": 129.1162
       }
     ]
   },
@@ -11065,6 +11240,34 @@
         "kind": "viewpoint",
         "lat": 37.6060632778332,
         "lng": 128.264539774299
+      },
+      {
+        "name": "풍수원성당",
+        "name_en": "Pungsuwon Cathedral",
+        "kind": "landmark",
+        "lat": 37.5095,
+        "lng": 127.9852
+      },
+      {
+        "name": "횡성레인보우힐링관광지",
+        "name_en": "Hoengseong Rainbow Healing",
+        "kind": "park",
+        "lat": 37.5485,
+        "lng": 128.0785
+      },
+      {
+        "name": "병지방계곡",
+        "name_en": "Byeongjibang Valley",
+        "kind": "park",
+        "lat": 37.5525,
+        "lng": 128.1585
+      },
+      {
+        "name": "둔내자연휴양림",
+        "name_en": "Dunnae Recreation Forest",
+        "kind": "park",
+        "lat": 37.5125,
+        "lng": 128.2155
       }
     ]
   },
@@ -12233,6 +12436,34 @@
         "kind": "park",
         "lat": 38.026,
         "lng": 127.548
+      },
+      {
+        "name": "화천산소길",
+        "name_en": "Hwacheon Oxygen Path",
+        "kind": "viewpoint",
+        "lat": 38.1055,
+        "lng": 127.7085
+      },
+      {
+        "name": "딴산계곡",
+        "name_en": "Ttansan Valley",
+        "kind": "park",
+        "lat": 38.1485,
+        "lng": 127.6525
+      },
+      {
+        "name": "꺼먹다리",
+        "name_en": "Kkeomeok Bridge",
+        "kind": "landmark",
+        "lat": 38.1085,
+        "lng": 127.7065
+      },
+      {
+        "name": "화천향토박물관",
+        "name_en": "Hwacheon Folk Museum",
+        "kind": "museum",
+        "lat": 38.1058,
+        "lng": 127.7062
       }
     ]
   },
