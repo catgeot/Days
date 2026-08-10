@@ -4,7 +4,7 @@
 
 ## 테마여행 #119, 명승 홈 지도
 
-**상태**: feature `cursor/scenic-map-a086` · PR [#84](https://github.com/catgeot/Days/pull/84) · tip `019950e1` · Preview QA 대기
+**상태**: feature `cursor/scenic-map-a086` · PR [#84](https://github.com/catgeot/Days/pull/84) · tip `9ea922d8` · Preview QA 대기
 
 - **한 일**: 명승 홈에 축제형 목록↔지도 — `KoreaScenicMap` · `koreaScenicMapData` · 헤더/목록 「지도」토글 · 핀·클러스터 · 핀→상세 모달 · smoke `korea-scenic-map` (내 주변 GPS 지도 연동은 보류)
 - **VERIFY**: `npm run smoke:korea-scenic-map` · `npm run build`
