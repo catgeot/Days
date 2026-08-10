@@ -2794,27 +2794,6 @@ export default function KoreaThemeScenicPage() {
                     aria-hidden="true"
                   />
                 </button>
-                <button
-                  type="button"
-                  onClick={() => (mapOpen ? closeMap() : openMap())}
-                  aria-label={
-                    mapOpen ? '지도 닫기 · 목록으로' : '지도로 위치 보기'
-                  }
-                  title={mapOpen ? '지도 닫기 · 목록으로' : '지도로 위치 보기'}
-                  aria-pressed={mapOpen}
-                  className={`flex h-9 items-center gap-1 rounded-full border px-2.5 text-[11px] font-bold ${
-                    mapOpen
-                      ? 'border-amber-400 bg-amber-50 text-amber-900 hover:bg-amber-100'
-                      : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
-                  }`}
-                >
-                  {mapOpen ? (
-                    <X size={14} aria-hidden="true" />
-                  ) : (
-                    <MapIcon size={14} aria-hidden="true" />
-                  )}
-                  {mapOpen ? '목록' : '지도'}
-                </button>
                 <ThemeModuleBackButton onlyWhenBack />
                 {mapOpen ? (
                   <button
