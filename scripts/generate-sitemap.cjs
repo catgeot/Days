@@ -19,8 +19,19 @@ if (!travelSpotsMatch) {
 
 const travelSpotsData = JSON.parse(`[${travelSpotsMatch[1]}]`);
 
-const baseUrl = 'https://gateo.kr';
+const baseUrl = 'https://www.gateo.kr';
 const today = new Date().toISOString().split('T')[0];
+
+/** 국내 투톱·테마 허브 (vite-plugin-sitemap koreaRoutes 와 동기화) */
+const koreaHubRoutes = [
+  { path: '/korea', changefreq: 'daily', priority: '0.95' },
+  { path: '/korea/theme', changefreq: 'weekly', priority: '0.85' },
+  { path: '/korea/theme/scenic', changefreq: 'daily', priority: '0.95' },
+  { path: '/korea/theme/courses', changefreq: 'weekly', priority: '0.7' },
+  { path: '/korea/theme/packages', changefreq: 'weekly', priority: '0.65' },
+  { path: '/korea/theme/top10', changefreq: 'weekly', priority: '0.6' },
+  { path: '/korea/theme/regions', changefreq: 'weekly', priority: '0.6' },
+];
 
 // Sitemap 생성
 function generateSitemap() {
@@ -40,6 +51,15 @@ function generateSitemap() {
     lastmod: today,
     changefreq: 'weekly',
     priority: '0.9'
+  });
+
+  koreaHubRoutes.forEach((route) => {
+    urls.push({
+      loc: `${baseUrl}${route.path}`,
+      lastmod: today,
+      changefreq: route.changefreq,
+      priority: route.priority,
+    });
   });
 
   // 로그북 페이지
@@ -150,8 +170,9 @@ try {
   fs.writeFileSync(path.join(__dirname, '../public/sitemap.xml'), sitemap, 'utf-8');
   fs.writeFileSync(path.join(__dirname, '../public/rss.xml'), rss, 'utf-8');
 
+  const urlCount = (sitemap.match(/<url>/g) || []).length;
   console.log('✅ Sitemap 생성 완료: public/sitemap.xml');
-  console.log(`   - 총 ${travelSpotsData.length + 32}개 URL 포함`);
+  console.log(`   - 총 ${urlCount}개 URL 포함 (korea 허브 ${koreaHubRoutes.length})`);
   console.log('✅ RSS 피드 생성 완료: public/rss.xml');
   console.log('   - 최근 50개 여행지 포함');
   console.log('');

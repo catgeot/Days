@@ -2,6 +2,22 @@
 
 직전: [`2026-08-09-project-log.md`](./2026-08-09-project-log.md)
 
+## 브랜드 SEO #2, 축제·명승 허브
+
+**상태**: feature `cursor/korea-seo-hub-8220` · Preview QA 대기
+
+- **한 일**: 홈 크롤러에 축제/명승 링크 · Helmet 타이틀 구분(축제·랜딩·명승) · `robots` Allow `/korea` · sitemap `www`+korea lastmod/priority · `generate-sitemap.cjs` korea 허브 동기화 · `/qa/korea-seo`
+- **VERIFY**: `npm run build` PASS
+- **공유**: `https://www.gateo.kr/qa/korea-seo`
+- **Preview**: `https://days-git-cursor-korea-seo-hub-8220-catgeots-projects.vercel.app/korea`
+- **작업 로그**: 「축제·명승 SEO 허브 보강」
+- **남은 일**: 사람 Preview QA · main 병합 후 Search Console 사이트맵 재제출(권장)
+- **다음 채팅명**:
+
+```
+브랜드 SEO #3, (다음 과제)
+```
+
 ## 테마여행 #127, 리스트 크게
 
 **상태**: feature `cursor/scenic-list-large-a55c` · PR [#91](https://github.com/catgeot/Days/pull/91) · tip `65f0601b` · `/qa/scenic-list`
@@ -20,18 +36,18 @@
 
 ## 브랜드 SEO #1, Days→GATEO
 
-**상태**: feature `cursor/gateo-brand-seo-8220` · PR [#90](https://github.com/catgeot/Days/pull/90) · tip `d60de7ef` · Preview QA 대기
+**상태**: PR [#90](https://github.com/catgeot/Days/pull/90) **MERGED** · `origin/main` · `/qa/brand`→PROD
 
-- **한 일**: 검색 노출 원인인 Helmet `siteName`「Days - 세상의 모든 여행지」→ GATEO · `index.html` author · About/약관/개인정보「Project Days」·로고 저작권·갤러리 utm/fallback · e2e 타이틀 정합 · `/qa/brand`
+- **한 일**: Helmet `siteName` Days → GATEO · author/About/약관/로고·갤러리·e2e 정합 · **main 병합**
 - **VERIFY**: `npm run build` PASS
 - **공유**: `https://www.gateo.kr/qa/brand`
-- **Preview**: `https://days-git-cursor-gateo-brand-seo-8220-catgeots-projects.vercel.app/`
+- **PROD**: `https://www.gateo.kr/`
 - **작업 로그**: 「검색·문서 타이틀 Days → GATEO」
-- **남은 일**: 사람 Preview QA · main 병합 후 검색엔진 재크롤(캐시 지연 가능)
+- **남은 일**: (선택) 검색엔진 재크롤
 - **다음 채팅명**:
 
 ```
-브랜드 SEO #2, (다음 과제)
+브랜드 SEO #2, 축제·명승 허브
 ```
 
 ## 테마여행 #126, 명승·관광지 지도 드릴다운

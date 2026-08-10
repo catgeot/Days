@@ -1415,8 +1415,8 @@ export default function KoreaFestivalHub() {
   return (
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
       <SEO
-        title="국내 축제 · 시간·지역·테마"
-        description="TourAPI 기반 국내 축제. 시간·지역·테마로 찾고, 필요 시 지도로 위치·동선을 확인하세요."
+        title="한국의 축제"
+        description="GATEO 국내 축제 허브. TourAPI 일정으로 시간·지역·테마별 축제를 찾고, 지도로 위치·동선을 확인하세요."
         url="/korea"
       />
 
