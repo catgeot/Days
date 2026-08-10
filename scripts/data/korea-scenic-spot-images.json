@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-10T11:04:00.561Z",
-    "count": 738,
+    "updatedAt": "2026-08-10T11:09:32.810Z",
+    "count": 747,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -743,6 +743,15 @@
     "jarasum": "https://tong.visitkorea.or.kr/cms/resource/69/3512869_image2_1.jpg",
     "homyeong-lake": "https://tong.visitkorea.or.kr/cms/resource/25/3520225_image2_1.jpg",
     "mokpo-marine-cable-car": "https://tong.visitkorea.or.kr/cms/resource/20/3554020_image2_1.jpg",
-    "haengnam-coastal-walk": "https://tong.visitkorea.or.kr/cms/resource/11/3575511_image2_1.jpg"
+    "haengnam-coastal-walk": "https://tong.visitkorea.or.kr/cms/resource/11/3575511_image2_1.jpg",
+    "mallipo-beach": "https://tong.visitkorea.or.kr/cms/resource/35/2653435_image2_1.jpg",
+    "mongsanpo-beach": "https://tong.visitkorea.or.kr/cms/resource/86/3344186_image2_1.jpg",
+    "anmyeondo-arboretum": "https://tong.visitkorea.or.kr/cms/resource/35/3493435_image2_1.jpg",
+    "gongju-national-museum": "https://tong.visitkorea.or.kr/cms/resource/33/3534933_image2_1.jpg",
+    "seokjangni-museum": "https://tong.visitkorea.or.kr/cms/resource/69/3390269_image2_1.JPG",
+    "kkotji-beach": "https://tong.visitkorea.or.kr/cms/resource/64/4060364_image2_1.jpg",
+    "chollipo-arboretum": "https://tong.visitkorea.or.kr/cms/resource/72/3493772_image2_1.jpg",
+    "hwangmaesan": "https://tong.visitkorea.or.kr/cms/resource/29/3588329_image2_1.jpg",
+    "nakhwaam": "https://tong.visitkorea.or.kr/cms/resource/72/3335172_image2_1.jpg"
   }
 }
