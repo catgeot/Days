@@ -4,7 +4,7 @@
 
 ## 테마여행 #132, 소량 hub 보강
 
-**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · Preview QA 대기  
+**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · tip `e79aea3d` · Preview QA 대기  
 **세션**: `테마여행 #132, 소량 hub 보강`
 
 - **한 일**: curated **1** hub 소량 보강 — 포항·목포·울릉·가평 `cityAttractionHubs` **기존 attractions 미등재만** GATEO 선정 **23곳** append(754→777) · attractions 억지 추가 없음 · contentId DB/수동 일부(잔여 null 4 · keyword 429)
