@@ -4,7 +4,7 @@
 
 ## 테마여행 #133, 소량 hub 보강
 
-**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · tip `ebcc0d8e` · Preview QA 대기  
+**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · tip `17c7cc66` · Preview QA 대기  
 **세션**: `테마여행 #133, 소량 hub 보강`
 
 - **한 일**: curated **1** hub 소량 보강 — 공주·합천·태안·부여 `cityAttractionHubs` **기존 attractions 미등재만** GATEO 선정 **22곳** append(777→799) · attractions 억지 추가 없음 · contentId DB 2곳(황매산·낙화암 · 잔여 null 10 · keyword 429)
