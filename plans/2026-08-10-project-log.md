@@ -4,7 +4,7 @@
 
 ## 테마여행 #138, 양구수목원 등록
 
-**상태**: feature `cursor/yanggu-arboretum-7807` · Preview QA 대기  
+**상태**: feature `cursor/yanggu-arboretum-7807` · PR [#97](https://github.com/catgeot/Days/pull/97) · tip `a7386856` · Preview QA 대기  
 **세션**: `테마여행 #138, 양구수목원 등록`
 
 - **한 일**: 검색 누락 **양구 수목원**(공식명·옛 양구자연생태공원) — `cityAttractionHubs` yanggu attractions append · GATEO scenic **+1**(869→870) · TourAPI contentId **미등재**(null·overview)
