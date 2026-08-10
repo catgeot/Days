@@ -4,7 +4,7 @@
 
 ## 테마여행 #124, 상태바 검정 텍스트
 
-**상태**: feature `cursor/scenic-map-a086` · tip `f090618a` · Preview QA 대기
+**상태**: feature `cursor/scenic-map-a086` · PR [#87](https://github.com/catgeot/Days/pull/87) · tip `f090618a` · Preview QA 대기
 
 - **한 일**: 지도 상단 경로 바 — 밝은 패널 + **검정(stone-900)** 텍스트 · 「상위」·힌트도 동일
 - **VERIFY**: `npm run build`
