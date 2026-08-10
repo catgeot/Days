@@ -329,7 +329,9 @@ export function buildCuratedMapDrill(allSpots, drill) {
     };
   }
 
-  if (d.area) {
+  /** 시도 칩을 거친 권역만 상태바에 시도 표시 (강원 등 단일 시도는 세권으로 직행) */
+  const showAreaCrumb = Boolean(d.area) && areaChipsMeta.length > 1;
+  if (showAreaCrumb) {
     const areaLabel = labelScenicAreaCode(d.area) || d.area;
     crumbs.push({
       id: `area:${d.area}`,
@@ -401,7 +403,7 @@ export function buildCuratedMapDrill(allSpots, drill) {
     };
   }
 
-  if (d.cluster && !d.hub) {
+  if (d.cluster) {
     const clusterArea = resolveScenicClusterAreaCode(d.region, d.area);
     const clusterLabel =
       listKoreaScenicClusterChips(d.region, clusterArea).find(
@@ -412,44 +414,46 @@ export function buildCuratedMapDrill(allSpots, drill) {
       label: clusterLabel,
       drill: {
         region: d.region,
-        area: d.area || clusterArea,
+        area: showAreaCrumb ? d.area : d.area || clusterArea,
         cluster: d.cluster,
         hub: null,
       },
     });
-    const inCluster = inArea.filter((s) =>
-      hubMatchesScenicCluster(s.hubId, clusterArea, d.cluster),
-    );
-    const hubMeta = listKoreaScenicHubChips(
-      d.region,
-      d.area || clusterArea,
-      d.cluster,
-    );
-    /** @type {ScenicMapDrillChip[]} */
-    const chips = [];
-    for (const h of hubMeta) {
-      const members = inCluster.filter(
-        (s) => String(s.hubId || '').trim().toLowerCase() === h.hubId,
+    if (!d.hub) {
+      const inCluster = inArea.filter((s) =>
+        hubMatchesScenicCluster(s.hubId, clusterArea, d.cluster),
       );
-      const chip = chipFromMembers(members, {
-        id: `hub:${h.hubId}`,
-        kind: 'hub',
-        label: h.label,
-        count: h.count,
-        region: d.region,
-        area: d.area || clusterArea || undefined,
-        cluster: d.cluster,
-        hub: h.hubId,
-      });
-      if (chip) chips.push(chip);
+      const hubMeta = listKoreaScenicHubChips(
+        d.region,
+        d.area || clusterArea,
+        d.cluster,
+      );
+      /** @type {ScenicMapDrillChip[]} */
+      const chips = [];
+      for (const h of hubMeta) {
+        const members = inCluster.filter(
+          (s) => String(s.hubId || '').trim().toLowerCase() === h.hubId,
+        );
+        const chip = chipFromMembers(members, {
+          id: `hub:${h.hubId}`,
+          kind: 'hub',
+          label: h.label,
+          count: h.count,
+          region: d.region,
+          area: d.area || clusterArea || undefined,
+          cluster: d.cluster,
+          hub: h.hubId,
+        });
+        if (chip) chips.push(chip);
+      }
+      return {
+        chips,
+        showSpotPins: false,
+        crumbs,
+        scopeSpots: inCluster,
+        levelLabel: '소분류(여행지)',
+      };
     }
-    return {
-      chips,
-      showSpotPins: false,
-      crumbs,
-      scopeSpots: inCluster,
-      levelLabel: '소분류(여행지)',
-    };
   }
 
   const hubLabel =
@@ -526,6 +530,11 @@ export function drillUpScenicMap(drill) {
     return { region: d.region, area: d.area, cluster: d.cluster, hub: null };
   }
   if (d.cluster) {
+    const areas = listScenicRegionAreas(d.region);
+    /** 강원처럼 시도 칩이 1개면 세권 상위는 권역(세권 목록)으로 */
+    if (areas.length <= 1) {
+      return { region: d.region, area: null, cluster: null, hub: null };
+    }
     return { region: d.region, area: d.area, cluster: null, hub: null };
   }
   if (d.area) {
