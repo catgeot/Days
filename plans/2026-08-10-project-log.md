@@ -4,7 +4,7 @@
 
 ## 테마여행 #125, 상태바 안내 문구 제거
 
-**상태**: feature `cursor/scenic-map-a086` · Preview QA 대기
+**상태**: feature `cursor/scenic-map-a086` · PR [#88](https://github.com/catgeot/Days/pull/88) · tip `a343e07f` · Preview QA 대기
 
 - **한 일**: 지도 경로 바 하단 안내 문구(「칩을 눌러 좁히세요」등) **제거**
 - **VERIFY**: `npm run build`
@@ -17,6 +17,7 @@
 ```
 테마여행 #126, (다음 과제)
 ```
+
 
 ## 테마여행 #124, 상태바 검정 텍스트
 
