@@ -4,7 +4,7 @@
 
 ## 브랜드 SEO #1, Days→GATEO
 
-**상태**: feature `cursor/gateo-brand-seo-8220` · Preview QA 대기
+**상태**: feature `cursor/gateo-brand-seo-8220` · PR [#90](https://github.com/catgeot/Days/pull/90) · tip `d60de7ef` · Preview QA 대기
 
 - **한 일**: 검색 노출 원인인 Helmet `siteName`「Days - 세상의 모든 여행지」→ GATEO · `index.html` author · About/약관/개인정보「Project Days」·로고 저작권·갤러리 utm/fallback · e2e 타이틀 정합 · `/qa/brand`
 - **VERIFY**: `npm run build` PASS
