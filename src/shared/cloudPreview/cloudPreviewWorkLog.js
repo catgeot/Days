@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '테마여행',
-  sessionNo: 126,
-  sessionPhase: '명승·관광지 지도 드릴다운',
-  branch: 'cursor/scenic-map-drill-f70d',
-  previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'scenic-map',
+  title: '브랜드 SEO',
+  sessionNo: 1,
+  sessionPhase: 'Days→GATEO',
+  branch: 'cursor/gateo-brand-seo-8220',
+  previewPath: '/',
+  qaShareSlug: 'brand',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-10-brand-seo-1',
+    session: '브랜드 SEO #1, Days→GATEO',
+    title: '검색·문서 타이틀 Days → GATEO',
+    detail:
+      'Helmet siteName이 「Days - 세상의 모든 여행지」로 남아 검색 결과에 Days가 노출되던 문제를 GATEO로 맞췄습니다. Preview 홈에서 브라우저 탭 제목·About/약관「Project Days」잔여·로고 패널 저작권 표기를 확인해 주세요.',
+    at: '2026-08-10',
+  },
   {
     id: '2026-08-10-scenic-map-126',
     session: '테마여행 #126, 명승·관광지 지도 드릴다운',

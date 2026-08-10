@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/brand",
+      "destination": "https://days-git-cursor-gateo-brand-seo-8220-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
       "source": "/qa/scenic-map",
       "destination": "https://days-git-cursor-scenic-map-drill-f70d-catgeots-projects.vercel.app/korea/theme/scenic",
       "permanent": false

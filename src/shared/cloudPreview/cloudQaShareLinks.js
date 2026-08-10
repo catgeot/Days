@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'brand',
+    label: '브랜드 SEO Days→GATEO',
+    branch: 'cursor/gateo-brand-seo-8220',
+    destination:
+      'https://days-git-cursor-gateo-brand-seo-8220-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
     slug: 'scenic-map',
     label: '명승 홈 지도 드릴다운',
     branch: 'cursor/scenic-map-drill-f70d',
