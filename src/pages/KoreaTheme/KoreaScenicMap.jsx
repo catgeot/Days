@@ -250,7 +250,6 @@ export default function KoreaScenicMap({
   drillCrumbs = null,
   onDrillCrumb,
   onDrillUp,
-  drillLevelLabel = '',
   showSpotPins = true,
 }) {
   const mapRef = useRef(null);
@@ -561,13 +560,6 @@ export default function KoreaScenicMap({
               })}
             </nav>
           </div>
-          {drillLevelLabel || chips.length > 0 ? (
-            <p className="pointer-events-none max-w-[20rem] rounded-xl border border-stone-200/70 bg-white/85 px-2.5 py-1 text-[10px] font-medium text-stone-800 shadow-sm backdrop-blur-sm break-keep">
-              {chips.length > 0
-                ? `${drillLevelLabel || '분류'} 칩을 눌러 좁히세요 · 분포를 보고 여행지를 고릅니다`
-                : '핀을 눌러 명소를 확인하세요'}
-            </p>
-          ) : null}
         </div>
       ) : null}
       {typeof onToggleFullscreen === 'function' ? (
@@ -581,7 +573,7 @@ export default function KoreaScenicMap({
             fullscreen
               ? 'top-[max(5.25rem,calc(env(safe-area-inset-top)+4.75rem))]'
               : crumbs.length > 0
-                ? 'top-[4.85rem]'
+                ? 'top-[3.85rem]'
                 : 'top-3'
           }`}
         >
