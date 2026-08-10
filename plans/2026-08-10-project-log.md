@@ -2,6 +2,23 @@
 
 직전: [`2026-08-09-project-log.md`](./2026-08-09-project-log.md)
 
+## 테마여행 #138, 양구수목원 등록
+
+**상태**: feature `cursor/yanggu-arboretum-7807` · Preview QA 대기  
+**세션**: `테마여행 #138, 양구수목원 등록`
+
+- **한 일**: 검색 누락 **양구 수목원**(공식명·옛 양구자연생태공원) — `cityAttractionHubs` yanggu attractions append · GATEO scenic **+1**(869→870) · TourAPI contentId **미등재**(null·overview)
+- **VERIFY**: `audit:city-attraction-hubs` · `audit`/`smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · 검색 exact(`양구 수목원`/`양구수목원`) · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
+- **Preview**: `https://days-git-cursor-yanggu-arboretum-7807-catgeots-projects.vercel.app/korea/theme/scenic?hub=yanggu`
+- **작업 로그**: 「양구 수목원 hub·GATEO 선정 등록」
+- **남은 일**: 사람 Preview QA(검색·양구 hub 목록)
+- **다음 채팅명**:
+
+```
+테마여행 #139, 소량 hub 보강
+```
+
 ## 테마여행 #137, 소량 hub 보강
 
 **상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · tip `c4cb181d` · Preview QA 대기  

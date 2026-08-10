@@ -6,9 +6,9 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 137,
-  sessionPhase: '소량 hub 보강',
-  branch: 'cursor/scenic-thin-hubs-beea',
+  sessionNo: 138,
+  sessionPhase: '양구수목원 등록',
+  branch: 'cursor/yanggu-arboretum-7807',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-hub-fill',
 };
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-10-yanggu-arboretum-138',
+    session: '테마여행 #138, 양구수목원 등록',
+    title: '양구 수목원 hub·GATEO 선정 등록',
+    detail:
+      '검색·테마에 없던 양구 수목원(공식명·옛 양구자연생태공원)을 yanggu hub attractions와 koreaScenicSpots에 추가했습니다(869→870). TourAPI에 동일 관광지 contentId가 없어 null·GATEO overview입니다. Preview에서 검색「양구 수목원」·`/korea/theme/scenic?hub=yanggu`를 확인해 주세요.',
+    at: '2026-08-10',
+  },
   {
     id: '2026-08-10-scenic-thin-hubs-137',
     session: '테마여행 #137, 소량 hub 보강',
