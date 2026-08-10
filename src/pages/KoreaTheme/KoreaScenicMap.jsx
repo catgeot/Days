@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import Map, {
   Layer,
+  Marker,
   NavigationControl,
   Source,
   useControl,
 } from 'react-map-gl/mapbox';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
-import { Maximize2, Minimize2 } from 'lucide-react';
+import { ChevronLeft, Maximize2, Minimize2 } from 'lucide-react';
 import { MAPBOX_ATTRIBUTION_LINKS } from '../../data/mapboxAttribution';
 import {
   buildScenicMapGeoJson,
@@ -90,10 +91,12 @@ function applyKoreanPlaceLabels(map) {
   }
 }
 
-function MapCaption({ pointCount }) {
+function MapCaption({ pointCount, countLabel = '좌표' }) {
   return (
     <div className="pointer-events-none absolute bottom-2 left-2 right-14 flex flex-wrap gap-x-2 gap-y-0.5 text-[10px] text-white/80">
-      <span className="text-white/70">좌표 {pointCount}</span>
+      <span className="text-white/70">
+        {countLabel} {pointCount}
+      </span>
       <span className="text-white/40">·</span>
       {CAPTION_LINKS.map((item, idx) => (
         <React.Fragment key={item.label}>
@@ -192,6 +195,16 @@ function applyFocusCamera(map, focusView, opts = {}) {
   return true;
 }
 
+function drillChipClass(kind) {
+  if (kind === 'region') {
+    return 'rounded-full border border-amber-300/90 bg-amber-500 px-3 py-1.5 text-xs font-bold text-[#1b1410] shadow-[0_4px_14px_rgba(0,0,0,0.35)] hover:bg-amber-400';
+  }
+  if (kind === 'area' || kind === 'cluster') {
+    return 'rounded-full border border-stone-200/90 bg-stone-900/90 px-2.5 py-1 text-[11px] font-bold text-amber-50 shadow-[0_4px_14px_rgba(0,0,0,0.4)] backdrop-blur-sm hover:bg-stone-800';
+  }
+  return 'rounded-full border border-amber-200/80 bg-[#fff7ed]/95 px-2 py-0.5 text-[10px] font-bold text-amber-950 shadow-[0_3px_12px_rgba(0,0,0,0.35)] hover:bg-amber-100';
+}
+
 /**
  * @param {{
  *   items: object[],
@@ -206,6 +219,20 @@ function applyFocusCamera(map, focusView, opts = {}) {
  *   fullscreen?: boolean,
  *   onToggleFullscreen?: () => void,
  *   className?: string,
+ *   drillChips?: {
+ *     id: string,
+ *     kind: string,
+ *     label: string,
+ *     count: number,
+ *     lng: number,
+ *     lat: number,
+ *   }[],
+ *   onSelectDrillChip?: (chip: object) => void,
+ *   drillCrumbs?: { id: string, label: string }[],
+ *   onDrillCrumb?: (index: number) => void,
+ *   onDrillUp?: () => void,
+ *   drillLevelLabel?: string,
+ *   showSpotPins?: boolean,
  * }} props
  */
 export default function KoreaScenicMap({
@@ -218,13 +245,24 @@ export default function KoreaScenicMap({
   fullscreen = false,
   onToggleFullscreen,
   className = '',
+  drillChips = null,
+  onSelectDrillChip,
+  drillCrumbs = null,
+  onDrillCrumb,
+  onDrillUp,
+  drillLevelLabel = '',
+  showSpotPins = true,
 }) {
   const mapRef = useRef(null);
   const viewStackRef = useRef([]);
   const focusViewRef = useRef(focusView);
   focusViewRef.current = focusView;
-  const geojson = useMemo(() => buildScenicMapGeoJson(items), [items]);
+  const pinItems = showSpotPins ? items : [];
+  const geojson = useMemo(() => buildScenicMapGeoJson(pinItems), [pinItems]);
   const pointCount = geojson.features.length;
+  const chips = Array.isArray(drillChips) ? drillChips : [];
+  const crumbs = Array.isArray(drillCrumbs) ? drillCrumbs : [];
+  const canDrillUp = crumbs.length > 1;
   const focusKey = focusView
     ? isBoundsFocus(focusView)
       ? `b:${focusView.west},${focusView.south},${focusView.east},${focusView.north},${focusView.maxZoom ?? ''}`
@@ -381,71 +419,157 @@ export default function KoreaScenicMap({
         touchZoomRotate
         doubleClickZoom
         keyboard
-        interactiveLayerIds={INTERACTIVE_LAYERS}
+        interactiveLayerIds={showSpotPins ? INTERACTIVE_LAYERS : []}
         onLoad={handleMapLoad}
-        onClick={handleClick}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        onClick={showSpotPins ? handleClick : undefined}
+        onMouseEnter={showSpotPins ? handleMouseEnter : undefined}
+        onMouseLeave={showSpotPins ? handleMouseLeave : undefined}
       >
         <LanguageControl />
         <NavigationControl position="bottom-right" showCompass={false} />
-        <Source
-          id={SOURCE_ID}
-          type="geojson"
-          data={geojson}
-          cluster
-          clusterMaxZoom={13}
-          clusterRadius={52}
-        >
-          <Layer
-            id={CLUSTER_LAYER}
-            type="circle"
-            filter={['has', 'point_count']}
-            paint={clusterPaint}
-          />
-          <Layer
-            id={CLUSTER_COUNT_LAYER}
-            type="symbol"
-            filter={['has', 'point_count']}
-            layout={{
-              'text-field': ['get', 'point_count_abbreviated'],
-              'text-size': 12,
-              'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-            }}
-            paint={{ 'text-color': '#1b1410' }}
-          />
-          <Layer
-            id={POINT_LAYER}
-            type="circle"
-            filter={['!', ['has', 'point_count']]}
-            paint={pointPaint}
-          />
-          <Layer
-            id={POINT_LABEL_LAYER}
-            type="symbol"
-            filter={['!', ['has', 'point_count']]}
-            layout={{
-              'text-field': ['get', 'titleShort'],
-              'text-size': 11,
-              'text-offset': [0, 1.35],
-              'text-anchor': 'top',
-              'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-              'text-max-width': 8,
-            }}
-            paint={{
-              'text-color': '#1b1410',
-              'text-halo-color': '#f59e0b',
-              'text-halo-width': 1.4,
-            }}
-          />
-          <Layer
-            id={ACTIVE_LAYER}
-            type="circle"
-            filter={activeFilter}
-            paint={activePaint}
-          />
-        </Source>
+        {showSpotPins ? (
+          <Source
+            id={SOURCE_ID}
+            type="geojson"
+            data={geojson}
+            cluster
+            clusterMaxZoom={13}
+            clusterRadius={52}
+          >
+            <Layer
+              id={CLUSTER_LAYER}
+              type="circle"
+              filter={['has', 'point_count']}
+              paint={clusterPaint}
+            />
+            <Layer
+              id={CLUSTER_COUNT_LAYER}
+              type="symbol"
+              filter={['has', 'point_count']}
+              layout={{
+                'text-field': ['get', 'point_count_abbreviated'],
+                'text-size': 12,
+                'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+              }}
+              paint={{ 'text-color': '#1b1410' }}
+            />
+            <Layer
+              id={POINT_LAYER}
+              type="circle"
+              filter={['!', ['has', 'point_count']]}
+              paint={pointPaint}
+            />
+            <Layer
+              id={POINT_LABEL_LAYER}
+              type="symbol"
+              filter={['!', ['has', 'point_count']]}
+              layout={{
+                'text-field': ['get', 'titleShort'],
+                'text-size': 11,
+                'text-offset': [0, 1.35],
+                'text-anchor': 'top',
+                'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+                'text-max-width': 8,
+              }}
+              paint={{
+                'text-color': '#1b1410',
+                'text-halo-color': '#f59e0b',
+                'text-halo-width': 1.4,
+              }}
+            />
+            <Layer
+              id={ACTIVE_LAYER}
+              type="circle"
+              filter={activeFilter}
+              paint={activePaint}
+            />
+          </Source>
+        ) : null}
+        {chips.map((chip) => (
+          <Marker
+            key={chip.id}
+            longitude={chip.lng}
+            latitude={chip.lat}
+            anchor="center"
+            style={{ zIndex: 2 }}
+          >
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelectDrillChip?.(chip);
+              }}
+              className={`pointer-events-auto inline-flex max-w-[9.5rem] items-center gap-1 ${drillChipClass(chip.kind)}`}
+              aria-label={`${chip.label} ${chip.count}곳 펼치기`}
+            >
+              <span className="truncate">{chip.label}</span>
+              <span className="shrink-0 tabular-nums opacity-80">
+                {chip.count}
+              </span>
+            </button>
+          </Marker>
+        ))}
       </Map>
+      {crumbs.length > 0 ? (
+        <div className="pointer-events-none absolute left-3 right-3 top-3 z-10 flex flex-col gap-1.5">
+          <div className="pointer-events-auto flex flex-wrap items-center gap-1 rounded-2xl border border-white/25 bg-[#1b1410]/72 px-2 py-1.5 shadow-lg backdrop-blur-md">
+            {canDrillUp ? (
+              <button
+                type="button"
+                onClick={onDrillUp}
+                aria-label="상위 분류로"
+                className="inline-flex h-7 shrink-0 items-center gap-0.5 rounded-full border border-white/30 bg-white/10 px-2 text-[11px] font-bold text-white hover:bg-white/20"
+              >
+                <ChevronLeft size={14} aria-hidden="true" />
+                상위
+              </button>
+            ) : null}
+            <nav
+              aria-label="지도 분류 경로"
+              className="flex min-w-0 flex-1 flex-wrap items-center gap-x-1 gap-y-0.5 text-[11px] text-white/85"
+            >
+              {crumbs.map((crumb, idx) => {
+                const last = idx === crumbs.length - 1;
+                return (
+                  <React.Fragment key={crumb.id}>
+                    {idx > 0 ? (
+                      <span className="text-white/35" aria-hidden="true">
+                        /
+                      </span>
+                    ) : null}
+                    {last || typeof onDrillCrumb !== 'function' ? (
+                      <span
+                        className={
+                          last
+                            ? 'font-bold text-amber-200'
+                            : 'font-semibold text-white/80'
+                        }
+                      >
+                        {crumb.label}
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => onDrillCrumb(idx)}
+                        className="font-semibold text-white/80 underline-offset-2 hover:text-amber-100 hover:underline"
+                      >
+                        {crumb.label}
+                      </button>
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </nav>
+          </div>
+          {drillLevelLabel || chips.length > 0 ? (
+            <p className="pointer-events-none max-w-[20rem] rounded-xl bg-[#1b1410]/55 px-2.5 py-1 text-[10px] font-medium text-white/75 backdrop-blur-sm break-keep">
+              {chips.length > 0
+                ? `${drillLevelLabel || '분류'} 칩을 눌러 좁히세요 · 분포를 보고 여행지를 고릅니다`
+                : '핀을 눌러 명소를 확인하세요'}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
       {typeof onToggleFullscreen === 'function' ? (
         <button
           type="button"
@@ -456,7 +580,9 @@ export default function KoreaScenicMap({
           className={`absolute right-3 z-10 flex h-10 items-center gap-1.5 rounded-full border border-white/40 bg-[#1b1410]/70 px-3 text-[11px] font-bold text-white shadow-lg backdrop-blur-md hover:bg-[#1b1410]/85 ${
             fullscreen
               ? 'top-[max(5.25rem,calc(env(safe-area-inset-top)+4.75rem))]'
-              : 'top-3'
+              : crumbs.length > 0
+                ? 'top-[4.75rem]'
+                : 'top-3'
           }`}
         >
           {fullscreen ? (
@@ -467,7 +593,14 @@ export default function KoreaScenicMap({
           {fullscreen ? '축소' : '전체'}
         </button>
       ) : null}
-      <MapCaption pointCount={pointCount} />
+      <MapCaption
+        countLabel={showSpotPins ? '좌표' : '분류'}
+        pointCount={
+          showSpotPins
+            ? pointCount
+            : chips.reduce((n, c) => n + (c.count || 0), 0)
+        }
+      />
     </div>
   );
 }

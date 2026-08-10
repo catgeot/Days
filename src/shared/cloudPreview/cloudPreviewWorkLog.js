@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 120,
-  sessionPhase: '접이·파드별 지도',
+  sessionNo: 121,
+  sessionPhase: '지도 드릴다운 칩',
   branch: 'cursor/scenic-map-a086',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-map',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-10-scenic-map-121',
+    session: '테마여행 #121, 지도 드릴다운 칩',
+    title: '명소 지도 대→중→소 드릴다운',
+    detail:
+      '명소 「지도」는 짧은 목록 핀 확인이 아니라, 권역(대)→시도·세권(중)→여행지 hub(소) 칩을 지도 위에 펼쳐 좁히는 드릴다운입니다. hub까지 들어가면 그때 핀이 보입니다. Preview에서 명소 지도 → 권역 칩 → 중분류 → 소분류 → 핀·상세를 확인해 주세요.',
+    at: '2026-08-10',
+  },
   {
     id: '2026-08-10-scenic-map-120',
     session: '테마여행 #120, 접이·파드별 지도',
