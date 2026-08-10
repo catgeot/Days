@@ -4,7 +4,7 @@
 
 ## 테마여행 #122, 경로 바 시인성
 
-**상태**: feature `cursor/scenic-map-a086` · Preview QA 대기
+**상태**: feature `cursor/scenic-map-a086` · PR [#86](https://github.com/catgeot/Days/pull/86) · tip `79423957` · Preview QA 대기
 
 - **한 일**: 지도 드릴다운 상단 「상위」·경로 바 시인성 — 불투명 배경·호박 테두리·큰 「상위」버튼·경로를 칩형으로
 - **VERIFY**: `npm run build`
@@ -17,6 +17,7 @@
 ```
 테마여행 #123, (다음 과제)
 ```
+
 
 ## 테마여행 #121, 지도 드릴다운 칩
 
