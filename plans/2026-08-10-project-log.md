@@ -2,9 +2,25 @@
 
 직전: [`2026-08-09-project-log.md`](./2026-08-09-project-log.md)
 
+## 테마여행 #124, 상태바 검정 텍스트
+
+**상태**: feature `cursor/scenic-map-a086` · Preview QA 대기
+
+- **한 일**: 지도 상단 경로 바 — 밝은 패널 + **검정(stone-900)** 텍스트 · 「상위」·힌트도 동일
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-map`
+- **Preview**: `https://days-git-cursor-scenic-map-a086-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: 「상태바 텍스트 검정」
+- **남은 일**: 사람 Preview QA · main 병합
+- **다음 채팅명**:
+
+```
+테마여행 #125, (다음 과제)
+```
+
 ## 테마여행 #123, 경로 바 톤 맞춤
 
-**상태**: PR [#86](https://github.com/catgeot/Days/pull/86) **MERGED** · `origin/main` `37acc4c4` · `/qa/scenic-map`→PROD
+**상태**: PR [#86](https://github.com/catgeot/Days/pull/86) **MERGED** · `origin/main` `37acc4c4` · → #124 검정 텍스트
 
 - **한 일**: 경로 바를 지도 글래스·칩 톤에 맞춤 — 과장된 호박 면/흰 칩 제거 · 「상위」는 연한 호박 글로우 · 현재 단계만 은은히 강조 · 시인성 유지 · **main 병합**(#122 시인성 포함)
 - **VERIFY**: `npm run build`
