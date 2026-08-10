@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-10T08:01:19.767Z",
-    "count": 717,
+    "updatedAt": "2026-08-10T08:21:29.926Z",
+    "count": 723,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -722,6 +722,12 @@
     "chuam-candle-rock": "https://tong.visitkorea.or.kr/cms/resource/83/2921483_image2_1.jpg",
     "gungchon-beach": "https://tong.visitkorea.or.kr/cms/resource/48/3040348_image2_1.jpg",
     "maengbang-beach": "https://tong.visitkorea.or.kr/cms/resource/95/2921595_image2_1.jpg",
-    "haesindang-park": "https://tong.visitkorea.or.kr/cms/resource/87/3376587_image2_1.jpg"
+    "haesindang-park": "https://tong.visitkorea.or.kr/cms/resource/87/3376587_image2_1.jpg",
+    "ojukheon": "https://tong.visitkorea.or.kr/cms/resource/38/3527138_image2_1.jpg",
+    "jumunjin-port": "https://tong.visitkorea.or.kr/cms/resource/68/2921868_image2_1.jpg",
+    "gyeongpo-lake": "https://tong.visitkorea.or.kr/cms/resource/60/3460260_image2_1.jpg",
+    "ganhyeon-tourist-site": "https://tong.visitkorea.or.kr/cms/resource/72/3388672_image2_1.JPG",
+    "dunnae-recreation-forest": "https://tong.visitkorea.or.kr/cms/resource/32/3457832_image2_1.png",
+    "kkeomeok-bridge": "https://tong.visitkorea.or.kr/cms/resource/63/3484963_image2_1.png"
   }
 }

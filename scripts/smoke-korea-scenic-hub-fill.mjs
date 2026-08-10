@@ -559,6 +559,10 @@ const thinHubMin = {
   sokcho: 9,
   donghae: 8,
   samcheok: 10,
+  gangneung: 11,
+  wonju: 9,
+  hoengseong: 8,
+  hwacheon: 8,
 };
 const curatedByHub = new Map();
 for (const s of Array.isArray(scenic?.spots) ? scenic.spots : []) {
@@ -570,7 +574,7 @@ for (const s of Array.isArray(scenic?.spots) ? scenic.spots : []) {
 }
 for (const [hubId, min] of Object.entries(thinHubMin)) {
   const n = curatedByHub.get(hubId) || 0;
-  assert(n >= min, `#130 소량 hub ${hubId} ≥${min} (got ${n})`);
+  assert(n >= min, `소량 hub ${hubId} ≥${min} (got ${n})`);
 }
 
 if (failed) {

@@ -6,7 +6,7 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 130,
+  sessionNo: 131,
   sessionPhase: '소량 hub 보강',
   branch: 'cursor/scenic-thin-hubs-beea',
   previewPath: '/korea/theme/scenic',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-10-scenic-thin-hubs-131',
+    session: '테마여행 #131, 소량 hub 보강',
+    title: '강릉·원주·횡성·화천 소량 hub 명소 보강',
+    detail:
+      '강원 소량 hub 4곳에 cityAttractionHubs 명소 추가 + GATEO 선정 20곳을 append했습니다(강릉 4→11 · 원주 4→9 · 횡성 4→8 · 화천 4→8). Preview에서 `/korea/theme/scenic?hub=gangneung` · `wonju` · `hoengseong` · `hwacheon` 목록·지도를 확인해 주세요.',
+    at: '2026-08-10',
+  },
   {
     id: '2026-08-10-scenic-thin-hubs-130',
     session: '테마여행 #130, 소량 hub 보강',
