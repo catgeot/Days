@@ -4,7 +4,7 @@
 
 ## 브랜드 SEO #2, 축제·명승 허브
 
-**상태**: feature `cursor/korea-seo-hub-8220` · Preview QA 대기
+**상태**: feature `cursor/korea-seo-hub-8220` · PR [#92](https://github.com/catgeot/Days/pull/92) · tip `58386c5e` · Preview QA 대기
 
 - **한 일**: 홈 크롤러에 축제/명승 링크 · Helmet 타이틀 구분(축제·랜딩·명승) · `robots` Allow `/korea` · sitemap `www`+korea lastmod/priority · `generate-sitemap.cjs` korea 허브 동기화 · `/qa/korea-seo`
 - **VERIFY**: `npm run build` PASS
