@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '브랜드 SEO',
-  sessionNo: 1,
-  sessionPhase: 'Days→GATEO',
-  branch: 'cursor/gateo-brand-seo-8220',
-  previewPath: '/',
-  qaShareSlug: 'brand',
+  title: '테마여행',
+  sessionNo: 127,
+  sessionPhase: '리스트 크게',
+  branch: 'cursor/scenic-list-large-a55c',
+  previewPath: '/korea/theme/scenic',
+  qaShareSlug: 'scenic-list',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-10-scenic-list-127',
+    session: '테마여행 #127, 리스트 크게',
+    title: '명승 홈 리스트 「크게」·지도 옆',
+    detail:
+      '축제홈과 같이 명소·명승·관광지·즐겨찾기 파드 헤더의 지도 버튼 왼쪽에 「크게」토글을 두었습니다. Preview에서 크게→썸네일·행 확대, 기본→원복을 확인해 주세요.',
+    at: '2026-08-10',
+  },
   {
     id: '2026-08-10-brand-seo-1',
     session: '브랜드 SEO #1, Days→GATEO',
