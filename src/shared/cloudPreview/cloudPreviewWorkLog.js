@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 118,
-  sessionPhase: '명승 홈 즐겨찾기',
-  branch: 'cursor/scenic-favorites-492c',
+  sessionNo: 119,
+  sessionPhase: '명승 홈 지도',
+  branch: 'cursor/scenic-map-a086',
   previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'scenic-favorites',
+  qaShareSlug: 'scenic-map',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-10-scenic-map-119',
+    session: '테마여행 #119, 명승 홈 지도',
+    title: '목록↔지도 · 핀·클러스터',
+    detail:
+      '명승 홈에 축제와 같은 지도 전환을 넣었습니다. 헤더·목록의 「지도」→ 현재 목록(선정·명승·관광지) 핀·클러스터 · 핀 탭 시 상세 모달. 내 주변 GPS 연동은 다음 단계입니다. Preview에서 지도 → 핀 → 상세 → 목록 복귀를 확인해 주세요.',
+    at: '2026-08-10',
+  },
   {
     id: '2026-08-09-scenic-favorites-118',
     session: '테마여행 #118, 명승 홈 즐겨찾기',

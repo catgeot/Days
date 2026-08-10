@@ -16,6 +16,7 @@ import {
   Landmark,
   Loader2,
   LocateFixed,
+  Map as MapIcon,
   MapPin,
   Mountain,
   Search,
@@ -23,6 +24,11 @@ import {
   X,
 } from 'lucide-react';
 import SEO from '../../components/SEO';
+import KoreaScenicMap from './KoreaScenicMap';
+import {
+  focusViewFromScenicItems,
+  KOREA_SCENIC_MAP_OVERVIEW,
+} from './koreaScenicMapData';
 import {
   countKoreaScenicSpotsByRegion,
   countKoreaScenicSpotsByTourArea,
@@ -1164,6 +1170,10 @@ export default function KoreaThemeScenicPage() {
   const [favoriteIds, setFavoriteIds] = useState(
     () => new Set(loadScenicFavorites().map((r) => String(r.id))),
   );
+  const [mapOpen, setMapOpen] = useState(false);
+  const [mapSessionKey, setMapSessionKey] = useState(0);
+  /** @type {[object | null, function]} */
+  const [mapFocusView, setMapFocusView] = useState(null);
   const [viewedList, setViewedList] = useState(() => loadScenicViewed());
   const [chipCounts, setChipCounts] = useState({
     regionCounts: {},
@@ -2569,19 +2579,58 @@ export default function KoreaThemeScenicPage() {
     [personalItems],
   );
 
+  /** 지도 핀 — 현재 목록(선정·명승·관광지) · 즐겨찾기/본 항목 패널이면 그 목록 */
+  const mapItems = useMemo(() => {
+    if (personalTab != null) return personalItems;
+    /** @type {Map<string, Record<string, unknown>>} */
+    const byId = new Map();
+    for (const spot of curatedSpots) {
+      const id = String(spot?.id || '').trim();
+      if (id) byId.set(id, spot);
+    }
+    for (const spot of heritageSpots) {
+      const id = String(spot?.id || '').trim();
+      if (id && !byId.has(id)) byId.set(id, spot);
+    }
+    for (const spot of dbSpots) {
+      const id = String(spot?.id || '').trim();
+      if (id && !byId.has(id)) byId.set(id, spot);
+    }
+    return [...byId.values()];
+  }, [personalTab, personalItems, curatedSpots, heritageSpots, dbSpots]);
+
+  useEffect(() => {
+    if (!mapOpen) return;
+    const view = focusViewFromScenicItems(mapItems);
+    setMapFocusView(view || KOREA_SCENIC_MAP_OVERVIEW);
+  }, [mapOpen, mapItems]);
+
+  const openMap = useCallback(() => {
+    setMapSessionKey((k) => k + 1);
+    setMapOpen(true);
+    requestAnimationFrame(() => {
+      mainScrollRef.current?.scrollTo({ top: 0 });
+    });
+  }, []);
+
+  const closeMap = useCallback(() => {
+    setMapOpen(false);
+  }, []);
+
   const openSpot = useCallback(
     (id) => {
       const key = String(id || '').trim();
       if (!key) return;
       const live = scenicById.get(key);
       const fromPersonal = personalItems.find((s) => String(s.id) === key);
-      const refSpot = live || fromPersonal || { id: key, name: key };
+      const fromMap = mapItems.find((s) => String(s.id) === key);
+      const refSpot = live || fromPersonal || fromMap || { id: key, name: key };
       setViewedList(pushScenicViewed(refSpot));
       const next = new URLSearchParams(searchParams);
       next.set('spot', key);
       setSearchParams(next, { replace: false });
     },
-    [personalItems, scenicById, searchParams, setSearchParams],
+    [mapItems, personalItems, scenicById, searchParams, setSearchParams],
   );
 
   const closeModal = useCallback(() => {
@@ -2745,17 +2794,51 @@ export default function KoreaThemeScenicPage() {
                     aria-hidden="true"
                   />
                 </button>
-                <ThemeModuleBackButton onlyWhenBack />
                 <button
                   type="button"
-                  onClick={() => navigate('/')}
-                  aria-label="홈으로"
-                  title="홈으로"
-                  className="flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs font-bold text-stone-700 hover:bg-stone-100"
+                  onClick={() => (mapOpen ? closeMap() : openMap())}
+                  aria-label={
+                    mapOpen ? '지도 닫기 · 목록으로' : '지도로 위치 보기'
+                  }
+                  title={mapOpen ? '지도 닫기 · 목록으로' : '지도로 위치 보기'}
+                  aria-pressed={mapOpen}
+                  className={`flex h-9 items-center gap-1 rounded-full border px-2.5 text-[11px] font-bold ${
+                    mapOpen
+                      ? 'border-amber-400 bg-amber-50 text-amber-900 hover:bg-amber-100'
+                      : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
+                  }`}
                 >
-                  <Home size={14} aria-hidden="true" />
-                  홈으로
+                  {mapOpen ? (
+                    <X size={14} aria-hidden="true" />
+                  ) : (
+                    <MapIcon size={14} aria-hidden="true" />
+                  )}
+                  {mapOpen ? '목록' : '지도'}
                 </button>
+                <ThemeModuleBackButton onlyWhenBack />
+                {mapOpen ? (
+                  <button
+                    type="button"
+                    onClick={closeMap}
+                    aria-label="지도 닫기 · 목록으로"
+                    title="목록으로"
+                    className="flex items-center gap-1 rounded-full border border-amber-400 bg-amber-50 px-2.5 py-1.5 text-xs font-bold text-amber-900 hover:bg-amber-100"
+                  >
+                    <X size={14} aria-hidden="true" />
+                    닫기
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => navigate('/')}
+                    aria-label="홈으로"
+                    title="홈으로"
+                    className="flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs font-bold text-stone-700 hover:bg-stone-100"
+                  >
+                    <Home size={14} aria-hidden="true" />
+                    홈으로
+                  </button>
+                )}
               </div>
             </div>
             {searchOpen ? (
@@ -2868,6 +2951,16 @@ export default function KoreaThemeScenicPage() {
               {!searchActive && personalTab == null ? (
                 <div className="space-y-2">
                   <div className="flex flex-wrap items-center justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={openMap}
+                      aria-label="지도로 위치 보기"
+                      title="지도로 위치 보기"
+                      className="shrink-0 flex items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-700 hover:bg-stone-100"
+                    >
+                      <MapIcon size={14} aria-hidden="true" />
+                      지도
+                    </button>
                     <button
                       type="button"
                       onClick={handleNearMe}
@@ -3635,7 +3728,7 @@ export default function KoreaThemeScenicPage() {
           mainScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         className={`fixed bottom-[max(1.25rem,calc(env(safe-area-inset-bottom)+0.75rem))] right-3 z-40 flex h-11 items-center gap-1 rounded-full border border-amber-400/60 bg-amber-500 px-3.5 text-white shadow-[0_4px_18px_rgba(245,158,11,0.45)] transition-all duration-300 md:hidden ${
-          showScrollTop && !selectedId
+          showScrollTop && !selectedId && !mapOpen
             ? 'pointer-events-auto translate-y-0 opacity-100'
             : 'pointer-events-none translate-y-3 opacity-0'
         }`}
@@ -3649,6 +3742,20 @@ export default function KoreaThemeScenicPage() {
         <span className="text-xs font-bold">위로</span>
       </button>
 
+      {mapOpen ? (
+        <div className="fixed inset-0 z-20 overflow-hidden bg-[#1b1410] pt-[max(4.5rem,calc(env(safe-area-inset-top)+4rem))]">
+          <KoreaScenicMap
+            className="absolute inset-0 h-full w-full"
+            items={mapItems}
+            activeSpotId={selectedId ? String(selectedId) : ''}
+            focusView={mapFocusView}
+            historyKey={`${mapSessionKey}:${personalTab || ''}:${searchFilter}:${hubId || ''}:${curatedRegion}:${heritageRegion}:${cat1}`}
+            layoutKey="immersive"
+            onSelectPoint={(spotId) => openSpot(spotId)}
+          />
+        </div>
+      ) : null}
+
       {modalSpot ? (
         <ThemeSpotDetailModal
           spot={modalSpot}
@@ -3657,7 +3764,9 @@ export default function KoreaThemeScenicPage() {
           }
           returnTo={listReturnTo}
           onClose={closeModal}
-          overlayZClass={searchActive ? 'z-50' : 'z-40'}
+          overlayZClass={
+            searchActive || mapOpen ? 'z-50' : 'z-40'
+          }
           favorited={
             modalSpot?.id != null && favoriteIds.has(String(modalSpot.id))
           }
