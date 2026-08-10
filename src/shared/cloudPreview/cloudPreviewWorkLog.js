@@ -7,8 +7,8 @@ export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
   sessionNo: 129,
-  sessionPhase: '상태바 세권',
-  branch: 'cursor/scenic-chip-spread-8d91',
+  sessionPhase: '상태바 main',
+  branch: 'main',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-map',
 };
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-10-scenic-map-crumb-129-main',
+    session: '테마여행 #129, 상태바 main',
+    title: '상태바 세권 크럼 main 병합',
+    detail:
+      'PR #94를 main에 반영했습니다. `/qa/scenic-map`은 PROD 명승 경로로 연결됩니다. www.gateo.kr/korea/theme/scenic 에서 명소 지도 → 강원 → 세권 → 여행지 → 핀 경로 바에 세권이 남는지 확인해 주세요.',
+    at: '2026-08-10',
+  },
   {
     id: '2026-08-10-scenic-map-crumb-129',
     session: '테마여행 #129, 상태바 세권',

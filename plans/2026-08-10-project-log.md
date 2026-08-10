@@ -4,14 +4,14 @@
 
 ## 테마여행 #129, 상태바 세권
 
-**상태**: feature `cursor/scenic-chip-spread-8d91` · [PR #94](https://github.com/catgeot/Days/pull/94) · tip `70eac566` · `/qa/scenic-map`
+**상태**: PR [#94](https://github.com/catgeot/Days/pull/94) **MERGED** · `origin/main` `4034dd0a` · `/qa/scenic-map`→PROD
 
-- **한 일**: 지도 상태바에서 **세권(4권역) 크럼 누락** 수정 — hub·핀 단계에도 영서/북부 등 유지 · 강원 단일 시도 「강원」중복 제거 · 세권 상위 drillUp 시 area 클리어
+- **한 일**: 지도 상태바 **세권(4권역) 크럼 누락** 수정 · 강원 「강원」중복 제거 · **main 병합** · `/qa/scenic-map`→PROD (#128 칩 분포도 main에 포함)
 - **VERIFY**: `npm run smoke:korea-scenic-map` · `npm run build` PASS
 - **공유**: `https://www.gateo.kr/qa/scenic-map`
-- **Preview**: `https://days-git-cursor-scenic-chip-spread-8d91-catgeots-projects.vercel.app/korea/theme/scenic`
-- **작업 로그**: 「지도 상태바 — 세권(4권역) 크럼」
-- **남은 일**: 사람 Preview QA · main 병합
+- **PROD**: `https://www.gateo.kr/korea/theme/scenic`
+- **작업 로그**: 「상태바 세권 크럼 main 병합」
+- **남은 일**: (선택) PROD QA
 - **다음 채팅명**:
 
 ```
@@ -20,18 +20,18 @@
 
 ## 테마여행 #128, 지도 칩 분포
 
-**상태**: feature `cursor/scenic-chip-spread-8d91` · [PR #93](https://github.com/catgeot/Days/pull/93) · tip `3be763b8` · `/qa/scenic-map`
+**상태**: PR [#93](https://github.com/catgeot/Days/pull/93) **MERGED** · `origin/main` `9f0d4596` · `/qa/scenic-map`→PROD
 
-- **한 일**: 명승홈 지도에서 hub 등 소량 핀이 2·3·5·7 숫자로 뭉치던 문제 — **≤20곳은 클러스터 끔** · 반경/maxZoom 완화 · 근접 드릴 칩 fan-out · 좁은 스팬 과줌인 완화
+- **한 일**: 명승홈 지도 hub 소량 핀 숫자 뭉치 완화 · **main 병합**(#93)
 - **VERIFY**: `npm run smoke:korea-scenic-map` · `npm run build` PASS
 - **공유**: `https://www.gateo.kr/qa/scenic-map`
-- **Preview**: `https://days-git-cursor-scenic-chip-spread-8d91-catgeots-projects.vercel.app/korea/theme/scenic`
+- **PROD**: `https://www.gateo.kr/korea/theme/scenic`
 - **작업 로그**: 「명승 지도 — 숫자 뭉치↓ · 윤곽 핀」
-- **남은 일**: 사람 Preview QA · main 병합
+- **남은 일**: —
 - **다음 채팅명**:
 
 ```
-테마여행 #129, (다음 과제)
+테마여행 #129, 상태바 세권
 ```
 
 ## 브랜드 SEO #2, 축제·명승 허브
