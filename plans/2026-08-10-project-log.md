@@ -4,7 +4,7 @@
 
 ## 테마여행 #121, 지도 드릴다운 칩
 
-**상태**: feature `cursor/scenic-map-a086` · PR [#84](https://github.com/catgeot/Days/pull/84) · Preview QA 대기
+**상태**: feature `cursor/scenic-map-a086` · tip `bccef701` · Preview QA 대기
 
 - **한 일**: 명소 지도를 **대(권역)→중(시도·세권)→소(여행지 hub)** 지도 위 칩 드릴다운으로 재설계 · hub 도달 시에만 핀 · 목록 URL 기본칩과 분리된 `curatedMapDrill` · 닫을 때 URL 동기화 · smoke 확장
 - **VERIFY**: `npm run smoke:korea-scenic-map` · `npm run build` PASS
