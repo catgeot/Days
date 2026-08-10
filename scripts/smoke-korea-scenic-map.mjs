@@ -11,15 +11,30 @@ const {
 
 const {
   buildCuratedMapDrill,
+  buildHeritageMapDrill,
   centroidOfScenicSpots,
+  drillDownHeritageMap,
   drillDownScenicMap,
+  drillUpHeritageMap,
   drillUpScenicMap,
+  EMPTY_HERITAGE_MAP_DRILL,
   EMPTY_SCENIC_MAP_DRILL,
   focusViewForMapDrill,
 } = await import('../src/pages/KoreaTheme/koreaScenicMapDrill.js');
 
+const {
+  buildTourMapDrill,
+  drillDownTourMap,
+  drillUpTourMap,
+  EMPTY_TOUR_MAP_DRILL,
+  fanOutMapAnchor,
+} = await import('../src/pages/KoreaTheme/koreaTourMapDrill.js');
+
 const { listKoreaScenicSpots } = await import(
   '../src/pages/Home/lib/koreaScenicSpots.js'
+);
+const { listKoreaHeritageScenic } = await import(
+  '../src/pages/Home/lib/koreaHeritageScenic.js'
 );
 
 const gyeongbok = {
@@ -130,5 +145,77 @@ assert.ok(focusChips);
 assert.ok(
   Number.isFinite(focusChips.west) || Number.isFinite(focusChips.lng),
 );
+
+const heritageCatalog = listKoreaHeritageScenic();
+assert.ok(heritageCatalog.length > 50, '국가유산 명승 카탈로그');
+const hRoot = buildHeritageMapDrill(heritageCatalog, EMPTY_HERITAGE_MAP_DRILL);
+assert.equal(hRoot.showSpotPins, false);
+assert.ok(hRoot.chips.length >= 5, '명승 대분류(권역)');
+assert.ok(hRoot.chips.every((c) => c.kind === 'region'));
+const hRegionChip =
+  hRoot.chips.find((c) => c.region === '전라') || hRoot.chips[0];
+const hAfterRegion = drillDownHeritageMap(EMPTY_HERITAGE_MAP_DRILL, hRegionChip);
+const hMid = buildHeritageMapDrill(heritageCatalog, hAfterRegion);
+assert.equal(hMid.showSpotPins, false);
+assert.ok(hMid.chips.length >= 1, '명승 중·소분류 칩');
+assert.ok(
+  hMid.chips.every((c) => c.kind === 'area' || c.kind === 'category'),
+);
+let hCursor = hAfterRegion;
+let hLeaf = hMid;
+let hGuard = 0;
+while (!hLeaf.showSpotPins && hLeaf.chips.length && hGuard < 6) {
+  hCursor = drillDownHeritageMap(hCursor, hLeaf.chips[0]);
+  hLeaf = buildHeritageMapDrill(heritageCatalog, hCursor);
+  hGuard += 1;
+}
+assert.equal(hLeaf.showSpotPins, true, '명승 경관까지 드릴 후 핀');
+assert.ok(hLeaf.scopeSpots.length >= 1);
+assert.equal(drillUpHeritageMap(hCursor).category, null);
+
+const tLoading = buildTourMapDrill(EMPTY_TOUR_MAP_DRILL, {}, { countsReady: false });
+assert.equal(tLoading.showSpotPins, false);
+assert.equal(tLoading.chips.length, 0);
+
+const mockCounts = {
+  regionCounts: {
+    수도권: 100,
+    강원: 80,
+    충청: 70,
+    전라: 90,
+    경상: 110,
+    제주: 40,
+  },
+  areaCounts: { 1: 40, 2: 20, 31: 40 },
+  cat1Counts: { A01: 30, A02: 70 },
+  cat2Counts: { A0101: 20, A0102: 10 },
+  cat3Counts: { A01010100: 5, A01010400: 8 },
+};
+const tRoot = buildTourMapDrill(EMPTY_TOUR_MAP_DRILL, mockCounts, {
+  countsReady: true,
+});
+assert.equal(tRoot.showSpotPins, false);
+assert.ok(tRoot.chips.length >= 5, '관광지 대분류(권역)');
+const tMetro =
+  tRoot.chips.find((c) => c.region === '수도권') || tRoot.chips[0];
+const tAfterRegion = drillDownTourMap(EMPTY_TOUR_MAP_DRILL, tMetro);
+const tMid = buildTourMapDrill(tAfterRegion, mockCounts, { countsReady: true });
+assert.equal(tMid.showSpotPins, false);
+assert.ok(tMid.chips.every((c) => c.kind === 'area' || c.kind === 'cat1'));
+const tAreaOrCat = tMid.chips[0];
+let tCursor = drillDownTourMap(tAfterRegion, tAreaOrCat);
+let tLeaf = buildTourMapDrill(tCursor, mockCounts, { countsReady: true });
+let tGuard = 0;
+while (!tLeaf.showSpotPins && tLeaf.chips.length && tGuard < 8) {
+  tCursor = drillDownTourMap(tCursor, tLeaf.chips[0]);
+  tLeaf = buildTourMapDrill(tCursor, mockCounts, { countsReady: true });
+  tGuard += 1;
+}
+assert.equal(tLeaf.showSpotPins, true, '관광지 종목까지 드릴 후 핀');
+assert.ok(tLeaf.fetchFilters);
+assert.equal(drillUpTourMap(tCursor).cat3, null);
+
+const fan = fanOutMapAnchor({ lng: 127, lat: 37 }, 0, 4, 0.2);
+assert.ok(Number.isFinite(fan.lng) && Number.isFinite(fan.lat));
 
 console.log('smoke-korea-scenic-map: PASS');

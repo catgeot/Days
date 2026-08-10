@@ -31,7 +31,7 @@ const CHA_CTCD_ALIASES = {
 };
 
 /** CHA ctcd → TourAPI areaCode (칩·필터 정합) */
-const CHA_CTCD_TO_TOUR_AREA = {
+export const CHA_CTCD_TO_TOUR_AREA = {
   11: '1',
   23: '2',
   25: '3',
@@ -154,6 +154,15 @@ export function getKoreaHeritageScenicById(id) {
   if (!key) return null;
   const spots = Array.isArray(data?.spots) ? data.spots : [];
   return spots.find((s) => s.id === key) || null;
+}
+
+/**
+ * @param {object | null | undefined} spot
+ * @returns {string | null}
+ */
+export function heritageTourAreaCodeForSpot(spot) {
+  const tourCode = CHA_CTCD_TO_TOUR_AREA[String(spot?.ctcd || '')];
+  return tourCode || null;
 }
 
 /**
