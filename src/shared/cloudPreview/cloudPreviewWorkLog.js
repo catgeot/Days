@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 124,
-  sessionPhase: '상태바 검정 텍스트',
+  sessionNo: 125,
+  sessionPhase: '상태바 안내 문구 제거',
   branch: 'cursor/scenic-map-a086',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-map',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-10-scenic-map-125',
+    session: '테마여행 #125, 상태바 안내 문구 제거',
+    title: '상태바 하단 안내 문구 제거',
+    detail:
+      '지도 경로 바 아래 「칩을 눌러 좁히세요」안내 문구를 제거했습니다. Preview에서 상태바만 남았는지 확인해 주세요.',
+    at: '2026-08-10',
+  },
   {
     id: '2026-08-10-scenic-map-124',
     session: '테마여행 #124, 상태바 검정 텍스트',

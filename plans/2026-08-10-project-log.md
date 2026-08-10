@@ -2,21 +2,29 @@
 
 직전: [`2026-08-09-project-log.md`](./2026-08-09-project-log.md)
 
-## 테마여행 #124, 상태바 검정 텍스트
+## 테마여행 #125, 상태바 안내 문구 제거
 
-**상태**: feature `cursor/scenic-map-a086` · PR [#87](https://github.com/catgeot/Days/pull/87) · tip `f090618a` · Preview QA 대기
+**상태**: feature `cursor/scenic-map-a086` · PR [#88](https://github.com/catgeot/Days/pull/88) · tip `a343e07f` · Preview QA 대기
 
-- **한 일**: 지도 상단 경로 바 — 밝은 패널 + **검정(stone-900)** 텍스트 · 「상위」·힌트도 동일
+- **한 일**: 지도 경로 바 하단 안내 문구(「칩을 눌러 좁히세요」등) **제거**
 - **VERIFY**: `npm run build`
 - **공유**: `https://www.gateo.kr/qa/scenic-map`
 - **Preview**: `https://days-git-cursor-scenic-map-a086-catgeots-projects.vercel.app/korea/theme/scenic`
-- **작업 로그**: 「상태바 텍스트 검정」
+- **작업 로그**: 「상태바 하단 안내 문구 제거」
 - **남은 일**: 사람 Preview QA · main 병합
 - **다음 채팅명**:
 
 ```
-테마여행 #125, (다음 과제)
+테마여행 #126, (다음 과제)
 ```
+
+
+## 테마여행 #124, 상태바 검정 텍스트
+
+**상태**: PR [#87](https://github.com/catgeot/Days/pull/87) **MERGED** · `origin/main` `a9925099` · → #125 안내 문구 제거
+
+- **한 일**: 지도 상단 경로 바 — 밝은 패널 + **검정(stone-900)** 텍스트
+- **작업 로그**: 「상태바 텍스트 검정」
 
 
 ## 테마여행 #123, 경로 바 톤 맞춤
