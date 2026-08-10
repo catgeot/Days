@@ -4,7 +4,7 @@
 
 ## 테마여행 #135, 소량 hub 보강
 
-**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · tip `d4fbed89` · Preview QA 대기  
+**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · tip `4dc5dce9` · Preview QA 대기  
 **세션**: `테마여행 #135, 소량 hub 보강`
 
 - **한 일**: curated **1** hub 소량 보강 — 청주·광주·정읍·성남 `cityAttractionHubs` **기존 attractions 미등재만** GATEO 선정 **20곳** append(819→839) · attractions 억지 추가 없음 · contentId DB 4곳(잔여 null 12 · keyword 429)
