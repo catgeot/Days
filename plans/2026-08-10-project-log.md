@@ -4,29 +4,25 @@
 
 ## 테마여행 #123, 경로 바 톤 맞춤
 
-**상태**: feature `cursor/scenic-map-a086` · PR [#86](https://github.com/catgeot/Days/pull/86) · tip `b6db7b39` · Preview QA 대기
+**상태**: PR [#86](https://github.com/catgeot/Days/pull/86) **MERGED** · `origin/main` `37acc4c4` · `/qa/scenic-map`→PROD
 
-- **한 일**: 경로 바를 지도 글래스·칩 톤에 맞춤 — 과장된 호박 면/흰 칩 제거 · 「상위」는 연한 호박 글로우 · 현재 단계만 은은히 강조 · 시인성 유지
+- **한 일**: 경로 바를 지도 글래스·칩 톤에 맞춤 — 과장된 호박 면/흰 칩 제거 · 「상위」는 연한 호박 글로우 · 현재 단계만 은은히 강조 · 시인성 유지 · **main 병합**(#122 시인성 포함)
 - **VERIFY**: `npm run build`
 - **공유**: `https://www.gateo.kr/qa/scenic-map`
-- **Preview**: `https://days-git-cursor-scenic-map-a086-catgeots-projects.vercel.app/korea/theme/scenic`
-- **작업 로그**: 「경로 바 — 지도 톤에 맞춤」
-- **남은 일**: 사람 Preview QA · main 병합
+- **PROD**: `https://www.gateo.kr/korea/theme/scenic`
+- **작업 로그**: 「경로 바 시인성·톤 main 병합」
+- **남은 일**: (선택) 명승·관광지 지도 드릴다운 · 내 주변 GPS 지도 연동 · 사람 PROD QA
 - **다음 채팅명**:
 
 ```
 테마여행 #124, (다음 과제)
 ```
 
-
 ## 테마여행 #122, 경로 바 시인성
 
-**상태**: feature `cursor/scenic-map-a086` · PR [#86](https://github.com/catgeot/Days/pull/86) · → #123 톤 맞춤
+**상태**: PR [#86](https://github.com/catgeot/Days/pull/86) **MERGED** · → #123과 함께 main
 
-- **한 일**: 지도 드릴다운 상단 「상위」·경로 바 시인성 — 불투명 배경·호박 테두리·큰 「상위」버튼·경로를 칩형으로
-- **VERIFY**: `npm run build`
-- **공유**: `https://www.gateo.kr/qa/scenic-map`
-- **Preview**: `https://days-git-cursor-scenic-map-a086-catgeots-projects.vercel.app/korea/theme/scenic`
+- **한 일**: 지도 드릴다운 상단 「상위」·경로 바 시인성 — 이후 #123에서 톤 완화
 - **작업 로그**: 「지도 상위·경로 바 시인성」
 
 

@@ -4,11 +4,11 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: true,
+  active: false,
   title: '테마여행',
   sessionNo: 123,
-  sessionPhase: '경로 바 톤 맞춤',
-  branch: 'cursor/scenic-map-a086',
+  sessionPhase: '경로 바 main',
+  branch: 'main',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-map',
 };
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-10-scenic-map-123-main',
+    session: '테마여행 #123, 경로 바 main',
+    title: '경로 바 시인성·톤 main 병합',
+    detail:
+      'PR #86을 main에 반영했습니다. `/qa/scenic-map`은 PROD 명승 경로로 연결됩니다. www.gateo.kr/korea/theme/scenic 에서 지도 상위·경로 바 톤을 확인해 주세요.',
+    at: '2026-08-10',
+  },
   {
     id: '2026-08-10-scenic-map-123',
     session: '테마여행 #123, 경로 바 톤 맞춤',
