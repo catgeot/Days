@@ -11,12 +11,13 @@
 - **공유**: `https://www.gateo.kr/qa/scenic-map`
 - **Preview**: `https://days-git-cursor-scenic-map-a086-catgeots-projects.vercel.app/korea/theme/scenic`
 - **작업 로그**: 「목록↔지도 · 핀·클러스터」
-- **남은 일**: 사람 Preview QA · (선택) 내 주변·분할 보기
+- **남은 일**: → #120 접이·파드별 지도로 이음 ([`2026-08-10-project-log.md`](./2026-08-10-project-log.md))
 - **다음 채팅명**:
 
 ```
-테마여행 #120, (다음 과제)
+테마여행 #120, 접이·파드별 지도
 ```
+
 
 ## 테마여행 #118, 명승 홈 즐겨찾기
 

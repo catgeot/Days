@@ -10,6 +10,7 @@ import { flushSync } from 'react-dom';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowUp,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Home,
@@ -1170,10 +1171,17 @@ export default function KoreaThemeScenicPage() {
   const [favoriteIds, setFavoriteIds] = useState(
     () => new Set(loadScenicFavorites().map((r) => String(r.id))),
   );
-  const [mapOpen, setMapOpen] = useState(false);
+  /** null | curated | heritage | tour | personal — 파드별 목록↔지도 */
+  const [mapPod, setMapPod] = useState(null);
+  const [openPods, setOpenPods] = useState({
+    curated: true,
+    heritage: false,
+    tour: false,
+  });
   const [mapSessionKey, setMapSessionKey] = useState(0);
   /** @type {[object | null, function]} */
   const [mapFocusView, setMapFocusView] = useState(null);
+  const mapOpen = mapPod != null;
   const [viewedList, setViewedList] = useState(() => loadScenicViewed());
   const [chipCounts, setChipCounts] = useState({
     regionCounts: {},
@@ -2543,6 +2551,9 @@ export default function KoreaThemeScenicPage() {
   const openPersonal = useCallback(
     (tab) => {
       setPersonalTab(tab);
+      setMapPod((cur) =>
+        cur === 'personal' || cur == null ? cur : null,
+      );
       clearNear();
       clearSearchFilter();
       const next = new URLSearchParams(searchParams);
@@ -2562,6 +2573,7 @@ export default function KoreaThemeScenicPage() {
 
   const closePersonal = useCallback(() => {
     setPersonalTab(null);
+    setMapPod((cur) => (cur === 'personal' ? null : cur));
   }, []);
 
   const personalItems = useMemo(() => {
@@ -2579,42 +2591,57 @@ export default function KoreaThemeScenicPage() {
     [personalItems],
   );
 
-  /** 지도 핀 — 현재 목록(선정·명승·관광지) · 즐겨찾기/본 항목 패널이면 그 목록 */
+  /** 지도 핀 — 열린 파드(또는 즐겨찾기/본 항목) 목록만 */
   const mapItems = useMemo(() => {
-    if (personalTab != null) return personalItems;
-    /** @type {Map<string, Record<string, unknown>>} */
-    const byId = new Map();
-    for (const spot of curatedSpots) {
-      const id = String(spot?.id || '').trim();
-      if (id) byId.set(id, spot);
-    }
-    for (const spot of heritageSpots) {
-      const id = String(spot?.id || '').trim();
-      if (id && !byId.has(id)) byId.set(id, spot);
-    }
-    for (const spot of dbSpots) {
-      const id = String(spot?.id || '').trim();
-      if (id && !byId.has(id)) byId.set(id, spot);
-    }
-    return [...byId.values()];
-  }, [personalTab, personalItems, curatedSpots, heritageSpots, dbSpots]);
+    if (mapPod === 'personal') return personalItems;
+    if (mapPod === 'curated') return curatedSpots;
+    if (mapPod === 'heritage') return heritageSpots;
+    if (mapPod === 'tour') return dbSpots;
+    return [];
+  }, [mapPod, personalItems, curatedSpots, heritageSpots, dbSpots]);
 
   useEffect(() => {
-    if (!mapOpen) return;
+    if (!mapPod) return;
     const view = focusViewFromScenicItems(mapItems);
     setMapFocusView(view || KOREA_SCENIC_MAP_OVERVIEW);
-  }, [mapOpen, mapItems]);
+  }, [mapPod, mapItems]);
 
-  const openMap = useCallback(() => {
-    setMapSessionKey((k) => k + 1);
-    setMapOpen(true);
-    requestAnimationFrame(() => {
-      mainScrollRef.current?.scrollTo({ top: 0 });
+  /** 검색·내 주변은 결과 누락 방지로 세 파드 펼침(다중 펼침 유지) */
+  useEffect(() => {
+    if (!searchActive && !nearActive) return;
+    setOpenPods({ curated: true, heritage: true, tour: true });
+  }, [searchActive, nearActive]);
+
+  useEffect(() => {
+    if (personalTab == null && mapPod === 'personal') setMapPod(null);
+  }, [personalTab, mapPod]);
+
+  const closeMap = useCallback(() => {
+    setMapPod(null);
+  }, []);
+
+  const togglePodOpen = useCallback((pod) => {
+    setOpenPods((prev) => {
+      const nextOpen = !prev[pod];
+      if (!nextOpen) {
+        setMapPod((cur) => (cur === pod ? null : cur));
+      }
+      return { ...prev, [pod]: nextOpen };
     });
   }, []);
 
-  const closeMap = useCallback(() => {
-    setMapOpen(false);
+  const togglePodMap = useCallback((pod) => {
+    setMapPod((cur) => {
+      if (cur === pod) return null;
+      if (pod !== 'personal') {
+        setOpenPods((prev) => (prev[pod] ? prev : { ...prev, [pod]: true }));
+      }
+      setMapSessionKey((k) => k + 1);
+      requestAnimationFrame(() => {
+        mainScrollRef.current?.scrollTo({ top: 0 });
+      });
+      return pod;
+    });
   }, []);
 
   const openSpot = useCallback(
@@ -2932,16 +2959,6 @@ export default function KoreaThemeScenicPage() {
                   <div className="flex flex-wrap items-center justify-end gap-2">
                     <button
                       type="button"
-                      onClick={openMap}
-                      aria-label="지도로 위치 보기"
-                      title="지도로 위치 보기"
-                      className="shrink-0 flex items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-700 hover:bg-stone-100"
-                    >
-                      <MapIcon size={14} aria-hidden="true" />
-                      지도
-                    </button>
-                    <button
-                      type="button"
                       onClick={handleNearMe}
                       disabled={nearBusy}
                       aria-label="내 주변 명소·명승·관광지 불러오기"
@@ -3001,13 +3018,34 @@ export default function KoreaThemeScenicPage() {
                     {personalItems.length}건 · 권역 그룹
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={closePersonal}
-                  className="rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-[11px] font-bold text-stone-700 hover:bg-stone-100"
-                >
-                  목록으로
-                </button>
+                <div className="flex shrink-0 flex-wrap items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => togglePodMap('personal')}
+                    aria-label={
+                      mapPod === 'personal'
+                        ? '목록으로'
+                        : '즐겨찾기·본 항목 지도'
+                    }
+                    title={mapPod === 'personal' ? '목록' : '지도'}
+                    aria-pressed={mapPod === 'personal'}
+                    className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-bold ${
+                      mapPod === 'personal'
+                        ? 'border-amber-400/90 bg-amber-50 text-amber-950'
+                        : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
+                    }`}
+                  >
+                    <MapIcon size={13} aria-hidden="true" />
+                    {mapPod === 'personal' ? '목록' : '지도'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={closePersonal}
+                    className="rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-[11px] font-bold text-stone-700 hover:bg-stone-100"
+                  >
+                    목록으로
+                  </button>
+                </div>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 <button
@@ -3071,15 +3109,54 @@ export default function KoreaThemeScenicPage() {
           ) : (
             <>
           <section aria-labelledby="korea-scenic-curated-heading" className="space-y-4">
-            <div className="flex items-center gap-2 text-stone-700">
-              <Landmark size={18} className="text-amber-700" aria-hidden="true" />
-              <h2
-                id="korea-scenic-curated-heading"
-                className="text-sm font-bold tracking-tight md:text-base"
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <button
+                type="button"
+                onClick={() => togglePodOpen('curated')}
+                aria-expanded={openPods.curated}
+                aria-controls="korea-scenic-curated-body"
+                className="flex min-w-0 flex-1 items-center gap-2 text-left text-stone-700"
               >
-                GATEO 선정 명소
-              </h2>
+                <ChevronDown
+                  size={18}
+                  className={`shrink-0 text-stone-500 transition-transform ${
+                    openPods.curated ? '' : '-rotate-90'
+                  }`}
+                  aria-hidden="true"
+                />
+                <Landmark size={18} className="shrink-0 text-amber-700" aria-hidden="true" />
+                <h2
+                  id="korea-scenic-curated-heading"
+                  className="text-sm font-bold tracking-tight md:text-base"
+                >
+                  GATEO 선정 명소
+                </h2>
+                <span className="text-xs font-semibold text-stone-500 tabular-nums">
+                  {curatedSpots.length.toLocaleString('ko-KR')}곳
+                </span>
+              </button>
+              {openPods.curated ? (
+                <button
+                  type="button"
+                  onClick={() => togglePodMap('curated')}
+                  aria-label={
+                    mapPod === 'curated' ? '명소 목록으로' : '명소 지도로'
+                  }
+                  title={mapPod === 'curated' ? '명소' : '지도'}
+                  aria-pressed={mapPod === 'curated'}
+                  className={`shrink-0 inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-bold ${
+                    mapPod === 'curated'
+                      ? 'border-amber-400/90 bg-amber-50 text-amber-950'
+                      : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
+                  }`}
+                >
+                  <MapIcon size={13} aria-hidden="true" />
+                  {mapPod === 'curated' ? '명소' : '지도'}
+                </button>
+              ) : null}
             </div>
+            {openPods.curated ? (
+            <div id="korea-scenic-curated-body" className="space-y-4">
             {curatedSpots.length > 0 ? (
               <p className="text-sm leading-relaxed text-stone-600 break-keep">
                 {DISCLAIMER}
@@ -3256,14 +3333,29 @@ export default function KoreaThemeScenicPage() {
                         : '이 권역에는 아직 선정 명소가 없습니다.'}
               </p>
             ) : null}
+            </div>
+            ) : null}
           </section>
 
           <section aria-labelledby="korea-scenic-heritage-heading" className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="flex items-center gap-2 text-stone-800">
+              <button
+                type="button"
+                onClick={() => togglePodOpen('heritage')}
+                aria-expanded={openPods.heritage}
+                aria-controls="korea-scenic-heritage-body"
+                className="flex min-w-0 flex-1 items-center gap-2 text-left text-stone-800"
+              >
+                <ChevronDown
+                  size={18}
+                  className={`shrink-0 text-stone-500 transition-transform ${
+                    openPods.heritage ? '' : '-rotate-90'
+                  }`}
+                  aria-hidden="true"
+                />
                 <Mountain
                   size={18}
-                  className="text-emerald-800"
+                  className="shrink-0 text-emerald-800"
                   aria-hidden="true"
                 />
                 <h2
@@ -3272,14 +3364,35 @@ export default function KoreaThemeScenicPage() {
                 >
                   국가유산 명승
                 </h2>
-              </div>
-              <p className="text-xs font-semibold text-stone-500 tabular-nums">
-                {heritageSpots.length.toLocaleString('ko-KR')}곳
-                {heritageSpots.length !== HERITAGE_TOTAL
-                  ? ` · 전국 ${HERITAGE_TOTAL.toLocaleString('ko-KR')}`
-                  : ''}
-              </p>
+                <span className="text-xs font-semibold text-stone-500 tabular-nums">
+                  {heritageSpots.length.toLocaleString('ko-KR')}곳
+                  {heritageSpots.length !== HERITAGE_TOTAL
+                    ? ` · 전국 ${HERITAGE_TOTAL.toLocaleString('ko-KR')}`
+                    : ''}
+                </span>
+              </button>
+              {openPods.heritage ? (
+                <button
+                  type="button"
+                  onClick={() => togglePodMap('heritage')}
+                  aria-label={
+                    mapPod === 'heritage' ? '명승 목록으로' : '명승 지도로'
+                  }
+                  title={mapPod === 'heritage' ? '명승' : '지도'}
+                  aria-pressed={mapPod === 'heritage'}
+                  className={`shrink-0 inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-bold ${
+                    mapPod === 'heritage'
+                      ? 'border-amber-400/90 bg-amber-50 text-amber-950'
+                      : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
+                  }`}
+                >
+                  <MapIcon size={13} aria-hidden="true" />
+                  {mapPod === 'heritage' ? '명승' : '지도'}
+                </button>
+              ) : null}
             </div>
+            {openPods.heritage ? (
+            <div id="korea-scenic-heritage-body" className="space-y-4">
             <p className="text-xs text-stone-500 break-keep">{HERITAGE_DISCLAIMER}</p>
 
             {showHeritageFilterChips ? (
@@ -3417,14 +3530,29 @@ export default function KoreaThemeScenicPage() {
                 ))}
               </ul>
             )}
+            </div>
+            ) : null}
           </section>
 
           <section aria-labelledby="korea-scenic-db-heading" className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="flex items-center gap-2 text-stone-800">
+              <button
+                type="button"
+                onClick={() => togglePodOpen('tour')}
+                aria-expanded={openPods.tour}
+                aria-controls="korea-scenic-tour-body"
+                className="flex min-w-0 flex-1 items-center gap-2 text-left text-stone-800"
+              >
+                <ChevronDown
+                  size={18}
+                  className={`shrink-0 text-stone-500 transition-transform ${
+                    openPods.tour ? '' : '-rotate-90'
+                  }`}
+                  aria-hidden="true"
+                />
                 <MapPin
                   size={18}
-                  className="text-sky-800"
+                  className="shrink-0 text-sky-800"
                   aria-hidden="true"
                 />
                 <h2
@@ -3433,23 +3561,44 @@ export default function KoreaThemeScenicPage() {
                 >
                   {catalogHeadingLabel}
                 </h2>
-              </div>
-              {nearActive
-                ? dbStatus !== 'loading' && (
-                    <p className="text-xs font-semibold text-stone-500 tabular-nums">
-                      {dbCount.toLocaleString('ko-KR')}곳 · 가까운 순
-                    </p>
-                  )
-                : scopeCount > 0 || dbStatus === 'ok' || dbCount > 0 ? (
-                    <p className="text-xs font-semibold text-stone-500 tabular-nums">
-                      {(scopeCount > 0 ? scopeCount : dbCount).toLocaleString(
-                        'ko-KR',
-                      )}
-                      곳
-                      {totalPages > 1 ? ` · ${page}/${totalPages}` : ''}
-                    </p>
-                  ) : null}
+                {nearActive
+                  ? dbStatus !== 'loading' && (
+                      <span className="text-xs font-semibold text-stone-500 tabular-nums">
+                        {dbCount.toLocaleString('ko-KR')}곳 · 가까운 순
+                      </span>
+                    )
+                  : scopeCount > 0 || dbStatus === 'ok' || dbCount > 0 ? (
+                      <span className="text-xs font-semibold text-stone-500 tabular-nums">
+                        {(scopeCount > 0 ? scopeCount : dbCount).toLocaleString(
+                          'ko-KR',
+                        )}
+                        곳
+                        {totalPages > 1 ? ` · ${page}/${totalPages}` : ''}
+                      </span>
+                    ) : null}
+              </button>
+              {openPods.tour ? (
+                <button
+                  type="button"
+                  onClick={() => togglePodMap('tour')}
+                  aria-label={
+                    mapPod === 'tour' ? '관광지 목록으로' : '관광지 지도로'
+                  }
+                  title={mapPod === 'tour' ? '관광지' : '지도'}
+                  aria-pressed={mapPod === 'tour'}
+                  className={`shrink-0 inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-bold ${
+                    mapPod === 'tour'
+                      ? 'border-amber-400/90 bg-amber-50 text-amber-950'
+                      : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
+                  }`}
+                >
+                  <MapIcon size={13} aria-hidden="true" />
+                  {mapPod === 'tour' ? '관광지' : '지도'}
+                </button>
+              ) : null}
             </div>
+            {openPods.tour ? (
+            <div id="korea-scenic-tour-body" className="space-y-4">
             <p className="text-xs text-stone-500 break-keep">
               한국관광공사 선정 관광지입니다.
             </p>
@@ -3692,6 +3841,8 @@ export default function KoreaThemeScenicPage() {
                 </button>
               </div>
             ) : null}
+            </div>
+            ) : null}
           </section>
             </>
           )}
@@ -3728,8 +3879,8 @@ export default function KoreaThemeScenicPage() {
             items={mapItems}
             activeSpotId={selectedId ? String(selectedId) : ''}
             focusView={mapFocusView}
-            historyKey={`${mapSessionKey}:${personalTab || ''}:${searchFilter}:${hubId || ''}:${curatedRegion}:${heritageRegion}:${cat1}`}
-            layoutKey="immersive"
+            historyKey={`${mapSessionKey}:${mapPod}:${personalTab || ''}:${searchFilter}:${hubId || ''}:${curatedRegion}:${heritageRegion}:${cat1}:${page}`}
+            layoutKey={`immersive:${mapPod}`}
             onSelectPoint={(spotId) => openSpot(spotId)}
           />
         </div>

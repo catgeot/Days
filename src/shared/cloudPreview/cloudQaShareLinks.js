@@ -9,7 +9,7 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'scenic-map',
-    label: '명승 홈 지도',
+    label: '명승 홈 접이·파드별 지도',
     branch: 'cursor/scenic-map-a086',
     destination:
       'https://days-git-cursor-scenic-map-a086-catgeots-projects.vercel.app/korea/theme/scenic',
