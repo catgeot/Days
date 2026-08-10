@@ -4,11 +4,11 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: false,
+  active: true,
   title: '테마여행',
-  sessionNo: 121,
-  sessionPhase: '지도 드릴다운 main',
-  branch: 'main',
+  sessionNo: 123,
+  sessionPhase: '경로 바 톤 맞춤',
+  branch: 'cursor/scenic-map-a086',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-map',
 };
@@ -23,6 +23,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-10-scenic-map-123',
+    session: '테마여행 #123, 경로 바 톤 맞춤',
+    title: '경로 바 — 지도 톤에 맞춤',
+    detail:
+      '상단 경로 바를 지도 글래스·칩 분위기에 맞게 완화했습니다. 「상위」는 연한 호박 글로우, 경로는 텍스트+현재만 살짝 강조로 시인성은 유지합니다. Preview에서 균형이 맞는지 봐 주세요.',
+    at: '2026-08-10',
+  },
+  {
+    id: '2026-08-10-scenic-map-122',
+    session: '테마여행 #122, 경로 바 시인성',
+    title: '지도 상위·경로 바 시인성',
+    detail:
+      '드릴다운 상단 「상위」·경로 바 대비를 올렸습니다(불투명 배경·호박 테두리·큰 「상위」버튼·경로 칩). Preview에서 권역→중→소로 들어간 뒤 상위/경로가 잘 보이는지 확인해 주세요.',
+    at: '2026-08-10',
+  },
   {
     id: '2026-08-10-scenic-map-121-main',
     session: '테마여행 #121, 지도 드릴다운 main',

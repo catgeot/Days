@@ -10,8 +10,9 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'scenic-map',
     label: '명승 홈 지도 드릴다운',
-    branch: 'main',
-    destination: 'https://www.gateo.kr/korea/theme/scenic',
+    branch: 'cursor/scenic-map-a086',
+    destination:
+      'https://days-git-cursor-scenic-map-a086-catgeots-projects.vercel.app/korea/theme/scenic',
     active: true,
   },
   {

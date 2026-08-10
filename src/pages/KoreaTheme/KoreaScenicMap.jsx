@@ -511,22 +511,22 @@ export default function KoreaScenicMap({
         ))}
       </Map>
       {crumbs.length > 0 ? (
-        <div className="pointer-events-none absolute left-3 right-3 top-3 z-10 flex flex-col gap-1.5">
-          <div className="pointer-events-auto flex flex-wrap items-center gap-1 rounded-2xl border border-white/25 bg-[#1b1410]/72 px-2 py-1.5 shadow-lg backdrop-blur-md">
+        <div className="pointer-events-none absolute left-3 right-3 top-3 z-20 flex flex-col gap-1.5">
+          <div className="pointer-events-auto flex flex-wrap items-center gap-1.5 rounded-2xl border border-white/35 bg-[#1b1410]/88 px-2.5 py-1.5 shadow-[0_6px_20px_rgba(0,0,0,0.4)] backdrop-blur-md">
             {canDrillUp ? (
               <button
                 type="button"
                 onClick={onDrillUp}
                 aria-label="상위 분류로"
-                className="inline-flex h-7 shrink-0 items-center gap-0.5 rounded-full border border-white/30 bg-white/10 px-2 text-[11px] font-bold text-white hover:bg-white/20"
+                className="inline-flex h-8 shrink-0 items-center gap-0.5 rounded-full border border-amber-400/55 bg-amber-500/20 px-2.5 text-[11px] font-bold text-amber-100 hover:border-amber-300/80 hover:bg-amber-500/30"
               >
-                <ChevronLeft size={14} aria-hidden="true" />
+                <ChevronLeft size={15} strokeWidth={2.5} aria-hidden="true" />
                 상위
               </button>
             ) : null}
             <nav
               aria-label="지도 분류 경로"
-              className="flex min-w-0 flex-1 flex-wrap items-center gap-x-1 gap-y-0.5 text-[11px] text-white/85"
+              className="flex min-w-0 flex-1 flex-wrap items-center gap-x-1 gap-y-0.5 text-[11px]"
             >
               {crumbs.map((crumb, idx) => {
                 const last = idx === crumbs.length - 1;
@@ -541,8 +541,8 @@ export default function KoreaScenicMap({
                       <span
                         className={
                           last
-                            ? 'font-bold text-amber-200'
-                            : 'font-semibold text-white/80'
+                            ? 'max-w-[9rem] truncate rounded-full bg-amber-500/25 px-2 py-0.5 font-bold text-amber-100'
+                            : 'max-w-[8rem] truncate font-semibold text-white/80'
                         }
                       >
                         {crumb.label}
@@ -551,7 +551,7 @@ export default function KoreaScenicMap({
                       <button
                         type="button"
                         onClick={() => onDrillCrumb(idx)}
-                        className="font-semibold text-white/80 underline-offset-2 hover:text-amber-100 hover:underline"
+                        className="max-w-[8rem] truncate rounded-full px-1.5 py-0.5 font-semibold text-white/90 underline decoration-white/35 underline-offset-2 hover:bg-white/10 hover:text-amber-100 hover:decoration-amber-200/70"
                       >
                         {crumb.label}
                       </button>
@@ -562,7 +562,7 @@ export default function KoreaScenicMap({
             </nav>
           </div>
           {drillLevelLabel || chips.length > 0 ? (
-            <p className="pointer-events-none max-w-[20rem] rounded-xl bg-[#1b1410]/55 px-2.5 py-1 text-[10px] font-medium text-white/75 backdrop-blur-sm break-keep">
+            <p className="pointer-events-none max-w-[20rem] rounded-xl bg-[#1b1410]/60 px-2.5 py-1 text-[10px] font-medium text-white/70 backdrop-blur-sm break-keep">
               {chips.length > 0
                 ? `${drillLevelLabel || '분류'} 칩을 눌러 좁히세요 · 분포를 보고 여행지를 고릅니다`
                 : '핀을 눌러 명소를 확인하세요'}
@@ -577,11 +577,11 @@ export default function KoreaScenicMap({
           aria-label={fullscreen ? '지도 분할 보기로' : '지도 전체 화면'}
           aria-pressed={fullscreen}
           title={fullscreen ? '분할 보기' : '전체 화면'}
-          className={`absolute right-3 z-10 flex h-10 items-center gap-1.5 rounded-full border border-white/40 bg-[#1b1410]/70 px-3 text-[11px] font-bold text-white shadow-lg backdrop-blur-md hover:bg-[#1b1410]/85 ${
+          className={`absolute right-3 z-20 flex h-10 items-center gap-1.5 rounded-full border border-white/40 bg-[#1b1410]/75 px-3 text-[11px] font-bold text-white shadow-lg backdrop-blur-md hover:bg-[#1b1410]/88 ${
             fullscreen
               ? 'top-[max(5.25rem,calc(env(safe-area-inset-top)+4.75rem))]'
               : crumbs.length > 0
-                ? 'top-[4.75rem]'
+                ? 'top-[4.85rem]'
                 : 'top-3'
           }`}
         >
