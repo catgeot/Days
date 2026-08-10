@@ -4,7 +4,7 @@
 
 ## 테마여행 #129, 상태바 세권
 
-**상태**: PR [#94](https://github.com/catgeot/Days/pull/94) **MERGED** · `origin/main` `4034dd0a` · `/qa/scenic-map`→PROD
+**상태**: PR [#94](https://github.com/catgeot/Days/pull/94) **MERGED** · `origin/main` `98e6b46e` · `/qa/scenic-map`→PROD
 
 - **한 일**: 지도 상태바 **세권(4권역) 크럼 누락** 수정 · 강원 「강원」중복 제거 · **main 병합** · `/qa/scenic-map`→PROD (#128 칩 분포도 main에 포함)
 - **VERIFY**: `npm run smoke:korea-scenic-map` · `npm run build` PASS
