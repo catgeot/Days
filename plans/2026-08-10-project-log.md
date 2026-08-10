@@ -4,7 +4,7 @@
 
 ## 테마여행 #128, 지도 칩 분포
 
-**상태**: feature `cursor/scenic-chip-spread-8d91` · `/qa/scenic-map`
+**상태**: feature `cursor/scenic-chip-spread-8d91` · [PR #93](https://github.com/catgeot/Days/pull/93) · tip `8de543e1` · `/qa/scenic-map`
 
 - **한 일**: 명승홈 지도에서 hub 등 소량 핀이 2·3·5·7 숫자로 뭉치던 문제 — **≤20곳은 클러스터 끔** · 반경/maxZoom 완화 · 근접 드릴 칩 fan-out · 좁은 스팬 과줌인 완화
 - **VERIFY**: `npm run smoke:korea-scenic-map` · `npm run build` PASS
