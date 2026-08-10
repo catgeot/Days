@@ -4,14 +4,14 @@
 
 ## 테마여행 #127, 리스트 크게
 
-**상태**: feature `cursor/scenic-list-large-a55c` · `/qa/scenic-list`
+**상태**: feature `cursor/scenic-list-large-a55c` · PR [#91](https://github.com/catgeot/Days/pull/91) · tip `65f0601b` · `/qa/scenic-list`
 
 - **한 일**: 명승홈 리스트 「크게」토글을 축제홈처럼 **지도 버튼 왼쪽**에 배치 · 행·썸네일 확대
-- **VERIFY**: `npm run build`
+- **VERIFY**: `npm run build` PASS
 - **공유**: `https://www.gateo.kr/qa/scenic-list`
 - **Preview**: `https://days-git-cursor-scenic-list-large-a55c-catgeots-projects.vercel.app/korea/theme/scenic`
 - **작업 로그**: 「명승 홈 리스트 「크게」·지도 옆」
-- **남은 일**: 사람 Preview QA
+- **남은 일**: 사람 Preview QA · main 병합
 - **다음 채팅명**:
 
 ```
