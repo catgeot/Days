@@ -11966,6 +11966,20 @@
         "lat": 38.1306356264,
         "lng": 127.9828067282,
         "mapboxId": null
+      },
+      {
+        "name": "양구 수목원",
+        "name_en": "Yanggu Arboretum",
+        "kind": "park",
+        "lat": 38.189998,
+        "lng": 128.073998
+      },
+      {
+        "name": "양구백자박물관",
+        "name_en": "Yanggu Porcelain Museum",
+        "kind": "museum",
+        "lat": 38.2072701825,
+        "lng": 127.9514018354
       }
     ]
   },

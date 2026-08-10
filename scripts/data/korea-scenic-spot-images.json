@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-10T12:51:49.879Z",
-    "count": 777,
+    "updatedAt": "2026-08-10T22:33:32.913Z",
+    "count": 778,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -782,6 +782,7 @@
     "yongdam-lake": "https://tong.visitkorea.or.kr/cms/resource/86/2656786_image2_1.jpg",
     "jinan-eunsusa": "https://tong.visitkorea.or.kr/cms/resource/30/3520730_image2_1.jpg",
     "unilam-banilam": "https://tong.visitkorea.or.kr/cms/resource/64/3555164_image2_1.jpg",
-    "jinyangho-zoo": "https://tong.visitkorea.or.kr/cms/resource/25/3065525_image2_1.jpg"
+    "jinyangho-zoo": "https://tong.visitkorea.or.kr/cms/resource/25/3065525_image2_1.jpg",
+    "yanggu-porcelain-museum": "https://tong.visitkorea.or.kr/cms/resource_photo/89/3513089_image2_1.jpg"
   }
 }

@@ -8911,5 +8911,27 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       attractionName: '진안 은수사',
       contentId: '128973',
     },
+    {
+      order: 8700,
+      id: 'yanggu-arboretum',
+      name: '양구 수목원',
+      blurb: '양구 수목원 — 공립 수목원·생태 산책',
+      region: '강원',
+      hubId: 'yanggu',
+      attractionName: '양구 수목원',
+      contentId: null,
+      overview:
+        '강원 양구 동면의 공립 수목원(옛 양구자연생태공원). 생태식물원·DMZ 야생화 분재원 일대를 산책하는 명소로, 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+    },
+    {
+      order: 8710,
+      id: 'yanggu-porcelain-museum',
+      name: '양구백자박물관',
+      blurb: '양구백자박물관 — 방산 백자·공방',
+      region: '강원',
+      hubId: 'yanggu',
+      attractionName: '양구백자박물관',
+      contentId: '731454',
+    },
   ],
 };
