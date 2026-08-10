@@ -4,7 +4,7 @@
 
 ## 테마여행 #136, 소량 hub 보강
 
-**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · tip `dc2092b6` · Preview QA 대기  
+**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · tip `c17af102` · Preview QA 대기  
 **세션**: `테마여행 #136, 소량 hub 보강`
 
 - **한 일**: curated **1** hub 소량 보강 — 보령·단양·군산·구례 `cityAttractionHubs` **기존 attractions 미등재만** GATEO 선정 **15곳** append(839→854) · 보령 hub 중복명 「무창포해수욕장」(신비의바닷길) 스킵 · attractions 억지 추가 없음 · contentId DB 3곳(온달관광지·경암동철길마을·구례수목원 · 잔여 null 6 · keyword 429)
