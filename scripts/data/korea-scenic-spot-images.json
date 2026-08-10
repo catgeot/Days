@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-10T11:30:15.388Z",
-    "count": 761,
+    "updatedAt": "2026-08-10T12:14:44.717Z",
+    "count": 769,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -766,6 +766,14 @@
     "cheongju-central-park": "https://tong.visitkorea.or.kr/cms/resource/60/3060160_image2_1.jpg",
     "naejangsa": "https://tong.visitkorea.or.kr/cms/resource/35/3550735_image2_1.jpg",
     "jeongeupsa-park": "https://tong.visitkorea.or.kr/cms/resource/43/3045443_image2_1.jpg",
-    "seongnam-central-park": "https://tong.visitkorea.or.kr/cms/resource/47/3037647_image2_1.jpg"
+    "seongnam-central-park": "https://tong.visitkorea.or.kr/cms/resource/47/3037647_image2_1.jpg",
+    "gaehwa-art-park": "https://tong.visitkorea.or.kr/cms/resource/92/3560492_image2_1.jpg",
+    "boryeong-coal-museum": "https://tong.visitkorea.or.kr/cms/resource/57/3560557_image2_1.jpg",
+    "muchangpo-beach": "https://tong.visitkorea.or.kr/cms/resource/13/3513913_image2_1.jpg",
+    "gunsan-modern-history-museum": "https://tong.visitkorea.or.kr/cms/resource/13/3304813_image2_1.jpg",
+    "eunpa-lake-park": "https://tong.visitkorea.or.kr/cms/resource/83/4087583_image2_1.jpg",
+    "jinpo-maritime-theme-park": "https://tong.visitkorea.or.kr/cms/resource/53/2649953_image2_1.jpg",
+    "ondal-tourist-site": "https://tong.visitkorea.or.kr/cms/resource/17/3537517_image2_1.jpg",
+    "gyeongam-dong-railroad-village": "https://tong.visitkorea.or.kr/cms/resource/50/3080250_image2_1.JPG"
   }
 }

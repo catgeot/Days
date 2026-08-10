@@ -6,7 +6,7 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 135,
+  sessionNo: 136,
   sessionPhase: '소량 hub 보강',
   branch: 'cursor/scenic-thin-hubs-beea',
   previewPath: '/korea/theme/scenic',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-10-scenic-thin-hubs-136',
+    session: '테마여행 #136, 소량 hub 보강',
+    title: '보령·단양·군산·구례 미등재 명소 draft',
+    detail:
+      'curated 1 hub 4곳의 기존 cityAttractionHubs attractions 미등재분만 GATEO 선정 15곳을 append했습니다(839→854 · 보령 1→4 · 단양·군산·구례 각 1→5). 보령 hub 중복명 「무창포해수욕장」(신비의바닷길)은 동일 한글명 중복이라 스킵. attractions 억지 추가는 없습니다. Preview에서 `/korea/theme/scenic?hub=boryeong` · `danyang` · `gunsan` · `gurye` 목록·지도를 확인해 주세요.',
+    at: '2026-08-10',
+  },
   {
     id: '2026-08-10-scenic-thin-hubs-135',
     session: '테마여행 #135, 소량 hub 보강',
