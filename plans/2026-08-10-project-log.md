@@ -4,7 +4,7 @@
 
 ## 테마여행 #123, 경로 바 톤 맞춤
 
-**상태**: feature `cursor/scenic-map-a086` · PR [#86](https://github.com/catgeot/Days/pull/86) · Preview QA 대기
+**상태**: feature `cursor/scenic-map-a086` · PR [#86](https://github.com/catgeot/Days/pull/86) · tip `b6db7b39` · Preview QA 대기
 
 - **한 일**: 경로 바를 지도 글래스·칩 톤에 맞춤 — 과장된 호박 면/흰 칩 제거 · 「상위」는 연한 호박 글로우 · 현재 단계만 은은히 강조 · 시인성 유지
 - **VERIFY**: `npm run build`
@@ -17,6 +17,7 @@
 ```
 테마여행 #124, (다음 과제)
 ```
+
 
 ## 테마여행 #122, 경로 바 시인성
 
