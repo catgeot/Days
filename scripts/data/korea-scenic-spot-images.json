@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-10T10:40:37.527Z",
-    "count": 719,
+    "updatedAt": "2026-08-10T11:04:00.561Z",
+    "count": 738,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -724,6 +724,25 @@
     "maengbang-beach": "https://tong.visitkorea.or.kr/cms/resource/95/2921595_image2_1.jpg",
     "haesindang-park": "https://tong.visitkorea.or.kr/cms/resource/87/3376587_image2_1.jpg",
     "ojukheon": "https://tong.visitkorea.or.kr/cms/resource/38/3527138_image2_1.jpg",
-    "jumunjin-port": "https://tong.visitkorea.or.kr/cms/resource/68/2921868_image2_1.jpg"
+    "jumunjin-port": "https://tong.visitkorea.or.kr/cms/resource/68/2921868_image2_1.jpg",
+    "bogyeongsa": "https://tong.visitkorea.or.kr/cms/resource/30/3573030_image2_1.jpg",
+    "samhakdo": "https://tong.visitkorea.or.kr/cms/resource/15/3521515_image2_1.jpg",
+    "peace-plaza-mokpo": "https://tong.visitkorea.or.kr/cms/resource/04/3548304_image2_1.jpg",
+    "mokpo-gatbawi": "https://tong.visitkorea.or.kr/cms/resource/24/3521524_image2_1.jpg",
+    "nari-basin": "https://tong.visitkorea.or.kr/cms/resource/34/3524434_image2_1.jpg",
+    "naesujeon-sunrise-observatory": "https://tong.visitkorea.or.kr/cms/resource/37/3575337_image2_1.jpg",
+    "bongrae-falls": "https://tong.visitkorea.or.kr/cms/resource/10/3575410_image2_1.jpg",
+    "ulleung-dokdo-museum": "https://tong.visitkorea.or.kr/cms/resource/16/2653416_image2_1.jpg",
+    "petite-france": "https://tong.visitkorea.or.kr/cms/resource/15/3423715_image2_1.jpg",
+    "cheongpyeong-lake": "https://tong.visitkorea.or.kr/cms/resource/89/3019089_image2_1.jpg",
+    "space-walk": "https://tong.visitkorea.or.kr/cms/resource/63/4078963_image2_1.jpg",
+    "yeongildae-beach": "https://tong.visitkorea.or.kr/cms/resource/79/4078979_image2_1.jpg",
+    "jukdo-market": "https://tong.visitkorea.or.kr/cms/resource/86/2678386_image2_1.jpg",
+    "yeonin-mountain": "https://tong.visitkorea.or.kr/cms/resource/74/1591274_image2_1.jpg",
+    "mokpo-modern-history-museum": "https://tong.visitkorea.or.kr/cms/resource/03/4067003_image2_1.JPG",
+    "jarasum": "https://tong.visitkorea.or.kr/cms/resource/69/3512869_image2_1.jpg",
+    "homyeong-lake": "https://tong.visitkorea.or.kr/cms/resource/25/3520225_image2_1.jpg",
+    "mokpo-marine-cable-car": "https://tong.visitkorea.or.kr/cms/resource/20/3554020_image2_1.jpg",
+    "haengnam-coastal-walk": "https://tong.visitkorea.or.kr/cms/resource/11/3575511_image2_1.jpg"
   }
 }

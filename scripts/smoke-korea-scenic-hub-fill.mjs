@@ -568,6 +568,10 @@ const thinHubMin = {
   donghae: 8,
   samcheok: 10,
   gangneung: 6,
+  pohang: 6,
+  mokpo: 7,
+  ulleung: 7,
+  gapyeong: 7,
 };
 const thinHubExactAttr = {
   // 빈 hub(#87·#89) 졸업 — attractions 전수 유지, #131 재보강 회귀 방지
