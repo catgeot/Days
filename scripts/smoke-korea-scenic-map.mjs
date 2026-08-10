@@ -139,6 +139,52 @@ while (!leaf.showSpotPins && leaf.chips.length && guard < 6) {
 assert.equal(leaf.showSpotPins, true, 'hub까지 드릴 후 핀');
 assert.ok(leaf.scopeSpots.length >= 1);
 assert.equal(leaf.chips.length, 0);
+assert.ok(
+  leaf.crumbs.some((c) => String(c.id).startsWith('cluster:')) ||
+    !cursor.cluster,
+  '세권 선택 후 상태바에 세권(4권역) 크럼',
+);
+
+const gwChip = root.chips.find((c) => c.region === '강원');
+assert.ok(gwChip, '강원 대분류');
+let gwCursor = drillDownScenicMap(EMPTY_SCENIC_MAP_DRILL, gwChip);
+let gwLeaf = buildCuratedMapDrill(catalog, gwCursor);
+assert.ok(gwLeaf.chips.every((c) => c.kind === 'cluster'), '강원→세권 직행');
+assert.deepEqual(
+  gwLeaf.crumbs.map((c) => c.label),
+  ['전체', '강원'],
+);
+const gwCluster = gwLeaf.chips[0];
+gwCursor = drillDownScenicMap(gwCursor, gwCluster);
+gwLeaf = buildCuratedMapDrill(catalog, gwCursor);
+assert.ok(gwLeaf.chips.every((c) => c.kind === 'hub'));
+assert.ok(
+  gwLeaf.crumbs.some((c) => c.id === `cluster:${gwCluster.cluster}`),
+  '강원 세권 크럼',
+);
+assert.equal(
+  gwLeaf.crumbs.filter((c) => c.label === '강원').length,
+  1,
+  '강원 단일 시도는 상태바에 강원 중복 없음',
+);
+gwCursor = drillDownScenicMap(gwCursor, gwLeaf.chips[0]);
+gwLeaf = buildCuratedMapDrill(catalog, gwCursor);
+assert.equal(gwLeaf.showSpotPins, true);
+assert.ok(
+  gwLeaf.crumbs.some((c) => c.id === `cluster:${gwCluster.cluster}`),
+  'hub·핀 단계에서도 세권 크럼 유지',
+);
+assert.equal(
+  gwLeaf.crumbs.filter((c) => c.label === '강원').length,
+  1,
+  '핀 단계 강원 중복 없음',
+);
+const gwUp = drillUpScenicMap(gwCursor);
+assert.equal(gwUp.hub, null);
+assert.equal(gwUp.cluster, gwCluster.cluster);
+const gwUp2 = drillUpScenicMap(gwUp);
+assert.equal(gwUp2.cluster, null);
+assert.equal(gwUp2.area, null, '강원 세권 상위는 권역(area 클리어)');
 
 const upFromLeaf = drillUpScenicMap(cursor);
 assert.equal(upFromLeaf.hub, null);

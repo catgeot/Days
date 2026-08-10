@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 128,
-  sessionPhase: '지도 칩 분포',
+  sessionNo: 129,
+  sessionPhase: '상태바 세권',
   branch: 'cursor/scenic-chip-spread-8d91',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-map',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-10-scenic-map-crumb-129',
+    session: '테마여행 #129, 상태바 세권',
+    title: '지도 상태바 — 세권(4권역) 크럼',
+    detail:
+      '강원 등 세권 드릴 후 hub·핀 단계에서 상태바에 영서/영동 등 세권(4권역)이 빠지던 문제를 고쳤습니다. 단일 시도 권역의 「강원」중복도 제거했습니다. Preview에서 명소 지도 → 강원 → 세권 → 여행지 → 핀까지 경로 바를 확인해 주세요.',
+    at: '2026-08-10',
+  },
   {
     id: '2026-08-10-scenic-chip-spread-128',
     session: '테마여행 #128, 지도 칩 분포',

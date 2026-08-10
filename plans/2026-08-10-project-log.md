@@ -2,6 +2,22 @@
 
 직전: [`2026-08-09-project-log.md`](./2026-08-09-project-log.md)
 
+## 테마여행 #129, 상태바 세권
+
+**상태**: feature `cursor/scenic-chip-spread-8d91` · [PR #93](https://github.com/catgeot/Days/pull/93) · `/qa/scenic-map`
+
+- **한 일**: 지도 상태바에서 **세권(4권역) 크럼 누락** 수정 — hub·핀 단계에도 영서/북부 등 유지 · 강원 단일 시도 「강원」중복 제거 · 세권 상위 drillUp 시 area 클리어
+- **VERIFY**: `npm run smoke:korea-scenic-map` · `npm run build` PASS
+- **공유**: `https://www.gateo.kr/qa/scenic-map`
+- **Preview**: `https://days-git-cursor-scenic-chip-spread-8d91-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: 「지도 상태바 — 세권(4권역) 크럼」
+- **남은 일**: 사람 Preview QA · main 병합
+- **다음 채팅명**:
+
+```
+테마여행 #130, (다음 과제)
+```
+
 ## 테마여행 #128, 지도 칩 분포
 
 **상태**: feature `cursor/scenic-chip-spread-8d91` · [PR #93](https://github.com/catgeot/Days/pull/93) · tip `3be763b8` · `/qa/scenic-map`
