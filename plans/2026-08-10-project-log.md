@@ -4,14 +4,14 @@
 
 ## 브랜드 SEO #2, 축제·명승 허브
 
-**상태**: feature `cursor/korea-seo-hub-8220` · PR [#92](https://github.com/catgeot/Days/pull/92) · tip `58386c5e` · Preview QA 대기
+**상태**: PR [#92](https://github.com/catgeot/Days/pull/92) **MERGED** · `origin/main` `f8726f7b` · `/qa/korea-seo`→PROD
 
-- **한 일**: 홈 크롤러에 축제/명승 링크 · Helmet 타이틀 구분(축제·랜딩·명승) · `robots` Allow `/korea` · sitemap `www`+korea lastmod/priority · `generate-sitemap.cjs` korea 허브 동기화 · `/qa/korea-seo`
+- **한 일**: 홈 크롤러에 축제/명승 링크 · Helmet 타이틀 구분(축제·랜딩·명승) · `robots` Allow `/korea` · sitemap `www`+korea lastmod/priority · `generate-sitemap.cjs` korea 허브 동기화 · **main 병합** · `/qa/korea-seo`→PROD
 - **VERIFY**: `npm run build` PASS
 - **공유**: `https://www.gateo.kr/qa/korea-seo`
-- **Preview**: `https://days-git-cursor-korea-seo-hub-8220-catgeots-projects.vercel.app/korea`
-- **작업 로그**: 「축제·명승 SEO 허브 보강」
-- **남은 일**: 사람 Preview QA · main 병합 후 Search Console 사이트맵 재제출(권장)
+- **PROD**: `https://www.gateo.kr/korea` · `https://www.gateo.kr/korea/theme/scenic`
+- **작업 로그**: 「축제·명승 SEO 허브 main 병합」
+- **남은 일**: (권장) Search Console 사이트맵 재제출 · 재크롤 대기
 - **다음 채팅명**:
 
 ```

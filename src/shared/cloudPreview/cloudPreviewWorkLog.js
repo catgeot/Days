@@ -7,8 +7,8 @@ export const cloudPreviewProject = {
   active: true,
   title: '브랜드 SEO',
   sessionNo: 2,
-  sessionPhase: '축제·명승 허브',
-  branch: 'cursor/korea-seo-hub-8220',
+  sessionPhase: '축제·명승 main',
+  branch: 'main',
   previewPath: '/korea',
   qaShareSlug: 'korea-seo',
 };
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-10-brand-seo-2-main',
+    session: '브랜드 SEO #2, 축제·명승 main',
+    title: '축제·명승 SEO 허브 main 병합',
+    detail:
+      'PR #92를 main에 반영했습니다. `/qa/korea-seo`는 PROD 축제 경로로 연결됩니다. www.gateo.kr/korea · /korea/theme/scenic 탭 제목과 홈 소스의 축제·명승 링크를 확인해 주세요. Search Console 사이트맵 재제출을 권장합니다.',
+    at: '2026-08-10',
+  },
   {
     id: '2026-08-10-brand-seo-2',
     session: '브랜드 SEO #2, 축제·명승 허브',

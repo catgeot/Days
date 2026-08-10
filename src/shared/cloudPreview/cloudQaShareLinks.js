@@ -10,9 +10,8 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'korea-seo',
     label: '축제·명승 SEO 허브',
-    branch: 'cursor/korea-seo-hub-8220',
-    destination:
-      'https://days-git-cursor-korea-seo-hub-8220-catgeots-projects.vercel.app/korea',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/korea',
     active: true,
   },
   {
