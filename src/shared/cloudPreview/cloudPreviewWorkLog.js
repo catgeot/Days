@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '브랜드 SEO',
-  sessionNo: 2,
-  sessionPhase: '축제·명승 main',
-  branch: 'main',
-  previewPath: '/korea',
-  qaShareSlug: 'korea-seo',
+  title: '테마여행',
+  sessionNo: 128,
+  sessionPhase: '지도 칩 분포',
+  branch: 'cursor/scenic-chip-spread-8d91',
+  previewPath: '/korea/theme/scenic',
+  qaShareSlug: 'scenic-map',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-10-scenic-chip-spread-128',
+    session: '테마여행 #128, 지도 칩 분포',
+    title: '명승 지도 — 숫자 뭉치↓ · 윤곽 핀',
+    detail:
+      'hub·경관 리프(≤20곳)는 클러스터(숫자)를 끄고 개별 핀·라벨로 분포를 보여 줍니다. 넓은 뷰 클러스터도 반경·maxZoom을 완화했고, 근접 드릴 칩은 살짝 펼치며 좁은 스팬 과줌인을 줄였습니다. Preview에서 명소 지도 → hub까지 드릴 → 2~7곳이 숫자로 안 뭉치고 흩어지는지 확인해 주세요.',
+    at: '2026-08-10',
+  },
   {
     id: '2026-08-10-brand-seo-2-main',
     session: '브랜드 SEO #2, 축제·명승 main',

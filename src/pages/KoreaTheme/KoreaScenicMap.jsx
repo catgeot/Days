@@ -13,13 +13,20 @@ import {
   buildScenicMapGeoJson,
   focusViewFromScenicItems,
   KOREA_SCENIC_MAP_OVERVIEW,
+  SCENIC_MAP_CLUSTER_MAX_ZOOM,
+  SCENIC_MAP_CLUSTER_MIN_POINTS,
+  SCENIC_MAP_CLUSTER_RADIUS,
 } from './koreaScenicMapData';
+import { spreadNearbyMapChips } from './koreaScenicMapDrill';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 export {
   buildScenicMapGeoJson,
   focusViewFromScenicItems,
   KOREA_SCENIC_MAP_OVERVIEW,
+  SCENIC_MAP_CLUSTER_MAX_ZOOM,
+  SCENIC_MAP_CLUSTER_MIN_POINTS,
+  SCENIC_MAP_CLUSTER_RADIUS,
 };
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
@@ -259,7 +266,16 @@ export default function KoreaScenicMap({
   const pinItems = showSpotPins ? items : [];
   const geojson = useMemo(() => buildScenicMapGeoJson(pinItems), [pinItems]);
   const pointCount = geojson.features.length;
-  const chips = Array.isArray(drillChips) ? drillChips : [];
+  const useClusters = pointCount >= SCENIC_MAP_CLUSTER_MIN_POINTS;
+  const interactiveLayerIds = useMemo(() => {
+    if (!showSpotPins) return [];
+    if (!useClusters) return [POINT_LAYER, POINT_LABEL_LAYER];
+    return INTERACTIVE_LAYERS;
+  }, [showSpotPins, useClusters]);
+  const chips = useMemo(
+    () => spreadNearbyMapChips(Array.isArray(drillChips) ? drillChips : []),
+    [drillChips],
+  );
   const crumbs = Array.isArray(drillCrumbs) ? drillCrumbs : [];
   const canDrillUp = crumbs.length > 1;
   const focusKey = focusView
@@ -418,7 +434,7 @@ export default function KoreaScenicMap({
         touchZoomRotate
         doubleClickZoom
         keyboard
-        interactiveLayerIds={showSpotPins ? INTERACTIVE_LAYERS : []}
+        interactiveLayerIds={interactiveLayerIds}
         onLoad={handleMapLoad}
         onClick={showSpotPins ? handleClick : undefined}
         onMouseEnter={showSpotPins ? handleMouseEnter : undefined}
@@ -431,27 +447,31 @@ export default function KoreaScenicMap({
             id={SOURCE_ID}
             type="geojson"
             data={geojson}
-            cluster
-            clusterMaxZoom={13}
-            clusterRadius={52}
+            cluster={useClusters}
+            clusterMaxZoom={SCENIC_MAP_CLUSTER_MAX_ZOOM}
+            clusterRadius={SCENIC_MAP_CLUSTER_RADIUS}
           >
-            <Layer
-              id={CLUSTER_LAYER}
-              type="circle"
-              filter={['has', 'point_count']}
-              paint={clusterPaint}
-            />
-            <Layer
-              id={CLUSTER_COUNT_LAYER}
-              type="symbol"
-              filter={['has', 'point_count']}
-              layout={{
-                'text-field': ['get', 'point_count_abbreviated'],
-                'text-size': 12,
-                'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-              }}
-              paint={{ 'text-color': '#1b1410' }}
-            />
+            {useClusters ? (
+              <Layer
+                id={CLUSTER_LAYER}
+                type="circle"
+                filter={['has', 'point_count']}
+                paint={clusterPaint}
+              />
+            ) : null}
+            {useClusters ? (
+              <Layer
+                id={CLUSTER_COUNT_LAYER}
+                type="symbol"
+                filter={['has', 'point_count']}
+                layout={{
+                  'text-field': ['get', 'point_count_abbreviated'],
+                  'text-size': 12,
+                  'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+                }}
+                paint={{ 'text-color': '#1b1410' }}
+              />
+            ) : null}
             <Layer
               id={POINT_LAYER}
               type="circle"

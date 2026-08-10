@@ -7,6 +7,9 @@ const {
   buildScenicMapGeoJson,
   focusViewFromScenicItems,
   KOREA_SCENIC_MAP_OVERVIEW,
+  SCENIC_MAP_CLUSTER_MAX_ZOOM,
+  SCENIC_MAP_CLUSTER_MIN_POINTS,
+  SCENIC_MAP_CLUSTER_RADIUS,
 } = await import('../src/pages/KoreaTheme/koreaScenicMapData.js');
 
 const {
@@ -20,6 +23,7 @@ const {
   EMPTY_HERITAGE_MAP_DRILL,
   EMPTY_SCENIC_MAP_DRILL,
   focusViewForMapDrill,
+  spreadNearbyMapChips,
 } = await import('../src/pages/KoreaTheme/koreaScenicMapDrill.js');
 
 const {
@@ -72,7 +76,14 @@ assert.ok(many);
 assert.ok(Number.isFinite(many.west));
 assert.ok(many.west < many.east);
 assert.ok(many.south < many.north);
-assert.equal(many.maxZoom, 11.5);
+assert.ok(many.maxZoom <= 11.5);
+
+const tightA = { id: 'a', name: 'a', lat: 37.5, lng: 127.0 };
+const tightB = { id: 'b', name: 'b', lat: 37.505, lng: 127.01 };
+const tight = focusViewFromScenicItems([tightA, tightB]);
+assert.ok(tight);
+assert.ok(tight.maxZoom <= 10.8, '좁은 스팬은 과도 줌인 완화');
+assert.ok(tight.east - tight.west >= 0.08);
 
 assert.equal(focusViewFromScenicItems([]), null);
 assert.equal(focusViewFromScenicItems([noCoord]), null);
@@ -217,5 +228,24 @@ assert.equal(drillUpTourMap(tCursor).cat3, null);
 
 const fan = fanOutMapAnchor({ lng: 127, lat: 37 }, 0, 4, 0.2);
 assert.ok(Number.isFinite(fan.lng) && Number.isFinite(fan.lat));
+
+assert.ok(SCENIC_MAP_CLUSTER_MIN_POINTS > 10);
+assert.ok(SCENIC_MAP_CLUSTER_RADIUS < 52);
+assert.ok(SCENIC_MAP_CLUSTER_MAX_ZOOM <= 10);
+
+const piled = [
+  { id: 'p1', label: 'A', count: 3, lng: 127.0, lat: 37.5 },
+  { id: 'p2', label: 'B', count: 5, lng: 127.01, lat: 37.502 },
+  { id: 'p3', label: 'C', count: 2, lng: 127.005, lat: 37.498 },
+];
+const spread = spreadNearbyMapChips(piled);
+assert.equal(spread.length, 3);
+const dist = (a, b) =>
+  Math.hypot(a.lng - b.lng, a.lat - b.lat);
+assert.ok(
+  dist(spread[0], spread[1]) > dist(piled[0], piled[1]),
+  '근접 칩은 펼쳐져야 함',
+);
+assert.ok(dist(spread[0], spread[2]) > 0.04);
 
 console.log('smoke-korea-scenic-map: PASS');
