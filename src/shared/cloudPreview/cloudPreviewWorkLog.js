@@ -26,9 +26,9 @@ export const cloudPreviewWorkLog = [
   {
     id: '2026-08-10-scenic-thin-hubs-131',
     session: '테마여행 #131, 소량 hub 보강',
-    title: '강릉·원주·횡성·화천 소량 hub 명소 보강',
+    title: '소량 hub 범위 교정 · 강릉 미등재 2곳만',
     detail:
-      '강원 소량 hub 4곳에 cityAttractionHubs 명소 추가 + GATEO 선정 20곳을 append했습니다(강릉 4→11 · 원주 4→9 · 횡성 4→8 · 화천 4→8). Preview에서 `/korea/theme/scenic?hub=gangneung` · `wonju` · `hoengseong` · `hwacheon` 목록·지도를 확인해 주세요.',
+      '소량 hub는 빈 hub 큐에서 제외된(이미 선정 있는) hub만입니다. 빈 hub 보강 졸업지(원주·횡성·화천) 재팽창과 명소 억지 추가는 되돌렸고, 강릉은 기존 attractions 미등재 오죽헌·주문진항만 넣었습니다. Preview에서 `/korea/theme/scenic?hub=gangneung` 을 확인해 주세요.',
     at: '2026-08-10',
   },
   {

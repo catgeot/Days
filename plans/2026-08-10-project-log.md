@@ -7,12 +7,13 @@
 **상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#95](https://github.com/catgeot/Days/pull/95) · Preview QA 대기  
 **세션**: `테마여행 #131, 소량 hub 보강`
 
-- **한 일**: 강원 **소량 hub** 보강 — 강릉·원주·횡성·화천 `cityAttractionHubs` 명소 추가 + GATEO 선정 **20곳** append(752→772) · contentId DB 4곳 채움(keyword 429 잔여) · `/qa/scenic-hub-fill` 동일 Preview
+- **한 일**: **교정** — 소량 hub = 빈 hub 큐 **제외**(이미 curated>0)만. 빈 hub 졸업지(원주·횡성·화천 #87·#89) 재팽창·명소 억지 추가 **되돌림**. 강릉은 기존 hub attractions 미등재 **오죽헌·주문진항**만 append(752→754)
+- **규칙**: 빈 hub 보강 대상 재작업 금지 · attractions를 무리하게 늘리지 않음(품질)
 - **VERIFY**: `audit:city-attraction-hubs` · `audit`/`smoke:korea-scenic-spots` · `smoke:korea-scenic-hub-fill` · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/scenic-hub-fill`
-- **Preview**: `https://days-git-cursor-scenic-thin-hubs-beea-catgeots-projects.vercel.app/korea/theme/scenic?hub=gangneung` · `?hub=wonju` · `?hub=hoengseong` · `?hub=hwacheon`
-- **작업 로그**: 「강릉·원주·횡성·화천 소량 hub 명소 보강」
-- **남은 일**: 사람 Preview QA · 타 소량 hub(철원·태백·정선 등) · Tour 미등재·429 contentId
+- **Preview**: `https://days-git-cursor-scenic-thin-hubs-beea-catgeots-projects.vercel.app/korea/theme/scenic?hub=gangneung`
+- **작업 로그**: 「소량 hub 범위 교정 · 강릉 미등재 2곳만」
+- **남은 일**: 사람 Preview QA · 다음 소량 = curated 1–3(빈 큐 제외분) · 기존 attractions 미등재만 draft
 - **다음 채팅명**:
 
 ```
