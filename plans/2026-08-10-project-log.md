@@ -4,7 +4,7 @@
 
 ## 테마여행 #135, 소량 hub 보강
 
-**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · tip `f79022e7` · Preview QA 대기  
+**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · tip `6c1c0bf7` · Preview QA 대기  
 **세션**: `테마여행 #135, 소량 hub 보강`
 
 - **한 일**: curated **1** hub 소량 보강 — 청주·광주·정읍·성남 `cityAttractionHubs` **기존 attractions 미등재만** GATEO 선정 **20곳** append(819→839) · attractions 억지 추가 없음 · contentId DB 4곳(잔여 null 12 · keyword 429)
@@ -22,7 +22,7 @@
 
 ## 테마여행 #134, 소량 hub 보강
 
-**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · tip `f79022e7` · Preview QA 대기  
+**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · tip `4b94f30a` · Preview QA 대기  
 **세션**: `테마여행 #134, 소량 hub 보강`
 
 - **한 일**: curated **1** hub 소량 보강 — 보성·부안·남원·하동 `cityAttractionHubs` **기존 attractions 미등재만** GATEO 선정 **20곳** append(799→819) · attractions 억지 추가 없음 · contentId DB/AREA 6곳(잔여 null 14 · keyword 429)
@@ -40,7 +40,7 @@
 
 ## 테마여행 #133, 소량 hub 보강
 
-**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · tip `f79022e7` · Preview QA 대기  
+**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · tip `17c7cc66` · Preview QA 대기  
 **세션**: `테마여행 #133, 소량 hub 보강`
 
 - **한 일**: curated **1** hub 소량 보강 — 공주·합천·태안·부여 `cityAttractionHubs` **기존 attractions 미등재만** GATEO 선정 **22곳** append(777→799) · attractions 억지 추가 없음 · contentId DB 2곳(황매산·낙화암 · 잔여 null 10 · keyword 429)
@@ -58,7 +58,7 @@
 
 ## 테마여행 #132, 소량 hub 보강
 
-**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · tip `f79022e7` · Preview QA 대기  
+**상태**: feature `cursor/scenic-thin-hubs-beea` · PR [#96](https://github.com/catgeot/Days/pull/96) · tip `e79aea3d` · Preview QA 대기  
 **세션**: `테마여행 #132, 소량 hub 보강`
 
 - **한 일**: curated **1** hub 소량 보강 — 포항·목포·울릉·가평 `cityAttractionHubs` **기존 attractions 미등재만** GATEO 선정 **23곳** append(754→777) · attractions 억지 추가 없음 · contentId DB/수동 일부(잔여 null 4 · keyword 429)
@@ -159,7 +159,7 @@
 
 ## 테마여행 #127, 리스트 크게
 
-**상태**: feature `cursor/scenic-list-large-a55c` · PR [#91](https://github.com/catgeot/Days/pull/91) · tip `f79022e7` · `/qa/scenic-list`
+**상태**: feature `cursor/scenic-list-large-a55c` · PR [#91](https://github.com/catgeot/Days/pull/91) · tip `65f0601b` · `/qa/scenic-list`
 
 - **한 일**: 명승홈 리스트 「크게」토글을 축제홈처럼 **지도 버튼 왼쪽**에 배치 · 행·썸네일 확대
 - **VERIFY**: `npm run build` PASS
