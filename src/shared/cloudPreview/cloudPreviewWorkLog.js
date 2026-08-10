@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '테마여행',
-  sessionNo: 127,
-  sessionPhase: '리스트 크게',
-  branch: 'cursor/scenic-list-large-a55c',
-  previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'scenic-list',
+  title: '브랜드 SEO',
+  sessionNo: 2,
+  sessionPhase: '축제·명승 허브',
+  branch: 'cursor/korea-seo-hub-8220',
+  previewPath: '/korea',
+  qaShareSlug: 'korea-seo',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-10-brand-seo-2',
+    session: '브랜드 SEO #2, 축제·명승 허브',
+    title: '축제·명승 SEO 허브 보강',
+    detail:
+      '홈 크롤러 본문·nav에 한국의 축제/명승 링크를 넣고, Helmet 타이틀을 축제·랜딩·명승으로 구분했으며 sitemap(www)·robots Allow /korea를 맞췄습니다. Preview에서 / · /korea · /korea/theme · /korea/theme/scenic 탭 제목과 소스의 축제·명승 링크를 확인해 주세요.',
+    at: '2026-08-10',
+  },
   {
     id: '2026-08-10-scenic-list-127',
     session: '테마여행 #127, 리스트 크게',

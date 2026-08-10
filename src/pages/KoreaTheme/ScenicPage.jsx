@@ -3164,7 +3164,7 @@ export default function KoreaThemeScenicPage() {
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
       <SEO
         title="한국의 명승"
-        description="국가유산청 지정 명승과 GATEO 선정 명소. 권역별로 상세를 모달로 봅니다."
+        description="GATEO 명승 허브. 국가유산 지정 명승·선정 명소·관광지를 권역별로 보고, 주변 맛집·숙소·투어로 이어갑니다."
         url={RETURN_TO}
       />
       <style>{`

@@ -35,8 +35,8 @@ export default function KoreaThemeLanding() {
   return (
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
       <SEO
-        title="한국의 명승"
-        description="한국의 축제와 명승 투톱. 명승에서 주변 관광지·맛집·숙소·투어로 이어갑니다."
+        title="한국 축제·명승"
+        description="GATEO 한국 투톱 안내. 한국의 축제와 명승 허브로 이어지며, 명승에서 주변 관광지·맛집·숙소·투어를 탐색합니다."
         url="/korea/theme"
       />
 

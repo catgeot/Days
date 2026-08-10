@@ -1,13 +1,18 @@
 {
   "redirects": [
     {
+      "source": "/qa/korea-seo",
+      "destination": "https://days-git-cursor-korea-seo-hub-8220-catgeots-projects.vercel.app/korea",
+      "permanent": false
+    },
+    {
       "source": "/qa/scenic-list",
       "destination": "https://days-git-cursor-scenic-list-large-a55c-catgeots-projects.vercel.app/korea/theme/scenic",
       "permanent": false
     },
     {
       "source": "/qa/brand",
-      "destination": "https://days-git-cursor-gateo-brand-seo-8220-catgeots-projects.vercel.app/",
+      "destination": "https://www.gateo.kr/",
       "permanent": false
     },
     {

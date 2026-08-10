@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'korea-seo',
+    label: '축제·명승 SEO 허브',
+    branch: 'cursor/korea-seo-hub-8220',
+    destination:
+      'https://days-git-cursor-korea-seo-hub-8220-catgeots-projects.vercel.app/korea',
+    active: true,
+  },
+  {
     slug: 'scenic-list',
     label: '명승 홈 리스트 크게',
     branch: 'cursor/scenic-list-large-a55c',
@@ -18,9 +26,8 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'brand',
     label: '브랜드 SEO Days→GATEO',
-    branch: 'cursor/gateo-brand-seo-8220',
-    destination:
-      'https://days-git-cursor-gateo-brand-seo-8220-catgeots-projects.vercel.app/',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/',
     active: true,
   },
   {
