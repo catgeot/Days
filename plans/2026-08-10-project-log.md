@@ -4,7 +4,7 @@
 
 ## 테마여행 #139, 양구백자박물관 등록
 
-**상태**: feature `cursor/yanggu-arboretum-7807` · PR [#97](https://github.com/catgeot/Days/pull/97) · Preview QA 대기  
+**상태**: feature `cursor/yanggu-arboretum-7807` · PR [#97](https://github.com/catgeot/Days/pull/97) · tip `d4458e75` · Preview QA 대기  
 **세션**: `테마여행 #139, 양구백자박물관 등록`
 
 - **한 일**: **양구백자박물관** hub attractions + GATEO scenic **+1**(870→871) · contentId `731454` · detailImage 썸네일 · Tour LIVE 있음·`tourapi_attraction` DB sync 누락
