@@ -580,6 +580,10 @@ const thinHubMin = {
   buan: 6,
   namwon: 6,
   hadong: 6,
+  cheongju: 6,
+  gwangju: 6,
+  jeongeup: 6,
+  seongnam: 6,
 };
 const thinHubExactAttr = {
   // 빈 hub(#87·#89) 졸업 — attractions 전수 유지, #131 재보강 회귀 방지

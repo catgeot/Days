@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "updatedAt": "2026-08-10T11:24:08.745Z",
-    "count": 753,
+    "updatedAt": "2026-08-10T11:30:15.388Z",
+    "count": 761,
     "source": "tourapi_attraction.first_image + tourapi-proxy detailCommon"
   },
   "byId": {
@@ -758,6 +758,14 @@
     "naesosa": "https://tong.visitkorea.or.kr/cms/resource/09/3519909_image2_1.jpg",
     "byeonsanbando-national-park": "https://tong.visitkorea.or.kr/cms/resource/48/3351048_image2_1.jpeg",
     "namwon-manin-cemetery": "https://tong.visitkorea.or.kr/cms/resource/81/3557381_image2_1.jpg",
-    "botjae-pass": "https://tong.visitkorea.or.kr/cms/resource/74/3511574_image2_1.jpg"
+    "botjae-pass": "https://tong.visitkorea.or.kr/cms/resource/74/3511574_image2_1.jpg",
+    "munam-ecological-park": "https://tong.visitkorea.or.kr/cms/resource/37/3503837_image2_1.jpg",
+    "suamgol": "https://tong.visitkorea.or.kr/cms/resource/31/3504331_image2_1.jpg",
+    "chungjang-ro": "https://tong.visitkorea.or.kr/cms/resource/99/3351399_image2_1.jpg",
+    "asia-culture-center": "https://tong.visitkorea.or.kr/cms/resource/59/3083359_image2_1.jpg",
+    "cheongju-central-park": "https://tong.visitkorea.or.kr/cms/resource/60/3060160_image2_1.jpg",
+    "naejangsa": "https://tong.visitkorea.or.kr/cms/resource/35/3550735_image2_1.jpg",
+    "jeongeupsa-park": "https://tong.visitkorea.or.kr/cms/resource/43/3045443_image2_1.jpg",
+    "seongnam-central-park": "https://tong.visitkorea.or.kr/cms/resource/47/3037647_image2_1.jpg"
   }
 }
