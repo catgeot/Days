@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Sparkles, Maximize2, Cuboid, Plane, Loader2, ChevronRight, ScanSearch, ScanEye } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { X, Sparkles, Maximize2, Cuboid, Plane, Loader2, ChevronRight, ScanSearch, ScanEye, LayoutList } from 'lucide-react';
 import BookmarkButton from '../common/BookmarkButton';
 import { getPlaceTitleLines } from '../common/locationDisplay';
 import { canStartGlobeTour } from '../../../pages/Home/lib/globeTourEngine';
@@ -23,6 +24,7 @@ const PlaceCardSummary = ({
   onImmerseZoomStep,
   isImmersed = false,
   canToggleImmerse = true,
+  plannerUrl = null,
   onPreviewFlightRoute,
   canPreviewFlightRoute = false,
   isFlightRouteReady = false,
@@ -121,8 +123,11 @@ const PlaceCardSummary = ({
     setOriginExpanded(initialOriginExpanded);
   }, [location?.id, location?.slug, initialOriginExpanded]);
 
+  const showPlannerLink = Boolean(plannerUrl) && !isScanning && !isImmersed;
+  const showImmerseControls = !isScanning && canToggleImmerse && (!plannerUrl || isImmersed);
+
   const actionButtonCount =
-    (!isScanning && canToggleImmerse ? 1 : 0) +
+    (showPlannerLink || showImmerseControls ? 1 : 0) +
     (canPreviewFlightRoute ? 1 : 0) +
     (canStartTour ? 1 : 0) +
     (stayToggle ? 1 : 0);
@@ -423,7 +428,21 @@ const PlaceCardSummary = ({
                   </button>
                 )}
 
-                {!isScanning && canToggleImmerse && (
+                {showPlannerLink ? (
+                  <Link
+                    to={plannerUrl}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    className="relative z-10 flex min-h-[40px] min-w-0 items-center justify-center gap-1.5 rounded-xl border border-cyan-300/50 bg-cyan-500/20 px-2 py-2 transition-all duration-300 hover:border-cyan-200/60 hover:bg-cyan-500/28 lg:min-h-[36px]"
+                    title="여행 플래너 열기"
+                  >
+                    <LayoutList size={16} className="shrink-0 text-cyan-200" aria-hidden="true" />
+                    <span className="min-w-0 truncate text-xs font-bold text-cyan-50">플래너 보기</span>
+                  </Link>
+                ) : null}
+
+                {showImmerseControls && (
                   isImmersed ? (
                     isMobileCoarse ? (
                       <button
