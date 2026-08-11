@@ -10,12 +10,13 @@ const SEO = ({
   // JSON-LD 구조화 데이터를 위한 추가 props
   location = null
 }) => {
-  const siteName = "Days - 세상의 모든 여행지";
-  const defaultDescription = "전 세계 200여 개의 아름다운 여행지를 3D 지구본으로 탐험하고, 여행 스케치와 여행 팁을 확인하세요.";
-  const defaultImage = "https://gateo.kr/og-image.png";
-  const siteUrl = "https://gateo.kr";
+  const siteName = 'GATEO';
+  const defaultTitle = 'GATEO | AI 도슨트와 함께하는 3D 세계 여행';
+  const defaultDescription = '당신의 여행을 계획하고 기록하는 가장 스마트한 방법, AI 도슨트와 함께하는 3D 세계 여행 GATEO(게이트제로)';
+  const defaultImage = 'https://www.gateo.kr/og-image.png';
+  const siteUrl = 'https://www.gateo.kr';
 
-  const seoTitle = title ? `${title} | ${siteName}` : siteName;
+  const seoTitle = title ? `${title} | ${siteName}` : defaultTitle;
   const seoDescription = description || defaultDescription;
   const seoUrl = url ? `${siteUrl}${url}` : siteUrl;
   const seoImage = image || defaultImage;
@@ -125,6 +126,7 @@ const SEO = ({
       <meta property="og:title" content={seoTitle} />
       <meta property="og:description" content={seoDescription} />
       <meta property="og:image" content={seoImage} />
+      <meta property="og:site_name" content={siteName} />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />

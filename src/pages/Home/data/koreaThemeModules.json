@@ -1,0 +1,64 @@
+{
+  "meta": {
+    "version": 1,
+    "generatedAt": "2026-08-05T17:52:41.529Z",
+    "moduleCount": 6,
+    "source": "scripts/data/korea-theme-modules-overrides.mjs"
+  },
+  "modules": [
+    {
+      "id": "festivals",
+      "label": "한국의 축제",
+      "blurb": "시즌·지역·테마로 찾는 축제 현장",
+      "order": 10,
+      "enabled": true,
+      "path": "/korea",
+      "icon": "calendar"
+    },
+    {
+      "id": "scenic",
+      "label": "한국의 명승",
+      "blurb": "관광지·맛집·숙소·투어로 이어가는 명승",
+      "order": 20,
+      "enabled": true,
+      "path": "/korea/theme/scenic",
+      "icon": "landmark"
+    },
+    {
+      "id": "courses",
+      "label": "여행코스",
+      "blurb": "상세에서 이어가는 추천 코스",
+      "order": 90,
+      "enabled": false,
+      "path": "/korea/theme/courses",
+      "icon": "route"
+    },
+    {
+      "id": "top10",
+      "label": "한국의 10대 절경",
+      "blurb": "GATEO가 고른 대표 절경 열 곳",
+      "order": 91,
+      "enabled": false,
+      "path": "/korea/theme/top10",
+      "icon": "mountain"
+    },
+    {
+      "id": "regions",
+      "label": "방방곡곡",
+      "blurb": "시도·도시 허브로 이어가는 국내 여행",
+      "order": 92,
+      "enabled": false,
+      "path": "/korea/theme/regions",
+      "icon": "map"
+    },
+    {
+      "id": "packages",
+      "label": "패키지 상품",
+      "blurb": "상세에서 매칭되는 MRT 패키지",
+      "order": 93,
+      "enabled": false,
+      "path": "/korea/theme/packages",
+      "icon": "package"
+    }
+  ]
+}

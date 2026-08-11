@@ -530,7 +530,7 @@ const PlannerTab = ({
                 <div className="mt-8 mb-4 flex items-start gap-2 bg-blue-50/50 p-4 rounded-xl border border-blue-100 shrink-0">
                     <AlertCircle size={16} className="text-blue-500 shrink-0 mt-0.5" />
                     <p className={`${plannerCaption} md:text-sm text-gray-600`}>
-                        <strong className="font-bold text-gray-700">하이브리드 정보 안내:</strong> 본 툴킷은 객관적인 공공 정보(비자, 치안 등)와 함께, 원활한 여행 준비를 돕기 위한 파트너사 제휴 링크(숙박, 유심 등)가 일부 포함되어 있습니다. 제휴 링크를 통한 서비스 이용 시 사이트 운영에 큰 도움이 됩니다. AI에 의해 자동 생성된 팁이므로 시기에 따라 일부 정보가 다를 수 있습니다.
+                        <strong className="font-bold text-gray-700">하이브리드 정보 안내:</strong> 본 툴킷은 객관적인 공공 정보(비자, 치안 등)와 함께, 원활한 여행 준비를 돕기 위한 파트너사 제휴광고 연결(숙박, 유심 등)이 일부 포함되어 있습니다. 제휴광고를 통한 서비스 이용 시 사이트 운영에 큰 도움이 됩니다. AI에 의해 자동 생성된 팁이므로 시기에 따라 일부 정보가 다를 수 있습니다.
                     </p>
                 </div>
 

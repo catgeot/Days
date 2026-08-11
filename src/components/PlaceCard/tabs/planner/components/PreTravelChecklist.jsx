@@ -114,7 +114,7 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
                                 </span>
                                 <span className="flex-1 text-left">
                                     <span className="font-bold text-sm text-gray-800 block">호텔 예약 (Trip.com)</span>
-                                    <span className="text-xs text-gray-600">이 여행지는 트립닷컴 제휴 링크로 연결됩니다</span>
+                                    <span className="text-xs text-gray-600">이 여행지는 트립닷컴 제휴광고로 연결됩니다</span>
                                 </span>
                             </span>
                         </a>

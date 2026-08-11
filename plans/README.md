@@ -3,21 +3,24 @@
 ## 지금 쓰는 것
 
 - **프로젝트 컨텍스트(매 세션 권장)**: 루트의 [`.ai-context.md`](../.ai-context.md)
-- **Cloud 이어하기 · Preview 연속성**: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) · [`AGENTS.md`](../AGENTS.md) Cloud (세션 표기·고정 Preview·작업 로그)
+- **Cloud 이어하기 · Preview 연속성**: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) · [`AGENTS.md`](../AGENTS.md) Cloud (세션 표기·**채팅명 제시어 §1.1**·고정 Preview·작업 로그)
 - **오케스트레이터 (다배치 SSOT)**: [`orchestrator-method.md`](./orchestrator-method.md) · 제시어 `오케스트레이터`
 - **명소 hub 사전 큐**: [`city-attraction-hub-queue.md`](./city-attraction-hub-queue.md) (R48–R61 **소진** · tip 550 hub)
+- **GATEO 선정 명소 권역 보강 큐 ✅ 소진 (main #108)**: [`korea-scenic-hub-fill-queue.md`](./korea-scenic-hub-fill-queue.md) · 잔여 TODO = Tour contentId(~75) · `fill:korea-scenic-spot-content-ids`
 - **여행지·도착 공항 운영**: [`travel-spots-management.md`](./travel-spots-management.md) (추가·헬스체크·공항 매핑)
 - **항공 경로 DB (우선)**: [`flight-route-database-plan.md`](./flight-route-database-plan.md) · **Heuristic SSOT (다음)**: [`flight-route-heuristic-ssot-plan.md`](./flight-route-heuristic-ssot-plan.md) · **비-ICN 라우팅**: [`flight-route-non-icn-routing-plan.md`](./flight-route-non-icn-routing-plan.md) (OurAirports·Supabase · **Phase 0~4 v2.2 ✅** · **Heuristic+GATN seed ⏳**)
 - **사이트 점검·헬스 모니터링**: [`site-health-monitoring-plan.md`](./site-health-monitoring-plan.md) (스모크·E2E·Billing 알림·구현 Phase 0~3)
 - **TourAPI 국내 관광 (3단계 ⏳ · 시드40·v1.7 · UI/릴리스 합의)**: [`tourapi-edge-proxy-plan.md`](./tourapi-edge-proxy-plan.md) · 제시어 `TourAPI-이어하기` · 일지 핸드오프
 - **국내 축제·지역 허브 `/korea` (리스트 우선 · tip `d32894e`)** : [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) · 일지 `2026-07-29`
+- **한국의 명승 · 축제 투톱 ✅ main** (`/korea` + `/korea/theme/scenic` · PR [#58](https://github.com/catgeot/Days/pull/58) MERGED): [`korea-theme-travel-plan.md`](./korea-theme-travel-plan.md) · 일지 `2026-08-07` #63 · 다음 폴리시·릴리스
+- **명소 세권(중분류) 칩 방안**: [`korea-scenic-mid-cluster-plan.md`](./korea-scenic-mid-cluster-plan.md) · **경기=동서남북 4세권 합의** · 타 시도·UI 대기 · 일지 `2026-08-09` #111
 - **국내 MRT 읍·면 감사·city=리 군선두 ✅**: [`mrt-stay-admin-gap-audit-plan.md`](./mrt-stay-admin-gap-audit-plan.md) §5.1–§5.2 · `npm run audit:mrt-stay-admin-gaps` · RISK **0** · keyword 군 선두
 - **동명 리/읍/면/동·bare 화이트리스트 검색 다후보 ✅**: [`ko-homonym-ri-search-disambiguation-plan.md`](./ko-homonym-ri-search-disambiguation-plan.md) · [`ko-homonym-search-expand-plan.md`](./ko-homonym-search-expand-plan.md) · PR [#37](https://github.com/catgeot/Days/pull/37) MERGED · `smoke:ko-homonym-ri-search`
 - **국내 명소 tip 좌표 TourAPI 보정 (다음 세션)**: [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) · 제시어 `TourAPI-명소좌표-이어하기`
 - **국내 MRT TNA 인근 (Phase 4 ✅ · C표 32)**: [`mrt-tna-nearby-expand-plan.md`](./mrt-tna-nearby-expand-plan.md) · 일지 `2026-07-30`
 - **블로그 AI 큐레이션 인페이지 허브 (Phase B+C tip · Preview QA)**: [`blog-ai-curation-page-plan.md`](./blog-ai-curation-page-plan.md) · 제시어 `큐레이션-이어하기` · 일지 `2026-07-31`
 - **일별 작업 로그**: `YYYY-MM-DD-project-log.md`  
-  - 최신: [`2026-08-02-project-log.md`](./2026-08-02-project-log.md) · 직전 [`2026-08-01-project-log.md`](./2026-08-01-project-log.md)  
+  - 최신: [`2026-08-11-project-log.md`](./2026-08-11-project-log.md) · 직전 [`2026-08-10-project-log.md`](./2026-08-10-project-log.md)  
 
 
   - **홈 지구본 풍부화 계획**: [`2026-06-02-globe-enrichment-plan.md`](./2026-06-02-globe-enrichment-plan.md)

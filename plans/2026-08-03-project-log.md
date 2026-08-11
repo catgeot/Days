@@ -1,0 +1,286 @@
+# 2026-08-03 프로젝트 일지
+
+직전: [`2026-08-02-project-log.md`](./2026-08-02-project-log.md)
+
+## 테마여행 #10, SEO·QA링크
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `932af69e` · Preview QA 대기
+
+- **한 일**: vite·`public/sitemap.xml`에 `/korea/theme`+하위 4 · 홈 SEO 히든 링크 · Helmet 유지 · `/qa/korea-theme`·vercel redirect 최종 · 작업로그 #10 · `previewPath=/korea/theme`
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme`
+- **QA**: 우측 작업 로그·공유 링크 · `/korea/theme`·top10·scenic·regions·packages title · sitemap 항목
+- **다음**: S9 폴리시·릴리스
+
+```
+테마여행 #11, 폴리시·릴리스
+```
+
+- **금지 3**: releaseNotes 파일 수정 · UI 리디자인 · 세션마다 새 Preview 브랜치
+
+## 테마여행 #9, 축제 연결
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `f025536e` · Preview QA 대기
+
+- **한 일**: 테마 타일·헤더「축제」→ `/korea?from=theme` · 축제 헤더「← 테마여행으로」한 줄 → `/korea/theme` · 칩/지도/필터 미변경 · 홈「국내」단독 회귀
+- **VERIFY**: `audit:korea-theme-modules` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme` → 축제 → 복귀
+- **QA**: 테마→축제 타일/헤더→복귀 한 줄→테마 · `/korea` 직접 진입 시 한 줄 없음
+- **다음**: S8 SEO·QA링크
+
+```
+테마여행 #10, SEO·QA링크
+```
+
+- **금지 3**: 축제 칩/지도/필터 로직 변경 · releaseNotes · 세션마다 새 Preview 브랜치
+
+## 테마여행 #8, 패키지
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `8e4ec525` · Preview QA 대기
+
+- **한 일**: `/korea/theme/packages` · MRT CTA P0 제주·P1 홈·P2 경주(LIVE 200) · `koreaJeju`/`koreaHome`/`koreaGyeongju` · 새 탭 · 가짜 카드 없음
+- **VERIFY**: `npm run smoke:mrt-package` · `npm run build` · LIVE `q=제주`/`q=경주`/`/pkc`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/packages`
+- **QA**: 테마→패키지 상품→제주/홈/경주 CTA→새 탭 MRT·mylink
+- **다음**: S7 축제 연결
+
+```
+테마여행 #9, 축제 연결
+```
+
+- **금지 3**: 가짜 상품 카드 · `q=부산` 국내 목적지 오표기 · 축제 `/korea` 칩/지도 로직 변경
+
+## 테마여행 #7, 방방곡곡
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `e50ac4e3` · Preview QA 대기
+
+- **한 일**: `/korea/theme/regions` · 시도 칩 → **hub 명소 리스트**(서울=경복궁 등) → place · hub 요약 행 제거 · `smoke:korea-theme-regions` 명소 resolve
+- **VERIFY**: `npm run smoke:korea-area-codes` · `npm run smoke:korea-theme-regions` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/regions`
+- **QA**: 테마→방방곡곡→서울 칩→경복궁 등 목록→항목→place→뒤로
+- **다음**: S6 패키지
+
+```
+테마여행 #8, 패키지
+```
+
+- **금지 3**: 축제 `/korea` 지도·칩 로직 수정 · hub JSON 직접 대량 편집 · `q=부산` 국내 목적지 오표기(패키지 세션)
+
+## 테마여행 #6, 뒤로복귀
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `e71df1aa` · Preview QA 대기
+
+- **한 일**: PlaceChatPanel·`leavePlaceCard` → `navigate(returnTo)` · `isKoreaPlaceReturnPath`로 `prevPath` undefined TypeError 가드
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/top10`
+- **QA**: top10·scenic → 항목 → place → 뒤로 → 해당 목록
+- **다음**: S5 방방곡곡
+
+```
+테마여행 #7, 방방곡곡
+```
+
+- **금지 3**: 축제 `/korea` 로직 수정 · 절경 전용 상세 신설 · UI 리디자인
+
+## 테마여행 #5, 명승지
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `23f04f08` · Preview QA 대기
+
+- **한 일**: curated 20 · overrides→`koreaScenicSpots.json` · `/korea/theme/scenic` · 권역 필터 · place 복귀 path
+- **VERIFY**: `npm run audit:korea-scenic-spots` · `npm run smoke:korea-scenic-spots` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/scenic`
+- **QA**: 테마→명승지→권역 칩→항목→place · 「GATEO 선정」고지
+- **다음**: PlaceCard `navigate(returnTo)` 뒤로복귀 핫픽스 → `#6`에서 처리
+
+- **금지 3**: 축제 `/korea` 로직 수정 · TourAPI 라이브 대량 목록 · 절경 전용 상세 신설
+
+## 테마여행 #4, 10대 절경
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `f4235f96` · Preview QA 대기
+
+- **한 일**: §3.3 GATEO 10 확정 · overrides→`koreaTop10Scenic.json` · `/korea/theme/top10` · place 복귀 · 「GATEO 선정」고지
+- **VERIFY**: `npm run audit:korea-top10-scenic` · `npm run smoke:korea-top10-scenic` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme/top10`
+- **QA**: 테마→10대 절경→항목→place→뒤로 목록 · 공식기관 사칭 문구 없음
+- **사람 결정 (2026-08-03)**: PlaceCard 뒤로→절경 목록 복귀 버그 있음 · **전용 상세 페이지는 만들지 않음** · **S4 명승 진행 후** `navigate(returnTo)` 핫픽스
+- **다음**: S4 명승지 → (이어서) 뒤로복귀 핫픽스
+
+```
+테마여행 #5, 명승지
+```
+
+- **금지 3**: 축제 `/korea` 로직 수정 · 공식 10대 사칭 · 세션 중 10곳 교체 · 절경 전용 상세 신설
+
+## 테마여행 #3, 모듈 SSOT
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `5e192245` · Preview QA 대기
+
+- **한 일**: modules overrides→json→`audit:korea-theme-modules` · 랜딩 타일 5 · 축제→`/korea` · top10/scenic/regions/packages 빈 페이지
+- **VERIFY**: `npm run audit:korea-theme-modules` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme`
+- **QA**: `/korea/theme` 타일 5·order · 축제→`/korea` · 나머지 빈 페이지·테마로 복귀
+- **다음**: S3 10대 절경
+
+```
+테마여행 #4, 10대 절경
+```
+
+- **금지 3**: 축제 `/korea` 로직 수정 · top10 본문 대량 · UI 리디자인
+
+## 테마여행 #2, 셸 라우트
+
+**상태**: feature `cursor/korea-theme` · PR [#58](https://github.com/catgeot/Days/pull/58) · SHA `23f04f08` · Preview QA 대기
+
+- **한 일**: `/korea/theme` 셸 · 홈 진입 「한국의 테마 여행」 · `placeReturnTo` · `/qa/korea-theme`+vercel · 작업로그
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-theme`
+- **Preview**: `https://days-git-cursor-korea-theme-catgeots-projects.vercel.app/korea/theme`
+- **QA**: 홈→「한국의 테마 여행」→`/korea/theme`→홈으로 · 축제 링크 유지
+- **다음**: S2 모듈 SSOT
+
+```
+테마여행 #3, 모듈 SSOT
+```
+
+- **금지 3**: 축제 `/korea` 로직 수정 · 모듈 본문 대량 · releaseNotes
+## 독도 검색 #1, 허브 SSOT
+
+**상태**: feature `cursor/dokdo-search-a849` · Preview QA 대기
+
+- **이슈**: 「독도」검색 시 별도 표시 없음 — `울릉독도박물관`.includes(`독도`)로 울릉 클러스터만 노출
+- **변경**: `cityAttractionHubs`에 `dokdo` 허브(독도·Dokdo · 독도등대·동도·서도·독도접안시설) 추가 · travelSpots blocklist 유지
+- **검증**: `npm run audit:city-attraction-hubs` · resolve 시뮬레이션(독도 exactHub · 울릉도/울릉독도박물관 유지)
+- **공유**: `https://www.gateo.kr/qa/dokdo` · git Preview `https://days-git-cursor-dokdo-search-a849-catgeots-projects.vercel.app/`
+- **QA**: 홈 검색「독도」→ 독도 허브·명소 · 「울릉도」·「울릉독도박물관」회귀
+
+## 테마여행 #1, main 반영 (Cloud 전 주제)
+
+- **`main` push** `060e97c3` (fast-forward) — Cloud 채팅명 제시어 규칙 + 테마 플랜이 **origin/main**에 있음
+- 다른 Cloud 작업이 **main 기준**으로 뜨면 `AGENTS.md` · `cloud-preview-continuity` §1.1 적용
+- PR [#57](https://github.com/catgeot/Days/pull/57) tip과 동일 SHA
+
+## 테마여행 #1, Cloud 채팅명 제시어 규칙
+
+- [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) **§1.1·§5** · `AGENTS.md` Cloud 행 · `.ai-context` 1.5.2 · Rule 한 줄 — 다음 채팅명 한 줄 펜스·제시어 1행 동일
+- 테마 플랜 복붙표는 동 규칙 준수
+- 다음 채팅명:
+
+```
+테마여행 #2, 셸 라우트
+```
+
+
+## 테마여행 #1, 채팅명 복붙표
+
+- 플랜 상단에 `테마여행 #2~#10` 채팅명·첫 메시지 블록 추가 (cloud-preview 규칙)
+- 다음 채팅명: `테마여행 #2, 셸 라우트`
+
+## 테마여행 #1, S0 합의 반영
+
+**상태**: feature `cursor/korea-theme-plan-4160` · PR [#57](https://github.com/catgeot/Days/pull/57) · 플랜만 · 구현은 `cursor/korea-theme`
+
+- **경로**: `/korea/theme` (+ `top10`/`scenic`/`regions`/`packages`) · 축제 `/korea` 유지
+- **홈**: C — 「테마여행」추가 · 기존 국내/축제 유지
+- **순서**: SSOT `order`로 차후 조정 · 테마=페이지
+- **10대**: 웹+TourAPI+hub · S3 확정 · 시드 초안(한라산·성산·설악·순천만·주상절리·해운대·불국사·내장산·보성·통영)
+- **패키지 MRT**: P0 `q=제주`(LIVE) · P1 `/pkc` 홈 · P2 `q=경주` · `q=부산`은 출발지 오탐으로 보류
+- **다음**: S1 셸 — 제시어는 플랜 S1 블록
+- **금지**: 축제 코드 수정 · 플랜 브랜치에서 UI 구현
+
+## 테마여행 #1, 플랜 설계
+
+**상태**: ✅ Pre-S0 → S0로 이관 (위 절)
+
+## 축제 페이지 #2, 칩 아이콘 통일
+
+**상태**: feature `cursor/korea-time-list-16a3` · PR [#56](https://github.com/catgeot/Days/pull/56) · SHA `36cb9e11` · Preview QA 대기
+
+- **요청**: 시간·지역·테마 대분류와 하위 칩이 같은 아이콘으로 종속 관계가 보이게
+- **변경**: `CalendarDays` / `MapPin` / `Sparkles` — 대분류·하위(전국·테마 전체 포함) 동일 아이콘
+- **검증**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea` · git Preview `https://days-git-cursor-korea-time-list-16a3-catgeots-projects.vercel.app/korea`
+- **QA**: `/korea` — 시간 대분류·지금/주말/이번 달 달력 아이콘 · 지역 핀 · 테마 스파클
+
+## 지구본 나라 목록 #6, 이스라엘 하이라이트 fill
+
+**상태**: feature `cursor/globe-neighbor-list-15b3` · PR [#55](https://github.com/catgeot/Days/pull/55) · SHA `25c8092` · Preview QA 대기
+
+- **이슈**: 중동 편입 후 이스라엘 선택 시 노란 외곽만 크고 보라 fill이 비어 보임
+- **원인**: 나라 하이라이트 halo가 분쟁 admin선까지 포함 · 소권역 바(모바일·PC) 중복 sync가 동일 id로 `clearRegionFocus`
+- **변경**: halo/solid = 비분쟁만 · 분쟁은 dashed 유지 · 동일 소권역 재선택 시 clear 스킵
+- **검증**: `npm run smoke:globe-face-neighbor-order` · `smoke:place-label-slug` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/globe` · git Preview `https://days-git-cursor-globe-neighbor-list-15b3-catgeots-projects.vercel.app/`
+- **QA**: 홈→휴양→중동→이스라엘 — 보라 fill이 국경 안에 채워지는지(요르단과 비교)
+
+## 지구본 나라 목록 #5, 중동 이스라엘·요르단
+
+**상태**: feature `cursor/globe-neighbor-list-15b3` · PR [#55](https://github.com/catgeot/Days/pull/55) · SHA `b918094` · Preview QA 대기
+
+- **이슈**: 중동 리스트에 이스라엘 없음 — `il`/`jo`가 아프리카「북아프리카·레반트」에 있었음
+- **변경**: 아시아 면·중동 소권역으로 이동 · 북아프리카 라벨에서 「레반트」 제거
+- **검증**: `npm run smoke:globe-face-neighbor-order` · `smoke:place-label-slug` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/globe` · git Preview `https://days-git-cursor-globe-neighbor-list-15b3-catgeots-projects.vercel.app/`
+- **QA**: 홈→도시(아시아)→중동에 이스라엘·요르단 · 아프리카→북아프리카에 없음
+
+## 지구본 나라 목록 #4, 중분류 좌우 스크롤
+
+**상태**: ✅ `main` 머지 · PR [#54](https://github.com/catgeot/Days/pull/54)
+
+- **이슈**: 중분류 좌우 스크롤 불가 → 이어 좌측 ~1/2 폭에 치우침
+- **변경**: 스크롤포트 `min-w-0` 복구 · 중분류 바만 `100vw` 거의 전체 폭(나라·카테고리는 좌측 유지)
+- **검증**: `npm run smoke:globe-face-neighbor-order` · `smoke:place-label-slug` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/globe` · git Preview `https://days-git-cursor-globe-neighbor-list-15b3-catgeots-projects.vercel.app/`
+- **QA**: 홈(모바일)→도시→중분류 바가 화면 가로로 넓고, 좌우로 「소국·공국」까지 스크롤되는지
+
+## 지구본 나라 목록 #3, 중분류·소국 재편
+
+**상태**: ✅ `main` 머지 · PR [#53](https://github.com/catgeot/Days/pull/53)
+
+- **이슈**: 인접국 연쇄만으로는 소국·공국이 본토 흐름 중간에 끼고, 「서·남유럽」 등 큰 중분류가 직관을 해침
+- **변경**: `GLOBE_FACE_SUBREGIONS` — 유럽을 서/영국/남/북/중부/발칸·동/소국·공국/북극으로 분할 · 아시아는 동남아·남아시아·중동·중앙아시아 · 아프리카는 동·남·인도양·북·서·중부
+- **유지**: 5대면(대분류) · 중분류 안 nearest-neighbor 연쇄 · 면 배타
+- **검증**: `npm run smoke:globe-face-neighbor-order` · `smoke:place-label-slug` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/globe` · git Preview `…-git-cursor-globe-neighbor-list-15b3-….vercel.app/`
+- **QA**: 홈→도시→「소국·공국」·「서유럽」 칩 · 아시아·아프리카 중분류 라벨·나열 흐름
+
+## 푸터 법적 공지 #3, 아동 개인정보 문구
+
+**상태**: ✅ `main` 머지·푸시 `a823292` · PR [#52](https://github.com/catgeot/Days/pull/52) MERGED · PROD 배포 SUCCESS
+
+- Privacy §8: 14세는 **콘텐츠 금지**가 아니라 **회원 개인정보·보호자 동의**(개인정보보호법) 이슈로 구분
+- 공개 여행 정보 열람은 나이 제한 없음 · 만 14세 미만 계정 개인정보는 보호자 동의 필요·현재 동의 UI 없음·확인/요청 시 이메일 삭제
+- **PROD**: https://www.gateo.kr — 로고 패널 → Privacy → 「8. 아동의 개인정보」
+
+## 푸터 법적 공지 #2, Privacy·제휴라벨
+
+**상태**: ✅ `main` 머지·푸시 `719d868` · PR [#51](https://github.com/catgeot/Days/pull/51) MERGED · PROD 배포 SUCCESS
+
+- Privacy: 「서비스 내 계정 삭제 기능」→ 이메일(`admin@gateo.kr`) 요청으로 정정
+- UI: 사용자 노출 「제휴링크」·툴킷 Sponsored 뱃지 → 「제휴광고」 통일 (GYG/MRT 등 파트너 브랜드·Sponsored 병기는 약관 「또는 제휴사 브랜드」로 유지)
+- Preview 장애 해결: 긴 브랜치 DNS 라벨 초과 → `cursor/footer-legal-edfa` · 구 PR #50 폐기
+- **PROD**: https://www.gateo.kr — 로고 패널 → Privacy / 플래너 제휴광고 뱃지
+
+## 푸터 법적 공지 #1, About·Terms·Privacy 정합
+
+**상태**: ✅ `main` 머지·푸시 `c305b8a` · PR [#49](https://github.com/catgeot/Days/pull/49)
+
+- **리스크**: About「비상업적」·「Project Days」·약관「중개·판매 없음」이 실제 제휴 수수료·GATEO 브랜드·GA/Mapbox 수집과 불일치
+- **변경**: `footerData.js` About/Terms/Privacy/Contact 개정 · LogoPanel 저작권 · `index.html` author · TripLinkModal「중개」표현 정리
+- **PROD**: https://www.gateo.kr — 로고 패널 → About Us / Terms / Privacy
+- **사람 후속(선택)**: 사업자등록번호·대표자 실명 표기 · Updates `notice` 릴리스 노트
+
+## 축제 페이지 #1, 시간 탭 실제 건수
+
+**상태**: ✅ `main` 머지·푸시 `1cf2156` · PR [#48](https://github.com/catgeot/Days/pull/48) MERGED
+
+- **이슈**: 지금·주말·이번 달·시즌이 모두 48건처럼 보임 (UI `PANEL_LIMIT` 상한 + 메타가 잘린 건수 표시)
+- **변경**: 목록 상한 제거 · 메타·시간 칩에 실제 건수 · 리스트 시작일 순 · 지도 클러스터 leaf 1000
+- **PROD**: `/korea` · 공유 `https://www.gateo.kr/qa/korea` (redirect는 main 배포 후)

@@ -8,6 +8,7 @@ import {
   LogOut,
   Sparkles,
   CalendarDays,
+  Map,
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import TravelTicker from '../components/TravelTicker';
@@ -100,7 +101,7 @@ const HomeUI = React.memo(({
           aria-hidden="true"
         />
 
-        <div className="md:col-span-2 flex-shrink-0 flex flex-col items-start gap-2 animate-fade-in-down pt-2 md:pl-2 pointer-events-auto relative z-50">
+        <div className="md:col-span-2 flex-shrink-0 flex flex-col items-start gap-2 animate-fade-in-down pt-2 md:pl-2 pointer-events-auto relative z-[60]">
           <div
             onClick={onLogoClick}
             className="cursor-pointer group"
@@ -113,36 +114,38 @@ const HomeUI = React.memo(({
             <>
               <Link
                 to="/korea"
-                className="group flex w-full max-w-[14rem] items-center gap-2.5 rounded-xl border border-amber-400/45 bg-black/60 px-2.5 py-2 shadow-[0_0_18px_rgba(245,158,11,0.22)] backdrop-blur-md transition-all hover:border-amber-300/70 hover:bg-black/75"
-                aria-label="한국의 축제 현장으로 이동"
+                className="group flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-amber-400/45 bg-black/60 px-2.5 py-1.5 shadow-[0_0_18px_rgba(245,158,11,0.22)] backdrop-blur-md transition-all hover:border-amber-300/70 hover:bg-black/75"
+                aria-label="한국의 축제로 이동"
               >
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-amber-400/35 bg-amber-500/15 text-amber-300 group-hover:bg-amber-500/25">
-                  <CalendarDays size={16} aria-hidden="true" />
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-amber-400/35 bg-amber-500/15 text-amber-300 group-hover:bg-amber-500/25">
+                  <CalendarDays size={15} aria-hidden="true" />
                 </span>
-                <span className="min-w-0 flex flex-col leading-tight">
-                  <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
-                    한국의 축제 현장
-                  </span>
-                  <span className="truncate text-[10px] text-amber-100/85">
-                    지금 · 지도에서 찾기
-                  </span>
+                <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
+                  한국의 축제
+                </span>
+              </Link>
+              <Link
+                to="/korea/theme/scenic"
+                className="group flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-emerald-400/40 bg-black/60 px-2.5 py-1.5 shadow-[0_0_18px_rgba(52,211,153,0.18)] backdrop-blur-md transition-all hover:border-emerald-300/65 hover:bg-black/75"
+                aria-label="한국의 명승으로 이동"
+              >
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-emerald-400/35 bg-emerald-500/15 text-emerald-300 group-hover:bg-emerald-500/25">
+                  <Map size={15} aria-hidden="true" />
+                </span>
+                <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
+                  한국의 명승
                 </span>
               </Link>
               <Link
                 to="/blog/curation"
-                className="group flex w-full max-w-[14rem] items-center gap-2.5 rounded-xl border border-sky-400/45 bg-black/60 px-2.5 py-2 shadow-[0_0_18px_rgba(56,189,248,0.2)] backdrop-blur-md transition-all hover:border-sky-300/70 hover:bg-black/75"
+                className="group flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-sky-400/45 bg-black/60 px-2.5 py-1.5 shadow-[0_0_18px_rgba(56,189,248,0.2)] backdrop-blur-md transition-all hover:border-sky-300/70 hover:bg-black/75"
                 aria-label="AI 큐레이션 페이지로 이동"
               >
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-sky-400/35 bg-sky-500/15 text-sky-300 group-hover:bg-sky-500/25">
-                  <Sparkles size={16} aria-hidden="true" />
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-sky-400/35 bg-sky-500/15 text-sky-300 group-hover:bg-sky-500/25">
+                  <Sparkles size={15} aria-hidden="true" />
                 </span>
-                <span className="min-w-0 flex flex-col leading-tight">
-                  <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
-                    AI 큐레이션
-                  </span>
-                  <span className="truncate text-[10px] text-sky-100/85">
-                    숨은 낙원 · 팁 바로 보기
-                  </span>
+                <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
+                  AI 큐레이션
                 </span>
               </Link>
             </>
@@ -220,10 +223,10 @@ const HomeUI = React.memo(({
         </div>
       </div>
 
-      {/* 모바일 하단 스택 — 나라/세부칩/카테고리 (세이프영역까지 하향) */}
+      {/* 모바일 하단 스택 — 나라/세부칩/카테고리 (중분류 바는 뷰포트 폭) */}
       {!isTourCinema && (
       <div className={`fixed z-50 left-[max(0.25rem,env(safe-area-inset-left,0px))] bottom-[max(0.5rem,env(safe-area-inset-bottom,0px))]
-         w-auto max-w-[calc(100vw-7rem)] flex flex-col items-start gap-1.5 pointer-events-none md:hidden
+         flex flex-col items-start gap-1.5 pointer-events-none overflow-visible md:hidden
          ${isPlaceCardVisible && !isFlightCinema ? 'max-lg:hidden' : ''}
          ${isFlightCinema ? 'max-lg:hidden' : ''}`}
       >
@@ -288,7 +291,7 @@ const HomeUI = React.memo(({
                 category={selectedCategory}
                 selectedSubregionId={selectedFaceSubregionId}
                 onSelectSubregion={onFaceSubregionSelect}
-                className="animate-fade-in-up"
+                className="w-[calc(100vw-0.5rem-env(safe-area-inset-left,0px)-env(safe-area-inset-right,0px))] min-w-0 animate-fade-in-up"
               />
             ) : null}
           </div>
@@ -329,8 +332,8 @@ const HomeUI = React.memo(({
       </div>
       )}
 
-      {/* PC 좌측 — 카테고리 + 나라 칩 + 권역 범례 */}
-      <div className="hidden md:flex fixed left-6 top-[calc(50%+2rem)] -translate-y-1/2 z-[55] flex-col gap-3 pointer-events-none animate-fade-in-right">
+      {/* PC 좌측 — 카테고리 + 나라 칩 + 권역 범례 (투톱 아래 상단 고정 · 하위칩은 아래로만 확장 · 스크롤바 없음) */}
+      <div className="hidden md:flex fixed left-6 top-[14.5rem] z-[55] flex-col justify-start gap-3 pointer-events-none animate-fade-in-right">
         {!isTourCinema && (
           <div
             className={`pointer-events-auto flex flex-row items-start gap-2 ${
@@ -410,7 +413,7 @@ const HomeUI = React.memo(({
         </div>
       )}
 
-      <footer className="fixed bottom-0 left-0 right-0 p-4 md:p-6 z-50 pointer-events-none">
+      <footer className="fixed bottom-0 left-0 right-0 p-4 md:p-6 z-[60] pointer-events-none">
         <div className="hidden md:flex absolute bottom-6 left-[8.75rem] items-end gap-4 pointer-events-auto">
           {user ? (
             <button onClick={onLogout} className="group flex items-center gap-2 pb-2 cursor-pointer focus:outline-none">

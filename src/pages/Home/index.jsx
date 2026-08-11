@@ -30,7 +30,7 @@ import {
   overlaySessionCuration,
   resolvePlaceTargetFromSlug,
 } from './lib/placeRouteHydrate';
-import { getSystemPrompt } from './lib/prompts';
+import { getSystemPrompt, PERSONA_TYPES } from './lib/prompts';
 import { persistMooniLastChatId } from './lib/tripChatUtils';
 import { enrichLocationWithRentalAirport } from '../../utils/rentalAirportMatch.js';
 import {
@@ -298,8 +298,16 @@ function Home() {
     setCategoryFaceEpoch((epoch) => epoch + 1);
   }, [category, faceRegionsOpen, flightCinemaActive, globeMode]);
 
+  const selectedFaceSubregionIdRef = useRef(selectedFaceSubregionId);
+  selectedFaceSubregionIdRef.current = selectedFaceSubregionId;
+
   const handleFaceSubregionSelect = useCallback((subregionId) => {
-    setSelectedFaceSubregionId(subregionId || null);
+    const next = subregionId || null;
+    // 모바일·PC 소권역 바가 둘 다 기본값을 sync할 때 동일 id로 clear되면
+    // 방금 고른 나라 fill이 바로 사라진다.
+    if (selectedFaceSubregionIdRef.current === next) return;
+    selectedFaceSubregionIdRef.current = next;
+    setSelectedFaceSubregionId(next);
     setSelectedFaceRegionId(null);
     globeRef.current?.clearRegionFocus?.();
   }, []);
@@ -319,6 +327,17 @@ function Home() {
       boundSpot,
     });
   }, [handleStartChat, selectedLocation]);
+
+  useEffect(() => {
+    const st = routeLocation.state;
+    if (!st?.openMooni || !st?.boundSpot?.name) return;
+    const boundSpot = st.boundSpot;
+    navigate('.', { replace: true, state: {} });
+    handleStartChat('MOONi', {
+      persona: PERSONA_TYPES.GENERAL,
+      boundSpot,
+    });
+  }, [routeLocation.state, navigate, handleStartChat]);
 
   /** 무니 인트로 → 장소카드/검색 desc 재사용 */
   const handlePlaceIntroReady = useCallback(({ summary, placeName }) => {
@@ -462,11 +481,6 @@ function Home() {
     const returnTo = peekPlaceReturnTo(routeLocation.state);
     if (returnTo) {
       clearPlaceReturnTo();
-      const idx = window.history.state?.idx;
-      if (typeof idx === 'number' && idx > 0) {
-        navigate(-1);
-        return;
-      }
       navigate(returnTo);
       return;
     }
@@ -1237,6 +1251,10 @@ function Home() {
         <Link to="/explore/oceania">오세아니아</Link>
         <Link to="/explore/africa">아프리카</Link>
         <Link to="/explore/middle-east">중동</Link>
+
+        {/* 국내 축제·명승 투톱 */}
+        <Link to="/korea">한국의 축제</Link>
+        <Link to="/korea/theme/scenic">한국의 명승</Link>
       </div>
     </div>
     </FlightCinemaProvider>

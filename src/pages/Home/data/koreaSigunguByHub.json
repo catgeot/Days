@@ -1,0 +1,658 @@
+{
+  "meta": {
+    "version": 1,
+    "generatedAt": "2026-08-09T05:22:57.937Z",
+    "hubCount": 162,
+    "source": "TourAPI areaCode + cityAttractionHubs name match"
+  },
+  "byHubId": {
+    "sokcho": {
+      "areaCode": "32",
+      "sigunguCode": "5"
+    },
+    "gangneung": {
+      "areaCode": "32",
+      "sigunguCode": "1"
+    },
+    "chuncheon": {
+      "areaCode": "32",
+      "sigunguCode": "13"
+    },
+    "pyeongchang": {
+      "areaCode": "32",
+      "sigunguCode": "15"
+    },
+    "yangyang": {
+      "areaCode": "32",
+      "sigunguCode": "7"
+    },
+    "goseong": {
+      "areaCode": "32",
+      "sigunguCode": "2"
+    },
+    "inje": {
+      "areaCode": "32",
+      "sigunguCode": "10"
+    },
+    "yeongwol": {
+      "areaCode": "32",
+      "sigunguCode": "8"
+    },
+    "wonju": {
+      "areaCode": "32",
+      "sigunguCode": "9"
+    },
+    "samcheok": {
+      "areaCode": "32",
+      "sigunguCode": "4"
+    },
+    "taebaek": {
+      "areaCode": "32",
+      "sigunguCode": "14"
+    },
+    "donghae": {
+      "areaCode": "32",
+      "sigunguCode": "3"
+    },
+    "hongcheon": {
+      "areaCode": "32",
+      "sigunguCode": "16"
+    },
+    "jeongseon": {
+      "areaCode": "32",
+      "sigunguCode": "11"
+    },
+    "hoengseong": {
+      "areaCode": "32",
+      "sigunguCode": "18"
+    },
+    "yanggu": {
+      "areaCode": "32",
+      "sigunguCode": "6"
+    },
+    "hwacheon": {
+      "areaCode": "32",
+      "sigunguCode": "17"
+    },
+    "cheorwon": {
+      "areaCode": "32",
+      "sigunguCode": "12"
+    },
+    "busan": {
+      "areaCode": "6",
+      "sigunguCode": "7"
+    },
+    "gijang": {
+      "areaCode": "6",
+      "sigunguCode": "3"
+    },
+    "jeju": {
+      "areaCode": "39",
+      "sigunguCode": "1"
+    },
+    "seogwipo": {
+      "areaCode": "39",
+      "sigunguCode": "3"
+    },
+    "ganghwa": {
+      "areaCode": "2",
+      "sigunguCode": "1"
+    },
+    "ongjin": {
+      "areaCode": "2",
+      "sigunguCode": "9"
+    },
+    "dalseong": {
+      "areaCode": "4",
+      "sigunguCode": "3"
+    },
+    "ulju": {
+      "areaCode": "7",
+      "sigunguCode": "5"
+    },
+    "yeosu": {
+      "areaCode": "38",
+      "sigunguCode": "13"
+    },
+    "suncheon": {
+      "areaCode": "38",
+      "sigunguCode": "11"
+    },
+    "mokpo": {
+      "areaCode": "38",
+      "sigunguCode": "8"
+    },
+    "damyang": {
+      "areaCode": "38",
+      "sigunguCode": "7"
+    },
+    "boseong": {
+      "areaCode": "38",
+      "sigunguCode": "10"
+    },
+    "wando": {
+      "areaCode": "38",
+      "sigunguCode": "18"
+    },
+    "jindo": {
+      "areaCode": "38",
+      "sigunguCode": "21"
+    },
+    "goheung": {
+      "areaCode": "38",
+      "sigunguCode": "2"
+    },
+    "jangheung": {
+      "areaCode": "38",
+      "sigunguCode": "20"
+    },
+    "gurye": {
+      "areaCode": "38",
+      "sigunguCode": "5"
+    },
+    "gokseong": {
+      "areaCode": "38",
+      "sigunguCode": "3"
+    },
+    "yeonggwang": {
+      "areaCode": "38",
+      "sigunguCode": "16"
+    },
+    "haenam": {
+      "areaCode": "38",
+      "sigunguCode": "23"
+    },
+    "muan": {
+      "areaCode": "38",
+      "sigunguCode": "9"
+    },
+    "yeongam": {
+      "areaCode": "38",
+      "sigunguCode": "17"
+    },
+    "gangjin": {
+      "areaCode": "38",
+      "sigunguCode": "1"
+    },
+    "jangseong": {
+      "areaCode": "38",
+      "sigunguCode": "19"
+    },
+    "hampyeong": {
+      "areaCode": "38",
+      "sigunguCode": "22"
+    },
+    "sinan": {
+      "areaCode": "38",
+      "sigunguCode": "12"
+    },
+    "naju": {
+      "areaCode": "38",
+      "sigunguCode": "6"
+    },
+    "hwasun": {
+      "areaCode": "38",
+      "sigunguCode": "24"
+    },
+    "gwangyang": {
+      "areaCode": "38",
+      "sigunguCode": "4"
+    },
+    "gyeongju": {
+      "areaCode": "35",
+      "sigunguCode": "2"
+    },
+    "pohang": {
+      "areaCode": "35",
+      "sigunguCode": "23"
+    },
+    "andong": {
+      "areaCode": "35",
+      "sigunguCode": "11"
+    },
+    "ulleung": {
+      "areaCode": "35",
+      "sigunguCode": "17"
+    },
+    "mungyeong": {
+      "areaCode": "35",
+      "sigunguCode": "7"
+    },
+    "yeongju": {
+      "areaCode": "35",
+      "sigunguCode": "14"
+    },
+    "uljin": {
+      "areaCode": "35",
+      "sigunguCode": "18"
+    },
+    "yeongdeok": {
+      "areaCode": "35",
+      "sigunguCode": "12"
+    },
+    "cheongsong": {
+      "areaCode": "35",
+      "sigunguCode": "21"
+    },
+    "yeongyang": {
+      "areaCode": "35",
+      "sigunguCode": "13"
+    },
+    "bonghwa": {
+      "areaCode": "35",
+      "sigunguCode": "8"
+    },
+    "uiseong": {
+      "areaCode": "35",
+      "sigunguCode": "19"
+    },
+    "yecheon": {
+      "areaCode": "35",
+      "sigunguCode": "16"
+    },
+    "sangju": {
+      "areaCode": "35",
+      "sigunguCode": "9"
+    },
+    "gimcheon": {
+      "areaCode": "35",
+      "sigunguCode": "6"
+    },
+    "gumi": {
+      "areaCode": "35",
+      "sigunguCode": "4"
+    },
+    "chilgok": {
+      "areaCode": "35",
+      "sigunguCode": "22"
+    },
+    "gyeongsan": {
+      "areaCode": "35",
+      "sigunguCode": "1"
+    },
+    "goryeong": {
+      "areaCode": "35",
+      "sigunguCode": "3"
+    },
+    "seongju": {
+      "areaCode": "35",
+      "sigunguCode": "10"
+    },
+    "yeongcheon": {
+      "areaCode": "35",
+      "sigunguCode": "15"
+    },
+    "cheongdo": {
+      "areaCode": "35",
+      "sigunguCode": "20"
+    },
+    "jeonju": {
+      "areaCode": "37",
+      "sigunguCode": "12"
+    },
+    "gunsan": {
+      "areaCode": "37",
+      "sigunguCode": "2"
+    },
+    "namwon": {
+      "areaCode": "37",
+      "sigunguCode": "4"
+    },
+    "buan": {
+      "areaCode": "37",
+      "sigunguCode": "6"
+    },
+    "gochang": {
+      "areaCode": "37",
+      "sigunguCode": "1"
+    },
+    "muju": {
+      "areaCode": "37",
+      "sigunguCode": "5"
+    },
+    "jinan": {
+      "areaCode": "37",
+      "sigunguCode": "14"
+    },
+    "imsil": {
+      "areaCode": "37",
+      "sigunguCode": "10"
+    },
+    "sunchang": {
+      "areaCode": "37",
+      "sigunguCode": "7"
+    },
+    "jangsu": {
+      "areaCode": "37",
+      "sigunguCode": "11"
+    },
+    "jeongeup": {
+      "areaCode": "37",
+      "sigunguCode": "13"
+    },
+    "gimje": {
+      "areaCode": "37",
+      "sigunguCode": "3"
+    },
+    "iksan": {
+      "areaCode": "37",
+      "sigunguCode": "9"
+    },
+    "wanju": {
+      "areaCode": "37",
+      "sigunguCode": "8"
+    },
+    "tongyeong": {
+      "areaCode": "36",
+      "sigunguCode": "17"
+    },
+    "namhae": {
+      "areaCode": "36",
+      "sigunguCode": "5"
+    },
+    "jinju": {
+      "areaCode": "36",
+      "sigunguCode": "13"
+    },
+    "geoje": {
+      "areaCode": "36",
+      "sigunguCode": "1"
+    },
+    "hadong": {
+      "areaCode": "36",
+      "sigunguCode": "18"
+    },
+    "geochang": {
+      "areaCode": "36",
+      "sigunguCode": "2"
+    },
+    "hamyang": {
+      "areaCode": "36",
+      "sigunguCode": "20"
+    },
+    "sancheong": {
+      "areaCode": "36",
+      "sigunguCode": "9"
+    },
+    "hapcheon": {
+      "areaCode": "36",
+      "sigunguCode": "21"
+    },
+    "gimhae": {
+      "areaCode": "36",
+      "sigunguCode": "4"
+    },
+    "changwon": {
+      "areaCode": "36",
+      "sigunguCode": "16"
+    },
+    "miryang": {
+      "areaCode": "36",
+      "sigunguCode": "7"
+    },
+    "yangsan": {
+      "areaCode": "36",
+      "sigunguCode": "10"
+    },
+    "sacheon": {
+      "areaCode": "36",
+      "sigunguCode": "8"
+    },
+    "uiryeong": {
+      "areaCode": "36",
+      "sigunguCode": "12"
+    },
+    "changnyeong": {
+      "areaCode": "36",
+      "sigunguCode": "15"
+    },
+    "haman": {
+      "areaCode": "36",
+      "sigunguCode": "19"
+    },
+    "goseongnam": {
+      "areaCode": "36",
+      "sigunguCode": "3"
+    },
+    "boryeong": {
+      "areaCode": "34",
+      "sigunguCode": "5"
+    },
+    "taean": {
+      "areaCode": "34",
+      "sigunguCode": "14"
+    },
+    "gongju": {
+      "areaCode": "34",
+      "sigunguCode": "1"
+    },
+    "buyeo": {
+      "areaCode": "34",
+      "sigunguCode": "6"
+    },
+    "cheonan": {
+      "areaCode": "34",
+      "sigunguCode": "12"
+    },
+    "asan": {
+      "areaCode": "34",
+      "sigunguCode": "9"
+    },
+    "seosan": {
+      "areaCode": "34",
+      "sigunguCode": "7"
+    },
+    "dangjin": {
+      "areaCode": "34",
+      "sigunguCode": "4"
+    },
+    "nonsan": {
+      "areaCode": "34",
+      "sigunguCode": "3"
+    },
+    "gyeryong": {
+      "areaCode": "34",
+      "sigunguCode": "16"
+    },
+    "seocheon": {
+      "areaCode": "34",
+      "sigunguCode": "8"
+    },
+    "hongseong": {
+      "areaCode": "34",
+      "sigunguCode": "15"
+    },
+    "yesan": {
+      "areaCode": "34",
+      "sigunguCode": "11"
+    },
+    "cheongyang": {
+      "areaCode": "34",
+      "sigunguCode": "13"
+    },
+    "geumsan": {
+      "areaCode": "34",
+      "sigunguCode": "2"
+    },
+    "suwon": {
+      "areaCode": "31",
+      "sigunguCode": "13"
+    },
+    "gapyeong": {
+      "areaCode": "31",
+      "sigunguCode": "1"
+    },
+    "paju": {
+      "areaCode": "31",
+      "sigunguCode": "27"
+    },
+    "yangpyeong": {
+      "areaCode": "31",
+      "sigunguCode": "19"
+    },
+    "icheon": {
+      "areaCode": "31",
+      "sigunguCode": "26"
+    },
+    "yeoju": {
+      "areaCode": "31",
+      "sigunguCode": "20"
+    },
+    "pocheon": {
+      "areaCode": "31",
+      "sigunguCode": "29"
+    },
+    "yeoncheon": {
+      "areaCode": "31",
+      "sigunguCode": "21"
+    },
+    "anseong": {
+      "areaCode": "31",
+      "sigunguCode": "16"
+    },
+    "pyeongtaek": {
+      "areaCode": "31",
+      "sigunguCode": "28"
+    },
+    "osan": {
+      "areaCode": "31",
+      "sigunguCode": "22"
+    },
+    "guri": {
+      "areaCode": "31",
+      "sigunguCode": "6"
+    },
+    "namyangju": {
+      "areaCode": "31",
+      "sigunguCode": "9"
+    },
+    "hanam": {
+      "areaCode": "31",
+      "sigunguCode": "30"
+    },
+    "uijeongbu": {
+      "areaCode": "31",
+      "sigunguCode": "25"
+    },
+    "anyang": {
+      "areaCode": "31",
+      "sigunguCode": "17"
+    },
+    "gunpo": {
+      "areaCode": "31",
+      "sigunguCode": "7"
+    },
+    "bucheon": {
+      "areaCode": "31",
+      "sigunguCode": "11"
+    },
+    "gwacheon": {
+      "areaCode": "31",
+      "sigunguCode": "3"
+    },
+    "siheung": {
+      "areaCode": "31",
+      "sigunguCode": "14"
+    },
+    "gimpo": {
+      "areaCode": "31",
+      "sigunguCode": "8"
+    },
+    "goyang": {
+      "areaCode": "31",
+      "sigunguCode": "2"
+    },
+    "yangju": {
+      "areaCode": "31",
+      "sigunguCode": "9"
+    },
+    "dongducheon": {
+      "areaCode": "31",
+      "sigunguCode": "10"
+    },
+    "gwangmyeong": {
+      "areaCode": "31",
+      "sigunguCode": "4"
+    },
+    "uiwang": {
+      "areaCode": "31",
+      "sigunguCode": "24"
+    },
+    "ansan": {
+      "areaCode": "31",
+      "sigunguCode": "15"
+    },
+    "seongnam": {
+      "areaCode": "31",
+      "sigunguCode": "12"
+    },
+    "yongin": {
+      "areaCode": "31",
+      "sigunguCode": "23"
+    },
+    "hwaseong": {
+      "areaCode": "31",
+      "sigunguCode": "31"
+    },
+    "gwangju_gi": {
+      "areaCode": "31",
+      "sigunguCode": "5"
+    },
+    "cheongju": {
+      "areaCode": "33",
+      "sigunguCode": "10"
+    },
+    "jecheon": {
+      "areaCode": "33",
+      "sigunguCode": "7"
+    },
+    "danyang": {
+      "areaCode": "33",
+      "sigunguCode": "2"
+    },
+    "chungju": {
+      "areaCode": "33",
+      "sigunguCode": "11"
+    },
+    "boeun": {
+      "areaCode": "33",
+      "sigunguCode": "3"
+    },
+    "okcheon": {
+      "areaCode": "33",
+      "sigunguCode": "5"
+    },
+    "goesan": {
+      "areaCode": "33",
+      "sigunguCode": "1"
+    },
+    "jincheon": {
+      "areaCode": "33",
+      "sigunguCode": "8"
+    },
+    "eumseong": {
+      "areaCode": "33",
+      "sigunguCode": "6"
+    },
+    "yeongdong": {
+      "areaCode": "33",
+      "sigunguCode": "4"
+    },
+    "jeungpyeong": {
+      "areaCode": "33",
+      "sigunguCode": "12"
+    },
+    "sejong": {
+      "areaCode": "8",
+      "sigunguCode": "1"
+    },
+    "yeongi": {
+      "areaCode": "8",
+      "sigunguCode": "1"
+    },
+    "gunwi": {
+      "areaCode": "4",
+      "sigunguCode": "9"
+    }
+  }
+}

@@ -204,6 +204,18 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     confidence: 'high',
     rationale: 'ICN↔SPN 직항(진에어 등) · graph 2hop FUK·PUS 경유 오탐 보정',
   },
+  zermatt: {
+    primaryIatas: ['ZRH', 'GVA'],
+    preferredLinkIata: 'ZRH',
+    kind: 'multi',
+    flightRouteHubIatas: [],
+    confidence: 'high',
+    rationale:
+      'ICN↔ZRH 직항(대한항공·스위스 등) · graph-2hop ICN→MUC→GVA→ZRH 오탐(GVA·ZRH는 체르마트 도착 관문, 상호 경유 아님)',
+    searchHintIatas: ['ZRH', 'GVA'],
+    bannerNote:
+      '체르마트는 공항이 없습니다. 보통 인천→취리히(ZRH) 직항 후 기차로 들어갑니다. 제네바(GVA)도 도착 관문이며 서로 환승 경유지가 아닙니다. 티켓의 최종 도착 코드를 확인해 주세요.',
+  },
   'san-diego': {
     primaryIatas: ['SAN', 'LAX', 'SFO'],
     preferredLinkIata: 'SAN',

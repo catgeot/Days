@@ -5,7 +5,8 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { flushSync } from 'react-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowUp,
   CalendarDays,
@@ -17,14 +18,15 @@ import {
   Maximize2,
   Minimize2,
   Search,
+  Sparkles,
   Star,
   Undo2,
   X,
 } from 'lucide-react';
 import SEO from '../../components/SEO';
-import { listCityAttractionHubs } from '../Home/lib/cityAttractionHubs';
+import { ThemeFestivalBackLink } from '../KoreaTheme/ThemeModuleBackButton';
 import { setPlaceReturnTo } from '../Home/lib/placeReturnTo';
-import { isDomesticKoreaLocation } from '../../utils/tourApiMatch';
+import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
 import { resolveKoreaAreaFromCoords } from './resolveKoreaAreaFromCoords';
 import { festivalLngLat } from './koreaFestivalCorridors';
 import {
@@ -42,7 +44,6 @@ import {
   sidoListPhrase,
   subregionUnitLabel,
 } from './festivalRegionTags';
-import { nearbyHubsForFestival } from './nearbyFestivalHubs';
 import {
   groupFestivalsByCity,
   groupFestivalsBySido,
@@ -100,10 +101,9 @@ function buildIndexListHeadline({
  *   areaCode: string,
  *   cityName: string,
  *   count: number,
- *   capped: boolean,
  * }} p
  */
-function buildPanelListMeta({ areaCode, cityName, count, capped }) {
+function buildPanelListMeta({ areaCode, cityName, count }) {
   const sido = sidoListPhrase(areaCode);
   const city = cityListPhrase(cityName);
   const place = [sido, city].filter(Boolean).join(' · ');
@@ -112,13 +112,24 @@ function buildPanelListMeta({ areaCode, cityName, count, capped }) {
   bits.push(`${count}건`);
   if (place && !city) bits.push(`${subregionUnitLabel(areaCode)}별`);
   else if (!place) bits.push('지역 그룹');
-  if (capped) bits.push(`${PANEL_LIMIT}건까지`);
   return bits.join(' · ');
+}
+
+/**
+ * @param {object} a
+ * @param {object} b
+ */
+function compareFestivalsByStart(a, b) {
+  const as = String(a?.eventStartDate || '');
+  const bs = String(b?.eventStartDate || '');
+  return (
+    as.localeCompare(bs) ||
+    String(a?.title || '').localeCompare(String(b?.title || ''), 'ko')
+  );
 }
 
 /** @typedef {'time' | 'region' | 'taste'} ChipPanelId */
 
-const PANEL_LIMIT = 48;
 const NEAR_KM = NEAR_FESTIVAL_KM;
 
 /** Strict Mode 재마운트에도 진입 GPS는 JS 세션당 1회(첫 시도) */
@@ -228,6 +239,19 @@ function majorChipClass(panelOpen) {
       ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
       : 'bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100'
   }`;
+}
+
+/** 시간·지역·테마 — 대분류·하위 칩이 같은 아이콘으로 종속 관계 표시 */
+const CHIP_PANEL_ICONS = {
+  time: CalendarDays,
+  region: MapPin,
+  taste: Sparkles,
+};
+
+function ChipPanelIcon({ panel, size = 12 }) {
+  const Icon = CHIP_PANEL_ICONS[panel];
+  if (!Icon) return null;
+  return <Icon size={size} className="shrink-0 opacity-90" aria-hidden="true" />;
 }
 
 function flapChipClass(active) {
@@ -578,7 +602,33 @@ function FestivalRow({
 
 export default function KoreaFestivalHub() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const fromTheme = searchParams.get('from') === 'theme';
+  /** 테마 크로스 레일 deep-link — 칩/지도 리팩터 없이 area만 수신 */
+  const themeAreaParam = String(searchParams.get('area') || '').trim();
+  /** 코스→축제 상세 deep-link — 칩/지도 리팩터 없이 contentId만 수신 */
+  const festivalFromQuery = String(searchParams.get('festival') || '').trim();
   const now = useMemo(() => new Date(), []);
+
+  const goHome = useCallback(() => {
+    try {
+      sessionStorage.setItem('gateo_reset_viewport', '1');
+    } catch {
+      /* ignore quota / private mode */
+    }
+    resetIosZoomAfterInput();
+    navigate('/');
+  }, [navigate]);
+
+  useEffect(() => {
+    return () => {
+      try {
+        sessionStorage.setItem('gateo_reset_viewport', '1');
+      } catch {
+        /* ignore */
+      }
+    };
+  }, []);
 
   const [timeTab, setTimeTab] = useState('now');
   const [tasteId, setTasteId] = useState('all');
@@ -625,8 +675,32 @@ export default function KoreaFestivalHub() {
   );
   const userRegionOverrideRef = useRef(false);
   const mountLocTriedRef = useRef(false);
+  const mobileSearchInputRef = useRef(null);
   const mainScrollRef = useRef(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const themeAreaAppliedRef = useRef(false);
+  const festivalQueryAppliedRef = useRef('');
+
+  useEffect(() => {
+    if (themeAreaAppliedRef.current) return;
+    if (!themeAreaParam || themeAreaParam === 'all') return;
+    if (!/^\d{1,2}$/.test(themeAreaParam)) return;
+    themeAreaAppliedRef.current = true;
+    userRegionOverrideRef.current = true;
+    setAreaCode(themeAreaParam);
+    setCityName('all');
+  }, [themeAreaParam]);
+
+  useEffect(() => {
+    if (!festivalFromQuery || loading || !items.length) return;
+    if (festivalQueryAppliedRef.current === festivalFromQuery) return;
+    const hit = items.find(
+      (row) => String(row?.contentId || '') === festivalFromQuery,
+    );
+    if (!hit) return;
+    festivalQueryAppliedRef.current = festivalFromQuery;
+    setSelected(hit);
+  }, [festivalFromQuery, loading, items]);
 
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 1024px)');
@@ -640,17 +714,6 @@ export default function KoreaFestivalHub() {
   );
   const [favoriteList, setFavoriteList] = useState(() => loadFavorites());
   const [viewedList, setViewedList] = useState(() => loadViewed());
-
-  const krHubById = useMemo(() => {
-    const map = new Map();
-    for (const hub of listCityAttractionHubs()) {
-      if (!isDomesticKoreaLocation(hub) || !hub.hubId) continue;
-      map.set(String(hub.hubId).toLowerCase(), hub);
-    }
-    return map;
-  }, []);
-
-  const krHubList = useMemo(() => [...krHubById.values()], [krHubById]);
 
   const loadFestivals = useCallback(async (force = false) => {
     setLoading(true);
@@ -811,11 +874,20 @@ export default function KoreaFestivalHub() {
   }, [nearRanked]);
 
   const panelItems = useMemo(() => {
-    if (nearBaseItems) {
-      return nearBaseItems.slice(0, PANEL_LIMIT);
-    }
-    return filteredItems.slice(0, PANEL_LIMIT);
+    if (nearBaseItems) return nearBaseItems;
+    return [...filteredItems].sort(compareFestivalsByStart);
   }, [nearBaseItems, filteredItems]);
+
+  const timeChipCounts = useMemo(() => {
+    /** @type {Record<string, number>} */
+    const counts = {};
+    const regionBase = filterByRegion(items, { areaCode, cityName });
+    const pool = filterByTaste(regionBase, tasteId);
+    for (const t of timeTabs) {
+      counts[t.id] = filterByTimeTab(t.id, pool, now).length;
+    }
+    return counts;
+  }, [items, areaCode, cityName, tasteId, timeTabs, now]);
 
   const panelGroups = useMemo(() => {
     if (nearBaseItems) {
@@ -848,7 +920,10 @@ export default function KoreaFestivalHub() {
             a.minKm - b.minKm || a.label.localeCompare(b.label, 'ko'),
         );
     }
-    return groupFestivalsForList(panelItems, { areaCode });
+    return groupFestivalsForList(panelItems, { areaCode }).map((g) => ({
+      ...g,
+      items: [...g.items].sort(compareFestivalsByStart),
+    }));
   }, [nearBaseItems, panelItems, areaCode, nearKmByContentId]);
 
   const flapChildChips = useMemo(() => {
@@ -958,11 +1033,6 @@ export default function KoreaFestivalHub() {
     cityName,
     afterRegion,
   ]);
-
-  const selectedHubs = useMemo(() => {
-    if (!selected) return [];
-    return nearbyHubsForFestival(selected, krHubList);
-  }, [selected, krHubList]);
 
   const dismissLocHint = useCallback(() => {
     setLocHintDismissed(true);
@@ -1120,18 +1190,13 @@ export default function KoreaFestivalHub() {
 
   const panelListMeta = useMemo(() => {
     if (nearBaseItems && nearLabel) {
-      const n = panelItems.length;
-      const total = nearBaseItems.length;
-      return total > PANEL_LIMIT
-        ? `${NEAR_KM}km 안 ${n}건 · ${PANEL_LIMIT}건까지`
-        : `${NEAR_KM}km 안 ${n}건`;
+      return `${NEAR_KM}km 안 ${panelItems.length}건`;
     }
     if (nearActive && nearMsg) return nearMsg;
     return buildPanelListMeta({
       areaCode,
       cityName,
       count: panelItems.length,
-      capped: filteredItems.length > PANEL_LIMIT,
     });
   }, [
     nearBaseItems,
@@ -1141,7 +1206,6 @@ export default function KoreaFestivalHub() {
     areaCode,
     cityName,
     panelItems.length,
-    filteredItems.length,
   ]);
 
   const selectTime = (id) => {
@@ -1351,8 +1415,8 @@ export default function KoreaFestivalHub() {
   return (
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
       <SEO
-        title="국내 축제 · 시간·지역·테마"
-        description="TourAPI 기반 국내 축제. 시간·지역·테마로 찾고, 필요 시 지도로 위치·동선을 확인하세요."
+        title="한국의 축제"
+        description="GATEO 국내 축제 허브. TourAPI 일정으로 시간·지역·테마별 축제를 찾고, 지도로 위치·동선을 확인하세요."
         url="/korea"
       />
 
@@ -1447,8 +1511,14 @@ export default function KoreaFestivalHub() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (searchOpen || searchActive) closeSearch();
-                    else setSearchOpen(true);
+                    if (searchOpen || searchActive) {
+                      closeSearch();
+                      return;
+                    }
+                    flushSync(() => {
+                      setSearchOpen(true);
+                    });
+                    mobileSearchInputRef.current?.focus();
                   }}
                   aria-label={
                     searchOpen || searchActive ? '검색 닫기' : '축제 검색'
@@ -1504,7 +1574,7 @@ export default function KoreaFestivalHub() {
                 ) : (
                   <button
                     type="button"
-                    onClick={() => navigate('/')}
+                    onClick={goHome}
                     aria-label="홈으로"
                     title="홈으로"
                     className="flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs font-bold text-stone-700 hover:bg-stone-100"
@@ -1515,6 +1585,14 @@ export default function KoreaFestivalHub() {
                 )}
               </div>
             </div>
+
+            {fromTheme && !mapImmersive ? (
+              <p className="mt-1.5 text-xs leading-relaxed text-stone-600 break-keep">
+                <ThemeFestivalBackLink />
+                <span className="text-stone-400"> · </span>
+                축제 일정·지도는 여기서 이어갑니다
+              </p>
+            ) : null}
 
             {searchOpen && (
               <form
@@ -1528,6 +1606,7 @@ export default function KoreaFestivalHub() {
                   축제 검색
                 </label>
                 <input
+                  ref={mobileSearchInputRef}
                   id="korea-festival-search"
                   type="search"
                   value={searchDraft}
@@ -1567,6 +1646,7 @@ export default function KoreaFestivalHub() {
                     aria-pressed={chipPanel === 'time'}
                     aria-label={`시간 대분류 · ${timeMajorLabel}`}
                   >
+                    <ChipPanelIcon panel="time" size={13} />
                     {timeMajorLabel}
                   </button>
                   <button
@@ -1576,6 +1656,7 @@ export default function KoreaFestivalHub() {
                     aria-pressed={chipPanel === 'region'}
                     aria-label={`지역 대분류 · ${regionMajorLabel}`}
                   >
+                    <ChipPanelIcon panel="region" size={13} />
                     {regionMajorLabel}
                   </button>
                   <button
@@ -1585,6 +1666,7 @@ export default function KoreaFestivalHub() {
                     aria-pressed={chipPanel === 'taste'}
                     aria-label={`테마 대분류 · ${tasteMajorLabel}`}
                   >
+                    <ChipPanelIcon panel="taste" size={13} />
                     {tasteMajorLabel}
                   </button>
                 </div>
@@ -1614,7 +1696,11 @@ export default function KoreaFestivalHub() {
                       className={chipClass(timeTab === t.id)}
                       aria-pressed={timeTab === t.id}
                     >
+                      <ChipPanelIcon panel="time" />
                       {t.label}
+                      <span className="opacity-70">
+                        {timeChipCounts[t.id] ?? 0}
+                      </span>
                     </button>
                   ))}
                 {chipPanel === 'region' && (
@@ -1625,6 +1711,7 @@ export default function KoreaFestivalHub() {
                       className={chipClass(areaCode === 'all')}
                       aria-pressed={areaCode === 'all'}
                     >
+                      <ChipPanelIcon panel="region" />
                       전국
                     </button>
                     {sidoChips.map((s) => (
@@ -1635,6 +1722,7 @@ export default function KoreaFestivalHub() {
                         className={chipClass(areaCode === s.id)}
                         aria-pressed={areaCode === s.id}
                       >
+                        <ChipPanelIcon panel="region" />
                         {s.label}
                         <span className="opacity-70">{s.count}</span>
                       </button>
@@ -1649,6 +1737,7 @@ export default function KoreaFestivalHub() {
                       className={chipClass(tasteId === 'all')}
                       aria-pressed={tasteId === 'all'}
                     >
+                      <ChipPanelIcon panel="taste" />
                       테마 전체
                     </button>
                     {tasteChips.map((t) => (
@@ -1659,6 +1748,7 @@ export default function KoreaFestivalHub() {
                         className={chipClass(tasteId === t.id)}
                         aria-pressed={tasteId === t.id}
                       >
+                        <ChipPanelIcon panel="taste" />
                         {t.label}
                         <span className="opacity-70">{t.count}</span>
                       </button>
@@ -1894,7 +1984,7 @@ export default function KoreaFestivalHub() {
               }`}
             >
               <div
-                className={`${listLarge ? 'space-y-3' : 'space-y-2'} px-3 pt-3 pb-[max(10.5rem,calc(env(safe-area-inset-bottom,0px)+9rem))] md:pb-24 ${
+                className={`${listLarge ? 'space-y-3' : 'space-y-2'} page-scroll-end-pad px-3 pt-3 ${
                   mapSplitActive
                     ? 'hidden lg:block lg:custom-scrollbar lg:min-h-0 lg:w-[min(26rem,38%)] lg:shrink-0 lg:overflow-y-auto lg:border-r lg:border-stone-200'
                     : mapOpen
@@ -2062,11 +2152,14 @@ export default function KoreaFestivalHub() {
       {selected && (
         <FestivalDetailSheet
           item={selected}
-          hubs={selectedHubs}
           favorited={favoriteIds.has(String(selected.contentId))}
           onToggleFavorite={handleToggleFavorite}
-          onClose={() => setSelected(null)}
+          onClose={() => {
+            resetIosZoomAfterInput();
+            setSelected(null);
+          }}
           onOpenHub={(hubId) => {
+            resetIosZoomAfterInput();
             setPlaceReturnTo('/korea');
             navigate(`/place/${hubId}`, { state: { returnTo: '/korea' } });
           }}

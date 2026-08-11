@@ -25,7 +25,8 @@ const INTERACTIVE_LAYERS = [
   POINT_LAYER,
   POINT_LABEL_LAYER,
 ];
-const CLUSTER_LEAF_LIMIT = 48;
+/** 클러스터 클릭 시 목록으로 넘기는 leaf 상한(실제 point_count까지) */
+const CLUSTER_LEAF_LIMIT = 1000;
 
 const KR_VIEW = {
   longitude: 127.8,

@@ -18,6 +18,7 @@ import { mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import mooniChar from '../../../assets/MOONI_transparent.png';
 import {
   clearPlaceReturnTo,
+  isKoreaPlaceReturnPath,
   peekPlaceReturnTo,
 } from '../../../pages/Home/lib/placeReturnTo';
 
@@ -175,23 +176,18 @@ const PlaceChatPanel = React.memo(({
                     const returnTo = peekPlaceReturnTo(routeLocation.state);
                     if (typeof idx === 'number' && idx > 0) {
                         const prevPath = pathByHistoryIdxRef.current.get(idx - 1);
-                        // 탭·명소 간 / 축제홈(returnTo) 복귀는 -1.
+                        // 탭·명소·탐색 간만 -1. 테마/축제 목록은 returnTo로 복귀.
                         if (
                             typeof prevPath === 'string' &&
                             (prevPath.startsWith('/place/') ||
-                              prevPath.startsWith('/explore') ||
-                              prevPath === '/korea' ||
-                              prevPath.startsWith('/korea?'))
+                              prevPath.startsWith('/explore'))
                         ) {
-                            if (returnTo && (prevPath === '/korea' || prevPath.startsWith('/korea?'))) {
-                                clearPlaceReturnTo();
-                            }
                             navigate(-1);
                             return;
                         }
-                        if (returnTo) {
+                        if (returnTo && isKoreaPlaceReturnPath(prevPath)) {
                             clearPlaceReturnTo();
-                            navigate(-1);
+                            navigate(returnTo);
                             return;
                         }
                     }

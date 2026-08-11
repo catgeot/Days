@@ -84,7 +84,7 @@ const FooterModal = ({ isOpen, onClose, initialTab = 'about' }) => {
           {activeTab === 'updates' ? (
             <>
               <p className="text-gray-400 text-sm leading-relaxed break-keep mb-5">
-                GATEO의 새 기능, 제휴 입점, 개선 사항을 모아두었습니다.
+                GATEO의 새 기능·제휴 입점·공지를 모아두었습니다. 이용약관·개인정보 변경이 있으면 Terms·Privacy 탭도 함께 확인해 주세요.
               </p>
               <ReleaseNotesList />
             </>

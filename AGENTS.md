@@ -59,12 +59,13 @@ npm run smoke:place-label-slug   # 지구본 라벨 slug/name_en · 무니 역�
 
 | | 규칙 |
 |--|------|
-| **세션·채팅 표기** | 형식 **`{주제} #{N}, {단계}`** — 예: `축제 페이지 #1, mvp 제작`. 주제는 고정 · `#N`은 세션 순번 · 단계는 이번 목표. **첫 응답·턴 종료·일지·PR 제목**에 동일 표기. Cursor UI 채팅명을 못 바꾸면 본문에 반복하고, 런칭 시 사람도 같은 형식을 쓴다. |
+| **세션·채팅 표기** | 형식 **`{주제} #{N}, {단계}`** — 예: `축제 페이지 #1, mvp 제작` · `테마여행 #2, 셸 라우트`. 주제는 고정 · `#N`은 세션 순번 · 단계는 이번 목표. **첫 응답·턴 종료·일지·PR 제목**에 동일 표기. Cursor UI 채팅명을 못 바꾸면 본문에 반복하고, 런칭 시 사람도 같은 형식을 쓴다. |
+| **채팅명 제시어 (자동 반영)** | 다세션·플랜·세션 종료 시 **다음 채팅명**을 코드펜스 **한 줄만** 제안(복붙 → 새 채팅 제목/런칭). **제시어 블록 1행 = 채팅명과 동일**. 플랜에 채팅명 복붙표. `#N` 리셋 금지. 상세 [`cloud-preview-continuity.md`](plans/cloud-preview-continuity.md) **§1.1·§5**. |
 | **고정 브랜치** | 주제당 feature **한 번** 생성 → main 병합까지 **재사용**. 세션마다 새 `cursor/…-xxxx`·새 PR **금지**. **새 주제 브랜치명는 짧게** (`cursor/puzzle`, `cursor/korea`) — 길면 git Preview 호스트가 더 길어짐. Mapbox에 이미 등록된 고정 브랜치는 **이름 변경 금지**(사람이 도메인·토큰 이관할 때만). |
 | **동일 Preview URL** | 기술 QA·Mapbox = **git Preview URL** (`…-git-<branch-slug>-….vercel.app`). 배포 해시 URL **금지**. |
 | **짧은 공유 링크 (테스터)** | 사람에게는 **`https://www.gateo.kr/qa/<slug>`** 를 우선 안내 (예: `/qa/puzzle` → 퍼즐 Preview). SSOT [`cloudQaShareLinks.js`](src/shared/cloudPreview/cloudQaShareLinks.js) + [`vercel.json`](vercel.json) `redirects` 동기화. 목록 페이지 `/qa`. 주제 종료 시 항목 `active: false` 또는 destination을 PROD path로 변경. |
 | **Preview 작업 로그** | Preview/로컬 화면 **우측** 「작업 로그」패널. 세션마다 로그 append · `qaShareSlug` 있으면 공유 링크 표시. PROD에는 안 보임. |
-| **턴 종료 링크** | 요약에 **세션 표기 + 짧은 `/qa/…` 링크(있으면) + git Preview URL + 이번 적용 1줄** 필수. Preview 링크 없이 「로컬만」으로 세션 종료 **금지**. |
+| **턴 종료 링크** | 요약에 **세션 표기 + 짧은 `/qa/…` 링크(있으면) + git Preview URL + 이번 적용 1줄** 필수. 다음 세션이 있으면 **다음 채팅명**(한 줄 펜스) 포함. Preview 링크 없이 「로컬만」으로 세션 종료 **금지**. |
 
 ### Feature 브랜치 · Vercel Preview (사람 QA 경로)
 
@@ -135,4 +136,4 @@ VERIFY FAIL tip은 커밋하지 않는다. 워커는 commit/PR 금지.
 
 ### 핸드오프
 
-작업이 Preview·QA로 끝나면 일지에 **세션 표기 · 브랜치 · SHA · PR · `/qa/…` 공유 링크 · git Preview URL · QA path** · **작업 로그 제목** · **남은 일**을 명시한다.
+작업이 Preview·QA로 끝나면 일지에 **세션 표기 · 브랜치 · SHA · PR · `/qa/…` 공유 링크 · git Preview URL · QA path** · **작업 로그 제목** · **남은 일** · (다음 세션 있으면) **다음 채팅명 한 줄**을 명시한다.

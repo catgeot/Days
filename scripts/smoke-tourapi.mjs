@@ -18,6 +18,7 @@ const ALLOWED_ACTIONS = [
   'searchPhoto',
   'searchFestival',
   'areaBasedList',
+  'locationBasedList',
   'areaCode',
   'detailIntro',
   'detailInfo',
@@ -38,7 +39,7 @@ function assert(cond, msg) {
 }
 
 function schemaGuards() {
-  assert(ALLOWED_ACTIONS.length === 11, 'whitelist has 11 actions');
+  assert(ALLOWED_ACTIONS.length === 12, 'whitelist has 12 actions');
   for (const a of ALLOWED_ACTIONS) {
     assert(typeof a === 'string' && a.length > 0, `action name: ${a}`);
   }

@@ -1,0 +1,634 @@
+/**
+ * 선정 명소 권역 보강 도구 스모크.
+ *
+ *   npm run smoke:korea-scenic-hub-fill
+ */
+import { readFileSync } from 'fs';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+import {
+  buildScenicFillRounds,
+  draftScenicSpotsForHubs,
+  isDistrictHub,
+  listEmptyScenicHubs,
+} from './lib/koreaScenicHubFill.mjs';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const areaCodes = JSON.parse(
+  readFileSync(
+    join(__dirname, '../src/pages/Home/data/koreaAreaCodes.json'),
+    'utf8',
+  ),
+);
+const scenic = JSON.parse(
+  readFileSync(
+    join(__dirname, '../src/pages/Home/data/koreaScenicSpots.json'),
+    'utf8',
+  ),
+);
+const hubsFile = JSON.parse(
+  readFileSync(
+    join(__dirname, '../src/pages/Home/data/cityAttractionHubs.json'),
+    'utf8',
+  ),
+);
+
+let failed = 0;
+function assert(cond, msg) {
+  if (!cond) {
+    failed += 1;
+    console.error(`FAIL  ${msg}`);
+    return false;
+  }
+  console.log(`OK    ${msg}`);
+  return true;
+}
+
+assert(isDistrictHub({ aliases: ['강남구', 'Gangnam'] }), '강남구 = district');
+assert(!isDistrictHub({ aliases: ['양양군', 'yangyang'] }), '양양군 ≠ district');
+assert(!isDistrictHub({ aliases: ['양구군', 'yanggu'] }), '양구군 ≠ district');
+
+const { empty, maxOrder, curatedHubs } = listEmptyScenicHubs();
+assert(Array.isArray(empty), 'empty list');
+assert(curatedHubs >= 1, `curatedHubs≥1 (got ${curatedHubs})`);
+assert(maxOrder >= 10, `maxOrder≥10 (got ${maxOrder})`);
+assert(
+  !empty.some((h) => h.hubId === 'yangyang'),
+  '양양은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'pyeongchang'),
+  '평창은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'namhae'),
+  '남해는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'ansan'),
+  '안산은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'ganghwa'),
+  '강화는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'gimpo'),
+  '김포는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'goyang'),
+  '고양은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'gwangmyeong'),
+  '광명은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'hanam'),
+  '하남은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'anseong'),
+  '안성은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'anyang'),
+  '안양은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'bucheon'),
+  '부천은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'namyangju'),
+  '남양주는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'pocheon'),
+  '포천은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'siheung'),
+  '시흥은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'uiwang'),
+  '의왕은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'yangpyeong'),
+  '양평은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'yongin'),
+  '용인은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'gunpo'),
+  '군포는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'guri'),
+  '구리는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'gwacheon'),
+  '과천은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'gwangju_gi'),
+  '경기 광주는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'hwaseong'),
+  '화성은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'ongjin'),
+  '옹진은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'osan'),
+  '오산은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'jincheon'),
+  '진천은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'asan'),
+  '아산은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'cheonan'),
+  '천안은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'uijeongbu'),
+  '의정부는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'yeoju'),
+  '여주는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'yeoncheon'),
+  '연천은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'cheorwon'),
+  '철원은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'dongducheon'),
+  '동두천은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'icheon'),
+  '이천은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'pyeongtaek'),
+  '평택은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'wonju'),
+  '원주는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'yangju'),
+  '양주는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'inje'),
+  '인제는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'yeongwol'),
+  '영월은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'goseong'),
+  '고성은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'hongcheon'),
+  '홍천은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'yanggu'),
+  '양구는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'jeongseon'),
+  '정선은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'taebaek'),
+  '태백은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'uljin'),
+  '울진은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'hoengseong'),
+  '횡성은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'hwacheon'),
+  '화천은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'chungju'),
+  '충주는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'jeungpyeong'),
+  '증평은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'sejong'),
+  '세종은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'seosan'),
+  '서산은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'boeun'),
+  '보은은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'cheongyang'),
+  '청양은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'dangjin'),
+  '당진은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'goesan'),
+  '괴산은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'sangju'),
+  '상주는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'gyeryong'),
+  '계룡은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'mungyeong'),
+  '문경은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'yeongdong'),
+  '영동은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'bonghwa'),
+  '봉화는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'hwasun'),
+  '화순은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'imsil'),
+  '임실은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'jangheung'),
+  '장흥은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'jangseong'),
+  '장성은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'jindo'),
+  '진도는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'naju'),
+  '나주는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'sinan'),
+  '신안은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'sunchang'),
+  '순창은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'yeonggwang'),
+  '영광은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'gimje'),
+  '김제는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'haenam'),
+  '해남은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'hampyeong'),
+  '함평은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'iksan'),
+  '익산은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'muan'),
+  '무안은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'muju'),
+  '무주는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'yeongam'),
+  '영암은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'geochang'),
+  '거창은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'ulju'),
+  '울주는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'gimhae'),
+  '김해는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'gunwi'),
+  '군위는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'yangsan'),
+  '양산은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'changwon'),
+  '창원은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'cheongdo'),
+  '청도는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'dalseong'),
+  '달성은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'gijang'),
+  '기장은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'goseongnam'),
+  '경남 고성은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'gumi'),
+  '구미는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'haman'),
+  '함안은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'miryang'),
+  '밀양은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'sacheon'),
+  '사천은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'uiseong'),
+  '의성은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'yecheon'),
+  '예천은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'yeongcheon'),
+  '영천은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'yeongju'),
+  '영주는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'changnyeong'),
+  '창녕은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'cheongsong'),
+  '청송은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'chilgok'),
+  '칠곡은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'dokdo'),
+  '독도는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'gimcheon'),
+  '김천은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'goryeong'),
+  '고령은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'gwangyang'),
+  '광양은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'gyeongsan'),
+  '경산은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'sancheong'),
+  '산청은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'seongju'),
+  '성주는 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'uiryeong'),
+  '의령은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'yeongdeok'),
+  '영덕은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.hubId === 'yeongyang'),
+  '영양은 선정 있음 → 빈 목록 제외',
+);
+assert(
+  !empty.some((h) => h.district),
+  '기본 목록에 자치구 없음',
+);
+
+const byHubId = areaCodes?.byHubId && typeof areaCodes.byHubId === 'object'
+  ? areaCodes.byHubId
+  : {};
+const curatedHubIds = [
+  ...new Set(
+    (Array.isArray(scenic?.spots) ? scenic.spots : [])
+      .map((s) =>
+        String(s?.hubId || '')
+          .trim()
+          .toLowerCase(),
+      )
+      .filter(Boolean),
+  ),
+];
+const unlinked = curatedHubIds.filter((id) => byHubId[id] == null);
+assert(
+  unlinked.length === 0,
+  `선정 hub 전부 area 색인 (missing: ${unlinked.slice(0, 8).join(',') || 'none'})`,
+);
+
+const rounds = buildScenicFillRounds(empty, { batchSize: 10 });
+assert(
+  empty.length === 0 || rounds.length >= 1,
+  `rounds≥1 when empty>0 (empty=${empty.length}, rounds=${rounds.length})`,
+);
+assert(
+  empty.length > 0 || rounds.length === 0,
+  `빈 hub 0이면 rounds 0 (queue 소진 · rounds=${rounds.length})`,
+);
+if (rounds.length > 0) {
+  assert(
+    rounds[0].workerA.length + rounds[0].workerB.length <= 10,
+    'R01 size≤10',
+  );
+}
+
+const already = draftScenicSpotsForHubs(['yangyang']);
+assert(
+  already.drafts.length === 0 &&
+    already.skipped.some(
+      (s) => s.hubId === 'yangyang' && String(s.reason).startsWith('already-complete'),
+    ),
+  'yangyang already-complete (전수 선정)',
+);
+const yeongdeokDone = draftScenicSpotsForHubs(['yeongdeok', 'yeongyang']);
+assert(
+  yeongdeokDone.drafts.length === 0 &&
+    yeongdeokDone.skipped.filter((s) =>
+      String(s.reason).startsWith('already-complete'),
+    ).length === 2,
+  'yeongdeok·yeongyang already-complete (전수 선정)',
+);
+
+const target = empty.find((h) => h.attractions >= 5);
+if (target) {
+  const full = draftScenicSpotsForHubs([target.hubId]);
+  assert(
+    full.drafts.length === target.attractions,
+    `default drafts ALL attractions for ${target.hubId} (got ${full.drafts.length}, hub has ${target.attractions}) — no per-hub=4 default`,
+  );
+  const capped = draftScenicSpotsForHubs([target.hubId], { perHub: 2 });
+  assert(
+    capped.drafts.length === 2,
+    `--per-hub=2 caps ${target.hubId} to 2`,
+  );
+  assert(
+    full.drafts.every((d) => d.hubId === target.hubId && d.region && d.attractionName),
+    `${target.hubId} draft fields`,
+  );
+  assert(
+    full.drafts.every((d) => d.order > maxOrder),
+    'draft orders after maxOrder',
+  );
+}
+
+// 소량 hub = 빈 hub 큐에서 제외된(이미 curated>0) hub만.
+// 빈 hub 보강 졸업지(원주·횡성·화천 등) 재팽창·명소 억지 추가 금지.
+const thinHubMin = {
+  chuncheon: 11,
+  sokcho: 9,
+  donghae: 8,
+  samcheok: 10,
+  gangneung: 6,
+  pohang: 6,
+  mokpo: 7,
+  ulleung: 7,
+  gapyeong: 7,
+  gongju: 7,
+  hapcheon: 7,
+  taean: 6,
+  buyeo: 6,
+  boseong: 6,
+  buan: 6,
+  namwon: 6,
+  hadong: 6,
+  cheongju: 6,
+  gwangju: 6,
+  jeongeup: 6,
+  seongnam: 6,
+  boryeong: 4,
+  danyang: 5,
+  gunsan: 5,
+  gurye: 5,
+  jecheon: 5,
+  jinju: 5,
+  wando: 5,
+  jinan: 4,
+};
+const thinHubExactAttr = {
+  // 빈 hub(#87·#89) 졸업 — attractions 전수 유지, #131 재보강 회귀 방지
+  wonju: 4,
+  hoengseong: 4,
+  hwacheon: 4,
+};
+const curatedByHub = new Map();
+for (const s of Array.isArray(scenic?.spots) ? scenic.spots : []) {
+  const hid = String(s?.hubId || '')
+    .trim()
+    .toLowerCase();
+  if (!hid) continue;
+  curatedByHub.set(hid, (curatedByHub.get(hid) || 0) + 1);
+}
+for (const [hubId, min] of Object.entries(thinHubMin)) {
+  const n = curatedByHub.get(hubId) || 0;
+  assert(n >= min, `소량 hub ${hubId} ≥${min} (got ${n})`);
+}
+const hubArr = Array.isArray(hubsFile) ? hubsFile : [];
+for (const [hubId, exact] of Object.entries(thinHubExactAttr)) {
+  const hub = hubArr.find(
+    (h) =>
+      String(h?.hubId || '')
+        .trim()
+        .toLowerCase() === hubId,
+  );
+  const attr = Array.isArray(hub?.attractions) ? hub.attractions.length : 0;
+  const curated = curatedByHub.get(hubId) || 0;
+  assert(
+    attr === exact && curated === exact,
+    `빈hub졸업 ${hubId} attr=curated=${exact} (attr ${attr} curated ${curated}) — 재팽창 금지`,
+  );
+}
+
+if (failed) {
+  console.error(`\n${failed} smoke assertion(s) failed`);
+  process.exit(1);
+}
+console.log('\nkorea-scenic-hub-fill SMOKE OK');

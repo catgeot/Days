@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Sparkles, Maximize2, Cuboid, Plane, Loader2, ChevronRight, ScanSearch, ScanEye } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { X, Sparkles, Maximize2, Cuboid, Plane, Loader2, ChevronRight, ScanSearch, ScanEye, LayoutList } from 'lucide-react';
 import BookmarkButton from '../common/BookmarkButton';
 import { getPlaceTitleLines } from '../common/locationDisplay';
 import { canStartGlobeTour } from '../../../pages/Home/lib/globeTourEngine';
@@ -23,6 +24,7 @@ const PlaceCardSummary = ({
   onImmerseZoomStep,
   isImmersed = false,
   canToggleImmerse = true,
+  plannerUrl = null,
   onPreviewFlightRoute,
   canPreviewFlightRoute = false,
   isFlightRouteReady = false,
@@ -121,8 +123,11 @@ const PlaceCardSummary = ({
     setOriginExpanded(initialOriginExpanded);
   }, [location?.id, location?.slug, initialOriginExpanded]);
 
+  const showPlannerLink = Boolean(plannerUrl) && !isScanning && !isImmersed;
+  const showImmerseControls = !isScanning && canToggleImmerse && (!plannerUrl || isImmersed);
+
   const actionButtonCount =
-    (!isScanning && canToggleImmerse ? 1 : 0) +
+    (showPlannerLink || showImmerseControls ? 1 : 0) +
     (canPreviewFlightRoute ? 1 : 0) +
     (canStartTour ? 1 : 0) +
     (stayToggle ? 1 : 0);
@@ -132,7 +137,7 @@ const PlaceCardSummary = ({
 
   if (isImmerseCompact) {
     return (
-      <div className="z-[60] absolute bottom-[calc(6.75rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[calc(100vw-2.5rem)] max-w-[400px] animate-fade-in-up">
+      <div className="z-[60] fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[calc(100vw-2.5rem)] max-w-[400px] animate-fade-in-up lg:absolute lg:bottom-6">
         <div className="tour-mobile-bar-shell relative">
           <div className="tour-mobile-bar-halo" aria-hidden="true" />
           <div className="tour-mobile-bar-card relative z-[1] flex items-center gap-3 rounded-2xl border border-white/15 bg-black/80 px-3 py-1.5 backdrop-blur-xl">
@@ -201,7 +206,7 @@ const PlaceCardSummary = ({
       } animate-fade-in-up transition-all duration-200 ${
         isOriginCompact
           ? 'fixed left-1/2 -translate-x-1/2 w-[calc(100vw-3rem)] max-w-[360px]'
-          : `absolute bottom-[calc(6.75rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[calc(100vw-3rem)] max-w-[360px] lg:bottom-6 lg:translate-x-0 lg:left-auto lg:right-8 lg:w-[400px] lg:max-w-[400px] xl:w-[440px] xl:max-w-[440px]${
+          : `fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[calc(100vw-3rem)] max-w-[360px] lg:absolute lg:bottom-6 lg:translate-x-0 lg:left-auto lg:right-8 lg:w-[400px] lg:max-w-[400px] xl:w-[440px] xl:max-w-[440px]${
               tourTab ? ' ml-[1.1rem] lg:ml-0' : ''
             }`
       }`}
@@ -423,7 +428,21 @@ const PlaceCardSummary = ({
                   </button>
                 )}
 
-                {!isScanning && canToggleImmerse && (
+                {showPlannerLink ? (
+                  <Link
+                    to={plannerUrl}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    className="relative z-10 flex min-h-[40px] min-w-0 items-center justify-center gap-1.5 rounded-xl border border-cyan-300/50 bg-cyan-500/20 px-2 py-2 transition-all duration-300 hover:border-cyan-200/60 hover:bg-cyan-500/28 lg:min-h-[36px]"
+                    title="여행 플래너 열기"
+                  >
+                    <LayoutList size={16} className="shrink-0 text-cyan-200" aria-hidden="true" />
+                    <span className="min-w-0 truncate text-xs font-bold text-cyan-50">여행 플래너</span>
+                  </Link>
+                ) : null}
+
+                {showImmerseControls && (
                   isImmersed ? (
                     isMobileCoarse ? (
                       <button
