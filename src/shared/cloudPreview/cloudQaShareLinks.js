@@ -40,9 +40,8 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'scenic-map',
     label: '명승 홈 지도 내 위치',
-    branch: 'cursor/scenic-locate-1064',
-    destination:
-      'https://days-git-cursor-scenic-locate-1064-catgeots-projects.vercel.app/korea/theme/scenic',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/korea/theme/scenic',
     active: true,
   },
   {

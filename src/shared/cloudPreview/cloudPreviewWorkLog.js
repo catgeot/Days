@@ -7,8 +7,8 @@ export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
   sessionNo: 143,
-  sessionPhase: '내 위치 핀 시인성',
-  branch: 'cursor/scenic-locate-1064',
+  sessionPhase: '내 위치 핀 main 병합',
+  branch: 'main',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-map',
 };
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-11-scenic-locate-pin-143-main',
+    session: '테마여행 #143, 내 위치 핀 main 병합',
+    title: '내 위치 붉은 깃발 핀 main 반영',
+    detail:
+      'PR #100(붉은 깃발 핀)을 main에 반영했습니다. `/qa/scenic-map`은 PROD 명승 경로로 연결됩니다. www.gateo.kr/korea/theme/scenic 에서 지도→내 위치(붉은 깃발)를 확인해 주세요.',
+    at: '2026-08-11',
+  },
   {
     id: '2026-08-11-scenic-locate-pin-143',
     session: '테마여행 #143, 내 위치 핀 시인성',

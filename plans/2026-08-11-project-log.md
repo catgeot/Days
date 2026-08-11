@@ -4,36 +4,22 @@
 
 ## 테마여행 #143, 내 위치 핀 시인성
 
-**상태**: feature `cursor/scenic-locate-1064` · PR [#99](https://github.com/catgeot/Days/pull/99) · Preview QA 대기  
-**세션**: `테마여행 #143, 내 위치 핀 시인성`
+**상태**: **main 병합** · tip 대기 push · `/qa/scenic-map`→PROD  
+**세션**: `테마여행 #143, 내 위치 핀 main 병합`
 
-- **한 일**: 내 위치 마커를 **붉은 깃발 핀**으로 교체 · 위치 해제 버튼 붉은 톤
-- **VERIFY**: `npm run build`
-- **공유**: `https://www.gateo.kr/qa/scenic-map`
-- **Preview**: `https://days-git-cursor-scenic-locate-1064-catgeots-projects.vercel.app/korea/theme/scenic`
-- **다음 채팅명**:
-
-```
-테마여행 #144, 지도 내 위치 QA
-```
+- **한 일**: 내 위치 **붉은 깃발 핀** main 반영 · PR [#100](https://github.com/catgeot/Days/pull/100) · `/qa/scenic-map`→PROD
+- **VERIFY**: `npm run build`(핀 커밋 시)
+- **공유**: `https://www.gateo.kr/qa/scenic-map` → PROD
+- **PROD**: `https://www.gateo.kr/korea/theme/scenic`
 
 ## 테마여행 #142, 지도 내 위치 주변 칩
 
-**상태**: feature `cursor/scenic-locate-1064` · PR [#99](https://github.com/catgeot/Days/pull/99) · Preview QA 대기  
+**상태**: **main 병합** · PR [#99](https://github.com/catgeot/Days/pull/99) `99c53c74`  
 **세션**: `테마여행 #142, 지도 내 위치 주변 칩`
 
 - **잠금**: 표시 상한 **12** · 반경 목표 ≤24 · 단계 **20→40→60→80**
 - **한 일**: 파드별 지도 내 위치→해당 파드만 주변 칩 · 분류/위치 해제로 드릴 복귀 · 목록 내 주변 적응 반경·더보기·권역 칩 클릭 시 위치 해제
 - **VERIFY**: `npm run smoke:korea-scenic-nearby` · `smoke:korea-scenic-map` · `npm run build`
-- **공유**: `https://www.gateo.kr/qa/scenic-map`
-- **Preview**: `https://days-git-cursor-scenic-locate-1064-catgeots-projects.vercel.app/korea/theme/scenic`
-- **작업 로그**: 「파드별 내 위치 주변 칩·목록 적응 반경」
-- **남은 일**: 사람 Preview QA
-- **다음 채팅명**:
-
-```
-테마여행 #143, 지도 내 위치 QA
-```
 
 ## 테마여행 #141, 지도 내 위치
 
