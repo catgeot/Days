@@ -2,6 +2,23 @@
 
 직전: [`2026-08-10-project-log.md`](./2026-08-10-project-log.md)
 
+## AI 큐레이션 #4, main 동기화·병합 QA
+
+**상태**: feature `cursor/blog-ai-curation-links-5aff` · PR [#42](https://github.com/catgeot/Days/pull/42) · tip `d9a26946` · 사람 Preview QA·병합 대기  
+**세션**: `AI 큐레이션 #4, main 동기화·병합 QA`
+
+- **한 일**: main(364↑) 머지 · 홈 축제·명승 칩 톤 유지 + 「AI 큐레이션」칩 · `/qa/curation`·작업 로그 유지
+- **VERIFY**: `npm run smoke:curation-history` · `smoke:curation-place-bridge` · `npm run build` PASS
+- **공유**: `https://www.gateo.kr/qa/curation`
+- **Preview**: `https://days-git-cursor-blog-ai-curation-links-5aff-catgeots-projects.vercel.app/blog/curation`
+- **작업 로그**: 「main 동기화 후 Preview QA」
+- **남은 일**: 사람 Preview QA → main 병합 · PR [#38](https://github.com/catgeot/Days/pull/38)은 #42에 포함(닫아도 됨)
+- **다음 채팅명**:
+
+```
+AI 큐레이션 #5, Preview QA·병합
+```
+
 ## 지구본 홈 #3, 모바일 써머리 하단
 
 **상태**: feature `cursor/summary-mobile-bottom-f024` · PR [#104](https://github.com/catgeot/Days/pull/104) · tip `238992f9` · Preview QA 대기  
