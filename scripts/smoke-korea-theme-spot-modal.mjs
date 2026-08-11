@@ -70,6 +70,17 @@ assert(
 assert(!modalSrc.includes('openMooni: true'), 'modal does not use Home openMooni route state');
 assert(modalSrc.includes('fetchScenicSpotVideos'), 'modal loads scenic videos');
 assert(modalSrc.includes('scenicHomePathForHubId'), 'nearby hubs open scenic home');
+assert(
+  modalSrc.includes('themeNavBackEntryForSpot'),
+  'modal builds themeBack via themeNavBackEntryForSpot',
+);
+assert(
+  modalSrc.includes('중첩 모달 우선') ||
+    (modalSrc.includes('row.modalSpot && onOpenSameHub') &&
+      modalSrc.indexOf('row.modalSpot && onOpenSameHub') <
+        modalSrc.indexOf('row.deepPath')),
+  'sameHub prefers nested modal over deepPath navigate',
+);
 assert(modalSrc.includes('galleryUrls'), 'modal keeps Tour gallery photos');
 assert(modalSrc.includes('openLightboxAt'), 'modal opens photo lightbox');
 assert(modalSrc.includes('PHOTO_SWIPE_THRESHOLD_PX'), 'modal supports photo swipe');

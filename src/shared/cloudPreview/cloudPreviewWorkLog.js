@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 143,
-  sessionPhase: '내 위치 핀 main 병합',
-  branch: 'main',
-  previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'scenic-map',
+  sessionNo: 144,
+  sessionPhase: '축제 같은 도시 명소 튕김',
+  branch: 'cursor/festival-samehub-8585',
+  previewPath: '/korea',
+  qaShareSlug: 'festival-samehub',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-11-festival-samehub-144',
+    session: '테마여행 #144, 축제 같은 도시 명소 튕김',
+    title: '축제→같은 도시 명소 중첩·이전 복귀',
+    detail:
+      '축제 상세→횡성호→안흥찐빵마을이 명소홈으로 튕기던 문제를 고쳤습니다. 같은 도시 명소는 중첩 모달로 열고, 축제 returnTo의 「이전」은 횡성호 명승 상세로 갑니다(축제홈 spot 오부착 제거). Preview에서 가을·강원·횡성한우축제→횡성호→안흥찐빵마을→닫기를 확인해 주세요.',
+    at: '2026-08-11',
+  },
   {
     id: '2026-08-11-scenic-locate-pin-143-main',
     session: '테마여행 #143, 내 위치 핀 main 병합',

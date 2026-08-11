@@ -2,6 +2,25 @@
 
 직전: [`2026-08-10-project-log.md`](./2026-08-10-project-log.md)
 
+## 테마여행 #144, 축제 같은 도시 명소 튕김
+
+**상태**: feature `cursor/festival-samehub-8585` · Preview QA 대기  
+**세션**: `테마여행 #144, 축제 같은 도시 명소 튕김`
+
+- **증상**: 축제홈→가을→강원→횡성한우축제→횡성호→안흥찐빵마을 클릭 시 명소홈으로 튕김 · 헤더 「횡성호 · 테마」클릭 시 축제홈으로 튕김
+- **원인**: 축제 오버레이 `returnTo="/korea"`에 scenic spotId를 붙여 themeBack이 `/korea?spot=횡성호`가 됨 · sameHub deepPath가 명소홈으로 navigate
+- **한 일**: sameHub는 modalSpot 중첩 모달 우선 · `themeNavBackEntryForSpot`로 축제 returnTo는 명승 `?spot=` 복귀 · 스모크 보강
+- **VERIFY**: `npm run smoke:korea-theme-nav-back` · `smoke:korea-theme-cross-links` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/festival-samehub`
+- **Preview**: `https://days-git-cursor-festival-samehub-8585-catgeots-projects.vercel.app/korea`
+- **작업 로그**: 「축제→같은 도시 명소 중첩·이전 복귀」
+- **남은 일**: 사람 Preview QA(위 클릭 경로)
+- **다음 채팅명**:
+
+```
+테마여행 #145, 축제 sameHub QA
+```
+
 ## 테마여행 #143, 내 위치 핀 시인성
 
 **상태**: **main 병합** · `d71a530f` · PR [#100](https://github.com/catgeot/Days/pull/100) MERGED · `/qa/scenic-map`→PROD  
