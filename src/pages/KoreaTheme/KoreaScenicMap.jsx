@@ -371,6 +371,22 @@ export default function KoreaScenicMap({
   }, [flyToUserLocation]);
 
   useEffect(() => {
+    if (!locateMsg || locateBusy) return undefined;
+    const t = window.setTimeout(() => setLocateMsg(''), 6_000);
+    return () => window.clearTimeout(t);
+  }, [locateMsg, locateBusy]);
+
+  const locateStackTopClass = fullscreen
+    ? 'top-[max(8.5rem,calc(env(safe-area-inset-top)+8rem))]'
+    : crumbs.length > 0
+      ? typeof onToggleFullscreen === 'function'
+        ? 'top-[7.1rem]'
+        : 'top-[3.85rem]'
+      : typeof onToggleFullscreen === 'function'
+        ? 'top-[3.85rem]'
+        : 'top-3';
+
+  useEffect(() => {
     clearViewHistory();
     const map = resolveMapInstance(mapRef.current);
     if (!map) return;
@@ -687,16 +703,9 @@ export default function KoreaScenicMap({
           {fullscreen ? '축소' : '전체'}
         </button>
       ) : null}
-      <div className="pointer-events-none absolute bottom-[6.75rem] right-3 z-20 flex flex-col items-end gap-1.5">
-        {locateMsg ? (
-          <p
-            role="status"
-            aria-live="polite"
-            className="pointer-events-auto max-w-[12.5rem] rounded-xl border border-stone-300/80 bg-white/92 px-2.5 py-1.5 text-[10px] font-semibold leading-snug text-stone-900 shadow-[0_4px_14px_rgba(0,0,0,0.28)] backdrop-blur-md"
-          >
-            {locateMsg}
-          </p>
-        ) : null}
+      <div
+        className={`pointer-events-none absolute right-3 z-20 flex flex-col items-end gap-1.5 ${locateStackTopClass}`}
+      >
         <button
           type="button"
           onClick={handleLocateMe}
@@ -713,6 +722,15 @@ export default function KoreaScenicMap({
           />
           {locateBusy ? '확인 중' : '내 위치'}
         </button>
+        {locateMsg ? (
+          <p
+            role="status"
+            aria-live="polite"
+            className="pointer-events-auto max-w-[13rem] rounded-xl border border-stone-300/80 bg-white/95 px-2.5 py-1.5 text-[10px] font-semibold leading-snug text-stone-900 shadow-[0_4px_14px_rgba(0,0,0,0.28)] backdrop-blur-md"
+          >
+            {locateMsg}
+          </p>
+        ) : null}
       </div>
       <MapCaption
         countLabel={showSpotPins ? '좌표' : '분류'}
