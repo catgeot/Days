@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Map, {
   Layer,
   Marker,
@@ -7,7 +7,7 @@ import Map, {
   useControl,
 } from 'react-map-gl/mapbox';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
-import { ChevronLeft, Maximize2, Minimize2 } from 'lucide-react';
+import { ChevronLeft, LocateFixed, Maximize2, Minimize2 } from 'lucide-react';
 import { MAPBOX_ATTRIBUTION_LINKS } from '../../data/mapboxAttribution';
 import {
   buildScenicMapGeoJson,
@@ -209,6 +209,9 @@ function drillChipClass(kind) {
   if (kind === 'area' || kind === 'cluster' || kind === 'cat2') {
     return 'rounded-full border border-stone-200/90 bg-stone-900/90 px-2.5 py-1 text-[11px] font-bold text-amber-50 shadow-[0_4px_14px_rgba(0,0,0,0.4)] backdrop-blur-sm hover:bg-stone-800';
   }
+  if (kind === 'spot') {
+    return 'rounded-full border border-sky-300/90 bg-sky-50/95 px-2 py-0.5 text-[10px] font-bold text-sky-950 shadow-[0_3px_12px_rgba(0,0,0,0.35)] hover:bg-sky-100';
+  }
   return 'rounded-full border border-amber-200/80 bg-[#fff7ed]/95 px-2 py-0.5 text-[10px] font-bold text-amber-950 shadow-[0_3px_12px_rgba(0,0,0,0.35)] hover:bg-amber-100';
 }
 
@@ -240,8 +243,19 @@ function drillChipClass(kind) {
  *   onDrillUp?: () => void,
  *   drillLevelLabel?: string,
  *   showSpotPins?: boolean,
+ *   userLocation?: { lng: number, lat: number } | null,
+ *   onLocateSuccess?: (coords: { lat: number, lng: number }) => void,
+ *   onClearLocate?: () => void,
+ *   locateActive?: boolean,
  * }} props
  */
+const LOCATE_ZOOM = 12;
+const GEO_OPTS = Object.freeze({
+  enableHighAccuracy: false,
+  timeout: 15_000,
+  maximumAge: 120_000,
+});
+
 export default function KoreaScenicMap({
   items,
   activeSpotId = '',
@@ -258,11 +272,26 @@ export default function KoreaScenicMap({
   onDrillCrumb,
   onDrillUp,
   showSpotPins = true,
+  userLocation: userLocationProp = null,
+  onLocateSuccess,
+  onClearLocate,
+  locateActive = false,
 }) {
   const mapRef = useRef(null);
   const viewStackRef = useRef([]);
   const focusViewRef = useRef(focusView);
   focusViewRef.current = focusView;
+  const [userLocationLocal, setUserLocationLocal] = useState(
+    /** @type {{ lng: number, lat: number } | null} */ (null),
+  );
+  const userLocation =
+    userLocationProp &&
+    Number.isFinite(userLocationProp.lng) &&
+    Number.isFinite(userLocationProp.lat)
+      ? userLocationProp
+      : userLocationLocal;
+  const [locateBusy, setLocateBusy] = useState(false);
+  const [locateMsg, setLocateMsg] = useState('');
   const pinItems = showSpotPins ? items : [];
   const geojson = useMemo(() => buildScenicMapGeoJson(pinItems), [pinItems]);
   const pointCount = geojson.features.length;
@@ -304,6 +333,82 @@ export default function KoreaScenicMap({
     if (typeof mapLike.getMap === 'function') return mapLike.getMap();
     return null;
   };
+
+  const flyToUserLocation = useCallback((lng, lat) => {
+    const map = resolveMapInstance(mapRef.current);
+    if (!map || typeof map.flyTo !== 'function') return;
+    pushCurrentView();
+    const curZoom =
+      typeof map.getZoom === 'function' ? Number(map.getZoom()) : LOCATE_ZOOM;
+    map.flyTo({
+      center: [lng, lat],
+      zoom: Math.max(Number.isFinite(curZoom) ? curZoom : LOCATE_ZOOM, LOCATE_ZOOM),
+      duration: 900,
+      essential: true,
+    });
+  }, []);
+
+  const handleLocateMe = useCallback(() => {
+    if (locateActive && typeof onClearLocate === 'function') {
+      onClearLocate();
+      setUserLocationLocal(null);
+      setLocateMsg('');
+      return;
+    }
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      setLocateMsg('이 기기에서는 위치 정보를 사용할 수 없습니다.');
+      return;
+    }
+    setLocateBusy(true);
+    setLocateMsg('위치를 확인하는 중…');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        setLocateBusy(false);
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+          setLocateMsg('위치를 가져오지 못했습니다.');
+          return;
+        }
+        setUserLocationLocal({ lng, lat });
+        setLocateMsg('');
+        flyToUserLocation(lng, lat);
+        onLocateSuccess?.({ lat, lng });
+      },
+      (err) => {
+        setLocateBusy(false);
+        const code = err?.code;
+        if (code === 1) {
+          setLocateMsg(
+            '위치 권한이 필요합니다. 브라우저에서 위치를 허용해 주세요.',
+          );
+        } else if (code === 3) {
+          setLocateMsg('위치 확인이 지연되었습니다. 잠시 후 다시 시도해 주세요.');
+        } else {
+          setLocateMsg(
+            '위치를 가져오지 못했습니다. 권한·네트워크를 확인해 주세요.',
+          );
+        }
+      },
+      GEO_OPTS,
+    );
+  }, [flyToUserLocation, locateActive, onClearLocate, onLocateSuccess]);
+
+  useEffect(() => {
+    if (!locateMsg || locateBusy) return undefined;
+    const t = window.setTimeout(() => setLocateMsg(''), 6_000);
+    return () => window.clearTimeout(t);
+  }, [locateMsg, locateBusy]);
+
+  const locateStackTopClass = fullscreen
+    ? 'top-[max(8.5rem,calc(env(safe-area-inset-top)+8rem))]'
+    : crumbs.length > 0
+      ? typeof onToggleFullscreen === 'function'
+        ? 'top-[7.1rem]'
+        : 'top-[3.85rem]'
+      : typeof onToggleFullscreen === 'function'
+        ? 'top-[3.85rem]'
+        : 'top-3';
 
   useEffect(() => {
     clearViewHistory();
@@ -519,15 +624,38 @@ export default function KoreaScenicMap({
                 onSelectDrillChip?.(chip);
               }}
               className={`pointer-events-auto inline-flex max-w-[9.5rem] items-center gap-1 ${drillChipClass(chip.kind)}`}
-              aria-label={`${chip.label} ${chip.count}곳 펼치기`}
+              aria-label={
+                chip.kind === 'spot'
+                  ? `${chip.label} ${chip.count}`
+                  : `${chip.label} ${chip.count}곳 펼치기`
+              }
             >
               <span className="truncate">{chip.label}</span>
-              <span className="shrink-0 tabular-nums opacity-80">
-                {chip.count}
-              </span>
+              {chip.count != null && chip.count !== '' ? (
+                <span className="shrink-0 tabular-nums opacity-80">
+                  {chip.count}
+                </span>
+              ) : null}
             </button>
           </Marker>
         ))}
+        {userLocation ? (
+          <Marker
+            longitude={userLocation.lng}
+            latitude={userLocation.lat}
+            anchor="center"
+            style={{ zIndex: 3 }}
+          >
+            <span
+              className="relative flex h-4 w-4 items-center justify-center"
+              aria-label="내 위치"
+              title="내 위치"
+            >
+              <span className="absolute inline-flex h-7 w-7 animate-ping rounded-full bg-sky-400/35" />
+              <span className="relative inline-flex h-3.5 w-3.5 rounded-full border-2 border-white bg-sky-500 shadow-[0_0_0_1px_rgba(12,74,110,0.45)]" />
+            </span>
+          </Marker>
+        ) : null}
       </Map>
       {crumbs.length > 0 ? (
         <div className="pointer-events-none absolute left-3 right-3 top-3 z-20 flex flex-col gap-1.5">
@@ -605,6 +733,40 @@ export default function KoreaScenicMap({
           {fullscreen ? '축소' : '전체'}
         </button>
       ) : null}
+      <div
+        className={`pointer-events-none absolute right-3 z-20 flex flex-col items-end gap-1.5 ${locateStackTopClass}`}
+      >
+        <button
+          type="button"
+          onClick={handleLocateMe}
+          disabled={locateBusy}
+          aria-label={locateActive ? '내 위치 해제' : '내 위치로 이동'}
+          aria-busy={locateBusy}
+          aria-pressed={locateActive}
+          title={locateActive ? '내 위치 해제' : '내 위치'}
+          className={`pointer-events-auto inline-flex h-10 items-center gap-1.5 rounded-full border px-3 text-[11px] font-bold shadow-lg backdrop-blur-md disabled:cursor-wait disabled:opacity-70 ${
+            locateActive
+              ? 'border-sky-300/80 bg-sky-500 text-[#1b1410] hover:bg-sky-400'
+              : 'border-white/40 bg-[#1b1410]/75 text-white hover:bg-[#1b1410]/88'
+          }`}
+        >
+          <LocateFixed
+            size={15}
+            className={locateBusy ? 'animate-pulse' : undefined}
+            aria-hidden="true"
+          />
+          {locateBusy ? '확인 중' : locateActive ? '위치 해제' : '내 위치'}
+        </button>
+        {locateMsg ? (
+          <p
+            role="status"
+            aria-live="polite"
+            className="pointer-events-auto max-w-[13rem] rounded-xl border border-stone-300/80 bg-white/95 px-2.5 py-1.5 text-[10px] font-semibold leading-snug text-stone-900 shadow-[0_4px_14px_rgba(0,0,0,0.28)] backdrop-blur-md"
+          >
+            {locateMsg}
+          </p>
+        ) : null}
+      </div>
       <MapCaption
         countLabel={showSpotPins ? '좌표' : '분류'}
         pointCount={

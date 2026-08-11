@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 140,
-  sessionPhase: '페이지 하단 여백',
-  branch: 'cursor/page-end-pad-1e22',
+  sessionNo: 142,
+  sessionPhase: '지도 내 위치 주변 칩',
+  branch: 'cursor/scenic-locate-1064',
   previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'page-end-pad',
+  qaShareSlug: 'scenic-map',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-11-scenic-locate-near-142',
+    session: '테마여행 #142, 지도 내 위치 주변 칩',
+    title: '파드별 내 위치 주변 칩·목록 적응 반경',
+    detail:
+      '지도 내 위치는 파드별로 해당 파드만 가까운 칩(최대 12)·적응 반경(20→80km)으로 보여 줍니다. 분류 칩/크럼 클릭·위치 해제로 드릴로 복귀. 목록 내 주변도 동일 상한·더보기·반경 확대. Preview에서 명소 지도→내 위치→칩→분류 복귀를 확인해 주세요.',
+    at: '2026-08-11',
+  },
+  {
+    id: '2026-08-11-scenic-locate-141',
+    session: '테마여행 #141, 지도 내 위치',
+    title: '명승 지도 — 내 위치 버튼',
+    detail:
+      '명승홈 지도에 「내 위치」버튼을 넣었습니다. 위치 허용 후 파란 점으로 표시하고 카메라가 이동합니다. 목록 「내 주변」필터·TourAPI는 건드리지 않습니다. Preview에서 명소/명승/관광지 지도 → 내 위치를 확인해 주세요.',
+    at: '2026-08-11',
+  },
   {
     id: '2026-08-11-page-end-pad-140',
     session: '테마여행 #140, 페이지 하단 여백',

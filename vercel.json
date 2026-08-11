@@ -22,7 +22,7 @@
     },
     {
       "source": "/qa/scenic-map",
-      "destination": "https://www.gateo.kr/korea/theme/scenic",
+      "destination": "https://days-git-cursor-scenic-locate-1064-catgeots-projects.vercel.app/korea/theme/scenic",
       "permanent": false
     },
     {
