@@ -4,10 +4,10 @@
 
 ## 테마여행 #141, 지도 내 위치
 
-**상태**: feature `cursor/scenic-locate-1064` · Preview QA 대기  
+**상태**: feature `cursor/scenic-locate-1064` · PR [#99](https://github.com/catgeot/Days/pull/99) · tip `84295e3c` · Preview QA 대기  
 **세션**: `테마여행 #141, 지도 내 위치`
 
-- **한 일**: 명승홈 지도(`KoreaScenicMap`)에 **내 위치** 버튼·파란 점 마커·flyTo 추가. 목록「내 주변」·필터 해제·TourAPI 호출은 없음
+- **한 일**: 명승홈 지도(`KoreaScenicMap`)에 **내 위치** 버튼·파란 점 마커·flyTo 추가(우상단). 목록「내 주변」·필터 해제·TourAPI 호출은 없음
 - **VERIFY**: `npm run smoke:korea-scenic-map` · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/scenic-map`
 - **Preview**: `https://days-git-cursor-scenic-locate-1064-catgeots-projects.vercel.app/korea/theme/scenic`
