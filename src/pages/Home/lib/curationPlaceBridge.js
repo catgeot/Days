@@ -1,0 +1,161 @@
+import { TRAVEL_SPOTS } from '../data/travelSpots.js';
+import { citiesData } from '../data/citiesData.js';
+import { formatUrlName, isEphemeralSlug, resolveCatalogPlaceSlug } from './formatUrlName.js';
+import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve.js';
+
+export const CURATION_PENDING_HOME_KEY = 'gateo_curation_pending_home';
+
+export function hasValidCurationCoords(loc) {
+  const lat = Number(loc?.lat);
+  const lng = Number(loc?.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return false;
+  if (lat === 0 && lng === 0) return false;
+  return Math.abs(lat) <= 90 && Math.abs(lng) <= 180;
+}
+
+function matchCatalogSpot(curationData) {
+  if (!curationData?.location) return null;
+  const dest = String(curationData.location).trim();
+  const locationEn = String(curationData.locationEn || '').trim();
+  const enCity = locationEn.split(',')[0].trim();
+  const slugHint = resolveCatalogPlaceSlug(curationData.slug);
+
+  if (slugHint) {
+    const bySlug = TRAVEL_SPOTS.find((s) => String(s.slug).toLowerCase() === slugHint);
+    if (bySlug) return bySlug;
+  }
+
+  const exact =
+    TRAVEL_SPOTS.find(
+      (s) =>
+        s.name === dest ||
+        s.name_en === dest ||
+        (enCity && s.name_en && s.name_en.toLowerCase() === enCity.toLowerCase()) ||
+        (locationEn && s.name_en && s.name_en.toLowerCase() === locationEn.toLowerCase()),
+    ) || null;
+  if (exact) return exact;
+
+  return (
+    resolveTravelSpotFromSearchQuery(dest) ||
+    (enCity ? resolveTravelSpotFromSearchQuery(enCity) : null) ||
+    null
+  );
+}
+
+/**
+ * 블로그 AI 큐레이션 결과 → 홈 써머리/장소카드/무니용 location.
+ * SSOT 매칭 우선 · 없으면 좌표 있는 uiPlace · 좌표 없으면 null(지도 진입 불가).
+ */
+export function hydrateLocationFromCuration(curationData) {
+  if (!curationData?.location) return null;
+
+  const dest = String(curationData.location).trim();
+  const locationEn = String(curationData.locationEn || '').trim();
+  const catalog = matchCatalogSpot(curationData);
+  if (catalog) {
+    return {
+      ...catalog,
+      type: 'temp-base',
+      category: catalog.category || 'paradise',
+      desc: curationData.description || catalog.desc || '',
+      curationSummary: curationData.description || '',
+      curation_data: curationData,
+    };
+  }
+
+  const enCity = locationEn.split(',')[0].trim();
+  const city =
+    (citiesData || []).find(
+      (c) =>
+        c.name === dest ||
+        c.name_en === dest ||
+        (enCity && c.name_en && c.name_en.toLowerCase() === enCity.toLowerCase()),
+    ) || null;
+  if (city && hasValidCurationCoords(city)) {
+    return {
+      id: `city-${city.lat}-${city.lng}`,
+      slug: city.slug || formatUrlName(city.name_en || city.name),
+      name: dest,
+      name_en: city.name_en || locationEn || dest,
+      lat: city.lat,
+      lng: city.lng,
+      country: curationData.country || city.country || undefined,
+      country_en: curationData.country_en || city.country_en || undefined,
+      type: 'temp-base',
+      category: 'paradise',
+      uiPlace: true,
+      source: 'cities',
+      desc: curationData.description || '',
+      curationSummary: curationData.description || '',
+      curation_data: curationData,
+    };
+  }
+
+  if (!hasValidCurationCoords(curationData)) return null;
+
+  const lat = Number(curationData.lat);
+  const lng = Number(curationData.lng);
+  const rawSlug = typeof curationData.slug === 'string' ? curationData.slug.trim() : '';
+  const slug =
+    (rawSlug && !isEphemeralSlug(rawSlug) && rawSlug) ||
+    formatUrlName(enCity || locationEn || dest) ||
+    `search-${lat}-${lng}`;
+
+  return {
+    id: curationData.placeId || `search-${lat}-${lng}`,
+    slug,
+    name: dest,
+    name_en: locationEn || enCity || dest,
+    lat,
+    lng,
+    country: curationData.country || undefined,
+    country_en: curationData.country_en || undefined,
+    type: 'temp-base',
+    category: 'paradise',
+    uiPlace: true,
+    desc: curationData.description || '',
+    curationSummary: curationData.description || '',
+    curation_data: curationData,
+  };
+}
+
+/** 블로그 → 홈 써머리(±무니) 핸드오프 */
+export function queueCurationHomeOpen(location, { openMooni = false } = {}) {
+  if (!location || !hasValidCurationCoords(location)) return false;
+  try {
+    sessionStorage.setItem(
+      CURATION_PENDING_HOME_KEY,
+      JSON.stringify({
+        location,
+        openMooni: Boolean(openMooni),
+        at: Date.now(),
+      }),
+    );
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function consumeCurationHomeOpen({ maxAgeMs = 120000 } = {}) {
+  try {
+    const raw = sessionStorage.getItem(CURATION_PENDING_HOME_KEY);
+    if (!raw) return null;
+    sessionStorage.removeItem(CURATION_PENDING_HOME_KEY);
+    const parsed = JSON.parse(raw);
+    if (!parsed?.location || !hasValidCurationCoords(parsed.location)) return null;
+    const at = Number(parsed.at);
+    if (Number.isFinite(at) && Date.now() - at > maxAgeMs) return null;
+    return {
+      location: parsed.location,
+      openMooni: Boolean(parsed.openMooni),
+    };
+  } catch {
+    try {
+      sessionStorage.removeItem(CURATION_PENDING_HOME_KEY);
+    } catch {
+      /* private mode */
+    }
+    return null;
+  }
+}

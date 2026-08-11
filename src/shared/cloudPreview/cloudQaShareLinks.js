@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'curation',
+    label: 'AI 큐레이션',
+    branch: 'cursor/blog-ai-curation-links-5aff',
+    destination:
+      'https://days-git-cursor-blog-ai-curation-links-5aff-catgeots-projects.vercel.app/blog/curation',
+    active: true,
+  },
+  {
     slug: 'summary-bottom',
     label: '모바일 써머리 하단',
     branch: 'cursor/summary-mobile-bottom-f024',

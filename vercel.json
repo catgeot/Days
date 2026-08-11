@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/curation",
+      "destination": "https://days-git-cursor-blog-ai-curation-links-5aff-catgeots-projects.vercel.app/blog/curation",
+      "permanent": false
+    },
+    {
       "source": "/qa/summary-bottom",
       "destination": "https://days-git-cursor-summary-mobile-bottom-f024-catgeots-projects.vercel.app/",
       "permanent": false

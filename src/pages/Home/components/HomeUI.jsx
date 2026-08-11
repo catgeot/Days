@@ -136,6 +136,18 @@ const HomeUI = React.memo(({
                   한국의 명승
                 </span>
               </Link>
+              <Link
+                to="/blog/curation"
+                className="group flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-sky-400/45 bg-black/60 px-2.5 py-1.5 shadow-[0_0_18px_rgba(56,189,248,0.2)] backdrop-blur-md transition-all hover:border-sky-300/70 hover:bg-black/75"
+                aria-label="AI 큐레이션 페이지로 이동"
+              >
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-sky-400/35 bg-sky-500/15 text-sky-300 group-hover:bg-sky-500/25">
+                  <Sparkles size={15} aria-hidden="true" />
+                </span>
+                <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
+                  AI 큐레이션
+                </span>
+              </Link>
             </>
           )}
         </div>

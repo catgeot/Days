@@ -2,6 +2,16 @@
 
 직전: [`2026-07-30-project-log.md`](./2026-07-30-project-log.md)
 
+## AI 큐레이션 #3, 홈 진입 연결
+
+**상태**: feature `cursor/blog-ai-curation-links-5aff` · PR [#42](https://github.com/catgeot/Days/pull/42) · Preview QA 대기
+
+- 홈 로고 아래 「AI 큐레이션」칩 → `/blog/curation`
+- 큐레이션 페이지 「홈」복귀 링크
+- `/qa/curation` 공유 + Preview 작업 로그
+- main 동기화 · `smoke:curation-*` · `npm run build` PASS
+- **공유**: `https://www.gateo.kr/qa/curation` · git Preview `…-git-cursor-blog-ai-curation-links-5aff-….vercel.app/blog/curation`
+
 ## MRT 패키지 연결 #3, 숙소·투어 패키지 CTA
 
 **상태**: feature `cursor/mrt-package-strip-18d2` · Preview QA 대기
