@@ -1,13 +1,13 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-07-25T08:21:04.723Z",
+    "generatedAt": "2026-08-11T22:19:08.498Z",
     "spotCount": 273,
-    "placeIdCount": 641,
+    "placeIdCount": 647,
     "stats": {
-      "override": 171,
+      "override": 172,
       "curatedPreserved": 0,
-      "toolkitSync": 102,
+      "toolkitSync": 101,
       "runtime": 0,
       "multiRule": 0,
       "geo": 0,
@@ -1820,14 +1820,15 @@
       ],
       "preferredLinkIata": "ZRH",
       "kind": "multi",
-      "source": "toolkit-sync",
+      "source": "curated-override",
       "confidence": "high",
-      "rationale": "place_toolkit essential_guide 동기화",
-      "graphFlightRouteHubIatas": [
-        "MUC",
+      "bannerNote": "체르마트는 공항이 없습니다. 보통 인천→취리히(ZRH) 직항 후 기차로 들어갑니다. 제네바(GVA)도 도착 관문이며 서로 환승 경유지가 아닙니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "rationale": "ICN↔ZRH 직항(대한항공·스위스 등) · graph-2hop ICN→MUC→GVA→ZRH 오탐(GVA·ZRH는 체르마트 도착 관문, 상호 경유 아님)",
+      "searchHintIatas": [
+        "ZRH",
         "GVA"
       ],
-      "graphFlightRouteSource": "graph-2hop"
+      "flightRouteHubIatas": []
     },
     "dublin": {
       "primaryIatas": [

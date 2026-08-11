@@ -285,6 +285,16 @@ async function main() {
       expectRouteIatas: ['ICN', 'CDG'],
     },
     {
+      id: 'icn-zermatt-direct',
+      label: 'ICN → zermatt explicit direct (ZRH · no MUC/GVA hub)',
+      location: loadTravelSpotBySlug('zermatt'),
+      originIata: 'ICN',
+      expectEdge: false,
+      expectPreview: true,
+      expectRouteIatas: ['ICN', 'ZRH'],
+      forbiddenHubs: ['MUC', 'GVA'],
+    },
+    {
       id: 'icn-grand-canyon-waypoint',
       label: 'ICN → grand-canyon Pacific waypoint',
       location: loadTravelSpotBySlug('grand-canyon'),
@@ -485,6 +495,13 @@ async function main() {
       const actual = summary?.hubIatas ?? [];
       if (actual.join(',') !== testCase.expectHubIatas.join(',')) {
         checks.push(`hubs: expected ${testCase.expectHubIatas.join(',')}, got ${actual.join(',') || '—'}`);
+      }
+    }
+    if (testCase.forbiddenHubs?.length) {
+      const actualHubs = summary?.hubIatas ?? [];
+      const hit = testCase.forbiddenHubs.filter((hub) => actualHubs.includes(hub));
+      if (hit.length) {
+        checks.push(`forbidden hub present: ${hit.join(',')}`);
       }
     }
     if (testCase.expectWaypoints) {
