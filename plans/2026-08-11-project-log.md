@@ -4,7 +4,7 @@
 
 ## 테마여행 #144, 축제 같은 도시 명소 튕김
 
-**상태**: feature `cursor/festival-samehub-8585` · PR [#101](https://github.com/catgeot/Days/pull/101) · tip `e79c03a5` · Preview QA 대기  
+**상태**: feature `cursor/festival-samehub-8585` · PR [#101](https://github.com/catgeot/Days/pull/101) · tip `af6d41ac` · Preview QA 대기  
 **세션**: `테마여행 #144, 축제 같은 도시 명소 튕김`
 
 - **증상**: 축제홈→가을→강원→횡성한우축제→횡성호→안흥찐빵마을 클릭 시 명소홈으로 튕김 · 헤더 「횡성호 · 테마」클릭 시 축제홈으로 튕김
