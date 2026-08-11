@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '지구본 홈',
-  sessionNo: 1,
-  sessionPhase: '플래너 보기 버튼',
-  branch: 'cursor/summary-planner-bd48',
+  sessionNo: 2,
+  sessionPhase: '항로 플래너·체르마트',
+  branch: 'cursor/flight-cinema-zermatt-f4d1',
   previewPath: '/',
-  qaShareSlug: 'summary-planner',
+  qaShareSlug: 'zermatt-flight',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-11-zermatt-flight-2',
+    session: '지구본 홈 #2, 항로 플래너·체르마트',
+    title: '항로 Bar 「여행 플래너」·체르마트 직항',
+    detail:
+      '항로 상태바 버튼을 「여행 플랜」→「여행 플래너」로 바꿨고, 체르마트는 ICN→ZRH 직항(MUC·GVA 경유 오탐 제거)입니다. Preview에서 체르마트→항공 경로→직항 표시와 버튼을 확인해 주세요.',
+    at: '2026-08-11',
+  },
   {
     id: '2026-08-11-summary-planner-1b',
     session: '지구본 홈 #1, 플래너 보기 버튼',

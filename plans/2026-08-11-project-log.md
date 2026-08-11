@@ -2,22 +2,34 @@
 
 직전: [`2026-08-10-project-log.md`](./2026-08-10-project-log.md)
 
+## 지구본 홈 #2, 항로 플래너·체르마트
+
+**상태**: feature `cursor/flight-cinema-zermatt-f4d1` · Preview QA 대기  
+**세션**: `지구본 홈 #2, 항로 플래너·체르마트`
+
+- **증상**: 항로 Bar 「여행 플랜」문구 · 체르마트 graph-2hop `ICN→MUC→GVA→ZRH`(ZRH·GVA 도착 관문을 경유로 오표시)
+- **한 일**: Bar 「여행 플래너」·`zermatt` `flightRouteHubIatas: []`(ICN→ZRH 직항) · smoke `icn-zermatt-direct` · `/qa/zermatt-flight`
+- **VERIFY**: `npm run generate:airports` · `smoke:flight-route-baseline` 26/26 · `audit:airports` none:0 · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/zermatt-flight`
+- **Preview**: `https://days-git-cursor-flight-cinema-zermatt-f4d1-catgeots-projects.vercel.app/`
+- **작업 로그**: 「항로 Bar 「여행 플래너」·체르마트 직항」
+- **남은 일**: 사람 Preview QA(체르마트→항공 경로 직항 · Bar 버튼 문구)
+- **다음 채팅명**:
+
+```
+지구본 홈 #3, 체르마트 항로 QA
+```
+
 ## 지구본 홈 #1, 플래너 보기 버튼
 
-**상태**: feature `cursor/summary-planner-bd48` · PR [#102](https://github.com/catgeot/Days/pull/102) · Preview QA 대기  
+**상태**: **main 병합** · PR [#102](https://github.com/catgeot/Days/pull/102) MERGED · `/qa/summary-planner` inactive  
 **세션**: `지구본 홈 #1, 플래너 보기 버튼`
 
 - **한 일**: 써머리 「가까이 보기」→ 플래너 있으면 「여행 플래너」`Link` · 없으면 가까이 보기 유지 · 문구 「플래너 보기」→「여행 플래너」
 - **VERIFY**: `npm run build`
-- **공유**: `https://www.gateo.kr/qa/summary-planner`
+- **공유**: `https://www.gateo.kr/qa/summary-planner` (inactive)
 - **Preview**: `https://days-git-cursor-summary-planner-bd48-catgeots-projects.vercel.app/`
 - **작업 로그**: 「써머리 CTA 문구 「여행 플래너」」
-- **남은 일**: 사람 Preview QA(플래너 유/무 핀 비교 · 라벨)
-- **다음 채팅명**:
-
-```
-지구본 홈 #2, 플래너 보기 QA
-```
 
 ## 테마여행 #144, 축제 같은 도시 명소 튕김
 

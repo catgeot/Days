@@ -467,7 +467,7 @@ export default function FlightCinemaBar({
                 className={`flight-cinema-bar-planner shrink-0 ${BAR_BTN} border-violet-200/70 bg-gradient-to-b from-violet-500/55 to-violet-600/45 text-white shadow-sm hover:from-violet-400/65 hover:to-violet-500/55`}
               >
                 <LayoutList size={12} className="opacity-95" aria-hidden="true" />
-                여행 플랜
+                여행 플래너
               </Link>
             ) : null}
             {location ? (

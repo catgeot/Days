@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/zermatt-flight",
+      "destination": "https://days-git-cursor-flight-cinema-zermatt-f4d1-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
       "source": "/qa/summary-planner",
       "destination": "https://days-git-cursor-summary-planner-bd48-catgeots-projects.vercel.app/",
       "permanent": false
