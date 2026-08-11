@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'festival-samehub',
+    label: '축제→같은 도시 명소 중첩',
+    branch: 'cursor/festival-samehub-8585',
+    destination:
+      'https://days-git-cursor-festival-samehub-8585-catgeots-projects.vercel.app/korea',
+    active: true,
+  },
+  {
     slug: 'page-end-pad',
     label: '페이지 스크롤 끝 하단 여백',
     branch: 'cursor/page-end-pad-1e22',

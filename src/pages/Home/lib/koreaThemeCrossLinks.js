@@ -314,7 +314,9 @@ export function listSameHubCrossSpots(hubId, opts = {}) {
     const row = byPlaceSlug.get(slug);
     if (!row) continue;
     const deepPath = sameHubMembershipDeepPath(row);
-    const modalSpot = deepPath ? null : sameHubMembershipModalSpot(row);
+    // deepPath가 있어도 modalSpot을 함께 둔다 — 축제 오버레이 등에서는
+    // 중첩 모달로 열어 명소홈으로 튕기지 않는다.
+    const modalSpot = sameHubMembershipModalSpot(row);
     if (!deepPath && !modalSpot) continue;
     out.push({
       placeSlug: row.placeSlug,

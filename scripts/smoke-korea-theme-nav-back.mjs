@@ -16,6 +16,7 @@ import {
   reconcileThemeNavBack,
   resolveThemeNavBack,
   themeModuleLabelForPath,
+  themeNavBackEntryForSpot,
 } from '../src/pages/Home/lib/koreaThemeNavBack.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -63,6 +64,40 @@ assert(
   themeModuleLabelForPath('/korea/theme/top10?spot=x') === '10대 절경',
   'module label from path',
 );
+assert(themeModuleLabelForPath('/korea') === '축제', 'festival module label');
+
+{
+  const fromFestival = themeNavBackEntryForSpot(
+    { id: 'hoengseong-lake', name: '횡성호', areaCode: '32' },
+    '/korea',
+  );
+  assert(
+    fromFestival?.path === '/korea/theme/scenic?spot=hoengseong-lake' &&
+      fromFestival?.label === '횡성호' &&
+      fromFestival?.moduleLabel === '한국의 명승',
+    `festival returnTo back goes to scenic spot (got ${JSON.stringify(fromFestival)})`,
+  );
+  assert(
+    !String(fromFestival?.path || '').startsWith('/korea?'),
+    'festival returnTo must not attach scenic spotId onto /korea',
+  );
+  assert(
+    formatThemeNavBackLabel(fromFestival) === '횡성호 · 한국의 명승',
+    'festival→scenic back label',
+  );
+}
+{
+  const fromScenic = themeNavBackEntryForSpot(
+    { id: 'hoengseong-lake', name: '횡성호', areaCode: '32' },
+    '/korea/theme/scenic?cregion=%EA%B0%95%EC%9B%90',
+  );
+  assert(
+    fromScenic?.path.includes('spot=hoengseong-lake') &&
+      fromScenic?.path.includes('cregion=') &&
+      fromScenic?.moduleLabel === '한국의 명승',
+    `scenic returnTo keeps filters + spot (got ${fromScenic?.path})`,
+  );
+}
 
 pushThemeNavBack({
   path: '/korea/theme/top10?spot=boseong-tea',
@@ -168,10 +203,6 @@ assert(
   korea.includes('ThemeFestivalBackLink'),
   'festival from=theme uses ThemeFestivalBackLink',
 );
-assert(
-  korea.includes('to="/korea/theme/scenic"') && korea.includes('명승'),
-  'festival header has 명승 mutual chip',
-);
 
 const festSheet = readFileSync(
   join(root, 'src/pages/Korea/FestivalDetailSheet.jsx'),
@@ -184,6 +215,11 @@ assert(
 assert(
   festSheet.includes('숙소 · 투어') && festSheet.includes('패키지'),
   'festival detail has stay/tna/package rails',
+);
+assert(
+  festSheet.includes('returnTo="/korea"') &&
+    festSheet.includes('ThemeSpotDetailModal'),
+  'festival scenic overlay uses returnTo=/korea (backEntry must remap)',
 );
 
 const crossLib = readFileSync(

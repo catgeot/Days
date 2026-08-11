@@ -28,7 +28,7 @@ import {
 import {
   buildThemeModulePath,
   pushThemeNavBack,
-  themeModuleLabelForPath,
+  themeNavBackEntryForSpot,
 } from '../Home/lib/koreaThemeNavBack';
 import { buildMooniBoundSpotFromLocation } from '../Home/lib/placeChatIntro';
 import MooniBoundChatHost from '../Home/components/MooniBoundChatHost';
@@ -168,26 +168,24 @@ function ThemeSpotCrossRail({
     [spot?.placeSlug],
   );
 
-  const backEntry = useMemo(() => {
-    if (!spot || !returnTo) return null;
-    const path = buildThemeModulePath(returnTo, {
-      spotId: spot.id,
-      areaCode: spot.areaCode,
-    });
-    return {
-      path,
-      label: spot.name,
-      moduleLabel: themeModuleLabelForPath(returnTo),
-    };
-  }, [spot, returnTo]);
+  const backEntry = useMemo(
+    () => themeNavBackEntryForSpot(spot, returnTo),
+    [spot, returnTo],
+  );
 
   const goThemePath = (to) => {
     if (!to) return;
+    // 축제 오버레이(`/korea`)에서 테마 모듈로 나갈 때만 시트 닫기.
+    // 명승 홈에서는 closeModal이 spot query를 지워 deep-link와 경합할 수 있음.
+    const leavingFestivalOverlay =
+      String(returnTo || '').split('?')[0] === '/korea';
     if (backEntry) {
       pushThemeNavBack(backEntry);
+      if (leavingFestivalOverlay) onClose?.();
       navigate(to, { state: { themeBack: backEntry } });
       return;
     }
+    if (leavingFestivalOverlay) onClose?.();
     navigate(to);
   };
 
@@ -268,11 +266,15 @@ function ThemeSpotCrossRail({
               <li key={row.placeSlug}>
                 <CrossTextButton
                   onClick={() => {
+                    // 중첩 모달 우선 — 축제→명소 상세에서 deepPath로 명소홈 튕김 방지
+                    if (row.modalSpot && onOpenSameHub) {
+                      onOpenSameHub(row.modalSpot);
+                      return;
+                    }
                     if (row.deepPath) {
                       goThemePath(row.deepPath);
                       return;
                     }
-                    if (row.modalSpot) onOpenSameHub?.(row.modalSpot);
                   }}
                 >
                   {row.name}

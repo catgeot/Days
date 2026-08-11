@@ -2,6 +2,7 @@ const KEY = 'gateo:theme-nav-back-stack';
 const MAX_DEPTH = 8;
 
 const MODULE_LABEL_BY_PATH = {
+  '/korea': '축제',
   '/korea/theme': '한국의 명승',
   '/korea/theme/top10': '10대 절경',
   '/korea/theme/scenic': '한국의 명승',
@@ -38,6 +39,37 @@ export function buildThemeModulePath(basePath, opts = {}) {
 export function themeModuleLabelForPath(path) {
   const pathname = String(path || '').split('?')[0];
   return MODULE_LABEL_BY_PATH[pathname] || '테마';
+}
+
+/**
+ * 상세 모달 크로스 이동 시 「이전」스택 엔트리.
+ * 축제(`/korea`) 등 테마 모듈이 아닌 returnTo에 scenic spotId를 붙이면
+ * 헤더 「○○ · 테마」가 축제홈으로 튕기므로, 그 경우 명승 상세로 복귀한다.
+ * @param {{ id?: string, name?: string, areaCode?: string | number | null } | null | undefined} spot
+ * @param {string | null | undefined} returnTo
+ * @returns {{ path: string, label: string, moduleLabel: string } | null}
+ */
+export function themeNavBackEntryForSpot(spot, returnTo) {
+  if (!spot || !returnTo) return null;
+  const returnPath = String(returnTo).split('?')[0];
+  const label = String(spot.name || '').trim();
+  const spotId = String(spot.id || '').trim();
+  if (returnPath === '/korea' || !returnPath.startsWith('/korea/theme/')) {
+    if (!spotId) return null;
+    return {
+      path: buildThemeModulePath('/korea/theme/scenic', { spotId }),
+      label,
+      moduleLabel: themeModuleLabelForPath('/korea/theme/scenic'),
+    };
+  }
+  return {
+    path: buildThemeModulePath(returnTo, {
+      spotId: spot.id,
+      areaCode: spot.areaCode,
+    }),
+    label,
+    moduleLabel: themeModuleLabelForPath(returnTo),
+  };
 }
 
 /**

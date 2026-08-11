@@ -153,6 +153,26 @@ assert(
   hanbat?.deepPath === '/korea/theme/scenic?spot=hanbat-arboretum',
   `hanbat deepPath scenic spot (got ${hanbat?.deepPath})`,
 );
+assert(
+  hanbat?.modalSpot?.contentId && hanbat?.modalSpot?.name === '한밭수목원',
+  `hanbat also exposes modalSpot for nested open (got ${JSON.stringify(hanbat?.modalSpot)})`,
+);
+
+const hoengLake = listKoreaScenicSpots().find((s) => s.id === 'hoengseong-lake');
+assert(Boolean(hoengLake), 'scenic hoengseong-lake exists');
+const hoengSame = listSameHubCrossSpots(hoengLake.hubId, {
+  excludePlaceSlug: hoengLake.placeSlug,
+});
+const anheung = hoengSame.find(
+  (r) => r.placeSlug === 'anheung-steamed-bun-village',
+);
+assert(
+  anheung?.deepPath ===
+    '/korea/theme/scenic?spot=anheung-steamed-bun-village' &&
+    anheung?.modalSpot?.contentId === '128074' &&
+    anheung?.modalSpot?.name === '안흥찐빵마을',
+  `hoengseong sameHub 안흥 has deepPath+modalSpot (got ${JSON.stringify(anheung)})`,
+);
 const expo = yuseongSame.find((r) => r.placeSlug === 'expo-science-park');
 assert(
   expo?.deepPath == null &&
