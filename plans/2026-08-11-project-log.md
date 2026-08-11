@@ -4,7 +4,7 @@
 
 ## 지구본 홈 #3, 모바일 써머리 하단
 
-**상태**: feature `cursor/summary-mobile-bottom-f024` · PR [#104](https://github.com/catgeot/Days/pull/104) · tip `0b5f85ac` · Preview QA 대기  
+**상태**: feature `cursor/summary-mobile-bottom-f024` · PR [#104](https://github.com/catgeot/Days/pull/104) · tip `238992f9` · Preview QA 대기  
 **세션**: `지구본 홈 #3, 모바일 써머리 하단`
 
 - **증상**: 모바일 써머리 카드가 화면 하단이 아니라 떠 보임 · 예전 `bottom 6.75rem`이 카테고리 바 높이용인데 카드 표시 시 바는 숨김
