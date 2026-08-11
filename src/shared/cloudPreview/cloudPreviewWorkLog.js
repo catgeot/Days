@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 139,
-  sessionPhase: '양구백자박물관 등록',
-  branch: 'cursor/yanggu-arboretum-7807',
+  sessionNo: 140,
+  sessionPhase: '페이지 하단 여백',
+  branch: 'cursor/page-end-pad-1e22',
   previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'scenic-hub-fill',
+  qaShareSlug: 'page-end-pad',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-11-page-end-pad-140',
+    session: '테마여행 #140, 페이지 하단 여백',
+    title: '스크롤 끝 하단 여백(중앙 착지)',
+    detail:
+      '명승홈·테마·축제 목록에 `.page-scroll-end-pad`(약 50vh)를 적용해 끝까지 스크롤해도 마지막 접힘 버튼·본문이 화면 하단이 아니라 중앙 부근에 오도록 했습니다. Preview `/korea/theme/scenic`에서 명소 리스트 끝→국가유산 명승·지역 관광지 접힘 버튼을 확인해 주세요.',
+    at: '2026-08-11',
+  },
   {
     id: '2026-08-10-yanggu-porcelain-139',
     session: '테마여행 #139, 양구백자박물관 등록',

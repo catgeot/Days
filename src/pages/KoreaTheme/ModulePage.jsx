@@ -60,7 +60,7 @@ export default function KoreaThemeModulePage() {
       </header>
 
       <main className="min-h-0 flex-1 overflow-y-auto">
-        <div className="mx-auto w-full max-w-3xl px-3 py-8 md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl">
+        <div className="page-scroll-end-pad mx-auto w-full max-w-3xl px-3 pt-8 md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl">
           <p className="text-sm leading-relaxed text-stone-600 break-keep">{mod.blurb}</p>
           <div className="mt-6 rounded-2xl border border-dashed border-stone-300 bg-white/70 px-4 py-12 text-center text-sm text-stone-500 break-keep">
             이 테마 본문은 다음 세션에서 채웁니다.
