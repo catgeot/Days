@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-11-summary-planner-1b',
+    session: '지구본 홈 #1, 플래너 보기 버튼',
+    title: '써머리 CTA 문구 「여행 플래너」',
+    detail:
+      '써머리 링크 버튼 문구를 「플래너 보기」에서 「여행 플래너」로 바꿨습니다. Preview에서 플래너 있는 핀의 버튼 라벨을 확인해 주세요.',
+    at: '2026-08-11',
+  },
+  {
     id: '2026-08-11-summary-planner-1',
     session: '지구본 홈 #1, 플래너 보기 버튼',
     title: '써머리 「플래너 보기」링크',

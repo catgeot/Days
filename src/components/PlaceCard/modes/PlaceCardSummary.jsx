@@ -438,7 +438,7 @@ const PlaceCardSummary = ({
                     title="여행 플래너 열기"
                   >
                     <LayoutList size={16} className="shrink-0 text-cyan-200" aria-hidden="true" />
-                    <span className="min-w-0 truncate text-xs font-bold text-cyan-50">플래너 보기</span>
+                    <span className="min-w-0 truncate text-xs font-bold text-cyan-50">여행 플래너</span>
                   </Link>
                 ) : null}
 
