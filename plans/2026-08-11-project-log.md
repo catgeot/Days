@@ -4,7 +4,7 @@
 
 ## 지구본 홈 #2, 항로 플래너·체르마트
 
-**상태**: feature `cursor/flight-cinema-zermatt-f4d1` · Preview QA 대기  
+**상태**: feature `cursor/flight-cinema-zermatt-f4d1` · PR [#103](https://github.com/catgeot/Days/pull/103) · tip `4514505e` · Preview QA 대기  
 **세션**: `지구본 홈 #2, 항로 플래너·체르마트`
 
 - **증상**: 항로 Bar 「여행 플랜」문구 · 체르마트 graph-2hop `ICN→MUC→GVA→ZRH`(ZRH·GVA 도착 관문을 경유로 오표시)
