@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 142,
-  sessionPhase: '지도 내 위치 주변 칩',
+  sessionNo: 143,
+  sessionPhase: '내 위치 핀 시인성',
   branch: 'cursor/scenic-locate-1064',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-map',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-11-scenic-locate-pin-143',
+    session: '테마여행 #143, 내 위치 핀 시인성',
+    title: '내 위치 — 붉은 깃발 핀',
+    detail:
+      '지도 내 위치 마커를 하늘색 점에서 붉은 깃발 핀(테드롭+Flag)으로 바꿔 시인성을 높였습니다. 활성 「위치 해제」버튼도 붉은 톤으로 맞췄습니다. Preview에서 명소 지도→내 위치를 확인해 주세요.',
+    at: '2026-08-11',
+  },
   {
     id: '2026-08-11-scenic-locate-near-142',
     session: '테마여행 #142, 지도 내 위치 주변 칩',

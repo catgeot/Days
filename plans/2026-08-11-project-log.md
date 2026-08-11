@@ -2,6 +2,21 @@
 
 직전: [`2026-08-10-project-log.md`](./2026-08-10-project-log.md)
 
+## 테마여행 #143, 내 위치 핀 시인성
+
+**상태**: feature `cursor/scenic-locate-1064` · PR [#99](https://github.com/catgeot/Days/pull/99) · Preview QA 대기  
+**세션**: `테마여행 #143, 내 위치 핀 시인성`
+
+- **한 일**: 내 위치 마커를 **붉은 깃발 핀**으로 교체 · 위치 해제 버튼 붉은 톤
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-map`
+- **Preview**: `https://days-git-cursor-scenic-locate-1064-catgeots-projects.vercel.app/korea/theme/scenic`
+- **다음 채팅명**:
+
+```
+테마여행 #144, 지도 내 위치 QA
+```
+
 ## 테마여행 #142, 지도 내 위치 주변 칩
 
 **상태**: feature `cursor/scenic-locate-1064` · PR [#99](https://github.com/catgeot/Days/pull/99) · Preview QA 대기  

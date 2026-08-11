@@ -7,7 +7,13 @@ import Map, {
   useControl,
 } from 'react-map-gl/mapbox';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
-import { ChevronLeft, LocateFixed, Maximize2, Minimize2 } from 'lucide-react';
+import {
+  ChevronLeft,
+  Flag,
+  LocateFixed,
+  Maximize2,
+  Minimize2,
+} from 'lucide-react';
 import { MAPBOX_ATTRIBUTION_LINKS } from '../../data/mapboxAttribution';
 import {
   buildScenicMapGeoJson,
@@ -643,16 +649,28 @@ export default function KoreaScenicMap({
           <Marker
             longitude={userLocation.lng}
             latitude={userLocation.lat}
-            anchor="center"
-            style={{ zIndex: 3 }}
+            anchor="bottom"
+            style={{ zIndex: 4 }}
           >
             <span
-              className="relative flex h-4 w-4 items-center justify-center"
+              className="relative flex flex-col items-center drop-shadow-[0_3px_8px_rgba(0,0,0,0.45)]"
               aria-label="내 위치"
               title="내 위치"
             >
-              <span className="absolute inline-flex h-7 w-7 animate-ping rounded-full bg-sky-400/35" />
-              <span className="relative inline-flex h-3.5 w-3.5 rounded-full border-2 border-white bg-sky-500 shadow-[0_0_0_1px_rgba(12,74,110,0.45)]" />
+              <span className="absolute top-1 h-8 w-8 animate-ping rounded-full bg-red-500/30" />
+              <span className="relative flex h-9 w-9 items-center justify-center rounded-full border-[2.5px] border-white bg-red-600 text-white shadow-[0_2px_10px_rgba(185,28,28,0.6)]">
+                <Flag
+                  size={17}
+                  strokeWidth={2.5}
+                  fill="currentColor"
+                  fillOpacity={0.4}
+                  aria-hidden="true"
+                />
+              </span>
+              <span
+                className="-mt-0.5 h-0 w-0 border-l-[7px] border-r-[7px] border-t-[9px] border-l-transparent border-r-transparent border-t-red-700"
+                aria-hidden="true"
+              />
             </span>
           </Marker>
         ) : null}
@@ -746,7 +764,7 @@ export default function KoreaScenicMap({
           title={locateActive ? '내 위치 해제' : '내 위치'}
           className={`pointer-events-auto inline-flex h-10 items-center gap-1.5 rounded-full border px-3 text-[11px] font-bold shadow-lg backdrop-blur-md disabled:cursor-wait disabled:opacity-70 ${
             locateActive
-              ? 'border-sky-300/80 bg-sky-500 text-[#1b1410] hover:bg-sky-400'
+              ? 'border-red-300/90 bg-red-600 text-white hover:bg-red-500'
               : 'border-white/40 bg-[#1b1410]/75 text-white hover:bg-[#1b1410]/88'
           }`}
         >
