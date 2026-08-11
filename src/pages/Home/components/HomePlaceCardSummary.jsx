@@ -21,6 +21,7 @@ import {
   nextImmerseZoom,
   resolveImmerseCamera,
 } from '../lib/globeImmerseZoom.js';
+import { buildPlacePlannerPath } from '../../../utils/placePlannerPath.js';
 import GlobeStayStrip from './GlobeStayStrip.jsx';
 import GlobeTourStrip from './GlobeTourStrip.jsx';
 
@@ -44,6 +45,8 @@ export default function HomePlaceCardSummary({
 
   const slug = location?.slug ? String(location.slug).trim().toLowerCase() : null;
   const essentialGuide = useChatEssentialGuide(slug, location?.name ?? '');
+  /** place_toolkit essential_guide가 있을 때만 써머리 「플래너 보기」링크 */
+  const plannerUrl = essentialGuide ? buildPlacePlannerPath(slug) : null;
 
   const [selectedOriginIata, setSelectedOriginIata] = useState(() => resolveDefaultFlightOriginIata());
   const [isImmersed, setIsImmersed] = useState(false);
@@ -368,6 +371,7 @@ export default function HomePlaceCardSummary({
                       }
                     : undefined
                 }
+                plannerUrl={plannerUrl}
                 canToggleImmerse={canToggleImmerse}
                 isImmersed={isImmersed}
                 onToggleImmerse={() => {

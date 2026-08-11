@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/summary-planner",
+      "destination": "https://days-git-cursor-summary-planner-bd48-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
       "source": "/qa/festival-samehub",
       "destination": "https://days-git-cursor-festival-samehub-8585-catgeots-projects.vercel.app/korea",
       "permanent": false

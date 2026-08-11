@@ -2,6 +2,23 @@
 
 직전: [`2026-08-10-project-log.md`](./2026-08-10-project-log.md)
 
+## 지구본 홈 #1, 플래너 보기 버튼
+
+**상태**: feature `cursor/summary-planner-bd48` · PR [#102](https://github.com/catgeot/Days/pull/102) · Preview QA 대기  
+**세션**: `지구본 홈 #1, 플래너 보기 버튼`
+
+- **한 일**: 써머리 「가까이 보기」→ 플래너 있으면 「여행 플래너」`Link` · 없으면 가까이 보기 유지 · 문구 「플래너 보기」→「여행 플래너」
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/summary-planner`
+- **Preview**: `https://days-git-cursor-summary-planner-bd48-catgeots-projects.vercel.app/`
+- **작업 로그**: 「써머리 CTA 문구 「여행 플래너」」
+- **남은 일**: 사람 Preview QA(플래너 유/무 핀 비교 · 라벨)
+- **다음 채팅명**:
+
+```
+지구본 홈 #2, 플래너 보기 QA
+```
+
 ## 테마여행 #144, 축제 같은 도시 명소 튕김
 
 **상태**: feature `cursor/festival-samehub-8585` · PR [#101](https://github.com/catgeot/Days/pull/101) · tip `af6d41ac` · Preview QA 대기  

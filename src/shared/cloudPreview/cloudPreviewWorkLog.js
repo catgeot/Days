@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '테마여행',
-  sessionNo: 144,
-  sessionPhase: '축제 같은 도시 명소 튕김',
-  branch: 'cursor/festival-samehub-8585',
-  previewPath: '/korea',
-  qaShareSlug: 'festival-samehub',
+  title: '지구본 홈',
+  sessionNo: 1,
+  sessionPhase: '플래너 보기 버튼',
+  branch: 'cursor/summary-planner-bd48',
+  previewPath: '/',
+  qaShareSlug: 'summary-planner',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-11-summary-planner-1b',
+    session: '지구본 홈 #1, 플래너 보기 버튼',
+    title: '써머리 CTA 문구 「여행 플래너」',
+    detail:
+      '써머리 링크 버튼 문구를 「플래너 보기」에서 「여행 플래너」로 바꿨습니다. Preview에서 플래너 있는 핀의 버튼 라벨을 확인해 주세요.',
+    at: '2026-08-11',
+  },
+  {
+    id: '2026-08-11-summary-planner-1',
+    session: '지구본 홈 #1, 플래너 보기 버튼',
+    title: '써머리 「플래너 보기」링크',
+    detail:
+      '지구본 홈 써머리 장소카드의 「가까이 보기」를, place_toolkit 플래너가 있는 여행지에서는 「플래너 보기」링크로 바꿨습니다. 플래너가 없으면 기존 「가까이 보기」를 유지합니다. Preview에서 플래너 있는 핀(예: 주요 도시)과 없는 핀을 비교해 주세요.',
+    at: '2026-08-11',
+  },
   {
     id: '2026-08-11-festival-samehub-144',
     session: '테마여행 #144, 축제 같은 도시 명소 튕김',
