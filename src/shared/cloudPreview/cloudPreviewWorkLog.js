@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '지구본 홈',
-  sessionNo: 2,
-  sessionPhase: '항로 플래너·체르마트',
-  branch: 'cursor/flight-cinema-zermatt-f4d1',
+  sessionNo: 3,
+  sessionPhase: '모바일 써머리 하단',
+  branch: 'cursor/summary-mobile-bottom-f024',
   previewPath: '/',
-  qaShareSlug: 'zermatt-flight',
+  qaShareSlug: 'summary-bottom',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-11-summary-mobile-bottom-3',
+    session: '지구본 홈 #3, 모바일 써머리 하단',
+    title: '써머리 카드 모바일 하단 고정',
+    detail:
+      '써머리·몰입 컴팩트 바의 모바일 bottom을 카테고리 바용 6.75rem에서 1rem+safe-area로 내리고 fixed로 뷰포트 하단에 붙였습니다. 카드가 뜰 때 카테고리 바는 숨겨지는데 예전 오프셋이 남아 중간에 떠 보이던 문제입니다. Preview 모바일에서 핀 탭 후 써머리가 화면 하단에 있는지 확인해 주세요.',
+    at: '2026-08-11',
+  },
   {
     id: '2026-08-11-zermatt-flight-2',
     session: '지구본 홈 #2, 항로 플래너·체르마트',
