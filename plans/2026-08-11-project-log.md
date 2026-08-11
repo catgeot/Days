@@ -4,12 +4,11 @@
 
 ## 테마여행 #143, 내 위치 핀 시인성
 
-**상태**: **main 병합** · tip 대기 push · `/qa/scenic-map`→PROD  
+**상태**: **main 병합** · `d71a530f` · PR [#100](https://github.com/catgeot/Days/pull/100) MERGED · `/qa/scenic-map`→PROD  
 **세션**: `테마여행 #143, 내 위치 핀 main 병합`
 
-- **한 일**: 내 위치 **붉은 깃발 핀** main 반영 · PR [#100](https://github.com/catgeot/Days/pull/100) · `/qa/scenic-map`→PROD
-- **VERIFY**: `npm run build`(핀 커밋 시)
-- **공유**: `https://www.gateo.kr/qa/scenic-map` → PROD
+- **한 일**: 내 위치 **붉은 깃발 핀** main 반영 · `/qa/scenic-map`→PROD
+- **공유**: `https://www.gateo.kr/qa/scenic-map`
 - **PROD**: `https://www.gateo.kr/korea/theme/scenic`
 
 ## 테마여행 #142, 지도 내 위치 주변 칩
