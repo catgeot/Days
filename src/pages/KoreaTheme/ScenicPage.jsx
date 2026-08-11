@@ -3426,15 +3426,7 @@ export default function KoreaThemeScenicPage() {
               searchActive ? 'min-h-0 flex-1 overflow-y-auto' : undefined
             }
           >
-            <div
-              className={`mx-auto w-full max-w-3xl space-y-8 px-3 pt-6 md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl ${
-                dbStatus === 'empty' ||
-                dbStatus === 'error' ||
-                dbSpots.length <= 3
-                  ? 'pb-[max(8rem,60vh)]'
-                  : 'pb-6'
-              }`}
-            >
+            <div className="page-scroll-end-pad mx-auto w-full max-w-3xl space-y-8 px-3 pt-6 md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl">
               {!searchActive && personalTab == null ? (
                 <div className="space-y-2">
                   <div className="flex flex-wrap items-center justify-end gap-2">

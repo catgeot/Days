@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'page-end-pad',
+    label: '페이지 스크롤 끝 하단 여백',
+    branch: 'cursor/page-end-pad-1e22',
+    destination:
+      'https://days-git-cursor-page-end-pad-1e22-catgeots-projects.vercel.app/korea/theme/scenic',
+    active: true,
+  },
+  {
     slug: 'korea-seo',
     label: '축제·명승 SEO 허브',
     branch: 'main',

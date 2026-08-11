@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/page-end-pad",
+      "destination": "https://days-git-cursor-page-end-pad-1e22-catgeots-projects.vercel.app/korea/theme/scenic",
+      "permanent": false
+    },
+    {
       "source": "/qa/korea-seo",
       "destination": "https://www.gateo.kr/korea",
       "permanent": false

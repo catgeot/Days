@@ -58,7 +58,7 @@ export default function KoreaThemePackagesPage() {
       </header>
 
       <main className="min-h-0 flex-1 overflow-y-auto">
-        <div className="mx-auto w-full max-w-3xl px-3 py-6 md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl">
+        <div className="page-scroll-end-pad mx-auto w-full max-w-3xl px-3 pt-6 md:px-5 lg:max-w-6xl lg:px-8 xl:max-w-7xl">
           <section aria-labelledby="korea-packages-heading" className="space-y-4">
             <div className="flex items-center gap-2 text-stone-700">
               <Package size={18} className="text-amber-700" aria-hidden="true" />

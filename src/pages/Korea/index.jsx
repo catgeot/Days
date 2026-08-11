@@ -1984,7 +1984,7 @@ export default function KoreaFestivalHub() {
               }`}
             >
               <div
-                className={`${listLarge ? 'space-y-3' : 'space-y-2'} px-3 pt-3 pb-[max(10.5rem,calc(env(safe-area-inset-bottom,0px)+9rem))] md:pb-24 ${
+                className={`${listLarge ? 'space-y-3' : 'space-y-2'} page-scroll-end-pad px-3 pt-3 ${
                   mapSplitActive
                     ? 'hidden lg:block lg:custom-scrollbar lg:min-h-0 lg:w-[min(26rem,38%)] lg:shrink-0 lg:overflow-y-auto lg:border-r lg:border-stone-200'
                     : mapOpen

@@ -8,6 +8,18 @@ body {
   margin: 0; 
 }
 
+/*
+ * 스크롤 페이지 끝 여백 — 마지막 버튼·본문이 화면 하단에 붙지 않고
+ * 스크롤 끝에서 대략 뷰포트 중앙에 올 수 있게 함 (명승홈 접힘 파드 등).
+ */
+.page-scroll-end-pad {
+  padding-bottom: max(
+    8rem,
+    50vh,
+    calc(env(safe-area-inset-bottom, 0px) + 8rem)
+  );
+}
+
 /* PlaceCard 탭별 touch-action SSOT */
 .place-scroll-pan-y {
   touch-action: pan-y;
