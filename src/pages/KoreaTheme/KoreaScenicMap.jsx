@@ -209,6 +209,9 @@ function drillChipClass(kind) {
   if (kind === 'area' || kind === 'cluster' || kind === 'cat2') {
     return 'rounded-full border border-stone-200/90 bg-stone-900/90 px-2.5 py-1 text-[11px] font-bold text-amber-50 shadow-[0_4px_14px_rgba(0,0,0,0.4)] backdrop-blur-sm hover:bg-stone-800';
   }
+  if (kind === 'spot') {
+    return 'rounded-full border border-sky-300/90 bg-sky-50/95 px-2 py-0.5 text-[10px] font-bold text-sky-950 shadow-[0_3px_12px_rgba(0,0,0,0.35)] hover:bg-sky-100';
+  }
   return 'rounded-full border border-amber-200/80 bg-[#fff7ed]/95 px-2 py-0.5 text-[10px] font-bold text-amber-950 shadow-[0_3px_12px_rgba(0,0,0,0.35)] hover:bg-amber-100';
 }
 
@@ -240,6 +243,10 @@ function drillChipClass(kind) {
  *   onDrillUp?: () => void,
  *   drillLevelLabel?: string,
  *   showSpotPins?: boolean,
+ *   userLocation?: { lng: number, lat: number } | null,
+ *   onLocateSuccess?: (coords: { lat: number, lng: number }) => void,
+ *   onClearLocate?: () => void,
+ *   locateActive?: boolean,
  * }} props
  */
 const LOCATE_ZOOM = 12;
@@ -265,14 +272,24 @@ export default function KoreaScenicMap({
   onDrillCrumb,
   onDrillUp,
   showSpotPins = true,
+  userLocation: userLocationProp = null,
+  onLocateSuccess,
+  onClearLocate,
+  locateActive = false,
 }) {
   const mapRef = useRef(null);
   const viewStackRef = useRef([]);
   const focusViewRef = useRef(focusView);
   focusViewRef.current = focusView;
-  const [userLocation, setUserLocation] = useState(
+  const [userLocationLocal, setUserLocationLocal] = useState(
     /** @type {{ lng: number, lat: number } | null} */ (null),
   );
+  const userLocation =
+    userLocationProp &&
+    Number.isFinite(userLocationProp.lng) &&
+    Number.isFinite(userLocationProp.lat)
+      ? userLocationProp
+      : userLocationLocal;
   const [locateBusy, setLocateBusy] = useState(false);
   const [locateMsg, setLocateMsg] = useState('');
   const pinItems = showSpotPins ? items : [];
@@ -332,6 +349,12 @@ export default function KoreaScenicMap({
   }, []);
 
   const handleLocateMe = useCallback(() => {
+    if (locateActive && typeof onClearLocate === 'function') {
+      onClearLocate();
+      setUserLocationLocal(null);
+      setLocateMsg('');
+      return;
+    }
     if (typeof navigator === 'undefined' || !navigator.geolocation) {
       setLocateMsg('이 기기에서는 위치 정보를 사용할 수 없습니다.');
       return;
@@ -347,9 +370,10 @@ export default function KoreaScenicMap({
           setLocateMsg('위치를 가져오지 못했습니다.');
           return;
         }
-        setUserLocation({ lng, lat });
+        setUserLocationLocal({ lng, lat });
         setLocateMsg('');
         flyToUserLocation(lng, lat);
+        onLocateSuccess?.({ lat, lng });
       },
       (err) => {
         setLocateBusy(false);
@@ -368,7 +392,7 @@ export default function KoreaScenicMap({
       },
       GEO_OPTS,
     );
-  }, [flyToUserLocation]);
+  }, [flyToUserLocation, locateActive, onClearLocate, onLocateSuccess]);
 
   useEffect(() => {
     if (!locateMsg || locateBusy) return undefined;
@@ -600,12 +624,18 @@ export default function KoreaScenicMap({
                 onSelectDrillChip?.(chip);
               }}
               className={`pointer-events-auto inline-flex max-w-[9.5rem] items-center gap-1 ${drillChipClass(chip.kind)}`}
-              aria-label={`${chip.label} ${chip.count}곳 펼치기`}
+              aria-label={
+                chip.kind === 'spot'
+                  ? `${chip.label} ${chip.count}`
+                  : `${chip.label} ${chip.count}곳 펼치기`
+              }
             >
               <span className="truncate">{chip.label}</span>
-              <span className="shrink-0 tabular-nums opacity-80">
-                {chip.count}
-              </span>
+              {chip.count != null && chip.count !== '' ? (
+                <span className="shrink-0 tabular-nums opacity-80">
+                  {chip.count}
+                </span>
+              ) : null}
             </button>
           </Marker>
         ))}
@@ -710,17 +740,22 @@ export default function KoreaScenicMap({
           type="button"
           onClick={handleLocateMe}
           disabled={locateBusy}
-          aria-label="내 위치로 이동"
+          aria-label={locateActive ? '내 위치 해제' : '내 위치로 이동'}
           aria-busy={locateBusy}
-          title="내 위치"
-          className="pointer-events-auto inline-flex h-10 items-center gap-1.5 rounded-full border border-white/40 bg-[#1b1410]/75 px-3 text-[11px] font-bold text-white shadow-lg backdrop-blur-md hover:bg-[#1b1410]/88 disabled:cursor-wait disabled:opacity-70"
+          aria-pressed={locateActive}
+          title={locateActive ? '내 위치 해제' : '내 위치'}
+          className={`pointer-events-auto inline-flex h-10 items-center gap-1.5 rounded-full border px-3 text-[11px] font-bold shadow-lg backdrop-blur-md disabled:cursor-wait disabled:opacity-70 ${
+            locateActive
+              ? 'border-sky-300/80 bg-sky-500 text-[#1b1410] hover:bg-sky-400'
+              : 'border-white/40 bg-[#1b1410]/75 text-white hover:bg-[#1b1410]/88'
+          }`}
         >
           <LocateFixed
             size={15}
             className={locateBusy ? 'animate-pulse' : undefined}
             aria-hidden="true"
           />
-          {locateBusy ? '확인 중' : '내 위치'}
+          {locateBusy ? '확인 중' : locateActive ? '위치 해제' : '내 위치'}
         </button>
         {locateMsg ? (
           <p

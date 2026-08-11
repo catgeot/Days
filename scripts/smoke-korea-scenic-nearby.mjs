@@ -17,7 +17,13 @@ import { listKoreaScenicSpots } from '../src/pages/Home/lib/koreaScenicSpots.js'
 import { listKoreaHeritageScenic } from '../src/pages/Home/lib/koreaHeritageScenic.js';
 import {
   formatDistanceKm,
+  limitNearbyRanked,
+  nearbySpotMapChips,
+  NEAR_DISPLAY_SOFT_MAX,
+  NEAR_RADIUS_STEPS_KM,
   NEAR_SCENIC_KM,
+  nextNearRadiusStepKm,
+  pickAdaptiveNearRadiusKm,
   rankNearbyScenicSpots,
   rankSpotsByDistance,
   scenicSpotLngLat,
@@ -35,9 +41,17 @@ const pageSrc = readFileSync(PAGE, 'utf8');
 const festivalSheetSrc = readFileSync(FESTIVAL_SHEET, 'utf8');
 
 assert.equal(NEAR_SCENIC_KM, 80, 'NEAR_SCENIC_KM=80 (축제와 동일)');
+assert.deepEqual(
+  [...NEAR_RADIUS_STEPS_KM],
+  [20, 40, 60, 80],
+  'adaptive radius steps',
+);
+assert.equal(NEAR_DISPLAY_SOFT_MAX, 12, 'display soft max');
 assert.equal(formatDistanceKm(0.42), '0.4km', 'sub-km format');
 assert.equal(formatDistanceKm(3.26), '3.3km', 'ones-km format');
 assert.equal(formatDistanceKm(42.2), '42km', 'tens-km format');
+assert.equal(nextNearRadiusStepKm(20), 40, 'next step after 20');
+assert.equal(nextNearRadiusStepKm(80), null, 'no step after 80');
 
 const seoul = { lat: 37.5665, lng: 126.978 };
 const curated = listKoreaScenicSpots();
@@ -61,6 +75,21 @@ assert.ok(
   nearHeritage.length >= 3,
   `서울 80km 안 국가유산 명승≥3 (got ${nearHeritage.length})`,
 );
+const seoulRadius = pickAdaptiveNearRadiusKm(nearCurated);
+assert.equal(seoulRadius, 20, `서울 적응 반경=20 (got ${seoulRadius})`);
+const seoulLimited = limitNearbyRanked(nearCurated, {
+  radiusKm: seoulRadius,
+  limit: NEAR_DISPLAY_SOFT_MAX,
+});
+assert.equal(
+  seoulLimited.length,
+  NEAR_DISPLAY_SOFT_MAX,
+  `서울 표시 상한 ${NEAR_DISPLAY_SOFT_MAX}`,
+);
+const seoulChips = nearbySpotMapChips(seoulLimited);
+assert.equal(seoulChips.length, NEAR_DISPLAY_SOFT_MAX, '서울 지도 칩=상한');
+assert.equal(seoulChips[0].kind, 'spot', 'chip kind spot');
+assert.ok(seoulChips[0].spotId, 'chip spotId');
 for (let i = 1; i < nearCurated.length; i += 1) {
   assert.ok(
     nearCurated[i].km >= nearCurated[i - 1].km,
@@ -82,6 +111,9 @@ assert.ok(pageSrc.includes('handleNearMe'), 'ScenicPage handleNearMe');
 assert.ok(pageSrc.includes('내 주변'), 'ScenicPage 내 주변 CTA');
 assert.ok(pageSrc.includes('rankNearbyScenicSpots'), 'ScenicPage uses rank helper');
 assert.ok(pageSrc.includes('NEAR_SCENIC_KM') || pageSrc.includes('NEAR_KM'), 'NEAR km');
+assert.ok(pageSrc.includes('pickAdaptiveNearRadiusKm'), 'adaptive radius');
+assert.ok(pageSrc.includes('nearbySpotMapChips'), 'map near chips');
+assert.ok(pageSrc.includes('mapNearOrigin'), 'map-only near origin');
 assert.ok(pageSrc.includes('formatDistanceKm'), 'distance label');
 assert.ok(pageSrc.includes('resolveKoreaAreaFromCoords'), 'GPS→hub');
 assert.ok(
@@ -89,8 +121,10 @@ assert.ok(
   'ScenicPage near uses bbox distance fetch (not region sample)',
 );
 assert.ok(
-  pageSrc.includes('NEAR_DB_POOL_LIMIT') && pageSrc.includes('NEAR_DB_LIST_LIMIT'),
-  'near tour pool + list limits',
+  pageSrc.includes('NEAR_DB_POOL_LIMIT') &&
+    (pageSrc.includes('NEAR_DB_LIST_HARD_MAX') ||
+      pageSrc.includes('NEAR_LIST_SOFT_MAX')),
+  'near tour pool + list soft/hard limits',
 );
 assert.ok(
   pageSrc.includes('countTourCatsFromNearSpots') &&

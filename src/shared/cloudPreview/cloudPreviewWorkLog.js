@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '테마여행',
-  sessionNo: 141,
-  sessionPhase: '지도 내 위치',
+  sessionNo: 142,
+  sessionPhase: '지도 내 위치 주변 칩',
   branch: 'cursor/scenic-locate-1064',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'scenic-map',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-11-scenic-locate-near-142',
+    session: '테마여행 #142, 지도 내 위치 주변 칩',
+    title: '파드별 내 위치 주변 칩·목록 적응 반경',
+    detail:
+      '지도 내 위치는 파드별로 해당 파드만 가까운 칩(최대 12)·적응 반경(20→80km)으로 보여 줍니다. 분류 칩/크럼 클릭·위치 해제로 드릴로 복귀. 목록 내 주변도 동일 상한·더보기·반경 확대. Preview에서 명소 지도→내 위치→칩→분류 복귀를 확인해 주세요.',
+    at: '2026-08-11',
+  },
   {
     id: '2026-08-11-scenic-locate-141',
     session: '테마여행 #141, 지도 내 위치',
