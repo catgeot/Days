@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'summary-bottom',
+    label: '모바일 써머리 하단',
+    branch: 'cursor/summary-mobile-bottom-f024',
+    destination:
+      'https://days-git-cursor-summary-mobile-bottom-f024-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
     slug: 'zermatt-flight',
     label: '체르마트 항로·플래너',
     branch: 'cursor/flight-cinema-zermatt-f4d1',

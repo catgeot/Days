@@ -137,7 +137,7 @@ const PlaceCardSummary = ({
 
   if (isImmerseCompact) {
     return (
-      <div className="z-[60] absolute bottom-[calc(6.75rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[calc(100vw-2.5rem)] max-w-[400px] animate-fade-in-up">
+      <div className="z-[60] fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[calc(100vw-2.5rem)] max-w-[400px] animate-fade-in-up lg:absolute lg:bottom-6">
         <div className="tour-mobile-bar-shell relative">
           <div className="tour-mobile-bar-halo" aria-hidden="true" />
           <div className="tour-mobile-bar-card relative z-[1] flex items-center gap-3 rounded-2xl border border-white/15 bg-black/80 px-3 py-1.5 backdrop-blur-xl">
@@ -206,7 +206,7 @@ const PlaceCardSummary = ({
       } animate-fade-in-up transition-all duration-200 ${
         isOriginCompact
           ? 'fixed left-1/2 -translate-x-1/2 w-[calc(100vw-3rem)] max-w-[360px]'
-          : `absolute bottom-[calc(6.75rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[calc(100vw-3rem)] max-w-[360px] lg:bottom-6 lg:translate-x-0 lg:left-auto lg:right-8 lg:w-[400px] lg:max-w-[400px] xl:w-[440px] xl:max-w-[440px]${
+          : `fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[calc(100vw-3rem)] max-w-[360px] lg:absolute lg:bottom-6 lg:translate-x-0 lg:left-auto lg:right-8 lg:w-[400px] lg:max-w-[400px] xl:w-[440px] xl:max-w-[440px]${
               tourTab ? ' ml-[1.1rem] lg:ml-0' : ''
             }`
       }`}
