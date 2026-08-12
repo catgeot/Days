@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-12-logbook-curation-body-taste-only-9c',
+    session: '로그북 #9, 취향 재설정·헤더 뒤로가기',
+    title: '본문 하단 · 취향 다시 설정만 · 시인성',
+    detail:
+      '본문 하단에서 「새로운 낙원 찾기」를 빼고 「취향 다시 설정」만 indigo 칩 버튼으로 남겼습니다. 재실행은 나의 큐레이션 옆 버튼을 씁니다. Preview에서 본문 하단을 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
     id: '2026-08-12-logbook-curation-climate-special-9b',
     session: '로그북 #9, 취향 재설정·헤더 뒤로가기',
     title: '취향 설문 · 겨울·우기·백야·흑야',

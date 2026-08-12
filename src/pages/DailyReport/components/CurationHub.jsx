@@ -5,7 +5,6 @@ import {
   MapPin,
   Loader2,
   Compass,
-  ArrowRight,
   Star,
   ChevronDown,
   ChevronUp,
@@ -90,7 +89,6 @@ function CurationRichBlocks({ data }) {
 function CurationResultPanel({
   data,
   compact = false,
-  onExplore,
   onResetTaste,
   user,
   savedTrips,
@@ -324,32 +322,23 @@ function CurationResultPanel({
             </button>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <span className="text-xs text-gray-400 font-mono tracking-wide uppercase">Gateo Intelligence v5.0</span>
-            <div className="flex flex-wrap items-center gap-2 justify-end">
-              {onResetTaste ? (
-                <button
-                  type="button"
-                  onClick={onResetTaste}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-indigo-600 transition-colors z-20 relative"
-                >
-                  <SlidersHorizontal size={14} className="text-indigo-500" />
-                  취향 다시 설정
-                </button>
-              ) : null}
-              {onExplore ? (
-                <button
-                  type="button"
-                  onClick={onExplore}
-                  className="group/btn flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-blue-500 transition-colors z-20 relative flex-shrink-0"
-                >
-                  <Sparkles size={14} className="text-blue-500 group-hover/btn:animate-pulse" />
-                  새로운 낙원 찾기
-                  <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
-                </button>
-              ) : null}
+          {onResetTaste ? (
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs text-gray-400 font-mono tracking-wide uppercase">Gateo Intelligence v5.0</span>
+              <button
+                type="button"
+                onClick={onResetTaste}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300 transition-colors z-20 relative shadow-sm"
+              >
+                <SlidersHorizontal size={13} aria-hidden="true" />
+                취향 다시 설정
+              </button>
             </div>
-          </div>
+          ) : (
+            <div className="flex justify-between items-center gap-2">
+              <span className="text-xs text-gray-400 font-mono tracking-wide uppercase">Gateo Intelligence v5.0</span>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -362,7 +351,6 @@ function HistoryList({
   openStack,
   onToggle,
   onDismiss,
-  onExplore,
   onResetTaste,
   user,
   savedTrips,
@@ -432,7 +420,6 @@ function HistoryList({
             {isOpen && panelData ? (
               <CurationResultPanel
                 data={panelData}
-                onExplore={onExplore}
                 onResetTaste={onResetTaste}
                 user={user}
                 savedTrips={savedTrips}
@@ -785,7 +772,6 @@ const CurationHub = ({ compact = false } = {}) => {
             <CurationResultPanel
               data={curationData}
               compact
-              onExplore={handleCuration}
               onResetTaste={openResetTasteSurvey}
               user={user}
               savedTrips={savedTrips}
@@ -823,7 +809,6 @@ const CurationHub = ({ compact = false } = {}) => {
             <>
               <CurationResultPanel
                 data={curationData}
-                onExplore={handleCuration}
                 onResetTaste={openResetTasteSurvey}
                 user={user}
                 savedTrips={savedTrips}
@@ -862,7 +847,6 @@ const CurationHub = ({ compact = false } = {}) => {
               openStack={openStack}
               onToggle={toggleStackItem}
               onDismiss={handleDismiss}
-              onExplore={handleCuration}
               onResetTaste={openResetTasteSurvey}
               user={user}
               savedTrips={savedTrips}
