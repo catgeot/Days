@@ -33,6 +33,12 @@ import {
   readCurationTasteSurvey,
   writeCurationTasteSurvey,
 } from '../lib/curationHistory';
+import {
+  destinationLabel,
+  RECENT_SEARCH_KEY,
+  safeLoadRecentList,
+  safeLoadRecentVisited,
+} from '../../Home/lib/exploreRecentHistory';
 
 const linkBtnClass =
   'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-colors disabled:opacity-40 disabled:cursor-not-allowed';
@@ -559,8 +565,11 @@ const CurationHub = ({ compact = false } = {}) => {
   const handleCuration = async () => {
     const { reports, saved } = await fetchTasteSources();
     const hasDbTaste = reports.length > 0 || saved.length > 0;
+    const hasExploreTaste =
+      safeLoadRecentList(RECENT_SEARCH_KEY).length > 0 ||
+      safeLoadRecentVisited().some((item) => Boolean(destinationLabel(item)));
     const storedSurvey = readCurationTasteSurvey();
-    if (!hasDbTaste && !storedSurvey?.tags?.length) {
+    if (!hasDbTaste && !hasExploreTaste && !storedSurvey?.tags?.length) {
       setSurveyTags([]);
       setShowTasteSurvey(true);
       return;

@@ -154,11 +154,15 @@ const { getCurationPrompt } = await import(
 const prompt = getCurationPrompt([], [], [{ location: '제외지' }, '문자열제외'], {
   rejectedList: [{ location: '라자암팟 제도' }],
   tasteTags: ['sea', 'quiet'],
+  recentSearches: ['아이투타키', '파로스'],
+  recentVisited: [{ name: '소코트라 섬' }, '발리'],
 });
 assert(prompt.includes('제외지') && prompt.includes('문자열제외'), 'prompt exclude objects');
 assert(prompt.includes('whyHidden') && prompt.includes('bestSeason') && prompt.includes('tips'), 'prompt rich fields');
 assert(prompt.includes('라자암팟 제도') && prompt.includes('취향 불일치'), 'prompt rejected signal');
 assert(prompt.includes('바다·섬') && prompt.includes('조용한 휴식'), 'prompt survey tags');
+assert(prompt.includes('최근 검색어') && prompt.includes('아이투타키'), 'prompt recent searches');
+assert(prompt.includes('최근 방문 목적지') && prompt.includes('소코트라 섬') && prompt.includes('발리'), 'prompt recent visited');
 
 const rejLocal = makeStore();
 const rejSession = makeStore();

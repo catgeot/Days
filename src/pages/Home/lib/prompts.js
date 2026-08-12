@@ -180,7 +180,12 @@ export const getCurationPrompt = (
   validReports = [],
   validSaved = [],
   excludeList = [],
-  { rejectedList = [], tasteTags = [] } = {},
+  {
+    rejectedList = [],
+    tasteTags = [],
+    recentSearches = [],
+    recentVisited = [],
+  } = {},
 ) => {
   const reportLines = (validReports || [])
     .map((r) => String(r?.location || '').trim())
@@ -190,6 +195,19 @@ export const getCurationPrompt = (
     .map((s) => String(s?.destination || '').trim())
     .filter(Boolean)
     .map((dest) => `- ${dest}`);
+  const searchLines = (recentSearches || [])
+    .map((s) => String(s || '').trim())
+    .filter(Boolean)
+    .slice(0, 10)
+    .map((s) => `- ${s}`);
+  const visitedLines = (recentVisited || [])
+    .map((v) => {
+      if (typeof v === 'string') return v.trim();
+      return String(v?.name || v?.location || '').trim();
+    })
+    .filter(Boolean)
+    .slice(0, 10)
+    .map((v) => `- ${v}`);
 
   const tasteTagLabels = {
     sea: '바다·섬',
@@ -203,7 +221,9 @@ export const getCurationPrompt = (
     .map((id) => tasteTagLabels[String(id).trim()] || String(id).trim())
     .filter(Boolean);
   const hasSurvey = surveyLabels.length > 0;
-  const hasTasteData = reportLines.length > 0 || savedLines.length > 0 || hasSurvey;
+  const hasExploreTaste = searchLines.length > 0 || visitedLines.length > 0;
+  const hasTasteData =
+    reportLines.length > 0 || savedLines.length > 0 || hasSurvey || hasExploreTaste;
 
   const excludeNames = (excludeList || [])
     .map((item) => (typeof item === 'string' ? item : item?.location))
@@ -221,6 +241,12 @@ export const getCurationPrompt = (
     if (reportLines.length || savedLines.length) {
       parts.push(`[사용자의 과거 기록] ${reportLines.length ? reportLines.join(', ') : '(없음)'}`);
       parts.push(`[사용자의 북마크] ${savedLines.length ? savedLines.join(', ') : '(없음)'}`);
+    }
+    if (searchLines.length) {
+      parts.push(`[최근 검색어] ${searchLines.join(', ')}`);
+    }
+    if (visitedLines.length) {
+      parts.push(`[최근 방문 목적지] ${visitedLines.join(', ')}`);
     }
     if (hasSurvey) {
       parts.push(`[취향 설문] 선호 분위기: ${surveyLabels.join(', ')}`);

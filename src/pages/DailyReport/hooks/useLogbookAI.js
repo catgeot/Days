@@ -6,6 +6,12 @@ import { getCoordinatesFromAddress } from '../../Home/lib/geocoding.js';
 import { TRAVEL_SPOTS } from '../../Home/data/travelSpots.js';
 import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve.js';
 import { hasValidCurationCoords } from '../../Home/lib/curationPlaceBridge.js';
+import {
+  destinationLabel,
+  RECENT_SEARCH_KEY,
+  safeLoadRecentList,
+  safeLoadRecentVisited,
+} from '../../Home/lib/exploreRecentHistory.js';
 import { supabase } from '../../../shared/api/supabase';
 import {
   curationEntryToPanelData,
@@ -254,9 +260,16 @@ export const useCurationAI = () => {
       const tags = Array.isArray(tasteTags) && tasteTags.length
         ? tasteTags
         : survey?.tags || [];
+      const recentSearches = safeLoadRecentList(RECENT_SEARCH_KEY).slice(0, 10);
+      const recentVisited = safeLoadRecentVisited()
+        .map((item) => destinationLabel(item))
+        .filter(Boolean)
+        .slice(0, 10);
       const systemPrompt = getCurationPrompt(validReports, validSaved, excludeNames, {
         rejectedList,
         tasteTags: tags,
+        recentSearches,
+        recentVisited,
       });
 
       const resultText = await apiClient.fetchProxyGemini(null, [], systemPrompt, "");

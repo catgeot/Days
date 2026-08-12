@@ -2,6 +2,22 @@
 
 직전: [`2026-08-11-project-log.md`](./2026-08-11-project-log.md)
 
+## 로그북 #7, 취향에 최근 검색·방문
+
+**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip _(push 후)_ · Preview QA 대기  
+**세션**: `로그북 #7, 취향에 최근 검색·방문`
+
+- **한 일**: `gateo_recent_search_keywords` · `gateo_recent_visited_destinations`를 큐레이션 프롬프트에 추가(각 최대 10) · 있으면 설문 스킵
+- **VERIFY**: `npm run smoke:curation-history` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/logbook-curation`
+- **Preview**: `https://days-git-cursor-logbook-cta-home-bbbd-catgeots-projects.vercel.app/blog/curation`
+- **작업 로그**: 「최근 검색·방문 목적지를 취향 프롬프트에」
+- **다음 채팅명**:
+
+```
+로그북 #8, 최근 검색·방문 취향 QA
+```
+
 ## 로그북 #6, 취향 삭제·설문·본문 CTA
 
 **상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `35decb4a` · Preview QA 대기  

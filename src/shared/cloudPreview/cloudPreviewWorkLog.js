@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '로그북',
-  sessionNo: 5,
-  sessionPhase: '큐레이션 닫기 버튼 위치',
+  sessionNo: 7,
+  sessionPhase: '취향에 최근 검색·방문',
   branch: 'cursor/logbook-cta-home-bbbd',
   previewPath: '/blog/curation',
   qaShareSlug: 'logbook-curation',
@@ -23,6 +23,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-12-logbook-curation-recent-explore-taste-7',
+    session: '로그북 #7, 취향에 최근 검색·방문',
+    title: '최근 검색·방문 목적지를 취향 프롬프트에',
+    detail:
+      '지구본 최근 검색어·최근 방문 목적지를 로그북·북마크와 함께 큐레이션 프롬프트에 실었습니다. 이 신호가 있으면 취향 설문을 건너뜁니다. Preview에서 홈 검색 후 /blog/curation 탐색을 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-logbook-curation-taste-reject-survey-6',
+    session: '로그북 #6, 취향 삭제·설문·본문 CTA',
+    title: '본문 탐색 CTA · 목록 삭제→거절 · 취향 설문',
+    detail:
+      '모든 본문 하단에 「다른 낙원 탐색」을 두었습니다. 목록 휴지로 지우면 거절 목록에 남아 다음 추천에서 유사 취향을 피합니다. 기록·북마크가 없으면 짧은 분위기 설문을 먼저 물어봅니다.',
+    at: '2026-08-12',
+  },
   {
     id: '2026-08-12-logbook-curation-close-on-photo-5',
     session: '로그북 #5, 큐레이션 닫기 버튼 위치',
