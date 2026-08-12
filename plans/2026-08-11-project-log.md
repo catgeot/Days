@@ -2,6 +2,24 @@
 
 직전: [`2026-08-10-project-log.md`](./2026-08-10-project-log.md)
 
+## AI 큐레이션 #5, 사진 place_stats 폴백
+
+**상태**: feature `cursor/curation-photo-6d19` · Preview QA 대기  
+**세션**: `AI 큐레이션 #5, 사진 place_stats 폴백`
+
+- **증상**: `/blog/curation` 아이투타키 「사진 준비 중」 — Unsplash/Pexels만 쓰고 place_stats 갤러리 미사용
+- **한 일**: 스톡 실패 시 `place_stats` 폴백 · 캐시된 무사진 결과 자동 heal · 쿼리 보강(lagoon/beach) · `/qa/curation` 브랜치 갱신
+- **VERIFY**: `npm run smoke:curation-image-resolve` · `smoke:curation-history` · `smoke:curation-place-bridge` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/curation`
+- **Preview**: `https://days-git-cursor-curation-photo-6d19-catgeots-projects.vercel.app/blog/curation`
+- **작업 로그**: 「아이투타키 등 사진 준비 중 → place_stats 폴백」
+- **남은 일**: 사람 Preview QA(아이투타키 사진 표시) → main 병합
+- **다음 채팅명**:
+
+```
+AI 큐레이션 #6, 사진 QA·병합
+```
+
 ## AI 큐레이션 #4, main 동기화·병합 QA
 
 **상태**: feature `cursor/blog-ai-curation-links-5aff` · PR [#42](https://github.com/catgeot/Days/pull/42) · tip `0517c120` · 사람 Preview QA·병합 대기  

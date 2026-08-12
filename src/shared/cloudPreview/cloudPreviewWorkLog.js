@@ -6,9 +6,9 @@
 export const cloudPreviewProject = {
   active: true,
   title: 'AI 큐레이션',
-  sessionNo: 4,
-  sessionPhase: 'main 동기화·병합 QA',
-  branch: 'cursor/blog-ai-curation-links-5aff',
+  sessionNo: 5,
+  sessionPhase: '사진 place_stats 폴백',
+  branch: 'cursor/curation-photo-6d19',
   previewPath: '/blog/curation',
   qaShareSlug: 'curation',
 };
@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-12-curation-photo-fallback-5',
+    session: 'AI 큐레이션 #5, 사진 place_stats 폴백',
+    title: '아이투타키 등 사진 준비 중 → place_stats 폴백',
+    detail:
+      'Unsplash/Pexels가 비거나 실패해도 place_stats(장소카드 갤러리) 썸네일로 채웁니다. 이미 「사진 준비 중」으로 저장된 아이투타키도 페이지 열면 자동 복구됩니다. Preview에서 낙원 탐색·나의 목록의 아이투타키 사진을 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
     id: '2026-08-11-curation-main-sync-4',
     session: 'AI 큐레이션 #4, main 동기화·병합 QA',
     title: 'main 동기화 후 Preview QA',
@@ -31,6 +39,7 @@ export const cloudPreviewWorkLog = [
       'main을 큐레이션 브랜치에 맞춰 머지했습니다. 홈 로고 아래 「AI 큐레이션」칩·/blog/curation 낙원 탐색·리치 팁·나의 목록·홈 복귀를 확인해 주세요.',
     at: '2026-08-11',
   },
+
   {
     id: '2026-08-02-curation-home-entry',
     session: 'AI 큐레이션 #3, 홈 진입 연결',

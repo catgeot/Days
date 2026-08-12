@@ -1,9 +1,9 @@
 # 블로그 AI 큐레이션 페이지 — 인페이지 콘텐츠 허브
 
-**상태**: Phase B+C + 홈 진입 · main 동기화 ✅ · 사람 Preview QA·병합 대기  
-**세션**: `AI 큐레이션 #4, main 동기화·병합 QA`  
+**상태**: Phase B+C main 병합 ✅ · #5 사진 place_stats 폴백 Preview QA 대기  
+**세션**: `AI 큐레이션 #5, 사진 place_stats 폴백`  
 **제시어**: `큐레이션-이어하기` · `@plans/blog-ai-curation-page-plan.md`  
-**브랜치**: `cursor/blog-ai-curation-links-5aff` · PR [#42](https://github.com/catgeot/Days/pull/42) (기반 Phase A [#38](https://github.com/catgeot/Days/pull/38) — 본 PR에 포함)  
+**브랜치**: `cursor/curation-photo-6d19`  
 **공유**: `https://www.gateo.kr/qa/curation`
 
 ---
