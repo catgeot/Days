@@ -4,7 +4,7 @@
 
 ## 로그북 #4, 큐레이션 목록 본문 스택
 
-**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip _(push 후)_ · Preview QA 대기  
+**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `fc137722` · Preview QA 대기  
 **세션**: `로그북 #4, 큐레이션 목록 본문 스택`
 
 - **요청**: 나의 큐레이션 클릭 시 메인을 바꾸지 않고 본문을 쌓기
