@@ -7,13 +7,13 @@
 **상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `99d8561b` · Preview QA 대기  
 **세션**: `로그북 #2, 큐레이션 페이지`
 
-- **요청**: 큐레이션 헤더 · 나의 큐레이션 상단 · 하단 스크롤 여유 · 별표 즐겨찾기·비로그인 안내
-- **한 일**: `Curation.jsx`/`CurationHub` IA · `page-scroll-end-pad` · 별표 즐겨찾기 + 로그인 안내 모달(로그인 하러가기·확인) · `/qa/logbook-curation`
+- **요청**: 큐레이션 헤더 · 나의 큐레이션 상단(세로 목록) · 하단 스크롤 여유 · 별표 즐겨찾기·비로그인 안내
+- **한 일**: `Curation.jsx`/`CurationHub` IA · `page-scroll-end-pad` · 별표 즐겨찾기 + 로그인 안내 · 나의 큐레이션 **세로 나열** · `/qa/logbook-curation`
 - **VERIFY**: `npm run build`
 - **공유**: `https://www.gateo.kr/qa/logbook-curation`
 - **Preview**: `https://days-git-cursor-logbook-cta-home-bbbd-catgeots-projects.vercel.app/blog/curation`
-- **작업 로그**: 「즐겨찾기 별표 · 비로그인 안내」
-- **남은 일**: 사람 Preview QA(별표·비로그인 안내·헤더·목록/본문·하단 여유)
+- **작업 로그**: 「나의 큐레이션 목록 세로 나열」
+- **남은 일**: 사람 Preview QA(세로 목록·별표·비로그인 안내·헤더·본문·하단 여유)
 - **다음 채팅명**:
 
 ```
@@ -22,7 +22,7 @@
 
 ## 로그북 #1, 공개피드 CTA
 
-**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#107](https://github.com/catgeot/Days/pull/107) · tip `fe9c7d0d` · Preview QA 대기  
+**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#107](https://github.com/catgeot/Days/pull/107) · tip `95abbb3b` · Preview QA 대기  
 **세션**: `로그북 #1, 공개피드 CTA`
 
 - **증상**: 공개 피드(`/p/:id`) 하단 「나만의 기록 남기기」→ `/auth/login`
@@ -35,7 +35,7 @@
 
 ## 지구본 홈 #4, 아이투타키 투어 오탐
 
-**상태**: feature `cursor/aitutaki-gyg-tour-b09e` · PR [#106](https://github.com/catgeot/Days/pull/106) · tip `fe9c7d0d` · Preview QA 대기  
+**상태**: feature `cursor/aitutaki-gyg-tour-b09e` · PR [#106](https://github.com/catgeot/Days/pull/106) · tip `61c07bd3` · Preview QA 대기  
 **세션**: `지구본 홈 #4, 아이투타키 투어 오탐`
 
 - **증상**: 써머리「투어 찾기」아이투타키 → GYG bare `Aitutaki`가 아유타야(·일본 혼입)로 오탐

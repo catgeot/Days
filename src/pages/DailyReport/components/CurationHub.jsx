@@ -75,15 +75,15 @@ function HistoryList({ history, activeLocation, onSelect }) {
   if (!history?.length) return null;
 
   return (
-    <ul className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 snap-x snap-mandatory">
+    <ul className="space-y-2 max-h-[320px] overflow-y-auto pr-1">
       {history.map((item) => {
         const active = item.location === activeLocation;
         return (
-          <li key={`${item.location}-${item.savedAt || ''}`} className="snap-start shrink-0 w-[200px] sm:w-[220px]">
+          <li key={`${item.location}-${item.savedAt || ''}`}>
             <button
               type="button"
               onClick={() => onSelect(item)}
-              className={`w-full h-full text-left rounded-2xl border px-3 py-2.5 transition-colors ${
+              className={`w-full text-left rounded-2xl border px-3 py-2.5 transition-colors ${
                 active
                   ? 'bg-blue-50 border-blue-200 shadow-sm'
                   : 'bg-white/70 border-gray-200 hover:border-blue-200 hover:bg-blue-50/40'
