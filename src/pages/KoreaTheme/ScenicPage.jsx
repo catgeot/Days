@@ -108,6 +108,14 @@ import { formatScenicSpotPlaceLabel } from '../Home/lib/scenicSpotPlaceLabel';
 import { sortScenicSpotsByPlaceCluster } from '../Home/lib/sortScenicSpotsByPlaceCluster';
 import { resolveKoreaAreaFromCoords } from '../Korea/resolveKoreaAreaFromCoords';
 import {
+  clearRecentSearches,
+  loadRecentSearches,
+  pushRecentSearch,
+  removeRecentSearch,
+  SCENIC_RECENT_SEARCH_KEY,
+} from '../Korea/koreaRecentSearches';
+import RecentSearchSuggestions from '../Korea/RecentSearchSuggestions';
+import {
   formatDistanceKm,
   limitNearbyRanked,
   nearbySpotMapChips,
@@ -714,7 +722,14 @@ export default function KoreaThemeScenicPage() {
   const [searchDraft, setSearchDraft] = useState('');
   /** 확정된 검색어 — 입력창을 비워도 리스트 필터 유지 · 분류 칩으로 결과 분해 */
   const [searchApplied, setSearchApplied] = useState('');
+  const [recentSearches, setRecentSearches] = useState(() =>
+    loadRecentSearches(SCENIC_RECENT_SEARCH_KEY),
+  );
+  const [searchSuggestOpen, setSearchSuggestOpen] = useState(false);
   const mobileSearchInputRef = useRef(null);
+  const pcSearchRootRef = useRef(null);
+  const mobileSearchRootRef = useRef(null);
+  const mobileSearchToggleRef = useRef(null);
   const mainScrollRef = useRef(null);
   /** 분류칩 클릭 직후 목록 높이 변화로 스크롤이 튀지 않게 칩 위치 고정 */
   const chipScrollPinRef = useRef(null);
@@ -1378,6 +1393,7 @@ export default function KoreaThemeScenicPage() {
     setSearchDraft('');
     setSearchApplied('');
     setSearchOpen(false);
+    setSearchSuggestOpen(false);
   }, []);
 
   const closeSearch = useCallback(() => {
@@ -1529,12 +1545,54 @@ export default function KoreaThemeScenicPage() {
     [clearNear, resetListPage],
   );
 
-  const commitSearch = useCallback(() => {
-    const q = searchDraft.trim() || searchApplied.trim();
+  const openSearchSuggestions = useCallback(() => {
+    setRecentSearches(loadRecentSearches(SCENIC_RECENT_SEARCH_KEY));
+    setSearchSuggestOpen(true);
+  }, []);
+
+  /** 칩·빈 영역 등 검색 UI 밖 탭 — 최근 목록 + 모바일 검색바 함께 닫기 */
+  const dismissSearchUi = useCallback(() => {
+    setSearchSuggestOpen(false);
+    setSearchOpen(false);
+    setSearchDraft('');
+    if (typeof document !== 'undefined') {
+      const el =
+        document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : null;
+      el?.blur?.();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!searchOpen && !searchSuggestOpen) return undefined;
+    const onPointerDown = (e) => {
+      const target = e.target;
+      if (!(target instanceof Node)) return;
+      if (pcSearchRootRef.current?.contains(target)) return;
+      if (mobileSearchRootRef.current?.contains(target)) return;
+      if (mobileSearchToggleRef.current?.contains(target)) return;
+      dismissSearchUi();
+    };
+    document.addEventListener('pointerdown', onPointerDown, true);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown, true);
+    };
+  }, [searchOpen, searchSuggestOpen, dismissSearchUi]);
+
+  const closeSearchSuggestionsSoon = useCallback(() => {
+    window.setTimeout(() => setSearchSuggestOpen(false), 120);
+  }, []);
+
+  const commitSearch = useCallback((raw) => {
+    const q = String(raw ?? searchDraft)
+      .trim() || searchApplied.trim();
     setSearchApplied(q);
     setSearchDraft('');
     setSearchOpen(false);
+    setSearchSuggestOpen(false);
     if (q) {
+      setRecentSearches(pushRecentSearch(SCENIC_RECENT_SEARCH_KEY, q));
       clearNear();
       const curatedMatches = filterScenicSpotsByQuery(CURATED_ALL, q);
       const heritageMatches = filterScenicSpotsByQuery(
@@ -3583,7 +3641,8 @@ export default function KoreaThemeScenicPage() {
               </div>
               <div className="flex shrink-0 items-center gap-2">
                 <form
-                  className="hidden w-56 xl:w-64 lg:block"
+                  ref={pcSearchRootRef}
+                  className="relative hidden w-56 xl:w-64 lg:block"
                   onSubmit={(e) => {
                     e.preventDefault();
                     commitSearch();
@@ -3609,9 +3668,12 @@ export default function KoreaThemeScenicPage() {
                       type="search"
                       value={searchDraft}
                       onChange={onSearchInputChange}
+                      onFocus={openSearchSuggestions}
+                      onBlur={closeSearchSuggestionsSoon}
                       onKeyDown={(e) => {
                         if (e.key === 'Escape') {
                           e.preventDefault();
+                          setSearchSuggestOpen(false);
                           if (searchActive) closeSearch();
                           else e.currentTarget.blur();
                         }
@@ -3636,30 +3698,53 @@ export default function KoreaThemeScenicPage() {
                       </button>
                     ) : null}
                   </div>
+                  <RecentSearchSuggestions
+                    items={recentSearches}
+                    draft={searchDraft}
+                    visible={searchSuggestOpen}
+                    onSelect={(keyword) => commitSearch(keyword)}
+                    onRemove={(keyword) =>
+                      setRecentSearches(
+                        removeRecentSearch(SCENIC_RECENT_SEARCH_KEY, keyword),
+                      )
+                    }
+                    onClearAll={() =>
+                      setRecentSearches(
+                        clearRecentSearches(SCENIC_RECENT_SEARCH_KEY),
+                      )
+                    }
+                    className="absolute left-0 right-0 top-[calc(100%+0.35rem)] z-50"
+                  />
                 </form>
                 <button
+                  ref={mobileSearchToggleRef}
                   type="button"
                   onClick={() => {
-                    if (searchOpen) {
-                      setSearchOpen(false);
+                    if (searchOpen || searchActive) {
+                      closeSearch();
                       return;
                     }
                     // 클릭 제스처 안에서 mount+focus (setTimeout/useEffect는 모바일 키보드 차단)
                     flushSync(() => {
                       setSearchOpen(true);
+                      openSearchSuggestions();
                     });
                     mobileSearchInputRef.current?.focus();
                   }}
-                  aria-label={searchOpen ? '검색창 닫기' : '명소·명승 검색'}
-                  aria-pressed={searchOpen}
-                  title={searchOpen ? '검색창 닫기' : '명소·명승 검색'}
+                  aria-label={
+                    searchOpen || searchActive ? '검색창 닫기' : '명소·명승 검색'
+                  }
+                  aria-pressed={searchOpen || searchActive}
+                  title={
+                    searchOpen || searchActive ? '검색창 닫기' : '명소·명승 검색'
+                  }
                   className={`flex h-9 w-9 items-center justify-center rounded-full border lg:hidden ${
                     searchOpen || searchActive
                       ? 'border-amber-400 bg-amber-50 text-amber-800'
                       : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
                   }`}
                 >
-                  {searchOpen ? (
+                  {searchOpen || searchActive ? (
                     <X size={15} aria-hidden="true" />
                   ) : (
                     <Search size={15} aria-hidden="true" />
@@ -3718,44 +3803,66 @@ export default function KoreaThemeScenicPage() {
               </div>
             </div>
             {searchOpen ? (
-              <form
-                className="mt-2 flex items-center gap-2 lg:hidden"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  commitSearch();
-                }}
-              >
-                <label className="sr-only" htmlFor="korea-scenic-search">
-                  명소·명승 검색
-                </label>
-                <input
-                  ref={mobileSearchInputRef}
-                  id="korea-scenic-search"
-                  type="search"
-                  value={searchDraft}
-                  onChange={onSearchInputChange}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Escape') {
-                      e.preventDefault();
-                      setSearchOpen(false);
-                    }
+              <div ref={mobileSearchRootRef} className="relative mt-2 lg:hidden">
+                <form
+                  className="flex items-center gap-2"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    commitSearch();
                   }}
-                  placeholder={
-                    searchApplied
-                      ? `검색 · ${searchApplied}`
-                      : '명소·지역 검색'
-                  }
-                  autoComplete="off"
-                  enterKeyHint="search"
-                  className="min-w-0 flex-1 rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-base text-stone-900 placeholder:text-stone-400 outline-none focus:border-amber-400 focus:bg-white"
-                />
-                <button
-                  type="submit"
-                  className="shrink-0 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-[11px] font-bold text-stone-600 hover:bg-stone-100"
                 >
-                  검색
-                </button>
-              </form>
+                  <label className="sr-only" htmlFor="korea-scenic-search">
+                    명소·명승 검색
+                  </label>
+                  <input
+                    ref={mobileSearchInputRef}
+                    id="korea-scenic-search"
+                    type="search"
+                    value={searchDraft}
+                    onChange={onSearchInputChange}
+                    onFocus={openSearchSuggestions}
+                    onBlur={closeSearchSuggestionsSoon}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Escape') {
+                        e.preventDefault();
+                        setSearchSuggestOpen(false);
+                        setSearchOpen(false);
+                      }
+                    }}
+                    placeholder={
+                      searchApplied
+                        ? `검색 · ${searchApplied}`
+                        : '명소·지역 검색'
+                    }
+                    autoComplete="off"
+                    enterKeyHint="search"
+                    className="min-w-0 flex-1 rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-base text-stone-900 placeholder:text-stone-400 outline-none focus:border-amber-400 focus:bg-white"
+                  />
+                  <button
+                    type="submit"
+                    className="shrink-0 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-[11px] font-bold text-stone-600 hover:bg-stone-100"
+                  >
+                    검색
+                  </button>
+                </form>
+                <RecentSearchSuggestions
+                  items={recentSearches}
+                  draft={searchDraft}
+                  visible={searchSuggestOpen}
+                  onSelect={(keyword) => commitSearch(keyword)}
+                  onRemove={(keyword) =>
+                    setRecentSearches(
+                      removeRecentSearch(SCENIC_RECENT_SEARCH_KEY, keyword),
+                    )
+                  }
+                  onClearAll={() =>
+                    setRecentSearches(
+                      clearRecentSearches(SCENIC_RECENT_SEARCH_KEY),
+                    )
+                  }
+                  className="absolute left-0 right-0 top-[calc(100%+0.35rem)] z-50"
+                />
+              </div>
             ) : null}
             <ThemeNavBackHint />
           </div>

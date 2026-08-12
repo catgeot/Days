@@ -4,13 +4,13 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: false,
-  title: '명승 검색',
-  sessionNo: 1,
-  sessionPhase: '화엄사 0건',
-  branch: 'cursor/scenic-hwaeomsa-search-8838',
-  previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'scenic-hwaeomsa',
+  active: true,
+  title: '축제·명승 검색',
+  sessionNo: 4,
+  sessionPhase: '닫기 버튼 수정',
+  branch: 'cursor/korea-recent-search-972e',
+  previewPath: '/korea',
+  qaShareSlug: 'korea-recent-search',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,38 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-12-korea-recent-search-toggle-fix-4',
+    session: '축제·명승 검색 #4, 닫기 버튼 수정',
+    title: '모바일 검색 닫기(X) 버튼 복구',
+    detail:
+      '바깥 클릭 dismiss가 닫기 버튼 pointerdown보다 먼저 실행되어 X가 다시 열리던 문제를 고쳤습니다. Preview 모바일에서 검색 열기 → X로 닫기 · 칩/바탕으로 스킵 닫기 둘 다 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-korea-recent-search-bar-dismiss-3',
+    session: '축제·명승 검색 #3, 검색바 스킵 닫기',
+    title: '모바일 검색바 · 칩·빈 영역으로 스킵 닫기',
+    detail:
+      '검색 아이콘을 연 뒤 닫기(X) 없이 분류 칩이나 빈 영역을 누르면 최근 목록뿐 아니라 검색바 자체도 닫힙니다(확정된 검색 결과는 유지). Preview 모바일 폭에서 검색 열기 → 칩/바탕 탭으로 스킵되는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-korea-recent-search-dismiss-2',
+    session: '축제·명승 검색 #2, 최근 검색어 닫기',
+    title: '최근 검색 목록 · 바깥 클릭·칩으로 닫기',
+    detail:
+      '최근 검색 목록이 닫기(X) 전까지 고정되던 문제를 고쳤습니다. 칩을 누르거나 검색창·목록 밖 빈 곳을 누르면 목록이 닫힙니다. Preview에서 검색창 포커스 → 목록 표시 → 지역 칩/빈 영역 클릭으로 닫히는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-korea-recent-search-1',
+    session: '축제·명승 검색 #1, 최근 검색어',
+    title: '축제홈·명승홈 최근 검색어',
+    detail:
+      '검색을 확정하면 localStorage에 저장되고, 검색창을 열거나 포커스하면 최근 검색어가 나열됩니다. 입력 중에는 부분 일치로 걸러집니다. Preview에서 /korea 와 /korea/theme/scenic 검색창을 열어 같은 단어를 다시 고를 수 있는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
   {
     id: '2026-08-12-scenic-hwaeomsa-tour-region-3',
     session: '명승 검색 #1, 화엄사 0건',

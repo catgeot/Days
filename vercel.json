@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/korea-recent-search",
+      "destination": "https://days-git-cursor-korea-recent-search-972e-catgeots-projects.vercel.app/korea",
+      "permanent": false
+    },
+    {
       "source": "/qa/scenic-hwaeomsa",
       "destination": "https://www.gateo.kr/korea/theme/scenic",
       "permanent": false

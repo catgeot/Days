@@ -60,6 +60,14 @@ import {
   DEFAULT_AREA_CODE,
   NEAR_FESTIVAL_KM,
 } from './koreaFestivalDefaults';
+import {
+  clearRecentSearches,
+  FESTIVAL_RECENT_SEARCH_KEY,
+  loadRecentSearches,
+  pushRecentSearch,
+  removeRecentSearch,
+} from './koreaRecentSearches';
+import RecentSearchSuggestions from './RecentSearchSuggestions';
 import KoreaFestivalMap, {
   focusViewFromFestivalItems,
   KOREA_MAP_OVERVIEW,
@@ -668,6 +676,10 @@ export default function KoreaFestivalHub() {
   const [searchDraft, setSearchDraft] = useState('');
   /** 확정된 검색어 — 입력창을 비워도 리스트 필터 유지 · 칩 변경 시 해제 */
   const [searchApplied, setSearchApplied] = useState('');
+  const [recentSearches, setRecentSearches] = useState(() =>
+    loadRecentSearches(FESTIVAL_RECENT_SEARCH_KEY),
+  );
+  const [searchSuggestOpen, setSearchSuggestOpen] = useState(false);
   /** @type {['favorites' | 'viewed' | null, function]} */
   const [personalTab, setPersonalTab] = useState(null);
   const [locHintDismissed, setLocHintDismissed] = useState(() =>
@@ -676,6 +688,9 @@ export default function KoreaFestivalHub() {
   const userRegionOverrideRef = useRef(false);
   const mountLocTriedRef = useRef(false);
   const mobileSearchInputRef = useRef(null);
+  const pcSearchRootRef = useRef(null);
+  const mobileSearchRootRef = useRef(null);
+  const mobileSearchToggleRef = useRef(null);
   const mainScrollRef = useRef(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const themeAreaAppliedRef = useRef(false);
@@ -1135,6 +1150,7 @@ export default function KoreaFestivalHub() {
     setSearchDraft('');
     setSearchApplied('');
     setSearchOpen(false);
+    setSearchSuggestOpen(false);
   };
 
   const closeSearch = () => {
@@ -1157,12 +1173,15 @@ export default function KoreaFestivalHub() {
   };
 
   /** 검색 확정 — 입력창 비우고 확정어로 리스트만 유지 · 칩은 전국 */
-  const commitSearch = () => {
-    const q = searchDraft.trim() || searchApplied.trim();
+  const commitSearch = (raw) => {
+    const q = String(raw ?? searchDraft)
+      .trim() || searchApplied.trim();
     setSearchApplied(q);
     setSearchDraft('');
     setSearchOpen(false);
+    setSearchSuggestOpen(false);
     if (q) {
+      setRecentSearches(pushRecentSearch(FESTIVAL_RECENT_SEARCH_KEY, q));
       setAreaCode('all');
       setCityName('all');
       setTasteId('all');
@@ -1174,6 +1193,45 @@ export default function KoreaFestivalHub() {
           : null;
       el?.blur?.();
     }
+  };
+
+  const openSearchSuggestions = () => {
+    setRecentSearches(loadRecentSearches(FESTIVAL_RECENT_SEARCH_KEY));
+    setSearchSuggestOpen(true);
+  };
+
+  /** 칩·빈 영역 등 검색 UI 밖 탭 — 최근 목록 + 모바일 검색바 함께 닫기 */
+  const dismissSearchUi = useCallback(() => {
+    setSearchSuggestOpen(false);
+    setSearchOpen(false);
+    setSearchDraft('');
+    if (typeof document !== 'undefined') {
+      const el =
+        document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : null;
+      el?.blur?.();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!searchOpen && !searchSuggestOpen) return undefined;
+    const onPointerDown = (e) => {
+      const target = e.target;
+      if (!(target instanceof Node)) return;
+      if (pcSearchRootRef.current?.contains(target)) return;
+      if (mobileSearchRootRef.current?.contains(target)) return;
+      if (mobileSearchToggleRef.current?.contains(target)) return;
+      dismissSearchUi();
+    };
+    document.addEventListener('pointerdown', onPointerDown, true);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown, true);
+    };
+  }, [searchOpen, searchSuggestOpen, dismissSearchUi]);
+
+  const closeSearchSuggestionsSoon = () => {
+    window.setTimeout(() => setSearchSuggestOpen(false), 120);
   };
 
   const nearActive = Boolean(nearOrigin && nearLabel);
@@ -1242,9 +1300,18 @@ export default function KoreaFestivalHub() {
     setSelected(null);
   };
 
-  const openTimeMajor = () => setChipPanel('time');
-  const openRegionMajor = () => setChipPanel('region');
-  const openTasteMajor = () => setChipPanel('taste');
+  const openTimeMajor = () => {
+    dismissSearchUi();
+    setChipPanel('time');
+  };
+  const openRegionMajor = () => {
+    dismissSearchUi();
+    setChipPanel('region');
+  };
+  const openTasteMajor = () => {
+    dismissSearchUi();
+    setChipPanel('taste');
+  };
 
   const timeMajorLabel =
     timeTabs.find((t) => t.id === timeTab)?.label || '지금';
@@ -1454,7 +1521,8 @@ export default function KoreaFestivalHub() {
               </div>
               <div className="flex shrink-0 items-center gap-2">
                 <form
-                  className="hidden w-64 xl:w-72 lg:block"
+                  ref={pcSearchRootRef}
+                  className="relative hidden w-64 xl:w-72 lg:block"
                   onSubmit={(e) => {
                     e.preventDefault();
                     commitSearch();
@@ -1480,9 +1548,12 @@ export default function KoreaFestivalHub() {
                       type="search"
                       value={searchDraft}
                       onChange={onSearchInputChange}
+                      onFocus={openSearchSuggestions}
+                      onBlur={closeSearchSuggestionsSoon}
                       onKeyDown={(e) => {
                         if (e.key === 'Escape') {
                           e.preventDefault();
+                          setSearchSuggestOpen(false);
                           if (searchActive) closeSearch();
                           else e.currentTarget.blur();
                         }
@@ -1507,8 +1578,26 @@ export default function KoreaFestivalHub() {
                       </button>
                     ) : null}
                   </div>
+                  <RecentSearchSuggestions
+                    items={recentSearches}
+                    draft={searchDraft}
+                    visible={searchSuggestOpen}
+                    onSelect={(keyword) => commitSearch(keyword)}
+                    onRemove={(keyword) =>
+                      setRecentSearches(
+                        removeRecentSearch(FESTIVAL_RECENT_SEARCH_KEY, keyword),
+                      )
+                    }
+                    onClearAll={() =>
+                      setRecentSearches(
+                        clearRecentSearches(FESTIVAL_RECENT_SEARCH_KEY),
+                      )
+                    }
+                    className="absolute left-0 right-0 top-[calc(100%+0.35rem)] z-50"
+                  />
                 </form>
                 <button
+                  ref={mobileSearchToggleRef}
                   type="button"
                   onClick={() => {
                     if (searchOpen || searchActive) {
@@ -1517,6 +1606,7 @@ export default function KoreaFestivalHub() {
                     }
                     flushSync(() => {
                       setSearchOpen(true);
+                      openSearchSuggestions();
                     });
                     mobileSearchInputRef.current?.focus();
                   }}
@@ -1595,45 +1685,67 @@ export default function KoreaFestivalHub() {
             ) : null}
 
             {searchOpen && (
-              <form
-                className="mt-2 flex items-center gap-2 lg:hidden"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  commitSearch();
-                }}
-              >
-                <label className="sr-only" htmlFor="korea-festival-search">
-                  축제 검색
-                </label>
-                <input
-                  ref={mobileSearchInputRef}
-                  id="korea-festival-search"
-                  type="search"
-                  value={searchDraft}
-                  onChange={onSearchInputChange}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Escape') {
-                      e.preventDefault();
-                      if (searchActive) closeSearch();
-                      else setSearchOpen(false);
-                    }
+              <div ref={mobileSearchRootRef} className="relative mt-2 lg:hidden">
+                <form
+                  className="flex items-center gap-2"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    commitSearch();
                   }}
-                  placeholder={
-                    searchApplied
-                      ? `검색 · ${searchApplied}`
-                      : '축제명·지역 검색'
-                  }
-                  autoComplete="off"
-                  enterKeyHint="search"
-                  className="min-w-0 flex-1 rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-base text-stone-900 placeholder:text-stone-400 outline-none focus:border-amber-400 focus:bg-white"
-                />
-                <button
-                  type="submit"
-                  className="shrink-0 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-[11px] font-bold text-stone-600 hover:bg-stone-100"
                 >
-                  검색
-                </button>
-              </form>
+                  <label className="sr-only" htmlFor="korea-festival-search">
+                    축제 검색
+                  </label>
+                  <input
+                    ref={mobileSearchInputRef}
+                    id="korea-festival-search"
+                    type="search"
+                    value={searchDraft}
+                    onChange={onSearchInputChange}
+                    onFocus={openSearchSuggestions}
+                    onBlur={closeSearchSuggestionsSoon}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Escape') {
+                        e.preventDefault();
+                        setSearchSuggestOpen(false);
+                        if (searchActive) closeSearch();
+                        else setSearchOpen(false);
+                      }
+                    }}
+                    placeholder={
+                      searchApplied
+                        ? `검색 · ${searchApplied}`
+                        : '축제명·지역 검색'
+                    }
+                    autoComplete="off"
+                    enterKeyHint="search"
+                    className="min-w-0 flex-1 rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-base text-stone-900 placeholder:text-stone-400 outline-none focus:border-amber-400 focus:bg-white"
+                  />
+                  <button
+                    type="submit"
+                    className="shrink-0 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-[11px] font-bold text-stone-600 hover:bg-stone-100"
+                  >
+                    검색
+                  </button>
+                </form>
+                <RecentSearchSuggestions
+                  items={recentSearches}
+                  draft={searchDraft}
+                  visible={searchSuggestOpen}
+                  onSelect={(keyword) => commitSearch(keyword)}
+                  onRemove={(keyword) =>
+                    setRecentSearches(
+                      removeRecentSearch(FESTIVAL_RECENT_SEARCH_KEY, keyword),
+                    )
+                  }
+                  onClearAll={() =>
+                    setRecentSearches(
+                      clearRecentSearches(FESTIVAL_RECENT_SEARCH_KEY),
+                    )
+                  }
+                  className="absolute left-0 right-0 top-[calc(100%+0.35rem)] z-50"
+                />
+              </div>
             )}
 
             <div className="mt-2.5 flex flex-col gap-1.5">
