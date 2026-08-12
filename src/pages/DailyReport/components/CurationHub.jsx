@@ -14,6 +14,7 @@ import {
   Lightbulb,
   CalendarDays,
   EyeOff,
+  X,
 } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 import { useCurationAI } from '../hooks/useLogbookAI';
@@ -25,6 +26,7 @@ import {
   queueCurationHomeOpen,
 } from '../../Home/lib/curationPlaceBridge';
 import { cachePlaceLocation } from '../../Home/lib/placeLocationCache';
+import { curationEntryToPanelData } from '../lib/curationHistory';
 
 const linkBtnClass =
   'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-colors disabled:opacity-40 disabled:cursor-not-allowed';
@@ -71,59 +73,26 @@ function CurationRichBlocks({ data }) {
   );
 }
 
-function HistoryList({ history, activeLocation, onSelect }) {
-  if (!history?.length) return null;
-
-  return (
-    <ul className="space-y-2 max-h-[320px] overflow-y-auto pr-1">
-      {history.map((item) => {
-        const active = item.location === activeLocation;
-        return (
-          <li key={`${item.location}-${item.savedAt || ''}`}>
-            <button
-              type="button"
-              onClick={() => onSelect(item)}
-              className={`w-full text-left rounded-2xl border px-3 py-2.5 transition-colors ${
-                active
-                  ? 'bg-blue-50 border-blue-200 shadow-sm'
-                  : 'bg-white/70 border-gray-200 hover:border-blue-200 hover:bg-blue-50/40'
-              }`}
-            >
-              <p className="text-sm font-bold text-gray-900 truncate">{item.location}</p>
-              {item.title ? (
-                <p className="text-xs text-gray-500 truncate mt-0.5 font-light">{item.title}</p>
-              ) : item.locationEn ? (
-                <p className="text-[11px] text-gray-400 truncate mt-0.5 font-mono">{item.locationEn}</p>
-              ) : null}
-            </button>
-          </li>
-        );
-      })}
-    </ul>
-  );
-}
-
-const CurationHub = ({ compact = false } = {}) => {
+function CurationResultPanel({
+  data,
+  compact = false,
+  showExploreCta = false,
+  onExplore,
+  user,
+  savedTrips,
+  saveCurationData,
+  onNeedLogin,
+  onClose,
+}) {
   const navigate = useNavigate();
-  const { status, curationData, history, generateCuration, selectFromHistory } = useCurationAI();
-
-  const [user, setUser] = useState(null);
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUser(data?.user || null));
-  }, []);
-
-  const { saveCurationData, savedTrips } = useTravelData(user);
-
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-  const [loadingText, setLoadingText] = useState('여정의 궤적을 분석 중...');
   const [isTextExpanded, setIsTextExpanded] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
 
   const hydratedPlace = useMemo(
-    () => (curationData ? hydrateLocationFromCuration(curationData) : null),
-    [curationData],
+    () => (data ? hydrateLocationFromCuration(data) : null),
+    [data],
   );
   const canOpenMap = Boolean(hydratedPlace && hasValidCurationCoords(hydratedPlace));
   const placeParam = hydratedPlace ? getPlaceUrlParam(hydratedPlace) : '';
@@ -131,78 +100,42 @@ const CurationHub = ({ compact = false } = {}) => {
   useEffect(() => {
     setImageFailed(false);
     setIsTextExpanded(false);
-  }, [curationData?.imageUrl, curationData?.location]);
+  }, [data?.imageUrl, data?.location]);
 
   useEffect(() => {
-    if (status === 'result' && curationData) {
-      const isAlreadySaved = savedTrips.some(
-        (trip) => trip.destination === curationData.location && trip.is_bookmarked && !trip.is_hidden,
-      );
-      setIsSaved(isAlreadySaved);
+    if (!data?.location) {
+      setIsSaved(false);
+      return;
     }
-  }, [status, curationData, savedTrips]);
+    const isAlreadySaved = (savedTrips || []).some(
+      (trip) => trip.destination === data.location && trip.is_bookmarked && !trip.is_hidden,
+    );
+    setIsSaved(isAlreadySaved);
+  }, [data?.location, savedTrips]);
 
-  useEffect(() => {
-    if (status !== 'loading') return;
-    const texts = [
-      '사용자의 기억을 스캔하는 중...',
-      '취향의 별자리를 연결하는 중...',
-      '완벽한 낙원의 좌표를 수신 중...',
-      '가장 순수한 풍경을 렌더링 중...',
-    ];
-    let i = 0;
-    const timer = setInterval(() => {
-      setLoadingText(texts[i % texts.length]);
-      i++;
-    }, 2000);
-    return () => clearInterval(timer);
-  }, [status]);
-
-  const handleCuration = async () => {
-    setIsSaved(false);
-    setIsTextExpanded(false);
-    setImageFailed(false);
-
-    let reports = [];
-    let saved = [];
-    if (user?.id) {
-      const [reportsRes, savedRes] = await Promise.all([
-        supabase.from('reports').select('location').eq('user_id', user.id).eq('is_deleted', false).limit(10),
-        supabase
-          .from('saved_trips')
-          .select('destination')
-          .eq('user_id', user.id)
-          .eq('is_bookmarked', true)
-          .eq('is_hidden', false)
-          .limit(10),
-      ]);
-      reports = reportsRes.data || [];
-      saved = savedRes.data || [];
-    }
-
-    await generateCuration(reports, saved);
-  };
+  if (!data) return null;
 
   const handleSaveCuration = async (e) => {
     e.stopPropagation();
-    if (isSaving || isSaved || !curationData) return;
+    if (isSaving || isSaved || !data) return;
     if (!user) {
-      setShowLoginPrompt(true);
+      onNeedLogin?.();
       return;
     }
+    if (!saveCurationData) return;
 
     setIsSaving(true);
     try {
       const payload = hydratedPlace
         ? {
-            ...curationData,
+            ...data,
             lat: hydratedPlace.lat,
             lng: hydratedPlace.lng,
-            slug: hydratedPlace.slug || curationData.slug,
-            country: hydratedPlace.country || curationData.country,
-            country_en: hydratedPlace.country_en || curationData.country_en,
+            slug: hydratedPlace.slug || data.slug,
+            country: hydratedPlace.country || data.country,
+            country_en: hydratedPlace.country_en || data.country_en,
           }
-        : curationData;
+        : data;
 
       const savedTrip = await saveCurationData(payload, user);
       if (savedTrip) setIsSaved(true);
@@ -243,13 +176,13 @@ const CurationHub = ({ compact = false } = {}) => {
     navigate(`/place/${placeParam}`, { state: { fromCuration: true } });
   };
 
-  const resultPanel = status === 'result' && curationData && (
-    <div className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm flex flex-col md:flex-row min-h-[340px] relative overflow-hidden group animate-in fade-in zoom-in-95 duration-700">
-      <div className="w-full md:w-5/12 h-52 md:min-h-[340px] relative overflow-hidden">
-        {curationData.imageUrl && !imageFailed ? (
+  return (
+    <div className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm flex flex-col md:flex-row min-h-[280px] md:min-h-[340px] relative overflow-hidden group animate-in fade-in zoom-in-95 duration-500">
+      <div className="w-full md:w-5/12 h-44 md:min-h-[340px] relative overflow-hidden">
+        {data.imageUrl && !imageFailed ? (
           <img
-            src={curationData.imageUrl}
-            alt={curationData.location}
+            src={data.imageUrl}
+            alt={data.location}
             onError={() => setImageFailed(true)}
             className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
           />
@@ -262,7 +195,7 @@ const CurationHub = ({ compact = false } = {}) => {
       </div>
 
       <div className="w-full md:w-7/12 py-4 pr-4 pl-6 md:py-5 md:pr-5 md:pl-8 flex flex-col relative z-10">
-        <div className="flex items-start justify-between mb-3">
+        <div className="flex items-start justify-between mb-3 gap-2">
           <div className="flex items-start gap-2 min-w-0">
             <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 border border-blue-200 text-blue-600 text-[10px] font-bold rounded tracking-wider flex-shrink-0 mt-0.5">
               <Sparkles size={10} /> AI CURATION
@@ -270,43 +203,55 @@ const CurationHub = ({ compact = false } = {}) => {
             <div className="flex flex-col justify-center ml-1 min-w-0">
               <p className="flex items-center gap-1 text-gray-800 text-sm font-bold truncate">
                 <MapPin size={12} className="flex-shrink-0 text-blue-500" />
-                <span className="truncate">{curationData.location}</span>
+                <span className="truncate">{data.location}</span>
               </p>
-              {curationData.locationEn ? (
+              {data.locationEn ? (
                 <p className="text-gray-500 text-[15px] ml-4 font-mono truncate mt-0.5 select-all">
-                  {curationData.locationEn}
+                  {data.locationEn}
                 </p>
               ) : null}
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={handleSaveCuration}
-            disabled={isSaving}
-            aria-label={isSaved ? '즐겨찾기 저장됨' : '즐겨찾기'}
-            aria-pressed={isSaved}
-            className={`p-2.5 rounded-full transition-all flex-shrink-0 z-20 border shadow-sm disabled:opacity-60 ${
-              isSaved
-                ? 'bg-amber-50 text-amber-500 border-amber-200 shadow-amber-500/10'
-                : 'bg-gray-100 text-gray-400 hover:text-amber-500 hover:bg-amber-50 hover:border-amber-200 border-gray-200'
-            }`}
-            title={isSaved ? '즐겨찾기 저장됨' : '즐겨찾기'}
-          >
-            {isSaving ? (
-              <Loader2 size={16} className="animate-spin" />
-            ) : (
-              <Star
-                size={16}
-                className={isSaved ? 'fill-amber-400 text-amber-500' : ''}
-                aria-hidden="true"
-              />
-            )}
-          </button>
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <button
+              type="button"
+              onClick={handleSaveCuration}
+              disabled={isSaving}
+              aria-label={isSaved ? '즐겨찾기 저장됨' : '즐겨찾기'}
+              aria-pressed={isSaved}
+              className={`p-2.5 rounded-full transition-all border shadow-sm disabled:opacity-60 ${
+                isSaved
+                  ? 'bg-amber-50 text-amber-500 border-amber-200 shadow-amber-500/10'
+                  : 'bg-gray-100 text-gray-400 hover:text-amber-500 hover:bg-amber-50 hover:border-amber-200 border-gray-200'
+              }`}
+              title={isSaved ? '즐겨찾기 저장됨' : '즐겨찾기'}
+            >
+              {isSaving ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <Star
+                  size={16}
+                  className={isSaved ? 'fill-amber-400 text-amber-500' : ''}
+                  aria-hidden="true"
+                />
+              )}
+            </button>
+            {onClose ? (
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="본문 닫기"
+                className="p-2.5 rounded-full border border-gray-200 bg-gray-50 text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+              >
+                <X size={16} aria-hidden="true" />
+              </button>
+            ) : null}
+          </div>
         </div>
 
         <h2 className="text-lg md:text-xl font-bold text-gray-900 leading-tight mb-3 tracking-tight line-clamp-2 mt-1">
-          {curationData.title}
+          {data.title}
         </h2>
 
         <div className="mb-2 flex-1">
@@ -315,9 +260,9 @@ const CurationHub = ({ compact = false } = {}) => {
               isTextExpanded ? '' : 'line-clamp-3'
             }`}
           >
-            {curationData.description}
+            {data.description}
           </p>
-          {curationData.description?.length > 80 && (
+          {data.description?.length > 80 && (
             <button
               type="button"
               onClick={() => setIsTextExpanded(!isTextExpanded)}
@@ -335,7 +280,7 @@ const CurationHub = ({ compact = false } = {}) => {
             </button>
           )}
 
-          {!compact ? <CurationRichBlocks data={curationData} /> : null}
+          {!compact ? <CurationRichBlocks data={data} /> : null}
         </div>
 
         <div className="mt-auto pt-3 border-t border-gray-200 space-y-3">
@@ -368,50 +313,170 @@ const CurationHub = ({ compact = false } = {}) => {
 
           <div className="flex justify-between items-center">
             <span className="text-xs text-gray-400 font-mono tracking-wide uppercase">Gateo Intelligence v5.0</span>
-            <button
-              type="button"
-              onClick={handleCuration}
-              className="group/btn flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-blue-500 transition-colors z-20 relative"
-            >
-              <Sparkles size={14} className="text-blue-500 group-hover/btn:animate-pulse" />
-              다른 낙원 탐색
-              <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
-            </button>
+            {showExploreCta && onExplore ? (
+              <button
+                type="button"
+                onClick={onExplore}
+                className="group/btn flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-blue-500 transition-colors z-20 relative"
+              >
+                <Sparkles size={14} className="text-blue-500 group-hover/btn:animate-pulse" />
+                다른 낙원 탐색
+                <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+              </button>
+            ) : null}
           </div>
         </div>
       </div>
     </div>
   );
+}
 
-  const idleOrLoading = (status === 'idle' || status === 'loading') && (
-    <div className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm flex flex-col min-h-[280px] relative overflow-hidden">
-      {status === 'idle' && (
-        <div className="p-8 flex flex-col items-center justify-center w-full text-center z-10">
-          <div className="w-14 h-14 bg-blue-50/80 rounded-full flex items-center justify-center mb-5 border border-blue-100">
-            <Compass size={24} className="text-blue-500" />
-          </div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">당신만을 위한 큐레이션</h3>
-          <p className="text-sm text-gray-500 mb-6 max-w-sm font-light break-keep">
-            아직 발견하지 못한 숨겨진 낙원을 찾아, 이 페이지 안에서 실용·숨은 정보까지 바로 보여 드립니다.
-          </p>
-          <button
-            type="button"
-            onClick={handleCuration}
-            className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-full transition-all shadow-md hover:shadow-lg active:scale-95"
-          >
-            <Sparkles size={16} /> 낙원 탐색 시작
-          </button>
-        </div>
-      )}
-      {status === 'loading' && (
-        <div className="p-8 flex flex-col items-center justify-center w-full text-center z-10">
-          <Loader2 size={32} className="text-blue-500 animate-spin mb-4" />
-          <h3 className="text-lg font-bold text-gray-900 mb-1 animate-pulse">{loadingText}</h3>
-          <p className="text-xs text-gray-500">당신의 취향과 공명하는 별을 찾고 있습니다.</p>
-        </div>
-      )}
-    </div>
+function HistoryList({
+  history,
+  mainLocation,
+  openStack,
+  onToggle,
+  user,
+  savedTrips,
+  saveCurationData,
+  onNeedLogin,
+}) {
+  if (!history?.length) return null;
+
+  return (
+    <ul className="space-y-3">
+      {history.map((item) => {
+        const isMain = item.location === mainLocation;
+        const isOpen = openStack.some((entry) => entry.location === item.location);
+        const panelData = curationEntryToPanelData(item);
+
+        return (
+          <li key={`${item.location}-${item.savedAt || ''}`} className="space-y-2">
+            <button
+              type="button"
+              onClick={() => onToggle(item)}
+              aria-expanded={isOpen}
+              disabled={isMain}
+              className={`w-full text-left rounded-2xl border px-3 py-2.5 transition-colors ${
+                isOpen || isMain
+                  ? 'bg-blue-50 border-blue-200 shadow-sm'
+                  : 'bg-white/70 border-gray-200 hover:border-blue-200 hover:bg-blue-50/40'
+              } ${isMain ? 'cursor-default' : ''}`}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-sm font-bold text-gray-900 truncate">{item.location}</p>
+                  {item.title ? (
+                    <p className="text-xs text-gray-500 truncate mt-0.5 font-light">{item.title}</p>
+                  ) : item.locationEn ? (
+                    <p className="text-[11px] text-gray-400 truncate mt-0.5 font-mono">{item.locationEn}</p>
+                  ) : null}
+                  {isMain ? (
+                    <p className="text-[10px] text-blue-500 font-medium mt-1">상단 메인에서 보는 중</p>
+                  ) : null}
+                </div>
+                {!isMain ? (
+                  <span className="flex-shrink-0 text-gray-400 mt-0.5" aria-hidden="true">
+                    {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </span>
+                ) : null}
+              </div>
+            </button>
+
+            {isOpen && panelData ? (
+              <CurationResultPanel
+                data={panelData}
+                user={user}
+                savedTrips={savedTrips}
+                saveCurationData={saveCurationData}
+                onNeedLogin={onNeedLogin}
+                onClose={() => onToggle(item)}
+              />
+            ) : null}
+          </li>
+        );
+      })}
+    </ul>
   );
+}
+
+const CurationHub = ({ compact = false } = {}) => {
+  const navigate = useNavigate();
+  const { status, curationData, history, generateCuration } = useCurationAI();
+
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUser(data?.user || null));
+  }, []);
+
+  const { saveCurationData, savedTrips } = useTravelData(user);
+
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [loadingText, setLoadingText] = useState('여정의 궤적을 분석 중...');
+  /** 목록에서 연 본문 — 클릭할수록 아래로 쌓임(토글) · 메인 교체 없음 */
+  const [openStack, setOpenStack] = useState([]);
+
+  useEffect(() => {
+    if (status !== 'loading') return;
+    const texts = [
+      '사용자의 기억을 스캔하는 중...',
+      '취향의 별자리를 연결하는 중...',
+      '완벽한 낙원의 좌표를 수신 중...',
+      '가장 순수한 풍경을 렌더링 중...',
+    ];
+    let i = 0;
+    const timer = setInterval(() => {
+      setLoadingText(texts[i % texts.length]);
+      i++;
+    }, 2000);
+    return () => clearInterval(timer);
+  }, [status]);
+
+  useEffect(() => {
+    const main = curationData?.location;
+    const locs = new Set((history || []).map((h) => h.location));
+    setOpenStack((prev) =>
+      prev.filter((entry) => locs.has(entry.location) && entry.location !== main),
+    );
+  }, [history, curationData?.location]);
+
+  const handleCuration = async () => {
+    setOpenStack([]);
+
+    let reports = [];
+    let saved = [];
+    if (user?.id) {
+      const [reportsRes, savedRes] = await Promise.all([
+        supabase.from('reports').select('location').eq('user_id', user.id).eq('is_deleted', false).limit(10),
+        supabase
+          .from('saved_trips')
+          .select('destination')
+          .eq('user_id', user.id)
+          .eq('is_bookmarked', true)
+          .eq('is_hidden', false)
+          .limit(10),
+      ]);
+      reports = reportsRes.data || [];
+      saved = savedRes.data || [];
+    }
+
+    await generateCuration(reports, saved);
+  };
+
+  const toggleStackItem = (item) => {
+    const location = item?.location;
+    if (!location) return;
+    // 상단 메인과 동일 건은 목록에 본문을 중복으로 쌓지 않음
+    if (location === curationData?.location) return;
+    setOpenStack((prev) => {
+      if (prev.some((entry) => entry.location === location)) {
+        return prev.filter((entry) => entry.location !== location);
+      }
+      const panel = curationEntryToPanelData(item);
+      if (!panel) return prev;
+      return [...prev, panel];
+    });
+  };
 
   const loginPrompt = showLoginPrompt ? (
     <div
@@ -463,11 +528,54 @@ const CurationHub = ({ compact = false } = {}) => {
     </div>
   ) : null;
 
+  const idleOrLoading = (status === 'idle' || status === 'loading') && (
+    <div className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm flex flex-col min-h-[280px] relative overflow-hidden">
+      {status === 'idle' && (
+        <div className="p-8 flex flex-col items-center justify-center w-full text-center z-10">
+          <div className="w-14 h-14 bg-blue-50/80 rounded-full flex items-center justify-center mb-5 border border-blue-100">
+            <Compass size={24} className="text-blue-500" />
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">당신만을 위한 큐레이션</h3>
+          <p className="text-sm text-gray-500 mb-6 max-w-sm font-light break-keep">
+            아직 발견하지 못한 숨겨진 낙원을 찾아, 이 페이지 안에서 실용·숨은 정보까지 바로 보여 드립니다.
+          </p>
+          <button
+            type="button"
+            onClick={handleCuration}
+            className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-full transition-all shadow-md hover:shadow-lg active:scale-95"
+          >
+            <Sparkles size={16} /> 낙원 탐색 시작
+          </button>
+        </div>
+      )}
+      {status === 'loading' && (
+        <div className="p-8 flex flex-col items-center justify-center w-full text-center z-10">
+          <Loader2 size={32} className="text-blue-500 animate-spin mb-4" />
+          <h3 className="text-lg font-bold text-gray-900 mb-1 animate-pulse">{loadingText}</h3>
+          <p className="text-xs text-gray-500">당신의 취향과 공명하는 별을 찾고 있습니다.</p>
+        </div>
+      )}
+    </div>
+  );
+
   if (compact) {
     return (
       <>
         <div className="h-full min-h-[340px]">
-          {status === 'result' ? resultPanel : idleOrLoading}
+          {status === 'result' && curationData ? (
+            <CurationResultPanel
+              data={curationData}
+              compact
+              showExploreCta
+              onExplore={handleCuration}
+              user={user}
+              savedTrips={savedTrips}
+              saveCurationData={saveCurationData}
+              onNeedLogin={() => setShowLoginPrompt(true)}
+            />
+          ) : (
+            idleOrLoading
+          )}
         </div>
         {loginPrompt}
       </>
@@ -476,7 +584,6 @@ const CurationHub = ({ compact = false } = {}) => {
 
   const hasHistory = Boolean(history?.length);
   const showResultBody = status === 'result' && Boolean(curationData);
-  // 실행 박스는「실행 결과 없음」일 때만 메인. 목록만 있고 session이 비면 hook이 history[0] 복원.
   const showExecutionMain = !showResultBody && (status === 'idle' || status === 'loading');
 
   return (
@@ -484,9 +591,18 @@ const CurationHub = ({ compact = false } = {}) => {
       <div className="space-y-6">
         {showResultBody ? (
           <div className="space-y-4">
-            {resultPanel}
+            <CurationResultPanel
+              data={curationData}
+              showExploreCta
+              onExplore={handleCuration}
+              user={user}
+              savedTrips={savedTrips}
+              saveCurationData={saveCurationData}
+              onNeedLogin={() => setShowLoginPrompt(true)}
+            />
             <p className="text-[11px] text-gray-400 font-light break-keep px-1">
-              지구본·장소 카드는 더 깊게 볼 때만. 기본 읽기는 이 페이지에 머무릅니다.
+              지구본·장소 카드는 더 깊게 볼 때만. 기본 읽기는 이 페이지에 머무릅니다. 아래 목록을 누르면 본문이
+              쌓입니다.
             </p>
           </div>
         ) : null}
@@ -511,11 +627,13 @@ const CurationHub = ({ compact = false } = {}) => {
             </div>
             <HistoryList
               history={history}
-              activeLocation={curationData?.location}
-              onSelect={(item) => {
-                selectFromHistory(item);
-                setIsSaved(false);
-              }}
+              mainLocation={curationData?.location}
+              openStack={openStack}
+              onToggle={toggleStackItem}
+              user={user}
+              savedTrips={savedTrips}
+              saveCurationData={saveCurationData}
+              onNeedLogin={() => setShowLoginPrompt(true)}
             />
           </section>
         ) : null}

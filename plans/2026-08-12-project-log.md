@@ -2,6 +2,24 @@
 
 직전: [`2026-08-11-project-log.md`](./2026-08-11-project-log.md)
 
+## 로그북 #4, 큐레이션 목록 본문 스택
+
+**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip _(push 후)_ · Preview QA 대기  
+**세션**: `로그북 #4, 큐레이션 목록 본문 스택`
+
+- **요청**: 나의 큐레이션 클릭 시 메인을 바꾸지 않고 본문을 쌓기
+- **한 일**: 목록 토글 → 행 아래 본문 패널 스택 · 메인 건은 중복 비활성 · `CurationResultPanel` 분리
+- **VERIFY**: `npm run smoke:curation-history` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/logbook-curation`
+- **Preview**: `https://days-git-cursor-logbook-cta-home-bbbd-catgeots-projects.vercel.app/blog/curation`
+- **작업 로그**: 「목록 클릭 시 본문 쌓기」
+- **남은 일**: 사람 Preview QA(목록 클릭→본문 스택 · 다시 클릭/× 닫기)
+- **다음 채팅명**:
+
+```
+로그북 #5, 큐레이션 목록 스택 QA
+```
+
 ## 로그북 #3, 큐레이션 페이지 QA
 
 **상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `79be0f3b` · Preview QA 대기  

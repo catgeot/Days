@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '로그북',
-  sessionNo: 3,
-  sessionPhase: '큐레이션 페이지 QA',
+  sessionNo: 4,
+  sessionPhase: '큐레이션 목록 본문 스택',
   branch: 'cursor/logbook-cta-home-bbbd',
   previewPath: '/blog/curation',
   qaShareSlug: 'logbook-curation',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-12-logbook-curation-stack-bodies-4',
+    session: '로그북 #4, 큐레이션 목록 본문 스택',
+    title: '목록 클릭 시 본문 쌓기',
+    detail:
+      '나의 큐레이션 항목을 누르면 메인을 바꾸지 않고 해당 본문이 목록 아래에 쌓입니다(다시 누르면 닫힘). 상단 메인과 같은 항목은 중복으로 안 엽니다. Preview /blog/curation에서 소코트라 등을 눌러 본문 스택을 확인해 주세요.',
+    at: '2026-08-12',
+  },
   {
     id: '2026-08-12-logbook-curation-restore-history-3',
     session: '로그북 #3, 큐레이션 페이지 QA',
