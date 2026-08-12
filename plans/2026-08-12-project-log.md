@@ -4,11 +4,11 @@
 
 ## 규칙, 브라우저 QA=사람만
 
-**상태**: feature `cursor/human-qa-only-c0c9` · PR 예정 · docs-only  
+**상태**: feature `cursor/human-qa-only-c0c9` · PR [#112](https://github.com/catgeot/Days/pull/112) · tip `3f623949` · docs-only  
 **세션**: `규칙, 브라우저 QA=사람만`
 
 - **한 일**: 에이전트 `computerUse`/브라우저 대행 QA **기본 금지**를 alwaysApply·`.ai-context` §1.6·§4.1 13·`AGENTS`·`cloud-preview-continuity`에 고정. 검증=audit/smoke/build → Preview 핸드오프.
-- **남은 일**: PR merge → main
+- **남은 일**: PR #112 merge → main
 
 ## 축제·명승 검색 #4, 닫기 버튼 수정
 
