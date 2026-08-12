@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/aitutaki-tour",
+      "destination": "https://days-git-cursor-aitutaki-gyg-tour-b09e-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
       "source": "/qa/curation",
       "destination": "https://days-git-cursor-curation-photo-6d19-catgeots-projects.vercel.app/blog/curation",
       "permanent": false

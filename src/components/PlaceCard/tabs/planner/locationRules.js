@@ -13,7 +13,18 @@ export const GYG_CITY_CONFIGS = [
     // 공개 URL `…/{slug}-l{id}/` · 제휴 embed 확인분 (전면 매핑 금지)
     { locationId: '169030', keys: ['iceland', '아이슬란드'] },
     { locationId: '160504', keys: ['miyakojima', '미야코지마', 'miyako'] },
+    // Rarotonga l2689 — Aitutaki GYG 재고 없음 · bare Aitutaki→Ayutthaya 오탐 방지(City 폴백)
+    { locationId: '2689', keys: ['aitutaki', '아이투타키'] },
 ];
+
+/**
+ * slug → Manual Activities data-gyg-q.
+ * GYG가 도시명만으로 엉뚱한 목적지에 붙는 소수 케이스만 (전면 매핑 금지).
+ */
+const GYG_ACTIVITIES_Q_BY_SLUG = {
+    // bare "Aitutaki" → Ayutthaya(태국) fuzzy · 재고 없음 → 확정 쿡 제도 embed
+    aitutaki: 'Rarotonga, Cook Islands',
+};
 
 // 지도/명소 카드에서 Klook 커버리지가 약해 GYG를 우선 노출할 여행지.
 const MAP_POI_GYG_ONLY_LOCATION_KEYS = GYG_CITY_CONFIGS.flatMap((item) => item.keys);
@@ -79,6 +90,11 @@ const isGygSearchSafeLabel = (value) => {
  * @returns {string|null}
  */
 export const buildGygActivitiesSearchQuery = (location) => {
+    const slug = String(location?.slug || '').trim().toLowerCase();
+    if (slug && GYG_ACTIVITIES_Q_BY_SLUG[slug]) {
+        return GYG_ACTIVITIES_Q_BY_SLUG[slug];
+    }
+
     const cityEn = String(
         location?.name_en || location?.curation_data?.locationEn || ''
     ).trim();

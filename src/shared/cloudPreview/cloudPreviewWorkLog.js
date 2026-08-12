@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: 'AI 큐레이션',
-  sessionNo: 5,
-  sessionPhase: '사진 place_stats 폴백',
-  branch: 'cursor/curation-photo-6d19',
-  previewPath: '/blog/curation',
-  qaShareSlug: 'curation',
+  title: '지구본 홈',
+  sessionNo: 4,
+  sessionPhase: '아이투타키 투어 오탐',
+  branch: 'cursor/aitutaki-gyg-tour-b09e',
+  previewPath: '/',
+  qaShareSlug: 'aitutaki-tour',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-12-aitutaki-gyg-ayutthaya-4',
+    session: '지구본 홈 #4, 아이투타키 투어 오탐',
+    title: '아이투타키 투어 찾기 → 아유타야 오탐 보정',
+    detail:
+      'GYG에 아이투타키 재고가 없어 bare「Aitutaki」검색이 아유타야로 붙던 문제를, 확정 쿡 제도 쿼리(Rarotonga, Cook Islands)·City id 2689로 바꿨습니다. Preview에서 아이투타키 써머리 → 투어 찾기에 태국 아유타야·일본 투어가 안 뜨는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
   {
     id: '2026-08-12-curation-photo-fallback-5',
     session: 'AI 큐레이션 #5, 사진 place_stats 폴백',
