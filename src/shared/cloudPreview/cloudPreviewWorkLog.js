@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-12-logbook-curation-scroll-top-9d',
+    session: '로그북 #9, 취향 재설정·헤더 뒤로가기',
+    title: '큐레이션 페이지 「위로」버튼',
+    detail:
+      '스크롤을 조금 내리면 우측 하단에 「위로」가 나타나고, 누르면 로그북 본문 스크롤을 맨 위로 올립니다. Preview /blog/curation에서 목록을 내린 뒤 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
     id: '2026-08-12-logbook-curation-body-taste-only-9c',
     session: '로그북 #9, 취향 재설정·헤더 뒤로가기',
     title: '본문 하단 · 취향 다시 설정만 · 시인성',
