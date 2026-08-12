@@ -51,6 +51,7 @@
     "smoke:korea-scenic-place-cluster": "node scripts/smoke-korea-scenic-place-cluster.mjs",
     "smoke:korea-scenic-nearby": "node scripts/smoke-korea-scenic-nearby.mjs",
     "smoke:korea-scenic-search": "node scripts/smoke-korea-scenic-search.mjs",
+    "smoke:tourapi-attraction-infer": "node scripts/smoke-tourapi-attraction-infer.mjs",
     "smoke:theme-detail-text-overflow": "node scripts/smoke-theme-detail-text-overflow.mjs",
     "generate:korea-theme-region-tour": "node scripts/generate-korea-theme-region-tour.mjs",
     "audit:korea-theme-region-tour": "node scripts/audit-korea-theme-region-tour.mjs",

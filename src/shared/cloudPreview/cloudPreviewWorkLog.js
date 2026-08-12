@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-12-scenic-hwaeomsa-tourdb-2',
+    session: '명승 검색 #1, 화엄사 0건',
+    title: '관광지 DB에 화엄사(127923) 보강',
+    detail:
+      'TourAPI 인기 POI는 areacode/cat이 비어 areaBased sync에서 빠집니다. 화엄사를 전남·인문(사찰)로 upsert했고, 선정 contentId 백필·추론(sync --curated-only)을 넣었습니다. Preview에서 「화엄사」검색 → 관광지 파드(인문)에도 화엄사가 나오는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
     id: '2026-08-12-scenic-hwaeomsa-search-1',
     session: '명승 검색 #1, 화엄사 0건',
     title: '「화엄사」검색 0건 보정',

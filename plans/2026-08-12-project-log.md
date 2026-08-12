@@ -4,17 +4,17 @@
 
 ## 명승 검색 #1, 화엄사 0건
 
-**상태**: feature `cursor/scenic-hwaeomsa-search-8838` · PR [#109](https://github.com/catgeot/Days/pull/109) · tip `17afc3aa` · Preview QA 대기  
+**상태**: feature `cursor/scenic-hwaeomsa-search-8838` · PR [#109](https://github.com/catgeot/Days/pull/109) · Preview QA 대기
 **세션**: `명승 검색 #1, 화엄사 0건`
 
-- **증상**: 명승 홈에서 「화엄사」검색 시 결과 없음
-- **원인**: (1) draft 입력만으로 검색 활성→기본 수도권·시도·hub에 걸려 0건 (2) 검색 중 권역 칩이 시도·hub 재시드 (3) CHA ctcd 52를 전북으로 오매핑(실제 전남광주·구례)
-- **한 일**: 확정어만 필터 · 검색 중 권역만 전환 · ctcd52→전남 · smoke 화엄사
-- **VERIFY**: `npm run smoke:korea-scenic-search` · `npm run build`
+- **증상**: 「화엄사」검색 0건 · 관광지 파드에 사찰 없음
+- **원인**: (1) draft 검색+권역 시드 (2) CHA ctcd52 전북 오매핑 (3) TourAPI areacode/cat 공백 → areaBased sync 누락
+- **한 일**: 검색 UX · ctcd52→전남 · DB upsert 127923 · curated 백필·추론 · smoke infer
+- **VERIFY**: smoke:korea-scenic-search · smoke:tourapi-attraction-infer · DB ilike 화엄사
 - **공유**: `https://www.gateo.kr/qa/scenic-hwaeomsa`
 - **Preview**: `https://days-git-cursor-scenic-hwaeomsa-search-8838-catgeots-projects.vercel.app/korea/theme/scenic`
-- **작업 로그**: 「「화엄사」검색 0건 보정」
-- **남은 일**: 사람 Preview QA(화엄사 검색→선정·명승)
+- **작업 로그**: 「관광지 DB에 화엄사(127923) 보강」
+- **남은 일**: Preview QA · curated 잔여 백필(429) 재시도 가능
 - **다음 채팅명**:
 
 ```
