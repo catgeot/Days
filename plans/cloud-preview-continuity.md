@@ -2,6 +2,12 @@
 
 **SSOT 요약**: [`AGENTS.md`](../AGENTS.md) Cloud 절. 사람 QA 경로 = **고정 feature 브랜치의 Vercel git Preview URL**.
 
+### 0. 브라우저 QA — 사람만 (기본)
+
+에이전트는 `computerUse` / `RecordScreen` / 화면 클릭으로 Preview를 **대행 테스트하지 않음** (사람 **명시 요청**만 예외).  
+검증 = audit/smoke/`build` → 커밋·push → **`/qa/…`·git Preview + 사람 체크 1~3줄**.  
+채팅명·일지 `… QA` = **사람이 볼 단계**. 상세 [`.ai-context.md`](../.ai-context.md) **§4.1 13** · **1.6**.
+
 ## 왜
 
 세션마다 새 브랜치·새 Preview 호스트·임의 채팅명이 생기면, 사람이 「지금 무슨 작업인지 · 어디까지인지 · 어디를 열어 볼지」를 추적할 수 없다. (국내축제 Cloud 중단 원인의 일부.)

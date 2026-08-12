@@ -2,22 +2,24 @@
 
 직전: [`2026-08-11-project-log.md`](./2026-08-11-project-log.md)
 
+## 로그북 큐레이션 · main 반영
+
+**상태**: `main` 반영 · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `19715fbc`  
+**세션**: `로그북 #8, 탐색 시 메인 포커스` → main 병합
+
+- **한 일**: #2~#8 큐레이션 IA·취향·탐색 포커스 feature를 main에 병합 · `/qa/logbook-curation` → PROD `/blog/curation`
+- **PROD**: `https://www.gateo.kr/blog/curation`
+- **작업 로그**: 로그북 Preview 종료(`logbook-curation`/`logbook-cta` active:false)
+
 ## 로그북 #8, 탐색 시 메인 포커스
 
-**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `a58a77b8` · Preview QA 대기  
+**상태**: `main` 반영 · PR [#108](https://github.com/catgeot/Days/pull/108)  
 **세션**: `로그북 #8, 탐색 시 메인 포커스`
 
 - **증상**: 「다른 낙원 탐색」을 하단에서 누르면 클릭 위치에 머물고, 상단 스피너·결과가 안 보임
-- **한 일**: 메인 스테이지 ref · 탐색 시작/로딩/결과 시 `scrollIntoView`
+- **한 일**: 메인 스테이지 ref · 탐색 시작/로딩/결과 시 `scrollIntoView` · **main 병합**
 - **VERIFY**: `npm run build`
-- **공유**: `https://www.gateo.kr/qa/logbook-curation`
-- **Preview**: `https://days-git-cursor-logbook-cta-home-bbbd-catgeots-projects.vercel.app/blog/curation`
-- **작업 로그**: 「다른 낙원 탐색 → 스피너·결과가 화면 주인공」
-- **다음 채팅명**:
-
-```
-로그북 #9, 탐색 메인 포커스 QA
-```
+- **PROD**: `https://www.gateo.kr/blog/curation`
 
 ## 로그북 #7, 취향에 최근 검색·방문
 
@@ -136,6 +138,82 @@
 - **Preview**: `https://days-git-cursor-logbook-cta-home-bbbd-catgeots-projects.vercel.app/blog/curation`
 - **작업 로그**: 「최근 실행 본문 메인 · 목록은 하단」
 - **남은 일**: → #3 QA에서 본문 복원 수정
+
+## 규칙, 브라우저 QA=사람만
+
+**상태**: feature `cursor/human-qa-only-c0c9` · PR [#112](https://github.com/catgeot/Days/pull/112) · tip `3f623949` · docs-only  
+**세션**: `규칙, 브라우저 QA=사람만`
+
+- **한 일**: 에이전트 `computerUse`/브라우저 대행 QA **기본 금지**를 alwaysApply·`.ai-context` §1.6·§4.1 13·`AGENTS`·`cloud-preview-continuity`에 고정. 검증=audit/smoke/build → Preview 핸드오프.
+- **남은 일**: PR #112 merge → main
+
+## 축제·명승 검색 #4, 닫기 버튼 수정
+
+**상태**: feature `cursor/korea-recent-search-972e` · PR [#111](https://github.com/catgeot/Days/pull/111) · Preview QA 대기  
+**세션**: `축제·명승 검색 #4, 닫기 버튼 수정`
+
+- **증상**: 칩·바탕으로는 검색바가 닫히는데 모바일 X(닫기)는 동작 안 함
+- **원인**: 바깥 pointerdown dismiss가 X 클릭보다 먼저 searchOpen을 false → click이 다시 열기로 처리
+- **한 일**: mobileSearchToggleRef 예외 · 명승 X는 searchActive일 때 closeSearch
+- **VERIFY**: `npm run smoke:korea-recent-searches` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-recent-search`
+- **Preview**: `https://days-git-cursor-korea-recent-search-972e-catgeots-projects.vercel.app/korea`
+- **작업 로그**: 「모바일 검색 닫기(X) 버튼 복구」
+- **남은 일**: 사람 Preview QA
+- **다음 채팅명**:
+
+```
+축제·명승 검색 #5, 검색 UX QA
+```
+
+## 축제·명승 검색 #3, 검색바 스킵 닫기
+
+**상태**: feature `cursor/korea-recent-search-972e` · PR [#111](https://github.com/catgeot/Days/pull/111) · 후속 #4  
+**세션**: `축제·명승 검색 #3, 검색바 스킵 닫기`
+
+- **요청**: 칩·빈 영역으로 최근 목록만이 아니라 모바일 검색바까지 스킵 닫기
+- **한 일**: `dismissSearchUi` — searchOpen+suggest+draft 닫기 · 검색 UI 밖 pointerdown(최근 없어도) · 확정 검색어는 유지
+- **VERIFY**: `npm run smoke:korea-recent-searches` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-recent-search`
+- **Preview**: `https://days-git-cursor-korea-recent-search-972e-catgeots-projects.vercel.app/korea`
+- **작업 로그**: 「모바일 검색바 · 칩·빈 영역으로 스킵 닫기」
+
+## 축제·명승 검색 #2, 최근 검색어 닫기
+
+**상태**: feature `cursor/korea-recent-search-972e` · PR [#111](https://github.com/catgeot/Days/pull/111) · 후속 #3  
+**세션**: `축제·명승 검색 #2, 최근 검색어 닫기`
+
+- **요청**: 최근 검색 목록이 X 전까지 안 닫힘 → 칩·빈 영역 클릭으로 닫기
+- **한 일**: 바깥 pointerdown dismiss · 모바일 `searchOpen` 고정 해제 · 대분류 칩 열 때 목록 닫기
+- **VERIFY**: `npm run smoke:korea-recent-searches` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-recent-search`
+- **Preview**: `https://days-git-cursor-korea-recent-search-972e-catgeots-projects.vercel.app/korea`
+- **작업 로그**: 「최근 검색 목록 · 바깥 클릭·칩으로 닫기」
+
+## 축제·명승 검색 #1, 최근 검색어
+
+**상태**: feature `cursor/korea-recent-search-972e` · PR [#111](https://github.com/catgeot/Days/pull/111) · tip `5878f515` · 후속 #2  
+**세션**: `축제·명승 검색 #1, 최근 검색어`
+
+- **요청**: 축제홈·명승홈 검색을 반복할 때 매번 같은 텍스트를 다시 치지 않게
+- **한 일**: localStorage 최근 검색어(축제/명승 키 분리) · 검색창 포커스/활성 시 목록 · 입력 중 부분 일치 필터 · 항목 삭제·전체 지우기
+- **VERIFY**: `npm run smoke:korea-recent-searches` · `npm run build` · 로컬 UI 스모크(축제·명승 드롭다운)
+- **공유**: `https://www.gateo.kr/qa/korea-recent-search`
+- **Preview**: `https://days-git-cursor-korea-recent-search-972e-catgeots-projects.vercel.app/korea` · 명승 `/korea/theme/scenic`
+- **작업 로그**: 「축제홈·명승홈 최근 검색어」
+
+## 명승 검색 #1, 화엄사 0건
+
+**상태**: `main` 반영 · PR [#110](https://github.com/catgeot/Days/pull/110) · 사람 QA OK
+**세션**: `명승 검색 #1, 화엄사 0건`
+
+- **증상**: 「화엄사」검색 0건 · 관광지 파드에 사찰 없음 · (후속) 선정·명승은 나오는데 관광지만 「이 종목 0건」
+- **원인**: (1) draft 검색+권역 시드 (2) CHA ctcd52 전북 오매핑 (3) TourAPI areacode/cat 공백 → areaBased sync 누락 (4) 검색 확정 시 tregion이 수도권 유지 + 명소 매칭 있으면 관광지 권역 자동전환 skip
+- **한 일**: 검색 UX · ctcd52→전남 · DB upsert 127923 · curated 백필·추론 · 관광지 권역 매칭 우선 · main 병합
+- **VERIFY**: smoke:korea-scenic-search · build · 사람 Preview QA OK
+- **PROD**: `https://www.gateo.kr/korea/theme/scenic`
+- **작업 로그**: 종료(`active: false`) · `/qa/scenic-hwaeomsa` → PROD
+- **남은 일**: curated 잔여 백필(429)은 별도 세션
 
 ## 로그북 #1, 공개피드 CTA
 

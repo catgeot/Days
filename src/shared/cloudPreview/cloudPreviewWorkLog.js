@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '로그북',
-  sessionNo: 8,
-  sessionPhase: '탐색 시 메인 포커스',
-  branch: 'cursor/logbook-cta-home-bbbd',
-  previewPath: '/blog/curation',
-  qaShareSlug: 'logbook-curation',
+  title: '축제·명승 검색',
+  sessionNo: 4,
+  sessionPhase: '닫기 버튼 수정',
+  branch: 'cursor/korea-recent-search-972e',
+  previewPath: '/korea',
+  qaShareSlug: 'korea-recent-search',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -109,6 +109,62 @@ export const cloudPreviewWorkLog = [
     title: '큐레이션 헤더 · 나의 큐레이션 상단 · 최근 본문',
     detail:
       '헤더를 로그북형 「큐레이션」헤더로 맞추고, 나의 큐레이션이 있으면 상단 목록·아래에 최근 실행 본문, 없으면 낙원 탐색 실행 박스가 상단에 오도록 바꿨습니다. Preview /blog/curation에서 목록·본문 순서를 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-korea-recent-search-toggle-fix-4',
+    session: '축제·명승 검색 #4, 닫기 버튼 수정',
+    title: '모바일 검색 닫기(X) 버튼 복구',
+    detail:
+      '바깥 클릭 dismiss가 닫기 버튼 pointerdown보다 먼저 실행되어 X가 다시 열리던 문제를 고쳤습니다. Preview 모바일에서 검색 열기 → X로 닫기 · 칩/바탕으로 스킵 닫기 둘 다 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-korea-recent-search-bar-dismiss-3',
+    session: '축제·명승 검색 #3, 검색바 스킵 닫기',
+    title: '모바일 검색바 · 칩·빈 영역으로 스킵 닫기',
+    detail:
+      '검색 아이콘을 연 뒤 닫기(X) 없이 분류 칩이나 빈 영역을 누르면 최근 목록뿐 아니라 검색바 자체도 닫힙니다(확정된 검색 결과는 유지). Preview 모바일 폭에서 검색 열기 → 칩/바탕 탭으로 스킵되는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-korea-recent-search-dismiss-2',
+    session: '축제·명승 검색 #2, 최근 검색어 닫기',
+    title: '최근 검색 목록 · 바깥 클릭·칩으로 닫기',
+    detail:
+      '최근 검색 목록이 닫기(X) 전까지 고정되던 문제를 고쳤습니다. 칩을 누르거나 검색창·목록 밖 빈 곳을 누르면 목록이 닫힙니다. Preview에서 검색창 포커스 → 목록 표시 → 지역 칩/빈 영역 클릭으로 닫히는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-korea-recent-search-1',
+    session: '축제·명승 검색 #1, 최근 검색어',
+    title: '축제홈·명승홈 최근 검색어',
+    detail:
+      '검색을 확정하면 localStorage에 저장되고, 검색창을 열거나 포커스하면 최근 검색어가 나열됩니다. 입력 중에는 부분 일치로 걸러집니다. Preview에서 /korea 와 /korea/theme/scenic 검색창을 열어 같은 단어를 다시 고를 수 있는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-scenic-hwaeomsa-tour-region-3',
+    session: '명승 검색 #1, 화엄사 0건',
+    title: '검색 시 관광지 권역이 수도권에 남는 문제',
+    detail:
+      '명소·명승은 「화엄사」→전라로 잡히는데 관광지만 기존 tregion(수도권)을 유지해 0건이었습니다. 검색 확정 시 매칭 권역을 우선하고, 명소가 있어도 관광지 현 권역 0건이면 TourAPI 최다 권역으로 바꿉니다. Preview에서 「화엄사」검색 → 관광지 파드에 화엄사·화엄사계곡이 나오는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-scenic-hwaeomsa-tourdb-2',
+    session: '명승 검색 #1, 화엄사 0건',
+    title: '관광지 DB에 화엄사(127923) 보강',
+    detail:
+      'TourAPI 인기 POI는 areacode/cat이 비어 areaBased sync에서 빠집니다. 화엄사를 전남·인문(사찰)로 upsert했고, 선정 contentId 백필·추론(sync --curated-only)을 넣었습니다. Preview에서 「화엄사」검색 → 관광지 파드(인문)에도 화엄사가 나오는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
+    id: '2026-08-12-scenic-hwaeomsa-search-1',
+    session: '명승 검색 #1, 화엄사 0건',
+    title: '「화엄사」검색 0건 보정',
+    detail:
+      '입력 중 draft로 검색이 켜지며 기본 수도권·시도·hub에 걸려 0건으로 보이던 문제를 고쳤습니다(확정 검색만 필터). 권역 칩이 검색 중 시도·hub를 다시 시드하지 않게 했고, CHA ctcd 52(지리산 화엄사 일원)를 전북→전남으로 바로잡았습니다. Preview에서 「화엄사」검색 → 선정·국가유산 명승이 나오는지 확인해 주세요.',
     at: '2026-08-12',
   },
   {

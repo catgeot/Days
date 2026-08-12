@@ -10,18 +10,31 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'logbook-curation',
     label: '로그북 큐레이션 페이지',
-    branch: 'cursor/logbook-cta-home-bbbd',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/blog/curation',
+    active: false,
+  },
+  {
+    slug: 'korea-recent-search',
+    label: '축제·명승 최근 검색어',
+    branch: 'cursor/korea-recent-search-972e',
     destination:
-      'https://days-git-cursor-logbook-cta-home-bbbd-catgeots-projects.vercel.app/blog/curation',
+      'https://days-git-cursor-korea-recent-search-972e-catgeots-projects.vercel.app/korea',
     active: true,
+  },
+  {
+    slug: 'scenic-hwaeomsa',
+    label: '명승 검색 화엄사',
+    branch: 'cursor/scenic-hwaeomsa-search-8838',
+    destination: 'https://www.gateo.kr/korea/theme/scenic',
+    active: false,
   },
   {
     slug: 'logbook-cta',
     label: '로그북 공개피드 CTA',
-    branch: 'cursor/logbook-cta-home-bbbd',
-    destination:
-      'https://days-git-cursor-logbook-cta-home-bbbd-catgeots-projects.vercel.app/blog',
-    active: true,
+    branch: 'main',
+    destination: 'https://www.gateo.kr/blog',
+    active: false,
   },
   {
     slug: 'aitutaki-tour',
