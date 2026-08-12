@@ -6,8 +6,7 @@ import {
   Loader2,
   Compass,
   ArrowRight,
-  Bookmark,
-  Check,
+  Star,
   ChevronDown,
   ChevronUp,
   Globe2,
@@ -117,6 +116,7 @@ const CurationHub = ({ compact = false } = {}) => {
 
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [loadingText, setLoadingText] = useState('여정의 궤적을 분석 중...');
   const [isTextExpanded, setIsTextExpanded] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
@@ -186,14 +186,13 @@ const CurationHub = ({ compact = false } = {}) => {
   const handleSaveCuration = async (e) => {
     e.stopPropagation();
     if (isSaving || isSaved || !curationData) return;
+    if (!user) {
+      setShowLoginPrompt(true);
+      return;
+    }
+
     setIsSaving(true);
-
     try {
-      if (!user) {
-        alert('로그인이 필요합니다.');
-        return;
-      }
-
       const payload = hydratedPlace
         ? {
             ...curationData,
@@ -284,14 +283,25 @@ const CurationHub = ({ compact = false } = {}) => {
           <button
             type="button"
             onClick={handleSaveCuration}
-            className={`p-2.5 rounded-full transition-all flex-shrink-0 z-20 border shadow-sm ${
+            disabled={isSaving}
+            aria-label={isSaved ? '즐겨찾기 저장됨' : '즐겨찾기'}
+            aria-pressed={isSaved}
+            className={`p-2.5 rounded-full transition-all flex-shrink-0 z-20 border shadow-sm disabled:opacity-60 ${
               isSaved
-                ? 'bg-blue-600 text-white border-blue-500 shadow-blue-500/20'
-                : 'bg-gray-100 text-gray-500 hover:text-gray-900 hover:bg-gray-200 border-gray-200'
+                ? 'bg-amber-50 text-amber-500 border-amber-200 shadow-amber-500/10'
+                : 'bg-gray-100 text-gray-400 hover:text-amber-500 hover:bg-amber-50 hover:border-amber-200 border-gray-200'
             }`}
-            title={isSaved ? '저장됨' : '위시리스트에 추가'}
+            title={isSaved ? '즐겨찾기 저장됨' : '즐겨찾기'}
           >
-            {isSaving ? <Loader2 size={16} className="animate-spin" /> : isSaved ? <Check size={16} /> : <Bookmark size={16} />}
+            {isSaving ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Star
+                size={16}
+                className={isSaved ? 'fill-amber-400 text-amber-500' : ''}
+                aria-hidden="true"
+              />
+            )}
           </button>
         </div>
 
@@ -403,11 +413,64 @@ const CurationHub = ({ compact = false } = {}) => {
     </div>
   );
 
+  const loginPrompt = showLoginPrompt ? (
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-[2px] p-4"
+      role="presentation"
+      onClick={() => setShowLoginPrompt(false)}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="curation-login-prompt-title"
+        className="w-full max-w-sm rounded-3xl border border-gray-200 bg-white p-6 shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-4 flex items-center justify-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-50 border border-amber-100">
+            <Star size={22} className="fill-amber-400 text-amber-500" aria-hidden="true" />
+          </div>
+        </div>
+        <h3
+          id="curation-login-prompt-title"
+          className="text-center text-base font-bold text-gray-900 mb-2"
+        >
+          로그인이 필요합니다
+        </h3>
+        <p className="text-center text-sm text-gray-500 font-light leading-relaxed break-keep mb-6">
+          즐겨찾기를 저장하려면 로그인이 필요합니다.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setShowLoginPrompt(false);
+              navigate('/auth/login', { state: { from: '/blog/curation' } });
+            }}
+            className="flex-1 inline-flex items-center justify-center px-4 py-2.5 rounded-full text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white transition-colors"
+          >
+            로그인 하러가기
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowLoginPrompt(false)}
+            className="flex-1 inline-flex items-center justify-center px-4 py-2.5 rounded-full text-sm font-bold bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
+          >
+            확인
+          </button>
+        </div>
+      </div>
+    </div>
+  ) : null;
+
   if (compact) {
     return (
-      <div className="h-full min-h-[340px]">
-        {status === 'result' ? resultPanel : idleOrLoading}
-      </div>
+      <>
+        <div className="h-full min-h-[340px]">
+          {status === 'result' ? resultPanel : idleOrLoading}
+        </div>
+        {loginPrompt}
+      </>
     );
   }
 
@@ -417,49 +480,52 @@ const CurationHub = ({ compact = false } = {}) => {
     status === 'result' || (hasHistory && status === 'loading') || (hasHistory && status === 'idle');
 
   return (
-    <div className="space-y-6">
-      {hasHistory ? (
-        <section className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm p-5">
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-            <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-gray-900">나의 큐레이션</h3>
-              <span className="text-[10px] font-mono text-gray-400">{history.length}</span>
+    <>
+      <div className="space-y-6">
+        {hasHistory ? (
+          <section className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-bold text-gray-900">나의 큐레이션</h3>
+                <span className="text-[10px] font-mono text-gray-400">{history.length}</span>
+              </div>
+              <button
+                type="button"
+                onClick={handleCuration}
+                disabled={status === 'loading'}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition-colors disabled:opacity-50"
+              >
+                <Sparkles size={14} /> 다른 낙원 탐색
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={handleCuration}
-              disabled={status === 'loading'}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition-colors disabled:opacity-50"
-            >
-              <Sparkles size={14} /> 다른 낙원 탐색
-            </button>
+            <HistoryList
+              history={history}
+              activeLocation={curationData?.location}
+              onSelect={(item) => {
+                selectFromHistory(item);
+                setIsSaved(false);
+              }}
+            />
+          </section>
+        ) : null}
+
+        {showExecutionTop ? idleOrLoading : null}
+
+        {showBody ? (
+          <div className="space-y-4">
+            {status === 'result' ? resultPanel : null}
+            {hasHistory && status === 'loading' ? idleOrLoading : null}
+            {hasHistory && status === 'idle' ? idleOrLoading : null}
+            {status === 'result' ? (
+              <p className="text-[11px] text-gray-400 font-light break-keep px-1">
+                지구본·장소 카드는 더 깊게 볼 때만. 기본 읽기는 이 페이지에 머무릅니다.
+              </p>
+            ) : null}
           </div>
-          <HistoryList
-            history={history}
-            activeLocation={curationData?.location}
-            onSelect={(item) => {
-              selectFromHistory(item);
-              setIsSaved(false);
-            }}
-          />
-        </section>
-      ) : null}
-
-      {showExecutionTop ? idleOrLoading : null}
-
-      {showBody ? (
-        <div className="space-y-4">
-          {status === 'result' ? resultPanel : null}
-          {hasHistory && status === 'loading' ? idleOrLoading : null}
-          {hasHistory && status === 'idle' ? idleOrLoading : null}
-          {status === 'result' ? (
-            <p className="text-[11px] text-gray-400 font-light break-keep px-1">
-              지구본·장소 카드는 더 깊게 볼 때만. 기본 읽기는 이 페이지에 머무릅니다.
-            </p>
-          ) : null}
-        </div>
-      ) : null}
-    </div>
+        ) : null}
+      </div>
+      {loginPrompt}
+    </>
   );
 };
 

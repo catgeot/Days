@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-12-logbook-curation-star-login-2c',
+    session: '로그북 #2, 큐레이션 페이지',
+    title: '즐겨찾기 별표 · 비로그인 안내',
+    detail:
+      '저장 버튼을 별표 즐겨찾기로 바꾸고, 비로그인에서 누르면 「즐겨찾기 저장을 위해 로그인 필요」안내와 「로그인 하러가기」·「확인」을 띄웁니다. Preview /blog/curation에서 비로그인으로 별표를 눌러 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
     id: '2026-08-12-logbook-curation-end-pad-2b',
     session: '로그북 #2, 큐레이션 페이지',
     title: '큐레이션 페이지 하단 스크롤 여유(~50vh)',
