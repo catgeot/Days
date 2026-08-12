@@ -20,7 +20,7 @@
 
 ## 로그북 큐레이션 · main 반영
 
-**상태**: `main` 반영 · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `85817149`  
+**상태**: `main` 반영 · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `19715fbc`  
 **세션**: `로그북 #8, 탐색 시 메인 포커스` → main 병합
 
 - **한 일**: #2~#8 큐레이션 IA·취향·탐색 포커스 feature를 main에 병합 · `/qa/logbook-curation` → PROD `/blog/curation`
@@ -39,7 +39,7 @@
 
 ## 로그북 #7, 취향에 최근 검색·방문
 
-**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `85817149` · Preview QA 대기  
+**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `6dec3fd6` · Preview QA 대기  
 **세션**: `로그북 #7, 취향에 최근 검색·방문`
 
 - **한 일**: `gateo_recent_search_keywords` · `gateo_recent_visited_destinations`를 큐레이션 프롬프트에 추가(각 최대 10) · 있으면 설문 스킵
@@ -55,7 +55,7 @@
 
 ## 로그북 #6, 취향 삭제·설문·본문 CTA
 
-**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `85817149` · Preview QA 대기  
+**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `35decb4a` · Preview QA 대기  
 **세션**: `로그북 #6, 취향 삭제·설문·본문 CTA`
 
 ### 취향 분석 조사 (선행)
@@ -90,7 +90,7 @@
 
 ## 로그북 #5, 큐레이션 닫기 버튼 위치
 
-**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `85817149` · Preview QA 대기  
+**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `3f4a3e59` · Preview QA 대기  
 **세션**: `로그북 #5, 큐레이션 닫기 버튼 위치`
 
 - **요청**: 닫기(×)가 제목란에 있어 지명 생략 → 사진 우측 상단·시인성 개선
@@ -107,7 +107,7 @@
 
 ## 로그북 #4, 큐레이션 목록 본문 스택
 
-**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `85817149` · Preview QA 대기  
+**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `fc137722` · Preview QA 대기  
 **세션**: `로그북 #4, 큐레이션 목록 본문 스택`
 
 - **요청**: 나의 큐레이션 클릭 시 메인을 바꾸지 않고 본문을 쌓기
@@ -125,7 +125,7 @@
 
 ## 로그북 #3, 큐레이션 페이지 QA
 
-**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `85817149` · Preview QA 대기  
+**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `79be0f3b` · Preview QA 대기  
 **세션**: `로그북 #3, 큐레이션 페이지 QA`
 
 - **증상**: 나의 목록(라자암팟·소코트라)이 있는데도 「낙원 탐색 시작」박스가 메인으로 보임
@@ -144,7 +144,7 @@
 
 ## 로그북 #2, 큐레이션 페이지
 
-**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `85817149` · Preview QA 대기  
+**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `463a11cf` · Preview QA 대기  
 **세션**: `로그북 #2, 큐레이션 페이지`
 
 - **요청**: 최근 실행 본문 메인 · 그 아래 나의 큐레이션 세로 목록 · 하단 여유 · 별표·비로그인 안내
@@ -157,7 +157,7 @@
 
 ## 규칙, 브라우저 QA=사람만
 
-**상태**: feature `cursor/human-qa-only-c0c9` · PR [#112](https://github.com/catgeot/Days/pull/112) · tip `85817149` · docs-only  
+**상태**: feature `cursor/human-qa-only-c0c9` · PR [#112](https://github.com/catgeot/Days/pull/112) · tip `3f623949` · docs-only  
 **세션**: `규칙, 브라우저 QA=사람만`
 
 - **한 일**: 에이전트 `computerUse`/브라우저 대행 QA **기본 금지**를 alwaysApply·`.ai-context` §1.6·§4.1 13·`AGENTS`·`cloud-preview-continuity`에 고정. 검증=audit/smoke/build → Preview 핸드오프.
@@ -208,7 +208,7 @@
 
 ## 축제·명승 검색 #1, 최근 검색어
 
-**상태**: feature `cursor/korea-recent-search-972e` · PR [#111](https://github.com/catgeot/Days/pull/111) · tip `85817149` · 후속 #2  
+**상태**: feature `cursor/korea-recent-search-972e` · PR [#111](https://github.com/catgeot/Days/pull/111) · tip `5878f515` · 후속 #2  
 **세션**: `축제·명승 검색 #1, 최근 검색어`
 
 - **요청**: 축제홈·명승홈 검색을 반복할 때 매번 같은 텍스트를 다시 치지 않게
@@ -233,7 +233,7 @@
 
 ## 로그북 #1, 공개피드 CTA
 
-**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#107](https://github.com/catgeot/Days/pull/107) · tip `85817149` · Preview QA 대기  
+**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#107](https://github.com/catgeot/Days/pull/107) · tip `95abbb3b` · Preview QA 대기  
 **세션**: `로그북 #1, 공개피드 CTA`
 
 - **증상**: 공개 피드(`/p/:id`) 하단 「나만의 기록 남기기」→ `/auth/login`
@@ -246,7 +246,7 @@
 
 ## 지구본 홈 #4, 아이투타키 투어 오탐
 
-**상태**: feature `cursor/aitutaki-gyg-tour-b09e` · PR [#106](https://github.com/catgeot/Days/pull/106) · tip `85817149` · Preview QA 대기  
+**상태**: feature `cursor/aitutaki-gyg-tour-b09e` · PR [#106](https://github.com/catgeot/Days/pull/106) · tip `61c07bd3` · Preview QA 대기  
 **세션**: `지구본 홈 #4, 아이투타키 투어 오탐`
 
 - **증상**: 써머리「투어 찾기」아이투타키 → GYG bare `Aitutaki`가 아유타야(·일본 혼입)로 오탐
