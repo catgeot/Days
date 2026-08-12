@@ -4,7 +4,7 @@
 
 ## 명승 검색 #1, 화엄사 0건
 
-**상태**: feature `cursor/scenic-hwaeomsa-search-8838` · Preview QA 대기  
+**상태**: feature `cursor/scenic-hwaeomsa-search-8838` · PR [#109](https://github.com/catgeot/Days/pull/109) · tip `17afc3aa` · Preview QA 대기  
 **세션**: `명승 검색 #1, 화엄사 0건`
 
 - **증상**: 명승 홈에서 「화엄사」검색 시 결과 없음
