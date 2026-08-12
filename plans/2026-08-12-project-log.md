@@ -4,7 +4,7 @@
 
 ## 로그북 #2, 큐레이션 페이지
 
-**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `d17cdc10` · Preview QA 대기  
+**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `72a8c4bb` · Preview QA 대기  
 **세션**: `로그북 #2, 큐레이션 페이지`
 
 - **요청**: 큐레이션 헤더 · 나의 큐레이션 상단 · 없으면 실행 박스 · 있으면 목록 아래 최근 본문 · 하단 스크롤 여유
