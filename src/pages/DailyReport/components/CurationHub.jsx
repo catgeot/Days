@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Sparkles,
@@ -510,6 +510,21 @@ const CurationHub = ({ compact = false } = {}) => {
   const [openStack, setOpenStack] = useState([]);
   const [showTasteSurvey, setShowTasteSurvey] = useState(false);
   const [surveyTags, setSurveyTags] = useState(() => readCurationTasteSurvey()?.tags || []);
+  const mainStageRef = useRef(null);
+
+  const focusMainStage = () => {
+    const el = mainStageRef.current;
+    if (!el || typeof el.scrollIntoView !== 'function') return;
+    requestAnimationFrame(() => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
+
+  useEffect(() => {
+    if (status === 'loading' || status === 'result') {
+      focusMainStage();
+    }
+  }, [status, curationData?.location]);
 
   useEffect(() => {
     if (status !== 'loading') return;
@@ -558,6 +573,7 @@ const CurationHub = ({ compact = false } = {}) => {
   const runCuration = async (tasteTags) => {
     setOpenStack([]);
     setShowTasteSurvey(false);
+    focusMainStage();
     const { reports, saved } = await fetchTasteSources();
     await generateCuration(reports, saved, { tasteTags });
   };
@@ -575,6 +591,7 @@ const CurationHub = ({ compact = false } = {}) => {
       return;
     }
     setOpenStack([]);
+    focusMainStage();
     await generateCuration(reports, saved, { tasteTags: storedSurvey?.tags });
   };
 
@@ -726,24 +743,26 @@ const CurationHub = ({ compact = false } = {}) => {
   return (
     <>
       <div className="space-y-6">
-        {showResultBody ? (
-          <div className="space-y-4">
-            <CurationResultPanel
-              data={curationData}
-              onExplore={handleCuration}
-              user={user}
-              savedTrips={savedTrips}
-              saveCurationData={saveCurationData}
-              onNeedLogin={() => setShowLoginPrompt(true)}
-            />
-            <p className="text-[11px] text-gray-400 font-light break-keep px-1">
-              지구본·장소 카드는 더 깊게 볼 때만. 기본 읽기는 이 페이지에 머무릅니다. 목록에서 본문을 열고, 취향에
-              안 맞으면 휴지로 지울 수 있습니다.
-            </p>
-          </div>
-        ) : null}
+        <div ref={mainStageRef} className="scroll-mt-6 space-y-4" tabIndex={-1}>
+          {showResultBody ? (
+            <>
+              <CurationResultPanel
+                data={curationData}
+                onExplore={handleCuration}
+                user={user}
+                savedTrips={savedTrips}
+                saveCurationData={saveCurationData}
+                onNeedLogin={() => setShowLoginPrompt(true)}
+              />
+              <p className="text-[11px] text-gray-400 font-light break-keep px-1">
+                지구본·장소 카드는 더 깊게 볼 때만. 기본 읽기는 이 페이지에 머무릅니다. 목록에서 본문을 열고, 취향에
+                안 맞으면 휴지로 지울 수 있습니다.
+              </p>
+            </>
+          ) : null}
 
-        {showExecutionMain ? idleOrLoading : null}
+          {showExecutionMain ? idleOrLoading : null}
+        </div>
 
         {hasHistory ? (
           <section className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm p-5">

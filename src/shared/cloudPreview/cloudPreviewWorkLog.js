@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '로그북',
-  sessionNo: 7,
-  sessionPhase: '취향에 최근 검색·방문',
+  sessionNo: 8,
+  sessionPhase: '탐색 시 메인 포커스',
   branch: 'cursor/logbook-cta-home-bbbd',
   previewPath: '/blog/curation',
   qaShareSlug: 'logbook-curation',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-12-logbook-curation-explore-focus-8',
+    session: '로그북 #8, 탐색 시 메인 포커스',
+    title: '다른 낙원 탐색 → 스피너·결과가 화면 주인공',
+    detail:
+      '목록·스택 본문에서 「다른 낙원 탐색」을 눌러도 클릭 위치에 머무르지 않고, 상단 로딩 스피너와 완료 본문으로 스크롤됩니다. Preview에서 하단 CTA로 탐색해 확인해 주세요.',
+    at: '2026-08-12',
+  },
   {
     id: '2026-08-12-logbook-curation-recent-explore-taste-7',
     session: '로그북 #7, 취향에 최근 검색·방문',

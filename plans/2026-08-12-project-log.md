@@ -2,6 +2,23 @@
 
 직전: [`2026-08-11-project-log.md`](./2026-08-11-project-log.md)
 
+## 로그북 #8, 탐색 시 메인 포커스
+
+**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip _(push 후)_ · Preview QA 대기  
+**세션**: `로그북 #8, 탐색 시 메인 포커스`
+
+- **증상**: 「다른 낙원 탐색」을 하단에서 누르면 클릭 위치에 머물고, 상단 스피너·결과가 안 보임
+- **한 일**: 메인 스테이지 ref · 탐색 시작/로딩/결과 시 `scrollIntoView`
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/logbook-curation`
+- **Preview**: `https://days-git-cursor-logbook-cta-home-bbbd-catgeots-projects.vercel.app/blog/curation`
+- **작업 로그**: 「다른 낙원 탐색 → 스피너·결과가 화면 주인공」
+- **다음 채팅명**:
+
+```
+로그북 #9, 탐색 메인 포커스 QA
+```
+
 ## 로그북 #7, 취향에 최근 검색·방문
 
 **상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `6dec3fd6` · Preview QA 대기  
