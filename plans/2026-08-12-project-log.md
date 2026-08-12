@@ -4,7 +4,7 @@
 
 ## 로그북 #8, 탐색 시 메인 포커스
 
-**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip _(push 후)_ · Preview QA 대기  
+**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `a58a77b8` · Preview QA 대기  
 **세션**: `로그북 #8, 탐색 시 메인 포커스`
 
 - **증상**: 「다른 낙원 탐색」을 하단에서 누르면 클릭 위치에 머물고, 상단 스피너·결과가 안 보임
