@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'logbook-cta',
+    label: '로그북 공개피드 CTA',
+    branch: 'cursor/logbook-cta-home-bbbd',
+    destination:
+      'https://days-git-cursor-logbook-cta-home-bbbd-catgeots-projects.vercel.app/blog',
+    active: true,
+  },
+  {
     slug: 'aitutaki-tour',
     label: '아이투타키 투어 오탐',
     branch: 'cursor/aitutaki-gyg-tour-b09e',

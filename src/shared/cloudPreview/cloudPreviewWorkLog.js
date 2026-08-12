@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '지구본 홈',
-  sessionNo: 4,
-  sessionPhase: '아이투타키 투어 오탐',
-  branch: 'cursor/aitutaki-gyg-tour-b09e',
-  previewPath: '/',
-  qaShareSlug: 'aitutaki-tour',
+  title: '로그북',
+  sessionNo: 1,
+  sessionPhase: '공개피드 CTA',
+  branch: 'cursor/logbook-cta-home-bbbd',
+  previewPath: '/blog',
+  qaShareSlug: 'logbook-cta',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-12-logbook-public-cta-home-1',
+    session: '로그북 #1, 공개피드 CTA',
+    title: '공개 피드 「나만의 기록 남기기」→ 로그북 홈',
+    detail:
+      '공개 피드(/p/:id) 본문 하단 CTA가 로그인으로 가던 것을 /blog(로그북 홈)로 바꿨습니다. Preview에서 공개 기록 하단 「나만의 기록 남기기」를 눌러 /blog로 가는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
   {
     id: '2026-08-12-aitutaki-gyg-ayutthaya-4',
     session: '지구본 홈 #4, 아이투타키 투어 오탐',

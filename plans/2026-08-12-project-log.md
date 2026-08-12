@@ -2,6 +2,24 @@
 
 직전: [`2026-08-11-project-log.md`](./2026-08-11-project-log.md)
 
+## 로그북 #1, 공개피드 CTA
+
+**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#107](https://github.com/catgeot/Days/pull/107) · tip `95abbb3b` · Preview QA 대기  
+**세션**: `로그북 #1, 공개피드 CTA`
+
+- **증상**: 공개 피드(`/p/:id`) 하단 「나만의 기록 남기기」→ `/auth/login`
+- **한 일**: `PublicViewer` CTA → `/blog`(로그북 홈) · `/qa/logbook-cta`
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/logbook-cta`
+- **Preview**: `https://days-git-cursor-logbook-cta-home-bbbd-catgeots-projects.vercel.app/blog`
+- **작업 로그**: 「공개 피드 「나만의 기록 남기기」→ 로그북 홈」
+- **남은 일**: 사람 Preview QA(공개 기록 하단 CTA → `/blog`)
+- **다음 채팅명**:
+
+```
+로그북 #2, 공개피드 CTA QA
+```
+
 ## 지구본 홈 #4, 아이투타키 투어 오탐
 
 **상태**: feature `cursor/aitutaki-gyg-tour-b09e` · PR [#106](https://github.com/catgeot/Days/pull/106) · tip `61c07bd3` · Preview QA 대기  

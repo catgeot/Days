@@ -143,7 +143,7 @@ const PublicViewer = () => {
             <p className="text-gray-500 text-sm font-medium mb-6">GATEO에서 나만의 여행 기록을 남겨보세요.</p>
             <div className="flex flex-col sm:flex-row gap-3">
               <button
-                onClick={() => navigate('/auth/login', { state: { from: '/blog/write' } })}
+                onClick={() => navigate('/blog')}
                 className="inline-flex items-center justify-center gap-2 text-sm font-bold text-white transition-all bg-blue-600 hover:bg-blue-700 px-6 py-2.5 rounded-full shadow-md hover:shadow-lg"
               >
                 <PenTool size={16} /> ✍️ 나만의 기록 남기기
