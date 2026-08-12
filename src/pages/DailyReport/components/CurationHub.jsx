@@ -821,9 +821,9 @@ const CurationHub = ({ compact = false } = {}) => {
         </div>
 
         {hasHistory ? (
-          <section className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm p-5">
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-              <div className="flex items-center gap-2">
+          <section className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm">
+            <div className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 px-5 py-3 rounded-t-3xl border-b border-gray-100 bg-white/95 backdrop-blur-md shadow-[0_1px_0_rgba(0,0,0,0.03)]">
+              <div className="flex items-center gap-2 min-w-0">
                 <h3 className="text-sm font-bold text-gray-900">나의 큐레이션</h3>
                 <span className="text-[10px] font-mono text-gray-400">{history.length}</span>
               </div>
@@ -831,23 +831,40 @@ const CurationHub = ({ compact = false } = {}) => {
                 type="button"
                 onClick={handleCuration}
                 disabled={status === 'loading'}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition-colors disabled:opacity-50"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition-colors disabled:opacity-50 flex-shrink-0"
               >
                 <Sparkles size={14} /> 새로운 낙원 찾기
               </button>
             </div>
-            <HistoryList
-              history={history}
-              mainLocation={curationData?.location}
-              openStack={openStack}
-              onToggle={toggleStackItem}
-              onDismiss={handleDismiss}
-              onResetTaste={openResetTasteSurvey}
-              user={user}
-              savedTrips={savedTrips}
-              saveCurationData={saveCurationData}
-              onNeedLogin={() => setShowLoginPrompt(true)}
-            />
+            <div className="p-5 pt-4">
+              <HistoryList
+                history={history}
+                mainLocation={curationData?.location}
+                openStack={openStack}
+                onToggle={toggleStackItem}
+                onDismiss={handleDismiss}
+                onResetTaste={openResetTasteSurvey}
+                user={user}
+                savedTrips={savedTrips}
+                saveCurationData={saveCurationData}
+                onNeedLogin={() => setShowLoginPrompt(true)}
+              />
+              {history.length >= 3 ? (
+                <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <p className="text-[11px] text-gray-400 font-light break-keep">
+                    목록이 길 때는 위 고정 바 또는 아래에서 바로 새 추천을 실행할 수 있습니다.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleCuration}
+                    disabled={status === 'loading'}
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition-colors disabled:opacity-50 flex-shrink-0"
+                  >
+                    <Sparkles size={14} /> 새로운 낙원 찾기
+                  </button>
+                </div>
+              ) : null}
+            </div>
           </section>
         ) : null}
       </div>

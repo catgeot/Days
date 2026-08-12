@@ -2,6 +2,21 @@
 
 직전: [`2026-08-11-project-log.md`](./2026-08-11-project-log.md)
 
+## 로그북 #11, 실행 버튼 sticky·하단
+
+**상태**: feature `cursor/logbook-curation-4475` · PR [#114](https://github.com/catgeot/Days/pull/114) · Preview QA 대기  
+**세션**: `로그북 #11, 실행 버튼 sticky·하단`
+
+- **한 일**: 「나의 큐레이션」헤더+「새로운 낙원 찾기」 sticky 고정 · 목록 3건 이상이면 하단에도 동일 버튼 (본문마다 두지 않음 — 취향 다시 설정만 유지)
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/logbook-curation`
+- **Preview**: `https://days-git-cursor-logbook-curation-4475-catgeots-projects.vercel.app/blog/curation`
+- **다음 채팅명**:
+
+```
+로그북 #12, 실행 버튼 sticky QA
+```
+
 ## 로그북 #10, 본문 제목행 AI 마크 제거
 
 **상태**: feature `cursor/logbook-curation-4475` · PR [#114](https://github.com/catgeot/Days/pull/114) · tip `665de361` · Preview QA 대기  
