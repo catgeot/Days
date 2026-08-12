@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Clock, X } from 'lucide-react';
 import { filterRecentSearches } from './koreaRecentSearches';
 
 /**
  * 검색창 활성 시 최근 검색어 목록 · draft로 부분 필터.
+ * 검색 루트 밖(칩·빈 영역) pointerdown 시 onRequestClose.
  * @param {{
  *   items: string[],
  *   draft: string,
@@ -11,6 +12,8 @@ import { filterRecentSearches } from './koreaRecentSearches';
  *   onSelect: (keyword: string) => void,
  *   onRemove: (keyword: string) => void,
  *   onClearAll?: () => void,
+ *   onRequestClose?: () => void,
+ *   rootRef?: { current: HTMLElement | null },
  *   className?: string,
  * }} props
  */
@@ -21,12 +24,29 @@ export default function RecentSearchSuggestions({
   onSelect,
   onRemove,
   onClearAll,
+  onRequestClose,
+  rootRef,
   className = '',
 }) {
   const filtered = useMemo(
     () => filterRecentSearches(items, draft),
     [items, draft],
   );
+
+  useEffect(() => {
+    if (!visible || !onRequestClose) return undefined;
+    const handlePointerDown = (e) => {
+      const target = e.target;
+      if (!(target instanceof Node)) return;
+      const root = rootRef?.current;
+      if (root && root.contains(target)) return;
+      onRequestClose();
+    };
+    document.addEventListener('pointerdown', handlePointerDown, true);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown, true);
+    };
+  }, [visible, onRequestClose, rootRef]);
 
   if (!visible || filtered.length === 0) return null;
 

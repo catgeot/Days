@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '축제·명승 검색',
-  sessionNo: 1,
-  sessionPhase: '최근 검색어',
+  sessionNo: 2,
+  sessionPhase: '최근 검색어 닫기',
   branch: 'cursor/korea-recent-search-972e',
   previewPath: '/korea',
   qaShareSlug: 'korea-recent-search',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-12-korea-recent-search-dismiss-2',
+    session: '축제·명승 검색 #2, 최근 검색어 닫기',
+    title: '최근 검색 목록 · 바깥 클릭·칩으로 닫기',
+    detail:
+      '최근 검색 목록이 닫기(X) 전까지 고정되던 문제를 고쳤습니다. 칩을 누르거나 검색창·목록 밖 빈 곳을 누르면 목록이 닫힙니다. Preview에서 검색창 포커스 → 목록 표시 → 지역 칩/빈 영역 클릭으로 닫히는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
   {
     id: '2026-08-12-korea-recent-search-1',
     session: '축제·명승 검색 #1, 최근 검색어',

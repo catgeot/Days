@@ -100,10 +100,16 @@ const suggestSrc = readFileSync(
 assert.ok(festivalSrc.includes('RecentSearchSuggestions'));
 assert.ok(festivalSrc.includes('FESTIVAL_RECENT_SEARCH_KEY'));
 assert.ok(festivalSrc.includes('openSearchSuggestions'));
+assert.ok(festivalSrc.includes('onRequestClose'));
+assert.ok(!festivalSrc.includes('searchSuggestOpen || searchOpen'));
 assert.ok(scenicSrc.includes('RecentSearchSuggestions'));
 assert.ok(scenicSrc.includes('SCENIC_RECENT_SEARCH_KEY'));
 assert.ok(scenicSrc.includes('openSearchSuggestions'));
+assert.ok(scenicSrc.includes('onRequestClose'));
+assert.ok(!scenicSrc.includes('searchSuggestOpen || searchOpen'));
 assert.ok(suggestSrc.includes('최근 검색'));
 assert.ok(suggestSrc.includes('전체 지우기'));
+assert.ok(suggestSrc.includes('pointerdown'));
+assert.ok(suggestSrc.includes('onRequestClose'));
 
 console.log('smoke-korea-recent-searches: PASS');

@@ -2,9 +2,27 @@
 
 직전: [`2026-08-11-project-log.md`](./2026-08-11-project-log.md)
 
+## 축제·명승 검색 #2, 최근 검색어 닫기
+
+**상태**: feature `cursor/korea-recent-search-972e` · PR [#111](https://github.com/catgeot/Days/pull/111) · Preview QA 대기  
+**세션**: `축제·명승 검색 #2, 최근 검색어 닫기`
+
+- **요청**: 최근 검색 목록이 X 전까지 안 닫힘 → 칩·빈 영역 클릭으로 닫기
+- **한 일**: 바깥 pointerdown dismiss · 모바일 `searchOpen` 고정 해제 · 대분류 칩 열 때 목록 닫기
+- **VERIFY**: `npm run smoke:korea-recent-searches` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-recent-search`
+- **Preview**: `https://days-git-cursor-korea-recent-search-972e-catgeots-projects.vercel.app/korea`
+- **작업 로그**: 「최근 검색 목록 · 바깥 클릭·칩으로 닫기」
+- **남은 일**: 사람 Preview QA
+- **다음 채팅명**:
+
+```
+축제·명승 검색 #3, 최근 검색어 QA
+```
+
 ## 축제·명승 검색 #1, 최근 검색어
 
-**상태**: feature `cursor/korea-recent-search-972e` · PR [#111](https://github.com/catgeot/Days/pull/111) · tip `5878f515` · Preview QA 대기  
+**상태**: feature `cursor/korea-recent-search-972e` · PR [#111](https://github.com/catgeot/Days/pull/111) · tip `5878f515` · 후속 #2  
 **세션**: `축제·명승 검색 #1, 최근 검색어`
 
 - **요청**: 축제홈·명승홈 검색을 반복할 때 매번 같은 텍스트를 다시 치지 않게
@@ -13,12 +31,6 @@
 - **공유**: `https://www.gateo.kr/qa/korea-recent-search`
 - **Preview**: `https://days-git-cursor-korea-recent-search-972e-catgeots-projects.vercel.app/korea` · 명승 `/korea/theme/scenic`
 - **작업 로그**: 「축제홈·명승홈 최근 검색어」
-- **남은 일**: 사람 Preview QA
-- **다음 채팅명**:
-
-```
-축제·명승 검색 #2, 최근 검색어 QA
-```
 
 ## 명승 검색 #1, 화엄사 0건
 

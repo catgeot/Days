@@ -688,6 +688,8 @@ export default function KoreaFestivalHub() {
   const userRegionOverrideRef = useRef(false);
   const mountLocTriedRef = useRef(false);
   const mobileSearchInputRef = useRef(null);
+  const pcSearchRootRef = useRef(null);
+  const mobileSearchRootRef = useRef(null);
   const mainScrollRef = useRef(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const themeAreaAppliedRef = useRef(false);
@@ -1147,6 +1149,7 @@ export default function KoreaFestivalHub() {
     setSearchDraft('');
     setSearchApplied('');
     setSearchOpen(false);
+    setSearchSuggestOpen(false);
   };
 
   const closeSearch = () => {
@@ -1195,6 +1198,10 @@ export default function KoreaFestivalHub() {
     setRecentSearches(loadRecentSearches(FESTIVAL_RECENT_SEARCH_KEY));
     setSearchSuggestOpen(true);
   };
+
+  const closeSearchSuggestions = useCallback(() => {
+    setSearchSuggestOpen(false);
+  }, []);
 
   const closeSearchSuggestionsSoon = () => {
     window.setTimeout(() => setSearchSuggestOpen(false), 120);
@@ -1266,9 +1273,18 @@ export default function KoreaFestivalHub() {
     setSelected(null);
   };
 
-  const openTimeMajor = () => setChipPanel('time');
-  const openRegionMajor = () => setChipPanel('region');
-  const openTasteMajor = () => setChipPanel('taste');
+  const openTimeMajor = () => {
+    setSearchSuggestOpen(false);
+    setChipPanel('time');
+  };
+  const openRegionMajor = () => {
+    setSearchSuggestOpen(false);
+    setChipPanel('region');
+  };
+  const openTasteMajor = () => {
+    setSearchSuggestOpen(false);
+    setChipPanel('taste');
+  };
 
   const timeMajorLabel =
     timeTabs.find((t) => t.id === timeTab)?.label || '지금';
@@ -1478,6 +1494,7 @@ export default function KoreaFestivalHub() {
               </div>
               <div className="flex shrink-0 items-center gap-2">
                 <form
+                  ref={pcSearchRootRef}
                   className="relative hidden w-64 xl:w-72 lg:block"
                   onSubmit={(e) => {
                     e.preventDefault();
@@ -1538,6 +1555,8 @@ export default function KoreaFestivalHub() {
                     items={recentSearches}
                     draft={searchDraft}
                     visible={searchSuggestOpen}
+                    rootRef={pcSearchRootRef}
+                    onRequestClose={closeSearchSuggestions}
                     onSelect={(keyword) => commitSearch(keyword)}
                     onRemove={(keyword) =>
                       setRecentSearches(
@@ -1640,7 +1659,7 @@ export default function KoreaFestivalHub() {
             ) : null}
 
             {searchOpen && (
-              <div className="relative mt-2 lg:hidden">
+              <div ref={mobileSearchRootRef} className="relative mt-2 lg:hidden">
                 <form
                   className="flex items-center gap-2"
                   onSubmit={(e) => {
@@ -1686,7 +1705,9 @@ export default function KoreaFestivalHub() {
                 <RecentSearchSuggestions
                   items={recentSearches}
                   draft={searchDraft}
-                  visible={searchSuggestOpen || searchOpen}
+                  visible={searchSuggestOpen}
+                  rootRef={mobileSearchRootRef}
+                  onRequestClose={closeSearchSuggestions}
                   onSelect={(keyword) => commitSearch(keyword)}
                   onRemove={(keyword) =>
                     setRecentSearches(

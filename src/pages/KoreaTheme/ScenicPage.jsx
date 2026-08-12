@@ -727,6 +727,8 @@ export default function KoreaThemeScenicPage() {
   );
   const [searchSuggestOpen, setSearchSuggestOpen] = useState(false);
   const mobileSearchInputRef = useRef(null);
+  const pcSearchRootRef = useRef(null);
+  const mobileSearchRootRef = useRef(null);
   const mainScrollRef = useRef(null);
   /** 분류칩 클릭 직후 목록 높이 변화로 스크롤이 튀지 않게 칩 위치 고정 */
   const chipScrollPinRef = useRef(null);
@@ -1390,6 +1392,7 @@ export default function KoreaThemeScenicPage() {
     setSearchDraft('');
     setSearchApplied('');
     setSearchOpen(false);
+    setSearchSuggestOpen(false);
   }, []);
 
   const closeSearch = useCallback(() => {
@@ -1544,6 +1547,10 @@ export default function KoreaThemeScenicPage() {
   const openSearchSuggestions = useCallback(() => {
     setRecentSearches(loadRecentSearches(SCENIC_RECENT_SEARCH_KEY));
     setSearchSuggestOpen(true);
+  }, []);
+
+  const closeSearchSuggestions = useCallback(() => {
+    setSearchSuggestOpen(false);
   }, []);
 
   const closeSearchSuggestionsSoon = useCallback(() => {
@@ -3607,6 +3614,7 @@ export default function KoreaThemeScenicPage() {
               </div>
               <div className="flex shrink-0 items-center gap-2">
                 <form
+                  ref={pcSearchRootRef}
                   className="relative hidden w-56 xl:w-64 lg:block"
                   onSubmit={(e) => {
                     e.preventDefault();
@@ -3667,6 +3675,8 @@ export default function KoreaThemeScenicPage() {
                     items={recentSearches}
                     draft={searchDraft}
                     visible={searchSuggestOpen}
+                    rootRef={pcSearchRootRef}
+                    onRequestClose={closeSearchSuggestions}
                     onSelect={(keyword) => commitSearch(keyword)}
                     onRemove={(keyword) =>
                       setRecentSearches(
@@ -3764,7 +3774,7 @@ export default function KoreaThemeScenicPage() {
               </div>
             </div>
             {searchOpen ? (
-              <div className="relative mt-2 lg:hidden">
+              <div ref={mobileSearchRootRef} className="relative mt-2 lg:hidden">
                 <form
                   className="flex items-center gap-2"
                   onSubmit={(e) => {
@@ -3809,7 +3819,9 @@ export default function KoreaThemeScenicPage() {
                 <RecentSearchSuggestions
                   items={recentSearches}
                   draft={searchDraft}
-                  visible={searchSuggestOpen || searchOpen}
+                  visible={searchSuggestOpen}
+                  rootRef={mobileSearchRootRef}
+                  onRequestClose={closeSearchSuggestions}
                   onSelect={(keyword) => commitSearch(keyword)}
                   onRemove={(keyword) =>
                     setRecentSearches(
