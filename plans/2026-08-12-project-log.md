@@ -4,7 +4,7 @@
 
 ## 지구본 홈 #4, 아이투타키 투어 오탐
 
-**상태**: feature `cursor/aitutaki-gyg-tour-b09e` · Preview QA 대기  
+**상태**: feature `cursor/aitutaki-gyg-tour-b09e` · PR [#106](https://github.com/catgeot/Days/pull/106) · tip `61c07bd3` · Preview QA 대기  
 **세션**: `지구본 홈 #4, 아이투타키 투어 오탐`
 
 - **증상**: 써머리「투어 찾기」아이투타키 → GYG bare `Aitutaki`가 아유타야(·일본 혼입)로 오탐
