@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '로그북',
-  sessionNo: 4,
-  sessionPhase: '큐레이션 목록 본문 스택',
+  sessionNo: 5,
+  sessionPhase: '큐레이션 닫기 버튼 위치',
   branch: 'cursor/logbook-cta-home-bbbd',
   previewPath: '/blog/curation',
   qaShareSlug: 'logbook-curation',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-12-logbook-curation-close-on-photo-5',
+    session: '로그북 #5, 큐레이션 닫기 버튼 위치',
+    title: '닫기 버튼 → 사진 우측 상단',
+    detail:
+      '스택 본문의 × 닫기를 제목 옆에서 사진 우측 상단(반투명 원형)으로 옮겼습니다. 지명 생략이 줄고 시인성이 나아졌는지 Preview에서 확인해 주세요.',
+    at: '2026-08-12',
+  },
   {
     id: '2026-08-12-logbook-curation-stack-bodies-4',
     session: '로그북 #4, 큐레이션 목록 본문 스택',

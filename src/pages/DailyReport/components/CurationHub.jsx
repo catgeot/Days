@@ -192,6 +192,17 @@ function CurationResultPanel({
             <span className="text-[11px] font-medium tracking-wide">사진 준비 중</span>
           </div>
         )}
+        {onClose ? (
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="본문 닫기"
+            title="본문 닫기"
+            className="absolute top-3 right-3 z-20 inline-flex items-center justify-center w-9 h-9 rounded-full bg-black/55 hover:bg-black/70 text-white border border-white/40 shadow-md backdrop-blur-[2px] transition-colors"
+          >
+            <X size={18} strokeWidth={2.25} aria-hidden="true" />
+          </button>
+        ) : null}
       </div>
 
       <div className="w-full md:w-7/12 py-4 pr-4 pl-6 md:py-5 md:pr-5 md:pl-8 flex flex-col relative z-10">
@@ -213,41 +224,29 @@ function CurationResultPanel({
             </div>
           </div>
 
-          <div className="flex items-center gap-1 flex-shrink-0">
-            <button
-              type="button"
-              onClick={handleSaveCuration}
-              disabled={isSaving}
-              aria-label={isSaved ? '즐겨찾기 저장됨' : '즐겨찾기'}
-              aria-pressed={isSaved}
-              className={`p-2.5 rounded-full transition-all border shadow-sm disabled:opacity-60 ${
-                isSaved
-                  ? 'bg-amber-50 text-amber-500 border-amber-200 shadow-amber-500/10'
-                  : 'bg-gray-100 text-gray-400 hover:text-amber-500 hover:bg-amber-50 hover:border-amber-200 border-gray-200'
-              }`}
-              title={isSaved ? '즐겨찾기 저장됨' : '즐겨찾기'}
-            >
-              {isSaving ? (
-                <Loader2 size={16} className="animate-spin" />
-              ) : (
-                <Star
-                  size={16}
-                  className={isSaved ? 'fill-amber-400 text-amber-500' : ''}
-                  aria-hidden="true"
-                />
-              )}
-            </button>
-            {onClose ? (
-              <button
-                type="button"
-                onClick={onClose}
-                aria-label="본문 닫기"
-                className="p-2.5 rounded-full border border-gray-200 bg-gray-50 text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-              >
-                <X size={16} aria-hidden="true" />
-              </button>
-            ) : null}
-          </div>
+          <button
+            type="button"
+            onClick={handleSaveCuration}
+            disabled={isSaving}
+            aria-label={isSaved ? '즐겨찾기 저장됨' : '즐겨찾기'}
+            aria-pressed={isSaved}
+            className={`p-2.5 rounded-full transition-all border shadow-sm disabled:opacity-60 flex-shrink-0 ${
+              isSaved
+                ? 'bg-amber-50 text-amber-500 border-amber-200 shadow-amber-500/10'
+                : 'bg-gray-100 text-gray-400 hover:text-amber-500 hover:bg-amber-50 hover:border-amber-200 border-gray-200'
+            }`}
+            title={isSaved ? '즐겨찾기 저장됨' : '즐겨찾기'}
+          >
+            {isSaving ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Star
+                size={16}
+                className={isSaved ? 'fill-amber-400 text-amber-500' : ''}
+                aria-hidden="true"
+              />
+            )}
+          </button>
         </div>
 
         <h2 className="text-lg md:text-xl font-bold text-gray-900 leading-tight mb-3 tracking-tight line-clamp-2 mt-1">

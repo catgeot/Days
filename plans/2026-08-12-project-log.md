@@ -2,6 +2,23 @@
 
 직전: [`2026-08-11-project-log.md`](./2026-08-11-project-log.md)
 
+## 로그북 #5, 큐레이션 닫기 버튼 위치
+
+**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip _(push 후)_ · Preview QA 대기  
+**세션**: `로그북 #5, 큐레이션 닫기 버튼 위치`
+
+- **요청**: 닫기(×)가 제목란에 있어 지명 생략 → 사진 우측 상단·시인성 개선
+- **한 일**: 스택 본문 ×를 이미지 영역 `top-right` 반투명 원형으로 이동
+- **VERIFY**: `npm run build`
+- **공유**: `https://www.gateo.kr/qa/logbook-curation`
+- **Preview**: `https://days-git-cursor-logbook-cta-home-bbbd-catgeots-projects.vercel.app/blog/curation`
+- **작업 로그**: 「닫기 버튼 → 사진 우측 상단」
+- **다음 채팅명**:
+
+```
+로그북 #6, 큐레이션 닫기 버튼 QA
+```
+
 ## 로그북 #4, 큐레이션 목록 본문 스택
 
 **상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `fc137722` · Preview QA 대기  
