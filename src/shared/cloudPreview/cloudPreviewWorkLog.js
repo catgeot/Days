@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-12-logbook-curation-climate-special-9b',
+    session: '로그북 #9, 취향 재설정·헤더 뒤로가기',
+    title: '취향 설문 · 겨울·우기·백야·흑야',
+    detail:
+      '재취향 설문에 겨울·추위, 눈·설경, 우기·비·흐림과 백야·흑야·오로라(특별함) 칩을 추가했습니다. Preview에서 「취향 다시 설정」모달을 열어 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
     id: '2026-08-12-logbook-curation-taste-reset-header-9',
     session: '로그북 #9, 취향 재설정·헤더 뒤로가기',
     title: '본문 취향 재설정 · LogBook 뒤로가기 · 새로운 낙원 찾기',

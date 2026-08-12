@@ -24,12 +24,24 @@ export const CURATION_TASTE_DETAIL_GROUPS = [
   },
   {
     id: 'climate',
-    title: '선호하는 기후는?',
+    title: '선호하는 기후·날씨는?',
     options: [
       { id: 'warm', label: '따뜻·온화' },
       { id: 'cool', label: '선선·고지' },
       { id: 'tropical', label: '열대·습윤' },
+      { id: 'winter', label: '겨울·추위' },
+      { id: 'snow', label: '눈·설경' },
+      { id: 'rainy', label: '우기·비·흐림' },
       { id: 'four_season', label: '사계절 뚜렷' },
+    ],
+  },
+  {
+    id: 'special',
+    title: '특별한 자연 현상은? (선택)',
+    options: [
+      { id: 'midnight_sun', label: '백야' },
+      { id: 'polar_night', label: '흑야' },
+      { id: 'aurora', label: '오로라' },
     ],
   },
   {

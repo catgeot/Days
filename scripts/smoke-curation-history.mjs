@@ -188,9 +188,18 @@ assert(
   'survey accepts detail tags',
 );
 assert(
-  getCurationPrompt([], [], [], { tasteTags: ['tropical', 'photo', 'oceania'] }).includes('열대·습윤') &&
-    getCurationPrompt([], [], [], { tasteTags: ['tropical', 'photo', 'oceania'] }).includes('풍경·사진 명소'),
-  'prompt detail survey labels',
+  writeCurationTasteSurvey(
+    { tags: ['winter', 'snow', 'rainy', 'midnight_sun', 'polar_night'] },
+    { localStorage: surveyLocal },
+  )?.tags.join(',') === 'winter,snow,rainy,midnight_sun,polar_night',
+  'survey accepts winter·rain·special tags',
+);
+assert(
+  getCurationPrompt([], [], [], { tasteTags: ['snow', 'rainy', 'midnight_sun', 'aurora'] }).includes('눈·설경') &&
+    getCurationPrompt([], [], [], { tasteTags: ['snow', 'rainy', 'midnight_sun', 'aurora'] }).includes('우기·비·흐림') &&
+    getCurationPrompt([], [], [], { tasteTags: ['snow', 'rainy', 'midnight_sun', 'aurora'] }).includes('백야') &&
+    getCurationPrompt([], [], [], { tasteTags: ['snow', 'rainy', 'midnight_sun', 'aurora'] }).includes('오로라'),
+  'prompt winter·rain·special labels',
 );
 
 if (failed > 0) {

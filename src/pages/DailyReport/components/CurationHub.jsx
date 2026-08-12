@@ -487,7 +487,7 @@ function TasteSurveyModal({ open, mode = 'first', selected, onToggleTag, onSkip,
         </h3>
         <p className="text-sm text-gray-500 font-light break-keep mb-4">
           {isReset
-            ? '이번엔 기후·스타일·밀도·권역까지 골라 주시면, 지나간 추천과 다른 결의 낙원을 찾습니다.'
+            ? '이번엔 기후·특별함(백야·흑야 등)·스타일·밀도·권역까지 골라 주시면, 지나간 추천과 다른 결의 낙원을 찾습니다.'
             : '기록·북마크가 적어 취향 신호가 약합니다. 원하는 분위기를 골라 주시면 다음 추천에 반영합니다.'}
         </p>
         {isReset ? (
