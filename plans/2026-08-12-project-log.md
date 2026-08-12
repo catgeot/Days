@@ -4,7 +4,7 @@
 
 ## 로그북 #11, 실행 버튼 sticky·하단
 
-**상태**: feature `cursor/logbook-curation-4475` · PR [#114](https://github.com/catgeot/Days/pull/114) · Preview QA 대기  
+**상태**: feature `cursor/logbook-curation-4475` · PR [#114](https://github.com/catgeot/Days/pull/114) · tip `ea79b85d` · Preview QA 대기  
 **세션**: `로그북 #11, 실행 버튼 sticky·하단`
 
 - **한 일**: 「나의 큐레이션」헤더+「새로운 낙원 찾기」 sticky 고정 · 목록 3건 이상이면 하단에도 동일 버튼 (본문마다 두지 않음 — 취향 다시 설정만 유지)
