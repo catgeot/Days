@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { getLogbookPrompt, getCurationPrompt } from '../../Home/lib/prompts.js';
 import { apiClient } from '../../Home/lib/apiClient.js';
 import { convertToBase64 } from './useLogbookMedia';
@@ -6,6 +6,7 @@ import { getCoordinatesFromAddress } from '../../Home/lib/geocoding.js';
 import { TRAVEL_SPOTS } from '../../Home/data/travelSpots.js';
 import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve.js';
 import { hasValidCurationCoords } from '../../Home/lib/curationPlaceBridge.js';
+import { supabase } from '../../../shared/api/supabase';
 import {
   curationEntryToPanelData,
   historyExcludeLocations,
@@ -15,6 +16,11 @@ import {
   writeCurationData,
   writeCurationHistory,
 } from '../lib/curationHistory.js';
+import {
+  buildCurationImageQueries,
+  curationPlaceStatsCandidates,
+  pickImageFromPlaceStatsRows,
+} from '../lib/curationImageResolve.js';
 
 export const useLogbookAI = (title, setTitle, content, setContent, date, mapLocation) => {
   const [isAILoading, setIsAILoading] = useState(false);
@@ -96,16 +102,29 @@ function matchSpotForCuration(parsedData) {
   );
 }
 
-async function resolveCurationImageUrl(parsedData) {
+async function resolveCurationImageFromPlaceStats(parsedData, catalogSpot = null) {
+  const candidates = curationPlaceStatsCandidates(parsedData, catalogSpot);
+  if (!candidates.length) return { imageUrl: null, imageSource: null };
+
+  try {
+    const { data, error } = await supabase
+      .from('place_stats')
+      .select('place_id, image_url, gallery_urls')
+      .in('place_id', candidates.slice(0, 12));
+
+    if (error || !Array.isArray(data) || data.length === 0) {
+      return { imageUrl: null, imageSource: null };
+    }
+    return pickImageFromPlaceStatsRows(data, candidates);
+  } catch {
+    return { imageUrl: null, imageSource: null };
+  }
+}
+
+async function resolveCurationImageUrl(parsedData, catalogSpot = null) {
   const unsplashKey = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
   const pexelsKey = import.meta.env.VITE_PEXELS_API_KEY;
-  const queries = [];
-  if (parsedData.searchKeyword) queries.push(String(parsedData.searchKeyword).trim());
-  if (parsedData.locationEn) {
-    const simpleLocation = String(parsedData.locationEn).split(',')[0].trim();
-    if (simpleLocation) queries.push(`${simpleLocation} nature landscape`);
-  }
-  if (parsedData.location) queries.push(String(parsedData.location).trim());
+  const queries = buildCurationImageQueries(parsedData);
 
   for (const query of queries) {
     if (!query) continue;
@@ -129,13 +148,14 @@ async function resolveCurationImageUrl(parsedData) {
     }
   }
 
-  return { imageUrl: null, imageSource: null };
+  return resolveCurationImageFromPlaceStats(parsedData, catalogSpot);
 }
 
 export const useCurationAI = () => {
   const [status, setStatus] = useState(() => (readCurationData() ? 'result' : 'idle'));
   const [curationData, setCurationData] = useState(() => readCurationData());
   const [history, setHistory] = useState(() => readCurationHistory());
+  const imageHealKeyRef = useRef('');
 
   const persistResult = useCallback((finalData) => {
     const panel = writeCurationData(finalData) || curationEntryToPanelData(finalData);
@@ -148,14 +168,38 @@ export const useCurationAI = () => {
     return panel;
   }, []);
 
+  const healMissingImage = useCallback(async (panel) => {
+    if (!panel?.location || panel.imageUrl) return panel;
+    const catalogSpot = matchSpotForCuration(panel);
+    const resolved = await resolveCurationImageFromPlaceStats(panel, catalogSpot);
+    if (!resolved?.imageUrl) return panel;
+    return persistResult({
+      ...panel,
+      imageUrl: resolved.imageUrl,
+      imageSource: resolved.imageSource || 'place_stats',
+      slug: panel.slug || catalogSpot?.slug,
+    });
+  }, [persistResult]);
+
   const selectFromHistory = useCallback((entry) => {
     const panel = curationEntryToPanelData(entry);
     if (!panel) return false;
     writeCurationData(panel);
     setCurationData(panel);
     setStatus('result');
+    if (!panel.imageUrl) {
+      void healMissingImage(panel);
+    }
     return true;
-  }, []);
+  }, [healMissingImage]);
+
+  useEffect(() => {
+    if (!curationData?.location || curationData.imageUrl) return;
+    const key = `${curationData.location}|${curationData.slug || ''}`;
+    if (imageHealKeyRef.current === key) return;
+    imageHealKeyRef.current = key;
+    void healMissingImage(curationData);
+  }, [curationData, healMissingImage]);
 
   const generateCuration = async (validReports = [], validSaved = []) => {
     setStatus('loading');
@@ -175,7 +219,7 @@ export const useCurationAI = () => {
       if (!parsedData?.location) throw new Error("큐레이션 지명 누락");
 
       const catalogSpot = matchSpotForCuration(parsedData);
-      const { imageUrl, imageSource } = await resolveCurationImageUrl(parsedData);
+      const { imageUrl, imageSource } = await resolveCurationImageUrl(parsedData, catalogSpot);
 
       const finalData = {
         ...parsedData,

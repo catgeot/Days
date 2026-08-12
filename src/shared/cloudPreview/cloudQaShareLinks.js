@@ -10,11 +10,12 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'curation',
     label: 'AI 큐레이션',
-    branch: 'cursor/blog-ai-curation-links-5aff',
+    branch: 'cursor/curation-photo-6d19',
     destination:
-      'https://days-git-cursor-blog-ai-curation-links-5aff-catgeots-projects.vercel.app/blog/curation',
+      'https://days-git-cursor-curation-photo-6d19-catgeots-projects.vercel.app/blog/curation',
     active: true,
   },
+
   {
     slug: 'summary-bottom',
     label: '모바일 써머리 하단',
