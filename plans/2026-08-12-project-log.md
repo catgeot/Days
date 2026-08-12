@@ -4,22 +4,16 @@
 
 ## 명승 검색 #1, 화엄사 0건
 
-**상태**: feature `cursor/scenic-hwaeomsa-search-8838` · PR [#110](https://github.com/catgeot/Days/pull/110) · tip `25d3788d` · (#109 머지 후속) · Preview QA 대기
+**상태**: `main` 반영 · PR [#110](https://github.com/catgeot/Days/pull/110) · 사람 QA OK
 **세션**: `명승 검색 #1, 화엄사 0건`
 
 - **증상**: 「화엄사」검색 0건 · 관광지 파드에 사찰 없음 · (후속) 선정·명승은 나오는데 관광지만 「이 종목 0건」
 - **원인**: (1) draft 검색+권역 시드 (2) CHA ctcd52 전북 오매핑 (3) TourAPI areacode/cat 공백 → areaBased sync 누락 (4) 검색 확정 시 tregion이 수도권 유지 + 명소 매칭 있으면 관광지 권역 자동전환 skip
-- **한 일**: 검색 UX · ctcd52→전남 · DB upsert 127923 · curated 백필·추론 · smoke infer · 관광지 권역을 명소·명승 매칭 우선 + 현 권역 0건 시 전환
-- **VERIFY**: smoke:korea-scenic-search · smoke:tourapi-attraction-infer · DB ilike 화엄사
-- **공유**: `https://www.gateo.kr/qa/scenic-hwaeomsa`
-- **Preview**: `https://days-git-cursor-scenic-hwaeomsa-search-8838-catgeots-projects.vercel.app/korea/theme/scenic`
-- **작업 로그**: 「검색 시 관광지 권역이 수도권에 남는 문제」
-- **남은 일**: Preview QA(「화엄사」→ 관광지 파드 결과) · curated 잔여 백필(429) 재시도 가능
-- **다음 채팅명**:
-
-```
-명승 검색 #2, 화엄사 QA
-```
+- **한 일**: 검색 UX · ctcd52→전남 · DB upsert 127923 · curated 백필·추론 · 관광지 권역 매칭 우선 · main 병합
+- **VERIFY**: smoke:korea-scenic-search · build · 사람 Preview QA OK
+- **PROD**: `https://www.gateo.kr/korea/theme/scenic`
+- **작업 로그**: 종료(`active: false`) · `/qa/scenic-hwaeomsa` → PROD
+- **남은 일**: curated 잔여 백필(429)은 별도 세션
 
 ## 로그북 #1, 공개피드 CTA
 
