@@ -4,7 +4,7 @@
 
 ## AI 큐레이션 #5, 사진 place_stats 폴백
 
-**상태**: feature `cursor/curation-photo-6d19` · Preview QA 대기  
+**상태**: feature `cursor/curation-photo-6d19` · PR [#105](https://github.com/catgeot/Days/pull/105) · tip `d43401e7` · Preview QA 대기  
 **세션**: `AI 큐레이션 #5, 사진 place_stats 폴백`
 
 - **증상**: `/blog/curation` 아이투타키 「사진 준비 중」 — Unsplash/Pexels만 쓰고 place_stats 갤러리 미사용
