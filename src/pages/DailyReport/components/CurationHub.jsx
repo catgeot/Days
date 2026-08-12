@@ -73,24 +73,18 @@ function CurationRichBlocks({ data }) {
 }
 
 function HistoryList({ history, activeLocation, onSelect }) {
-  if (!history?.length) {
-    return (
-      <p className="text-xs text-gray-400 font-light leading-relaxed break-keep">
-        아직 받은 추천이 없습니다. 낙원 탐색을 시작하면 여기에 쌓입니다.
-      </p>
-    );
-  }
+  if (!history?.length) return null;
 
   return (
-    <ul className="space-y-2 max-h-[420px] overflow-y-auto pr-1">
+    <ul className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 snap-x snap-mandatory">
       {history.map((item) => {
         const active = item.location === activeLocation;
         return (
-          <li key={`${item.location}-${item.savedAt || ''}`}>
+          <li key={`${item.location}-${item.savedAt || ''}`} className="snap-start shrink-0 w-[200px] sm:w-[220px]">
             <button
               type="button"
               onClick={() => onSelect(item)}
-              className={`w-full text-left rounded-2xl border px-3 py-2.5 transition-colors ${
+              className={`w-full h-full text-left rounded-2xl border px-3 py-2.5 transition-colors ${
                 active
                   ? 'bg-blue-50 border-blue-200 shadow-sm'
                   : 'bg-white/70 border-gray-200 hover:border-blue-200 hover:bg-blue-50/40'
@@ -417,40 +411,54 @@ const CurationHub = ({ compact = false } = {}) => {
     );
   }
 
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-      <div className="lg:col-span-2 space-y-4">
-        {status === 'result' ? resultPanel : idleOrLoading}
-        {status === 'result' && (
-          <p className="text-[11px] text-gray-400 font-light break-keep px-1">
-            지구본·장소 카드는 더 깊게 볼 때만. 기본 읽기는 이 페이지에 머무릅니다.
-          </p>
-        )}
-      </div>
+  const hasHistory = Boolean(history?.length);
+  const showExecutionTop = !hasHistory && (status === 'idle' || status === 'loading');
+  const showBody =
+    status === 'result' || (hasHistory && status === 'loading') || (hasHistory && status === 'idle');
 
-      <aside className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm p-5">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-bold text-gray-900">나의 큐레이션</h3>
-          <span className="text-[10px] font-mono text-gray-400">{history?.length || 0}</span>
+  return (
+    <div className="space-y-6">
+      {hasHistory ? (
+        <section className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-bold text-gray-900">나의 큐레이션</h3>
+              <span className="text-[10px] font-mono text-gray-400">{history.length}</span>
+            </div>
+            <button
+              type="button"
+              onClick={handleCuration}
+              disabled={status === 'loading'}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition-colors disabled:opacity-50"
+            >
+              <Sparkles size={14} /> 다른 낙원 탐색
+            </button>
+          </div>
+          <HistoryList
+            history={history}
+            activeLocation={curationData?.location}
+            onSelect={(item) => {
+              selectFromHistory(item);
+              setIsSaved(false);
+            }}
+          />
+        </section>
+      ) : null}
+
+      {showExecutionTop ? idleOrLoading : null}
+
+      {showBody ? (
+        <div className="space-y-4">
+          {status === 'result' ? resultPanel : null}
+          {hasHistory && status === 'loading' ? idleOrLoading : null}
+          {hasHistory && status === 'idle' ? idleOrLoading : null}
+          {status === 'result' ? (
+            <p className="text-[11px] text-gray-400 font-light break-keep px-1">
+              지구본·장소 카드는 더 깊게 볼 때만. 기본 읽기는 이 페이지에 머무릅니다.
+            </p>
+          ) : null}
         </div>
-        <HistoryList
-          history={history}
-          activeLocation={curationData?.location}
-          onSelect={(item) => {
-            selectFromHistory(item);
-            setIsSaved(false);
-          }}
-        />
-        {status === 'result' ? (
-          <button
-            type="button"
-            onClick={handleCuration}
-            className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition-colors"
-          >
-            <Sparkles size={14} /> 다른 낙원 탐색
-          </button>
-        ) : null}
-      </aside>
+      ) : null}
     </div>
   );
 };

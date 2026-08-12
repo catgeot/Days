@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '로그북',
-  sessionNo: 1,
-  sessionPhase: '공개피드 CTA',
+  sessionNo: 2,
+  sessionPhase: '큐레이션 페이지',
   branch: 'cursor/logbook-cta-home-bbbd',
-  previewPath: '/blog',
-  qaShareSlug: 'logbook-cta',
+  previewPath: '/blog/curation',
+  qaShareSlug: 'logbook-curation',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-12-logbook-curation-layout-2',
+    session: '로그북 #2, 큐레이션 페이지',
+    title: '큐레이션 헤더 · 나의 큐레이션 상단 · 최근 본문',
+    detail:
+      '헤더를 로그북형 「큐레이션」헤더로 맞추고, 나의 큐레이션이 있으면 상단 목록·아래에 최근 실행 본문, 없으면 낙원 탐색 실행 박스가 상단에 오도록 바꿨습니다. Preview /blog/curation에서 목록·본문 순서를 확인해 주세요.',
+    at: '2026-08-12',
+  },
   {
     id: '2026-08-12-logbook-public-cta-home-1',
     session: '로그북 #1, 공개피드 CTA',
