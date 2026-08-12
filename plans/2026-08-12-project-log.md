@@ -4,7 +4,7 @@
 
 ## 로그북 #1, 공개피드 CTA
 
-**상태**: feature `cursor/logbook-cta-home-bbbd` · Preview QA 대기  
+**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#107](https://github.com/catgeot/Days/pull/107) · tip `faad5950` · Preview QA 대기  
 **세션**: `로그북 #1, 공개피드 CTA`
 
 - **증상**: 공개 피드(`/p/:id`) 하단 「나만의 기록 남기기」→ `/auth/login`
