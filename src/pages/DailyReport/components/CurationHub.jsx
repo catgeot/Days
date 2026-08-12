@@ -475,13 +475,19 @@ const CurationHub = ({ compact = false } = {}) => {
   }
 
   const hasHistory = Boolean(history?.length);
-  const showExecutionTop = !hasHistory && (status === 'idle' || status === 'loading');
-  const showBody =
-    status === 'result' || (hasHistory && status === 'loading') || (hasHistory && status === 'idle');
 
   return (
     <>
       <div className="space-y-6">
+        <div className="space-y-4">
+          {status === 'result' ? resultPanel : idleOrLoading}
+          {status === 'result' ? (
+            <p className="text-[11px] text-gray-400 font-light break-keep px-1">
+              지구본·장소 카드는 더 깊게 볼 때만. 기본 읽기는 이 페이지에 머무릅니다.
+            </p>
+          ) : null}
+        </div>
+
         {hasHistory ? (
           <section className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm p-5">
             <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
@@ -507,21 +513,6 @@ const CurationHub = ({ compact = false } = {}) => {
               }}
             />
           </section>
-        ) : null}
-
-        {showExecutionTop ? idleOrLoading : null}
-
-        {showBody ? (
-          <div className="space-y-4">
-            {status === 'result' ? resultPanel : null}
-            {hasHistory && status === 'loading' ? idleOrLoading : null}
-            {hasHistory && status === 'idle' ? idleOrLoading : null}
-            {status === 'result' ? (
-              <p className="text-[11px] text-gray-400 font-light break-keep px-1">
-                지구본·장소 카드는 더 깊게 볼 때만. 기본 읽기는 이 페이지에 머무릅니다.
-              </p>
-            ) : null}
-          </div>
         ) : null}
       </div>
       {loginPrompt}

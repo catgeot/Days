@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-12-logbook-curation-main-then-list-2e',
+    session: '로그북 #2, 큐레이션 페이지',
+    title: '최근 실행 본문 메인 · 목록은 하단',
+    detail:
+      '마지막 실행한 큐레이션 본문이 상단 메인을 장식하고, 그 아래에 나의 큐레이션 세로 목록이 오도록 순서를 바꿨습니다. Preview /blog/curation에서 본문→목록 순을 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
     id: '2026-08-12-logbook-curation-list-vertical-2d',
     session: '로그북 #2, 큐레이션 페이지',
     title: '나의 큐레이션 목록 세로 나열',
