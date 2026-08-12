@@ -152,6 +152,18 @@ assert.ok(
   'search auto-picks cat1 with matches',
 );
 assert.ok(
+  pageSrc.includes('관광지도 명소·명승 매칭 권역 우선') ||
+    (pageSrc.includes('nextCurated ||') &&
+      pageSrc.includes('nextHeritage ||') &&
+      pageSrc.includes("searchParams.get('tregion')")),
+  'commitSearch tour region prefers curated/heritage match over stale tregion',
+);
+assert.ok(
+  pageSrc.includes('현 관광지 권역 0건이면') ||
+    pageSrc.includes('수도권+화엄사'),
+  'search auto-switches tour region when curated hits but tour region has 0',
+);
+assert.ok(
   pageSrc.includes('pickRegionFromTourCounts'),
   'search can pick region from TourAPI counts',
 );

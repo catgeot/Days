@@ -11,9 +11,8 @@ export const CLOUD_QA_SHARE_LINKS = [
     slug: 'scenic-hwaeomsa',
     label: '명승 검색 화엄사',
     branch: 'cursor/scenic-hwaeomsa-search-8838',
-    destination:
-      'https://days-git-cursor-scenic-hwaeomsa-search-8838-catgeots-projects.vercel.app/korea/theme/scenic',
-    active: true,
+    destination: 'https://www.gateo.kr/korea/theme/scenic',
+    active: false,
   },
   {
     slug: 'logbook-cta',
