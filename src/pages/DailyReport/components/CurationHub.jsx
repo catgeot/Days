@@ -219,21 +219,16 @@ function CurationResultPanel({
 
       <div className="w-full md:w-7/12 py-4 pr-4 pl-6 md:py-5 md:pr-5 md:pl-8 flex flex-col relative z-10">
         <div className="flex items-start justify-between mb-3 gap-2">
-          <div className="flex items-start gap-2 min-w-0">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 border border-blue-200 text-blue-600 text-[10px] font-bold rounded tracking-wider flex-shrink-0 mt-0.5">
-              <Sparkles size={10} /> AI CURATION
-            </span>
-            <div className="flex flex-col justify-center ml-1 min-w-0">
-              <p className="flex items-center gap-1 text-gray-800 text-sm font-bold truncate">
-                <MapPin size={12} className="flex-shrink-0 text-blue-500" />
-                <span className="truncate">{data.location}</span>
+          <div className="flex flex-col justify-center min-w-0 flex-1">
+            <p className="flex items-center gap-1 text-gray-800 text-sm font-bold min-w-0">
+              <MapPin size={12} className="flex-shrink-0 text-blue-500" />
+              <span className="truncate">{data.location}</span>
+            </p>
+            {data.locationEn ? (
+              <p className="text-gray-500 text-[15px] ml-4 font-mono truncate mt-0.5 select-all">
+                {data.locationEn}
               </p>
-              {data.locationEn ? (
-                <p className="text-gray-500 text-[15px] ml-4 font-mono truncate mt-0.5 select-all">
-                  {data.locationEn}
-                </p>
-              ) : null}
-            </div>
+            ) : null}
           </div>
 
           <button
@@ -826,9 +821,9 @@ const CurationHub = ({ compact = false } = {}) => {
         </div>
 
         {hasHistory ? (
-          <section className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm p-5">
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-              <div className="flex items-center gap-2">
+          <section className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm">
+            <div className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 px-5 py-3 rounded-t-3xl border-b border-gray-100 bg-white/95 backdrop-blur-md shadow-[0_1px_0_rgba(0,0,0,0.03)]">
+              <div className="flex items-center gap-2 min-w-0">
                 <h3 className="text-sm font-bold text-gray-900">나의 큐레이션</h3>
                 <span className="text-[10px] font-mono text-gray-400">{history.length}</span>
               </div>
@@ -836,23 +831,40 @@ const CurationHub = ({ compact = false } = {}) => {
                 type="button"
                 onClick={handleCuration}
                 disabled={status === 'loading'}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition-colors disabled:opacity-50"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition-colors disabled:opacity-50 flex-shrink-0"
               >
                 <Sparkles size={14} /> 새로운 낙원 찾기
               </button>
             </div>
-            <HistoryList
-              history={history}
-              mainLocation={curationData?.location}
-              openStack={openStack}
-              onToggle={toggleStackItem}
-              onDismiss={handleDismiss}
-              onResetTaste={openResetTasteSurvey}
-              user={user}
-              savedTrips={savedTrips}
-              saveCurationData={saveCurationData}
-              onNeedLogin={() => setShowLoginPrompt(true)}
-            />
+            <div className="p-5 pt-4">
+              <HistoryList
+                history={history}
+                mainLocation={curationData?.location}
+                openStack={openStack}
+                onToggle={toggleStackItem}
+                onDismiss={handleDismiss}
+                onResetTaste={openResetTasteSurvey}
+                user={user}
+                savedTrips={savedTrips}
+                saveCurationData={saveCurationData}
+                onNeedLogin={() => setShowLoginPrompt(true)}
+              />
+              {history.length >= 3 ? (
+                <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <p className="text-[11px] text-gray-400 font-light break-keep">
+                    목록이 길 때는 위 고정 바 또는 아래에서 바로 새 추천을 실행할 수 있습니다.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleCuration}
+                    disabled={status === 'loading'}
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition-colors disabled:opacity-50 flex-shrink-0"
+                  >
+                    <Sparkles size={14} /> 새로운 낙원 찾기
+                  </button>
+                </div>
+              ) : null}
+            </div>
           </section>
         ) : null}
       </div>
