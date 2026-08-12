@@ -176,7 +176,12 @@ export const getReviewPrompt = (locationName, rating, content) => {
 };
 
 // 큐레이션 전용 프롬프트 (excludeList: 지명 문자열 또는 history 객체)
-export const getCurationPrompt = (validReports = [], validSaved = [], excludeList = []) => {
+export const getCurationPrompt = (
+  validReports = [],
+  validSaved = [],
+  excludeList = [],
+  { rejectedList = [], tasteTags = [] } = {},
+) => {
   const reportLines = (validReports || [])
     .map((r) => String(r?.location || '').trim())
     .filter(Boolean)
@@ -185,31 +190,61 @@ export const getCurationPrompt = (validReports = [], validSaved = [], excludeLis
     .map((s) => String(s?.destination || '').trim())
     .filter(Boolean)
     .map((dest) => `- ${dest}`);
-  const hasTasteData = reportLines.length > 0 || savedLines.length > 0;
+
+  const tasteTagLabels = {
+    sea: '바다·섬',
+    nature: '산·자연',
+    city: '도시·건축',
+    culture: '문화·유적',
+    adventure: '오지·모험',
+    quiet: '조용한 휴식',
+  };
+  const surveyLabels = (tasteTags || [])
+    .map((id) => tasteTagLabels[String(id).trim()] || String(id).trim())
+    .filter(Boolean);
+  const hasSurvey = surveyLabels.length > 0;
+  const hasTasteData = reportLines.length > 0 || savedLines.length > 0 || hasSurvey;
 
   const excludeNames = (excludeList || [])
     .map((item) => (typeof item === 'string' ? item : item?.location))
     .map((s) => String(s || '').trim())
     .filter(Boolean);
 
-  const userDataText = hasTasteData
-    ? `
-    [사용자의 과거 기록] ${reportLines.length ? reportLines.join(', ') : '(없음)'}
-    [사용자의 북마크] ${savedLines.length ? savedLines.join(', ') : '(없음)'}
-  `
-    : `
+  const rejectedNames = (rejectedList || [])
+    .map((item) => (typeof item === 'string' ? item : item?.location))
+    .map((s) => String(s || '').trim())
+    .filter(Boolean);
+
+  let userDataText;
+  if (hasTasteData) {
+    const parts = [];
+    if (reportLines.length || savedLines.length) {
+      parts.push(`[사용자의 과거 기록] ${reportLines.length ? reportLines.join(', ') : '(없음)'}`);
+      parts.push(`[사용자의 북마크] ${savedLines.length ? savedLines.join(', ') : '(없음)'}`);
+    }
+    if (hasSurvey) {
+      parts.push(`[취향 설문] 선호 분위기: ${surveyLabels.join(', ')}`);
+    }
+    userDataText = `\n    ${parts.join('\n    ')}\n  `;
+  } else {
+    userDataText = `
     [취향 데이터] 없음 (비로그인·기록 없음). 특정 사용자 이력에 맞추지 말고, 대중에게 덜 알려진 숨겨진 낙원 1곳을 자유롭게 추천하세요.
   `;
+  }
 
   const excludeText = excludeNames.length > 0
-    ? `\n🚨 [강제 제외 장소]: ${excludeNames.join(', ')} (이 장소들은 이번 세션에서 이미 추천했으므로 절대로 다시 추천하지 마세요.)`
+    ? `\n🚨 [강제 제외 장소]: ${excludeNames.join(', ')} (이미 추천한 곳이므로 다시 추천하지 마세요.)`
+    : '';
+
+  const rejectedText = rejectedNames.length > 0
+    ? `\n🚫 [취향 불일치·삭제된 추천]: ${rejectedNames.join(', ')} — 사용자가 맞지 않다고 지운 장소입니다. 이 장소와 비슷한 분위기·유형·지역 성격도 피하고, 다른 취향의 숨은 낙원을 추천하세요.`
     : '';
 
   return `당신은 세계 곳곳의 숨겨진 명소를 잘 아는 GATEO의 수석 여행 큐레이터입니다.
 대중에게 덜 알려졌으나${hasTasteData ? ', 사용자의 취향에 완벽히 맞는' : ''} 숨겨진 낙원 딱 1곳을 추천하세요.
 
 [사용자 취향 데이터]
-${userDataText}${excludeText}
+${userDataText}${excludeText}${rejectedText}
 
 🚨 [언어 및 데이터 정합성 엄수 규칙]
 1. "location": 구글 검색이 가능한 정확한 '한국어 지명' (예: 아이투타키).

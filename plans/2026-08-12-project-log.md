@@ -2,6 +2,41 @@
 
 직전: [`2026-08-11-project-log.md`](./2026-08-11-project-log.md)
 
+## 로그북 #6, 취향 삭제·설문·본문 CTA
+
+**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip _(push 후)_ · Preview QA 대기  
+**세션**: `로그북 #6, 취향 삭제·설문·본문 CTA`
+
+### 취향 분석 조사 (선행)
+
+| 입력 | 실제 쓰임 |
+|------|-----------|
+| 로그인 `reports.location` (최대 10) | 프롬프트에 지명 나열만 |
+| 로그인 `saved_trips.destination` 북마크 | 지명 나열만 |
+| `gateo_curation_history` | **긍정 취향 아님** · 재추천 제외 목록만 |
+| 비로그인·기록 없음 | 「취향 없음」→ 일반 숨은 낙원 |
+
+- 구조화 취향(분위기·기후·활동) 추출 없음 · LLM이 지명 나열을 해석하는 수준
+- 목록만 지우면 제외 목록에서 빠져 **같은 곳이 다시 나올 수 있었음** → 거절 SSOT 필요
+
+### 한 일
+
+- 모든 본문 하단 「다른 낙원 탐색」
+- 목록 휴지 → history 삭제 + `gateo_curation_rejected` · 프롬프트에 유사 취향 회피
+- 기록·북마크·설문 없으면 분위기 칩 설문(바다·섬 등) → local `gateo_curation_taste_survey`
+
+### VERIFY / 링크
+
+- **VERIFY**: `npm run smoke:curation-history` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/logbook-curation`
+- **Preview**: `https://days-git-cursor-logbook-cta-home-bbbd-catgeots-projects.vercel.app/blog/curation`
+- **작업 로그**: 「본문 탐색 CTA · 목록 삭제→거절 · 취향 설문」
+- **다음 채팅명**:
+
+```
+로그북 #7, 취향 삭제·설문 QA
+```
+
 ## 로그북 #5, 큐레이션 닫기 버튼 위치
 
 **상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `3f4a3e59` · Preview QA 대기  

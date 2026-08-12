@@ -15,6 +15,7 @@ import {
   CalendarDays,
   EyeOff,
   X,
+  Trash2,
 } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 import { useCurationAI } from '../hooks/useLogbookAI';
@@ -26,7 +27,12 @@ import {
   queueCurationHomeOpen,
 } from '../../Home/lib/curationPlaceBridge';
 import { cachePlaceLocation } from '../../Home/lib/placeLocationCache';
-import { curationEntryToPanelData } from '../lib/curationHistory';
+import {
+  curationEntryToPanelData,
+  CURATION_TASTE_TAG_OPTIONS,
+  readCurationTasteSurvey,
+  writeCurationTasteSurvey,
+} from '../lib/curationHistory';
 
 const linkBtnClass =
   'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-colors disabled:opacity-40 disabled:cursor-not-allowed';
@@ -76,7 +82,6 @@ function CurationRichBlocks({ data }) {
 function CurationResultPanel({
   data,
   compact = false,
-  showExploreCta = false,
   onExplore,
   user,
   savedTrips,
@@ -310,13 +315,13 @@ function CurationResultPanel({
             </button>
           </div>
 
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center gap-2">
             <span className="text-xs text-gray-400 font-mono tracking-wide uppercase">Gateo Intelligence v5.0</span>
-            {showExploreCta && onExplore ? (
+            {onExplore ? (
               <button
                 type="button"
                 onClick={onExplore}
-                className="group/btn flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-blue-500 transition-colors z-20 relative"
+                className="group/btn flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-blue-500 transition-colors z-20 relative flex-shrink-0"
               >
                 <Sparkles size={14} className="text-blue-500 group-hover/btn:animate-pulse" />
                 다른 낙원 탐색
@@ -335,6 +340,8 @@ function HistoryList({
   mainLocation,
   openStack,
   onToggle,
+  onDismiss,
+  onExplore,
   user,
   savedTrips,
   saveCurationData,
@@ -351,40 +358,59 @@ function HistoryList({
 
         return (
           <li key={`${item.location}-${item.savedAt || ''}`} className="space-y-2">
-            <button
-              type="button"
-              onClick={() => onToggle(item)}
-              aria-expanded={isOpen}
-              disabled={isMain}
-              className={`w-full text-left rounded-2xl border px-3 py-2.5 transition-colors ${
+            <div
+              className={`flex items-stretch gap-1.5 rounded-2xl border ${
                 isOpen || isMain
                   ? 'bg-blue-50 border-blue-200 shadow-sm'
-                  : 'bg-white/70 border-gray-200 hover:border-blue-200 hover:bg-blue-50/40'
-              } ${isMain ? 'cursor-default' : ''}`}
+                  : 'bg-white/70 border-gray-200'
+              }`}
             >
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="text-sm font-bold text-gray-900 truncate">{item.location}</p>
-                  {item.title ? (
-                    <p className="text-xs text-gray-500 truncate mt-0.5 font-light">{item.title}</p>
-                  ) : item.locationEn ? (
-                    <p className="text-[11px] text-gray-400 truncate mt-0.5 font-mono">{item.locationEn}</p>
-                  ) : null}
-                  {isMain ? (
-                    <p className="text-[10px] text-blue-500 font-medium mt-1">상단 메인에서 보는 중</p>
+              <button
+                type="button"
+                onClick={() => onToggle(item)}
+                aria-expanded={isOpen}
+                disabled={isMain}
+                className={`flex-1 min-w-0 text-left px-3 py-2.5 transition-colors rounded-2xl ${
+                  isMain ? 'cursor-default' : 'hover:bg-blue-50/60'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold text-gray-900 truncate">{item.location}</p>
+                    {item.title ? (
+                      <p className="text-xs text-gray-500 truncate mt-0.5 font-light">{item.title}</p>
+                    ) : item.locationEn ? (
+                      <p className="text-[11px] text-gray-400 truncate mt-0.5 font-mono">{item.locationEn}</p>
+                    ) : null}
+                    {isMain ? (
+                      <p className="text-[10px] text-blue-500 font-medium mt-1">상단 메인에서 보는 중</p>
+                    ) : null}
+                  </div>
+                  {!isMain ? (
+                    <span className="flex-shrink-0 text-gray-400 mt-0.5" aria-hidden="true">
+                      {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </span>
                   ) : null}
                 </div>
-                {!isMain ? (
-                  <span className="flex-shrink-0 text-gray-400 mt-0.5" aria-hidden="true">
-                    {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                  </span>
-                ) : null}
-              </div>
-            </button>
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDismiss?.(item);
+                }}
+                aria-label={`${item.location} 추천 삭제`}
+                title="취향에 안 맞음 · 목록에서 삭제"
+                className="flex-shrink-0 self-center mr-2 p-2 rounded-full text-gray-400 hover:text-rose-500 hover:bg-rose-50 transition-colors"
+              >
+                <Trash2 size={15} aria-hidden="true" />
+              </button>
+            </div>
 
             {isOpen && panelData ? (
               <CurationResultPanel
                 data={panelData}
+                onExplore={onExplore}
                 user={user}
                 savedTrips={savedTrips}
                 saveCurationData={saveCurationData}
@@ -399,9 +425,71 @@ function HistoryList({
   );
 }
 
+function TasteSurveyModal({ open, selected, onToggleTag, onSkip, onConfirm }) {
+  if (!open) return null;
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-[2px] p-4"
+      role="presentation"
+      onClick={onSkip}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="curation-taste-survey-title"
+        className="w-full max-w-md rounded-3xl border border-gray-200 bg-white p-6 shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 id="curation-taste-survey-title" className="text-base font-bold text-gray-900 mb-1">
+          어떤 분위기의 낙원을 찾을까요?
+        </h3>
+        <p className="text-sm text-gray-500 font-light break-keep mb-4">
+          기록·북마크가 적어 취향 신호가 약합니다. 원하는 분위기를 골라 주시면 다음 추천에 반영합니다.
+        </p>
+        <div className="flex flex-wrap gap-2 mb-6">
+          {CURATION_TASTE_TAG_OPTIONS.map((opt) => {
+            const on = selected.includes(opt.id);
+            return (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => onToggleTag(opt.id)}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-colors ${
+                  on
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-blue-200'
+                }`}
+              >
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={!selected.length}
+            className="flex-1 inline-flex items-center justify-center px-4 py-2.5 rounded-full text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white transition-colors disabled:opacity-40"
+          >
+            이 취향으로 탐색
+          </button>
+          <button
+            type="button"
+            onClick={onSkip}
+            className="flex-1 inline-flex items-center justify-center px-4 py-2.5 rounded-full text-sm font-bold bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
+          >
+            건너뛰고 탐색
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const CurationHub = ({ compact = false } = {}) => {
   const navigate = useNavigate();
-  const { status, curationData, history, generateCuration } = useCurationAI();
+  const { status, curationData, history, generateCuration, dismissFromHistory } = useCurationAI();
 
   const [user, setUser] = useState(null);
   useEffect(() => {
@@ -414,6 +502,8 @@ const CurationHub = ({ compact = false } = {}) => {
   const [loadingText, setLoadingText] = useState('여정의 궤적을 분석 중...');
   /** 목록에서 연 본문 — 클릭할수록 아래로 쌓임(토글) · 메인 교체 없음 */
   const [openStack, setOpenStack] = useState([]);
+  const [showTasteSurvey, setShowTasteSurvey] = useState(false);
+  const [surveyTags, setSurveyTags] = useState(() => readCurationTasteSurvey()?.tags || []);
 
   useEffect(() => {
     if (status !== 'loading') return;
@@ -439,9 +529,7 @@ const CurationHub = ({ compact = false } = {}) => {
     );
   }, [history, curationData?.location]);
 
-  const handleCuration = async () => {
-    setOpenStack([]);
-
+  const fetchTasteSources = async () => {
     let reports = [];
     let saved = [];
     if (user?.id) {
@@ -458,8 +546,38 @@ const CurationHub = ({ compact = false } = {}) => {
       reports = reportsRes.data || [];
       saved = savedRes.data || [];
     }
+    return { reports, saved };
+  };
 
-    await generateCuration(reports, saved);
+  const runCuration = async (tasteTags) => {
+    setOpenStack([]);
+    setShowTasteSurvey(false);
+    const { reports, saved } = await fetchTasteSources();
+    await generateCuration(reports, saved, { tasteTags });
+  };
+
+  const handleCuration = async () => {
+    const { reports, saved } = await fetchTasteSources();
+    const hasDbTaste = reports.length > 0 || saved.length > 0;
+    const storedSurvey = readCurationTasteSurvey();
+    if (!hasDbTaste && !storedSurvey?.tags?.length) {
+      setSurveyTags([]);
+      setShowTasteSurvey(true);
+      return;
+    }
+    setOpenStack([]);
+    await generateCuration(reports, saved, { tasteTags: storedSurvey?.tags });
+  };
+
+  const handleDismiss = (item) => {
+    const location = item?.location;
+    if (!location) return;
+    const ok = window.confirm(
+      `「${location}」을(를) 목록에서 지울까요?\n비슷한 취향의 추천도 앞으로 피합니다.`,
+    );
+    if (!ok) return;
+    dismissFromHistory(item);
+    setOpenStack((prev) => prev.filter((entry) => entry.location !== location));
   };
 
   const toggleStackItem = (item) => {
@@ -565,7 +683,6 @@ const CurationHub = ({ compact = false } = {}) => {
             <CurationResultPanel
               data={curationData}
               compact
-              showExploreCta
               onExplore={handleCuration}
               user={user}
               savedTrips={savedTrips}
@@ -577,6 +694,18 @@ const CurationHub = ({ compact = false } = {}) => {
           )}
         </div>
         {loginPrompt}
+        <TasteSurveyModal
+          open={showTasteSurvey}
+          selected={surveyTags}
+          onToggleTag={(id) =>
+            setSurveyTags((prev) => (prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]))
+          }
+          onSkip={() => void runCuration([])}
+          onConfirm={() => {
+            writeCurationTasteSurvey({ tags: surveyTags, updatedAt: Date.now() });
+            void runCuration(surveyTags);
+          }}
+        />
       </>
     );
   }
@@ -592,7 +721,6 @@ const CurationHub = ({ compact = false } = {}) => {
           <div className="space-y-4">
             <CurationResultPanel
               data={curationData}
-              showExploreCta
               onExplore={handleCuration}
               user={user}
               savedTrips={savedTrips}
@@ -600,8 +728,8 @@ const CurationHub = ({ compact = false } = {}) => {
               onNeedLogin={() => setShowLoginPrompt(true)}
             />
             <p className="text-[11px] text-gray-400 font-light break-keep px-1">
-              지구본·장소 카드는 더 깊게 볼 때만. 기본 읽기는 이 페이지에 머무릅니다. 아래 목록을 누르면 본문이
-              쌓입니다.
+              지구본·장소 카드는 더 깊게 볼 때만. 기본 읽기는 이 페이지에 머무릅니다. 목록에서 본문을 열고, 취향에
+              안 맞으면 휴지로 지울 수 있습니다.
             </p>
           </div>
         ) : null}
@@ -629,6 +757,8 @@ const CurationHub = ({ compact = false } = {}) => {
               mainLocation={curationData?.location}
               openStack={openStack}
               onToggle={toggleStackItem}
+              onDismiss={handleDismiss}
+              onExplore={handleCuration}
               user={user}
               savedTrips={savedTrips}
               saveCurationData={saveCurationData}
@@ -638,6 +768,18 @@ const CurationHub = ({ compact = false } = {}) => {
         ) : null}
       </div>
       {loginPrompt}
+      <TasteSurveyModal
+        open={showTasteSurvey}
+        selected={surveyTags}
+        onToggleTag={(id) =>
+          setSurveyTags((prev) => (prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]))
+        }
+        onSkip={() => void runCuration([])}
+        onConfirm={() => {
+          writeCurationTasteSurvey({ tags: surveyTags, updatedAt: Date.now() });
+          void runCuration(surveyTags);
+        }}
+      />
     </>
   );
 };

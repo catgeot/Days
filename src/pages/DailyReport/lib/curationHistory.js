@@ -1,6 +1,19 @@
 export const CURATION_DATA_KEY = 'gateo_curation_data';
 export const CURATION_HISTORY_KEY = 'gateo_curation_history';
 export const CURATION_HISTORY_MAX = 24;
+export const CURATION_REJECTED_KEY = 'gateo_curation_rejected';
+export const CURATION_REJECTED_MAX = 48;
+export const CURATION_TASTE_SURVEY_KEY = 'gateo_curation_taste_survey';
+
+/** 설문 칩 — 프롬프트·UI 공통 */
+export const CURATION_TASTE_TAG_OPTIONS = [
+  { id: 'sea', label: '바다·섬' },
+  { id: 'nature', label: '산·자연' },
+  { id: 'city', label: '도시·건축' },
+  { id: 'culture', label: '문화·유적' },
+  { id: 'adventure', label: '오지·모험' },
+  { id: 'quiet', label: '조용한 휴식' },
+];
 
 function safeParseJson(raw) {
   if (raw == null || raw === '') return null;
@@ -97,6 +110,112 @@ export function historyExcludeLocations(list) {
     .filter(Boolean);
 }
 
+export function removeCurationHistoryEntry(list, location) {
+  const loc = trimStr(location);
+  if (!loc) return parseCurationHistory(list);
+  return parseCurationHistory(list).filter((e) => e.location !== loc);
+}
+
+export function normalizeCurationRejectedEntry(raw) {
+  if (raw == null) return null;
+  if (typeof raw === 'string') {
+    const location = trimStr(raw);
+    return location ? { location, rejectedAt: Date.now() } : null;
+  }
+  if (typeof raw !== 'object') return null;
+  const location = trimStr(raw.location);
+  if (!location) return null;
+  const entry = { location };
+  const locationEn = trimStr(raw.locationEn);
+  if (locationEn) entry.locationEn = locationEn;
+  const rejectedAt = Number(raw.rejectedAt);
+  entry.rejectedAt = Number.isFinite(rejectedAt) ? rejectedAt : Date.now();
+  return entry;
+}
+
+export function parseCurationRejected(raw) {
+  const parsed = typeof raw === 'string' ? safeParseJson(raw) : raw;
+  if (!Array.isArray(parsed)) return [];
+  const out = [];
+  const seen = new Set();
+  for (const item of parsed) {
+    const entry = normalizeCurationRejectedEntry(item);
+    if (!entry || seen.has(entry.location)) continue;
+    seen.add(entry.location);
+    out.push(entry);
+  }
+  return out;
+}
+
+export function upsertCurationRejectedEntry(list, rawEntry, { max = CURATION_REJECTED_MAX } = {}) {
+  const entry = normalizeCurationRejectedEntry(rawEntry);
+  if (!entry) return parseCurationRejected(list);
+  const prev = parseCurationRejected(list).filter((e) => e.location !== entry.location);
+  return [entry, ...prev].slice(0, Math.max(1, max));
+}
+
+export function readCurationRejected({
+  localStorage: localStore = typeof localStorage !== 'undefined' ? localStorage : null,
+  sessionStorage: sessionStore = typeof sessionStorage !== 'undefined' ? sessionStorage : null,
+} = {}) {
+  const fromLocal = parseCurationRejected(readStorageRaw(localStore, CURATION_REJECTED_KEY));
+  if (fromLocal.length) return fromLocal;
+  return parseCurationRejected(readStorageRaw(sessionStore, CURATION_REJECTED_KEY));
+}
+
+export function writeCurationRejected(
+  list,
+  {
+    localStorage: localStore = typeof localStorage !== 'undefined' ? localStorage : null,
+    sessionStorage: sessionStore = typeof sessionStorage !== 'undefined' ? sessionStorage : null,
+  } = {},
+) {
+  const normalized = parseCurationRejected(list).slice(0, CURATION_REJECTED_MAX);
+  const raw = JSON.stringify(normalized);
+  writeStorageRaw(localStore, CURATION_REJECTED_KEY, raw);
+  writeStorageRaw(sessionStore, CURATION_REJECTED_KEY, raw);
+  return normalized;
+}
+
+export function normalizeCurationTasteSurvey(raw) {
+  if (!raw || typeof raw !== 'object') return null;
+  const allowed = new Set(CURATION_TASTE_TAG_OPTIONS.map((o) => o.id));
+  const tags = (Array.isArray(raw.tags) ? raw.tags : [])
+    .map((t) => trimStr(t))
+    .filter((t) => allowed.has(t));
+  if (!tags.length) return null;
+  const updatedAt = Number(raw.updatedAt);
+  return {
+    tags,
+    updatedAt: Number.isFinite(updatedAt) ? updatedAt : Date.now(),
+  };
+}
+
+export function readCurationTasteSurvey({
+  localStorage: localStore = typeof localStorage !== 'undefined' ? localStorage : null,
+} = {}) {
+  return normalizeCurationTasteSurvey(safeParseJson(readStorageRaw(localStore, CURATION_TASTE_SURVEY_KEY)));
+}
+
+export function writeCurationTasteSurvey(
+  survey,
+  {
+    localStorage: localStore = typeof localStorage !== 'undefined' ? localStorage : null,
+  } = {},
+) {
+  const normalized = normalizeCurationTasteSurvey(survey);
+  if (!normalized) {
+    try {
+      localStore?.removeItem?.(CURATION_TASTE_SURVEY_KEY);
+    } catch {
+      /* ignore */
+    }
+    return null;
+  }
+  writeStorageRaw(localStore, CURATION_TASTE_SURVEY_KEY, JSON.stringify(normalized));
+  return normalized;
+}
+
 /** 동일 location이면 최신으로 교체 후 맨 앞. 상한 초과 시 꼬리 절단. */
 export function upsertCurationHistoryEntry(list, rawEntry, { max = CURATION_HISTORY_MAX } = {}) {
   const entry = normalizeCurationHistoryEntry(rawEntry);
@@ -172,6 +291,17 @@ export function writeCurationData(
   if (!entry) return null;
   writeStorageRaw(sessionStore, CURATION_DATA_KEY, JSON.stringify(entry));
   return entry;
+}
+
+export function clearCurationData(
+  sessionStore = typeof sessionStorage !== 'undefined' ? sessionStorage : null,
+) {
+  if (!sessionStore || typeof sessionStore.removeItem !== 'function') return;
+  try {
+    sessionStore.removeItem(CURATION_DATA_KEY);
+  } catch {
+    /* ignore */
+  }
 }
 
 /** 패널 복원용 — savedAt 유지한 채 현재 결과로 쓸 payload */

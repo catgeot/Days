@@ -12,10 +12,16 @@ import {
   historyExcludeLocations,
   readCurationData,
   readCurationHistory,
+  readCurationRejected,
+  readCurationTasteSurvey,
+  removeCurationHistoryEntry,
   resolveActiveCurationPanel,
+  clearCurationData,
   upsertCurationHistoryEntry,
+  upsertCurationRejectedEntry,
   writeCurationData,
   writeCurationHistory,
+  writeCurationRejected,
 } from '../lib/curationHistory.js';
 import {
   buildCurationImageQueries,
@@ -195,6 +201,40 @@ export const useCurationAI = () => {
     return true;
   }, [healMissingImage]);
 
+  const dismissFromHistory = useCallback((entry) => {
+    const location = String(entry?.location || '').trim();
+    if (!location) return false;
+
+    const nextRejected = writeCurationRejected(
+      upsertCurationRejectedEntry(readCurationRejected(), {
+        location,
+        locationEn: entry?.locationEn,
+        rejectedAt: Date.now(),
+      }),
+    );
+    const nextHistory = writeCurationHistory(
+      removeCurationHistoryEntry(readCurationHistory(), location),
+    );
+    setHistory(nextHistory);
+
+    const wasMain = curationData?.location === location;
+    if (wasMain) {
+      const nextPanel = curationEntryToPanelData(nextHistory[0]);
+      if (nextPanel) {
+        writeCurationData(nextPanel);
+        setCurationData(nextPanel);
+        setStatus('result');
+        if (!nextPanel.imageUrl) void healMissingImage(nextPanel);
+      } else {
+        clearCurationData();
+        setCurationData(null);
+        setStatus('idle');
+      }
+    }
+
+    return { rejected: nextRejected, history: nextHistory, wasMain };
+  }, [curationData?.location, healMissingImage]);
+
   useEffect(() => {
     if (!curationData?.location || curationData.imageUrl) return;
     const key = `${curationData.location}|${curationData.slug || ''}`;
@@ -203,13 +243,21 @@ export const useCurationAI = () => {
     void healMissingImage(curationData);
   }, [curationData, healMissingImage]);
 
-  const generateCuration = async (validReports = [], validSaved = []) => {
+  const generateCuration = async (validReports = [], validSaved = [], { tasteTags } = {}) => {
     setStatus('loading');
 
     try {
       const curationHistory = readCurationHistory();
       const excludeNames = historyExcludeLocations(curationHistory);
-      const systemPrompt = getCurationPrompt(validReports, validSaved, excludeNames);
+      const rejectedList = readCurationRejected();
+      const survey = readCurationTasteSurvey();
+      const tags = Array.isArray(tasteTags) && tasteTags.length
+        ? tasteTags
+        : survey?.tags || [];
+      const systemPrompt = getCurationPrompt(validReports, validSaved, excludeNames, {
+        rejectedList,
+        tasteTags: tags,
+      });
 
       const resultText = await apiClient.fetchProxyGemini(null, [], systemPrompt, "");
 
@@ -278,5 +326,6 @@ export const useCurationAI = () => {
     history,
     generateCuration,
     selectFromHistory,
+    dismissFromHistory,
   };
 };
