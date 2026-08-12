@@ -4,12 +4,12 @@
 
 ## 축제·명승 검색 #1, 최근 검색어
 
-**상태**: feature `cursor/korea-recent-search-972e` · Preview QA 대기  
+**상태**: feature `cursor/korea-recent-search-972e` · PR [#111](https://github.com/catgeot/Days/pull/111) · tip `5878f515` · Preview QA 대기  
 **세션**: `축제·명승 검색 #1, 최근 검색어`
 
 - **요청**: 축제홈·명승홈 검색을 반복할 때 매번 같은 텍스트를 다시 치지 않게
 - **한 일**: localStorage 최근 검색어(축제/명승 키 분리) · 검색창 포커스/활성 시 목록 · 입력 중 부분 일치 필터 · 항목 삭제·전체 지우기
-- **VERIFY**: `npm run smoke:korea-recent-searches` · `npm run build`
+- **VERIFY**: `npm run smoke:korea-recent-searches` · `npm run build` · 로컬 UI 스모크(축제·명승 드롭다운)
 - **공유**: `https://www.gateo.kr/qa/korea-recent-search`
 - **Preview**: `https://days-git-cursor-korea-recent-search-972e-catgeots-projects.vercel.app/korea` · 명승 `/korea/theme/scenic`
 - **작업 로그**: 「축제홈·명승홈 최근 검색어」
