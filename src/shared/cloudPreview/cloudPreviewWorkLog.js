@@ -4,11 +4,11 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: false,
+  active: true,
   title: '로그북',
-  sessionNo: 9,
-  sessionPhase: '취향 재설정·헤더 뒤로가기',
-  branch: 'main',
+  sessionNo: 10,
+  sessionPhase: '본문 제목행 AI 마크 제거',
+  branch: 'cursor/logbook-curation-4475',
   previewPath: '/blog/curation',
   qaShareSlug: 'logbook-curation',
 };
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-12-logbook-curation-remove-ai-badge-10',
+    session: '로그북 #10, 본문 제목행 AI 마크 제거',
+    title: '본문 상단 AI CURATION 마크 제거',
+    detail:
+      '큐레이션 본문 제목행에서 AI CURATION 배지를 빼 한국어·영문 지명이 더 넓게 보이도록 했습니다. Preview /blog/curation에서 긴 지명 본문을 확인해 주세요.',
+    at: '2026-08-12',
+  },
   {
     id: '2026-08-12-logbook-curation-main-merge-9e',
     session: '로그북 #9, 취향 재설정·헤더 뒤로가기',

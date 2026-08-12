@@ -219,21 +219,16 @@ function CurationResultPanel({
 
       <div className="w-full md:w-7/12 py-4 pr-4 pl-6 md:py-5 md:pr-5 md:pl-8 flex flex-col relative z-10">
         <div className="flex items-start justify-between mb-3 gap-2">
-          <div className="flex items-start gap-2 min-w-0">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 border border-blue-200 text-blue-600 text-[10px] font-bold rounded tracking-wider flex-shrink-0 mt-0.5">
-              <Sparkles size={10} /> AI CURATION
-            </span>
-            <div className="flex flex-col justify-center ml-1 min-w-0">
-              <p className="flex items-center gap-1 text-gray-800 text-sm font-bold truncate">
-                <MapPin size={12} className="flex-shrink-0 text-blue-500" />
-                <span className="truncate">{data.location}</span>
+          <div className="flex flex-col justify-center min-w-0 flex-1">
+            <p className="flex items-center gap-1 text-gray-800 text-sm font-bold min-w-0">
+              <MapPin size={12} className="flex-shrink-0 text-blue-500" />
+              <span className="truncate">{data.location}</span>
+            </p>
+            {data.locationEn ? (
+              <p className="text-gray-500 text-[15px] ml-4 font-mono truncate mt-0.5 select-all">
+                {data.locationEn}
               </p>
-              {data.locationEn ? (
-                <p className="text-gray-500 text-[15px] ml-4 font-mono truncate mt-0.5 select-all">
-                  {data.locationEn}
-                </p>
-              ) : null}
-            </div>
+            ) : null}
           </div>
 
           <button
