@@ -4,13 +4,13 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: false,
-  title: '명승 검색',
+  active: true,
+  title: '축제·명승 검색',
   sessionNo: 1,
-  sessionPhase: '화엄사 0건',
-  branch: 'cursor/scenic-hwaeomsa-search-8838',
-  previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'scenic-hwaeomsa',
+  sessionPhase: '최근 검색어',
+  branch: 'cursor/korea-recent-search-972e',
+  previewPath: '/korea',
+  qaShareSlug: 'korea-recent-search',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-12-korea-recent-search-1',
+    session: '축제·명승 검색 #1, 최근 검색어',
+    title: '축제홈·명승홈 최근 검색어',
+    detail:
+      '검색을 확정하면 localStorage에 저장되고, 검색창을 열거나 포커스하면 최근 검색어가 나열됩니다. 입력 중에는 부분 일치로 걸러집니다. Preview에서 /korea 와 /korea/theme/scenic 검색창을 열어 같은 단어를 다시 고를 수 있는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
   {
     id: '2026-08-12-scenic-hwaeomsa-tour-region-3',
     session: '명승 검색 #1, 화엄사 0건',
