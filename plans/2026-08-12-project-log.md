@@ -4,7 +4,7 @@
 
 ## 로그북 #10, 본문 제목행 AI 마크 제거
 
-**상태**: feature `cursor/logbook-curation-4475` · tip `9d9f5ef8` · Preview QA 대기  
+**상태**: feature `cursor/logbook-curation-4475` · PR [#114](https://github.com/catgeot/Days/pull/114) · tip `665de361` · Preview QA 대기  
 **세션**: `로그북 #10, 본문 제목행 AI 마크 제거`
 
 - **한 일**: 큐레이션 본문 상단 `AI CURATION` 배지 제거 · 지명 행이 별표까지 넓게 쓰이도록 정리
