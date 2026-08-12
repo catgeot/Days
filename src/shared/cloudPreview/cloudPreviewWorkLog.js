@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '로그북',
+  title: '명승 검색',
   sessionNo: 1,
-  sessionPhase: '공개피드 CTA',
-  branch: 'cursor/logbook-cta-home-bbbd',
-  previewPath: '/blog',
-  qaShareSlug: 'logbook-cta',
+  sessionPhase: '화엄사 0건',
+  branch: 'cursor/scenic-hwaeomsa-search-8838',
+  previewPath: '/korea/theme/scenic',
+  qaShareSlug: 'scenic-hwaeomsa',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-12-scenic-hwaeomsa-search-1',
+    session: '명승 검색 #1, 화엄사 0건',
+    title: '「화엄사」검색 0건 보정',
+    detail:
+      '입력 중 draft로 검색이 켜지며 기본 수도권·시도·hub에 걸려 0건으로 보이던 문제를 고쳤습니다(확정 검색만 필터). 권역 칩이 검색 중 시도·hub를 다시 시드하지 않게 했고, CHA ctcd 52(지리산 화엄사 일원)를 전북→전남으로 바로잡았습니다. Preview에서 「화엄사」검색 → 선정·국가유산 명승이 나오는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
   {
     id: '2026-08-12-logbook-public-cta-home-1',
     session: '로그북 #1, 공개피드 CTA',

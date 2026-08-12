@@ -722,7 +722,8 @@ export default function KoreaThemeScenicPage() {
   const chipScrollPinClearTimerRef = useRef(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
-  const searchFilter = searchDraft.trim() || searchApplied.trim();
+  // 확정어만 필터 — draft로 켜면 기본 수도권·시도·hub에 걸려 화엄사 등이 0건으로 보임
+  const searchFilter = searchApplied.trim();
   const searchActive = searchFilter.length > 0;
   const [dbSearchFilter, setDbSearchFilter] = useState('');
   useEffect(() => {
@@ -2327,22 +2328,29 @@ export default function KoreaThemeScenicPage() {
     (r) => {
       clearNear();
       const region = resolveRegion(r);
-      const def = resolveDefaultCuratedChips(region);
       const next = new URLSearchParams(searchParams);
       next.set('cregion', region);
-      if (def.areaCode) next.set('carea', def.areaCode);
-      else next.delete('carea');
-      if (def.clusterId) next.set('ccluster', def.clusterId);
-      else next.delete('ccluster');
-      if (def.hubId) next.set('hub', def.hubId);
-      else next.delete('hub');
+      // 검색 중에는 권역만 전환 — 기본 시도·hub 시드하면 화엄사 등이 0건으로 가려짐
+      if (searchActive) {
+        next.delete('carea');
+        next.delete('ccluster');
+        next.delete('hub');
+      } else {
+        const def = resolveDefaultCuratedChips(region);
+        if (def.areaCode) next.set('carea', def.areaCode);
+        else next.delete('carea');
+        if (def.clusterId) next.set('ccluster', def.clusterId);
+        else next.delete('ccluster');
+        if (def.hubId) next.set('hub', def.hubId);
+        else next.delete('hub');
+      }
       next.delete('region');
       next.delete('area');
       next.delete('spot');
       next.delete('page');
       setSearchParams(next, { replace: true });
     },
-    [searchParams, setSearchParams, clearNear],
+    [searchParams, setSearchParams, clearNear, searchActive],
   );
 
   const setCuratedArea = useCallback(
@@ -2410,20 +2418,26 @@ export default function KoreaThemeScenicPage() {
     (r) => {
       clearNear();
       const region = resolveRegion(r);
-      const def = resolveDefaultHeritageChips(region);
       const next = new URLSearchParams(searchParams);
       next.set('hregion', region);
-      if (def.areaCode) next.set('harea', def.areaCode);
-      else next.delete('harea');
-      if (def.category) next.set('hcat', def.category);
-      else next.delete('hcat');
+      // 검색 중에는 권역만 — 기본 시도(광주 등) 시드 시 구례 화엄사 등이 탈락
+      if (searchActive) {
+        next.delete('harea');
+        next.delete('hcat');
+      } else {
+        const def = resolveDefaultHeritageChips(region);
+        if (def.areaCode) next.set('harea', def.areaCode);
+        else next.delete('harea');
+        if (def.category) next.set('hcat', def.category);
+        else next.delete('hcat');
+      }
       next.delete('region');
       next.delete('area');
       next.delete('spot');
       next.delete('page');
       setSearchParams(next, { replace: true });
     },
-    [searchParams, setSearchParams, clearNear],
+    [searchParams, setSearchParams, clearNear, searchActive],
   );
 
   const setHeritageArea = useCallback(
@@ -2462,14 +2476,18 @@ export default function KoreaThemeScenicPage() {
       const region = resolveRegion(r);
       const next = new URLSearchParams(searchParams);
       next.set('tregion', region);
-      const tourAreaDef = resolveDefaultTourAreaCode(
-        region,
-        Object.fromEntries(
-          listScenicRegionAreas(region).map((a) => [a.code, 1]),
-        ),
-      );
-      if (tourAreaDef) next.set('tarea', tourAreaDef);
-      else next.delete('tarea');
+      if (searchActive) {
+        next.delete('tarea');
+      } else {
+        const tourAreaDef = resolveDefaultTourAreaCode(
+          region,
+          Object.fromEntries(
+            listScenicRegionAreas(region).map((a) => [a.code, 1]),
+          ),
+        );
+        if (tourAreaDef) next.set('tarea', tourAreaDef);
+        else next.delete('tarea');
+      }
       next.delete('cat2');
       next.delete('cat3');
       next.delete('region');
@@ -2478,7 +2496,7 @@ export default function KoreaThemeScenicPage() {
       next.delete('page');
       setSearchParams(next, { replace: true });
     },
-    [searchParams, setSearchParams, clearNear],
+    [searchParams, setSearchParams, clearNear, searchActive],
   );
 
   const setTourArea = useCallback(

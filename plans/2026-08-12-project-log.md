@@ -2,6 +2,25 @@
 
 직전: [`2026-08-11-project-log.md`](./2026-08-11-project-log.md)
 
+## 명승 검색 #1, 화엄사 0건
+
+**상태**: feature `cursor/scenic-hwaeomsa-search-8838` · Preview QA 대기  
+**세션**: `명승 검색 #1, 화엄사 0건`
+
+- **증상**: 명승 홈에서 「화엄사」검색 시 결과 없음
+- **원인**: (1) draft 입력만으로 검색 활성→기본 수도권·시도·hub에 걸려 0건 (2) 검색 중 권역 칩이 시도·hub 재시드 (3) CHA ctcd 52를 전북으로 오매핑(실제 전남광주·구례)
+- **한 일**: 확정어만 필터 · 검색 중 권역만 전환 · ctcd52→전남 · smoke 화엄사
+- **VERIFY**: `npm run smoke:korea-scenic-search` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/scenic-hwaeomsa`
+- **Preview**: `https://days-git-cursor-scenic-hwaeomsa-search-8838-catgeots-projects.vercel.app/korea/theme/scenic`
+- **작업 로그**: 「「화엄사」검색 0건 보정」
+- **남은 일**: 사람 Preview QA(화엄사 검색→선정·명승)
+- **다음 채팅명**:
+
+```
+명승 검색 #2, 화엄사 QA
+```
+
 ## 로그북 #1, 공개피드 CTA
 
 **상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#107](https://github.com/catgeot/Days/pull/107) · tip `95abbb3b` · Preview QA 대기  

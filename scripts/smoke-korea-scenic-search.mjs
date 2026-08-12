@@ -38,6 +38,39 @@ assert.ok(
   gyeongpo.some((s) => String(s.name || '').includes('경포')),
   '국가유산 명승 경포 검색',
 );
+const hwaeomsaCurated = filterScenicSpotsByQuery(curated, '화엄사');
+const hwaeomsaHeritage = filterScenicSpotsByQuery(heritage, '화엄사');
+assert.ok(
+  hwaeomsaCurated.some((s) => s.id === 'hwaeomsa' || String(s.name || '').includes('화엄사')),
+  '선정 명소 화엄사 검색',
+);
+assert.ok(
+  hwaeomsaHeritage.some((s) => String(s.name || '').includes('화엄사')),
+  '국가유산 명승 화엄사 검색',
+);
+const hwaeomsaJeonnam = listKoreaHeritageScenic({
+  region: '전라',
+  areaCode: '38',
+}).filter((s) => String(s.name || '').includes('화엄사'));
+assert.ok(
+  hwaeomsaJeonnam.length >= 1,
+  '화엄사 ctcd52 → 전남(38) 칩에 포함',
+);
+assert.equal(
+  listKoreaHeritageScenic({ region: '전라', areaCode: '37' }).filter((s) =>
+    String(s.name || '').includes('화엄사'),
+  ).length,
+  0,
+  '화엄사 전북(37) 칩에 없음',
+);
+assert.ok(
+  pageSrc.includes('const searchFilter = searchApplied.trim()'),
+  '검색 필터는 확정어(searchApplied)만',
+);
+assert.ok(
+  pageSrc.includes('검색 중에는 권역만'),
+  '검색 중 권역 칩이 시도·hub를 재시드하지 않음',
+);
 assert.equal(filterScenicSpotsByQuery(curated, '').length, curated.length);
 assert.equal(
   filterScenicSpotsByQuery(curated, 'zzzz-no-match-xxxx').length,

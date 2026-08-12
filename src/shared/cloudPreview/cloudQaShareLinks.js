@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'scenic-hwaeomsa',
+    label: '명승 검색 화엄사',
+    branch: 'cursor/scenic-hwaeomsa-search-8838',
+    destination:
+      'https://days-git-cursor-scenic-hwaeomsa-search-8838-catgeots-projects.vercel.app/korea/theme/scenic',
+    active: true,
+  },
+  {
     slug: 'logbook-cta',
     label: '로그북 공개피드 CTA',
     branch: 'cursor/logbook-cta-home-bbbd',
