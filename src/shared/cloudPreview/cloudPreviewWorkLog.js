@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-12-scenic-hwaeomsa-tour-region-3',
+    session: '명승 검색 #1, 화엄사 0건',
+    title: '검색 시 관광지 권역이 수도권에 남는 문제',
+    detail:
+      '명소·명승은 「화엄사」→전라로 잡히는데 관광지만 기존 tregion(수도권)을 유지해 0건이었습니다. 검색 확정 시 매칭 권역을 우선하고, 명소가 있어도 관광지 현 권역 0건이면 TourAPI 최다 권역으로 바꿉니다. Preview에서 「화엄사」검색 → 관광지 파드에 화엄사·화엄사계곡이 나오는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
     id: '2026-08-12-scenic-hwaeomsa-tourdb-2',
     session: '명승 검색 #1, 화엄사 0건',
     title: '관광지 DB에 화엄사(127923) 보강',

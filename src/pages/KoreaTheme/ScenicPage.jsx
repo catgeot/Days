@@ -1549,11 +1549,12 @@ export default function KoreaThemeScenicPage() {
         heritageMatches,
         searchParams.get('hregion') || searchParams.get('region'),
       );
+      // 관광지도 명소·명승 매칭 권역 우선 (기존 tregion=수도권 유지 시 「화엄사」0건)
       const tourFallback =
-        searchParams.get('tregion') ||
-        searchParams.get('region') ||
         nextCurated ||
-        nextHeritage;
+        nextHeritage ||
+        searchParams.get('tregion') ||
+        searchParams.get('region');
 
       const applyPodRegions = (curatedR, heritageR, tourR) => {
         const next = new URLSearchParams(searchParams);
@@ -2663,13 +2664,12 @@ export default function KoreaThemeScenicPage() {
   ]);
 
   /**
-   * 검색 중 명소·명승 전국 0이면 TourAPI 최다 권역으로 관광지 파드만 전환.
-   * 현 권역에 오탐 소수만 있어도(성주→보령 성주면) 본 지역 권역으로 승격.
+   * 검색 중 관광지 권역 자동 전환.
+   * - 명소·명승 매칭 있음: 현 관광지 권역 0건이면 TourAPI 최다 권역 (수도권+화엄사)
+   * - 명소·명승 0: 최다 권역으로 승격 (화천·성주 오탐 소수보다 본 지역)
    */
   useEffect(() => {
     if (!searchActive || !dbSearchActive) return;
-    if ((curatedSearchPool?.length || 0) > 0) return;
-    if ((heritageSearchPool?.length || 0) > 0) return;
     const counts = chipCounts.regionCounts || {};
     const loaded = SCENIC_REGION_ORDER.some((r) =>
       Number.isFinite(Number(counts[r])),
@@ -2679,6 +2679,14 @@ export default function KoreaThemeScenicPage() {
     if (!next || next === tourRegion) return;
     const curN = Number(counts[tourRegion]) || 0;
     const nextN = Number(counts[next]) || 0;
+    if (nextN <= 0) return;
+    const curatedN = curatedSearchPool?.length || 0;
+    const heritageN = heritageSearchPool?.length || 0;
+    if (curatedN > 0 || heritageN > 0) {
+      if (curN > 0) return;
+      setTourRegion(next);
+      return;
+    }
     if (nextN <= curN) return;
     setTourRegion(next);
   }, [
