@@ -17,8 +17,9 @@
 - **검증 없이** git commit/push · FAIL·미확인 상태로 커밋 · `main` 강제 push
 - 사용자 승인 없는 「완료」 단정 · **UI 임의 변경** (기능 작업 중 기존 버튼·레이아웃·톤 교체 포함 · `.ai-context` **§4.1 5**)
 - 릴리스 노트 잦은 제안 — **새 기능·중대 업데이트만** (`.ai-context` **1.7**)
-- 복붙 Core Rules 부활 금지(구조 제안→승인→전체 코드) · 주석 **희소**(`.ai-context` **4.0**/**4.2**) · 사람에게는 동작·QA
+- 복붙 Core Rules 부활 금지(구조 제안→승인→전체 코드) · 주석 **희소**(`.ai-context` **4.0**/**4.2**) · 사람에게는 동작·QA(**사람** Preview 체크 · 에이전트 대행 아님)
 - **오류 루프**: 동일 FAIL **2회** 후 추측 패치 중단·보고 · 요청 밖 확장 금지 (`.ai-context` **4.1**)
+- **브라우저/`computerUse` QA** — 사람 **명시 요청 시에만**. 기본은 `/qa/…`·Preview 핸드오프 + 사람 QA. 에이전트 검증은 audit/smoke/`build`만 (`.ai-context` **§4.1 13** · **1.6**)
 
 ## 커밋·푸시 (검증 게이트)
 
@@ -70,6 +71,7 @@ npm run smoke:place-label-slug   # 지구본 라벨 slug/name_en · 무니 역�
 ### Feature 브랜치 · Vercel Preview (사람 QA 경로)
 
 사람이 Cloud 작업을 **확인하는 기본 경로**는 로컬 미리보기가 아니라 **해당 feature 브랜치의 Vercel Preview**(예: 축제 브랜치 git Preview → `/korea`)다.  
+에이전트 **브라우저/`computerUse` 대행 QA는 기본 금지** — 사람 명시 요청 시에만 (`.ai-context` **§4.1 13**). 에이전트는 audit/smoke/`build` 후 Preview 링크를 넘긴다.  
 **push가 없으면 Preview가 갱신되지 않아 테스트 페이지를 로드할 수 없다** → Cloud feature에서는 로컬의 「UI 커밋 보류」를 **적용하지 않음**.
 
 | | 규칙 |
