@@ -2,6 +2,8 @@
 // 🚨 [Fix/New] 수정 이유:
 // 1. [Fix] AI 환각 방지(JSON Syntax Error 차단): JSON 문자열 내부에 물리적인 줄바꿈(Enter) 사용을 엄격히 금지하고 띄어쓰기로 대체하도록 프롬프트 규칙 추가.
 
+import { curationTasteLabelById } from '../../DailyReport/lib/curationHistory.js';
+
 const BASE_RULES = `
 - 모든 답변은 한국어로 한다.
 - 사용자의 질문에 친절하고 정중하게 답한다.
@@ -209,16 +211,8 @@ export const getCurationPrompt = (
     .slice(0, 10)
     .map((v) => `- ${v}`);
 
-  const tasteTagLabels = {
-    sea: '바다·섬',
-    nature: '산·자연',
-    city: '도시·건축',
-    culture: '문화·유적',
-    adventure: '오지·모험',
-    quiet: '조용한 휴식',
-  };
   const surveyLabels = (tasteTags || [])
-    .map((id) => tasteTagLabels[String(id).trim()] || String(id).trim())
+    .map((id) => curationTasteLabelById(id))
     .filter(Boolean);
   const hasSurvey = surveyLabels.length > 0;
   const hasExploreTaste = searchLines.length > 0 || visitedLines.length > 0;

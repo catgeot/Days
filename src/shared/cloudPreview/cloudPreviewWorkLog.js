@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '축제·명승 검색',
-  sessionNo: 4,
-  sessionPhase: '닫기 버튼 수정',
-  branch: 'cursor/korea-recent-search-972e',
-  previewPath: '/korea',
-  qaShareSlug: 'korea-recent-search',
+  title: '로그북',
+  sessionNo: 9,
+  sessionPhase: '취향 재설정·헤더 뒤로가기',
+  branch: 'cursor/logbook-curation-4475',
+  previewPath: '/blog/curation',
+  qaShareSlug: 'logbook-curation',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-12-logbook-curation-taste-reset-header-9',
+    session: '로그북 #9, 취향 재설정·헤더 뒤로가기',
+    title: '본문 취향 재설정 · LogBook 뒤로가기 · 새로운 낙원 찾기',
+    detail:
+      '헤더 큰 LogBook 버튼을 제거하고 큐레이션 제목 앞에 로그북 뒤로가기를 두었습니다. 나의 큐레이션·본문 CTA를 「새로운 낙원 찾기」로 바꾸고, 본문 하단에 「취향 다시 설정」(기후·스타일·밀도·권역 상세 설문)을 추가했습니다. Preview /blog/curation에서 확인해 주세요.',
+    at: '2026-08-12',
+  },
   {
     id: '2026-08-12-logbook-curation-explore-focus-8',
     session: '로그북 #8, 탐색 시 메인 포커스',

@@ -182,6 +182,16 @@ assert(readCurationRejected({ localStorage: rejLocal, sessionStorage: rejSession
 const surveyLocal = makeStore();
 assert(writeCurationTasteSurvey({ tags: ['sea', 'nope'] }, { localStorage: surveyLocal })?.tags.join(',') === 'sea', 'survey filters unknown tags');
 assert(readCurationTasteSurvey({ localStorage: surveyLocal })?.tags[0] === 'sea', 'survey read');
+assert(
+  writeCurationTasteSurvey({ tags: ['warm', 'slow', 'asia'] }, { localStorage: surveyLocal })?.tags.join(',') ===
+    'warm,slow,asia',
+  'survey accepts detail tags',
+);
+assert(
+  getCurationPrompt([], [], [], { tasteTags: ['tropical', 'photo', 'oceania'] }).includes('열대·습윤') &&
+    getCurationPrompt([], [], [], { tasteTags: ['tropical', 'photo', 'oceania'] }).includes('풍경·사진 명소'),
+  'prompt detail survey labels',
+);
 
 if (failed > 0) {
   console.error(`\n${failed} failure(s)`);

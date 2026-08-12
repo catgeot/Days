@@ -16,6 +16,7 @@ import {
   EyeOff,
   X,
   Trash2,
+  SlidersHorizontal,
 } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 import { useCurationAI } from '../hooks/useLogbookAI';
@@ -30,6 +31,7 @@ import { cachePlaceLocation } from '../../Home/lib/placeLocationCache';
 import {
   curationEntryToPanelData,
   CURATION_TASTE_TAG_OPTIONS,
+  CURATION_TASTE_DETAIL_GROUPS,
   readCurationTasteSurvey,
   writeCurationTasteSurvey,
 } from '../lib/curationHistory';
@@ -89,6 +91,7 @@ function CurationResultPanel({
   data,
   compact = false,
   onExplore,
+  onResetTaste,
   user,
   savedTrips,
   saveCurationData,
@@ -321,19 +324,31 @@ function CurationResultPanel({
             </button>
           </div>
 
-          <div className="flex justify-between items-center gap-2">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="text-xs text-gray-400 font-mono tracking-wide uppercase">Gateo Intelligence v5.0</span>
-            {onExplore ? (
-              <button
-                type="button"
-                onClick={onExplore}
-                className="group/btn flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-blue-500 transition-colors z-20 relative flex-shrink-0"
-              >
-                <Sparkles size={14} className="text-blue-500 group-hover/btn:animate-pulse" />
-                다른 낙원 탐색
-                <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
-              </button>
-            ) : null}
+            <div className="flex flex-wrap items-center gap-2 justify-end">
+              {onResetTaste ? (
+                <button
+                  type="button"
+                  onClick={onResetTaste}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-indigo-600 transition-colors z-20 relative"
+                >
+                  <SlidersHorizontal size={14} className="text-indigo-500" />
+                  취향 다시 설정
+                </button>
+              ) : null}
+              {onExplore ? (
+                <button
+                  type="button"
+                  onClick={onExplore}
+                  className="group/btn flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-blue-500 transition-colors z-20 relative flex-shrink-0"
+                >
+                  <Sparkles size={14} className="text-blue-500 group-hover/btn:animate-pulse" />
+                  새로운 낙원 찾기
+                  <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+                </button>
+              ) : null}
+            </div>
           </div>
         </div>
       </div>
@@ -348,6 +363,7 @@ function HistoryList({
   onToggle,
   onDismiss,
   onExplore,
+  onResetTaste,
   user,
   savedTrips,
   saveCurationData,
@@ -417,6 +433,7 @@ function HistoryList({
               <CurationResultPanel
                 data={panelData}
                 onExplore={onExplore}
+                onResetTaste={onResetTaste}
                 user={user}
                 savedTrips={savedTrips}
                 saveCurationData={saveCurationData}
@@ -431,8 +448,25 @@ function HistoryList({
   );
 }
 
-function TasteSurveyModal({ open, selected, onToggleTag, onSkip, onConfirm }) {
+function TasteChip({ opt, on, onToggle }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onToggle(opt.id)}
+      className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-colors ${
+        on
+          ? 'bg-blue-600 text-white border-blue-600'
+          : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-blue-200'
+      }`}
+    >
+      {opt.label}
+    </button>
+  );
+}
+
+function TasteSurveyModal({ open, mode = 'first', selected, onToggleTag, onSkip, onConfirm }) {
   if (!open) return null;
+  const isReset = mode === 'reset';
   return (
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-[2px] p-4"
@@ -443,34 +477,49 @@ function TasteSurveyModal({ open, selected, onToggleTag, onSkip, onConfirm }) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="curation-taste-survey-title"
-        className="w-full max-w-md rounded-3xl border border-gray-200 bg-white p-6 shadow-xl"
+        className={`w-full rounded-3xl border border-gray-200 bg-white p-6 shadow-xl ${
+          isReset ? 'max-w-lg max-h-[85vh] overflow-y-auto' : 'max-w-md'
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         <h3 id="curation-taste-survey-title" className="text-base font-bold text-gray-900 mb-1">
-          어떤 분위기의 낙원을 찾을까요?
+          {isReset ? '취향을 다시 맞춰 볼까요?' : '어떤 분위기의 낙원을 찾을까요?'}
         </h3>
         <p className="text-sm text-gray-500 font-light break-keep mb-4">
-          기록·북마크가 적어 취향 신호가 약합니다. 원하는 분위기를 골라 주시면 다음 추천에 반영합니다.
+          {isReset
+            ? '이번엔 기후·스타일·밀도·권역까지 골라 주시면, 지나간 추천과 다른 결의 낙원을 찾습니다.'
+            : '기록·북마크가 적어 취향 신호가 약합니다. 원하는 분위기를 골라 주시면 다음 추천에 반영합니다.'}
         </p>
-        <div className="flex flex-wrap gap-2 mb-6">
-          {CURATION_TASTE_TAG_OPTIONS.map((opt) => {
-            const on = selected.includes(opt.id);
-            return (
-              <button
+        {isReset ? (
+          <div className="space-y-5 mb-6">
+            {CURATION_TASTE_DETAIL_GROUPS.map((group) => (
+              <div key={group.id}>
+                <p className="text-[11px] font-bold text-gray-700 mb-2">{group.title}</p>
+                <div className="flex flex-wrap gap-2">
+                  {group.options.map((opt) => (
+                    <TasteChip
+                      key={opt.id}
+                      opt={opt}
+                      on={selected.includes(opt.id)}
+                      onToggle={onToggleTag}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-wrap gap-2 mb-6">
+            {CURATION_TASTE_TAG_OPTIONS.map((opt) => (
+              <TasteChip
                 key={opt.id}
-                type="button"
-                onClick={() => onToggleTag(opt.id)}
-                className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-colors ${
-                  on
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-blue-200'
-                }`}
-              >
-                {opt.label}
-              </button>
-            );
-          })}
-        </div>
+                opt={opt}
+                on={selected.includes(opt.id)}
+                onToggle={onToggleTag}
+              />
+            ))}
+          </div>
+        )}
         <div className="flex flex-col sm:flex-row gap-2">
           <button
             type="button"
@@ -478,14 +527,14 @@ function TasteSurveyModal({ open, selected, onToggleTag, onSkip, onConfirm }) {
             disabled={!selected.length}
             className="flex-1 inline-flex items-center justify-center px-4 py-2.5 rounded-full text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white transition-colors disabled:opacity-40"
           >
-            이 취향으로 탐색
+            {isReset ? '이 취향으로 다시 찾기' : '이 취향으로 탐색'}
           </button>
           <button
             type="button"
             onClick={onSkip}
             className="flex-1 inline-flex items-center justify-center px-4 py-2.5 rounded-full text-sm font-bold bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
           >
-            건너뛰고 탐색
+            {isReset ? '닫기' : '건너뛰고 탐색'}
           </button>
         </div>
       </div>
@@ -509,6 +558,7 @@ const CurationHub = ({ compact = false } = {}) => {
   /** 목록에서 연 본문 — 클릭할수록 아래로 쌓임(토글) · 메인 교체 없음 */
   const [openStack, setOpenStack] = useState([]);
   const [showTasteSurvey, setShowTasteSurvey] = useState(false);
+  const [surveyMode, setSurveyMode] = useState('first');
   const [surveyTags, setSurveyTags] = useState(() => readCurationTasteSurvey()?.tags || []);
   const mainStageRef = useRef(null);
 
@@ -586,6 +636,7 @@ const CurationHub = ({ compact = false } = {}) => {
       safeLoadRecentVisited().some((item) => Boolean(destinationLabel(item)));
     const storedSurvey = readCurationTasteSurvey();
     if (!hasDbTaste && !hasExploreTaste && !storedSurvey?.tags?.length) {
+      setSurveyMode('first');
       setSurveyTags([]);
       setShowTasteSurvey(true);
       return;
@@ -593,6 +644,31 @@ const CurationHub = ({ compact = false } = {}) => {
     setOpenStack([]);
     focusMainStage();
     await generateCuration(reports, saved, { tasteTags: storedSurvey?.tags });
+  };
+
+  const openResetTasteSurvey = () => {
+    const stored = readCurationTasteSurvey();
+    setSurveyMode('reset');
+    setSurveyTags(stored?.tags || []);
+    setShowTasteSurvey(true);
+  };
+
+  const closeTasteSurvey = () => {
+    setShowTasteSurvey(false);
+    setSurveyMode('first');
+  };
+
+  const handleTasteSurveySkip = () => {
+    if (surveyMode === 'reset') {
+      closeTasteSurvey();
+      return;
+    }
+    void runCuration([]);
+  };
+
+  const handleTasteSurveyConfirm = () => {
+    writeCurationTasteSurvey({ tags: surveyTags, updatedAt: Date.now() });
+    void runCuration(surveyTags);
   };
 
   const handleDismiss = (item) => {
@@ -710,6 +786,7 @@ const CurationHub = ({ compact = false } = {}) => {
               data={curationData}
               compact
               onExplore={handleCuration}
+              onResetTaste={openResetTasteSurvey}
               user={user}
               savedTrips={savedTrips}
               saveCurationData={saveCurationData}
@@ -722,15 +799,13 @@ const CurationHub = ({ compact = false } = {}) => {
         {loginPrompt}
         <TasteSurveyModal
           open={showTasteSurvey}
+          mode={surveyMode}
           selected={surveyTags}
           onToggleTag={(id) =>
             setSurveyTags((prev) => (prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]))
           }
-          onSkip={() => void runCuration([])}
-          onConfirm={() => {
-            writeCurationTasteSurvey({ tags: surveyTags, updatedAt: Date.now() });
-            void runCuration(surveyTags);
-          }}
+          onSkip={handleTasteSurveySkip}
+          onConfirm={handleTasteSurveyConfirm}
         />
       </>
     );
@@ -749,6 +824,7 @@ const CurationHub = ({ compact = false } = {}) => {
               <CurationResultPanel
                 data={curationData}
                 onExplore={handleCuration}
+                onResetTaste={openResetTasteSurvey}
                 user={user}
                 savedTrips={savedTrips}
                 saveCurationData={saveCurationData}
@@ -777,7 +853,7 @@ const CurationHub = ({ compact = false } = {}) => {
                 disabled={status === 'loading'}
                 className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition-colors disabled:opacity-50"
               >
-                <Sparkles size={14} /> 다른 낙원 탐색
+                <Sparkles size={14} /> 새로운 낙원 찾기
               </button>
             </div>
             <HistoryList
@@ -787,6 +863,7 @@ const CurationHub = ({ compact = false } = {}) => {
               onToggle={toggleStackItem}
               onDismiss={handleDismiss}
               onExplore={handleCuration}
+              onResetTaste={openResetTasteSurvey}
               user={user}
               savedTrips={savedTrips}
               saveCurationData={saveCurationData}
@@ -798,15 +875,13 @@ const CurationHub = ({ compact = false } = {}) => {
       {loginPrompt}
       <TasteSurveyModal
         open={showTasteSurvey}
+        mode={surveyMode}
         selected={surveyTags}
         onToggleTag={(id) =>
           setSurveyTags((prev) => (prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]))
         }
-        onSkip={() => void runCuration([])}
-        onConfirm={() => {
-          writeCurationTasteSurvey({ tags: surveyTags, updatedAt: Date.now() });
-          void runCuration(surveyTags);
-        }}
+        onSkip={handleTasteSurveySkip}
+        onConfirm={handleTasteSurveyConfirm}
       />
     </>
   );

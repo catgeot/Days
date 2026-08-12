@@ -5,7 +5,7 @@ export const CURATION_REJECTED_KEY = 'gateo_curation_rejected';
 export const CURATION_REJECTED_MAX = 48;
 export const CURATION_TASTE_SURVEY_KEY = 'gateo_curation_taste_survey';
 
-/** 설문 칩 — 프롬프트·UI 공통 */
+/** 첫 설문·분위기 칩 — 프롬프트·UI 공통 */
 export const CURATION_TASTE_TAG_OPTIONS = [
   { id: 'sea', label: '바다·섬' },
   { id: 'nature', label: '산·자연' },
@@ -14,6 +14,70 @@ export const CURATION_TASTE_TAG_OPTIONS = [
   { id: 'adventure', label: '오지·모험' },
   { id: 'quiet', label: '조용한 휴식' },
 ];
+
+/** 재취향 설정 — 분위기보다 구체적인 다문항 설문 */
+export const CURATION_TASTE_DETAIL_GROUPS = [
+  {
+    id: 'vibe',
+    title: '어떤 분위기의 낙원을 원하세요?',
+    options: CURATION_TASTE_TAG_OPTIONS,
+  },
+  {
+    id: 'climate',
+    title: '선호하는 기후는?',
+    options: [
+      { id: 'warm', label: '따뜻·온화' },
+      { id: 'cool', label: '선선·고지' },
+      { id: 'tropical', label: '열대·습윤' },
+      { id: 'four_season', label: '사계절 뚜렷' },
+    ],
+  },
+  {
+    id: 'style',
+    title: '여행 스타일은?',
+    options: [
+      { id: 'slow', label: '느긋한 휴식' },
+      { id: 'active', label: '걷기·액티비티' },
+      { id: 'local', label: '로컬·일상 체험' },
+      { id: 'photo', label: '풍경·사진 명소' },
+    ],
+  },
+  {
+    id: 'crowd',
+    title: '사람·밀도는?',
+    options: [
+      { id: 'secluded', label: '한적·거의 비어 있는' },
+      { id: 'balanced', label: '적당한 활기' },
+      { id: 'lively', label: '생동감 있는 거리' },
+    ],
+  },
+  {
+    id: 'region',
+    title: '관심 있는 권역은? (선택)',
+    options: [
+      { id: 'asia', label: '아시아' },
+      { id: 'europe', label: '유럽' },
+      { id: 'americas', label: '아메리카' },
+      { id: 'oceania', label: '오세아니아·태평양' },
+      { id: 'africa', label: '아프리카·중동' },
+    ],
+  },
+];
+
+export function allCurationTasteOptions() {
+  const byId = new Map();
+  for (const opt of CURATION_TASTE_TAG_OPTIONS) byId.set(opt.id, opt);
+  for (const group of CURATION_TASTE_DETAIL_GROUPS) {
+    for (const opt of group.options || []) byId.set(opt.id, opt);
+  }
+  return [...byId.values()];
+}
+
+export function curationTasteLabelById(id) {
+  const key = String(id ?? '').trim();
+  if (!key) return '';
+  return allCurationTasteOptions().find((o) => o.id === key)?.label || key;
+}
 
 function safeParseJson(raw) {
   if (raw == null || raw === '') return null;
@@ -179,7 +243,7 @@ export function writeCurationRejected(
 
 export function normalizeCurationTasteSurvey(raw) {
   if (!raw || typeof raw !== 'object') return null;
-  const allowed = new Set(CURATION_TASTE_TAG_OPTIONS.map((o) => o.id));
+  const allowed = new Set(allCurationTasteOptions().map((o) => o.id));
   const tags = (Array.isArray(raw.tags) ? raw.tags : [])
     .map((t) => trimStr(t))
     .filter((t) => allowed.has(t));
