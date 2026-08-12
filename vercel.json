@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/scenic-hwaeomsa",
+      "destination": "https://days-git-cursor-scenic-hwaeomsa-search-8838-catgeots-projects.vercel.app/korea/theme/scenic",
+      "permanent": false
+    },
+    {
       "source": "/qa/logbook-cta",
       "destination": "https://days-git-cursor-logbook-cta-home-bbbd-catgeots-projects.vercel.app/blog",
       "permanent": false
