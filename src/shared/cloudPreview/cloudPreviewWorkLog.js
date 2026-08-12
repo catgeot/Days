@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '로그북',
-  sessionNo: 2,
-  sessionPhase: '큐레이션 페이지',
+  sessionNo: 3,
+  sessionPhase: '큐레이션 페이지 QA',
   branch: 'cursor/logbook-cta-home-bbbd',
   previewPath: '/blog/curation',
   qaShareSlug: 'logbook-curation',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-12-logbook-curation-restore-history-3',
+    session: '로그북 #3, 큐레이션 페이지 QA',
+    title: '마지막 실행 본문 복원 · 없을 때만 실행 박스',
+    detail:
+      'session이 비어도 나의 큐레이션 최신(예: 라자암팟) 본문을 메인으로 복원합니다. 실행 이력이 없을 때만 「낙원 탐색 시작」박스가 메인입니다. Preview /blog/curation에서 본문→목록 순을 확인해 주세요.',
+    at: '2026-08-12',
+  },
   {
     id: '2026-08-12-logbook-curation-main-then-list-2e',
     session: '로그북 #2, 큐레이션 페이지',

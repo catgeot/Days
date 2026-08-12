@@ -180,3 +180,27 @@ export function curationEntryToPanelData(entry) {
   if (!normalized) return null;
   return { ...normalized };
 }
+
+/**
+ * 페이지 진입 시 메인 본문: session 결과 우선 · 없으면 나의 목록 최신.
+ * 목록만 있고 session이 비면 history[0]을 session에 되살려 result로 연다.
+ */
+export function resolveActiveCurationPanel({
+  localStorage: localStore = typeof localStorage !== 'undefined' ? localStorage : null,
+  sessionStorage: sessionStore = typeof sessionStorage !== 'undefined' ? sessionStorage : null,
+} = {}) {
+  const history = readCurationHistory({
+    localStorage: localStore,
+    sessionStorage: sessionStore,
+  });
+  const session = readCurationData(sessionStore);
+  if (session?.location) {
+    return { panel: session, history, from: 'session' };
+  }
+  const fallback = curationEntryToPanelData(history[0]);
+  if (fallback) {
+    writeCurationData(fallback, sessionStore);
+    return { panel: fallback, history, from: 'history' };
+  }
+  return { panel: null, history, from: null };
+}

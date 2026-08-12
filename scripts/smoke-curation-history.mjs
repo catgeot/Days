@@ -35,6 +35,7 @@ const {
   writeCurationData,
   readCurationData,
   CURATION_DATA_KEY,
+  resolveActiveCurationPanel,
 } = await import(pathToFileURL(join(root, 'src/pages/DailyReport/lib/curationHistory.js')).href);
 
 let failed = 0;
@@ -110,6 +111,36 @@ assert(panel?.tips?.length === 2, 'panel restore tips');
 writeCurationData(panel, session);
 assert(readCurationData(session)?.location === '신규', 'curation data roundtrip');
 assert(session.getItem(CURATION_DATA_KEY), 'data key set');
+
+const emptySession = makeStore();
+const histOnlyLocal = makeStore();
+writeCurationHistory(
+  [
+    {
+      location: '라자암팟 제도',
+      title: '신비로운 산호의 왕국',
+      description: '본문',
+      whyHidden: '접근',
+    },
+    { location: '소코트라 섬', title: '지구의 숨겨진 보석, 소코트라' },
+  ],
+  { localStorage: histOnlyLocal, sessionStorage: emptySession },
+);
+const restored = resolveActiveCurationPanel({
+  localStorage: histOnlyLocal,
+  sessionStorage: emptySession,
+});
+assert(restored.from === 'history', 'resolve from history when session empty');
+assert(restored.panel?.location === '라자암팟 제도', 'history[0] becomes main panel');
+assert(readCurationData(emptySession)?.location === '라자암팟 제도', 'history fallback writes session');
+
+const emptyBothLocal = makeStore();
+const emptyBothSession = makeStore();
+const emptyActive = resolveActiveCurationPanel({
+  localStorage: emptyBothLocal,
+  sessionStorage: emptyBothSession,
+});
+assert(emptyActive.panel === null && emptyActive.from === null, 'no history → no panel (execution main)');
 
 const { getCurationPrompt } = await import(
   pathToFileURL(join(root, 'src/pages/Home/lib/prompts.js')).href

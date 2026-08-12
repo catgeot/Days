@@ -12,6 +12,7 @@ import {
   historyExcludeLocations,
   readCurationData,
   readCurationHistory,
+  resolveActiveCurationPanel,
   upsertCurationHistoryEntry,
   writeCurationData,
   writeCurationHistory,
@@ -152,9 +153,10 @@ async function resolveCurationImageUrl(parsedData, catalogSpot = null) {
 }
 
 export const useCurationAI = () => {
-  const [status, setStatus] = useState(() => (readCurationData() ? 'result' : 'idle'));
-  const [curationData, setCurationData] = useState(() => readCurationData());
-  const [history, setHistory] = useState(() => readCurationHistory());
+  const [boot] = useState(() => resolveActiveCurationPanel());
+  const [status, setStatus] = useState(() => (boot.panel ? 'result' : 'idle'));
+  const [curationData, setCurationData] = useState(() => boot.panel);
+  const [history, setHistory] = useState(() => boot.history);
   const imageHealKeyRef = useRef('');
 
   const persistResult = useCallback((finalData) => {
@@ -258,9 +260,10 @@ export const useCurationAI = () => {
     } catch (error) {
       console.warn("큐레이션 에러:", error);
       alert("큐레이션에 실패했습니다. 잠시 후 다시 시도해 주세요.");
-      const cached = readCurationData();
-      if (cached?.location) {
-        setCurationData(cached);
+      const { panel } = resolveActiveCurationPanel();
+      if (panel?.location) {
+        setCurationData(panel);
+        setHistory(readCurationHistory());
         setStatus('result');
         return;
       }

@@ -2,6 +2,25 @@
 
 직전: [`2026-08-11-project-log.md`](./2026-08-11-project-log.md)
 
+## 로그북 #3, 큐레이션 페이지 QA
+
+**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip _(push 후)_ · Preview QA 대기  
+**세션**: `로그북 #3, 큐레이션 페이지 QA`
+
+- **증상**: 나의 목록(라자암팟·소코트라)이 있는데도 「낙원 탐색 시작」박스가 메인으로 보임
+- **원인**: session `gateo_curation_data`가 비면 status=idle → 실행 박스 표시 (history는 local만 있음)
+- **한 일**: `resolveActiveCurationPanel` — session 없으면 history[0] 본문 복원 · 실행 박스는 이력 없을 때만 메인 · `smoke:curation-history`
+- **VERIFY**: _(실행 후 기입)_
+- **공유**: `https://www.gateo.kr/qa/logbook-curation`
+- **Preview**: `https://days-git-cursor-logbook-cta-home-bbbd-catgeots-projects.vercel.app/blog/curation`
+- **작업 로그**: 「마지막 실행 본문 복원 · 없을 때만 실행 박스」
+- **남은 일**: 사람 Preview QA(라자암팟 본문→목록 · 빈 이력 시 실행 박스 메인)
+- **다음 채팅명**:
+
+```
+로그북 #4, 큐레이션 페이지 QA
+```
+
 ## 로그북 #2, 큐레이션 페이지
 
 **상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `463a11cf` · Preview QA 대기  
@@ -13,12 +32,7 @@
 - **공유**: `https://www.gateo.kr/qa/logbook-curation`
 - **Preview**: `https://days-git-cursor-logbook-cta-home-bbbd-catgeots-projects.vercel.app/blog/curation`
 - **작업 로그**: 「최근 실행 본문 메인 · 목록은 하단」
-- **남은 일**: 사람 Preview QA(본문→목록 · 별표 · 하단 여유)
-- **다음 채팅명**:
-
-```
-로그북 #3, 큐레이션 페이지 QA
-```
+- **남은 일**: → #3 QA에서 본문 복원 수정
 
 ## 로그북 #1, 공개피드 CTA
 

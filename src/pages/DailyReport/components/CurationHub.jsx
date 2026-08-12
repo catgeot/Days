@@ -475,18 +475,23 @@ const CurationHub = ({ compact = false } = {}) => {
   }
 
   const hasHistory = Boolean(history?.length);
+  const showResultBody = status === 'result' && Boolean(curationData);
+  // 실행 박스는「실행 결과 없음」일 때만 메인. 목록만 있고 session이 비면 hook이 history[0] 복원.
+  const showExecutionMain = !showResultBody && (status === 'idle' || status === 'loading');
 
   return (
     <>
       <div className="space-y-6">
-        <div className="space-y-4">
-          {status === 'result' ? resultPanel : idleOrLoading}
-          {status === 'result' ? (
+        {showResultBody ? (
+          <div className="space-y-4">
+            {resultPanel}
             <p className="text-[11px] text-gray-400 font-light break-keep px-1">
               지구본·장소 카드는 더 깊게 볼 때만. 기본 읽기는 이 페이지에 머무릅니다.
             </p>
-          ) : null}
-        </div>
+          </div>
+        ) : null}
+
+        {showExecutionMain ? idleOrLoading : null}
 
         {hasHistory ? (
           <section className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm p-5">
