@@ -1549,9 +1549,34 @@ export default function KoreaThemeScenicPage() {
     setSearchSuggestOpen(true);
   }, []);
 
-  const closeSearchSuggestions = useCallback(() => {
+  /** 칩·빈 영역 등 검색 UI 밖 탭 — 최근 목록 + 모바일 검색바 함께 닫기 */
+  const dismissSearchUi = useCallback(() => {
     setSearchSuggestOpen(false);
+    setSearchOpen(false);
+    setSearchDraft('');
+    if (typeof document !== 'undefined') {
+      const el =
+        document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : null;
+      el?.blur?.();
+    }
   }, []);
+
+  useEffect(() => {
+    if (!searchOpen && !searchSuggestOpen) return undefined;
+    const onPointerDown = (e) => {
+      const target = e.target;
+      if (!(target instanceof Node)) return;
+      if (pcSearchRootRef.current?.contains(target)) return;
+      if (mobileSearchRootRef.current?.contains(target)) return;
+      dismissSearchUi();
+    };
+    document.addEventListener('pointerdown', onPointerDown, true);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown, true);
+    };
+  }, [searchOpen, searchSuggestOpen, dismissSearchUi]);
 
   const closeSearchSuggestionsSoon = useCallback(() => {
     window.setTimeout(() => setSearchSuggestOpen(false), 120);
@@ -3675,8 +3700,6 @@ export default function KoreaThemeScenicPage() {
                     items={recentSearches}
                     draft={searchDraft}
                     visible={searchSuggestOpen}
-                    rootRef={pcSearchRootRef}
-                    onRequestClose={closeSearchSuggestions}
                     onSelect={(keyword) => commitSearch(keyword)}
                     onRemove={(keyword) =>
                       setRecentSearches(
@@ -3820,8 +3843,6 @@ export default function KoreaThemeScenicPage() {
                   items={recentSearches}
                   draft={searchDraft}
                   visible={searchSuggestOpen}
-                  rootRef={mobileSearchRootRef}
-                  onRequestClose={closeSearchSuggestions}
                   onSelect={(keyword) => commitSearch(keyword)}
                   onRemove={(keyword) =>
                     setRecentSearches(

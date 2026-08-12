@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '축제·명승 검색',
-  sessionNo: 2,
-  sessionPhase: '최근 검색어 닫기',
+  sessionNo: 3,
+  sessionPhase: '검색바 스킵 닫기',
   branch: 'cursor/korea-recent-search-972e',
   previewPath: '/korea',
   qaShareSlug: 'korea-recent-search',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-12-korea-recent-search-bar-dismiss-3',
+    session: '축제·명승 검색 #3, 검색바 스킵 닫기',
+    title: '모바일 검색바 · 칩·빈 영역으로 스킵 닫기',
+    detail:
+      '검색 아이콘을 연 뒤 닫기(X) 없이 분류 칩이나 빈 영역을 누르면 최근 목록뿐 아니라 검색바 자체도 닫힙니다(확정된 검색 결과는 유지). Preview 모바일 폭에서 검색 열기 → 칩/바탕 탭으로 스킵되는지 확인해 주세요.',
+    at: '2026-08-12',
+  },
   {
     id: '2026-08-12-korea-recent-search-dismiss-2',
     session: '축제·명승 검색 #2, 최근 검색어 닫기',
