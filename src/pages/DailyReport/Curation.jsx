@@ -6,7 +6,7 @@ import CurationHub from './components/CurationHub';
 const Curation = () => {
   return (
     <div className="min-h-screen bg-white text-gray-900 font-sans relative">
-      <div className="max-w-7xl mx-auto pt-8 px-4 sm:px-6 pb-20">
+      <div className="page-scroll-end-pad max-w-7xl mx-auto pt-8 px-4 sm:px-6">
         <div className="mb-6 flex flex-col lg:flex-row justify-between lg:items-end gap-6 border-b border-gray-100 pb-6">
           <div>
             <div className="flex items-center gap-2 mb-1">

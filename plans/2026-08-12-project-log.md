@@ -7,13 +7,13 @@
 **상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `d17cdc10` · Preview QA 대기  
 **세션**: `로그북 #2, 큐레이션 페이지`
 
-- **요청**: 큐레이션 헤더 · 나의 큐레이션 상단 · 없으면 실행 박스 · 있으면 목록 아래 최근 본문
-- **한 일**: `Curation.jsx` 로그북형 「큐레이션」헤더 · `CurationHub` 세로 IA(목록→본문 / 무목록→실행 박스) · `/qa/logbook-curation`
+- **요청**: 큐레이션 헤더 · 나의 큐레이션 상단 · 없으면 실행 박스 · 있으면 목록 아래 최근 본문 · 하단 스크롤 여유
+- **한 일**: `Curation.jsx` 로그북형 「큐레이션」헤더 · `CurationHub` 세로 IA · `.page-scroll-end-pad`(~50vh) · `/qa/logbook-curation`
 - **VERIFY**: `npm run build`
 - **공유**: `https://www.gateo.kr/qa/logbook-curation`
 - **Preview**: `https://days-git-cursor-logbook-cta-home-bbbd-catgeots-projects.vercel.app/blog/curation`
-- **작업 로그**: 「큐레이션 헤더 · 나의 큐레이션 상단 · 최근 본문」
-- **남은 일**: 사람 Preview QA(헤더·목록/실행 박스/본문 순서)
+- **작업 로그**: 「큐레이션 페이지 하단 스크롤 여유(~50vh)」
+- **남은 일**: 사람 Preview QA(헤더·목록/본문 순서·끝까지 스크롤 시 본문 하단 위치)
 - **다음 채팅명**:
 
 ```

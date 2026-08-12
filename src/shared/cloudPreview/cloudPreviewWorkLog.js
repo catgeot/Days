@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-12-logbook-curation-end-pad-2b',
+    session: '로그북 #2, 큐레이션 페이지',
+    title: '큐레이션 페이지 하단 스크롤 여유(~50vh)',
+    detail:
+      '본문 끝이 화면 하단에 붙지 않고 스크롤 시 중앙 부근까지 올라오도록 `.page-scroll-end-pad`를 적용했습니다. Preview /blog/curation에서 끝까지 스크롤해 본문 하단(팁·CTA) 위치를 확인해 주세요.',
+    at: '2026-08-12',
+  },
+  {
     id: '2026-08-12-logbook-curation-layout-2',
     session: '로그북 #2, 큐레이션 페이지',
     title: '큐레이션 헤더 · 나의 큐레이션 상단 · 최근 본문',
