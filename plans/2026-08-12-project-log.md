@@ -4,7 +4,7 @@
 
 ## 명승 검색 #1, 화엄사 0건
 
-**상태**: feature `cursor/scenic-hwaeomsa-search-8838` · PR [#109](https://github.com/catgeot/Days/pull/109) · Preview QA 대기
+**상태**: feature `cursor/scenic-hwaeomsa-search-8838` · PR [#110](https://github.com/catgeot/Days/pull/110) · tip `25d3788d` · (#109 머지 후속) · Preview QA 대기
 **세션**: `명승 검색 #1, 화엄사 0건`
 
 - **증상**: 「화엄사」검색 0건 · 관광지 파드에 사찰 없음 · (후속) 선정·명승은 나오는데 관광지만 「이 종목 0건」
