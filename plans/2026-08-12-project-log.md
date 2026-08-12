@@ -4,7 +4,7 @@
 
 ## 로그북 #9, 취향 재설정·헤더 뒤로가기
 
-**상태**: `main` 반영 · PR [#113](https://github.com/catgeot/Days/pull/113) · tip `cd190c5a`  
+**상태**: `main` 반영 · PR [#113](https://github.com/catgeot/Days/pull/113) · tip `66417519`  
 **세션**: `로그북 #9, 취향 재설정·헤더 뒤로가기` → main 병합
 
 - **한 일**: 본문 하단 「취향 다시 설정」만(indigo 칩) · 본문 낙원 탐색 제거 · 기후·특별함 설문 보강 · 「위로」버튼 · **main 병합** · `/qa/logbook-curation` → PROD
