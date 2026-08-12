@@ -4,7 +4,7 @@
 
 ## 로그북 #7, 취향에 최근 검색·방문
 
-**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip _(push 후)_ · Preview QA 대기  
+**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `6dec3fd6` · Preview QA 대기  
 **세션**: `로그북 #7, 취향에 최근 검색·방문`
 
 - **한 일**: `gateo_recent_search_keywords` · `gateo_recent_visited_destinations`를 큐레이션 프롬프트에 추가(각 최대 10) · 있으면 설문 스킵
