@@ -4,7 +4,7 @@
 
 ## 로그북 #5, 큐레이션 닫기 버튼 위치
 
-**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip _(push 후)_ · Preview QA 대기  
+**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `3f4a3e59` · Preview QA 대기  
 **세션**: `로그북 #5, 큐레이션 닫기 버튼 위치`
 
 - **요청**: 닫기(×)가 제목란에 있어 지명 생략 → 사진 우측 상단·시인성 개선
