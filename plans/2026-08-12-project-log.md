@@ -4,7 +4,7 @@
 
 ## 로그북 #6, 취향 삭제·설문·본문 CTA
 
-**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip _(push 후)_ · Preview QA 대기  
+**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `35decb4a` · Preview QA 대기  
 **세션**: `로그북 #6, 취향 삭제·설문·본문 CTA`
 
 ### 취향 분석 조사 (선행)
