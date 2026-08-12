@@ -4,7 +4,7 @@
 
 ## 로그북 #2, 큐레이션 페이지
 
-**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `72a8c4bb` · Preview QA 대기  
+**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#108](https://github.com/catgeot/Days/pull/108) · tip `fe9c7d0d` · Preview QA 대기  
 **세션**: `로그북 #2, 큐레이션 페이지`
 
 - **요청**: 큐레이션 헤더 · 나의 큐레이션 상단 · 하단 스크롤 여유 · 별표 즐겨찾기·비로그인 안내
@@ -22,7 +22,7 @@
 
 ## 로그북 #1, 공개피드 CTA
 
-**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#107](https://github.com/catgeot/Days/pull/107) · tip `95abbb3b` · Preview QA 대기  
+**상태**: feature `cursor/logbook-cta-home-bbbd` · PR [#107](https://github.com/catgeot/Days/pull/107) · tip `fe9c7d0d` · Preview QA 대기  
 **세션**: `로그북 #1, 공개피드 CTA`
 
 - **증상**: 공개 피드(`/p/:id`) 하단 「나만의 기록 남기기」→ `/auth/login`
@@ -35,7 +35,7 @@
 
 ## 지구본 홈 #4, 아이투타키 투어 오탐
 
-**상태**: feature `cursor/aitutaki-gyg-tour-b09e` · PR [#106](https://github.com/catgeot/Days/pull/106) · tip `61c07bd3` · Preview QA 대기  
+**상태**: feature `cursor/aitutaki-gyg-tour-b09e` · PR [#106](https://github.com/catgeot/Days/pull/106) · tip `fe9c7d0d` · Preview QA 대기  
 **세션**: `지구본 홈 #4, 아이투타키 투어 오탐`
 
 - **증상**: 써머리「투어 찾기」아이투타키 → GYG bare `Aitutaki`가 아유타야(·일본 혼입)로 오탐
