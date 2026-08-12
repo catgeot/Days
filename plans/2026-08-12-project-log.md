@@ -2,9 +2,28 @@
 
 직전: [`2026-08-11-project-log.md`](./2026-08-11-project-log.md)
 
-## 축제·명승 검색 #3, 검색바 스킵 닫기
+## 축제·명승 검색 #4, 닫기 버튼 수정
 
 **상태**: feature `cursor/korea-recent-search-972e` · PR [#111](https://github.com/catgeot/Days/pull/111) · Preview QA 대기  
+**세션**: `축제·명승 검색 #4, 닫기 버튼 수정`
+
+- **증상**: 칩·바탕으로는 검색바가 닫히는데 모바일 X(닫기)는 동작 안 함
+- **원인**: 바깥 pointerdown dismiss가 X 클릭보다 먼저 searchOpen을 false → click이 다시 열기로 처리
+- **한 일**: mobileSearchToggleRef 예외 · 명승 X는 searchActive일 때 closeSearch
+- **VERIFY**: `npm run smoke:korea-recent-searches` · `npm run build`
+- **공유**: `https://www.gateo.kr/qa/korea-recent-search`
+- **Preview**: `https://days-git-cursor-korea-recent-search-972e-catgeots-projects.vercel.app/korea`
+- **작업 로그**: 「모바일 검색 닫기(X) 버튼 복구」
+- **남은 일**: 사람 Preview QA
+- **다음 채팅명**:
+
+```
+축제·명승 검색 #5, 검색 UX QA
+```
+
+## 축제·명승 검색 #3, 검색바 스킵 닫기
+
+**상태**: feature `cursor/korea-recent-search-972e` · PR [#111](https://github.com/catgeot/Days/pull/111) · 후속 #4  
 **세션**: `축제·명승 검색 #3, 검색바 스킵 닫기`
 
 - **요청**: 칩·빈 영역으로 최근 목록만이 아니라 모바일 검색바까지 스킵 닫기
@@ -13,12 +32,6 @@
 - **공유**: `https://www.gateo.kr/qa/korea-recent-search`
 - **Preview**: `https://days-git-cursor-korea-recent-search-972e-catgeots-projects.vercel.app/korea`
 - **작업 로그**: 「모바일 검색바 · 칩·빈 영역으로 스킵 닫기」
-- **남은 일**: 사람 Preview QA
-- **다음 채팅명**:
-
-```
-축제·명승 검색 #4, 검색바 스킵 QA
-```
 
 ## 축제·명승 검색 #2, 최근 검색어 닫기
 

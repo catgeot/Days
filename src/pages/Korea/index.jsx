@@ -690,6 +690,7 @@ export default function KoreaFestivalHub() {
   const mobileSearchInputRef = useRef(null);
   const pcSearchRootRef = useRef(null);
   const mobileSearchRootRef = useRef(null);
+  const mobileSearchToggleRef = useRef(null);
   const mainScrollRef = useRef(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const themeAreaAppliedRef = useRef(false);
@@ -1220,6 +1221,7 @@ export default function KoreaFestivalHub() {
       if (!(target instanceof Node)) return;
       if (pcSearchRootRef.current?.contains(target)) return;
       if (mobileSearchRootRef.current?.contains(target)) return;
+      if (mobileSearchToggleRef.current?.contains(target)) return;
       dismissSearchUi();
     };
     document.addEventListener('pointerdown', onPointerDown, true);
@@ -1595,6 +1597,7 @@ export default function KoreaFestivalHub() {
                   />
                 </form>
                 <button
+                  ref={mobileSearchToggleRef}
                   type="button"
                   onClick={() => {
                     if (searchOpen || searchActive) {

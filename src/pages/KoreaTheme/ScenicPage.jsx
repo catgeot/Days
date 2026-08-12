@@ -729,6 +729,7 @@ export default function KoreaThemeScenicPage() {
   const mobileSearchInputRef = useRef(null);
   const pcSearchRootRef = useRef(null);
   const mobileSearchRootRef = useRef(null);
+  const mobileSearchToggleRef = useRef(null);
   const mainScrollRef = useRef(null);
   /** 분류칩 클릭 직후 목록 높이 변화로 스크롤이 튀지 않게 칩 위치 고정 */
   const chipScrollPinRef = useRef(null);
@@ -1570,6 +1571,7 @@ export default function KoreaThemeScenicPage() {
       if (!(target instanceof Node)) return;
       if (pcSearchRootRef.current?.contains(target)) return;
       if (mobileSearchRootRef.current?.contains(target)) return;
+      if (mobileSearchToggleRef.current?.contains(target)) return;
       dismissSearchUi();
     };
     document.addEventListener('pointerdown', onPointerDown, true);
@@ -3715,11 +3717,11 @@ export default function KoreaThemeScenicPage() {
                   />
                 </form>
                 <button
+                  ref={mobileSearchToggleRef}
                   type="button"
                   onClick={() => {
-                    if (searchOpen) {
-                      setSearchOpen(false);
-                      setSearchSuggestOpen(false);
+                    if (searchOpen || searchActive) {
+                      closeSearch();
                       return;
                     }
                     // 클릭 제스처 안에서 mount+focus (setTimeout/useEffect는 모바일 키보드 차단)
@@ -3729,16 +3731,20 @@ export default function KoreaThemeScenicPage() {
                     });
                     mobileSearchInputRef.current?.focus();
                   }}
-                  aria-label={searchOpen ? '검색창 닫기' : '명소·명승 검색'}
-                  aria-pressed={searchOpen}
-                  title={searchOpen ? '검색창 닫기' : '명소·명승 검색'}
+                  aria-label={
+                    searchOpen || searchActive ? '검색창 닫기' : '명소·명승 검색'
+                  }
+                  aria-pressed={searchOpen || searchActive}
+                  title={
+                    searchOpen || searchActive ? '검색창 닫기' : '명소·명승 검색'
+                  }
                   className={`flex h-9 w-9 items-center justify-center rounded-full border lg:hidden ${
                     searchOpen || searchActive
                       ? 'border-amber-400 bg-amber-50 text-amber-800'
                       : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
                   }`}
                 >
-                  {searchOpen ? (
+                  {searchOpen || searchActive ? (
                     <X size={15} aria-hidden="true" />
                   ) : (
                     <Search size={15} aria-hidden="true" />

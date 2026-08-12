@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '축제·명승 검색',
-  sessionNo: 3,
-  sessionPhase: '검색바 스킵 닫기',
+  sessionNo: 4,
+  sessionPhase: '닫기 버튼 수정',
   branch: 'cursor/korea-recent-search-972e',
   previewPath: '/korea',
   qaShareSlug: 'korea-recent-search',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-12-korea-recent-search-toggle-fix-4',
+    session: '축제·명승 검색 #4, 닫기 버튼 수정',
+    title: '모바일 검색 닫기(X) 버튼 복구',
+    detail:
+      '바깥 클릭 dismiss가 닫기 버튼 pointerdown보다 먼저 실행되어 X가 다시 열리던 문제를 고쳤습니다. Preview 모바일에서 검색 열기 → X로 닫기 · 칩/바탕으로 스킵 닫기 둘 다 확인해 주세요.',
+    at: '2026-08-12',
+  },
   {
     id: '2026-08-12-korea-recent-search-bar-dismiss-3',
     session: '축제·명승 검색 #3, 검색바 스킵 닫기',
