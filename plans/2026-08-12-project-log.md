@@ -4,10 +4,10 @@
 
 ## 로그북 #9, 취향 재설정·헤더 뒤로가기
 
-**상태**: feature `cursor/logbook-curation-4475` · PR [#113](https://github.com/catgeot/Days/pull/113) · tip `85817149` · Preview QA 대기  
+**상태**: feature `cursor/logbook-curation-4475` · PR [#113](https://github.com/catgeot/Days/pull/113) · tip `5d056870` · Preview QA 대기  
 **세션**: `로그북 #9, 취향 재설정·헤더 뒤로가기`
 
-- **한 일**: 헤더 큰 LogBook 링크 제거 → 제목 앞 뒤로가기(`/blog`) · 「새로운 낙원 찾기」 CTA · 본문 하단 「취향 다시 설정」(기후·스타일·밀도·권역 상세 설문) · 기후 칩에 겨울·눈·우기 · 특별함(백야·흑야·오로라)
+- **한 일**: 헤더 큰 LogBook 링크 제거 → 제목 앞 뒤로가기(`/blog`) · 「새로운 낙원 찾기」 CTA · 본문 하단 「취향 다시 설정」만(indigo 칩) · 본문 낙원 탐색 제거 · 기후·특별함 설문 보강
 - **VERIFY**: `npm run smoke:curation-history` · `npm run build`
 - **공유**: `https://www.gateo.kr/qa/logbook-curation`
 - **Preview**: `https://days-git-cursor-logbook-curation-4475-catgeots-projects.vercel.app/blog/curation`
