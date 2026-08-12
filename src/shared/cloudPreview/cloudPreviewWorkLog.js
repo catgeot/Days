@@ -4,11 +4,11 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: true,
+  active: false,
   title: '로그북',
   sessionNo: 9,
   sessionPhase: '취향 재설정·헤더 뒤로가기',
-  branch: 'cursor/logbook-curation-4475',
+  branch: 'main',
   previewPath: '/blog/curation',
   qaShareSlug: 'logbook-curation',
 };
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-12-logbook-curation-main-merge-9e',
+    session: '로그북 #9, 취향 재설정·헤더 뒤로가기',
+    title: '로그북 #9 main 반영 · QA → PROD',
+    detail:
+      '취향 재설정·헤더 뒤로가기·위로 버튼·설문 보강을 main에 반영했습니다. /qa/logbook-curation 은 PROD /blog/curation 으로 연결됩니다.',
+    at: '2026-08-12',
+  },
   {
     id: '2026-08-12-logbook-curation-scroll-top-9d',
     session: '로그북 #9, 취향 재설정·헤더 뒤로가기',

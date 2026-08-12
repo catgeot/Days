@@ -10,10 +10,9 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'logbook-curation',
     label: '로그북 큐레이션 페이지',
-    branch: 'cursor/logbook-curation-4475',
-    destination:
-      'https://days-git-cursor-logbook-curation-4475-catgeots-projects.vercel.app/blog/curation',
-    active: true,
+    branch: 'main',
+    destination: 'https://www.gateo.kr/blog/curation',
+    active: false,
   },
   {
     slug: 'korea-recent-search',
