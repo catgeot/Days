@@ -2,7 +2,7 @@
   "redirects": [
     {
       "source": "/qa/logbook-curation",
-      "destination": "https://days-git-cursor-logbook-curation-4475-catgeots-projects.vercel.app/blog/curation",
+      "destination": "https://www.gateo.kr/blog/curation",
       "permanent": false
     },
     {

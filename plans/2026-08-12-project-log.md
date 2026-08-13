@@ -2,20 +2,24 @@
 
 직전: [`2026-08-11-project-log.md`](./2026-08-11-project-log.md)
 
+## 로그북 #11, Preview SSO · QA를 PROD로 복귀
+
+**상태**: `main`  
+**세션**: `로그북 #11, Preview SSO·QA 경로`
+
+- **원인**: Preview가 Vercel **Deployment Protection(SSO)** — 미로그인 Chrome은 `vercel.com/login`으로 튕김. Safari는 Vercel 세션이 있어 통과했을 수 있음. `/qa/logbook-curation`도 Preview로 가서 Chrome gateo에서 동일 증상.
+- **한 일**: `/qa/logbook-curation` → PROD `/blog/curation` 복귀
+- **PROD 테스트(권장)**: `https://www.gateo.kr/blog/curation`
+- **남은 일**: sticky 실행 버튼은 feature `cursor/logbook-curation-4475`에만 있음 · main 병합 대기
+
 ## 로그북 #11, 실행 버튼 sticky·하단
 
-**상태**: feature `cursor/logbook-curation-4475` · PR [#114](https://github.com/catgeot/Days/pull/114) · tip `ea79b85d` · Preview QA 대기  
+**상태**: feature `cursor/logbook-curation-4475` · tip `fcea0c5b` · Preview SSO로 공유 QA 비권장  
 **세션**: `로그북 #11, 실행 버튼 sticky·하단`
 
 - **한 일**: 「나의 큐레이션」헤더+「새로운 낙원 찾기」 sticky 고정 · 목록 3건 이상이면 하단에도 동일 버튼 (본문마다 두지 않음 — 취향 다시 설정만 유지)
 - **VERIFY**: `npm run build`
-- **공유**: `https://www.gateo.kr/qa/logbook-curation`
-- **Preview**: `https://days-git-cursor-logbook-curation-4475-catgeots-projects.vercel.app/blog/curation`
-- **다음 채팅명**:
-
-```
-로그북 #12, 실행 버튼 sticky QA
-```
+- **비고**: Preview SSO · 사람 확인은 PROD 또는 Vercel 로그인 후 Preview
 
 ## 로그북 #10, 본문 제목행 AI 마크 제거
 
