@@ -2,9 +2,26 @@
 
 직전: [`2026-08-12-project-log.md`](./2026-08-12-project-log.md)
 
+## 지구본 홈 #13, Chrome 칩 히트 어긋남
+
+**상태**: feature `cursor/chrome-hit-6294` · Preview QA 대기  
+**세션**: `지구본 홈 #13, Chrome 칩 히트 어긋남`
+
+- **증상**: Chrome만 — 첫 진입 칩 OK → 1턴(써머리/페이지 왕복) 후 「한국의 명승」탭이 `/blog/curation`으로 감 · 큐레이션도 이상
+- **원인(1순위)**: `HomeUI` 칩 컬럼 `translate3d`+`isolate` 강제 합성 레이어가 `syncHomeViewportAfterInput`/URL바·Mapbox resize 후 paint↔hit 어긋남
+- **수정**: 레이어 승격 제거 · 불투명 실드/칩 BG 유지 · 검색 absolute 열 `pointer-events-none`(pill만 auto) · `/qa/chrome-hit`
+- **VERIFY**: `npm run build`
+- **QA**: `https://www.gateo.kr/qa/chrome-hit` · git Preview `…-git-cursor-chrome-hit-6294-….vercel.app/`
+- **사람 체크**: Chrome에서 홈→써머리 닫기 또는 명승/큐레이션 왕복 후, 명승=`/korea/theme/scenic` · 큐레이션=`/blog/curation`
+- **다음 채팅명**:
+
+```
+지구본 홈 #14, Chrome 칩 QA
+```
+
 ## 지구본 홈 #12, Chrome 클릭 관통·장소카드 갇힘
 
-**상태**: `main` 반영 · PR [#116](https://github.com/catgeot/Days/pull/116) · tip `ae00ee74`  
+**상태**: `main` 반영 · PR [#116](https://github.com/catgeot/Days/pull/116) · tip `ae00ee74` / 히트실드 `643d912b`  
 **세션**: `지구본 홈 #12, Chrome 클릭 관통·장소카드 갇힘`
 
 - **증상**: Chrome에서 AI 큐레이션 칩 클릭이 아래(지도)로 뚫림 → 써머리 오픈 → X가 확장으로 오인 → `/place` 갇힘·explore 루프

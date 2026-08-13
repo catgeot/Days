@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/chrome-hit",
+      "destination": "https://days-git-cursor-chrome-hit-6294-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
       "source": "/qa/logbook-curation",
       "destination": "https://www.gateo.kr/blog/curation",
       "permanent": false

@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'chrome-hit',
+    label: '지구본 홈 Chrome 칩 히트',
+    branch: 'cursor/chrome-hit-6294',
+    destination:
+      'https://days-git-cursor-chrome-hit-6294-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
     slug: 'logbook-curation',
     label: '로그북 큐레이션 페이지',
     branch: 'main',

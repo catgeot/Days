@@ -102,13 +102,15 @@ const HomeUI = React.memo(({
         />
 
         <div
-          className="md:col-span-2 flex-shrink-0 relative z-[110] pointer-events-auto isolate pt-2 md:pl-2 animate-fade-in-down"
+          className="md:col-span-2 flex-shrink-0 relative z-[110] pointer-events-auto pt-2 md:pl-2 animate-fade-in-down"
           data-home-chrome-hit
-          style={{ transform: 'translate3d(0,0,0)' }}
           onPointerDown={(e) => e.stopPropagation()}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Chrome+WebGL: 반투명/blur 칩만으로는 지도 클릭이 뚫림 → 불투명 히트 실드 */}
+          {/*
+            Chrome+WebGL: 반투명/blur만으로는 지도로 클릭이 뚫림 → 불투명 실드·칩 BG.
+            translate3d/isolate 레이어 승격은 쓰지 않음 — URL바·resize 후 paint/hit 어긋남(명승→큐레이션) 유발.
+          */}
           <div
             aria-hidden="true"
             className="pointer-events-auto absolute -inset-x-2 -inset-y-2 z-0 rounded-2xl bg-[#070707]/92"
@@ -126,7 +128,7 @@ const HomeUI = React.memo(({
               <>
                 <Link
                   to="/korea"
-                  className="group flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-amber-400/45 bg-[#14110c] px-2.5 py-1.5 shadow-[0_0_18px_rgba(245,158,11,0.22)] transition-all hover:border-amber-300/70 hover:bg-[#1c1710] touch-manipulation"
+                  className="group relative flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-amber-400/45 bg-[#14110c] px-2.5 py-1.5 shadow-[0_0_18px_rgba(245,158,11,0.22)] transition-colors hover:border-amber-300/70 hover:bg-[#1c1710] touch-manipulation"
                   aria-label="한국의 축제로 이동"
                 >
                   <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-amber-400/35 bg-amber-500/15 text-amber-300 group-hover:bg-amber-500/25">
@@ -138,7 +140,7 @@ const HomeUI = React.memo(({
                 </Link>
                 <Link
                   to="/korea/theme/scenic"
-                  className="group flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-emerald-400/40 bg-[#0f1412] px-2.5 py-1.5 shadow-[0_0_18px_rgba(52,211,153,0.18)] transition-all hover:border-emerald-300/65 hover:bg-[#121a16] touch-manipulation"
+                  className="group relative flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-emerald-400/40 bg-[#0f1412] px-2.5 py-1.5 shadow-[0_0_18px_rgba(52,211,153,0.18)] transition-colors hover:border-emerald-300/65 hover:bg-[#121a16] touch-manipulation"
                   aria-label="한국의 명승으로 이동"
                 >
                   <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-emerald-400/35 bg-emerald-500/15 text-emerald-300 group-hover:bg-emerald-500/25">
@@ -150,9 +152,8 @@ const HomeUI = React.memo(({
                 </Link>
                 <Link
                   to="/blog/curation"
-                  className="group flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-sky-400/45 bg-[#0c1218] px-2.5 py-1.5 shadow-[0_0_18px_rgba(56,189,248,0.2)] transition-all hover:border-sky-300/70 hover:bg-[#101820] touch-manipulation"
+                  className="group relative flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-sky-400/45 bg-[#0c1218] px-2.5 py-1.5 shadow-[0_0_18px_rgba(56,189,248,0.2)] transition-colors hover:border-sky-300/70 hover:bg-[#101820] touch-manipulation"
                   aria-label="AI 큐레이션 페이지로 이동"
-                  onClick={(e) => e.stopPropagation()}
                 >
                   <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-sky-400/35 bg-sky-500/15 text-sky-300 group-hover:bg-sky-500/25">
                     <Sparkles size={15} aria-hidden="true" />
@@ -193,10 +194,10 @@ const HomeUI = React.memo(({
            <button onClick={onClearScouts} className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30 transition-all shadow-lg group"><Trash2 size={16} className="group-hover:scale-110 transition-transform" /></button>
         </div>
 
-        <div className="flex-1 md:col-span-5 flex flex-col items-stretch md:items-center animate-fade-in-down delay-100 pt-1 md:pt-2 pointer-events-auto z-50 min-w-0 md:relative">
+        <div className="flex-1 md:col-span-5 flex flex-col items-stretch md:items-center animate-fade-in-down delay-100 pt-1 md:pt-2 pointer-events-none z-50 min-w-0 md:relative">
           {isTourCinema && tourLocation ? (
             <TourMobileBar
-              className="w-full md:hidden"
+              className="w-full md:hidden pointer-events-auto"
               location={tourLocation}
               globeMode={globeMode}
               tourPivoted={tourPivoted}
@@ -206,8 +207,8 @@ const HomeUI = React.memo(({
               onClose={onTourBarClose}
             />
           ) : (
-           <div data-site-notice-anchor className="group w-[min(12.5rem,calc(100vw-5.5rem))] sm:max-w-xs md:max-w-md md:w-full absolute right-3 top-[1.35rem] md:relative md:right-auto md:top-auto md:self-end">
-            <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+           <div data-site-notice-anchor className="group pointer-events-auto w-[min(12.5rem,calc(100vw-5.5rem))] sm:max-w-xs md:max-w-md md:w-full absolute right-3 top-[1.35rem] md:relative md:right-auto md:top-auto md:self-end">
+            <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             <div
               onClick={() => navigate('/explore')}
               className="relative flex items-center bg-black/40 backdrop-blur-xl border border-white/30 shadow-lg transition-all h-10 md:h-12 rounded-full cursor-pointer hover:bg-black/50 hover:border-blue-400/50 group-hover:border-blue-400/50"

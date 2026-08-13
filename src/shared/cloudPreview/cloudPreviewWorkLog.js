@@ -6,9 +6,9 @@
 export const cloudPreviewProject = {
   active: true,
   title: '지구본 홈',
-  sessionNo: 12,
-  sessionPhase: 'Chrome 클릭 관통·장소카드 갇힘',
-  branch: 'cursor/chrome-hit-4475',
+  sessionNo: 13,
+  sessionPhase: 'Chrome 칩 히트 어긋남',
+  branch: 'cursor/chrome-hit-6294',
   previewPath: '/',
   qaShareSlug: 'chrome-hit',
 };
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-13-chrome-hit-shift-13',
+    session: '지구본 홈 #13, Chrome 칩 히트 어긋남',
+    title: 'translate3d/isolate 제거 · 검색열 pointer-events 분리',
+    detail:
+      '1턴 후 「한국의 명승」이 /blog/curation 으로 가던 Chrome 히트 어긋남을 막기 위해, 칩 컬럼의 translate3d·isolate 레이어 승격을 제거하고 검색 absolute pill 열은 pointer-events-none으로 좁혔습니다. 불투명 실드·칩 BG는 유지합니다. Chrome에서 써머리/페이지 왕복 뒤 명승·큐레이션 칩을 확인해 주세요.',
+    at: '2026-08-13',
+  },
   {
     id: '2026-08-13-chrome-hit-shield-12b',
     session: '지구본 홈 #12, Chrome 클릭 관통·장소카드 갇힘',
