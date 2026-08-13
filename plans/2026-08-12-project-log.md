@@ -4,7 +4,7 @@
 
 ## 로그북 #11, Preview SSO · QA를 PROD로 복귀
 
-**상태**:  · tip `main`  
+**상태**: `main` · tip `26495c29`  
 **세션**: `로그북 #11, Preview SSO·QA 경로`
 
 - **원인**: Preview가 Vercel **Deployment Protection(SSO)** — 미로그인 Chrome은 `vercel.com/login`으로 튕김. Safari는 Vercel 세션이 있어 통과했을 수 있음. `/qa/logbook-curation`도 Preview로 가서 Chrome gateo에서 동일 증상.
