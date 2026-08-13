@@ -4,11 +4,11 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: true,
+  active: false,
   title: '로그북',
   sessionNo: 11,
-  sessionPhase: '실행 버튼 sticky·하단',
-  branch: 'cursor/logbook-curation-4475',
+  sessionPhase: 'Preview SSO·QA PROD 복귀',
+  branch: 'main',
   previewPath: '/blog/curation',
   qaShareSlug: 'logbook-curation',
 };
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-13-logbook-curation-qa-prod-sso-11b',
+    session: '로그북 #11, Preview SSO·QA 경로',
+    title: '/qa/logbook-curation → PROD (Preview SSO 회피)',
+    detail:
+      'Vercel Preview에 Deployment Protection(SSO)이 걸려 미로그인 Chrome에서 Preview·/qa가 Vercel 로그인으로 튕겼습니다. /qa/logbook-curation 을 PROD /blog/curation 으로 복귀했습니다. sticky 실행 버튼은 feature에 남아 있습니다.',
+    at: '2026-08-13',
+  },
   {
     id: '2026-08-12-logbook-curation-explore-sticky-11',
     session: '로그북 #11, 실행 버튼 sticky·하단',
