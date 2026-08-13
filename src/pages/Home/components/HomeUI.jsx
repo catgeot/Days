@@ -94,7 +94,7 @@ const HomeUI = React.memo(({
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 z-50 p-4 md:p-6 flex items-start gap-3 md:grid md:grid-cols-12 pointer-events-none w-full">
+      <div className="fixed top-0 left-0 right-0 z-[100] p-4 md:p-6 flex items-start gap-3 md:grid md:grid-cols-12 pointer-events-none w-full">
         <div
           data-site-notice-anchor-mobile
           className="md:hidden absolute inset-x-0 bottom-0 h-px pointer-events-none"
@@ -102,57 +102,68 @@ const HomeUI = React.memo(({
         />
 
         <div
-          className="md:col-span-2 flex-shrink-0 flex flex-col items-start gap-2 animate-fade-in-down pt-2 md:pl-2 pointer-events-auto relative z-[60] isolate [transform:translateZ(0)]"
+          className="md:col-span-2 flex-shrink-0 relative z-[110] pointer-events-auto isolate pt-2 md:pl-2 animate-fade-in-down"
           data-home-chrome-hit
+          style={{ transform: 'translate3d(0,0,0)' }}
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
         >
+          {/* Chrome+WebGL: 반투명/blur 칩만으로는 지도 클릭이 뚫림 → 불투명 히트 실드 */}
           <div
-            onClick={onLogoClick}
-            className="cursor-pointer group relative z-10 touch-manipulation"
-          >
-            <h1 className="group-hover:scale-105 transition-transform origin-left">
-              <Logo />
-            </h1>
+            aria-hidden="true"
+            className="pointer-events-auto absolute -inset-x-2 -inset-y-2 z-0 rounded-2xl bg-[#070707]/92"
+          />
+          <div className="relative z-10 flex flex-col items-start gap-2">
+            <div
+              onClick={onLogoClick}
+              className="cursor-pointer group touch-manipulation"
+            >
+              <h1 className="group-hover:scale-105 transition-transform origin-left">
+                <Logo />
+              </h1>
+            </div>
+            {!isTourCinema && (
+              <>
+                <Link
+                  to="/korea"
+                  className="group flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-amber-400/45 bg-[#14110c] px-2.5 py-1.5 shadow-[0_0_18px_rgba(245,158,11,0.22)] transition-all hover:border-amber-300/70 hover:bg-[#1c1710] touch-manipulation"
+                  aria-label="한국의 축제로 이동"
+                >
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-amber-400/35 bg-amber-500/15 text-amber-300 group-hover:bg-amber-500/25">
+                    <CalendarDays size={15} aria-hidden="true" />
+                  </span>
+                  <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
+                    한국의 축제
+                  </span>
+                </Link>
+                <Link
+                  to="/korea/theme/scenic"
+                  className="group flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-emerald-400/40 bg-[#0f1412] px-2.5 py-1.5 shadow-[0_0_18px_rgba(52,211,153,0.18)] transition-all hover:border-emerald-300/65 hover:bg-[#121a16] touch-manipulation"
+                  aria-label="한국의 명승으로 이동"
+                >
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-emerald-400/35 bg-emerald-500/15 text-emerald-300 group-hover:bg-emerald-500/25">
+                    <Map size={15} aria-hidden="true" />
+                  </span>
+                  <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
+                    한국의 명승
+                  </span>
+                </Link>
+                <Link
+                  to="/blog/curation"
+                  className="group flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-sky-400/45 bg-[#0c1218] px-2.5 py-1.5 shadow-[0_0_18px_rgba(56,189,248,0.2)] transition-all hover:border-sky-300/70 hover:bg-[#101820] touch-manipulation"
+                  aria-label="AI 큐레이션 페이지로 이동"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-sky-400/35 bg-sky-500/15 text-sky-300 group-hover:bg-sky-500/25">
+                    <Sparkles size={15} aria-hidden="true" />
+                  </span>
+                  <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
+                    AI 큐레이션
+                  </span>
+                </Link>
+              </>
+            )}
           </div>
-          {!isTourCinema && (
-            <>
-              <Link
-                to="/korea"
-                className="group relative z-10 flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-amber-400/45 bg-black/80 px-2.5 py-1.5 shadow-[0_0_18px_rgba(245,158,11,0.22)] backdrop-blur-md transition-all hover:border-amber-300/70 hover:bg-black/90 touch-manipulation"
-                aria-label="한국의 축제로 이동"
-              >
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-amber-400/35 bg-amber-500/15 text-amber-300 group-hover:bg-amber-500/25">
-                  <CalendarDays size={15} aria-hidden="true" />
-                </span>
-                <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
-                  한국의 축제
-                </span>
-              </Link>
-              <Link
-                to="/korea/theme/scenic"
-                className="group relative z-10 flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-emerald-400/40 bg-black/80 px-2.5 py-1.5 shadow-[0_0_18px_rgba(52,211,153,0.18)] backdrop-blur-md transition-all hover:border-emerald-300/65 hover:bg-black/90 touch-manipulation"
-                aria-label="한국의 명승으로 이동"
-              >
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-emerald-400/35 bg-emerald-500/15 text-emerald-300 group-hover:bg-emerald-500/25">
-                  <Map size={15} aria-hidden="true" />
-                </span>
-                <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
-                  한국의 명승
-                </span>
-              </Link>
-              <Link
-                to="/blog/curation"
-                className="group relative z-10 flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-sky-400/45 bg-black/80 px-2.5 py-1.5 shadow-[0_0_18px_rgba(56,189,248,0.2)] backdrop-blur-md transition-all hover:border-sky-300/70 hover:bg-black/90 touch-manipulation"
-                aria-label="AI 큐레이션 페이지로 이동"
-              >
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-sky-400/35 bg-sky-500/15 text-sky-300 group-hover:bg-sky-500/25">
-                  <Sparkles size={15} aria-hidden="true" />
-                </span>
-                <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
-                  AI 큐레이션
-                </span>
-              </Link>
-            </>
-          )}
         </div>
 
         <div className="hidden md:flex md:col-span-1 justify-center gap-3 lg:gap-4 pt-3 animate-fade-in-down delay-75 pointer-events-auto relative z-50">

@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-13-chrome-hit-shield-12b',
+    session: '지구본 홈 #12, Chrome 클릭 관통·장소카드 갇힘',
+    title: '홈 칩 불투명 히트 실드·blur 제거 (Chrome 전용)',
+    detail:
+      'Safari·네이버·구글앱은 정상·Chrome만 지도로 클릭이 뚫리는 증상을 위해, 로고·축제·명승·AI 큐레이션 영역에 불투명 히트 실드를 두고 backdrop-blur를 뺐습니다. Chrome에서 AI 큐레이션이 /blog/curation 으로만 가는지 확인해 주세요.',
+    at: '2026-08-13',
+  },
+  {
     id: '2026-08-13-chrome-hit-curation-summary-12',
     session: '지구본 홈 #12, Chrome 클릭 관통·장소카드 갇힘',
     title: 'AI 큐레이션 클릭 관통·써머리 X·/place 갇힘 완화',
