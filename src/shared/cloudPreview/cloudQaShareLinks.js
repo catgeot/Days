@@ -10,9 +10,8 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'chrome-hit',
     label: '지구본 홈 Chrome 칩 히트',
-    branch: 'cursor/chrome-hit-6294',
-    destination:
-      'https://days-git-cursor-chrome-hit-6294-catgeots-projects.vercel.app/',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/',
     active: true,
   },
   {

@@ -4,11 +4,11 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: true,
+  active: false,
   title: '지구본 홈',
   sessionNo: 13,
   sessionPhase: 'Chrome 칩 히트 어긋남',
-  branch: 'cursor/chrome-hit-6294',
+  branch: 'main',
   previewPath: '/',
   qaShareSlug: 'chrome-hit',
 };

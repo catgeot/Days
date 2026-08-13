@@ -4,15 +4,14 @@
 
 ## 지구본 홈 #13, Chrome 칩 히트 어긋남
 
-**상태**: feature `cursor/chrome-hit-6294` · tip `01910faf` · push됨 · PR 생성은 권한상 보류(사람/포털)  
+**상태**: `main` 반영 예정 · feature `cursor/chrome-hit-6294`  
 **세션**: `지구본 홈 #13, Chrome 칩 히트 어긋남`
 
-- **증상**: Chrome만 — 첫 진입 칩 OK → 1턴(써머리/페이지 왕복) 후 「한국의 명승」탭이 `/blog/curation`으로 감 · 큐레이션도 이상
-- **원인(1순위)**: `HomeUI` 칩 컬럼 `translate3d`+`isolate` 강제 합성 레이어가 `syncHomeViewportAfterInput`/URL바·Mapbox resize 후 paint↔hit 어긋남
-- **수정**: 레이어 승격 제거 · 불투명 실드/칩 BG 유지 · 검색 absolute 열 `pointer-events-none`(pill만 auto) · `/qa/chrome-hit`
+- **증상**: Chrome만 — 첫 진입 칩 OK → 1턴 후 「한국의 명승」클릭이 큐레이션(`/blog/curation`)으로 이동 · 큐레이션 버튼도 이상
+- **원인**: `#12`에서 넣은 `translate3d`+`isolate` 합성 레이어가 URL바/viewport sync 후 **paint와 hit 박스가 한 줄만큼 어긋남**
+- **수정**: 레이어 승격 제거 · 로고 hover scale 제거 · 검색 열 hit 축소 · `/qa/chrome-hit`→PROD
 - **VERIFY**: `npm run build`
-- **QA**: `https://www.gateo.kr/qa/chrome-hit` · git Preview `…-git-cursor-chrome-hit-6294-….vercel.app/`
-- **사람 체크**: Chrome에서 홈→써머리 닫기 또는 명승/큐레이션 왕복 후, 명승=`/korea/theme/scenic` · 큐레이션=`/blog/curation`
+- **PROD QA**: `https://www.gateo.kr/` — Chrome에서 1턴 후 명승·큐레이션 각각 올바른 경로
 - **다음 채팅명**:
 
 ```

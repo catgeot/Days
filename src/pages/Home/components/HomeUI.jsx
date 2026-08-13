@@ -120,7 +120,7 @@ const HomeUI = React.memo(({
               onClick={onLogoClick}
               className="cursor-pointer group touch-manipulation"
             >
-              <h1 className="group-hover:scale-105 transition-transform origin-left">
+              <h1 className="group-hover:opacity-90 transition-opacity origin-left">
                 <Logo />
               </h1>
             </div>
