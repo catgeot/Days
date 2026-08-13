@@ -4,7 +4,7 @@
 
 ## 지구본 홈 #12, Chrome 클릭 관통·장소카드 갇힘
 
-**상태**: feature `cursor/chrome-hit-4475` · main 반영 예정  
+**상태**: `main` 반영 · PR [#116](https://github.com/catgeot/Days/pull/116) · tip `ae00ee74`  
 **세션**: `지구본 홈 #12, Chrome 클릭 관통·장소카드 갇힘`
 
 - **증상**: Chrome에서 AI 큐레이션 칩 클릭이 아래(지도)로 뚫림 → 써머리 오픈 → X가 확장으로 오인 → `/place` 갇힘·explore 루프
