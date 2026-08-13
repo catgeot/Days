@@ -268,16 +268,25 @@ const PlaceCardSummary = ({
               )}
             </div>
 
-            <div className="flex shrink-0 items-center gap-1 -mr-2 -mt-2 z-10">
+            <div
+              className="flex shrink-0 items-center gap-1 -mr-1 -mt-1 z-20 relative"
+              data-summary-chrome
+              onClick={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+            >
               {!isScanning && <BookmarkButton location={location} isBookmarked={isBookmarked} onToggle={onToggleBookmark} />}
               <button
+                type="button"
+                aria-label="써머리 닫기"
                 onClick={(e) => {
+                  e.preventDefault();
                   e.stopPropagation();
-                  onClose();
+                  onClose?.();
                 }}
-                className="p-1.5 rounded-full hover:bg-white/10 text-gray-500 hover:text-white transition-colors"
+                onPointerDown={(e) => e.stopPropagation()}
+                className="relative z-20 inline-flex items-center justify-center min-h-11 min-w-11 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors touch-manipulation"
               >
-                <X size={18} />
+                <X size={18} aria-hidden="true" />
               </button>
             </div>
           </div>

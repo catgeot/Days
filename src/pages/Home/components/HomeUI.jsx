@@ -101,10 +101,13 @@ const HomeUI = React.memo(({
           aria-hidden="true"
         />
 
-        <div className="md:col-span-2 flex-shrink-0 flex flex-col items-start gap-2 animate-fade-in-down pt-2 md:pl-2 pointer-events-auto relative z-[60]">
+        <div
+          className="md:col-span-2 flex-shrink-0 flex flex-col items-start gap-2 animate-fade-in-down pt-2 md:pl-2 pointer-events-auto relative z-[60] isolate [transform:translateZ(0)]"
+          data-home-chrome-hit
+        >
           <div
             onClick={onLogoClick}
-            className="cursor-pointer group"
+            className="cursor-pointer group relative z-10 touch-manipulation"
           >
             <h1 className="group-hover:scale-105 transition-transform origin-left">
               <Logo />
@@ -114,7 +117,7 @@ const HomeUI = React.memo(({
             <>
               <Link
                 to="/korea"
-                className="group flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-amber-400/45 bg-black/60 px-2.5 py-1.5 shadow-[0_0_18px_rgba(245,158,11,0.22)] backdrop-blur-md transition-all hover:border-amber-300/70 hover:bg-black/75"
+                className="group relative z-10 flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-amber-400/45 bg-black/80 px-2.5 py-1.5 shadow-[0_0_18px_rgba(245,158,11,0.22)] backdrop-blur-md transition-all hover:border-amber-300/70 hover:bg-black/90 touch-manipulation"
                 aria-label="한국의 축제로 이동"
               >
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-amber-400/35 bg-amber-500/15 text-amber-300 group-hover:bg-amber-500/25">
@@ -126,7 +129,7 @@ const HomeUI = React.memo(({
               </Link>
               <Link
                 to="/korea/theme/scenic"
-                className="group flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-emerald-400/40 bg-black/60 px-2.5 py-1.5 shadow-[0_0_18px_rgba(52,211,153,0.18)] backdrop-blur-md transition-all hover:border-emerald-300/65 hover:bg-black/75"
+                className="group relative z-10 flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-emerald-400/40 bg-black/80 px-2.5 py-1.5 shadow-[0_0_18px_rgba(52,211,153,0.18)] backdrop-blur-md transition-all hover:border-emerald-300/65 hover:bg-black/90 touch-manipulation"
                 aria-label="한국의 명승으로 이동"
               >
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-emerald-400/35 bg-emerald-500/15 text-emerald-300 group-hover:bg-emerald-500/25">
@@ -138,7 +141,7 @@ const HomeUI = React.memo(({
               </Link>
               <Link
                 to="/blog/curation"
-                className="group flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-sky-400/45 bg-black/60 px-2.5 py-1.5 shadow-[0_0_18px_rgba(56,189,248,0.2)] backdrop-blur-md transition-all hover:border-sky-300/70 hover:bg-black/75"
+                className="group relative z-10 flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-sky-400/45 bg-black/80 px-2.5 py-1.5 shadow-[0_0_18px_rgba(56,189,248,0.2)] backdrop-blur-md transition-all hover:border-sky-300/70 hover:bg-black/90 touch-manipulation"
                 aria-label="AI 큐레이션 페이지로 이동"
               >
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-sky-400/35 bg-sky-500/15 text-sky-300 group-hover:bg-sky-500/25">

@@ -4,13 +4,13 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: false,
-  title: '로그북',
-  sessionNo: 11,
-  sessionPhase: 'Preview SSO·QA PROD 복귀',
-  branch: 'main',
-  previewPath: '/blog/curation',
-  qaShareSlug: 'logbook-curation',
+  active: true,
+  title: '지구본 홈',
+  sessionNo: 12,
+  sessionPhase: 'Chrome 클릭 관통·장소카드 갇힘',
+  branch: 'cursor/chrome-hit-4475',
+  previewPath: '/',
+  qaShareSlug: 'chrome-hit',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-13-chrome-hit-curation-summary-12',
+    session: '지구본 홈 #12, Chrome 클릭 관통·장소카드 갇힘',
+    title: 'AI 큐레이션 클릭 관통·써머리 X·/place 갇힘 완화',
+    detail:
+      'Chrome에서 Mapbox 위 홈 칩 클릭이 지도로 뚫리던 문제를 레이어/불투명도로 보강하고, 써머리 닫기 타깃을 키웠습니다. /place X는 explore 루프 대신 홈으로 나가며 써머리 재오픈을 건너뜁니다. PROD Chrome에서 로고 아래 AI 큐레이션→써머리 X를 확인해 주세요.',
+    at: '2026-08-13',
+  },
   {
     id: '2026-08-13-logbook-curation-qa-prod-sso-11b',
     session: '로그북 #11, Preview SSO·QA 경로',

@@ -367,6 +367,8 @@ function Home() {
   const lastGlobeFocusRef = useRef(null);
   /** 홈(지구본) 복귀 시 moveToLocation SSOT — navigateToPlace·goHomeFromPlace가 명시 설정 */
   const pendingGlobeHomeFocusRef = useRef(null);
+  /** /place X 닫기 등 — 홈 복귀 시 써머리 재오픈 생략(핀 flyTo는 유지) */
+  const skipHomeSummaryRestoreRef = useRef(false);
   const placeRouteSyncRef = useRef(0);
 
   const rememberGlobeFocus = useCallback((loc) => {
@@ -484,8 +486,17 @@ function Home() {
       navigate(returnTo);
       return;
     }
-    navigate('/explore');
-  }, [navigate, routeLocation.state]);
+    // 써머리→/place 오탭 후 X: explore 루프 대신 홈으로. 써머리 재오픈은 skipHomeSummaryRestoreRef.
+    clearPlaceReturnTo();
+    skipHomeSummaryRestoreRef.current = true;
+    pendingGlobeHomeFocusRef.current = null;
+    setIsCardExpanded(false);
+    setSelectedLocation(null);
+    navigate('/');
+    if (isMobileViewport) {
+      syncHomeViewportAfterInput();
+    }
+  }, [isMobileViewport, navigate, routeLocation.state, setSelectedLocation]);
 
   const createTripOnFirstUserMessage = useCallback(async ({ destination, lat, lng, persona, firstUserText }) => {
     const systemPrompt = getSystemPrompt(persona, destination);
@@ -784,7 +795,9 @@ function Home() {
       if (focusForHome) {
         rememberGlobeFocus(focusForHome);
         selectedLocationRef.current = focusForHome;
-        if (!fromSearch) {
+        const skipSummary = skipHomeSummaryRestoreRef.current;
+        skipHomeSummaryRestoreRef.current = false;
+        if (!fromSearch && !skipSummary) {
           setSelectedLocation(focusForHome);
         }
         const { lat, lng, name } = focusForHome;
@@ -1006,7 +1019,7 @@ function Home() {
         />
       </div>
 
-      <div className={`transition-opacity duration-1000 ${isZenMode ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+      <div className={`relative z-10 transition-opacity duration-1000 ${isZenMode ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
         <SiteUpdateBanner />
         <HomeUI
           onSearch={handleSmartSearch} onTickerClick={handleSmartSearch}
@@ -1083,8 +1096,10 @@ function Home() {
             isBookmarked={savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked)}
             onClose={dismissPlaceSelectionKeepGlobePin}
             onExpand={() => {
+              const param = getPlaceUrlParam(selectedLocation);
+              if (!param) return;
               setIsCardExpanded(true);
-              navigate(`/place/${getPlaceUrlParam(selectedLocation)}`);
+              navigate(`/place/${param}`);
             }}
             onChat={openMooniFromPlace}
             onToggleBookmark={handleToggleBookmark}
