@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/drakensberg",
+      "destination": "https://days-git-cursor-drakensberg-geocode-03a1-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
       "source": "/qa/logbook-curation",
       "destination": "https://days-git-cursor-logbook-curation-4475-catgeots-projects.vercel.app/blog/curation",
       "permanent": false

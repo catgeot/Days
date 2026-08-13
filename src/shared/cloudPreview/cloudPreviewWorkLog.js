@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '로그북',
-  sessionNo: 11,
-  sessionPhase: '실행 버튼 sticky·하단',
-  branch: 'cursor/logbook-curation-4475',
-  previewPath: '/blog/curation',
-  qaShareSlug: 'logbook-curation',
+  title: '드라켄즈버그',
+  sessionNo: 9,
+  sessionPhase: 'main 기준점 재현 QA',
+  branch: 'cursor/drakensberg-geocode-03a1',
+  previewPath: '/',
+  qaShareSlug: 'drakensberg',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-13-drakensberg-main-baseline-9',
+    session: '드라켄즈버그 #9, main 기준점 재현 QA',
+    title: '오늘 코드 전부 취소 · tip=main 기준점',
+    detail:
+      '#1–#8 기능·클릭 패치를 모두 되돌렸습니다. Preview 코드는 main과 동일합니다. 장소→홈→써머리 X→AI 큐레이션이 지도 포커스/써머리로 가는지(재현/미재현)만 알려 주세요. 재현되면 main부터 이분, 아니면 R1부터 하나씩 올립니다.',
+    at: '2026-08-13',
+  },
   {
     id: '2026-08-12-logbook-curation-explore-sticky-11',
     session: '로그북 #11, 실행 버튼 sticky·하단',

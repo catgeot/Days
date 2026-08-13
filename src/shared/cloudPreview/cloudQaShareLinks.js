@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'drakensberg',
+    label: '드라켄즈버그 main 기준점 재현',
+    branch: 'cursor/drakensberg-geocode-03a1',
+    destination:
+      'https://days-git-cursor-drakensberg-geocode-03a1-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
     slug: 'logbook-curation',
     label: '로그북 큐레이션 페이지',
     branch: 'cursor/logbook-curation-4475',
