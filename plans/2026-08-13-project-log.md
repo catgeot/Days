@@ -4,7 +4,7 @@
 
 ## 지구본 홈 #13, Chrome 칩 히트 어긋남
 
-**상태**: feature `cursor/chrome-hit-6294` · Preview QA 대기  
+**상태**: feature `cursor/chrome-hit-6294` · tip `01910faf` · push됨 · PR 생성은 권한상 보류(사람/포털)  
 **세션**: `지구본 홈 #13, Chrome 칩 히트 어긋남`
 
 - **증상**: Chrome만 — 첫 진입 칩 OK → 1턴(써머리/페이지 왕복) 후 「한국의 명승」탭이 `/blog/curation`으로 감 · 큐레이션도 이상
