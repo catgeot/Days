@@ -2,6 +2,20 @@
 
 직전: [`2026-08-12-project-log.md`](./2026-08-12-project-log.md)
 
+## 해안해양 탐색 #1, 플랜
+
+**상태**: 플랜만 · feature `cursor/coast-sea-plan-8c05`  
+**세션**: `해안해양 탐색 #1, 플랜`
+
+- **요청**: 5 테마 칩에 해안·해양 별칭 · 에게해·산호해 등 주변해로 숨은 섬 탐색 가능 여부
+- **조사**: spots 273 · sea 필드 **0** · paradise 53 · 휴리스틱 해안 ~132 · 에게해 desc 2 · 산호해 고유명 ≈0
+- **결론**: 6번째 대분류 금지(5면 충돌) · **해역 2차 칩+필드(`seaIds`/`coastKind`)** 권장 · [`coast-sea-explore-plan.md`](./coast-sea-explore-plan.md)
+- **다음 채팅명**:
+
+```
+해안해양 탐색 #2, 해역 SSOT 시드
+```
+
 ## 지구본 홈 #13, Chrome 칩 히트 어긋남
 
 **상태**: `main` 반영 예정 · feature `cursor/chrome-hit-6294`  

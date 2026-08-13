@@ -14,6 +14,7 @@
 - **국내 축제·지역 허브 `/korea` (리스트 우선 · tip `d32894e`)** : [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) · 일지 `2026-07-29`
 - **한국의 명승 · 축제 투톱 ✅ main** (`/korea` + `/korea/theme/scenic` · PR [#58](https://github.com/catgeot/Days/pull/58) MERGED): [`korea-theme-travel-plan.md`](./korea-theme-travel-plan.md) · 일지 `2026-08-07` #63 · 다음 폴리시·릴리스
 - **명소 세권(중분류) 칩 방안**: [`korea-scenic-mid-cluster-plan.md`](./korea-scenic-mid-cluster-plan.md) · **경기=동서남북 4세권 합의** · 타 시도·UI 대기 · 일지 `2026-08-09` #111
+- **해안·해양 탐색 칩 (플랜)**: [`coast-sea-explore-plan.md`](./coast-sea-explore-plan.md) · 5면 유지·해역 2차 축 · 필드 공백·수량 스냅샷 · 일지 `2026-08-13`
 - **국내 MRT 읍·면 감사·city=리 군선두 ✅**: [`mrt-stay-admin-gap-audit-plan.md`](./mrt-stay-admin-gap-audit-plan.md) §5.1–§5.2 · `npm run audit:mrt-stay-admin-gaps` · RISK **0** · keyword 군 선두
 - **동명 리/읍/면/동·bare 화이트리스트 검색 다후보 ✅**: [`ko-homonym-ri-search-disambiguation-plan.md`](./ko-homonym-ri-search-disambiguation-plan.md) · [`ko-homonym-search-expand-plan.md`](./ko-homonym-search-expand-plan.md) · PR [#37](https://github.com/catgeot/Days/pull/37) MERGED · `smoke:ko-homonym-ri-search`
 - **국내 명소 tip 좌표 TourAPI 보정 (다음 세션)**: [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) · 제시어 `TourAPI-명소좌표-이어하기`
