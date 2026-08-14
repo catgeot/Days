@@ -2,6 +2,21 @@
 
 직전: [`2026-08-12-project-log.md`](./2026-08-12-project-log.md)
 
+## 지구본 홈 #15, Chrome 모바일 큐레이션 왕복
+
+**상태**: `main` 로컬 tip `b7e4807` · push는 사람 요청 시  
+**세션**: `지구본 홈 #15, Chrome 모바일 테스트`
+
+- **증상**: Chrome만 — 큐레이션→/place→홈→써머리 X 후 큐레이션 칩이 지도로 뚫림 · X가 확장으로 오인 · 홈 버튼이 여행 스케치로 오탭
+- **한 일**: 써머리 닫기·홈 복귀 시 `syncHomeChromeAfterNavigation`(meta 줌 리셋 생략) · fixed chrome `visualViewport.offsetTop` · PlaceCard 헤더 isolate/blur 제거 · 써머리 모바일 불투명 BG
+- **VERIFY**: `npm run build`
+- **PROD QA**: `https://www.gateo.kr/` — 위 재현 경로 Chrome 모바일
+- **다음 채팅명**:
+
+```
+지구본 홈 #15, Chrome 모바일 QA
+```
+
 ## 지구본 홈 #13, Chrome 칩 히트 어긋남
 
 **상태**: `main` 반영 예정 · feature `cursor/chrome-hit-6294`  
