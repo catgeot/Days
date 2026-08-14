@@ -227,7 +227,7 @@ const PlaceCardSummary = ({
         )}
 
         <div
-          className={`place-summary-card relative z-[1] bg-black/80 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl group ${
+          className={`place-summary-card relative z-[1] border border-white/10 rounded-3xl shadow-2xl group max-md:bg-[#0a0a0a] max-md:backdrop-blur-none md:bg-black/80 md:backdrop-blur-xl ${
             isOriginCompact || stayExpanded || tourTab ? 'overflow-visible' : 'overflow-hidden'
           } ${isOriginCompact ? 'p-2.5' : 'p-4'} ${isEnterGlow ? 'place-summary-card-enter' : glowPhase === 'idle' ? 'place-summary-card-idle' : ''}`}
         >
@@ -269,7 +269,7 @@ const PlaceCardSummary = ({
             </div>
 
             <div
-              className="flex shrink-0 items-center gap-1 -mr-1 -mt-1 z-20 relative"
+              className="flex shrink-0 items-center gap-1 -mr-1 -mt-1 z-20 relative pointer-events-auto"
               data-summary-chrome
               onClick={(e) => e.stopPropagation()}
               onPointerDown={(e) => e.stopPropagation()}

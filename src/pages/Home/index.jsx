@@ -51,7 +51,7 @@ import { GLOBE_MODE, isTourMode } from './lib/globeMode';
 import { FlightCinemaProvider } from './lib/FlightCinemaContext.jsx';
 import { pickRandomGlobeCategory } from './lib/globeCategoryFocus';
 import { getDefaultFaceSubregionId } from './lib/globeFaceSubregions.js';
-import { syncHomeViewportAfterInput } from '../../shared/lib/mobileViewport';
+import { syncHomeViewportAfterInput, syncHomeChromeAfterNavigation } from '../../shared/lib/mobileViewport';
 import {
   clearPlaceReturnTo,
   peekPlaceReturnTo,
@@ -475,7 +475,8 @@ function Home() {
     }
     navigate('/');
     if (isMobileViewport) {
-      syncHomeViewportAfterInput();
+      syncHomeChromeAfterNavigation();
+      globeRef.current?.wakeAfterOverlay?.();
     }
   }, [routeLocation.pathname, category, navigate, rememberGlobeFocus, addScoutPin, setSelectedLocation, isMobileViewport]);
 
@@ -494,7 +495,8 @@ function Home() {
     setSelectedLocation(null);
     navigate('/');
     if (isMobileViewport) {
-      syncHomeViewportAfterInput();
+      syncHomeChromeAfterNavigation();
+      globeRef.current?.wakeAfterOverlay?.();
     }
   }, [isMobileViewport, navigate, routeLocation.state, setSelectedLocation]);
 
@@ -907,7 +909,8 @@ function Home() {
     }
     globeRef.current?.resumeRotation?.();
     if (isMobileViewport) {
-      syncHomeViewportAfterInput();
+      syncHomeChromeAfterNavigation();
+      globeRef.current?.wakeAfterOverlay?.();
     }
   }, [addScoutPin, rememberGlobeFocus, selectedLocation, setSelectedLocation, isMobileViewport]);
 
