@@ -207,9 +207,9 @@ const PlaceCardSummary = ({
       } max-md:animate-none transition-all duration-200 ${
         isOriginCompact
           ? 'fixed left-0 right-0 mx-auto w-[calc(100vw-3rem)] max-w-[360px]'
-          : `fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] left-0 right-0 mx-auto w-[calc(100vw-3rem)] max-w-[360px] lg:absolute lg:bottom-6 lg:left-auto lg:right-8 lg:mx-0 lg:w-[400px] lg:max-w-[400px] xl:w-[440px] xl:max-w-[440px]${
-              tourTab ? ' ml-[1.1rem] lg:ml-0' : ''
-            }`
+          : tourTab
+            ? 'fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] left-[max(2.2rem,env(safe-area-inset-left,0px))] right-[1.5rem] mx-0 w-auto max-w-[360px] lg:absolute lg:bottom-6 lg:left-auto lg:right-8 lg:mx-0 lg:w-[400px] lg:max-w-[400px] xl:w-[440px] xl:max-w-[440px]'
+            : 'fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] left-0 right-0 mx-auto w-[calc(100vw-3rem)] max-w-[360px] lg:absolute lg:bottom-6 lg:left-auto lg:right-8 lg:mx-0 lg:w-[400px] lg:max-w-[400px] xl:w-[440px] xl:max-w-[440px]'
       }`}
       style={keyboardAnchorStyle}
     >
