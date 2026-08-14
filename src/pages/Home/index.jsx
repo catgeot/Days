@@ -195,6 +195,10 @@ function Home() {
   /** 모바일 숙소 패널 펼침 — 스크림·회전 정지·MOONi 숨김 */
   const [isStayStripExpanded, setIsStayStripExpanded] = useState(false);
   const [isPlaceImmersed, setIsPlaceImmersed] = useState(false);
+  const [homeChromeEpoch, setHomeChromeEpoch] = useState(0);
+  const bumpHomeChromeEpoch = useCallback(() => {
+    setHomeChromeEpoch((n) => n + 1);
+  }, []);
   const prevChatOpenRef = useRef(false);
   const prevPathnameRef = useRef(routeLocation.pathname);
 
@@ -475,10 +479,11 @@ function Home() {
     }
     navigate('/');
     if (isMobileViewport) {
+      bumpHomeChromeEpoch();
       syncHomeChromeAfterNavigation();
       globeRef.current?.wakeAfterOverlay?.();
     }
-  }, [routeLocation.pathname, category, navigate, rememberGlobeFocus, addScoutPin, setSelectedLocation, isMobileViewport]);
+  }, [routeLocation.pathname, category, navigate, rememberGlobeFocus, addScoutPin, setSelectedLocation, isMobileViewport, bumpHomeChromeEpoch]);
 
   const leavePlaceCard = useCallback(() => {
     const returnTo = peekPlaceReturnTo(routeLocation.state);
@@ -495,10 +500,11 @@ function Home() {
     setSelectedLocation(null);
     navigate('/');
     if (isMobileViewport) {
+      bumpHomeChromeEpoch();
       syncHomeChromeAfterNavigation();
       globeRef.current?.wakeAfterOverlay?.();
     }
-  }, [isMobileViewport, navigate, routeLocation.state, setSelectedLocation]);
+  }, [isMobileViewport, navigate, routeLocation.state, setSelectedLocation, bumpHomeChromeEpoch]);
 
   const createTripOnFirstUserMessage = useCallback(async ({ destination, lat, lng, persona, firstUserText }) => {
     const systemPrompt = getSystemPrompt(persona, destination);
@@ -778,6 +784,9 @@ function Home() {
     prevPathRef.current = currentPath;
 
     if (currentPath === '/' && (prevPath.startsWith('/place/') || prevPath.startsWith('/explore'))) {
+      if (isMobileViewport && prevPath.startsWith('/place/')) {
+        bumpHomeChromeEpoch();
+      }
       const fromSearch = Boolean(routeLocation.state?.fromSearch);
       const fromPrevPlacePath =
         !fromSearch && prevPath.startsWith('/place/')
@@ -816,7 +825,7 @@ function Home() {
         revealRandomGlobeFace();
       }
     }
-  }, [routeLocation.pathname, routeLocation.state?.fromSearch, category, moveToLocation, rememberGlobeFocus, revealRandomGlobeFace, setSelectedLocation]);
+  }, [routeLocation.pathname, routeLocation.state?.fromSearch, category, moveToLocation, rememberGlobeFocus, revealRandomGlobeFace, setSelectedLocation, isMobileViewport, bumpHomeChromeEpoch]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
@@ -909,10 +918,11 @@ function Home() {
     }
     globeRef.current?.resumeRotation?.();
     if (isMobileViewport) {
+      bumpHomeChromeEpoch();
       syncHomeChromeAfterNavigation();
       globeRef.current?.wakeAfterOverlay?.();
     }
-  }, [addScoutPin, rememberGlobeFocus, selectedLocation, setSelectedLocation, isMobileViewport]);
+  }, [addScoutPin, bumpHomeChromeEpoch, rememberGlobeFocus, selectedLocation, setSelectedLocation, isMobileViewport]);
 
   /** 나라 칩 포커스 시 써머리만 닫고 국가 단위 fitBounds — PC는 카드와 메뉴 동시 표시 */
   const handleFaceRegionSelect = useCallback((region) => {
@@ -1025,6 +1035,7 @@ function Home() {
       <div className={`relative z-10 transition-opacity duration-1000 ${isZenMode ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
         <SiteUpdateBanner />
         <HomeUI
+          homeChromeEpoch={homeChromeEpoch}
           onSearch={handleSmartSearch} onTickerClick={handleSmartSearch}
           onRelatedPlaceClick={handleRelatedPlaceClickWithCinemaExit}
           externalInput={draftInput}
@@ -1094,6 +1105,7 @@ function Home() {
 
         {selectedLocation && routeLocation.pathname === '/' && !isTourCinema && !flightCinemaActive && (
           <HomePlaceCardSummary
+            key={`summary-${homeChromeEpoch}-${selectedLocation.id ?? selectedLocation.slug ?? selectedLocation.name}`}
             globeRef={globeRef}
             location={selectedLocation}
             isBookmarked={savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked)}

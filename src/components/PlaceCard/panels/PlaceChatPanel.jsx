@@ -15,10 +15,6 @@ import { copyToClipboard } from '../common/copyToClipboard';
 import PlaceMobileSecondaryNav from '../common/PlaceMobileSecondaryNav';
 import { dispatchPlaceScrollToTop } from '../common/placeScrollSurface';
 import { mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
-import {
-  useCoarsePointer,
-  useVisualViewportTopInset,
-} from '../../../shared/hooks/useMobileInputViewport';
 import mooniChar from '../../../assets/MOONI_transparent.png';
 import {
   clearPlaceReturnTo,
@@ -65,9 +61,6 @@ const PlaceChatPanel = React.memo(({
   const skipRelatedRefreshRef = useRef(false);
   const [relatedPlaces, setRelatedPlaces] = useState([]);
   const { primaryName, secondaryName } = getPlaceTitleLines(location);
-
-  const isMobileCoarse = useCoarsePointer();
-  const vvTopInset = useVisualViewportTopInset(isMobileCoarse);
 
   const getPlaceKey = (place) => `${place?.id ?? ''}:${place?.name ?? ''}`;
 
@@ -171,8 +164,7 @@ const PlaceChatPanel = React.memo(({
 
       {/* Header — 갤러리·위키·리뷰·플래너: 지명 영역 탭 시 스크롤 맨 위 (뒤로/홈 버튼과 분리) */}
       <div
-        className={`shrink-0 px-3 md:border-b md:border-white/5 bg-transparent z-20 py-2 md:py-3 flex flex-col items-stretch justify-between gap-2 md:gap-3 max-md:fixed max-md:inset-x-0 max-md:z-[180] max-md:bg-[#05070a] max-md:backdrop-blur-none max-md:border-b max-md:border-white/10 max-md:pb-1.5 ${mobileLandscapeChromeHidden}`}
-        style={vvTopInset > 0 ? { top: vvTopInset } : undefined}
+        className={`shrink-0 px-3 md:border-b md:border-white/5 bg-transparent z-20 py-2 md:py-3 flex flex-col items-stretch justify-between gap-2 md:gap-3 max-md:fixed max-md:inset-x-0 max-md:top-0 max-md:z-[180] max-md:bg-[#05070a] max-md:backdrop-blur-none max-md:border-b max-md:border-white/10 max-md:pb-1.5 ${mobileLandscapeChromeHidden}`}
       >
          {/* Row 1: Home, Location Info, Bookmark, Toolkit (Killer Tab) */}
          <div

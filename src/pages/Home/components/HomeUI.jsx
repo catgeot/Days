@@ -18,10 +18,6 @@ import GlobeFaceRegionRail, { GlobeFaceSubregionBar } from './GlobeFaceRegionRai
 import { shouldShowFaceSubregionChips } from '../lib/globeFaceSubregions.js';
 import { useTrendingData } from '../hooks/useTrendingData';
 import { CATEGORY_LABELS } from './SearchDiscovery/constants';
-import {
-  useCoarsePointer,
-  useVisualViewportTopInset,
-} from '../../../shared/hooks/useMobileInputViewport';
 
 /** 모바일 활성 카테고리 — 테마색 글로우 (배포본과 동일) */
 const CATEGORY_ACTIVE_MOBILE = {
@@ -54,6 +50,7 @@ const HomeUI = React.memo(({
   isTourCinema = false,
   isFlightCinema = false,
   isPlaceCardVisible = false,
+  homeChromeEpoch = 0,
   tourLocation = null,
   tourPivoted = false,
   globeMode = null,
@@ -64,8 +61,6 @@ const HomeUI = React.memo(({
 }) => {
   const [, setInputValue] = useState('');
   const navigate = useNavigate();
-  const isMobileCoarse = useCoarsePointer();
-  const vvTopInset = useVisualViewportTopInset(isMobileCoarse);
   /** 모바일 나라 메뉴 — 펼침일 때만 목록 노출 · 숨김 시 지도 탐색 */
   const [mobileRegionsExpanded, setMobileRegionsExpanded] = useState(true);
 
@@ -100,10 +95,7 @@ const HomeUI = React.memo(({
 
   return (
     <>
-      <div
-        className="fixed top-0 left-0 right-0 z-[100] p-4 md:p-6 flex items-start gap-3 md:grid md:grid-cols-12 pointer-events-none w-full"
-        style={vvTopInset > 0 ? { top: vvTopInset } : undefined}
-      >
+      <div className="fixed top-0 left-0 right-0 z-[100] p-4 md:p-6 flex items-start gap-3 md:grid md:grid-cols-12 pointer-events-none w-full">
         <div
           data-site-notice-anchor-mobile
           className="md:hidden absolute inset-x-0 bottom-0 h-px pointer-events-none"
@@ -111,7 +103,8 @@ const HomeUI = React.memo(({
         />
 
         <div
-          className="md:col-span-2 flex-shrink-0 relative z-[110] pointer-events-auto pt-2 md:pl-2 animate-fade-in-down"
+          key={homeChromeEpoch}
+          className="md:col-span-2 flex-shrink-0 relative z-[110] pointer-events-auto pt-2 md:pl-2 max-md:animate-none md:animate-fade-in-down"
           data-home-chrome-hit
           onPointerDown={(e) => e.stopPropagation()}
           onClick={(e) => e.stopPropagation()}

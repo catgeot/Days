@@ -137,19 +137,10 @@ export function syncHomeViewportAfterInput() {
   }, 120);
 }
 
-/** 홈·/place 왕복 — 입력 없을 때 meta 줌 리셋 생략(Chrome Android 히트 어긋남 방지) */
+/** 홈·/place 왕복 — 입력 없을 때 meta 줌·window resize 생략(Chrome WebGL hit 누적 어긋남 방지) */
 export function syncHomeChromeAfterNavigation() {
   if (typeof window === 'undefined') return;
 
   window.scrollTo(0, 0);
-
-  if (homeViewportSyncTimer != null) {
-    window.clearTimeout(homeViewportSyncTimer);
-  }
-
-  homeViewportSyncTimer = window.setTimeout(() => {
-    homeViewportSyncTimer = null;
-    window.dispatchEvent(new Event('resize'));
-    scheduleRecalibrateFixedChromeHits();
-  }, 120);
+  scheduleRecalibrateFixedChromeHits();
 }

@@ -74,7 +74,8 @@ const PlaceCardSummary = ({
   }, [isImmersed, location?.id]);
 
   const isScanning = location?.isScanning;
-  const isEnterGlow = glowPhase === 'enter';
+  const allowSummaryExpandTap = !isMobileCoarse;
+  const isEnterGlow = !isMobileCoarse && glowPhase === 'enter';
   const { primaryName, secondaryName } = getPlaceTitleLines(location);
   const canStartTour = canStartGlobeTour(location);
   const flightRouteInteractive = isFlightRouteReady && !isFlightRoutePending;
@@ -137,7 +138,7 @@ const PlaceCardSummary = ({
 
   if (isImmerseCompact) {
     return (
-      <div className="z-[60] fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[calc(100vw-2.5rem)] max-w-[400px] animate-fade-in-up lg:absolute lg:bottom-6">
+      <div className="z-[60] fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] left-0 right-0 mx-auto w-[calc(100vw-2.5rem)] max-w-[400px] max-md:animate-none lg:absolute lg:bottom-6 lg:left-auto lg:right-auto lg:mx-0 lg:w-[calc(100vw-2.5rem)]">
         <div className="tour-mobile-bar-shell relative">
           <div className="tour-mobile-bar-halo" aria-hidden="true" />
           <div className="tour-mobile-bar-card relative z-[1] flex items-center gap-3 rounded-2xl border border-white/15 bg-black/80 px-3 py-1.5 backdrop-blur-xl">
@@ -203,10 +204,10 @@ const PlaceCardSummary = ({
     <div
       className={`${
         tourExpanded || stayExpanded ? 'z-[62]' : 'z-[60]'
-      } animate-fade-in-up transition-all duration-200 ${
+      } max-md:animate-none transition-all duration-200 ${
         isOriginCompact
-          ? 'fixed left-1/2 -translate-x-1/2 w-[calc(100vw-3rem)] max-w-[360px]'
-          : `fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 w-[calc(100vw-3rem)] max-w-[360px] lg:absolute lg:bottom-6 lg:translate-x-0 lg:left-auto lg:right-8 lg:w-[400px] lg:max-w-[400px] xl:w-[440px] xl:max-w-[440px]${
+          ? 'fixed left-0 right-0 mx-auto w-[calc(100vw-3rem)] max-w-[360px]'
+          : `fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] left-0 right-0 mx-auto w-[calc(100vw-3rem)] max-w-[360px] lg:absolute lg:bottom-6 lg:left-auto lg:right-8 lg:mx-0 lg:w-[400px] lg:max-w-[400px] xl:w-[440px] xl:max-w-[440px]${
               tourTab ? ' ml-[1.1rem] lg:ml-0' : ''
             }`
       }`}
@@ -232,16 +233,16 @@ const PlaceCardSummary = ({
           } ${isOriginCompact ? 'p-2.5' : 'p-4'} ${isEnterGlow ? 'place-summary-card-enter' : glowPhase === 'idle' ? 'place-summary-card-idle' : ''}`}
         >
           <div
-            className="place-summary-top-shine absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent group-hover:via-blue-400 transition-all duration-500 cursor-pointer"
-            onClick={!isScanning ? onExpand : undefined}
+            className="place-summary-top-shine absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent group-hover:via-blue-400 transition-all duration-500 max-md:pointer-events-none md:cursor-pointer"
+            onClick={allowSummaryExpandTap && !isScanning ? onExpand : undefined}
           />
 
           <div
             className={`flex items-start justify-between gap-2 mb-3 ${isOriginCompact ? 'hidden' : ''}`}
           >
             <div
-              className={`flex min-w-0 flex-1 flex-col ${!isScanning ? 'cursor-pointer' : ''}`}
-              onClick={!isScanning ? onExpand : undefined}
+              className={`flex min-w-0 flex-1 flex-col ${allowSummaryExpandTap && !isScanning ? 'cursor-pointer' : ''}`}
+              onClick={allowSummaryExpandTap && !isScanning ? onExpand : undefined}
             >
               <div className="flex items-center gap-1.5 mb-1 min-w-0">
                 <Sparkles size={12} className={`shrink-0 ${isScanning ? 'text-blue-400 animate-pulse' : 'text-yellow-400'}`} />
@@ -283,7 +284,11 @@ const PlaceCardSummary = ({
                   e.stopPropagation();
                   onClose?.();
                 }}
-                onPointerDown={(e) => e.stopPropagation()}
+                onPointerDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onClose?.();
+                }}
                 className="relative z-20 inline-flex items-center justify-center min-h-11 min-w-11 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors touch-manipulation"
               >
                 <X size={18} aria-hidden="true" />
@@ -292,8 +297,8 @@ const PlaceCardSummary = ({
           </div>
 
           <div
-            className={`${isOriginCompact ? 'hidden' : ''} ${!isScanning && !isCompact ? `cursor-pointer ${canPreviewFlightRoute ? 'mb-3' : 'mb-6'}` : isCompact ? 'mb-0' : ''}`}
-            onClick={!isScanning && !isCompact ? onExpand : undefined}
+            className={`${isOriginCompact ? 'hidden' : ''} ${allowSummaryExpandTap && !isScanning && !isCompact ? `cursor-pointer ${canPreviewFlightRoute ? 'mb-3' : 'mb-6'}` : isCompact ? 'mb-0' : ''}`}
+            onClick={allowSummaryExpandTap && !isScanning && !isCompact ? onExpand : undefined}
           >
             {!isCompact && (isLoading || isScanning ? (
               <div className="w-full animate-pulse space-y-3 mt-1 px-1">

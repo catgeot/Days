@@ -2,6 +2,15 @@
 
 직전: [`2026-08-12-project-log.md`](./2026-08-12-project-log.md)
 
+## 지구본 홈 #15, Chrome 모바일 2회차 오탭
+
+**상태**: `main` push 대기  
+**세션**: `지구본 홈 #15, Chrome 모바일 2회차`
+
+- **증상**: 1회차 OK → 2회차 써머리 X가 확장·큐레이션 칩 지도 관통·홈→여행 스케치 오탭 (새로고침 후 1회차만 재복구)
+- **한 일**: resize·offsetTop 보정 제거 · 모바일 transform 애니메이션·translate 센터링 제거 · 써머리 모바일 탭 확장 금지(더보기만) · chrome/summary epoch 리마운트
+- **VERIFY**: `npm run build`
+
 ## 지구본 홈 #15, Chrome 모바일 큐레이션 왕복
 
 **상태**: `main` 로컬 tip `b7e4807` · push는 사람 요청 시  
