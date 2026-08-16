@@ -68,6 +68,7 @@ const HomeUI = React.memo(({
   relatedPlaces = [], isTagLoading = false, onRelatedPlaceClick,
   selectedCategory, onCategorySelect,
   faceRegionsOpen = false,
+  onFaceRegionsDismiss,
   selectedFaceRegionId = null,
   onFaceRegionSelect,
   selectedFaceSubregionId = null,
@@ -218,7 +219,10 @@ const HomeUI = React.memo(({
                   {showMobileQuickLinksCollapsed ? (
                     <button
                       type="button"
-                      onClick={() => setMobileQuickLinksExpanded(true)}
+                      onClick={() => {
+                        onFaceRegionsDismiss?.();
+                        setMobileQuickLinksExpanded(true);
+                      }}
                       className="group relative flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-white/25 bg-[#101010] px-2.5 py-1.5 shadow-[0_0_14px_rgba(255,255,255,0.08)] transition-colors hover:border-white/40 hover:bg-[#161616] touch-manipulation"
                       aria-label={`바로가기 메뉴 펼치기 — ${MOBILE_QUICK_LINKS.map((item) => item.label).join(', ')}`}
                       title="바로가기 메뉴 펼치기"
