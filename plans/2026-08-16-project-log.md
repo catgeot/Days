@@ -36,3 +36,9 @@
 - **후속**: HTML pill → 지도 심볼 지명 · Mapbox marine 라벨 강조 · `main` push
 - **#8**: 소해역 선택 시 칩 리스트·핀 범위 붕괴 — parentOcean bbox pick · 핀 필터 제거(하이라이트만)
 - **#9**: 바다 모드 줌·팬 시 칩 축소 — pick 범위 고정(seaRailPickContext) · minSpan · preventShrink
+
+## 해안 해양 탐색 #10 핸드오프 — 계층 리스트·바다버튼
+
+- **요청**: 대양→중위권역→소해역 **고정 계층 리스트** (뷰포트 1줄 동적 칩 대체) · 바다 토글 시인성 1단 하향 · 중분류 칩은 **후순위**
+- **SSOT**: `seaBasins` `parentOcean`/`tier` · `seaBasinRail.js` · `GlobeFaceRegionRail.jsx` · `SeaBasinListButton`
+- **다음 제시어**: `feature-handoff-index.md` 활성 행 참고
