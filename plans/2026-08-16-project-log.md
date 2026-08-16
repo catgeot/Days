@@ -61,3 +61,10 @@
 - **한 일**: `faceSeaOceans.js` 면별 대양 칩( coast 스팟 기반·빈 칩 숨김) · 소권역 바·PC 사이드에 배타 노출 · 레일은 tier2/3만 · `SeaBasinListButton`·`faceRailMode` 제거
 - **VERIFY**: `smoke:sea-basin-rail` · `audit:sea-basins` · `build` PASS
 - **PROD QA**: https://www.gateo.kr/ — 하단 소권역 옆 대양(지중해 등) 탭 → 레일 해역 · 동남아 탭 → 나라 목록
+
+## 해안 해양 #11 hotfix — 해역 집중 테스트 크래시
+
+- **증상**: 해역 연속 탭 시 브라우저/사이트 다운
+- **원인**: 태평양 `topOceanToFlyRegion` bbox 경도 360° → Mapbox `fitBounds` 폭주 · 모바일 소권역 auto-sync 경쟁
+- **수정**: `clampOceanFlyBbox` · 대양 fly zoom 폴백 · ref로 배타 선택 경쟁 차단 · 모바일 레일 auto-sync 제거 · 해역 리스트 뷰 디바운스
+- **VERIFY**: `smoke:sea-basin-rail` · `build` PASS
