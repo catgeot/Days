@@ -1,0 +1,994 @@
+{
+  "meta": {
+    "generatedAt": "2026-08-16T01:24:33.224Z",
+    "spotCount": 119,
+    "source": "scripts/data/travel-spot-coast-overrides.mjs"
+  },
+  "spots": {
+    "santorini": {
+      "coastKind": "island",
+      "seaPrimary": "aegean",
+      "seaIds": [
+        "aegean",
+        "mediterranean"
+      ],
+      "source": "curated-override"
+    },
+    "crete": {
+      "coastKind": "island",
+      "seaPrimary": "aegean",
+      "seaIds": [
+        "aegean",
+        "mediterranean"
+      ],
+      "source": "curated-override"
+    },
+    "bodrum": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "aegean",
+      "seaIds": [
+        "aegean",
+        "mediterranean"
+      ],
+      "source": "curated-override"
+    },
+    "malta": {
+      "coastKind": "archipelago",
+      "seaPrimary": "mediterranean",
+      "seaIds": [
+        "mediterranean"
+      ],
+      "source": "curated-override"
+    },
+    "ibiza": {
+      "coastKind": "island",
+      "seaPrimary": "mediterranean",
+      "seaIds": [
+        "mediterranean"
+      ],
+      "source": "curated-override"
+    },
+    "sant-joan": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "mediterranean",
+      "seaIds": [
+        "mediterranean"
+      ],
+      "source": "curated-override"
+    },
+    "barcelona": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "mediterranean",
+      "seaIds": [
+        "mediterranean"
+      ],
+      "source": "curated-override"
+    },
+    "corsica": {
+      "coastKind": "island",
+      "seaPrimary": "mediterranean",
+      "seaIds": [
+        "mediterranean",
+        "tyrrhenian"
+      ],
+      "source": "curated-override"
+    },
+    "sicily": {
+      "coastKind": "island",
+      "seaPrimary": "mediterranean",
+      "seaIds": [
+        "mediterranean",
+        "tyrrhenian"
+      ],
+      "source": "curated-override"
+    },
+    "cinque-terre": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "tyrrhenian",
+      "seaIds": [
+        "tyrrhenian",
+        "mediterranean"
+      ],
+      "source": "curated-override"
+    },
+    "la-spezia": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "tyrrhenian",
+      "seaIds": [
+        "tyrrhenian",
+        "mediterranean"
+      ],
+      "source": "curated-override"
+    },
+    "hvar": {
+      "coastKind": "island",
+      "seaPrimary": "adriatic",
+      "seaIds": [
+        "adriatic",
+        "mediterranean"
+      ],
+      "source": "curated-override"
+    },
+    "dubrovnik": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "adriatic",
+      "seaIds": [
+        "adriatic",
+        "mediterranean"
+      ],
+      "source": "curated-override"
+    },
+    "kotor": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "adriatic",
+      "seaIds": [
+        "adriatic",
+        "mediterranean"
+      ],
+      "source": "curated-override"
+    },
+    "cancun": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "caribbean",
+      "seaIds": [
+        "caribbean",
+        "gulf-of-mexico"
+      ],
+      "source": "curated-override"
+    },
+    "bahamas": {
+      "coastKind": "archipelago",
+      "seaPrimary": "caribbean",
+      "seaIds": [
+        "caribbean"
+      ],
+      "source": "curated-override"
+    },
+    "havana": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "caribbean",
+      "seaIds": [
+        "caribbean"
+      ],
+      "source": "curated-override"
+    },
+    "miami": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "gulf-of-mexico",
+      "seaIds": [
+        "gulf-of-mexico",
+        "caribbean"
+      ],
+      "source": "curated-override"
+    },
+    "costa-rica": {
+      "coastKind": "peninsula",
+      "seaPrimary": "caribbean",
+      "seaIds": [
+        "caribbean"
+      ],
+      "source": "curated-override"
+    },
+    "andaman-islands": {
+      "coastKind": "archipelago",
+      "seaPrimary": "andaman",
+      "seaIds": [
+        "andaman"
+      ],
+      "source": "curated-override"
+    },
+    "phuket": {
+      "coastKind": "island",
+      "seaPrimary": "andaman",
+      "seaIds": [
+        "andaman"
+      ],
+      "source": "curated-override"
+    },
+    "phi-phi-islands": {
+      "coastKind": "archipelago",
+      "seaPrimary": "andaman",
+      "seaIds": [
+        "andaman"
+      ],
+      "source": "curated-override"
+    },
+    "krabi": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "andaman",
+      "seaIds": [
+        "andaman"
+      ],
+      "source": "curated-override"
+    },
+    "similan-islands": {
+      "coastKind": "archipelago",
+      "seaPrimary": "andaman",
+      "seaIds": [
+        "andaman"
+      ],
+      "source": "curated-override"
+    },
+    "koh-samui": {
+      "coastKind": "island",
+      "seaPrimary": "gulf-of-thailand",
+      "seaIds": [
+        "gulf-of-thailand"
+      ],
+      "source": "curated-override"
+    },
+    "phu-quoc": {
+      "coastKind": "island",
+      "seaPrimary": "gulf-of-thailand",
+      "seaIds": [
+        "gulf-of-thailand"
+      ],
+      "source": "curated-override"
+    },
+    "palawan": {
+      "coastKind": "island",
+      "seaPrimary": "south-china-sea",
+      "seaIds": [
+        "south-china-sea"
+      ],
+      "source": "curated-override"
+    },
+    "el-nido": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "south-china-sea",
+      "seaIds": [
+        "south-china-sea"
+      ],
+      "source": "curated-override"
+    },
+    "halong-bay": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "south-china-sea",
+      "seaIds": [
+        "south-china-sea"
+      ],
+      "source": "curated-override"
+    },
+    "da-nang": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "south-china-sea",
+      "seaIds": [
+        "south-china-sea"
+      ],
+      "source": "curated-override"
+    },
+    "nha-trang": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "south-china-sea",
+      "seaIds": [
+        "south-china-sea"
+      ],
+      "source": "curated-override"
+    },
+    "hong-kong": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "south-china-sea",
+      "seaIds": [
+        "south-china-sea"
+      ],
+      "source": "curated-override"
+    },
+    "macau": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "south-china-sea",
+      "seaIds": [
+        "south-china-sea"
+      ],
+      "source": "curated-override"
+    },
+    "kota-kinabalu": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "south-china-sea",
+      "seaIds": [
+        "south-china-sea",
+        "celebes"
+      ],
+      "source": "curated-override"
+    },
+    "brunei": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "south-china-sea",
+      "seaIds": [
+        "south-china-sea"
+      ],
+      "source": "curated-override"
+    },
+    "boracay": {
+      "coastKind": "island",
+      "seaPrimary": "philippine-sea",
+      "seaIds": [
+        "philippine-sea",
+        "south-china-sea"
+      ],
+      "source": "curated-override"
+    },
+    "cebu": {
+      "coastKind": "island",
+      "seaPrimary": "philippine-sea",
+      "seaIds": [
+        "philippine-sea"
+      ],
+      "source": "curated-override"
+    },
+    "bohol": {
+      "coastKind": "island",
+      "seaPrimary": "philippine-sea",
+      "seaIds": [
+        "philippine-sea"
+      ],
+      "source": "curated-override"
+    },
+    "langkawi": {
+      "coastKind": "island",
+      "seaPrimary": "andaman",
+      "seaIds": [
+        "andaman",
+        "south-china-sea"
+      ],
+      "source": "curated-override"
+    },
+    "okinawa": {
+      "coastKind": "archipelago",
+      "seaPrimary": "east-china-sea",
+      "seaIds": [
+        "east-china-sea"
+      ],
+      "source": "curated-override"
+    },
+    "miyakojima": {
+      "coastKind": "island",
+      "seaPrimary": "east-china-sea",
+      "seaIds": [
+        "east-china-sea"
+      ],
+      "source": "curated-override"
+    },
+    "ishigaki": {
+      "coastKind": "island",
+      "seaPrimary": "east-china-sea",
+      "seaIds": [
+        "east-china-sea"
+      ],
+      "source": "curated-override"
+    },
+    "jeju": {
+      "coastKind": "island",
+      "seaPrimary": "east-china-sea",
+      "seaIds": [
+        "east-china-sea",
+        "yellow-sea"
+      ],
+      "source": "curated-override"
+    },
+    "seogwipo": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "east-china-sea",
+      "seaIds": [
+        "east-china-sea"
+      ],
+      "source": "curated-override"
+    },
+    "qingdao": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "yellow-sea",
+      "seaIds": [
+        "yellow-sea"
+      ],
+      "source": "curated-override"
+    },
+    "tsushima": {
+      "coastKind": "island",
+      "seaPrimary": "sea-of-japan",
+      "seaIds": [
+        "sea-of-japan",
+        "east-china-sea"
+      ],
+      "source": "curated-override"
+    },
+    "vladivostok": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "sea-of-japan",
+      "seaIds": [
+        "sea-of-japan"
+      ],
+      "source": "curated-override"
+    },
+    "yokohama": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "north-pacific",
+      "seaIds": [
+        "north-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "kobe": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "east-china-sea",
+      "seaIds": [
+        "east-china-sea"
+      ],
+      "source": "curated-override"
+    },
+    "bali": {
+      "coastKind": "island",
+      "seaPrimary": "java-sea",
+      "seaIds": [
+        "java-sea"
+      ],
+      "source": "curated-override"
+    },
+    "gili-meno": {
+      "coastKind": "island",
+      "seaPrimary": "java-sea",
+      "seaIds": [
+        "java-sea"
+      ],
+      "source": "curated-override"
+    },
+    "lombok": {
+      "coastKind": "island",
+      "seaPrimary": "java-sea",
+      "seaIds": [
+        "java-sea",
+        "banda"
+      ],
+      "source": "curated-override"
+    },
+    "komodo-island": {
+      "coastKind": "island",
+      "seaPrimary": "banda",
+      "seaIds": [
+        "banda",
+        "java-sea"
+      ],
+      "source": "curated-override"
+    },
+    "raja-ampat": {
+      "coastKind": "archipelago",
+      "seaPrimary": "banda",
+      "seaIds": [
+        "banda",
+        "celebes"
+      ],
+      "source": "curated-override"
+    },
+    "great-barrier-reef": {
+      "coastKind": "reef",
+      "seaPrimary": "coral-sea",
+      "seaIds": [
+        "coral-sea"
+      ],
+      "source": "curated-override"
+    },
+    "vanuatu": {
+      "coastKind": "archipelago",
+      "seaPrimary": "coral-sea",
+      "seaIds": [
+        "coral-sea",
+        "solomon-sea"
+      ],
+      "source": "curated-override"
+    },
+    "solomon-islands": {
+      "coastKind": "archipelago",
+      "seaPrimary": "solomon-sea",
+      "seaIds": [
+        "solomon-sea",
+        "coral-sea"
+      ],
+      "source": "curated-override"
+    },
+    "brisbane": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "coral-sea",
+      "seaIds": [
+        "coral-sea",
+        "tasman"
+      ],
+      "source": "curated-override"
+    },
+    "gold-coast": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "tasman",
+      "seaIds": [
+        "tasman",
+        "coral-sea"
+      ],
+      "source": "curated-override"
+    },
+    "sydney": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "tasman",
+      "seaIds": [
+        "tasman"
+      ],
+      "source": "curated-override"
+    },
+    "auckland": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "tasman",
+      "seaIds": [
+        "tasman"
+      ],
+      "source": "curated-override"
+    },
+    "fiordland": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "tasman",
+      "seaIds": [
+        "tasman"
+      ],
+      "source": "curated-override"
+    },
+    "queenstown": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "tasman",
+      "seaIds": [
+        "tasman"
+      ],
+      "source": "curated-override"
+    },
+    "bora-bora": {
+      "coastKind": "island",
+      "seaPrimary": "south-pacific",
+      "seaIds": [
+        "south-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "rarotonga": {
+      "coastKind": "island",
+      "seaPrimary": "south-pacific",
+      "seaIds": [
+        "south-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "aitutaki": {
+      "coastKind": "island",
+      "seaPrimary": "south-pacific",
+      "seaIds": [
+        "south-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "tahiti": {
+      "coastKind": "island",
+      "seaPrimary": "south-pacific",
+      "seaIds": [
+        "south-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "samoa": {
+      "coastKind": "archipelago",
+      "seaPrimary": "south-pacific",
+      "seaIds": [
+        "south-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "fiji": {
+      "coastKind": "archipelago",
+      "seaPrimary": "south-pacific",
+      "seaIds": [
+        "south-pacific",
+        "coral-sea"
+      ],
+      "source": "curated-override"
+    },
+    "easter-island": {
+      "coastKind": "island",
+      "seaPrimary": "south-pacific",
+      "seaIds": [
+        "south-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "pitcairn-islands": {
+      "coastKind": "archipelago",
+      "seaPrimary": "south-pacific",
+      "seaIds": [
+        "south-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "hawaii": {
+      "coastKind": "archipelago",
+      "seaPrimary": "north-pacific",
+      "seaIds": [
+        "north-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "honolulu": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "north-pacific",
+      "seaIds": [
+        "north-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "midway-atoll": {
+      "coastKind": "island",
+      "seaPrimary": "north-pacific",
+      "seaIds": [
+        "north-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "guam": {
+      "coastKind": "island",
+      "seaPrimary": "philippine-sea",
+      "seaIds": [
+        "philippine-sea",
+        "central-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "saipan": {
+      "coastKind": "island",
+      "seaPrimary": "philippine-sea",
+      "seaIds": [
+        "philippine-sea",
+        "central-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "palau": {
+      "coastKind": "archipelago",
+      "seaPrimary": "philippine-sea",
+      "seaIds": [
+        "philippine-sea",
+        "celebes"
+      ],
+      "source": "curated-override"
+    },
+    "yap": {
+      "coastKind": "island",
+      "seaPrimary": "central-pacific",
+      "seaIds": [
+        "central-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "chuuk": {
+      "coastKind": "archipelago",
+      "seaPrimary": "central-pacific",
+      "seaIds": [
+        "central-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "kosrae": {
+      "coastKind": "island",
+      "seaPrimary": "central-pacific",
+      "seaIds": [
+        "central-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "pohnpei": {
+      "coastKind": "island",
+      "seaPrimary": "central-pacific",
+      "seaIds": [
+        "central-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "kiribati": {
+      "coastKind": "archipelago",
+      "seaPrimary": "central-pacific",
+      "seaIds": [
+        "central-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "nauru": {
+      "coastKind": "island",
+      "seaPrimary": "central-pacific",
+      "seaIds": [
+        "central-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "los-angeles": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "north-pacific",
+      "seaIds": [
+        "north-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "san-francisco": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "north-pacific",
+      "seaIds": [
+        "north-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "san-diego": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "north-pacific",
+      "seaIds": [
+        "north-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "vancouver": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "north-pacific",
+      "seaIds": [
+        "north-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "seattle": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "north-pacific",
+      "seaIds": [
+        "north-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "galapagos": {
+      "coastKind": "archipelago",
+      "seaPrimary": "south-pacific",
+      "seaIds": [
+        "south-pacific"
+      ],
+      "source": "curated-override"
+    },
+    "maldives": {
+      "coastKind": "archipelago",
+      "seaPrimary": "maldives-sea",
+      "seaIds": [
+        "maldives-sea",
+        "western-indian"
+      ],
+      "source": "curated-override"
+    },
+    "seychelles": {
+      "coastKind": "archipelago",
+      "seaPrimary": "western-indian",
+      "seaIds": [
+        "western-indian"
+      ],
+      "source": "curated-override"
+    },
+    "mauritius": {
+      "coastKind": "island",
+      "seaPrimary": "western-indian",
+      "seaIds": [
+        "western-indian"
+      ],
+      "source": "curated-override"
+    },
+    "la-reunion": {
+      "coastKind": "island",
+      "seaPrimary": "western-indian",
+      "seaIds": [
+        "western-indian"
+      ],
+      "source": "curated-override"
+    },
+    "zanzibar": {
+      "coastKind": "island",
+      "seaPrimary": "western-indian",
+      "seaIds": [
+        "western-indian"
+      ],
+      "source": "curated-override"
+    },
+    "madagascar": {
+      "coastKind": "island",
+      "seaPrimary": "western-indian",
+      "seaIds": [
+        "western-indian"
+      ],
+      "source": "curated-override"
+    },
+    "diego-garcia": {
+      "coastKind": "island",
+      "seaPrimary": "maldives-sea",
+      "seaIds": [
+        "maldives-sea",
+        "western-indian"
+      ],
+      "source": "curated-override"
+    },
+    "christmas-island": {
+      "coastKind": "island",
+      "seaPrimary": "western-indian",
+      "seaIds": [
+        "western-indian"
+      ],
+      "source": "curated-override"
+    },
+    "cocos-islands": {
+      "coastKind": "archipelago",
+      "seaPrimary": "western-indian",
+      "seaIds": [
+        "western-indian"
+      ],
+      "source": "curated-override"
+    },
+    "cape-town": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "south-atlantic",
+      "seaIds": [
+        "south-atlantic",
+        "western-indian"
+      ],
+      "source": "curated-override"
+    },
+    "perth": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "western-indian",
+      "seaIds": [
+        "western-indian"
+      ],
+      "source": "curated-override"
+    },
+    "bermuda": {
+      "coastKind": "island",
+      "seaPrimary": "north-atlantic",
+      "seaIds": [
+        "north-atlantic"
+      ],
+      "source": "curated-override"
+    },
+    "azores": {
+      "coastKind": "archipelago",
+      "seaPrimary": "north-atlantic",
+      "seaIds": [
+        "north-atlantic"
+      ],
+      "source": "curated-override"
+    },
+    "madeira": {
+      "coastKind": "island",
+      "seaPrimary": "north-atlantic",
+      "seaIds": [
+        "north-atlantic"
+      ],
+      "source": "curated-override"
+    },
+    "canary-islands": {
+      "coastKind": "archipelago",
+      "seaPrimary": "north-atlantic",
+      "seaIds": [
+        "north-atlantic"
+      ],
+      "source": "curated-override"
+    },
+    "cape-verde": {
+      "coastKind": "archipelago",
+      "seaPrimary": "north-atlantic",
+      "seaIds": [
+        "north-atlantic"
+      ],
+      "source": "curated-override"
+    },
+    "fernando-de-noronha": {
+      "coastKind": "archipelago",
+      "seaPrimary": "south-atlantic",
+      "seaIds": [
+        "south-atlantic"
+      ],
+      "source": "curated-override"
+    },
+    "st-helena": {
+      "coastKind": "island",
+      "seaPrimary": "south-atlantic",
+      "seaIds": [
+        "south-atlantic"
+      ],
+      "source": "curated-override"
+    },
+    "rio-de-janeiro": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "south-atlantic",
+      "seaIds": [
+        "south-atlantic"
+      ],
+      "source": "curated-override"
+    },
+    "peninsula-valdes": {
+      "coastKind": "peninsula",
+      "seaPrimary": "south-atlantic",
+      "seaIds": [
+        "south-atlantic"
+      ],
+      "source": "curated-override"
+    },
+    "falkland-islands": {
+      "coastKind": "archipelago",
+      "seaPrimary": "south-atlantic",
+      "seaIds": [
+        "south-atlantic"
+      ],
+      "source": "curated-override"
+    },
+    "iceland": {
+      "coastKind": "island",
+      "seaPrimary": "north-atlantic",
+      "seaIds": [
+        "north-atlantic"
+      ],
+      "source": "curated-override"
+    },
+    "faroe-islands": {
+      "coastKind": "archipelago",
+      "seaPrimary": "norwegian-sea",
+      "seaIds": [
+        "norwegian-sea",
+        "north-atlantic"
+      ],
+      "source": "curated-override"
+    },
+    "lofoten": {
+      "coastKind": "archipelago",
+      "seaPrimary": "norwegian-sea",
+      "seaIds": [
+        "norwegian-sea"
+      ],
+      "source": "curated-override"
+    },
+    "stockholm": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "baltic",
+      "seaIds": [
+        "baltic"
+      ],
+      "source": "curated-override"
+    },
+    "helsinki": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "baltic",
+      "seaIds": [
+        "baltic"
+      ],
+      "source": "curated-override"
+    },
+    "svalbard": {
+      "coastKind": "archipelago",
+      "seaPrimary": "barents",
+      "seaIds": [
+        "barents"
+      ],
+      "source": "curated-override"
+    },
+    "antarctica": {
+      "coastKind": "peninsula",
+      "seaPrimary": "southern-ocean",
+      "seaIds": [
+        "southern-ocean"
+      ],
+      "source": "curated-override"
+    },
+    "greenland": {
+      "coastKind": "island",
+      "seaPrimary": "north-atlantic",
+      "seaIds": [
+        "north-atlantic"
+      ],
+      "source": "curated-override"
+    },
+    "kerguelen-islands": {
+      "coastKind": "archipelago",
+      "seaPrimary": "southern-ocean",
+      "seaIds": [
+        "southern-ocean",
+        "western-indian"
+      ],
+      "source": "curated-override"
+    }
+  }
+}

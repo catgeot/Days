@@ -1,8 +1,9 @@
 # 해안·해양 탐색 칩 — 수량·필드·가치 플랜
 
-**세션 표기**: `해안해양 탐색 #1, 플랜`  
-**상태**: 플랜만 (구현·UI 대기 · 사람 합의 후)  
-**관련 SSOT**: [`travelSpots.js`](../src/pages/Home/data/travelSpots.js) · [`globeCategoryFocus.js`](../src/pages/Home/lib/globeCategoryFocus.js) · [`globeFaceRegions.js`](../src/pages/Home/lib/globeFaceRegions.js) · [`.ai-context.md`](../.ai-context.md) 지구본 5면
+**세션 표기**: `해안해양 탐색 #2, 해역 SSOT 시드`  
+**상태**: Phase 1–2 SSOT ✅ (`seaBasins` 33 · coast 119 · `audit:sea-basins` PASS) · UI(Phase 4) 대기  
+**고정 브랜치**: `cursor/coast-sea-plan-8c05`  
+**관련 SSOT**: [`seaBasins.json`](../src/pages/Home/data/seaBasins.json) · [`travelSpotCoast.json`](../src/pages/Home/data/travelSpotCoast.json) · overrides `scripts/data/sea-basins-overrides.mjs` · `travel-spot-coast-overrides.mjs`
 
 ---
 
@@ -261,12 +262,13 @@ id, name, name_en, parentOcean, bbox | polygonHint, center{lat,lng}, tier, alias
 | Phase | 내용 | 검증 | UI |
 |-------|------|------|-----|
 | **0** ✅ | 본 플랜 · 수량·필드 공백 확정 | — | 없음 |
-| **1** | `seaBasins` 카탈로그 25~40 + audit 스크립트 | `audit:sea-basins` | 없음 |
-| **2** | 스팟 overrides `coastKind`/`seaIds` · 코어 60~90 채움 | audit · orphan 0 | 없음 |
+| **1** ✅ | `seaBasins` 33 + `audit:sea-basins` | PASS | 없음 |
+| **2** ✅ | coast overrides 119 (`coastKind`/`seaIds`) | orphan 0 · tier1–2 ≥2 | 없음 |
 | **3** | 검색 별칭 (해양명→해역/대표 스팟) | smoke 검색 | 기존 검색만 |
 | **4** | (합의) 해역 2차 칩 · 카메라 center | build · Preview | **사람 UI 승인 후** |
 
-Phase 1~2는 로직/SSOT라 검증 후 커밋 OK. Phase 4는 UI라 레이아웃·톤 합의 필수.
+`npm run generate:sea-basins` · `generate:travel-spot-coast` · `audit:sea-basins`  
+홍해·아라비아·사르가소·바렌츠·남극해 = **tier 3**(칩 제외).
 
 ---
 
@@ -296,8 +298,9 @@ Phase 1~2는 로직/SSOT라 검증 후 커밋 OK. Phase 4는 UI라 레이아웃�
 **다음 채팅명**:
 
 ```
-해안해양 탐색 #2, 해역 SSOT 시드
+해안해양 탐색 #3, 검색 별칭
 ```
 
-**읽을 것**: 본 플랜 §2~3 · `.ai-context` 지구본 5면·권역≠테마 · `travel-spots-management.md` 필드 패턴  
-**하지 말 것**: `GLOBE_CATEGORY_IDS`에 coast 추가 · spots JSON 직접 난타 · 미합의 UI 칩 추가
+**읽을 것**: 본 플랜 §4.5–4.7 · `seaBasins.json` · `travelSpotCoast.json` · `audit:sea-basins`  
+**하지 말 것**: `GLOBE_CATEGORY_IDS`에 coast 추가 · spots JSON/`travelSpots.js` 직접 난타 · 미합의 UI 칩 추가  
+**다음**: Phase 3 검색 동의어(`KEYWORD_SYNONYMS`/해양명→해역) · Phase 4는 `나라|바다` 토글 UI 합의 후
