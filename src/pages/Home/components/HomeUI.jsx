@@ -15,7 +15,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import TravelTicker from '../components/TravelTicker';
 import Logo from './Logo';
 import TourMobileBar from './TourMobileBar';
-import GlobeFaceRegionRail, { GlobeFaceSubregionBar } from './GlobeFaceRegionRail';
+import GlobeFaceRegionRail, { GlobeFaceSubregionBar, FaceRailModeToggle } from './GlobeFaceRegionRail';
 import { shouldShowFaceSubregionChips } from '../lib/globeFaceSubregions.js';
 import { useMobileFaceRegionListHeight } from '../hooks/useMobileFaceRegionListHeight';
 import { useTrendingData } from '../hooks/useTrendingData';
@@ -394,10 +394,18 @@ const HomeUI = React.memo(({
                 seaBasins={visibleSeaBasins}
                 selectedSeaBasinId={selectedSeaBasinId}
                 onSelectSeaBasin={onSeaBasinSelect}
+                hideRailModeToggle
                 className="mb-0.5"
               />
             ) : null}
             <div ref={mobileRegionsAuxRef} className="flex w-full flex-col items-start gap-1.5">
+            {mobileRegionsExpanded ? (
+              <FaceRailModeToggle
+                mode={faceRailMode}
+                onChange={onFaceRailModeChange}
+                category={selectedCategory}
+              />
+            ) : null}
             <div
               className={`pointer-events-auto flex w-[4.75rem] flex-col gap-1 rounded-xl border px-2 py-1.5 backdrop-blur-md transition-all ${
                 mobileRegionsExpanded

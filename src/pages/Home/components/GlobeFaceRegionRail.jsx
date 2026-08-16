@@ -46,10 +46,11 @@ const RAIL_LIST_HEIGHT_DESKTOP = 'h-[calc(100dvh-14.5rem-6.5rem)]';
 const RAIL_LIST_HEIGHT_MOBILE = 'h-[min(50vh,22rem)]';
 const RAIL_LIST_HEIGHT_MOBILE_FLAT = 'h-[min(58vh,26rem)]';
 
-function FaceRailModeToggle({ mode, onChange, tone }) {
+function FaceRailModeToggle({ mode, onChange, category }) {
+  const tone = CATEGORY_CHIP[category] || CATEGORY_CHIP.paradise;
   return (
     <div
-      className="mb-1.5 flex w-full gap-1 rounded-lg border border-white/15 bg-black/50 p-0.5 backdrop-blur-md"
+      className="mb-1.5 flex w-[4.75rem] gap-1 rounded-lg border border-white/15 bg-black/50 p-0.5 backdrop-blur-md"
       role="tablist"
       aria-label="나라 또는 바다 탐색"
     >
@@ -76,6 +77,8 @@ function FaceRailModeToggle({ mode, onChange, tone }) {
     </div>
   );
 }
+
+export { FaceRailModeToggle };
 
 function useActiveSubregionId(category, showSubregionChips, selectedSubregionId, subregions) {
   return useMemo(() => {
@@ -268,6 +271,7 @@ export default function GlobeFaceRegionRail({
   seaBasins = [],
   selectedSeaBasinId = null,
   onSelectSeaBasin,
+  hideRailModeToggle = false,
 }) {
   const isSeaMode = railMode === 'sea';
   const subregions = useMemo(
@@ -365,12 +369,16 @@ export default function GlobeFaceRegionRail({
   const listShellClass = listHeightStyle ? 'relative w-full' : `relative w-full ${resolvedListHeight}`;
   const listShellStyle = listHeightStyle || undefined;
 
+  const railModeToggle = hideRailModeToggle ? null : (
+    <FaceRailModeToggle mode={railMode} onChange={onRailModeChange} category={category} />
+  );
+
   const seaList = (
     <div
       className={`flex flex-col items-center ${anchorListToBottom ? 'overflow-hidden' : 'overflow-visible'}`}
       {...(anchorListToBottom ? isolateMapTouchProps : {})}
     >
-      <FaceRailModeToggle mode={railMode} onChange={onRailModeChange} tone={tone} />
+      {!anchorListToBottom ? railModeToggle : null}
       <div className={listShellClass} style={listShellStyle}>
         <div
           ref={listRef}
@@ -435,6 +443,7 @@ export default function GlobeFaceRegionRail({
           </>
         ) : null}
       </div>
+      {anchorListToBottom ? railModeToggle : null}
     </div>
   );
 
@@ -443,7 +452,7 @@ export default function GlobeFaceRegionRail({
       className={`flex flex-col items-center ${anchorListToBottom ? 'overflow-hidden' : 'overflow-visible'}`}
       {...(anchorListToBottom ? isolateMapTouchProps : {})}
     >
-      <FaceRailModeToggle mode={railMode} onChange={onRailModeChange} tone={tone} />
+      {!anchorListToBottom ? railModeToggle : null}
       <div className={listShellClass} style={listShellStyle}>
         <div
           ref={listRef}
@@ -508,6 +517,7 @@ export default function GlobeFaceRegionRail({
           </>
         ) : null}
       </div>
+      {anchorListToBottom ? railModeToggle : null}
     </div>
   );
 
