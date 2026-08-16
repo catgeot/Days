@@ -85,3 +85,12 @@
 - **원인**: fly마다 marine 라벨 전체 스캔·하이라이트 3중 적용·stop() moveend 연쇄
 - **수정**: 라벨 강조 스로틀 · 해역 하이라이트 fly 종료 1회 · 연속 탭 jumpTo · 탐색 중 뷰 폴링 정지
 - **VERIFY**: `smoke:sea-basin-rail` · `build` PASS
+
+## 해안 해양 탐색 #13, 발견형 해역 확장
+
+**상태**: `main` (push 후 SHA)  
+**세션**: `해안 해양 탐색 #13, 발견형 해역`
+
+- **의도**: 수량만 늘리지 않고 여행지와 연결된 덜 알려진 해역(홍해·마스카렌·모잠비크 해협·마카로네시아 등) 탐색
+- **한 일**: 해역 3(+홍해 tier1 승격·페르시아만 tier2) · coast 링크 15곳 재배치 · 스모크 발견형 게이트
+- **VERIFY**: `audit:sea-basins` · `smoke:sea-basin-rail` · `build` PASS

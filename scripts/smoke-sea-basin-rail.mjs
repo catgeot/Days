@@ -166,8 +166,37 @@ const indianRail = buildHierarchicalSeaBasinRail({
   selectedTopOceanId: 'indian',
   omitTopOceans: true,
 });
-if (indianRail.midRegions.length < 1 || indianRail.labelSeas.length < 4) {
-  console.error(`FAIL indian rail too small mid=${indianRail.midRegions.length} label=${indianRail.labelSeas.length}`);
+if (indianRail.midRegions.length < 4) {
+  console.error(`FAIL indian rail too small mid=${indianRail.midRegions.length} (expected >= 4 tier2)`);
+  process.exit(1);
+}
+if (!indianRail.smallSeas.some((b) => b.id === 'red-sea')) {
+  console.error('FAIL indian smallSeas should include red-sea discovery gateway');
+  process.exit(1);
+}
+for (const basinId of ['mascarene-sea', 'mozambique-channel', 'persian-gulf']) {
+  if (!indianRail.midRegions.some((b) => b.id === basinId)) {
+    console.error(`FAIL indian midRegions missing ${basinId}`);
+    process.exit(1);
+  }
+}
+const redSeaSlugs = getSpotSlugsForSeaBasin('red-sea');
+if (redSeaSlugs.length < 2) {
+  console.error(`FAIL red-sea spot slugs=${redSeaSlugs.length}`);
+  process.exit(1);
+}
+
+const atlanticRail = buildHierarchicalSeaBasinRail({
+  selectedTopOceanId: 'atlantic',
+  omitTopOceans: true,
+});
+if (!atlanticRail.midRegions.some((b) => b.id === 'macaronesia')) {
+  console.error('FAIL atlantic midRegions missing macaronesia discovery belt');
+  process.exit(1);
+}
+const macaronesiaSlugs = getSpotSlugsForSeaBasin('macaronesia');
+if (macaronesiaSlugs.length < 3) {
+  console.error(`FAIL macaronesia spot slugs=${macaronesiaSlugs.length}`);
   process.exit(1);
 }
 

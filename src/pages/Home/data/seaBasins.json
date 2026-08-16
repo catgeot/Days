@@ -1,7 +1,7 @@
 {
   "meta": {
-    "generatedAt": "2026-08-16T06:10:32.594Z",
-    "basinCount": 42,
+    "generatedAt": "2026-08-16T06:20:37.149Z",
+    "basinCount": 45,
     "source": "scripts/data/sea-basins-overrides.mjs"
   },
   "basins": [
@@ -490,7 +490,7 @@
       "name": "홍해",
       "name_en": "Red Sea",
       "parentOcean": "indian",
-      "tier": 3,
+      "tier": 1,
       "center": {
         "lat": 22,
         "lng": 38
@@ -503,7 +503,8 @@
       ],
       "aliases": [
         "홍해",
-        "Red Sea"
+        "Red Sea",
+        "적해"
       ]
     },
     {
@@ -814,7 +815,7 @@
       "name": "페르시아만",
       "name_en": "Persian Gulf",
       "parentOcean": "indian",
-      "tier": 3,
+      "tier": 2,
       "center": {
         "lat": 26,
         "lng": 52
@@ -827,7 +828,51 @@
       ],
       "aliases": [
         "페르시아만",
-        "Persian Gulf"
+        "Persian Gulf",
+        "아라비아만"
+      ]
+    },
+    {
+      "id": "mozambique-channel",
+      "name": "모잠비크 해협",
+      "name_en": "Mozambique Channel",
+      "parentOcean": "indian",
+      "tier": 2,
+      "center": {
+        "lat": -18,
+        "lng": 42
+      },
+      "bbox": [
+        35,
+        -28,
+        52,
+        -10
+      ],
+      "aliases": [
+        "모잠비크 해협",
+        "Mozambique Channel"
+      ]
+    },
+    {
+      "id": "mascarene-sea",
+      "name": "마스카렌 해",
+      "name_en": "Mascarene Sea",
+      "parentOcean": "indian",
+      "tier": 2,
+      "center": {
+        "lat": -15,
+        "lng": 60
+      },
+      "bbox": [
+        52,
+        -22,
+        72,
+        -8
+      ],
+      "aliases": [
+        "마스카렌 해",
+        "Mascarene Sea",
+        "마스카렌 제도"
       ]
     },
     {
@@ -892,6 +937,28 @@
       "aliases": [
         "기니만",
         "Gulf of Guinea"
+      ]
+    },
+    {
+      "id": "macaronesia",
+      "name": "마카로네시아",
+      "name_en": "Macaronesia",
+      "parentOcean": "atlantic",
+      "tier": 2,
+      "center": {
+        "lat": 28,
+        "lng": -25
+      },
+      "bbox": [
+        -35,
+        14,
+        -10,
+        40
+      ],
+      "aliases": [
+        "마카로네시아",
+        "Macaronesia",
+        "대서양 화산섬"
       ]
     },
     {

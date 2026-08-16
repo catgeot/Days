@@ -1,7 +1,7 @@
 {
   "meta": {
-    "generatedAt": "2026-08-16T01:24:33.224Z",
-    "spotCount": 119,
+    "generatedAt": "2026-08-16T06:20:37.242Z",
+    "spotCount": 124,
     "source": "scripts/data/travel-spot-coast-overrides.mjs"
   },
   "spots": {
@@ -582,6 +582,24 @@
       ],
       "source": "curated-override"
     },
+    "new-caledonia": {
+      "coastKind": "archipelago",
+      "seaPrimary": "coral-sea",
+      "seaIds": [
+        "coral-sea",
+        "tasman"
+      ],
+      "source": "curated-override"
+    },
+    "tonga": {
+      "coastKind": "archipelago",
+      "seaPrimary": "south-pacific",
+      "seaIds": [
+        "south-pacific",
+        "coral-sea"
+      ],
+      "source": "curated-override"
+    },
     "easter-island": {
       "coastKind": "island",
       "seaPrimary": "south-pacific",
@@ -756,40 +774,45 @@
     },
     "seychelles": {
       "coastKind": "archipelago",
-      "seaPrimary": "western-indian",
+      "seaPrimary": "mascarene-sea",
       "seaIds": [
+        "mascarene-sea",
         "western-indian"
       ],
       "source": "curated-override"
     },
     "mauritius": {
       "coastKind": "island",
-      "seaPrimary": "western-indian",
+      "seaPrimary": "mascarene-sea",
       "seaIds": [
+        "mascarene-sea",
         "western-indian"
       ],
       "source": "curated-override"
     },
     "la-reunion": {
       "coastKind": "island",
-      "seaPrimary": "western-indian",
+      "seaPrimary": "mascarene-sea",
       "seaIds": [
+        "mascarene-sea",
         "western-indian"
       ],
       "source": "curated-override"
     },
     "zanzibar": {
       "coastKind": "island",
-      "seaPrimary": "western-indian",
+      "seaPrimary": "mozambique-channel",
       "seaIds": [
+        "mozambique-channel",
         "western-indian"
       ],
       "source": "curated-override"
     },
     "madagascar": {
       "coastKind": "island",
-      "seaPrimary": "western-indian",
+      "seaPrimary": "mozambique-channel",
       "seaIds": [
+        "mozambique-channel",
         "western-indian"
       ],
       "source": "curated-override"
@@ -836,6 +859,31 @@
       ],
       "source": "curated-override"
     },
+    "petra": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "red-sea",
+      "seaIds": [
+        "red-sea"
+      ],
+      "source": "curated-override"
+    },
+    "wadi-rum": {
+      "coastKind": "peninsula",
+      "seaPrimary": "red-sea",
+      "seaIds": [
+        "red-sea"
+      ],
+      "source": "curated-override"
+    },
+    "dubai": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "persian-gulf",
+      "seaIds": [
+        "persian-gulf",
+        "arabian"
+      ],
+      "source": "curated-override"
+    },
     "bermuda": {
       "coastKind": "island",
       "seaPrimary": "north-atlantic",
@@ -846,32 +894,36 @@
     },
     "azores": {
       "coastKind": "archipelago",
-      "seaPrimary": "north-atlantic",
+      "seaPrimary": "macaronesia",
       "seaIds": [
+        "macaronesia",
         "north-atlantic"
       ],
       "source": "curated-override"
     },
     "madeira": {
       "coastKind": "island",
-      "seaPrimary": "north-atlantic",
+      "seaPrimary": "macaronesia",
       "seaIds": [
+        "macaronesia",
         "north-atlantic"
       ],
       "source": "curated-override"
     },
     "canary-islands": {
       "coastKind": "archipelago",
-      "seaPrimary": "north-atlantic",
+      "seaPrimary": "macaronesia",
       "seaIds": [
+        "macaronesia",
         "north-atlantic"
       ],
       "source": "curated-override"
     },
     "cape-verde": {
       "coastKind": "archipelago",
-      "seaPrimary": "north-atlantic",
+      "seaPrimary": "macaronesia",
       "seaIds": [
+        "macaronesia",
         "north-atlantic"
       ],
       "source": "curated-override"
