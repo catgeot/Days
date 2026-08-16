@@ -16,7 +16,10 @@ const {
   expandBboxForSilhouette,
   resolveSilhouetteMaxZoom,
   resolveFaceRegionCameraBounds,
+  resolveSilhouetteViewport,
   GLOBE_FACE_REGION_MAX_ZOOM,
+  GLOBE_FACE_REGION_CAMERA_PADDING_MOBILE,
+  GLOBE_FACE_REGION_CAMERA_PADDING_DESKTOP,
 } = await load('src/pages/Home/lib/globeFaceRegions.js');
 const { getGlobeCountryById } = await load('src/pages/Home/lib/globeCountryCatalog.js');
 
@@ -65,6 +68,36 @@ const viewport = { width: 1200, height: 800 };
 {
   const expanded = expandBboxForSilhouette([0, 0, 10, 10], 0.2);
   assert(expanded[0] === -2 && expanded[2] === 12, 'expandBboxForSilhouette 20% margin');
+}
+
+{
+  const vpMobile = { width: 390, height: 844 };
+  const kr = getGlobeCountryById('kr');
+  const withoutPad = resolveFaceRegionCameraBounds(kr, vpMobile);
+  const withPad = resolveFaceRegionCameraBounds(kr, vpMobile, GLOBE_FACE_REGION_CAMERA_PADDING_MOBILE);
+  assert(
+    withPad.maxZoom < withoutPad.maxZoom,
+    `mobile KR maxZoom ${withPad.maxZoom} < unpadded ${withoutPad.maxZoom}`,
+  );
+  assert(
+    withPad.maxZoom <= 4.8,
+    `mobile KR padded maxZoom ${withPad.maxZoom} keeps peninsula silhouette visible`,
+  );
+}
+
+{
+  const vpMobile = { width: 390, height: 844 };
+  const jp = getGlobeCountryById('jp');
+  const { maxZoom } = resolveFaceRegionCameraBounds(jp, vpMobile, GLOBE_FACE_REGION_CAMERA_PADDING_MOBILE);
+  assert(maxZoom <= 4.5, `mobile JP padded maxZoom ${maxZoom} fits archipelago silhouette`);
+}
+
+{
+  const eff = resolveSilhouetteViewport(
+    { width: 390, height: 844 },
+    GLOBE_FACE_REGION_CAMERA_PADDING_MOBILE,
+  );
+  assert(eff.width === 250 && eff.height === 564, 'resolveSilhouetteViewport subtracts mobile padding');
 }
 
 if (failed > 0) {
