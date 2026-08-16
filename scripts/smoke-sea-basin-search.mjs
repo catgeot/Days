@@ -28,6 +28,18 @@ const pin = pickSeaBasinCurationSpot('산호해');
 assert.ok(pin?.slug, '산호해 curation pin');
 assert.equal(pin.seaBasinId, 'coral-sea');
 
+for (const typo of ['산호헤', '맥시코']) {
+  const hit = resolveSeaBasinFromQuery(typo);
+  assert.ok(hit, `${typo} typo resolve`);
+  assert.ok(hit.typoCorrected, `${typo} should be typo-corrected`);
+  const pinTypo = pickSeaBasinCurationSpot(typo);
+  assert.ok(pinTypo?.slug, `${typo} curation pin`);
+}
+
+const mexicoPrefix = resolveSeaBasinFromQuery('멕시코');
+assert.ok(mexicoPrefix, '멕시코 prefix resolve');
+assert.equal(mexicoPrefix.basin.id, 'gulf-of-mexico');
+
 const sargasso = resolveSeaBasinFromQuery('사르가소해');
 assert.equal(sargasso, null, '사르가소해 has no coast spots → null');
 
