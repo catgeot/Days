@@ -21,7 +21,7 @@
 | **상태** | **main 병합 대기** · 연속 탭 QA ✅ · 대양 칩 가독성 fix |
 | **브랜치** | `cursor/ocean-chip-crash-1ed2` (**재사용** · 새 브랜치 금지) |
 | **PR** | [#122](https://github.com/catgeot/Days/pull/122) |
-| **tip** | `d50c1f14` |
+| **tip** | `f1da0a58` |
 | **플랜** | [`coast-sea-explore-plan.md`](./coast-sea-explore-plan.md) §9 |
 | **일지** | [`2026-08-16-project-log.md`](./2026-08-16-project-log.md) — 「에이전트 핸드오프」 |
 | **Preview** | `https://days-git-cursor-ocean-chip-crash-1ed2-catgeots-projects.vercel.app/` (Mapbox 호스트 1회 등록) |
@@ -30,12 +30,10 @@
 **다음 제시어**:
 
 ```
-해안 해양 탐색 #15, 모바일 해역 연속 탭 Preview QA
+해안 해양 탐색 #15, main 병합·PROD QA
 @plans/feature-handoff-index.md
 @plans/2026-08-16-project-log.md
-@plans/coast-sea-explore-plan.md
-브랜치 cursor/ocean-chip-crash-1ed2 · PR #122 · Preview QA
-금지: main 새 브랜치 · seaBasins.json 직접 편집 · UI 리디자인 · computerUse QA
+브랜치 cursor/ocean-chip-crash-1ed2 · PR #122 · main 병합
 ```
 
 ---
