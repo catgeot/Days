@@ -553,10 +553,9 @@ const CurationHub = ({ compact = false } = {}) => {
   };
 
   useEffect(() => {
-    if (status === 'loading' || status === 'result') {
-      focusMainStage();
-    }
-  }, [status, curationData?.location]);
+    if (status !== 'loading') return;
+    focusMainStage();
+  }, [status]);
 
   useEffect(() => {
     if (status !== 'loading') return;
@@ -605,7 +604,6 @@ const CurationHub = ({ compact = false } = {}) => {
   const runCuration = async (tasteTags) => {
     setOpenStack([]);
     setShowTasteSurvey(false);
-    focusMainStage();
     const { reports, saved } = await fetchTasteSources();
     await generateCuration(reports, saved, { tasteTags });
   };
@@ -624,7 +622,6 @@ const CurationHub = ({ compact = false } = {}) => {
       return;
     }
     setOpenStack([]);
-    focusMainStage();
     await generateCuration(reports, saved, { tasteTags: storedSurvey?.tags });
   };
 
