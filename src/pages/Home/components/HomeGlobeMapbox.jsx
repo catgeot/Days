@@ -1003,7 +1003,11 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }
     setupRegionHighlightLayers(map);
     if (focusedFaceRegionRef.current) {
-      setRegionHighlight(map, focusedFaceRegionRef.current);
+      if (focusedFaceRegionRef.current.seaBasinId) {
+        setSeaBasinHighlight(map, focusedFaceRegionRef.current);
+      } else {
+        setRegionHighlight(map, focusedFaceRegionRef.current);
+      }
     }
     setupFlightCinemaLayers(map, { visible: flightCinemaActiveRef.current });
     if (isFlightCinemaGlobeReady(map)) {
@@ -1690,6 +1694,15 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     try {
       map.stop();
+      const onFlyEnd = () => {
+        map.off('moveend', onFlyEnd);
+        if (focusedFaceRegionRef.current?.seaBasinId) {
+          setSeaBasinHighlight(map, focusedFaceRegionRef.current);
+        } else if (focusedFaceRegionRef.current) {
+          setRegionHighlight(map, focusedFaceRegionRef.current);
+        }
+      };
+      map.once('moveend', onFlyEnd);
       map.flyTo({
         ...camera,
         duration: GLOBE_FACE_REGION_FLY_MS,

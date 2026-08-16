@@ -81,6 +81,7 @@ const HomeUI = React.memo(({
   onFaceRailModeChange,
   visibleSeaBasins = [],
   selectedSeaBasinId = null,
+  selectedSeaBasinName = null,
   onSeaBasinSelect,
   isTickerExpanded, setIsTickerExpanded,
   onClearScouts,
@@ -207,6 +208,19 @@ const HomeUI = React.memo(({
 
   return (
     <>
+      {!isTourCinema && !isFlightCinema && faceRegionsOpen && faceRailMode === 'sea' && selectedSeaBasinName ? (
+        <div
+          className="pointer-events-none fixed left-1/2 top-[max(4.5rem,calc(env(safe-area-inset-top,0px)+3.5rem))] z-[48] -translate-x-1/2 animate-fade-in-down max-md:top-[max(4rem,calc(env(safe-area-inset-top,0px)+3rem))]"
+          aria-live="polite"
+        >
+          <div className="rounded-full border border-cyan-400/40 bg-black/60 px-3.5 py-1.5 backdrop-blur-xl shadow-lg">
+            <span className="text-[13px] font-bold tracking-tight text-cyan-100 break-keep">
+              {selectedSeaBasinName}
+            </span>
+          </div>
+        </div>
+      ) : null}
+
       <div className="fixed top-0 left-0 right-0 z-[100] p-4 md:p-6 flex items-start gap-3 md:grid md:grid-cols-12 pointer-events-none w-full">
         <div
           data-site-notice-anchor-mobile
@@ -435,6 +449,7 @@ const HomeUI = React.memo(({
                 category={selectedCategory}
                 selectedSubregionId={selectedFaceSubregionId}
                 onSelectSubregion={onFaceSubregionSelect}
+                skipAutoSync={faceRailMode === 'sea'}
                 className="w-[calc(100vw-0.5rem-env(safe-area-inset-left,0px)-env(safe-area-inset-right,0px))] min-w-0 animate-fade-in-up"
               />
             ) : null}

@@ -196,6 +196,7 @@ export function GlobeFaceSubregionBar({
   category,
   selectedSubregionId = null,
   onSelectSubregion,
+  skipAutoSync = false,
   className = '',
 }) {
   const subregions = useMemo(() => getFaceSubregions(category), [category]);
@@ -227,10 +228,10 @@ export function GlobeFaceSubregionBar({
   }, []);
 
   useEffect(() => {
-    if (!show || !activeSubregionId) return;
+    if (skipAutoSync || !show || !activeSubregionId) return;
     if (selectedSubregionId === activeSubregionId) return;
     onSelectSubregion?.(activeSubregionId);
-  }, [show, activeSubregionId, selectedSubregionId, onSelectSubregion]);
+  }, [skipAutoSync, show, activeSubregionId, selectedSubregionId, onSelectSubregion]);
 
   useEffect(() => {
     updateScrollUi();
@@ -414,10 +415,10 @@ export default function GlobeFaceRegionRail({
   }, [updateScrollHint]);
 
   useEffect(() => {
-    if (!showSubregionChips || !activeSubregionId) return;
+    if (isSeaMode || !showSubregionChips || !activeSubregionId) return;
     if (selectedSubregionId === activeSubregionId) return;
     onSelectSubregion?.(activeSubregionId);
-  }, [showSubregionChips, activeSubregionId, selectedSubregionId, onSelectSubregion]);
+  }, [isSeaMode, showSubregionChips, activeSubregionId, selectedSubregionId, onSelectSubregion]);
 
   if (!category || (!isSeaMode && regions.length === 0 && !showSubregionChips)) return null;
 
