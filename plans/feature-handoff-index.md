@@ -21,7 +21,7 @@
 | **상태** | **열림** · #14 코드 fix push · **모바일 Preview QA 대기** |
 | **브랜치** | `cursor/ocean-chip-crash-1ed2` (**재사용** · 새 브랜치 금지) |
 | **PR** | [#122](https://github.com/catgeot/Days/pull/122) |
-| **tip** | (push 후 SHA) |
+| **tip** | `0952ca46` |
 | **플랜** | [`coast-sea-explore-plan.md`](./coast-sea-explore-plan.md) §9 |
 | **일지** | [`2026-08-16-project-log.md`](./2026-08-16-project-log.md) — 「에이전트 핸드오프」 |
 | **Preview** | `https://days-git-cursor-ocean-chip-crash-1ed2-catgeots-projects.vercel.app/` (Mapbox 호스트 1회 등록) |
