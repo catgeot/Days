@@ -82,81 +82,78 @@ function FaceRailModeToggle({ mode, onChange, category }) {
   );
 }
 
-/** 모바일 — 지도 숨김 · 나라 · 바다 단일 3단 컨트롤 */
+const MOBILE_EXPLORE_MODES = ['hidden', 'country', 'sea'];
+
+const MOBILE_EXPLORE_MODE_META = {
+  hidden: {
+    label: '숨김',
+    card: 'border-amber-400/60 bg-black/85 shadow-[0_0_12px_rgba(245,158,11,0.35)]',
+    labelTone: 'text-amber-100',
+    track: 'border-amber-300/75 bg-amber-500/35',
+    knob: 'bg-amber-50',
+    knobLeft: 'left-0.5',
+    aria: '지도 탐색 — 탭하면 나라 목록',
+  },
+  country: {
+    label: '나라',
+    card: 'border-white/20 bg-black/70 shadow-lg',
+    labelTone: 'text-gray-200/90',
+    track: 'border-white/30 bg-white/12',
+    knob: 'bg-gray-100',
+    knobLeft: 'left-1/2 -translate-x-1/2',
+    aria: '나라·지역 목록 — 탭하면 바다 목록',
+  },
+  sea: {
+    label: '바다',
+    card: 'border-cyan-400/50 bg-black/70 shadow-[0_0_10px_rgba(34,211,238,0.28)]',
+    labelTone: 'text-cyan-100',
+    track: 'border-cyan-400/50 bg-cyan-500/35',
+    knob: 'bg-white',
+    knobLeft: 'left-[calc(100%-0.875rem-2px)]',
+    aria: '바다·해역 목록 — 탭하면 지도 탐색',
+  },
+};
+
+/** 모바일 — 숨김·나라·바다 3단 순환 토글 (컴팩트 스위치) */
 export function MobileFaceExploreModeSwitch({ mode, onChange }) {
-  const segments = [
-    { id: 'hidden', label: '숨김' },
-    { id: 'country', label: '나라' },
-    { id: 'sea', label: '바다' },
-  ];
+  const meta = MOBILE_EXPLORE_MODE_META[mode] || MOBILE_EXPLORE_MODE_META.country;
 
-  const cardTone = mode === 'hidden'
-    ? 'border-amber-400/60 bg-black/85 shadow-[0_0_16px_rgba(245,158,11,0.4)]'
-    : mode === 'sea'
-      ? 'border-cyan-400/50 bg-black/70 shadow-[0_0_12px_rgba(34,211,238,0.3)]'
-      : 'border-white/20 bg-black/70 shadow-lg';
-
-  const labelText = mode === 'hidden'
-    ? '지도 탐색'
-    : mode === 'sea'
-      ? '바다·해역'
-      : '나라·지역';
-
-  const labelTone = mode === 'hidden'
-    ? 'text-amber-100'
-    : mode === 'sea'
-      ? 'text-cyan-100'
-      : 'text-gray-200/90';
-
-  const segmentTone = {
-    hidden: 'bg-amber-500/35 border-amber-300/70 text-amber-50 shadow-[0_0_8px_rgba(251,191,36,0.35)]',
-    country: 'bg-white/15 border-white/35 text-white shadow-[0_0_8px_rgba(255,255,255,0.12)]',
-    sea: 'bg-cyan-500/30 border-cyan-400/55 text-cyan-50 shadow-[0_0_8px_rgba(34,211,238,0.28)]',
+  const cycleMode = (event) => {
+    event.stopPropagation();
+    const idx = MOBILE_EXPLORE_MODES.indexOf(mode);
+    const next = MOBILE_EXPLORE_MODES[(idx + 1) % MOBILE_EXPLORE_MODES.length];
+    onChange?.(next);
   };
 
   return (
     <div
-      className={`pointer-events-auto flex w-[9.85rem] flex-col gap-1.5 rounded-xl border px-2 py-1.5 backdrop-blur-md transition-all ${cardTone}`}
+      className={`pointer-events-auto flex w-[4.25rem] flex-col gap-0.5 rounded-lg border px-1.5 py-1 backdrop-blur-md transition-all ${meta.card}`}
       {...isolateMapTouchProps}
     >
-      <span className={`text-[10px] font-bold leading-none tracking-tight break-keep ${labelTone}`}>
-        {labelText}
+      <span className={`text-center text-[9px] font-bold leading-none tracking-tight ${meta.labelTone}`}>
+        {meta.label}
       </span>
-      <div
-        role="tablist"
-        aria-label="탐색 모드"
-        className="flex gap-0.5 rounded-lg border border-white/15 bg-black/45 p-0.5"
+      <button
+        type="button"
+        role="switch"
+        aria-checked={mode !== 'hidden'}
+        aria-label={meta.aria}
+        title={meta.aria}
+        onClick={cycleMode}
+        className="flex w-full items-center justify-center active:scale-[0.97]"
       >
-        {segments.map((segment) => {
-          const active = mode === segment.id;
-          return (
-            <button
-              key={segment.id}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              title={
-                segment.id === 'hidden'
-                  ? '목록 숨기고 지도 보기'
-                  : segment.id === 'sea'
-                    ? '바다·해역 목록'
-                    : '나라·지역 목록'
-              }
-              onClick={(event) => {
-                event.stopPropagation();
-                onChange?.(segment.id);
-              }}
-              className={`flex-1 rounded-md border px-1 py-1 text-[10px] font-bold leading-tight transition-all active:scale-[0.97] ${
-                active
-                  ? segmentTone[segment.id]
-                  : 'border-transparent text-gray-300/75 opacity-80'
-              }`}
-            >
-              {segment.label}
-            </button>
-          );
-        })}
-      </div>
+        <span
+          aria-hidden="true"
+          className={`relative h-4 w-9 shrink-0 overflow-hidden rounded-full border transition-colors ${meta.track}`}
+        >
+          <span className="pointer-events-none absolute inset-y-0 left-[18%] w-px bg-white/20" />
+          <span className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-white/20" />
+          <span className="pointer-events-none absolute inset-y-0 right-[18%] w-px bg-white/20" />
+          <span
+            className={`absolute top-0.5 h-3 w-3 rounded-full shadow transition-[left,transform] duration-200 ${meta.knob} ${meta.knobLeft}`}
+          />
+        </span>
+      </button>
     </div>
   );
 }
