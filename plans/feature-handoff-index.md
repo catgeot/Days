@@ -18,10 +18,10 @@
 
 | | |
 |--|--|
-| **상태** | **main 병합 대기** · 연속 탭 QA ✅ · 대양 칩 가독성 fix |
-| **브랜치** | `cursor/ocean-chip-crash-1ed2` (**재사용** · 새 브랜치 금지) |
+| **상태** | **main 병합 OK** · 모바일 Preview QA ✅ (대양 4 + 해역 1회 전체 순회) |
+| **브랜치** | `cursor/ocean-chip-crash-1ed2` |
 | **PR** | [#122](https://github.com/catgeot/Days/pull/122) |
-| **tip** | `f1da0a58` |
+| **tip** | `d7e6b25b` |
 | **플랜** | [`coast-sea-explore-plan.md`](./coast-sea-explore-plan.md) §9 |
 | **일지** | [`2026-08-16-project-log.md`](./2026-08-16-project-log.md) — 「에이전트 핸드오프」 |
 | **Preview** | `https://days-git-cursor-ocean-chip-crash-1ed2-catgeots-projects.vercel.app/` (Mapbox 호스트 1회 등록) |
