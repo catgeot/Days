@@ -50,9 +50,10 @@ function FaceRailModeToggle({ mode, onChange, category }) {
   const tone = CATEGORY_CHIP[category] || CATEGORY_CHIP.paradise;
   return (
     <div
-      className="mb-1.5 flex w-[4.75rem] gap-1 rounded-lg border border-white/15 bg-black/50 p-0.5 backdrop-blur-md"
+      className="pointer-events-auto mb-1.5 flex w-[4.75rem] gap-1 rounded-lg border border-white/15 bg-black/50 p-0.5 backdrop-blur-md"
       role="tablist"
       aria-label="나라 또는 바다 탐색"
+      {...isolateMapTouchProps}
     >
       {[
         { id: 'country', label: '나라' },
@@ -65,7 +66,10 @@ function FaceRailModeToggle({ mode, onChange, category }) {
             type="button"
             role="tab"
             aria-selected={active}
-            onClick={() => onChange?.(item.id)}
+            onClick={(event) => {
+              event.stopPropagation();
+              onChange?.(item.id);
+            }}
             className={`flex-1 rounded-md px-1 py-1 text-[10px] font-bold leading-tight transition-all active:scale-[0.97] ${
               active ? tone.active : `${tone.idle} opacity-80`
             }`}

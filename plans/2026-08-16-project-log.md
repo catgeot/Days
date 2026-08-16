@@ -2,6 +2,16 @@
 
 직전: [`2026-08-13-project-log.md`](./2026-08-13-project-log.md)
 
+## 해안해양 탐색 #5, 나라바다 토글 QA
+
+**상태**: feature `cursor/coast-sea-plan-8c05` · PR [#118](https://github.com/catgeot/Days/pull/118)  
+**세션**: `해안해양 탐색 #5, 나라바다 토글 QA`
+
+- **원인**: 모바일 `FaceRailModeToggle`에 `pointer-events-auto`·터치 격리 없음 → 부모 `pointer-events-none` 아래 클릭이 지구본으로 통과
+- **수정**: 토글에 `pointer-events-auto` + `isolateMapTouchProps` + `stopPropagation`
+- **검토**: diff ~3470줄 중 JSON SSOT ~1720 · UI/로직 ~350 · audit/smoke/build PASS
+- **QA**: Preview — 5면 → 바다 토글 클릭이 지도 클릭으로 이어지지 않는지
+
 ## 해안해양 탐색 #4, 나라바다 토글
 
 **상태**: feature `cursor/coast-sea-plan-8c05` · PR [#118](https://github.com/catgeot/Days/pull/118)  
