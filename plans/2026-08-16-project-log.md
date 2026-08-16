@@ -35,3 +35,4 @@
 - **PROD QA**: https://www.gateo.kr/ — 바다 탭 → 해역 선택 → fill 유지·상단 해역명 확인
 - **후속**: HTML pill → 지도 심볼 지명 · Mapbox marine 라벨 강조 · `main` push
 - **#8**: 소해역 선택 시 칩 리스트·핀 범위 붕괴 — parentOcean bbox pick · 핀 필터 제거(하이라이트만)
+- **#9**: 바다 모드 줌·팬 시 칩 축소 — pick 범위 고정(seaRailPickContext) · minSpan · preventShrink
