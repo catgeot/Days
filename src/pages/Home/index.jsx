@@ -188,13 +188,14 @@ function Home() {
   }, []);
 
   const closeFaceRegions = useCallback(() => {
+    clearPendingRegionFlies();
     setFaceRegionsOpen(false);
     setSelectedFaceRegionId(null);
     setSelectedFaceSubregionId(null);
     setSelectedSeaBasinId(null);
     setSelectedTopOceanId(null);
     globeRef.current?.clearRegionFocus?.();
-  }, []);
+  }, [clearPendingRegionFlies]);
 
   const [isPinVisible, setIsPinVisible] = useState(true);
   const [globeTheme, setGlobeTheme] = useState(DEFAULT_GLOBE_THEME);
@@ -301,6 +302,7 @@ function Home() {
     }
 
     if (nextCategory === category && faceRegionsOpen) {
+      clearPendingRegionFlies();
       setFaceRegionsOpen(false);
       setSelectedFaceRegionId(null);
       setSelectedFaceSubregionId(null);
@@ -318,7 +320,7 @@ function Home() {
     setSelectedTopOceanId(null);
     globeRef.current?.clearRegionFocus?.();
     setCategoryFaceEpoch((epoch) => epoch + 1);
-  }, [category, faceRegionsOpen, flightCinemaActive, globeMode]);
+  }, [category, faceRegionsOpen, clearPendingRegionFlies, flightCinemaActive, globeMode]);
 
   const selectedFaceSubregionIdRef = useRef(selectedFaceSubregionId);
   selectedFaceSubregionIdRef.current = selectedFaceSubregionId;
@@ -328,17 +330,40 @@ function Home() {
   selectedSeaBasinIdRef.current = selectedSeaBasinId;
   const pendingSeaBasinFlyRef = useRef(null);
   const seaBasinFlyTimerRef = useRef(null);
+  const pendingTopOceanFlyRef = useRef(null);
+  const topOceanFlyTimerRef = useRef(null);
   const seaBasinExploreBusyRef = useRef(false);
   const seaBasinExploreIdleTimerRef = useRef(null);
 
-  useEffect(() => () => {
-    if (seaBasinFlyTimerRef.current) {
-      window.clearTimeout(seaBasinFlyTimerRef.current);
-    }
+  const markSeaExploreBusy = useCallback(() => {
+    seaBasinExploreBusyRef.current = true;
     if (seaBasinExploreIdleTimerRef.current) {
       window.clearTimeout(seaBasinExploreIdleTimerRef.current);
     }
+    seaBasinExploreIdleTimerRef.current = window.setTimeout(() => {
+      seaBasinExploreBusyRef.current = false;
+    }, 2800);
   }, []);
+
+  const clearPendingRegionFlies = useCallback(() => {
+    pendingSeaBasinFlyRef.current = null;
+    pendingTopOceanFlyRef.current = null;
+    if (seaBasinFlyTimerRef.current) {
+      window.clearTimeout(seaBasinFlyTimerRef.current);
+      seaBasinFlyTimerRef.current = null;
+    }
+    if (topOceanFlyTimerRef.current) {
+      window.clearTimeout(topOceanFlyTimerRef.current);
+      topOceanFlyTimerRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => () => {
+    clearPendingRegionFlies();
+    if (seaBasinExploreIdleTimerRef.current) {
+      window.clearTimeout(seaBasinExploreIdleTimerRef.current);
+    }
+  }, [clearPendingRegionFlies]);
 
   const handleFaceSubregionSelect = useCallback((subregionId) => {
     const next = subregionId || null;
@@ -1082,6 +1107,8 @@ function Home() {
   const handleTopOceanSelect = useCallback((ocean) => {
     if (!ocean?.id) return;
     if (selectedTopOceanIdRef.current === ocean.id && !selectedSeaBasinIdRef.current) return;
+    const flyRegion = topOceanToFlyRegion(ocean.id);
+    if (!flyRegion) return;
     if (flightCinemaActive) {
       globeRef.current?.closeFlightCinema?.();
     }
@@ -1090,17 +1117,29 @@ function Home() {
     }
     selectedFaceSubregionIdRef.current = null;
     selectedTopOceanIdRef.current = ocean.id;
+    selectedSeaBasinIdRef.current = null;
     setSelectedFaceRegionId(null);
     setSelectedFaceSubregionId(null);
     setSelectedTopOceanId(ocean.id);
     setSelectedSeaBasinId(null);
-    const flyRegion = topOceanToFlyRegion(ocean.id);
-    if (flyRegion) {
-      globeRef.current?.flyToRegion?.(flyRegion);
+    markSeaExploreBusy();
+    const hadQueuedFly = Boolean(topOceanFlyTimerRef.current);
+    pendingTopOceanFlyRef.current = { ...flyRegion, immediate: hadQueuedFly };
+    if (topOceanFlyTimerRef.current) {
+      window.clearTimeout(topOceanFlyTimerRef.current);
     }
+    topOceanFlyTimerRef.current = window.setTimeout(() => {
+      topOceanFlyTimerRef.current = null;
+      const region = pendingTopOceanFlyRef.current;
+      pendingTopOceanFlyRef.current = null;
+      if (region) {
+        globeRef.current?.flyToRegion?.(region);
+      }
+    }, hadQueuedFly ? 50 : 160);
   }, [
     dismissPlaceSelectionKeepGlobePin,
     flightCinemaActive,
+    markSeaExploreBusy,
     routeLocation.pathname,
     selectedLocation,
   ]);
@@ -1122,13 +1161,7 @@ function Home() {
     setSelectedFaceRegionId(null);
     setSelectedTopOceanId(topOcean);
     setSelectedSeaBasinId(basin.id);
-    seaBasinExploreBusyRef.current = true;
-    if (seaBasinExploreIdleTimerRef.current) {
-      window.clearTimeout(seaBasinExploreIdleTimerRef.current);
-    }
-    seaBasinExploreIdleTimerRef.current = window.setTimeout(() => {
-      seaBasinExploreBusyRef.current = false;
-    }, 2800);
+    markSeaExploreBusy();
     const hadQueuedFly = Boolean(seaBasinFlyTimerRef.current);
     pendingSeaBasinFlyRef.current = { ...flyRegion, immediate: hadQueuedFly };
     if (seaBasinFlyTimerRef.current) {
@@ -1145,6 +1178,7 @@ function Home() {
   }, [
     dismissPlaceSelectionKeepGlobePin,
     flightCinemaActive,
+    markSeaExploreBusy,
     routeLocation.pathname,
     selectedLocation,
   ]);

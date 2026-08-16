@@ -1743,16 +1743,20 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         return true;
       }
 
-      regionFlyEndHandlerRef.current = onFlyEnd;
+      if (isSeaBasinFly) {
+        regionFlyEndHandlerRef.current = onFlyEnd;
+      }
       map.flyTo({
         ...camera,
         duration: isSeaBasinFly ? 900 : GLOBE_FACE_REGION_FLY_MS,
         essential: !isSeaBasinFly,
       });
-      requestAnimationFrame(() => {
-        if (regionFlyGenRef.current !== gen) return;
-        map.on('moveend', onFlyEnd);
-      });
+      if (isSeaBasinFly) {
+        requestAnimationFrame(() => {
+          if (regionFlyGenRef.current !== gen) return;
+          map.on('moveend', onFlyEnd);
+        });
+      }
     } catch {
       map.off('moveend', onFlyEnd);
       if (regionFlyEndHandlerRef.current === onFlyEnd) {
