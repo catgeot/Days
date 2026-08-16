@@ -2,6 +2,18 @@
 
 직전: [`2026-08-13-project-log.md`](./2026-08-13-project-log.md)
 
+## 해안해양 탐색 #3, 검색 별칭
+
+**상태**: feature `cursor/coast-sea-plan-8c05` · PR [#118](https://github.com/catgeot/Days/pull/118)  
+**세션**: `해안해양 탐색 #3, 검색 별칭`
+
+- **한 일**: `seaBasinResolve` — 에게해/산호해/멕시코만 등 → coast 스팟 큐레이션 · `useHomeHandlers` 테마 경로 선연결 · `smoke:sea-basin-search` PASS · build OK
+- **다음**: Phase 4 UI는 사람 합의 후
+
+```
+해안해양 탐색 #4, 나라바다 토글
+```
+
 ## 해안해양 탐색 #2, 해역 SSOT 시드
 
 **상태**: feature `cursor/coast-sea-plan-8c05` · PR [#118](https://github.com/catgeot/Days/pull/118)  

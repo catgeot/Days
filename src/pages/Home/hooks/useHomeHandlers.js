@@ -39,6 +39,7 @@ import {
   makeDisambiguationResult,
 } from '../lib/cityAttractionHubs.js';
 import { resolveSettlement, settlementToPlacePin } from '../lib/mapboxSettlementPlaces.js';
+import { pickSeaBasinCurationSpot } from '../lib/seaBasinResolve.js';
 import { findCityBySearchQuery, cityToSuggestion } from '../lib/citiesSearch.js';
 import {
   buildHubCandidatesForEnter,
@@ -209,6 +210,9 @@ function findThemeKeywordHits(query) {
 }
 
 function pickThemeCurationSpot(query, category) {
+  const seaSpot = pickSeaBasinCurationSpot(query, category);
+  if (seaSpot) return seaSpot;
+
   const hits = findThemeKeywordHits(query);
   if (!hits.length) return null;
 
