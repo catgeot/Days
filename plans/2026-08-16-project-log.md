@@ -8,6 +8,7 @@
 - **원인**: 대양 선택만 fly coalesce·busy 가드 없이 즉시 `flyToRegion` — #12 해역 fix 미적용
 - **수정**: `handleTopOceanSelect` coalesce/jumpTo · pending fly 정리 · 대양 fly moveend 중복 생략
 - **hotfix**: `clearPendingRegionFlies` TDZ → Preview 검은 화면 (선언 순서 이동)
+- **Preview 콘솔 403**: Mapbox 토큰 URL 제한 — 신규 git Preview 호스트(`days-git-cursor-ocean-chip-crash-1ed2-…`) 미등록 · 코드 무관 · Mapbox에 호스트 1회 추가 또는 `www.gateo.kr` QA
 - **VERIFY**: `smoke:sea-basin-rail` · `build` PASS · 브랜치 `cursor/ocean-chip-crash-1ed2`
 
 ## 큐레이션 모바일 sticky·하단 CTA
