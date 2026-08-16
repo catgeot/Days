@@ -82,52 +82,81 @@ function FaceRailModeToggle({ mode, onChange, category }) {
   );
 }
 
-/** 모바일 — 세부메뉴 토글과 동일한 스위치 카드 (나라 ↔ 바다) */
-export function MobileFaceRailModeSwitch({ mode, onChange }) {
-  const isSea = mode === 'sea';
+/** 모바일 — 지도 숨김 · 나라 · 바다 단일 3단 컨트롤 */
+export function MobileFaceExploreModeSwitch({ mode, onChange }) {
+  const segments = [
+    { id: 'hidden', label: '숨김' },
+    { id: 'country', label: '나라' },
+    { id: 'sea', label: '바다' },
+  ];
+
+  const cardTone = mode === 'hidden'
+    ? 'border-amber-400/60 bg-black/85 shadow-[0_0_16px_rgba(245,158,11,0.4)]'
+    : mode === 'sea'
+      ? 'border-cyan-400/50 bg-black/70 shadow-[0_0_12px_rgba(34,211,238,0.3)]'
+      : 'border-white/20 bg-black/70 shadow-lg';
+
+  const labelText = mode === 'hidden'
+    ? '지도 탐색'
+    : mode === 'sea'
+      ? '바다·해역'
+      : '나라·지역';
+
+  const labelTone = mode === 'hidden'
+    ? 'text-amber-100'
+    : mode === 'sea'
+      ? 'text-cyan-100'
+      : 'text-gray-200/90';
+
+  const segmentTone = {
+    hidden: 'bg-amber-500/35 border-amber-300/70 text-amber-50 shadow-[0_0_8px_rgba(251,191,36,0.35)]',
+    country: 'bg-white/15 border-white/35 text-white shadow-[0_0_8px_rgba(255,255,255,0.12)]',
+    sea: 'bg-cyan-500/30 border-cyan-400/55 text-cyan-50 shadow-[0_0_8px_rgba(34,211,238,0.28)]',
+  };
+
   return (
     <div
-      className={`pointer-events-auto flex w-[4.75rem] flex-col gap-1 rounded-xl border px-2 py-1.5 backdrop-blur-md transition-all ${
-        isSea
-          ? 'border-cyan-400/50 bg-black/70 shadow-[0_0_12px_rgba(34,211,238,0.3)]'
-          : 'border-white/20 bg-black/70 shadow-lg'
-      }`}
+      className={`pointer-events-auto flex w-[9.85rem] flex-col gap-1.5 rounded-xl border px-2 py-1.5 backdrop-blur-md transition-all ${cardTone}`}
       {...isolateMapTouchProps}
     >
-      <span
-        className={`text-[10px] font-bold leading-none tracking-tight break-keep ${
-          isSea ? 'text-cyan-100' : 'text-gray-200/90'
-        }`}
-      >
-        {isSea ? '바다' : '나라'}
+      <span className={`text-[10px] font-bold leading-none tracking-tight break-keep ${labelTone}`}>
+        {labelText}
       </span>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={isSea}
-        aria-label={isSea ? '나라 모드로 전환' : '바다 모드로 전환'}
-        title={isSea ? '나라 목록 보기' : '바다·해역 목록 보기'}
-        onClick={(event) => {
-          event.stopPropagation();
-          onChange?.(isSea ? 'country' : 'sea');
-        }}
-        className="flex w-full items-center justify-center active:scale-[0.97]"
+      <div
+        role="tablist"
+        aria-label="탐색 모드"
+        className="flex gap-0.5 rounded-lg border border-white/15 bg-black/45 p-0.5"
       >
-        <span
-          aria-hidden="true"
-          className={`relative h-5 w-9 shrink-0 overflow-hidden rounded-full border transition-colors ${
-            isSea
-              ? 'border-cyan-400/50 bg-cyan-500/40'
-              : 'border-white/30 bg-white/15'
-          }`}
-        >
-          <span
-            className={`absolute top-0.5 h-3.5 w-3.5 rounded-full shadow transition-[left] duration-200 ${
-              isSea ? 'left-5 bg-white' : 'left-0.5 bg-gray-100'
-            }`}
-          />
-        </span>
-      </button>
+        {segments.map((segment) => {
+          const active = mode === segment.id;
+          return (
+            <button
+              key={segment.id}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              title={
+                segment.id === 'hidden'
+                  ? '목록 숨기고 지도 보기'
+                  : segment.id === 'sea'
+                    ? '바다·해역 목록'
+                    : '나라·지역 목록'
+              }
+              onClick={(event) => {
+                event.stopPropagation();
+                onChange?.(segment.id);
+              }}
+              className={`flex-1 rounded-md border px-1 py-1 text-[10px] font-bold leading-tight transition-all active:scale-[0.97] ${
+                active
+                  ? segmentTone[segment.id]
+                  : 'border-transparent text-gray-300/75 opacity-80'
+              }`}
+            >
+              {segment.label}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
