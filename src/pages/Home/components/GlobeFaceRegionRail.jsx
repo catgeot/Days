@@ -51,10 +51,10 @@ export function SeaBasinListButton({ active = false, onClick, compact = false, p
   const label = prominent ? '바다' : '해역';
 
   const shellClass = prominent
-    ? `w-[4.75rem] min-h-[3rem] rounded-2xl border-2 px-3 py-2.5 text-[13px] tracking-tight ${
+    ? `w-[4.25rem] rounded-lg border px-1.5 py-1.5 text-[10px] ${
         active
-          ? 'border-cyan-300/85 bg-gradient-to-b from-cyan-400/50 to-cyan-600/35 text-white shadow-[0_0_22px_rgba(34,211,238,0.62)] ring-1 ring-cyan-200/35'
-          : 'border-cyan-400/55 bg-gradient-to-b from-cyan-950/90 to-black/75 text-cyan-50 shadow-[0_0_16px_rgba(34,211,238,0.38)]'
+          ? 'border-cyan-400/70 bg-cyan-500/30 text-cyan-50 shadow-[0_0_12px_rgba(34,211,238,0.45)]'
+          : 'border-cyan-400/40 bg-black/70 text-cyan-100 shadow-[0_0_8px_rgba(34,211,238,0.22)]'
       }`
     : compact
       ? 'w-[4.25rem] rounded-lg px-1.5 py-1.5 text-[10px]'

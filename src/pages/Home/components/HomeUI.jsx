@@ -120,7 +120,7 @@ const HomeUI = React.memo(({
     && shouldShowFaceSubregionChips(selectedCategory)
     && mobileRegionsExpanded,
   );
-  const mobileShowRegionList = mobileRegionsExpanded || faceRailMode === 'sea';
+  const mobileShowRegionList = mobileRegionsExpanded;
   const mobileRegionListHeight = useMobileFaceRegionListHeight({
     enabled: Boolean(
       !hideExploreChrome
@@ -133,6 +133,13 @@ const HomeUI = React.memo(({
     bottomAuxRef: mobileRegionsAuxRef,
     categoryBarRef: mobileCategoryBarRef,
   });
+
+  const handleMobileRegionsExpandedChange = useCallback((expanded) => {
+    setMobileRegionsExpanded(expanded);
+    if (!expanded && faceRailMode === 'sea') {
+      onFaceRailModeChange?.('country');
+    }
+  }, [faceRailMode, onFaceRailModeChange]);
 
   const handleSeaBasinListToggle = useCallback(() => {
     if (faceRailMode === 'sea') {
@@ -410,15 +417,17 @@ const HomeUI = React.memo(({
                 className="mb-0.5"
               />
             ) : null}
-            <div ref={mobileRegionsAuxRef} className="flex flex-col items-start gap-1.5">
-              <SeaBasinListButton
-                prominent
-                active={faceRailMode === 'sea'}
-                onClick={handleSeaBasinListToggle}
-              />
+            <div ref={mobileRegionsAuxRef} className="flex flex-col items-start gap-1">
+              {mobileRegionsExpanded ? (
+                <SeaBasinListButton
+                  prominent
+                  active={faceRailMode === 'sea'}
+                  onClick={handleSeaBasinListToggle}
+                />
+              ) : null}
               <MobileRegionsMenuSwitch
                 expanded={mobileRegionsExpanded}
-                onChange={setMobileRegionsExpanded}
+                onChange={handleMobileRegionsExpandedChange}
               />
             {mobileRegionsExpanded && showMobileSubregionBar ? (
               <GlobeFaceSubregionBar
