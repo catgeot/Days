@@ -313,6 +313,30 @@ function averageBasinCenter(basins) {
   return { lat, lng };
 }
 
+/** Mapbox fitBounds 폭주 방지 — 태평양 등 자식 bbox 합집합이 경도 360°에 닿지 않게 */
+export function clampOceanFlyBbox(bbox, { maxLngSpan = 100, maxLatSpan = 52 } = {}) {
+  if (!Array.isArray(bbox) || bbox.length !== 4) return null;
+  const [west, south, east, north] = bbox;
+  if (![west, south, east, north].every((n) => Number.isFinite(n))) return null;
+
+  const lngSpan = east - west;
+  const latSpan = north - south;
+  if (lngSpan <= maxLngSpan && latSpan <= maxLatSpan) {
+    return [west, south, east, north];
+  }
+
+  const centerLng = (west + east) / 2;
+  const centerLat = (south + north) / 2;
+  const halfLng = Math.min(lngSpan / 2, maxLngSpan / 2);
+  const halfLat = Math.min(latSpan / 2, maxLatSpan / 2);
+  return [
+    centerLng - halfLng,
+    centerLat - halfLat,
+    centerLng + halfLng,
+    centerLat + halfLat,
+  ];
+}
+
 /**
  * @param {string} oceanId
  */
@@ -322,12 +346,17 @@ export function topOceanToFlyRegion(oceanId) {
   if (!children.length) return null;
   const ocean = SEA_BASIN_TOP_OCEANS.find((o) => o.id === oceanId);
   const center = averageBasinCenter(children);
+  const rawBbox = unionBasinBboxes(children);
+  const bbox = clampOceanFlyBbox(rawBbox);
+  const lngSpan = Array.isArray(rawBbox) ? rawBbox[2] - rawBbox[0] : 0;
+  const useZoomOnly = !bbox || lngSpan > 100;
   return {
     id: `ocean-${oceanId}`,
     labelKo: ocean?.name || oceanId,
     lat: center.lat,
     lng: center.lng,
-    bbox: unionBasinBboxes(children),
+    bbox: useZoomOnly ? null : bbox,
+    zoom: oceanId === 'pacific' ? 2.1 : 3.4,
     seaBasinId: null,
   };
 }

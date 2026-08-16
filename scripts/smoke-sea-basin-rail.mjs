@@ -8,6 +8,7 @@ import {
   resolveTopOceanForBasin,
   shouldRevealSmallSeaBasins,
   topOceanToFlyRegion,
+  clampOceanFlyBbox,
   SEA_BASIN_TOP_OCEANS,
 } from '../src/pages/Home/lib/seaBasinRail.js';
 import { getFaceSeaOceans } from '../src/pages/Home/lib/faceSeaOceans.js';
@@ -102,6 +103,20 @@ if (shouldRevealSmallSeaBasins([120, -20, 200, 40])) {
 const flyRegion = topOceanToFlyRegion('mediterranean');
 if (!flyRegion?.bbox || flyRegion.bbox.length !== 4) {
   console.error('FAIL topOceanToFlyRegion(mediterranean) bbox');
+  process.exit(1);
+}
+
+const pacificFly = topOceanToFlyRegion('pacific');
+if (pacificFly?.bbox) {
+  const pacificSpan = pacificFly.bbox[2] - pacificFly.bbox[0];
+  if (pacificSpan > 100) {
+    console.error(`FAIL pacific fly bbox lng span too wide: ${pacificSpan}`);
+    process.exit(1);
+  }
+}
+const clamped = clampOceanFlyBbox([0, -40, 360, 50]);
+if (!clamped || clamped[2] - clamped[0] > 100) {
+  console.error(`FAIL clampOceanFlyBbox should cap lng span, got ${clamped}`);
   process.exit(1);
 }
 

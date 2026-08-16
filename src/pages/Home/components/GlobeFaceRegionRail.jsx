@@ -420,9 +420,10 @@ export default function GlobeFaceRegionRail({
 
   useEffect(() => {
     if (selectedTopOceanId || isSeaRail || !showSubregionChips || !activeSubregionId) return;
+    if (subregionPlacement === 'none') return;
     if (selectedSubregionId === activeSubregionId) return;
     onSelectSubregion?.(activeSubregionId);
-  }, [selectedTopOceanId, isSeaRail, showSubregionChips, activeSubregionId, selectedSubregionId, onSelectSubregion]);
+  }, [selectedTopOceanId, isSeaRail, showSubregionChips, activeSubregionId, selectedSubregionId, onSelectSubregion, subregionPlacement]);
 
   if (!category || (!isSeaRail && regions.length === 0 && !renderSideChips)) return null;
 
