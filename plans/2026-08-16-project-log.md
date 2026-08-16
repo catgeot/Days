@@ -78,3 +78,10 @@
 - **수정**: `flyToRegion` generation 토큰 · 대양 선택 시 tier1 리스트 고정 · 해역 fly bbox 클램프 · 120ms fly coalesce
 - **VERIFY**: `smoke:sea-basin-rail` · `build` PASS
 - **PC QA**: 휴양 → 태평양 칩 → 해역 리스트 연속 클릭(황해 포함) — 새로고침·다운 없음
+
+## 해안 해양 탐색 #12b, 메모리 폭주 완화
+
+- **증상**: 동중국해·남중국해 구간까지 진행 후에도 OOM성 새로고침
+- **원인**: fly마다 marine 라벨 전체 스캔·하이라이트 3중 적용·stop() moveend 연쇄
+- **수정**: 라벨 강조 스로틀 · 해역 하이라이트 fly 종료 1회 · 연속 탭 jumpTo · 탐색 중 뷰 폴링 정지
+- **VERIFY**: `smoke:sea-basin-rail` · `build` PASS
