@@ -278,7 +278,7 @@ const HomeUI = React.memo(({
                     </div>
                   )}
                 </div>
-                <div className="hidden md:flex flex-col items-start gap-2">
+                <div className="hidden md:flex flex-col items-start gap-2 pb-3">
                   {MOBILE_QUICK_LINKS.map((item) => {
                     const Icon = item.icon;
                     return (
@@ -463,7 +463,7 @@ const HomeUI = React.memo(({
       )}
 
       {/* PC 좌측 — 카테고리 + 나라 칩 + 권역 범례 (투톱 아래 상단 고정 · 하위칩은 아래로만 확장 · 스크롤바 없음) */}
-      <div className="hidden md:flex fixed left-6 top-[14.5rem] z-[55] flex-col justify-start gap-3 pointer-events-none animate-fade-in-right">
+      <div className="hidden md:flex fixed left-6 top-[17rem] z-[55] flex-col justify-start gap-3 pointer-events-none animate-fade-in-right">
         {!isTourCinema && (
           <div
             className={`pointer-events-auto flex flex-row items-start gap-2 ${
