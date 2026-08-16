@@ -2786,7 +2786,7 @@ export default function KoreaThemeScenicPage() {
 
   /** 관광지 종목 중·소분류 기본값 — 칩 건수 로드 후 첫 중분류·길면 소분류 */
   useEffect(() => {
-    if (nearActive || searchActive) return;
+    if (nearActive || searchActive || selectedId) return;
     const resolved = resolveDefaultTourCatChips(cat1, cat2, cat3, chipCounts);
     if (!resolved.changed) return;
     setSearchParams(
@@ -2802,7 +2802,9 @@ export default function KoreaThemeScenicPage() {
           changed = true;
         }
         if (!changed) return prev;
-        next.delete('spot');
+        if (!prev.get('spot')) {
+          next.delete('spot');
+        }
         next.delete('page');
         return next;
       },
@@ -2811,6 +2813,7 @@ export default function KoreaThemeScenicPage() {
   }, [
     nearActive,
     searchActive,
+    selectedId,
     cat1,
     cat2,
     cat3,

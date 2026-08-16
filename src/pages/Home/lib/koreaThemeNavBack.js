@@ -1,3 +1,13 @@
+import { areaCodeForHubId } from '../../Korea/koreaHubSeeds.js';
+import { resolveCityAttractionHub } from './cityAttractionHubs.js';
+import { listKoreaScenicSpots } from './koreaScenicSpots.js';
+import {
+  SCENIC_REGION_ORDER,
+  scenicAreaCodeForHubId,
+  scenicRegionForAreaCode,
+} from './koreaTourAttractionMap.js';
+import { scenicClusterIdForHubId } from './koreaScenicClusters.js';
+
 const KEY = 'gateo:theme-nav-back-stack';
 const MAX_DEPTH = 8;
 
@@ -42,6 +52,43 @@ export function themeModuleLabelForPath(path) {
 }
 
 /**
+ * hub → 명승 홈 베이스 경로 (spot 쿼리 제외). koreaThemeCrossLinks.scenicHomePathForHubId와 동기.
+ * @param {string | null | undefined} hubId
+ * @returns {string}
+ */
+function scenicHomeBasePathForHubId(hubId) {
+  const hid = String(hubId || '')
+    .trim()
+    .toLowerCase();
+  if (!hid || !resolveCityAttractionHub(hid)) return '/korea/theme/scenic';
+  const areaCode = scenicAreaCodeForHubId(hid) || areaCodeForHubId(hid) || null;
+  let region = scenicRegionForAreaCode(areaCode);
+  if (!region) {
+    const curated = listKoreaScenicSpots().find(
+      (s) => String(s.hubId || '').toLowerCase() === hid,
+    );
+    const label = String(curated?.region || '').trim();
+    if (label && SCENIC_REGION_ORDER.includes(label)) region = label;
+  }
+  const params = new URLSearchParams();
+  if (region) {
+    params.set('cregion', region);
+    params.set('hregion', region);
+    params.set('tregion', region);
+  }
+  if (areaCode && region) {
+    const area = String(areaCode);
+    params.set('carea', area);
+    params.set('harea', area);
+    params.set('tarea', area);
+  }
+  const clusterId = scenicClusterIdForHubId(hid);
+  if (clusterId) params.set('ccluster', clusterId);
+  params.set('hub', hid);
+  return `/korea/theme/scenic?${params.toString()}`;
+}
+
+/**
  * 상세 모달 크로스 이동 시 「이전」스택 엔트리.
  * 축제(`/korea`) 등 테마 모듈이 아닌 returnTo에 scenic spotId를 붙이면
  * 헤더 「○○ · 테마」가 축제홈으로 튕기므로, 그 경우 명승 상세로 복귀한다.
@@ -53,11 +100,15 @@ export function themeNavBackEntryForSpot(spot, returnTo) {
   if (!spot || !returnTo) return null;
   const returnPath = String(returnTo).split('?')[0];
   const label = String(spot.name || '').trim();
-  const spotId = String(spot.id || '').trim();
+  const spotId = String(spot.id || spot.placeSlug || '').trim();
   if (returnPath === '/korea' || !returnPath.startsWith('/korea/theme/')) {
     if (!spotId) return null;
+    const hubId = String(spot.hubId || '').trim().toLowerCase();
+    const basePath = hubId
+      ? scenicHomeBasePathForHubId(hubId)
+      : '/korea/theme/scenic';
     return {
-      path: buildThemeModulePath('/korea/theme/scenic', { spotId }),
+      path: buildThemeModulePath(basePath, { spotId }),
       label,
       moduleLabel: themeModuleLabelForPath('/korea/theme/scenic'),
     };

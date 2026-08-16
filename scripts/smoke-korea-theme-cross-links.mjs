@@ -21,6 +21,7 @@ import {
   scenicHomePathForHubId,
   THEME_REGION_LABEL_TO_AREA,
 } from '../src/pages/Home/lib/koreaThemeCrossLinks.js';
+import { themeNavBackEntryForSpot } from '../src/pages/Home/lib/koreaThemeNavBack.js';
 import { extractTourAttractionSigungu } from '../src/pages/Home/lib/koreaTourAttractionLocality.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -246,6 +247,20 @@ const insadongBundle = resolveThemeCrossLinks(insadong);
 assert(
   insadongBundle.deepLinks.festivals === '/korea?from=theme&area=1',
   `insadong 이 지역 축제 → 서울 목록 (got ${insadongBundle.deepLinks.festivals})`,
+);
+
+const insadongBack = themeNavBackEntryForSpot(
+  { id: 'insadong', name: '인사동', hubId: 'seoul' },
+  '/korea',
+);
+assert(
+  insadongBack?.path.includes('spot=insadong') &&
+    insadongBack.path.includes('hub=seoul'),
+  `insadong themeBack → hub+spot scenic (got ${insadongBack?.path})`,
+);
+assert(
+  insadongBack?.label === '인사동',
+  `insadong themeBack label (got ${insadongBack?.label})`,
 );
 
 const jejuFest = resolveFestivalThemeCrossLinks(
