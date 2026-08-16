@@ -5,6 +5,7 @@ import {
   pickVisibleSeaBasins,
   getSpotSlugsForSeaBasin,
   stabilizeSeaBasinList,
+  resolveSeaBasinListPickBounds,
   SEA_BASIN_LIST_MAX_COUNT,
 } from '../src/pages/Home/lib/seaBasinRail.js';
 
@@ -70,6 +71,33 @@ if (uncapped.length < capped.length) {
 const slugs = getSpotSlugsForSeaBasin('aegean');
 if (slugs.length < 2) {
   console.error(`FAIL aegean spot slugs=${slugs.length}`);
+  process.exit(1);
+}
+
+const tightAegeanView = {
+  viewBounds: [24, 36, 27, 39],
+  viewCenter: { lng: 25.5, lat: 37.5 },
+  category: 'urban',
+};
+const tightPicked = pickVisibleSeaBasins(tightAegeanView);
+const selectionBounds = resolveSeaBasinListPickBounds('aegean');
+if (!selectionBounds) {
+  console.error('FAIL resolveSeaBasinListPickBounds(aegean) should return bounds');
+  process.exit(1);
+}
+const broadPicked = pickVisibleSeaBasins({
+  viewBounds: selectionBounds,
+  viewCenter: tightAegeanView.viewCenter,
+  category: 'urban',
+});
+if (broadPicked.length <= tightPicked.length) {
+  console.error(
+    `FAIL selected aegean should widen list: tight=${tightPicked.length} broad=${broadPicked.length}`,
+  );
+  process.exit(1);
+}
+if (!broadPicked.some((b) => b.id === 'mediterranean' || b.id === 'adriatic')) {
+  console.error(`FAIL aegean selection bounds should include mediterranean-group basins: ${broadPicked.map((b) => b.id).join(',')}`);
   process.exit(1);
 }
 

@@ -81,6 +81,45 @@ export function stabilizeSeaBasinList(previous = [], next = []) {
   return [...kept, ...added];
 }
 
+function unionBbox(a, b) {
+  if (!Array.isArray(a) || a.length !== 4) return b;
+  if (!Array.isArray(b) || b.length !== 4) return a;
+  return [
+    Math.min(a[0], b[0]),
+    Math.min(a[1], b[1]),
+    Math.max(a[2], b[2]),
+    Math.max(a[3], b[3]),
+  ];
+}
+
+function expandBbox(bbox, padRatio = 0.12) {
+  if (!Array.isArray(bbox) || bbox.length !== 4) return bbox;
+  const [west, south, east, north] = bbox;
+  const lngPad = Math.max((east - west) * padRatio, 2);
+  const latPad = Math.max((north - south) * padRatio, 2);
+  return [west - lngPad, south - latPad, east + lngPad, north + latPad];
+}
+
+/**
+ * 해역 선택 후 fly로 뷰가 좁아져도 칩·탐색 맥락이 붕괴되지 않도록
+ * 상위 해역(parentOcean) bbox를 리스트 pick 범위로 쓴다.
+ * @param {string | null | undefined} selectedBasinId
+ */
+export function resolveSeaBasinListPickBounds(selectedBasinId) {
+  if (!selectedBasinId) return null;
+  const basin = getSeaBasinById(selectedBasinId);
+  if (!basin?.bbox) return null;
+
+  let bounds = [...basin.bbox];
+  const parent = basin.parentOcean ? getSeaBasinById(basin.parentOcean) : null;
+  if (parent?.bbox) {
+    bounds = unionBbox(bounds, parent.bbox);
+  } else {
+    bounds = expandBbox(bounds);
+  }
+  return bounds;
+}
+
 /**
  * @param {{
  *   viewBounds?: [number, number, number, number] | null,

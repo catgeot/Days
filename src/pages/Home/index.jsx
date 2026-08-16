@@ -52,8 +52,8 @@ import { FlightCinemaProvider } from './lib/FlightCinemaContext.jsx';
 import { pickRandomGlobeCategory } from './lib/globeCategoryFocus';
 import { getDefaultFaceSubregionId } from './lib/globeFaceSubregions.js';
 import {
-  getSpotSlugsForSeaBasin,
   pickVisibleSeaBasins,
+  resolveSeaBasinListPickBounds,
   seaBasinToFlyRegion,
   stabilizeSeaBasinList,
 } from './lib/seaBasinRail.js';
@@ -372,19 +372,26 @@ function Home() {
   }, [faceRegionsOpen, category, categoryFaceEpoch]);
 
   const visibleSeaBasins = useMemo(() => {
+    const selectionPickBounds = faceRailMode === 'sea' && selectedSeaBasinId
+      ? resolveSeaBasinListPickBounds(selectedSeaBasinId)
+      : null;
     const picked = pickVisibleSeaBasins({
-      viewBounds: mapViewSnapshot?.bounds || null,
+      viewBounds: selectionPickBounds || mapViewSnapshot?.bounds || null,
       viewCenter: mapViewSnapshot?.center || null,
       category,
     });
     const stabilized = stabilizeSeaBasinList(stableSeaBasinsRef.current, picked);
     stableSeaBasinsRef.current = stabilized;
     return stabilized;
-  }, [mapViewSnapshot, category]);
+  }, [faceRailMode, selectedSeaBasinId, mapViewSnapshot, category]);
 
   useEffect(() => {
     stableSeaBasinsRef.current = [];
   }, [category, categoryFaceEpoch, faceRegionsOpen]);
+
+  useEffect(() => {
+    stableSeaBasinsRef.current = [];
+  }, [selectedSeaBasinId]);
 
   const handleRelatedPlaceClickWithCinemaExit = useCallback((placeData, isBridge) => {
     if (flightCinemaActive) {
@@ -922,12 +929,8 @@ function Home() {
 
   const filteredSavedTrips = useMemo(() => savedTrips.filter(t => t.category === category), [savedTrips, category]);
   // Mapbox 지구본은 마커 겹침을 자연스럽게 처리하므로 카테고리와 무관하게 전체 여행지 노출
-  const globeSpots = useMemo(() => {
-    if (faceRailMode !== 'sea' || !selectedSeaBasinId) return TRAVEL_SPOTS;
-    const slugSet = new Set(getSpotSlugsForSeaBasin(selectedSeaBasinId));
-    if (!slugSet.size) return TRAVEL_SPOTS;
-    return TRAVEL_SPOTS.filter((spot) => slugSet.has(spot.slug));
-  }, [faceRailMode, selectedSeaBasinId]);
+  // 해역 선택 = 지도 fill·라벨 하이라이트만. 핀은 뷰 기준 전체 유지(플랜 §4.6 하이라이트).
+  const globeSpots = useMemo(() => TRAVEL_SPOTS, []);
   const bucketList = useMemo(() => savedTrips.filter(t => t.is_bookmarked), [savedTrips]);
 
   const globeRenderedTrips = useMemo(() => {
