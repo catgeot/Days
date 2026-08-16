@@ -173,7 +173,6 @@ function Home() {
   const [faceRailMode, setFaceRailMode] = useState('country');
   const [selectedSeaBasinId, setSelectedSeaBasinId] = useState(null);
   const [mapViewSnapshot, setMapViewSnapshot] = useState(null);
-  const [seaBasinListMaxHeightPx, setSeaBasinListMaxHeightPx] = useState(null);
   const stableSeaBasinsRef = useRef([]);
 
   const revealRandomGlobeFace = useCallback(() => {
@@ -377,12 +376,11 @@ function Home() {
       viewBounds: mapViewSnapshot?.bounds || null,
       viewCenter: mapViewSnapshot?.center || null,
       category,
-      maxListHeightPx: seaBasinListMaxHeightPx,
     });
     const stabilized = stabilizeSeaBasinList(stableSeaBasinsRef.current, picked);
     stableSeaBasinsRef.current = stabilized;
     return stabilized;
-  }, [mapViewSnapshot, category, seaBasinListMaxHeightPx]);
+  }, [mapViewSnapshot, category]);
 
   useEffect(() => {
     stableSeaBasinsRef.current = [];
@@ -1154,7 +1152,6 @@ function Home() {
           visibleSeaBasins={visibleSeaBasins}
           selectedSeaBasinId={selectedSeaBasinId}
           onSeaBasinSelect={handleSeaBasinSelect}
-          onSeaBasinListMaxHeightChange={setSeaBasinListMaxHeightPx}
           isTickerExpanded={isTickerExpanded} setIsTickerExpanded={setIsTickerExpanded}
           isPinVisible={isPinVisible} onTogglePinVisibility={() => setIsPinVisible(prev => !prev)}
           globeTheme={globeTheme} onThemeToggle={handleThemeToggle}

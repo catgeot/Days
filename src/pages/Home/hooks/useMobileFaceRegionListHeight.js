@@ -92,6 +92,7 @@ export function useMobileFaceRegionListHeight({
 
   return {
     maxHeightPx,
-    listHeightStyle: { height: `${maxHeightPx}px`, maxHeight: `${maxHeightPx}px` },
+    // 고정 height 대신 maxHeight만 — 짧은 목록은 컨테이너가 내용 높이로 줄고 불필요한 스크롤·체이닝 방지
+    listHeightStyle: { maxHeight: `${maxHeightPx}px` },
   };
 }

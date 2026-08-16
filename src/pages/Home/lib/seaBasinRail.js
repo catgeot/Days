@@ -1,5 +1,5 @@
 /**
- * 해역 칩 레일 — 뷰포트 교차 해역 우선 · 순서 안정화 · 가용 높이까지 표시.
+ * 해역 칩 레일 — 뷰포트 교차 해역 우선 · 순서 안정화 · 상한까지 표시.
  */
 import coastJson from '../data/travelSpotCoast.json' with { type: 'json' };
 import { GLOBE_FACE_CENTER_BY_CATEGORY } from './globeCategoryFocus.js';
@@ -7,8 +7,8 @@ import { listChipSeaBasins } from './seaBasinResolve.js';
 
 const coastSpots = coastJson.spots || {};
 
-/** 모바일 해역 칩 1행(패딩·간격 포함) 추정 높이 */
-export const SEA_BASIN_CHIP_HEIGHT_PX = 46;
+/** 모바일 해역 칩 레일 — 뷰포트·거리 우선 후 최대 표시 개수 */
+export const SEA_BASIN_LIST_MAX_COUNT = 12;
 
 /** @param {string} basinId */
 export function getSpotSlugsForSeaBasin(basinId) {
@@ -87,7 +87,7 @@ export function stabilizeSeaBasinList(previous = [], next = []) {
  *   viewCenter?: { lng?: number, lat?: number } | null,
  *   category?: string | null,
  *   minCount?: number,
- *   maxListHeightPx?: number | null,
+ *   maxCount?: number,
  * }} opts
  */
 export function pickVisibleSeaBasins({
@@ -95,7 +95,7 @@ export function pickVisibleSeaBasins({
   viewCenter = null,
   category = null,
   minCount = 3,
-  maxListHeightPx = null,
+  maxCount = SEA_BASIN_LIST_MAX_COUNT,
 } = {}) {
   const candidates = listChipSeaBasins(1);
   if (!candidates.length) return [];
@@ -122,17 +122,13 @@ export function pickVisibleSeaBasins({
     }
   }
 
-  if (maxListHeightPx != null && maxListHeightPx > 0) {
-    const maxByHeight = Math.max(minCount, Math.floor(maxListHeightPx / SEA_BASIN_CHIP_HEIGHT_PX));
-    if (picked.length > maxByHeight) {
-      const ranked = sortScoredRows(
-        picked.map((basin) => scoreBasin(basin, viewBounds, refLng, refLat)),
-      );
-      return ranked.slice(0, maxByHeight).map((row) => row.basin);
-    }
-  }
+  const cap = Math.max(minCount, Math.min(maxCount, picked.length));
+  if (picked.length <= cap) return picked;
 
-  return picked;
+  const ranked = sortScoredRows(
+    picked.map((basin) => scoreBasin(basin, viewBounds, refLng, refLat)),
+  );
+  return ranked.slice(0, cap).map((row) => row.basin);
 }
 
 /** @param {string} basinId */

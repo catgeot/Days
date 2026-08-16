@@ -3,6 +3,7 @@ import {
   pickVisibleSeaBasins,
   getSpotSlugsForSeaBasin,
   stabilizeSeaBasinList,
+  SEA_BASIN_LIST_MAX_COUNT,
 } from '../src/pages/Home/lib/seaBasinRail.js';
 
 const aegeanView = {
@@ -34,14 +35,24 @@ if (stable !== picked) {
   process.exit(1);
 }
 
-const heightCapped = pickVisibleSeaBasins({
+const capped = pickVisibleSeaBasins({
   viewBounds: [120, -20, 200, 40],
   viewCenter: { lng: 160, lat: 10 },
   category: 'paradise',
-  maxListHeightPx: 352,
+  maxCount: 8,
 });
-if (heightCapped.length > 8) {
-  console.error(`FAIL height cap should limit count, got ${heightCapped.length}`);
+if (capped.length > 8) {
+  console.error(`FAIL maxCount cap should limit count, got ${capped.length}`);
+  process.exit(1);
+}
+
+const uncapped = pickVisibleSeaBasins({
+  viewBounds: [120, -20, 200, 40],
+  viewCenter: { lng: 160, lat: 10 },
+  category: 'paradise',
+});
+if (uncapped.length < capped.length) {
+  console.error(`FAIL default maxCount=${SEA_BASIN_LIST_MAX_COUNT} should show >= capped view`);
   process.exit(1);
 }
 
