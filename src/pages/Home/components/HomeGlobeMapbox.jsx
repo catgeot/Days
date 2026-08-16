@@ -1702,12 +1702,14 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     regionFlyGenRef.current = gen;
     regionFlyInProgressRef.current = isSeaBasinFly && !immediate;
 
-    const applyRegionFocusVisual = () => {
+    const applyRegionFocusVisual = ({ emphasizeMarine = true } = {}) => {
       if (regionFlyGenRef.current !== gen) return;
       setupRegionHighlightLayers(map);
       if (focusedFaceRegionRef.current?.seaBasinId) {
         setSeaBasinHighlight(map, focusedFaceRegionRef.current);
-        emphasizeMapboxMarineLabels(map, { force: true });
+        if (emphasizeMarine) {
+          emphasizeMapboxMarineLabels(map, { force: true });
+        }
       } else if (focusedFaceRegionRef.current) {
         setRegionHighlight(map, focusedFaceRegionRef.current);
       }
@@ -1738,7 +1740,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       if (immediate) {
         map.jumpTo(camera);
         if (isSeaBasinFly) {
-          applyRegionFocusVisual();
+          applyRegionFocusVisual({ emphasizeMarine: false });
         }
         return true;
       }

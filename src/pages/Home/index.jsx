@@ -410,6 +410,7 @@ function Home() {
       return undefined;
     }
     const timer = window.setTimeout(() => {
+      if (seaBasinExploreBusyRef.current) return;
       setSeaRailViewSnapshot(mapViewSnapshot);
     }, 1100);
     return () => window.clearTimeout(timer);
@@ -1123,8 +1124,14 @@ function Home() {
     setSelectedTopOceanId(ocean.id);
     setSelectedSeaBasinId(null);
     markSeaExploreBusy();
+    const hadPendingSeaBasinFly = Boolean(seaBasinFlyTimerRef.current);
+    if (seaBasinFlyTimerRef.current) {
+      window.clearTimeout(seaBasinFlyTimerRef.current);
+      seaBasinFlyTimerRef.current = null;
+    }
+    pendingSeaBasinFlyRef.current = null;
     const hadQueuedFly = Boolean(topOceanFlyTimerRef.current);
-    pendingTopOceanFlyRef.current = { ...flyRegion, immediate: hadQueuedFly };
+    pendingTopOceanFlyRef.current = { ...flyRegion, immediate: hadQueuedFly || hadPendingSeaBasinFly };
     if (topOceanFlyTimerRef.current) {
       window.clearTimeout(topOceanFlyTimerRef.current);
     }
@@ -1162,8 +1169,14 @@ function Home() {
     setSelectedTopOceanId(topOcean);
     setSelectedSeaBasinId(basin.id);
     markSeaExploreBusy();
+    const hadPendingOceanFly = Boolean(topOceanFlyTimerRef.current);
+    if (topOceanFlyTimerRef.current) {
+      window.clearTimeout(topOceanFlyTimerRef.current);
+      topOceanFlyTimerRef.current = null;
+    }
+    pendingTopOceanFlyRef.current = null;
     const hadQueuedFly = Boolean(seaBasinFlyTimerRef.current);
-    pendingSeaBasinFlyRef.current = { ...flyRegion, immediate: hadQueuedFly };
+    pendingSeaBasinFlyRef.current = { ...flyRegion, immediate: hadQueuedFly || hadPendingOceanFly };
     if (seaBasinFlyTimerRef.current) {
       window.clearTimeout(seaBasinFlyTimerRef.current);
     }
