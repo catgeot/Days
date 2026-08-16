@@ -1046,6 +1046,7 @@ function Home() {
           relatedPlaces={relatedPlaces} isTagLoading={isTagLoading}
           selectedCategory={category} onCategorySelect={handleCategorySelect}
           faceRegionsOpen={faceRegionsOpen}
+          onFaceRegionsDismiss={closeFaceRegions}
           selectedFaceRegionId={selectedFaceRegionId}
           onFaceRegionSelect={handleFaceRegionSelect}
           selectedFaceSubregionId={selectedFaceSubregionId}

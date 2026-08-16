@@ -20,6 +20,39 @@ import { useMobileFaceRegionListHeight } from '../hooks/useMobileFaceRegionListH
 import { useTrendingData } from '../hooks/useTrendingData';
 import { CATEGORY_LABELS } from './SearchDiscovery/constants';
 
+/** 모바일 좌상단 바로가기 — 테마 국가 리스트 펼침 시 접힘 라벨 */
+const MOBILE_QUICK_LINKS = [
+  {
+    to: '/korea',
+    shortLabel: '축제',
+    label: '한국의 축제',
+    icon: CalendarDays,
+    chipClass:
+      'border-amber-400/45 bg-[#14110c] shadow-[0_0_18px_rgba(245,158,11,0.22)] hover:border-amber-300/70 hover:bg-[#1c1710]',
+    iconWrapClass: 'border-amber-400/35 bg-amber-500/15 text-amber-300 group-hover:bg-amber-500/25',
+  },
+  {
+    to: '/korea/theme/scenic',
+    shortLabel: '명승',
+    label: '한국의 명승',
+    icon: Map,
+    chipClass:
+      'border-emerald-400/40 bg-[#0f1412] shadow-[0_0_18px_rgba(52,211,153,0.18)] hover:border-emerald-300/65 hover:bg-[#121a16]',
+    iconWrapClass: 'border-emerald-400/35 bg-emerald-500/15 text-emerald-300 group-hover:bg-emerald-500/25',
+  },
+  {
+    to: '/blog/curation',
+    shortLabel: 'AI',
+    label: 'AI 큐레이션',
+    icon: Sparkles,
+    chipClass:
+      'border-sky-400/45 bg-[#0c1218] shadow-[0_0_18px_rgba(56,189,248,0.2)] hover:border-sky-300/70 hover:bg-[#101820]',
+    iconWrapClass: 'border-sky-400/35 bg-sky-500/15 text-sky-300 group-hover:bg-sky-500/25',
+  },
+];
+
+const MOBILE_QUICK_LINKS_COLLAPSED_LABEL = MOBILE_QUICK_LINKS.map((item) => item.shortLabel).join(' · ');
+
 /** 모바일 활성 카테고리 — 테마색 글로우 (배포본과 동일) */
 const CATEGORY_ACTIVE_MOBILE = {
   paradise: 'bg-cyan-500/25 border-cyan-400/50 shadow-[0_0_14px_rgba(34,211,238,0.35)]',
@@ -34,6 +67,7 @@ const HomeUI = React.memo(({
   relatedPlaces = [], isTagLoading = false, onRelatedPlaceClick,
   selectedCategory, onCategorySelect,
   faceRegionsOpen = false,
+  onFaceRegionsDismiss,
   selectedFaceRegionId = null,
   onFaceRegionSelect,
   selectedFaceSubregionId = null,
@@ -111,6 +145,11 @@ const HomeUI = React.memo(({
     }
   };
   const ThemeIcon = getThemeConfig().icon;
+  const mobileQuickLinksCollapsed = Boolean(
+    !hideExploreChrome
+    && faceRegionsOpen
+    && mobileRegionsExpanded,
+  );
 
   return (
     <>
@@ -149,42 +188,53 @@ const HomeUI = React.memo(({
             </div>
             {!isTourCinema && (
               <>
-                <Link
-                  to="/korea"
-                  className="group relative flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-amber-400/45 bg-[#14110c] px-2.5 py-1.5 shadow-[0_0_18px_rgba(245,158,11,0.22)] transition-colors hover:border-amber-300/70 hover:bg-[#1c1710] touch-manipulation"
-                  aria-label="한국의 축제로 이동"
-                >
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-amber-400/35 bg-amber-500/15 text-amber-300 group-hover:bg-amber-500/25">
-                    <CalendarDays size={15} aria-hidden="true" />
-                  </span>
-                  <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
-                    한국의 축제
-                  </span>
-                </Link>
-                <Link
-                  to="/korea/theme/scenic"
-                  className="group relative flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-emerald-400/40 bg-[#0f1412] px-2.5 py-1.5 shadow-[0_0_18px_rgba(52,211,153,0.18)] transition-colors hover:border-emerald-300/65 hover:bg-[#121a16] touch-manipulation"
-                  aria-label="한국의 명승으로 이동"
-                >
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-emerald-400/35 bg-emerald-500/15 text-emerald-300 group-hover:bg-emerald-500/25">
-                    <Map size={15} aria-hidden="true" />
-                  </span>
-                  <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
-                    한국의 명승
-                  </span>
-                </Link>
-                <Link
-                  to="/blog/curation"
-                  className="group relative flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-sky-400/45 bg-[#0c1218] px-2.5 py-1.5 shadow-[0_0_18px_rgba(56,189,248,0.2)] transition-colors hover:border-sky-300/70 hover:bg-[#101820] touch-manipulation"
-                  aria-label="AI 큐레이션 페이지로 이동"
-                >
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-sky-400/35 bg-sky-500/15 text-sky-300 group-hover:bg-sky-500/25">
-                    <Sparkles size={15} aria-hidden="true" />
-                  </span>
-                  <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
-                    AI 큐레이션
-                  </span>
-                </Link>
+                {mobileQuickLinksCollapsed ? (
+                  <button
+                    type="button"
+                    onClick={() => onFaceRegionsDismiss?.()}
+                    className="group relative flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-white/25 bg-[#101010] px-2.5 py-1.5 shadow-[0_0_14px_rgba(255,255,255,0.08)] transition-colors hover:border-white/40 hover:bg-[#161616] touch-manipulation md:hidden"
+                    aria-label={`바로가기 메뉴 펼치기 — ${MOBILE_QUICK_LINKS.map((item) => item.label).join(', ')}`}
+                    title="바로가기 메뉴 펼치기"
+                  >
+                    <span className="flex items-center gap-1">
+                      {MOBILE_QUICK_LINKS.map((item) => {
+                        const Icon = item.icon;
+                        return (
+                          <span
+                            key={item.to}
+                            className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border ${item.iconWrapClass}`}
+                            aria-hidden="true"
+                          >
+                            <Icon size={12} />
+                          </span>
+                        );
+                      })}
+                    </span>
+                    <span className="truncate text-[11px] font-bold tracking-tight text-white/95 break-keep">
+                      {MOBILE_QUICK_LINKS_COLLAPSED_LABEL}
+                    </span>
+                  </button>
+                ) : null}
+                <div className={`flex flex-col items-start gap-2 ${mobileQuickLinksCollapsed ? 'hidden md:flex' : 'flex'}`}>
+                  {MOBILE_QUICK_LINKS.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <Link
+                        key={item.to}
+                        to={item.to}
+                        className={`group relative flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border px-2.5 py-1.5 transition-colors touch-manipulation ${item.chipClass}`}
+                        aria-label={`${item.label}로 이동`}
+                      >
+                        <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border ${item.iconWrapClass}`}>
+                          <Icon size={15} aria-hidden="true" />
+                        </span>
+                        <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
+                          {item.label}
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </div>
               </>
             )}
           </div>
