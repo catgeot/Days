@@ -173,8 +173,14 @@ export function showGlobeContextBasemapLayer(map, layerId) {
 }
 
 /** 해역 포커스 시 Mapbox marine/water/ocean 지명 가독성 강화 */
-export function emphasizeMapboxMarineLabels(map) {
+const marineLabelEmphasisAt = new WeakMap();
+
+export function emphasizeMapboxMarineLabels(map, { force = false, minIntervalMs = 700 } = {}) {
   if (!map?.getStyle) return;
+  const now = Date.now();
+  const lastAt = marineLabelEmphasisAt.get(map) || 0;
+  if (!force && now - lastAt < minIntervalMs) return;
+  marineLabelEmphasisAt.set(map, now);
   let layers;
   try {
     layers = map.getStyle().layers || [];

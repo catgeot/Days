@@ -328,10 +328,15 @@ function Home() {
   selectedSeaBasinIdRef.current = selectedSeaBasinId;
   const pendingSeaBasinFlyRef = useRef(null);
   const seaBasinFlyTimerRef = useRef(null);
+  const seaBasinExploreBusyRef = useRef(false);
+  const seaBasinExploreIdleTimerRef = useRef(null);
 
   useEffect(() => () => {
     if (seaBasinFlyTimerRef.current) {
       window.clearTimeout(seaBasinFlyTimerRef.current);
+    }
+    if (seaBasinExploreIdleTimerRef.current) {
+      window.clearTimeout(seaBasinExploreIdleTimerRef.current);
     }
   }, []);
 
@@ -350,6 +355,7 @@ function Home() {
   useEffect(() => {
     if (!faceRegionsOpen) return undefined;
     const tick = () => {
+      if (seaBasinExploreBusyRef.current) return;
       const view = globeRef.current?.getMapView?.();
       if (!view) return;
       setMapViewSnapshot((prev) => {
@@ -1068,7 +1074,15 @@ function Home() {
     setSelectedFaceRegionId(null);
     setSelectedTopOceanId(topOcean);
     setSelectedSeaBasinId(basin.id);
-    pendingSeaBasinFlyRef.current = flyRegion;
+    seaBasinExploreBusyRef.current = true;
+    if (seaBasinExploreIdleTimerRef.current) {
+      window.clearTimeout(seaBasinExploreIdleTimerRef.current);
+    }
+    seaBasinExploreIdleTimerRef.current = window.setTimeout(() => {
+      seaBasinExploreBusyRef.current = false;
+    }, 2800);
+    const hadQueuedFly = Boolean(seaBasinFlyTimerRef.current);
+    pendingSeaBasinFlyRef.current = { ...flyRegion, immediate: hadQueuedFly };
     if (seaBasinFlyTimerRef.current) {
       window.clearTimeout(seaBasinFlyTimerRef.current);
     }
@@ -1079,7 +1093,7 @@ function Home() {
       if (region) {
         globeRef.current?.flyToRegion?.(region);
       }
-    }, 120);
+    }, hadQueuedFly ? 50 : 160);
   }, [
     dismissPlaceSelectionKeepGlobePin,
     flightCinemaActive,
