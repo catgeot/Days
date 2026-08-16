@@ -82,6 +82,7 @@ import { readGlobeShareViewFromUrl } from '../lib/globeExploreNav';
 import {
   applyEarlyMapboxGlobeLabelSuppress,
   applyMapboxGlobeLabelPolicy,
+  emphasizeMapboxMarineLabels,
   isGlobeContextBasemapLabel,
 } from '../lib/globeMapboxLabelPolicy';
 import { getCategoryGlobeFaceView, GLOBE_FACE_FLY_MS, resolveCategoryFaceMapboxZoom } from '../lib/globeCategoryFocus';
@@ -1005,6 +1006,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (focusedFaceRegionRef.current) {
       if (focusedFaceRegionRef.current.seaBasinId) {
         setSeaBasinHighlight(map, focusedFaceRegionRef.current);
+        emphasizeMapboxMarineLabels(map);
       } else {
         setRegionHighlight(map, focusedFaceRegionRef.current);
       }
@@ -1684,10 +1686,14 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       bbox: Array.isArray(region.bbox) ? region.bbox : bounds,
       settleZoom,
       seaBasinId: region.seaBasinId || null,
+      labelKo: region.labelKo || null,
+      lat,
+      lng: lngVal,
     };
     setupRegionHighlightLayers(map);
     if (region.seaBasinId) {
       setSeaBasinHighlight(map, focusedFaceRegionRef.current);
+      emphasizeMapboxMarineLabels(map);
     } else {
       setRegionHighlight(map, focusedFaceRegionRef.current);
     }
@@ -1698,6 +1704,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         map.off('moveend', onFlyEnd);
         if (focusedFaceRegionRef.current?.seaBasinId) {
           setSeaBasinHighlight(map, focusedFaceRegionRef.current);
+          emphasizeMapboxMarineLabels(map);
         } else if (focusedFaceRegionRef.current) {
           setRegionHighlight(map, focusedFaceRegionRef.current);
         }

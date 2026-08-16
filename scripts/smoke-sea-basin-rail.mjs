@@ -1,10 +1,21 @@
 #!/usr/bin/env node
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import {
   pickVisibleSeaBasins,
   getSpotSlugsForSeaBasin,
   stabilizeSeaBasinList,
   SEA_BASIN_LIST_MAX_COUNT,
 } from '../src/pages/Home/lib/seaBasinRail.js';
+
+const highlightSrc = readFileSync(
+  fileURLToPath(new URL('../src/pages/Home/lib/globeRegionHighlight.js', import.meta.url)),
+  'utf8',
+);
+if (!highlightSrc.includes('gateo-sea-basin-highlight-label')) {
+  console.error('FAIL sea basin map label layer missing in globeRegionHighlight.js');
+  process.exit(1);
+}
 
 const aegeanView = {
   viewBounds: [20, 34, 30, 42],

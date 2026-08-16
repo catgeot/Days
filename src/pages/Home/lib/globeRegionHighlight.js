@@ -32,9 +32,11 @@ export const REGION_HIGHLIGHT_FALLBACK_LINE_ID = 'gateo-region-highlight-fallbac
 export const REGION_HIGHLIGHT_FALLBACK_HALO_ID = 'gateo-region-highlight-fallback-halo';
 
 export const REGION_HIGHLIGHT_SEA_SOURCE_ID = 'gateo-sea-basin-highlight';
+export const REGION_HIGHLIGHT_SEA_LABEL_SOURCE_ID = 'gateo-sea-basin-label';
 export const REGION_HIGHLIGHT_SEA_FILL_ID = 'gateo-sea-basin-highlight-fill';
 export const REGION_HIGHLIGHT_SEA_LINE_ID = 'gateo-sea-basin-highlight-line';
 export const REGION_HIGHLIGHT_SEA_HALO_ID = 'gateo-sea-basin-highlight-halo';
+export const REGION_HIGHLIGHT_SEA_LABEL_ID = 'gateo-sea-basin-highlight-label';
 
 export const REGION_HIGHLIGHT_LAYER_IDS = [
   REGION_HIGHLIGHT_FILL_ID,
@@ -47,12 +49,14 @@ export const REGION_HIGHLIGHT_LAYER_IDS = [
   REGION_HIGHLIGHT_SEA_FILL_ID,
   REGION_HIGHLIGHT_SEA_HALO_ID,
   REGION_HIGHLIGHT_SEA_LINE_ID,
+  REGION_HIGHLIGHT_SEA_LABEL_ID,
 ];
 
 const SEA_BASIN_HIGHLIGHT_LAYER_IDS = [
   REGION_HIGHLIGHT_SEA_FILL_ID,
   REGION_HIGHLIGHT_SEA_HALO_ID,
   REGION_HIGHLIGHT_SEA_LINE_ID,
+  REGION_HIGHLIGHT_SEA_LABEL_ID,
 ];
 
 const COUNTRY_HIGHLIGHT_LAYER_IDS = [
@@ -117,7 +121,8 @@ function opacityExprFromSettle(settleZoom, peak) {
 }
 
 export function isRegionHighlightLayer(layerId = '') {
-  return String(layerId).startsWith('gateo-region-highlight');
+  const id = String(layerId);
+  return id.startsWith('gateo-region-highlight') || id.startsWith('gateo-sea-basin-highlight');
 }
 
 function setVisibility(map, layerId, visibility) {
@@ -595,6 +600,35 @@ function bboxToFeatureCollection(bbox) {
   };
 }
 
+function pointToFeatureCollection(lng, lat, name = '') {
+  if (!Number.isFinite(lng) || !Number.isFinite(lat)) {
+    return { type: 'FeatureCollection', features: [] };
+  }
+  return {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: { name: String(name || '') },
+        geometry: { type: 'Point', coordinates: [lng, lat] },
+      },
+    ],
+  };
+}
+
+function resolveSeaBasinLabelPoint(basin) {
+  const lng = Number(basin?.lng ?? basin?.center?.lng);
+  const lat = Number(basin?.lat ?? basin?.center?.lat);
+  if (Number.isFinite(lng) && Number.isFinite(lat)) {
+    return { lng, lat };
+  }
+  const bbox = basin?.bbox;
+  if (!Array.isArray(bbox) || bbox.length !== 4) return null;
+  const [west, south, east, north] = bbox;
+  if (![west, south, east, north].every((n) => Number.isFinite(n))) return null;
+  return { lng: (west + east) / 2, lat: (south + north) / 2 };
+}
+
 function ensureSeaBasinHighlightLayers(map) {
   if (!map?.getStyle?.()) return false;
 
@@ -662,6 +696,54 @@ function ensureSeaBasinHighlightLayers(map) {
     }
   }
 
+  const emptyLabel = pointToFeatureCollection(0, 0, '');
+  if (!map.getSource(REGION_HIGHLIGHT_SEA_LABEL_SOURCE_ID)) {
+    try {
+      map.addSource(REGION_HIGHLIGHT_SEA_LABEL_SOURCE_ID, { type: 'geojson', data: emptyLabel });
+    } catch {
+      return false;
+    }
+  }
+
+  if (!map.getLayer(REGION_HIGHLIGHT_SEA_LABEL_ID)) {
+    try {
+      map.addLayer({
+        id: REGION_HIGHLIGHT_SEA_LABEL_ID,
+        type: 'symbol',
+        source: REGION_HIGHLIGHT_SEA_LABEL_SOURCE_ID,
+        layout: {
+          visibility: 'none',
+          'text-field': ['get', 'name'],
+          'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
+          'text-size': ['interpolate', ['linear'], ['zoom'], 2, 11, 4, 13, 6, 15, 8, 16],
+          'text-allow-overlap': true,
+          'text-ignore-placement': true,
+          'text-anchor': 'center',
+        },
+        paint: {
+          'text-color': '#b8e4ff',
+          'text-halo-color': 'rgba(2, 6, 23, 0.88)',
+          'text-halo-width': 1.1,
+          'text-opacity': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            2,
+            0.72,
+            4,
+            0.82,
+            6,
+            0.78,
+            8,
+            0.62,
+          ],
+        },
+      });
+    } catch {
+      // ignore
+    }
+  }
+
   return Boolean(map.getLayer(REGION_HIGHLIGHT_SEA_FILL_ID));
 }
 
@@ -700,5 +782,20 @@ export function setSeaBasinHighlight(map, basin) {
   for (const layerId of SEA_BASIN_HIGHLIGHT_LAYER_IDS) {
     setVisibility(map, layerId, 'visible');
   }
+
+  const labelPoint = resolveSeaBasinLabelPoint(basin);
+  const labelName = basin?.labelKo || basin?.name || basin?.name_en || '';
+  if (labelPoint && labelName) {
+    try {
+      map.getSource(REGION_HIGHLIGHT_SEA_LABEL_SOURCE_ID)?.setData(
+        pointToFeatureCollection(labelPoint.lng, labelPoint.lat, labelName),
+      );
+    } catch {
+      // ignore
+    }
+  } else {
+    setVisibility(map, REGION_HIGHLIGHT_SEA_LABEL_ID, 'none');
+  }
+
   raiseHighlightLayers(map);
 }

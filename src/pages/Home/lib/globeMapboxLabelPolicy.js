@@ -172,6 +172,41 @@ export function showGlobeContextBasemapLayer(map, layerId) {
   }
 }
 
+/** 해역 포커스 시 Mapbox marine/water/ocean 지명 가독성 강화 */
+export function emphasizeMapboxMarineLabels(map) {
+  if (!map?.getStyle) return;
+  let layers;
+  try {
+    layers = map.getStyle().layers || [];
+  } catch {
+    return;
+  }
+  for (const layer of layers) {
+    const layerId = layer.id;
+    const sourceLayer = layer['source-layer'] || '';
+    if (!isGlobeContextBasemapLabel(layerId, sourceLayer)) continue;
+    if (!layerMatchesHints(layerId, sourceLayer, ['marine', 'water', 'ocean'])) continue;
+    showGlobeContextBasemapLayer(map, layerId);
+    try {
+      map.setPaintProperty(layerId, 'text-opacity', [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        1,
+        0.82,
+        4,
+        0.78,
+        6,
+        0.65,
+        8,
+        0.45,
+      ]);
+    } catch {
+      // Style may be mid-transition.
+    }
+  }
+}
+
 function isOwnedOverlayLayer(layerId) {
   return (
     isGateoLayer(layerId)

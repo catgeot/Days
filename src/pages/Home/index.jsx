@@ -52,7 +52,6 @@ import { FlightCinemaProvider } from './lib/FlightCinemaContext.jsx';
 import { pickRandomGlobeCategory } from './lib/globeCategoryFocus';
 import { getDefaultFaceSubregionId } from './lib/globeFaceSubregions.js';
 import {
-  getSeaBasinById,
   getSpotSlugsForSeaBasin,
   pickVisibleSeaBasins,
   seaBasinToFlyRegion,
@@ -382,12 +381,6 @@ function Home() {
     stableSeaBasinsRef.current = stabilized;
     return stabilized;
   }, [mapViewSnapshot, category]);
-
-  const selectedSeaBasinName = useMemo(() => {
-    if (!selectedSeaBasinId) return null;
-    const fromList = visibleSeaBasins.find((basin) => basin.id === selectedSeaBasinId);
-    return fromList?.name || getSeaBasinById(selectedSeaBasinId)?.name || null;
-  }, [selectedSeaBasinId, visibleSeaBasins]);
 
   useEffect(() => {
     stableSeaBasinsRef.current = [];
@@ -1158,7 +1151,6 @@ function Home() {
           onFaceRailModeChange={handleFaceRailModeChange}
           visibleSeaBasins={visibleSeaBasins}
           selectedSeaBasinId={selectedSeaBasinId}
-          selectedSeaBasinName={selectedSeaBasinName}
           onSeaBasinSelect={handleSeaBasinSelect}
           isTickerExpanded={isTickerExpanded} setIsTickerExpanded={setIsTickerExpanded}
           isPinVisible={isPinVisible} onTogglePinVisibility={() => setIsPinVisible(prev => !prev)}
