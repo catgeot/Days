@@ -240,6 +240,14 @@ const seoulBundle = resolveThemeCrossLinks(seoulSpot);
 assert(seoulBundle.areaCode === '1', 'seoul areaCode 1');
 assert(seoulBundle.packageCta == null, 'seoul has no city package CTA (avoid false busan-like)');
 
+const insadong = listKoreaScenicSpots().find((s) => s.id === 'insadong');
+assert(Boolean(insadong), 'insadong scenic exists');
+const insadongBundle = resolveThemeCrossLinks(insadong);
+assert(
+  insadongBundle.deepLinks.festivals === '/korea?from=theme&area=1',
+  `insadong 이 지역 축제 → 서울 목록 (got ${insadongBundle.deepLinks.festivals})`,
+);
+
 const jejuFest = resolveFestivalThemeCrossLinks(
   {
     title: '제주 불꽃축제',

@@ -6,7 +6,7 @@ import React, {
   useState,
 } from 'react';
 import { flushSync } from 'react-dom';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowUp,
   CalendarDays,
@@ -610,6 +610,7 @@ function FestivalRow({
 
 export default function KoreaFestivalHub() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const fromTheme = searchParams.get('from') === 'theme';
   /** 테마 크로스 레일 deep-link — 칩/지도 리팩터 없이 area만 수신 */
@@ -693,18 +694,24 @@ export default function KoreaFestivalHub() {
   const mobileSearchToggleRef = useRef(null);
   const mainScrollRef = useRef(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const themeAreaAppliedRef = useRef(false);
   const festivalQueryAppliedRef = useRef('');
 
+  // 테마「이 지역 축제」— 같은 /korea 안에서도 지역·목록으로 복귀 (상세 시트 유지 방지)
   useEffect(() => {
-    if (themeAreaAppliedRef.current) return;
-    if (!themeAreaParam || themeAreaParam === 'all') return;
+    if (!fromTheme || !themeAreaParam || themeAreaParam === 'all') return;
     if (!/^\d{1,2}$/.test(themeAreaParam)) return;
-    themeAreaAppliedRef.current = true;
     userRegionOverrideRef.current = true;
     setAreaCode(themeAreaParam);
     setCityName('all');
-  }, [themeAreaParam]);
+    setChipPanel('region');
+    setSelected(null);
+    setPersonalTab(null);
+    setNearIds(null);
+    setNearOrigin(null);
+    setNearLabel('');
+    setNearMsg('');
+    mainScrollRef.current?.scrollTo({ top: 0 });
+  }, [fromTheme, themeAreaParam, location.key]);
 
   useEffect(() => {
     if (!festivalFromQuery || loading || !items.length) return;
