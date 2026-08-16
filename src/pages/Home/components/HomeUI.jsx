@@ -9,6 +9,7 @@ import {
   Sparkles,
   CalendarDays,
   Map,
+  ChevronUp,
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import TravelTicker from '../components/TravelTicker';
@@ -154,14 +155,14 @@ const HomeUI = React.memo(({
   const ThemeIcon = getThemeConfig().icon;
   const showMobileQuickLinksCollapsed = !hideExploreChrome && !mobileQuickLinksExpanded;
 
-  const renderMobileQuickLink = (item) => {
+  const renderMobileQuickLink = (item, linkClassName = '') => {
     const Icon = item.icon;
     return (
       <Link
         key={item.to}
         to={item.to}
         onClick={() => setMobileQuickLinksExpanded(false)}
-        className={`group relative flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border px-2.5 py-1.5 transition-colors touch-manipulation ${item.chipClass}`}
+        className={`group relative flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border px-2.5 py-1.5 transition-colors touch-manipulation ${item.chipClass} ${linkClassName}`}
         aria-label={`${item.label}로 이동`}
       >
         <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border ${item.iconWrapClass}`}>
@@ -173,6 +174,8 @@ const HomeUI = React.memo(({
       </Link>
     );
   };
+
+  const [mobileQuickLinkFirst, ...mobileQuickLinkRest] = MOBILE_QUICK_LINKS;
 
   return (
     <>
@@ -240,15 +243,19 @@ const HomeUI = React.memo(({
                     </button>
                   ) : (
                     <div className="flex flex-col items-start gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setMobileQuickLinksExpanded(false)}
-                        className="flex w-auto max-w-[14rem] items-center justify-center rounded-lg border border-white/20 bg-black/55 px-2.5 py-1 text-[10px] font-bold tracking-tight text-gray-200/90 touch-manipulation active:scale-[0.98]"
-                        aria-label="바로가기 메뉴 접기"
-                      >
-                        접기
-                      </button>
-                      {MOBILE_QUICK_LINKS.map(renderMobileQuickLink)}
+                      <div className="flex max-w-[17.5rem] items-stretch gap-1.5">
+                        {renderMobileQuickLink(mobileQuickLinkFirst, 'min-w-0 flex-1 max-w-none')}
+                        <button
+                          type="button"
+                          onClick={() => setMobileQuickLinksExpanded(false)}
+                          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/35 bg-black/70 text-white shadow-[0_0_14px_rgba(255,255,255,0.14)] touch-manipulation transition-colors hover:border-white/50 hover:bg-black/85 active:scale-[0.97]"
+                          aria-label="바로가기 메뉴 접기"
+                          title="메뉴 접기"
+                        >
+                          <ChevronUp size={20} strokeWidth={2.5} aria-hidden="true" />
+                        </button>
+                      </div>
+                      {mobileQuickLinkRest.map((item) => renderMobileQuickLink(item))}
                     </div>
                   )}
                 </div>
