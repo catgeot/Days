@@ -9,8 +9,9 @@
 
 - **원인**: 모바일 `FaceRailModeToggle`에 `pointer-events-auto`·터치 격리 없음 → 부모 `pointer-events-none` 아래 클릭이 지구본으로 통과
 - **수정**: 토글에 `pointer-events-auto` + `isolateMapTouchProps` + `stopPropagation`
+- **UI**: `MobileFaceRailModeSwitch` — 세부메뉴와 동일 스위치 카드 · 나란히 배치(항상 표시)
 - **검토**: diff ~3470줄 중 JSON SSOT ~1720 · UI/로직 ~350 · audit/smoke/build PASS
-- **QA**: Preview — 5면 → 바다 토글 클릭이 지도 클릭으로 이어지지 않는지
+- **QA**: Preview — 나라|바다 스위치가 세부메뉴 옆 · 바다 ON 시 시안 글로우
 
 ## 해안해양 탐색 #4, 나라바다 토글
 

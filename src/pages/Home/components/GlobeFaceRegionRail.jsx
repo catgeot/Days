@@ -82,6 +82,56 @@ function FaceRailModeToggle({ mode, onChange, category }) {
   );
 }
 
+/** 모바일 — 세부메뉴 토글과 동일한 스위치 카드 (나라 ↔ 바다) */
+export function MobileFaceRailModeSwitch({ mode, onChange }) {
+  const isSea = mode === 'sea';
+  return (
+    <div
+      className={`pointer-events-auto flex w-[4.75rem] flex-col gap-1 rounded-xl border px-2 py-1.5 backdrop-blur-md transition-all ${
+        isSea
+          ? 'border-cyan-400/50 bg-black/70 shadow-[0_0_12px_rgba(34,211,238,0.3)]'
+          : 'border-white/20 bg-black/70 shadow-lg'
+      }`}
+      {...isolateMapTouchProps}
+    >
+      <span
+        className={`text-[10px] font-bold leading-none tracking-tight break-keep ${
+          isSea ? 'text-cyan-100' : 'text-gray-200/90'
+        }`}
+      >
+        {isSea ? '바다' : '나라'}
+      </span>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={isSea}
+        aria-label={isSea ? '나라 모드로 전환' : '바다 모드로 전환'}
+        title={isSea ? '나라 목록 보기' : '바다·해역 목록 보기'}
+        onClick={(event) => {
+          event.stopPropagation();
+          onChange?.(isSea ? 'country' : 'sea');
+        }}
+        className="flex w-full items-center justify-center active:scale-[0.97]"
+      >
+        <span
+          aria-hidden="true"
+          className={`relative h-5 w-9 shrink-0 overflow-hidden rounded-full border transition-colors ${
+            isSea
+              ? 'border-cyan-400/50 bg-cyan-500/40'
+              : 'border-white/30 bg-white/15'
+          }`}
+        >
+          <span
+            className={`absolute top-0.5 h-3.5 w-3.5 rounded-full shadow transition-[left] duration-200 ${
+              isSea ? 'left-5 bg-white' : 'left-0.5 bg-gray-100'
+            }`}
+          />
+        </span>
+      </button>
+    </div>
+  );
+}
+
 export { FaceRailModeToggle };
 
 function useActiveSubregionId(category, showSubregionChips, selectedSubregionId, subregions) {
