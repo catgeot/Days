@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { placeScrollPanYClass } from '../../../components/PlaceCard/common/placeScrollSurface.js';
 import {
   getDefaultFaceSubregionId,
   getFaceRegionsForSubregion,
@@ -32,6 +33,13 @@ const CATEGORY_CHIP = {
 const GLASS_SCROLL_CLASS = 'globe-face-region-scroll';
 /** 나라·세부칩 — 네이티브 바 숨김 · 커스텀 스크롤바 항시 표시 */
 const CUSTOM_SCROLL_CLASS = 'globe-face-custom-scroll';
+/** 모바일 나라 리스트 — 지도 pan·스크롤 체이닝 차단 */
+const MOBILE_LIST_SCROLL_CLASS = `${placeScrollPanYClass} ${CUSTOM_SCROLL_CLASS}`;
+const isolateMapTouchProps = {
+  onPointerDown: (event) => event.stopPropagation(),
+  onTouchStart: (event) => event.stopPropagation(),
+  onTouchMove: (event) => event.stopPropagation(),
+};
 /** PC — 투톱~LOGIN/LOGBOOK 사이 가용 높이 사용(여유 6.5rem만 하단 확보, 상한으로 과도 축소하지 않음) */
 const RAIL_LIST_HEIGHT_DESKTOP = 'h-[calc(100dvh-14.5rem-6.5rem)]';
 /** 모바일 — 하단 카테고리·세부칩 위를 남기고도 스크롤이 답답하지 않게 */
@@ -321,14 +329,18 @@ export default function GlobeFaceRegionRail({
   const listShellStyle = listHeightStyle || undefined;
 
   const countryList = (
-    <div className="flex flex-col items-center overflow-visible">
+    <div
+      className={`flex flex-col items-center ${anchorListToBottom ? 'overflow-hidden' : 'overflow-visible'}`}
+      {...(anchorListToBottom ? isolateMapTouchProps : {})}
+    >
       <div className={listShellClass} style={listShellStyle}>
         <div
           ref={listRef}
-          className={`h-full overflow-y-scroll ${CUSTOM_SCROLL_CLASS} pl-2.5`}
+          className={`h-full overflow-y-auto ${anchorListToBottom ? MOBILE_LIST_SCROLL_CLASS : GLASS_SCROLL_CLASS} pl-2.5`}
           role="listbox"
           aria-label="나라·지역 탐색"
           onScroll={updateScrollHint}
+          {...(anchorListToBottom ? isolateMapTouchProps : {})}
         >
           <div
             className={`flex min-h-full flex-col gap-1.5 ${
@@ -390,7 +402,10 @@ export default function GlobeFaceRegionRail({
 
   if (!renderSideChips) {
     return (
-      <div className={`pointer-events-auto relative ${className}`}>
+      <div
+        className={`pointer-events-auto relative ${className}`}
+        {...(anchorListToBottom ? isolateMapTouchProps : {})}
+      >
         <GlassScrollStyles />
         {countryList}
       </div>

@@ -269,7 +269,12 @@ const HomeUI = React.memo(({
          ${isFlightCinema ? 'max-lg:hidden' : ''}`}
       >
         {!hideExploreChrome && faceRegionsOpen && selectedCategory && (
-          <div className="flex flex-col items-start gap-1.5 animate-fade-in-right">
+          <div
+            className="flex flex-col items-start gap-1.5 animate-fade-in-right"
+            onPointerDown={(event) => event.stopPropagation()}
+            onTouchStart={(event) => event.stopPropagation()}
+            onTouchMove={(event) => event.stopPropagation()}
+          >
             {mobileRegionsExpanded ? (
               <GlobeFaceRegionRail
                 category={selectedCategory}
