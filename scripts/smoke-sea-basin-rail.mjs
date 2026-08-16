@@ -2,13 +2,13 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import {
-  pickVisibleSeaBasins,
-  pickSeaBasinsForRail,
+  buildHierarchicalSeaBasinRail,
   getSpotSlugsForSeaBasin,
-  stabilizeSeaBasinList,
-  resolveSeaBasinListPickBounds,
-  ensureMinPickBounds,
-  SEA_BASIN_LIST_MAX_COUNT,
+  inferTopOceanFromView,
+  resolveTopOceanForBasin,
+  shouldRevealSmallSeaBasins,
+  topOceanToFlyRegion,
+  SEA_BASIN_TOP_OCEANS,
 } from '../src/pages/Home/lib/seaBasinRail.js';
 
 const highlightSrc = readFileSync(
@@ -26,47 +26,81 @@ const aegeanView = {
   category: 'urban',
 };
 
-const picked = pickVisibleSeaBasins(aegeanView);
-if (picked.length < 3) {
-  console.error(`FAIL pickVisibleSeaBasins count=${picked.length} (expected >= 3 intersecting)`);
+if (SEA_BASIN_TOP_OCEANS.length !== 4) {
+  console.error(`FAIL top oceans should be 4, got ${SEA_BASIN_TOP_OCEANS.length}`);
   process.exit(1);
 }
 
-const hasAegean = picked.some((b) => b.id === 'aegean');
-if (!hasAegean) {
-  console.error('FAIL aegean view should include aegean basin');
+const inferredOcean = inferTopOceanFromView(aegeanView);
+if (inferredOcean !== 'mediterranean') {
+  console.error(`FAIL inferTopOceanFromView aegean view expected mediterranean, got ${inferredOcean}`);
   process.exit(1);
 }
 
-const nudged = pickVisibleSeaBasins({
-  viewBounds: [20.1, 34.1, 30.1, 42.1],
-  viewCenter: { lng: 25.1, lat: 38.1 },
-  category: 'urban',
+const hierarchy = buildHierarchicalSeaBasinRail({
+  ...aegeanView,
+  selectedTopOceanId: 'mediterranean',
 });
-const stable = stabilizeSeaBasinList(picked, nudged);
-if (stable !== picked) {
-  console.error(`FAIL stabilize should keep order/ref when same members: ${stable.map((b) => b.id).join(',')}`);
+if (hierarchy.topOceans.length !== 4) {
+  console.error(`FAIL hierarchy topOceans=${hierarchy.topOceans.length}`);
+  process.exit(1);
+}
+if (hierarchy.activeTopOceanId !== 'mediterranean') {
+  console.error(`FAIL hierarchy activeTopOceanId=${hierarchy.activeTopOceanId}`);
+  process.exit(1);
+}
+if (!hierarchy.midRegions.some((b) => b.id === 'tyrrhenian')) {
+  console.error(`FAIL mediterranean midRegions missing tyrrhenian: ${hierarchy.midRegions.map((b) => b.id).join(',')}`);
+  process.exit(1);
+}
+if (hierarchy.showSmallSeas && !hierarchy.smallSeas.some((b) => b.id === 'aegean')) {
+  console.error(`FAIL zoomed mediterranean should include aegean in smallSeas`);
   process.exit(1);
 }
 
-const capped = pickVisibleSeaBasins({
+const wideView = buildHierarchicalSeaBasinRail({
   viewBounds: [120, -20, 200, 40],
   viewCenter: { lng: 160, lat: 10 },
   category: 'paradise',
-  maxCount: 8,
+  selectedTopOceanId: 'pacific',
 });
-if (capped.length > 8) {
-  console.error(`FAIL maxCount cap should limit count, got ${capped.length}`);
+if (wideView.showSmallSeas) {
+  console.error('FAIL wide pacific view should hide smallSeas tier until zoom/selection');
+  process.exit(1);
+}
+if (wideView.midRegions.length < 4) {
+  console.error(`FAIL pacific midRegions=${wideView.midRegions.length} (expected >= 4 tier2)`);
   process.exit(1);
 }
 
-const uncapped = pickVisibleSeaBasins({
-  viewBounds: [120, -20, 200, 40],
-  viewCenter: { lng: 160, lat: 10 },
-  category: 'paradise',
+const selectedSmall = buildHierarchicalSeaBasinRail({
+  ...aegeanView,
+  selectedTopOceanId: 'mediterranean',
+  selectedSeaBasinId: 'aegean',
 });
-if (uncapped.length < capped.length) {
-  console.error(`FAIL default maxCount=${SEA_BASIN_LIST_MAX_COUNT} should show >= capped view`);
+if (!selectedSmall.showSmallSeas || !selectedSmall.smallSeas.some((b) => b.id === 'aegean')) {
+  console.error('FAIL selected basin should reveal smallSeas including aegean');
+  process.exit(1);
+}
+
+const aegeanOcean = resolveTopOceanForBasin({ id: 'aegean', parentOcean: 'mediterranean', tier: 1 });
+if (aegeanOcean !== 'mediterranean') {
+  console.error(`FAIL resolveTopOceanForBasin(aegean)=${aegeanOcean}`);
+  process.exit(1);
+}
+
+if (!shouldRevealSmallSeaBasins(aegeanView.viewBounds, { selectedSeaBasinId: 'aegean' })) {
+  console.error('FAIL shouldRevealSmallSeaBasins with selection');
+  process.exit(1);
+}
+if (shouldRevealSmallSeaBasins([120, -20, 200, 40])) {
+  console.error('FAIL shouldRevealSmallSeaBasins wide view');
+  process.exit(1);
+}
+
+const flyRegion = topOceanToFlyRegion('mediterranean');
+if (!flyRegion?.bbox || flyRegion.bbox.length !== 4) {
+  console.error('FAIL topOceanToFlyRegion(mediterranean) bbox');
   process.exit(1);
 }
 
@@ -76,58 +110,6 @@ if (slugs.length < 2) {
   process.exit(1);
 }
 
-const tightAegeanView = {
-  viewBounds: [24, 36, 27, 39],
-  viewCenter: { lng: 25.5, lat: 37.5 },
-  category: 'urban',
-};
-const tightPicked = pickVisibleSeaBasins(tightAegeanView);
-const selectionBounds = resolveSeaBasinListPickBounds('aegean');
-if (!selectionBounds) {
-  console.error('FAIL resolveSeaBasinListPickBounds(aegean) should return bounds');
-  process.exit(1);
-}
-const broadPicked = pickVisibleSeaBasins({
-  viewBounds: selectionBounds,
-  viewCenter: tightAegeanView.viewCenter,
-  category: 'urban',
-});
-if (broadPicked.length <= tightPicked.length) {
-  console.error(
-    `FAIL selected aegean should widen list: tight=${tightPicked.length} broad=${broadPicked.length}`,
-  );
-  process.exit(1);
-}
-if (!broadPicked.some((b) => b.id === 'mediterranean' || b.id === 'adriatic')) {
-  console.error(`FAIL aegean selection bounds should include mediterranean-group basins: ${broadPicked.map((b) => b.id).join(',')}`);
-  process.exit(1);
-}
-
-const seaModePicked = pickSeaBasinsForRail({
-  viewBounds: tightAegeanView.viewBounds,
-  viewCenter: tightAegeanView.viewCenter,
-  category: 'urban',
-  seaMode: true,
-});
-if (seaModePicked.length < 6) {
-  console.error(`FAIL seaMode pick should keep minCount=6, got ${seaModePicked.length}`);
-  process.exit(1);
-}
-
-const shrunk = stabilizeSeaBasinList(
-  broadPicked,
-  tightPicked,
-  { preventShrink: true },
+console.log(
+  `PASS sea-basin-rail (hierarchy med=${hierarchy.midRegions.length} small=${hierarchy.smallSeas.length})`,
 );
-if (shrunk.length < broadPicked.length) {
-  console.error(`FAIL preventShrink should not drop basins: ${shrunk.length} < ${broadPicked.length}`);
-  process.exit(1);
-}
-
-const padded = ensureMinPickBounds([24, 36, 27, 39]);
-if (!padded || padded[2] - padded[0] < 20) {
-  console.error(`FAIL ensureMinPickBounds should widen tight view, got ${padded}`);
-  process.exit(1);
-}
-
-console.log(`PASS sea-basin-rail (${picked.map((b) => b.id).join(', ')})`);

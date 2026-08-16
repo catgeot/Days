@@ -21,39 +21,24 @@
 | **상태** | **main 병합 완료** (2026-08-16) · PROD 배포 후 QA |
 | **브랜치** | `cursor/coast-sea-plan-8c05` → `main` |
 | **PR** | [#118](https://github.com/catgeot/Days/pull/118) |
-| **main tip** | `7a2bd052` 이후 — 해역 QA·리스트 고정 패치 반영 |
+| **main tip** | 계층 해역 리스트·바다버튼 톤다운 반영 후 push 대기 |
 | **플랜** | [`coast-sea-explore-plan.md`](./coast-sea-explore-plan.md) §4.6·§9 |
 | **일지** | [`2026-08-16-project-log.md`](./2026-08-16-project-log.md) |
-| **PROD QA** | `https://www.gateo.kr/` — 모바일 테마 → **바다** 탭 |
+| **PROD QA** | `https://www.gateo.kr/` — 모바일 테마 → **바다** 탭 → 3단 계층·버튼 톤 |
 | **VERIFY** | `smoke-sea-basin-rail` · `audit:sea-basins` · `build` |
 
-**다음 제시어** (새 채팅 첫 메시지·제목에 그대로 복붙):
+**다음 제시어** (중분류 칩 세션 — 1단 안정 QA 후):
 
 ```
-해안 해양 탐색 #10, 계층 해역 리스트·바다버튼 톤다운
+해안 해양 탐색 #11, 중분류 해역 칩
 @plans/feature-handoff-index.md
 @plans/2026-08-16-project-log.md
 @plans/coast-sea-explore-plan.md
 브랜치 main · PROD QA · smoke:sea-basin-rail
 
-## 이번 세션 목표 (우선순위)
-
-1. **계층 해역 리스트 (1순위)** — 뷰포트 동적 1줄 칩 대신 **고정 계층 UI** 검토·구현
-   - **1단**: 상위 대양(고정, 예: 태평양·대서양·인도양·지중해 권역)
-   - **2단**: 중위 권역 2~3줄 (parentOcean·tier2)
-   - **3단**: 소해역(tier1·작은 만) — 넓게 볼 때는 1~2단 위주, 줌/선택 시 3단 부상
-   - SSOT: `seaBasins.json` `parentOcean`·`tier` · `seaBasinRail.js` · `GlobeFaceRegionRail.jsx`
-   - 기존 `pickVisibleSeaBasins`·`seaRailPickContext` 축소 로직은 **계층 고정**으로 대체·단순화 검토
-
-2. **바다 전환 버튼 시인성 1단계 하향** — `SeaBasinListButton` `prominent` 톤(글로우·ring) 완화, 나라 칩과 균형
-
-3. **보류(이번 세션 후)** — 플랜에서 배제됐던 **중분류 칩**(소권역형 해양 구역) 분할. 1번 안정 후 별 세션.
-
-## 금지
-- `seaBasins.json` spots 직접 편집 → overrides → `generate:sea-basins`
-- 5테마 6번째 칩·`GLOBE_CATEGORY_IDS`에 coast 추가
-- 승인 없는 전면 UI 리디자인(레일·카테고리 바 톤 전체 교체)
-- 중분류 칩을 1번보다 먼저 큰 범위로 착수
+## 이번 세션 목표
+- 소권역형 **중분류 해역 칩** 분할(플랜 §4.4 유사) — 계층 3단 안정 QA 후
+- 금지: seaBasins.json 직접 편집 · GLOBE_CATEGORY_IDS coast · UI 리디자인
 ```
 
 ---

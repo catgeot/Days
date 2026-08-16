@@ -256,3 +256,182 @@ export function seaBasinToFlyRegion(basin) {
     seaBasinId: basin.id,
   };
 }
+
+/** 1단 — 고정 상위 대양·지중해 권역 */
+export const SEA_BASIN_TOP_OCEANS = [
+  { id: 'pacific', name: '태평양' },
+  { id: 'atlantic', name: '대서양' },
+  { id: 'indian', name: '인도양' },
+  { id: 'mediterranean', name: '지중해' },
+];
+
+const TOP_OCEAN_IDS = new Set(SEA_BASIN_TOP_OCEANS.map((o) => o.id));
+
+function sortBasinsByWeight(a, b) {
+  const spotDelta = (b.spotCount || 0) - (a.spotCount || 0);
+  if (spotDelta !== 0) return spotDelta;
+  return String(a.name || '').localeCompare(String(b.name || ''), 'ko');
+}
+
+/**
+ * @param {{ id?: string, parentOcean?: string } | null | undefined} basin
+ * @returns {string | null}
+ */
+export function resolveTopOceanForBasin(basin) {
+  if (!basin?.id) return null;
+  if (basin.id === 'mediterranean') return 'mediterranean';
+  const parent = basin.parentOcean;
+  if (parent === 'mediterranean') return 'mediterranean';
+  if (TOP_OCEAN_IDS.has(parent)) return parent;
+  return null;
+}
+
+function isSmallSeaBasin(basin, activeOceanId) {
+  if (!basin || basin.tier !== 1) return false;
+  if (basin.parentOcean !== activeOceanId) return false;
+  if (activeOceanId === 'atlantic' && basin.id === 'mediterranean') return false;
+  if (activeOceanId === 'mediterranean' && basin.id === 'mediterranean') return false;
+  return true;
+}
+
+/**
+ * @param {Array<{ bbox?: number[] }>} basins
+ * @returns {[number, number, number, number] | null}
+ */
+function unionBasinBboxes(basins) {
+  return basins.reduce((acc, basin) => unionBbox(acc, basin.bbox), null);
+}
+
+/**
+ * @param {Array<{ center?: { lat?: number, lng?: number } }>} basins
+ */
+function averageBasinCenter(basins) {
+  const valid = basins.filter((b) => Number.isFinite(b.center?.lat) && Number.isFinite(b.center?.lng));
+  if (!valid.length) return { lat: 0, lng: 0 };
+  const lat = valid.reduce((sum, b) => sum + b.center.lat, 0) / valid.length;
+  const lng = valid.reduce((sum, b) => sum + b.center.lng, 0) / valid.length;
+  return { lat, lng };
+}
+
+/**
+ * @param {string} oceanId
+ */
+export function topOceanToFlyRegion(oceanId) {
+  if (!TOP_OCEAN_IDS.has(oceanId)) return null;
+  const children = listChipSeaBasins(1).filter((b) => resolveTopOceanForBasin(b) === oceanId);
+  if (!children.length) return null;
+  const ocean = SEA_BASIN_TOP_OCEANS.find((o) => o.id === oceanId);
+  const center = averageBasinCenter(children);
+  return {
+    id: `ocean-${oceanId}`,
+    labelKo: ocean?.name || oceanId,
+    lat: center.lat,
+    lng: center.lng,
+    bbox: unionBasinBboxes(children),
+    seaBasinId: null,
+  };
+}
+
+/**
+ * 줌·선택 시 3단(소해역) 노출.
+ * @param {[number, number, number, number] | null | undefined} viewBounds
+ */
+export function shouldRevealSmallSeaBasins(
+  viewBounds,
+  { selectedSeaBasinId = null, selectedMidBasinId = null } = {},
+) {
+  if (selectedSeaBasinId || selectedMidBasinId) return true;
+  if (!Array.isArray(viewBounds) || viewBounds.length !== 4) return false;
+  const [west, south, east, north] = viewBounds;
+  if (![west, south, east, north].every((n) => Number.isFinite(n))) return false;
+  return (east - west) < 55 && (north - south) < 40;
+}
+
+/**
+ * @param {{
+ *   selectedTopOceanId?: string | null,
+ *   selectedSeaBasinId?: string | null,
+ *   viewBounds?: [number, number, number, number] | null,
+ *   viewCenter?: { lng?: number, lat?: number } | null,
+ *   category?: string | null,
+ * }} opts
+ */
+export function inferTopOceanFromView({
+  viewBounds = null,
+  viewCenter = null,
+  category = null,
+} = {}) {
+  const candidates = listChipSeaBasins(1);
+  const faceCenter = category ? GLOBE_FACE_CENTER_BY_CATEGORY[category] : null;
+  const refLng = Number.isFinite(viewCenter?.lng) ? viewCenter.lng : faceCenter?.lng;
+  const refLat = Number.isFinite(viewCenter?.lat) ? viewCenter.lat : faceCenter?.lat;
+
+  const scored = SEA_BASIN_TOP_OCEANS.map((ocean) => {
+    const children = candidates.filter((b) => resolveTopOceanForBasin(b) === ocean.id);
+    let intersectCount = 0;
+    let minDist = Number.POSITIVE_INFINITY;
+    for (const basin of children) {
+      if (bboxIntersectsView(basin.bbox, viewBounds)) intersectCount += 1;
+      minDist = Math.min(minDist, centerDistanceDeg(basin, refLng, refLat));
+    }
+    return { id: ocean.id, intersectCount, minDist };
+  });
+
+  scored.sort((a, b) => {
+    if (a.intersectCount !== b.intersectCount) return b.intersectCount - a.intersectCount;
+    return a.minDist - b.minDist;
+  });
+  return scored[0]?.id || 'pacific';
+}
+
+/**
+ * 바다 모드 — 고정 3단 계층 리스트.
+ * @param {{
+ *   selectedTopOceanId?: string | null,
+ *   selectedSeaBasinId?: string | null,
+ *   viewBounds?: [number, number, number, number] | null,
+ *   viewCenter?: { lng?: number, lat?: number } | null,
+ *   category?: string | null,
+ * }} opts
+ */
+export function buildHierarchicalSeaBasinRail({
+  selectedTopOceanId = null,
+  selectedSeaBasinId = null,
+  viewBounds = null,
+  viewCenter = null,
+  category = null,
+} = {}) {
+  const chipBasins = listChipSeaBasins(1);
+  let activeTopOceanId = selectedTopOceanId;
+  if (!activeTopOceanId && selectedSeaBasinId) {
+    activeTopOceanId = resolveTopOceanForBasin(getSeaBasinById(selectedSeaBasinId));
+  }
+  if (!activeTopOceanId) {
+    activeTopOceanId = inferTopOceanFromView({ viewBounds, viewCenter, category });
+  }
+
+  const midRegions = chipBasins
+    .filter((b) => b.tier === 2 && b.parentOcean === activeTopOceanId)
+    .sort(sortBasinsByWeight);
+
+  const selectedBasin = selectedSeaBasinId ? getSeaBasinById(selectedSeaBasinId) : null;
+  const selectedMidBasinId = selectedBasin?.tier === 2 ? selectedBasin.id : null;
+  const showSmallSeas = shouldRevealSmallSeaBasins(viewBounds, {
+    selectedSeaBasinId,
+    selectedMidBasinId,
+  });
+
+  const smallSeas = showSmallSeas
+    ? chipBasins
+      .filter((b) => isSmallSeaBasin(b, activeTopOceanId))
+      .sort(sortBasinsByWeight)
+    : [];
+
+  return {
+    topOceans: SEA_BASIN_TOP_OCEANS,
+    activeTopOceanId,
+    midRegions,
+    smallSeas,
+    showSmallSeas,
+  };
+}

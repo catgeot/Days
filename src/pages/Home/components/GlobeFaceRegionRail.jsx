@@ -53,8 +53,8 @@ export function SeaBasinListButton({ active = false, onClick, compact = false, p
   const shellClass = prominent
     ? `w-[4.25rem] rounded-lg border px-1.5 py-1.5 text-[10px] ${
         active
-          ? 'border-cyan-400/90 bg-cyan-500/35 text-white shadow-[0_0_14px_rgba(34,211,238,0.55)] ring-1 ring-cyan-400/40'
-          : 'border-cyan-400/70 bg-cyan-500/30 text-cyan-50 shadow-[0_0_12px_rgba(34,211,238,0.45)]'
+          ? 'border-cyan-400/55 bg-cyan-500/25 text-cyan-50 shadow-[0_0_10px_rgba(34,211,238,0.28)]'
+          : 'border-cyan-400/40 bg-cyan-500/18 text-cyan-100/90 hover:bg-cyan-500/22'
       }`
     : compact
       ? 'w-[4.25rem] rounded-lg px-1.5 py-1.5 text-[10px]'
@@ -321,9 +321,10 @@ export default function GlobeFaceRegionRail({
   listHeightStyle = null,
   className = '',
   railMode = 'country',
-  seaBasins = [],
+  seaBasinHierarchy = null,
   selectedSeaBasinId = null,
   onSelectSeaBasin,
+  onSelectTopOcean = null,
   onSeaBasinListToggle = null,
 }) {
   const isSeaMode = railMode === 'sea';
@@ -404,7 +405,7 @@ export default function GlobeFaceRegionRail({
       el.scrollTop = 0;
     }
     updateScrollHint();
-  }, [category, regions.length, seaBasins.length, isSeaMode, activeSubregionId, updateScrollHint]);
+  }, [category, regions.length, seaBasinHierarchy, isSeaMode, activeSubregionId, updateScrollHint]);
 
   useEffect(() => {
     const el = listRef.current;
@@ -507,27 +508,83 @@ export default function GlobeFaceRegionRail({
     </div>
   );
 
+  const renderSeaBasinChip = (basin, { compact = false, isActive = false } = {}) => (
+    <button
+      key={basin.id}
+      type="button"
+      role="option"
+      aria-selected={isActive}
+      onClick={() => onSelectSeaBasin?.(basin)}
+      className={`${compact ? 'w-[4.25rem] rounded-lg px-1.5 py-1.5 text-[10px]' : 'w-[4.75rem] md:w-[5.5rem] rounded-xl px-2 py-2 text-[11px] md:text-xs'} shrink-0 border bg-black/55 text-left backdrop-blur-md shadow-lg transition-all active:scale-[0.97] ${
+        isActive ? tone.active : tone.idle
+      }`}
+    >
+      <span className="block font-bold leading-tight tracking-tight break-keep">
+        {basin.name}
+      </span>
+    </button>
+  );
+
+  const renderSeaBasinHierarchy = () => {
+    if (!seaBasinHierarchy) return null;
+    const {
+      topOceans,
+      activeTopOceanId,
+      midRegions,
+      smallSeas,
+      showSmallSeas,
+    } = seaBasinHierarchy;
+
+    return (
+      <>
+        <div
+          className="flex flex-wrap gap-1"
+          role="group"
+          aria-label="대양·권역"
+        >
+          {topOceans.map((ocean) => {
+            const isActive = activeTopOceanId === ocean.id && !selectedSeaBasinId;
+            return (
+              <button
+                key={ocean.id}
+                type="button"
+                aria-pressed={isActive}
+                onClick={() => onSelectTopOcean?.(ocean)}
+                className={`w-[4.25rem] shrink-0 rounded-lg border bg-black/50 px-1 py-1.5 text-center backdrop-blur-md transition-all active:scale-[0.97] ${
+                  isActive
+                    ? 'border-cyan-400/50 bg-cyan-500/20 text-cyan-50'
+                    : 'border-white/18 text-cyan-100/85 hover:bg-cyan-500/10'
+                }`}
+              >
+                <span className="block text-[10px] font-bold leading-tight tracking-tight break-keep">
+                  {ocean.name}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        {midRegions.length > 0 ? (
+          <div className="mt-1 flex flex-col gap-1" role="group" aria-label="중위 해역">
+            {midRegions.map((basin) => renderSeaBasinChip(basin, {
+              isActive: selectedSeaBasinId === basin.id,
+            }))}
+          </div>
+        ) : null}
+        {showSmallSeas && smallSeas.length > 0 ? (
+          <div className="mt-1 flex flex-col gap-1" role="group" aria-label="소해역">
+            {smallSeas.map((basin) => renderSeaBasinChip(basin, {
+              compact: true,
+              isActive: selectedSeaBasinId === basin.id,
+            }))}
+          </div>
+        ) : null}
+      </>
+    );
+  };
+
   const seaList = renderModeList(
     '해역 탐색',
-    seaBasins.map((basin) => {
-      const isActive = selectedSeaBasinId === basin.id;
-      return (
-        <button
-          key={basin.id}
-          type="button"
-          role="option"
-          aria-selected={isActive}
-          onClick={() => onSelectSeaBasin?.(basin)}
-          className={`w-[4.75rem] md:w-[5.5rem] shrink-0 rounded-xl border bg-black/55 px-2 py-2 text-left backdrop-blur-md shadow-lg transition-all active:scale-[0.97] ${
-            isActive ? tone.active : tone.idle
-          }`}
-        >
-          <span className="block text-[11px] md:text-xs font-bold leading-tight tracking-tight break-keep">
-            {basin.name}
-          </span>
-        </button>
-      );
-    }),
+    renderSeaBasinHierarchy(),
   );
 
   const countryList = renderModeList(

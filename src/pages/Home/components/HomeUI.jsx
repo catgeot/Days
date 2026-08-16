@@ -79,9 +79,10 @@ const HomeUI = React.memo(({
   onFaceSubregionSelect,
   faceRailMode = 'country',
   onFaceRailModeChange,
-  visibleSeaBasins = [],
+  seaBasinHierarchy = null,
   selectedSeaBasinId = null,
   onSeaBasinSelect,
+  onTopOceanSelect,
   isTickerExpanded, setIsTickerExpanded,
   onClearScouts,
   isPinVisible,
@@ -411,9 +412,10 @@ const HomeUI = React.memo(({
                 onSelectSubregion={onFaceSubregionSelect}
                 listHeightStyle={mobileRegionListHeight?.listHeightStyle ?? null}
                 railMode={faceRailMode}
-                seaBasins={visibleSeaBasins}
+                seaBasinHierarchy={seaBasinHierarchy}
                 selectedSeaBasinId={selectedSeaBasinId}
                 onSelectSeaBasin={onSeaBasinSelect}
+                onSelectTopOcean={onTopOceanSelect}
                 className="mb-0.5"
               />
             ) : null}
@@ -522,9 +524,10 @@ const HomeUI = React.memo(({
                 onSelectSubregion={onFaceSubregionSelect}
                 railMode={faceRailMode}
                 onSeaBasinListToggle={handleSeaBasinListToggle}
-                seaBasins={visibleSeaBasins}
+                seaBasinHierarchy={seaBasinHierarchy}
                 selectedSeaBasinId={selectedSeaBasinId}
                 onSelectSeaBasin={onSeaBasinSelect}
+                onSelectTopOcean={onTopOceanSelect}
                 className="pt-0.5"
               />
             ) : null}

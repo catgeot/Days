@@ -52,12 +52,11 @@ import { FlightCinemaProvider } from './lib/FlightCinemaContext.jsx';
 import { pickRandomGlobeCategory } from './lib/globeCategoryFocus';
 import { getDefaultFaceSubregionId } from './lib/globeFaceSubregions.js';
 import {
-  ensureMinPickBounds,
+  buildHierarchicalSeaBasinRail,
   getSeaBasinById,
-  pickSeaBasinsForRail,
-  resolveSeaBasinListPickBounds,
+  resolveTopOceanForBasin,
   seaBasinToFlyRegion,
-  stabilizeSeaBasinList,
+  topOceanToFlyRegion,
 } from './lib/seaBasinRail.js';
 import { syncHomeViewportAfterInput, syncHomeChromeAfterNavigation } from '../../shared/lib/mobileViewport';
 import {
@@ -174,25 +173,8 @@ function Home() {
   const [selectedFaceSubregionId, setSelectedFaceSubregionId] = useState(null);
   const [faceRailMode, setFaceRailMode] = useState('country');
   const [selectedSeaBasinId, setSelectedSeaBasinId] = useState(null);
+  const [selectedTopOceanId, setSelectedTopOceanId] = useState(null);
   const [mapViewSnapshot, setMapViewSnapshot] = useState(null);
-  const [seaRailPickContext, setSeaRailPickContext] = useState(null);
-  const stableSeaBasinsRef = useRef([]);
-
-  const buildSeaRailPickContext = useCallback((selectedId = null) => {
-    const view = globeRef.current?.getMapView?.();
-    if (selectedId) {
-      const basin = getSeaBasinById(selectedId);
-      return {
-        bounds: resolveSeaBasinListPickBounds(selectedId),
-        center: basin?.center || view?.center || null,
-      };
-    }
-    if (!view?.bounds) return null;
-    return {
-      bounds: ensureMinPickBounds(view.bounds),
-      center: view.center || null,
-    };
-  }, []);
 
   const revealRandomGlobeFace = useCallback(() => {
     const next = pickRandomGlobeCategory();
@@ -203,6 +185,7 @@ function Home() {
     setSelectedFaceSubregionId(getDefaultFaceSubregionId(next));
     setFaceRailMode('country');
     setSelectedSeaBasinId(null);
+    setSelectedTopOceanId(null);
     globeRef.current?.clearRegionFocus?.();
   }, []);
 
@@ -212,6 +195,7 @@ function Home() {
     setSelectedFaceSubregionId(null);
     setFaceRailMode('country');
     setSelectedSeaBasinId(null);
+    setSelectedTopOceanId(null);
     globeRef.current?.clearRegionFocus?.();
   }, []);
 
@@ -325,6 +309,7 @@ function Home() {
       setSelectedFaceSubregionId(null);
       setFaceRailMode('country');
       setSelectedSeaBasinId(null);
+      setSelectedTopOceanId(null);
       globeRef.current?.clearRegionFocus?.();
       return;
     }
@@ -335,6 +320,7 @@ function Home() {
     setSelectedFaceSubregionId(getDefaultFaceSubregionId(nextCategory));
     setFaceRailMode('country');
     setSelectedSeaBasinId(null);
+    setSelectedTopOceanId(null);
     globeRef.current?.clearRegionFocus?.();
     setCategoryFaceEpoch((epoch) => epoch + 1);
   }, [category, faceRegionsOpen, flightCinemaActive, globeMode]);
@@ -355,6 +341,7 @@ function Home() {
     setSelectedFaceSubregionId(next);
     setSelectedFaceRegionId(null);
     setSelectedSeaBasinId(null);
+    setSelectedTopOceanId(null);
     globeRef.current?.clearRegionFocus?.();
   }, [faceRailMode]);
 
@@ -363,6 +350,7 @@ function Home() {
     setFaceRailMode(nextMode);
     setSelectedFaceRegionId(null);
     setSelectedSeaBasinId(null);
+    setSelectedTopOceanId(null);
     globeRef.current?.clearRegionFocus?.();
   }, []);
 
@@ -390,61 +378,16 @@ function Home() {
     return () => window.clearInterval(timer);
   }, [faceRegionsOpen, category, categoryFaceEpoch]);
 
-  const visibleSeaBasins = useMemo(() => {
-    const seaMode = faceRailMode === 'sea';
-    const pickBounds = seaMode && seaRailPickContext
-      ? seaRailPickContext.bounds
-      : mapViewSnapshot?.bounds;
-    const pickCenter = seaMode && seaRailPickContext
-      ? seaRailPickContext.center
-      : mapViewSnapshot?.center;
-
-    const picked = pickSeaBasinsForRail({
-      viewBounds: pickBounds || null,
-      viewCenter: pickCenter || null,
+  const seaBasinHierarchy = useMemo(() => {
+    if (faceRailMode !== 'sea') return null;
+    return buildHierarchicalSeaBasinRail({
+      selectedTopOceanId,
+      selectedSeaBasinId,
+      viewBounds: mapViewSnapshot?.bounds || null,
+      viewCenter: mapViewSnapshot?.center || null,
       category,
-      selectedBasinId: seaMode ? selectedSeaBasinId : null,
-      seaMode,
     });
-    const stabilized = stabilizeSeaBasinList(
-      stableSeaBasinsRef.current,
-      picked,
-      { preventShrink: seaMode },
-    );
-    stableSeaBasinsRef.current = stabilized;
-    return stabilized;
-  }, [faceRailMode, selectedSeaBasinId, seaRailPickContext, mapViewSnapshot, category]);
-
-  useEffect(() => {
-    if (faceRailMode !== 'sea') {
-      setSeaRailPickContext(null);
-      return;
-    }
-    setSeaRailPickContext((prev) => {
-      if (selectedSeaBasinId) {
-        return buildSeaRailPickContext(selectedSeaBasinId) || prev;
-      }
-      if (prev?.bounds) return prev;
-      return buildSeaRailPickContext(null) || prev;
-    });
-  }, [
-    faceRailMode,
-    category,
-    categoryFaceEpoch,
-    faceRegionsOpen,
-    mapViewSnapshot,
-    selectedSeaBasinId,
-    buildSeaRailPickContext,
-  ]);
-
-  useEffect(() => {
-    stableSeaBasinsRef.current = [];
-  }, [category, categoryFaceEpoch, faceRegionsOpen, faceRailMode]);
-
-  useEffect(() => {
-    if (faceRailMode !== 'sea') return;
-    stableSeaBasinsRef.current = [];
-  }, [selectedSeaBasinId, faceRailMode]);
+  }, [faceRailMode, selectedTopOceanId, selectedSeaBasinId, mapViewSnapshot, category]);
 
   const handleRelatedPlaceClickWithCinemaExit = useCallback((placeData, isBridge) => {
     if (flightCinemaActive) {
@@ -1065,8 +1008,31 @@ function Home() {
       dismissPlaceSelectionKeepGlobePin();
     }
     setSelectedSeaBasinId(null);
+    setSelectedTopOceanId(null);
     setSelectedFaceRegionId(region.id);
     globeRef.current?.flyToRegion?.(region);
+  }, [
+    dismissPlaceSelectionKeepGlobePin,
+    flightCinemaActive,
+    routeLocation.pathname,
+    selectedLocation,
+  ]);
+
+  const handleTopOceanSelect = useCallback((ocean) => {
+    if (!ocean?.id) return;
+    if (flightCinemaActive) {
+      globeRef.current?.closeFlightCinema?.();
+    }
+    if (selectedLocation && routeLocation.pathname === '/') {
+      dismissPlaceSelectionKeepGlobePin();
+    }
+    setSelectedFaceRegionId(null);
+    setSelectedTopOceanId(ocean.id);
+    setSelectedSeaBasinId(null);
+    const flyRegion = topOceanToFlyRegion(ocean.id);
+    if (flyRegion) {
+      globeRef.current?.flyToRegion?.(flyRegion);
+    }
   }, [
     dismissPlaceSelectionKeepGlobePin,
     flightCinemaActive,
@@ -1085,11 +1051,8 @@ function Home() {
       dismissPlaceSelectionKeepGlobePin();
     }
     setSelectedFaceRegionId(null);
+    setSelectedTopOceanId(resolveTopOceanForBasin(basin));
     setSelectedSeaBasinId(basin.id);
-    setSeaRailPickContext({
-      bounds: resolveSeaBasinListPickBounds(basin.id),
-      center: basin.center || null,
-    });
     globeRef.current?.flyToRegion?.(flyRegion);
   }, [
     dismissPlaceSelectionKeepGlobePin,
@@ -1209,9 +1172,10 @@ function Home() {
           onFaceSubregionSelect={handleFaceSubregionSelect}
           faceRailMode={faceRailMode}
           onFaceRailModeChange={handleFaceRailModeChange}
-          visibleSeaBasins={visibleSeaBasins}
+          seaBasinHierarchy={seaBasinHierarchy}
           selectedSeaBasinId={selectedSeaBasinId}
           onSeaBasinSelect={handleSeaBasinSelect}
+          onTopOceanSelect={handleTopOceanSelect}
           isTickerExpanded={isTickerExpanded} setIsTickerExpanded={setIsTickerExpanded}
           isPinVisible={isPinVisible} onTogglePinVisibility={() => setIsPinVisible(prev => !prev)}
           globeTheme={globeTheme} onThemeToggle={handleThemeToggle}

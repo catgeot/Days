@@ -42,3 +42,13 @@
 - **요청**: 대양→중위권역→소해역 **고정 계층 리스트** (뷰포트 1줄 동적 칩 대체) · 바다 토글 시인성 1단 하향 · 중분류 칩은 **후순위**
 - **SSOT**: `seaBasins` `parentOcean`/`tier` · `seaBasinRail.js` · `GlobeFaceRegionRail.jsx` · `SeaBasinListButton`
 - **다음 제시어**: `feature-handoff-index.md` 활성 행 참고
+
+## 해안 해양 탐색 #10, 계층 해역 리스트·바다버튼 톤다운
+
+**상태**: `main` tip (로컬 커밋 대기) · PROD QA  
+**세션**: `해안 해양 탐색 #10, 계층 해역 리스트·바다버튼 톤다운`
+
+- **한 일**: `buildHierarchicalSeaBasinRail` 3단(대양·tier2·tier1) · `seaRailPickContext`/`pickVisibleSeaBasins` 레일 경로 제거 · `SeaBasinListButton` prominent 글로우·ring 완화
+- **VERIFY**: `smoke:sea-basin-rail` · `audit:sea-basins` · `build` PASS
+- **PROD QA**: https://www.gateo.kr/ — 바다 탭 → 1단 대양 4개 고정 · 2단 중위 · 줌/선택 시 3단 소해역 · 바다 버튼 톤 나라 칩과 균형
+- **보류**: 중분류 칩(소권역형) — 별 세션
