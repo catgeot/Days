@@ -406,9 +406,9 @@ function HistoryList({
                 }}
                 aria-label={`${item.location} 추천 삭제`}
                 title="취향에 안 맞음 · 목록에서 삭제"
-                className="flex-shrink-0 self-center mr-2 p-2 rounded-full text-gray-400 hover:text-rose-500 hover:bg-rose-50 transition-colors"
+                className="flex-shrink-0 self-center mr-2 p-2 rounded-full border border-gray-200/90 bg-white/80 text-gray-500 hover:text-rose-600 hover:bg-rose-50 hover:border-rose-200 transition-colors"
               >
-                <Trash2 size={15} aria-hidden="true" />
+                <Trash2 size={16} aria-hidden="true" />
               </button>
             </div>
 
