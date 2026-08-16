@@ -33,4 +33,5 @@
 - **한 일**: `syncGateoMarkerLayers` 해역 하이라이트 분기 · fly `moveend` 재적용 · 바다 모드 소권역 auto-sync 차단 · 상단 해역명 pill
 - **VERIFY**: `smoke-sea-basin-rail` · `audit:sea-basins` · `build` PASS · `main` push
 - **PROD QA**: https://www.gateo.kr/ — 바다 탭 → 해역 선택 → fill 유지·상단 해역명 확인
-- **후속**: HTML pill → 지도 심볼 지명(`gateo-sea-basin-highlight-label`) · Mapbox marine 라벨 강조 · `main` `fix` push
+- **후속**: HTML pill → 지도 심볼 지명 · Mapbox marine 라벨 강조 · `main` push
+- **#8**: 소해역 선택 시 칩 리스트·핀 범위 붕괴 — parentOcean bbox pick · 핀 필터 제거(하이라이트만)
