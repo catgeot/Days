@@ -8,6 +8,14 @@
 
 // geoBoundaries GBR ADM1 · UK 구성국 (CC BY 4.0) · 글로브용 간소화
 import ukSubdivisionGeoJSONByIso3166_2 from '../data/globeSubdivisionUk.json';
+import {
+  DEFAULT_SETTLE_ZOOM,
+  DISPUTED_PEAK_OPACITY,
+  FILL_PEAK_OPACITY,
+  HALO_PEAK_OPACITY,
+  LINE_PEAK_OPACITY,
+  opacityExprFromSettle,
+} from './globeRegionHighlightOpacity.js';
 
 export const REGION_HIGHLIGHT_COUNTRIES_SOURCE_ID = 'gateo-region-highlight-countries';
 export const REGION_HIGHLIGHT_FILL_ID = 'gateo-region-highlight-fill';
@@ -87,38 +95,9 @@ const HIGHLIGHT_FILL = '#7c3aed';
 const HIGHLIGHT_LINE = '#fbbf24';
 const HIGHLIGHT_HALO = 'rgba(251, 191, 36, 0.5)';
 
-/** 나라 포커스 중에는 저줌에서도 국경이 보이도록 */
-const HIGHLIGHT_MIN_ZOOM = 1.8;
+/** 나라 포커스 — Map minZoom(1)과 맞춤. 1.8이면 RU 등 저줌 fit에서 fill 미렌더 */
+const HIGHLIGHT_MIN_ZOOM = 1;
 const HIGHLIGHT_MAX_ZOOM = 22;
-
-/** fit 도착 줌 기준 상대 페이드 — 소국(고줌 fit)도 도착 시점에는 peak 유지 */
-const FILL_PEAK_OPACITY = 0.48;
-const LINE_PEAK_OPACITY = 0.95;
-const HALO_PEAK_OPACITY = 0.85;
-const DISPUTED_PEAK_OPACITY = 0.85;
-const DEFAULT_SETTLE_ZOOM = 4.2;
-
-/**
- * @param {number} settleZoom fit/도착 줌
- * @param {number} peak 도착 줌 이하에서의 불투명도
- */
-function opacityExprFromSettle(settleZoom, peak) {
-  const z = Number.isFinite(settleZoom) ? settleZoom : DEFAULT_SETTLE_ZOOM;
-  const zPeak = Math.max(HIGHLIGHT_MIN_ZOOM, z);
-  return [
-    'interpolate',
-    ['linear'],
-    ['zoom'],
-    zPeak,
-    peak,
-    zPeak + 0.8,
-    peak * 0.45,
-    zPeak + 1.6,
-    peak * 0.12,
-    zPeak + 2.4,
-    0,
-  ];
-}
 
 export function isRegionHighlightLayer(layerId = '') {
   const id = String(layerId);
