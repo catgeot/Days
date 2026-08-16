@@ -1192,21 +1192,36 @@ function Home() {
     }
     pendingTopOceanFlyRef.current = null;
     const hadQueuedFly = Boolean(seaBasinFlyTimerRef.current);
-    pendingSeaBasinFlyRef.current = { ...flyRegion, immediate: hadQueuedFly || hadPendingOceanFly };
+    const useImmediate = isMobileViewport || hadQueuedFly || hadPendingOceanFly;
+    logSeaExplore('basin.tap', {
+      id: basin.id,
+      immediate: useImmediate,
+      queued: hadQueuedFly,
+      mobile: isMobileViewport,
+    });
+    if (isMobileViewport && performance.memory) {
+      logSeaExplore('mem.mb', Math.round(performance.memory.usedJSHeapSize / 1048576));
+    }
+    pendingSeaBasinFlyRef.current = { ...flyRegion, immediate: useImmediate };
     if (seaBasinFlyTimerRef.current) {
       window.clearTimeout(seaBasinFlyTimerRef.current);
     }
+    const delayMs = isMobileViewport
+      ? (hadQueuedFly ? 32 : 72)
+      : (hadQueuedFly ? 50 : 160);
     seaBasinFlyTimerRef.current = window.setTimeout(() => {
       seaBasinFlyTimerRef.current = null;
       const region = pendingSeaBasinFlyRef.current;
       pendingSeaBasinFlyRef.current = null;
       if (region) {
+        logSeaExplore('basin.fly', { id: basin.id, immediate: region.immediate });
         globeRef.current?.flyToRegion?.(region);
       }
-    }, hadQueuedFly ? 50 : 160);
+    }, delayMs);
   }, [
     dismissPlaceSelectionKeepGlobePin,
     flightCinemaActive,
+    isMobileViewport,
     markSeaExploreBusy,
     routeLocation.pathname,
     selectedLocation,

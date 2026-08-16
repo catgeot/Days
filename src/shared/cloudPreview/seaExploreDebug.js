@@ -59,7 +59,12 @@ export function installSeaExploreDebugGlobalHooks() {
   if (globalHooksInstalled || !isSeaExploreDebugEnabled()) return;
   globalHooksInstalled = true;
   window.addEventListener('error', (event) => {
-    logSeaExplore('window.error', event.message || 'unknown');
+    const detail = [
+      event.message || 'unknown',
+      event.filename ? `@${String(event.filename).split('/').pop()}` : '',
+      event.lineno ? `:${event.lineno}` : '',
+    ].join('');
+    logSeaExplore('window.error', detail.trim());
   });
   window.addEventListener('unhandledrejection', (event) => {
     logSeaExplore('unhandledrejection', String(event.reason ?? 'unknown'));

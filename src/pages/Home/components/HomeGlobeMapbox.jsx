@@ -1699,16 +1699,17 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     const isSeaBasinFly = Boolean(region.seaBasinId);
     const immediate = Boolean(region.immediate);
+    const useJump = immediate || (isMobileDevice && isSeaBasinFly);
     const isCountryFocusFly = Boolean(region.iso || region.iso3166_2);
     logSeaExplore('flyToRegion', {
       id: region.id || region.seaBasinId || null,
       sea: isSeaBasinFly,
-      immediate,
+      immediate: useJump,
       country: isCountryFocusFly,
     });
     const gen = regionFlyGenRef.current + 1;
     regionFlyGenRef.current = gen;
-    regionFlyInProgressRef.current = isSeaBasinFly && !immediate;
+    regionFlyInProgressRef.current = isSeaBasinFly && !useJump;
 
     const applyRegionFocusVisual = ({ emphasizeMarine = true } = {}) => {
       if (regionFlyGenRef.current !== gen) return;
@@ -1716,7 +1717,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       if (focusedFaceRegionRef.current?.seaBasinId) {
         setSeaBasinHighlight(map, focusedFaceRegionRef.current);
         if (emphasizeMarine) {
-          emphasizeMapboxMarineLabels(map, { force: true });
+          emphasizeMapboxMarineLabels(map, { force: !isMobileDevice });
         }
       } else if (focusedFaceRegionRef.current) {
         setRegionHighlight(map, focusedFaceRegionRef.current);
@@ -1745,10 +1746,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     try {
       map.stop();
-      if (immediate) {
+      if (useJump) {
         map.jumpTo(camera);
         if (isSeaBasinFly) {
-          applyRegionFocusVisual({ emphasizeMarine: false });
+          applyRegionFocusVisual({ emphasizeMarine: !isMobileDevice });
         }
         return true;
       }

@@ -11,7 +11,7 @@
 | | |
 |--|--|
 | **완료** | 대양·해역 연속 탭 QA 통과 · #14 fix |
-| **#16** | 모바일 대양 2턴 크래시 — ocean fly 모바일 jumpTo · highlight churn 제거 · `?debug=sea` 온스크린 로그 |
+| **#16b** | 로그 분석 — 해역 `immediate:false` 900ms fly 누적 → 모바일 해역도 항상 jumpTo |
 | **읽을 것** | `index.jsx` `handleSeaBasinSelect` · `HomeGlobeMapbox.jsx` `flyToRegion` · `globeRegionHighlight.js` · 일지 #12·#12b |
 | **금지** | 새 브랜치 · `seaBasins.json` 직편집 · UI 리디자인 · computerUse QA |
 | **VERIFY** | `smoke-sea-basin-rail` · `build` |
