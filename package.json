@@ -84,6 +84,7 @@
     "smoke:curation-image-resolve": "node scripts/smoke-curation-image-resolve.mjs",
 
     "smoke:globe-face-neighbor-order": "node scripts/smoke-globe-face-neighbor-order.mjs",
+    "smoke:globe-country-silhouette-zoom": "node scripts/smoke-globe-country-silhouette-zoom.mjs",
     "smoke:gyg-activities-query": "node scripts/smoke-gyg-activities-query.mjs",
     "audit:flight-route-gaps": "node scripts/audit-flight-route-gaps.mjs",
     "generate:graph-direct-review": "node scripts/generate-graph-direct-review-list.mjs",
