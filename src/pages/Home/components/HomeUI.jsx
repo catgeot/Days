@@ -42,7 +42,7 @@ const MOBILE_QUICK_LINKS = [
   },
   {
     to: '/blog/curation',
-    shortLabel: 'AI',
+    shortLabel: '추천',
     label: 'AI 큐레이션',
     icon: Sparkles,
     chipClass:
