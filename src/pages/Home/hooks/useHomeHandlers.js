@@ -754,6 +754,12 @@ export function useHomeHandlers({
         return querySpot;
       }
 
+      const seaSpot = pickSeaBasinCurationSpot(query, category);
+      if (seaSpot) {
+        handleLocationSelect(seaSpot);
+        return seaSpot;
+      }
+
       // 큐레이션 명소 exact (낙산사·에펠탑) → 바로 핀
       const hubAttractionHit = resolveHubAttraction(query);
       if (hubAttractionHit) {
@@ -1046,6 +1052,11 @@ export function useHomeHandlers({
 
     // 감정 키워드(번아웃·설렘 등)·문장부호는 지오코딩 스킵 → AI 무드 큐레이션 유지
     // (Mapbox가 "힐링" 등을 임의 POI로 잡는 회귀 방지). 시설·일반 지명은 기존처럼 geocode.
+    const seaSpotBeforeGeocode = pickSeaBasinCurationSpot(query, category);
+    if (seaSpotBeforeGeocode) {
+      return commitLocation(seaSpotBeforeGeocode);
+    }
+
     const coords = shouldSkipGeocodeForMood(query)
       ? null
       : await getCoordinatesFromAddress(query);

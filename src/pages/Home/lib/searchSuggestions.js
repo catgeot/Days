@@ -7,6 +7,7 @@
  */
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve.js';
+import { resolveSeaBasinFromQuery } from './seaBasinResolve.js';
 import {
   matchCityAttractionHubsPrefix,
   resolveCityAttractionHub,
@@ -394,6 +395,15 @@ export async function buildCuratedEnterDisambiguation(query) {
   const querySpot = resolveTravelSpotFromSearchQuery(q);
   if (querySpot) {
     return ensureDisambiguation(q, [spotToSuggestion(querySpot)], `'${querySpot.name}' → 이 여행지로 갈까요?`);
+  }
+
+  const seaHit = resolveSeaBasinFromQuery(q);
+  if (seaHit?.spots?.length) {
+    return ensureDisambiguation(
+      q,
+      seaHit.spots.map((spot) => spotToSuggestion(spot)),
+      `'${seaHit.basin.name}' 해역 — 여행지를 골라주세요`,
+    );
   }
 
   return null;
