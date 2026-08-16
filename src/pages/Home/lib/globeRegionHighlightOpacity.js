@@ -8,6 +8,11 @@ export const DEFAULT_SETTLE_ZOOM = 4.2;
 /** 줌 아웃(전체 위치 확인) 시 peak 유지 · 추가 확대(줌 인) 시에만 옅어짐 */
 export const HIGHLIGHT_OPACITY_FLOOR_ZOOM = 1;
 
+/** settle 대비 줌 인 페이드 구간 — 값이 클수록 확대해도 fill이 오래 유지 */
+export const HIGHLIGHT_ZOOM_IN_FADE_START_OFFSET = 1.5;
+export const HIGHLIGHT_ZOOM_IN_FADE_MID_OFFSET = 3;
+export const HIGHLIGHT_ZOOM_IN_FADE_END_OFFSET = 4.5;
+
 /**
  * @param {number} settleZoom fit/도착 줌
  * @param {number} peak 도착 줌 이하에서의 불투명도
@@ -23,12 +28,28 @@ export function opacityExprFromSettle(settleZoom, peak) {
     peak,
     zPeak,
     peak,
-    zPeak + 0.8,
+    zPeak + HIGHLIGHT_ZOOM_IN_FADE_START_OFFSET,
     peak * 0.45,
-    zPeak + 1.6,
+    zPeak + HIGHLIGHT_ZOOM_IN_FADE_MID_OFFSET,
     peak * 0.12,
-    zPeak + 2.4,
+    zPeak + HIGHLIGHT_ZOOM_IN_FADE_END_OFFSET,
     0,
+  ];
+}
+
+/**
+ * @param {number} settleZoom
+ * @returns {[number, number, number, number, number]}
+ */
+export function resolveHighlightZoomInFadeStops(settleZoom) {
+  const z = Number.isFinite(settleZoom) ? settleZoom : DEFAULT_SETTLE_ZOOM;
+  const zPeak = Math.max(HIGHLIGHT_OPACITY_FLOOR_ZOOM, z);
+  return [
+    HIGHLIGHT_OPACITY_FLOOR_ZOOM,
+    zPeak,
+    zPeak + HIGHLIGHT_ZOOM_IN_FADE_START_OFFSET,
+    zPeak + HIGHLIGHT_ZOOM_IN_FADE_MID_OFFSET,
+    zPeak + HIGHLIGHT_ZOOM_IN_FADE_END_OFFSET,
   ];
 }
 
@@ -44,9 +65,9 @@ export function sampleOpacityAtZoom(settleZoom, peak, zoom) {
   const stops = [
     [HIGHLIGHT_OPACITY_FLOOR_ZOOM, peak],
     [zPeak, peak],
-    [zPeak + 0.8, peak * 0.45],
-    [zPeak + 1.6, peak * 0.12],
-    [zPeak + 2.4, 0],
+    [zPeak + HIGHLIGHT_ZOOM_IN_FADE_START_OFFSET, peak * 0.45],
+    [zPeak + HIGHLIGHT_ZOOM_IN_FADE_MID_OFFSET, peak * 0.12],
+    [zPeak + HIGHLIGHT_ZOOM_IN_FADE_END_OFFSET, 0],
   ];
   if (zoom <= stops[0][0]) return stops[0][1];
   for (let i = 1; i < stops.length; i += 1) {
