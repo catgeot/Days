@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import { Globe, LogOut } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { PenNameProvider } from '../context/PenNameContext';
 
 const DailyLayout = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState(null);
+  const hideMobileBlogChrome = location.pathname.startsWith('/blog/curation');
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -31,7 +33,11 @@ const DailyLayout = () => {
   return (
     <div className="flex flex-col md:flex-row h-screen w-full bg-gray-50 text-gray-900 overflow-hidden">
 
-      <div className="md:hidden w-full h-14 bg-white flex items-center justify-between px-4 shrink-0 border-b border-gray-200 z-50">
+      <div
+        className={`md:hidden w-full min-h-14 shrink-0 border-b border-gray-200 z-50 bg-white flex items-center justify-between px-4 pt-[env(safe-area-inset-top,0px)] ${
+          hideMobileBlogChrome ? 'hidden' : ''
+        }`}
+      >
         <button
           onClick={handleGoHome}
           className="text-gray-600 hover:text-gray-900 flex items-center gap-2 transition-colors"

@@ -460,6 +460,16 @@ function Home() {
   /** /place X 닫기 등 — 홈 복귀 시 써머리 재오픈 생략(핀 flyTo는 유지) */
   const skipHomeSummaryRestoreRef = useRef(false);
   const placeRouteSyncRef = useRef(0);
+  const dismissRotateResumeTimerRef = useRef(null);
+
+  const clearDismissRotateResumeTimer = useCallback(() => {
+    if (dismissRotateResumeTimerRef.current != null) {
+      window.clearTimeout(dismissRotateResumeTimerRef.current);
+      dismissRotateResumeTimerRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => () => clearDismissRotateResumeTimer(), [clearDismissRotateResumeTimer]);
 
   const rememberGlobeFocus = useCallback((loc) => {
     if (!hasValidCoords(loc)) return;
@@ -484,6 +494,13 @@ function Home() {
     selectedLocationRef.current = pin;
     handleLocationSelect(pin);
 
+    window.setTimeout(() => {
+      globeRef.current?.wakeAfterOverlay?.();
+      if (hasValidCoords(pin)) {
+        moveToLocation(pin.lat, pin.lng, pin.name, pin.category || category, { location: pin });
+      }
+    }, 150);
+
     if (pending.openMooni) {
       const boundSpot = buildMooniBoundSpotFromLocation(pin);
       if (boundSpot?.name) {
@@ -492,7 +509,7 @@ function Home() {
         }, 280);
       }
     }
-  }, [category, handleLocationSelect, handleStartChat, rememberGlobeFocus]);
+  }, [category, handleLocationSelect, handleStartChat, moveToLocation, rememberGlobeFocus]);
 
   useEffect(() => {
     if (!selectedLocation) {
@@ -990,10 +1007,25 @@ function Home() {
   /** 써머리·투어 UI만 닫고 지구본 마지막 방문 핀은 유지 */
   const dismissPlaceSelectionKeepGlobePin = useCallback(() => {
     if (selectedLocation) {
-      // 모바일·PC 공통: 카드만 닫고 확대(줌) 유지 — 「넓게 보기」로만 원상복구
-      globeRef.current?.clearImmerseState?.();
+      const lat = Number(selectedLocation.lat);
+      const lng = Number(selectedLocation.lng);
+      const hasCoords = Number.isFinite(lat) && Number.isFinite(lng);
+      const immersed = isPlaceImmersed || globeRef.current?.isImmersed?.();
+
+      if (immersed && hasCoords) {
+        globeRef.current?.exitImmerse?.(lat, lng);
+      } else {
+        globeRef.current?.clearImmerseState?.();
+      }
+
       addScoutPin(selectedLocation);
       rememberGlobeFocus(selectedLocation);
+
+      if (hasCoords) {
+        moveToLocation(lat, lng, selectedLocation.name, selectedLocation.category || category, {
+          location: selectedLocation,
+        });
+      }
     }
     setIsCardExpanded(false);
     setSelectedLocation(null);
@@ -1003,13 +1035,29 @@ function Home() {
     if (globeRef.current?.getGlobeMode?.() !== GLOBE_MODE.GLOBE_2D) {
       globeRef.current?.endTour?.();
     }
-    globeRef.current?.resumeRotation?.();
+    globeRef.current?.pauseRotation?.();
+    clearDismissRotateResumeTimer();
+    dismissRotateResumeTimerRef.current = window.setTimeout(() => {
+      dismissRotateResumeTimerRef.current = null;
+      globeRef.current?.resumeRotation?.();
+    }, 3000);
     if (isMobileViewport) {
       bumpHomeChromeEpoch();
       syncHomeChromeAfterNavigation();
       globeRef.current?.wakeAfterOverlay?.();
     }
-  }, [addScoutPin, bumpHomeChromeEpoch, rememberGlobeFocus, selectedLocation, setSelectedLocation, isMobileViewport]);
+  }, [
+    addScoutPin,
+    bumpHomeChromeEpoch,
+    category,
+    clearDismissRotateResumeTimer,
+    isPlaceImmersed,
+    moveToLocation,
+    rememberGlobeFocus,
+    selectedLocation,
+    setSelectedLocation,
+    isMobileViewport,
+  ]);
 
   /** 나라 칩 포커스 시 써머리만 닫고 국가 단위 fitBounds — PC는 카드와 메뉴 동시 표시 */
   const handleFaceRegionSelect = useCallback((region) => {

@@ -2,6 +2,15 @@
 
 직전: [`2026-08-13-project-log.md`](./2026-08-13-project-log.md)
 
+## 큐레이션 모바일 sticky·하단 CTA
+
+**상태**: `cursor/curation-mobile-header-f821` · PR 대기  
+**세션**: 큐레이션 모바일 고정 헤더·하단 버튼
+
+- **증상**: 모바일 sticky 바가 상태바(안전영역)까지 확장 · GATEO 바는 PC만 없음 · 하단 「새로운 낙원 찾기」 중복
+- **한 일**: `/blog/curation` 모바일 GATEO 바 숨김 · sticky `top: env(safe-area-inset-top)` · 목록 하단 CTA 제거(상단 유지)
+- **VERIFY**: `npm run build`
+
 ## 해안 해양 탐색 #6, 바다 리스트 최적화
 
 **상태**: `cursor/coast-sea-plan-8c05` tip `4c293544` · PR [#118](https://github.com/catgeot/Days/pull/118)  
