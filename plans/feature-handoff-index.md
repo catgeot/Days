@@ -14,26 +14,28 @@
 
 ## 활성 목록
 
-### 해안·해양 탐색
+### 해안·해양 탐색 (모바일 크래시 — PR #122)
 
 | | |
 |--|--|
-| **상태** | **main 병합 완료** (2026-08-16) · PROD 배포 후 QA |
-| **브랜치** | `cursor/coast-sea-plan-8c05` → `main` |
-| **PR** | [#118](https://github.com/catgeot/Days/pull/118) |
-| **main tip** | `906c4765` — #11 대양 중분류 칩·바다버튼 제거 |
-| **플랜** | [`coast-sea-explore-plan.md`](./coast-sea-explore-plan.md) §4.6·§9 |
-| **일지** | [`2026-08-16-project-log.md`](./2026-08-16-project-log.md) |
-| **PROD QA** | `https://www.gateo.kr/` — 소권역 바 **대양 칩**(면당) · 배타 · 바다 버튼 없음 |
-| **VERIFY** | `smoke-sea-basin-rail` · `audit:sea-basins` · `build` |
+| **상태** | **열림** · 대양 4개 순환 OK · **해역(tier2/3) 연속 탭 → 모바일 다운 잔존** |
+| **브랜치** | `cursor/ocean-chip-crash-1ed2` (**재사용** · 새 브랜치 금지) |
+| **PR** | [#122](https://github.com/catgeot/Days/pull/122) |
+| **tip** | `75037292` |
+| **플랜** | [`coast-sea-explore-plan.md`](./coast-sea-explore-plan.md) §9 |
+| **일지** | [`2026-08-16-project-log.md`](./2026-08-16-project-log.md) — 「에이전트 핸드오프」 |
+| **Preview** | `https://days-git-cursor-ocean-chip-crash-1ed2-catgeots-projects.vercel.app/` (Mapbox 호스트 1회 등록) |
+| **VERIFY** | `smoke-sea-basin-rail` · `build` |
 
 **다음 제시어**:
 
 ```
-해안 해양 탐색 #12, 해역 탐색 QA·미세 조정
+해안 해양 탐색 #14, 모바일 해역 연속 탭 크래시
 @plans/feature-handoff-index.md
 @plans/2026-08-16-project-log.md
-브랜치 main · PROD QA · smoke:sea-basin-rail
+@plans/coast-sea-explore-plan.md
+브랜치 cursor/ocean-chip-crash-1ed2 · PR #122 · Preview QA
+금지: main 새 브랜치 · seaBasins.json 직접 편집 · UI 리디자인 · computerUse QA
 ```
 
 ---

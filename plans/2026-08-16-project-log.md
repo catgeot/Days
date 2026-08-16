@@ -2,6 +2,21 @@
 
 직전: [`2026-08-13-project-log.md`](./2026-08-13-project-log.md)
 
+## 에이전트 핸드오프 — 모바일 해역 연속 탭 (#14)
+
+**세션**: `해안 해양 탐색 #14, 모바일 해역 연속 탭 크래시`  
+**브랜치**: `cursor/ocean-chip-crash-1ed2` · **PR [#122](https://github.com/catgeot/Days/pull/122)**  
+**Preview**: `https://days-git-cursor-ocean-chip-crash-1ed2-catgeots-projects.vercel.app/` (Mapbox URL 1회 등록)
+
+| | |
+|--|--|
+| **완료 (#13b)** | 대양 4개 순환 OK · `handleTopOceanSelect` coalesce · TDZ 검은 화면 hotfix |
+| **잔존** | 대양 선택 후 **해역(tier2/3) 몇 차례 연속 탭** → 모바일 다운 (PC #12·#12b와 유사 추정) |
+| **읽을 것** | `index.jsx` `handleSeaBasinSelect` · `HomeGlobeMapbox.jsx` `flyToRegion` · `globeRegionHighlight.js` · 일지 #12·#12b |
+| **금지** | 새 브랜치 · `seaBasins.json` 직편집 · UI 리디자인 · computerUse QA |
+| **VERIFY** | `smoke-sea-basin-rail` · `build` |
+| **QA** | 모바일 Preview — 휴양→태평양→…→지중해 순환 후 각 해역 리스트 5~10회 연속 탭 |
+
 ## 모바일 대양 칩 연속 탭 크래시
 
 - **증상**: 지구본 홈 대양 대분류 칩 2회+ 연속 탭 시 모바일 탭 다운
