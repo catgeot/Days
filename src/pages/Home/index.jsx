@@ -323,15 +323,19 @@ function Home() {
 
   const handleFaceSubregionSelect = useCallback((subregionId) => {
     const next = subregionId || null;
+    const switchingFromSea = faceRailMode === 'sea';
     // 모바일·PC 소권역 바가 둘 다 기본값을 sync할 때 동일 id로 clear되면
-    // 방금 고른 나라 fill이 바로 사라진다.
-    if (selectedFaceSubregionIdRef.current === next) return;
+    // 방금 고른 나라 fill이 바로 사라진다. 바다 모드에서는 같은 칩 재탭도 나라 목록으로.
+    if (!switchingFromSea && selectedFaceSubregionIdRef.current === next) return;
     selectedFaceSubregionIdRef.current = next;
+    if (switchingFromSea) {
+      setFaceRailMode('country');
+    }
     setSelectedFaceSubregionId(next);
     setSelectedFaceRegionId(null);
     setSelectedSeaBasinId(null);
     globeRef.current?.clearRegionFocus?.();
-  }, []);
+  }, [faceRailMode]);
 
   const handleFaceRailModeChange = useCallback((nextMode) => {
     if (nextMode !== 'country' && nextMode !== 'sea') return;

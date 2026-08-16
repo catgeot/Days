@@ -53,8 +53,8 @@ export function SeaBasinListButton({ active = false, onClick, compact = false, p
   const shellClass = prominent
     ? `w-[4.25rem] rounded-lg border px-1.5 py-1.5 text-[10px] ${
         active
-          ? 'border-cyan-400/70 bg-cyan-500/30 text-cyan-50 shadow-[0_0_12px_rgba(34,211,238,0.45)]'
-          : 'border-cyan-400/40 bg-black/70 text-cyan-100 shadow-[0_0_8px_rgba(34,211,238,0.22)]'
+          ? 'border-cyan-400/90 bg-cyan-500/35 text-white shadow-[0_0_14px_rgba(34,211,238,0.55)] ring-1 ring-cyan-400/40'
+          : 'border-cyan-400/70 bg-cyan-500/30 text-cyan-50 shadow-[0_0_12px_rgba(34,211,238,0.45)]'
       }`
     : compact
       ? 'w-[4.25rem] rounded-lg px-1.5 py-1.5 text-[10px]'
@@ -327,10 +327,10 @@ export default function GlobeFaceRegionRail({
 }) {
   const isSeaMode = railMode === 'sea';
   const subregions = useMemo(
-    () => (!isSeaMode && showSubregions ? getFaceSubregions(category) : []),
-    [category, showSubregions, isSeaMode],
+    () => (showSubregions ? getFaceSubregions(category) : []),
+    [category, showSubregions],
   );
-  const showSubregionChips = !isSeaMode && showSubregions && shouldShowFaceSubregionChips(category) && subregions.length > 0;
+  const showSubregionChips = showSubregions && shouldShowFaceSubregionChips(category) && subregions.length > 0;
   const renderSideChips = showSubregionChips && subregionPlacement === 'side';
 
   const activeSubregionId = useActiveSubregionId(
@@ -586,7 +586,6 @@ export default function GlobeFaceRegionRail({
   return (
     <div className={`pointer-events-auto relative flex flex-row items-start gap-2 ${className}`}>
       <GlassScrollStyles />
-      {!isSeaMode ? (
       <div
         className={`flex ${resolvedListHeight} flex-col gap-1 overflow-y-auto ${GLASS_SCROLL_CLASS} pr-1`}
         role="listbox"
@@ -612,7 +611,6 @@ export default function GlobeFaceRegionRail({
           );
         })}
       </div>
-      ) : null}
       {isSeaMode ? seaList : countryList}
     </div>
   );

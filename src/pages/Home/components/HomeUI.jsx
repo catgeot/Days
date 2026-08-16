@@ -116,7 +116,6 @@ const HomeUI = React.memo(({
   const mobileRegionsAuxRef = useRef(null);
   const showMobileSubregionBar = Boolean(
     selectedCategory
-    && faceRailMode !== 'sea'
     && shouldShowFaceSubregionChips(selectedCategory)
     && mobileRegionsExpanded,
   );
