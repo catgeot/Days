@@ -3,7 +3,7 @@
  */
 import coastJson from '../data/travelSpotCoast.json' with { type: 'json' };
 import { GLOBE_FACE_CENTER_BY_CATEGORY } from './globeCategoryFocus.js';
-import { listChipSeaBasins } from './seaBasinResolve.js';
+import { listChipSeaBasins, listRailSeaBasins } from './seaBasinResolve.js';
 
 const coastSpots = coastJson.spots || {};
 
@@ -238,7 +238,7 @@ export function pickVisibleSeaBasins({
 
 /** @param {string} basinId */
 export function getSeaBasinById(basinId) {
-  return listChipSeaBasins(1).find((b) => b.id === basinId) || null;
+  return listRailSeaBasins().find((b) => b.id === basinId) || null;
 }
 
 /**
@@ -300,6 +300,11 @@ function isSmallSeaBasin(basin, activeOceanId) {
   if (activeOceanId === 'atlantic' && basin.id === 'mediterranean') return false;
   if (activeOceanId === 'mediterranean' && basin.id === 'mediterranean') return false;
   return true;
+}
+
+function isLabelSeaBasin(basin, activeOceanId) {
+  if (!basin || basin.tier !== 3) return false;
+  return basin.parentOcean === activeOceanId;
 }
 
 /**
@@ -440,7 +445,7 @@ export function buildHierarchicalSeaBasinRail({
   category = null,
   omitTopOceans = false,
 } = {}) {
-  const chipBasins = listChipSeaBasins(1);
+  const chipBasins = listRailSeaBasins();
   let activeTopOceanId = selectedTopOceanId;
   if (!activeTopOceanId && selectedSeaBasinId) {
     activeTopOceanId = resolveTopOceanForBasin(getSeaBasinById(selectedSeaBasinId));
@@ -466,11 +471,18 @@ export function buildHierarchicalSeaBasinRail({
       .sort(sortBasinsByWeight)
     : [];
 
+  const labelSeas = showSmallSeas
+    ? chipBasins
+      .filter((b) => isLabelSeaBasin(b, activeTopOceanId))
+      .sort(sortBasinsByWeight)
+    : [];
+
   return {
     topOceans: omitTopOceans ? [] : SEA_BASIN_TOP_OCEANS,
     activeTopOceanId,
     midRegions,
     smallSeas,
+    labelSeas,
     showSmallSeas,
     omitTopOceans,
   };

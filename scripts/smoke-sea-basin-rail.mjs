@@ -148,8 +148,26 @@ if (slugs.length < 2) {
 }
 
 const urbanOceans = getFaceSeaOceans('urban');
-if (!urbanOceans.some((o) => o.id === 'mediterranean')) {
-  console.error(`FAIL urban face oceans expected mediterranean: ${urbanOceans.map((o) => o.id).join(',')}`);
+if (urbanOceans.length !== 4) {
+  console.error(`FAIL urban face oceans expected 4, got ${urbanOceans.length}: ${urbanOceans.map((o) => o.id).join(',')}`);
+  process.exit(1);
+}
+
+const medRail = buildHierarchicalSeaBasinRail({
+  selectedTopOceanId: 'mediterranean',
+  omitTopOceans: true,
+});
+if (medRail.midRegions.length < 1 || medRail.labelSeas.length < 3) {
+  console.error(`FAIL mediterranean rail too small mid=${medRail.midRegions.length} label=${medRail.labelSeas.length}`);
+  process.exit(1);
+}
+
+const indianRail = buildHierarchicalSeaBasinRail({
+  selectedTopOceanId: 'indian',
+  omitTopOceans: true,
+});
+if (indianRail.midRegions.length < 1 || indianRail.labelSeas.length < 4) {
+  console.error(`FAIL indian rail too small mid=${indianRail.midRegions.length} label=${indianRail.labelSeas.length}`);
   process.exit(1);
 }
 
@@ -163,5 +181,5 @@ if (railOnly.topOceans.length !== 0 || railOnly.omitTopOceans !== true) {
 }
 
 console.log(
-  `PASS sea-basin-rail (hierarchy med=${hierarchy.midRegions.length} small=${hierarchy.smallSeas.length} urban=${urbanOceans.map((o) => o.id).join('+')})`,
+  `PASS sea-basin-rail (hierarchy med=${hierarchy.midRegions.length} small=${hierarchy.smallSeas.length} urban=${urbanOceans.map((o) => o.id).join('+')} medLabel=${medRail.labelSeas.length})`,
 );

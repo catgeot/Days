@@ -358,12 +358,13 @@ export default function GlobeFaceRegionRail({
 
   const seaListScrollKey = useMemo(() => {
     if (!seaBasinHierarchy) return null;
-    const { midRegions, smallSeas, showSmallSeas, activeTopOceanId } = seaBasinHierarchy;
+    const { midRegions, smallSeas, labelSeas, showSmallSeas, activeTopOceanId } = seaBasinHierarchy;
     return [
       activeTopOceanId || '',
       showSmallSeas ? 1 : 0,
       midRegions.map((b) => b.id).join(','),
       showSmallSeas ? smallSeas.map((b) => b.id).join(',') : '',
+      showSmallSeas ? labelSeas.map((b) => b.id).join(',') : '',
     ].join('|');
   }, [seaBasinHierarchy]);
 
@@ -541,6 +542,7 @@ export default function GlobeFaceRegionRail({
       topOceans,
       midRegions,
       smallSeas,
+      labelSeas,
       showSmallSeas,
       omitTopOceans,
       activeTopOceanId,
@@ -574,6 +576,14 @@ export default function GlobeFaceRegionRail({
         {showSmallSeas && smallSeas.length > 0 ? (
           <div className="mt-1 flex flex-col gap-1" role="group" aria-label="소해역">
             {smallSeas.map((basin) => renderSeaBasinChip(basin, {
+              compact: true,
+              isActive: selectedSeaBasinId === basin.id,
+            }))}
+          </div>
+        ) : null}
+        {showSmallSeas && labelSeas.length > 0 ? (
+          <div className="mt-1 flex flex-col gap-1" role="group" aria-label="광역 해역">
+            {labelSeas.map((basin) => renderSeaBasinChip(basin, {
               compact: true,
               isActive: selectedSeaBasinId === basin.id,
             }))}

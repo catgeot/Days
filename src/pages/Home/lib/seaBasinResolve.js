@@ -104,3 +104,15 @@ export function listChipSeaBasins(minSpots = 1) {
     })
     .filter((b) => b.spotCount >= minSpots);
 }
+
+/** 해역 탐색 레일 — tier 1–3 전체(스팟 유무 무관) */
+export function listRailSeaBasins() {
+  return basins
+    .filter((b) => b.tier === 1 || b.tier === 2 || b.tier === 3)
+    .map((b) => {
+      const n = Object.values(coastSpots).filter(
+        (e) => e.seaPrimary === b.id || (e.seaIds || []).includes(b.id)
+      ).length;
+      return { ...b, spotCount: n };
+    });
+}
