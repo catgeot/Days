@@ -130,6 +130,7 @@ const HomeUI = React.memo(({
     ),
     hasSubregionBar: showMobileSubregionBar,
     chromeEpoch: homeChromeEpoch,
+    faceRegionsOpen: Boolean(faceRegionsOpen && selectedCategory),
     bottomAuxRef: mobileRegionsAuxRef,
     categoryBarRef: mobileCategoryBarRef,
   });
