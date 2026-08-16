@@ -3,7 +3,8 @@
 ## 지금 쓰는 것
 
 - **프로젝트 컨텍스트(매 세션 권장)**: 루트의 [`.ai-context.md`](../.ai-context.md)
-- **Cloud 이어하기 · Preview 연속성**: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) · [`AGENTS.md`](../AGENTS.md) Cloud (세션 표기·**채팅명 제시어 §1.1**·고정 Preview·작업 로그)
+- **Cloud 이어하기 · Preview 연속성**: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) · [`AGENTS.md`](../AGENTS.md) Cloud (세션 표기·**§1.2 제시어 핀 3개**·고정 Preview·작업 로그)
+- **열린 feature main 핸드오프**: [`feature-handoff-index.md`](./feature-handoff-index.md) — 브랜치·PR·다음 제시어 복붙표
 - **오케스트레이터 (다배치 SSOT)**: [`orchestrator-method.md`](./orchestrator-method.md) · 제시어 `오케스트레이터`
 - **명소 hub 사전 큐**: [`city-attraction-hub-queue.md`](./city-attraction-hub-queue.md) (R48–R61 **소진** · tip 550 hub)
 - **GATEO 선정 명소 권역 보강 큐 ✅ 소진 (main #108)**: [`korea-scenic-hub-fill-queue.md`](./korea-scenic-hub-fill-queue.md) · 잔여 TODO = Tour contentId(~75) · `fill:korea-scenic-spot-content-ids`
