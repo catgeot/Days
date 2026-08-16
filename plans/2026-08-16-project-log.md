@@ -68,3 +68,13 @@
 - **원인**: 태평양 `topOceanToFlyRegion` bbox 경도 360° → Mapbox `fitBounds` 폭주 · 모바일 소권역 auto-sync 경쟁
 - **수정**: `clampOceanFlyBbox` · 대양 fly zoom 폴백 · ref로 배타 선택 경쟁 차단 · 모바일 레일 auto-sync 제거 · 해역 리스트 뷰 디바운스
 - **VERIFY**: `smoke:sea-basin-rail` · `build` PASS
+
+## 해안 해양 탐색 #12, 연속 해역 클릭 크래시
+
+**상태**: `cursor/sea-basin-rail-fly-2ab3` · Preview QA  
+**세션**: `해안 해양 탐색 #12, 연속 해역 클릭 크래시`
+
+- **증상**: 휴양·태평양 → 리스트 연속 클릭(남태평양→황해) 시 새로고침·다운
+- **수정**: `flyToRegion` generation 토큰 · 대양 선택 시 tier1 리스트 고정 · 해역 fly bbox 클램프 · 120ms fly coalesce
+- **VERIFY**: `smoke:sea-basin-rail` · `build` PASS
+- **PC QA**: 휴양 → 태평양 칩 → 해역 리스트 연속 클릭(황해 포함) — 새로고침·다운 없음
