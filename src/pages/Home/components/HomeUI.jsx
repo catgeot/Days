@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   User, Search, Ticket, MessageSquare, X, Trash2,
   Palmtree, Mountain, Building2, Landmark, Compass,
@@ -16,6 +16,7 @@ import Logo from './Logo';
 import TourMobileBar from './TourMobileBar';
 import GlobeFaceRegionRail, { GlobeFaceSubregionBar } from './GlobeFaceRegionRail';
 import { shouldShowFaceSubregionChips } from '../lib/globeFaceSubregions.js';
+import { useMobileFaceRegionListHeight } from '../hooks/useMobileFaceRegionListHeight';
 import { useTrendingData } from '../hooks/useTrendingData';
 import { CATEGORY_LABELS } from './SearchDiscovery/constants';
 
@@ -61,8 +62,29 @@ const HomeUI = React.memo(({
 }) => {
   const [, setInputValue] = useState('');
   const navigate = useNavigate();
+  const hideExploreChrome =
+    (isPlaceCardVisible && !isFlightCinema) || isFlightCinema;
   /** 모바일 나라 메뉴 — 펼침일 때만 목록 노출 · 숨김 시 지도 탐색 */
   const [mobileRegionsExpanded, setMobileRegionsExpanded] = useState(true);
+  const mobileCategoryBarRef = useRef(null);
+  const mobileRegionsAuxRef = useRef(null);
+  const showMobileSubregionBar = Boolean(
+    selectedCategory
+    && shouldShowFaceSubregionChips(selectedCategory)
+    && mobileRegionsExpanded,
+  );
+  const mobileRegionListHeight = useMobileFaceRegionListHeight({
+    enabled: Boolean(
+      !hideExploreChrome
+      && faceRegionsOpen
+      && selectedCategory
+      && mobileRegionsExpanded,
+    ),
+    hasSubregionBar: showMobileSubregionBar,
+    chromeEpoch: homeChromeEpoch,
+    bottomAuxRef: mobileRegionsAuxRef,
+    categoryBarRef: mobileCategoryBarRef,
+  });
 
   const trendingData = useTrendingData();
 
@@ -90,9 +112,6 @@ const HomeUI = React.memo(({
   };
   const ThemeIcon = getThemeConfig().icon;
 
-  const hideExploreChrome =
-    (isPlaceCardVisible && !isFlightCinema) || isFlightCinema;
-
   return (
     <>
       <div className="fixed top-0 left-0 right-0 z-[100] p-4 md:p-6 flex items-start gap-3 md:grid md:grid-cols-12 pointer-events-none w-full">
@@ -115,7 +134,9 @@ const HomeUI = React.memo(({
           */}
           <div
             aria-hidden="true"
-            className="pointer-events-auto absolute -inset-x-2 -inset-y-2 z-0 rounded-2xl bg-[#070707]/92"
+            className={`pointer-events-auto absolute -inset-x-2 -inset-y-2 z-0 rounded-2xl bg-[#070707]/92 ${
+              faceRegionsOpen && !isTourCinema ? 'max-md:-bottom-14' : ''
+            }`}
           />
           <div className="relative z-10 flex flex-col items-start gap-2">
             <div
@@ -258,9 +279,11 @@ const HomeUI = React.memo(({
                 subregionPlacement="none"
                 selectedSubregionId={selectedFaceSubregionId}
                 onSelectSubregion={onFaceSubregionSelect}
+                listHeightStyle={mobileRegionListHeight?.listHeightStyle ?? null}
                 className="mb-0.5"
               />
             ) : null}
+            <div ref={mobileRegionsAuxRef} className="flex w-full flex-col items-start gap-1.5">
             <div
               className={`pointer-events-auto flex w-[4.75rem] flex-col gap-1 rounded-xl border px-2 py-1.5 backdrop-blur-md transition-all ${
                 mobileRegionsExpanded
@@ -302,7 +325,7 @@ const HomeUI = React.memo(({
                 </span>
               </button>
             </div>
-            {mobileRegionsExpanded && shouldShowFaceSubregionChips(selectedCategory) ? (
+            {mobileRegionsExpanded && showMobileSubregionBar ? (
               <GlobeFaceSubregionBar
                 key={`subregion-bar-${selectedCategory}`}
                 category={selectedCategory}
@@ -311,10 +334,11 @@ const HomeUI = React.memo(({
                 className="w-[calc(100vw-0.5rem-env(safe-area-inset-left,0px)-env(safe-area-inset-right,0px))] min-w-0 animate-fade-in-up"
               />
             ) : null}
+            </div>
           </div>
         )}
 
-        <div className="pointer-events-auto relative max-md:home-category-bar-shell animate-fade-in-left">
+        <div ref={mobileCategoryBarRef} className="pointer-events-auto relative max-md:home-category-bar-shell animate-fade-in-left">
           <div className="home-category-bar-halo md:hidden" aria-hidden="true" />
           <div className="home-category-bar-card relative z-[1] flex items-end gap-0.5 sm:gap-1
              max-md:bg-black/80 max-md:border-white/20 max-md:backdrop-blur-xl max-md:p-2 max-md:rounded-2xl max-md:border

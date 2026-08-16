@@ -222,6 +222,7 @@ export default function GlobeFaceRegionRail({
   /** 'side' = PC 세로 칩 · 'none' = 칩 UI 없음(필터만 · 하단 바 등과 조합) */
   subregionPlacement = 'side',
   listHeightClass,
+  listHeightStyle = null,
   className = '',
 }) {
   const subregions = useMemo(
@@ -316,9 +317,12 @@ export default function GlobeFaceRegionRail({
 
   const tone = CATEGORY_CHIP[category] || CATEGORY_CHIP.paradise;
 
+  const listShellClass = listHeightStyle ? 'relative w-full' : `relative w-full ${resolvedListHeight}`;
+  const listShellStyle = listHeightStyle || undefined;
+
   const countryList = (
     <div className="flex flex-col items-center overflow-visible">
-      <div className={`relative w-full ${resolvedListHeight}`}>
+      <div className={listShellClass} style={listShellStyle}>
         <div
           ref={listRef}
           className={`h-full overflow-y-scroll ${CUSTOM_SCROLL_CLASS} pl-2.5`}
