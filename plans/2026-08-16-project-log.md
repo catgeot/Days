@@ -11,7 +11,7 @@
 | | |
 |--|--|
 | **완료** | 모바일 Preview — 대양 4 + 해역 리스트 **1회 전체 순회** · 전 탭 `immediate:true` · 에러 없음 |
-| **병합** | PR #122 → `main` · tip `d7e6b25b` |
+| **병합** | PR #122 → `main` `74de3b5c` (2026-08-16) |
 | **읽을 것** | `index.jsx` `handleSeaBasinSelect` · `HomeGlobeMapbox.jsx` `flyToRegion` · `globeRegionHighlight.js` · 일지 #12·#12b |
 | **금지** | 새 브랜치 · `seaBasins.json` 직편집 · UI 리디자인 · computerUse QA |
 | **VERIFY** | `smoke-sea-basin-rail` · `build` |

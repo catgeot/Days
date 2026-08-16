@@ -14,26 +14,24 @@
 
 ## 활성 목록
 
-### 해안·해양 탐색 (모바일 크래시 — PR #122)
+### 해안·해양 탐색
 
 | | |
 |--|--|
-| **상태** | **main 병합 OK** · 모바일 Preview QA ✅ (대양 4 + 해역 1회 전체 순회) |
-| **브랜치** | `cursor/ocean-chip-crash-1ed2` |
-| **PR** | [#122](https://github.com/catgeot/Days/pull/122) |
-| **tip** | `d7e6b25b` |
+| **상태** | **main 병합 완료** (2026-08-16) · PROD 배포 후 QA |
+| **main** | `74de3b5c` — PR [#122](https://github.com/catgeot/Days/pull/122) 모바일 대양·해역 연속 탭 크래시 |
 | **플랜** | [`coast-sea-explore-plan.md`](./coast-sea-explore-plan.md) §9 |
-| **일지** | [`2026-08-16-project-log.md`](./2026-08-16-project-log.md) — 「에이전트 핸드오프」 |
-| **Preview** | `https://days-git-cursor-ocean-chip-crash-1ed2-catgeots-projects.vercel.app/` (Mapbox 호스트 1회 등록) |
+| **일지** | [`2026-08-16-project-log.md`](./2026-08-16-project-log.md) |
+| **PROD QA** | `https://www.gateo.kr/` — 모바일 대양 4 + 해역 리스트 연속 탭 |
 | **VERIFY** | `smoke-sea-basin-rail` · `build` |
 
 **다음 제시어**:
 
 ```
-해안 해양 탐색 #15, main 병합·PROD QA
+해안 해양 탐색 #17, PROD QA
 @plans/feature-handoff-index.md
 @plans/2026-08-16-project-log.md
-브랜치 cursor/ocean-chip-crash-1ed2 · PR #122 · main 병합
+main · www.gateo.kr 모바일 대양·해역 연속 탭
 ```
 
 ---
