@@ -21,24 +21,19 @@
 | **상태** | **main 병합 완료** (2026-08-16) · PROD 배포 후 QA |
 | **브랜치** | `cursor/coast-sea-plan-8c05` → `main` |
 | **PR** | [#118](https://github.com/catgeot/Days/pull/118) |
-| **main tip** | 계층 해역 리스트·바다버튼 톤다운 반영 후 push 대기 |
+| **main tip** | `906c4765` — #11 대양 중분류 칩·바다버튼 제거 |
 | **플랜** | [`coast-sea-explore-plan.md`](./coast-sea-explore-plan.md) §4.6·§9 |
 | **일지** | [`2026-08-16-project-log.md`](./2026-08-16-project-log.md) |
-| **PROD QA** | `https://www.gateo.kr/` — 모바일 테마 → **바다** 탭 → 3단 계층·버튼 톤 |
+| **PROD QA** | `https://www.gateo.kr/` — 소권역 바 **대양 칩**(면당) · 배타 · 바다 버튼 없음 |
 | **VERIFY** | `smoke-sea-basin-rail` · `audit:sea-basins` · `build` |
 
-**다음 제시어** (중분류 칩 세션 — 1단 안정 QA 후):
+**다음 제시어**:
 
 ```
-해안 해양 탐색 #11, 중분류 해역 칩
+해안 해양 탐색 #12, 해역 탐색 QA·미세 조정
 @plans/feature-handoff-index.md
 @plans/2026-08-16-project-log.md
-@plans/coast-sea-explore-plan.md
 브랜치 main · PROD QA · smoke:sea-basin-rail
-
-## 이번 세션 목표
-- 소권역형 **중분류 해역 칩** 분할(플랜 §4.4 유사) — 계층 3단 안정 QA 후
-- 금지: seaBasins.json 직접 편집 · GLOBE_CATEGORY_IDS coast · UI 리디자인
 ```
 
 ---
