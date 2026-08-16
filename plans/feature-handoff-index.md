@@ -18,7 +18,7 @@
 
 | | |
 |--|--|
-| **상태** | **열림** · #14 코드 fix push · **모바일 Preview QA 대기** |
+| **상태** | **main 병합 대기** · 연속 탭 QA ✅ · 대양 칩 가독성 fix |
 | **브랜치** | `cursor/ocean-chip-crash-1ed2` (**재사용** · 새 브랜치 금지) |
 | **PR** | [#122](https://github.com/catgeot/Days/pull/122) |
 | **tip** | `d50c1f14` |

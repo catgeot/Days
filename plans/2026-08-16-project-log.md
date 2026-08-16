@@ -10,9 +10,8 @@
 
 | | |
 |--|--|
-| **완료 (#13b)** | 대양 4개 순환 OK · `handleTopOceanSelect` coalesce · TDZ 검은 화면 hotfix |
-| **잔존** | ~~대양 선택 후 해역 연속 탭 다운~~ → #14 fix push · **모바일 Preview QA** |
-| **#14 fix** | 대양↔해역 pending fly 상호 취소 · 해역 즉시 jumpTo 시 marine 라벨 force 스캔 생략 · 탐색 중 seaRail 스냅샷 갱신 보류 |
+| **완료** | 대양·해역 연속 탭 QA 통과 · #14 fix |
+| **#15** | 대양 칩 비선택 3개 `idleDimmed` 제거 — 선택 외에도 idle 가독성 유지 |
 | **읽을 것** | `index.jsx` `handleSeaBasinSelect` · `HomeGlobeMapbox.jsx` `flyToRegion` · `globeRegionHighlight.js` · 일지 #12·#12b |
 | **금지** | 새 브랜치 · `seaBasins.json` 직편집 · UI 리디자인 · computerUse QA |
 | **VERIFY** | `smoke-sea-basin-rail` · `build` |
