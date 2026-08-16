@@ -247,12 +247,20 @@ export function getSeaBasinById(basinId) {
  */
 export function seaBasinToFlyRegion(basin) {
   if (!basin?.center) return null;
+  const rawBbox = basin.bbox;
+  const rawLngSpan = Array.isArray(rawBbox) && rawBbox.length === 4
+    ? rawBbox[2] - rawBbox[0]
+    : 0;
+  const bbox = clampOceanFlyBbox(rawBbox);
+  const useZoomOnly = !bbox || rawLngSpan > 100 || rawLngSpan < 0;
+  const zoom = basin.tier === 2 ? 5.2 : basin.tier === 1 ? 4.4 : 4.8;
   return {
     id: basin.id,
     labelKo: basin.name,
     lat: basin.center.lat,
     lng: basin.center.lng,
-    bbox: basin.bbox,
+    bbox: useZoomOnly ? null : bbox,
+    zoom: useZoomOnly ? zoom : undefined,
     seaBasinId: basin.id,
   };
 }
@@ -450,7 +458,7 @@ export function buildHierarchicalSeaBasinRail({
   const showSmallSeas = shouldRevealSmallSeaBasins(viewBounds, {
     selectedSeaBasinId,
     selectedMidBasinId,
-  });
+  }) || Boolean(selectedTopOceanId);
 
   const smallSeas = showSmallSeas
     ? chipBasins

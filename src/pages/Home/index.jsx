@@ -326,6 +326,14 @@ function Home() {
   selectedTopOceanIdRef.current = selectedTopOceanId;
   const selectedSeaBasinIdRef = useRef(selectedSeaBasinId);
   selectedSeaBasinIdRef.current = selectedSeaBasinId;
+  const pendingSeaBasinFlyRef = useRef(null);
+  const seaBasinFlyTimerRef = useRef(null);
+
+  useEffect(() => () => {
+    if (seaBasinFlyTimerRef.current) {
+      window.clearTimeout(seaBasinFlyTimerRef.current);
+    }
+  }, []);
 
   const handleFaceSubregionSelect = useCallback((subregionId) => {
     const next = subregionId || null;
@@ -1060,7 +1068,18 @@ function Home() {
     setSelectedFaceRegionId(null);
     setSelectedTopOceanId(topOcean);
     setSelectedSeaBasinId(basin.id);
-    globeRef.current?.flyToRegion?.(flyRegion);
+    pendingSeaBasinFlyRef.current = flyRegion;
+    if (seaBasinFlyTimerRef.current) {
+      window.clearTimeout(seaBasinFlyTimerRef.current);
+    }
+    seaBasinFlyTimerRef.current = window.setTimeout(() => {
+      seaBasinFlyTimerRef.current = null;
+      const region = pendingSeaBasinFlyRef.current;
+      pendingSeaBasinFlyRef.current = null;
+      if (region) {
+        globeRef.current?.flyToRegion?.(region);
+      }
+    }, 120);
   }, [
     dismissPlaceSelectionKeepGlobePin,
     flightCinemaActive,

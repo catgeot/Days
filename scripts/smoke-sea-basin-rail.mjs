@@ -3,9 +3,11 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import {
   buildHierarchicalSeaBasinRail,
+  getSeaBasinById,
   getSpotSlugsForSeaBasin,
   inferTopOceanFromView,
   resolveTopOceanForBasin,
+  seaBasinToFlyRegion,
   shouldRevealSmallSeaBasins,
   topOceanToFlyRegion,
   clampOceanFlyBbox,
@@ -66,8 +68,8 @@ const wideView = buildHierarchicalSeaBasinRail({
   category: 'paradise',
   selectedTopOceanId: 'pacific',
 });
-if (wideView.showSmallSeas) {
-  console.error('FAIL wide pacific view should hide smallSeas tier until zoom/selection');
+if (!wideView.showSmallSeas) {
+  console.error('FAIL pacific top-ocean browse should keep smallSeas tier visible');
   process.exit(1);
 }
 if (wideView.midRegions.length < 4) {
@@ -118,6 +120,25 @@ const clamped = clampOceanFlyBbox([0, -40, 360, 50]);
 if (!clamped || clamped[2] - clamped[0] > 100) {
   console.error(`FAIL clampOceanFlyBbox should cap lng span, got ${clamped}`);
   process.exit(1);
+}
+
+for (const basinId of ['south-pacific', 'yellow-sea', 'central-pacific']) {
+  const basin = getSeaBasinById(basinId);
+  const fly = seaBasinToFlyRegion(basin);
+  if (!fly?.lat || !fly?.lng) {
+    console.error(`FAIL seaBasinToFlyRegion(${basinId}) missing center`);
+    process.exit(1);
+  }
+  if (fly.bbox) {
+    const span = fly.bbox[2] - fly.bbox[0];
+    if (span > 100 || span < 0) {
+      console.error(`FAIL seaBasinToFlyRegion(${basinId}) bbox span=${span}`);
+      process.exit(1);
+    }
+  } else if (!Number.isFinite(fly.zoom)) {
+    console.error(`FAIL seaBasinToFlyRegion(${basinId}) needs bbox or zoom fallback`);
+    process.exit(1);
+  }
 }
 
 const slugs = getSpotSlugsForSeaBasin('aegean');

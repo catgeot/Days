@@ -421,6 +421,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const prevHighlightCategoryRef = useRef(null);
   const prevCategoryFaceEpochRef = useRef(categoryFaceEpoch);
   const categoryFaceFlyGenRef = useRef(0);
+  const regionFlyGenRef = useRef(0);
+  const regionFlyEndHandlerRef = useRef(null);
   const highlightCategoryRef = useRef(highlightCategory);
   const onGlobeModeChangeRef = useRef(onGlobeModeChange);
   const tourEngineCallbacksRef = useRef({});
@@ -1698,24 +1700,42 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       setRegionHighlight(map, focusedFaceRegionRef.current);
     }
 
+    const gen = regionFlyGenRef.current + 1;
+    regionFlyGenRef.current = gen;
+
+    if (regionFlyEndHandlerRef.current) {
+      map.off('moveend', regionFlyEndHandlerRef.current);
+      regionFlyEndHandlerRef.current = null;
+    }
+
+    const onFlyEnd = () => {
+      if (regionFlyGenRef.current !== gen) return;
+      map.off('moveend', onFlyEnd);
+      if (regionFlyEndHandlerRef.current === onFlyEnd) {
+        regionFlyEndHandlerRef.current = null;
+      }
+      if (focusedFaceRegionRef.current?.seaBasinId) {
+        setSeaBasinHighlight(map, focusedFaceRegionRef.current);
+        emphasizeMapboxMarineLabels(map);
+      } else if (focusedFaceRegionRef.current) {
+        setRegionHighlight(map, focusedFaceRegionRef.current);
+      }
+    };
+    regionFlyEndHandlerRef.current = onFlyEnd;
+
     try {
       map.stop();
-      const onFlyEnd = () => {
-        map.off('moveend', onFlyEnd);
-        if (focusedFaceRegionRef.current?.seaBasinId) {
-          setSeaBasinHighlight(map, focusedFaceRegionRef.current);
-          emphasizeMapboxMarineLabels(map);
-        } else if (focusedFaceRegionRef.current) {
-          setRegionHighlight(map, focusedFaceRegionRef.current);
-        }
-      };
-      map.once('moveend', onFlyEnd);
+      map.on('moveend', onFlyEnd);
       map.flyTo({
         ...camera,
         duration: GLOBE_FACE_REGION_FLY_MS,
         essential: true,
       });
     } catch {
+      map.off('moveend', onFlyEnd);
+      if (regionFlyEndHandlerRef.current === onFlyEnd) {
+        regionFlyEndHandlerRef.current = null;
+      }
       map.jumpTo(camera);
     }
     return true;
