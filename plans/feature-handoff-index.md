@@ -18,10 +18,10 @@
 
 | | |
 |--|--|
-| **상태** | **열림** · 대양 4개 순환 OK · **해역(tier2/3) 연속 탭 → 모바일 다운 잔존** |
+| **상태** | **열림** · #14 코드 fix push · **모바일 Preview QA 대기** |
 | **브랜치** | `cursor/ocean-chip-crash-1ed2` (**재사용** · 새 브랜치 금지) |
 | **PR** | [#122](https://github.com/catgeot/Days/pull/122) |
-| **tip** | `75037292` |
+| **tip** | (push 후 SHA) |
 | **플랜** | [`coast-sea-explore-plan.md`](./coast-sea-explore-plan.md) §9 |
 | **일지** | [`2026-08-16-project-log.md`](./2026-08-16-project-log.md) — 「에이전트 핸드오프」 |
 | **Preview** | `https://days-git-cursor-ocean-chip-crash-1ed2-catgeots-projects.vercel.app/` (Mapbox 호스트 1회 등록) |
@@ -30,7 +30,7 @@
 **다음 제시어**:
 
 ```
-해안 해양 탐색 #14, 모바일 해역 연속 탭 크래시
+해안 해양 탐색 #15, 모바일 해역 연속 탭 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-08-16-project-log.md
 @plans/coast-sea-explore-plan.md
