@@ -23,3 +23,13 @@
 브랜치 cursor/coast-sea-plan-8c05 · PR #118 · Preview QA
 금지: main 새 브랜치 · seaBasins.json 직접 편집 · UI 리디자인 · GLOBE_CATEGORY_IDS에 coast 추가
 ```
+
+## 해안 해양 탐색 #7, 해역 fill·이름 QA
+
+**상태**: `main` `d014e64e`  
+**세션**: `해안 해양 탐색 #7, 해역 fill·이름 QA`
+
+- **증상**: 해역 선택 시 fill ~2초 후 사라짐 · 해역명 미표시
+- **한 일**: `syncGateoMarkerLayers` 해역 하이라이트 분기 · fly `moveend` 재적용 · 바다 모드 소권역 auto-sync 차단 · 상단 해역명 pill
+- **VERIFY**: `smoke-sea-basin-rail` · `audit:sea-basins` · `build` PASS · `main` push
+- **PROD QA**: https://www.gateo.kr/ — 바다 탭 → 해역 선택 → fill 유지·상단 해역명 확인
