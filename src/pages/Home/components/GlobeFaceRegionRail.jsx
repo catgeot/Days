@@ -6,6 +6,7 @@ import {
   getFaceSubregions,
   shouldShowFaceSubregionChips,
 } from '../lib/globeFaceSubregions.js';
+import { getFaceSeaOceans } from '../lib/faceSeaOceans.js';
 
 const CATEGORY_CHIP = {
   paradise: {
@@ -46,40 +47,27 @@ const RAIL_LIST_HEIGHT_DESKTOP = 'h-[calc(100dvh-14.5rem-6.5rem)]';
 const RAIL_LIST_HEIGHT_MOBILE = 'h-[min(50vh,22rem)]';
 const RAIL_LIST_HEIGHT_MOBILE_FLAT = 'h-[min(58vh,26rem)]';
 
-/** 모바일·PC — 해역(바다) 목록 진입 버튼 (나라 리스트와 분리) */
-export function SeaBasinListButton({ active = false, onClick, compact = false, prominent = false }) {
-  const label = prominent ? '바다' : '해역';
+const SEA_OCEAN_CHIP = {
+  idle: 'border-cyan-400/30 text-cyan-100/90 hover:bg-cyan-500/12 bg-black/30',
+  active: 'bg-cyan-500/22 border-cyan-400/50 text-cyan-50 shadow-[0_0_10px_rgba(34,211,238,0.22)]',
+};
 
-  const shellClass = prominent
-    ? `w-[4.25rem] rounded-lg border px-1.5 py-1.5 text-[10px] ${
-        active
-          ? 'border-cyan-400/55 bg-cyan-500/25 text-cyan-50 shadow-[0_0_10px_rgba(34,211,238,0.28)]'
-          : 'border-cyan-400/40 bg-cyan-500/18 text-cyan-100/90 hover:bg-cyan-500/22'
-      }`
-    : compact
-      ? 'w-[4.25rem] rounded-lg px-1.5 py-1.5 text-[10px]'
-      : 'mb-1.5 w-[4.75rem] md:w-[5.5rem] rounded-xl px-2 py-2 text-[11px] md:text-xs';
-
-  const idleClass = prominent
-    ? ''
-    : active
-      ? 'border-cyan-400/55 bg-cyan-500/25 text-cyan-50 shadow-[0_0_10px_rgba(34,211,238,0.28)]'
-      : 'border-white/20 bg-black/55 text-cyan-100/90 hover:bg-cyan-500/10';
-
+function renderSeaOceanChip(ocean, { isActive, onClick, compact = false, side = false }) {
   return (
     <button
+      key={`ocean-${ocean.id}`}
       type="button"
-      aria-pressed={active}
-      aria-label={active ? '나라·지역 목록으로' : `${label}·해역 목록 보기`}
-      title={active ? '나라·지역 목록으로' : '지금 보는 지구본 근처 해역'}
-      onClick={(event) => {
-        event.stopPropagation();
-        onClick?.();
-      }}
-      className={`pointer-events-auto shrink-0 border backdrop-blur-md font-bold leading-tight transition-all active:scale-[0.97] ${shellClass} ${idleClass}`}
-      {...isolateMapTouchProps}
+      role="option"
+      aria-selected={isActive}
+      aria-label={`${ocean.name} 해역`}
+      onClick={() => onClick?.(ocean)}
+      className={`${side ? 'w-[4.5rem] shrink-0' : 'shrink-0'} rounded-lg border px-2.5 py-1.5 text-left transition-all active:scale-[0.97] ${
+        compact ? 'px-1.5 text-[10px]' : 'text-[11px]'
+      } ${isActive ? SEA_OCEAN_CHIP.active : SEA_OCEAN_CHIP.idle}`}
     >
-      {label}
+      <span className="block whitespace-nowrap font-bold leading-tight tracking-tight break-keep">
+        {ocean.name}
+      </span>
     </button>
   );
 }
@@ -196,12 +184,22 @@ export function GlobeFaceSubregionBar({
   category,
   selectedSubregionId = null,
   onSelectSubregion,
+  selectedTopOceanId = null,
+  onSelectTopOcean = null,
   skipAutoSync = false,
   className = '',
 }) {
   const subregions = useMemo(() => getFaceSubregions(category), [category]);
-  const show = shouldShowFaceSubregionChips(category) && subregions.length > 0;
-  const activeSubregionId = useActiveSubregionId(category, show, selectedSubregionId, subregions);
+  const faceSeaOceans = useMemo(() => getFaceSeaOceans(category), [category]);
+  const showSubregions = shouldShowFaceSubregionChips(category) && subregions.length > 0;
+  const showOceans = faceSeaOceans.length > 0;
+  const show = showSubregions || showOceans;
+  const activeSubregionId = useActiveSubregionId(
+    category,
+    showSubregions && !selectedTopOceanId,
+    selectedSubregionId,
+    subregions,
+  );
   const barRef = useRef(null);
   const [scrollUi, setScrollUi] = useState({
     scrollable: false,
@@ -228,14 +226,14 @@ export function GlobeFaceSubregionBar({
   }, []);
 
   useEffect(() => {
-    if (skipAutoSync || !show || !activeSubregionId) return;
+    if (skipAutoSync || selectedTopOceanId || !showSubregions || !activeSubregionId) return;
     if (selectedSubregionId === activeSubregionId) return;
     onSelectSubregion?.(activeSubregionId);
-  }, [skipAutoSync, show, activeSubregionId, selectedSubregionId, onSelectSubregion]);
+  }, [skipAutoSync, selectedTopOceanId, showSubregions, activeSubregionId, selectedSubregionId, onSelectSubregion]);
 
   useEffect(() => {
     updateScrollUi();
-  }, [category, subregions.length, updateScrollUi]);
+  }, [category, subregions.length, faceSeaOceans.length, updateScrollUi]);
 
   useEffect(() => {
     const el = barRef.current;
@@ -261,11 +259,11 @@ export function GlobeFaceSubregionBar({
           ref={barRef}
           className={`flex w-full min-w-0 gap-1.5 overflow-x-auto overscroll-x-contain touch-pan-x ${CUSTOM_SCROLL_CLASS}`}
           role="listbox"
-          aria-label="소권역"
+          aria-label="소권역·해양"
           onScroll={updateScrollUi}
         >
           {subregions.map((sub) => {
-            const isActive = activeSubregionId === sub.id;
+            const isActive = !selectedTopOceanId && activeSubregionId === sub.id;
             return (
               <button
                 key={sub.id}
@@ -283,6 +281,10 @@ export function GlobeFaceSubregionBar({
               </button>
             );
           })}
+          {faceSeaOceans.map((ocean) => renderSeaOceanChip(ocean, {
+            isActive: selectedTopOceanId === ocean.id,
+            onClick: onSelectTopOcean,
+          }))}
         </div>
         {scrollUi.scrollable ? (
           <div
@@ -320,31 +322,32 @@ export default function GlobeFaceRegionRail({
   listHeightClass,
   listHeightStyle = null,
   className = '',
-  railMode = 'country',
   seaBasinHierarchy = null,
   selectedSeaBasinId = null,
   onSelectSeaBasin,
+  selectedTopOceanId = null,
   onSelectTopOcean = null,
-  onSeaBasinListToggle = null,
 }) {
-  const isSeaMode = railMode === 'sea';
+  const isSeaRail = Boolean(seaBasinHierarchy);
   const subregions = useMemo(
     () => (showSubregions ? getFaceSubregions(category) : []),
     [category, showSubregions],
   );
   const showSubregionChips = showSubregions && shouldShowFaceSubregionChips(category) && subregions.length > 0;
-  const renderSideChips = showSubregionChips && subregionPlacement === 'side';
+  const faceSeaOceans = useMemo(() => getFaceSeaOceans(category), [category]);
+  const showOceanChips = faceSeaOceans.length > 0;
+  const renderSideChips = (showSubregionChips || showOceanChips) && subregionPlacement === 'side';
 
   const activeSubregionId = useActiveSubregionId(
     category,
-    showSubregionChips,
+    showSubregionChips && !selectedTopOceanId,
     selectedSubregionId,
     subregions,
   );
 
   const regions = useMemo(
-    () => getFaceRegionsForSubregion(category, showSubregionChips ? activeSubregionId : null),
-    [category, showSubregionChips, activeSubregionId],
+    () => (isSeaRail ? [] : getFaceRegionsForSubregion(category, showSubregionChips ? activeSubregionId : null)),
+    [category, showSubregionChips, activeSubregionId, isSeaRail],
   );
 
   const resolvedListHeight =
@@ -367,7 +370,7 @@ export default function GlobeFaceRegionRail({
     listHeightStyle?.maxHeight && !listHeightStyle?.height,
   );
   /** 해역·동적 maxHeight — 내용 높이 우선, 하단 justify-end·빈 스크롤 영역 방지 */
-  const anchorItemsToBottom = anchorListToBottom && !isSeaMode && !usesDynamicMaxHeight;
+  const anchorItemsToBottom = anchorListToBottom && !isSeaRail && !usesDynamicMaxHeight;
 
   const updateScrollHint = useCallback(() => {
     const el = listRef.current;
@@ -405,7 +408,7 @@ export default function GlobeFaceRegionRail({
       el.scrollTop = 0;
     }
     updateScrollHint();
-  }, [category, regions.length, seaBasinHierarchy, isSeaMode, activeSubregionId, updateScrollHint]);
+  }, [category, regions.length, seaBasinHierarchy, isSeaRail, activeSubregionId, updateScrollHint]);
 
   useEffect(() => {
     const el = listRef.current;
@@ -416,21 +419,17 @@ export default function GlobeFaceRegionRail({
   }, [updateScrollHint]);
 
   useEffect(() => {
-    if (isSeaMode || !showSubregionChips || !activeSubregionId) return;
+    if (selectedTopOceanId || isSeaRail || !showSubregionChips || !activeSubregionId) return;
     if (selectedSubregionId === activeSubregionId) return;
     onSelectSubregion?.(activeSubregionId);
-  }, [isSeaMode, showSubregionChips, activeSubregionId, selectedSubregionId, onSelectSubregion]);
+  }, [selectedTopOceanId, isSeaRail, showSubregionChips, activeSubregionId, selectedSubregionId, onSelectSubregion]);
 
-  if (!category || (!isSeaMode && regions.length === 0 && !showSubregionChips)) return null;
+  if (!category || (!isSeaRail && regions.length === 0 && !renderSideChips)) return null;
 
   const tone = CATEGORY_CHIP[category] || CATEGORY_CHIP.paradise;
 
   const listShellClass = listHeightStyle ? 'relative w-full' : `relative w-full ${resolvedListHeight}`;
   const listShellStyle = listHeightStyle || undefined;
-
-  const seaBasinEntry = onSeaBasinListToggle && subregionPlacement !== 'none' ? (
-    <SeaBasinListButton active={isSeaMode} onClick={onSeaBasinListToggle} />
-  ) : null;
 
   const renderScrollHints = () => (scrollUi.scrollable ? (
     <>
@@ -466,7 +465,6 @@ export default function GlobeFaceRegionRail({
       className={`flex flex-col items-center ${anchorListToBottom ? 'overflow-hidden' : 'overflow-visible'}`}
       {...(anchorListToBottom ? isolateMapTouchProps : {})}
     >
-      {seaBasinEntry}
       {usesDynamicMaxHeight ? (
         <div className="relative w-full">
           <div
@@ -529,42 +527,33 @@ export default function GlobeFaceRegionRail({
     if (!seaBasinHierarchy) return null;
     const {
       topOceans,
-      activeTopOceanId,
       midRegions,
       smallSeas,
       showSmallSeas,
+      omitTopOceans,
+      activeTopOceanId,
     } = seaBasinHierarchy;
 
     return (
       <>
-        <div
-          className="flex flex-wrap gap-1"
-          role="group"
-          aria-label="대양·권역"
-        >
-          {topOceans.map((ocean) => {
-            const isActive = activeTopOceanId === ocean.id && !selectedSeaBasinId;
-            return (
-              <button
-                key={ocean.id}
-                type="button"
-                aria-pressed={isActive}
-                onClick={() => onSelectTopOcean?.(ocean)}
-                className={`w-[4.25rem] shrink-0 rounded-lg border bg-black/50 px-1 py-1.5 text-center backdrop-blur-md transition-all active:scale-[0.97] ${
-                  isActive
-                    ? 'border-cyan-400/50 bg-cyan-500/20 text-cyan-50'
-                    : 'border-white/18 text-cyan-100/85 hover:bg-cyan-500/10'
-                }`}
-              >
-                <span className="block text-[10px] font-bold leading-tight tracking-tight break-keep">
-                  {ocean.name}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+        {!omitTopOceans && topOceans.length > 0 ? (
+          <div
+            className="flex flex-wrap gap-1"
+            role="group"
+            aria-label="대양·권역"
+          >
+            {topOceans.map((ocean) => {
+              const isActive = activeTopOceanId === ocean.id && !selectedSeaBasinId;
+              return renderSeaOceanChip(ocean, {
+                isActive,
+                onClick: onSelectTopOcean,
+                compact: true,
+              });
+            })}
+          </div>
+        ) : null}
         {midRegions.length > 0 ? (
-          <div className="mt-1 flex flex-col gap-1" role="group" aria-label="중위 해역">
+          <div className={`flex flex-col gap-1 ${!omitTopOceans && topOceans.length > 0 ? 'mt-1' : ''}`} role="group" aria-label="중위 해역">
             {midRegions.map((basin) => renderSeaBasinChip(basin, {
               isActive: selectedSeaBasinId === basin.id,
             }))}
@@ -617,7 +606,7 @@ export default function GlobeFaceRegionRail({
         {...(anchorListToBottom ? isolateMapTouchProps : {})}
       >
         <GlassScrollStyles />
-        {isSeaMode ? seaList : countryList}
+        {isSeaRail ? seaList : countryList}
       </div>
     );
   }
@@ -628,10 +617,10 @@ export default function GlobeFaceRegionRail({
       <div
         className={`flex ${resolvedListHeight} flex-col gap-1 overflow-y-auto ${GLASS_SCROLL_CLASS} pr-1`}
         role="listbox"
-        aria-label="소권역"
+        aria-label="소권역·해양"
       >
         {subregions.map((sub) => {
-          const isActive = activeSubregionId === sub.id;
+          const isActive = !selectedTopOceanId && activeSubregionId === sub.id;
           return (
             <button
               key={sub.id}
@@ -649,8 +638,14 @@ export default function GlobeFaceRegionRail({
             </button>
           );
         })}
+        {faceSeaOceans.map((ocean) => renderSeaOceanChip(ocean, {
+          isActive: selectedTopOceanId === ocean.id,
+          onClick: onSelectTopOcean,
+          compact: true,
+          side: true,
+        }))}
       </div>
-      {isSeaMode ? seaList : countryList}
+      {isSeaRail ? seaList : countryList}
     </div>
   );
 }

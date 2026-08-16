@@ -171,7 +171,6 @@ function Home() {
   const [faceRegionsOpen, setFaceRegionsOpen] = useState(false);
   const [selectedFaceRegionId, setSelectedFaceRegionId] = useState(null);
   const [selectedFaceSubregionId, setSelectedFaceSubregionId] = useState(null);
-  const [faceRailMode, setFaceRailMode] = useState('country');
   const [selectedSeaBasinId, setSelectedSeaBasinId] = useState(null);
   const [selectedTopOceanId, setSelectedTopOceanId] = useState(null);
   const [mapViewSnapshot, setMapViewSnapshot] = useState(null);
@@ -183,7 +182,6 @@ function Home() {
     setFaceRegionsOpen(false);
     setSelectedFaceRegionId(null);
     setSelectedFaceSubregionId(getDefaultFaceSubregionId(next));
-    setFaceRailMode('country');
     setSelectedSeaBasinId(null);
     setSelectedTopOceanId(null);
     globeRef.current?.clearRegionFocus?.();
@@ -193,7 +191,6 @@ function Home() {
     setFaceRegionsOpen(false);
     setSelectedFaceRegionId(null);
     setSelectedFaceSubregionId(null);
-    setFaceRailMode('country');
     setSelectedSeaBasinId(null);
     setSelectedTopOceanId(null);
     globeRef.current?.clearRegionFocus?.();
@@ -307,7 +304,6 @@ function Home() {
       setFaceRegionsOpen(false);
       setSelectedFaceRegionId(null);
       setSelectedFaceSubregionId(null);
-      setFaceRailMode('country');
       setSelectedSeaBasinId(null);
       setSelectedTopOceanId(null);
       globeRef.current?.clearRegionFocus?.();
@@ -318,7 +314,6 @@ function Home() {
     setFaceRegionsOpen(true);
     setSelectedFaceRegionId(null);
     setSelectedFaceSubregionId(getDefaultFaceSubregionId(nextCategory));
-    setFaceRailMode('country');
     setSelectedSeaBasinId(null);
     setSelectedTopOceanId(null);
     globeRef.current?.clearRegionFocus?.();
@@ -330,29 +325,14 @@ function Home() {
 
   const handleFaceSubregionSelect = useCallback((subregionId) => {
     const next = subregionId || null;
-    const switchingFromSea = faceRailMode === 'sea';
-    // 모바일·PC 소권역 바가 둘 다 기본값을 sync할 때 동일 id로 clear되면
-    // 방금 고른 나라 fill이 바로 사라진다. 바다 모드에서는 같은 칩 재탭도 나라 목록으로.
-    if (!switchingFromSea && selectedFaceSubregionIdRef.current === next) return;
+    if (selectedFaceSubregionIdRef.current === next && !selectedTopOceanId) return;
     selectedFaceSubregionIdRef.current = next;
-    if (switchingFromSea) {
-      setFaceRailMode('country');
-    }
+    setSelectedTopOceanId(null);
     setSelectedFaceSubregionId(next);
     setSelectedFaceRegionId(null);
     setSelectedSeaBasinId(null);
-    setSelectedTopOceanId(null);
     globeRef.current?.clearRegionFocus?.();
-  }, [faceRailMode]);
-
-  const handleFaceRailModeChange = useCallback((nextMode) => {
-    if (nextMode !== 'country' && nextMode !== 'sea') return;
-    setFaceRailMode(nextMode);
-    setSelectedFaceRegionId(null);
-    setSelectedSeaBasinId(null);
-    setSelectedTopOceanId(null);
-    globeRef.current?.clearRegionFocus?.();
-  }, []);
+  }, [selectedTopOceanId]);
 
   useEffect(() => {
     if (!faceRegionsOpen) return undefined;
@@ -379,15 +359,16 @@ function Home() {
   }, [faceRegionsOpen, category, categoryFaceEpoch]);
 
   const seaBasinHierarchy = useMemo(() => {
-    if (faceRailMode !== 'sea') return null;
+    if (!selectedTopOceanId) return null;
     return buildHierarchicalSeaBasinRail({
       selectedTopOceanId,
       selectedSeaBasinId,
       viewBounds: mapViewSnapshot?.bounds || null,
       viewCenter: mapViewSnapshot?.center || null,
       category,
+      omitTopOceans: true,
     });
-  }, [faceRailMode, selectedTopOceanId, selectedSeaBasinId, mapViewSnapshot, category]);
+  }, [selectedTopOceanId, selectedSeaBasinId, mapViewSnapshot, category]);
 
   const handleRelatedPlaceClickWithCinemaExit = useCallback((placeData, isBridge) => {
     if (flightCinemaActive) {
@@ -1027,6 +1008,7 @@ function Home() {
       dismissPlaceSelectionKeepGlobePin();
     }
     setSelectedFaceRegionId(null);
+    setSelectedFaceSubregionId(null);
     setSelectedTopOceanId(ocean.id);
     setSelectedSeaBasinId(null);
     const flyRegion = topOceanToFlyRegion(ocean.id);
@@ -1170,12 +1152,11 @@ function Home() {
           onFaceRegionSelect={handleFaceRegionSelect}
           selectedFaceSubregionId={selectedFaceSubregionId}
           onFaceSubregionSelect={handleFaceSubregionSelect}
-          faceRailMode={faceRailMode}
-          onFaceRailModeChange={handleFaceRailModeChange}
+          selectedTopOceanId={selectedTopOceanId}
+          onTopOceanSelect={handleTopOceanSelect}
           seaBasinHierarchy={seaBasinHierarchy}
           selectedSeaBasinId={selectedSeaBasinId}
           onSeaBasinSelect={handleSeaBasinSelect}
-          onTopOceanSelect={handleTopOceanSelect}
           isTickerExpanded={isTickerExpanded} setIsTickerExpanded={setIsTickerExpanded}
           isPinVisible={isPinVisible} onTogglePinVisibility={() => setIsPinVisible(prev => !prev)}
           globeTheme={globeTheme} onThemeToggle={handleThemeToggle}

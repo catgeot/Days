@@ -52,3 +52,12 @@
 - **VERIFY**: `smoke:sea-basin-rail` · `audit:sea-basins` · `build` PASS
 - **PROD QA**: https://www.gateo.kr/ — 바다 탭 → 1단 대양 4개 고정 · 2단 중위 · 줌/선택 시 3단 소해역 · 바다 버튼 톤 나라 칩과 균형
 - **보류**: 중분류 칩(소권역형) — 별 세션
+
+## 해안 해양 탐색 #11, 대양 중분류 칩·바다버튼 제거
+
+**상태**: `main` · PROD QA  
+**세션**: `해안 해양 탐색 #11, 대양 중분류 칩·바다버튼 제거`
+
+- **한 일**: `faceSeaOceans.js` 면별 대양 칩( coast 스팟 기반·빈 칩 숨김) · 소권역 바·PC 사이드에 배타 노출 · 레일은 tier2/3만 · `SeaBasinListButton`·`faceRailMode` 제거
+- **VERIFY**: `smoke:sea-basin-rail` · `audit:sea-basins` · `build` PASS
+- **PROD QA**: https://www.gateo.kr/ — 하단 소권역 옆 대양(지중해 등) 탭 → 레일 해역 · 동남아 탭 → 나라 목록

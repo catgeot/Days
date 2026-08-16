@@ -392,6 +392,7 @@ export function inferTopOceanFromView({
  *   viewBounds?: [number, number, number, number] | null,
  *   viewCenter?: { lng?: number, lat?: number } | null,
  *   category?: string | null,
+ *   omitTopOceans?: boolean,
  * }} opts
  */
 export function buildHierarchicalSeaBasinRail({
@@ -400,6 +401,7 @@ export function buildHierarchicalSeaBasinRail({
   viewBounds = null,
   viewCenter = null,
   category = null,
+  omitTopOceans = false,
 } = {}) {
   const chipBasins = listChipSeaBasins(1);
   let activeTopOceanId = selectedTopOceanId;
@@ -428,10 +430,11 @@ export function buildHierarchicalSeaBasinRail({
     : [];
 
   return {
-    topOceans: SEA_BASIN_TOP_OCEANS,
+    topOceans: omitTopOceans ? [] : SEA_BASIN_TOP_OCEANS,
     activeTopOceanId,
     midRegions,
     smallSeas,
     showSmallSeas,
+    omitTopOceans,
   };
 }

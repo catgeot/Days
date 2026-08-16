@@ -10,6 +10,7 @@ import {
   topOceanToFlyRegion,
   SEA_BASIN_TOP_OCEANS,
 } from '../src/pages/Home/lib/seaBasinRail.js';
+import { getFaceSeaOceans } from '../src/pages/Home/lib/faceSeaOceans.js';
 
 const highlightSrc = readFileSync(
   fileURLToPath(new URL('../src/pages/Home/lib/globeRegionHighlight.js', import.meta.url)),
@@ -110,6 +111,21 @@ if (slugs.length < 2) {
   process.exit(1);
 }
 
+const urbanOceans = getFaceSeaOceans('urban');
+if (!urbanOceans.some((o) => o.id === 'mediterranean')) {
+  console.error(`FAIL urban face oceans expected mediterranean: ${urbanOceans.map((o) => o.id).join(',')}`);
+  process.exit(1);
+}
+
+const railOnly = buildHierarchicalSeaBasinRail({
+  selectedTopOceanId: 'mediterranean',
+  omitTopOceans: true,
+});
+if (railOnly.topOceans.length !== 0 || railOnly.omitTopOceans !== true) {
+  console.error('FAIL omitTopOceans should hide top ocean row in rail');
+  process.exit(1);
+}
+
 console.log(
-  `PASS sea-basin-rail (hierarchy med=${hierarchy.midRegions.length} small=${hierarchy.smallSeas.length})`,
+  `PASS sea-basin-rail (hierarchy med=${hierarchy.midRegions.length} small=${hierarchy.smallSeas.length} urban=${urbanOceans.map((o) => o.id).join('+')})`,
 );

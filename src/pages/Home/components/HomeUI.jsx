@@ -18,9 +18,9 @@ import TourMobileBar from './TourMobileBar';
 import GlobeFaceRegionRail, {
   GlobeFaceSubregionBar,
   MobileRegionsMenuSwitch,
-  SeaBasinListButton,
 } from './GlobeFaceRegionRail';
 import { shouldShowFaceSubregionChips } from '../lib/globeFaceSubregions.js';
+import { shouldShowFaceSeaOceanChips } from '../lib/faceSeaOceans.js';
 import { useMobileFaceRegionListHeight } from '../hooks/useMobileFaceRegionListHeight';
 import { useTrendingData } from '../hooks/useTrendingData';
 import { CATEGORY_LABELS } from './SearchDiscovery/constants';
@@ -77,12 +77,11 @@ const HomeUI = React.memo(({
   onFaceRegionSelect,
   selectedFaceSubregionId = null,
   onFaceSubregionSelect,
-  faceRailMode = 'country',
-  onFaceRailModeChange,
+  selectedTopOceanId = null,
+  onTopOceanSelect,
   seaBasinHierarchy = null,
   selectedSeaBasinId = null,
   onSeaBasinSelect,
-  onTopOceanSelect,
   isTickerExpanded, setIsTickerExpanded,
   onClearScouts,
   isPinVisible,
@@ -117,7 +116,7 @@ const HomeUI = React.memo(({
   const mobileRegionsAuxRef = useRef(null);
   const showMobileSubregionBar = Boolean(
     selectedCategory
-    && shouldShowFaceSubregionChips(selectedCategory)
+    && (shouldShowFaceSubregionChips(selectedCategory) || shouldShowFaceSeaOceanChips(selectedCategory))
     && mobileRegionsExpanded,
   );
   const mobileShowRegionList = mobileRegionsExpanded;
@@ -137,19 +136,7 @@ const HomeUI = React.memo(({
 
   const handleMobileRegionsExpandedChange = useCallback((expanded) => {
     setMobileRegionsExpanded(expanded);
-    if (!expanded && faceRailMode === 'sea') {
-      onFaceRailModeChange?.('country');
-    }
-  }, [faceRailMode, onFaceRailModeChange]);
-
-  const handleSeaBasinListToggle = useCallback(() => {
-    if (faceRailMode === 'sea') {
-      onFaceRailModeChange?.('country');
-      return;
-    }
-    onFaceRailModeChange?.('sea');
-    setMobileRegionsExpanded(true);
-  }, [faceRailMode, onFaceRailModeChange]);
+  }, []);
 
   const trendingData = useTrendingData();
 
@@ -411,22 +398,15 @@ const HomeUI = React.memo(({
                 selectedSubregionId={selectedFaceSubregionId}
                 onSelectSubregion={onFaceSubregionSelect}
                 listHeightStyle={mobileRegionListHeight?.listHeightStyle ?? null}
-                railMode={faceRailMode}
                 seaBasinHierarchy={seaBasinHierarchy}
                 selectedSeaBasinId={selectedSeaBasinId}
                 onSelectSeaBasin={onSeaBasinSelect}
+                selectedTopOceanId={selectedTopOceanId}
                 onSelectTopOcean={onTopOceanSelect}
                 className="mb-0.5"
               />
             ) : null}
             <div ref={mobileRegionsAuxRef} className="flex flex-col items-start gap-1">
-              {mobileRegionsExpanded ? (
-                <SeaBasinListButton
-                  prominent
-                  active={faceRailMode === 'sea'}
-                  onClick={handleSeaBasinListToggle}
-                />
-              ) : null}
               <MobileRegionsMenuSwitch
                 expanded={mobileRegionsExpanded}
                 onChange={handleMobileRegionsExpandedChange}
@@ -437,7 +417,9 @@ const HomeUI = React.memo(({
                 category={selectedCategory}
                 selectedSubregionId={selectedFaceSubregionId}
                 onSelectSubregion={onFaceSubregionSelect}
-                skipAutoSync={faceRailMode === 'sea'}
+                selectedTopOceanId={selectedTopOceanId}
+                onSelectTopOcean={onTopOceanSelect}
+                skipAutoSync={Boolean(selectedTopOceanId)}
                 className="w-[calc(100vw-0.5rem-env(safe-area-inset-left,0px)-env(safe-area-inset-right,0px))] min-w-0 animate-fade-in-up"
               />
             ) : null}
@@ -522,11 +504,10 @@ const HomeUI = React.memo(({
                 showSubregions
                 selectedSubregionId={selectedFaceSubregionId}
                 onSelectSubregion={onFaceSubregionSelect}
-                railMode={faceRailMode}
-                onSeaBasinListToggle={handleSeaBasinListToggle}
                 seaBasinHierarchy={seaBasinHierarchy}
                 selectedSeaBasinId={selectedSeaBasinId}
                 onSelectSeaBasin={onSeaBasinSelect}
+                selectedTopOceanId={selectedTopOceanId}
                 onSelectTopOcean={onTopOceanSelect}
                 className="pt-0.5"
               />
