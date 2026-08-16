@@ -12,6 +12,7 @@
 - **VERIFY**: `smoke-sea-basin-rail` · `smoke-sea-basin-search` · `audit:sea-basins` · `build`
 - **Preview**: `https://days-git-cursor-coast-sea-plan-8c05-catgeots-projects.vercel.app/` — 모바일 바다 탭 QA ✅
 - **규칙**: `cloud-preview-continuity` §1.2 제시어 핀 3개 · `feature-handoff-index.md` 추가
+- **main 병합**: `origin/main` `bf22da68` — PR #118 feature merge · smoke/audit/build PASS · PROD 배포 후 QA
 - **다음 제시어**:
 
 ```

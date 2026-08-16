@@ -18,12 +18,13 @@
 
 | | |
 |--|--|
-| **상태** | Preview QA · PR [#118](https://github.com/catgeot/Days/pull/118) |
-| **브랜치** | `cursor/coast-sea-plan-8c05` |
-| **tip** | `4c293544` (2026-08-16 #6 바다 리스트 최적화) |
+| **상태** | **main 병합 완료** (2026-08-16) · PROD 배포 후 QA |
+| **브랜치** | `cursor/coast-sea-plan-8c05` → `main` |
+| **PR** | [#118](https://github.com/catgeot/Days/pull/118) |
+| **main tip** | merge 후 push — 배포 파이프라인 대기 |
 | **플랜** | [`coast-sea-explore-plan.md`](./coast-sea-explore-plan.md) §9 |
 | **일지** | [`2026-08-16-project-log.md`](./2026-08-16-project-log.md) |
-| **Preview** | `https://days-git-cursor-coast-sea-plan-8c05-catgeots-projects.vercel.app/` |
+| **PROD QA** | `https://www.gateo.kr/` — 모바일 테마 → **바다** 탭 |
 | **VERIFY** | `smoke-sea-basin-rail` · `smoke-sea-basin-search` · `audit:sea-basins` |
 
 **다음 제시어** (새 채팅 첫 메시지·제목에 그대로 복붙):
