@@ -52,7 +52,9 @@ import { FlightCinemaProvider } from './lib/FlightCinemaContext.jsx';
 import { pickRandomGlobeCategory } from './lib/globeCategoryFocus';
 import { getDefaultFaceSubregionId } from './lib/globeFaceSubregions.js';
 import {
-  pickVisibleSeaBasins,
+  ensureMinPickBounds,
+  getSeaBasinById,
+  pickSeaBasinsForRail,
   resolveSeaBasinListPickBounds,
   seaBasinToFlyRegion,
   stabilizeSeaBasinList,
@@ -173,7 +175,24 @@ function Home() {
   const [faceRailMode, setFaceRailMode] = useState('country');
   const [selectedSeaBasinId, setSelectedSeaBasinId] = useState(null);
   const [mapViewSnapshot, setMapViewSnapshot] = useState(null);
+  const [seaRailPickContext, setSeaRailPickContext] = useState(null);
   const stableSeaBasinsRef = useRef([]);
+
+  const buildSeaRailPickContext = useCallback((selectedId = null) => {
+    const view = globeRef.current?.getMapView?.();
+    if (selectedId) {
+      const basin = getSeaBasinById(selectedId);
+      return {
+        bounds: resolveSeaBasinListPickBounds(selectedId),
+        center: basin?.center || view?.center || null,
+      };
+    }
+    if (!view?.bounds) return null;
+    return {
+      bounds: ensureMinPickBounds(view.bounds),
+      center: view.center || null,
+    };
+  }, []);
 
   const revealRandomGlobeFace = useCallback(() => {
     const next = pickRandomGlobeCategory();
@@ -372,26 +391,60 @@ function Home() {
   }, [faceRegionsOpen, category, categoryFaceEpoch]);
 
   const visibleSeaBasins = useMemo(() => {
-    const selectionPickBounds = faceRailMode === 'sea' && selectedSeaBasinId
-      ? resolveSeaBasinListPickBounds(selectedSeaBasinId)
-      : null;
-    const picked = pickVisibleSeaBasins({
-      viewBounds: selectionPickBounds || mapViewSnapshot?.bounds || null,
-      viewCenter: mapViewSnapshot?.center || null,
+    const seaMode = faceRailMode === 'sea';
+    const pickBounds = seaMode && seaRailPickContext
+      ? seaRailPickContext.bounds
+      : mapViewSnapshot?.bounds;
+    const pickCenter = seaMode && seaRailPickContext
+      ? seaRailPickContext.center
+      : mapViewSnapshot?.center;
+
+    const picked = pickSeaBasinsForRail({
+      viewBounds: pickBounds || null,
+      viewCenter: pickCenter || null,
       category,
+      selectedBasinId: seaMode ? selectedSeaBasinId : null,
+      seaMode,
     });
-    const stabilized = stabilizeSeaBasinList(stableSeaBasinsRef.current, picked);
+    const stabilized = stabilizeSeaBasinList(
+      stableSeaBasinsRef.current,
+      picked,
+      { preventShrink: seaMode },
+    );
     stableSeaBasinsRef.current = stabilized;
     return stabilized;
-  }, [faceRailMode, selectedSeaBasinId, mapViewSnapshot, category]);
+  }, [faceRailMode, selectedSeaBasinId, seaRailPickContext, mapViewSnapshot, category]);
+
+  useEffect(() => {
+    if (faceRailMode !== 'sea') {
+      setSeaRailPickContext(null);
+      return;
+    }
+    setSeaRailPickContext((prev) => {
+      if (selectedSeaBasinId) {
+        return buildSeaRailPickContext(selectedSeaBasinId) || prev;
+      }
+      if (prev?.bounds) return prev;
+      return buildSeaRailPickContext(null) || prev;
+    });
+  }, [
+    faceRailMode,
+    category,
+    categoryFaceEpoch,
+    faceRegionsOpen,
+    mapViewSnapshot,
+    selectedSeaBasinId,
+    buildSeaRailPickContext,
+  ]);
 
   useEffect(() => {
     stableSeaBasinsRef.current = [];
-  }, [category, categoryFaceEpoch, faceRegionsOpen]);
+  }, [category, categoryFaceEpoch, faceRegionsOpen, faceRailMode]);
 
   useEffect(() => {
+    if (faceRailMode !== 'sea') return;
     stableSeaBasinsRef.current = [];
-  }, [selectedSeaBasinId]);
+  }, [selectedSeaBasinId, faceRailMode]);
 
   const handleRelatedPlaceClickWithCinemaExit = useCallback((placeData, isBridge) => {
     if (flightCinemaActive) {
@@ -1033,6 +1086,10 @@ function Home() {
     }
     setSelectedFaceRegionId(null);
     setSelectedSeaBasinId(basin.id);
+    setSeaRailPickContext({
+      bounds: resolveSeaBasinListPickBounds(basin.id),
+      center: basin.center || null,
+    });
     globeRef.current?.flyToRegion?.(flyRegion);
   }, [
     dismissPlaceSelectionKeepGlobePin,

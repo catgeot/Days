@@ -3,9 +3,11 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import {
   pickVisibleSeaBasins,
+  pickSeaBasinsForRail,
   getSpotSlugsForSeaBasin,
   stabilizeSeaBasinList,
   resolveSeaBasinListPickBounds,
+  ensureMinPickBounds,
   SEA_BASIN_LIST_MAX_COUNT,
 } from '../src/pages/Home/lib/seaBasinRail.js';
 
@@ -98,6 +100,33 @@ if (broadPicked.length <= tightPicked.length) {
 }
 if (!broadPicked.some((b) => b.id === 'mediterranean' || b.id === 'adriatic')) {
   console.error(`FAIL aegean selection bounds should include mediterranean-group basins: ${broadPicked.map((b) => b.id).join(',')}`);
+  process.exit(1);
+}
+
+const seaModePicked = pickSeaBasinsForRail({
+  viewBounds: tightAegeanView.viewBounds,
+  viewCenter: tightAegeanView.viewCenter,
+  category: 'urban',
+  seaMode: true,
+});
+if (seaModePicked.length < 6) {
+  console.error(`FAIL seaMode pick should keep minCount=6, got ${seaModePicked.length}`);
+  process.exit(1);
+}
+
+const shrunk = stabilizeSeaBasinList(
+  broadPicked,
+  tightPicked,
+  { preventShrink: true },
+);
+if (shrunk.length < broadPicked.length) {
+  console.error(`FAIL preventShrink should not drop basins: ${shrunk.length} < ${broadPicked.length}`);
+  process.exit(1);
+}
+
+const padded = ensureMinPickBounds([24, 36, 27, 39]);
+if (!padded || padded[2] - padded[0] < 20) {
+  console.error(`FAIL ensureMinPickBounds should widen tight view, got ${padded}`);
   process.exit(1);
 }
 

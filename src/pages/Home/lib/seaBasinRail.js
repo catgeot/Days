@@ -64,7 +64,7 @@ function sortScoredRows(rows) {
  * @param {Array<{ id: string }>} previous
  * @param {Array<{ id: string }>} next
  */
-export function stabilizeSeaBasinList(previous = [], next = []) {
+export function stabilizeSeaBasinList(previous = [], next = [], { preventShrink = false } = {}) {
   if (!next.length) return next;
   if (!previous.length) return next;
 
@@ -72,6 +72,18 @@ export function stabilizeSeaBasinList(previous = [], next = []) {
   const prevIds = new Set(previous.map((b) => b.id));
   const sameSet = previous.length === next.length && previous.every((b) => nextIds.has(b.id));
   if (sameSet) return previous;
+
+  if (preventShrink && next.length < previous.length) {
+    const nextById = new Map(next.map((b) => [b.id, b]));
+    const merged = [];
+    for (const basin of previous) {
+      merged.push(nextById.get(basin.id) || basin);
+    }
+    for (const basin of next) {
+      if (!prevIds.has(basin.id)) merged.push(basin);
+    }
+    return merged.slice(0, SEA_BASIN_LIST_MAX_COUNT);
+  }
 
   const nextById = new Map(next.map((b) => [b.id, b]));
   const kept = previous
@@ -100,6 +112,27 @@ function expandBbox(bbox, padRatio = 0.12) {
   return [west - lngPad, south - latPad, east + lngPad, north + latPad];
 }
 
+/** 줌 인 시 뷰포트가 너무 좁아져 해역 칩이 1~2개로 줄지 않도록 최소 스팬 보장 */
+export function ensureMinPickBounds(
+  bounds,
+  { minSpanLng = 28, minSpanLat = 20 } = {},
+) {
+  if (!Array.isArray(bounds) || bounds.length !== 4) return bounds;
+  const [west, south, east, north] = bounds;
+  if (![west, south, east, north].every((n) => Number.isFinite(n))) return bounds;
+
+  const centerLng = (west + east) / 2;
+  const centerLat = (south + north) / 2;
+  const halfLng = Math.max((east - west) / 2, minSpanLng / 2);
+  const halfLat = Math.max((north - south) / 2, minSpanLat / 2);
+  return [
+    centerLng - halfLng,
+    centerLat - halfLat,
+    centerLng + halfLng,
+    centerLat + halfLat,
+  ];
+}
+
 /**
  * 해역 선택 후 fly로 뷰가 좁아져도 칩·탐색 맥락이 붕괴되지 않도록
  * 상위 해역(parentOcean) bbox를 리스트 pick 범위로 쓴다.
@@ -118,6 +151,39 @@ export function resolveSeaBasinListPickBounds(selectedBasinId) {
     bounds = expandBbox(bounds);
   }
   return bounds;
+}
+
+/**
+ * 바다 모드 레일 — 줌·팬마다 뷰포트만으로 칩이 줄어드는 것 방지.
+ * @param {{
+ *   viewBounds?: [number, number, number, number] | null,
+ *   viewCenter?: { lng?: number, lat?: number } | null,
+ *   category?: string | null,
+ *   selectedBasinId?: string | null,
+ *   seaMode?: boolean,
+ * }} opts
+ */
+export function pickSeaBasinsForRail({
+  viewBounds = null,
+  viewCenter = null,
+  category = null,
+  selectedBasinId = null,
+  seaMode = false,
+} = {}) {
+  let bounds = viewBounds;
+  if (seaMode) {
+    if (selectedBasinId) {
+      bounds = resolveSeaBasinListPickBounds(selectedBasinId) || bounds;
+    } else if (bounds) {
+      bounds = ensureMinPickBounds(bounds);
+    }
+  }
+  return pickVisibleSeaBasins({
+    viewBounds: bounds,
+    viewCenter,
+    category,
+    minCount: seaMode ? 6 : 3,
+  });
 }
 
 /**
