@@ -410,10 +410,9 @@ const HomeUI = React.memo(({
                 className="mb-0.5"
               />
             ) : null}
-            <div ref={mobileRegionsAuxRef} className="flex w-full flex-col items-start gap-1.5">
-            <div className="flex flex-row items-start gap-1.5">
+            <div ref={mobileRegionsAuxRef} className="flex flex-col items-start gap-1.5">
               <SeaBasinListButton
-                compact
+                prominent
                 active={faceRailMode === 'sea'}
                 onClick={handleSeaBasinListToggle}
               />
@@ -421,7 +420,6 @@ const HomeUI = React.memo(({
                 expanded={mobileRegionsExpanded}
                 onChange={setMobileRegionsExpanded}
               />
-            </div>
             {mobileRegionsExpanded && showMobileSubregionBar ? (
               <GlobeFaceSubregionBar
                 key={`subregion-bar-${selectedCategory}`}

@@ -46,30 +46,40 @@ const RAIL_LIST_HEIGHT_DESKTOP = 'h-[calc(100dvh-14.5rem-6.5rem)]';
 const RAIL_LIST_HEIGHT_MOBILE = 'h-[min(50vh,22rem)]';
 const RAIL_LIST_HEIGHT_MOBILE_FLAT = 'h-[min(58vh,26rem)]';
 
-/** 모바일·PC — 해역 목록 진입 버튼 (나라 리스트와 분리) */
-export function SeaBasinListButton({ active = false, onClick, compact = false }) {
+/** 모바일·PC — 해역(바다) 목록 진입 버튼 (나라 리스트와 분리) */
+export function SeaBasinListButton({ active = false, onClick, compact = false, prominent = false }) {
+  const label = prominent ? '바다' : '해역';
+
+  const shellClass = prominent
+    ? `w-[4.75rem] min-h-[3rem] rounded-2xl border-2 px-3 py-2.5 text-[13px] tracking-tight ${
+        active
+          ? 'border-cyan-300/85 bg-gradient-to-b from-cyan-400/50 to-cyan-600/35 text-white shadow-[0_0_22px_rgba(34,211,238,0.62)] ring-1 ring-cyan-200/35'
+          : 'border-cyan-400/55 bg-gradient-to-b from-cyan-950/90 to-black/75 text-cyan-50 shadow-[0_0_16px_rgba(34,211,238,0.38)]'
+      }`
+    : compact
+      ? 'w-[4.25rem] rounded-lg px-1.5 py-1.5 text-[10px]'
+      : 'mb-1.5 w-[4.75rem] md:w-[5.5rem] rounded-xl px-2 py-2 text-[11px] md:text-xs';
+
+  const idleClass = prominent
+    ? ''
+    : active
+      ? 'border-cyan-400/55 bg-cyan-500/25 text-cyan-50 shadow-[0_0_10px_rgba(34,211,238,0.28)]'
+      : 'border-white/20 bg-black/55 text-cyan-100/90 hover:bg-cyan-500/10';
+
   return (
     <button
       type="button"
       aria-pressed={active}
-      aria-label={active ? '나라·지역 목록으로' : '해역 목록 보기'}
+      aria-label={active ? '나라·지역 목록으로' : `${label}·해역 목록 보기`}
       title={active ? '나라·지역 목록으로' : '지금 보는 지구본 근처 해역'}
       onClick={(event) => {
         event.stopPropagation();
         onClick?.();
       }}
-      className={`pointer-events-auto shrink-0 border backdrop-blur-md font-bold leading-tight transition-all active:scale-[0.97] ${
-        compact
-          ? 'w-[4.25rem] rounded-lg px-1.5 py-1.5 text-[10px]'
-          : 'mb-1.5 w-[4.75rem] md:w-[5.5rem] rounded-xl px-2 py-2 text-[11px] md:text-xs'
-      } ${
-        active
-          ? 'border-cyan-400/55 bg-cyan-500/25 text-cyan-50 shadow-[0_0_10px_rgba(34,211,238,0.28)]'
-          : 'border-white/20 bg-black/55 text-cyan-100/90 hover:bg-cyan-500/10'
-      }`}
+      className={`pointer-events-auto shrink-0 border backdrop-blur-md font-bold leading-tight transition-all active:scale-[0.97] ${shellClass} ${idleClass}`}
       {...isolateMapTouchProps}
     >
-      해역
+      {label}
     </button>
   );
 }
