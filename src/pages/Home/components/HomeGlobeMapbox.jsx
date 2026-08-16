@@ -19,6 +19,8 @@ import { normalizeLngNear } from '../lib/globeLngUtils';
 import {
   GLOBE_FACE_REGION_DEFAULT_ZOOM,
   GLOBE_FACE_REGION_FLY_MS,
+  GLOBE_FACE_REGION_CAMERA_PADDING_DESKTOP,
+  GLOBE_FACE_REGION_CAMERA_PADDING_MOBILE,
   resolveFaceRegionCameraBounds,
 } from '../lib/globeFaceRegions';
 import {
@@ -1643,14 +1645,15 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     immerseActiveRef.current = false;
 
     const container = map.getContainer?.();
+    const visualViewport = typeof window !== 'undefined' ? window.visualViewport : null;
     const viewport = {
-      width: container?.clientWidth ?? window.innerWidth,
-      height: container?.clientHeight ?? window.innerHeight,
+      width: container?.clientWidth ?? visualViewport?.width ?? window.innerWidth,
+      height: container?.clientHeight ?? visualViewport?.height ?? window.innerHeight,
     };
-    const { bounds, maxZoom } = resolveFaceRegionCameraBounds(region, viewport);
     const pad = isMobileDevice
-      ? { top: 72, bottom: 140, left: 36, right: 36 }
-      : { top: 80, bottom: 80, left: 220, right: 64 };
+      ? GLOBE_FACE_REGION_CAMERA_PADDING_MOBILE
+      : GLOBE_FACE_REGION_CAMERA_PADDING_DESKTOP;
+    const { bounds, maxZoom } = resolveFaceRegionCameraBounds(region, viewport, pad);
 
     let camera = null;
     if (bounds) {

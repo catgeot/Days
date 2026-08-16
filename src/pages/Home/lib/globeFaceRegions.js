@@ -79,6 +79,38 @@ export const GLOBE_FACE_REGION_SILHOUETTE_MARGIN = 0.18;
 /** estimateZoomForBbox 대비 추가 pullback (실루엣 가독) */
 export const GLOBE_FACE_REGION_SILHOUETTE_ZOOM_PULLBACK = 0.5;
 
+/** cameraForBounds padding — maxZoom 산출 시 동일 값으로 유효 뷰포트를 맞춘다 */
+export const GLOBE_FACE_REGION_CAMERA_PADDING_MOBILE = {
+  top: 80,
+  bottom: 200,
+  left: 100,
+  right: 40,
+};
+
+export const GLOBE_FACE_REGION_CAMERA_PADDING_DESKTOP = {
+  top: 80,
+  bottom: 80,
+  left: 220,
+  right: 64,
+};
+
+/**
+ * fitBounds padding을 반영한 실루엣 줌 계산용 뷰포트.
+ * @param {{ width?: number, height?: number }} viewport
+ * @param {{ top?: number, bottom?: number, left?: number, right?: number }} padding
+ */
+export function resolveSilhouetteViewport(viewport = {}, padding = {}) {
+  const width = Math.max(
+    (Number(viewport.width) || 0) - (Number(padding.left) || 0) - (Number(padding.right) || 0),
+    200,
+  );
+  const height = Math.max(
+    (Number(viewport.height) || 0) - (Number(padding.top) || 0) - (Number(padding.bottom) || 0),
+    200,
+  );
+  return { width, height };
+}
+
 /** @type {Map<string, { globe: number, count: number, maxPop: number }> | null} */
 let spotCountryStatsCache = null;
 
@@ -254,7 +286,7 @@ export function resolveSilhouetteMaxZoom(bbox, viewport = {}) {
   return Math.min(GLOBE_FACE_REGION_MAX_ZOOM, estimated);
 }
 
-export function resolveFaceRegionCameraBounds(region, viewport = {}) {
+export function resolveFaceRegionCameraBounds(region, viewport = {}, padding = null) {
   const countryBbox = region?.bbox;
   const hubBbox = region?.hubBbox;
 
@@ -268,9 +300,13 @@ export function resolveFaceRegionCameraBounds(region, viewport = {}) {
     return { bounds: null, maxZoom: GLOBE_FACE_REGION_MAX_ZOOM, usedHub: false };
   }
 
+  const silhouetteViewport = padding
+    ? resolveSilhouetteViewport(viewport, padding)
+    : viewport;
+
   return {
     bounds: expandBboxForSilhouette(rawBounds),
-    maxZoom: resolveSilhouetteMaxZoom(rawBounds, viewport),
+    maxZoom: resolveSilhouetteMaxZoom(rawBounds, silhouetteViewport),
     usedHub: rawBounds === hubBbox,
   };
 }
