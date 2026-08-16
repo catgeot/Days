@@ -394,13 +394,13 @@ function Home() {
     if (!selectedTopOceanId) return null;
     return buildHierarchicalSeaBasinRail({
       selectedTopOceanId,
-      selectedSeaBasinId,
+      selectedSeaBasinId: null,
       viewBounds: seaRailViewSnapshot?.bounds || null,
       viewCenter: seaRailViewSnapshot?.center || null,
       category,
       omitTopOceans: true,
     });
-  }, [selectedTopOceanId, selectedSeaBasinId, seaRailViewSnapshot, category]);
+  }, [selectedTopOceanId, seaRailViewSnapshot, category]);
 
   const handleRelatedPlaceClickWithCinemaExit = useCallback((placeData, isBridge) => {
     if (flightCinemaActive) {

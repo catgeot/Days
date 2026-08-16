@@ -356,6 +356,17 @@ export default function GlobeFaceRegionRail({
       ? (showSubregionChips ? RAIL_LIST_HEIGHT_MOBILE : RAIL_LIST_HEIGHT_MOBILE_FLAT)
       : RAIL_LIST_HEIGHT_DESKTOP);
 
+  const seaListScrollKey = useMemo(() => {
+    if (!seaBasinHierarchy) return null;
+    const { midRegions, smallSeas, showSmallSeas, activeTopOceanId } = seaBasinHierarchy;
+    return [
+      activeTopOceanId || '',
+      showSmallSeas ? 1 : 0,
+      midRegions.map((b) => b.id).join(','),
+      showSmallSeas ? smallSeas.map((b) => b.id).join(',') : '',
+    ].join('|');
+  }, [seaBasinHierarchy]);
+
   const listRef = useRef(null);
   const [scrollUi, setScrollUi] = useState({
     scrollable: false,
@@ -408,7 +419,7 @@ export default function GlobeFaceRegionRail({
       el.scrollTop = 0;
     }
     updateScrollHint();
-  }, [category, regions.length, seaBasinHierarchy, isSeaRail, activeSubregionId, updateScrollHint]);
+  }, [category, regions.length, seaListScrollKey, isSeaRail, activeSubregionId, updateScrollHint]);
 
   useEffect(() => {
     const el = listRef.current;
