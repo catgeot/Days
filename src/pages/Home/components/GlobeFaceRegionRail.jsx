@@ -48,20 +48,16 @@ const RAIL_LIST_HEIGHT_MOBILE = 'h-[min(50vh,22rem)]';
 const RAIL_LIST_HEIGHT_MOBILE_FLAT = 'h-[min(58vh,26rem)]';
 
 const SEA_OCEAN_CHIP = {
-  idle: 'border-white/25 text-gray-200/85 bg-black/45 hover:bg-white/8',
-  idleDimmed: 'border-white/12 text-gray-500/80 bg-black/35 opacity-65',
+  idle: 'border-white/25 text-gray-200/90 bg-black/45 hover:bg-white/10',
   active:
     'bg-cyan-500/40 border-cyan-200/80 text-white shadow-[0_0_16px_rgba(34,211,238,0.42)] ring-2 ring-cyan-300/35',
 };
 
 function renderSeaOceanChip(
   ocean,
-  { isActive, onClick, compact = false, side = false, selectedTopOceanId = null },
+  { isActive, onClick, compact = false, side = false },
 ) {
-  const dimmed = Boolean(selectedTopOceanId) && !isActive;
-  const tone = isActive
-    ? SEA_OCEAN_CHIP.active
-    : (dimmed ? SEA_OCEAN_CHIP.idleDimmed : SEA_OCEAN_CHIP.idle);
+  const tone = isActive ? SEA_OCEAN_CHIP.active : SEA_OCEAN_CHIP.idle;
   return (
     <button
       key={`ocean-${ocean.id}`}
@@ -294,7 +290,6 @@ export function GlobeFaceSubregionBar({
           {faceSeaOceans.map((ocean) => renderSeaOceanChip(ocean, {
             isActive: selectedTopOceanId === ocean.id,
             onClick: onSelectTopOcean,
-            selectedTopOceanId,
           }))}
         </div>
         {scrollUi.scrollable ? (
@@ -575,7 +570,6 @@ export default function GlobeFaceRegionRail({
                 isActive,
                 onClick: onSelectTopOcean,
                 compact: true,
-                selectedTopOceanId,
               });
             })}
           </div>
@@ -679,7 +673,6 @@ export default function GlobeFaceRegionRail({
           onClick: onSelectTopOcean,
           compact: true,
           side: true,
-          selectedTopOceanId,
         }))}
       </div>
       {isSeaRail ? seaList : countryList}

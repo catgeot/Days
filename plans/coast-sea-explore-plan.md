@@ -301,16 +301,16 @@ id, name, name_en, parentOcean, bbox | polygonHint, center{lat,lng}, tier, alias
 **다음 제시어** (`cloud-preview-continuity` §1.2 — 새 채팅 제목·첫 메시지에 통째로 복붙):
 
 ```
-해안 해양 탐색 #7, (다음 단계)
+해안 해양 탐색 #15, 모바일 해역 연속 탭 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-08-16-project-log.md
 @plans/coast-sea-explore-plan.md
-브랜치 cursor/coast-sea-plan-8c05 · PR #118 · Preview QA
-금지: main 새 브랜치 · seaBasins.json 직접 편집 · UI 리디자인 · GLOBE_CATEGORY_IDS에 coast 추가
+브랜치 cursor/ocean-chip-crash-1ed2 · PR #122 · Preview QA
+금지: main 새 브랜치 · seaBasins.json 직접 편집 · UI 리디자인 · computerUse QA
 ```
 
-**읽을 것**: 본 절 · 인덱스 해당 행 · 최신 일지 · `seaBasinRail.js` · `GlobeFaceRegionRail.jsx` (범위 한정)  
-**하지 말 것**: `GLOBE_CATEGORY_IDS`에 coast 추가 · spots JSON/`travelSpots.js` 직접 난타 · 미합의 UI 칩 추가 · `main`에서 새 feature 브랜치  
-**VERIFY**: `smoke-sea-basin-rail` · `smoke-sea-basin-search` · `audit:sea-basins` · `build`  
-**Preview**: `https://days-git-cursor-coast-sea-plan-8c05-catgeots-projects.vercel.app/`  
-**다음**: #6 바다 리스트 QA 반영 후 남은 Phase(해역 하이라이트·검색 연동 등) — 단계는 #7 제시어에 명시
+**읽을 것**: 인덱스 PR #122 행 · 일지 「#14 fix」 · `handleSeaBasinSelect` · `flyToRegion` immediate 경로  
+**하지 말 것**: spots JSON 직접 편집 · 미합의 UI · **새 Preview 브랜치** · computerUse QA  
+**VERIFY**: `smoke-sea-basin-rail` · `build`  
+**Preview**: `https://days-git-cursor-ocean-chip-crash-1ed2-catgeots-projects.vercel.app/`  
+**다음**: 모바일 — 대양 4개 순환 후 해역 리스트 5~10회 연속 탭 다운 없음 확인

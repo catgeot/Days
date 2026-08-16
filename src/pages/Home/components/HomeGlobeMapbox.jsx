@@ -27,6 +27,7 @@ import {
   setSeaBasinHighlight,
   setupRegionHighlightLayers,
 } from '../lib/globeRegionHighlight';
+import { logSeaExplore } from '../../../shared/cloudPreview/seaExploreDebug.js';
 import { resolveTravelSpotFromCoords } from '../../../utils/travelSpotResolve.js';
 import {
   HIGH_ZOOM_FULL_REVEAL,
@@ -1698,23 +1699,33 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     const isSeaBasinFly = Boolean(region.seaBasinId);
     const immediate = Boolean(region.immediate);
+    const useJump = immediate || (isMobileDevice && isSeaBasinFly);
+    const isCountryFocusFly = Boolean(region.iso || region.iso3166_2);
+    logSeaExplore('flyToRegion', {
+      id: region.id || region.seaBasinId || null,
+      sea: isSeaBasinFly,
+      immediate: useJump,
+      country: isCountryFocusFly,
+    });
     const gen = regionFlyGenRef.current + 1;
     regionFlyGenRef.current = gen;
-    regionFlyInProgressRef.current = isSeaBasinFly && !immediate;
+    regionFlyInProgressRef.current = isSeaBasinFly && !useJump;
 
-    const applyRegionFocusVisual = () => {
+    const applyRegionFocusVisual = ({ emphasizeMarine = true } = {}) => {
       if (regionFlyGenRef.current !== gen) return;
       setupRegionHighlightLayers(map);
       if (focusedFaceRegionRef.current?.seaBasinId) {
         setSeaBasinHighlight(map, focusedFaceRegionRef.current);
-        emphasizeMapboxMarineLabels(map, { force: true });
+        if (emphasizeMarine) {
+          emphasizeMapboxMarineLabels(map, { force: !isMobileDevice });
+        }
       } else if (focusedFaceRegionRef.current) {
         setRegionHighlight(map, focusedFaceRegionRef.current);
       }
       regionFlyInProgressRef.current = false;
     };
 
-    if (!isSeaBasinFly) {
+    if (!isSeaBasinFly && isCountryFocusFly) {
       applyRegionFocusVisual();
     }
 
@@ -1735,24 +1746,28 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     try {
       map.stop();
-      if (immediate) {
+      if (useJump) {
         map.jumpTo(camera);
         if (isSeaBasinFly) {
-          applyRegionFocusVisual();
+          applyRegionFocusVisual({ emphasizeMarine: !isMobileDevice });
         }
         return true;
       }
 
-      regionFlyEndHandlerRef.current = onFlyEnd;
+      if (isSeaBasinFly) {
+        regionFlyEndHandlerRef.current = onFlyEnd;
+      }
       map.flyTo({
         ...camera,
-        duration: isSeaBasinFly ? 900 : GLOBE_FACE_REGION_FLY_MS,
-        essential: !isSeaBasinFly,
+        duration: isSeaBasinFly ? 900 : (isMobileDevice ? 0 : GLOBE_FACE_REGION_FLY_MS),
+        essential: !isSeaBasinFly && !isMobileDevice,
       });
-      requestAnimationFrame(() => {
-        if (regionFlyGenRef.current !== gen) return;
-        map.on('moveend', onFlyEnd);
-      });
+      if (isSeaBasinFly) {
+        requestAnimationFrame(() => {
+          if (regionFlyGenRef.current !== gen) return;
+          map.on('moveend', onFlyEnd);
+        });
+      }
     } catch {
       map.off('moveend', onFlyEnd);
       if (regionFlyEndHandlerRef.current === onFlyEnd) {
