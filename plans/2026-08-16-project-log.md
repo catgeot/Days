@@ -9,7 +9,7 @@
 
 - **원인**: 모바일 `FaceRailModeToggle`에 `pointer-events-auto`·터치 격리 없음 → 부모 `pointer-events-none` 아래 클릭이 지구본으로 통과
 - **수정**: 토글에 `pointer-events-auto` + `isolateMapTouchProps` + `stopPropagation`
-- **UI**: `MobileFaceRailModeSwitch` — 세부메뉴와 동일 스위치 카드 · 나란히 배치(항상 표시)
+- **UI**: `MobileFaceExploreModeSwitch` — 숨김|나라|바다 단일 3단 컨트롤(세부메뉴+나라바다 통합)
 - **검토**: diff ~3470줄 중 JSON SSOT ~1720 · UI/로직 ~350 · audit/smoke/build PASS
 - **QA**: Preview — 나라|바다 스위치가 세부메뉴 옆 · 바다 ON 시 시안 글로우
 
