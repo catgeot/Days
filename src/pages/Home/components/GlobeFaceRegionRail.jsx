@@ -46,119 +46,82 @@ const RAIL_LIST_HEIGHT_DESKTOP = 'h-[calc(100dvh-14.5rem-6.5rem)]';
 const RAIL_LIST_HEIGHT_MOBILE = 'h-[min(50vh,22rem)]';
 const RAIL_LIST_HEIGHT_MOBILE_FLAT = 'h-[min(58vh,26rem)]';
 
-function FaceRailModeToggle({ mode, onChange, category }) {
-  const tone = CATEGORY_CHIP[category] || CATEGORY_CHIP.paradise;
+/** 모바일·PC — 해역 목록 진입 버튼 (나라 리스트와 분리) */
+export function SeaBasinListButton({ active = false, onClick, compact = false }) {
   return (
-    <div
-      className="pointer-events-auto mb-1.5 flex w-[4.75rem] gap-1 rounded-lg border border-white/15 bg-black/50 p-0.5 backdrop-blur-md"
-      role="tablist"
-      aria-label="나라 또는 바다 탐색"
+    <button
+      type="button"
+      aria-pressed={active}
+      aria-label={active ? '나라·지역 목록으로' : '해역 목록 보기'}
+      title={active ? '나라·지역 목록으로' : '지금 보는 지구본 근처 해역'}
+      onClick={(event) => {
+        event.stopPropagation();
+        onClick?.();
+      }}
+      className={`pointer-events-auto shrink-0 border backdrop-blur-md font-bold leading-tight transition-all active:scale-[0.97] ${
+        compact
+          ? 'w-[4.25rem] rounded-lg px-1.5 py-1.5 text-[10px]'
+          : 'mb-1.5 w-[4.75rem] md:w-[5.5rem] rounded-xl px-2 py-2 text-[11px] md:text-xs'
+      } ${
+        active
+          ? 'border-cyan-400/55 bg-cyan-500/25 text-cyan-50 shadow-[0_0_10px_rgba(34,211,238,0.28)]'
+          : 'border-white/20 bg-black/55 text-cyan-100/90 hover:bg-cyan-500/10'
+      }`}
       {...isolateMapTouchProps}
     >
-      {[
-        { id: 'country', label: '나라' },
-        { id: 'sea', label: '바다' },
-      ].map((item) => {
-        const active = mode === item.id;
-        return (
-          <button
-            key={item.id}
-            type="button"
-            role="tab"
-            aria-selected={active}
-            onClick={(event) => {
-              event.stopPropagation();
-              onChange?.(item.id);
-            }}
-            className={`flex-1 rounded-md px-1 py-1 text-[10px] font-bold leading-tight transition-all active:scale-[0.97] ${
-              active ? tone.active : `${tone.idle} opacity-80`
-            }`}
-          >
-            {item.label}
-          </button>
-        );
-      })}
-    </div>
+      해역
+    </button>
   );
 }
 
-const MOBILE_EXPLORE_MODES = ['hidden', 'country', 'sea'];
-
-const MOBILE_EXPLORE_MODE_META = {
-  hidden: {
-    label: '숨김',
-    card: 'border-amber-400/60 bg-black/85 shadow-[0_0_12px_rgba(245,158,11,0.35)]',
-    labelTone: 'text-amber-100',
-    track: 'border-amber-300/75 bg-amber-500/35',
-    knob: 'bg-amber-50',
-    knobLeft: 'left-0.5',
-    aria: '지도 탐색 — 탭하면 나라 목록',
-  },
-  country: {
-    label: '나라',
-    card: 'border-white/20 bg-black/70 shadow-lg',
-    labelTone: 'text-gray-200/90',
-    track: 'border-white/30 bg-white/12',
-    knob: 'bg-gray-100',
-    knobLeft: 'left-1/2 -translate-x-1/2',
-    aria: '나라·지역 목록 — 탭하면 바다 목록',
-  },
-  sea: {
-    label: '바다',
-    card: 'border-cyan-400/50 bg-black/70 shadow-[0_0_10px_rgba(34,211,238,0.28)]',
-    labelTone: 'text-cyan-100',
-    track: 'border-cyan-400/50 bg-cyan-500/35',
-    knob: 'bg-white',
-    knobLeft: 'left-[calc(100%-0.875rem-2px)]',
-    aria: '바다·해역 목록 — 탭하면 지도 탐색',
-  },
-};
-
-/** 모바일 — 숨김·나라·바다 3단 순환 토글 (컴팩트 스위치) */
-export function MobileFaceExploreModeSwitch({ mode, onChange }) {
-  const meta = MOBILE_EXPLORE_MODE_META[mode] || MOBILE_EXPLORE_MODE_META.country;
-
-  const cycleMode = (event) => {
-    event.stopPropagation();
-    const idx = MOBILE_EXPLORE_MODES.indexOf(mode);
-    const next = MOBILE_EXPLORE_MODES[(idx + 1) % MOBILE_EXPLORE_MODES.length];
-    onChange?.(next);
-  };
-
+/** 모바일 — 세부 메뉴 펼침 스위치 */
+export function MobileRegionsMenuSwitch({ expanded, onChange }) {
   return (
     <div
-      className={`pointer-events-auto flex w-[4.25rem] flex-col gap-0.5 rounded-lg border px-1.5 py-1 backdrop-blur-md transition-all ${meta.card}`}
+      className={`pointer-events-auto flex w-[4.25rem] flex-col gap-0.5 rounded-lg border px-1.5 py-1 backdrop-blur-md transition-all ${
+        expanded
+          ? 'border-white/20 bg-black/70 shadow-lg'
+          : 'border-amber-400/60 bg-black/85 shadow-[0_0_12px_rgba(245,158,11,0.35)]'
+      }`}
       {...isolateMapTouchProps}
     >
-      <span className={`text-center text-[9px] font-bold leading-none tracking-tight ${meta.labelTone}`}>
-        {meta.label}
+      <span
+        className={`text-center text-[9px] font-bold leading-none tracking-tight ${
+          expanded ? 'text-gray-200/90' : 'text-amber-100'
+        }`}
+      >
+        {expanded ? '세부 메뉴' : '메뉴 숨김'}
       </span>
       <button
         type="button"
         role="switch"
-        aria-checked={mode !== 'hidden'}
-        aria-label={meta.aria}
-        title={meta.aria}
-        onClick={cycleMode}
+        aria-checked={expanded}
+        aria-label={expanded ? '세부 메뉴 숨기기' : '세부 메뉴 펼치기'}
+        title={expanded ? '숨기고 지도 보기' : '나라·세부 칩 보기'}
+        onClick={(event) => {
+          event.stopPropagation();
+          onChange?.(!expanded);
+        }}
         className="flex w-full items-center justify-center active:scale-[0.97]"
       >
         <span
           aria-hidden="true"
-          className={`relative h-4 w-9 shrink-0 overflow-hidden rounded-full border transition-colors ${meta.track}`}
+          className={`relative h-4 w-9 shrink-0 overflow-hidden rounded-full border transition-colors ${
+            expanded
+              ? 'border-cyan-400/50 bg-cyan-500/40'
+              : 'border-amber-300/80 bg-amber-500/40 shadow-[0_0_8px_rgba(251,191,36,0.45)]'
+          }`}
         >
-          <span className="pointer-events-none absolute inset-y-0 left-[18%] w-px bg-white/20" />
-          <span className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-white/20" />
-          <span className="pointer-events-none absolute inset-y-0 right-[18%] w-px bg-white/20" />
           <span
-            className={`absolute top-0.5 h-3 w-3 rounded-full shadow transition-[left,transform] duration-200 ${meta.knob} ${meta.knobLeft}`}
+            className={`absolute top-0.5 h-3 w-3 rounded-full shadow transition-[left] duration-200 ${
+              expanded ? 'left-[calc(100%-0.75rem-2px)] bg-white' : 'left-0.5 bg-amber-100'
+            }`}
           />
         </span>
       </button>
     </div>
   );
 }
-
-export { FaceRailModeToggle };
 
 function useActiveSubregionId(category, showSubregionChips, selectedSubregionId, subregions) {
   return useMemo(() => {
@@ -347,11 +310,10 @@ export default function GlobeFaceRegionRail({
   listHeightStyle = null,
   className = '',
   railMode = 'country',
-  onRailModeChange,
   seaBasins = [],
   selectedSeaBasinId = null,
   onSelectSeaBasin,
-  hideRailModeToggle = false,
+  onSeaBasinListToggle = null,
 }) {
   const isSeaMode = railMode === 'sea';
   const subregions = useMemo(
@@ -449,16 +411,16 @@ export default function GlobeFaceRegionRail({
   const listShellClass = listHeightStyle ? 'relative w-full' : `relative w-full ${resolvedListHeight}`;
   const listShellStyle = listHeightStyle || undefined;
 
-  const railModeToggle = hideRailModeToggle ? null : (
-    <FaceRailModeToggle mode={railMode} onChange={onRailModeChange} category={category} />
-  );
+  const seaBasinEntry = onSeaBasinListToggle && subregionPlacement !== 'none' ? (
+    <SeaBasinListButton active={isSeaMode} onClick={onSeaBasinListToggle} />
+  ) : null;
 
   const seaList = (
     <div
       className={`flex flex-col items-center ${anchorListToBottom ? 'overflow-hidden' : 'overflow-visible'}`}
       {...(anchorListToBottom ? isolateMapTouchProps : {})}
     >
-      {!anchorListToBottom ? railModeToggle : null}
+      {seaBasinEntry}
       <div className={listShellClass} style={listShellStyle}>
         <div
           ref={listRef}
@@ -523,7 +485,6 @@ export default function GlobeFaceRegionRail({
           </>
         ) : null}
       </div>
-      {anchorListToBottom ? railModeToggle : null}
     </div>
   );
 
@@ -532,7 +493,7 @@ export default function GlobeFaceRegionRail({
       className={`flex flex-col items-center ${anchorListToBottom ? 'overflow-hidden' : 'overflow-visible'}`}
       {...(anchorListToBottom ? isolateMapTouchProps : {})}
     >
-      {!anchorListToBottom ? railModeToggle : null}
+      {seaBasinEntry}
       <div className={listShellClass} style={listShellStyle}>
         <div
           ref={listRef}
@@ -597,7 +558,6 @@ export default function GlobeFaceRegionRail({
           </>
         ) : null}
       </div>
-      {anchorListToBottom ? railModeToggle : null}
     </div>
   );
 

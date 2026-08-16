@@ -15,7 +15,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import TravelTicker from '../components/TravelTicker';
 import Logo from './Logo';
 import TourMobileBar from './TourMobileBar';
-import GlobeFaceRegionRail, { GlobeFaceSubregionBar, MobileFaceExploreModeSwitch } from './GlobeFaceRegionRail';
+import GlobeFaceRegionRail, {
+  GlobeFaceSubregionBar,
+  MobileRegionsMenuSwitch,
+  SeaBasinListButton,
+} from './GlobeFaceRegionRail';
 import { shouldShowFaceSubregionChips } from '../lib/globeFaceSubregions.js';
 import { useMobileFaceRegionListHeight } from '../hooks/useMobileFaceRegionListHeight';
 import { useTrendingData } from '../hooks/useTrendingData';
@@ -116,12 +120,13 @@ const HomeUI = React.memo(({
     && shouldShowFaceSubregionChips(selectedCategory)
     && mobileRegionsExpanded,
   );
+  const mobileShowRegionList = mobileRegionsExpanded || faceRailMode === 'sea';
   const mobileRegionListHeight = useMobileFaceRegionListHeight({
     enabled: Boolean(
       !hideExploreChrome
       && faceRegionsOpen
       && selectedCategory
-      && mobileRegionsExpanded,
+      && mobileShowRegionList,
     ),
     hasSubregionBar: showMobileSubregionBar,
     chromeEpoch: homeChromeEpoch,
@@ -129,20 +134,14 @@ const HomeUI = React.memo(({
     categoryBarRef: mobileCategoryBarRef,
   });
 
-  const mobileExplorePanelMode = mobileRegionsExpanded
-    ? (faceRailMode === 'sea' ? 'sea' : 'country')
-    : 'hidden';
-
-  const handleMobileExplorePanelModeChange = useCallback((nextMode) => {
-    if (nextMode === 'hidden') {
-      setMobileRegionsExpanded(false);
+  const handleSeaBasinListToggle = useCallback(() => {
+    if (faceRailMode === 'sea') {
+      onFaceRailModeChange?.('country');
       return;
     }
+    onFaceRailModeChange?.('sea');
     setMobileRegionsExpanded(true);
-    if (nextMode === 'country' || nextMode === 'sea') {
-      onFaceRailModeChange?.(nextMode);
-    }
-  }, [onFaceRailModeChange]);
+  }, [faceRailMode, onFaceRailModeChange]);
 
   const trendingData = useTrendingData();
 
@@ -394,7 +393,7 @@ const HomeUI = React.memo(({
             onTouchStart={(event) => event.stopPropagation()}
             onTouchMove={(event) => event.stopPropagation()}
           >
-            {mobileRegionsExpanded ? (
+            {mobileShowRegionList ? (
               <GlobeFaceRegionRail
                 category={selectedCategory}
                 selectedRegionId={selectedFaceRegionId}
@@ -405,19 +404,24 @@ const HomeUI = React.memo(({
                 onSelectSubregion={onFaceSubregionSelect}
                 listHeightStyle={mobileRegionListHeight?.listHeightStyle ?? null}
                 railMode={faceRailMode}
-                onRailModeChange={onFaceRailModeChange}
                 seaBasins={visibleSeaBasins}
                 selectedSeaBasinId={selectedSeaBasinId}
                 onSelectSeaBasin={onSeaBasinSelect}
-                hideRailModeToggle
                 className="mb-0.5"
               />
             ) : null}
             <div ref={mobileRegionsAuxRef} className="flex w-full flex-col items-start gap-1.5">
-            <MobileFaceExploreModeSwitch
-              mode={mobileExplorePanelMode}
-              onChange={handleMobileExplorePanelModeChange}
-            />
+            <div className="flex flex-row items-start gap-1.5">
+              <SeaBasinListButton
+                compact
+                active={faceRailMode === 'sea'}
+                onClick={handleSeaBasinListToggle}
+              />
+              <MobileRegionsMenuSwitch
+                expanded={mobileRegionsExpanded}
+                onChange={setMobileRegionsExpanded}
+              />
+            </div>
             {mobileRegionsExpanded && showMobileSubregionBar ? (
               <GlobeFaceSubregionBar
                 key={`subregion-bar-${selectedCategory}`}
@@ -509,7 +513,7 @@ const HomeUI = React.memo(({
                 selectedSubregionId={selectedFaceSubregionId}
                 onSelectSubregion={onFaceSubregionSelect}
                 railMode={faceRailMode}
-                onRailModeChange={onFaceRailModeChange}
+                onSeaBasinListToggle={handleSeaBasinListToggle}
                 seaBasins={visibleSeaBasins}
                 selectedSeaBasinId={selectedSeaBasinId}
                 onSelectSeaBasin={onSeaBasinSelect}
