@@ -1,5 +1,9 @@
 #!/usr/bin/env node
-import { pickVisibleSeaBasins, getSpotSlugsForSeaBasin } from '../src/pages/Home/lib/seaBasinRail.js';
+import {
+  pickVisibleSeaBasins,
+  getSpotSlugsForSeaBasin,
+  stabilizeSeaBasinList,
+} from '../src/pages/Home/lib/seaBasinRail.js';
 
 const aegeanView = {
   viewBounds: [20, 34, 30, 42],
@@ -8,14 +12,36 @@ const aegeanView = {
 };
 
 const picked = pickVisibleSeaBasins(aegeanView);
-if (picked.length < 3 || picked.length > 8) {
-  console.error(`FAIL pickVisibleSeaBasins count=${picked.length} (expected 3~8)`);
+if (picked.length < 3) {
+  console.error(`FAIL pickVisibleSeaBasins count=${picked.length} (expected >= 3 intersecting)`);
   process.exit(1);
 }
 
 const hasAegean = picked.some((b) => b.id === 'aegean');
 if (!hasAegean) {
   console.error('FAIL aegean view should include aegean basin');
+  process.exit(1);
+}
+
+const nudged = pickVisibleSeaBasins({
+  viewBounds: [20.1, 34.1, 30.1, 42.1],
+  viewCenter: { lng: 25.1, lat: 38.1 },
+  category: 'urban',
+});
+const stable = stabilizeSeaBasinList(picked, nudged);
+if (stable !== picked) {
+  console.error(`FAIL stabilize should keep order/ref when same members: ${stable.map((b) => b.id).join(',')}`);
+  process.exit(1);
+}
+
+const heightCapped = pickVisibleSeaBasins({
+  viewBounds: [120, -20, 200, 40],
+  viewCenter: { lng: 160, lat: 10 },
+  category: 'paradise',
+  maxListHeightPx: 352,
+});
+if (heightCapped.length > 8) {
+  console.error(`FAIL height cap should limit count, got ${heightCapped.length}`);
   process.exit(1);
 }
 

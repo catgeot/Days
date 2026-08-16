@@ -4,7 +4,7 @@
  * - basin id/스키마 · 중복
  * - spot seaIds orphan
  * - travelSpots slug 존재
- * - tier 1–2 칩 후보: 스팟 < 2 → FAIL (빈 칩 방지)
+ * - tier 1–2 칩 후보: 스팟 < 1 → FAIL (빈 칩 방지)
  * - tier 3: 스팟 수 무관 (지도 라벨만)
  * exit 0 = PASS, exit 1 = FAIL
  */
@@ -18,7 +18,7 @@ const coastPath = join(root, 'src/pages/Home/data/travelSpotCoast.json');
 const spotsJsPath = join(root, 'src/pages/Home/data/travelSpots.js');
 
 const COAST_KINDS = new Set(['island', 'archipelago', 'coastal-city', 'reef', 'peninsula']);
-const CHIP_MIN_SPOTS = 2;
+const CHIP_MIN_SPOTS = 1;
 
 async function loadSpots() {
   const mod = await import(pathToFileURL(spotsJsPath).href);

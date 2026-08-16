@@ -55,6 +55,7 @@ import {
   getSpotSlugsForSeaBasin,
   pickVisibleSeaBasins,
   seaBasinToFlyRegion,
+  stabilizeSeaBasinList,
 } from './lib/seaBasinRail.js';
 import { syncHomeViewportAfterInput, syncHomeChromeAfterNavigation } from '../../shared/lib/mobileViewport';
 import {
@@ -172,6 +173,8 @@ function Home() {
   const [faceRailMode, setFaceRailMode] = useState('country');
   const [selectedSeaBasinId, setSelectedSeaBasinId] = useState(null);
   const [mapViewSnapshot, setMapViewSnapshot] = useState(null);
+  const [seaBasinListMaxHeightPx, setSeaBasinListMaxHeightPx] = useState(null);
+  const stableSeaBasinsRef = useRef([]);
 
   const revealRandomGlobeFace = useCallback(() => {
     const next = pickRandomGlobeCategory();
@@ -369,14 +372,21 @@ function Home() {
     return () => window.clearInterval(timer);
   }, [faceRegionsOpen, category, categoryFaceEpoch]);
 
-  const visibleSeaBasins = useMemo(
-    () => pickVisibleSeaBasins({
+  const visibleSeaBasins = useMemo(() => {
+    const picked = pickVisibleSeaBasins({
       viewBounds: mapViewSnapshot?.bounds || null,
       viewCenter: mapViewSnapshot?.center || null,
       category,
-    }),
-    [mapViewSnapshot, category],
-  );
+      maxListHeightPx: seaBasinListMaxHeightPx,
+    });
+    const stabilized = stabilizeSeaBasinList(stableSeaBasinsRef.current, picked);
+    stableSeaBasinsRef.current = stabilized;
+    return stabilized;
+  }, [mapViewSnapshot, category, seaBasinListMaxHeightPx]);
+
+  useEffect(() => {
+    stableSeaBasinsRef.current = [];
+  }, [category, categoryFaceEpoch, faceRegionsOpen]);
 
   const handleRelatedPlaceClickWithCinemaExit = useCallback((placeData, isBridge) => {
     if (flightCinemaActive) {
@@ -1144,6 +1154,7 @@ function Home() {
           visibleSeaBasins={visibleSeaBasins}
           selectedSeaBasinId={selectedSeaBasinId}
           onSeaBasinSelect={handleSeaBasinSelect}
+          onSeaBasinListMaxHeightChange={setSeaBasinListMaxHeightPx}
           isTickerExpanded={isTickerExpanded} setIsTickerExpanded={setIsTickerExpanded}
           isPinVisible={isPinVisible} onTogglePinVisibility={() => setIsPinVisible(prev => !prev)}
           globeTheme={globeTheme} onThemeToggle={handleThemeToggle}

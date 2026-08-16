@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
 import {
   User, Search, Ticket, MessageSquare, X, Trash2,
   Palmtree, Mountain, Building2, Landmark, Compass,
@@ -82,6 +82,7 @@ const HomeUI = React.memo(({
   visibleSeaBasins = [],
   selectedSeaBasinId = null,
   onSeaBasinSelect,
+  onSeaBasinListMaxHeightChange,
   isTickerExpanded, setIsTickerExpanded,
   onClearScouts,
   isPinVisible,
@@ -133,6 +134,10 @@ const HomeUI = React.memo(({
     bottomAuxRef: mobileRegionsAuxRef,
     categoryBarRef: mobileCategoryBarRef,
   });
+
+  useLayoutEffect(() => {
+    onSeaBasinListMaxHeightChange?.(mobileRegionListHeight?.maxHeightPx ?? null);
+  }, [mobileRegionListHeight?.maxHeightPx, onSeaBasinListMaxHeightChange]);
 
   const handleMobileRegionsExpandedChange = useCallback((expanded) => {
     setMobileRegionsExpanded(expanded);

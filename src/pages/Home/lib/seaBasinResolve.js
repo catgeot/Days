@@ -93,7 +93,7 @@ export function pickSeaBasinCurationSpot(query, category = 'paradise') {
   };
 }
 
-export function listChipSeaBasins(minSpots = 2) {
+export function listChipSeaBasins(minSpots = 1) {
   return basins
     .filter((b) => b.tier === 1 || b.tier === 2)
     .map((b) => {

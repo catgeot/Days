@@ -29,7 +29,7 @@ assert.equal(pin.seaBasinId, 'coral-sea');
 const sargasso = resolveSeaBasinFromQuery('사르가소해');
 assert.equal(sargasso, null, '사르가소해 has no coast spots → null');
 
-const chips = listChipSeaBasins(2);
+const chips = listChipSeaBasins(1);
 assert.ok(chips.length >= 20, `chip basins ≥20 got ${chips.length}`);
 assert.ok(!chips.some((b) => b.id === 'sargasso'), 'sargasso not chip');
 
