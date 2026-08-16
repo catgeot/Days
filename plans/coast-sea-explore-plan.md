@@ -301,16 +301,10 @@ id, name, name_en, parentOcean, bbox | polygonHint, center{lat,lng}, tier, alias
 **다음 제시어** (`cloud-preview-continuity` §1.2 — 새 채팅 제목·첫 메시지에 통째로 복붙):
 
 ```
-해안 해양 탐색 #15, 모바일 해역 연속 탭 Preview QA
+해안 해양 탐색 #18, (다음 단계)
 @plans/feature-handoff-index.md
 @plans/2026-08-16-project-log.md
-@plans/coast-sea-explore-plan.md
-브랜치 cursor/ocean-chip-crash-1ed2 · PR #122 · Preview QA
-금지: main 새 브랜치 · seaBasins.json 직접 편집 · UI 리디자인 · computerUse QA
+main · PROD QA 완료
 ```
 
-**읽을 것**: 인덱스 PR #122 행 · 일지 「#14 fix」 · `handleSeaBasinSelect` · `flyToRegion` immediate 경로  
-**하지 말 것**: spots JSON 직접 편집 · 미합의 UI · **새 Preview 브랜치** · computerUse QA  
-**VERIFY**: `smoke-sea-basin-rail` · `build`  
-**Preview**: `https://days-git-cursor-ocean-chip-crash-1ed2-catgeots-projects.vercel.app/`  
-**다음**: 모바일 — 대양 4개 순환 후 해역 리스트 5~10회 연속 탭 다운 없음 확인
+**상태**: PR #122 병합·PROD QA 통과 · `main` `14cc78ef`

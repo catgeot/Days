@@ -2,6 +2,13 @@
 
 직전: [`2026-08-13-project-log.md`](./2026-08-13-project-log.md)
 
+## 해안 해양 탐색 세션 종료 (2026-08-16)
+
+- **PR #122** `main` 병합 `74de3b5c` · 모바일 Preview QA 통과 (대양+해역 1회 순회)
+- **후속** `14cc78ef` — 고정형 해역 리스트용 `mapViewSnapshot`/`seaRailViewSnapshot` 폴링 제거
+- **PROD** 해협·해역 연속 탭 QA 통과 (사람 확인)
+- **VERIFY** `smoke-sea-basin-rail` · `build` PASS
+
 ## 에이전트 핸드오프 — 모바일 해역 연속 탭 (#14)
 
 **세션**: `해안 해양 탐색 #14, 모바일 해역 연속 탭 크래시`  

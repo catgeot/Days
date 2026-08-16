@@ -19,7 +19,7 @@
 | | |
 |--|--|
 | **상태** | **main 병합 완료** (2026-08-16) · PROD 배포 후 QA |
-| **main** | `74de3b5c` — PR [#122](https://github.com/catgeot/Days/pull/122) 모바일 대양·해역 연속 탭 크래시 |
+| **main** | `14cc78ef` — PR #122 병합 + 뷰 폴링 제거 |
 | **플랜** | [`coast-sea-explore-plan.md`](./coast-sea-explore-plan.md) §9 |
 | **일지** | [`2026-08-16-project-log.md`](./2026-08-16-project-log.md) |
 | **PROD QA** | `https://www.gateo.kr/` — 모바일 대양 4 + 해역 리스트 연속 탭 |
