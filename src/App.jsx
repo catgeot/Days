@@ -29,6 +29,7 @@ import Signup from './shared/Auth/SignUp';
 import ForgotPassword from './shared/Auth/ForgotPassWord';
 import UpdatePassword from './shared/Auth/UpdatePassword';
 import CloudPreviewWorkLog from './shared/cloudPreview/CloudPreviewWorkLog.jsx';
+import SeaExploreDebugPanel from './shared/cloudPreview/SeaExploreDebugPanel.jsx';
 
 function RouteTracker() {
   const location = useLocation();
@@ -62,6 +63,7 @@ function App() {
         <ReportProvider>
           <Analytics />
           <CloudPreviewWorkLog />
+          <SeaExploreDebugPanel />
           <Routes>
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />}>

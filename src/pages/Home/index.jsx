@@ -12,6 +12,7 @@ import HomePlaceCardSummary from './components/HomePlaceCardSummary';
 import SEO from '../../components/SEO';
 
 import { supabase } from '../../shared/api/supabase';
+import { logSeaExplore } from '../../shared/cloudPreview/seaExploreDebug.js';
 import { TRAVEL_SPOTS } from './data/travelSpots';
 import { citiesData } from './data/citiesData';
 
@@ -1131,21 +1132,36 @@ function Home() {
     }
     pendingSeaBasinFlyRef.current = null;
     const hadQueuedFly = Boolean(topOceanFlyTimerRef.current);
-    pendingTopOceanFlyRef.current = { ...flyRegion, immediate: hadQueuedFly || hadPendingSeaBasinFly };
+    const useImmediate = isMobileViewport || hadQueuedFly || hadPendingSeaBasinFly;
+    logSeaExplore('ocean.tap', {
+      id: ocean.id,
+      immediate: useImmediate,
+      queued: hadQueuedFly,
+      mobile: isMobileViewport,
+    });
+    if (isMobileViewport && performance.memory) {
+      logSeaExplore('mem.mb', Math.round(performance.memory.usedJSHeapSize / 1048576));
+    }
+    pendingTopOceanFlyRef.current = { ...flyRegion, immediate: useImmediate };
     if (topOceanFlyTimerRef.current) {
       window.clearTimeout(topOceanFlyTimerRef.current);
     }
+    const delayMs = isMobileViewport
+      ? (hadQueuedFly ? 32 : 72)
+      : (hadQueuedFly ? 50 : 160);
     topOceanFlyTimerRef.current = window.setTimeout(() => {
       topOceanFlyTimerRef.current = null;
       const region = pendingTopOceanFlyRef.current;
       pendingTopOceanFlyRef.current = null;
       if (region) {
+        logSeaExplore('ocean.fly', { id: ocean.id, immediate: region.immediate });
         globeRef.current?.flyToRegion?.(region);
       }
-    }, hadQueuedFly ? 50 : 160);
+    }, delayMs);
   }, [
     dismissPlaceSelectionKeepGlobePin,
     flightCinemaActive,
+    isMobileViewport,
     markSeaExploreBusy,
     routeLocation.pathname,
     selectedLocation,

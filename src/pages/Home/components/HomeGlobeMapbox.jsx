@@ -27,6 +27,7 @@ import {
   setSeaBasinHighlight,
   setupRegionHighlightLayers,
 } from '../lib/globeRegionHighlight';
+import { logSeaExplore } from '../../../shared/cloudPreview/seaExploreDebug.js';
 import { resolveTravelSpotFromCoords } from '../../../utils/travelSpotResolve.js';
 import {
   HIGH_ZOOM_FULL_REVEAL,
@@ -1698,6 +1699,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     const isSeaBasinFly = Boolean(region.seaBasinId);
     const immediate = Boolean(region.immediate);
+    const isCountryFocusFly = Boolean(region.iso || region.iso3166_2);
+    logSeaExplore('flyToRegion', {
+      id: region.id || region.seaBasinId || null,
+      sea: isSeaBasinFly,
+      immediate,
+      country: isCountryFocusFly,
+    });
     const gen = regionFlyGenRef.current + 1;
     regionFlyGenRef.current = gen;
     regionFlyInProgressRef.current = isSeaBasinFly && !immediate;
@@ -1716,7 +1724,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       regionFlyInProgressRef.current = false;
     };
 
-    if (!isSeaBasinFly) {
+    if (!isSeaBasinFly && isCountryFocusFly) {
       applyRegionFocusVisual();
     }
 
@@ -1750,8 +1758,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       }
       map.flyTo({
         ...camera,
-        duration: isSeaBasinFly ? 900 : GLOBE_FACE_REGION_FLY_MS,
-        essential: !isSeaBasinFly,
+        duration: isSeaBasinFly ? 900 : (isMobileDevice ? 0 : GLOBE_FACE_REGION_FLY_MS),
+        essential: !isSeaBasinFly && !isMobileDevice,
       });
       if (isSeaBasinFly) {
         requestAnimationFrame(() => {
