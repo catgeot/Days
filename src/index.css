@@ -439,6 +439,31 @@ body {
   }
 }
 
+@media (max-width: 767px) {
+  /* Chrome+WebGL: transform 애니메이션·translate 센터링 후 paint/hit 누적 어긋남 */
+  [data-home-chrome-hit] {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .place-summary-shell-enter,
+  .place-summary-card-enter,
+  .place-summary-card-enter .place-summary-top-shine,
+  .place-summary-card-idle,
+  .place-summary-orbit-ring,
+  .place-summary-halo,
+  .place-summary-open-hint {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .place-summary-card-idle {
+    box-shadow:
+      0 25px 50px -12px rgba(0, 0, 0, 0.58),
+      0 0 0 1px rgba(125, 211, 252, 0.22);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .place-summary-shell-enter,
   .place-summary-card-enter,

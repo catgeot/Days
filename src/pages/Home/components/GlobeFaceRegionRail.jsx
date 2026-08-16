@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { placeScrollPanYClass } from '../../../components/PlaceCard/common/placeScrollSurface.js';
 import {
   getDefaultFaceSubregionId,
   getFaceRegionsForSubregion,
@@ -32,11 +33,49 @@ const CATEGORY_CHIP = {
 const GLASS_SCROLL_CLASS = 'globe-face-region-scroll';
 /** 나라·세부칩 — 네이티브 바 숨김 · 커스텀 스크롤바 항시 표시 */
 const CUSTOM_SCROLL_CLASS = 'globe-face-custom-scroll';
+/** 모바일 나라 리스트 — 지도 pan·스크롤 체이닝 차단 */
+const MOBILE_LIST_SCROLL_CLASS = `${placeScrollPanYClass} ${CUSTOM_SCROLL_CLASS}`;
+const isolateMapTouchProps = {
+  onPointerDown: (event) => event.stopPropagation(),
+  onTouchStart: (event) => event.stopPropagation(),
+  onTouchMove: (event) => event.stopPropagation(),
+};
 /** PC — 투톱~LOGIN/LOGBOOK 사이 가용 높이 사용(여유 6.5rem만 하단 확보, 상한으로 과도 축소하지 않음) */
 const RAIL_LIST_HEIGHT_DESKTOP = 'h-[calc(100dvh-14.5rem-6.5rem)]';
 /** 모바일 — 하단 카테고리·세부칩 위를 남기고도 스크롤이 답답하지 않게 */
 const RAIL_LIST_HEIGHT_MOBILE = 'h-[min(50vh,22rem)]';
 const RAIL_LIST_HEIGHT_MOBILE_FLAT = 'h-[min(58vh,26rem)]';
+
+function FaceRailModeToggle({ mode, onChange, tone }) {
+  return (
+    <div
+      className="mb-1.5 flex w-full gap-1 rounded-lg border border-white/15 bg-black/50 p-0.5 backdrop-blur-md"
+      role="tablist"
+      aria-label="나라 또는 바다 탐색"
+    >
+      {[
+        { id: 'country', label: '나라' },
+        { id: 'sea', label: '바다' },
+      ].map((item) => {
+        const active = mode === item.id;
+        return (
+          <button
+            key={item.id}
+            type="button"
+            role="tab"
+            aria-selected={active}
+            onClick={() => onChange?.(item.id)}
+            className={`flex-1 rounded-md px-1 py-1 text-[10px] font-bold leading-tight transition-all active:scale-[0.97] ${
+              active ? tone.active : `${tone.idle} opacity-80`
+            }`}
+          >
+            {item.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 function useActiveSubregionId(category, showSubregionChips, selectedSubregionId, subregions) {
   return useMemo(() => {
@@ -222,13 +261,20 @@ export default function GlobeFaceRegionRail({
   /** 'side' = PC 세로 칩 · 'none' = 칩 UI 없음(필터만 · 하단 바 등과 조합) */
   subregionPlacement = 'side',
   listHeightClass,
+  listHeightStyle = null,
   className = '',
+  railMode = 'country',
+  onRailModeChange,
+  seaBasins = [],
+  selectedSeaBasinId = null,
+  onSelectSeaBasin,
 }) {
+  const isSeaMode = railMode === 'sea';
   const subregions = useMemo(
-    () => (showSubregions ? getFaceSubregions(category) : []),
-    [category, showSubregions],
+    () => (!isSeaMode && showSubregions ? getFaceSubregions(category) : []),
+    [category, showSubregions, isSeaMode],
   );
-  const showSubregionChips = showSubregions && shouldShowFaceSubregionChips(category) && subregions.length > 0;
+  const showSubregionChips = !isSeaMode && showSubregions && shouldShowFaceSubregionChips(category) && subregions.length > 0;
   const renderSideChips = showSubregionChips && subregionPlacement === 'side';
 
   const activeSubregionId = useActiveSubregionId(
@@ -312,19 +358,100 @@ export default function GlobeFaceRegionRail({
     onSelectSubregion?.(activeSubregionId);
   }, [showSubregionChips, activeSubregionId, selectedSubregionId, onSelectSubregion]);
 
-  if (!category || (regions.length === 0 && !showSubregionChips)) return null;
+  if (!category || (!isSeaMode && regions.length === 0 && !showSubregionChips)) return null;
 
   const tone = CATEGORY_CHIP[category] || CATEGORY_CHIP.paradise;
 
-  const countryList = (
-    <div className="flex flex-col items-center overflow-visible">
-      <div className={`relative w-full ${resolvedListHeight}`}>
+  const listShellClass = listHeightStyle ? 'relative w-full' : `relative w-full ${resolvedListHeight}`;
+  const listShellStyle = listHeightStyle || undefined;
+
+  const seaList = (
+    <div
+      className={`flex flex-col items-center ${anchorListToBottom ? 'overflow-hidden' : 'overflow-visible'}`}
+      {...(anchorListToBottom ? isolateMapTouchProps : {})}
+    >
+      <FaceRailModeToggle mode={railMode} onChange={onRailModeChange} tone={tone} />
+      <div className={listShellClass} style={listShellStyle}>
         <div
           ref={listRef}
-          className={`h-full overflow-y-scroll ${CUSTOM_SCROLL_CLASS} pl-2.5`}
+          className={`h-full overflow-y-auto ${anchorListToBottom ? MOBILE_LIST_SCROLL_CLASS : GLASS_SCROLL_CLASS} pl-2.5`}
+          role="listbox"
+          aria-label="해역 탐색"
+          onScroll={updateScrollHint}
+          {...(anchorListToBottom ? isolateMapTouchProps : {})}
+        >
+          <div
+            className={`flex min-h-full flex-col gap-1.5 ${
+              anchorListToBottom ? 'justify-end' : ''
+            }`}
+          >
+            {seaBasins.map((basin) => {
+              const isActive = selectedSeaBasinId === basin.id;
+              return (
+                <button
+                  key={basin.id}
+                  type="button"
+                  role="option"
+                  aria-selected={isActive}
+                  onClick={() => onSelectSeaBasin?.(basin)}
+                  className={`w-[4.75rem] md:w-[5.5rem] shrink-0 rounded-xl border bg-black/55 px-2 py-2 text-left backdrop-blur-md shadow-lg transition-all active:scale-[0.97] ${
+                    isActive ? tone.active : tone.idle
+                  }`}
+                >
+                  <span className="block text-[11px] md:text-xs font-bold leading-tight tracking-tight break-keep">
+                    {basin.name}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        {scrollUi.scrollable ? (
+          <>
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute left-0 top-1 bottom-1 w-[5px] rounded-full bg-white/15 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)]"
+            >
+              <div
+                className="absolute inset-x-0 rounded-full bg-gradient-to-b from-white/65 to-white/30 shadow-[0_0_6px_rgba(255,255,255,0.2)]"
+                style={{
+                  top: `${scrollUi.thumbTop}%`,
+                  height: `${scrollUi.thumbHeight}%`,
+                }}
+              />
+            </div>
+            {scrollUi.moreAbove ? (
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-x-0 top-0 h-7 rounded-t-xl bg-gradient-to-b from-black/55 via-black/20 to-transparent"
+              />
+            ) : null}
+            {scrollUi.moreBelow ? (
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-7 rounded-b-xl bg-gradient-to-t from-black/55 via-black/20 to-transparent"
+              />
+            ) : null}
+          </>
+        ) : null}
+      </div>
+    </div>
+  );
+
+  const countryList = (
+    <div
+      className={`flex flex-col items-center ${anchorListToBottom ? 'overflow-hidden' : 'overflow-visible'}`}
+      {...(anchorListToBottom ? isolateMapTouchProps : {})}
+    >
+      <FaceRailModeToggle mode={railMode} onChange={onRailModeChange} tone={tone} />
+      <div className={listShellClass} style={listShellStyle}>
+        <div
+          ref={listRef}
+          className={`h-full overflow-y-auto ${anchorListToBottom ? MOBILE_LIST_SCROLL_CLASS : GLASS_SCROLL_CLASS} pl-2.5`}
           role="listbox"
           aria-label="나라·지역 탐색"
           onScroll={updateScrollHint}
+          {...(anchorListToBottom ? isolateMapTouchProps : {})}
         >
           <div
             className={`flex min-h-full flex-col gap-1.5 ${
@@ -386,9 +513,12 @@ export default function GlobeFaceRegionRail({
 
   if (!renderSideChips) {
     return (
-      <div className={`pointer-events-auto relative ${className}`}>
+      <div
+        className={`pointer-events-auto relative ${className}`}
+        {...(anchorListToBottom ? isolateMapTouchProps : {})}
+      >
         <GlassScrollStyles />
-        {countryList}
+        {isSeaMode ? seaList : countryList}
       </div>
     );
   }
@@ -396,6 +526,7 @@ export default function GlobeFaceRegionRail({
   return (
     <div className={`pointer-events-auto relative flex flex-row items-start gap-2 ${className}`}>
       <GlassScrollStyles />
+      {!isSeaMode ? (
       <div
         className={`flex ${resolvedListHeight} flex-col gap-1 overflow-y-auto ${GLASS_SCROLL_CLASS} pr-1`}
         role="listbox"
@@ -421,7 +552,8 @@ export default function GlobeFaceRegionRail({
           );
         })}
       </div>
-      {countryList}
+      ) : null}
+      {isSeaMode ? seaList : countryList}
     </div>
   );
 }

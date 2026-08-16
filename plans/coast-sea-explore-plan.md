@@ -1,7 +1,7 @@
 # 해안·해양 탐색 칩 — 수량·필드·가치 플랜
 
-**세션 표기**: `해안해양 탐색 #3, 검색 별칭`  
-**상태**: Phase 1–3 ✅ · UI(Phase 4 `나라|바다` 토글) 합의 대기  
+**세션 표기**: `해안해양 탐색 #4, 나라바다 토글`  
+**상태**: Phase 1–4 ✅ · Preview QA 대기  
 **고정 브랜치**: `cursor/coast-sea-plan-8c05`  
 **관련 SSOT**: [`seaBasins.json`](../src/pages/Home/data/seaBasins.json) · [`travelSpotCoast.json`](../src/pages/Home/data/travelSpotCoast.json) · [`seaBasinResolve.js`](../src/pages/Home/lib/seaBasinResolve.js)
 

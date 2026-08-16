@@ -24,6 +24,7 @@ import {
 import {
   clearRegionHighlight,
   setRegionHighlight,
+  setSeaBasinHighlight,
   setupRegionHighlightLayers,
 } from '../lib/globeRegionHighlight';
 import { resolveTravelSpotFromCoords } from '../../../utils/travelSpotResolve.js';
@@ -86,7 +87,6 @@ import {
 import { getCategoryGlobeFaceView, GLOBE_FACE_FLY_MS, resolveCategoryFaceMapboxZoom } from '../lib/globeCategoryFocus';
 import { passesGlobeTierPolicy } from '../lib/globeSpotVisibility';
 import GlobeClusterLegend from './GlobeClusterLegend';
-import { readViewportSize } from '../../../shared/lib/mobileViewport';
 
 function LanguageControl() {
   useControl(() => new MapboxLanguage({ defaultLanguage: 'ko' }));
@@ -424,7 +424,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const onGlobeModeChangeRef = useRef(onGlobeModeChange);
   const tourEngineCallbacksRef = useRef({});
   const [globeMode, setGlobeMode] = useState(GLOBE_MODE.GLOBE_2D);
-  const [dimensions, setDimensions] = useState(() => readViewportSize());
   const [ripples, setRipples] = useState([]);
   const [mobileActionMessage, setMobileActionMessage] = useState('');
   const [reachBoundariesReady, setReachBoundariesReady] = useState(false);
@@ -680,7 +679,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
   useEffect(() => {
     const syncViewport = () => {
-      setDimensions(readViewportSize());
       const map = mapRef.current?.getMap();
       if (map) safeMapResize(map);
     };
@@ -1632,9 +1630,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }
     immerseActiveRef.current = false;
 
+    const container = map.getContainer?.();
     const viewport = {
-      width: dimensions?.width,
-      height: dimensions?.height,
+      width: container?.clientWidth ?? window.innerWidth,
+      height: container?.clientHeight ?? window.innerHeight,
     };
     const { bounds, maxZoom } = resolveFaceRegionCameraBounds(region, viewport);
     const pad = isMobileDevice
@@ -1680,9 +1679,14 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       iso3166_2: region.iso3166_2,
       bbox: Array.isArray(region.bbox) ? region.bbox : bounds,
       settleZoom,
+      seaBasinId: region.seaBasinId || null,
     };
     setupRegionHighlightLayers(map);
-    setRegionHighlight(map, focusedFaceRegionRef.current);
+    if (region.seaBasinId) {
+      setSeaBasinHighlight(map, focusedFaceRegionRef.current);
+    } else {
+      setRegionHighlight(map, focusedFaceRegionRef.current);
+    }
 
     try {
       map.stop();
@@ -1695,7 +1699,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       map.jumpTo(camera);
     }
     return true;
-  }, [dimensions?.height, dimensions?.width, globeMode, isMobileDevice, pauseRender]);
+  }, [globeMode, isMobileDevice, pauseRender]);
 
   useImperativeHandle(ref, () => ({
     pauseRotation: () => {
@@ -1726,10 +1730,16 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       const map = mapRef.current?.getMap();
       if (!map || map._removed) return null;
       try {
+        const center = map.getCenter();
+        const bounds = map.getBounds();
         return {
           zoom: map.getZoom(),
           pitch: map.getPitch(),
           altitude: null,
+          center: { lng: center.lng, lat: center.lat },
+          bounds: bounds
+            ? [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()]
+            : null,
         };
       } catch {
         return null;
@@ -2225,7 +2235,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           syncMapZoom();
           applyPlaceLabelVisibility();
         }}
-        style={{ width: dimensions.width, height: dimensions.height }}
+        style={{ width: '100%', height: '100%' }}
         minZoom={1}
         maxZoom={GLOBE_VIEW.maxZoom}
         clickTolerance={GLOBE_CLICK_TOLERANCE_PX}

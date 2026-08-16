@@ -1,3 +1,35 @@
+function isIosWebKitBrowser() {
+  if (typeof navigator === 'undefined') return false;
+  return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+/** 입력 포커스·페이지 줌·iOS Safari — full viewport meta 리셋이 필요할 때 */
+export function needsHomeViewportInputSync() {
+  if (typeof document === 'undefined') return false;
+  const active = document.activeElement;
+  if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement) {
+    return true;
+  }
+  const vv = window.visualViewport;
+  if (vv && Math.abs(vv.scale - 1) > 0.02) return true;
+  return isIosWebKitBrowser();
+}
+
+/** Chrome+WebGL: resize·viewport sync 후 fixed chrome paint/hit 어긋남 완화 */
+export function scheduleRecalibrateFixedChromeHits() {
+  if (typeof document === 'undefined' || typeof window === 'undefined') return;
+
+  const run = () => {
+    document
+      .querySelectorAll('[data-home-chrome-hit], [data-place-chrome-hit], [data-summary-chrome]')
+      .forEach((el) => {
+        void el.getBoundingClientRect();
+      });
+  };
+
+  requestAnimationFrame(() => requestAnimationFrame(run));
+}
+
 /** iOS Safari 등 — visualViewport 우선, 키보드·페이지 줌 후 지도·UI 크기 SSOT */
 export function readViewportSize() {
   if (typeof window === 'undefined') {
@@ -67,6 +99,7 @@ export function resetIosZoomAfterInput() {
 
   const original = meta.getAttribute('content');
   if (!original || original.includes('maximum-scale')) return;
+  if (!isIosWebKitBrowser()) return;
 
   meta.setAttribute('content', `${original}, maximum-scale=1.0`);
   requestAnimationFrame(() => {
@@ -82,7 +115,11 @@ let homeViewportSyncTimer = null;
  * 로그인 후 sessionStorage 플래그, MOONi 채팅·탐색 모달 닫기 등에서 공통 사용.
  */
 export function syncHomeViewportAfterInput() {
-  resetIosZoomAfterInput();
+  if (needsHomeViewportInputSync()) {
+    resetIosZoomAfterInput();
+  } else if (typeof window !== 'undefined') {
+    window.scrollTo(0, 0);
+  }
 
   if (typeof window === 'undefined') return;
 
@@ -95,6 +132,15 @@ export function syncHomeViewportAfterInput() {
     window.dispatchEvent(new Event('resize'));
     window.requestAnimationFrame(() => {
       window.dispatchEvent(new Event('resize'));
+      scheduleRecalibrateFixedChromeHits();
     });
   }, 120);
+}
+
+/** 홈·/place 왕복 — 입력 없을 때 meta 줌·window resize 생략(Chrome WebGL hit 누적 어긋남 방지) */
+export function syncHomeChromeAfterNavigation() {
+  if (typeof window === 'undefined') return;
+
+  window.scrollTo(0, 0);
+  scheduleRecalibrateFixedChromeHits();
 }

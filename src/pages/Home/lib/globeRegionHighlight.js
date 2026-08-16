@@ -31,6 +31,11 @@ export const REGION_HIGHLIGHT_FALLBACK_SOURCE_ID = 'gateo-region-highlight-fallb
 export const REGION_HIGHLIGHT_FALLBACK_LINE_ID = 'gateo-region-highlight-fallback-line';
 export const REGION_HIGHLIGHT_FALLBACK_HALO_ID = 'gateo-region-highlight-fallback-halo';
 
+export const REGION_HIGHLIGHT_SEA_SOURCE_ID = 'gateo-sea-basin-highlight';
+export const REGION_HIGHLIGHT_SEA_FILL_ID = 'gateo-sea-basin-highlight-fill';
+export const REGION_HIGHLIGHT_SEA_LINE_ID = 'gateo-sea-basin-highlight-line';
+export const REGION_HIGHLIGHT_SEA_HALO_ID = 'gateo-sea-basin-highlight-halo';
+
 export const REGION_HIGHLIGHT_LAYER_IDS = [
   REGION_HIGHLIGHT_FILL_ID,
   REGION_HIGHLIGHT_HALO_ID,
@@ -39,6 +44,15 @@ export const REGION_HIGHLIGHT_LAYER_IDS = [
   REGION_HIGHLIGHT_SUBDIVISION_FILL_ID,
   REGION_HIGHLIGHT_SUBDIVISION_HALO_ID,
   REGION_HIGHLIGHT_SUBDIVISION_LINE_ID,
+  REGION_HIGHLIGHT_SEA_FILL_ID,
+  REGION_HIGHLIGHT_SEA_HALO_ID,
+  REGION_HIGHLIGHT_SEA_LINE_ID,
+];
+
+const SEA_BASIN_HIGHLIGHT_LAYER_IDS = [
+  REGION_HIGHLIGHT_SEA_FILL_ID,
+  REGION_HIGHLIGHT_SEA_HALO_ID,
+  REGION_HIGHLIGHT_SEA_LINE_ID,
 ];
 
 const COUNTRY_HIGHLIGHT_LAYER_IDS = [
@@ -553,4 +567,138 @@ export function clearRegionHighlight(map) {
     setVisibility(map, layerId, 'none');
   }
   setStandardAdminBoundaries(map, false);
+}
+
+/** @param {[number, number, number, number]} bbox [W,S,E,N] */
+function bboxToFeatureCollection(bbox) {
+  const [west, south, east, north] = bbox;
+  return {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [west, south],
+              [east, south],
+              [east, north],
+              [west, north],
+              [west, south],
+            ],
+          ],
+        },
+      },
+    ],
+  };
+}
+
+function ensureSeaBasinHighlightLayers(map) {
+  if (!map?.getStyle?.()) return false;
+
+  const fc = bboxToFeatureCollection([0, 0, 0, 0]);
+  const existing = map.getSource(REGION_HIGHLIGHT_SEA_SOURCE_ID);
+  if (!existing) {
+    try {
+      map.addSource(REGION_HIGHLIGHT_SEA_SOURCE_ID, { type: 'geojson', data: fc });
+    } catch {
+      return false;
+    }
+  }
+
+  if (!map.getLayer(REGION_HIGHLIGHT_SEA_FILL_ID)) {
+    try {
+      map.addLayer({
+        id: REGION_HIGHLIGHT_SEA_FILL_ID,
+        type: 'fill',
+        source: REGION_HIGHLIGHT_SEA_SOURCE_ID,
+        layout: { visibility: 'none' },
+        paint: {
+          'fill-color': '#0ea5e9',
+          'fill-opacity': opacityExprFromSettle(DEFAULT_SETTLE_ZOOM, 0.22),
+        },
+      });
+    } catch {
+      // ignore
+    }
+  }
+
+  if (!map.getLayer(REGION_HIGHLIGHT_SEA_HALO_ID)) {
+    try {
+      map.addLayer({
+        id: REGION_HIGHLIGHT_SEA_HALO_ID,
+        type: 'line',
+        source: REGION_HIGHLIGHT_SEA_SOURCE_ID,
+        layout: { visibility: 'none', 'line-join': 'round', 'line-cap': 'round' },
+        paint: {
+          'line-color': 'rgba(56, 189, 248, 0.55)',
+          'line-width': ['interpolate', ['linear'], ['zoom'], 2, 3, 6, 8],
+          'line-opacity': opacityExprFromSettle(DEFAULT_SETTLE_ZOOM, 0.55),
+          'line-blur': 1.2,
+        },
+      });
+    } catch {
+      // ignore
+    }
+  }
+
+  if (!map.getLayer(REGION_HIGHLIGHT_SEA_LINE_ID)) {
+    try {
+      map.addLayer({
+        id: REGION_HIGHLIGHT_SEA_LINE_ID,
+        type: 'line',
+        source: REGION_HIGHLIGHT_SEA_SOURCE_ID,
+        layout: { visibility: 'none', 'line-join': 'round', 'line-cap': 'round' },
+        paint: {
+          'line-color': '#7dd3fc',
+          'line-width': ['interpolate', ['linear'], ['zoom'], 2, 1.2, 6, 2.4],
+          'line-opacity': opacityExprFromSettle(DEFAULT_SETTLE_ZOOM, 0.85),
+        },
+      });
+    } catch {
+      // ignore
+    }
+  }
+
+  return Boolean(map.getLayer(REGION_HIGHLIGHT_SEA_FILL_ID));
+}
+
+/**
+ * 해역 bbox 하이라이트 (나라 ISO 없음).
+ * @param {import('mapbox-gl').Map} map
+ * @param {{ bbox?: number[], settleZoom?: number } | null} basin
+ */
+export function setSeaBasinHighlight(map, basin) {
+  if (!map) return;
+  const bbox = basin?.bbox;
+  if (!Array.isArray(bbox) || bbox.length !== 4) {
+    hideHighlightLayers(map, SEA_BASIN_HIGHLIGHT_LAYER_IDS);
+    return;
+  }
+
+  hideHighlightLayers(map, [...COUNTRY_HIGHLIGHT_LAYER_IDS, ...SUBDIVISION_HIGHLIGHT_LAYER_IDS]);
+  setStandardAdminBoundaries(map, false);
+
+  if (!ensureSeaBasinHighlightLayers(map)) return;
+
+  const settleZoom = Number.isFinite(basin?.settleZoom) ? basin.settleZoom : DEFAULT_SETTLE_ZOOM;
+  const fillOpacity = opacityExprFromSettle(settleZoom, 0.22);
+  const lineOpacity = opacityExprFromSettle(settleZoom, 0.85);
+  const haloOpacity = opacityExprFromSettle(settleZoom, 0.55);
+
+  try {
+    map.getSource(REGION_HIGHLIGHT_SEA_SOURCE_ID)?.setData(bboxToFeatureCollection(bbox));
+    map.setPaintProperty(REGION_HIGHLIGHT_SEA_FILL_ID, 'fill-opacity', fillOpacity);
+    map.setPaintProperty(REGION_HIGHLIGHT_SEA_LINE_ID, 'line-opacity', lineOpacity);
+    map.setPaintProperty(REGION_HIGHLIGHT_SEA_HALO_ID, 'line-opacity', haloOpacity);
+  } catch {
+    // ignore
+  }
+
+  for (const layerId of SEA_BASIN_HIGHLIGHT_LAYER_IDS) {
+    setVisibility(map, layerId, 'visible');
+  }
+  raiseHighlightLayers(map);
 }

@@ -2,6 +2,14 @@
 
 직전: [`2026-08-13-project-log.md`](./2026-08-13-project-log.md)
 
+## 해안해양 탐색 #4, 나라바다 토글
+
+**상태**: feature `cursor/coast-sea-plan-8c05` · PR [#118](https://github.com/catgeot/Days/pull/118)  
+**세션**: `해안해양 탐색 #4, 나라바다 토글`
+
+- **한 일**: `main` merge · 나라 레일 `나라|바다` 토글 · 뷰포트 근처 해역 3~8 칩 · 선택 시 fitBounds+bbox fill · 해역 핀 필터 · `smoke:sea-basin-rail` PASS · build OK
+- **QA**: Preview — 5면 카테고리 → 바다 토글 → 에게해 등 칩 · 지도 하이라이트·핀
+
 ## 해안해양 탐색 #3, 검색 별칭
 
 **상태**: feature `cursor/coast-sea-plan-8c05` · PR [#118](https://github.com/catgeot/Days/pull/118)  

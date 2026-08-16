@@ -51,7 +51,12 @@ import { GLOBE_MODE, isTourMode } from './lib/globeMode';
 import { FlightCinemaProvider } from './lib/FlightCinemaContext.jsx';
 import { pickRandomGlobeCategory } from './lib/globeCategoryFocus';
 import { getDefaultFaceSubregionId } from './lib/globeFaceSubregions.js';
-import { syncHomeViewportAfterInput } from '../../shared/lib/mobileViewport';
+import {
+  getSpotSlugsForSeaBasin,
+  pickVisibleSeaBasins,
+  seaBasinToFlyRegion,
+} from './lib/seaBasinRail.js';
+import { syncHomeViewportAfterInput, syncHomeChromeAfterNavigation } from '../../shared/lib/mobileViewport';
 import {
   clearPlaceReturnTo,
   peekPlaceReturnTo,
@@ -164,6 +169,9 @@ function Home() {
   const [faceRegionsOpen, setFaceRegionsOpen] = useState(false);
   const [selectedFaceRegionId, setSelectedFaceRegionId] = useState(null);
   const [selectedFaceSubregionId, setSelectedFaceSubregionId] = useState(null);
+  const [faceRailMode, setFaceRailMode] = useState('country');
+  const [selectedSeaBasinId, setSelectedSeaBasinId] = useState(null);
+  const [mapViewSnapshot, setMapViewSnapshot] = useState(null);
 
   const revealRandomGlobeFace = useCallback(() => {
     const next = pickRandomGlobeCategory();
@@ -172,6 +180,8 @@ function Home() {
     setFaceRegionsOpen(false);
     setSelectedFaceRegionId(null);
     setSelectedFaceSubregionId(getDefaultFaceSubregionId(next));
+    setFaceRailMode('country');
+    setSelectedSeaBasinId(null);
     globeRef.current?.clearRegionFocus?.();
   }, []);
 
@@ -179,6 +189,8 @@ function Home() {
     setFaceRegionsOpen(false);
     setSelectedFaceRegionId(null);
     setSelectedFaceSubregionId(null);
+    setFaceRailMode('country');
+    setSelectedSeaBasinId(null);
     globeRef.current?.clearRegionFocus?.();
   }, []);
 
@@ -195,6 +207,10 @@ function Home() {
   /** 모바일 숙소 패널 펼침 — 스크림·회전 정지·MOONi 숨김 */
   const [isStayStripExpanded, setIsStayStripExpanded] = useState(false);
   const [isPlaceImmersed, setIsPlaceImmersed] = useState(false);
+  const [homeChromeEpoch, setHomeChromeEpoch] = useState(0);
+  const bumpHomeChromeEpoch = useCallback(() => {
+    setHomeChromeEpoch((n) => n + 1);
+  }, []);
   const prevChatOpenRef = useRef(false);
   const prevPathnameRef = useRef(routeLocation.pathname);
 
@@ -286,6 +302,8 @@ function Home() {
       setFaceRegionsOpen(false);
       setSelectedFaceRegionId(null);
       setSelectedFaceSubregionId(null);
+      setFaceRailMode('country');
+      setSelectedSeaBasinId(null);
       globeRef.current?.clearRegionFocus?.();
       return;
     }
@@ -294,6 +312,8 @@ function Home() {
     setFaceRegionsOpen(true);
     setSelectedFaceRegionId(null);
     setSelectedFaceSubregionId(getDefaultFaceSubregionId(nextCategory));
+    setFaceRailMode('country');
+    setSelectedSeaBasinId(null);
     globeRef.current?.clearRegionFocus?.();
     setCategoryFaceEpoch((epoch) => epoch + 1);
   }, [category, faceRegionsOpen, flightCinemaActive, globeMode]);
@@ -309,8 +329,50 @@ function Home() {
     selectedFaceSubregionIdRef.current = next;
     setSelectedFaceSubregionId(next);
     setSelectedFaceRegionId(null);
+    setSelectedSeaBasinId(null);
     globeRef.current?.clearRegionFocus?.();
   }, []);
+
+  const handleFaceRailModeChange = useCallback((nextMode) => {
+    if (nextMode !== 'country' && nextMode !== 'sea') return;
+    setFaceRailMode(nextMode);
+    setSelectedFaceRegionId(null);
+    setSelectedSeaBasinId(null);
+    globeRef.current?.clearRegionFocus?.();
+  }, []);
+
+  useEffect(() => {
+    if (!faceRegionsOpen) return undefined;
+    const tick = () => {
+      const view = globeRef.current?.getMapView?.();
+      if (!view) return;
+      setMapViewSnapshot((prev) => {
+        const nextBounds = view.bounds || null;
+        const prevBounds = prev?.bounds || null;
+        const sameBounds = prevBounds
+          && nextBounds
+          && prevBounds.every((v, i) => Math.abs(v - nextBounds[i]) < 0.02);
+        const sameCenter = prev?.center
+          && view.center
+          && Math.abs((prev.center.lng || 0) - (view.center.lng || 0)) < 0.02
+          && Math.abs((prev.center.lat || 0) - (view.center.lat || 0)) < 0.02;
+        if (sameBounds && sameCenter) return prev;
+        return view;
+      });
+    };
+    tick();
+    const timer = window.setInterval(tick, 900);
+    return () => window.clearInterval(timer);
+  }, [faceRegionsOpen, category, categoryFaceEpoch]);
+
+  const visibleSeaBasins = useMemo(
+    () => pickVisibleSeaBasins({
+      viewBounds: mapViewSnapshot?.bounds || null,
+      viewCenter: mapViewSnapshot?.center || null,
+      category,
+    }),
+    [mapViewSnapshot, category],
+  );
 
   const handleRelatedPlaceClickWithCinemaExit = useCallback((placeData, isBridge) => {
     if (flightCinemaActive) {
@@ -475,9 +537,11 @@ function Home() {
     }
     navigate('/');
     if (isMobileViewport) {
-      syncHomeViewportAfterInput();
+      bumpHomeChromeEpoch();
+      syncHomeChromeAfterNavigation();
+      globeRef.current?.wakeAfterOverlay?.();
     }
-  }, [routeLocation.pathname, category, navigate, rememberGlobeFocus, addScoutPin, setSelectedLocation, isMobileViewport]);
+  }, [routeLocation.pathname, category, navigate, rememberGlobeFocus, addScoutPin, setSelectedLocation, isMobileViewport, bumpHomeChromeEpoch]);
 
   const leavePlaceCard = useCallback(() => {
     const returnTo = peekPlaceReturnTo(routeLocation.state);
@@ -494,9 +558,11 @@ function Home() {
     setSelectedLocation(null);
     navigate('/');
     if (isMobileViewport) {
-      syncHomeViewportAfterInput();
+      bumpHomeChromeEpoch();
+      syncHomeChromeAfterNavigation();
+      globeRef.current?.wakeAfterOverlay?.();
     }
-  }, [isMobileViewport, navigate, routeLocation.state, setSelectedLocation]);
+  }, [isMobileViewport, navigate, routeLocation.state, setSelectedLocation, bumpHomeChromeEpoch]);
 
   const createTripOnFirstUserMessage = useCallback(async ({ destination, lat, lng, persona, firstUserText }) => {
     const systemPrompt = getSystemPrompt(persona, destination);
@@ -776,6 +842,9 @@ function Home() {
     prevPathRef.current = currentPath;
 
     if (currentPath === '/' && (prevPath.startsWith('/place/') || prevPath.startsWith('/explore'))) {
+      if (isMobileViewport && prevPath.startsWith('/place/')) {
+        bumpHomeChromeEpoch();
+      }
       const fromSearch = Boolean(routeLocation.state?.fromSearch);
       const fromPrevPlacePath =
         !fromSearch && prevPath.startsWith('/place/')
@@ -814,7 +883,7 @@ function Home() {
         revealRandomGlobeFace();
       }
     }
-  }, [routeLocation.pathname, routeLocation.state?.fromSearch, category, moveToLocation, rememberGlobeFocus, revealRandomGlobeFace, setSelectedLocation]);
+  }, [routeLocation.pathname, routeLocation.state?.fromSearch, category, moveToLocation, rememberGlobeFocus, revealRandomGlobeFace, setSelectedLocation, isMobileViewport, bumpHomeChromeEpoch]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
@@ -841,7 +910,12 @@ function Home() {
 
   const filteredSavedTrips = useMemo(() => savedTrips.filter(t => t.category === category), [savedTrips, category]);
   // Mapbox 지구본은 마커 겹침을 자연스럽게 처리하므로 카테고리와 무관하게 전체 여행지 노출
-  const globeSpots = useMemo(() => TRAVEL_SPOTS, []);
+  const globeSpots = useMemo(() => {
+    if (faceRailMode !== 'sea' || !selectedSeaBasinId) return TRAVEL_SPOTS;
+    const slugSet = new Set(getSpotSlugsForSeaBasin(selectedSeaBasinId));
+    if (!slugSet.size) return TRAVEL_SPOTS;
+    return TRAVEL_SPOTS.filter((spot) => slugSet.has(spot.slug));
+  }, [faceRailMode, selectedSeaBasinId]);
   const bucketList = useMemo(() => savedTrips.filter(t => t.is_bookmarked), [savedTrips]);
 
   const globeRenderedTrips = useMemo(() => {
@@ -907,9 +981,11 @@ function Home() {
     }
     globeRef.current?.resumeRotation?.();
     if (isMobileViewport) {
-      syncHomeViewportAfterInput();
+      bumpHomeChromeEpoch();
+      syncHomeChromeAfterNavigation();
+      globeRef.current?.wakeAfterOverlay?.();
     }
-  }, [addScoutPin, rememberGlobeFocus, selectedLocation, setSelectedLocation, isMobileViewport]);
+  }, [addScoutPin, bumpHomeChromeEpoch, rememberGlobeFocus, selectedLocation, setSelectedLocation, isMobileViewport]);
 
   /** 나라 칩 포커스 시 써머리만 닫고 국가 단위 fitBounds — PC는 카드와 메뉴 동시 표시 */
   const handleFaceRegionSelect = useCallback((region) => {
@@ -920,8 +996,29 @@ function Home() {
     if (selectedLocation && routeLocation.pathname === '/') {
       dismissPlaceSelectionKeepGlobePin();
     }
+    setSelectedSeaBasinId(null);
     setSelectedFaceRegionId(region.id);
     globeRef.current?.flyToRegion?.(region);
+  }, [
+    dismissPlaceSelectionKeepGlobePin,
+    flightCinemaActive,
+    routeLocation.pathname,
+    selectedLocation,
+  ]);
+
+  const handleSeaBasinSelect = useCallback((basin) => {
+    if (!basin?.id) return;
+    const flyRegion = seaBasinToFlyRegion(basin);
+    if (!flyRegion) return;
+    if (flightCinemaActive) {
+      globeRef.current?.closeFlightCinema?.();
+    }
+    if (selectedLocation && routeLocation.pathname === '/') {
+      dismissPlaceSelectionKeepGlobePin();
+    }
+    setSelectedFaceRegionId(null);
+    setSelectedSeaBasinId(basin.id);
+    globeRef.current?.flyToRegion?.(flyRegion);
   }, [
     dismissPlaceSelectionKeepGlobePin,
     flightCinemaActive,
@@ -1022,6 +1119,7 @@ function Home() {
       <div className={`relative z-10 transition-opacity duration-1000 ${isZenMode ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
         <SiteUpdateBanner />
         <HomeUI
+          homeChromeEpoch={homeChromeEpoch}
           onSearch={handleSmartSearch} onTickerClick={handleSmartSearch}
           onRelatedPlaceClick={handleRelatedPlaceClickWithCinemaExit}
           externalInput={draftInput}
@@ -1032,10 +1130,16 @@ function Home() {
           relatedPlaces={relatedPlaces} isTagLoading={isTagLoading}
           selectedCategory={category} onCategorySelect={handleCategorySelect}
           faceRegionsOpen={faceRegionsOpen}
+          onFaceRegionsDismiss={closeFaceRegions}
           selectedFaceRegionId={selectedFaceRegionId}
           onFaceRegionSelect={handleFaceRegionSelect}
           selectedFaceSubregionId={selectedFaceSubregionId}
           onFaceSubregionSelect={handleFaceSubregionSelect}
+          faceRailMode={faceRailMode}
+          onFaceRailModeChange={handleFaceRailModeChange}
+          visibleSeaBasins={visibleSeaBasins}
+          selectedSeaBasinId={selectedSeaBasinId}
+          onSeaBasinSelect={handleSeaBasinSelect}
           isTickerExpanded={isTickerExpanded} setIsTickerExpanded={setIsTickerExpanded}
           isPinVisible={isPinVisible} onTogglePinVisibility={() => setIsPinVisible(prev => !prev)}
           globeTheme={globeTheme} onThemeToggle={handleThemeToggle}
@@ -1091,6 +1195,7 @@ function Home() {
 
         {selectedLocation && routeLocation.pathname === '/' && !isTourCinema && !flightCinemaActive && (
           <HomePlaceCardSummary
+            key={`summary-${homeChromeEpoch}-${selectedLocation.id ?? selectedLocation.slug ?? selectedLocation.name}`}
             globeRef={globeRef}
             location={selectedLocation}
             isBookmarked={savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked)}
