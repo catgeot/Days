@@ -460,6 +460,16 @@ function Home() {
   /** /place X 닫기 등 — 홈 복귀 시 써머리 재오픈 생략(핀 flyTo는 유지) */
   const skipHomeSummaryRestoreRef = useRef(false);
   const placeRouteSyncRef = useRef(0);
+  const dismissRotateResumeTimerRef = useRef(null);
+
+  const clearDismissRotateResumeTimer = useCallback(() => {
+    if (dismissRotateResumeTimerRef.current != null) {
+      window.clearTimeout(dismissRotateResumeTimerRef.current);
+      dismissRotateResumeTimerRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => () => clearDismissRotateResumeTimer(), [clearDismissRotateResumeTimer]);
 
   const rememberGlobeFocus = useCallback((loc) => {
     if (!hasValidCoords(loc)) return;
@@ -1026,6 +1036,11 @@ function Home() {
       globeRef.current?.endTour?.();
     }
     globeRef.current?.pauseRotation?.();
+    clearDismissRotateResumeTimer();
+    dismissRotateResumeTimerRef.current = window.setTimeout(() => {
+      dismissRotateResumeTimerRef.current = null;
+      globeRef.current?.resumeRotation?.();
+    }, 3000);
     if (isMobileViewport) {
       bumpHomeChromeEpoch();
       syncHomeChromeAfterNavigation();
@@ -1035,6 +1050,7 @@ function Home() {
     addScoutPin,
     bumpHomeChromeEpoch,
     category,
+    clearDismissRotateResumeTimer,
     isPlaceImmersed,
     moveToLocation,
     rememberGlobeFocus,
