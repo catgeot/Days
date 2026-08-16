@@ -3,6 +3,8 @@ import { useLayoutEffect, useState } from 'react';
 const CHROME_SELECTOR = '[data-home-chrome-hit]';
 const MOBILE_MQL = '(max-width: 767px)';
 const CHROME_GAP_PX = 12;
+/** HomeUI 좌상단 실드 `max-md:-bottom-14` — hit box 밖 클릭 가로채기 방지 */
+const FACE_OPEN_CHROME_OVERLAP_PX = 56;
 const MIN_LIST_PX = 112;
 
 function capPxForSubregions(hasSubregions) {
@@ -21,6 +23,7 @@ export function useMobileFaceRegionListHeight({
   enabled,
   hasSubregionBar,
   chromeEpoch = 0,
+  faceRegionsOpen = false,
   bottomAuxRef,
   categoryBarRef,
 }) {
@@ -56,7 +59,8 @@ export function useMobileFaceRegionListHeight({
       const categoryTop = categoryBar.getBoundingClientRect().top;
       const auxHeight = bottomAuxRef?.current?.getBoundingClientRect().height ?? 0;
       const cap = capPxForSubregions(hasSubregionBar);
-      const available = categoryTop - chromeBottom - CHROME_GAP_PX - auxHeight;
+      const chromeOverlap = faceRegionsOpen ? FACE_OPEN_CHROME_OVERLAP_PX : 0;
+      const available = categoryTop - chromeBottom - CHROME_GAP_PX - chromeOverlap - auxHeight;
       const next = Math.max(MIN_LIST_PX, Math.min(cap, Math.floor(available)));
 
       setMaxHeightPx(Number.isFinite(next) ? next : null);
@@ -82,12 +86,13 @@ export function useMobileFaceRegionListHeight({
       window.visualViewport?.removeEventListener('scroll', update);
       mql.removeEventListener('change', update);
     };
-  }, [enabled, hasSubregionBar, chromeEpoch, bottomAuxRef, categoryBarRef]);
+  }, [enabled, hasSubregionBar, chromeEpoch, faceRegionsOpen, bottomAuxRef, categoryBarRef]);
 
   if (!enabled || maxHeightPx == null) return null;
 
   return {
     maxHeightPx,
-    listHeightStyle: { height: `${maxHeightPx}px`, maxHeight: `${maxHeightPx}px` },
+    // 고정 height 대신 maxHeight만 — 짧은 목록은 컨테이너가 내용 높이로 줄고 불필요한 스크롤·체이닝 방지
+    listHeightStyle: { maxHeight: `${maxHeightPx}px` },
   };
 }

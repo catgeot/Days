@@ -24,6 +24,7 @@ import {
 import {
   clearRegionHighlight,
   setRegionHighlight,
+  setSeaBasinHighlight,
   setupRegionHighlightLayers,
 } from '../lib/globeRegionHighlight';
 import { resolveTravelSpotFromCoords } from '../../../utils/travelSpotResolve.js';
@@ -1678,9 +1679,14 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       iso3166_2: region.iso3166_2,
       bbox: Array.isArray(region.bbox) ? region.bbox : bounds,
       settleZoom,
+      seaBasinId: region.seaBasinId || null,
     };
     setupRegionHighlightLayers(map);
-    setRegionHighlight(map, focusedFaceRegionRef.current);
+    if (region.seaBasinId) {
+      setSeaBasinHighlight(map, focusedFaceRegionRef.current);
+    } else {
+      setRegionHighlight(map, focusedFaceRegionRef.current);
+    }
 
     try {
       map.stop();
@@ -1724,10 +1730,16 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       const map = mapRef.current?.getMap();
       if (!map || map._removed) return null;
       try {
+        const center = map.getCenter();
+        const bounds = map.getBounds();
         return {
           zoom: map.getZoom(),
           pitch: map.getPitch(),
           altitude: null,
+          center: { lng: center.lng, lat: center.lat },
+          bounds: bounds
+            ? [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()]
+            : null,
         };
       } catch {
         return null;

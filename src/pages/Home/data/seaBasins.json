@@ -1,0 +1,729 @@
+{
+  "meta": {
+    "generatedAt": "2026-08-16T01:24:38.669Z",
+    "basinCount": 33,
+    "source": "scripts/data/sea-basins-overrides.mjs"
+  },
+  "basins": [
+    {
+      "id": "aegean",
+      "name": "에게해",
+      "name_en": "Aegean Sea",
+      "parentOcean": "mediterranean",
+      "tier": 1,
+      "center": {
+        "lat": 37.5,
+        "lng": 25.5
+      },
+      "bbox": [
+        22.5,
+        34.5,
+        28.5,
+        41.2
+      ],
+      "aliases": [
+        "에게해",
+        "Aegean",
+        "Aegean Sea"
+      ]
+    },
+    {
+      "id": "adriatic",
+      "name": "아드리아해",
+      "name_en": "Adriatic Sea",
+      "parentOcean": "mediterranean",
+      "tier": 1,
+      "center": {
+        "lat": 42.8,
+        "lng": 16.5
+      },
+      "bbox": [
+        12,
+        39.5,
+        20,
+        45.8
+      ],
+      "aliases": [
+        "아드리아해",
+        "Adriatic",
+        "Adriatic Sea"
+      ]
+    },
+    {
+      "id": "mediterranean",
+      "name": "지중해",
+      "name_en": "Mediterranean Sea",
+      "parentOcean": "atlantic",
+      "tier": 1,
+      "center": {
+        "lat": 38,
+        "lng": 8
+      },
+      "bbox": [
+        -6,
+        30,
+        36.5,
+        46
+      ],
+      "aliases": [
+        "지중해",
+        "Mediterranean",
+        "Mediterranean Sea"
+      ]
+    },
+    {
+      "id": "tyrrhenian",
+      "name": "티레니아해",
+      "name_en": "Tyrrhenian Sea",
+      "parentOcean": "mediterranean",
+      "tier": 2,
+      "center": {
+        "lat": 40.5,
+        "lng": 12
+      },
+      "bbox": [
+        8,
+        37.5,
+        16,
+        44.5
+      ],
+      "aliases": [
+        "티레니아해",
+        "Tyrrhenian",
+        "Tyrrhenian Sea"
+      ]
+    },
+    {
+      "id": "caribbean",
+      "name": "카리브해",
+      "name_en": "Caribbean Sea",
+      "parentOcean": "atlantic",
+      "tier": 1,
+      "center": {
+        "lat": 15,
+        "lng": -75
+      },
+      "bbox": [
+        -88,
+        9,
+        -59,
+        27.5
+      ],
+      "aliases": [
+        "카리브해",
+        "카리브",
+        "Caribbean",
+        "Caribbean Sea"
+      ]
+    },
+    {
+      "id": "gulf-of-mexico",
+      "name": "멕시코만",
+      "name_en": "Gulf of Mexico",
+      "parentOcean": "atlantic",
+      "tier": 2,
+      "center": {
+        "lat": 25,
+        "lng": -90
+      },
+      "bbox": [
+        -98,
+        18,
+        -80.5,
+        31
+      ],
+      "aliases": [
+        "멕시코만",
+        "Gulf of Mexico",
+        "Gulf of México"
+      ]
+    },
+    {
+      "id": "andaman",
+      "name": "안다만해",
+      "name_en": "Andaman Sea",
+      "parentOcean": "indian",
+      "tier": 1,
+      "center": {
+        "lat": 10,
+        "lng": 96
+      },
+      "bbox": [
+        92,
+        5,
+        100.5,
+        16
+      ],
+      "aliases": [
+        "안다만해",
+        "Andaman",
+        "Andaman Sea"
+      ]
+    },
+    {
+      "id": "gulf-of-thailand",
+      "name": "태국만",
+      "name_en": "Gulf of Thailand",
+      "parentOcean": "pacific",
+      "tier": 1,
+      "center": {
+        "lat": 10,
+        "lng": 101.5
+      },
+      "bbox": [
+        99,
+        6,
+        105,
+        13.5
+      ],
+      "aliases": [
+        "태국만",
+        "Gulf of Thailand",
+        "Gulf of Siam"
+      ]
+    },
+    {
+      "id": "south-china-sea",
+      "name": "남중국해",
+      "name_en": "South China Sea",
+      "parentOcean": "pacific",
+      "tier": 1,
+      "center": {
+        "lat": 12,
+        "lng": 114
+      },
+      "bbox": [
+        105,
+        0,
+        121,
+        23.5
+      ],
+      "aliases": [
+        "남중국해",
+        "South China Sea"
+      ]
+    },
+    {
+      "id": "east-china-sea",
+      "name": "동중국해",
+      "name_en": "East China Sea",
+      "parentOcean": "pacific",
+      "tier": 1,
+      "center": {
+        "lat": 28,
+        "lng": 126
+      },
+      "bbox": [
+        120,
+        23,
+        131,
+        35
+      ],
+      "aliases": [
+        "동중국해",
+        "East China Sea",
+        "동해"
+      ]
+    },
+    {
+      "id": "philippine-sea",
+      "name": "필리핀해",
+      "name_en": "Philippine Sea",
+      "parentOcean": "pacific",
+      "tier": 1,
+      "center": {
+        "lat": 15,
+        "lng": 140
+      },
+      "bbox": [
+        122,
+        0,
+        160,
+        30
+      ],
+      "aliases": [
+        "필리핀해",
+        "Philippine Sea"
+      ]
+    },
+    {
+      "id": "celebes",
+      "name": "셀레베스해",
+      "name_en": "Celebes Sea",
+      "parentOcean": "pacific",
+      "tier": 2,
+      "center": {
+        "lat": 3,
+        "lng": 122
+      },
+      "bbox": [
+        117,
+        -2,
+        127,
+        7
+      ],
+      "aliases": [
+        "셀레베스해",
+        "술라웨시해",
+        "Celebes Sea",
+        "Sulawesi Sea"
+      ]
+    },
+    {
+      "id": "banda",
+      "name": "반다해",
+      "name_en": "Banda Sea",
+      "parentOcean": "pacific",
+      "tier": 2,
+      "center": {
+        "lat": -5,
+        "lng": 128
+      },
+      "bbox": [
+        123,
+        -8.5,
+        134,
+        -1
+      ],
+      "aliases": [
+        "반다해",
+        "Banda Sea"
+      ]
+    },
+    {
+      "id": "java-sea",
+      "name": "자와해",
+      "name_en": "Java Sea",
+      "parentOcean": "pacific",
+      "tier": 2,
+      "center": {
+        "lat": -5,
+        "lng": 113
+      },
+      "bbox": [
+        105,
+        -8,
+        120,
+        -2
+      ],
+      "aliases": [
+        "자와해",
+        "Java Sea"
+      ]
+    },
+    {
+      "id": "coral-sea",
+      "name": "산호해",
+      "name_en": "Coral Sea",
+      "parentOcean": "pacific",
+      "tier": 1,
+      "center": {
+        "lat": -18,
+        "lng": 155
+      },
+      "bbox": [
+        142,
+        -30,
+        170,
+        -8
+      ],
+      "aliases": [
+        "산호해",
+        "Coral Sea"
+      ]
+    },
+    {
+      "id": "tasman",
+      "name": "타스만해",
+      "name_en": "Tasman Sea",
+      "parentOcean": "pacific",
+      "tier": 1,
+      "center": {
+        "lat": -38,
+        "lng": 160
+      },
+      "bbox": [
+        147,
+        -48,
+        175,
+        -28
+      ],
+      "aliases": [
+        "타스만해",
+        "Tasman",
+        "Tasman Sea"
+      ]
+    },
+    {
+      "id": "solomon-sea",
+      "name": "솔로몬해",
+      "name_en": "Solomon Sea",
+      "parentOcean": "pacific",
+      "tier": 2,
+      "center": {
+        "lat": -8,
+        "lng": 155
+      },
+      "bbox": [
+        147,
+        -12,
+        163,
+        -4
+      ],
+      "aliases": [
+        "솔로몬해",
+        "Solomon Sea"
+      ]
+    },
+    {
+      "id": "south-pacific",
+      "name": "남태평양",
+      "name_en": "South Pacific",
+      "parentOcean": "pacific",
+      "tier": 1,
+      "center": {
+        "lat": -18,
+        "lng": -150
+      },
+      "bbox": [
+        -180,
+        -30,
+        -130,
+        -5
+      ],
+      "aliases": [
+        "남태평양",
+        "South Pacific",
+        "South Pacific Ocean"
+      ]
+    },
+    {
+      "id": "central-pacific",
+      "name": "중부 태평양",
+      "name_en": "Central Pacific",
+      "parentOcean": "pacific",
+      "tier": 2,
+      "center": {
+        "lat": 5,
+        "lng": 165
+      },
+      "bbox": [
+        150,
+        -5,
+        180,
+        20
+      ],
+      "aliases": [
+        "중부 태평양",
+        "Central Pacific",
+        "Micronesia"
+      ]
+    },
+    {
+      "id": "north-pacific",
+      "name": "북태평양",
+      "name_en": "North Pacific",
+      "parentOcean": "pacific",
+      "tier": 2,
+      "center": {
+        "lat": 30,
+        "lng": -160
+      },
+      "bbox": [
+        -180,
+        15,
+        -120,
+        50
+      ],
+      "aliases": [
+        "북태평양",
+        "North Pacific",
+        "North Pacific Ocean"
+      ]
+    },
+    {
+      "id": "western-indian",
+      "name": "서인도양",
+      "name_en": "Western Indian Ocean",
+      "parentOcean": "indian",
+      "tier": 1,
+      "center": {
+        "lat": -10,
+        "lng": 50
+      },
+      "bbox": [
+        35,
+        -30,
+        70,
+        5
+      ],
+      "aliases": [
+        "서인도양",
+        "Western Indian Ocean",
+        "인도양"
+      ]
+    },
+    {
+      "id": "maldives-sea",
+      "name": "몰디브 해역",
+      "name_en": "Maldives Sea",
+      "parentOcean": "indian",
+      "tier": 2,
+      "center": {
+        "lat": 3,
+        "lng": 73
+      },
+      "bbox": [
+        70,
+        -2,
+        78,
+        8
+      ],
+      "aliases": [
+        "몰디브",
+        "Maldives",
+        "Laccadive Sea"
+      ]
+    },
+    {
+      "id": "red-sea",
+      "name": "홍해",
+      "name_en": "Red Sea",
+      "parentOcean": "indian",
+      "tier": 3,
+      "center": {
+        "lat": 22,
+        "lng": 38
+      },
+      "bbox": [
+        32,
+        12,
+        44,
+        30
+      ],
+      "aliases": [
+        "홍해",
+        "Red Sea"
+      ]
+    },
+    {
+      "id": "arabian",
+      "name": "아라비아해",
+      "name_en": "Arabian Sea",
+      "parentOcean": "indian",
+      "tier": 3,
+      "center": {
+        "lat": 15,
+        "lng": 65
+      },
+      "bbox": [
+        50,
+        5,
+        77,
+        25
+      ],
+      "aliases": [
+        "아라비아해",
+        "Arabian Sea"
+      ]
+    },
+    {
+      "id": "north-atlantic",
+      "name": "북대서양",
+      "name_en": "North Atlantic",
+      "parentOcean": "atlantic",
+      "tier": 2,
+      "center": {
+        "lat": 40,
+        "lng": -40
+      },
+      "bbox": [
+        -80,
+        20,
+        0,
+        65
+      ],
+      "aliases": [
+        "북대서양",
+        "North Atlantic",
+        "North Atlantic Ocean"
+      ]
+    },
+    {
+      "id": "south-atlantic",
+      "name": "남대서양",
+      "name_en": "South Atlantic",
+      "parentOcean": "atlantic",
+      "tier": 2,
+      "center": {
+        "lat": -20,
+        "lng": -20
+      },
+      "bbox": [
+        -50,
+        -50,
+        15,
+        5
+      ],
+      "aliases": [
+        "남대서양",
+        "South Atlantic",
+        "South Atlantic Ocean"
+      ]
+    },
+    {
+      "id": "norwegian-sea",
+      "name": "노르웨이해",
+      "name_en": "Norwegian Sea",
+      "parentOcean": "atlantic",
+      "tier": 2,
+      "center": {
+        "lat": 68,
+        "lng": 5
+      },
+      "bbox": [
+        -10,
+        60,
+        20,
+        75
+      ],
+      "aliases": [
+        "노르웨이해",
+        "Norwegian Sea"
+      ]
+    },
+    {
+      "id": "baltic",
+      "name": "발트해",
+      "name_en": "Baltic Sea",
+      "parentOcean": "atlantic",
+      "tier": 2,
+      "center": {
+        "lat": 58,
+        "lng": 20
+      },
+      "bbox": [
+        10,
+        53,
+        30,
+        66
+      ],
+      "aliases": [
+        "발트해",
+        "Baltic",
+        "Baltic Sea"
+      ]
+    },
+    {
+      "id": "yellow-sea",
+      "name": "황해",
+      "name_en": "Yellow Sea",
+      "parentOcean": "pacific",
+      "tier": 2,
+      "center": {
+        "lat": 35,
+        "lng": 123
+      },
+      "bbox": [
+        117,
+        31,
+        127,
+        40
+      ],
+      "aliases": [
+        "황해",
+        "서해",
+        "Yellow Sea"
+      ]
+    },
+    {
+      "id": "sea-of-japan",
+      "name": "동해",
+      "name_en": "Sea of Japan",
+      "parentOcean": "pacific",
+      "tier": 2,
+      "center": {
+        "lat": 40,
+        "lng": 135
+      },
+      "bbox": [
+        127,
+        34,
+        142,
+        48
+      ],
+      "aliases": [
+        "동해",
+        "일본해",
+        "Sea of Japan"
+      ]
+    },
+    {
+      "id": "sargasso",
+      "name": "사르가소해",
+      "name_en": "Sargasso Sea",
+      "parentOcean": "atlantic",
+      "tier": 3,
+      "center": {
+        "lat": 28,
+        "lng": -50
+      },
+      "bbox": [
+        -70,
+        20,
+        -30,
+        35
+      ],
+      "aliases": [
+        "사르가소해",
+        "사로가소해",
+        "Sargasso",
+        "Sargasso Sea"
+      ]
+    },
+    {
+      "id": "barents",
+      "name": "바렌츠해",
+      "name_en": "Barents Sea",
+      "parentOcean": "arctic",
+      "tier": 3,
+      "center": {
+        "lat": 74,
+        "lng": 40
+      },
+      "bbox": [
+        15,
+        68,
+        65,
+        81
+      ],
+      "aliases": [
+        "바렌츠해",
+        "Barents",
+        "Barents Sea"
+      ]
+    },
+    {
+      "id": "southern-ocean",
+      "name": "남극해",
+      "name_en": "Southern Ocean",
+      "parentOcean": "southern",
+      "tier": 3,
+      "center": {
+        "lat": -65,
+        "lng": 0
+      },
+      "bbox": [
+        -180,
+        -80,
+        180,
+        -50
+      ],
+      "aliases": [
+        "남극해",
+        "Southern Ocean",
+        "Antarctic Ocean"
+      ]
+    }
+  ]
+}

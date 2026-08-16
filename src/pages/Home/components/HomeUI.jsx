@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   User, Search, Ticket, MessageSquare, X, Trash2,
   Palmtree, Mountain, Building2, Landmark, Compass,
@@ -15,7 +15,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import TravelTicker from '../components/TravelTicker';
 import Logo from './Logo';
 import TourMobileBar from './TourMobileBar';
-import GlobeFaceRegionRail, { GlobeFaceSubregionBar } from './GlobeFaceRegionRail';
+import GlobeFaceRegionRail, {
+  GlobeFaceSubregionBar,
+  MobileRegionsMenuSwitch,
+  SeaBasinListButton,
+} from './GlobeFaceRegionRail';
 import { shouldShowFaceSubregionChips } from '../lib/globeFaceSubregions.js';
 import { useMobileFaceRegionListHeight } from '../hooks/useMobileFaceRegionListHeight';
 import { useTrendingData } from '../hooks/useTrendingData';
@@ -73,6 +77,11 @@ const HomeUI = React.memo(({
   onFaceRegionSelect,
   selectedFaceSubregionId = null,
   onFaceSubregionSelect,
+  faceRailMode = 'country',
+  onFaceRailModeChange,
+  visibleSeaBasins = [],
+  selectedSeaBasinId = null,
+  onSeaBasinSelect,
   isTickerExpanded, setIsTickerExpanded,
   onClearScouts,
   isPinVisible,
@@ -110,18 +119,36 @@ const HomeUI = React.memo(({
     && shouldShowFaceSubregionChips(selectedCategory)
     && mobileRegionsExpanded,
   );
+  const mobileShowRegionList = mobileRegionsExpanded;
   const mobileRegionListHeight = useMobileFaceRegionListHeight({
     enabled: Boolean(
       !hideExploreChrome
       && faceRegionsOpen
       && selectedCategory
-      && mobileRegionsExpanded,
+      && mobileShowRegionList,
     ),
     hasSubregionBar: showMobileSubregionBar,
     chromeEpoch: homeChromeEpoch,
+    faceRegionsOpen: Boolean(faceRegionsOpen && selectedCategory),
     bottomAuxRef: mobileRegionsAuxRef,
     categoryBarRef: mobileCategoryBarRef,
   });
+
+  const handleMobileRegionsExpandedChange = useCallback((expanded) => {
+    setMobileRegionsExpanded(expanded);
+    if (!expanded && faceRailMode === 'sea') {
+      onFaceRailModeChange?.('country');
+    }
+  }, [faceRailMode, onFaceRailModeChange]);
+
+  const handleSeaBasinListToggle = useCallback(() => {
+    if (faceRailMode === 'sea') {
+      onFaceRailModeChange?.('country');
+      return;
+    }
+    onFaceRailModeChange?.('sea');
+    setMobileRegionsExpanded(true);
+  }, [faceRailMode, onFaceRailModeChange]);
 
   const trendingData = useTrendingData();
 
@@ -373,7 +400,7 @@ const HomeUI = React.memo(({
             onTouchStart={(event) => event.stopPropagation()}
             onTouchMove={(event) => event.stopPropagation()}
           >
-            {mobileRegionsExpanded ? (
+            {mobileShowRegionList ? (
               <GlobeFaceRegionRail
                 category={selectedCategory}
                 selectedRegionId={selectedFaceRegionId}
@@ -383,51 +410,25 @@ const HomeUI = React.memo(({
                 selectedSubregionId={selectedFaceSubregionId}
                 onSelectSubregion={onFaceSubregionSelect}
                 listHeightStyle={mobileRegionListHeight?.listHeightStyle ?? null}
+                railMode={faceRailMode}
+                seaBasins={visibleSeaBasins}
+                selectedSeaBasinId={selectedSeaBasinId}
+                onSelectSeaBasin={onSeaBasinSelect}
                 className="mb-0.5"
               />
             ) : null}
-            <div ref={mobileRegionsAuxRef} className="flex w-full flex-col items-start gap-1.5">
-            <div
-              className={`pointer-events-auto flex w-[4.75rem] flex-col gap-1 rounded-xl border px-2 py-1.5 backdrop-blur-md transition-all ${
-                mobileRegionsExpanded
-                  ? 'border-white/20 bg-black/70 shadow-lg'
-                  : 'border-amber-400/60 bg-black/85 shadow-[0_0_16px_rgba(245,158,11,0.4)]'
-              }`}
-            >
-              <span
-                className={`text-[10px] font-bold leading-none tracking-tight break-keep ${
-                  mobileRegionsExpanded ? 'text-gray-200/90' : 'text-amber-100'
-                }`}
-              >
-                {mobileRegionsExpanded ? '세부 메뉴' : '메뉴 숨김'}
-              </span>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={mobileRegionsExpanded}
-                aria-label={mobileRegionsExpanded ? '세부 메뉴 숨기기' : '세부 메뉴 펼치기'}
-                title={mobileRegionsExpanded ? '숨기고 지도 보기' : '나라·세부 칩 보기'}
-                onClick={() => setMobileRegionsExpanded((open) => !open)}
-                className="flex w-full items-center justify-center active:scale-[0.97]"
-              >
-                <span
-                  aria-hidden="true"
-                  className={`relative h-5 w-9 shrink-0 overflow-hidden rounded-full border transition-colors ${
-                    mobileRegionsExpanded
-                      ? 'border-cyan-400/50 bg-cyan-500/40'
-                      : 'border-amber-300/80 bg-amber-500/40 shadow-[0_0_10px_rgba(251,191,36,0.55)]'
-                  }`}
-                >
-                  <span
-                    className={`absolute top-0.5 h-3.5 w-3.5 rounded-full shadow transition-[left] duration-200 ${
-                      mobileRegionsExpanded
-                        ? 'left-5 bg-white'
-                        : 'left-0.5 bg-amber-100'
-                    }`}
-                  />
-                </span>
-              </button>
-            </div>
+            <div ref={mobileRegionsAuxRef} className="flex flex-col items-start gap-1">
+              {mobileRegionsExpanded ? (
+                <SeaBasinListButton
+                  prominent
+                  active={faceRailMode === 'sea'}
+                  onClick={handleSeaBasinListToggle}
+                />
+              ) : null}
+              <MobileRegionsMenuSwitch
+                expanded={mobileRegionsExpanded}
+                onChange={handleMobileRegionsExpandedChange}
+              />
             {mobileRegionsExpanded && showMobileSubregionBar ? (
               <GlobeFaceSubregionBar
                 key={`subregion-bar-${selectedCategory}`}
@@ -518,6 +519,11 @@ const HomeUI = React.memo(({
                 showSubregions
                 selectedSubregionId={selectedFaceSubregionId}
                 onSelectSubregion={onFaceSubregionSelect}
+                railMode={faceRailMode}
+                onSeaBasinListToggle={handleSeaBasinListToggle}
+                seaBasins={visibleSeaBasins}
+                selectedSeaBasinId={selectedSeaBasinId}
+                onSelectSeaBasin={onSeaBasinSelect}
                 className="pt-0.5"
               />
             ) : null}
