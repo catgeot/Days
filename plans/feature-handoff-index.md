@@ -18,7 +18,8 @@
 
 | | |
 |--|--|
-| **상태** | Preview QA 대기 (#8b globe ref·map ready 대기) |
+| **상태** | **iPhone Preview QA PASS** · PR #128 merge 대기 |
+| **tip** | `06e2b250` |
 | **브랜치** | `cursor/curation-globe-android-0ba2` |
 | **PR** | [#128](https://github.com/catgeot/Days/pull/128) |
 | **플랜** | [`blog-ai-curation-page-plan.md`](./blog-ai-curation-page-plan.md) |

@@ -4,24 +4,25 @@
 
 ## AI 큐레이션 #8, 지도·무니 Preview QA 반영
 
-**상태**: `cursor/curation-globe-android-0ba2` · [PR #128](https://github.com/catgeot/Days/pull/128) · Preview QA 대기  
+**상태**: `cursor/curation-globe-android-0ba2` · [PR #128](https://github.com/catgeot/Days/pull/128) · **iPhone Preview QA PASS** (사람) · PR merge 대기  
 **세션**: `AI 큐레이션 #8, 지도·무니 Preview QA 반영`
 
-| 증상 | 원인 | 수정 |
-|------|------|------|
-| iPhone 전체 지도·무니 검은 화면 (`globeReady:false` · Style not done loading) | `/blog`→`/` 전환 시 Home·Mapbox cold mount · 360ms 시점에 globe ref·style 미준비 | globe ref 폴링 · `whenGlobeFocusReady` 대기 후 flyTo · `executeFocus` style 가드 |
+| 플랫폼 | 결과 | 로그 |
+|--------|------|------|
+| iPhone Safari | **PASS** (무니·재시도) | `home.sync.run globeReady:true` → `home.sync.ready mapReady:true` → `home.flyTo` → `home.mooni.open` → `chat.start` → `chat.open.draft` |
 
-- **한 일**: #8b — `whenGlobeFocusReady` API · 핸드오프 sync globe ref poll(100ms×36) · map ready 후 flyTo·무니(rAF×2)
+- **tip**: `06e2b250` — globe ref poll · `whenGlobeFocusReady` · `executeFocus` style 가드
 - **VERIFY**: `smoke-curation-place-bridge` · `npm run build` PASS
 - **공유**: `https://www.gateo.kr/qa/curation` · `?debug=curation`
 - **Preview**: `https://days-git-cursor-curation-globe-android-0ba2-catgeots-projects.vercel.app/blog/curation?debug=curation`
-- **남은 일(사람)**: iPhone 재테스트 → 로그 `home.sync.ready mapReady:true` · `home.flyTo` · (무니) `chat.start`
+- **남은 일**: Android 「전체 지도」확인(선택) · 사람 PR #128 merge
 
-**다음 채팅명**:
+**다음 채팅명** (merge 후):
 
 ```
-AI 큐레이션 #9, 지도·무니 Preview QA
+AI 큐레이션 #9, PROD 배포 확인
 ```
+
 
 ### #8a (이전 커밋)
 
