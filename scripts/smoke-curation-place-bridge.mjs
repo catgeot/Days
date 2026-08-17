@@ -24,6 +24,12 @@ const {
   hydrateLocationFromCuration,
   queueCurationHomeOpen,
   consumeCurationHomeOpen,
+  buildCurationHomeNavigateState,
+  resolveCurationHomeHandoff,
+  scheduleCurationHomeHandoffApply,
+  isCurationHomeHandoffApplyScheduled,
+  cancelCurationHomeHandoffApply,
+  clearCurationPendingHomeSession,
   CURATION_PENDING_HOME_KEY,
 } = await import(pathToFileURL(join(root, 'src/pages/Home/lib/curationPlaceBridge.js')).href);
 
@@ -88,6 +94,38 @@ const staleRaw = JSON.parse(store.get(CURATION_PENDING_HOME_KEY));
 staleRaw.at = Date.now() - 999999;
 store.set(CURATION_PENDING_HOME_KEY, JSON.stringify(staleRaw));
 assert(consumeCurationHomeOpen({ maxAgeMs: 1000 }) === null, 'expire stale handoff');
+
+const navState = buildCurationHomeNavigateState(uiPlace, { openMooni: true });
+const routeResolved = resolveCurationHomeHandoff(navState);
+assert(routeResolved?.source === 'route-state', 'route-state handoff');
+assert(routeResolved?.openMooni === true, 'route openMooni');
+assert(routeResolved?.location?.name === '가상낙원테스트', 'route location name');
+assert(consumeCurationHomeOpen() === null, 'route handoff does not require session consume');
+
+cancelCurationHomeHandoffApply();
+let applyRuns = 0;
+const applyAt = Date.now();
+assert(
+  scheduleCurationHomeHandoffApply(applyAt, 15, () => {
+    applyRuns += 1;
+  }) === true,
+  'schedule apply',
+);
+assert(isCurationHomeHandoffApplyScheduled(applyAt), 'apply scheduled');
+assert(
+  scheduleCurationHomeHandoffApply(applyAt, 15, () => {
+    applyRuns += 1;
+  }) === false,
+  'dedup apply schedule',
+);
+await new Promise((resolve) => setTimeout(resolve, 30));
+assert(applyRuns === 1, 'apply runs once');
+assert(!isCurationHomeHandoffApplyScheduled(applyAt), 'apply cleared after run');
+
+store.clear();
+queueCurationHomeOpen(uiPlace, { openMooni: true });
+clearCurationPendingHomeSession();
+assert(consumeCurationHomeOpen() === null, 'clear pending session');
 
 if (failed > 0) {
   console.error(`\n${failed} failure(s)`);

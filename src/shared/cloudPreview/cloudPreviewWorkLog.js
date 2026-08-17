@@ -4,13 +4,13 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: false,
-  title: '지구본 홈',
-  sessionNo: 13,
-  sessionPhase: 'Chrome 칩 히트 어긋남',
-  branch: 'main',
-  previewPath: '/',
-  qaShareSlug: 'chrome-hit',
+  active: true,
+  title: 'AI 큐레이션',
+  sessionNo: 7,
+  sessionPhase: '지도·무니 검은 화면 QA',
+  branch: 'cursor/curation-globe-android-0ba2',
+  previewPath: '/blog/curation',
+  qaShareSlug: 'curation',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-17-curation-globe-mooni-7',
+    session: 'AI 큐레이션 #7, 지도·무니 검은 화면 QA',
+    title: '큐레이션→홈 지도·무니 검은 화면 완화',
+    detail:
+      'Android/iPhone 큐레이션→홈 핸드오프 디버그 패널을 추가했습니다. Preview에서 「무니에게 묻기」클릭 시 우하단 curation log가 뜨며 로그 복사로 붙여넣기 가능합니다. ?debug=curation 또는 CTA 클릭 시 자동 활성.',
+    at: '2026-08-17',
+  },
   {
     id: '2026-08-13-chrome-hit-shift-13',
     session: '지구본 홈 #13, Chrome 칩 히트 어긋남',

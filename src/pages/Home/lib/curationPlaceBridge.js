@@ -2,8 +2,143 @@ import { TRAVEL_SPOTS } from '../data/travelSpots.js';
 import { citiesData } from '../data/citiesData.js';
 import { formatUrlName, isEphemeralSlug, resolveCatalogPlaceSlug } from './formatUrlName.js';
 import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve.js';
+import { logCurationHandoff } from '../../../shared/cloudPreview/curationHandoffDebug.js';
 
 export const CURATION_PENDING_HOME_KEY = 'gateo_curation_pending_home';
+const HANDOFF_CLAIM_PREFIX = 'gateo_curation_handoff_claim:';
+const HANDOFF_MAX_AGE_MS = 120000;
+
+let handoffApplyTimer = null;
+let handoffApplyStamp = null;
+
+function scheduleHandoffTimeout(fn, delayMs) {
+  const host = typeof window !== 'undefined' ? window : globalThis;
+  return host.setTimeout(fn, delayMs);
+}
+
+function clearHandoffTimeout(timerId) {
+  const host = typeof window !== 'undefined' ? window : globalThis;
+  host.clearTimeout(timerId);
+}
+
+export function isCurationHomeHandoffApplyScheduled(at) {
+  const stamp = Number(at);
+  if (!Number.isFinite(stamp)) return handoffApplyTimer != null;
+  return handoffApplyStamp === stamp && handoffApplyTimer != null;
+}
+
+export function cancelCurationHomeHandoffApply() {
+  if (handoffApplyTimer != null) {
+    clearHandoffTimeout(handoffApplyTimer);
+    handoffApplyTimer = null;
+  }
+  handoffApplyStamp = null;
+}
+
+/** effect cleanup·deps 변경에도 sync 타이머가 살아 있게 모듈 레벨로 예약 */
+export function scheduleCurationHomeHandoffApply(at, delayMs, run) {
+  const stamp = Number(at);
+  if (!Number.isFinite(stamp)) return false;
+  if (isCurationHomeHandoffApplyScheduled(stamp)) return false;
+  cancelCurationHomeHandoffApply();
+  handoffApplyStamp = stamp;
+  handoffApplyTimer = scheduleHandoffTimeout(() => {
+    handoffApplyTimer = null;
+    handoffApplyStamp = null;
+    run();
+  }, delayMs);
+  return true;
+}
+
+export function clearCurationPendingHomeSession() {
+  try {
+    sessionStorage.removeItem(CURATION_PENDING_HOME_KEY);
+  } catch {
+    /* private mode */
+  }
+}
+
+function parseHandoffPayload(parsed, maxAgeMs = HANDOFF_MAX_AGE_MS) {
+  if (!parsed?.location || !hasValidCurationCoords(parsed.location)) return null;
+  const at = Number(parsed.at);
+  if (Number.isFinite(at) && Date.now() - at > maxAgeMs) return null;
+  return {
+    location: parsed.location,
+    openMooni: Boolean(parsed.openMooni),
+    at: Number.isFinite(at) ? at : Date.now(),
+  };
+}
+
+export function buildCurationHomeNavigateState(location, { openMooni = false } = {}) {
+  return {
+    fromSearch: true,
+    fromCuration: true,
+    curationHandoff: {
+      location,
+      openMooni: Boolean(openMooni),
+      at: Date.now(),
+    },
+  };
+}
+
+function sessionKeyPresent() {
+  try {
+    return Boolean(sessionStorage.getItem(CURATION_PENDING_HOME_KEY));
+  } catch {
+    return false;
+  }
+}
+
+/** SPA navigate state 우선 · sessionStorage 폴백 */
+export function resolveCurationHomeHandoff(routeState, { maxAgeMs = HANDOFF_MAX_AGE_MS } = {}) {
+  const routePayload = routeState?.curationHandoff;
+  if (routePayload) {
+    const parsed = parseHandoffPayload(routePayload, maxAgeMs);
+    if (parsed) {
+      logCurationHandoff('handoff.route', {
+        openMooni: parsed.openMooni,
+        location: parsed.location?.name,
+        at: parsed.at,
+      });
+      return { ...parsed, source: 'route-state' };
+    }
+    logCurationHandoff('handoff.route.reject', { reason: 'invalid-or-stale' });
+  }
+
+  const session = consumeCurationHomeOpen({ maxAgeMs });
+  if (session) {
+    return { ...session, at: Date.now(), source: 'session-storage' };
+  }
+
+  logCurationHandoff('handoff.miss', {
+    hasRoute: Boolean(routeState?.curationHandoff),
+    sessionKey: sessionKeyPresent(),
+  });
+  return null;
+}
+
+export function claimCurationHomeHandoff(at) {
+  const stamp = Number(at);
+  if (!Number.isFinite(stamp)) return true;
+  const key = `${HANDOFF_CLAIM_PREFIX}${stamp}`;
+  try {
+    if (sessionStorage.getItem(key)) return false;
+    sessionStorage.setItem(key, '1');
+    return true;
+  } catch {
+    return true;
+  }
+}
+
+export function releaseCurationHomeHandoffClaim(at) {
+  const stamp = Number(at);
+  if (!Number.isFinite(stamp)) return;
+  try {
+    sessionStorage.removeItem(`${HANDOFF_CLAIM_PREFIX}${stamp}`);
+  } catch {
+    /* private mode */
+  }
+}
 
 export function hasValidCurationCoords(loc) {
   const lat = Number(loc?.lat);
@@ -121,7 +256,10 @@ export function hydrateLocationFromCuration(curationData) {
 
 /** 블로그 → 홈 써머리(±무니) 핸드오프 */
 export function queueCurationHomeOpen(location, { openMooni = false } = {}) {
-  if (!location || !hasValidCurationCoords(location)) return false;
+  if (!location || !hasValidCurationCoords(location)) {
+    logCurationHandoff('queue.reject', { reason: 'invalid-coords', openMooni });
+    return false;
+  }
   try {
     sessionStorage.setItem(
       CURATION_PENDING_HOME_KEY,
@@ -131,8 +269,15 @@ export function queueCurationHomeOpen(location, { openMooni = false } = {}) {
         at: Date.now(),
       }),
     );
+    logCurationHandoff('queue.ok', {
+      openMooni,
+      location: location.name,
+      lat: location.lat,
+      lng: location.lng,
+    });
     return true;
   } catch {
+    logCurationHandoff('queue.fail', { openMooni });
     return false;
   }
 }
@@ -140,12 +285,26 @@ export function queueCurationHomeOpen(location, { openMooni = false } = {}) {
 export function consumeCurationHomeOpen({ maxAgeMs = 120000 } = {}) {
   try {
     const raw = sessionStorage.getItem(CURATION_PENDING_HOME_KEY);
-    if (!raw) return null;
+    if (!raw) {
+      logCurationHandoff('consume.empty', { sessionKey: sessionKeyPresent() });
+      return null;
+    }
     sessionStorage.removeItem(CURATION_PENDING_HOME_KEY);
     const parsed = JSON.parse(raw);
-    if (!parsed?.location || !hasValidCurationCoords(parsed.location)) return null;
+    if (!parsed?.location || !hasValidCurationCoords(parsed.location)) {
+      logCurationHandoff('consume.reject', { reason: 'invalid-payload' });
+      return null;
+    }
     const at = Number(parsed.at);
-    if (Number.isFinite(at) && Date.now() - at > maxAgeMs) return null;
+    if (Number.isFinite(at) && Date.now() - at > maxAgeMs) {
+      logCurationHandoff('consume.stale', { ageMs: Date.now() - at });
+      return null;
+    }
+    logCurationHandoff('consume.ok', {
+      openMooni: Boolean(parsed.openMooni),
+      location: parsed.location?.name,
+      ageMs: Number.isFinite(at) ? Date.now() - at : null,
+    });
     return {
       location: parsed.location,
       openMooni: Boolean(parsed.openMooni),
@@ -156,6 +315,7 @@ export function consumeCurationHomeOpen({ maxAgeMs = 120000 } = {}) {
     } catch {
       /* private mode */
     }
+    logCurationHandoff('consume.error');
     return null;
   }
 }

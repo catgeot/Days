@@ -25,7 +25,12 @@ import {
   hydrateLocationFromCuration,
   hasValidCurationCoords,
   queueCurationHomeOpen,
+  buildCurationHomeNavigateState,
 } from '../../Home/lib/curationPlaceBridge';
+import {
+  armCurationHandoffDebugSession,
+  logCurationHandoff,
+} from '../../../shared/cloudPreview/curationHandoffDebug';
 import { cachePlaceLocation } from '../../Home/lib/placeLocationCache';
 import {
   curationEntryToPanelData,
@@ -163,16 +168,33 @@ function CurationResultPanel({
       alert('이 추천지의 좌표를 찾지 못했습니다. 다른 낙원을 탐색해 보세요.');
       return;
     }
+    armCurationHandoffDebugSession();
+    logCurationHandoff('cta.click', {
+      openMooni,
+      location: hydratedPlace.name,
+      lat: hydratedPlace.lat,
+      lng: hydratedPlace.lng,
+    });
     try {
       cachePlaceLocation(hydratedPlace);
     } catch {
       /* ignore */
     }
-    if (!queueCurationHomeOpen(hydratedPlace, { openMooni })) {
+    const queued = queueCurationHomeOpen(hydratedPlace, { openMooni });
+    logCurationHandoff('cta.queue', { ok: queued, openMooni });
+    if (!queued) {
       alert('홈으로 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.');
       return;
     }
-    navigate('/', { state: { fromSearch: true, fromCuration: true } });
+    try {
+      sessionStorage.setItem('gateo_reset_viewport', '1');
+    } catch {
+      /* private mode */
+    }
+    window.scrollTo(0, 0);
+    const navState = buildCurationHomeNavigateState(hydratedPlace, { openMooni });
+    logCurationHandoff('cta.navigate', { path: '/', hasHandoff: Boolean(navState.curationHandoff) });
+    navigate('/', { state: navState });
   };
 
   const openPlaceCard = () => {

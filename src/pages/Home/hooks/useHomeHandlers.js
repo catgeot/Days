@@ -32,6 +32,7 @@ import {
 import { enrichUiPlaceFromNearbySpot } from '../lib/travelRegionCountry.js';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
 import { resolveMooniResumeTrip } from '../lib/mooniChatResume.js';
+import { logCurationHandoff } from '../../../shared/cloudPreview/curationHandoffDebug';
 import {
   resolveCityAttractionHub,
   resolveHubAttraction,
@@ -537,6 +538,12 @@ export function useHomeHandlers({
     const boundSpot = initPayload?.boundSpot ?? null;
     const boundPlaceLabel =
       String(boundSpot?.displayLabel || boundSpot?.name || '').trim() || null;
+    logCurationHandoff('chat.start', {
+      dest,
+      isMooniRequest,
+      boundPlaceLabel,
+      existingId,
+    });
     const locationName = isMooniRequest
       ? (boundPlaceLabel || 'MOONi')
       : (dest || selectedLocation?.name || 'New Session');
@@ -559,6 +566,7 @@ export function useHomeHandlers({
           setSavedTrips((prev) => prev.map((t) => (t.id === placeTrip.id ? placeTrip : t)));
         }
         if (placeTrip) {
+          logCurationHandoff('chat.resume.placeTrip', { id: placeTrip.id });
           setChatDraft(null);
           setActiveChatId(placeTrip.id);
           setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null);
@@ -574,6 +582,7 @@ export function useHomeHandlers({
           userId: user?.id ?? null,
         });
         if (resumedTrip) {
+          logCurationHandoff('chat.resume.mooniTrip', { id: resumedTrip.id });
           if (!savedTrips.some((t) => String(t.id) === String(resumedTrip.id))) {
             setSavedTrips((prev) => [resumedTrip, ...prev]);
           }
@@ -632,6 +641,7 @@ export function useHomeHandlers({
 
     // 🚨 3. 찾았거나 부활시켰다면 해당 방으로 입장
     if (targetTrip) {
+      logCurationHandoff('chat.open.trip', { id: targetTrip.id, destination: targetTrip.destination });
       setChatDraft(null);
       setActiveChatId(targetTrip.id);
       setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null);
@@ -666,6 +676,7 @@ export function useHomeHandlers({
     });
     setActiveChatId(null);
     setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null);
+    logCurationHandoff('chat.open.draft', { destination: locationName, isMooniRequest });
     setIsChatOpen(true);
   }, [globeRef, savedTrips, selectedLocation, category, user, setActiveChatId, setInitialQuery, setIsChatOpen, setSavedTrips, setChatDraft, setMooniChatEntry, setMooniPlaceContext]);
 

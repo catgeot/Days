@@ -1133,6 +1133,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const executeFocus = useCallback((lat, lng, options = {}) => {
     const map = mapRef.current?.getMap();
     if (!map || pauseRender) return false;
+    if (!map.loaded?.() && !map.isStyleLoaded?.()) return false;
 
     const currentCenter = map.getCenter();
     const currentZoom = map.getZoom();
@@ -1151,13 +1152,17 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       return true;
     }
 
-    map.flyTo({
-      center: [normalizedLng, lat],
-      zoom: targetZoom,
-      pitch: GLOBE_VIEW.default.pitch,
-      duration: flyDuration,
-      essential: true
-    });
+    try {
+      map.flyTo({
+        center: [normalizedLng, lat],
+        zoom: targetZoom,
+        pitch: GLOBE_VIEW.default.pitch,
+        duration: flyDuration,
+        essential: true
+      });
+    } catch {
+      return false;
+    }
 
     scheduleOrientRotateResume(map, flyDuration);
     return true;
@@ -1275,16 +1280,32 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     return true;
   }, [scheduleOrientRotateResume]);
 
+  const applyPendingFocus = useCallback(() => {
+    if (!pendingFocusRef.current) return false;
+    const pending = pendingFocusRef.current;
+    const applied = executeFocus(pending.lat, pending.lng);
+    if (applied) {
+      pendingFocusRef.current = null;
+    }
+    return applied;
+  }, [executeFocus]);
+
   const flyToAndPin = useCallback((lat, lng, _name, _category, options = {}) => {
+    const shouldFocus = options?.focus !== false;
     const map = mapRef.current?.getMap();
-    if (!map) return;
+    if (!map) {
+      addRipple(lat, lng, 2000);
+      if (shouldFocus) {
+        pendingFocusRef.current = { lat, lng };
+      }
+      return;
+    }
     if (rotationTimer.current) clearTimeout(rotationTimer.current);
 
     const wasImmersed = immerseActiveRef.current;
     immerseActiveRef.current = false;
     autoRotateRef.current = false;
     addRipple(lat, lng, 2000);
-    const shouldFocus = options?.focus !== false;
     if (!shouldFocus) {
       pendingFocusRef.current = null;
       return;
@@ -1784,6 +1805,36 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     return true;
   }, [globeMode, isMobileDevice, pauseRender]);
 
+  const isGlobeFocusReady = useCallback(() => {
+    if (pauseRender) return false;
+    const map = mapRef.current?.getMap();
+    if (!map || map._removed) return false;
+    try {
+      return Boolean(map.loaded?.() || map.isStyleLoaded?.());
+    } catch {
+      return false;
+    }
+  }, [pauseRender]);
+
+  const whenGlobeFocusReady = useCallback(({ timeoutMs = 4000, intervalMs = 80 } = {}) => {
+    if (isGlobeFocusReady()) return Promise.resolve(true);
+    return new Promise((resolve) => {
+      const start = Date.now();
+      const tick = () => {
+        if (isGlobeFocusReady()) {
+          resolve(true);
+          return;
+        }
+        if (Date.now() - start >= timeoutMs) {
+          resolve(false);
+          return;
+        }
+        window.setTimeout(tick, intervalMs);
+      };
+      window.setTimeout(tick, intervalMs);
+    });
+  }, [isGlobeFocusReady]);
+
   useImperativeHandle(ref, () => ({
     pauseRotation: () => {
       autoRotateRef.current = false;
@@ -1866,8 +1917,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       if (!map) return Promise.resolve(false);
       return waitForFlightCinemaGlobeReady(map, options);
     },
+    isGlobeFocusReady,
+    whenGlobeFocusReady,
     getGlobeMode: () => globeMode
-  }), [addRipple, clearImmerseState, clearRegionFocus, closeFlightCinema, endTour, ensureInteractionReady, exitImmerse, flyToAndPin, flyToRegion, globeMode, immerseToPin, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour]);
+  }), [addRipple, clearImmerseState, clearRegionFocus, closeFlightCinema, endTour, ensureInteractionReady, exitImmerse, flyToAndPin, flyToRegion, globeMode, immerseToPin, isGlobeFocusReady, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour, whenGlobeFocusReady]);
 
   useEffect(() => {
     highlightCategoryRef.current = highlightCategory;
@@ -1980,21 +2033,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   }, [pauseRender, syncMapZoom, applyPlaceLabelVisibility]);
 
   useEffect(() => {
-    if (pauseRender) return;
+    if (pauseRender || !mapReady) return;
     if (!pendingFocusRef.current) return;
-
-    const pending = pendingFocusRef.current;
-    const applyPendingFocus = () => {
-      const applied = executeFocus(pending.lat, pending.lng);
-      if (applied) {
-        pendingFocusRef.current = null;
-      }
-    };
 
     // Defer until map container is visible/resized.
     const timer = window.setTimeout(applyPendingFocus, 80);
     return () => window.clearTimeout(timer);
-  }, [pauseRender, executeFocus]);
+  }, [pauseRender, mapReady, applyPendingFocus]);
 
   useEffect(() => {
     const tick = (ts) => {
@@ -2205,6 +2250,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           setMapReady(true);
           syncMapZoom();
           ensureInteractionReady();
+          applyPendingFocus();
 
           const syncOverlaysSoon = () => {
             if (!map) return;

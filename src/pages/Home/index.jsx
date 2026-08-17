@@ -13,6 +13,7 @@ import SEO from '../../components/SEO';
 
 import { supabase } from '../../shared/api/supabase';
 import { logSeaExplore } from '../../shared/cloudPreview/seaExploreDebug.js';
+import { logCurationHandoff } from '../../shared/cloudPreview/curationHandoffDebug';
 import { TRAVEL_SPOTS } from './data/travelSpots';
 import { citiesData } from './data/citiesData';
 
@@ -65,8 +66,13 @@ import {
   peekPlaceReturnTo,
 } from './lib/placeReturnTo';
 import {
-  consumeCurationHomeOpen,
+  claimCurationHomeHandoff,
+  clearCurationPendingHomeSession,
   hasValidCurationCoords,
+  isCurationHomeHandoffApplyScheduled,
+  releaseCurationHomeHandoffClaim,
+  resolveCurationHomeHandoff,
+  scheduleCurationHomeHandoffApply,
 } from './lib/curationPlaceBridge';
 
 const DEFAULT_GLOBE_THEME = 'deep';
@@ -446,10 +452,46 @@ function Home() {
     lastGlobeFocusRef.current = loc;
   }, []);
 
+  const curationHandoffClaimRef = useRef(null);
+  const curationHandoffSyncDoneRef = useRef(false);
+  const routeLocationRef = useRef(routeLocation);
+  routeLocationRef.current = routeLocation;
+  const handleStartChatRef = useRef(handleStartChat);
+  handleStartChatRef.current = handleStartChat;
+  const moveToLocationRef = useRef(moveToLocation);
+  moveToLocationRef.current = moveToLocation;
+  const isMobileViewportRef = useRef(isMobileViewport);
+  isMobileViewportRef.current = isMobileViewport;
+  const categoryRef = useRef(category);
+  categoryRef.current = category;
+
   // 블로그 AI 큐레이션 → 홈 써머리(±무니) 핸드오프
   useEffect(() => {
-    const pending = consumeCurationHomeOpen();
+    const pending = resolveCurationHomeHandoff(routeLocation.state);
     if (!pending?.location || !hasValidCurationCoords(pending.location)) return;
+
+    if (curationHandoffSyncDoneRef.current) {
+      logCurationHandoff('home.effect.skip', { reason: 'sync-done' });
+      return;
+    }
+
+    if (isCurationHomeHandoffApplyScheduled(pending.at)) {
+      logCurationHandoff('home.effect.skip', { reason: 'sync-scheduled', at: pending.at });
+      return;
+    }
+
+    if (!claimCurationHomeHandoff(pending.at)) {
+      logCurationHandoff('home.effect.skip', { reason: 'session-claim', at: pending.at });
+      return;
+    }
+    curationHandoffClaimRef.current = pending.at;
+
+    logCurationHandoff('home.effect.start', {
+      openMooni: pending.openMooni,
+      mobile: isMobileViewport,
+      source: pending.source,
+      at: pending.at,
+    });
 
     const pin = healPlaceholderCountry(
       mergeCanonicalTravelSpot({
@@ -463,23 +505,149 @@ function Home() {
     rememberGlobeFocus(pin);
     selectedLocationRef.current = pin;
     handleLocationSelect(pin);
+    logCurationHandoff('home.select', { name: pin.name, openMooni: pending.openMooni });
 
-    window.setTimeout(() => {
-      globeRef.current?.wakeAfterOverlay?.();
-      if (hasValidCoords(pin)) {
-        moveToLocation(pin.lat, pin.lng, pin.name, pin.category || category, { location: pin });
-      }
-    }, 150);
+    const boundSpotForMooni = pending.openMooni
+      ? buildMooniBoundSpotFromLocation(pin)
+      : null;
+    logCurationHandoff('home.mooni.bound', {
+      requested: pending.openMooni,
+      hasBound: Boolean(boundSpotForMooni?.name),
+      label: boundSpotForMooni?.name || null,
+    });
 
-    if (pending.openMooni) {
-      const boundSpot = buildMooniBoundSpotFromLocation(pin);
-      if (boundSpot?.name) {
-        window.setTimeout(() => {
-          handleStartChat('MOONi', { boundSpot });
-        }, 280);
+    const finalizeHandoff = (routeNow) => {
+      curationHandoffSyncDoneRef.current = true;
+      pendingGlobeHomeFocusRef.current = null;
+      if (routeNow.state?.curationHandoff) {
+        navigate(`${routeNow.pathname}${routeNow.search}`, {
+          replace: true,
+          state: { fromSearch: true, fromCuration: true },
+        });
       }
+      clearCurationPendingHomeSession();
+      releaseCurationHomeHandoffClaim(pending.at);
+      if (curationHandoffClaimRef.current === pending.at) {
+        curationHandoffClaimRef.current = null;
+      }
+    };
+
+    const openMooniChat = () => {
+      if (!boundSpotForMooni?.name) return;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          logCurationHandoff('home.mooni.open', { label: boundSpotForMooni.name });
+          handleStartChatRef.current('MOONi', {
+            boundSpot: boundSpotForMooni,
+            persona: PERSONA_TYPES.INSPIRER,
+          });
+        });
+      });
+    };
+
+    const runGlobeSync = (attempt = 0) => {
+      const routeNow = routeLocationRef.current;
+      if (routeNow.pathname !== '/') {
+        logCurationHandoff('home.sync.abort', { reason: 'left-home', at: pending.at, attempt });
+        releaseCurationHomeHandoffClaim(pending.at);
+        return;
+      }
+
+      const globe = globeRef.current;
+      if (!globe) {
+        if (attempt < 36) {
+          logCurationHandoff('home.sync.wait', { reason: 'no-globe-ref', attempt });
+          window.setTimeout(() => runGlobeSync(attempt + 1), 100);
+          return;
+        }
+        logCurationHandoff('home.sync.fail', { reason: 'no-globe-ref-timeout', attempt });
+        finalizeHandoff(routeNow);
+        return;
+      }
+
+      logCurationHandoff('home.sync.run', { globeReady: true, attempt });
+      syncHomeViewportAfterInput();
+      if (isMobileViewportRef.current) {
+        bumpHomeChromeEpoch();
+        syncHomeChromeAfterNavigation();
+      }
+
+      void (async () => {
+        const mapReady = await globe.whenGlobeFocusReady?.({ timeoutMs: 3200, intervalMs: 80 });
+        logCurationHandoff('home.sync.ready', {
+          mapReady: Boolean(mapReady),
+          attempt,
+        });
+
+        globe.wakeAfterOverlay?.();
+        if (hasValidCoords(pin)) {
+          moveToLocationRef.current(
+            pin.lat,
+            pin.lng,
+            pin.name,
+            pin.category || categoryRef.current,
+            { location: pin },
+          );
+          logCurationHandoff('home.flyTo', { name: pin.name, mapReady: Boolean(mapReady) });
+        }
+
+        if (pending.openMooni && boundSpotForMooni?.name) {
+          if (mapReady) {
+            openMooniChat();
+          } else {
+            window.setTimeout(openMooniChat, 200);
+          }
+        } else if (pending.openMooni) {
+          logCurationHandoff('home.mooni.skip', { reason: 'no-bound-spot' });
+        }
+
+        finalizeHandoff(routeLocationRef.current);
+      })();
+    };
+
+    const syncDelayMs = isMobileViewport ? 360 : 180;
+    logCurationHandoff('home.sync.schedule', { delayMs: syncDelayMs });
+    const scheduled = scheduleCurationHomeHandoffApply(pending.at, syncDelayMs, () => {
+      runGlobeSync(0);
+    });
+
+    if (!scheduled) {
+      logCurationHandoff('home.sync.schedule.skip', { at: pending.at });
     }
-  }, [category, handleLocationSelect, handleStartChat, moveToLocation, rememberGlobeFocus]);
+
+    return () => {
+      const syncPending = isCurationHomeHandoffApplyScheduled(pending.at);
+      logCurationHandoff('home.effect.cleanup', {
+        reason: syncPending ? 'deps-change-sync-pending' : 'deps-change',
+        at: pending.at,
+      });
+      if (!curationHandoffSyncDoneRef.current && !syncPending) {
+        releaseCurationHomeHandoffClaim(pending.at);
+        if (curationHandoffClaimRef.current === pending.at) {
+          curationHandoffClaimRef.current = null;
+        }
+      }
+    };
+  }, [
+    category,
+    handleLocationSelect,
+    rememberGlobeFocus,
+    isMobileViewport,
+    bumpHomeChromeEpoch,
+    navigate,
+    routeLocation.pathname,
+    routeLocation.search,
+    routeLocation.state,
+  ]);
+
+  useEffect(() => {
+    logCurationHandoff('home.ui', {
+      isChatOpen,
+      mooniChatEntry,
+      summary: selectedLocation?.name || null,
+      path: routeLocation.pathname,
+    });
+  }, [isChatOpen, mooniChatEntry, selectedLocation?.name, routeLocation.pathname]);
 
   useEffect(() => {
     if (!selectedLocation) {
