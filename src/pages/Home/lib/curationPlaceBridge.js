@@ -138,12 +138,24 @@ export function claimCurationHomeHandoff(at) {
   if (!Number.isFinite(stamp)) return true;
   const key = `${HANDOFF_CLAIM_PREFIX}${stamp}`;
   try {
-    if (sessionStorage.getItem(key)) return false;
-    sessionStorage.setItem(key, '1');
+    const raw = sessionStorage.getItem(key);
+    if (raw) {
+      const claimedAt = Number(raw);
+      if (Number.isFinite(claimedAt) && Date.now() - claimedAt < 12000) {
+        return false;
+      }
+    }
+    sessionStorage.setItem(key, String(Date.now()));
     return true;
   } catch {
     return true;
   }
+}
+
+/** remount·리로드 후 incomplete sync — claim 1회 재획득 */
+export function reclaimCurationHomeHandoff(at) {
+  releaseCurationHomeHandoffClaim(at);
+  return claimCurationHomeHandoff(at);
 }
 
 export function releaseCurationHomeHandoffClaim(at) {

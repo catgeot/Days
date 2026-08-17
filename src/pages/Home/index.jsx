@@ -71,10 +71,11 @@ import {
   clearCurationGlobeSyncFlush,
   hasValidCurationCoords,
   isCurationHomeHandoffApplyScheduled,
+  reclaimCurationHomeHandoff,
   releaseCurationHomeHandoffClaim,
   resolveCurationHomeHandoff,
   scheduleCurationHomeHandoffApply,
-  flushCurationGlobeSyncIfPending,
+  cancelCurationHomeHandoffApply,
 } from './lib/curationPlaceBridge';
 import { getGlobeApi, subscribeGlobeApi } from './lib/globeApiRegistry.js';
 
@@ -131,10 +132,6 @@ function resolveFocusLocationFromPlacePath(pathname, category, savedTrips = []) 
 
 function Home() {
   const globeRef = useRef();
-  const assignGlobeRef = useCallback((node) => {
-    globeRef.current = node;
-    if (node) flushCurationGlobeSyncIfPending();
-  }, []);
   const [user, setUser] = useState(null);
 
   const navigate = useNavigate();
@@ -471,6 +468,19 @@ function Home() {
   isMobileViewportRef.current = isMobileViewport;
   const categoryRef = useRef(category);
   categoryRef.current = category;
+  const handleLocationSelectRef = useRef(handleLocationSelect);
+  handleLocationSelectRef.current = handleLocationSelect;
+
+  useEffect(() => {
+    return () => {
+      cancelCurationHomeHandoffApply();
+      clearCurationGlobeSyncFlush();
+      if (curationHandoffClaimRef.current && !curationHandoffSyncDoneRef.current) {
+        releaseCurationHomeHandoffClaim(curationHandoffClaimRef.current);
+        curationHandoffClaimRef.current = null;
+      }
+    };
+  }, []);
 
   // 블로그 AI 큐레이션 → 홈 써머리(±무니) 핸드오프
   useEffect(() => {
@@ -488,8 +498,11 @@ function Home() {
     }
 
     if (!claimCurationHomeHandoff(pending.at)) {
-      logCurationHandoff('home.effect.skip', { reason: 'session-claim', at: pending.at });
-      return;
+      if (!reclaimCurationHomeHandoff(pending.at)) {
+        logCurationHandoff('home.effect.skip', { reason: 'session-claim', at: pending.at });
+        return;
+      }
+      logCurationHandoff('home.effect.reclaim', { at: pending.at });
     }
     curationHandoffClaimRef.current = pending.at;
 
@@ -511,7 +524,7 @@ function Home() {
     pendingGlobeHomeFocusRef.current = pin;
     rememberGlobeFocus(pin);
     selectedLocationRef.current = pin;
-    handleLocationSelect(pin, { deferGlobeFocus: true, refreshRelated: false });
+    handleLocationSelectRef.current(pin, { deferGlobeFocus: true, refreshRelated: false });
     logCurationHandoff('home.select', { name: pin.name, openMooni: pending.openMooni });
 
     const boundSpotForMooni = pending.openMooni
@@ -554,6 +567,7 @@ function Home() {
     };
 
     const resolveGlobeApi = () => getGlobeApi() || globeRef.current;
+    const syncLoopActiveRef = { current: false };
 
     const runGlobeSync = (attempt = 0) => {
       const routeNow = routeLocationRef.current;
@@ -561,6 +575,7 @@ function Home() {
         logCurationHandoff('home.sync.abort', { reason: 'left-home', at: pending.at, attempt });
         releaseCurationHomeHandoffClaim(pending.at);
         clearCurationGlobeSyncFlush();
+        syncLoopActiveRef.current = false;
         return;
       }
 
@@ -592,6 +607,7 @@ function Home() {
           unsub();
           lateFlyTo(api);
         });
+        syncLoopActiveRef.current = false;
         finalizeHandoff(routeNow);
         return;
       }
@@ -631,13 +647,34 @@ function Home() {
         }
 
         finalizeHandoff(routeLocationRef.current);
+        syncLoopActiveRef.current = false;
       })();
     };
+
+    const startGlobeSyncOnce = () => {
+      if (curationHandoffSyncDoneRef.current || syncLoopActiveRef.current) return;
+      syncLoopActiveRef.current = true;
+      runGlobeSync(0);
+    };
+
+    const unsubGlobe = subscribeGlobeApi((api) => {
+      if (curationHandoffSyncDoneRef.current) return;
+      if (routeLocationRef.current.pathname !== '/') return;
+      logCurationHandoff('home.globe.registered', {
+        at: pending.at,
+        hasWhenReady: Boolean(api?.whenGlobeFocusReady),
+      });
+      startGlobeSyncOnce();
+    });
+
+    if (resolveGlobeApi()) {
+      logCurationHandoff('home.globe.present', { at: pending.at });
+    }
 
     const syncDelayMs = 360;
     logCurationHandoff('home.sync.schedule', { delayMs: syncDelayMs });
     const scheduled = scheduleCurationHomeHandoffApply(pending.at, syncDelayMs, () => {
-      runGlobeSync(0);
+      startGlobeSyncOnce();
     });
 
     if (!scheduled) {
@@ -645,6 +682,7 @@ function Home() {
     }
 
     return () => {
+      unsubGlobe();
       const syncPending = isCurationHomeHandoffApplyScheduled(pending.at);
       logCurationHandoff('home.effect.cleanup', {
         reason: syncPending ? 'deps-change-sync-pending' : 'deps-change',
@@ -659,9 +697,7 @@ function Home() {
     };
   }, [
     category,
-    handleLocationSelect,
     rememberGlobeFocus,
-    isMobileViewport,
     bumpHomeChromeEpoch,
     navigate,
     routeLocation.pathname,
@@ -1430,7 +1466,7 @@ function Home() {
       <SEO />
       <div className="w-full h-full">
         <HomeGlobe
-          ref={assignGlobeRef}
+          ref={globeRef}
           onGlobeClick={handleGlobeClick}
           onMarkerClick={handleLocationSelect}
           isChatOpen={isChatOpen}

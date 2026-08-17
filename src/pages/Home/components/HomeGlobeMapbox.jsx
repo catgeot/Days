@@ -90,7 +90,7 @@ import {
 } from '../lib/globeMapboxLabelPolicy';
 import { getCategoryGlobeFaceView, GLOBE_FACE_FLY_MS, resolveCategoryFaceMapboxZoom } from '../lib/globeCategoryFocus';
 import { passesGlobeTierPolicy } from '../lib/globeSpotVisibility';
-import GlobeClusterLegend from './GlobeClusterLegend';
+import { flushCurationGlobeSyncIfPending } from '../lib/curationPlaceBridge.js';
 
 function LanguageControl() {
   useControl(() => new MapboxLanguage({ defaultLanguage: 'ko' }));
@@ -2298,6 +2298,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           } else {
             requestAnimationFrame(deferLabelSync);
           }
+          flushCurationGlobeSyncIfPending();
         }}
         onStyleData={() => {
           const map = mapRef.current?.getMap();
