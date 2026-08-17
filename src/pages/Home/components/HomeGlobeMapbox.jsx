@@ -1275,16 +1275,32 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     return true;
   }, [scheduleOrientRotateResume]);
 
+  const applyPendingFocus = useCallback(() => {
+    if (!pendingFocusRef.current) return false;
+    const pending = pendingFocusRef.current;
+    const applied = executeFocus(pending.lat, pending.lng);
+    if (applied) {
+      pendingFocusRef.current = null;
+    }
+    return applied;
+  }, [executeFocus]);
+
   const flyToAndPin = useCallback((lat, lng, _name, _category, options = {}) => {
+    const shouldFocus = options?.focus !== false;
     const map = mapRef.current?.getMap();
-    if (!map) return;
+    if (!map) {
+      addRipple(lat, lng, 2000);
+      if (shouldFocus) {
+        pendingFocusRef.current = { lat, lng };
+      }
+      return;
+    }
     if (rotationTimer.current) clearTimeout(rotationTimer.current);
 
     const wasImmersed = immerseActiveRef.current;
     immerseActiveRef.current = false;
     autoRotateRef.current = false;
     addRipple(lat, lng, 2000);
-    const shouldFocus = options?.focus !== false;
     if (!shouldFocus) {
       pendingFocusRef.current = null;
       return;
@@ -1980,21 +1996,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   }, [pauseRender, syncMapZoom, applyPlaceLabelVisibility]);
 
   useEffect(() => {
-    if (pauseRender) return;
+    if (pauseRender || !mapReady) return;
     if (!pendingFocusRef.current) return;
-
-    const pending = pendingFocusRef.current;
-    const applyPendingFocus = () => {
-      const applied = executeFocus(pending.lat, pending.lng);
-      if (applied) {
-        pendingFocusRef.current = null;
-      }
-    };
 
     // Defer until map container is visible/resized.
     const timer = window.setTimeout(applyPendingFocus, 80);
     return () => window.clearTimeout(timer);
-  }, [pauseRender, executeFocus]);
+  }, [pauseRender, mapReady, applyPendingFocus]);
 
   useEffect(() => {
     const tick = (ts) => {
@@ -2205,6 +2213,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           setMapReady(true);
           syncMapZoom();
           ensureInteractionReady();
+          applyPendingFocus();
 
           const syncOverlaysSoon = () => {
             if (!map) return;

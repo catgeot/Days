@@ -464,22 +464,25 @@ function Home() {
     selectedLocationRef.current = pin;
     handleLocationSelect(pin);
 
-    window.setTimeout(() => {
-      globeRef.current?.wakeAfterOverlay?.();
-      if (hasValidCoords(pin)) {
-        moveToLocation(pin.lat, pin.lng, pin.name, pin.category || category, { location: pin });
+    const syncTimer = window.setTimeout(() => {
+      if (isMobileViewport) {
+        bumpHomeChromeEpoch();
+        syncHomeChromeAfterNavigation();
       }
-    }, 150);
+      globeRef.current?.wakeAfterOverlay?.();
+    }, 180);
 
     if (pending.openMooni) {
       const boundSpot = buildMooniBoundSpotFromLocation(pin);
       if (boundSpot?.name) {
         window.setTimeout(() => {
           handleStartChat('MOONi', { boundSpot });
-        }, 280);
+        }, 320);
       }
     }
-  }, [category, handleLocationSelect, handleStartChat, moveToLocation, rememberGlobeFocus]);
+
+    return () => window.clearTimeout(syncTimer);
+  }, [category, handleLocationSelect, handleStartChat, rememberGlobeFocus, isMobileViewport, bumpHomeChromeEpoch]);
 
   useEffect(() => {
     if (!selectedLocation) {

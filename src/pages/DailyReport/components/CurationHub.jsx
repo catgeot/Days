@@ -172,6 +172,12 @@ function CurationResultPanel({
       alert('홈으로 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.');
       return;
     }
+    try {
+      sessionStorage.setItem('gateo_reset_viewport', '1');
+    } catch {
+      /* private mode */
+    }
+    window.scrollTo(0, 0);
     navigate('/', { state: { fromSearch: true, fromCuration: true } });
   };
 
