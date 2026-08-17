@@ -9,19 +9,26 @@
 
 | 증상 | 원인 | 수정 |
 |------|------|------|
-| iPhone 「무니에게 묻기」`unmount-before-sync` · `consume.empty` | effect cleanup이 360ms sync 타이머 취소(navigate replace·handleLocationSelect deps) | 모듈 레벨 `scheduleCurationHomeHandoffApply` · route strip·session clear를 sync 완료 후로 이동 |
+| iPhone 전체 지도·무니 검은 화면 (`globeReady:false` · Style not done loading) | `/blog`→`/` 전환 시 Home·Mapbox cold mount · 360ms 시점에 globe ref·style 미준비 | globe ref 폴링 · `whenGlobeFocusReady` 대기 후 flyTo · `executeFocus` style 가드 |
 
-- **한 일**: #8 — 핸드오프 sync 타이머 deps-change 생존 · smoke 스케줄러·clear session 테스트 추가
+- **한 일**: #8b — `whenGlobeFocusReady` API · 핸드오프 sync globe ref poll(100ms×36) · map ready 후 flyTo·무니(rAF×2)
 - **VERIFY**: `smoke-curation-place-bridge` · `npm run build` PASS
 - **공유**: `https://www.gateo.kr/qa/curation` · `?debug=curation`
 - **Preview**: `https://days-git-cursor-curation-globe-android-0ba2-catgeots-projects.vercel.app/blog/curation?debug=curation`
-- **남은 일(사람)**: iPhone 「무니에게 묻기」·Android 「전체 지도」재테스트 → 로그에 `home.sync.run` → `home.mooni.open` → `chat.start` 확인
+- **남은 일(사람)**: iPhone 재테스트 → 로그 `home.sync.ready mapReady:true` · `home.flyTo` · (무니) `chat.start`
 
 **다음 채팅명**:
 
 ```
 AI 큐레이션 #9, 지도·무니 Preview QA
 ```
+
+### #8a (이전 커밋)
+
+| 증상 | 원인 | 수정 |
+|------|------|------|
+| `unmount-before-sync` · `consume.empty` | effect cleanup이 360ms sync 타이머 취소 | 모듈 레벨 `scheduleCurationHomeHandoffApply` |
+
 
 ## AI 큐레이션 #7, 지도·무니 검은 화면 QA
 

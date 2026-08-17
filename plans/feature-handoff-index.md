@@ -18,7 +18,7 @@
 
 | | |
 |--|--|
-| **상태** | Preview QA 대기 (#8 unmount-before-sync 수정) |
+| **상태** | Preview QA 대기 (#8b globe ref·map ready 대기) |
 | **브랜치** | `cursor/curation-globe-android-0ba2` |
 | **PR** | [#128](https://github.com/catgeot/Days/pull/128) |
 | **플랜** | [`blog-ai-curation-page-plan.md`](./blog-ai-curation-page-plan.md) |

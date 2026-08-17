@@ -462,6 +462,8 @@ function Home() {
   moveToLocationRef.current = moveToLocation;
   const isMobileViewportRef = useRef(isMobileViewport);
   isMobileViewportRef.current = isMobileViewport;
+  const categoryRef = useRef(category);
+  categoryRef.current = category;
 
   // 블로그 AI 큐레이션 → 홈 써머리(±무니) 핸드오프
   useEffect(() => {
@@ -514,41 +516,9 @@ function Home() {
       label: boundSpotForMooni?.name || null,
     });
 
-    const syncDelayMs = isMobileViewport ? 360 : 180;
-    logCurationHandoff('home.sync.schedule', { delayMs: syncDelayMs });
-    const scheduled = scheduleCurationHomeHandoffApply(pending.at, syncDelayMs, () => {
-      const routeNow = routeLocationRef.current;
-      if (routeNow.pathname !== '/') {
-        logCurationHandoff('home.sync.abort', { reason: 'left-home', at: pending.at });
-        releaseCurationHomeHandoffClaim(pending.at);
-        return;
-      }
-
+    const finalizeHandoff = (routeNow) => {
       curationHandoffSyncDoneRef.current = true;
-      logCurationHandoff('home.sync.run', { globeReady: Boolean(globeRef.current) });
-      syncHomeViewportAfterInput();
-      if (isMobileViewportRef.current) {
-        bumpHomeChromeEpoch();
-        syncHomeChromeAfterNavigation();
-      }
-      globeRef.current?.wakeAfterOverlay?.();
-      if (hasValidCoords(pin)) {
-        moveToLocationRef.current(pin.lat, pin.lng, pin.name, pin.category || category, { location: pin });
-        logCurationHandoff('home.flyTo', { name: pin.name });
-      }
-
-      if (boundSpotForMooni?.name) {
-        requestAnimationFrame(() => {
-          logCurationHandoff('home.mooni.open', { label: boundSpotForMooni.name });
-          handleStartChatRef.current('MOONi', {
-            boundSpot: boundSpotForMooni,
-            persona: PERSONA_TYPES.INSPIRER,
-          });
-        });
-      } else if (pending.openMooni) {
-        logCurationHandoff('home.mooni.skip', { reason: 'no-bound-spot' });
-      }
-
+      pendingGlobeHomeFocusRef.current = null;
       if (routeNow.state?.curationHandoff) {
         navigate(`${routeNow.pathname}${routeNow.search}`, {
           replace: true,
@@ -560,6 +530,85 @@ function Home() {
       if (curationHandoffClaimRef.current === pending.at) {
         curationHandoffClaimRef.current = null;
       }
+    };
+
+    const openMooniChat = () => {
+      if (!boundSpotForMooni?.name) return;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          logCurationHandoff('home.mooni.open', { label: boundSpotForMooni.name });
+          handleStartChatRef.current('MOONi', {
+            boundSpot: boundSpotForMooni,
+            persona: PERSONA_TYPES.INSPIRER,
+          });
+        });
+      });
+    };
+
+    const runGlobeSync = (attempt = 0) => {
+      const routeNow = routeLocationRef.current;
+      if (routeNow.pathname !== '/') {
+        logCurationHandoff('home.sync.abort', { reason: 'left-home', at: pending.at, attempt });
+        releaseCurationHomeHandoffClaim(pending.at);
+        return;
+      }
+
+      const globe = globeRef.current;
+      if (!globe) {
+        if (attempt < 36) {
+          logCurationHandoff('home.sync.wait', { reason: 'no-globe-ref', attempt });
+          window.setTimeout(() => runGlobeSync(attempt + 1), 100);
+          return;
+        }
+        logCurationHandoff('home.sync.fail', { reason: 'no-globe-ref-timeout', attempt });
+        finalizeHandoff(routeNow);
+        return;
+      }
+
+      logCurationHandoff('home.sync.run', { globeReady: true, attempt });
+      syncHomeViewportAfterInput();
+      if (isMobileViewportRef.current) {
+        bumpHomeChromeEpoch();
+        syncHomeChromeAfterNavigation();
+      }
+
+      void (async () => {
+        const mapReady = await globe.whenGlobeFocusReady?.({ timeoutMs: 3200, intervalMs: 80 });
+        logCurationHandoff('home.sync.ready', {
+          mapReady: Boolean(mapReady),
+          attempt,
+        });
+
+        globe.wakeAfterOverlay?.();
+        if (hasValidCoords(pin)) {
+          moveToLocationRef.current(
+            pin.lat,
+            pin.lng,
+            pin.name,
+            pin.category || categoryRef.current,
+            { location: pin },
+          );
+          logCurationHandoff('home.flyTo', { name: pin.name, mapReady: Boolean(mapReady) });
+        }
+
+        if (pending.openMooni && boundSpotForMooni?.name) {
+          if (mapReady) {
+            openMooniChat();
+          } else {
+            window.setTimeout(openMooniChat, 200);
+          }
+        } else if (pending.openMooni) {
+          logCurationHandoff('home.mooni.skip', { reason: 'no-bound-spot' });
+        }
+
+        finalizeHandoff(routeLocationRef.current);
+      })();
+    };
+
+    const syncDelayMs = isMobileViewport ? 360 : 180;
+    logCurationHandoff('home.sync.schedule', { delayMs: syncDelayMs });
+    const scheduled = scheduleCurationHomeHandoffApply(pending.at, syncDelayMs, () => {
+      runGlobeSync(0);
     });
 
     if (!scheduled) {
