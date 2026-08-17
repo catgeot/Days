@@ -8,6 +8,56 @@ export const CURATION_PENDING_HOME_KEY = 'gateo_curation_pending_home';
 const HANDOFF_CLAIM_PREFIX = 'gateo_curation_handoff_claim:';
 const HANDOFF_MAX_AGE_MS = 120000;
 
+let handoffApplyTimer = null;
+let handoffApplyStamp = null;
+
+function scheduleHandoffTimeout(fn, delayMs) {
+  const host = typeof window !== 'undefined' ? window : globalThis;
+  return host.setTimeout(fn, delayMs);
+}
+
+function clearHandoffTimeout(timerId) {
+  const host = typeof window !== 'undefined' ? window : globalThis;
+  host.clearTimeout(timerId);
+}
+
+export function isCurationHomeHandoffApplyScheduled(at) {
+  const stamp = Number(at);
+  if (!Number.isFinite(stamp)) return handoffApplyTimer != null;
+  return handoffApplyStamp === stamp && handoffApplyTimer != null;
+}
+
+export function cancelCurationHomeHandoffApply() {
+  if (handoffApplyTimer != null) {
+    clearHandoffTimeout(handoffApplyTimer);
+    handoffApplyTimer = null;
+  }
+  handoffApplyStamp = null;
+}
+
+/** effect cleanup·deps 변경에도 sync 타이머가 살아 있게 모듈 레벨로 예약 */
+export function scheduleCurationHomeHandoffApply(at, delayMs, run) {
+  const stamp = Number(at);
+  if (!Number.isFinite(stamp)) return false;
+  if (isCurationHomeHandoffApplyScheduled(stamp)) return false;
+  cancelCurationHomeHandoffApply();
+  handoffApplyStamp = stamp;
+  handoffApplyTimer = scheduleHandoffTimeout(() => {
+    handoffApplyTimer = null;
+    handoffApplyStamp = null;
+    run();
+  }, delayMs);
+  return true;
+}
+
+export function clearCurationPendingHomeSession() {
+  try {
+    sessionStorage.removeItem(CURATION_PENDING_HOME_KEY);
+  } catch {
+    /* private mode */
+  }
+}
+
 function parseHandoffPayload(parsed, maxAgeMs = HANDOFF_MAX_AGE_MS) {
   if (!parsed?.location || !hasValidCurationCoords(parsed.location)) return null;
   const at = Number(parsed.at);

@@ -67,9 +67,12 @@ import {
 } from './lib/placeReturnTo';
 import {
   claimCurationHomeHandoff,
+  clearCurationPendingHomeSession,
   hasValidCurationCoords,
+  isCurationHomeHandoffApplyScheduled,
   releaseCurationHomeHandoffClaim,
   resolveCurationHomeHandoff,
+  scheduleCurationHomeHandoffApply,
 } from './lib/curationPlaceBridge';
 
 const DEFAULT_GLOBE_THEME = 'deep';
@@ -451,6 +454,14 @@ function Home() {
 
   const curationHandoffClaimRef = useRef(null);
   const curationHandoffSyncDoneRef = useRef(false);
+  const routeLocationRef = useRef(routeLocation);
+  routeLocationRef.current = routeLocation;
+  const handleStartChatRef = useRef(handleStartChat);
+  handleStartChatRef.current = handleStartChat;
+  const moveToLocationRef = useRef(moveToLocation);
+  moveToLocationRef.current = moveToLocation;
+  const isMobileViewportRef = useRef(isMobileViewport);
+  isMobileViewportRef.current = isMobileViewport;
 
   // 블로그 AI 큐레이션 → 홈 써머리(±무니) 핸드오프
   useEffect(() => {
@@ -462,23 +473,16 @@ function Home() {
       return;
     }
 
-    if (curationHandoffClaimRef.current === pending.at) {
-      logCurationHandoff('home.effect.skip', { reason: 'in-memory-claim', at: pending.at });
+    if (isCurationHomeHandoffApplyScheduled(pending.at)) {
+      logCurationHandoff('home.effect.skip', { reason: 'sync-scheduled', at: pending.at });
       return;
     }
+
     if (!claimCurationHomeHandoff(pending.at)) {
       logCurationHandoff('home.effect.skip', { reason: 'session-claim', at: pending.at });
       return;
     }
     curationHandoffClaimRef.current = pending.at;
-    curationHandoffSyncDoneRef.current = false;
-
-    if (routeLocation.state?.curationHandoff) {
-      navigate(`${routeLocation.pathname}${routeLocation.search}`, {
-        replace: true,
-        state: { fromSearch: true, fromCuration: true },
-      });
-    }
 
     logCurationHandoff('home.effect.start', {
       openMooni: pending.openMooni,
@@ -512,24 +516,31 @@ function Home() {
 
     const syncDelayMs = isMobileViewport ? 360 : 180;
     logCurationHandoff('home.sync.schedule', { delayMs: syncDelayMs });
-    const syncTimer = window.setTimeout(() => {
+    const scheduled = scheduleCurationHomeHandoffApply(pending.at, syncDelayMs, () => {
+      const routeNow = routeLocationRef.current;
+      if (routeNow.pathname !== '/') {
+        logCurationHandoff('home.sync.abort', { reason: 'left-home', at: pending.at });
+        releaseCurationHomeHandoffClaim(pending.at);
+        return;
+      }
+
       curationHandoffSyncDoneRef.current = true;
       logCurationHandoff('home.sync.run', { globeReady: Boolean(globeRef.current) });
       syncHomeViewportAfterInput();
-      if (isMobileViewport) {
+      if (isMobileViewportRef.current) {
         bumpHomeChromeEpoch();
         syncHomeChromeAfterNavigation();
       }
       globeRef.current?.wakeAfterOverlay?.();
       if (hasValidCoords(pin)) {
-        moveToLocation(pin.lat, pin.lng, pin.name, pin.category || category, { location: pin });
+        moveToLocationRef.current(pin.lat, pin.lng, pin.name, pin.category || category, { location: pin });
         logCurationHandoff('home.flyTo', { name: pin.name });
       }
 
       if (boundSpotForMooni?.name) {
         requestAnimationFrame(() => {
           logCurationHandoff('home.mooni.open', { label: boundSpotForMooni.name });
-          handleStartChat('MOONi', {
+          handleStartChatRef.current('MOONi', {
             boundSpot: boundSpotForMooni,
             persona: PERSONA_TYPES.INSPIRER,
           });
@@ -537,25 +548,40 @@ function Home() {
       } else if (pending.openMooni) {
         logCurationHandoff('home.mooni.skip', { reason: 'no-bound-spot' });
       }
-    }, syncDelayMs);
+
+      if (routeNow.state?.curationHandoff) {
+        navigate(`${routeNow.pathname}${routeNow.search}`, {
+          replace: true,
+          state: { fromSearch: true, fromCuration: true },
+        });
+      }
+      clearCurationPendingHomeSession();
+      releaseCurationHomeHandoffClaim(pending.at);
+      if (curationHandoffClaimRef.current === pending.at) {
+        curationHandoffClaimRef.current = null;
+      }
+    });
+
+    if (!scheduled) {
+      logCurationHandoff('home.sync.schedule.skip', { at: pending.at });
+    }
 
     return () => {
-      window.clearTimeout(syncTimer);
-      if (!curationHandoffSyncDoneRef.current) {
+      const syncPending = isCurationHomeHandoffApplyScheduled(pending.at);
+      logCurationHandoff('home.effect.cleanup', {
+        reason: syncPending ? 'deps-change-sync-pending' : 'deps-change',
+        at: pending.at,
+      });
+      if (!curationHandoffSyncDoneRef.current && !syncPending) {
         releaseCurationHomeHandoffClaim(pending.at);
         if (curationHandoffClaimRef.current === pending.at) {
           curationHandoffClaimRef.current = null;
         }
-        logCurationHandoff('home.effect.cleanup', { reason: 'unmount-before-sync', at: pending.at });
-      } else {
-        logCurationHandoff('home.effect.cleanup', { reason: 'sync-complete', at: pending.at });
       }
     };
   }, [
     category,
     handleLocationSelect,
-    handleStartChat,
-    moveToLocation,
     rememberGlobeFocus,
     isMobileViewport,
     bumpHomeChromeEpoch,

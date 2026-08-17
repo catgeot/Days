@@ -14,6 +14,32 @@
 
 ## 활성 목록
 
+### AI 큐레이션 — 지도·무니 핸드오프
+
+| | |
+|--|--|
+| **상태** | Preview QA 대기 (#8 unmount-before-sync 수정) |
+| **브랜치** | `cursor/curation-globe-android-0ba2` |
+| **PR** | [#128](https://github.com/catgeot/Days/pull/128) |
+| **플랜** | [`blog-ai-curation-page-plan.md`](./blog-ai-curation-page-plan.md) |
+| **일지** | [`2026-08-17-project-log.md`](./2026-08-17-project-log.md) |
+| **공유** | `https://www.gateo.kr/qa/curation` |
+| **Preview** | `https://days-git-cursor-curation-globe-android-0ba2-catgeots-projects.vercel.app/blog/curation?debug=curation` |
+| **VERIFY** | `smoke-curation-place-bridge` · `npm run build` |
+
+**다음 제시어**:
+
+```
+AI 큐레이션 #9, 지도·무니 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-08-17-project-log.md
+@plans/blog-ai-curation-page-plan.md
+브랜치 cursor/curation-globe-android-0ba2 · PR #128 · /qa/curation
+금지: 새 Preview 브랜치 · computerUse QA · travelSpots 직접 편집
+```
+
+---
+
 ### 해안·해양 탐색
 
 | | |

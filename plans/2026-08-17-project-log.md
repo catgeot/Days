@@ -2,6 +2,27 @@
 
 직전: [`2026-08-16-project-log.md`](./2026-08-16-project-log.md)
 
+## AI 큐레이션 #8, 지도·무니 Preview QA 반영
+
+**상태**: `cursor/curation-globe-android-0ba2` · [PR #128](https://github.com/catgeot/Days/pull/128) · Preview QA 대기  
+**세션**: `AI 큐레이션 #8, 지도·무니 Preview QA 반영`
+
+| 증상 | 원인 | 수정 |
+|------|------|------|
+| iPhone 「무니에게 묻기」`unmount-before-sync` · `consume.empty` | effect cleanup이 360ms sync 타이머 취소(navigate replace·handleLocationSelect deps) | 모듈 레벨 `scheduleCurationHomeHandoffApply` · route strip·session clear를 sync 완료 후로 이동 |
+
+- **한 일**: #8 — 핸드오프 sync 타이머 deps-change 생존 · smoke 스케줄러·clear session 테스트 추가
+- **VERIFY**: `smoke-curation-place-bridge` · `npm run build` PASS
+- **공유**: `https://www.gateo.kr/qa/curation` · `?debug=curation`
+- **Preview**: `https://days-git-cursor-curation-globe-android-0ba2-catgeots-projects.vercel.app/blog/curation?debug=curation`
+- **남은 일(사람)**: iPhone 「무니에게 묻기」·Android 「전체 지도」재테스트 → 로그에 `home.sync.run` → `home.mooni.open` → `chat.start` 확인
+
+**다음 채팅명**:
+
+```
+AI 큐레이션 #9, 지도·무니 Preview QA
+```
+
 ## AI 큐레이션 #7, 지도·무니 검은 화면 QA
 
 **상태**: `cursor/curation-globe-android-0ba2` · [PR #128](https://github.com/catgeot/Days/pull/128) · Preview QA 대기  
