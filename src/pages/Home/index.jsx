@@ -504,7 +504,7 @@ function Home() {
     pendingGlobeHomeFocusRef.current = pin;
     rememberGlobeFocus(pin);
     selectedLocationRef.current = pin;
-    handleLocationSelect(pin);
+    handleLocationSelect(pin, { deferGlobeFocus: true, refreshRelated: false });
     logCurationHandoff('home.select', { name: pin.name, openMooni: pending.openMooni });
 
     const boundSpotForMooni = pending.openMooni
@@ -567,10 +567,8 @@ function Home() {
 
       logCurationHandoff('home.sync.run', { globeReady: true, attempt });
       syncHomeViewportAfterInput();
-      if (isMobileViewportRef.current) {
-        bumpHomeChromeEpoch();
-        syncHomeChromeAfterNavigation();
-      }
+      bumpHomeChromeEpoch();
+      syncHomeChromeAfterNavigation();
 
       void (async () => {
         const mapReady = await globe.whenGlobeFocusReady?.({ timeoutMs: 3200, intervalMs: 80 });
@@ -605,7 +603,7 @@ function Home() {
       })();
     };
 
-    const syncDelayMs = isMobileViewport ? 360 : 180;
+    const syncDelayMs = 360;
     logCurationHandoff('home.sync.schedule', { delayMs: syncDelayMs });
     const scheduled = scheduleCurationHomeHandoffApply(pending.at, syncDelayMs, () => {
       runGlobeSync(0);

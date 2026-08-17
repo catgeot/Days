@@ -424,7 +424,8 @@ export function useHomeHandlers({
     if (!loc) return;
 
     // 지구본은 과거 onMarkerClick(loc, 'globe') 호출 — 문자열이면 옵션 무시
-    const { refreshRelated = true } = typeof options === 'object' && options ? options : {};
+    const { refreshRelated = true, deferGlobeFocus = false } =
+      typeof options === 'object' && options ? options : {};
 
     const name = loc.name || "Selected";
     const finalLoc = prepareResolvedLocation({
@@ -513,7 +514,9 @@ export function useHomeHandlers({
       return;
     }
 
-    moveToLocation(loc.lat, loc.lng, name, loc.category || category, { location: finalLoc });
+    if (!deferGlobeFocus) {
+      moveToLocation(loc.lat, loc.lng, name, loc.category || category, { location: finalLoc });
+    }
     addScoutPin(finalLoc);
     if (refreshRelated) {
       processSearchKeywords(finalLoc);

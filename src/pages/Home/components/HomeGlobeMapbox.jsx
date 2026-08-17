@@ -1133,7 +1133,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const executeFocus = useCallback((lat, lng, options = {}) => {
     const map = mapRef.current?.getMap();
     if (!map || pauseRender) return false;
-    if (!map.loaded?.() && !map.isStyleLoaded?.()) return false;
+    if (!map.isStyleLoaded?.()) return false;
 
     const currentCenter = map.getCenter();
     const currentZoom = map.getZoom();
@@ -1810,7 +1810,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const map = mapRef.current?.getMap();
     if (!map || map._removed) return false;
     try {
-      return Boolean(map.loaded?.() || map.isStyleLoaded?.());
+      return Boolean(map.isStyleLoaded?.());
     } catch {
       return false;
     }
