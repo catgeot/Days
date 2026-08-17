@@ -3,12 +3,38 @@ import { isCloudPreviewSurface } from './isCloudPreviewSurface.js';
 const MAX_LINES = 64;
 const SESSION_KEY = 'gateo:curation-debug-session';
 const PERSIST_KEY = 'gateo:curation-debug';
+const LOG_BUFFER_KEY = 'gateo:curation-debug-lines';
 
 /** @type {string[]} */
-const buffer = [];
+let buffer = [];
 /** @type {Set<() => void>} */
 const listeners = new Set();
 let globalHooksInstalled = false;
+
+function loadPersistedLogBuffer() {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = sessionStorage.getItem(LOG_BUFFER_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter((line) => typeof line === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
+function persistLogBuffer() {
+  if (typeof window === 'undefined') return;
+  try {
+    sessionStorage.setItem(LOG_BUFFER_KEY, JSON.stringify(buffer));
+  } catch {
+    /* private mode */
+  }
+}
+
+if (typeof window !== 'undefined') {
+  buffer = loadPersistedLogBuffer();
+}
 
 export function armCurationHandoffDebugSession() {
   if (typeof window === 'undefined') return;
@@ -62,6 +88,7 @@ export function logCurationHandoff(tag, detail) {
   const line = `${new Date().toISOString().slice(11, 23)} ${tag}${suffix}`;
   buffer.push(line);
   if (buffer.length > MAX_LINES) buffer.shift();
+  persistLogBuffer();
   console.log(`[curation-handoff] ${line}`);
   notify();
 }
@@ -72,6 +99,7 @@ export function getCurationHandoffDebugLines() {
 
 export function clearCurationHandoffDebugLines() {
   buffer.length = 0;
+  persistLogBuffer();
   notify();
 }
 
@@ -83,6 +111,8 @@ export function subscribeCurationHandoffDebug(listener) {
 export function installCurationHandoffDebugGlobalHooks() {
   if (globalHooksInstalled || !isCurationHandoffDebugEnabled()) return;
   globalHooksInstalled = true;
+  buffer = loadPersistedLogBuffer();
+  notify();
   window.addEventListener('error', (event) => {
     const detail = [
       event.message || 'unknown',

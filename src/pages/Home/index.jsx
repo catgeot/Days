@@ -66,8 +66,10 @@ import {
   peekPlaceReturnTo,
 } from './lib/placeReturnTo';
 import {
-  consumeCurationHomeOpen,
+  claimCurationHomeHandoff,
   hasValidCurationCoords,
+  releaseCurationHomeHandoffClaim,
+  resolveCurationHomeHandoff,
 } from './lib/curationPlaceBridge';
 
 const DEFAULT_GLOBE_THEME = 'deep';
@@ -447,14 +449,42 @@ function Home() {
     lastGlobeFocusRef.current = loc;
   }, []);
 
+  const curationHandoffClaimRef = useRef(null);
+  const curationHandoffSyncDoneRef = useRef(false);
+
   // 블로그 AI 큐레이션 → 홈 써머리(±무니) 핸드오프
   useEffect(() => {
-    const pending = consumeCurationHomeOpen();
+    const pending = resolveCurationHomeHandoff(routeLocation.state);
     if (!pending?.location || !hasValidCurationCoords(pending.location)) return;
+
+    if (curationHandoffSyncDoneRef.current) {
+      logCurationHandoff('home.effect.skip', { reason: 'sync-done' });
+      return;
+    }
+
+    if (curationHandoffClaimRef.current === pending.at) {
+      logCurationHandoff('home.effect.skip', { reason: 'in-memory-claim', at: pending.at });
+      return;
+    }
+    if (!claimCurationHomeHandoff(pending.at)) {
+      logCurationHandoff('home.effect.skip', { reason: 'session-claim', at: pending.at });
+      return;
+    }
+    curationHandoffClaimRef.current = pending.at;
+    curationHandoffSyncDoneRef.current = false;
+
+    if (routeLocation.state?.curationHandoff) {
+      navigate(`${routeLocation.pathname}${routeLocation.search}`, {
+        replace: true,
+        state: { fromSearch: true, fromCuration: true },
+      });
+    }
 
     logCurationHandoff('home.effect.start', {
       openMooni: pending.openMooni,
       mobile: isMobileViewport,
+      source: pending.source,
+      at: pending.at,
     });
 
     const pin = healPlaceholderCountry(
@@ -483,6 +513,7 @@ function Home() {
     const syncDelayMs = isMobileViewport ? 360 : 180;
     logCurationHandoff('home.sync.schedule', { delayMs: syncDelayMs });
     const syncTimer = window.setTimeout(() => {
+      curationHandoffSyncDoneRef.current = true;
       logCurationHandoff('home.sync.run', { globeReady: Boolean(globeRef.current) });
       syncHomeViewportAfterInput();
       if (isMobileViewport) {
@@ -510,9 +541,29 @@ function Home() {
 
     return () => {
       window.clearTimeout(syncTimer);
-      logCurationHandoff('home.effect.cleanup', { reason: 'unmount-or-deps' });
+      if (!curationHandoffSyncDoneRef.current) {
+        releaseCurationHomeHandoffClaim(pending.at);
+        if (curationHandoffClaimRef.current === pending.at) {
+          curationHandoffClaimRef.current = null;
+        }
+        logCurationHandoff('home.effect.cleanup', { reason: 'unmount-before-sync', at: pending.at });
+      } else {
+        logCurationHandoff('home.effect.cleanup', { reason: 'sync-complete', at: pending.at });
+      }
     };
-  }, [category, handleLocationSelect, handleStartChat, moveToLocation, rememberGlobeFocus, isMobileViewport, bumpHomeChromeEpoch]);
+  }, [
+    category,
+    handleLocationSelect,
+    handleStartChat,
+    moveToLocation,
+    rememberGlobeFocus,
+    isMobileViewport,
+    bumpHomeChromeEpoch,
+    navigate,
+    routeLocation.pathname,
+    routeLocation.search,
+    routeLocation.state,
+  ]);
 
   useEffect(() => {
     logCurationHandoff('home.ui', {

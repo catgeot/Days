@@ -24,6 +24,8 @@ const {
   hydrateLocationFromCuration,
   queueCurationHomeOpen,
   consumeCurationHomeOpen,
+  buildCurationHomeNavigateState,
+  resolveCurationHomeHandoff,
   CURATION_PENDING_HOME_KEY,
 } = await import(pathToFileURL(join(root, 'src/pages/Home/lib/curationPlaceBridge.js')).href);
 
@@ -88,6 +90,13 @@ const staleRaw = JSON.parse(store.get(CURATION_PENDING_HOME_KEY));
 staleRaw.at = Date.now() - 999999;
 store.set(CURATION_PENDING_HOME_KEY, JSON.stringify(staleRaw));
 assert(consumeCurationHomeOpen({ maxAgeMs: 1000 }) === null, 'expire stale handoff');
+
+const navState = buildCurationHomeNavigateState(uiPlace, { openMooni: true });
+const routeResolved = resolveCurationHomeHandoff(navState);
+assert(routeResolved?.source === 'route-state', 'route-state handoff');
+assert(routeResolved?.openMooni === true, 'route openMooni');
+assert(routeResolved?.location?.name === '가상낙원테스트', 'route location name');
+assert(consumeCurationHomeOpen() === null, 'route handoff does not require session consume');
 
 if (failed > 0) {
   console.error(`\n${failed} failure(s)`);

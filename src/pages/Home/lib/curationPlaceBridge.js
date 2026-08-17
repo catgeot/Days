@@ -5,6 +5,90 @@ import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResol
 import { logCurationHandoff } from '../../../shared/cloudPreview/curationHandoffDebug.js';
 
 export const CURATION_PENDING_HOME_KEY = 'gateo_curation_pending_home';
+const HANDOFF_CLAIM_PREFIX = 'gateo_curation_handoff_claim:';
+const HANDOFF_MAX_AGE_MS = 120000;
+
+function parseHandoffPayload(parsed, maxAgeMs = HANDOFF_MAX_AGE_MS) {
+  if (!parsed?.location || !hasValidCurationCoords(parsed.location)) return null;
+  const at = Number(parsed.at);
+  if (Number.isFinite(at) && Date.now() - at > maxAgeMs) return null;
+  return {
+    location: parsed.location,
+    openMooni: Boolean(parsed.openMooni),
+    at: Number.isFinite(at) ? at : Date.now(),
+  };
+}
+
+export function buildCurationHomeNavigateState(location, { openMooni = false } = {}) {
+  return {
+    fromSearch: true,
+    fromCuration: true,
+    curationHandoff: {
+      location,
+      openMooni: Boolean(openMooni),
+      at: Date.now(),
+    },
+  };
+}
+
+function sessionKeyPresent() {
+  try {
+    return Boolean(sessionStorage.getItem(CURATION_PENDING_HOME_KEY));
+  } catch {
+    return false;
+  }
+}
+
+/** SPA navigate state 우선 · sessionStorage 폴백 */
+export function resolveCurationHomeHandoff(routeState, { maxAgeMs = HANDOFF_MAX_AGE_MS } = {}) {
+  const routePayload = routeState?.curationHandoff;
+  if (routePayload) {
+    const parsed = parseHandoffPayload(routePayload, maxAgeMs);
+    if (parsed) {
+      logCurationHandoff('handoff.route', {
+        openMooni: parsed.openMooni,
+        location: parsed.location?.name,
+        at: parsed.at,
+      });
+      return { ...parsed, source: 'route-state' };
+    }
+    logCurationHandoff('handoff.route.reject', { reason: 'invalid-or-stale' });
+  }
+
+  const session = consumeCurationHomeOpen({ maxAgeMs });
+  if (session) {
+    return { ...session, at: Date.now(), source: 'session-storage' };
+  }
+
+  logCurationHandoff('handoff.miss', {
+    hasRoute: Boolean(routeState?.curationHandoff),
+    sessionKey: sessionKeyPresent(),
+  });
+  return null;
+}
+
+export function claimCurationHomeHandoff(at) {
+  const stamp = Number(at);
+  if (!Number.isFinite(stamp)) return true;
+  const key = `${HANDOFF_CLAIM_PREFIX}${stamp}`;
+  try {
+    if (sessionStorage.getItem(key)) return false;
+    sessionStorage.setItem(key, '1');
+    return true;
+  } catch {
+    return true;
+  }
+}
+
+export function releaseCurationHomeHandoffClaim(at) {
+  const stamp = Number(at);
+  if (!Number.isFinite(stamp)) return;
+  try {
+    sessionStorage.removeItem(`${HANDOFF_CLAIM_PREFIX}${stamp}`);
+  } catch {
+    /* private mode */
+  }
+}
 
 export function hasValidCurationCoords(loc) {
   const lat = Number(loc?.lat);
@@ -152,7 +236,7 @@ export function consumeCurationHomeOpen({ maxAgeMs = 120000 } = {}) {
   try {
     const raw = sessionStorage.getItem(CURATION_PENDING_HOME_KEY);
     if (!raw) {
-      logCurationHandoff('consume.empty');
+      logCurationHandoff('consume.empty', { sessionKey: sessionKeyPresent() });
       return null;
     }
     sessionStorage.removeItem(CURATION_PENDING_HOME_KEY);

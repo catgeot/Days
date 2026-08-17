@@ -12,7 +12,7 @@
 | 「전체 지도에서 보기」검은 화면·먹통 | Android Chrome | Mapbox pending focus · viewport reset · 지연 flyTo 복구 |
 | 「무니에게 묻기」검은 화면 | iPhone Safari | viewport sync·wake 후 rAF로 MOONi 오픈 |
 
-- **한 일**: #7 — viewport sync 후 `moveToLocation` 재호출 · `/qa/curation` Preview 갱신 · **모바일 디버그 패널**(curation log · 복사)
+- **한 일**: #7 — route state 1차 핸드오프(Strict Mode claim·재시도) · 디버그 로그 sessionStorage 유지
 - **VERIFY**: `npm run build` · `smoke-curation-place-bridge` PASS
 - **공유**: `https://www.gateo.kr/qa/curation`
 - **Preview**: `https://days-git-cursor-curation-globe-android-0ba2-catgeots-projects.vercel.app/blog/curation`

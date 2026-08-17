@@ -25,6 +25,7 @@ import {
   hydrateLocationFromCuration,
   hasValidCurationCoords,
   queueCurationHomeOpen,
+  buildCurationHomeNavigateState,
 } from '../../Home/lib/curationPlaceBridge';
 import {
   armCurationHandoffDebugSession,
@@ -191,8 +192,9 @@ function CurationResultPanel({
       /* private mode */
     }
     window.scrollTo(0, 0);
-    logCurationHandoff('cta.navigate', { path: '/' });
-    navigate('/', { state: { fromSearch: true, fromCuration: true } });
+    const navState = buildCurationHomeNavigateState(hydratedPlace, { openMooni });
+    logCurationHandoff('cta.navigate', { path: '/', hasHandoff: Boolean(navState.curationHandoff) });
+    navigate('/', { state: navState });
   };
 
   const openPlaceCard = () => {
