@@ -16,6 +16,13 @@
 |--------|------|------|
 | iPhone Safari | **PASS** (무니·재시도) | `home.sync.run globeReady:true` → `home.sync.ready mapReady:true` → `home.flyTo` → `home.mooni.open` → `chat.start` → `chat.open.draft` |
 
+## AI 큐레이션 #9, PC no-globe-ref 핸드오프
+
+**상태**: `cursor/curation-pc-globe-handoff-cc0e` · Preview QA  
+**증상**: PC `/blog/curation` → 「무니에게 묻기」·「전체 지도」 후 `no-globe-ref-timeout` · 무니·flyTo 생략  
+**수정**: `globeApiRegistry` · `flushCurationGlobeSyncIfPending` · callback ref · 타임아웃 시 무니·late flyTo  
+**VERIFY**: `smoke-curation-place-bridge` · `npm run build` PASS
+
 - **tip**: `06e2b250` — globe ref poll · `whenGlobeFocusReady` · `executeFocus` style 가드
 - **VERIFY**: `smoke-curation-place-bridge` · `npm run build` PASS
 - **공유**: `https://www.gateo.kr/qa/curation` · `?debug=curation`
