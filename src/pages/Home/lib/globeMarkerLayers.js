@@ -95,7 +95,11 @@ function safeMapUpdate(map, fn) {
 }
 
 export function gateoMarkerLayersReady(map) {
-  if (!map?.getStyle?.()) return false;
+  try {
+    if (!map?.isStyleLoaded?.() || !map?.getStyle?.()) return false;
+  } catch {
+    return false;
+  }
   try {
     // getLayer throws "Style is not done loading" while the style is mid-load
     // (e.g. 2s reveal fallback before idle/styledata).
@@ -118,7 +122,11 @@ export function areGateoMarkerLayersVisible(map) {
 
 /** Hide gateo spot layers until GeoJSON source is synced (avoids label flash on base reveal). */
 export function setGateoMarkerLayerVisibility(map, visible) {
-  if (!map?.getStyle?.()) return;
+  try {
+    if (!map?.isStyleLoaded?.() || !map?.getStyle?.()) return;
+  } catch {
+    return;
+  }
   const visibility = visible ? 'visible' : 'none';
   GATEO_LAYER_IDS.forEach((layerId) => {
     if (!map.getLayer(layerId)) return;

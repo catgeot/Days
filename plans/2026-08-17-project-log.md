@@ -2,6 +2,21 @@
 
 직전: [`2026-08-16-project-log.md`](./2026-08-16-project-log.md)
 
+## AI 큐레이션 #9–#10, PC PASS · main merge · 모바일 QA 대기
+
+**세션**: `AI 큐레이션 #9 PC Preview PASS` → PR #130 main 병합  
+**PC**: Preview **PASS** — `globe.api.register` → `home.sync.run` → `home.flyTo` → `home.mooni.open`  
+**모바일**: 애매 — main 배포 후 사람 QA (#10)  
+**merge**: PR #130 `cursor/curation-pc-globe-handoff-cc0e` — `globeApiRegistry` · reclaim · subscribe · Map onLoad flush  
+**VERIFY**: `smoke-curation-place-bridge` · `build` PASS  
+**PROD**: `https://www.gateo.kr/blog/curation?debug=curation`  
+**남은 일**: iPhone/Android 「전체 지도」·「무니」— 문제 시 로그 붙여 #10 이어하기
+
+**에이전트 핸드오프 (#10)**  
+- 읽을 것: 본 절 · `feature-handoff-index` 큐레이션 행 · 일지 핸드오프  
+- 금지: 새 Preview 브랜치 · `travelSpots.js` 전체 스캔  
+- 성공 로그: `globe.api.register` · `home.sync.run` · `home.flyTo` · (`openMooni`면) `home.mooni.open`
+
 ## AI 큐레이션 #8, 지도·무니 Preview QA 반영
 
 **상태**: **main 병합 완료** (PR #128 · `68b14979`) · PROD 배포 후 Android QA  
@@ -15,6 +30,13 @@
 | 플랫폼 | 결과 | 로그 |
 |--------|------|------|
 | iPhone Safari | **PASS** (무니·재시도) | `home.sync.run globeReady:true` → `home.sync.ready mapReady:true` → `home.flyTo` → `home.mooni.open` → `chat.start` → `chat.open.draft` |
+
+## AI 큐레이션 #9, PC no-globe-ref 핸드오프
+
+**상태**: `cursor/curation-pc-globe-handoff-cc0e` · Preview QA  
+**증상**: PC `/blog/curation` → 「무니에게 묻기」·「전체 지도」 후 `no-globe-ref-timeout` · 무니·flyTo 생략  
+**수정**: `globeApiRegistry` · `flushCurationGlobeSyncIfPending` · callback ref · 타임아웃 시 무니·late flyTo  
+**VERIFY**: `smoke-curation-place-bridge` · `npm run build` PASS
 
 - **tip**: `06e2b250` — globe ref poll · `whenGlobeFocusReady` · `executeFocus` style 가드
 - **VERIFY**: `smoke-curation-place-bridge` · `npm run build` PASS

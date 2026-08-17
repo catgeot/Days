@@ -68,12 +68,16 @@ import {
 import {
   claimCurationHomeHandoff,
   clearCurationPendingHomeSession,
+  clearCurationGlobeSyncFlush,
   hasValidCurationCoords,
   isCurationHomeHandoffApplyScheduled,
+  reclaimCurationHomeHandoff,
   releaseCurationHomeHandoffClaim,
   resolveCurationHomeHandoff,
   scheduleCurationHomeHandoffApply,
+  cancelCurationHomeHandoffApply,
 } from './lib/curationPlaceBridge';
+import { getGlobeApi, subscribeGlobeApi } from './lib/globeApiRegistry.js';
 
 const DEFAULT_GLOBE_THEME = 'deep';
 
@@ -464,6 +468,19 @@ function Home() {
   isMobileViewportRef.current = isMobileViewport;
   const categoryRef = useRef(category);
   categoryRef.current = category;
+  const handleLocationSelectRef = useRef(handleLocationSelect);
+  handleLocationSelectRef.current = handleLocationSelect;
+
+  useEffect(() => {
+    return () => {
+      cancelCurationHomeHandoffApply();
+      clearCurationGlobeSyncFlush();
+      if (curationHandoffClaimRef.current && !curationHandoffSyncDoneRef.current) {
+        releaseCurationHomeHandoffClaim(curationHandoffClaimRef.current);
+        curationHandoffClaimRef.current = null;
+      }
+    };
+  }, []);
 
   // 블로그 AI 큐레이션 → 홈 써머리(±무니) 핸드오프
   useEffect(() => {
@@ -481,8 +498,11 @@ function Home() {
     }
 
     if (!claimCurationHomeHandoff(pending.at)) {
-      logCurationHandoff('home.effect.skip', { reason: 'session-claim', at: pending.at });
-      return;
+      if (!reclaimCurationHomeHandoff(pending.at)) {
+        logCurationHandoff('home.effect.skip', { reason: 'session-claim', at: pending.at });
+        return;
+      }
+      logCurationHandoff('home.effect.reclaim', { at: pending.at });
     }
     curationHandoffClaimRef.current = pending.at;
 
@@ -504,7 +524,7 @@ function Home() {
     pendingGlobeHomeFocusRef.current = pin;
     rememberGlobeFocus(pin);
     selectedLocationRef.current = pin;
-    handleLocationSelect(pin);
+    handleLocationSelectRef.current(pin, { deferGlobeFocus: true, refreshRelated: false });
     logCurationHandoff('home.select', { name: pin.name, openMooni: pending.openMooni });
 
     const boundSpotForMooni = pending.openMooni
@@ -519,6 +539,7 @@ function Home() {
     const finalizeHandoff = (routeNow) => {
       curationHandoffSyncDoneRef.current = true;
       pendingGlobeHomeFocusRef.current = null;
+      clearCurationGlobeSyncFlush();
       if (routeNow.state?.curationHandoff) {
         navigate(`${routeNow.pathname}${routeNow.search}`, {
           replace: true,
@@ -545,32 +566,56 @@ function Home() {
       });
     };
 
+    const resolveGlobeApi = () => getGlobeApi() || globeRef.current;
+    const syncLoopActiveRef = { current: false };
+
     const runGlobeSync = (attempt = 0) => {
       const routeNow = routeLocationRef.current;
       if (routeNow.pathname !== '/') {
         logCurationHandoff('home.sync.abort', { reason: 'left-home', at: pending.at, attempt });
         releaseCurationHomeHandoffClaim(pending.at);
+        clearCurationGlobeSyncFlush();
+        syncLoopActiveRef.current = false;
         return;
       }
 
-      const globe = globeRef.current;
+      const globe = resolveGlobeApi();
       if (!globe) {
-        if (attempt < 36) {
+        if (attempt < 60) {
           logCurationHandoff('home.sync.wait', { reason: 'no-globe-ref', attempt });
           window.setTimeout(() => runGlobeSync(attempt + 1), 100);
           return;
         }
         logCurationHandoff('home.sync.fail', { reason: 'no-globe-ref-timeout', attempt });
+        syncHomeViewportAfterInput();
+        if (pending.openMooni && boundSpotForMooni?.name) {
+          window.setTimeout(openMooniChat, 200);
+        }
+        const lateFlyTo = (api) => {
+          if (!hasValidCoords(pin)) return;
+          api.wakeAfterOverlay?.();
+          moveToLocationRef.current(
+            pin.lat,
+            pin.lng,
+            pin.name,
+            pin.category || categoryRef.current,
+            { location: pin },
+          );
+          logCurationHandoff('home.flyTo.late', { name: pin.name });
+        };
+        const unsub = subscribeGlobeApi((api) => {
+          unsub();
+          lateFlyTo(api);
+        });
+        syncLoopActiveRef.current = false;
         finalizeHandoff(routeNow);
         return;
       }
 
       logCurationHandoff('home.sync.run', { globeReady: true, attempt });
       syncHomeViewportAfterInput();
-      if (isMobileViewportRef.current) {
-        bumpHomeChromeEpoch();
-        syncHomeChromeAfterNavigation();
-      }
+      bumpHomeChromeEpoch();
+      syncHomeChromeAfterNavigation();
 
       void (async () => {
         const mapReady = await globe.whenGlobeFocusReady?.({ timeoutMs: 3200, intervalMs: 80 });
@@ -602,13 +647,34 @@ function Home() {
         }
 
         finalizeHandoff(routeLocationRef.current);
+        syncLoopActiveRef.current = false;
       })();
     };
 
-    const syncDelayMs = isMobileViewport ? 360 : 180;
+    const startGlobeSyncOnce = () => {
+      if (curationHandoffSyncDoneRef.current || syncLoopActiveRef.current) return;
+      syncLoopActiveRef.current = true;
+      runGlobeSync(0);
+    };
+
+    const unsubGlobe = subscribeGlobeApi((api) => {
+      if (curationHandoffSyncDoneRef.current) return;
+      if (routeLocationRef.current.pathname !== '/') return;
+      logCurationHandoff('home.globe.registered', {
+        at: pending.at,
+        hasWhenReady: Boolean(api?.whenGlobeFocusReady),
+      });
+      startGlobeSyncOnce();
+    });
+
+    if (resolveGlobeApi()) {
+      logCurationHandoff('home.globe.present', { at: pending.at });
+    }
+
+    const syncDelayMs = 360;
     logCurationHandoff('home.sync.schedule', { delayMs: syncDelayMs });
     const scheduled = scheduleCurationHomeHandoffApply(pending.at, syncDelayMs, () => {
-      runGlobeSync(0);
+      startGlobeSyncOnce();
     });
 
     if (!scheduled) {
@@ -616,6 +682,7 @@ function Home() {
     }
 
     return () => {
+      unsubGlobe();
       const syncPending = isCurationHomeHandoffApplyScheduled(pending.at);
       logCurationHandoff('home.effect.cleanup', {
         reason: syncPending ? 'deps-change-sync-pending' : 'deps-change',
@@ -630,9 +697,7 @@ function Home() {
     };
   }, [
     category,
-    handleLocationSelect,
     rememberGlobeFocus,
-    isMobileViewport,
     bumpHomeChromeEpoch,
     navigate,
     routeLocation.pathname,
