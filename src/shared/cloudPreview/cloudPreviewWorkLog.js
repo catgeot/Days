@@ -4,13 +4,13 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: false,
-  title: '지구본 홈',
-  sessionNo: 13,
-  sessionPhase: 'Chrome 칩 히트 어긋남',
-  branch: 'main',
-  previewPath: '/',
-  qaShareSlug: 'chrome-hit',
+  active: true,
+  title: 'AI 큐레이션',
+  sessionNo: 7,
+  sessionPhase: '지도·무니 검은 화면 QA',
+  branch: 'cursor/curation-globe-android-0ba2',
+  previewPath: '/blog/curation',
+  qaShareSlug: 'curation',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-17-curation-globe-mooni-7',
+    session: 'AI 큐레이션 #7, 지도·무니 검은 화면 QA',
+    title: '큐레이션→홈 지도·무니 검은 화면 완화',
+    detail:
+      'Android Chrome 「전체 지도에서 보기」·iPhone 「무니에게 묻기」검은 화면을 줄였습니다. Mapbox pending focus·viewport reset·sync 후 flyTo·MOONi 오픈 순서를 맞췄습니다. Preview /blog/curation에서 각 버튼을 확인해 주세요.',
+    at: '2026-08-17',
+  },
   {
     id: '2026-08-13-chrome-hit-shift-13',
     session: '지구본 홈 #13, Chrome 칩 히트 어긋남',

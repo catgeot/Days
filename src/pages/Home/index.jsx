@@ -476,6 +476,9 @@ function Home() {
         syncHomeChromeAfterNavigation();
       }
       globeRef.current?.wakeAfterOverlay?.();
+      if (hasValidCoords(pin)) {
+        moveToLocation(pin.lat, pin.lng, pin.name, pin.category || category, { location: pin });
+      }
 
       if (boundSpotForMooni?.name) {
         requestAnimationFrame(() => {
@@ -488,7 +491,7 @@ function Home() {
     }, syncDelayMs);
 
     return () => window.clearTimeout(syncTimer);
-  }, [category, handleLocationSelect, handleStartChat, rememberGlobeFocus, isMobileViewport, bumpHomeChromeEpoch]);
+  }, [category, handleLocationSelect, handleStartChat, moveToLocation, rememberGlobeFocus, isMobileViewport, bumpHomeChromeEpoch]);
 
   useEffect(() => {
     if (!selectedLocation) {
