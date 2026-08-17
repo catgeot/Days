@@ -68,12 +68,15 @@ import {
 import {
   claimCurationHomeHandoff,
   clearCurationPendingHomeSession,
+  clearCurationGlobeSyncFlush,
   hasValidCurationCoords,
   isCurationHomeHandoffApplyScheduled,
   releaseCurationHomeHandoffClaim,
   resolveCurationHomeHandoff,
   scheduleCurationHomeHandoffApply,
+  flushCurationGlobeSyncIfPending,
 } from './lib/curationPlaceBridge';
+import { getGlobeApi, subscribeGlobeApi } from './lib/globeApiRegistry.js';
 
 const DEFAULT_GLOBE_THEME = 'deep';
 
@@ -128,6 +131,10 @@ function resolveFocusLocationFromPlacePath(pathname, category, savedTrips = []) 
 
 function Home() {
   const globeRef = useRef();
+  const assignGlobeRef = useCallback((node) => {
+    globeRef.current = node;
+    if (node) flushCurationGlobeSyncIfPending();
+  }, []);
   const [user, setUser] = useState(null);
 
   const navigate = useNavigate();
@@ -519,6 +526,7 @@ function Home() {
     const finalizeHandoff = (routeNow) => {
       curationHandoffSyncDoneRef.current = true;
       pendingGlobeHomeFocusRef.current = null;
+      clearCurationGlobeSyncFlush();
       if (routeNow.state?.curationHandoff) {
         navigate(`${routeNow.pathname}${routeNow.search}`, {
           replace: true,
@@ -545,22 +553,45 @@ function Home() {
       });
     };
 
+    const resolveGlobeApi = () => getGlobeApi() || globeRef.current;
+
     const runGlobeSync = (attempt = 0) => {
       const routeNow = routeLocationRef.current;
       if (routeNow.pathname !== '/') {
         logCurationHandoff('home.sync.abort', { reason: 'left-home', at: pending.at, attempt });
         releaseCurationHomeHandoffClaim(pending.at);
+        clearCurationGlobeSyncFlush();
         return;
       }
 
-      const globe = globeRef.current;
+      const globe = resolveGlobeApi();
       if (!globe) {
-        if (attempt < 36) {
+        if (attempt < 60) {
           logCurationHandoff('home.sync.wait', { reason: 'no-globe-ref', attempt });
           window.setTimeout(() => runGlobeSync(attempt + 1), 100);
           return;
         }
         logCurationHandoff('home.sync.fail', { reason: 'no-globe-ref-timeout', attempt });
+        syncHomeViewportAfterInput();
+        if (pending.openMooni && boundSpotForMooni?.name) {
+          window.setTimeout(openMooniChat, 200);
+        }
+        const lateFlyTo = (api) => {
+          if (!hasValidCoords(pin)) return;
+          api.wakeAfterOverlay?.();
+          moveToLocationRef.current(
+            pin.lat,
+            pin.lng,
+            pin.name,
+            pin.category || categoryRef.current,
+            { location: pin },
+          );
+          logCurationHandoff('home.flyTo.late', { name: pin.name });
+        };
+        const unsub = subscribeGlobeApi((api) => {
+          unsub();
+          lateFlyTo(api);
+        });
         finalizeHandoff(routeNow);
         return;
       }
@@ -1399,7 +1430,7 @@ function Home() {
       <SEO />
       <div className="w-full h-full">
         <HomeGlobe
-          ref={globeRef}
+          ref={assignGlobeRef}
           onGlobeClick={handleGlobeClick}
           onMarkerClick={handleLocationSelect}
           isChatOpen={isChatOpen}

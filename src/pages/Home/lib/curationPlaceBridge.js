@@ -10,6 +10,8 @@ const HANDOFF_MAX_AGE_MS = 120000;
 
 let handoffApplyTimer = null;
 let handoffApplyStamp = null;
+/** @type {(() => void) | null} */
+let pendingGlobeSyncFlush = null;
 
 function scheduleHandoffTimeout(fn, delayMs) {
   const host = typeof window !== 'undefined' ? window : globalThis;
@@ -33,6 +35,7 @@ export function cancelCurationHomeHandoffApply() {
     handoffApplyTimer = null;
   }
   handoffApplyStamp = null;
+  pendingGlobeSyncFlush = null;
 }
 
 /** effect cleanup·deps 변경에도 sync 타이머가 살아 있게 모듈 레벨로 예약 */
@@ -42,12 +45,25 @@ export function scheduleCurationHomeHandoffApply(at, delayMs, run) {
   if (isCurationHomeHandoffApplyScheduled(stamp)) return false;
   cancelCurationHomeHandoffApply();
   handoffApplyStamp = stamp;
+  pendingGlobeSyncFlush = run;
   handoffApplyTimer = scheduleHandoffTimeout(() => {
     handoffApplyTimer = null;
     handoffApplyStamp = null;
     run();
   }, delayMs);
   return true;
+}
+
+export function flushCurationGlobeSyncIfPending() {
+  if (!pendingGlobeSyncFlush) return false;
+  const run = pendingGlobeSyncFlush;
+  pendingGlobeSyncFlush = null;
+  run();
+  return true;
+}
+
+export function clearCurationGlobeSyncFlush() {
+  pendingGlobeSyncFlush = null;
 }
 
 export function clearCurationPendingHomeSession() {

@@ -29,6 +29,8 @@ const {
   scheduleCurationHomeHandoffApply,
   isCurationHomeHandoffApplyScheduled,
   cancelCurationHomeHandoffApply,
+  flushCurationGlobeSyncIfPending,
+  clearCurationGlobeSyncFlush,
   clearCurationPendingHomeSession,
   CURATION_PENDING_HOME_KEY,
 } = await import(pathToFileURL(join(root, 'src/pages/Home/lib/curationPlaceBridge.js')).href);
@@ -121,6 +123,16 @@ assert(
 await new Promise((resolve) => setTimeout(resolve, 30));
 assert(applyRuns === 1, 'apply runs once');
 assert(!isCurationHomeHandoffApplyScheduled(applyAt), 'apply cleared after run');
+
+let flushRuns = 0;
+scheduleCurationHomeHandoffApply(Date.now(), 500, () => {
+  flushRuns += 1;
+});
+assert(flushCurationGlobeSyncIfPending() === true, 'flush pending globe sync');
+assert(flushRuns === 1, 'flush runs scheduled sync');
+assert(flushCurationGlobeSyncIfPending() === false, 'flush noop when empty');
+clearCurationGlobeSyncFlush();
+cancelCurationHomeHandoffApply();
 
 store.clear();
 queueCurationHomeOpen(uiPlace, { openMooni: true });

@@ -1,7 +1,9 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import HomeGlobeLegacy from './HomeGlobe';
 import HomeGlobeMapbox from './HomeGlobeMapbox';
 import { resolveHomeGlobeEngine } from './resolveHomeGlobeEngine';
+import { registerGlobeApi, unregisterGlobeApi } from '../lib/globeApiRegistry.js';
+import { flushCurationGlobeSyncIfPending } from '../lib/curationPlaceBridge.js';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -28,7 +30,10 @@ const HomeGlobeAdapter = forwardRef((props, ref) => {
     }
   }, [initialEngine]);
 
-  useImperativeHandle(ref, () => ({
+  const globeApiRef = useRef(null);
+
+  useImperativeHandle(ref, () => {
+    const api = {
     pauseRotation: () => childRef.current?.pauseRotation?.(),
     resumeRotation: () => childRef.current?.resumeRotation?.(),
     wakeAfterOverlay: () => childRef.current?.wakeAfterOverlay?.(),
@@ -54,7 +59,21 @@ const HomeGlobeAdapter = forwardRef((props, ref) => {
     isGlobeFocusReady: () => childRef.current?.isGlobeFocusReady?.() ?? false,
     whenGlobeFocusReady: (options) => childRef.current?.whenGlobeFocusReady?.(options) ?? Promise.resolve(false),
     getGlobeMode: () => childRef.current?.getGlobeMode?.()
-  }), []);
+    };
+    globeApiRef.current = api;
+    registerGlobeApi(api);
+    return api;
+  }, []);
+
+  useLayoutEffect(() => {
+    if (globeApiRef.current) {
+      registerGlobeApi(globeApiRef.current);
+      flushCurationGlobeSyncIfPending();
+    }
+    return () => {
+      if (globeApiRef.current) unregisterGlobeApi(globeApiRef.current);
+    };
+  }, []);
 
   if (activeEngine === 'mapbox') {
     return (
