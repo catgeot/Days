@@ -66,6 +66,7 @@
     "smoke:korea-scenic-personal": "node scripts/smoke-korea-scenic-personal.mjs",
     "smoke:korea-scenic-map": "node scripts/smoke-korea-scenic-map.mjs",
     "smoke:korea-festival-nearby": "node scripts/smoke-korea-festival-nearby.mjs",
+    "smoke:globe-home-banner": "node scripts/smoke-globe-home-banner.mjs",
     "smoke:korea-nearby-restaurants": "node scripts/smoke-korea-nearby-restaurants.mjs",
     "smoke:korea-nearby-leisure-culture": "node scripts/smoke-korea-nearby-leisure-culture.mjs",
     "smoke:korea-course-festival": "node scripts/smoke-korea-course-festival.mjs",

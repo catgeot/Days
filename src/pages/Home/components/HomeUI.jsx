@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import TravelTicker from '../components/TravelTicker';
+import GlobeHomeMarqueeBanner from './GlobeHomeMarqueeBanner';
 import Logo from './Logo';
 import TourMobileBar from './TourMobileBar';
 import GlobeFaceRegionRail, {
@@ -278,7 +279,7 @@ const HomeUI = React.memo(({
                     </div>
                   )}
                 </div>
-                <div className="hidden md:flex flex-col items-start gap-2 pb-3">
+                <div className="hidden md:flex flex-col items-start gap-2">
                   {MOBILE_QUICK_LINKS.map((item) => {
                     const Icon = item.icon;
                     return (
@@ -298,6 +299,7 @@ const HomeUI = React.memo(({
                     );
                   })}
                 </div>
+                <GlobeHomeMarqueeBanner hidden={isZenMode} />
               </>
             )}
           </div>
