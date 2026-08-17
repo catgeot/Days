@@ -2,6 +2,7 @@ import { TRAVEL_SPOTS } from '../data/travelSpots.js';
 import { citiesData } from '../data/citiesData.js';
 import { formatUrlName, isEphemeralSlug, resolveCatalogPlaceSlug } from './formatUrlName.js';
 import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve.js';
+import { logCurationHandoff } from '../../../shared/cloudPreview/curationHandoffDebug.js';
 
 export const CURATION_PENDING_HOME_KEY = 'gateo_curation_pending_home';
 
@@ -121,7 +122,10 @@ export function hydrateLocationFromCuration(curationData) {
 
 /** 블로그 → 홈 써머리(±무니) 핸드오프 */
 export function queueCurationHomeOpen(location, { openMooni = false } = {}) {
-  if (!location || !hasValidCurationCoords(location)) return false;
+  if (!location || !hasValidCurationCoords(location)) {
+    logCurationHandoff('queue.reject', { reason: 'invalid-coords', openMooni });
+    return false;
+  }
   try {
     sessionStorage.setItem(
       CURATION_PENDING_HOME_KEY,
@@ -131,8 +135,15 @@ export function queueCurationHomeOpen(location, { openMooni = false } = {}) {
         at: Date.now(),
       }),
     );
+    logCurationHandoff('queue.ok', {
+      openMooni,
+      location: location.name,
+      lat: location.lat,
+      lng: location.lng,
+    });
     return true;
   } catch {
+    logCurationHandoff('queue.fail', { openMooni });
     return false;
   }
 }
@@ -140,12 +151,26 @@ export function queueCurationHomeOpen(location, { openMooni = false } = {}) {
 export function consumeCurationHomeOpen({ maxAgeMs = 120000 } = {}) {
   try {
     const raw = sessionStorage.getItem(CURATION_PENDING_HOME_KEY);
-    if (!raw) return null;
+    if (!raw) {
+      logCurationHandoff('consume.empty');
+      return null;
+    }
     sessionStorage.removeItem(CURATION_PENDING_HOME_KEY);
     const parsed = JSON.parse(raw);
-    if (!parsed?.location || !hasValidCurationCoords(parsed.location)) return null;
+    if (!parsed?.location || !hasValidCurationCoords(parsed.location)) {
+      logCurationHandoff('consume.reject', { reason: 'invalid-payload' });
+      return null;
+    }
     const at = Number(parsed.at);
-    if (Number.isFinite(at) && Date.now() - at > maxAgeMs) return null;
+    if (Number.isFinite(at) && Date.now() - at > maxAgeMs) {
+      logCurationHandoff('consume.stale', { ageMs: Date.now() - at });
+      return null;
+    }
+    logCurationHandoff('consume.ok', {
+      openMooni: Boolean(parsed.openMooni),
+      location: parsed.location?.name,
+      ageMs: Number.isFinite(at) ? Date.now() - at : null,
+    });
     return {
       location: parsed.location,
       openMooni: Boolean(parsed.openMooni),
@@ -156,6 +181,7 @@ export function consumeCurationHomeOpen({ maxAgeMs = 120000 } = {}) {
     } catch {
       /* private mode */
     }
+    logCurationHandoff('consume.error');
     return null;
   }
 }

@@ -2,6 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Sparkles, ChevronLeft, ArrowUp } from 'lucide-react';
 import CurationHub from './components/CurationHub';
+import {
+  armCurationHandoffDebugSession,
+  isCurationHandoffDebugEnabled,
+  logCurationHandoff,
+} from '../../shared/cloudPreview/curationHandoffDebug';
 
 function findScrollParent(el) {
   let node = el?.parentElement;
@@ -20,6 +25,13 @@ const Curation = () => {
   const rootRef = useRef(null);
   const scrollParentRef = useRef(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    if (isCurationHandoffDebugEnabled()) {
+      armCurationHandoffDebugSession();
+      logCurationHandoff('page.curation', { path: '/blog/curation' });
+    }
+  }, []);
 
   useEffect(() => {
     const root = rootRef.current;

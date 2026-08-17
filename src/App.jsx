@@ -30,6 +30,7 @@ import ForgotPassword from './shared/Auth/ForgotPassWord';
 import UpdatePassword from './shared/Auth/UpdatePassword';
 import CloudPreviewWorkLog from './shared/cloudPreview/CloudPreviewWorkLog.jsx';
 import SeaExploreDebugPanel from './shared/cloudPreview/SeaExploreDebugPanel.jsx';
+import CurationHandoffDebugPanel from './shared/cloudPreview/CurationHandoffDebugPanel.jsx';
 
 function RouteTracker() {
   const location = useLocation();
@@ -64,6 +65,7 @@ function App() {
           <Analytics />
           <CloudPreviewWorkLog />
           <SeaExploreDebugPanel />
+          <CurationHandoffDebugPanel />
           <Routes>
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />}>

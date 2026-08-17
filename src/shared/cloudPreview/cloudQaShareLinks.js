@@ -56,7 +56,7 @@ export const CLOUD_QA_SHARE_LINKS = [
     label: 'AI 큐레이션',
     branch: 'cursor/curation-globe-android-0ba2',
     destination:
-      'https://days-git-cursor-curation-globe-android-0ba2-catgeots-projects.vercel.app/blog/curation',
+      'https://days-git-cursor-curation-globe-android-0ba2-catgeots-projects.vercel.app/blog/curation?debug=curation',
     active: true,
   },
 

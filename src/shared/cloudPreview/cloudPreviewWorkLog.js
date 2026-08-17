@@ -28,7 +28,7 @@ export const cloudPreviewWorkLog = [
     session: 'AI 큐레이션 #7, 지도·무니 검은 화면 QA',
     title: '큐레이션→홈 지도·무니 검은 화면 완화',
     detail:
-      'Android Chrome 「전체 지도에서 보기」·iPhone 「무니에게 묻기」검은 화면을 줄였습니다. Mapbox pending focus·viewport reset·sync 후 flyTo·MOONi 오픈 순서를 맞췄습니다. Preview /blog/curation에서 각 버튼을 확인해 주세요.',
+      'Android/iPhone 큐레이션→홈 핸드오프 디버그 패널을 추가했습니다. Preview에서 「무니에게 묻기」클릭 시 우하단 curation log가 뜨며 로그 복사로 붙여넣기 가능합니다. ?debug=curation 또는 CTA 클릭 시 자동 활성.',
     at: '2026-08-17',
   },
   {

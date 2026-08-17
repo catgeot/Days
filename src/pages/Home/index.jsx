@@ -13,6 +13,7 @@ import SEO from '../../components/SEO';
 
 import { supabase } from '../../shared/api/supabase';
 import { logSeaExplore } from '../../shared/cloudPreview/seaExploreDebug.js';
+import { logCurationHandoff } from '../../shared/cloudPreview/curationHandoffDebug';
 import { TRAVEL_SPOTS } from './data/travelSpots';
 import { citiesData } from './data/citiesData';
 
@@ -451,6 +452,11 @@ function Home() {
     const pending = consumeCurationHomeOpen();
     if (!pending?.location || !hasValidCurationCoords(pending.location)) return;
 
+    logCurationHandoff('home.effect.start', {
+      openMooni: pending.openMooni,
+      mobile: isMobileViewport,
+    });
+
     const pin = healPlaceholderCountry(
       mergeCanonicalTravelSpot({
         ...pending.location,
@@ -463,13 +469,21 @@ function Home() {
     rememberGlobeFocus(pin);
     selectedLocationRef.current = pin;
     handleLocationSelect(pin);
+    logCurationHandoff('home.select', { name: pin.name, openMooni: pending.openMooni });
 
     const boundSpotForMooni = pending.openMooni
       ? buildMooniBoundSpotFromLocation(pin)
       : null;
+    logCurationHandoff('home.mooni.bound', {
+      requested: pending.openMooni,
+      hasBound: Boolean(boundSpotForMooni?.name),
+      label: boundSpotForMooni?.name || null,
+    });
 
     const syncDelayMs = isMobileViewport ? 360 : 180;
+    logCurationHandoff('home.sync.schedule', { delayMs: syncDelayMs });
     const syncTimer = window.setTimeout(() => {
+      logCurationHandoff('home.sync.run', { globeReady: Boolean(globeRef.current) });
       syncHomeViewportAfterInput();
       if (isMobileViewport) {
         bumpHomeChromeEpoch();
@@ -478,20 +492,36 @@ function Home() {
       globeRef.current?.wakeAfterOverlay?.();
       if (hasValidCoords(pin)) {
         moveToLocation(pin.lat, pin.lng, pin.name, pin.category || category, { location: pin });
+        logCurationHandoff('home.flyTo', { name: pin.name });
       }
 
       if (boundSpotForMooni?.name) {
         requestAnimationFrame(() => {
+          logCurationHandoff('home.mooni.open', { label: boundSpotForMooni.name });
           handleStartChat('MOONi', {
             boundSpot: boundSpotForMooni,
             persona: PERSONA_TYPES.INSPIRER,
           });
         });
+      } else if (pending.openMooni) {
+        logCurationHandoff('home.mooni.skip', { reason: 'no-bound-spot' });
       }
     }, syncDelayMs);
 
-    return () => window.clearTimeout(syncTimer);
+    return () => {
+      window.clearTimeout(syncTimer);
+      logCurationHandoff('home.effect.cleanup', { reason: 'unmount-or-deps' });
+    };
   }, [category, handleLocationSelect, handleStartChat, moveToLocation, rememberGlobeFocus, isMobileViewport, bumpHomeChromeEpoch]);
+
+  useEffect(() => {
+    logCurationHandoff('home.ui', {
+      isChatOpen,
+      mooniChatEntry,
+      summary: selectedLocation?.name || null,
+      path: routeLocation.pathname,
+    });
+  }, [isChatOpen, mooniChatEntry, selectedLocation?.name, routeLocation.pathname]);
 
   useEffect(() => {
     if (!selectedLocation) {
