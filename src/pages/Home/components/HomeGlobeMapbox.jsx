@@ -582,15 +582,15 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
   const applyKoreanSatelliteLabels = useCallback(() => {
     const map = mapRef.current?.getMap();
-    if (!map || globeTheme === 'bright') return;
+    if (!map || globeTheme === 'bright' || !map.isStyleLoaded?.()) return;
 
     [
       ...placeLabelLayerIdsRef.current,
       ...poiLabelLayerIdsRef.current,
       ...contextLabelLayerIdsRef.current,
     ].forEach((layerId) => {
-      if (isGateoLayer(layerId) || isFlightCinemaLayer(layerId) || !map.getLayer(layerId)) return;
       try {
+        if (isGateoLayer(layerId) || isFlightCinemaLayer(layerId) || !map.getLayer(layerId)) return;
         map.setLayoutProperty(layerId, 'text-field', [
           'coalesce',
           ['get', 'name_ko'],
@@ -649,16 +649,16 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
   const applyWaterPaint = useCallback(() => {
     const map = mapRef.current?.getMap();
-    if (!map) return;
-    if (globeTheme !== 'deep' && globeTheme !== 'neon') return;
+    if (!map || globeTheme !== 'deep' && globeTheme !== 'neon') return;
+    if (!map.isStyleLoaded?.()) return;
 
     const waterColor = WATER_COLOR_BY_THEME[globeTheme] || WATER_COLOR_BY_THEME.deep;
     const layerIds = ['water', 'water-shadow', 'waterway'];
 
     layerIds.forEach((layerId) => {
-      const layer = map.getLayer(layerId);
-      if (!layer) return;
       try {
+        const layer = map.getLayer(layerId);
+        if (!layer) return;
         if (layer.type === 'fill') {
           map.setPaintProperty(layerId, 'fill-color', waterColor);
           map.setPaintProperty(layerId, 'fill-opacity', 0.92);

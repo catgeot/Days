@@ -16,6 +16,7 @@ import {
   LINE_PEAK_OPACITY,
   opacityExprFromSettle,
 } from './globeRegionHighlightOpacity.js';
+import { isGlobeMapStyleReady } from './globeMapStyleGuard.js';
 
 export const REGION_HIGHLIGHT_COUNTRIES_SOURCE_ID = 'gateo-region-highlight-countries';
 export const REGION_HIGHLIGHT_FILL_ID = 'gateo-region-highlight-fill';
@@ -278,7 +279,7 @@ function addAdminLineLayer(map, { id, compositeId, paint, layout = {} }) {
 }
 
 export function regionHighlightLayersReady(map) {
-  if (!map?.getStyle?.()) return false;
+  if (!isGlobeMapStyleReady(map)) return false;
   try {
     return Boolean(
       map.getLayer(REGION_HIGHLIGHT_FILL_ID) || map.getLayer(REGION_HIGHLIGHT_LINE_ID)
@@ -289,7 +290,7 @@ export function regionHighlightLayersReady(map) {
 }
 
 export function setupRegionHighlightLayers(map) {
-  if (!map?.getStyle?.() || !map.isStyleLoaded?.()) return false;
+  if (!isGlobeMapStyleReady(map)) return false;
 
   try {
     removeLegacyLayers(map);

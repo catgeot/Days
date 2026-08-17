@@ -252,6 +252,13 @@ function Home() {
   const bumpHomeChromeEpoch = useCallback(() => {
     setHomeChromeEpoch((n) => n + 1);
   }, []);
+  const recalibrateHomeChromeAfterNav = useCallback(() => {
+    bumpHomeChromeEpoch();
+    syncHomeChromeAfterNavigation();
+    if (isMobileViewport) {
+      globeRef.current?.wakeAfterOverlay?.();
+    }
+  }, [bumpHomeChromeEpoch, isMobileViewport]);
   const prevChatOpenRef = useRef(false);
   const prevPathnameRef = useRef(routeLocation.pathname);
 
@@ -784,12 +791,8 @@ function Home() {
       setSelectedLocation(target);
     }
     navigate('/');
-    if (isMobileViewport) {
-      bumpHomeChromeEpoch();
-      syncHomeChromeAfterNavigation();
-      globeRef.current?.wakeAfterOverlay?.();
-    }
-  }, [routeLocation.pathname, category, navigate, rememberGlobeFocus, addScoutPin, setSelectedLocation, isMobileViewport, bumpHomeChromeEpoch]);
+    recalibrateHomeChromeAfterNav();
+  }, [routeLocation.pathname, category, navigate, rememberGlobeFocus, addScoutPin, setSelectedLocation, recalibrateHomeChromeAfterNav]);
 
   const leavePlaceCard = useCallback(() => {
     const returnTo = peekPlaceReturnTo(routeLocation.state);
@@ -805,12 +808,8 @@ function Home() {
     setIsCardExpanded(false);
     setSelectedLocation(null);
     navigate('/');
-    if (isMobileViewport) {
-      bumpHomeChromeEpoch();
-      syncHomeChromeAfterNavigation();
-      globeRef.current?.wakeAfterOverlay?.();
-    }
-  }, [isMobileViewport, navigate, routeLocation.state, setSelectedLocation, bumpHomeChromeEpoch]);
+    recalibrateHomeChromeAfterNav();
+  }, [navigate, routeLocation.state, setSelectedLocation, recalibrateHomeChromeAfterNav]);
 
   const createTripOnFirstUserMessage = useCallback(async ({ destination, lat, lng, persona, firstUserText }) => {
     const systemPrompt = getSystemPrompt(persona, destination);
@@ -1090,8 +1089,8 @@ function Home() {
     prevPathRef.current = currentPath;
 
     if (currentPath === '/' && (prevPath.startsWith('/place/') || prevPath.startsWith('/explore'))) {
-      if (isMobileViewport && prevPath.startsWith('/place/')) {
-        bumpHomeChromeEpoch();
+      if (prevPath.startsWith('/place/')) {
+        recalibrateHomeChromeAfterNav();
       }
       const fromSearch = Boolean(routeLocation.state?.fromSearch);
       const fromPrevPlacePath =
@@ -1131,7 +1130,7 @@ function Home() {
         revealRandomGlobeFace();
       }
     }
-  }, [routeLocation.pathname, routeLocation.state?.fromSearch, category, moveToLocation, rememberGlobeFocus, revealRandomGlobeFace, setSelectedLocation, isMobileViewport, bumpHomeChromeEpoch]);
+  }, [routeLocation.pathname, routeLocation.state?.fromSearch, category, moveToLocation, rememberGlobeFocus, revealRandomGlobeFace, setSelectedLocation, recalibrateHomeChromeAfterNav]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
@@ -1244,22 +1243,17 @@ function Home() {
       dismissRotateResumeTimerRef.current = null;
       globeRef.current?.resumeRotation?.();
     }, 3000);
-    if (isMobileViewport) {
-      bumpHomeChromeEpoch();
-      syncHomeChromeAfterNavigation();
-      globeRef.current?.wakeAfterOverlay?.();
-    }
+    recalibrateHomeChromeAfterNav();
   }, [
     addScoutPin,
-    bumpHomeChromeEpoch,
     category,
     clearDismissRotateResumeTimer,
     isPlaceImmersed,
     moveToLocation,
     rememberGlobeFocus,
+    recalibrateHomeChromeAfterNav,
     selectedLocation,
     setSelectedLocation,
-    isMobileViewport,
   ]);
 
   /** 나라 칩 포커스 시 써머리만 닫고 국가 단위 fitBounds — PC는 카드와 메뉴 동시 표시 */

@@ -9,6 +9,7 @@ import {
   FLIGHT_CINEMA_LEG_PAUSE_MS,
 } from './globeFlightCinema.js';
 import { normalizeLngNear } from './globeLngUtils.js';
+import { isGlobeMapStyleReady } from './globeMapStyleGuard.js';
 
 export const FLIGHT_CINEMA_ARC_SOURCE_ID = 'gateo-flight-cinema-arc';
 export const FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID = 'gateo-flight-cinema-endpoints';
@@ -44,7 +45,7 @@ const ARC_LINE_GLOW = {
 };
 
 function safeMapUpdate(map, fn) {
-  if (!map?.getStyle?.() || map._removed) return;
+  if (!isGlobeMapStyleReady(map)) return;
   try {
     fn();
   } catch {
@@ -193,7 +194,7 @@ export function isFlightCinemaLayer(layerId = '') {
 }
 
 export function setupFlightCinemaLayers(map, { visible = true } = {}) {
-  if (!map?.getStyle?.() || !map.isStyleLoaded?.()) return false;
+  if (!isGlobeMapStyleReady(map)) return false;
 
   try {
     if (!map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)) {
@@ -271,7 +272,7 @@ export function setupFlightCinemaLayers(map, { visible = true } = {}) {
 }
 
 export function clearFlightCinemaLayers(map) {
-  if (!map?.getStyle?.()) return;
+  if (!isGlobeMapStyleReady(map)) return;
   safeMapUpdate(map, () => {
     map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)?.setData(EMPTY_FC);
     map.getSource(FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID)?.setData(EMPTY_FC);
@@ -285,8 +286,7 @@ export function clearFlightCinemaLayers(map) {
 
 /** 읽기 전용 — 항공 시네마 레이어 존재 여부 (map 부수 효과 없음) */
 export function isFlightCinemaGlobeReady(map) {
-  if (!map || map._removed) return false;
-  if (!map.getStyle?.()) return false;
+  if (!isGlobeMapStyleReady(map)) return false;
   try {
     return Boolean(
       map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)
@@ -302,9 +302,8 @@ export function isFlightCinemaGlobeReady(map) {
 
 /** 레이어 선등록 후 준비 여부 (시작·대기 시에만 호출) */
 export function ensureFlightCinemaGlobeReady(map) {
-  if (!map || map._removed) return false;
+  if (!isGlobeMapStyleReady(map)) return false;
   if (isFlightCinemaGlobeReady(map)) return true;
-  if (!map.getStyle?.() || !map.isStyleLoaded?.()) return false;
   return setupFlightCinemaLayers(map, { visible: false });
 }
 
@@ -467,7 +466,7 @@ export function createFlightCinemaEngine(map, options = {}) {
    * }} params
    */
   const start = (params) => {
-    if (!map?.getStyle?.()) return false;
+    if (!isGlobeMapStyleReady(map)) return false;
 
     const relaunch = params.relaunch === true && active;
 

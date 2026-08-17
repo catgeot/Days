@@ -1,3 +1,5 @@
+import { isGlobeMapStyleReady } from './globeMapStyleGuard.js';
+
 export const REACH_SOURCE_ID = 'gateo-reach-boundaries';
 export const REACH_DRIVE_FILL_ID = 'gateo-reach-drive-fill';
 export const REACH_DRIVE_HALO_ID = 'gateo-reach-drive-halo';
@@ -53,8 +55,8 @@ const WALK_HALO_WIDTH = ['interpolate', ['linear'], ['zoom'], 10, 4, 13, 6, 16, 
 const WALK_LINE_WIDTH = ['interpolate', ['linear'], ['zoom'], 10, 1.8, 13, 2.4, 16, 3];
 
 function safeMapUpdate(map, fn) {
+  if (!isGlobeMapStyleReady(map)) return;
   try {
-    if (!map?.getStyle?.()?.layers) return;
     fn();
   } catch {
     // Style may be reloading after theme changes.
@@ -162,7 +164,7 @@ export async function resolveReachBoundaryGeoJSON(lng, lat, token, {
 }
 
 export function reachBoundaryLayersReady(map) {
-  if (!map?.getStyle?.()) return false;
+  if (!isGlobeMapStyleReady(map)) return false;
   try {
     return REACH_LAYER_IDS.every((id) => Boolean(map.getLayer(id)));
   } catch {
@@ -193,7 +195,7 @@ function raiseReachBoundaryLayers(map) {
 }
 
 export function setupReachBoundaryLayers(map) {
-  if (!map?.getStyle?.() || !map.isStyleLoaded?.()) return false;
+  if (!isGlobeMapStyleReady(map)) return false;
 
   try {
     removeLegacyLayers(map);
@@ -310,7 +312,7 @@ export function easeCameraForReachReveal(map) {
 }
 
 export function updateReachBoundarySource(map, geojson) {
-  if (!map?.getStyle?.()) return;
+  if (!isGlobeMapStyleReady(map)) return;
   const source = map.getSource(REACH_SOURCE_ID);
   if (!source) return;
   source.setData(geojson || EMPTY_FC);
@@ -321,7 +323,7 @@ export function clearReachBoundaries(map) {
 }
 
 export function setReachBoundaryVisibility(map, visible) {
-  if (!map?.getStyle?.()) return;
+  if (!isGlobeMapStyleReady(map)) return;
   const visibility = visible ? 'visible' : 'none';
   safeMapUpdate(map, () => {
     for (const layerId of [...REACH_LAYER_IDS, ...LEGACY_LAYER_IDS]) {

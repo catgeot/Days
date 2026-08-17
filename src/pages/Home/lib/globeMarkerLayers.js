@@ -81,13 +81,15 @@ export function markersToGeoJSON(markers = []) {
   return { type: 'FeatureCollection', features };
 }
 
+import { isGlobeMapStyleReady } from './globeMapStyleGuard.js';
+
 export function isGateoLayer(layerId = '') {
   return GATEO_LAYER_IDS.some((id) => layerId === id || layerId.startsWith('gateo-spots'));
 }
 
 function safeMapUpdate(map, fn) {
+  if (!isGlobeMapStyleReady(map)) return;
   try {
-    if (!map?.getStyle?.()?.layers) return;
     fn();
   } catch {
     // Style may be reloading after theme changes.
@@ -95,11 +97,7 @@ function safeMapUpdate(map, fn) {
 }
 
 export function gateoMarkerLayersReady(map) {
-  try {
-    if (!map?.isStyleLoaded?.() || !map?.getStyle?.()) return false;
-  } catch {
-    return false;
-  }
+  if (!isGlobeMapStyleReady(map)) return false;
   try {
     // getLayer throws "Style is not done loading" while the style is mid-load
     // (e.g. 2s reveal fallback before idle/styledata).
@@ -122,15 +120,11 @@ export function areGateoMarkerLayersVisible(map) {
 
 /** Hide gateo spot layers until GeoJSON source is synced (avoids label flash on base reveal). */
 export function setGateoMarkerLayerVisibility(map, visible) {
-  try {
-    if (!map?.isStyleLoaded?.() || !map?.getStyle?.()) return;
-  } catch {
-    return;
-  }
+  if (!isGlobeMapStyleReady(map)) return;
   const visibility = visible ? 'visible' : 'none';
   GATEO_LAYER_IDS.forEach((layerId) => {
-    if (!map.getLayer(layerId)) return;
     try {
+      if (!map.getLayer(layerId)) return;
       map.setLayoutProperty(layerId, 'visibility', visibility);
     } catch {
       // Style may be mid-transition.
@@ -176,9 +170,7 @@ export function syncGateoMarkerLayerStyle(map) {
 }
 
 export function setupGateoMarkerLayers(map) {
-  if (!map?.getStyle?.()) return false;
-  // addLayer requires style fully loaded — loaded() alone throws on mobile Safari.
-  if (!map.isStyleLoaded?.()) return false;
+  if (!isGlobeMapStyleReady(map)) return false;
 
   try {
     if (!map.getSource(GATEO_SOURCE_ID)) {
