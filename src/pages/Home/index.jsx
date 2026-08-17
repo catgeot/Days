@@ -464,22 +464,28 @@ function Home() {
     selectedLocationRef.current = pin;
     handleLocationSelect(pin);
 
+    const boundSpotForMooni = pending.openMooni
+      ? buildMooniBoundSpotFromLocation(pin)
+      : null;
+
+    const syncDelayMs = isMobileViewport ? 360 : 180;
     const syncTimer = window.setTimeout(() => {
+      syncHomeViewportAfterInput();
       if (isMobileViewport) {
         bumpHomeChromeEpoch();
         syncHomeChromeAfterNavigation();
       }
       globeRef.current?.wakeAfterOverlay?.();
-    }, 180);
 
-    if (pending.openMooni) {
-      const boundSpot = buildMooniBoundSpotFromLocation(pin);
-      if (boundSpot?.name) {
-        window.setTimeout(() => {
-          handleStartChat('MOONi', { boundSpot });
-        }, 320);
+      if (boundSpotForMooni?.name) {
+        requestAnimationFrame(() => {
+          handleStartChat('MOONi', {
+            boundSpot: boundSpotForMooni,
+            persona: PERSONA_TYPES.INSPIRER,
+          });
+        });
       }
-    }
+    }, syncDelayMs);
 
     return () => window.clearTimeout(syncTimer);
   }, [category, handleLocationSelect, handleStartChat, rememberGlobeFocus, isMobileViewport, bumpHomeChromeEpoch]);
