@@ -18,23 +18,20 @@
 
 | | |
 |--|--|
-| **상태** | **iPhone Preview QA PASS** · PR #128 merge 대기 |
-| **tip** | `06e2b250` |
-| **브랜치** | `cursor/curation-globe-android-0ba2` |
-| **PR** | [#128](https://github.com/catgeot/Days/pull/128) |
+| **상태** | **main 병합 완료** (PR #128 · `68b14979`) · PROD 배포 후 Android QA |
+| **main** | `68b14979` |
 | **플랜** | [`blog-ai-curation-page-plan.md`](./blog-ai-curation-page-plan.md) |
 | **일지** | [`2026-08-17-project-log.md`](./2026-08-17-project-log.md) |
-| **공유** | `https://www.gateo.kr/qa/curation` |
-| **Preview** | `https://days-git-cursor-curation-globe-android-0ba2-catgeots-projects.vercel.app/blog/curation?debug=curation` |
+| **PROD QA** | `https://www.gateo.kr/blog/curation?debug=curation` — Android 「전체 지도」·「무니에게 묻기」 |
 | **VERIFY** | `smoke-curation-place-bridge` · `npm run build` |
 
 **다음 제시어**:
 
 ```
-AI 큐레이션 #9, PROD 배포 확인
+AI 큐레이션 #9, Android PROD QA
 @plans/feature-handoff-index.md
 @plans/2026-08-17-project-log.md
-PR #128 merge · www.gateo.kr/qa/curation
+www.gateo.kr/blog/curation · Android 전체 지도·무니
 ```
 
 ---

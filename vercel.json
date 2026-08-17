@@ -32,7 +32,7 @@
     },
     {
       "source": "/qa/curation",
-      "destination": "https://days-git-cursor-curation-globe-android-0ba2-catgeots-projects.vercel.app/blog/curation?debug=curation",
+      "destination": "https://www.gateo.kr/blog/curation?debug=curation",
       "permanent": false
     },
 

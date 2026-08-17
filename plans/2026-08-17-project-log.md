@@ -4,8 +4,13 @@
 
 ## AI 큐레이션 #8, 지도·무니 Preview QA 반영
 
-**상태**: `cursor/curation-globe-android-0ba2` · [PR #128](https://github.com/catgeot/Days/pull/128) · **iPhone Preview QA PASS** (사람) · PR merge 대기  
-**세션**: `AI 큐레이션 #8, 지도·무니 Preview QA 반영`
+**상태**: **main 병합 완료** (PR #128 · `68b14979`) · PROD 배포 후 Android QA  
+**세션**: `AI 큐레이션 #8 → main merge`
+
+- **merge**: PR #128 → `main` `68b14979` (iPhone Preview QA PASS 후)
+- **PROD QA**: `https://www.gateo.kr/blog/curation?debug=curation` — Android 「전체 지도」·「무니에게 묻기」
+- **/qa/curation**: PROD로 redirect 갱신
+
 
 | 플랫폼 | 결과 | 로그 |
 |--------|------|------|
