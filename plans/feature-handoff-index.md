@@ -31,12 +31,10 @@
 **다음 제시어**:
 
 ```
-AI 큐레이션 #9, 지도·무니 Preview QA
+AI 큐레이션 #9, PROD 배포 확인
 @plans/feature-handoff-index.md
 @plans/2026-08-17-project-log.md
-@plans/blog-ai-curation-page-plan.md
-브랜치 cursor/curation-globe-android-0ba2 · PR #128 · /qa/curation
-금지: 새 Preview 브랜치 · computerUse QA · travelSpots 직접 편집
+PR #128 merge · www.gateo.kr/qa/curation
 ```
 
 ---
