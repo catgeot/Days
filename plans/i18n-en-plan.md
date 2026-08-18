@@ -20,7 +20,8 @@
 | 8 | 한국 테마 나머지 | `영문화 #8, 한국 테마 나머지` | ✅ Preview |
 | 9 | 로그북/대시보드 | `영문화 #9, 로그북·대시보드` | ✅ Preview |
 | 10 | 잔여·QA | `영문화 #10, 잔여·Preview QA` | ✅ Preview |
-| 11 | 병합·PROD | `영문화 #11, 병합·PROD QA` | 다음 |
+| 11 | 병합·PROD | `영문화 #11, 병합·PROD QA` | ✅ merge · PROD QA (사람) |
+| 12 | PROD 확인 | `영문화 #12, PROD QA 확인` | (배포 후 사람) |
 
 세션마다 `#1` 리셋 금지 · `#N` = Cloud 순번.
 
@@ -91,15 +92,15 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#10)**: Auth 페이지·/blog 잔여 i18n · PR [#134](https://github.com/catgeot/Days/pull/134) · Preview QA 대기
+**상태 (#11)**: PR [#134](https://github.com/catgeot/Days/pull/134) **main 병합** · Vercel PROD 배포 후 `/qa/en` 재확인
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #11, 병합·PROD QA
+영문화 #12, PROD QA 확인
 @plans/feature-handoff-index.md
 @plans/2026-08-18-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · PR #134 · /qa/en
+main · www.gateo.kr/qa/en · ?lang=en · /blog
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```

@@ -2,6 +2,14 @@
 
 직전: [`2026-08-16-project-log.md`](./2026-08-16-project-log.md)
 
+## 영문화 #11, 병합·PROD QA — main merge
+
+- **충돌 해소** `main` ← `cursor/en` — i18n JSON(logbook·auth) · 핸드오프 3종
+- **VERIFY** `npm run build` · `smoke:place-label-slug` PASS
+- **PR** [#134](https://github.com/catgeot/Days/pull/134) → **main merge**
+- **PROD** Vercel 배포 후 `/qa/en` → `/?lang=en` · `/blog?lang=en` — **사람 QA**
+- **다음** #12 PROD QA 확인·정리
+
 ## 영문화 #10, 잔여·Preview QA — push
 
 - **Auth** `authPage.*` — Login·SignUp·ForgotPassword·UpdatePassword ko/en
