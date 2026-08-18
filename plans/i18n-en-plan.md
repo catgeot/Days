@@ -90,6 +90,6 @@
 @plans/feature-handoff-index.md
 @plans/2026-08-18-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · PR #… · /qa/en · Preview /
+브랜치 cursor/en · PR #132 · /qa/en · Preview /
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```

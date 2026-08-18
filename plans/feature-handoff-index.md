@@ -62,8 +62,9 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#0 문서·브랜치** · locale 코드 미착수 |
+| **상태** | **#0 문서·브랜치** · PR [#132](https://github.com/catgeot/Days/pull/132) · locale 코드 미착수 |
 | **브랜치** | `cursor/en` |
+| **tip** | `bb00f58c` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9 |
 | **일지** | [`2026-08-18-project-log.md`](./2026-08-18-project-log.md) |
 | **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` |
@@ -77,7 +78,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 @plans/feature-handoff-index.md
 @plans/2026-08-18-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · PR #… · /qa/en · Preview /
+브랜치 cursor/en · PR #132 · /qa/en · Preview /
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 

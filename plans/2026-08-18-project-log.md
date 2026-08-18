@@ -8,5 +8,6 @@
 - **브랜치** `cursor/en` (신규 · 고정)
 - **`/qa/en`** — `cloudQaShareLinks.js` · `vercel.json` 동기 · Preview `/`
 - **핸드오프** [`feature-handoff-index.md`](./feature-handoff-index.md) 영문화 행 추가
+- **PR** [#132](https://github.com/catgeot/Days/pull/132) draft · tip `bb00f58c`
 - **VERIFY** `npm run build` PASS
 - **다음** #1 locale 기반 (`i18next` · `?lang=en` · 헤더 토글)
