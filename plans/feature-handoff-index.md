@@ -64,7 +64,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 |--|--|
 | **상태** | **#1 locale 기반** · PR [#132](https://github.com/catgeot/Days/pull/132) · i18next·토글 |
 | **브랜치** | `cursor/en` |
-| **tip** | (push 후 SHA) |
+| **tip** | `0141d586` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9 |
 | **일지** | [`2026-08-18-project-log.md`](./2026-08-18-project-log.md) |
 | **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` |
