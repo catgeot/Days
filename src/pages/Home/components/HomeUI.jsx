@@ -223,13 +223,16 @@ const HomeUI = React.memo(({
             }`}
           />
           <div className="relative z-10 flex flex-col items-start gap-2">
-            <div
-              onClick={onLogoClick}
-              className="cursor-pointer group touch-manipulation"
-            >
-              <h1 className="group-hover:opacity-90 transition-opacity origin-left">
-                <Logo />
-              </h1>
+            <div className="flex items-center gap-2">
+              <div
+                onClick={onLogoClick}
+                className="cursor-pointer group touch-manipulation"
+              >
+                <h1 className="group-hover:opacity-90 transition-opacity origin-left">
+                  <Logo />
+                </h1>
+              </div>
+              {!isTourCinema ? <LocaleToggle compact /> : null}
             </div>
             {!isTourCinema && (
               <>
@@ -307,8 +310,6 @@ const HomeUI = React.memo(({
         </div>
 
         <div className="hidden md:flex md:col-span-1 justify-center gap-3 lg:gap-4 pt-3 animate-fade-in-down delay-75 pointer-events-auto relative z-50">
-           <LocaleToggle />
-
            <button
              onClick={onThemeToggle}
              className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border flex items-center justify-center transition-all shadow-lg group ${getThemeConfig().color} ${getThemeConfig().border}`}
@@ -348,9 +349,7 @@ const HomeUI = React.memo(({
               onClose={onTourBarClose}
             />
           ) : (
-           <div data-site-notice-anchor className="group pointer-events-auto w-[min(12.5rem,calc(100vw-5.5rem))] sm:max-w-xs md:max-w-md md:w-full absolute right-3 top-[1.35rem] md:relative md:right-auto md:top-auto md:self-end flex items-center gap-2 justify-end">
-            <LocaleToggle compact className="md:hidden shrink-0" />
-            <div className="relative flex-1 min-w-0">
+           <div data-site-notice-anchor className="group pointer-events-auto w-[min(12.5rem,calc(100vw-5.5rem))] sm:max-w-xs md:max-w-md md:w-full absolute right-3 top-[1.35rem] md:relative md:right-auto md:top-auto md:self-end">
             <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             <div
               onClick={() => navigate('/explore')}
@@ -362,7 +361,6 @@ const HomeUI = React.memo(({
               >
                 {t('layout.search.placeholder')}
               </span>
-            </div>
             </div>
           </div>
           )}

@@ -64,13 +64,16 @@ export function LocaleProvider({ children }) {
 
   useEffect(() => {
     const urlLocale = resolveLocaleFromUrl(searchParams);
-    if (urlLocale && urlLocale !== locale) {
-      setLocaleState(urlLocale);
+    if (!urlLocale) return;
+
+    setLocaleState((current) => {
+      if (current === urlLocale) return current;
       persistLocale(urlLocale);
       void i18n.changeLanguage(urlLocale);
       syncDocumentLang(urlLocale);
-    }
-  }, [searchParams, locale]);
+      return urlLocale;
+    });
+  }, [searchParams]);
 
   const setLocale = useCallback(
     (nextLocale) => {

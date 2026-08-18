@@ -24,7 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
-    id: '2026-08-18-i18n-localecontext-fix',
+    id: '2026-08-18-i18n-toggle-hit-race',
+    session: '영문화 #1, locale 기반',
+    title: 'EN 토글 클릭·locale 레이스 수정',
+    detail:
+      'LocaleProvider URL 동기화 effect가 locale 변경을 되돌리던 레이스를 제거했습니다. EN/한 토글을 로고 chrome 히트 영역(불투명 실드)으로 옮기고 pointer-events 보강. Preview에서 EN 클릭 시 버튼이 한·검색 placeholder 영문 전환을 확인해 주세요.',
+    at: '2026-08-18',
+  },
+  {
     session: '영문화 #1, locale 기반',
     title: 'LocaleContext 누락 ReferenceError 수정',
     detail:
