@@ -2,12 +2,11 @@
 
 직전: [`2026-08-16-project-log.md`](./2026-08-16-project-log.md)
 
-## 영문화 #0, 문서·브랜치
+## 영문화 #1, locale 기반
 
-- **플랜** [`i18n-en-plan.md`](./i18n-en-plan.md) 신규 — Phase #0~4 · locale SSOT · 가드
-- **브랜치** `cursor/en` (신규 · 고정)
-- **`/qa/en`** — `cloudQaShareLinks.js` · `vercel.json` 동기 · Preview `/`
-- **핸드오프** [`feature-handoff-index.md`](./feature-handoff-index.md) 영문화 행 추가
-- **PR** [#132](https://github.com/catgeot/Days/pull/132) draft · tip `bb00f58c`
+- **i18n** `src/i18n/` — `i18next` · `LocaleProvider` · ko/en JSON SSOT
+- **URL** `?lang=en` + `localStorage`(`gateo.locale`) · `document.documentElement.lang` 동기
+- **헤더** `LocaleToggle` — PC 툴바·모바일 검색 옆 EN/한 토글
+- **공통 키** 홈 검색 placeholder · `SiteUpdateBanner` 카피
 - **VERIFY** `npm run build` PASS
-- **다음** #1 locale 기반 (`i18next` · `?lang=en` · 헤더 토글)
+- **다음** #2 홈·PlaceCard 주요 카피 en

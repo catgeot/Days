@@ -10,7 +10,7 @@
 | #N | 단계 | 채팅명 (복붙) | 상태 |
 |----|------|---------------|------|
 | 0 | 문서·브랜치 | `영문화 #0, 문서·브랜치` | ✅ |
-| 1 | 기반 | `영문화 #1, locale 기반` | ⏳ |
+| 1 | 기반 | `영문화 #1, locale 기반` | ✅ |
 | 2 | 홈·PlaceCard | `영문화 #2, 홈·PlaceCard` | ⏳ |
 | 3 | 한국 투톱 | `영문화 #3, korea·theme` | ⏳ |
 
@@ -81,12 +81,12 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#0)**: 플랜·브랜치·`/qa/en` SSOT 등록 · 코드 i18n **미착수**
+**상태 (#1)**: `i18next` · `LocaleProvider` · `?lang=en` · 헤더 토글 · 공통 레이아웃 키(검색·시스템 공지) · tip 확인 후 갱신
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #1, locale 기반
+영문화 #2, 홈·PlaceCard
 @plans/feature-handoff-index.md
 @plans/2026-08-18-project-log.md
 @plans/i18n-en-plan.md

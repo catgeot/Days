@@ -1,0 +1,28 @@
+{
+  "layout": {
+    "locale": {
+      "switchToEn": "English로 전환",
+      "switchToKo": "한국어로 전환",
+      "labelEn": "EN",
+      "labelKo": "한"
+    },
+    "search": {
+      "placeholder": "지금 기분, 느낌으로 검색해 보세요"
+    },
+    "siteNotice": {
+      "refreshHeader": "업데이트 안내",
+      "systemHeader": "시스템 공지",
+      "refreshTitle": "새 버전이 배포되었습니다",
+      "refreshBody": "새로고침하면 최신 기능을 사용할 수 있어요.",
+      "close": "닫기",
+      "reload": "새로고침",
+      "pastNotices": "지난 공지 보기",
+      "dismissPermanent": "다시 보지 않기"
+    },
+    "auth": {
+      "signIn": "로그인",
+      "signUp": "회원가입",
+      "back": "뒤로"
+    }
+  }
+}

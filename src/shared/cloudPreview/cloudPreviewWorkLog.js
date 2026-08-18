@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: 'AI 큐레이션',
-  sessionNo: 7,
-  sessionPhase: '지도·무니 검은 화면 QA',
-  branch: 'cursor/curation-globe-android-0ba2',
-  previewPath: '/blog/curation',
-  qaShareSlug: 'curation',
+  title: '영문화',
+  sessionNo: 1,
+  sessionPhase: 'locale 기반',
+  branch: 'cursor/en',
+  previewPath: '/',
+  qaShareSlug: 'en',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-18-i18n-locale-foundation-1',
+    session: '영문화 #1, locale 기반',
+    title: 'i18next·LocaleProvider·헤더 토글',
+    detail:
+      'src/i18n SSOT(ko/en JSON)와 LocaleProvider를 추가했습니다. ?lang=en·localStorage로 locale이 유지되고, 홈 헤더 EN/한 토글·검색 placeholder·시스템 공지 배너가 영문으로 전환됩니다. Preview /?lang=en 에서 확인해 주세요.',
+    at: '2026-08-18',
+  },
   {
     id: '2026-08-17-curation-globe-mooni-7',
     session: 'AI 큐레이션 #7, 지도·무니 검은 화면 QA',

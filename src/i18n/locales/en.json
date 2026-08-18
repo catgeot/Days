@@ -1,0 +1,28 @@
+{
+  "layout": {
+    "locale": {
+      "switchToEn": "Switch to English",
+      "switchToKo": "Switch to Korean",
+      "labelEn": "EN",
+      "labelKo": "한"
+    },
+    "search": {
+      "placeholder": "Search by mood or vibe"
+    },
+    "siteNotice": {
+      "refreshHeader": "Update",
+      "systemHeader": "Notice",
+      "refreshTitle": "A new version is available",
+      "refreshBody": "Refresh the page to use the latest features.",
+      "close": "Close",
+      "reload": "Refresh",
+      "pastNotices": "Past notices",
+      "dismissPermanent": "Don't show again"
+    },
+    "auth": {
+      "signIn": "Sign in",
+      "signUp": "Sign up",
+      "back": "Back"
+    }
+  }
+}

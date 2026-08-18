@@ -62,9 +62,9 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#0 문서·브랜치** · PR [#132](https://github.com/catgeot/Days/pull/132) · locale 코드 미착수 |
+| **상태** | **#1 locale 기반** · PR [#132](https://github.com/catgeot/Days/pull/132) · i18next·토글 |
 | **브랜치** | `cursor/en` |
-| **tip** | `bb00f58c` |
+| **tip** | (push 후 SHA) |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9 |
 | **일지** | [`2026-08-18-project-log.md`](./2026-08-18-project-log.md) |
 | **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` |
@@ -74,7 +74,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 **다음 제시어**:
 
 ```
-영문화 #1, locale 기반
+영문화 #2, 홈·PlaceCard
 @plans/feature-handoff-index.md
 @plans/2026-08-18-project-log.md
 @plans/i18n-en-plan.md

@@ -31,6 +31,7 @@ import UpdatePassword from './shared/Auth/UpdatePassword';
 import CloudPreviewWorkLog from './shared/cloudPreview/CloudPreviewWorkLog.jsx';
 import SeaExploreDebugPanel from './shared/cloudPreview/SeaExploreDebugPanel.jsx';
 import CurationHandoffDebugPanel from './shared/cloudPreview/CurationHandoffDebugPanel.jsx';
+import { LocaleProvider } from './i18n/LocaleProvider';
 
 function RouteTracker() {
   const location = useLocation();
@@ -60,6 +61,7 @@ function App() {
   return (
     <HelmetProvider>
       <BrowserRouter>
+        <LocaleProvider>
         <RouteTracker />
         <ReportProvider>
           <Analytics />
@@ -116,6 +118,7 @@ function App() {
             <Route path="/auth/update-password" element={<UpdatePassword />} />
           </Routes>
         </ReportProvider>
+        </LocaleProvider>
       </BrowserRouter>
     </HelmetProvider>
   );

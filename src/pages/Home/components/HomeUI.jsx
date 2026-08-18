@@ -12,8 +12,10 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import TravelTicker from '../components/TravelTicker';
 import Logo from './Logo';
+import LocaleToggle from '../../../i18n/LocaleToggle';
 import TourMobileBar from './TourMobileBar';
 import GlobeFaceRegionRail, {
   GlobeFaceSubregionBar,
@@ -104,6 +106,7 @@ const HomeUI = React.memo(({
   onTourBarClose,
   onTourBarStartTour,
 }) => {
+  const { t } = useTranslation();
   const [, setInputValue] = useState('');
   const navigate = useNavigate();
   const hideExploreChrome =
@@ -304,6 +307,8 @@ const HomeUI = React.memo(({
         </div>
 
         <div className="hidden md:flex md:col-span-1 justify-center gap-3 lg:gap-4 pt-3 animate-fade-in-down delay-75 pointer-events-auto relative z-50">
+           <LocaleToggle />
+
            <button
              onClick={onThemeToggle}
              className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border flex items-center justify-center transition-all shadow-lg group ${getThemeConfig().color} ${getThemeConfig().border}`}
@@ -343,7 +348,9 @@ const HomeUI = React.memo(({
               onClose={onTourBarClose}
             />
           ) : (
-           <div data-site-notice-anchor className="group pointer-events-auto w-[min(12.5rem,calc(100vw-5.5rem))] sm:max-w-xs md:max-w-md md:w-full absolute right-3 top-[1.35rem] md:relative md:right-auto md:top-auto md:self-end">
+           <div data-site-notice-anchor className="group pointer-events-auto w-[min(12.5rem,calc(100vw-5.5rem))] sm:max-w-xs md:max-w-md md:w-full absolute right-3 top-[1.35rem] md:relative md:right-auto md:top-auto md:self-end flex items-center gap-2 justify-end">
+            <LocaleToggle compact className="md:hidden shrink-0" />
+            <div className="relative flex-1 min-w-0">
             <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             <div
               onClick={() => navigate('/explore')}
@@ -353,8 +360,9 @@ const HomeUI = React.memo(({
               <span
                 className="w-full bg-transparent text-gray-300/80 px-2 md:px-3 text-xs md:text-sm font-medium cursor-pointer select-none truncate"
               >
-                지금 기분, 느낌으로 검색해 보세요
+                {t('layout.search.placeholder')}
               </span>
+            </div>
             </div>
           </div>
           )}
