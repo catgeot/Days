@@ -282,6 +282,13 @@ export const CLOUD_QA_SHARE_LINKS = [
       'https://days-git-cursor-geography-puzzle-plan-62e0-catgeots-projects.vercel.app/play/geo',
     active: true,
   },
+  {
+    slug: 'en',
+    label: '영문화 Preview',
+    branch: 'cursor/en',
+    destination: 'https://days-git-cursor-en-catgeots-projects.vercel.app/',
+    active: true,
+  },
 ];
 
 export function cloudQaShareUrl(slug) {

@@ -58,6 +58,31 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 ---
 
+### 영문화 (English UI)
+
+| | |
+|--|--|
+| **상태** | **#0 문서·브랜치** · locale 코드 미착수 |
+| **브랜치** | `cursor/en` |
+| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9 |
+| **일지** | [`2026-08-18-project-log.md`](./2026-08-18-project-log.md) |
+| **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` |
+| **공유** | `https://www.gateo.kr/qa/en` → Preview `/` |
+| **VERIFY** | `npm run build` |
+
+**다음 제시어**:
+
+```
+영문화 #1, locale 기반
+@plans/feature-handoff-index.md
+@plans/2026-08-18-project-log.md
+@plans/i18n-en-plan.md
+브랜치 cursor/en · PR #… · /qa/en · Preview /
+금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
+```
+
+---
+
 ## 행 추가 템플릿 (새 Cloud feature)
 
 ```markdown
