@@ -2,6 +2,9 @@ import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGlobeHomeBanner } from '../hooks/useGlobeHomeBanner';
 
+/** 복제 트랙 50% 이동 = 우→좌 1회전. 뉴스 크롤·전광판 통상 속도(약 30~40초). */
+const MARQUEE_LOOP_SECONDS = 32;
+
 const TOPIC_META = {
   festival: {
     badge: '축제',
@@ -109,7 +112,7 @@ export default function GlobeHomeMarqueeBanner({ hidden = false }) {
           mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
         }
         .globe-home-marquee-inner {
-          animation: globe-home-marquee 100s linear infinite;
+          animation: globe-home-marquee ${MARQUEE_LOOP_SECONDS}s linear infinite;
         }
         @keyframes globe-home-marquee {
           from { transform: translateX(0); }
