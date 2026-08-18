@@ -5,9 +5,9 @@
 ## 영문화 #8.5, 중간점검 — 무니·써머리 QA
 
 - **버그 수정** 모바일 갤러리→무니 시 연관 여행지 하단 푸터가 채팅 칩과 겹침 — `isMooniChatOpen`으로 포털 숨김 · tip `5e7337c4`
-- **써머리 탭** 모바일 `allowSummaryExpandTap=false`는 Chrome 2회차 오탭 방지 의도(d8f04648) · i18n 회귀 아님 · 더보기만 확장
+- **써머리** 모바일 설명란 탭으로 확장 카드 진입 복구(제목·헤더는 오탭 방지 유지) · tip `78b372f2`
 - **VERIFY** `npm run build` PASS · PR [#133](https://github.com/catgeot/Days/pull/133)
-- **Preview** `/qa/en` · `?lang=en` — 갤러리→무니 하단 겹침 재확인 요청
+- **Preview** `/qa/en` · `?lang=en` — 갤러리→무니·써머리 설명 탭 QA
 
 ## 영문화 #8, 한국 테마 나머지 — Preview
 
