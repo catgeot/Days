@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
 import { Save, ArrowLeft, MapPin, Loader2, Image as ImageIcon, X, Sparkles, Undo2, Calendar, UserRoundPen } from 'lucide-react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { useLogbookMedia } from './hooks/useLogbookMedia';
 import { useLogbookAI } from './hooks/useLogbookAI';
@@ -13,6 +14,7 @@ import {
 } from '../../shared/hooks/useMobileInputViewport';
 
 const Write = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -56,7 +58,7 @@ const Write = () => {
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
-        alert('로그인이 필요합니다.');
+        alert(t('logbook.common.loginRequired'));
         // 무한루프 방지를 위해 from 경로가 현재 경로(/blog/write)인 경우 기본적으로 /blog 나 / 로 이동하도록 Fallback 추가
         navigate('/auth/login', { replace: true, state: { from: '/blog' } });
         return;
@@ -71,7 +73,7 @@ const Write = () => {
           setDate(data.date);
           setExistingImages(data.images || []);
         } else {
-          alert('존재하지 않는 기록입니다.');
+          alert(t('logbook.write.notFound'));
           navigate('/blog', { replace: true });
         }
       }
@@ -89,7 +91,12 @@ const Write = () => {
 
   useEffect(() => {
     if (isAILoading) {
-      const msgs = ["위성 통신망 연결 중...", "사진 속 감성을 읽어내는 중...", "문장의 맥락을 조율하는 중...", "마무리 원고를 진행 중입니다..."];
+      const msgs = [
+        t('logbook.write.aiLoading.0'),
+        t('logbook.write.aiLoading.1'),
+        t('logbook.write.aiLoading.2'),
+        t('logbook.write.aiLoading.3'),
+      ];
       let i = 0;
       setAiLoadingMsg(msgs[0]);
       const timer = setInterval(() => {
@@ -103,15 +110,15 @@ const Write = () => {
   const handlePenNameSave = async () => {
     const { ok } = await savePenName();
     if (ok) {
-      setPenSaveHint('필명이 저장되었습니다.');
+      setPenSaveHint(t('logbook.write.penNameSaved'));
       setTimeout(() => setPenSaveHint(''), 2500);
       return;
     }
-    alert('필명 저장에 실패했습니다. 잠시 후 다시 시도해주세요.');
+    alert(t('logbook.common.penNameSaveFail'));
   };
 
   const handleGetCurrentLocation = () => {
-    if (!navigator.geolocation) return alert("위치 정보를 지원하지 않습니다.");
+    if (!navigator.geolocation) return alert(t('logbook.write.geoUnsupported'));
     setLocationLoading(true);
     navigator.geolocation.getCurrentPosition(async (position) => {
         try {
@@ -120,16 +127,16 @@ const Write = () => {
           const data = await response.json();
           const addr = data.address;
           const displayAddress = [addr.city || addr.province || '', addr.borough || addr.district || '', addr.quarter || addr.neighbourhood || addr.suburb || ''].filter(Boolean).join(' ');
-          setMapLocation(displayAddress || "위치 정보 없음");
-        } catch { setMapLocation("위치 확인 실패"); } finally { setLocationLoading(false); }
-      }, () => { setLocationLoading(false); alert("위치 권한을 확인해주세요."); }
+          setMapLocation(displayAddress || t('logbook.write.geoNone'));
+        } catch { setMapLocation(t('logbook.write.geoFail')); } finally { setLocationLoading(false); }
+      }, () => { setLocationLoading(false); alert(t('logbook.write.geoDenied')); }
     );
   };
 
   const handleSave = async () => {
-    if (!title) return alert("제목을 입력해주세요!");
+    if (!title) return alert(t('logbook.write.titleRequired'));
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return alert("로그인이 필요합니다.");
+    if (!user) return alert(t('logbook.common.loginRequired'));
 
     setUploading(true);
     let finalImageUrls = [...existingImages];
@@ -147,7 +154,7 @@ const Write = () => {
       const newUrls = await Promise.all(uploadPromises);
       finalImageUrls = [...finalImageUrls, ...newUrls];
 
-      const reportData = { title, content, location: mapLocation || '위치 미상', date, images: finalImageUrls, weather: '맑음', user_id: user.id };
+      const reportData = { title, content, location: mapLocation || t('logbook.common.locationUnknown'), date, images: finalImageUrls, weather: t('logbook.common.weatherSunny'), user_id: user.id };
 
       if (isEditMode) {
         await supabase.from('reports').update(reportData).eq('id', id);
@@ -158,7 +165,7 @@ const Write = () => {
       }
     } catch (error) {
       console.error("저장 실패:", error);
-      alert("저장 중 오류가 발생했습니다.");
+      alert(t('logbook.write.saveFail'));
     } finally {
       setUploading(false);
     }
@@ -181,21 +188,21 @@ const Write = () => {
           </button>
           <div>
             <h2 className="text-lg font-bold text-gray-900 tracking-tight">
-              {isEditMode ? '기록 수정하기' : '새로운 여정 기록'}
+              {isEditMode ? t('logbook.write.editTitle') : t('logbook.write.newTitle')}
             </h2>
-            <p className="text-[10px] text-blue-500 font-mono uppercase tracking-widest mt-0.5">Logbook Terminal</p>
+            <p className="text-[10px] text-blue-500 font-mono uppercase tracking-widest mt-0.5">{t('logbook.write.terminal')}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           {backupData && (
             <button onClick={handleRestoreBackup} className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-gray-600 bg-gray-100/80 rounded-full border border-gray-200 hover:bg-gray-200 transition-all">
-              <Undo2 size={14} /> <span className="hidden sm:inline">원본 복구</span>
+              <Undo2 size={14} /> <span className="hidden sm:inline">{t('logbook.write.restore')}</span>
             </button>
           )}
           <button onClick={handleSave} disabled={uploading || isAILoading || isCompressing} className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-full font-black text-xs sm:text-sm flex items-center gap-2 shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-blue-500/60 active:scale-95 transition-all disabled:opacity-50">
             {uploading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-            <span>{isEditMode ? '기록 업데이트' : 'GATEO에 저장'}</span>
+            <span>{isEditMode ? t('logbook.write.update') : t('logbook.write.saveToGateo')}</span>
           </button>
         </div>
       </header>
@@ -205,7 +212,7 @@ const Write = () => {
         <section className="flex flex-col gap-6">
           <div className="flex items-center gap-3 mb-2">
             <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 border border-blue-200 text-[10px] font-black text-blue-600">01</span>
-            <h3 className="text-xs font-black text-gray-500 uppercase tracking-[0.2em]">여정의 기본 정보</h3>
+            <h3 className="text-xs font-black text-gray-500 uppercase tracking-[0.2em]">{t('logbook.write.sectionBasics')}</h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -222,10 +229,10 @@ const Write = () => {
                   <MapPin size={12} /> Location
                 </label>
                 <button type="button" onClick={handleGetCurrentLocation} disabled={locationLoading} className="text-[10px] font-bold text-blue-500 hover:text-blue-600 transition-colors flex items-center gap-1">
-                   {locationLoading ? <Loader2 size={10} className="animate-spin" /> : "현재 위치 찾기"}
+                   {locationLoading ? <Loader2 size={10} className="animate-spin" /> : t('logbook.write.findLocation')}
                 </button>
               </div>
-              <input type="text" className="w-full bg-transparent outline-none text-xl font-bold text-gray-900 placeholder-gray-400 transition-colors" value={mapLocation} onChange={(e) => setMapLocation(e.target.value)} onFocus={() => setShowSuggestions(true)} onBlur={handleFieldBlur} placeholder="어디의 공기를 담았나요?" autoComplete="off" disabled={isAILoading || isCompressing} />
+              <input type="text" className="w-full bg-transparent outline-none text-xl font-bold text-gray-900 placeholder-gray-400 transition-colors" value={mapLocation} onChange={(e) => setMapLocation(e.target.value)} onFocus={() => setShowSuggestions(true)} onBlur={handleFieldBlur} placeholder={t('logbook.write.locationPlaceholder')} autoComplete="off" disabled={isAILoading || isCompressing} />
               {showSuggestions && recentLocations.length > 0 && (
                 <div className="absolute z-50 left-0 right-0 top-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden backdrop-blur-xl">
                    {recentLocations.map((loc, idx) => (<div key={idx} className="px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer flex items-center gap-3 transition-all" onClick={() => { setMapLocation(loc); setShowSuggestions(false); }}><MapPin size={14} className="opacity-50" />{loc}</div>))}
@@ -238,7 +245,7 @@ const Write = () => {
             <div className="flex items-center gap-2 mb-3">
               <UserRoundPen size={14} className="text-blue-500 shrink-0" />
               <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                공개 피드에 표시할 이름 (필명)
+                {t('logbook.write.penNameLabel')}
               </label>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
@@ -247,7 +254,7 @@ const Write = () => {
                 value={penName}
                 onChange={(e) => setPenName(e.target.value.slice(0, penMaxLen))}
                 disabled={penLoading}
-                placeholder={penUser?.email ? `${penUser.email.split('@')[0]} (비우면 계정 기준 표시)` : '닉네임'}
+                placeholder={penUser?.email ? t('logbook.write.penNamePlaceholder', { name: penUser.email.split('@')[0] }) : t('logbook.profile.nicknamePlaceholder')}
                 className={`flex-1 min-w-0 ${MOBILE_INPUT_TEXT_CLASS} font-semibold text-gray-900 bg-transparent outline-none border border-gray-200 rounded-xl px-3 py-2 focus:border-blue-400 focus:ring-1 focus:ring-blue-200`}
                 maxLength={penMaxLen}
                 autoComplete="nickname"
@@ -259,11 +266,11 @@ const Write = () => {
                 disabled={penLoading || penSaving}
                 className="shrink-0 px-4 py-2 text-xs font-black bg-blue-600 text-white rounded-xl hover:bg-blue-500 disabled:opacity-50"
               >
-                {penSaving ? '저장 중…' : '프로필에 저장'}
+                {penSaving ? t('logbook.write.penNameSaving') : t('logbook.write.penNameSave')}
               </button>
             </div>
             <p className="text-[10px] text-gray-400 mt-2 leading-relaxed break-keep">
-              명소 여행기·공개 로그북 카드에 동일하게 적용됩니다. 사이드바에서도 바꿀 수 있습니다.
+              {t('logbook.write.penNameHint')}
             </p>
             {penSaveHint && <p className="text-[10px] font-bold text-emerald-600 mt-1.5">{penSaveHint}</p>}
           </div>
@@ -272,15 +279,15 @@ const Write = () => {
         <section className="flex flex-col gap-6">
           <div className="flex items-center gap-3 mb-2">
             <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 border border-blue-200 text-[10px] font-black text-blue-600">02</span>
-            <h3 className="text-xs font-black text-gray-500 uppercase tracking-[0.2em]">장면의 포착</h3>
+            <h3 className="text-xs font-black text-gray-500 uppercase tracking-[0.2em]">{t('logbook.write.sectionMoments')}</h3>
           </div>
 
           <div className="bg-gray-50/80 backdrop-blur-md border border-gray-200 rounded-3xl p-6 sm:p-8 hover:border-gray-300 transition-all relative">
             {isCompressing && (
               <div className="absolute inset-0 z-20 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center text-blue-600 rounded-3xl">
                 <Loader2 size={36} className="animate-spin mb-4" />
-                <p className="font-bold text-sm">기록의 용량을 최적화 중...</p>
-                <p className="text-[10px] text-blue-500 mt-2 font-mono">Progress: {compressProgress.current} / {compressProgress.total}</p>
+                <p className="font-bold text-sm">{t('logbook.write.compressing')}</p>
+                <p className="text-[10px] text-blue-500 mt-2 font-mono">{t('logbook.write.progress', { current: compressProgress.current, total: compressProgress.total })}</p>
               </div>
             )}
 
@@ -312,12 +319,12 @@ const Write = () => {
         <section className="flex flex-col gap-6">
           <div className="flex items-center gap-3 mb-2">
             <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 border border-blue-200 text-[10px] font-black text-blue-600">03</span>
-            <h3 className="text-xs font-black text-gray-500 uppercase tracking-[0.2em]">기록의 완성</h3>
+            <h3 className="text-xs font-black text-gray-500 uppercase tracking-[0.2em]">{t('logbook.write.sectionStory')}</h3>
           </div>
 
           <div className="flex flex-col gap-4">
             <div className="bg-gray-50/80 backdrop-blur-md border border-gray-200 rounded-3xl p-6 sm:p-8 focus-within:border-blue-400 transition-all">
-              <input type="text" className="w-full bg-transparent outline-none text-2xl sm:text-4xl font-black text-gray-900 placeholder-gray-400 tracking-tight" placeholder="이번 여정을 한 문장으로 정의한다면?" value={title} onChange={(e) => setTitle(e.target.value)} disabled={isAILoading || isCompressing} />
+              <input type="text" className="w-full bg-transparent outline-none text-2xl sm:text-4xl font-black text-gray-900 placeholder-gray-400 tracking-tight" placeholder={t('logbook.write.titlePlaceholder')} value={title} onChange={(e) => setTitle(e.target.value)} disabled={isAILoading || isCompressing} />
             </div>
 
             <div className="bg-gray-50/80 backdrop-blur-md border border-gray-200 rounded-3xl p-6 sm:p-8 focus-within:border-blue-400 transition-all relative min-h-[500px] flex flex-col">
@@ -326,10 +333,10 @@ const Write = () => {
                 <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Storytelling</label>
                 <div className="flex gap-2">
                   <button onClick={() => handleAIPolish('essay', imageFiles)} disabled={isAILoading || isCompressing} className="group flex items-center gap-2 px-4 py-2 bg-purple-50 border border-purple-200 text-purple-600 rounded-full text-[10px] font-black hover:bg-purple-100 hover:text-purple-700 transition-all">
-                    <Sparkles size={12} className="group-hover:animate-spin" /> AI 에세이 작성
+                    <Sparkles size={12} className="group-hover:animate-spin" /> {t('logbook.write.aiEssay')}
                   </button>
                   <button onClick={() => handleAIPolish('sns', imageFiles)} disabled={isAILoading || isCompressing} className="group flex items-center gap-2 px-4 py-2 bg-pink-50 border border-pink-200 text-pink-600 rounded-full text-[10px] font-black hover:bg-pink-100 hover:text-pink-700 transition-all">
-                    <Sparkles size={12} className="group-hover:animate-pulse" /> AI SNS 인플루언서
+                    <Sparkles size={12} className="group-hover:animate-pulse" /> {t('logbook.write.aiSns')}
                   </button>
                 </div>
               </div>
@@ -347,7 +354,7 @@ const Write = () => {
                 onChange={(e) => setContent(e.target.value)}
                 onBlur={handleFieldBlur}
                 disabled={isAILoading || isCompressing}
-                placeholder="떠오르는 파편화된 기억들을 자유롭게 적어보세요. 사진을 올리고 위쪽의 AI 버튼을 누르면 투박한 메모가 아름다운 기록으로 변합니다."
+                placeholder={t('logbook.write.contentPlaceholder')}
               />
             </div>
           </div>

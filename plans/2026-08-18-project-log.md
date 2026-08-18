@@ -2,6 +2,15 @@
 
 직전: [`2026-08-16-project-log.md`](./2026-08-16-project-log.md)
 
+## 영문화 #9, 로그북·대시보드 — Preview push
+
+- **`logbook.*`** i18n — `/blog` 대시보드·RecentList·Calendar·CurationCard · Write·Detail·PublicViewer · Sidebar·PublicNav·UserProfile·QuickMemo·SlideViewer · `/blog/curation`·CurationHub(취향 칩 id)
+- **헬퍼** `src/i18n/logbookUi.js` · `reportAuthor` fallback `traveler`
+- **VERIFY** `npm run build` · `smoke:place-label-slug` PASS
+- **브랜치** `cursor/en` · PR [#133](https://github.com/catgeot/Days/pull/133)
+- **Preview** `/qa/en` · `?lang=en` → `/blog` · `/blog/write` · `/blog/curation`
+- **다음** 사람 Preview QA → #10 잔여·병합 합의
+
 ## 영문화 #8.5, 중간점검 — 무니·써머리 QA
 
 - **버그 수정** 모바일 갤러리→무니 시 연관 여행지 하단 푸터가 채팅 칩과 겹침 — `isMooniChatOpen`으로 포털 숨김 · tip `5e7337c4`

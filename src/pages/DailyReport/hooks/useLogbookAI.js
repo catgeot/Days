@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { i18n } from '../../../i18n/config';
 import { getLogbookPrompt, getCurationPrompt } from '../../Home/lib/prompts.js';
 import { apiClient } from '../../Home/lib/apiClient.js';
 import { convertToBase64 } from './useLogbookMedia';
@@ -41,7 +42,7 @@ export const useLogbookAI = (title, setTitle, content, setContent, date, mapLoca
 
   const handleAIPolish = async (mode, imageFiles) => {
     if (!content.trim() && imageFiles.length === 0) {
-      alert("AI가 분석할 내용이나 사진이 없습니다. 짧은 메모나 사진을 먼저 추가해주세요.");
+      alert(i18n.t('logbook.ai.noInput'));
       return;
     }
 
@@ -69,11 +70,11 @@ export const useLogbookAI = (title, setTitle, content, setContent, date, mapLoca
       );
 
       setContent(resultText);
-      if (!title) setTitle(`${mapLocation ? mapLocation : '어느 멋진 곳'}에서의 기록`);
+      if (!title) setTitle(i18n.t('logbook.write.defaultTitle', { place: mapLocation || i18n.t('logbook.write.defaultPlace') }));
 
     } catch (error) {
       console.error("AI 변환 실패:", error);
-      alert("AI 변환 중 오류가 발생했습니다. 원본을 안전하게 복구합니다.");
+      alert(i18n.t('logbook.ai.fail'));
 
       setTitle(originalTitle);
       setContent(originalContent);
@@ -320,7 +321,7 @@ export const useCurationAI = () => {
 
     } catch (error) {
       console.warn("큐레이션 에러:", error);
-      alert("큐레이션에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+      alert(i18n.t('logbook.curationHub.fail'));
       const { panel } = resolveActiveCurationPanel();
       if (panel?.location) {
         setCurationData(panel);

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../../shared/api/supabase';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import HomeButton from './HomeButton';
 import UserProfile from './UserProfile';
@@ -8,6 +9,7 @@ import SlideViewer from './SlideViewer';
 import PublicNav from './PublicNav';
 
 const Sidebar = ({ user }) => {
+  const { t } = useTranslation();
   const [slides, setSlides] = useState([]);
   const [isSlideOpen, setIsSlideOpen] = useState(false);
 
@@ -50,7 +52,7 @@ const Sidebar = ({ user }) => {
   }, [user?.id]);
 
   const handleLogout = async () => {
-    if (window.confirm("로그아웃 하시겠습니까?")) {
+    if (window.confirm(t('logbook.common.logoutConfirm'))) {
       await supabase.auth.signOut();
       navigate('/');
     }
@@ -71,15 +73,15 @@ const Sidebar = ({ user }) => {
           ) : (
             <div className="p-4 border-t border-gray-100">
               <div className="bg-gray-50 rounded-2xl border border-gray-200 p-5 text-center flex flex-col items-center">
-                <h4 className="text-[13px] font-bold text-gray-800 mb-2">나만의 여행 기록</h4>
+                <h4 className="text-[13px] font-bold text-gray-800 mb-2">{t('logbook.sidebar.travelLogTitle')}</h4>
                 <p className="text-[11px] text-gray-600 mb-5 leading-relaxed break-keep">
-                  로그인하고 전 세계 명소 리뷰와<br/>생생한 여행기를 작성해보세요.
+                  {t('logbook.sidebar.travelLogBody')}
                 </p>
                 <button
                   onClick={() => navigate('/auth/login')}
                   className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-all shadow-sm active:scale-95"
                 >
-                  로그인 / 회원가입
+                  {t('logbook.common.loginSignup')}
                 </button>
               </div>
             </div>

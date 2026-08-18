@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Sparkles, ChevronLeft, ArrowUp } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import CurationHub from './components/CurationHub';
 import {
   armCurationHandoffDebugSession,
@@ -22,6 +23,7 @@ function findScrollParent(el) {
 }
 
 const Curation = () => {
+  const { t } = useTranslation();
   const rootRef = useRef(null);
   const scrollParentRef = useRef(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -69,19 +71,19 @@ const Curation = () => {
           <div className="flex items-center gap-2 mb-1">
             <Link
               to="/blog"
-              aria-label="LogBook으로 돌아가기"
-              title="LogBook으로 돌아가기"
+              aria-label={t('logbook.curationPage.backAria')}
+              title={t('logbook.curationPage.backAria')}
               className="inline-flex items-center justify-center w-9 h-9 -ml-1 rounded-full text-gray-500 hover:text-gray-800 hover:bg-gray-100 transition-colors flex-shrink-0"
             >
               <ChevronLeft size={22} strokeWidth={2.25} aria-hidden="true" />
             </Link>
             <Sparkles className="text-blue-500 flex-shrink-0" size={24} />
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight drop-shadow-sm">
-              큐레이션
+              {t('logbook.curationPage.title')}
             </h2>
           </div>
           <p className="text-gray-500 mt-1.5 text-sm font-medium break-keep max-w-xl pl-11">
-            숨은 낙원을 추천받고, 이 페이지에서 팁·계절·이야기를 바로 읽으세요. 지나간 추천은 목록에서 다시 엽니다.
+            {t('logbook.curationPage.subtitle')}
           </p>
         </div>
 
@@ -90,7 +92,7 @@ const Curation = () => {
 
       <button
         type="button"
-        aria-label="맨 위로"
+        aria-label={t('logbook.curationPage.scrollTop')}
         onClick={scrollToTop}
         className={`fixed bottom-[max(1.25rem,calc(env(safe-area-inset-bottom)+0.75rem))] right-3 z-40 flex h-11 items-center gap-1 rounded-full border border-blue-500/50 bg-blue-600 px-3.5 text-white shadow-[0_4px_18px_rgba(37,99,235,0.4)] transition-all duration-300 ${
           showScrollTop
@@ -99,7 +101,7 @@ const Curation = () => {
         }`}
       >
         <ArrowUp size={18} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
-        <span className="text-xs font-bold">위로</span>
+        <span className="text-xs font-bold">{t('logbook.curationPage.scrollUp')}</span>
       </button>
     </div>
   );

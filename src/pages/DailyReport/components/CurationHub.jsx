@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Sparkles,
   MapPin,
@@ -45,11 +46,13 @@ import {
   safeLoadRecentList,
   safeLoadRecentVisited,
 } from '../../Home/lib/exploreRecentHistory';
+import { formatCurationTasteGroupTitle, formatCurationTasteLabel } from '../../../i18n/logbookUi';
 
 const linkBtnClass =
   'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-colors disabled:opacity-40 disabled:cursor-not-allowed';
 
 function CurationRichBlocks({ data }) {
+  const { t } = useTranslation();
   const tips = Array.isArray(data?.tips) ? data.tips.filter(Boolean) : [];
   const hasRich = Boolean(data?.whyHidden || data?.bestSeason || tips.length);
   if (!hasRich) return null;
@@ -59,7 +62,7 @@ function CurationRichBlocks({ data }) {
       {data.whyHidden ? (
         <div className="rounded-2xl bg-blue-50/70 border border-blue-100 px-3.5 py-3">
           <p className="flex items-center gap-1.5 text-[11px] font-bold text-blue-600 mb-1">
-            <EyeOff size={12} /> 왜 숨은 낙원인가
+            <EyeOff size={12} /> {t('logbook.curationHub.whyHidden')}
           </p>
           <p className="text-sm text-gray-700 leading-relaxed break-keep font-light">{data.whyHidden}</p>
         </div>
@@ -67,7 +70,7 @@ function CurationRichBlocks({ data }) {
       {data.bestSeason ? (
         <div className="rounded-2xl bg-sky-50/70 border border-sky-100 px-3.5 py-3">
           <p className="flex items-center gap-1.5 text-[11px] font-bold text-sky-700 mb-1">
-            <CalendarDays size={12} /> 가기 좋은 시기
+            <CalendarDays size={12} /> {t('logbook.curationHub.bestSeason')}
           </p>
           <p className="text-sm text-gray-700 leading-relaxed break-keep font-light">{data.bestSeason}</p>
         </div>
@@ -75,7 +78,7 @@ function CurationRichBlocks({ data }) {
       {tips.length > 0 ? (
         <div className="rounded-2xl bg-indigo-50/60 border border-indigo-100 px-3.5 py-3">
           <p className="flex items-center gap-1.5 text-[11px] font-bold text-indigo-600 mb-2">
-            <Lightbulb size={12} /> 알아두면 좋은 것
+            <Lightbulb size={12} /> {t('logbook.curationHub.tips')}
           </p>
           <ul className="space-y-1.5">
             {tips.map((tip, i) => (
@@ -101,6 +104,7 @@ function CurationResultPanel({
   onNeedLogin,
   onClose,
 }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -165,7 +169,7 @@ function CurationResultPanel({
 
   const openOnGlobe = ({ openMooni = false } = {}) => {
     if (!hydratedPlace || !canOpenMap) {
-      alert('이 추천지의 좌표를 찾지 못했습니다. 다른 낙원을 탐색해 보세요.');
+      alert(t('logbook.curationHub.coordsMissing'));
       return;
     }
     armCurationHandoffDebugSession();
@@ -183,7 +187,7 @@ function CurationResultPanel({
     const queued = queueCurationHomeOpen(hydratedPlace, { openMooni });
     logCurationHandoff('cta.queue', { ok: queued, openMooni });
     if (!queued) {
-      alert('홈으로 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.');
+      alert(t('logbook.curationHub.homeLinkFail'));
       return;
     }
     try {
@@ -199,7 +203,7 @@ function CurationResultPanel({
 
   const openPlaceCard = () => {
     if (!hydratedPlace || !placeParam) {
-      alert('장소 카드로 열 수 있는 정보가 부족합니다. 지구본에서 먼저 확인해 보세요.');
+      alert(t('logbook.curationHub.placeCardInsufficient'));
       return;
     }
     try {
@@ -223,15 +227,15 @@ function CurationResultPanel({
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-sky-100 via-blue-50 to-indigo-100 flex flex-col items-center justify-center gap-2 text-blue-500/80">
             <Compass size={36} strokeWidth={1.5} />
-            <span className="text-[11px] font-medium tracking-wide">사진 준비 중</span>
+            <span className="text-[11px] font-medium tracking-wide">{t('logbook.curationHub.imagePreparing')}</span>
           </div>
         )}
         {onClose ? (
           <button
             type="button"
             onClick={onClose}
-            aria-label="본문 닫기"
-            title="본문 닫기"
+            aria-label={t('logbook.curationHub.closeBody')}
+            title={t('logbook.curationHub.closeBody')}
             className="absolute top-3 right-3 z-20 inline-flex items-center justify-center w-9 h-9 rounded-full bg-black/55 hover:bg-black/70 text-white border border-white/40 shadow-md backdrop-blur-[2px] transition-colors"
           >
             <X size={18} strokeWidth={2.25} aria-hidden="true" />
@@ -257,14 +261,14 @@ function CurationResultPanel({
             type="button"
             onClick={handleSaveCuration}
             disabled={isSaving}
-            aria-label={isSaved ? '즐겨찾기 저장됨' : '즐겨찾기'}
+            aria-label={isSaved ? t('logbook.curationHub.favoriteSaved') : t('logbook.curationHub.favorite')}
             aria-pressed={isSaved}
             className={`p-2.5 rounded-full transition-all border shadow-sm disabled:opacity-60 flex-shrink-0 ${
               isSaved
                 ? 'bg-amber-50 text-amber-500 border-amber-200 shadow-amber-500/10'
                 : 'bg-gray-100 text-gray-400 hover:text-amber-500 hover:bg-amber-50 hover:border-amber-200 border-gray-200'
             }`}
-            title={isSaved ? '즐겨찾기 저장됨' : '즐겨찾기'}
+            title={isSaved ? t('logbook.curationHub.favoriteSaved') : t('logbook.curationHub.favorite')}
           >
             {isSaving ? (
               <Loader2 size={16} className="animate-spin" />
@@ -298,11 +302,11 @@ function CurationResultPanel({
             >
               {isTextExpanded ? (
                 <>
-                  <ChevronUp size={14} /> 간략히 보기
+                  <ChevronUp size={14} /> {t('logbook.curationHub.showLess')}
                 </>
               ) : (
                 <>
-                  <ChevronDown size={14} /> 상세히 보기
+                  <ChevronDown size={14} /> {t('logbook.curationHub.showMore')}
                 </>
               )}
             </button>
@@ -319,7 +323,7 @@ function CurationResultPanel({
               disabled={!canOpenMap}
               className={`${linkBtnClass} bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100`}
             >
-              <Globe2 size={13} /> 전체 지도에서 보기
+              <Globe2 size={13} /> {t('logbook.curationHub.viewOnGlobe')}
             </button>
             <button
               type="button"
@@ -327,7 +331,7 @@ function CurationResultPanel({
               disabled={!placeParam}
               className={`${linkBtnClass} bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100`}
             >
-              <MapPin size={13} /> 장소 카드
+              <MapPin size={13} /> {t('logbook.curationHub.placeCard')}
             </button>
             <button
               type="button"
@@ -335,7 +339,7 @@ function CurationResultPanel({
               disabled={!canOpenMap}
               className={`${linkBtnClass} bg-indigo-50 text-indigo-600 border-indigo-200 hover:bg-indigo-100`}
             >
-              <MessageCircle size={13} /> 무니에게 묻기
+              <MessageCircle size={13} /> {t('logbook.curationHub.askMooni')}
             </button>
           </div>
 
@@ -348,7 +352,7 @@ function CurationResultPanel({
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300 transition-colors z-20 relative shadow-sm"
               >
                 <SlidersHorizontal size={13} aria-hidden="true" />
-                취향 다시 설정
+                {t('logbook.curationHub.resetTaste')}
               </button>
             </div>
           ) : (
@@ -374,6 +378,7 @@ function HistoryList({
   saveCurationData,
   onNeedLogin,
 }) {
+  const { t } = useTranslation();
   if (!history?.length) return null;
 
   return (
@@ -410,7 +415,7 @@ function HistoryList({
                       <p className="text-[11px] text-gray-400 truncate mt-0.5 font-mono">{item.locationEn}</p>
                     ) : null}
                     {isMain ? (
-                      <p className="text-[10px] text-blue-500 font-medium mt-1">상단 메인에서 보는 중</p>
+                      <p className="text-[10px] text-blue-500 font-medium mt-1">{t('logbook.curationHub.viewingMain')}</p>
                     ) : null}
                   </div>
                   {!isMain ? (
@@ -426,8 +431,8 @@ function HistoryList({
                   e.stopPropagation();
                   onDismiss?.(item);
                 }}
-                aria-label={`${item.location} 추천 삭제`}
-                title="취향에 안 맞음 · 목록에서 삭제"
+                aria-label={t('logbook.curationHub.dismissAria', { location: item.location })}
+                title={t('logbook.curationHub.dismissTitle')}
                 className="flex-shrink-0 self-center mr-2 p-2 rounded-full border border-gray-200/90 bg-white/80 text-gray-500 hover:text-rose-600 hover:bg-rose-50 hover:border-rose-200 transition-colors"
               >
                 <Trash2 size={16} aria-hidden="true" />
@@ -453,6 +458,7 @@ function HistoryList({
 }
 
 function TasteChip({ opt, on, onToggle }) {
+  const { t } = useTranslation();
   return (
     <button
       type="button"
@@ -463,12 +469,13 @@ function TasteChip({ opt, on, onToggle }) {
           : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-blue-200'
       }`}
     >
-      {opt.label}
+      {formatCurationTasteLabel(t, opt)}
     </button>
   );
 }
 
 function TasteSurveyModal({ open, mode = 'first', selected, onToggleTag, onSkip, onConfirm }) {
+  const { t } = useTranslation();
   if (!open) return null;
   const isReset = mode === 'reset';
   return (
@@ -487,18 +494,16 @@ function TasteSurveyModal({ open, mode = 'first', selected, onToggleTag, onSkip,
         onClick={(e) => e.stopPropagation()}
       >
         <h3 id="curation-taste-survey-title" className="text-base font-bold text-gray-900 mb-1">
-          {isReset ? '취향을 다시 맞춰 볼까요?' : '어떤 분위기의 낙원을 찾을까요?'}
+          {isReset ? t('logbook.curationHub.surveyResetTitle') : t('logbook.curationHub.surveyFirstTitle')}
         </h3>
         <p className="text-sm text-gray-500 font-light break-keep mb-4">
-          {isReset
-            ? '이번엔 기후·특별함(백야·흑야 등)·스타일·밀도·권역까지 골라 주시면, 지나간 추천과 다른 결의 낙원을 찾습니다.'
-            : '기록·북마크가 적어 취향 신호가 약합니다. 원하는 분위기를 골라 주시면 다음 추천에 반영합니다.'}
+          {isReset ? t('logbook.curationHub.surveyResetBody') : t('logbook.curationHub.surveyFirstBody')}
         </p>
         {isReset ? (
           <div className="space-y-5 mb-6">
             {CURATION_TASTE_DETAIL_GROUPS.map((group) => (
               <div key={group.id}>
-                <p className="text-[11px] font-bold text-gray-700 mb-2">{group.title}</p>
+                <p className="text-[11px] font-bold text-gray-700 mb-2">{formatCurationTasteGroupTitle(t, group)}</p>
                 <div className="flex flex-wrap gap-2">
                   {group.options.map((opt) => (
                     <TasteChip
@@ -531,14 +536,14 @@ function TasteSurveyModal({ open, mode = 'first', selected, onToggleTag, onSkip,
             disabled={!selected.length}
             className="flex-1 inline-flex items-center justify-center px-4 py-2.5 rounded-full text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white transition-colors disabled:opacity-40"
           >
-            {isReset ? '이 취향으로 다시 찾기' : '이 취향으로 탐색'}
+            {isReset ? t('logbook.curationHub.surveyConfirmReset') : t('logbook.curationHub.surveyConfirmFirst')}
           </button>
           <button
             type="button"
             onClick={onSkip}
             className="flex-1 inline-flex items-center justify-center px-4 py-2.5 rounded-full text-sm font-bold bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
           >
-            {isReset ? '닫기' : '건너뛰고 탐색'}
+            {isReset ? t('logbook.curationHub.surveySkipReset') : t('logbook.curationHub.surveySkipFirst')}
           </button>
         </div>
       </div>
@@ -547,6 +552,7 @@ function TasteSurveyModal({ open, mode = 'first', selected, onToggleTag, onSkip,
 }
 
 const CurationHub = ({ compact = false } = {}) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { status, curationData, history, generateCuration, dismissFromHistory } = useCurationAI();
 
@@ -558,7 +564,7 @@ const CurationHub = ({ compact = false } = {}) => {
   const { saveCurationData, savedTrips } = useTravelData(user);
 
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-  const [loadingText, setLoadingText] = useState('여정의 궤적을 분석 중...');
+  const [loadingText, setLoadingText] = useState(() => t('logbook.curationHub.loadingDefault'));
   /** 목록에서 연 본문 — 클릭할수록 아래로 쌓임(토글) · 메인 교체 없음 */
   const [openStack, setOpenStack] = useState([]);
   const [showTasteSurvey, setShowTasteSurvey] = useState(false);
@@ -582,10 +588,10 @@ const CurationHub = ({ compact = false } = {}) => {
   useEffect(() => {
     if (status !== 'loading') return;
     const texts = [
-      '사용자의 기억을 스캔하는 중...',
-      '취향의 별자리를 연결하는 중...',
-      '완벽한 낙원의 좌표를 수신 중...',
-      '가장 순수한 풍경을 렌더링 중...',
+      t('logbook.curationHub.loadingScan'),
+      t('logbook.curationHub.loadingTaste'),
+      t('logbook.curationHub.loadingCoords'),
+      t('logbook.curationHub.loadingRender'),
     ];
     let i = 0;
     const timer = setInterval(() => {
@@ -675,9 +681,7 @@ const CurationHub = ({ compact = false } = {}) => {
   const handleDismiss = (item) => {
     const location = item?.location;
     if (!location) return;
-    const ok = window.confirm(
-      `「${location}」을(를) 목록에서 지울까요?\n비슷한 취향의 추천도 앞으로 피합니다.`,
-    );
+    const ok = window.confirm(t('logbook.curationHub.dismissConfirm', { location }));
     if (!ok) return;
     dismissFromHistory(item);
     setOpenStack((prev) => prev.filter((entry) => entry.location !== location));
@@ -720,10 +724,10 @@ const CurationHub = ({ compact = false } = {}) => {
           id="curation-login-prompt-title"
           className="text-center text-base font-bold text-gray-900 mb-2"
         >
-          로그인이 필요합니다
+          {t('logbook.curationHub.loginTitle')}
         </h3>
         <p className="text-center text-sm text-gray-500 font-light leading-relaxed break-keep mb-6">
-          즐겨찾기를 저장하려면 로그인이 필요합니다.
+          {t('logbook.curationHub.loginBody')}
         </p>
         <div className="flex flex-col sm:flex-row gap-2">
           <button
@@ -734,14 +738,14 @@ const CurationHub = ({ compact = false } = {}) => {
             }}
             className="flex-1 inline-flex items-center justify-center px-4 py-2.5 rounded-full text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white transition-colors"
           >
-            로그인 하러가기
+            {t('logbook.curationHub.loginCta')}
           </button>
           <button
             type="button"
             onClick={() => setShowLoginPrompt(false)}
             className="flex-1 inline-flex items-center justify-center px-4 py-2.5 rounded-full text-sm font-bold bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
           >
-            확인
+            {t('logbook.common.confirm')}
           </button>
         </div>
       </div>
@@ -755,16 +759,16 @@ const CurationHub = ({ compact = false } = {}) => {
           <div className="w-14 h-14 bg-blue-50/80 rounded-full flex items-center justify-center mb-5 border border-blue-100">
             <Compass size={24} className="text-blue-500" />
           </div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">당신만을 위한 큐레이션</h3>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">{t('logbook.curationHub.idleTitle')}</h3>
           <p className="text-sm text-gray-500 mb-6 max-w-sm font-light break-keep">
-            아직 발견하지 못한 숨겨진 낙원을 찾아, 이 페이지 안에서 실용·숨은 정보까지 바로 보여 드립니다.
+            {t('logbook.curationHub.idleBody')}
           </p>
           <button
             type="button"
             onClick={handleCuration}
             className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-full transition-all shadow-md hover:shadow-lg active:scale-95"
           >
-            <Sparkles size={16} /> 낙원 탐색 시작
+            <Sparkles size={16} /> {t('logbook.curationHub.startExplore')}
           </button>
         </div>
       )}
@@ -772,7 +776,7 @@ const CurationHub = ({ compact = false } = {}) => {
         <div className="p-8 flex flex-col items-center justify-center w-full text-center z-10">
           <Loader2 size={32} className="text-blue-500 animate-spin mb-4" />
           <h3 className="text-lg font-bold text-gray-900 mb-1 animate-pulse">{loadingText}</h3>
-          <p className="text-xs text-gray-500">당신의 취향과 공명하는 별을 찾고 있습니다.</p>
+          <p className="text-xs text-gray-500">{t('logbook.curationHub.loadingSub')}</p>
         </div>
       )}
     </div>
@@ -830,8 +834,7 @@ const CurationHub = ({ compact = false } = {}) => {
                 onNeedLogin={() => setShowLoginPrompt(true)}
               />
               <p className="text-[11px] text-gray-400 font-light break-keep px-1">
-                지구본·장소 카드는 더 깊게 볼 때만. 기본 읽기는 이 페이지에 머무릅니다. 목록에서 본문을 열고, 취향에
-                안 맞으면 휴지로 지울 수 있습니다.
+                {t('logbook.curationHub.hint')}
               </p>
             </>
           ) : null}
@@ -843,7 +846,7 @@ const CurationHub = ({ compact = false } = {}) => {
           <section className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm">
             <div className="sticky max-md:top-[env(safe-area-inset-top,0px)] md:top-0 z-20 flex flex-wrap items-center justify-between gap-3 px-5 py-3 rounded-t-3xl border-b border-gray-100 bg-white/95 backdrop-blur-md shadow-[0_1px_0_rgba(0,0,0,0.03)]">
               <div className="flex items-center gap-2 min-w-0">
-                <h3 className="text-sm font-bold text-gray-900">나의 큐레이션</h3>
+                <h3 className="text-sm font-bold text-gray-900">{t('logbook.curationHub.myCuration')}</h3>
                 <span className="text-[10px] font-mono text-gray-400">{history.length}</span>
               </div>
               <button
@@ -852,7 +855,7 @@ const CurationHub = ({ compact = false } = {}) => {
                 disabled={status === 'loading'}
                 className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition-colors disabled:opacity-50 flex-shrink-0"
               >
-                <Sparkles size={14} /> 새로운 낙원 찾기
+                <Sparkles size={14} /> {t('logbook.curationHub.findNew')}
               </button>
             </div>
             <div className="p-5 pt-4">

@@ -1,8 +1,10 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const CalendarCard = ({ viewYear, viewMonth, calendarDays, onPrevMonth, onNextMonth, isPublicMode }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const handleDateClick = (dayItem) => {
@@ -22,7 +24,7 @@ const CalendarCard = ({ viewYear, viewMonth, calendarDays, onPrevMonth, onNextMo
       <div className="flex justify-between items-center mb-6">
         <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2">
           <Calendar className="text-blue-500" size={20} />
-          {viewYear}년 {viewMonth + 1}월
+          {t('logbook.calendar.month', { year: viewYear, month: viewMonth + 1 })}
         </h3>
         <div className="flex gap-2">
           <button onClick={onPrevMonth} className="p-1.5 hover:bg-gray-100 text-gray-400 hover:text-gray-900 rounded-full transition-colors"><ChevronLeft size={20} /></button>

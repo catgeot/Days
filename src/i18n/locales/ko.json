@@ -35,9 +35,18 @@
       "collapseMenu": "바로가기 메뉴 접기",
       "collapseTitle": "메뉴 접기",
       "navigateTo": "{{label}}로 이동",
-      "festival": { "short": "축제", "label": "한국의 축제" },
-      "scenic": { "short": "명승", "label": "한국의 명승" },
-      "curation": { "short": "추천", "label": "AI 큐레이션" }
+      "festival": {
+        "short": "축제",
+        "label": "한국의 축제"
+      },
+      "scenic": {
+        "short": "명승",
+        "label": "한국의 명승"
+      },
+      "curation": {
+        "short": "추천",
+        "label": "AI 큐레이션"
+      }
     },
     "globe": {
       "themeToggle": "지구본 무드 변경",
@@ -661,6 +670,269 @@
           "tour": "관광지"
         }
       }
+    }
+  },
+  "logbook": {
+    "common": {
+      "home": "홈으로",
+      "logoutConfirm": "로그아웃 하시겠습니까?",
+      "saved": "저장됨",
+      "save": "저장",
+      "confirm": "확인",
+      "close": "닫기",
+      "loginRequired": "로그인이 필요합니다.",
+      "loginAction": "로그인 하기",
+      "loginSignup": "로그인 / 회원가입",
+      "syncing": "우주의 기록을 동기화하는 중...",
+      "syncingMemory": "우주의 기억을 동기화하는 중...",
+      "loadingFragments": "기억의 파편을 불러오는 중...",
+      "penNameSaveFail": "필명 저장에 실패했습니다. 잠시 후 다시 시도해주세요.",
+      "locationUnknown": "위치 미상",
+      "weatherSunny": "맑음",
+      "author": "작성자",
+      "traveler": "여행자",
+      "attachment": "첨부 {{n}}"
+    },
+    "sidebar": {
+      "travelLogTitle": "나만의 여행 기록",
+      "travelLogBody": "로그인하고 전 세계 명소 리뷰와 생생한 여행기를 작성해보세요."
+    },
+    "dashboard": {
+      "title": "LogBook",
+      "titlePublic": "Public LogBook",
+      "syncing": "우주의 기록을 동기화하는 중...",
+      "countPrivate": "총 {{count}}개의 기억이 빛나고 있습니다.",
+      "countPublic": "우주 여행자들의 {{count}}개 기록이 공유되고 있습니다.",
+      "countPublicFiltered": "'{{location}}' 지역의 공개된 기록 {{count}}개",
+      "tabMine": "내 기록",
+      "tabFeed": "탐험 피드",
+      "write": "기록 남기기",
+      "curation": "추천",
+      "calendar": "달력"
+    },
+    "recentList": {
+      "title": "최근 기록 보관소",
+      "titleCompact": "기록 보관소 (요약)",
+      "searchPlaceholder": "기억 검색...",
+      "clearSearch": "검색어 지우기",
+      "viewGrid": "그리드",
+      "viewList": "자세히",
+      "emptyTitle": "기록된 여정이 없습니다.",
+      "emptyBody": "당신만의 첫 번째 이야기를 남겨보세요.",
+      "emptyCta": "새 기록 작성하기",
+      "noResults": "\"{{term}}\"에 대한 기억을 찾을 수 없습니다.",
+      "showAll": "전체 목록 보기",
+      "footer": "총 {{count}}개의 기록",
+      "footerCompact": "(요약됨)"
+    },
+    "calendar": {
+      "month": "{{year}}년 {{month}}월"
+    },
+    "curationCard": {
+      "title": "당신만을 위한 큐레이션",
+      "body": "전용 페이지에서 숨은 낙원·실용 팁·나의 추천 목록을 한곳에서 봅니다.",
+      "recent": "최근 추천 · {{location}}",
+      "recentCount": " · 목록 {{count}}",
+      "savedCount": "저장된 추천 {{count}}곳",
+      "openPage": "큐레이션 페이지 열기"
+    },
+    "curationPage": {
+      "backAria": "LogBook으로 돌아가기",
+      "title": "큐레이션",
+      "subtitle": "숨은 낙원을 추천받고, 이 페이지에서 팁·계절·이야기를 바로 읽으세요. 지나간 추천은 목록에서 다시 엽니다.",
+      "scrollTop": "맨 위로",
+      "scrollUp": "위로"
+    },
+    "curationHub": {
+      "whyHidden": "왜 숨은 낙원인가",
+      "bestSeason": "가기 좋은 시기",
+      "tips": "알아두면 좋은 것",
+      "imagePreparing": "사진 준비 중",
+      "closeBody": "본문 닫기",
+      "favorite": "즐겨찾기",
+      "favoriteSaved": "즐겨찾기 저장됨",
+      "showLess": "간략히 보기",
+      "showMore": "상세히 보기",
+      "viewOnGlobe": "전체 지도에서 보기",
+      "placeCard": "장소 카드",
+      "askMooni": "무니에게 묻기",
+      "resetTaste": "취향 다시 설정",
+      "viewingMain": "상단 메인에서 보는 중",
+      "dismissAria": "{{location}} 추천 삭제",
+      "dismissTitle": "취향에 안 맞음 · 목록에서 삭제",
+      "coordsMissing": "이 추천지의 좌표를 찾지 못했습니다. 다른 낙원을 탐색해 보세요.",
+      "homeLinkFail": "홈으로 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+      "placeCardInsufficient": "장소 카드로 열 수 있는 정보가 부족합니다. 지구본에서 먼저 확인해 보세요.",
+      "surveyResetTitle": "취향을 다시 맞춰 볼까요?",
+      "surveyFirstTitle": "어떤 분위기의 낙원을 찾을까요?",
+      "surveyResetBody": "이번엔 기후·특별함(백야·흑야 등)·스타일·밀도·권역까지 골라 주시면, 지나간 추천과 다른 결의 낙원을 찾습니다.",
+      "surveyFirstBody": "기록·북마크가 적어 취향 신호가 약합니다. 원하는 분위기를 골라 주시면 다음 추천에 반영합니다.",
+      "surveyConfirmReset": "이 취향으로 다시 찾기",
+      "surveyConfirmFirst": "이 취향으로 탐색",
+      "surveySkipReset": "닫기",
+      "surveySkipFirst": "건너뛰고 탐색",
+      "loadingDefault": "여정의 궤적을 분석 중...",
+      "loadingScan": "사용자의 기억을 스캔하는 중...",
+      "loadingTaste": "취향의 별자리를 연결하는 중...",
+      "loadingCoords": "완벽한 낙원의 좌표를 수신 중...",
+      "loadingRender": "가장 순수한 풍경을 렌더링 중...",
+      "loadingSub": "당신의 취향과 공명하는 별을 찾고 있습니다.",
+      "dismissConfirm": "「{{location}}」을(를) 목록에서 지울까요?\n비슷한 취향의 추천도 앞으로 피합니다.",
+      "loginTitle": "로그인이 필요합니다",
+      "loginBody": "즐겨찾기를 저장하려면 로그인이 필요합니다.",
+      "loginCta": "로그인 하러가기",
+      "idleTitle": "당신만을 위한 큐레이션",
+      "idleBody": "아직 발견하지 못한 숨겨진 낙원을 찾아, 이 페이지 안에서 실용·숨은 정보까지 바로 보여 드립니다.",
+      "startExplore": "낙원 탐색 시작",
+      "hint": "지구본·장소 카드는 더 깊게 볼 때만. 기본 읽기는 이 페이지에 머무릅니다. 목록에서 본문을 열고, 취향에 안 맞으면 휴지로 지울 수 있습니다.",
+      "myCuration": "나의 큐레이션",
+      "findNew": "새로운 낙원 찾기",
+      "fail": "큐레이션에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+      "tasteGroup": {
+        "vibe": "어떤 분위기의 낙원을 원하세요?",
+        "climate": "선호하는 기후·날씨는?",
+        "special": "특별한 자연 현상은? (선택)",
+        "style": "여행 스타일은?",
+        "crowd": "사람·밀도는?",
+        "region": "관심 있는 권역은? (선택)"
+      },
+      "taste": {
+        "sea": "바다·섬",
+        "nature": "산·자연",
+        "city": "도시·건축",
+        "culture": "문화·유적",
+        "adventure": "오지·모험",
+        "quiet": "조용한 휴식",
+        "warm": "따뜻·온화",
+        "cool": "선선·고지",
+        "tropical": "열대·습윤",
+        "winter": "겨울·추위",
+        "snow": "눈·설경",
+        "rainy": "우기·비·흐림",
+        "four_season": "사계절 뚜렷",
+        "midnight_sun": "백야",
+        "polar_night": "흑야",
+        "aurora": "오로라",
+        "slow": "느긋한 휴식",
+        "active": "걷기·액티비티",
+        "local": "로컬·일상 체험",
+        "photo": "풍경·사진 명소",
+        "secluded": "한적·거의 비어 있는",
+        "balanced": "적당한 활기",
+        "lively": "생동감 있는 거리",
+        "asia": "아시아",
+        "europe": "유럽",
+        "americas": "아메리카",
+        "oceania": "오세아니아·태평양",
+        "africa": "아프리카·중동"
+      }
+    },
+    "publicNav": {
+      "viewAll": "전체 기록 보기",
+      "noPlaces": "공개된 장소가 없습니다."
+    },
+    "profile": {
+      "memoryBox": "추억 상자 열기",
+      "noPhoto": "사진 없음",
+      "penName": "공개 필명",
+      "nicknamePlaceholder": "닉네임",
+      "penNameHint": "공개 로그북·명소 여행기에 표시됩니다. 비우면 이메일 앞부분·ID로 대체됩니다.",
+      "loginRequired": "로그인이 필요합니다."
+    },
+    "memo": {
+      "placeholder": "새로운 아이디어를 적어보세요...",
+      "delete": "메모 삭제",
+      "add": "새 메모 추가",
+      "deleteConfirm": "삭제하시겠습니까?"
+    },
+    "slide": {
+      "avatarUpdated": "프로필 사진이 업데이트 되었습니다.",
+      "uploadFail": "업로드 실패",
+      "pause": "일시정지",
+      "play": "재생",
+      "noPhotos": "표시할 사진이 없습니다.",
+      "changeProfile": "프로필 변경"
+    },
+    "write": {
+      "terminal": "Logbook Terminal",
+      "editTitle": "기록 수정하기",
+      "newTitle": "새로운 여정 기록",
+      "restore": "원본 복구",
+      "update": "기록 업데이트",
+      "saveToGateo": "GATEO에 저장",
+      "sectionBasics": "여정의 기본 정보",
+      "sectionMoments": "장면의 포착",
+      "sectionStory": "기록의 완성",
+      "findLocation": "현재 위치 찾기",
+      "locationPlaceholder": "어디의 공기를 담았나요?",
+      "penNameLabel": "공개 피드에 표시할 이름 (필명)",
+      "penNamePlaceholder": "{{name}} (비우면 계정 기준 표시)",
+      "penNameSaving": "저장 중…",
+      "penNameSave": "프로필에 저장",
+      "penNameHint": "명소 여행기·공개 로그북 카드에 동일하게 적용됩니다. 사이드바에서도 바꿀 수 있습니다.",
+      "penNameSaved": "필명이 저장되었습니다.",
+      "compressing": "기록의 용량을 최적화 중...",
+      "progress": "Progress: {{current}} / {{total}}",
+      "titlePlaceholder": "이번 여정을 한 문장으로 정의한다면?",
+      "aiEssay": "AI 에세이 작성",
+      "aiSns": "AI SNS 인플루언서",
+      "contentPlaceholder": "떠오르는 파편화된 기억들을 자유롭게 적어보세요. 사진을 올리고 위쪽의 AI 버튼을 누르면 투박한 메모가 아름다운 기록으로 변합니다.",
+      "notFound": "존재하지 않는 기록입니다.",
+      "titleRequired": "제목을 입력해주세요!",
+      "saveFail": "저장 중 오류가 발생했습니다.",
+      "geoUnsupported": "위치 정보를 지원하지 않습니다.",
+      "geoNone": "위치 정보 없음",
+      "geoFail": "위치 확인 실패",
+      "geoDenied": "위치 권한을 확인해주세요.",
+      "aiLoading": {
+        "0": "위성 통신망 연결 중...",
+        "1": "사진 속 감성을 읽어내는 중...",
+        "2": "문장의 맥락을 조율하는 중...",
+        "3": "마무리 원고를 진행 중입니다..."
+      },
+      "defaultTitle": "{{place}}에서의 기록",
+      "defaultPlace": "어느 멋진 곳"
+    },
+    "detail": {
+      "deleteConfirm": "이 기록을 영구적으로 삭제하시겠습니까? (삭제 후 복구할 수 없습니다)",
+      "deleteFail": "기록을 삭제하는 중 오류가 발생했습니다.",
+      "privateConfirm": "이 글을 비공개로 전환하시겠습니까? (기존 공유 링크 접속 차단)",
+      "privateFail": "비공개 전환에 실패했습니다.",
+      "shareFail": "공유 상태 전환에 실패했습니다.",
+      "shareTitle": "GATEO LogBook: {{title}}",
+      "shareText": "지구본에서 나의 특별한 여행 기록을 확인해보세요.",
+      "shareCopied": "공유 링크가 클립보드에 복사되었습니다.\n(카카오톡 등 원하는 곳에 붙여넣기 하세요!)\n\n{{url}}",
+      "copyFail": "URL 복사에 실패했습니다. 브라우저 주소창의 /p/아이디 경로를 확인해주세요.",
+      "exportDate": "일자:",
+      "exportLocation": "위치:",
+      "exportPhoto": "첨부사진 {{n}}",
+      "exportViewWeb": "🔗 웹에서 원본 보기",
+      "exportFooter": "이 글은 GATEO의 AI LogBook을 통해 작성되었습니다.",
+      "clipboardFail": "브라우저 환경에 따라 복사가 지원되지 않을 수 있습니다.",
+      "share": "외부로 공유하기",
+      "shareShort": "공유",
+      "makePrivate": "비공개로 숨기기",
+      "makePrivateTitle": "클릭 시 외부 접속이 차단됩니다",
+      "copied": "복사 완료!",
+      "export": "블로그 보내기",
+      "edit": "수정",
+      "delete": "삭제"
+    },
+    "public": {
+      "notFound": "비공개되었거나 존재하지 않는 기록입니다.",
+      "backTitle": "이전 화면으로 돌아가기",
+      "goHome": "처음으로 가기",
+      "ctaBody": "GATEO에서 나만의 여행 기록을 남겨보세요.",
+      "writeCta": "✍️ 나만의 기록 남기기",
+      "exploreCta": "🌍 지구본 탐색하기"
+    },
+    "media": {
+      "maxPhotos": "사진은 최대 10장까지만 업로드 가능합니다.",
+      "compressFail": "이미지 처리 중 오류가 발생했습니다."
+    },
+    "ai": {
+      "noInput": "AI가 분석할 내용이나 사진이 없습니다. 짧은 메모나 사진을 먼저 추가해주세요.",
+      "fail": "AI 변환 중 오류가 발생했습니다. 원본을 안전하게 복구합니다."
     }
   }
 }
