@@ -62,9 +62,9 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#3 korea·theme · 사람 Preview QA 대기** · PR [#132](https://github.com/catgeot/Days/pull/132) |
+| **상태** | **#4 SEO·릴리스 · 사람 Preview QA 대기** · PR [#132](https://github.com/catgeot/Days/pull/132) |
 | **브랜치** | `cursor/en` |
-| **tip** | `11f6d66f` |
+| **tip** | (push 후 갱신) |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9 |
 | **일지** | [`2026-08-18-project-log.md`](./2026-08-18-project-log.md) |
 | **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` |
@@ -74,11 +74,11 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 **다음 제시어**:
 
 ```
-영문화 #4, SEO·릴리스
+영문화 #5, PROD 병합·QA
 @plans/feature-handoff-index.md
 @plans/2026-08-18-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · PR #132 · /qa/en · Preview /
+브랜치 cursor/en · PR #132 · main 병합은 사람 승인 후
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 

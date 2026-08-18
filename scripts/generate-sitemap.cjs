@@ -22,6 +22,36 @@ const travelSpotsData = JSON.parse(`[${travelSpotsMatch[1]}]`);
 const baseUrl = 'https://www.gateo.kr';
 const today = new Date().toISOString().split('T')[0];
 
+/** src/i18n/seoUrls.js I18N_HUB_PATHS 와 동기 */
+const i18nHubPaths = ['/', '/korea', '/korea/theme/scenic'];
+
+function buildLocalePageUrl(path = '/', locale = 'ko') {
+  const normalized = !path || path === '/' ? '/' : path.startsWith('/') ? path : `/${path}`;
+  const base = `${baseUrl}${normalized === '/' ? '' : normalized}`;
+  if (locale === 'en') {
+    return normalized === '/' ? `${baseUrl}/?lang=en` : `${baseUrl}${normalized}?lang=en`;
+  }
+  return normalized === '/' ? `${baseUrl}/` : base;
+}
+
+function buildHreflangXml(path) {
+  const alternates = [
+    { hreflang: 'ko', href: buildLocalePageUrl(path, 'ko') },
+    { hreflang: 'en', href: buildLocalePageUrl(path, 'en') },
+    { hreflang: 'x-default', href: buildLocalePageUrl(path, 'ko') },
+  ];
+  return alternates
+    .map(
+      (alt) =>
+        `    <xhtml:link rel="alternate" hreflang="${alt.hreflang}" href="${alt.href}"/>`,
+    )
+    .join('\n');
+}
+
+function isI18nHubPath(path) {
+  return i18nHubPaths.includes(path);
+}
+
 /** 국내 투톱·테마 허브 (vite-plugin-sitemap koreaRoutes 와 동기화) */
 const koreaHubRoutes = [
   { path: '/korea', changefreq: 'daily', priority: '0.95' },
@@ -102,12 +132,21 @@ function generateSitemap() {
         xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
         xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-${urls.map(url => `  <url>
-    <loc>${url.loc}</loc>
+${urls.map(url => {
+  const hubPath = url.loc === baseUrl || url.loc === `${baseUrl}/`
+    ? '/'
+    : url.loc.startsWith(baseUrl)
+      ? url.loc.slice(baseUrl.length)
+      : null;
+  const hreflangBlock =
+    hubPath && isI18nHubPath(hubPath) ? `\n${buildHreflangXml(hubPath)}` : '';
+  return `  <url>
+    <loc>${url.loc}</loc>${hreflangBlock}
     <lastmod>${url.lastmod}</lastmod>
     <changefreq>${url.changefreq}</changefreq>
     <priority>${url.priority}</priority>
-  </url>`).join('\n')}
+  </url>`;
+}).join('\n')}
 </urlset>`;
 
   return xml;

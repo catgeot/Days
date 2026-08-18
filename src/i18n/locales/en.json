@@ -1,4 +1,8 @@
 {
+  "seo": {
+    "defaultTitle": "GATEO | AI docent for 3D world travel",
+    "defaultDescription": "Plan and record trips with an AI docent on a 3D globe — GATEO, your smart travel toolkit."
+  },
   "layout": {
     "locale": {
       "switchToEn": "Switch to English",

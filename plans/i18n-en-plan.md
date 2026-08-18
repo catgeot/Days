@@ -13,6 +13,7 @@
 | 1 | 기반 | `영문화 #1, locale 기반` | ✅ |
 | 2 | 홈·PlaceCard | `영문화 #2, 홈·PlaceCard` | ✅ |
 | 3 | 한국 투톱 | `영문화 #3, korea·theme` | ✅ |
+| 4 | SEO·릴리스 | `영문화 #4, SEO·릴리스` | ✅ |
 
 세션마다 `#1` 리셋 금지 · `#N` = Cloud 순번.
 
@@ -81,15 +82,15 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#3)**: `/korea` · `/korea/theme` · `/korea/theme/scenic` 주요 UI 카피 en · `npm run build` PASS
+**상태 (#4)**: hreflang·locale SEO 메타 · 허브 sitemap xhtml alternate · 릴리스 노트 `2026-08-18` · `npm run build` PASS
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #4, SEO·릴리스
+영문화 #5, PROD 병합·QA
 @plans/feature-handoff-index.md
 @plans/2026-08-18-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · PR #132 · /qa/en · Preview /
+브랜치 cursor/en · PR #132 · main 병합은 사람 승인 후
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```

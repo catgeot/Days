@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '영문화',
-  sessionNo: 2,
-  sessionPhase: '홈·PlaceCard',
+  sessionNo: 4,
+  sessionPhase: 'SEO·릴리스',
   branch: 'cursor/en',
   previewPath: '/',
   qaShareSlug: 'en',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-18-i18n-seo-release',
+    session: '영문화 #4, SEO·릴리스',
+    title: 'hreflang·locale SEO·릴리스 노트',
+    detail:
+      'SEO Helmet에 ko/en/x-default alternate·canonical·og:locale을 추가했고, 홈·축제·명승 허브 sitemap에 xhtml alternate를 넣었습니다. 릴리스 노트(영문 UI)가 배포 후 배너에 표시됩니다. Preview /?lang=en 에서 페이지 소스의 hreflang·영문 title/description을 확인해 주세요.',
+    at: '2026-08-18',
+  },
   {
     id: '2026-08-18-i18n-home-placecard',
     session: '영문화 #2, 홈·PlaceCard',
