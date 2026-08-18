@@ -2,13 +2,13 @@
 
 직전: [`2026-08-16-project-log.md`](./2026-08-16-project-log.md)
 
-## 영문화 #2, 홈·PlaceCard
+## 영문화 #2, 홈·PlaceCard — 사람 Preview QA OK
 
 - **홈** 카테고리 칩·바로가기·지구본 메뉴 라벨 → `home.*` i18n 키
 - **PlaceCard** 탭·헤더·플래너 툴킷 섹션·링크 CTA · `name_en`/`country_en` 표시
 - **VERIFY** `build` · `smoke:place-label-slug` PASS
-- **PR** [#132](https://github.com/catgeot/Days/pull/132) · tip (push 후)
-- **Preview** `/qa/en` · `?lang=en` 홈·장소 카드·플래너 영문 QA
+- **PR** [#132](https://github.com/catgeot/Days/pull/132) · tip `97cbab99`
+- **Preview** `/qa/en` · `?lang=en` 홈·장소 카드·플래너 영문 — **사람 QA OK**
 - **다음** #3 한국 투톱(사람 합의 후)
 
 ## 영문화 #1, locale 기반 — 사람 Preview QA OK
