@@ -81,7 +81,7 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#1)**: `i18next` · `LocaleProvider` · `?lang=en` · 헤더 토글 · 공통 레이아웃 키(검색·시스템 공지) · tip 확인 후 갱신
+**상태 (#1)**: 사람 Preview QA OK — `i18next` · `LocaleProvider` · `?lang=en` · 로고 옆 토글 · 공통 레이아웃 키 · tip `00f1ae1a`
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
