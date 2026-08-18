@@ -27,38 +27,32 @@ import { useMobileFaceRegionListHeight } from '../hooks/useMobileFaceRegionListH
 import { useTrendingData } from '../hooks/useTrendingData';
 import { CATEGORY_LABELS } from './SearchDiscovery/constants';
 
-/** 모바일 좌상단 바로가기 — 테마 국가 리스트 펼침 시 접힘 라벨 */
-const MOBILE_QUICK_LINKS = [
+const MOBILE_QUICK_LINK_DEFS = [
   {
+    key: 'festival',
     to: '/korea',
-    shortLabel: '축제',
-    label: '한국의 축제',
     icon: CalendarDays,
     chipClass:
       'border-amber-400/45 bg-[#14110c] shadow-[0_0_18px_rgba(245,158,11,0.22)] hover:border-amber-300/70 hover:bg-[#1c1710]',
     iconWrapClass: 'border-amber-400/35 bg-amber-500/15 text-amber-300 group-hover:bg-amber-500/25',
   },
   {
+    key: 'scenic',
     to: '/korea/theme/scenic',
-    shortLabel: '명승',
-    label: '한국의 명승',
     icon: Map,
     chipClass:
       'border-emerald-400/40 bg-[#0f1412] shadow-[0_0_18px_rgba(52,211,153,0.18)] hover:border-emerald-300/65 hover:bg-[#121a16]',
     iconWrapClass: 'border-emerald-400/35 bg-emerald-500/15 text-emerald-300 group-hover:bg-emerald-500/25',
   },
   {
+    key: 'curation',
     to: '/blog/curation',
-    shortLabel: '추천',
-    label: 'AI 큐레이션',
     icon: Sparkles,
     chipClass:
       'border-sky-400/45 bg-[#0c1218] shadow-[0_0_18px_rgba(56,189,248,0.2)] hover:border-sky-300/70 hover:bg-[#101820]',
     iconWrapClass: 'border-sky-400/35 bg-sky-500/15 text-sky-300 group-hover:bg-sky-500/25',
   },
 ];
-
-const MOBILE_QUICK_LINKS_COLLAPSED_LABEL = MOBILE_QUICK_LINKS.map((item) => item.shortLabel).join(' · ');
 
 /** 모바일 활성 카테고리 — 테마색 글로우 (배포본과 동일) */
 const CATEGORY_ACTIVE_MOBILE = {
@@ -107,6 +101,19 @@ const HomeUI = React.memo(({
   onTourBarStartTour,
 }) => {
   const { t } = useTranslation();
+  const mobileQuickLinks = React.useMemo(
+    () =>
+      MOBILE_QUICK_LINK_DEFS.map((item) => ({
+        ...item,
+        shortLabel: t(`home.quickLinks.${item.key}.short`),
+        label: t(`home.quickLinks.${item.key}.label`),
+      })),
+    [t],
+  );
+  const mobileQuickLinksCollapsedLabel = mobileQuickLinks
+    .map((item) => item.shortLabel)
+    .join(' · ');
+  const categoryLabel = (id) => t(`home.category.${id}`, { defaultValue: CATEGORY_LABELS[id] || id });
   const [, setInputValue] = useState('');
   const navigate = useNavigate();
   const hideExploreChrome =
@@ -182,7 +189,7 @@ const HomeUI = React.memo(({
         to={item.to}
         onClick={() => setMobileQuickLinksExpanded(false)}
         className={`group relative flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border px-2.5 py-1.5 transition-colors touch-manipulation ${item.chipClass} ${linkClassName}`}
-        aria-label={`${item.label}로 이동`}
+        aria-label={t('home.quickLinks.navigateTo', { label: item.label })}
       >
         <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border ${item.iconWrapClass}`}>
           <Icon size={15} aria-hidden="true" />
@@ -194,7 +201,7 @@ const HomeUI = React.memo(({
     );
   };
 
-  const [mobileQuickLinkFirst, ...mobileQuickLinkRest] = MOBILE_QUICK_LINKS;
+  const [mobileQuickLinkFirst, ...mobileQuickLinkRest] = mobileQuickLinks;
 
   return (
     <>
@@ -245,11 +252,11 @@ const HomeUI = React.memo(({
                         setMobileQuickLinksExpanded(true);
                       }}
                       className="group relative flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-white/25 bg-[#101010] px-2.5 py-1.5 shadow-[0_0_14px_rgba(255,255,255,0.08)] transition-colors hover:border-white/40 hover:bg-[#161616] touch-manipulation"
-                      aria-label={`바로가기 메뉴 펼치기 — ${MOBILE_QUICK_LINKS.map((item) => item.label).join(', ')}`}
-                      title="바로가기 메뉴 펼치기"
+                      aria-label={`${t('home.quickLinks.expandMenu')} — ${mobileQuickLinks.map((item) => item.label).join(', ')}`}
+                      title={t('home.quickLinks.expandMenu')}
                     >
                       <span className="flex items-center gap-1">
-                        {MOBILE_QUICK_LINKS.map((item) => {
+                        {mobileQuickLinks.map((item) => {
                           const Icon = item.icon;
                           return (
                             <span
@@ -263,7 +270,7 @@ const HomeUI = React.memo(({
                         })}
                       </span>
                       <span className="truncate text-[11px] font-bold tracking-tight text-white/95 break-keep">
-                        {MOBILE_QUICK_LINKS_COLLAPSED_LABEL}
+                        {mobileQuickLinksCollapsedLabel}
                       </span>
                     </button>
                   ) : (
@@ -274,8 +281,8 @@ const HomeUI = React.memo(({
                           type="button"
                           onClick={() => setMobileQuickLinksExpanded(false)}
                           className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/35 bg-black/70 text-white shadow-[0_0_14px_rgba(255,255,255,0.14)] touch-manipulation transition-colors hover:border-white/50 hover:bg-black/85 active:scale-[0.97]"
-                          aria-label="바로가기 메뉴 접기"
-                          title="메뉴 접기"
+                          aria-label={t('home.quickLinks.collapseMenu')}
+                          title={t('home.quickLinks.collapseTitle')}
                         >
                           <ChevronUp size={20} strokeWidth={2.5} aria-hidden="true" />
                         </button>
@@ -285,14 +292,14 @@ const HomeUI = React.memo(({
                   )}
                 </div>
                 <div className="hidden md:flex flex-col items-start gap-2 pb-3">
-                  {MOBILE_QUICK_LINKS.map((item) => {
+                  {mobileQuickLinks.map((item) => {
                     const Icon = item.icon;
                     return (
                       <Link
                         key={item.to}
                         to={item.to}
                         className={`group relative flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border px-2.5 py-1.5 transition-colors touch-manipulation ${item.chipClass}`}
-                        aria-label={`${item.label}로 이동`}
+                        aria-label={t('home.quickLinks.navigateTo', { label: item.label })}
                       >
                         <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border ${item.iconWrapClass}`}>
                           <Icon size={15} aria-hidden="true" />
@@ -313,7 +320,7 @@ const HomeUI = React.memo(({
            <button
              onClick={onThemeToggle}
              className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border flex items-center justify-center transition-all shadow-lg group ${getThemeConfig().color} ${getThemeConfig().border}`}
-             title="지구본 무드 변경"
+             title={t('home.globe.themeToggle')}
            >
               <ThemeIcon size={16} className="group-hover:scale-110 transition-transform" />
            </button>
@@ -321,7 +328,7 @@ const HomeUI = React.memo(({
            <button
              onClick={onToggleZenMode}
              className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all shadow-lg group hover:bg-emerald-500/20 hover:border-emerald-500/30 ${isZenMode ? 'text-emerald-400 border-emerald-500/30' : 'text-emerald-400'}`}
-             title="Zen Mode (전체화면 힐링)"
+             title={t('home.globe.zenMode')}
            >
               <Leaf size={16} className="group-hover:scale-110 transition-transform" />
            </button>
@@ -329,7 +336,7 @@ const HomeUI = React.memo(({
            <button
              onClick={onTogglePinVisibility}
              className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all shadow-lg group ${isPinVisible ? 'text-blue-400 border-blue-500/30' : 'text-gray-500'}`}
-             title={isPinVisible ? '마커·지명 숨기기' : '마커·지명 보이기'}
+             title={isPinVisible ? t('home.globe.pinsHide') : t('home.globe.pinsShow')}
            >
               {isPinVisible ? <Eye size={16} className="group-hover:scale-110 transition-transform" /> : <EyeOff size={16} className="group-hover:scale-110 transition-transform" />}
            </button>
@@ -447,7 +454,7 @@ const HomeUI = React.memo(({
                    key={cat.id}
                    type="button"
                    onClick={() => onCategorySelect(cat.id)}
-                   aria-label={CATEGORY_LABELS[cat.id] || cat.label}
+                   aria-label={categoryLabel(cat.id) || cat.label}
                    aria-pressed={isActive && faceRegionsOpen}
                    className={`relative group flex flex-col items-center justify-center gap-0.5 flex-shrink-0 rounded-xl transition-all duration-300
                      w-[3.25rem] py-1.5 md:w-14 md:py-2 max-md:border
@@ -458,7 +465,7 @@ const HomeUI = React.memo(({
                  >
                    <Icon size={18} className={`md:w-5 md:h-5 transition-colors duration-300 ${isActive ? cat.color : 'max-md:text-gray-100 text-gray-500 group-hover:text-gray-300'}`} />
                    <span className={`text-[9px] md:text-[10px] font-bold leading-none tracking-tight pointer-events-none ${isActive ? cat.color : 'text-gray-200/90 md:text-gray-400 md:group-hover:text-gray-300'}`}>
-                     {CATEGORY_LABELS[cat.id]}
+                     {categoryLabel(cat.id)}
                    </span>
                  </button>
                )
@@ -485,7 +492,7 @@ const HomeUI = React.memo(({
                     key={cat.id}
                     type="button"
                     onClick={() => onCategorySelect(cat.id)}
-                    aria-label={CATEGORY_LABELS[cat.id] || cat.label}
+                    aria-label={categoryLabel(cat.id) || cat.label}
                     aria-pressed={isActive && faceRegionsOpen}
                     className={`relative group flex flex-col items-center justify-center gap-0.5 flex-shrink-0 rounded-xl transition-all duration-300
                       w-14 py-2 border
@@ -496,7 +503,7 @@ const HomeUI = React.memo(({
                   >
                     <Icon size={20} className={`transition-colors duration-300 ${isActive ? cat.color : 'text-gray-500 group-hover:text-gray-300'}`} />
                     <span className={`text-[10px] font-bold leading-none tracking-tight pointer-events-none ${isActive ? cat.color : 'text-gray-400 group-hover:text-gray-300'}`}>
-                      {CATEGORY_LABELS[cat.id]}
+                      {categoryLabel(cat.id)}
                     </span>
                   </button>
                 );

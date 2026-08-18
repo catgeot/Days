@@ -62,9 +62,9 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#1 locale 기반 · 사람 Preview QA OK** · PR [#132](https://github.com/catgeot/Days/pull/132) |
+| **상태** | **#2 홈·PlaceCard** · 사람 Preview QA · PR [#132](https://github.com/catgeot/Days/pull/132) |
 | **브랜치** | `cursor/en` |
-| **tip** | `00f1ae1a` |
+| **tip** | (push 후) |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9 |
 | **일지** | [`2026-08-18-project-log.md`](./2026-08-18-project-log.md) |
 | **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` |
@@ -74,7 +74,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 **다음 제시어**:
 
 ```
-영문화 #2, 홈·PlaceCard
+영문화 #3, korea·theme
 @plans/feature-handoff-index.md
 @plans/2026-08-18-project-log.md
 @plans/i18n-en-plan.md

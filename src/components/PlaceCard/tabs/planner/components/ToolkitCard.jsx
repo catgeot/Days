@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ExternalLink } from 'lucide-react';
 import CopyableText from '../../../common/CopyableText';
 import { isMobileDevice } from '../../../common/device';
@@ -36,6 +37,7 @@ const ToolkitCard = ({
     themeColor = 'gray',
     className = ''
 }) => {
+    const { t } = useTranslation();
     const Icon = icon;
     const theme = THEME_COLORS[themeColor] || THEME_COLORS.gray || THEME_COLORS.default;
 
@@ -63,8 +65,8 @@ const ToolkitCard = ({
                     </span>
                 )}
                 {isSponsored && (
-                    <span className="bg-fuchsia-50 text-fuchsia-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-fuchsia-100 tracking-wider group-hover:bg-fuchsia-100 transition-colors" title="파트너사 제휴광고 연결로, 사이트 운영에 도움이 됩니다.">
-                        제휴광고
+                    <span className="bg-fuchsia-50 text-fuchsia-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-fuchsia-100 tracking-wider group-hover:bg-fuchsia-100 transition-colors" title={t('place.planner.toolkit.sponsoredTitle')}>
+                        {t('place.planner.toolkit.sponsored')}
                     </span>
                 )}
             </div>

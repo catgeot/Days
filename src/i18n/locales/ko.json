@@ -24,5 +24,209 @@
       "signUp": "회원가입",
       "back": "뒤로"
     }
+  },
+  "home": {
+    "quickLinks": {
+      "expandMenu": "바로가기 메뉴 펼치기",
+      "collapseMenu": "바로가기 메뉴 접기",
+      "collapseTitle": "메뉴 접기",
+      "navigateTo": "{{label}}로 이동",
+      "festival": { "short": "축제", "label": "한국의 축제" },
+      "scenic": { "short": "명승", "label": "한국의 명승" },
+      "curation": { "short": "추천", "label": "AI 큐레이션" }
+    },
+    "globe": {
+      "themeToggle": "지구본 무드 변경",
+      "zenMode": "Zen Mode (전체화면 힐링)",
+      "pinsHide": "마커·지명 숨기기",
+      "pinsShow": "마커·지명 보이기",
+      "menuExpanded": "세부 메뉴",
+      "menuCollapsed": "메뉴 숨김",
+      "menuHide": "세부 메뉴 숨기기",
+      "menuShow": "세부 메뉴 펼치기",
+      "menuHideMap": "숨기고 지도 보기",
+      "menuShowChips": "나라·세부 칩 보기",
+      "subregionGroup": "소권역·해양",
+      "oceanGroup": "대양·권역",
+      "midSeaGroup": "중위 해역",
+      "smallSeaGroup": "소해역",
+      "wideSeaGroup": "광역 해역",
+      "seaExplore": "해역 탐색",
+      "countryExplore": "나라·지역 탐색"
+    },
+    "category": {
+      "paradise": "휴양",
+      "island": "섬여행",
+      "nature": "자연",
+      "urban": "도심",
+      "culture": "문화",
+      "adventure": "모험"
+    }
+  },
+  "place": {
+    "fallback": {
+      "destination": "여행지",
+      "local": "현지",
+      "global": "Global",
+      "infoUpdating": "이 장소에 대한 정보가 업데이트 중입니다.",
+      "reviewEmpty": "장소에 대한 리뷰 정보가 없습니다.",
+      "videoMissing": "영상 정보 없음",
+      "galleryDetail": "갤러리 상세보기"
+    },
+    "nav": {
+      "back": "뒤로가기",
+      "home": "홈으로 이동",
+      "copyPrimary": "여행지명 복사",
+      "copySecondary": "보조 지명 복사",
+      "copiedPrimary": "여행지명 복사됨",
+      "copiedSecondary": "보조 지명 복사됨",
+      "askMooni": "MOONi에게 물어보기",
+      "planner": "여행 플래너",
+      "galleryBack": "갤러리 복귀",
+      "travelSketch": "여행 스케치",
+      "youtube": "유튜브 영상",
+      "reviews": "리뷰",
+      "packageBrowse": "패키지 여행 둘러보기",
+      "scrollTopPlanner": "탭하면 플래너 맨 위로",
+      "scrollTopGallery": "탭하면 갤러리 맨 위로",
+      "scrollTopWiki": "탭하면 여행 스케치 맨 위로",
+      "scrollTopReviews": "탭하면 리뷰 맨 위로",
+      "plannerTop": "플래너 맨 위로",
+      "scrollTopShort": "맨 위"
+    },
+    "tab": {
+      "wiki": {
+        "suffix": "여행 스케치",
+        "desc": "{{name}}의 역사·문화·명소를 매거진형 여행 스케치와 AI 도슨트로 만나보세요."
+      },
+      "reviews": {
+        "suffix": "여행 후기 & 리뷰",
+        "desc": "{{name}}을(를) 다녀온 여행자들의 생생한 후기와 평점을 확인하세요."
+      },
+      "gallery": {
+        "suffix": "사진 갤러리",
+        "desc": "{{name}}의 아름다운 풍경을 사진으로 만나보세요."
+      },
+      "video": {
+        "suffix": "여행 영상",
+        "desc": "{{name}}의 생생한 현장 영상을 통해 미리 경험해보세요."
+      },
+      "planner": {
+        "suffix": "여행 준비 가이드",
+        "desc": "{{name}} 여행에 필요한 모든 정보와 팁을 확인하세요."
+      }
+    },
+    "summary": {
+      "flightLoading": "조회 중…",
+      "flightRefreshing": "갱신 중…",
+      "flightRoute": "항공 경로",
+      "preparing": "준비 중…",
+      "flightRouteLoading": "항공 경로 조회 중…",
+      "flightRouteRefreshing": "경로 갱신 중…",
+      "flightRoutePreview": "항공 경로 미리보기",
+      "globePreparing": "지구본 준비 중…",
+      "openPlanner": "여행 플래너 열기",
+      "globeFar": "지구본을 멀리서 보기",
+      "zoom2x": "현재 배율에서 ×2 확대",
+      "zoom4x": "현재 배율에서 ×4 확대",
+      "regionNear": "이 지역을 가까이서 보기",
+      "region3dTour": "이 지역 3D 투어",
+      "backToCard": "장소 카드로 돌아가기",
+      "closeSummary": "써머리 닫기",
+      "blurbFallback": "{{name}}의 숨겨진 매력을 발견하세요. 카드를 클릭하면 고화질 갤러리와 AI 가이드가 시작됩니다."
+    },
+    "planner": {
+      "title": "스마트 트래블 툴킷",
+      "subtitle": "{{name}} 여행을 위한 생존 정보 및 핵심 큐레이션",
+      "complexity": "복잡도",
+      "refreshSaved": "저장된 데이터 새로고침",
+      "refreshSavedTitle": "DB에 저장된 툴킷만 다시 불러옵니다 (AI 미호출)",
+      "lastUpdated": "마지막 업데이트: {{date}}",
+      "emptyTitle": "여행자 필수 정보가 없습니다.",
+      "emptyBody": "AI가 분석한 이 지역의 필수 여행 정보(비자, 교통, 숙박, 유심 등) 가이드를 실행할까요?",
+      "emptyHint": "버튼을 눌렀을 때만 AI 툴킷이 실행됩니다.",
+      "emptyMismatch": "저장된 툴킷이 「{{name}}」와 다른 여행지 내용입니다. AI 툴킷을 다시 실행해 주세요.",
+      "emptyStale": "저장 기록은 있으나 가이드 본문이 비어 있습니다. 아래에서 다시 실행하거나 「저장된 데이터 새로고침」을 눌러 보세요.",
+      "runToolkit": "AI 툴킷 실행하기",
+      "sectionPrep": "🛫 출발 전 필수 준비",
+      "sectionArrival": "🛬 현지 도착 및 이동",
+      "sectionEnjoy": "🌴 현지 100% 즐기기",
+      "toolkit": {
+        "visa": "비자 및 서류",
+        "flight": "항공권",
+        "accommodation": "숙박 지역 추천",
+        "safety": "안전 및 보험",
+        "airportTransfer": "공항 → 항구/목적지 이동",
+        "ferry": "페리 (쾌속선) 예약",
+        "connectivity": "유심 및 와이파이",
+        "mapPoi": "지도 및 명소",
+        "transport": "교통 및 패스",
+        "apps": "필수 앱",
+        "sponsored": "제휴광고",
+        "sponsoredTitle": "파트너사 제휴광고 연결로, 사이트 운영에 도움이 됩니다.",
+        "forceUpdate": "기존 툴킷 강제 업데이트 (관리자/테스트용)",
+        "forceUpdateShort": "Force Update Toolkit",
+        "forceUpdating": "Updating..."
+      },
+      "hybridNotice": "하이브리드 정보 안내: 본 툴킷은 객관적인 공공 정보(비자, 치안 등)와 함께, 원활한 여행 준비를 돕기 위한 파트너사 제휴광고 연결(숙박, 유심 등)이 일부 포함되어 있습니다. 제휴광고를 통한 서비스 이용 시 사이트 운영에 큰 도움이 됩니다. AI에 의해 자동 생성된 팁이므로 시기에 따라 일부 정보가 다를 수 있습니다.",
+      "preTravel": {
+        "title": "출발 전 필수 준비사항",
+        "goLink": "바로가기",
+        "essentialToolkit": "✈️ 필수 예약 툴킷",
+        "flightSearch": "항공권 실시간 검색",
+        "hotelTripcom": "호텔 예약 (Trip.com)",
+        "hotelTripcomNote": "이 여행지는 트립닷컴 제휴광고로 연결됩니다",
+        "staySearch": "숙소 실시간 검색",
+        "staySearchNote": "전 세계 숙소 검색 및 예약",
+        "pickup": "공항 픽업 예약",
+        "pickupNote": "항공권 구매 후 항공편명으로 검색해 주세요."
+      },
+      "loading": {
+        "new": [
+          "🗺️ 지도 및 명소를 가져오는 중...",
+          "📄 비자 및 서류 정보를 확인하는 중...",
+          "✈️ 최적의 항공권 및 직항 팁을 분석하는 중...",
+          "🏨 가장 위치가 좋은 숙박 지역을 선정하는 중...",
+          "📱 유심 및 공항 픽업 정보를 정리하는 중...",
+          "🚇 교통 패스 및 렌터카 정보를 찾는 중...",
+          "📲 국가별 필수 앱을 선별하는 중...",
+          "🚨 안전 및 치안 정보를 스캔하는 중...",
+          "✨ AI가 여행자 툴킷을 최종 완성하는 중..."
+        ],
+        "update": [
+          "📦 기존 툴킷 정보를 불러오는 중...",
+          "🔄 최신 비자 및 출입국 규정 변동을 확인하는 중...",
+          "🛫 항공 및 교통 정보를 업데이트하는 중...",
+          "🏠 숙박 및 편의 정보를 점검하는 중...",
+          "📱 유심·앱 정보를 최신화하는 중...",
+          "🗺️ 명소·지도 데이터를 다시 정리하는 중...",
+          "✨ AI가 툴킷을 최신 상태로 갱신하는 중..."
+        ]
+      },
+      "links": {
+        "regionStay": "[{{region}}] 숙박 찾기",
+        "hotelTripcom": "{{name}} 호텔 (Trip.com)",
+        "staySearch": "{{name}} 숙소 검색",
+        "guesthouse": "한인민박 검색",
+        "transitPass": "{{name}} 교통 패스",
+        "motorbike": "오토바이 대여",
+        "bounce": "Bounce (글로벌 짐 보관) 찾기",
+        "airportPickup": "공항 픽업 검색",
+        "airportPickupSub": "항공권 구매 후 항공편명으로 검색해 주세요.",
+        "rentalHome": "렌터카 홈",
+        "ferry12go": "12Go 교통 검색",
+        "ferry12goSub": "아시아 기차·버스·페리 통합 검색",
+        "ferryKlook": "Klook 페리 통합",
+        "ferryKlookSub": "노선 특화 URL이 없을 때 전체 페리 검색",
+        "googleMaps": "구글 맵 보기",
+        "klookDining": "Klook 레스토랑 검색",
+        "diningReserve": "{{name}} 식당 예약",
+        "nearbyRestaurant": "근처 레스토랑 찾기",
+        "insurance": "해외 여행자 보험 비교",
+        "officialSite": "공식 사이트 확인",
+        "safeTravel": "외교부 안전여행",
+        "visaInfo": "비자/입국 정보 확인"
+      }
+    }
   }
 }

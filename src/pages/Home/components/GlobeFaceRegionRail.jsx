@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { placeScrollPanYClass } from '../../../components/PlaceCard/common/placeScrollSurface.js';
 import {
   getDefaultFaceSubregionId,
@@ -80,6 +81,7 @@ function renderSeaOceanChip(
 
 /** 모바일 — 세부 메뉴 펼침 스위치 */
 export function MobileRegionsMenuSwitch({ expanded, onChange }) {
+  const { t } = useTranslation();
   return (
     <div
       className={`pointer-events-auto flex w-[4.25rem] flex-col gap-0.5 rounded-lg border px-1.5 py-1 backdrop-blur-md transition-all ${
@@ -94,14 +96,14 @@ export function MobileRegionsMenuSwitch({ expanded, onChange }) {
           expanded ? 'text-gray-200/90' : 'text-amber-100'
         }`}
       >
-        {expanded ? '세부 메뉴' : '메뉴 숨김'}
+        {expanded ? t('home.globe.menuExpanded') : t('home.globe.menuCollapsed')}
       </span>
       <button
         type="button"
         role="switch"
         aria-checked={expanded}
-        aria-label={expanded ? '세부 메뉴 숨기기' : '세부 메뉴 펼치기'}
-        title={expanded ? '숨기고 지도 보기' : '나라·세부 칩 보기'}
+        aria-label={expanded ? t('home.globe.menuHide') : t('home.globe.menuShow')}
+        title={expanded ? t('home.globe.menuHideMap') : t('home.globe.menuShowChips')}
         onClick={(event) => {
           event.stopPropagation();
           onChange?.(!expanded);
@@ -334,6 +336,7 @@ export default function GlobeFaceRegionRail({
   selectedTopOceanId = null,
   onSelectTopOcean = null,
 }) {
+  const { t } = useTranslation();
   const isSeaRail = Boolean(seaBasinHierarchy);
   const subregions = useMemo(
     () => (showSubregions ? getFaceSubregions(category) : []),
@@ -602,12 +605,12 @@ export default function GlobeFaceRegionRail({
   };
 
   const seaList = renderModeList(
-    '해역 탐색',
+    t('home.globe.seaExplore'),
     renderSeaBasinHierarchy(),
   );
 
   const countryList = renderModeList(
-    '나라·지역 탐색',
+    t('home.globe.countryExplore'),
     regions.map((region) => {
       const isActive = selectedRegionId === region.id;
       return (

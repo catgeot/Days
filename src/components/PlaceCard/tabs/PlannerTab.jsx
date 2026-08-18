@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Briefcase, MapPin, FileText, Train, Smartphone, Wifi, Plane, Bed, ShieldAlert, AlertCircle, Sparkles, Loader2, Car, Ship, RefreshCw, ArrowUp } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 
 import { LOADING_MESSAGES_NEW, LOADING_MESSAGES_UPDATE } from './planner/constants';
+import { getLocalizedPlaceName } from '../common/locationDisplay';
+import { useLocale } from '../../../i18n/LocaleProvider';
 import { mobilePlaceHeaderScrollPadding, mobilePlaceHeaderSpacerClass, mobilePlaceFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import PreTravelChecklist from './planner/components/PreTravelChecklist';
 import JourneyTimeline from './planner/components/JourneyTimeline';
@@ -48,6 +51,8 @@ const PlannerTab = ({
     matchedPackage,
     mobileSecondaryNav = null,
 }) => {
+    const { t } = useTranslation();
+    const { locale } = useLocale();
     const [loadingStep, setLoadingStep] = useState(0);
     const [isRemoteUpdating, setIsRemoteUpdating] = useState(false); // 수동 업데이트 로딩 상태 추가
 
@@ -73,7 +78,16 @@ const PlannerTab = ({
     const showFerryCard = shouldShowFerryCard(canonicalLocation?.slug);
     const toolkitMismatch = isToolkitLocationMismatch(plannerData, canonicalLocation);
     const isUpdatingExisting = !!guideData;
-    const currentMessages = isUpdatingExisting ? LOADING_MESSAGES_UPDATE : LOADING_MESSAGES_NEW;
+    const localizedPlaceName = getLocalizedPlaceName(canonicalLocation, locale) || canonicalLocation?.name || '';
+    const loadingMessagesNew = t('place.planner.loading.new', { returnObjects: true });
+    const loadingMessagesUpdate = t('place.planner.loading.update', { returnObjects: true });
+    const currentMessages = isUpdatingExisting
+        ? (Array.isArray(loadingMessagesUpdate) && loadingMessagesUpdate.length > 0
+            ? loadingMessagesUpdate
+            : LOADING_MESSAGES_UPDATE)
+        : (Array.isArray(loadingMessagesNew) && loadingMessagesNew.length > 0
+            ? loadingMessagesNew
+            : LOADING_MESSAGES_NEW);
 
     // isRemoteUpdating 플래그를 로딩 조건에 추가
     const isLoading = isPlannerLoading || isRemoteUpdating;
@@ -308,20 +322,20 @@ const PlannerTab = ({
                 )}
                 <div className="flex flex-1 flex-col items-center justify-center p-6 text-center min-h-0">
                 <Briefcase size={48} className="text-gray-300 mb-4" />
-                <h3 className="text-lg font-bold text-gray-800 mb-2">여행자 필수 정보가 없습니다.</h3>
+                <h3 className="text-lg font-bold text-gray-800 mb-2">{t('place.planner.emptyTitle')}</h3>
                 <p className="text-sm text-gray-500 mb-2 max-w-sm">
-                    AI가 분석한 이 지역의 필수 여행 정보(비자, 교통, 숙박, 유심 등) 가이드를 실행할까요?
+                    {t('place.planner.emptyBody')}
                 </p>
                 <p className="text-xs text-gray-400 mb-6 max-w-sm">
-                    버튼을 눌렀을 때만 AI 툴킷이 실행됩니다.
+                    {t('place.planner.emptyHint')}
                     {toolkitMismatch && (
                         <span className="mt-2 block text-amber-800/95">
-                            저장된 툴킷이 「{location?.name}」와 다른 여행지 내용입니다. AI 툴킷을 다시 실행해 주세요.
+                            {t('place.planner.emptyMismatch', { name: localizedPlaceName })}
                         </span>
                     )}
                     {!toolkitMismatch && plannerData?.toolkit_updated_at && (
                         <span className="mt-2 block text-amber-700/90">
-                            저장 기록은 있으나 가이드 본문이 비어 있습니다. 아래에서 다시 실행하거나 「저장된 데이터 새로고침」을 눌러 보세요.
+                            {t('place.planner.emptyStale')}
                         </span>
                     )}
                 </p>
@@ -332,7 +346,7 @@ const PlannerTab = ({
                     className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full font-bold shadow-lg transition-colors text-sm"
                 >
                     <Sparkles size={16} />
-                    <span>AI 툴킷 실행하기</span>
+                    <span>{t('place.planner.runToolkit')}</span>
                 </button>
                 {plannerData?.toolkit_updated_at && refetchPlannerFromDb ? (
                     <button
@@ -342,7 +356,7 @@ const PlannerTab = ({
                         className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-gray-600 hover:text-blue-600 disabled:opacity-50"
                     >
                         <RefreshCw size={14} className={isPlannerRefreshing ? 'animate-spin' : ''} />
-                        저장된 데이터 새로고침
+                        {t('place.planner.refreshSaved')}
                     </button>
                 ) : null}
                 </div>
@@ -375,11 +389,11 @@ const PlannerTab = ({
                             <h2 className="text-xl md:text-2xl font-black text-gray-900 flex flex-wrap items-baseline gap-x-2 gap-y-1">
                                 <span className="inline-flex items-center gap-2">
                                     <Briefcase className="text-blue-600" />
-                                    스마트 트래블 툴킷
+                                    {t('place.planner.title')}
                                 </span>
                                 {guideData?.is_complex ? (
                                     <span className="text-base font-bold tabular-nums text-amber-800/90 md:text-lg md:font-black">
-                                        (복잡도{' '}
+                                        ({t('place.planner.complexity')}{' '}
                                         {Number.isFinite(Number(guideData.complexity_score))
                                             ? Number(guideData.complexity_score)
                                             : 80}
@@ -388,7 +402,7 @@ const PlannerTab = ({
                                 ) : null}
                             </h2>
                             <p className={`${plannerCaption} mt-1 text-gray-600`}>
-                                {location?.name} 여행을 위한 생존 정보 및 핵심 큐레이션
+                                {t('place.planner.subtitle', { name: localizedPlaceName })}
                             </p>
                         </div>
 
@@ -399,14 +413,14 @@ const PlannerTab = ({
                                     onClick={() => refetchPlannerFromDb?.()}
                                     disabled={isPlannerRefreshing || !refetchPlannerFromDb}
                                     className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-bold text-gray-700 shadow-sm hover:bg-gray-50 hover:border-gray-300 disabled:opacity-50 disabled:pointer-events-none"
-                                    title="DB에 저장된 툴킷만 다시 불러옵니다 (AI 미호출)"
+                                    title={t('place.planner.refreshSavedTitle')}
                                 >
                                     <RefreshCw size={14} className={isPlannerRefreshing ? 'animate-spin text-blue-600' : 'text-gray-500'} />
-                                    저장된 데이터 새로고침
+                                    {t('place.planner.refreshSaved')}
                                 </button>
                                 {lastUpdated && (
                                     <span className={`${plannerMeta} px-1`}>
-                                        마지막 업데이트: {lastUpdated}
+                                        {t('place.planner.lastUpdated', { date: lastUpdated })}
                                     </span>
                                 )}
                             </div>
@@ -439,7 +453,7 @@ const PlannerTab = ({
                     >
                         <PreTravelChecklist
                             items={guideData?.categories?.pre_travel || []}
-                            locationName={location?.name}
+                            locationName={localizedPlaceName}
                             location={location}
                             essentialGuide={guideData}
                         />
@@ -459,20 +473,20 @@ const PlannerTab = ({
                 <div id="planner-prep" className="mb-8 scroll-mt-24">
                     <div className="flex items-center gap-2 mb-4">
                         <div className="w-1.5 h-5 bg-blue-600 rounded-full"></div>
-                        <h3 className="text-lg font-bold text-gray-800">🛫 출발 전 필수 준비</h3>
+                        <h3 className="text-lg font-bold text-gray-800">{t('place.planner.sectionPrep')}</h3>
                     </div>
                     <div className="grid grid-cols-1 gap-5">
                         <div id="planner-prep-visa" className="scroll-mt-24">
-                        <ToolkitCard icon={FileText} title="비자 및 서류" type="visa" data={guideData?.categories?.visa || guideData?.visa} isOfficial location={location} essentialGuide={guideData} themeColor="warning" />
+                        <ToolkitCard icon={FileText} title={t('place.planner.toolkit.visa')} type="visa" data={guideData?.categories?.visa || guideData?.visa} isOfficial location={location} essentialGuide={guideData} themeColor="warning" />
                         </div>
                         <div id="planner-prep-flight" className="scroll-mt-24">
-                        <ToolkitCard icon={Plane} title="항공권" type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
+                        <ToolkitCard icon={Plane} title={t('place.planner.toolkit.flight')} type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
                         </div>
                         <div id="planner-prep-accommodation" className="scroll-mt-24">
-                        <ToolkitCard icon={Bed} title="숙박 지역 추천" type="accommodation" data={guideData?.categories?.accommodation || guideData?.accommodation} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
+                        <ToolkitCard icon={Bed} title={t('place.planner.toolkit.accommodation')} type="accommodation" data={guideData?.categories?.accommodation || guideData?.accommodation} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
                         </div>
                         <div id="planner-prep-safety" className="scroll-mt-24">
-                        <ToolkitCard icon={ShieldAlert} title="안전 및 보험" type="safety" data={guideData?.categories?.safety || guideData?.safety} isOfficial location={location} essentialGuide={guideData} themeColor="danger" />
+                        <ToolkitCard icon={ShieldAlert} title={t('place.planner.toolkit.safety')} type="safety" data={guideData?.categories?.safety || guideData?.safety} isOfficial location={location} essentialGuide={guideData} themeColor="danger" />
                         </div>
                     </div>
                 </div>
@@ -481,21 +495,21 @@ const PlannerTab = ({
                 <div id="planner-arrival" className="mb-8 scroll-mt-24">
                     <div className="flex items-center gap-2 mb-4">
                         <div className="w-1.5 h-5 bg-teal-500 rounded-full"></div>
-                        <h3 className="text-lg font-bold text-gray-800">🛬 현지 도착 및 이동</h3>
+                        <h3 className="text-lg font-bold text-gray-800">{t('place.planner.sectionArrival')}</h3>
                     </div>
                     <div className="grid grid-cols-1 gap-5">
                         {(guideData?.categories?.airport_transfer) && (
                             <div id="planner-arrival-transfer" className="scroll-mt-24">
-                            <ToolkitCard icon={Car} title="공항 → 항구/목적지 이동" type="airport_transfer" data={guideData.categories.airport_transfer} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
+                            <ToolkitCard icon={Car} title={t('place.planner.toolkit.airportTransfer')} type="airport_transfer" data={guideData.categories.airport_transfer} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
                             </div>
                         )}
                         {showFerryCard && (
-                            <ToolkitCard icon={Ship} title="페리 (쾌속선) 예약" type="ferry_booking" data={guideData?.categories?.ferry_booking} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
+                            <ToolkitCard icon={Ship} title={t('place.planner.toolkit.ferry')} type="ferry_booking" data={guideData?.categories?.ferry_booking} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
                         )}
                         <div className="rounded-2xl border border-blue-200/90 bg-gradient-to-b from-blue-50/45 via-white to-white p-3 shadow-sm ring-1 ring-blue-900/[0.06] md:p-4 flex flex-col gap-4">
                             <ToolkitCard
                                 icon={Wifi}
-                                title="유심 및 와이파이"
+                                title={t('place.planner.toolkit.connectivity')}
                                 type="connectivity"
                                 data={guideData?.categories?.connectivity || guideData?.connectivity}
                                 isSponsored
@@ -516,21 +530,21 @@ const PlannerTab = ({
                 <div className="mb-8">
                     <div className="flex items-center gap-2 mb-4">
                         <div className="w-1.5 h-5 bg-orange-500 rounded-full"></div>
-                        <h3 className="text-lg font-bold text-gray-800">🌴 현지 100% 즐기기</h3>
+                        <h3 className="text-lg font-bold text-gray-800">{t('place.planner.sectionEnjoy')}</h3>
                     </div>
                     <div className="grid grid-cols-1 gap-5">
-                        <ToolkitCard icon={MapPin} title="지도 및 명소" type="map_poi" data={guideData?.categories?.map_poi || guideData?.map_poi} location={location} essentialGuide={guideData} themeColor="default" />
+                        <ToolkitCard icon={MapPin} title={t('place.planner.toolkit.mapPoi')} type="map_poi" data={guideData?.categories?.map_poi || guideData?.map_poi} location={location} essentialGuide={guideData} themeColor="default" />
                         <div id="planner-local-transport" className="scroll-mt-24">
-                        <ToolkitCard icon={Train} title="교통 및 패스" type="transport" data={guideData?.categories?.transport || guideData?.transport} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
+                        <ToolkitCard icon={Train} title={t('place.planner.toolkit.transport')} type="transport" data={guideData?.categories?.transport || guideData?.transport} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
                         </div>
-                        <ToolkitCard icon={Smartphone} title="필수 앱" type="apps" data={guideData?.categories?.apps || guideData?.apps} location={location} essentialGuide={guideData} themeColor="default" />
+                        <ToolkitCard icon={Smartphone} title={t('place.planner.toolkit.apps')} type="apps" data={guideData?.categories?.apps || guideData?.apps} location={location} essentialGuide={guideData} themeColor="default" />
                     </div>
                 </div>
 
                 <div className="mt-8 mb-4 flex items-start gap-2 bg-blue-50/50 p-4 rounded-xl border border-blue-100 shrink-0">
                     <AlertCircle size={16} className="text-blue-500 shrink-0 mt-0.5" />
                     <p className={`${plannerCaption} md:text-sm text-gray-600`}>
-                        <strong className="font-bold text-gray-700">하이브리드 정보 안내:</strong> 본 툴킷은 객관적인 공공 정보(비자, 치안 등)와 함께, 원활한 여행 준비를 돕기 위한 파트너사 제휴광고 연결(숙박, 유심 등)이 일부 포함되어 있습니다. 제휴광고를 통한 서비스 이용 시 사이트 운영에 큰 도움이 됩니다. AI에 의해 자동 생성된 팁이므로 시기에 따라 일부 정보가 다를 수 있습니다.
+                        {t('place.planner.hybridNotice')}
                     </p>
                 </div>
 
@@ -544,10 +558,10 @@ const PlannerTab = ({
                         onClick={handleRemoteUpdate}
                         disabled={isRemoteUpdating}
                         className="text-[10px] font-medium text-gray-400 hover:text-gray-600 transition-colors opacity-40 hover:opacity-100 disabled:pointer-events-none disabled:opacity-30"
-                        title="기존 툴킷 강제 업데이트 (관리자/테스트용)"
-                        aria-label="기존 툴킷 강제 업데이트"
+                        title={t('place.planner.toolkit.forceUpdate')}
+                        aria-label={t('place.planner.toolkit.forceUpdate')}
                     >
-                        {isRemoteUpdating ? 'Updating...' : 'Force Update Toolkit'}
+                        {isRemoteUpdating ? t('place.planner.toolkit.forceUpdating') : t('place.planner.toolkit.forceUpdateShort')}
                     </button>
                 </div>
             </div>
@@ -557,10 +571,10 @@ const PlannerTab = ({
                     type="button"
                     onClick={scrollPlannerToTop}
                     className={`fixed z-[170] flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-[0_4px_20px_rgba(37,99,235,0.55)] ring-2 ring-white transition-colors hover:bg-blue-500 active:scale-95 bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] right-3 sm:right-4 md:bottom-8 md:right-8 md:h-auto md:w-auto md:gap-1.5 md:px-4 md:py-2.5 touch-manipulation ${mobileLandscapeChromeHidden}`}
-                    aria-label="플래너 맨 위로"
+                    aria-label={t('place.nav.plannerTop')}
                 >
                     <ArrowUp size={22} className="shrink-0" strokeWidth={2.5} />
-                    <span className="hidden md:inline text-sm font-bold">맨 위</span>
+                    <span className="hidden md:inline text-sm font-bold">{t('place.nav.scrollTopShort')}</span>
                 </button>,
                 document.body
             )}

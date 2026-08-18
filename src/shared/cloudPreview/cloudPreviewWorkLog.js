@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '영문화',
-  sessionNo: 1,
-  sessionPhase: 'locale 기반',
+  sessionNo: 2,
+  sessionPhase: '홈·PlaceCard',
   branch: 'cursor/en',
   previewPath: '/',
   qaShareSlug: 'en',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-18-i18n-home-placecard',
+    session: '영문화 #2, 홈·PlaceCard',
+    title: '홈·PlaceCard 주요 카피 en',
+    detail:
+      '홈 카테고리·바로가기·지구본 메뉴와 PlaceCard 탭·플래너 툴킷·장소명(name_en) 표시를 ko/en JSON으로 분기했습니다. Preview /?lang=en 에서 EN 토글·홈 칩·장소 카드 헤더·플래너 섹션 제목이 영문인지 확인해 주세요.',
+    at: '2026-08-18',
+  },
   {
     id: '2026-08-18-i18n-toggle-hit-race',
     session: '영문화 #1, locale 기반',

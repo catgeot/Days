@@ -11,7 +11,7 @@
 |----|------|---------------|------|
 | 0 | 문서·브랜치 | `영문화 #0, 문서·브랜치` | ✅ |
 | 1 | 기반 | `영문화 #1, locale 기반` | ✅ |
-| 2 | 홈·PlaceCard | `영문화 #2, 홈·PlaceCard` | ⏳ |
+| 2 | 홈·PlaceCard | `영문화 #2, 홈·PlaceCard` | ✅ |
 | 3 | 한국 투톱 | `영문화 #3, korea·theme` | ⏳ |
 
 세션마다 `#1` 리셋 금지 · `#N` = Cloud 순번.
@@ -81,12 +81,12 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#1)**: 사람 Preview QA OK — `i18next` · `LocaleProvider` · `?lang=en` · 로고 옆 토글 · 공통 레이아웃 키 · tip `00f1ae1a`
+**상태 (#2)**: 홈·PlaceCard 주요 카피 en — `build` · `smoke:place-label-slug` PASS · 사람 Preview QA 대기
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #2, 홈·PlaceCard
+영문화 #3, korea·theme
 @plans/feature-handoff-index.md
 @plans/2026-08-18-project-log.md
 @plans/i18n-en-plan.md

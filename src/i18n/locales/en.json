@@ -24,5 +24,209 @@
       "signUp": "Sign up",
       "back": "Back"
     }
+  },
+  "home": {
+    "quickLinks": {
+      "expandMenu": "Expand quick links",
+      "collapseMenu": "Collapse quick links",
+      "collapseTitle": "Collapse menu",
+      "navigateTo": "Go to {{label}}",
+      "festival": { "short": "Fest", "label": "Korea festivals" },
+      "scenic": { "short": "Scenic", "label": "Korea scenic spots" },
+      "curation": { "short": "Pick", "label": "AI curation" }
+    },
+    "globe": {
+      "themeToggle": "Change globe mood",
+      "zenMode": "Zen mode (fullscreen)",
+      "pinsHide": "Hide markers & labels",
+      "pinsShow": "Show markers & labels",
+      "menuExpanded": "Detail menu",
+      "menuCollapsed": "Menu hidden",
+      "menuHide": "Hide detail menu",
+      "menuShow": "Show detail menu",
+      "menuHideMap": "Hide menu, show map",
+      "menuShowChips": "Show country & region chips",
+      "subregionGroup": "Subregions & oceans",
+      "oceanGroup": "Oceans & regions",
+      "midSeaGroup": "Mid seas",
+      "smallSeaGroup": "Small seas",
+      "wideSeaGroup": "Regional seas",
+      "seaExplore": "Explore seas",
+      "countryExplore": "Explore countries & regions"
+    },
+    "category": {
+      "paradise": "Resort",
+      "island": "Islands",
+      "nature": "Nature",
+      "urban": "Urban",
+      "culture": "Culture",
+      "adventure": "Adventure"
+    }
+  },
+  "place": {
+    "fallback": {
+      "destination": "Destination",
+      "local": "Local",
+      "global": "Global",
+      "infoUpdating": "Information for this place is being updated.",
+      "reviewEmpty": "No review information for this place yet.",
+      "videoMissing": "No video information",
+      "galleryDetail": "Gallery details"
+    },
+    "nav": {
+      "back": "Back",
+      "home": "Go to home",
+      "copyPrimary": "Copy place name",
+      "copySecondary": "Copy alternate name",
+      "copiedPrimary": "Place name copied",
+      "copiedSecondary": "Alternate name copied",
+      "askMooni": "Ask MOONi",
+      "planner": "Travel planner",
+      "galleryBack": "Back to gallery",
+      "travelSketch": "Travel sketch",
+      "youtube": "YouTube videos",
+      "reviews": "Reviews",
+      "packageBrowse": "Browse package trips",
+      "scrollTopPlanner": "Tap to scroll planner to top",
+      "scrollTopGallery": "Tap to scroll gallery to top",
+      "scrollTopWiki": "Tap to scroll travel sketch to top",
+      "scrollTopReviews": "Tap to scroll reviews to top",
+      "plannerTop": "Scroll planner to top",
+      "scrollTopShort": "Top"
+    },
+    "tab": {
+      "wiki": {
+        "suffix": "Travel sketch",
+        "desc": "Explore {{name}} through magazine-style travel sketches and an AI docent."
+      },
+      "reviews": {
+        "suffix": "Reviews & ratings",
+        "desc": "Read real traveler reviews and ratings for {{name}}."
+      },
+      "gallery": {
+        "suffix": "Photo gallery",
+        "desc": "Browse beautiful photos of {{name}}."
+      },
+      "video": {
+        "suffix": "Travel videos",
+        "desc": "Preview {{name}} through on-the-ground video."
+      },
+      "planner": {
+        "suffix": "Trip prep guide",
+        "desc": "Everything you need to plan a trip to {{name}}."
+      }
+    },
+    "summary": {
+      "flightLoading": "Searching…",
+      "flightRefreshing": "Updating…",
+      "flightRoute": "Flight route",
+      "preparing": "Preparing…",
+      "flightRouteLoading": "Loading flight route…",
+      "flightRouteRefreshing": "Refreshing route…",
+      "flightRoutePreview": "Flight route preview",
+      "globePreparing": "Preparing globe…",
+      "openPlanner": "Open travel planner",
+      "globeFar": "Zoom globe out",
+      "zoom2x": "Zoom in 2× from current level",
+      "zoom4x": "Zoom in 4× from current level",
+      "regionNear": "View this region up close",
+      "region3dTour": "3D tour of this region",
+      "backToCard": "Back to place card",
+      "closeSummary": "Close summary",
+      "blurbFallback": "Discover what makes {{name}} special. Tap the card for the gallery and AI guide."
+    },
+    "planner": {
+      "title": "Smart travel toolkit",
+      "subtitle": "Essential survival info and curated picks for {{name}}",
+      "complexity": "Complexity",
+      "refreshSaved": "Reload saved data",
+      "refreshSavedTitle": "Reload toolkit from database only (no AI)",
+      "lastUpdated": "Last updated: {{date}}",
+      "emptyTitle": "No essential traveler info yet.",
+      "emptyBody": "Run the AI guide for visas, transport, stays, eSIM, and more for this region?",
+      "emptyHint": "The AI toolkit runs only when you tap the button.",
+      "emptyMismatch": "Saved toolkit content does not match {{name}}. Please run the AI toolkit again.",
+      "emptyStale": "A saved record exists but the guide body is empty. Run again below or tap Reload saved data.",
+      "runToolkit": "Run AI toolkit",
+      "sectionPrep": "🛫 Before you depart",
+      "sectionArrival": "🛬 Arrival & getting around",
+      "sectionEnjoy": "🌴 Enjoy locally",
+      "toolkit": {
+        "visa": "Visa & documents",
+        "flight": "Flights",
+        "accommodation": "Where to stay",
+        "safety": "Safety & insurance",
+        "airportTransfer": "Airport → port / destination",
+        "ferry": "Ferry (fast boat) booking",
+        "connectivity": "eSIM & Wi‑Fi",
+        "mapPoi": "Maps & sights",
+        "transport": "Transit & passes",
+        "apps": "Essential apps",
+        "sponsored": "Sponsored",
+        "sponsoredTitle": "Partner links help support this site.",
+        "forceUpdate": "Force toolkit update (admin/test)",
+        "forceUpdateShort": "Force Update Toolkit",
+        "forceUpdating": "Updating..."
+      },
+      "hybridNotice": "Hybrid info notice: This toolkit mixes objective public info (visas, safety, etc.) with partner links (stays, eSIM, etc.) to help you prepare. Using partner links supports the site. Tips are AI-generated and may change over time.",
+      "preTravel": {
+        "title": "Must-do before departure",
+        "goLink": "Open",
+        "essentialToolkit": "✈️ Essential booking toolkit",
+        "flightSearch": "Search live flights",
+        "hotelTripcom": "Book hotels (Trip.com)",
+        "hotelTripcomNote": "This destination opens a Trip.com partner link",
+        "staySearch": "Search stays live",
+        "staySearchNote": "Search and book stays worldwide",
+        "pickup": "Book airport pickup",
+        "pickupNote": "After buying tickets, search by flight number."
+      },
+      "loading": {
+        "new": [
+          "🗺️ Loading maps and sights…",
+          "📄 Checking visa and document info…",
+          "✈️ Analyzing flights and direct-route tips…",
+          "🏨 Picking the best stay areas…",
+          "📱 Gathering eSIM and airport pickup info…",
+          "🚇 Finding transit passes and rental cars…",
+          "📲 Selecting essential apps…",
+          "🚨 Scanning safety and security info…",
+          "✨ AI is finalizing your travel toolkit…"
+        ],
+        "update": [
+          "📦 Loading existing toolkit…",
+          "🔄 Checking latest visa and entry rules…",
+          "🛫 Updating flight and transport info…",
+          "🏠 Reviewing stay and convenience info…",
+          "📱 Refreshing eSIM and app info…",
+          "🗺️ Reorganizing sights and map data…",
+          "✨ AI is refreshing the toolkit…"
+        ]
+      },
+      "links": {
+        "regionStay": "[{{region}}] Find stays",
+        "hotelTripcom": "{{name}} hotels (Trip.com)",
+        "staySearch": "Search stays in {{name}}",
+        "guesthouse": "Korean guesthouses",
+        "transitPass": "{{name}} transit pass",
+        "motorbike": "Motorcycle rental",
+        "bounce": "Find Bounce luggage storage",
+        "airportPickup": "Airport pickup search",
+        "airportPickupSub": "After buying tickets, search by flight number.",
+        "rentalHome": "Rental car home",
+        "ferry12go": "12Go transport search",
+        "ferry12goSub": "Asia trains, buses & ferries",
+        "ferryKlook": "Klook ferries",
+        "ferryKlookSub": "All ferries when no route-specific URL",
+        "googleMaps": "Open in Google Maps",
+        "klookDining": "Klook restaurant search",
+        "diningReserve": "{{name}} dining reservations",
+        "nearbyRestaurant": "Find nearby restaurants",
+        "insurance": "Compare travel insurance",
+        "officialSite": "Official website",
+        "safeTravel": "Korea MOFA safe travel",
+        "visaInfo": "Visa / entry info"
+      }
+    }
   }
 }

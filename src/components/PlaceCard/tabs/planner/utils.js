@@ -14,6 +14,8 @@ import {
 import { shouldShowFerryCard } from '../../../../utils/ferryBookingMatch.js';
 import { getRentalCarHomeSearchSubtext } from '../../../../utils/rentalAirportMatch.js';
 import { OFFICIAL_VISA_LINKS, DINING_RESERVATION_LINKS, DIRECT_FERRIES_HOME_URL } from './constants';
+import { i18n } from '../../../../i18n/config';
+import { getLocalizedPlaceName } from '../../common/locationDisplay';
 import {
     isMapPoiGygOnlyLocation,
     isMapPoiDiningHiddenLocation,
@@ -22,6 +24,15 @@ import {
 } from './locationRules';
 
 export { isMapPoiGygOnlyLocation } from './locationRules';
+
+function linkLabel(key, options) {
+  return i18n.t(key, options);
+}
+
+function plannerPlaceName(location) {
+  const name = getLocalizedPlaceName(location, i18n.language);
+  return name || linkLabel('place.fallback.local');
+}
 
 
 // 🆕 [Phase 8-3] 텍스트 정제 함수 고도화 (불필요한 기호 혼합 제거 및 리스트 통일)
@@ -108,7 +119,7 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
                     links.push({
                         isMrt: true,
                         mrtQuery: `${finalSearchTerm} 숙소`,
-                        text: `[${region}] 숙박 찾기`,
+                        text: linkLabel('place.planner.links.regionStay', { region: finalSearchTerm }),
                         colorClass: 'bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-200'
                     });
                 });
@@ -119,14 +130,14 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
                 if (tripcomHotelOverride) {
                     links.push({
                         url: tripcomHotelOverride,
-                        text: `${location?.name || '현지'} 호텔 (Trip.com)`,
+                        text: linkLabel('place.planner.links.hotelTripcom', { name: plannerPlaceName(location) }),
                         colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
                     });
                 } else {
                     links.push({
                         isMrt: true,
                         mrtQuery: `${searchQuery} 숙소`,
-                        text: `${location?.name || '현지'} 숙소 검색`,
+                        text: linkLabel('place.planner.links.staySearch', { name: plannerPlaceName(location) }),
                         colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
                     });
                 }
@@ -136,7 +147,7 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
             links.push({
                 isMrt: true,
                 mrtQuery: `${searchQuery} 한인민박`,
-                text: '한인민박 검색',
+                text: linkLabel('place.planner.links.guesthouse'),
                 colorClass: 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200'
             });
             break;
@@ -152,21 +163,21 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
             const klookPassTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20교통%20패스`;
             links.push({
                 url: getKlookAffiliateUrl(klookPassTargetUrl),
-                text: `${location?.name || '현지'} 교통 패스`,
+                text: linkLabel('place.planner.links.transitPass', { name: plannerPlaceName(location) }),
                 colorClass: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'
             });
 
             // 4. 오토바이/스쿠터 대여 (BikesBooking 어필리에이트)
             links.push({
                 url: BIKESBOOKING_AFFILIATE_HOME_URL,
-                text: '오토바이 대여',
+                text: linkLabel('place.planner.links.motorbike'),
                 colorClass: 'bg-teal-50 hover:bg-teal-100 text-teal-700 border-teal-200'
             });
 
             // 5. 짐 보관 서비스 (바운스 배너 — 모바일 300×250 / 데스크톱 278×90)
             links.push({
                 url: BOUNCE_AFFILIATE_HOME_URL,
-                text: 'Bounce (글로벌 짐 보관) 찾기',
+                text: linkLabel('place.planner.links.bounce'),
                 colorClass: 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200',
                 isBanner: true,
                 bannerSrc: bouncePlannerBannerDesktop,
@@ -179,14 +190,14 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
 
             links.push({
                 url: klookPickupHomeLink,
-                text: '공항 픽업 검색',
-                subtext: '항공권 구매 후 항공편명으로 검색해 주세요.',
+                text: linkLabel('place.planner.links.airportPickup'),
+                subtext: linkLabel('place.planner.links.airportPickupSub'),
                 colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
             });
 
             links.push({
                 url: klookCarRentalHomeLink,
-                text: '렌터카 홈',
+                text: linkLabel('place.planner.links.rentalHome'),
                 subtext: getRentalCarHomeSearchSubtext(location, { essentialGuide }),
                 colorClass: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'
             });
@@ -200,14 +211,14 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
             }
             links.push({
                 url: get12GoHomeUrl({ subId: slug ? `${slug}-planner` : 'gateo-planner' }),
-                text: '12Go 교통 검색',
-                subtext: '아시아 기차·버스·페리 통합 검색',
+                text: linkLabel('place.planner.links.ferry12go'),
+                subtext: linkLabel('place.planner.links.ferry12goSub'),
                 colorClass: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200',
             });
             links.push({
                 url: getKlookFerryUrl(),
-                text: 'Klook 페리 통합',
-                subtext: '노선 특화 URL이 없을 때 전체 페리 검색',
+                text: linkLabel('place.planner.links.ferryKlook'),
+                subtext: linkLabel('place.planner.links.ferryKlookSub'),
                 colorClass: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200',
             });
             break;
@@ -217,7 +228,7 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
 
             links.push({
                 url: `https://www.google.com/maps/search/${encodedQuery}`,
-                text: '구글 맵 보기',
+                text: linkLabel('place.planner.links.googleMaps'),
                 colorClass: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'
             });
 
@@ -233,12 +244,12 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
                 if (canUseKlookDining) {
                     const klookDiningTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20레스토랑`;
                     diningUrl = getKlookAffiliateUrl(klookDiningTargetUrl);
-                    diningText = 'Klook 레스토랑 검색';
+                    diningText = linkLabel('place.planner.links.klookDining');
                 } else {
                     for (const item of DINING_RESERVATION_LINKS) {
                         if (item.keywords.some(kw => searchTarget.includes(kw.toLowerCase()))) {
                             diningUrl = item.type === 'query' ? `${item.url}${encodedQuery}` : item.url;
-                            diningText = `${item.name} 식당 예약`;
+                            diningText = linkLabel('place.planner.links.diningReserve', { name: item.name });
                             break;
                         }
                     }
@@ -247,7 +258,7 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
                 // 플랫폼 미매칭이면 범용 대안으로 연결 (지원 공백 최소화)
                 if (!diningUrl) {
                     diningUrl = `https://www.google.com/maps/search/${encodedQuery}%20restaurant`;
-                    diningText = '근처 레스토랑 찾기';
+                    diningText = linkLabel('place.planner.links.nearbyRestaurant');
                 }
 
                 if (!diningUrl) {
@@ -265,20 +276,20 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
             // 1. 보험 추가
             links.push({
                 url: `https://www.tourmoz.com/`,
-                text: '해외 여행자 보험 비교',
+                text: linkLabel('place.planner.links.insurance'),
                 colorClass: 'bg-teal-50 hover:bg-teal-100 text-teal-700 border-teal-200'
             });
 
             if (data?.official_url && data.official_url !== 'null') {
                  links.push({
                     url: data.official_url,
-                    text: '공식 사이트 확인',
+                    text: linkLabel('place.planner.links.officialSite'),
                     colorClass: 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200'
                 });
             } else {
                  links.push({
                     url: `https://www.0404.go.kr/dev/country_search.moa`,
-                    text: '외교부 안전여행',
+                    text: linkLabel('place.planner.links.safeTravel'),
                     colorClass: 'bg-red-50 hover:bg-red-100 text-red-700 border-red-200'
                 });
             }
@@ -336,14 +347,14 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
                 // 2. 매칭된 정적 링크가 없고 AI가 반환한 URL이 유효할 때
                  links.push({
                     url: data.official_url,
-                    text: '비자/입국 정보 확인',
+                    text: linkLabel('place.planner.links.visaInfo'),
                     colorClass: 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200'
                 });
             } else {
                 // 3. 둘 다 없으면 외교부 안전여행 (가장 보수적 접근)
                  links.push({
                     url: `https://www.0404.go.kr/dev/country_search.moa`,
-                    text: '외교부 안전여행',
+                    text: linkLabel('place.planner.links.safeTravel'),
                     colorClass: 'bg-red-50 hover:bg-red-100 text-red-700 border-red-200'
                 });
             }
