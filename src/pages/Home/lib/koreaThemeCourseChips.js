@@ -65,9 +65,13 @@ export function buildCourseAreaChips(areaCounts, opts = {}) {
   }));
 
   if (sparse.length > 0) {
+    const otherLabel =
+      typeof opts.otherLabel === 'string' && opts.otherLabel.trim()
+        ? opts.otherLabel.trim()
+        : '기타';
     chips.push({
       id: COURSE_OTHER_CHIP_ID,
-      label: '기타',
+      label: otherLabel,
       areaCodes: sparse.map((a) => a.areaCode),
       areaNames: sparse.map((a) => a.name),
       count: sparse.reduce((sum, a) => sum + a.count, 0),

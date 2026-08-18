@@ -2,6 +2,17 @@
 
 직전: [`2026-08-16-project-log.md`](./2026-08-16-project-log.md)
 
+## 영문화 #8, 한국 테마 나머지 — Preview
+
+- **courses** `/korea/theme/courses` — 페이지·상세 모달·시도 칩 `korea.theme.courses.*`
+- **scenic 잔여** — 섹션·검색·내 주변·빈 상태·페이지네이션 `korea.theme.scenic*`
+- **지도** `KoreaScenicMap` — 위치·드릴·전체화면 `korea.theme.map.*`
+- **nav** 테마 모듈 복귀 라벨 `korea.theme.nav.module.*`
+- **VERIFY** `npm run build` · `smoke:place-label-slug` PASS
+- **PR** [#133](https://github.com/catgeot/Days/pull/133) · 브랜치 `cursor/en`
+- **Preview** `/qa/en` · `?lang=en` → `/korea/theme/courses` · `/korea/theme/scenic` — **사람 QA**
+- **다음** #9 로그북·대시보드
+
 ## 영문화 #7, PlaceCard 세부 — Preview
 
 - **PlaceCard 세부** 갤러리·위키·영상·채팅·리뷰·요약·플래너 로딩·공통 `place.*` i18n 키 en/ko

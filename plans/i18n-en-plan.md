@@ -17,7 +17,8 @@
 | 5 | PROD 병합·QA | `영문화 #5, PROD 병합·QA` | ✅ |
 | 6 | PROD QA 확인 | `영문화 #6, PROD QA 확인` | (배포 후 사람) |
 | 7 | PlaceCard 세부 | `영문화 #7, PlaceCard 세부 영문화` | ✅ Preview |
-| 8 | 한국 테마 나머지 | `영문화 #8, 한국 테마 나머지` | 다음 |
+| 8 | 한국 테마 나머지 | `영문화 #8, 한국 테마 나머지` | ✅ Preview |
+| 9 | 로그북/대시보드 | `영문화 #9, 로그북·대시보드` | 다음 |
 
 세션마다 `#1` 리셋 금지 · `#N` = Cloud 순번.
 
@@ -88,17 +89,15 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#5)**: PR #132 **main 병합** `bc381852` · PROD 배포 후 `/qa/en`·허브 재확인 · **2차 #7+** 세부 페이지는 `cursor/en` 새 세션
-
-**상태 (#7)**: PlaceCard 세부 i18n — 갤러리·위키·영상·채팅·리뷰·요약·플래너 위젯 · Preview QA 대기
+**상태 (#8)**: courses·scenic 잔여·map·nav 모듈명 i18n · PR [#133](https://github.com/catgeot/Days/pull/133) · Preview QA 대기
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #8, 한국 테마 나머지
+영문화 #9, 로그북·대시보드
 @plans/feature-handoff-index.md
 @plans/2026-08-18-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · /qa/en · ?lang=en PlaceCard 세부 QA OK 후
+브랜치 cursor/en · /qa/en · ?lang=en
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```

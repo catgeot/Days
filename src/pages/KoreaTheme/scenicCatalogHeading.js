@@ -5,24 +5,39 @@ import {
 } from '../Home/lib/koreaTourAttractionMap.js';
 
 /**
- * 명승 DB 목록 제목 — 상단 권역·시도 대분류에 맞춤 (예: 강원도 관광지).
- * hub(시·군)이 있으면 그 이름을 우선한다 (예: 보령 관광지).
  * @param {string | null | undefined} region
  * @param {string | null | undefined} areaCode
  * @param {string | null | undefined} [hubName]
+ * @param {import('i18next').TFunction} [t]
  */
-export function scenicDbCatalogHeading(region, areaCode, hubName) {
+export function scenicDbCatalogHeading(region, areaCode, hubName, t) {
   const hub = String(hubName || '').trim();
-  if (hub) return `${hub} 관광지`;
+  const placeFromHub = hub || null;
+  if (placeFromHub) {
+    return t
+      ? t('korea.theme.scenicCatalogAttractions', { place: placeFromHub })
+      : `${placeFromHub} 관광지`;
+  }
   const areas = listScenicRegionAreas(region);
   const code =
     areaCode || (areas.length === 1 ? areas[0].code : null);
   if (code) {
     const phrase =
-      sidoListPhrase(code) || labelScenicAreaCode(code) || region || '전국';
-    return `${phrase} 관광지`;
+      sidoListPhrase(code) || labelScenicAreaCode(code) || region || null;
+    const place =
+      phrase || (t ? t('korea.common.nationwide') : '전국');
+    return t
+      ? t('korea.theme.scenicCatalogAttractions', { place })
+      : `${place} 관광지`;
   }
   const r = String(region || '').trim();
-  if (r) return `${r} 관광지`;
-  return '전국 관광지';
+  if (r) {
+    return t
+      ? t('korea.theme.scenicCatalogAttractions', { place: r })
+      : `${r} 관광지`;
+  }
+  const nationwide = t ? t('korea.common.nationwide') : '전국';
+  return t
+    ? t('korea.theme.scenicCatalogAttractions', { place: nationwide })
+    : '전국 관광지';
 }

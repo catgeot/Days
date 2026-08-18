@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Home, Route } from 'lucide-react';
 import SEO from '../../components/SEO';
 import {
@@ -53,6 +54,7 @@ function pickChipIdForArea(chips, areaCode) {
 }
 
 export default function KoreaThemeCoursesPage() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const areaFromQuery = String(searchParams.get('area') || '').trim();
@@ -90,7 +92,9 @@ export default function KoreaThemeCoursesPage() {
         concurrency: 5,
       });
       if (cancelled) return;
-      const nextChips = buildCourseAreaChips(counts);
+      const nextChips = buildCourseAreaChips(counts, {
+        otherLabel: t('korea.theme.courses.chipOther'),
+      });
       setChips(nextChips);
       setSelectedChipId((prev) => {
         if (prev && nextChips.some((c) => c.id === prev)) return prev;
@@ -104,7 +108,7 @@ export default function KoreaThemeCoursesPage() {
     return () => {
       cancelled = true;
     };
-  }, [areaFromQuery]);
+  }, [areaFromQuery, t]);
 
   useEffect(() => {
     const chip = chips.find((c) => c.id === selectedChipId) || null;
@@ -135,7 +139,7 @@ export default function KoreaThemeCoursesPage() {
       if (cancelled) return;
 
       if (results.every((r) => !r)) {
-        setError('여행코스를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.');
+        setError(t('korea.theme.courses.loadError'));
         setCourses([]);
         setLoading(false);
         return;
@@ -161,7 +165,7 @@ export default function KoreaThemeCoursesPage() {
     return () => {
       cancelled = true;
     };
-  }, [selectedChipId, chips, chipsLoading]);
+  }, [selectedChipId, chips, chipsLoading, t]);
 
   const openCourse = useCallback(
     async (course) => {
@@ -192,19 +196,33 @@ export default function KoreaThemeCoursesPage() {
   const closeModal = useCallback(() => setSelectedId(null), []);
 
   const countLabel = (() => {
-    if (chipsLoading || !activeChip) return chipsLoading ? '지역 확인 중…' : '지역';
-    if (activeChip.id === COURSE_OTHER_CHIP_ID) {
-      const regions = activeChip.areaNames.join('·');
-      return `기타(${regions}) · ${loading ? '불러오는 중…' : `${courses.length}개`}`;
+    const loadingStatus = loading
+      ? t('korea.theme.courses.chipStatusLoading')
+      : t('korea.theme.courses.chipStatusCount', { count: courses.length });
+    if (chipsLoading || !activeChip) {
+      return chipsLoading
+        ? t('korea.theme.courses.regionChecking')
+        : t('korea.common.region');
     }
-    return `${activeChip.label} · ${loading ? '불러오는 중…' : `${courses.length}개`}`;
+    if (activeChip.id === COURSE_OTHER_CHIP_ID) {
+      return t('korea.theme.courses.otherChipMeta', {
+        regions: activeChip.areaNames.join('·'),
+        status: loadingStatus,
+      });
+    }
+    return t('korea.theme.courses.chipMeta', {
+      label: activeChip.label,
+      status: loadingStatus,
+    });
   })();
+
+  const countLocale = i18n.language?.startsWith('en') ? 'en-US' : 'ko-KR';
 
   return (
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
       <SEO
-        title="여행코스 · 한국의 테마여행"
-        description="한국관광공사 TourAPI 여행코스(지역별). 드라이브·당일·1박2일 코스 개요와 구간을 이어갑니다."
+        title={t('korea.theme.courses.seoTitle')}
+        description={t('korea.theme.courses.seoDescription')}
         url={RETURN_TO}
       />
 
@@ -217,7 +235,7 @@ export default function KoreaThemeCoursesPage() {
                   Korea · Theme · TourAPI
                 </p>
                 <h1 className="truncate text-base font-extrabold tracking-tight md:text-lg lg:text-xl">
-                  여행코스
+                  {t('korea.theme.courses.title')}
                 </h1>
               </div>
               <div className="flex shrink-0 items-center gap-2">
@@ -225,12 +243,12 @@ export default function KoreaThemeCoursesPage() {
                 <button
                   type="button"
                   onClick={() => navigate('/')}
-                  aria-label="홈으로"
-                  title="홈으로"
+                  aria-label={t('korea.common.home')}
+                  title={t('korea.common.home')}
                   className="flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs font-bold text-stone-700 hover:bg-stone-100"
                 >
                   <Home size={14} aria-hidden="true" />
-                  홈으로
+                  {t('korea.common.home')}
                 </button>
               </div>
             </div>
@@ -248,19 +266,27 @@ export default function KoreaThemeCoursesPage() {
                 id="korea-courses-heading"
                 className="text-sm font-bold tracking-tight md:text-base"
               >
-                TourAPI 여행코스
+                {t('korea.theme.courses.heading')}
               </h2>
             </div>
             <p className="text-sm leading-relaxed text-stone-600 break-keep">
-              한국관광공사 공개 여행코스입니다.
+              {t('korea.theme.courses.blurb')}
             </p>
 
-            <div role="group" aria-label="시도 필터" className="flex flex-wrap gap-1.5">
+            <div
+              role="group"
+              aria-label={t('korea.theme.courses.areaFilterAria')}
+              className="flex flex-wrap gap-1.5"
+            >
               {chipsLoading ? (
-                <span className="text-xs text-stone-500">코스가 있는 지역을 확인하는 중…</span>
+                <span className="text-xs text-stone-500">
+                  {t('korea.theme.courses.chipsLoading')}
+                </span>
               ) : null}
               {!chipsLoading && chips.length === 0 ? (
-                <span className="text-xs text-stone-500">표시할 지역이 없습니다.</span>
+                <span className="text-xs text-stone-500">
+                  {t('korea.theme.courses.noChips')}
+                </span>
               ) : null}
               {chips.map((chip) => {
                 const active = selectedChipId === chip.id;
@@ -284,7 +310,7 @@ export default function KoreaThemeCoursesPage() {
                     <span>{chip.label}</span>
                     {Number.isFinite(chip.count) ? (
                       <span className="opacity-70 tabular-nums">
-                        {chip.count.toLocaleString('ko-KR')}
+                        {chip.count.toLocaleString(countLocale)}
                       </span>
                     ) : null}
                   </button>
@@ -302,7 +328,7 @@ export default function KoreaThemeCoursesPage() {
 
             {!chipsLoading && !loading && !error && courses.length === 0 ? (
               <p className="text-sm text-stone-500 break-keep">
-                이 지역에 등록된 여행코스가 아직 없습니다. 다른 시도를 골라 보세요.
+                {t('korea.theme.courses.empty')}
               </p>
             ) : null}
 

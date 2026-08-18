@@ -153,6 +153,7 @@ import {
   pushScenicViewed,
   toggleScenicFavorite,
 } from './scenicPersonalStore';
+import { localizedDrillLevelLabel } from '../../i18n/koreaUi';
 
 const NEAR_KM = NEAR_SCENIC_KM;
 /** 내 주변 관광지 풀(칩 집계) · 종목 필터 전 bbox 거리순 */
@@ -161,8 +162,6 @@ const NEAR_DB_POOL_LIMIT = 200;
 const NEAR_DB_LIST_HARD_MAX = 100;
 const NEAR_LIST_SOFT_MAX = NEAR_DISPLAY_SOFT_MAX;
 
-const DISCLAIMER = koreaScenicSpotsDisclaimer();
-const HERITAGE_DISCLAIMER = koreaHeritageScenicDisclaimer();
 const HERITAGE_TOTAL = koreaHeritageScenicCount();
 const HERITAGE_REGION_COUNTS = countKoreaHeritageScenicByRegion();
 const CURATED_REGION_COUNTS = countKoreaScenicSpotsByRegion();
@@ -690,7 +689,7 @@ function pickRegionFromSpotMatches(matches, fallback) {
 }
 
 export default function KoreaThemeScenicPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -1844,8 +1843,8 @@ export default function KoreaThemeScenicPage() {
       tourCat3ChipsVisible.length > 1;
 
   const catalogHeading = useMemo(
-    () => scenicDbCatalogHeading(tourRegion, tourArea, null),
-    [tourRegion, tourArea],
+    () => scenicDbCatalogHeading(tourRegion, tourArea, null, t),
+    [tourRegion, tourArea, t],
   );
 
   useEffect(() => {
@@ -2328,14 +2327,25 @@ export default function KoreaThemeScenicPage() {
     const known = curatedN + heritageN + (dbN ?? 0);
     if (dbN == null) {
       setNearMsg(
-        `${nearLabel} 주변 · ${listNearRadiusKm}km 안 명소 ${curatedN} · 명승 ${heritageN} · 관광지 확인 중…`,
+        t('korea.theme.scenicNearSummaryLoading', {
+          label: nearLabel,
+          km: listNearRadiusKm,
+          curated: curatedN,
+          heritage: heritageN,
+        }),
       );
       return;
     }
     setNearMsg(
       known > 0
-        ? `${nearLabel} 주변 · ${listNearRadiusKm}km · 명소 ${curatedN} · 명승 ${heritageN} · 관광지 ${dbN}`
-        : `${NEAR_KM}km 안 명소·명승·관광지가 없습니다. 권역 칩으로 둘러보세요.`,
+        ? t('korea.theme.scenicNearSummary', {
+            label: nearLabel,
+            km: listNearRadiusKm,
+            curated: curatedN,
+            heritage: heritageN,
+            tour: dbN,
+          })
+        : t('korea.theme.scenicNearEmpty', { km: NEAR_KM }),
     );
   }, [
     nearActive,
@@ -2345,6 +2355,7 @@ export default function KoreaThemeScenicPage() {
     heritageNearPool,
     nearTourPool.length,
     nearTourStatus,
+    t,
   ]);
 
   useEffect(() => {
@@ -3505,13 +3516,17 @@ export default function KoreaThemeScenicPage() {
       }
       return t('korea.common.nearRadius', { km: mapNearRadiusKm });
     }
-    if (mapPod === 'curated') return curatedMapModel.levelLabel;
-    if (mapPod === 'heritage') return heritageMapModel.levelLabel;
+    if (mapPod === 'curated') {
+      return localizedDrillLevelLabel(t, curatedMapModel.levelLabel);
+    }
+    if (mapPod === 'heritage') {
+      return localizedDrillLevelLabel(t, heritageMapModel.levelLabel);
+    }
     if (mapPod === 'tour') {
       if (tourMapModel.showSpotPins && tourMapPinsStatus === 'loading') {
         return t('korea.common.loading');
       }
-      return tourMapModel.levelLabel;
+      return localizedDrillLevelLabel(t, tourMapModel.levelLabel);
     }
     return '';
   }, [
@@ -3812,7 +3827,7 @@ export default function KoreaThemeScenicPage() {
                     className="flex items-center gap-1 rounded-full border border-amber-400 bg-amber-50 px-2.5 py-1.5 text-xs font-bold text-amber-900 hover:bg-amber-100"
                   >
                     <X size={14} aria-hidden="true" />
-                    닫기
+                    {t('korea.common.close')}
                   </button>
                 ) : (
                   <button
@@ -3838,7 +3853,7 @@ export default function KoreaThemeScenicPage() {
                   }}
                 >
                   <label className="sr-only" htmlFor="korea-scenic-search">
-                    명소·명승 검색
+                    {t('korea.theme.scenicSearchLabel')}
                   </label>
                   <input
                     ref={mobileSearchInputRef}
@@ -3868,7 +3883,7 @@ export default function KoreaThemeScenicPage() {
                     type="submit"
                     className="shrink-0 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-[11px] font-bold text-stone-600 hover:bg-stone-100"
                   >
-                    검색
+                    {t('korea.common.searchSubmit')}
                   </button>
                 </form>
                 <RecentSearchSuggestions
@@ -3922,13 +3937,13 @@ export default function KoreaThemeScenicPage() {
             <div className="flex shrink-0 items-start justify-between gap-3 border-b border-stone-200/80 px-4 py-3.5 sm:px-5">
               <div className="min-w-0">
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-700">
-                  검색
+                  {t('korea.common.searchSubmit')}
                 </p>
                 <h2
                   id="korea-scenic-search-modal-title"
                   className="mt-0.5 text-base font-extrabold tracking-tight text-stone-900 break-keep sm:text-lg"
                 >
-                  「{searchFilter}」검색 결과
+                  {t('korea.theme.scenicSearchResults', { query: searchFilter })}
                 </h2>
               </div>
               <button
@@ -3974,7 +3989,7 @@ export default function KoreaThemeScenicPage() {
                       ) : (
                         <LocateFixed size={14} aria-hidden="true" />
                       )}
-                      내 주변
+                      {t('korea.common.nearMe')}
                     </button>
                   </div>
                   {nearMsg ? (
@@ -3991,7 +4006,7 @@ export default function KoreaThemeScenicPage() {
                           onClick={clearNear}
                           className="shrink-0 rounded-full px-2 py-1 text-[11px] font-semibold text-amber-800/70 hover:bg-amber-100/80"
                         >
-                          닫기
+                          {t('korea.common.close')}
                         </button>
                       ) : null}
                     </div>
@@ -4012,7 +4027,9 @@ export default function KoreaThemeScenicPage() {
                       : t('korea.common.viewed')}
                   </h2>
                   <p className="text-[11px] text-stone-500">
-                    {personalItems.length}건 · 권역 그룹
+                    {t('korea.theme.scenicPersonalMeta', {
+                      count: personalItems.length,
+                    })}
                   </p>
                 </div>
                 <div className="flex shrink-0 flex-wrap items-center gap-1.5">
@@ -4050,7 +4067,7 @@ export default function KoreaThemeScenicPage() {
                     onClick={closePersonal}
                     className="rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-[11px] font-bold text-stone-700 hover:bg-stone-100"
                   >
-                    목록으로
+                    {t('korea.theme.scenicBackToList')}
                   </button>
                 </div>
               </div>
@@ -4137,10 +4154,14 @@ export default function KoreaThemeScenicPage() {
                   id="korea-scenic-curated-heading"
                   className="text-sm font-bold tracking-tight md:text-base"
                 >
-                  GATEO 선정 명소
+                  {t('korea.theme.scenicSectionCurated')}
                 </h2>
                 <span className="text-xs font-semibold text-stone-500 tabular-nums">
-                  {curatedSpots.length.toLocaleString('ko-KR')}곳
+                  {t('korea.theme.spotCount', {
+                    count: curatedSpots.length.toLocaleString(
+                      i18n.language?.startsWith('en') ? 'en-US' : 'ko-KR',
+                    ),
+                  })}
                 </span>
               </button>
               {openPods.curated ? (
@@ -4181,7 +4202,9 @@ export default function KoreaThemeScenicPage() {
             <div id="korea-scenic-curated-body" className="space-y-4">
             {curatedSpots.length > 0 ? (
               <p className="text-sm leading-relaxed text-stone-600 break-keep">
-                {DISCLAIMER}
+                {t('korea.theme.scenicCuratedDisclaimer', {
+                  defaultValue: koreaScenicSpotsDisclaimer(),
+                })}
               </p>
             ) : null}
 
@@ -4351,7 +4374,9 @@ export default function KoreaThemeScenicPage() {
                     }
                     className="inline-flex items-center rounded-full border border-amber-300/80 bg-amber-50 px-3 py-1.5 text-xs font-bold text-stone-900 hover:bg-amber-100"
                   >
-                    명소 {curatedNearHiddenCount}곳 더 보기
+                    {t('korea.theme.scenicShowMoreCurated', {
+                      count: curatedNearHiddenCount,
+                    })}
                   </button>
                 ) : null}
                 {nearCanWidenRadius ? (
@@ -4365,7 +4390,9 @@ export default function KoreaThemeScenicPage() {
                     }}
                     className="inline-flex items-center rounded-full border border-stone-300 bg-white px-3 py-1.5 text-xs font-bold text-stone-800 hover:bg-stone-50"
                   >
-                    {nextNearRadiusStepKm(listNearRadiusKm)}km로 넓히기
+                    {t('korea.theme.scenicExpandRadius', {
+                      km: nextNearRadiusStepKm(listNearRadiusKm),
+                    })}
                   </button>
                 ) : null}
               </div>
@@ -4374,12 +4401,18 @@ export default function KoreaThemeScenicPage() {
               <p className="text-sm text-stone-500 break-keep">
                 {searchActive
                   ? (curatedSearchPool?.length || 0) > 0
-                    ? `「${searchFilter}」·이 분류에는 선정 명소가 없습니다. 다른 권역·시도 칩을 골라 보세요.`
-                    : `「${searchFilter}」와 맞는 선정 명소가 없습니다.`
+                    ? t('korea.theme.scenicEmptyCuratedSearchChip', {
+                        query: searchFilter,
+                      })
+                    : t('korea.theme.scenicEmptyCuratedSearch', {
+                        query: searchFilter,
+                      })
                   : nearActive
                     ? (curatedNearPool?.length || 0) > 0
-                      ? `${listNearRadiusKm}km 안·이 분류에는 선정 명소가 없습니다. 다른 여행지 칩을 골라 보세요.`
-                      : `${NEAR_KM}km 안에는 선정 명소가 없습니다. 아래 국가유산 명승을 둘러보세요.`
+                      ? t('korea.theme.scenicEmptyCuratedNearChip', {
+                          km: listNearRadiusKm,
+                        })
+                      : t('korea.theme.scenicEmptyCuratedNear', { km: NEAR_KM })
                     : hubId
                       ? t('korea.theme.scenicEmptyCuratedHub', {
                           hub:
@@ -4420,12 +4453,20 @@ export default function KoreaThemeScenicPage() {
                   id="korea-scenic-heritage-heading"
                   className="text-sm font-bold tracking-tight md:text-base"
                 >
-                  국가유산 명승
+                  {t('korea.theme.scenicSectionHeritage')}
                 </h2>
                 <span className="text-xs font-semibold text-stone-500 tabular-nums">
-                  {heritageSpots.length.toLocaleString('ko-KR')}곳
+                  {t('korea.theme.spotCount', {
+                    count: heritageSpots.length.toLocaleString(
+                      i18n.language?.startsWith('en') ? 'en-US' : 'ko-KR',
+                    ),
+                  })}
                   {heritageSpots.length !== HERITAGE_TOTAL
-                    ? ` · 전국 ${HERITAGE_TOTAL.toLocaleString('ko-KR')}`
+                    ? t('korea.theme.nationwideSuffix', {
+                        count: HERITAGE_TOTAL.toLocaleString(
+                          i18n.language?.startsWith('en') ? 'en-US' : 'ko-KR',
+                        ),
+                      })
                     : ''}
                 </span>
               </button>
@@ -4465,7 +4506,11 @@ export default function KoreaThemeScenicPage() {
             </div>
             {openPods.heritage ? (
             <div id="korea-scenic-heritage-body" className="space-y-4">
-            <p className="text-xs text-stone-500 break-keep">{HERITAGE_DISCLAIMER}</p>
+            <p className="text-xs text-stone-500 break-keep">
+              {t('korea.theme.scenicHeritageDisclaimer', {
+                defaultValue: koreaHeritageScenicDisclaimer(),
+              })}
+            </p>
 
             {showHeritageFilterChips ? (
               <div className="space-y-2">
@@ -4577,12 +4622,18 @@ export default function KoreaThemeScenicPage() {
               <p className="text-sm text-stone-500 break-keep">
                 {searchActive
                   ? (heritageSearchPool?.length || 0) > 0
-                    ? `「${searchFilter}」·이 분류에 해당하는 국가유산 명승이 없습니다. 다른 권역·경관 칩을 골라 보세요.`
-                    : `「${searchFilter}」에 해당하는 국가유산 명승이 없습니다.`
+                    ? t('korea.theme.scenicEmptyHeritageSearchChip', {
+                        query: searchFilter,
+                      })
+                    : t('korea.theme.scenicEmptyHeritageSearch', {
+                        query: searchFilter,
+                      })
                   : nearActive
                     ? (heritageNearPool?.length || 0) > 0
-                      ? `${NEAR_KM}km 안·이 경관 유형에 해당하는 국가유산 명승이 없습니다. 다른 소분류를 골라 보세요.`
-                      : `${NEAR_KM}km 안 국가유산 명승이 없습니다.`
+                      ? t('korea.theme.scenicEmptyHeritageNearChip', {
+                          km: NEAR_KM,
+                        })
+                      : t('korea.theme.scenicEmptyHeritageNear', { km: NEAR_KM })
                     : heritageCategory
                       ? t('korea.theme.scenicEmptyHeritageCategory')
                       : t('korea.theme.scenicEmptyHeritageRegion')}
@@ -4617,7 +4668,9 @@ export default function KoreaThemeScenicPage() {
                     }
                     className="inline-flex items-center rounded-full border border-amber-300/80 bg-amber-50 px-3 py-1.5 text-xs font-bold text-stone-900 hover:bg-amber-100"
                   >
-                    명승 {heritageNearHiddenCount}곳 더 보기
+                    {t('korea.theme.scenicShowMoreHeritage', {
+                      count: heritageNearHiddenCount,
+                    })}
                   </button>
                 ) : null}
               </div>
@@ -4656,15 +4709,18 @@ export default function KoreaThemeScenicPage() {
                 {nearActive
                   ? dbStatus !== 'loading' && (
                       <span className="text-xs font-semibold text-stone-500 tabular-nums">
-                        {dbCount.toLocaleString('ko-KR')}곳 · 가까운 순
+                        {t('korea.theme.scenicTourSorted', {
+                          count: dbCount.toLocaleString(
+                            i18n.language?.startsWith('en') ? 'en-US' : 'ko-KR',
+                          ),
+                        })}
                       </span>
                     )
                   : scopeCount > 0 || dbStatus === 'ok' || dbCount > 0 ? (
                       <span className="text-xs font-semibold text-stone-500 tabular-nums">
                         {(scopeCount > 0 ? scopeCount : dbCount).toLocaleString(
-                          'ko-KR',
+                          i18n.language?.startsWith('en') ? 'en-US' : 'ko-KR',
                         )}
-                        곳
                         {totalPages > 1 ? ` · ${page}/${totalPages}` : ''}
                       </span>
                     ) : null}
@@ -4706,7 +4762,7 @@ export default function KoreaThemeScenicPage() {
             {openPods.tour ? (
             <div id="korea-scenic-tour-body" className="space-y-4">
             <p className="text-xs text-stone-500 break-keep">
-              한국관광공사 선정 관광지입니다.
+              {t('korea.theme.scenicTourAttribution')}
             </p>
 
             {showTourFilterChips ? (
@@ -4817,7 +4873,9 @@ export default function KoreaThemeScenicPage() {
                 tourCat2ChipsVisible.length > 1) &&
               tourCat2ChipsVisible.length > 0 ? (
                 <FilterChipRow
-                  aria-label={`${activeCat1Label} 중분류`}
+                  aria-label={t('korea.theme.scenicFilterTourCatMid', {
+                    label: activeCat1Label,
+                  })}
                   className="pl-0.5"
                 >
                   {tourCat2ChipsVisible.map((chip) => {
@@ -4854,7 +4912,9 @@ export default function KoreaThemeScenicPage() {
                 tourCat3ChipsVisible.length > 1) &&
               tourCat3ChipsVisible.length > 0 ? (
                 <FilterChipRow
-                  aria-label={`${activeCat2Label} 소분류`}
+                  aria-label={t('korea.theme.scenicFilterTourCatSub', {
+                    label: activeCat2Label,
+                  })}
                   className="pl-1"
                 >
                   {tourCat3ChipsVisible.map((chip) => {
@@ -4890,21 +4950,24 @@ export default function KoreaThemeScenicPage() {
             ) : null}
 
             {dbStatus === 'loading' ? (
-              <p className="text-sm text-stone-500 break-keep">불러오는 중…</p>
+              <p className="text-sm text-stone-500 break-keep">{t('korea.common.loading')}</p>
             ) : null}
             {dbStatus === 'error' ? (
               <p className="text-sm text-stone-500 break-keep">
-                카탈로그를 불러오지 못했습니다{dbError ? ` (${dbError})` : ''}.
+                {t('korea.theme.scenicCatalogLoadError')}
+                {dbError ? ` (${dbError})` : ''}.
               </p>
             ) : null}
             {dbStatus === 'empty' ? (
               <p className="text-sm text-stone-500 break-keep">
                 {searchActive
-                  ? `「${searchFilter}」·이 종목에 해당하는 관광지가 없습니다. 다른 종목 칩을 골라 보세요.`
+                  ? t('korea.theme.scenicEmptyTourSearchChip', {
+                      query: searchFilter,
+                    })
                   : nearActive
                     ? (nearTourPool.length || 0) > 0
-                      ? `${NEAR_KM}km 안·이 종목에 해당하는 관광지가 없습니다. 다른 종목 칩을 골라 보세요.`
-                      : `${NEAR_KM}km 안 관광지가 없습니다.`
+                      ? t('korea.theme.scenicEmptyTourNearChip', { km: NEAR_KM })
+                      : t('korea.theme.scenicEmptyTourNear', { km: NEAR_KM })
                     : t('korea.theme.scenicEmptyTour')}
               </p>
             ) : null}
@@ -4942,7 +5005,7 @@ export default function KoreaThemeScenicPage() {
                   }
                   className="inline-flex items-center rounded-full border border-amber-300/80 bg-amber-50 px-3 py-1.5 text-xs font-bold text-stone-900 hover:bg-amber-100"
                 >
-                  관광지 더 보기
+                  {t('korea.theme.scenicTourShowMore')}
                 </button>
               </div>
             ) : null}
@@ -4956,7 +5019,7 @@ export default function KoreaThemeScenicPage() {
                   className="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs font-bold text-stone-700 disabled:opacity-40"
                 >
                   <ChevronLeft size={14} aria-hidden="true" />
-                  이전
+                  {t('korea.theme.paginationPrev')}
                 </button>
                 <button
                   type="button"
@@ -4964,7 +5027,7 @@ export default function KoreaThemeScenicPage() {
                   onClick={() => setPage(page + 1)}
                   className="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs font-bold text-stone-700 disabled:opacity-40"
                 >
-                  다음
+                  {t('korea.theme.paginationNext')}
                   <ChevronRight size={14} aria-hidden="true" />
                 </button>
               </div>
@@ -4997,7 +5060,7 @@ export default function KoreaThemeScenicPage() {
           className="shrink-0"
           aria-hidden="true"
         />
-        <span className="text-xs font-bold">위로</span>
+        <span className="text-xs font-bold">{t('korea.common.scrollToTop')}</span>
       </button>
 
       {mapOpen ? (

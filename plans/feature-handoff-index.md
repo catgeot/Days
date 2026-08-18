@@ -62,7 +62,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#7 PlaceCard 세부** Preview QA · 1차 main `bc381852` 병합됨 |
+| **상태** | **#8 한국 테마** Preview QA · PR [#133](https://github.com/catgeot/Days/pull/133) |
 | **브랜치** | `cursor/en` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9 |
 | **일지** | [`2026-08-18-project-log.md`](./2026-08-18-project-log.md) |
@@ -70,16 +70,16 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 | **PROD QA** | `https://www.gateo.kr/qa/en` → `/?lang=en` |
 | **VERIFY** | `npm run build` · `smoke:place-label-slug` |
 
-**2차 #7**: PlaceCard 갤러리·위키·영상·채팅·리뷰 세부 en
+**2차 #7+#8**: PlaceCard 세부 · courses · scenic 잔여·지도·nav
 
 **다음 제시어**:
 
 ```
-영문화 #8, 한국 테마 나머지
+영문화 #9, 로그북·대시보드
 @plans/feature-handoff-index.md
 @plans/2026-08-18-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · /qa/en · ?lang=en PlaceCard 세부 QA OK 후
+브랜치 cursor/en · /qa/en · ?lang=en
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 
