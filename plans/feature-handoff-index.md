@@ -14,6 +14,33 @@
 
 ## 활성 목록
 
+### 지구본 홈 동적 배너
+
+| | |
+|--|--|
+| **상태** | 축제 좌상단 + 명소 임시 우측 · **모바일 Preview QA** · 정위치·GPS 대기 |
+| **브랜치** | `cursor/globe-banner-8ec9` |
+| **tip** | `641e5720` |
+| **플랜** | [`globe-home-banner-plan.md`](./globe-home-banner-plan.md) §9 |
+| **일지** | [`2026-08-18-project-log.md`](./2026-08-18-project-log.md) |
+| **Preview** | `https://days-git-cursor-globe-banner-8ec9-catgeots-projects.vercel.app/` |
+| **공유** | `https://www.gateo.kr/qa/globe-banner` |
+| **VERIFY** | `npm run smoke:globe-home-banner` · `npm run build` |
+
+**다음 제시어**:
+
+```
+지구본 홈 배너 #4, 명소 정위치
+@plans/feature-handoff-index.md
+@plans/2026-08-18-project-log.md
+@plans/globe-home-banner-plan.md
+브랜치 cursor/globe-banner-8ec9 · PR #131 · Preview / 좌상단 축제 · 우측 명소(임시)
+금지: 큐레이션 레인 · 새 Preview 브랜치 · UI 임의 리디자인
+다음: 모바일 QA 피드백 → 명소 정위치 → GPS 근접 hub 명소 → 지자체 N경 SSOT
+```
+
+---
+
 ### AI 큐레이션 — 지도·무니 핸드오프
 
 | | |
