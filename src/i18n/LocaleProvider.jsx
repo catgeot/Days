@@ -17,8 +17,6 @@ import {
 } from './constants';
 import { ensureI18n, i18n } from './config';
 
-const LocaleContext = createContext(null);
-
 function readStoredLocale() {
   if (typeof window === 'undefined') return DEFAULT_LOCALE;
   try {
@@ -51,13 +49,15 @@ function resolveLocaleFromUrl(searchParams) {
 export function LocaleProvider({ children }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [locale, setLocaleState] = useState(() => {
-    return resolveLocaleFromUrl(searchParams) ?? readStoredLocale();
+    const initial = resolveLocaleFromUrl(searchParams) ?? readStoredLocale();
+    ensureI18n(initial);
+    syncDocumentLang(initial);
+    return initial;
   });
 
   useEffect(() => {
-    void ensureI18n(locale).then(() => {
-      syncDocumentLang(locale);
-    });
+    ensureI18n(locale);
+    syncDocumentLang(locale);
   }, [locale]);
 
   useEffect(() => {

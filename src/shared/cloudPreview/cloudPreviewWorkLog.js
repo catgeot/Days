@@ -24,7 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
-    id: '2026-08-18-i18n-locale-foundation-1',
+    id: '2026-08-18-i18n-blank-screen-fix',
+    session: '영문화 #1, locale 기반',
+    title: '검은 화면 수정 — i18n 동기 초기화',
+    detail:
+      'react-i18next v17 기본 useSuspense + 비동기 init으로 Suspense 경계 없이 빈 화면이 났습니다. i18n을 main 진입 시 동기 init(react.useSuspense:false)하고 LocaleProvider를 맞췄습니다. Preview 새로고침 후 지구본·헤더가 보이는지 확인해 주세요.',
+    at: '2026-08-18',
+  },
+  {
     session: '영문화 #1, locale 기반',
     title: 'i18next·LocaleProvider·헤더 토글',
     detail:
