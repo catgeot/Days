@@ -15,6 +15,8 @@
 | 3 | 한국 투톱 | `영문화 #3, korea·theme` | ✅ |
 | 4 | SEO·릴리스 | `영문화 #4, SEO·릴리스` | ✅ |
 | 5 | PROD 병합·QA | `영문화 #5, PROD 병합·QA` | ✅ |
+| 6 | PROD QA 확인 | `영문화 #6, PROD QA 확인` | (배포 후 사람) |
+| 7 | PlaceCard 세부 | `영문화 #7, PlaceCard 세부 영문화` | 다음 |
 
 세션마다 `#1` 리셋 금지 · `#N` = Cloud 순번.
 
@@ -52,8 +54,10 @@
 | **#2** | 홈·PlaceCard | 지구본·검색·탭·툴킷 주요 카피 en | `build` · `smoke:place-label-slug` |
 | **#3** | 한국 투톱 | `/korea` · `/korea/theme/scenic` — **사람 합의 후** 범위 | `build` |
 | **#4** | SEO·릴리스 | `hreflang` · sitemap · 릴리스 노트(승인 후) | `build` |
+| **#5** | PROD 병합 | PR #132 → `main` | `build` |
+| **#7+** | 세부·확장 | PlaceCard 세부 · 한국 테마 나머지 · 로그북/대시보드 | `build` |
 
-**우선순위**: 글로벌 여행 discovery(홈·PlaceCard) → 로그북/대시보드(별 트랙) → 한국 투톱.
+**우선순위**: 글로벌 여행 discovery(홈·PlaceCard) → **PlaceCard 세부** → 한국 테마 나머지 → 로그북/대시보드(별 트랙).
 
 ---
 
@@ -83,17 +87,15 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#5)**: Preview QA #2~#6 OK · PROD `/qa/en`은 PR 미병합으로 `/qa` 폴백(정상) · **merge 후** PROD #1~#6 재확인
-
-**PROD QA** (병합·배포 후): `www.gateo.kr/?lang=en` · PlaceCard · `/korea` · `/korea/theme/scenic` · hreflang · 릴리스 배너
+**상태 (#5)**: PR #132 **main 병합** `bc381852` · PROD 배포 후 `/qa/en`·허브 재확인 · **2차 #7+** 세부 페이지는 `cursor/en` 새 세션
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #6, PROD QA 확인·정리
+영문화 #7, PlaceCard 세부 영문화
 @plans/feature-handoff-index.md
 @plans/2026-08-18-project-log.md
 @plans/i18n-en-plan.md
-main · www.gateo.kr/?lang=en · PR #132 병합 SHA
+브랜치 cursor/en · main bc381852 · 배포 후 /qa/en 확인
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```

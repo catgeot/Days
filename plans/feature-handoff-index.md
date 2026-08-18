@@ -58,35 +58,30 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 ---
 
-### 영문화 (English UI)
+### 영문화 (English UI) — 1차 main 병합
 
 | | |
 |--|--|
-| **상태** | **Preview QA OK** · PR [#132](https://github.com/catgeot/Days/pull/132) **merge 대기** · PROD `/qa/en`은 병합 후 |
-| **브랜치** | `cursor/en` |
-| **tip** | `4a97d140` |
+| **상태** | **1차 main 병합** PR [#132](https://github.com/catgeot/Days/pull/132) · `bc381852` · PROD 배포 후 `/qa/en` 재확인 · **2차 세부 영문화 #7+** |
+| **브랜치** | `cursor/en` (이어하기 · `main` 동기화 후 사용) |
+| **main** | `bc381852` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9 |
 | **일지** | [`2026-08-18-project-log.md`](./2026-08-18-project-log.md) |
-| **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/?lang=en` |
-| **PROD QA** | `https://www.gateo.kr/qa/en` → `/?lang=en` (병합·배포 후) |
+| **PROD QA** | `https://www.gateo.kr/qa/en` → `/?lang=en` (배포 후) |
 | **VERIFY** | `npm run build` · `smoke:place-label-slug` |
 
-**PROD QA 체크** (병합·배포 후):
+**1차 포함**: locale 기반 · 홈 · PlaceCard 주요 · `/korea`·명승 · SEO·릴리스
 
-1. `/?lang=en` — EN/한 토글·홈 칩·검색 placeholder 영문
-2. PlaceCard 샘플 slug 2~3 — 탭·플래너·`name_en` 표시
-3. `/korea?lang=en` · `/korea/theme/scenic?lang=en` — 헤더·검색·필터 영문
-4. 페이지 소스 — `hreflang` ko/en/x-default · 영문 title/description
-5. 릴리스 배너 — 「영어로 홈·장소·한국 투톱을 볼 수 있어요」
+**2차 예정** (#7+): PlaceCard 세부 · 한국 테마 나머지 · 로그북/대시보드 등
 
-**다음 제시어** (병합·PROD QA 후):
+**다음 제시어**:
 
 ```
-영문화 #6, PROD QA 확인·정리
+영문화 #7, PlaceCard 세부 영문화
 @plans/feature-handoff-index.md
 @plans/2026-08-18-project-log.md
 @plans/i18n-en-plan.md
-main · www.gateo.kr/?lang=en · PR #132 병합 SHA
+브랜치 cursor/en · main bc381852 · 배포 후 /qa/en 확인
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 

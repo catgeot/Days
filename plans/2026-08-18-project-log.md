@@ -2,6 +2,13 @@
 
 직전: [`2026-08-16-project-log.md`](./2026-08-16-project-log.md)
 
+## 영문화 #5, PROD 병합 — main 반영
+
+- **PR** [#132](https://github.com/catgeot/Days/pull/132) **main merge** `bc381852`
+- **Preview QA** (#2~#6) — 사람 QA OK (merge 전)
+- **PROD** Vercel 배포 후 `/qa/en` → `/?lang=en` 재확인
+- **다음** #7 PlaceCard 세부·확장 영문화 (`cursor/en` 새 세션)
+
 ## 영문화 #5, PROD 병합·QA — Preview QA OK · merge 대기
 
 - **Preview QA** (#2~#6) git Preview `?lang=en` — **사람 QA OK**

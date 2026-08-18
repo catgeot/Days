@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '영문화',
   sessionNo: 5,
-  sessionPhase: 'PROD 병합·QA',
+  sessionPhase: 'main 병합',
   branch: 'cursor/en',
   previewPath: '/?lang=en',
   qaShareSlug: 'en',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-18-i18n-main-merge',
+    session: '영문화 #5, PROD 병합·QA',
+    title: 'PR #132 main 병합',
+    detail:
+      'PR #132를 main에 병합했습니다(bc381852). PROD 배포 후 /qa/en·허브 영문을 확인해 주세요. 2차 세부 페이지 영문화는 #7 새 세션에서 cursor/en으로 이어갑니다.',
+    at: '2026-08-18',
+  },
   {
     id: '2026-08-18-i18n-preview-qa-ok',
     session: '영문화 #5, PROD 병합·QA',
