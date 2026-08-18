@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Map, {
   Layer,
   Marker,
@@ -283,6 +284,7 @@ export default function KoreaScenicMap({
   onClearLocate,
   locateActive = false,
 }) {
+  const { t } = useTranslation();
   const mapRef = useRef(null);
   const viewStackRef = useRef([]);
   const focusViewRef = useRef(focusView);
@@ -362,18 +364,18 @@ export default function KoreaScenicMap({
       return;
     }
     if (typeof navigator === 'undefined' || !navigator.geolocation) {
-      setLocateMsg('이 기기에서는 위치 정보를 사용할 수 없습니다.');
+      setLocateMsg(t('korea.common.locUnavailable'));
       return;
     }
     setLocateBusy(true);
-    setLocateMsg('위치를 확인하는 중…');
+    setLocateMsg(t('korea.common.locChecking'));
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
         setLocateBusy(false);
         if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-          setLocateMsg('위치를 가져오지 못했습니다.');
+          setLocateMsg(t('korea.common.locFailed'));
           return;
         }
         setUserLocationLocal({ lng, lat });
@@ -385,20 +387,16 @@ export default function KoreaScenicMap({
         setLocateBusy(false);
         const code = err?.code;
         if (code === 1) {
-          setLocateMsg(
-            '위치 권한이 필요합니다. 브라우저에서 위치를 허용해 주세요.',
-          );
+          setLocateMsg(t('korea.common.locDenied'));
         } else if (code === 3) {
-          setLocateMsg('위치 확인이 지연되었습니다. 잠시 후 다시 시도해 주세요.');
+          setLocateMsg(t('korea.common.locTimeout'));
         } else {
-          setLocateMsg(
-            '위치를 가져오지 못했습니다. 권한·네트워크를 확인해 주세요.',
-          );
+          setLocateMsg(t('korea.common.locFailed'));
         }
       },
       GEO_OPTS,
     );
-  }, [flyToUserLocation, locateActive, onClearLocate, onLocateSuccess]);
+  }, [flyToUserLocation, locateActive, onClearLocate, onLocateSuccess, t]);
 
   useEffect(() => {
     if (!locateMsg || locateBusy) return undefined;
@@ -520,9 +518,9 @@ export default function KoreaScenicMap({
       <div
         className={`flex h-full w-full flex-col items-center justify-center bg-[#1b1410] px-4 py-10 text-center ${className}`}
       >
-        <p className="text-sm text-gray-300">지도를 표시할 수 없습니다.</p>
+        <p className="text-sm text-gray-300">{t('korea.theme.map.unavailable')}</p>
         <p className="mt-1 text-[11px] text-gray-500">
-          Mapbox 토큰이 필요합니다. ({pointCount}곳 좌표)
+          {t('korea.theme.map.tokenHint', { count: pointCount })}
         </p>
       </div>
     );
@@ -633,7 +631,10 @@ export default function KoreaScenicMap({
               aria-label={
                 chip.kind === 'spot'
                   ? `${chip.label} ${chip.count}`
-                  : `${chip.label} ${chip.count}곳 펼치기`
+                  : t('korea.theme.map.expandChip', {
+                      label: chip.label,
+                      count: chip.count,
+                    })
               }
             >
               <span className="truncate">{chip.label}</span>
@@ -654,8 +655,8 @@ export default function KoreaScenicMap({
           >
             <span
               className="relative flex flex-col items-center drop-shadow-[0_3px_8px_rgba(0,0,0,0.45)]"
-              aria-label="내 위치"
-              title="내 위치"
+              aria-label={t('korea.theme.map.myLocation')}
+              title={t('korea.theme.map.myLocation')}
             >
               <span className="absolute top-1 h-8 w-8 animate-ping rounded-full bg-red-500/30" />
               <span className="relative flex h-9 w-9 items-center justify-center rounded-full border-[2.5px] border-white bg-red-600 text-white shadow-[0_2px_10px_rgba(185,28,28,0.6)]">
@@ -682,15 +683,15 @@ export default function KoreaScenicMap({
               <button
                 type="button"
                 onClick={onDrillUp}
-                aria-label="상위 분류로"
+                aria-label={t('korea.theme.map.parentLevelAria')}
                 className="inline-flex h-8 shrink-0 items-center gap-0.5 rounded-full border border-amber-400/80 bg-amber-50 px-2.5 text-[11px] font-bold text-stone-900 hover:border-amber-500 hover:bg-amber-100"
               >
                 <ChevronLeft size={15} strokeWidth={2.5} aria-hidden="true" />
-                상위
+                {t('korea.theme.map.parentLevel')}
               </button>
             ) : null}
             <nav
-              aria-label="지도 분류 경로"
+              aria-label={t('korea.theme.map.breadcrumbAria')}
               className="flex min-w-0 flex-1 flex-wrap items-center gap-x-1 gap-y-0.5 text-[11px] text-stone-900"
             >
               {crumbs.map((crumb, idx) => {
@@ -732,9 +733,15 @@ export default function KoreaScenicMap({
         <button
           type="button"
           onClick={onToggleFullscreen}
-          aria-label={fullscreen ? '지도 분할 보기로' : '지도 전체 화면'}
+          aria-label={
+            fullscreen
+              ? t('korea.theme.map.splitView')
+              : t('korea.theme.map.fullscreen')
+          }
           aria-pressed={fullscreen}
-          title={fullscreen ? '분할 보기' : '전체 화면'}
+          title={
+            fullscreen ? t('korea.theme.map.splitView') : t('korea.theme.map.fullscreen')
+          }
           className={`absolute right-3 z-20 flex h-10 items-center gap-1.5 rounded-full border border-white/40 bg-[#1b1410]/75 px-3 text-[11px] font-bold text-white shadow-lg backdrop-blur-md hover:bg-[#1b1410]/88 ${
             fullscreen
               ? 'top-[max(5.25rem,calc(env(safe-area-inset-top)+4.75rem))]'
@@ -748,7 +755,7 @@ export default function KoreaScenicMap({
           ) : (
             <Maximize2 size={15} aria-hidden="true" />
           )}
-          {fullscreen ? '축소' : '전체'}
+          {fullscreen ? t('korea.theme.map.shrink') : t('korea.theme.map.expand')}
         </button>
       ) : null}
       <div
@@ -758,10 +765,12 @@ export default function KoreaScenicMap({
           type="button"
           onClick={handleLocateMe}
           disabled={locateBusy}
-          aria-label={locateActive ? '내 위치 해제' : '내 위치로 이동'}
+          aria-label={
+            locateActive ? t('korea.theme.map.locateOff') : t('korea.theme.map.locateOn')
+          }
           aria-busy={locateBusy}
           aria-pressed={locateActive}
-          title={locateActive ? '내 위치 해제' : '내 위치'}
+          title={locateActive ? t('korea.theme.map.locateOff') : t('korea.theme.map.myLocation')}
           className={`pointer-events-auto inline-flex h-10 items-center gap-1.5 rounded-full border px-3 text-[11px] font-bold shadow-lg backdrop-blur-md disabled:cursor-wait disabled:opacity-70 ${
             locateActive
               ? 'border-red-300/90 bg-red-600 text-white hover:bg-red-500'
@@ -773,7 +782,11 @@ export default function KoreaScenicMap({
             className={locateBusy ? 'animate-pulse' : undefined}
             aria-hidden="true"
           />
-          {locateBusy ? '확인 중' : locateActive ? '위치 해제' : '내 위치'}
+          {locateBusy
+            ? t('korea.theme.map.locateChecking')
+            : locateActive
+              ? t('korea.theme.map.locateClear')
+              : t('korea.theme.map.myLocation')}
         </button>
         {locateMsg ? (
           <p
@@ -786,7 +799,9 @@ export default function KoreaScenicMap({
         ) : null}
       </div>
       <MapCaption
-        countLabel={showSpotPins ? '좌표' : '분류'}
+        countLabel={
+          showSpotPins ? t('korea.theme.map.coords') : t('korea.theme.map.categories')
+        }
         pointCount={
           showSpotPins
             ? pointCount

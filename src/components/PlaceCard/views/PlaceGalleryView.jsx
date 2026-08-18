@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw, Sparkles, ArrowUp } from 'lucide-react';
+import { i18n } from '../../../i18n/config';
 import { mobilePlaceHeaderSpacerClass, mobilePlaceGalleryFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
@@ -152,12 +154,12 @@ const GalleryLoadingChrome = () => (
     role="status"
     aria-live="polite"
     aria-busy="true"
-    aria-label="사진을 불러오는 중"
+    aria-label={i18n.t('place.gallery.loading')}
   >
     <div className="h-10 w-10 rounded-full border-[3px] border-blue-300/35 border-t-blue-300 animate-spin" />
-    <p className="text-sm font-semibold text-white/85">사진을 불러오는 중...</p>
+    <p className="text-sm font-semibold text-white/85">{i18n.t('place.gallery.loadingBody')}</p>
     <p className="text-center text-[11px] leading-relaxed text-white/45">
-      저장된 사진을 불러오는 중이에요
+      {i18n.t('place.gallery.loadingSaved')}
     </p>
   </div>
 );
@@ -186,6 +188,7 @@ const PlaceGalleryView = React.memo(({
   handleDropBrokenImage,
   mobileSecondaryNav = null
 }) => {
+  const { t } = useTranslation();
   const fullScreenContainerRef = useRef(null);
   const scrollContainerRef = useRef(null);
   const mobileSwipeStartRef = useRef(null);
@@ -463,7 +466,7 @@ const PlaceGalleryView = React.memo(({
           className="fixed inset-0 z-[9999] h-[100dvh] min-h-[100svh] w-screen overflow-hidden bg-black animate-fade-in"
           role="dialog"
           aria-modal="true"
-          aria-label="갤러리 사진 확대 보기"
+          aria-label={t('place.gallery.zoomView')}
         >
           <div className="relative h-full w-full portrait:flex portrait:flex-col">
           <div
@@ -474,7 +477,7 @@ const PlaceGalleryView = React.memo(({
               <div className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-black/55 px-3 py-2.5 backdrop-blur-md shadow-lg landscape:rounded-xl landscape:border-white/10 landscape:bg-black/45 landscape:px-2.5 landscape:py-1.5">
                 <p className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-blue-300/90 landscape:sr-only">
                   <ImageIcon size={11} className="shrink-0 opacity-90" aria-hidden />
-                  사진 노트
+                  {t('place.gallery.photoNote')}
                 </p>
                 <p className="max-h-[2.75rem] overflow-y-auto text-sm leading-snug text-gray-100/95 whitespace-pre-line landscape:max-h-none landscape:overflow-hidden landscape:text-xs landscape:truncate">
                   {photoCaption}
@@ -485,7 +488,7 @@ const PlaceGalleryView = React.memo(({
             )}
             <button
               onClick={() => setSelectedImg(null)}
-              aria-label="닫기"
+              aria-label={t('place.gallery.close')}
               className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/30 bg-black/70 text-white shadow-[0_4px_24px_rgba(0,0,0,0.55)] ring-2 ring-white/25 backdrop-blur-md transition-all touch-manipulation active:scale-95 hover:border-red-300/60 hover:bg-red-500/90 hover:ring-red-300/40 landscape:h-10 landscape:w-10"
             >
               <X size={26} strokeWidth={2.5} className="landscape:h-6 landscape:w-6" />
@@ -536,7 +539,7 @@ const PlaceGalleryView = React.memo(({
                 type="button"
                 onClick={handlePrev}
                 disabled={!canGoPrev}
-                aria-label="이전 사진"
+                aria-label={t('place.gallery.prevPhoto')}
                 className={`${mobileNavButtonClass(canGoPrev)} portrait:hidden landscape:absolute landscape:left-[max(0.5rem,env(safe-area-inset-left,0px))] landscape:top-1/2 landscape:z-[220] landscape:h-11 landscape:w-11 landscape:-translate-y-1/2 ${isUIHidden ? 'opacity-0 pointer-events-none' : ''}`}
               >
                 <ChevronLeft className="h-6 w-6" strokeWidth={2.5} />
@@ -545,7 +548,7 @@ const PlaceGalleryView = React.memo(({
                 type="button"
                 onClick={handleNext}
                 disabled={!canGoNext}
-                aria-label="다음 사진"
+                aria-label={t('place.gallery.nextPhoto')}
                 className={`${mobileNavButtonClass(canGoNext)} portrait:hidden landscape:absolute landscape:right-[max(0.5rem,env(safe-area-inset-right,0px))] landscape:top-1/2 landscape:z-[220] landscape:h-11 landscape:w-11 landscape:-translate-y-1/2 ${isUIHidden ? 'opacity-0 pointer-events-none' : ''}`}
               >
                 <ChevronRight className="h-6 w-6" strokeWidth={2.5} />
@@ -571,7 +574,7 @@ const PlaceGalleryView = React.memo(({
                   type="button"
                   onClick={handlePrev}
                   disabled={!canGoPrev}
-                  aria-label="이전 사진"
+                  aria-label={t('place.gallery.prevPhoto')}
                   className={`${mobileNavButtonClass(canGoPrev)} h-12 w-12 portrait:flex landscape:hidden`}
                 >
                   <ChevronLeft className="h-7 w-7" strokeWidth={2.5} />
@@ -595,8 +598,8 @@ const PlaceGalleryView = React.memo(({
                   type="button"
                   onClick={() => handleDownload && handleDownload(selectedImg)}
                   className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/20 bg-black/55 text-white/90 backdrop-blur-md transition-all hover:bg-blue-600 hover:text-white landscape:h-10 landscape:w-10"
-                  title="이미지 다운로드"
-                  aria-label="이미지 다운로드"
+                  title={t('place.gallery.download')}
+                  aria-label={t('place.gallery.download')}
                 >
                   <Download size={20} />
                 </button>
@@ -607,7 +610,7 @@ const PlaceGalleryView = React.memo(({
                   type="button"
                   onClick={handleNext}
                   disabled={!canGoNext}
-                  aria-label="다음 사진"
+                  aria-label={t('place.gallery.nextPhoto')}
                   className={`${mobileNavButtonClass(canGoNext)} h-12 w-12 portrait:flex landscape:hidden`}
                 >
                   <ChevronRight className="h-7 w-7" strokeWidth={2.5} />
@@ -661,7 +664,7 @@ const PlaceGalleryView = React.memo(({
             type="button"
             onClick={handlePrev}
             disabled={!canGoPrev}
-            aria-label="이전 사진"
+            aria-label={t('place.gallery.prevPhoto')}
             className={`${mobileNavButtonClass(canGoPrev)} h-12 w-12 md:h-11 md:w-11`}
           >
             <ChevronLeft className="h-7 w-7 md:h-6 md:w-6" strokeWidth={2.5} />
@@ -681,8 +684,8 @@ const PlaceGalleryView = React.memo(({
               type="button"
               onClick={() => handleDownload && handleDownload(selectedImg)}
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/20 bg-black/55 text-white/90 backdrop-blur-md transition-all hover:bg-blue-600 hover:text-white"
-              title="이미지 다운로드"
-              aria-label="이미지 다운로드"
+              title={t('place.gallery.download')}
+              aria-label={t('place.gallery.download')}
             >
               <Download size={20} />
             </button>
@@ -692,7 +695,7 @@ const PlaceGalleryView = React.memo(({
             type="button"
             onClick={handleNext}
             disabled={!canGoNext}
-            aria-label="다음 사진"
+            aria-label={t('place.gallery.nextPhoto')}
             className={`${mobileNavButtonClass(canGoNext)} h-12 w-12 md:h-11 md:w-11`}
           >
             <ChevronRight className="h-7 w-7 md:h-6 md:w-6" strokeWidth={2.5} />
@@ -732,7 +735,7 @@ const PlaceGalleryView = React.memo(({
         <button
           type="button"
           onClick={() => toggleFullScreen(fullScreenContainerRef)}
-          aria-label={isFullScreen ? '전체화면 종료' : '전체화면'}
+          aria-label={isFullScreen ? t('place.gallery.exitFullscreen') : t('place.gallery.fullscreen')}
           className="hidden md:flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-black/75 text-white shadow-[0_4px_24px_rgba(0,0,0,0.55)] ring-2 ring-white/25 backdrop-blur-md transition-all hover:border-blue-300/60 hover:bg-blue-600/90 hover:ring-blue-300/40"
         >
           {isFullScreen ? <Minimize2 size={22} strokeWidth={2.25} /> : <Maximize2 size={22} strokeWidth={2.25} />}
@@ -740,7 +743,7 @@ const PlaceGalleryView = React.memo(({
         <button
           type="button"
           onClick={isFullScreen ? closeImageKeepFullscreen : () => setSelectedImg(null)}
-          aria-label="닫기"
+          aria-label={t('place.gallery.close')}
           className="flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-black/75 text-white shadow-[0_4px_24px_rgba(0,0,0,0.55)] ring-2 ring-white/25 backdrop-blur-md transition-all hover:border-red-300/60 hover:bg-red-500/90 hover:ring-red-300/40 md:h-11 md:w-11"
         >
           <X size={22} strokeWidth={2.5} />
@@ -756,7 +759,7 @@ const PlaceGalleryView = React.memo(({
           <div className="max-h-[30vh] overflow-y-auto rounded-2xl border border-white/10 bg-black/55 px-3.5 py-3 backdrop-blur-md shadow-lg">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-blue-300/90 mb-1.5 flex items-center gap-1.5">
               <ImageIcon size={12} className="shrink-0 opacity-90" aria-hidden />
-              사진 노트
+              {t('place.gallery.photoNote')}
             </p>
             <p className="text-sm text-gray-100/95 leading-relaxed whitespace-pre-line">{photoCaption}</p>
           </div>
@@ -768,10 +771,10 @@ const PlaceGalleryView = React.memo(({
         <button
           onClick={() => handleDownload && handleDownload(selectedImg)}
           className="flex items-center gap-2 p-3 md:px-4 md:py-2 bg-black/50 backdrop-blur-md border border-white/10 text-white/80 rounded-full hover:bg-blue-600 hover:text-white transition-all shadow-xl"
-          title="이미지 다운로드"
+          title={t('place.gallery.download')}
         >
           <Download size={20} />
-          <span className="hidden md:block text-sm font-medium pr-1">다운로드</span>
+          <span className="hidden md:block text-sm font-medium pr-1">{t('place.gallery.download')}</span>
         </button>
       </div>
       )}
@@ -875,10 +878,10 @@ const PlaceGalleryView = React.memo(({
                     className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.04] border border-white/10 text-white/45 hover:bg-blue-500/10 hover:text-blue-300/90 hover:border-blue-500/30 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-medium"
                     title={
                       isRefreshing
-                        ? '추가 사진을 불러오는 중'
+                        ? t('place.gallery.refreshLoadingTitle')
                         : refreshCooldownLeft > 0
-                          ? `${refreshCooldownLeft}초 후 다시 시도 가능`
-                          : 'Unsplash·Pexels에서 추가 사진 불러오기'
+                          ? t('place.gallery.refreshCooldownTitle', { seconds: refreshCooldownLeft })
+                          : t('place.gallery.refreshTitle')
                     }
                   >
                     <RefreshCw
@@ -892,19 +895,19 @@ const PlaceGalleryView = React.memo(({
                       }
                     />
                     {isRefreshing
-                      ? '추가 사진을 불러오는 중...'
+                      ? t('place.gallery.refreshLoading')
                       : refreshCooldownLeft > 0
-                        ? `${refreshCooldownLeft}초 후 다시 불러올 수 있어요`
-                        : '더 많은 사진 불러오기'}
+                        ? t('place.gallery.refreshCooldown', { seconds: refreshCooldownLeft })
+                        : t('place.gallery.refreshMore')}
                   </button>
-                  <p className="text-[10px] text-white/25">Unsplash · Pexels · {refreshCooldownSec}초에 한 번</p>
+                  <p className="text-[10px] text-white/25">{t('place.gallery.sourcesRateLimit', { seconds: refreshCooldownSec })}</p>
                 </div>
               )}
 
               {!showInitialSkeleton && !isPaintPending && images.length === 0 && (
                 <div className="w-full h-[300px] flex flex-col items-center justify-center text-white/20 gap-4">
                   <ImageIcon size={48} />
-                  <p className="text-sm">등록된 이미지가 없습니다.</p>
+                  <p className="text-sm">{t('place.gallery.empty')}</p>
                 </div>
               )}
             </div>
@@ -917,10 +920,10 @@ const PlaceGalleryView = React.memo(({
           type="button"
           onClick={scrollGalleryToTop}
           className={`fixed z-[170] flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-[0_4px_20px_rgba(37,99,235,0.55)] ring-2 ring-white transition-colors hover:bg-blue-500 active:scale-95 bottom-24 right-3 sm:right-4 md:bottom-8 md:right-8 md:h-auto md:w-auto md:gap-1.5 md:px-4 md:py-2.5 touch-manipulation ${mobileLandscapeChromeHidden}`}
-          aria-label="갤러리 맨 위로"
+          aria-label={t('place.gallery.scrollTop')}
         >
           <ArrowUp size={22} className="shrink-0" strokeWidth={2.5} />
-          <span className="hidden md:inline text-sm font-bold">맨 위</span>
+          <span className="hidden md:inline text-sm font-bold">{t('place.gallery.scrollTopShort')}</span>
         </button>,
         document.body
       )}

@@ -126,7 +126,7 @@ const ToolkitCard = ({
                                 target={isMobileDevice() ? "_self" : "_blank"}
                                 rel="noopener noreferrer"
                                 className={`flex ${link.subtext ? 'flex-col gap-0.5 py-2' : 'flex-row items-center gap-1 py-3'} justify-center w-full px-1 min-h-[44px] rounded-xl transition-colors border overflow-hidden ${link.colorClass} ${isColSpan2 ? 'col-span-2' : ''}`}
-                                aria-label={link.subtext ? `${link.text}. ${link.subtext}` : `${link.text}에서 검색하기`}
+                                aria-label={link.subtext ? `${link.text}. ${link.subtext}` : t('place.planner.searchOn', { label: link.text })}
                             >
                                 <span className={`flex items-center justify-center gap-1 min-w-0 text-[11px] md:text-xs font-semibold ${link.subtext ? '' : 'w-full'}`}>
                                     <span className="truncate max-w-[85%]">{link.text}</span>

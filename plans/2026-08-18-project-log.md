@@ -2,6 +2,31 @@
 
 직전: [`2026-08-16-project-log.md`](./2026-08-16-project-log.md)
 
+## 영문화 #8.5, 중간점검 — 무니·써머리 QA
+
+- **버그 수정** 모바일 갤러리→무니 시 연관 여행지 하단 푸터가 채팅 칩과 겹침 — `isMooniChatOpen`으로 포털 숨김 · tip `5e7337c4`
+- **써머리** 모바일 설명란 탭으로 확장 카드 진입 복구(제목·헤더는 오탭 방지 유지) · tip `78b372f2`
+- **VERIFY** `npm run build` PASS · PR [#133](https://github.com/catgeot/Days/pull/133)
+- **Preview** `/qa/en` · `?lang=en` — 갤러리→무니·써머리 설명 탭 QA
+
+## 영문화 #8, 한국 테마 나머지 — Preview
+
+- **courses** `/korea/theme/courses` — 페이지·상세 모달·시도 칩 `korea.theme.courses.*`
+- **scenic 잔여** — 섹션·검색·내 주변·빈 상태·페이지네이션 `korea.theme.scenic*`
+- **지도** `KoreaScenicMap` — 위치·드릴·전체화면 `korea.theme.map.*`
+- **nav** 테마 모듈 복귀 라벨 `korea.theme.nav.module.*`
+- **VERIFY** `npm run build` · `smoke:place-label-slug` PASS
+- **PR** [#133](https://github.com/catgeot/Days/pull/133) · 브랜치 `cursor/en`
+- **Preview** `/qa/en` · `?lang=en` → `/korea/theme/courses` · `/korea/theme/scenic` — **사람 QA**
+- **다음** #9 로그북·대시보드
+
+## 영문화 #7, PlaceCard 세부 — Preview
+
+- **PlaceCard 세부** 갤러리·위키·영상·채팅·리뷰·요약·플래너 로딩·공통 `place.*` i18n 키 en/ko
+- **VERIFY** `npm run build` · `smoke:place-label-slug` PASS
+- **브랜치** `cursor/en` · **Preview** `/qa/en` · `?lang=en` PlaceCard 샘플 slug QA
+- **다음** 사람 Preview QA → 한국 테마 나머지·로그북 등 #8+
+
 ## 영문화 #5, PROD 병합 — main 반영
 
 - **PR** [#132](https://github.com/catgeot/Days/pull/132) **main merge** `bc381852`

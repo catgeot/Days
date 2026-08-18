@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import { BookOpen, Sparkles, Loader2, RefreshCw, Quote, Camera, ArrowUp, X, ChevronLeft as ChevronLeftIcon, ChevronRight, ChevronDown, Briefcase, ImageIcon, Download, PenLine } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 import { parseAiPracticalInfo } from '../../../utils/aiDataParser';
@@ -29,31 +30,6 @@ import { ensurePlaceChatIntroForLocation } from '../../../pages/Home/lib/placeCh
 import { resolveHubAttractionParentSketch } from '../../../pages/Home/lib/placeWikiParentSketch';
 import { fetchPlaceWikiBestRow } from '../hooks/useWikiData';
 
-const LOADING_MESSAGES_NEW = [
-    "여행 스케치 자료 분석 및 연동 중...",
-    "핵심 랜드마크와 역사적 배경 스캔 중...",
-    "여행자를 위한 실용적인 로컬 팁 추출 중...",
-    "날씨, 문화, 예절 등 필수 지식 정리 중...",
-    "명소 주변 숨겨진 핫플레이스 탐색 중...",
-    "AI가 최종 로컬 왓슨 노트를 완성하는 중..."
-];
-
-const LOADING_MESSAGES_UPDATE = [
-    "기존 로컬 왓슨 노트를 불러오는 중...",
-    "최근 변경된 현지 이슈와 팁을 확인하는 중...",
-    "새로운 여행 트렌드를 기반으로 데이터 비교 중...",
-    "변경 사항을 반영하여 정보를 재조립하는 중...",
-    "AI가 최종 로컬 왓슨 노트를 검수하는 중..."
-];
-
-const MAGAZINE_LOADING_MESSAGES = [
-    "하이엔드 매거진 에디터가 서사를 구상하는 중...",
-    "오감 자극 묘사와 로컬 루트를 엮는 중...",
-    "프롤로그와 7개 피처 섹션을 집필하는 중...",
-    "문장 리듬과 여백을 다듬는 중...",
-    "GATEO 여행 스케치 매거진을 완성하는 중..."
-];
-
 /** summary + sections 가 모두 채워진 완성 매거진인지 */
 function hasMagazineContent(wikiData) {
   if (!wikiData) return false;
@@ -76,6 +52,7 @@ const PlaceWikiDetailsView = ({
   onNavigateToPlace,
   mobileSecondaryNav = null
 }) => {
+  const { t, i18n } = useTranslation();
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isMagazineGenerating, setIsMagazineGenerating] = useState(false);
@@ -107,7 +84,10 @@ const PlaceWikiDetailsView = ({
   const handleLightboxDownload = galleryData?.handleDownload;
 
   const isUpdatingExisting = !!wikiData?.ai_practical_info && wikiData.ai_practical_info !== '[[LOADING]]';
-  const currentMessages = isUpdatingExisting ? LOADING_MESSAGES_UPDATE : LOADING_MESSAGES_NEW;
+  const loadingMessagesNew = t('place.wiki.loading.new', { returnObjects: true });
+  const loadingMessagesUpdate = t('place.wiki.loading.update', { returnObjects: true });
+  const magazineLoadingMessages = t('place.wiki.loading.magazine', { returnObjects: true });
+  const currentMessages = isUpdatingExisting ? loadingMessagesUpdate : loadingMessagesNew;
 
   const aiSectionRef = useRef(null);
   const containerRef = useRef(null);
@@ -165,12 +145,12 @@ const PlaceWikiDetailsView = ({
           setMagazineLoadingStep(0);
           interval = setInterval(() => {
               setMagazineLoadingStep((prev) =>
-                  prev < MAGAZINE_LOADING_MESSAGES.length - 1 ? prev + 1 : prev
+                  prev < magazineLoadingMessages.length - 1 ? prev + 1 : prev
               );
           }, 5000);
       }
       return () => clearInterval(interval);
-  }, [isMagazineLoading]);
+  }, [isMagazineLoading, magazineLoadingMessages.length]);
 
   // DB 폴링으로 매거진이 채워지면 로컬 생성 상태 해제
   useEffect(() => {
@@ -703,7 +683,7 @@ const PlaceWikiDetailsView = ({
             {/* 소제목 */}
             <div className="flex items-center gap-3 text-amber-400 text-lg md:text-xl font-bold mb-8 pb-4 border-b border-white/10">
                 <BookOpen size={24} />
-                <span>GATEO 여행 스케치</span>
+                <span>{t('place.wiki.sketchBrand')}</span>
             </div>
 
             {/* 메인 레이아웃 (단일 컬럼) */}
@@ -725,23 +705,23 @@ const PlaceWikiDetailsView = ({
                     <div className="flex flex-col items-center justify-center min-h-[40vh] py-12 animate-fade-in">
                         <div className="w-full max-w-md space-y-6">
                             <div className="flex justify-between items-end px-2">
-                                <span className="text-base font-bold text-gray-300">매거진 작성 중</span>
+                                <span className="text-base font-bold text-gray-300">{t('place.wiki.magazineWriting')}</span>
                                 <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">
-                                    {Math.round((magazineLoadingStep / (MAGAZINE_LOADING_MESSAGES.length - 1)) * 100)}%
+                                    {Math.round((magazineLoadingStep / (magazineLoadingMessages.length - 1)) * 100)}%
                                 </span>
                             </div>
                             <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
                                 <div
                                     className="h-full bg-gradient-to-r from-amber-500 to-orange-500 transition-all duration-500 ease-out"
-                                    style={{ width: `${(magazineLoadingStep / (MAGAZINE_LOADING_MESSAGES.length - 1)) * 100}%` }}
+                                    style={{ width: `${(magazineLoadingStep / (magazineLoadingMessages.length - 1)) * 100}%` }}
                                 />
                             </div>
                             <div className="flex items-center gap-3 text-sm text-gray-400 font-medium justify-center mt-6">
                                 <Loader2 size={16} className="animate-spin text-amber-400" />
-                                <span className="animate-pulse break-keep">{MAGAZINE_LOADING_MESSAGES[magazineLoadingStep]}</span>
+                                <span className="animate-pulse break-keep">{magazineLoadingMessages[magazineLoadingStep]}</span>
                             </div>
                             <p className="text-xs text-gray-500 text-center break-keep">
-                                피처 기사 분량이 길어 1~2분 정도 걸릴 수 있습니다. 탭을 닫아도 생성이 이어집니다.
+                                {t('place.wiki.magazineWaitHint')}
                             </p>
                         </div>
                     </div>
@@ -783,7 +763,7 @@ const PlaceWikiDetailsView = ({
                                             >
                                                 <img
                                                     src={imageForSection.urls?.regular || imageForSection.urls?.small}
-                                                    alt={imageForSection.alt_description || `${sec.title} 관련 이미지`}
+                                                    alt={imageForSection.alt_description || t('place.wiki.sectionImageAlt', { title: sec.title })}
                                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                                     loading={idx === 0 ? "eager" : "lazy"}
                                                     fetchPriority={idx === 0 ? "high" : "auto"}
@@ -817,7 +797,7 @@ const PlaceWikiDetailsView = ({
                             <div className="mt-24 pt-12 border-t border-white/10" data-gallery-section>
                                 <h3 className="text-2xl font-bold mb-8 flex items-center gap-3 text-white tracking-tight">
                                     <Camera size={24} className="text-gray-400" />
-                                    <span>포토 갤러리</span>
+                                    <span>{t('place.wiki.photoGallery')}</span>
                                 </h3>
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                                     {galleryImages.map((img, i) => (
@@ -838,7 +818,7 @@ const PlaceWikiDetailsView = ({
                                                     setLightboxIndex(i);
                                                 }
                                             }}
-                                            aria-label={`${img.alt_description || '갤러리 이미지'} 확대하기`}
+                                            aria-label={t('place.gallery.enlargeImage', { alt: img.alt_description || t('place.gallery.imageFallback') })}
                                         >
                                             <img
                                                 src={img.urls?.small}
@@ -873,7 +853,7 @@ const PlaceWikiDetailsView = ({
                         <div className="flex flex-col items-center gap-5">
                             <BookOpen size={48} className="opacity-20 text-amber-400" />
                             <p className="text-base text-gray-300 font-medium text-center px-4 break-keep">
-                                아직 이 장소의 매거진이 준비되지 않았습니다.
+                                {t('place.wiki.magazineNotReady')}
                             </p>
                             {parentHasMagazine && parentSketch?.place && onNavigateToPlace ? (
                                 <button
@@ -883,13 +863,13 @@ const PlaceWikiDetailsView = ({
                                 >
                                     <Sparkles size={16} className="text-cyan-200 shrink-0 group-hover:rotate-12 transition-transform duration-200" />
                                     <span className="text-sm md:text-[15px] font-bold tracking-wide break-keep">
-                                        {parentSketch.label} 여행 스케치 보기
+                                        {t('place.wiki.parentSketchLink', { label: parentSketch.label })}
                                     </span>
                                     <ChevronRight size={16} className="text-sky-100/90 shrink-0 group-hover:translate-x-0.5 transition-transform duration-200" aria-hidden="true" />
                                 </button>
                             ) : null}
                             <p className="text-[13px] md:text-sm text-gray-300/90 text-center px-4 leading-relaxed break-keep">
-                                AI 에디터가 하이엔드 여행 스케치 피처 기사를 작성합니다.
+                                {t('place.wiki.magazineAiHint')}
                             </p>
                             {magazineError && (
                                 <p className="text-sm text-red-400/90 text-center px-4 break-keep">{magazineError}</p>
@@ -901,7 +881,7 @@ const PlaceWikiDetailsView = ({
                             >
                                 <PenLine size={18} className="text-amber-300" />
                                 <span className="text-sm md:text-base font-bold text-amber-100 tracking-wide">
-                                    {magazineError ? '다시 생성하기' : '매거진 생성하기'}
+                                    {magazineError ? t('place.wiki.magazineRegenerate') : t('place.wiki.magazineGenerate')}
                                 </span>
                             </button>
                         </div>
@@ -919,18 +899,18 @@ const PlaceWikiDetailsView = ({
                                     <Sparkles size={28} className="text-blue-400" />
                                 </div>
                                 <div>
-                                    <h3 className="text-2xl font-bold text-white tracking-tight">로컬 왓슨 노트</h3>
-                                    <p className="text-sm text-gray-400 mt-1">AI가 분석한 실전 여행 팁</p>
+                                    <h3 className="text-2xl font-bold text-white tracking-tight">{t('place.wiki.localWatsonTitle')}</h3>
+                                    <p className="text-sm text-gray-400 mt-1">{t('place.wiki.localWatsonSubtitle')}</p>
                                 </div>
                             </div>
                             {(!isAiLoading && localAiResponse) && (
                                 <button
                                     onClick={() => handleRequestAiInfo(placeName || wikiData?.title, true)}
                                     className="p-2.5 hover:bg-blue-500/10 text-blue-400/70 hover:text-blue-400 rounded-xl transition-all border border-transparent hover:border-blue-500/30 flex items-center gap-2 group"
-                                    title="AI 정보 강제 갱신"
+                                    title={t('place.wiki.aiForceRefresh')}
                                 >
                                     <RefreshCw size={16} className="group-hover:rotate-180 transition-transform duration-700" />
-                                    <span className="text-xs font-bold hidden md:inline">최신화</span>
+                                    <span className="text-xs font-bold hidden md:inline">{t('place.wiki.refreshShort')}</span>
                                 </button>
                             )}
                         </div>
@@ -940,7 +920,7 @@ const PlaceWikiDetailsView = ({
                                 <div className="w-full max-w-md space-y-6">
                                     <div className="flex justify-between items-end px-2">
                                         <span className="text-base font-bold text-gray-300">
-                                            {isUpdatingExisting ? "AI 정보 점검 중" : "AI 정보 생성 중"}
+                                            {isUpdatingExisting ? t('place.wiki.aiChecking') : t('place.wiki.aiGenerating')}
                                         </span>
                                         <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
                                             {Math.round((loadingStep / (currentMessages.length - 1)) * 100)}%
@@ -960,13 +940,13 @@ const PlaceWikiDetailsView = ({
                             </div>
                         ) : !localAiResponse && error ? (
                             <div className="flex flex-col items-center justify-center py-12 space-y-6 text-gray-400">
-                                <p className="text-base">정보를 불러오는 중 문제가 발생했습니다.</p>
+                                <p className="text-base">{t('place.wiki.loadError')}</p>
                                 <button
                                     onClick={() => handleRequestAiInfo(placeName || wikiData?.title)}
                                     className="flex items-center gap-2 px-6 py-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors border border-white/10 font-medium"
                                 >
                                     <RefreshCw size={18} />
-                                    <span>다시 시도</span>
+                                    <span>{t('place.wiki.retry')}</span>
                                 </button>
                             </div>
                         ) : localAiResponse ? (
@@ -977,7 +957,12 @@ const PlaceWikiDetailsView = ({
                                 <div className="flex items-center justify-between pt-6 border-t border-white/5">
                                     <div className="text-xs text-gray-500 font-medium">
                                         {(localUpdatedAt || wikiData?.ai_info_updated_at) && wikiData?.ai_practical_info !== '[[LOADING]]' ?
-                                            `마지막 업데이트: ${new Date(localUpdatedAt || wikiData.ai_info_updated_at).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}`
+                                            t('place.wiki.lastUpdated', {
+                                              date: new Date(localUpdatedAt || wikiData.ai_info_updated_at).toLocaleDateString(
+                                                i18n.language === 'en' ? 'en-US' : 'ko-KR',
+                                                { year: 'numeric', month: 'long', day: 'numeric' },
+                                              ),
+                                            })
                                             : ''}
                                     </div>
                                 </div>
@@ -995,11 +980,11 @@ const PlaceWikiDetailsView = ({
                                         }
                                     }}
                                     className="flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 rounded-2xl border border-purple-500/30 transition-all duration-300 group shadow-lg min-h-[44px] w-full md:w-auto"
-                                    aria-label="포토 갤러리로 이동"
+                                    aria-label={t('place.wiki.goGallery')}
                                 >
                                     <Camera size={22} className="text-purple-400 group-hover:text-purple-300 group-hover:scale-110 transition-transform" />
                                     <span className="text-sm md:text-base font-bold text-purple-300 group-hover:text-purple-200 tracking-wide">
-                                        포토 갤러리 보기 ({galleryImages.length}장)
+                                        {t('place.wiki.viewGalleryCount', { count: galleryImages.length })}
                                     </span>
                                 </button>
                             </div>
@@ -1029,7 +1014,7 @@ const PlaceWikiDetailsView = ({
                 >
                     <Sparkles size={16} className="text-blue-400 group-hover:scale-110 transition-transform shrink-0" />
                     <span className="text-[11px] sm:text-xs font-medium text-gray-200 tracking-wide truncate">
-                        {isAiExpanded ? '로컬 왓슨' : '제미나이 묻기'}
+                        {isAiExpanded ? t('place.wiki.mobileAiLocal') : t('place.wiki.mobileAiAsk')}
                     </span>
                 </button>
 
@@ -1041,7 +1026,7 @@ const PlaceWikiDetailsView = ({
                     >
                         <Briefcase size={16} className="text-purple-100 group-hover:scale-110 transition-transform shrink-0" />
                         <span className="text-[11px] sm:text-xs font-medium text-white tracking-wide truncate">
-                            패키지 여행
+                            {t('place.wiki.packageTrip')}
                         </span>
                     </button>
                 )}
@@ -1052,7 +1037,7 @@ const PlaceWikiDetailsView = ({
             <button
                 onClick={scrollToTop}
                 className="fixed bottom-24 md:bottom-12 right-6 md:right-12 p-3.5 bg-blue-600/80 hover:bg-blue-500 text-white rounded-full shadow-2xl backdrop-blur-md transition-all duration-300 z-[170] group animate-fade-in"
-                aria-label="맨 위로 가기"
+                aria-label={t('place.gallery.scrollTop')}
             >
                 <ArrowUp size={24} className="group-hover:-translate-y-1 transition-transform" />
             </button>
@@ -1070,7 +1055,7 @@ const PlaceWikiDetailsView = ({
                 }}
                 role="dialog"
                 aria-modal="true"
-                aria-label="이미지 확대 보기"
+                aria-label={t('place.gallery.zoomView')}
                 tabIndex={-1}
             >
                 <div className="relative h-full w-full" onClick={(e) => e.stopPropagation()}>
@@ -1091,7 +1076,7 @@ const PlaceWikiDetailsView = ({
                                 type="button"
                                 onClick={goLightboxPrev}
                                 disabled={!canGoLightboxPrev}
-                                aria-label="이전 사진"
+                                aria-label={t('place.gallery.prevPhoto')}
                                 className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/30 bg-black/80 text-white shadow-[0_4px_24px_rgba(0,0,0,0.55)] ring-2 ring-white/25 backdrop-blur-md transition-all touch-manipulation active:scale-95 md:h-11 md:w-11 ${
                                     canGoLightboxPrev ? 'hover:bg-blue-600/90 hover:border-blue-300/60' : 'opacity-45'
                                 }`}
@@ -1112,8 +1097,8 @@ const PlaceWikiDetailsView = ({
                                         type="button"
                                         onClick={() => handleLightboxDownload(lightboxImg)}
                                         className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/20 bg-black/55 text-white/90 backdrop-blur-md transition-all hover:bg-blue-600 hover:text-white"
-                                        title="이미지 다운로드"
-                                        aria-label="이미지 다운로드"
+                                        title={t('place.gallery.download')}
+                                        aria-label={t('place.gallery.download')}
                                     >
                                         <Download size={20} />
                                     </button>
@@ -1124,7 +1109,7 @@ const PlaceWikiDetailsView = ({
                                 type="button"
                                 onClick={goLightboxNext}
                                 disabled={!canGoLightboxNext}
-                                aria-label="다음 사진"
+                                aria-label={t('place.gallery.nextPhoto')}
                                 className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/30 bg-black/80 text-white shadow-[0_4px_24px_rgba(0,0,0,0.55)] ring-2 ring-white/25 backdrop-blur-md transition-all touch-manipulation active:scale-95 md:h-11 md:w-11 ${
                                     canGoLightboxNext ? 'hover:bg-blue-600/90 hover:border-blue-300/60' : 'opacity-45'
                                 }`}
@@ -1152,7 +1137,7 @@ const PlaceWikiDetailsView = ({
                         <button
                             type="button"
                             onClick={() => setLightboxImg(null)}
-                            aria-label="닫기"
+                            aria-label={t('place.gallery.close')}
                             className="flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-black/75 text-white shadow-[0_4px_24px_rgba(0,0,0,0.55)] ring-2 ring-white/25 backdrop-blur-md transition-all hover:border-red-300/60 hover:bg-red-500/90 hover:ring-red-300/40"
                         >
                             <X size={22} strokeWidth={2.5} />
@@ -1167,7 +1152,7 @@ const PlaceWikiDetailsView = ({
                             <div className="max-h-[30vh] overflow-y-auto rounded-2xl border border-white/10 bg-black/55 px-3.5 py-3 backdrop-blur-md shadow-lg">
                                 <p className="text-[11px] font-semibold uppercase tracking-wider text-blue-300/90 mb-1.5 flex items-center gap-1.5">
                                     <ImageIcon size={12} className="shrink-0 opacity-90" aria-hidden />
-                                    사진 노트
+                                    {t('place.gallery.photoNote')}
                                 </p>
                                 <p className="text-sm text-gray-100/95 leading-relaxed whitespace-pre-line">{lightboxCaption}</p>
                             </div>

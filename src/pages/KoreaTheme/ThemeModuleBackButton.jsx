@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
 import {
   consumeThemeNavBack,
-  formatThemeNavBackLabel,
   peekThemeNavBack,
   resolveThemeNavBack,
 } from '../Home/lib/koreaThemeNavBack';
+import { formatLocalizedThemeNavBackLabel } from '../../i18n/koreaUi';
 
 const BTN_CLASS =
   'flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs font-bold text-stone-700 hover:bg-stone-100';
@@ -40,7 +40,7 @@ export default function ThemeModuleBackButton({ onlyWhenBack = false }) {
   const { back, goBack } = useThemeNavBackAction();
 
   if (back?.path) {
-    const label = formatThemeNavBackLabel(back);
+    const label = formatLocalizedThemeNavBackLabel(t, back);
     return (
       <button
         type="button"
@@ -79,7 +79,7 @@ export function ThemeNavBackHint() {
   const { t } = useTranslation();
   const { back, goBack } = useThemeNavBackAction();
   if (!back?.path) return null;
-  const label = formatThemeNavBackLabel(back);
+  const label = formatLocalizedThemeNavBackLabel(t, back);
   if (!label) return null;
 
   return (
@@ -101,7 +101,7 @@ export function ThemeNavBackHint() {
 export function ThemeFestivalBackLink() {
   const { t } = useTranslation();
   const { back, goBack } = useThemeNavBackAction();
-  const label = formatThemeNavBackLabel(back);
+  const label = formatLocalizedThemeNavBackLabel(t, back);
 
   if (back?.path) {
     return (

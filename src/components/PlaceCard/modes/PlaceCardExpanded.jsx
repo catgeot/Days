@@ -14,7 +14,7 @@ import TripLinkModal from '../modals/TripLinkModal';
 import { getLocalizedPlaceName } from '../common/locationDisplay';
 import { useLocale } from '../../../i18n/LocaleProvider';
 
-const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenMooni, onNavigateToPlace, onGoHome, galleryData, onToggleBookmark, initialTab = 'GALLERY' }) => {
+const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenMooni, onNavigateToPlace, onGoHome, isMooniChatOpen = false, galleryData, onToggleBookmark, initialTab = 'GALLERY' }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { locale } = useLocale();
@@ -183,6 +183,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
         onOpenMooni={onOpenMooni}
         onNavigateToPlace={onNavigateToPlace}
         onGoHome={onGoHome}
+        isMooniChatOpen={isMooniChatOpen}
         activeInfo={activeInfo}
         isFullScreen={isFullScreen}
         mediaMode={mediaMode}

@@ -79,6 +79,7 @@ const PlaceCardSummary = ({
 
   const isScanning = location?.isScanning;
   const allowSummaryExpandTap = !isMobileCoarse;
+  const allowSummaryIntroExpandTap = !isScanning && !isCompact;
   const isEnterGlow = !isMobileCoarse && glowPhase === 'enter';
   const { primaryName, secondaryName } = getPlaceTitleLinesForLocale(location, locale);
   const canStartTour = canStartGlobeTour(location);
@@ -225,7 +226,7 @@ const PlaceCardSummary = ({
             <div className="place-summary-orbit-ring" aria-hidden="true" />
             {!isScanning && (
               <div className="place-summary-open-hint absolute -top-9 left-1/2 -translate-x-1/2 z-20 pointer-events-none whitespace-nowrap lg:hidden">
-                클릭하여 탐색 시작
+                {t('place.summary.tapToExplore')}
               </div>
             )}
           </>
@@ -301,8 +302,8 @@ const PlaceCardSummary = ({
           </div>
 
           <div
-            className={`${isOriginCompact ? 'hidden' : ''} ${allowSummaryExpandTap && !isScanning && !isCompact ? `cursor-pointer ${canPreviewFlightRoute ? 'mb-3' : 'mb-6'}` : isCompact ? 'mb-0' : ''}`}
-            onClick={allowSummaryExpandTap && !isScanning && !isCompact ? onExpand : undefined}
+            className={`${isOriginCompact ? 'hidden' : ''} ${allowSummaryIntroExpandTap ? `cursor-pointer touch-manipulation ${canPreviewFlightRoute ? 'mb-3' : 'mb-6'}` : isCompact ? 'mb-0' : ''}`}
+            onClick={allowSummaryIntroExpandTap ? onExpand : undefined}
           >
             {!isCompact && (isLoading || isScanning ? (
               <div className="w-full animate-pulse space-y-3 mt-1 px-1">
@@ -331,7 +332,7 @@ const PlaceCardSummary = ({
                       }}
                       className="absolute bottom-0 right-0 inline-flex items-center gap-0.5 bg-gradient-to-l from-black/85 via-black/70 to-transparent pl-3 text-[12px] font-semibold leading-[1.55] text-sky-300/95 hover:text-sky-200 transition-colors"
                     >
-                      더보기
+                      {t('place.summary.readMore')}
                       <ChevronRight size={14} className="shrink-0 opacity-80" aria-hidden="true" />
                     </button>
                   ) : null}
@@ -367,7 +368,7 @@ const PlaceCardSummary = ({
                       <p className="min-w-0 flex-1 truncate text-right text-xs font-semibold text-sky-200/90 break-keep tabular-nums">
                         {flightRouteLabel}
                         {typeof flightRouteHours === 'number' ? (
-                          <span className="ml-1 font-medium text-sky-300/75">· 약 {flightRouteHours}h</span>
+                          <span className="ml-1 font-medium text-sky-300/75">· {t('place.summary.flightHoursApprox', { hours: flightRouteHours })}</span>
                         ) : null}
                       </p>
                     ) : null}
@@ -456,7 +457,7 @@ const PlaceCardSummary = ({
                     title={t('place.summary.openPlanner')}
                   >
                     <LayoutList size={16} className="shrink-0 text-cyan-200" aria-hidden="true" />
-                    <span className="min-w-0 truncate text-xs font-bold text-cyan-50">여행 플래너</span>
+                    <span className="min-w-0 truncate text-xs font-bold text-cyan-50">{t('place.nav.planner')}</span>
                   </Link>
                 ) : null}
 
@@ -473,7 +474,7 @@ const PlaceCardSummary = ({
                         title={t('place.summary.globeFar')}
                       >
                         <ScanEye size={16} className="shrink-0 text-emerald-300" />
-                        <span className="min-w-0 truncate text-xs font-bold text-emerald-100">멀리서 보기</span>
+                        <span className="min-w-0 truncate text-xs font-bold text-emerald-100">{t('place.summary.globeFar')}</span>
                       </button>
                     ) : (
                       <div className="col-span-2 relative z-10 flex min-h-[40px] min-w-0 items-center gap-1.5 lg:min-h-[36px]">
@@ -509,7 +510,7 @@ const PlaceCardSummary = ({
                           title={t('place.summary.globeFar')}
                         >
                           <ScanEye size={16} className="shrink-0 text-emerald-300" />
-                          <span className="min-w-0 truncate text-xs font-bold text-emerald-100">멀리서 보기</span>
+                          <span className="min-w-0 truncate text-xs font-bold text-emerald-100">{t('place.summary.globeFar')}</span>
                         </button>
                       </div>
                     )
@@ -524,7 +525,7 @@ const PlaceCardSummary = ({
                       title={t('place.summary.regionNear')}
                     >
                       <ScanSearch size={16} className="shrink-0 text-teal-300" />
-                      <span className="min-w-0 truncate text-xs font-bold text-teal-50">가까이 보기</span>
+                      <span className="min-w-0 truncate text-xs font-bold text-teal-50">{t('place.summary.regionNear')}</span>
                     </button>
                   )
                 )}
@@ -542,7 +543,7 @@ const PlaceCardSummary = ({
                     <Cuboid size={16} className="shrink-0 text-violet-200" strokeWidth={2.25} aria-hidden="true" />
                     <span className="min-w-0 truncate text-xs font-bold text-violet-50">
                       <span className="tracking-tight text-violet-100">3D</span>
-                      <span className="text-violet-50/90"> 투어</span>
+                      <span className="text-violet-50/90"> {t('place.summary.tour3dLabel')}</span>
                     </span>
                   </button>
                 )}

@@ -62,26 +62,24 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **1차 main 병합** PR [#132](https://github.com/catgeot/Days/pull/132) · `bc381852` · PROD 배포 후 `/qa/en` 재확인 · **2차 세부 영문화 #7+** |
-| **브랜치** | `cursor/en` (이어하기 · `main` 동기화 후 사용) |
-| **main** | `bc381852` |
+| **상태** | **#8.5 QA** · PR [#133](https://github.com/catgeot/Days/pull/133) · tip `5e7337c4` |
+| **브랜치** | `cursor/en` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9 |
 | **일지** | [`2026-08-18-project-log.md`](./2026-08-18-project-log.md) |
-| **PROD QA** | `https://www.gateo.kr/qa/en` → `/?lang=en` (배포 후) |
+| **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` |
+| **PROD QA** | `https://www.gateo.kr/qa/en` → `/?lang=en` |
 | **VERIFY** | `npm run build` · `smoke:place-label-slug` |
 
-**1차 포함**: locale 기반 · 홈 · PlaceCard 주요 · `/korea`·명승 · SEO·릴리스
-
-**2차 예정** (#7+): PlaceCard 세부 · 한국 테마 나머지 · 로그북/대시보드 등
+**2차 #7+#8**: PlaceCard 세부 · courses · scenic 잔여·지도·nav
 
 **다음 제시어**:
 
 ```
-영문화 #7, PlaceCard 세부 영문화
+영문화 #9, 로그북·대시보드
 @plans/feature-handoff-index.md
 @plans/2026-08-18-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · main bc381852 · 배포 후 /qa/en 확인
+브랜치 cursor/en · /qa/en · ?lang=en
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowUp,
   CalendarDays,
@@ -63,6 +64,7 @@ export default function CourseDetailModal({
   overlayZClass = 'z-40',
   showNearbyFestivals = true,
 }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const scrollRef = useRef(null);
   const [nearbyFestivals, setNearbyFestivals] = useState([]);
@@ -202,7 +204,7 @@ export default function CourseDetailModal({
         <div className="flex shrink-0 items-start justify-between gap-3 border-b border-stone-200/80 px-4 py-3.5 sm:px-5">
           <div className="min-w-0">
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-700">
-              여행코스 상세
+              {t('korea.theme.courses.detailTitle')}
             </p>
             <h2
               id="korea-course-modal-title"
@@ -217,7 +219,7 @@ export default function CourseDetailModal({
           <button
             type="button"
             onClick={onClose}
-            aria-label="닫기"
+            aria-label={t('korea.common.close')}
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100"
           >
             <X size={18} aria-hidden="true" />
@@ -242,11 +244,11 @@ export default function CourseDetailModal({
 
           <div className="min-w-0 space-y-4 px-4 py-4 sm:px-5">
             {detailLoading ? (
-              <p className="text-xs text-stone-500">상세를 불러오는 중…</p>
+              <p className="text-xs text-stone-500">{t('korea.common.loading')}</p>
             ) : null}
             {!detailLoading && detail?.empty ? (
               <p className="text-xs text-stone-500 break-keep">
-                상세 정보를 가져오지 못했습니다.
+                {t('korea.theme.courses.detailError')}
               </p>
             ) : null}
             {!detailLoading && detail && !detail.empty ? (
@@ -272,7 +274,7 @@ export default function CourseDetailModal({
                   </p>
                 ) : null}
                 {galleryExtra.length > 0 ? (
-                  <div className="space-y-2" aria-label="코스 사진">
+                  <div className="space-y-2" aria-label={t('korea.theme.courses.photosAria')}>
                     {galleryExtra.map((url) => (
                       <img
                         key={url}
@@ -302,7 +304,7 @@ export default function CourseDetailModal({
                             />
                           ) : null}
                           <p className="font-bold text-stone-800 break-keep">
-                            {Number(seg.subnum ?? idx) + 1}. {seg.subname || '구간'}
+                            {Number(seg.subnum ?? idx) + 1}. {seg.subname || t('korea.theme.courses.segmentFallback')}
                           </p>
                           {seg.subdetailoverview ? (
                             <p className="min-w-0 max-w-full whitespace-pre-line text-sm leading-relaxed text-stone-600 break-keep break-words">
@@ -315,7 +317,7 @@ export default function CourseDetailModal({
                   </ol>
                 ) : detail.overview ? null : (
                   <p className="text-[11px] text-stone-500 break-keep">
-                    이 코스의 구간 상세는 아직 없습니다.
+                    {t('korea.theme.courses.noSegments')}
                   </p>
                 )}
               </>
@@ -326,26 +328,26 @@ export default function CourseDetailModal({
               nearbyStatus !== 'nocoords' && (
                 <div className="space-y-2 border-t border-stone-200/80 pt-4">
                   <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
-                    인근 축제
+                    {t('korea.theme.courses.nearFestivals')}
                   </p>
                   {nearbyStatus === 'loading' && (
                     <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
                       <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-                      인근 축제 불러오는 중…
+                      {t('korea.theme.courses.nearFestivalsLoading')}
                     </div>
                   )}
                   {nearbyStatus === 'error' && nearbyFestivals.length === 0 && (
                     <p className="text-xs text-stone-500">
-                      인근 축제를 불러오지 못했습니다.
+                      {t('korea.theme.courses.nearFestivalsError')}
                     </p>
                   )}
                   {nearbyStatus === 'empty' && (
                     <p className="text-xs text-stone-500">
-                      이 지역에 가까운 축제가 없습니다.
+                      {t('korea.theme.courses.nearFestivalsEmpty')}
                     </p>
                   )}
                   {nearbyFestivals.length > 0 && (
-                    <ul className="space-y-2" aria-label="코스 인근 축제">
+                    <ul className="space-y-2" aria-label={t('korea.theme.courses.nearFestivalsAria')}>
                       {nearbyFestivals.map((fest) => {
                         const thumbFest = toHttps(fest.firstImage);
                         const dist = formatDistKm(fest.distKm);
@@ -393,7 +395,7 @@ export default function CourseDetailModal({
                     onClick={openFestivalPage}
                     className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
                   >
-                    이 지역 축제 더보기
+                    {t('korea.theme.courses.moreFestivals')}
                     <ExternalLink size={14} aria-hidden="true" />
                   </button>
                 </div>
@@ -408,7 +410,7 @@ export default function CourseDetailModal({
             className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm font-bold text-stone-700 hover:bg-stone-100"
           >
             <ArrowUp size={16} aria-hidden="true" />
-            위로
+            {t('korea.common.scrollToTop')}
           </button>
           <button
             type="button"
@@ -416,7 +418,7 @@ export default function CourseDetailModal({
             className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
           >
             <X size={16} aria-hidden="true" />
-            닫기
+            {t('korea.common.close')}
           </button>
         </div>
       </div>

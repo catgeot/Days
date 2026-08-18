@@ -1587,6 +1587,7 @@ function Home() {
         <Outlet context={{
           location: selectedLocation,
           isBookmarked: selectedLocation ? savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked) : false,
+          isMooniChatOpen: isChatOpen,
           onClose: leavePlaceCard,
           onOpenMooni: openMooniFromPlace,
           onNavigateToPlace: navigateToPlace,
