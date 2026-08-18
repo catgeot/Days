@@ -62,7 +62,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#8 한국 테마** Preview QA · PR [#133](https://github.com/catgeot/Days/pull/133) |
+| **상태** | **#8.5 QA** · PR [#133](https://github.com/catgeot/Days/pull/133) · tip `5e7337c4` |
 | **브랜치** | `cursor/en` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9 |
 | **일지** | [`2026-08-18-project-log.md`](./2026-08-18-project-log.md) |
