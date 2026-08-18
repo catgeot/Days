@@ -81,7 +81,7 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#2)**: 홈·PlaceCard 주요 카피 en — `build` · `smoke:place-label-slug` PASS · 사람 Preview QA 대기
+**상태 (#2)**: 사람 Preview QA OK — 홈·PlaceCard 주요 카피 en · tip `4821414b`
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 

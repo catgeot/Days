@@ -7,7 +7,7 @@
 - **홈** 카테고리 칩·바로가기·지구본 메뉴 라벨 → `home.*` i18n 키
 - **PlaceCard** 탭·헤더·플래너 툴킷 섹션·링크 CTA · `name_en`/`country_en` 표시
 - **VERIFY** `build` · `smoke:place-label-slug` PASS
-- **PR** [#132](https://github.com/catgeot/Days/pull/132) · tip `97cbab99`
+- **PR** [#132](https://github.com/catgeot/Days/pull/132) · tip `4821414b`
 - **Preview** `/qa/en` · `?lang=en` 홈·장소 카드·플래너 영문 — **사람 QA OK**
 - **다음** #3 한국 투톱(사람 합의 후)
 
