@@ -62,23 +62,31 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#4 SEO·릴리스 · 사람 Preview QA 대기** · PR [#132](https://github.com/catgeot/Days/pull/132) |
+| **상태** | **병합 준비 완료** · PR [#132](https://github.com/catgeot/Days/pull/132) — **사람 승인 후 merge** · PROD QA 대기 |
 | **브랜치** | `cursor/en` |
-| **tip** | `e91780ae` |
+| **tip** | (이번 커밋 후 갱신) |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9 |
 | **일지** | [`2026-08-18-project-log.md`](./2026-08-18-project-log.md) |
-| **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` |
-| **공유** | `https://www.gateo.kr/qa/en` → Preview `/` |
-| **VERIFY** | `npm run build` |
+| **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/?lang=en` |
+| **PROD QA** | `https://www.gateo.kr/qa/en` → `/?lang=en` (병합·배포 후) |
+| **VERIFY** | `npm run build` · `smoke:place-label-slug` |
 
-**다음 제시어**:
+**PROD QA 체크** (병합·배포 후):
+
+1. `/?lang=en` — EN/한 토글·홈 칩·검색 placeholder 영문
+2. PlaceCard 샘플 slug 2~3 — 탭·플래너·`name_en` 표시
+3. `/korea?lang=en` · `/korea/theme/scenic?lang=en` — 헤더·검색·필터 영문
+4. 페이지 소스 — `hreflang` ko/en/x-default · 영문 title/description
+5. 릴리스 배너 — 「영어로 홈·장소·한국 투톱을 볼 수 있어요」
+
+**다음 제시어** (병합·PROD QA 후):
 
 ```
-영문화 #5, PROD 병합·QA
+영문화 #6, PROD QA 확인·정리
 @plans/feature-handoff-index.md
 @plans/2026-08-18-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · PR #132 · main 병합은 사람 승인 후
+main · www.gateo.kr/?lang=en · PR #132 병합 SHA
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 

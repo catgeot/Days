@@ -183,7 +183,7 @@
     },
     {
       "source": "/qa/en",
-      "destination": "https://days-git-cursor-en-catgeots-projects.vercel.app/",
+      "destination": "https://www.gateo.kr/?lang=en",
       "permanent": false
     }
   ],

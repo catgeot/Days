@@ -14,6 +14,7 @@
 | 2 | 홈·PlaceCard | `영문화 #2, 홈·PlaceCard` | ✅ |
 | 3 | 한국 투톱 | `영문화 #3, korea·theme` | ✅ |
 | 4 | SEO·릴리스 | `영문화 #4, SEO·릴리스` | ✅ |
+| 5 | PROD 병합·QA | `영문화 #5, PROD 병합·QA` | ✅ |
 
 세션마다 `#1` 리셋 금지 · `#N` = Cloud 순번.
 
@@ -82,15 +83,17 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#4)**: hreflang·locale SEO 메타 · 허브 sitemap xhtml alternate · 릴리스 노트 `2026-08-18` · `npm run build` PASS
+**상태 (#5)**: #0~#4 완료 · build·smoke PASS · PR #132 병합 준비 · `/qa/en` → PROD `?lang=en` (병합 후) · **main merge는 사람 승인 후**
+
+**PROD QA** (병합·배포 후): `www.gateo.kr/?lang=en` · PlaceCard · `/korea` · `/korea/theme/scenic` · hreflang · 릴리스 배너
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #5, PROD 병합·QA
+영문화 #6, PROD QA 확인·정리
 @plans/feature-handoff-index.md
 @plans/2026-08-18-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · PR #132 · main 병합은 사람 승인 후
+main · www.gateo.kr/?lang=en · PR #132 병합 SHA
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```

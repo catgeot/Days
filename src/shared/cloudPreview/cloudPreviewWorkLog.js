@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '영문화',
-  sessionNo: 4,
-  sessionPhase: 'SEO·릴리스',
+  sessionNo: 5,
+  sessionPhase: 'PROD 병합·QA',
   branch: 'cursor/en',
-  previewPath: '/',
+  previewPath: '/?lang=en',
   qaShareSlug: 'en',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-18-i18n-merge-prep',
+    session: '영문화 #5, PROD 병합·QA',
+    title: '병합 준비·PROD QA 체크리스트',
+    detail:
+      'build·smoke:place-label-slug PASS. PR #132 병합 준비(사람 승인 후 merge). 병합·배포 후 /qa/en → PROD ?lang=en. PROD에서 EN 토글·홈·PlaceCard·/korea·명승·hreflang·릴리스 배너를 확인해 주세요.',
+    at: '2026-08-18',
+  },
   {
     id: '2026-08-18-i18n-seo-release',
     session: '영문화 #4, SEO·릴리스',

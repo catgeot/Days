@@ -284,9 +284,9 @@ export const CLOUD_QA_SHARE_LINKS = [
   },
   {
     slug: 'en',
-    label: '영문화 Preview',
-    branch: 'cursor/en',
-    destination: 'https://days-git-cursor-en-catgeots-projects.vercel.app/',
+    label: '영문화 PROD QA',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/?lang=en',
     active: true,
   },
 ];

@@ -2,15 +2,24 @@
 
 직전: [`2026-08-16-project-log.md`](./2026-08-16-project-log.md)
 
-## 영문화 #4, SEO·릴리스 — Preview QA 대기
+## 영문화 #5, PROD 병합·QA — 병합 준비
+
+- **VERIFY** `npm run build` · `smoke:place-label-slug` PASS
+- **PR** [#132](https://github.com/catgeot/Days/pull/132) — #0~#4 범위 · **사람 승인 후 merge**
+- **병합 후** `/qa/en` → `https://www.gateo.kr/?lang=en` (vercel.json·cloudQaShareLinks)
+- **PROD QA** EN 토글·홈·PlaceCard·/korea·명승·hreflang·릴리스 배너
+- **Preview** `days-git-cursor-en-catgeots-projects.vercel.app/?lang=en`
+- **다음** #6 PROD QA 확인·정리(병합 SHA·cloudPreview active:false)
+
+## 영문화 #4, SEO·릴리스 — 사람 Preview QA OK
 
 - **SEO** `hreflang` ko/en/x-default · locale별 canonical·og:locale · `seo.*` i18n 기본 title/description
 - **sitemap** 홈·`/korea`·`/korea/theme/scenic` xhtml alternate (`generate-sitemap.cjs`)
 - **릴리스** `releaseNotes.js` `2026-08-18` 영문 UI 공지
 - **VERIFY** `npm run build` PASS
 - **PR** [#132](https://github.com/catgeot/Days/pull/132)
-- **Preview** `/qa/en` · `?lang=en` → 페이지 소스 hreflang·영문 meta
-- **다음** #5 PROD 병합·QA(사람 승인 후)
+- **Preview** `/qa/en` · `?lang=en` → 페이지 소스 hreflang·영문 meta — **사람 QA OK**
+- **다음** #5 PROD 병합·QA
 
 ## 영문화 #3, korea·theme — 사람 Preview QA OK
 
