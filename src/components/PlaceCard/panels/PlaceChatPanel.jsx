@@ -40,6 +40,7 @@ const PlaceChatPanel = React.memo(({
     onOpenMooni,
     onNavigateToPlace,
     onGoHome,
+    isMooniChatOpen = false,
     activeInfo,
     isFullScreen,
     mediaMode,
@@ -377,7 +378,7 @@ const PlaceChatPanel = React.memo(({
           </div>
       )}
 
-      {relatedPlaces.length > 0 && mediaMode === 'GALLERY' && !selectedImg && !isFullScreen && createPortal(
+      {relatedPlaces.length > 0 && mediaMode === 'GALLERY' && !selectedImg && !isFullScreen && !isMooniChatOpen && createPortal(
           <div className={`md:hidden fixed bottom-0 left-0 w-full z-[160] bg-[#05070a]/90 backdrop-blur-xl border-t border-white/10 p-3 pb-8 animate-fade-in-up shadow-[0_-10px_30px_rgba(0,0,0,0.5)] ${mobileLandscapeChromeHidden}`}>
               <style>{`
                   .no-scrollbar::-webkit-scrollbar { display: none; }
