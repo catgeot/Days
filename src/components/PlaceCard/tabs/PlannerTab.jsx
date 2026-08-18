@@ -291,7 +291,7 @@ const PlannerTab = ({
 
                     <div className="w-full space-y-3">
                         <div className="flex justify-between items-center px-1">
-                            <span className="text-sm font-bold text-gray-700">{isUpdatingExisting ? "AI 툴킷 점검 중" : "AI 툴킷 생성 중"}</span>
+                            <span className="text-sm font-bold text-gray-700">{isUpdatingExisting ? t('place.planner.toolkitChecking') : t('place.planner.toolkitCreating')}</span>
                             <span className="text-xs font-bold text-blue-600">{Math.round((loadingStep / (currentMessages.length - 1)) * 100)}%</span>
                         </div>
                         <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">

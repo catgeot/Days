@@ -1,5 +1,6 @@
 import React, { useMemo, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { MapPin } from 'lucide-react';
 import { getClusterForSlug, getRelatedTravelSpots } from '../../utils/travelSpotClusters.js';
 import { getPlaceStableKey } from '../../utils/travelSpotResolve.js';
@@ -11,6 +12,7 @@ const DRAG_CLICK_THRESHOLD_PX = 5;
  * 같은 권역·다른 관문 여행지 교차 링크 (PlannerTab 배너 아래)
  */
 export default function RelatedTravelSpots({ location, className = '' }) {
+  const { t, i18n } = useTranslation();
   const currentSlug = getPlaceStableKey(location);
   const related = useMemo(() => getRelatedTravelSpots(currentSlug), [currentSlug]);
   const cluster = useMemo(() => getClusterForSlug(currentSlug), [currentSlug]);
@@ -56,10 +58,12 @@ export default function RelatedTravelSpots({ location, className = '' }) {
 
   if (!related.length || !cluster) return null;
 
+  const clusterLabel = i18n.language === 'en' && cluster.labelEn ? cluster.labelEn : cluster.labelKo;
+
   return (
     <section
       className={`rounded-2xl border border-slate-200/90 bg-white p-4 shadow-sm ring-1 ring-slate-900/[0.04] ${className}`}
-      aria-label="연관 여행지"
+      aria-label={t('place.common.relatedSpots')}
     >
       <style>{`
         .related-spots-scroll {
@@ -85,7 +89,7 @@ export default function RelatedTravelSpots({ location, className = '' }) {
       `}</style>
       <div className="mb-3">
         <p className={`${plannerMicroLabel} text-slate-500`}>
-          {cluster.labelKo}
+          {clusterLabel}
         </p>
         <p className="mt-1 text-sm font-bold text-gray-800 break-keep">
           같은 권역이지만 관문 공항·일정이 다릅니다
@@ -97,7 +101,7 @@ export default function RelatedTravelSpots({ location, className = '' }) {
       <div
         ref={scrollRef}
         role="list"
-        aria-label="같은 권역 여행지 목록"
+        aria-label={t('place.common.relatedList')}
         className="related-spots-scroll -mx-1 flex gap-2 overflow-x-auto overscroll-x-contain pb-2 pt-0.5 px-1 cursor-grab active:cursor-grabbing"
         onMouseDown={handleMouseDown}
         onMouseLeave={endDrag}

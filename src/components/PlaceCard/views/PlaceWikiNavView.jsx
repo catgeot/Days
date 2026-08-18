@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { BookOpen, Sparkles, Briefcase } from 'lucide-react';
 
 const PlaceWikiNavView = ({ wikiData, isWikiLoading, onNavClick, placeName, matchedPackage, onOpenPackage }) => {
+  const { t } = useTranslation();
   const [activeSection, setActiveSection] = useState(null);
   const [isAiExpanded, setIsAiExpanded] = useState(false);
 
@@ -38,7 +40,7 @@ const PlaceWikiNavView = ({ wikiData, isWikiLoading, onNavClick, placeName, matc
     <div className="animate-fade-in flex flex-col h-full p-8 pb-6">
       <h2 className="text-white font-bold text-lg mb-4 flex items-center gap-2 shrink-0">
         <BookOpen size={18} className="text-amber-400" />
-        문서 목차
+        {t('place.wiki.toc')}
       </h2>
 
       {isWikiLoading ? (
@@ -70,10 +72,9 @@ const PlaceWikiNavView = ({ wikiData, isWikiLoading, onNavClick, placeName, matc
                   ))}
                 </div>
             ) : (
-                <p className="text-gray-400 text-sm flex-1 mb-4">등록된 목차가 없습니다.</p>
+                <p className="text-gray-400 text-sm flex-1 mb-4">{t('place.wiki.tocEmpty')}</p>
             )}
 
-            {/* 🆕 [Phase 9-3] wikiData 없어도 버튼 표시 (검색/지오코딩 진입 대응) */}
             <div className="mt-auto pt-4 border-t border-white/10 shrink-0 flex flex-col md:flex-row gap-2">
                 <button
                     onClick={handleRemoteAiRequest}
@@ -86,7 +87,7 @@ const PlaceWikiNavView = ({ wikiData, isWikiLoading, onNavClick, placeName, matc
                 >
                     <Sparkles size={15} className={`group-hover:scale-110 transition-transform ${activeSection === 'ai' ? 'text-white' : 'text-blue-400'}`} />
                     <span className={`text-xs font-medium tracking-wide ${activeSection === 'ai' ? 'text-white' : 'text-gray-200'}`}>
-                        {isAiExpanded ? '로컬 왓슨 정보 보기' : '제미나이 최신 정보'}
+                        {isAiExpanded ? t('place.wiki.aiLocalWatson') : t('place.wiki.aiGeminiLatest')}
                     </span>
                 </button>
 
@@ -97,7 +98,7 @@ const PlaceWikiNavView = ({ wikiData, isWikiLoading, onNavClick, placeName, matc
                     >
                         <Briefcase size={15} className="group-hover:scale-110 transition-transform text-purple-100" />
                         <span className="text-xs font-medium tracking-wide text-white">
-                            패키지 여행
+                            {t('place.wiki.packageTrip')}
                         </span>
                     </button>
                 )}

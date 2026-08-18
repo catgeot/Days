@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Send, Loader2, Sparkles } from 'lucide-react';
 import BookingActionCards from '../../chat/BookingActionCards';
 import { refreshStoredBookingActionLabels } from '../../../utils/chatBookingResolver';
@@ -16,6 +17,7 @@ const PlaceChatView = ({
   slug = null,
   onPlannerNavigate = null,
 }) => {
+  const { t } = useTranslation();
   const [inputStr, setInputStr] = useState("");
   const messagesEndRef = useRef(null);
   const handleInputBlur = useDeferredViewportSyncOnBlur();
@@ -59,7 +61,7 @@ const PlaceChatView = ({
             </div>
             <p className="text-sm text-gray-300 leading-relaxed">
               <span className="text-blue-300 font-bold text-base block mb-1">{locationName}</span>
-               여행 계획을 도와드릴까요?<br/>맛집, 숙소, 숨은 명소 등 무엇이든 물어보세요.
+               {t('place.chat.intro')}
             </p>
           </div>
         ) : (
@@ -69,7 +71,7 @@ const PlaceChatView = ({
               <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${
                 msg.role === 'user' ? 'text-blue-400' : msg.role === 'error' ? 'text-red-400' : 'text-purple-400'
               }`}>
-                  {msg.role === 'user' ? 'Me' : 'AI Docent'}
+                  {msg.role === 'user' ? t('place.chat.roleUser') : t('place.chat.roleAi')}
               </span>
 
               <div className={`relative px-5 py-4 rounded-2xl text-[13.5px] border leading-7 w-full shadow-sm transition-all
@@ -108,10 +110,10 @@ const PlaceChatView = ({
 
         {isAiLoading && (
           <div className="flex flex-col items-start w-full animate-pulse mt-2">
-            <span className="text-[10px] font-bold mb-1 px-1 uppercase tracking-wider text-purple-400">AI Docent</span>
+            <span className="text-[10px] font-bold mb-1 px-1 uppercase tracking-wider text-purple-400">{t('place.chat.roleAi')}</span>
             <div className="bg-[#0F1115]/60 px-5 py-4 rounded-2xl rounded-tl-sm text-xs text-gray-400 border border-white/5 flex items-center gap-2 w-full">
                <Loader2 size={14} className="animate-spin text-purple-400" />
-               <span>답변을 생성하고 있습니다...</span>
+               <span>{t('place.chat.generating')}</span>
             </div>
           </div>
         )}
@@ -139,7 +141,7 @@ const PlaceChatView = ({
             value={inputStr}
             onChange={(e) => setInputStr(e.target.value)}
             onBlur={handleInputBlur}
-            placeholder="궁금한 내용을 입력하세요..."
+            placeholder={t('place.chat.placeholder')}
             disabled={isAiLoading}
             className={`flex-1 bg-transparent border-none h-full focus:outline-none ${MOBILE_INPUT_TEXT_CLASS} text-white placeholder-gray-400 pl-3 pr-12 disabled:opacity-50`}
             autoComplete="off"

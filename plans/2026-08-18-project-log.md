@@ -2,6 +2,13 @@
 
 직전: [`2026-08-16-project-log.md`](./2026-08-16-project-log.md)
 
+## 영문화 #7, PlaceCard 세부 — Preview
+
+- **PlaceCard 세부** 갤러리·위키·영상·채팅·리뷰·요약·플래너 로딩·공통 `place.*` i18n 키 en/ko
+- **VERIFY** `npm run build` · `smoke:place-label-slug` PASS
+- **브랜치** `cursor/en` · **Preview** `/qa/en` · `?lang=en` PlaceCard 샘플 slug QA
+- **다음** 사람 Preview QA → 한국 테마 나머지·로그북 등 #8+
+
 ## 영문화 #5, PROD 병합 — main 반영
 
 - **PR** [#132](https://github.com/catgeot/Days/pull/132) **main merge** `bc381852`
