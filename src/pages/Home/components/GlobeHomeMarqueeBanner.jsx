@@ -38,9 +38,12 @@ function BannerItem({ item, onSelect }) {
   );
 }
 
-export default function GlobeHomeMarqueeBanner({ hidden = false }) {
+export default function GlobeHomeMarqueeBanner({ hidden = false, lane = 'festival' }) {
   const navigate = useNavigate();
-  const { items } = useGlobeHomeBanner();
+  const { items } = useGlobeHomeBanner(lane);
+  const bannerDataAttr = lane === 'scenic'
+    ? { 'data-home-globe-scenic-banner': '' }
+    : { 'data-home-globe-banner': '' };
   const [reduceMotion, setReduceMotion] = React.useState(false);
 
   React.useEffect(() => {
@@ -69,7 +72,7 @@ export default function GlobeHomeMarqueeBanner({ hidden = false }) {
     return (
       <div
         className="w-full max-w-[17.5rem] md:max-w-[14rem] rounded-xl border border-white/10 bg-black/25 backdrop-blur-md overflow-hidden pointer-events-auto"
-        data-home-globe-banner
+        {...bannerDataAttr}
       >
         <button
           type="button"
@@ -92,7 +95,7 @@ export default function GlobeHomeMarqueeBanner({ hidden = false }) {
   return (
     <div
       className="w-full max-w-[17.5rem] md:max-w-[14rem] rounded-xl border border-white/10 bg-black/25 backdrop-blur-md overflow-hidden pointer-events-auto"
-      data-home-globe-banner
+      {...bannerDataAttr}
       aria-live="off"
     >
       <div className="globe-home-marquee-track py-1.5">

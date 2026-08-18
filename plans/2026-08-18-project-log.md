@@ -12,7 +12,16 @@
 **Preview**: `https://days-git-cursor-globe-banner-8ec9-catgeots-projects.vercel.app/`  
 **남은 일**: 모바일 QA · GPS 근접 명소 · 지자체 N경 SSOT
 
-**에이전트 핸드오프 (#3)**  
+## 지구본 홈 배너 #3, 축제·명소 레인 분리
+
+**세션**: `지구본 홈 배너 #3, 모바일 Preview QA`  
+**적용**: 축제는 **기존 좌상단 마키만**. 명소는 **별도 배너**(임시: 모바일 검색 아래 · PC 우하단). 혼합 레인 제거.  
+**QA**: Preview `/` — 좌상단 축제 탭 → `/korea?festival=` · 우측 명소 탭 → `/korea/theme/scenic`  
+**VERIFY**: `smoke:globe-home-banner` · `build`  
+**Preview**: `https://days-git-cursor-globe-banner-8ec9-catgeots-projects.vercel.app/`  
+**공유**: `https://www.gateo.kr/qa/globe-banner`
+
+**에이전트 핸드오프 (#4)**  
 - 읽을 것: `feature-handoff-index` 지구본 배너 행 · [`globe-home-banner-plan.md`](./globe-home-banner-plan.md) §9 · 본 절  
 - 금지: 큐레이션 레인 · 새 Preview 브랜치 · UI 임의 리디자인  
-- QA: `/` 모바일 바로가기 하단 마키 속도·방향·탭 이동
+- 다음: 모바일 QA 피드백 → 명소 정위치 → GPS 근접 hub 명소 → 지자체 N경 SSOT

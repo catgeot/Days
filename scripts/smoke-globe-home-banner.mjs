@@ -60,8 +60,10 @@ assert(scenics.length === 3, 'scenic pick 3');
 assert(scenics.every((item) => item.topic === 'scenic' && item.href.includes('/korea/theme/scenic')), 'scenic href');
 
 const mixed = mixGlobeBannerItems(picked, scenics);
-assert(mixed.length === 6, 'interleaved 6 items');
-assert(mixed[0].topic === 'festival' && mixed[1].topic === 'scenic', 'alternate mix');
+assert(mixed.length === 6, 'interleaved 6 items (helper, unused in UI)');
+assert(mixed[0].topic === 'festival' && mixed[1].topic === 'scenic', 'alternate mix helper');
+assert(picked.every((item) => item.topic === 'festival'), 'festival lane only');
+assert(scenics.every((item) => item.topic === 'scenic'), 'scenic lane only');
 
 assert(
   compareFestivalsByStartDesc(

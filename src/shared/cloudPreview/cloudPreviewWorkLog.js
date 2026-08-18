@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: 'AI 큐레이션',
-  sessionNo: 7,
-  sessionPhase: '지도·무니 검은 화면 QA',
-  branch: 'cursor/curation-globe-android-0ba2',
-  previewPath: '/blog/curation',
-  qaShareSlug: 'curation',
+  title: '지구본 홈 배너',
+  sessionNo: 3,
+  sessionPhase: '모바일 Preview QA',
+  branch: 'cursor/globe-banner-8ec9',
+  previewPath: '/',
+  qaShareSlug: 'globe-banner',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-18-globe-banner-lanes-3',
+    session: '지구본 홈 배너 #3, 모바일 Preview QA',
+    title: '축제 좌상단 · 명소 별도(임시 우측)',
+    detail:
+      '좌상단 마키는 축제만 돌립니다. 명소는 같은 전광판 스타일로 분리해 모바일은 검색창 아래, PC는 우하단에 임시 배치했습니다. 축제 탭은 /korea, 명소 탭은 /korea/theme/scenic 으로 가는지 확인해 주세요. 정위치는 다음 세션입니다.',
+    at: '2026-08-18',
+  },
   {
     id: '2026-08-17-curation-globe-mooni-7',
     session: 'AI 큐레이션 #7, 지도·무니 검은 화면 QA',

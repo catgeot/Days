@@ -299,7 +299,7 @@ const HomeUI = React.memo(({
                     );
                   })}
                 </div>
-                <GlobeHomeMarqueeBanner hidden={isZenMode} />
+                <GlobeHomeMarqueeBanner hidden={isZenMode} lane="festival" />
               </>
             )}
           </div>
@@ -375,6 +375,15 @@ const HomeUI = React.memo(({
           </div>
         </div>
       </div>
+
+      {/* TEMP: 명소 배너 정위치 전 동작 확인 — 모바일 검색 아래·PC 우하단 */}
+      {!isTourCinema && !hideExploreChrome && (
+        <div className="fixed z-[90] right-3 top-[5.25rem] md:right-6 md:top-auto md:bottom-28 pointer-events-none w-[17.5rem] md:w-[14rem]">
+          <div className="pointer-events-auto flex justify-end">
+            <GlobeHomeMarqueeBanner hidden={isZenMode} lane="scenic" />
+          </div>
+        </div>
+      )}
 
       {/* 모바일 하단 스택 — 나라/세부칩/카테고리 (중분류 바는 뷰포트 폭) */}
       {!isTourCinema && (
