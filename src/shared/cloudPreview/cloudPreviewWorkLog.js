@@ -24,7 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
-    id: '2026-08-18-i18n-blank-screen-fix',
+    id: '2026-08-18-i18n-localecontext-fix',
+    session: '영문화 #1, locale 기반',
+    title: 'LocaleContext 누락 ReferenceError 수정',
+    detail:
+      'LocaleProvider 리팩터 중 createContext 선언이 빠져 Uncaught ReferenceError: LocaleContext is not defined 로 앱이 멈췄습니다. 선언 복구 후 build PASS. Preview 강력 새로고침으로 재확인해 주세요.',
+    at: '2026-08-18',
+  },
+  {
     session: '영문화 #1, locale 기반',
     title: '검은 화면 수정 — i18n 동기 초기화',
     detail:

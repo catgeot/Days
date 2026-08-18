@@ -17,6 +17,8 @@ import {
 } from './constants';
 import { ensureI18n, i18n } from './config';
 
+const LocaleContext = createContext(null);
+
 function readStoredLocale() {
   if (typeof window === 'undefined') return DEFAULT_LOCALE;
   try {
