@@ -79,6 +79,7 @@ const PlaceCardSummary = ({
 
   const isScanning = location?.isScanning;
   const allowSummaryExpandTap = !isMobileCoarse;
+  const allowSummaryIntroExpandTap = !isScanning && !isCompact;
   const isEnterGlow = !isMobileCoarse && glowPhase === 'enter';
   const { primaryName, secondaryName } = getPlaceTitleLinesForLocale(location, locale);
   const canStartTour = canStartGlobeTour(location);
@@ -301,8 +302,8 @@ const PlaceCardSummary = ({
           </div>
 
           <div
-            className={`${isOriginCompact ? 'hidden' : ''} ${allowSummaryExpandTap && !isScanning && !isCompact ? `cursor-pointer ${canPreviewFlightRoute ? 'mb-3' : 'mb-6'}` : isCompact ? 'mb-0' : ''}`}
-            onClick={allowSummaryExpandTap && !isScanning && !isCompact ? onExpand : undefined}
+            className={`${isOriginCompact ? 'hidden' : ''} ${allowSummaryIntroExpandTap ? `cursor-pointer touch-manipulation ${canPreviewFlightRoute ? 'mb-3' : 'mb-6'}` : isCompact ? 'mb-0' : ''}`}
+            onClick={allowSummaryIntroExpandTap ? onExpand : undefined}
           >
             {!isCompact && (isLoading || isScanning ? (
               <div className="w-full animate-pulse space-y-3 mt-1 px-1">
