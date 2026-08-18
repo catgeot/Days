@@ -62,8 +62,8 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **main 병합** PR [#134](https://github.com/catgeot/Days/pull/134) · PROD 배포 후 QA |
-| **main** | PR #134 merge 후 SHA 확인 |
+| **상태** | **main 병합 완료** (2026-08-18) · PROD 배포 후 QA |
+| **main** | `47845093` — PR [#134](https://github.com/catgeot/Days/pull/134) |
 | **브랜치** | `cursor/en` (병합 후 동기) |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9 |
 | **일지** | [`2026-08-18-project-log.md`](./2026-08-18-project-log.md) |

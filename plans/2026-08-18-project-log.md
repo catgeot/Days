@@ -6,7 +6,7 @@
 
 - **충돌 해소** `main` ← `cursor/en` — i18n JSON(logbook·auth) · 핸드오프 3종
 - **VERIFY** `npm run build` · `smoke:place-label-slug` PASS
-- **PR** [#134](https://github.com/catgeot/Days/pull/134) → **main merge**
+- **PR** [#134](https://github.com/catgeot/Days/pull/134) **main merge** `47845093`
 - **PROD** Vercel 배포 후 `/qa/en` → `/?lang=en` · `/blog?lang=en` — **사람 QA**
 - **다음** #12 PROD QA 확인·정리
 

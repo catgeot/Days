@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '영문화',
-  sessionNo: 10,
-  sessionPhase: '잔여·Preview QA',
-  branch: 'cursor/en',
-  previewPath: '/blog?lang=en',
+  sessionNo: 11,
+  sessionPhase: '병합·PROD QA',
+  branch: 'main',
+  previewPath: '/?lang=en',
   qaShareSlug: 'en',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-18-i18n-main-merge',
+    session: '영문화 #11, 병합·PROD QA',
+    title: 'PR #134 main 병합',
+    detail:
+      'main 충돌 해소(i18n logbook·auth) · build·smoke PASS · merge 47845093. PROD: /qa/en → ?lang=en · /blog?lang=en',
+    at: '2026-08-18T23:30:00.000Z',
+  },
   {
     id: '2026-08-18-i18n-blog-auth',
     session: '영문화 #10, 잔여·Preview QA',
