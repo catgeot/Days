@@ -20,7 +20,7 @@
 |--|--|
 | **상태** | 축제 좌상단 + 명소 임시 우측 · **모바일 Preview QA** · 정위치·GPS 대기 |
 | **브랜치** | `cursor/globe-banner-8ec9` |
-| **tip** | `049ecf48` |
+| **tip** | `641e5720` |
 | **플랜** | [`globe-home-banner-plan.md`](./globe-home-banner-plan.md) §9 |
 | **일지** | [`2026-08-18-project-log.md`](./2026-08-18-project-log.md) |
 | **Preview** | `https://days-git-cursor-globe-banner-8ec9-catgeots-projects.vercel.app/` |
