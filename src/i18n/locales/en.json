@@ -29,6 +29,51 @@
       "back": "Back"
     }
   },
+  "authPage": {
+    "common": {
+      "or": "OR",
+      "email": "EMAIL",
+      "password": "PASSWORD"
+    },
+    "login": {
+      "backTitle": "Go back",
+      "title": "Welcome Back",
+      "subtitle": "Your journey awaits.",
+      "forgotPassword": "Forgot password?",
+      "rememberEmail": "Remember email",
+      "submit": "Sign in",
+      "noAccount": "Don't have an account?",
+      "signUpLink": "Sign up"
+    },
+    "signup": {
+      "backTitle": "Back to main",
+      "title": "Sign up",
+      "subtitle": "Start writing your travel log.",
+      "email": "Email",
+      "password": "Password",
+      "passwordPlaceholder": "At least 6 characters",
+      "submit": "Create account",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Sign in",
+      "confirmEmailAlert": "Confirmation email sent! 📧\n\nCheck your inbox and click the link to complete signup."
+    },
+    "forgot": {
+      "title": "Reset Password",
+      "subtitle": "We'll send a reset link to your email.",
+      "submit": "Send link",
+      "backToLogin": "Back to sign in",
+      "success": "Reset link sent! Check your inbox.",
+      "error": "Something went wrong: {{message}}"
+    },
+    "updatePassword": {
+      "title": "New Password",
+      "subtitle": "Enter your new password.",
+      "newPassword": "NEW PASSWORD",
+      "placeholder": "Enter new password",
+      "submit": "Update password",
+      "successAlert": "Password updated! Please sign in again."
+    }
+  },
   "home": {
     "quickLinks": {
       "expandMenu": "Expand quick links",

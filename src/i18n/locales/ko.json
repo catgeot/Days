@@ -29,6 +29,51 @@
       "back": "뒤로"
     }
   },
+  "authPage": {
+    "common": {
+      "or": "OR",
+      "email": "이메일",
+      "password": "비밀번호"
+    },
+    "login": {
+      "backTitle": "이전으로 돌아가기",
+      "title": "Welcome Back",
+      "subtitle": "당신의 여정을 기다리고 있습니다.",
+      "forgotPassword": "비밀번호를 잊으셨나요?",
+      "rememberEmail": "이메일 기억하기",
+      "submit": "로그인",
+      "noAccount": "아직 계정이 없으신가요?",
+      "signUpLink": "회원가입"
+    },
+    "signup": {
+      "backTitle": "메인으로 돌아가기",
+      "title": "📝 회원가입",
+      "subtitle": "나만의 일보 작성을 시작해보세요.",
+      "email": "이메일",
+      "password": "비밀번호",
+      "passwordPlaceholder": "6자리 이상 입력해주세요",
+      "submit": "회원가입 하기",
+      "hasAccount": "이미 계정이 있으신가요?",
+      "loginLink": "로그인 하러 가기",
+      "confirmEmailAlert": "회원가입 확인 메일을 보냈습니다! 📧\n\n이메일 함을 확인하여 링크를 클릭하면 가입이 완료됩니다."
+    },
+    "forgot": {
+      "title": "Reset Password",
+      "subtitle": "가입하신 이메일로 재설정 링크를 보내드립니다.",
+      "submit": "링크 보내기",
+      "backToLogin": "로그인으로 돌아가기",
+      "success": "재설정 링크를 이메일로 보냈습니다! 메일함을 확인해주세요.",
+      "error": "오류가 발생했습니다: {{message}}"
+    },
+    "updatePassword": {
+      "title": "New Password",
+      "subtitle": "새로운 비밀번호를 입력해주세요.",
+      "newPassword": "NEW PASSWORD",
+      "placeholder": "새 비밀번호 입력",
+      "submit": "변경 완료",
+      "successAlert": "비밀번호가 성공적으로 변경되었습니다! 다시 로그인해주세요."
+    }
+  },
   "home": {
     "quickLinks": {
       "expandMenu": "바로가기 메뉴 펼치기",

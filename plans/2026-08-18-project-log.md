@@ -2,6 +2,15 @@
 
 직전: [`2026-08-16-project-log.md`](./2026-08-16-project-log.md)
 
+## 영문화 #10, 잔여·Preview QA — push
+
+- **Auth** `authPage.*` — Login·SignUp·ForgotPassword·UpdatePassword ko/en
+- **잔여** `/blog` 작성 시 로그인 플로우 영문 카피
+- **VERIFY** `npm run build` · `smoke:place-label-slug` PASS
+- **브랜치** `cursor/en` · PR [#134](https://github.com/catgeot/Days/pull/134)
+- **Preview** `/qa/en` · `?lang=en` → `/blog` · `/blog/write` · `/blog/curation` · auth
+- **다음** 사람 Preview QA → #11 병합·PROD
+
 ## 영문화 #9, 로그북·대시보드 — Preview push
 
 - **`logbook.*`** i18n — `/blog` 대시보드·RecentList·Calendar·CurationCard · Write·Detail·PublicViewer · Sidebar·PublicNav·UserProfile·QuickMemo·SlideViewer · `/blog/curation`·CurationHub(취향 칩 id)

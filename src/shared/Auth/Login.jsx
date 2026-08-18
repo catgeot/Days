@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../api/supabase';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Mail, Lock, Loader2, ArrowRight, Check, X } from 'lucide-react';
 import Logo from '../../pages/Home/components/Logo';
 import { resetIosZoomAfterInput } from '../lib/mobileViewport';
 
 const Login = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from || '/';
@@ -78,7 +80,7 @@ const Login = () => {
         <button
           onClick={() => navigate(from)}
           className="absolute top-3 right-3 p-1.5 text-gray-400 hover:text-gray-800 hover:bg-gray-100/50 rounded-full transition-all z-50"
-          title="이전으로 돌아가기"
+          title={t('authPage.login.backTitle')}
         >
           <X size={18} />
         </button>
@@ -87,14 +89,14 @@ const Login = () => {
           <div className="flex justify-center mb-2 scale-110">
             <Logo />
           </div>
-          <h2 className="text-xl font-bold tracking-tight text-gray-900">Welcome Back</h2>
-          <p className="text-xs text-gray-500 mt-1">당신의 여정을 기다리고 있습니다.</p>
+          <h2 className="text-xl font-bold tracking-tight text-gray-900">{t('authPage.login.title')}</h2>
+          <p className="text-xs text-gray-500 mt-1">{t('authPage.login.subtitle')}</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-3">
 
           <div className="space-y-1">
-            <label className="text-[10px] font-bold text-gray-500 ml-1">EMAIL</label>
+            <label className="text-[10px] font-bold text-gray-500 ml-1">{t('authPage.common.email')}</label>
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Mail size={16} className="text-gray-400 group-focus-within:text-blue-500 transition-colors" />
@@ -113,9 +115,9 @@ const Login = () => {
 
           <div className="space-y-1">
             <div className="flex justify-between items-center">
-              <label className="text-[10px] font-bold text-gray-500 ml-1">PASSWORD</label>
+              <label className="text-[10px] font-bold text-gray-500 ml-1">{t('authPage.common.password')}</label>
               <Link to="/auth/forgot-password" className="text-[10px] text-blue-500 hover:text-blue-600 transition-colors">
-                비밀번호를 잊으셨나요?
+                {t('authPage.login.forgotPassword')}
               </Link>
             </div>
             <div className="relative group">
@@ -139,7 +141,7 @@ const Login = () => {
               {rememberEmail && <Check size={10} className="text-white" />}
             </div>
             <span className={`text-[10px] ${rememberEmail ? 'text-gray-700' : 'text-gray-500'} group-hover:text-gray-700 transition-colors`}>
-              이메일 기억하기
+              {t('authPage.login.rememberEmail')}
             </span>
           </div>
 
@@ -148,13 +150,13 @@ const Login = () => {
             disabled={loading}
             className="w-full bg-blue-600 border border-transparent text-white text-sm font-bold py-2.5 rounded-lg shadow-sm hover:bg-blue-500 hover:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all duration-300 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed mt-2 group"
           >
-            {loading ? <Loader2 size={16} className="animate-spin" /> : <>로그인 <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" /></>}
+            {loading ? <Loader2 size={16} className="animate-spin" /> : <>{t('authPage.login.submit')} <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" /></>}
           </button>
         </form>
 
         <div className="flex items-center gap-3 my-4 opacity-60">
           <div className="flex-1 border-t border-gray-300"></div>
-          <span className="text-[10px] text-gray-500 font-bold tracking-widest">OR</span>
+          <span className="text-[10px] text-gray-500 font-bold tracking-widest">{t('authPage.common.or')}</span>
           <div className="flex-1 border-t border-gray-300"></div>
         </div>
 
@@ -188,9 +190,9 @@ const Login = () => {
         </div>
 
         <div className="mt-5 text-center text-xs text-gray-500">
-          아직 계정이 없으신가요?{' '}
+          {t('authPage.login.noAccount')}{' '}
           <Link to="/auth/signup" state={{ from }} className="text-blue-500 hover:text-blue-600 font-bold hover:underline transition-colors">
-            회원가입
+            {t('authPage.login.signUpLink')}
           </Link>
         </div>
 
