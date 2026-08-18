@@ -62,7 +62,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#2 홈·PlaceCard · 사람 Preview QA OK** · PR [#132](https://github.com/catgeot/Days/pull/132) |
+| **상태** | **#3 korea·theme · 사람 Preview QA 대기** · PR [#132](https://github.com/catgeot/Days/pull/132) |
 | **브랜치** | `cursor/en` |
 | **tip** | `4821414b` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9 |
@@ -74,7 +74,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 **다음 제시어**:
 
 ```
-영문화 #3, korea·theme
+영문화 #4, SEO·릴리스
 @plans/feature-handoff-index.md
 @plans/2026-08-18-project-log.md
 @plans/i18n-en-plan.md

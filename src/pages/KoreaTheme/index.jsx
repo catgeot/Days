@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   CalendarDays,
   Home,
@@ -23,10 +24,22 @@ const MODULE_ICONS = {
   package: Package,
 };
 
+const MODULE_I18N = {
+  festivals: {
+    label: 'korea.theme.moduleFestivals',
+    blurb: 'korea.theme.moduleFestivalsBlurb',
+  },
+  scenic: {
+    label: 'korea.theme.moduleScenic',
+    blurb: 'korea.theme.moduleScenicBlurb',
+  },
+};
+
 const MODULES = listKoreaThemeModules();
 
 export default function KoreaThemeLanding() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     clearThemeNavBack();
@@ -35,8 +48,8 @@ export default function KoreaThemeLanding() {
   return (
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
       <SEO
-        title="한국 축제·명승"
-        description="GATEO 한국 투톱 안내. 한국의 축제와 명승 허브로 이어지며, 명승에서 주변 관광지·맛집·숙소·투어를 탐색합니다."
+        title={t('korea.theme.landingTitle')}
+        description={t('korea.theme.landingSeoDescription')}
         url="/korea/theme"
       />
 
@@ -49,28 +62,28 @@ export default function KoreaThemeLanding() {
                   Korea · Scenic
                 </p>
                 <h1 className="truncate text-base font-extrabold tracking-tight md:text-lg lg:text-xl">
-                  한국의 명승
+                  {t('korea.theme.landingHeading')}
                 </h1>
               </div>
               <div className="flex shrink-0 items-center gap-2">
                 <Link
                   to="/korea?from=theme"
-                  aria-label="한국의 축제로"
-                  title="축제"
+                  aria-label={t('korea.theme.festivalsLinkAria')}
+                  title={t('korea.theme.festivalsLink')}
                   className="flex items-center gap-1 rounded-full border border-amber-300/80 bg-amber-50 px-2.5 py-1.5 text-xs font-bold text-amber-900 hover:bg-amber-100"
                 >
                   <CalendarDays size={14} aria-hidden="true" />
-                  축제
+                  {t('korea.theme.festivalsLink')}
                 </Link>
                 <button
                   type="button"
                   onClick={() => navigate('/')}
-                  aria-label="홈으로"
-                  title="홈으로"
+                  aria-label={t('korea.common.home')}
+                  title={t('korea.common.home')}
                   className="flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs font-bold text-stone-700 hover:bg-stone-100"
                 >
                   <Home size={14} aria-hidden="true" />
-                  홈으로
+                  {t('korea.common.home')}
                 </button>
               </div>
             </div>
@@ -87,15 +100,18 @@ export default function KoreaThemeLanding() {
                 id="korea-theme-modules-heading"
                 className="text-sm font-bold tracking-tight md:text-base"
               >
-                축제 · 명승
+                {t('korea.theme.landingSection')}
               </h2>
             </div>
             <p className="text-sm leading-relaxed text-stone-600 break-keep">
-              축제와 명승 두 축으로 이어가세요. 맛집·숙소·투어·패키지는 각 상세에서 만납니다.
+              {t('korea.theme.landingBlurb')}
             </p>
             <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {MODULES.map((mod) => {
                 const Icon = MODULE_ICONS[mod.icon] || LayoutGrid;
+                const i18n = MODULE_I18N[mod.id];
+                const label = i18n ? t(i18n.label) : mod.label;
+                const blurb = i18n ? t(i18n.blurb) : mod.blurb;
                 return (
                   <li key={mod.id}>
                     <Link
@@ -111,10 +127,10 @@ export default function KoreaThemeLanding() {
                       </span>
                       <span className="min-w-0">
                         <span className="block text-sm font-extrabold tracking-tight text-stone-900 break-keep">
-                          {mod.label}
+                          {label}
                         </span>
                         <span className="mt-0.5 block text-xs leading-relaxed text-stone-600 break-keep">
-                          {mod.blurb}
+                          {blurb}
                         </span>
                       </span>
                     </Link>

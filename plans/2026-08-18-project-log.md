@@ -2,6 +2,15 @@
 
 직전: [`2026-08-16-project-log.md`](./2026-08-16-project-log.md)
 
+## 영문화 #3, korea·theme — Preview QA 대기
+
+- **`korea.*`** i18n 키 — `/korea` 축제 허브 · `/korea/theme` 랜딩 · `/korea/theme/scenic` 명승 헤더·검색·칩·목록·지도·즐겨찾기·위치 안내
+- **공통** `RecentSearchSuggestions` · `ThemeModuleBackButton` · `koreaUi.js`(시간·테마 칩 라벨)
+- **VERIFY** `npm run build` PASS
+- **PR** [#132](https://github.com/catgeot/Days/pull/132)
+- **Preview** `/qa/en` · `?lang=en` → `/korea` · `/korea/theme/scenic` 헤더·검색·필터 영문
+- **다음** #4 SEO·릴리스(합의 후)
+
 ## 영문화 #2, 홈·PlaceCard — 사람 Preview QA OK
 
 - **홈** 카테고리 칩·바로가기·지구본 메뉴 라벨 → `home.*` i18n 키

@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Clock, X } from 'lucide-react';
 import { filterRecentSearches } from './koreaRecentSearches';
 
@@ -24,6 +25,7 @@ export default function RecentSearchSuggestions({
   onClearAll,
   className = '',
 }) {
+  const { t } = useTranslation();
   const filtered = useMemo(
     () => filterRecentSearches(items, draft),
     [items, draft],
@@ -34,11 +36,13 @@ export default function RecentSearchSuggestions({
   return (
     <div
       role="listbox"
-      aria-label="최근 검색어"
+      aria-label={t('korea.recentSearch.ariaLabel')}
       className={`overflow-hidden rounded-xl border border-stone-200 bg-white shadow-lg ${className}`}
     >
       <div className="flex items-center justify-between gap-2 border-b border-stone-100 px-3 py-1.5">
-        <span className="text-[11px] font-bold text-stone-500">최근 검색</span>
+        <span className="text-[11px] font-bold text-stone-500">
+          {t('korea.recentSearch.heading')}
+        </span>
         {onClearAll ? (
           <button
             type="button"
@@ -46,7 +50,7 @@ export default function RecentSearchSuggestions({
             onClick={onClearAll}
             className="text-[11px] font-semibold text-stone-400 hover:text-stone-700"
           >
-            전체 지우기
+            {t('korea.recentSearch.clearAll')}
           </button>
         ) : null}
       </div>
@@ -71,7 +75,7 @@ export default function RecentSearchSuggestions({
               type="button"
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => onRemove(keyword)}
-              aria-label={`${keyword} 최근 검색에서 삭제`}
+              aria-label={t('korea.recentSearch.remove', { keyword })}
               className="shrink-0 px-2.5 text-stone-400 hover:bg-stone-50 hover:text-stone-700"
             >
               <X size={13} aria-hidden="true" />

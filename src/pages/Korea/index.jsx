@@ -6,6 +6,7 @@ import React, {
   useState,
 } from 'react';
 import { flushSync } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowUp,
@@ -73,9 +74,14 @@ import KoreaFestivalMap, {
   KOREA_MAP_OVERVIEW,
 } from './KoreaFestivalMap';
 import FestivalDetailSheet from './FestivalDetailSheet';
+import {
+  localizeFestivalTimeTabs,
+  localizeTasteChips,
+  localizedTasteLabel,
+} from '../../i18n/koreaUi';
 
 /**
- * @param {{ timeTab: string, areaCode: string, cityName: string, tasteId: string, timeTabs: { id: string, label: string }[] }} p
+ * @param {{ timeTab: string, areaCode: string, cityName: string, tasteId: string, timeTabs: { id: string, label: string }[], t: import('i18next').TFunction }} p
  */
 function buildIndexListHeadline({
   timeTab,
@@ -83,25 +89,27 @@ function buildIndexListHeadline({
   cityName,
   tasteId,
   timeTabs,
+  t,
 }) {
   const time =
-    timeTabs.find((t) => t.id === timeTab)?.label || '지금';
+    timeTabs.find((tab) => tab.id === timeTab)?.label ||
+    t('korea.festival.timeTab.now');
   const sido = sidoListPhrase(areaCode);
   const city = cityListPhrase(cityName);
-  const taste = tasteLabel(tasteId);
+  const taste =
+    tasteId && tasteId !== 'all'
+      ? localizedTasteLabel(t, tasteId, tasteLabel(tasteId))
+      : '';
+  const tasteSuffix = taste
+    ? t('korea.festival.headlineTasteSuffix', { taste })
+    : '';
   const place = [sido, city].filter(Boolean).join(' ');
 
   if (place) {
-    let sentence = `${place} · "${time}"`;
-    if (taste) sentence += ` "${taste}" 관련`;
-    sentence += ' 축제 리스트';
-    return sentence;
+    return t('korea.festival.headlineWithPlace', { place, time, tasteSuffix });
   }
 
-  let sentence = `"${time}"`;
-  if (taste) sentence += ` "${taste}" 관련`;
-  sentence += ' 축제 리스트';
-  return sentence;
+  return t('korea.festival.headlineGeneral', { time, tasteSuffix });
 }
 
 /**
@@ -109,17 +117,23 @@ function buildIndexListHeadline({
  *   areaCode: string,
  *   cityName: string,
  *   count: number,
+ *   t: import('i18next').TFunction,
  * }} p
  */
-function buildPanelListMeta({ areaCode, cityName, count }) {
+function buildPanelListMeta({ areaCode, cityName, count, t }) {
   const sido = sidoListPhrase(areaCode);
   const city = cityListPhrase(cityName);
   const place = [sido, city].filter(Boolean).join(' · ');
   const bits = [];
   if (place) bits.push(place);
-  bits.push(`${count}건`);
-  if (place && !city) bits.push(`${subregionUnitLabel(areaCode)}별`);
-  else if (!place) bits.push('지역 그룹');
+  bits.push(t('korea.common.countUnit', { count }));
+  if (place && !city) {
+    bits.push(
+      t('korea.festival.panelBySubregion', {
+        unit: subregionUnitLabel(areaCode),
+      }),
+    );
+  } else if (!place) bits.push(t('korea.common.regionGroup'));
   return bits.join(' · ');
 }
 
@@ -365,10 +379,12 @@ function RelatedChipFlap({
   onSelectCity,
   onSelectSido,
   onSelectTaste,
-  neighborLabel = '인근',
+  neighborLabel,
   parentRegionLabel = '',
   layout = 'side',
 }) {
+  const { t } = useTranslation();
+  const neighbor = neighborLabel ?? t('korea.common.neighbor');
   const hasChild = childChips.length > 0;
   const hasNeighbor = neighborChips.length > 0;
   const hasTaste = tasteSiblingChips.length > 0;
@@ -384,14 +400,16 @@ function RelatedChipFlap({
     return (
       <ChipScrollRow
         className="shrink-0 border-b border-stone-200 px-3 py-2 md:hidden"
-        ariaLabel="지역 구분 칩"
+        ariaLabel={t('korea.common.regionChips')}
       >
         {showParentUp && (
           <button
             type="button"
             onClick={() => onSelectCity('all')}
             className={chipClass(false)}
-            aria-label={`${parentRegionLabel} 전체로`}
+            aria-label={t('korea.common.parentRegionAll', {
+              label: parentRegionLabel,
+            })}
           >
             <Undo2 size={12} aria-hidden="true" />
             {parentRegionLabel}
@@ -415,14 +433,16 @@ function RelatedChipFlap({
   if (!hasChild && !hasNeighbor && !hasTaste && !showParentUp) return null;
 
   return (
-    <div className={shell} aria-label="연관 색인 칩">
+    <div className={shell} aria-label={t('korea.common.relatedChips')}>
       {showParentUp && (
         <button
           type="button"
           onClick={() => onSelectCity('all')}
           className={flapChipClass(false)}
-          aria-label={`${parentRegionLabel} 전체로`}
-          title="상위 지역 목록"
+          aria-label={t('korea.common.parentRegionAll', {
+            label: parentRegionLabel,
+          })}
+          title={t('korea.common.parentRegionList')}
         >
           <span className="flex min-w-0 items-center gap-0.5 truncate">
             <Undo2 size={11} className="shrink-0" aria-hidden="true" />
@@ -433,7 +453,7 @@ function RelatedChipFlap({
       {hasChild && (
         <div className="space-y-1">
           <p className="px-0.5 text-[9px] font-bold tracking-wide text-stone-400">
-            하위
+            {t('korea.common.subRegion')}
           </p>
           {childChips.map((c) => (
             <button
@@ -451,7 +471,7 @@ function RelatedChipFlap({
       {hasNeighbor && (
         <div className="space-y-1">
           <p className="px-0.5 text-[9px] font-bold tracking-wide text-stone-400">
-            {neighborLabel}
+            {neighbor}
           </p>
           {neighborChips.map((s) => (
             <button
@@ -469,7 +489,7 @@ function RelatedChipFlap({
       {hasTaste && (
         <div className="space-y-1">
           <p className="px-0.5 text-[9px] font-bold tracking-wide text-stone-400">
-            테마
+            {t('korea.common.theme')}
           </p>
           {tasteSiblingChips.map((t) => (
             <button
@@ -497,6 +517,7 @@ function FestivalRow({
   distanceKm,
   large = false,
 }) {
+  const { t } = useTranslation();
   const img = festivalImage(item);
   const start = formatYmdLabel(item.eventStartDate);
   const end = formatYmdLabel(item.eventEndDate);
@@ -589,7 +610,11 @@ function FestivalRow({
             e.stopPropagation();
             onToggleFavorite(item);
           }}
-          aria-label={favorited ? '즐겨찾기 해제' : '즐겨찾기'}
+          aria-label={
+            favorited
+              ? t('korea.common.favoriteRemove')
+              : t('korea.common.favoriteAdd')
+          }
           aria-pressed={favorited}
           className={`shrink-0 flex items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-500 hover:bg-amber-50 hover:border-amber-300 ${
             large ? 'h-10 w-10' : 'h-9 w-9'
@@ -609,6 +634,7 @@ function FestivalRow({
 }
 
 export default function KoreaFestivalHub() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -744,19 +770,22 @@ export default function KoreaFestivalHub() {
     const result = await fetchKoreaFestivalsRolling12({ force, now });
     if (!result.ok) {
       setItems([]);
-      setError(result.error || '축제 목록을 불러오지 못했습니다.');
+      setError(result.error || t('korea.festival.loadError'));
       setLoading(false);
       return;
     }
     setItems(result.items);
     setLoading(false);
-  }, [now]);
+  }, [now, t]);
 
   useEffect(() => {
     loadFestivals(false);
   }, [loadFestivals]);
 
-  const timeTabs = useMemo(() => buildFestivalTimeTabs(now), [now]);
+  const timeTabs = useMemo(
+    () => localizeFestivalTimeTabs(t, buildFestivalTimeTabs(now)),
+    [now, t],
+  );
 
   const timedItems = useMemo(
     () => filterByTimeTab(timeTab, items, now),
@@ -796,7 +825,10 @@ export default function KoreaFestivalHub() {
     [timedItems, areaCode, cityName],
   );
 
-  const tasteChips = useMemo(() => buildTasteTags(afterRegion), [afterRegion]);
+  const tasteChips = useMemo(
+    () => localizeTasteChips(t, buildTasteTags(afterRegion)),
+    [afterRegion, t],
+  );
 
   useEffect(() => {
     if (tasteId === 'all') return;
@@ -824,10 +856,10 @@ export default function KoreaFestivalHub() {
 
   const indexTitle = useMemo(() => {
     if (nearOrigin && nearLabel) {
-      return `${nearLabel} 주변`;
+      return t('korea.common.nearAround', { label: nearLabel });
     }
     if (searchActive) {
-      return `검색 · ${searchFilter}`;
+      return t('korea.common.searchPrefix', { query: searchFilter });
     }
     return buildIndexListHeadline({
       timeTab,
@@ -835,6 +867,7 @@ export default function KoreaFestivalHub() {
       cityName,
       tasteId,
       timeTabs,
+      t,
     });
   }, [
     nearOrigin,
@@ -846,6 +879,7 @@ export default function KoreaFestivalHub() {
     cityName,
     tasteId,
     timeTabs,
+    t,
   ]);
 
   const indexNeighborChips = useMemo(
@@ -1085,7 +1119,7 @@ export default function KoreaFestivalHub() {
       if (!hubResolved) {
         if (!silent) {
           setNearLabel('');
-          setNearMsg('국내 위치를 찾지 못했습니다. 지역 칩으로 골라 보세요.');
+          setNearMsg(t('korea.common.locDomesticMiss'));
         }
         return false;
       }
@@ -1130,12 +1164,12 @@ export default function KoreaFestivalHub() {
       setNearLabel(label);
       setNearMsg(
         ids.length
-          ? `${NEAR_KM}km 안 ${ids.length}건`
-          : `${NEAR_KM}km 안 지금 축제가 없습니다. 시간 탭을 바꿔 보세요.`,
+          ? t('korea.festival.nearPanelMeta', { km: NEAR_KM, count: ids.length })
+          : t('korea.festival.nearEmptyNow', { km: NEAR_KM }),
       );
       return true;
     },
-    [items, now, dismissLocHint],
+    [items, now, dismissLocHint, t],
   );
 
   useEffect(() => {
@@ -1143,15 +1177,15 @@ export default function KoreaFestivalHub() {
     const n = nearBaseItems?.length ?? 0;
     setNearMsg(
       n > 0
-        ? `${NEAR_KM}km 안 ${n}건`
-        : `${NEAR_KM}km 안 축제가 없습니다. 시간 탭을 바꿔 보세요.`,
+        ? t('korea.festival.nearPanelMeta', { km: NEAR_KM, count: n })
+        : t('korea.festival.nearEmpty', { km: NEAR_KM }),
     );
     setNearIds(
       (nearBaseItems || [])
         .map((item) => String(item?.contentId || ''))
         .filter(Boolean),
     );
-  }, [nearOrigin, nearLabel, nearBaseItems]);
+  }, [nearOrigin, nearLabel, nearBaseItems, t]);
 
   const clearSearchFilter = () => {
     setSearchDraft('');
@@ -1255,13 +1289,17 @@ export default function KoreaFestivalHub() {
 
   const panelListMeta = useMemo(() => {
     if (nearBaseItems && nearLabel) {
-      return `${NEAR_KM}km 안 ${panelItems.length}건`;
+      return t('korea.festival.nearPanelMeta', {
+        km: NEAR_KM,
+        count: panelItems.length,
+      });
     }
     if (nearActive && nearMsg) return nearMsg;
     return buildPanelListMeta({
       areaCode,
       cityName,
       count: panelItems.length,
+      t,
     });
   }, [
     nearBaseItems,
@@ -1271,6 +1309,7 @@ export default function KoreaFestivalHub() {
     areaCode,
     cityName,
     panelItems.length,
+    t,
   ]);
 
   const selectTime = (id) => {
@@ -1321,14 +1360,17 @@ export default function KoreaFestivalHub() {
   };
 
   const timeMajorLabel =
-    timeTabs.find((t) => t.id === timeTab)?.label || '지금';
+    timeTabs.find((tab) => tab.id === timeTab)?.label ||
+    t('korea.festival.timeTab.now');
   const regionMajorLabel =
     cityName !== 'all'
       ? cityName
       : areaCode !== 'all'
-        ? sidoLabel(areaCode) || '지역'
-        : '지역';
-  const tasteMajorLabel = tasteLabel(tasteId) || '테마';
+        ? sidoLabel(areaCode) || t('korea.common.region')
+        : t('korea.common.region');
+  const tasteMajorLabel =
+    localizedTasteLabel(t, tasteId, tasteLabel(tasteId)) ||
+    t('korea.common.theme');
 
   const refreshFavorites = useCallback(() => {
     const list = loadFavorites();
@@ -1384,12 +1426,12 @@ export default function KoreaFestivalHub() {
     userRegionOverrideRef.current = true;
     if (typeof navigator === 'undefined' || !navigator.geolocation) {
       setNearLabel('');
-      setNearMsg('이 기기에서는 위치 정보를 사용할 수 없습니다.');
+      setNearMsg(t('korea.common.locUnavailable'));
       return;
     }
     setNearBusy(true);
     setNearLabel('');
-    setNearMsg('위치를 확인하는 중…');
+    setNearMsg(t('korea.common.locChecking'));
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setNearBusy(false);
@@ -1403,13 +1445,13 @@ export default function KoreaFestivalHub() {
         setNearLabel('');
         const code = err?.code;
         if (code === 1) {
-          setNearMsg('위치 권한이 필요합니다. 브라우저에서 위치를 허용해 주세요.');
+          setNearMsg(t('korea.common.locDenied'));
         } else if (code === 3) {
           dismissLocHint();
-          setNearMsg('위치 확인이 지연되었습니다. 잠시 후 다시 시도해 주세요.');
+          setNearMsg(t('korea.common.locTimeout'));
         } else {
           dismissLocHint();
-          setNearMsg('위치를 가져오지 못했습니다. 권한·네트워크를 확인해 주세요.');
+          setNearMsg(t('korea.common.locFailed'));
         }
       },
       { enableHighAccuracy: false, timeout: 15_000, maximumAge: 120_000 },
@@ -1489,8 +1531,8 @@ export default function KoreaFestivalHub() {
   return (
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
       <SEO
-        title="한국의 축제"
-        description="GATEO 국내 축제 허브. TourAPI 일정으로 시간·지역·테마별 축제를 찾고, 지도로 위치·동선을 확인하세요."
+        title={t('korea.festival.title')}
+        description={t('korea.festival.seoDescription')}
         url="/korea"
       />
 
@@ -1523,7 +1565,7 @@ export default function KoreaFestivalHub() {
                   Korea
                 </p>
                 <h1 className="truncate text-base font-extrabold tracking-tight md:text-lg lg:text-xl">
-                  한국의 축제
+                  {t('korea.festival.title')}
                 </h1>
               </div>
               <div className="flex shrink-0 items-center gap-2">
@@ -1536,7 +1578,7 @@ export default function KoreaFestivalHub() {
                   }}
                 >
                   <label className="sr-only" htmlFor="korea-festival-search-pc">
-                    축제 검색
+                    {t('korea.festival.searchLabel')}
                   </label>
                   <div
                     className={`flex w-full items-center gap-2 rounded-full border px-3 py-1.5 ${
@@ -1567,8 +1609,8 @@ export default function KoreaFestivalHub() {
                       }}
                       placeholder={
                         searchApplied
-                          ? `검색 · ${searchApplied}`
-                          : '축제명·지역 검색'
+                          ? t('korea.common.searchPrefix', { query: searchApplied })
+                          : t('korea.festival.searchPlaceholder')
                       }
                       autoComplete="off"
                       className="min-w-0 flex-1 bg-transparent text-sm text-stone-900 placeholder:text-stone-400 outline-none"
@@ -1577,8 +1619,8 @@ export default function KoreaFestivalHub() {
                       <button
                         type="button"
                         onClick={closeSearch}
-                        aria-label="검색 지우기"
-                        title="검색 지우기"
+                        aria-label={t('korea.common.searchClear')}
+                        title={t('korea.common.searchClear')}
                         className="shrink-0 flex h-6 w-6 items-center justify-center rounded-full text-stone-500 hover:bg-stone-200/80 hover:text-stone-800"
                       >
                         <X size={13} aria-hidden="true" />
@@ -1618,10 +1660,16 @@ export default function KoreaFestivalHub() {
                     mobileSearchInputRef.current?.focus();
                   }}
                   aria-label={
-                    searchOpen || searchActive ? '검색 닫기' : '축제 검색'
+                    searchOpen || searchActive
+                      ? t('korea.common.searchClose')
+                      : t('korea.festival.searchOpen')
                   }
                   aria-pressed={searchOpen || searchActive}
-                  title={searchOpen || searchActive ? '검색 닫기' : '축제 검색'}
+                  title={
+                    searchOpen || searchActive
+                      ? t('korea.common.searchClose')
+                      : t('korea.festival.searchOpen')
+                  }
                   className={`flex h-9 w-9 items-center justify-center rounded-full border lg:hidden ${
                     searchOpen || searchActive
                       ? 'border-amber-400 bg-amber-50 text-amber-800'
@@ -1639,7 +1687,7 @@ export default function KoreaFestivalHub() {
                   onClick={() =>
                     personalTab ? closePersonal() : openPersonal('favorites')
                   }
-                  aria-label="즐겨찾기·본 항목"
+                  aria-label={t('korea.common.favoritesViewed')}
                   aria-pressed={personalTab != null}
                   className={`flex h-9 w-9 items-center justify-center rounded-full border ${
                     personalTab != null
@@ -1661,23 +1709,23 @@ export default function KoreaFestivalHub() {
                   <button
                     type="button"
                     onClick={closeMap}
-                    aria-label="지도 닫기 · 목록으로"
-                    title="목록으로"
+                    aria-label={t('korea.common.mapCloseList')}
+                    title={t('korea.common.mapToList')}
                     className="flex items-center gap-1 rounded-full border border-amber-400 bg-amber-50 px-2.5 py-1.5 text-xs font-bold text-amber-900 hover:bg-amber-100"
                   >
                     <X size={14} aria-hidden="true" />
-                    닫기
+                    {t('korea.common.close')}
                   </button>
                 ) : (
                   <button
                     type="button"
                     onClick={goHome}
-                    aria-label="홈으로"
-                    title="홈으로"
+                    aria-label={t('korea.common.home')}
+                    title={t('korea.common.home')}
                     className="flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs font-bold text-stone-700 hover:bg-stone-100"
                   >
                     <Home size={14} aria-hidden="true" />
-                    홈으로
+                    {t('korea.common.home')}
                   </button>
                 )}
               </div>
@@ -1687,7 +1735,7 @@ export default function KoreaFestivalHub() {
               <p className="mt-1.5 text-xs leading-relaxed text-stone-600 break-keep">
                 <ThemeFestivalBackLink />
                 <span className="text-stone-400"> · </span>
-                축제 일정·지도는 여기서 이어갑니다
+                {t('korea.festival.fromThemeHint')}
               </p>
             ) : null}
 
@@ -1701,7 +1749,7 @@ export default function KoreaFestivalHub() {
                   }}
                 >
                   <label className="sr-only" htmlFor="korea-festival-search">
-                    축제 검색
+                    {t('korea.festival.searchLabel')}
                   </label>
                   <input
                     ref={mobileSearchInputRef}
@@ -1721,8 +1769,8 @@ export default function KoreaFestivalHub() {
                     }}
                     placeholder={
                       searchApplied
-                        ? `검색 · ${searchApplied}`
-                        : '축제명·지역 검색'
+                        ? t('korea.common.searchPrefix', { query: searchApplied })
+                        : t('korea.festival.searchPlaceholder')
                     }
                     autoComplete="off"
                     enterKeyHint="search"
@@ -1732,7 +1780,7 @@ export default function KoreaFestivalHub() {
                     type="submit"
                     className="shrink-0 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-[11px] font-bold text-stone-600 hover:bg-stone-100"
                   >
-                    검색
+                    {t('korea.common.searchSubmit')}
                   </button>
                 </form>
                 <RecentSearchSuggestions
@@ -1763,7 +1811,7 @@ export default function KoreaFestivalHub() {
                     onClick={openTimeMajor}
                     className={majorChipClass(chipPanel === 'time')}
                     aria-pressed={chipPanel === 'time'}
-                    aria-label={`시간 대분류 · ${timeMajorLabel}`}
+                    aria-label={t('korea.common.majorTime', { label: timeMajorLabel })}
                   >
                     <ChipPanelIcon panel="time" size={13} />
                     {timeMajorLabel}
@@ -1773,7 +1821,7 @@ export default function KoreaFestivalHub() {
                     onClick={openRegionMajor}
                     className={majorChipClass(chipPanel === 'region')}
                     aria-pressed={chipPanel === 'region'}
-                    aria-label={`지역 대분류 · ${regionMajorLabel}`}
+                    aria-label={t('korea.common.majorRegion', { label: regionMajorLabel })}
                   >
                     <ChipPanelIcon panel="region" size={13} />
                     {regionMajorLabel}
@@ -1783,7 +1831,7 @@ export default function KoreaFestivalHub() {
                     onClick={openTasteMajor}
                     className={majorChipClass(chipPanel === 'taste')}
                     aria-pressed={chipPanel === 'taste'}
-                    aria-label={`테마 대분류 · ${tasteMajorLabel}`}
+                    aria-label={t('korea.common.majorTheme', { label: tasteMajorLabel })}
                   >
                     <ChipPanelIcon panel="taste" size={13} />
                     {tasteMajorLabel}
@@ -1793,8 +1841,8 @@ export default function KoreaFestivalHub() {
                   type="button"
                   onClick={handleNearMe}
                   disabled={nearBusy}
-                  aria-label="내 주변 축제 불러오기"
-                  title="내 주변"
+                  aria-label={t('korea.festival.nearLoad')}
+                  title={t('korea.common.nearMe')}
                   className="shrink-0 flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500 px-3 py-1.5 text-xs font-bold text-white hover:bg-amber-600 disabled:opacity-60"
                 >
                   {nearBusy ? (
@@ -1802,10 +1850,10 @@ export default function KoreaFestivalHub() {
                   ) : (
                     <LocateFixed size={14} aria-hidden="true" />
                   )}
-                  내 주변
+                  {t('korea.common.nearMe')}
                 </button>
               </div>
-              <ChipScrollRow ariaLabel="세부 칩">
+              <ChipScrollRow ariaLabel={t('korea.common.detailChips')}>
                 {chipPanel === 'time' &&
                   timeTabs.map((t) => (
                     <button
@@ -1831,7 +1879,7 @@ export default function KoreaFestivalHub() {
                       aria-pressed={areaCode === 'all'}
                     >
                       <ChipPanelIcon panel="region" />
-                      전국
+                      {t('korea.common.nationwide')}
                     </button>
                     {sidoChips.map((s) => (
                       <button
@@ -1857,7 +1905,7 @@ export default function KoreaFestivalHub() {
                       aria-pressed={tasteId === 'all'}
                     >
                       <ChipPanelIcon panel="taste" />
-                      테마 전체
+                      {t('korea.common.themeAll')}
                     </button>
                     {tasteChips.map((t) => (
                       <button
@@ -1893,7 +1941,7 @@ export default function KoreaFestivalHub() {
         {loading && !mapOpen && (
           <div className="mb-3 flex items-center justify-center gap-2 rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-700 shadow-sm">
             <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-            축제 일정을 불러오는 중…
+            {t('korea.festival.loadingSchedule')}
           </div>
         )}
 
@@ -1905,7 +1953,7 @@ export default function KoreaFestivalHub() {
               onClick={() => loadFestivals(true)}
               className="mt-3 rounded-xl border border-stone-200 bg-stone-50 px-4 py-2 text-xs font-bold text-stone-800 hover:bg-stone-100"
             >
-              다시 시도
+              {t('korea.common.retry')}
             </button>
           </div>
         )}
@@ -1926,7 +1974,11 @@ export default function KoreaFestivalHub() {
               ? 'lg:flex-row'
               : ''
           }`}
-          aria-label={personalTab != null ? '내 축제 목록' : '축제 목록'}
+          aria-label={
+            personalTab != null
+              ? t('korea.festival.myListAria')
+              : t('korea.festival.listAria')
+          }
         >
           {mapSplitActive && personalTab == null && flapHasRelated && (
             <RelatedChipFlap
@@ -1939,7 +1991,7 @@ export default function KoreaFestivalHub() {
               onSelectCity={selectCity}
               onSelectSido={selectSido}
               onSelectTaste={selectTaste}
-              neighborLabel="인근"
+              neighborLabel={t('korea.common.neighbor')}
               parentRegionLabel={parentRegionLabel}
             />
           )}
@@ -1957,13 +2009,13 @@ export default function KoreaFestivalHub() {
                 <h2 className="text-sm font-bold text-stone-900 break-keep leading-snug lg:text-[15px]">
                   {personalTab != null
                     ? personalTab === 'favorites'
-                      ? '즐겨찾기'
-                      : '본 항목'
+                      ? t('korea.common.favorites')
+                      : t('korea.common.viewed')
                     : indexTitle}
                 </h2>
                 <p className="truncate text-[11px] text-stone-500">
                   {personalTab != null
-                    ? `${personalItems.length}건 · 지역 그룹`
+                    ? `${personalItems.length} · ${t('korea.common.regionGroup')}`
                     : panelListMeta}
                 </p>
               </div>
@@ -1972,9 +2024,15 @@ export default function KoreaFestivalHub() {
                   type="button"
                   onClick={() => setListLarge((v) => !v)}
                   aria-label={
-                    listLarge ? '리스트 기본 크기로' : '리스트 크게 보기'
+                    listLarge
+                      ? t('korea.common.listDefaultAria')
+                      : t('korea.common.listLargeAria')
                   }
-                  title={listLarge ? '기본 크기' : '크게 보기'}
+                  title={
+                    listLarge
+                      ? t('korea.common.listDefaultTitle')
+                      : t('korea.common.listLargeTitle')
+                  }
                   aria-pressed={listLarge}
                   className={`flex h-9 items-center gap-1 rounded-full border px-2.5 text-[11px] font-bold ${
                     listLarge
@@ -1987,16 +2045,20 @@ export default function KoreaFestivalHub() {
                   ) : (
                     <Maximize2 size={14} aria-hidden="true" />
                   )}
-                  {listLarge ? '기본' : '크게'}
+                  {listLarge ? t('korea.common.listDefault') : t('korea.common.listLarge')}
                 </button>
                 <button
                   type="button"
                   onClick={() => (mapOpen ? closeMap() : openMap())}
                   aria-label={
-                    mapOpen ? '지도 닫기 · 목록으로' : '지도로 위치·동선 보기'
+                    mapOpen
+                      ? t('korea.common.mapCloseList')
+                      : t('korea.common.mapOpenRoute')
                   }
                   title={
-                    mapOpen ? '지도 닫기 · 목록으로' : '지도로 위치·동선 보기'
+                    mapOpen
+                      ? t('korea.common.mapCloseList')
+                      : t('korea.common.mapOpenRoute')
                   }
                   aria-pressed={mapOpen}
                   className={`flex h-9 items-center gap-1 rounded-full border px-2.5 text-[11px] font-bold ${
@@ -2010,7 +2072,7 @@ export default function KoreaFestivalHub() {
                   ) : (
                     <MapIcon size={14} aria-hidden="true" />
                   )}
-                  {mapOpen ? '목록' : '지도'}
+                  {mapOpen ? t('korea.common.list') : t('korea.common.map')}
                 </button>
                 {personalTab == null &&
                   areaCode !== 'all' &&
@@ -2018,14 +2080,19 @@ export default function KoreaFestivalHub() {
                     <button
                       type="button"
                       onClick={() => selectCity('all')}
-                      aria-label={`${sidoListPhrase(areaCode) || sidoLabel(areaCode) || '상위 지역'} 전체로`}
-                      title="상위 지역 목록"
+                      aria-label={t('korea.common.parentRegionAll', {
+                        label:
+                          sidoListPhrase(areaCode) ||
+                          sidoLabel(areaCode) ||
+                          t('korea.common.parentRegion'),
+                      })}
+                      title={t('korea.common.parentRegionList')}
                       className="flex h-9 items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 text-[11px] font-bold text-stone-700 hover:bg-stone-100"
                     >
                       <Undo2 size={14} aria-hidden="true" />
-                      {sidoListPhrase(areaCode) ||
+                      {                        sidoListPhrase(areaCode) ||
                         sidoLabel(areaCode) ||
-                        '상위'}
+                        t('korea.common.parentRegion')}
                     </button>
                   )}
               </div>
@@ -2033,11 +2100,10 @@ export default function KoreaFestivalHub() {
             {showDefaultLocHint && !mapOpen && (
               <div className="shrink-0 border-b border-amber-100 bg-amber-50/90 px-4 py-2.5">
                 <p className="text-[12px] font-bold leading-snug text-amber-950 break-keep">
-                  위치 허용이 없어 전국 축제 리스트를 보여 드려요.
+                  {t('korea.festival.locHintTitle')}
                 </p>
                 <p className="mt-1 text-[11px] leading-snug text-amber-900/80 break-keep">
-                  위치를 허용하면 현재 위치의 축제와 숙소 등 주변 정보를
-                  맞춰 드릴게요.
+                  {t('korea.festival.locHintBody')}
                 </p>
                 <div className="mt-2 flex items-center gap-2">
                   <button
@@ -2046,14 +2112,16 @@ export default function KoreaFestivalHub() {
                     disabled={nearBusy}
                     className="rounded-full border border-amber-300 bg-white px-3 py-1 text-[11px] font-bold text-amber-950 hover:bg-amber-100 disabled:opacity-60"
                   >
-                    {nearBusy ? '확인 중…' : '위치 허용'}
+                    {nearBusy
+                      ? t('korea.common.nearMeLoading')
+                      : t('korea.common.allowLocation')}
                   </button>
                   <button
                     type="button"
                     onClick={dismissLocHint}
                     className="rounded-full px-2 py-1 text-[11px] font-semibold text-amber-800/70 hover:bg-amber-100/80"
                   >
-                    닫기
+                    {t('korea.common.close')}
                   </button>
                 </div>
               </div>
@@ -2065,7 +2133,7 @@ export default function KoreaFestivalHub() {
                   onClick={() => openPersonal('favorites')}
                   className={chipClass(personalTab === 'favorites')}
                 >
-                  즐겨찾기
+                  {t('korea.common.favorites')}
                   <span className="opacity-70">{favoriteList.length}</span>
                 </button>
                 <button
@@ -2073,7 +2141,7 @@ export default function KoreaFestivalHub() {
                   onClick={() => openPersonal('viewed')}
                   className={chipClass(personalTab === 'viewed')}
                 >
-                  본 항목
+                  {t('korea.common.viewed')}
                   <span className="opacity-70">{viewedList.length}</span>
                 </button>
               </div>
@@ -2089,7 +2157,7 @@ export default function KoreaFestivalHub() {
                 onSelectCity={selectCity}
                 onSelectSido={selectSido}
                 onSelectTaste={selectTaste}
-                neighborLabel="인근"
+                neighborLabel={t('korea.common.neighbor')}
                 parentRegionLabel={parentRegionLabel}
               />
             )}
@@ -2115,8 +2183,8 @@ export default function KoreaFestivalHub() {
                 personalItems.length === 0 ? (
                   <p className="px-1 py-4 text-sm text-stone-500">
                     {personalTab === 'favorites'
-                      ? '즐겨찾은 축제가 없습니다. 상세에서 ★로 추가해 보세요.'
-                      : '아직 본 축제가 없습니다. 카드를 열어 보면 여기에 쌓입니다.'}
+                      ? t('korea.festival.emptyFavorites')
+                      : t('korea.festival.emptyViewed')}
                   </p>
                 ) : (
                   personalGroups.map((group) => (
@@ -2148,10 +2216,10 @@ export default function KoreaFestivalHub() {
               ) : panelItems.length === 0 ? (
                 <p className="px-1 py-4 text-sm text-stone-500">
                   {loading
-                    ? '불러오는 중…'
+                    ? t('korea.common.loading')
                     : searchActive
-                      ? '검색과 맞는 축제가 없습니다.'
-                      : '이 선택에 맞는 축제가 없습니다.'}
+                      ? t('korea.festival.emptySearch')
+                      : t('korea.festival.emptyFilter')}
                 </p>
               ) : (
                 panelGroups.map((group) => (
@@ -2216,7 +2284,9 @@ export default function KoreaFestivalHub() {
                       setNearOrigin(null);
                       setNearIds(ids);
                       setNearLabel('');
-                      setNearMsg(`지도에서 고른 ${ids.length}건`);
+                      setNearMsg(
+                        t('korea.festival.mapPicked', { count: ids.length }),
+                      );
                     }}
                   />
                 </div>
@@ -2254,7 +2324,7 @@ export default function KoreaFestivalHub() {
 
       <button
         type="button"
-        aria-label="맨 위로"
+        aria-label={t('korea.common.scrollToTop')}
         onClick={() => {
           mainScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
         }}
