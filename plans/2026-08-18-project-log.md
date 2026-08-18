@@ -2,14 +2,14 @@
 
 직전: [`2026-08-16-project-log.md`](./2026-08-16-project-log.md)
 
-## 영문화 #5, PROD 병합·QA — 병합 준비
+## 영문화 #5, PROD 병합·QA — Preview QA OK · merge 대기
 
+- **Preview QA** (#2~#6) git Preview `?lang=en` — **사람 QA OK**
+- **PROD `/qa/en`** → `/qa` 목록 — **예상 동작**(PR #132 미병합 · `main`에 `/qa/en` redirect·`en` slug 없음)
 - **VERIFY** `npm run build` · `smoke:place-label-slug` PASS
-- **PR** [#132](https://github.com/catgeot/Days/pull/132) — #0~#4 범위 · **사람 승인 후 merge**
-- **병합 후** `/qa/en` → `https://www.gateo.kr/?lang=en` (vercel.json·cloudQaShareLinks)
-- **PROD QA** EN 토글·홈·PlaceCard·/korea·명승·hreflang·릴리스 배너
-- **Preview** `days-git-cursor-en-catgeots-projects.vercel.app/?lang=en`
-- **다음** #6 PROD QA 확인·정리(병합 SHA·cloudPreview active:false)
+- **PR** [#132](https://github.com/catgeot/Days/pull/132) — **사람 승인 후 merge** → 배포 후 `/qa/en`·PROD #1 재확인
+- **병합 후** `/qa/en` → `https://www.gateo.kr/?lang=en`
+- **다음** merge·PROD 배포 → #6 PROD QA 확인·정리
 
 ## 영문화 #4, SEO·릴리스 — 사람 Preview QA OK
 

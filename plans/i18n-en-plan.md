@@ -83,7 +83,7 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#5)**: #0~#4 완료 · build·smoke PASS · PR #132 병합 준비 · `/qa/en` → PROD `?lang=en` (병합 후) · **main merge는 사람 승인 후**
+**상태 (#5)**: Preview QA #2~#6 OK · PROD `/qa/en`은 PR 미병합으로 `/qa` 폴백(정상) · **merge 후** PROD #1~#6 재확인
 
 **PROD QA** (병합·배포 후): `www.gateo.kr/?lang=en` · PlaceCard · `/korea` · `/korea/theme/scenic` · hreflang · 릴리스 배너
 

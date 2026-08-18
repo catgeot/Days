@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-18-i18n-preview-qa-ok',
+    session: '영문화 #5, PROD 병합·QA',
+    title: 'Preview QA OK · PROD /qa/en은 merge 후',
+    detail:
+      '사람 Preview QA: git Preview ?lang=en 에서 EN 토글·홈·PlaceCard·/korea·명승·hreflang·릴리스 배너 OK. PROD /qa/en 은 PR #132 미병합으로 /qa 목록으로 폴백(정상). merge·배포 후 /qa/en → PROD ?lang=en 재확인.',
+    at: '2026-08-18',
+  },
+  {
     id: '2026-08-18-i18n-merge-prep',
     session: '영문화 #5, PROD 병합·QA',
     title: '병합 준비·PROD QA 체크리스트',

@@ -62,7 +62,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **병합 준비 완료** · PR [#132](https://github.com/catgeot/Days/pull/132) — **사람 승인 후 merge** · PROD QA 대기 |
+| **상태** | **Preview QA OK** · PR [#132](https://github.com/catgeot/Days/pull/132) **merge 대기** · PROD `/qa/en`은 병합 후 |
 | **브랜치** | `cursor/en` |
 | **tip** | `4a97d140` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9 |
