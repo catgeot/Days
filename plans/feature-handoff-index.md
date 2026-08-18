@@ -62,24 +62,25 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#8.5 QA** · PR [#133](https://github.com/catgeot/Days/pull/133) · tip `5e7337c4` |
-| **브랜치** | `cursor/en` |
+| **상태** | **main 병합** PR [#134](https://github.com/catgeot/Days/pull/134) · PROD 배포 후 QA |
+| **main** | PR #134 merge 후 SHA 확인 |
+| **브랜치** | `cursor/en` (병합 후 동기) |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9 |
 | **일지** | [`2026-08-18-project-log.md`](./2026-08-18-project-log.md) |
 | **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` |
-| **PROD QA** | `https://www.gateo.kr/qa/en` → `/?lang=en` |
+| **PROD QA** | `https://www.gateo.kr/qa/en` → `/?lang=en` · `/blog?lang=en` |
 | **VERIFY** | `npm run build` · `smoke:place-label-slug` |
 
-**2차 #7+#8**: PlaceCard 세부 · courses · scenic 잔여·지도·nav
+**PROD QA (#7~#10)**: 홈·PlaceCard · `/korea/theme/*` · `/blog` · auth
 
 **다음 제시어**:
 
 ```
-영문화 #9, 로그북·대시보드
+영문화 #12, PROD QA 확인
 @plans/feature-handoff-index.md
 @plans/2026-08-18-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · /qa/en · ?lang=en
+main · www.gateo.kr/qa/en · ?lang=en · /blog
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 

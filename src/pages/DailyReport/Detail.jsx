@@ -7,8 +7,10 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
 import { ArrowLeft, Trash2, Edit, MapPin, Copy, CheckCircle2, Lock, Share2 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const Detail = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -43,7 +45,7 @@ const Detail = () => {
   }, [id, navigate]);
 
   const handleDelete = async () => {
-    if (window.confirm("이 기록을 영구적으로 삭제하시겠습니까? (삭제 후 복구할 수 없습니다)")) {
+    if (window.confirm(t('logbook.detail.deleteConfirm'))) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
@@ -51,7 +53,7 @@ const Detail = () => {
 
       if(error) {
          console.error("삭제 실패:", error);
-         alert("기록을 삭제하는 중 오류가 발생했습니다.");
+         alert(t('logbook.detail.deleteFail'));
          return;
       }
       navigate('/blog', { replace: true });
@@ -60,14 +62,14 @@ const Detail = () => {
 
   // 🚨 [New] 비공개(Lock) 강제 전환 핸들러
   const handleMakePrivate = async () => {
-    if (window.confirm("이 글을 비공개로 전환하시겠습니까? (기존 공유 링크 접속 차단)")) {
+    if (window.confirm(t('logbook.detail.privateConfirm'))) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       const { error } = await supabase.from('reports').update({ is_public: false }).eq('id', id).eq('user_id', user.id);
       if (!error) {
         setIsPublic(false);
       } else {
-        alert("비공개 전환에 실패했습니다.");
+        alert(t('logbook.detail.privateFail'));
       }
     }
   };
@@ -80,14 +82,14 @@ const Detail = () => {
     // 1. [Pessimistic First] 비공개 상태면 DB부터 공개로 업데이트
     if (!isPublic) {
       const { error } = await supabase.from('reports').update({ is_public: true }).eq('id', id).eq('user_id', user.id);
-      if (error) return alert("공유 상태 전환에 실패했습니다.");
+      if (error) return alert(t('logbook.detail.shareFail'));
       setIsPublic(true);
     }
 
     const shareUrl = `${window.location.origin}/p/${id}`;
     const shareData = {
-      title: `GATEO LogBook: ${report.title}`,
-      text: '지구본에서 나의 특별한 여행 기록을 확인해보세요.',
+      title: t('logbook.detail.shareTitle', { title: report.title }),
+      text: t('logbook.detail.shareText'),
       url: shareUrl,
     };
 
@@ -112,9 +114,9 @@ const Detail = () => {
   const fallbackCopy = async (url) => {
     try {
       await navigator.clipboard.writeText(url);
-      alert(`공유 링크가 클립보드에 복사되었습니다.\n(카카오톡 등 원하는 곳에 붙여넣기 하세요!)\n\n${url}`);
+      alert(t('logbook.detail.shareCopied', { url }));
     } catch {
-      alert("URL 복사에 실패했습니다. 브라우저 주소창의 /p/아이디 경로를 확인해주세요.");
+      alert(t('logbook.detail.copyFail'));
     }
   };
 
@@ -124,7 +126,7 @@ const Detail = () => {
     try {
       const images = report.images || [];
       const titleHtml = `<h2 style="color: #333; font-size: 24px; font-weight: bold;">${report.title}</h2>`;
-      const metaHtml = `<p style="color: #666; font-size: 14px; margin-bottom: 20px;"><strong>일자:</strong> ${report.date} | <strong>위치:</strong> ${report.location}</p><hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 20px;" />`;
+      const metaHtml = `<p style="color: #666; font-size: 14px; margin-bottom: 20px;"><strong>${t('logbook.detail.exportDate')}</strong> ${report.date} | <strong>${t('logbook.detail.exportLocation')}</strong> ${report.location}</p><hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 20px;" />`;
 
       let bodyHtml = '';
       const parts = report.content.split(/(\[사진\s*\d+\])/g);
@@ -134,18 +136,18 @@ const Detail = () => {
         if (match) {
           const imgIndex = parseInt(match[1], 10) - 1;
           if (images[imgIndex]) {
-            bodyHtml += `<div style="margin: 30px 0; text-align: center;"><img src="${images[imgIndex]}" alt="첨부사진 ${match[1]}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" /></div>`;
+            bodyHtml += `<div style="margin: 30px 0; text-align: center;"><img src="${images[imgIndex]}" alt="${t('logbook.detail.exportPhoto', { n: match[1] })}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" /></div>`;
           }
         } else if (part.trim()) {
           bodyHtml += `<p style="line-height: 1.8; color: #444; font-size: 16px; margin-bottom: 15px; white-space: pre-wrap;">${part}</p>`;
         }
       });
 
-      const publicLinkHtml = isPublic ? `<p style="margin-top: 10px;"><a href="${window.location.origin}/p/${id}" style="color: #3b82f6; text-decoration: none;">🔗 웹에서 원본 보기</a></p>` : '';
-      const footerHtml = `<br/><blockquote style="border-left: 4px solid #3b82f6; padding-left: 14px; margin-top: 40px; color: #888; font-style: italic; background: #f8fafc; padding: 16px; border-radius: 0 8px 8px 0;">이 글은 <strong>GATEO</strong>의 AI LogBook을 통해 작성되었습니다.<br/>🌐 https://gateo.kr${publicLinkHtml}</blockquote>`;
+      const publicLinkHtml = isPublic ? `<p style="margin-top: 10px;"><a href="${window.location.origin}/p/${id}" style="color: #3b82f6; text-decoration: none;">${t('logbook.detail.exportViewWeb')}</a></p>` : '';
+      const footerHtml = `<br/><blockquote style="border-left: 4px solid #3b82f6; padding-left: 14px; margin-top: 40px; color: #888; font-style: italic; background: #f8fafc; padding: 16px; border-radius: 0 8px 8px 0;">${t('logbook.detail.exportFooter')}<br/>🌐 https://gateo.kr${publicLinkHtml}</blockquote>`;
 
       const finalHtml = `<div style="font-family: sans-serif; max-width: 800px; margin: 0 auto;">${titleHtml}${metaHtml}${bodyHtml}${footerHtml}</div>`;
-      const plainText = `${report.title}\n일자: ${report.date} | 위치: ${report.location}\n\n${report.content}\n\n> 이 글은 GATEO의 AI LogBook을 통해 작성되었습니다.\n> https://gateo.kr`;
+      const plainText = `${report.title}\n${t('logbook.detail.exportDate')} ${report.date} | ${t('logbook.detail.exportLocation')} ${report.location}\n\n${report.content}\n\n> ${t('logbook.detail.exportFooter')}\n> https://gateo.kr`;
 
       if (window.ClipboardItem) {
         const blobHtml = new Blob([finalHtml], { type: 'text/html' });
@@ -160,7 +162,7 @@ const Detail = () => {
       setTimeout(() => setIsCopied(false), 3000);
     } catch (error) {
       console.error("클립보드 복사 실패:", error);
-      alert("브라우저 환경에 따라 복사가 지원되지 않을 수 있습니다.");
+      alert(t('logbook.detail.clipboardFail'));
     }
   };
 
@@ -176,7 +178,7 @@ const Detail = () => {
         if (images[imgIndex]) {
           return (
             <div key={index} className="my-10 group relative rounded-2xl overflow-hidden shadow-2xl border border-slate-700/50">
-              <img src={images[imgIndex]} alt={`첨부 ${imgIndex + 1}`} className="w-full h-auto object-cover hover:scale-105 transition-transform duration-700 cursor-pointer" onClick={() => window.open(images[imgIndex], '_blank')} />
+              <img src={images[imgIndex]} alt={t('logbook.common.attachment', { n: imgIndex + 1 })} className="w-full h-auto object-cover hover:scale-105 transition-transform duration-700 cursor-pointer" onClick={() => window.open(images[imgIndex], '_blank')} />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none"></div>
             </div>
           );
@@ -190,7 +192,7 @@ const Detail = () => {
     });
   };
 
-  if (!report) return <div className="min-h-screen bg-white p-10 flex justify-center items-center text-gray-400 animate-pulse">우주의 기억을 동기화하는 중...</div>;
+  if (!report) return <div className="min-h-screen bg-white p-10 flex justify-center items-center text-gray-400 animate-pulse">{t('logbook.common.syncingMemory')}</div>;
 
   const images = report.images || [];
   const heroImageUrl = images[0] || null;
@@ -221,8 +223,8 @@ const Detail = () => {
               className="flex items-center gap-1.5 px-4 sm:px-5 py-2 rounded-full transition-all border text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-sm hover:shadow-md border-transparent"
             >
               <Share2 size={16} />
-              <span className="hidden sm:inline">외부로 공유하기</span>
-              <span className="sm:hidden">공유</span>
+              <span className="hidden sm:inline">{t('logbook.detail.share')}</span>
+              <span className="sm:hidden">{t('logbook.detail.shareShort')}</span>
             </button>
 
             {/* 🚨 [New] 비공개 전환 버튼 (공개 상태일 때만 슬쩍 나타나는 Safe Path) */}
@@ -230,10 +232,10 @@ const Detail = () => {
               <button
                 onClick={handleMakePrivate}
                 className="flex items-center gap-1.5 px-3 py-2 rounded-full transition-all text-xs font-medium text-gray-500 hover:text-red-500 hover:bg-red-50"
-                title="클릭 시 외부 접속이 차단됩니다"
+                title={t('logbook.detail.makePrivateTitle')}
               >
                 <Lock size={14} />
-                <span className="hidden sm:inline">비공개로 숨기기</span>
+                <span className="hidden sm:inline">{t('logbook.detail.makePrivate')}</span>
               </button>
             )}
 
@@ -248,14 +250,14 @@ const Detail = () => {
               `}
             >
               {isCopied ? <CheckCircle2 size={16} /> : <Copy size={16} />}
-              <span className="hidden sm:inline">{isCopied ? '복사 완료!' : '블로그 내보내기'}</span>
+              <span className="hidden sm:inline">{isCopied ? t('logbook.detail.copied') : t('logbook.detail.export')}</span>
             </button>
 
             <button onClick={() => navigate(`/blog/write/${id}`)} className="flex items-center gap-1.5 bg-gray-50 backdrop-blur-md text-gray-600 px-3 sm:px-4 py-2 rounded-full hover:bg-gray-100 hover:text-gray-900 transition-colors border border-gray-200 text-sm font-medium">
-              <Edit size={16} /> <span className="hidden sm:inline">수정</span>
+              <Edit size={16} /> <span className="hidden sm:inline">{t('logbook.detail.edit')}</span>
             </button>
             <button onClick={handleDelete} className="flex items-center gap-1.5 bg-red-50 backdrop-blur-md text-red-500 px-3 sm:px-4 py-2 rounded-full hover:bg-red-100 transition-colors border border-red-100 text-sm font-medium">
-              <Trash2 size={16} /> <span className="hidden sm:inline">삭제</span>
+              <Trash2 size={16} /> <span className="hidden sm:inline">{t('logbook.detail.delete')}</span>
             </button>
           </div>
         </div>
@@ -277,7 +279,7 @@ const Detail = () => {
             `}>
               {images.map((img, idx) => (
                 <div key={idx} className={`relative group ${images.length === 1 ? 'aspect-video' : 'aspect-square'}`}>
-                  <img src={img} alt={`첨부 ${idx+1}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-700 cursor-pointer border border-gray-200" onClick={() => window.open(img, '_blank')} />
+                  <img src={img} alt={t('logbook.common.attachment', { n: idx + 1 })} className="w-full h-full object-cover hover:scale-105 transition-transform duration-700 cursor-pointer border border-gray-200" onClick={() => window.open(img, '_blank')} />
                   <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors pointer-events-none"></div>
                 </div>
               ))}

@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '영문화',
-  sessionNo: 5,
-  sessionPhase: 'main 병합',
+  sessionNo: 10,
+  sessionPhase: '잔여·Preview QA',
   branch: 'cursor/en',
-  previewPath: '/?lang=en',
+  previewPath: '/blog?lang=en',
   qaShareSlug: 'en',
 };
 
@@ -23,6 +23,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-18-i18n-blog-auth',
+    session: '영문화 #10, 잔여·Preview QA',
+    title: 'Auth·/blog 잔여 영문화',
+    detail:
+      '로그인·회원가입·비밀번호 재설정·변경 페이지를 authPage.* i18n으로 분기했습니다. Preview /qa/en · ?lang=en → /blog · /blog/write(로그인) · /blog/curation 에서 EN 토글 시 카피가 영문인지 확인해 주세요.',
+    at: '2026-08-18',
+  },
+  {
+    id: '2026-08-18-i18n-logbook-dashboard',
+    session: '영문화 #9, 로그북·대시보드',
+    title: '로그북·대시보드 UI en',
+    detail:
+      '/blog 대시보드·작성·상세·큐레이션 허브·사이드바 카피를 logbook.* 키로 영문화했습니다. Preview ?lang=en → /blog · /blog/curation 에서 LogBook·Picks·취향 칩 영문을 확인해 주세요.',
+    at: '2026-08-18',
+  },
   {
     id: '2026-08-18-i18n-main-merge',
     session: '영문화 #5, PROD 병합·QA',

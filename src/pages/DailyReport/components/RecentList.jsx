@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { MapPin, ChevronRight, Image as ImageIcon, PenTool, ClipboardList, Search, LayoutGrid, List as ListIcon, XCircle, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   MOBILE_INPUT_TEXT_CLASS,
   useDeferredViewportSyncOnBlur,
 } from '../../../shared/hooks/useMobileInputViewport';
 
 const RecentList = ({ reports, loading, isPublicMode }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [viewMode, setViewMode] = useState('grid');
   const [searchTerm, setSearchTerm] = useState('');
@@ -40,7 +42,7 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
       <div className="p-5 sm:p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4 bg-transparent sticky top-0 z-10">
         <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2 self-start sm:self-center tracking-tight">
           <ClipboardList className="text-blue-500" size={20} />
-          {isCompact ? '기록 보관소 (요약)' : '최근 기록 보관소'}
+          {isCompact ? t('logbook.recentList.titleCompact') : t('logbook.recentList.title')}
         </h3>
 
         <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -56,7 +58,7 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
               type="text"
               inputMode="search"
               enterKeyHint="search"
-              placeholder="기억 검색..."
+              placeholder={t('logbook.recentList.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onBlur={handleSearchBlur}
@@ -67,7 +69,7 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                 type="button"
                 onClick={() => setSearchTerm('')}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                aria-label="검색어 지우기"
+                aria-label={t('logbook.recentList.clearSearch')}
               >
                 <XCircle size={14} />
               </button>
@@ -80,7 +82,7 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
               className="flex items-center gap-1.5 px-3 py-2 bg-white text-blue-600 shadow-sm border border-gray-100 rounded-lg transition-all hover:bg-gray-50"
             >
               {viewMode === 'list' ? <LayoutGrid size={16} /> : <ListIcon size={16} />}
-              <span className="text-xs font-medium hidden sm:block">{viewMode === 'list' ? '그리드' : '자세히'}</span>
+              <span className="text-xs font-medium hidden sm:block">{viewMode === 'list' ? t('logbook.recentList.viewGrid') : t('logbook.recentList.viewList')}</span>
             </button>
           </div>
         </div>
@@ -90,17 +92,17 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
         {reports.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center pb-10 mt-10">
             <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6 text-gray-400 border border-gray-200"><ClipboardList size={40} /></div>
-            <p className="text-gray-900 font-bold text-xl mb-2">기록된 여정이 없습니다.</p>
-            <p className="text-gray-500 text-sm mb-8 font-medium">당신만의 첫 번째 이야기를 남겨보세요.</p>
+            <p className="text-gray-900 font-bold text-xl mb-2">{t('logbook.recentList.emptyTitle')}</p>
+            <p className="text-gray-500 text-sm mb-8 font-medium">{t('logbook.recentList.emptyBody')}</p>
             <button
               onClick={() => navigate('/blog/write')}
               className="flex items-center gap-2 bg-blue-50 text-blue-600 hover:bg-blue-100 px-8 py-4 rounded-full font-bold border border-blue-200 transition-all shadow-sm hover:shadow-md"
             >
-              <PenTool size={18} /> 새 기록 작성하기
+              <PenTool size={18} /> {t('logbook.recentList.emptyCta')}
             </button>
           </div>
         ) : filteredReports.length === 0 ? (
-          <div className="text-center py-20 text-gray-500"><Search size={40} className="mx-auto mb-4 opacity-30" /><p className="text-lg">"{searchTerm}"에 대한 기억을 찾을 수 없습니다.</p><button onClick={() => setSearchTerm('')} className="text-blue-500 text-sm mt-3 hover:text-blue-600 underline underline-offset-4 transition-colors">전체 목록 보기</button></div>
+          <div className="text-center py-20 text-gray-500"><Search size={40} className="mx-auto mb-4 opacity-30" /><p className="text-lg">{t('logbook.recentList.noResults', { term: searchTerm })}</p><button onClick={() => setSearchTerm('')} className="text-blue-500 text-sm mt-3 hover:text-blue-600 underline underline-offset-4 transition-colors">{t('logbook.recentList.showAll')}</button></div>
         ) : (
           <div className={viewMode === 'grid'
             ? (isCompact ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4' : 'grid grid-cols-1 sm:grid-cols-2 gap-5')
@@ -150,7 +152,7 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
 
                   <div className={`flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-400 font-medium ${viewMode === 'list' ? (isCompact ? 'mt-0' : 'mt-4') : (isCompact ? 'mt-auto pt-3 border-t border-gray-100' : 'mt-auto pt-4 border-t border-gray-100')}`}>
                     {isPublicMode && report.author_label && (
-                      <span className="flex items-center gap-1.5 truncate max-w-[140px] text-gray-500" title="작성자">
+                      <span className="flex items-center gap-1.5 truncate max-w-[140px] text-gray-500" title={t('logbook.common.author')}>
                         <User size={12} className="text-gray-400 shrink-0" />
                         <span className="truncate">{report.author_label}</span>
                       </span>
@@ -179,7 +181,7 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
 
       {filteredReports.length > 0 && (
         <div className="bg-gray-50 border-t border-gray-200 p-3.5 text-center flex-shrink-0 text-xs text-gray-500 font-medium tracking-wide">
-          총 {filteredReports.length}개의 기록 {isCompact && <span className="text-gray-400 ml-1">(요약됨)</span>}
+          {t('logbook.recentList.footer', { count: filteredReports.length })} {isCompact && <span className="text-gray-400 ml-1">{t('logbook.recentList.footerCompact')}</span>}
         </div>
       )}
     </div>

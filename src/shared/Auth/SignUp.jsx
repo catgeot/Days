@@ -1,14 +1,13 @@
-// src/shared/Auth/SignUp.jsx
-// 🚨 [Fix] Login.jsx와 동일한 Light & Glassmorphism 디자인으로 UI 통일 적용 및 z-50 나가기 버튼 구현
-
 import React, { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../api/supabase';
 import { UserPlus, Mail, Lock, X, Loader2 } from 'lucide-react';
 import { MOBILE_INPUT_TEXT_CLASS } from '../hooks/useMobileInputViewport';
 import { resetIosZoomAfterInput } from '../lib/mobileViewport';
 
 const Signup = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from || '/';
@@ -54,7 +53,7 @@ const Signup = () => {
 
       if (error) throw error;
 
-      alert("회원가입 확인 메일을 보냈습니다! 📧\n\n이메일 함을 확인하여 링크를 클릭하면 가입이 완료됩니다.");
+      alert(t('authPage.signup.confirmEmailAlert'));
       navigate('/auth/login', { state: { from } });
 
     } catch (error) {
@@ -75,20 +74,20 @@ const Signup = () => {
         <button
           onClick={handleGoHome}
           className="absolute top-3 right-3 p-1.5 text-gray-400 hover:text-gray-800 hover:bg-gray-100/50 rounded-full transition-all z-50"
-          title="메인으로 돌아가기"
+          title={t('authPage.signup.backTitle')}
         >
           <X size={18} />
         </button>
 
         <div className="text-center mb-5">
-          <h1 className="text-xl font-bold tracking-tight text-gray-900">📝 회원가입</h1>
-          <p className="text-xs text-gray-500 mt-1">나만의 일보 작성을 시작해보세요.</p>
+          <h1 className="text-xl font-bold tracking-tight text-gray-900">{t('authPage.signup.title')}</h1>
+          <p className="text-xs text-gray-500 mt-1">{t('authPage.signup.subtitle')}</p>
         </div>
 
         <form onSubmit={handleSignup} className="space-y-3">
 
           <div className="space-y-1">
-            <label className="text-[10px] font-bold text-gray-500 ml-1">이메일</label>
+            <label className="text-[10px] font-bold text-gray-500 ml-1">{t('authPage.signup.email')}</label>
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Mail size={16} className="text-gray-400 group-focus-within:text-blue-500 transition-colors" />
@@ -105,7 +104,7 @@ const Signup = () => {
           </div>
 
           <div className="space-y-1">
-            <label className="text-[10px] font-bold text-gray-500 ml-1">비밀번호</label>
+            <label className="text-[10px] font-bold text-gray-500 ml-1">{t('authPage.signup.password')}</label>
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Lock size={16} className="text-gray-400 group-focus-within:text-purple-500 transition-colors" />
@@ -114,7 +113,7 @@ const Signup = () => {
                 type="password"
                 required
                 className={`w-full bg-white/80 border border-gray-200 rounded-lg py-2.5 pl-9 pr-3 ${MOBILE_INPUT_TEXT_CLASS} text-gray-900 placeholder-gray-400 focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-all`}
-                placeholder="6자리 이상 입력해주세요"
+                placeholder={t('authPage.signup.passwordPlaceholder')}
                 minLength={6}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -126,14 +125,14 @@ const Signup = () => {
             disabled={loading}
             className="w-full bg-purple-600 border border-transparent text-white text-sm font-bold py-2.5 rounded-lg shadow-sm hover:bg-purple-500 hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all duration-300 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed mt-2 group"
           >
-            {loading ? <Loader2 size={16} className="animate-spin" /> : <><UserPlus size={14} className="group-hover:scale-110 transition-transform" /> 회원가입 하기</>}
+            {loading ? <Loader2 size={16} className="animate-spin" /> : <><UserPlus size={14} className="group-hover:scale-110 transition-transform" /> {t('authPage.signup.submit')}</>}
           </button>
 
         </form>
 
         <div className="flex items-center gap-3 my-4 opacity-60">
           <div className="flex-1 border-t border-gray-300"></div>
-          <span className="text-[10px] text-gray-500 font-bold tracking-widest">OR</span>
+          <span className="text-[10px] text-gray-500 font-bold tracking-widest">{t('authPage.common.or')}</span>
           <div className="flex-1 border-t border-gray-300"></div>
         </div>
 
@@ -167,9 +166,9 @@ const Signup = () => {
         </div>
 
         <div className="mt-5 text-center text-xs text-gray-500">
-          이미 계정이 있으신가요?{' '}
+          {t('authPage.signup.hasAccount')}{' '}
           <Link to="/auth/login" state={{ from }} className="text-blue-500 hover:text-blue-600 font-bold hover:underline transition-colors">
-            로그인 하러 가기
+            {t('authPage.signup.loginLink')}
           </Link>
         </div>
 

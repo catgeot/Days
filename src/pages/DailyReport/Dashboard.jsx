@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PenTool, Globe, Sparkles, Calendar } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import AICurationCard from './components/AICurationCard';
 import CalendarCard from './components/CalendarCard';
@@ -8,6 +9,7 @@ import RecentList from './components/RecentList';
 import { useDashboardData } from './hooks/useDashboardData';
 
 const Dashboard = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const locationFilter = searchParams.get('location');
@@ -71,14 +73,14 @@ const Dashboard = () => {
               <div className="flex items-center gap-2 mb-1">
                 {isPublicMode && <Globe className="text-blue-500" size={24} />}
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight drop-shadow-sm">
-                  {isPublicMode ? 'Public LogBook' : 'LogBook'}
+                  {isPublicMode ? t('logbook.dashboard.titlePublic') : t('logbook.dashboard.title')}
                 </h2>
               </div>
               <p className="text-gray-500 mt-1.5 text-sm font-medium flex flex-wrap gap-2 items-center">
-                 {loading ? '우주의 기록을 동기화하는 중...' : (
+                 {loading ? t('logbook.dashboard.syncing') : (
                    isPublicMode
-                    ? (locationFilter ? `'${locationFilter}' 지역의 공개된 기록 ${filteredReports.length}개` : `우주 여행자들의 ${reports.length}개 기록이 공유되고 있습니다.`)
-                    : `총 ${reports.length}개의 기억이 빛나고 있습니다.`
+                    ? (locationFilter ? t('logbook.dashboard.countPublicFiltered', { location: locationFilter, count: filteredReports.length }) : t('logbook.dashboard.countPublic', { count: reports.length }))
+                    : t('logbook.dashboard.countPrivate', { count: reports.length })
                  )}
               </p>
             </div>
@@ -91,7 +93,7 @@ const Dashboard = () => {
                     !isPublicMode ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
-                  내 기록
+                  {t('logbook.dashboard.tabMine')}
                 </button>
                 <button
                   onClick={() => handleTabChange('public')}
@@ -100,7 +102,7 @@ const Dashboard = () => {
                   }`}
                 >
                   <span className="flex items-center gap-1">
-                    탐험 피드
+                    {t('logbook.dashboard.tabFeed')}
                   </span>
                 </button>
               </div>
@@ -115,7 +117,7 @@ const Dashboard = () => {
               <div className="absolute top-0 -left-full w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 transition-all duration-700 group-hover:left-full"></div>
               <PenTool size={16} className="relative z-10 shrink-0 drop-shadow-md sm:w-[18px] sm:h-[18px]" />
               <span className="relative z-10 tracking-tight text-xs sm:text-sm drop-shadow-md whitespace-nowrap">
-                기록 남기기
+                {t('logbook.dashboard.write')}
               </span>
             </button>
 
@@ -129,7 +131,7 @@ const Dashboard = () => {
               }`}
             >
               <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-              <span className="text-xs sm:text-sm">추천</span>
+              <span className="text-xs sm:text-sm">{t('logbook.dashboard.curation')}</span>
             </button>
 
             <button
@@ -142,7 +144,7 @@ const Dashboard = () => {
               }`}
             >
               <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-              <span className="text-xs sm:text-sm">달력</span>
+              <span className="text-xs sm:text-sm">{t('logbook.dashboard.calendar')}</span>
             </button>
           </div>
         </div>

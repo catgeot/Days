@@ -3,9 +3,11 @@ import Sidebar from './Sidebar';
 import { Globe, LogOut } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PenNameProvider } from '../context/PenNameContext';
 
 const DailyLayout = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState(null);
@@ -20,7 +22,7 @@ const DailyLayout = () => {
   }, []);
 
   const handleLogout = async () => {
-    if (window.confirm("로그아웃 하시겠습니까?")) {
+    if (window.confirm(t('logbook.common.logoutConfirm'))) {
       await supabase.auth.signOut();
       navigate('/');
     }

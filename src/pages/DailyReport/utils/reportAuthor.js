@@ -1,11 +1,12 @@
 import { supabase } from '../../../shared/api/supabase';
+import { i18n } from '../../../i18n/config';
 
 /** 공개 글: 프로필 닉네임이 없으면 사용자 UUID 앞 8자 */
 export function reportAuthorLabel(userId, displayName) {
   const name = typeof displayName === 'string' ? displayName.trim() : '';
   if (name) return name;
   if (userId && typeof userId === 'string') return userId.slice(0, 8);
-  return '여행자';
+  return i18n.t('logbook.common.traveler');
 }
 
 export async function attachAuthorLabels(rows) {

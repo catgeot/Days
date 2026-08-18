@@ -2,6 +2,32 @@
 
 직전: [`2026-08-16-project-log.md`](./2026-08-16-project-log.md)
 
+## 영문화 #11, 병합·PROD QA — main merge
+
+- **충돌 해소** `main` ← `cursor/en` — i18n JSON(logbook·auth) · 핸드오프 3종
+- **VERIFY** `npm run build` · `smoke:place-label-slug` PASS
+- **PR** [#134](https://github.com/catgeot/Days/pull/134) → **main merge**
+- **PROD** Vercel 배포 후 `/qa/en` → `/?lang=en` · `/blog?lang=en` — **사람 QA**
+- **다음** #12 PROD QA 확인·정리
+
+## 영문화 #10, 잔여·Preview QA — push
+
+- **Auth** `authPage.*` — Login·SignUp·ForgotPassword·UpdatePassword ko/en
+- **잔여** `/blog` 작성 시 로그인 플로우 영문 카피
+- **VERIFY** `npm run build` · `smoke:place-label-slug` PASS
+- **브랜치** `cursor/en` · PR [#134](https://github.com/catgeot/Days/pull/134)
+- **Preview** `/qa/en` · `?lang=en` → `/blog` · `/blog/write` · `/blog/curation` · auth
+- **다음** 사람 Preview QA → #11 병합·PROD
+
+## 영문화 #9, 로그북·대시보드 — Preview push
+
+- **`logbook.*`** i18n — `/blog` 대시보드·RecentList·Calendar·CurationCard · Write·Detail·PublicViewer · Sidebar·PublicNav·UserProfile·QuickMemo·SlideViewer · `/blog/curation`·CurationHub(취향 칩 id)
+- **헬퍼** `src/i18n/logbookUi.js` · `reportAuthor` fallback `traveler`
+- **VERIFY** `npm run build` · `smoke:place-label-slug` PASS
+- **브랜치** `cursor/en` · PR [#133](https://github.com/catgeot/Days/pull/133)
+- **Preview** `/qa/en` · `?lang=en` → `/blog` · `/blog/write` · `/blog/curation`
+- **다음** 사람 Preview QA → #10 잔여·병합 합의
+
 ## 영문화 #8.5, 중간점검 — 무니·써머리 QA
 
 - **버그 수정** 모바일 갤러리→무니 시 연관 여행지 하단 푸터가 채팅 칩과 겹침 — `isMooniChatOpen`으로 포털 숨김 · tip `5e7337c4`
