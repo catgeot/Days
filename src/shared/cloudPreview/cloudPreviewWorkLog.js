@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: 'AI 큐레이션',
-  sessionNo: 7,
-  sessionPhase: '지도·무니 검은 화면 QA',
-  branch: 'cursor/curation-globe-android-0ba2',
-  previewPath: '/blog/curation',
-  qaShareSlug: 'curation',
+  title: '영문화',
+  sessionNo: 5,
+  sessionPhase: 'PROD 병합·QA',
+  branch: 'cursor/en',
+  previewPath: '/?lang=en',
+  qaShareSlug: 'en',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,67 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-18-i18n-preview-qa-ok',
+    session: '영문화 #5, PROD 병합·QA',
+    title: 'Preview QA OK · PROD /qa/en은 merge 후',
+    detail:
+      '사람 Preview QA: git Preview ?lang=en 에서 EN 토글·홈·PlaceCard·/korea·명승·hreflang·릴리스 배너 OK. PROD /qa/en 은 PR #132 미병합으로 /qa 목록으로 폴백(정상). merge·배포 후 /qa/en → PROD ?lang=en 재확인.',
+    at: '2026-08-18',
+  },
+  {
+    id: '2026-08-18-i18n-merge-prep',
+    session: '영문화 #5, PROD 병합·QA',
+    title: '병합 준비·PROD QA 체크리스트',
+    detail:
+      'build·smoke:place-label-slug PASS. PR #132 병합 준비(사람 승인 후 merge). 병합·배포 후 /qa/en → PROD ?lang=en. PROD에서 EN 토글·홈·PlaceCard·/korea·명승·hreflang·릴리스 배너를 확인해 주세요.',
+    at: '2026-08-18',
+  },
+  {
+    id: '2026-08-18-i18n-seo-release',
+    session: '영문화 #4, SEO·릴리스',
+    title: 'hreflang·locale SEO·릴리스 노트',
+    detail:
+      'SEO Helmet에 ko/en/x-default alternate·canonical·og:locale을 추가했고, 홈·축제·명승 허브 sitemap에 xhtml alternate를 넣었습니다. 릴리스 노트(영문 UI)가 배포 후 배너에 표시됩니다. Preview /?lang=en 에서 페이지 소스의 hreflang·영문 title/description을 확인해 주세요.',
+    at: '2026-08-18',
+  },
+  {
+    id: '2026-08-18-i18n-home-placecard',
+    session: '영문화 #2, 홈·PlaceCard',
+    title: '홈·PlaceCard 주요 카피 en',
+    detail:
+      '홈 카테고리·바로가기·지구본 메뉴와 PlaceCard 탭·플래너 툴킷·장소명(name_en) 표시를 ko/en JSON으로 분기했습니다. Preview /?lang=en 에서 EN 토글·홈 칩·장소 카드 헤더·플래너 섹션 제목이 영문인지 확인해 주세요.',
+    at: '2026-08-18',
+  },
+  {
+    id: '2026-08-18-i18n-toggle-hit-race',
+    session: '영문화 #1, locale 기반',
+    title: 'EN 토글 클릭·locale 레이스 수정',
+    detail:
+      'LocaleProvider URL 동기화 effect가 locale 변경을 되돌리던 레이스를 제거했습니다. EN/한 토글을 로고 chrome 히트 영역(불투명 실드)으로 옮기고 pointer-events 보강. Preview에서 EN 클릭 시 버튼이 한·검색 placeholder 영문 전환을 확인해 주세요.',
+    at: '2026-08-18',
+  },
+  {
+    session: '영문화 #1, locale 기반',
+    title: 'LocaleContext 누락 ReferenceError 수정',
+    detail:
+      'LocaleProvider 리팩터 중 createContext 선언이 빠져 Uncaught ReferenceError: LocaleContext is not defined 로 앱이 멈췄습니다. 선언 복구 후 build PASS. Preview 강력 새로고침으로 재확인해 주세요.',
+    at: '2026-08-18',
+  },
+  {
+    session: '영문화 #1, locale 기반',
+    title: '검은 화면 수정 — i18n 동기 초기화',
+    detail:
+      'react-i18next v17 기본 useSuspense + 비동기 init으로 Suspense 경계 없이 빈 화면이 났습니다. i18n을 main 진입 시 동기 init(react.useSuspense:false)하고 LocaleProvider를 맞췄습니다. Preview 새로고침 후 지구본·헤더가 보이는지 확인해 주세요.',
+    at: '2026-08-18',
+  },
+  {
+    session: '영문화 #1, locale 기반',
+    title: 'i18next·LocaleProvider·헤더 토글',
+    detail:
+      'src/i18n SSOT(ko/en JSON)와 LocaleProvider를 추가했습니다. ?lang=en·localStorage로 locale이 유지되고, 홈 헤더 EN/한 토글·검색 placeholder·시스템 공지 배너가 영문으로 전환됩니다. Preview /?lang=en 에서 확인해 주세요.',
+    at: '2026-08-18',
+  },
   {
     id: '2026-08-17-curation-globe-mooni-7',
     session: 'AI 큐레이션 #7, 지도·무니 검은 화면 QA',

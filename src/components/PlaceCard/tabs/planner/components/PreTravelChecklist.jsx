@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AlertCircle, CheckCircle2, ExternalLink, Plane, Car, Bed } from 'lucide-react';
 import MrtTimelineAction from './MrtTimelineAction';
 import { getKlookAirportTransferUrl, getTripcomHotelOverrideUrlForLocation } from '../../../../../utils/affiliate';
@@ -13,6 +14,7 @@ import { getFlightDestinationSearchHint } from '../../../../../utils/rentalAirpo
 import { plannerCaption, plannerMicroLabel } from '../readableText';
 
 const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) => {
+    const { t } = useTranslation();
     const tryOpenFlightSearch = useTryOpenTripcomFlightSearch();
     const tripcomHotelOverride = getTripcomHotelOverrideUrlForLocation(location);
     const mrtQuery = `${locationName || ''} 숙소`;
@@ -42,10 +44,9 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
         <div className="bg-amber-50/80 border border-amber-200 rounded-2xl p-5 mb-5 shadow-sm flex flex-col">
             <h3 className="font-bold text-amber-900 mb-4 flex items-center gap-2 text-sm md:text-base">
                 <AlertCircle className="text-amber-600 shrink-0" size={18} />
-                출발 전 필수 준비사항
+                {t('place.planner.preTravel.title')}
             </h3>
 
-            {/* AI가 생성한 준비사항 */}
             <div className="flex-1">
                 {items && items.length > 0 && (
                     <div className="space-y-3">
@@ -60,7 +61,7 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
                                 </div>
                                 {item.url && (
                                     <a href={item.url} target="_blank" rel="noopener noreferrer" className="shrink-0 flex items-center gap-1.5 bg-amber-100 hover:bg-amber-200 text-amber-700 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
-                                        <span>바로가기</span>
+                                        <span>{t('place.planner.preTravel.goLink')}</span>
                                         <ExternalLink size={12} />
                                     </a>
                                 )}
@@ -70,18 +71,15 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
                 )}
             </div>
 
-            {/* 🆕 상시 노출 예약 버튼 (항공권, 숙소, 픽업) - 하단 고정 */}
             <div className="mt-auto pt-5">
-                {/* 구분선 및 라벨 */}
                 <div className="flex items-center gap-2 mb-4">
                     <div className="h-px flex-1 bg-amber-300/50"></div>
                     <p className={`${plannerMicroLabel} text-amber-700/90`}>
-                        ✈️ 필수 예약 툴킷
+                        {t('place.planner.preTravel.essentialToolkit')}
                     </p>
                     <div className="h-px flex-1 bg-amber-300/50"></div>
                 </div>
 
-                {/* 1. 항공권 검색 — 상단 Trip.com 배너와 구분되는 제휴 추적 URL */}
                 <div className="mb-3">
                     <a
                         {...preTravelFlightLinkProps}
@@ -91,7 +89,7 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
                             <Plane size={16} />
                         </div>
                         <div className="flex-1 text-left min-w-0">
-                            <div className="font-bold text-sm text-gray-800">항공권 실시간 검색</div>
+                            <div className="font-bold text-sm text-gray-800">{t('place.planner.preTravel.flightSearch')}</div>
                             <div className={`${plannerCaption} text-gray-600 mt-0.5`}>
                                 {getFlightDestinationSearchHint(location, { essentialGuide })}
                             </div>
@@ -99,7 +97,6 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
                     </a>
                 </div>
 
-                {/* 2. 숙소 검색 — 기본 마이리얼트립 / PLANNER_TRIPCOM_HOTEL_OVERRIDES 등록 시 트립닷컴 */}
                 <div className="mb-3">
                     {tripcomHotelOverride ? (
                         <a
@@ -113,23 +110,23 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
                                     <Bed size={16} />
                                 </span>
                                 <span className="flex-1 text-left">
-                                    <span className="font-bold text-sm text-gray-800 block">호텔 예약 (Trip.com)</span>
-                                    <span className="text-xs text-gray-600">이 여행지는 트립닷컴 제휴광고로 연결됩니다</span>
+                                    <span className="font-bold text-sm text-gray-800 block">{t('place.planner.preTravel.hotelTripcom')}</span>
+                                    <span className="text-xs text-gray-600">{t('place.planner.preTravel.hotelTripcomNote')}</span>
                                 </span>
                             </span>
                         </a>
                     ) : (
                         <MrtTimelineAction
                             mrtQuery={mrtQuery}
-                            label="숙소 실시간 검색"
+                            label={t('place.planner.preTravel.staySearch')}
                             customTrigger={
                                 <button type="button" className="bg-white border-2 border-emerald-300 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all w-full">
                                     <span className="bg-emerald-100 text-emerald-600 p-2 rounded-lg shrink-0 inline-flex">
                                         <Bed size={16} />
                                     </span>
                                     <span className="flex-1 text-left">
-                                        <span className="font-bold text-sm text-gray-800 block">숙소 실시간 검색</span>
-                                        <span className="text-xs text-gray-600">전 세계 숙소 검색 및 예약</span>
+                                        <span className="font-bold text-sm text-gray-800 block">{t('place.planner.preTravel.staySearch')}</span>
+                                        <span className="text-xs text-gray-600">{t('place.planner.preTravel.staySearchNote')}</span>
                                     </span>
                                 </button>
                             }
@@ -137,7 +134,6 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
                     )}
                 </div>
 
-                {/* 3. 공항 픽업 예약 */}
                 <a
                     href={getKlookAirportTransferUrl()}
                     target={linkTarget}
@@ -148,9 +144,9 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
                         <Car size={16} />
                     </div>
                     <div className="flex-1 text-left">
-                        <div className="font-bold text-sm text-gray-800">공항 픽업 예약</div>
+                        <div className="font-bold text-sm text-gray-800">{t('place.planner.preTravel.pickup')}</div>
                         <div className="text-xs text-gray-600 leading-snug">
-                            항공권 구매 후 항공편명으로 검색해 주세요.
+                            {t('place.planner.preTravel.pickupNote')}
                         </div>
                     </div>
                 </a>

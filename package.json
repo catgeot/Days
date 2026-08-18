@@ -82,7 +82,6 @@
     "smoke:curation-place-bridge": "node scripts/smoke-curation-place-bridge.mjs",
     "smoke:curation-history": "node scripts/smoke-curation-history.mjs",
     "smoke:curation-image-resolve": "node scripts/smoke-curation-image-resolve.mjs",
-
     "smoke:globe-face-neighbor-order": "node scripts/smoke-globe-face-neighbor-order.mjs",
     "smoke:globe-country-silhouette-zoom": "node scripts/smoke-globe-country-silhouette-zoom.mjs",
     "smoke:globe-region-highlight-opacity": "node scripts/smoke-globe-region-highlight-opacity.mjs",
@@ -133,6 +132,7 @@
     "@supabase/supabase-js": "^2.89.0",
     "@vercel/analytics": "^1.6.1",
     "browser-image-compression": "^2.0.2",
+    "i18next": "^26.3.6",
     "lucide-react": "^0.562.0",
     "mapbox-gl": "^3.20.0",
     "openai": "^6.16.0",
@@ -140,6 +140,7 @@
     "react-dom": "^19.2.0",
     "react-globe.gl": "^2.37.0",
     "react-helmet-async": "^3.0.0",
+    "react-i18next": "^17.0.11",
     "react-map-gl": "^8.1.0",
     "react-router-dom": "^7.12.0",
     "three": "^0.182.0"

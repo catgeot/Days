@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Sparkles, ArrowLeft, Send, Image as ImageIcon, X, Briefcase, Globe } from 'lucide-react';
 import { useNavigate, useLocation as useRouteLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import VideoInfoView from '../views/VideoInfoView';
 import GalleryInfoView from '../views/GalleryInfoView';
 import PlaceWikiNavView from '../views/PlaceWikiNavView';
@@ -10,7 +11,8 @@ import BookmarkButton from '../common/BookmarkButton';
 import { getRelatedPlaces } from '../../../pages/Home/hooks/useSearchEngine';
 import { getPlaceUrlParam } from '../../../pages/Home/lib/formatUrlName';
 import { mergeCanonicalTravelSpot } from '../../../utils/travelSpotResolve';
-import { getPlaceTitleLines } from '../common/locationDisplay';
+import { getPlaceTitleLinesForLocale, getLocalizedCountryName } from '../common/locationDisplay';
+import { useLocale } from '../../../i18n/LocaleProvider';
 import { copyToClipboard } from '../common/copyToClipboard';
 import PlaceMobileSecondaryNav from '../common/PlaceMobileSecondaryNav';
 import { dispatchPlaceScrollToTop } from '../common/placeScrollSurface';
@@ -24,11 +26,11 @@ import {
 
 const HEADER_SCROLL_TOP_MODES = ['PLANNER', 'GALLERY', 'WIKI', 'REVIEWS'];
 
-const HEADER_SCROLL_TOP_TITLES = {
-  PLANNER: '탭하면 플래너 맨 위로',
-  GALLERY: '탭하면 갤러리 맨 위로',
-  WIKI: '탭하면 여행 스케치 맨 위로',
-  REVIEWS: '탭하면 리뷰 맨 위로',
+const HEADER_SCROLL_TOP_TITLE_KEYS = {
+  PLANNER: 'place.nav.scrollTopPlanner',
+  GALLERY: 'place.nav.scrollTopGallery',
+  WIKI: 'place.nav.scrollTopWiki',
+  REVIEWS: 'place.nav.scrollTopReviews',
 };
 
 const PlaceChatPanel = React.memo(({
@@ -51,6 +53,8 @@ const PlaceChatPanel = React.memo(({
     matchedPackage,
     onOpenPackage
 }) => {
+  const { t } = useTranslation();
+  const { locale } = useLocale();
   const [copiedType, setCopiedType] = useState('');
   const scrollRef = useRef(null);
   const navigate = useNavigate();
@@ -60,7 +64,8 @@ const PlaceChatPanel = React.memo(({
   const anchorKeyRef = useRef(null);
   const skipRelatedRefreshRef = useRef(false);
   const [relatedPlaces, setRelatedPlaces] = useState([]);
-  const { primaryName, secondaryName } = getPlaceTitleLines(location);
+  const { primaryName, secondaryName } = getPlaceTitleLinesForLocale(location, locale);
+  const countryLabel = getLocalizedCountryName(location, locale) || t('place.fallback.global');
 
   const getPlaceKey = (place) => `${place?.id ?? ''}:${place?.name ?? ''}`;
 
@@ -204,8 +209,8 @@ const PlaceChatPanel = React.memo(({
                     onClose?.();
                 }}
                 className="flex items-center justify-center w-8 h-8 md:w-8 md:h-8 rounded-full bg-white/15 md:bg-white/10 text-white border border-white/25 hover:bg-white/25 transition-all shrink-0 shadow-lg touch-manipulation"
-                title="뒤로가기"
-                aria-label="뒤로가기"
+                title={t('place.nav.back')}
+                aria-label={t('place.nav.back')}
              >
                  <ArrowLeft className="w-4 h-4 md:w-4 md:h-4 pointer-events-none" />
              </button>
@@ -216,8 +221,8 @@ const PlaceChatPanel = React.memo(({
                     handleGoHomeClick();
                 }}
                 className="flex items-center justify-center w-8 h-8 md:w-8 md:h-8 rounded-full bg-white/10 md:bg-white/5 text-white md:text-gray-300 hover:bg-white/20 transition-all shrink-0 shadow-lg touch-manipulation"
-                title="홈으로 이동"
-                aria-label="홈으로 이동"
+                title={t('place.nav.home')}
+                aria-label={t('place.nav.home')}
              >
                 <Globe className="w-4 h-4 md:w-4 md:h-4 pointer-events-none" />
              </button>
@@ -232,15 +237,15 @@ const PlaceChatPanel = React.memo(({
                 }}
                 role={supportsHeaderScrollTop ? 'button' : undefined}
                 tabIndex={supportsHeaderScrollTop ? 0 : undefined}
-                title={supportsHeaderScrollTop ? HEADER_SCROLL_TOP_TITLES[mediaMode] : undefined}
+                title={supportsHeaderScrollTop ? t(HEADER_SCROLL_TOP_TITLE_KEYS[mediaMode]) : undefined}
              >
-                 <span className="text-[10px] text-blue-300 font-bold tracking-widest uppercase truncate drop-shadow-md">{location?.country || "Global"}</span>
+                 <span className="text-[10px] text-blue-300 font-bold tracking-widest uppercase truncate drop-shadow-md">{countryLabel}</span>
                  <div className="flex items-center gap-1.5 min-w-0 mt-0.5">
                      <button
                         type="button"
                         onClick={(event) => handleCopyName(event, primaryName || location.name, 'primary')}
                         className="text-left text-base font-black tracking-tighter text-white truncate leading-none drop-shadow-md hover:text-blue-200 active:scale-[0.99] min-w-0"
-                        title="여행지명 복사"
+                        title={t('place.nav.copyPrimary')}
                      >
                         {primaryName || location.name}
                      </button>
@@ -253,14 +258,14 @@ const PlaceChatPanel = React.memo(({
                         type="button"
                         onClick={(event) => handleCopyName(event, secondaryName, 'secondary')}
                         className="mt-1 w-fit text-left text-xs leading-none text-gray-200/90 font-semibold tracking-normal truncate hover:text-white"
-                        title="보조 지명 복사"
+                        title={t('place.nav.copySecondary')}
                      >
                         ({secondaryName})
                      </button>
                  )}
                  {copiedType && (
                     <span className="mt-1 text-[10px] text-emerald-300 font-semibold">
-                        {copiedType === 'primary' ? '여행지명 복사됨' : '보조 지명 복사됨'}
+                        {copiedType === 'primary' ? t('place.nav.copiedPrimary') : t('place.nav.copiedSecondary')}
                     </span>
                  )}
              </div>
@@ -269,8 +274,8 @@ const PlaceChatPanel = React.memo(({
                     type="button"
                     onClick={openMooni}
                     className="place-header-mooni-btn flex h-8 w-8 md:h-auto md:w-auto items-center justify-center gap-1 rounded-full border border-cyan-400/45 bg-cyan-500/25 px-0 md:px-2.5 md:py-1.5 text-cyan-50 ring-1 ring-cyan-300/30 ring-inset transition-all shrink-0 touch-manipulation hover:border-cyan-300/70 hover:bg-cyan-500/35 active:scale-95"
-                    title="MOONi에게 물어보기"
-                    aria-label="MOONi에게 물어보기"
+                    title={t('place.nav.askMooni')}
+                    aria-label={t('place.nav.askMooni')}
                  >
                     <img
                       src={mooniChar}
@@ -286,7 +291,7 @@ const PlaceChatPanel = React.memo(({
                         className="px-2.5 py-1.5 md:px-4 md:py-2 rounded-full bg-blue-600/90 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20 transition-all flex items-center gap-1.5 group shrink-0"
                     >
                         <ImageIcon className="w-3.5 h-3.5 md:w-4 md:h-4 group-hover:scale-110 transition-transform"/>
-                        <span className="text-xs font-bold">갤러리 복귀</span>
+                        <span className="text-xs font-bold">{t('place.nav.galleryBack')}</span>
                     </button>
                  ) : (
                     <button
@@ -294,7 +299,7 @@ const PlaceChatPanel = React.memo(({
                         className="px-2.5 py-1.5 md:px-4 md:py-2 rounded-full bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-500 hover:to-blue-400 text-white shadow-lg shadow-blue-900/30 transition-all flex items-center gap-1.5 group border border-blue-400/30 shrink-0"
                     >
                         <Briefcase className="w-3.5 h-3.5 md:w-4 md:h-4 group-hover:scale-110 transition-transform"/>
-                        <span className="text-xs font-bold whitespace-nowrap">여행 플래너</span>
+                        <span className="text-xs font-bold whitespace-nowrap">{t('place.nav.planner')}</span>
                     </button>
                  )}
              </div>
@@ -364,7 +369,7 @@ const PlaceChatPanel = React.memo(({
                   <div className="w-9 h-9 rounded-full bg-cyan-500/15 flex items-center justify-center shrink-0 overflow-hidden">
                       <img src={mooniChar} alt="" className="h-8 w-8 object-contain" draggable={false} />
                   </div>
-                  <span className="text-sm text-gray-400 group-hover:text-gray-200 font-medium truncate">MOONi에게 물어보기</span>
+                  <span className="text-sm text-gray-400 group-hover:text-gray-200 font-medium truncate">{t('place.nav.askMooni')}</span>
                   <div className="ml-auto mr-2 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-cyan-600 group-hover:text-white transition-all">
                       <Send size={12} />
                   </div>

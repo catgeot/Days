@@ -1,35 +1,17 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { usePlaceGallery } from './hooks/usePlaceGallery';
 import PlaceCardExpanded from './modes/PlaceCardExpanded';
 import SEO from '../SEO';
-
-const TAB_METADATA = {
-  wiki: {
-    suffix: '여행 스케치',
-    descTemplate: (name) => `${name}의 역사·문화·명소를 매거진형 여행 스케치와 AI 도슨트로 만나보세요.`,
-  },
-  reviews: {
-    suffix: '여행 후기 & 리뷰',
-    descTemplate: (name) => `${name}을(를) 다녀온 여행자들의 생생한 후기와 평점을 확인하세요.`,
-  },
-  gallery: {
-    suffix: '사진 갤러리',
-    descTemplate: (name) => `${name}의 아름다운 풍경을 사진으로 만나보세요.`,
-  },
-  video: {
-    suffix: '여행 영상',
-    descTemplate: (name) => `${name}의 생생한 현장 영상을 통해 미리 경험해보세요.`,
-  },
-  planner: {
-    suffix: '여행 준비 가이드',
-    descTemplate: (name) => `${name} 여행에 필요한 모든 정보와 팁을 확인하세요.`,
-  },
-};
+import { getLocalizedPlaceName } from './common/locationDisplay';
+import { useLocale } from '../../i18n/LocaleProvider';
 
 const PlaceCard = () => {
   const { slug, tab } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { locale } = useLocale();
 
   const context = useOutletContext();
   const {
@@ -58,16 +40,20 @@ const PlaceCard = () => {
   if (!contextLocation) return null;
 
   const currentTab = tab || 'gallery';
-  const locationName = contextLocation.name || contextLocation.destination || contextLocation.name_en || '여행지';
+  const locationName =
+    getLocalizedPlaceName(contextLocation, locale) || t('place.fallback.destination');
 
-  const metadata = TAB_METADATA[currentTab] || TAB_METADATA.gallery;
-  const locationDesc = metadata.descTemplate(locationName);
+  const tabKey = ['wiki', 'reviews', 'gallery', 'video', 'planner'].includes(currentTab)
+    ? currentTab
+    : 'gallery';
+  const locationDesc = t(`place.tab.${tabKey}.desc`, { name: locationName });
+  const tabSuffix = t(`place.tab.${tabKey}.suffix`);
   const locationImage = contextLocation.thumbnail || contextLocation.image || `https://source.unsplash.com/1200x630/?${encodeURIComponent(contextLocation.name_en || locationName)}`;
 
   return (
     <>
       <SEO
-        title={`${locationName} ${metadata.suffix}`}
+        title={`${locationName} ${tabSuffix}`}
         description={locationDesc}
         url={`/place/${slug}${tab ? `/${tab}` : ''}`}
         image={locationImage}

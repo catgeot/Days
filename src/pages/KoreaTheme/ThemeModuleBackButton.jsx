@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
 import {
   consumeThemeNavBack,
@@ -35,6 +36,7 @@ function useThemeNavBackAction() {
  * `onlyWhenBack`: 명승 홈처럼 기본 「명승」 자기 링크가 불필요할 때.
  */
 export default function ThemeModuleBackButton({ onlyWhenBack = false }) {
+  const { t } = useTranslation();
   const { back, goBack } = useThemeNavBackAction();
 
   if (back?.path) {
@@ -43,12 +45,16 @@ export default function ThemeModuleBackButton({ onlyWhenBack = false }) {
       <button
         type="button"
         onClick={goBack}
-        aria-label={label ? `이전 · ${label}` : '이전'}
-        title={label || '이전'}
+        aria-label={
+          label
+            ? t('korea.theme.navBackAria', { label })
+            : t('korea.theme.navBack')
+        }
+        title={label || t('korea.theme.navBack')}
         className={BTN_CLASS}
       >
         <ArrowLeft size={14} aria-hidden="true" />
-        이전
+        {t('korea.theme.navBack')}
       </button>
     );
   }
@@ -58,18 +64,19 @@ export default function ThemeModuleBackButton({ onlyWhenBack = false }) {
   return (
     <Link
       to="/korea/theme/scenic"
-      aria-label="한국의 명승으로"
-      title="한국의 명승"
+      aria-label={t('korea.theme.navScenicAria')}
+      title={t('korea.theme.navScenic')}
       className={BTN_CLASS}
     >
       <ArrowLeft size={14} aria-hidden="true" />
-      명승
+      {t('korea.theme.navScenic')}
     </Link>
   );
 }
 
 /** 이전 상태 표기 (축제 from=theme 힌트와 동일 톤) */
 export function ThemeNavBackHint() {
+  const { t } = useTranslation();
   const { back, goBack } = useThemeNavBackAction();
   if (!back?.path) return null;
   const label = formatThemeNavBackLabel(back);
@@ -85,13 +92,14 @@ export function ThemeNavBackHint() {
         ← {label}
       </button>
       <span className="text-stone-400"> · </span>
-      이전 탐색으로 돌아갑니다
+      {t('korea.theme.navBackHint')}
     </p>
   );
 }
 
 /** 축제 `/korea?from=theme` — 가능하면 직전 테마 상세로 복귀 */
 export function ThemeFestivalBackLink() {
+  const { t } = useTranslation();
   const { back, goBack } = useThemeNavBackAction();
   const label = formatThemeNavBackLabel(back);
 
@@ -102,7 +110,7 @@ export function ThemeFestivalBackLink() {
         onClick={goBack}
         className="font-bold text-amber-800 hover:underline"
       >
-        ← {label || '이전 명승으로'}
+        ← {label || t('korea.theme.navPrevScenic')}
       </button>
     );
   }
@@ -112,7 +120,7 @@ export function ThemeFestivalBackLink() {
       to="/korea/theme/scenic"
       className="font-bold text-amber-800 hover:underline"
     >
-      ← 명승으로
+      ← {t('korea.theme.navScenicLink')}
     </Link>
   );
 }

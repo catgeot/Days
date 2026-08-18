@@ -1,5 +1,6 @@
 import { RefreshCw, Sparkles } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useSiteUpdateBanner } from '../hooks/useSiteUpdateBanner';
 import { useSiteNoticeAnchorRect } from '../hooks/useSiteNoticeAnchorRect';
 import { openUpdatesList } from '../lib/siteNoticeEvents';
@@ -11,6 +12,7 @@ function isHomeNoticeSurface(pathname) {
 }
 
 function SiteUpdateBanner() {
+  const { t } = useTranslation();
   const location = useLocation();
   const { mode, release, closeRelease, dismissPermanent, reload } = useSiteUpdateBanner();
   const showSurface = Boolean(mode) && isHomeNoticeSurface(location.pathname);
@@ -19,7 +21,9 @@ function SiteUpdateBanner() {
   if (!showSurface) return null;
 
   const isRefresh = mode === 'refresh';
-  const headerLabel = isRefresh ? '업데이트 안내' : '시스템 공지';
+  const headerLabel = isRefresh
+    ? t('layout.siteNotice.refreshHeader')
+    : t('layout.siteNotice.systemHeader');
   const anchored = Boolean(anchorRect);
 
   const panelStyle = anchored
@@ -71,12 +75,12 @@ function SiteUpdateBanner() {
             id="site-update-notice-title"
             className="text-base md:text-lg font-bold text-white break-keep leading-snug"
           >
-            {isRefresh ? '새 버전이 배포되었습니다' : release?.title}
+            {isRefresh ? t('layout.siteNotice.refreshTitle') : release?.title}
           </p>
 
           {isRefresh ? (
             <p className="mt-2 text-sm text-slate-300 break-keep leading-relaxed">
-              새로고침하면 최신 기능을 사용할 수 있어요.
+              {t('layout.siteNotice.refreshBody')}
             </p>
           ) : (
             release?.items?.length > 0 && (
@@ -99,14 +103,14 @@ function SiteUpdateBanner() {
                   onClick={closeRelease}
                   className="rounded-xl px-4 py-2 text-sm font-medium text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
                 >
-                  닫기
+                  {t('layout.siteNotice.close')}
                 </button>
                 <button
                   type="button"
                   onClick={reload}
                   className="rounded-xl bg-blue-600/80 hover:bg-blue-500 border border-blue-500/30 px-5 py-2 text-sm font-semibold text-white shadow-sm transition-colors"
                 >
-                  새로고침
+                  {t('layout.siteNotice.reload')}
                 </button>
               </>
             ) : (
@@ -119,21 +123,21 @@ function SiteUpdateBanner() {
                   }}
                   className="mr-auto rounded-xl px-3 py-2 text-sm font-medium text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
                 >
-                  지난 공지 보기
+                  {t('layout.siteNotice.pastNotices')}
                 </button>
                 <button
                   type="button"
                   onClick={closeRelease}
                   className="rounded-xl px-4 py-2 text-sm font-medium text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
                 >
-                  닫기
+                  {t('layout.siteNotice.close')}
                 </button>
                 <button
                   type="button"
                   onClick={dismissPermanent}
                   className="rounded-xl bg-gradient-to-r from-blue-600/80 to-purple-600/80 hover:from-blue-500 hover:to-purple-500 border border-blue-500/30 px-5 py-2 text-sm font-semibold text-white shadow-sm transition-colors"
                 >
-                  다시 보지 않기
+                  {t('layout.siteNotice.dismissPermanent')}
                 </button>
               </>
             )}

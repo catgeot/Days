@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { X, Sparkles, Maximize2, Cuboid, Plane, Loader2, ChevronRight, ScanSearch, ScanEye, LayoutList } from 'lucide-react';
 import BookmarkButton from '../common/BookmarkButton';
-import { getPlaceTitleLines } from '../common/locationDisplay';
+import { getPlaceTitleLinesForLocale } from '../common/locationDisplay';
+import { useLocale } from '../../../i18n/LocaleProvider';
 import { canStartGlobeTour } from '../../../pages/Home/lib/globeTourEngine';
 import FlightOriginSelector from '../../../pages/Home/components/FlightOriginSelector.jsx';
 import {
@@ -43,6 +45,8 @@ const PlaceCardSummary = ({
   tourTab = null,
   tourExpanded = false,
 }) => {
+  const { t } = useTranslation();
+  const { locale } = useLocale();
   const [isLoading, setIsLoading] = useState(true);
   const [glowPhase, setGlowPhase] = useState('enter');
   const [originExpanded, setOriginExpanded] = useState(initialOriginExpanded);
@@ -76,17 +80,17 @@ const PlaceCardSummary = ({
   const isScanning = location?.isScanning;
   const allowSummaryExpandTap = !isMobileCoarse;
   const isEnterGlow = !isMobileCoarse && glowPhase === 'enter';
-  const { primaryName, secondaryName } = getPlaceTitleLines(location);
+  const { primaryName, secondaryName } = getPlaceTitleLinesForLocale(location, locale);
   const canStartTour = canStartGlobeTour(location);
   const flightRouteInteractive = isFlightRouteReady && !isFlightRoutePending;
   const flightRouteBusy = canPreviewFlightRoute && !flightRouteInteractive && !isFlightRoutePending;
   const flightRouteButtonLabel = isFlightRoutePending
-    ? '조회 중…'
+    ? t('place.summary.flightLoading')
     : flightRouteBusy
-      ? '갱신 중…'
+      ? t('place.summary.flightRefreshing')
       : isFlightRouteReady
-        ? '항공 경로'
-        : '준비 중…';
+        ? t('place.summary.flightRoute')
+        : t('place.summary.preparing');
 
   const placeIntro = String(location?.desc || '').trim();
   const hasPlaceIntro =
@@ -94,7 +98,7 @@ const PlaceCardSummary = ({
 
   const blurbText = hasPlaceIntro
     ? placeIntro
-    : `${location?.name}의 숨겨진 매력을 발견하세요. 카드를 클릭하면 고화질 갤러리와 AI 가이드가 시작됩니다.`;
+    : t('place.summary.blurbFallback', { name: location?.name || '' });
   /** 항공 경로 카드는 공간 절약 — 2줄+더보기 / 그 외(국내·명소)는 3줄 */
   const introClampClass = canPreviewFlightRoute ? 'line-clamp-2' : 'line-clamp-3';
   const showIntroMore = hasPlaceIntro
@@ -165,7 +169,7 @@ const PlaceCardSummary = ({
                   onImmerseZoomStep?.('x2');
                 }}
                 className={`flex h-10 min-w-[2.75rem] items-center justify-center rounded-xl border px-3 text-sm font-bold tabular-nums transition-all active:scale-[0.98] ${immerseStepChipClass}`}
-                title="현재 배율에서 ×2 확대"
+                title={t('place.summary.zoom2x')}
               >
                 ×2
               </button>
@@ -176,7 +180,7 @@ const PlaceCardSummary = ({
                   onImmerseZoomStep?.('x4');
                 }}
                 className={`flex h-10 min-w-[2.75rem] items-center justify-center rounded-xl border px-3 text-sm font-bold tabular-nums transition-all active:scale-[0.98] ${immerseStepChipClass}`}
-                title="현재 배율에서 ×4 확대"
+                title={t('place.summary.zoom4x')}
               >
                 ×4
               </button>
@@ -189,8 +193,8 @@ const PlaceCardSummary = ({
                 setImmerseBarOpen(false);
               }}
               className="tour-mobile-bar-close shrink-0 flex h-10 w-10 items-center justify-center rounded-xl border border-white/25 bg-white/10 text-white transition-all hover:bg-white/15 active:scale-[0.96]"
-              aria-label="장소 카드로 돌아가기"
-              title="장소 카드로 돌아가기"
+              aria-label={t('place.summary.backToCard')}
+              title={t('place.summary.backToCard')}
             >
               <X size={17} strokeWidth={2.5} aria-hidden="true" />
             </button>
@@ -278,7 +282,7 @@ const PlaceCardSummary = ({
               {!isScanning && <BookmarkButton location={location} isBookmarked={isBookmarked} onToggle={onToggleBookmark} />}
               <button
                 type="button"
-                aria-label="써머리 닫기"
+                aria-label={t('place.summary.closeSummary')}
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -416,12 +420,12 @@ const PlaceCardSummary = ({
                     }`}
                     title={
                       isFlightRoutePending
-                        ? '항공 경로 조회 중…'
+                        ? t('place.summary.flightRouteLoading')
                         : flightRouteBusy
-                          ? '경로 갱신 중…'
+                          ? t('place.summary.flightRouteRefreshing')
                           : isFlightRouteReady
-                            ? (flightRouteLabel || '항공 경로 미리보기')
-                            : '지구본 준비 중…'
+                            ? (flightRouteLabel || t('place.summary.flightRoutePreview'))
+                            : t('place.summary.globePreparing')
                     }
                   >
                     {isFlightRoutePending || flightRouteBusy ? (
@@ -449,7 +453,7 @@ const PlaceCardSummary = ({
                       e.stopPropagation();
                     }}
                     className="relative z-10 flex min-h-[40px] min-w-0 items-center justify-center gap-1.5 rounded-xl border border-cyan-300/50 bg-cyan-500/20 px-2 py-2 transition-all duration-300 hover:border-cyan-200/60 hover:bg-cyan-500/28 lg:min-h-[36px]"
-                    title="여행 플래너 열기"
+                    title={t('place.summary.openPlanner')}
                   >
                     <LayoutList size={16} className="shrink-0 text-cyan-200" aria-hidden="true" />
                     <span className="min-w-0 truncate text-xs font-bold text-cyan-50">여행 플래너</span>
@@ -466,7 +470,7 @@ const PlaceCardSummary = ({
                           onToggleImmerse?.();
                         }}
                         className="relative z-10 flex min-h-[40px] min-w-0 items-center justify-center gap-1.5 rounded-xl border border-emerald-400/35 bg-emerald-500/15 px-2 py-2 hover:bg-emerald-500/25 hover:border-emerald-300/45 transition-all lg:min-h-[36px]"
-                        title="지구본을 멀리서 보기"
+                        title={t('place.summary.globeFar')}
                       >
                         <ScanEye size={16} className="shrink-0 text-emerald-300" />
                         <span className="min-w-0 truncate text-xs font-bold text-emerald-100">멀리서 보기</span>
@@ -480,7 +484,7 @@ const PlaceCardSummary = ({
                             onImmerseZoomStep?.('x2');
                           }}
                           className={`flex min-h-[40px] flex-1 items-center justify-center rounded-xl border px-2 py-2 text-xs font-bold tabular-nums transition-all lg:min-h-[36px] ${immerseStepChipClass}`}
-                          title="현재 배율에서 ×2 확대"
+                          title={t('place.summary.zoom2x')}
                         >
                           ×2
                         </button>
@@ -491,7 +495,7 @@ const PlaceCardSummary = ({
                             onImmerseZoomStep?.('x4');
                           }}
                           className={`flex min-h-[40px] flex-1 items-center justify-center rounded-xl border px-2 py-2 text-xs font-bold tabular-nums transition-all lg:min-h-[36px] ${immerseStepChipClass}`}
-                          title="현재 배율에서 ×4 확대"
+                          title={t('place.summary.zoom4x')}
                         >
                           ×4
                         </button>
@@ -502,7 +506,7 @@ const PlaceCardSummary = ({
                             onToggleImmerse?.();
                           }}
                           className="relative z-10 flex min-h-[40px] min-w-0 flex-[1.35] items-center justify-center gap-1.5 rounded-xl border border-emerald-400/35 bg-emerald-500/15 px-2 py-2 hover:bg-emerald-500/25 hover:border-emerald-300/45 transition-all lg:min-h-[36px]"
-                          title="지구본을 멀리서 보기"
+                          title={t('place.summary.globeFar')}
                         >
                           <ScanEye size={16} className="shrink-0 text-emerald-300" />
                           <span className="min-w-0 truncate text-xs font-bold text-emerald-100">멀리서 보기</span>
@@ -517,7 +521,7 @@ const PlaceCardSummary = ({
                         onToggleImmerse?.();
                       }}
                       className="relative z-10 flex min-h-[40px] min-w-0 items-center justify-center gap-1.5 rounded-xl border border-teal-400/40 bg-teal-500/20 px-2 py-2 transition-all duration-300 hover:border-teal-300/50 hover:bg-teal-500/28 lg:min-h-[36px]"
-                      title="이 지역을 가까이서 보기"
+                      title={t('place.summary.regionNear')}
                     >
                       <ScanSearch size={16} className="shrink-0 text-teal-300" />
                       <span className="min-w-0 truncate text-xs font-bold text-teal-50">가까이 보기</span>
@@ -533,7 +537,7 @@ const PlaceCardSummary = ({
                       if (onStartTour) onStartTour(location);
                     }}
                     className="relative z-10 flex min-h-[40px] min-w-0 items-center justify-center gap-1.5 rounded-xl border border-violet-300/55 bg-violet-500/22 px-2 py-2 transition-all duration-300 hover:border-violet-200/65 hover:bg-violet-500/30 lg:min-h-[36px]"
-                    title="이 지역 3D 투어"
+                    title={t('place.summary.region3dTour')}
                   >
                     <Cuboid size={16} className="shrink-0 text-violet-200" strokeWidth={2.25} aria-hidden="true" />
                     <span className="min-w-0 truncate text-xs font-bold text-violet-50">

@@ -13,6 +13,16 @@
 /** @type {ReleaseNote[]} */
 export const RELEASE_NOTES = [
   {
+    id: '2026-08-18',
+    category: 'feature',
+    title: '영어로 홈·장소·한국 투톱을 볼 수 있어요',
+    items: [
+      '헤더 EN/한 토글 또는 주소에 ?lang=en 을 붙이면 UI를 영어로 전환할 수 있어요.',
+      '홈·장소 카드·한국의 축제·명승 등 주요 화면 카피가 영어로 표시돼요.',
+      '선택한 언어는 브라우저에 기억돼 다음 방문에도 유지돼요.',
+    ],
+  },
+  {
     id: '2026-08-07',
     category: 'feature',
     title: '한국의 명소를 축제와 함께 둘러볼 수 있어요',

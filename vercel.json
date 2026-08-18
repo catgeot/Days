@@ -180,6 +180,11 @@
       "source": "/qa/puzzle",
       "destination": "https://days-git-cursor-geography-puzzle-plan-62e0-catgeots-projects.vercel.app/play/geo",
       "permanent": false
+    },
+    {
+      "source": "/qa/en",
+      "destination": "https://www.gateo.kr/?lang=en",
+      "permanent": false
     }
   ],
   "rewrites": [
