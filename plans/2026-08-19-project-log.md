@@ -45,6 +45,15 @@
 - **브랜치** `cursor/en` · `/qa/en` · `?lang=en` — MOONi 칩 탭 시 AI 답변 영문
 - **다음** #20 무니 인트로·탐지
 
+## 영문화 #20, 무니 인트로·탐지 — Preview push
+
+- **인트로 캐시** `formatPlaceChatLabel`·`buildPlaceChatIntroKeys` — en일 때 `name_en`·`country_en` 라벨 + `@en` 키
+- **탐지** `resolveDestinationFromChat` EN 발화 패턴 · `normalizeAccessDepartureUserText` locale=en
+- **합성 desc** `placeDescText` EN placeholder 탐지
+- **VERIFY** `smoke:place-label-slug` · `npm run build` PASS
+- **브랜치** `cursor/en` · `/qa/en` · `?lang=en` — bound 장소 MOONi 인트로·써머리 EN
+- **다음** #21 플래너 배너·UI EN
+
 ## 영문화 #18, 무니 UI·칩 — Preview push
 
 - **무니 UI** `ChatModal` · `MooniAgentFab` · 목적지 칩 · 플래너 follow-up — `mooni.*` i18n 키

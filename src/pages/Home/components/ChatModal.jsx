@@ -6,6 +6,7 @@ import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
 import { getGeminiProxyErrorMessage } from '../lib/geminiProxyError';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
+import { TRAVEL_SPOTS } from '../data/travelSpots.js';
 import {
   fetchPlaceChatIntroSummary,
   generatePlaceChatIntroWithAi,
@@ -254,7 +255,7 @@ const ChatModal = ({
     }
 
     return entrySeed;
-  }, [isOpen, chatDraft, activeChatId, chatHistory, mooniPlaceContext]);
+  }, [isOpen, chatDraft, activeChatId, chatHistory, mooniPlaceContext, i18n.language]);
 
   const boundDestinationSlug = resolveCatalogPlaceSlug(activeSessionPlace?.slug) || null;
   /** 지명만 있는 uiPlace도 주제 칩 허용 (플래너·카탈로그 연동은 slug 있을 때만) */
@@ -272,7 +273,7 @@ const ChatModal = ({
     if (activeSessionPlace?.name) return activeSessionPlace.name.trim();
     if (isMooniUi) return '';
     return introDestinationRaw;
-  }, [isOpen, activeSessionPlace?.name, isMooniUi, introDestinationRaw]);
+  }, [isOpen, activeSessionPlace?.name, isMooniUi, introDestinationRaw, i18n.language]);
 
   const effectiveQuickReplySlug = boundDestinationSlug;
 
@@ -420,17 +421,17 @@ const ChatModal = ({
 
     (async () => {
       try {
-        let text = await fetchPlaceChatIntroSummary(placeIntroTarget);
+        let text = await fetchPlaceChatIntroSummary(placeIntroTarget, i18n.language);
         if (cancelled) return;
         if (text) {
           setPlaceIntro(text);
           notifyPlaceCard(text);
           return;
         }
-        text = await generatePlaceChatIntroWithAi(placeIntroTarget);
+        text = await generatePlaceChatIntroWithAi(placeIntroTarget, i18n.language);
         if (cancelled) return;
         setPlaceIntro(text);
-        await persistPlaceChatIntroSummary(placeIntroTarget, text);
+        await persistPlaceChatIntroSummary(placeIntroTarget, text, i18n.language);
         notifyPlaceCard(text);
       } catch (e) {
         if (!cancelled) {
@@ -444,7 +445,7 @@ const ChatModal = ({
     return () => {
       cancelled = true;
     };
-  }, [isOpen, placeIntroTarget, onPlaceIntroReady, mooniPlaceContext?.name]);
+  }, [isOpen, placeIntroTarget, onPlaceIntroReady, mooniPlaceContext?.name, i18n.language]);
 
   // 🚨 보안 수정: 클라이언트에서 API 키를 가져오지 않습니다. 서버 프록시 사용.
   // const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
@@ -525,28 +526,31 @@ const ChatModal = ({
 
     await applyDestinationBinding(activeChatId, chatDraft, candidate);
 
-    let introText = await fetchPlaceChatIntroSummary(candidate.name);
+    const boundSpot = TRAVEL_SPOTS.find((s) => s.slug === candidate.slug) || candidate;
+    const introLabel = formatPlaceChatLabel(boundSpot, i18n.language) || candidate.name;
+
+    let introText = await fetchPlaceChatIntroSummary(introLabel, i18n.language);
     if (!introText) {
       try {
-        introText = await generatePlaceChatIntroWithAi(candidate.name);
-        await persistPlaceChatIntroSummary(candidate.name, introText);
+        introText = await generatePlaceChatIntroWithAi(introLabel, i18n.language);
+        await persistPlaceChatIntroSummary(introLabel, introText, i18n.language);
       } catch {
         introText = '';
       }
     }
     if (introText && onPlaceIntroReady) {
-      const summary = stripPlaceChatIntroForSummary(introText, candidate.name);
+      const summary = stripPlaceChatIntroForSummary(introText, introLabel);
       if (summary) {
         onPlaceIntroReady({
           summary,
-          destinationKey: candidate.name,
-          placeName: candidate.name,
+          destinationKey: introLabel,
+          placeName: introLabel,
         });
       }
     }
 
     const confirmed = { slug: candidate.slug, name: candidate.name };
-    const modelText = buildMooniIntroWithHint(introText, candidate.name);
+    const modelText = buildMooniIntroWithHint(introText, introLabel);
 
     const baseMessages = messages.map((m, i) =>
       i === messageIndex
@@ -592,6 +596,8 @@ const ChatModal = ({
     applyDestinationBinding,
     onUpdateChat,
     onCreateTripOnFirstUserMessage,
+    onPlaceIntroReady,
+    i18n.language,
   ]);
 
   const handleSend = useCallback(async (text, personaOverride = null, sendOptions = null) => {
@@ -606,7 +612,10 @@ const ChatModal = ({
       : null;
     const accessDockActive =
       Boolean(sessionBoundEarly?.slug) && topicDockParent === 'access';
-    const cleanText = normalizeAccessDepartureUserText(rawText, { accessDockActive });
+    const cleanText = normalizeAccessDepartureUserText(rawText, {
+      accessDockActive,
+      locale: i18n.language,
+    });
     const personaToUse =
       personaOverride ||
       (shouldUsePlannerPersona(cleanText, messages) ? PERSONA_TYPES.PLANNER : currentPersona);

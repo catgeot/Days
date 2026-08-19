@@ -8,6 +8,10 @@ import { i18n } from '../../../i18n/config';
 import { normalizeAppLocale } from '../../../i18n/constants';
 import { getMooniPromptBundle, fillMooniPromptTemplate } from '../../../i18n/mooniPromptBundles';
 import {
+  getLocalizedCountryName,
+  getLocalizedPlaceName,
+} from '../../../components/PlaceCard/common/locationDisplay';
+import {
   isSyntheticOrEmptyPlaceDesc,
   needsPlaceChatIntroHydration,
 } from './placeDescText.js';
@@ -39,17 +43,24 @@ export function normalizeDestinationKey(name) {
     .replace(/\s+/g, ' ');
 }
 
+function resolveIntroLocale(lng = i18n.language) {
+  return normalizeAppLocale(lng?.slice?.(0, 2) ?? lng);
+}
+
 /**
- * 무니·장소 채팅용 표시 라벨 — 「일본 쿠시로」처럼 국가+지명.
+ * 무니·장소 채팅용 표시 라벨 — 「일본 쿠시로」/「Japan Kyoto」처럼 국가+지명.
  * placeholder 국가(Explore 등)·중복 표기는 생략.
  */
-export function formatPlaceChatLabel(loc) {
+export function formatPlaceChatLabel(loc, lng = i18n.language) {
   if (!loc || typeof loc !== 'object') {
     return normalizeDestinationKey(loc);
   }
-  const name = normalizeDestinationKey(loc.name || loc.displayLabel || '');
+  const locale = resolveIntroLocale(lng);
+  const name = normalizeDestinationKey(
+    getLocalizedPlaceName(loc, locale) || loc.displayLabel || loc.name || '',
+  );
   if (!name) return '';
-  const country = normalizeDestinationKey(loc.country || '');
+  const country = normalizeDestinationKey(getLocalizedCountryName(loc, locale) || loc.country || '');
   if (!country || isPlaceholderCountry(country)) return name;
   if (name.includes(country) || country.includes(name)) return name;
   return `${country} ${name}`;
@@ -148,18 +159,23 @@ export function stripPlaceChatIntroForSummary(text, placeName = '') {
 }
 
 /** 조회·저장에 쓸 destination_key 후보 (이름 / 국가+이름 / displayLabel) */
-export function buildPlaceChatIntroKeys(locOrName) {
+export function buildPlaceChatIntroKeys(locOrName, lng = i18n.language) {
   if (locOrName == null) return [];
   if (typeof locOrName === 'string') {
     const key = normalizeDestinationKey(locOrName);
     return isValidIntroDestination(key) ? [key] : [];
   }
 
-  const name = normalizeDestinationKey(locOrName.name || locOrName.displayLabel || '');
-  const label = normalizeDestinationKey(
-    locOrName.displayLabel || formatPlaceChatLabel(locOrName)
+  const locale = resolveIntroLocale(lng);
+  const name = normalizeDestinationKey(
+    getLocalizedPlaceName(locOrName, locale) || locOrName.displayLabel || locOrName.name || '',
   );
-  const country = normalizeDestinationKey(locOrName.country || '');
+  const label = normalizeDestinationKey(
+    locOrName.displayLabel || formatPlaceChatLabel(locOrName, lng),
+  );
+  const country = normalizeDestinationKey(
+    getLocalizedCountryName(locOrName, locale) || locOrName.country || '',
+  );
   const keys = [];
   const push = (k) => {
     const n = normalizeDestinationKey(k);
@@ -196,22 +212,27 @@ async function fetchIntroByExactKey(destinationKey, lng = i18n.language) {
   return loadPlaceChatIntroLocal(destinationKey, lng);
 }
 
-export async function fetchPlaceChatIntroSummary(destinationDisplayName) {
+export async function fetchPlaceChatIntroSummary(destinationDisplayName, lng = i18n.language) {
   const destinationKey = normalizeDestinationKey(destinationDisplayName);
   if (!isValidIntroDestination(destinationKey)) return null;
-  return fetchIntroByExactKey(destinationKey);
+  return fetchIntroByExactKey(destinationKey, lng);
 }
 
 /** 여러 키 후보로 조회 후 써머리용 본문 반환 */
-export async function fetchPlaceChatIntroSummaryForLocation(locOrName) {
-  const keys = buildPlaceChatIntroKeys(locOrName);
+export async function fetchPlaceChatIntroSummaryForLocation(locOrName, lng = i18n.language) {
+  const keys = buildPlaceChatIntroKeys(locOrName, lng);
+  const locale = resolveIntroLocale(lng);
   const placeName =
     typeof locOrName === 'string'
       ? locOrName
-      : locOrName?.name || locOrName?.displayLabel || keys[0] || '';
+      : getLocalizedPlaceName(locOrName, locale) ||
+        locOrName?.displayLabel ||
+        locOrName?.name ||
+        keys[0] ||
+        '';
 
   for (const key of keys) {
-    const raw = await fetchIntroByExactKey(key);
+    const raw = await fetchIntroByExactKey(key, lng);
     if (!raw) continue;
     const stripped = stripPlaceChatIntroForSummary(raw, placeName);
     if (stripped) return stripped;
@@ -279,38 +300,42 @@ const introEnsureFailed = new Set();
  * @returns {Promise<string|null>}
  */
 export async function ensurePlaceChatIntroForLocation(locOrName, options = {}) {
-  const { generateIfMissing = true } = options;
-  const keys = buildPlaceChatIntroKeys(locOrName);
+  const { generateIfMissing = true, lng = i18n.language } = options;
+  const keys = buildPlaceChatIntroKeys(locOrName, lng);
   if (!keys.length) return null;
 
-  const cached = await fetchPlaceChatIntroSummaryForLocation(locOrName);
+  const cached = await fetchPlaceChatIntroSummaryForLocation(locOrName, lng);
   if (cached) return cached;
   if (!generateIfMissing) return null;
 
   const primaryKey = keys[0];
-  const inflightKey = `${introLocaleKey()}:${primaryKey}`;
+  const inflightKey = `${introLocaleKey(lng)}:${primaryKey}`;
   if (introEnsureFailed.has(inflightKey)) return null;
 
   const existing = introEnsureInflight.get(inflightKey);
   if (existing) return existing;
 
+  const locale = resolveIntroLocale(lng);
   const placeName =
     typeof locOrName === 'string'
       ? locOrName
-      : locOrName?.name || locOrName?.displayLabel || primaryKey;
+      : getLocalizedPlaceName(locOrName, locale) ||
+        locOrName?.displayLabel ||
+        locOrName?.name ||
+        primaryKey;
   const generateLabel =
     typeof locOrName === 'string'
       ? normalizeDestinationKey(locOrName)
-      : formatPlaceChatLabel(locOrName) || primaryKey;
+      : formatPlaceChatLabel(locOrName, lng) || primaryKey;
 
   const promise = (async () => {
     try {
-      const raw = await generatePlaceChatIntroWithAi(generateLabel);
+      const raw = await generatePlaceChatIntroWithAi(generateLabel, lng);
       if (!raw) {
         introEnsureFailed.add(inflightKey);
         return null;
       }
-      await persistPlaceChatIntroSummary(generateLabel, raw);
+      await persistPlaceChatIntroSummary(generateLabel, raw, lng);
       const stripped = stripPlaceChatIntroForSummary(raw, placeName);
       return stripped || null;
     } catch (err) {

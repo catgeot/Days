@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '영문화',
-  sessionNo: 19,
-  sessionPhase: '무니 프롬프트·대화 EN',
+  sessionNo: 20,
+  sessionPhase: '무니 인트로·탐지',
   branch: 'cursor/en',
   previewPath: '/?lang=en',
   qaShareSlug: 'en',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-19-i18n-mooni-intro-detect-en',
+    session: '영문화 #20, 무니 인트로·탐지',
+    title: 'place_chat_intro EN 캐시·목적지 탐지',
+    detail:
+      '?lang=en에서 place_chat_intro 조회·생성 키가 영문 라벨(Japan Osaka@en)로 분리됩니다. MOONi bound 장소 인트로·써머리 hydrate도 locale 연동. EN 발화 「I want to go to Osaka」 목적지 탐지·access 출발지 shaping 추가. Preview /qa/en · 홈 장소 핀 → MOONi FAB → 인트로·써머리가 영문인지 확인해 주세요.',
+    at: '2026-08-19',
+  },
   {
     id: '2026-08-19-i18n-mooni-prompts-en',
     session: '영문화 #19, 무니 프롬프트·대화 EN',
