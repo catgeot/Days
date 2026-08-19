@@ -63,7 +63,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 | | |
 |--|--|
 | **상태** | **#13~#14 main 병합** · **#15 TourAPI 착수** (`cursor/en`) |
-| **main** | PR [#135](https://github.com/catgeot/Days/pull/135) 병합 후 SHA 확인 |
+| **main** | `cb5d4358` — PR [#135](https://github.com/catgeot/Days/pull/135) 병합 (#13~#14) |
 | **브랜치** | `cursor/en` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§10 |
 | **일지** | [`2026-08-19-project-log.md`](./2026-08-19-project-log.md) |
