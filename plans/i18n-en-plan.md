@@ -111,7 +111,7 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#15)**: Preview push · Edge deploy 대기(사람)
+**상태 (#15)**: Edge deploy · LIVE `smoke:tourapi` PASS · Preview QA 대기
 
 **브랜치**: `cursor/en` · `/qa/en` · **#16 착수**
 

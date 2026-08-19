@@ -62,7 +62,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#15 TourAPI 프록시** Preview push · Edge deploy 대기 (`cursor/en`) |
+| **상태** | **#15 TourAPI 프록시** Edge deploy · LIVE PASS · Preview QA (`cursor/en`) |
 | **main** | `cb5d4358` — PR [#135](https://github.com/catgeot/Days/pull/135) 병합 (#13~#14) |
 | **브랜치** | `cursor/en` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§10 |

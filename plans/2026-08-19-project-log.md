@@ -49,3 +49,10 @@
 - **VERIFY** `smoke:tourapi` · `npm run build` PASS
 - **남은 일** Edge `tourapi-proxy` deploy(사람) 후 LIVE `TOURAPI_SMOKE_LIVE=1` · Preview QA
 - **다음** #16 축제 본문 EN (`cursor/en`)
+
+## 영문화 #15, Edge deploy · LIVE PASS
+
+- **Secrets** Cloud·Supabase 모두 `TOUR_API_SERVICE_KEY` 등록 확인
+- **배포** `npx supabase functions deploy tourapi-proxy --no-verify-jwt` 완료
+- **LIVE** `TOURAPI_SMOKE_LIVE=1 npm run smoke:tourapi` — `locale=en` EngService2 **PASS**
+- **다음** Preview `/qa/en` 사람 QA · #16 축제 본문 EN
