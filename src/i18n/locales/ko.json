@@ -1029,6 +1029,22 @@
       "fail": "AI 변환 중 오류가 발생했습니다. 원본을 안전하게 복구합니다."
     }
   },
+  "flightOrigin": {
+    "departure": "출발",
+    "departureFrom": "출발지",
+    "searchTitle": "출발지 검색",
+    "searchPlaceholder": "도시·공항 검색 (예: 마닐라, ICN)",
+    "expandSearch": "출발지 검색 펼치기",
+    "collapseSearch": "출발지 검색 접기",
+    "collapse": "접기",
+    "geoFromMyLocation": "내 위치에서 출발",
+    "geo": {
+      "unsupported": "이 기기에서는 위치 정보를 사용할 수 없어요.",
+      "denied": "위치 권한을 확인해 주세요.",
+      "unavailable": "현재 위치를 가져오지 못했어요.",
+      "notFound": "근처 공항을 찾지 못했어요."
+    }
+  },
   "mooni": {
     "fab": {
       "ariaHelper": "MOONi AI 여행 도우미",
@@ -1144,7 +1160,11 @@
       "accessRouteAskFallback": "어떻게 가?",
       "topicHint": "이곳이 어떤 곳인지부터, 가는 방법·준비·즐길거리까지 골라보셔도 좋아요. 예약은 답변 아래 버튼으로 이어질 수 있어요.",
       "introWithPlace": "{{placeName}} 여행, 이곳이 어떤 곳인지부터 가는 방법·준비·즐길거리까지 도와드릴게요.",
-      "introDefault": "안녕하세요! 저는 MOONi예요. 가고 싶은 여행지, 일정, 교통·예약 궁금한 점 무엇이든 물어보세요."
+      "introDefault": "안녕하세요! 저는 MOONi예요. 가고 싶은 여행지, 일정, 교통·예약 궁금한 점 무엇이든 물어보세요.",
+      "askButton": "물어보기",
+      "spotOverviewTitle": "이 장소 한눈에 보기",
+      "placeSummaryLoading": "여행지 요약을 준비하고 있어요...",
+      "placeIntroLoading": "여행지 소개를 준비하고 있어요..."
     },
     "resolution": {
       "departure": "출발",

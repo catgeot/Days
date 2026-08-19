@@ -1,4 +1,51 @@
 import { RENTAL_AIRPORT_HUBS } from '../../../utils/rentalAirportHubs.js';
+import { normalizeAppLocale } from '../../../i18n/constants';
+
+function capitalizeLatinLabel(value) {
+  const t = String(value ?? '').trim();
+  if (!t) return t;
+  if (t.length <= 3) return t.toUpperCase();
+  return t.charAt(0).toUpperCase() + t.slice(1).toLowerCase();
+}
+
+/**
+ * 출발지 UI·MOONi 발화용 locale 표시명 — en은 라틴 alias 우선.
+ * @param {string} iata
+ * @param {string} [locale]
+ */
+export function getFlightOriginDisplayLabel(iata, locale = 'ko') {
+  const code = String(iata ?? '').trim().toUpperCase();
+  if (code.length !== 3) return code;
+  const hub = hubByIata.get(code);
+  if (!hub) return code;
+  if (normalizeAppLocale(locale) === 'en') {
+    const latin = (hub.aliases || []).find(
+      (a) =>
+        /^[a-zA-Z]/.test(a) &&
+        a.length >= 3 &&
+        a.toLowerCase() !== code.toLowerCase(),
+    );
+    if (latin) return capitalizeLatinLabel(latin);
+    return code;
+  }
+  const ko = hub.aliases?.find((alias) => /[가-힣]/.test(alias));
+  return ko || hub.officialKo || code;
+}
+
+/** 칩·히스토리에 저장된 한글 출발지 라벨 → locale 표시 */
+export function localizeDepartureLabel(label, locale = 'ko') {
+  const raw = String(label ?? '').trim();
+  if (!raw || normalizeAppLocale(locale) !== 'en') return raw;
+  for (const hub of RENTAL_AIRPORT_HUBS) {
+    if (
+      hub.officialKo === raw ||
+      (hub.aliases || []).some((a) => a === raw)
+    ) {
+      return getFlightOriginDisplayLabel(hub.iata, 'en');
+    }
+  }
+  return raw;
+}
 
 /** 써머리·MOONi §2.12 정렬 — 한국·빈번 허브 (Bar 1행) */
 export const FLIGHT_CINEMA_ORIGIN_PRIMARY_IATAS = ['ICN', 'GMP', 'PUS', 'CJU'];

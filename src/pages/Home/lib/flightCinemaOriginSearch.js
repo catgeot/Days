@@ -2,8 +2,9 @@ import { RENTAL_AIRPORT_HUBS } from '../../../utils/rentalAirportHubs.js';
 import { distanceKm } from '../../../utils/rentalAirportMatch.js';
 import { findNearestAirportInIndex } from '../../../utils/airportsIndexLookup.js';
 import { matchDepartureInText } from '../../../utils/resolveDepartureIataFromChat.js';
-import { getFlightCinemaOriginOption } from './flightCinemaOriginOptions.js';
+import { getFlightCinemaOriginOption, getFlightOriginDisplayLabel } from './flightCinemaOriginOptions.js';
 import { promoteFlightOriginGateway } from './flightOriginMetroGateways.js';
+import { i18n } from '../../../i18n/config';
 
 const GEO_HUB_MAX_KM = 200;
 const GEO_INDEX_MAX_KM = 120;
@@ -27,7 +28,7 @@ function findNearestRentalHub(lat, lng, maxKm) {
       const ko = hub.aliases?.find((alias) => /[가-힣]/.test(alias));
       best = {
         iata: hub.iata,
-        label: ko || hub.officialKo || hub.iata,
+        label: getFlightOriginDisplayLabel(hub.iata, i18n.language),
         officialKo: hub.officialKo,
         km,
       };
@@ -41,10 +42,9 @@ function findNearestRentalHub(lat, lng, maxKm) {
  * @returns {{ iata: string, label: string, officialKo?: string }}
  */
 function hubToSearchResult(hub) {
-  const option = getFlightCinemaOriginOption(hub.iata);
   return {
     iata: hub.iata,
-    label: option?.label || hub.officialKo || hub.iata,
+    label: getFlightOriginDisplayLabel(hub.iata, i18n.language),
     officialKo: hub.officialKo,
   };
 }
