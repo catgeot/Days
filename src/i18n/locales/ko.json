@@ -1166,6 +1166,22 @@
       "transportPass": "플래너에서 {{place}} 교통·패스 안내 보기",
       "destinationFallback": "여행지"
     },
+    "booking": {
+      "transportSection": "교통 · 티켓",
+      "prepSection": "출발 전 준비",
+      "morePlannerOptions": "플래너에서 더 많은 예약 옵션 보기",
+      "flightRouteSearch": "{{departName}}({{depart}}) → {{arriveName}}({{arrive}}) 항공권 검색",
+      "flightRouteSearchIata": "{{depart}} → {{arrive}} 항공권 검색",
+      "flightSearchPlace": "{{place}} 검색",
+      "modal": {
+        "title": "항공권 검색",
+        "ariaSearch": "Trip.com 항공권 검색",
+        "ariaRoute": "Trip.com 항공권 검색 — {{depart}}에서 {{arrive}}까지",
+        "affiliateBadge": "제휴광고",
+        "partnerSearch": "Trip.com 제휴 검색",
+        "close": "닫기"
+      }
+    },
     "chips": {
       "l1": {
         "explore": {

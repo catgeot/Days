@@ -1387,6 +1387,22 @@
       "transportPass": "{{place}} transport & passes in planner",
       "destinationFallback": "destination"
     },
+    "booking": {
+      "transportSection": "Transport · tickets",
+      "prepSection": "Before you go",
+      "morePlannerOptions": "See more booking options in planner",
+      "flightRouteSearch": "{{departName}} ({{depart}}) → {{arriveName}} ({{arrive}}) flight search",
+      "flightRouteSearchIata": "{{depart}} → {{arrive}} flight search",
+      "flightSearchPlace": "Search {{place}}",
+      "modal": {
+        "title": "Flight search",
+        "ariaSearch": "Trip.com flight search",
+        "ariaRoute": "Trip.com flight search — {{depart}} to {{arrive}}",
+        "affiliateBadge": "Ad",
+        "partnerSearch": "Trip.com partner search",
+        "close": "Close"
+      }
+    },
     "chips": {
       "l1": {
         "explore": {

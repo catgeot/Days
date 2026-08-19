@@ -21,6 +21,7 @@ import {
 import { resolveChatPrepActions } from './chatPrepBookingLinks.js';
 import { buildPlacePlannerPath } from './placePlannerPath.js';
 import { getMooniPlannerCtaLabel } from './placePlannerFocus.js';
+import { i18n } from '../i18n/config.js';
 
 const HUB_BY_IATA = new Map(
   RENTAL_AIRPORT_HUBS.map((hub) => [hub.iata.toUpperCase(), hub.officialKo])
@@ -52,8 +53,10 @@ export function resolveChatFlightArrivalIata({
 
 /** 채팅 Trip CTA 버튼 라벨 — 여행지명 + 주제 */
 export function formatChatFlightCtaLabel(destinationName) {
-  const place = String(destinationName ?? '').trim() || '항공권';
-  return `${place} 항공권 예약 정보`;
+  const place =
+    String(destinationName ?? '').trim() ||
+    i18n.t('mooni.planner.destinationFallback');
+  return i18n.t('mooni.planner.flightBooking', { place });
 }
 
 /** Trip URL(`buildTripcomPlannerFlightUrl`)과 동일 SSOT — 출발 미언급 시 ICN */
@@ -62,16 +65,29 @@ export function formatChatFlightLabel({ departureIata, arrivalIata, destinationN
     .trim()
     .toUpperCase();
   const arrive = arrivalIata ? String(arrivalIata).trim().toUpperCase() : null;
+  const locale = i18n.language?.slice?.(0, 2) ?? i18n.language;
 
   if (arrive) {
+    if (locale === 'en') {
+      return i18n.t('mooni.booking.flightRouteSearchIata', { depart, arrive });
+    }
     const departKo = lookupAirportKo(depart);
     const arriveKo = lookupAirportKo(arrive);
     if (departKo && arriveKo) {
-      return `${departKo}(${depart}) → ${arriveKo}(${arrive}) 항공권 검색`;
+      return i18n.t('mooni.booking.flightRouteSearch', {
+        departName: departKo,
+        depart,
+        arriveName: arriveKo,
+        arrive,
+      });
     }
-    return `${depart} → ${arrive} 항공권 검색`;
+    return i18n.t('mooni.booking.flightRouteSearchIata', { depart, arrive });
   }
-  return `${destinationName || '항공권'} 검색`;
+
+  const place =
+    String(destinationName ?? '').trim() ||
+    i18n.t('mooni.planner.destinationFallback');
+  return i18n.t('mooni.booking.flightSearchPlace', { place });
 }
 
 /**
@@ -102,13 +118,18 @@ export function refreshStoredBookingActionLabels(
   if (!arrivalIata) return actions;
 
   const nextLabel = formatChatFlightCtaLabel(destinationName);
+  const nextRouteHint = formatChatFlightLabel({
+    departureIata,
+    arrivalIata,
+    destinationName,
+  });
 
   return actions.map((action) => {
     if (action.provider !== 'trip_com' || action.type !== 'trip_flight') {
       return action;
     }
-    if (action.label === nextLabel) return action;
-    return { ...action, label: nextLabel };
+    if (action.label === nextLabel && action.routeHint === nextRouteHint) return action;
+    return { ...action, label: nextLabel, routeHint: nextRouteHint };
   });
 }
 
