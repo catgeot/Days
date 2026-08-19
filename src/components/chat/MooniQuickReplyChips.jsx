@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronLeft } from 'lucide-react';
 
 /**
@@ -13,19 +14,22 @@ export default function MooniQuickReplyChips({
   onOpenPlanner,
   onFocusInput,
   disabled,
-  prompt = '무엇부터 도와드릴까요?',
+  prompt,
   showPrompt = true,
   dock = false,
-  backLabel = '다른 주제',
+  backLabel,
   parentL1Label = null,
 }) {
+  const { t } = useTranslation();
+  const resolvedPrompt = prompt ?? t('mooni.chat.topicPrompt');
+  const resolvedBackLabel = backLabel ?? t('mooni.chat.backTopic');
   const items = chips ?? [];
   if (!items.length) return null;
 
   const chipClass =
     'inline-flex shrink-0 items-center justify-center gap-1 min-h-[36px] rounded-full border border-cyan-500/35 bg-cyan-950/30 px-3 py-1.5 text-xs font-medium text-cyan-100 touch-manipulation hover:border-cyan-400/60 hover:bg-cyan-900/40 transition-colors disabled:opacity-50 disabled:pointer-events-none';
 
-  const backLabelText = backLabel.replace(/^←\s*/, '');
+  const backLabelText = resolvedBackLabel.replace(/^←\s*/, '');
 
   const chipRowClass = dock
     ? 'flex gap-2 flex-nowrap overflow-x-auto overscroll-x-contain touch-pan-x pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
@@ -51,8 +55,8 @@ export default function MooniQuickReplyChips({
           ) : null}
         </div>
       ) : null}
-      {showPrompt && prompt ? (
-        <p className="text-xs text-gray-400 px-0.5">{prompt}</p>
+      {showPrompt && resolvedPrompt ? (
+        <p className="text-xs text-gray-400 px-0.5">{resolvedPrompt}</p>
       ) : null}
       <div className={dock ? 'relative min-w-0' : undefined}>
         <div className={chipRowClass}>

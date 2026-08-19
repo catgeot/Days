@@ -1,5 +1,6 @@
 import { buildPlacePlannerPath } from './placePlannerPath.js';
 import { getPreTravelItemsFromGuide } from './chatPrepBookingLinks.js';
+import { i18n } from '../i18n/config';
 
 /** PlannerTab DOM id — hash와 1:1 */
 export const PLANNER_FOCUS_ID = {
@@ -105,7 +106,9 @@ export function getMooniPlannerCtaLabel({
   chipId = null,
   userText = '',
 } = {}) {
-  const place = String(destinationName ?? '').trim() || '여행지';
+  const place =
+    String(destinationName ?? '').trim() ||
+    i18n.t('mooni.planner.destinationFallback');
   const focus =
     plannerFocus ||
     resolvePlannerFocusFromPrepChipId(chipId) ||
@@ -114,27 +117,29 @@ export function getMooniPlannerCtaLabel({
   switch (focus) {
     case PLANNER_FOCUS_ID.PRE_TRAVEL_CHECKLIST:
     case PLANNER_FOCUS_ID.PREP_FLIGHT:
-      return `${place} 항공권 예약 정보`;
+      return i18n.t('mooni.planner.flightBooking', { place });
     case PLANNER_FOCUS_ID.PREP_ACCOMMODATION:
-      return `${place} 숙소 예약`;
+      return i18n.t('mooni.planner.stayBooking', { place });
     case PLANNER_FOCUS_ID.ARRIVAL_TRANSFER:
     case PLANNER_FOCUS_ID.LOCAL_TRANSPORT:
     case PLANNER_FOCUS_ID.RENTAL_PICKUP:
     case PLANNER_FOCUS_ID.ARRIVAL:
-      return `${place} 현지 교통 안내`;
+      return i18n.t('mooni.planner.localTransport', { place });
     case PLANNER_FOCUS_ID.PREP_VISA:
     case PLANNER_FOCUS_ID.PREP_SAFETY:
     case PLANNER_FOCUS_ID.PREP_SECTION:
-      return `${place} 비자·입국 정보`;
+      return i18n.t('mooni.planner.visaInfo', { place });
     default:
-      return `${place} 여행 정보`;
+      return i18n.t('mooni.planner.travelInfo', { place });
   }
 }
 
 /** MOONi 「교통 · 티켓」 항공 CTA 아래 — 플래너 항공권 카드(경로·팁 요약) 연결 */
 export function getMooniPlannerFlightGuideLabel(destinationName = '') {
-  const place = String(destinationName ?? '').trim() || '여행지';
-  return `플래너에서 ${place} 항공권 안내 보기`;
+  const place =
+    String(destinationName ?? '').trim() ||
+    i18n.t('mooni.planner.destinationFallback');
+  return i18n.t('mooni.planner.flightGuide', { place });
 }
 
 /**
@@ -148,7 +153,9 @@ export function resolveMooniTransportPlannerLinks(
   essentialGuide = null,
   destinationName = ''
 ) {
-  const place = String(destinationName ?? '').trim() || '여행지';
+  const place =
+    String(destinationName ?? '').trim() ||
+    i18n.t('mooni.planner.destinationFallback');
   const cats = /** @type {{ airport_transfer?: unknown }} */ (
     essentialGuide?.categories ?? {}
   );
@@ -158,18 +165,18 @@ export function resolveMooniTransportPlannerLinks(
   if (cats?.airport_transfer) {
     links.push({
       focusId: PLANNER_FOCUS_ID.ARRIVAL_TRANSFER,
-      label: `플래너에서 ${place} 공항→목적지 이동 보기`,
+      label: i18n.t('mooni.planner.airportTransfer', { place }),
     });
   } else {
     links.push({
       focusId: PLANNER_FOCUS_ID.RENTAL_PICKUP,
-      label: `플래너에서 ${place} 렌터카·픽업 기준 보기`,
+      label: i18n.t('mooni.planner.rentalPickup', { place }),
     });
   }
 
   links.push({
     focusId: PLANNER_FOCUS_ID.LOCAL_TRANSPORT,
-    label: `플래너에서 ${place} 교통·패스 안내 보기`,
+    label: i18n.t('mooni.planner.transportPass', { place }),
   });
 
   return links;

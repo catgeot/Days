@@ -3,14 +3,16 @@ import { expect } from '@playwright/test';
 /** @typedef {import('@playwright/test').Page} Page */
 
 export const AI_ERROR_PATTERN =
-  /AI 사용량 한도|일시적으로 바쁩니다|통신에 실패|설정 오류/;
+  /AI 사용량 한도|일시적으로 바쁩니다|통신에 실패|설정 오류|usage limit|temporarily busy|connection failed|configuration error/i;
 
 /**
  * MOONi FAB 말풍선·인트로가 있으면 닫는다.
  * @param {Page} page
  */
 export async function dismissMooniHintIfPresent(page) {
-  const closeHint = page.getByRole('button', { name: '말풍선 닫기' });
+  const closeHint = page.getByRole('button', {
+    name: /말풍선 닫기|Close hint bubble/i,
+  });
   if (await closeHint.isVisible({ timeout: 3000 }).catch(() => false)) {
     await closeHint.click();
   }
@@ -24,13 +26,17 @@ export async function dismissMooniHintIfPresent(page) {
 export async function mooniOneChatTurn(page, message = '안녕') {
   await dismissMooniHintIfPresent(page);
 
-  await page.getByRole('button', { name: /MOONi와 대화하기/ }).click();
-  await expect(page.getByLabel('채팅 닫기')).toBeVisible({ timeout: 20_000 });
+  await page
+    .getByRole('button', {
+      name: /MOONi와 대화하기|Chat with MOONi/i,
+    })
+    .click();
+  await expect(page.getByLabel(/채팅 닫기|Close chat/i)).toBeVisible({ timeout: 20_000 });
 
-  const input = page.getByPlaceholder('메시지 입력...');
+  const input = page.getByPlaceholder(/메시지 입력|Type a message/i);
   await input.fill(message);
   const chatForm = page.locator('form').filter({ has: input });
-  const sendButton = chatForm.getByRole('button', { name: '전송' });
+  const sendButton = chatForm.getByRole('button', { name: /전송|Send/i });
   if (await sendButton.isVisible({ timeout: 2000 }).catch(() => false)) {
     await sendButton.click();
   } else {
@@ -39,10 +45,10 @@ export async function mooniOneChatTurn(page, message = '안녕') {
 
   await page.waitForFunction(
     ({ patternSource, userMessage }) => {
-      const pattern = new RegExp(patternSource);
+      const pattern = new RegExp(patternSource, 'i');
       const text = document.body.innerText;
       if (pattern.test(text)) return true;
-      if (text.includes('답변을 생성 중')) return false;
+      if (/답변을 생성 중|Generating a reply/i.test(text)) return false;
       return text.includes(userMessage) && text.includes('MOONi');
     },
     { patternSource: AI_ERROR_PATTERN.source, userMessage: message },
@@ -52,5 +58,5 @@ export async function mooniOneChatTurn(page, message = '안녕') {
   const bodyText = await page.locator('body').innerText();
   const hasError = AI_ERROR_PATTERN.test(bodyText);
   const hasDialogue = bodyText.includes(message) && bodyText.includes('MOONi');
-  return { hasError, hasDialogue, bodyText };
+  return { hasError, hasDialogue };
 }

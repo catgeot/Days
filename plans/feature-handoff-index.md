@@ -62,7 +62,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#16·#17 TourAPI EN 롤백(A)** · UI i18n 유지 · **#18 무니** (`cursor/en`) |
+| **상태** | **#18 무니 UI·칩** Preview push (`cursor/en`) |
 | **main** | `cb5d4358` — PR [#135](https://github.com/catgeot/Days/pull/135) 병합 (#13~#14) |
 | **브랜치** | `cursor/en` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§10 |
@@ -71,16 +71,16 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 | **PROD** | `https://www.gateo.kr/qa/en` → `/?lang=en` |
 | **VERIFY** | `npm run build` · `smoke:place-label-slug` · `smoke:scenic-detail-locale` |
 
-**2차 순서**: ~~#13 지구본 칩~~ · ~~#14 지명~~ · ~~#15 TourAPI~~ · ~~#16·#17 본문 EN↩~~ → **#18~20 무니**
+**2차 순서**: ~~#13~#17~~ → **#18 무니 UI·칩** → #19~20 무니 → #21~22 플래너
 
 **다음 제시어**:
 
 ```
-영문화 #18, 무니 UI·칩 EN
+영문화 #19, 무니 프롬프트·대화 EN
 @plans/feature-handoff-index.md
 @plans/2026-08-19-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · /qa/en · ?lang=en 무니 UI·칩
+브랜치 cursor/en · /qa/en · ?lang=en 무니 프롬프트·시스템
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 

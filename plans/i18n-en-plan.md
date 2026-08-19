@@ -27,7 +27,7 @@
 | 15 | TourAPI 프록시 | `영문화 #15, TourAPI 프록시 EN` | ✅ |
 | 16 | 축제 본문 EN | `영문화 #16, 축제 본문 EN` | ↩ 롤백(A) |
 | 17 | 명승 TourAPI 본문 | `영문화 #17, 명승 TourAPI 본문 EN` | ↩ 롤백(A) |
-| 18 | 무니 UI·칩 | `영문화 #18, 무니 UI·칩` | |
+| 18 | 무니 UI·칩 | `영문화 #18, 무니 UI·칩` | ✅ Preview |
 | 19 | 무니 프롬프트·대화 | `영문화 #19, 무니 프롬프트·대화 EN` | |
 | 20 | 무니 인트로·탐지 | `영문화 #20, 무니 인트로·탐지` | |
 | 21 | 플래너 배너·UI | `영문화 #21, 플래너 배너·UI EN` | |
@@ -111,18 +111,18 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#17)**: **#16·#17 TourAPI EN 롤백(A)** — 축제·명승 본문 KorService2 SSOT · UI i18n 유지
+**상태 (#18)**: Preview push — 무니 UI·주제 칩·FAB 말풍선 en (`mooni.*` 키)
 
-**브랜치**: `cursor/en` · `/qa/en` · **#18 착수**
+**브랜치**: `cursor/en` · `/qa/en` · **#19 착수**
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #18, 무니 UI·칩 EN
+영문화 #19, 무니 프롬프트·대화 EN
 @plans/feature-handoff-index.md
 @plans/2026-08-19-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · /qa/en · ?lang=en 무니 UI·칩
+브랜치 cursor/en · /qa/en · ?lang=en 무니 프롬프트·시스템
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 

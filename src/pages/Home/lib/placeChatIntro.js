@@ -4,6 +4,7 @@ import { getPlaceChatIntroSystemPrompt } from './prompts';
 import { MOONI_GEMINI } from '../../../utils/mooniChatModel';
 import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
 import { MOONI_TOPIC_HINT } from './mooniQuickReplies';
+import { i18n } from '../../../i18n/config';
 import {
   isSyntheticOrEmptyPlaceDesc,
   needsPlaceChatIntroHydration,
@@ -96,13 +97,21 @@ export function stripPlaceChatIntroForSummary(text, placeName = '') {
   let body = String(text ?? '').trim();
   if (!body) return '';
 
-  const hint = String(MOONI_TOPIC_HINT || '').trim();
-  if (hint && body.endsWith(hint)) {
-    body = body.slice(0, -hint.length).trim();
-  } else if (hint) {
+  const hints = [
+    i18n.t('mooni.chat.topicHint', { lng: 'ko' }),
+    i18n.t('mooni.chat.topicHint', { lng: 'en' }),
+    String(MOONI_TOPIC_HINT || '').trim(),
+  ].filter((h, i, arr) => h && arr.indexOf(h) === i);
+
+  for (const hint of hints) {
+    if (body.endsWith(hint)) {
+      body = body.slice(0, -hint.length).trim();
+      break;
+    }
     const idx = body.lastIndexOf(hint);
     if (idx >= 0 && idx >= body.length - hint.length - 8) {
       body = body.slice(0, idx).trim();
+      break;
     }
   }
 

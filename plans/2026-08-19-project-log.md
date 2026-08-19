@@ -36,11 +36,14 @@
 - **클러스터** `GlobeClusterLegend` — `labelEn` · `getPlaceTitleLinesForLocale`
 - **VERIFY** `npm run build` · `smoke:place-label-slug` PASS
 
-## 영문화 #14, Preview QA PASS · main 병합
+## 영문화 #18, 무니 UI·칩 — Preview push
 
-- **사람 QA** `/qa/en` · `?lang=en` — gateo 핀·Mapbox 지명·클러스터 범례 **통과**
-- **PR [#135](https://github.com/catgeot/Days/pull/135)** → **main** `cb5d4358`
-- **다음** #15 TourAPI 프록시 EN (`cursor/en`)
+- **무니 UI** `ChatModal` · `MooniAgentFab` · 목적지 칩 · 플래너 follow-up — `mooni.*` i18n 키
+- **주제 칩** L1/L2 라벨·sendText · FAB 말풍선 · 로딩·placeholder en
+- **VERIFY** `npm run build` · `smoke:place-label-slug` PASS
+- **브랜치** `cursor/en` · `/qa/en` · `?lang=en` — 홈 MOONi FAB·채팅·bound slug 칩
+- **다음** #19 무니 프롬프트·대화 EN
+
 
 ## 영문화 #15, TourAPI 프록시 EN — Preview push
 

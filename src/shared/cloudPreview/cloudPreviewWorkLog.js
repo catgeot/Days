@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '영문화',
-  sessionNo: 17,
-  sessionPhase: 'TourAPI EN 롤백(A)',
+  sessionNo: 18,
+  sessionPhase: '무니 UI·칩 EN',
   branch: 'cursor/en',
-  previewPath: '/korea/theme/scenic?lang=en',
+  previewPath: '/?lang=en',
   qaShareSlug: 'en',
 };
 

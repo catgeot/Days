@@ -1249,5 +1249,229 @@
       "noInput": "Nothing for AI to analyze. Add a short note or photo first.",
       "fail": "AI conversion failed. Your original text was restored."
     }
+  },
+  "mooni": {
+    "fab": {
+      "ariaHelper": "MOONi AI travel assistant",
+      "ariaChat": "Chat with MOONi. Drag to move. On mobile, press and hold for a hint bubble.",
+      "ariaCloseHint": "Close hint bubble",
+      "ariaCharacter": "MOONi character"
+    },
+    "lines": {
+      "intro": [
+        "Hi! I'm MOONi.",
+        "Nice to meet you — MOONi here.",
+        "Travel vibes today? MOONi here."
+      ],
+      "peek": {
+        "invite": [
+          "Say hi to MOONi",
+          "Welcome!",
+          "Tap if you're curious",
+          "Just tap me",
+          "Want to chat?",
+          "Tap to start chatting"
+        ],
+        "curious": [
+          "Where do you want to go?",
+          "Tell me about your trip",
+          "What mood are you in today?",
+          "Any place on your mind?",
+          "Where should we start?"
+        ],
+        "tease": [
+          "I'm not asleep…",
+          "Browsing the map",
+          "I love when you say hi",
+          "Peeking through the clouds…",
+          "I just woke up"
+        ]
+      },
+      "idle": {
+        "playful": [
+          "Z z z…",
+          "Walking on clouds…",
+          "The breeze smells like travel.",
+          "Exploring around…",
+          "I see a faraway island.",
+          "Shall we dream of starlight travel?"
+        ],
+        "travel": [
+          "Hello, I'm MOONi.",
+          "I want to get away…",
+          "Where to today?",
+          "The map pulls me in.",
+          "When's the next vacation…",
+          "I can almost see blue ocean."
+        ],
+        "hint": [
+          "Ask me anything.",
+          "Routes and plans too",
+          "Just name an island",
+          "I can suggest destinations",
+          "Flights and ferries — ask away"
+        ]
+      },
+      "react": {
+        "drag": [
+          "Whoa, there!",
+          "Easy does it~",
+          "Floating on the breeze",
+          "Nice view here too",
+          "Drag is OK"
+        ],
+        "dismiss": [
+          "See you later…",
+          "Off to watch clouds",
+          "Call me anytime",
+          "Take your time~"
+        ]
+      },
+      "easterEgg": [
+        "…Should I steal a star?",
+        "MOONi came from the moon. Secret!",
+        "Earth is bigger than you think!",
+        "Today's lucky destination is… (heart flutter)"
+      ]
+    },
+    "chat": {
+      "history": "Chat history",
+      "deleteChat": "Delete chat",
+      "close": "Close",
+      "closeAria": "Close chat",
+      "send": "Send",
+      "placeholder": "Type a message...",
+      "placeholderOrType": "Or type your own…",
+      "placeholderDirect": "Type directly…",
+      "topicPrompt": "What can I help with first?",
+      "backTopic": "Other topics",
+      "mooniSessionTitle": "MOONi travel chat",
+      "travelSessionTitle": "Travel chat",
+      "travelAiHelper": "Travel AI assistant",
+      "travelChat": "{{destination}} chat",
+      "openPlanner": "Open travel planner",
+      "loadingDefault": "AI is preparing a reply...",
+      "loadingStatuses": [
+        "Scanning destination info...",
+        "Finding hidden local spots...",
+        "🗺️ Organizing your trip plan...",
+        "✈️ Generating a reply..."
+      ],
+      "introError": "Could not load place summary.",
+      "noContent": "No content",
+      "questionUnreadable": "Could not read question",
+      "accessDeparturePlaceholder": "Where are you leaving from? (e.g. Seoul, Manila)",
+      "accessRouteAsk": "How do I get there from {{place}}?",
+      "accessRouteAskFallback": "How do I get there?",
+      "topicHint": "Start with what this place is like, how to get there, what to prepare, and things to do. Booking links may appear below the reply.",
+      "introWithPlace": "For {{placeName}}, I can help from what it's like to routes, prep, and things to do.",
+      "introDefault": "Hi! I'm MOONi. Ask about destinations, itineraries, transport, bookings — anything travel."
+    },
+    "resolution": {
+      "departure": "From",
+      "destination": "Destination",
+      "viewInfo": "{{name}} details",
+      "pickDestination": "Which of these do you want to visit?"
+    },
+    "planner": {
+      "heading": "Check in planner",
+      "openFull": "View trip plan in GATEO planner",
+      "flightGuide": "Flight guide for {{place}} in planner",
+      "flightBooking": "{{place}} flight booking info",
+      "stayBooking": "{{place}} stays",
+      "localTransport": "{{place}} local transport",
+      "visaInfo": "{{place}} visa & entry info",
+      "travelInfo": "{{place}} travel info",
+      "airportTransfer": "{{place}} airport transfer in planner",
+      "rentalPickup": "{{place}} rental & pickup in planner",
+      "transportPass": "{{place}} transport & passes in planner",
+      "destinationFallback": "destination"
+    },
+    "chips": {
+      "l1": {
+        "explore": {
+          "label": "🌍 About this place",
+          "mobileLabel": "🌍 Curious?"
+        },
+        "access": {
+          "label": "✈️ Getting there",
+          "mobileLabel": "✈️ Getting there"
+        },
+        "prep": {
+          "label": "🛫 Before you go",
+          "mobileLabel": "🛫 Prep"
+        },
+        "enjoy": {
+          "label": "🌴 Things to do",
+          "mobileLabel": "🌴 Things to do"
+        },
+        "planner": {
+          "label": "📋 Open planner"
+        }
+      },
+      "l2": {
+        "explore": {
+          "place_overview": {
+            "label": "What's it like?",
+            "sendText": "What kind of place is this?"
+          },
+          "safety_vibe": {
+            "label": "Vibe & safety",
+            "sendText": "What's the vibe and safety like?"
+          },
+          "history": {
+            "label": "History & culture",
+            "sendText": "What's special historically or culturally?"
+          },
+          "why_go": {
+            "label": "Why visit?",
+            "sendText": "Why is this worth visiting?"
+          }
+        },
+        "access": {
+          "ferry": {
+            "label": "🚢 Ferry",
+            "sendText": "Ferry booking"
+          }
+        },
+        "prep": {
+          "visa_docs": {
+            "label": "Visa & entry",
+            "sendText": "Explain visa and entry requirements"
+          },
+          "prep_flight": {
+            "label": "Flights",
+            "sendText": "How should I book flights?"
+          },
+          "prep_hotel": {
+            "label": "Stays",
+            "sendText": "Where should I stay?"
+          },
+          "prep_transport": {
+            "label": "Rental & pickup",
+            "mobileLabel": "Transport",
+            "sendText": "How should I get around locally?"
+          }
+        },
+        "enjoy": {
+          "activities": {
+            "label": "Activities",
+            "sendText": "Suggest activities"
+          },
+          "food": {
+            "label": "Food",
+            "sendText": "Recommend restaurants"
+          },
+          "itinerary": {
+            "label": "2–3 day plan",
+            "sendText": "Plan a 2–3 day itinerary"
+          },
+          "companion": {
+            "label": "By travel style",
+            "sendText": "Who is it best for? Suggest by companion type"
+          }
+        }
+      }
+    }
   }
 }
