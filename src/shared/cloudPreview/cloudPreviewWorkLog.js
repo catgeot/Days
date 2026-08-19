@@ -40,6 +40,22 @@ export const cloudPreviewWorkLog = [
     at: '2026-08-19',
   },
   {
+    id: '2026-08-19-i18n-prod-qa-ok',
+    session: '영문화 #12, PROD QA 확인',
+    title: '1차 UI PROD QA OK',
+    detail:
+      '사람 PROD QA 통과. 1차 영문 UI(#0~#11) 완료. 다음 #13 지구본 칩·국가·해양 EN — cursor/en · PR #135.',
+    at: '2026-08-19T03:30:00.000Z',
+  },
+  {
+    id: '2026-08-18-i18n-main-merge',
+    session: '영문화 #11, 병합·PROD QA',
+    title: 'PR #134 main 병합',
+    detail:
+      'main 충돌 해소(i18n logbook·auth) · build·smoke PASS · merge 47845093. PROD: /qa/en → ?lang=en · /blog?lang=en',
+    at: '2026-08-18T23:30:00.000Z',
+  },
+  {
     id: '2026-08-18-i18n-blog-auth',
     session: '영문화 #10, 잔여·Preview QA',
     title: 'Auth·/blog 잔여 영문화',

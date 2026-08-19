@@ -20,11 +20,20 @@
 | 8 | 한국 테마 나머지 | `영문화 #8, 한국 테마 나머지` | ✅ Preview |
 | 9 | 로그북/대시보드 | `영문화 #9, 로그북·대시보드` | ✅ Preview |
 | 10 | 잔여·QA | `영문화 #10, 잔여·Preview QA` | ✅ Preview |
-| 11 | 병합·PROD | `영문화 #11, 병합·PROD QA` | ✅ merge · PROD QA (사람) |
-| 12 | PROD 확인 | `영문화 #12, PROD QA 확인` | (배포 후 사람) |
-| 13 | 지구본 칩 | `영문화 #13, 지구본 칩·국가` | ✅ Preview QA |
-| 14 | 지구본 지명 | `영문화 #14, 지구본 지명·맵` | ✅ Preview QA |
+| 11 | 병합·PROD | `영문화 #11, 병합·PROD QA` | ✅ merge |
+| 12 | PROD 확인 | `영문화 #12, PROD QA 확인` | ✅ 사람 QA |
+| 13 | 지구본 칩 | `영문화 #13, 지구본 칩·국가` | ✅ main |
+| 14 | 지구본 지명 | `영문화 #14, 지구본 지명·맵` | ✅ main |
 | 15 | TourAPI 프록시 | `영문화 #15, TourAPI 프록시 EN` | 다음 |
+| 16 | 축제 본문 EN | `영문화 #16, 축제 본문 EN` | |
+| 17 | 명승 TourAPI 본문 | `영문화 #17, 명승 TourAPI 본문 EN` | |
+| 18 | 무니 UI·칩 | `영문화 #18, 무니 UI·칩` | |
+| 19 | 무니 프롬프트·대화 | `영문화 #19, 무니 프롬프트·대화 EN` | |
+| 20 | 무니 인트로·탐지 | `영문화 #20, 무니 인트로·탐지` | |
+| 21 | 플래너 배너·UI | `영문화 #21, 플래너 배너·UI EN` | |
+| 22 | 플래너 AI 본문 | `영문화 #22, 플래너 AI 본문 EN` | |
+
+**1차 (#0~#12)**: UI 카피 · **2차 (#13~#22)**: 지구본 데이터 · TourAPI 본문 · 무니 · 플래너 AI·배너.
 
 세션마다 `#1` 리셋 금지 · `#N` = Cloud 순번.
 
@@ -63,11 +72,14 @@
 | **#3** | 한국 투톱 | `/korea` · `/korea/theme/scenic` — **사람 합의 후** 범위 | `build` |
 | **#4** | SEO·릴리스 | `hreflang` · sitemap · 릴리스 노트(승인 후) | `build` |
 | **#5** | PROD 병합 | PR #132 → `main` | `build` |
-| **#7+** | 세부·확장 | PlaceCard 세부 · 한국 테마 나머지 · 로그북/대시보드 | `build` |
+| **#7+** | 세부·확장 | PlaceCard 세부 · 한국 테마 · 로그북/대시보드 | `build` |
 | **#13** | 지구본 칩·국가 | 중분류·국가·해양 칩 EN (`globeUi.js`) | `build` |
 | **#14** | 지구본 지명 | 핀·Mapbox `name_en` · 클러스터 범례 | `build` · `smoke:place-label-slug` |
 | **#15** | TourAPI 프록시 | `EngService2` + locale 캐시 | `build` · Edge deploy |
 | **#16** | 축제 본문 | `/korea` TourAPI EN | `build` |
+| **#17** | 명승 TourAPI | `ThemeSpotDetailModal` (CHA·선정 제외) | `build` |
+| **#18~20** | 무니 | UI·칩 → 프롬프트·대화 → 인트로 캐시 | `build` |
+| **#21~22** | 플래너 | 배너·제휴 UI → `essential_guide_en` | `build` · Edge |
 
 **우선순위 (2차)**: 지구본 홈 → 한국 TourAPI 본문 → 무니 → 플래너.
 
@@ -99,9 +111,9 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#14)**: Preview QA **PASS** (사람) · PR [#135](https://github.com/catgeot/Days/pull/135) · tip `ff0cfe5f`
+**상태 (#14)**: Preview QA **PASS** · PR [#135](https://github.com/catgeot/Days/pull/135) → **main 병합** (사람)
 
-**브랜치**: `cursor/en` · `/qa/en`
+**브랜치**: `cursor/en` · `/qa/en` · **#15 착수**
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
@@ -110,7 +122,7 @@
 @plans/feature-handoff-index.md
 @plans/2026-08-19-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · PR #135 · /qa/en · ?lang=en TourAPI EngService2
+브랜치 cursor/en · /qa/en · ?lang=en TourAPI EngService2
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 

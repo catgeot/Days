@@ -62,13 +62,13 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#14 Preview QA PASS** · PR [#135](https://github.com/catgeot/Days/pull/135) · tip `ff0cfe5f` · **#15 착수** |
-| **main** | `47845093` — PR [#134](https://github.com/catgeot/Days/pull/134) |
+| **상태** | **#13~#14 main 병합** · **#15 TourAPI 착수** (`cursor/en`) |
+| **main** | PR [#135](https://github.com/catgeot/Days/pull/135) 병합 후 SHA 확인 |
 | **브랜치** | `cursor/en` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§10 |
 | **일지** | [`2026-08-19-project-log.md`](./2026-08-19-project-log.md) |
 | **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` |
-| **PROD QA** | `https://www.gateo.kr/qa/en` → `/?lang=en` |
+| **PROD** | `https://www.gateo.kr/qa/en` → `/?lang=en` |
 | **VERIFY** | `npm run build` · `smoke:place-label-slug` |
 
 **2차 순서**: ~~#13 지구본 칩~~ · ~~#14 지명~~ → **#15 TourAPI** → #16~17 한국 본문 → #18~20 무니
@@ -80,7 +80,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 @plans/feature-handoff-index.md
 @plans/2026-08-19-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · PR #135 · /qa/en · ?lang=en TourAPI EngService2
+브랜치 cursor/en · /qa/en · ?lang=en TourAPI EngService2
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 
