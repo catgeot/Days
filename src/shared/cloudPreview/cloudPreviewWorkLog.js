@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '영문화',
-  sessionNo: 15,
-  sessionPhase: 'TourAPI 프록시 EN',
+  sessionNo: 16,
+  sessionPhase: '축제 본문 EN',
   branch: 'cursor/en',
-  previewPath: '/?lang=en',
+  previewPath: '/korea?lang=en',
   qaShareSlug: 'en',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-19-i18n-festival-body-en',
+    session: '영문화 #16, 축제 본문 EN',
+    title: '축제 목록 KO · 본문 EN+폴백',
+    detail:
+      '축제 목록은 KorService2 SSOT(건수·탭 동일). 상세는 locale=en일 때 EngService2 본문 + KorService2 폴백. Preview /qa/en · /korea?lang=en 에서 「지금」45건 유지·카드 열기 시 overview·program·info가 영문(없으면 한글)인지 확인해 주세요.',
+    at: '2026-08-19',
+  },
   {
     id: '2026-08-19-i18n-tourapi-proxy-en',
     session: '영문화 #15, TourAPI 프록시 EN',

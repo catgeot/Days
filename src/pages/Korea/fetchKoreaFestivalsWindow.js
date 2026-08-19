@@ -1,7 +1,7 @@
 import { fetchTourApiFestivalWindow } from '../../utils/fetchTourApiFestivals';
 import { rolling12MonthRangeYmd } from './festivalTimeFilter';
 
-const CACHE_KEY = 'gateo:korea-festivals:v1:rolling12';
+const CACHE_KEY = 'gateo:korea-festivals:v1:rolling12:ko';
 const CACHE_TTL_MS = 6 * 60 * 60 * 1000;
 
 /** @type {Promise<{ ok: boolean, items: object[], fromCache: boolean, stale?: boolean, error?: string }> | null} */

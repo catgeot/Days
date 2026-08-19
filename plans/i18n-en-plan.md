@@ -24,8 +24,8 @@
 | 12 | PROD 확인 | `영문화 #12, PROD QA 확인` | ✅ 사람 QA |
 | 13 | 지구본 칩 | `영문화 #13, 지구본 칩·국가` | ✅ main |
 | 14 | 지구본 지명 | `영문화 #14, 지구본 지명·맵` | ✅ main |
-| 15 | TourAPI 프록시 | `영문화 #15, TourAPI 프록시 EN` | 다음 |
-| 16 | 축제 본문 EN | `영문화 #16, 축제 본문 EN` | |
+| 15 | TourAPI 프록시 | `영문화 #15, TourAPI 프록시 EN` | ✅ |
+| 16 | 축제 본문 EN | `영문화 #16, 축제 본문 EN` | Preview |
 | 17 | 명승 TourAPI 본문 | `영문화 #17, 명승 TourAPI 본문 EN` | |
 | 18 | 무니 UI·칩 | `영문화 #18, 무니 UI·칩` | |
 | 19 | 무니 프롬프트·대화 | `영문화 #19, 무니 프롬프트·대화 EN` | |
@@ -111,29 +111,29 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#15)**: Edge deploy · LIVE `smoke:tourapi` PASS · Preview QA 대기
+**상태 (#16)**: Preview push · `smoke:festival-detail-locale` PASS
 
-**브랜치**: `cursor/en` · `/qa/en` · **#16 착수**
+**브랜치**: `cursor/en` · `/qa/en` · **#17 착수**
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #16, 축제 본문 EN
+영문화 #17, 명승 TourAPI 본문 EN
 @plans/feature-handoff-index.md
 @plans/2026-08-19-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · /qa/en · ?lang=en /korea 축제 본문
+브랜치 cursor/en · /qa/en · ?lang=en /korea/theme/scenic 본문
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 
-### #16 세션 범위 (에이전트 Read 대상만)
+### #16 완료 요약
 
 | 파일 | 작업 |
 |------|------|
-| `/korea` 축제 상세 | TourAPI EN 본문 표시 |
-| `FestivalDetailSheet` 등 | locale 분기·기존 비주얼 유지 |
-
-**VERIFY**: `npm run build` · `smoke:korea-festival-*` · Edge deploy 후 LIVE
+| `fetchTourApiFestivals.js` | 목록 `locale=ko` · `fetchTourApiFestivalDetailLocalized` |
+| `mergeTourApiFestivalDetail.js` | EN 필드 우선 · KO 폴백 |
+| `FestivalDetailSheet` | localized detail · `displayTitle` |
+| `fetchKoreaFestivalsWindow.js` | sessionStorage `rolling12:ko` |
 
 ### #15 완료 요약
 

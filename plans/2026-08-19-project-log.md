@@ -56,3 +56,11 @@
 - **배포** `npx supabase functions deploy tourapi-proxy --no-verify-jwt` 완료
 - **LIVE** `TOURAPI_SMOKE_LIVE=1 npm run smoke:tourapi` — `locale=en` EngService2 **PASS**
 - **다음** Preview `/qa/en` 사람 QA · #16 축제 본문 EN
+
+## 영문화 #16, 축제 본문 EN — Preview push
+
+- **목록** `festivalWindow` 항상 `locale=ko` (KorService2 SSOT · 「지금」45건 유지)
+- **상세** `fetchTourApiFestivalDetailLocalized` — EN 본문 + KO 필드 폴백 · `displayTitle`
+- **캐시** sessionStorage `rolling12:ko` · `mergeTourApiFestivalDetail.js`
+- **VERIFY** `smoke:festival-detail-locale` · `build` · `smoke:place-label-slug` PASS
+- **Preview** `/qa/en` · `/korea?lang=en` — 축제 카드·상세 본문
