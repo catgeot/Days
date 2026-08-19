@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '영문화',
-  sessionNo: 10,
-  sessionPhase: '잔여·Preview QA',
+  sessionNo: 13,
+  sessionPhase: '지구본 칩·국가',
   branch: 'cursor/en',
-  previewPath: '/blog?lang=en',
+  previewPath: '/?lang=en',
   qaShareSlug: 'en',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-19-i18n-globe-chips',
+    session: '영문화 #13, 지구본 칩·국가',
+    title: '지구본 나라·소권역·해양 칩 en',
+    detail:
+      'GlobeFaceRegionRail — 소권역·나라·대양·해역 칩 label을 globeUi + home.globe.country/subregion/ocean i18n으로 분기했습니다. Preview /qa/en · ?lang=en 홈에서 카테고리 칩·나라 목록·소권역 바가 영문인지 확인해 주세요.',
+    at: '2026-08-19',
+  },
   {
     id: '2026-08-18-i18n-blog-auth',
     session: '영문화 #10, 잔여·Preview QA',

@@ -8,6 +8,12 @@ import {
   shouldShowFaceSubregionChips,
 } from '../lib/globeFaceSubregions.js';
 import { getFaceSeaOceans } from '../lib/faceSeaOceans.js';
+import {
+  localizedGlobeCountryLabel,
+  localizedGlobeSubregionLabel,
+  localizedSeaBasinChipLabel,
+  localizedSeaOceanLabel,
+} from '../../../i18n/globeUi.js';
 
 const CATEGORY_CHIP = {
   paradise: {
@@ -56,7 +62,7 @@ const SEA_OCEAN_CHIP = {
 
 function renderSeaOceanChip(
   ocean,
-  { isActive, onClick, compact = false, side = false },
+  { isActive, onClick, compact = false, side = false, label, ariaLabel },
 ) {
   const tone = isActive ? SEA_OCEAN_CHIP.active : SEA_OCEAN_CHIP.idle;
   return (
@@ -66,14 +72,14 @@ function renderSeaOceanChip(
       role="option"
       aria-selected={isActive}
       aria-pressed={isActive}
-      aria-label={`${ocean.name} 해역`}
+      aria-label={ariaLabel}
       onClick={() => onClick?.(ocean)}
       className={`${side ? 'w-[4.5rem] shrink-0' : 'shrink-0'} rounded-lg border px-2.5 py-1.5 text-left backdrop-blur-md transition-all active:scale-[0.97] ${
         compact ? 'px-1.5 text-[10px]' : 'text-[11px]'
       } ${tone}`}
     >
       <span className="block whitespace-nowrap font-bold leading-tight tracking-tight break-keep">
-        {ocean.name}
+        {label}
       </span>
     </button>
   );
@@ -197,6 +203,7 @@ export function GlobeFaceSubregionBar({
   skipAutoSync = false,
   className = '',
 }) {
+  const { t } = useTranslation();
   const subregions = useMemo(() => getFaceSubregions(category), [category]);
   const faceSeaOceans = useMemo(() => getFaceSeaOceans(category), [category]);
   const showSubregions = shouldShowFaceSubregionChips(category) && subregions.length > 0;
@@ -267,11 +274,12 @@ export function GlobeFaceSubregionBar({
           ref={barRef}
           className={`flex w-full min-w-0 gap-1.5 overflow-x-auto overscroll-x-contain touch-pan-x ${CUSTOM_SCROLL_CLASS}`}
           role="listbox"
-          aria-label="소권역·해양"
+          aria-label={t('home.globe.subregionGroup')}
           onScroll={updateScrollUi}
         >
           {subregions.map((sub) => {
             const isActive = !selectedTopOceanId && activeSubregionId === sub.id;
+            const subLabel = localizedGlobeSubregionLabel(t, category, sub);
             return (
               <button
                 key={sub.id}
@@ -284,15 +292,20 @@ export function GlobeFaceSubregionBar({
                 }`}
               >
                 <span className="block whitespace-nowrap text-[11px] font-bold leading-tight tracking-tight break-keep">
-                  {sub.labelKo}
+                  {subLabel}
                 </span>
               </button>
             );
           })}
-          {faceSeaOceans.map((ocean) => renderSeaOceanChip(ocean, {
-            isActive: selectedTopOceanId === ocean.id,
-            onClick: onSelectTopOcean,
-          }))}
+          {faceSeaOceans.map((ocean) => {
+            const oceanLabel = localizedSeaOceanLabel(t, ocean);
+            return renderSeaOceanChip(ocean, {
+              isActive: selectedTopOceanId === ocean.id,
+              onClick: onSelectTopOcean,
+              label: oceanLabel,
+              ariaLabel: t('home.globe.oceanChipAria', { name: oceanLabel }),
+            });
+          })}
         </div>
         {scrollUi.scrollable ? (
           <div
@@ -336,7 +349,7 @@ export default function GlobeFaceRegionRail({
   selectedTopOceanId = null,
   onSelectTopOcean = null,
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isSeaRail = Boolean(seaBasinHierarchy);
   const subregions = useMemo(
     () => (showSubregions ? getFaceSubregions(category) : []),
@@ -528,22 +541,25 @@ export default function GlobeFaceRegionRail({
     </div>
   );
 
-  const renderSeaBasinChip = (basin, { compact = false, isActive = false } = {}) => (
-    <button
-      key={basin.id}
-      type="button"
-      role="option"
-      aria-selected={isActive}
-      onClick={() => onSelectSeaBasin?.(basin)}
-      className={`${compact ? 'w-[4.25rem] rounded-lg px-1.5 py-1.5 text-[10px]' : 'w-[4.75rem] md:w-[5.5rem] rounded-xl px-2 py-2 text-[11px] md:text-xs'} shrink-0 border bg-black/55 text-left backdrop-blur-md shadow-lg transition-all active:scale-[0.97] ${
-        isActive ? tone.active : tone.idle
-      }`}
-    >
-      <span className="block font-bold leading-tight tracking-tight break-keep">
-        {basin.name}
-      </span>
-    </button>
-  );
+  const renderSeaBasinChip = (basin, { compact = false, isActive = false } = {}) => {
+    const basinLabel = localizedSeaBasinChipLabel(i18n.language, basin);
+    return (
+      <button
+        key={basin.id}
+        type="button"
+        role="option"
+        aria-selected={isActive}
+        onClick={() => onSelectSeaBasin?.(basin)}
+        className={`${compact ? 'w-[4.25rem] rounded-lg px-1.5 py-1.5 text-[10px]' : 'w-[4.75rem] md:w-[5.5rem] rounded-xl px-2 py-2 text-[11px] md:text-xs'} shrink-0 border bg-black/55 text-left backdrop-blur-md shadow-lg transition-all active:scale-[0.97] ${
+          isActive ? tone.active : tone.idle
+        }`}
+      >
+        <span className="block font-bold leading-tight tracking-tight break-keep">
+          {basinLabel}
+        </span>
+      </button>
+    );
+  };
 
   const renderSeaBasinHierarchy = () => {
     if (!seaBasinHierarchy) return null;
@@ -565,27 +581,30 @@ export default function GlobeFaceRegionRail({
           <div
             className="flex flex-wrap gap-1"
             role="group"
-            aria-label="대양·권역"
+            aria-label={t('home.globe.oceanGroup')}
           >
             {topOceans.map((ocean) => {
               const isActive = activeTopOceanId === ocean.id;
+              const oceanLabel = localizedSeaOceanLabel(t, ocean);
               return renderSeaOceanChip(ocean, {
                 isActive,
                 onClick: onSelectTopOcean,
                 compact: true,
+                label: oceanLabel,
+                ariaLabel: t('home.globe.oceanChipAria', { name: oceanLabel }),
               });
             })}
           </div>
         ) : null}
         {midRegions.length > 0 ? (
-          <div className={`flex flex-col gap-1 ${showTopOceansInList && topOceans.length > 0 ? 'mt-1' : ''}`} role="group" aria-label="중위 해역">
+          <div className={`flex flex-col gap-1 ${showTopOceansInList && topOceans.length > 0 ? 'mt-1' : ''}`} role="group" aria-label={t('home.globe.midSeaGroup')}>
             {midRegions.map((basin) => renderSeaBasinChip(basin, {
               isActive: selectedSeaBasinId === basin.id,
             }))}
           </div>
         ) : null}
         {showSmallSeas && smallSeas.length > 0 ? (
-          <div className="mt-1 flex flex-col gap-1" role="group" aria-label="소해역">
+          <div className="mt-1 flex flex-col gap-1" role="group" aria-label={t('home.globe.smallSeaGroup')}>
             {smallSeas.map((basin) => renderSeaBasinChip(basin, {
               compact: true,
               isActive: selectedSeaBasinId === basin.id,
@@ -593,7 +612,7 @@ export default function GlobeFaceRegionRail({
           </div>
         ) : null}
         {showSmallSeas && labelSeas.length > 0 ? (
-          <div className="mt-1 flex flex-col gap-1" role="group" aria-label="광역 해역">
+          <div className="mt-1 flex flex-col gap-1" role="group" aria-label={t('home.globe.wideSeaGroup')}>
             {labelSeas.map((basin) => renderSeaBasinChip(basin, {
               compact: true,
               isActive: selectedSeaBasinId === basin.id,
@@ -613,6 +632,7 @@ export default function GlobeFaceRegionRail({
     t('home.globe.countryExplore'),
     regions.map((region) => {
       const isActive = selectedRegionId === region.id;
+      const countryLabel = localizedGlobeCountryLabel(t, region);
       return (
         <button
           key={region.id}
@@ -625,7 +645,7 @@ export default function GlobeFaceRegionRail({
           }`}
         >
           <span className="block text-[11px] md:text-xs font-bold leading-tight tracking-tight break-keep">
-            {region.labelKo}
+            {countryLabel}
           </span>
         </button>
       );
@@ -650,10 +670,11 @@ export default function GlobeFaceRegionRail({
       <div
         className={`flex ${resolvedListHeight} flex-col gap-1 overflow-y-auto ${GLASS_SCROLL_CLASS} pr-1`}
         role="listbox"
-        aria-label="소권역·해양"
+        aria-label={t('home.globe.subregionGroup')}
       >
         {subregions.map((sub) => {
           const isActive = !selectedTopOceanId && activeSubregionId === sub.id;
+          const subLabel = localizedGlobeSubregionLabel(t, category, sub);
           return (
             <button
               key={sub.id}
@@ -666,17 +687,22 @@ export default function GlobeFaceRegionRail({
               }`}
             >
               <span className="block text-[10px] font-bold leading-tight tracking-tight break-keep">
-                {sub.labelKo}
+                {subLabel}
               </span>
             </button>
           );
         })}
-        {faceSeaOceans.map((ocean) => renderSeaOceanChip(ocean, {
-          isActive: selectedTopOceanId === ocean.id,
-          onClick: onSelectTopOcean,
-          compact: true,
-          side: true,
-        }))}
+        {faceSeaOceans.map((ocean) => {
+          const oceanLabel = localizedSeaOceanLabel(t, ocean);
+          return renderSeaOceanChip(ocean, {
+            isActive: selectedTopOceanId === ocean.id,
+            onClick: onSelectTopOcean,
+            compact: true,
+            side: true,
+            label: oceanLabel,
+            ariaLabel: t('home.globe.oceanChipAria', { name: oceanLabel }),
+          });
+        })}
       </div>
       {isSeaRail ? seaList : countryList}
     </div>

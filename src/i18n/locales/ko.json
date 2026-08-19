@@ -110,7 +110,56 @@
       "smallSeaGroup": "소해역",
       "wideSeaGroup": "광역 해역",
       "seaExplore": "해역 탐색",
-      "countryExplore": "나라·지역 탐색"
+      "countryExplore": "나라·지역 탐색",
+      "ocean": {
+        "pacific": "태평양",
+        "atlantic": "대서양",
+        "indian": "인도양",
+        "mediterranean": "지중해"
+      },
+      "oceanChipAria": "{{name}} 해역",
+      "subregion": {
+        "paradise": {
+          "east_asia": "동아시아",
+          "se_asia": "동남아시아",
+          "s_asia": "남아시아",
+          "pacific": "남태평양·오세아니아",
+          "middle_east": "중동",
+          "central_asia": "중앙아시아·코카서스",
+          "other": "기타"
+        },
+        "nature": {
+          "east_africa": "동아프리카",
+          "southern_africa": "남아프리카",
+          "indian_ocean": "인도양 도서",
+          "north_africa": "북아프리카",
+          "west_africa": "서아프리카",
+          "central": "중부 아프리카",
+          "other": "기타"
+        },
+        "urban": {
+          "west_europe": "서유럽",
+          "british_isles": "영국·아일랜드",
+          "south_europe": "남유럽",
+          "north_europe": "북유럽",
+          "central_europe": "중부유럽",
+          "balkans_east": "발칸·동유럽",
+          "microstates": "소국·공국",
+          "arctic": "북극·도서",
+          "other": "기타"
+        },
+        "culture": {
+          "north": "북미",
+          "central": "중미",
+          "caribbean": "카리브",
+          "other": "기타"
+        },
+        "adventure": {
+          "andes": "안데스·서부",
+          "atlantic": "대서양·남부",
+          "other": "기타"
+        }
+      }
     },
     "category": {
       "paradise": "휴양",
