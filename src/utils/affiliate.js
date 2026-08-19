@@ -1,5 +1,6 @@
 // src/utils/affiliate.js
 
+import { i18n } from '../i18n/config.js';
 import {
   MRT_HOME_MYLINK_ID,
   MRT_PACKAGE_SHORT_URLS,
@@ -19,6 +20,14 @@ export {
   resolveMrtPackageThemeHref,
   resolveMrtPackageThemeForLocation,
 } from './mrtPackageLinks.js';
+import { resolveTripcomPartnerLocale } from './tripcomPartnerLocale.js';
+
+export { resolveTripcomPartnerLocale };
+
+/** @returns {'ko-KR' | 'en-US'} */
+export function getTripcomPartnerLocale() {
+  return resolveTripcomPartnerLocale(i18n.language);
+}
 
 // Klook direct affiliate parameters (managed in one place)
 export const KLOOK_AID = '118544';
@@ -815,6 +824,7 @@ function resolveTripcomFlightTracking(options = {}) {
  *   returnDate?: string,
  *   adultCount?: number,
  *   childCount?: number,
+ *   partnerLocale?: string,
  * }} [options]
  * @returns {string}
  */
@@ -822,12 +832,14 @@ export function buildTripcomPlannerFlightUrl(location, options = {}) {
   const { mode = 'flights', adId = TRIPCOM_FLIGHT_AD.adId, departureIata } = options;
   const arrival = getPlannerFlightArrivalIata(location, options);
   const { sub1, sub3 } = resolveTripcomFlightTracking(options);
+  const partnerLocale =
+    options.partnerLocale ?? getTripcomPartnerLocale();
 
   const params = new URLSearchParams({
     Allianceid: TRIPCOM_KR_PARTNER.allianceId,
     SID: TRIPCOM_KR_PARTNER.sid,
     trip_sub1: sub1,
-    locale: 'ko-KR',
+    locale: partnerLocale,
     curr: 'KRW',
     trip_sub3: sub3,
   });

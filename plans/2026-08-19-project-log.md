@@ -60,6 +60,12 @@
 - **모달** `TripcomFlightSearchModal` — 헤더·aria·제휴 배지 EN
 - **VERIFY** `smoke:place-label-slug` · `build` PASS
 
+## 영문화 #20 보정 — Trip.com ad locale=en-US 시험
+
+- **항공 iframe** `buildTripcomPlannerFlightUrl` — `?lang=en` → URL `locale=en-US` (동일 ad ID)
+- **한계** iframe 안 UI(왕복·편도·검색)는 Trip.com ad 템플릿 — Preview에서 EN 미반영 시 Trip.com EN ad 신규 등록
+- **VERIFY** `smoke-tripcom-flight-locale` · `build` PASS
+
 ## 영문화 #18, 무니 UI·칩 — Preview push
 
 - **무니 UI** `ChatModal` · `MooniAgentFab` · 목적지 칩 · 플래너 follow-up — `mooni.*` i18n 키
