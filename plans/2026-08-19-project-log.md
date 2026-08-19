@@ -10,3 +10,10 @@
 - **브랜치** `cursor/en` · PR #135
 - **Preview** `/qa/en` · `?lang=en` — 홈 지구본 칩·나라 목록
 - **다음** 사람 Preview QA → 잔여 영문화 또는 PROD
+
+## 영문화 #13 보정 — 동해 en 표기
+
+- **동해** `name_en` Sea of Japan → **East Sea** (한국 표기 관례)
+- **검색 alias** `East Sea` 추가 · `Sea of Japan`은 검색용 alias 유지
+- **동중국해** alias에서 `동해` 오탐 제거
+- **VERIFY** `generate:sea-basins` · `smoke:sea-basin-rail` · `build` PASS
