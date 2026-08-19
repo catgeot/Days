@@ -22,9 +22,9 @@
 | 10 | 잔여·QA | `영문화 #10, 잔여·Preview QA` | ✅ Preview |
 | 11 | 병합·PROD | `영문화 #11, 병합·PROD QA` | ✅ merge |
 | 12 | PROD 확인 | `영문화 #12, PROD QA 확인` | ✅ 사람 QA |
-| **13** | 지구본 칩·국가 | `영문화 #13, 지구본 칩·국가` | 다음 |
-| 14 | 지구본 지명·맵 | `영문화 #14, 지구본 지명·맵` | |
-| 15 | TourAPI 프록시 EN | `영문화 #15, TourAPI 프록시 EN` | |
+| 13 | 지구본 칩 | `영문화 #13, 지구본 칩·국가` | ✅ main |
+| 14 | 지구본 지명 | `영문화 #14, 지구본 지명·맵` | ✅ main |
+| 15 | TourAPI 프록시 | `영문화 #15, TourAPI 프록시 EN` | 다음 |
 | 16 | 축제 본문 EN | `영문화 #16, 축제 본문 EN` | |
 | 17 | 명승 TourAPI 본문 | `영문화 #17, 명승 TourAPI 본문 EN` | |
 | 18 | 무니 UI·칩 | `영문화 #18, 무니 UI·칩` | |
@@ -74,7 +74,7 @@
 | **#5** | PROD 병합 | PR #132 → `main` | `build` |
 | **#7+** | 세부·확장 | PlaceCard 세부 · 한국 테마 · 로그북/대시보드 | `build` |
 | **#13** | 지구본 칩·국가 | 중분류·국가·해양 칩 EN (`globeUi.js`) | `build` |
-| **#14** | 지구본 지명 | 핀·Mapbox `name_en` | `build` · `smoke:place-label-slug` |
+| **#14** | 지구본 지명 | 핀·Mapbox `name_en` · 클러스터 범례 | `build` · `smoke:place-label-slug` |
 | **#15** | TourAPI 프록시 | `EngService2` + locale 캐시 | `build` · Edge deploy |
 | **#16** | 축제 본문 | `/korea` TourAPI EN | `build` |
 | **#17** | 명승 TourAPI | `ThemeSpotDetailModal` (CHA·선정 제외) | `build` |
@@ -111,32 +111,30 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#12)**: PROD QA **사람 OK** · 1차 UI 영문화 main 완료 (`097ecc59` docs tip) · **2차 #13 착수 대기**
+**상태 (#14)**: Preview QA **PASS** · PR [#135](https://github.com/catgeot/Days/pull/135) → **main 병합** (사람)
 
-**브랜치**: `cursor/en` · PR **#135** (신규) · `/qa/en`
+**브랜치**: `cursor/en` · `/qa/en` · **#15 착수**
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #13, 지구본 칩·국가
+영문화 #15, TourAPI 프록시 EN
 @plans/feature-handoff-index.md
 @plans/2026-08-19-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · PR #135 · /qa/en · ?lang=en 지구본 칩
+브랜치 cursor/en · /qa/en · ?lang=en TourAPI EngService2
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 
-### #13 세션 범위 (에이전트 Read 대상만)
+### #15 세션 범위 (에이전트 Read 대상만)
 
 | 파일 | 작업 |
 |------|------|
-| `src/pages/Home/lib/globeFaceSubregions.js` | `labelEn` 또는 i18n id |
-| `src/pages/Home/lib/globeCountryCatalog.js` | `labelEn` (`Intl.DisplayNames` 스크립트) |
-| `src/pages/Home/lib/seaBasinRail.js` · `seaBasins.json` | `name_en` |
-| `src/pages/Home/components/GlobeFaceRegionRail.jsx` | `useLocale()` + 라벨 |
-| `src/i18n/globeUi.js` (신규) | `getLocalizedGlobeCountryLabel` 등 |
+| TourAPI Edge 프록시 | ko=`KorService2` · en=`EngService2` |
+| 캐시 키 | locale 분리 |
+| 클라이언트 호출부 | `useLocale()` → API locale 전달 |
 
-**VERIFY**: `npm run build`
+**VERIFY**: `npm run build` · `smoke:tourapi`(해당 시) · Edge deploy는 Secrets·사람
 
 ---
 

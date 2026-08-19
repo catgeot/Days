@@ -119,7 +119,7 @@ export const SEA_BASINS_OVERRIDES = [
     tier: 1,
     center: { lat: 28.0, lng: 126.0 },
     bbox: [120.0, 23.0, 131.0, 35.0],
-    aliases: ['동중국해', 'East China Sea', '동해'],
+    aliases: ['동중국해', 'East China Sea'],
   },
   {
     id: 'philippine-sea',
@@ -314,12 +314,12 @@ export const SEA_BASINS_OVERRIDES = [
   {
     id: 'sea-of-japan',
     name: '동해',
-    name_en: 'Sea of Japan',
+    name_en: 'East Sea',
     parentOcean: 'pacific',
     tier: 2,
     center: { lat: 40.0, lng: 135.0 },
     bbox: [127.0, 34.0, 142.0, 48.0],
-    aliases: ['동해', '일본해', 'Sea of Japan'],
+    aliases: ['동해', 'East Sea', '일본해', 'Sea of Japan'],
   },
   {
     id: 'sargasso',

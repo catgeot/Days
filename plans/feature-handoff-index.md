@@ -58,29 +58,29 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 ---
 
-### 영문화 (English UI) — 1차 main · 2차 콘텐츠
+### 영문화 (English UI) — 2차 확장
 
 | | |
 |--|--|
-| **상태** | **1차 완료** (#12 PROD QA OK) · **2차 #13 착수** |
-| **main** | `097ecc59` — PR [#134](https://github.com/catgeot/Days/pull/134) 병합 + docs |
-| **브랜치** | `cursor/en` (2차 작업) |
+| **상태** | **#13~#14 main 병합** · **#15 TourAPI 착수** (`cursor/en`) |
+| **main** | PR [#135](https://github.com/catgeot/Days/pull/135) 병합 후 SHA 확인 |
+| **브랜치** | `cursor/en` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§10 |
 | **일지** | [`2026-08-19-project-log.md`](./2026-08-19-project-log.md) |
 | **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` |
 | **PROD** | `https://www.gateo.kr/qa/en` → `/?lang=en` |
 | **VERIFY** | `npm run build` · `smoke:place-label-slug` |
 
-**2차 순서**: #13 지구본 칩 → #14 지명 → #15~17 TourAPI → #18~20 무니 → #21~22 플래너
+**2차 순서**: ~~#13 지구본 칩~~ · ~~#14 지명~~ → **#15 TourAPI** → #16~17 한국 본문 → #18~20 무니
 
 **다음 제시어**:
 
 ```
-영문화 #13, 지구본 칩·국가
+영문화 #15, TourAPI 프록시 EN
 @plans/feature-handoff-index.md
 @plans/2026-08-19-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · PR #135 · /qa/en · ?lang=en 지구본 칩
+브랜치 cursor/en · /qa/en · ?lang=en TourAPI EngService2
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 

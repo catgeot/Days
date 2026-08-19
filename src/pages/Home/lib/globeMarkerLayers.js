@@ -1,3 +1,5 @@
+import { localizedMarkerPinLabel } from '../../../i18n/globeUi.js';
+
 /** Mapbox GeoJSON layers for gateo globe markers (GPU-attached, no DOM jitter) */
 
 export const GATEO_SOURCE_ID = 'gateo-spots';
@@ -36,11 +38,12 @@ const truncate = (str, length = 12) => {
   return str.length > length ? `${str.substring(0, length)}..` : str;
 };
 
-export function markerToFeature(marker, index = 0) {
+export function markerToFeature(marker, index = 0, locale = 'ko') {
   const lat = Number(marker.lat) + (Number(marker._offsetLat) || 0);
   const lng = Number(marker.lng) + (Number(marker._offsetLng) || 0);
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
 
+  const displayName = localizedMarkerPinLabel(marker, locale);
   const type = marker.type || 'major';
   const category = marker.category || 'default';
   const color = type === 'temp-base'
@@ -55,8 +58,8 @@ export function markerToFeature(marker, index = 0) {
     geometry: { type: 'Point', coordinates: [lng, lat] },
     properties: {
       markerId: String(marker.id || marker.tripId || marker.slug || `spot-${index}`),
-      name: truncate(marker.name || marker.destination || '?', type === 'major' ? 12 : 10),
-      fullName: marker.name || marker.destination || '',
+      name: truncate(displayName, type === 'major' ? 12 : 10),
+      fullName: displayName,
       slug: marker.slug || '',
       country: marker.country || '',
       country_en: marker.country_en || '',
@@ -74,9 +77,9 @@ export function markerToFeature(marker, index = 0) {
   };
 }
 
-export function markersToGeoJSON(markers = []) {
+export function markersToGeoJSON(markers = [], locale = 'ko') {
   const features = markers
-    .map((marker, index) => markerToFeature(marker, index))
+    .map((marker, index) => markerToFeature(marker, index, locale))
     .filter(Boolean);
   return { type: 'FeatureCollection', features };
 }
