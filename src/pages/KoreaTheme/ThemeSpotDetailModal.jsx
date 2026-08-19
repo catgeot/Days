@@ -1016,6 +1016,9 @@ export default function ThemeSpotDetailModal({
       const data = await fetchTourApiAttractionDetailLocalized({
         contentId,
         contentTypeId: spot.contentTypeId || undefined,
+        titleEn: spot.nameEn || null,
+        spotId: spot.id || null,
+        placeSlug: spot.placeSlug || null,
       });
       if (cancelled) return;
       setDetailLoading(false);

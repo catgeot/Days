@@ -87,6 +87,27 @@ assert(
   'attraction detail localized fetch with en/ko',
 );
 
+assert(
+  fetchJs.includes('resolveTourApiEngContentId') &&
+    fetchJs.includes('titleEn'),
+  'localized detail resolves EngService2 contentId via English search',
+);
+
+const proxyJs = readFileSync(join(root, 'src/utils/tourApiProxy.js'), 'utf8');
+assert(
+  proxyJs.includes('NEARBY_TOUR_API_LOCALE'),
+  'nearby TourAPI locale pinned to ko',
+);
+
+const nearbyJs = readFileSync(
+  join(root, 'src/utils/fetchNearbyTourRestaurants.js'),
+  'utf8',
+);
+assert(
+  nearbyJs.includes('NEARBY_TOUR_API_LOCALE'),
+  'nearby restaurants use ko listing SSOT',
+);
+
 const modalJs = readFileSync(
   join(root, 'src/pages/KoreaTheme/ThemeSpotDetailModal.jsx'),
   'utf8',
@@ -99,6 +120,22 @@ assert(
 assert(
   modalJs.includes('i18n.language'),
   'ThemeSpotDetailModal refetches on locale change',
+);
+
+assert(
+  modalJs.includes('spotId: spot.id') && modalJs.includes('titleEn: spot.nameEn'),
+  'ThemeSpotDetailModal passes spotId/titleEn for EN contentId resolve',
+);
+
+const resolveJs = readFileSync(
+  join(root, 'src/utils/resolveTourApiEngContentId.js'),
+  'utf8',
+);
+assert(
+  resolveJs.includes('englishSearchTerms') &&
+    resolveJs.includes('resolveTourApiEngContentId') &&
+    resolveJs.includes('travelSpotTourApi.json'),
+  'Eng contentId resolver uses TourAPI aliases SSOT',
 );
 
 if (failed) {

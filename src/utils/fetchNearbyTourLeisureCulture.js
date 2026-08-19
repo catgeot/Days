@@ -5,7 +5,7 @@ import {
   fetchNearbyTourAreaBasedFallback,
   isTourApiQuotaError,
 } from './nearbyTourAreaFallback';
-import { getTourApiLocale, withTourApiTimeout } from './tourApiProxy';
+import { NEARBY_TOUR_API_LOCALE, withTourApiTimeout } from './tourApiProxy';
 
 export const LEPORTS_CONTENT_TYPE_ID = '28';
 export const CULTURE_CONTENT_TYPE_ID = '14';
@@ -158,7 +158,7 @@ export async function fetchNearbyTourByContentType(opts) {
       supabase.functions.invoke('tourapi-proxy', {
         body: {
           action: 'locationBasedList',
-          locale: getTourApiLocale(),
+          locale: NEARBY_TOUR_API_LOCALE,
           mapX: lng,
           mapY: lat,
           radius: radiusM,

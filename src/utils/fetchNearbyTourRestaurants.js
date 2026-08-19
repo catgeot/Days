@@ -5,7 +5,7 @@ import {
   fetchNearbyTourAreaBasedFallback,
   isTourApiQuotaError,
 } from './nearbyTourAreaFallback';
-import { getTourApiLocale, withTourApiTimeout } from './tourApiProxy';
+import { NEARBY_TOUR_API_LOCALE, withTourApiTimeout } from './tourApiProxy';
 
 export const RESTAURANT_CONTENT_TYPE_ID = '39';
 
@@ -123,7 +123,7 @@ export async function fetchNearbyTourRestaurants(opts) {
       supabase.functions.invoke('tourapi-proxy', {
         body: {
           action: 'locationBasedList',
-          locale: getTourApiLocale(),
+          locale: NEARBY_TOUR_API_LOCALE,
           mapX: lng,
           mapY: lat,
           radius: radiusM,

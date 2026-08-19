@@ -1,5 +1,5 @@
 import { supabase } from '../shared/api/supabase';
-import { getTourApiLocale, withTourApiTimeout } from './tourApiProxy';
+import { NEARBY_TOUR_API_LOCALE, withTourApiTimeout } from './tourApiProxy';
 
 function haversineKm(lat1, lng1, lat2, lng2) {
   const toRad = (d) => (d * Math.PI) / 180;
@@ -54,7 +54,7 @@ export async function fetchNearbyTourAreaBasedFallback(opts) {
     for (let pageNo = 1; pageNo <= maxPages; pageNo += 1) {
       const body = {
         action: 'areaBasedList',
-        locale: getTourApiLocale(),
+        locale: NEARBY_TOUR_API_LOCALE,
         areaCode,
         contentTypeId,
         numOfRows: 50,

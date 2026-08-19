@@ -1,9 +1,14 @@
 import { getTourApiLocale, invokeTourApiProxy } from './tourApiProxy';
 import { mergeTourApiAttractionDetail } from './mergeTourApiAttractionDetail';
+import { resolveTourApiEngContentId } from './resolveTourApiEngContentId';
 
 const ATTRACTION_CONTENT_TYPE_ID = '12';
 const RESTAURANT_CONTENT_TYPE_ID = '39';
 const INTRO_TYPE_CANDIDATES = ['12', '14', '28', '38', '39'];
+
+function hasText(value) {
+  return String(value ?? '').trim().length > 0;
+}
 
 /**
  * @param {string} action
@@ -31,14 +36,15 @@ function pickImageUrl(...candidates) {
 }
 
 /**
- * @param {{ contentId: string | number, contentTypeId?: string | number, locale?: 'ko' | 'en' }} opts
+ * @param {{
+ *   contentId: string,
+ *   contentTypeId?: string,
+ *   locale: 'ko' | 'en',
+ * }} params
  */
-async function fetchTourApiAttractionDetailForLocale(opts) {
-  const contentId = String(opts?.contentId ?? '').trim();
-  if (!/^\d{1,32}$/.test(contentId)) return null;
-
-  const locale = opts?.locale === 'en' ? 'en' : 'ko';
-  const preferredType = String(opts?.contentTypeId || '').trim();
+async function loadTourApiAttractionBundle(params) {
+  const { contentId, locale } = params;
+  const preferredType = String(params.contentTypeId || '').trim();
 
   const [common, images] = await Promise.all([
     invokeTourApi('detailCommon', { contentId }, locale),
@@ -130,6 +136,48 @@ async function fetchTourApiAttractionDetailForLocale(opts) {
 }
 
 /**
+ * @param {{
+ *   contentId: string | number,
+ *   contentTypeId?: string | number,
+ *   locale?: 'ko' | 'en',
+ *   titleEn?: string | null,
+ *   placeSlug?: string | null,
+ *   spotId?: string | null,
+ * }} opts
+ */
+async function fetchTourApiAttractionDetailForLocale(opts) {
+  const contentId = String(opts?.contentId ?? '').trim();
+  if (!/^\d{1,32}$/.test(contentId)) return null;
+
+  const locale = opts?.locale === 'en' ? 'en' : 'ko';
+  let preferredType = String(opts?.contentTypeId || '').trim();
+
+  let detail = await loadTourApiAttractionBundle({
+    contentId,
+    contentTypeId: preferredType,
+    locale,
+  });
+
+  if (
+    locale === 'en' &&
+    (!detail ||
+      (String(detail.overview || '').trim().length < 40 && !hasText(detail.title)))
+  ) {
+    const resolved = await resolveTourApiEngContentId(opts);
+    if (resolved?.contentId && resolved.contentId !== contentId) {
+      preferredType = resolved.contentTypeId;
+      detail = await loadTourApiAttractionBundle({
+        contentId: resolved.contentId,
+        contentTypeId: preferredType,
+        locale,
+      });
+    }
+  }
+
+  return detail;
+}
+
+/**
  * 관광지·맛집 등 상세 — 개요·이용·부가정보·사진.
  * @param {{ contentId: string | number, contentTypeId?: string | number }} opts
  */
@@ -142,7 +190,13 @@ export async function fetchTourApiAttractionDetail(opts) {
 
 /**
  * locale=en — EngService2 본문 + KorService2 폴백. ko — KorService2만.
- * @param {{ contentId: string | number, contentTypeId?: string | number }} opts
+ * @param {{
+ *   contentId: string | number,
+ *   contentTypeId?: string | number,
+ *   titleEn?: string | null,
+ *   placeSlug?: string | null,
+ *   spotId?: string | null,
+ * }} opts
  */
 export async function fetchTourApiAttractionDetailLocalized(opts) {
   const contentId = String(opts?.contentId ?? '').trim();

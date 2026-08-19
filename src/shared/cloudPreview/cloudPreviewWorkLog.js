@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-19-i18n-scenic-tourapi-body-en-fix',
+    session: '영문화 #17, 명승 TourAPI 본문 EN',
+    title: '경복궁 EN id·주변 맛집 ko SSOT 보정',
+    detail:
+      'EngService2는 KorService2와 contentId가 다름(경복궁 126508→264337). EN 본문은 영문 alias searchKeyword로 Eng id를 찾고, 주변 맛집·레포츠·문화 locationBasedList는 locale=en이 빈 결과 → 항상 ko SSOT. Preview /korea/theme/scenic?lang=en 경복궁: 제목·개요 영문 + 주변 맛집 목록 표시 확인.',
+    at: '2026-08-19',
+  },
+  {
     id: '2026-08-19-i18n-scenic-tourapi-body-en',
     session: '영문화 #17, 명승 TourAPI 본문 EN',
     title: 'ThemeSpotDetailModal EN 본문 + KO 폴백',
