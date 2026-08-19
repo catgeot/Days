@@ -39,5 +39,5 @@
 ## 영문화 #14, Preview QA PASS · main 병합
 
 - **사람 QA** `/qa/en` · `?lang=en` — gateo 핀·Mapbox 지명·클러스터 범례 **통과**
-- **PR [#135](https://github.com/catgeot/Days/pull/135)** → **main 병합** (사람 요청)
+- **PR [#135](https://github.com/catgeot/Days/pull/135)** → **main** `cb5d4358`
 - **다음** #15 TourAPI 프록시 EN (`cursor/en`)
