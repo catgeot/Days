@@ -63,8 +63,13 @@
 ## 영문화 #20 보정 — Trip.com ad locale=en-US 시험
 
 - **항공 iframe** `buildTripcomPlannerFlightUrl` — `?lang=en` → URL `locale=en-US` (동일 ad ID)
-- **한계** iframe 안 UI(왕복·편도·검색)는 Trip.com ad 템플릿 — Preview에서 EN 미반영 시 Trip.com EN ad 신규 등록
 - **VERIFY** `smoke-tripcom-flight-locale` · `build` PASS
+
+## 영문화 #20, Preview QA PASS — MOONi·Trip.com EN
+
+- **사람 QA** `/qa/en` · `?lang=en` — MOONi 인트로·항공 CTA·Trip.com 검색 모달(왕복·편도·검색) **영문 OK**
+- **Trip.com** 별도 EN ad 불필요 — `locale=en-US` 쿼리로 기존 ad ID EN UI 확인
+- **tip** `6bca488c` · **다음** #21 플래너 배너·UI EN
 
 ## 영문화 #18, 무니 UI·칩 — Preview push
 
