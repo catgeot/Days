@@ -58,29 +58,29 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 ---
 
-### 영문화 (English UI) — 1차 main 병합
+### 영문화 (English UI) — 1차 main · 2차 콘텐츠
 
 | | |
 |--|--|
-| **상태** | **main 병합 완료** (2026-08-18) · PROD 배포 후 QA |
-| **main** | `47845093` — PR [#134](https://github.com/catgeot/Days/pull/134) |
-| **브랜치** | `cursor/en` (병합 후 동기) |
-| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9 |
-| **일지** | [`2026-08-18-project-log.md`](./2026-08-18-project-log.md) |
+| **상태** | **1차 완료** (#12 PROD QA OK) · **2차 #13 착수** |
+| **main** | `097ecc59` — PR [#134](https://github.com/catgeot/Days/pull/134) 병합 + docs |
+| **브랜치** | `cursor/en` (2차 작업) |
+| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§10 |
+| **일지** | [`2026-08-19-project-log.md`](./2026-08-19-project-log.md) |
 | **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` |
-| **PROD QA** | `https://www.gateo.kr/qa/en` → `/?lang=en` · `/blog?lang=en` |
+| **PROD** | `https://www.gateo.kr/qa/en` → `/?lang=en` |
 | **VERIFY** | `npm run build` · `smoke:place-label-slug` |
 
-**PROD QA (#7~#10)**: 홈·PlaceCard · `/korea/theme/*` · `/blog` · auth
+**2차 순서**: #13 지구본 칩 → #14 지명 → #15~17 TourAPI → #18~20 무니 → #21~22 플래너
 
 **다음 제시어**:
 
 ```
-영문화 #12, PROD QA 확인
+영문화 #13, 지구본 칩·국가
 @plans/feature-handoff-index.md
-@plans/2026-08-18-project-log.md
+@plans/2026-08-19-project-log.md
 @plans/i18n-en-plan.md
-main · www.gateo.kr/qa/en · ?lang=en · /blog
+브랜치 cursor/en · PR #135 · /qa/en · ?lang=en 지구본 칩
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 

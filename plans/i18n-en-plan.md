@@ -20,8 +20,20 @@
 | 8 | 한국 테마 나머지 | `영문화 #8, 한국 테마 나머지` | ✅ Preview |
 | 9 | 로그북/대시보드 | `영문화 #9, 로그북·대시보드` | ✅ Preview |
 | 10 | 잔여·QA | `영문화 #10, 잔여·Preview QA` | ✅ Preview |
-| 11 | 병합·PROD | `영문화 #11, 병합·PROD QA` | ✅ merge · PROD QA (사람) |
-| 12 | PROD 확인 | `영문화 #12, PROD QA 확인` | (배포 후 사람) |
+| 11 | 병합·PROD | `영문화 #11, 병합·PROD QA` | ✅ merge |
+| 12 | PROD 확인 | `영문화 #12, PROD QA 확인` | ✅ 사람 QA |
+| **13** | 지구본 칩·국가 | `영문화 #13, 지구본 칩·국가` | 다음 |
+| 14 | 지구본 지명·맵 | `영문화 #14, 지구본 지명·맵` | |
+| 15 | TourAPI 프록시 EN | `영문화 #15, TourAPI 프록시 EN` | |
+| 16 | 축제 본문 EN | `영문화 #16, 축제 본문 EN` | |
+| 17 | 명승 TourAPI 본문 | `영문화 #17, 명승 TourAPI 본문 EN` | |
+| 18 | 무니 UI·칩 | `영문화 #18, 무니 UI·칩` | |
+| 19 | 무니 프롬프트·대화 | `영문화 #19, 무니 프롬프트·대화 EN` | |
+| 20 | 무니 인트로·탐지 | `영문화 #20, 무니 인트로·탐지` | |
+| 21 | 플래너 배너·UI | `영문화 #21, 플래너 배너·UI EN` | |
+| 22 | 플래너 AI 본문 | `영문화 #22, 플래너 AI 본문 EN` | |
+
+**1차 (#0~#12)**: UI 카피 · **2차 (#13~#22)**: 지구본 데이터 · TourAPI 본문 · 무니 · 플래너 AI·배너.
 
 세션마다 `#1` 리셋 금지 · `#N` = Cloud 순번.
 
@@ -60,9 +72,16 @@
 | **#3** | 한국 투톱 | `/korea` · `/korea/theme/scenic` — **사람 합의 후** 범위 | `build` |
 | **#4** | SEO·릴리스 | `hreflang` · sitemap · 릴리스 노트(승인 후) | `build` |
 | **#5** | PROD 병합 | PR #132 → `main` | `build` |
-| **#7+** | 세부·확장 | PlaceCard 세부 · 한국 테마 나머지 · 로그북/대시보드 | `build` |
+| **#7+** | 세부·확장 | PlaceCard 세부 · 한국 테마 · 로그북/대시보드 | `build` |
+| **#13** | 지구본 칩·국가 | 중분류·국가·해양 칩 EN (`globeUi.js`) | `build` |
+| **#14** | 지구본 지명 | 핀·Mapbox `name_en` | `build` · `smoke:place-label-slug` |
+| **#15** | TourAPI 프록시 | `EngService2` + locale 캐시 | `build` · Edge deploy |
+| **#16** | 축제 본문 | `/korea` TourAPI EN | `build` |
+| **#17** | 명승 TourAPI | `ThemeSpotDetailModal` (CHA·선정 제외) | `build` |
+| **#18~20** | 무니 | UI·칩 → 프롬프트·대화 → 인트로 캐시 | `build` |
+| **#21~22** | 플래너 | 배너·제휴 UI → `essential_guide_en` | `build` · Edge |
 
-**우선순위**: 글로벌 여행 discovery(홈·PlaceCard) → **PlaceCard 세부** → 한국 테마 나머지 → 로그북/대시보드(별 트랙).
+**우선순위 (2차)**: 지구본 홈 → 한국 TourAPI 본문 → 무니 → 플래너.
 
 ---
 
@@ -92,15 +111,39 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#11)**: PR [#134](https://github.com/catgeot/Days/pull/134) **main 병합** · Vercel PROD 배포 후 `/qa/en` 재확인
+**상태 (#12)**: PROD QA **사람 OK** · 1차 UI 영문화 main 완료 (`097ecc59` docs tip) · **2차 #13 착수 대기**
+
+**브랜치**: `cursor/en` · PR **#135** (신규) · `/qa/en`
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #12, PROD QA 확인
+영문화 #13, 지구본 칩·국가
 @plans/feature-handoff-index.md
-@plans/2026-08-18-project-log.md
+@plans/2026-08-19-project-log.md
 @plans/i18n-en-plan.md
-main · www.gateo.kr/qa/en · ?lang=en · /blog
+브랜치 cursor/en · PR #135 · /qa/en · ?lang=en 지구본 칩
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
+
+### #13 세션 범위 (에이전트 Read 대상만)
+
+| 파일 | 작업 |
+|------|------|
+| `src/pages/Home/lib/globeFaceSubregions.js` | `labelEn` 또는 i18n id |
+| `src/pages/Home/lib/globeCountryCatalog.js` | `labelEn` (`Intl.DisplayNames` 스크립트) |
+| `src/pages/Home/lib/seaBasinRail.js` · `seaBasins.json` | `name_en` |
+| `src/pages/Home/components/GlobeFaceRegionRail.jsx` | `useLocale()` + 라벨 |
+| `src/i18n/globeUi.js` (신규) | `getLocalizedGlobeCountryLabel` 등 |
+
+**VERIFY**: `npm run build`
+
+---
+
+## 10. 2차 콘텐츠 영문화 가드
+
+1. **spots JSON 직편집 금지** — `name_en`은 overrides → `generate:*`
+2. **TourAPI** — ko=`KorService2` · en=`EngService2` · 캐시 키에 locale
+3. **CHA·선정 명승** — TourAPI 아님 → #17 범위 밖 (`overview_en`은 추후)
+4. **AI 캐시** — `place_chat_intro`·`essential_guide` locale별 키/컬럼 분리
+5. **기존 비주얼 유지** — 카피·locale 분기만

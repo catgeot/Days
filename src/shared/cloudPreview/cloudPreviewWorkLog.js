@@ -6,9 +6,9 @@
 export const cloudPreviewProject = {
   active: true,
   title: '영문화',
-  sessionNo: 11,
-  sessionPhase: '병합·PROD QA',
-  branch: 'main',
+  sessionNo: 12,
+  sessionPhase: 'PROD QA 확인',
+  branch: 'cursor/en',
   previewPath: '/?lang=en',
   qaShareSlug: 'en',
 };
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-19-i18n-prod-qa-ok',
+    session: '영문화 #12, PROD QA 확인',
+    title: '1차 UI PROD QA OK',
+    detail:
+      '사람 PROD QA 통과. 1차 영문 UI(#0~#11) 완료. 다음 #13 지구본 칩·국가·해양 EN — cursor/en · PR #135.',
+    at: '2026-08-19T03:30:00.000Z',
+  },
   {
     id: '2026-08-18-i18n-main-merge',
     session: '영문화 #11, 병합·PROD QA',
