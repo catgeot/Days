@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '영문화',
-  sessionNo: 16,
-  sessionPhase: '축제 본문 EN',
+  sessionNo: 17,
+  sessionPhase: '명승 TourAPI 본문 EN',
   branch: 'cursor/en',
-  previewPath: '/korea?lang=en',
+  previewPath: '/korea/theme/scenic?lang=en',
   qaShareSlug: 'en',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-19-i18n-scenic-tourapi-body-en',
+    session: '영문화 #17, 명승 TourAPI 본문 EN',
+    title: 'ThemeSpotDetailModal EN 본문 + KO 폴백',
+    detail:
+      'TourAPI contentId 있는 명승·지역 명소·TOP10·주변 맛집/레포츠/문화/관광지 상세 모달 — locale=en일 때 EngService2 overview·intro·info 우선, 빈 필드는 KorService2. CHA·선정(국가유산)·GATEO 큐레이션 overview는 KO 유지. Preview git URL /korea/theme/scenic?lang=en · /korea/theme/regions?lang=en 에서 카드→상세 개요·이용안내가 영문인지 확인해 주세요. (목록 카드 제목은 KO SSOT)',
+    at: '2026-08-19',
+  },
   {
     id: '2026-08-19-i18n-festival-body-en',
     session: '영문화 #16, 축제 본문 EN',
