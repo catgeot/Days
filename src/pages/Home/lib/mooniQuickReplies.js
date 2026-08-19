@@ -2,6 +2,7 @@ import { PERSONA_TYPES } from './prompts';
 import { getDestinationBookingProfile } from '../../../utils/destinationBookingProfile';
 import { getPreTravelItemsFromGuide } from '../../../utils/chatPrepBookingLinks';
 import { i18n } from '../../../i18n/config';
+import { getFlightOriginDisplayLabel } from './flightCinemaOriginOptions.js';
 
 /** @deprecated — use mooni.chat.topicHint */
 export const MOONI_TOPIC_HINT = 'mooni.chat.topicHint';
@@ -23,7 +24,9 @@ function chipTranslation(key) {
  */
 export function buildAccessRouteAskText(iata, option = null) {
   const code = String(iata ?? '').trim().toUpperCase();
-  const label = String(option?.label ?? '').trim();
+  const label =
+    getFlightOriginDisplayLabel(code, i18n.language) ||
+    String(option?.label ?? '').trim();
   const place = label || code;
   if (!place) return i18n.t('mooni.chat.accessRouteAskFallback');
   return i18n.t('mooni.chat.accessRouteAsk', { place });

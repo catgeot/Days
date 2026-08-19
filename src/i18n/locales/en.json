@@ -1250,6 +1250,22 @@
       "fail": "AI conversion failed. Your original text was restored."
     }
   },
+  "flightOrigin": {
+    "departure": "From",
+    "departureFrom": "Departure",
+    "searchTitle": "Search departure",
+    "searchPlaceholder": "City or airport (e.g. Manila, ICN)",
+    "expandSearch": "Expand departure search",
+    "collapseSearch": "Collapse departure search",
+    "collapse": "Collapse",
+    "geoFromMyLocation": "Depart from my location",
+    "geo": {
+      "unsupported": "Location is not available on this device.",
+      "denied": "Please check location permission.",
+      "unavailable": "Could not get your current location.",
+      "notFound": "No nearby airport found."
+    }
+  },
   "mooni": {
     "fab": {
       "ariaHelper": "MOONi AI travel assistant",
@@ -1365,7 +1381,11 @@
       "accessRouteAskFallback": "How do I get there?",
       "topicHint": "Start with what this place is like, how to get there, what to prepare, and things to do. Booking links may appear below the reply.",
       "introWithPlace": "For {{placeName}}, I can help from what it's like to routes, prep, and things to do.",
-      "introDefault": "Hi! I'm MOONi. Ask about destinations, itineraries, transport, bookings — anything travel."
+      "introDefault": "Hi! I'm MOONi. Ask about destinations, itineraries, transport, bookings — anything travel.",
+      "askButton": "Ask",
+      "spotOverviewTitle": "Spot overview",
+      "placeSummaryLoading": "Preparing place summary...",
+      "placeIntroLoading": "Preparing place intro..."
     },
     "resolution": {
       "departure": "From",

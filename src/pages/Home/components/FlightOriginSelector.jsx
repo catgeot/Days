@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronUp, Loader2, LocateFixed, Search } from 'lucide-react';
-import { getFlightCinemaOriginOption } from '../lib/flightCinemaOriginOptions.js';
+import { getFlightCinemaOriginOption, getFlightOriginDisplayLabel } from '../lib/flightCinemaOriginOptions.js';
 import {
   resolveOriginFromGeolocation,
   searchFlightOriginHubs,
@@ -12,11 +13,11 @@ import {
   syncHomeViewportAfterInput,
 } from '../../../shared/lib/mobileViewport';
 
-const GEO_ERROR_MESSAGES = {
-  unsupported: '이 기기에서는 위치 정보를 사용할 수 없어요.',
-  denied: '위치 권한을 확인해 주세요.',
-  unavailable: '현재 위치를 가져오지 못했어요.',
-  not_found: '근처 공항을 찾지 못했어요.',
+const GEO_ERROR_KEYS = {
+  unsupported: 'flightOrigin.geo.unsupported',
+  denied: 'flightOrigin.geo.denied',
+  unavailable: 'flightOrigin.geo.unavailable',
+  not_found: 'flightOrigin.geo.notFound',
 };
 
 const LISTBOX_MAX_HEIGHT = 176;
@@ -53,6 +54,7 @@ export default function FlightOriginSelector({
   initialExpanded = false,
   onSearchActiveChange,
 }) {
+  const { t, i18n } = useTranslation();
   const listboxId = useId();
   const rootRef = useRef(null);
   const inputWrapRef = useRef(null);
@@ -312,12 +314,12 @@ export default function FlightOriginSelector({
       const resolved = await resolveOriginFromGeolocation();
       handleSelect(resolved.iata);
     } catch (err) {
-      const code = err?.code && GEO_ERROR_MESSAGES[err.code] ? err.code : 'unavailable';
-      setGeoError(GEO_ERROR_MESSAGES[code] || GEO_ERROR_MESSAGES.unavailable);
+      const code = err?.code && GEO_ERROR_KEYS[err.code] ? err.code : 'unavailable';
+      setGeoError(t(GEO_ERROR_KEYS[code] || GEO_ERROR_KEYS.unavailable));
     } finally {
       setGeoPending(false);
     }
-  }, [disabled, geoPending, handleSelect]);
+  }, [disabled, geoPending, handleSelect, t]);
 
   const inputClass = isBar
     ? 'min-h-[44px] w-full rounded-md border border-white/15 bg-white/5 py-2 pl-7 pr-11 text-[16px] md:text-xs font-medium text-white placeholder:text-white/35 focus:border-sky-300/50 focus:outline-none focus:ring-1 focus:ring-sky-300/30'
@@ -371,7 +373,7 @@ export default function FlightOriginSelector({
   const geoIconSize = isBar ? 16 : 18;
 
   const selectedLabel = selectedOption
-    ? `${selectedOption.label} (${selectedOption.iata})`
+    ? `${getFlightOriginDisplayLabel(selectedOption.iata, i18n.language)} (${selectedOption.iata})`
     : selectedIata;
 
   const handleCollapse = useCallback(() => {
@@ -437,15 +439,17 @@ export default function FlightOriginSelector({
         onClick={(event) => event.stopPropagation()}
         onMouseDown={(event) => event.stopPropagation()}
       >
-        <span className="shrink-0 text-[11px] font-bold tracking-wide text-sky-100/90 break-keep">출발</span>
+        <span className="shrink-0 text-[11px] font-bold tracking-wide text-sky-100/90 break-keep">
+          {t('flightOrigin.departure')}
+        </span>
         <button
           type="button"
           disabled={disabled}
           onClick={() => onExpandRequest?.()}
           className={chipButtonClass}
           aria-expanded={false}
-          aria-label="출발지 검색 펼치기"
-          title={selectedOption?.officialKo || selectedLabel}
+          aria-label={t('flightOrigin.expandSearch')}
+          title={selectedLabel}
         >
           <span className="min-w-0 truncate tabular-nums">{selectedLabel}</span>
           <ChevronDown size={14} strokeWidth={2.25} className="shrink-0 text-sky-100/90" aria-hidden="true" />
@@ -463,7 +467,7 @@ export default function FlightOriginSelector({
         onMouseDown={(event) => event.stopPropagation()}
       >
         <span className="text-[10px] font-semibold uppercase tracking-wide text-white/45 break-keep">
-          출발
+          {t('flightOrigin.departure')}
         </span>
         <button
           type="button"
@@ -471,7 +475,7 @@ export default function FlightOriginSelector({
           onClick={() => onExpandRequest?.()}
           className={chipButtonClass}
           aria-expanded={false}
-          title={selectedOption?.officialKo || selectedLabel}
+          title={selectedLabel}
         >
           <span className="min-w-0 truncate tabular-nums">{selectedLabel}</span>
           <ChevronDown size={14} className="shrink-0 opacity-70" aria-hidden="true" />
@@ -489,14 +493,14 @@ export default function FlightOriginSelector({
         onMouseDown={(event) => event.stopPropagation()}
       >
         <div className="flex items-center justify-between gap-2 min-w-0">
-          <p className={labelClass}>출발지</p>
+          <p className={labelClass}>{t('flightOrigin.departureFrom')}</p>
           <button
             type="button"
             disabled={disabled}
             onClick={() => setBarExpanded(true)}
             className={chipButtonClass}
             aria-expanded={false}
-            title={selectedOption?.officialKo || selectedLabel}
+            title={selectedLabel}
           >
             <span className="min-w-0 truncate tabular-nums">{selectedLabel}</span>
             <ChevronDown size={16} className="shrink-0 opacity-70" aria-hidden="true" />
@@ -524,14 +528,14 @@ export default function FlightOriginSelector({
       {!isSummaryPanel ? (
         <div className="flex items-center justify-between gap-2 min-w-0">
           <p className={isBar ? barSearchLabelClass : labelClass}>
-            {isSummary || isBar ? '출발지 검색' : '출발지'}
+            {isSummary || isBar ? t('flightOrigin.searchTitle') : t('flightOrigin.departureFrom')}
           </p>
           {!isBar && selectedOption ? (
             <span
               className={isSummary ? summarySelectedClass : `min-w-0 truncate ${selectedClass}`}
-              title={selectedOption.officialKo || selectedOption.label}
+              title={selectedLabel}
             >
-              {selectedOption.label} ({selectedOption.iata})
+              {selectedLabel}
             </span>
           ) : isBar ? (
             <button
@@ -546,10 +550,10 @@ export default function FlightOriginSelector({
                 setBarExpanded(false);
               }}
               className={barCollapseClass}
-              aria-label="출발지 검색 접기"
+              aria-label={t('flightOrigin.collapseSearch')}
             >
               <ChevronUp size={15} aria-hidden="true" />
-              접기
+              {t('flightOrigin.collapse')}
             </button>
           ) : (
             <span className={selectedClass}>{selectedIata}</span>
@@ -557,16 +561,16 @@ export default function FlightOriginSelector({
         </div>
       ) : (
         <div className="flex items-center justify-between gap-2 min-w-0">
-          <p className={barSearchLabelClass}>출발지 검색</p>
+          <p className={barSearchLabelClass}>{t('flightOrigin.searchTitle')}</p>
           <button
             type="button"
             disabled={disabled}
             onClick={handleCollapse}
             className={barCollapseClass}
-            aria-label="출발지 검색 접기"
+            aria-label={t('flightOrigin.collapseSearch')}
           >
             <ChevronUp size={15} aria-hidden="true" />
-            접기
+            {t('flightOrigin.collapse')}
           </button>
         </div>
       )}
@@ -598,7 +602,7 @@ export default function FlightOriginSelector({
             enterKeyHint="search"
             value={query}
             disabled={disabled}
-            placeholder="도시·공항 검색 (예: 마닐라, ICN)"
+            placeholder={t('flightOrigin.searchPlaceholder')}
             autoComplete="off"
             aria-expanded={isOpen && results.length > 0}
             aria-controls={listboxId}
@@ -660,8 +664,8 @@ export default function FlightOriginSelector({
               disabled={disabled || geoPending}
               onClick={handleUseMyLocation}
               className={`${geoInlineClass} ${disabled || geoPending ? 'opacity-60 cursor-wait' : ''}`}
-              title="내 위치에서 출발"
-              aria-label="내 위치에서 출발"
+              title={t('flightOrigin.geoFromMyLocation')}
+              aria-label={t('flightOrigin.geoFromMyLocation')}
             >
               {geoPending ? (
                 <Loader2 size={geoIconSize} className="animate-spin" />
@@ -680,7 +684,7 @@ export default function FlightOriginSelector({
             className={`${geoButtonClass} w-full ${disabled || geoPending ? 'opacity-60 cursor-wait' : ''}`}
           >
             {geoPending ? <Loader2 size={geoIconSize} className="animate-spin" /> : <LocateFixed size={geoIconSize} />}
-            내 위치에서 출발
+            {t('flightOrigin.geoFromMyLocation')}
           </button>
         ) : null}
       </div>

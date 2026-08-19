@@ -15,6 +15,8 @@ import {
   isSyntheticOrEmptyPlaceDesc,
   needsPlaceChatIntroHydration,
 } from './placeDescText.js';
+import { TRAVEL_SPOTS } from '../data/travelSpots.js';
+import { resolveCatalogPlaceSlug } from './formatUrlName.js';
 
 export { isSyntheticOrEmptyPlaceDesc, needsPlaceChatIntroHydration };
 
@@ -51,6 +53,21 @@ function resolveIntroLocale(lng = i18n.language) {
  * 무니·장소 채팅용 표시 라벨 — 「일본 쿠시로」/「Japan Kyoto」처럼 국가+지명.
  * placeholder 국가(Explore 등)·중복 표기는 생략.
  */
+/** MOONi 칩·헤더 — slug 카탈로그 lookup 후 locale 표시명 */
+export function localizeMooniPlaceLabel(place, lng = i18n.language) {
+  if (!place) return '';
+  const locale = resolveIntroLocale(lng);
+  const catalogSlug = place.slug ? resolveCatalogPlaceSlug(place.slug) : null;
+  if (catalogSlug) {
+    const spot = TRAVEL_SPOTS.find((s) => s.slug === catalogSlug);
+    if (spot) {
+      const label = formatPlaceChatLabel(spot, locale);
+      if (label) return label;
+    }
+  }
+  return formatPlaceChatLabel(place, locale) || String(place.name || '').trim();
+}
+
 export function formatPlaceChatLabel(loc, lng = i18n.language) {
   if (!loc || typeof loc !== 'object') {
     return normalizeDestinationKey(loc);

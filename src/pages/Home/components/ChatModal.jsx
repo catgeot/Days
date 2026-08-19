@@ -12,6 +12,7 @@ import {
   generatePlaceChatIntroWithAi,
   persistPlaceChatIntroSummary,
   formatPlaceChatLabel,
+  localizeMooniPlaceLabel,
   stripPlaceChatIntroForSummary,
 } from '../lib/placeChatIntro';
 import { resolveCatalogPlaceSlug } from '../lib/formatUrlName';
@@ -264,20 +265,25 @@ const ChatModal = ({
 
   const mooniHeaderLabel = useMemo(() => {
     if (!isMooniUi) return introDestinationRaw || 'MOONi';
-    const placeName = activeSessionPlace?.name ?? null;
-    return placeName ? `${placeName} · MOONi` : 'MOONi';
-  }, [isMooniUi, activeSessionPlace?.name, introDestinationRaw]);
+    const label = localizeMooniPlaceLabel(activeSessionPlace, i18n.language);
+    return label ? `${label} · MOONi` : 'MOONi';
+  }, [isMooniUi, activeSessionPlace, introDestinationRaw, i18n.language]);
 
   const placeIntroTarget = useMemo(() => {
     if (!isOpen) return '';
-    if (activeSessionPlace?.name) return activeSessionPlace.name.trim();
+    if (activeSessionPlace) {
+      return localizeMooniPlaceLabel(activeSessionPlace, i18n.language);
+    }
     if (isMooniUi) return '';
     return introDestinationRaw;
-  }, [isOpen, activeSessionPlace?.name, isMooniUi, introDestinationRaw, i18n.language]);
+  }, [isOpen, activeSessionPlace, isMooniUi, introDestinationRaw, i18n.language]);
 
   const effectiveQuickReplySlug = boundDestinationSlug;
 
-  const topicDockDestName = activeSessionPlace?.name ?? '';
+  const topicDockDestName =
+    localizeMooniPlaceLabel(activeSessionPlace, i18n.language) ||
+    activeSessionPlace?.name ||
+    '';
 
   const topicEssentialGuide = useChatEssentialGuide(
     effectiveQuickReplySlug,
@@ -1015,7 +1021,11 @@ const ChatModal = ({
                  <span className="hidden md:block text-[11px] text-cyan-300/80 font-medium leading-tight truncate">
                    {isMooniUi
                      ? boundDestinationSlug
-                       ? `${t('mooni.chat.travelChat', { destination: activeSessionPlace?.name ?? introDestinationRaw })} · ${currentPersona}`
+                       ? `${t('mooni.chat.travelChat', {
+                           destination:
+                             localizeMooniPlaceLabel(activeSessionPlace, i18n.language) ||
+                             introDestinationRaw,
+                         })} · ${currentPersona}`
                        : `${t('mooni.chat.travelAiHelper')} · ${currentPersona}`
                      : `${t('mooni.chat.travelChat', { destination: introDestinationRaw || t('place.fallback.destination') })} · ${currentPersona}`}
                  </span>
@@ -1049,12 +1059,14 @@ const ChatModal = ({
                 <div className="rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-950/40 to-gray-900/60 p-4 shadow-lg">
                   <div className="flex items-center gap-2 mb-2 text-emerald-300/90">
                     <Sparkles size={16} className="shrink-0" />
-                    <span className="text-xs font-bold uppercase tracking-wide">이 장소 한눈에 보기</span>
+                    <span className="text-xs font-bold uppercase tracking-wide">
+                      {t('mooni.chat.spotOverviewTitle')}
+                    </span>
                   </div>
                   {placeIntroLoading && !placeIntro && (
                     <div className="flex items-center gap-2 text-gray-400 text-sm">
                       <Loader2 className="animate-spin shrink-0" size={18} />
-                      <span>여행지 요약을 준비하고 있어요...</span>
+                      <span>{t('mooni.chat.placeSummaryLoading')}</span>
                     </div>
                   )}
                   {placeIntroError && (
@@ -1072,7 +1084,7 @@ const ChatModal = ({
                     {placeIntroLoading && !placeIntro && (
                       <div className="flex items-center gap-2 text-gray-400 text-sm">
                         <Loader2 className="animate-spin shrink-0" size={18} />
-                        <span>여행지 소개를 준비하고 있어요...</span>
+                        <span>{t('mooni.chat.placeIntroLoading')}</span>
                       </div>
                     )}
                     {placeIntroError && (
@@ -1106,11 +1118,14 @@ const ChatModal = ({
                   : { text: rawMsgText, hadBracketLinks: false };
                 const msgSlug = msg.bookingMeta?.slug ?? boundDestinationSlug;
                 const msgDestinationName = isMooniUi
-                  ? activeSessionPlace?.name ??
-                    messages
-                      .slice(0, idx)
-                      .reverse()
-                      .find((m) => m.confirmedDestination?.name)?.confirmedDestination?.name ??
+                  ? localizeMooniPlaceLabel(activeSessionPlace, i18n.language) ||
+                    localizeMooniPlaceLabel(
+                      messages
+                        .slice(0, idx)
+                        .reverse()
+                        .find((m) => m.confirmedDestination?.name)?.confirmedDestination,
+                      i18n.language,
+                    ) ||
                     (introDestinationRaw !== 'MOONi' ? introDestinationRaw : '')
                   : introDestinationRaw;
                 const priorUserText =
@@ -1162,11 +1177,7 @@ const ChatModal = ({
                       <BookingActionCards
                         actions={refreshStoredBookingActionLabels(msg.bookingActions, {
                           slug: msg.bookingMeta?.slug ?? boundDestinationSlug,
-                          destinationName: isMooniUi
-                            ? (activeSessionPlace?.name
-                              ?? messages.slice(0, idx).reverse().find((m) => m.confirmedDestination?.name)?.confirmedDestination?.name
-                              ?? (introDestinationRaw !== 'MOONi' ? introDestinationRaw : ''))
-                            : introDestinationRaw,
+                          destinationName: msgDestinationName,
                           chatHistory: messages
                             .slice(0, idx)
                             .filter((m) => m.role === 'user')
@@ -1235,7 +1246,7 @@ const ChatModal = ({
                       className="inline-flex shrink-0 items-center gap-0.5 min-h-[32px] rounded-full border border-gray-500/55 bg-gray-800/90 px-2.5 py-1 text-[11px] font-semibold text-gray-100 touch-manipulation hover:border-gray-400 hover:bg-gray-700/90 transition-colors disabled:opacity-50 disabled:pointer-events-none"
                     >
                       <ChevronLeft size={14} className="shrink-0 -ml-0.5" aria-hidden />
-                      다른 주제
+                      {t('mooni.chat.backTopic')}
                     </button>
                     <span className="text-[11px] text-cyan-400/75 font-medium break-keep min-w-0">
                       {getMooniL1ChipLabel('access', { mobile: true })}
@@ -1270,7 +1281,7 @@ const ChatModal = ({
                         onClick={handleAskWithAccessOrigin}
                         className="shrink-0 inline-flex items-center justify-center rounded-full border border-cyan-400/60 bg-cyan-500/25 px-3 py-2 text-[12px] font-semibold text-cyan-50 touch-manipulation hover:bg-cyan-500/35 disabled:opacity-50"
                       >
-                        물어보기
+                        {t('mooni.chat.askButton')}
                       </button>
                     </div>
                   )}
