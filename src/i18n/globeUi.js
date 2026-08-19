@@ -49,3 +49,17 @@ export function localizedSeaBasinChipLabel(locale, basin) {
   if (locale?.startsWith('en') && basin?.name_en) return basin.name_en;
   return ko;
 }
+
+/**
+ * Gateo globe pin label — en일 때 name_en·destination 영문 우선.
+ * @param {{ name?: string, name_en?: string, destination?: string } | null | undefined} marker
+ * @param {string} [locale]
+ */
+export function localizedMarkerPinLabel(marker, locale = 'ko') {
+  const ko = String(marker?.name || marker?.destination || '').trim();
+  if (locale?.startsWith('en')) {
+    const en = String(marker?.name_en || '').trim();
+    if (en) return en;
+  }
+  return ko || '?';
+}

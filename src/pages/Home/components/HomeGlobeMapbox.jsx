@@ -91,9 +91,11 @@ import {
 import { getCategoryGlobeFaceView, GLOBE_FACE_FLY_MS, resolveCategoryFaceMapboxZoom } from '../lib/globeCategoryFocus';
 import { passesGlobeTierPolicy } from '../lib/globeSpotVisibility';
 import { flushCurationGlobeSyncIfPending } from '../lib/curationPlaceBridge.js';
+import { useLocale } from '../../../i18n/LocaleProvider';
 
-function LanguageControl() {
-  useControl(() => new MapboxLanguage({ defaultLanguage: 'ko' }));
+function LanguageControl({ locale }) {
+  const mapLanguage = locale?.startsWith('en') ? 'en' : 'ko';
+  useControl(() => new MapboxLanguage({ defaultLanguage: mapLanguage }));
   return null;
 }
 
@@ -178,6 +180,24 @@ const PLACE_LABEL_PROPERTY_KEYS = [
   'title'
 ];
 const PLACE_LABEL_ENGLISH_KEYS = ['name_en', 'name_int', 'name_latin', 'name:en', 'name'];
+
+function placeLabelPropertyKeysForLocale(locale) {
+  if (locale?.startsWith('en')) {
+    return [
+      'name_en',
+      'name_int',
+      'name_latin',
+      'name:en',
+      'name',
+      'name_ko',
+      'name_kr',
+      'name_local',
+      'text',
+      'title',
+    ];
+  }
+  return PLACE_LABEL_PROPERTY_KEYS;
+}
 
 const GLOBE_MAP_BTN_BASE =
   'h-11 w-11 rounded-full bg-black/55 border shadow-lg backdrop-blur-sm flex items-center justify-center active:scale-95 hover:bg-black/70 transition-colors shrink-0';
@@ -372,6 +392,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   categoryFaceEpoch = 0,
   onReturnToSpace = null,
 }, ref) => {
+  const { locale } = useLocale();
   const mapRef = useRef(null);
   const interactionRef = useRef(false);
   const autoRotateRef = useRef(!pauseRender);
@@ -905,8 +926,19 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (isZenMode) {
       return { type: 'FeatureCollection', features: [] };
     }
-    return markersToGeoJSON(allMarkers);
-  }, [allMarkers, isZenMode]);
+    return markersToGeoJSON(allMarkers, locale);
+  }, [allMarkers, isZenMode, locale]);
+
+  useEffect(() => {
+    const map = mapRef.current?.getMap?.();
+    if (!map || typeof map.setLanguage !== 'function') return;
+    const mapLanguage = locale?.startsWith('en') ? 'en' : 'ko';
+    try {
+      map.setLanguage(mapLanguage);
+    } catch {
+      // Style may still be loading.
+    }
+  }, [locale, globeTheme]);
 
   useEffect(() => {
     allMarkersLookupRef.current = allMarkers;
@@ -2132,7 +2164,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const props = topLabel?.properties || {};
 
     let label = '';
-    for (const key of PLACE_LABEL_PROPERTY_KEYS) {
+    for (const key of placeLabelPropertyKeysForLocale(locale)) {
       if (typeof props[key] === 'string' && props[key].trim()) {
         label = props[key].trim();
         break;
@@ -2170,7 +2202,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (inTour) return;
 
     onGlobeClick({ lat: event.lngLat.lat, lng: event.lngLat.lng, source: 'map' });
-  }, [allTravelSpots, closeFlightCinema, globeMode, isZenMode, onGlobeClick, onMarkerClick, pauseRender, travelSpots]);
+  }, [allTravelSpots, closeFlightCinema, globeMode, isZenMode, locale, onGlobeClick, onMarkerClick, pauseRender, travelSpots]);
 
   const mapStyle = MAP_STYLES[globeTheme] || MAP_STYLES.deep;
 
@@ -2249,6 +2281,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
           setMapReady(true);
           syncMapZoom();
+          if (map && typeof map.setLanguage === 'function') {
+            try {
+              map.setLanguage(locale?.startsWith('en') ? 'en' : 'ko');
+            } catch {
+              // Style may not be ready yet.
+            }
+          }
           ensureInteractionReady();
           applyPendingFocus();
 
@@ -2374,7 +2413,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         attributionControl={{ compact: true }}
         fog={fogConfig}
       >
-        {globeTheme !== 'bright' && <LanguageControl />}
+        {globeTheme !== 'bright' && <LanguageControl locale={locale} />}
 
         {ripples.map(ripple => (
           <Marker

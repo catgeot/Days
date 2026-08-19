@@ -23,6 +23,7 @@
 | 11 | 병합·PROD | `영문화 #11, 병합·PROD QA` | ✅ merge · PROD QA (사람) |
 | 12 | PROD 확인 | `영문화 #12, PROD QA 확인` | (배포 후 사람) |
 | 13 | 지구본 칩 | `영문화 #13, 지구본 칩·국가` | ✅ Preview QA |
+| 14 | 지구본 지명 | `영문화 #14, 지구본 지명·맵` | ⏳ Preview QA |
 
 세션마다 `#1` 리셋 금지 · `#N` = Cloud 순번.
 
@@ -62,8 +63,10 @@
 | **#4** | SEO·릴리스 | `hreflang` · sitemap · 릴리스 노트(승인 후) | `build` |
 | **#5** | PROD 병합 | PR #132 → `main` | `build` |
 | **#7+** | 세부·확장 | PlaceCard 세부 · 한국 테마 나머지 · 로그북/대시보드 | `build` |
+| **#13** | 지구본 칩·국가 | 중분류·국가·해양 칩 EN (`globeUi.js`) | `build` |
+| **#14** | 지구본 지명 | 핀·Mapbox `name_en` · 클러스터 범례 | `build` · `smoke:place-label-slug` |
 
-**우선순위**: 글로벌 여행 discovery(홈·PlaceCard) → **PlaceCard 세부** → 한국 테마 나머지 → 로그북/대시보드(별 트랙).
+**우선순위 (2차)**: 지구본 홈 → 한국 TourAPI 본문 → 무니 → 플래너.
 
 ---
 
@@ -93,15 +96,28 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#13)**: Preview QA **PASS** · PR [#135](https://github.com/catgeot/Days/pull/135) · tip `022d1848` · **main 병합 대기**(사람)
+**상태 (#14)**: Preview push · PR [#135](https://github.com/catgeot/Days/pull/135) · **사람 Preview QA 대기**
+
+**브랜치**: `cursor/en` · `/qa/en`
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #14, 병합·잔여
+영문화 #14, Preview QA·잔여
 @plans/feature-handoff-index.md
 @plans/2026-08-19-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · PR #135 · main 병합 승인 후 PROD
+브랜치 cursor/en · PR #135 · /qa/en · ?lang=en 지구본 핀·Mapbox 지명
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
+
+### #14 세션 범위 (에이전트 Read 대상만)
+
+| 파일 | 작업 |
+|------|------|
+| `src/i18n/globeUi.js` | `localizedMarkerPinLabel` |
+| `src/pages/Home/lib/globeMarkerLayers.js` | locale별 핀 label |
+| `src/pages/Home/components/HomeGlobeMapbox.jsx` | `map.setLanguage` · label 클릭 en 우선 |
+| `src/pages/Home/components/GlobeClusterLegend.jsx` | `labelEn` · `name_en` |
+
+**VERIFY**: `npm run build` · `smoke:place-label-slug`

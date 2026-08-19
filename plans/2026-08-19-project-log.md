@@ -22,4 +22,13 @@
 
 - **사람 QA** `/qa/en` · `?lang=en` — 지구본 칩·나라·동해(East Sea) **통과**
 - **tip** `022d1848` · PR [#135](https://github.com/catgeot/Days/pull/135)
-- **다음** main 병합 승인 → #14 잔여 영문화
+- **다음** #14 지구본 지명·맵
+
+## 영문화 #14, 지구본 지명·맵 — Preview push
+
+- **핀** `localizedMarkerPinLabel` · `globeMarkerLayers` locale별 label
+- **Mapbox** `map.setLanguage(en|ko)` · satellite `MapboxLanguage` · label 클릭 en 우선
+- **클러스터** `GlobeClusterLegend` — `labelEn` · `getPlaceTitleLinesForLocale`
+- **VERIFY** `npm run build` · `smoke:place-label-slug` PASS
+- **Preview** `/qa/en` · `?lang=en` — 줌인 gateo 핀·Mapbox 지명·클러스터 범례
+- **다음** 사람 Preview QA → #15 TourAPI 또는 main 병합
