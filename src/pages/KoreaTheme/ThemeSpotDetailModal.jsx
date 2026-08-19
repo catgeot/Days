@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowUp,
@@ -35,7 +34,7 @@ import { buildMooniBoundSpotFromLocation } from '../Home/lib/placeChatIntro';
 import MooniBoundChatHost from '../Home/components/MooniBoundChatHost';
 import { useLightboxPinchTransform } from '../../components/PlaceCard/common/useLightboxPinchTransform';
 import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
-import { fetchTourApiAttractionDetailLocalized } from '../../utils/fetchTourApiAttractionDetail';
+import { fetchTourApiAttractionDetail } from '../../utils/fetchTourApiAttractionDetail';
 import { fetchNearbyTourAttractions } from '../../utils/fetchNearbyTourAttractions';
 import {
   fetchNearbyTourRestaurants,
@@ -679,7 +678,6 @@ export default function ThemeSpotDetailModal({
   favorited = false,
   onToggleFavorite,
 }) {
-  const { i18n } = useTranslation();
   const navigate = useNavigate();
   const scrollRef = useRef(null);
   const [detail, setDetail] = useState(null);
@@ -1013,12 +1011,9 @@ export default function ThemeSpotDetailModal({
     setDetailLoading(true);
 
     (async () => {
-      const data = await fetchTourApiAttractionDetailLocalized({
+      const data = await fetchTourApiAttractionDetail({
         contentId,
         contentTypeId: spot.contentTypeId || undefined,
-        titleEn: spot.nameEn || null,
-        spotId: spot.id || null,
-        placeSlug: spot.placeSlug || null,
       });
       if (cancelled) return;
       setDetailLoading(false);
@@ -1034,7 +1029,6 @@ export default function ThemeSpotDetailModal({
       cancelled = true;
     };
   }, [
-    i18n.language,
     spot?.id,
     spot?.contentId,
     spot?.contentTypeId,
@@ -1307,8 +1301,7 @@ export default function ThemeSpotDetailModal({
 
   if (!spot) return null;
 
-  const displayTitle =
-    String(detail?.title || spot.nameEn || spot.name || '').trim() || '명소';
+  const displayTitle = String(spot.name || '').trim() || '명소';
   const hasContentId = /^\d{1,32}$/.test(String(spot.contentId || '').trim());
   const hero = imageUrls[activeImage] || imageUrls[0] || '';
   const galleryList = imageUrls;

@@ -62,7 +62,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#17 명승 TourAPI 본문 EN** Preview push (`cursor/en`) |
+| **상태** | **#16·#17 TourAPI EN 롤백(A)** · UI i18n 유지 · **#18 무니** (`cursor/en`) |
 | **main** | `cb5d4358` — PR [#135](https://github.com/catgeot/Days/pull/135) 병합 (#13~#14) |
 | **브랜치** | `cursor/en` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§10 |
@@ -71,7 +71,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 | **PROD** | `https://www.gateo.kr/qa/en` → `/?lang=en` |
 | **VERIFY** | `npm run build` · `smoke:place-label-slug` · `smoke:scenic-detail-locale` |
 
-**2차 순서**: ~~#13 지구본 칩~~ · ~~#14 지명~~ · ~~#15 TourAPI~~ · ~~#16 축제~~ · **#17 명승** → #18~20 무니
+**2차 순서**: ~~#13 지구본 칩~~ · ~~#14 지명~~ · ~~#15 TourAPI~~ · ~~#16·#17 본문 EN↩~~ → **#18~20 무니**
 
 **다음 제시어**:
 

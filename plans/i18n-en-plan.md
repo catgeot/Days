@@ -25,8 +25,8 @@
 | 13 | 지구본 칩 | `영문화 #13, 지구본 칩·국가` | ✅ main |
 | 14 | 지구본 지명 | `영문화 #14, 지구본 지명·맵` | ✅ main |
 | 15 | TourAPI 프록시 | `영문화 #15, TourAPI 프록시 EN` | ✅ |
-| 16 | 축제 본문 EN | `영문화 #16, 축제 본문 EN` | Preview |
-| 17 | 명승 TourAPI 본문 | `영문화 #17, 명승 TourAPI 본문 EN` | |
+| 16 | 축제 본문 EN | `영문화 #16, 축제 본문 EN` | ↩ 롤백(A) |
+| 17 | 명승 TourAPI 본문 | `영문화 #17, 명승 TourAPI 본문 EN` | ↩ 롤백(A) |
 | 18 | 무니 UI·칩 | `영문화 #18, 무니 UI·칩` | |
 | 19 | 무니 프롬프트·대화 | `영문화 #19, 무니 프롬프트·대화 EN` | |
 | 20 | 무니 인트로·탐지 | `영문화 #20, 무니 인트로·탐지` | |
@@ -76,8 +76,8 @@
 | **#13** | 지구본 칩·국가 | 중분류·국가·해양 칩 EN (`globeUi.js`) | `build` |
 | **#14** | 지구본 지명 | 핀·Mapbox `name_en` · 클러스터 범례 | `build` · `smoke:place-label-slug` |
 | **#15** | TourAPI 프록시 | `EngService2` + locale 캐시 | `build` · Edge deploy |
-| **#16** | 축제 본문 | `/korea` TourAPI EN | `build` |
-| **#17** | 명승 TourAPI | `ThemeSpotDetailModal` (CHA·선정 제외) | `build` |
+| **#16** | 축제 본문 | ↩ **롤백(A)** — TourAPI 본문 ko SSOT | — |
+| **#17** | 명승 TourAPI | ↩ **롤백(A)** — ThemeSpotDetailModal ko SSOT | — |
 | **#18~20** | 무니 | UI·칩 → 프롬프트·대화 → 인트로 캐시 | `build` |
 | **#21~22** | 플래너 | 배너·제휴 UI → `essential_guide_en` | `build` · Edge |
 
@@ -111,7 +111,7 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#17)**: Preview push · `smoke:scenic-detail-locale` PASS
+**상태 (#17)**: **#16·#17 TourAPI EN 롤백(A)** — 축제·명승 본문 KorService2 SSOT · UI i18n 유지
 
 **브랜치**: `cursor/en` · `/qa/en` · **#18 착수**
 
@@ -126,15 +126,21 @@
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 
-### #17 완료 요약
+### #16·#17 롤백(A) — 사람 합의
+
+| | |
+|--|--|
+| **결정** | `/korea` · `/korea/theme/*` **TourAPI 본문 EngService2 호출 중단** |
+| **유지** | UI i18n(버튼·섹션·헤더) · Edge locale 인프라(#15) · 주변 POI ko SSOT |
+| **코드** | `TOUR_API_BODY_LOCALE=ko` · localized fetch·merge·Eng id 해석 제거 |
+
+### #17 (롤백 전) 참고
 
 | 파일 | 작업 |
 |------|------|
-| `fetchTourApiAttractionDetail.js` | `fetchTourApiAttractionDetailLocalized` · locale en/ko |
-| `mergeTourApiAttractionDetail.js` | EN 필드 우선 · KO 폴백 |
-| `ThemeSpotDetailModal` | localized detail · `displayTitle` · CHA 제외 |
+| ~~localized detail~~ | EngService2 coverage·contentId 불일치로 철회 |
 
-### #16 완료 요약
+### #16 (롤백 전) 참고
 
 | 파일 | 작업 |
 |------|------|
@@ -156,7 +162,8 @@
 ## 10. 2차 콘텐츠 영문화 가드
 
 1. **spots JSON 직편집 금지** — `name_en`은 overrides → `generate:*`
-2. **TourAPI** — ko=`KorService2` · en=`EngService2` · 캐시 키에 locale
-3. **CHA·선정 명승** — TourAPI 아님 → #17 범위 밖 (`overview_en`은 추후)
-4. **AI 캐시** — `place_chat_intro`·`essential_guide` locale별 키/컬럼 분리
-5. **기존 비주얼 유지** — 카피·locale 분기만
+2. **TourAPI 본문 (`/korea`·`/korea/theme/*`)** — **KorService2 SSOT** (`TOUR_API_BODY_LOCALE=ko`) · EngService2 본문 EN **롤백(A)**
+3. **TourAPI Edge** — locale 인프라 유지(#15) · 갤러리 등 다른 경로는 별도
+4. **CHA·선정 명승** — TourAPI 아님 · `overview_en`은 추후
+5. **AI 캐시** — `place_chat_intro`·`essential_guide` locale별 키/컬럼 분리
+6. **기존 비주얼 유지** — 카피·locale 분기만

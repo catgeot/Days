@@ -1,5 +1,4 @@
-import { invokeTourApiProxy, getTourApiLocale } from './tourApiProxy';
-import { mergeTourApiFestivalDetailBundle } from './mergeTourApiFestivalDetail';
+import { invokeTourApiProxy, TOUR_API_BODY_LOCALE } from './tourApiProxy';
 
 const FESTIVAL_WINDOW_TIMEOUT_MS = 90_000;
 const FESTIVAL_DETAIL_TIMEOUT_MS = 30_000;
@@ -13,7 +12,7 @@ async function invokeTourApi(action, payload, opts = {}) {
   return invokeTourApiProxy(action, payload, {
     timeoutMs: opts.timeoutMs,
     returnRawOnFail: true,
-    locale: opts.locale,
+    locale: opts.locale ?? TOUR_API_BODY_LOCALE,
   });
 }
 
@@ -68,15 +67,14 @@ export async function fetchTourApiFestivalWindow(opts = {}) {
     payload.eventEndDate = String(opts.eventEndDate).trim();
   }
   if (opts?.force === true) payload.force = true;
-  // 축제 허브 목록 SSOT = KorService2 (EngService2는 별도·부분 카탈로그)
   return invokeTourApi('festivalWindow', payload, {
     timeoutMs: FESTIVAL_WINDOW_TIMEOUT_MS,
-    locale: 'ko',
+    locale: TOUR_API_BODY_LOCALE,
   });
 }
 
 /**
- * 축제 상세 intro/common/info — Edge 묶음 + DB 캐시 (1 invoke).
+ * 축제 상세 intro/common/info — Edge 묶음 + DB 캐시 (KorService2 SSOT).
  * @param {{
  *   contentId: string | number,
  *   contentTypeId?: string | number,
@@ -94,37 +92,8 @@ export async function fetchTourApiFestivalDetail(opts) {
   if (opts?.force === true) payload.force = true;
   return invokeTourApi('festivalDetail', payload, {
     timeoutMs: FESTIVAL_DETAIL_TIMEOUT_MS,
+    locale: TOUR_API_BODY_LOCALE,
   });
-}
-
-/**
- * locale=en — EngService2 본문 + KorService2 폴백. ko — KorService2만.
- * @param {{
- *   contentId: string | number,
- *   contentTypeId?: string | number,
- *   force?: boolean,
- * }} opts
- */
-export async function fetchTourApiFestivalDetailLocalized(opts) {
-  const contentId = String(opts?.contentId ?? '').trim();
-  if (!/^\d{1,32}$/.test(contentId)) return null;
-  /** @type {Record<string, unknown>} */
-  const payload = {
-    contentId,
-    contentTypeId: String(opts?.contentTypeId ?? '15').trim() || '15',
-  };
-  if (opts?.force === true) payload.force = true;
-  const invokeOpts = { timeoutMs: FESTIVAL_DETAIL_TIMEOUT_MS };
-
-  if (getTourApiLocale() !== 'en') {
-    return invokeTourApi('festivalDetail', payload, invokeOpts);
-  }
-
-  const [enData, koData] = await Promise.all([
-    invokeTourApi('festivalDetail', payload, { ...invokeOpts, locale: 'en' }),
-    invokeTourApi('festivalDetail', payload, { ...invokeOpts, locale: 'ko' }),
-  ]);
-  return mergeTourApiFestivalDetailBundle(enData, koData);
 }
 
 /**

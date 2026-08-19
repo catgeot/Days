@@ -72,3 +72,11 @@
 - **모달** `ThemeSpotDetailModal` — TourAPI만(CHA·선정 제외) · `i18n.language` 재fetch
 - **VERIFY** `smoke:scenic-detail-locale` · `build` · `smoke:place-label-slug` PASS
 - **Preview** `/qa/en` · `/korea/theme/scenic?lang=en` — 명승 카드→상세 본문
+
+## 영문화 #16·#17 롤백(A) — TourAPI 본문 EN 철회
+
+- **결정** — 사람 합의: 축제·명승 EngService2 본문 실익 낮음 → **KorService2 SSOT**
+- **코드** — `TOUR_API_BODY_LOCALE=ko` · localized fetch·merge·Eng contentId 해석 제거
+- **유지** — `/korea`·`/korea/theme/*` **UI i18n** · Edge locale(#15) · 주변 POI ko
+- **VERIFY** `smoke:festival-detail-locale` · `smoke:scenic-detail-locale` · `build` PASS
+- **다음** #18 무니 UI·칩 EN

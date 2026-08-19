@@ -18,8 +18,11 @@ export function getTourApiLocale() {
   return resolveTourApiLocale(i18n.language);
 }
 
-/** EngService2 location/area listings are sparse — nearby POI lists stay KorService2. */
-export const NEARBY_TOUR_API_LOCALE = 'ko';
+/** KorService2 SSOT — 축제·명승 본문·주변 POI (EngService2 롤백). */
+export const TOUR_API_BODY_LOCALE = 'ko';
+
+/** @deprecated alias — use TOUR_API_BODY_LOCALE */
+export const NEARBY_TOUR_API_LOCALE = TOUR_API_BODY_LOCALE;
 
 /**
  * @template T

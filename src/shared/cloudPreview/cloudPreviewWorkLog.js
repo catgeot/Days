@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '영문화',
   sessionNo: 17,
-  sessionPhase: '명승 TourAPI 본문 EN',
+  sessionPhase: 'TourAPI EN 롤백(A)',
   branch: 'cursor/en',
   previewPath: '/korea/theme/scenic?lang=en',
   qaShareSlug: 'en',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-19-i18n-tourapi-body-en-rollback',
+    session: '영문화 #17, TourAPI EN 롤백(A)',
+    title: '축제·명승 본문 KorService2 SSOT',
+    detail:
+      '사람 합의로 #16·#17 TourAPI EngService2 본문 EN을 철회했습니다. ?lang=en에서도 축제·명승 상세 개요·이용안내·주변 맛집/레포츠/문화는 한글 TourAPI SSOT입니다. UI 버튼·섹션 카피만 영문. Preview /korea?lang=en · /korea/theme/scenic?lang=en 에서 본문 KO·UI EN 확인.',
+    at: '2026-08-19',
+  },
   {
     id: '2026-08-19-i18n-scenic-tourapi-body-en-fix',
     session: '영문화 #17, 명승 TourAPI 본문 EN',

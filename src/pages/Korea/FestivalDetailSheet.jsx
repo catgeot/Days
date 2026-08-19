@@ -18,9 +18,8 @@ import {
   Utensils,
   X,
 } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 import {
-  fetchTourApiFestivalDetailLocalized,
+  fetchTourApiFestivalDetail,
   fetchTourApiFestivalImages,
 } from '../../utils/fetchTourApiFestivals';
 import { fetchFestivalVideos, FESTIVAL_VIDEOS_MAX, FESTIVAL_VIDEOS_PAGE } from '../../utils/fetchFestivalVideos';
@@ -293,7 +292,6 @@ export default function FestivalDetailSheet({
   onOpenHub: _onOpenHub,
 }) {
   const navigate = useNavigate();
-  const { i18n } = useTranslation();
   const [intro, setIntro] = useState(null);
   const [common, setCommon] = useState(null);
   const [infoItems, setInfoItems] = useState([]);
@@ -485,7 +483,7 @@ export default function FestivalDetailSheet({
       const contentId = item.contentId;
       const contentTypeId = item.contentTypeId || '15';
       const [detailData, imageData] = await Promise.all([
-        fetchTourApiFestivalDetailLocalized({ contentId, contentTypeId }),
+        fetchTourApiFestivalDetail({ contentId, contentTypeId }),
         fetchTourApiFestivalImages({ contentId, numOfRows: 12 }),
       ]);
       if (cancelled) return;
@@ -515,7 +513,7 @@ export default function FestivalDetailSheet({
     return () => {
       cancelled = true;
     };
-  }, [item?.contentId, item?.contentTypeId, i18n.language]);
+  }, [item?.contentId, item?.contentTypeId]);
 
   const {
     transformStyle: lightboxTransformStyle,
