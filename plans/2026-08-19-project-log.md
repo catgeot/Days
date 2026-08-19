@@ -36,6 +36,15 @@
 - **클러스터** `GlobeClusterLegend` — `labelEn` · `getPlaceTitleLinesForLocale`
 - **VERIFY** `npm run build` · `smoke:place-label-slug` PASS
 
+## 영문화 #19, 무니 프롬프트·대화 EN — Preview push
+
+- **프롬프트 SSOT** `mooniPromptBundles.js` — ko/en system·칩·CTA·인트로 지시
+- **연동** `prompts.js` · `mooniChipPrompts.js` · `chatCtaPromptHint.js` · `placeChatIntro.js`
+- **인트로 캐시** `destination_key@en` 접미사로 ko/en 분리
+- **VERIFY** `npm run build` · `smoke:place-label-slug` PASS
+- **브랜치** `cursor/en` · `/qa/en` · `?lang=en` — MOONi 칩 탭 시 AI 답변 영문
+- **다음** #20 무니 인트로·탐지
+
 ## 영문화 #18, 무니 UI·칩 — Preview push
 
 - **무니 UI** `ChatModal` · `MooniAgentFab` · 목적지 칩 · 플래너 follow-up — `mooni.*` i18n 키

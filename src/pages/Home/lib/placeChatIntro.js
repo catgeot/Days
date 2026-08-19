@@ -5,6 +5,8 @@ import { MOONI_GEMINI } from '../../../utils/mooniChatModel';
 import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
 import { MOONI_TOPIC_HINT } from './mooniQuickReplies';
 import { i18n } from '../../../i18n/config';
+import { normalizeAppLocale } from '../../../i18n/constants';
+import { getMooniPromptBundle, fillMooniPromptTemplate } from '../../../i18n/mooniPromptBundles';
 import {
   isSyntheticOrEmptyPlaceDesc,
   needsPlaceChatIntroHydration,
@@ -13,8 +15,23 @@ import {
 export { isSyntheticOrEmptyPlaceDesc, needsPlaceChatIntroHydration };
 
 const LS_PREFIX = 'days_place_chat_intro:';
+const INTRO_LOCALE_SUFFIX = { en: '@en' };
 
-const INVALID_DESTINATIONS = new Set(['', 'new session', 'scanning...', 'mooni']);
+function introLocaleKey(lng = i18n.language) {
+  const locale = normalizeAppLocale(lng?.slice?.(0, 2) ?? lng);
+  return INTRO_LOCALE_SUFFIX[locale] ?? '';
+}
+
+/** DB·localStorage용 destination_key (locale 분리 — #19) */
+export function withPlaceChatIntroLocale(destinationKey, lng = i18n.language) {
+  const base = normalizeDestinationKey(destinationKey);
+  const suffix = introLocaleKey(lng);
+  return suffix && base ? `${base}${suffix}` : base;
+}
+
+function localStorageKey(destinationKey, lng = i18n.language) {
+  return `${LS_PREFIX}${encodeURIComponent(withPlaceChatIntroLocale(destinationKey, lng))}`;
+}
 
 export function normalizeDestinationKey(name) {
   return String(name ?? '')
@@ -56,18 +73,16 @@ export function buildMooniBoundSpotFromLocation(loc) {
   };
 }
 
+const INVALID_DESTINATIONS = new Set(['', 'new session', 'scanning...', 'mooni']);
+
 function isValidIntroDestination(key) {
   const lower = key.trim().toLowerCase();
   return key.length > 0 && !INVALID_DESTINATIONS.has(lower);
 }
 
-function localStorageKey(destinationKey) {
-  return `${LS_PREFIX}${encodeURIComponent(destinationKey)}`;
-}
-
-export function loadPlaceChatIntroLocal(destinationKey) {
+export function loadPlaceChatIntroLocal(destinationKey, lng = i18n.language) {
   try {
-    const raw = localStorage.getItem(localStorageKey(destinationKey));
+    const raw = localStorage.getItem(localStorageKey(destinationKey, lng));
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     const s = typeof parsed?.summary === 'string' ? parsed.summary.trim() : '';
@@ -77,10 +92,10 @@ export function loadPlaceChatIntroLocal(destinationKey) {
   }
 }
 
-export function savePlaceChatIntroLocal(destinationKey, summary) {
+export function savePlaceChatIntroLocal(destinationKey, summary, lng = i18n.language) {
   try {
     localStorage.setItem(
-      localStorageKey(destinationKey),
+      localStorageKey(destinationKey, lng),
       JSON.stringify({ summary, savedAt: Date.now() })
     );
   } catch {
@@ -160,24 +175,25 @@ export function buildPlaceChatIntroKeys(locOrName) {
   return keys;
 }
 
-async function fetchIntroByExactKey(destinationKey) {
+async function fetchIntroByExactKey(destinationKey, lng = i18n.language) {
+  const storageKey = withPlaceChatIntroLocale(destinationKey, lng);
   if (!isValidIntroDestination(destinationKey)) return null;
 
   const { data, error } = await supabase
     .from('place_chat_intro')
     .select('summary')
-    .eq('destination_key', destinationKey)
+    .eq('destination_key', storageKey)
     .maybeSingle();
 
   if (!error && data?.summary) {
     const text = String(data.summary).trim();
     if (text) {
-      savePlaceChatIntroLocal(destinationKey, text);
+      savePlaceChatIntroLocal(destinationKey, text, lng);
       return text;
     }
   }
 
-  return loadPlaceChatIntroLocal(destinationKey);
+  return loadPlaceChatIntroLocal(destinationKey, lng);
 }
 
 export async function fetchPlaceChatIntroSummary(destinationDisplayName) {
@@ -203,17 +219,18 @@ export async function fetchPlaceChatIntroSummaryForLocation(locOrName) {
   return null;
 }
 
-export async function persistPlaceChatIntroSummary(destinationDisplayName, summary) {
+export async function persistPlaceChatIntroSummary(destinationDisplayName, summary, lng = i18n.language) {
   const destinationKey = normalizeDestinationKey(destinationDisplayName);
+  const storageKey = withPlaceChatIntroLocale(destinationKey, lng);
   const text = String(summary ?? '').trim();
   if (!isValidIntroDestination(destinationKey) || !text) return;
 
-  savePlaceChatIntroLocal(destinationKey, text);
+  savePlaceChatIntroLocal(destinationKey, text, lng);
 
   const { data: existing, error: selErr } = await supabase
     .from('place_chat_intro')
     .select('id')
-    .eq('destination_key', destinationKey)
+    .eq('destination_key', storageKey)
     .maybeSingle();
 
   if (selErr) {
@@ -226,11 +243,11 @@ export async function persistPlaceChatIntroSummary(destinationDisplayName, summa
     const { error } = await supabase
       .from('place_chat_intro')
       .update({ summary: text, updated_at: now })
-      .eq('destination_key', destinationKey);
+      .eq('destination_key', storageKey);
     if (error) console.warn('[place_chat_intro] update failed:', error);
   } else {
     const { error } = await supabase.from('place_chat_intro').insert({
-      destination_key: destinationKey,
+      destination_key: storageKey,
       summary: text,
       updated_at: now
     });
@@ -238,13 +255,14 @@ export async function persistPlaceChatIntroSummary(destinationDisplayName, summa
   }
 }
 
-export async function generatePlaceChatIntroWithAi(destinationDisplayName) {
+export async function generatePlaceChatIntroWithAi(destinationDisplayName, lng = i18n.language) {
   const name = normalizeDestinationKey(destinationDisplayName);
+  const bundle = getMooniPromptBundle(lng);
   if (!isValidIntroDestination(name)) {
-    throw new Error('유효하지 않은 여행지 이름입니다.');
+    throw new Error(bundle.introInvalidDestination);
   }
-  const system = getPlaceChatIntroSystemPrompt();
-  const userText = `여행지 이름: ${name}\n이 장소를 처음 듣는 사람에게 왜 가볼 만한지, 어떤 분위기·매력이 있는지 2~4문장으로 소개해줘. 위 여행지 이름 자체(예: 상위 도시·섬만)로 범위를 바꾸지 말고, 지정된 장소만 소개해줘.`;
+  const system = getPlaceChatIntroSystemPrompt(lng);
+  const userText = fillMooniPromptTemplate(bundle.introUser, { name });
   const raw = await apiClient.fetchProxyGemini(null, [], system, userText, [], MOONI_GEMINI.INTRO);
   return String(raw ?? '').trim();
 }
@@ -270,9 +288,10 @@ export async function ensurePlaceChatIntroForLocation(locOrName, options = {}) {
   if (!generateIfMissing) return null;
 
   const primaryKey = keys[0];
-  if (introEnsureFailed.has(primaryKey)) return null;
+  const inflightKey = `${introLocaleKey()}:${primaryKey}`;
+  if (introEnsureFailed.has(inflightKey)) return null;
 
-  const existing = introEnsureInflight.get(primaryKey);
+  const existing = introEnsureInflight.get(inflightKey);
   if (existing) return existing;
 
   const placeName =
@@ -288,21 +307,21 @@ export async function ensurePlaceChatIntroForLocation(locOrName, options = {}) {
     try {
       const raw = await generatePlaceChatIntroWithAi(generateLabel);
       if (!raw) {
-        introEnsureFailed.add(primaryKey);
+        introEnsureFailed.add(inflightKey);
         return null;
       }
       await persistPlaceChatIntroSummary(generateLabel, raw);
       const stripped = stripPlaceChatIntroForSummary(raw, placeName);
       return stripped || null;
     } catch (err) {
-      introEnsureFailed.add(primaryKey);
+      introEnsureFailed.add(inflightKey);
       console.warn('[place_chat_intro] ensure generate failed:', err);
       return null;
     } finally {
-      introEnsureInflight.delete(primaryKey);
+      introEnsureInflight.delete(inflightKey);
     }
   })();
 
-  introEnsureInflight.set(primaryKey, promise);
+  introEnsureInflight.set(inflightKey, promise);
   return promise;
 }

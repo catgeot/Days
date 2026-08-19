@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '영문화',
-  sessionNo: 18,
-  sessionPhase: '무니 UI·칩 EN',
+  sessionNo: 19,
+  sessionPhase: '무니 프롬프트·대화 EN',
   branch: 'cursor/en',
   previewPath: '/?lang=en',
   qaShareSlug: 'en',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-19-i18n-mooni-prompts-en',
+    session: '영문화 #19, 무니 프롬프트·대화 EN',
+    title: 'MOONi system prompt·칩·CTA EN',
+    detail:
+      '?lang=en에서 무니 Gemini system prompt·주제 칩 지침·CTA 힌트·장소 인트로 생성 프롬프트가 영문으로 전달됩니다. place_chat_intro 캐시 키는 @en 접미사로 ko와 분리. Preview /qa/en · 홈 MOONi FAB → 칩(Flights/Visa 등) 탭 시 답변이 영문인지 확인해 주세요.',
+    at: '2026-08-19',
+  },
   {
     id: '2026-08-19-i18n-tourapi-body-en-rollback',
     session: '영문화 #17, TourAPI EN 롤백(A)',
