@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '영문화',
-  sessionNo: 13,
-  sessionPhase: '지구본 칩·국가',
+  sessionNo: 15,
+  sessionPhase: 'TourAPI 프록시 EN',
   branch: 'cursor/en',
   previewPath: '/?lang=en',
   qaShareSlug: 'en',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-19-i18n-globe-place-labels',
+    session: '영문화 #14, 지구본 지명·맵',
+    title: '지구본 핀·Mapbox 지명 en',
+    detail:
+      'gateo 핀 label은 name_en 우선(localizedMarkerPinLabel). Mapbox는 map.setLanguage(en|ko) + label 클릭 시 영문 키 우선. 클러스터 범례는 labelEn·name_en 표시. Preview /qa/en · ?lang=en 홈에서 줌인 후 Bali·Paris 등 핀·Mapbox 지명·좌하단 클러스터가 영문인지 확인해 주세요.',
+    at: '2026-08-19',
+  },
   {
     id: '2026-08-19-i18n-globe-chips',
     session: '영문화 #13, 지구본 칩·국가',

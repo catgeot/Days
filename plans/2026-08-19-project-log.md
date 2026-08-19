@@ -24,11 +24,8 @@
 - **tip** `022d1848` · PR [#135](https://github.com/catgeot/Days/pull/135)
 - **다음** #14 지구본 지명·맵
 
-## 영문화 #14, 지구본 지명·맵 — Preview push
+## 영문화 #14, Preview QA PASS
 
-- **핀** `localizedMarkerPinLabel` · `globeMarkerLayers` locale별 label
-- **Mapbox** `map.setLanguage(en|ko)` · satellite `MapboxLanguage` · label 클릭 en 우선
-- **클러스터** `GlobeClusterLegend` — `labelEn` · `getPlaceTitleLinesForLocale`
-- **VERIFY** `npm run build` · `smoke:place-label-slug` PASS
-- **Preview** `/qa/en` · `?lang=en` — 줌인 gateo 핀·Mapbox 지명·클러스터 범례
-- **다음** 사람 Preview QA → #15 TourAPI 또는 main 병합
+- **사람 QA** `/qa/en` · `?lang=en` — gateo 핀·Mapbox 지명·클러스터 범례 **통과**
+- **tip** `ff0cfe5f` · PR [#135](https://github.com/catgeot/Days/pull/135)
+- **다음** #15 TourAPI 프록시 EN (`EngService2` + locale 캐시)

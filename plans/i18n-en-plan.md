@@ -23,7 +23,8 @@
 | 11 | 병합·PROD | `영문화 #11, 병합·PROD QA` | ✅ merge · PROD QA (사람) |
 | 12 | PROD 확인 | `영문화 #12, PROD QA 확인` | (배포 후 사람) |
 | 13 | 지구본 칩 | `영문화 #13, 지구본 칩·국가` | ✅ Preview QA |
-| 14 | 지구본 지명 | `영문화 #14, 지구본 지명·맵` | ⏳ Preview QA |
+| 14 | 지구본 지명 | `영문화 #14, 지구본 지명·맵` | ✅ Preview QA |
+| 15 | TourAPI 프록시 | `영문화 #15, TourAPI 프록시 EN` | 다음 |
 
 세션마다 `#1` 리셋 금지 · `#N` = Cloud 순번.
 
@@ -65,6 +66,8 @@
 | **#7+** | 세부·확장 | PlaceCard 세부 · 한국 테마 나머지 · 로그북/대시보드 | `build` |
 | **#13** | 지구본 칩·국가 | 중분류·국가·해양 칩 EN (`globeUi.js`) | `build` |
 | **#14** | 지구본 지명 | 핀·Mapbox `name_en` · 클러스터 범례 | `build` · `smoke:place-label-slug` |
+| **#15** | TourAPI 프록시 | `EngService2` + locale 캐시 | `build` · Edge deploy |
+| **#16** | 축제 본문 | `/korea` TourAPI EN | `build` |
 
 **우선순위 (2차)**: 지구본 홈 → 한국 TourAPI 본문 → 무니 → 플래너.
 
@@ -96,28 +99,37 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#14)**: Preview push · PR [#135](https://github.com/catgeot/Days/pull/135) · **사람 Preview QA 대기**
+**상태 (#14)**: Preview QA **PASS** (사람) · PR [#135](https://github.com/catgeot/Days/pull/135) · tip `ff0cfe5f`
 
 **브랜치**: `cursor/en` · `/qa/en`
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #14, Preview QA·잔여
+영문화 #15, TourAPI 프록시 EN
 @plans/feature-handoff-index.md
 @plans/2026-08-19-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · PR #135 · /qa/en · ?lang=en 지구본 핀·Mapbox 지명
+브랜치 cursor/en · PR #135 · /qa/en · ?lang=en TourAPI EngService2
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 
-### #14 세션 범위 (에이전트 Read 대상만)
+### #15 세션 범위 (에이전트 Read 대상만)
 
 | 파일 | 작업 |
 |------|------|
-| `src/i18n/globeUi.js` | `localizedMarkerPinLabel` |
-| `src/pages/Home/lib/globeMarkerLayers.js` | locale별 핀 label |
-| `src/pages/Home/components/HomeGlobeMapbox.jsx` | `map.setLanguage` · label 클릭 en 우선 |
-| `src/pages/Home/components/GlobeClusterLegend.jsx` | `labelEn` · `name_en` |
+| TourAPI Edge 프록시 | ko=`KorService2` · en=`EngService2` |
+| 캐시 키 | locale 분리 |
+| 클라이언트 호출부 | `useLocale()` → API locale 전달 |
 
-**VERIFY**: `npm run build` · `smoke:place-label-slug`
+**VERIFY**: `npm run build` · `smoke:tourapi`(해당 시) · Edge deploy는 Secrets·사람
+
+---
+
+## 10. 2차 콘텐츠 영문화 가드
+
+1. **spots JSON 직편집 금지** — `name_en`은 overrides → `generate:*`
+2. **TourAPI** — ko=`KorService2` · en=`EngService2` · 캐시 키에 locale
+3. **CHA·선정 명승** — TourAPI 아님 → #17 범위 밖 (`overview_en`은 추후)
+4. **AI 캐시** — `place_chat_intro`·`essential_guide` locale별 키/컬럼 분리
+5. **기존 비주얼 유지** — 카피·locale 분기만
