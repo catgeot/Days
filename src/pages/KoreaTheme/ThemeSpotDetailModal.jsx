@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowUp,
@@ -34,7 +35,7 @@ import { buildMooniBoundSpotFromLocation } from '../Home/lib/placeChatIntro';
 import MooniBoundChatHost from '../Home/components/MooniBoundChatHost';
 import { useLightboxPinchTransform } from '../../components/PlaceCard/common/useLightboxPinchTransform';
 import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
-import { fetchTourApiAttractionDetail } from '../../utils/fetchTourApiAttractionDetail';
+import { fetchTourApiAttractionDetailLocalized } from '../../utils/fetchTourApiAttractionDetail';
 import { fetchNearbyTourAttractions } from '../../utils/fetchNearbyTourAttractions';
 import {
   fetchNearbyTourRestaurants,
@@ -678,6 +679,7 @@ export default function ThemeSpotDetailModal({
   favorited = false,
   onToggleFavorite,
 }) {
+  const { i18n } = useTranslation();
   const navigate = useNavigate();
   const scrollRef = useRef(null);
   const [detail, setDetail] = useState(null);
@@ -1011,7 +1013,7 @@ export default function ThemeSpotDetailModal({
     setDetailLoading(true);
 
     (async () => {
-      const data = await fetchTourApiAttractionDetail({
+      const data = await fetchTourApiAttractionDetailLocalized({
         contentId,
         contentTypeId: spot.contentTypeId || undefined,
       });
@@ -1029,6 +1031,7 @@ export default function ThemeSpotDetailModal({
       cancelled = true;
     };
   }, [
+    i18n.language,
     spot?.id,
     spot?.contentId,
     spot?.contentTypeId,
@@ -1301,6 +1304,8 @@ export default function ThemeSpotDetailModal({
 
   if (!spot) return null;
 
+  const displayTitle =
+    String(detail?.title || spot.nameEn || spot.name || '').trim() || '명소';
   const hasContentId = /^\d{1,32}$/.test(String(spot.contentId || '').trim());
   const hero = imageUrls[activeImage] || imageUrls[0] || '';
   const galleryList = imageUrls;
@@ -1370,7 +1375,7 @@ export default function ThemeSpotDetailModal({
               id="korea-theme-spot-modal-title"
               className="mt-0.5 text-base font-extrabold tracking-tight text-stone-900 break-keep sm:text-lg"
             >
-              {spot.name}
+              {displayTitle}
             </h2>
             {spot.subtitle ? (
               <p className="mt-1 text-xs text-stone-500 break-keep">
@@ -2033,7 +2038,7 @@ export default function ThemeSpotDetailModal({
                   id="korea-theme-spot-videos-title"
                   className="mt-0.5 text-base font-extrabold tracking-tight text-stone-900 break-keep sm:text-lg"
                 >
-                  {spot.name}
+                  {displayTitle}
                 </h2>
               </div>
               <button

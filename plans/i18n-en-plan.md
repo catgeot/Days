@@ -111,20 +111,28 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#16)**: Preview push · `smoke:festival-detail-locale` PASS
+**상태 (#17)**: Preview push · `smoke:scenic-detail-locale` PASS
 
-**브랜치**: `cursor/en` · `/qa/en` · **#17 착수**
+**브랜치**: `cursor/en` · `/qa/en` · **#18 착수**
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #17, 명승 TourAPI 본문 EN
+영문화 #18, 무니 UI·칩 EN
 @plans/feature-handoff-index.md
 @plans/2026-08-19-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · /qa/en · ?lang=en /korea/theme/scenic 본문
+브랜치 cursor/en · /qa/en · ?lang=en 무니 UI·칩
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
+
+### #17 완료 요약
+
+| 파일 | 작업 |
+|------|------|
+| `fetchTourApiAttractionDetail.js` | `fetchTourApiAttractionDetailLocalized` · locale en/ko |
+| `mergeTourApiAttractionDetail.js` | EN 필드 우선 · KO 폴백 |
+| `ThemeSpotDetailModal` | localized detail · `displayTitle` · CHA 제외 |
 
 ### #16 완료 요약
 

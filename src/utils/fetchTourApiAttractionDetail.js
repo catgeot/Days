@@ -1,4 +1,5 @@
-import { invokeTourApiProxy } from './tourApiProxy';
+import { getTourApiLocale, invokeTourApiProxy } from './tourApiProxy';
+import { mergeTourApiAttractionDetail } from './mergeTourApiAttractionDetail';
 
 const ATTRACTION_CONTENT_TYPE_ID = '12';
 const RESTAURANT_CONTENT_TYPE_ID = '39';
@@ -7,9 +8,10 @@ const INTRO_TYPE_CANDIDATES = ['12', '14', '28', '38', '39'];
 /**
  * @param {string} action
  * @param {Record<string, unknown>} payload
+ * @param {'ko' | 'en'} locale
  */
-async function invokeTourApi(action, payload) {
-  return invokeTourApiProxy(action, payload);
+async function invokeTourApi(action, payload, locale) {
+  return invokeTourApiProxy(action, payload, { locale });
 }
 
 function toHttps(url) {
@@ -29,22 +31,26 @@ function pickImageUrl(...candidates) {
 }
 
 /**
- * 관광지·맛집 등 상세 — 개요·이용·부가정보·사진.
- * @param {{ contentId: string | number, contentTypeId?: string | number }} opts
+ * @param {{ contentId: string | number, contentTypeId?: string | number, locale?: 'ko' | 'en' }} opts
  */
-export async function fetchTourApiAttractionDetail(opts) {
+async function fetchTourApiAttractionDetailForLocale(opts) {
   const contentId = String(opts?.contentId ?? '').trim();
   if (!/^\d{1,32}$/.test(contentId)) return null;
 
+  const locale = opts?.locale === 'en' ? 'en' : 'ko';
   const preferredType = String(opts?.contentTypeId || '').trim();
 
   const [common, images] = await Promise.all([
-    invokeTourApi('detailCommon', { contentId }),
-    invokeTourApi('detailImage', {
-      contentId,
-      numOfRows: 12,
-      pageNo: 1,
-    }),
+    invokeTourApi('detailCommon', { contentId }, locale),
+    invokeTourApi(
+      'detailImage',
+      {
+        contentId,
+        numOfRows: 12,
+        pageNo: 1,
+      },
+      locale,
+    ),
   ]);
 
   const commonItem = common?.items?.[0] || null;
@@ -64,13 +70,17 @@ export async function fetchTourApiAttractionDetail(opts) {
   let infoItems = [];
   for (const contentTypeId of typeOrder) {
     const [intro, info] = await Promise.all([
-      invokeTourApi('detailIntro', { contentId, contentTypeId }),
-      invokeTourApi('detailInfo', {
-        contentId,
-        contentTypeId,
-        numOfRows: 30,
-        pageNo: 1,
-      }),
+      invokeTourApi('detailIntro', { contentId, contentTypeId }, locale),
+      invokeTourApi(
+        'detailInfo',
+        {
+          contentId,
+          contentTypeId,
+          numOfRows: 30,
+          pageNo: 1,
+        },
+        locale,
+      ),
     ]);
     const candidateIntro = intro?.items?.[0] || null;
     const candidateInfo = Array.isArray(info?.items) ? info.items : [];
@@ -117,6 +127,36 @@ export async function fetchTourApiAttractionDetail(opts) {
     intro: introItem,
     infoItems,
   };
+}
+
+/**
+ * 관광지·맛집 등 상세 — 개요·이용·부가정보·사진.
+ * @param {{ contentId: string | number, contentTypeId?: string | number }} opts
+ */
+export async function fetchTourApiAttractionDetail(opts) {
+  return fetchTourApiAttractionDetailForLocale({
+    ...opts,
+    locale: getTourApiLocale(),
+  });
+}
+
+/**
+ * locale=en — EngService2 본문 + KorService2 폴백. ko — KorService2만.
+ * @param {{ contentId: string | number, contentTypeId?: string | number }} opts
+ */
+export async function fetchTourApiAttractionDetailLocalized(opts) {
+  const contentId = String(opts?.contentId ?? '').trim();
+  if (!/^\d{1,32}$/.test(contentId)) return null;
+
+  if (getTourApiLocale() !== 'en') {
+    return fetchTourApiAttractionDetailForLocale({ ...opts, locale: 'ko' });
+  }
+
+  const [enDetail, koDetail] = await Promise.all([
+    fetchTourApiAttractionDetailForLocale({ ...opts, locale: 'en' }),
+    fetchTourApiAttractionDetailForLocale({ ...opts, locale: 'ko' }),
+  ]);
+  return mergeTourApiAttractionDetail(enDetail, koDetail);
 }
 
 export { ATTRACTION_CONTENT_TYPE_ID, RESTAURANT_CONTENT_TYPE_ID };

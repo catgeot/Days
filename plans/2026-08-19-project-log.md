@@ -64,3 +64,11 @@
 - **캐시** sessionStorage `rolling12:ko` · `mergeTourApiFestivalDetail.js`
 - **VERIFY** `smoke:festival-detail-locale` · `build` · `smoke:place-label-slug` PASS
 - **Preview** `/qa/en` · `/korea?lang=en` — 축제 카드·상세 본문
+
+## 영문화 #17, 명승 TourAPI 본문 EN — Preview push
+
+- **상세** `fetchTourApiAttractionDetailLocalized` — EN 본문 + KO 필드 폴백 · `displayTitle`
+- **병합** `mergeTourApiAttractionDetail.js` — overview·intro·infoItems
+- **모달** `ThemeSpotDetailModal` — TourAPI만(CHA·선정 제외) · `i18n.language` 재fetch
+- **VERIFY** `smoke:scenic-detail-locale` · `build` · `smoke:place-label-slug` PASS
+- **Preview** `/qa/en` · `/korea/theme/scenic?lang=en` — 명승 카드→상세 본문

@@ -62,25 +62,25 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#16 축제 본문 EN** Preview push (`cursor/en`) |
+| **상태** | **#17 명승 TourAPI 본문 EN** Preview push (`cursor/en`) |
 | **main** | `cb5d4358` — PR [#135](https://github.com/catgeot/Days/pull/135) 병합 (#13~#14) |
 | **브랜치** | `cursor/en` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§10 |
 | **일지** | [`2026-08-19-project-log.md`](./2026-08-19-project-log.md) |
 | **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` |
 | **PROD** | `https://www.gateo.kr/qa/en` → `/?lang=en` |
-| **VERIFY** | `npm run build` · `smoke:place-label-slug` |
+| **VERIFY** | `npm run build` · `smoke:place-label-slug` · `smoke:scenic-detail-locale` |
 
-**2차 순서**: ~~#13 지구본 칩~~ · ~~#14 지명~~ · ~~#15 TourAPI~~ → **#16 축제** → #17 명승 → #18~20 무니
+**2차 순서**: ~~#13 지구본 칩~~ · ~~#14 지명~~ · ~~#15 TourAPI~~ · ~~#16 축제~~ · **#17 명승** → #18~20 무니
 
 **다음 제시어**:
 
 ```
-영문화 #16, 축제 본문 EN
+영문화 #18, 무니 UI·칩 EN
 @plans/feature-handoff-index.md
 @plans/2026-08-19-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · /qa/en · ?lang=en /korea 축제 본문
+브랜치 cursor/en · /qa/en · ?lang=en 무니 UI·칩
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 
