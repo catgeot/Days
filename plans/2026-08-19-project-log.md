@@ -69,7 +69,15 @@
 
 - **사람 QA** `/qa/en` · `?lang=en` — MOONi 인트로·항공 CTA·Trip.com 검색 모달(왕복·편도·검색) **영문 OK**
 - **Trip.com** 별도 EN ad 불필요 — `locale=en-US` 쿼리로 기존 ad ID EN UI 확인
-- **tip** `6bca488c` · **다음** #21 플래너 배너·UI EN
+- **tip** `6bca488c` · **다음** main 병합·PROD QA
+
+## 영문화 #21, 메인 병합 — #15~#20
+
+- **범위** TourAPI locale(#15) · #16·#17 본문 롤백(A) · 무니 UI·프롬프트·인트로(#18~#20) · Trip.com `locale=en-US`
+- **VERIFY** `npm run build` · `smoke:place-label-slug` · `smoke:tourapi` PASS (`cursor/en` tip `66f5bf17`)
+- **PR** [#136](https://github.com/catgeot/Days/pull/136) → **main** (사람 PROD QA)
+- **PROD QA** `www.gateo.kr/qa/en` → `/?lang=en` — MOONi FAB·채팅·항공 CTA·Trip.com 모달
+- **다음** #21 플래너 배너·UI EN (`cursor/en`)
 
 ## 영문화 #18, 무니 UI·칩 — Preview push
 
