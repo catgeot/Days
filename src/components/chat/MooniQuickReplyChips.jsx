@@ -32,7 +32,7 @@ export default function MooniQuickReplyChips({
   const backLabelText = resolvedBackLabel.replace(/^←\s*/, '');
 
   const chipRowClass = dock
-    ? 'flex gap-2 flex-nowrap overflow-x-auto overscroll-x-contain touch-pan-x pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
+    ? 'flex w-full max-w-full gap-2 flex-nowrap overflow-x-auto overscroll-x-contain touch-pan-x pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
     : 'flex flex-wrap gap-2';
 
   return (
@@ -58,7 +58,7 @@ export default function MooniQuickReplyChips({
       {showPrompt && resolvedPrompt ? (
         <p className="text-xs text-gray-400 px-0.5">{resolvedPrompt}</p>
       ) : null}
-      <div className={dock ? 'relative min-w-0' : undefined}>
+      <div className={dock ? 'relative min-w-0 w-full max-w-full overflow-hidden' : undefined}>
         <div className={chipRowClass}>
           {items.map((chip) => (
             <button

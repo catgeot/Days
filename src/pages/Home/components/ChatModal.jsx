@@ -981,7 +981,7 @@ const ChatModal = ({
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col bg-black/50 relative">
+        <div className="flex-1 flex flex-col bg-black/50 relative min-w-0">
             <div
               className="bg-gray-800/50 p-4 md:py-2.5 md:px-4 max-md:px-3 max-md:py-2 max-md:pt-[max(0.4rem,env(safe-area-inset-top,0px))] flex items-center gap-3 max-md:gap-2 border-b border-gray-700 backdrop-blur-md"
               onPointerDown={() => {
@@ -1215,7 +1215,7 @@ const ChatModal = ({
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="shrink-0 bg-gray-900 border-t border-gray-800 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
+            <div className="shrink-0 min-w-0 overflow-hidden bg-gray-900 border-t border-gray-800 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
               {showAccessOriginDock ? (
                 <div className="px-3 md:px-4 pt-3 md:pt-2 pb-2 md:pb-1.5 space-y-2 md:space-y-1.5 border-b border-gray-800/80">
                   <div className="flex items-center gap-2 min-w-0 flex-wrap">
@@ -1339,8 +1339,8 @@ const ChatModal = ({
                       </button>
                     </form>
                   </div>
-                  <div className="hidden md:flex items-end gap-3 px-4 pt-2 pb-2">
-                    <div className="min-w-0 flex-1">
+                  <div className="hidden md:flex items-end gap-3 px-4 pt-2 pb-2 min-w-0 overflow-hidden">
+                    <div className="min-w-0 flex-1 overflow-hidden">
                       <MooniQuickReplyChips {...topicDockChipsProps} />
                     </div>
                     <form

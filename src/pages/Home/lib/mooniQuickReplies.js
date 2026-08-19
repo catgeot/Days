@@ -9,6 +9,13 @@ export const MOONI_TOPIC_HINT = 'mooni.chat.topicHint';
 /** @deprecated — use mooni.chat.accessDeparturePlaceholder */
 export const ACCESS_DEPARTURE_INPUT_PLACEHOLDER = 'mooni.chat.accessDeparturePlaceholder';
 
+/** i18next returnEmptyString:false — 빈 default면 키 경로가 그대로 노출됨 */
+function chipTranslation(key) {
+  const value = i18n.t(key, { defaultValue: '__missing__' });
+  if (!value || value === key || value === '__missing__') return '';
+  return value;
+}
+
 /**
  * 출발 IATA → MOONi access_route 발화
  * @param {string} iata
@@ -85,7 +92,7 @@ const L2_ENJOY = [
 
 function localizeL1Def(def) {
   const base = `mooni.chips.l1.${def.id}`;
-  const mobileLabel = i18n.t(`${base}.mobileLabel`, { defaultValue: '' });
+  const mobileLabel = chipTranslation(`${base}.mobileLabel`);
   return {
     ...def,
     label: i18n.t(`${base}.label`),
@@ -95,12 +102,17 @@ function localizeL1Def(def) {
 
 function localizeL2Def(parentId, def) {
   const base = `mooni.chips.l2.${parentId}.${def.id}`;
-  const mobileLabel = i18n.t(`${base}.mobileLabel`, { defaultValue: '' });
+  const { mobileLabel: wantsMobileLabel, ...defRest } = def;
+  const extras = {};
+  if (wantsMobileLabel === true) {
+    const mobileLabel = chipTranslation(`${base}.mobileLabel`);
+    if (mobileLabel) extras.mobileLabel = mobileLabel;
+  }
   return {
-    ...def,
+    ...defRest,
     label: i18n.t(`${base}.label`),
     sendText: i18n.t(`${base}.sendText`),
-    ...(mobileLabel ? { mobileLabel } : {}),
+    ...extras,
   };
 }
 
@@ -197,10 +209,10 @@ export function getMooniQuickReplies(slug, level = 1, parentId = null, options =
 export function getMooniL1ChipLabel(parentId, { mobile = false } = {}) {
   const base = `mooni.chips.l1.${parentId}`;
   if (mobile) {
-    const mobileLabel = i18n.t(`${base}.mobileLabel`, { defaultValue: '' });
+    const mobileLabel = chipTranslation(`${base}.mobileLabel`);
     if (mobileLabel) return mobileLabel;
   }
-  return i18n.t(`${base}.label`, { defaultValue: '' });
+  return chipTranslation(`${base}.label`) || i18n.t(`${base}.label`);
 }
 
 export function buildMooniIntroWithHint(introText, placeName) {
