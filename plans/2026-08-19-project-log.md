@@ -54,6 +54,12 @@
 - **브랜치** `cursor/en` · `/qa/en` · `?lang=en` — bound 장소 MOONi 인트로·써머리 EN
 - **다음** #21 플래너 배너·UI EN
 
+## 영문화 #20 보정 — MOONi 항공 CTA·검색 모달 EN
+
+- **배너** `BookingActionCards` · `chatBookingResolver` — Transport·항공 라벨·route hint locale
+- **모달** `TripcomFlightSearchModal` — 헤더·aria·제휴 배지 EN
+- **VERIFY** `smoke:place-label-slug` · `build` PASS
+
 ## 영문화 #18, 무니 UI·칩 — Preview push
 
 - **무니 UI** `ChatModal` · `MooniAgentFab` · 목적지 칩 · 플래너 follow-up — `mooni.*` i18n 키

@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-19-i18n-mooni-flight-cta-en',
+    session: '영문화 #20, 무니 인트로·탐지',
+    title: 'MOONi 항공 CTA·검색 모달 EN',
+    detail:
+      '?lang=en MOONi 답변 아래 「Transport · tickets」·항공 버튼·route hint·Trip.com 검색 모달 헤더가 영문으로 표시됩니다. Preview /qa/en · bound 장소 → 항공권 칩/CTA 탭 → 배너·모달 확인.',
+    at: '2026-08-19',
+  },
+  {
     id: '2026-08-19-i18n-mooni-intro-detect-en',
     session: '영문화 #20, 무니 인트로·탐지',
     title: 'place_chat_intro EN 캐시·목적지 탐지',
