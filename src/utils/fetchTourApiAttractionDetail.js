@@ -1,58 +1,15 @@
-import { supabase } from '../shared/api/supabase';
+import { invokeTourApiProxy, TOUR_API_BODY_LOCALE } from './tourApiProxy';
 
-const INVOKE_TIMEOUT_MS = 12_000;
 const ATTRACTION_CONTENT_TYPE_ID = '12';
 const RESTAURANT_CONTENT_TYPE_ID = '39';
 const INTRO_TYPE_CANDIDATES = ['12', '14', '28', '38', '39'];
-
-/**
- * @template T
- * @param {Promise<T>} promise
- * @param {number} ms
- * @param {string} label
- * @returns {Promise<T>}
- */
-function withTimeout(promise, ms, label) {
-  let timer;
-  return Promise.race([
-    promise,
-    new Promise((_, reject) => {
-      timer = setTimeout(() => reject(new Error(`${label} timeout ${ms}ms`)), ms);
-    }),
-  ]).finally(() => {
-    if (timer) clearTimeout(timer);
-  });
-}
 
 /**
  * @param {string} action
  * @param {Record<string, unknown>} payload
  */
 async function invokeTourApi(action, payload) {
-  try {
-    const { data, error } = await withTimeout(
-      supabase.functions.invoke('tourapi-proxy', {
-        body: { action, ...payload },
-      }),
-      INVOKE_TIMEOUT_MS,
-      `tourapi:${action}`,
-    );
-    if (error) {
-      console.warn(`[tourapi] ${action} invoke error:`, error.message || error);
-      return null;
-    }
-    if (!data?.ok) {
-      console.warn(
-        `[tourapi] ${action} not ok:`,
-        data?.message || data?.error || 'unknown',
-      );
-      return null;
-    }
-    return data;
-  } catch (err) {
-    console.warn(`[tourapi] ${action} failed:`, err?.message || err);
-    return null;
-  }
+  return invokeTourApiProxy(action, payload, { locale: TOUR_API_BODY_LOCALE });
 }
 
 function toHttps(url) {
@@ -72,7 +29,7 @@ function pickImageUrl(...candidates) {
 }
 
 /**
- * 관광지·맛집 등 상세 — 개요·이용·부가정보·사진.
+ * 관광지·맛집 등 상세 — 개요·이용·부가정보·사진 (KorService2 SSOT).
  * @param {{ contentId: string | number, contentTypeId?: string | number }} opts
  */
 export async function fetchTourApiAttractionDetail(opts) {

@@ -1,25 +1,5 @@
 import { supabase } from '../shared/api/supabase';
-
-const INVOKE_TIMEOUT_MS = 14_000;
-
-/**
- * @template T
- * @param {Promise<T>} promise
- * @param {number} ms
- * @param {string} label
- * @returns {Promise<T>}
- */
-function withTimeout(promise, ms, label) {
-  let timer;
-  return Promise.race([
-    promise,
-    new Promise((_, reject) => {
-      timer = setTimeout(() => reject(new Error(`${label} timeout ${ms}ms`)), ms);
-    }),
-  ]).finally(() => {
-    if (timer) clearTimeout(timer);
-  });
-}
+import { NEARBY_TOUR_API_LOCALE, withTourApiTimeout } from './tourApiProxy';
 
 function haversineKm(lat1, lng1, lat2, lng2) {
   const toRad = (d) => (d * Math.PI) / 180;
@@ -74,6 +54,7 @@ export async function fetchNearbyTourAreaBasedFallback(opts) {
     for (let pageNo = 1; pageNo <= maxPages; pageNo += 1) {
       const body = {
         action: 'areaBasedList',
+        locale: NEARBY_TOUR_API_LOCALE,
         areaCode,
         contentTypeId,
         numOfRows: 50,
@@ -83,9 +64,9 @@ export async function fetchNearbyTourAreaBasedFallback(opts) {
       };
       if (/^\d{1,10}$/.test(sigunguCode)) body.sigunguCode = sigunguCode;
 
-      const { data, error } = await withTimeout(
+      const { data, error } = await withTourApiTimeout(
         supabase.functions.invoke('tourapi-proxy', { body }),
-        INVOKE_TIMEOUT_MS,
+        14_000,
         `tourapi:areaBasedList:${contentTypeId}`,
       );
       if (error || !data?.ok) {

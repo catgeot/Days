@@ -1,59 +1,19 @@
-import { supabase } from '../shared/api/supabase';
+import { invokeTourApiProxy, TOUR_API_BODY_LOCALE } from './tourApiProxy';
 
-const INVOKE_TIMEOUT_MS = 12_000;
 const FESTIVAL_WINDOW_TIMEOUT_MS = 90_000;
 const FESTIVAL_DETAIL_TIMEOUT_MS = 30_000;
 
 /**
- * @template T
- * @param {Promise<T>} promise
- * @param {number} ms
- * @param {string} label
- * @returns {Promise<T>}
- */
-function withTimeout(promise, ms, label) {
-  let timer;
-  return Promise.race([
-    promise,
-    new Promise((_, reject) => {
-      timer = setTimeout(() => reject(new Error(`${label} timeout ${ms}ms`)), ms);
-    }),
-  ]).finally(() => {
-    if (timer) clearTimeout(timer);
-  });
-}
-
-/**
  * @param {string} action
  * @param {Record<string, unknown>} payload
- * @param {{ timeoutMs?: number }} [opts]
+ * @param {{ timeoutMs?: number, locale?: string }} [opts]
  */
 async function invokeTourApi(action, payload, opts = {}) {
-  const timeoutMs = opts.timeoutMs ?? INVOKE_TIMEOUT_MS;
-  try {
-    const { data, error } = await withTimeout(
-      supabase.functions.invoke('tourapi-proxy', {
-        body: { action, ...payload },
-      }),
-      timeoutMs,
-      `tourapi:${action}`,
-    );
-    if (error) {
-      console.warn(`[tourapi] ${action} invoke error:`, error.message || error);
-      return null;
-    }
-    if (!data?.ok) {
-      console.warn(
-        `[tourapi] ${action} not ok:`,
-        data?.message || data?.error || 'unknown',
-      );
-      return data ?? null;
-    }
-    return data;
-  } catch (err) {
-    console.warn(`[tourapi] ${action} failed:`, err?.message || err);
-    return null;
-  }
+  return invokeTourApiProxy(action, payload, {
+    timeoutMs: opts.timeoutMs,
+    returnRawOnFail: true,
+    locale: opts.locale ?? TOUR_API_BODY_LOCALE,
+  });
 }
 
 /**
@@ -109,11 +69,12 @@ export async function fetchTourApiFestivalWindow(opts = {}) {
   if (opts?.force === true) payload.force = true;
   return invokeTourApi('festivalWindow', payload, {
     timeoutMs: FESTIVAL_WINDOW_TIMEOUT_MS,
+    locale: TOUR_API_BODY_LOCALE,
   });
 }
 
 /**
- * 축제 상세 intro/common/info — Edge 묶음 + DB 캐시 (1 invoke).
+ * 축제 상세 intro/common/info — Edge 묶음 + DB 캐시 (KorService2 SSOT).
  * @param {{
  *   contentId: string | number,
  *   contentTypeId?: string | number,
@@ -131,6 +92,7 @@ export async function fetchTourApiFestivalDetail(opts) {
   if (opts?.force === true) payload.force = true;
   return invokeTourApi('festivalDetail', payload, {
     timeoutMs: FESTIVAL_DETAIL_TIMEOUT_MS,
+    locale: TOUR_API_BODY_LOCALE,
   });
 }
 

@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { X, Send, Loader2, MessageSquare, Trash2, Sparkles, ChevronLeft } from 'lucide-react';
 import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
 import { getGeminiProxyErrorMessage } from '../lib/geminiProxyError';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
+import { TRAVEL_SPOTS } from '../data/travelSpots.js';
 import {
   fetchPlaceChatIntroSummary,
   generatePlaceChatIntroWithAi,
@@ -48,7 +50,6 @@ import {
   buildMooniIntroWithHint,
   getMooniQuickReplies,
   getMooniL1ChipLabel,
-  ACCESS_DEPARTURE_INPUT_PLACEHOLDER,
   buildAccessRouteAskText,
 } from '../lib/mooniQuickReplies';
 import { resolveMooniChatModel } from '../../../utils/mooniChatModel';
@@ -80,11 +81,12 @@ const ChatModal = ({
   /** 무니 인트로 본문 준비 시 장소카드 desc hydrate (DB 캐시·신규 생성 공통) */
   onPlaceIntroReady = null,
 }) => {
+  const { t, i18n } = useTranslation();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [currentPersona, setCurrentPersona] = useState(PERSONA_TYPES.GENERAL);
-  const [loadingStatus, setLoadingStatus] = useState("AI가 답변을 준비 중입니다...");
+  const [loadingStatus, setLoadingStatus] = useState(() => t('mooni.chat.loadingDefault'));
   const [placeIntro, setPlaceIntro] = useState(null);
   const [placeIntroLoading, setPlaceIntroLoading] = useState(false);
   const [placeIntroError, setPlaceIntroError] = useState(null);
@@ -253,7 +255,7 @@ const ChatModal = ({
     }
 
     return entrySeed;
-  }, [isOpen, chatDraft, activeChatId, chatHistory, mooniPlaceContext]);
+  }, [isOpen, chatDraft, activeChatId, chatHistory, mooniPlaceContext, i18n.language]);
 
   const boundDestinationSlug = resolveCatalogPlaceSlug(activeSessionPlace?.slug) || null;
   /** 지명만 있는 uiPlace도 주제 칩 허용 (플래너·카탈로그 연동은 slug 있을 때만) */
@@ -271,7 +273,7 @@ const ChatModal = ({
     if (activeSessionPlace?.name) return activeSessionPlace.name.trim();
     if (isMooniUi) return '';
     return introDestinationRaw;
-  }, [isOpen, activeSessionPlace?.name, isMooniUi, introDestinationRaw]);
+  }, [isOpen, activeSessionPlace?.name, isMooniUi, introDestinationRaw, i18n.language]);
 
   const effectiveQuickReplySlug = boundDestinationSlug;
 
@@ -300,6 +302,7 @@ const ChatModal = ({
       topicEssentialGuide,
       boundDestinationSlug,
       allowNameBoundChips,
+      i18n.language,
     ]
   );
 
@@ -315,15 +318,15 @@ const ChatModal = ({
     (mobileDockInputFocused || Boolean(input.trim()));
 
   const topicDockPrompt =
-    !topicDockParent && messages.length === 0 ? '무엇부터 도와드릴까요?' : null;
+    !topicDockParent && messages.length === 0 ? t('mooni.chat.topicPrompt') : null;
 
   const showTopicDockPrompt = Boolean(topicDockPrompt);
 
   const chatInputPlaceholder = useMemo(() => {
-    if (topicDockParent === 'access') return ACCESS_DEPARTURE_INPUT_PLACEHOLDER;
-    if (effectiveQuickReplySlug) return '또는 직접 입력…';
-    return '메시지 입력...';
-  }, [topicDockParent, effectiveQuickReplySlug]);
+    if (topicDockParent === 'access') return t('mooni.chat.accessDeparturePlaceholder');
+    if (effectiveQuickReplySlug) return t('mooni.chat.placeholderOrType');
+    return t('mooni.chat.placeholder');
+  }, [topicDockParent, effectiveQuickReplySlug, t, i18n.language]);
 
   useEffect(() => {
     setTopicDockParent(null);
@@ -418,21 +421,21 @@ const ChatModal = ({
 
     (async () => {
       try {
-        let text = await fetchPlaceChatIntroSummary(placeIntroTarget);
+        let text = await fetchPlaceChatIntroSummary(placeIntroTarget, i18n.language);
         if (cancelled) return;
         if (text) {
           setPlaceIntro(text);
           notifyPlaceCard(text);
           return;
         }
-        text = await generatePlaceChatIntroWithAi(placeIntroTarget);
+        text = await generatePlaceChatIntroWithAi(placeIntroTarget, i18n.language);
         if (cancelled) return;
         setPlaceIntro(text);
-        await persistPlaceChatIntroSummary(placeIntroTarget, text);
+        await persistPlaceChatIntroSummary(placeIntroTarget, text, i18n.language);
         notifyPlaceCard(text);
       } catch (e) {
         if (!cancelled) {
-          setPlaceIntroError(e?.message || '여행지 요약을 불러오지 못했습니다.');
+          setPlaceIntroError(e?.message || t('mooni.chat.introError'));
         }
       } finally {
         if (!cancelled) setPlaceIntroLoading(false);
@@ -442,7 +445,7 @@ const ChatModal = ({
     return () => {
       cancelled = true;
     };
-  }, [isOpen, placeIntroTarget, onPlaceIntroReady, mooniPlaceContext?.name]);
+  }, [isOpen, placeIntroTarget, onPlaceIntroReady, mooniPlaceContext?.name, i18n.language]);
 
   // 🚨 보안 수정: 클라이언트에서 API 키를 가져오지 않습니다. 서버 프록시 사용.
   // const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
@@ -450,21 +453,18 @@ const ChatModal = ({
   useEffect(() => {
     let interval;
     if (isLoading) {
-      const statuses = [
-        "새로운 여행지 정보를 스캔하고 있습니다...",
-        "숨겨진 로컬 맛집과 명소를 찾는 중...",
-        "🗺️ 여행 계획을 정리하고 있습니다...",
-        "✈️ 답변을 생성 중입니다..."
-      ];
+      const statuses = /** @type {string[]} */ (
+        t('mooni.chat.loadingStatuses', { returnObjects: true })
+      );
       let i = 0;
-      setLoadingStatus(statuses[0]);
+      setLoadingStatus(statuses[0] || t('mooni.chat.loadingDefault'));
       interval = setInterval(() => {
         i = (i + 1) % statuses.length;
-        setLoadingStatus(statuses[i]);
+        setLoadingStatus(statuses[i] || t('mooni.chat.loadingDefault'));
       }, 2500);
     }
     return () => clearInterval(interval);
-  }, [isLoading]);
+  }, [isLoading, t, i18n.language]);
 
   useEffect(() => {
     if (!isOpen) return undefined;
@@ -526,28 +526,31 @@ const ChatModal = ({
 
     await applyDestinationBinding(activeChatId, chatDraft, candidate);
 
-    let introText = await fetchPlaceChatIntroSummary(candidate.name);
+    const boundSpot = TRAVEL_SPOTS.find((s) => s.slug === candidate.slug) || candidate;
+    const introLabel = formatPlaceChatLabel(boundSpot, i18n.language) || candidate.name;
+
+    let introText = await fetchPlaceChatIntroSummary(introLabel, i18n.language);
     if (!introText) {
       try {
-        introText = await generatePlaceChatIntroWithAi(candidate.name);
-        await persistPlaceChatIntroSummary(candidate.name, introText);
+        introText = await generatePlaceChatIntroWithAi(introLabel, i18n.language);
+        await persistPlaceChatIntroSummary(introLabel, introText, i18n.language);
       } catch {
         introText = '';
       }
     }
     if (introText && onPlaceIntroReady) {
-      const summary = stripPlaceChatIntroForSummary(introText, candidate.name);
+      const summary = stripPlaceChatIntroForSummary(introText, introLabel);
       if (summary) {
         onPlaceIntroReady({
           summary,
-          destinationKey: candidate.name,
-          placeName: candidate.name,
+          destinationKey: introLabel,
+          placeName: introLabel,
         });
       }
     }
 
     const confirmed = { slug: candidate.slug, name: candidate.name };
-    const modelText = buildMooniIntroWithHint(introText, candidate.name);
+    const modelText = buildMooniIntroWithHint(introText, introLabel);
 
     const baseMessages = messages.map((m, i) =>
       i === messageIndex
@@ -593,12 +596,14 @@ const ChatModal = ({
     applyDestinationBinding,
     onUpdateChat,
     onCreateTripOnFirstUserMessage,
+    onPlaceIntroReady,
+    i18n.language,
   ]);
 
   const handleSend = useCallback(async (text, personaOverride = null, sendOptions = null) => {
     if (!text?.trim() || isLoading) return;
 
-    const rawText = typeof text === 'object' ? (text.text || '질문 내용 확인 불가') : text;
+    const rawText = typeof text === 'object' ? (text.text || t('mooni.chat.questionUnreadable')) : text;
     const sessionBoundEarly = activeSessionPlace?.name
       ? {
           slug: boundDestinationSlug,
@@ -607,7 +612,10 @@ const ChatModal = ({
       : null;
     const accessDockActive =
       Boolean(sessionBoundEarly?.slug) && topicDockParent === 'access';
-    const cleanText = normalizeAccessDepartureUserText(rawText, { accessDockActive });
+    const cleanText = normalizeAccessDepartureUserText(rawText, {
+      accessDockActive,
+      locale: i18n.language,
+    });
     const personaToUse =
       personaOverride ||
       (shouldUsePlannerPersona(cleanText, messages) ? PERSONA_TYPES.PLANNER : currentPersona);
@@ -949,7 +957,7 @@ const ChatModal = ({
           <div className="p-5 border-b border-gray-800 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <MessageSquare size={18} className="text-blue-400" />
-              <span className="font-bold text-gray-200 text-sm">채팅 기록</span>
+              <span className="font-bold text-gray-200 text-sm">{t('mooni.chat.history')}</span>
             </div>
           </div>
 
@@ -967,7 +975,7 @@ const ChatModal = ({
                             onDeleteChat(item.id);
                         }}
                         className="text-gray-600 hover:text-red-400"
-                        title="채팅방 삭제"
+                        title={t('mooni.chat.deleteChat')}
                       >
                         <Trash2 size={14} />
                       </button>
@@ -982,7 +990,7 @@ const ChatModal = ({
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col bg-black/50 relative">
+        <div className="flex-1 flex flex-col bg-black/50 relative min-w-0">
             <div
               className="bg-gray-800/50 p-4 md:py-2.5 md:px-4 max-md:px-3 max-md:py-2 max-md:pt-[max(0.4rem,env(safe-area-inset-top,0px))] flex items-center gap-3 max-md:gap-2 border-b border-gray-700 backdrop-blur-md"
               onPointerDown={() => {
@@ -994,8 +1002,8 @@ const ChatModal = ({
                <button
                  type="button"
                  onClick={handleClose}
-                 aria-label="채팅 닫기"
-                 title="닫기"
+                 aria-label={t('mooni.chat.closeAria')}
+                 title={t('mooni.chat.close')}
                  className="flex h-9 w-9 md:h-8 md:w-8 max-md:h-8 max-md:w-8 shrink-0 items-center justify-center rounded-full border border-gray-500/60 max-md:border-white/45 bg-gray-700/70 max-md:bg-gray-700 text-gray-200 max-md:text-white shadow-md transition-colors hover:border-gray-400 hover:bg-gray-600 hover:text-white touch-manipulation"
                >
                  <X size={16} className="pointer-events-none max-md:h-4 max-md:w-4" />
@@ -1007,12 +1015,12 @@ const ChatModal = ({
                  <span className="hidden md:block text-[11px] text-cyan-300/80 font-medium leading-tight truncate">
                    {isMooniUi
                      ? boundDestinationSlug
-                       ? `${activeSessionPlace?.name ?? introDestinationRaw} 여행 대화 · ${currentPersona}`
-                       : `여행 AI 도우미 · ${currentPersona}`
-                     : `${introDestinationRaw || '여행'} 대화 · ${currentPersona}`}
+                       ? `${t('mooni.chat.travelChat', { destination: activeSessionPlace?.name ?? introDestinationRaw })} · ${currentPersona}`
+                       : `${t('mooni.chat.travelAiHelper')} · ${currentPersona}`
+                     : `${t('mooni.chat.travelChat', { destination: introDestinationRaw || t('place.fallback.destination') })} · ${currentPersona}`}
                  </span>
                  <span className="md:hidden text-[10px] text-gray-400 font-medium leading-none mt-0.5 truncate">
-                   {isMooniUi ? 'MOONi 여행 대화' : '여행 대화'}
+                   {isMooniUi ? t('mooni.chat.mooniSessionTitle') : t('mooni.chat.travelSessionTitle')}
                  </span>
                </div>
                <div className="flex items-center gap-2 shrink-0">
@@ -1021,9 +1029,9 @@ const ChatModal = ({
                      type="button"
                      onClick={() => handlePlannerNavigate(`/place/${effectiveQuickReplySlug}/planner`)}
                      className="inline-flex items-center gap-1 rounded-full border border-cyan-300/80 bg-cyan-500/30 px-2.5 py-1.5 max-md:min-h-[32px] text-[11px] font-semibold text-cyan-50 shadow-[0_0_12px_rgba(34,211,238,0.25)] ring-1 ring-cyan-400/35 hover:border-cyan-300 hover:bg-cyan-500/40 transition-colors touch-manipulation"
-                     title="여행 플래너 열기"
+                     title={t('mooni.chat.openPlanner')}
                    >
-                     📋 플래너 보기
+                     {t('mooni.chips.l1.planner.label')}
                    </button>
                  ) : null}
                </div>
@@ -1091,7 +1099,7 @@ const ChatModal = ({
               )}
               {messages.map((msg, idx) => {
                 const rawMsgText =
-                  typeof msg.text === 'object' ? msg.text?.text ?? '내용 없음' : msg.text ?? '';
+                  typeof msg.text === 'object' ? msg.text?.text ?? t('mooni.chat.noContent') : msg.text ?? '';
                 const isModelMsg = msg.role === 'model';
                 const { text: displayMsgText, hadBracketLinks } = isModelMsg
                   ? sanitizeMooniModelReply(rawMsgText)
@@ -1216,7 +1224,7 @@ const ChatModal = ({
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="shrink-0 bg-gray-900 border-t border-gray-800 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
+            <div className="shrink-0 min-w-0 overflow-hidden bg-gray-900 border-t border-gray-800 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
               {showAccessOriginDock ? (
                 <div className="px-3 md:px-4 pt-3 md:pt-2 pb-2 md:pb-1.5 space-y-2 md:space-y-1.5 border-b border-gray-800/80">
                   <div className="flex items-center gap-2 min-w-0 flex-wrap">
@@ -1314,7 +1322,7 @@ const ChatModal = ({
                         placeholder={
                           mobileDockInputExpanded
                             ? chatInputPlaceholder
-                            : '직접 입력…'
+                            : t('mooni.chat.placeholderDirect')
                         }
                         title={chatInputPlaceholder}
                         className={
@@ -1334,14 +1342,14 @@ const ChatModal = ({
                             ? 'absolute right-1 top-1/2 -translate-y-1/2 p-1.5 bg-blue-600 rounded-full text-white disabled:opacity-40 touch-manipulation'
                             : 'absolute right-0.5 top-1/2 -translate-y-1/2 p-1 bg-blue-600/80 rounded-full text-white disabled:opacity-40 touch-manipulation'
                         }
-                        aria-label="전송"
+                        aria-label={t('mooni.chat.send')}
                       >
                         <Send size={mobileDockInputExpanded ? 17 : 13} />
                       </button>
                     </form>
                   </div>
-                  <div className="hidden md:flex items-end gap-3 px-4 pt-2 pb-2">
-                    <div className="min-w-0 flex-1">
+                  <div className="hidden md:flex items-end gap-3 px-4 pt-2 pb-2 min-w-0 overflow-hidden">
+                    <div className="min-w-0 flex-1 overflow-hidden">
                       <MooniQuickReplyChips {...topicDockChipsProps} />
                     </div>
                     <form
@@ -1358,7 +1366,7 @@ const ChatModal = ({
                         enterKeyHint="send"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder="직접 입력…"
+                        placeholder={t('mooni.chat.placeholderDirect')}
                         title={chatInputPlaceholder}
                         className="w-full min-h-[36px] bg-gray-700/95 text-white text-sm font-medium pl-3.5 pr-11 py-2 rounded-full border border-cyan-400/45 shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_0_0_1px_rgba(34,211,238,0.08)] focus:outline-none focus:border-cyan-300/80 focus:ring-1 focus:ring-cyan-400/35 placeholder:text-gray-300/90"
                         disabled={isLoading}
@@ -1367,7 +1375,7 @@ const ChatModal = ({
                         type="submit"
                         disabled={isLoading || !input.trim()}
                         className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 bg-cyan-500/90 hover:bg-cyan-400 rounded-full text-white disabled:opacity-40 disabled:bg-blue-600/70"
-                        aria-label="전송"
+                        aria-label={t('mooni.chat.send')}
                       >
                         <Send size={16} />
                       </button>

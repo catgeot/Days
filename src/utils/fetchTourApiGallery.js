@@ -1,5 +1,6 @@
 import { supabase } from '../shared/api/supabase';
 import { scoreTourPhotoTitle, TOURAPI_MIN_KEEP_SCORE } from './tourApiPhotoRank';
+import { invokeTourApiProxy } from './tourApiProxy';
 
 export { scoreTourPhotoTitle, TOURAPI_MIN_KEEP_SCORE } from './tourApiPhotoRank';
 
@@ -45,30 +46,7 @@ function withTimeout(promise, ms, label) {
  * @param {Record<string, unknown>} payload
  */
 async function invokeTourApi(action, payload) {
-  try {
-    const { data, error } = await withTimeout(
-      supabase.functions.invoke('tourapi-proxy', {
-        body: { action, ...payload },
-      }),
-      INVOKE_TIMEOUT_MS,
-      `tourapi:${action}`,
-    );
-    if (error) {
-      console.warn(`[tourapi] ${action} invoke error:`, error.message || error);
-      return null;
-    }
-    if (!data?.ok) {
-      console.warn(
-        `[tourapi] ${action} not ok:`,
-        data?.message || data?.error || 'unknown',
-      );
-      return null;
-    }
-    return data;
-  } catch (err) {
-    console.warn(`[tourapi] ${action} failed:`, err?.message || err);
-    return null;
-  }
+  return invokeTourApiProxy(action, payload);
 }
 
 /**

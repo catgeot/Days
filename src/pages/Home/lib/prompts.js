@@ -1,98 +1,71 @@
 // src/pages/Home/lib/prompts.js
-// 🚨 [Fix/New] 수정 이유:
-// 1. [Fix] AI 환각 방지(JSON Syntax Error 차단): JSON 문자열 내부에 물리적인 줄바꿈(Enter) 사용을 엄격히 금지하고 띄어쓰기로 대체하도록 프롬프트 규칙 추가.
 
+import { getMooniPromptBundle, fillMooniPromptTemplate } from '../../../i18n/mooniPromptBundles';
 import { curationTasteLabelById } from '../../DailyReport/lib/curationHistory.js';
 
-const BASE_RULES = `
-- 모든 답변은 한국어로 한다.
-- 사용자의 질문에 친절하고 정중하게 답한다.
-- 마크다운 형식을 활용하여 가독성 있게 출력한다.
-- 답변은 가급적 핵심 위주로 간결하게 작성한다.
-`;
-
-const BOOKING_RULES = `
-- 교통·페리·버스·기차 예약 방법을 물으면, 아시아·동남아 구간은 12Go(12go.asia)로 예약할 수 있다고 안내한다.
-- 답변 아래 UI는 「교통 · 티켓」「출발 전 준비」 섹션과 플래너 링크만 있다. [이번 턴 CTA UI] 지시가 있으면 그에 맞춰 안내한다.
-- 「예약 · 티켓 검색」이라는 이름의 버튼은 없다. 이 문구를 쓰지 않는다.
-- 임의의 예약 URL·가짜 링크·확인되지 않은 예약 사이트를 직접 적지 않는다.
-- 항공편은 Trip.com 등 항공 전용 채널, 육로·페리·기차는 12Go로 역할을 구분해 설명한다.
-- 비자·e-VOA·관광세·공항 픽업·입국 증빙은 「출발 전 준비」 버튼·플래너로 안내하고, 금액·면제 여부를 단정하지 않는다.
-`;
-
-const MOONI_DESTINATION_RULES = `
-- 사용자가 여행 목적지를 정하면, 교통·예약·티켓은 답변 아래 버튼·플래너로 **이어질 수 있음**을 짧게 안내할 수 있다. 단, [이번 턴 주제] 지시가 있으면 **본문에 실질 정보를 먼저** 제공하고 UI 안내는 마지막 1~2문장으로만 한다.
-- 항공·페리 요금·소요시간·운항 여부를 단정하지 않는다.
-- 비자·관광세·픽업 비용·면제 여부는 단정하지 말고, 버튼·플래너에서 최신 정보를 확인하라고 안내한다.
-- 목적지가 아직 정해지지 않았으면 후보를 질문하고, 확정되기 전에는 특정 장소 예약을 단정하지 않는다.
-- [버튼 이름] 또는 [GATEO 플래너로 …]처럼 대괄호만 있는 가짜 링크·버튼 문구를 답변에 쓰지 않는다. 플래너·예약 안내는 답변 아래 UI 버튼과 채팅 헤더 「플래너 보기」로 연결된다.
-- 여행지 소개·탐색 답변 마지막에 대괄호 CTA 목록을 붙이지 않는다. 준비·항공·입국이 궁금하면 한두 문장으로만 언급한다.
-- 「입국 심사」「숙소·항공 증빙」처럼 서류·입국 요건 질문에는 왕복 항공권·숙소 예약 확인증·보험 증명 등 **항목을 짧게 나열**한다. 항공권 예약 링크를 대신 제시하지 않는다. 세부·최신 규정은 플래너·아래 공식·준비 버튼으로 안내한다.
-`;
-
 export const PERSONA_TYPES = {
-  INSPIRER: 'INSPIRER',   // 1단계: 여행 전도사 (지구본/카드 클릭)
-  PLANNER: 'PLANNER',     // 2단계: 전문 가이드 (티켓/즐겨찾기 대화)
-  ARCHITECT: 'ARCHITECT', // 3단계: 설계자 (일정 수립)
-  CONCIERGE: 'CONCIERGE', // 4단계: 여행 비서 (현지 모드)
-  GENERAL: 'GENERAL'      // 일반 AI (직접 입력)
+  INSPIRER: 'INSPIRER',
+  PLANNER: 'PLANNER',
+  ARCHITECT: 'ARCHITECT',
+  CONCIERGE: 'CONCIERGE',
+  GENERAL: 'GENERAL',
 };
 
 export const PROMPT_STORAGE = {
-  [PERSONA_TYPES.INSPIRER]: {
-    system: `${BASE_RULES} 너는 여행지의 매력을 전파하는 '열정적인 여행 전도사'야.
-    딱딱한 정보보다는 "여긴 꼭 가봐야 해요, 왜냐하면..." 식의 감성적이고 자극적인 말투를 써줘.
-    장소의 분위기, 노을, 현지의 소리 같은 감각적인 묘사를 섞어줘.`,
-    temperature: 0.8
-  },
-  [PERSONA_TYPES.PLANNER]: {
-    system: `${BASE_RULES}${BOOKING_RULES} 너는 체계적이고 꼼꼼한 '전문 여행 가이드'야.
-    동선, 교통편, 예약 팁, 주의사항 등 실질적이고 정확한 정보를 구조적으로 제공해줘.`,
-    temperature: 0.5
-  },
-  [PERSONA_TYPES.ARCHITECT]: {
-    system: `${BASE_RULES} 너는 유저의 취향을 완벽히 분석하는 '여행 설계자'야.
-    일정의 효율성과 동선의 최적화를 우선시하며, 논리적인 근거를 바탕으로 여행 코스를 제안해줘.`,
-    temperature: 0.4
-  },
-  [PERSONA_TYPES.CONCIERGE]: {
-    system: `${BASE_RULES} 너는 유저의 손목 위에서 즉각 답해주는 '현지 여행 비서'야.
-    답변은 매우 짧고 명확해야 하며, "바로 앞 50m에 맛집이 있습니다"와 같은 실시간 대응 위주로 말해줘.`,
-    temperature: 0.2
-  },
-  [PERSONA_TYPES.GENERAL]: {
-    system: `${BASE_RULES}${BOOKING_RULES} 너는 유능하고 친절한 일반 AI 도우미야. 여행 외의 질문에도 성실히 답해줘.`,
-    temperature: 0.7
-  }
+  [PERSONA_TYPES.INSPIRER]: { temperature: 0.8 },
+  [PERSONA_TYPES.PLANNER]: { temperature: 0.5 },
+  [PERSONA_TYPES.ARCHITECT]: { temperature: 0.4 },
+  [PERSONA_TYPES.CONCIERGE]: { temperature: 0.2 },
+  [PERSONA_TYPES.GENERAL]: { temperature: 0.7 },
 };
 
-export const getSystemPrompt = (personaType, locationName = "", options = {}) => {
-  const config = PROMPT_STORAGE[personaType] || PROMPT_STORAGE.GENERAL;
+function buildPersonaSystem(personaType, bundle) {
+  const personaBody = bundle.personas[personaType] ?? bundle.personas.GENERAL;
+  const usesBooking = bundle.personaUsesBooking[personaType];
+  return (
+    bundle.baseRules +
+    (usesBooking ? bundle.bookingRules : '') +
+    personaBody
+  );
+}
+
+export const getSystemPrompt = (personaType, locationName = '', options = {}) => {
+  const bundle = getMooniPromptBundle(options.locale);
   const boundPlaceName = String(options.boundPlaceName ?? '').trim();
   const isMooni =
     options.isMooni ||
     Boolean(boundPlaceName) ||
     String(locationName ?? '').trim().toLowerCase() === 'mooni';
-  const mooniContext = isMooni ? MOONI_DESTINATION_RULES : '';
+  const mooniContext = isMooni ? `\n${bundle.mooniDestinationRules}` : '';
   const effectiveLocation = boundPlaceName || locationName;
-  const locationContext = effectiveLocation ? `\n현재 대상 지역: ${effectiveLocation}` : '';
+  const locationContext = effectiveLocation
+    ? `\n${fillMooniPromptTemplate(bundle.locationContext, { location: effectiveLocation })}`
+    : '';
   const boundPlaceRules = boundPlaceName
-    ? `\n- 사용자가 「이곳」「여기」라고 하면 반드시 「${boundPlaceName}」을(를) 가리킨다. 이전 대화의 출발지(서울·인천 등)와 혼동하지 않는다.`
+    ? `\n${fillMooniPromptTemplate(bundle.boundPlace, { name: boundPlaceName })}`
     : '';
   const ctaHint = String(options.chatCtaHint ?? '').trim();
   const chipHint = String(options.chipPromptHint ?? '').trim();
   const ctaContext = ctaHint ? `\n${ctaHint}` : '';
   const chipContext = chipHint ? `\n${chipHint}` : '';
-  return config.system + mooniContext + locationContext + boundPlaceRules + chipContext + ctaContext;
+
+  return (
+    buildPersonaSystem(personaType, bundle) +
+    mooniContext +
+    locationContext +
+    boundPlaceRules +
+    chipContext +
+    ctaContext
+  );
 };
 
 /** 채팅 모달 최초 진입 시 보여줄 여행지 한줄 요약 (DB 캐시용) */
-export const getPlaceChatIntroSystemPrompt = () =>
-  `${BASE_RULES}
-너는 여행지를 한 번에 이해시키는 카피라이터다.
-- 출력은 한국어 본문만. 인사·메타 설명·따옴표로 장소명만 감싸기 금지.
-- 마크다운·목록·표·제목(#) 사용 금지. 일반 문장 2~4개로만 작성.
-- 350자 이내. 사실에 가깝게, 과장·확정 불가한 통계는 쓰지 않는다.`;
+export const getPlaceChatIntroSystemPrompt = (locale) => {
+  const bundle = getMooniPromptBundle(locale);
+  return `${bundle.baseRules}
+${bundle.introRole}
+${bundle.introSystem}`;
+};
 
 export const getPracticalInfoPrompt = (locationName) => {
   return `당신은 제미나이의 강력한 웹 검색 능력을 활용하는 [${locationName}]의 베테랑 로컬 가이드입니다.

@@ -5,29 +5,9 @@ import {
   fetchNearbyTourAreaBasedFallback,
   isTourApiQuotaError,
 } from './nearbyTourAreaFallback';
+import { NEARBY_TOUR_API_LOCALE, withTourApiTimeout } from './tourApiProxy';
 
 export const RESTAURANT_CONTENT_TYPE_ID = '39';
-
-const INVOKE_TIMEOUT_MS = 14_000;
-
-/**
- * @template T
- * @param {Promise<T>} promise
- * @param {number} ms
- * @param {string} label
- * @returns {Promise<T>}
- */
-function withTimeout(promise, ms, label) {
-  let timer;
-  return Promise.race([
-    promise,
-    new Promise((_, reject) => {
-      timer = setTimeout(() => reject(new Error(`${label} timeout ${ms}ms`)), ms);
-    }),
-  ]).finally(() => {
-    if (timer) clearTimeout(timer);
-  });
-}
 
 function toHttps(url) {
   const s = String(url || '').trim();
@@ -139,10 +119,11 @@ export async function fetchNearbyTourRestaurants(opts) {
   };
 
   try {
-    const { data, error } = await withTimeout(
+    const { data, error } = await withTourApiTimeout(
       supabase.functions.invoke('tourapi-proxy', {
         body: {
           action: 'locationBasedList',
+          locale: NEARBY_TOUR_API_LOCALE,
           mapX: lng,
           mapY: lat,
           radius: radiusM,
@@ -152,7 +133,7 @@ export async function fetchNearbyTourRestaurants(opts) {
           arrange: 'E',
         },
       }),
-      INVOKE_TIMEOUT_MS,
+      14_000,
       'tourapi:locationBasedList',
     );
     if (error) {

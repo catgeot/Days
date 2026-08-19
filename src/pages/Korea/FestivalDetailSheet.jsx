@@ -871,6 +871,8 @@ export default function FestivalDetailSheet({
   const tel = String(intro?.sponsor1tel || item.tel || '').trim();
   const sponsor2tel = String(intro?.sponsor2tel || '').trim();
   const hero = imageUrls[activeImage] || imageUrls[0] || '';
+  const displayTitle =
+    String(common?.title || item?.title || '').trim() || '축제';
   const eventplace = String(intro?.eventplace || '').trim();
   const showEventPlace =
     Boolean(eventplace) && eventplace !== String(item.addr1 || '').trim();
@@ -1042,7 +1044,7 @@ export default function FestivalDetailSheet({
               id="korea-festival-sheet-title"
               className="text-xl md:text-2xl lg:text-3xl font-extrabold leading-snug text-stone-900"
             >
-              {item.title}
+              {displayTitle}
             </h3>
             {item.addr1 && (
               <p className="text-xs text-stone-500 flex items-start gap-1">

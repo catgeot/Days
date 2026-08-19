@@ -8,22 +8,38 @@ const corsHeaders = {
 };
 
 const KOR_BASE = "https://apis.data.go.kr/B551011/KorService2";
+const ENG_BASE = "https://apis.data.go.kr/B551011/EngService2";
 const PHOTO_BASE = "https://apis.data.go.kr/B551011/PhotoGalleryService1";
 
-const ACTIONS = {
-  searchKeyword: { base: KOR_BASE, path: "searchKeyword2" },
-  detailCommon: { base: KOR_BASE, path: "detailCommon2" },
-  detailImage: { base: KOR_BASE, path: "detailImage2" },
-  searchPhoto: { base: PHOTO_BASE, path: "gallerySearchList1" },
-  searchFestival: { base: KOR_BASE, path: "searchFestival2" },
-  areaBasedList: { base: KOR_BASE, path: "areaBasedList2" },
-  locationBasedList: { base: KOR_BASE, path: "locationBasedList2" },
-  areaCode: { base: KOR_BASE, path: "areaCode2" },
-  detailIntro: { base: KOR_BASE, path: "detailIntro2" },
-  detailInfo: { base: KOR_BASE, path: "detailInfo2" },
-} as const;
+type TourApiLocale = "ko" | "en";
 
-type Action = keyof typeof ACTIONS;
+function parseTourApiLocale(value: unknown): TourApiLocale {
+  const s = String(value ?? "ko").trim().toLowerCase();
+  if (s === "en" || s.startsWith("en")) return "en";
+  return "ko";
+}
+
+function serviceBaseForLocale(locale: TourApiLocale): string {
+  return locale === "en" ? ENG_BASE : KOR_BASE;
+}
+
+function actionsForLocale(locale: TourApiLocale) {
+  const base = serviceBaseForLocale(locale);
+  return {
+    searchKeyword: { base, path: "searchKeyword2" },
+    detailCommon: { base, path: "detailCommon2" },
+    detailImage: { base, path: "detailImage2" },
+    searchPhoto: { base: PHOTO_BASE, path: "gallerySearchList1" },
+    searchFestival: { base, path: "searchFestival2" },
+    areaBasedList: { base, path: "areaBasedList2" },
+    locationBasedList: { base, path: "locationBasedList2" },
+    areaCode: { base, path: "areaCode2" },
+    detailIntro: { base, path: "detailIntro2" },
+    detailInfo: { base, path: "detailInfo2" },
+  } as const;
+}
+
+type Action = keyof ReturnType<typeof actionsForLocale>;
 
 /** Composite cache actions — not direct TourAPI paths */
 const CACHE_ACTIONS = new Set(["festivalWindow", "festivalDetail"]);
@@ -176,7 +192,10 @@ function guardArrange(value: unknown): string {
   return s;
 }
 
-function locationCacheKey(query: Record<string, string>): string {
+function locationCacheKey(
+  locale: TourApiLocale,
+  query: Record<string, string>,
+): string {
   const mapX = Number(query.mapX).toFixed(3);
   const mapY = Number(query.mapY).toFixed(3);
   const radius = query.radius || "";
@@ -184,7 +203,7 @@ function locationCacheKey(query: Record<string, string>): string {
   const rows = query.numOfRows || String(DEFAULT_ROWS);
   const page = query.pageNo || "1";
   const arrange = query.arrange || "E";
-  return `loc:${type}:${mapX}:${mapY}:${radius}:${rows}:${page}:${arrange}`;
+  return `loc:${locale}:${type}:${mapX}:${mapY}:${radius}:${rows}:${page}:${arrange}`;
 }
 
 function readLocationCache(key: string): Record<string, unknown> | null {
@@ -451,11 +470,12 @@ function normalizeItem(
 const UPSTREAM_TIMEOUT_MS = 10_000;
 
 async function callTourApi(
+  locale: TourApiLocale,
   action: Action,
   query: Record<string, string>,
   serviceKey: string,
 ) {
-  const { base, path } = ACTIONS[action];
+  const { base, path } = actionsForLocale(locale)[action];
   const params = new URLSearchParams({
     MobileOS: "ETC",
     MobileApp: "gateo",
@@ -724,6 +744,7 @@ function mergeFestivalPages(
 }
 
 async function fetchFestivalWindowLive(
+  locale: TourApiLocale,
   serviceKey: string,
   eventStartDate: string,
   eventEndDate: string,
@@ -737,6 +758,7 @@ async function fetchFestivalWindowLive(
     let page: Awaited<ReturnType<typeof callTourApi>>;
     try {
       page = await callTourApi(
+        locale,
         "searchFestival",
         {
           eventStartDate,
@@ -778,6 +800,7 @@ async function fetchFestivalWindowLive(
 async function handleFestivalWindow(
   body: Record<string, unknown>,
   serviceKey: string,
+  locale: TourApiLocale,
 ): Promise<Response> {
   const force = body.force === true;
   let eventStartDate: string;
@@ -790,7 +813,7 @@ async function handleFestivalWindow(
     eventStartDate = range.eventStartDate;
     eventEndDate = range.eventEndDate;
   }
-  const cacheKey = `list:rolling12:${eventStartDate}:${eventEndDate}`;
+  const cacheKey = `list:${locale}:rolling12:${eventStartDate}:${eventEndDate}`;
   const cached = await readFestivalCache(cacheKey);
   const cachedAge = ageMs(cached?.fetched_at);
   const cachedItems = Array.isArray(
@@ -814,6 +837,7 @@ async function handleFestivalWindow(
   }
 
   const live = await fetchFestivalWindowLive(
+    locale,
     serviceKey,
     eventStartDate,
     eventEndDate,
@@ -864,6 +888,7 @@ async function handleFestivalWindow(
 async function handleFestivalDetail(
   body: Record<string, unknown>,
   serviceKey: string,
+  locale: TourApiLocale,
 ): Promise<Response> {
   const force = body.force === true;
   const contentId = guardContentId(body.contentId);
@@ -871,7 +896,7 @@ async function handleFestivalDetail(
     body.contentTypeId != null && String(body.contentTypeId).trim()
       ? guardContentTypeId(body.contentTypeId)
       : FESTIVAL_CONTENT_TYPE_ID;
-  const cacheKey = `detail:${contentId}`;
+  const cacheKey = `detail:${locale}:${contentId}`;
   const cached = await readFestivalCache(cacheKey);
   const cachedAge = ageMs(cached?.fetched_at);
   const cachedPayload = cached?.payload as {
@@ -910,12 +935,14 @@ async function handleFestivalDetail(
   try {
     const [intro, common, info] = await Promise.all([
       callTourApi(
+        locale,
         "detailIntro",
         { contentId, contentTypeId },
         serviceKey,
       ),
-      callTourApi("detailCommon", { contentId }, serviceKey),
+      callTourApi(locale, "detailCommon", { contentId }, serviceKey),
       callTourApi(
+        locale,
         "detailInfo",
         {
           contentId,
@@ -1024,15 +1051,16 @@ serve(async (req) => {
     const action = body.action;
     const isCacheAction =
       typeof action === "string" && CACHE_ACTIONS.has(action);
+    const locale = parseTourApiLocale(body.locale);
     const isUpstreamAction =
-      typeof action === "string" && action in ACTIONS;
+      typeof action === "string" && action in actionsForLocale(locale);
 
     if (!isCacheAction && !isUpstreamAction) {
       return jsonResponse(
         {
           ok: false,
           error: `action must be one of: ${[
-            ...Object.keys(ACTIONS),
+            ...Object.keys(actionsForLocale("ko")),
             ...CACHE_ACTIONS,
           ].join(", ")}`,
         },
@@ -1049,10 +1077,10 @@ serve(async (req) => {
     }
 
     if (action === "festivalWindow") {
-      return await handleFestivalWindow(body, serviceKey);
+      return await handleFestivalWindow(body, serviceKey, locale);
     }
     if (action === "festivalDetail") {
-      return await handleFestivalDetail(body, serviceKey);
+      return await handleFestivalDetail(body, serviceKey, locale);
     }
 
     const typedAction = action as Action;
@@ -1060,16 +1088,16 @@ serve(async (req) => {
     const query = buildUpstreamQuery(typedAction, body);
 
     if (typedAction === "locationBasedList") {
-      const cacheKey = locationCacheKey(query);
+      const cacheKey = locationCacheKey(locale, query);
       const cached = readLocationCache(cacheKey);
       if (cached) {
-        return jsonResponse({ ...cached, cached: true });
+        return jsonResponse({ ...cached, cached: true, locale });
       }
     }
 
     let result: Awaited<ReturnType<typeof callTourApi>>;
     try {
-      result = await callTourApi(typedAction, query, serviceKey);
+      result = await callTourApi(locale, typedAction, query, serviceKey);
     } catch (upstreamErr) {
       const msg = (upstreamErr as Error)?.message || "upstream fetch failed";
       const timedOut = /abort|timeout/i.test(msg);
@@ -1101,13 +1129,14 @@ serve(async (req) => {
     const okPayload = {
       ok: true as const,
       action: typedAction,
+      locale,
       items: result.items,
       rawCount: result.rawCount,
       resultCode: result.resultCode,
     };
 
     if (typedAction === "locationBasedList") {
-      writeLocationCache(locationCacheKey(query), okPayload);
+      writeLocationCache(locationCacheKey(locale, query), okPayload);
     }
 
     return jsonResponse(okPayload);

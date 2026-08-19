@@ -62,25 +62,25 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#13~#14 main 병합** · **#15 TourAPI 착수** (`cursor/en`) |
-| **main** | PR [#135](https://github.com/catgeot/Days/pull/135) 병합 후 SHA 확인 |
+| **상태** | **#15~#20 main 병합** PR [#136](https://github.com/catgeot/Days/pull/136) · **PROD QA** 후 #21 |
+| **main** | PR #136 merge 후 SHA 확인 |
 | **브랜치** | `cursor/en` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§10 |
 | **일지** | [`2026-08-19-project-log.md`](./2026-08-19-project-log.md) |
 | **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` |
 | **PROD** | `https://www.gateo.kr/qa/en` → `/?lang=en` |
-| **VERIFY** | `npm run build` · `smoke:place-label-slug` |
+| **VERIFY** | `npm run build` · `smoke:place-label-slug` · `smoke:tourapi` |
 
-**2차 순서**: ~~#13 지구본 칩~~ · ~~#14 지명~~ → **#15 TourAPI** → #16~17 한국 본문 → #18~20 무니
+**2차 순서**: ~~#13~#20~~ → **#21 플래너 배너·UI** → #22 플래너 AI
 
 **다음 제시어**:
 
 ```
-영문화 #15, TourAPI 프록시 EN
+영문화 #21, PROD QA — #15~#20
 @plans/feature-handoff-index.md
 @plans/2026-08-19-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · /qa/en · ?lang=en TourAPI EngService2
+main · /qa/en · ?lang=en MOONi·Trip.com EN
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 

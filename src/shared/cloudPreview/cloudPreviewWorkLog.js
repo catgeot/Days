@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '영문화',
-  sessionNo: 15,
-  sessionPhase: 'TourAPI 프록시 EN',
+  sessionNo: 20,
+  sessionPhase: '무니 인트로·탐지',
   branch: 'cursor/en',
   previewPath: '/?lang=en',
   qaShareSlug: 'en',
@@ -23,6 +23,70 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-19-i18n-mooni-flight-cta-en',
+    session: '영문화 #20, 무니 인트로·탐지',
+    title: 'MOONi 항공 CTA·검색 모달 EN',
+    detail:
+      '?lang=en MOONi 항공 CTA·Trip.com 검색 모달 — locale=en-US 쿼리로 iframe(왕복·편도·검색) 영문 표시 확인(PASS). 별도 EN ad ID 불필요.',
+    at: '2026-08-19',
+  },
+  {
+    id: '2026-08-19-i18n-mooni-intro-detect-en',
+    session: '영문화 #20, 무니 인트로·탐지',
+    title: 'place_chat_intro EN 캐시·목적지 탐지',
+    detail:
+      '?lang=en에서 place_chat_intro 조회·생성 키가 영문 라벨(Japan Osaka@en)로 분리됩니다. MOONi bound 장소 인트로·써머리 hydrate도 locale 연동. EN 발화 「I want to go to Osaka」 목적지 탐지·access 출발지 shaping 추가. Preview /qa/en · 홈 장소 핀 → MOONi FAB → 인트로·써머리가 영문인지 확인해 주세요.',
+    at: '2026-08-19',
+  },
+  {
+    id: '2026-08-19-i18n-mooni-prompts-en',
+    session: '영문화 #19, 무니 프롬프트·대화 EN',
+    title: 'MOONi system prompt·칩·CTA EN',
+    detail:
+      '?lang=en에서 무니 Gemini system prompt·주제 칩 지침·CTA 힌트·장소 인트로 생성 프롬프트가 영문으로 전달됩니다. place_chat_intro 캐시 키는 @en 접미사로 ko와 분리. Preview /qa/en · 홈 MOONi FAB → 칩(Flights/Visa 등) 탭 시 답변이 영문인지 확인해 주세요.',
+    at: '2026-08-19',
+  },
+  {
+    id: '2026-08-19-i18n-tourapi-body-en-rollback',
+    session: '영문화 #17, TourAPI EN 롤백(A)',
+    title: '축제·명승 본문 KorService2 SSOT',
+    detail:
+      '사람 합의로 #16·#17 TourAPI EngService2 본문 EN을 철회했습니다. ?lang=en에서도 축제·명승 상세 개요·이용안내·주변 맛집/레포츠/문화는 한글 TourAPI SSOT입니다. UI 버튼·섹션 카피만 영문. Preview /korea?lang=en · /korea/theme/scenic?lang=en 에서 본문 KO·UI EN 확인.',
+    at: '2026-08-19',
+  },
+  {
+    id: '2026-08-19-i18n-scenic-tourapi-body-en-fix',
+    session: '영문화 #17, 명승 TourAPI 본문 EN',
+    title: '경복궁 EN id·주변 맛집 ko SSOT 보정',
+    detail:
+      'EngService2는 KorService2와 contentId가 다름(경복궁 126508→264337). EN 본문은 영문 alias searchKeyword로 Eng id를 찾고, 주변 맛집·레포츠·문화 locationBasedList는 locale=en이 빈 결과 → 항상 ko SSOT. Preview /korea/theme/scenic?lang=en 경복궁: 제목·개요 영문 + 주변 맛집 목록 표시 확인.',
+    at: '2026-08-19',
+  },
+  {
+    id: '2026-08-19-i18n-scenic-tourapi-body-en',
+    session: '영문화 #17, 명승 TourAPI 본문 EN',
+    title: 'ThemeSpotDetailModal EN 본문 + KO 폴백',
+    detail:
+      'TourAPI contentId 있는 명승·지역 명소·TOP10·주변 맛집/레포츠/문화/관광지 상세 모달 — locale=en일 때 EngService2 overview·intro·info 우선, 빈 필드는 KorService2. CHA·선정(국가유산)·GATEO 큐레이션 overview는 KO 유지. Preview git URL /korea/theme/scenic?lang=en · /korea/theme/regions?lang=en 에서 카드→상세 개요·이용안내가 영문인지 확인해 주세요. (목록 카드 제목은 KO SSOT)',
+    at: '2026-08-19',
+  },
+  {
+    id: '2026-08-19-i18n-festival-body-en',
+    session: '영문화 #16, 축제 본문 EN',
+    title: '축제 목록 KO · 본문 EN+폴백',
+    detail:
+      '축제 목록은 KorService2 SSOT(건수·탭 동일). 상세는 locale=en일 때 EngService2 본문 + KorService2 폴백. Preview /qa/en · /korea?lang=en 에서 「지금」45건 유지·카드 열기 시 overview·program·info가 영문(없으면 한글)인지 확인해 주세요.',
+    at: '2026-08-19',
+  },
+  {
+    id: '2026-08-19-i18n-tourapi-proxy-en',
+    session: '영문화 #15, TourAPI 프록시 EN',
+    title: 'TourAPI EngService2 · locale 캐시',
+    detail:
+      'Edge tourapi-proxy — ko=KorService2 · en=EngService2 · 축제/location 캐시 키 locale 분리. 클라이언트 invokeTourApiProxy가 i18n locale 전달. Edge deploy 후 /qa/en · ?lang=en 에서 한국 갤러리·축제 본문이 영문으로 오는지 확인해 주세요.',
+    at: '2026-08-19',
+  },
   {
     id: '2026-08-19-i18n-globe-place-labels',
     session: '영문화 #14, 지구본 지명·맵',

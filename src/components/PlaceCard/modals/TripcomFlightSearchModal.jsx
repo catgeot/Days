@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Plane } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { TRIPCOM_FLIGHT_AD } from '../../../utils/affiliate';
 
 /**
@@ -16,6 +17,7 @@ const TripcomFlightSearchModal = ({
     bannerHeight = TRIPCOM_FLIGHT_AD.mobileHeight,
     onClose,
 }) => {
+    const { t } = useTranslation();
     const [loadedSrc, setLoadedSrc] = useState('');
     const [isLoaded, setIsLoaded] = useState(false);
 
@@ -62,8 +64,11 @@ const TripcomFlightSearchModal = ({
                 aria-modal="true"
                 aria-label={
                     arrivalIata
-                        ? `Trip.com 항공권 검색 — ${departCode}에서 ${arrivalIata}까지`
-                        : 'Trip.com 항공권 검색'
+                        ? t('mooni.booking.modal.ariaRoute', {
+                              depart: departCode,
+                              arrive: arrivalIata,
+                          })
+                        : t('mooni.booking.modal.ariaSearch')
                 }
                 className={`relative z-10 flex flex-col overflow-hidden rounded-2xl bg-white shadow-[0_0_50px_rgba(0,0,0,0.45)] animate-scale-up ${
                     isDesktopBanner
@@ -73,20 +78,24 @@ const TripcomFlightSearchModal = ({
             >
                 <div className="relative shrink-0 border-b border-gray-100 bg-gradient-to-r from-sky-50 to-blue-50 px-3 py-2.5">
                     <span className="pointer-events-none absolute right-12 top-2 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white">
-                        제휴광고
+                        {t('mooni.booking.modal.affiliateBadge')}
                     </span>
                     <div className="flex items-center gap-2.5 pr-10">
                         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-100 text-sky-600">
                             <Plane size={18} />
                         </div>
                         <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm font-bold text-gray-900">항공권 검색</p>
+                            <p className="truncate text-sm font-bold text-gray-900">
+                                {t('mooni.booking.modal.title')}
+                            </p>
                             {arrivalIata ? (
                                 <p className="text-[11px] font-mono text-gray-600">
                                     {departCode} → {arrivalIata}
                                 </p>
                             ) : (
-                                <p className="text-[11px] text-gray-600">Trip.com 제휴 검색</p>
+                                <p className="text-[11px] text-gray-600">
+                                    {t('mooni.booking.modal.partnerSearch')}
+                                </p>
                             )}
                         </div>
                     </div>
@@ -94,7 +103,7 @@ const TripcomFlightSearchModal = ({
                         type="button"
                         onClick={onClose}
                         className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-white/80 hover:text-gray-800"
-                        aria-label="닫기"
+                        aria-label={t('mooni.booking.modal.close')}
                     >
                         <X size={22} />
                     </button>
@@ -109,7 +118,7 @@ const TripcomFlightSearchModal = ({
                     {loadedSrc ? (
                         <iframe
                             src={loadedSrc}
-                            title="Trip.com 항공권 검색"
+                            title={t('mooni.booking.modal.ariaSearch')}
                             width={bannerW}
                             height={bannerH}
                             className="block max-h-full w-full border-0"

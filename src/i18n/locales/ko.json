@@ -1028,5 +1028,245 @@
       "noInput": "AI가 분석할 내용이나 사진이 없습니다. 짧은 메모나 사진을 먼저 추가해주세요.",
       "fail": "AI 변환 중 오류가 발생했습니다. 원본을 안전하게 복구합니다."
     }
+  },
+  "mooni": {
+    "fab": {
+      "ariaHelper": "MOONi AI 여행 도우미",
+      "ariaChat": "MOONi와 대화하기. 드래그하면 위치를 옮길 수 있어요. 모바일에서는 누르고 있으면 말풍선이 나와요.",
+      "ariaCloseHint": "말풍선 닫기",
+      "ariaCharacter": "MOONi 캐릭터"
+    },
+    "lines": {
+      "intro": [
+        "안녕! MOONi예요.",
+        "반가워요, MOONi예요.",
+        "오늘도 여행 기분, MOONi예요."
+      ],
+      "peek": {
+        "invite": [
+          "MOONi와 이야기해 봐요",
+          "어서 오세요",
+          "궁금한 게 있으면 눌러보세요",
+          "살짝만 불러주세요",
+          "저랑 한마디 할래요?",
+          "탭하면 대화 시작이에요"
+        ],
+        "curious": [
+          "떠나고 싶은 곳이 어디인가요?",
+          "여행 이야기 들려주세요",
+          "오늘 기분은 어디로 가고 싶은 기분?",
+          "지금 떠오르는 곳이 있어요?",
+          "어디부터 알아볼까요?"
+        ],
+        "tease": [
+          "저… 안 자고 있어요",
+          "지도 구경 중이에요",
+          "말 걸어주면 기뻐요",
+          "구름 사이로 엿보는 중…",
+          "살짝 졸렸다 깼어요"
+        ]
+      },
+      "idle": {
+        "playful": [
+          "Z Z Z…",
+          "구름 위를 걸어볼까…",
+          "바람 냄새가 여행 같아요.",
+          "여기저기 구경 중…",
+          "멀리 있는 섬이 보여요.",
+          "별빛 여행, 떠올려 볼까요?"
+        ],
+        "travel": [
+          "안녕하세요, MOONi입니다.",
+          "떠나고 싶어요…",
+          "오늘은 어디로 갈까요?",
+          "지도만 봐도 마음이 가요.",
+          "다음 휴가는 언제죠…",
+          "파란 바다가 보이는 것 같아요."
+        ],
+        "hint": [
+          "궁금한 게 있으면 불러주세요.",
+          "일정·교통도 물어보세요",
+          "가고 싶은 섬 이름만 말해도 돼요",
+          "여행지 추천도 도와드려요",
+          "항공·페리 궁금한 것도 OK"
+        ]
+      },
+      "react": {
+        "drag": [
+          "앗, 거기요!",
+          "천천히 옮겨 주세요~",
+          "바람 따라 날아가요",
+          "여기도 뷰가 좋네요",
+          "드래그도 OK예요"
+        ],
+        "dismiss": [
+          "다음에 또 올게요…",
+          "조용히 구름 보러 갈게요",
+          "필요하면 또 불러주세요",
+          "천천히 둘러보세요~"
+        ]
+      },
+      "easterEgg": [
+        "…별 하나를 훔쳐 올까요?",
+        "MOONi는 달에서 왔어요. 비밀이에요.",
+        "지구는 생각보다 넓어요!",
+        "오늘은 행운의 여행지가… (두근)"
+      ]
+    },
+    "chat": {
+      "history": "채팅 기록",
+      "deleteChat": "채팅방 삭제",
+      "close": "닫기",
+      "closeAria": "채팅 닫기",
+      "send": "전송",
+      "placeholder": "메시지 입력...",
+      "placeholderOrType": "또는 직접 입력…",
+      "placeholderDirect": "직접 입력…",
+      "topicPrompt": "무엇부터 도와드릴까요?",
+      "backTopic": "다른 주제",
+      "mooniSessionTitle": "MOONi 여행 대화",
+      "travelSessionTitle": "여행 대화",
+      "travelAiHelper": "여행 AI 도우미",
+      "travelChat": "{{destination}} 대화",
+      "openPlanner": "여행 플래너 열기",
+      "loadingDefault": "AI가 답변을 준비 중입니다...",
+      "loadingStatuses": [
+        "새로운 여행지 정보를 스캔하고 있습니다...",
+        "숨겨진 로컬 맛집과 명소를 찾는 중...",
+        "🗺️ 여행 계획을 정리하고 있습니다...",
+        "✈️ 답변을 생성 중입니다..."
+      ],
+      "introError": "여행지 요약을 불러오지 못했습니다.",
+      "noContent": "내용 없음",
+      "questionUnreadable": "질문 내용 확인 불가",
+      "accessDeparturePlaceholder": "어디서 출발하시나요? (예: 서울, 마닐라)",
+      "accessRouteAsk": "{{place}}에서 어떻게 가?",
+      "accessRouteAskFallback": "어떻게 가?",
+      "topicHint": "이곳이 어떤 곳인지부터, 가는 방법·준비·즐길거리까지 골라보셔도 좋아요. 예약은 답변 아래 버튼으로 이어질 수 있어요.",
+      "introWithPlace": "{{placeName}} 여행, 이곳이 어떤 곳인지부터 가는 방법·준비·즐길거리까지 도와드릴게요.",
+      "introDefault": "안녕하세요! 저는 MOONi예요. 가고 싶은 여행지, 일정, 교통·예약 궁금한 점 무엇이든 물어보세요."
+    },
+    "resolution": {
+      "departure": "출발",
+      "destination": "목적지",
+      "viewInfo": "{{name}} 정보 보기",
+      "pickDestination": "이 중 어디로 가고 싶으세요?"
+    },
+    "planner": {
+      "heading": "플래너에서 확인",
+      "openFull": "GATEO 플래너에서 여행 계획 보기",
+      "flightGuide": "플래너에서 {{place}} 항공권 안내 보기",
+      "flightBooking": "{{place}} 항공권 예약 정보",
+      "stayBooking": "{{place}} 숙소 예약",
+      "localTransport": "{{place}} 현지 교통 안내",
+      "visaInfo": "{{place}} 비자·입국 정보",
+      "travelInfo": "{{place}} 여행 정보",
+      "airportTransfer": "플래너에서 {{place}} 공항→목적지 이동 보기",
+      "rentalPickup": "플래너에서 {{place}} 렌터카·픽업 기준 보기",
+      "transportPass": "플래너에서 {{place}} 교통·패스 안내 보기",
+      "destinationFallback": "여행지"
+    },
+    "booking": {
+      "transportSection": "교통 · 티켓",
+      "prepSection": "출발 전 준비",
+      "morePlannerOptions": "플래너에서 더 많은 예약 옵션 보기",
+      "flightRouteSearch": "{{departName}}({{depart}}) → {{arriveName}}({{arrive}}) 항공권 검색",
+      "flightRouteSearchIata": "{{depart}} → {{arrive}} 항공권 검색",
+      "flightSearchPlace": "{{place}} 검색",
+      "modal": {
+        "title": "항공권 검색",
+        "ariaSearch": "Trip.com 항공권 검색",
+        "ariaRoute": "Trip.com 항공권 검색 — {{depart}}에서 {{arrive}}까지",
+        "affiliateBadge": "제휴광고",
+        "partnerSearch": "Trip.com 제휴 검색",
+        "close": "닫기"
+      }
+    },
+    "chips": {
+      "l1": {
+        "explore": {
+          "label": "🌍 이곳이 궁금해",
+          "mobileLabel": "🌍 궁금해?"
+        },
+        "access": {
+          "label": "✈️ 가는 방법",
+          "mobileLabel": "✈️ 가는 방법"
+        },
+        "prep": {
+          "label": "🛫 출발 전 준비",
+          "mobileLabel": "🛫 출발 준비"
+        },
+        "enjoy": {
+          "label": "🌴 즐길거리·일정",
+          "mobileLabel": "🌴 즐길거리"
+        },
+        "planner": {
+          "label": "📋 플래너 보기"
+        }
+      },
+      "l2": {
+        "explore": {
+          "place_overview": {
+            "label": "어떤 곳?",
+            "sendText": "이곳은 어떤 곳이야?"
+          },
+          "safety_vibe": {
+            "label": "분위기·치안",
+            "sendText": "분위기와 치안은 어때?"
+          },
+          "history": {
+            "label": "역사·문화",
+            "sendText": "역사나 문화적으로 특징이 뭐야?"
+          },
+          "why_go": {
+            "label": "왜 가볼 만해?",
+            "sendText": "왜 가볼 만한 여행지야?"
+          }
+        },
+        "access": {
+          "ferry": {
+            "label": "🚢 페리·배",
+            "sendText": "페리 예약"
+          }
+        },
+        "prep": {
+          "visa_docs": {
+            "label": "비자·입국·서류",
+            "sendText": "비자, 입국 필수 준비 사항을 설명해줘"
+          },
+          "prep_flight": {
+            "label": "항공권",
+            "sendText": "항공권 예약을 어떻게 해야 하지?"
+          },
+          "prep_hotel": {
+            "label": "숙소",
+            "sendText": "여행지의 숙소는 어디가 좋을까?"
+          },
+          "prep_transport": {
+            "label": "렌터카·픽업",
+            "mobileLabel": "교통·픽업",
+            "sendText": "현지 교통은 어떻게 이용하는 것이 좋을까?"
+          }
+        },
+        "enjoy": {
+          "activities": {
+            "label": "액티비티",
+            "sendText": "추천 액티비티 알려줘"
+          },
+          "food": {
+            "label": "맛집",
+            "sendText": "맛집 추천해줘"
+          },
+          "itinerary": {
+            "label": "2~3일 일정",
+            "sendText": "2~3일 일정 짜줘"
+          },
+          "companion": {
+            "label": "동행별 추천",
+            "sendText": "누구와 가기 좋아? 동행별 추천해줘"
+          }
+        }
+      }
+    }
   }
 }
