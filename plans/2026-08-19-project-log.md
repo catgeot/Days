@@ -79,6 +79,12 @@
 - **PROD QA** `www.gateo.kr/qa/en` → `/?lang=en` — MOONi FAB·채팅·항공 CTA·Trip.com 모달
 - **다음** PROD QA OK 후 #21 플래너 배너·UI EN (`cursor/en`)
 
+## 영문화 #21 보정 — MOONi 채팅 잔여 한글 EN
+
+- **MOONi** 헤더·목적지 칩 `localizeMooniPlaceLabel` · 출발지 `FlightOriginSelector` i18n
+- **UI** 다른 주제·물어보기·출발·출발지 검색 · `flightOrigin.*` 키
+- **VERIFY** `build` · `smoke:place-label-slug` PASS
+
 ## 영문화 #18, 무니 UI·칩 — Preview push
 
 - **무니 UI** `ChatModal` · `MooniAgentFab` · 목적지 칩 · 플래너 follow-up — `mooni.*` i18n 키
