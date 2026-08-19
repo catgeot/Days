@@ -41,3 +41,11 @@
 - **사람 QA** `/qa/en` · `?lang=en` — gateo 핀·Mapbox 지명·클러스터 범례 **통과**
 - **PR [#135](https://github.com/catgeot/Days/pull/135)** → **main** `cb5d4358`
 - **다음** #15 TourAPI 프록시 EN (`cursor/en`)
+
+## 영문화 #15, TourAPI 프록시 EN — Preview push
+
+- **Edge** `tourapi-proxy` — `locale` ko/en · en=`EngService2` · 캐시 키 locale 분리
+- **클라** `tourApiProxy.js` — `getTourApiLocale()` → invoke body `locale`
+- **VERIFY** `smoke:tourapi` · `npm run build` PASS
+- **남은 일** Edge `tourapi-proxy` deploy(사람) 후 LIVE `TOURAPI_SMOKE_LIVE=1` · Preview QA
+- **다음** #16 축제 본문 EN (`cursor/en`)

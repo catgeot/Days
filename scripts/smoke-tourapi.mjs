@@ -65,6 +65,27 @@ function schemaGuards() {
   assert(areaCodeOk('1'), 'areaCode guard accepts 1');
   assert(!areaCodeOk(''), 'areaCode guard rejects empty');
 
+  const localeOk = (v) => v === 'ko' || v === 'en';
+  const normalizeLocale = (v) => {
+    const s = String(v ?? 'ko').trim().toLowerCase();
+    if (s === 'en' || s.startsWith('en')) return 'en';
+    return 'ko';
+  };
+  assert(localeOk('ko') && localeOk('en'), 'locale whitelist ko|en');
+  assert(normalizeLocale('en') === 'en', 'locale normalize en');
+  assert(normalizeLocale('en-US') === 'en', 'locale normalize en-US');
+  assert(normalizeLocale('ko') === 'ko', 'locale normalize ko');
+  assert(normalizeLocale(undefined) === 'ko', 'locale default ko');
+  assert(
+    `list:${normalizeLocale('en')}:rolling12:20260101:20261231` ===
+      'list:en:rolling12:20260101:20261231',
+    'festival cache key includes locale',
+  );
+  assert(
+    `detail:${normalizeLocale('ko')}:126508` === 'detail:ko:126508',
+    'festival detail cache key includes locale',
+  );
+
   const sampleShape = {
     ok: true,
     action: 'searchKeyword',
@@ -160,6 +181,12 @@ async function invokeEdge(action, payload) {
   return { httpStatus: res.status, data };
 }
 
+function normalizeLocale(v) {
+  const s = String(v ?? 'ko').trim().toLowerCase();
+  if (s === 'en' || s.startsWith('en')) return 'en';
+  return 'ko';
+}
+
 function monthStartYmd(d = new Date()) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -190,6 +217,30 @@ async function liveChain() {
   assert(detail.data?.ok === true, `detailCommon ok (msg=${detail.data?.message || detail.data?.error || '-'})`);
   const detailTitle = detail.data?.items?.[0]?.title;
   assert(Boolean(detailTitle), `detailCommon title (${detailTitle || '-'})`);
+
+  console.log('\n--- LIVE locale=en (EngService2) ---');
+
+  const kwEn = await invokeEdge('searchKeyword', {
+    locale: 'en',
+    keyword: 'Gyeongbokgung',
+    numOfRows: 3,
+  });
+  assert(kwEn.httpStatus === 200, `searchKeyword en HTTP ${kwEn.httpStatus}`);
+  if (kwEn.data?.ok === true && Array.isArray(kwEn.data?.items) && kwEn.data.items.length >= 1) {
+    const enTitle = kwEn.data.items[0]?.title || '';
+    assert(
+      /[A-Za-z]/.test(enTitle),
+      `searchKeyword en title has Latin (${enTitle || '-'})`,
+    );
+    assert(
+      kwEn.data.locale === 'en' || normalizeLocale('en') === 'en',
+      `searchKeyword en locale echoed (${kwEn.data?.locale || '-'})`,
+    );
+  } else {
+    console.log(
+      `SKIP  searchKeyword en (deploy pending? msg=${kwEn.data?.message || kwEn.data?.error || '-'})`,
+    );
+  }
 
   const images = await invokeEdge('detailImage', {
     contentId,

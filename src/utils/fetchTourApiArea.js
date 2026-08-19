@@ -1,55 +1,11 @@
-import { supabase } from '../shared/api/supabase';
-
-const INVOKE_TIMEOUT_MS = 12_000;
-
-/**
- * @template T
- * @param {Promise<T>} promise
- * @param {number} ms
- * @param {string} label
- * @returns {Promise<T>}
- */
-function withTimeout(promise, ms, label) {
-  let timer;
-  return Promise.race([
-    promise,
-    new Promise((_, reject) => {
-      timer = setTimeout(() => reject(new Error(`${label} timeout ${ms}ms`)), ms);
-    }),
-  ]).finally(() => {
-    if (timer) clearTimeout(timer);
-  });
-}
+import { invokeTourApiProxy } from './tourApiProxy';
 
 /**
  * @param {string} action
  * @param {Record<string, unknown>} payload
  */
 async function invokeTourApi(action, payload) {
-  try {
-    const { data, error } = await withTimeout(
-      supabase.functions.invoke('tourapi-proxy', {
-        body: { action, ...payload },
-      }),
-      INVOKE_TIMEOUT_MS,
-      `tourapi:${action}`,
-    );
-    if (error) {
-      console.warn(`[tourapi] ${action} invoke error:`, error.message || error);
-      return null;
-    }
-    if (!data?.ok) {
-      console.warn(
-        `[tourapi] ${action} not ok:`,
-        data?.message || data?.error || 'unknown',
-      );
-      return null;
-    }
-    return data;
-  } catch (err) {
-    console.warn(`[tourapi] ${action} failed:`, err?.message || err);
-    return null;
-  }
+  return invokeTourApiProxy(action, payload);
 }
 
 /**

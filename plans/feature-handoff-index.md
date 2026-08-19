@@ -62,7 +62,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#13~#14 main 병합** · **#15 TourAPI 착수** (`cursor/en`) |
+| **상태** | **#15 TourAPI 프록시** Preview push · Edge deploy 대기 (`cursor/en`) |
 | **main** | `cb5d4358` — PR [#135](https://github.com/catgeot/Days/pull/135) 병합 (#13~#14) |
 | **브랜치** | `cursor/en` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§10 |
@@ -71,16 +71,16 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 | **PROD** | `https://www.gateo.kr/qa/en` → `/?lang=en` |
 | **VERIFY** | `npm run build` · `smoke:place-label-slug` |
 
-**2차 순서**: ~~#13 지구본 칩~~ · ~~#14 지명~~ → **#15 TourAPI** → #16~17 한국 본문 → #18~20 무니
+**2차 순서**: ~~#13 지구본 칩~~ · ~~#14 지명~~ · ~~#15 TourAPI~~ → **#16 축제** → #17 명승 → #18~20 무니
 
 **다음 제시어**:
 
 ```
-영문화 #15, TourAPI 프록시 EN
+영문화 #16, 축제 본문 EN
 @plans/feature-handoff-index.md
 @plans/2026-08-19-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · /qa/en · ?lang=en TourAPI EngService2
+브랜치 cursor/en · /qa/en · ?lang=en /korea 축제 본문
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 

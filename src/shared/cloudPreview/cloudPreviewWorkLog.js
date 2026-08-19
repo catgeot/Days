@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-19-i18n-tourapi-proxy-en',
+    session: '영문화 #15, TourAPI 프록시 EN',
+    title: 'TourAPI EngService2 · locale 캐시',
+    detail:
+      'Edge tourapi-proxy — ko=KorService2 · en=EngService2 · 축제/location 캐시 키 locale 분리. 클라이언트 invokeTourApiProxy가 i18n locale 전달. Edge deploy 후 /qa/en · ?lang=en 에서 한국 갤러리·축제 본문이 영문으로 오는지 확인해 주세요.',
+    at: '2026-08-19',
+  },
+  {
     id: '2026-08-19-i18n-globe-place-labels',
     session: '영문화 #14, 지구본 지명·맵',
     title: '지구본 핀·Mapbox 지명 en',

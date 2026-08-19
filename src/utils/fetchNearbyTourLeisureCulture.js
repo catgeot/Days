@@ -5,11 +5,10 @@ import {
   fetchNearbyTourAreaBasedFallback,
   isTourApiQuotaError,
 } from './nearbyTourAreaFallback';
+import { getTourApiLocale, withTourApiTimeout } from './tourApiProxy';
 
 export const LEPORTS_CONTENT_TYPE_ID = '28';
 export const CULTURE_CONTENT_TYPE_ID = '14';
-
-const INVOKE_TIMEOUT_MS = 14_000;
 
 const TYPE_META = {
   [LEPORTS_CONTENT_TYPE_ID]: {
@@ -30,15 +29,7 @@ const TYPE_META = {
  * @returns {Promise<T>}
  */
 function withTimeout(promise, ms, label) {
-  let timer;
-  return Promise.race([
-    promise,
-    new Promise((_, reject) => {
-      timer = setTimeout(() => reject(new Error(`${label} timeout ${ms}ms`)), ms);
-    }),
-  ]).finally(() => {
-    if (timer) clearTimeout(timer);
-  });
+  return withTourApiTimeout(promise, ms, label);
 }
 
 function toHttps(url) {
@@ -167,6 +158,7 @@ export async function fetchNearbyTourByContentType(opts) {
       supabase.functions.invoke('tourapi-proxy', {
         body: {
           action: 'locationBasedList',
+          locale: getTourApiLocale(),
           mapX: lng,
           mapY: lat,
           radius: radiusM,
@@ -176,7 +168,7 @@ export async function fetchNearbyTourByContentType(opts) {
           arrange: 'E',
         },
       }),
-      INVOKE_TIMEOUT_MS,
+      14_000,
       `tourapi:locationBasedList:${meta.label}`,
     );
     if (error) {

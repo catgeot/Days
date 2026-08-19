@@ -111,30 +111,37 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#14)**: Preview QA **PASS** · PR [#135](https://github.com/catgeot/Days/pull/135) → **main 병합** (사람)
+**상태 (#15)**: Preview push · Edge deploy 대기(사람)
 
-**브랜치**: `cursor/en` · `/qa/en` · **#15 착수**
+**브랜치**: `cursor/en` · `/qa/en` · **#16 착수**
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #15, TourAPI 프록시 EN
+영문화 #16, 축제 본문 EN
 @plans/feature-handoff-index.md
 @plans/2026-08-19-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · /qa/en · ?lang=en TourAPI EngService2
+브랜치 cursor/en · /qa/en · ?lang=en /korea 축제 본문
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 
-### #15 세션 범위 (에이전트 Read 대상만)
+### #16 세션 범위 (에이전트 Read 대상만)
+
+| 파일 | 작업 |
+|------|------|
+| `/korea` 축제 상세 | TourAPI EN 본문 표시 |
+| `FestivalDetailSheet` 등 | locale 분기·기존 비주얼 유지 |
+
+**VERIFY**: `npm run build` · `smoke:korea-festival-*` · Edge deploy 후 LIVE
+
+### #15 완료 요약
 
 | 파일 | 작업 |
 |------|------|
 | TourAPI Edge 프록시 | ko=`KorService2` · en=`EngService2` |
 | 캐시 키 | locale 분리 |
-| 클라이언트 호출부 | `useLocale()` → API locale 전달 |
-
-**VERIFY**: `npm run build` · `smoke:tourapi`(해당 시) · Edge deploy는 Secrets·사람
+| 클라이언트 호출부 | `getTourApiLocale()` → API locale 전달 |
 
 ---
 
