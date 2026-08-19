@@ -111,18 +111,18 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#19)**: Preview push — MOONi system prompt·칩·CTA·인트로 생성 EN (`mooniPromptBundles.js`)
+**상태 (#20)**: Preview push — place_chat_intro EN 캐시·목적지 탐지
 
-**브랜치**: `cursor/en` · `/qa/en` · **#20 착수**
+**브랜치**: `cursor/en` · `/qa/en` · **#21 착수**
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #20, 무니 인트로·탐지
+영문화 #21, 플래너 배너·UI EN
 @plans/feature-handoff-index.md
 @plans/2026-08-19-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · /qa/en · ?lang=en 무니 인트로 캐시·탐지
+브랜치 cursor/en · /qa/en · ?lang=en 플래너 배너·UI
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 
