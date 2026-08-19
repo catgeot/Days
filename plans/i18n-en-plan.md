@@ -22,7 +22,7 @@
 | 10 | 잔여·QA | `영문화 #10, 잔여·Preview QA` | ✅ Preview |
 | 11 | 병합·PROD | `영문화 #11, 병합·PROD QA` | ✅ merge · PROD QA (사람) |
 | 12 | PROD 확인 | `영문화 #12, PROD QA 확인` | (배포 후 사람) |
-| 13 | 지구본 칩 | `영문화 #13, 지구본 칩·국가` | ✅ Preview |
+| 13 | 지구본 칩 | `영문화 #13, 지구본 칩·국가` | ✅ Preview QA |
 
 세션마다 `#1` 리셋 금지 · `#N` = Cloud 순번.
 
@@ -93,15 +93,15 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#13)**: 지구본 칩·국가 영문화 — Preview QA (사람)
+**상태 (#13)**: Preview QA **PASS** · PR [#135](https://github.com/catgeot/Days/pull/135) · tip `022d1848` · **main 병합 대기**(사람)
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #14, Preview QA·잔여
+영문화 #14, 병합·잔여
 @plans/feature-handoff-index.md
 @plans/2026-08-19-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · PR #135 · /qa/en · ?lang=en
+브랜치 cursor/en · PR #135 · main 병합 승인 후 PROD
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```

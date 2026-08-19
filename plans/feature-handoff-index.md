@@ -62,7 +62,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#13 Preview** — 지구본 칩·국가 en · PR #135 |
+| **상태** | **#13 Preview QA PASS** · PR [#135](https://github.com/catgeot/Days/pull/135) · tip `022d1848` · **main 병합 대기** |
 | **main** | `47845093` — PR [#134](https://github.com/catgeot/Days/pull/134) |
 | **브랜치** | `cursor/en` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9 |
@@ -74,11 +74,11 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 **다음 제시어**:
 
 ```
-영문화 #14, Preview QA·잔여
+영문화 #14, 병합·잔여
 @plans/feature-handoff-index.md
 @plans/2026-08-19-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · PR #135 · /qa/en · ?lang=en
+브랜치 cursor/en · PR #135 · main 병합 승인 후 PROD
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 

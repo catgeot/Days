@@ -17,3 +17,9 @@
 - **검색 alias** `East Sea` 추가 · `Sea of Japan`은 검색용 alias 유지
 - **동중국해** alias에서 `동해` 오탐 제거
 - **VERIFY** `generate:sea-basins` · `smoke:sea-basin-rail` · `build` PASS
+
+## 영문화 #13, Preview QA PASS
+
+- **사람 QA** `/qa/en` · `?lang=en` — 지구본 칩·나라·동해(East Sea) **통과**
+- **tip** `022d1848` · PR [#135](https://github.com/catgeot/Days/pull/135)
+- **다음** main 병합 승인 → #14 잔여 영문화
