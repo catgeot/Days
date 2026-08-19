@@ -75,9 +75,9 @@
 
 - **범위** TourAPI locale(#15) · #16·#17 본문 롤백(A) · 무니 UI·프롬프트·인트로(#18~#20) · Trip.com `locale=en-US`
 - **VERIFY** `npm run build` · `smoke:place-label-slug` · `smoke:tourapi` PASS (`cursor/en` tip `66f5bf17`)
-- **PR** [#136](https://github.com/catgeot/Days/pull/136) → **main** (사람 PROD QA)
+- **PR** [#136](https://github.com/catgeot/Days/pull/136) → **main** `9157f772`
 - **PROD QA** `www.gateo.kr/qa/en` → `/?lang=en` — MOONi FAB·채팅·항공 CTA·Trip.com 모달
-- **다음** #21 플래너 배너·UI EN (`cursor/en`)
+- **다음** PROD QA OK 후 #21 플래너 배너·UI EN (`cursor/en`)
 
 ## 영문화 #18, 무니 UI·칩 — Preview push
 
