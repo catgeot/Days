@@ -230,7 +230,7 @@ const HomeUI = React.memo(({
             }`}
           />
           <div className="relative z-10 flex flex-col items-start gap-2">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <div
                 onClick={onLogoClick}
                 className="cursor-pointer group touch-manipulation"
@@ -343,7 +343,7 @@ const HomeUI = React.memo(({
            <button onClick={onClearScouts} className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30 transition-all shadow-lg group"><Trash2 size={16} className="group-hover:scale-110 transition-transform" /></button>
         </div>
 
-        <div className="flex-1 md:col-span-5 flex flex-col items-stretch md:items-center animate-fade-in-down delay-100 pt-2 md:pt-2 pointer-events-none z-50 min-w-0 md:relative">
+        <div className="flex-1 md:col-span-5 flex flex-col items-stretch md:items-center animate-fade-in-down delay-100 pt-1 md:pt-2 pointer-events-none z-50 min-w-0 md:relative">
           {isTourCinema && tourLocation ? (
             <TourMobileBar
               className="w-full md:hidden pointer-events-auto"
@@ -356,7 +356,7 @@ const HomeUI = React.memo(({
               onClose={onTourBarClose}
             />
           ) : (
-           <div data-site-notice-anchor className="group pointer-events-auto ml-auto mr-3 w-[min(12.5rem,100%)] min-w-0 sm:max-w-xs md:max-w-md md:w-full md:mr-0 md:self-end">
+           <div data-site-notice-anchor className="group pointer-events-auto ml-auto mr-3 w-[min(12.5rem,calc(100vw-5.5rem))] min-w-0 sm:max-w-xs md:max-w-md md:w-full md:ml-0 md:mr-0 md:self-end">
             <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             <div
               onClick={() => navigate('/explore')}

@@ -29,7 +29,7 @@ export default function LocaleToggle({ className = '', compact = false }) {
         type="button"
         onPointerDown={handlePointerDown}
         onClick={handleClick}
-        className={`relative z-20 h-8 min-w-[2.25rem] rounded-full bg-black/80 backdrop-blur-md border border-white/40 px-2.5 text-[11px] font-bold tracking-wide text-white shadow-[0_0_14px_rgba(255,255,255,0.14)] transition-colors hover:border-white/55 hover:bg-black/90 touch-manipulation ${className}`}
+        className={`relative z-20 h-7 min-w-[1.75rem] rounded-full bg-black/80 backdrop-blur-md border border-white/35 px-1.5 text-[10px] font-bold tracking-wide text-white shadow-[0_0_10px_rgba(255,255,255,0.12)] transition-colors hover:border-white/50 hover:bg-black/90 touch-manipulation ${className}`}
         title={title}
         aria-label={title}
       >
