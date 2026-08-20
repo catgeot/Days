@@ -205,7 +205,7 @@ const HomeUI = React.memo(({
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 z-[100] p-4 md:p-6 flex items-start gap-3 md:grid md:grid-cols-12 pointer-events-none w-full">
+      <div className="fixed top-0 left-0 right-0 z-[100] p-4 md:p-6 flex items-start gap-3 md:grid md:grid-cols-12 pointer-events-none w-full max-md:overflow-x-clip">
         <div
           data-site-notice-anchor-mobile
           className="md:hidden absolute inset-x-0 bottom-0 h-px pointer-events-none"
@@ -343,8 +343,8 @@ const HomeUI = React.memo(({
            <button onClick={onClearScouts} className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30 transition-all shadow-lg group"><Trash2 size={16} className="group-hover:scale-110 transition-transform" /></button>
         </div>
 
-        <div className="flex-1 md:col-span-5 flex flex-col items-stretch md:items-center animate-fade-in-down delay-100 pt-1 md:pt-2 pointer-events-none z-50 min-w-0 md:relative">
-          {isTourCinema && tourLocation ? (
+        {isTourCinema && tourLocation ? (
+          <div className="flex-1 md:col-span-5 flex flex-col items-stretch md:items-center animate-fade-in-down delay-100 pt-1 md:pt-2 pointer-events-none z-50 min-w-0 md:relative">
             <TourMobileBar
               className="w-full md:hidden pointer-events-auto"
               location={tourLocation}
@@ -355,23 +355,26 @@ const HomeUI = React.memo(({
               onStartTour={onTourBarStartTour}
               onClose={onTourBarClose}
             />
-          ) : (
-           <div data-site-notice-anchor className="group pointer-events-auto ml-auto mr-3 w-[min(12.5rem,calc(100vw-5.5rem))] min-w-0 sm:max-w-xs md:max-w-md md:w-full md:ml-0 md:mr-0 md:self-end">
-            <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+          </div>
+        ) : !isTourCinema ? (
+          <div
+            data-site-notice-anchor
+            className="group pointer-events-auto min-w-0 max-md:fixed max-md:left-[7.75rem] max-md:right-4 max-md:top-6 max-md:z-[105] md:col-span-5 md:relative md:z-50 md:flex md:flex-col md:items-center md:pt-2 md:animate-fade-in-down md:delay-100"
+          >
+            <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
             <div
               onClick={() => navigate('/explore')}
-              className="relative flex items-center bg-black/40 backdrop-blur-xl border border-white/30 shadow-lg transition-all h-10 md:h-12 rounded-full cursor-pointer hover:bg-black/50 hover:border-blue-400/50 group-hover:border-blue-400/50"
+              className="relative flex w-full min-w-0 items-center bg-black/40 backdrop-blur-xl border border-white/30 shadow-lg transition-all h-10 md:h-12 rounded-full cursor-pointer hover:bg-black/50 hover:border-blue-400/50 group-hover:border-blue-400/50 md:max-w-md"
             >
-              <div className="pl-3 md:pl-4 text-gray-400 transition-colors group-hover:text-blue-400"><Search size={16} className="md:w-[18px] md:h-[18px]" /></div>
-              <span
-                className="w-full bg-transparent text-gray-300/80 px-2 md:px-3 text-xs md:text-sm font-medium cursor-pointer select-none truncate"
-              >
+              <div className="pl-3 md:pl-4 text-gray-400 transition-colors group-hover:text-blue-400">
+                <Search size={16} className="md:w-[18px] md:h-[18px]" />
+              </div>
+              <span className="min-w-0 flex-1 bg-transparent text-gray-300/80 px-2 md:px-3 text-xs md:text-sm font-medium cursor-pointer select-none truncate">
                 {t('layout.search.placeholder')}
               </span>
             </div>
           </div>
-          )}
-        </div>
+        ) : null}
 
         <div className="hidden md:block md:col-span-1" />
 
