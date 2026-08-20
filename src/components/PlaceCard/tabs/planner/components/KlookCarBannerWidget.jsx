@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { isMobileDevice } from '../../../common/device';
+import { useLocale } from '../../../../../i18n/LocaleProvider';
 import {
     computeKlookBannerLayout,
     KLOOK_CAR_AD_ID_DESKTOP,
     KLOOK_CAR_AD_ID_MOBILE,
     KLOOK_CAR_BANNER_MOBILE_HEIGHT,
-    KLOOK_CAR_BANNER_FOOTER_HINT,
     KLOOK_CAR_BANNER_MOBILE_WIDTH,
 } from './klookBannerLayout';
 import { useKlookPlannerBannerDimensions } from './useKlookPlannerBannerDimensions';
@@ -40,8 +41,11 @@ const KlookCarBannerWidget = ({
     height: heightProp,
     className = 'mt-3',
     targetUrl = 'https://www.klook.com/?aid=118544',
-    footerHint = KLOOK_CAR_BANNER_FOOTER_HINT,
+    footerHint,
 }) => {
+    const { t } = useTranslation();
+    const { locale } = useLocale();
+    const resolvedFooterHint = footerHint ?? t('place.planner.banners.klookCar.footerHint');
     const responsiveDims = useKlookPlannerBannerDimensions('car');
     const width = widthProp ?? responsiveDims.width;
     const height = heightProp ?? responsiveDims.height;
@@ -137,7 +141,7 @@ const KlookCarBannerWidget = ({
                             data-wid="118544"
                             data-bgtype="Car"
                             data-adid={carAdId}
-                            data-lang="ko"
+                            data-lang={locale === 'en' ? 'en' : 'ko'}
                             data-prod="banner"
                             data-width={String(width)}
                             data-height={String(height)}
@@ -150,13 +154,13 @@ const KlookCarBannerWidget = ({
                     href={targetUrl}
                     target={isMobileDevice() ? '_self' : '_blank'}
                     rel="noopener noreferrer"
-                    aria-label="Klook 렌터카 페이지 열기"
+                    aria-label={t('place.planner.banners.klookCar.ariaOpen')}
                     className="pointer-events-auto absolute inset-0 z-20"
                 />
             </div>
-            {footerHint ? (
+            {resolvedFooterHint ? (
                 <p className="mt-1.5 px-1 text-center text-[9px] md:text-[10px] font-medium leading-tight text-gray-600 break-keep">
-                    {footerHint}
+                    {resolvedFooterHint}
                 </p>
             ) : null}
         </div>

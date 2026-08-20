@@ -8,7 +8,7 @@
       "switchToEn": "Switch to English",
       "switchToKo": "Switch to Korean",
       "labelEn": "EN",
-      "labelKo": "한"
+      "labelKo": "KO"
     },
     "search": {
       "placeholder": "Search by mood or vibe"
@@ -538,6 +538,13 @@
           "✨ AI is refreshing the toolkit…"
         ]
       },
+      "mrtQuery": {
+        "stay": "accommodation",
+        "guesthouse": "Korean guesthouse",
+        "transitPass": "transit pass",
+        "restaurant": "restaurant",
+        "stayWithPlace": "{{place}} accommodation"
+      },
       "links": {
         "regionStay": "[{{region}}] Find stays",
         "hotelTripcom": "{{name}} hotels (Trip.com)",
@@ -561,6 +568,153 @@
         "officialSite": "Official website",
         "safeTravel": "Korea MOFA safe travel",
         "visaInfo": "Visa / entry info"
+      },
+      "banners": {
+        "affiliateBadge": "Sponsored",
+        "rentalPickup": {
+          "heading": "Rental · pickup · flight reference",
+          "subtitleFromPlanner": "Arrival airport aligned with toolkit route and flight tips. If your ticket differs, change the search to your actual arrival code.",
+          "subtitleDefault": "Arrival airport used for flight and rental searches. Confirm the code on your ticket.",
+          "linkedArrival": "Linked arrival airport",
+          "otherCandidates": "Other arrival options",
+          "affiliateNoteLinked": "Rental and pickup partner links use the linked arrival airport above.",
+          "affiliateNoteSingle": "Rental and pickup partner links use this airport.",
+          "flightTipsCta": "View flight tips",
+          "copyOfficialDone": "Official airport name copied.",
+          "copyOfficialTitle": "Click to copy official airport name",
+          "copyIataDone": "IATA code {{code}} copied.",
+          "copyIataTitle": "Click to copy IATA code",
+          "copyFailed": "Copy failed. Check clipboard permission in your browser.",
+          "plannerBannerNote": "Arrival airport matches the toolkit route and flight tips. If your ticket differs, switch searches to your actual arrival code."
+        },
+        "tripcomFlight": {
+          "iframeTitle": "Trip.com flight search",
+          "srWithArrival": "Trip.com flight search banner for arrival {{iata}}. Edit departure, arrival, and dates in the banner.",
+          "srGeneric": "Trip.com flight search banner. Edit departure, arrival, and dates in the banner.",
+          "routeApplied": "Auto-filled depart {{depart}} → arrive {{arrive}} · editable in banner",
+          "routeDepart": "Depart",
+          "routeArrive": "Arrive",
+          "routeEditable": "auto-filled · editable in banner",
+          "fullScreenSearch": "Full-screen search",
+          "noArrivalFallback": "No arrival airport found — opens generic search.",
+          "tripcomFlights": "Trip.com flights"
+        },
+        "flightSearchCta": {
+          "title": "Search live flights",
+          "search": "Search",
+          "autoFill": "Trip.com pre-fills departure and arrival airports",
+          "ariaWithRoute": "Trip.com flight search — {{depart}} to {{arrive}}",
+          "ariaGeneric": "Trip.com live flight search"
+        },
+        "twelveGo": {
+          "routeLabel": "Ferry & transport search",
+          "ariaWithLabel": "12Go {{label}} search",
+          "ariaGeneric": "12Go ferry and fast-boat tickets",
+          "subtitle": "Ferry and fast-boat schedules · ticket search",
+          "findTickets": "Find tickets"
+        },
+        "klookCar": {
+          "ariaOpen": "Open Klook rental car page",
+          "footerHint": "Banner searches by destination name. For precise search, use the rental car link."
+        },
+        "cinemaNotice": {
+          "intro": "You came from the flight route view. This travel plan uses",
+          "icnDepart": "Incheon (ICN) departure",
+          "basis": "as the default.",
+          "originDiff": "It may differ from the origin you picked on the map ({{iata}}).",
+          "dismiss": "Dismiss notice"
+        },
+        "gyg": {
+          "moreLink": "More on GetYourGuide",
+          "copyQueryTitle": "Copy widget search query (tour cards are in a partner iframe and cannot be selected)",
+          "copied": "Copied",
+          "queryLabel": "Query · {{query}}",
+          "loadingPrimary": "Loading local tours…",
+          "loadingSecondary": "GetYourGuide list will appear shortly"
+        },
+        "airalo": {
+          "aria": "Airalo eSIM partner banner: custom plans in 200+ regions",
+          "subtitleBold": "Custom plans",
+          "subtitleRest": "200+ regions — pick GB and days, pay for what you use"
+        },
+        "holafly": {
+          "aria": "Holafly eSIM partner banner: unlimited-data focus",
+          "subtitleBold": "Unlimited focus",
+          "subtitleRest": "Less data worry — good for long, simple trips"
+        },
+        "directFerries": {
+          "recommendedTitle": "Recommended routes",
+          "subtitle": "Search and book ferry routes worldwide in real time",
+          "features": "Autocomplete · live vessel tracking · instant confirmation",
+          "searchCta": "Search",
+          "affiliateNote": "Direct Ferries partner link — bookings help support this site."
+        },
+        "mrtTna": {
+          "sortRecommended": "Recommended",
+          "sortPriceAsc": "Price: low to high",
+          "sortPriceDesc": "Price: high to low",
+          "sortRatingDesc": "Top rated",
+          "gridDefault": "Default grid",
+          "gridZoomIn": "Zoom in",
+          "nearbyMoreAria": "Show more nearby areas",
+          "nearbyExploreTitle": "Explore nearby areas",
+          "nearbyMore": "More nearby areas",
+          "loadingMore": "Loading…",
+          "loadingTours": "Loading tours and tickets…",
+          "loadError": "Could not load tour list.",
+          "empty": "No matching tours or tickets for this area.",
+          "nearbyToursHint": "Tours from nearby destinations",
+          "nearbyRegion": "Nearby",
+          "openOnMrt": "View on MyRealTrip",
+          "sortTour": "Sort tours",
+          "itemCount": "{{count}} items",
+          "searchOnMrt": "Search on MyRealTrip",
+          "moreOnMrt": "More on MyRealTrip",
+          "sectionThingsToDo": "Things to do in {{keyword}}"
+        }
+      },
+      "timeline": {
+        "heading": "Detailed journey planner",
+        "copyNameTitle": "Copy destination or city name only",
+        "copyNameAria": "Copy {{name}}",
+        "copyCodeTitle": "Copy IATA code only",
+        "copyCodeTitleBare": "Copy IATA code only (no parentheses)",
+        "copyCodeAria": "Copy {{code}}",
+        "copyCodeDone": "Airport code copied.",
+        "copyNameDone": "Destination name copied.",
+        "copyGenericDone": "Copied to clipboard.",
+        "copyFailed": "Copy failed. Check clipboard permission in your browser.",
+        "actionCruise": "Search cruises",
+        "actionCruiseDesc": "Compare Trip.com cruise dates and fares",
+        "actionFerryBook": "Book {{name}}",
+        "actionFerryDesc": "Ferry and fast-boat routes",
+        "actionRental": "Search rental cars"
+      },
+      "flightHint": {
+        "placeFallback": "this destination",
+        "noCodes": "For accurate flight search, enter the 3-letter arrival airport code (IATA).",
+        "withCodes": "For accurate flight search, enter arrival code(s) for {{place}}: {{codes}}.",
+        "withCodesGeneric": "For accurate flight search, enter the 3-letter IATA arrival code for {{place}}.",
+        "codesOr": "{{first}} or {{second}}",
+        "codesList": "{{list}}, or {{last}}"
+      },
+      "rentalHint": {
+        "searchAs": "Search as {{label}}",
+        "enterCode": "Enter a 3-letter airport code",
+        "singleCode": "Enter airport code {{code}}",
+        "multiCode": "Enter airport code {{codes}}"
+      },
+      "rentalHomeSubtext": {
+        "searchAs": "For rental search, use {{label}}.",
+        "enterCode": "For rental search, enter a 3-letter airport code (e.g. PDL).",
+        "singleCode": "For rental search, enter airport code {{code}}.",
+        "multiCode": "For rental search, enter one of {{codes}}."
+      },
+      "flightDisclaimer": {
+        "agencyWithArrival": "Trip.com search goes to {{arrival}}. Check below and local agents for the final leg.",
+        "agencyGeneric": "Trip.com covers international gateways only. Check below for the final leg.",
+        "officialWithArrival": "Trip.com search goes to {{arrival}}. Use the official booking links below for the final leg.",
+        "officialGeneric": "Trip.com covers international gateways only. Use the official booking links below for the final leg."
       }
     },
     "gallery": {

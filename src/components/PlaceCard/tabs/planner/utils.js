@@ -29,9 +29,21 @@ function linkLabel(key, options) {
   return i18n.t(key, options);
 }
 
+function visaLinkLabel(item) {
+  return i18n.language === 'en' && item.labelEn ? item.labelEn : item.label;
+}
+
 function plannerPlaceName(location) {
   const name = getLocalizedPlaceName(location, i18n.language);
   return name || linkLabel('place.fallback.local');
+}
+
+function mrtQuerySuffix(key) {
+  return i18n.t(`place.planner.mrtQuery.${key}`);
+}
+
+function klookLocalePath() {
+  return i18n.language?.startsWith?.('en') ? 'en' : 'ko';
 }
 
 
@@ -118,7 +130,7 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
 
                     links.push({
                         isMrt: true,
-                        mrtQuery: `${finalSearchTerm} 숙소`,
+                        mrtQuery: `${finalSearchTerm} ${mrtQuerySuffix('stay')}`,
                         text: linkLabel('place.planner.links.regionStay', { region: finalSearchTerm }),
                         colorClass: 'bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-200'
                     });
@@ -136,7 +148,7 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
                 } else {
                     links.push({
                         isMrt: true,
-                        mrtQuery: `${searchQuery} 숙소`,
+                        mrtQuery: `${searchQuery} ${mrtQuerySuffix('stay')}`,
                         text: linkLabel('place.planner.links.staySearch', { name: plannerPlaceName(location) }),
                         colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
                     });
@@ -146,7 +158,7 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
             // 3. 한인민박 검색 버튼 (마이리얼트립)
             links.push({
                 isMrt: true,
-                mrtQuery: `${searchQuery} 한인민박`,
+                mrtQuery: `${searchQuery} ${mrtQuerySuffix('guesthouse')}`,
                 text: linkLabel('place.planner.links.guesthouse'),
                 colorClass: 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200'
             });
@@ -160,7 +172,7 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
             break;
         case 'transport':
             // 1. 클룩 교통/레일 패스
-            const klookPassTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20교통%20패스`;
+            const klookPassTargetUrl = `https://www.klook.com/${klookLocalePath()}/search/result/?query=${encodedQuery}%20${encodeURIComponent(mrtQuerySuffix('transitPass'))}`;
             links.push({
                 url: getKlookAffiliateUrl(klookPassTargetUrl),
                 text: linkLabel('place.planner.links.transitPass', { name: plannerPlaceName(location) }),
@@ -242,7 +254,7 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
                 const canUseKlookDining = isKlookDiningPriorityLocation(searchTarget) && !isKlookDiningUnsupportedLocation(location);
 
                 if (canUseKlookDining) {
-                    const klookDiningTargetUrl = `https://www.klook.com/ko/search/result/?query=${encodedQuery}%20레스토랑`;
+                    const klookDiningTargetUrl = `https://www.klook.com/${klookLocalePath()}/search/result/?query=${encodedQuery}%20${encodeURIComponent(mrtQuerySuffix('restaurant'))}`;
                     diningUrl = getKlookAffiliateUrl(klookDiningTargetUrl);
                     diningText = linkLabel('place.planner.links.klookDining');
                 } else {
@@ -339,7 +351,7 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
                 uniqueLinks.forEach(item => {
                     links.push({
                         url: item.url,
-                        text: item.label,
+                        text: visaLinkLabel(item),
                         colorClass: 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200'
                     });
                 });

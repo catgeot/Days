@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ExternalLink, Loader2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import {
   GYG_ACTIVITIES_ITEM_COUNT,
   GYG_CURRENCY,
@@ -24,13 +25,15 @@ const FRAME_APPEAR_SETTLE_MS = 900;
 export function GygHomeMoreLink({
   location,
   cmp: cmpProp,
-  label = '겟유어가이드에서 더보기',
+  label,
   compact = false,
   tone = 'dark',
   className = '',
 }) {
+  const { t } = useTranslation();
   const cmp = cmpProp || buildGygPlannerCmp(location);
   const href = getGygHomeUrl({ cmp });
+  const linkLabel = label ?? t('place.planner.banners.gyg.moreLink');
   const toneClass =
     tone === 'light'
       ? compact
@@ -47,7 +50,7 @@ export function GygHomeMoreLink({
       onClick={(e) => e.stopPropagation()}
       className={className || toneClass}
     >
-      <span>{label}</span>
+      <span>{linkLabel}</span>
       <ExternalLink size={compact ? 12 : 13} className="shrink-0 opacity-70" aria-hidden />
     </a>
   );
@@ -72,6 +75,7 @@ const GetYourGuideActivitiesWidget = ({
   linkSponsoredLabel = false,
   className = '',
 }) => {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   const [frameReady, setFrameReady] = useState(() => frameWidth == null);
   const [widgetLoaded, setWidgetLoaded] = useState(false);
@@ -237,14 +241,14 @@ const GetYourGuideActivitiesWidget = ({
       <button
         type="button"
         onClick={copyQuery}
-        title="위젯 검색어 복사 (투어 카드 본문은 제휴 iframe이라 선택이 안 됩니다)"
+        title={t('place.planner.banners.gyg.copyQueryTitle')}
         className={`max-w-full truncate rounded-md border px-2 py-0.5 text-[10px] font-medium select-text ${
           isBoxed
             ? 'border-orange-200/80 bg-white/70 text-orange-800 hover:bg-white'
             : 'border-white/15 bg-white/10 text-orange-100/90 hover:bg-white/15'
         }`}
       >
-        {copied ? '복사됨' : `검색어 · ${query}`}
+        {copied ? t('place.planner.banners.gyg.copied') : t('place.planner.banners.gyg.queryLabel', { query })}
       </button>
     </div>
   );
@@ -267,14 +271,14 @@ const GetYourGuideActivitiesWidget = ({
           isBoxed ? 'text-orange-800/85' : 'text-white/75'
         }`}
       >
-        현지 투어를 불러오는 중이에요
+        {t('place.planner.banners.gyg.loadingPrimary')}
       </p>
       <p
         className={`break-keep text-center text-[11px] leading-relaxed ${
           isBoxed ? 'text-orange-700/60' : 'text-white/45'
         }`}
       >
-        GetYourGuide 목록이 곧 표시됩니다
+        {t('place.planner.banners.gyg.loadingSecondary')}
       </p>
     </div>
   ) : null;
@@ -315,7 +319,7 @@ const GetYourGuideActivitiesWidget = ({
       <p
         className={`text-[12px] ${isBoxed ? 'text-orange-800/80' : 'text-white/55'}`}
       >
-        현지 투어를 불러오는 중이에요
+        {t('place.planner.banners.gyg.loadingPrimary')}
       </p>
     </div>
   );

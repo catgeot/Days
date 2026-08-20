@@ -1,31 +1,41 @@
 import React from 'react';
 import { Ship } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { DIRECT_FERRIES_HOME_URL, DIRECT_FERRIES_RECOMMENDATIONS } from '../constants';
 
+function localizeFerryRoute(route, locale) {
+    if (!locale?.startsWith?.('en')) return route;
+    const withLatin = route.replace(/[^\x00-\x7F]+(\(([^)]+)\))/g, '$2');
+    const withoutKoreanParens = withLatin.replace(/\([^)]*[\u3131-\uD79D][^)]*\)/g, '');
+    const cleaned = withoutKoreanParens.replace(/\s+/g, ' ').trim();
+    return cleaned || route;
+}
+
 const DirectFerriesWidget = ({ location }) => {
+    const { t, i18n } = useTranslation();
     const recommendations = location?.slug ? DIRECT_FERRIES_RECOMMENDATIONS[location.slug] : null;
 
     return (
         <div className="mt-4 space-y-3">
-            {/* 추천 노선 박스 (여행지별 조건부 표시) */}
             {recommendations && recommendations.length > 0 && (
                 <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-4">
                     <div className="flex items-center gap-2 mb-2">
                         <span className="text-lg">💡</span>
-                        <h4 className="font-semibold text-blue-900 text-sm">추천 노선</h4>
+                        <h4 className="font-semibold text-blue-900 text-sm">
+                            {t('place.planner.banners.directFerries.recommendedTitle')}
+                        </h4>
                     </div>
                     <ul className="space-y-1.5">
                         {recommendations.map((route, idx) => (
                             <li key={idx} className="text-xs text-blue-800 flex items-start gap-2">
                                 <span className="text-blue-400 mt-0.5">•</span>
-                                <span className="break-keep">{route}</span>
+                                <span className="break-keep">{localizeFerryRoute(route, i18n.language)}</span>
                             </li>
                         ))}
                     </ul>
                 </div>
             )}
 
-            {/* Direct Ferries 홈 배너 버튼 */}
             <a
                 href={DIRECT_FERRIES_HOME_URL}
                 target="_blank"
@@ -42,24 +52,23 @@ const DirectFerriesWidget = ({ location }) => {
                                 <h3 className="text-white font-bold text-lg">Direct Ferries</h3>
                             </div>
                             <p className="text-white/90 text-sm font-medium break-keep">
-                                전 세계 페리 노선 실시간 검색 및 예약
+                                {t('place.planner.banners.directFerries.subtitle')}
                             </p>
                             <p className="text-white/70 text-xs mt-1 break-keep">
-                                자동완성 지원 · 실시간 선박 추적 · 즉시 예약 확정
+                                {t('place.planner.banners.directFerries.features')}
                             </p>
                         </div>
                         <div className="flex-shrink-0 ml-4">
                             <div className="bg-white text-cyan-600 px-4 py-2 rounded-lg font-bold text-sm group-hover:bg-cyan-50 transition-colors">
-                                검색하기 →
+                                {t('place.planner.banners.directFerries.searchCta')} →
                             </div>
                         </div>
                     </div>
                 </div>
             </a>
 
-            {/* 제휴 안내 문구 */}
             <p className="text-xs text-gray-500 text-center leading-relaxed break-keep">
-                Direct Ferries 제휴광고 연결로, 예약 시 사이트 운영에 도움이 됩니다.
+                {t('place.planner.banners.directFerries.affiliateNote')}
             </p>
         </div>
     );

@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { ArrowRight, Plane, Search } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import {
     TRIPCOM_DEFAULT_DEPARTURE_AIRPORT,
     getPlannerFlightArrivalIata,
@@ -12,6 +13,7 @@ import { getFlightDestinationSearchHint } from '../../../../../utils/rentalAirpo
  * WhiteLabelWidget customTrigger 또는 단독 버튼으로 사용.
  */
 const FlightSearchCta = ({ location, essentialGuide, className = '', ...buttonProps }) => {
+    const { t } = useTranslation();
     const arrivalIata = useMemo(
         () => getPlannerFlightArrivalIata(location, { essentialGuide }),
         [location, essentialGuide],
@@ -22,10 +24,10 @@ const FlightSearchCta = ({ location, essentialGuide, className = '', ...buttonPr
         const tierDisclaimer = getFlightTripDisclaimer(location, { arrivalIata });
         if (tierDisclaimer) return tierDisclaimer;
         if (arrivalIata) {
-            return 'Trip.com에서 출발·도착 공항이 자동 입력됩니다';
+            return t('place.planner.banners.flightSearchCta.autoFill');
         }
         return getFlightDestinationSearchHint(location, { essentialGuide });
-    }, [location, essentialGuide, arrivalIata]);
+    }, [location, essentialGuide, arrivalIata, t]);
 
     return (
         <button
@@ -33,8 +35,11 @@ const FlightSearchCta = ({ location, essentialGuide, className = '', ...buttonPr
             className={`group relative mt-3 w-full overflow-hidden rounded-2xl text-left transition-all duration-200 hover:scale-[1.01] hover:shadow-xl active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 ${className}`.trim()}
             aria-label={
                 arrivalIata
-                    ? `Trip.com 항공권 검색 — ${departure}에서 ${arrivalIata}까지`
-                    : 'Trip.com 항공권 실시간 검색'
+                    ? t('place.planner.banners.flightSearchCta.ariaWithRoute', {
+                          depart: departure,
+                          arrive: arrivalIata,
+                      })
+                    : t('place.planner.banners.flightSearchCta.ariaGeneric')
             }
             {...buttonProps}
         >
@@ -55,7 +60,9 @@ const FlightSearchCta = ({ location, essentialGuide, className = '', ...buttonPr
 
                 <div className="min-w-0 flex-1 pr-1">
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                        <span className="text-sm font-bold text-white sm:text-base">항공권 실시간 검색</span>
+                        <span className="text-sm font-bold text-white sm:text-base">
+                            {t('place.planner.banners.flightSearchCta.title')}
+                        </span>
                         {arrivalIata ? (
                             <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2 py-0.5 text-[11px] font-semibold text-white ring-1 ring-white/25 sm:text-xs">
                                 <span className="font-mono tracking-wide">{departure}</span>
@@ -69,7 +76,7 @@ const FlightSearchCta = ({ location, essentialGuide, className = '', ...buttonPr
 
                 <span className="hidden shrink-0 items-center gap-1.5 rounded-xl bg-white px-3.5 py-2.5 text-sm font-bold text-blue-700 shadow-md transition-colors group-hover:bg-sky-50 sm:inline-flex">
                     <Search size={15} aria-hidden="true" />
-                    검색
+                    {t('place.planner.banners.flightSearchCta.search')}
                 </span>
                 <ArrowRight
                     size={20}

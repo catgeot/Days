@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     TRIPCOM_FLIGHT_AD,
     buildTripcomPlannerFlightUrl,
@@ -25,6 +26,7 @@ const MIN_DISPLAY_HEIGHT = 120;
  * 배너 iframe에서 출발·도착·일자 등을 직접 수정할 수 있도록 클릭을 iframe에 전달합니다.
  */
 const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3' }) => {
+    const { t } = useTranslation();
     const tryOpenFlightSearch = useTryOpenTripcomFlightSearch();
     const containerRef = useRef(null);
     const { width: nativeW, height: nativeH } = useTripcomPlannerBannerDimensions();
@@ -125,7 +127,7 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3
                         <iframe
                             key={`${iframeSrc}-${nativeW}x${nativeH}`}
                             src={iframeSrc}
-                            title="Trip.com 항공권 검색"
+                            title={t('place.planner.banners.tripcomFlight.iframeTitle')}
                             width={nativeW}
                             height={nativeH}
                             className="block border-0"
@@ -139,31 +141,35 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3
                 </div>
                 <p className="sr-only">
                     {arrivalIata
-                        ? `도착 공항 ${arrivalIata} 기준 Trip.com 항공권 검색 배너. 배너에서 출발·도착·일자를 수정할 수 있습니다.`
-                        : 'Trip.com 항공권 검색 배너. 배너에서 출발·도착·일자를 수정할 수 있습니다.'}
+                        ? t('place.planner.banners.tripcomFlight.srWithArrival', { iata: arrivalIata })
+                        : t('place.planner.banners.tripcomFlight.srGeneric')}
                 </p>
             </div>
             <p className={`mt-1.5 text-center ${plannerCaption}`}>
                 {arrivalIata ? (
                     <>
-                        출발 <span className="font-mono font-semibold">ICN</span> → 도착{' '}
-                        <span className="font-mono font-semibold">{arrivalIata}</span> 자동 반영 · 배너에서 수정 가능
+                        {t('place.planner.banners.tripcomFlight.routeDepart')}{' '}
+                        <span className="font-mono font-semibold">ICN</span>
+                        {' → '}
+                        {t('place.planner.banners.tripcomFlight.routeArrive')}{' '}
+                        <span className="font-mono font-semibold">{arrivalIata}</span>{' '}
+                        {t('place.planner.banners.tripcomFlight.routeEditable')}
                         {' · '}
                         <a
                             {...fullScreenLinkProps}
                             className="text-blue-600 underline-offset-2 hover:underline"
                         >
-                            전체 화면 검색
+                            {t('place.planner.banners.tripcomFlight.fullScreenSearch')}
                         </a>
                     </>
                 ) : (
                     <>
-                        도착 공항을 찾지 못해 일반 검색으로 열립니다.{' '}
+                        {t('place.planner.banners.tripcomFlight.noArrivalFallback')}{' '}
                         <a
                             {...fullScreenLinkProps}
                             className="text-blue-600 underline-offset-2 hover:underline"
                         >
-                            Trip.com 항공권
+                            {t('place.planner.banners.tripcomFlight.tripcomFlights')}
                         </a>
                     </>
                 )}

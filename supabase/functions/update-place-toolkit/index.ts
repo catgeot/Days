@@ -102,65 +102,80 @@ function validateEssentialGuideForLocation(
   return null;
 }
 
-serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+function normalizeToolkitLocale(raw: unknown): 'ko' | 'en' {
+  const v = String(raw ?? '').trim().toLowerCase();
+  return v === 'en' ? 'en' : 'ko';
+}
+
+function buildCoordHint(
+  destLat: number | undefined,
+  destLng: number | undefined,
+  country: unknown,
+  locale: 'ko' | 'en'
+): string {
+  if (Number.isFinite(destLat) && Number.isFinite(destLng)) {
+    return locale === 'en'
+      ? ` (lat ${destLat}, lng ${destLng}${country ? `, ${country}` : ''})`
+      : ` (위도 ${destLat}, 경도 ${destLng}${country ? `, ${country}` : ''})`;
+  }
+  return country ? (locale === 'en' ? ` (${country})` : ` (${country})`) : '';
+}
+
+function buildToolkitPrompts(
+  locale: 'ko' | 'en',
+  locationName: string,
+  coordHint: string,
+  slug?: string | null
+): { systemPrompt: string; userPrompt: string } {
+  const slugHint = slug ? (locale === 'en' ? ` (slug: ${slug})` : ` (slug: ${slug})`) : '';
+
+  if (locale === 'en') {
+    const systemPrompt = `You are a veteran travel planner and local booking agent using strong web search. Provide structured JSON with every practical booking detail, transport option, visa requirement, and a step-by-step arrival timeline for travelers going **only to "${locationName}"${coordHint}**.
+
+🚨 **Hard rule**: Do not include other destinations, countries, or arrival airports unrelated to "${locationName}". primary_arrival_airports_iata and the final arrival codes in the timeline must match this place.${slugHint}
+
+**[Complexity]**
+1. Set "is_complex": true when there is no nonstop flight from Korea (ICN) and travelers need ferries or multi-leg transport (e.g. Gili Meno, Boracay).
+2. Raise complexity when e-visas, tourist taxes, or permits must be paid online before departure.
+
+**[Structure]**
+1. "is_complex" (boolean)
+2. "complexity_score" (number 0-100)
+3. "primary_arrival_airports_iata" (string[]): IATA codes where flights actually land in the destination region — not ICN/GMP. Match the timeline. Example: Swiss Alps → ["ZRH","GVA"], Bali → ["DPS"].
+4. "journey_timeline" (array): step, title, duration — show the big picture from Korea to the destination. Put airport codes in titles as (IATA), e.g. "Arrive Zurich (ZRH) or Geneva (GVA)".
+5. "categories" (object):
+   - "pre_travel" (array): online visas, taxes, permits — each needs title, url, cost. Official government URLs only; otherwise url null and explain in advice.
+   - "airport_transfer", "ferry_booking" (object or null)
+   - Other category "advice" fields: practical markdown checklists, not vague prose.
+   - Wrap searchable names in \`[@Name@]\` for smart links (e.g. \`- Book [@BlueWater Express@]\`).
+   - Include visa, flight, accommodation, connectivity, transport, apps, map_poi, safety as in the schema.
+
+Write all user-facing strings in **English**.`;
+
+    const userPrompt = `Provide a detailed toolkit JSON for "${locationName}".
+
+Example shape:
+{
+  "is_complex": true,
+  "complexity_score": 85,
+  "primary_arrival_airports_iata": ["DPS"],
+  "journey_timeline": [
+    { "step": 1, "title": "Depart ICN ✈️", "duration": "7h" },
+    { "step": 2, "title": "Arrive Bali (DPS) & rest 🏨", "duration": "6h" }
+  ],
+  "categories": {
+    "pre_travel": [{ "title": "Indonesia e-Visa", "url": "https://molina.imigrasi.go.id/", "cost": "$35" }],
+    "visa": { "advice": "**Requirements**\\n- Passport valid 6+ months", "url": null },
+    "flight": { "advice": "**Booking tips**\\n- Nonstop: …", "url": null }
+  }
+}`;
+
+    return { systemPrompt, userPrompt };
   }
 
-  let requestedPlaceId: string | null = null;
-  let reqBody: any = null;
+  const systemPrompt = `당신은 제미나이의 강력한 정보 검색 능력을 활용하는 베테랑 여행 플래너 및 로컬 예약 에이전트입니다. 여행자가 **오직 "${locationName}"${coordHint}** 한 곳에 가기 위해 필요한 모든 실용적인 예약 정보, 교통편, 비자, 그리고 도착까지의 상세 타임라인을 구조화된 JSON 데이터로 제공해야 합니다.
 
-  try {
-    reqBody = await req.json();
-    const { placeId, locationName, lat, lng, country, slug, canonicalPlaceId: canonicalPlaceIdHint } = reqBody;
-    requestedPlaceId = placeId;
-
-    if (!placeId || !locationName) {
-        throw new Error('placeId and locationName are required');
-    }
-
-    const slugNorm = typeof slug === 'string' ? slug.trim().toLowerCase() : '';
-    if (slugNorm && !isKnownTravelSpotSlug(slugNorm)) {
-      console.warn('[update-place-toolkit] Unknown slug (place_id not normalized):', slugNorm);
-    }
-
-    const canonicalPlaceId = resolveCanonicalPlaceId({
-      slug: slugNorm || null,
-      placeId: String(placeId),
-      locationName: String(locationName),
-      canonicalPlaceId: canonicalPlaceIdHint != null ? String(canonicalPlaceIdHint) : null,
-    });
-
-    if (canonicalPlaceId !== String(placeId)) {
-      console.log('[update-place-toolkit] Normalized place_id:', {
-        requested: placeId,
-        canonical: canonicalPlaceId,
-        slug: slugNorm || null,
-      });
-    }
-
-    const destLat = typeof lat === 'number' ? lat : Number(lat);
-    const destLng = typeof lng === 'number' ? lng : Number(lng);
-    const coordHint =
-      Number.isFinite(destLat) && Number.isFinite(destLng)
-        ? ` (위도 ${destLat}, 경도 ${destLng}${country ? `, ${country}` : ''})`
-        : country
-          ? ` (${country})`
-          : '';
-
-    const supabaseAdmin = createClient(
-        Deno.env.get('SUPABASE_URL') ?? '',
-        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
-
-    const geminiApiKey = Deno.env.get('VITE_GEMINI_API_KEY') || Deno.env.get('GEMINI_API_KEY');
-    if (!geminiApiKey) {
-        throw new Error('GEMINI_API_KEY is not configured on server');
-    }
-
-    const systemPrompt = `당신은 제미나이의 강력한 정보 검색 능력을 활용하는 베테랑 여행 플래너 및 로컬 예약 에이전트입니다. 여행자가 **오직 "${locationName}"${coordHint}** 한 곳에 가기 위해 필요한 모든 실용적인 예약 정보, 교통편, 비자, 그리고 도착까지의 상세 타임라인을 구조화된 JSON 데이터로 제공해야 합니다.
-
-🚨 **절대 규칙**: 요청 지명("${locationName}")과 무관한 다른 여행지·국가·도착 공항 내용을 넣지 마세요. primary_arrival_airports_iata·타임라인의 최종 도착 코드는 이 여행지에 맞아야 합니다.${slug ? ` (slug: ${slug})` : ''}
+🚨 **절대 규칙**: 요청 지명("${locationName}")과 무관한 다른 여행지·국가·도착 공항 내용을 넣지 마세요. primary_arrival_airports_iata·타임라인의 최종 도착 코드는 이 여행지에 맞아야 합니다.${slugHint}
 
 **[핵심 분석: 복잡도 평가]**
 1. 이 장소가 인천(한국)에서 출발했을 때, 직항이 없고 배를 타야 하거나, 다단계 교통수단(비행기->버스->페리 등)을 거쳐야 한다면 "is_complex": true로 설정하세요. (예: 길리 메노, 보라카이 등)
@@ -189,7 +204,7 @@ serve(async (req) => {
 
 URL이 있다면 반드시 해당 공식 사이트의 유효한 예약 링크나 정보 링크를 제공하세요.`;
 
-    const userPrompt = `"${locationName}"에 대한 상세 툴킷 정보를 JSON 형식으로 제공해주세요.
+  const userPrompt = `"${locationName}"에 대한 상세 툴킷 정보를 JSON 형식으로 제공해주세요.
 
 응답 형식 예시:
 {
@@ -219,6 +234,73 @@ URL이 있다면 반드시 해당 공식 사이트의 유효한 예약 링크나
     "safety": { "advice": "**치안 및 주의사항**\\n- 소매치기 주의...", "url": null }
   }
 }`;
+
+  return { systemPrompt, userPrompt };
+}
+
+serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
+  }
+
+  let requestedPlaceId: string | null = null;
+  let reqBody: any = null;
+
+  try {
+    reqBody = await req.json();
+    const { placeId, locationName, lat, lng, country, slug, canonicalPlaceId: canonicalPlaceIdHint, locale: localeRaw } = reqBody;
+    requestedPlaceId = placeId;
+    const toolkitLocale = normalizeToolkitLocale(localeRaw);
+
+    if (!placeId || !locationName) {
+        throw new Error('placeId and locationName are required');
+    }
+
+    const slugNorm = typeof slug === 'string' ? slug.trim().toLowerCase() : '';
+    if (slugNorm && !isKnownTravelSpotSlug(slugNorm)) {
+      console.warn('[update-place-toolkit] Unknown slug (place_id not normalized):', slugNorm);
+    }
+
+    const canonicalPlaceId = resolveCanonicalPlaceId({
+      slug: slugNorm || null,
+      placeId: String(placeId),
+      locationName: String(locationName),
+      canonicalPlaceId: canonicalPlaceIdHint != null ? String(canonicalPlaceIdHint) : null,
+    });
+
+    if (canonicalPlaceId !== String(placeId)) {
+      console.log('[update-place-toolkit] Normalized place_id:', {
+        requested: placeId,
+        canonical: canonicalPlaceId,
+        slug: slugNorm || null,
+      });
+    }
+
+    const destLat = typeof lat === 'number' ? lat : Number(lat);
+    const destLng = typeof lng === 'number' ? lng : Number(lng);
+    const coordHint = buildCoordHint(
+      Number.isFinite(destLat) ? destLat : undefined,
+      Number.isFinite(destLng) ? destLng : undefined,
+      country,
+      toolkitLocale
+    );
+
+    const supabaseAdmin = createClient(
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
+    const geminiApiKey = Deno.env.get('VITE_GEMINI_API_KEY') || Deno.env.get('GEMINI_API_KEY');
+    if (!geminiApiKey) {
+        throw new Error('GEMINI_API_KEY is not configured on server');
+    }
+
+    const { systemPrompt, userPrompt } = buildToolkitPrompts(
+      toolkitLocale,
+      String(locationName),
+      coordHint,
+      slugNorm || slug || null
+    );
 
     // 🆕 [Phase 8 Fix] Gemini 모델 폴백 로직 추가 (3.1 Pro → 2.5 Pro)
     const modelsToTry = [
@@ -346,12 +428,13 @@ URL이 있다면 반드시 해당 공식 사이트의 유효한 예약 링크나
       );
     }
 
-    // Upsert essential_guide into place_toolkit table (canonical SSOT 한글명)
+    // Upsert locale column into place_toolkit (canonical SSOT place_id)
+    const guideColumn = toolkitLocale === 'en' ? 'essential_guide_en' : 'essential_guide';
     const { error: dbError } = await supabaseAdmin
       .from('place_toolkit')
       .upsert({
         place_id: canonicalPlaceId,
-        essential_guide: essentialGuideJson,
+        [guideColumn]: essentialGuideJson,
         toolkit_updated_at: new Date().toISOString()
       }, { onConflict: 'place_id' });
 
@@ -362,6 +445,7 @@ URL이 있다면 반드시 해당 공식 사이트의 유효한 예약 링크나
 
     return new Response(JSON.stringify({
       success: true,
+      locale: toolkitLocale,
       essentialGuide: essentialGuideJson,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

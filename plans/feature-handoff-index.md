@@ -62,26 +62,33 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#15~#20 main 병합** `9157f772` · **PROD QA** 후 #21 |
-| **main** | `9157f772` — PR [#136](https://github.com/catgeot/Days/pull/136) |
-| **브랜치** | `cursor/en` |
-| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§10 |
-| **일지** | [`2026-08-19-project-log.md`](./2026-08-19-project-log.md) |
+| **상태** | **#23 Preview PASS** · **#24 PROD QA** (브라우저 locale·축제 Chrome 번역) |
+| **main** | `50963f69` — PR [#137](https://github.com/catgeot/Days/pull/137) (#21 MOONi) |
+| **브랜치** | `cursor/en` · PR [#138](https://github.com/catgeot/Days/pull/138) (#21~#23) |
+| **tip** | `be20b6c7` |
+| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·#23 |
+| **일지** | [`2026-08-20-project-log.md`](./2026-08-20-project-log.md) |
 | **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` |
-| **PROD** | `https://www.gateo.kr/qa/en` → `/?lang=en` |
-| **VERIFY** | `npm run build` · `smoke:place-label-slug` · `smoke:tourapi` |
+| **PROD** | `https://www.gateo.kr` (시크릿 EN) · `/qa/en` → `/?lang=en` |
+| **VERIFY** | `build` · `smoke:browser-locale-hint` · `smoke:festival-detail-locale` · `smoke:essential-guide-locale` · `smoke:place-label-slug` |
 
-**2차 순서**: ~~#13~#20~~ → **#21 플래너 배너·UI** → #22 플래너 AI
+**2차 순서**: ~~#13~#23~~ → **#24 PROD QA** → main 병합
+
+**PROD QA 체크** (사람 · 시크릿 창):
+
+1. Chrome 언어 **English** 우선 · `gateo.locale` 없음 · `www.gateo.kr/` — UI 자동 EN·`?lang=en` 추가
+2. `/korea` — UI EN · 축제 카드 한글 제목·주소에 Chrome 번역 제안
+3. 축제 상세 — overview·info 한글 본문 Chrome 번역 (포스터 이미지 내 한글은 번역 불가)
+4. 헤더 KO 토글 → 한글 UI · 재방문 시 선택 유지
 
 **다음 제시어**:
 
 ```
-영문화 #21, PROD QA — #15~#20
+영문화 #25, main 병합 — #21~#23
 @plans/feature-handoff-index.md
-@plans/2026-08-19-project-log.md
+@plans/2026-08-20-project-log.md
 @plans/i18n-en-plan.md
-main · /qa/en · ?lang=en MOONi·Trip.com EN
-금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
+cursor/en · PR #138 · PROD QA OK 후 merge
 ```
 
 ---

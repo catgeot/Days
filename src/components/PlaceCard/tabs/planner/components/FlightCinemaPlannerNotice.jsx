@@ -1,5 +1,6 @@
 import React from 'react';
 import { Info, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { plannerCaption } from '../readableText';
 
 /**
@@ -7,6 +8,7 @@ import { plannerCaption } from '../readableText';
  * @param {{ cinemaOriginIata?: string | null, onDismiss?: () => void }} props
  */
 export default function FlightCinemaPlannerNotice({ cinemaOriginIata = null, onDismiss }) {
+  const { t } = useTranslation();
   const showOriginDiff =
     cinemaOriginIata && cinemaOriginIata !== 'ICN';
 
@@ -18,14 +20,15 @@ export default function FlightCinemaPlannerNotice({ cinemaOriginIata = null, onD
       <div className="flex items-start gap-2">
         <Info size={16} className="mt-0.5 shrink-0 text-sky-600" aria-hidden="true" />
         <p className={`min-w-0 flex-1 ${plannerCaption} text-sky-950/90`}>
-          항공 경로 화면에서 이동했습니다. 아래 여행 플랜은{' '}
-          <span className="font-semibold text-sky-900">인천(ICN) 출발</span> 기준입니다.
+          {t('place.planner.banners.cinemaNotice.intro')}{' '}
+          <span className="font-semibold text-sky-900">
+            {t('place.planner.banners.cinemaNotice.icnDepart')}
+          </span>{' '}
+          {t('place.planner.banners.cinemaNotice.basis')}
           {showOriginDiff ? (
             <>
               {' '}
-              지도에서 선택한 출발지(
-              <span className="font-mono font-semibold">{cinemaOriginIata}</span>
-              )와 다를 수 있어요.
+              {t('place.planner.banners.cinemaNotice.originDiff', { iata: cinemaOriginIata })}
             </>
           ) : null}
         </p>
@@ -34,7 +37,7 @@ export default function FlightCinemaPlannerNotice({ cinemaOriginIata = null, onD
             type="button"
             onClick={onDismiss}
             className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-sky-700/70 transition-colors hover:bg-sky-100/80 hover:text-sky-900"
-            aria-label="안내 닫기"
+            aria-label={t('place.planner.banners.cinemaNotice.dismiss')}
           >
             <X size={15} aria-hidden="true" />
           </button>

@@ -17,7 +17,7 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
     const { t } = useTranslation();
     const tryOpenFlightSearch = useTryOpenTripcomFlightSearch();
     const tripcomHotelOverride = getTripcomHotelOverrideUrlForLocation(location);
-    const mrtQuery = `${locationName || ''} 숙소`;
+    const mrtQuery = t('place.planner.mrtQuery.stayWithPlace', { place: locationName || '' });
     const linkTarget = getPartnerLinkTarget();
     const tripcomLinkRel = getTripcomLinkRel(linkTarget);
 

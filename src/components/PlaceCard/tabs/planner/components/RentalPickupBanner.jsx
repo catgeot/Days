@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowDown, Car } from 'lucide-react';
-import { resolveRentalPickupBannerInfo, resolveBannerPeerAlternateAirports } from '../../../../../utils/rentalAirportMatch.js';
+import { useTranslation } from 'react-i18next';
+import { resolveRentalPickupBannerInfo, resolveBannerPeerAlternateAirports, getRentalAirportDisplayName } from '../../../../../utils/rentalAirportMatch.js';
 import { shouldShowOfficialFlightBooking } from '../../../../../utils/flightBookingMatch.js';
 import { PLANNER_FOCUS_ID, scrollPlannerFocusIntoView } from '../../../../../utils/placePlannerFocus.js';
 import { plannerCaption, plannerCaptionMedium, plannerCaptionStrong, plannerMicroLabel } from '../readableText';
@@ -8,7 +9,7 @@ import { plannerCaption, plannerCaptionMedium, plannerCaptionStrong, plannerMicr
 const airportCopyHitClass =
     'cursor-pointer rounded border-0 bg-transparent px-0.5 py-1 text-left font-inherit transition-colors hover:bg-emerald-100/70 focus-visible:outline focus-visible:ring-2 focus-visible:ring-emerald-500/40';
 
-function RentalPickupAirportCopyRow({ officialKo, iata, onCopy, highlight = false }) {
+function RentalPickupAirportCopyRow({ displayName, iata, onCopy, highlight = false, copyMessages }) {
     return (
         <div
             className={`flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-1 text-sm font-semibold leading-snug ${highlight ? 'text-emerald-950' : 'text-gray-900'}`}
@@ -16,17 +17,17 @@ function RentalPickupAirportCopyRow({ officialKo, iata, onCopy, highlight = fals
             <button
                 type="button"
                 className={`${airportCopyHitClass} break-words ${highlight ? 'text-emerald-950' : 'text-gray-900'}`}
-                onClick={() => onCopy(officialKo, '정식 공항명이 복사되었습니다.')}
-                title="클릭하여 정식 공항명 복사"
+                onClick={() => onCopy(displayName, copyMessages.officialDone)}
+                title={copyMessages.officialTitle}
             >
-                {officialKo}
+                {displayName}
             </button>
             {iata ? (
                 <button
                     type="button"
                     className={`${airportCopyHitClass} shrink-0 font-mono text-xs font-medium ${highlight ? 'text-emerald-800' : 'text-emerald-800/90'}`}
-                    onClick={() => onCopy(iata, `IATA 코드 ${iata}가 복사되었습니다.`)}
-                    title="클릭하여 IATA 코드 복사"
+                    onClick={() => onCopy(iata, copyMessages.iataDone(iata))}
+                    title={copyMessages.iataTitle}
                 >
                     ({iata})
                 </button>
@@ -39,8 +40,20 @@ function RentalPickupAirportCopyRow({ officialKo, iata, onCopy, highlight = fals
  * 플래너 상단 「렌터카 · 픽업 · 항공권 기준」 도착 공항 배너
  */
 export default function RentalPickupBanner({ location, essentialGuide, scrollContainerRef, className = '' }) {
+    const { t, i18n } = useTranslation();
     const [copyMessage, setCopyMessage] = useState(null);
     const copyTimeoutRef = useRef(0);
+
+    const copyMessages = useMemo(
+        () => ({
+            officialDone: t('place.planner.banners.rentalPickup.copyOfficialDone'),
+            officialTitle: t('place.planner.banners.rentalPickup.copyOfficialTitle'),
+            iataDone: (code) => t('place.planner.banners.rentalPickup.copyIataDone', { code }),
+            iataTitle: t('place.planner.banners.rentalPickup.copyIataTitle'),
+            failed: t('place.planner.banners.rentalPickup.copyFailed'),
+        }),
+        [t],
+    );
 
     const info = useMemo(
         () => resolveRentalPickupBannerInfo(location, { essentialGuide }),
@@ -61,19 +74,34 @@ export default function RentalPickupBanner({ location, essentialGuide, scrollCon
                 copyTimeoutRef.current = window.setTimeout(() => setCopyMessage(null), 2500);
             } catch (err) {
                 console.warn('[RentalPickupBanner] 클립보드 복사 실패', err);
-                setCopyMessage('복사에 실패했습니다. 브라우저에서 클립보드 권한을 확인해 주세요.');
+                setCopyMessage(copyMessages.failed);
                 window.clearTimeout(copyTimeoutRef.current);
                 copyTimeoutRef.current = window.setTimeout(() => setCopyMessage(null), 3500);
             }
         };
         void run();
-    }, []);
+    }, [copyMessages.failed]);
 
     useEffect(() => () => window.clearTimeout(copyTimeoutRef.current), []);
 
+    const resolvedBannerNote = useMemo(() => {
+        if (info?.plannerSourcedNote) {
+            return t('place.planner.banners.rentalPickup.plannerBannerNote');
+        }
+        return info?.bannerNote?.trim() || '';
+    }, [info, t]);
+
     const showFlightNav = useMemo(
-        () => Boolean(info?.bannerNote?.trim()) || shouldShowOfficialFlightBooking(location),
-        [info?.bannerNote, location],
+        () => Boolean(resolvedBannerNote) || shouldShowOfficialFlightBooking(location),
+        [resolvedBannerNote, location],
+    );
+
+    const resolveAirportDisplayName = useCallback(
+        (airport) => {
+            if (!airport) return '';
+            return getRentalAirportDisplayName(airport.iata, i18n.language) || airport.officialKo || airport.iata || '';
+        },
+        [i18n.language],
     );
 
     const scrollToFlightSection = useCallback(
@@ -88,8 +116,8 @@ export default function RentalPickupBanner({ location, essentialGuide, scrollCon
     if (!info) return null;
 
     const subtitle = info.fromPlanner
-        ? '툴킷 여정·항공 안내와 맞춘 도착 공항입니다. 티켓과 다르면 실제 도착 코드로 검색어를 바꿔 주세요.'
-        : '항공권·렌터카 검색에 쓰는 도착 공항입니다. 티켓의 도착 공항 코드를 확인해 주세요.';
+        ? t('place.planner.banners.rentalPickup.subtitleFromPlanner')
+        : t('place.planner.banners.rentalPickup.subtitleDefault');
 
     const primaryAirport =
         info.kind === 'multi' && info.linkHub
@@ -106,35 +134,41 @@ export default function RentalPickupBanner({ location, essentialGuide, scrollCon
             <Car size={18} className="mt-0.5 shrink-0 text-emerald-600" aria-hidden />
             <div className="min-w-0 flex-1 text-left">
                 <p className={`${plannerMicroLabel} text-emerald-800/85`}>
-                    렌터카 · 픽업 · 항공권 기준
+                    {t('place.planner.banners.rentalPickup.heading')}
                 </p>
                 <p className={`mt-0.5 ${plannerCaption}`}>{subtitle}</p>
 
                 {showPeerAlternates ? (
                     <>
-                        <p className={`mt-2 ${plannerMicroLabel} text-emerald-900/90`}>연동 도착 공항</p>
+                        <p className={`mt-2 ${plannerMicroLabel} text-emerald-900/90`}>
+                            {t('place.planner.banners.rentalPickup.linkedArrival')}
+                        </p>
                         <div className="mt-1">
                             <RentalPickupAirportCopyRow
-                                officialKo={primaryAirport.officialKo}
+                                displayName={resolveAirportDisplayName(primaryAirport)}
                                 iata={primaryAirport.iata}
                                 onCopy={handleCopy}
                                 highlight
+                                copyMessages={copyMessages}
                             />
                         </div>
-                        <p className={`mt-2 ${plannerCaptionStrong} text-gray-600`}>다른 도착 후보</p>
+                        <p className={`mt-2 ${plannerCaptionStrong} text-gray-600`}>
+                            {t('place.planner.banners.rentalPickup.otherCandidates')}
+                        </p>
                         <div className="mt-1 flex flex-col gap-2">
                             {peerAlternates.map((a) => (
                                 <RentalPickupAirportCopyRow
                                     key={a.iata || a.officialKo}
-                                    officialKo={a.officialKo}
+                                    displayName={resolveAirportDisplayName(a)}
                                     iata={a.iata}
                                     onCopy={handleCopy}
+                                    copyMessages={copyMessages}
                                 />
                             ))}
                         </div>
-                        {info.bannerNote ? (
+                        {resolvedBannerNote ? (
                             <p className={`mt-2 whitespace-pre-line border-l-2 border-emerald-300/80 pl-2.5 ${plannerCaptionMedium} text-gray-800`}>
-                                {info.bannerNote}
+                                {resolvedBannerNote}
                             </p>
                         ) : null}
                     </>
@@ -142,15 +176,16 @@ export default function RentalPickupBanner({ location, essentialGuide, scrollCon
                     <>
                         <div className="mt-1.5">
                             <RentalPickupAirportCopyRow
-                                officialKo={primaryAirport?.officialKo ?? info.officialKo}
+                                displayName={resolveAirportDisplayName(primaryAirport ?? { officialKo: info.officialKo, iata: info.iata })}
                                 iata={primaryAirport?.iata ?? info.iata}
                                 onCopy={handleCopy}
                                 highlight
+                                copyMessages={copyMessages}
                             />
                         </div>
-                        {info.bannerNote ? (
+                        {resolvedBannerNote ? (
                             <p className={`mt-2 whitespace-pre-line border-l-2 border-emerald-300/80 pl-2.5 ${plannerCaptionMedium} text-gray-800`}>
-                                {info.bannerNote}
+                                {resolvedBannerNote}
                             </p>
                         ) : null}
                     </>
@@ -164,10 +199,12 @@ export default function RentalPickupBanner({ location, essentialGuide, scrollCon
 
                 {showPeerAlternates ? (
                     <p className={`mt-1.5 ${plannerCaptionMedium}`}>
-                        렌터카·픽업 제휴 링크는 위 「연동 도착 공항」 기준으로 연결됩니다.
+                        {t('place.planner.banners.rentalPickup.affiliateNoteLinked')}
                     </p>
                 ) : (
-                    <p className={`mt-1 ${plannerCaptionMedium}`}>렌터카·픽업 제휴 링크는 이 공항 기준입니다.</p>
+                    <p className={`mt-1 ${plannerCaptionMedium}`}>
+                        {t('place.planner.banners.rentalPickup.affiliateNoteSingle')}
+                    </p>
                 )}
 
                 {showFlightNav ? (
@@ -177,7 +214,7 @@ export default function RentalPickupBanner({ location, essentialGuide, scrollCon
                             onClick={() => scrollToFlightSection(PLANNER_FOCUS_ID.PREP_FLIGHT)}
                             className="inline-flex min-h-[40px] items-center justify-center gap-1.5 rounded-lg border border-emerald-300/90 bg-white px-3 py-2 text-xs font-semibold text-emerald-900 shadow-sm transition-colors hover:bg-emerald-100/80 focus-visible:outline focus-visible:ring-2 focus-visible:ring-emerald-500/40"
                         >
-                            항공권 팁 확인
+                            {t('place.planner.banners.rentalPickup.flightTipsCta')}
                             <ArrowDown size={13} className="opacity-70" aria-hidden />
                         </button>
                     </div>

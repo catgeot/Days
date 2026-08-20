@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Clock, Map as MapIcon, Car, Ship, Anchor } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { getKlookRentalHomeUrl, getTripcomCruiseUrl } from '../../../../../utils/affiliate';
 import { resolveFerryBookings, shouldShowFerryCard } from '../../../../../utils/ferryBookingMatch.js';
 import { getRentalCarTimelineActionDescription } from '../../../../../utils/rentalAirportMatch.js';
@@ -51,6 +52,7 @@ function splitTitleIntoCopyParts(title) {
 }
 
 function TimelineStepTitleWithCopy({ title, stepIdx, onCopySegment }) {
+    const { t } = useTranslation();
     const parts = useMemo(() => splitTitleIntoCopyParts(title), [title]);
     const hasCopy = parts.some((p) => p.type === 'copyPair' || p.type === 'copyCode');
 
@@ -75,8 +77,8 @@ function TimelineStepTitleWithCopy({ title, stepIdx, onCopySegment }) {
                             type="button"
                             className={`${timelineCopyHitClass} font-mono text-xs font-bold text-blue-900/95`}
                             onClick={() => onCopySegment(stepIdx, p.code, 'code')}
-                            title="IATA 코드만 복사"
-                            aria-label={`${p.code} 복사`}
+                            title={t('place.planner.timeline.copyCodeTitle')}
+                            aria-label={t('place.planner.timeline.copyCodeAria', { code: p.code })}
                         >
                             {p.label}
                         </button>
@@ -88,8 +90,8 @@ function TimelineStepTitleWithCopy({ title, stepIdx, onCopySegment }) {
                             type="button"
                             className={`${timelineCopyHitClass} break-words text-gray-800`}
                             onClick={() => onCopySegment(stepIdx, p.name, 'name')}
-                            title="도착지·도시명만 복사"
-                            aria-label={`${p.name} 복사`}
+                            title={t('place.planner.timeline.copyNameTitle')}
+                            aria-label={t('place.planner.timeline.copyNameAria', { name: p.name })}
                         >
                             {p.name}
                         </button>
@@ -97,8 +99,8 @@ function TimelineStepTitleWithCopy({ title, stepIdx, onCopySegment }) {
                             type="button"
                             className={`${timelineCopyHitClass} shrink-0 font-mono text-xs font-bold text-blue-900/95`}
                             onClick={() => onCopySegment(stepIdx, p.code, 'code')}
-                            title="IATA 코드만 복사 (괄호 없음)"
-                            aria-label={`${p.code} 복사`}
+                            title={t('place.planner.timeline.copyCodeTitleBare')}
+                            aria-label={t('place.planner.timeline.copyCodeAria', { code: p.code })}
                         >
                             ({p.code})
                         </button>
@@ -129,7 +131,7 @@ function matchesRentalCarTimelineKeyword(text) {
 }
 
 // 🔧 타임라인 내 동적 액션 버튼 (크루즈·페리·렌터카)
-const getActionForStep = (title, location, essentialGuide) => {
+const getActionForStep = (title, location, essentialGuide, t) => {
     const text = title.toLowerCase();
     const slug = location?.slug;
 
@@ -142,10 +144,10 @@ const getActionForStep = (title, location, essentialGuide) => {
         return {
             type: 'banner',
             actionTypeKey: 'cruise',
-            label: '크루즈 검색',
-            description: 'Trip.com 크루즈 일정·요금 비교',
+            label: t('place.planner.timeline.actionCruise'),
+            description: t('place.planner.timeline.actionCruiseDesc'),
             url: getTripcomCruiseUrl({
-                campaign: '플래너 크루즈',
+                campaign: 'planner-cruise',
                 locationName: location?.name,
             }),
             icon: <Anchor size={16} />,
@@ -173,8 +175,8 @@ const getActionForStep = (title, location, essentialGuide) => {
             return {
                 type: 'banner',
                 actionTypeKey: 'ferry',
-                label: `${primary.name} 예약`,
-                description: '페리·쾌속선 노선 예약',
+                label: t('place.planner.timeline.actionFerryBook', { name: primary.name }),
+                description: t('place.planner.timeline.actionFerryDesc'),
                 url: primary.url,
                 icon: <Ship size={16} />,
                 bgClass: 'bg-white border-2 border-cyan-300',
@@ -191,7 +193,7 @@ const getActionForStep = (title, location, essentialGuide) => {
         return {
             type: 'banner',
             actionTypeKey: 'rental_car',
-            label: '렌터카 검색',
+            label: t('place.planner.timeline.actionRental'),
             description: getRentalCarTimelineActionDescription(location, { essentialGuide }),
             url: getKlookRentalHomeUrl(),
             icon: <Car size={16} />,
@@ -207,6 +209,7 @@ const getActionForStep = (title, location, essentialGuide) => {
 };
 
 const JourneyTimeline = ({ timeline, location, essentialGuide }) => {
+    const { t } = useTranslation();
     const [copyFeedback, setCopyFeedback] = useState(null);
     const copyTimeoutRef = useRef(0);
 
@@ -218,22 +221,25 @@ const JourneyTimeline = ({ timeline, location, essentialGuide }) => {
                 await navigator.clipboard.writeText(text);
                 const message =
                     feedbackKey === 'code'
-                        ? '공항 코드를 복사했습니다.'
+                        ? t('place.planner.timeline.copyCodeDone')
                         : feedbackKey === 'name'
-                          ? '도착지명을 복사했습니다.'
-                          : '클립보드에 복사했습니다.';
+                          ? t('place.planner.timeline.copyNameDone')
+                          : t('place.planner.timeline.copyGenericDone');
                 setCopyFeedback({ stepIdx, message });
                 window.clearTimeout(copyTimeoutRef.current);
                 copyTimeoutRef.current = window.setTimeout(() => setCopyFeedback(null), 2500);
             } catch (err) {
                 console.warn('[JourneyTimeline] 클립보드 복사 실패', err);
-                setCopyFeedback({ stepIdx, message: '복사에 실패했습니다. 브라우저에서 클립보드 권한을 확인해 주세요.' });
+                setCopyFeedback({
+                    stepIdx,
+                    message: t('place.planner.timeline.copyFailed'),
+                });
                 window.clearTimeout(copyTimeoutRef.current);
                 copyTimeoutRef.current = window.setTimeout(() => setCopyFeedback(null), 3500);
             }
         };
         void run();
-    }, []);
+    }, [t]);
 
     if (!timeline || timeline.length === 0) return null;
 
@@ -244,21 +250,13 @@ const JourneyTimeline = ({ timeline, location, essentialGuide }) => {
         <div className="bg-blue-50/80 border border-blue-200 rounded-2xl p-5 mb-5 shadow-sm">
             <h3 className="font-bold text-blue-900 mb-4 flex items-center gap-2 text-sm md:text-base">
                 <MapIcon className="text-blue-600 shrink-0" size={18} />
-                상세 여정 플래너
+                {t('place.planner.timeline.heading')}
             </h3>
             <div className="relative pl-6 space-y-6 before:absolute before:inset-y-2 before:left-[11px] before:w-[2px] before:bg-blue-200">
                 {timeline.map((step, idx) => {
-                    const action = getActionForStep(step.title, location, essentialGuide);
+                    const action = getActionForStep(step.title, location, essentialGuide, t);
 
-                    // 액션 타입 식별 (중복 방지용)
-                    let actionTypeKey = action?.actionTypeKey ?? null;
-                    if (action && !actionTypeKey) {
-                        if (action.label.includes('크루즈')) actionTypeKey = 'cruise';
-                        else if (action.label.includes('렌터카')) actionTypeKey = 'rental_car';
-                        else actionTypeKey = 'ferry';
-                    }
-
-                    // 중복 체크: 이미 표시된 타입이면 숨김
+                    const actionTypeKey = action?.actionTypeKey ?? null;
                     let shouldShowAction = true;
                     if (actionTypeKey) {
                         if (shownActionTypes.has(actionTypeKey)) {

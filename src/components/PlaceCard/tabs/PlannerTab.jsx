@@ -74,9 +74,9 @@ const PlannerTab = ({
     const canonicalLocation = useMemo(() => mergeCanonicalTravelSpot(location), [location]);
 
     // essential_guide가 {} 등 빈 객체여도 UI에 내용이 없도록 정규화
-    const guideData = getEssentialGuide(plannerData, canonicalLocation);
+    const guideData = getEssentialGuide(plannerData, canonicalLocation, locale);
     const showFerryCard = shouldShowFerryCard(canonicalLocation?.slug);
-    const toolkitMismatch = isToolkitLocationMismatch(plannerData, canonicalLocation);
+    const toolkitMismatch = isToolkitLocationMismatch(plannerData, canonicalLocation, locale);
     const isUpdatingExisting = !!guideData;
     const localizedPlaceName = getLocalizedPlaceName(canonicalLocation, locale) || canonicalLocation?.name || '';
     const loadingMessagesNew = t('place.planner.loading.new', { returnObjects: true });
@@ -178,11 +178,12 @@ const PlannerTab = ({
                     body: {
                         placeId: canonicalPlaceId,
                         canonicalPlaceId,
-                        locationName: placeName || canonicalLoc?.name || location?.name,
+                        locationName: localizedPlaceName || placeName || canonicalLoc?.name || location?.name,
                         lat: canonicalLoc?.lat ?? location?.lat,
                         lng: canonicalLoc?.lng ?? location?.lng,
                         country: canonicalLoc?.country ?? location?.country,
                         slug,
+                        locale,
                     },
                 });
 
@@ -197,7 +198,11 @@ const PlannerTab = ({
                 if (data?.success) {
                     console.log(`[PlannerTab] 업데이트 완료. 이벤트 발생 (forceUpdate: ${forceUpdate})`);
                     window.dispatchEvent(new CustomEvent('toolkit-updated', {
-                        detail: { placeId: canonicalPlaceId, essentialGuide: data.essentialGuide }
+                        detail: {
+                            placeId: canonicalPlaceId,
+                            essentialGuide: data.essentialGuide,
+                            locale: data.locale || locale,
+                        }
                     }));
                 } else {
                     console.error("[PlannerTab] 백엔드 응답 에러 (success: false):", data);
@@ -220,7 +225,7 @@ const PlannerTab = ({
         // 전역 캐시에 등록
         pendingToolkitRequests.set(canonicalPlaceId, requestPromise);
         return requestPromise;
-    }, [plannerData, location]);
+    }, [plannerData, location, locale, localizedPlaceName]);
 
     // 원격 업데이트 요청 이벤트 전송 (수동 직권 갱신 버튼 클릭 시)
     const handleRemoteUpdate = () => {

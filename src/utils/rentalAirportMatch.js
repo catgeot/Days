@@ -2,6 +2,8 @@ import { RENTAL_AIRPORT_HUBS, DEFAULT_HUB_RADIUS_KM } from './rentalAirportHubs.
 import { findNearestAirportInIndex, getAirportsIndexCoords } from './airportsIndexLookup.js';
 import { lookupGraphRouteByDestIata } from './flightRouteGraphLookup.js';
 import { resolveTravelSpotForUiPlaceRegion } from './travelSpotResolve.js';
+import { getLocalizedPlaceName } from '../components/PlaceCard/common/locationDisplay.js';
+import { i18n } from '../i18n/config.js';
 import travelSpotAirportsData from '../pages/Home/data/travelSpotAirports.json' with { type: 'json' };
 
 const toRad = (d) => (d * Math.PI) / 180;
@@ -480,6 +482,36 @@ function hubByIata(iata) {
   return RENTAL_AIRPORT_HUBS.find((h) => h.iata === iata) || null;
 }
 
+function titleCaseLatinAlias(value) {
+  return String(value ?? '')
+    .trim()
+    .replace(/\b[a-z]/g, (c) => c.toUpperCase());
+}
+
+/**
+ * 렌터카·픽업 배너 표시용 공항명 — ko는 hub.officialKo, en은 라틴 alias 또는 IATA.
+ *
+ * @param {string | null | undefined} iata
+ * @param {string} [locale]
+ * @returns {string}
+ */
+export function getRentalAirportDisplayName(iata, locale = i18n.language) {
+  const code = String(iata ?? '').trim().toUpperCase();
+  if (!code) return '';
+  const hub = hubByIata(code);
+  if (!hub) return code;
+  const lang = String(locale || 'ko').toLowerCase();
+  if (lang.startsWith('ko')) return hub.officialKo;
+  const latinAlias = hub.aliases?.find(
+    (alias) =>
+      /^[a-zA-Z][a-zA-Z0-9\s\-'.]*$/.test(alias) &&
+      alias.length > 2 &&
+      alias.toUpperCase() !== code,
+  );
+  if (latinAlias) return titleCaseLatinAlias(latinAlias);
+  return code;
+}
+
 /** `journey_timeline` 제목 등에서 도착·경유 맥락이 있을 때만 IATA 추출에 쓰는 힌트 */
 const ARRIVAL_TIMELINE_HINT =
   /공항|도착|입국|경유|환승|국내선|domestic|airport|arrival|immigration|terminal|터미널|비행기|비행\b|탑승|->|→/i;
@@ -739,9 +771,6 @@ export function extractFlightRouteHubIatasFromEssentialGuide(guide, options = {}
   return hubs.length ? hubs.slice(0, 3) : null;
 }
 
-const PLANNER_SOURCED_RENTAL_BANNER_NOTE =
-  '도착 공항은 이 툴킷 AI가 정리한 여정·항공 안내와 맞추었습니다. 실제 티켓과 다르면 도착 공항 코드를 기준으로 바꿔 주세요.';
-
 /** hub 좌표 우선 · 없으면 airportsIndex — 배너 거리 필터용 */
 function airportCoordsForBanner(iata) {
   const hub = hubByIata(iata);
@@ -832,7 +861,7 @@ function resolveRentalPickupBannerFromPlannerIatas(location, iataCodes) {
     kind: 'multi',
     airports: [linkHub, ...others],
     linkHub,
-    bannerNote: PLANNER_SOURCED_RENTAL_BANNER_NOTE,
+    plannerSourcedNote: true,
     fromPlanner: true
   };
 }
@@ -972,8 +1001,13 @@ function formatFlightHintIataCodes(iatas) {
   const codes = iatas.filter(Boolean);
   if (codes.length === 0) return null;
   if (codes.length === 1) return codes[0];
-  if (codes.length === 2) return `${codes[0]} 또는 ${codes[1]}`;
-  return `${codes.slice(0, -1).join(', ')} 또는 ${codes[codes.length - 1]}`;
+  if (codes.length === 2) {
+    return i18n.t('place.planner.flightHint.codesOr', { first: codes[0], second: codes[1] });
+  }
+  return i18n.t('place.planner.flightHint.codesList', {
+    list: codes.slice(0, -1).join(', '),
+    last: codes[codes.length - 1],
+  });
 }
 
 function resolveTripFlightArrivalIataFromStaticRow(location, options = {}) {
@@ -1180,21 +1214,22 @@ export function getFlightRouteWaypoints(location, options = {}) {
  */
 export function getFlightDestinationSearchHint(location, options = {}) {
   const place =
-    location && typeof location.name === 'string' && location.name.trim() ? location.name.trim() : '이 여행지';
+    getLocalizedPlaceName(location, i18n.language) ||
+    i18n.t('place.planner.flightHint.placeFallback');
   const label = flightHintPlaceLabel(place);
   const flightOverride = resolveTripFlightArrivalIataFromStaticRow(location, options);
   const codes = flightOverride ? [flightOverride] : resolveSearchHintIataCodes(location, options);
 
   if (!codes?.length) {
-    return '정확한 항공권 검색을 위해 도착 공항 3자리 코드(IATA)를 입력해 주세요.';
+    return i18n.t('place.planner.flightHint.noCodes');
   }
 
   const formatted = formatFlightHintIataCodes(codes);
   if (formatted) {
-    return `정확한 항공권 검색을 위해 ${label} 도착 공항 코드(${formatted})를 입력해 주세요.`;
+    return i18n.t('place.planner.flightHint.withCodes', { place: label, codes: formatted });
   }
 
-  return `정확한 항공권 검색을 위해 ${label} 도착 공항 3자리 코드(IATA)를 입력해 주세요.`;
+  return i18n.t('place.planner.flightHint.withCodesGeneric', { place: label });
 }
 
 /**
@@ -1217,7 +1252,7 @@ function resolveKlookRentalHomeSearchLabel(location, options = {}) {
 
   if (row?.klookRentalSearchMode === 'airport') {
     const hub = resolveRentalAirport(location);
-    if (hub?.officialKo) return hub.officialKo;
+    if (hub?.iata) return getRentalAirportDisplayName(hub.iata, i18n.language);
   }
 
   return null;
@@ -1233,17 +1268,17 @@ function resolveKlookRentalHomeSearchLabel(location, options = {}) {
 export function getRentalCarHomeSearchSubtext(location, options = {}) {
   const label = resolveKlookRentalHomeSearchLabel(location, options);
   if (label) {
-    return `렌터카 검색 시 ${label}(으)로 검색해 주세요.`;
+    return i18n.t('place.planner.rentalHomeSubtext.searchAs', { label });
   }
 
   const codes = resolveSearchHintIataCodes(location, options);
   if (!codes?.length) {
-    return '렌터카 검색 시 세자리 공항 코드(예: PDL)로 입력해 주세요.';
+    return i18n.t('place.planner.rentalHomeSubtext.enterCode');
   }
   if (codes.length === 1) {
-    return `렌터카 검색 시 세자리 공항 코드(${codes[0]})로 입력해 주세요.`;
+    return i18n.t('place.planner.rentalHomeSubtext.singleCode', { code: codes[0] });
   }
-  return `렌터카 검색 시 세자리 공항 코드(${codes.join(', ')}) 중 하나로 입력해 주세요.`;
+  return i18n.t('place.planner.rentalHomeSubtext.multiCode', { codes: codes.join(', ') });
 }
 
 /**
@@ -1258,9 +1293,11 @@ export function getRentalCarHomeSearchHintShort(location, options = {}) {
   if (label) return label;
 
   const codes = resolveSearchHintIataCodes(location, options);
-  if (!codes?.length) return '공항 코드 입력';
-  if (codes.length === 1) return `코드 ${codes[0]}`;
-  return `코드 ${codes.slice(0, 2).join('·')}`;
+  if (!codes?.length) return i18n.t('place.planner.rentalHint.enterCode');
+  if (codes.length === 1) {
+    return i18n.t('place.planner.rentalHint.singleCode', { code: codes[0] });
+  }
+  return i18n.t('place.planner.rentalHint.multiCode', { codes: codes.slice(0, 2).join('·') });
 }
 
 /**
@@ -1291,11 +1328,12 @@ export function resolveKlookRentalBannerSearchLabel(location, options = {}) {
         : info?.kind === 'single'
           ? { officialKo: info.officialKo }
           : resolveRentalAirport(location);
-    if (hub?.officialKo) return hub.officialKo;
+    if (hub?.iata) return getRentalAirportDisplayName(hub.iata, i18n.language);
   }
 
   const name = typeof location.name === 'string' ? location.name.trim() : '';
   const nameEn = typeof location.name_en === 'string' ? location.name_en.trim() : '';
+  if (i18n.language?.startsWith?.('en')) return nameEn || name;
   return name || nameEn;
 }
 
@@ -1309,17 +1347,17 @@ export function resolveKlookRentalBannerSearchLabel(location, options = {}) {
 export function getRentalCarTimelineActionDescription(location, options = {}) {
   const label = resolveKlookRentalHomeSearchLabel(location, options);
   if (label) {
-    return `${label}(으)로 검색해 주세요`;
+    return i18n.t('place.planner.rentalHint.searchAs', { label });
   }
 
   const codes = resolveSearchHintIataCodes(location, options);
   if (!codes?.length) {
-    return '세자리 공항코드를 입력해 주세요';
+    return i18n.t('place.planner.rentalHint.enterCode');
   }
   if (codes.length === 1) {
-    return `세자리 공항코드(${codes[0]})를 입력해 주세요`;
+    return i18n.t('place.planner.rentalHint.singleCode', { code: codes[0] });
   }
-  return `세자리 공항코드(${codes.join(', ')})를 입력해 주세요`;
+  return i18n.t('place.planner.rentalHint.multiCode', { codes: codes.join(', ') });
 }
 
 /**

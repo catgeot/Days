@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { get12GoHomeUrl } from '../../../../../utils/affiliate';
 import {
   getPartnerLinkRel,
@@ -13,24 +14,26 @@ import {
 const TwelveGoSearchWidget = ({
   slug,
   targetUrl,
-  routeLabel = '페리·교통 검색',
+  routeLabel,
   className = '',
   variant = 'default',
   showRouteLabel = true,
   showPoweredBy = true,
 }) => {
+  const { t } = useTranslation();
   const linkTarget = getPartnerLinkTarget();
   const linkRel = getPartnerLinkRel(linkTarget);
   const poweredHref = get12GoHomeUrl({
     subId: slug ? `${slug}-12go-widget` : 'gateo-12go-widget',
   });
   const isCompact = variant === 'compact';
+  const resolvedRouteLabel = routeLabel ?? t('place.planner.banners.twelveGo.routeLabel');
 
   if (!targetUrl) return null;
 
   const ariaLabel = showRouteLabel
-    ? `12Go ${routeLabel} 검색`
-    : '12Go 페리·쾌속선 티켓 검색';
+    ? t('place.planner.banners.twelveGo.ariaWithLabel', { label: resolvedRouteLabel })
+    : t('place.planner.banners.twelveGo.ariaGeneric');
 
   return (
     <div className={className}>
@@ -50,11 +53,11 @@ const TwelveGoSearchWidget = ({
             </p>
             {showRouteLabel && (
               <p className={`font-bold text-gray-900 break-keep ${isCompact ? 'mt-0.5 text-xs' : 'mt-1 text-sm'}`}>
-                {routeLabel}
+                {resolvedRouteLabel}
               </p>
             )}
             <p className={`text-gray-600 break-keep ${showRouteLabel ? 'mt-0.5 text-xs' : 'mt-0.5 text-[11px]'}`}>
-              페리·쾌속선 시간표 · 티켓 검색
+              {t('place.planner.banners.twelveGo.subtitle')}
             </p>
           </div>
           <span
@@ -63,7 +66,7 @@ const TwelveGoSearchWidget = ({
             }`}
           >
             <Search size={isCompact ? 12 : 14} />
-            티켓 찾기
+            {t('place.planner.banners.twelveGo.findTickets')}
           </span>
         </div>
       </a>

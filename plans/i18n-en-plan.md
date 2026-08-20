@@ -30,10 +30,12 @@
 | 18 | 무니 UI·칩 | `영문화 #18, 무니 UI·칩` | ✅ Preview |
 | 19 | 무니 프롬프트·대화 | `영문화 #19, 무니 프롬프트·대화 EN` | ✅ Preview |
 | 20 | 무니 인트로·탐지 | `영문화 #20, 무니 인트로·탐지` | ✅ Preview |
-| 21 | 플래너 배너·UI | `영문화 #21, 플래너 배너·UI EN` | 다음 |
-| 22 | 플래너 AI 본문 | `영문화 #22, 플래너 AI 본문 EN` | |
+| 21 | 플래너 배너·UI | `영문화 #21, 플래너 배너·UI EN` | ✅ Preview |
+| 22 | 플래너 AI 본문 | `영문화 #22, 플래너 AI 본문 EN` | ✅ Preview |
+| 23 | 브라우저 locale | `영문화 #23, 브라우저 locale 자동` | ✅ Preview |
+| 24 | PROD QA | `영문화 #24, PROD QA — 브라우저 locale` | ⏳ 사람 |
 
-**1차 (#0~#12)**: UI 카피 · **2차 (#13~#22)**: 지구본 데이터 · TourAPI 본문 · 무니 · 플래너 AI·배너.
+**1차 (#0~#12)**: UI 카피 · **2차 (#13~#22)**: 지구본 데이터 · TourAPI 본문 · 무니 · 플래너 AI·배너 · **#23**: 첫 방문 브라우저 언어 → locale.
 
 세션마다 `#1` 리셋 금지 · `#N` = Cloud 순번.
 
@@ -111,19 +113,51 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#20)**: Preview QA **PASS** · PR [#136](https://github.com/catgeot/Days/pull/136) → **main 병합** (사람 PROD QA)
+**상태 (#24)**: #23 Preview PASS · **PROD QA** (시크릿 EN 브라우저·`/korea` 축제 Chrome 번역)
 
-**브랜치**: `cursor/en` · `/qa/en` · **#21 착수**(PROD QA 후)
+**브랜치**: `cursor/en` · PR [#138](https://github.com/catgeot/Days/pull/138) · tip `be20b6c7`
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #21, PROD QA — #15~#20
+영문화 #25, main 병합 — #21~#23
 @plans/feature-handoff-index.md
-@plans/2026-08-19-project-log.md
+@plans/2026-08-20-project-log.md
 @plans/i18n-en-plan.md
-main · /qa/en · ?lang=en MOONi·Trip.com EN
-금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
+cursor/en · PR #138 · PROD QA OK 후 merge
+```
+
+### #23 브라우저 locale 자동 — 완료
+
+| | |
+|--|--|
+| **목표** | `gateo.locale`·`?lang=` 없는 **첫 방문**에 `navigator.languages`로 ko/en 선택 |
+| **규칙** | `ko*` 포함 → **ko** (재외 한국인) · 그 외(en·ja·zh…) → **en** |
+| **우선순위** | ① `?lang=` ② `localStorage` `gateo.locale` ③ `inferLocaleFromBrowserLanguages` ④ `ko` |
+| **헬퍼** | [`src/i18n/browserLocaleHint.js`](../src/i18n/browserLocaleHint.js) — `resolveInitialLocale` |
+| **스모크** | `npm run smoke:browser-locale-hint` |
+| **연동 파일** | [`LocaleProvider.jsx`](../src/i18n/LocaleProvider.jsx) · [`config.js`](../src/i18n/config.js) `resolveBootLocale` |
+| **금지** | Google Translate · IP geolocation · 저장된 locale 덮어쓰기 |
+
+**LocaleProvider 변경 요지**:
+
+1. `readStoredLocale()` → 키 **없으면 `null`** 반환 (지금은 무조건 `ko` — 구분 불가)
+2. 초기 state: `urlLang ?? stored ?? resolveInitialLocale({ languages })`
+3. 자동 `en`이면 `setLocale('en')`과 동일하게 `?lang=en`·storage persist (헤더 토글과 일치)
+4. EN/KO 토글 UI 유지 — 사용자 선택이 항상 최우선
+
+**사람 QA**: 시크릿 창 · Chrome 언어 `English` → `/` EN UI · 언어 목록에 `한국어` 추가 → KO · `?lang=en` URL 우선
+
+---
+
+### #22 완료 요약
+
+**상태**: Preview push · `essential_guide_en` · Edge `locale=en` · ko 폴백 · #21 보완(A+B)
+
+**다음 제시어 (대체 — #23로 이관)**:
+
+```
+영문화 #22, PROD QA — #21~#22
 ```
 
 ### #16·#17 롤백(A) — 사람 합의
