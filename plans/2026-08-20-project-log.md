@@ -109,6 +109,25 @@ main · www.gateo.kr · 써머리 Find stays/tours · /explore EN
 cursor/en · GlobeStayStrip · SearchDiscoveryModal · audit:i18n
 ```
 
+## 영문화 #30, P0-A 숙소·탐색 패널 EN — Preview push
+
+- **범위** `GlobeStayStrip` 펼친 패널 · `stayDateControls` · Trip empty/error · stayAgency · `SearchDiscoveryModal` 큐레이션 SSOT 분리
+- **키** `home.stayStrip.*` · `home.stayDate.*` · `home.tripcomStay.*` · `home.stayAgency.*`
+- **debt** GlobeStayStrip 42→0 · SearchDiscoveryModal 20→0 · stayDateControls 10→0 · P0 합계 152→80
+- **VERIFY** `audit:i18n` · `build` · `smoke:browser-locale-hint` · `smoke:place-label-slug` · `smoke:essential-guide-locale` PASS
+- **브랜치** `cursor/en` · `/qa/en` · `?lang=en` — PlaceCard Find stays 펼침 · 탐색 모달
+- **다음** #31 P0-A 잔여 — GlobeTourStrip · SearchSuggestionList
+
+**다음 제시어**:
+
+```
+영문화 #31, P0-A 잔여·투어 패널 EN
+@plans/feature-handoff-index.md
+@plans/2026-08-20-project-log.md
+@plans/i18n-en-plan.md
+cursor/en · GlobeTourStrip · SearchSuggestionList · audit:i18n
+```
+
 ## 영문화 #26, PROD QA — 써머리·탐색 EN 보완
 
 - **범위** PlaceCard 써머리「숙소 찾기」「투어 찾기」·검색바 탐색(`/explore`) UI EN

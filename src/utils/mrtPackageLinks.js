@@ -11,6 +11,7 @@ import {
   resolveMrtPackageSearchKeyword,
   resolveMrtPackageThemeKey,
 } from './mrtPackageQuery.js';
+import { i18n } from '../i18n/config.js';
 
 function withMylink(targetUrl, options = {}) {
   if (!targetUrl) return '';
@@ -118,5 +119,7 @@ export function resolveMrtPackageThemeForLocation(location, options = {}) {
 /** 숙소·투어 모달 CTA 문구 — 예: `더블린 패키지 상품보기` */
 export function formatMrtPackageProductCtaLabel(keyword) {
   const k = String(keyword ?? '').trim();
-  return k ? `${k} 패키지 상품보기` : '패키지 상품보기';
+  return k
+    ? i18n.t('home.stayStrip.packageCta', { keyword: k })
+    : i18n.t('home.stayStrip.packageCtaDefault');
 }

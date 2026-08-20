@@ -50,8 +50,8 @@ import {
   getTripcomHotelErrorCopy,
 } from '../../../utils/affiliate';
 import {
-  STAY_AGENCY_DISCLAIMER,
   getStayAgencyKindLabel,
+  getStayAgencyDisclaimer,
   resolveStayAgencyProfile,
   withStayAgencyReferral,
 } from '../../../utils/stayAgencyLinks';
@@ -78,12 +78,14 @@ const LG_MQ = '(min-width: 1024px)';
 /** 목록 URL을 못 만들 때만 — 마이리얼트립 제휴 홈 */
 const MRT_AFFILIATE_HOME_URL = MRT_PACKAGE_SHORT_URLS.home;
 
-const STAY_SORT_OPTIONS = [
-  { id: 'recommended', label: '추천순' },
-  { id: 'price_asc', label: '낮은 가격순' },
-  { id: 'price_desc', label: '높은 가격순' },
-  { id: 'rating_desc', label: '평점 높은순' },
-];
+function getStaySortOptions(t) {
+  return [
+    { id: 'recommended', label: t('home.stayStrip.sort.recommended') },
+    { id: 'price_asc', label: t('home.stayStrip.sort.priceAsc') },
+    { id: 'price_desc', label: t('home.stayStrip.sort.priceDesc') },
+    { id: 'rating_desc', label: t('home.stayStrip.sort.ratingDesc') },
+  ];
+}
 
 /** 모바일 목록 열 수 — 기본 2열, 1열은 확대 */
 const MOBILE_GRID_IMAGE = {
@@ -157,6 +159,7 @@ function StayPanelHeader({
   /** mobile fullscreen uses larger close + safe-area */
   density = 'desktop',
 }) {
+  const { t } = useTranslation();
   const title = String(placeName || '').trim();
   const mobile = density === 'mobile';
   return (
@@ -187,19 +190,19 @@ function StayPanelHeader({
                 mobile ? 'text-sm' : 'text-[15px]'
               }`}
             >
-              {title || (mobile ? '근처 숙소' : '숙소')}
+              {title || (mobile ? t('home.stayStrip.panelTitleNearby') : t('home.stayStrip.panelTitle'))}
             </p>
           </div>
           {mobile && loading ? (
             <p className="truncate text-xs font-semibold text-amber-100/75">
-              불러오는 중…
+              {t('home.stayStrip.loading')}
             </p>
           ) : null}
         </div>
         {onClose ? (
           <button
             type="button"
-            aria-label="숙소 목록 닫기"
+            aria-label={t('home.stayStrip.closeListAria')}
             onClick={(e) => {
               e.stopPropagation();
               onClose();
@@ -216,9 +219,11 @@ function StayPanelHeader({
   );
 }
 
-function formatPrice(n) {
+function formatPrice(n, t, language) {
   if (n == null || !Number.isFinite(Number(n)) || Number(n) <= 0) return null;
-  return `${Number(n).toLocaleString('ko-KR')}원~`;
+  const num = Number(n);
+  const formatted = num.toLocaleString(language?.startsWith('en') ? 'en-US' : 'ko-KR');
+  return t('home.stayStrip.priceFrom', { price: formatted });
 }
 
 /**
@@ -240,6 +245,7 @@ function StayDateBar({
   /** PC만 — Trip 항공+호텔 보조 CTA (모바일·항공 경로 없으면 null) */
   flightCta = null,
 }) {
+  const { t } = useTranslation();
   const isLg = useIsLg();
   const rootRef = useRef(null);
   const [open, setOpen] = useState(false);
@@ -323,7 +329,7 @@ function StayDateBar({
           {showClose && !embedInPanel ? (
             <button
               type="button"
-              aria-label="숙소 목록 닫기"
+              aria-label={t('home.stayStrip.closeListAria')}
               onClick={(e) => {
                 e.stopPropagation();
                 onClose?.();
@@ -339,7 +345,7 @@ function StayDateBar({
         type="button"
         aria-expanded={open}
         aria-haspopup="dialog"
-        aria-label="체크인·체크아웃 날짜 선택"
+        aria-label={t('home.stayStrip.checkInOutAria')}
         onClick={(e) => {
           e.stopPropagation();
           setOpen((v) => !v);
@@ -356,19 +362,19 @@ function StayDateBar({
           aria-hidden="true"
         />
         <span className="flex min-w-0 flex-1 items-center justify-center gap-1">
-          <span className="shrink-0 text-[11px] font-semibold text-amber-100/80">체크인</span>
+          <span className="shrink-0 text-[11px] font-semibold text-amber-100/80">{t('home.stayStrip.checkIn')}</span>
           <span className="truncate text-sm font-bold tabular-nums text-amber-50">
             {formatStayDateLabel(draftIn)}
           </span>
         </span>
         <span
           className="shrink-0 rounded-md bg-amber-400/20 px-1.5 py-0.5 text-xs font-bold tabular-nums text-amber-100"
-          aria-label={draftNights > 0 ? `${draftNights}박` : '일정'}
+          aria-label={draftNights > 0 ? t('home.stayStrip.nights', { count: draftNights }) : t('home.stayStrip.schedule')}
         >
-          {draftNights > 0 ? `${draftNights}박` : '·'}
+          {draftNights > 0 ? t('home.stayStrip.nights', { count: draftNights }) : '·'}
         </span>
         <span className="flex min-w-0 flex-1 items-center justify-center gap-1">
-          <span className="shrink-0 text-[11px] font-semibold text-amber-100/80">체크아웃</span>
+          <span className="shrink-0 text-[11px] font-semibold text-amber-100/80">{t('home.stayStrip.checkOut')}</span>
           <span className="truncate text-sm font-bold tabular-nums text-amber-50">
             {formatStayDateLabel(draftOut)}
           </span>
@@ -377,14 +383,14 @@ function StayDateBar({
       <div className="mt-1.5 flex flex-wrap items-center gap-1.5 border-t border-white/10 pt-1.5">
         <Users size={12} className="shrink-0 text-amber-200/75" aria-hidden="true" />
         <GuestStepper
-          label="성인"
+          label={t('home.stayStrip.adult')}
           value={draftAdult}
           min={1}
           max={8}
           onChange={setDraftAdult}
         />
         <GuestStepper
-          label="아동"
+          label={t('home.stayStrip.child')}
           value={draftChild}
           min={0}
           max={8}
@@ -409,7 +415,7 @@ function StayDateBar({
               : 'cursor-not-allowed border-white/10 bg-white/5 text-white/35'
           }`}
         >
-          변경하기
+          {t('home.stayStrip.apply')}
         </button>
         {showFlightCta ? (
           <span
@@ -429,16 +435,16 @@ function StayDateBar({
               customTrigger={
                 <button
                   type="button"
-                  aria-label="항공권과 호텔을 함께 예약하세요"
+                  aria-label={t('home.stayStrip.flightHotelAria')}
                   className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-sky-300/50 bg-sky-500/25 px-2.5 py-1 text-[11px] font-bold text-sky-50 transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-[0.98]"
                 >
                   <Plane size={13} className="shrink-0 opacity-90" aria-hidden="true" />
-                  <span className="break-keep">항공권과 호텔을 함께 예약하세요</span>
+                  <span className="break-keep">{t('home.stayStrip.flightHotelCta')}</span>
                 </button>
               }
             />
             <span className="min-w-0 text-[11px] font-semibold leading-snug text-sky-50/95 break-keep">
-              숙소 일정은 도착일에 맞춰 조정하세요
+              {t('home.stayStrip.flightHotelHint')}
             </span>
           </span>
         ) : null}
@@ -470,6 +476,7 @@ function StayCard({
   /** PC 확장 목록용 — 이미지·타이포 한 단계 확대 */
   size = 'md',
 }) {
+  const { t, i18n } = useTranslation();
   const large = size === 'lg';
   const productHref = item.productUrl
     ? buildMrtMylinkUrl(item.productUrl)
@@ -538,7 +545,7 @@ function StayCard({
                 large ? 'text-xs' : 'text-[10px]'
               }`}
             >
-              일정 조정 후 예약
+              {t('home.stayStrip.bookAfterAdjust')}
             </span>
           ) : null}
         </div>
@@ -548,6 +555,7 @@ function StayCard({
 }
 
 function StayGridDensityToggle({ variant, value, onChange, className = '', activeClassName = '' }) {
+  const { t } = useTranslation();
   const isZoomed =
     variant === 'desktop' ? value === 'zoom' : value === 1;
   const nextValue =
@@ -558,7 +566,7 @@ function StayGridDensityToggle({ variant, value, onChange, className = '', activ
       : isZoomed
         ? 2
         : 1;
-  const label = isZoomed ? '기본 그리드로' : '확대해서 보기';
+  const label = isZoomed ? t('home.stayStrip.gridDefault') : t('home.stayStrip.gridZoom');
 
   return (
     <button
@@ -588,6 +596,7 @@ function StayListToolbar({
   densityValue,
   onDensityChange,
 }) {
+  const { t } = useTranslation();
   const href = listUrl || MRT_AFFILIATE_HOME_URL;
   const ctrl =
     'rounded-lg border border-amber-200/55 bg-amber-500/15 text-amber-50/95 transition-colors hover:border-amber-100/75 hover:bg-amber-500/28 hover:text-amber-50';
@@ -599,7 +608,7 @@ function StayListToolbar({
       <div className="flex min-w-0 flex-wrap items-center gap-1.5">
         {count ? (
           <p className="shrink-0 text-xs font-semibold tabular-nums text-amber-100/80">
-            {count}곳
+            {t('home.stayStrip.countPlaces', { count })}
           </p>
         ) : null}
         <a
@@ -609,7 +618,7 @@ function StayListToolbar({
           onClick={(e) => e.stopPropagation()}
           className={`inline-flex shrink-0 items-center px-2.5 py-1 text-[11px] font-semibold active:scale-[0.98] ${ctrl}`}
         >
-          마이리얼트립에서 보기
+          {t('home.stayStrip.viewOnMrt')}
         </a>
       </div>
       <div className="flex shrink-0 flex-wrap items-center gap-1.5">
@@ -621,7 +630,7 @@ function StayListToolbar({
           activeClassName={ctrlOn}
         />
         <label className="relative flex shrink-0 items-center">
-          <span className="sr-only">숙소 정렬</span>
+          <span className="sr-only">{t('home.stayStrip.sortAria')}</span>
           <ArrowUpDown
             size={11}
             className="pointer-events-none absolute left-1.5 text-amber-100/75"
@@ -636,7 +645,7 @@ function StayListToolbar({
             }}
             className={`appearance-none py-1 pl-5 pr-5 text-[11px] font-semibold outline-none focus:border-amber-100/80 ${ctrl}`}
           >
-            {STAY_SORT_OPTIONS.map((opt) => (
+            {getStaySortOptions(t).map((opt) => (
               <option key={opt.id} value={opt.id} className="bg-zinc-900 text-white">
                 {opt.label}
               </option>
@@ -656,6 +665,7 @@ function StayAgencyGuideLinks({
   compact = false,
   className = '',
 }) {
+  const { t } = useTranslation();
   if (!profile?.links?.length) return null;
   const titleClass = compact
     ? 'break-keep text-[11px] font-semibold tracking-wide text-slate-100/90'
@@ -668,7 +678,7 @@ function StayAgencyGuideLinks({
     <div
       className={`flex w-full max-w-sm flex-col items-stretch gap-2.5 lg:max-w-md ${className}`.trim()}
     >
-      <p className={`${titleClass} text-center`}>공식·인가 안내</p>
+      <p className={`${titleClass} text-center`}>{t('home.stayStrip.officialGuide')}</p>
       <div className="flex w-full flex-col gap-2">
         {profile.links.map((link) => {
           const kindLabel = getStayAgencyKindLabel(link.kind);
@@ -704,7 +714,7 @@ function StayAgencyGuideLinks({
         })}
       </div>
       <p className="break-keep text-center text-[10px] font-medium leading-relaxed text-white/50">
-        {STAY_AGENCY_DISCLAIMER}
+        {getStayAgencyDisclaimer()}
       </p>
     </div>
   );
@@ -717,11 +727,12 @@ function StayAgencyAlwaysFooter({
   linkRel,
   compact = false,
 }) {
+  const { t } = useTranslation();
   if (!profile?.alwaysShow || !profile?.links?.length) return null;
   return (
     <div className="mt-4 flex flex-col items-center gap-2.5 rounded-xl border border-white/15 bg-white/5 px-3 py-3.5 text-center">
       <p className="break-keep text-[11px] font-medium leading-relaxed text-white/70 lg:text-[12px]">
-        이 지역은 온라인 정보가 적어요. 공식 관광 안내도 함께 확인해 보세요
+        {t('home.stayStrip.sparseInfoNote')}
       </p>
       <StayAgencyGuideLinks
         profile={profile}
@@ -735,6 +746,7 @@ function StayAgencyAlwaysFooter({
 
 /** 목록 스크롤 끝 — 마이리얼트립 사이트(보조 CTA · 앱 내 더보기와 구분) */
 function StayMrtMoreFooter({ href, compact = false }) {
+  const { t } = useTranslation();
   if (!href) return null;
   return (
     <div className="mt-6 flex w-full flex-col items-center pt-1">
@@ -749,7 +761,7 @@ function StayMrtMoreFooter({ href, compact = false }) {
             : 'inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[13px] font-semibold text-amber-100/75 underline-offset-2 transition-colors hover:text-amber-50 hover:underline'
         }
       >
-        <span>마이리얼트립에서 더 보기</span>
+        <span>{t('home.stayStrip.viewMoreOnMrt')}</span>
         <ExternalLink size={compact ? 12 : 13} className="shrink-0 opacity-70" aria-hidden />
       </a>
     </div>
@@ -758,6 +770,7 @@ function StayMrtMoreFooter({ href, compact = false }) {
 
 /** 숙소 → 투어 모달 전환 (인라인 목록 없음) */
 function StaySwitchToTourFooter({ onSwitch, compact = false }) {
+  const { t } = useTranslation();
   if (typeof onSwitch !== 'function') return null;
   return (
     <button
@@ -773,7 +786,7 @@ function StaySwitchToTourFooter({ onSwitch, compact = false }) {
       }`}
     >
       <Ticket size={compact ? 15 : 16} className="shrink-0 text-orange-200/90" strokeWidth={2.25} aria-hidden />
-      <span className="break-keep">주변 즐길거리를 탐색해 보세요</span>
+      <span className="break-keep">{t('home.stayStrip.switchToTour')}</span>
     </button>
   );
 }
@@ -837,6 +850,7 @@ function StayLowInventoryFooter({
   /** API 목록 중 요금 없는 건이 더 있으면 일정 변경 안내 */
   moreWithDateChange = false,
 }) {
+  const { t } = useTranslation();
   if (!href && !agencyProfile?.links?.length) return null;
   const hasAgency = Boolean(agencyProfile?.links?.length);
   return (
@@ -852,27 +866,27 @@ function StayLowInventoryFooter({
         {moreWithDateChange ? (
           <>
             <span className="block lg:inline">
-              이 일정에 바로 예약할 수 있는 숙소가 적어요.
+              {t('home.stayStrip.lowInventoryFewBookable')}
             </span>
             <span className="mt-0.5 block lg:mt-0 lg:inline">
               <span className="hidden lg:inline"> </span>
-              일정 조정이 필요한 숙소도 함께 보여 드려요
+              {t('home.stayStrip.lowInventoryFlexibleShown')}
             </span>
           </>
         ) : hasAgency ? (
           <>
-            <span className="block lg:inline">이 지역은 마이리얼트립 재고가 적어요.</span>
+            <span className="block lg:inline">{t('home.stayStrip.lowInventoryMrtLow')}</span>
             <span className="mt-0.5 block lg:mt-0 lg:inline">
               <span className="hidden lg:inline"> </span>
-              공식·전문 안내와 트립닷컴을 함께 확인해 보세요
+              {t('home.stayStrip.lowInventoryAgencyTrip')}
             </span>
           </>
         ) : (
           <>
-            <span className="block lg:inline">이 지역은 마이리얼트립 재고가 적어요.</span>
+            <span className="block lg:inline">{t('home.stayStrip.lowInventoryMrtLow')}</span>
             <span className="mt-0.5 block lg:mt-0 lg:inline">
               <span className="hidden lg:inline"> </span>
-              트립닷컴도 함께 확인해 보세요
+              {t('home.stayStrip.lowInventoryTripOnly')}
             </span>
           </>
         )}
@@ -892,7 +906,7 @@ function StayLowInventoryFooter({
           }`}
         >
           {hasAgency ? (
-            <p className="break-keep text-[10px] font-medium text-white/55">또는 숙소 OTA</p>
+            <p className="break-keep text-[10px] font-medium text-white/55">{t('home.stayStrip.orStayOta')}</p>
           ) : null}
           <a
             href={href}
@@ -901,7 +915,7 @@ function StayLowInventoryFooter({
             onClick={(e) => e.stopPropagation()}
             className={ctaClassName}
           >
-            <span>트립닷컴에서 더 찾아보기</span>
+            <span>{t('home.stayStrip.searchOnTripcom')}</span>
             {hasAgency ? (
               <ExternalLink size={13} className="shrink-0 opacity-80" aria-hidden />
             ) : null}
@@ -943,6 +957,7 @@ function StayCardsGrid({
   cardClassName = 'w-auto min-w-0',
   cardSize = 'md',
 }) {
+  const { t, i18n } = useTranslation();
   const ordered = orderStayItemsForDisplay(items, sortMode);
   const visible = ordered.slice(0, Math.max(0, visibleCount));
   const pricedInFull = ordered.some((row) => !row.dateFlexible);
@@ -957,20 +972,20 @@ function StayCardsGrid({
               <div className="rounded-xl border border-amber-300/35 bg-amber-500/15 px-3 py-2.5">
                 <p className="break-keep text-[12px] font-extrabold leading-snug tracking-tight text-amber-50 lg:text-[13px]">
                   {pricedInFull
-                    ? '일정 조정이 필요한 숙소'
-                    : '이 일정엔 바로 예약 가능한 숙소가 없어요'}
+                    ? t('home.stayStrip.flexibleSectionTitle')
+                    : t('home.stayStrip.noBookableTitle')}
                 </p>
                 <p className="mt-0.5 break-keep text-[11px] font-medium leading-snug text-amber-100/85 lg:text-[12px]">
                   {pricedInFull
-                    ? '아래 숙소는 체크인·체크아웃을 바꾸면 예약할 수 있어요'
-                    : '체크인·체크아웃을 바꾸면 아래 숙소를 예약할 수 있어요'}
+                    ? t('home.stayStrip.flexibleSectionHint')
+                    : t('home.stayStrip.flexibleOnlyHint')}
                 </p>
               </div>
             </div>
           ) : null}
           <StayCard
             item={item}
-            price={formatPrice(item.salePrice)}
+            price={formatPrice(item.salePrice, t, i18n.language)}
             dateFlexible={dateFlexible}
             className={cardClassName}
             imageClassName={imageClassName}
@@ -984,6 +999,7 @@ function StayCardsGrid({
 
 /** 메모리 목록(최대 50)을 PAGE_SIZE씩 더 펼침 — 외부 MRT 링크와 별개 */
 function StayListLoadMore({ remaining, onLoadMore, compact = false }) {
+  const { t } = useTranslation();
   if (!(remaining > 0) || typeof onLoadMore !== 'function') return null;
   const next = Math.min(MRT_STAY_PAGE_SIZE, remaining);
   return (
@@ -1000,7 +1016,7 @@ function StayListLoadMore({ remaining, onLoadMore, compact = false }) {
             : 'inline-flex h-9 items-center justify-center gap-1 rounded-full border border-amber-300/70 bg-amber-500 px-4 text-[12px] font-extrabold text-black shadow-[0_2px_12px_rgba(245,158,11,0.35)] transition-colors hover:bg-amber-400 active:scale-[0.98]'
         }
       >
-        <span>{next}곳 더 보기</span>
+        <span>{t('home.stayStrip.loadMore', { count: next })}</span>
         <ChevronDown size={compact ? 13 : 14} strokeWidth={2.5} className="shrink-0" aria-hidden />
       </button>
     </div>
@@ -1391,7 +1407,7 @@ export default function GlobeStayStrip({
       ? emptySubtitleBase
       : hasStayAgencyLinks
         ? stayAgencyProfile.note ||
-          '아래 공신력 있는 안내·여행사로 루트를 확인해 보세요'
+          t('home.stayStrip.emptyAgencyFallback')
         : emptySubtitleBase;
   const agencyLinkTarget = getPartnerLinkTarget();
   const agencyLinkRel = 'noopener noreferrer';
@@ -1429,7 +1445,7 @@ export default function GlobeStayStrip({
         }`}
       >
         {hasStayAgencyLinks ? (
-          <p className="break-keep text-[11px] font-medium text-white/55">또는 숙소 OTA</p>
+          <p className="break-keep text-[11px] font-medium text-white/55">{t('home.stayStrip.orStayOta')}</p>
         ) : null}
         <a
           href={tripcomEmptyUrl}
@@ -1470,7 +1486,7 @@ export default function GlobeStayStrip({
         }`}
       >
         {hasStayAgencyLinks ? (
-          <p className="break-keep text-[10px] font-medium text-white/55">또는 숙소 OTA</p>
+          <p className="break-keep text-[10px] font-medium text-white/55">{t('home.stayStrip.orStayOta')}</p>
         ) : null}
         <a
           href={tripcomEmptyUrl}
@@ -1588,8 +1604,8 @@ export default function GlobeStayStrip({
           aria-busy="true"
         >
           <Loader2 size={28} className="animate-spin text-amber-200/90" aria-hidden="true" />
-          <p className="text-sm font-medium text-white/70">숙소를 불러오는 중…</p>
-          <p className="text-xs text-white/40">잠시만 기다려 주세요</p>
+          <p className="text-sm font-medium text-white/70">{t('home.stayStrip.loadingStays')}</p>
+          <p className="text-xs text-white/40">{t('home.stayStrip.loadingWait')}</p>
         </div>
       ) : null}
       {status === 'empty' || status === 'error' ? emptyState : null}
@@ -1654,7 +1670,7 @@ export default function GlobeStayStrip({
           <div
             id="globe-stay-strip-panel"
             role="region"
-            aria-label="숙소 목록"
+            aria-label={t('home.stayStrip.listRegionAria')}
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
             className="fixed z-[61] left-0 top-0 bottom-0 right-[calc(2rem+400px+0.75rem)] xl:right-[calc(2rem+440px+0.75rem)] flex flex-col overflow-hidden border-2 border-amber-200/35 bg-black/85 shadow-[0_0_28px_rgba(251,191,36,0.16)] backdrop-blur-xl"
@@ -1667,7 +1683,7 @@ export default function GlobeStayStrip({
             {desktopPanelBody}
             <button
               type="button"
-              aria-label="맨 위로"
+              aria-label={t('home.stayStrip.scrollTopAria')}
               onClick={() => {
                 desktopListScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
               }}
@@ -1678,7 +1694,7 @@ export default function GlobeStayStrip({
               }`}
             >
               <ArrowUp size={16} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
-              <span className="text-xs font-bold">맨 위</span>
+              <span className="text-xs font-bold">{t('home.stayStrip.scrollTop')}</span>
             </button>
           </div>,
           document.body
@@ -1692,7 +1708,7 @@ export default function GlobeStayStrip({
             id="globe-stay-strip-panel"
             role="dialog"
             aria-modal="true"
-            aria-label="숙소 전체 목록"
+            aria-label={t('home.stayStrip.listFullscreenAria')}
             className="fixed inset-0 z-[80] flex flex-col bg-black/95"
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
@@ -1711,7 +1727,7 @@ export default function GlobeStayStrip({
               {status === 'loading' ? (
                 <div className="flex flex-col items-center justify-center gap-2 py-16 text-white/50">
                   <Loader2 size={22} className="animate-spin text-amber-200/80" />
-                  <p className="text-[12px]">숙소를 불러오는 중…</p>
+                  <p className="text-[12px]">{t('home.stayStrip.loadingStays')}</p>
                 </div>
               ) : null}
               {status === 'empty' || status === 'error' ? emptyStateMobile : null}
@@ -1779,7 +1795,7 @@ export default function GlobeStayStrip({
             </div>
             <button
               type="button"
-              aria-label="맨 위로"
+              aria-label={t('home.stayStrip.scrollTopAria')}
               onClick={() => {
                 mobileListScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
               }}
@@ -1790,7 +1806,7 @@ export default function GlobeStayStrip({
               }`}
             >
               <ArrowUp size={18} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
-              <span className="text-xs font-bold">맨 위</span>
+              <span className="text-xs font-bold">{t('home.stayStrip.scrollTop')}</span>
             </button>
           </div>,
           document.body

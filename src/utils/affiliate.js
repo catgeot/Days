@@ -633,24 +633,22 @@ export function getTripcomHotelEmptyCopy(location) {
   const slug = getLocationSlugKey(location);
   if (slug === 'persepolis') {
     return {
-      title: '보통 시라즈에 묵고 당일 투어로 다녀와요',
-      subtitle:
-        '다만 트립닷컴·마이리얼트립에서는 이란 숙소 예약이 거의 안 돼요. 이란 전문·현지 예약을 확인해 보세요',
-      cta: '트립닷컴에서 확인하기',
+      title: i18n.t('home.tripcomStay.empty.persepolis.title'),
+      subtitle: i18n.t('home.tripcomStay.empty.persepolis.subtitle'),
+      cta: i18n.t('home.tripcomStay.empty.persepolis.cta'),
     };
   }
   if (isTripcomHotelSparseInventoryLocation(location)) {
     return {
-      title: '이 지역은 온라인 숙소 예약이 거의 없어요',
-      subtitle:
-        '트립닷컴에도 재고가 없거나 예약이 어려울 수 있어요. 현지·전문 여행사를 확인해 보세요',
-      cta: '트립닷컴에서 확인하기',
+      title: i18n.t('home.tripcomStay.empty.sparse.title'),
+      subtitle: i18n.t('home.tripcomStay.empty.sparse.subtitle'),
+      cta: i18n.t('home.tripcomStay.empty.sparse.cta'),
     };
   }
   return {
-    title: '이 여행지 숙소를 마이리얼트립에서 찾지 못했어요',
-    subtitle: '위쪽 일정·인원을 바꾼 뒤 트립닷컴으로 검색해 보세요',
-    cta: '트립닷컴에서 숙소 검색',
+    title: i18n.t('home.tripcomStay.empty.default.title'),
+    subtitle: i18n.t('home.tripcomStay.empty.default.subtitle'),
+    cta: i18n.t('home.tripcomStay.empty.default.cta'),
   };
 }
 
@@ -662,9 +660,9 @@ export function getTripcomHotelEmptyCopy(location) {
  */
 export function getTripcomHotelErrorCopy() {
   return {
-    title: '숙소 검색을 잠시 불러오지 못했어요',
-    subtitle: '잠시 후에 다시 시도해 주세요. 트립닷컴에서 바로 검색할 수도 있어요',
-    cta: '트립닷컴에서 숙소 검색',
+    title: i18n.t('home.tripcomStay.error.title'),
+    subtitle: i18n.t('home.tripcomStay.error.subtitle'),
+    cta: i18n.t('home.tripcomStay.error.cta'),
   };
 }
 

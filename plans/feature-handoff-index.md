@@ -62,7 +62,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#29 audit:i18n baseline** · P0 23파일 · **#30 P0-A 패널 EN** |
+| **상태** | **#30 P0-A 완료** · hangul debt **80**줄(6파일) · **#31 P0-A 잔여** |
 | **main** | PR [#139](https://github.com/catgeot/Days/pull/139) 병합 `c15c3d54` · **#28 PROD QA** (배포 후 사람) |
 | **브랜치** | `cursor/en` (재사용) |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§11 |
@@ -70,16 +70,16 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 | **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` · `/qa/en` |
 | **VERIFY** | `audit:i18n` · `build` · `smoke:browser-locale-hint` · `smoke:festival-detail-locale` · `smoke:essential-guide-locale` · `smoke:place-label-slug` |
 
-**2차 순서**: ~~#13~#27~~ → **#28 PROD QA** → **#29 baseline** → **#30 P0-A** (GlobeStayStrip·탐색 패널)
+**2차 순서**: ~~#13~#30 P0-A~~ → **#31 P0-A 잔여** (GlobeTourStrip·SearchSuggestionList)
 
 **다음 제시어**:
 
 ```
-영문화 #30, P0-A 숙소·탐색 패널 EN
+영문화 #31, P0-A 잔여·투어 패널 EN
 @plans/feature-handoff-index.md
 @plans/2026-08-20-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · GlobeStayStrip · SearchDiscoveryModal · audit:i18n
+cursor/en · GlobeTourStrip · SearchSuggestionList · audit:i18n
 ```
 
 ---

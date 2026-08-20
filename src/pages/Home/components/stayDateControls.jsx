@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, Minus, Plus } from 'lucide-react';
+import { i18n } from '../../../i18n/config.js';
 import { normalizeMrtStayDates } from '../../../utils/fetchMrtStays';
 
 export const STAY_MAX_NIGHTS = 30;
-export const STAY_WEEKDAYS_KO = ['일', '월', '화', '수', '목', '금', '토'];
 
 function parseYmd(s) {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s || '').trim());
@@ -29,12 +30,15 @@ function addDaysYmd(ymd, days) {
 /** YYYY-MM-DD → 2026.7.20 */
 export function formatStayDateLabel(ymd) {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(ymd || '').trim());
-  if (!m) return ymd || '날짜 선택';
+  if (!m) return ymd || i18n.t('home.stayDate.pickDate');
   return `${Number(m[1])}.${Number(m[2])}.${Number(m[3])}`;
 }
 
-function monthTitle(viewMonth) {
-  return `${viewMonth.getFullYear()}년 ${viewMonth.getMonth() + 1}월`;
+function formatMonthTitle(viewMonth, t) {
+  return t('home.stayDate.monthTitle', {
+    year: viewMonth.getFullYear(),
+    month: viewMonth.getMonth() + 1,
+  });
 }
 
 function buildMonthCells(viewMonth) {
@@ -78,7 +82,6 @@ const ACCENT = {
 
 const DESKTOP_MONTHS = 3;
 
-/** 멀티월 뷰에서 기준 달이 가운데 오도록 첫 달(viewMonth) 계산 */
 function firstMonthForFocus(focusDate, monthsVisible) {
   const focus = new Date(focusDate.getFullYear(), focusDate.getMonth(), 1);
   if (monthsVisible <= 1) return focus;
@@ -86,12 +89,6 @@ function firstMonthForFocus(focusDate, monthsVisible) {
   return new Date(focus.getFullYear(), focus.getMonth() - centerOffset, 1);
 }
 
-/**
- * 체크인→체크아웃 기간 선택.
- * 1탭=체크인 · 2탭=체크아웃 · 일정 변경 시에만 「변경하기」활성 · 최대 {@link STAY_MAX_NIGHTS}박.
- * `monthsVisible={1}`: 모바일 기존(한 달·19.5rem) · `3`: PC 세 달·한 단계 확대.
- * PC 기본 뷰: 체크인 달(보름 뒤)이 가운데(예: 8월 → 7·8·9월).
- */
 export function StayRangeCalendar({
   checkIn,
   checkOut,
@@ -101,6 +98,8 @@ export function StayRangeCalendar({
   accent = 'amber',
   monthsVisible = 1,
 }) {
+  const { t } = useTranslation();
+  const weekdays = t('home.stayDate.weekdays', { returnObjects: true });
   const theme = ACCENT[accent] || ACCENT.amber;
   const isMulti = monthsVisible > 1;
   const [viewMonth, setViewMonth] = useState(() => {
@@ -185,8 +184,8 @@ export function StayRangeCalendar({
   };
 
   const headerLabel = isMulti
-    ? `${monthTitle(visibleMonths[0])} – ${monthTitle(visibleMonths[monthsVisible - 1])}`
-    : monthTitle(viewMonth);
+    ? `${formatMonthTitle(visibleMonths[0], t)} – ${formatMonthTitle(visibleMonths[monthsVisible - 1], t)}`
+    : formatMonthTitle(viewMonth, t);
 
   const renderMonthGrid = (month, { showTitle }) => {
     const cells = buildMonthCells(month);
@@ -200,15 +199,15 @@ export function StayRangeCalendar({
           <p
             className={`mb-1.5 text-center text-[13px] font-bold tabular-nums ${theme.title}`}
           >
-            {monthTitle(month)}
+            {formatMonthTitle(month, t)}
           </p>
         ) : null}
         <div className="mb-0.5 grid grid-cols-7 gap-0.5">
-          {STAY_WEEKDAYS_KO.map((d) => (
+          {(Array.isArray(weekdays) ? weekdays : []).map((d, idx) => (
             <div
-              key={`${toYmd(month)}-${d}`}
+              key={`${toYmd(month)}-${idx}`}
               className={`py-0.5 text-center font-medium ${weekdayCls} ${
-                d === '일' ? 'text-rose-300/70' : 'text-white/40'
+                idx === 0 ? 'text-rose-300/70' : 'text-white/40'
               }`}
             >
               {d}
@@ -241,7 +240,7 @@ export function StayRangeCalendar({
   return (
     <div
       role="dialog"
-      aria-label="숙소 일정 선택"
+      aria-label={t('home.stayDate.dialogAria')}
       className={`mt-2 w-full rounded-xl border ${theme.border} bg-black/90 shadow-xl backdrop-blur-md ${
         isMulti ? 'max-w-5xl p-3' : 'max-w-[19.5rem] p-2.5'
       }`}
@@ -255,7 +254,7 @@ export function StayRangeCalendar({
       >
         <button
           type="button"
-          aria-label="이전 달"
+          aria-label={t('home.stayDate.prevMonth')}
           onClick={() => shiftMonth(-1)}
           className={`flex items-center justify-center rounded-lg border border-white/15 text-white/80 hover:bg-white/10 active:scale-95 transition-all ${
             isMulti ? 'h-9 w-9' : 'h-8 w-8'
@@ -272,7 +271,7 @@ export function StayRangeCalendar({
         </p>
         <button
           type="button"
-          aria-label="다음 달"
+          aria-label={t('home.stayDate.nextMonth')}
           onClick={() => shiftMonth(1)}
           className={`flex items-center justify-center rounded-lg border border-white/15 text-white/80 hover:bg-white/10 active:scale-95 transition-all ${
             isMulti ? 'h-9 w-9' : 'h-8 w-8'
@@ -294,7 +293,7 @@ export function StayRangeCalendar({
                 : 'max-w-[17rem] px-2.5 py-1.5 text-[11px]'
             }`}
           >
-            체크아웃 날짜를 선택해 주세요
+            {t('home.stayDate.pickCheckOut')}
             <span
               className={`pointer-events-none absolute left-1/2 top-full -mt-px -translate-x-1/2 border-[5px] border-transparent ${theme.tipArrow}`}
               aria-hidden="true"
@@ -307,7 +306,7 @@ export function StayRangeCalendar({
             isMulti ? 'mb-2 text-[12px]' : 'mb-1.5 text-[11px]'
           }`}
         >
-          체크인 날짜를 선택하세요
+          {t('home.stayDate.pickCheckIn')}
         </p>
       )}
 
@@ -334,7 +333,7 @@ export function StayRangeCalendar({
           {draftOut
             ? formatStayDateLabel(draftOut)
             : pickingOut
-              ? '선택 중'
+              ? t('home.stayDate.selecting')
               : formatStayDateLabel(checkOut)}
         </p>
         <div className={`flex items-center justify-between ${isMulti ? 'gap-1.5' : 'gap-1'}`}>
@@ -347,7 +346,7 @@ export function StayRangeCalendar({
                 : 'rounded-md border border-white/20 px-2 py-1 text-[10px] font-semibold text-white/85 hover:bg-white/10 hover:text-white transition-colors'
             }
           >
-            오늘
+            {t('home.stayDate.today')}
           </button>
           <div className={`flex items-center ${isMulti ? 'gap-1.5' : 'gap-1'}`}>
             <button
@@ -359,7 +358,7 @@ export function StayRangeCalendar({
                   : 'rounded-md px-2 py-1 text-[10px] font-medium text-white/60 hover:bg-white/10 hover:text-white transition-colors'
               }
             >
-              닫기
+              {t('home.stayDate.close')}
             </button>
             <button
               type="button"
@@ -373,7 +372,7 @@ export function StayRangeCalendar({
                   : 'cursor-not-allowed border-white/10 bg-white/5 text-white/35'
               }`}
             >
-              변경하기
+              {t('home.stayDate.apply')}
             </button>
           </div>
         </div>
@@ -392,6 +391,7 @@ export function GuestStepper({
   onChange,
   accent = 'amber',
 }) {
+  const { t } = useTranslation();
   const labelCls =
     accent === 'sky' ? 'text-sky-100/75' : 'text-amber-100/75';
   return (
@@ -400,7 +400,7 @@ export function GuestStepper({
       <div className="flex items-center rounded-md border border-white/12 bg-black/40">
         <button
           type="button"
-          aria-label={`${label} 줄이기`}
+          aria-label={t('home.stayDate.decrease', { label })}
           disabled={value <= min}
           onClick={(e) => {
             e.stopPropagation();
@@ -415,7 +415,7 @@ export function GuestStepper({
         </span>
         <button
           type="button"
-          aria-label={`${label} 늘리기`}
+          aria-label={t('home.stayDate.increase', { label })}
           disabled={value >= max}
           onClick={(e) => {
             e.stopPropagation();

@@ -118,18 +118,18 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#29)**: `audit:i18n` baseline · P0 **23**파일 · hangul debt **152**줄(9파일) · `en` 누락 키 **0**
+**상태 (#30)**: P0-A 숙소·탐색 펼친 패널 EN · hangul debt **80**줄(6파일) · `en` 누락 **0**
 
 **브랜치**: `cursor/en` · `/qa/en`
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #30, P0-A 숙소·탐색 패널 EN
+영문화 #31, P0-A 잔여·투어 패널 EN
 @plans/feature-handoff-index.md
 @plans/2026-08-20-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · GlobeStayStrip · SearchDiscoveryModal · audit:i18n
+cursor/en · GlobeTourStrip · SearchSuggestionList · audit:i18n
 ```
 
 ### #23 브라우저 locale 자동 — 완료
@@ -223,15 +223,14 @@ cursor/en · GlobeStayStrip · SearchDiscoveryModal · audit:i18n
 
 | Tier | 범위 | 파일 수 | hangul 줄(#29) |
 |------|------|---------|----------------|
-| **A** | 홈·탐색·PlaceCard 써머리/펼침 | 11 | 77 |
-| **B** | 무니·플래너·리뷰·공항 | 7 | 20 |
+| **A** | 홈·탐색·PlaceCard 써머리/펼침 | 11 | 15 |
+| **B** | 무니·플래너·리뷰·공항 | 7 | 10 |
 | **C** | Auth·공지·한국 UI 셸 | 5 | 55 |
 
-**#29 debt 상위** (다음 세션 P0-A):
+**#30 debt 상위** (다음 세션 P0-A 잔여):
 
-1. `GlobeStayStrip.jsx` — 42줄 (숙소·투어·패키지 펼친 패널)
-2. `SearchDiscoveryModal.jsx` — 20줄
-3. `stayDateControls.jsx` — 10줄
-4. `GlobeTourStrip.jsx` — 9줄
+1. `GlobeTourStrip.jsx` — 9줄
+2. `SearchDiscovery/SearchSuggestionList.jsx` — 5줄
+3. `ReviewsTab.jsx` — 10줄 (tier B)
 
 **제외·참고**: `FestivalDetailSheet` tier C — UI EN·본문 ko SSOT(Chrome 번역) · `missingInKo` 219건은 en-only 지구본 국가 키

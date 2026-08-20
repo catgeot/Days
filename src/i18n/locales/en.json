@@ -479,6 +479,110 @@
         "동네": "Neighborhood",
         "장소": "Place"
       }
+    },
+    "stayStrip": {
+      "sort": {
+        "recommended": "Recommended",
+        "priceAsc": "Price: low to high",
+        "priceDesc": "Price: high to low",
+        "ratingDesc": "Top rated"
+      },
+      "panelTitle": "Stays",
+      "panelTitleNearby": "Nearby stays",
+      "loading": "Loading…",
+      "loadingStays": "Loading stays…",
+      "loadingWait": "Please wait a moment",
+      "closeListAria": "Close stay list",
+      "listRegionAria": "Stay list",
+      "listFullscreenAria": "Full stay list",
+      "scrollTopAria": "Scroll to top",
+      "scrollTop": "Top",
+      "priceFrom": "from ₩{{price}}",
+      "checkInOutAria": "Select check-in and check-out dates",
+      "checkIn": "Check-in",
+      "checkOut": "Check-out",
+      "nights": "{{count}} nights",
+      "schedule": "Dates",
+      "adult": "Adult",
+      "child": "Child",
+      "apply": "Apply",
+      "flightHotelAria": "Book flights and hotels together",
+      "flightHotelCta": "Book flights and hotels together",
+      "flightHotelHint": "Align stay dates with your arrival",
+      "bookAfterAdjust": "Book after adjusting dates",
+      "gridDefault": "Default grid",
+      "gridZoom": "Zoom in",
+      "countPlaces": "{{count}} places",
+      "viewOnMrt": "View on MyRealTrip",
+      "sortAria": "Sort stays",
+      "officialGuide": "Official & licensed info",
+      "sparseInfoNote": "Limited online info for this area. Check official tourism guides too.",
+      "viewMoreOnMrt": "View more on MyRealTrip",
+      "switchToTour": "Explore things to do nearby",
+      "lowInventoryFewBookable": "Few stays are bookable for these dates.",
+      "lowInventoryFlexibleShown": "We also show stays that need date changes",
+      "lowInventoryMrtLow": "MyRealTrip has limited inventory here.",
+      "lowInventoryAgencyTrip": "Check official guides and Trip.com too",
+      "lowInventoryTripOnly": "Check Trip.com too",
+      "orStayOta": "Or search stays on OTAs",
+      "searchOnTripcom": "Search more on Trip.com",
+      "flexibleSectionTitle": "Stays needing date changes",
+      "noBookableTitle": "No stays available for these dates",
+      "flexibleSectionHint": "Change check-in or check-out to book the stays below",
+      "flexibleOnlyHint": "Change dates to book the stays below",
+      "loadMore": "Show {{count}} more",
+      "emptyAgencyFallback": "Check trusted official guides and travel agencies below",
+      "packageCta": "View {{keyword}} package deals",
+      "packageCtaDefault": "View package deals"
+    },
+    "stayDate": {
+      "pickDate": "Select dates",
+      "monthTitle": "{{month}} {{year}}",
+      "weekdays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+      "dialogAria": "Select stay dates",
+      "prevMonth": "Previous month",
+      "nextMonth": "Next month",
+      "pickCheckOut": "Select check-out date",
+      "pickCheckIn": "Select check-in date",
+      "selecting": "Selecting…",
+      "today": "Today",
+      "close": "Close",
+      "apply": "Apply",
+      "decrease": "Decrease {{label}}",
+      "increase": "Increase {{label}}"
+    },
+    "tripcomStay": {
+      "empty": {
+        "default": {
+          "title": "We couldn't find stays on MyRealTrip for this place",
+          "subtitle": "Try different dates or guests above, then search on Trip.com",
+          "cta": "Search stays on Trip.com"
+        },
+        "persepolis": {
+          "title": "Travelers usually stay in Shiraz and visit on a day tour",
+          "subtitle": "Trip.com and MyRealTrip rarely list Iran stays. Check Iran specialists or local booking",
+          "cta": "Check on Trip.com"
+        },
+        "sparse": {
+          "title": "Online stay booking is rarely available here",
+          "subtitle": "Trip.com may also have no inventory. Check local or specialist agencies",
+          "cta": "Check on Trip.com"
+        }
+      },
+      "error": {
+        "title": "Couldn't load stay search right now",
+        "subtitle": "Try again in a moment, or search directly on Trip.com",
+        "cta": "Search stays on Trip.com"
+      }
+    },
+    "stayAgency": {
+      "kind": {
+        "tourism-board": "Official tourism",
+        "local-dmc": "Licensed specialist",
+        "kr-specialist": "Korea specialist"
+      },
+      "defaultKind": "Guide",
+      "disclaimer": "GATEO is not a booking agent for these providers. Please use official sources."
     }
   },
   "place": {

@@ -258,6 +258,110 @@
         "동네": "동네",
         "장소": "장소"
       }
+    },
+    "stayStrip": {
+      "sort": {
+        "recommended": "추천순",
+        "priceAsc": "낮은 가격순",
+        "priceDesc": "높은 가격순",
+        "ratingDesc": "평점 높은순"
+      },
+      "panelTitle": "숙소",
+      "panelTitleNearby": "근처 숙소",
+      "loading": "불러오는 중…",
+      "loadingStays": "숙소를 불러오는 중…",
+      "loadingWait": "잠시만 기다려 주세요",
+      "closeListAria": "숙소 목록 닫기",
+      "listRegionAria": "숙소 목록",
+      "listFullscreenAria": "숙소 전체 목록",
+      "scrollTopAria": "맨 위로",
+      "scrollTop": "맨 위",
+      "priceFrom": "{{price}}원~",
+      "checkInOutAria": "체크인·체크아웃 날짜 선택",
+      "checkIn": "체크인",
+      "checkOut": "체크아웃",
+      "nights": "{{count}}박",
+      "schedule": "일정",
+      "adult": "성인",
+      "child": "아동",
+      "apply": "변경하기",
+      "flightHotelAria": "항공권과 호텔을 함께 예약하세요",
+      "flightHotelCta": "항공권과 호텔을 함께 예약하세요",
+      "flightHotelHint": "숙소 일정은 도착일에 맞춰 조정하세요",
+      "bookAfterAdjust": "일정 조정 후 예약",
+      "gridDefault": "기본 그리드로",
+      "gridZoom": "확대해서 보기",
+      "countPlaces": "{{count}}곳",
+      "viewOnMrt": "마이리얼트립에서 보기",
+      "sortAria": "숙소 정렬",
+      "officialGuide": "공식·인가 안내",
+      "sparseInfoNote": "이 지역은 온라인 정보가 적어요. 공식 관광 안내도 함께 확인해 보세요",
+      "viewMoreOnMrt": "마이리얼트립에서 더 보기",
+      "switchToTour": "주변 즐길거리를 탐색해 보세요",
+      "lowInventoryFewBookable": "이 일정에 바로 예약할 수 있는 숙소가 적어요.",
+      "lowInventoryFlexibleShown": "일정 조정이 필요한 숙소도 함께 보여 드려요",
+      "lowInventoryMrtLow": "이 지역은 마이리얼트립 재고가 적어요.",
+      "lowInventoryAgencyTrip": "공식·전문 안내와 트립닷컴을 함께 확인해 보세요",
+      "lowInventoryTripOnly": "트립닷컴도 함께 확인해 보세요",
+      "orStayOta": "또는 숙소 OTA",
+      "searchOnTripcom": "트립닷컴에서 더 찾아보기",
+      "flexibleSectionTitle": "일정 조정이 필요한 숙소",
+      "noBookableTitle": "이 일정엔 바로 예약 가능한 숙소가 없어요",
+      "flexibleSectionHint": "아래 숙소는 체크인·체크아웃을 바꾸면 예약할 수 있어요",
+      "flexibleOnlyHint": "체크인·체크아웃을 바꾸면 아래 숙소를 예약할 수 있어요",
+      "loadMore": "{{count}}곳 더 보기",
+      "emptyAgencyFallback": "아래 공신력 있는 안내·여행사로 루트를 확인해 보세요",
+      "packageCta": "{{keyword}} 패키지 상품보기",
+      "packageCtaDefault": "패키지 상품보기"
+    },
+    "stayDate": {
+      "pickDate": "날짜 선택",
+      "monthTitle": "{{year}}년 {{month}}월",
+      "weekdays": ["일", "월", "화", "수", "목", "금", "토"],
+      "dialogAria": "숙소 일정 선택",
+      "prevMonth": "이전 달",
+      "nextMonth": "다음 달",
+      "pickCheckOut": "체크아웃 날짜를 선택해 주세요",
+      "pickCheckIn": "체크인 날짜를 선택하세요",
+      "selecting": "선택 중",
+      "today": "오늘",
+      "close": "닫기",
+      "apply": "변경하기",
+      "decrease": "{{label}} 줄이기",
+      "increase": "{{label}} 늘리기"
+    },
+    "tripcomStay": {
+      "empty": {
+        "default": {
+          "title": "이 여행지 숙소를 마이리얼트립에서 찾지 못했어요",
+          "subtitle": "위쪽 일정·인원을 바꾼 뒤 트립닷컴으로 검색해 보세요",
+          "cta": "트립닷컴에서 숙소 검색"
+        },
+        "persepolis": {
+          "title": "보통 시라즈에 묵고 당일 투어로 다녀와요",
+          "subtitle": "다만 트립닷컴·마이리얼트립에서는 이란 숙소 예약이 거의 안 돼요. 이란 전문·현지 예약을 확인해 보세요",
+          "cta": "트립닷컴에서 확인하기"
+        },
+        "sparse": {
+          "title": "이 지역은 온라인 숙소 예약이 거의 없어요",
+          "subtitle": "트립닷컴에도 재고가 없거나 예약이 어려울 수 있어요. 현지·전문 여행사를 확인해 보세요",
+          "cta": "트립닷컴에서 확인하기"
+        }
+      },
+      "error": {
+        "title": "숙소 검색을 잠시 불러오지 못했어요",
+        "subtitle": "잠시 후에 다시 시도해 주세요. 트립닷컴에서 바로 검색할 수도 있어요",
+        "cta": "트립닷컴에서 숙소 검색"
+      }
+    },
+    "stayAgency": {
+      "kind": {
+        "tourism-board": "공식 관광",
+        "local-dmc": "인가·전문",
+        "kr-specialist": "국내 전문"
+      },
+      "defaultKind": "안내",
+      "disclaimer": "게이트오는 해당 여행사와 예약 대행 관계가 아닙니다. 공식 안내를 참고해 주세요."
     }
   },
   "place": {
