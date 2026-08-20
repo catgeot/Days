@@ -24,3 +24,10 @@
 - **Edge** `update-place-toolkit` — `phdjnbfitvmrguqzverm` · `--no-verify-jwt` 배포 완료
 - **DB** migration `20260820120000_place_toolkit_essential_guide_en.sql` 적용 (`essential_guide_en`)
 - **Preview QA** `/qa/en` · `?lang=en` — Planner → Run AI toolkit → EN 본문 저장·표시
+
+## 영문화 #21 보완, 플래너 배너·유틸 locale — Preview push
+
+- **A** Airalo · Holafly · Direct Ferries 위젯 i18n · 제휴 뱃지
+- **B** 렌터카 픽업 공항 EN 표기(`getRentalAirportDisplayName`) · MRT 검색어 suffix · PreTravel 숙소 쿼리 · TNA 가격 locale · planner bannerNote i18n
+- **VERIFY** `build` · `smoke:place-label-slug` · `smoke:essential-guide-locale` PASS
+- **브랜치** `cursor/en` · `/qa/en` · `?lang=en`
