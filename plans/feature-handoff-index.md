@@ -62,15 +62,15 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#26** 써머리 숙소·투어 버튼 · 탐색 페이지 EN — Preview QA |
-| **main** | `448a3553` — PR [#138](https://github.com/catgeot/Days/pull/138) (#21~#23) |
-| **브랜치** | `cursor/en` |
+| **상태** | **#27 main 병합** — #26 써머리·탐색 EN · **PROD 배포 후 QA** |
+| **main** | PR [#139](https://github.com/catgeot/Days/pull/139) 병합 후 SHA 확인 |
+| **브랜치** | `cursor/en` (재사용) |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9 |
 | **일지** | [`2026-08-20-project-log.md`](./2026-08-20-project-log.md) |
 | **PROD** | `https://www.gateo.kr` (시크릿 EN) · `/qa/en` → `/?lang=en` |
 | **VERIFY** | `build` · `smoke:browser-locale-hint` · `smoke:festival-detail-locale` · `smoke:essential-guide-locale` · `smoke:place-label-slug` |
 
-**2차 순서**: ~~#13~#25~~ → **#26 PROD QA** (써머리·탐색 EN 보완)
+**2차 순서**: ~~#13~#27~~ → **#28 PROD QA** (배포 후 · #26 써머리·탐색 포함)
 
 **PROD QA 체크** (사람 · 시크릿 창):
 
@@ -78,17 +78,18 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 2. `/korea` — UI EN · 축제 카드 한글 제목·주소에 Chrome 번역 제안
 3. 축제 상세 — overview·info 한글 본문 Chrome 번역 (포스터 이미지 내 한글은 번역 불가)
 4. 헤더 KO 토글 → 한글 UI · 재방문 시 선택 유지
-5. PlaceCard 써머리 — **Find stays** · **Find tours** (좌측 탭) EN
-6. 검색바 → 탐색 — 필터·큐레이션·안내문 EN
+5. PlaceCard 플래너 — 배너·AI 본문 EN
+6. PlaceCard 써머리 — **Find stays** · **Find tours** (좌측 탭) EN
+7. 검색바 → 탐색 — 필터·큐레이션·안내문 EN
 
 **다음 제시어**:
 
 ```
-영문화 #27, main 병합 — #26 써머리·탐색 EN
+영문화 #28, PROD QA — #26 써머리·탐색
 @plans/feature-handoff-index.md
 @plans/2026-08-20-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · Preview QA 후 main
+main · www.gateo.kr · 써머리 Find stays/tours · /explore EN
 ```
 
 ---
