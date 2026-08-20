@@ -340,6 +340,135 @@
         "officialSite": "공식 사이트 확인",
         "safeTravel": "외교부 안전여행",
         "visaInfo": "비자/입국 정보 확인"
+      },
+      "banners": {
+        "affiliateBadge": "제휴광고",
+        "rentalPickup": {
+          "heading": "렌터카 · 픽업 · 항공권 기준",
+          "subtitleFromPlanner": "툴킷 여정·항공 안내와 맞춘 도착 공항입니다. 티켓과 다르면 실제 도착 코드로 검색어를 바꿔 주세요.",
+          "subtitleDefault": "항공권·렌터카 검색에 쓰는 도착 공항입니다. 티켓의 도착 공항 코드를 확인해 주세요.",
+          "linkedArrival": "연동 도착 공항",
+          "otherCandidates": "다른 도착 후보",
+          "affiliateNoteLinked": "렌터카·픽업 제휴 링크는 위 「연동 도착 공항」 기준으로 연결됩니다.",
+          "affiliateNoteSingle": "렌터카·픽업 제휴 링크는 이 공항 기준입니다.",
+          "flightTipsCta": "항공권 팁 확인",
+          "copyOfficialDone": "정식 공항명이 복사되었습니다.",
+          "copyOfficialTitle": "클릭하여 정식 공항명 복사",
+          "copyIataDone": "IATA 코드 {{code}}가 복사되었습니다.",
+          "copyIataTitle": "클릭하여 IATA 코드 복사",
+          "copyFailed": "복사에 실패했습니다. 브라우저에서 클립보드 권한을 확인해 주세요."
+        },
+        "tripcomFlight": {
+          "iframeTitle": "Trip.com 항공권 검색",
+          "srWithArrival": "도착 공항 {{iata}} 기준 Trip.com 항공권 검색 배너. 배너에서 출발·도착·일자를 수정할 수 있습니다.",
+          "srGeneric": "Trip.com 항공권 검색 배너. 배너에서 출발·도착·일자를 수정할 수 있습니다.",
+          "routeApplied": "출발 {{depart}} → 도착 {{arrive}} 자동 반영 · 배너에서 수정 가능",
+          "routeDepart": "출발",
+          "routeArrive": "도착",
+          "routeEditable": "자동 반영 · 배너에서 수정 가능",
+          "fullScreenSearch": "전체 화면 검색",
+          "noArrivalFallback": "도착 공항을 찾지 못해 일반 검색으로 열립니다.",
+          "tripcomFlights": "Trip.com 항공권"
+        },
+        "flightSearchCta": {
+          "title": "항공권 실시간 검색",
+          "search": "검색",
+          "autoFill": "Trip.com에서 출발·도착 공항이 자동 입력됩니다",
+          "ariaWithRoute": "Trip.com 항공권 검색 — {{depart}}에서 {{arrive}}까지",
+          "ariaGeneric": "Trip.com 항공권 실시간 검색"
+        },
+        "twelveGo": {
+          "routeLabel": "페리·교통 검색",
+          "ariaWithLabel": "12Go {{label}} 검색",
+          "ariaGeneric": "12Go 페리·쾌속선 티켓 검색",
+          "subtitle": "페리·쾌속선 시간표 · 티켓 검색",
+          "findTickets": "티켓 찾기"
+        },
+        "klookCar": {
+          "ariaOpen": "Klook 렌터카 페이지 열기",
+          "footerHint": "여행지명으로 검색 연결됩니다. 정확한 검색은 렌터카 검색 링크를 이용하세요."
+        },
+        "cinemaNotice": {
+          "intro": "항공 경로 화면에서 이동했습니다. 아래 여행 플랜은",
+          "icnDepart": "인천(ICN) 출발",
+          "basis": "기준입니다.",
+          "originDiff": "지도에서 선택한 출발지({{iata}})와 다를 수 있어요.",
+          "dismiss": "안내 닫기"
+        },
+        "gyg": {
+          "moreLink": "겟유어가이드에서 더보기",
+          "copyQueryTitle": "위젯 검색어 복사 (투어 카드 본문은 제휴 iframe이라 선택이 안 됩니다)",
+          "copied": "복사됨",
+          "queryLabel": "검색어 · {{query}}",
+          "loadingPrimary": "현지 투어를 불러오는 중이에요",
+          "loadingSecondary": "GetYourGuide 목록이 곧 표시됩니다"
+        },
+        "mrtTna": {
+          "sortRecommended": "추천순",
+          "sortPriceAsc": "낮은 가격순",
+          "sortPriceDesc": "높은 가격순",
+          "sortRatingDesc": "평점 높은순",
+          "gridDefault": "기본 그리드로",
+          "gridZoomIn": "확대해서 보기",
+          "nearbyMoreAria": "주변 지역 더보기",
+          "nearbyExploreTitle": "주변 지역 더보기",
+          "nearbyMore": "인근지역 더보기",
+          "loadingMore": "불러오는 중…",
+          "loadingTours": "투어·티켓을 불러오는 중입니다…",
+          "loadError": "투어 목록을 불러오지 못했습니다.",
+          "empty": "이 지역에 맞는 투어·티켓을 찾지 못했습니다.",
+          "nearbyToursHint": "가까운 여행지 투어를 안내합니다",
+          "nearbyRegion": "인근 여행지",
+          "openOnMrt": "마이리얼트립에서 보기",
+          "sortTour": "투어 정렬",
+          "itemCount": "{{count}}개",
+          "searchOnMrt": "마이리얼트립에서 검색",
+          "moreOnMrt": "마이리얼트립에서 더보기",
+          "sectionThingsToDo": "{{keyword}}의 즐길거리"
+        }
+      },
+      "timeline": {
+        "heading": "상세 여정 플래너",
+        "copyNameTitle": "도착지·도시명만 복사",
+        "copyNameAria": "{{name}} 복사",
+        "copyCodeTitle": "IATA 코드만 복사",
+        "copyCodeTitleBare": "IATA 코드만 복사 (괄호 없음)",
+        "copyCodeAria": "{{code}} 복사",
+        "copyCodeDone": "공항 코드를 복사했습니다.",
+        "copyNameDone": "도착지명을 복사했습니다.",
+        "copyGenericDone": "클립보드에 복사했습니다.",
+        "copyFailed": "복사에 실패했습니다. 브라우저에서 클립보드 권한을 확인해 주세요.",
+        "actionCruise": "크루즈 검색",
+        "actionCruiseDesc": "Trip.com 크루즈 일정·요금 비교",
+        "actionFerryBook": "{{name}} 예약",
+        "actionFerryDesc": "페리·쾌속선 노선 예약",
+        "actionRental": "렌터카 검색"
+      },
+      "flightHint": {
+        "placeFallback": "이 여행지",
+        "noCodes": "정확한 항공권 검색을 위해 도착 공항 3자리 코드(IATA)를 입력해 주세요.",
+        "withCodes": "정확한 항공권 검색을 위해 {{place}} 도착 공항 코드({{codes}})를 입력해 주세요.",
+        "withCodesGeneric": "정확한 항공권 검색을 위해 {{place}} 도착 공항 3자리 코드(IATA)를 입력해 주세요.",
+        "codesOr": "{{first}} 또는 {{second}}",
+        "codesList": "{{list}} 또는 {{last}}"
+      },
+      "rentalHint": {
+        "searchAs": "{{label}}(으)로 검색해 주세요",
+        "enterCode": "세자리 공항코드를 입력해 주세요",
+        "singleCode": "세자리 공항코드({{code}})를 입력해 주세요",
+        "multiCode": "세자리 공항코드({{codes}})를 입력해 주세요"
+      },
+      "rentalHomeSubtext": {
+        "searchAs": "렌터카 검색 시 {{label}}(으)로 검색해 주세요.",
+        "enterCode": "렌터카 검색 시 세자리 공항 코드(예: PDL)로 입력해 주세요.",
+        "singleCode": "렌터카 검색 시 세자리 공항 코드({{code}})로 입력해 주세요.",
+        "multiCode": "렌터카 검색 시 세자리 공항 코드({{codes}}) 중 하나로 입력해 주세요."
+      },
+      "flightDisclaimer": {
+        "agencyWithArrival": "Trip.com 검색은 {{arrival}}까지입니다. 최종 구간은 아래 안내·현지 에이전시를 확인해 주세요.",
+        "agencyGeneric": "Trip.com은 국제선 관문까지만 검색됩니다. 최종 구간은 아래 안내를 확인해 주세요.",
+        "officialWithArrival": "Trip.com 검색은 {{arrival}}까지입니다. 최종 구간은 아래 공식 예약 링크를 이용해 주세요.",
+        "officialGeneric": "Trip.com은 국제선 관문까지만 검색됩니다. 최종 구간은 아래 공식 예약 링크를 이용해 주세요."
       }
     },
     "gallery": {

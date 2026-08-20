@@ -29,6 +29,10 @@ function linkLabel(key, options) {
   return i18n.t(key, options);
 }
 
+function visaLinkLabel(item) {
+  return i18n.language === 'en' && item.labelEn ? item.labelEn : item.label;
+}
+
 function plannerPlaceName(location) {
   const name = getLocalizedPlaceName(location, i18n.language);
   return name || linkLabel('place.fallback.local');
@@ -339,7 +343,7 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
                 uniqueLinks.forEach(item => {
                     links.push({
                         url: item.url,
-                        text: item.label,
+                        text: visaLinkLabel(item),
                         colorClass: 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200'
                     });
                 });

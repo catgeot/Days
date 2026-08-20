@@ -1,4 +1,5 @@
 import flightData from '../pages/Home/data/travelSpotFlightBookings.json';
+import { i18n } from '../i18n/config.js';
 
 /** @typedef {'standard'|'segmented'|'carrier-only'|'agency-only'} FlightBookingTier */
 /** @typedef {{ provider: string, name: string, originIata?: string, destinationIata: string, url?: string }} FlightOfficialLinkDef */
@@ -183,11 +184,11 @@ export function getFlightTripDisclaimer(locationOrSlug, context = {}) {
   const arrival = context.arrivalIata ? String(context.arrivalIata).trim().toUpperCase() : null;
   if (profile.tier === 'agency-only') {
     return arrival
-      ? `Trip.com 검색은 ${arrival}까지입니다. 최종 구간은 아래 안내·현지 에이전시를 확인해 주세요.`
-      : 'Trip.com은 국제선 관문까지만 검색됩니다. 최종 구간은 아래 안내를 확인해 주세요.';
+      ? i18n.t('place.planner.flightDisclaimer.agencyWithArrival', { arrival })
+      : i18n.t('place.planner.flightDisclaimer.agencyGeneric');
   }
 
   return arrival
-    ? `Trip.com 검색은 ${arrival}까지입니다. 최종 구간은 아래 공식 예약 링크를 이용해 주세요.`
-    : 'Trip.com은 국제선 관문까지만 검색됩니다. 최종 구간은 아래 공식 예약 링크를 이용해 주세요.';
+    ? i18n.t('place.planner.flightDisclaimer.officialWithArrival', { arrival })
+    : i18n.t('place.planner.flightDisclaimer.officialGeneric');
 }

@@ -30,8 +30,8 @@
 | 18 | 무니 UI·칩 | `영문화 #18, 무니 UI·칩` | ✅ Preview |
 | 19 | 무니 프롬프트·대화 | `영문화 #19, 무니 프롬프트·대화 EN` | ✅ Preview |
 | 20 | 무니 인트로·탐지 | `영문화 #20, 무니 인트로·탐지` | ✅ Preview |
-| 21 | 플래너 배너·UI | `영문화 #21, 플래너 배너·UI EN` | 다음 |
-| 22 | 플래너 AI 본문 | `영문화 #22, 플래너 AI 본문 EN` | |
+| 21 | 플래너 배너·UI | `영문화 #21, 플래너 배너·UI EN` | ✅ Preview |
+| 22 | 플래너 AI 본문 | `영문화 #22, 플래너 AI 본문 EN` | 다음 |
 
 **1차 (#0~#12)**: UI 카피 · **2차 (#13~#22)**: 지구본 데이터 · TourAPI 본문 · 무니 · 플래너 AI·배너.
 
@@ -111,18 +111,18 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#20)**: Preview QA **PASS** · PR [#136](https://github.com/catgeot/Days/pull/136) → **main 병합** (사람 PROD QA)
+**상태 (#21)**: Preview push · 사람 QA `/qa/en` · `?lang=en` 플래너 탭
 
-**브랜치**: `cursor/en` · `/qa/en` · **#21 착수**(PROD QA 후)
+**브랜치**: `cursor/en` · **#22 착수**
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #21, PROD QA — #15~#20
+영문화 #22, 플래너 AI 본문 EN
 @plans/feature-handoff-index.md
-@plans/2026-08-19-project-log.md
+@plans/2026-08-20-project-log.md
 @plans/i18n-en-plan.md
-main · /qa/en · ?lang=en MOONi·Trip.com EN
+브랜치 cursor/en · /qa/en · ?lang=en 플래너 AI 본문
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 
