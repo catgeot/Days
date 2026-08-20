@@ -31,7 +31,7 @@
 | 19 | 무니 프롬프트·대화 | `영문화 #19, 무니 프롬프트·대화 EN` | ✅ Preview |
 | 20 | 무니 인트로·탐지 | `영문화 #20, 무니 인트로·탐지` | ✅ Preview |
 | 21 | 플래너 배너·UI | `영문화 #21, 플래너 배너·UI EN` | ✅ Preview |
-| 22 | 플래너 AI 본문 | `영문화 #22, 플래너 AI 본문 EN` | 다음 |
+| 22 | 플래너 AI 본문 | `영문화 #22, 플래너 AI 본문 EN` | ✅ Preview |
 
 **1차 (#0~#12)**: UI 카피 · **2차 (#13~#22)**: 지구본 데이터 · TourAPI 본문 · 무니 · 플래너 AI·배너.
 
@@ -111,18 +111,18 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#21)**: Preview push · 사람 QA `/qa/en` · `?lang=en` 플래너 탭
+**상태 (#22)**: Preview push · `essential_guide_en` · Edge `locale=en` · ko 폴백
 
-**브랜치**: `cursor/en` · **#22 착수**
+**브랜치**: `cursor/en` · **2차 #22 완료** → PROD QA·main 병합
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #22, 플래너 AI 본문 EN
+영문화 #22, PROD QA — #21~#22
 @plans/feature-handoff-index.md
 @plans/2026-08-20-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · /qa/en · ?lang=en 플래너 AI 본문
+cursor/en · /qa/en · ?lang=en 플래너 AI 본문·배너
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 

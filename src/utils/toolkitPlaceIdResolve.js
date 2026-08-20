@@ -10,6 +10,7 @@ import { formatUrlName } from '../pages/Home/lib/formatUrlName.js';
 import { RENTAL_AIRPORT_HUBS } from './rentalAirportHubs.js';
 import { getAirportsIndexCoords } from './airportsIndexLookup.js';
 import { distanceKm, extractArrivalIataCodesFromEssentialGuide } from './rentalAirportMatch.js';
+import { normalizeAppLocale } from '../i18n/constants.js';
 
 /** 목적지 좌표와 도착 공항 허브가 이 거리(km)보다 멀면 툴킷·배너에서 제외 */
 export const MAX_DESTINATION_AIRPORT_KM = 900;
@@ -275,39 +276,50 @@ export function essentialGuideMatchesLocation(guide, location) {
   return known.some((c) => isIataPlausibleForLocation(c, loc) || curated?.has(c));
 }
 
-export function hasUsableToolkit(row) {
-  const guide = parseEssentialGuide(row?.essential_guide);
+/** locale별 essential_guide — en 없으면 ko 폴백 (#22) */
+export function resolveEssentialGuideRaw(row, locale = 'ko') {
+  if (!row) return null;
+  const loc = normalizeAppLocale(locale);
+  if (loc === 'en') {
+    const enGuide = parseEssentialGuide(row.essential_guide_en);
+    if (essentialGuideHasContent(enGuide)) return enGuide;
+  }
+  return parseEssentialGuide(row.essential_guide);
+}
+
+export function hasUsableToolkit(row, locale = 'ko') {
+  const guide = resolveEssentialGuideRaw(row, locale);
   return essentialGuideHasContent(guide);
 }
 
-export function hasUsableToolkitForLocation(row, location) {
-  const guide = parseEssentialGuide(row?.essential_guide);
+export function hasUsableToolkitForLocation(row, location, locale = 'ko') {
+  const guide = resolveEssentialGuideRaw(row, locale);
   if (!essentialGuideHasContent(guide)) return false;
   return essentialGuideMatchesLocation(guide, location);
 }
 
 /** DB에 본문은 있으나 여행지와 불일치 */
-export function isToolkitLocationMismatch(row, location) {
-  const guide = parseEssentialGuide(row?.essential_guide);
+export function isToolkitLocationMismatch(row, location, locale = 'ko') {
+  const guide = resolveEssentialGuideRaw(row, locale);
   if (!essentialGuideHasContent(guide)) return false;
   return !essentialGuideMatchesLocation(guide, location);
 }
 
 /** UI·배너용 — 내용 없거나 여행지 불일치면 null */
-export function getEssentialGuide(row, location = null) {
+export function getEssentialGuide(row, location = null, locale = 'ko') {
   if (location) {
-    if (!hasUsableToolkitForLocation(row, location)) return null;
-  } else if (!hasUsableToolkit(row)) {
+    if (!hasUsableToolkitForLocation(row, location, locale)) return null;
+  } else if (!hasUsableToolkit(row, locale)) {
     return null;
   }
-  return parseEssentialGuide(row?.essential_guide);
+  return resolveEssentialGuideRaw(row, locale);
 }
 
-export function pickBestToolkitRow(rows, location = null) {
+export function pickBestToolkitRow(rows, location = null, locale = 'ko') {
   if (!rows?.length) return null;
   const withGuide = location
-    ? rows.filter((row) => hasUsableToolkitForLocation(row, location))
-    : rows.filter(hasUsableToolkit);
+    ? rows.filter((row) => hasUsableToolkitForLocation(row, location, locale))
+    : rows.filter((row) => hasUsableToolkit(row, locale));
   if (!withGuide.length) return null;
   return [...withGuide].sort(
     (a, b) =>
@@ -316,7 +328,7 @@ export function pickBestToolkitRow(rows, location = null) {
 }
 
 /** @param {import('@supabase/supabase-js').SupabaseClient} supabase */
-export async function fetchToolkitRow(supabase, location) {
+export async function fetchToolkitRow(supabase, location, locale = 'ko') {
   const candidates = buildToolkitPlaceIdCandidates(location);
   if (!candidates.length) return null;
 
@@ -332,7 +344,7 @@ export async function fetchToolkitRow(supabase, location) {
 
   if (!data?.length) return null;
 
-  const picked = pickBestToolkitRow(data, location);
+  const picked = pickBestToolkitRow(data, location, locale);
   if (picked) return picked;
 
   if (import.meta.env?.DEV && data.length > 0) {
@@ -342,8 +354,7 @@ export async function fetchToolkitRow(supabase, location) {
     });
   }
 
-  // place_id는 맞지만 IATA 지리 검증만 실패한 레거시 행 — UI mismatch 경고로 표시
-  return pickBestToolkitRow(data, null);
+  return pickBestToolkitRow(data, null, locale);
 }
 
 export function toolkitUpdateMatchesLocation(updatedPlaceId, location) {

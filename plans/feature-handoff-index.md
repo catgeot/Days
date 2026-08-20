@@ -62,25 +62,25 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#21 Preview** · #22 다음 |
-| **main** | `9157f772` — PR [#136](https://github.com/catgeot/Days/pull/136) |
+| **상태** | **#21~#22 Preview** · PROD QA 후 main 병합 |
+| **main** | `9157f772` — PR [#136](https://github.com/catgeot/Days/pull/136) (#15~#20) |
 | **브랜치** | `cursor/en` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§10 |
 | **일지** | [`2026-08-20-project-log.md`](./2026-08-20-project-log.md) |
 | **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` |
 | **PROD** | `https://www.gateo.kr/qa/en` → `/?lang=en` |
-| **VERIFY** | `npm run build` · `smoke:place-label-slug` · `smoke:tourapi` |
+| **VERIFY** | `npm run build` · `smoke:place-label-slug` · `smoke:essential-guide-locale` |
 
-**2차 순서**: ~~#13~#21~~ → **#22 플래너 AI**
+**2차 순서**: ~~#13~#22~~ → **PROD QA·병합**
 
 **다음 제시어**:
 
 ```
-영문화 #22, 플래너 AI 본문 EN
+영문화 #22, PROD QA — #21~#22
 @plans/feature-handoff-index.md
 @plans/2026-08-20-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/en · /qa/en · ?lang=en 플래너 AI 본문
+cursor/en · /qa/en · ?lang=en 플래너 AI 본문·배너
 금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
 ```
 
