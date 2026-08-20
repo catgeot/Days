@@ -79,6 +79,8 @@ import {
   localizeTasteChips,
   localizedTasteLabel,
 } from '../../i18n/koreaUi';
+import { useLocale } from '../../i18n/LocaleProvider';
+import { koreanApiTextProps } from '../../i18n/koreanApiText';
 
 /**
  * @param {{ timeTab: string, areaCode: string, cityName: string, tasteId: string, timeTabs: { id: string, label: string }[], t: import('i18next').TFunction }} p
@@ -518,6 +520,8 @@ function FestivalRow({
   large = false,
 }) {
   const { t } = useTranslation();
+  const { isEnglish } = useLocale();
+  const koText = koreanApiTextProps(isEnglish);
   const img = festivalImage(item);
   const start = formatYmdLabel(item.eventStartDate);
   const end = formatYmdLabel(item.eventEndDate);
@@ -547,7 +551,13 @@ function FestivalRow({
           }`}
         >
           {img ? (
-            <img src={img} alt="" className="w-full h-full object-cover" loading="lazy" />
+            <img
+              src={img}
+              alt={item.title || ''}
+              className="w-full h-full object-cover"
+              loading="lazy"
+              {...koText}
+            />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-amber-100 to-stone-200" />
           )}
@@ -560,6 +570,7 @@ function FestivalRow({
                   ? 'text-[15px] leading-snug line-clamp-2 sm:text-base'
                   : 'text-sm truncate'
               }`}
+              {...koText}
             >
               {item.title}
             </p>
@@ -596,7 +607,7 @@ function FestivalRow({
                 className="shrink-0 opacity-70"
                 aria-hidden="true"
               />
-              <span className={large ? 'line-clamp-2' : 'truncate'}>
+              <span className={large ? 'line-clamp-2' : 'truncate'} {...koText}>
                 {item.addr1}
               </span>
             </p>

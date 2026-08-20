@@ -62,7 +62,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#23 준비** · 브라우저 locale 자동 (헬퍼·스모크) · Provider 연동은 다음 세션 |
+| **상태** | **#23 Preview** · 브라우저 locale 자동 연동 완료 · PROD QA 후 병합 |
 | **main** | `9157f772` — PR [#136](https://github.com/catgeot/Days/pull/136) (#15~#20) |
 | **브랜치** | `cursor/en` · PR [#138](https://github.com/catgeot/Days/pull/138) |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·#23 |
@@ -71,17 +71,16 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 | **PROD** | `https://www.gateo.kr/qa/en` → `/?lang=en` |
 | **VERIFY** | `build` · `smoke:place-label-slug` · `smoke:essential-guide-locale` · `smoke:browser-locale-hint` |
 
-**2차 순서**: ~~#13~#22~~ → **#23 브라우저 locale** → PROD QA·병합
+**2차 순서**: ~~#13~#23~~ → **PROD QA·병합**
 
 **다음 제시어**:
 
 ```
-영문화 #23, 브라우저 locale 자동
+영문화 #23, PROD QA — 브라우저 locale
 @plans/feature-handoff-index.md
 @plans/2026-08-20-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · LocaleProvider 연동 · smoke:browser-locale-hint
-금지: Google 번역 · IP geo · travelSpots.js 전체 Read
+cursor/en · /qa/en · 시크릿 EN 브라우저 /korea 축제 Chrome 번역
 ```
 
 ---

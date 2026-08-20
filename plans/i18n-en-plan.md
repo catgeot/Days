@@ -112,22 +112,21 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#23 준비)**: #21~#22 Preview 완료 · **다음 = 브라우저 언어 자동 locale** (헬퍼·스모크만, Provider 미연동)
+**상태 (#23)**: 브라우저 locale 자동 연동 완료 · **다음 = PROD QA·병합**
 
 **브랜치**: `cursor/en`
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #23, 브라우저 locale 자동
+영문화 #23, PROD QA — 브라우저 locale
 @plans/feature-handoff-index.md
 @plans/2026-08-20-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · LocaleProvider 연동 · smoke:browser-locale-hint
-금지: Google 번역 · IP geo · travelSpots.js 전체 Read
+cursor/en · /qa/en · 시크릿 EN 브라우저 /korea 축제 Chrome 번역
 ```
 
-### #23 브라우저 locale 자동 — 구현 메모 (다음 세션)
+### #23 브라우저 locale 자동 — 완료
 
 | | |
 |--|--|

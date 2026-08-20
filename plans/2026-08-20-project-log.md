@@ -32,6 +32,24 @@
 - **VERIFY** `build` · `smoke:place-label-slug` · `smoke:essential-guide-locale` PASS
 - **브랜치** `cursor/en` · `/qa/en` · `?lang=en`
 
+## 영문화 #23, 브라우저 locale 자동 — Preview push
+
+- **LocaleProvider** `resolveInitialLocale` 연동 — `?lang=` → `gateo.locale` → `navigator.languages` → ko
+- **config.js** `resolveBootLocale` 동기화 · 첫 방문 EN 브라우저 시 `?lang=en`·storage persist
+- **축제** EN UI에서 TourAPI 한글 제목·주소·썸네일 alt에 `lang="ko"` — Chrome 번역 인식(포스터 이미지 내 한글은 번역 불가 · #16 롤백으로 목록 ko SSOT 유지)
+- **VERIFY** `smoke:browser-locale-hint` · `smoke:festival-detail-locale` · `smoke:place-label-slug` · `smoke:essential-guide-locale` · `build` PASS
+- **브랜치** `cursor/en` · `/qa/en` · 시크릿 창 EN 브라우저 → `/` EN UI 자동
+
+**다음 제시어**:
+
+```
+영문화 #23, PROD QA — 브라우저 locale
+@plans/feature-handoff-index.md
+@plans/2026-08-20-project-log.md
+@plans/i18n-en-plan.md
+cursor/en · /qa/en · 시크릿 EN 브라우저 /korea 축제 Chrome 번역
+```
+
 ## 영문화 #23 준비 — 브라우저 locale 자동 (다음 세션)
 
 ### 핸드오프

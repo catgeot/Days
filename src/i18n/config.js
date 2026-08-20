@@ -3,10 +3,10 @@ import { initReactI18next } from 'react-i18next';
 
 import ko from './locales/ko.json' with { type: 'json' };
 import en from './locales/en.json' with { type: 'json' };
+import { resolveInitialLocale } from './browserLocaleHint.js';
 import {
   DEFAULT_LOCALE,
   LOCALE_STORAGE_KEY,
-  isAppLocale,
   normalizeAppLocale,
 } from './constants.js';
 
@@ -21,9 +21,8 @@ function resolveBootLocale() {
   if (typeof window === 'undefined') return DEFAULT_LOCALE;
   try {
     const urlLang = new URLSearchParams(window.location.search).get('lang');
-    if (isAppLocale(urlLang)) return urlLang;
     const stored = window.localStorage.getItem(LOCALE_STORAGE_KEY);
-    if (isAppLocale(stored)) return stored;
+    return resolveInitialLocale({ urlLang, storedLocale: stored });
   } catch {
     // private mode / blocked storage
   }

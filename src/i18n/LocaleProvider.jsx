@@ -4,13 +4,14 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
 
+import { resolveInitialLocale } from './browserLocaleHint';
 import {
-  DEFAULT_LOCALE,
   LOCALE_STORAGE_KEY,
   isAppLocale,
   normalizeAppLocale,
@@ -19,17 +20,15 @@ import { ensureI18n, i18n } from './config';
 
 const LocaleContext = createContext(null);
 
-function readStoredLocale() {
-  if (typeof window === 'undefined') return DEFAULT_LOCALE;
+function readStoredLocaleOrNull() {
+  if (typeof window === 'undefined') return null;
   try {
     const stored = window.localStorage.getItem(LOCALE_STORAGE_KEY);
-    return isAppLocale(stored) ? stored : DEFAULT_LOCALE;
+    return isAppLocale(stored) ? stored : null;
   } catch {
-    return DEFAULT_LOCALE;
+    return null;
   }
 }
-
-/** #23: storage 없음(null) vs 기본 ko 구분 — browserLocaleHint 연동 시 readStoredLocaleOrNull 사용 */
 
 function persistLocale(locale) {
   if (typeof window === 'undefined') return;
@@ -50,19 +49,51 @@ function resolveLocaleFromUrl(searchParams) {
   return isAppLocale(urlLang) ? urlLang : null;
 }
 
+function resolveBootLocaleFromSearchParams(searchParams) {
+  return resolveInitialLocale({
+    urlLang: resolveLocaleFromUrl(searchParams),
+    storedLocale: readStoredLocaleOrNull(),
+  });
+}
+
 export function LocaleProvider({ children }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [locale, setLocaleState] = useState(() => {
-    const initial = resolveLocaleFromUrl(searchParams) ?? readStoredLocale();
+    const initial = resolveBootLocaleFromSearchParams(searchParams);
     ensureI18n(initial);
     syncDocumentLang(initial);
     return initial;
   });
+  const bootSyncDone = useRef(false);
 
   useEffect(() => {
     ensureI18n(locale);
     syncDocumentLang(locale);
   }, [locale]);
+
+  useEffect(() => {
+    if (bootSyncDone.current) return;
+    bootSyncDone.current = true;
+
+    const urlLang = resolveLocaleFromUrl(searchParams);
+    const stored = readStoredLocaleOrNull();
+    if (urlLang || stored) return;
+
+    const inferred = resolveInitialLocale({ urlLang: null, storedLocale: null });
+    if (inferred !== 'en') return;
+
+    persistLocale('en');
+    void i18n.changeLanguage('en');
+    syncDocumentLang('en');
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.set('lang', 'en');
+        return next;
+      },
+      { replace: true },
+    );
+  }, [searchParams, setSearchParams]);
 
   useEffect(() => {
     const urlLocale = resolveLocaleFromUrl(searchParams);

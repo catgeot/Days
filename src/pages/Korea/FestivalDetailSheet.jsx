@@ -22,6 +22,8 @@ import {
   fetchTourApiFestivalDetail,
   fetchTourApiFestivalImages,
 } from '../../utils/fetchTourApiFestivals';
+import { useLocale } from '../../i18n/LocaleProvider';
+import { koreanApiTextProps } from '../../i18n/koreanApiText';
 import { fetchFestivalVideos, FESTIVAL_VIDEOS_MAX, FESTIVAL_VIDEOS_PAGE } from '../../utils/fetchFestivalVideos';
 import { fetchNearbyTourAttractions } from '../../utils/fetchNearbyTourAttractions';
 import {
@@ -292,6 +294,8 @@ export default function FestivalDetailSheet({
   onOpenHub: _onOpenHub,
 }) {
   const navigate = useNavigate();
+  const { isEnglish } = useLocale();
+  const koText = koreanApiTextProps(isEnglish);
   const [intro, setIntro] = useState(null);
   const [common, setCommon] = useState(null);
   const [infoItems, setInfoItems] = useState([]);
@@ -1043,13 +1047,14 @@ export default function FestivalDetailSheet({
             <h3
               id="korea-festival-sheet-title"
               className="text-xl md:text-2xl lg:text-3xl font-extrabold leading-snug text-stone-900"
+              {...koText}
             >
               {displayTitle}
             </h3>
             {item.addr1 && (
               <p className="text-xs text-stone-500 flex items-start gap-1">
                 <MapPin size={12} className="mt-0.5 shrink-0" aria-hidden="true" />
-                <span>{item.addr1}</span>
+                <span {...koText}>{item.addr1}</span>
               </p>
             )}
           </div>
