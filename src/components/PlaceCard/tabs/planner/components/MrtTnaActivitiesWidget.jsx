@@ -78,18 +78,25 @@ function sortTourItems(list, sortMode) {
   return arr;
 }
 
-function formatPrice(item) {
+function formatPrice(item, locale = 'ko') {
   if (item?.priceDisplay) return String(item.priceDisplay);
   const n = Number(item?.salePrice);
   if (!Number.isFinite(n) || n <= 0) return null;
+  if (String(locale).startsWith('en')) {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'KRW',
+      maximumFractionDigits: 0,
+    }).format(n);
+  }
   return `${n.toLocaleString('ko-KR')}원`;
 }
 
-function TnaCard({ item, size = 'md', theme = 'dark', imageClassName }) {
+function TnaCard({ item, size = 'md', theme = 'dark', imageClassName, locale = 'ko' }) {
   const large = size === 'lg';
   const light = theme === 'light';
   const href = buildMrtTnaProductUrl(item);
-  const price = formatPrice(item);
+  const price = formatPrice(item, locale);
   const imgBox = imageClassName || 'aspect-square';
 
   return (
@@ -262,7 +269,7 @@ export default function MrtTnaActivitiesWidget({
   showMoreLink = true,
   linkSponsoredLabel = false,
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const planner = variant === 'planner';
   const theme = planner ? 'light' : 'dark';
   const isLg = useIsLg();
@@ -654,6 +661,7 @@ export default function MrtTnaActivitiesWidget({
                     size={planner ? 'md' : 'lg'}
                     theme={theme}
                     imageClassName={planner ? undefined : openImageClass}
+                    locale={i18n.language}
                   />
                 ))}
               </div>

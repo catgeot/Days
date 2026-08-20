@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowDown, Car } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { resolveRentalPickupBannerInfo, resolveBannerPeerAlternateAirports } from '../../../../../utils/rentalAirportMatch.js';
+import { resolveRentalPickupBannerInfo, resolveBannerPeerAlternateAirports, getRentalAirportDisplayName } from '../../../../../utils/rentalAirportMatch.js';
 import { shouldShowOfficialFlightBooking } from '../../../../../utils/flightBookingMatch.js';
 import { PLANNER_FOCUS_ID, scrollPlannerFocusIntoView } from '../../../../../utils/placePlannerFocus.js';
 import { plannerCaption, plannerCaptionMedium, plannerCaptionStrong, plannerMicroLabel } from '../readableText';
@@ -9,7 +9,7 @@ import { plannerCaption, plannerCaptionMedium, plannerCaptionStrong, plannerMicr
 const airportCopyHitClass =
     'cursor-pointer rounded border-0 bg-transparent px-0.5 py-1 text-left font-inherit transition-colors hover:bg-emerald-100/70 focus-visible:outline focus-visible:ring-2 focus-visible:ring-emerald-500/40';
 
-function RentalPickupAirportCopyRow({ officialKo, iata, onCopy, highlight = false, copyMessages }) {
+function RentalPickupAirportCopyRow({ displayName, iata, onCopy, highlight = false, copyMessages }) {
     return (
         <div
             className={`flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-1 text-sm font-semibold leading-snug ${highlight ? 'text-emerald-950' : 'text-gray-900'}`}
@@ -17,10 +17,10 @@ function RentalPickupAirportCopyRow({ officialKo, iata, onCopy, highlight = fals
             <button
                 type="button"
                 className={`${airportCopyHitClass} break-words ${highlight ? 'text-emerald-950' : 'text-gray-900'}`}
-                onClick={() => onCopy(officialKo, copyMessages.officialDone)}
+                onClick={() => onCopy(displayName, copyMessages.officialDone)}
                 title={copyMessages.officialTitle}
             >
-                {officialKo}
+                {displayName}
             </button>
             {iata ? (
                 <button
@@ -40,7 +40,7 @@ function RentalPickupAirportCopyRow({ officialKo, iata, onCopy, highlight = fals
  * 플래너 상단 「렌터카 · 픽업 · 항공권 기준」 도착 공항 배너
  */
 export default function RentalPickupBanner({ location, essentialGuide, scrollContainerRef, className = '' }) {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [copyMessage, setCopyMessage] = useState(null);
     const copyTimeoutRef = useRef(0);
 
@@ -84,9 +84,24 @@ export default function RentalPickupBanner({ location, essentialGuide, scrollCon
 
     useEffect(() => () => window.clearTimeout(copyTimeoutRef.current), []);
 
+    const resolvedBannerNote = useMemo(() => {
+        if (info?.plannerSourcedNote) {
+            return t('place.planner.banners.rentalPickup.plannerBannerNote');
+        }
+        return info?.bannerNote?.trim() || '';
+    }, [info, t]);
+
     const showFlightNav = useMemo(
-        () => Boolean(info?.bannerNote?.trim()) || shouldShowOfficialFlightBooking(location),
-        [info?.bannerNote, location],
+        () => Boolean(resolvedBannerNote) || shouldShowOfficialFlightBooking(location),
+        [resolvedBannerNote, location],
+    );
+
+    const resolveAirportDisplayName = useCallback(
+        (airport) => {
+            if (!airport) return '';
+            return getRentalAirportDisplayName(airport.iata, i18n.language) || airport.officialKo || airport.iata || '';
+        },
+        [i18n.language],
     );
 
     const scrollToFlightSection = useCallback(
@@ -130,7 +145,7 @@ export default function RentalPickupBanner({ location, essentialGuide, scrollCon
                         </p>
                         <div className="mt-1">
                             <RentalPickupAirportCopyRow
-                                officialKo={primaryAirport.officialKo}
+                                displayName={resolveAirportDisplayName(primaryAirport)}
                                 iata={primaryAirport.iata}
                                 onCopy={handleCopy}
                                 highlight
@@ -144,16 +159,16 @@ export default function RentalPickupBanner({ location, essentialGuide, scrollCon
                             {peerAlternates.map((a) => (
                                 <RentalPickupAirportCopyRow
                                     key={a.iata || a.officialKo}
-                                    officialKo={a.officialKo}
+                                    displayName={resolveAirportDisplayName(a)}
                                     iata={a.iata}
                                     onCopy={handleCopy}
                                     copyMessages={copyMessages}
                                 />
                             ))}
                         </div>
-                        {info.bannerNote ? (
+                        {resolvedBannerNote ? (
                             <p className={`mt-2 whitespace-pre-line border-l-2 border-emerald-300/80 pl-2.5 ${plannerCaptionMedium} text-gray-800`}>
-                                {info.bannerNote}
+                                {resolvedBannerNote}
                             </p>
                         ) : null}
                     </>
@@ -161,16 +176,16 @@ export default function RentalPickupBanner({ location, essentialGuide, scrollCon
                     <>
                         <div className="mt-1.5">
                             <RentalPickupAirportCopyRow
-                                officialKo={primaryAirport?.officialKo ?? info.officialKo}
+                                displayName={resolveAirportDisplayName(primaryAirport ?? { officialKo: info.officialKo, iata: info.iata })}
                                 iata={primaryAirport?.iata ?? info.iata}
                                 onCopy={handleCopy}
                                 highlight
                                 copyMessages={copyMessages}
                             />
                         </div>
-                        {info.bannerNote ? (
+                        {resolvedBannerNote ? (
                             <p className={`mt-2 whitespace-pre-line border-l-2 border-emerald-300/80 pl-2.5 ${plannerCaptionMedium} text-gray-800`}>
-                                {info.bannerNote}
+                                {resolvedBannerNote}
                             </p>
                         ) : null}
                     </>

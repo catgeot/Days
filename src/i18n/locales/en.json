@@ -538,6 +538,13 @@
           "✨ AI is refreshing the toolkit…"
         ]
       },
+      "mrtQuery": {
+        "stay": "accommodation",
+        "guesthouse": "Korean guesthouse",
+        "transitPass": "transit pass",
+        "restaurant": "restaurant",
+        "stayWithPlace": "{{place}} accommodation"
+      },
       "links": {
         "regionStay": "[{{region}}] Find stays",
         "hotelTripcom": "{{name}} hotels (Trip.com)",
@@ -577,7 +584,8 @@
           "copyOfficialTitle": "Click to copy official airport name",
           "copyIataDone": "IATA code {{code}} copied.",
           "copyIataTitle": "Click to copy IATA code",
-          "copyFailed": "Copy failed. Check clipboard permission in your browser."
+          "copyFailed": "Copy failed. Check clipboard permission in your browser.",
+          "plannerBannerNote": "Arrival airport matches the toolkit route and flight tips. If your ticket differs, switch searches to your actual arrival code."
         },
         "tripcomFlight": {
           "iframeTitle": "Trip.com flight search",
@@ -623,6 +631,23 @@
           "queryLabel": "Query · {{query}}",
           "loadingPrimary": "Loading local tours…",
           "loadingSecondary": "GetYourGuide list will appear shortly"
+        },
+        "airalo": {
+          "aria": "Airalo eSIM partner banner: custom plans in 200+ regions",
+          "subtitleBold": "Custom plans",
+          "subtitleRest": "200+ regions — pick GB and days, pay for what you use"
+        },
+        "holafly": {
+          "aria": "Holafly eSIM partner banner: unlimited-data focus",
+          "subtitleBold": "Unlimited focus",
+          "subtitleRest": "Less data worry — good for long, simple trips"
+        },
+        "directFerries": {
+          "recommendedTitle": "Recommended routes",
+          "subtitle": "Search and book ferry routes worldwide in real time",
+          "features": "Autocomplete · live vessel tracking · instant confirmation",
+          "searchCta": "Search",
+          "affiliateNote": "Direct Ferries partner link — bookings help support this site."
         },
         "mrtTna": {
           "sortRecommended": "Recommended",
