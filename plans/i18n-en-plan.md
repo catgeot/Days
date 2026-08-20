@@ -38,6 +38,7 @@
 | 26 | 써머리·탐색 EN | `영문화 #26, 써머리·탐색 EN` | ✅ Preview |
 | 27 | main 병합 | `영문화 #27, main 병합 — #26 써머리·탐색 EN` | ✅ merge |
 | 28 | PROD 확인 | `영문화 #28, PROD QA — #26 써머리·탐색` | (배포 후 사람) |
+| 29 | i18n 감사 | `영문화 #29, i18n 커버리지 감사` | ✅ baseline |
 
 **1차 (#0~#12)**: UI 카피 · **2차 (#13~#22)**: 지구본 데이터 · TourAPI 본문 · 무니 · 플래너 AI·배너 · **#23**: 첫 방문 브라우저 언어 → locale.
 
@@ -117,18 +118,18 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#27)**: PR [#139](https://github.com/catgeot/Days/pull/139) → **main** · **#28 PROD QA** (배포 후)
+**상태 (#29)**: `audit:i18n` baseline · P0 **23**파일 · hangul debt **152**줄(9파일) · `en` 누락 키 **0**
 
 **브랜치**: `cursor/en` · `/qa/en`
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #28, PROD QA — #26 써머리·탐색
+영문화 #30, P0-A 숙소·탐색 패널 EN
 @plans/feature-handoff-index.md
 @plans/2026-08-20-project-log.md
 @plans/i18n-en-plan.md
-main · www.gateo.kr · 써머리 Find stays/tours · /explore EN
+cursor/en · GlobeStayStrip · SearchDiscoveryModal · audit:i18n
 ```
 
 ### #23 브라우저 locale 자동 — 완료
@@ -205,3 +206,32 @@ main · www.gateo.kr · 써머리 Find stays/tours · /explore EN
 4. **CHA·선정 명승** — TourAPI 아님 · `overview_en`은 추후
 5. **AI 캐시** — `place_chat_intro`·`essential_guide` locale별 키/컬럼 분리
 6. **기존 비주얼 유지** — 카피·locale 분기만
+
+---
+
+## 11. i18n 커버리지 감사 (`audit:i18n`)
+
+| | |
+|--|--|
+| **명령** | `npm run audit:i18n` |
+| **SSOT** | P0 목록 [`scripts/data/i18n-audit-p0.mjs`](../scripts/data/i18n-audit-p0.mjs) |
+| **리포트** | `scripts/outputs/i18n-audit-baseline.json` (gitignore · 실행 시 생성) |
+| **게이트** | `en.json` 누락 키 **0** · P0 파일 존재 — **PASS** |
+| **debt** | P0 한글 리터럴 줄 수 — baseline 추적만(아직 fail 조건 아님) |
+
+### P0 tier (Preview `/qa/en` · #29 baseline)
+
+| Tier | 범위 | 파일 수 | hangul 줄(#29) |
+|------|------|---------|----------------|
+| **A** | 홈·탐색·PlaceCard 써머리/펼침 | 11 | 77 |
+| **B** | 무니·플래너·리뷰·공항 | 7 | 20 |
+| **C** | Auth·공지·한국 UI 셸 | 5 | 55 |
+
+**#29 debt 상위** (다음 세션 P0-A):
+
+1. `GlobeStayStrip.jsx` — 42줄 (숙소·투어·패키지 펼친 패널)
+2. `SearchDiscoveryModal.jsx` — 20줄
+3. `stayDateControls.jsx` — 10줄
+4. `GlobeTourStrip.jsx` — 9줄
+
+**제외·참고**: `FestivalDetailSheet` tier C — UI EN·본문 ko SSOT(Chrome 번역) · `missingInKo` 219건은 en-only 지구본 국가 키
