@@ -62,17 +62,15 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#23 Preview PASS** · **#24 PROD QA** (브라우저 locale·축제 Chrome 번역) |
-| **main** | `50963f69` — PR [#137](https://github.com/catgeot/Days/pull/137) (#21 MOONi) |
-| **브랜치** | `cursor/en` · PR [#138](https://github.com/catgeot/Days/pull/138) (#21~#23) |
-| **tip** | `be20b6c7` |
-| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·#23 |
+| **상태** | **#21~#23 main 병합** `448a3553` · **PROD 배포 후 QA** |
+| **main** | `448a3553` — PR [#138](https://github.com/catgeot/Days/pull/138) |
+| **브랜치** | `cursor/en` (재사용) |
+| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9 |
 | **일지** | [`2026-08-20-project-log.md`](./2026-08-20-project-log.md) |
-| **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` |
 | **PROD** | `https://www.gateo.kr` (시크릿 EN) · `/qa/en` → `/?lang=en` |
 | **VERIFY** | `build` · `smoke:browser-locale-hint` · `smoke:festival-detail-locale` · `smoke:essential-guide-locale` · `smoke:place-label-slug` |
 
-**2차 순서**: ~~#13~#23~~ → **#24 PROD QA** → main 병합
+**2차 순서**: ~~#13~#25~~ → **#26 PROD QA 확인** (배포 후)
 
 **PROD QA 체크** (사람 · 시크릿 창):
 
@@ -80,15 +78,16 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 2. `/korea` — UI EN · 축제 카드 한글 제목·주소에 Chrome 번역 제안
 3. 축제 상세 — overview·info 한글 본문 Chrome 번역 (포스터 이미지 내 한글은 번역 불가)
 4. 헤더 KO 토글 → 한글 UI · 재방문 시 선택 유지
+5. PlaceCard 플래너 — 배너·AI 본문 EN
 
 **다음 제시어**:
 
 ```
-영문화 #25, main 병합 — #21~#23
+영문화 #26, PROD QA 확인 — #21~#23
 @plans/feature-handoff-index.md
 @plans/2026-08-20-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · PR #138 · PROD QA OK 후 merge
+main · www.gateo.kr 시크릿 EN · /korea 축제 번역
 ```
 
 ---

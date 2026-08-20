@@ -53,14 +53,22 @@
   4. 헤더 KO → 한글 UI · 재방문 유지
 - **다음** PROD QA OK → #25 main 병합
 
+## 영문화 #25, main 병합 — #21~#23
+
+- **범위** #21 플래너 배너·UI EN · #22 `essential_guide_en` · #23 브라우저 locale 자동·축제 `lang="ko"`
+- **VERIFY** `smoke:browser-locale-hint` · `smoke:festival-detail-locale` · `smoke:essential-guide-locale` · `smoke:place-label-slug` · `build` PASS
+- **PR** [#138](https://github.com/catgeot/Days/pull/138) → **main** `448a3553`
+- **PROD QA** (사람 · 배포 후) — 시크릿 EN Chrome · `/` 자동 EN · `/korea` 축제 Chrome 번역 · KO 토글
+- **다음** PROD 배포 후 #26 PROD QA 확인·2차 마무리
+
 **다음 제시어**:
 
 ```
-영문화 #25, main 병합 — #21~#23
+영문화 #26, PROD QA 확인 — #21~#23
 @plans/feature-handoff-index.md
 @plans/2026-08-20-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · PR #138 · PROD QA OK 후 merge
+main · www.gateo.kr 시크릿 EN · /korea 축제 번역
 ```
 
 ## 영문화 #23 준비 — 브라우저 locale 자동 (다음 세션)
