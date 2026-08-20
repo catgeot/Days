@@ -29,6 +29,8 @@ function readStoredLocale() {
   }
 }
 
+/** #23: storage 없음(null) vs 기본 ko 구분 — browserLocaleHint 연동 시 readStoredLocaleOrNull 사용 */
+
 function persistLocale(locale) {
   if (typeof window === 'undefined') return;
   try {

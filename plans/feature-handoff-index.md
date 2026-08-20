@@ -62,26 +62,26 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#21~#22 Preview** · PROD QA 후 main 병합 |
+| **상태** | **#23 준비** · 브라우저 locale 자동 (헬퍼·스모크) · Provider 연동은 다음 세션 |
 | **main** | `9157f772` — PR [#136](https://github.com/catgeot/Days/pull/136) (#15~#20) |
-| **브랜치** | `cursor/en` |
-| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§10 |
+| **브랜치** | `cursor/en` · PR [#138](https://github.com/catgeot/Days/pull/138) |
+| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·#23 |
 | **일지** | [`2026-08-20-project-log.md`](./2026-08-20-project-log.md) |
 | **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` |
 | **PROD** | `https://www.gateo.kr/qa/en` → `/?lang=en` |
-| **VERIFY** | `npm run build` · `smoke:place-label-slug` · `smoke:essential-guide-locale` |
+| **VERIFY** | `build` · `smoke:place-label-slug` · `smoke:essential-guide-locale` · `smoke:browser-locale-hint` |
 
-**2차 순서**: ~~#13~#22~~ → **PROD QA·병합**
+**2차 순서**: ~~#13~#22~~ → **#23 브라우저 locale** → PROD QA·병합
 
 **다음 제시어**:
 
 ```
-영문화 #22, PROD QA — #21~#22
+영문화 #23, 브라우저 locale 자동
 @plans/feature-handoff-index.md
 @plans/2026-08-20-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · /qa/en · ?lang=en 플래너 AI 본문·배너
-금지: 새 랜덤 브랜치 · travelSpots.js 전체 Read · UI 리디자인
+cursor/en · LocaleProvider 연동 · smoke:browser-locale-hint
+금지: Google 번역 · IP geo · travelSpots.js 전체 Read
 ```
 
 ---

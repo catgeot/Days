@@ -31,3 +31,27 @@
 - **B** 렌터카 픽업 공항 EN 표기(`getRentalAirportDisplayName`) · MRT 검색어 suffix · PreTravel 숙소 쿼리 · TNA 가격 locale · planner bannerNote i18n
 - **VERIFY** `build` · `smoke:place-label-slug` · `smoke:essential-guide-locale` PASS
 - **브랜치** `cursor/en` · `/qa/en` · `?lang=en`
+
+## 영문화 #23 준비 — 브라우저 locale 자동 (다음 세션)
+
+### 핸드오프
+
+| | |
+|--|--|
+| **결정** | IP geo **아님** · **`navigator.languages`** — `ko*` → ko · 그 외 → en |
+| **우선순위** | `?lang=` → `gateo.locale` → 브라우저 추론 → ko |
+| **헬퍼** | `src/i18n/browserLocaleHint.js` (`resolveInitialLocale`) — **Provider 미연동** |
+| **스모크** | `npm run smoke:browser-locale-hint` |
+| **연동** | `LocaleProvider.jsx` · `config.js` `resolveBootLocale` — `readStoredLocale` null 구분 |
+| **금지** | Google Translate · 저장 locale 덮어쓰기 |
+
+**다음 제시어**:
+
+```
+영문화 #23, 브라우저 locale 자동
+@plans/feature-handoff-index.md
+@plans/2026-08-20-project-log.md
+@plans/i18n-en-plan.md
+cursor/en · LocaleProvider 연동 · smoke:browser-locale-hint
+금지: Google 번역 · IP geo · travelSpots.js 전체 Read
+```
