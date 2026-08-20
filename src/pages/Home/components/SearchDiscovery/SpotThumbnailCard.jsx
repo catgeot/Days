@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MapPin, Compass } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { usePlaceGallery } from '../../../../components/PlaceCard/hooks/usePlaceGallery';
-import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICONS } from './constants';
+import { CATEGORY_COLORS, CATEGORY_ICONS } from './constants';
+import { localizedExploreCategoryLabel } from '../../../../i18n/exploreUi';
 import useClickWithDragPrevention from '../../../../hooks/useClickWithDragPrevention';
 
 const CardBackgroundImage = ({ spot, categoryStyle, icon }) => {
@@ -34,8 +36,9 @@ const CardBackgroundImage = ({ spot, categoryStyle, icon }) => {
 };
 
 const SpotThumbnailCard = ({ spot, onClick, isGrid = false }) => {
+  const { t } = useTranslation();
   const categoryStyle = CATEGORY_COLORS[spot.primaryCategory] || CATEGORY_COLORS.paradise;
-  const categoryLabel = CATEGORY_LABELS[spot.primaryCategory] || '기타';
+  const categoryLabel = localizedExploreCategoryLabel(t, spot.primaryCategory);
   const CategoryIcon = CATEGORY_ICONS[spot.primaryCategory] || Compass;
 
   const [inView, setInView] = useState(false);

@@ -389,6 +389,96 @@
       "urban": "Urban",
       "culture": "Culture",
       "adventure": "Adventure"
+    },
+    "explore": {
+      "backHome": "Home",
+      "filterTheme": "Theme",
+      "filterContinent": "Region",
+      "filterThemePc": "By theme",
+      "filterContinentPc": "By region",
+      "sidebarTitle": "Refine",
+      "scrollTop": "Scroll to top",
+      "clearAll": "Clear all",
+      "searchPlaceholder": "e.g. Sokcho, Paris, Eiffel Tower, burnout",
+      "guideEmpty": "No destination in mind? Type a mood, vibe, or word and AI will suggest places.",
+      "guideTyping": "Pick a city or sight from suggestions, or keep typing and press Enter.",
+      "guideQuery": "Pick from suggestions or press Enter to search \"{{query}}\". Ambiguous names open a picker.",
+      "recentSearches": "Recent searches",
+      "recentSearchesCount": "Recent searches {{count}}",
+      "recentVisited": "Recent places",
+      "recentVisitedCount": "Recent places {{count}}",
+      "keywordVisits": "Keyword history",
+      "keywordVisitsCount": "Keyword history {{count}}",
+      "recentSearch": "Recent search",
+      "removeItem": "Remove {{item}}",
+      "removeRecord": "Remove {{keyword}} record",
+      "collectionCount": "{{count}} curated places",
+      "aiExploreTitle": "Explore the world for <query>{{query}}</query>",
+      "aiExploreHint": "Pick a suggestion below the search bar, or press <strong>Enter</strong> for AI and map search.",
+      "spotCount": "{{count}} places",
+      "aiLoadingTitle": "AI is exploring destinations",
+      "aiLoadingBody": "Checking similar names and typos…",
+      "suggestionsTitle": "Cities, sights & places for \"{{query}}\"",
+      "suggestionsDefault": "Suggestions for \"{{query}}\"",
+      "suggestionsLoading": "Loading",
+      "suggestionsEmpty": "No suggestions. Press Enter for AI and map search.",
+      "disambiguationTitle": "Choose a place",
+      "disambiguationBody": "This name may match several places. Tap a card to open it.",
+      "more": "See more",
+      "categoryOther": "Other",
+      "affiliate": "Sponsored · {{source}}",
+      "continent": {
+        "all": "Editor's picks",
+        "asia": "Asia",
+        "europe": "Europe",
+        "north_america": "North America",
+        "south_america": "South America",
+        "oceania": "Oceania",
+        "africa": "Africa",
+        "middle_east": "Middle East",
+        "unknown": "Special regions"
+      },
+      "theme": {
+        "all": "Editor's picks"
+      },
+      "packageCta": {
+        "family": "Southeast Asia & Japan packages",
+        "japan": "Japan packages",
+        "longhaul": "Europe packages",
+        "resort": "Southeast Asia resort packages"
+      },
+      "leadingPackage": {
+        "title": "Package trips",
+        "subtitle": "Flights, hotels & tours in one",
+        "imageAlt": "Travel flight — MyRealTrip packages",
+        "badge": "Package home",
+        "affiliateSource": "MyRealTrip"
+      },
+      "curation": {
+        "islandTitle": "Island getaways",
+        "islandSubtitle": "Lesser-known islands and archipelagos like Rarotonga, Yap, Gili Meno",
+        "familyTitle": "Easy family trips nearby",
+        "familySubtitle": "Short-haul within 4 hours — {{cta}}",
+        "japanTitle": "Japan packages nearby",
+        "japanSubtitle": "Flight + hotel bundles — {{cta}}",
+        "longhaulTitle": "Europe & long-haul tours",
+        "longhaulSubtitle": "Worry-free transport & language — {{cta}} trips",
+        "resortTitle": "Everyday escape — air-hotel & all-inclusive",
+        "resortSubtitle": "Flights, stay & pickup included — {{cta}}"
+      },
+      "badge": {
+        "여행지": "Destination",
+        "도시": "City",
+        "명소": "Sight",
+        "지역": "Region",
+        "해변": "Beach",
+        "시장": "Market",
+        "사찰": "Temple",
+        "전망": "Viewpoint",
+        "박물관": "Museum",
+        "동네": "Neighborhood",
+        "장소": "Place"
+      }
     }
   },
   "place": {
@@ -465,7 +555,14 @@
       "tapToExplore": "Tap to start exploring",
       "readMore": "More",
       "flightHoursApprox": "about {{hours}}h",
-      "tour3dLabel": "3D tour"
+      "tour3dLabel": "3D tour",
+      "findStays": "Find stays",
+      "findTours": "Find tours",
+      "closeShort": "Close",
+      "findStaysAria": "Find stays",
+      "closeStayListAria": "Close stay list",
+      "findToursAria": "Find tours",
+      "closeTourListAria": "Close tour list"
     },
     "planner": {
       "title": "Smart travel toolkit",

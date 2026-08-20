@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronRight, ChevronLeft, ArrowRight } from 'lucide-react';
 import SpotThumbnailCard from './SpotThumbnailCard';
 import TripLinkSectionCard from './TripLinkSectionCard';
@@ -18,6 +19,7 @@ const CurationSection = ({
   packageLinkUrl,
   packageCtaLabel,
 }) => {
+  const { t } = useTranslation();
   const scrollRef = useRef(null);
   const [showLeftBtn, setShowLeftBtn] = useState(false);
   const [showRightBtn, setShowRightBtn] = useState(true);
@@ -183,7 +185,7 @@ const CurationSection = ({
               <div className="w-12 h-12 rounded-full bg-white/5 group-hover/more:bg-blue-500/20 flex items-center justify-center transition-colors">
                 <ChevronRight size={24} />
               </div>
-              <span className="text-sm font-bold">더 찾아보기</span>
+              <span className="text-sm font-bold">{t('home.explore.more')}</span>
             </div>
           </div>
         </div>

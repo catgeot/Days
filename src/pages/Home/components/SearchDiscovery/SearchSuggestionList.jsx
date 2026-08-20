@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MapPin, Landmark, Building2, Compass, Loader2, ChevronRight } from 'lucide-react';
 import {
   fetchPlaceChatIntroSummaryForLocation,
   needsPlaceChatIntroHydration,
 } from '../../lib/placeChatIntro';
+import { localizedExploreBadgeLabel } from '../../../../i18n/exploreUi';
 
 /** 검색 카드 intro — 3줄 고정 + 더보기 유도 (PlaceCardSummary와 동일 휴리스틱) */
 const SEARCH_INTRO_MORE_MIN_LEN = 72;
@@ -95,6 +97,7 @@ export function SearchSuggestionList({
   title,
   variant = 'panel',
 }) {
+  const { t } = useTranslation();
   if (!query.trim()) return null;
 
   const isPopover = variant === 'popover';
@@ -112,19 +115,19 @@ export function SearchSuggestionList({
         }`}
       >
         <span className="text-[11px] text-white/75">
-          {title || `'${query}' 제안`}
+          {title || t('home.explore.suggestionsDefault', { query })}
         </span>
         {loading && (
           <span className="inline-flex items-center gap-1.5 text-[11px] text-sky-200">
             <Loader2 size={12} className="animate-spin" />
-            불러오는 중
+            {t('home.explore.suggestionsLoading')}
           </span>
         )}
       </div>
 
       {items.length === 0 && !loading ? (
         <p className={`text-sm text-white/70 text-center break-keep ${isPopover ? 'px-3 py-4' : 'px-4 py-6'}`}>
-          제안이 없습니다. Enter로 AI·지도 검색을 이어갈 수 있어요.
+          {t('home.explore.suggestionsEmpty')}
         </p>
       ) : (
         <ul
@@ -133,8 +136,8 @@ export function SearchSuggestionList({
           }`}
         >
           {items.map((item) => {
-            const badge = item.badge || '장소';
-            const badgeClass = BADGE_STYLES[badge] || BADGE_STYLES['장소'];
+            const badge = localizedExploreBadgeLabel(t, item.badge || '장소');
+            const badgeClass = BADGE_STYLES[item.badge || '장소'] || BADGE_STYLES['장소'];
             const locationLine = buildLocationLine(item);
             const desc = resolveCardDesc(item, locationLine);
             const subtitle = [locationLine, desc]
@@ -186,6 +189,7 @@ export function SearchDisambiguationCards({
   onSelect,
   onCancel,
 }) {
+  const { t } = useTranslation();
   const [introByKey, setIntroByKey] = useState({});
 
   const candidateKey = useMemo(
@@ -226,10 +230,10 @@ export function SearchDisambiguationCards({
       <div className="mb-5 flex items-start justify-between gap-3">
         <div>
           <h3 className="text-base md:text-lg font-bold text-white break-keep">
-            {title || '원하는 장소를 선택하세요'}
+            {title || t('home.explore.disambiguationTitle')}
           </h3>
           <p className="mt-1 text-xs text-white/70 break-keep">
-            위치가 여러 곳일 수 있어요. 카드를 누르면 해당 장소로 이동합니다.
+            {t('home.explore.disambiguationBody')}
           </p>
         </div>
         {onCancel && (
@@ -238,15 +242,15 @@ export function SearchDisambiguationCards({
             onClick={onCancel}
             className="shrink-0 text-xs text-white/75 hover:text-white transition-colors"
           >
-            닫기
+            {t('place.summary.closeShort')}
           </button>
         )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 items-stretch">
         {candidates.map((item, index) => {
-          const badge = item.badge || '장소';
-          const badgeClass = BADGE_STYLES[badge] || BADGE_STYLES['장소'];
+          const badge = localizedExploreBadgeLabel(t, item.badge || '장소');
+          const badgeClass = BADGE_STYLES[item.badge || '장소'] || BADGE_STYLES['장소'];
           const locationLine = buildLocationLine(item);
           const hydrated = introByKey[index]
             ? { ...item, desc: introByKey[index], placeChatIntroApplied: true }
@@ -287,7 +291,7 @@ export function SearchDisambiguationCards({
                       className="pointer-events-none absolute bottom-0 right-0 inline-flex items-center gap-0.5 bg-gradient-to-l from-[#32281f] via-[#32281f]/95 to-transparent pl-4 text-[12px] font-semibold leading-[1.55] text-sky-300 group-hover:from-[#3a2f25] group-hover:via-[#3a2f25]/95 group-hover:text-sky-200"
                       aria-hidden="true"
                     >
-                      더보기
+                      {t('place.summary.readMore')}
                       <ChevronRight size={14} className="shrink-0 opacity-80" />
                     </span>
                   ) : null}

@@ -1,8 +1,10 @@
 import React from 'react';
 import { ExternalLink, Tag } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import useClickWithDragPrevention from '../../../../hooks/useClickWithDragPrevention';
 
 const PackageThumbnailCard = ({ pkg, isGrid = false }) => {
+  const { t } = useTranslation();
   /** 원본 종횡비 유지(너비만 카드와 맞추고 높이는 이미지에 맡김) — 가로 배너 등 */
   const intrinsic = !isGrid && pkg.image && pkg.imageLayout === 'intrinsic';
 
@@ -58,7 +60,7 @@ const PackageThumbnailCard = ({ pkg, isGrid = false }) => {
             )}
             <div className="flex items-center gap-2">
               <span className="rounded border border-yellow-400/30 bg-black/60 px-2 py-0.5 text-[10px] font-bold text-yellow-400">
-                제휴광고 · {pkg.affiliateSource || 'TRIPLINK'}
+                {t('home.explore.affiliate', { source: pkg.affiliateSource || 'TRIPLINK' })}
               </span>
               <div className="ml-auto flex h-8 w-8 items-center justify-center rounded-full bg-black/50 opacity-0 backdrop-blur-md transition-opacity duration-300 group-hover:opacity-100">
                 <ExternalLink size={14} className="text-white" />
@@ -134,7 +136,7 @@ const PackageThumbnailCard = ({ pkg, isGrid = false }) => {
         <div className="mt-auto p-1">
           <div className="flex items-center gap-2 mb-1.5">
             <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-black/60 text-yellow-400 border border-yellow-400/30">
-              제휴광고 · {pkg.affiliateSource || 'TRIPLINK'}
+              {t('home.explore.affiliate', { source: pkg.affiliateSource || 'TRIPLINK' })}
             </span>
           </div>
           {!pkg.omitOverlayTitles && (
