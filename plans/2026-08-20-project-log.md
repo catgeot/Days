@@ -75,7 +75,7 @@ main · www.gateo.kr 시크릿 EN · /korea 축제 번역
 
 - **범위** #26 PlaceCard 써머리「숙소 찾기」「투어 찾기」·탐색(`/explore`) UI EN · `exploreUi.js`
 - **VERIFY** `build` · `smoke:browser-locale-hint` · `smoke:festival-detail-locale` · `smoke:essential-guide-locale` · `smoke:place-label-slug` PASS
-- **PR** [#139](https://github.com/catgeot/Days/pull/139) → **main**
+- **PR** [#139](https://github.com/catgeot/Days/pull/139) → **main** `c15c3d54`
 - **PROD QA** (사람 · 배포 후) — 써머리 Find stays/tours · 검색→탐색 필터·큐레이션 EN · #21~#23 항목 유지
 - **남은 일** 숙소/투어 **펼친 패널** 내부 카피 EN 후속
 

@@ -117,7 +117,7 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#27)**: PR [#139](https://github.com/catgeot/Days/pull/139) → **main** · **#28 PROD QA** (배포 후)
+**상태 (#27)**: PR [#139](https://github.com/catgeot/Days/pull/139) → **main** `c15c3d54` · **#28 PROD QA** (배포 후)
 
 **브랜치**: `cursor/en` · `/qa/en`
 
