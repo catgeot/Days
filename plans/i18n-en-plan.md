@@ -117,18 +117,18 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#25)**: PR [#138](https://github.com/catgeot/Days/pull/138) → **main** `448a3553` · **#26 PROD QA** (배포 후)
+**상태 (#27)**: PR [#139](https://github.com/catgeot/Days/pull/139) → **main** · **#28 PROD QA** (배포 후)
 
 **브랜치**: `cursor/en` · `/qa/en`
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #26, PROD QA 확인 — #21~#23
+영문화 #28, PROD QA — #26 써머리·탐색
 @plans/feature-handoff-index.md
 @plans/2026-08-20-project-log.md
 @plans/i18n-en-plan.md
-main · www.gateo.kr 시크릿 EN · /korea 축제 번역
+main · www.gateo.kr · 써머리 Find stays/tours · /explore EN
 ```
 
 ### #23 브라우저 locale 자동 — 완료
