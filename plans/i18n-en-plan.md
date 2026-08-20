@@ -32,7 +32,8 @@
 | 20 | 무니 인트로·탐지 | `영문화 #20, 무니 인트로·탐지` | ✅ Preview |
 | 21 | 플래너 배너·UI | `영문화 #21, 플래너 배너·UI EN` | ✅ Preview |
 | 22 | 플래너 AI 본문 | `영문화 #22, 플래너 AI 본문 EN` | ✅ Preview |
-| 23 | 브라우저 locale | `영문화 #23, 브라우저 locale 자동` | ⏳ 준비됨 |
+| 23 | 브라우저 locale | `영문화 #23, 브라우저 locale 자동` | ✅ Preview |
+| 24 | PROD QA | `영문화 #24, PROD QA — 브라우저 locale` | ⏳ 사람 |
 
 **1차 (#0~#12)**: UI 카피 · **2차 (#13~#22)**: 지구본 데이터 · TourAPI 본문 · 무니 · 플래너 AI·배너 · **#23**: 첫 방문 브라우저 언어 → locale.
 
@@ -112,18 +113,18 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#23)**: 브라우저 locale 자동 연동 완료 · **다음 = PROD QA·병합**
+**상태 (#24)**: #23 Preview PASS · **PROD QA** (시크릿 EN 브라우저·`/korea` 축제 Chrome 번역)
 
-**브랜치**: `cursor/en`
+**브랜치**: `cursor/en` · PR [#138](https://github.com/catgeot/Days/pull/138) · tip `be20b6c7`
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #23, PROD QA — 브라우저 locale
+영문화 #25, main 병합 — #21~#23
 @plans/feature-handoff-index.md
 @plans/2026-08-20-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · /qa/en · 시크릿 EN 브라우저 /korea 축제 Chrome 번역
+cursor/en · PR #138 · PROD QA OK 후 merge
 ```
 
 ### #23 브라우저 locale 자동 — 완료

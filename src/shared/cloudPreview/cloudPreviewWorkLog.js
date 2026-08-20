@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '영문화',
-  sessionNo: 22,
-  sessionPhase: '플래너 AI 본문 EN',
+  sessionNo: 24,
+  sessionPhase: 'PROD QA — 브라우저 locale',
   branch: 'cursor/en',
-  previewPath: '/?lang=en',
+  previewPath: '/',
   qaShareSlug: 'en',
 };
 
@@ -23,6 +23,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-20-i18n-browser-locale-prod-qa',
+    session: '영문화 #24, PROD QA — 브라우저 locale',
+    title: '브라우저 locale 자동·축제 Chrome 번역 PROD QA',
+    detail:
+      '시크릿 창·Chrome 언어 English 우선·gateo.locale 없음 → www.gateo.kr/ 방문 시 UI 자동 EN·?lang=en. /korea 축제 카드·상세 한글 TourAPI 텍스트에 lang=ko — Chrome 번역 제안(포스터 이미지 내 한글 제외). 헤더 KO 토글·재방문 유지 확인. Preview /qa/en · git URL.',
+    at: '2026-08-20',
+  },
+  {
+    id: '2026-08-20-i18n-browser-locale-auto',
+    session: '영문화 #23, 브라우저 locale 자동',
+    title: 'navigator.languages → locale · 축제 lang=ko',
+    detail:
+      '첫 방문: ?lang= → gateo.locale → navigator.languages(ko*→ko, 그 외→en). EN 자동 시 ?lang=en·storage persist. 축제 카드·상세 TourAPI 한글에 lang=ko·translate=yes. smoke:browser-locale-hint PASS.',
+    at: '2026-08-20',
+  },
   {
     id: '2026-08-20-i18n-planner-ai-body-en',
     session: '영문화 #22, 플래너 AI 본문 EN',

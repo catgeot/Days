@@ -40,14 +40,27 @@
 - **VERIFY** `smoke:browser-locale-hint` · `smoke:festival-detail-locale` · `smoke:place-label-slug` · `smoke:essential-guide-locale` · `build` PASS
 - **브랜치** `cursor/en` · `/qa/en` · 시크릿 창 EN 브라우저 → `/` EN UI 자동
 
+## 영문화 #24, PROD QA — 브라우저 locale
+
+- **범위** #23 브라우저 locale 자동 · 축제 `lang="ko"` 마크업 · #21~#22 플래너 EN (PR #138)
+- **VERIFY** `smoke:browser-locale-hint` · `smoke:festival-detail-locale` · `smoke:essential-guide-locale` · `smoke:place-label-slug` · `build` PASS
+- **브랜치** `cursor/en` · tip `be20b6c7` · PR [#138](https://github.com/catgeot/Days/pull/138)
+- **Preview** `https://days-git-cursor-en-catgeots-projects.vercel.app/` · `/qa/en`
+- **PROD QA** (사람 · 시크릿 EN Chrome):
+  1. `www.gateo.kr/` — `gateo.locale` 없음 · UI 자동 EN·`?lang=en`
+  2. `/korea` — UI EN · 축제 카드 한글 제목 Chrome 번역 제안
+  3. 축제 상세 — overview·info 한글 본문 번역 (포스터 이미지 내 한글 제외)
+  4. 헤더 KO → 한글 UI · 재방문 유지
+- **다음** PROD QA OK → #25 main 병합
+
 **다음 제시어**:
 
 ```
-영문화 #23, PROD QA — 브라우저 locale
+영문화 #25, main 병합 — #21~#23
 @plans/feature-handoff-index.md
 @plans/2026-08-20-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · /qa/en · 시크릿 EN 브라우저 /korea 축제 Chrome 번역
+cursor/en · PR #138 · PROD QA OK 후 merge
 ```
 
 ## 영문화 #23 준비 — 브라우저 locale 자동 (다음 세션)
