@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowUp, BedDouble, ChevronRight, ExternalLink, Luggage, MapPin, Ticket, X } from 'lucide-react';
 import GetYourGuideActivitiesWidget from '../../../components/PlaceCard/tabs/planner/components/GetYourGuideActivitiesWidget';
 import MrtTnaActivitiesWidget from '../../../components/PlaceCard/tabs/planner/components/MrtTnaActivitiesWidget';
@@ -152,6 +153,7 @@ export default function GlobeTourStrip({
   /** 숙소 스트립 가능 시 하단 전환 */
   onSwitchToStay = null,
 }) {
+  const { t } = useTranslation();
   const isLg = useIsLg();
   const [expanded, setExpanded] = useState(false);
   const [listFullscreen, setListFullscreen] = useState(false);
@@ -314,7 +316,7 @@ export default function GlobeTourStrip({
       type="button"
       aria-expanded={expanded}
       aria-controls="globe-tour-strip-panel"
-      aria-label={tourTabFolded ? '투어 목록 닫기' : '투어 찾기'}
+      aria-label={tourTabFolded ? t('place.summary.closeTourListAria') : t('place.summary.findToursAria')}
       onClick={(e) => {
         e.stopPropagation();
         toggleOpen();
@@ -338,7 +340,7 @@ export default function GlobeTourStrip({
         className="text-[12px] font-bold tracking-wide"
         style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
       >
-        {tourTabFolded ? '닫기' : '투어 찾기'}
+        {tourTabFolded ? t('place.summary.closeShort') : t('place.summary.findTours')}
       </span>
     </button>
   );

@@ -1,5 +1,6 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowUp,
   ArrowUpDown,
@@ -1060,6 +1061,7 @@ export default function GlobeStayStrip({
   flightOriginIata = null,
   canPreviewFlightRoute: canPreviewFlightRouteProp = false,
 }) {
+  const { t } = useTranslation();
   const isLg = useIsLg();
   const [expanded, setExpanded] = useState(false);
   const [listFullscreen, setListFullscreen] = useState(false);
@@ -1608,7 +1610,7 @@ export default function GlobeStayStrip({
       type="button"
       aria-expanded={expanded}
       aria-controls="globe-stay-strip-panel"
-      aria-label={stayToggleFolded ? '숙소 목록 닫기' : '숙소 찾기'}
+      aria-label={stayToggleFolded ? t('place.summary.closeStayListAria') : t('place.summary.findStaysAria')}
       onClick={(e) => {
         e.stopPropagation();
         if (!isLg) {
@@ -1634,7 +1636,7 @@ export default function GlobeStayStrip({
         <BedDouble size={16} className="shrink-0 text-amber-200" strokeWidth={2.25} />
       )}
       <span className="min-w-0 truncate text-xs font-bold text-amber-50">
-        {stayToggleFolded ? '닫기' : '숙소 찾기'}
+        {stayToggleFolded ? t('place.summary.closeShort') : t('place.summary.findStays')}
       </span>
       {stayToggleFolded ? null : expanded ? (
         <ChevronLeft size={14} className="hidden shrink-0 text-amber-100/70 lg:block" />

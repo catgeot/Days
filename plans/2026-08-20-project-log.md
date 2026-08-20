@@ -71,6 +71,42 @@
 main · www.gateo.kr 시크릿 EN · /korea 축제 번역
 ```
 
+## 영문화 #27, main 병합 — #26 써머리·탐색 EN
+
+- **범위** #26 PlaceCard 써머리「숙소 찾기」「투어 찾기」·탐색(`/explore`) UI EN · `exploreUi.js`
+- **VERIFY** `build` · `smoke:browser-locale-hint` · `smoke:festival-detail-locale` · `smoke:essential-guide-locale` · `smoke:place-label-slug` PASS
+- **PR** [#139](https://github.com/catgeot/Days/pull/139) → **main**
+- **PROD QA** (사람 · 배포 후) — 써머리 Find stays/tours · 검색→탐색 필터·큐레이션 EN · #21~#23 항목 유지
+- **남은 일** 숙소/투어 **펼친 패널** 내부 카피 EN 후속
+
+**다음 제시어**:
+
+```
+영문화 #28, PROD QA — #26 써머리·탐색
+@plans/feature-handoff-index.md
+@plans/2026-08-20-project-log.md
+@plans/i18n-en-plan.md
+main · www.gateo.kr · 써머리 Find stays/tours · /explore EN
+```
+
+## 영문화 #26, PROD QA — 써머리·탐색 EN 보완
+
+- **범위** PlaceCard 써머리「숙소 찾기」「투어 찾기」·검색바 탐색(`/explore`) UI EN
+- **키** `place.summary.findStays/findTours` · `home.explore.*` · `exploreUi.js`
+- **VERIFY** `build` · `smoke:browser-locale-hint` · `smoke:place-label-slug` · `smoke:essential-guide-locale` PASS
+- **브랜치** `cursor/en` · `/qa/en` · `?lang=en`
+- **남은 일** Preview QA → main 병합 · 숙소/투어 **펼친 패널** 내부 카피는 후속
+
+**다음 제시어**:
+
+```
+영문화 #27, main 병합 — #26 써머리·탐색 EN
+@plans/feature-handoff-index.md
+@plans/2026-08-20-project-log.md
+@plans/i18n-en-plan.md
+cursor/en · Preview QA 후 main
+```
+
 ## 영문화 #23 준비 — 브라우저 locale 자동 (다음 세션)
 
 ### 핸드오프

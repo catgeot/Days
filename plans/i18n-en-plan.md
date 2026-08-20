@@ -35,7 +35,9 @@
 | 23 | 브라우저 locale | `영문화 #23, 브라우저 locale 자동` | ✅ Preview |
 | 24 | PROD QA | `영문화 #24, PROD QA — 브라우저 locale` | ✅ 사람 QA |
 | 25 | main 병합 | `영문화 #25, main 병합 — #21~#23` | ✅ merge |
-| 26 | PROD 확인 | `영문화 #26, PROD QA 확인 — #21~#23` | (배포 후 사람) |
+| 26 | 써머리·탐색 EN | `영문화 #26, 써머리·탐색 EN` | ✅ Preview |
+| 27 | main 병합 | `영문화 #27, main 병합 — #26 써머리·탐색 EN` | ✅ merge |
+| 28 | PROD 확인 | `영문화 #28, PROD QA — #26 써머리·탐색` | (배포 후 사람) |
 
 **1차 (#0~#12)**: UI 카피 · **2차 (#13~#22)**: 지구본 데이터 · TourAPI 본문 · 무니 · 플래너 AI·배너 · **#23**: 첫 방문 브라우저 언어 → locale.
 
@@ -115,18 +117,18 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#25)**: PR [#138](https://github.com/catgeot/Days/pull/138) → **main** `448a3553` · **#26 PROD QA** (배포 후)
+**상태 (#27)**: PR [#139](https://github.com/catgeot/Days/pull/139) → **main** · **#28 PROD QA** (배포 후)
 
 **브랜치**: `cursor/en` · `/qa/en`
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #26, PROD QA 확인 — #21~#23
+영문화 #28, PROD QA — #26 써머리·탐색
 @plans/feature-handoff-index.md
 @plans/2026-08-20-project-log.md
 @plans/i18n-en-plan.md
-main · www.gateo.kr 시크릿 EN · /korea 축제 번역
+main · www.gateo.kr · 써머리 Find stays/tours · /explore EN
 ```
 
 ### #23 브라우저 locale 자동 — 완료
