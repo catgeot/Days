@@ -62,25 +62,32 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#36 Preview** — 지역·분류칩 EN · P0 debt **0** |
+| **상태** | **#39 Preview** — ThemeSpotDetailModal·지도 breadcrumb·핀 EN |
 | **main** | PR [#139](https://github.com/catgeot/Days/pull/139) 병합 `c15c3d54` · **#28 PROD QA** (배포 후 사람) |
 | **브랜치** | `cursor/en` (재사용) |
-| **tip** | `211beaf7` |
+| **tip** | `7ae5953b` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§11 |
-| **일지** | [`2026-08-20-project-log.md`](./2026-08-20-project-log.md) |
+| **일지** | [`2026-08-21-project-log.md`](./2026-08-21-project-log.md) |
 | **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` · `/qa/en` |
-| **VERIFY** | `audit:i18n` · `build` · `smoke:korea-scenic-place-label` · `smoke:browser-locale-hint` · `smoke:place-label-slug` · `smoke:festival-detail-locale` |
+| **VERIFY** | `audit:i18n` · `build` · `smoke:korea-scenic-place-label` · `smoke:korea-scenic-map` · `smoke:browser-locale-hint` · `smoke:place-label-slug` · `smoke:festival-detail-locale` |
 
-**2차 순서**: ~~#13~#35 P0~~ · ~~#36 지역칩~~ → **#37 Preview QA 잔여**
+**2차 순서**: ~~#13~#36~~ → **#40 Preview QA** (명승 모달·지도 EN)
+
+**Preview QA** (`?lang=en`):
+
+1. `/korea/theme/scenic` — 칩·place 라벨 EN
+2. 지도 드릴 breadcrumb·칩·핀 EN
+3. `ThemeSpotDetailModal` UI EN · 본문 `lang="ko"`
+4. 크로스 레일·주변 POI·무니·유튜브 EN
 
 **다음 제시어**:
 
 ```
-영문화 #37, Preview QA 잔여
+영문화 #40, Preview QA — 명승 모달·지도 EN
 @plans/feature-handoff-index.md
-@plans/2026-08-20-project-log.md
+@plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · /korea?lang=en · 지역칩 EN 확인 · 마커·작업로그
+cursor/en · /korea/theme/scenic?lang=en · ThemeSpotDetailModal · 지도 breadcrumb
 ```
 
 ---
