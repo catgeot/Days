@@ -65,7 +65,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 | **상태** | **#39·#40 agent VERIFY** — 사람 Preview QA 대기 (명승 모달·지도 EN) |
 | **main** | PR [#139](https://github.com/catgeot/Days/pull/139) 병합 `c15c3d54` · **#28 PROD QA** (배포 후 사람) |
 | **브랜치** | `cursor/en` (재사용) |
-| **tip** | `712e51cf` |
+| **tip** | `739c18de` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§11·§12 |
 | **일지** | [`2026-08-21-project-log.md`](./2026-08-21-project-log.md) |
 | **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` · `/qa/en` |
