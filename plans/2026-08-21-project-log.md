@@ -146,3 +146,10 @@ main · ?lang=en · i18n-en-plan §13 B
 - **판단** 파트너 API `itemName` EN 필드 없음 · `Accept-Language`는 오류 메시지용 — EN Edge·캐시 분기는 중복 호출만 유발
 - **조치** `fetch-mrt-stays`·`fetchMrtStays`·`GlobeStayStrip` locale 분기 제거 · 헤더 `getLocalizedPlaceName` 유지
 - **Edge** `fetch-mrt-stays` 재배포
+
+## 영문화 #42f, PROD QA — 큐레이션 EN·체르마트 플래너 배너
+
+- **큐레이션** `getCurationPrompt(..., { locale })` — `?lang=en` 시 title·description·tips 등 EN 생성 · `CurationHub` 지명 primary EN
+- **체르마트 배너** `bannerNoteEn` overrides → `generate:airports` · `resolveLocalizedBannerNote` · `RentalPickupBanner`
+- **VERIFY** `audit:i18n` · `build` · `smoke:curation-history` PASS
+- **사람 QA** `?lang=en` · `/blog/curation` 새 추천 EN · Zermatt PlaceCard 플래너 배너 노트 EN

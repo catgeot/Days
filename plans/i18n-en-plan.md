@@ -125,7 +125,7 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#42e PROD QA OK)**: SiteUpdateBanner · 숙소 헤더 EN · MRT `itemName` ko SSOT(재호출 금지) — main `abdc315c`.
+**상태 (#42f 완료)**: #42e PROD QA OK · 큐레이션 EN 프롬프트 · 체르마트 `bannerNoteEn` — main push 후 PROD QA.
 
 **다음 (#43 최적화)** — §13 B: 축제 titleEn 캐시·locale 전환·bundle 등. §13 C 백로그는 차차.
 

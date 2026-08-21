@@ -62,8 +62,8 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **main** `#42e` **PROD QA OK** · MRT locale 재호출 롤백 · **다음 #43 최적화** |
-| **main tip** | `abdc315c` |
+| **상태** | **main** `#42e` PROD QA OK · `#42f` 큐레이션 EN·체르마트 `bannerNoteEn` · **다음 #43 최적화** |
+| **main tip** | (이번 push 후) |
 | **브랜치** | `main` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·**§13 B·C** |
 | **일지** | [`2026-08-21-project-log.md`](./2026-08-21-project-log.md) |
@@ -71,7 +71,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 | **VERIFY** | `audit:i18n` · `build` · §13 A 스모크 |
 | **Edge** | `fetch-mrt-stays` — locale 분기 없음 (재배포 ✅) |
 
-**#42 완료** (#42b~e): 로고·About · 버킷·Credits · Updates·투어·항공 · SiteUpdateBanner · 숙소 헤더 EN · MRT `itemName` ko SSOT(재호출 금지)
+**#42 완료** (#42b~f): 로고·About · 버킷·Credits · Updates·투어·항공 · SiteUpdateBanner · 숙소 헤더 EN · MRT `itemName` ko SSOT(재호출 금지) · **큐레이션 EN 프롬프트** · **체르마트 `bannerNoteEn`**
 
 **다음 제시어 (#43)**:
 

@@ -79,6 +79,7 @@ function rowFromPlaceIdOverride(placeId) {
     source: 'curated-override',
     confidence: override.confidence ?? 'high',
     ...(override.bannerNote ? { bannerNote: override.bannerNote } : {}),
+    ...(override.bannerNoteEn ? { bannerNoteEn: override.bannerNoteEn } : {}),
     ...(override.rationale ? { rationale: override.rationale } : {})
   };
 }

@@ -2,7 +2,7 @@
  * 여행지 slug별 도착 공항 수동·검수 매핑 (배너 없음·오탐 보정).
  * IATA는 rentalAirportHubs.js에 등록되어 있어야 런타임·배너에 반영됩니다.
  *
- * @type {Record<string, { primaryIatas: string[], preferredLinkIata?: string, tripFlightArrivalIata?: string, kind?: 'single'|'multi', bannerNote?: string, confidence?: string, rationale?: string }>}
+ * @type {Record<string, { primaryIatas: string[], preferredLinkIata?: string, tripFlightArrivalIata?: string, kind?: 'single'|'multi', bannerNote?: string, bannerNoteEn?: string, confidence?: string, rationale?: string }>}
  */
 export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   hvar: {
@@ -215,6 +215,8 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     searchHintIatas: ['ZRH', 'GVA'],
     bannerNote:
       '체르마트는 공항이 없습니다. 보통 인천→취리히(ZRH) 직항 후 기차로 들어갑니다. 제네바(GVA)도 도착 관문이며 서로 환승 경유지가 아닙니다. 티켓의 최종 도착 코드를 확인해 주세요.',
+    bannerNoteEn:
+      'Zermatt has no airport. Most travelers fly ICN→Zurich (ZRH) direct, then take the train. Geneva (GVA) is also an arrival gateway — they are not transfer hubs for each other. Confirm the final arrival code on your ticket.',
   },
   'san-diego': {
     primaryIatas: ['SAN', 'LAX', 'SFO'],

@@ -51,8 +51,24 @@ import { formatCurationTasteGroupTitle, formatCurationTasteLabel } from '../../.
 const linkBtnClass =
   'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-colors disabled:opacity-40 disabled:cursor-not-allowed';
 
+function curationPrimaryLocation(item, locale) {
+  const isEn = String(locale || '').toLowerCase().startsWith('en');
+  const ko = String(item?.location || '').trim();
+  const en = String(item?.locationEn || '').trim();
+  if (isEn) return en || ko;
+  return ko || en;
+}
+
+function curationSecondaryLocation(item, locale) {
+  const isEn = String(locale || '').toLowerCase().startsWith('en');
+  const ko = String(item?.location || '').trim();
+  const en = String(item?.locationEn || '').trim();
+  if (isEn) return ko && en && ko !== en ? ko : '';
+  return en && en !== ko ? en : '';
+}
+
 function CurationRichBlocks({ data }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const tips = Array.isArray(data?.tips) ? data.tips.filter(Boolean) : [];
   const hasRich = Boolean(data?.whyHidden || data?.bestSeason || tips.length);
   if (!hasRich) return null;
@@ -104,7 +120,7 @@ function CurationResultPanel({
   onNeedLogin,
   onClose,
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -248,11 +264,11 @@ function CurationResultPanel({
           <div className="flex flex-col justify-center min-w-0 flex-1">
             <p className="flex items-center gap-1 text-gray-800 text-sm font-bold min-w-0">
               <MapPin size={12} className="flex-shrink-0 text-blue-500" />
-              <span className="truncate">{data.location}</span>
+              <span className="truncate">{curationPrimaryLocation(data, i18n.language)}</span>
             </p>
-            {data.locationEn ? (
+            {curationSecondaryLocation(data, i18n.language) ? (
               <p className="text-gray-500 text-[15px] ml-4 font-mono truncate mt-0.5 select-all">
-                {data.locationEn}
+                {curationSecondaryLocation(data, i18n.language)}
               </p>
             ) : null}
           </div>
@@ -378,7 +394,7 @@ function HistoryList({
   saveCurationData,
   onNeedLogin,
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   if (!history?.length) return null;
 
   return (
@@ -408,11 +424,15 @@ function HistoryList({
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="text-sm font-bold text-gray-900 truncate">{item.location}</p>
+                    <p className="text-sm font-bold text-gray-900 truncate">
+                      {curationPrimaryLocation(item, i18n.language)}
+                    </p>
                     {item.title ? (
                       <p className="text-xs text-gray-500 truncate mt-0.5 font-light">{item.title}</p>
-                    ) : item.locationEn ? (
-                      <p className="text-[11px] text-gray-400 truncate mt-0.5 font-mono">{item.locationEn}</p>
+                    ) : curationSecondaryLocation(item, i18n.language) ? (
+                      <p className="text-[11px] text-gray-400 truncate mt-0.5 font-mono">
+                        {curationSecondaryLocation(item, i18n.language)}
+                      </p>
                     ) : null}
                     {isMain ? (
                       <p className="text-[10px] text-blue-500 font-medium mt-1">{t('logbook.curationHub.viewingMain')}</p>
@@ -431,7 +451,9 @@ function HistoryList({
                   e.stopPropagation();
                   onDismiss?.(item);
                 }}
-                aria-label={t('logbook.curationHub.dismissAria', { location: item.location })}
+                aria-label={t('logbook.curationHub.dismissAria', {
+                  location: curationPrimaryLocation(item, i18n.language),
+                })}
                 title={t('logbook.curationHub.dismissTitle')}
                 className="flex-shrink-0 self-center mr-2 p-2 rounded-full border border-gray-200/90 bg-white/80 text-gray-500 hover:text-rose-600 hover:bg-rose-50 hover:border-rose-200 transition-colors"
               >
@@ -458,7 +480,7 @@ function HistoryList({
 }
 
 function TasteChip({ opt, on, onToggle }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   return (
     <button
       type="button"
@@ -475,7 +497,7 @@ function TasteChip({ opt, on, onToggle }) {
 }
 
 function TasteSurveyModal({ open, mode = 'first', selected, onToggleTag, onSkip, onConfirm }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   if (!open) return null;
   const isReset = mode === 'reset';
   return (
@@ -552,7 +574,7 @@ function TasteSurveyModal({ open, mode = 'first', selected, onToggleTag, onSkip,
 }
 
 const CurationHub = ({ compact = false } = {}) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { status, curationData, history, generateCuration, dismissFromHistory } = useCurationAI();
 

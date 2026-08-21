@@ -8,7 +8,7 @@ import travelSpotAirportsData from '../pages/Home/data/travelSpotAirports.json' 
 
 const toRad = (d) => (d * Math.PI) / 180;
 
-/** @type {Record<string, { primaryIatas: string[], preferredLinkIata?: string, tripFlightArrivalIata?: string, kind?: string, bannerNote?: string, searchHintIatas?: string[], klookRentalHomeSearchLabel?: string, klookRentalSearchLabel?: string, klookRentalSearchMode?: string }>} */
+/** @type {Record<string, { primaryIatas: string[], preferredLinkIata?: string, tripFlightArrivalIata?: string, kind?: string, bannerNote?: string, bannerNoteEn?: string, searchHintIatas?: string[], klookRentalHomeSearchLabel?: string, klookRentalSearchLabel?: string, klookRentalSearchMode?: string }>} */
 const STATIC_SPOT_AIRPORT_MAP = travelSpotAirportsData.spots ?? {};
 
 /** DB place_toolkit.place_id·사용자 입력 지명 (공식 travelSpots slug 없음 포함) */
@@ -169,7 +169,8 @@ function resolveRentalPickupBannerFromStaticMap(
       officialKo: hub.officialKo,
       iata: hub.iata,
       fromStaticMap: true,
-      ...(row.bannerNote ? { bannerNote: row.bannerNote } : {})
+      ...(row.bannerNote ? { bannerNote: row.bannerNote } : {}),
+      ...(row.bannerNoteEn ? { bannerNoteEn: row.bannerNoteEn } : {}),
     };
   }
 
@@ -182,8 +183,16 @@ function resolveRentalPickupBannerFromStaticMap(
     airports: [linkHub, ...others],
     linkHub,
     ...(row.bannerNote ? { bannerNote: row.bannerNote } : {}),
+    ...(row.bannerNoteEn ? { bannerNoteEn: row.bannerNoteEn } : {}),
     fromStaticMap: true
   };
+}
+
+export function resolveLocalizedBannerNote(info, locale) {
+  if (!info) return '';
+  const isEn = String(locale || '').toLowerCase().startsWith('en');
+  const note = isEn ? info.bannerNoteEn || info.bannerNote : info.bannerNote;
+  return String(note || '').trim();
 }
 
 export function distanceKm(lat1, lng1, lat2, lng2) {
@@ -203,7 +212,7 @@ const MIN_ALIAS_LEN = 4;
  * 렌터카 링크와 별개로, 플래너 상단에 둘 이상의 도착 공항을 안내할 여행지.
  * `phrases` 중 하나가 slug·이름(한/영)에 부분 일치하면 적용됩니다. 더 구체적인 행을 위에 둡니다.
  *
- * @typedef {{ phrases: string[], iataCodes: string[], preferredLinkIata?: string, bannerNote?: string, searchHintIatas?: string[] }} RentalMultiAirportRow
+ * @typedef {{ phrases: string[], iataCodes: string[], preferredLinkIata?: string, bannerNote?: string, bannerNoteEn?: string, searchHintIatas?: string[] }} RentalMultiAirportRow
  */
 
 /** @type {RentalMultiAirportRow[]} */
@@ -214,7 +223,9 @@ export const RENTAL_MULTI_AIRPORT_DESTINATIONS = [
     preferredLinkIata: 'ZRH',
     searchHintIatas: ['ZRH', 'GVA'],
     bannerNote:
-      '체르마트는 차량 통제 구역이라 공항 도착 후 기차(취리히·제네바 공항역 → 비스프 등)로 이어지는 일정이 흔합니다. 지도상으로는 북이탈리아 공항이 가깝게 보일 수 있어도, 실제 티켓·입국·연결은 스위스 관문(ZRH·GVA)을 먼저 확인해 주세요.'
+      '체르마트는 차량 통제 구역이라 공항 도착 후 기차(취리히·제네바 공항역 → 비스프 등)로 이어지는 일정이 흔합니다. 지도상으로는 북이탈리아 공항이 가깝게 보일 수 있어도, 실제 티켓·입국·연결은 스위스 관문(ZRH·GVA)을 먼저 확인해 주세요.',
+    bannerNoteEn:
+      'Zermatt is car-free — most itineraries continue by train from Zurich or Geneva airport stations (e.g. Visp). Northern Italian airports may look closer on the map, but tickets, entry, and connections usually go through Swiss gateways (ZRH·GVA) first.',
   },
   {
     phrases: ['lofoten', '로포텐', 'lofoten islands', 'moskenes', '모스케네스', 'reine', '레이네', 'vesteralen', '베스테란'],
@@ -983,7 +994,7 @@ export function resolveRentalPickupBannerInfo(location, options = {}) {
     if (!matchMultiAirportDestination(location, row)) continue;
     const airports = airportsFromIataCodes(row.iataCodes);
     const linkHub = resolveLinkHubWithinMulti(location, row, airports);
-    return { kind: 'multi', airports, linkHub, bannerNote: row.bannerNote };
+    return { kind: 'multi', airports, linkHub, bannerNote: row.bannerNote, bannerNoteEn: row.bannerNoteEn };
   }
 
   const single = resolveRentalAirport(location);

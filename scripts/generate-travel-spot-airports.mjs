@@ -114,6 +114,7 @@ function rowFromOverride(override) {
     source: 'curated-override',
     confidence: override.confidence ?? 'high',
     ...(override.bannerNote ? { bannerNote: override.bannerNote } : {}),
+    ...(override.bannerNoteEn ? { bannerNoteEn: override.bannerNoteEn } : {}),
     ...(override.rationale ? { rationale: override.rationale } : {}),
     ...(Array.isArray(override.searchHintIatas) && override.searchHintIatas.length
       ? { searchHintIatas: filterRegisteredIatas(override.searchHintIatas) }
@@ -203,6 +204,7 @@ function rowFromPlaceIdOverride(override) {
     source: 'curated-override',
     confidence: override.confidence ?? 'high',
     ...(override.bannerNote ? { bannerNote: override.bannerNote } : {}),
+    ...(override.bannerNoteEn ? { bannerNoteEn: override.bannerNoteEn } : {}),
     ...(override.rationale ? { rationale: override.rationale } : {}),
     ...(hints.length ? { searchHintIatas: hints } : {}),
     ...(override.tripFlightArrivalIata

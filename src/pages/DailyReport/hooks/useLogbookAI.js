@@ -271,6 +271,7 @@ export const useCurationAI = () => {
         tasteTags: tags,
         recentSearches,
         recentVisited,
+        locale: i18n.language,
       });
 
       const resultText = await apiClient.fetchProxyGemini(null, [], systemPrompt, "");

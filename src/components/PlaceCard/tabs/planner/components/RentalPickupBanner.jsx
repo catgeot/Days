@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowDown, Car } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { resolveRentalPickupBannerInfo, resolveBannerPeerAlternateAirports, getRentalAirportDisplayName } from '../../../../../utils/rentalAirportMatch.js';
+import { resolveRentalPickupBannerInfo, resolveBannerPeerAlternateAirports, getRentalAirportDisplayName, resolveLocalizedBannerNote } from '../../../../../utils/rentalAirportMatch.js';
 import { shouldShowOfficialFlightBooking } from '../../../../../utils/flightBookingMatch.js';
 import { PLANNER_FOCUS_ID, scrollPlannerFocusIntoView } from '../../../../../utils/placePlannerFocus.js';
 import { plannerCaption, plannerCaptionMedium, plannerCaptionStrong, plannerMicroLabel } from '../readableText';
@@ -88,8 +88,8 @@ export default function RentalPickupBanner({ location, essentialGuide, scrollCon
         if (info?.plannerSourcedNote) {
             return t('place.planner.banners.rentalPickup.plannerBannerNote');
         }
-        return info?.bannerNote?.trim() || '';
-    }, [info, t]);
+        return resolveLocalizedBannerNote(info, i18n.language);
+    }, [info, t, i18n.language]);
 
     const showFlightNav = useMemo(
         () => Boolean(resolvedBannerNote) || shouldShowOfficialFlightBooking(location),

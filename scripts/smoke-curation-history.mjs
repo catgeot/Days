@@ -4,6 +4,7 @@
  * Usage: node scripts/smoke-curation-history.mjs
  */
 import { dirname, join } from 'node:path';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -149,7 +150,7 @@ const emptyActive = resolveActiveCurationPanel({
 assert(emptyActive.panel === null && emptyActive.from === null, 'no history → no panel (execution main)');
 
 const { getCurationPrompt } = await import(
-  pathToFileURL(join(root, 'src/pages/Home/lib/prompts.js')).href
+  pathToFileURL(join(root, 'src/pages/Home/lib/curationPrompt.js')).href
 );
 const prompt = getCurationPrompt([], [], [{ location: '제외지' }, '문자열제외'], {
   rejectedList: [{ location: '라자암팟 제도' }],
@@ -200,6 +201,26 @@ assert(
     getCurationPrompt([], [], [], { tasteTags: ['snow', 'rainy', 'midnight_sun', 'aurora'] }).includes('백야') &&
     getCurationPrompt([], [], [], { tasteTags: ['snow', 'rainy', 'midnight_sun', 'aurora'] }).includes('오로라'),
   'prompt winter·rain·special labels',
+);
+
+const promptEn = getCurationPrompt([], [], [], { locale: 'en', tasteTags: ['sea', 'quiet'] });
+assert(promptEn.includes('English only') && promptEn.includes('Sea & islands'), 'prompt en locale');
+assert(!promptEn.includes("반드시 '한국어'"), 'prompt en drops ko-only body rules');
+
+const { resolveRentalPickupBannerInfo, resolveLocalizedBannerNote } = await import(
+  pathToFileURL(join(root, 'src/utils/rentalAirportMatch.js')).href
+);
+const airportsJson = JSON.parse(readFileSync(join(root, 'src/pages/Home/data/travelSpotAirports.json'), 'utf8'));
+const zermattRow = airportsJson.spots?.zermatt;
+assert(zermattRow?.bannerNoteEn?.includes('Zermatt has no airport'), 'zermatt bannerNoteEn in airports json');
+const zermattBanner = resolveRentalPickupBannerInfo({ slug: 'zermatt', name: '체르마트', name_en: 'Zermatt' });
+assert(
+  resolveLocalizedBannerNote(zermattBanner, 'en').includes('Zermatt has no airport'),
+  'zermatt localized banner note en',
+);
+assert(
+  resolveLocalizedBannerNote(zermattBanner, 'ko').includes('체르마트'),
+  'zermatt localized banner note ko',
 );
 
 if (failed > 0) {

@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-08-11T22:19:08.498Z",
+    "generatedAt": "2026-08-21T22:57:21.464Z",
     "spotCount": 273,
     "placeIdCount": 647,
     "stats": {
@@ -1823,6 +1823,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "체르마트는 공항이 없습니다. 보통 인천→취리히(ZRH) 직항 후 기차로 들어갑니다. 제네바(GVA)도 도착 관문이며 서로 환승 경유지가 아닙니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "Zermatt has no airport. Most travelers fly ICN→Zurich (ZRH) direct, then take the train. Geneva (GVA) is also an arrival gateway — they are not transfer hubs for each other. Confirm the final arrival code on your ticket.",
       "rationale": "ICN↔ZRH 직항(대한항공·스위스 등) · graph-2hop ICN→MUC→GVA→ZRH 오탐(GVA·ZRH는 체르마트 도착 관문, 상호 경유 아님)",
       "searchHintIatas": [
         "ZRH",
