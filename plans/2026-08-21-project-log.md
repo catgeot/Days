@@ -21,12 +21,20 @@
 - **동작** 줌 ≥12에서 `labelFull` 표시 · `<12`는 기존 10자 truncate · 핀과 동일 `KOREA_MAP_PIN_LABEL_FULL_ZOOM`
 - **VERIFY** `smoke:korea-scenic-nearby` · `smoke:korea-scenic-map` · `build` PASS
 
-**다음 제시어**:
+## 영문화 #40, Preview QA — 명승 모달·지도 EN
+
+- **수정** `ThemeSpotDetailModal` 헤더 `displayTitle` → `scenicSpotMapTitle(spot, locale)` (EN title 누락)
+- **스모크** `smoke:korea-theme-spot-modal` i18n 키 assert · `smoke:scenic-detail-locale` breadcrumb·핀·title EN 검증 추가
+- **VERIFY** `audit:i18n` · `build` · `smoke:scenic-detail-locale` · `smoke:korea-scenic-place-label` · `smoke:korea-scenic-map` · `smoke:korea-scenic-nearby` · `smoke:place-label-slug` PASS
+- **브랜치** `cursor/en` · `/qa/en` · PR #141
+- **다음** 사람 Preview QA → **#41 축제 지도·title EN**
+
+**다음 제시어 (#41)**:
 
 ```
-영문화 #40, Preview QA — 명승 모달·지도 EN
+영문화 #41, 축제 지도·title EN
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · /korea/theme/scenic?lang=en · ThemeSpotDetailModal · 지도 breadcrumb
+cursor/en · /korea?lang=en · KoreaFestivalMap · titleEn join
 ```
