@@ -12,9 +12,11 @@ import {
 import { canShowMrtStayStrip } from '../../../utils/mrtStayQuery';
 import {
   canShowMrtPackageStrip,
+  resolveMrtPackageDisplayKeyword,
   resolveMrtPackageSearchKeyword,
 } from '../../../utils/mrtPackageQuery';
 import { canShowMrtTnaStrip } from '../../../utils/mrtTnaQuery';
+import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
 import Logo from './Logo';
 
 const LG_MQ = '(min-width: 1024px)';
@@ -34,6 +36,7 @@ function useIsLg() {
 }
 
 function TourPanelHeader({ placeName = '', onClose, density = 'desktop' }) {
+  const { t } = useTranslation();
   const title = String(placeName || '').trim();
   const mobile = density === 'mobile';
   return (
@@ -64,14 +67,16 @@ function TourPanelHeader({ placeName = '', onClose, density = 'desktop' }) {
                 mobile ? 'text-sm' : 'text-[15px]'
               }`}
             >
-              {title ? `${title} 투어` : '투어 찾기'}
+              {title
+                ? t('home.tourStrip.panelTitlePlace', { name: title })
+                : t('home.tourStrip.panelTitleDefault')}
             </p>
           </div>
         </div>
         {onClose ? (
           <button
             type="button"
-            aria-label="투어 목록 닫기"
+            aria-label={t('home.tourStrip.closeListAria')}
             onClick={(e) => {
               e.stopPropagation();
               onClose();
@@ -89,10 +94,11 @@ function TourPanelHeader({ placeName = '', onClose, density = 'desktop' }) {
 }
 
 function TourPanelIntro() {
+  const { t } = useTranslation();
   return (
     <div className="mb-5 rounded-2xl border border-orange-400/25 bg-orange-500/10 px-3 py-2.5">
       <p className="text-center text-sm font-semibold leading-snug text-orange-100/80 break-keep">
-        현지에서 즐길 투어·액티비티를 골라보세요
+        {t('home.tourStrip.intro')}
       </p>
     </div>
   );
@@ -100,6 +106,7 @@ function TourPanelIntro() {
 
 /** 투어 → 숙소 모달 전환 (인라인 목록 없음) */
 function TourSwitchToStayFooter({ onSwitch }) {
+  const { t } = useTranslation();
   if (typeof onSwitch !== 'function') return null;
   return (
     <button
@@ -111,15 +118,17 @@ function TourSwitchToStayFooter({ onSwitch }) {
       className="inline-flex max-w-full items-center justify-center gap-2 rounded-xl border border-amber-300/40 bg-amber-500/15 px-4 py-3 text-[13px] font-semibold text-amber-50 shadow-[0_2px_12px_rgba(245,158,11,0.12)] backdrop-blur-sm transition-colors hover:border-amber-200/55 hover:bg-amber-500/25 active:scale-[0.98]"
     >
       <BedDouble size={16} className="shrink-0 text-amber-200/90" strokeWidth={2.25} aria-hidden />
-      <span className="break-keep">편하게 묵을 숙소를 알아보세요</span>
+      <span className="break-keep">{t('home.tourStrip.switchToStay')}</span>
     </button>
   );
 }
 
 /** 투어 모달 하단 — 패키지 /pkc 검색 (목록 API 없음 · 새 탭) */
 function TourPackageMoreFooter({ location }) {
+  const { i18n } = useTranslation();
   if (!canShowMrtPackageStrip(location)) return null;
   const keyword = resolveMrtPackageSearchKeyword(location);
+  const displayKeyword = resolveMrtPackageDisplayKeyword(location, i18n.language);
   const href = buildMrtPkcUrlForLocation(location, {
     utmContent: 'tour-package-more',
   });
@@ -133,7 +142,9 @@ function TourPackageMoreFooter({ location }) {
       className="inline-flex max-w-full items-center justify-center gap-2 rounded-xl border border-teal-300/40 bg-teal-500/15 px-4 py-3 text-[13px] font-semibold text-teal-50 shadow-[0_2px_12px_rgba(20,184,166,0.12)] backdrop-blur-sm transition-colors hover:border-teal-200/55 hover:bg-teal-500/25 active:scale-[0.98]"
     >
       <Luggage size={16} className="shrink-0 text-teal-200/90" strokeWidth={2.25} aria-hidden />
-      <span className="break-keep">{formatMrtPackageProductCtaLabel(keyword)}</span>
+      <span className="break-keep">
+        {formatMrtPackageProductCtaLabel(keyword, { displayKeyword })}
+      </span>
       <ExternalLink size={14} className="shrink-0 opacity-80" aria-hidden />
     </a>
   );
@@ -153,7 +164,7 @@ export default function GlobeTourStrip({
   /** 숙소 스트립 가능 시 하단 전환 */
   onSwitchToStay = null,
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isLg = useIsLg();
   const [expanded, setExpanded] = useState(false);
   const [listFullscreen, setListFullscreen] = useState(false);
@@ -202,7 +213,7 @@ export default function GlobeTourStrip({
   const showPeerStayCta = Boolean(onSwitchToStay) && peerStayEligible;
   const showPackageMore = canShowMrtPackageStrip(location);
   const showTourFooter = showPackageMore || showPeerStayCta;
-  const name = location?.name || '';
+  const name = getLocalizedPlaceName(location, i18n.language) || location?.name || '';
   const placeKey = `${location?.slug || ''}|${name}|${location?.lat}|${location?.lng}|${useMrtTna ? 'mrt' : 'gyg'}`;
   const mobileOpen = !isLg && listFullscreen;
   const desktopOpen = Boolean(expanded && isLg);
@@ -387,7 +398,7 @@ export default function GlobeTourStrip({
           <div
             id="globe-tour-strip-panel"
             role="region"
-            aria-label="투어 목록"
+            aria-label={t('home.tourStrip.listRegionAria')}
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
             className="fixed z-[61] left-0 top-0 bottom-0 right-[calc(2rem+400px+0.75rem)] xl:right-[calc(2rem+440px+0.75rem)] flex flex-col overflow-hidden border-2 border-orange-200/35 bg-black/85 shadow-[0_0_28px_rgba(249,115,22,0.16)] backdrop-blur-xl"
@@ -411,7 +422,7 @@ export default function GlobeTourStrip({
             </div>
             <button
               type="button"
-              aria-label="맨 위로"
+              aria-label={t('home.tourStrip.scrollTopAria')}
               onClick={() => {
                 desktopListScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
               }}
@@ -422,7 +433,7 @@ export default function GlobeTourStrip({
               }`}
             >
               <ArrowUp size={16} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
-              <span className="text-xs font-bold">맨 위</span>
+              <span className="text-xs font-bold">{t('home.tourStrip.scrollTop')}</span>
             </button>
           </div>,
           document.body
@@ -436,7 +447,7 @@ export default function GlobeTourStrip({
             id="globe-tour-strip-panel"
             role="dialog"
             aria-modal="true"
-            aria-label="투어 전체 목록"
+            aria-label={t('home.tourStrip.listFullscreenAria')}
             className="fixed inset-0 z-[80] flex flex-col bg-black/95"
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
@@ -460,7 +471,7 @@ export default function GlobeTourStrip({
             </div>
             <button
               type="button"
-              aria-label="맨 위로"
+              aria-label={t('home.tourStrip.scrollTopAria')}
               onClick={() => {
                 mobileListScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
               }}
@@ -471,7 +482,7 @@ export default function GlobeTourStrip({
               }`}
             >
               <ArrowUp size={18} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
-              <span className="text-xs font-bold">맨 위</span>
+              <span className="text-xs font-bold">{t('home.tourStrip.scrollTop')}</span>
             </button>
           </div>,
           document.body

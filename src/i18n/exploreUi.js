@@ -1,5 +1,9 @@
 import { CATEGORY_LABELS } from '../pages/Home/components/SearchDiscovery/constants';
 
+/** SSOT explore badge keys — BADGE_STYLES·localizedExploreBadgeLabel lookup */
+export const EXPLORE_BADGE_PLACE = '장소';
+export const EXPLORE_BADGE_REGION = '지역';
+
 /**
  * @param {import('i18next').TFunction} t
  * @param {string} id

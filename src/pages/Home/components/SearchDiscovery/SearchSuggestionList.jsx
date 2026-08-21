@@ -5,7 +5,16 @@ import {
   fetchPlaceChatIntroSummaryForLocation,
   needsPlaceChatIntroHydration,
 } from '../../lib/placeChatIntro';
-import { localizedExploreBadgeLabel } from '../../../../i18n/exploreUi';
+import {
+  EXPLORE_BADGE_PLACE,
+  EXPLORE_BADGE_REGION,
+  localizedExploreBadgeLabel,
+} from '../../../../i18n/exploreUi';
+import {
+  getLocalizedCountryName,
+  getLocalizedPlaceName,
+  getPlaceTitleLinesForLocale,
+} from '../../../../components/PlaceCard/common/locationDisplay';
 
 /** 검색 카드 intro — 3줄 고정 + 더보기 유도 (PlaceCardSummary와 동일 휴리스틱) */
 const SEARCH_INTRO_MORE_MIN_LEN = 72;
@@ -32,10 +41,10 @@ const normalizeCompare = (s) =>
     .replace(/[·・.,]/g, '');
 
 /** 위치 줄: 이름에 이미 포함된 상위 도시는 생략 */
-function buildLocationLine(item) {
-  const name = String(item?.name || '').trim();
+function buildLocationLine(item, locale = 'ko') {
+  const name = getLocalizedPlaceName(item, locale) || String(item?.name || '').trim();
   const parent = String(item?.parentCity || '').trim();
-  const country = String(item?.country || '').trim();
+  const country = getLocalizedCountryName(item, locale) || String(item?.country || '').trim();
   const parts = [];
   if (parent && parent !== name && !name.includes(parent)) {
     parts.push(parent);
@@ -66,7 +75,7 @@ function resolveCardDesc(item, locationLine) {
     [parent, badge],
     [parent, name],
     [parent, country],
-    [parent, '지역'],
+    [parent, EXPLORE_BADGE_REGION],
     [name, country],
     [name, badge],
   ];
@@ -97,7 +106,7 @@ export function SearchSuggestionList({
   title,
   variant = 'panel',
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   if (!query.trim()) return null;
 
   const isPopover = variant === 'popover';
@@ -136,9 +145,12 @@ export function SearchSuggestionList({
           }`}
         >
           {items.map((item) => {
-            const badge = localizedExploreBadgeLabel(t, item.badge || '장소');
-            const badgeClass = BADGE_STYLES[item.badge || '장소'] || BADGE_STYLES['장소'];
-            const locationLine = buildLocationLine(item);
+            const badgeKey = item.badge || EXPLORE_BADGE_PLACE;
+            const badge = localizedExploreBadgeLabel(t, badgeKey);
+            const badgeClass = BADGE_STYLES[badgeKey] || BADGE_STYLES[EXPLORE_BADGE_PLACE];
+            const displayName =
+              getLocalizedPlaceName(item, i18n.language) || String(item?.name || '').trim();
+            const locationLine = buildLocationLine(item, i18n.language);
             const desc = resolveCardDesc(item, locationLine);
             const subtitle = [locationLine, desc]
               .filter(Boolean)
@@ -160,7 +172,7 @@ export function SearchSuggestionList({
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-sm font-semibold text-white truncate">{item.name}</span>
+                      <span className="text-sm font-semibold text-white truncate">{displayName}</span>
                       <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium ${badgeClass}`}>
                         {badge}
                       </span>
@@ -189,7 +201,7 @@ export function SearchDisambiguationCards({
   onSelect,
   onCancel,
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [introByKey, setIntroByKey] = useState({});
 
   const candidateKey = useMemo(
@@ -249,9 +261,11 @@ export function SearchDisambiguationCards({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 items-stretch">
         {candidates.map((item, index) => {
-          const badge = localizedExploreBadgeLabel(t, item.badge || '장소');
-          const badgeClass = BADGE_STYLES[item.badge || '장소'] || BADGE_STYLES['장소'];
-          const locationLine = buildLocationLine(item);
+          const badgeKey = item.badge || EXPLORE_BADGE_PLACE;
+          const badge = localizedExploreBadgeLabel(t, badgeKey);
+          const badgeClass = BADGE_STYLES[badgeKey] || BADGE_STYLES[EXPLORE_BADGE_PLACE];
+          const { primaryName, secondaryName } = getPlaceTitleLinesForLocale(item, i18n.language);
+          const locationLine = buildLocationLine(item, i18n.language);
           const hydrated = introByKey[index]
             ? { ...item, desc: introByKey[index], placeChatIntroApplied: true }
             : item;
@@ -270,9 +284,11 @@ export function SearchDisambiguationCards({
                   {badge}
                 </span>
               </div>
-              <div className="text-[15px] md:text-sm font-bold text-white break-keep leading-snug">{item.name}</div>
-              {item.name_en && item.name_en !== item.name ? (
-                <div className="mt-1 text-[13px] text-white/90 leading-snug">{item.name_en}</div>
+              <div className="text-[15px] md:text-sm font-bold text-white break-keep leading-snug">
+                {primaryName || item.name}
+              </div>
+              {secondaryName ? (
+                <div className="mt-1 text-[13px] text-white/90 leading-snug">{secondaryName}</div>
               ) : null}
               {locationLine ? (
                 <div className="mt-2 text-[13px] text-amber-50/80 break-keep">{locationLine}</div>

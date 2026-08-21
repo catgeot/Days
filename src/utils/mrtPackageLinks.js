@@ -116,9 +116,9 @@ export function resolveMrtPackageThemeForLocation(location, options = {}) {
   return resolveMrtPackageThemeHref(key, options);
 }
 
-/** 숙소·투어 모달 CTA 문구 — 예: `더블린 패키지 상품보기` */
-export function formatMrtPackageProductCtaLabel(keyword) {
-  const k = String(keyword ?? '').trim();
+/** 숙소·투어 모달 CTA 문구 — 예: `View Timbuktu package deals` */
+export function formatMrtPackageProductCtaLabel(keyword, options = {}) {
+  const k = String(options.displayKeyword ?? keyword ?? '').trim();
   return k
     ? i18n.t('home.stayStrip.packageCta', { keyword: k })
     : i18n.t('home.stayStrip.packageCtaDefault');

@@ -314,6 +314,17 @@
       "packageCta": "{{keyword}} 패키지 상품보기",
       "packageCtaDefault": "패키지 상품보기"
     },
+    "tourStrip": {
+      "panelTitlePlace": "{{name}} 투어",
+      "panelTitleDefault": "투어 찾기",
+      "closeListAria": "투어 목록 닫기",
+      "intro": "현지에서 즐길 투어·액티비티를 골라보세요",
+      "switchToStay": "편하게 묵을 숙소를 알아보세요",
+      "listRegionAria": "투어 목록",
+      "listFullscreenAria": "투어 전체 목록",
+      "scrollTopAria": "맨 위로",
+      "scrollTop": "맨 위"
+    },
     "stayDate": {
       "pickDate": "날짜 선택",
       "monthTitle": "{{year}}년 {{month}}월",

@@ -535,6 +535,17 @@
       "packageCta": "View {{keyword}} package deals",
       "packageCtaDefault": "View package deals"
     },
+    "tourStrip": {
+      "panelTitlePlace": "{{name}} tours",
+      "panelTitleDefault": "Find tours",
+      "closeListAria": "Close tour list",
+      "intro": "Browse local tours and activities",
+      "switchToStay": "Explore places to stay nearby",
+      "listRegionAria": "Tour list",
+      "listFullscreenAria": "Full tour list",
+      "scrollTopAria": "Scroll to top",
+      "scrollTop": "Top"
+    },
     "stayDate": {
       "pickDate": "Select dates",
       "monthTitle": "{{month}} {{year}}",

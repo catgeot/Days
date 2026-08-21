@@ -34,6 +34,7 @@ import {
 import { canShowMrtTnaStrip } from '../../../utils/mrtTnaQuery';
 import {
   canShowMrtPackageStrip,
+  resolveMrtPackageDisplayKeyword,
   resolveMrtPackageSearchKeyword,
 } from '../../../utils/mrtPackageQuery';
 import {
@@ -793,8 +794,10 @@ function StaySwitchToTourFooter({ onSwitch, compact = false }) {
 
 /** 숙소 모달 하단 — 패키지 /pkc 검색 (목록 API 없음 · 새 탭) */
 function StayPackageMoreFooter({ location, compact = false }) {
+  const { i18n } = useTranslation();
   if (!canShowMrtPackageStrip(location)) return null;
   const keyword = resolveMrtPackageSearchKeyword(location);
+  const displayKeyword = resolveMrtPackageDisplayKeyword(location, i18n.language);
   const href = buildMrtPkcUrlForLocation(location, {
     utmContent: 'stay-package-more',
   });
@@ -817,7 +820,9 @@ function StayPackageMoreFooter({ location, compact = false }) {
         strokeWidth={2.25}
         aria-hidden
       />
-      <span className="break-keep">{formatMrtPackageProductCtaLabel(keyword)}</span>
+      <span className="break-keep">
+        {formatMrtPackageProductCtaLabel(keyword, { displayKeyword })}
+      </span>
       <ExternalLink size={compact ? 12 : 14} className="shrink-0 opacity-80" aria-hidden />
     </a>
   );

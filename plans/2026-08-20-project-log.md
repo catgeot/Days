@@ -128,6 +128,25 @@ cursor/en · GlobeStayStrip · SearchDiscoveryModal · audit:i18n
 cursor/en · GlobeTourStrip · SearchSuggestionList · audit:i18n
 ```
 
+## 영문화 #31, P0-A 잔여·투어 패널 EN — Preview push
+
+- **범위** `GlobeTourStrip` 펼친 패널 · `SearchSuggestionList` 표시명 · 패키지 CTA `displayKeyword`
+- **수정** `getLocalizedPlaceName` 헤더 · `home.tourStrip.*` · `resolveMrtPackageDisplayKeyword` (URL q=한글 유지)
+- **debt** GlobeTourStrip 9→0 · SearchSuggestionList 5→0 · P0 tier A 15→1 · 합계 80→66
+- **VERIFY** `audit:i18n` · `build` · `smoke:browser-locale-hint` · `smoke:place-label-slug` · `smoke-mrt-package-links` PASS
+- **브랜치** `cursor/en` · `/qa/en` · `?lang=en` — 팀북투 등 `name_en` PlaceCard 투어 패널
+- **다음** #32 P0-B — ReviewsTab · tier A 잔여 HomeUI
+
+**다음 제시어**:
+
+```
+영문화 #32, P0-B ReviewsTab EN
+@plans/feature-handoff-index.md
+@plans/2026-08-20-project-log.md
+@plans/i18n-en-plan.md
+cursor/en · ReviewsTab · audit:i18n
+```
+
 ## 영문화 #26, PROD QA — 써머리·탐색 EN 보완
 
 - **범위** PlaceCard 써머리「숙소 찾기」「투어 찾기」·검색바 탐색(`/explore`) UI EN
