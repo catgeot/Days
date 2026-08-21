@@ -629,7 +629,10 @@
       "feedbackTitle": "Bug reports & feature ideas",
       "feedbackHint": "Send feedback safely via Google Form",
       "businessTitle": "Business & partnership inquiries",
-      "emailCopied": "Copied!"
+      "emailCopied": "Copied!",
+      "mapSourceTitle": "Map data sources",
+      "telemetryTitle": "Mapbox Telemetry",
+      "techStackTitle": "Technology & services"
     }
   },
   "place": {

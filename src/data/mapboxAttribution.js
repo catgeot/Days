@@ -4,27 +4,62 @@ export const MAPBOX_ATTRIBUTION_LINKS = [
   { label: '© Mapbox', href: 'https://www.mapbox.com/about/maps/' },
   { label: '© OpenStreetMap', href: 'https://www.openstreetmap.org/about' },
   { label: 'Improve this map', href: 'https://www.mapbox.com/map-feedback/' },
-  { label: '© Maxar', href: 'https://www.maxar.com/', note: '위성·고해상도 영상' },
+  {
+    label: '© Maxar',
+    href: 'https://www.maxar.com/',
+    note: '위성·고해상도 영상',
+    noteEn: 'Satellite & high-resolution imagery',
+  },
 ];
 
 /** attribution 컨트롤 숨김(모바일) 시 ToS상 대체 opt-out 경로 */
 export const MAPBOX_TELEMETRY = {
   label: 'Mapbox 개인정보·Telemetry',
+  labelEn: 'Mapbox Privacy & Telemetry',
   href: 'https://www.mapbox.com/legal/privacy',
   description:
     '지도 SDK는 익명화된 위치·사용 데이터를 Mapbox로 전송할 수 있습니다. 수집 거부·정책은 Mapbox 개인정보 처리방침에서 확인하세요.',
+  descriptionEn:
+    'The map SDK may send anonymized location and usage data to Mapbox. See the Mapbox privacy policy for opt-out and details.',
 };
 
 /** gateo.kr 기술·서비스 스택 — Credits 탭 요약 */
 export const GATEO_TECH_STACK = [
-  { name: 'React', detail: 'UI · SPA' },
-  { name: 'Vite', detail: '빌드' },
-  { name: 'Mapbox GL JS', detail: '3D 지구본' },
-  { name: 'Mapbox Static Images', detail: '여행 스케치 위치 지도' },
-  { name: 'Supabase', detail: '인증·데이터' },
-  { name: 'Vercel', detail: '호스팅' },
-  { name: 'Google Gemini', detail: 'MOONi AI (프록시 경유)' },
+  { name: 'React', detail: 'UI · SPA', detailEn: 'UI · SPA' },
+  { name: 'Vite', detail: '빌드', detailEn: 'Build' },
+  { name: 'Mapbox GL JS', detail: '3D 지구본', detailEn: '3D globe' },
+  { name: 'Mapbox Static Images', detail: '여행 스케치 위치 지도', detailEn: 'Travel sketch maps' },
+  { name: 'Supabase', detail: '인증·데이터', detailEn: 'Auth · data' },
+  { name: 'Vercel', detail: '호스팅', detailEn: 'Hosting' },
+  { name: 'Google Gemini', detail: 'MOONi AI (프록시 경유)', detailEn: 'MOONi AI (via proxy)' },
 ];
 
 export const MAPBOX_CREDITS_INTRO =
   '홈 지구본·여행 스케치 위치 지도는 Mapbox 지도 스타일과 OpenStreetMap 등 오픈 데이터를 사용합니다. 모바일 화면에서는 지도 위 텍스트 attribution 대신 이 페이지에서 출처를 확인할 수 있습니다.';
+
+export const MAPBOX_CREDITS_INTRO_EN =
+  'The home globe and travel sketch location maps use Mapbox map styles and open data such as OpenStreetMap. On mobile, you can review attribution here instead of on-map text.';
+
+/** locale-aware Credits 탭 본문 */
+export function resolveMapboxAttribution(locale) {
+  const useEn = locale === 'en';
+  return {
+    intro: useEn ? MAPBOX_CREDITS_INTRO_EN : MAPBOX_CREDITS_INTRO,
+    links: MAPBOX_ATTRIBUTION_LINKS.map((item) => ({
+      ...item,
+      note: useEn && item.noteEn ? item.noteEn : item.note,
+    })),
+    telemetry: {
+      label: useEn && MAPBOX_TELEMETRY.labelEn ? MAPBOX_TELEMETRY.labelEn : MAPBOX_TELEMETRY.label,
+      description:
+        useEn && MAPBOX_TELEMETRY.descriptionEn
+          ? MAPBOX_TELEMETRY.descriptionEn
+          : MAPBOX_TELEMETRY.description,
+      href: MAPBOX_TELEMETRY.href,
+    },
+    techStack: GATEO_TECH_STACK.map((item) => ({
+      name: item.name,
+      detail: useEn && item.detailEn ? item.detailEn : item.detail,
+    })),
+  };
+}

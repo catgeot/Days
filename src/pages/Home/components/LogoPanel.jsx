@@ -6,7 +6,7 @@ import Logo from './Logo';
 
 import { useReport } from '../../../context/ReportContext';
 import { usePlaceGallery } from '../../../components/PlaceCard/hooks/usePlaceGallery';
-import { hydrateLocationFromSavedTrip } from '../lib/placeRouteHydrate';
+import { hydrateLocationFromSavedTrip, getSavedTripDisplayName } from '../lib/placeRouteHydrate';
 import FooterModal from './FooterModal';
 import { OPEN_UPDATES_LIST_EVENT } from '../../../shared/lib/siteNoticeEvents';
 
@@ -14,7 +14,12 @@ const DEFAULT_THUMB =
   'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=400&q=80';
 
 const BucketListCard = ({ trip, onTripSelect, onToggleBookmark }) => {
+  const { t, i18n } = useTranslation();
   const location = useMemo(() => hydrateLocationFromSavedTrip(trip), [trip]);
+  const displayName = useMemo(
+    () => getSavedTripDisplayName(trip, i18n.language, t),
+    [trip, i18n.language, t],
+  );
   const { images, isImgLoading } = usePlaceGallery(location, { thumbnailOnly: true });
 
   const thumbUrl = images[0]?.urls?.small || images[0]?.urls?.regular || '';
@@ -28,7 +33,7 @@ const BucketListCard = ({ trip, onTripSelect, onToggleBookmark }) => {
     >
       <img
         src={finalImgSrc}
-        alt={trip.destination}
+        alt={displayName}
         className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-70 group-hover:opacity-100 ${isLoaded ? 'blur-0' : 'blur-sm grayscale'}`}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90"></div>
@@ -41,7 +46,7 @@ const BucketListCard = ({ trip, onTripSelect, onToggleBookmark }) => {
       </button>
 
       <div className="absolute bottom-3 left-3 right-3">
-        <p className="text-xs font-bold text-white leading-tight mb-1 truncate">{trip.destination}</p>
+        <p className="text-xs font-bold text-white leading-tight mb-1 truncate">{displayName}</p>
         <p className="text-[9px] text-blue-400 tracking-wider font-mono uppercase">{trip.code}</p>
       </div>
     </div>

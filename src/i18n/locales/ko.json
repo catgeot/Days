@@ -400,7 +400,10 @@
       "feedbackTitle": "버그 리포트 및 기능 제안",
       "feedbackHint": "구글 폼으로 안전하게 의견 보내기",
       "businessTitle": "비즈니스 및 제휴 문의",
-      "emailCopied": "복사 완료!"
+      "emailCopied": "복사 완료!",
+      "mapSourceTitle": "지도 데이터 출처",
+      "telemetryTitle": "Mapbox Telemetry",
+      "techStackTitle": "기술 및 서비스"
     }
   },
   "place": {
