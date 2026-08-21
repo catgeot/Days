@@ -34,6 +34,12 @@
 - **수정** `ThemeSpotCrossRail` → `localizedPackageCtaLabel(key)` · EN 「Gangwon packages」
 - **VERIFY** `smoke:festival-detail-locale` · `build` PASS
 
+## 영문화 #42 — 명승 모달 상단 지역 EN
+
+- **증상** `?lang=en` 명승 모달 제목 아래 「강원」ko (축제→인근 명승 경로)
+- **수정** `localizedSpotModalSubtitle` · `toScenicModalSpot` · `formatScenicSpotPlaceLabel` areaCode 폴백 · `142fb4d9`+`…`
+- **VERIFY** node `formatScenicSpotPlaceLabel({region:강원}, en)` → Gangwon
+
 **다음 제시어 (#42)**:
 
 ```
