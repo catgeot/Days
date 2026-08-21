@@ -62,8 +62,8 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **main** `#42` · 탐색 썸네일 EN 수정 `614ed344` · **배포 후 PROD QA** |
-| **main** | `614ed344` — SpotThumbnailCard locale 지명·국가 |
+| **상태** | **main** `#42` · 탐색 크래시 `648fa6bf` · titleEn lazy fetch `904c93e7` · **배포 후 PROD QA** |
+| **main** | `904c93e7` — SpotThumbnailCard crash fix · ko locale en fetch skip |
 | **브랜치** | `main` (병합 후) · 잔존은 차차 |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§11·**§13** |
 | **일지** | [`2026-08-21-project-log.md`](./2026-08-21-project-log.md) |

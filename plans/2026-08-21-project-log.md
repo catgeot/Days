@@ -21,19 +21,19 @@
 - **결정** 사람 Preview QA OK · 잔존 이슈는 차차 · **PR #141 → main `5c8adea5`**
 - **다음** **#42 테스트·최적화** — PROD 회귀 · en fetch/캐시 · 알려진 한계 정리
 
-## 영문화 #42, PROD QA — 탐색 썸네일 EN
+## 영문화 #42, PROD QA — 탐색 크래시·titleEn 캐시
 
-- **증상** `?lang=en` 탐색 Island getaways 카드 제목·국가가 한글(`spot.name`·`country`)
-- **수정** `SpotThumbnailCard` → `getLocalizedPlaceName` / `getLocalizedCountryName` (`614ed344`)
-- **VERIFY** `audit:i18n` · `build` PASS · island 샘플 EN 라벨 node 확인
-- **사람 QA** main push·배포 후 `/?lang=en` → 탐색 → Island getaways 카드 EN 재확인
+- **크래시** `614ed344` EN 라벨 추가 후 `CardBackgroundImage`가 스코프 밖 `displayName` 참조 → lazy load 시 ReferenceError · **수정** `648fa6bf`
+- **성능** ko locale 첫 fetch 시 en window 2nd fetch 생략 · en 전환·캐시 hit lazy merge 유지 · **904c93e7**
+- **VERIFY** `audit:i18n` · `build` · `smoke:festival-detail-locale` PASS
+- **사람 QA** main push·배포 후 `/?lang=en` → 탐색 진입·Island getaways · `/korea?lang=en` 축제 EN title
 
 **다음 제시어 (#42)**:
 
 ```
-영문화 #42, PROD QA — 탐색 썸네일 EN
+영문화 #42, PROD QA — 배포 후 회귀
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-main · ?lang=en · Island getaways 카드 EN
+main · ?lang=en · 탐색·축제·locale 토글
 ```
