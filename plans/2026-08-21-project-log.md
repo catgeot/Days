@@ -52,6 +52,14 @@ cursor/en · /korea?lang=en · KoreaFestivalMap · titleEn join
 - **브랜치** `cursor/en` · PR #141 · `/qa/en` · `/korea?lang=en`
 - **다음** 사람 Preview QA — 축제 지도 핀·상세 헤더 EN · 목록·본문 ko
 
+## 영문화 #41 follow-up — titleEn 매칭·본문 크로스 UI EN
+
+- **원인** EngService2 `contentId` ≠ KorService2 → contentId join 실패 · en window ~157/600건
+- **수정** `festivalTitleEnMerge` — `English (한글)` 괄호 힌트 매칭 · cache `v2` 무효화
+- **본문 UI** `FestivalDetailSheet` — `localizedScenicMajorRegion` · hub stay/tour · `localizedPackageCtaLabel` · en `home.explore.packageCta.korea*`
+- **잔여** EngService2 미등록 축제 핀·TourAPI POI명은 ko 폴백(SSOT)
+- **VERIFY** `audit:i18n` · `build` · `smoke:festival-detail-locale` PASS
+
 **다음 제시어 (Preview QA)**:
 
 ```
