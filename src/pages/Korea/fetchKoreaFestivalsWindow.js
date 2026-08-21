@@ -1,7 +1,8 @@
 import { fetchTourApiFestivalWindow } from '../../utils/fetchTourApiFestivals';
+import { mergeFestivalTitleEn } from './festivalTitleEnMerge';
 import { rolling12MonthRangeYmd } from './festivalTimeFilter';
 
-const CACHE_KEY = 'gateo:korea-festivals:v1:rolling12:ko';
+const CACHE_KEY = 'gateo:korea-festivals:v2:rolling12:ko';
 const CACHE_TTL_MS = 6 * 60 * 60 * 1000;
 
 /** @type {Promise<{ ok: boolean, items: object[], fromCache: boolean, stale?: boolean, error?: string }> | null} */
@@ -63,26 +64,11 @@ async function mergeTitleEnOntoItems(koItems, range) {
     locale: 'en',
   });
 
-  if (!enData?.ok || !Array.isArray(enData.items)) {
+  if (!enData?.ok || !Array.isArray(enData.items) || !enData.items.length) {
     return koItems;
   }
 
-  /** @type {Map<string, string>} */
-  const enById = new Map();
-  for (const item of enData.items) {
-    const id = String(item?.contentId || '').trim();
-    const title = String(item?.title || '').trim();
-    if (id && title) enById.set(id, title);
-  }
-
-  if (!enById.size) return koItems;
-
-  return koItems.map((item) => {
-    const id = String(item?.contentId || '').trim();
-    const titleEn = id ? enById.get(id) : '';
-    if (!titleEn) return item;
-    return { ...item, titleEn };
-  });
+  return mergeFestivalTitleEn(koItems, enData.items);
 }
 
 function itemsNeedTitleEn(items) {

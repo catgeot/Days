@@ -446,7 +446,15 @@
         "family": "Southeast Asia & Japan packages",
         "japan": "Japan packages",
         "longhaul": "Europe packages",
-        "resort": "Southeast Asia resort packages"
+        "resort": "Southeast Asia resort packages",
+        "koreaJeju": "Jeju packages",
+        "koreaYeosu": "Yeosu packages",
+        "koreaUlleungdo": "Ulleungdo packages",
+        "koreaGangwon": "Gangwon packages",
+        "koreaSuncheon": "Suncheon packages",
+        "koreaHongdo": "Hongdo & Heuksan packages",
+        "koreaBaengnyeong": "Baengnyeongdo packages",
+        "koreaHome": "Browse MRT packages"
       },
       "leadingPackage": {
         "title": "Package trips",

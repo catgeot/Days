@@ -48,9 +48,19 @@ const windowJs = readFileSync(
 );
 assert(windowJs.includes('rolling12:ko'), 'sessionStorage cache key includes ko');
 assert(
-  windowJs.includes('mergeTitleEnOntoItems') &&
+  windowJs.includes('mergeFestivalTitleEn') &&
     windowJs.includes("locale: 'en'"),
   'fetchKoreaFestivalsWindow merges titleEn via en festivalWindow',
+);
+
+const mergeJs = readFileSync(
+  join(root, 'src/pages/Korea/festivalTitleEnMerge.js'),
+  'utf8',
+);
+assert(
+  mergeJs.includes('parseEngFestivalTitle') &&
+    mergeJs.includes('byKoTitle'),
+  'titleEn merge uses parenthetical ko hint matching',
 );
 
 const mapJs = readFileSync(
@@ -79,10 +89,23 @@ assert(
   sheetJs.includes('festivalMapTitle(item, locale)'),
   'FestivalDetailSheet header uses festivalMapTitle',
 );
+assert(
+  sheetJs.includes('localizedScenicMajorRegion(locale, scenicRegion)'),
+  'FestivalDetailSheet cross links localize scenic region',
+);
+assert(
+  sheetJs.includes('localizedPackageCtaLabel'),
+  'FestivalDetailSheet package CTA uses localizedPackageCtaLabel',
+);
 
 const { festivalMapTitle } = await import(
   '../src/pages/Home/lib/scenicSpotPlaceLabel.js'
 );
+const {
+  mergeFestivalTitleEn,
+  parseEngFestivalTitle,
+} = await import('../src/pages/Korea/festivalTitleEnMerge.js');
+
 const sample = {
   title: '2026 부산 불꽃축제',
   titleEn: '2026 Busan Fireworks Festival',
@@ -96,9 +119,26 @@ assert(
   festivalMapTitle(sample, 'ko') === sample.title,
   'festivalMapTitle uses ko title for ko locale',
 );
+
+const parsed = parseEngFestivalTitle('Garden Night Market (가든 나이트 마켓)');
 assert(
-  festivalMapTitle({ title: sample.title }, 'en') === sample.title,
-  'festivalMapTitle falls back to ko when titleEn missing',
+  parsed.en === 'Garden Night Market' && parsed.koHint === '가든 나이트 마켓',
+  'parseEngFestivalTitle splits English (Korean)',
+);
+
+const merged = mergeFestivalTitleEn(
+  [{ contentId: '1', title: '가든 나이트 마켓', eventStartDate: '20260401' }],
+  [
+    {
+      contentId: '999',
+      title: 'Garden Night Market (가든 나이트 마켓)',
+      eventStartDate: '20260401',
+    },
+  ],
+);
+assert(
+  merged[0]?.titleEn === 'Garden Night Market',
+  'mergeFestivalTitleEn matches ko title via parenthetical hint',
 );
 
 if (failed) {
