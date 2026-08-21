@@ -2,6 +2,25 @@
 
 직전: [`2026-08-19-project-log.md`](./2026-08-19-project-log.md)
 
+## 영문화 #36, P0 완료 Preview QA — 지역·분류칩 EN
+
+- **범위** `koreaRegionEn.js` · `koreaRegionLabels.js` — 시도·권역·분류·hub `name_en` SSOT
+- **축제** `/korea` — sido/city 칩·패널 그룹·Mapbox `setLanguage(en)` · 본문·마커 제목 ko SSOT 유지
+- **명승** `/korea/theme/scenic` — major/area/cluster/hub/heritage/tourCat 칩 · `formatScenicSpotPlaceLabel(locale)` · 지도 드릴칩
+- **VERIFY** `audit:i18n` · `build` · `smoke:korea-scenic-place-label` · `smoke:browser-locale-hint` · `smoke:place-label-slug` · `smoke:festival-detail-locale` PASS
+- **브랜치** `cursor/en` · `/qa/en` · `?lang=en` — 지역칩·분류칩·place 라벨 EN
+- **다음** #37 Preview QA — 축제 지도 마커 제목·잔여 한글(작업 로그 등) · PROD QA 준비
+
+**다음 제시어**:
+
+```
+영문화 #37, Preview QA 잔여
+@plans/feature-handoff-index.md
+@plans/2026-08-20-project-log.md
+@plans/i18n-en-plan.md
+cursor/en · /korea?lang=en · 지역칩 EN 확인 · 마커·작업로그
+```
+
 ## 영문화 #35, P0-C FestivalDetailSheet UI EN (일괄) — Preview push
 
 - **범위** `FestivalDetailSheet.jsx` — 탭·라벨·크로스 네비·로딩/에러·라이트박스 · `korea.festival.detail` 83키 · TourAPI infoname 매칭은 `festivalTourApiMatchLabels.js`

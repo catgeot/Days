@@ -118,18 +118,18 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#35)**: P0-C **완료** — `FestivalDetailSheet` 0줄 · P0 debt **0** (tier A·B·C 전부)
+**상태 (#36)**: 지역·분류칩 EN — `koreaRegionEn/Labels` · 축제·명승 필터칩·place 라벨·Mapbox en · P0 debt **0** 유지
 
-**브랜치**: `cursor/en` · `/qa/en`
+**브랜치**: `cursor/en` · `/qa/en` · tip `211beaf7`
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #36, P0 완료 Preview QA
+영문화 #37, Preview QA 잔여
 @plans/feature-handoff-index.md
 @plans/2026-08-20-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · /korea?lang=en · audit:i18n · 축제 상세 UI EN
+cursor/en · /korea?lang=en · 지역칩 EN 확인 · 마커·작업로그
 ```
 
 ### #23 브라우저 locale 자동 — 완료
