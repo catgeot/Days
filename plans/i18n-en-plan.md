@@ -97,7 +97,7 @@
 1. **기존 비주얼 유지** — 버튼·레이아웃·색 교체 금지 (`.ai-context` §4.1 5)
 2. **키 네이밍** — `domain.section.key` (예: `home.globe.chip.paradise`)
 3. **폴백** — en 키 없으면 ko · ko 없으면 키 문자열(개발만)
-4. **Affiliate** — `affiliate.js` locale 파라미터를 `LocaleProvider`와 동기( `#2` )
+4. **Affiliate** — Trip.com·**GYG** `resolve*Locale` ↔ `LocaleProvider` 동기 ✅ · Klook/12Go 등 후속
 5. **E2E** — 한글 accessibility name 의존 테스트는 키/라벨 변경 시 동기 ([`site-health-monitoring-plan.md`](./site-health-monitoring-plan.md))
 
 ---
