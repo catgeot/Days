@@ -2,6 +2,24 @@
 
 직전: [`2026-08-19-project-log.md`](./2026-08-19-project-log.md)
 
+## 영문화 #33, P0-A HomeUI 잔여 EN — Preview push
+
+- **범위** `HomeUI.jsx` PC 하단「AI와 대화하기」→ `home.chatWithAi`
+- **debt** HomeUI 1→0 · tier A 1→0 · 합계 56→55
+- **VERIFY** `audit:i18n` · `build` · `smoke:browser-locale-hint` · `smoke:place-label-slug` PASS
+- **브랜치** `cursor/en` · `/qa/en` · `?lang=en` — 홈 PC MOONi CTA EN
+- **다음** #34 P0-C — `Korea/index.jsx` 2줄
+
+**다음 제시어**:
+
+```
+영문화 #34, P0-C Korea 허브 UI EN
+@plans/feature-handoff-index.md
+@plans/2026-08-20-project-log.md
+@plans/i18n-en-plan.md
+cursor/en · Korea/index · audit:i18n
+```
+
 ## 영문화 #32, P0-B ReviewsTab EN — Preview push
 
 - **범위** `ReviewsTab.jsx` — 로그인 배너·필터·빈 상태·삭제 confirm·블로그·갤러리 alt · `place.reviews.*` 12키 추가

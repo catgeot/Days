@@ -118,18 +118,18 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#32)**: P0-B ReviewsTab EN · debt **56**줄 (tier B **0**) · `en` 누락 **0**
+**상태 (#33)**: P0-A HomeUI EN · tier A **0** · debt **55**줄 (tier B **0**) · `en` 누락 **0**
 
 **브랜치**: `cursor/en` · `/qa/en`
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #33, P0-A HomeUI 잔여 EN
+영문화 #34, P0-C Korea 허브 UI EN
 @plans/feature-handoff-index.md
 @plans/2026-08-20-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · HomeUI · audit:i18n
+cursor/en · Korea/index · audit:i18n
 ```
 
 ### #23 브라우저 locale 자동 — 완료
@@ -227,9 +227,9 @@ cursor/en · HomeUI · audit:i18n
 | **B** | 무니·플래너·리뷰·공항 | 7 | 10 |
 | **C** | Auth·공지·한국 UI 셸 | 5 | 55 |
 
-**#30 debt 상위** (#33 P0-A):
+**#34 debt 상위** (#33 완료 · tier A·B **0**):
 
-1. `HomeUI.jsx` — 1줄 (tier A 잔여)
-2. `FestivalDetailSheet.jsx` — 53줄 (tier C · UI EN·본문 ko SSOT)
+1. `FestivalDetailSheet.jsx` — 53줄 (tier C · UI EN·본문 ko SSOT)
+2. `Korea/index.jsx` — 2줄 (tier C · `칩 목록` aria · `위로`)
 
 **제외·참고**: `FestivalDetailSheet` tier C — UI EN·본문 ko SSOT(Chrome 번역) · `missingInKo` 219건은 en-only 지구본 국가 키

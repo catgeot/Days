@@ -62,7 +62,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#32 Preview** — ReviewsTab EN · debt **56**줄 (tier B 0) |
+| **상태** | **#33 Preview** — HomeUI tier A **0** · debt **55**줄 (tier A·B **0**) |
 | **main** | PR [#139](https://github.com/catgeot/Days/pull/139) 병합 `c15c3d54` · **#28 PROD QA** (배포 후 사람) |
 | **브랜치** | `cursor/en` (재사용) |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§11 |
@@ -70,16 +70,16 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 | **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` · `/qa/en` |
 | **VERIFY** | `audit:i18n` · `build` · `smoke:browser-locale-hint` · `smoke:place-label-slug` |
 
-**2차 순서**: ~~#13~#32 P0-B~~ → **#33 P0-A** (HomeUI 잔여)
+**2차 순서**: ~~#13~#33 P0-A~~ → **#34 P0-C** (`Korea/index.jsx` 2줄)
 
 **다음 제시어**:
 
 ```
-영문화 #33, P0-A HomeUI 잔여 EN
+영문화 #34, P0-C Korea 허브 UI EN
 @plans/feature-handoff-index.md
 @plans/2026-08-20-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · HomeUI · audit:i18n
+cursor/en · Korea/index · audit:i18n
 ```
 
 ---
