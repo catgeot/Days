@@ -106,6 +106,7 @@ assert.equal(
   'Gongjiche…',
   '공지천 EN 칩 라벨(10자 truncate)',
 );
+assert.equal(gongjiChip.labelFull, 'Gongjicheon', '공지천 EN 칩 full');
 assert.ok(
   chuncheonEnChips.every((c) => !/[가-힣]/.test(String(c.label || ''))),
   '춘천 EN 칩 라벨에 한글 없음',
