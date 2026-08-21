@@ -4,6 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { usePlaceGallery } from '../../../../components/PlaceCard/hooks/usePlaceGallery';
 import { CATEGORY_COLORS, CATEGORY_ICONS } from './constants';
 import { localizedExploreCategoryLabel } from '../../../../i18n/exploreUi';
+import {
+  getLocalizedCountryName,
+  getLocalizedPlaceName,
+} from '../../../../components/PlaceCard/common/locationDisplay';
 import useClickWithDragPrevention from '../../../../hooks/useClickWithDragPrevention';
 
 const CardBackgroundImage = ({ spot, categoryStyle, icon }) => {
@@ -15,7 +19,7 @@ const CardBackgroundImage = ({ spot, categoryStyle, icon }) => {
     return (
       <img
         src={bgImgUrl}
-        alt={spot.name}
+        alt={displayName}
         loading="lazy"
         className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-110"
       />
@@ -36,7 +40,17 @@ const CardBackgroundImage = ({ spot, categoryStyle, icon }) => {
 };
 
 const SpotThumbnailCard = ({ spot, onClick, isGrid = false }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language;
+  const displayName =
+    getLocalizedPlaceName(spot, locale) || String(spot?.name || '').trim();
+  const countryLabel =
+    getLocalizedCountryName(spot, locale) || String(spot?.country || '').trim();
+  const englishName = String(spot?.name_en || '').trim();
+  const locationLine =
+    locale === 'en'
+      ? countryLabel
+      : [countryLabel, englishName].filter(Boolean).join(' · ');
   const categoryStyle = CATEGORY_COLORS[spot.primaryCategory] || CATEGORY_COLORS.paradise;
   const categoryLabel = localizedExploreCategoryLabel(t, spot.primaryCategory);
   const CategoryIcon = CATEGORY_ICONS[spot.primaryCategory] || Compass;
@@ -115,12 +129,14 @@ const SpotThumbnailCard = ({ spot, onClick, isGrid = false }) => {
         {/* 하단 텍스트 (그림자 효과 강화) */}
         <div className="mt-auto p-1">
           <h3 className="text-xl md:text-3xl font-extrabold text-white group-hover:text-blue-300 transition-colors line-clamp-1 break-keep drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
-            {spot.name}
+            {displayName}
           </h3>
-          <div className="flex items-center gap-1.5 text-xs md:text-sm text-gray-200 font-medium mt-2 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
-            <MapPin size={14} className="text-gray-300" />
-            <span className="truncate">{spot.country} · {spot.name_en}</span>
-          </div>
+          {locationLine ? (
+            <div className="flex items-center gap-1.5 text-xs md:text-sm text-gray-200 font-medium mt-2 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
+              <MapPin size={14} className="text-gray-300" />
+              <span className="truncate">{locationLine}</span>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>
