@@ -61,6 +61,7 @@ import { koreanApiTextProps } from '../../i18n/koreanApiText';
 import { useLocale } from '../../i18n/LocaleProvider';
 import { scenicSpotMapTitle } from '../Home/lib/scenicSpotPlaceLabel.js';
 import { localizedHubLabel } from '../../i18n/koreaRegionLabels';
+import { localizedPackageCtaLabel } from '../../i18n/exploreUi';
 import { fetchNearbyFestivals } from '../../utils/fetchNearbyFestivals';
 import { detectSidoCode } from '../Korea/festivalRegionTags';
 
@@ -406,8 +407,11 @@ function ThemeSpotCrossRail({
             rel="noopener noreferrer sponsored"
             className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
           >
-            {cross.packageCta.ctaLabel ||
-              t('korea.theme.spotDetail.packageCtaFallback')}
+            {localizedPackageCtaLabel(
+              t,
+              cross.packageCta.key,
+              cross.packageCta.ctaLabel,
+            ) || t('korea.theme.spotDetail.packageCtaFallback')}
             <ExternalLink size={14} aria-hidden="true" />
           </a>
         </CrossRailSection>

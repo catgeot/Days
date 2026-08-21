@@ -68,6 +68,16 @@ assert(
   'SpotThumbnailCard passes displayName prop (no ReferenceError on lazy load)',
 );
 
+const spotModalJs = readFileSync(
+  join(root, 'src/pages/KoreaTheme/ThemeSpotDetailModal.jsx'),
+  'utf8',
+);
+assert(
+  spotModalJs.includes('localizedPackageCtaLabel') &&
+    spotModalJs.includes('cross.packageCta.key'),
+  'ThemeSpotDetailModal package CTA uses localizedPackageCtaLabel',
+);
+
 const mergeJs = readFileSync(
   join(root, 'src/pages/Korea/festivalTitleEnMerge.js'),
   'utf8',
