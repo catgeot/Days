@@ -21,8 +21,9 @@ export {
   resolveMrtPackageThemeForLocation,
 } from './mrtPackageLinks.js';
 import { resolveTripcomPartnerLocale } from './tripcomPartnerLocale.js';
+import { resolveGygLocale } from './gygPartnerLocale.js';
 
-export { resolveTripcomPartnerLocale };
+export { resolveTripcomPartnerLocale, resolveGygLocale };
 
 /** @returns {'ko-KR' | 'en-US'} */
 export function getTripcomPartnerLocale() {
@@ -99,7 +100,13 @@ export const KLOOK_SITE_HOME_TARGET = 'https://www.klook.com/ko/';
 
 /** GetYourGuide 제휴 파트너 ID — 위젯·스마트 링크 홈 공통 */
 export const GYG_PARTNER_ID = 'LRKVVU4';
+/** @deprecated {@link resolveGygLocale} / {@link getGygLocale} — ko fallback only */
 export const GYG_LOCALE = 'ko-KR';
+
+/** @returns {'ko-KR' | 'en-US'} */
+export function getGygLocale() {
+  return resolveGygLocale(i18n.language);
+}
 /** 위젯·딥링크 표시 통화 — 미지정 시 GYG 기본(EUR). 한국 서비스는 KRW */
 export const GYG_CURRENCY = 'KRW';
 /** 스마트 링크·홈 진입 기본 cmp (광고 파라미터 제외한 클린 추적) · 철자 planer는 기존 포털 캠페인과 동일 */

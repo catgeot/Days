@@ -147,6 +147,24 @@ cursor/en · GlobeTourStrip · SearchSuggestionList · audit:i18n
 cursor/en · ReviewsTab · audit:i18n
 ```
 
+## 영문화 #31 후속, GYG 투어 리스트 locale EN — Preview push
+
+- **원인** GYG iframe `data-gyg-locale-code` 고정 `ko-KR` → 카드「소요 시간」·제목 한글
+- **수정** [`gygPartnerLocale.js`](../src/utils/gygPartnerLocale.js) `resolveGygLocale` · Activities/City 위젯 · remountKey에 locale
+- **VERIFY** `smoke-gyg-activities-query` · `build` · `audit:i18n` PASS
+- **브랜치** `cursor/en` · `/qa/en` — Timbuktu Find tours GYG **Duration** EN
+- **다음** #32 P0-B ReviewsTab
+
+**다음 제시어**:
+
+```
+영문화 #32, P0-B ReviewsTab EN
+@plans/feature-handoff-index.md
+@plans/2026-08-20-project-log.md
+@plans/i18n-en-plan.md
+cursor/en · ReviewsTab · audit:i18n
+```
+
 ## 영문화 #26, PROD QA — 써머리·탐색 EN 보완
 
 - **범위** PlaceCard 써머리「숙소 찾기」「투어 찾기」·검색바 탐색(`/explore`) UI EN

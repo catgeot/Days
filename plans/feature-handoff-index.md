@@ -62,13 +62,13 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#31 Preview** — 투어 패널·탐색 제안 EN · debt **66**줄(4파일) |
+| **상태** | **#31 Preview** — 투어 패널 EN · **GYG locale en-US** · debt **66**줄 |
 | **main** | PR [#139](https://github.com/catgeot/Days/pull/139) 병합 `c15c3d54` · **#28 PROD QA** (배포 후 사람) |
 | **브랜치** | `cursor/en` (재사용) |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§11 |
 | **일지** | [`2026-08-20-project-log.md`](./2026-08-20-project-log.md) |
 | **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` · `/qa/en` |
-| **VERIFY** | `audit:i18n` · `build` · `smoke:browser-locale-hint` · `smoke:place-label-slug` · `smoke-mrt-package-links` |
+| **VERIFY** | `audit:i18n` · `build` · `smoke-gyg-activities-query` · `smoke:browser-locale-hint` · `smoke:place-label-slug` |
 
 **2차 순서**: ~~#13~#31 P0-A~~ → **#32 P0-B** (ReviewsTab)
 

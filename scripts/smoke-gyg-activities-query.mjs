@@ -15,6 +15,7 @@ async function load(rel) {
 const { buildGygActivitiesSearchQuery, getGygLocationIdByLocation } = await load(
   'src/components/PlaceCard/tabs/planner/locationRules.js'
 );
+const { resolveGygLocale } = await load('src/utils/gygPartnerLocale.js');
 
 function assert(cond, msg) {
   if (!cond) {
@@ -75,6 +76,10 @@ assert(
   buildGygActivitiesSearchQuery(miyakojima) === 'Miyakojima',
   'miyakojima q stays city-only (no , Japan)'
 );
+
+assert(resolveGygLocale('en') === 'en-US', 'GYG locale en → en-US');
+assert(resolveGygLocale('ko') === 'ko-KR', 'GYG locale ko → ko-KR');
+assert(resolveGygLocale('en-US') === 'en-US', 'GYG locale en-US → en-US');
 
 if (process.exitCode) {
   console.error('\nsmoke-gyg-activities-query: FAIL');

@@ -118,7 +118,7 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#31)**: P0-A 투어·탐색 제안 EN · hangul debt **66**줄(4파일) · tier A **1**줄 · `en` 누락 **0**
+**상태 (#31)**: P0-A 투어·탐색 EN · **GYG 위젯 locale 동기** · hangul debt **66**줄 · `en` 누락 **0**
 
 **브랜치**: `cursor/en` · `/qa/en`
 
