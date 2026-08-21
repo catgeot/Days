@@ -129,6 +129,11 @@ main · ?lang=en · SiteUpdateBanner EN · 숙소 제목 EN
 
 - **SiteUpdateBanner** `resolveReleaseNote(release, i18n.language)` — 팝업 제목·항목 EN
 - **숙소 찾기** `getLocalizedPlaceName` — 헤더·일정바 「로키 산맥」→ Rocky Mountains
-- **MRT 목록** Edge `Accept-Language: en-US` · 클라 `locale` 캐시 분리 — **Edge deploy 필요**
+- **MRT 목록** Edge `Accept-Language: en-US` · 클라 `locale` 캐시 분리
 - **VERIFY** `audit:i18n` · `build` PASS
 - **사람 QA** `?lang=en` · localStorage `gateo_seen_release` 삭제 후 팝업 EN · Rocky Mountains 숙소 목록
+
+## 영문화 #42e — Edge deploy
+
+- **명령** `npx supabase functions deploy fetch-mrt-stays --project-ref phdjnbfitvmrguqzverm --no-verify-jwt` ✅
+- **VERIFY** `smoke:health` P0-4 PASS · `MRT_STAY_SMOKE_LIVE=1` PASS

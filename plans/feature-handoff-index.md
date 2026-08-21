@@ -69,7 +69,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 | **일지** | [`2026-08-21-project-log.md`](./2026-08-21-project-log.md) |
 | **PROD QA** | `https://www.gateo.kr/?lang=en` |
 | **VERIFY** | `audit:i18n` · `build` |
-| **Edge** | `fetch-mrt-stays` deploy — 숙소 카드명 EN |
+| **Edge** | `fetch-mrt-stays` deploy ✅ |
 
 **#42 진행**:
 
