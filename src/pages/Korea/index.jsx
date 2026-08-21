@@ -290,7 +290,9 @@ function flapChipClass(active) {
  * 모바일 가로 칩 스크롤 — 하단 스크롤 트랙만(인지용 · 화살표 없음).
  * PC는 트랙 숨김.
  */
-function ChipScrollRow({ children, className = '', ariaLabel = '칩 목록' }) {
+function ChipScrollRow({ children, className = '', ariaLabel }) {
+  const { t } = useTranslation();
+  const resolvedAriaLabel = ariaLabel ?? t('korea.common.chipList');
   const scrollerRef = useRef(null);
   const [scrollable, setScrollable] = useState(false);
   const [thumb, setThumb] = useState({ left: 0, width: 100 });
@@ -349,7 +351,7 @@ function ChipScrollRow({ children, className = '', ariaLabel = '칩 목록' }) {
       <div
         ref={scrollerRef}
         onScroll={updateScrollUi}
-        aria-label={ariaLabel}
+        aria-label={resolvedAriaLabel}
         className="flex min-w-0 items-center gap-1.5 overflow-x-auto overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {children}
@@ -2346,7 +2348,7 @@ export default function KoreaFestivalHub() {
         }`}
       >
         <ArrowUp size={18} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
-        <span className="text-xs font-bold">위로</span>
+        <span className="text-xs font-bold">{t('korea.common.scrollUp')}</span>
       </button>
 
       {selected && (

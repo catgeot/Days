@@ -2,6 +2,24 @@
 
 직전: [`2026-08-19-project-log.md`](./2026-08-19-project-log.md)
 
+## 영문화 #34, P0-C Korea 허브 UI EN — Preview push
+
+- **범위** `Korea/index.jsx` — `ChipScrollRow` aria `korea.common.chipList` · 스크롤 버튼 `korea.common.scrollUp`
+- **debt** Korea/index 2→0 · 합계 55→53 (`FestivalDetailSheet`만 잔여)
+- **VERIFY** `audit:i18n` · `build` · `smoke:browser-locale-hint` · `smoke:place-label-slug` PASS
+- **브랜치** `cursor/en` · `/qa/en` · `?lang=en` — `/korea` 칩 aria·위로 버튼 EN
+- **다음** #35 P0-C — `FestivalDetailSheet.jsx` 53줄
+
+**다음 제시어**:
+
+```
+영문화 #35, P0-C FestivalDetailSheet UI EN
+@plans/feature-handoff-index.md
+@plans/2026-08-20-project-log.md
+@plans/i18n-en-plan.md
+cursor/en · FestivalDetailSheet · audit:i18n
+```
+
 ## 영문화 #33, P0-A HomeUI 잔여 EN — Preview push
 
 - **범위** `HomeUI.jsx` PC 하단「AI와 대화하기」→ `home.chatWithAi`
