@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowUp,
@@ -57,6 +58,10 @@ import ThemeSpotDetailModal from '../KoreaTheme/ThemeSpotDetailModal';
 import CourseDetailModal from '../KoreaTheme/CourseDetailModal';
 import { useLightboxPinchTransform } from '../../components/PlaceCard/common/useLightboxPinchTransform';
 import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
+import {
+  FESTIVAL_TOURAPI_INFO_INTRO,
+  FESTIVAL_TOURAPI_INFO_PROGRAM,
+} from './festivalTourApiMatchLabels';
 
 const SCENIC_PATH = '/korea/theme/scenic';
 const COURSES_PATH = '/korea/theme/courses';
@@ -218,15 +223,6 @@ function nearbyPlaceLabel(spot) {
   return String(spot?.locality || spot?.region || '').trim();
 }
 
-function nearbyEyebrow(spot) {
-  const t = String(spot?.contentTypeId || '');
-  if (t === RESTAURANT_CONTENT_TYPE_ID) return '주변 맛집';
-  if (t === LEPORTS_CONTENT_TYPE_ID) return '주변 레포츠';
-  if (t === CULTURE_CONTENT_TYPE_ID) return '주변 문화';
-  if (t === COURSE_CONTENT_TYPE_ID) return '인근 여행코스';
-  return '주변 관광지';
-}
-
 function toNearbyModalSpot(spot) {
   if (!spot) return null;
   const place = nearbyPlaceLabel(spot);
@@ -293,9 +289,30 @@ export default function FestivalDetailSheet({
   onClose,
   onOpenHub: _onOpenHub,
 }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { isEnglish } = useLocale();
   const koText = koreanApiTextProps(isEnglish);
+  const festivalModuleLabel = t('korea.theme.nav.module.festival');
+  const nearbyEyebrow = useCallback(
+    (spot) => {
+      const typeId = String(spot?.contentTypeId || '');
+      if (typeId === RESTAURANT_CONTENT_TYPE_ID) {
+        return t('korea.festival.detail.nearEyebrowFood');
+      }
+      if (typeId === LEPORTS_CONTENT_TYPE_ID) {
+        return t('korea.festival.detail.nearEyebrowLeports');
+      }
+      if (typeId === CULTURE_CONTENT_TYPE_ID) {
+        return t('korea.festival.detail.nearEyebrowCulture');
+      }
+      if (typeId === COURSE_CONTENT_TYPE_ID) {
+        return t('korea.festival.detail.nearEyebrowCourse');
+      }
+      return t('korea.festival.detail.nearEyebrowAttraction');
+    },
+    [t],
+  );
   const [intro, setIntro] = useState(null);
   const [common, setCommon] = useState(null);
   const [infoItems, setInfoItems] = useState([]);
@@ -389,8 +406,10 @@ export default function FestivalDetailSheet({
   const openScenicPage = () => {
     const back = {
       path: FESTIVAL_RETURN,
-      label: String(item?.title || '축제').trim() || '축제',
-      moduleLabel: '축제',
+      label:
+        String(item?.title || '').trim() ||
+        t('korea.festival.detail.fallbackTitle'),
+      moduleLabel: festivalModuleLabel,
     };
     pushThemeNavBack(back);
     onClose();
@@ -405,8 +424,10 @@ export default function FestivalDetailSheet({
   const openCoursesPage = () => {
     const back = {
       path: FESTIVAL_RETURN,
-      label: String(item?.title || '축제').trim() || '축제',
-      moduleLabel: '축제',
+      label:
+        String(item?.title || '').trim() ||
+        t('korea.festival.detail.fallbackTitle'),
+      moduleLabel: festivalModuleLabel,
     };
     pushThemeNavBack(back);
     onClose();
@@ -501,7 +522,7 @@ export default function FestivalDetailSheet({
         setIntro(null);
         setCommon(null);
         setInfoItems([]);
-        setDetailError('상세 정보를 불러오지 못했습니다.');
+        setDetailError(t('korea.festival.detail.detailLoadError'));
         setDetailLoading(false);
         return;
       }
@@ -517,7 +538,7 @@ export default function FestivalDetailSheet({
     return () => {
       cancelled = true;
     };
-  }, [item?.contentId, item?.contentTypeId]);
+  }, [item?.contentId, item?.contentTypeId, t]);
 
   const {
     transformStyle: lightboxTransformStyle,
@@ -773,14 +794,14 @@ export default function FestivalDetailSheet({
     for (const row of rows) {
       // Keep overview / program; drop detailInfo duplicates only
       if (
-        row.name.includes('행사소개') &&
+        row.name.includes(FESTIVAL_TOURAPI_INFO_INTRO) &&
         overview &&
         textsSimilarOrEqual(row.text, overview)
       ) {
         continue;
       }
       if (
-        row.name.includes('행사내용') &&
+        row.name.includes(FESTIVAL_TOURAPI_INFO_PROGRAM) &&
         programText &&
         textsEqual(row.text, programText)
       ) {
@@ -829,7 +850,7 @@ export default function FestivalDetailSheet({
       setVideosExpanded(false);
       if (!result.ok) {
         setVideos([]);
-        setVideosError('관련 영상을 찾지 못했습니다.');
+        setVideosError(t('korea.festival.detail.videosNotFound'));
         return;
       }
       const list = Array.isArray(result.videos)
@@ -837,7 +858,7 @@ export default function FestivalDetailSheet({
         : [];
       setVideos(list);
       if (!list.length) {
-        setVideosError('관련 영상을 찾지 못했습니다.');
+        setVideosError(t('korea.festival.detail.videosNotFound'));
       }
     })();
 
@@ -851,6 +872,7 @@ export default function FestivalDetailSheet({
     item?.eventStartDate,
     intro?.eventStartDate,
     videosLoadedFor,
+    t,
   ]);
 
   useEffect(() => {
@@ -876,7 +898,8 @@ export default function FestivalDetailSheet({
   const sponsor2tel = String(intro?.sponsor2tel || '').trim();
   const hero = imageUrls[activeImage] || imageUrls[0] || '';
   const displayTitle =
-    String(common?.title || item?.title || '').trim() || '축제';
+    String(common?.title || item?.title || '').trim() ||
+    t('korea.festival.detail.fallbackTitle');
   const eventplace = String(intro?.eventplace || '').trim();
   const showEventPlace =
     Boolean(eventplace) && eventplace !== String(item.addr1 || '').trim();
@@ -931,7 +954,7 @@ export default function FestivalDetailSheet({
         <button
           type="button"
           onClick={onClose}
-          aria-label="닫기"
+          aria-label={t('korea.common.close')}
           className="absolute top-3 right-3 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-white/95 text-stone-700 shadow-sm hover:bg-stone-50"
         >
           <X size={18} aria-hidden="true" />
@@ -954,8 +977,8 @@ export default function FestivalDetailSheet({
               className="group relative flex w-full items-center justify-center bg-stone-200/70 text-left touch-pan-y md:min-h-0 md:flex-1 md:overflow-hidden"
               aria-label={
                 imageUrls.length > 1
-                  ? '사진 확대보기 · 좌우로 쓸어 넘기기'
-                  : '사진 확대보기'
+                  ? t('korea.festival.detail.heroExpandSwipe')
+                  : t('korea.festival.detail.heroExpand')
               }
             >
               <img
@@ -966,7 +989,7 @@ export default function FestivalDetailSheet({
               />
               <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-stone-900/55 px-2.5 py-1 text-[11px] font-bold text-white opacity-95 group-hover:bg-stone-900/70">
                 <Expand size={13} aria-hidden="true" />
-                확대보기
+                {t('korea.festival.detail.expandView')}
               </span>
               {imageUrls.length > 1 && (
                 <span className="absolute bottom-3 right-3 rounded-full bg-stone-900/55 px-2 py-0.5 text-[10px] font-bold text-white tabular-nums">
@@ -978,7 +1001,7 @@ export default function FestivalDetailSheet({
               <div
                 className="flex gap-2 overflow-x-auto px-4 md:px-4 py-2.5 md:py-3 border-b border-stone-100 md:border-b-0 md:border-t md:border-stone-200/80 bg-white md:bg-stone-50 custom-scrollbar"
                 role="listbox"
-                aria-label="축제 사진"
+                aria-label={t('korea.festival.detail.photosAria')}
               >
                 {imageUrls.map((url, index) => {
                   const selected = index === activeImage;
@@ -1028,7 +1051,11 @@ export default function FestivalDetailSheet({
                 <button
                   type="button"
                   onClick={() => onToggleFavorite(item)}
-                  aria-label={favorited ? '즐겨찾기 해제' : '즐겨찾기'}
+                  aria-label={
+                    favorited
+                      ? t('korea.common.favoriteRemove')
+                      : t('korea.common.favoriteAdd')
+                  }
                   aria-pressed={favorited}
                   className="shrink-0 flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-stone-50 text-stone-600 hover:bg-amber-50 hover:border-amber-300"
                 >
@@ -1067,14 +1094,14 @@ export default function FestivalDetailSheet({
               className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-amber-300 bg-amber-100 px-4 py-3 text-sm font-bold text-amber-900 shadow-sm transition-colors hover:border-amber-500 hover:bg-amber-100 hover:shadow-md hover:ring-2 hover:ring-amber-200"
             >
               <ExternalLink size={15} aria-hidden="true" />
-              공식 홈페이지
+              {t('korea.festival.detail.officialSite')}
             </a>
           )}
 
           {detailLoading && (
             <div className="flex items-center gap-2 text-sm text-stone-500 py-2">
               <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-              상세 불러오는 중…
+              {t('korea.festival.detail.loadingDetail')}
             </div>
           )}
 
@@ -1087,20 +1114,20 @@ export default function FestivalDetailSheet({
               ref={tabListRef}
               className="flex gap-1.5 overflow-x-auto border-b border-stone-200 pb-2 custom-scrollbar"
               role="tablist"
-              aria-label="축제 상세 구분"
+              aria-label={t('korea.festival.detail.tabListAria')}
             >
               <TabChip
                 selected={activeTab === TAB_INFO}
                 onClick={() => selectTab(TAB_INFO)}
               >
-                안내
+                {t('korea.festival.detail.tabInfo')}
               </TabChip>
               {hasProgramTab && (
                 <TabChip
                   selected={activeTab === TAB_PROGRAM}
                   onClick={() => selectTab(TAB_PROGRAM)}
                 >
-                  프로그램·내용
+                  {t('korea.festival.detail.tabProgram')}
                 </TabChip>
               )}
               {hasPhotoTab && (
@@ -1108,21 +1135,25 @@ export default function FestivalDetailSheet({
                   selected={activeTab === TAB_PHOTOS}
                   onClick={() => selectTab(TAB_PHOTOS)}
                 >
-                  사진
+                  {t('korea.festival.detail.tabPhotos')}
                 </TabChip>
               )}
               <TabChip
                 selected={activeTab === TAB_READING}
                 onClick={() => selectTab(TAB_READING)}
               >
-                읽을거리
+                {t('korea.festival.detail.tabReading')}
               </TabChip>
             </div>
           )}
 
           {!detailLoading && activeTab === TAB_INFO && (
             <div className="space-y-3">
-              {overview && <DetailRow label="개요">{overview}</DetailRow>}
+              {overview && (
+                <DetailRow label={t('korea.festival.detail.labelOverview')}>
+                  {overview}
+                </DetailRow>
+              )}
 
               {(intro || scenicRegion) && (
                 <div
@@ -1133,29 +1164,31 @@ export default function FestivalDetailSheet({
                     .filter(Boolean)
                     .join(' ')}
                 >
-                  <DetailRow label="행사 장소">
+                  <DetailRow label={t('korea.festival.detail.labelVenue')}>
                     {showEventPlace ? eventplace : null}
                   </DetailRow>
-                  <DetailRow label="행사 시간">
+                  <DetailRow label={t('korea.festival.detail.labelTime')}>
                     {stripHtml(intro?.playtime || '') || null}
                   </DetailRow>
-                  <DetailRow label="이용 요금">
+                  <DetailRow label={t('korea.festival.detail.labelFee')}>
                     {stripHtml(intro?.usetimefestival || '') || null}
                   </DetailRow>
-                  <DetailRow label="관람 연령">
+                  <DetailRow label={t('korea.festival.detail.labelAge')}>
                     {stripHtml(intro?.agelimit || '') || null}
                   </DetailRow>
-                  <DetailRow label="소요 시간">
+                  <DetailRow label={t('korea.festival.detail.labelDuration')}>
                     {stripHtml(intro?.spendtimefestival || '') || null}
                   </DetailRow>
-                  <DetailRow label="할인">
+                  <DetailRow label={t('korea.festival.detail.labelDiscount')}>
                     {stripHtml(intro?.discountinfofestival || '') || null}
                   </DetailRow>
-                  <DetailRow label="예매/입장">
+                  <DetailRow label={t('korea.festival.detail.labelBooking')}>
                     {stripHtml(intro?.bookingplace || '') || null}
                   </DetailRow>
-                  <DetailRow label="주최">{sponsor1 || null}</DetailRow>
-                  <DetailRow label="주관/후원">
+                  <DetailRow label={t('korea.festival.detail.labelOrganizer')}>
+                    {sponsor1 || null}
+                  </DetailRow>
+                  <DetailRow label={t('korea.festival.detail.labelSponsor')}>
                     {showSponsor2 ? (
                       <>
                         {sponsor2}
@@ -1175,7 +1208,7 @@ export default function FestivalDetailSheet({
                     ) : null}
                   </DetailRow>
                   {tel && (
-                    <DetailRow label="문의">
+                    <DetailRow label={t('korea.festival.detail.labelContact')}>
                       <a
                         href={`tel:${tel.replace(/\s+/g, '')}`}
                         className="inline-flex items-center gap-1.5 text-amber-800 hover:text-amber-950"
@@ -1185,10 +1218,10 @@ export default function FestivalDetailSheet({
                       </a>
                     </DetailRow>
                   )}
-                  <DetailRow label="장소 안내">
+                  <DetailRow label={t('korea.festival.detail.labelPlaceInfo')}>
                     {stripHtml(intro?.placeinfo || '') || null}
                   </DetailRow>
-                  <DetailRow label="부대행사">
+                  <DetailRow label={t('korea.festival.detail.labelSideEvents')}>
                     {stripHtml(intro?.subevent || '') || null}
                   </DetailRow>
                 </div>
@@ -1197,12 +1230,14 @@ export default function FestivalDetailSheet({
               {scenicRegion && (
                 <div className="space-y-2 pt-1">
                   <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
-                    인근 명소
+                    {t('korea.festival.detail.nearScenic')}
                   </p>
                   {scenicSpotsRanked.length > 0 && (
                     <ul
                       className="space-y-2"
-                      aria-label={`${scenicRegion} 명소 축제장에서 가까운 순`}
+                      aria-label={t('korea.festival.detail.nearScenicAria', {
+                        region: scenicRegion,
+                      })}
                     >
                       {scenicSpotsRanked.map(({ spot, km }) => {
                         const distanceLabel = formatDistanceKm(km);
@@ -1244,7 +1279,9 @@ export default function FestivalDetailSheet({
                     onClick={openScenicPage}
                     className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
                   >
-                    {scenicRegion} 명소 더보기
+                    {t('korea.festival.detail.nearScenicMore', {
+                      region: scenicRegion,
+                    })}
                     <ExternalLink size={14} aria-hidden="true" />
                   </button>
                 </div>
@@ -1257,7 +1294,7 @@ export default function FestivalDetailSheet({
                   {festivalStayHref || festivalTnaHref ? (
                     <div className="space-y-2">
                       <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
-                        숙소 · 투어
+                        {t('korea.festival.detail.stayTour')}
                       </p>
                       <div className="flex flex-col gap-1.5 sm:flex-row sm:flex-wrap">
                         {festivalStayHref ? (
@@ -1267,7 +1304,9 @@ export default function FestivalDetailSheet({
                             rel="noopener noreferrer sponsored"
                             className="inline-flex items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-950 hover:bg-amber-100"
                           >
-                            숙소 · {festivalCross.stay.keyword}
+                            {t('korea.festival.detail.stayKeyword', {
+                              keyword: festivalCross.stay.keyword,
+                            })}
                             <ExternalLink size={12} aria-hidden="true" />
                           </a>
                         ) : null}
@@ -1278,7 +1317,9 @@ export default function FestivalDetailSheet({
                             rel="noopener noreferrer sponsored"
                             className="inline-flex items-center justify-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-stone-100"
                           >
-                            투어 · {festivalCross.tna.keyword}
+                            {t('korea.festival.detail.tourKeyword', {
+                              keyword: festivalCross.tna.keyword,
+                            })}
                             <ExternalLink size={12} aria-hidden="true" />
                           </a>
                         ) : null}
@@ -1288,7 +1329,7 @@ export default function FestivalDetailSheet({
                   {festivalCross?.packageCta?.url ? (
                     <div className="space-y-2">
                       <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
-                        패키지
+                        {t('korea.festival.detail.packages')}
                       </p>
                       <a
                         href={festivalCross.packageCta.url}
@@ -1296,7 +1337,8 @@ export default function FestivalDetailSheet({
                         rel="noopener noreferrer sponsored"
                         className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
                       >
-                        {festivalCross.packageCta.ctaLabel || '패키지 보기'}
+                        {festivalCross.packageCta.ctaLabel ||
+                          t('korea.festival.detail.packageCtaFallback')}
                         <ExternalLink size={14} aria-hidden="true" />
                       </a>
                     </div>
@@ -1308,7 +1350,7 @@ export default function FestivalDetailSheet({
                 nearbyCoursesStatus !== 'noarea' && (
                   <div className="space-y-2 pt-1">
                     <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
-                      인근 여행코스
+                      {t('korea.festival.detail.nearCourses')}
                     </p>
                     {nearbyCoursesStatus === 'loading' && (
                       <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
@@ -1317,22 +1359,25 @@ export default function FestivalDetailSheet({
                           className="animate-spin"
                           aria-hidden="true"
                         />
-                        인근 여행코스 불러오는 중…
+                        {t('korea.festival.detail.nearCoursesLoading')}
                       </div>
                     )}
                     {nearbyCoursesStatus === 'error' &&
                       nearbyCourses.length === 0 && (
                         <p className="text-xs text-stone-500">
-                          인근 여행코스를 불러오지 못했습니다.
+                          {t('korea.festival.detail.nearCoursesError')}
                         </p>
                       )}
                     {nearbyCoursesStatus === 'empty' && (
                       <p className="text-xs text-stone-500">
-                        이 시도에 등록된 여행코스가 없습니다.
+                        {t('korea.festival.detail.nearCoursesEmpty')}
                       </p>
                     )}
                     {nearbyCourses.length > 0 && (
-                      <ul className="space-y-2" aria-label="축제 인근 여행코스">
+                      <ul
+                        className="space-y-2"
+                        aria-label={t('korea.festival.detail.nearCoursesAria')}
+                      >
                         {nearbyCourses.map((spot) => {
                           const thumb = toHttps(spot.firstImage);
                           const dist = formatDistKm(spot.distKm);
@@ -1374,7 +1419,7 @@ export default function FestivalDetailSheet({
                       onClick={openCoursesPage}
                       className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
                     >
-                      여행코스 더보기
+                      {t('korea.festival.detail.moreCourses')}
                       <ExternalLink size={14} aria-hidden="true" />
                     </button>
                   </div>
@@ -1383,26 +1428,29 @@ export default function FestivalDetailSheet({
               {nearbyStatus !== 'idle' && nearbyStatus !== 'nocoords' && (
                 <div className="space-y-2 pt-1">
                   <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
-                    주변 관광지
+                    {t('korea.festival.detail.nearAttractions')}
                   </p>
                   {nearbyStatus === 'loading' && (
                     <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
                       <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-                      주변 관광지 불러오는 중…
+                      {t('korea.festival.detail.nearAttractionsLoading')}
                     </div>
                   )}
                   {nearbyStatus === 'error' && nearbySpots.length === 0 && (
                     <p className="text-xs text-stone-500">
-                      주변 관광지를 불러오지 못했습니다.
+                      {t('korea.festival.detail.nearAttractionsError')}
                     </p>
                   )}
                   {nearbyStatus === 'empty' && (
                     <p className="text-xs text-stone-500">
-                      반경 8km 안 등록된 관광지가 없습니다.
+                      {t('korea.festival.detail.nearAttractionsEmpty')}
                     </p>
                   )}
                   {nearbySpots.length > 0 && (
-                    <ul className="space-y-2" aria-label="축제 주변 관광지">
+                    <ul
+                      className="space-y-2"
+                      aria-label={t('korea.festival.detail.nearAttractionsAria')}
+                    >
                       {nearbySpots.map((spot) => {
                         const thumb = toHttps(spot.firstImage);
                         const dist = formatDistKm(spot.distKm);
@@ -1445,26 +1493,29 @@ export default function FestivalDetailSheet({
               {nearbyFoodStatus !== 'idle' && nearbyFoodStatus !== 'nocoords' && (
                 <div className="space-y-2 pt-1">
                   <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
-                    주변 맛집
+                    {t('korea.festival.detail.nearFood')}
                   </p>
                   {nearbyFoodStatus === 'loading' && (
                     <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
                       <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-                      주변 맛집 불러오는 중…
+                      {t('korea.festival.detail.nearFoodLoading')}
                     </div>
                   )}
                   {nearbyFoodStatus === 'error' && nearbyFood.length === 0 && (
                     <p className="text-xs text-stone-500">
-                      주변 맛집을 불러오지 못했습니다.
+                      {t('korea.festival.detail.nearFoodError')}
                     </p>
                   )}
                   {nearbyFoodStatus === 'empty' && (
                     <p className="text-xs text-stone-500">
-                      반경 3km 안 TourAPI 맛집이 없습니다.
+                      {t('korea.festival.detail.nearFoodEmpty')}
                     </p>
                   )}
                   {nearbyFood.length > 0 && (
-                    <ul className="space-y-2" aria-label="축제 주변 맛집">
+                    <ul
+                      className="space-y-2"
+                      aria-label={t('korea.festival.detail.nearFoodAria')}
+                    >
                       {nearbyFood.map((spot) => {
                         const thumb = toHttps(spot.firstImage);
                         const dist = formatDistKm(spot.distKm);
@@ -1508,7 +1559,7 @@ export default function FestivalDetailSheet({
                 nearbyLeportsStatus !== 'nocoords' && (
                   <div className="space-y-2 pt-1">
                     <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
-                      주변 레포츠
+                      {t('korea.festival.detail.nearLeports')}
                     </p>
                     {nearbyLeportsStatus === 'loading' && (
                       <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
@@ -1517,22 +1568,25 @@ export default function FestivalDetailSheet({
                           className="animate-spin"
                           aria-hidden="true"
                         />
-                        주변 레포츠 불러오는 중…
+                        {t('korea.festival.detail.nearLeportsLoading')}
                       </div>
                     )}
                     {nearbyLeportsStatus === 'error' &&
                       nearbyLeports.length === 0 && (
                         <p className="text-xs text-stone-500">
-                          주변 레포츠를 불러오지 못했습니다.
+                          {t('korea.festival.detail.nearLeportsError')}
                         </p>
                       )}
                     {nearbyLeportsStatus === 'empty' && (
                       <p className="text-xs text-stone-500">
-                        반경 5km 안 TourAPI 레포츠가 없습니다.
+                        {t('korea.festival.detail.nearLeportsEmpty')}
                       </p>
                     )}
                     {nearbyLeports.length > 0 && (
-                      <ul className="space-y-2" aria-label="축제 주변 레포츠">
+                      <ul
+                        className="space-y-2"
+                        aria-label={t('korea.festival.detail.nearLeportsAria')}
+                      >
                         {nearbyLeports.map((spot) => {
                           const thumb = toHttps(spot.firstImage);
                           const dist = formatDistKm(spot.distKm);
@@ -1576,7 +1630,7 @@ export default function FestivalDetailSheet({
                 nearbyCultureStatus !== 'nocoords' && (
                   <div className="space-y-2 pt-1">
                     <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
-                      주변 문화
+                      {t('korea.festival.detail.nearCulture')}
                     </p>
                     {nearbyCultureStatus === 'loading' && (
                       <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
@@ -1585,22 +1639,25 @@ export default function FestivalDetailSheet({
                           className="animate-spin"
                           aria-hidden="true"
                         />
-                        주변 문화시설 불러오는 중…
+                        {t('korea.festival.detail.nearCultureLoading')}
                       </div>
                     )}
                     {nearbyCultureStatus === 'error' &&
                       nearbyCulture.length === 0 && (
                         <p className="text-xs text-stone-500">
-                          주변 문화시설을 불러오지 못했습니다.
+                          {t('korea.festival.detail.nearCultureError')}
                         </p>
                       )}
                     {nearbyCultureStatus === 'empty' && (
                       <p className="text-xs text-stone-500">
-                        반경 5km 안 TourAPI 문화시설이 없습니다.
+                        {t('korea.festival.detail.nearCultureEmpty')}
                       </p>
                     )}
                     {nearbyCulture.length > 0 && (
-                      <ul className="space-y-2" aria-label="축제 주변 문화">
+                      <ul
+                        className="space-y-2"
+                        aria-label={t('korea.festival.detail.nearCultureAria')}
+                      >
                         {nearbyCulture.map((spot) => {
                           const thumb = toHttps(spot.firstImage);
                           const dist = formatDistKm(spot.distKm);
@@ -1645,12 +1702,14 @@ export default function FestivalDetailSheet({
           {!detailLoading && activeTab === TAB_PROGRAM && hasProgramTab && (
             <div className="space-y-3">
               {showProgram && (
-                <DetailRow label="프로그램">{programText}</DetailRow>
+                <DetailRow label={t('korea.festival.detail.labelProgram')}>
+                  {programText}
+                </DetailRow>
               )}
               {detailSections.map((row, index) => (
                 <DetailRow
                   key={`${row.serial || row.name}-${index}`}
-                  label={row.name || '상세'}
+                  label={row.name || t('korea.festival.detail.labelDetailFallback')}
                 >
                   {row.text || null}
                 </DetailRow>
@@ -1661,7 +1720,9 @@ export default function FestivalDetailSheet({
           {!detailLoading && activeTab === TAB_PHOTOS && hasPhotoTab && (
             <div className="space-y-3">
               <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
-                사진 {imageUrls.length}장
+                {t('korea.festival.detail.photosCount', {
+                  count: imageUrls.length,
+                })}
               </p>
               <div className="grid grid-cols-3 gap-2 md:grid-cols-4">
                 {imageUrls.map((url, index) => (
@@ -1673,7 +1734,9 @@ export default function FestivalDetailSheet({
                       setLightboxOpen(true);
                     }}
                     className="relative aspect-square overflow-hidden rounded-xl border border-stone-200 bg-stone-100"
-                    aria-label={`사진 ${index + 1} 확대보기`}
+                    aria-label={t('korea.festival.detail.photoExpandAria', {
+                      index: index + 1,
+                    })}
                   >
                     <img
                       src={url}
@@ -1690,7 +1753,7 @@ export default function FestivalDetailSheet({
             <div className="space-y-4">
               <div className="space-y-2">
                 <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
-                  더 찾아보기
+                  {t('korea.festival.detail.readMore')}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {naverSearchUrl(item.title) && (
@@ -1701,7 +1764,7 @@ export default function FestivalDetailSheet({
                       className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:border-amber-300 transition-colors"
                     >
                       <ExternalLink size={12} aria-hidden="true" />
-                      네이버 검색
+                      {t('korea.festival.detail.naverSearch')}
                     </a>
                   )}
                   {googleSearchUrl(item.title) && (
@@ -1712,7 +1775,7 @@ export default function FestivalDetailSheet({
                       className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:border-amber-300 transition-colors"
                     >
                       <ExternalLink size={12} aria-hidden="true" />
-                      구글 검색
+                      {t('korea.festival.detail.googleSearch')}
                     </a>
                   )}
                 </div>
@@ -1720,12 +1783,12 @@ export default function FestivalDetailSheet({
 
               <div className="space-y-2">
                 <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
-                  관련 영상
+                  {t('korea.festival.detail.relatedVideos')}
                 </p>
                 {videosLoading && (
                   <div className="flex items-center gap-2 text-sm text-stone-500 py-2">
                     <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-                    영상 불러오는 중…
+                    {t('korea.festival.detail.videosLoading')}
                   </div>
                 )}
                 {!videosLoading && videosError && videos.length === 0 && (
@@ -1757,7 +1820,8 @@ export default function FestivalDetailSheet({
                                 <div className="h-16 w-28 shrink-0 rounded-xl bg-stone-200" />
                               )}
                               <span className="min-w-0 flex-1 text-sm font-bold text-stone-800 leading-snug line-clamp-3 break-keep">
-                                {video.title || 'YouTube 영상'}
+                                {video.title ||
+                                  t('korea.festival.detail.youtubeFallback')}
                               </span>
                             </a>
                           </li>
@@ -1770,7 +1834,7 @@ export default function FestivalDetailSheet({
                         onClick={() => setVideosExpanded(true)}
                         className="w-full py-2.5 rounded-2xl text-sm font-bold border border-stone-200 bg-stone-50 text-stone-800 hover:bg-stone-100"
                       >
-                        동영상 더보기
+                        {t('korea.festival.detail.videosMore')}
                       </button>
                     )}
                   </>
@@ -1784,14 +1848,14 @@ export default function FestivalDetailSheet({
             onClick={onClose}
             className="w-full py-3 rounded-2xl text-sm font-bold border border-stone-200 bg-stone-50 text-stone-800 hover:bg-stone-100"
           >
-            닫기
+            {t('korea.common.close')}
           </button>
         </div>
       </div>
 
       <button
         type="button"
-        aria-label="맨 위로"
+        aria-label={t('korea.common.scrollToTop')}
         onClick={(e) => {
           e.stopPropagation();
           sheetScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1803,7 +1867,7 @@ export default function FestivalDetailSheet({
         }`}
       >
         <ArrowUp size={18} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
-        <span className="text-xs font-bold">위로</span>
+        <span className="text-xs font-bold">{t('korea.common.scrollUp')}</span>
       </button>
 
       {selectedNearby && (
@@ -1819,7 +1883,7 @@ export default function FestivalDetailSheet({
       {selectedScenic && (
         <ThemeSpotDetailModal
           spot={toScenicModalSpot(selectedScenic)}
-          eyebrow="인근 명소"
+          eyebrow={t('korea.festival.detail.nearScenic')}
           returnTo="/korea"
           overlayZClass="z-50"
           onClose={() => setSelectedScenic(null)}
@@ -1858,18 +1922,18 @@ export default function FestivalDetailSheet({
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
-            aria-label="사진 확대보기"
+            aria-label={t('korea.festival.detail.lightboxAria')}
           >
             <div className="flex shrink-0 items-center justify-between gap-3 pb-3">
               <p className="text-sm font-bold text-white/90 tabular-nums">
                 {imageUrls.length > 1
                   ? `${activeImage + 1} / ${imageUrls.length}`
-                  : '사진'}
+                  : t('korea.festival.detail.lightboxPhoto')}
               </p>
               <button
                 type="button"
                 onClick={closeLightbox}
-                aria-label="확대보기 닫기"
+                aria-label={t('korea.festival.detail.lightboxClose')}
                 className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white hover:bg-white/20"
               >
                 <X size={20} aria-hidden="true" />
@@ -1897,7 +1961,7 @@ export default function FestivalDetailSheet({
                   <button
                     type="button"
                     onClick={() => stepLightbox(-1)}
-                    aria-label="이전 사진"
+                    aria-label={t('korea.festival.detail.lightboxPrev')}
                     className="absolute left-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-stone-900/55 text-white hover:bg-stone-900/75 md:left-2"
                   >
                     <ChevronLeft size={22} aria-hidden="true" />
@@ -1905,7 +1969,7 @@ export default function FestivalDetailSheet({
                   <button
                     type="button"
                     onClick={() => stepLightbox(1)}
-                    aria-label="다음 사진"
+                    aria-label={t('korea.festival.detail.lightboxNext')}
                     className="absolute right-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-stone-900/55 text-white hover:bg-stone-900/75 md:right-2"
                   >
                     <ChevronRight size={22} aria-hidden="true" />
