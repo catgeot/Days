@@ -62,30 +62,40 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **PROD QA (#38)** — #29~#36 main · **#39 한국 2차 UI·지도명** 대기 |
-| **main** | `72144c4d` (#36 merge) |
+| **상태** | **#39 대기** — 명승·테마 UI·지도 (#40 축제 지도·title) |
+| **main** | `06b82440` (핸드오프) · 코드 `72144c4d` (#36) |
 | **브랜치** | `cursor/en` (재사용) |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§11·**§12** |
 | **일지** | [`2026-08-21-project-log.md`](./2026-08-21-project-log.md) |
 | **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` · `/qa/en` |
 | **VERIFY** | `audit:i18n` · `build` · `smoke:korea-scenic-place-label` · `smoke:browser-locale-hint` · `smoke:place-label-slug` · `smoke:festival-detail-locale` |
 
-**2차 순서**: ~~#13~#36~~ · #38 PROD QA(사람) → **#39 한국 2차 UI·지도명 EN**
+**2차 순서**: ~~#13~#36~~ · #38 PROD QA ✅ → **#39 명승·테마** → **#40 축제 지도·title**
 
-**#38 PROD QA 메모** (사람 · 2026-08-21):
+**#38 PROD QA 메모** (2026-08-21):
 
-- 축제 분류칩 EN OK · 지도 마커 한글 · `ThemeSpotDetailModal` UI 한글
-- 명승 지도 breadcrumb 한글(전체/강원/접경/화천) · 명소 핀 한글
-- **합의**: 본문 제외 · **상단 title·UI 셸·지도 핀** EN → #39
+- 축제 분류칩 EN OK · 지도 마커·`ThemeSpotDetailModal` UI 한글
+- 명승 지도 breadcrumb·명소 핀 한글
+- **합의**: 본문 ko · **상단 title·UI·지도 핀** EN → **#39·#40 2세션**
 
-**다음 제시어**:
+**다음 제시어 (#39)**:
 
 ```
-영문화 #39, 한국 2차 UI·지도명 EN
+영문화 #39, 명승·테마 UI·지도 EN
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · /korea?lang=en · ThemeSpotDetailModal · 지도 마커·breadcrumb
+cursor/en · /korea/theme/scenic?lang=en · ThemeSpotDetailModal · 지도 breadcrumb·핀
+```
+
+**#39 종료 후 (#40)**:
+
+```
+영문화 #40, 축제 지도·title EN
+@plans/feature-handoff-index.md
+@plans/2026-08-21-project-log.md
+@plans/i18n-en-plan.md
+cursor/en · /korea?lang=en · KoreaFestivalMap · titleEn join
 ```
 
 ---

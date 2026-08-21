@@ -40,8 +40,9 @@
 | 28 | PROD 확인 | `영문화 #28, PROD QA — #26 써머리·탐색` | (배포 후 사람) |
 | 29 | i18n 감사 | `영문화 #29, i18n 커버리지 감사` | ✅ baseline |
 | 30~36 | P0·지역칩 | (일지 참고) | ✅ main |
-| 38 | PROD QA | `영문화 #38, PROD QA — #29~#36` | (사람 진행 중) |
-| 39 | 한국 2차 UI·지도명 | `영문화 #39, 한국 2차 UI·지도명 EN` | ⏳ 다음 |
+| 38 | PROD QA | `영문화 #38, PROD QA — #29~#36` | ✅ 사람 |
+| 39 | 명승·테마 UI·지도 | `영문화 #39, 명승·테마 UI·지도 EN` | ⏳ 다음 |
+| 40 | 축제 지도·title | `영문화 #40, 축제 지도·title EN` | ⏳ |
 
 **1차 (#0~#12)**: UI 카피 · **2차 (#13~#22)**: 지구본 데이터 · TourAPI 본문 · 무니 · 플래너 AI·배너 · **#23**: 첫 방문 브라우저 언어 → locale.
 
@@ -121,18 +122,18 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#38)**: main `72144c4d` · PROD QA 중 — 지도 breadcrumb·마커·`ThemeSpotDetailModal` UI 잔여 확인
+**상태 (#38)**: PROD QA 완료 · 잔여를 **#39·#40** 2세션으로 분할
 
 **브랜치**: `cursor/en` (재사용) · `/qa/en`
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #39, 한국 2차 UI·지도명 EN
+영문화 #39, 명승·테마 UI·지도 EN
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · /korea?lang=en · ThemeSpotDetailModal · 지도 마커·breadcrumb
+cursor/en · /korea/theme/scenic?lang=en · ThemeSpotDetailModal · 지도 breadcrumb·핀
 ```
 
 ### #23 브라우저 locale 자동 — 완료
@@ -236,58 +237,75 @@ cursor/en · /korea?lang=en · ThemeSpotDetailModal · 지도 마커·breadcrumb
 
 ---
 
-## 12. #39 — 한국 2차 UI·지도 표시명 EN (PROD QA 후속)
+## 12. #39·#40 — 한국 2차 UI·지도 표시명 EN (PROD QA 후속 · 2세션)
 
 **배경 (#38 PROD QA)**: 본문(TourAPI·blurb) 한글은 정책 유지 OK · **UI 셸·상단 명칭·지도 핀 라벨**은 EN 필요(번역 없이 맥락 파악).
 
-### 한 세션 가능 여부
+### 세션 분할 (확정)
 
-| 판정 | 내용 |
-|------|------|
-| **핵심 A~D** | **한 세션 가능** — 패턴은 #35 `FestivalDetailSheet`·#36 지역칩과 동일 · 파일 5~7개 |
-| **전체 A~E** | **한 세션 가능(빡빡)** — 축제 `titleEn` join + 스모크 · 국가유산(heritage) 핀 EN 데이터 없으면 **ko 폴백** 문서화 |
-| **분할 시** | #39a UI·명승 지도 · #39b 축제 지도·헤더 title |
+| 세션 | 트랙 | 범위 | 채팅명 |
+|------|------|------|--------|
+| **#39** | A·B·C·D₁ | 명승·테마 — 지도 breadcrumb·명소 핀 · `ThemeSpotDetailModal` UI · 상단 title(subtitle) | `영문화 #39, 명승·테마 UI·지도 EN` |
+| **#40** | D₂·E | 축제 — 지도 핀 · `FestivalDetailSheet` 헤더 title · `titleEn` join | `영문화 #40, 축제 지도·title EN` |
+
+**#39 종료 후 제시어 → #40**:
+
+```
+영문화 #40, 축제 지도·title EN
+@plans/feature-handoff-index.md
+@plans/2026-08-21-project-log.md
+@plans/i18n-en-plan.md
+cursor/en · /korea?lang=en · KoreaFestivalMap · titleEn join
+```
 
 ### 범위 (EN) vs 제외 (ko SSOT)
 
-| EN (#39) | ko 유지 (본문·데이터) |
-|----------|----------------------|
+| EN (#39·#40) | ko 유지 (본문·데이터) |
+|--------------|----------------------|
 | `ThemeSpotDetailModal` 버튼·섹션·aria·푸터 | overview·blurb·맛집/POI **이름** |
 | 상세 **헤더 title**·subtitle(권역) | TourAPI info/program 본문 |
-| 지도 **breadcrumb**·드릴 칩(기존 helper 재사용) | 축제 카드·목록 제목(한글+`lang=ko`) |
+| 지도 **breadcrumb**·드릴 칩 | 축제 **목록 카드** 제목(한글+`lang=ko`) |
 | 지도 **핀 라벨** `titleShort` | 포스터·이미지 내 한글 |
-| `FestivalDetailSheet` **헤더 title**만 | |
+| `FestivalDetailSheet` **헤더 title**만 (#40) | |
 
 ### 작업 트랙
 
-| ID | 작업 | 파일 | 데이터 |
-|----|------|------|--------|
-| **A** | 명승 지도 breadcrumb EN | `KoreaScenicMap.jsx` · `koreaUi.js` `localizeMapDrillCrumb` | `displayChipLabel` · `korea.common.all` |
-| **B** | 명승 지도 핀 EN | `koreaScenicMapData.js` · `KoreaScenicMap.jsx` | curated `attractionNameEn` **871/871** · heritage **nameEn 없음→ko 폴백** · tour `attractionNameEn` 대부분 null |
-| **C** | `ThemeSpotDetailModal` UI EN | `ThemeSpotDetailModal.jsx` · `ThemeSpotCrossRail` | `korea.festival.detail.*` 재사용 + `korea.theme.spotDetail.*` 신규 |
-| **D** | 상단 명칭 EN | `ThemeSpotDetailModal` · `FestivalDetailSheet` | `getLocalizedPlaceName` / `formatScenicSpotPlaceLabel` · `nameEn`·`attractionNameEn` |
-| **E** | 축제 지도 핀·헤더 title EN | `KoreaFestivalMap.jsx` · `fetchKoreaFestivalsWindow.js` | Edge `festivalWindow` **locale=en** 캐시(`list:en:rolling12:…`) · `contentId`→`titleEn` join · 상세 본문 ko 유지 |
+| ID | 세션 | 작업 | 파일 | 데이터 |
+|----|------|------|------|--------|
+| **A** | #39 | 명승 지도 breadcrumb EN | `KoreaScenicMap.jsx` · `koreaUi.js` | `localizeMapDrillCrumb` · `displayChipLabel` |
+| **B** | #39 | 명승 지도 핀 EN | `koreaScenicMapData.js` | curated `attractionNameEn` **871/871** · heritage **ko 폴백** |
+| **C** | #39 | `ThemeSpotDetailModal` UI EN | `ThemeSpotDetailModal.jsx` · `ThemeSpotCrossRail` | `korea.festival.detail.*` 재사용 + `korea.theme.spotDetail.*` |
+| **D₁** | #39 | 명승 상단 title·subtitle | `ThemeSpotDetailModal` | `getLocalizedPlaceName` · `formatScenicSpotPlaceLabel` |
+| **D₂** | #40 | 축제 상단 title | `FestivalDetailSheet.jsx` | `titleEn` 우선 · 본문 ko |
+| **E** | #40 | 축제 지도 핀 EN | `KoreaFestivalMap.jsx` · `fetchKoreaFestivalsWindow.js` | Edge `festivalWindow` locale=en · `contentId` join |
 
 ### 구현 메모
 
-1. **축제 titleEn**: `fetchTourApiFestivalWindow({ locale: 'en' })` 병렬 1회(또는 sessionStorage `rolling12:en`) → ko `items`에 `titleEn` 필드만 merge · 카드/본문은 기존 `title`(ko).
-2. **명승 핀**: `buildScenicMapGeoJson(items, locale)` — `locale===en`이면 `attractionNameEn || nameEn || name`.
-3. **audit**: `ThemeSpotDetailModal.jsx`를 P0 tier C에 추가(선택) 또는 #39 전용 debt 0 확인.
-4. **금지**: TourAPI detail `locale=en` 재도입 · spots JSON 직편집 · UI 리디자인.
+1. **#39 먼저** — 축제 파일(`KoreaFestivalMap`·`fetchKoreaFestivalsWindow`) **건드리지 않음**.
+2. **#40 titleEn**: `fetchTourApiFestivalWindow({ locale: 'en' })` → ko `items`에 `titleEn`만 merge · 카드/본문 `title`(ko) 유지.
+3. **명승 핀**: `buildScenicMapGeoJson(items, locale)` — en이면 `attractionNameEn || name`.
+4. **금지**: TourAPI detail `locale=en` · spots JSON 직편집 · UI 리디자인.
 
-### VERIFY (#39 게이트)
+### VERIFY
+
+**#39 게이트**:
 
 ```bash
-npm run audit:i18n
-npm run build
+npm run audit:i18n && npm run build
 npm run smoke:korea-scenic-place-label
-npm run smoke:festival-detail-locale
-npm run smoke:browser-locale-hint
 npm run smoke:place-label-slug
 ```
 
-**사람 Preview QA** (`cursor/en` · `/qa/en`):
+**#40 게이트** (#39 위 +):
 
-1. `/korea/theme/scenic?lang=en` 지도 — breadcrumb·핀 EN(명소) · heritage ko 폴백 시 메모
-2. `/korea?lang=en` 지도 — 핀 EN · 상세 헤더 EN · 본문 한글
-3. 축제→인근 명소 모달 — UI EN · 리스트명은 ko 데이터
+```bash
+npm run smoke:festival-detail-locale
+npm run smoke:browser-locale-hint
+```
+
+**사람 Preview QA**:
+
+| 세션 | 경로 |
+|------|------|
+| #39 | `/korea/theme/scenic?lang=en` — breadcrumb·명소 핀 EN · 모달 UI·헤더 EN · 본문 ko |
+| #40 | `/korea?lang=en` — 축제 지도 핀·상세 헤더 EN · 목록·본문 ko |
