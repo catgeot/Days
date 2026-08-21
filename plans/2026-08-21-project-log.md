@@ -28,6 +28,12 @@
 - **VERIFY** `audit:i18n` · `build` · `smoke:festival-detail-locale` PASS
 - **사람 QA** main push·배포 후 `/?lang=en` → 탐색 진입·Island getaways · `/korea?lang=en` 축제 EN title
 
+## 영문화 #42 — 명승 모달 PACKAGES CTA EN
+
+- **증상** `?lang=en` 명승 상세 PACKAGES 버튼 「강원 패키지」ko 유지
+- **수정** `ThemeSpotCrossRail` → `localizedPackageCtaLabel(key)` · EN 「Gangwon packages」
+- **VERIFY** `smoke:festival-detail-locale` · `build` PASS
+
 **다음 제시어 (#42)**:
 
 ```
