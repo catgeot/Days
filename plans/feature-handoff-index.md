@@ -62,8 +62,8 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **main 병합** PR #141 (#39~#41) · **#42 테스트·최적화** |
-| **main** | `5c8adea5` — PR #141 병합 (#39~#41) |
+| **상태** | **main** `#42` · 탐색 썸네일 EN 수정 `614ed344` · **배포 후 PROD QA** |
+| **main** | `614ed344` — SpotThumbnailCard locale 지명·국가 |
 | **브랜치** | `main` (병합 후) · 잔존은 차차 |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§11·**§13** |
 | **일지** | [`2026-08-21-project-log.md`](./2026-08-21-project-log.md) |
@@ -72,18 +72,18 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 **#42 범위 (테스트·최적화)**:
 
-1. **회귀** — PROD `?lang=en` 홈·한국·명승·축제 상세·locale 토글
+1. **회귀** — PROD `?lang=en` 홈·한국·명승·축제 상세·locale 토글 · **탐색 썸네일 EN** ✅ `614ed344`
 2. **성능** — 축제 `titleEn` en window 2nd fetch · sessionStorage v2 · locale 전환
 3. **백로그(차차)** — EngService2 미등록 축제 핀 ko · Preview 「작업 로그」·#28 PROD QA
 
 **다음 제시어 (#42)**:
 
 ```
-영문화 #42, 테스트·최적화
+영문화 #42, PROD QA — 축제 titleEn 캐시
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-main · PROD ?lang=en · audit:i18n · 축제 titleEn 캐시
+main · ?lang=en · 축제 상세 titleEn 2nd fetch
 ```
 
 ---
