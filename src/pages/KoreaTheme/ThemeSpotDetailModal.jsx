@@ -1295,6 +1295,7 @@ export default function ThemeSpotDetailModal({
       areaCode: areaCode || undefined,
       radiusKm: 50,
       limit: 6,
+      locale,
     }).then((res) => {
       if (cancelled) return;
       const list = Array.isArray(res?.festivals) ? res.festivals : [];
@@ -1318,6 +1319,7 @@ export default function ThemeSpotDetailModal({
     detail?.mapx,
     detail?.mapy,
     detailLoading,
+    locale,
   ]);
 
   const overview = useMemo(

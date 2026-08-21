@@ -77,11 +77,12 @@ function itemsNeedTitleEn(items) {
 
 /**
  * Edge festivalWindow 1회 (서버 페이지 merge + DB 캐시).
- * @param {{ force?: boolean, now?: Date }} [opts]
+ * @param {{ force?: boolean, now?: Date, locale?: string }} [opts]
  */
 async function fetchKoreaFestivalsRolling12Uncached(opts = {}) {
   const now = opts.now instanceof Date ? opts.now : new Date();
   const range = rolling12MonthRangeYmd(now);
+  const wantTitleEn = String(opts.locale || '').startsWith('en');
   const data = await fetchTourApiFestivalWindow({
     eventStartDate: range.eventStartDate,
     eventEndDate: range.eventEndDate,
@@ -101,10 +102,12 @@ async function fetchKoreaFestivalsRolling12Uncached(opts = {}) {
   }
 
   const filtered = filterFestivalItems(data.items);
-  const items = await mergeTitleEnOntoItems(filtered, {
-    ...range,
-    force: Boolean(opts.force),
-  });
+  const items = wantTitleEn
+    ? await mergeTitleEnOntoItems(filtered, {
+        ...range,
+        force: Boolean(opts.force),
+      })
+    : filtered;
   writeCache(items);
   return {
     ok: true,

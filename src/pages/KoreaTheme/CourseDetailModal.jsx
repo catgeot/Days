@@ -12,6 +12,7 @@ import {
 import { fetchNearbyFestivals } from '../../utils/fetchNearbyFestivals';
 import { detectSidoCode } from '../Korea/festivalRegionTags';
 import { pushThemeNavBack } from '../Home/lib/koreaThemeNavBack';
+import { useLocale } from '../../i18n/LocaleProvider';
 
 function stripHtml(html) {
   if (!html) return '';
@@ -65,6 +66,7 @@ export default function CourseDetailModal({
   showNearbyFestivals = true,
 }) {
   const { t } = useTranslation();
+  const { locale } = useLocale();
   const navigate = useNavigate();
   const scrollRef = useRef(null);
   const [nearbyFestivals, setNearbyFestivals] = useState([]);
@@ -121,6 +123,7 @@ export default function CourseDetailModal({
       areaCode: areaCode || undefined,
       radiusKm: 50,
       limit: 6,
+      locale,
     }).then((res) => {
       if (cancelled) return;
       const list = Array.isArray(res?.festivals) ? res.festivals : [];
@@ -143,6 +146,7 @@ export default function CourseDetailModal({
     course?.areaCode,
     course?._areaCode,
     course?.addr1,
+    locale,
   ]);
 
   const scrollToTop = () => {
