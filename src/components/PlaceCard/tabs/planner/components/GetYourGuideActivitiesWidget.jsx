@@ -3,10 +3,10 @@ import { ExternalLink, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import {
   GYG_ACTIVITIES_ITEM_COUNT,
-  GYG_CURRENCY,
   GYG_PARTNER_ID,
   buildGygPlannerCmp,
   getGygHomeUrl,
+  resolveGygCurrency,
   resolveGygLocale,
 } from '../../../../../utils/affiliate';
 import { buildGygActivitiesSearchQuery } from '../locationRules';
@@ -30,9 +30,9 @@ export function GygHomeMoreLink({
   tone = 'dark',
   className = '',
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const cmp = cmpProp || buildGygPlannerCmp(location);
-  const href = getGygHomeUrl({ cmp });
+  const href = getGygHomeUrl({ cmp, locale: i18n.language });
   const linkLabel = label ?? t('place.planner.banners.gyg.moreLink');
   const toneClass =
     tone === 'light'
@@ -81,6 +81,7 @@ const GetYourGuideActivitiesWidget = ({
   const [widgetLoaded, setWidgetLoaded] = useState(false);
   const frameHostRef = useRef(null);
   const gygLocale = resolveGygLocale(i18n.language);
+  const gygCurrency = resolveGygCurrency(i18n.language);
   const query = useMemo(
     () => (queryProp != null ? queryProp : buildGygActivitiesSearchQuery(location)),
     [
@@ -96,8 +97,11 @@ const GetYourGuideActivitiesWidget = ({
   const items = Math.max(1, Number(itemCount) || GYG_ACTIVITIES_ITEM_COUNT);
   const openFramePx =
     !isBoxed && frameWidth != null && Number(frameWidth) > 0 ? Number(frameWidth) : null;
-  const remountKey = `${location?.slug || query || 'gyg-activities'}|${items}|${openFramePx || 'fluid'}|${gygLocale}`;
-  const homeHref = useMemo(() => getGygHomeUrl({ cmp }), [cmp]);
+  const remountKey = `${location?.slug || query || 'gyg-activities'}|${items}|${openFramePx || 'fluid'}|${gygLocale}|${gygCurrency}`;
+  const homeHref = useMemo(
+    () => getGygHomeUrl({ cmp, locale: i18n.language }),
+    [cmp, i18n.language]
+  );
 
   // 패널 폭 전환 후 한 프레임 뒤 마운트 — 좁은 폭으로 iframe이 고정되는 것 방지
   useEffect(() => {
@@ -293,7 +297,7 @@ const GetYourGuideActivitiesWidget = ({
         data-gyg-widget="activities"
         data-gyg-partner-id={GYG_PARTNER_ID}
         data-gyg-locale-code={gygLocale}
-        data-gyg-currency={GYG_CURRENCY}
+        data-gyg-currency={gygCurrency}
         data-gyg-number-of-items={String(items)}
         data-gyg-q={query}
         data-gyg-cmp={cmp}

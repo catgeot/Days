@@ -161,6 +161,12 @@ cursor/en · ReviewsTab · audit:i18n
 - **수정** `GYG_ACTIVITIES_Q_BY_SLUG.timbuktu` → `Timbuktu, Mali`
 - **VERIFY** `smoke-gyg-activities-query` · `build` PASS
 
+## 영문화 #31 후속3, GYG EN 사이트 딥링크 — Preview push
+
+- **원인** 위젯 `locale=en-US`인데 `currency=KRW`·제휴 URL locale 없음 → GYG 한글 사이트
+- **수정** `resolveGygCurrency`(en=USD) · `getGygHomeUrl`/`buildGygSearchUrl` → `/en-us/` + `locale_code`
+- **VERIFY** smoke·build PASS
+
 **다음 제시어**:
 
 ```

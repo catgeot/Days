@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  GYG_CURRENCY,
   GYG_PARTNER_ID,
   buildGygPlannerCmp,
+  resolveGygCurrency,
   resolveGygLocale,
 } from '../../../../../utils/affiliate';
 import { getGygLocationIdByLocation } from '../locationRules';
@@ -11,12 +11,13 @@ import { getGygLocationIdByLocation } from '../locationRules';
 const GetYourGuideCityWidget = ({ location }) => {
   const { i18n } = useTranslation();
   const gygLocale = resolveGygLocale(i18n.language);
+  const gygCurrency = resolveGygCurrency(i18n.language);
   const locationId = useMemo(
     () => getGygLocationIdByLocation(location),
     [location?.slug, location?.name, location?.name_en, location?.curation_data?.locationEn]
   );
   const cmp = useMemo(() => buildGygPlannerCmp(location), [location?.slug]);
-  const remountKey = `${locationId || 'gyg-city'}|${cmp}|${gygLocale}`;
+  const remountKey = `${locationId || 'gyg-city'}|${cmp}|${gygLocale}|${gygCurrency}`;
 
   if (!locationId) return null;
 
@@ -30,7 +31,7 @@ const GetYourGuideCityWidget = ({ location }) => {
         data-gyg-href="https://widget.getyourguide.com/default/city.frame"
         data-gyg-location-id={locationId}
         data-gyg-locale-code={gygLocale}
-        data-gyg-currency={GYG_CURRENCY}
+        data-gyg-currency={gygCurrency}
         data-gyg-widget="city"
         data-gyg-partner-id={GYG_PARTNER_ID}
         data-gyg-cmp={cmp}

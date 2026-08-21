@@ -21,9 +21,40 @@ export {
   resolveMrtPackageThemeForLocation,
 } from './mrtPackageLinks.js';
 import { resolveTripcomPartnerLocale } from './tripcomPartnerLocale.js';
-import { resolveGygLocale } from './gygPartnerLocale.js';
+import { resolveGygLocale, resolveGygCurrency } from './gygPartnerLocale.js';
+import {
+  GYG_PARTNER_ID,
+  GYG_DEFAULT_CMP,
+  GYG_CURRENCY,
+  GYG_ACTIVITIES_ITEM_COUNT,
+  GYG_PLANNER_ACTIVITIES_ITEM_COUNT,
+  getGygHomeUrl as buildGygHomeUrlRaw,
+  buildGygSearchUrl as buildGygSearchUrlRaw,
+} from './gygAffiliateLinks.js';
 
-export { resolveTripcomPartnerLocale, resolveGygLocale };
+export { resolveTripcomPartnerLocale, resolveGygLocale, resolveGygCurrency };
+export {
+  GYG_PARTNER_ID,
+  GYG_DEFAULT_CMP,
+  GYG_CURRENCY,
+  GYG_ACTIVITIES_ITEM_COUNT,
+  GYG_PLANNER_ACTIVITIES_ITEM_COUNT,
+};
+
+/** app locale 기본 — Node smoke는 {@link ./gygAffiliateLinks.js} 직접 */
+export function getGygHomeUrl(options = {}) {
+  return buildGygHomeUrlRaw({
+    ...options,
+    locale: options.locale ?? i18n.language,
+  });
+}
+
+export function buildGygSearchUrl(query, options = {}) {
+  return buildGygSearchUrlRaw(query, {
+    ...options,
+    locale: options.locale ?? i18n.language,
+  });
+}
 
 /** @returns {'ko-KR' | 'en-US'} */
 export function getTripcomPartnerLocale() {
@@ -98,37 +129,12 @@ export const MRT_HOME_URL = 'https://www.myrealtrip.com';
 /** Klook 한국어 사이트 홈 (스마트 링크·일반 랜딩) */
 export const KLOOK_SITE_HOME_TARGET = 'https://www.klook.com/ko/';
 
-/** GetYourGuide 제휴 파트너 ID — 위젯·스마트 링크 홈 공통 */
-export const GYG_PARTNER_ID = 'LRKVVU4';
 /** @deprecated {@link resolveGygLocale} / {@link getGygLocale} — ko fallback only */
 export const GYG_LOCALE = 'ko-KR';
 
 /** @returns {'ko-KR' | 'en-US'} */
 export function getGygLocale() {
   return resolveGygLocale(i18n.language);
-}
-/** 위젯·딥링크 표시 통화 — 미지정 시 GYG 기본(EUR). 한국 서비스는 KRW */
-export const GYG_CURRENCY = 'KRW';
-/** 스마트 링크·홈 진입 기본 cmp (광고 파라미터 제외한 클린 추적) · 철자 planer는 기존 포털 캠페인과 동일 */
-export const GYG_DEFAULT_CMP = 'gateo_planer';
-/** Manual Activities — 스케치·홈 모달 등 넓은 표면 */
-export const GYG_ACTIVITIES_ITEM_COUNT = 12;
-/** 플래너 map_poi — 짧은 리스트 + 제휴 홈 링크로 이동 */
-export const GYG_PLANNER_ACTIVITIES_ITEM_COUNT = 3;
-
-/**
- * GetYourGuide 제휴 홈 (단축 URL 불필요 — partner_id 직접).
- * @param {{ cmp?: string, currency?: string }} [options]
- * @returns {string}
- */
-export function getGygHomeUrl(options = {}) {
-  const params = new URLSearchParams({
-    partner_id: GYG_PARTNER_ID,
-    utm_medium: 'online_publisher',
-    cmp: options.cmp || GYG_DEFAULT_CMP,
-    currency: options.currency || GYG_CURRENCY,
-  });
-  return `https://www.getyourguide.com/?${params.toString()}`;
 }
 
 /**
