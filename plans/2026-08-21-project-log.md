@@ -40,12 +40,19 @@
 - **수정** `localizedSpotModalSubtitle` · `toScenicModalSpot` · `formatScenicSpotPlaceLabel` areaCode 폴백 · `142fb4d9`+`…`
 - **VERIFY** node `formatScenicSpotPlaceLabel({region:강원}, en)` → Gangwon
 
-**다음 제시어 (#42)**:
+## 영문화 #42a, PROD QA — 지구본·항공·칩 EN
+
+- **범위** `?lang=en` PROD 회귀 5항목 — 숙소 헤더 · 3D 투어·경계 · 연관 칩 · FlightCinemaBar
+- **키** `home.globe.*` · `home.flightCinema.*` · `place.common.relatedGatewayHint`
+- **VERIFY** `audit:i18n` · `build` · browser-locale·place-label smoke PASS
+- **잔여** LogoPanel · Footer/About → **#42b**
+
+**다음 제시어 (#42b)**:
 
 ```
-영문화 #42, PROD QA — 배포 후 회귀
+영문화 #42b, PROD QA — 로고·About
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-main · ?lang=en · 탐색·축제·locale 토글
+main · ?lang=en · LogoPanel · FooterModal · footerData contentEn
 ```
