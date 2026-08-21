@@ -118,18 +118,18 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#39)**: ThemeSpotDetailModal·지도 breadcrumb·핀 EN · TourAPI 본문 ko SSOT
+**상태 (#41)**: 축제 지도 핀·`FestivalDetailSheet` 헤더 title EN · `titleEn` join · TourAPI 본문 ko SSOT
 
-**브랜치**: `cursor/en` · `/qa/en` · tip `7ae5953b`
+**브랜치**: `cursor/en` · `/qa/en` · PR #141
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #40, Preview QA — 명승 모달·지도 EN
+영문화 #41, 축제 지도·title EN — Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · /korea/theme/scenic?lang=en · ThemeSpotDetailModal · 지도 breadcrumb
+cursor/en · /korea?lang=en · KoreaFestivalMap · FestivalDetailSheet 헤더
 ```
 
 ### #23 브라우저 locale 자동 — 완료

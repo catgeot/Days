@@ -62,31 +62,31 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#39·#40 agent VERIFY** — 사람 Preview QA 대기 (명승 모달·지도 EN) |
+| **상태** | **#41 agent VERIFY** — 사람 Preview QA 대기 (축제 지도·title EN) |
 | **main** | PR [#139](https://github.com/catgeot/Days/pull/139) 병합 `c15c3d54` · **#28 PROD QA** (배포 후 사람) |
 | **브랜치** | `cursor/en` (재사용) |
-| **tip** | `739c18de` |
+| **tip** | (push 후 갱신) |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§11·§12 |
 | **일지** | [`2026-08-21-project-log.md`](./2026-08-21-project-log.md) |
 | **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` · `/qa/en` |
-| **VERIFY** | `audit:i18n` · `build` · `smoke:korea-scenic-place-label` · `smoke:korea-scenic-map` · `smoke:browser-locale-hint` · `smoke:place-label-slug` · `smoke:festival-detail-locale` |
+| **VERIFY** | `audit:i18n` · `build` · `smoke:festival-detail-locale` · `smoke:browser-locale-hint` · `smoke:korea-scenic-place-label` · `smoke:place-label-slug` |
 
-**2차 순서**: ~~#13~#36~~ · ~~#39 명승·테마~~ · ~~#40 Preview VERIFY~~ → **#41 축제 지도·title**
+**2차 순서**: ~~#13~#36~~ · ~~#39·#40 명승~~ → **#41 축제 지도·title** agent VERIFY
 
-**agent VERIFY** (`?lang=en` · `/korea/theme/scenic`):
+**agent VERIFY** (`?lang=en` · `/korea`):
 
-1. 칩·place 라벨 EN · 지도 breadcrumb·핀·내 위치 칩 EN
-2. `ThemeSpotDetailModal` UI·헤더 title EN (`scenicSpotMapTitle`) · 본문 `lang="ko"`
-3. `smoke:scenic-detail-locale` · `smoke:korea-scenic-map` · `build` PASS
+1. 축제 지도 핀 EN (`titleEn` join) · 목록 카드 title ko 유지
+2. `FestivalDetailSheet` 헤더 title EN · 본문·TourAPI detail `lang="ko"`
+3. `smoke:festival-detail-locale` · `build` PASS
 
-**다음 제시어 (#41)**:
+**다음 제시어 (Preview QA)**:
 
 ```
-영문화 #41, 축제 지도·title EN
+영문화 #41, 축제 지도·title EN — Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · /korea?lang=en · KoreaFestivalMap · titleEn join
+cursor/en · /korea?lang=en · KoreaFestivalMap · FestivalDetailSheet 헤더
 ```
 
 ---

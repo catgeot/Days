@@ -42,3 +42,22 @@
 @plans/i18n-en-plan.md
 cursor/en · /korea?lang=en · KoreaFestivalMap · titleEn join
 ```
+
+## 영문화 #41, 축제 지도·title EN — titleEn join
+
+- **데이터** `fetchKoreaFestivalsRolling12` — ko 목록 + `festivalWindow` locale=en → `contentId` join `titleEn` · 카드 `title`(ko) 유지
+- **지도** `KoreaFestivalMap` — `festivalMapTitle(item, locale)` 핀 라벨 EN
+- **상세** `FestivalDetailSheet` 헤더 — `titleEn` 우선 · 본문·TourAPI detail ko SSOT
+- **VERIFY** `audit:i18n` · `build` · `smoke:festival-detail-locale` · `smoke:browser-locale-hint` · `smoke:korea-scenic-place-label` · `smoke:place-label-slug` PASS
+- **브랜치** `cursor/en` · PR #141 · `/qa/en` · `/korea?lang=en`
+- **다음** 사람 Preview QA — 축제 지도 핀·상세 헤더 EN · 목록·본문 ko
+
+**다음 제시어 (Preview QA)**:
+
+```
+영문화 #41, 축제 지도·title EN — Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-08-21-project-log.md
+@plans/i18n-en-plan.md
+cursor/en · /korea?lang=en · KoreaFestivalMap · FestivalDetailSheet 헤더
+```
