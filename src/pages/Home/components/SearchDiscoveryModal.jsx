@@ -43,6 +43,14 @@ import {
   localizedLeadingExplorePackage,
   localizedPackageCtaLabel,
 } from '../../../i18n/exploreUi';
+import {
+  CURATION_FAMILY_TARGETS,
+  CURATION_ISLAND_TARGETS,
+  CURATION_JAPAN_TARGETS,
+  CURATION_LONGHAUL_TARGETS,
+  CURATION_POPULAR_ISLAND_SLUGS,
+  CURATION_RESORT_TARGETS,
+} from './SearchDiscovery/curationTargets';
 
 const pickVisibleElementRect = (...refs) => {
   for (const ref of refs) {
@@ -546,50 +554,20 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
 
     // 테마별 우선 노출 여행지 목록 (2026-04-22: 신규 25개 여행지 반영하여 대폭 확장)
     // 가족/효도 테마: 아시아 단거리(일본 제외) — 일본은 japanTargets로 분리
-    const familyTargets = [
-      '제주', '서귀포', '다낭', '나트랑', '하노이', '푸꾸옥', '호이안',
-      '방콕', '푸켓', '치앙마이', '타이베이', '가오슝', '싱가포르', '마닐라', '세부', '보라카이',
-      '쿠알라룸푸르', '코타키나발루', '랑카위', '홍콩', '마카오', '상하이', '장가계', '칭다오', '청도', '베이징'
-    ];
+    const familyTargets = CURATION_FAMILY_TARGETS;
 
     // 일본 테마: 본토·오키나와·대마도 (MRT 일본 특가 CTA)
-    const japanTargets = [
-      '오사카', '교토', '도쿄', '후쿠오카', '삿포로', '나라', '고베', '나가사키',
-      '요코하마', '가나자와', '대마도', '오키나와', '미야코지마', '이시가키', '나고야', '히로시마'
-    ];
+    const japanTargets = CURATION_JAPAN_TARGETS;
 
     // 장거리 테마: 유럽, 북미, 오세아니아 등 장거리 여행 (42개)
-    const longhaulTargets = [
-      '파리', '로마', '바르셀로나', '마드리드', '런던', '암스테르담', '베니스', '피렌체', '밀라노',
-      '프라하', '부다페스트', '빈', '베를린', '뮌헨', '더블린', '에딘버러', '리스본', '포르투',
-      '헬싱키', '스톡홀름', '코펜하겐', '레이캬비크', '아이슬란드', '오슬로', '바르샤바', '자그레브',
-      '아테네', '산토리니', '두브로브니크', '이스탄불', '두바이', '예루살렘',
-      '뉴욕', '로스앤젤레스', '샌프란시스코', '라스베가스', '시애틀', '시카고', '필라델피아', '샌디에이고',
-      '시드니', '멜버른', '브리즈번', '오클랜드', '퀸스타운'
-    ];
+    const longhaulTargets = CURATION_LONGHAUL_TARGETS;
 
     // 휴양 테마: 해변, 리조트, 휴양지 중심 (35개)
-    const resortTargets = [
-      '괌', '사이판', '하와이', '호놀룰루', '마우이', '발리', '길리 메노', '롬복', '팔라완', '엘니도',
-      '보라카이', '세부', '코타키나발루', '쿠알라룸푸르', '랑카위', '푸켓', '피피 섬', '코사무이', '크라비',
-      '다낭', '나트랑', '푸꾸옥', '몰디브', '세이셸', '모리셔스', '잔지바르', '칸쿤', '보라보라', '피지',
-      '라로통가', '사모아', '팔라우', '뉴칼레도니아', '골드코스트', '그레이트 배리어 리프'
-    ];
+    const resortTargets = CURATION_RESORT_TARGETS;
 
     // 섬여행 에디터스 픽: 숨겨진·생소한 섬 위주 (인기 휴양지 제외)
-    const islandTargets = [
-      '라로통가', '아이투타키', '길리 메노', '야프', '추크', '코스라에', '폰페이', '나우루', '키리바시',
-      '팔라우', '사모아', '통가', '바누아투', '뉴칼레도니아', '레위니옹', '흐바르',
-      '로포텐', '페로', '아조레스', '마데이라', '이스터', '미드웨이', '핏케언',
-      '케르겔렌', '디에고 가르시아', '세인트 헬레나', '페르난두지노로냐', '시미란',
-      '코모도', '안다만', '미야코지마', '이시가키', '대마도', '카보베르데'
-    ];
-    const popularIslandSlugs = new Set([
-      'jeju', 'seogwipo', 'maldives', 'boracay', 'bali', 'santorini', 'guam', 'saipan',
-      'phuket', 'phi-phi-islands', 'bora-bora', 'hawaii', 'honolulu', 'cebu', 'iceland',
-      'sicily', 'crete', 'ibiza', 'koh-samui', 'lombok', 'palawan', 'fiji', 'mauritius',
-      'seychelles', 'zanzibar', 'tahiti',
-    ]);
+    const islandTargets = CURATION_ISLAND_TARGETS;
+    const popularIslandSlugs = CURATION_POPULAR_ISLAND_SLUGS;
     const isHiddenIslandExploreSpot = (s) =>
       isIslandExploreSpot(s) && !popularIslandSlugs.has((s.slug || '').toLowerCase());
 

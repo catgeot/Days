@@ -21,8 +21,40 @@ export {
   resolveMrtPackageThemeForLocation,
 } from './mrtPackageLinks.js';
 import { resolveTripcomPartnerLocale } from './tripcomPartnerLocale.js';
+import { resolveGygLocale, resolveGygCurrency } from './gygPartnerLocale.js';
+import {
+  GYG_PARTNER_ID,
+  GYG_DEFAULT_CMP,
+  GYG_CURRENCY,
+  GYG_ACTIVITIES_ITEM_COUNT,
+  GYG_PLANNER_ACTIVITIES_ITEM_COUNT,
+  getGygHomeUrl as buildGygHomeUrlRaw,
+  buildGygSearchUrl as buildGygSearchUrlRaw,
+} from './gygAffiliateLinks.js';
 
-export { resolveTripcomPartnerLocale };
+export { resolveTripcomPartnerLocale, resolveGygLocale, resolveGygCurrency };
+export {
+  GYG_PARTNER_ID,
+  GYG_DEFAULT_CMP,
+  GYG_CURRENCY,
+  GYG_ACTIVITIES_ITEM_COUNT,
+  GYG_PLANNER_ACTIVITIES_ITEM_COUNT,
+};
+
+/** app locale 기본 — Node smoke는 {@link ./gygAffiliateLinks.js} 직접 */
+export function getGygHomeUrl(options = {}) {
+  return buildGygHomeUrlRaw({
+    ...options,
+    locale: options.locale ?? i18n.language,
+  });
+}
+
+export function buildGygSearchUrl(query, options = {}) {
+  return buildGygSearchUrlRaw(query, {
+    ...options,
+    locale: options.locale ?? i18n.language,
+  });
+}
 
 /** @returns {'ko-KR' | 'en-US'} */
 export function getTripcomPartnerLocale() {
@@ -97,31 +129,12 @@ export const MRT_HOME_URL = 'https://www.myrealtrip.com';
 /** Klook 한국어 사이트 홈 (스마트 링크·일반 랜딩) */
 export const KLOOK_SITE_HOME_TARGET = 'https://www.klook.com/ko/';
 
-/** GetYourGuide 제휴 파트너 ID — 위젯·스마트 링크 홈 공통 */
-export const GYG_PARTNER_ID = 'LRKVVU4';
+/** @deprecated {@link resolveGygLocale} / {@link getGygLocale} — ko fallback only */
 export const GYG_LOCALE = 'ko-KR';
-/** 위젯·딥링크 표시 통화 — 미지정 시 GYG 기본(EUR). 한국 서비스는 KRW */
-export const GYG_CURRENCY = 'KRW';
-/** 스마트 링크·홈 진입 기본 cmp (광고 파라미터 제외한 클린 추적) · 철자 planer는 기존 포털 캠페인과 동일 */
-export const GYG_DEFAULT_CMP = 'gateo_planer';
-/** Manual Activities — 스케치·홈 모달 등 넓은 표면 */
-export const GYG_ACTIVITIES_ITEM_COUNT = 12;
-/** 플래너 map_poi — 짧은 리스트 + 제휴 홈 링크로 이동 */
-export const GYG_PLANNER_ACTIVITIES_ITEM_COUNT = 3;
 
-/**
- * GetYourGuide 제휴 홈 (단축 URL 불필요 — partner_id 직접).
- * @param {{ cmp?: string, currency?: string }} [options]
- * @returns {string}
- */
-export function getGygHomeUrl(options = {}) {
-  const params = new URLSearchParams({
-    partner_id: GYG_PARTNER_ID,
-    utm_medium: 'online_publisher',
-    cmp: options.cmp || GYG_DEFAULT_CMP,
-    currency: options.currency || GYG_CURRENCY,
-  });
-  return `https://www.getyourguide.com/?${params.toString()}`;
+/** @returns {'ko-KR' | 'en-US'} */
+export function getGygLocale() {
+  return resolveGygLocale(i18n.language);
 }
 
 /**
@@ -633,24 +646,22 @@ export function getTripcomHotelEmptyCopy(location) {
   const slug = getLocationSlugKey(location);
   if (slug === 'persepolis') {
     return {
-      title: '보통 시라즈에 묵고 당일 투어로 다녀와요',
-      subtitle:
-        '다만 트립닷컴·마이리얼트립에서는 이란 숙소 예약이 거의 안 돼요. 이란 전문·현지 예약을 확인해 보세요',
-      cta: '트립닷컴에서 확인하기',
+      title: i18n.t('home.tripcomStay.empty.persepolis.title'),
+      subtitle: i18n.t('home.tripcomStay.empty.persepolis.subtitle'),
+      cta: i18n.t('home.tripcomStay.empty.persepolis.cta'),
     };
   }
   if (isTripcomHotelSparseInventoryLocation(location)) {
     return {
-      title: '이 지역은 온라인 숙소 예약이 거의 없어요',
-      subtitle:
-        '트립닷컴에도 재고가 없거나 예약이 어려울 수 있어요. 현지·전문 여행사를 확인해 보세요',
-      cta: '트립닷컴에서 확인하기',
+      title: i18n.t('home.tripcomStay.empty.sparse.title'),
+      subtitle: i18n.t('home.tripcomStay.empty.sparse.subtitle'),
+      cta: i18n.t('home.tripcomStay.empty.sparse.cta'),
     };
   }
   return {
-    title: '이 여행지 숙소를 마이리얼트립에서 찾지 못했어요',
-    subtitle: '위쪽 일정·인원을 바꾼 뒤 트립닷컴으로 검색해 보세요',
-    cta: '트립닷컴에서 숙소 검색',
+    title: i18n.t('home.tripcomStay.empty.default.title'),
+    subtitle: i18n.t('home.tripcomStay.empty.default.subtitle'),
+    cta: i18n.t('home.tripcomStay.empty.default.cta'),
   };
 }
 
@@ -662,9 +673,9 @@ export function getTripcomHotelEmptyCopy(location) {
  */
 export function getTripcomHotelErrorCopy() {
   return {
-    title: '숙소 검색을 잠시 불러오지 못했어요',
-    subtitle: '잠시 후에 다시 시도해 주세요. 트립닷컴에서 바로 검색할 수도 있어요',
-    cta: '트립닷컴에서 숙소 검색',
+    title: i18n.t('home.tripcomStay.error.title'),
+    subtitle: i18n.t('home.tripcomStay.error.subtitle'),
+    cta: i18n.t('home.tripcomStay.error.cta'),
   };
 }
 

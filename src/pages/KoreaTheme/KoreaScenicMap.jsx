@@ -16,6 +16,8 @@ import {
   Minimize2,
 } from 'lucide-react';
 import { MAPBOX_ATTRIBUTION_LINKS } from '../../data/mapboxAttribution';
+import { mapboxLanguageForLocale, displayChipLabel } from '../../i18n/koreaRegionLabels';
+import { resolveCityAttractionHub } from '../Home/lib/cityAttractionHubs';
 import {
   buildScenicMapGeoJson,
   focusViewFromScenicItems,
@@ -90,16 +92,17 @@ const activePaint = {
   'circle-stroke-color': '#fff7ed',
 };
 
-function LanguageControl() {
-  useControl(() => new MapboxLanguage({ defaultLanguage: 'ko' }));
+function LanguageControl({ locale = 'ko' }) {
+  const mapLanguage = mapboxLanguageForLocale(locale);
+  useControl(() => new MapboxLanguage({ defaultLanguage: mapLanguage }));
   return null;
 }
 
 /** @param {import('mapbox-gl').Map | null | undefined} map */
-function applyKoreanPlaceLabels(map) {
+function applyMapPlaceLabels(map, locale = 'ko') {
   if (!map || typeof map.setLanguage !== 'function') return;
   try {
-    map.setLanguage('ko');
+    map.setLanguage(mapboxLanguageForLocale(locale));
   } catch {
     /* ignore */
   }
@@ -283,8 +286,42 @@ export default function KoreaScenicMap({
   onLocateSuccess,
   onClearLocate,
   locateActive = false,
+  locale = 'ko',
 }) {
   const { t } = useTranslation();
+
+  const localizedDrillChipLabel = useCallback(
+    (chip) => {
+      if (!chip) return '';
+      const kind =
+        chip.kind === 'region'
+          ? 'major'
+          : chip.kind === 'area'
+            ? 'area'
+            : chip.kind === 'cluster'
+              ? 'cluster'
+              : chip.kind === 'hub'
+                ? 'hub'
+                : chip.kind === 'category'
+                  ? 'heritage'
+                  : chip.kind === 'cat1' ||
+                      chip.kind === 'cat2' ||
+                      chip.kind === 'cat3'
+                    ? 'tourCat'
+                    : null;
+      const hub =
+        chip.hubId || chip.hub
+          ? resolveCityAttractionHub(String(chip.hubId || chip.hub || ''))
+          : null;
+      return displayChipLabel(locale, chip.label, {
+        kind,
+        code: chip.area || chip.cat || chip.code || chip.hubId,
+        clusterId: chip.cluster,
+        hub,
+      });
+    },
+    [locale],
+  );
   const mapRef = useRef(null);
   const viewStackRef = useRef([]);
   const focusViewRef = useRef(focusView);
@@ -455,9 +492,14 @@ export default function KoreaScenicMap({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusKey]);
 
+  useEffect(() => {
+    const map = resolveMapInstance(mapRef.current);
+    applyMapPlaceLabels(map, locale);
+  }, [locale]);
+
   const handleMapLoad = (e) => {
     const map = e?.target;
-    applyKoreanPlaceLabels(map);
+    applyMapPlaceLabels(map, locale);
     const focus = focusViewRef.current;
     if (isValidFocusView(focus)) {
       applyFocusCamera(map, focus, { pushHistory: false });
@@ -549,7 +591,7 @@ export default function KoreaScenicMap({
         onMouseEnter={showSpotPins ? handleMouseEnter : undefined}
         onMouseLeave={showSpotPins ? handleMouseLeave : undefined}
       >
-        <LanguageControl />
+        <LanguageControl locale={locale} />
         <NavigationControl position="bottom-right" showCompass={false} />
         {showSpotPins ? (
           <Source
@@ -630,14 +672,14 @@ export default function KoreaScenicMap({
               className={`pointer-events-auto inline-flex max-w-[9.5rem] items-center gap-1 ${drillChipClass(chip.kind)}`}
               aria-label={
                 chip.kind === 'spot'
-                  ? `${chip.label} ${chip.count}`
+                  ? `${localizedDrillChipLabel(chip)} ${chip.count}`
                   : t('korea.theme.map.expandChip', {
-                      label: chip.label,
+                      label: localizedDrillChipLabel(chip),
                       count: chip.count,
                     })
               }
             >
-              <span className="truncate">{chip.label}</span>
+              <span className="truncate">{localizedDrillChipLabel(chip)}</span>
               {chip.count != null && chip.count !== '' ? (
                 <span className="shrink-0 tabular-nums opacity-80">
                   {chip.count}

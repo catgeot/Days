@@ -38,6 +38,7 @@
 | 26 | 써머리·탐색 EN | `영문화 #26, 써머리·탐색 EN` | ✅ Preview |
 | 27 | main 병합 | `영문화 #27, main 병합 — #26 써머리·탐색 EN` | ✅ merge |
 | 28 | PROD 확인 | `영문화 #28, PROD QA — #26 써머리·탐색` | (배포 후 사람) |
+| 29 | i18n 감사 | `영문화 #29, i18n 커버리지 감사` | ✅ baseline |
 
 **1차 (#0~#12)**: UI 카피 · **2차 (#13~#22)**: 지구본 데이터 · TourAPI 본문 · 무니 · 플래너 AI·배너 · **#23**: 첫 방문 브라우저 언어 → locale.
 
@@ -96,7 +97,7 @@
 1. **기존 비주얼 유지** — 버튼·레이아웃·색 교체 금지 (`.ai-context` §4.1 5)
 2. **키 네이밍** — `domain.section.key` (예: `home.globe.chip.paradise`)
 3. **폴백** — en 키 없으면 ko · ko 없으면 키 문자열(개발만)
-4. **Affiliate** — `affiliate.js` locale 파라미터를 `LocaleProvider`와 동기( `#2` )
+4. **Affiliate** — Trip.com·**GYG** `resolve*Locale` ↔ `LocaleProvider` 동기 ✅ · Klook/12Go 등 후속
 5. **E2E** — 한글 accessibility name 의존 테스트는 키/라벨 변경 시 동기 ([`site-health-monitoring-plan.md`](./site-health-monitoring-plan.md))
 
 ---
@@ -117,18 +118,18 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#27)**: PR [#139](https://github.com/catgeot/Days/pull/139) → **main** `c15c3d54` · **#28 PROD QA** (배포 후)
+**상태 (#36 main 병합)**: #29~#36 · `audit:i18n` P0 debt **0** · 지역·분류칩 EN · **PROD QA** (배포 후 사람)
 
-**브랜치**: `cursor/en` · `/qa/en`
+**브랜치**: `cursor/en` (재사용) · `/qa/en`
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #28, PROD QA — #26 써머리·탐색
+영문화 #38, PROD QA — #29~#36 P0·지역칩
 @plans/feature-handoff-index.md
 @plans/2026-08-20-project-log.md
 @plans/i18n-en-plan.md
-main · www.gateo.kr · 써머리 Find stays/tours · /explore EN
+main · www.gateo.kr · /korea?lang=en · /explore EN
 ```
 
 ### #23 브라우저 locale 자동 — 완료
@@ -205,3 +206,27 @@ main · www.gateo.kr · 써머리 Find stays/tours · /explore EN
 4. **CHA·선정 명승** — TourAPI 아님 · `overview_en`은 추후
 5. **AI 캐시** — `place_chat_intro`·`essential_guide` locale별 키/컬럼 분리
 6. **기존 비주얼 유지** — 카피·locale 분기만
+
+---
+
+## 11. i18n 커버리지 감사 (`audit:i18n`)
+
+| | |
+|--|--|
+| **명령** | `npm run audit:i18n` |
+| **SSOT** | P0 목록 [`scripts/data/i18n-audit-p0.mjs`](../scripts/data/i18n-audit-p0.mjs) |
+| **리포트** | `scripts/outputs/i18n-audit-baseline.json` (gitignore · 실행 시 생성) |
+| **게이트** | `en.json` 누락 키 **0** · P0 파일 존재 — **PASS** |
+| **debt** | P0 한글 리터럴 줄 수 — baseline 추적만(아직 fail 조건 아님) |
+
+### P0 tier (Preview `/qa/en` · #29 baseline)
+
+| Tier | 범위 | 파일 수 | hangul 줄(#29) |
+|------|------|---------|----------------|
+| **A** | 홈·탐색·PlaceCard 써머리/펼침 | 11 | 15 |
+| **B** | 무니·플래너·리뷰·공항 | 7 | 10 |
+| **C** | Auth·공지·한국 UI 셸 | 5 | 55 |
+
+**#35 완료** — P0 debt **0** (tier A·B·C). TourAPI 본문 ko SSOT·Chrome 번역 가드 유지.
+
+**제외·참고**: `missingInKo` 219건은 en-only 지구본 국가 키

@@ -62,34 +62,33 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#27 main 병합** — #26 써머리·탐색 EN · **PROD 배포 후 QA** |
-| **main** | PR [#139](https://github.com/catgeot/Days/pull/139) 병합 후 SHA 확인 |
+| **상태** | **main 병합** — #29~#36 P0·지역칩 EN · **PROD QA** (배포 후 사람) |
+| **main** | #36 merge 후 SHA 확인 · PR [#139](https://github.com/catgeot/Days/pull/139) `c15c3d54` 포함 |
 | **브랜치** | `cursor/en` (재사용) |
-| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9 |
+| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§11 |
 | **일지** | [`2026-08-20-project-log.md`](./2026-08-20-project-log.md) |
-| **PROD** | `https://www.gateo.kr` (시크릿 EN) · `/qa/en` → `/?lang=en` |
-| **VERIFY** | `build` · `smoke:browser-locale-hint` · `smoke:festival-detail-locale` · `smoke:essential-guide-locale` · `smoke:place-label-slug` |
+| **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` · `/qa/en` |
+| **VERIFY** | `audit:i18n` · `build` · `smoke:korea-scenic-place-label` · `smoke:browser-locale-hint` · `smoke:place-label-slug` · `smoke:festival-detail-locale` |
 
-**2차 순서**: ~~#13~#27~~ → **#28 PROD QA** (배포 후 · #26 써머리·탐색 포함)
+**2차 순서**: ~~#13~#36~~ → **#38 PROD QA** (배포 후 · #28~#36 포함)
 
-**PROD QA 체크** (사람 · 시크릿 창):
+**PROD QA 체크** (사람 · 시크릿 EN Chrome · `gateo.locale` 없음):
 
-1. Chrome 언어 **English** 우선 · `gateo.locale` 없음 · `www.gateo.kr/` — UI 자동 EN·`?lang=en` 추가
-2. `/korea` — UI EN · 축제 카드 한글 제목·주소에 Chrome 번역 제안
-3. 축제 상세 — overview·info 한글 본문 Chrome 번역 (포스터 이미지 내 한글은 번역 불가)
-4. 헤더 KO 토글 → 한글 UI · 재방문 시 선택 유지
-5. PlaceCard 플래너 — 배너·AI 본문 EN
-6. PlaceCard 써머리 — **Find stays** · **Find tours** (좌측 탭) EN
-7. 검색바 → 탐색 — 필터·큐레이션·안내문 EN
+1. `www.gateo.kr/` — UI 자동 EN · `?lang=en`
+2. `/korea?lang=en` — 지역·분류칩 EN · 축제 카드 한글 → Chrome 번역
+3. `/korea/theme/scenic?lang=en` — 명승 칩·place 라벨 EN
+4. PlaceCard — Find stays/tours · 펼친 패널 · 리뷰·플래너 EN
+5. `/explore?lang=en` — 탐색 필터·큐레이션 EN
+6. 헤더 KO 토글 → 한글 UI · 재방문 유지
 
 **다음 제시어**:
 
 ```
-영문화 #28, PROD QA — #26 써머리·탐색
+영문화 #38, PROD QA — #29~#36 P0·지역칩
 @plans/feature-handoff-index.md
 @plans/2026-08-20-project-log.md
 @plans/i18n-en-plan.md
-main · www.gateo.kr · 써머리 Find stays/tours · /explore EN
+main · www.gateo.kr · /korea?lang=en · /explore EN
 ```
 
 ---

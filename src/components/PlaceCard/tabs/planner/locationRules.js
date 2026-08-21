@@ -24,6 +24,8 @@ export const GYG_CITY_CONFIGS = [
 const GYG_ACTIVITIES_Q_BY_SLUG = {
     // bare "Aitutaki" → Ayutthaya(태국) fuzzy · 재고 없음 → 확정 쿡 제도 embed
     aitutaki: 'Rarotonga, Cook Islands',
+    // bare "Timbuktu" → Tbilisi(조지아) fuzzy · Hostaway q= 권장 "City, Country"
+    timbuktu: 'Timbuktu, Mali',
 };
 
 // 지도/명소 카드에서 Klook 커버리지가 약해 GYG를 우선 노출할 여행지.

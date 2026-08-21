@@ -595,7 +595,7 @@ const HomeUI = React.memo(({
             onClick={() => onOpenChat()}
             className="bg-gradient-to-r from-blue-600/80 to-purple-600/80 backdrop-blur-md text-white px-8 py-3 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.4)] flex items-center gap-2 font-bold text-xs border border-white/10 hover:scale-105 transition-transform"
           >
-            <MessageSquare size={16} /> <span>AI와 대화하기</span>
+            <MessageSquare size={16} /> <span>{t('home.chatWithAi')}</span>
           </button>
         </div>
       </footer>

@@ -77,6 +77,7 @@
     "audit:mrt-stay-admin-gaps": "node scripts/audit-mrt-stay-admin-gaps.mjs",
     "audit:ko-homonym-expand": "node scripts/audit-ko-homonym-expand-candidates.mjs",
     "audit:tripcom-hotel-city-gaps": "node scripts/list-tripcom-hotel-city-gaps.mjs",
+    "audit:i18n": "node scripts/audit-i18n.mjs",
     "audit:flight-arcs": "node scripts/audit-flight-arcs.mjs",
     "smoke:flight-route-baseline": "node scripts/smoke-flight-route-baseline.mjs",
     "smoke:flight-origin-gateway": "node scripts/smoke-flight-origin-gateway.mjs",

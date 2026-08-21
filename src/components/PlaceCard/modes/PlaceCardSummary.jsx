@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { X, Sparkles, Maximize2, Cuboid, Plane, Loader2, ChevronRight, ScanSearch, ScanEye, LayoutList } from 'lucide-react';
 import BookmarkButton from '../common/BookmarkButton';
-import { getPlaceTitleLinesForLocale } from '../common/locationDisplay';
+import { getPlaceTitleLinesForLocale, getLocalizedCountryName } from '../common/locationDisplay';
 import { useLocale } from '../../../i18n/LocaleProvider';
 import { canStartGlobeTour } from '../../../pages/Home/lib/globeTourEngine';
 import FlightOriginSelector from '../../../pages/Home/components/FlightOriginSelector.jsx';
@@ -82,6 +82,7 @@ const PlaceCardSummary = ({
   const allowSummaryIntroExpandTap = !isScanning && !isCompact;
   const isEnterGlow = !isMobileCoarse && glowPhase === 'enter';
   const { primaryName, secondaryName } = getPlaceTitleLinesForLocale(location, locale);
+  const countryLabel = getLocalizedCountryName(location, locale) || t('place.fallback.global');
   const canStartTour = canStartGlobeTour(location);
   const flightRouteInteractive = isFlightRouteReady && !isFlightRoutePending;
   const flightRouteBusy = canPreviewFlightRoute && !flightRouteInteractive && !isFlightRoutePending;
@@ -156,7 +157,7 @@ const PlaceCardSummary = ({
               className="min-w-0 flex-1 self-stretch py-1 leading-none text-left"
             >
               <p className="text-[9px] font-bold tracking-widest uppercase text-emerald-300/90 truncate leading-none">
-                {location?.country || 'Global'}
+                {countryLabel}
               </p>
               <p className="mt-0.5 text-sm font-bold text-white truncate leading-none">
                 {primaryName || location?.name}
@@ -252,7 +253,7 @@ const PlaceCardSummary = ({
               <div className="flex items-center gap-1.5 mb-1 min-w-0">
                 <Sparkles size={12} className={`shrink-0 ${isScanning ? 'text-blue-400 animate-pulse' : 'text-yellow-400'}`} />
                 <span className="min-w-0 truncate text-[10px] text-blue-300 font-bold tracking-widest uppercase">
-                  {isScanning ? 'SEARCHING...' : (location?.country || 'Global')}
+                  {isScanning ? 'SEARCHING...' : countryLabel}
                 </span>
               </div>
               <div className="flex items-center gap-2 min-w-0">
