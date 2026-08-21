@@ -88,3 +88,31 @@ export function formatScenicSpotPlaceLabel(spot, locale = 'ko') {
   if (!sido) return city;
   return `${sido} ${city}`;
 }
+
+function isEnLocale(locale) {
+  return String(locale || '').startsWith('en');
+}
+
+/**
+ * 지도 핀·짧은 라벨 — EN이면 nameEn 우선, 없으면 한글 원문.
+ * @param {{ name?: string, title?: string, nameEn?: string, attractionNameEn?: string, name_en?: string } | null | undefined} spot
+ * @param {string} [locale]
+ */
+export function scenicSpotMapTitle(spot, locale = 'ko') {
+  const ko = String(spot?.name || spot?.title || '').trim();
+  if (!ko) return '';
+  if (!isEnLocale(locale)) return ko;
+  const en = String(
+    spot?.nameEn || spot?.attractionNameEn || spot?.name_en || '',
+  ).trim();
+  return en || ko;
+}
+
+/** 축제 지도 핀·상세 헤더 — EN이면 titleEn 우선, 목록 카드 title(ko) 유지. */
+export function festivalMapTitle(item, locale = 'ko') {
+  const ko = String(item?.title || '').trim();
+  if (!ko) return '';
+  if (!isEnLocale(locale)) return ko;
+  const en = String(item?.titleEn || '').trim();
+  return en || ko;
+}

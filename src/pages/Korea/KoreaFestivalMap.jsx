@@ -9,8 +9,10 @@ import Map, {
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import { Maximize2, Minimize2 } from 'lucide-react';
 import { MAPBOX_ATTRIBUTION_LINKS } from '../../data/mapboxAttribution';
+import { festivalMapTitle } from '../Home/lib/scenicSpotPlaceLabel.js';
 import { mapboxLanguageForLocale } from '../../i18n/koreaRegionLabels';
 import { festivalLngLat } from './koreaFestivalCorridors';
+import { koreaMapPinLabelLayout } from './koreaMapPinLabelLayout';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
@@ -136,8 +138,9 @@ function shortTitle(title) {
 
 /**
  * @param {object[]} items
+ * @param {string} [locale]
  */
-function buildGeoJson(items) {
+function buildGeoJson(items, locale = 'ko') {
   /** @type {GeoJSON.Feature[]} */
   const features = [];
   for (const item of items || []) {
@@ -145,7 +148,7 @@ function buildGeoJson(items) {
     if (!pt) continue;
     const contentId = String(item?.contentId || '');
     if (!contentId) continue;
-    const title = String(item?.title || '');
+    const title = festivalMapTitle(item, locale);
     features.push({
       type: 'Feature',
       properties: {
@@ -304,7 +307,7 @@ export default function KoreaFestivalMap({
   const viewStackRef = useRef([]);
   const focusViewRef = useRef(focusView);
   focusViewRef.current = focusView;
-  const geojson = useMemo(() => buildGeoJson(items), [items]);
+  const geojson = useMemo(() => buildGeoJson(items, locale), [items, locale]);
   const pointCount = geojson.features.length;
   const focusKey = focusView
     ? isBoundsFocus(focusView)
@@ -547,14 +550,7 @@ export default function KoreaFestivalMap({
             id={POINT_LABEL_LAYER}
             type="symbol"
             filter={['!', ['has', 'point_count']]}
-            layout={{
-              'text-field': ['get', 'titleShort'],
-              'text-size': 11,
-              'text-offset': [0, 1.35],
-              'text-anchor': 'top',
-              'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-              'text-max-width': 8,
-            }}
+            layout={koreaMapPinLabelLayout}
             paint={{
               'text-color': '#1b1410',
               'text-halo-color': '#f59e0b',

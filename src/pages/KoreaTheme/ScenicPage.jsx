@@ -3018,8 +3018,9 @@ export default function KoreaThemeScenicPage() {
         radiusKm: mapNearRadiusKm,
         limit: NEAR_LIST_SOFT_MAX,
       }),
+      { locale },
     );
-  }, [curatedMapNearRanked, mapNearRadiusKm]);
+  }, [curatedMapNearRanked, mapNearRadiusKm, locale]);
 
   const heritageMapNearChips = useMemo(() => {
     if (!heritageMapNearRanked) return [];
@@ -3028,8 +3029,9 @@ export default function KoreaThemeScenicPage() {
         radiusKm: mapNearRadiusKm,
         limit: NEAR_LIST_SOFT_MAX,
       }),
+      { locale },
     );
-  }, [heritageMapNearRanked, mapNearRadiusKm]);
+  }, [heritageMapNearRanked, mapNearRadiusKm, locale]);
 
   const tourMapNearChips = useMemo(() => {
     if (!mapNearOrigin || mapPod !== 'tour' || !mapTourNearPool.length) {
@@ -3046,8 +3048,9 @@ export default function KoreaThemeScenicPage() {
         radiusKm: mapNearRadiusKm,
         limit: NEAR_LIST_SOFT_MAX,
       }),
+      { locale },
     );
-  }, [mapNearOrigin, mapPod, mapTourNearPool, mapNearRadiusKm]);
+  }, [mapNearOrigin, mapPod, mapTourNearPool, mapNearRadiusKm, locale]);
 
   /** 관광지 지도 — 내 위치 모드: 주변 풀만 fetch */
   useEffect(() => {

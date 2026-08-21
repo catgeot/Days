@@ -62,40 +62,28 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#39 대기** — 명승·테마 UI·지도 (#40 축제 지도·title) |
-| **main** | `06b82440` (핸드오프) · 코드 `72144c4d` (#36) |
-| **브랜치** | `cursor/en` (재사용) |
-| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§11·**§12** |
+| **상태** | **main 병합** PR #141 (#39~#41) · **#42 테스트·최적화** |
+| **main** | PR #141 merge SHA (병합 후 갱신) |
+| **브랜치** | `main` (병합 후) · 잔존은 차차 |
+| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§11·**§13** |
 | **일지** | [`2026-08-21-project-log.md`](./2026-08-21-project-log.md) |
-| **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` · `/qa/en` |
-| **VERIFY** | `audit:i18n` · `build` · `smoke:korea-scenic-place-label` · `smoke:browser-locale-hint` · `smoke:place-label-slug` · `smoke:festival-detail-locale` |
+| **PROD QA** | `https://www.gateo.kr/?lang=en` · `/korea?lang=en` · `/korea/theme/scenic?lang=en` |
+| **VERIFY** | `audit:i18n` · `build` · `smoke:festival-detail-locale` · `smoke:browser-locale-hint` · scenic 스모크 |
 
-**2차 순서**: ~~#13~#36~~ · #38 PROD QA ✅ → **#39 명승·테마** → **#40 축제 지도·title**
+**#42 범위 (테스트·최적화)**:
 
-**#38 PROD QA 메모** (2026-08-21):
+1. **회귀** — PROD `?lang=en` 홈·한국·명승·축제 상세·locale 토글
+2. **성능** — 축제 `titleEn` en window 2nd fetch · sessionStorage v2 · locale 전환
+3. **백로그(차차)** — EngService2 미등록 축제 핀 ko · Preview 「작업 로그」·#28 PROD QA
 
-- 축제 분류칩 EN OK · 지도 마커·`ThemeSpotDetailModal` UI 한글
-- 명승 지도 breadcrumb·명소 핀 한글
-- **합의**: 본문 ko · **상단 title·UI·지도 핀** EN → **#39·#40 2세션**
-
-**다음 제시어 (#39)**:
+**다음 제시어 (#42)**:
 
 ```
-영문화 #39, 명승·테마 UI·지도 EN
+영문화 #42, 테스트·최적화
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · /korea/theme/scenic?lang=en · ThemeSpotDetailModal · 지도 breadcrumb·핀
-```
-
-**#39 종료 후 (#40)**:
-
-```
-영문화 #40, 축제 지도·title EN
-@plans/feature-handoff-index.md
-@plans/2026-08-21-project-log.md
-@plans/i18n-en-plan.md
-cursor/en · /korea?lang=en · KoreaFestivalMap · titleEn join
+main · PROD ?lang=en · audit:i18n · 축제 titleEn 캐시
 ```
 
 ---

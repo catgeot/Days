@@ -55,6 +55,7 @@ export async function fetchTourApiFestivals(opts) {
  *   eventStartDate?: string,
  *   eventEndDate?: string,
  *   force?: boolean,
+ *   locale?: string,
  * }} [opts]
  */
 export async function fetchTourApiFestivalWindow(opts = {}) {
@@ -69,7 +70,7 @@ export async function fetchTourApiFestivalWindow(opts = {}) {
   if (opts?.force === true) payload.force = true;
   return invokeTourApi('festivalWindow', payload, {
     timeoutMs: FESTIVAL_WINDOW_TIMEOUT_MS,
-    locale: TOUR_API_BODY_LOCALE,
+    locale: opts.locale ?? TOUR_API_BODY_LOCALE,
   });
 }
 

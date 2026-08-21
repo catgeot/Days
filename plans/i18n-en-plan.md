@@ -41,8 +41,10 @@
 | 29 | i18n 감사 | `영문화 #29, i18n 커버리지 감사` | ✅ baseline |
 | 30~36 | P0·지역칩 | (일지 참고) | ✅ main |
 | 38 | PROD QA | `영문화 #38, PROD QA — #29~#36` | ✅ 사람 |
-| 39 | 명승·테마 UI·지도 | `영문화 #39, 명승·테마 UI·지도 EN` | ⏳ 다음 |
-| 40 | 축제 지도·title | `영문화 #40, 축제 지도·title EN` | ⏳ |
+| 39 | 명승·테마 UI·지도 | `영문화 #39, 명승·테마 UI·지도 EN` | ✅ merge |
+| 40 | 명승 follow-up | `영문화 #40, Preview QA — 명승 모달·지도 EN` | ✅ merge |
+| 41 | 축제 지도·title | `영문화 #41, 축제 지도·title EN` | ✅ merge PR #141 |
+| 42 | 테스트·최적화 | `영문화 #42, 테스트·최적화` | ⏳ next |
 
 **1차 (#0~#12)**: UI 카피 · **2차 (#13~#22)**: 지구본 데이터 · TourAPI 본문 · 무니 · 플래너 AI·배너 · **#23**: 첫 방문 브라우저 언어 → locale.
 
@@ -122,18 +124,18 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#38)**: PROD QA 완료 · 잔여를 **#39·#40** 2세션으로 분할
+**상태 (#42)**: PR #141 main 병합 후 — **테스트·최적화** · 잔존 이슈는 차차
 
-**브랜치**: `cursor/en` (재사용) · `/qa/en`
+**브랜치**: `main`
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #39, 명승·테마 UI·지도 EN
+영문화 #42, 테스트·최적화
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · /korea/theme/scenic?lang=en · ThemeSpotDetailModal · 지도 breadcrumb·핀
+main · PROD ?lang=en · audit:i18n · 축제 titleEn 캐시
 ```
 
 ### #23 브라우저 locale 자동 — 완료
@@ -309,3 +311,56 @@ npm run smoke:browser-locale-hint
 |------|------|
 | #39 | `/korea/theme/scenic?lang=en` — breadcrumb·명소 핀 EN · 모달 UI·헤더 EN · 본문 ko |
 | #40 | `/korea?lang=en` — 축제 지도 핀·상세 헤더 EN · 목록·본문 ko |
+
+---
+
+## 13. #42 — 테스트·최적화 (main 병합 후)
+
+**전제**: PR #141 병합 · Preview QA OK · 잔존(EngService2 미등록 축제 핀 ko 등)은 **백로그** — 본 세션에서 일괄 해결 금지.
+
+### A. 회귀 테스트 (PROD · `?lang=en`)
+
+| 경로 | 확인 |
+|------|------|
+| `/` | locale 토글 · 홈·탐색 EN |
+| `/korea?lang=en` | 축제 칩·상세 헤더·크로스 UI EN · 목록·본문 ko |
+| `/korea/theme/scenic?lang=en` | 지도 breadcrumb·핀 · 모달 UI·헤더 EN |
+| PlaceCard | P0 탭·써머리 EN (#28 잔여) |
+
+**에이전트 VERIFY**:
+
+```bash
+npm run audit:i18n && npm run build
+npm run smoke:festival-detail-locale
+npm run smoke:browser-locale-hint
+npm run smoke:korea-scenic-place-label
+npm run smoke:korea-scenic-map
+npm run smoke:scenic-detail-locale
+npm run smoke:place-label-slug
+```
+
+### B. 성능·최적화 후보
+
+| 항목 | 파일 | 메모 |
+|------|------|------|
+| 축제 en window 2nd fetch | `fetchKoreaFestivalsWindow.js` | ko fetch 후 en merge — locale=ko 첫 방문 시 skip 검토 |
+| sessionStorage v2 | `CACHE_KEY` | titleEn 포함 · TTL 6h · quota |
+| locale 전환 | `Korea/index.jsx` | `loadFestivals` locale deps · 캐시 hit 시 titleEn lazy merge |
+| bundle | `build` 출력 | i18n JSON·한국 페이지 chunk |
+
+### C. 백로그 (차차 · #42에서 스코프 밖)
+
+- EngService2 미등록 축제 지도 핀 ko (~75%)
+- Preview 「작업 로그」패널 한글
+- `#28` PROD QA — 써머리·탐색
+- `/en/…` URL prefix (2차 합의 후)
+
+**다음 제시어 (#42)**:
+
+```
+영문화 #42, 테스트·최적화
+@plans/feature-handoff-index.md
+@plans/2026-08-21-project-log.md
+@plans/i18n-en-plan.md
+main · PROD ?lang=en · audit:i18n · 축제 titleEn 캐시
+```

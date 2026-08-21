@@ -1,3 +1,5 @@
+import { scenicSpotMapTitle } from '../Home/lib/scenicSpotPlaceLabel.js';
+
 /** 명승 홈 내 주변 — 축제홈 NEAR_FESTIVAL_KM과 동일 반경(탐색 풀) */
 export const NEAR_SCENIC_KM = 80;
 
@@ -148,23 +150,36 @@ export function limitNearbyRanked(rankedPool, opts = {}) {
 }
 
 /**
+ * @param {string} title
+ */
+function shortMapChipTitle(title) {
+  const name = String(title || '').trim();
+  if (!name) return '';
+  return name.length > 10 ? `${name.slice(0, 9)}…` : name;
+}
+
+/**
  * 지도용 주변 명소·명승 칩(수량 제한분).
  * @param {{ item: object, km: number }[]} rankedLimited
+ * @param {{ locale?: string }} [opts]
  * @returns {{
  *   id: string,
  *   kind: 'spot',
  *   label: string,
+ *   labelFull?: string,
  *   count: string,
  *   lng: number,
  *   lat: number,
  *   spotId: string,
  * }[]}
  */
-export function nearbySpotMapChips(rankedLimited) {
+export function nearbySpotMapChips(rankedLimited, opts = {}) {
+  const locale = opts.locale || 'ko';
   /** @type {{
    *   id: string,
    *   kind: 'spot',
    *   label: string,
+   *   labelFull?: string,
    *   count: string,
    *   lng: number,
    *   lat: number,
@@ -177,13 +192,12 @@ export function nearbySpotMapChips(rankedLimited) {
     if (!pt) continue;
     const spotId = String(spot?.id || '').trim();
     if (!spotId) continue;
-    const name = String(spot?.name || spotId).trim();
-    const short =
-      name.length > 10 ? `${name.slice(0, 9)}…` : name;
+    const title = scenicSpotMapTitle(spot, locale) || spotId;
     chips.push({
       id: `spot:${spotId}`,
       kind: 'spot',
-      label: short,
+      label: shortMapChipTitle(title),
+      labelFull: title,
       count: formatDistanceKm(row.km),
       lng: pt.lng,
       lat: pt.lat,

@@ -16,7 +16,11 @@ import {
   Minimize2,
 } from 'lucide-react';
 import { MAPBOX_ATTRIBUTION_LINKS } from '../../data/mapboxAttribution';
-import { mapboxLanguageForLocale, displayChipLabel } from '../../i18n/koreaRegionLabels';
+import {
+  displayChipLabel,
+  localizeMapDrillCrumbLabel,
+  mapboxLanguageForLocale,
+} from '../../i18n/koreaRegionLabels';
 import { resolveCityAttractionHub } from '../Home/lib/cityAttractionHubs';
 import {
   buildScenicMapGeoJson,
@@ -27,6 +31,7 @@ import {
   SCENIC_MAP_CLUSTER_RADIUS,
 } from './koreaScenicMapData';
 import { spreadNearbyMapChips } from './koreaScenicMapDrill';
+import { koreaMapPinLabelLayout, KOREA_MAP_PIN_LABEL_FULL_ZOOM } from '../Korea/koreaMapPinLabelLayout';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 export {
@@ -289,6 +294,7 @@ export default function KoreaScenicMap({
   locale = 'ko',
 }) {
   const { t } = useTranslation();
+  const [mapZoom, setMapZoom] = useState(KR_VIEW.zoom);
 
   const localizedDrillChipLabel = useCallback(
     (chip) => {
@@ -322,6 +328,22 @@ export default function KoreaScenicMap({
     },
     [locale],
   );
+
+  const drillChipShowsFullLabel = useCallback(
+    (chip) =>
+      mapZoom >= KOREA_MAP_PIN_LABEL_FULL_ZOOM &&
+      String(chip?.labelFull || '').trim().length > 0,
+    [mapZoom],
+  );
+
+  const drillChipDisplayLabel = useCallback(
+    (chip) => {
+      if (drillChipShowsFullLabel(chip)) return String(chip.labelFull).trim();
+      return localizedDrillChipLabel(chip);
+    },
+    [drillChipShowsFullLabel, localizedDrillChipLabel],
+  );
+
   const mapRef = useRef(null);
   const viewStackRef = useRef([]);
   const focusViewRef = useRef(focusView);
@@ -338,7 +360,10 @@ export default function KoreaScenicMap({
   const [locateBusy, setLocateBusy] = useState(false);
   const [locateMsg, setLocateMsg] = useState('');
   const pinItems = showSpotPins ? items : [];
-  const geojson = useMemo(() => buildScenicMapGeoJson(pinItems), [pinItems]);
+  const geojson = useMemo(
+    () => buildScenicMapGeoJson(pinItems, { locale }),
+    [pinItems, locale],
+  );
   const pointCount = geojson.features.length;
   const useClusters = pointCount >= SCENIC_MAP_CLUSTER_MIN_POINTS;
   const interactiveLayerIds = useMemo(() => {
@@ -350,7 +375,13 @@ export default function KoreaScenicMap({
     () => spreadNearbyMapChips(Array.isArray(drillChips) ? drillChips : []),
     [drillChips],
   );
-  const crumbs = Array.isArray(drillCrumbs) ? drillCrumbs : [];
+  const crumbs = useMemo(() => {
+    const raw = Array.isArray(drillCrumbs) ? drillCrumbs : [];
+    return raw.map((crumb) => ({
+      ...crumb,
+      label: localizeMapDrillCrumbLabel(locale, crumb, t),
+    }));
+  }, [drillCrumbs, locale, t]);
   const canDrillUp = crumbs.length > 1;
   const focusKey = focusView
     ? isBoundsFocus(focusView)
@@ -500,11 +531,20 @@ export default function KoreaScenicMap({
   const handleMapLoad = (e) => {
     const map = e?.target;
     applyMapPlaceLabels(map, locale);
+    if (typeof map?.getZoom === 'function') {
+      const z = Number(map.getZoom());
+      if (Number.isFinite(z)) setMapZoom(z);
+    }
     const focus = focusViewRef.current;
     if (isValidFocusView(focus)) {
       applyFocusCamera(map, focus, { pushHistory: false });
     }
   };
+
+  const handleMapMove = useCallback((evt) => {
+    const z = Number(evt?.viewState?.zoom);
+    if (Number.isFinite(z)) setMapZoom(z);
+  }, []);
 
   const activeFilter = useMemo(
     () =>
@@ -587,6 +627,7 @@ export default function KoreaScenicMap({
         keyboard
         interactiveLayerIds={interactiveLayerIds}
         onLoad={handleMapLoad}
+        onMove={handleMapMove}
         onClick={showSpotPins ? handleClick : undefined}
         onMouseEnter={showSpotPins ? handleMouseEnter : undefined}
         onMouseLeave={showSpotPins ? handleMouseLeave : undefined}
@@ -633,14 +674,7 @@ export default function KoreaScenicMap({
               id={POINT_LABEL_LAYER}
               type="symbol"
               filter={['!', ['has', 'point_count']]}
-              layout={{
-                'text-field': ['get', 'titleShort'],
-                'text-size': 11,
-                'text-offset': [0, 1.35],
-                'text-anchor': 'top',
-                'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-                'text-max-width': 8,
-              }}
+              layout={koreaMapPinLabelLayout}
               paint={{
                 'text-color': '#1b1410',
                 'text-halo-color': '#f59e0b',
@@ -655,7 +689,10 @@ export default function KoreaScenicMap({
             />
           </Source>
         ) : null}
-        {chips.map((chip) => (
+        {chips.map((chip) => {
+          const chipFull = drillChipShowsFullLabel(chip);
+          const chipLabel = drillChipDisplayLabel(chip);
+          return (
           <Marker
             key={chip.id}
             longitude={chip.lng}
@@ -669,17 +706,19 @@ export default function KoreaScenicMap({
                 e.stopPropagation();
                 onSelectDrillChip?.(chip);
               }}
-              className={`pointer-events-auto inline-flex max-w-[9.5rem] items-center gap-1 ${drillChipClass(chip.kind)}`}
+              className={`pointer-events-auto inline-flex items-center gap-1 ${drillChipClass(chip.kind)} ${
+                chipFull ? 'max-w-none whitespace-nowrap' : 'max-w-[9.5rem]'
+              }`}
               aria-label={
                 chip.kind === 'spot'
-                  ? `${localizedDrillChipLabel(chip)} ${chip.count}`
+                  ? `${chipLabel} ${chip.count}`
                   : t('korea.theme.map.expandChip', {
-                      label: localizedDrillChipLabel(chip),
+                      label: chipLabel,
                       count: chip.count,
                     })
               }
             >
-              <span className="truncate">{localizedDrillChipLabel(chip)}</span>
+              <span className={chipFull ? '' : 'truncate'}>{chipLabel}</span>
               {chip.count != null && chip.count !== '' ? (
                 <span className="shrink-0 tabular-nums opacity-80">
                   {chip.count}
@@ -687,7 +726,8 @@ export default function KoreaScenicMap({
               ) : null}
             </button>
           </Marker>
-        ))}
+          );
+        })}
         {userLocation ? (
           <Marker
             longitude={userLocation.lng}

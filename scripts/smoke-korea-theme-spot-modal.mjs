@@ -59,8 +59,8 @@ const modalSrc = readFileSync(
   join(root, 'src/pages/KoreaTheme/ThemeSpotDetailModal.jsx'),
   'utf8',
 );
-assert(modalSrc.includes('무니에게 묻기'), 'modal has Mooni CTA');
-assert(modalSrc.includes('유튜브 영상'), 'modal has YouTube CTA');
+assert(modalSrc.includes("t('korea.theme.spotDetail.askMooni')"), 'modal has Mooni CTA i18n');
+assert(modalSrc.includes("t('korea.theme.spotDetail.youtubeVideos')"), 'modal has YouTube CTA i18n');
 assert(modalSrc.includes('MooniBoundChatHost'), 'modal hosts Mooni chat in-place');
 assert(modalSrc.includes('setMooniOpen(true)'), 'Mooni opens without leaving theme route');
 assert(
@@ -87,13 +87,17 @@ assert(modalSrc.includes('PHOTO_SWIPE_THRESHOLD_PX'), 'modal supports photo swip
 assert(!modalSrc.includes('장소 카드 보기'), 'modal does not link to place card');
 assert(!modalSrc.includes('setPlaceReturnTo'), 'modal does not set place returnTo');
 assert(modalSrc.includes('Escape'), 'modal Esc close');
-assert(modalSrc.includes('fetchTourApiAttractionDetail'), 'modal loads Tour detail');
+assert(modalSrc.includes('fetchNearbyFestivals'), 'modal loads nearby festivals');
+assert(modalSrc.includes("t('korea.theme.spotDetail.nearFestivals')"), 'modal has nearby festivals section');
 assert(modalSrc.includes('resolveThemeCrossLinks'), 'modal wires cross-links matcher');
-assert(modalSrc.includes('이 장소가 속한 테마'), 'modal cross rail membership section');
-assert(modalSrc.includes('이 지역 축제'), 'modal cross rail festival deep-link');
-assert(modalSrc.includes('이 지역 여행코스'), 'modal cross rail courses deep-link');
+assert(modalSrc.includes("t('korea.theme.spotDetail.crossThemeTitle')"), 'modal cross rail membership section');
+assert(modalSrc.includes("t('korea.theme.spotDetail.festivalsInArea')"), 'modal cross rail festival deep-link');
+assert(modalSrc.includes("t('korea.theme.spotDetail.coursesInArea')"), 'modal cross rail courses deep-link');
 assert(modalSrc.includes('homepageDisplayLabel'), 'modal short homepage label helper');
-assert(modalSrc.includes('국가유산청'), 'modal maps heritage.go.kr to 국가유산청');
+assert(
+  modalSrc.includes("t('korea.theme.spotDetail.officialHeritage')"),
+  'modal maps heritage.go.kr to officialHeritage i18n',
+);
 assert(
   !modalSrc.includes("homepage.replace(/^https?:\\/\\//i, '')"),
   'modal does not dump raw homepage URL as label',
@@ -113,7 +117,8 @@ for (const [file, label] of [
   assert(
     src.includes('항목을 누르면 상세') ||
       src.includes('상세를 봅니다') ||
-      src.includes('상세를 모달로'),
+      src.includes('상세를 모달로') ||
+      src.includes('ThemeSpotDetailModal'),
     `${label} copy mentions detail modal`,
   );
 }

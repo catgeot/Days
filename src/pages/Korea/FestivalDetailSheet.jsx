@@ -25,6 +25,11 @@ import {
 } from '../../utils/fetchTourApiFestivals';
 import { useLocale } from '../../i18n/LocaleProvider';
 import { koreanApiTextProps } from '../../i18n/koreanApiText';
+import { localizedPackageCtaLabel } from '../../i18n/exploreUi';
+import {
+  localizedHubLabel,
+  localizedScenicMajorRegion,
+} from '../../i18n/koreaRegionLabels';
 import { fetchFestivalVideos, FESTIVAL_VIDEOS_MAX, FESTIVAL_VIDEOS_PAGE } from '../../utils/fetchFestivalVideos';
 import { fetchNearbyTourAttractions } from '../../utils/fetchNearbyTourAttractions';
 import {
@@ -44,6 +49,7 @@ import {
 import { fetchTourApiCourseDetail } from '../../utils/fetchTourApiCourses';
 import { listKoreaScenicSpots } from '../Home/lib/koreaScenicSpots';
 import { scenicRegionForAreaCode } from '../Home/lib/koreaTourAttractionMap';
+import { festivalMapTitle } from '../Home/lib/scenicSpotPlaceLabel.js';
 import { resolveFestivalThemeCrossLinks } from '../Home/lib/koreaThemeCrossLinks';
 import { pushThemeNavBack } from '../Home/lib/koreaThemeNavBack';
 import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
@@ -291,7 +297,7 @@ export default function FestivalDetailSheet({
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { isEnglish } = useLocale();
+  const { isEnglish, locale } = useLocale();
   const koText = koreanApiTextProps(isEnglish);
   const festivalModuleLabel = t('korea.theme.nav.module.festival');
   const nearbyEyebrow = useCallback(
@@ -360,6 +366,10 @@ export default function FestivalDetailSheet({
     () => scenicRegionForAreaCode(festivalAreaCode),
     [festivalAreaCode],
   );
+  const scenicRegionLabel = useMemo(
+    () => localizedScenicMajorRegion(locale, scenicRegion),
+    [locale, scenicRegion],
+  );
 
   const scenicSpotsRanked = useMemo(() => {
     if (!scenicRegion) return [];
@@ -402,6 +412,21 @@ export default function FestivalDetailSheet({
   const festivalTnaHref = festivalCross?.tna?.keyword
     ? buildMrtTnaSearchMoreUrl(festivalCross.tna.keyword)
     : '';
+  const nearestHub = festivalCross?.nearbyHubs?.[0];
+  const stayDisplayKeyword =
+    localizedHubLabel(locale, {
+      hubId: nearestHub?.hubId,
+      name: festivalCross?.stay?.keyword,
+    }) ||
+    festivalCross?.stay?.keyword ||
+    '';
+  const tnaDisplayKeyword =
+    localizedHubLabel(locale, {
+      hubId: nearestHub?.hubId,
+      name: festivalCross?.tna?.keyword,
+    }) ||
+    festivalCross?.tna?.keyword ||
+    '';
 
   const openScenicPage = () => {
     const back = {
@@ -897,9 +922,13 @@ export default function FestivalDetailSheet({
   const tel = String(intro?.sponsor1tel || item.tel || '').trim();
   const sponsor2tel = String(intro?.sponsor2tel || '').trim();
   const hero = imageUrls[activeImage] || imageUrls[0] || '';
+  const koTitle = String(item?.title || common?.title || '').trim();
   const displayTitle =
-    String(common?.title || item?.title || '').trim() ||
+    festivalMapTitle(item, locale) ||
+    koTitle ||
     t('korea.festival.detail.fallbackTitle');
+  const headerUsesKoTitle =
+    !isEnglish || !displayTitle || displayTitle === koTitle;
   const eventplace = String(intro?.eventplace || '').trim();
   const showEventPlace =
     Boolean(eventplace) && eventplace !== String(item.addr1 || '').trim();
@@ -1074,7 +1103,7 @@ export default function FestivalDetailSheet({
             <h3
               id="korea-festival-sheet-title"
               className="text-xl md:text-2xl lg:text-3xl font-extrabold leading-snug text-stone-900"
-              {...koText}
+              {...(headerUsesKoTitle ? koText : {})}
             >
               {displayTitle}
             </h3>
@@ -1236,7 +1265,7 @@ export default function FestivalDetailSheet({
                     <ul
                       className="space-y-2"
                       aria-label={t('korea.festival.detail.nearScenicAria', {
-                        region: scenicRegion,
+                        region: scenicRegionLabel || scenicRegion,
                       })}
                     >
                       {scenicSpotsRanked.map(({ spot, km }) => {
@@ -1263,7 +1292,11 @@ export default function FestivalDetailSheet({
                                   ) : null}
                                 </span>
                                 <span className="mt-0.5 block text-[11px] text-stone-500 break-keep">
-                                  {[spot.region, spot.blurb]
+                                  {[
+                                    localizedScenicMajorRegion(locale, spot.region) ||
+                                      spot.region,
+                                    spot.blurb,
+                                  ]
                                     .filter(Boolean)
                                     .join(' · ')}
                                 </span>
@@ -1280,7 +1313,7 @@ export default function FestivalDetailSheet({
                     className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
                   >
                     {t('korea.festival.detail.nearScenicMore', {
-                      region: scenicRegion,
+                      region: scenicRegionLabel || scenicRegion,
                     })}
                     <ExternalLink size={14} aria-hidden="true" />
                   </button>
@@ -1305,7 +1338,7 @@ export default function FestivalDetailSheet({
                             className="inline-flex items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-950 hover:bg-amber-100"
                           >
                             {t('korea.festival.detail.stayKeyword', {
-                              keyword: festivalCross.stay.keyword,
+                              keyword: stayDisplayKeyword,
                             })}
                             <ExternalLink size={12} aria-hidden="true" />
                           </a>
@@ -1318,7 +1351,7 @@ export default function FestivalDetailSheet({
                             className="inline-flex items-center justify-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-stone-100"
                           >
                             {t('korea.festival.detail.tourKeyword', {
-                              keyword: festivalCross.tna.keyword,
+                              keyword: tnaDisplayKeyword,
                             })}
                             <ExternalLink size={12} aria-hidden="true" />
                           </a>
@@ -1337,8 +1370,11 @@ export default function FestivalDetailSheet({
                         rel="noopener noreferrer sponsored"
                         className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
                       >
-                        {festivalCross.packageCta.ctaLabel ||
-                          t('korea.festival.detail.packageCtaFallback')}
+                        {localizedPackageCtaLabel(
+                          t,
+                          festivalCross.packageCta.key,
+                          festivalCross.packageCta.ctaLabel,
+                        ) || t('korea.festival.detail.packageCtaFallback')}
                         <ExternalLink size={14} aria-hidden="true" />
                       </a>
                     </div>

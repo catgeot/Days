@@ -6,32 +6,27 @@
 
 - **범위** main `72144c4d` · `/korea?lang=en` · `/korea/theme/scenic?lang=en`
 - **PASS** 축제 상단 분류칩 EN · 홈·탐색·PlaceCard P0
-- **잔여** 명승 지도 breadcrumb 한글 · 지도 핀(축제·명소) 한글 · `ThemeSpotDetailModal` UI 한글(eyebrow만 EN)
-- **합의** TourAPI·blurb **본문** ko SSOT 유지 · **상단 title·UI 셸·지도 핀 라벨** EN 필요
-- **다음** **#39·#40 2세션** — 플랜 [`i18n-en-plan.md`](./i18n-en-plan.md) **§12**
+- **잔여** 명승 지도 breadcrumb·핀 · `ThemeSpotDetailModal` UI → **#39·#40** · 축제 지도·title → **#41**
 
-## 영문화 #38 후속, #39·#40 세션 분할 확정
+## 영문화 #39~#41 — 명승·축제 UI·지도 EN (cursor/en · PR #141)
 
-- **#39** A·B·C·D₁ — 명승·테마: `ThemeSpotDetailModal` UI · 지도 breadcrumb·명소 핀 · 상단 title
-- **#40** D₂·E — 축제: `KoreaFestivalMap` 핀 · `FestivalDetailSheet` 헤더 title · `titleEn` join
-- **금지** #39에서 축제 지도 파일 수정
+- **#39** `ThemeSpotDetailModal` UI · 지도 breadcrumb·핀 · `scenicSpotMapTitle`
+- **#40** 명승 모달 헤더·인근 축제 크로스 · 내 위치 칩 EN
+- **#41** `festivalTitleEnMerge` · `KoreaFestivalMap` · `FestivalDetailSheet` 헤더·크로스 UI
+- **VERIFY** `audit:i18n` · `build` · `smoke:festival-detail-locale` · scenic 스모크 PASS
+- **잔여(데이터)** EngService2 미등록 축제 핀 ko · TourAPI POI명 ko — 차차
 
-**다음 제시어 (#39)**:
+## 영문화 #41, main 병합 — Preview QA OK
+
+- **결정** 사람 Preview QA OK · 잔존 이슈는 차차 · **PR #141 → main 병합**
+- **다음** **#42 테스트·최적화** — PROD 회귀 · en fetch/캐시 · 알려진 한계 정리
+
+**다음 제시어 (#42)**:
 
 ```
-영문화 #39, 명승·테마 UI·지도 EN
+영문화 #42, 테스트·최적화
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · /korea/theme/scenic?lang=en · ThemeSpotDetailModal · 지도 breadcrumb·핀
-```
-
-**#39 종료 후 (#40)**:
-
-```
-영문화 #40, 축제 지도·title EN
-@plans/feature-handoff-index.md
-@plans/2026-08-21-project-log.md
-@plans/i18n-en-plan.md
-cursor/en · /korea?lang=en · KoreaFestivalMap · titleEn join
+main · PROD ?lang=en · audit:i18n · 축제 titleEn 캐시
 ```

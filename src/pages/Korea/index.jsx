@@ -799,7 +799,7 @@ export default function KoreaFestivalHub() {
     setLoading(true);
     setError('');
     setSelected(null);
-    const result = await fetchKoreaFestivalsRolling12({ force, now });
+    const result = await fetchKoreaFestivalsRolling12({ force, now, locale });
     if (!result.ok) {
       setItems([]);
       setError(result.error || t('korea.festival.loadError'));
@@ -808,7 +808,7 @@ export default function KoreaFestivalHub() {
     }
     setItems(result.items);
     setLoading(false);
-  }, [now, t]);
+  }, [now, t, locale]);
 
   useEffect(() => {
     loadFestivals(false);

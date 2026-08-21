@@ -90,6 +90,34 @@ const seoulChips = nearbySpotMapChips(seoulLimited);
 assert.equal(seoulChips.length, NEAR_DISPLAY_SOFT_MAX, '서울 지도 칩=상한');
 assert.equal(seoulChips[0].kind, 'spot', 'chip kind spot');
 assert.ok(seoulChips[0].spotId, 'chip spotId');
+
+const chuncheon = { lat: 37.8813, lng: 127.7298 };
+const nearChuncheon = rankNearbyScenicSpots(curated, chuncheon.lat, chuncheon.lng);
+const chuncheonLimited = limitNearbyRanked(nearChuncheon, {
+  radiusKm: 20,
+  limit: NEAR_DISPLAY_SOFT_MAX,
+});
+const chuncheonEnChips = nearbySpotMapChips(chuncheonLimited, { locale: 'en' });
+assert.ok(chuncheonEnChips.length >= 3, `춘천 20km EN 칩≥3 (got ${chuncheonEnChips.length})`);
+const gongjiChip = chuncheonEnChips.find((c) => c.spotId === 'gongjicheon');
+assert.ok(gongjiChip, '춘천 EN 칩에 gongjicheon');
+assert.equal(
+  gongjiChip.label,
+  'Gongjiche…',
+  '공지천 EN 칩 라벨(10자 truncate)',
+);
+assert.equal(gongjiChip.labelFull, 'Gongjicheon', '공지천 EN 칩 full');
+assert.ok(
+  chuncheonEnChips.every((c) => !/[가-힣]/.test(String(c.label || ''))),
+  '춘천 EN 칩 라벨에 한글 없음',
+);
+const skywalkChip = chuncheonEnChips.find((c) => c.spotId === 'soyanggang-skywalk');
+assert.ok(skywalkChip, '춘천 EN 칩에 soyanggang-skywalk');
+assert.equal(
+  skywalkChip.label,
+  'Soyanggan…',
+  '소양강스카이워크 EN 칩 라벨(10자 truncate)',
+);
 for (let i = 1; i < nearCurated.length; i += 1) {
   assert.ok(
     nearCurated[i].km >= nearCurated[i - 1].km,

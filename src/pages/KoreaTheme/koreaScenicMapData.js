@@ -1,3 +1,4 @@
+import { scenicSpotMapTitle } from '../Home/lib/scenicSpotPlaceLabel.js';
 import { scenicSpotLngLat } from './nearbyScenicRank.js';
 
 const KR_VIEW = {
@@ -68,8 +69,10 @@ function shortTitle(title) {
 
 /**
  * @param {object[]} items
+ * @param {{ locale?: string }} [opts]
  */
-export function buildScenicMapGeoJson(items) {
+export function buildScenicMapGeoJson(items, opts = {}) {
+  const locale = opts.locale || 'ko';
   /** @type {GeoJSON.Feature[]} */
   const features = [];
   /** @type {Set<string>} */
@@ -80,7 +83,7 @@ export function buildScenicMapGeoJson(items) {
     const pt = scenicSpotLngLat(item);
     if (!pt) continue;
     seen.add(spotId);
-    const title = String(item?.name || item?.title || '');
+    const title = scenicSpotMapTitle(item, locale);
     features.push({
       type: 'Feature',
       properties: {
