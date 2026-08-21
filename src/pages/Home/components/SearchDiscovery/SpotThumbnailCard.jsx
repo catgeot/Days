@@ -10,16 +10,17 @@ import {
 } from '../../../../components/PlaceCard/common/locationDisplay';
 import useClickWithDragPrevention from '../../../../hooks/useClickWithDragPrevention';
 
-const CardBackgroundImage = ({ spot, categoryStyle, icon }) => {
+const CardBackgroundImage = ({ spot, categoryStyle, icon, displayName }) => {
   const CategoryIcon = icon;
   const { images, isImgLoading } = usePlaceGallery(spot);
   const bgImgUrl = images && images.length > 0 ? (images[0].urls?.regular || images[0].url) : null;
+  const alt = displayName || String(spot?.name || '').trim() || 'Travel destination';
 
   if (bgImgUrl) {
     return (
       <img
         src={bgImgUrl}
-        alt={displayName}
+        alt={alt}
         loading="lazy"
         className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-110"
       />
@@ -108,7 +109,12 @@ const SpotThumbnailCard = ({ spot, onClick, isGrid = false }) => {
     >
       {/* 배경 사진 영역 (Lazy Load) */}
       {inView ? (
-        <CardBackgroundImage spot={spot} categoryStyle={categoryStyle} icon={CategoryIcon} />
+        <CardBackgroundImage
+          spot={spot}
+          categoryStyle={categoryStyle}
+          icon={CategoryIcon}
+          displayName={displayName}
+        />
       ) : (
         <div className={`absolute inset-0 bg-gradient-to-br from-white/5 to-transparent ${categoryStyle.split(' ')[0]}`} />
       )}

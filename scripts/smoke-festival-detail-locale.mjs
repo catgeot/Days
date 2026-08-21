@@ -52,6 +52,21 @@ assert(
     windowJs.includes("locale: 'en'"),
   'fetchKoreaFestivalsWindow merges titleEn via en festivalWindow',
 );
+assert(
+  windowJs.includes('wantTitleEn') &&
+    windowJs.includes('itemsNeedTitleEn'),
+  'fetchKoreaFestivalsWindow lazy-en merge on cache hit only when locale=en',
+);
+
+const spotCardJs = readFileSync(
+  join(root, 'src/pages/Home/components/SearchDiscovery/SpotThumbnailCard.jsx'),
+  'utf8',
+);
+assert(
+  spotCardJs.includes('({ spot, categoryStyle, icon, displayName })') &&
+    spotCardJs.includes('displayName={displayName}'),
+  'SpotThumbnailCard passes displayName prop (no ReferenceError on lazy load)',
+);
 
 const mergeJs = readFileSync(
   join(root, 'src/pages/Korea/festivalTitleEnMerge.js'),
