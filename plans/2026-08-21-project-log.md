@@ -129,11 +129,12 @@ main · ?lang=en · SiteUpdateBanner EN · 숙소 제목 EN
 
 - **SiteUpdateBanner** `resolveReleaseNote(release, i18n.language)` — 팝업 제목·항목 EN
 - **숙소 찾기** `getLocalizedPlaceName` — 헤더·일정바 「로키 산맥」→ Rocky Mountains
-- **MRT 목록** Edge `Accept-Language: en-US` · 클라 `locale` 캐시 분리
+- **MRT 목록** `itemName` 한글 SSOT — locale·Accept-Language 재호출 **제거** (#42e 롤백)
 - **VERIFY** `audit:i18n` · `build` PASS
 - **사람 QA** `?lang=en` · localStorage `gateo_seen_release` 삭제 후 팝업 EN · Rocky Mountains 숙소 목록
 
-## 영문화 #42e — Edge deploy
+## 영문화 #42e — MRT locale 재호출 롤백
 
-- **명령** `npx supabase functions deploy fetch-mrt-stays --project-ref phdjnbfitvmrguqzverm --no-verify-jwt` ✅
-- **VERIFY** `smoke:health` P0-4 PASS · `MRT_STAY_SMOKE_LIVE=1` PASS
+- **판단** 파트너 API `itemName` EN 필드 없음 · `Accept-Language`는 오류 메시지용 — EN Edge·캐시 분기는 중복 호출만 유발
+- **조치** `fetch-mrt-stays`·`fetchMrtStays`·`GlobeStayStrip` locale 분기 제거 · 헤더 `getLocalizedPlaceName` 유지
+- **Edge** `fetch-mrt-stays` 재배포

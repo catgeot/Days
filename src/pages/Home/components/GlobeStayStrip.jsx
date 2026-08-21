@@ -1113,8 +1113,7 @@ export default function GlobeStayStrip({
   const placeKey = `${slug}|${name}|${country}|${location?.lat}|${location?.lng}`;
   const datesKey = `${stayDates.checkIn}|${stayDates.checkOut}`;
   const guestsKey = `a${guests.adultCount}c${guests.childCount}`;
-  const localeKey = i18n.language === 'en' ? 'en' : 'ko';
-  const fetchKey = `${placeKey}|${datesKey}|${guestsKey}|${localeKey}`;
+  const fetchKey = `${placeKey}|${datesKey}|${guestsKey}`;
   const eligible = canShowMrtStayStrip(location, { hidden }) && !isScanning;
   const peerTourEligible = useMemo(() => {
     if (isScanning) return false;
@@ -1237,7 +1236,6 @@ export default function GlobeStayStrip({
       const result = await fetchMrtStaysForLocation(locForFetch, {
         ...stayDates,
         ...guests,
-        locale: i18n.language,
       });
       if (cancelled) return;
       fetchedKeyRef.current = fetchKey;

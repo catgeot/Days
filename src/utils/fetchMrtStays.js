@@ -1,6 +1,7 @@
 /**
  * MRT 숙소 — Edge `fetch-mrt-stays` (region-autocomplete → search).
  * 브라우저에 MYREALTRIP / VITE_ MRT 키 사용 금지.
+ * 숙소 `itemName`은 파트너 API 한글 SSOT — `?lang=en`·Accept-Language로 EN 목록 분기·재호출 금지.
  */
 import { supabase } from '../shared/api/supabase';
 import {
@@ -189,7 +190,6 @@ function cacheKey(
   checkOut,
   adultCount,
   childCount,
-  locale = 'ko',
 ) {
   const cityKey = Array.isArray(cityHints) && cityHints.length
     ? cityHints.join(',')
@@ -198,8 +198,7 @@ function cacheKey(
     .map((c) => String(c || '').trim())
     .filter(Boolean)
     .join('|') || '-';
-  const localeKey = locale === 'en' ? 'en' : 'ko';
-  return `${CACHE_PREFIX}${localeKey}:${isDomestic ? 'd' : 'i'}:${countryKey}:${cityKey}:${checkIn}:${checkOut}:a${adultCount}c${childCount}:${keyword}`;
+  return `${CACHE_PREFIX}${isDomestic ? 'd' : 'i'}:${countryKey}:${cityKey}:${checkIn}:${checkOut}:a${adultCount}c${childCount}:${keyword}`;
 }
 
 /**
@@ -274,7 +273,6 @@ export async function fetchMrtStays(params) {
     1,
     Math.min(MRT_STAY_FETCH_SIZE, Number(params?.size) || MRT_STAY_FETCH_SIZE),
   );
-  const locale = String(params?.locale || '').trim() === 'en' ? 'en' : 'ko';
   const ladderKey = [keyword, ...altKeywords].join('|');
   const key = cacheKey(
     ladderKey,
@@ -286,7 +284,6 @@ export async function fetchMrtStays(params) {
     checkOut,
     adultCount,
     childCount,
-    locale,
   );
 
   const hit = readCache(key);
@@ -307,7 +304,6 @@ export async function fetchMrtStays(params) {
         ...(nameEn ? { nameEn } : {}),
         ...(altKeywords.length ? { altKeywords } : {}),
         ...(cityHints.length ? { cityHints } : {}),
-        ...(locale === 'en' ? { locale: 'en' } : {}),
       },
     });
 
@@ -343,7 +339,7 @@ export async function fetchMrtStays(params) {
 /**
  * 홈 Summary 숙소 — SSOT slug + uiPlace. 실패·빈 결과는 호출측에서 empty 처리.
  * @param {object} location
- * @param {{ checkIn?: string, checkOut?: string, adultCount?: number, childCount?: number, locale?: string }} [opts]
+ * @param {{ checkIn?: string, checkOut?: string, adultCount?: number, childCount?: number }} [opts]
  */
 export async function fetchMrtStaysForLocation(location, opts = {}) {
   if (!location || location.isScanning) return null;
@@ -355,7 +351,6 @@ export async function fetchMrtStaysForLocation(location, opts = {}) {
   const isDomestic = isMrtDomesticLocation(location);
   const normalized = normalizeMrtStayDates(opts.checkIn, opts.checkOut);
   const guests = normalizeMrtGuestCounts(opts.adultCount, opts.childCount);
-  const locale = String(opts.locale || '').trim() === 'en' ? 'en' : 'ko';
   return fetchMrtStays({
     ...query,
     countryHint: normalizeMrtCountryHint(query.countryHint || location?.country, isDomestic),
@@ -363,6 +358,5 @@ export async function fetchMrtStaysForLocation(location, opts = {}) {
     ...normalized,
     ...guests,
     size: MRT_STAY_FETCH_SIZE,
-    locale,
   });
 }
