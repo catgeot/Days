@@ -73,6 +73,11 @@ const spotModalJs = readFileSync(
   'utf8',
 );
 assert(
+  spotModalJs.includes('localizedSpotModalSubtitle') &&
+    spotModalJs.includes('displaySubtitle'),
+  'ThemeSpotDetailModal header subtitle uses locale-aware region label',
+);
+assert(
   spotModalJs.includes('localizedPackageCtaLabel') &&
     spotModalJs.includes('cross.packageCta.key'),
   'ThemeSpotDetailModal package CTA uses localizedPackageCtaLabel',

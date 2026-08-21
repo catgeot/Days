@@ -7,6 +7,7 @@ import {
 import {
   localizedAreaCodeLabel,
   localizedHubLabel,
+  localizedScenicMajorRegion,
   localizedSidoShort,
   localizedSubregionLabel,
 } from '../../../i18n/koreaRegionLabels.js';
@@ -83,7 +84,9 @@ export function formatScenicSpotPlaceLabel(spot, locale = 'ko') {
     stripKoAdminSuffix(cityRaw) || String(cityRaw || '').trim(),
   );
 
-  if (!sido && !city) return region;
+  if (!sido && !city) {
+    return localizedScenicMajorRegion(locale, region) || region;
+  }
   if (!city || sido === city) return sido || city;
   if (!sido) return city;
   return `${sido} ${city}`;

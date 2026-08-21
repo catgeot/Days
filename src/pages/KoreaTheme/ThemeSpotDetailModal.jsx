@@ -59,11 +59,22 @@ import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
 import { resolveTourAreaForHub } from '../Home/lib/koreaSigunguByHub';
 import { koreanApiTextProps } from '../../i18n/koreanApiText';
 import { useLocale } from '../../i18n/LocaleProvider';
-import { scenicSpotMapTitle } from '../Home/lib/scenicSpotPlaceLabel.js';
-import { localizedHubLabel } from '../../i18n/koreaRegionLabels';
+import {
+  formatScenicSpotPlaceLabel,
+  scenicSpotMapTitle,
+} from '../Home/lib/scenicSpotPlaceLabel.js';
+import { localizedHubLabel, localizedScenicMajorRegion } from '../../i18n/koreaRegionLabels';
 import { localizedPackageCtaLabel } from '../../i18n/exploreUi';
 import { fetchNearbyFestivals } from '../../utils/fetchNearbyFestivals';
 import { detectSidoCode } from '../Korea/festivalRegionTags';
+
+function localizedSpotModalSubtitle(spot, locale) {
+  const place = formatScenicSpotPlaceLabel(spot, locale);
+  if (place) return place;
+  const raw = String(spot?.subtitle || '').trim();
+  if (!raw) return '';
+  return localizedScenicMajorRegion(locale, raw) || raw;
+}
 
 /** 본문·확대보기 — 가로 스와이프 vs 세로 스크롤·탭 */
 const PHOTO_SWIPE_THRESHOLD_PX = 48;
@@ -1440,6 +1451,7 @@ export default function ThemeSpotDetailModal({
   const displayTitle =
     scenicSpotMapTitle(spot, locale) ||
     t('korea.theme.spotDetail.fallbackTitle');
+  const displaySubtitle = localizedSpotModalSubtitle(spot, locale);
   const hasContentId = /^\d{1,32}$/.test(String(spot.contentId || '').trim());
   const hero = imageUrls[activeImage] || imageUrls[0] || '';
   const galleryList = imageUrls;
@@ -1529,9 +1541,9 @@ export default function ThemeSpotDetailModal({
             >
               {displayTitle}
             </h2>
-            {spot.subtitle ? (
+            {displaySubtitle ? (
               <p className="mt-1 text-xs text-stone-500 break-keep" {...koText}>
-                {spot.subtitle}
+                {displaySubtitle}
               </p>
             ) : null}
           </div>

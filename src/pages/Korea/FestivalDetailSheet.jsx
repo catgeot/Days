@@ -49,7 +49,10 @@ import {
 import { fetchTourApiCourseDetail } from '../../utils/fetchTourApiCourses';
 import { listKoreaScenicSpots } from '../Home/lib/koreaScenicSpots';
 import { scenicRegionForAreaCode } from '../Home/lib/koreaTourAttractionMap';
-import { festivalMapTitle } from '../Home/lib/scenicSpotPlaceLabel.js';
+import {
+  festivalMapTitle,
+  formatScenicSpotPlaceLabel,
+} from '../Home/lib/scenicSpotPlaceLabel.js';
 import { resolveFestivalThemeCrossLinks } from '../Home/lib/koreaThemeCrossLinks';
 import { pushThemeNavBack } from '../Home/lib/koreaThemeNavBack';
 import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
@@ -261,18 +264,25 @@ function googleSearchUrl(title) {
   return `https://www.google.com/search?q=${encodeURIComponent(q)}&hl=ko`;
 }
 
-function toScenicModalSpot(spot) {
+function toScenicModalSpot(spot, locale = 'ko') {
   if (!spot) return null;
   return {
     id: spot.id || spot.contentId,
     name: spot.name,
-    subtitle: spot.region || '',
+    subtitle:
+      formatScenicSpotPlaceLabel(spot, locale) ||
+      localizedScenicMajorRegion(locale, spot.region) ||
+      spot.region ||
+      '',
     blurb: spot.blurb,
     placeSlug: spot.placeSlug,
     contentId: spot.contentId,
     contentTypeId: '12',
     hubId: spot.hubId,
     region: spot.region,
+    locality: spot.locality,
+    areaLabel: spot.areaLabel,
+    areaCode: spot.areaCode,
     nameEn: spot.attractionNameEn || null,
     lat: spot.lat,
     lng: spot.lng,
@@ -1918,7 +1928,7 @@ export default function FestivalDetailSheet({
 
       {selectedScenic && (
         <ThemeSpotDetailModal
-          spot={toScenicModalSpot(selectedScenic)}
+          spot={toScenicModalSpot(selectedScenic, locale)}
           eyebrow={t('korea.festival.detail.nearScenic')}
           returnTo="/korea"
           overlayZClass="z-50"

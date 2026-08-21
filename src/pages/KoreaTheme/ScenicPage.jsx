@@ -631,7 +631,11 @@ function toModalSpot(spot, locale = 'ko') {
   return {
     id: spot.id,
     name: spot.name,
-    subtitle: placeLabel || spot.areaLabel || spot.region,
+    subtitle:
+      placeLabel ||
+      localizedScenicMajorRegion(locale, spot.areaLabel || spot.region) ||
+      spot.areaLabel ||
+      spot.region,
     blurb: spot.blurb,
     placeSlug: spot.placeSlug,
     contentId: spot.contentId,
