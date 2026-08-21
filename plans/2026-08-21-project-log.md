@@ -16,6 +16,11 @@
 - **수정** `scenicSpotMapTitle(spot, locale)` · curated/heritage/tour near 칩 `{ locale }` · `smoke:korea-scenic-nearby` 춘천 EN assert
 - **VERIFY** `smoke:korea-scenic-nearby` · `build` PASS · **SHA** `0154d9d0` · PR #141
 
+## 영문화 #39 follow-up — 내 위치 칩 줌 확대 시 전체 제목
+
+- **동작** 줌 ≥12에서 `labelFull` 표시 · `<12`는 기존 10자 truncate · 핀과 동일 `KOREA_MAP_PIN_LABEL_FULL_ZOOM`
+- **VERIFY** `smoke:korea-scenic-nearby` · `smoke:korea-scenic-map` · `build` PASS
+
 **다음 제시어**:
 
 ```
