@@ -2,70 +2,31 @@
 
 직전: [`2026-08-20-project-log.md`](./2026-08-20-project-log.md)
 
-## 영문화 #39, 명승·테마 UI·지도 EN — Preview push
+## 영문화 #38, PROD QA — 한국 2차 UI·지도명 잔여 확인
 
-- **범위** `ThemeSpotDetailModal` — 크로스 레일·주변 POI·라이트박스·영상 UI `korea.theme.spotDetail` · TourAPI 본문 `lang="ko"` 유지
-- **지도** `localizeMapDrillCrumbLabel` — breadcrumb EN · `scenicSpotMapTitle` — 핀 라벨 `nameEn` 우선
-- **VERIFY** `audit:i18n` · `build` · `smoke:korea-scenic-place-label` · `smoke:korea-scenic-map` · `smoke:browser-locale-hint` PASS
-- **브랜치** `cursor/en` · `/qa/en` · `?lang=en` — `/korea/theme/scenic` 모달·지도 breadcrumb·핀
-- **다음** Preview QA — 명승 상세 모달 EN · 지도 드릴 breadcrumb/핀 · 잔여 한글(작업 로그 등)
+- **범위** main `72144c4d` · `/korea?lang=en` · `/korea/theme/scenic?lang=en`
+- **PASS** 축제 상단 분류칩 EN · 홈·탐색·PlaceCard P0
+- **잔여** 명승 지도 breadcrumb·핀 · `ThemeSpotDetailModal` UI → **#39·#40** · 축제 지도·title → **#41**
 
-## 영문화 #39 follow-up — 내 위치 지도 칩 EN
+## 영문화 #39~#41 — 명승·축제 UI·지도 EN (cursor/en · PR #141)
 
-- **원인** `nearbySpotMapChips`가 `spot.name`(한글)만 사용 · `ScenicPage` near 칩에 locale 미전달
-- **수정** `scenicSpotMapTitle(spot, locale)` · curated/heritage/tour near 칩 `{ locale }` · `smoke:korea-scenic-nearby` 춘천 EN assert
-- **VERIFY** `smoke:korea-scenic-nearby` · `build` PASS · **SHA** `0154d9d0` · PR #141
+- **#39** `ThemeSpotDetailModal` UI · 지도 breadcrumb·핀 · `scenicSpotMapTitle`
+- **#40** 명승 모달 헤더·인근 축제 크로스 · 내 위치 칩 EN
+- **#41** `festivalTitleEnMerge` · `KoreaFestivalMap` · `FestivalDetailSheet` 헤더·크로스 UI
+- **VERIFY** `audit:i18n` · `build` · `smoke:festival-detail-locale` · scenic 스모크 PASS
+- **잔여(데이터)** EngService2 미등록 축제 핀 ko · TourAPI POI명 ko — 차차
 
-## 영문화 #39 follow-up — 내 위치 칩 줌 확대 시 전체 제목
+## 영문화 #41, main 병합 — Preview QA OK
 
-- **동작** 줌 ≥12에서 `labelFull` 표시 · `<12`는 기존 10자 truncate · 핀과 동일 `KOREA_MAP_PIN_LABEL_FULL_ZOOM`
-- **VERIFY** `smoke:korea-scenic-nearby` · `smoke:korea-scenic-map` · `build` PASS
+- **결정** 사람 Preview QA OK · 잔존 이슈는 차차 · **PR #141 → main 병합**
+- **다음** **#42 테스트·최적화** — PROD 회귀 · en fetch/캐시 · 알려진 한계 정리
 
-## 영문화 #40 follow-up — 명승 모달 인근 축제 본문 연계
-
-- **추가** `ThemeSpotDetailModal` 본문 「인근 축제」— `fetchNearbyFestivals` · 클릭→`/korea?from=theme&festival=` · `themeBack` 복귀
-- **EN** sameHub·인근 hub·숙소/투어 키워드 라벨 · deep-link `lang=en` 유지
-- **VERIFY** `build` · `smoke:korea-theme-spot-modal`(i18n assert) · `smoke:scenic-detail-locale` PASS · **SHA** `739c18de`
-
-- **수정** `ThemeSpotDetailModal` 헤더 `displayTitle` → `scenicSpotMapTitle(spot, locale)` (EN title 누락)
-- **스모크** `smoke:korea-theme-spot-modal` i18n 키 assert · `smoke:scenic-detail-locale` breadcrumb·핀·title EN 검증 추가
-- **VERIFY** `audit:i18n` · `build` · `smoke:scenic-detail-locale` · `smoke:korea-scenic-place-label` · `smoke:korea-scenic-map` · `smoke:korea-scenic-nearby` · `smoke:place-label-slug` PASS
-- **브랜치** `cursor/en` · `/qa/en` · PR #141
-- **다음** 사람 Preview QA → **#41 축제 지도·title EN**
-
-**다음 제시어 (#41)**:
+**다음 제시어 (#42)**:
 
 ```
-영문화 #41, 축제 지도·title EN
+영문화 #42, 테스트·최적화
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · /korea?lang=en · KoreaFestivalMap · titleEn join
-```
-
-## 영문화 #41, 축제 지도·title EN — titleEn join
-
-- **데이터** `fetchKoreaFestivalsRolling12` — ko 목록 + `festivalWindow` locale=en → `contentId` join `titleEn` · 카드 `title`(ko) 유지
-- **지도** `KoreaFestivalMap` — `festivalMapTitle(item, locale)` 핀 라벨 EN
-- **상세** `FestivalDetailSheet` 헤더 — `titleEn` 우선 · 본문·TourAPI detail ko SSOT
-- **VERIFY** `audit:i18n` · `build` · `smoke:festival-detail-locale` · `smoke:browser-locale-hint` · `smoke:korea-scenic-place-label` · `smoke:place-label-slug` PASS
-- **브랜치** `cursor/en` · PR #141 · `/qa/en` · `/korea?lang=en`
-- **다음** 사람 Preview QA — 축제 지도 핀·상세 헤더 EN · 목록·본문 ko
-
-## 영문화 #41 follow-up — titleEn 매칭·본문 크로스 UI EN
-
-- **원인** EngService2 `contentId` ≠ KorService2 → contentId join 실패 · en window ~157/600건
-- **수정** `festivalTitleEnMerge` — `English (한글)` 괄호 힌트 매칭 · cache `v2` 무효화
-- **본문 UI** `FestivalDetailSheet` — `localizedScenicMajorRegion` · hub stay/tour · `localizedPackageCtaLabel` · en `home.explore.packageCta.korea*`
-- **잔여** EngService2 미등록 축제 핀·TourAPI POI명은 ko 폴백(SSOT)
-- **VERIFY** `audit:i18n` · `build` · `smoke:festival-detail-locale` PASS
-
-**다음 제시어 (Preview QA)**:
-
-```
-영문화 #41, 축제 지도·title EN — Preview QA
-@plans/feature-handoff-index.md
-@plans/2026-08-21-project-log.md
-@plans/i18n-en-plan.md
-cursor/en · /korea?lang=en · KoreaFestivalMap · FestivalDetailSheet 헤더
+main · PROD ?lang=en · audit:i18n · 축제 titleEn 캐시
 ```

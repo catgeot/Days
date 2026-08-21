@@ -62,31 +62,28 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#41 follow-up push** — titleEn 괄호 매칭 · 본문 크로스 UI EN · Preview QA |
-| **main** | PR [#139](https://github.com/catgeot/Days/pull/139) 병합 `c15c3d54` · **#28 PROD QA** (배포 후 사람) |
-| **브랜치** | `cursor/en` (재사용) |
-| **tip** | `2236e9ed` |
-| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§11·§12 |
+| **상태** | **main 병합** PR #141 (#39~#41) · **#42 테스트·최적화** |
+| **main** | PR #141 merge SHA (병합 후 갱신) |
+| **브랜치** | `main` (병합 후) · 잔존은 차차 |
+| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§11·**§13** |
 | **일지** | [`2026-08-21-project-log.md`](./2026-08-21-project-log.md) |
-| **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` · `/qa/en` |
-| **VERIFY** | `audit:i18n` · `build` · `smoke:festival-detail-locale` · `smoke:browser-locale-hint` · `smoke:korea-scenic-place-label` · `smoke:place-label-slug` |
+| **PROD QA** | `https://www.gateo.kr/?lang=en` · `/korea?lang=en` · `/korea/theme/scenic?lang=en` |
+| **VERIFY** | `audit:i18n` · `build` · `smoke:festival-detail-locale` · `smoke:browser-locale-hint` · scenic 스모크 |
 
-**2차 순서**: ~~#13~#36~~ · ~~#39·#40 명승~~ → **#41 축제 지도·title** agent VERIFY
+**#42 범위 (테스트·최적화)**:
 
-**agent VERIFY** (`?lang=en` · `/korea`):
+1. **회귀** — PROD `?lang=en` 홈·한국·명승·축제 상세·locale 토글
+2. **성능** — 축제 `titleEn` en window 2nd fetch · sessionStorage v2 · locale 전환
+3. **백로그(차차)** — EngService2 미등록 축제 핀 ko · Preview 「작업 로그」·#28 PROD QA
 
-1. 축제 지도 핀 EN (`titleEn` join) · 목록 카드 title ko 유지
-2. `FestivalDetailSheet` 헤더 title EN · 본문·TourAPI detail `lang="ko"`
-3. `smoke:festival-detail-locale` · `build` PASS
-
-**다음 제시어 (Preview QA)**:
+**다음 제시어 (#42)**:
 
 ```
-영문화 #41, 축제 지도·title EN — Preview QA
+영문화 #42, 테스트·최적화
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · /korea?lang=en · KoreaFestivalMap · FestivalDetailSheet 헤더
+main · PROD ?lang=en · audit:i18n · 축제 titleEn 캐시
 ```
 
 ---

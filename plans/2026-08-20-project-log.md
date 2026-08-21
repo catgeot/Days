@@ -2,6 +2,23 @@
 
 직전: [`2026-08-19-project-log.md`](./2026-08-19-project-log.md)
 
+## 영문화 #36, main 병합 — #29~#36 P0·지역칩 EN
+
+- **범위** #29 audit:i18n · #30~#31 숙소·투어 패널 · #32 ReviewsTab · #33~#35 Korea·FestivalDetailSheet · #36 지역·분류칩
+- **VERIFY** `audit:i18n`(P0 debt 0) · `build` · smoke 4종 PASS (병합 전 cursor/en tip)
+- **main** `cursor/en` → main merge · PROD QA는 배포 후 사람
+- **다음** #38 PROD QA — `www.gateo.kr` · `/korea?lang=en` · `/explore?lang=en`
+
+**다음 제시어**:
+
+```
+영문화 #38, PROD QA — #29~#36 P0·지역칩
+@plans/feature-handoff-index.md
+@plans/2026-08-20-project-log.md
+@plans/i18n-en-plan.md
+main · www.gateo.kr · /korea?lang=en · /explore EN
+```
+
 ## 영문화 #36, P0 완료 Preview QA — 지역·분류칩 EN
 
 - **범위** `koreaRegionEn.js` · `koreaRegionLabels.js` — 시도·권역·분류·hub `name_en` SSOT
@@ -166,7 +183,7 @@ main · www.gateo.kr 시크릿 EN · /korea 축제 번역
 
 - **범위** #26 PlaceCard 써머리「숙소 찾기」「투어 찾기」·탐색(`/explore`) UI EN · `exploreUi.js`
 - **VERIFY** `build` · `smoke:browser-locale-hint` · `smoke:festival-detail-locale` · `smoke:essential-guide-locale` · `smoke:place-label-slug` PASS
-- **PR** [#139](https://github.com/catgeot/Days/pull/139) → **main**
+- **PR** [#139](https://github.com/catgeot/Days/pull/139) → **main** `c15c3d54`
 - **PROD QA** (사람 · 배포 후) — 써머리 Find stays/tours · 검색→탐색 필터·큐레이션 EN · #21~#23 항목 유지
 - **남은 일** 숙소/투어 **펼친 패널** 내부 카피 EN 후속
 
