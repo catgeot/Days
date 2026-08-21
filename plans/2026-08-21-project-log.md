@@ -40,12 +40,19 @@
 - **수정** `localizedSpotModalSubtitle` · `toScenicModalSpot` · `formatScenicSpotPlaceLabel` areaCode 폴백 · `142fb4d9`+`…`
 - **VERIFY** node `formatScenicSpotPlaceLabel({region:강원}, en)` → Gangwon
 
-**다음 제시어 (#42)**:
+## 영문화 #42b, PROD QA — 로고·About
+
+- **범위** `/?lang=en` · LogoPanel · FooterModal · `footerData` `titleEn`/`contentEn`
+- **수정** `resolveFooterBlock` · About/Terms/Privacy/Contact EN 본문 · 패널·모달 UI i18n(`home.logoPanel`·`home.footerModal`)
+- **VERIFY** `audit:i18n` · `build` PASS
+- **잔여** Credits(`MapboxCreditsPanel`) · Updates(`ReleaseNotesList`) ko · Preview 작업 로그
+
+**다음 제시어 (#42c)**:
 
 ```
-영문화 #42, PROD QA — 배포 후 회귀
+영문화 #42c, PROD QA — Credits·Updates
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-main · ?lang=en · 탐색·축제·locale 토글
+main · ?lang=en · MapboxCreditsPanel · ReleaseNotesList
 ```

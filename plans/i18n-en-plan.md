@@ -124,18 +124,18 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#42)**: PR #141 main 병합 후 — **테스트·최적화** · 잔존 이슈는 차차
+**상태 (#42b)**: LogoPanel·FooterModal·About/Terms/Privacy/Contact EN — **배포 후 PROD QA**
 
 **브랜치**: `main`
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #42, 테스트·최적화
+영문화 #42c, PROD QA — Credits·Updates
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-main · PROD ?lang=en · audit:i18n · 축제 titleEn 캐시
+main · ?lang=en · MapboxCreditsPanel · ReleaseNotesList
 ```
 
 ### #23 브라우저 locale 자동 — 완료
