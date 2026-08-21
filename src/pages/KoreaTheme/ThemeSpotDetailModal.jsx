@@ -5,6 +5,7 @@ import {
   ArrowUp,
   Bike,
   Building2,
+  CalendarDays,
   ChevronLeft,
   ChevronRight,
   Expand,
@@ -24,6 +25,7 @@ import {
 import {
   getThemeMembership,
   resolveThemeCrossLinks,
+  resolveThemeSpotAreaCode,
   scenicHomePathForHubId,
 } from '../Home/lib/koreaThemeCrossLinks';
 import {
@@ -58,11 +60,30 @@ import { resolveTourAreaForHub } from '../Home/lib/koreaSigunguByHub';
 import { koreanApiTextProps } from '../../i18n/koreanApiText';
 import { useLocale } from '../../i18n/LocaleProvider';
 import { scenicSpotMapTitle } from '../Home/lib/scenicSpotPlaceLabel.js';
+import { localizedHubLabel } from '../../i18n/koreaRegionLabels';
+import { fetchNearbyFestivals } from '../../utils/fetchNearbyFestivals';
+import { detectSidoCode } from '../Korea/festivalRegionTags';
 
 /** 본문·확대보기 — 가로 스와이프 vs 세로 스크롤·탭 */
 const PHOTO_SWIPE_THRESHOLD_PX = 48;
 const PHOTO_SWIPE_DIRECTION_RATIO = 1.25;
 
+function formatYmdLabel(ymd) {
+  const s = String(ymd || '');
+  if (!/^\d{8}$/.test(s)) return '';
+  return `${Number(s.slice(4, 6))}.${s.slice(6, 8)}`;
+}
+
+function appendLocaleQuery(path, locale) {
+  const raw = String(path || '').trim();
+  if (!raw || !String(locale || '').startsWith('en')) return raw;
+  const qIdx = raw.indexOf('?');
+  const pathname = qIdx >= 0 ? raw.slice(0, qIdx) : raw;
+  const params = new URLSearchParams(qIdx >= 0 ? raw.slice(qIdx + 1) : '');
+  if (!params.has('lang')) params.set('lang', 'en');
+  const q = params.toString();
+  return q ? `${pathname}?${q}` : pathname;
+}
 function youtubeThumb(videoId) {
   const id = String(videoId || '').trim();
   if (!id) return '';
@@ -134,6 +155,7 @@ function ThemeSpotCrossRail({
   hideNearbyHubs = false,
 }) {
   const { t } = useTranslation();
+  const { locale } = useLocale();
   const navigate = useNavigate();
 
   const crossSpot = useMemo(() => {
@@ -180,6 +202,7 @@ function ThemeSpotCrossRail({
 
   const goThemePath = (to) => {
     if (!to) return;
+    const dest = appendLocaleQuery(to, locale);
     // 축제 오버레이(`/korea`)에서 테마 모듈로 나갈 때만 시트 닫기.
     // 명승 홈에서는 closeModal이 spot query를 지워 deep-link와 경합할 수 있음.
     const leavingFestivalOverlay =
@@ -187,12 +210,21 @@ function ThemeSpotCrossRail({
     if (backEntry) {
       pushThemeNavBack(backEntry);
       if (leavingFestivalOverlay) onClose?.();
-      navigate(to, { state: { themeBack: backEntry } });
+      navigate(dest, { state: { themeBack: backEntry } });
       return;
     }
     if (leavingFestivalOverlay) onClose?.();
-    navigate(to);
+    navigate(dest);
   };
+
+  const stayDisplayKeyword =
+    localizedHubLabel(locale, { hubId: crossSpot?.hubId, name: cross.stay?.keyword }) ||
+    cross.stay?.keyword ||
+    '';
+  const tnaDisplayKeyword =
+    localizedHubLabel(locale, { hubId: crossSpot?.hubId, name: cross.tna?.keyword }) ||
+    cross.tna?.keyword ||
+    '';
 
   if (!spot || !cross) return null;
 
@@ -282,7 +314,8 @@ function ThemeSpotCrossRail({
                     }
                   }}
                 >
-                  {row.name}
+                  {scenicSpotMapTitle(row.modalSpot || { name: row.name }, locale) ||
+                    row.name}
                 </CrossTextButton>
               </li>
             ))}
@@ -298,7 +331,8 @@ function ThemeSpotCrossRail({
                 <CrossTextButton onClick={() => openNearbyScenicHome(h)}>
                   <span className="inline-flex items-center gap-1.5">
                     <MapPin size={14} className="text-amber-700" aria-hidden="true" />
-                    {h.name}
+                    {localizedHubLabel(locale, { hubId: h.hubId, name: h.name }) ||
+                      h.name}
                     <span className="text-[11px] font-medium text-stone-500">
                       {t('korea.theme.spotDetail.scenicChip')}
                     </span>
@@ -321,7 +355,7 @@ function ThemeSpotCrossRail({
                 className="inline-flex max-w-full min-w-0 items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-950 hover:bg-amber-100 break-keep break-words"
               >
                 {t('korea.theme.spotDetail.stayKeyword', {
-                  keyword: cross.stay.keyword,
+                  keyword: stayDisplayKeyword,
                 })}
                 <ExternalLink size={12} aria-hidden="true" />
               </a>
@@ -334,7 +368,7 @@ function ThemeSpotCrossRail({
                 className="inline-flex max-w-full min-w-0 items-center justify-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-stone-100 break-keep break-words"
               >
                 {t('korea.theme.spotDetail.tourKeyword', {
-                  keyword: cross.tna.keyword,
+                  keyword: tnaDisplayKeyword,
                 })}
                 <ExternalLink size={12} aria-hidden="true" />
               </a>
@@ -708,6 +742,8 @@ export default function ThemeSpotDetailModal({
   const [nearbyCultureStatus, setNearbyCultureStatus] = useState('idle');
   const [nearbyAttractions, setNearbyAttractions] = useState([]);
   const [nearbyAttractionsStatus, setNearbyAttractionsStatus] = useState('idle');
+  const [nearbyFestivals, setNearbyFestivals] = useState([]);
+  const [nearbyFestivalsStatus, setNearbyFestivalsStatus] = useState('idle');
   const [selectedFood, setSelectedFood] = useState(null);
   const [selectedLeports, setSelectedLeports] = useState(null);
   const [selectedCulture, setSelectedCulture] = useState(null);
@@ -1099,6 +1135,8 @@ export default function ThemeSpotDetailModal({
       setNearbyCultureStatus('idle');
       setNearbyAttractions([]);
       setNearbyAttractionsStatus('idle');
+      setNearbyFestivals([]);
+      setNearbyFestivalsStatus('idle');
       return undefined;
     }
 
@@ -1222,6 +1260,66 @@ export default function ThemeSpotDetailModal({
     detailLoading,
   ]);
 
+  useEffect(() => {
+    if (!spot || isApiPoiCross) {
+      setNearbyFestivals([]);
+      setNearbyFestivalsStatus('idle');
+      return undefined;
+    }
+
+    const fromDetailLat = Number(detail?.mapy);
+    const fromDetailLng = Number(detail?.mapx);
+    const lat = Number(spot.lat);
+    const lng = Number(spot.lng);
+    const useLat = Number.isFinite(lat) ? lat : fromDetailLat;
+    const useLng = Number.isFinite(lng) ? lng : fromDetailLng;
+    const areaCode = String(
+      spot.areaCode || resolveThemeSpotAreaCode(spot) || detectSidoCode(spot.addr1) || '',
+    ).trim();
+    const hasCoords =
+      Number.isFinite(useLat) &&
+      Number.isFinite(useLng) &&
+      !(useLat === 0 && useLng === 0);
+
+    if (!areaCode && !hasCoords) {
+      setNearbyFestivals([]);
+      setNearbyFestivalsStatus(detailLoading ? 'idle' : 'nocoords');
+      return undefined;
+    }
+
+    let cancelled = false;
+    setNearbyFestivalsStatus('loading');
+    fetchNearbyFestivals({
+      lat: hasCoords ? useLat : undefined,
+      lng: hasCoords ? useLng : undefined,
+      areaCode: areaCode || undefined,
+      radiusKm: 50,
+      limit: 6,
+    }).then((res) => {
+      if (cancelled) return;
+      const list = Array.isArray(res?.festivals) ? res.festivals : [];
+      setNearbyFestivals(list);
+      if (res?.error) setNearbyFestivalsStatus('error');
+      else if (!list.length) setNearbyFestivalsStatus('empty');
+      else setNearbyFestivalsStatus('ok');
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    spot?.id,
+    spot?.lat,
+    spot?.lng,
+    spot?.areaCode,
+    spot?.addr1,
+    spot?.hubId,
+    isApiPoiCross,
+    detail?.mapx,
+    detail?.mapy,
+    detailLoading,
+  ]);
+
   const overview = useMemo(
     () => stripHtml(detail?.overview || ''),
     [detail?.overview],
@@ -1339,6 +1437,23 @@ export default function ThemeSpotDetailModal({
   const hasContentId = /^\d{1,32}$/.test(String(spot.contentId || '').trim());
   const hero = imageUrls[activeImage] || imageUrls[0] || '';
   const galleryList = imageUrls;
+
+  const openFestival = (fest) => {
+    const festId = String(fest?.contentId || '').trim();
+    if (!festId) return;
+    const areaCode = String(
+      spot.areaCode || resolveThemeSpotAreaCode(spot) || '',
+    ).trim();
+    const params = new URLSearchParams();
+    params.set('from', 'theme');
+    if (areaCode) params.set('area', areaCode);
+    params.set('festival', festId);
+    if (isEnglish) params.set('lang', 'en');
+    const backEntry = themeNavBackEntryForSpot(spot, returnTo);
+    if (backEntry) pushThemeNavBack(backEntry);
+    onClose?.();
+    navigate(`/korea?${params.toString()}`);
+  };
 
   const scrollToTop = () => {
     scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1911,6 +2026,89 @@ export default function ThemeSpotDetailModal({
                                 </span>
                                 <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
                                   {[place, dist].filter(Boolean).join(' · ')}
+                                </span>
+                              </span>
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </section>
+              )}
+
+            {!isApiPoiCross &&
+              nearbyFestivalsStatus !== 'idle' &&
+              nearbyFestivalsStatus !== 'nocoords' && (
+                <section className="space-y-2 border-t border-stone-200/80 pt-4">
+                  <h3 className="text-[11px] font-bold uppercase tracking-[0.14em] text-stone-500">
+                    {t('korea.theme.spotDetail.nearFestivals')}
+                  </h3>
+                  {nearbyFestivalsStatus === 'loading' && (
+                    <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
+                      <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+                      {t('korea.theme.spotDetail.nearFestivalsLoading')}
+                    </div>
+                  )}
+                  {nearbyFestivalsStatus === 'error' && nearbyFestivals.length === 0 && (
+                    <p className="text-xs text-stone-500">
+                      {t('korea.theme.spotDetail.nearFestivalsError')}
+                    </p>
+                  )}
+                  {nearbyFestivalsStatus === 'empty' && (
+                    <p className="text-xs text-stone-500">
+                      {t('korea.theme.spotDetail.nearFestivalsEmpty')}
+                    </p>
+                  )}
+                  {nearbyFestivals.length > 0 && (
+                    <ul
+                      className="space-y-2"
+                      aria-label={t('korea.theme.spotDetail.nearFestivalsAria')}
+                    >
+                      {nearbyFestivals.map((fest) => {
+                        const thumbFest = toHttps(fest.firstImage);
+                        const dist = formatDistKm(fest.distKm);
+                        const when = [
+                          formatYmdLabel(fest.eventStartDate),
+                          formatYmdLabel(fest.eventEndDate),
+                        ]
+                          .filter(Boolean)
+                          .join('–');
+                        const place = String(fest.locality || fest.region || '').trim();
+                        return (
+                          <li key={fest.contentId}>
+                            <button
+                              type="button"
+                              onClick={() => openFestival(fest)}
+                              className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
+                            >
+                              {thumbFest ? (
+                                <img
+                                  src={thumbFest}
+                                  alt=""
+                                  className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
+                                />
+                              ) : (
+                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-800">
+                                  <CalendarDays size={18} aria-hidden="true" />
+                                </div>
+                              )}
+                              <span className="min-w-0 flex-1">
+                                <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                                  <span
+                                    className="text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep"
+                                    {...koText}
+                                  >
+                                    {fest.title || fest.name}
+                                  </span>
+                                  {dist ? (
+                                    <span className="shrink-0 rounded-full bg-stone-100 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-stone-600">
+                                      {dist}
+                                    </span>
+                                  ) : null}
+                                </span>
+                                <span className="mt-0.5 block text-[11px] text-stone-500 break-keep" {...koText}>
+                                  {[place, when].filter(Boolean).join(' · ')}
                                 </span>
                               </span>
                             </button>

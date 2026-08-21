@@ -87,7 +87,8 @@ assert(modalSrc.includes('PHOTO_SWIPE_THRESHOLD_PX'), 'modal supports photo swip
 assert(!modalSrc.includes('장소 카드 보기'), 'modal does not link to place card');
 assert(!modalSrc.includes('setPlaceReturnTo'), 'modal does not set place returnTo');
 assert(modalSrc.includes('Escape'), 'modal Esc close');
-assert(modalSrc.includes('fetchTourApiAttractionDetail'), 'modal loads Tour detail');
+assert(modalSrc.includes('fetchNearbyFestivals'), 'modal loads nearby festivals');
+assert(modalSrc.includes("t('korea.theme.spotDetail.nearFestivals')"), 'modal has nearby festivals section');
 assert(modalSrc.includes('resolveThemeCrossLinks'), 'modal wires cross-links matcher');
 assert(modalSrc.includes("t('korea.theme.spotDetail.crossThemeTitle')"), 'modal cross rail membership section');
 assert(modalSrc.includes("t('korea.theme.spotDetail.festivalsInArea')"), 'modal cross rail festival deep-link');
