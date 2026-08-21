@@ -62,10 +62,10 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#41 agent VERIFY** — 사람 Preview QA 대기 (축제 지도·title EN) |
+| **상태** | **#41 follow-up push** — titleEn 괄호 매칭 · 본문 크로스 UI EN · Preview QA |
 | **main** | PR [#139](https://github.com/catgeot/Days/pull/139) 병합 `c15c3d54` · **#28 PROD QA** (배포 후 사람) |
 | **브랜치** | `cursor/en` (재사용) |
-| **tip** | `1b0b3b93` |
+| **tip** | `2236e9ed` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§11·§12 |
 | **일지** | [`2026-08-21-project-log.md`](./2026-08-21-project-log.md) |
 | **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` · `/qa/en` |
