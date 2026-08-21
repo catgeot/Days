@@ -230,3 +230,37 @@ export function displayChipLabel(locale, label, meta = {}) {
       return ko;
   }
 }
+
+/**
+ * @param {string | null | undefined} locale
+ * @param {{ id?: string, label?: string } | null | undefined} crumb
+ * @param {import('i18next').TFunction} t
+ */
+export function localizeMapDrillCrumbLabel(locale, crumb, t) {
+  const id = String(crumb?.id || '').trim();
+  const label = String(crumb?.label || '').trim();
+  if (!label) return '';
+  if (id === 'root') return t('korea.common.all');
+  const sep = id.indexOf(':');
+  if (sep < 0) return label;
+  const kind = id.slice(0, sep);
+  const code = id.slice(sep + 1);
+  switch (kind) {
+    case 'region':
+      return localizedScenicMajorRegion(locale, label);
+    case 'area':
+      return localizedAreaCodeLabel(locale, code, label);
+    case 'cluster':
+      return localizedScenicClusterLabel(locale, code, label);
+    case 'hub':
+      return localizedHubLabel(locale, { hubId: code, name: label });
+    case 'category':
+      return localizedHeritageCategoryLabel(locale, label);
+    case 'cat1':
+    case 'cat2':
+    case 'cat3':
+      return localizedTourCategoryLabel(locale, code, label);
+    default:
+      return label;
+  }
+}

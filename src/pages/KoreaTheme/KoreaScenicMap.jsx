@@ -16,7 +16,11 @@ import {
   Minimize2,
 } from 'lucide-react';
 import { MAPBOX_ATTRIBUTION_LINKS } from '../../data/mapboxAttribution';
-import { mapboxLanguageForLocale, displayChipLabel } from '../../i18n/koreaRegionLabels';
+import {
+  displayChipLabel,
+  localizeMapDrillCrumbLabel,
+  mapboxLanguageForLocale,
+} from '../../i18n/koreaRegionLabels';
 import { resolveCityAttractionHub } from '../Home/lib/cityAttractionHubs';
 import {
   buildScenicMapGeoJson,
@@ -338,7 +342,10 @@ export default function KoreaScenicMap({
   const [locateBusy, setLocateBusy] = useState(false);
   const [locateMsg, setLocateMsg] = useState('');
   const pinItems = showSpotPins ? items : [];
-  const geojson = useMemo(() => buildScenicMapGeoJson(pinItems), [pinItems]);
+  const geojson = useMemo(
+    () => buildScenicMapGeoJson(pinItems, { locale }),
+    [pinItems, locale],
+  );
   const pointCount = geojson.features.length;
   const useClusters = pointCount >= SCENIC_MAP_CLUSTER_MIN_POINTS;
   const interactiveLayerIds = useMemo(() => {
@@ -350,7 +357,13 @@ export default function KoreaScenicMap({
     () => spreadNearbyMapChips(Array.isArray(drillChips) ? drillChips : []),
     [drillChips],
   );
-  const crumbs = Array.isArray(drillCrumbs) ? drillCrumbs : [];
+  const crumbs = useMemo(() => {
+    const raw = Array.isArray(drillCrumbs) ? drillCrumbs : [];
+    return raw.map((crumb) => ({
+      ...crumb,
+      label: localizeMapDrillCrumbLabel(locale, crumb, t),
+    }));
+  }, [drillCrumbs, locale, t]);
   const canDrillUp = crumbs.length > 1;
   const focusKey = focusView
     ? isBoundsFocus(focusView)
