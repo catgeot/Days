@@ -107,3 +107,12 @@ export function scenicSpotMapTitle(spot, locale = 'ko') {
   ).trim();
   return en || ko;
 }
+
+/** 축제 지도 핀·상세 헤더 — EN이면 titleEn 우선, 목록 카드 title(ko) 유지. */
+export function festivalMapTitle(item, locale = 'ko') {
+  const ko = String(item?.title || '').trim();
+  if (!ko) return '';
+  if (!isEnLocale(locale)) return ko;
+  const en = String(item?.titleEn || '').trim();
+  return en || ko;
+}

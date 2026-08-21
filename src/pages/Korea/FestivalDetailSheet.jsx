@@ -25,6 +25,7 @@ import {
 } from '../../utils/fetchTourApiFestivals';
 import { useLocale } from '../../i18n/LocaleProvider';
 import { koreanApiTextProps } from '../../i18n/koreanApiText';
+import { festivalMapTitle } from '../Home/lib/scenicSpotPlaceLabel.js';
 import { fetchFestivalVideos, FESTIVAL_VIDEOS_MAX, FESTIVAL_VIDEOS_PAGE } from '../../utils/fetchFestivalVideos';
 import { fetchNearbyTourAttractions } from '../../utils/fetchNearbyTourAttractions';
 import {
@@ -291,7 +292,7 @@ export default function FestivalDetailSheet({
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { isEnglish } = useLocale();
+  const { isEnglish, locale } = useLocale();
   const koText = koreanApiTextProps(isEnglish);
   const festivalModuleLabel = t('korea.theme.nav.module.festival');
   const nearbyEyebrow = useCallback(
@@ -897,9 +898,13 @@ export default function FestivalDetailSheet({
   const tel = String(intro?.sponsor1tel || item.tel || '').trim();
   const sponsor2tel = String(intro?.sponsor2tel || '').trim();
   const hero = imageUrls[activeImage] || imageUrls[0] || '';
+  const koTitle = String(item?.title || common?.title || '').trim();
   const displayTitle =
-    String(common?.title || item?.title || '').trim() ||
+    festivalMapTitle(item, locale) ||
+    koTitle ||
     t('korea.festival.detail.fallbackTitle');
+  const headerUsesKoTitle =
+    !isEnglish || !displayTitle || displayTitle === koTitle;
   const eventplace = String(intro?.eventplace || '').trim();
   const showEventPlace =
     Boolean(eventplace) && eventplace !== String(item.addr1 || '').trim();
@@ -1074,7 +1079,7 @@ export default function FestivalDetailSheet({
             <h3
               id="korea-festival-sheet-title"
               className="text-xl md:text-2xl lg:text-3xl font-extrabold leading-snug text-stone-900"
-              {...koText}
+              {...(headerUsesKoTitle ? koText : {})}
             >
               {displayTitle}
             </h3>

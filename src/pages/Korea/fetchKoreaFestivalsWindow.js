@@ -41,6 +41,54 @@ function writeCache(items) {
   }
 }
 
+function filterFestivalItems(items) {
+  return (items || []).filter(
+    (item) =>
+      item?.title && /^\d{8}$/.test(String(item.eventStartDate || '')),
+  );
+}
+
+/**
+ * KorService2 목록에 EngService2 title만 contentId join.
+ * @param {object[]} koItems
+ * @param {{ eventStartDate: string, eventEndDate: string, force?: boolean }} range
+ */
+async function mergeTitleEnOntoItems(koItems, range) {
+  if (!koItems.length) return koItems;
+
+  const enData = await fetchTourApiFestivalWindow({
+    eventStartDate: range.eventStartDate,
+    eventEndDate: range.eventEndDate,
+    force: Boolean(range.force),
+    locale: 'en',
+  });
+
+  if (!enData?.ok || !Array.isArray(enData.items)) {
+    return koItems;
+  }
+
+  /** @type {Map<string, string>} */
+  const enById = new Map();
+  for (const item of enData.items) {
+    const id = String(item?.contentId || '').trim();
+    const title = String(item?.title || '').trim();
+    if (id && title) enById.set(id, title);
+  }
+
+  if (!enById.size) return koItems;
+
+  return koItems.map((item) => {
+    const id = String(item?.contentId || '').trim();
+    const titleEn = id ? enById.get(id) : '';
+    if (!titleEn) return item;
+    return { ...item, titleEn };
+  });
+}
+
+function itemsNeedTitleEn(items) {
+  return (items || []).some((item) => item?.contentId && !item?.titleEn);
+}
+
 /**
  * Edge festivalWindow 1회 (서버 페이지 merge + DB 캐시).
  * @param {{ force?: boolean, now?: Date }} [opts]
@@ -66,10 +114,11 @@ async function fetchKoreaFestivalsRolling12Uncached(opts = {}) {
     };
   }
 
-  const items = data.items.filter(
-    (item) =>
-      item?.title && /^\d{8}$/.test(String(item.eventStartDate || '')),
-  );
+  const filtered = filterFestivalItems(data.items);
+  const items = await mergeTitleEnOntoItems(filtered, {
+    ...range,
+    force: Boolean(opts.force),
+  });
   writeCache(items);
   return {
     ok: true,
@@ -82,14 +131,23 @@ async function fetchKoreaFestivalsRolling12Uncached(opts = {}) {
 /**
  * 롤링 12개월 축제 목록.
  * sessionStorage L1 → Edge festivalWindow (DB HIT / LIVE / stale).
- * @param {{ force?: boolean, now?: Date }} [opts]
+ * @param {{ force?: boolean, now?: Date, locale?: string }} [opts]
  * @returns {Promise<{ ok: boolean, items: object[], fromCache: boolean, stale?: boolean, error?: string }>}
  */
 export async function fetchKoreaFestivalsRolling12(opts = {}) {
+  const wantTitleEn = String(opts.locale || '').startsWith('en');
+
   if (!opts.force) {
     const cached = readCache();
     if (cached) {
-      return { ok: true, items: cached.items, fromCache: true };
+      let { items } = cached;
+      if (wantTitleEn && itemsNeedTitleEn(items)) {
+        const now = opts.now instanceof Date ? opts.now : new Date();
+        const range = rolling12MonthRangeYmd(now);
+        items = await mergeTitleEnOntoItems(items, range);
+        writeCache(items);
+      }
+      return { ok: true, items, fromCache: true };
     }
   }
 
