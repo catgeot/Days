@@ -61,9 +61,13 @@ export function formatScenicSpotPlaceLabel(spot, locale = 'ko') {
       (SINGLE_PROVINCE_REGION.has(region) ? region : '') ||
       '',
   ).trim();
+  const sidoFromCode = areaCode
+    ? localizedAreaCodeLabel(locale, areaCode, sidoRaw)
+    : '';
   const sido =
-    localizedAreaCodeLabel(locale, areaCode, sidoRaw) ||
+    sidoFromCode ||
     localizedSidoShort(locale, sidoRaw) ||
+    localizedScenicMajorRegion(locale, sidoRaw) ||
     sidoRaw;
 
   const hub = hubId ? resolveCityAttractionHub(hubId) : null;
