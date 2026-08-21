@@ -380,7 +380,41 @@
           "atlantic": "Atlantic & South",
           "other": "Other"
         }
+      },
+      "returnTo2d": "Return to 2D",
+      "tour3dRestart": "3D tour",
+      "endTourAria": "End 3D tour",
+      "terrainLoading": "Loading 3D terrain…",
+      "reachBoundary": {
+        "title": "Reachable area",
+        "hide": "Hide reachable area",
+        "show": "Show reachable area",
+        "walkMinutes": "~{{minutes}} min walk",
+        "driveMinutes": "~{{minutes}} min drive",
+        "computing": "Calculating boundary…",
+        "hintVisible": "Walking path · driving reach",
+        "hintHidden": "Hidden on map · toggle to show"
       }
+    },
+    "flightCinema": {
+      "regionAria": "Flight route {{route}}",
+      "regionLabel": "Flight route",
+      "routeAlternatives": "Layover options",
+      "alternativesCount": "{{count}} options",
+      "totalHours": "(total {{hours}}h)",
+      "totalHoursTitle": "Total {{hours}}h — segment estimate (layover time excluded)",
+      "routeAria": "{{codes}} via — about {{hours}} hours total",
+      "legTimeTitle": "Estimated segment flight time (excludes layover & check-in)",
+      "routeMeta": "Great-circle route. Actual path may differ.",
+      "legTimeHint1": "~Nh per segment is a great-circle flight time estimate.",
+      "legTimeHint2": "Layover wait and check-in are not included.",
+      "routeInfoAria": "Route info",
+      "direct": "Nonstop",
+      "plannerTitle": "View full journey in planner tab",
+      "searchFlights": "Search flights",
+      "timezoneNone": "No time difference",
+      "timezoneDiff": "Time diff ~{{sign}}{{hours}}h",
+      "close": "Close"
     },
     "category": {
       "paradise": "Resort",
@@ -1074,6 +1108,7 @@
       "bookmark": "Bookmark",
       "relatedSpots": "Related destinations",
       "relatedList": "More places in this region",
+      "relatedGatewayHint": "Same region, different gateway airports and itineraries",
       "loadInfoFailed": "Could not load related information.",
       "searchGoogle": "Search on Google",
       "affiliateSite": "Open partner site"

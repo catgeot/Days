@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
+import { useLocale } from '../../../i18n/LocaleProvider';
 import TravelTicker from '../components/TravelTicker';
 import Logo from './Logo';
 import LocaleToggle from '../../../i18n/LocaleToggle';
@@ -101,6 +103,7 @@ const HomeUI = React.memo(({
   onTourBarStartTour,
 }) => {
   const { t } = useTranslation();
+  const { locale } = useLocale();
   const mobileQuickLinks = React.useMemo(
     () =>
       MOBILE_QUICK_LINK_DEFS.map((item) => ({
@@ -556,7 +559,7 @@ const HomeUI = React.memo(({
                   )}
                   <span className={`text-[10px] md:text-sm font-medium truncate ${
                     place.isBridge ? 'text-fuchsia-200 group-hover:text-white' : 'text-gray-200 group-hover:text-white'
-                  }`}>{place.name}</span>
+                  }`}>{getLocalizedPlaceName(place.data, locale) || place.name}</span>
                 </div>
               </button>
             ))}

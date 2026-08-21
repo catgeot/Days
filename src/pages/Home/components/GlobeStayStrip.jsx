@@ -61,6 +61,7 @@ import {
   getTripcomLinkRel,
 } from '../../../components/PlaceCard/common/partnerNavigation';
 import WhiteLabelWidget from '../../../components/PlaceCard/common/WhiteLabelWidget.jsx';
+import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
 import { getAddressFromCoordinates } from '../lib/geocoding';
 import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
 import {
@@ -1082,7 +1083,7 @@ export default function GlobeStayStrip({
   flightOriginIata = null,
   canPreviewFlightRoute: canPreviewFlightRouteProp = false,
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isLg = useIsLg();
   const [expanded, setExpanded] = useState(false);
   const [listFullscreen, setListFullscreen] = useState(false);
@@ -1106,7 +1107,7 @@ export default function GlobeStayStrip({
   const desktopListScrollRef = useRef(null);
 
   const slug = location?.slug ? String(location.slug).trim().toLowerCase() : '';
-  const name = location?.name || '';
+  const name = getLocalizedPlaceName(location, i18n.language) || location?.name || '';
   const country = location?.country || '';
   const isScanning = Boolean(location?.isScanning);
   const placeKey = `${slug}|${name}|${country}|${location?.lat}|${location?.lng}`;

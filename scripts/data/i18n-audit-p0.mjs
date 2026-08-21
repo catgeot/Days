@@ -15,6 +15,26 @@ export const I18N_AUDIT_P0 = [
   },
   {
     tier: 'A',
+    path: 'src/pages/Home/components/TourMobileBar.jsx',
+    note: '3D 투어 모바일 상태창 (#42a)',
+  },
+  {
+    tier: 'A',
+    path: 'src/pages/Home/components/HomeGlobeMapbox.jsx',
+    note: '3D 투어·이동 가능 경계 (#42a)',
+  },
+  {
+    tier: 'A',
+    path: 'src/pages/Home/components/FlightCinemaBar.jsx',
+    note: '항공경로 상태창 (#42a)',
+  },
+  {
+    tier: 'A',
+    path: 'src/components/PlaceCard/views/GalleryInfoView.jsx',
+    note: '갤러리 연관 칩 (#42a)',
+  },
+  {
+    tier: 'A',
     path: 'src/pages/Home/components/GlobeTourStrip.jsx',
     note: '3D 투어 스트립',
   },
