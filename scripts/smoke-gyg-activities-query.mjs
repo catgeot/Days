@@ -58,6 +58,22 @@ const miyakojima = {
   country_en: 'Japan',
 };
 
+const timbuktu = {
+  slug: 'timbuktu',
+  name: '팀북투',
+  name_en: 'Timbuktu',
+  country: '말리',
+  country_en: 'Mali',
+};
+
+const tbilisi = {
+  slug: 'tbilisi',
+  name: '트빌리시',
+  name_en: 'Tbilisi',
+  country: '조지아',
+  country_en: 'Georgia',
+};
+
 const aitQ = buildGygActivitiesSearchQuery(aitutaki);
 assert(aitQ === 'Rarotonga, Cook Islands', 'aitutaki q → Rarotonga, Cook Islands');
 assert(!/ayutthaya/i.test(String(aitQ)), 'aitutaki q ≠ Ayutthaya');
@@ -75,6 +91,14 @@ assert(
 assert(
   buildGygActivitiesSearchQuery(miyakojima) === 'Miyakojima',
   'miyakojima q stays city-only (no , Japan)'
+);
+
+const timQ = buildGygActivitiesSearchQuery(timbuktu);
+assert(timQ === 'Timbuktu, Mali', 'timbuktu q → Timbuktu, Mali');
+assert(!/tbilisi/i.test(String(timQ)), 'timbuktu q ≠ Tbilisi');
+assert(
+  buildGygActivitiesSearchQuery(tbilisi) === 'Tbilisi',
+  'tbilisi q stays city-only Tbilisi'
 );
 
 assert(resolveGygLocale('en') === 'en-US', 'GYG locale en → en-US');

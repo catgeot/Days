@@ -155,6 +155,12 @@ cursor/en · ReviewsTab · audit:i18n
 - **브랜치** `cursor/en` · `/qa/en` — Timbuktu Find tours GYG **Duration** EN
 - **다음** #32 P0-B ReviewsTab
 
+## 영문화 #31 후속2, GYG Timbuktu→Tbilisi 오탐 — Preview push
+
+- **원인** bare `Timbuktu` q → GYG fuzzy **Tbilisi** (아이투타키→아유타야와 동일 패턴)
+- **수정** `GYG_ACTIVITIES_Q_BY_SLUG.timbuktu` → `Timbuktu, Mali`
+- **VERIFY** `smoke-gyg-activities-query` · `build` PASS
+
 **다음 제시어**:
 
 ```
