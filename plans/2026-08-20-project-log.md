@@ -2,6 +2,24 @@
 
 직전: [`2026-08-19-project-log.md`](./2026-08-19-project-log.md)
 
+## 영문화 #35, P0-C FestivalDetailSheet UI EN (일괄) — Preview push
+
+- **범위** `FestivalDetailSheet.jsx` — 탭·라벨·크로스 네비·로딩/에러·라이트박스 · `korea.festival.detail` 83키 · TourAPI infoname 매칭은 `festivalTourApiMatchLabels.js`
+- **debt** FestivalDetailSheet 53→0 · P0 합계 **0** (tier A·B·C)
+- **VERIFY** `audit:i18n` · `build` · `smoke:browser-locale-hint` · `smoke:place-label-slug` · `smoke:festival-detail-locale` PASS
+- **브랜치** `cursor/en` · `/qa/en` · `?lang=en` — 축제 상세 UI EN · 본문 ko SSOT 유지
+- **다음** #36 P0 완료 Preview QA
+
+**다음 제시어**:
+
+```
+영문화 #36, P0 완료 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-08-20-project-log.md
+@plans/i18n-en-plan.md
+cursor/en · /korea?lang=en · audit:i18n · 축제 상세 UI EN
+```
+
 ## 영문화 #34, P0-C Korea 허브 UI EN — Preview push
 
 - **범위** `Korea/index.jsx` — `ChipScrollRow` aria `korea.common.chipList` · 스크롤 버튼 `korea.common.scrollUp`

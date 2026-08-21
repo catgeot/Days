@@ -62,24 +62,24 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **#34 Preview** — Korea 허브 tier C `index.jsx` **0** · debt **53**줄 (`FestivalDetailSheet`만) |
+| **상태** | **#35 Preview** — P0 debt **0** (tier A·B·C) · `FestivalDetailSheet` UI EN |
 | **main** | PR [#139](https://github.com/catgeot/Days/pull/139) 병합 `c15c3d54` · **#28 PROD QA** (배포 후 사람) |
 | **브랜치** | `cursor/en` (재사용) |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§11 |
 | **일지** | [`2026-08-20-project-log.md`](./2026-08-20-project-log.md) |
 | **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` · `/qa/en` |
-| **VERIFY** | `audit:i18n` · `build` · `smoke:browser-locale-hint` · `smoke:place-label-slug` |
+| **VERIFY** | `audit:i18n` · `build` · `smoke:browser-locale-hint` · `smoke:place-label-slug` · `smoke:festival-detail-locale` |
 
-**2차 순서**: ~~#13~#34 P0-C Korea/index~~ → **#35 P0-C** (`FestivalDetailSheet.jsx` 53줄)
+**2차 순서**: ~~#13~#35 P0~~ → **#36 Preview QA** (P0 완료 · `/korea` 상세 UI)
 
 **다음 제시어**:
 
 ```
-영문화 #35, P0-C FestivalDetailSheet UI EN
+영문화 #36, P0 완료 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-08-20-project-log.md
 @plans/i18n-en-plan.md
-cursor/en · FestivalDetailSheet · audit:i18n
+cursor/en · /korea?lang=en · audit:i18n · 축제 상세 UI EN
 ```
 
 ---
