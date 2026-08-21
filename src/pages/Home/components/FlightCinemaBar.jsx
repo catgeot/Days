@@ -1,23 +1,25 @@
 import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ChevronDown, Info, LayoutList, Loader2, Plane, Search } from 'lucide-react';
-import { getPlaceTitleLines } from '../../../components/PlaceCard/common/locationDisplay';
+import {
+  getLocalizedCountryName,
+  getPlaceTitleLinesForLocale,
+} from '../../../components/PlaceCard/common/locationDisplay';
+import { useLocale } from '../../../i18n/LocaleProvider';
+import { formatFlightRouteAlternativeLabel } from '../lib/flightCinemaRouteAlternatives';
 import WhiteLabelWidget from '../../../components/PlaceCard/common/WhiteLabelWidget.jsx';
 import FlightOriginSelector from './FlightOriginSelector.jsx';
 import { getFlightOriginMetroHint } from '../lib/flightOriginMetroGateways.js';
 import { useCoarsePointer, useMobileOverlayViewport } from '../../../shared/hooks/useMobileInputViewport.js';
 
-const ROUTE_META = '대권 항로입니다. 실제 비행경로와 다를 수 있어요.';
-
-const LEG_TIME_TITLE = '구간 추정 비행 시간(환승 대기·체크인 미포함)';
-
 const ROUTE_INFO_TOOLTIP_Z = 130;
 
 /**
- * @param {{ metroHint?: string | null, showLegTimeHint?: boolean }} props
+ * @param {{ metroHint?: string | null, showLegTimeHint?: boolean, t: (key: string, opts?: object) => string }} props
  */
-function FlightRouteInfoTooltip({ metroHint = null, showLegTimeHint = true }) {
+function FlightRouteInfoTooltip({ metroHint = null, showLegTimeHint = true, t }) {
   const tooltipId = useId();
   const rootRef = useRef(null);
   const tooltipRef = useRef(null);
@@ -93,11 +95,11 @@ function FlightRouteInfoTooltip({ metroHint = null, showLegTimeHint = true }) {
           }}
           className="rounded-lg border border-white/15 bg-black/95 px-2.5 py-2 text-[10px] font-medium leading-snug text-white/85 shadow-lg backdrop-blur-sm"
         >
-          <p className="break-keep">{ROUTE_META}</p>
+          <p className="break-keep">{t('home.flightCinema.routeMeta')}</p>
           {showLegTimeHint ? (
             <>
-              <p className="mt-1 break-keep text-white/65">구간 ~Nh는 대권 거리 기준 추정 비행 시간이에요.</p>
-              <p className="mt-1 break-keep text-white/65">환승 대기·체크인은 포함되지 않아요.</p>
+              <p className="mt-1 break-keep text-white/65">{t('home.flightCinema.legTimeHint1')}</p>
+              <p className="mt-1 break-keep text-white/65">{t('home.flightCinema.legTimeHint2')}</p>
             </>
           ) : null}
           {metroHint ? (
@@ -120,7 +122,7 @@ function FlightRouteInfoTooltip({ metroHint = null, showLegTimeHint = true }) {
       >
         <button
           type="button"
-          aria-label="항로 안내"
+          aria-label={t('home.flightCinema.routeInfoAria')}
           aria-expanded={showTooltip}
           aria-controls={tooltipId}
           onClick={() => setPinned((open) => !open)}
@@ -144,6 +146,7 @@ const BAR_BTN =
  *   flightLegHours?: { fromIata: string, toIata: string, hours: number }[],
  *   originIata?: string | null,
  *   isPending?: boolean,
+ *   t: (key: string, opts?: object) => string,
  * }} props
  */
 function FlightRouteSummary({
@@ -152,6 +155,7 @@ function FlightRouteSummary({
   flightLegHours = [],
   originIata = null,
   isPending = false,
+  t,
 }) {
   const codes = routeIatas.filter(Boolean);
   const legs = flightLegHours.filter(Boolean);
@@ -167,7 +171,7 @@ function FlightRouteSummary({
     <div className="min-w-0 leading-tight">
       <div className="flex min-w-0 items-center gap-2">
         <p className="min-w-0 flex-1 text-sm font-bold text-white break-keep">{codes.join(' → ')}</p>
-        <FlightRouteInfoTooltip metroHint={metroHint} showLegTimeHint={false} />
+        <FlightRouteInfoTooltip metroHint={metroHint} showLegTimeHint={false} t={t} />
       </div>
     </div>
   ) : (
@@ -175,7 +179,10 @@ function FlightRouteSummary({
       <div className="flex min-w-0 items-center gap-2.5">
         <p
           className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap text-sm leading-snug [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          aria-label={`${codes.join(' 경유 ')} 총 약 ${flightHours}시간`}
+          aria-label={t('home.flightCinema.routeAria', {
+            codes: codes.join(' · '),
+            hours: flightHours,
+          })}
         >
           {codes.map((code, index) => (
             <React.Fragment key={`${code}-${index}`}>
@@ -183,7 +190,7 @@ function FlightRouteSummary({
               {index < legs.length ? (
                 <span
                   className="mx-1.5 text-[10px] font-medium tabular-nums text-sky-300/85 sm:mx-2"
-                  title={`${legs[index].fromIata}→${legs[index].toIata} ${LEG_TIME_TITLE}`}
+                  title={t('home.flightCinema.legTimeTitle')}
                 >
                   ~{legs[index].hours}h
                 </span>
@@ -194,11 +201,11 @@ function FlightRouteSummary({
         <span className="inline-flex shrink-0 items-center gap-1.5">
           <span
             className="whitespace-nowrap text-[11px] font-semibold tabular-nums text-sky-200/90"
-            title={`총 ${flightHours}시간 — 구간 합산 추정(환승 대기 미포함)`}
+            title={t('home.flightCinema.totalHoursTitle', { hours: flightHours })}
           >
-            (총 {flightHours}h)
+            {t('home.flightCinema.totalHours', { hours: flightHours })}
           </span>
-          <FlightRouteInfoTooltip metroHint={metroHint} />
+          <FlightRouteInfoTooltip metroHint={metroHint} t={t} />
         </span>
       </div>
     </div>
@@ -220,6 +227,8 @@ function FlightRouteSummary({
  *   selectedKey?: string | null,
  *   disabled?: boolean,
  *   onSelect?: (key: string) => void,
+ *   t: (key: string, opts?: object) => string,
+ *   directLabel: string,
  * }} props
  */
 function FlightRouteAlternatives({
@@ -227,14 +236,22 @@ function FlightRouteAlternatives({
   selectedKey = null,
   disabled = false,
   onSelect,
+  t,
+  directLabel,
 }) {
   const [expanded, setExpanded] = useState(false);
 
   if (!alternatives || alternatives.length <= 1) return null;
 
   const activeRow = alternatives.find((row) => row.key === selectedKey) || alternatives[0];
+  const formatAltLabel = (row) => formatFlightRouteAlternativeLabel(
+    row.originIata,
+    row.destIata,
+    row.hubIatas,
+    { directLabel },
+  );
   const activeSummary = activeRow
-    ? `${activeRow.label}${typeof activeRow.flightHours === 'number' ? ` · ${activeRow.flightHours}h` : ''}`
+    ? `${formatAltLabel(activeRow)}${typeof activeRow.flightHours === 'number' ? ` · ${activeRow.flightHours}h` : ''}`
     : '';
 
   return (
@@ -246,10 +263,10 @@ function FlightRouteAlternatives({
         onClick={() => setExpanded((open) => !open)}
         className={`inline-flex max-w-full min-h-0 items-center gap-1 py-0 text-left transition-colors hover:text-sky-100 motion-safe:active:opacity-80 ${disabled ? 'opacity-60 cursor-wait' : ''}`}
       >
-        <span className="shrink-0 text-[10px] font-medium text-sky-200/70">경유 후보</span>
+        <span className="shrink-0 text-[10px] font-medium text-sky-200/70">{t('home.flightCinema.routeAlternatives')}</span>
         <span className="shrink-0 text-[10px] text-white/35" aria-hidden="true">·</span>
         <span className="inline-flex min-w-0 items-center gap-1 text-[10px] font-semibold text-sky-100/90">
-          <span className="truncate">{activeSummary || `${alternatives.length}개`}</span>
+          <span className="truncate">{activeSummary || t('home.flightCinema.alternativesCount', { count: alternatives.length })}</span>
           <ChevronDown
             size={13}
             strokeWidth={2.5}
@@ -274,9 +291,9 @@ function FlightRouteAlternatives({
                     ? 'border-amber-300/50 bg-amber-400/15 text-amber-100/90'
                     : 'border-white/15 bg-white/[0.05] text-white/80 hover:border-white/30 hover:bg-white/10'
                 } ${disabled ? 'opacity-60 cursor-wait' : ''}`}
-                title={row.routeIatas?.join(' → ') || row.label}
+                title={row.routeIatas?.join(' → ') || formatAltLabel(row)}
               >
-                {row.label}
+                {formatAltLabel(row)}
                 {typeof row.flightHours === 'number' ? ` · ${row.flightHours}h` : ''}
               </button>
             );
@@ -329,11 +346,15 @@ export default function FlightCinemaBar({
   className = '',
   onCompactLayoutChange,
 }) {
+  const { t } = useTranslation();
+  const { locale } = useLocale();
+  const directLabel = t('home.flightCinema.direct');
   const routeAria = Array.isArray(routeIatas) && routeIatas.length >= 2
-    ? routeIatas.join(' 경유 ')
+    ? routeIatas.join(' · ')
     : '';
 
-  const { primaryName } = getPlaceTitleLines(location);
+  const { primaryName } = getPlaceTitleLinesForLocale(location, locale);
+  const countryLabel = getLocalizedCountryName(location, locale) || 'Global';
   const [originExpanded, setOriginExpanded] = useState(false);
   const [originSearchActive, setOriginSearchActive] = useState(false);
   const isMobileCoarse = useCoarsePointer();
@@ -381,7 +402,7 @@ export default function FlightCinemaBar({
     <div
       className={`pointer-events-auto animate-fade-in-down ${className}`}
       role="region"
-      aria-label={routeAria ? `항공 경로 ${routeAria}` : '항공 경로 시네마'}
+      aria-label={routeAria ? t('home.flightCinema.regionAria', { route: routeAria }) : t('home.flightCinema.regionLabel')}
     >
       <div className="flight-cinema-bar-shell relative">
         {!isOriginCompact ? <div className="flight-cinema-bar-halo" aria-hidden="true" /> : null}
@@ -396,7 +417,7 @@ export default function FlightCinemaBar({
               <div className="flex items-center justify-between gap-2 min-w-0">
                 <div className="min-w-0 flex-1">
                   <p className="text-[9px] font-bold tracking-widest uppercase text-blue-300/90 truncate leading-none">
-                    {location?.country || 'Global'}
+                    {countryLabel}
                   </p>
                   <p className="mt-0.5 truncate text-sm font-bold text-white leading-tight">
                     {primaryName || location?.name}
@@ -446,6 +467,7 @@ export default function FlightCinemaBar({
                 flightLegHours={flightLegHours}
                 originIata={originIata}
                 isPending={isRouteUpdatePending}
+                t={t}
               />
               <div className="-mt-1">
                 <FlightRouteAlternatives
@@ -453,6 +475,8 @@ export default function FlightCinemaBar({
                   selectedKey={selectedRouteKey}
                   disabled={isRouteUpdatePending}
                   onSelect={onSelectRouteAlternative}
+                  t={t}
+                  directLabel={directLabel}
                 />
               </div>
             </div>
@@ -463,11 +487,11 @@ export default function FlightCinemaBar({
               <Link
                 to={plannerUrl}
                 onClick={onClose}
-                title="플래너 탭에서 전체 여정 보기"
+                title={t('home.flightCinema.plannerTitle')}
                 className={`flight-cinema-bar-planner shrink-0 ${BAR_BTN} border-violet-200/70 bg-gradient-to-b from-violet-500/55 to-violet-600/45 text-white shadow-sm hover:from-violet-400/65 hover:to-violet-500/55`}
               >
                 <LayoutList size={12} className="opacity-95" aria-hidden="true" />
-                여행 플래너
+                {t('place.nav.planner')}
               </Link>
             ) : null}
             {location ? (
@@ -482,7 +506,7 @@ export default function FlightCinemaBar({
                     className={`flight-cinema-bar-cta shrink-0 ${BAR_BTN} border-sky-300/50 bg-sky-500/20 text-sky-50 hover:border-sky-200/60 hover:bg-sky-500/30`}
                   >
                     <Search size={12} aria-hidden="true" />
-                    항공권 검색
+                    {t('home.flightCinema.searchFlights')}
                   </button>
                 }
               />
@@ -492,7 +516,7 @@ export default function FlightCinemaBar({
               onClick={onClose}
               className={`ml-auto shrink-0 ${BAR_BTN} border-white/25 bg-white/10 text-white hover:bg-white/15`}
             >
-              닫기
+              {t('home.flightCinema.close')}
             </button>
           </div>
           </>

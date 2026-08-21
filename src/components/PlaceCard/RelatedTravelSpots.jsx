@@ -2,6 +2,7 @@ import React, { useMemo, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { MapPin } from 'lucide-react';
+import { getLocalizedPlaceName } from '../../components/PlaceCard/common/locationDisplay';
 import { getClusterForSlug, getRelatedTravelSpots } from '../../utils/travelSpotClusters.js';
 import { getPlaceStableKey } from '../../utils/travelSpotResolve.js';
 import { plannerCaption, plannerMicroLabel } from './tabs/planner/readableText';
@@ -92,7 +93,7 @@ export default function RelatedTravelSpots({ location, className = '' }) {
           {clusterLabel}
         </p>
         <p className="mt-1 text-sm font-bold text-gray-800 break-keep">
-          같은 권역이지만 관문 공항·일정이 다릅니다
+          {t('place.common.relatedGatewayHint')}
         </p>
         {cluster.notes ? (
           <p className={`mt-1 ${plannerCaption}`}>{cluster.notes}</p>
@@ -117,9 +118,14 @@ export default function RelatedTravelSpots({ location, className = '' }) {
             onClick={handleLinkClick}
             className="flex min-w-[9.5rem] shrink-0 flex-col gap-1 rounded-xl border border-slate-200/80 bg-slate-50/80 px-3 py-2.5 text-left transition-colors hover:border-blue-300 hover:bg-blue-50/60"
           >
-            <span className="text-sm font-bold text-gray-900 break-keep">{spot.name}</span>
-            {spot.name_en ? (
+            <span className="text-sm font-bold text-gray-900 break-keep">
+              {getLocalizedPlaceName(spot, i18n.language) || spot.name}
+            </span>
+            {spot.name_en && i18n.language === 'ko' ? (
               <span className={`${plannerCaption} font-medium`}>{spot.name_en}</span>
+            ) : null}
+            {!spot.name_en && i18n.language === 'en' && spot.name && spot.name !== getLocalizedPlaceName(spot, i18n.language) ? (
+              <span className={`${plannerCaption} font-medium`}>{spot.name}</span>
             ) : null}
             {spot.gatewayIata ? (
               <span className={`mt-0.5 inline-flex items-center gap-1 ${plannerCaption} font-bold text-blue-700`}>

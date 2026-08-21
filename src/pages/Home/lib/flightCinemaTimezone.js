@@ -25,13 +25,18 @@ export function estimateAirportTimezoneDiffHours(originIata, destIata) {
 
 /**
  * @param {number | null} diffHours
+ * @param {{ t?: (key: string, opts?: object) => string }} [options]
  * @returns {string | null}
  */
-export function formatTimezoneDiffHint(diffHours) {
+export function formatTimezoneDiffHint(diffHours, { t } = {}) {
   if (diffHours == null) return null;
-  if (diffHours === 0) return '시차 없음';
+  if (diffHours === 0) {
+    return t ? t('home.flightCinema.timezoneNone') : '시차 없음';
+  }
   const sign = diffHours > 0 ? '+' : '';
-  return `시차 약 ${sign}${diffHours}h`;
+  return t
+    ? t('home.flightCinema.timezoneDiff', { sign, hours: diffHours })
+    : `시차 약 ${sign}${diffHours}h`;
 }
 
 /**

@@ -11,7 +11,7 @@ import BookmarkButton from '../common/BookmarkButton';
 import { getRelatedPlaces } from '../../../pages/Home/hooks/useSearchEngine';
 import { getPlaceUrlParam } from '../../../pages/Home/lib/formatUrlName';
 import { mergeCanonicalTravelSpot } from '../../../utils/travelSpotResolve';
-import { getPlaceTitleLinesForLocale, getLocalizedCountryName } from '../common/locationDisplay';
+import { getPlaceTitleLinesForLocale, getLocalizedCountryName, getLocalizedPlaceName } from '../common/locationDisplay';
 import { useLocale } from '../../../i18n/LocaleProvider';
 import { copyToClipboard } from '../common/copyToClipboard';
 import PlaceMobileSecondaryNav from '../common/PlaceMobileSecondaryNav';
@@ -395,7 +395,7 @@ const PlaceChatPanel = React.memo(({
                                 : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:text-white hover:border-white/20'}`}
                       >
                           {place.isBridge && <Sparkles size={10} className="text-fuchsia-400" />}
-                          {place.data.name}
+                          {getLocalizedPlaceName(place.data, locale) || place.data.name}
                       </button>
                   ))}
               </div>

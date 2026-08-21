@@ -44,7 +44,7 @@
 | 39 | 명승·테마 UI·지도 | `영문화 #39, 명승·테마 UI·지도 EN` | ✅ merge |
 | 40 | 명승 follow-up | `영문화 #40, Preview QA — 명승 모달·지도 EN` | ✅ merge |
 | 41 | 축제 지도·title | `영문화 #41, 축제 지도·title EN` | ✅ merge PR #141 |
-| 42 | 테스트·최적화 | `영문화 #42, 테스트·최적화` | ⏳ next |
+| 42 | 테스트·최적화 | `영문화 #42, 테스트·최적화` | ⏳ #42a·#42b |
 
 **1차 (#0~#12)**: UI 카피 · **2차 (#13~#22)**: 지구본 데이터 · TourAPI 본문 · 무니 · 플래너 AI·배너 · **#23**: 첫 방문 브라우저 언어 → locale.
 
@@ -124,7 +124,7 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#42)**: PR #141 main 병합 후 — **테스트·최적화** · 잔존 이슈는 차차
+**상태 (#42)**: **#42a** PROD QA 회귀(지구본·항공·칩) 완료 · **#42b** Logo·About 잔여
 
 **브랜치**: `main`
 
@@ -363,4 +363,45 @@ npm run smoke:place-label-slug
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
 main · PROD ?lang=en · audit:i18n · 축제 titleEn 캐시
+```
+
+---
+
+## 14. #42 PROD QA 회귀 — 세션 분할 (#42a · #42b)
+
+**배경**: PROD `?lang=en` 사람 QA — 지구본·PlaceCard 주변 UI 7곳 한글 잔존.
+
+### 세션 분할
+
+| 세션 | 범위 | 상태 |
+|------|------|------|
+| **#42a** | 숙소 헤더 · 3D 투어 상태·경계 · 연관 칩 · 항공경로 Bar | ✅ 코드 |
+| **#42b** | LogoPanel · FooterModal · footerData EN 본문 | ⏳ next |
+
+### #42a 수정 파일
+
+| 항목 | 파일 | 방법 |
+|------|------|------|
+| 숙소 상단 지명 | `GlobeStayStrip.jsx` | `getLocalizedPlaceName` |
+| 3D 투어 상태 | `TourMobileBar.jsx` | locale 헬퍼 + `home.globe.*` |
+| 이동 가능 경계 | `HomeGlobeMapbox.jsx` | `home.globe.reachBoundary.*` |
+| 연관 칩 | `GalleryInfoView` · `PlaceChatPanel` · `HomeUI` · `RelatedTravelSpots` | `getLocalizedPlaceName` |
+| 항공경로 Bar | `FlightCinemaBar.jsx` · `flightCinemaTimezone.js` · `FlightCinemaContext.jsx` | `home.flightCinema.*` |
+
+**i18n 키**: `home.globe.returnTo2d` · `reachBoundary.*` · `home.flightCinema.*` · `place.common.relatedGatewayHint`
+
+### #42b (다음)
+
+- `LogoPanel.jsx` empty state
+- `FooterModal.jsx` shell
+- `footerData.js` `contentEn` (About 우선 · Terms/Privacy 사람 검토)
+
+**다음 제시어 (#42b)**:
+
+```
+영문화 #42b, PROD QA — 로고·About
+@plans/feature-handoff-index.md
+@plans/2026-08-21-project-log.md
+@plans/i18n-en-plan.md
+main · ?lang=en · LogoPanel · FooterModal · footerData contentEn
 ```

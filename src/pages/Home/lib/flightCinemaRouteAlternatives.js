@@ -23,9 +23,9 @@ export function buildFlightRouteAlternativeKey(originIata, destIata, hubIatas = 
  * @param {string[]} hubIatas
  * @returns {string}
  */
-export function formatFlightRouteAlternativeLabel(originIata, destIata, hubIatas = []) {
+export function formatFlightRouteAlternativeLabel(originIata, destIata, hubIatas = [], { directLabel = '직항' } = {}) {
   const route = [originIata, ...(hubIatas ?? []), destIata].filter(Boolean);
-  if (route.length <= 2 && !(hubIatas?.length)) return '직항';
+  if (route.length <= 2 && !(hubIatas?.length)) return directLabel;
   if (!hubIatas?.length) return route.join(' → ');
   return hubIatas.join(' · ');
 }

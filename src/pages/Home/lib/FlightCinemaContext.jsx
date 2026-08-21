@@ -35,6 +35,7 @@ import {
 } from './flightCinemaTimezone.js';
 import { suggestFlightOriginFromBrowserTimezone } from './flightCinemaOriginOptions.js';
 import { persistFlightOriginIata } from './flightOriginPreference.js';
+import { useTranslation } from 'react-i18next';
 
 const FlightCinemaContext = createContext(null);
 
@@ -54,6 +55,7 @@ export function FlightCinemaProvider({
   endTourForCinema,
   onActiveChange,
 }) {
+  const { t } = useTranslation();
   const [active, setActive] = useState(null);
   const [requestPending, setRequestPending] = useState(false);
   const activeRef = useRef(null);
@@ -237,11 +239,11 @@ export function FlightCinemaProvider({
         essentialGuide,
         routeAlternatives,
         selectedRouteKey: routeKey,
-        timezoneDiffHint: formatTimezoneDiffHint(timezoneDiffHours),
+        timezoneDiffHint: formatTimezoneDiffHint(timezoneDiffHours, { t }),
       });
       return true;
     },
-    [finishCinema, globeRef]
+    [finishCinema, globeRef, t]
   );
 
   const requestFlightCinema = useCallback(
@@ -336,7 +338,7 @@ export function FlightCinemaProvider({
         flightHours: picked.flightHours ?? current.flightHours,
         flightLegHours: picked.flightLegHours ?? current.flightLegHours,
         isConnecting: Boolean(picked.hubIatas?.length),
-        timezoneDiffHint: formatTimezoneDiffHint(timezoneDiffHours),
+        timezoneDiffHint: formatTimezoneDiffHint(timezoneDiffHours, { t }),
       });
 
       requestInFlightRef.current = true;
