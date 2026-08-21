@@ -603,6 +603,33 @@
       },
       "defaultKind": "Guide",
       "disclaimer": "GATEO is not a booking agent for these providers. Please use official sources."
+    },
+    "logoPanel": {
+      "myTravelLog": "My Travel Log",
+      "myBucketList": "My Bucket List",
+      "bucketEmpty": "No saved destinations yet.",
+      "bucketEmptyHint": "Click a city on the globe to add it.",
+      "signInTitle": "Record your travels",
+      "signInBody": "Sign in to build your bucket list and use the globe without limits.",
+      "signIn": "Sign in",
+      "signOut": "Sign out"
+    },
+    "footerModal": {
+      "tab": {
+        "about": "About Us",
+        "updates": "Updates",
+        "credits": "Credits",
+        "terms": "Terms",
+        "privacy": "Privacy",
+        "contact": "Contact"
+      },
+      "updatesTitle": "Update history",
+      "creditsTitle": "Map & tech credits",
+      "updatesIntro": "New features, partner launches, and notices from GATEO. If Terms or Privacy change, check those tabs too.",
+      "feedbackTitle": "Bug reports & feature ideas",
+      "feedbackHint": "Send feedback safely via Google Form",
+      "businessTitle": "Business & partnership inquiries",
+      "emailCopied": "Copied!"
     }
   },
   "place": {

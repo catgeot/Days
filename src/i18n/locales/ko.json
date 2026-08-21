@@ -374,6 +374,33 @@
       },
       "defaultKind": "안내",
       "disclaimer": "게이트오는 해당 여행사와 예약 대행 관계가 아닙니다. 공식 안내를 참고해 주세요."
+    },
+    "logoPanel": {
+      "myTravelLog": "나의 여행 기록",
+      "myBucketList": "나의 버킷리스트",
+      "bucketEmpty": "아직 저장한 여행지가 없습니다.",
+      "bucketEmptyHint": "지구본에서 도시를 클릭하고 담아보세요.",
+      "signInTitle": "당신의 여행을 기록하세요",
+      "signInBody": "로그인하고 나만의 버킷리스트를 만들고 지구본의 모든 기능을 제한 없이 이용할 수 있습니다.",
+      "signIn": "로그인",
+      "signOut": "로그아웃"
+    },
+    "footerModal": {
+      "tab": {
+        "about": "About Us",
+        "updates": "Updates",
+        "credits": "Credits",
+        "terms": "Terms",
+        "privacy": "Privacy Policy",
+        "contact": "Contact"
+      },
+      "updatesTitle": "업데이트 내역",
+      "creditsTitle": "기술·지도 출처",
+      "updatesIntro": "GATEO의 새 기능·제휴 입점·공지를 모아두었습니다. 이용약관·개인정보 변경이 있으면 Terms·Privacy 탭도 함께 확인해 주세요.",
+      "feedbackTitle": "버그 리포트 및 기능 제안",
+      "feedbackHint": "구글 폼으로 안전하게 의견 보내기",
+      "businessTitle": "비즈니스 및 제휴 문의",
+      "emailCopied": "복사 완료!"
     }
   },
   "place": {

@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { X, Copy, Check, ExternalLink } from 'lucide-react';
-import { FOOTER_CONTENT } from '../data/footerData';
+import { useTranslation } from 'react-i18next';
+import { resolveFooterBlock } from '../data/footerData';
 import ReleaseNotesList from '../../../shared/components/ReleaseNotesList';
 import MapboxCreditsPanel from '../../../shared/components/MapboxCreditsPanel';
 
 const FooterModal = ({ isOpen, onClose, initialTab = 'about' }) => {
+  const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState(initialTab);
   const [isCopied, setIsCopied] = useState(false);
 
@@ -27,16 +29,25 @@ const FooterModal = ({ isOpen, onClose, initialTab = 'about' }) => {
     }
   };
 
+  const contactBlock = useMemo(
+    () => resolveFooterBlock('contact', i18n.language),
+    [i18n.language],
+  );
+
   if (!isOpen) return null;
 
   const tabs = [
-    { id: 'about', label: 'About Us' },
-    { id: 'updates', label: 'Updates' },
-    { id: 'credits', label: 'Credits' },
-    { id: 'terms', label: 'Terms' },
-    { id: 'privacy', label: 'Privacy' },
-    { id: 'contact', label: 'Contact' },
+    { id: 'about', label: t('home.footerModal.tab.about') },
+    { id: 'updates', label: t('home.footerModal.tab.updates') },
+    { id: 'credits', label: t('home.footerModal.tab.credits') },
+    { id: 'terms', label: t('home.footerModal.tab.terms') },
+    { id: 'privacy', label: t('home.footerModal.tab.privacy') },
+    { id: 'contact', label: t('home.footerModal.tab.contact') },
   ];
+
+  const contentBlock = ['about', 'terms', 'privacy', 'contact'].includes(activeTab)
+    ? resolveFooterBlock(activeTab, i18n.language)
+    : null;
 
   return (
     // LogoPanel z-[140] 위 — Credits 등 패널 내부 모달
@@ -50,10 +61,10 @@ const FooterModal = ({ isOpen, onClose, initialTab = 'about' }) => {
         <div className="flex justify-between items-center p-5 border-b border-white/10 bg-black/50">
           <h2 className="text-lg font-bold text-white tracking-tight">
             {activeTab === 'updates'
-              ? '업데이트 내역'
+              ? t('home.footerModal.updatesTitle')
               : activeTab === 'credits'
-                ? '기술·지도 출처'
-                : FOOTER_CONTENT[activeTab].title}
+                ? t('home.footerModal.creditsTitle')
+                : contentBlock?.title}
           </h2>
           <button 
             onClick={onClose} 
@@ -84,7 +95,7 @@ const FooterModal = ({ isOpen, onClose, initialTab = 'about' }) => {
           {activeTab === 'updates' ? (
             <>
               <p className="text-gray-400 text-sm leading-relaxed break-keep mb-5">
-                GATEO의 새 기능·제휴 입점·공지를 모아두었습니다. 이용약관·개인정보 변경이 있으면 Terms·Privacy 탭도 함께 확인해 주세요.
+                {t('home.footerModal.updatesIntro')}
               </p>
               <ReleaseNotesList />
             </>
@@ -92,7 +103,7 @@ const FooterModal = ({ isOpen, onClose, initialTab = 'about' }) => {
             <MapboxCreditsPanel />
           ) : (
             <div className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap font-light">
-              {FOOTER_CONTENT[activeTab].content}
+              {contentBlock?.content}
             </div>
           )}
 
@@ -100,29 +111,29 @@ const FooterModal = ({ isOpen, onClose, initialTab = 'about' }) => {
             <div className="mt-8 space-y-4 animate-fade-in">
               
               <button
-                onClick={() => window.open(FOOTER_CONTENT.contact.formUrl, '_blank')}
+                onClick={() => window.open(contactBlock.formUrl, '_blank')}
                 className="w-full py-4 px-5 bg-blue-600/10 hover:bg-blue-600/20 border border-blue-500/30 rounded-xl flex items-center justify-between group transition-all"
               >
                 <div className="flex flex-col items-start gap-1">
-                  <span className="text-sm font-bold text-white tracking-wide">버그 리포트 및 기능 제안</span>
-                  <span className="text-xs text-blue-400">구글 폼으로 안전하게 의견 보내기</span>
+                  <span className="text-sm font-bold text-white tracking-wide">{t('home.footerModal.feedbackTitle')}</span>
+                  <span className="text-xs text-blue-400">{t('home.footerModal.feedbackHint')}</span>
                 </div>
                 <ExternalLink size={20} className="text-blue-500 group-hover:scale-110 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
               </button>
 
               <button
-                onClick={() => handleCopyEmail(FOOTER_CONTENT.contact.email)}
+                onClick={() => handleCopyEmail(contactBlock.email)}
                 className="w-full py-4 px-5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl flex items-center justify-between group transition-all relative"
               >
                 <div className="flex flex-col items-start gap-1">
-                  <span className="text-sm font-bold text-white tracking-wide">비즈니스 및 제휴 문의</span>
-                  <span className="text-xs text-gray-400 font-mono">{FOOTER_CONTENT.contact.email}</span>
+                  <span className="text-sm font-bold text-white tracking-wide">{t('home.footerModal.businessTitle')}</span>
+                  <span className="text-xs text-gray-400 font-mono">{contactBlock.email}</span>
                 </div>
                 
                 {isCopied ? (
                   <div className="flex items-center gap-1.5 text-green-400 bg-green-400/10 px-3 py-1.5 rounded-lg animate-fade-in">
                     <Check size={16} />
-                    <span className="text-xs font-bold">복사 완료!</span>
+                    <span className="text-xs font-bold">{t('home.footerModal.emailCopied')}</span>
                   </div>
                 ) : (
                   <div className="p-2 bg-black/40 rounded-lg group-hover:bg-black/60 transition-colors">
