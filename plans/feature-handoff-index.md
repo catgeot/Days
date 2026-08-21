@@ -62,30 +62,29 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **main** `#42c` · 버킷 카드·Credits EN · **배포 후 PROD QA** |
-| **main** | `#42b` tip — LogoPanel·FooterModal EN · `footerData` contentEn |
-| **브랜치** | `main` (병합 후) · 잔존은 차차 |
-| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§11·**§13** |
-| **일지** | [`2026-08-21-project-log.md`](./2026-08-21-project-log.md) |
-| **PROD QA** | `https://www.gateo.kr/?lang=en` · `/korea?lang=en` · `/korea/theme/scenic?lang=en` |
-| **VERIFY** | `audit:i18n` · `build` · `smoke:festival-detail-locale` · `smoke:browser-locale-hint` · scenic 스모크 |
+| **상태** | **main** `#42d` · Updates·3D투어·항공경로 EN · **#42e 대기** |
+| **main tip** | `fa22be18` i18n · `bd46b688` docs |
+| **브랜치** | `main` |
+| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·**§13 C** |
+| **일지** | [`2026-08-21-project-log.md`](./2026-08-21-project-log.md) — **「#42e 핸드오프」** 절 |
+| **PROD QA** | `https://www.gateo.kr/?lang=en` |
+| **VERIFY** | `audit:i18n` · `build` · (선택) `smoke:festival-detail-locale` |
 
-**#42 범위 (테스트·최적화)**:
+**#42 진행**:
 
-1. **회귀** — PROD `?lang=en` 홈·한국·명승·축제 상세·locale 토글 · **탐색 썸네일 EN** ✅
-2. **로고·About** — LogoPanel·FooterModal·`footerData` contentEn ✅ **#42b**
-3. **버킷·Credits** — `getSavedTripDisplayName` · `resolveMapboxAttribution` ✅ **#42c**
-4. **성능** — 축제 `titleEn` en window 2nd fetch · sessionStorage v2 · locale 전환 ✅
-5. **백로그(차차)** — SSOT 미등록 uiPlace · Updates EN · Preview 「작업 로그」·#28 PROD QA
+1. **회귀** — PROD `?lang=en` 홈·한국·명승·축제 ✅
+2. **로고·About** — #42b ✅
+3. **버킷·Credits** — #42c ✅
+4. **Updates·투어·항공 바** — #42d ✅ (`ReleaseNotesList` · `TourMobileBar` · `HomeGlobeMapbox` · `FlightCinemaBar`)
+5. **다음 #42e** — `SiteUpdateBanner` → `resolveReleaseNote` · 신규 릴리즈 노트 EN 동시 추가 규칙
 
-**다음 제시어 (#42d)**:
+**다음 제시어 (#42e)**:
 
 ```
-영문화 #42d, PROD QA — Updates
+영문화 #42e, PROD QA — SiteUpdateBanner·릴리즈 노트 EN
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
-@plans/i18n-en-plan.md
-main · ?lang=en · ReleaseNotesList
+main · ?lang=en · SiteUpdateBanner · resolveReleaseNote
 ```
 
 ---

@@ -124,19 +124,30 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#42c)**: 버킷 카드·Credits EN — **배포 후 PROD QA**
+**상태 (#42d 완료 · #42e next)**: Updates 탭·3D투어·항공경로 바 EN — main `fa22be18`. **잔여 #42e**: `SiteUpdateBanner` 팝업 EN · 신규 릴리즈 노트 EN 동시 추가.
 
 **브랜치**: `main`
+
+**일지**: [`2026-08-21-project-log.md`](./2026-08-21-project-log.md) — **「#42e 핸드오프」** 절 (작업 표·VERIFY·금지)
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #42d, PROD QA — Updates
+영문화 #42e, PROD QA — SiteUpdateBanner·릴리즈 노트 EN
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
-@plans/i18n-en-plan.md
-main · ?lang=en · ReleaseNotesList
+main · ?lang=en · SiteUpdateBanner · resolveReleaseNote
 ```
+
+### #42e 스코프 (다음 세션)
+
+| P | 항목 | 파일 |
+|---|------|------|
+| 1 | 홈 업데이트 팝업 EN | `SiteUpdateBanner.jsx` + `resolveReleaseNote` |
+| 2 | 릴리즈 노트 추가 시 EN 동시 | `releaseNotes.js` — `RELEASE_NOTES` + `RELEASE_NOTES_EN_BY_ID` 동일 `id` |
+| 3 | (선택) 구형 노트 EN | `RELEASE_NOTES_EN_BY_ID` 점진 확장 |
+
+**백로그**: `getFlightOriginMetroHint` ko · `CloudPreviewWorkLog` · 버킷 SSOT 미등록명 — §13 C.
 
 ### #23 브라우저 locale 자동 — 완료
 
@@ -351,9 +362,12 @@ npm run smoke:place-label-slug
 ### C. 백로그 (차차 · #42에서 스코프 밖)
 
 - EngService2 미등록 축제 지도 핀 ko (~75%)
-- Preview 「작업 로그」패널 한글
+- Preview 「작업 로그」패널 한글 (`CloudPreviewWorkLog.jsx`)
 - `#28` PROD QA — 써머리·탐색
 - `/en/…` URL prefix (2차 합의 후)
+- 릴리즈 노트 12건 이전 EN 오버레이 (`RELEASE_NOTES_EN_BY_ID`)
+- `getFlightOriginMetroHint` 항공 바 tooltip ko
+- 버킷 SSOT 미등록 uiPlace (예: 프로비덴시아 섬)
 
 **다음 제시어 (#42)**:
 

@@ -61,11 +61,66 @@
 - **VERIFY** `audit:i18n` · `build` PASS · **main `fa22be18` push**
 - **잔여** 오래된 릴리즈 노트(12건 이전) KO 폴백 · `SiteUpdateBanner` ko
 
+---
+
+## 영문화 #42e — 에이전트 핸드오프 (다음 세션)
+
+**세션 표기**: `영문화 #42e, PROD QA — SiteUpdateBanner·릴리즈 노트 EN`
+
+| | |
+|--|--|
+| **브랜치** | `main` (`bd46b688` · tip `fa22be18` i18n) |
+| **PROD QA** | `https://www.gateo.kr/?lang=en` |
+| **이전 완료** | #42d — Updates 탭·3D투어·항공경로 바 EN (`fa22be18`) |
+
+### 읽을 것 (3)
+
+1. 본 절 + 아래 **작업 표**
+2. [`feature-handoff-index.md`](./feature-handoff-index.md) — 영문화 행
+3. [`i18n-en-plan.md`](./i18n-en-plan.md) **§9만** (전문 Read 금지)
+
+### Read 금지
+
+- `travelSpots.js` 전체 · `i18n-en-plan` §1~8·§13 전문
+- 닫힌 일지 · `.ai-context` 5절 이력
+
+### #42e 작업 (우선순위)
+
+| P | 작업 | 파일 | 메모 |
+|---|------|------|------|
+| **1** | 홈 업데이트 **팝업** EN | `SiteUpdateBanner.jsx` | `release?.title`/`items` 직접 표시 → `resolveReleaseNote(release, i18n.language)` · `useTranslation` 이미 있음 |
+| **2** | 신규 릴리즈 노트 **EN 동시 추가** 규칙 | `releaseNotes.js` | `RELEASE_NOTES` 맨 앞 + `RELEASE_NOTES_EN_BY_ID` **동일 id** (파일 상단 주석 참고) |
+| **3** | (선택) 구형 노트 EN | `releaseNotes.js` | 12건 이전 id — Updates 탭 KO 폴백만; 필요 시 점진 추가 |
+| 백로그 | 항공 metro tooltip ko | `flightOriginMetroGateways.js` `getFlightOriginMetroHint` | Bar info tooltip 한 줄 |
+| 백로그 | Preview 작업 로그 ko | `CloudPreviewWorkLog.jsx` | PROD 비노출 · Cloud 전용 |
+| 백로그 | 버킷 SSOT 미등록명 | `placeRouteHydrate.js` | 예: 프로비덴시아 섬 — 데이터 이슈 |
+
+### 구현 힌트 (#42e P1)
+
+```jsx
+// SiteUpdateBanner.jsx — release 모드 본문
+import { resolveReleaseNote } from '../../data/releaseNotes';
+const { title, items } = resolveReleaseNote(release, i18n.language);
+// title / items 로 교체 (isRefresh 분기는 layout.siteNotice.* 유지)
+```
+
+### VERIFY
+
+```bash
+npm run audit:i18n && npm run build
+```
+
+**사람 QA** (`?lang=en`): 홈 첫 방문(또는 localStorage `gateo_seen_release` 삭제) → 팝업 제목·항목 EN · About → Updates 최신 카드 EN 일치.
+
+### 금지
+
+- UI 임의 리디자인 · `RELEASE_NOTES` 사용자 합의 없이 추가 · browser/computerUse QA
+
 **다음 제시어 (#42e)**:
 
 ```
-영문화 #42e, PROD QA — SiteUpdateBanner·잔여 ko
+영문화 #42e, PROD QA — SiteUpdateBanner·릴리즈 노트 EN
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
-main · ?lang=en
+main · ?lang=en · SiteUpdateBanner · resolveReleaseNote
 ```

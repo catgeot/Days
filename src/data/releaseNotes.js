@@ -6,6 +6,11 @@
  * 반영은 사용자 합의 후 · 최신 항목을 RELEASE_NOTES 배열 **맨 앞**.
  * id는 YYYY-MM-DD (같은 날 여러 건이면 -2, -3) — 남발 금지.
  *
+ * **EN (?lang=en)**:
+ * - Updates 탭: `resolveReleaseNote` → `RELEASE_NOTES_EN_BY_ID[id]` 있으면 EN, 없으면 KO 폴백.
+ * - 신규 추가 시 **동일 id**로 `RELEASE_NOTES_EN_BY_ID`에 title·items EN도 함께 넣을 것.
+ * - 홈 팝업(`SiteUpdateBanner`): #42e에서 `resolveReleaseNote` 연동 예정(현재 KO 직접 표시).
+ *
  * @typedef {'feature' | 'partner' | 'fix' | 'notice'} ReleaseCategory
  * @typedef {{ id: string, title: string, items: string[], category?: ReleaseCategory, date?: string }} ReleaseNote
  */
