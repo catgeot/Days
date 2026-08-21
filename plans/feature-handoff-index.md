@@ -63,7 +63,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 | | |
 |--|--|
 | **상태** | **main** `#42e` · SiteUpdateBanner·숙소 제목 EN · MRT `Accept-Language` |
-| **main tip** | (push 후 SHA) |
+| **main tip** | `a8271873` |
 | **브랜치** | `main` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·**§13 C** |
 | **일지** | [`2026-08-21-project-log.md`](./2026-08-21-project-log.md) |
