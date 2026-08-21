@@ -59,6 +59,54 @@ assert(
     !modalJs.includes('fetchTourApiAttractionDetailLocalized'),
   'ThemeSpotDetailModal uses ko-only attraction detail',
 );
+assert(
+  modalJs.includes('scenicSpotMapTitle(spot, locale)'),
+  'ThemeSpotDetailModal header title uses scenicSpotMapTitle',
+);
+
+const mapJs = readFileSync(
+  join(root, 'src/pages/KoreaTheme/KoreaScenicMap.jsx'),
+  'utf8',
+);
+assert(
+  mapJs.includes('localizeMapDrillCrumbLabel'),
+  'KoreaScenicMap breadcrumb uses localizeMapDrillCrumbLabel',
+);
+assert(
+  mapJs.includes('buildScenicMapGeoJson(pinItems, { locale })'),
+  'KoreaScenicMap pins pass locale to GeoJSON builder',
+);
+
+const mapDataJs = readFileSync(
+  join(root, 'src/pages/KoreaTheme/koreaScenicMapData.js'),
+  'utf8',
+);
+assert(
+  mapDataJs.includes('scenicSpotMapTitle(item, locale)'),
+  'buildScenicMapGeoJson uses scenicSpotMapTitle for pin labels',
+);
+
+const { buildScenicMapGeoJson } = await import(
+  '../src/pages/KoreaTheme/koreaScenicMapData.js'
+);
+const { listKoreaScenicSpots } = await import(
+  '../src/pages/Home/lib/koreaScenicSpots.js'
+);
+const sample = listKoreaScenicSpots().find((s) => s.attractionNameEn);
+if (sample) {
+  const enGeo = buildScenicMapGeoJson([sample], { locale: 'en' });
+  const feat = enGeo.features.find((f) => f.properties.spotId === sample.id);
+  assert(
+    feat?.properties?.title === sample.attractionNameEn,
+    `EN pin title uses attractionNameEn (${sample.id})`,
+  );
+  const koGeo = buildScenicMapGeoJson([sample], { locale: 'ko' });
+  const koFeat = koGeo.features.find((f) => f.properties.spotId === sample.id);
+  assert(
+    koFeat?.properties?.title === sample.name,
+    `KO pin title uses Korean name (${sample.id})`,
+  );
+}
 
 if (failed) {
   console.error(`\n${failed} check(s) failed`);

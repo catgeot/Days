@@ -57,6 +57,7 @@ import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
 import { resolveTourAreaForHub } from '../Home/lib/koreaSigunguByHub';
 import { koreanApiTextProps } from '../../i18n/koreanApiText';
 import { useLocale } from '../../i18n/LocaleProvider';
+import { scenicSpotMapTitle } from '../Home/lib/scenicSpotPlaceLabel.js';
 
 /** 본문·확대보기 — 가로 스와이프 vs 세로 스크롤·탭 */
 const PHOTO_SWIPE_THRESHOLD_PX = 48;
@@ -1333,7 +1334,8 @@ export default function ThemeSpotDetailModal({
   const modalEyebrow =
     eyebrow || t('korea.theme.spotDetail.eyebrowDefault');
   const displayTitle =
-    String(spot.name || '').trim() || t('korea.theme.spotDetail.fallbackTitle');
+    scenicSpotMapTitle(spot, locale) ||
+    t('korea.theme.spotDetail.fallbackTitle');
   const hasContentId = /^\d{1,32}$/.test(String(spot.contentId || '').trim());
   const hero = imageUrls[activeImage] || imageUrls[0] || '';
   const galleryList = imageUrls;
