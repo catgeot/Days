@@ -62,7 +62,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **main** `#42b` · LogoPanel·FooterModal·About EN · **배포 후 PROD QA** |
+| **상태** | **main** `#42c` · 버킷 카드·Credits EN · **배포 후 PROD QA** |
 | **main** | `#42b` tip — LogoPanel·FooterModal EN · `footerData` contentEn |
 | **브랜치** | `main` (병합 후) · 잔존은 차차 |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§11·**§13** |
@@ -74,17 +74,18 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 1. **회귀** — PROD `?lang=en` 홈·한국·명승·축제 상세·locale 토글 · **탐색 썸네일 EN** ✅
 2. **로고·About** — LogoPanel·FooterModal·`footerData` contentEn ✅ **#42b**
-3. **성능** — 축제 `titleEn` en window 2nd fetch · sessionStorage v2 · locale 전환 ✅
-4. **백로그(차차)** — Credits·Updates EN · EngService2 미등록 축제 핀 ko · Preview 「작업 로그」·#28 PROD QA
+3. **버킷·Credits** — `getSavedTripDisplayName` · `resolveMapboxAttribution` ✅ **#42c**
+4. **성능** — 축제 `titleEn` en window 2nd fetch · sessionStorage v2 · locale 전환 ✅
+5. **백로그(차차)** — SSOT 미등록 uiPlace · Updates EN · Preview 「작업 로그」·#28 PROD QA
 
-**다음 제시어 (#42c)**:
+**다음 제시어 (#42d)**:
 
 ```
-영문화 #42c, PROD QA — Credits·Updates
+영문화 #42d, PROD QA — Updates
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-main · ?lang=en · MapboxCreditsPanel · ReleaseNotesList
+main · ?lang=en · ReleaseNotesList
 ```
 
 ---

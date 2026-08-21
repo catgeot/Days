@@ -47,12 +47,19 @@
 - **VERIFY** `audit:i18n` · `build` PASS
 - **잔여** Credits(`MapboxCreditsPanel`) · Updates(`ReleaseNotesList`) ko · Preview 작업 로그
 
-**다음 제시어 (#42c)**:
+## 영문화 #42c, PROD QA — 버킷 카드·Credits
+
+- **버킷 카드** `getSavedTripDisplayName` — SSOT·정착지·나라 칩 EN 폴백 (가이아나→Guyana 등)
+- **Credits** `resolveMapboxAttribution` — intro·Maxar·Telemetry·tech stack EN
+- **VERIFY** `audit:i18n` · `build` PASS
+- **잔여** SSOT 미등록 uiPlace(예: 프로비덴시아 섬) · Updates(`ReleaseNotesList`) ko
+
+**다음 제시어 (#42d)**:
 
 ```
-영문화 #42c, PROD QA — Credits·Updates
+영문화 #42d, PROD QA — Updates
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-main · ?lang=en · MapboxCreditsPanel · ReleaseNotesList
+main · ?lang=en · ReleaseNotesList
 ```

@@ -124,18 +124,18 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#42b)**: LogoPanel·FooterModal·About/Terms/Privacy/Contact EN — **배포 후 PROD QA**
+**상태 (#42c)**: 버킷 카드·Credits EN — **배포 후 PROD QA**
 
 **브랜치**: `main`
 
 **다음 제시어** (`cloud-preview-continuity` §1.2):
 
 ```
-영문화 #42c, PROD QA — Credits·Updates
+영문화 #42d, PROD QA — Updates
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-main · ?lang=en · MapboxCreditsPanel · ReleaseNotesList
+main · ?lang=en · ReleaseNotesList
 ```
 
 ### #23 브라우저 locale 자동 — 완료
