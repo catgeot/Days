@@ -10,6 +10,12 @@
 - **브랜치** `cursor/en` · `/qa/en` · `?lang=en` — `/korea/theme/scenic` 모달·지도 breadcrumb·핀
 - **다음** Preview QA — 명승 상세 모달 EN · 지도 드릴 breadcrumb/핀 · 잔여 한글(작업 로그 등)
 
+## 영문화 #39 follow-up — 내 위치 지도 칩 EN
+
+- **원인** `nearbySpotMapChips`가 `spot.name`(한글)만 사용 · `ScenicPage` near 칩에 locale 미전달
+- **수정** `scenicSpotMapTitle(spot, locale)` · curated/heritage/tour near 칩 `{ locale }` · `smoke:korea-scenic-nearby` 춘천 EN assert
+- **VERIFY** `smoke:korea-scenic-nearby` · `build` PASS · **SHA** `0154d9d0` · PR #141
+
 **다음 제시어**:
 
 ```
