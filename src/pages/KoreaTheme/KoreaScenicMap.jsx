@@ -31,6 +31,7 @@ import {
   SCENIC_MAP_CLUSTER_RADIUS,
 } from './koreaScenicMapData';
 import { spreadNearbyMapChips } from './koreaScenicMapDrill';
+import { koreaMapPinLabelLayout } from '../Korea/koreaMapPinLabelLayout';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 export {
@@ -646,14 +647,7 @@ export default function KoreaScenicMap({
               id={POINT_LABEL_LAYER}
               type="symbol"
               filter={['!', ['has', 'point_count']]}
-              layout={{
-                'text-field': ['get', 'titleShort'],
-                'text-size': 11,
-                'text-offset': [0, 1.35],
-                'text-anchor': 'top',
-                'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-                'text-max-width': 8,
-              }}
+              layout={koreaMapPinLabelLayout}
               paint={{
                 'text-color': '#1b1410',
                 'text-halo-color': '#f59e0b',

@@ -11,6 +11,7 @@ import { Maximize2, Minimize2 } from 'lucide-react';
 import { MAPBOX_ATTRIBUTION_LINKS } from '../../data/mapboxAttribution';
 import { mapboxLanguageForLocale } from '../../i18n/koreaRegionLabels';
 import { festivalLngLat } from './koreaFestivalCorridors';
+import { koreaMapPinLabelLayout } from './koreaMapPinLabelLayout';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
@@ -547,14 +548,7 @@ export default function KoreaFestivalMap({
             id={POINT_LABEL_LAYER}
             type="symbol"
             filter={['!', ['has', 'point_count']]}
-            layout={{
-              'text-field': ['get', 'titleShort'],
-              'text-size': 11,
-              'text-offset': [0, 1.35],
-              'text-anchor': 'top',
-              'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-              'text-max-width': 8,
-            }}
+            layout={koreaMapPinLabelLayout}
             paint={{
               'text-color': '#1b1410',
               'text-halo-color': '#f59e0b',
