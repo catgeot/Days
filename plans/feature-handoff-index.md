@@ -62,30 +62,26 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **main** `#42e` · SiteUpdateBanner·숙소 제목 EN · MRT `Accept-Language` |
-| **main tip** | `a8271873` |
+| **상태** | **main** `#42e` **PROD QA OK** · MRT locale 재호출 롤백 · **다음 #43 최적화** |
+| **main tip** | `abdc315c` |
 | **브랜치** | `main` |
-| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·**§13 C** |
+| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·**§13 B·C** |
 | **일지** | [`2026-08-21-project-log.md`](./2026-08-21-project-log.md) |
-| **PROD QA** | `https://www.gateo.kr/?lang=en` |
-| **VERIFY** | `audit:i18n` · `build` |
-| **Edge** | `fetch-mrt-stays` deploy ✅ |
+| **PROD QA** | `https://www.gateo.kr/?lang=en` ✅ 사람 |
+| **VERIFY** | `audit:i18n` · `build` · §13 A 스모크 |
+| **Edge** | `fetch-mrt-stays` — locale 분기 없음 (재배포 ✅) |
 
-**#42 진행**:
+**#42 완료** (#42b~e): 로고·About · 버킷·Credits · Updates·투어·항공 · SiteUpdateBanner · 숙소 헤더 EN · MRT `itemName` ko SSOT(재호출 금지)
 
-1. **회귀** — PROD `?lang=en` 홈·한국·명승·축제 ✅
-2. **로고·About** — #42b ✅
-3. **버킷·Credits** — #42c ✅
-4. **Updates·투어·항공 바** — #42d ✅
-5. **SiteUpdateBanner·숙소** — #42e ✅ (`resolveReleaseNote` · `getLocalizedPlaceName` · MRT locale)
-
-**다음 제시어 (#42f)**:
+**다음 제시어 (#43)**:
 
 ```
-영문화 #42f, PROD QA — 배포 후 회귀
+영문화 #43, 최적화
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
-main · ?lang=en · SiteUpdateBanner EN · 숙소 제목·목록
+@plans/i18n-en-plan.md
+main · ?lang=en · i18n-en-plan §13 B
+금지: MRT locale·Accept-Language 재호출 · UI 리디자인
 ```
 
 ---

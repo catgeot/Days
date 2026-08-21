@@ -116,14 +116,22 @@ npm run audit:i18n && npm run build
 
 - UI 임의 리디자인 · `RELEASE_NOTES` 사용자 합의 없이 추가 · browser/computerUse QA
 
-**다음 제시어 (#42e)**:
+**다음 제시어 (#43)**:
 
 ```
-영문화 #42f, PROD QA — 배포 후 회귀
+영문화 #43, 최적화
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
-main · ?lang=en · SiteUpdateBanner EN · 숙소 제목 EN
+@plans/i18n-en-plan.md
+main · ?lang=en · i18n-en-plan §13 B
+금지: MRT locale·Accept-Language 재호출 · UI 리디자인
 ```
+
+## 영문화 #42e, PROD QA — 사람 QA OK
+
+- **PASS** SiteUpdateBanner EN · Updates 일치 · 숙소 헤더 EN · MRT 카드명 ko(예상)
+- **main** `abdc315c` · MRT locale 재호출 롤백·Edge 재배포 완료
+- **다음** **#43 최적화** — [`i18n-en-plan.md`](./i18n-en-plan.md) §13 B
 
 ## 영문화 #42e, PROD QA — SiteUpdateBanner·릴리즈 노트·숙소 찾기 EN
 

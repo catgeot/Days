@@ -44,7 +44,8 @@
 | 39 | 명승·테마 UI·지도 | `영문화 #39, 명승·테마 UI·지도 EN` | ✅ merge |
 | 40 | 명승 follow-up | `영문화 #40, Preview QA — 명승 모달·지도 EN` | ✅ merge |
 | 41 | 축제 지도·title | `영문화 #41, 축제 지도·title EN` | ✅ merge PR #141 |
-| 42 | 테스트·최적화 | `영문화 #42, 테스트·최적화` | ⏳ next |
+| 42 | 테스트·최적화 | `영문화 #42, 테스트·최적화` | ✅ PROD QA |
+| 43 | 최적화 | `영문화 #43, 최적화` | ⏳ next |
 
 **1차 (#0~#12)**: UI 카피 · **2차 (#13~#22)**: 지구본 데이터 · TourAPI 본문 · 무니 · 플래너 AI·배너 · **#23**: 첫 방문 브라우저 언어 → locale.
 
@@ -124,15 +125,19 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#42e 완료)**: SiteUpdateBanner `resolveReleaseNote` · 숙소 찾기 `getLocalizedPlaceName` · MRT `Accept-Language` — main push·Edge deploy 후 PROD QA.
+**상태 (#42e PROD QA OK)**: SiteUpdateBanner · 숙소 헤더 EN · MRT `itemName` ko SSOT(재호출 금지) — main `abdc315c`.
+
+**다음 (#43 최적화)** — §13 B: 축제 titleEn 캐시·locale 전환·bundle 등. §13 C 백로그는 차차.
 
 **다음 제시어**:
 
 ```
-영문화 #42f, PROD QA — 배포 후 회귀
+영문화 #43, 최적화
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
-main · ?lang=en · SiteUpdateBanner EN · 숙소 제목·목록
+@plans/i18n-en-plan.md
+main · ?lang=en · i18n-en-plan §13 B
+금지: MRT locale·Accept-Language 재호출 · UI 리디자인
 ```
 
 ### #23 브라우저 locale 자동 — 완료
