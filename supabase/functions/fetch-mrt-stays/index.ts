@@ -244,13 +244,23 @@ function uniqueKeywords(list: string[]) {
   return out;
 }
 
-async function mrtPost(path: string, apiKey: string, body: Record<string, unknown>) {
+function mrtAcceptLanguage(locale: string | undefined) {
+  return locale === "en" ? "en-US" : "ko-KR";
+}
+
+async function mrtPost(
+  path: string,
+  apiKey: string,
+  body: Record<string, unknown>,
+  acceptLanguage = "ko-KR",
+) {
   const res = await fetch(`${MRT_BASE}${path}`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
       Accept: "application/json",
+      "Accept-Language": acceptLanguage,
     },
     body: JSON.stringify(body),
   });
@@ -317,6 +327,7 @@ async function searchStays(
     childCount: number;
     page: number;
     size: number;
+    acceptLanguage?: string;
   },
 ): Promise<{ ok: true; items: StayItem[]; totalCount: number } | { ok: false; detail: string }> {
   const {
@@ -327,9 +338,10 @@ async function searchStays(
     childCount,
     page,
     size,
+    acceptLanguage = "ko-KR",
   } = params;
   const cacheKey =
-    `search:${regionId}|${checkIn}|${checkOut}|${adultCount}|${childCount}|${size}|${page}`;
+    `search:${acceptLanguage}:${regionId}|${checkIn}|${checkOut}|${adultCount}|${childCount}|${size}|${page}`;
   const hit = getCached(searchCache, cacheKey);
   if (hit) return { ok: true, ...hit };
 
@@ -345,7 +357,7 @@ async function searchStays(
       childCount,
       page,
       size,
-    });
+    }, acceptLanguage);
     const searchResult = search.data?.result || {};
     if (search.status !== 200 || searchResult.status !== 200) {
       return {
@@ -465,6 +477,9 @@ serve(async (req) => {
     /** 파트너 API size 상한 50 · 클라는 fetch 50 후 UI에서 20씩 더보기 */
     const size = Math.max(1, Math.min(50, Number(body?.size) || 20));
     const page = Math.max(0, Number(body?.page) || 0);
+    const acceptLanguage = mrtAcceptLanguage(
+      String(body?.locale ?? "").trim() === "en" ? "en" : "ko",
+    );
 
     // region 매칭은 됐지만 해당 CITY 재고 0인 경우(버뮤다→세인트조지스 등)
     // 다음 키워드·다른 regionId로 최대 수회 재시도
@@ -497,6 +512,7 @@ serve(async (req) => {
         childCount,
         page,
         size,
+        acceptLanguage,
       });
 
       if (!search.ok) {

@@ -62,29 +62,30 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **main** `#42d` · Updates·3D투어·항공경로 EN · **#42e 대기** |
-| **main tip** | `fa22be18` i18n · `bd46b688` docs |
+| **상태** | **main** `#42e` · SiteUpdateBanner·숙소 제목 EN · MRT `Accept-Language` |
+| **main tip** | (push 후 SHA) |
 | **브랜치** | `main` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·**§13 C** |
-| **일지** | [`2026-08-21-project-log.md`](./2026-08-21-project-log.md) — **「#42e 핸드오프」** 절 |
+| **일지** | [`2026-08-21-project-log.md`](./2026-08-21-project-log.md) |
 | **PROD QA** | `https://www.gateo.kr/?lang=en` |
-| **VERIFY** | `audit:i18n` · `build` · (선택) `smoke:festival-detail-locale` |
+| **VERIFY** | `audit:i18n` · `build` |
+| **Edge** | `fetch-mrt-stays` deploy — 숙소 카드명 EN |
 
 **#42 진행**:
 
 1. **회귀** — PROD `?lang=en` 홈·한국·명승·축제 ✅
 2. **로고·About** — #42b ✅
 3. **버킷·Credits** — #42c ✅
-4. **Updates·투어·항공 바** — #42d ✅ (`ReleaseNotesList` · `TourMobileBar` · `HomeGlobeMapbox` · `FlightCinemaBar`)
-5. **다음 #42e** — `SiteUpdateBanner` → `resolveReleaseNote` · 신규 릴리즈 노트 EN 동시 추가 규칙
+4. **Updates·투어·항공 바** — #42d ✅
+5. **SiteUpdateBanner·숙소** — #42e ✅ (`resolveReleaseNote` · `getLocalizedPlaceName` · MRT locale)
 
-**다음 제시어 (#42e)**:
+**다음 제시어 (#42f)**:
 
 ```
-영문화 #42e, PROD QA — SiteUpdateBanner·릴리즈 노트 EN
+영문화 #42f, PROD QA — 배포 후 회귀
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
-main · ?lang=en · SiteUpdateBanner · resolveReleaseNote
+main · ?lang=en · SiteUpdateBanner EN · 숙소 제목·목록
 ```
 
 ---

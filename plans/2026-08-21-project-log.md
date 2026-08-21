@@ -119,8 +119,16 @@ npm run audit:i18n && npm run build
 **다음 제시어 (#42e)**:
 
 ```
-영문화 #42e, PROD QA — SiteUpdateBanner·릴리즈 노트 EN
+영문화 #42f, PROD QA — 배포 후 회귀
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
-main · ?lang=en · SiteUpdateBanner · resolveReleaseNote
+main · ?lang=en · SiteUpdateBanner EN · 숙소 제목 EN
 ```
+
+## 영문화 #42e, PROD QA — SiteUpdateBanner·릴리즈 노트·숙소 찾기 EN
+
+- **SiteUpdateBanner** `resolveReleaseNote(release, i18n.language)` — 팝업 제목·항목 EN
+- **숙소 찾기** `getLocalizedPlaceName` — 헤더·일정바 「로키 산맥」→ Rocky Mountains
+- **MRT 목록** Edge `Accept-Language: en-US` · 클라 `locale` 캐시 분리 — **Edge deploy 필요**
+- **VERIFY** `audit:i18n` · `build` PASS
+- **사람 QA** `?lang=en` · localStorage `gateo_seen_release` 삭제 후 팝업 EN · Rocky Mountains 숙소 목록

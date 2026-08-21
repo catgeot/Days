@@ -124,30 +124,16 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#42d 완료 · #42e next)**: Updates 탭·3D투어·항공경로 바 EN — main `fa22be18`. **잔여 #42e**: `SiteUpdateBanner` 팝업 EN · 신규 릴리즈 노트 EN 동시 추가.
+**상태 (#42e 완료)**: SiteUpdateBanner `resolveReleaseNote` · 숙소 찾기 `getLocalizedPlaceName` · MRT `Accept-Language` — main push·Edge deploy 후 PROD QA.
 
-**브랜치**: `main`
-
-**일지**: [`2026-08-21-project-log.md`](./2026-08-21-project-log.md) — **「#42e 핸드오프」** 절 (작업 표·VERIFY·금지)
-
-**다음 제시어** (`cloud-preview-continuity` §1.2):
+**다음 제시어**:
 
 ```
-영문화 #42e, PROD QA — SiteUpdateBanner·릴리즈 노트 EN
+영문화 #42f, PROD QA — 배포 후 회귀
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
-main · ?lang=en · SiteUpdateBanner · resolveReleaseNote
+main · ?lang=en · SiteUpdateBanner EN · 숙소 제목·목록
 ```
-
-### #42e 스코프 (다음 세션)
-
-| P | 항목 | 파일 |
-|---|------|------|
-| 1 | 홈 업데이트 팝업 EN | `SiteUpdateBanner.jsx` + `resolveReleaseNote` |
-| 2 | 릴리즈 노트 추가 시 EN 동시 | `releaseNotes.js` — `RELEASE_NOTES` + `RELEASE_NOTES_EN_BY_ID` 동일 `id` |
-| 3 | (선택) 구형 노트 EN | `RELEASE_NOTES_EN_BY_ID` 점진 확장 |
-
-**백로그**: `getFlightOriginMetroHint` ko · `CloudPreviewWorkLog` · 버킷 SSOT 미등록명 — §13 C.
 
 ### #23 브라우저 locale 자동 — 완료
 

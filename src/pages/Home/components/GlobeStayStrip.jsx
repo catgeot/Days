@@ -18,6 +18,7 @@ import {
   Users,
   X,
 } from 'lucide-react';
+import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
 import { buildGygActivitiesSearchQuery } from '../../../components/PlaceCard/tabs/planner/locationRules';
 import {
   MRT_STAY_PAGE_SIZE,
@@ -1082,7 +1083,7 @@ export default function GlobeStayStrip({
   flightOriginIata = null,
   canPreviewFlightRoute: canPreviewFlightRouteProp = false,
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isLg = useIsLg();
   const [expanded, setExpanded] = useState(false);
   const [listFullscreen, setListFullscreen] = useState(false);
@@ -1106,13 +1107,14 @@ export default function GlobeStayStrip({
   const desktopListScrollRef = useRef(null);
 
   const slug = location?.slug ? String(location.slug).trim().toLowerCase() : '';
-  const name = location?.name || '';
+  const name = getLocalizedPlaceName(location, i18n.language) || location?.name || '';
   const country = location?.country || '';
   const isScanning = Boolean(location?.isScanning);
   const placeKey = `${slug}|${name}|${country}|${location?.lat}|${location?.lng}`;
   const datesKey = `${stayDates.checkIn}|${stayDates.checkOut}`;
   const guestsKey = `a${guests.adultCount}c${guests.childCount}`;
-  const fetchKey = `${placeKey}|${datesKey}|${guestsKey}`;
+  const localeKey = i18n.language === 'en' ? 'en' : 'ko';
+  const fetchKey = `${placeKey}|${datesKey}|${guestsKey}|${localeKey}`;
   const eligible = canShowMrtStayStrip(location, { hidden }) && !isScanning;
   const peerTourEligible = useMemo(() => {
     if (isScanning) return false;
@@ -1235,6 +1237,7 @@ export default function GlobeStayStrip({
       const result = await fetchMrtStaysForLocation(locForFetch, {
         ...stayDates,
         ...guests,
+        locale: i18n.language,
       });
       if (cancelled) return;
       fetchedKeyRef.current = fetchKey;

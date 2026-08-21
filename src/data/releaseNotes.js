@@ -9,7 +9,7 @@
  * **EN (?lang=en)**:
  * - Updates 탭: `resolveReleaseNote` → `RELEASE_NOTES_EN_BY_ID[id]` 있으면 EN, 없으면 KO 폴백.
  * - 신규 추가 시 **동일 id**로 `RELEASE_NOTES_EN_BY_ID`에 title·items EN도 함께 넣을 것.
- * - 홈 팝업(`SiteUpdateBanner`): #42e에서 `resolveReleaseNote` 연동 예정(현재 KO 직접 표시).
+ * - 홈 팝업(`SiteUpdateBanner`): `resolveReleaseNote` 연동 (#42e).
  *
  * @typedef {'feature' | 'partner' | 'fix' | 'notice'} ReleaseCategory
  * @typedef {{ id: string, title: string, items: string[], category?: ReleaseCategory, date?: string }} ReleaseNote

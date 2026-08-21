@@ -1,6 +1,7 @@
 import { RefreshCw, Sparkles } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { resolveReleaseNote } from '../../data/releaseNotes';
 import { useSiteUpdateBanner } from '../hooks/useSiteUpdateBanner';
 import { useSiteNoticeAnchorRect } from '../hooks/useSiteNoticeAnchorRect';
 import { openUpdatesList } from '../lib/siteNoticeEvents';
@@ -12,9 +13,10 @@ function isHomeNoticeSurface(pathname) {
 }
 
 function SiteUpdateBanner() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const { mode, release, closeRelease, dismissPermanent, reload } = useSiteUpdateBanner();
+  const resolvedRelease = release ? resolveReleaseNote(release, i18n.language) : null;
   const showSurface = Boolean(mode) && isHomeNoticeSurface(location.pathname);
   const anchorRect = useSiteNoticeAnchorRect(showSurface);
 
@@ -75,7 +77,7 @@ function SiteUpdateBanner() {
             id="site-update-notice-title"
             className="text-base md:text-lg font-bold text-white break-keep leading-snug"
           >
-            {isRefresh ? t('layout.siteNotice.refreshTitle') : release?.title}
+            {isRefresh ? t('layout.siteNotice.refreshTitle') : resolvedRelease?.title}
           </p>
 
           {isRefresh ? (
@@ -83,9 +85,9 @@ function SiteUpdateBanner() {
               {t('layout.siteNotice.refreshBody')}
             </p>
           ) : (
-            release?.items?.length > 0 && (
+            resolvedRelease?.items?.length > 0 && (
               <ul className="mt-2.5 space-y-1.5 text-sm text-slate-300 break-keep leading-relaxed">
-                {release.items.map((item) => (
+                {resolvedRelease.items.map((item) => (
                   <li key={item} className="flex gap-2">
                     <span className="text-blue-400 font-bold shrink-0">·</span>
                     <span>{item}</span>
