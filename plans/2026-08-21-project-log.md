@@ -18,7 +18,7 @@
 
 ## 영문화 #41, main 병합 — Preview QA OK
 
-- **결정** 사람 Preview QA OK · 잔존 이슈는 차차 · **PR #141 → main 병합**
+- **결정** 사람 Preview QA OK · 잔존 이슈는 차차 · **PR #141 → main `5c8adea5`**
 - **다음** **#42 테스트·최적화** — PROD 회귀 · en fetch/캐시 · 알려진 한계 정리
 
 **다음 제시어 (#42)**:
