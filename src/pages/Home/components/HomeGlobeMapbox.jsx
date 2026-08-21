@@ -92,6 +92,7 @@ import { getCategoryGlobeFaceView, GLOBE_FACE_FLY_MS, resolveCategoryFaceMapboxZ
 import { passesGlobeTierPolicy } from '../lib/globeSpotVisibility';
 import { flushCurationGlobeSyncIfPending } from '../lib/curationPlaceBridge.js';
 import { useLocale } from '../../../i18n/LocaleProvider';
+import { useTranslation } from 'react-i18next';
 
 function LanguageControl({ locale }) {
   const mapLanguage = locale?.startsWith('en') ? 'en' : 'ko';
@@ -393,6 +394,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   onReturnToSpace = null,
 }, ref) => {
   const { locale } = useLocale();
+  const { t } = useTranslation();
   const mapRef = useRef(null);
   const interactionRef = useRef(false);
   const autoRotateRef = useRef(!pauseRender);
@@ -2497,7 +2499,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
             onClick={skipTour}
             className="flex items-center gap-2 rounded-full border border-white/15 bg-black/65 px-4 py-2 text-xs font-bold text-white/90 shadow-lg backdrop-blur-sm transition-all hover:bg-black/80 active:scale-95"
           >
-            Skip
+            {t('home.globeTour.skip')}
           </button>
         </div>
       )}
@@ -2506,16 +2508,16 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         <div
           className="fixed left-3 bottom-[calc(1.25rem+env(safe-area-inset-bottom,0px))] z-[55] md:left-6 md:bottom-8"
           role="region"
-          aria-label="이동 가능 경계"
+          aria-label={t('home.globeTour.reachBoundaryAria')}
         >
           <div className="pointer-events-auto rounded-2xl border border-white/10 bg-black/60 px-3 py-2.5 text-[11px] text-white/85 shadow-lg backdrop-blur-sm">
             <div className="mb-1.5 flex items-center justify-between gap-3">
-              <p className="min-w-0 flex-1 font-bold tracking-wide text-white/95">이동 가능 경계</p>
+              <p className="min-w-0 flex-1 font-bold tracking-wide text-white/95">{t('home.globeTour.reachBoundaryTitle')}</p>
               <button
                 type="button"
                 role="switch"
                 aria-checked={reachBoundariesVisible}
-                aria-label={reachBoundariesVisible ? '이동 가능 경계 숨기기' : '이동 가능 경계 표시'}
+                aria-label={reachBoundariesVisible ? t('home.globeTour.reachBoundaryHide') : t('home.globeTour.reachBoundaryShow')}
                 disabled={reachBoundariesLoading}
                 onClick={toggleReachBoundaries}
                 className={`relative h-5 w-9 shrink-0 overflow-hidden rounded-full border p-0 transition-colors disabled:opacity-40 ${
@@ -2535,19 +2537,19 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
             <div className={reachBoundariesVisible ? '' : 'opacity-45'}>
               <div className="flex items-center gap-2">
                 <span className="inline-block h-0.5 w-4 border-t-2 border-dashed border-emerald-400 shrink-0" aria-hidden="true" />
-                <span>도보 약 {REACH_CONTOUR_MINUTES.walk}분</span>
+                <span>{t('home.globeTour.walkApprox', { minutes: REACH_CONTOUR_MINUTES.walk })}</span>
               </div>
               <div className="mt-1 flex items-center gap-2">
                 <span className="inline-block h-0.5 w-4 border-t-2 border-solid border-blue-400 shrink-0" aria-hidden="true" />
-                <span>차량 약 {REACH_CONTOUR_MINUTES.drive}분</span>
+                <span>{t('home.globeTour.driveApprox', { minutes: REACH_CONTOUR_MINUTES.drive })}</span>
               </div>
             </div>
             {reachBoundariesLoading && (
-              <p className="mt-1.5 text-[10px] text-white/55">경계 계산 중…</p>
+              <p className="mt-1.5 text-[10px] text-white/55">{t('home.globeTour.computing')}</p>
             )}
             {reachBoundariesReady && !reachBoundariesLoading && (
               <p className="mt-1.5 text-[10px] text-white/55">
-                {reachBoundariesVisible ? '보행 경로 · 운전 도달 영역' : '지도에 숨김 · 토글로  표시'}
+                {reachBoundariesVisible ? t('home.globeTour.legendVisible') : t('home.globeTour.legendHidden')}
               </p>
             )}
           </div>
@@ -2576,7 +2578,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
             onClick={endTour}
             className="flex items-center gap-2 rounded-full border border-blue-400/35 bg-black/65 px-4 py-2 text-xs font-bold text-blue-300 shadow-lg backdrop-blur-sm transition-all hover:bg-black/80 active:scale-95"
           >
-            2D로 복귀
+            {t('home.globeTour.return2d')}
           </button>
         </div>
       )}
@@ -2584,7 +2586,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       {globeMode === GLOBE_MODE.TOUR_BOOTSTRAPPING && !isZenMode && (
         <div className="absolute inset-x-0 top-1/3 z-[65] pointer-events-none flex justify-center">
           <div className="rounded-full border border-white/10 bg-black/60 px-4 py-2 text-xs text-white/80 backdrop-blur-sm">
-            3D 지형 로딩 중…
+            {t('home.globeTour.terrainLoading')}
           </div>
         </div>
       )}

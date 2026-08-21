@@ -404,6 +404,49 @@
       "mapSourceTitle": "지도 데이터 출처",
       "telemetryTitle": "Mapbox Telemetry",
       "techStackTitle": "기술 및 서비스"
+    },
+    "releaseNotes": {
+      "empty": "표시할 업데이트가 없습니다.",
+      "latest": "최신"
+    },
+    "tourMobile": {
+      "skip": "Skip",
+      "return2d": "2D로 복귀",
+      "closeAria": "닫기"
+    },
+    "globeTour": {
+      "skip": "Skip",
+      "reachBoundaryAria": "이동 가능 경계 범례",
+      "reachBoundaryTitle": "이동 가능 경계",
+      "reachBoundaryShow": "이동 가능 경계 표시",
+      "reachBoundaryHide": "이동 가능 경계 숨기기",
+      "walkApprox": "도보 약 {{minutes}}분",
+      "driveApprox": "차량 약 {{minutes}}분",
+      "computing": "경로 계산 중…",
+      "legendVisible": "보행 경로 · 운전 도달 영역",
+      "legendHidden": "이동 가능 경계 숨김",
+      "return2d": "2D로 복귀",
+      "terrainLoading": "3D 지형 로딩 중…"
+    },
+    "flightCinema": {
+      "routeMeta": "대권 항로입니다. 실제 비행경로와 다를 수 있어요.",
+      "legTimeTitle": "구간 추정 비행 시간(환승 대기·체크인 미포함)",
+      "routeInfoAria": "항로 안내",
+      "legTimeEstimate": "구간 ~Nh는 대권 거리 기준 추정 비행 시간이에요.",
+      "transferNotIncluded": "환승 대기·체크인은 포함되지 않아요.",
+      "viaSeparator": " 경유 ",
+      "routeSummaryAria": "{{codes}} 총 약 {{hours}}시간",
+      "legTitle": "{{from}}→{{to}} {{legTimeTitle}}",
+      "totalHoursTitle": "총 {{hours}}시간 — 구간 합산 추정(환승 대기 미포함)",
+      "totalHoursShort": "(총 {{hours}}h)",
+      "viaCandidates": "경유 후보",
+      "countItems": "{{count}}개",
+      "regionAriaFlight": "항공 경로 {{route}}",
+      "regionAriaDefault": "항공 경로 시네마",
+      "plannerTitle": "플래너 탭에서 전체 여정 보기",
+      "planner": "여행 플래너",
+      "searchFlights": "항공권 검색",
+      "close": "닫기"
     }
   },
   "place": {

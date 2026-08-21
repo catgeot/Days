@@ -633,6 +633,49 @@
       "mapSourceTitle": "Map data sources",
       "telemetryTitle": "Mapbox Telemetry",
       "techStackTitle": "Technology & services"
+    },
+    "releaseNotes": {
+      "empty": "No updates to show yet.",
+      "latest": "Latest"
+    },
+    "tourMobile": {
+      "skip": "Skip",
+      "return2d": "Back to 2D",
+      "closeAria": "Close"
+    },
+    "globeTour": {
+      "skip": "Skip",
+      "reachBoundaryAria": "Reach boundary legend",
+      "reachBoundaryTitle": "Reach boundary",
+      "reachBoundaryShow": "Show reach boundary",
+      "reachBoundaryHide": "Hide reach boundary",
+      "walkApprox": "~{{minutes}} min on foot",
+      "driveApprox": "~{{minutes}} min by car",
+      "computing": "Calculating routes…",
+      "legendVisible": "Walking route · Driving reach area",
+      "legendHidden": "Reach boundary hidden",
+      "return2d": "Back to 2D",
+      "terrainLoading": "Loading 3D terrain…"
+    },
+    "flightCinema": {
+      "routeMeta": "Great-circle route. Actual flight paths may differ.",
+      "legTimeTitle": "Estimated leg time (excludes layovers & check-in)",
+      "routeInfoAria": "Route info",
+      "legTimeEstimate": "Segments ~Nh are estimated flight times based on great-circle distance.",
+      "transferNotIncluded": "Layovers and check-in are not included.",
+      "viaSeparator": " via ",
+      "routeSummaryAria": "{{codes}} — about {{hours}} hours total",
+      "legTitle": "{{from}}→{{to}} {{legTimeTitle}}",
+      "totalHoursTitle": "Total {{hours}}h — sum of leg estimates (layovers excluded)",
+      "totalHoursShort": "(Total {{hours}}h)",
+      "viaCandidates": "Via options",
+      "countItems": "{{count}} options",
+      "regionAriaFlight": "Flight route {{route}}",
+      "regionAriaDefault": "Flight route cinema",
+      "plannerTitle": "View full trip in planner",
+      "planner": "Travel planner",
+      "searchFlights": "Search flights",
+      "close": "Close"
     }
   },
   "place": {

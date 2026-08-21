@@ -365,6 +365,131 @@ export const RELEASE_CATEGORY_LABELS = {
   notice: '공지',
 };
 
+export const RELEASE_CATEGORY_LABELS_EN = {
+  feature: 'New feature',
+  partner: 'Partner',
+  fix: 'Improvement',
+  notice: 'Notice',
+};
+
+/** EN overlay — id → { title, items } */
+const RELEASE_NOTES_EN_BY_ID = {
+  '2026-08-18': {
+    title: 'Browse home, places, and Korea hubs in English',
+    items: [
+      'Switch the UI to English with the header EN/KO toggle or ?lang=en in the URL.',
+      'Main copy on home, place cards, Korea festivals, and scenic spots appears in English.',
+      'Your language choice is saved in the browser for future visits.',
+    ],
+  },
+  '2026-08-07': {
+    title: 'Explore Korea scenic spots alongside festivals',
+    items: [
+      'Jump to Korea festivals and scenic spots from home quick links.',
+      'Browse GATEO picks, heritage scenic sites, and nationwide attractions by region and type.',
+      'Search by name or start from places near you.',
+      'Open a spot for photos and guides, then continue to nearby festivals, dining, stays, or tours.',
+    ],
+  },
+  '2026-07-30': {
+    title: 'Browse Korea festivals in one place',
+    items: [
+      'From home, open Korea to see current festivals on the map and in a list.',
+      'Filter by region or theme, search, or check festivals near you.',
+      'Tap a festival for schedule, venue, programs, and reading — then nearby destinations.',
+      'Star favorites to revisit later.',
+    ],
+  },
+  '2026-07-24': {
+    title: 'Find and book tours from home and the planner',
+    items: [
+      'Use Find tours on a place card to browse local activities.',
+      'See recommended tours in the planner and continue to GetYourGuide to book.',
+    ],
+  },
+  '2026-07-23': {
+    title: 'See more stays with clearer availability',
+    items: [
+      'Load up to 50 stays with Show more in stay search.',
+      'Bookable stays vs. stays needing date changes are shown more clearly.',
+    ],
+  },
+  '2026-07-21-3': {
+    title: 'More accurate landmark search and stay list view',
+    items: [
+      'Searching for landmarks like the Eiffel Tower opens the landmark, not a same-named street or city.',
+      'Enlarge stay cards with the grid button in stay search.',
+    ],
+  },
+  '2026-07-21-2': {
+    title: 'Zoom the globe from a place card',
+    items: [
+      'View this region zooms the globe to the pinned area.',
+      'Zoom out returns to a wider view without auto-zooming every time you open a card.',
+    ],
+  },
+  '2026-07-21': {
+    title: 'Search specific places and find nearby stays',
+    items: [
+      'Home search opens place cards for cities, landmarks, hotels, and resorts.',
+      'Examples: Seongsan Ilchulbong, hotels, condos — the map focuses on that point.',
+      'From the card, Find stays searches and books near that place.',
+    ],
+  },
+  '2026-07-20-3': {
+    title: 'Easier stay search',
+    items: [
+      'Set adults, children, and dates, then Apply to search again in one step.',
+      'See stays that match your dates first, with alternatives that need changes.',
+      'Sort by recommended, price, or rating.',
+    ],
+  },
+  '2026-07-20-2': {
+    title: 'Find and book stays near you and your destination',
+    items: [
+      'Find stays on a place card searches near you and the destination.',
+      'Pick check-in/out for matching inventory and book on MyRealTrip.',
+      'Full-screen on mobile, wider list on desktop.',
+    ],
+  },
+  '2026-07-20': {
+    title: 'Explore sub-regions on the globe',
+    items: [
+      'Zoom in to see and tap cities, landmarks, and local place names.',
+      'Unlisted points still open a place card with photos and AI.',
+      'Keep the globe clean when zoomed out; details appear when you zoom in.',
+    ],
+  },
+  '2026-07-11': {
+    title: 'MOONi “How to get there” shares origin search',
+    items: [
+      'Pick your departure the same way as on place cards and the flight bar.',
+      'On mobile, topic chips scroll in one row with the input below for more chat space.',
+      'On desktop, topics and input sit on one row with a wider conversation area.',
+      'Subtopics include Back to topics.',
+    ],
+  },
+};
+
+export function resolveReleaseCategoryLabel(category, locale = 'ko') {
+  if (locale === 'en' && category && RELEASE_CATEGORY_LABELS_EN[category]) {
+    return RELEASE_CATEGORY_LABELS_EN[category];
+  }
+  return RELEASE_CATEGORY_LABELS[category] || category || '';
+}
+
+export function resolveReleaseNote(release, locale = 'ko') {
+  if (!release) return { title: '', items: [] };
+  if (locale !== 'en') {
+    return { title: release.title, items: release.items || [] };
+  }
+  const en = RELEASE_NOTES_EN_BY_ID[release.id];
+  return {
+    title: en?.title || release.title,
+    items: en?.items || release.items || [],
+  };
+}
+
 export function getLatestRelease() {
   return RELEASE_NOTES[0] ?? null;
 }
