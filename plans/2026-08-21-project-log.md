@@ -54,12 +54,18 @@
 - **VERIFY** `audit:i18n` · `build` PASS
 - **잔여** SSOT 미등록 uiPlace(예: 프로비덴시아 섬) · Updates(`ReleaseNotesList`) ko
 
-**다음 제시어 (#42d)**:
+## 영문화 #42d, PROD QA — Updates·3D투어·항공경로 EN
+
+- **증상** `?lang=en` Updates 탭·3D투어 상태창·항공경로 바 한글 유지 (#42b~c 잔여)
+- **수정** `releaseNotes` EN 오버레이(최근 12건) · `ReleaseNotesList` · `TourMobileBar` · `HomeGlobeMapbox` 투어 범례 · `FlightCinemaBar` 전체 UI
+- **VERIFY** `audit:i18n` · `build` PASS · **main `fa22be18` push**
+- **잔여** 오래된 릴리즈 노트(12건 이전) KO 폴백 · `SiteUpdateBanner` ko
+
+**다음 제시어 (#42e)**:
 
 ```
-영문화 #42d, PROD QA — Updates
+영문화 #42e, PROD QA — SiteUpdateBanner·잔여 ko
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
-@plans/i18n-en-plan.md
-main · ?lang=en · ReleaseNotesList
+main · ?lang=en
 ```
