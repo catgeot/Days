@@ -62,33 +62,30 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **main 병합** — #29~#36 P0·지역칩 EN · **PROD QA** (배포 후 사람) |
-| **main** | #36 merge 후 SHA 확인 · PR [#139](https://github.com/catgeot/Days/pull/139) `c15c3d54` 포함 |
+| **상태** | **PROD QA (#38)** — #29~#36 main · **#39 한국 2차 UI·지도명** 대기 |
+| **main** | `72144c4d` (#36 merge) |
 | **브랜치** | `cursor/en` (재사용) |
-| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§11 |
-| **일지** | [`2026-08-20-project-log.md`](./2026-08-20-project-log.md) |
+| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·§11·**§12** |
+| **일지** | [`2026-08-21-project-log.md`](./2026-08-21-project-log.md) |
 | **Preview** | `https://days-git-cursor-en-catgeots-projects.vercel.app/` · `/qa/en` |
 | **VERIFY** | `audit:i18n` · `build` · `smoke:korea-scenic-place-label` · `smoke:browser-locale-hint` · `smoke:place-label-slug` · `smoke:festival-detail-locale` |
 
-**2차 순서**: ~~#13~#36~~ → **#38 PROD QA** (배포 후 · #28~#36 포함)
+**2차 순서**: ~~#13~#36~~ · #38 PROD QA(사람) → **#39 한국 2차 UI·지도명 EN**
 
-**PROD QA 체크** (사람 · 시크릿 EN Chrome · `gateo.locale` 없음):
+**#38 PROD QA 메모** (사람 · 2026-08-21):
 
-1. `www.gateo.kr/` — UI 자동 EN · `?lang=en`
-2. `/korea?lang=en` — 지역·분류칩 EN · 축제 카드 한글 → Chrome 번역
-3. `/korea/theme/scenic?lang=en` — 명승 칩·place 라벨 EN
-4. PlaceCard — Find stays/tours · 펼친 패널 · 리뷰·플래너 EN
-5. `/explore?lang=en` — 탐색 필터·큐레이션 EN
-6. 헤더 KO 토글 → 한글 UI · 재방문 유지
+- 축제 분류칩 EN OK · 지도 마커 한글 · `ThemeSpotDetailModal` UI 한글
+- 명승 지도 breadcrumb 한글(전체/강원/접경/화천) · 명소 핀 한글
+- **합의**: 본문 제외 · **상단 title·UI 셸·지도 핀** EN → #39
 
 **다음 제시어**:
 
 ```
-영문화 #38, PROD QA — #29~#36 P0·지역칩
+영문화 #39, 한국 2차 UI·지도명 EN
 @plans/feature-handoff-index.md
-@plans/2026-08-20-project-log.md
+@plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-main · www.gateo.kr · /korea?lang=en · /explore EN
+cursor/en · /korea?lang=en · ThemeSpotDetailModal · 지도 마커·breadcrumb
 ```
 
 ---
