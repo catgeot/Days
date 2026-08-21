@@ -2,6 +2,24 @@
 
 직전: [`2026-08-19-project-log.md`](./2026-08-19-project-log.md)
 
+## 영문화 #32, P0-B ReviewsTab EN — Preview push
+
+- **범위** `ReviewsTab.jsx` — 로그인 배너·필터·빈 상태·삭제 confirm·블로그·갤러리 alt · `place.reviews.*` 12키 추가
+- **debt** ReviewsTab 10→0 · tier B 10→0 · 합계 66→56
+- **VERIFY** `audit:i18n` · `build` · `smoke:browser-locale-hint` · `smoke:place-label-slug` PASS
+- **브랜치** `cursor/en` · `/qa/en` · `?lang=en` — PlaceCard 리뷰 탭 EN
+- **다음** #33 P0-A — HomeUI 1줄
+
+**다음 제시어**:
+
+```
+영문화 #33, P0-A HomeUI 잔여 EN
+@plans/feature-handoff-index.md
+@plans/2026-08-20-project-log.md
+@plans/i18n-en-plan.md
+cursor/en · HomeUI · audit:i18n
+```
+
 ## 영문화 #21, 플래너 배너·UI EN — Preview push
 
 - **범위** `place.planner.banners` · timeline · flight/rental hint · 비자 링크 `labelEn` — RentalPickup · Trip.com · 12Go · Klook · GYG · MRT TNA · JourneyTimeline · FlightSearchCta · cinema notice

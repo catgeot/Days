@@ -1045,9 +1045,21 @@
       "title": "Place reviews",
       "subtitle": "Real experiences from travelers who visited this place",
       "filterAll": "All",
+      "filterAllShort": "All",
       "filterMine": "My reviews",
       "writeAction": "Write review",
-      "headerShort": "Reviews"
+      "writeFirst": "Write a review",
+      "headerShort": "Reviews",
+      "loginRequiredConfirm": "You need to sign in for this feature.\nGo to the sign-in page?",
+      "deleteConfirm": "Delete this review?",
+      "deleteError": "Error while deleting: {{error}}",
+      "deleteSuccess": "Review deleted.",
+      "loginBanner": "<bold>Sign in</bold> to leave the first review!",
+      "loginAction": "Sign in",
+      "emptyMine": "You haven't written any reviews yet.",
+      "emptyAll": "No reviews yet.",
+      "blogBadge": "Blog",
+      "galleryViewerAlt": "Gallery viewer image"
     },
     "common": {
       "bookmark": "Bookmark",

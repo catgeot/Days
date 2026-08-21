@@ -824,9 +824,21 @@
       "title": "장소 리뷰",
       "subtitle": "이 장소를 다녀온 여행자들의 생생한 경험담",
       "filterAll": "전체 보기",
+      "filterAllShort": "전체",
       "filterMine": "내 리뷰",
       "writeAction": "작성하기",
-      "headerShort": "리뷰"
+      "writeFirst": "리뷰 작성하기",
+      "headerShort": "리뷰",
+      "loginRequiredConfirm": "로그인이 필요한 기능입니다.\n로그인 페이지로 이동하시겠습니까?",
+      "deleteConfirm": "정말로 이 리뷰를 삭제하시겠습니까?",
+      "deleteError": "삭제 중 오류가 발생했습니다: {{error}}",
+      "deleteSuccess": "리뷰가 삭제되었습니다.",
+      "loginBanner": "<bold>로그인</bold>하고 첫 리뷰를 남겨보세요!",
+      "loginAction": "로그인 하기",
+      "emptyMine": "작성한 리뷰가 없습니다.",
+      "emptyAll": "아직 작성된 리뷰가 없습니다.",
+      "blogBadge": "블로그",
+      "galleryViewerAlt": "갤러리 뷰어 이미지"
     },
     "common": {
       "bookmark": "즐겨찾기",
