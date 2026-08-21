@@ -106,6 +106,14 @@ import {
 import { resolveCityAttractionHub } from '../Home/lib/cityAttractionHubs';
 import { reconcileThemeNavBack } from '../Home/lib/koreaThemeNavBack';
 import { formatScenicSpotPlaceLabel } from '../Home/lib/scenicSpotPlaceLabel';
+import { useLocale } from '../../i18n/LocaleProvider';
+import {
+  displayChipLabel,
+  localizedAreaCodeLabel,
+  localizedHubLabel,
+  localizedScenicMajorRegion,
+  localizedTourCategoryLabel,
+} from '../../i18n/koreaRegionLabels';
 import { sortScenicSpotsByPlaceCluster } from '../Home/lib/sortScenicSpotsByPlaceCluster';
 import { resolveKoreaAreaFromCoords } from '../Korea/resolveKoreaAreaFromCoords';
 import {
@@ -295,11 +303,15 @@ function pickRegionFromTourCounts(regionCounts, fallback) {
   );
 }
 
-function FilterChipLabel({ label, count }) {
+function FilterChipLabel({ label, count, locale, chipMeta }) {
   const n = chipCountLabel(count);
+  const display =
+    locale && chipMeta
+      ? displayChipLabel(locale, label, chipMeta)
+      : label;
   return (
     <span className="inline-flex items-center gap-1">
-      <span>{label}</span>
+      <span>{display}</span>
       {n != null ? <span className="opacity-70 tabular-nums">{n}</span> : null}
     </span>
   );
@@ -494,6 +506,7 @@ function ScenicListRow({
   favorited = false,
   onToggleFavorite,
   large = false,
+  locale = 'ko',
 }) {
   const { t } = useTranslation();
   const distanceLabel = formatDistanceKm(distanceKm);
@@ -559,7 +572,7 @@ function ScenicListRow({
                 large ? 'text-xs' : 'text-[11px]'
               }`}
             >
-              {formatScenicSpotPlaceLabel(spot)}
+              {formatScenicSpotPlaceLabel(spot, locale)}
             </span>
             {distanceLabel ? (
               <span
@@ -612,9 +625,9 @@ function ScenicListRow({
   );
 }
 
-function toModalSpot(spot) {
+function toModalSpot(spot, locale = 'ko') {
   if (!spot) return null;
-  const placeLabel = formatScenicSpotPlaceLabel(spot);
+  const placeLabel = formatScenicSpotPlaceLabel(spot, locale);
   return {
     id: spot.id,
     name: spot.name,
@@ -690,12 +703,13 @@ function pickRegionFromSpotMatches(matches, fallback) {
 
 export default function KoreaThemeScenicPage() {
   const { t, i18n } = useTranslation();
+  const { locale } = useLocale();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const hubId = normalizeScenicHubParam(searchParams.get('hub'));
   const hub = hubId ? resolveCityAttractionHub(hubId) : null;
-  const hubName = hub ? String(hub.name || hubId) : '';
+  const hubName = hub ? localizedHubLabel(locale, hub) || hubId : '';
   const curatedRegion = resolvePodRegion(searchParams, 'c');
   const curatedArea = resolvePodArea(searchParams, 'c', curatedRegion);
   const curatedClusterArea = resolveScenicClusterAreaCode(
@@ -1843,8 +1857,8 @@ export default function KoreaThemeScenicPage() {
       tourCat3ChipsVisible.length > 1;
 
   const catalogHeading = useMemo(
-    () => scenicDbCatalogHeading(tourRegion, tourArea, null, t),
-    [tourRegion, tourArea, t],
+    () => scenicDbCatalogHeading(tourRegion, tourArea, null, t, locale),
+    [tourRegion, tourArea, t, locale],
   );
 
   useEffect(() => {
@@ -3630,13 +3644,19 @@ export default function KoreaThemeScenicPage() {
   const totalPages = nearActive
     ? 1
     : Math.max(1, Math.ceil(dbCount / PAGE_SIZE));
-  const modalSpot = toModalSpot(selectedSpot);
+  const modalSpot = toModalSpot(selectedSpot, locale);
   const activeCat1Label =
-    TOUR_ATTRACTION_CAT1.find((c) => c.code === cat1)?.label ||
-    t('korea.theme.cat1Fallback');
+    localizedTourCategoryLabel(
+      locale,
+      cat1,
+      TOUR_ATTRACTION_CAT1.find((c) => c.code === cat1)?.label,
+    ) || t('korea.theme.cat1Fallback');
   const activeCat2Label =
-    cat2Chips.find((c) => c.code === cat2)?.label ||
-    t('korea.theme.cat2Fallback');
+    localizedTourCategoryLabel(
+      locale,
+      cat2,
+      cat2Chips.find((c) => c.code === cat2)?.label,
+    ) || t('korea.theme.cat2Fallback');
   const listHeadline = nearActive
     ? t('korea.common.nearAround', { label: nearLabel })
     : t('korea.theme.scenicTitle');
@@ -4122,6 +4142,7 @@ export default function KoreaThemeScenicPage() {
                               onOpen={openSpot}
                               favorited={favoriteIds.has(String(spot.id))}
                               onToggleFavorite={handleToggleFavorite}
+                              locale={locale}
                             />
                           </li>
                         ))}
@@ -4237,6 +4258,8 @@ export default function KoreaThemeScenicPage() {
                           <FilterChipLabel
                             label={r}
                             count={curatedRegionCountsForChips[r]}
+                            locale={locale}
+                            chipMeta={{ kind: 'major' }}
                           />
                         </button>
                       );
@@ -4271,6 +4294,8 @@ export default function KoreaThemeScenicPage() {
                           <FilterChipLabel
                             label={chip.label}
                             count={curatedAreaCounts[chip.code]}
+                            locale={locale}
+                            chipMeta={{ kind: 'area', code: chip.code }}
                           />
                         </button>
                       );
@@ -4305,6 +4330,8 @@ export default function KoreaThemeScenicPage() {
                           <FilterChipLabel
                             label={chip.label}
                             count={chip.count}
+                            locale={locale}
+                            chipMeta={{ kind: 'cluster', clusterId: chip.id }}
                           />
                         </button>
                       );
@@ -4339,6 +4366,12 @@ export default function KoreaThemeScenicPage() {
                           <FilterChipLabel
                             label={chip.label}
                             count={chip.count}
+                            locale={locale}
+                            chipMeta={{
+                              kind: 'hub',
+                              code: chip.hubId,
+                              hub: resolveCityAttractionHub(chip.hubId),
+                            }}
                           />
                         </button>
                       );
@@ -4360,6 +4393,7 @@ export default function KoreaThemeScenicPage() {
                     onOpen={openSpot}
                     favorited={favoriteIds.has(String(spot.id))}
                     onToggleFavorite={handleToggleFavorite}
+                    locale={locale}
                   />
                 </li>
               ))}
@@ -4541,6 +4575,8 @@ export default function KoreaThemeScenicPage() {
                           <FilterChipLabel
                             label={r}
                             count={heritageRegionCountsForChips[r]}
+                            locale={locale}
+                            chipMeta={{ kind: 'major' }}
                           />
                         </button>
                       );
@@ -4575,6 +4611,8 @@ export default function KoreaThemeScenicPage() {
                           <FilterChipLabel
                             label={chip.label}
                             count={heritageAreaCounts[chip.code]}
+                            locale={locale}
+                            chipMeta={{ kind: 'area', code: chip.code }}
                           />
                         </button>
                       );
@@ -4609,6 +4647,8 @@ export default function KoreaThemeScenicPage() {
                           <FilterChipLabel
                             label={chip.label}
                             count={chip.count}
+                            locale={locale}
+                            chipMeta={{ kind: 'heritage' }}
                           />
                         </button>
                       );
@@ -4651,6 +4691,7 @@ export default function KoreaThemeScenicPage() {
                       onOpen={openSpot}
                       favorited={favoriteIds.has(String(spot.id))}
                       onToggleFavorite={handleToggleFavorite}
+                      locale={locale}
                     />
                   </li>
                 ))}
@@ -4794,6 +4835,8 @@ export default function KoreaThemeScenicPage() {
                         <FilterChipLabel
                           label={r}
                           count={chipCounts.regionCounts?.[r]}
+                          locale={locale}
+                          chipMeta={{ kind: 'major' }}
                         />
                       </button>
                     );
@@ -4828,6 +4871,8 @@ export default function KoreaThemeScenicPage() {
                         <FilterChipLabel
                           label={chip.label}
                           count={tourAreaCounts[chip.code]}
+                          locale={locale}
+                          chipMeta={{ kind: 'area', code: chip.code }}
                         />
                       </button>
                     );
@@ -4862,6 +4907,8 @@ export default function KoreaThemeScenicPage() {
                         <FilterChipLabel
                           label={chip.label}
                           count={chipCounts.cat1Counts[chip.code]}
+                          locale={locale}
+                          chipMeta={{ kind: 'tourCat', code: chip.code }}
                         />
                       </button>
                     );
@@ -4901,6 +4948,8 @@ export default function KoreaThemeScenicPage() {
                         <FilterChipLabel
                           label={chip.label}
                           count={chipCounts.cat2Counts[chip.code]}
+                          locale={locale}
+                          chipMeta={{ kind: 'tourCat', code: chip.code }}
                         />
                       </button>
                     );
@@ -4940,6 +4989,8 @@ export default function KoreaThemeScenicPage() {
                         <FilterChipLabel
                           label={chip.label}
                           count={chipCounts.cat3Counts[chip.code]}
+                          locale={locale}
+                          chipMeta={{ kind: 'tourCat', code: chip.code }}
                         />
                       </button>
                     );
@@ -4985,6 +5036,7 @@ export default function KoreaThemeScenicPage() {
                       onOpen={openSpot}
                       favorited={favoriteIds.has(String(spot.id))}
                       onToggleFavorite={handleToggleFavorite}
+                      locale={locale}
                     />
                   </li>
                 ))}
@@ -5102,6 +5154,7 @@ export default function KoreaThemeScenicPage() {
             locateActive={mapNearActive}
             onLocateSuccess={handleMapLocateSuccess}
             onClearLocate={clearMapNear}
+            locale={locale}
           />
         </div>
       ) : null}

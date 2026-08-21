@@ -1,5 +1,10 @@
 import { sidoListPhrase } from '../Korea/festivalRegionTags.js';
 import {
+  localizedAreaCodeLabel,
+  localizedScenicMajorRegion,
+  localizedSidoListPhrase,
+} from '../../i18n/koreaRegionLabels.js';
+import {
   labelScenicAreaCode,
   listScenicRegionAreas,
 } from '../Home/lib/koreaTourAttractionMap.js';
@@ -9,8 +14,9 @@ import {
  * @param {string | null | undefined} areaCode
  * @param {string | null | undefined} [hubName]
  * @param {import('i18next').TFunction} [t]
+ * @param {string} [locale]
  */
-export function scenicDbCatalogHeading(region, areaCode, hubName, t) {
+export function scenicDbCatalogHeading(region, areaCode, hubName, t, locale = 'ko') {
   const hub = String(hubName || '').trim();
   const placeFromHub = hub || null;
   if (placeFromHub) {
@@ -22,19 +28,25 @@ export function scenicDbCatalogHeading(region, areaCode, hubName, t) {
   const code =
     areaCode || (areas.length === 1 ? areas[0].code : null);
   if (code) {
-    const phrase =
-      sidoListPhrase(code) || labelScenicAreaCode(code) || region || null;
+    const phrase = localizedSidoListPhrase(
+      locale,
+      code,
+      sidoListPhrase(code) || labelScenicAreaCode(code) || '',
+    );
     const place =
-      phrase || (t ? t('korea.common.nationwide') : '전국');
+      phrase ||
+      localizedAreaCodeLabel(locale, code, labelScenicAreaCode(code) || '') ||
+      (t ? t('korea.common.nationwide') : '전국');
     return t
       ? t('korea.theme.scenicCatalogAttractions', { place })
       : `${place} 관광지`;
   }
   const r = String(region || '').trim();
   if (r) {
+    const place = localizedScenicMajorRegion(locale, r);
     return t
-      ? t('korea.theme.scenicCatalogAttractions', { place: r })
-      : `${r} 관광지`;
+      ? t('korea.theme.scenicCatalogAttractions', { place })
+      : `${place} 관광지`;
   }
   const nationwide = t ? t('korea.common.nationwide') : '전국';
   return t

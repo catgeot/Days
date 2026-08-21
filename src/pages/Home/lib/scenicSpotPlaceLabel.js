@@ -4,6 +4,12 @@ import {
   labelScenicAreaCode,
   scenicAreaCodeForHubId,
 } from './koreaTourAttractionMap.js';
+import {
+  localizedAreaCodeLabel,
+  localizedHubLabel,
+  localizedSidoShort,
+  localizedSubregionLabel,
+} from '../../../i18n/koreaRegionLabels.js';
 import { stripKoAdminSuffix } from '../../../utils/mrtStayQuery.js';
 
 /** koreaAreaCodes.byHubId 미등록 curated hub → 시도 약칭 */
@@ -35,9 +41,10 @@ const SINGLE_PROVINCE_REGION = new Set(['강원', '제주']);
  *   hubId?: string | null,
  *   hubName?: string | null,
  * } | null | undefined} spot
+ * @param {string} [locale]
  * @returns {string}
  */
-export function formatScenicSpotPlaceLabel(spot) {
+export function formatScenicSpotPlaceLabel(spot, locale = 'ko') {
   if (!spot) return '';
 
   const hubId = String(spot.hubId || '')
@@ -46,24 +53,35 @@ export function formatScenicSpotPlaceLabel(spot) {
   const areaCode =
     String(spot.areaCode ?? '').trim() || scenicAreaCodeForHubId(hubId) || '';
   const region = String(spot.region || '').trim();
-  const sido = String(
+  const sidoRaw = String(
     spot.areaLabel ||
       labelScenicAreaCode(areaCode) ||
       HUB_SIDO_FALLBACK[hubId] ||
       (SINGLE_PROVINCE_REGION.has(region) ? region : '') ||
       '',
   ).trim();
+  const sido =
+    localizedAreaCodeLabel(locale, areaCode, sidoRaw) ||
+    localizedSidoShort(locale, sidoRaw) ||
+    sidoRaw;
 
+  const hub = hubId ? resolveCityAttractionHub(hubId) : null;
   const hubName =
-    String(spot.hubName || '').trim() ||
-    (hubId ? String(resolveCityAttractionHub(hubId)?.name || '') : '');
+    localizedHubLabel(locale, {
+      ...hub,
+      name: String(spot.hubName || '').trim() || hub?.name,
+      hubId,
+    }) || '';
 
   const fromAddr =
     extractTourAttractionSigungu(spot.addr1, spot.addr2) ||
     extractTourAttractionSigungu(spot.locality) ||
     '';
-  const cityRaw = fromAddr || hubName;
-  const city = stripKoAdminSuffix(cityRaw) || String(cityRaw || '').trim();
+  const cityRaw = fromAddr || hub?.name || '';
+  const city = localizedSubregionLabel(
+    locale,
+    stripKoAdminSuffix(cityRaw) || String(cityRaw || '').trim(),
+  );
 
   if (!sido && !city) return region;
   if (!city || sido === city) return sido || city;

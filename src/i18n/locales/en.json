@@ -1138,6 +1138,12 @@
       "heritageDetail": "National heritage scenic site",
       "spotDetail": "Spot details"
     },
+    "region": {
+      "unit": {
+        "district": "District",
+        "cityCounty": "City/county"
+      }
+    },
     "recentSearch": {
       "ariaLabel": "Recent searches",
       "heading": "Recent",
@@ -1163,6 +1169,7 @@
       "emptySearch": "No festivals match your search.",
       "emptyFilter": "No festivals match this filter.",
       "mapPicked": "{{count}} picked on map",
+      "mapPointCount": "Points",
       "nearPanelMeta": "Within {{km}} km · {{count}}",
       "nearEmptyNow": "No festivals now within {{km}} km. Try another time tab.",
       "nearEmpty": "No festivals within {{km}} km. Try another time tab.",
