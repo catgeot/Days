@@ -125,19 +125,18 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#43h 완료)**: `update-place-wiki` locale+`@en` · `watsonPrompts.ts` · **`useWikiData` 매거진/왓슨 읽기 분리** · Edge 재배포 ✅ · **main push 후 PROD QA**
+**상태 (#43i PROD QA ✅)**: 왓슨 Refresh EN 본문 · KO 폴백 쉘 · main `dec6d957`
 
-**다음 (#43i)** — `?lang=en` `/place/*/wiki` Refresh → EN 왓슨 본문 · GT 일괄 백필 금지.
+**다음 (#43j)** — `#43` 최적화 잔여(§13 B·C) · GT 일괄 백필 합의 전 금지
 
 **다음 제시어**:
 
 ```
-영문화 #43i, 왓슨 PROD QA
+영문화 #43j, 최적화 잔여
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-main · ?lang=en · /place/torres-del-paine/wiki · Refresh 후 EN 왓슨 본문
-금지: GT 일괄 백필
+main · i18n-en-plan §13 B·C · GT 백필 금지
 ```
 
 ### #23 브라우저 locale 자동 — 완료

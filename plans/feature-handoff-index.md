@@ -62,8 +62,8 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **main** `#43h` 왓슨 locale · `useWikiData` 매거진/왓슨 읽기 분리 · PROD push 대기 |
-| **main tip** | (이번 push 후) |
+| **상태** | **main** `#43i` 왓슨 PROD QA ✅ · `#43h` locale+읽기 분리 완료 |
+| **main tip** | `dec6d957` |
 | **브랜치** | `main` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·**§13 B·C** |
 | **일지** | [`2026-08-21-project-log.md`](./2026-08-21-project-log.md) |
