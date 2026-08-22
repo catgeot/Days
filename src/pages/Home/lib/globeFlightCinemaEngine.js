@@ -103,6 +103,7 @@ const AIRPORT_DOT_PAINT = {
 
 const AIRPORT_LABEL_LAYOUT = {
   'text-field': ['get', 'iata'],
+  'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
   'symbol-sort-key': ['match', AIRPORT_ROLE, 'origin', 12, 'dest', 10, 'hub', 8, 6],
   'text-size': ['interpolate', ['linear'], ['zoom'], 1, 15, 4, 19, 8, 24],
   'text-offset': [
@@ -196,7 +197,7 @@ export function isFlightCinemaLayer(layerId = '') {
     || id === FLIGHT_CINEMA_DEST_LAYER_ID;
 }
 
-export function setupFlightCinemaLayers(map, { visible = true } = {}) {
+export function setupFlightCinemaLayers(map, { visible = true, promoteZIndex = false } = {}) {
   if (!isGlobeMapStyleReady(map)) return false;
 
   try {
@@ -262,7 +263,9 @@ export function setupFlightCinemaLayers(map, { visible = true } = {}) {
         } else {
           map.setLayoutProperty(layerId, 'visibility', 'none');
         }
-        map.moveLayer(layerId);
+        if (promoteZIndex) {
+          map.moveLayer(layerId);
+        }
       } catch {
         // Style may be mid-transition.
       }
@@ -516,8 +519,8 @@ export function createFlightCinemaEngine(map, options = {}) {
     const cameraView = computeRouteCameraView(fullArc, params.origin, params.dest, flyZoom);
 
     if (isFlightCinemaGlobeReady(map)) {
-      setupFlightCinemaLayers(map, { visible: true });
-    } else if (!setupFlightCinemaLayers(map, { visible: true })) {
+      setupFlightCinemaLayers(map, { visible: true, promoteZIndex: true });
+    } else if (!setupFlightCinemaLayers(map, { visible: true, promoteZIndex: true })) {
       return false;
     }
 
@@ -528,12 +531,28 @@ export function createFlightCinemaEngine(map, options = {}) {
     cancelled = false;
     if (params.onComplete) onCompleteRef = params.onComplete;
 
+    const endpointFc = routeAirportsFeature(
+      normalizedOriginIata,
+      normalizedDestIata,
+      params.hubIatas
+    );
+
     safeMapUpdate(map, () => {
-      map.getSource(FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID)?.setData(
-        routeAirportsFeature(normalizedOriginIata, normalizedDestIata, params.hubIatas)
-      );
       map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)?.setData(arcLineFeature([originLngLat]));
     });
+
+    // Symbol placement races flyTo + per-frame arc updates — defer IATA labels (mapbox-gl 3.x).
+    const applyEndpointLabels = () => {
+      if (!active || cancelled || gen !== runGen) return;
+      safeMapUpdate(map, () => {
+        map.getSource(FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID)?.setData(endpointFc);
+      });
+    };
+    if (typeof requestAnimationFrame === 'function') {
+      requestAnimationFrame(() => requestAnimationFrame(applyEndpointLabels));
+    } else {
+      applyEndpointLabels();
+    }
 
     autoRotateOff(map);
 

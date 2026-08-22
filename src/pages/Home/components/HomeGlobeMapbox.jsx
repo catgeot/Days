@@ -1053,9 +1053,11 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         setRegionHighlight(map, focusedFaceRegionRef.current);
       }
     }
-    setupFlightCinemaLayers(map, { visible: flightCinemaActiveRef.current });
-    if (isFlightCinemaGlobeReady(map)) {
-      flightCinemaLayersLatchedRef.current = true;
+    if (!flightCinemaActiveRef.current) {
+      setupFlightCinemaLayers(map, { visible: false });
+      if (isFlightCinemaGlobeReady(map)) {
+        flightCinemaLayersLatchedRef.current = true;
+      }
     }
     updateGateoMarkerSource(map, markerGeoJSON);
     restoreReachBoundaryLayersIfNeeded();

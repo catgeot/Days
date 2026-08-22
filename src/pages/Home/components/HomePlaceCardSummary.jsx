@@ -7,6 +7,7 @@ import {
   estimateFlightHoursChain,
   estimateFlightLegHours,
   getAirportHubCoords,
+  normalizeFlightRouteIataChain,
   resolveSummaryFlightCinemaOd,
 } from '../lib/globeFlightCinema.js';
 import {
@@ -171,7 +172,11 @@ export default function HomePlaceCardSummary({
       .trim()
       .toUpperCase();
     const dest = getAirportHubCoords(destIata) || syncFlightPreview.dest;
-    const routeIatas = [syncFlightPreview.originIata, ...hubIatas, destIata];
+    const routeIatas = normalizeFlightRouteIataChain(
+      syncFlightPreview.originIata,
+      hubIatas,
+      destIata
+    );
     const chainPoints = [
       syncFlightPreview.origin,
       ...hubIatas.map((iata) => getAirportHubCoords(iata)).filter(Boolean),
