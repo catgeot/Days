@@ -27,7 +27,6 @@ export const FLIGHT_CINEMA_LAYER_IDS = [
   FLIGHT_CINEMA_ARC_GLOW_LAYER_ID,
   FLIGHT_CINEMA_ARC_LAYER_ID,
   FLIGHT_CINEMA_AIRPORT_LAYER_ID,
-  FLIGHT_CINEMA_AIRPORT_LABEL_LAYER_ID,
 ];
 
 const EMPTY_FC = { type: 'FeatureCollection', features: [] };
@@ -101,35 +100,6 @@ const AIRPORT_DOT_PAINT = {
   'circle-stroke-color': '#ffffff',
 };
 
-const AIRPORT_LABEL_LAYOUT = {
-  'text-field': ['get', 'iata'],
-  'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
-  'symbol-sort-key': ['match', AIRPORT_ROLE, 'origin', 12, 'dest', 10, 'hub', 8, 6],
-  'text-size': ['interpolate', ['linear'], ['zoom'], 1, 15, 4, 19, 8, 24],
-  'text-offset': [
-    'interpolate',
-    ['linear'],
-    ['zoom'],
-    1,
-    ['literal', [0.75, 0]],
-    4,
-    ['literal', [0.9, 0]],
-    8,
-    ['literal', [1.1, 0]],
-  ],
-  'text-anchor': 'left',
-  'text-max-width': 8,
-  'text-allow-overlap': true,
-  'text-ignore-placement': true,
-  'text-letter-spacing': 0.08,
-};
-
-const AIRPORT_LABEL_PAINT = {
-  'text-color': '#ffffff',
-  'text-halo-color': 'rgba(2,6,23,0.95)',
-  'text-halo-width': 1.5,
-};
-
 function routeAirportsFeature(originIata, destIata, hubIatas = []) {
   /** @type {import('geojson').Feature[]} */
   const features = [];
@@ -157,7 +127,11 @@ function routeAirportsFeature(originIata, destIata, hubIatas = []) {
 }
 
 function removeLegacyAirportLayers(map) {
-  for (const legacyId of [FLIGHT_CINEMA_ORIGIN_LAYER_ID, FLIGHT_CINEMA_DEST_LAYER_ID]) {
+  for (const legacyId of [
+    FLIGHT_CINEMA_ORIGIN_LAYER_ID,
+    FLIGHT_CINEMA_DEST_LAYER_ID,
+    FLIGHT_CINEMA_AIRPORT_LABEL_LAYER_ID,
+  ]) {
     if (map.getLayer(legacyId)) {
       try {
         map.removeLayer(legacyId);
@@ -179,22 +153,12 @@ function applyLayerPaint(map, layerId, paint) {
   }
 }
 
-function applyLayerLayout(map, layerId, layout) {
-  if (!map.getLayer(layerId)) return;
-  for (const [key, value] of Object.entries(layout)) {
-    try {
-      map.setLayoutProperty(layerId, key, value);
-    } catch {
-      // Style may be mid-transition.
-    }
-  }
-}
-
 export function isFlightCinemaLayer(layerId = '') {
   const id = String(layerId);
   return FLIGHT_CINEMA_LAYER_IDS.includes(id)
     || id === FLIGHT_CINEMA_ORIGIN_LAYER_ID
-    || id === FLIGHT_CINEMA_DEST_LAYER_ID;
+    || id === FLIGHT_CINEMA_DEST_LAYER_ID
+    || id === FLIGHT_CINEMA_AIRPORT_LABEL_LAYER_ID;
 }
 
 export function setupFlightCinemaLayers(map, { visible = true, promoteZIndex = false } = {}) {
@@ -239,19 +203,6 @@ export function setupFlightCinemaLayers(map, { visible = true, promoteZIndex = f
       });
     } else {
       applyLayerPaint(map, FLIGHT_CINEMA_AIRPORT_LAYER_ID, AIRPORT_DOT_PAINT);
-    }
-
-    if (!map.getLayer(FLIGHT_CINEMA_AIRPORT_LABEL_LAYER_ID)) {
-      map.addLayer({
-        id: FLIGHT_CINEMA_AIRPORT_LABEL_LAYER_ID,
-        type: 'symbol',
-        source: FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID,
-        layout: AIRPORT_LABEL_LAYOUT,
-        paint: AIRPORT_LABEL_PAINT,
-      });
-    } else {
-      applyLayerLayout(map, FLIGHT_CINEMA_AIRPORT_LABEL_LAYER_ID, AIRPORT_LABEL_LAYOUT);
-      applyLayerPaint(map, FLIGHT_CINEMA_AIRPORT_LABEL_LAYER_ID, AIRPORT_LABEL_PAINT);
     }
 
     for (const layerId of FLIGHT_CINEMA_LAYER_IDS) {
@@ -299,7 +250,6 @@ export function isFlightCinemaGlobeReady(map) {
       && map.getSource(FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID)
       && map.getLayer(FLIGHT_CINEMA_ARC_LAYER_ID)
       && map.getLayer(FLIGHT_CINEMA_AIRPORT_LAYER_ID)
-      && map.getLayer(FLIGHT_CINEMA_AIRPORT_LABEL_LAYER_ID)
     );
   } catch {
     // getLayer/getSource throw while style is mid-load.
@@ -538,21 +488,9 @@ export function createFlightCinemaEngine(map, options = {}) {
     );
 
     safeMapUpdate(map, () => {
+      map.getSource(FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID)?.setData(endpointFc);
       map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)?.setData(arcLineFeature([originLngLat]));
     });
-
-    // Symbol placement races flyTo + per-frame arc updates — defer IATA labels (mapbox-gl 3.x).
-    const applyEndpointLabels = () => {
-      if (!active || cancelled || gen !== runGen) return;
-      safeMapUpdate(map, () => {
-        map.getSource(FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID)?.setData(endpointFc);
-      });
-    };
-    if (typeof requestAnimationFrame === 'function') {
-      requestAnimationFrame(() => requestAnimationFrame(applyEndpointLabels));
-    } else {
-      applyEndpointLabels();
-    }
 
     autoRotateOff(map);
 

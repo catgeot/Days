@@ -16,3 +16,9 @@
 - **원인** `syncGateoMarkerLayers`가 시네마 중 매번 `moveLayer` · symbol+flyTo+arc rAF 동시 갱신
 - **수정** `text-font` 명시 · `promoteZIndex` 시에만 `moveLayer` · endpoint `setData` 2×rAF 지연 · 시네마 활성 시 레이어 재동기화 스킵
 - **VERIFY** `npm run build` PASS
+
+## 영문화 #44b — IATA HTML Marker 복원
+
+- **원인** i18n `setLanguage` 후 Mapbox **symbol** 레이어 `continuePlacement` 크래시 — 영문화 이전에도 symbol이었으나 언어 전환·배치 경합으로 악화
+- **수정** IATA 텍스트 → **react-map-gl Marker** (`FlightCinemaAirportMarkers`) · symbol 레이어 제거
+- **VERIFY** `npm run build` PASS

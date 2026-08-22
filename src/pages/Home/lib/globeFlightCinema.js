@@ -68,6 +68,31 @@ export function getAirportHubCoords(iata) {
   return getAirportsIndexCoords(code);
 }
 
+/**
+ * 항공 시네마 HTML Marker용 — routeIatas → 좌표·역할.
+ * Mapbox symbol 레이어는 i18n setLanguage 후 continuePlacement 크래시 → Marker 사용.
+ * @param {string[]} routeIatas
+ * @returns {{ iata: string, lng: number, lat: number, role: 'origin' | 'hub' | 'dest' }[]}
+ */
+export function buildFlightCinemaAirportMarkers(routeIatas = []) {
+  const codes = (routeIatas ?? [])
+    .map((code) => String(code || '').trim().toUpperCase())
+    .filter((code) => code.length === 3);
+  if (!codes.length) return [];
+
+  const origin = codes[0];
+  const dest = codes[codes.length - 1];
+
+  return codes
+    .map((iata) => {
+      const hub = getAirportHubCoords(iata);
+      if (!hub) return null;
+      const role = iata === origin ? 'origin' : iata === dest ? 'dest' : 'hub';
+      return { iata, lng: hub.lng, lat: hub.lat, role };
+    })
+    .filter(Boolean);
+}
+
 /** @param {{ lat: number, lng: number }} a @param {{ lat: number, lng: number }} b */
 export function haversineKm(a, b) {
   const R = 6371;

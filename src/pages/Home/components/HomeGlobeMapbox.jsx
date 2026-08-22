@@ -93,6 +93,8 @@ import { passesGlobeTierPolicy } from '../lib/globeSpotVisibility';
 import { flushCurationGlobeSyncIfPending } from '../lib/curationPlaceBridge.js';
 import { useLocale } from '../../../i18n/LocaleProvider';
 import { useTranslation } from 'react-i18next';
+import { useOptionalFlightCinemaRoute } from '../lib/FlightCinemaContext.jsx';
+import FlightCinemaAirportMarkers from './FlightCinemaAirportMarkers.jsx';
 
 function LanguageControl({ locale }) {
   const mapLanguage = locale?.startsWith('en') ? 'en' : 'ko';
@@ -395,6 +397,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 }, ref) => {
   const { locale } = useLocale();
   const { t } = useTranslation();
+  const { active: flightCinemaActive, routeIatas: flightCinemaRouteIatas } = useOptionalFlightCinemaRoute();
   const mapRef = useRef(null);
   const interactionRef = useRef(false);
   const autoRotateRef = useRef(!pauseRender);
@@ -2426,6 +2429,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         fog={fogConfig}
       >
         {globeTheme !== 'bright' && <LanguageControl locale={locale} />}
+
+        {flightCinemaActive ? (
+          <FlightCinemaAirportMarkers routeIatas={flightCinemaRouteIatas} />
+        ) : null}
 
         {ripples.map(ripple => (
           <Marker

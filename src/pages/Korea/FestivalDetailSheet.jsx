@@ -282,11 +282,10 @@ function toScenicModalSpot(spot, locale = 'ko') {
     region: spot.region,
     locality: spot.locality,
     areaLabel: spot.areaLabel,
-    areaCode: spot.areaCode,
+    areaCode: spot.areaCode || null,
     nameEn: spot.attractionNameEn || null,
     lat: spot.lat,
     lng: spot.lng,
-    areaCode: spot.areaCode || null,
   };
 }
 

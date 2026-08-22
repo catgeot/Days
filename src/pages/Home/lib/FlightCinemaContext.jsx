@@ -451,6 +451,7 @@ export function FlightCinemaProvider({
   const value = useMemo(
     () => ({
       flightCinemaActive: Boolean(active),
+      flightCinemaRouteIatas: active?.routeIatas ?? [],
       flightCinemaRequestPending: requestPending,
       requestFlightCinema,
       closeFlightCinema,
@@ -538,4 +539,13 @@ export function useFlightCinema() {
 /** Provider 밖·Tour 중 — cinema 생략 */
 export function useOptionalFlightCinemaRequest() {
   return useContext(FlightCinemaContext)?.requestFlightCinema ?? null;
+}
+
+/** 지구본 HTML IATA Marker — Provider 밖이면 비활성 */
+export function useOptionalFlightCinemaRoute() {
+  const ctx = useContext(FlightCinemaContext);
+  return {
+    active: Boolean(ctx?.flightCinemaActive),
+    routeIatas: ctx?.flightCinemaRouteIatas ?? [],
+  };
 }
