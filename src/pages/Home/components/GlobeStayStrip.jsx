@@ -72,6 +72,7 @@ import {
   GuestStepper,
   StayRangeCalendar,
   formatStayDateLabel,
+  formatStayDateBarLabel,
   DESKTOP_MONTHS,
 } from './stayDateControls';
 import Logo from './Logo';
@@ -247,8 +248,9 @@ function StayDateBar({
   /** PC만 — Trip 항공+호텔 보조 CTA (모바일·항공 경로 없으면 null) */
   flightCta = null,
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isLg = useIsLg();
+  const compactDateBar = i18n.language?.startsWith('en');
   const rootRef = useRef(null);
   const [open, setOpen] = useState(false);
   const [draftIn, setDraftIn] = useState(checkIn);
@@ -364,21 +366,29 @@ function StayDateBar({
           aria-hidden="true"
         />
         <span className="flex min-w-0 flex-1 items-center justify-center gap-1">
-          <span className="shrink-0 text-[11px] font-semibold text-amber-100/80">{t('home.stayStrip.checkIn')}</span>
-          <span className="truncate text-sm font-bold tabular-nums text-amber-50">
-            {formatStayDateLabel(draftIn)}
+          <span className={compactDateBar ? 'sr-only' : 'shrink-0 text-[11px] font-semibold text-amber-100/80'}>
+            {t('home.stayStrip.checkIn')}
+          </span>
+          <span className={`text-sm font-bold tabular-nums text-amber-50 ${compactDateBar ? 'shrink-0 whitespace-nowrap' : 'truncate'}`}>
+            {formatStayDateBarLabel(draftIn, i18n.language)}
           </span>
         </span>
         <span
           className="shrink-0 rounded-md bg-amber-400/20 px-1.5 py-0.5 text-xs font-bold tabular-nums text-amber-100"
           aria-label={draftNights > 0 ? t('home.stayStrip.nights', { count: draftNights }) : t('home.stayStrip.schedule')}
         >
-          {draftNights > 0 ? t('home.stayStrip.nights', { count: draftNights }) : '·'}
+          {draftNights > 0
+            ? (compactDateBar
+              ? t('home.stayStrip.nightsShort', { count: draftNights })
+              : t('home.stayStrip.nights', { count: draftNights }))
+            : '·'}
         </span>
         <span className="flex min-w-0 flex-1 items-center justify-center gap-1">
-          <span className="shrink-0 text-[11px] font-semibold text-amber-100/80">{t('home.stayStrip.checkOut')}</span>
-          <span className="truncate text-sm font-bold tabular-nums text-amber-50">
-            {formatStayDateLabel(draftOut)}
+          <span className={compactDateBar ? 'sr-only' : 'shrink-0 text-[11px] font-semibold text-amber-100/80'}>
+            {t('home.stayStrip.checkOut')}
+          </span>
+          <span className={`text-sm font-bold tabular-nums text-amber-50 ${compactDateBar ? 'shrink-0 whitespace-nowrap' : 'truncate'}`}>
+            {formatStayDateBarLabel(draftOut, i18n.language)}
           </span>
         </span>
       </button>

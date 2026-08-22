@@ -27,11 +27,24 @@ function addDaysYmd(ymd, days) {
   return toYmd(d);
 }
 
-/** YYYY-MM-DD → 2026.7.20 */
+/** YYYY-MM-DD → 2026.7.20 (KO) · Mar 15 (EN bar) */
 export function formatStayDateLabel(ymd) {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(ymd || '').trim());
   if (!m) return ymd || i18n.t('home.stayDate.pickDate');
   return `${Number(m[1])}.${Number(m[2])}.${Number(m[3])}`;
+}
+
+/** Compact label for stay strip date bar — EN uses short month to avoid truncation. */
+export function formatStayDateBarLabel(ymd, locale = 'ko') {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(ymd || '').trim());
+  if (!m) return ymd || i18n.t('home.stayDate.pickDate');
+  if (locale?.startsWith('en')) {
+    const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 12, 0, 0, 0);
+    if (!Number.isNaN(d.getTime())) {
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+  }
+  return formatStayDateLabel(ymd);
 }
 
 function formatMonthTitle(viewMonth, t) {
