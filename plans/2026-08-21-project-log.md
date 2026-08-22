@@ -169,3 +169,10 @@ main · ?lang=en · i18n-en-plan §13 B
 - **#43h** `update-place-wiki` `locale`·`@en` EN 프롬프트 (차후)
 - **GT 백필** 보류 — `sample-magazine-translate-quality.mjs` 참고
 
+## 영문화 #43h — 로컬 왓슨 locale · update-place-wiki EN 분기
+
+- **Edge** `update-place-wiki` — `locale` · `magazineStorageId`(`@en`) · `watsonPrompts.ts` EN/KO 프롬프트
+- **클라** `PlaceWikiDetailsView` — `locale` 전달 · EN 지명(`getLocalizedPlaceName`) · KO 폴백 쉘(섹션 EN·`articleInKorean`)
+- **VERIFY** `smoke:watson-locale` · `smoke:magazine-locale` · `audit:i18n` · `build` PASS
+- **배포** `npx supabase functions deploy update-place-wiki` (사람) · **GT 일괄 백필 금지**
+

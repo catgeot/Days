@@ -16,8 +16,12 @@ import { koreanApiTextProps } from '../../../i18n/koreanApiText';
 import {
   getMagazineSectionTitle,
   localizeMagazineContentText,
+  localizeWatsonContentText,
+  magazineStorageIdForLocale,
   shouldLocalizeMagazineShell,
+  shouldLocalizeWatsonShell,
 } from '../common/magazineLocale';
+import { getLocalizedCountryName, getLocalizedPlaceName } from '../common/locationDisplay';
 import CopyableText from '../common/CopyableText';
 import PlaceWikiLocatorMap from '../common/PlaceWikiLocatorMap';
 import { mobilePlaceHeaderSpacerClass, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
@@ -62,7 +66,9 @@ const PlaceWikiDetailsView = ({
   const { t, i18n } = useTranslation();
   const appLocale = normalizeAppLocale(i18n.language);
   const magazineShellMode = shouldLocalizeMagazineShell(appLocale, wikiData);
+  const watsonShellMode = shouldLocalizeWatsonShell(appLocale, wikiData);
   const magazineKoBodyProps = koreanApiTextProps(magazineShellMode);
+  const watsonKoBodyProps = koreanApiTextProps(watsonShellMode);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isMagazineGenerating, setIsMagazineGenerating] = useState(false);
@@ -372,11 +378,11 @@ const PlaceWikiDetailsView = ({
 
   const handleRequestAiInfo = useCallback(async (eventOrRemoteName, forceUpdate = false) => {
     setIsAiExpanded(true);
-    // 스크롤은 isAiExpanded 변경 시 useEffect에서 처리됨
 
     const hasCachedInfo = wikiData?.ai_practical_info && wikiData.ai_practical_info !== '[[LOADING]]';
+    const hasEnCachedInfo = hasCachedInfo && !shouldLocalizeWatsonShell(appLocale, wikiData);
 
-    if (!forceUpdate && hasCachedInfo) {
+    if (!forceUpdate && hasEnCachedInfo) {
         if (import.meta.env.DEV) {
             console.log("[PlaceWikiDetailsView] 기존 캐시된 응답 있음 - 네트워크 호출 생략");
         }
@@ -394,16 +400,53 @@ const PlaceWikiDetailsView = ({
       }
       const isClickEvent = eventOrRemoteName && typeof eventOrRemoteName === 'object' && 'type' in eventOrRemoteName;
       const remoteName = isClickEvent ? null : eventOrRemoteName;
-      let location = remoteName || requestInfoRef.current.placeName || requestInfoRef.current.wikiTitle || "이 장소";
 
-      if (countryName && countryName !== "Explore" && countryName !== "Ocean" && countryName !== "바다" && countryName !== "해양" && !location.includes(countryName)) {
-          location = `${location} ${countryName}`;
+      const canonicalLoc = mergeCanonicalTravelSpot(location);
+      const resolved = resolveTravelSpotFromLocation(location);
+      const isHubAttr = isHubAttractionLocation(location);
+      const slug = isHubAttr
+          ? (
+              location?.slug ||
+              canonicalLoc?.slug ||
+              (getPlaceStableKey(location) || '').toLowerCase() ||
+              null
+            )
+          : (
+              resolved?.spot?.slug ||
+              canonicalLoc?.canonical_slug ||
+              canonicalLoc?.slug ||
+              location?.slug ||
+              (getPlaceStableKey(canonicalLoc) || '').toLowerCase()
+            );
+      const placeId =
+          slug ||
+          wikiData?.place_id ||
+          requestInfoRef.current.placeId ||
+          placeName;
+      const localizedName = getLocalizedPlaceName(canonicalLoc || location, appLocale)
+          || remoteName
+          || requestInfoRef.current.placeName
+          || requestInfoRef.current.wikiTitle
+          || placeName
+          || wikiData?.title
+          || t('place.fallback.destination');
+      let locationLabel = localizedName;
+
+      const localizedCountry = getLocalizedCountryName(canonicalLoc || location, appLocale) || countryName;
+
+      if (
+        localizedCountry &&
+        localizedCountry !== 'Explore' &&
+        localizedCountry !== 'Ocean' &&
+        localizedCountry !== '바다' &&
+        localizedCountry !== '해양' &&
+        !locationLabel.includes(localizedCountry)
+      ) {
+          locationLabel = `${locationLabel} ${localizedCountry}`;
       }
 
-      const placeId = requestInfoRef.current.placeId;
-
       if (!placeId) {
-          setError("장소 정보를 확인할 수 없습니다.");
+          setError(t('place.wiki.magazinePlaceUnknown'));
           return;
       }
 
@@ -411,23 +454,32 @@ const PlaceWikiDetailsView = ({
       setError(null);
       setLocalAiResponse(null);
 
-      if (import.meta.env.DEV) {
-          console.log("[PlaceWikiDetailsView] Edge Function에서 DB 레코드 생성/업데이트 처리");
-      }
-
       const oldAiInfo = wikiData?.ai_practical_info !== '[[LOADING]]' ? wikiData?.ai_practical_info : localAiResponse;
 
       try {
           if (import.meta.env.DEV) {
-              console.log("[PlaceWikiDetailsView] Supabase Edge Function 호출");
+              console.log('[PlaceWikiDetailsView] update-place-wiki 호출', {
+                placeId,
+                locationName: locationLabel,
+                slug,
+                locale: appLocale,
+              });
           }
           const { data, error: functionError } = await supabase.functions.invoke('update-place-wiki', {
-              body: { placeId, locationName: location, oldAiInfo, forceUpdate }
+              body: {
+                placeId,
+                canonicalPlaceId: placeId,
+                locationName: locationLabel,
+                slug,
+                locale: appLocale,
+                oldAiInfo,
+                forceUpdate,
+              },
           });
 
           if (functionError) {
               console.error("[PlaceWikiDetailsView] Edge Function Error:", functionError);
-              throw new Error("정보를 가져오는데 실패했습니다.");
+              throw new Error(t('place.wiki.loadError'));
           }
 
           if (import.meta.env.DEV) {
@@ -437,17 +489,20 @@ const PlaceWikiDetailsView = ({
           if (data && data.success) {
               setLocalAiResponse(data.aiResponse);
               setLocalUpdatedAt(new Date().toISOString());
+              window.dispatchEvent(new CustomEvent('watson-updated', {
+                detail: { placeId: data.placeId || magazineStorageIdForLocale(placeId, appLocale) },
+              }));
           } else {
-              throw new Error(data?.error || "AI 응답을 생성하지 못했습니다.");
+              throw new Error(data?.error || t('place.wiki.loadError'));
           }
       } catch (err) {
           console.error('Request Error:', err);
-          setError(err.message || "오류가 발생했습니다.");
+          setError(err.message || t('place.wiki.loadError'));
       } finally {
           setIsAiLoading(false);
       }
     }
-  }, [isAiLoading, wikiData, countryName, localAiResponse]);
+  }, [appLocale, countryName, isAiLoading, location, placeName, t, wikiData, localAiResponse]);
 
   useEffect(() => {
     const currentInfo = wikiData?.ai_practical_info;
@@ -975,8 +1030,23 @@ const PlaceWikiDetailsView = ({
                             </div>
                         ) : localAiResponse ? (
                             <div className="flex flex-col gap-8">
-                                <div className="text-base md:text-lg text-gray-300 leading-[1.9] tracking-wide whitespace-pre-line break-keep font-light">
-                                    <CopyableText text={parseAiPracticalInfo(localAiResponse).wikiContent || localAiResponse} locationName={placeName || wikiData?.title} type="wiki" />
+                                {watsonShellMode && (
+                                    <p className="text-sm text-amber-200/80 break-keep" {...watsonKoBodyProps}>
+                                        {t('place.wiki.articleInKorean')}
+                                    </p>
+                                )}
+                                <div className="text-base md:text-lg text-gray-300 leading-[1.9] tracking-wide whitespace-pre-line break-keep font-light" {...watsonKoBodyProps}>
+                                    <CopyableText
+                                        text={
+                                            parseAiPracticalInfo(
+                                                watsonShellMode
+                                                    ? localizeWatsonContentText(localAiResponse, appLocale)
+                                                    : localAiResponse,
+                                            ).wikiContent || localAiResponse
+                                        }
+                                        locationName={placeName || wikiData?.title}
+                                        type="wiki"
+                                    />
                                 </div>
                                 <div className="flex items-center justify-between pt-6 border-t border-white/5">
                                     <div className="text-xs text-gray-500 font-medium">

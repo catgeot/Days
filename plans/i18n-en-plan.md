@@ -125,20 +125,19 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#43f 완료 · main `f6d29def`)**: 여행 스케치 쉘 EN · `place_id@en` · **`generate-place-magazine` Edge 배포 완료** (2026-08-22)
+**상태 (#43h 완료)**: `update-place-wiki` locale+`@en` · `watsonPrompts.ts` · **`useWikiData` 매거진/왓슨 읽기 분리** · Edge 재배포 ✅ · **main push 후 PROD QA**
 
-**다음 (#43g)** — **읽기 분리**: `useWikiData`에서 매거진(`summary`/`sections`)은 locale·`@en` 우선, **로컬 왓슨(`ai_practical_info`)은 KO `slug` 행**에서만 · `magazineScore` 왓슨 가중 제거 · PROD `?lang=en` wiki QA
-
-**이후 (#43h)** — `update-place-wiki`에 `locale`·`@en` + EN 프롬프트 (별 세션)
+**다음 (#43i)** — `?lang=en` `/place/*/wiki` Refresh → EN 왓슨 본문 · GT 일괄 백필 금지.
 
 **다음 제시어**:
 
 ```
-영문화 #43g, 왓슨·매거진 읽기 분리
+영문화 #43i, 왓슨 PROD QA
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-main · useWikiData 매거진/왓슨 분리 · Edge generate-place-magazine deploy
+main · ?lang=en · /place/torres-del-paine/wiki · Refresh 후 EN 왓슨 본문
+금지: GT 일괄 백필
 ```
 
 ### #23 브라우저 locale 자동 — 완료
