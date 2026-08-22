@@ -526,6 +526,7 @@ export function createFlightCinemaEngine(map, options = {}) {
         rafId = requestAnimationFrame(tick);
         return;
       }
+      revealFullRoute();
       animating = false;
       rafId = null;
     };
