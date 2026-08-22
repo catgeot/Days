@@ -1,12 +1,14 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Camera, MapPin, Compass, Sparkles } from 'lucide-react';
 import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
 import GalleryAttributionLink from '../common/GalleryAttributionLink';
 import { splitPlaceOverview } from '../common/placeOverviewText';
 import PlaceOverviewProse from '../common/PlaceOverviewProse';
+import { getLocalizedPlaceName } from '../common/locationDisplay';
 
 const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces = [], onRelatedClick }) => {
-    
+    const { i18n } = useTranslation();
     const isPhotoMode = !!selectedImg;
 
     const description = useMemo(() => {
@@ -147,7 +149,7 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
                                             ) : (
                                                 <Compass size={13} className="text-blue-400 group-hover:animate-pulse" />
                                             )}
-                                            {place.name}
+                                            {getLocalizedPlaceName(place.data, i18n.language) || place.name}
                                         </button>
                                     ))}
                                 </div>
