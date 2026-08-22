@@ -299,6 +299,8 @@ export default function HomePlaceCardSummary({
       destIata: flightPreview.destIata,
       origin: flightPreview.origin,
       dest: flightPreview.dest,
+      hubIatas: flightPreview.edgePending ? undefined : flightPreview.hubIatas,
+      skipEdgeHubResolve: Boolean(flightPreview && !flightPreview.edgePending),
     });
   };
 

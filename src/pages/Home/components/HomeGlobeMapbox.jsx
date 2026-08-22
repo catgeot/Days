@@ -1944,12 +1944,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     isFlightCinemaReady: () => {
       if (!mapReady || isStyleTransitioning) return false;
       if (tourActiveRef.current || flightCinemaActiveRef.current) return false;
-      // 줌 중 isStyleLoaded 깜박임은 무시 — 레이어 latch 또는 실존만 본다
-      if (flightCinemaLayersLatchedRef.current) return true;
       const map = mapRef.current?.getMap();
       if (!map || map._removed) return false;
       const ready = isFlightCinemaGlobeReady(map);
-      if (ready) flightCinemaLayersLatchedRef.current = true;
+      flightCinemaLayersLatchedRef.current = ready;
       return ready;
     },
     waitForFlightCinemaReady: (options) => {
@@ -2350,6 +2348,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         onStyleData={() => {
           const map = mapRef.current?.getMap();
           if (!map) return;
+
+          if (!map.isStyleLoaded?.()) {
+            flightCinemaLayersLatchedRef.current = false;
+          }
 
           applyEarlyMapboxGlobeLabelSuppress(map, globeTheme);
           tryRevealGlobeOverlays();

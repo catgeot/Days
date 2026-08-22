@@ -2,6 +2,7 @@ import {
   buildFlightRouteLineWithLegs,
   buildFlightArcDrawSchedule,
   computeRouteCameraView,
+  DEFAULT_FLIGHT_ORIGIN_IATA,
   getAirportHubCoords,
   resolveArcDrawAtTime,
   FLIGHT_CINEMA_DURATION_MS,
@@ -102,6 +103,7 @@ const AIRPORT_DOT_PAINT = {
 
 const AIRPORT_LABEL_LAYOUT = {
   'text-field': ['get', 'iata'],
+  'symbol-sort-key': ['match', AIRPORT_ROLE, 'origin', 12, 'dest', 10, 'hub', 8, 6],
   'text-size': ['interpolate', ['linear'], ['zoom'], 1, 15, 4, 19, 8, 24],
   'text-offset': [
     'interpolate',
@@ -131,6 +133,7 @@ function routeAirportsFeature(originIata, destIata, hubIatas = []) {
   /** @type {import('geojson').Feature[]} */
   const features = [];
   const seen = new Set();
+  const normalizedOrigin = String(originIata || DEFAULT_FLIGHT_ORIGIN_IATA).trim().toUpperCase();
 
   const pushAirport = (iata, role) => {
     const code = String(iata || '').trim().toUpperCase();
@@ -145,7 +148,7 @@ function routeAirportsFeature(originIata, destIata, hubIatas = []) {
     });
   };
 
-  pushAirport(originIata, 'origin');
+  pushAirport(normalizedOrigin, 'origin');
   for (const hubIata of hubIatas) pushAirport(hubIata, 'hub');
   pushAirport(destIata, 'dest');
 
@@ -293,6 +296,7 @@ export function isFlightCinemaGlobeReady(map) {
       && map.getSource(FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID)
       && map.getLayer(FLIGHT_CINEMA_ARC_LAYER_ID)
       && map.getLayer(FLIGHT_CINEMA_AIRPORT_LAYER_ID)
+      && map.getLayer(FLIGHT_CINEMA_AIRPORT_LABEL_LAYER_ID)
     );
   } catch {
     // getLayer/getSource throw while style is mid-load.
@@ -487,12 +491,17 @@ export function createFlightCinemaEngine(map, options = {}) {
       cleanupTimers();
     }
 
+    const normalizedOriginIata = String(params.originIata || DEFAULT_FLIGHT_ORIGIN_IATA)
+      .trim()
+      .toUpperCase();
+    const normalizedDestIata = String(params.destIata || '').trim().toUpperCase();
+
     const originLngLat = [params.origin.lng, params.origin.lat];
     const destLngLat = [params.dest.lng, params.dest.lat];
     const { coords: fullArc, legEndIndices } = buildFlightRouteLineWithLegs(originLngLat, destLngLat, {
       location: params.location ?? null,
-      originIata: params.originIata,
-      destIata: params.destIata,
+      originIata: normalizedOriginIata,
+      destIata: normalizedDestIata,
       hubIatas: params.hubIatas,
       essentialGuide: params.essentialGuide ?? null,
     });
@@ -521,7 +530,7 @@ export function createFlightCinemaEngine(map, options = {}) {
 
     safeMapUpdate(map, () => {
       map.getSource(FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID)?.setData(
-        routeAirportsFeature(params.originIata, params.destIata, params.hubIatas)
+        routeAirportsFeature(normalizedOriginIata, normalizedDestIata, params.hubIatas)
       );
       map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)?.setData(arcLineFeature([originLngLat]));
     });

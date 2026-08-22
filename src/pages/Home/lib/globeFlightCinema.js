@@ -23,7 +23,35 @@ const FLIGHT_SPEED_KMH = 850;
 /** Bar·graph hub 후보 — 단일 leg haversine 상한(일반 장거리 직항 ~14–15h + 여유). */
 export const MAX_FLIGHT_LEG_HOURS = 16;
 /** SSOT: `TRIPCOM_DEFAULT_DEPARTURE_AIRPORT` in affiliate.js */
-const DEFAULT_ORIGIN_IATA = 'ICN';
+export const DEFAULT_FLIGHT_ORIGIN_IATA = 'ICN';
+const DEFAULT_ORIGIN_IATA = DEFAULT_FLIGHT_ORIGIN_IATA;
+
+/**
+ * routeIatas SSOT — origin IATA가 비어 있으면 fallback(기본 ICN)으로 기점을 보장.
+ * @param {string} [originIata]
+ * @param {string[]} [hubIatas]
+ * @param {string} [destIata]
+ * @param {string} [fallbackOrigin]
+ */
+export function normalizeFlightRouteIataChain(
+  originIata,
+  hubIatas = [],
+  destIata,
+  fallbackOrigin = DEFAULT_FLIGHT_ORIGIN_IATA
+) {
+  const fallback = String(fallbackOrigin || DEFAULT_FLIGHT_ORIGIN_IATA).trim().toUpperCase();
+  const origin = String(originIata || fallback).trim().toUpperCase();
+  const dest = String(destIata || '').trim().toUpperCase();
+  const hubs = (hubIatas ?? [])
+    .map((code) => String(code || '').trim().toUpperCase())
+    .filter((code) => code.length === 3 && code !== origin && code !== dest);
+  if (origin.length !== 3) {
+    if (dest.length !== 3) return [];
+    return [fallback, ...hubs, dest];
+  }
+  if (dest.length !== 3) return [origin, ...hubs];
+  return [origin, ...hubs, dest];
+}
 const ROUTE_FLY_ZOOM_MAX = 2.35;
 /** Short-arc |lat| above this → prefer long arc or override waypoints (ICN→LPB Arctic loop). */
 const POLAR_AVOID_ABS_LAT = 58;

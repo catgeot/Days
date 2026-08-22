@@ -17,6 +17,8 @@ import {
   estimateFlightHoursChain,
   estimateFlightLegHours,
   getAirportHubCoords,
+  normalizeFlightRouteIataChain,
+  DEFAULT_FLIGHT_ORIGIN_IATA,
   resolveFlightCinemaOd,
 } from './globeFlightCinema.js';
 import {
@@ -115,6 +117,14 @@ export function FlightCinemaProvider({
       let resolvedOrigin = origin ?? (normalizedOrigin ? getAirportHubCoords(normalizedOrigin) : null);
       let resolvedDest = dest ?? (normalizedDest ? getAirportHubCoords(normalizedDest) : null);
 
+      if (!normalizedOrigin && resolvedOrigin?.iata) {
+        normalizedOrigin = String(resolvedOrigin.iata).trim().toUpperCase();
+      }
+      if (!normalizedOrigin) {
+        normalizedOrigin = DEFAULT_FLIGHT_ORIGIN_IATA;
+        resolvedOrigin = resolvedOrigin ?? getAirportHubCoords(normalizedOrigin);
+      }
+
       let hubIatas = hubIatasParam ?? [];
       let routeIatas = [];
       let isConnecting = false;
@@ -142,7 +152,7 @@ export function FlightCinemaProvider({
           essentialGuide,
         });
         hubIatas = hubIatasParam ?? od?.hubIatas ?? [];
-        routeIatas = [normalizedOrigin, ...hubIatas, normalizedDest];
+        routeIatas = normalizeFlightRouteIataChain(normalizedOrigin, hubIatas, normalizedDest);
         isConnecting = hubIatas.length > 0 || Boolean(od?.isConnecting);
         flightHours = od?.flightHours ?? estimateFlightHours(resolvedOrigin, resolvedDest);
         flightLegHours = od?.flightLegHours ?? estimateFlightLegHours(routeIatas);
@@ -191,7 +201,7 @@ export function FlightCinemaProvider({
       }
 
       if (edgeHubs || hubIatasParam != null || hubIatas.length) {
-        routeIatas = [normalizedOrigin, ...hubIatas, normalizedDest];
+        routeIatas = normalizeFlightRouteIataChain(normalizedOrigin, hubIatas, normalizedDest);
         isConnecting = hubIatas.length > 0;
         const chainPoints = [
           resolvedOrigin,
@@ -204,7 +214,7 @@ export function FlightCinemaProvider({
 
       pendingCompleteRef.current = onComplete ?? null;
 
-      const started = globeRef.current?.startFlightCinema?.({
+      const cinemaParams = {
         originIata: normalizedOrigin,
         destIata: normalizedDest,
         origin: resolvedOrigin,
@@ -214,7 +224,18 @@ export function FlightCinemaProvider({
         essentialGuide,
         relaunch: isRelaunch,
         onComplete: (reason) => finishCinema(reason),
-      });
+      };
+
+      let started = globeRef.current?.startFlightCinema?.(cinemaParams);
+      if (!started) {
+        const waitForReady = globeRef.current?.waitForFlightCinemaReady?.bind(globeRef.current);
+        if (typeof waitForReady === 'function') {
+          const retryReady = await waitForReady({ timeoutMs: 2500 });
+          if (retryReady) {
+            started = globeRef.current?.startFlightCinema?.(cinemaParams);
+          }
+        }
+      }
 
       if (!started) {
         pendingCompleteRef.current = null;
@@ -224,12 +245,17 @@ export function FlightCinemaProvider({
       const routeKey =
         selectedRouteKey ?? buildFlightRouteAlternativeKey(normalizedOrigin, normalizedDest, hubIatas);
       const timezoneDiffHours = estimateAirportTimezoneDiffHours(normalizedOrigin, normalizedDest);
+      const normalizedRouteIatas = normalizeFlightRouteIataChain(
+        normalizedOrigin,
+        hubIatas,
+        normalizedDest
+      );
 
       setActive({
         originIata: normalizedOrigin,
         destIata: normalizedDest,
         hubIatas,
-        routeIatas,
+        routeIatas: normalizedRouteIatas,
         isConnecting,
         flightHours,
         flightLegHours,
@@ -253,6 +279,7 @@ export function FlightCinemaProvider({
       location = null,
       essentialGuide = null,
       hubIatas: hubIatasParam,
+      skipEdgeHubResolve = false,
       onComplete,
     }) => {
       if (requestInFlightRef.current) return false;
@@ -302,6 +329,7 @@ export function FlightCinemaProvider({
           essentialGuide,
           hubIatas: hubIatasParam,
           routeAlternatives,
+          skipEdgeHubResolve,
           onComplete,
         });
       } finally {
