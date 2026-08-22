@@ -29,3 +29,16 @@
 - **목표** PROD `?lang=en` 회귀 — [`i18n-en-plan.md`](./i18n-en-plan.md) **§13 A** (홈·축제·명소·PlaceCard) + 항공 시네마 PROD 재확인
 - **금지** GT 일괄 백필
 - **tip** `e531e660` (push 후 SHA 갱신)
+
+## 로컬 → PROD 동기화 (항공경로 루프 중단)
+
+- **조치** `git reset --hard origin/main` — 로컬만 있던 항공경로 수정 5커밋·미커밋 변경·`scripts/qa-flight-route-button.mjs` 제거
+- **기준 SHA** `ff2343c1` (= gateo.kr PROD)
+- **다음** 증상 재현 시 PROD와 동일 베이스에서 단계별 디버깅 (로컬 선행 패치 금지)
+
+## 확대 후 지구본 크래시 수정
+
+- **증상** 고줌·여행지 클릭 시 `GlobeClusterLegend is not defined` · `ForwardRef` React 크래시·검은 화면
+- **원인** cluster 범례 import 누락 · gateo/cluster symbol `text-font` 없음 · 시네마 중 marker setData·동기 close+select
+- **수정** `GlobeClusterLegend` import · symbol `text-font` · 시네마 중 gateo 라벨 숨김·setData 스킵 · `queueMicrotask`로 핀 선택 지연
+- **VERIFY** `npm run build` PASS

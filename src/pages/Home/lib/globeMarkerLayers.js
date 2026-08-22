@@ -135,6 +135,17 @@ export function setGateoMarkerLayerVisibility(map, visible) {
   });
 }
 
+/** Symbol placement races flyTo during flight cinema — hide text labels only. */
+export function setGateoMarkerLabelVisibility(map, visible) {
+  if (!isGlobeMapStyleReady(map)) return;
+  try {
+    if (!map.getLayer(GATEO_LABEL_LAYER_ID)) return;
+    map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'visibility', visible ? 'visible' : 'none');
+  } catch {
+    // Style may be mid-transition.
+  }
+}
+
 /** 레이어가 이미 있을 때 스타일·필터 동기화 (테마 전환·핫리로드) */
 export function syncGateoMarkerLayerStyle(map) {
   if (!gateoMarkerLayersReady(map)) return;
@@ -143,6 +154,7 @@ export function syncGateoMarkerLayerStyle(map) {
     map.setFilter(GATEO_DOT_LAYER_ID, SHOW_DOT);
 
     map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'text-size', LABEL_TEXT_SIZE);
+    map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'text-font', ['DIN Pro Medium', 'Arial Unicode MS Regular']);
     map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'text-offset', [
       'case',
       IS_MAJOR,
@@ -226,6 +238,7 @@ export function setupGateoMarkerLayers(map) {
       source: GATEO_SOURCE_ID,
       layout: {
         'text-field': ['get', 'name'],
+        'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
         'text-size': LABEL_TEXT_SIZE,
         'text-offset': [
           'case',

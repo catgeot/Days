@@ -251,6 +251,7 @@ export function setupClusterBoundaryLayers(map) {
         source: CLUSTER_POI_SOURCE_ID,
         layout: {
           'text-field': ['get', 'name'],
+          'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
           'text-size': ['interpolate', ['linear'], ['zoom'], 4, 10, 8, 11, 12, 12],
           'text-offset': [0, 1.1],
           'text-anchor': 'top',

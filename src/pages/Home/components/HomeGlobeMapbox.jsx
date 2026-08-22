@@ -47,6 +47,7 @@ import {
   gateoMarkerLayersReady,
   areGateoMarkerLayersVisible,
   setGateoMarkerLayerVisibility,
+  setGateoMarkerLabelVisibility,
   syncGateoMarkerLayerStyle
 } from '../lib/globeMarkerLayers';
 import { GLOBE_MODE, canEndTour, canSkipTour, isTourMode } from '../lib/globeMode';
@@ -95,6 +96,7 @@ import { useLocale } from '../../../i18n/LocaleProvider';
 import { useTranslation } from 'react-i18next';
 import { useOptionalFlightCinemaRoute } from '../lib/FlightCinemaContext.jsx';
 import FlightCinemaAirportMarkers from './FlightCinemaAirportMarkers.jsx';
+import GlobeClusterLegend from './GlobeClusterLegend.jsx';
 
 function LanguageControl({ locale }) {
   const mapLanguage = locale?.startsWith('en') ? 'en' : 'ko';
@@ -440,6 +442,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const flightCinemaEngineMapRef = useRef(null);
   const flightCinemaActiveRef = useRef(false);
   const flightCinemaOnCompleteRef = useRef(null);
+  const [showCinemaAirportMarkers, setShowCinemaAirportMarkers] = useState(false);
   const tourActiveRef = useRef(false);
   const prevTourEngineModeRef = useRef(GLOBE_MODE.GLOBE_2D);
   const reachFetchGenRef = useRef(0);
@@ -1061,14 +1064,14 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       if (isFlightCinemaGlobeReady(map)) {
         flightCinemaLayersLatchedRef.current = true;
       }
+      updateGateoMarkerSource(map, markerGeoJSON);
     }
-    updateGateoMarkerSource(map, markerGeoJSON);
     restoreReachBoundaryLayersIfNeeded();
     syncClusterOverlayLayers();
   }, [markerGeoJSON, pauseRender, restoreReachBoundaryLayersIfNeeded, syncClusterOverlayLayers]);
 
   useEffect(() => {
-    if (pauseRender) return;
+    if (pauseRender || flightCinemaActiveRef.current) return;
     updateGateoMarkerSource(mapRef.current?.getMap(), markerGeoJSON);
   }, [markerGeoJSON, pauseRender]);
 
@@ -1521,8 +1524,16 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     return flightCinemaEngineRef.current;
   }, []);
 
+  useEffect(() => {
+    setShowCinemaAirportMarkers(
+      flightCinemaActive && Array.isArray(flightCinemaRouteIatas) && flightCinemaRouteIatas.length > 0
+    );
+  }, [flightCinemaActive, flightCinemaRouteIatas]);
+
   const closeFlightCinema = useCallback(() => {
+    setShowCinemaAirportMarkers(false);
     const engine = flightCinemaEngineRef.current;
+    const map = mapRef.current?.getMap();
     const hadSession = Boolean(flightCinemaActiveRef.current || engine?.isActive?.());
     const notifyComplete = flightCinemaOnCompleteRef.current;
     if (engine?.isActive?.()) {
@@ -1538,8 +1549,12 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       flightCinemaActiveRef.current = false;
       interactionRef.current = false;
     }
+    if (map) {
+      setGateoMarkerLabelVisibility(map, true);
+      updateGateoMarkerSource(map, markerGeoJSON);
+    }
     return hadSession;
-  }, []);
+  }, [markerGeoJSON]);
 
   const startFlightCinema = useCallback((params) => {
     if (tourActiveRef.current) {
@@ -1560,6 +1575,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       flightCinemaOnCompleteRef.current = null;
       flightCinemaActiveRef.current = false;
       interactionRef.current = false;
+      setShowCinemaAirportMarkers(false);
       params.onComplete?.(reason);
     };
     flightCinemaOnCompleteRef.current = wrappedOnComplete;
@@ -1575,6 +1591,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       if (rotationTimer.current) clearTimeout(rotationTimer.current);
       interactionRef.current = true;
       flightCinemaActiveRef.current = true;
+      setShowCinemaAirportMarkers(true);
+      setGateoMarkerLabelVisibility(map, false);
     }
     return started;
   }, [ensureFlightCinemaEngine]);
@@ -2132,6 +2150,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (map && event.point && !isScreenPointOnGlobe(map, event.point)) return;
 
     const inTour = isTourMode(globeMode) || tourActiveRef.current;
+    const hadFlightCinema = flightCinemaActiveRef.current;
 
     const markerHitPx = getGateoMarkerHitThresholdPx(map?.getZoom?.());
     const markerAtPoint = map && event.point
@@ -2139,7 +2158,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       : null;
     if (markerAtPoint) {
       markerClickGuardUntilRef.current = Date.now() + 450;
-      if (flightCinemaActiveRef.current) closeFlightCinema();
       const spotCatalog = allTravelSpots.length > 0 ? allTravelSpots : travelSpots;
       let fullMarker = lookupFullMarker(allMarkersLookupRef.current, markerAtPoint);
       fullMarker = reconcileMarkerWithClickCoords(
@@ -2149,7 +2167,15 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         spotCatalog
       );
       fullMarker = hydrateMarkerFromSpotCatalog(fullMarker, spotCatalog);
-      if (onMarkerClick) onMarkerClick(fullMarker, { source: 'globe' });
+      const selectMarker = () => {
+        if (onMarkerClick) onMarkerClick(fullMarker, { source: 'globe' });
+      };
+      if (hadFlightCinema) {
+        closeFlightCinema();
+        queueMicrotask(selectMarker);
+        return;
+      }
+      selectMarker();
       return;
     }
 
@@ -2159,8 +2185,15 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       const spot = spotCatalog.find((s) => s.slug === clusterPoi.slug);
       if (spot) {
         markerClickGuardUntilRef.current = Date.now() + 450;
-        if (flightCinemaActiveRef.current) closeFlightCinema();
-        onMarkerClick({ ...spot, type: 'major' }, { source: 'globe' });
+        const selectCluster = () => {
+          onMarkerClick({ ...spot, type: 'major' }, { source: 'globe' });
+        };
+        if (hadFlightCinema) {
+          closeFlightCinema();
+          queueMicrotask(selectCluster);
+          return;
+        }
+        selectCluster();
         return;
       }
     }
@@ -2430,8 +2463,11 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       >
         {globeTheme !== 'bright' && <LanguageControl locale={locale} />}
 
-        {flightCinemaActive ? (
-          <FlightCinemaAirportMarkers routeIatas={flightCinemaRouteIatas} />
+        {showCinemaAirportMarkers ? (
+          <FlightCinemaAirportMarkers
+            key={flightCinemaRouteIatas.join('>')}
+            routeIatas={flightCinemaRouteIatas}
+          />
         ) : null}
 
         {ripples.map(ripple => (
