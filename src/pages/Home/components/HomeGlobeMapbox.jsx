@@ -1450,8 +1450,14 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       const map = mapRef.current?.getMap();
       const center = map?.getCenter?.();
       if (center) {
-        // Soft landing to explore pitch (~52); keeps 3D feel vs old top-down.
-        loadReachBoundaries(center.lng, center.lat, { easeCamera: true });
+        const runReachLoad = () => {
+          loadReachBoundaries(center.lng, center.lat, { easeCamera: true });
+        };
+        if (map?.isMoving?.()) {
+          map.once('idle', runReachLoad);
+        } else {
+          requestAnimationFrame(runReachLoad);
+        }
       }
       const pendingPivot = pendingTourPivotRef.current;
       if (pendingPivot) {
@@ -1953,7 +1959,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     },
     isGlobeFocusReady,
     whenGlobeFocusReady,
-    getGlobeMode: () => globeMode
+    getGlobeMode: () => tourEngineRef.current?.getMode?.() ?? globeMode
   }), [addRipple, clearImmerseState, clearRegionFocus, closeFlightCinema, endTour, ensureInteractionReady, exitImmerse, flyToAndPin, flyToRegion, globeMode, immerseToPin, isGlobeFocusReady, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour, whenGlobeFocusReady]);
 
   useEffect(() => {

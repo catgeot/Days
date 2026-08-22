@@ -1,7 +1,7 @@
 import globeLandmarks from '../data/globeLandmarks.json';
 import { mergeCanonicalTravelSpot, getPlaceStableKey } from '../../../utils/travelSpotResolve.js';
 import { bootstrapGlobe3d, teardownGlobe3d } from './globe3dBootstrap';
-import { GLOBE_MODE, transitionGlobeMode } from './globeMode';
+import { GLOBE_MODE, isTourMode, transitionGlobeMode } from './globeMode';
 import { TOUR_TEMPLATE_BY_NAME, landmarkOrbit } from './globeTourTemplates';
 import { resolveGlobeTourConfig } from './globeTourResolve';
 
@@ -179,7 +179,14 @@ export function createGlobeTourEngine(map, { onModeChange, onTourUiChange, defau
 
       if (cancelled) {
         active = false;
-        onTourUiChange?.(false);
+        // skip() may already have landed on TOUR_READY — do not tear down 3D UI again.
+        if (currentMode !== GLOBE_MODE.TOUR_READY) {
+          onTourUiChange?.(false);
+          if (isTourMode(currentMode)) {
+            teardownGlobe3d(map);
+            setMode(GLOBE_MODE.GLOBE_2D);
+          }
+        }
         return false;
       }
 
@@ -197,22 +204,41 @@ export function createGlobeTourEngine(map, { onModeChange, onTourUiChange, defau
     },
 
     skip() {
-      if (!map) return;
+      if (!map || map._removed) return;
       cancelled = true;
       active = false;
-      map.stop();
 
-      if (keyframes.length > 1) {
-        const last = keyframes[keyframes.length - 1];
-        applyKeyframe(map, last, { immediate: true });
-        setMode(GLOBE_MODE.TOUR_READY);
+      const finalizeSkip = () => {
+        if (!map || map._removed) return;
+        try {
+          map.stop();
+        } catch {
+          // Map may be mid-style transition.
+        }
+
+        if (keyframes.length > 1) {
+          const last = keyframes[keyframes.length - 1];
+          try {
+            applyKeyframe(map, last, { immediate: true });
+          } catch {
+            // Placement can throw if terrain/bootstrap is still settling.
+          }
+          setMode(GLOBE_MODE.TOUR_READY);
+          return;
+        }
+
+        teardownGlobe3d(map);
+        onTourUiChange?.(false);
+        setMode(GLOBE_MODE.GLOBE_2D);
+        keyframes = [];
+      };
+
+      if (typeof map.isStyleLoaded === 'function' && !map.isStyleLoaded()) {
+        map.once('load', finalizeSkip);
         return;
       }
 
-      teardownGlobe3d(map);
-      onTourUiChange?.(false);
-      setMode(GLOBE_MODE.GLOBE_2D);
-      keyframes = [];
+      requestAnimationFrame(() => requestAnimationFrame(finalizeSkip));
     },
 
     async end() {
