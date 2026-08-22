@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BookOpen, Sparkles, Briefcase } from 'lucide-react';
+import { normalizeAppLocale } from '../../../i18n/constants';
+import { getMagazineSectionTitle } from '../common/magazineLocale';
 
 const PlaceWikiNavView = ({ wikiData, isWikiLoading, onNavClick, placeName, matchedPackage, onOpenPackage }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const appLocale = normalizeAppLocale(i18n.language);
   const [activeSection, setActiveSection] = useState(null);
   const [isAiExpanded, setIsAiExpanded] = useState(false);
 
@@ -67,7 +70,7 @@ const PlaceWikiNavView = ({ wikiData, isWikiLoading, onNavClick, placeName, matc
                       <span className={`${activeSection === idx ? 'text-amber-400' : 'text-amber-500/50 group-hover:text-amber-400'} mr-2`}>
                           {idx + 1}.
                       </span>
-                      {sec.title}
+                      {getMagazineSectionTitle(idx, sec.title, appLocale, t)}
                     </button>
                   ))}
                 </div>

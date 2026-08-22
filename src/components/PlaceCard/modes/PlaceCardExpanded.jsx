@@ -75,7 +75,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
   const activeVideoId = selectedVideoId || (spotVideos.length > 0 ? spotVideos[0].id : null);
   const activeVideoData = useMemo(() => spotVideos.find(v => v.id === activeVideoId) || (spotVideos.length > 0 ? spotVideos[0] : null), [spotVideos, activeVideoId]);
 
-  const { wikiData: currentWikiData, isWikiLoading } = useWikiData(location, mediaMode);
+  const { wikiData: currentWikiData, isWikiLoading } = useWikiData(location, mediaMode, locale);
   const {
     plannerData: currentPlannerData,
     isPlannerLoading,
@@ -201,6 +201,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
       <div className={`flex-1 w-full min-w-0 h-full transition-all duration-500 z-10 ${isFullScreen ? 'fixed inset-0 z-[200]' : 'relative'}`}>
         <PlaceMediaPanel
             location={location}
+            displayPlaceName={displayName}
             galleryData={galleryData}
             isFullScreen={isFullScreen}
             toggleFullScreen={toggleFullScreen}

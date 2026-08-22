@@ -335,7 +335,7 @@ const PlaceChatPanel = React.memo(({
                 wikiData={wikiData}
                 isWikiLoading={isWikiLoading}
                 onNavClick={handleWikiNavClick}
-                placeName={location.name}
+                placeName={getLocalizedPlaceName(location, locale) || location.name}
                 matchedPackage={matchedPackage}
                 onOpenPackage={onOpenPackage}
             />

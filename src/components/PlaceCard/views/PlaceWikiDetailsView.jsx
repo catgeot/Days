@@ -11,6 +11,13 @@ import {
   mergeCanonicalTravelSpot,
   resolveTravelSpotFromLocation,
 } from '../../../utils/travelSpotResolve';
+import { normalizeAppLocale } from '../../../i18n/constants';
+import { koreanApiTextProps } from '../../../i18n/koreanApiText';
+import {
+  getMagazineSectionTitle,
+  localizeMagazineContentText,
+  shouldLocalizeMagazineShell,
+} from '../common/magazineLocale';
 import CopyableText from '../common/CopyableText';
 import PlaceWikiLocatorMap from '../common/PlaceWikiLocatorMap';
 import { mobilePlaceHeaderSpacerClass, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
@@ -53,6 +60,9 @@ const PlaceWikiDetailsView = ({
   mobileSecondaryNav = null
 }) => {
   const { t, i18n } = useTranslation();
+  const appLocale = normalizeAppLocale(i18n.language);
+  const magazineShellMode = shouldLocalizeMagazineShell(appLocale, wikiData);
+  const magazineKoBodyProps = koreanApiTextProps(magazineShellMode);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isMagazineGenerating, setIsMagazineGenerating] = useState(false);
@@ -295,7 +305,7 @@ const PlaceWikiDetailsView = ({
             );
 
       if (!placeId || !locationName) {
-          setMagazineError('장소 정보를 확인할 수 없습니다.');
+          setMagazineError(t('place.wiki.magazinePlaceUnknown'));
           return;
       }
 
@@ -313,17 +323,18 @@ const PlaceWikiDetailsView = ({
                   canonicalPlaceId: placeId,
                   locationName,
                   slug,
+                  locale: appLocale,
                   forceUpdate: false,
               },
           });
 
           if (functionError) {
               console.error('[PlaceWikiDetailsView] Magazine Edge Error:', functionError);
-              throw new Error('매거진 생성에 실패했습니다.');
+              throw new Error(t('place.wiki.magazineGenerateFailed'));
           }
 
           if (!data?.success) {
-              throw new Error(data?.error || '매거진을 생성하지 못했습니다.');
+              throw new Error(data?.error || t('place.wiki.magazineGenerateIncomplete'));
           }
 
           // 폴링이 wikiData를 갱신할 때까지 로딩 유지 (이미 완성본이면 useEffect가 해제)
@@ -335,10 +346,10 @@ const PlaceWikiDetailsView = ({
           }
       } catch (err) {
           console.error('[PlaceWikiDetailsView] Magazine Request Error:', err);
-          setMagazineError(err.message || '매거진 생성 중 오류가 발생했습니다.');
+          setMagazineError(err.message || t('place.wiki.magazineGenerateError'));
           setIsMagazineGenerating(false);
       }
-  }, [isMagazineLoading, location, placeName, wikiData?.place_id, wikiData?.title]);
+  }, [appLocale, isMagazineLoading, location, placeName, t, wikiData?.place_id, wikiData?.title]);
 
   useEffect(() => {
       const hasCachedInfo = wikiData?.ai_practical_info && wikiData.ai_practical_info !== '[[LOADING]]';
@@ -591,7 +602,7 @@ const PlaceWikiDetailsView = ({
     return () => window.removeEventListener('pageshow', onPageShow);
   }, [isActive, wikiPlaceKey]);
 
-  // 요약 텍스트에서 인용구(첫 문장) 추출
+  const heroTitle = placeName || wikiData?.title;
   let pullQuote = "";
   let remainingSummary = "";
   if (wikiData?.summary && wikiData.summary !== '[[LOADING]]') {
@@ -626,6 +637,13 @@ const PlaceWikiDetailsView = ({
           }
           return <React.Fragment key={index}>{part}</React.Fragment>;
       });
+  };
+
+  const renderLocalizedMagazineContent = (content) => {
+      const text = magazineShellMode
+          ? localizeMagazineContentText(content, appLocale, t)
+          : content;
+      return renderContentWithSubtitles(text);
   };
 
   return (
@@ -663,7 +681,7 @@ const PlaceWikiDetailsView = ({
                     <div className="absolute bottom-0 left-0 w-full p-6 md:p-12 pb-8">
                         <div className="max-w-3xl mx-auto">
                             <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter drop-shadow-2xl">
-                                {placeName || wikiData?.title}
+                                {heroTitle}
                             </h1>
                         </div>
                     </div>
@@ -681,10 +699,16 @@ const PlaceWikiDetailsView = ({
             )}
 
             {/* 소제목 */}
-            <div className="flex items-center gap-3 text-amber-400 text-lg md:text-xl font-bold mb-8 pb-4 border-b border-white/10">
+            <div className="flex items-center gap-3 text-amber-400 text-lg md:text-xl font-bold mb-4 pb-4 border-b border-white/10">
                 <BookOpen size={24} />
                 <span>{t('place.wiki.sketchBrand')}</span>
             </div>
+
+            {magazineShellMode && hasMagazineContent(wikiData) && (
+                <p className="text-sm text-amber-200/80 mb-8 break-keep" {...magazineKoBodyProps}>
+                    {t('place.wiki.articleInKorean')}
+                </p>
+            )}
 
             {/* 메인 레이아웃 (단일 컬럼) */}
             <div className="space-y-12">
@@ -730,7 +754,7 @@ const PlaceWikiDetailsView = ({
 
                         {/* 인용구 (Pull Quote) */}
                         {pullQuote && (
-                            <div className="relative pl-8 md:pl-12 py-2">
+                            <div className="relative pl-8 md:pl-12 py-2" {...magazineKoBodyProps}>
                                 <Quote size={48} className="absolute left-0 top-0 text-amber-500/20 -translate-y-2" />
                                 <p className="text-xl md:text-2xl lg:text-3xl font-bold text-amber-50 leading-snug tracking-tight break-keep">
                                     {pullQuote}
@@ -738,9 +762,8 @@ const PlaceWikiDetailsView = ({
                             </div>
                         )}
 
-                        {/* 요약 본문 */}
                         {remainingSummary && (
-                            <p className="text-base md:text-lg text-gray-200 leading-[1.8] tracking-wide whitespace-pre-line break-keep font-light">
+                            <p className="text-base md:text-lg text-gray-200 leading-[1.8] tracking-wide whitespace-pre-line break-keep font-light" {...magazineKoBodyProps}>
                                 {remainingSummary}
                             </p>
                         )}
@@ -752,6 +775,7 @@ const PlaceWikiDetailsView = ({
                         <div className="space-y-16 pt-8">
                             {wikiData.sections && wikiData.sections.map((sec, idx) => {
                                 const imageForSection = idx < sectionImageCount ? contentImages[idx] : null;
+                                const sectionTitle = getMagazineSectionTitle(idx, sec.title, appLocale, t);
 
                                 return (
                                     <section key={idx} id={`wiki-section-${idx}`} className="scroll-mt-8 group">
@@ -763,7 +787,7 @@ const PlaceWikiDetailsView = ({
                                             >
                                                 <img
                                                     src={imageForSection.urls?.regular || imageForSection.urls?.small}
-                                                    alt={imageForSection.alt_description || t('place.wiki.sectionImageAlt', { title: sec.title })}
+                                                    alt={imageForSection.alt_description || t('place.wiki.sectionImageAlt', { title: sectionTitle })}
                                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                                     loading={idx === 0 ? "eager" : "lazy"}
                                                     fetchPriority={idx === 0 ? "high" : "auto"}
@@ -772,20 +796,20 @@ const PlaceWikiDetailsView = ({
                                                 <div className="absolute bottom-0 left-0 w-full p-5 md:p-8">
                                                     <h3 className="text-xl md:text-3xl font-bold text-white tracking-tight flex items-center gap-3 drop-shadow-lg">
                                                         <span className="w-5 md:w-6 h-[2px] md:h-[3px] bg-amber-500 rounded-full shadow-[0_0_8px_rgba(245,158,11,0.6)]"></span>
-                                                        {sec.title}
+                                                        {sectionTitle}
                                                     </h3>
                                                 </div>
                                             </figure>
                                         ) : (
                                             <h3 className="text-xl md:text-2xl font-bold mb-6 text-white tracking-tight flex items-center gap-3">
                                                 <span className="w-6 h-[2px] bg-amber-500 rounded-full"></span>
-                                                {sec.title}
+                                                {sectionTitle}
                                             </h3>
                                         )}
 
                                         {/* 본문 텍스트 */}
-                                        <div className="text-base md:text-lg text-gray-300 leading-[1.9] tracking-wide whitespace-pre-line break-keep font-light md:px-2">
-                                            {renderContentWithSubtitles(sec.content)}
+                                        <div className="text-base md:text-lg text-gray-300 leading-[1.9] tracking-wide whitespace-pre-line break-keep font-light md:px-2" {...magazineKoBodyProps}>
+                                            {renderLocalizedMagazineContent(sec.content)}
                                         </div>
                                     </section>
                                 );

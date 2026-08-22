@@ -5,6 +5,8 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { supabase } from '../../../shared/api/supabase';
 import { buildPlaceWikiIdCandidates, getPlaceStableKey } from '../../../utils/travelSpotResolve';
+import { normalizeAppLocale } from '../../../i18n/constants';
+import { buildPlaceWikiLocaleCandidates } from '../common/magazineLocale';
 
 const isDev = import.meta.env.DEV;
 
@@ -57,7 +59,7 @@ async function fetchWikiRow(candidates) {
   return fetchPlaceWikiBestRow(candidates);
 }
 
-export const useWikiData = (location, mediaMode) => {
+export const useWikiData = (location, mediaMode, locale = 'ko') => {
   const [wikiData, setWikiData] = useState(null);
   const [isWikiLoading, setIsWikiLoading] = useState(false);
   const wikiDataRef = useRef(null);
@@ -66,9 +68,9 @@ export const useWikiData = (location, mediaMode) => {
   const placeKey = useMemo(() => getPlaceStableKey(location), [location]);
   // location 객체 참조 변경만으로 후보 배열이 바뀌지 않게 placeKey에 고정
   const dbCandidates = useMemo(
-    () => buildPlaceWikiIdCandidates(location),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- placeKey가 같으면 동일 장소
-    [placeKey],
+    () => buildPlaceWikiLocaleCandidates(location, locale),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- placeKey·locale가 같으면 동일 장소
+    [placeKey, normalizeAppLocale(locale)],
   );
   const candidatesKey = useMemo(() => dbCandidates.join('\0'), [dbCandidates]);
 

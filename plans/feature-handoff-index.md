@@ -62,7 +62,7 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **main** `#42e` PROD QA OK · `#42f` 큐레이션 EN·체르마트 `bannerNoteEn` · **다음 #43 최적화** |
+| **상태** | **main** `#42f` 갤러리 칩 EN · **`#43f` 여행 스케치 쉘 EN·EN 생성 프롬프트** · 다음 #43 GT/백필 검토 |
 | **main tip** | (이번 push 후) |
 | **브랜치** | `main` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·**§13 B·C** |
@@ -73,15 +73,17 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 **#42 완료** (#42b~f): 로고·About · 버킷·Credits · Updates·투어·항공 · SiteUpdateBanner · 숙소 헤더 EN · MRT `itemName` ko SSOT(재호출 금지) · **큐레이션 EN 프롬프트** · **체르마트 `bannerNoteEn`**
 
-**다음 제시어 (#43)**:
+**#43f 완료 (이번)**: 여행 스케치 **쉘 EN**(제목·7섹션·앵커)·`articleInKorean` · EN 생성 `locale` + `place_id@en` · `magazinePrompts.ts` EN 프롬프트 · `smoke:magazine-locale`
+
+**다음 제시어 (#43g)**:
 
 ```
-영문화 #43, 최적화
+영문화 #43g, 여행 스케치 PROD QA
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-main · ?lang=en · i18n-en-plan §13 B
-금지: MRT locale·Accept-Language 재호출 · UI 리디자인
+main · ?lang=en · /place/washington-dc/wiki · Edge generate-place-magazine 재배포
+GT 백필 여부는 sample-magazine-translate-quality.mjs 참고 후 결정
 ```
 
 ---

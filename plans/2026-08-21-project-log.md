@@ -154,8 +154,11 @@ main · ?lang=en · i18n-en-plan §13 B
 - **VERIFY** `audit:i18n` · `build` · `smoke:curation-history` PASS
 - **사람 QA** `?lang=en` · `/blog/curation` 새 추천 EN · Zermatt PlaceCard 플래너 배너 노트 EN
 
-## 영문화 — 갤러리 연관 여행지 칩 EN
+## 영문화 #43f — 여행 스케치 쉘 EN·EN 매거진 생성
 
-- **증상** `?lang=en` 갤러리 하단 연관 칩(이시가키·흐바르 등) 한글 유지
-- **수정** `GalleryInfoView` · `PlaceChatPanel` 모바일 바 → `getLocalizedPlaceName(place.data, locale)`
-- **VERIFY** `audit:i18n` · `build` PASS
+- **쉘 EN** `magazineLocale.js` — EN UI에서 제목(`getLocalizedPlaceName`)·7섹션·`[앵커]` EN · KO 본문 `articleInKorean` · `lang=ko`+`translate=yes`
+- **생성** Edge `magazinePrompts.ts` EN 프롬프트(ko 동등 가이드) · `locale` · `place_id@en` 행 분리 · 클라 `generate-place-magazine`에 `locale` 전달
+- **GT 샘플** `scripts/sample-magazine-translate-quality.mjs` — 기계번역은 가독 가능·피처 톤은 EN 생성 우선
+- **VERIFY** `smoke:magazine-locale` · `audit:i18n` · `build` PASS
+- **배포** `npx supabase functions deploy generate-place-magazine` (사람) · PROD `?lang=en` `/place/*/wiki` QA
+

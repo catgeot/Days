@@ -25,6 +25,7 @@ const PlaceMediaPanel = React.memo(({
     refetchPlannerFromDb,
     isPlannerRefreshing,
     location,
+    displayPlaceName,
     isVideoLoading,
     videoError: _videoError,
     googleFormUrl,
@@ -89,7 +90,7 @@ const PlaceMediaPanel = React.memo(({
             <PlaceWikiDetailsView
                 wikiData={wikiData}
                 isWikiLoading={isWikiLoading}
-                placeName={location?.name}
+                placeName={displayPlaceName || location?.name}
                 countryName={location?.country}
                 location={location}
                 galleryData={galleryData}

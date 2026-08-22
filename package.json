@@ -86,6 +86,7 @@
     "smoke:browser-locale-hint": "node scripts/smoke-browser-locale-hint.mjs",
     "smoke:curation-place-bridge": "node scripts/smoke-curation-place-bridge.mjs",
     "smoke:curation-history": "node scripts/smoke-curation-history.mjs",
+    "smoke:magazine-locale": "node scripts/smoke-magazine-locale.mjs",
     "smoke:curation-image-resolve": "node scripts/smoke-curation-image-resolve.mjs",
     "smoke:globe-face-neighbor-order": "node scripts/smoke-globe-face-neighbor-order.mjs",
     "smoke:globe-country-silhouette-zoom": "node scripts/smoke-globe-country-silhouette-zoom.mjs",

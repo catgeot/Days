@@ -125,19 +125,18 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#42f 완료)**: #42e PROD QA OK · 큐레이션 EN 프롬프트 · 체르마트 `bannerNoteEn` — main push 후 PROD QA.
+**상태 (#43f 완료)**: 여행 스케치 쉘 EN · EN 매거진 생성 프롬프트(`magazinePrompts.ts`) · `place_id@en` 캐시 · KO 본문 `articleInKorean` · **Edge `generate-place-magazine` 재배포 필요** · PROD QA 대기.
 
-**다음 (#43 최적화)** — §13 B: 축제 titleEn 캐시·locale 전환·bundle 등. §13 C 백로그는 차차.
+**다음 (#43g)** — `?lang=en` `/place/*/wiki` 쉘·신규 EN 생성 QA · Google Translate 백필은 `node scripts/sample-magazine-translate-quality.mjs` 품질 참고 후 결정.
 
 **다음 제시어**:
 
 ```
-영문화 #43, 최적화
+영문화 #43g, 여행 스케치 PROD QA
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-main · ?lang=en · i18n-en-plan §13 B
-금지: MRT locale·Accept-Language 재호출 · UI 리디자인
+main · ?lang=en · Edge generate-place-magazine deploy
 ```
 
 ### #23 브라우저 locale 자동 — 완료
