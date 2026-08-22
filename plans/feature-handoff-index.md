@@ -62,29 +62,27 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **main** `#44` 써머리 항공경로 버그픽스 · `#43i` 왓슨 PROD QA ✅ |
-| **main tip** | `f44f660f` |
+| **상태** | **main** `#44b` 항공경로·지구본 IATA **로컬 QA ✅** · §13 회귀 QA 이어가기 |
+| **main tip** | `e531e660` |
 | **브랜치** | `main` |
-| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·**§13 B·C** |
-| **일지** | [`2026-08-21-project-log.md`](./2026-08-21-project-log.md) |
-| **PROD QA** | `https://www.gateo.kr/?lang=en` ✅ 사람 |
+| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·**§13 A·B·C** |
+| **일지** | [`2026-08-22-project-log.md`](./2026-08-22-project-log.md) |
+| **PROD QA** | `https://www.gateo.kr/?lang=en` — 항공 시네마 IATA·§13 A 경로 |
 | **VERIFY** | `audit:i18n` · `build` · `smoke:watson-locale` · `smoke:magazine-locale` |
 | **Edge** | `generate-place-magazine` · **`update-place-wiki`** locale+`@en` **배포 완료** (2026-08-22) |
 
-**#43f 완료**: 여행 스케치 쉘 EN · `place_id@en` · `magazinePrompts.ts` · `smoke:magazine-locale`
+**#44 완료**: 써머리 항공경로 첫 클릭·ICN 기점 — `f44f660f`
 
-**#43h 완료 (이번)**: `update-place-wiki` locale+`@en` · `watsonPrompts.ts` · KO 폴백 쉘 · **`useWikiData` 매거진/왓슨 읽기 분리** · **GT 일괄 백필 금지**
+**#44b 완료 (이번)**: Mapbox symbol `continuePlacement` → **HTML Marker** (`FlightCinemaAirportMarkers`) · 로컬 QA ✅ — `e531e660`
 
-**#44 (이번)**: 써머리 항공경로 첫 클릭 실패·기점 IATA 누락 — `f44f660f`
-
-**다음 제시어 (#44b)**:
+**다음 제시어 (#44c)**:
 
 ```
-영문화 #44b, 항공경로 PROD QA
+영문화 #44c, PROD 회귀 QA
 @plans/feature-handoff-index.md
 @plans/2026-08-22-project-log.md
 @plans/i18n-en-plan.md
-main · ?lang=en · 써머리 항공경로 1회 클릭·ICN 기점
+main · ?lang=en · i18n-en-plan §13 A · 항공경로 PROD 재확인
 금지: GT 일괄 백필
 ```
 

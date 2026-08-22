@@ -22,3 +22,10 @@
 - **원인** i18n `setLanguage` 후 Mapbox **symbol** 레이어 `continuePlacement` 크래시 — 영문화 이전에도 symbol이었으나 언어 전환·배치 경합으로 악화
 - **수정** IATA 텍스트 → **react-map-gl Marker** (`FlightCinemaAirportMarkers`) · symbol 레이어 제거
 - **VERIFY** `npm run build` PASS
+- **사람 QA** 로컬 `/?lang=en` — arc + 지구본 **ICN** 라벨 + Bar 경로 **✅**
+
+## 영문화 #44c — 다음 세션
+
+- **목표** PROD `?lang=en` 회귀 — [`i18n-en-plan.md`](./i18n-en-plan.md) **§13 A** (홈·축제·명소·PlaceCard) + 항공 시네마 PROD 재확인
+- **금지** GT 일괄 백필
+- **tip** `e531e660` (push 후 SHA 갱신)

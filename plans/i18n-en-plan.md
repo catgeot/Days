@@ -125,18 +125,19 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#43i PROD QA ✅)**: 왓슨 Refresh EN 본문 · KO 폴백 쉘 · main `dec6d957`
+**상태 (#44b 로컬 QA ✅)**: 항공 시네마 지구본 IATA — HTML Marker · main `e531e660` (push 후 SHA 확인)
 
-**다음 (#43j)** — `#43` 최적화 잔여(§13 B·C) · GT 일괄 백필 합의 전 금지
+**다음 (#44c)** — §13 A PROD 회귀 QA · 항공경로 PROD 재확인 · GT 일괄 백필 금지
 
 **다음 제시어**:
 
 ```
-영문화 #43j, 최적화 잔여
+영문화 #44c, PROD 회귀 QA
 @plans/feature-handoff-index.md
-@plans/2026-08-21-project-log.md
+@plans/2026-08-22-project-log.md
 @plans/i18n-en-plan.md
-main · i18n-en-plan §13 B·C · GT 백필 금지
+main · ?lang=en · i18n-en-plan §13 A · 항공경로 PROD 재확인
+금지: GT 일괄 백필
 ```
 
 ### #23 브라우저 locale 자동 — 완료
