@@ -162,3 +162,10 @@ main · ?lang=en · i18n-en-plan §13 B
 - **VERIFY** `smoke:magazine-locale` · `audit:i18n` · `build` PASS
 - **배포** `npx supabase functions deploy generate-place-magazine` (사람) · PROD `?lang=en` `/place/*/wiki` QA
 
+## 영문화 — 다음 세션 핸드오프 (#43g·#43h)
+
+- **합의** 로컬 왓슨 EN 생성은 **#43h** 별 세션 · **#43g**는 읽기 분리만
+- **#43g** `useWikiData`: 매거진=locale/`slug@en` · 왓슨=`ai_practical_info`는 KO `slug` 행 · `magazineScore`에서 왓슨 점수 제거
+- **#43h** `update-place-wiki` `locale`·`@en` EN 프롬프트 (차후)
+- **GT 백필** 보류 — `sample-magazine-translate-quality.mjs` 참고
+

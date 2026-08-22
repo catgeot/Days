@@ -62,8 +62,8 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **main** `#42f` 갤러리 칩 EN · **`#43f` 여행 스케치 쉘 EN·EN 생성 프롬프트** · 다음 #43 GT/백필 검토 |
-| **main tip** | (이번 push 후) |
+| **상태** | **main** `1527abe8` `#43f` 여행 스케치 쉘·EN 생성 · **다음 #43g 왓슨·매거진 읽기 분리** |
+| **main tip** | `1527abe8` |
 | **브랜치** | `main` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·**§13 B·C** |
 | **일지** | [`2026-08-21-project-log.md`](./2026-08-21-project-log.md) |
@@ -73,17 +73,21 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 **#42 완료** (#42b~f): 로고·About · 버킷·Credits · Updates·투어·항공 · SiteUpdateBanner · 숙소 헤더 EN · MRT `itemName` ko SSOT(재호출 금지) · **큐레이션 EN 프롬프트** · **체르마트 `bannerNoteEn`**
 
-**#43f 완료 (이번)**: 여행 스케치 **쉘 EN**(제목·7섹션·앵커)·`articleInKorean` · EN 생성 `locale` + `place_id@en` · `magazinePrompts.ts` EN 프롬프트 · `smoke:magazine-locale`
+**#43f 완료**: 여행 스케치 쉘 EN · `place_id@en` · `magazinePrompts.ts` · `smoke:magazine-locale` · main `1527abe8`
+
+**다음 (#43g)** — `useWikiData` **매거진·로컬 왓슨 읽기 분리** (매거진=locale/`@en`, 왓슨=KO `slug` 폴백) · `magazineScore`에서 왓슨 점수 제거 · Edge `generate-place-magazine` 배포·PROD QA
+
+**이후 (#43h)** — `update-place-wiki` `locale`·`@en` EN 왓슨 생성 (사용자 합의·별 세션)
 
 **다음 제시어 (#43g)**:
 
 ```
-영문화 #43g, 여행 스케치 PROD QA
+영문화 #43g, 왓슨·매거진 읽기 분리
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-main · ?lang=en · /place/washington-dc/wiki · Edge generate-place-magazine 재배포
-GT 백필 여부는 sample-magazine-translate-quality.mjs 참고 후 결정
+main · useWikiData 매거진/왓슨 분리 · Edge generate-place-magazine 배포 QA
+금지: update-place-wiki locale (#43h) · GT 일괄 백필
 ```
 
 ---

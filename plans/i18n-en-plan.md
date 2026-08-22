@@ -125,18 +125,20 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#43f 완료)**: 여행 스케치 쉘 EN · EN 매거진 생성 프롬프트(`magazinePrompts.ts`) · `place_id@en` 캐시 · KO 본문 `articleInKorean` · **Edge `generate-place-magazine` 재배포 필요** · PROD QA 대기.
+**상태 (#43f 완료 · main `1527abe8`)**: 여행 스케치 쉘 EN · `place_id@en` · `magazinePrompts.ts` · **Edge `generate-place-magazine` 재배포 필요**
 
-**다음 (#43g)** — `?lang=en` `/place/*/wiki` 쉘·신규 EN 생성 QA · Google Translate 백필은 `node scripts/sample-magazine-translate-quality.mjs` 품질 참고 후 결정.
+**다음 (#43g)** — **읽기 분리**: `useWikiData`에서 매거진(`summary`/`sections`)은 locale·`@en` 우선, **로컬 왓슨(`ai_practical_info`)은 KO `slug` 행**에서만 · `magazineScore` 왓슨 가중 제거 · PROD `?lang=en` wiki QA
+
+**이후 (#43h)** — `update-place-wiki`에 `locale`·`@en` + EN 프롬프트 (별 세션)
 
 **다음 제시어**:
 
 ```
-영문화 #43g, 여행 스케치 PROD QA
+영문화 #43g, 왓슨·매거진 읽기 분리
 @plans/feature-handoff-index.md
 @plans/2026-08-21-project-log.md
 @plans/i18n-en-plan.md
-main · ?lang=en · Edge generate-place-magazine deploy
+main · useWikiData 매거진/왓슨 분리 · Edge generate-place-magazine deploy
 ```
 
 ### #23 브라우저 locale 자동 — 완료
