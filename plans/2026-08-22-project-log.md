@@ -2,6 +2,13 @@
 
 직전: [`2026-08-21-project-log.md`](./2026-08-21-project-log.md)
 
+## 항공경로 첫 클릭·아크 중단 재발
+
+- **증상** PROD 써머리 「항공 경로」1회 클릭 조용 실패·arc 그려지다 멈춤
+- **수정** `949875c1` — alternatives Edge 조회를 시네마 시작 후로 지연 · start 재시도·ready 대기 시점 이동 · Edge prefetch 실패 시 launch 재조회 · 애니 종료 revealFullRoute · ready latch
+- **VERIFY** `npm run build` · `smoke-flight-route-baseline` PASS
+- **PR** `cursor/flight-route-click-fix-b5aa`
+
 ## 영문화 #44, 최적화 잔여 — 써머리 항공경로 버그
 
 - **증상** 써머리 「항공 경로」첫 클릭 조회 중 후 실패·재클릭 시에만 arc · 항로 기점 공항코드(ICN) 누락
