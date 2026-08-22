@@ -173,6 +173,7 @@ main · ?lang=en · i18n-en-plan §13 B
 
 - **Edge** `update-place-wiki` — `locale` · `magazineStorageId`(`@en`) · `watsonPrompts.ts` EN/KO 프롬프트
 - **클라** `PlaceWikiDetailsView` — `locale` 전달 · EN 지명(`getLocalizedPlaceName`) · KO 폴백 쉘(섹션 EN·`articleInKorean`)
+- **읽기 분리** `mergePlaceWikiRows` — 매거진(ko/slug 행)과 왓슨(`@en` 행) 병합 · PROD Refresh 후 EN 본문 표시
 - **VERIFY** `smoke:watson-locale` · `smoke:magazine-locale` · `audit:i18n` · `build` PASS
-- **배포** `npx supabase functions deploy update-place-wiki` (사람) · **GT 일괄 백필 금지**
+- **배포** Edge `update-place-wiki` ✅ · **main `06c3ac58` push** ✅ (Vercel PROD) · **GT 일괄 백필 금지**
 
