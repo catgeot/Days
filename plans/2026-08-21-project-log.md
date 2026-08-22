@@ -188,3 +188,9 @@ main · ?lang=en · i18n-en-plan §13 B
 - **수정** `globeTourEngine.skip` — rAF 지연·bootstrap 중 skip 시 `start()` cancelled 분기가 TOUR_READY를 GLOBE_2D로 되돌리지 않음 · `loadReachBoundaries` idle 후 실행 · `getGlobeMode` 엔진 SSOT
 - **VERIFY** `build` PASS · Playwright Skip 재현 후 root/map 생존
 
+## 영문화 #43j — 3D 투어 Skip 크래시
+
+- **증상** 홈 써머리 3D 투어 중 상태창 Skip → 지구본·UI 다운( Mapbox `continuePlacement` + `onTourUiChange(false)` 레이스)
+- **수정** `globeTourEngine.skip` — rAF 지연·bootstrap 중 skip 시 `start()` cancelled 분기가 TOUR_READY를 GLOBE_2D로 되돌리지 않음 · `loadReachBoundaries` idle 후 실행 · `getGlobeMode` 엔진 SSOT
+- **VERIFY** `build` PASS · Playwright Skip 재현 후 root/map 생존
+
