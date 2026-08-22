@@ -125,7 +125,7 @@
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (#43f 완료 · main `1527abe8`)**: 여행 스케치 쉘 EN · `place_id@en` · `magazinePrompts.ts` · **Edge `generate-place-magazine` 재배포 필요**
+**상태 (#43f 완료 · main `f6d29def`)**: 여행 스케치 쉘 EN · `place_id@en` · **`generate-place-magazine` Edge 배포 완료** (2026-08-22)
 
 **다음 (#43g)** — **읽기 분리**: `useWikiData`에서 매거진(`summary`/`sections`)은 locale·`@en` 우선, **로컬 왓슨(`ai_practical_info`)은 KO `slug` 행**에서만 · `magazineScore` 왓슨 가중 제거 · PROD `?lang=en` wiki QA
 

@@ -160,7 +160,7 @@ main · ?lang=en · i18n-en-plan §13 B
 - **생성** Edge `magazinePrompts.ts` EN 프롬프트(ko 동등 가이드) · `locale` · `place_id@en` 행 분리 · 클라 `generate-place-magazine`에 `locale` 전달
 - **GT 샘플** `scripts/sample-magazine-translate-quality.mjs` — 기계번역은 가독 가능·피처 톤은 EN 생성 우선
 - **VERIFY** `smoke:magazine-locale` · `audit:i18n` · `build` PASS
-- **배포** `npx supabase functions deploy generate-place-magazine` (사람) · PROD `?lang=en` `/place/*/wiki` QA
+- **배포** `npx supabase functions deploy generate-place-magazine --project-ref phdjnbfitvmrguqzverm --no-verify-jwt` ✅ 2026-08-22 (`magazinePrompts.ts`·`locale`·`@en` 포함)
 
 ## 영문화 — 다음 세션 핸드오프 (#43g·#43h)
 
