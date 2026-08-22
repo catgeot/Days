@@ -72,7 +72,6 @@ import {
   GuestStepper,
   StayRangeCalendar,
   formatStayDateLabel,
-  formatStayDateBarLabel,
   DESKTOP_MONTHS,
 } from './stayDateControls';
 import Logo from './Logo';
@@ -370,7 +369,7 @@ function StayDateBar({
             {t('home.stayStrip.checkIn')}
           </span>
           <span className={`text-sm font-bold tabular-nums text-amber-50 ${compactDateBar ? 'shrink-0 whitespace-nowrap' : 'truncate'}`}>
-            {formatStayDateBarLabel(draftIn, i18n.language)}
+            {formatStayDateLabel(draftIn)}
           </span>
         </span>
         <span
@@ -388,7 +387,7 @@ function StayDateBar({
             {t('home.stayStrip.checkOut')}
           </span>
           <span className={`text-sm font-bold tabular-nums text-amber-50 ${compactDateBar ? 'shrink-0 whitespace-nowrap' : 'truncate'}`}>
-            {formatStayDateBarLabel(draftOut, i18n.language)}
+            {formatStayDateLabel(draftOut)}
           </span>
         </span>
       </button>
