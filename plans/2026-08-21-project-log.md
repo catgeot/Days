@@ -153,3 +153,9 @@ main · ?lang=en · i18n-en-plan §13 B
 - **체르마트 배너** `bannerNoteEn` overrides → `generate:airports` · `resolveLocalizedBannerNote` · `RentalPickupBanner`
 - **VERIFY** `audit:i18n` · `build` · `smoke:curation-history` PASS
 - **사람 QA** `?lang=en` · `/blog/curation` 새 추천 EN · Zermatt PlaceCard 플래너 배너 노트 EN
+
+## 영문화 — 갤러리 연관 여행지 칩 EN
+
+- **증상** `?lang=en` 갤러리 하단 연관 칩(이시가키·흐바르 등) 한글 유지
+- **수정** `GalleryInfoView` · `PlaceChatPanel` 모바일 바 → `getLocalizedPlaceName(place.data, locale)`
+- **VERIFY** `audit:i18n` · `build` PASS
