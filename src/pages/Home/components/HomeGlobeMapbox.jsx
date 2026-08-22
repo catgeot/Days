@@ -1951,9 +1951,12 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       if (tourActiveRef.current || flightCinemaActiveRef.current) return false;
       const map = mapRef.current?.getMap();
       if (!map || map._removed) return false;
-      const ready = isFlightCinemaGlobeReady(map);
-      flightCinemaLayersLatchedRef.current = ready;
-      return ready;
+      if (isFlightCinemaGlobeReady(map)) {
+        flightCinemaLayersLatchedRef.current = true;
+        return true;
+      }
+      // 줌·idle 깜박임 흡수 — onStyleData·테마 전환 시 latch 해제
+      return flightCinemaLayersLatchedRef.current;
     },
     waitForFlightCinemaReady: (options) => {
       const map = mapRef.current?.getMap();

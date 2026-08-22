@@ -162,15 +162,6 @@ export function FlightCinemaProvider({
       if (normalizedOrigin === normalizedDest) return false;
 
       const isRelaunch = relaunch || Boolean(activeRef.current);
-      if (!isRelaunch) {
-        const waitForReady = globeRef.current?.waitForFlightCinemaReady?.bind(globeRef.current);
-        if (typeof waitForReady === 'function') {
-          const ready = await waitForReady({ timeoutMs: 8000 });
-          if (!ready) return false;
-        } else if (globeRef.current?.isFlightCinemaReady?.() === false) {
-          return false;
-        }
-      }
 
       const edgeHubs = skipEdgeHubResolve
         ? null
@@ -226,15 +217,28 @@ export function FlightCinemaProvider({
         onComplete: (reason) => finishCinema(reason),
       };
 
-      let started = globeRef.current?.startFlightCinema?.(cinemaParams);
-      if (!started) {
-        const waitForReady = globeRef.current?.waitForFlightCinemaReady?.bind(globeRef.current);
+      const waitForReady = globeRef.current?.waitForFlightCinemaReady?.bind(globeRef.current);
+      const tryWaitReady = async (timeoutMs) => {
         if (typeof waitForReady === 'function') {
-          const retryReady = await waitForReady({ timeoutMs: 2500 });
-          if (retryReady) {
-            started = globeRef.current?.startFlightCinema?.(cinemaParams);
-          }
+          return await waitForReady({ timeoutMs });
         }
+        return globeRef.current?.isFlightCinemaReady?.() !== false;
+      };
+
+      const startAttempts = isRelaunch ? 2 : 3;
+      let started = false;
+
+      for (let attempt = 0; attempt < startAttempts; attempt += 1) {
+        const needsInitialWait = !isRelaunch && attempt === 0;
+        const needsRetryWait = attempt > 0;
+        if (needsInitialWait) {
+          if (!(await tryWaitReady(8000))) continue;
+        } else if (needsRetryWait) {
+          if (!(await tryWaitReady(attempt === 1 ? 2500 : 4000))) continue;
+        }
+
+        started = Boolean(globeRef.current?.startFlightCinema?.(cinemaParams));
+        if (started) break;
       }
 
       if (!started) {
@@ -297,7 +301,6 @@ export function FlightCinemaProvider({
           }
         }
 
-        let routeAlternatives = [];
         const normalizedOrigin = String(originIata || 'ICN').trim().toUpperCase();
         const normalizedDest = String(
           destIata || resolveFlightCinemaOd(location, { essentialGuide })?.destIata || ''
@@ -311,16 +314,7 @@ export function FlightCinemaProvider({
           !hasManualFlightRouteHubOverride(location) &&
           !hasExplicitDirectFlightRoute(location);
 
-        if (canFetchAlternatives) {
-          routeAlternatives = await resolveFlightRouteAlternativesForCinema(location, {
-            originIata: normalizedOrigin,
-            destIata: normalizedDest,
-            essentialGuide,
-            topN: 3,
-          });
-        }
-
-        return await launchFlightCinema({
+        const launched = await launchFlightCinema({
           originIata,
           destIata,
           origin,
@@ -328,10 +322,26 @@ export function FlightCinemaProvider({
           location,
           essentialGuide,
           hubIatas: hubIatasParam,
-          routeAlternatives,
+          routeAlternatives: [],
           skipEdgeHubResolve,
           onComplete,
         });
+
+        if (launched && canFetchAlternatives) {
+          void resolveFlightRouteAlternativesForCinema(location, {
+            originIata: normalizedOrigin,
+            destIata: normalizedDest,
+            essentialGuide,
+            topN: 3,
+          }).then((routeAlternatives) => {
+            if (!activeRef.current || !routeAlternatives?.length) return;
+            setActive((prev) =>
+              prev ? { ...prev, routeAlternatives } : prev
+            );
+          });
+        }
+
+        return launched;
       } finally {
         requestInFlightRef.current = false;
         setRequestPending(false);
