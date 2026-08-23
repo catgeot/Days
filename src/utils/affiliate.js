@@ -898,7 +898,11 @@ export function buildTripcomPlannerFlightUrl(location, options = {}) {
   }
 
   if (mode === 'packages' || options.tracking === 'stay-modal-flight') {
-    params.set('sourceFrom', 'IBUBundle_home');
+    const hasPackageDeepLink = Boolean(arriveCode && depart && departDate);
+    // IBUBundle_home = 홈 퍼널 진입 — OD·일정 딥링크일 땐 생략(제휴 trip_sub*·Alliance/SID 유지)
+    if (!hasPackageDeepLink) {
+      params.set('sourceFrom', 'IBUBundle_home');
+    }
     return `${origin}/packages/?${params.toString()}`;
   }
 
