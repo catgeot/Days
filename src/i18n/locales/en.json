@@ -1275,6 +1275,7 @@
       "listAria": "Festival list",
       "myListAria": "My festivals",
       "nearLoad": "Load festivals near me",
+      "nearOff": "Turn off near me · restore previous filters",
       "fromThemeHint": "Continue festival schedule and map here",
       "locHintTitle": "Showing nationwide festivals without location access.",
       "locHintBody": "Allow location to tailor festivals and nearby stays to where you are.",

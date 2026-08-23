@@ -781,6 +781,12 @@ export default function KoreaFestivalHub() {
   );
   const userRegionOverrideRef = useRef(false);
   const mountLocTriedRef = useRef(false);
+  /** 내 주변 진입 직전 필터 — 재탭 시 복원 */
+  const preNearSnapshotRef = useRef(
+    /** @type {null | { timeTab: string, tasteId: string, areaCode: string, cityName: string, chipPanel: ChipPanelId }} */ (
+      null
+    ),
+  );
   const mobileSearchInputRef = useRef(null);
   const pcSearchRootRef = useRef(null);
   const mobileSearchRootRef = useRef(null);
@@ -1190,7 +1196,24 @@ export default function KoreaFestivalHub() {
     setNearOrigin(null);
     setNearLabel('');
     setNearMsg('');
+    preNearSnapshotRef.current = null;
   }, []);
+
+  const restorePreNearState = useCallback(() => {
+    const snap = preNearSnapshotRef.current;
+    preNearSnapshotRef.current = null;
+    clearNear();
+    if (snap) {
+      setTimeTab(snap.timeTab);
+      setTasteId(snap.tasteId);
+      setAreaCode(snap.areaCode);
+      setCityName(snap.cityName);
+      setChipPanel(snap.chipPanel);
+    }
+    setSelected(null);
+    setMapFocusView(null);
+    mainScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [clearNear]);
 
   /**
    * GPS 성공 시: 시도 칩 맞춤.
@@ -1532,24 +1555,37 @@ export default function KoreaFestivalHub() {
 
   const handleNearMe = () => {
     userRegionOverrideRef.current = true;
+    if (nearActive) {
+      restorePreNearState();
+      return;
+    }
     if (typeof navigator === 'undefined' || !navigator.geolocation) {
       setNearLabel('');
       setNearMsg(t('korea.common.locUnavailable'));
       return;
     }
+    preNearSnapshotRef.current = {
+      timeTab,
+      tasteId,
+      areaCode,
+      cityName,
+      chipPanel,
+    };
     setNearBusy(true);
     setNearLabel('');
     setNearMsg(t('korea.common.locChecking'));
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setNearBusy(false);
-        applyUserLocation(pos.coords.latitude, pos.coords.longitude, {
+        const ok = applyUserLocation(pos.coords.latitude, pos.coords.longitude, {
           silent: false,
           festivalItems: items,
         });
+        if (!ok) preNearSnapshotRef.current = null;
       },
       (err) => {
         setNearBusy(false);
+        preNearSnapshotRef.current = null;
         setNearLabel('');
         const code = err?.code;
         if (code === 1) {
@@ -1950,8 +1986,16 @@ export default function KoreaFestivalHub() {
                     type="button"
                     onClick={handleNearMe}
                     disabled={nearBusy}
-                    aria-label={t('korea.festival.nearLoad')}
-                    title={t('korea.common.nearMe')}
+                    aria-label={
+                      nearActive
+                        ? t('korea.festival.nearOff')
+                        : t('korea.festival.nearLoad')
+                    }
+                    title={
+                      nearActive
+                        ? t('korea.festival.nearOff')
+                        : t('korea.common.nearMe')
+                    }
                     aria-pressed={nearActive}
                     className={nearMeChipClass(nearActive)}
                   >
