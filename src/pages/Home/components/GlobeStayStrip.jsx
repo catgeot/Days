@@ -228,6 +228,80 @@ function formatPrice(n, t, language) {
   return t('home.stayStrip.priceFrom', { price: formatted });
 }
 
+/** Trip 항공+호텔 — PC는 일정 바 인라인 · 모바일은 목록 툴바(50 places) 위 */
+function StayFlightHotelCta({
+  flightCta,
+  checkIn,
+  checkOut,
+  adultCount,
+  childCount,
+  variant = 'desktop-inline',
+  className = '',
+}) {
+  const { t } = useTranslation();
+  if (!flightCta?.location) return null;
+
+  const isMobileToolbar = variant === 'mobile-toolbar';
+  const widget = (
+    <WhiteLabelWidget
+      location={flightCta.location}
+      essentialGuide={flightCta.essentialGuide}
+      departureIata={flightCta.departureIata}
+      tracking="stay-modal-flight"
+      departDate={checkIn}
+      returnDate={checkOut}
+      adultCount={adultCount}
+      childCount={childCount}
+      customTrigger={
+        <button
+          type="button"
+          aria-label={t('home.stayStrip.flightHotelAria')}
+          className={
+            isMobileToolbar
+              ? 'inline-flex w-full min-h-[40px] items-center justify-center gap-1.5 rounded-lg border border-sky-300/50 bg-sky-500/25 px-3 py-2 text-[12px] font-bold text-sky-50 transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-[0.98]'
+              : 'inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-sky-300/50 bg-sky-500/25 px-2.5 py-1 text-[11px] font-bold text-sky-50 transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-[0.98]'
+          }
+        >
+          <Plane
+            size={isMobileToolbar ? 14 : 13}
+            className="shrink-0 opacity-90"
+            aria-hidden="true"
+          />
+          <span className="break-keep">{t('home.stayStrip.flightHotelCta')}</span>
+        </button>
+      }
+    />
+  );
+
+  if (isMobileToolbar) {
+    return (
+      <div
+        className={`mb-3 flex w-full flex-col gap-1 ${className}`.trim()}
+        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
+      >
+        {widget}
+        <p className="break-keep text-center text-[11px] font-semibold leading-snug text-sky-50/90">
+          {t('home.stayStrip.flightHotelHint')}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <span
+      className={`ml-auto inline-flex min-w-0 max-w-full items-center gap-2 border-l border-white/15 pl-3 ${className}`.trim()}
+      onClick={(e) => e.stopPropagation()}
+      onMouseDown={(e) => e.stopPropagation()}
+    >
+      {widget}
+      <span className="min-w-0 break-keep text-[11px] font-semibold leading-snug text-sky-50/95">
+        {t('home.stayStrip.flightHotelHint')}
+      </span>
+    </span>
+  );
+}
+
 /**
  * 일정: 달력 「변경하기」→ 즉시 조회.
  * 인원: 헤더 「변경하기」→ 인원만 바뀌었을 때 활성·조회.
@@ -244,7 +318,7 @@ function StayDateBar({
   onClose,
   /** 패널 고정 헤더에 여행지·닫기가 있을 때 DateBar 중복 숨김 */
   embedInPanel = false,
-  /** PC만 — Trip 항공+호텔 보조 CTA (모바일·항공 경로 없으면 null) */
+  /** PC만 — Trip 항공+호텔 보조 CTA (모바일은 목록 툴바 위 · 항공 경로 없으면 null) */
   flightCta = null,
 }) {
   const { t, i18n } = useTranslation();
@@ -429,35 +503,13 @@ function StayDateBar({
           {t('home.stayStrip.apply')}
         </button>
         {showFlightCta ? (
-          <span
-            className="ml-auto inline-flex min-w-0 max-w-full items-center gap-2 border-l border-white/15 pl-3"
-            onClick={(e) => e.stopPropagation()}
-            onMouseDown={(e) => e.stopPropagation()}
-          >
-            <WhiteLabelWidget
-              location={flightCta.location}
-              essentialGuide={flightCta.essentialGuide}
-              departureIata={flightCta.departureIata}
-              tracking="stay-modal-flight"
-              departDate={draftIn}
-              returnDate={draftOut}
-              adultCount={draftAdult}
-              childCount={draftChild}
-              customTrigger={
-                <button
-                  type="button"
-                  aria-label={t('home.stayStrip.flightHotelAria')}
-                  className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-sky-300/50 bg-sky-500/25 px-2.5 py-1 text-[11px] font-bold text-sky-50 transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-[0.98]"
-                >
-                  <Plane size={13} className="shrink-0 opacity-90" aria-hidden="true" />
-                  <span className="break-keep">{t('home.stayStrip.flightHotelCta')}</span>
-                </button>
-              }
-            />
-            <span className="min-w-0 text-[11px] font-semibold leading-snug text-sky-50/95 break-keep">
-              {t('home.stayStrip.flightHotelHint')}
-            </span>
-          </span>
+          <StayFlightHotelCta
+            flightCta={flightCta}
+            checkIn={draftIn}
+            checkOut={draftOut}
+            adultCount={draftAdult}
+            childCount={draftChild}
+          />
         ) : null}
       </div>
       {open ? (
@@ -1331,9 +1383,9 @@ export default function GlobeStayStrip({
   }
 
   const stayFlightArrivalIata = getPlannerFlightArrivalIata(location, { essentialGuide });
-  /** PC 숙소 모달만 — 써머리 항공 경로 게이트와 동일 · 도착 IATA 없으면 숨김 */
+  /** 써머리 항공 경로 게이트와 동일 · 도착 IATA 없으면 숨김 */
   const stayFlightCta =
-    isLg && canPreviewFlightRouteProp && stayFlightArrivalIata
+    canPreviewFlightRouteProp && stayFlightArrivalIata
       ? {
           location,
           essentialGuide,
@@ -1739,6 +1791,16 @@ export default function GlobeStayStrip({
               className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3 pb-[max(5.5rem,calc(env(safe-area-inset-bottom)+3.75rem))]"
             >
               <div className="mb-3.5">{renderDateBar({ embedInPanel: true })}</div>
+              {stayFlightCta ? (
+                <StayFlightHotelCta
+                  flightCta={stayFlightCta}
+                  checkIn={stayDates.checkIn}
+                  checkOut={stayDates.checkOut}
+                  adultCount={guests.adultCount}
+                  childCount={guests.childCount}
+                  variant="mobile-toolbar"
+                />
+              ) : null}
               {status === 'loading' ? (
                 <div className="flex flex-col items-center justify-center gap-2 py-16 text-white/50">
                   <Loader2 size={22} className="animate-spin text-amber-200/80" />
