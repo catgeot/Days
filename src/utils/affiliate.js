@@ -725,7 +725,8 @@ export const TRIPCOM_FLIGHT_TRACKING = {
   sub1PlannerPreTravelFlight: '플래너 필수준비 항공권 검색 일반',
   sub1ChatFlight: '채팅 항공권',
   sub1GlobeFlightCinema: '홈 항공 시네마',
-  sub1StayModalFlight: '숙소모달 항공권',
+  sub1StayModalFlight: '홈 숙소 모달',
+  sub3StayModalFlightHotel: 'D18887227',
   sub3PlannerFlight: 'D17104488',
   sub3PlannerPreTravelFlight: 'D17159522',
   sub3ChatFlight: 'D17104488',
@@ -811,7 +812,7 @@ function resolveTripcomFlightTracking(options = {}) {
   if (tracking === 'stay-modal-flight') {
     return {
       sub1: TRIPCOM_FLIGHT_TRACKING.sub1StayModalFlight,
-      sub3: TRIPCOM_FLIGHT_TRACKING.sub3PlannerFlight,
+      sub3: TRIPCOM_FLIGHT_TRACKING.sub3StayModalFlightHotel,
     };
   }
 
@@ -827,7 +828,7 @@ function resolveTripcomFlightTracking(options = {}) {
  * @param {Record<string, unknown> | null | undefined} location
  * @param {{
  *   essentialGuide?: Record<string, unknown> | null,
- *   mode?: 'flights' | 'ad',
+ *   mode?: 'flights' | 'ad' | 'packages',
  *   adId?: string,
  *   departureIata?: string,
  *   tracking?: 'planner-flight-mobile' | 'planner-pre-travel' | 'globe-flight-cinema' | 'chat-flight' | 'stay-modal-flight',
@@ -891,6 +892,11 @@ export function buildTripcomPlannerFlightUrl(location, options = {}) {
 
   if (mode === 'ad') {
     return `https://kr.trip.com/partners/ad/${adId}?${params.toString()}`;
+  }
+
+  if (mode === 'packages' || options.tracking === 'stay-modal-flight') {
+    params.set('sourceFrom', 'IBUBundle_home');
+    return `https://kr.trip.com/packages/?${params.toString()}`;
   }
 
   return `https://kr.trip.com/flights/?${params.toString()}`;

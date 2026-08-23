@@ -46,6 +46,7 @@ import {
   MRT_STAY_LOW_COUNT,
   TRIPCOM_HOTEL_TRACKING,
   buildMrtMylinkUrl,
+  buildTripcomPlannerFlightUrl,
   buildTripcomHotelSearchUrl,
   getPlannerFlightArrivalIata,
   getTripcomHotelEmptyCopy,
@@ -60,8 +61,9 @@ import {
 import {
   getPartnerLinkTarget,
   getTripcomLinkRel,
+  openTripcomExternalUrl,
 } from '../../../components/PlaceCard/common/partnerNavigation';
-import WhiteLabelWidget from '../../../components/PlaceCard/common/WhiteLabelWidget.jsx';
+import { resolveFlightDepartureIataForTrip } from '../lib/flightOriginPreference.js';
 import { getAddressFromCoordinates } from '../lib/geocoding';
 import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
 import {
@@ -228,7 +230,7 @@ function formatPrice(n, t, language) {
   return t('home.stayStrip.priceFrom', { price: formatted });
 }
 
-/** Trip 항공+호텔 — PC는 일정 바 인라인 · 모바일은 목록 툴바(50 places) 위 */
+/** Trip 항공+호텔 — `/packages/` 직링크(PC·모바일 동일 · 항공 검색 모달 미사용) */
 function StayFlightHotelCta({
   flightCta,
   checkIn,
@@ -239,65 +241,70 @@ function StayFlightHotelCta({
   className = '',
 }) {
   const { t } = useTranslation();
-  if (!flightCta?.location) return null;
-
   const isMobileToolbar = variant === 'mobile-toolbar';
-  const widget = (
-    <WhiteLabelWidget
-      location={flightCta.location}
-      essentialGuide={flightCta.essentialGuide}
-      departureIata={flightCta.departureIata}
-      tracking="stay-modal-flight"
-      departDate={checkIn}
-      returnDate={checkOut}
-      adultCount={adultCount}
-      childCount={childCount}
-      customTrigger={
-        <button
-          type="button"
-          aria-label={t('home.stayStrip.flightHotelAria')}
-          className={
-            isMobileToolbar
-              ? 'inline-flex w-full min-h-[40px] items-center justify-center gap-1.5 rounded-lg border border-sky-300/50 bg-sky-500/25 px-3 py-2 text-[12px] font-bold text-sky-50 transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-[0.98]'
-              : 'inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-sky-300/50 bg-sky-500/25 px-2.5 py-1 text-[11px] font-bold text-sky-50 transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-[0.98]'
-          }
-        >
-          <Plane
-            size={isMobileToolbar ? 14 : 13}
-            className="shrink-0 opacity-90"
-            aria-hidden="true"
-          />
-          <span className="break-keep">{t('home.stayStrip.flightHotelCta')}</span>
-        </button>
+  const packageUrl = useMemo(() => {
+    if (!flightCta?.location) return null;
+    const departureIata = flightCta.departureIata
+      ? resolveFlightDepartureIataForTrip(flightCta.departureIata)
+      : undefined;
+    return buildTripcomPlannerFlightUrl(flightCta.location, {
+      essentialGuide: flightCta.essentialGuide,
+      departureIata,
+      tracking: 'stay-modal-flight',
+      mode: 'packages',
+      departDate: checkIn,
+      returnDate: checkOut,
+      adultCount,
+      childCount,
+    });
+  }, [flightCta, checkIn, checkOut, adultCount, childCount]);
+
+  if (!flightCta?.location || !packageUrl) return null;
+
+  const handleOpen = (e) => {
+    e.stopPropagation();
+    openTripcomExternalUrl(packageUrl, { target: getPartnerLinkTarget() });
+  };
+
+  const button = (
+    <button
+      type="button"
+      aria-label={t('home.stayStrip.flightHotelAria')}
+      onClick={handleOpen}
+      className={
+        isMobileToolbar
+          ? 'inline-flex w-full min-h-[40px] items-center justify-center gap-1.5 rounded-lg border border-sky-300/50 bg-sky-500/25 px-3 py-2 text-[12px] font-bold text-sky-50 transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-[0.98]'
+          : 'inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-sky-300/50 bg-sky-500/25 px-2.5 py-1 text-[11px] font-bold text-sky-50 transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-[0.98]'
       }
-    />
+    >
+      <Plane
+        size={isMobileToolbar ? 14 : 13}
+        className="shrink-0 opacity-90"
+        aria-hidden="true"
+      />
+      <span className="break-keep">{t('home.stayStrip.flightHotelCta')}</span>
+    </button>
   );
 
   if (isMobileToolbar) {
     return (
       <div
-        className={`mb-3 flex w-full flex-col gap-1 ${className}`.trim()}
+        className={`mb-3 w-full ${className}`.trim()}
         onClick={(e) => e.stopPropagation()}
         onMouseDown={(e) => e.stopPropagation()}
       >
-        {widget}
-        <p className="break-keep text-center text-[11px] font-semibold leading-snug text-sky-50/90">
-          {t('home.stayStrip.flightHotelHint')}
-        </p>
+        {button}
       </div>
     );
   }
 
   return (
     <span
-      className={`ml-auto inline-flex min-w-0 max-w-full items-center gap-2 border-l border-white/15 pl-3 ${className}`.trim()}
+      className={`ml-auto inline-flex min-w-0 max-w-full shrink-0 border-l border-white/15 pl-3 ${className}`.trim()}
       onClick={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
     >
-      {widget}
-      <span className="min-w-0 break-keep text-[11px] font-semibold leading-snug text-sky-50/95">
-        {t('home.stayStrip.flightHotelHint')}
-      </span>
+      {button}
     </span>
   );
 }
