@@ -46,10 +46,12 @@ import {
   MRT_STAY_LOW_COUNT,
   TRIPCOM_HOTEL_TRACKING,
   buildMrtMylinkUrl,
+  buildTripcomPlannerFlightUrl,
   buildTripcomHotelSearchUrl,
   getPlannerFlightArrivalIata,
   getTripcomHotelEmptyCopy,
   getTripcomHotelErrorCopy,
+  resolveTripcomPartnerLocale,
 } from '../../../utils/affiliate';
 import {
   getStayAgencyKindLabel,
@@ -60,8 +62,10 @@ import {
 import {
   getPartnerLinkTarget,
   getTripcomLinkRel,
+  openTripcomExternalUrl,
 } from '../../../components/PlaceCard/common/partnerNavigation';
 import WhiteLabelWidget from '../../../components/PlaceCard/common/WhiteLabelWidget.jsx';
+import { resolveFlightDepartureIataForTrip } from '../lib/flightOriginPreference.js';
 import { getAddressFromCoordinates } from '../lib/geocoding';
 import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
 import {
@@ -226,6 +230,60 @@ function formatPrice(n, t, language) {
   const num = Number(n);
   const formatted = num.toLocaleString(language?.startsWith('en') ? 'en-US' : 'ko-KR');
   return t('home.stayStrip.priceFrom', { price: formatted });
+}
+
+/** Trip 항공+호텔 — 모바일 목록 툴바 전용 · `/packages/` 직링크 */
+function StayFlightHotelCta({
+  flightCta,
+  checkIn,
+  checkOut,
+  adultCount,
+  childCount,
+  className = '',
+}) {
+  const { t, i18n } = useTranslation();
+  const packageUrl = useMemo(() => {
+    if (!flightCta?.location) return null;
+    const departureIata = flightCta.departureIata
+      ? resolveFlightDepartureIataForTrip(flightCta.departureIata)
+      : undefined;
+    return buildTripcomPlannerFlightUrl(flightCta.location, {
+      essentialGuide: flightCta.essentialGuide,
+      departureIata,
+      tracking: 'stay-modal-flight',
+      mode: 'packages',
+      departDate: checkIn,
+      returnDate: checkOut,
+      adultCount,
+      childCount,
+      partnerLocale: resolveTripcomPartnerLocale(i18n.language),
+    });
+  }, [flightCta, checkIn, checkOut, adultCount, childCount, i18n.language]);
+
+  if (!flightCta?.location || !packageUrl) return null;
+
+  const handleOpen = (e) => {
+    e.stopPropagation();
+    openTripcomExternalUrl(packageUrl, { target: getPartnerLinkTarget() });
+  };
+
+  return (
+    <div
+      className={className}
+      onClick={(e) => e.stopPropagation()}
+      onMouseDown={(e) => e.stopPropagation()}
+    >
+      <button
+        type="button"
+        aria-label={t('home.stayStrip.flightHotelAria')}
+        onClick={handleOpen}
+        className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-sky-300/50 bg-sky-500/25 px-2.5 py-1 text-[11px] font-bold text-sky-50 transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-[0.98]"
+      >
+        <Plane size={13} className="shrink-0 opacity-90" aria-hidden="true" />
+        <span className="break-keep">{t('home.stayStrip.flightHotelSearchCta')}</span>
+      </button>
+    </div>
+  );
 }
 
 /**
@@ -606,6 +664,11 @@ function StayListToolbar({
   densityVariant = 'mobile',
   densityValue,
   onDensityChange,
+  flightCta = null,
+  flightCheckIn,
+  flightCheckOut,
+  flightAdultCount,
+  flightChildCount,
 }) {
   const { t } = useTranslation();
   const href = listUrl || MRT_AFFILIATE_HOME_URL;
@@ -613,24 +676,38 @@ function StayListToolbar({
     'rounded-lg border border-amber-200/55 bg-amber-500/15 text-amber-50/95 transition-colors hover:border-amber-100/75 hover:bg-amber-500/28 hover:text-amber-50';
   const ctrlOn =
     'rounded-lg border border-amber-100/80 bg-amber-500/40 text-amber-50 transition-colors';
+  const isMobile = densityVariant === 'mobile';
+  const showMobileFlightCta = Boolean(isMobile && flightCta?.location);
 
   return (
     <div className="mt-1 mb-4 flex min-w-0 flex-wrap items-center justify-between gap-1.5 px-0.5">
       <div className="flex min-w-0 flex-wrap items-center gap-1.5">
-        {count ? (
-          <p className="shrink-0 text-xs font-semibold tabular-nums text-amber-100/80">
-            {t('home.stayStrip.countPlaces', { count })}
-          </p>
-        ) : null}
-        <a
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer sponsored"
-          onClick={(e) => e.stopPropagation()}
-          className={`inline-flex shrink-0 items-center px-2.5 py-1 text-[11px] font-semibold active:scale-[0.98] ${ctrl}`}
-        >
-          {t('home.stayStrip.viewOnMrt')}
-        </a>
+        {showMobileFlightCta ? (
+          <StayFlightHotelCta
+            flightCta={flightCta}
+            checkIn={flightCheckIn}
+            checkOut={flightCheckOut}
+            adultCount={flightAdultCount}
+            childCount={flightChildCount}
+          />
+        ) : (
+          <>
+            {count ? (
+              <p className="shrink-0 text-xs font-semibold tabular-nums text-amber-100/80">
+                {t('home.stayStrip.countPlaces', { count })}
+              </p>
+            ) : null}
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer sponsored"
+              onClick={(e) => e.stopPropagation()}
+              className={`inline-flex shrink-0 items-center px-2.5 py-1 text-[11px] font-semibold active:scale-[0.98] ${ctrl}`}
+            >
+              {t('home.stayStrip.viewOnMrt')}
+            </a>
+          </>
+        )}
       </div>
       <div className="flex shrink-0 flex-wrap items-center gap-1.5">
         <StayGridDensityToggle
@@ -1331,9 +1408,9 @@ export default function GlobeStayStrip({
   }
 
   const stayFlightArrivalIata = getPlannerFlightArrivalIata(location, { essentialGuide });
-  /** PC 숙소 모달만 — 써머리 항공 경로 게이트와 동일 · 도착 IATA 없으면 숨김 */
+  /** PC 일정 바 + 모바일 툴바 — 써머리 항공 경로 게이트와 동일 · 도착 IATA 없으면 숨김 */
   const stayFlightCta =
-    isLg && canPreviewFlightRouteProp && stayFlightArrivalIata
+    canPreviewFlightRouteProp && stayFlightArrivalIata
       ? {
           location,
           essentialGuide,
@@ -1756,6 +1833,11 @@ export default function GlobeStayStrip({
                     densityVariant="mobile"
                     densityValue={mobileGridCols}
                     onDensityChange={setMobileGridCols}
+                    flightCta={stayFlightCta}
+                    flightCheckIn={stayDates.checkIn}
+                    flightCheckOut={stayDates.checkOut}
+                    flightAdultCount={guests.adultCount}
+                    flightChildCount={guests.childCount}
                   />
                   <div
                     className={`grid gap-2.5 ${

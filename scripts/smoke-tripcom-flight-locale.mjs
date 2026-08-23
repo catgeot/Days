@@ -17,10 +17,21 @@ function assert(cond, msg) {
 }
 
 async function main() {
-  const { resolveTripcomPartnerLocale } = await load('src/utils/tripcomPartnerLocale.js');
+  const {
+    resolveTripcomPartnerLocale,
+    resolveTripcomSiteOrigin,
+  } = await load('src/utils/tripcomPartnerLocale.js');
 
   assert(resolveTripcomPartnerLocale('ko') === 'ko-KR', 'ko locale');
   assert(resolveTripcomPartnerLocale('en') === 'en-US', 'en locale');
+  assert(
+    resolveTripcomSiteOrigin('en-US') === 'https://www.trip.com',
+    'en site origin',
+  );
+  assert(
+    resolveTripcomSiteOrigin('ko-KR') === 'https://kr.trip.com',
+    'ko site origin',
+  );
 
   const enParams = new URLSearchParams({
     locale: resolveTripcomPartnerLocale('en'),
@@ -35,7 +46,13 @@ async function main() {
   });
   assert(koParams.get('locale') === 'ko-KR', 'ko query locale');
 
-  console.log('OK: tripcom-flight-locale — en-US query when app locale en');
+  const enPackages = new URL(
+    `${resolveTripcomSiteOrigin('en-US')}/packages/?${enParams.toString()}&sourceFrom=IBUBundle_home`,
+  );
+  assert(enPackages.hostname === 'www.trip.com', 'en packages host');
+  assert(enPackages.searchParams.get('locale') === 'en-US', 'en packages locale');
+
+  console.log('OK: tripcom-flight-locale — en-US query + www.trip.com when app locale en');
   console.log('SMOKE OK');
 }
 
