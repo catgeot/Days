@@ -2241,23 +2241,6 @@ export default function KoreaFestivalHub() {
                   )}
                   {mapOpen ? t('korea.common.list') : t('korea.common.map')}
                 </button>
-                {personalTab == null &&
-                  areaCode !== 'all' &&
-                  cityName !== 'all' && (
-                    <button
-                      type="button"
-                      onClick={() => selectCity('all')}
-                      aria-label={t('korea.common.parentRegionAll', {
-                        label:
-                          parentRegionLabel || t('korea.common.parentRegion'),
-                      })}
-                      title={t('korea.common.parentRegionList')}
-                      className="flex h-9 items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 text-[11px] font-bold text-stone-700 hover:bg-stone-100"
-                    >
-                      <Undo2 size={14} aria-hidden="true" />
-                      {parentRegionLabel || t('korea.common.parentRegion')}
-                    </button>
-                  )}
               </div>
             </div>
             {showDefaultLocHint && !mapOpen && (
