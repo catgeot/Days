@@ -62,7 +62,7 @@ import {
 import {
   getPartnerLinkTarget,
   getTripcomLinkRel,
-  openTripcomExternalUrl,
+  getTripcomPackageLinkTarget,
 } from '../../../components/PlaceCard/common/partnerNavigation';
 import WhiteLabelWidget from '../../../components/PlaceCard/common/WhiteLabelWidget.jsx';
 import { resolveFlightDepartureIataForTrip } from '../lib/flightOriginPreference.js';
@@ -242,6 +242,7 @@ function StayFlightHotelCta({
   className = '',
 }) {
   const { t, i18n } = useTranslation();
+  const openingRef = useRef(false);
   const packageUrl = useMemo(() => {
     if (!flightCta?.location) return null;
     const departureIata = flightCta.departureIata
@@ -262,10 +263,8 @@ function StayFlightHotelCta({
 
   if (!flightCta?.location || !packageUrl) return null;
 
-  const handleOpen = (e) => {
-    e.stopPropagation();
-    openTripcomExternalUrl(packageUrl, { target: getPartnerLinkTarget() });
-  };
+  const linkTarget = getTripcomPackageLinkTarget();
+  const linkRel = getTripcomLinkRel(linkTarget);
 
   return (
     <div
@@ -273,15 +272,27 @@ function StayFlightHotelCta({
       onClick={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
     >
-      <button
-        type="button"
+      <a
+        href={packageUrl}
+        target={linkTarget}
+        rel={linkRel}
         aria-label={t('home.stayStrip.flightHotelAria')}
-        onClick={handleOpen}
-        className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-sky-300/50 bg-sky-500/25 px-2.5 py-1 text-[11px] font-bold text-sky-50 transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-[0.98]"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (openingRef.current) {
+            e.preventDefault();
+            return;
+          }
+          openingRef.current = true;
+          window.setTimeout(() => {
+            openingRef.current = false;
+          }, 2000);
+        }}
+        className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-sky-300/50 bg-sky-500/25 px-2.5 py-1 text-[11px] font-bold text-sky-50 no-underline transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-[0.98]"
       >
         <Plane size={13} className="shrink-0 opacity-90" aria-hidden="true" />
         <span className="break-keep">{t('home.stayStrip.flightHotelSearchCta')}</span>
-      </button>
+      </a>
     </div>
   );
 }

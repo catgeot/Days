@@ -126,3 +126,11 @@ export function openTripcomExternalUrl(url, { target = getPartnerLinkTarget() } 
     }
     window.open(url, '_blank', 'noopener');
 }
+
+/**
+ * 숙소 모달 항공+호텔(packages) — same-tab Trip 리다이렉트 체인이 gateo 탭에서
+ * 「닫혔다 다시 열림」처럼 보일 수 있어 새 탭 고정.
+ */
+export function getTripcomPackageLinkTarget() {
+    return '_blank';
+}
