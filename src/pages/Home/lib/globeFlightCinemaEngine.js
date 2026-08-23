@@ -45,7 +45,9 @@ const ARC_LINE_GLOW = {
 };
 
 function safeMapUpdate(map, fn) {
-  if (!isGlobeMapStyleReady(map)) return;
+  if (!map || map._removed) return;
+  const styleReady = Boolean(map.isStyleLoaded?.() || map.loaded?.());
+  if (!styleReady) return;
   try {
     fn();
   } catch {

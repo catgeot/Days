@@ -285,6 +285,7 @@ function Home() {
   const [isExploreFromPlace, setIsExploreFromPlace] = useState(false);
   const [tourPivoted, setTourPivoted] = useState(false);
   const [flightCinemaActive, setFlightCinemaActive] = useState(false);
+  const [flightCinemaLaunchPending, setFlightCinemaLaunchPending] = useState(false);
   const [tourLaunchPending, setTourLaunchPending] = useState(false);
   const isTourActive = isTourMode(globeMode);
   /** 모바일 투어 UI — TourMobileBar·써머리 숨김 (globeMode 동기화 전 launch pending 포함) */
@@ -1455,6 +1456,7 @@ function Home() {
       isTourActive={isTourActive}
       endTourForCinema={endTourForFlightCinema}
       onActiveChange={setFlightCinemaActive}
+      onPendingChange={setFlightCinemaLaunchPending}
     >
     <div className="relative w-full h-screen bg-black text-white overflow-hidden font-sans">
       <SEO />
@@ -1471,6 +1473,7 @@ function Home() {
           activePinId={globeActivePinId}
           pauseRender={shouldPauseGlobe}
           isFlightCinemaActive={flightCinemaActive}
+          isFlightCinemaLaunchPending={flightCinemaLaunchPending}
           globeTheme={globeTheme}
           isZenMode={isZenMode}
           isPinVisible={isPinVisible}

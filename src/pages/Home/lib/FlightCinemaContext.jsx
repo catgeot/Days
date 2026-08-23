@@ -47,6 +47,7 @@ const FlightCinemaContext = createContext(null);
  *   isTourActive?: boolean,
  *   endTourForCinema?: () => Promise<void>,
  *   onActiveChange?: (active: boolean) => void,
+ *   onPendingChange?: (pending: boolean) => void,
  * }} props
  */
 export function FlightCinemaProvider({
@@ -55,6 +56,7 @@ export function FlightCinemaProvider({
   isTourActive = false,
   endTourForCinema,
   onActiveChange,
+  onPendingChange,
 }) {
   const [active, setActive] = useState(null);
   const [requestPending, setRequestPending] = useState(false);
@@ -80,6 +82,10 @@ export function FlightCinemaProvider({
     activeRef.current = active;
     onActiveChange?.(Boolean(active));
   }, [active, onActiveChange]);
+
+  useEffect(() => {
+    onPendingChange?.(requestPending);
+  }, [onPendingChange, requestPending]);
 
   const finishCinema = useCallback((reason) => {
     if (!activeRef.current && !pendingCompleteRef.current) return;
