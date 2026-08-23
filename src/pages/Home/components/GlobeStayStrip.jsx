@@ -63,6 +63,7 @@ import {
   getTripcomLinkRel,
   openTripcomExternalUrl,
 } from '../../../components/PlaceCard/common/partnerNavigation';
+import WhiteLabelWidget from '../../../components/PlaceCard/common/WhiteLabelWidget.jsx';
 import { resolveFlightDepartureIataForTrip } from '../lib/flightOriginPreference.js';
 import { getAddressFromCoordinates } from '../lib/geocoding';
 import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
@@ -230,7 +231,7 @@ function formatPrice(n, t, language) {
   return t('home.stayStrip.priceFrom', { price: formatted });
 }
 
-/** Trip 항공+호텔 — `/packages/` 직링크 · 목록 툴바(구 MRT 링크 자리) */
+/** Trip 항공+호텔 — 모바일 목록 툴바 전용 · `/packages/` 직링크 */
 function StayFlightHotelCta({
   flightCta,
   checkIn,
@@ -299,6 +300,8 @@ function StayDateBar({
   onClose,
   /** 패널 고정 헤더에 여행지·닫기가 있을 때 DateBar 중복 숨김 */
   embedInPanel = false,
+  /** PC만 — Trip 항공+호텔 보조 CTA (모바일·항공 경로 없으면 null) */
+  flightCta = null,
 }) {
   const { t, i18n } = useTranslation();
   const isLg = useIsLg();
@@ -309,6 +312,7 @@ function StayDateBar({
   const [draftOut, setDraftOut] = useState(checkOut);
   const [draftAdult, setDraftAdult] = useState(adultCount);
   const [draftChild, setDraftChild] = useState(childCount);
+  const showFlightCta = Boolean(isLg && flightCta?.location);
 
   useEffect(() => {
     setDraftIn(checkIn);
@@ -480,6 +484,37 @@ function StayDateBar({
         >
           {t('home.stayStrip.apply')}
         </button>
+        {showFlightCta ? (
+          <span
+            className="ml-auto inline-flex min-w-0 max-w-full items-center gap-2 border-l border-white/15 pl-3"
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <WhiteLabelWidget
+              location={flightCta.location}
+              essentialGuide={flightCta.essentialGuide}
+              departureIata={flightCta.departureIata}
+              tracking="stay-modal-flight"
+              departDate={draftIn}
+              returnDate={draftOut}
+              adultCount={draftAdult}
+              childCount={draftChild}
+              customTrigger={
+                <button
+                  type="button"
+                  aria-label={t('home.stayStrip.flightHotelAria')}
+                  className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-sky-300/50 bg-sky-500/25 px-2.5 py-1 text-[11px] font-bold text-sky-50 transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-[0.98]"
+                >
+                  <Plane size={13} className="shrink-0 opacity-90" aria-hidden="true" />
+                  <span className="break-keep">{t('home.stayStrip.flightHotelCta')}</span>
+                </button>
+              }
+            />
+            <span className="min-w-0 text-[11px] font-semibold leading-snug text-sky-50/95 break-keep">
+              {t('home.stayStrip.flightHotelHint')}
+            </span>
+          </span>
+        ) : null}
       </div>
       {open ? (
         <div className="flex w-full justify-start">
@@ -620,8 +655,10 @@ function StayGridDensityToggle({ variant, value, onChange, className = '', activ
 }
 
 function StayListToolbar({
+  count,
   sortMode,
   onSortChange,
+  listUrl,
   densityVariant = 'mobile',
   densityValue,
   onDensityChange,
@@ -632,15 +669,18 @@ function StayListToolbar({
   flightChildCount,
 }) {
   const { t } = useTranslation();
+  const href = listUrl || MRT_AFFILIATE_HOME_URL;
   const ctrl =
     'rounded-lg border border-amber-200/55 bg-amber-500/15 text-amber-50/95 transition-colors hover:border-amber-100/75 hover:bg-amber-500/28 hover:text-amber-50';
   const ctrlOn =
     'rounded-lg border border-amber-100/80 bg-amber-500/40 text-amber-50 transition-colors';
+  const isMobile = densityVariant === 'mobile';
+  const showMobileFlightCta = Boolean(isMobile && flightCta?.location);
 
   return (
     <div className="mt-1 mb-4 flex min-w-0 flex-wrap items-center justify-between gap-1.5 px-0.5">
       <div className="flex min-w-0 flex-wrap items-center gap-1.5">
-        {flightCta?.location ? (
+        {showMobileFlightCta ? (
           <StayFlightHotelCta
             flightCta={flightCta}
             checkIn={flightCheckIn}
@@ -648,7 +688,24 @@ function StayListToolbar({
             adultCount={flightAdultCount}
             childCount={flightChildCount}
           />
-        ) : null}
+        ) : (
+          <>
+            {count ? (
+              <p className="shrink-0 text-xs font-semibold tabular-nums text-amber-100/80">
+                {t('home.stayStrip.countPlaces', { count })}
+              </p>
+            ) : null}
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer sponsored"
+              onClick={(e) => e.stopPropagation()}
+              className={`inline-flex shrink-0 items-center px-2.5 py-1 text-[11px] font-semibold active:scale-[0.98] ${ctrl}`}
+            >
+              {t('home.stayStrip.viewOnMrt')}
+            </a>
+          </>
+        )}
       </div>
       <div className="flex shrink-0 flex-wrap items-center gap-1.5">
         <StayGridDensityToggle
@@ -1349,7 +1406,7 @@ export default function GlobeStayStrip({
   }
 
   const stayFlightArrivalIata = getPlannerFlightArrivalIata(location, { essentialGuide });
-  /** 써머리 항공 경로 게이트와 동일 · 도착 IATA 없으면 숨김 */
+  /** PC 일정 바 + 모바일 툴바 — 써머리 항공 경로 게이트와 동일 · 도착 IATA 없으면 숨김 */
   const stayFlightCta =
     canPreviewFlightRouteProp && stayFlightArrivalIata
       ? {
@@ -1371,6 +1428,7 @@ export default function GlobeStayStrip({
       showClose={Boolean(opts.showClose)}
       onClose={() => setExpanded(false)}
       embedInPanel={Boolean(opts.embedInPanel)}
+      flightCta={stayFlightCta}
     />
   );
 
@@ -1560,16 +1618,13 @@ export default function GlobeStayStrip({
     isLg && status === 'ready' && items?.length ? (
       <>
         <StayListToolbar
+          count={listTotalCount}
           sortMode={sortMode}
           onSortChange={setSortMode}
+          listUrl={mrtStayListUrl}
           densityVariant="desktop"
           densityValue={desktopGridDensity}
           onDensityChange={setDesktopGridDensity}
-          flightCta={stayFlightCta}
-          flightCheckIn={stayDates.checkIn}
-          flightCheckOut={stayDates.checkOut}
-          flightAdultCount={guests.adultCount}
-          flightChildCount={guests.childCount}
         />
         <div
           className={`grid gap-3 ${
@@ -1769,8 +1824,10 @@ export default function GlobeStayStrip({
               {status === 'ready' && items?.length ? (
                 <>
                   <StayListToolbar
+                    count={listTotalCount}
                     sortMode={sortMode}
                     onSortChange={setSortMode}
+                    listUrl={mrtStayListUrl}
                     densityVariant="mobile"
                     densityValue={mobileGridCols}
                     onDensityChange={setMobileGridCols}
