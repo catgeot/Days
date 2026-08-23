@@ -283,6 +283,15 @@ function majorChipClass(panelOpen) {
   }`;
 }
 
+/** 내 주변 — 필터 탭이 아닌 위치 액션(아웃라인) */
+function nearMeChipClass(active) {
+  return `flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition-all disabled:opacity-60 ${
+    active
+      ? 'border-amber-400 bg-amber-50 text-amber-900 shadow-sm ring-1 ring-amber-200/80'
+      : 'border-stone-300 bg-white text-stone-700 hover:border-amber-300 hover:bg-stone-50 hover:text-amber-900'
+  }`;
+}
+
 /** 시간·지역·테마 — 대분류·하위 칩이 같은 아이콘으로 종속 관계 표시 */
 const CHIP_PANEL_ICONS = {
   time: CalendarDays,
@@ -1936,23 +1945,32 @@ export default function KoreaFestivalHub() {
                     {majorTasteDisplay}
                   </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleNearMe}
-                  disabled={nearBusy}
-                  aria-label={t('korea.festival.nearLoad')}
-                  title={t('korea.common.nearMe')}
-                  className="shrink-0 flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500 px-3 py-1.5 text-xs font-bold text-white hover:bg-amber-600 disabled:opacity-60"
-                >
-                  {nearBusy ? (
-                    <Loader2 size={14} className="animate-spin" aria-hidden="true" />
-                  ) : (
-                    <LocateFixed size={14} aria-hidden="true" />
-                  )}
-                  <span className={locale === 'en' ? 'hidden md:inline' : undefined}>
-                    {t('korea.common.nearMe')}
-                  </span>
-                </button>
+                <div className="flex shrink-0 items-center border-l border-stone-200 pl-3">
+                  <button
+                    type="button"
+                    onClick={handleNearMe}
+                    disabled={nearBusy}
+                    aria-label={t('korea.festival.nearLoad')}
+                    title={t('korea.common.nearMe')}
+                    aria-pressed={nearActive}
+                    className={nearMeChipClass(nearActive)}
+                  >
+                    {nearBusy ? (
+                      <Loader2 size={14} className="animate-spin" aria-hidden="true" />
+                    ) : (
+                      <LocateFixed
+                        size={14}
+                        className={
+                          nearActive ? 'text-amber-700' : 'text-amber-600'
+                        }
+                        aria-hidden="true"
+                      />
+                    )}
+                    <span className={locale === 'en' ? 'hidden md:inline' : undefined}>
+                      {t('korea.common.nearMe')}
+                    </span>
+                  </button>
+                </div>
               </div>
               <ChipScrollRow
                 ariaLabel={t('korea.common.detailChips')}
