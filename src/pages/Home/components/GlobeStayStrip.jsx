@@ -273,12 +273,12 @@ function StayFlightHotelCta({
       onClick={handleOpen}
       className={
         isMobileToolbar
-          ? 'inline-flex w-full min-h-[40px] items-center justify-center gap-1.5 rounded-lg border border-sky-300/50 bg-sky-500/25 px-3 py-2 text-[12px] font-bold text-sky-50 transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-[0.98]'
+          ? 'inline-flex shrink-0 items-center gap-1 rounded-lg border border-sky-300/50 bg-sky-500/25 px-2.5 py-1 text-[11px] font-semibold text-sky-50 transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-[0.98]'
           : 'inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-sky-300/50 bg-sky-500/25 px-2.5 py-1 text-[11px] font-bold text-sky-50 transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-[0.98]'
       }
     >
       <Plane
-        size={isMobileToolbar ? 14 : 13}
+        size={isMobileToolbar ? 12 : 13}
         className="shrink-0 opacity-90"
         aria-hidden="true"
       />
@@ -287,15 +287,7 @@ function StayFlightHotelCta({
   );
 
   if (isMobileToolbar) {
-    return (
-      <div
-        className={`mb-3 w-full ${className}`.trim()}
-        onClick={(e) => e.stopPropagation()}
-        onMouseDown={(e) => e.stopPropagation()}
-      >
-        {button}
-      </div>
-    );
+    return button;
   }
 
   return (
@@ -325,7 +317,7 @@ function StayDateBar({
   onClose,
   /** 패널 고정 헤더에 여행지·닫기가 있을 때 DateBar 중복 숨김 */
   embedInPanel = false,
-  /** PC만 — Trip 항공+호텔 보조 CTA (모바일은 목록 툴바 위 · 항공 경로 없으면 null) */
+  /** PC만 — Trip 항공+호텔 보조 CTA (모바일은 목록 툴바 인라인 · 항공 경로 없으면 null) */
   flightCta = null,
 }) {
   const { t, i18n } = useTranslation();
@@ -665,6 +657,11 @@ function StayListToolbar({
   densityVariant = 'mobile',
   densityValue,
   onDensityChange,
+  flightCta = null,
+  flightCheckIn,
+  flightCheckOut,
+  flightAdultCount,
+  flightChildCount,
 }) {
   const { t } = useTranslation();
   const href = listUrl || MRT_AFFILIATE_HOME_URL;
@@ -672,6 +669,9 @@ function StayListToolbar({
     'rounded-lg border border-amber-200/55 bg-amber-500/15 text-amber-50/95 transition-colors hover:border-amber-100/75 hover:bg-amber-500/28 hover:text-amber-50';
   const ctrlOn =
     'rounded-lg border border-amber-100/80 bg-amber-500/40 text-amber-50 transition-colors';
+  const showFlightCta = Boolean(
+    densityVariant === 'mobile' && flightCta?.location,
+  );
 
   return (
     <div className="mt-1 mb-4 flex min-w-0 flex-wrap items-center justify-between gap-1.5 px-0.5">
@@ -680,6 +680,22 @@ function StayListToolbar({
           <p className="shrink-0 text-xs font-semibold tabular-nums text-amber-100/80">
             {t('home.stayStrip.countPlaces', { count })}
           </p>
+        ) : null}
+        {showFlightCta ? (
+          <span
+            className="shrink-0"
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <StayFlightHotelCta
+              flightCta={flightCta}
+              checkIn={flightCheckIn}
+              checkOut={flightCheckOut}
+              adultCount={flightAdultCount}
+              childCount={flightChildCount}
+              variant="mobile-toolbar"
+            />
+          </span>
         ) : null}
         <a
           href={href}
@@ -1798,16 +1814,6 @@ export default function GlobeStayStrip({
               className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3 pb-[max(5.5rem,calc(env(safe-area-inset-bottom)+3.75rem))]"
             >
               <div className="mb-3.5">{renderDateBar({ embedInPanel: true })}</div>
-              {stayFlightCta ? (
-                <StayFlightHotelCta
-                  flightCta={stayFlightCta}
-                  checkIn={stayDates.checkIn}
-                  checkOut={stayDates.checkOut}
-                  adultCount={guests.adultCount}
-                  childCount={guests.childCount}
-                  variant="mobile-toolbar"
-                />
-              ) : null}
               {status === 'loading' ? (
                 <div className="flex flex-col items-center justify-center gap-2 py-16 text-white/50">
                   <Loader2 size={22} className="animate-spin text-amber-200/80" />
@@ -1825,6 +1831,11 @@ export default function GlobeStayStrip({
                     densityVariant="mobile"
                     densityValue={mobileGridCols}
                     onDensityChange={setMobileGridCols}
+                    flightCta={stayFlightCta}
+                    flightCheckIn={stayDates.checkIn}
+                    flightCheckOut={stayDates.checkOut}
+                    flightAdultCount={guests.adultCount}
+                    flightChildCount={guests.childCount}
                   />
                   <div
                     className={`grid gap-2.5 ${
