@@ -230,18 +230,16 @@ function formatPrice(n, t, language) {
   return t('home.stayStrip.priceFrom', { price: formatted });
 }
 
-/** Trip 항공+호텔 — `/packages/` 직링크 · PC=일정 바 인라인 · 모바일=툴바 전용 행 */
+/** Trip 항공+호텔 — `/packages/` 직링크 · 목록 툴바(구 MRT 링크 자리) */
 function StayFlightHotelCta({
   flightCta,
   checkIn,
   checkOut,
   adultCount,
   childCount,
-  variant = 'desktop-inline',
   className = '',
 }) {
   const { t } = useTranslation();
-  const isMobileBanner = variant === 'mobile-banner';
   const packageUrl = useMemo(() => {
     if (!flightCta?.location) return null;
     const departureIata = flightCta.departureIata
@@ -266,50 +264,22 @@ function StayFlightHotelCta({
     openTripcomExternalUrl(packageUrl, { target: getPartnerLinkTarget() });
   };
 
-  const label = isMobileBanner
-    ? t('home.stayStrip.flightHotelSearchCta')
-    : t('home.stayStrip.flightHotelCta');
-
-  const button = (
-    <button
-      type="button"
-      aria-label={t('home.stayStrip.flightHotelAria')}
-      onClick={handleOpen}
-      className={
-        isMobileBanner
-          ? 'inline-flex w-full min-h-[36px] items-center justify-center gap-1.5 rounded-lg border border-sky-300/50 bg-sky-500/25 px-3 py-2 text-[12px] font-bold text-sky-50 transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-[0.98]'
-          : 'inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-sky-300/50 bg-sky-500/25 px-2.5 py-1 text-[11px] font-bold text-sky-50 transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-[0.98]'
-      }
-    >
-      <Plane
-        size={isMobileBanner ? 13 : 13}
-        className="shrink-0 opacity-90"
-        aria-hidden="true"
-      />
-      <span className="break-keep">{label}</span>
-    </button>
-  );
-
-  if (isMobileBanner) {
-    return (
-      <div
-        className={`w-full ${className}`.trim()}
-        onClick={(e) => e.stopPropagation()}
-        onMouseDown={(e) => e.stopPropagation()}
-      >
-        {button}
-      </div>
-    );
-  }
-
   return (
-    <span
-      className={`ml-auto inline-flex min-w-0 max-w-full shrink-0 border-l border-white/15 pl-3 ${className}`.trim()}
+    <div
+      className={className}
       onClick={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
     >
-      {button}
-    </span>
+      <button
+        type="button"
+        aria-label={t('home.stayStrip.flightHotelAria')}
+        onClick={handleOpen}
+        className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-sky-300/50 bg-sky-500/25 px-2.5 py-1 text-[11px] font-bold text-sky-50 transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-[0.98]"
+      >
+        <Plane size={13} className="shrink-0 opacity-90" aria-hidden="true" />
+        <span className="break-keep">{t('home.stayStrip.flightHotelSearchCta')}</span>
+      </button>
+    </div>
   );
 }
 
@@ -329,8 +299,6 @@ function StayDateBar({
   onClose,
   /** 패널 고정 헤더에 여행지·닫기가 있을 때 DateBar 중복 숨김 */
   embedInPanel = false,
-  /** PC만 — Trip 항공+호텔 보조 CTA (모바일은 목록 툴바 전용 행 · 항공 경로 없으면 null) */
-  flightCta = null,
 }) {
   const { t, i18n } = useTranslation();
   const isLg = useIsLg();
@@ -341,7 +309,6 @@ function StayDateBar({
   const [draftOut, setDraftOut] = useState(checkOut);
   const [draftAdult, setDraftAdult] = useState(adultCount);
   const [draftChild, setDraftChild] = useState(childCount);
-  const showFlightCta = Boolean(isLg && flightCta?.location);
 
   useEffect(() => {
     setDraftIn(checkIn);
@@ -513,15 +480,6 @@ function StayDateBar({
         >
           {t('home.stayStrip.apply')}
         </button>
-        {showFlightCta ? (
-          <StayFlightHotelCta
-            flightCta={flightCta}
-            checkIn={draftIn}
-            checkOut={draftOut}
-            adultCount={draftAdult}
-            childCount={draftChild}
-          />
-        ) : null}
       </div>
       {open ? (
         <div className="flex w-full justify-start">
@@ -662,10 +620,8 @@ function StayGridDensityToggle({ variant, value, onChange, className = '', activ
 }
 
 function StayListToolbar({
-  count,
   sortMode,
   onSortChange,
-  listUrl,
   densityVariant = 'mobile',
   densityValue,
   onDensityChange,
@@ -676,43 +632,23 @@ function StayListToolbar({
   flightChildCount,
 }) {
   const { t } = useTranslation();
-  const href = listUrl || MRT_AFFILIATE_HOME_URL;
   const ctrl =
     'rounded-lg border border-amber-200/55 bg-amber-500/15 text-amber-50/95 transition-colors hover:border-amber-100/75 hover:bg-amber-500/28 hover:text-amber-50';
   const ctrlOn =
     'rounded-lg border border-amber-100/80 bg-amber-500/40 text-amber-50 transition-colors';
-  const showFlightCta = Boolean(
-    densityVariant === 'mobile' && flightCta?.location,
-  );
 
   return (
-    <div className="mt-1 mb-4 space-y-2 px-0.5">
-      {showFlightCta ? (
-        <StayFlightHotelCta
-          flightCta={flightCta}
-          checkIn={flightCheckIn}
-          checkOut={flightCheckOut}
-          adultCount={flightAdultCount}
-          childCount={flightChildCount}
-          variant="mobile-banner"
-        />
-      ) : null}
-      <div className="flex min-w-0 flex-wrap items-center justify-between gap-1.5">
-        <div className="flex min-w-0 flex-wrap items-center gap-1.5">
-        {count ? (
-          <p className="shrink-0 text-xs font-semibold tabular-nums text-amber-100/80">
-            {t('home.stayStrip.countPlaces', { count })}
-          </p>
+    <div className="mt-1 mb-4 flex min-w-0 flex-wrap items-center justify-between gap-1.5 px-0.5">
+      <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+        {flightCta?.location ? (
+          <StayFlightHotelCta
+            flightCta={flightCta}
+            checkIn={flightCheckIn}
+            checkOut={flightCheckOut}
+            adultCount={flightAdultCount}
+            childCount={flightChildCount}
+          />
         ) : null}
-        <a
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer sponsored"
-          onClick={(e) => e.stopPropagation()}
-          className={`inline-flex shrink-0 items-center px-2.5 py-1 text-[11px] font-semibold active:scale-[0.98] ${ctrl}`}
-        >
-          {t('home.stayStrip.viewOnMrt')}
-        </a>
       </div>
       <div className="flex shrink-0 flex-wrap items-center gap-1.5">
         <StayGridDensityToggle
@@ -745,7 +681,6 @@ function StayListToolbar({
             ))}
           </select>
         </label>
-      </div>
       </div>
     </div>
   );
@@ -1436,7 +1371,6 @@ export default function GlobeStayStrip({
       showClose={Boolean(opts.showClose)}
       onClose={() => setExpanded(false)}
       embedInPanel={Boolean(opts.embedInPanel)}
-      flightCta={stayFlightCta}
     />
   );
 
@@ -1626,13 +1560,16 @@ export default function GlobeStayStrip({
     isLg && status === 'ready' && items?.length ? (
       <>
         <StayListToolbar
-          count={listTotalCount}
           sortMode={sortMode}
           onSortChange={setSortMode}
-          listUrl={mrtStayListUrl}
           densityVariant="desktop"
           densityValue={desktopGridDensity}
           onDensityChange={setDesktopGridDensity}
+          flightCta={stayFlightCta}
+          flightCheckIn={stayDates.checkIn}
+          flightCheckOut={stayDates.checkOut}
+          flightAdultCount={guests.adultCount}
+          flightChildCount={guests.childCount}
         />
         <div
           className={`grid gap-3 ${
@@ -1832,10 +1769,8 @@ export default function GlobeStayStrip({
               {status === 'ready' && items?.length ? (
                 <>
                   <StayListToolbar
-                    count={listTotalCount}
                     sortMode={sortMode}
                     onSortChange={setSortMode}
-                    listUrl={mrtStayListUrl}
                     densityVariant="mobile"
                     densityValue={mobileGridCols}
                     onDensityChange={setMobileGridCols}
