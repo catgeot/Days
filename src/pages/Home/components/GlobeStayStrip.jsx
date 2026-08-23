@@ -230,7 +230,7 @@ function formatPrice(n, t, language) {
   return t('home.stayStrip.priceFrom', { price: formatted });
 }
 
-/** Trip 항공+호텔 — `/packages/` 직링크(PC·모바일 동일 · 항공 검색 모달 미사용) */
+/** Trip 항공+호텔 — `/packages/` 직링크 · PC=일정 바 인라인 · 모바일=툴바 전용 행 */
 function StayFlightHotelCta({
   flightCta,
   checkIn,
@@ -241,7 +241,7 @@ function StayFlightHotelCta({
   className = '',
 }) {
   const { t } = useTranslation();
-  const isMobileToolbar = variant === 'mobile-toolbar';
+  const isMobileBanner = variant === 'mobile-banner';
   const packageUrl = useMemo(() => {
     if (!flightCta?.location) return null;
     const departureIata = flightCta.departureIata
@@ -266,28 +266,40 @@ function StayFlightHotelCta({
     openTripcomExternalUrl(packageUrl, { target: getPartnerLinkTarget() });
   };
 
+  const label = isMobileBanner
+    ? t('home.stayStrip.flightHotelSearchCta')
+    : t('home.stayStrip.flightHotelCta');
+
   const button = (
     <button
       type="button"
       aria-label={t('home.stayStrip.flightHotelAria')}
       onClick={handleOpen}
       className={
-        isMobileToolbar
-          ? 'inline-flex shrink-0 items-center gap-1 rounded-lg border border-sky-300/50 bg-sky-500/25 px-2.5 py-1 text-[11px] font-semibold text-sky-50 transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-[0.98]'
+        isMobileBanner
+          ? 'inline-flex w-full min-h-[36px] items-center justify-center gap-1.5 rounded-lg border border-sky-300/50 bg-sky-500/25 px-3 py-2 text-[12px] font-bold text-sky-50 transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-[0.98]'
           : 'inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-sky-300/50 bg-sky-500/25 px-2.5 py-1 text-[11px] font-bold text-sky-50 transition-colors hover:border-sky-200/55 hover:bg-sky-500/40 active:scale-[0.98]'
       }
     >
       <Plane
-        size={isMobileToolbar ? 12 : 13}
+        size={isMobileBanner ? 13 : 13}
         className="shrink-0 opacity-90"
         aria-hidden="true"
       />
-      <span className="break-keep">{t('home.stayStrip.flightHotelCta')}</span>
+      <span className="break-keep">{label}</span>
     </button>
   );
 
-  if (isMobileToolbar) {
-    return button;
+  if (isMobileBanner) {
+    return (
+      <div
+        className={`w-full ${className}`.trim()}
+        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
+      >
+        {button}
+      </div>
+    );
   }
 
   return (
@@ -317,7 +329,7 @@ function StayDateBar({
   onClose,
   /** 패널 고정 헤더에 여행지·닫기가 있을 때 DateBar 중복 숨김 */
   embedInPanel = false,
-  /** PC만 — Trip 항공+호텔 보조 CTA (모바일은 목록 툴바 인라인 · 항공 경로 없으면 null) */
+  /** PC만 — Trip 항공+호텔 보조 CTA (모바일은 목록 툴바 전용 행 · 항공 경로 없으면 null) */
   flightCta = null,
 }) {
   const { t, i18n } = useTranslation();
@@ -674,28 +686,23 @@ function StayListToolbar({
   );
 
   return (
-    <div className="mt-1 mb-4 flex min-w-0 flex-wrap items-center justify-between gap-1.5 px-0.5">
-      <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+    <div className="mt-1 mb-4 space-y-2 px-0.5">
+      {showFlightCta ? (
+        <StayFlightHotelCta
+          flightCta={flightCta}
+          checkIn={flightCheckIn}
+          checkOut={flightCheckOut}
+          adultCount={flightAdultCount}
+          childCount={flightChildCount}
+          variant="mobile-banner"
+        />
+      ) : null}
+      <div className="flex min-w-0 flex-wrap items-center justify-between gap-1.5">
+        <div className="flex min-w-0 flex-wrap items-center gap-1.5">
         {count ? (
           <p className="shrink-0 text-xs font-semibold tabular-nums text-amber-100/80">
             {t('home.stayStrip.countPlaces', { count })}
           </p>
-        ) : null}
-        {showFlightCta ? (
-          <span
-            className="shrink-0"
-            onClick={(e) => e.stopPropagation()}
-            onMouseDown={(e) => e.stopPropagation()}
-          >
-            <StayFlightHotelCta
-              flightCta={flightCta}
-              checkIn={flightCheckIn}
-              checkOut={flightCheckOut}
-              adultCount={flightAdultCount}
-              childCount={flightChildCount}
-              variant="mobile-toolbar"
-            />
-          </span>
         ) : null}
         <a
           href={href}
@@ -738,6 +745,7 @@ function StayListToolbar({
             ))}
           </select>
         </label>
+      </div>
       </div>
     </div>
   );
