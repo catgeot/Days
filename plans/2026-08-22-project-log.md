@@ -2,6 +2,13 @@
 
 직전: [`2026-08-21-project-log.md`](./2026-08-21-project-log.md)
 
+## 항공경로 PROD arc 레이스 (#146)
+
+- **증상** Preview OK · main 병합 후 PROD에서 arc 실패·중단 재발
+- **원인** 조회 대기 중 `syncGateoMarkerLayers`가 시네마 레이어 숨김 · start 직후 idle 레이스
+- **수정** launch pending·engine.isActive 동안 레이어 재숨김 금지 · active ref 선설정 · safeMapUpdate loaded 폴백
+- **VERIFY** `npm run build` PASS
+
 ## 항공경로 첫 클릭·아크 중단 재발
 
 - **증상** PROD 써머리 「항공 경로」1회 클릭 조용 실패·arc 그려지다 멈춤
