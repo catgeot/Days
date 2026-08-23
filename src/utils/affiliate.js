@@ -20,7 +20,7 @@ export {
   resolveMrtPackageThemeHref,
   resolveMrtPackageThemeForLocation,
 } from './mrtPackageLinks.js';
-import { resolveTripcomPartnerLocale } from './tripcomPartnerLocale.js';
+import { resolveTripcomPartnerLocale, resolveTripcomSiteOrigin } from './tripcomPartnerLocale.js';
 import { resolveGygLocale, resolveGygCurrency } from './gygPartnerLocale.js';
 import {
   GYG_PARTNER_ID,
@@ -32,7 +32,7 @@ import {
   buildGygSearchUrl as buildGygSearchUrlRaw,
 } from './gygAffiliateLinks.js';
 
-export { resolveTripcomPartnerLocale, resolveGygLocale, resolveGygCurrency };
+export { resolveTripcomPartnerLocale, resolveTripcomSiteOrigin, resolveGygLocale, resolveGygCurrency };
 export {
   GYG_PARTNER_ID,
   GYG_DEFAULT_CMP,
@@ -702,15 +702,17 @@ export const TRIPCOM_KR_PARTNER = {
  * @returns {string}
  */
 export function getTripcomHomeUrl(options = {}) {
+  const partnerLocale = options.partnerLocale ?? getTripcomPartnerLocale();
+  const origin = resolveTripcomSiteOrigin(partnerLocale);
   const params = new URLSearchParams({
-    locale: 'ko-KR',
+    locale: partnerLocale,
     curr: 'KRW',
     Allianceid: TRIPCOM_KR_PARTNER.allianceId,
     SID: TRIPCOM_KR_PARTNER.sid,
   });
   if (options.campaign) params.set('trip_sub1', options.campaign);
   if (options.locationName) params.set('trip_sub2', options.locationName);
-  return `https://kr.trip.com/?${params.toString()}`;
+  return `${origin}/?${params.toString()}`;
 }
 
 /** Klook 사이트 홈 제휴 URL */
@@ -846,6 +848,7 @@ export function buildTripcomPlannerFlightUrl(location, options = {}) {
   const { sub1, sub3 } = resolveTripcomFlightTracking(options);
   const partnerLocale =
     options.partnerLocale ?? getTripcomPartnerLocale();
+  const origin = resolveTripcomSiteOrigin(partnerLocale);
 
   const params = new URLSearchParams({
     Allianceid: TRIPCOM_KR_PARTNER.allianceId,
@@ -891,15 +894,15 @@ export function buildTripcomPlannerFlightUrl(location, options = {}) {
   }
 
   if (mode === 'ad') {
-    return `https://kr.trip.com/partners/ad/${adId}?${params.toString()}`;
+    return `${origin}/partners/ad/${adId}?${params.toString()}`;
   }
 
   if (mode === 'packages' || options.tracking === 'stay-modal-flight') {
     params.set('sourceFrom', 'IBUBundle_home');
-    return `https://kr.trip.com/packages/?${params.toString()}`;
+    return `${origin}/packages/?${params.toString()}`;
   }
 
-  return `https://kr.trip.com/flights/?${params.toString()}`;
+  return `${origin}/flights/?${params.toString()}`;
 }
 
 /** @param {unknown} value @returns {string | null} YYYY-MM-DD */
@@ -956,15 +959,17 @@ function getTripcomHotelFullOverrideUrl(location) {
  * @param {{ checkIn?: string, checkOut?: string, campaign?: string, adultCount?: number, childCount?: number }} options
  */
 function mergeTripcomHotelStayParams(baseUrl, options = {}) {
+  const partnerLocale = options.partnerLocale ?? getTripcomPartnerLocale();
   try {
     const url = new URL(baseUrl);
+    url.hostname = new URL(resolveTripcomSiteOrigin(partnerLocale)).hostname;
     if (!url.searchParams.has('Allianceid')) {
       url.searchParams.set('Allianceid', TRIPCOM_KR_PARTNER.allianceId);
     }
     if (!url.searchParams.has('SID')) {
       url.searchParams.set('SID', TRIPCOM_KR_PARTNER.sid);
     }
-    if (!url.searchParams.has('locale')) url.searchParams.set('locale', 'ko-KR');
+    url.searchParams.set('locale', partnerLocale);
     if (!url.searchParams.has('curr')) url.searchParams.set('curr', 'KRW');
     if (options.campaign) url.searchParams.set('trip_sub1', options.campaign);
     if (options.checkIn) url.searchParams.set('checkIn', String(options.checkIn));
@@ -1022,8 +1027,10 @@ export function buildTripcomHotelSearchUrl(location, options = {}) {
     location?.name_en || location?.name || location?.name_ko || '',
   ).trim();
   const cityId = getTripcomHotelCityIdForLocation(location);
+  const partnerLocale = options.partnerLocale ?? getTripcomPartnerLocale();
+  const origin = resolveTripcomSiteOrigin(partnerLocale);
   const params = new URLSearchParams({
-    locale: 'ko-KR',
+    locale: partnerLocale,
     curr: 'KRW',
     Allianceid: TRIPCOM_KR_PARTNER.allianceId,
     SID: TRIPCOM_KR_PARTNER.sid,
@@ -1047,9 +1054,9 @@ export function buildTripcomHotelSearchUrl(location, options = {}) {
   if (mode === 'list') params.set('crn', '1');
 
   if (mode === 'ad') {
-    return `https://kr.trip.com/partners/ad/${adId}?${params.toString()}`;
+    return `${origin}/partners/ad/${adId}?${params.toString()}`;
   }
-  return `https://kr.trip.com/hotels/list?${params.toString()}`;
+  return `${origin}/hotels/list?${params.toString()}`;
 }
 
 /**

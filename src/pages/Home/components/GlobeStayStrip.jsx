@@ -51,6 +51,7 @@ import {
   getPlannerFlightArrivalIata,
   getTripcomHotelEmptyCopy,
   getTripcomHotelErrorCopy,
+  resolveTripcomPartnerLocale,
 } from '../../../utils/affiliate';
 import {
   getStayAgencyKindLabel,
@@ -240,7 +241,7 @@ function StayFlightHotelCta({
   childCount,
   className = '',
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const packageUrl = useMemo(() => {
     if (!flightCta?.location) return null;
     const departureIata = flightCta.departureIata
@@ -255,8 +256,9 @@ function StayFlightHotelCta({
       returnDate: checkOut,
       adultCount,
       childCount,
+      partnerLocale: resolveTripcomPartnerLocale(i18n.language),
     });
-  }, [flightCta, checkIn, checkOut, adultCount, childCount]);
+  }, [flightCta, checkIn, checkOut, adultCount, childCount, i18n.language]);
 
   if (!flightCta?.location || !packageUrl) return null;
 

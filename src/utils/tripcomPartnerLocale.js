@@ -7,3 +7,8 @@ export function resolveTripcomPartnerLocale(value) {
   );
   return locale === 'en' ? 'en-US' : 'ko-KR';
 }
+
+/** app locale en → 글로벌 호스트(영문 UI) · ko → kr 서브도메인 */
+export function resolveTripcomSiteOrigin(partnerLocale) {
+  return partnerLocale === 'en-US' ? 'https://www.trip.com' : 'https://kr.trip.com';
+}
