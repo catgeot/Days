@@ -307,8 +307,15 @@ function flapChipClass(active) {
 /**
  * 모바일 가로 칩 스크롤 — 하단 스크롤 트랙만(인지용 · 화살표 없음).
  * PC는 트랙 숨김.
+ * @param {{ panelKey?: string, activeKey?: string }} p — 패널 전환 시 스크롤 초기화·선택 칩 가시화
  */
-function ChipScrollRow({ children, className = '', ariaLabel }) {
+function ChipScrollRow({
+  children,
+  className = '',
+  ariaLabel,
+  panelKey = '',
+  activeKey = '',
+}) {
   const { t } = useTranslation();
   const resolvedAriaLabel = ariaLabel ?? t('korea.common.chipList');
   const scrollerRef = useRef(null);
@@ -363,6 +370,25 @@ function ChipScrollRow({ children, className = '', ariaLabel }) {
       mo?.disconnect();
     };
   }, [updateScrollUi]);
+
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return undefined;
+    const frame = requestAnimationFrame(() => {
+      const active = el.querySelector('[aria-pressed="true"]');
+      if (active) {
+        active.scrollIntoView({
+          behavior: 'auto',
+          block: 'nearest',
+          inline: 'nearest',
+        });
+      } else {
+        el.scrollLeft = 0;
+      }
+      updateScrollUi();
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [panelKey, activeKey, updateScrollUi]);
 
   return (
     <div className={`min-w-0 ${className}`}>
@@ -1430,6 +1456,21 @@ export default function KoreaFestivalHub() {
     localizedTasteLabel(t, tasteId, tasteLabel(tasteId)) ||
     t('korea.common.theme');
 
+  const majorTimeDisplay =
+    locale === 'en' ? t('korea.common.time') : timeMajorLabel;
+  const majorRegionDisplay =
+    locale === 'en' ? t('korea.common.region') : regionMajorLabel;
+  const majorTasteDisplay =
+    locale === 'en' ? t('korea.common.theme') : tasteMajorLabel;
+
+  const detailChipPanelKey = chipPanel;
+  const detailChipActiveKey =
+    chipPanel === 'time'
+      ? timeTab
+      : chipPanel === 'region'
+        ? `${areaCode}:${cityName}`
+        : tasteId;
+
   const refreshFavorites = useCallback(() => {
     const list = loadFavorites();
     setFavoriteList(list);
@@ -1872,7 +1913,7 @@ export default function KoreaFestivalHub() {
                     aria-label={t('korea.common.majorTime', { label: timeMajorLabel })}
                   >
                     <ChipPanelIcon panel="time" size={13} />
-                    {timeMajorLabel}
+                    {majorTimeDisplay}
                   </button>
                   <button
                     type="button"
@@ -1882,7 +1923,7 @@ export default function KoreaFestivalHub() {
                     aria-label={t('korea.common.majorRegion', { label: regionMajorLabel })}
                   >
                     <ChipPanelIcon panel="region" size={13} />
-                    {regionMajorLabel}
+                    {majorRegionDisplay}
                   </button>
                   <button
                     type="button"
@@ -1892,7 +1933,7 @@ export default function KoreaFestivalHub() {
                     aria-label={t('korea.common.majorTheme', { label: tasteMajorLabel })}
                   >
                     <ChipPanelIcon panel="taste" size={13} />
-                    {tasteMajorLabel}
+                    {majorTasteDisplay}
                   </button>
                 </div>
                 <button
@@ -1908,10 +1949,16 @@ export default function KoreaFestivalHub() {
                   ) : (
                     <LocateFixed size={14} aria-hidden="true" />
                   )}
-                  {t('korea.common.nearMe')}
+                  <span className={locale === 'en' ? 'hidden md:inline' : undefined}>
+                    {t('korea.common.nearMe')}
+                  </span>
                 </button>
               </div>
-              <ChipScrollRow ariaLabel={t('korea.common.detailChips')}>
+              <ChipScrollRow
+                ariaLabel={t('korea.common.detailChips')}
+                panelKey={detailChipPanelKey}
+                activeKey={detailChipActiveKey}
+              >
                 {chipPanel === 'time' &&
                   timeTabs.map((t) => (
                     <button

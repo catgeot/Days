@@ -1209,6 +1209,7 @@
       "retry": "Try again",
       "loading": "Loading…",
       "nationwide": "Nationwide",
+      "time": "Time",
       "region": "Region",
       "theme": "Theme",
       "themeAll": "All themes",
@@ -1292,8 +1293,8 @@
       "panelBySubregion": "By {{unit}}",
       "timeTab": {
         "now": "Now",
-        "weekend": "This weekend",
-        "thisMonth": "This month",
+        "weekend": "Weekend",
+        "thisMonth": "Month",
         "spring": "Spring",
         "summer": "Summer",
         "autumn": "Autumn",
