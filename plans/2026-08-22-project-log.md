@@ -7,6 +7,7 @@
 - **증상** Preview OK · main 병합 후 PROD에서 arc 실패·중단 재발
 - **원인** 조회 대기 중 `syncGateoMarkerLayers`가 시네마 레이어 숨김 · start 직후 idle 레이스
 - **수정** launch pending·engine.isActive 동안 레이어 재숨김 금지 · active ref 선설정 · safeMapUpdate loaded 폴백
+- **추가** flyTo 중 setData 스킵 → map render 훅·완료 타이머 · 공항 circle 점 레이어 상시 숨김(IATA HTML만)
 - **VERIFY** `npm run build` PASS
 
 ## 항공경로 첫 클릭·아크 중단 재발

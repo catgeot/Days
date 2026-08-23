@@ -23,9 +23,13 @@ export const FLIGHT_CINEMA_ORIGIN_LAYER_ID = 'gateo-flight-cinema-origin';
 /** @deprecated legacy layer ids for label-policy compat */
 export const FLIGHT_CINEMA_DEST_LAYER_ID = 'gateo-flight-cinema-dest';
 
-export const FLIGHT_CINEMA_LAYER_IDS = [
+export const FLIGHT_CINEMA_ARC_LAYER_IDS = [
   FLIGHT_CINEMA_ARC_GLOW_LAYER_ID,
   FLIGHT_CINEMA_ARC_LAYER_ID,
+];
+
+export const FLIGHT_CINEMA_LAYER_IDS = [
+  ...FLIGHT_CINEMA_ARC_LAYER_IDS,
   FLIGHT_CINEMA_AIRPORT_LAYER_ID,
 ];
 
@@ -43,6 +47,15 @@ const ARC_LINE_GLOW = {
   'line-opacity': 0.55,
   'line-blur': 1.2,
 };
+
+function setArcLineCoords(map, coords) {
+  if (!map || map._removed) return;
+  try {
+    map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)?.setData(arcLineFeature(coords));
+  } catch {
+    // Style may be mid-transition — render hook retries.
+  }
+}
 
 function safeMapUpdate(map, fn) {
   if (!map || map._removed) return;
@@ -207,7 +220,7 @@ export function setupFlightCinemaLayers(map, { visible = true, promoteZIndex = f
       applyLayerPaint(map, FLIGHT_CINEMA_AIRPORT_LAYER_ID, AIRPORT_DOT_PAINT);
     }
 
-    for (const layerId of FLIGHT_CINEMA_LAYER_IDS) {
+    for (const layerId of FLIGHT_CINEMA_ARC_LAYER_IDS) {
       if (!map.getLayer(layerId)) continue;
       try {
         if (visible) {
@@ -219,6 +232,15 @@ export function setupFlightCinemaLayers(map, { visible = true, promoteZIndex = f
         if (promoteZIndex) {
           map.moveLayer(layerId);
         }
+      } catch {
+        // Style may be mid-transition.
+      }
+    }
+
+    // IATA 코드는 HTML Marker만 — Mapbox circle 점은 Safari 등에서 과하게 보임
+    if (map.getLayer(FLIGHT_CINEMA_AIRPORT_LAYER_ID)) {
+      try {
+        map.setLayoutProperty(FLIGHT_CINEMA_AIRPORT_LAYER_ID, 'visibility', 'none');
       } catch {
         // Style may be mid-transition.
       }
@@ -338,17 +360,35 @@ export function createFlightCinemaEngine(map, options = {}) {
   let animating = false;
   let cancelled = false;
   let rafId = null;
+  let renderArcHandler = null;
+  let completeTimer = null;
   let runGen = 0;
   let onCompleteRef = null;
   let fullArcRef = null;
   let arcScheduleRef = null;
   let animationStartAt = 0;
 
-  const cleanupTimers = () => {
+  const clearArcAnimationHooks = () => {
     if (rafId != null) {
       cancelAnimationFrame(rafId);
       rafId = null;
     }
+    if (renderArcHandler) {
+      try {
+        map.off('render', renderArcHandler);
+      } catch {
+        // ignore
+      }
+      renderArcHandler = null;
+    }
+    if (completeTimer != null) {
+      clearTimeout(completeTimer);
+      completeTimer = null;
+    }
+  };
+
+  const cleanupTimers = () => {
+    clearArcAnimationHooks();
   };
 
   /** Stale active/timers without invoking a previous onComplete (re-entry guard). */
@@ -396,9 +436,7 @@ export function createFlightCinemaEngine(map, options = {}) {
     cleanupTimers();
     animating = false;
     if (fullArcRef) {
-      safeMapUpdate(map, () => {
-        map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)?.setData(arcLineFeature(fullArcRef));
-      });
+      setArcLineCoords(map, fullArcRef);
     }
   };
 
@@ -491,7 +529,7 @@ export function createFlightCinemaEngine(map, options = {}) {
 
     safeMapUpdate(map, () => {
       map.getSource(FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID)?.setData(endpointFc);
-      map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)?.setData(arcLineFeature([originLngLat]));
+      setArcLineCoords(map, [originLngLat]);
     });
 
     autoRotateOff(map);
@@ -516,22 +554,37 @@ export function createFlightCinemaEngine(map, options = {}) {
 
     animationStartAt = performance.now();
 
+    const syncArcAtElapsed = (elapsed) => {
+      const partial = resolveArcDrawAtTime(fullArc, arcScheduleRef, elapsed);
+      setArcLineCoords(map, partial);
+      return elapsed;
+    };
+
+    const finishArcAnimation = () => {
+      if (!active || cancelled || gen !== runGen) return;
+      revealFullRoute();
+    };
+
     const tick = (now) => {
       if (!active || cancelled || gen !== runGen) return;
       const schedule = arcScheduleRef;
-      const elapsed = now - animationStartAt;
-      const partial = resolveArcDrawAtTime(fullArc, schedule, elapsed);
-      safeMapUpdate(map, () => {
-        map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)?.setData(arcLineFeature(partial));
-      });
+      const elapsed = syncArcAtElapsed(now - animationStartAt);
       if (elapsed < (schedule?.totalMs ?? 0)) {
         rafId = requestAnimationFrame(tick);
         return;
       }
-      revealFullRoute();
-      animating = false;
-      rafId = null;
+      finishArcAnimation();
     };
+
+    renderArcHandler = () => {
+      if (!active || cancelled || gen !== runGen) return;
+      syncArcAtElapsed(performance.now() - animationStartAt);
+    };
+    map.on('render', renderArcHandler);
+
+    completeTimer = setTimeout(() => {
+      finishArcAnimation();
+    }, (arcScheduleRef?.totalMs ?? 0) + 300);
 
     rafId = requestAnimationFrame(tick);
 
