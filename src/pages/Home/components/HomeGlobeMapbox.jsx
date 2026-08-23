@@ -386,6 +386,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   activePinId,
   pauseRender = false,
   isFlightCinemaActive = false,
+  isFlightCinemaLaunchPending = false,
   globeTheme = 'deep',
   isZenMode = false,
   isPinVisible = true,
@@ -1059,7 +1060,11 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         setRegionHighlight(map, focusedFaceRegionRef.current);
       }
     }
-    if (!flightCinemaActiveRef.current) {
+    const cinemaGlobeSession =
+      flightCinemaActiveRef.current
+      || isFlightCinemaLaunchPending
+      || flightCinemaEngineRef.current?.isActive?.();
+    if (!cinemaGlobeSession) {
       setupFlightCinemaLayers(map, { visible: false });
       if (isFlightCinemaGlobeReady(map)) {
         flightCinemaLayersLatchedRef.current = true;
@@ -1068,7 +1073,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }
     restoreReachBoundaryLayersIfNeeded();
     syncClusterOverlayLayers();
-  }, [markerGeoJSON, pauseRender, restoreReachBoundaryLayersIfNeeded, syncClusterOverlayLayers]);
+  }, [isFlightCinemaLaunchPending, markerGeoJSON, pauseRender, restoreReachBoundaryLayersIfNeeded, syncClusterOverlayLayers]);
 
   useEffect(() => {
     if (pauseRender || flightCinemaActiveRef.current) return;
@@ -1580,19 +1585,24 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     };
     flightCinemaOnCompleteRef.current = wrappedOnComplete;
 
+    immerseActiveRef.current = false;
+    autoRotateRef.current = false;
+    if (rotationTimer.current) clearTimeout(rotationTimer.current);
+    interactionRef.current = true;
+    flightCinemaActiveRef.current = true;
+
     const started = engine.start({
       ...params,
       onComplete: wrappedOnComplete,
     });
 
     if (started) {
-      immerseActiveRef.current = false;
-      autoRotateRef.current = false;
-      if (rotationTimer.current) clearTimeout(rotationTimer.current);
-      interactionRef.current = true;
-      flightCinemaActiveRef.current = true;
       setShowCinemaAirportMarkers(true);
       setGateoMarkerLabelVisibility(map, false);
+    } else {
+      flightCinemaActiveRef.current = false;
+      interactionRef.current = false;
+      flightCinemaOnCompleteRef.current = null;
     }
     return started;
   }, [ensureFlightCinemaEngine]);
