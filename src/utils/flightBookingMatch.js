@@ -3,7 +3,7 @@ import { i18n } from '../i18n/config.js';
 
 /** @typedef {'standard'|'segmented'|'carrier-only'|'agency-only'} FlightBookingTier */
 /** @typedef {{ provider: string, name: string, originIata?: string, destinationIata: string, url?: string }} FlightOfficialLinkDef */
-/** @typedef {{ tier: FlightBookingTier, bookingNote?: string, tripDisclaimer?: string, officialLinks?: FlightOfficialLinkDef[] }} FlightBookingProfile */
+/** @typedef {{ tier: FlightBookingTier, bookingNote?: string, bookingNoteEn?: string, tripDisclaimer?: string, officialLinks?: FlightOfficialLinkDef[] }} FlightBookingProfile */
 
 const UNITED_SEARCH_BASE = 'https://www.united.com/en/us/fsr/choose-flights';
 
@@ -62,6 +62,18 @@ export function resolveFlightBookingProfile(locationOrSlug) {
   const slug = resolveFlightBookingSlug(locationOrSlug);
   if (!slug) return null;
   return flightData.spots?.[slug] ?? null;
+}
+
+/**
+ * @param {FlightBookingProfile | null | undefined} profile
+ * @param {string | null | undefined} locale
+ * @returns {string}
+ */
+export function resolveLocalizedBookingNote(profile, locale) {
+  if (!profile) return '';
+  const isEn = String(locale || '').toLowerCase().startsWith('en');
+  const note = isEn ? profile.bookingNoteEn || profile.bookingNote : profile.bookingNote;
+  return String(note || '').trim();
 }
 
 /**

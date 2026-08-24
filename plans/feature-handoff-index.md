@@ -62,27 +62,25 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **main** `#44b` 항공경로·지구본 IATA **로컬 QA ✅** · §13 회귀 QA 이어가기 |
-| **main tip** | `e531e660` |
-| **브랜치** | `main` |
-| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9·**§13 A·B·C** |
-| **일지** | [`2026-08-22-project-log.md`](./2026-08-22-project-log.md) |
-| **PROD QA** | `https://www.gateo.kr/?lang=en` — 항공 시네마 IATA·§13 A 경로 |
-| **VERIFY** | `audit:i18n` · `build` · `smoke:watson-locale` · `smoke:magazine-locale` |
-| **Edge** | `generate-place-magazine` · **`update-place-wiki`** locale+`@en` **배포 완료** (2026-08-22) |
+| **상태** | **feature** `#45` 플래너 bannerNote·권역 EN · Preview QA 대기 |
+| **브랜치** | `cursor/i18n-planner-banner-en-feb4` |
+| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9 |
+| **일지** | [`2026-08-24-project-log.md`](./2026-08-24-project-log.md) |
+| **Preview** | `https://www.gateo.kr/qa/en` → git Preview `?lang=en` · `/place/yap/planner` |
+| **VERIFY** | `audit:airports` · `audit:i18n` · `build` · hangul bannerNote missing EN = 0 |
 
-**#44 완료**: 써머리 항공경로 첫 클릭·ICN 기점 — `f44f660f`
+**#44b 완료**: Mapbox IATA HTML Marker — `e531e660` (main)
 
-**#44b 완료 (이번)**: Mapbox symbol `continuePlacement` → **HTML Marker** (`FlightCinemaAirportMarkers`) · 로컬 QA ✅ — `e531e660`
+**#45 이번**: 공항/예약 배너 EN + 권역 리스트 EN
 
-**다음 제시어 (#44c)**:
+**다음 제시어 (#46)**:
 
 ```
-영문화 #44c, PROD 회귀 QA
+영문화 #46, Preview QA — 플래너 banner EN
 @plans/feature-handoff-index.md
-@plans/2026-08-22-project-log.md
+@plans/2026-08-24-project-log.md
 @plans/i18n-en-plan.md
-main · ?lang=en · i18n-en-plan §13 A · 항공경로 PROD 재확인
+cursor/i18n-planner-banner-en-feb4 · /qa/en · /place/yap/planner?lang=en
 금지: GT 일괄 백필
 ```
 

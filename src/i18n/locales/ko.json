@@ -949,6 +949,7 @@
     "common": {
       "bookmark": "즐겨찾기",
       "relatedSpots": "연관 여행지",
+      "relatedSpotsSubtitle": "같은 권역이지만 관문 공항·일정이 다릅니다",
       "relatedList": "같은 권역 여행지 목록",
       "loadInfoFailed": "관련 정보를 불러올 수 없습니다.",
       "searchGoogle": "구글에서 검색하기",
