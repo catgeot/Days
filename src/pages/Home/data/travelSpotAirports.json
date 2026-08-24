@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-08-21T22:57:21.464Z",
+    "generatedAt": "2026-08-24T03:35:33.281Z",
     "spotCount": 273,
     "placeIdCount": 647,
     "stats": {
@@ -29,6 +29,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "보라보라는 인천 직항이 없습니다. 보통 인천→도쿄(NRT) 경유 타히티(PPT) 도착 후 Air Tahiti 국내선으로 BOB까지 연결됩니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "Bora Bora has no direct flight from Incheon. Typical routing is ICN→Tokyo (NRT) to Tahiti (PPT), then Air Tahiti domestic to BOB. Confirm the final arrival code on your ticket.",
       "rationale": "보라보라 BOB — 시네마 ICN→NRT→PPT→BOB",
       "flightRouteHubIatas": [
         "NRT",
@@ -122,6 +123,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "버뮤다 최종 도착은 버뮤다 국제공항(BDA)입니다. 한국에서는 인천(ICN) 직항이 없어 보통 미국 동부(뉴욕 JFK·보스턴 BOS·애틀랜타 ATL·마이애미 MIA 등) 또는 영국·유럽(런던 LHR·파리 CDG 등) 경유 후 BDA로 연결되는 일정이 일반적입니다. 미국 경유 시 ESTA·캐나다·영국 경유 시 해당 입국·트랜짓 비자 규정을 반드시 확인하세요. 항공권 검색 시 도착지 코드 BDA를 입력하고, 티켓의 최종 도착 공항을 확인한 뒤 제휴 링크도 맞춰 주세요.",
+      "bannerNoteEn": "Final arrival for Bermuda is Bermuda International (BDA). There is no ICN direct from Korea; typical connections are via the US East Coast (New York JFK, Boston BOS, Atlanta ATL, Miami MIA, etc.) or UK/Europe (London LHR, Paris CDG, etc.) then BDA. Via the US, check ESTA; via Canada or the UK, check the relevant entry/transit visa rules. Enter arrival code BDA when searching flights, confirm the final arrival airport on your ticket, then match affiliate links.",
       "rationale": "버뮤다 국제공항(L.F. Wade) — 한국 직항 없음",
       "graphFlightRouteHubIatas": [
         "JFK"
@@ -166,6 +168,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "라로통가(쿡 제도)는 보통 인천→오클랜드(AKL) 경유 후 라로통가(RAR) 도착이 일반적입니다. 날짜변경선으로 도착일이 하루 당겨질 수 있으니 티켓·숙소 날짜를 확인하세요.",
+      "bannerNoteEn": "Rarotonga (Cook Islands) is usually reached ICN→Auckland (AKL) then Rarotonga (RAR). The International Date Line can pull your arrival date forward by a day — double-check ticket and lodging dates.",
       "rationale": "라로통가 RAR — 시네마 ICN→AKL→RAR",
       "flightRouteHubIatas": [
         "AKL"
@@ -181,6 +184,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "아이투타키는 보통 인천→오클랜드(AKL) 경유 후 라로통가(RAR) 국제선, 이어서 에어 라로통가 국내선으로 아이투타키(AIT) 도착이 일반적입니다. 렌터카·픽업·투어는 아이투타키 공항(AIT) 기준입니다. 날짜변경선으로 도착일이 하루 당겨질 수 있으니 티켓·숙소 날짜를 확인하세요.",
+      "bannerNoteEn": "Aitutaki is usually reached ICN→Auckland (AKL), then Rarotonga (RAR) internationally, then Air Rarotonga domestic to Aitutaki (AIT). Car rental, pickup, and tours are based on Aitutaki Airport (AIT). The International Date Line can pull your arrival date forward by a day — double-check ticket and lodging dates.",
       "rationale": "AKL·RAR 국제선 경유 후 AIT 국내선 — 최종 도착·렌터카 AIT",
       "flightRouteHubIatas": [
         "AKL",
@@ -196,6 +200,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "사모아(아피아)는 인천 직항이 없습니다. 보통 인천→오클랜드(AKL)·피지 난디(NAN) 등 경유 후 APW 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "Samoa (Apia) has no direct flight from Incheon. Typical routings are ICN→Auckland (AKL) or Fiji Nadi (NAN), then APW. Confirm the final arrival code on your ticket.",
       "rationale": "팔레올로 APW — 시네마 ICN→AKL/NAN 경유",
       "flightRouteHubIatas": [
         "AKL",
@@ -213,6 +218,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "팔라완·엘니도는 ENI 직항(MNL 경유·AirSWIFT), PPS 육로, MNL 국제선 관문이 나뉩니다. 엘니도 상세 경로는 엘니도 여행지 배너를 참고해 주세요.",
+      "bannerNoteEn": "Palawan and El Nido split between ENI direct (via MNL · AirSWIFT), the PPS overland route, and MNL as an international gateway. See the El Nido destination banner for detailed El Nido routings.",
       "rationale": "엘니도·푸에르토프린세사·마닐라 관문",
       "graphFlightRouteHubIatas": [
         "MNL"
@@ -312,6 +318,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 루프트한자·핀에어 뮌헨(MUC)·헬싱키(HEL) 경유\n· 대안: 아이슬란드항공(레이캬비크), KLM(암스테르담), 카타르(도하)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장",
+      "bannerNoteEn": "Flight booking tips\n· Direct: none (usually 1 stop) · total 14–18 hours\n· Recommended: Lufthansa or Finnair via Munich (MUC) or Helsinki (HEL)\n· Alternatives: Icelandair (Reykjavík), KLM (Amsterdam), Qatar (Doha)\n· Summer peak (Jun–Aug) — book 3–4 months ahead",
       "rationale": "케플라비크 KEF · 플래너 ICN→유럽 허브(뮌헨 등) 경유→KEF · ICN↔KEF 직항 long-arc(지구 한 바퀴) 회피 waypoint",
       "flightRouteWaypoints": [
         [
@@ -390,6 +397,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "팔라우는 인천 직항이 없습니다. 보통 인천→타이pei(TPE)·마닐라(MNL) 등 경유 후 코로르(ROR) 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "Palau has no direct flight from Incheon. Typical routings are ICN→Taipei (TPE) or Manila (MNL), then Koror (ROR). Confirm the final arrival code on your ticket.",
       "rationale": "코로르 ROR — 시네마 ICN→타이pei(TPE)→ROR",
       "flightRouteHubIatas": [
         "TPE"
@@ -405,6 +413,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "갈라파고스는 산크리스토발(GPS) 직항·과야킬(GYE) 경유 일정이 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "Galápagos itineraries often fly direct to San Cristóbal (GPS) or connect via Guayaquil (GYE). Confirm the final arrival code on your ticket.",
       "rationale": "산크리스토발(GPS)·과야킬(GYE) 관문 — 툴킷·배너 SSOT",
       "graphFlightRouteHubIatas": [
         "JFK",
@@ -435,6 +444,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "호주령 크리스마스섬 직항은 크리스마스섬(XCH)입니다. 퍼스(PER) 등 호주 본토에서 정기편·경유로 이어지는 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "Direct flights to Australian Christmas Island arrive at Christmas Island (XCH). Schedules usually connect from mainland Australia such as Perth (PER). Confirm the final arrival code on your ticket.",
       "rationale": "섬 도착 XCH, 호주 본토 경유 PER",
       "graphFlightRouteHubIatas": [
         "CGK",
@@ -451,6 +461,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "디에고가르시아는 영국령 군사 기지로 일반 관광 출입이 불가합니다. 아래 링크는 인도양 권역(몰디브 등) 연결·일정 참고용이며, 실제 목적지와 다릅니다.",
+      "bannerNoteEn": "Diego Garcia is a British military base and closed to general tourism. Links below are for Indian Ocean region connections (e.g. Maldives) and itinerary reference only — they are not the actual destination.",
       "rationale": "민간 출입 불가, 인도양 경유 허브 참고",
       "graphFlightRouteHubIatas": [
         "CMB"
@@ -469,6 +480,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "로포텐으로 가는 항로는 공항마다 역할이 다릅니다. 레크네스(LKN)·스볼바어(SVJ)는 군도 위 공항이라, 국내선 등으로 섬에 직접 도착한 뒤 렌터카·이동을 이어가기 좋습니다. 이베네스(EVE)는 본토(하르스타드·나르비크) 쪽 관문으로 국제·국내 대형 노선이 많고, 차나 버스로 로포텐으로 들어오는 일정이 흔합니다. 보되(BOO)는 로포텐 남쪽 본토에서 페리(예: 보되–모스케네스)나 국내선으로 군도에 이어질 때 자주 쓰입니다. 인천 등에서는 오슬로(OSL) 등 유럽 경유 후 위 공항으로 국내선을 이어 붙입니다. 실제 티켓·일정에 적힌 도착 공항(IATA)을 확인한 뒤, 아래 제휴 링크 검색어도 그 공항에 맞춰 바꿔 주세요.",
+      "bannerNoteEn": "Routes into Lofoten differ by airport. Leknes (LKN) and Svolvær (SVJ) sit on the archipelago, so arriving there on a domestic leg works well before continuing by rental car. Evenes (EVE) is a mainland gateway (Harstad–Narvik) with more international and larger domestic options; many itineraries continue to Lofoten by car or bus. Bodø (BOO) is often used when connecting from the mainland south of Lofoten by ferry (e.g. Bodø–Moskenes) or domestic flights. From Incheon, travelers usually connect via Oslo (OSL) or other European hubs, then take a domestic flight to one of the airports above. Confirm the arrival airport (IATA) on your ticket and itinerary, then adjust the affiliate search terms below to match that airport.",
       "rationale": "로포텐 다관문 — toolkit-sync BOO·OSL 오탐 보정",
       "searchHintIatas": [
         "BOO",
@@ -680,6 +692,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "뉴칼레도니아는 인천 직항이 없습니다. 보통 인천→시드니(SYD)·오클랜드(AKL) 경유 후 누메아(NOU) 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "New Caledonia has no direct flight from Incheon. Typical routing is ICN→Sydney (SYD) or Auckland (AKL), then Nouméa (NOU). Confirm the final arrival code on your ticket.",
       "rationale": "누메아 NOU — 시네마 ICN→SYD→NOU",
       "flightRouteHubIatas": [
         "SYD"
@@ -805,6 +818,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.",
+      "bannerNoteEn": "International flights arrive in Lima (LIM), then continue on a domestic flight to Cusco (CUZ). Car rental, pickup, and tours are based on Cusco Airport.",
       "rationale": "ICN→LAX→CUZ · 태평양 waypoint로 시베리아 bbox arc 회피",
       "flightRouteWaypoints": [
         [
@@ -854,6 +868,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "씨엠립 앙코르(SAI)는 구 REP 폐쇄 후 관문입니다. 인천 직항은 드물고, 베트남항공 등 호치민(SGN)·하노이(HAN) 경유 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "Siem Reap Angkor (SAI) is the gateway after the old REP closed. Direct flights from Incheon are rare; Vietnam Airlines connections via Ho Chi Minh City (SGN) or Hanoi (HAN) are typical. Confirm the final arrival code on your ticket.",
       "rationale": "ICN→SGN→SAI · 베트남항공 등 호치민 경유가 일반적(직항은 유동적)",
       "flightRouteHubIatas": [
         "SGN"
@@ -882,6 +897,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "미드웨이 환초는 상용 정기 노선이 없으며, 미국 Fish & Wildlife 허가·투어로 호놀룰루(HNL) 등에서 이어지는 일정이 일반적입니다.",
+      "bannerNoteEn": "Midway Atoll has no commercial scheduled service; itineraries usually continue from Honolulu (HNL) under US Fish & Wildlife permits and tours.",
       "rationale": "호놀룰루 경유 정부·에코투어",
       "graphFlightRouteHubIatas": [],
       "graphFlightRouteSource": "graph-direct"
@@ -895,6 +911,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "국제선은 양곤(RGN) 또는 만달레이(MDL) 경유 후 바간행 국내선이 NYU(냥우)에 도착하는 일정이 많습니다. 렌터카·픽업·항공 제휴는 최종 도착 NYU 기준입니다.",
+      "bannerNoteEn": "International arrivals often go via Yangon (RGN) or Mandalay (MDL), then a domestic flight to Bagan landing at NYU (Nyaung U). Car rental, pickup, and flight affiliates are based on final arrival NYU.",
       "rationale": "바간 관문 냥우(NYU) 공항",
       "graphFlightRouteHubIatas": [
         "KMG",
@@ -911,6 +928,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "피지(난디)는 인천 직항이 없습니다. 보통 인천→시드니(SYD)·오클랜드(AKL)·도쿄(NRT) 등 경유 후 NAN 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "Fiji (Nadi) has no direct flight from Incheon. Typical routings are ICN→Sydney (SYD), Auckland (AKL), or Tokyo (NRT), then NAN. Confirm the final arrival code on your ticket.",
       "rationale": "난디 NAN — 시네마 ICN→시드니(SYD)→NAN",
       "flightRouteHubIatas": [
         "SYD"
@@ -926,6 +944,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "이스터섬은 인천 직항이 없습니다. 보통 인천→LA(LAX)·애틀랜트(ATL)·시드니(SYD) 등 경유 후 산티아고(SCL) 도착, 이어 LATAM 국내선으로 IPC까지 연결되는 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "Easter Island has no direct flight from Incheon. Typical routing is ICN→LA (LAX), Atlanta (ATL), Sydney (SYD), or similar, then Santiago (SCL), then LATAM domestic to IPC. Confirm the final arrival code on your ticket.",
       "rationale": "마타베리(IPC) — 시네마 ICN→LAX→SCL→IPC · LATAM 국내선",
       "tripFlightArrivalIata": "SCL",
       "flightRouteWaypoints": [
@@ -963,6 +982,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "세인트헬레나 최종 도착은 세인트헬레나(HLE)입니다. 요하네스버그(JNB) 등에서 연결·개항편으로 이어지는 일정이 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "Final arrival for St Helena is St Helena (HLE). Connections and opening flights often continue from Johannesburg (JNB) and similar hubs. Confirm the final arrival code on your ticket.",
       "rationale": "ICN→JNB→HLE · 남아공·Airlink 개항편 연결",
       "flightRouteHubIatas": [
         "JNB"
@@ -1111,6 +1131,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "남극 본토는 상용 노선이 없습니다. 관광 크루즈는 우수아이아(USH) 등 남미 관문, 맥머도 기지 등은 크라이스트처치(CHC) 경유가 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "Mainland Antarctica has no commercial flights. Tourist cruises usually use South American gateways such as Ushuaia (USH); McMurdo and similar bases often connect via Christchurch (CHC). Confirm the final arrival code on your ticket.",
       "rationale": "크루즈 관문 우수아이아(USH) · 맥머도 등 연구기지 관문 크라이스트처치(CHC)",
       "graphFlightRouteHubIatas": [
         "LHR",
@@ -1148,6 +1169,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "통가(누쿠알로파)는 인천 직항이 없습니다. 보통 인천→피지 난디(NAN) 경유(Fiji Airways) 또는 오클랜드(AKL) 경유(Air New Zealand) 후 TBU 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "Tonga (Nukuʻalofa) has no direct flight from Incheon. Typical routings are ICN→Fiji Nadi (NAN) on Fiji Airways or Auckland (AKL) on Air New Zealand, then TBU. Confirm the final arrival code on your ticket.",
       "rationale": "푸아아모투 국제공항(TBU) — 시네마 ICN→피지(NAN)→TBU (Fiji Airways 등 가장 일반적)",
       "flightRouteHubIatas": [
         "NAN"
@@ -1179,6 +1201,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "서울은 인천(ICN) 국제선·김포(GMP) 국내·단거리 국제선이 나뉩니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "bannerNoteEn": "Seoul splits between Incheon (ICN) for international and Gimpo (GMP) for domestic and short-haul international. Confirm the final arrival code on your ticket, then match affiliate links to that airport.",
       "rationale": "인천(ICN) 국제선·김포(GMP) 국내·단거리 국제선",
       "graphFlightRouteHubIatas": [],
       "graphFlightRouteSource": "same-airport"
@@ -1192,6 +1215,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "바누아투는 인천 직항이 없습니다. 보통 인천→시드니(SYD)·브리즈번(BNE) 경유 후 포트빌라(VLI) 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "Vanuatu has no direct flight from Incheon. Typical routing is ICN→Sydney (SYD) or Brisbane (BNE), then Port Vila (VLI). Confirm the final arrival code on your ticket.",
       "rationale": "포트빌라 VLI — 시네마 ICN→SYD→VLI",
       "flightRouteHubIatas": [
         "SYD"
@@ -1207,6 +1231,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "이 여행지는 **아르헨티나 북부 파타고니아**(바릴로체·호수·안데스)입니다. 보통 부에노스아이레스(EZE) 국제선 후 바릴로체(BRC) 국내선으로 이어집니다. 남부(우수아이아 USH·토레스 델 파이네 PUQ)는 별도 여행지를 참고하세요. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "This destination is **northern Argentine Patagonia** (Bariloche, lakes, Andes). Typical routing is Buenos Aires (EZE) international, then Bariloche (BRC) domestic. For the south (Ushuaia USH · Torres del Paine PUQ), see those separate destinations. Confirm the final arrival code on your ticket.",
       "rationale": "아르헨티나 북부 파타고니아 — 바릴로체(BRC)·부에노스아이레스(EZE) 국제선 관문",
       "graphFlightRouteHubIatas": [
         "FRA",
@@ -1223,6 +1248,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "케르겔렌은 연구·군사 목적 선박·전용 항공만 접근 가능합니다. 레위니옹(RUN) 등 프랑스 남방 영토 관문을 거치는 탐험 일정이 일반적입니다.",
+      "bannerNoteEn": "Kerguelen is reachable only by research/military ships or dedicated flights. Expedition itineraries typically pass through French Southern Territories gateways such as Réunion (RUN).",
       "rationale": "레위니옹 경유 프랑스 남방군도",
       "graphFlightRouteHubIatas": [
         "PVG",
@@ -1404,6 +1430,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "상하이는 인천→푸둥(PVG) 직항과 김포→훙차오(SHA) 단거리 노선이 흔합니다. 시내 접근성은 훙차오가 좋으나 항공편 선택지는 푸둥이 더 많습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "bannerNoteEn": "Shanghai commonly uses ICN→Pudong (PVG) direct and Gimpo→Hongqiao (SHA) short-haul. Hongqiao is better for city access; Pudong has more flight options. Confirm the final arrival code on your ticket, then match affiliate links to that airport.",
       "rationale": "푸둥(PVG) 국제선·훙차오(SHA) 국내·단거리 국제선",
       "searchHintIatas": [
         "PVG",
@@ -1562,6 +1589,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "항공권·경로 비교\n· 루트 1(추천·비용↑): 인천→마닐라(MNL)→엘니도(ENI). AirSWIFT 독점, MNL 제4터미널(T4) 환승·짐 비연결 → 환승 3~4시간 이상 권장.\n· 루트 2(가성비·육로): 인천→푸에르토프린세사(PPS)→밴·버스→엘니도(5시간+). 체력 소모 큼.\n티켓의 최종 도착 코드로 제휴 링크 검색어를 맞춰 주세요.",
+      "bannerNoteEn": "Flight & route comparison\n· Route 1 (recommended · higher cost): ICN→Manila (MNL)→El Nido (ENI). AirSWIFT monopoly; MNL Terminal 4 (T4) transfer with no through-checked bags → allow 3–4+ hours for the connection.\n· Route 2 (value · overland): ICN→Puerto Princesa (PPS)→van/bus→El Nido (5+ hours). Physically demanding.\nMatch affiliate search terms to the final arrival code on your ticket.",
       "rationale": "ICN→MNL→ENI · AirSWIFT 국내선(추천 루트)",
       "flightRouteHubIatas": [
         "MNL"
@@ -1577,6 +1605,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "보라카이는 칼리보(KLO) 국제선 후 버스·페리, 또는 카틱란(MPH) 직항·국내선으로 들어오는 일정이 흔합니다. 티켓의 최종 도착 코드를 확인한 뒤 아래 제휴 링크 검색어도 그 공항에 맞춰 주세요.",
+      "bannerNoteEn": "Boracay is often reached via Kalibo (KLO) international then bus/ferry, or via Caticlan (MPH) direct/domestic. Confirm the final arrival code on your ticket, then match the affiliate search terms below to that airport.",
       "rationale": "칼리보·카틱란 관문",
       "graphFlightRouteHubIatas": [],
       "graphFlightRouteSource": "graph-direct"
@@ -1733,6 +1762,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "토레스 델 파이네는 칠레 남부 파타고니아 국립공원입니다. 보통 푼타아레나스(PUQ) 직항·경유 후 버스·투어로 들어갑니다. 아르헨티나 북부 파타고니아·우수아이아와 관문이 다릅니다.",
+      "bannerNoteEn": "Torres del Paine is a national park in southern Chilean Patagonia. Most travelers fly direct or connect into Punta Arenas (PUQ), then continue by bus or tour. Gateways differ from northern Argentine Patagonia and Ushuaia.",
       "rationale": "ICN→LAX→SCL→PUQ · 미국 경유 산티아고 국제선 후 파타고니아 국내선 · 태평양 waypoint",
       "flightRouteWaypoints": [
         [
@@ -1869,6 +1899,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 핀에어 헬싱키(HEL) 경유 — 비행시간·피로도 유리\n· 대안: SAS(코펜하겐), KLM(암스테르담), 루프트한자(뮌헨·FRA), 카타르(도하)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장",
+      "bannerNoteEn": "Flight booking tips\n· Direct: none (usually 1 stop) · total 14–18 hours\n· Recommended: Finnair via Helsinki (HEL) — better flight time and fatigue\n· Alternatives: SAS (Copenhagen), KLM (Amsterdam), Lufthansa (Munich/FRA), Qatar (Doha)\n· Summer peak (Jun–Aug) — book 3–4 months ahead",
       "rationale": "코펜하겐 CPH · ICN→헬싱키(HEL) 핀에어 경유 — 북유럽 1회 경유 대표 루트",
       "flightRouteHubIatas": [
         "HEL"
@@ -1883,6 +1914,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 핀에어 헬싱키(HEL) 경유 — 비행시간·피로도 유리\n· 대안: SAS(코펜하겐), KLM(암스테르담), 루프트한자(뮌헨·FRA)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장",
+      "bannerNoteEn": "Flight booking tips\n· Direct: none (usually 1 stop) · total 14–18 hours\n· Recommended: Finnair via Helsinki (HEL) — better flight time and fatigue\n· Alternatives: SAS (Copenhagen), KLM (Amsterdam), Lufthansa (Munich/FRA)\n· Summer peak (Jun–Aug) — book 3–4 months ahead",
       "rationale": "알란다 ARN · ICN→헬싱키(HEL) 핀에어 경유 — 오슬로와 동일 패턴",
       "flightRouteHubIatas": [
         "HEL"
@@ -2058,6 +2090,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "항공권 예약 팁\n· 직항: 없음(인천↔브뤼셀 정기 직항 없음, 1회 경유 필수) · 총 15~18시간\n· 추천: 루프트한자(프랑크푸르트·뮌헨), 에어프랑스(파리), 카타르(도하), KLM(암스테르담)\n· 절감 팁: 파리(CDG)·암스테르담(AMS) 직항 후 유로스타(Eurostar)·탈리스 고속열차로 브뤼셀 남역(약 1시간 30분) — 시간·비용 효율적",
+      "bannerNoteEn": "Flight booking tips\n· Direct: none (no regular ICN↔Brussels nonstop; 1 stop required) · total 15–18 hours\n· Recommended: Lufthansa (Frankfurt/Munich), Air France (Paris), Qatar (Doha), KLM (Amsterdam)\n· Money-saver: fly into Paris (CDG) or Amsterdam (AMS) direct, then Eurostar/Thalys high-speed rail to Brussels Midi (~1 hour 30 minutes) — efficient on time and cost",
       "rationale": "브뤼셀 BRU · ICN→프랑크푸르트(FRA) 루프트한자 경유 — 추천 취항사 대표 루트",
       "flightRouteHubIatas": [
         "FRA"
@@ -2072,6 +2105,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 핀에어 헬싱키(HEL) 경유 — 비행시간·피로도 유리\n· 대안: 카타르(도하), 루프트한자(뮌헨·프랑크푸르트), KLM(암스테르담)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장",
+      "bannerNoteEn": "Flight booking tips\n· Direct: none (usually 1 stop) · total 14–18 hours\n· Recommended: Finnair via Helsinki (HEL) — better flight time and fatigue\n· Alternatives: Qatar (Doha), Lufthansa (Munich/Frankfurt), KLM (Amsterdam)\n· Summer peak (Jun–Aug) — book 3–4 months ahead",
       "rationale": "가르데르모엔 OSL · ICN→헬싱키(HEL) 핀에어 경유 — 플래너·시네마 최적 루트",
       "flightRouteHubIatas": [
         "HEL"
@@ -2185,6 +2219,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "앙코르 권역(SAI)은 구 REP 폐쇄 후 관문입니다. 인천 직항은 드물고, 베트남항공 등 호치민(SGN)·하노이(HAN) 경유 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "The Angkor area (SAI) is the gateway after the old REP closed. Direct flights from Incheon are rare; Vietnam Airlines connections via Ho Chi Minh City (SGN) or Hanoi (HAN) are typical. Confirm the final arrival code on your ticket.",
       "rationale": "ICN→SGN→SAI · angkor-wat와 동일 관문",
       "flightRouteHubIatas": [
         "SGN"
@@ -2199,6 +2234,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "보로부두르·마겔랑 권역은 보통 인천→자카르타(CGK) 또는 발리(DPS) 경유 후 족자카르타(YIA) 국내선 도착이 일반적입니다. 티켓의 최종 도착 코드가 다르면 실제 코드에 맞춰 검색·제휴 링크를 바꿔 주세요.",
+      "bannerNoteEn": "For the Borobudur–Magelang area, the usual path is ICN→Jakarta (CGK) or Bali (DPS), then a domestic flight to Yogyakarta (YIA). If the final arrival code on your ticket differs, switch search and affiliate links to that actual code.",
       "rationale": "ICN→CGK→YIA · 자카르타 경유 국내선 연결(발리 DPS 경유도 흔함)",
       "flightRouteHubIatas": [
         "CGK"
@@ -2441,6 +2477,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "룩소르는 인천→카이로(CAI) 또는 도하(DOH) 국제선 경유(약 11~12시간·2~5시간 대기) 후, 카이로→룩소르(LXR) 국내선(약 1시간·CAI 기준) 또는 도하→룩소르(약 3.5시간)로 이어집니다. Trip.com 등 항공권 검색·제휴 링크는 룩소르(LXR) 기준 — 경유·국내선 포함 일정이면 최종 도착 코드 LXR로 맞춰 주세요.",
+      "bannerNoteEn": "Luxor is typically ICN→Cairo (CAI) or Doha (DOH) international (~11–12 hours plus 2–5 hours layover), then Cairo→Luxor (LXR) domestic (~1 hour from CAI) or Doha→Luxor (~3.5 hours). Trip.com and other flight/affiliate searches should use Luxor (LXR) — if your itinerary includes connections and a domestic leg, set the final arrival code to LXR.",
       "rationale": "ICN→CAI·DOH 국제선 경유 → CAI→LXR 국내선",
       "flightRouteHubIatas": [
         "CAI"
@@ -2457,6 +2494,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "아부심벨은 인천→중동(DXB·DOH 등) 경유 → 카이로(CAI) 국제선 → 카이로→아스완(ASW) 국내선(약 1.5시간) → 아스완에서 아부심벨(ABS) 경비행기(약 45분) 또는 투어 차량 육로(약 3.5시간) 순입니다. Trip.com 등 항공권 검색·제휴 링크는 아스완(ASW) 기준 — 카이로 경유·국내선 포함 일정이면 최종 도착 코드 ASW로 맞춰 주세요. ABS 직항·현지 투어는 별도 예약입니다. 렌터카·픽업·투어는 아스완(ASW) 기준입니다.",
+      "bannerNoteEn": "Abu Simbel is typically ICN→Middle East (DXB, DOH, etc.) → Cairo (CAI) international → Cairo→Aswan (ASW) domestic (~1.5 hours) → then Aswan to Abu Simbel (ABS) by light aircraft (~45 minutes) or tour vehicle overland (~3.5 hours). Trip.com and other flight/affiliate searches should use Aswan (ASW) — if your itinerary includes Cairo and the domestic leg, set the final arrival code to ASW. ABS direct and local tours are booked separately. Car rental, pickup, and tours are based on Aswan (ASW).",
       "rationale": "ICN→DXB 경유 → CAI → ASW 국내선 → ABS 경비행기·육로(투어)",
       "searchHintIatas": [
         "ASW",
@@ -2507,6 +2545,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "랄리벨라는 보통 인천→아디스아바바(ADD) 국제선 후 랄리벨라(LLI) 국내선으로 이어집니다. 렌터카·픽업·투어는 랄리벨라 공항(LLI) 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "bannerNoteEn": "Lalibela is usually ICN→Addis Ababa (ADD) international, then a domestic flight to Lalibela (LLI). Car rental, pickup, and tours are based on Lalibela Airport (LLI). Confirm the final arrival code on your ticket, then match affiliate links to that airport.",
       "rationale": "ICN→ADD→LLI · 에티오피아항공 국제선 후 국내선",
       "flightRouteHubIatas": [
         "ADD"
@@ -2522,6 +2561,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.",
+      "bannerNoteEn": "International flights arrive in Lima (LIM), then continue on a domestic flight to Cusco (CUZ). Car rental, pickup, and tours are based on Cusco Airport.",
       "rationale": "ICN→LAX→CUZ · 태평양 waypoint로 시베리아 bbox arc 회피",
       "flightRouteWaypoints": [
         [
@@ -2562,6 +2602,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "티칼은 보통 과테말라시티(GUA) 국제선 입국 후 플로레스(FRS) 국내선·차량으로 들어갑니다. 렌터카·픽업은 최종 도착 FRS 기준이며, Trip 항공 검색은 국제선 관문 GUA를 사용합니다.",
+      "bannerNoteEn": "Tikal is usually entered after Guatemala City (GUA) international, then Flores (FRS) by domestic flight or road. Car rental and pickup are based on final arrival FRS; Trip flight search uses the international gateway GUA.",
       "rationale": "플로레스(FRS) 국내선 최종 · 국제선 GUA 관문 · ICN→LAX 태평양 남방 경유 waypoint",
       "tripFlightArrivalIata": "GUA",
       "flightRouteWaypoints": [
@@ -2589,6 +2630,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "산티아고 데 콤포스텔라는 보통 SCQ 공항 직항·입국이 기준입니다. 마드리드(MAD) 도착 후 기차·국내선으로 오는 일정도 많으니, 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "bannerNoteEn": "Santiago de Compostela is usually based on a direct arrival or entry at SCQ. Many travelers also fly into Madrid (MAD) then continue by train or domestic flight — confirm the final arrival code on your ticket, then match affiliate links to that airport.",
       "rationale": "순례 종착지 SCQ — 마드리드(MAD) 경유·국내선 루트도 흔함",
       "graphFlightRouteHubIatas": [
         "HEL",
@@ -2618,6 +2660,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "안나푸르나 서킷은 보통 인천→카트만두 트리부반국제공항(KTM) 국제선 도착 후 시내 준비·베시사하르(Besisahar) 육로로 서킷에 들어갑니다. 포카라(PKR) 경유·국내선으로 접근하는 일정도 있습니다. 항공권·Trip 검색 도착 코드는 KTM을 사용하세요.",
+      "bannerNoteEn": "For the Annapurna Circuit, most travelers fly ICN→Kathmandu Tribhuvan International (KTM), prepare in the city, then enter the circuit overland via Besisahar. Some itineraries go via Pokhara (PKR) or a domestic flight. Use KTM as the arrival code for flight and Trip searches.",
       "rationale": "국제선 카트만두 트리부반(KTM) 도착 — 베시사하르 육로·서킷 준비; PKR은 국내선·대안",
       "searchHintIatas": [
         "KTM",
@@ -2638,6 +2681,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "킬리만자로 원정은 킬리만자로(JRO) 직항·나이로비(NBO) 경유 육로가 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "Kilimanjaro expeditions commonly fly into Kilimanjaro (JRO) or connect overland via Nairobi (NBO). Confirm the final arrival code on your ticket.",
       "rationale": "ICN→ADD→JRO · 에티오피아항공 등 동아프리카 관문(도하·NBO 경유도 흔함)",
       "flightRouteHubIatas": [
         "ADD"
@@ -2698,6 +2742,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "보르네오는 말레이시아·인도네시아·브루나이에 걸친 대섬입니다. 키나발루·세피록(사바)은 코타키나발루(BKI), 쿠칭·사라왕은 쿠칭(KCH), 국제선은 쿠알라룸푸르(KUL) 경유가 흔합니다. 브루나이(BWN)는 별도 여행지입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "Borneo spans Malaysia, Indonesia, and Brunei. Kinabalu/Sepilok (Sabah) use Kota Kinabalu (BKI); Kuching/Sarawak use Kuching (KCH); international connections often go via Kuala Lumpur (KUL). Brunei (BWN) is a separate destination. Confirm the final arrival code on your ticket.",
       "rationale": "사바·사라왕·반도 국제 관문",
       "searchHintIatas": [
         "BKI",
@@ -2730,6 +2775,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "코스타리카는 수도 산호세의 후안 산타마리아(SJO) 또는 북서부 휴양지 접근이 편한 리베리아(LIR) 중 일정에 맞게 선택하세요. 미국·캐나다·멕시코 경유가 일반적이며 직항은 없습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "bannerNoteEn": "For Costa Rica, pick Juan Santamaría (SJO) in San José or Liberia (LIR) for easier northwest resort access, based on your itinerary. Connections via the US, Canada, or Mexico are typical; there is no direct flight. Confirm the final arrival code on your ticket, then match affiliate links to that airport.",
       "rationale": "ICN→LAX→SJO · 태평양 waypoint로 시베리아 bbox arc 회피",
       "searchHintIatas": [
         "SJO",
@@ -2755,6 +2801,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.",
+      "bannerNoteEn": "International flights arrive in Lima (LIM), then continue on a domestic flight to Cusco (CUZ). Car rental, pickup, and tours are based on Cusco Airport.",
       "rationale": "ICN→LAX→CUZ · 태평양 waypoint로 시베리아 bbox arc 회피",
       "flightRouteWaypoints": [
         [
@@ -2778,6 +2825,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "발데스 반도는 인천→미국·유럽 경유(약 14~18시간) 후 부에노스아이레스 국제공항(EZE) 도착 → 공항 간 이동(약 1.5시간) 후 국내선 출발 공항(AEP)에서 트렐레우(REL) 또는 푸에르토마드린(PMY) 국내선(약 2시간) — 렌터카 수령 후 반도 진입. Trip.com 등 항공권·제휴 링크는 PMY·REL 최종 도착 기준 — 국제선·EZE 경유 일정이면 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "For Península Valdés: ICN→US/Europe (~14–18 hours) → Buenos Aires international (EZE) → ~1.5 hours airport transfer → domestic departure from AEP to Trelew (REL) or Puerto Madryn (PMY) (~2 hours) — then pick up a rental car and enter the peninsula. Trip.com and other flight/affiliate links should use final arrival PMY or REL — if your itinerary includes international and EZE, confirm the final arrival code on your ticket.",
       "rationale": "ICN→LAX→EZE 국제선 → AEP→PMY·REL 국내선 · 발데스 반도",
       "searchHintIatas": [
         "PMY",
@@ -2820,6 +2868,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "크레타는 이라클리온(HER)·하니아(CHQ) 등 도착 공항이 나뉩니다. 입·출국 공항을 다르게 잡는 일정도 흔합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "bannerNoteEn": "Crete arrivals split between Heraklion (HER), Chania (CHQ), and similar airports. Open-jaw itineraries with different arrival and departure airports are common. Confirm the final arrival code on your ticket, then match affiliate links to that airport.",
       "rationale": "동부 이라클리온·서부 하니아 — 아테네 경유 국내선·페리",
       "graphFlightRouteHubIatas": [
         "IST",
@@ -2868,6 +2917,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "흐바르는 보통 스플리트(SPU) 공항 도착 후 페리로 들어갑니다. 귀국은 동선에 따라 두브로브니크(DBV)나 자그레브(ZAG) 아웃을 쓰는 경우가 많습니다. 티켓의 최종 도착 코드가 다르면 실제 코드에 맞춰 검색·제휴 링크를 바꿔 주세요.",
+      "bannerNoteEn": "Hvar is usually reached by ferry after landing at Split (SPU). For the return, Dubrovnik (DBV) or Zagreb (ZAG) outs are common depending on your itinerary. If the final arrival code on your ticket differs, switch search and affiliate links to that actual code.",
       "rationale": "스플리트(SPU) 도착 후 페리 — 흐바르 타운",
       "graphFlightRouteHubIatas": [
         "MUC"
@@ -2899,6 +2949,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "보홀은 타그비라란(TAG) 공항 직항·세부(CEB) 페리로 들어오는 일정이 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "Bohol is often reached via Tagbilaran (TAG) airport direct or by ferry from Cebu (CEB). Confirm the final arrival code on your ticket.",
       "rationale": "타그비라란(TAG) 직항·세부(CEB) 페리 관문",
       "graphFlightRouteHubIatas": [
         "MNL"
@@ -3041,6 +3092,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "카르스텐츠 원정은 보통 자카르타(CGK) 또는 발리(DPS) 국제선 후 티미카(TIM) 국내선으로 들어옵니다. 센타니(DJJ)는 자야푸라 관문으로 흔하지 않습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "bannerNoteEn": "Carstensz expeditions usually enter via Jakarta (CGK) or Bali (DPS) international, then a domestic flight to Timika (TIM). Sentani (DJJ) is the Jayapura gateway and is uncommon for this route. Confirm the final arrival code on your ticket, then match affiliate links to that airport.",
       "rationale": "국제선 CGK/DPS 후 파푸아 티미카(TIM) 국내선 — 카르스텐츠 원정 관문",
       "graphFlightRouteHubIatas": [
         "DPS"
@@ -3297,6 +3349,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "인천 직항(진에어 등)은 시모지시마 공항(SHI) 도착이 일반적이며, 오키나와(나하) 경유 시 미야코 공항(MMY)입니다. 시모지시마는 다리로 본섬과 연결되어 렌터카·이동이 편합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크 검색어도 그 공항에 맞춰 주세요.",
+      "bannerNoteEn": "Direct flights from Incheon (Jin Air and others) usually arrive at Shimojishima (SHI); via Okinawa (Naha) the arrival is Miyako (MMY). Shimojishima is bridge-linked to the main island, so rental cars and transfers are convenient. Confirm the final arrival code on your ticket, then match affiliate search terms to that airport.",
       "rationale": "인천 직항 시모지시마(SHI)·나하 경유 미야코(MMY) 관문",
       "searchHintIatas": [
         "SHI",
@@ -3357,6 +3410,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "보베르데는 섬마다 공항이 나뉩니다. 휴양·해양 액티비티는 살 섬 아밀카르 카브랄(SID), 행정·문화 중심은 산티아고 섬 프라이아 넬슨 만델라(RAI) 도착이 일반적입니다. 한국에서는 리스본(LIS)·카사블랑카(CMN) 등 경유 후 섬행 직항으로 이어지는 일정이 흔합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "bannerNoteEn": "Cape Verde airports differ by island. Sal Island Amílcar Cabral (SID) is typical for beach and marine activities; Santiago Island Praia Nelson Mandela (RAI) for administrative and cultural stays. From Korea, itineraries often connect via Lisbon (LIS) or Casablanca (CMN), then a direct island flight. Confirm the final arrival code on your ticket, then match affiliate links to that airport.",
       "rationale": "살(SID) 휴양·프라이아(RAI) 행정 — LIS/CMN 국제선 경유",
       "searchHintIatas": [
         "SID",
@@ -3379,6 +3433,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "블레드는 보통 류블랴나(LJU) 공항 도착 후 셔틀·버스(약 30~45분)로 이동합니다. 항공료 절감을 위해 자그레브(ZAG)·베네치아(VCE) 입국 후 육로로 오는 일정도 흔합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "bannerNoteEn": "Bled is usually reached by shuttle or bus (about 30–45 minutes) after landing at Ljubljana (LJU). Itineraries that enter via Zagreb (ZAG) or Venice (VCE) then continue overland are also common to save on airfare. Confirm the final arrival code on your ticket, then match affiliate links to that airport.",
       "rationale": "슬로베니아 류블랴나(LJU) 관문 — ZAG·VCE는 대안 루트",
       "searchHintIatas": [
         "LJU",
@@ -3402,6 +3457,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "라스페치아·친퀘테레 권역은 공항이 없습니다. 국제선은 로마 피우미치노(FCO) 또는 밀라노 말펜사(MXP) 입국 후 기차로 오는 일정이 가장 흔합니다. 피렌체(FLR)·피사(PSA)로 들어오면 라스페치아까지 기차 시간이 더 짧을 수 있습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "bannerNoteEn": "The La Spezia / Cinque Terre area has no airport. Most travelers enter internationally at Rome Fiumicino (FCO) or Milan Malpensa (MXP), then continue by train. Florence (FLR) or Pisa (PSA) can shorten the train ride to La Spezia. Confirm the final arrival code on your ticket, then match affiliate links to that airport.",
       "rationale": "공항 없는 항구도시 — 로마(FCO)·밀라노(MXP) 국제선 관문, 피렌체(FLR)·피사(PSA)는 기차 이동 단축",
       "searchHintIatas": [
         "FCO",
@@ -3425,6 +3481,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "코토르는 티바트(TIV, 차로 약 15분)·포드고리차(TGD, 몬테네그로 주요 국제공항) 도착이 일반적입니다. 발칸 일주 여행객은 두브로브니크(DBV, 크로아티아) 후 버스로 들어오는 일정도 흔합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "bannerNoteEn": "Kotor is typically reached via Tivat (TIV, about 15 minutes by car) or Podgorica (TGD, Montenegro’s main international airport). Balkan loop travelers also often enter via Dubrovnik (DBV, Croatia) then continue by bus. Confirm the final arrival code on your ticket, then match affiliate links to that airport.",
       "rationale": "티바트(TIV)·포드고리차(TGD) — 몬테네그로 코토르 관문; 툴킷 DBV 오탐 보정",
       "searchHintIatas": [
         "TIV",
@@ -3519,6 +3576,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "항공권 예약 팁\n· 직항: 핀에어 인천↔헬싱키(HEL) 직항(약 9~10시간)\n· 대안: 1회 경유(총 12~16시간) — SAS(코펜하겐), KLM(암스테르담), 루프트한자(뮌헨·FRA)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장",
+      "bannerNoteEn": "Flight booking tips\n· Direct: Finnair ICN↔Helsinki (HEL) nonstop (~9–10 hours)\n· Alternatives: 1 stop (total 12–16 hours) — SAS (Copenhagen), KLM (Amsterdam), Lufthansa (Munich/FRA)\n· Summer peak (Jun–Aug) — book 3–4 months ahead",
       "rationale": "헬싱키반타 HEL · 핀에어 인천↔헬싱키 직항 — 북유럽 허브 · 시네마는 corridor(DXB) arc",
       "graphFlightRouteHubIatas": [],
       "graphFlightRouteSource": "graph-direct"
@@ -3532,6 +3590,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "항공권 예약 팁\n· 직항: 없음(주로 1회 경유) · 총 14~18시간\n· 추천: 루프트한자·핀에어 뮌헨(MUC)·헬싱키(HEL) 경유\n· 대안: 아이슬란드항공(레이캬비크), KLM(암스테르담), 카타르(도하)\n· 여름(6~8월) 성수기 — 3~4개월 전 예약 권장",
+      "bannerNoteEn": "Flight booking tips\n· Direct: none (usually 1 stop) · total 14–18 hours\n· Recommended: Lufthansa or Finnair via Munich (MUC) or Helsinki (HEL)\n· Alternatives: Icelandair (Reykjavík), KLM (Amsterdam), Qatar (Doha)\n· Summer peak (Jun–Aug) — book 3–4 months ahead",
       "rationale": "케플라비크 KEF — iceland와 동일 · 플래너 유럽 허브(뮌헨) 경유 시네마",
       "flightRouteWaypoints": [
         [
@@ -3616,6 +3675,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "요코하마는 도쿄권 하네다(HND)·나리타(NRT) 공항 후 JR·지하철로 이동하는 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "Yokohama is typically reached via Tokyo-area Haneda (HND) or Narita (NRT), then JR/subway. Confirm the final arrival code on your ticket.",
       "rationale": "하네다(HND)·나리타(NRT) — 도쿄권 국제·국내선 관문",
       "graphFlightRouteHubIatas": [
         "NRT",
@@ -3633,6 +3693,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "대마도(쓰시마·対馬島)는 같은 섬입니다. 한국에서 가는 일반 경로는 부산국제여객터미널→히타카츠항 페리이며, 인천(ICN) 직항은 없습니다. 아래 TSJ·FUK는 일본 국내선·후쿠오카 경유 일정 참고용이고, 페리·렌터카는 툴킷 여정(부산 출발)을 우선해 주세요.",
+      "bannerNoteEn": "Tsushima (対馬島) is the same island. The usual route from Korea is the ferry Busan International Passenger Terminal→Hitakatsu; there is no ICN direct flight. TSJ and FUK below are for Japanese domestic / Fukuoka-connection reference — prefer the toolkit itinerary (departing Busan) for ferry and rental cars.",
       "rationale": "対馬島(대마도·쓰시마) — 한국인 주 경로 부산 페리·히타카츠; TSJ·FUK는 일본 측 항공 관문",
       "graphFlightRouteHubIatas": [
         "KMI"
@@ -3844,6 +3905,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "보르네오섬 북부의 독립 국가입니다. 말레이시아 사바·보르네오(borneo)와 입국 서류·관문(BKI)이 다릅니다. 티켓 도착은 BWN을 확인해 주세요.",
+      "bannerNoteEn": "An independent country on northern Borneo. Entry documents and the gateway differ from Malaysian Sabah / Borneo (borneo) (BKI). Confirm ticket arrival as BWN.",
       "rationale": "브루나이 국제공항(BWN) — 보르네오(borneo)와 별도 여행지",
       "graphFlightRouteHubIatas": [
         "HKG"
@@ -3859,6 +3921,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "엘칼라파테는 페리토 모레노 빙하·로스글라시아레스 국립공원 관문(FTE)입니다. 북부 파타고니아(바릴로체 BRC)·우수아이아(USH)·토레스 델 파이네(PUQ)와 관문이 다릅니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "El Calafate is the gateway (FTE) for Perito Moreno Glacier and Los Glaciares National Park. Gateways differ from northern Patagonia (Bariloche BRC), Ushuaia (USH), and Torres del Paine (PUQ). Confirm the final arrival code on your ticket.",
       "rationale": "ICN→LAX→EZE→FTE · 미국 경유 부에노스아이레스 국제선 후 파타고니아 국내선 · 태평양 waypoint",
       "flightRouteWaypoints": [
         [
@@ -3896,6 +3959,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "호주령 코코스(킬링) 제도는 코코스 제도(CCK) 직항·퍼스(PER) 등 호주 본토 경유 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "The Australian Cocos (Keeling) Islands usually use Cocos Islands (CCK) direct or connections via mainland Australia such as Perth (PER). Confirm the final arrival code on your ticket.",
       "rationale": "ICN→PER→CCK · Virgin Australia 퍼스 경유(주 2회)",
       "flightRouteHubIatas": [
         "PER"
@@ -3910,6 +3974,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "핏케언 제도는 상용 직항이 없습니다. 타히티(PPT) 국제선 도착 → 망가레바(GMR) 국내선 → 리키테아 페리·전용 여객선 순이 일반적입니다. 위 연동 공항은 타히티(PPT) 기준입니다.",
+      "bannerNoteEn": "Pitcairn Islands have no commercial direct flight. Typical sequence is Tahiti (PPT) international → Mangareva (GMR) domestic → Rikitea ferry or dedicated passenger ship. Linked airports above are based on Tahiti (PPT).",
       "rationale": "타히티 PPT 국제선 관문 — 시네마 ICN→NRT→PPT",
       "tripFlightArrivalIata": "PPT",
       "flightRouteHubIatas": [
@@ -3926,6 +3991,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "그린란드는 코펜하겐(CPH) 등 유럽 관문 경유 후 누크(GOH)·일룰리사트 등으로 이어지는 일정이 흔합니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "Greenland itineraries often connect via European gateways such as Copenhagen (CPH), then continue to Nuuk (GOH), Ilulissat, and similar. Confirm the final arrival code on your ticket.",
       "rationale": "덴마크 CPH 경유·누크 GOH",
       "graphFlightRouteHubIatas": [
         "HEL"
@@ -3942,6 +4008,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "포클랜드 제도는 MPM(마운트 플레전트) 도착·칠레(SCL) 경유 일정이 일반적입니다. 토레스 델 파이네(PUQ)와 혼동하지 마세요.",
+      "bannerNoteEn": "The Falkland Islands typically arrive at MPM (Mount Pleasant), often via Chile (SCL). Do not confuse with Torres del Paine (PUQ).",
       "rationale": "MPM 스탠리·칠레 SCL 경유",
       "graphFlightRouteHubIatas": [
         "PEK",
@@ -3959,6 +4026,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "솔로몬 제도는 인천 직항이 없습니다. 보통 인천→브리즈번(BNE)·시드니(SYD) 경유 후 호니아라(HIR) 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "The Solomon Islands have no direct flight from Incheon. Typical routing is ICN→Brisbane (BNE) or Sydney (SYD), then Honiara (HIR). Confirm the final arrival code on your ticket.",
       "rationale": "호니아라 HIR — 시네마 ICN→BNE→HIR",
       "flightRouteHubIatas": [
         "BNE"
@@ -3974,6 +4042,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "나우루는 인천 직항이 없습니다. 보통 인천→브리즈번(BNE) 경유 후 INU 도착이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "Nauru has no direct flight from Incheon. Typical routing is ICN→Brisbane (BNE), then INU. Confirm the final arrival code on your ticket.",
       "rationale": "나우루 INU — 시네마 ICN→BNE→INU",
       "flightRouteHubIatas": [
         "BNE"
@@ -4037,6 +4106,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "바하마는 나소(NAS) 등 섬별 관문이 다릅니다. 마이애미(MIA)·애틀랜타(ATL) 경유 일정도 흔하니 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "The Bahamas have different gateways by island (e.g. Nassau NAS). Connections via Miami (MIA) or Atlanta (ATL) are also common — confirm the final arrival code on your ticket.",
       "rationale": "ICN→ATL→NAS · DXB Atlantic corridor ukraine 교차 · 태평양 waypoint",
       "flightRouteWaypoints": [
         [
@@ -4119,6 +4189,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "야프(YAP)는 인천→괌(GUM) 직항 도착 후, 유나이티드항공으로 YAP에 들어가는 일정이 일반적입니다(호놀룰루 HNL 경유 아일랜드 호퍼도 가능). Trip.com 등 항공권 검색은 GUM까지 — YAP 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 YAP 도착 기준입니다.",
+      "bannerNoteEn": "Yap (YAP) is usually reached ICN→Guam (GUM) direct, then United Airlines to YAP (Island Hopper via Honolulu HNL is also possible). Trip.com and similar flight searches go as far as GUM — the YAP segment requires a United official booking. Car rental, pickup, and island plans are based on YAP arrival.",
       "rationale": "ICN→GUM 직항 후 United YAP — 시네마·Trip GUM · HNL 아일랜드 호퍼는 대안",
       "tripFlightArrivalIata": "GUM",
       "flightRouteHubIatas": [
@@ -4136,6 +4207,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "추크(TKK)는 인천→괌(GUM) 직항 도착 후, 유나이티드항공으로 TKK에 들어가는 일정이 일반적입니다(호놀룰루 HNL 경유 아일랜드 호퍼·MAJ 경유도 가능). Trip.com 등 항공권 검색은 GUM까지 — TKK 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 TKK 도착 기준입니다.",
+      "bannerNoteEn": "Chuuk (TKK) is usually reached ICN→Guam (GUM) direct, then United Airlines to TKK (Island Hopper via Honolulu HNL, or via MAJ, is also possible). Trip.com and similar flight searches go as far as GUM — the TKK segment requires a United official booking. Car rental, pickup, and island plans are based on TKK arrival.",
       "rationale": "ICN→GUM 직항 후 United TKK — 시네마·Trip GUM · HNL 아일랜드 호퍼는 대안",
       "tripFlightArrivalIata": "GUM",
       "flightRouteHubIatas": [
@@ -4153,6 +4225,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "코스라에(KOS)는 인천→괌(GUM) 직항 도착 후, 유나이티드항공으로 KOS에 들어가는 일정이 일반적입니다(호놀룰루 HNL 경유 아일랜드 호퍼도 가능). Trip.com 등 항공권 검색은 GUM까지 — United 예약 시 목적지 코드 KSA를 사용합니다. 렌터카·픽업·섬 일정은 KOS 도착 기준입니다.",
+      "bannerNoteEn": "Kosrae (KOS) is usually reached ICN→Guam (GUM) direct, then United Airlines to KOS (Island Hopper via Honolulu HNL is also possible). Trip.com and similar flight searches go as far as GUM — when booking on United, use destination code KSA. Car rental, pickup, and island plans are based on KOS arrival.",
       "rationale": "ICN→GUM 직항 후 United KOS(KSA) — 시네마·Trip GUM · HNL 아일랜드 호퍼는 대안",
       "tripFlightArrivalIata": "GUM",
       "flightRouteHubIatas": [
@@ -4170,6 +4243,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "폰페이(PNI)는 인천→괌(GUM) 직항 도착 후, 유나이티드항공으로 PNI에 들어가는 일정이 일반적입니다(호놀룰루 HNL 경유 아일랜드 호퍼·MAJ 경유도 가능). Trip.com 등 항공권 검색은 GUM까지 — PNI 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 PNI 도착 기준입니다.",
+      "bannerNoteEn": "Pohnpei (PNI) is usually reached ICN→Guam (GUM) direct, then United Airlines to PNI (Island Hopper via Honolulu HNL, or via MAJ, is also possible). Trip.com and similar flight searches go as far as GUM — the PNI segment requires a United official booking. Car rental, pickup, and island plans are based on PNI arrival.",
       "rationale": "ICN→GUM 직항 후 United PNI — 시네마·Trip GUM · HNL 아일랜드 호퍼는 대안",
       "tripFlightArrivalIata": "GUM",
       "flightRouteHubIatas": [
@@ -4185,6 +4259,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "바티칸 시국은 로마 시내 서쪽에 위치한 독립국입니다. 국제선은 로마 피우미치노(FCO) 공항이 관문이며, 시내·바티칸까지 지하철·택시·도보로 이동합니다. 항공권 검색 시 도착지 FCO를 사용하세요.",
+      "bannerNoteEn": "Vatican City is an independent state on the west side of central Rome. The international gateway is Rome Fiumicino (FCO); continue into the city/Vatican by metro, taxi, or on foot. Use arrival FCO when searching flights.",
       "rationale": "바티칸 시국 — 로마 피우미치노(FCO) 관문, 로마 시내와 인접",
       "graphFlightRouteHubIatas": [
         "MUC",
@@ -4201,6 +4276,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "우붓은 발리 중부 고원 마을입니다. 국제선은 응우라라이(DPS) 공항이 관문이며, 공항에서 우붓까지 차로 약 1~1.5시간이 소요됩니다. 항공권 검색 시 도착지 DPS를 사용하세요.",
+      "bannerNoteEn": "Ubud is a highland village in central Bali. The international gateway is Ngurah Rai (DPS); the drive to Ubud is about 1–1.5 hours. Use arrival DPS when searching flights.",
       "rationale": "우붓(Ubud) — 발리 응우라라이(DPS) 관문, 공항에서 차로 약 1~1.5시간",
       "graphFlightRouteHubIatas": [],
       "graphFlightRouteSource": "graph-direct"
@@ -4214,6 +4290,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "오키나와 본섬은 나하공항(OKA) 도착이 일반적입니다. 미야코지마(SHI/MMY)·이시가키(ISG)는 별도 섬·별도 여행지이므로 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "Okinawa’s main island usually arrives at Naha (OKA). Miyakojima (SHI/MMY) and Ishigaki (ISG) are separate islands and destinations — confirm the final arrival code on your ticket.",
       "rationale": "오키나와 본섬(나하) 관문 — 미야코(SHI/MMY)·이시가키(ISG)와 분리"
     }
   },
@@ -4723,6 +4800,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "코스타리카는 수도 산호세의 후안 산타마리아(SJO) 또는 북서부 휴양지 접근이 편한 리베리아(LIR) 중 일정에 맞게 선택하세요. 미국·캐나다·멕시코 경유가 일반적이며 직항은 없습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "bannerNoteEn": "For Costa Rica, pick Juan Santamaría (SJO) in San José or Liberia (LIR) for easier northwest resort access, based on your itinerary. Connections via the US, Canada, or Mexico are typical; there is no direct flight. Confirm the final arrival code on your ticket, then match affiliate links to that airport.",
       "rationale": "수도 산호세(SJO)·북서 휴양지 리베리아(LIR) — slug costa-rica와 동일",
       "searchHintIatas": [
         "SJO",
@@ -5370,6 +5448,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "상하이는 인천→푸둥(PVG) 직항과 김포→훙차오(SHA) 단거리 노선이 흔합니다. 시내 접근성은 훙차오가 좋으나 항공편 선택지는 푸둥이 더 많습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "bannerNoteEn": "Shanghai commonly uses ICN→Pudong (PVG) direct and Gimpo→Hongqiao (SHA) short-haul. Hongqiao is better for city access; Pudong has more flight options. Confirm the final arrival code on your ticket, then match affiliate links to that airport.",
       "rationale": "푸둥(PVG)·훙차오(SHA) — slug shanghai와 동일",
       "searchHintIatas": [
         "PVG",
@@ -6219,6 +6298,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.",
+      "bannerNoteEn": "International flights arrive in Lima (LIM), then continue on a domestic flight to Cusco (CUZ). Car rental, pickup, and tours are based on Cusco Airport.",
       "rationale": "LIM 국제선 후 CUZ 국내선 — slug machu-picchu와 동일",
       "placeId": "마추픽추"
     },
@@ -6232,6 +6312,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "국제선은 리마(LIM)에 도착한 뒤 쿠스코(CUZ) 국내선으로 이어집니다. 렌터카·픽업·투어는 쿠스코 공항 기준입니다.",
+      "bannerNoteEn": "International flights arrive in Lima (LIM), then continue on a domestic flight to Cusco (CUZ). Car rental, pickup, and tours are based on Cusco Airport.",
       "rationale": "LIM 국제선 후 CUZ 국내선 — slug cusco와 동일",
       "placeId": "쿠스코"
     },
@@ -6868,6 +6949,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "인천 직항(진에어 등)은 시모지시마 공항(SHI) 도착이 일반적이며, 오키나와(나하) 경유 시 미야코 공항(MMY)입니다. 시모지시마는 다리로 본섬과 연결되어 렌터카·이동이 편합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크 검색어도 그 공항에 맞춰 주세요.",
+      "bannerNoteEn": "Direct flights from Incheon (Jin Air and others) usually arrive at Shimojishima (SHI); via Okinawa (Naha) the arrival is Miyako (MMY). Shimojishima is bridge-linked to the main island, so rental cars and transfers are convenient. Confirm the final arrival code on your ticket, then match affiliate search terms to that airport.",
       "rationale": "인천 직항 시모지시마(SHI)·나하 경유 미야코(MMY) — slug miyakojima와 동일",
       "searchHintIatas": [
         "SHI",
@@ -6932,6 +7014,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "오키나와 본섬은 나하공항(OKA) 도착이 일반적입니다. 미야코지마(SHI/MMY)·이시가키(ISG)는 별도 섬·별도 여행지이므로 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "Okinawa’s main island usually arrives at Naha (OKA). Miyakojima (SHI/MMY) and Ishigaki (ISG) are separate islands and destinations — confirm the final arrival code on your ticket.",
       "rationale": "오키나와 본섬(나하) OKA — slug okinawa와 동일 · 미야코/이시가키 linkedSlug 금지",
       "linkedSlug": "okinawa",
       "placeId": "오키나와"
@@ -7227,6 +7310,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "라스페치아·친퀘테레 권역은 공항이 없습니다. 국제선은 로마 피우미치노(FCO) 또는 밀라노 말펜사(MXP) 입국 후 기차로 오는 일정이 가장 흔합니다. 피렌체(FLR)·피사(PSA)로 들어오면 라스페치아까지 기차 시간이 더 짧을 수 있습니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "bannerNoteEn": "The La Spezia / Cinque Terre area has no airport. Most travelers enter internationally at Rome Fiumicino (FCO) or Milan Malpensa (MXP), then continue by train. Florence (FLR) or Pisa (PSA) can shorten the train ride to La Spezia. Confirm the final arrival code on your ticket, then match affiliate links to that airport.",
       "rationale": "공항 없는 항구도시 — slug la-spezia와 동일",
       "searchHintIatas": [
         "FCO",
@@ -7511,6 +7595,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "어센션 섬 최종 도착은 와이드어웨이크 공항(ASI)입니다. 요하네스버그(JNB) 등에서 RAF·개항편으로 이어지는 일정이 흔합니다. 허가·제한 구역이므로 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "Final arrival for Ascension Island is Wideawake Airfield (ASI). Connections often continue from Johannesburg (JNB) on RAF or opening flights. It is a permit/restricted area — confirm the final arrival code on your ticket.",
       "rationale": "ICN→JNB→HLE→ASI · Airlink·월 1회 어센션 연결",
       "flightRouteHubIatas": [
         "JNB",
@@ -7529,6 +7614,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "어센션 섬 최종 도착은 와이드어웨이크 공항(ASI)입니다. 요하네스버그(JNB) 등에서 RAF·개항편으로 이어지는 일정이 흔합니다. 허가·제한 구역이므로 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "Final arrival for Ascension Island is Wideawake Airfield (ASI). Connections often continue from Johannesburg (JNB) on RAF or opening flights. It is a permit/restricted area — confirm the final arrival code on your ticket.",
       "rationale": "ICN→JNB→HLE→ASI · Airlink·월 1회 어센션 연결",
       "flightRouteHubIatas": [
         "JNB",
@@ -8440,6 +8526,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "마셜 제도(마주로)는 인천→괌(GUM) 직항 도착 후, 유나이티드항공으로 MAJ에 들어가는 일정이 일반적입니다(호놀룰루 HNL 경유 아일랜드 호퍼도 가능). Trip.com 등 항공권 검색은 GUM까지 — MAJ 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 MAJ 도착 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 맞춰 주세요.",
+      "bannerNoteEn": "The Marshall Islands (Majuro) are usually reached ICN→Guam (GUM) direct, then United Airlines to MAJ (Island Hopper via Honolulu HNL is also possible). Trip.com and similar flight searches go as far as GUM — the MAJ segment requires a United official booking. Car rental, pickup, and island plans are based on MAJ arrival. Confirm the final arrival code on your ticket, then match affiliate links.",
       "rationale": "ICN→GUM 직항 후 United MAJ — slug marshall-islands와 동일",
       "tripFlightArrivalIata": "GUM",
       "flightRouteHubIatas": [
@@ -8458,6 +8545,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "마셜 제도(마주로)는 인천→괌(GUM) 직항 도착 후, 유나이티드항공으로 MAJ에 들어가는 일정이 일반적입니다(호놀룰루 HNL 경유 아일랜드 호퍼도 가능). Trip.com 등 항공권 검색은 GUM까지 — MAJ 구간은 United 공식 예약이 필요합니다. 렌터카·픽업·섬 일정은 MAJ 도착 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 맞춰 주세요.",
+      "bannerNoteEn": "The Marshall Islands (Majuro) are usually reached ICN→Guam (GUM) direct, then United Airlines to MAJ (Island Hopper via Honolulu HNL is also possible). Trip.com and similar flight searches go as far as GUM — the MAJ segment requires a United official booking. Car rental, pickup, and island plans are based on MAJ arrival. Confirm the final arrival code on your ticket, then match affiliate links.",
       "rationale": "ICN→GUM 직항 후 United MAJ — slug marshall-islands와 동일",
       "tripFlightArrivalIata": "GUM",
       "flightRouteHubIatas": [
@@ -9129,6 +9217,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "마니히키(투카오)는 인천→도쿄(NRT)·타히티(PPT) 경유 후 라로통가(RAR) 국제선, 이어서 에어 라로통가 국내선으로 마니히키(MHX) 도착이 일반적입니다. 렌터카·픽업은 MHX 기준입니다. 날짜변경선으로 도착일이 하루 당겨질 수 있으니 티켓·숙소 날짜를 확인하세요.",
+      "bannerNoteEn": "Manihiki (Tukao) is usually reached ICN→Tokyo (NRT) or Tahiti (PPT), then Rarotonga (RAR) internationally, then Air Rarotonga domestic to Manihiki (MHX). Car rental and pickup are based on MHX. The International Date Line can pull your arrival date forward by a day — double-check ticket and lodging dates.",
       "rationale": "MHX 섬 공항 · RAR·PPT 쿡 제도 관문 — uiPlace Manihiki(Tukao)",
       "tripFlightArrivalIata": "MHX",
       "flightRouteHubIatas": [
@@ -10500,6 +10589,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "소코트라는 인천→아부다비(AUH) 국제선 도착 후, 아부다비에서 주 1~2회 운항하는 정부 인가 전세기(주로 Air Arabia)로 소코트라(SCT)에 들어갑니다. 스카이스캐너·Trip.com 등 항공권 검색은 AUH까지, SCT 구간은 현지 투어 에이전시를 통해서만 발권됩니다. 렌터카·픽업·섬 일정은 SCT 도착 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 맞춰 주세요.",
+      "bannerNoteEn": "Socotra is reached after ICN→Abu Dhabi (AUH) international, then a government-authorized charter (mainly Air Arabia, about 1–2 times per week) from Abu Dhabi to Socotra (SCT). Skyscanner, Trip.com, and similar flight searches go as far as AUH; the SCT segment is ticketed only through local tour agencies. Car rental, pickup, and island plans are based on SCT arrival. Confirm the final arrival code on your ticket, then match affiliate links.",
       "rationale": "AUH 국제선·전세기 후 SCT 최종 — slug socotra와 동일",
       "tripFlightArrivalIata": "AUH",
       "flightRouteHubIatas": [
@@ -10517,6 +10607,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "소코트라는 인천→아부다비(AUH) 국제선 도착 후, 아부다비에서 주 1~2회 운항하는 정부 인가 전세기(주로 Air Arabia)로 소코트라(SCT)에 들어갑니다. 스카이스캐너·Trip.com 등 항공권 검색은 AUH까지, SCT 구간은 현지 투어 에이전시를 통해서만 발권됩니다. 렌터카·픽업·섬 일정은 SCT 도착 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 맞춰 주세요.",
+      "bannerNoteEn": "Socotra is reached after ICN→Abu Dhabi (AUH) international, then a government-authorized charter (mainly Air Arabia, about 1–2 times per week) from Abu Dhabi to Socotra (SCT). Skyscanner, Trip.com, and similar flight searches go as far as AUH; the SCT segment is ticketed only through local tour agencies. Car rental, pickup, and island plans are based on SCT arrival. Confirm the final arrival code on your ticket, then match affiliate links.",
       "rationale": "AUH 국제선·전세기 후 SCT 최종 — slug socotra와 동일",
       "tripFlightArrivalIata": "AUH",
       "flightRouteHubIatas": [
@@ -11580,6 +11671,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "아이투타키는 보통 인천→오클랜드(AKL) 경유 후 라로통가(RAR) 국제선, 이어서 에어 라로통가 국내선으로 아이투타키(AIT) 도착이 일반적입니다. 렌터카·픽업·투어는 아이투타키 공항(AIT) 기준입니다. 날짜변경선으로 도착일이 하루 당겨질 수 있으니 티켓·숙소 날짜를 확인하세요.",
+      "bannerNoteEn": "Aitutaki is usually reached ICN→Auckland (AKL), then Rarotonga (RAR) internationally, then Air Rarotonga domestic to Aitutaki (AIT). Car rental, pickup, and tours are based on Aitutaki Airport (AIT). The International Date Line can pull your arrival date forward by a day — double-check ticket and lodging dates.",
       "rationale": "AKL·RAR 국제선 경유 후 AIT 국내선 — 최종 도착·렌터카 AIT",
       "linkedSlug": "aitutaki",
       "flightRouteHubIatas": [
@@ -11940,6 +12032,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "보베르데는 섬마다 공항이 나뉩니다. 휴양·해양 액티비티는 살 섬 아밀카르 카브랄(SID), 행정·문화 중심은 산티아고 섬 프라이아 넬슨 만델라(RAI) 도착이 일반적입니다. 한국에서는 리스본(LIS)·카사블랑카(CMN) 등 경유 후 섬행 직항으로 이어지는 일정이 흔합니다. 티켓의 최종 도착 코드를 확인한 뒤 제휴 링크도 그 공항에 맞춰 주세요.",
+      "bannerNoteEn": "Cape Verde airports differ by island. Sal Island Amílcar Cabral (SID) is typical for beach and marine activities; Santiago Island Praia Nelson Mandela (RAI) for administrative and cultural stays. From Korea, itineraries often connect via Lisbon (LIS) or Casablanca (CMN), then a direct island flight. Confirm the final arrival code on your ticket, then match affiliate links to that airport.",
       "rationale": "살(SID)·프라이아(RAI) — slug cape-verde와 동일",
       "searchHintIatas": [
         "SID",
@@ -11957,6 +12050,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "콘다오는 인천→호치민(SGN) 국제선 후 VASCO 등 국내선(SGN-VCS)으로 이어지는 일정이 일반적입니다. 국내선은 소형기·좌석이 적어 조기 예약이 필요합니다. 렌터카·픽업·제휴 링크는 콘다오 공항(VCS) 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 검색어를 맞춰 주세요.",
+      "bannerNoteEn": "Con Dao is typically ICN→Ho Chi Minh City (SGN) international, then a VASCO (or similar) domestic flight (SGN–VCS). Domestic seats are limited on small aircraft — book early. Car rental, pickup, and affiliate links are based on Con Dao Airport (VCS). Confirm the final arrival code on your ticket, then match search terms.",
       "rationale": "SGN 국제선 후 VCS 국내선 — 최종 도착·렌터카 VCS (travelSpots slug 없음)",
       "placeId": "콘다오"
     },
@@ -11971,6 +12065,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "어센션 섬 최종 도착은 와이드어웨이크 공항(ASI)입니다. 요하네스버그(JNB) 등에서 RAF·개항편으로 이어지는 일정이 흔합니다. 허가·제한 구역이므로 티켓의 최종 도착 코드를 확인해 주세요.",
+      "bannerNoteEn": "Final arrival for Ascension Island is Wideawake Airfield (ASI). Connections often continue from Johannesburg (JNB) on RAF or opening flights. It is a permit/restricted area — confirm the final arrival code on your ticket.",
       "rationale": "ICN→JNB→HLE→ASI · Airlink·월 1회 어센션 연결",
       "flightRouteHubIatas": [
         "JNB",
@@ -12090,6 +12185,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "마니히키(투카오)는 인천→도쿄(NRT)·타히티(PPT) 경유 후 라로통가(RAR) 국제선, 이어서 에어 라로통가 국내선으로 마니히키(MHX) 도착이 일반적입니다. 렌터카·픽업은 MHX 기준입니다. 날짜변경선으로 도착일이 하루 당겨질 수 있으니 티켓·숙소 날짜를 확인하세요.",
+      "bannerNoteEn": "Manihiki (Tukao) is usually reached ICN→Tokyo (NRT) or Tahiti (PPT), then Rarotonga (RAR) internationally, then Air Rarotonga domestic to Manihiki (MHX). Car rental and pickup are based on MHX. The International Date Line can pull your arrival date forward by a day — double-check ticket and lodging dates.",
       "rationale": "MHX 섬 공항 · RAR·PPT 쿡 제도 관문 — uiPlace Manihiki(Tukao)",
       "tripFlightArrivalIata": "MHX",
       "flightRouteHubIatas": [
@@ -12109,6 +12205,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "카바라티(락샤드윕)는 보통 인천→코치 국제공항(COK) 도착 후 국내선으로 아가티(AGX)에 내린 뒤, 보트나 헬기로 카바라티로 이어집니다. Trip.com 등 항공권 검색은 COK까지 — AGX·섬 이동은 현지 일정에 맞춰 주세요. 렌터카·픽업은 AGX 기준입니다.",
+      "bannerNoteEn": "Kavaratti (Lakshadweep) is usually ICN→Cochin International (COK), then a domestic flight to Agatti (AGX), then boat or helicopter to Kavaratti. Trip.com and similar flight searches go as far as COK — AGX and island transfers follow the local schedule. Car rental and pickup are based on AGX.",
       "rationale": "락샤드윕 카바라티 — COK 국제·국내 관문 후 AGX, 보트/헬기 이동",
       "tripFlightArrivalIata": "COK",
       "flightRouteHubIatas": [
@@ -12126,6 +12223,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "카바라티(락샤드윕)는 보통 인천→코치 국제공항(COK) 도착 후 국내선으로 아가티(AGX)에 내린 뒤, 보트나 헬기로 카바라티로 이어집니다. Trip.com 등 항공권 검색은 COK까지 — AGX·섬 이동은 현지 일정에 맞춰 주세요. 렌터카·픽업은 AGX 기준입니다.",
+      "bannerNoteEn": "Kavaratti (Lakshadweep) is usually ICN→Cochin International (COK), then a domestic flight to Agatti (AGX), then boat or helicopter to Kavaratti. Trip.com and similar flight searches go as far as COK — AGX and island transfers follow the local schedule. Car rental and pickup are based on AGX.",
       "rationale": "락샤드윕 카바라티 — COK 국제·국내 관문 후 AGX, 보트/헬기 이동",
       "tripFlightArrivalIata": "COK",
       "flightRouteHubIatas": [
@@ -12143,6 +12241,7 @@
       "source": "curated-override",
       "confidence": "high",
       "bannerNote": "아가티(락샤드윕)는 보통 인천→코치 국제공항(COK) 도착 후 국내선으로 아가티(AGX)에 내립니다. Trip.com 등 항공권 검색은 COK까지 — AGX 구간은 현지 일정에 맞춰 주세요. 렌터카·픽업은 AGX 기준입니다.",
+      "bannerNoteEn": "Agatti (Lakshadweep) is usually ICN→Cochin International (COK), then a domestic flight to Agatti (AGX). Trip.com and similar flight searches go as far as COK — match the AGX segment to your local schedule. Car rental and pickup are based on AGX.",
       "rationale": "락샤드윕 아가티 공항 — COK 관문 후 AGX 최종",
       "tripFlightArrivalIata": "COK",
       "flightRouteHubIatas": [
@@ -12158,6 +12257,7 @@
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
+      "bannerNoteEn": "Okinawa’s main island usually arrives at Naha (OKA). Miyakojima (SHI/MMY) and Ishigaki (ISG) are separate islands and destinations — confirm the final arrival code on your ticket.",
       "rationale": "오키나와 본섬(나하) OKA — slug okinawa와 동일",
       "linkedSlug": "okinawa",
       "placeId": "Okinawa"

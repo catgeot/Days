@@ -1179,6 +1179,7 @@
     "common": {
       "bookmark": "Bookmark",
       "relatedSpots": "Related destinations",
+      "relatedSpotsSubtitle": "Same region — different gateways and schedules",
       "relatedList": "More places in this region",
       "loadInfoFailed": "Could not load related information.",
       "searchGoogle": "Search on Google",

@@ -58,7 +58,9 @@ export default function RelatedTravelSpots({ location, className = '' }) {
 
   if (!related.length || !cluster) return null;
 
-  const clusterLabel = i18n.language === 'en' && cluster.labelEn ? cluster.labelEn : cluster.labelKo;
+  const isEn = String(i18n.language || '').toLowerCase().startsWith('en');
+  const clusterLabel = isEn && cluster.labelEn ? cluster.labelEn : cluster.labelKo;
+  const clusterNotes = isEn && cluster.notesEn ? cluster.notesEn : cluster.notes;
 
   return (
     <section
@@ -92,10 +94,10 @@ export default function RelatedTravelSpots({ location, className = '' }) {
           {clusterLabel}
         </p>
         <p className="mt-1 text-sm font-bold text-gray-800 break-keep">
-          같은 권역이지만 관문 공항·일정이 다릅니다
+          {t('place.common.relatedSpotsSubtitle')}
         </p>
-        {cluster.notes ? (
-          <p className={`mt-1 ${plannerCaption}`}>{cluster.notes}</p>
+        {clusterNotes ? (
+          <p className={`mt-1 ${plannerCaption}`}>{clusterNotes}</p>
         ) : null}
       </div>
       <div

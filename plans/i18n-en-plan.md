@@ -123,20 +123,24 @@
 
 ## 9. 핸드오프
 
-**인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
+**세션** `영문화 #45, 플래너 bannerNote·권역 EN`  
+**브랜치** `cursor/i18n-planner-banner-en-feb4`  
+**일지** [`2026-08-24-project-log.md`](./2026-08-24-project-log.md)
 
-**상태 (#44b 로컬 QA ✅)**: 항공 시네마 지구본 IATA — HTML Marker · main `e531e660` (push 후 SHA 확인)
-
-**다음 (#44c)** — §13 A PROD 회귀 QA · 항공경로 PROD 재확인 · GT 일괄 백필 금지
+| | |
+|--|--|
+| **이번** | EN planner: `bannerNoteEn`(generate 병합) · `bookingNoteEn` · 권역 `notesEn` · `relatedSpotsSubtitle` |
+| **QA** | `/place/yap/planner?lang=en` — 배너·MICRONESIA 카드 EN |
+| **VERIFY** | `generate:airports` · `audit:airports` · `audit:i18n` · `build` |
 
 **다음 제시어**:
 
 ```
-영문화 #44c, PROD 회귀 QA
+영문화 #46, Preview QA — 플래너 banner EN
 @plans/feature-handoff-index.md
-@plans/2026-08-22-project-log.md
+@plans/2026-08-24-project-log.md
 @plans/i18n-en-plan.md
-main · ?lang=en · i18n-en-plan §13 A · 항공경로 PROD 재확인
+cursor/i18n-planner-banner-en-feb4 · /qa/en · /place/yap/planner?lang=en
 금지: GT 일괄 백필
 ```
 

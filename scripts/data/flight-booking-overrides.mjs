@@ -13,6 +13,7 @@
  * @type {Record<string, {
  *   tier: 'segmented'|'carrier-only'|'agency-only',
  *   bookingNote?: string,
+ *   bookingNoteEn?: string,
  *   tripDisclaimer?: string,
  *   officialLinks?: Array<{
  *     provider: 'united'|'direct',
@@ -30,6 +31,8 @@ export const FLIGHT_BOOKING_OVERRIDES = {
     tier: 'segmented',
     bookingNote:
       '야프(YAP)는 인천→괌(GUM) 직항 도착 후, 유나이티드항공으로 YAP에 들어갑니다(HNL 경유 아일랜드 호퍼도 가능). Trip.com 검색은 GUM까지 — YAP 구간은 United 공식 예약이 필요합니다.',
+    bookingNoteEn:
+      'Yap (YAP) is usually reached ICN→Guam (GUM) direct, then United Airlines to YAP (Island Hopper via Honolulu HNL is also possible). Trip.com searches go as far as GUM — the YAP segment requires a United official booking.',
     officialLinks: [
       {
         provider: 'united',
@@ -45,6 +48,8 @@ export const FLIGHT_BOOKING_OVERRIDES = {
     tier: 'segmented',
     bookingNote:
       '추크(TKK)는 인천→괌(GUM) 직항 도착 후, 유나이티드항공으로 TKK에 들어갑니다(HNL 경유 아일랜드 호퍼도 가능). Trip.com 검색은 GUM까지 — TKK 구간은 United 공식 예약이 필요합니다.',
+    bookingNoteEn:
+      'Chuuk (TKK) is usually reached ICN→Guam (GUM) direct, then United Airlines to TKK (Island Hopper via Honolulu HNL is also possible). Trip.com searches go as far as GUM — the TKK segment requires a United official booking.',
     officialLinks: [
       {
         provider: 'united',
@@ -60,6 +65,8 @@ export const FLIGHT_BOOKING_OVERRIDES = {
     tier: 'segmented',
     bookingNote:
       '폰페이(PNI)는 인천→괌(GUM) 직항 도착 후, 유나이티드항공으로 PNI에 들어갑니다(HNL 경유 아일랜드 호퍼도 가능). Trip.com 검색은 GUM까지 — PNI 구간은 United 공식 예약이 필요합니다.',
+    bookingNoteEn:
+      'Pohnpei (PNI) is usually reached ICN→Guam (GUM) direct, then United Airlines to PNI (Island Hopper via Honolulu HNL is also possible). Trip.com searches go as far as GUM — the PNI segment requires a United official booking.',
     officialLinks: [
       {
         provider: 'united',
@@ -75,6 +82,8 @@ export const FLIGHT_BOOKING_OVERRIDES = {
     tier: 'segmented',
     bookingNote:
       '코스라에(KOS)는 인천→괌(GUM) 직항 도착 후, 유나이티드항공으로 KOS에 들어갑니다(HNL 경유 아일랜드 호퍼도 가능). Trip.com 검색은 GUM까지 — United 예약 시 목적지 코드 KSA(코스라에)를 사용합니다.',
+    bookingNoteEn:
+      'Kosrae (KOS) is usually reached ICN→Guam (GUM) direct, then United Airlines to KOS (Island Hopper via Honolulu HNL is also possible). Trip.com searches go as far as GUM — when booking on United, use destination code KSA (Kosrae).',
     officialLinks: [
       {
         provider: 'united',
@@ -90,6 +99,8 @@ export const FLIGHT_BOOKING_OVERRIDES = {
     tier: 'segmented',
     bookingNote:
       '마셜 제도(마주로·MAJ)는 인천→괌(GUM) 직항 도착 후, 유나이티드항공으로 MAJ에 들어갑니다(HNL 경유 아일랜드 호퍼도 가능). Trip.com 검색은 GUM까지 — MAJ 구간은 United 공식 예약이 필요합니다.',
+    bookingNoteEn:
+      'The Marshall Islands (Majuro, MAJ) are usually reached ICN→Guam (GUM) direct, then United Airlines to MAJ (Island Hopper via Honolulu HNL is also possible). Trip.com searches go as far as GUM — the MAJ segment requires a United official booking.',
     officialLinks: [
       {
         provider: 'united',
@@ -105,6 +116,8 @@ export const FLIGHT_BOOKING_OVERRIDES = {
     tier: 'agency-only',
     bookingNote:
       '소코트라(SCT) 구간은 아부다비(AUH) 도착 후 현지 인가 투어 에이전시를 통한 전세기(주 1~2회)로만 발권됩니다. Trip.com·스카이스캐너는 AUH까지 검색하고, SCT 티켓은 투어 패키지·현지 에이전시에 문의해 주세요.',
+    bookingNoteEn:
+      'Socotra (SCT) is only ticketed on authorized local-agency charters (about 1–2× weekly) after arriving in Abu Dhabi (AUH). Search Trip.com/Skyscanner as far as AUH, then arrange the SCT ticket via a tour package or local agency.',
     confidence: 'high',
     rationale: 'AUH Trip 유지 · SCT 에이전시 안내 — 일지 2026-06-11',
   },
