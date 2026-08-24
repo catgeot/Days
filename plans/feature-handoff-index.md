@@ -62,25 +62,23 @@ main · www.gateo.kr 모바일 대양·해역 연속 탭
 
 | | |
 |--|--|
-| **상태** | **feature** `#45` 플래너 bannerNote·권역 EN · Preview QA 대기 |
-| **브랜치** | `cursor/i18n-planner-banner-en-feb4` |
+| **상태** | **main 병합** PR #149 · PROD 배포 후 QA |
+| **main** | `452c4c25` |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §9 |
 | **일지** | [`2026-08-24-project-log.md`](./2026-08-24-project-log.md) |
-| **Preview** | `https://www.gateo.kr/qa/en` → git Preview `?lang=en` · `/place/yap/planner` |
-| **VERIFY** | `audit:airports` · `audit:i18n` · `build` · hangul bannerNote missing EN = 0 |
+| **PROD QA** | `https://www.gateo.kr/place/yap/planner?lang=en` — 배너·MICRONESIA 권역 EN |
+| **VERIFY** | `audit:airports` · `audit:i18n` · `build` |
 
-**#44b 완료**: Mapbox IATA HTML Marker — `e531e660` (main)
-
-**#45 이번**: 공항/예약 배너 EN + 권역 리스트 EN
+**#45 완료**: 플래너 bannerNote·bookingNote·권역 notesEn — PR #149 merge
 
 **다음 제시어 (#46)**:
 
 ```
-영문화 #46, Preview QA — 플래너 banner EN
+영문화 #46, PROD QA — 플래너 banner EN
 @plans/feature-handoff-index.md
 @plans/2026-08-24-project-log.md
 @plans/i18n-en-plan.md
-cursor/i18n-planner-banner-en-feb4 · /qa/en · /place/yap/planner?lang=en
+main · www.gateo.kr/place/yap/planner?lang=en
 금지: GT 일괄 백필
 ```
 

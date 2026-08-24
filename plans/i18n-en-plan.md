@@ -124,23 +124,23 @@
 ## 9. 핸드오프
 
 **세션** `영문화 #45, 플래너 bannerNote·권역 EN`  
-**브랜치** `cursor/i18n-planner-banner-en-feb4`  
+**main** PR #149 merge · `452c4c25`  
 **일지** [`2026-08-24-project-log.md`](./2026-08-24-project-log.md)
 
 | | |
 |--|--|
-| **이번** | EN planner: `bannerNoteEn`(generate 병합) · `bookingNoteEn` · 권역 `notesEn` · `relatedSpotsSubtitle` |
-| **QA** | `/place/yap/planner?lang=en` — 배너·MICRONESIA 카드 EN |
-| **VERIFY** | `generate:airports` · `audit:airports` · `audit:i18n` · `build` |
+| **완료** | 플래너 bannerNoteEn · bookingNoteEn · 권역 notesEn · relatedSpotsSubtitle |
+| **PROD QA** | `/place/yap/planner?lang=en` |
+| **VERIFY** | `audit:airports` · `audit:i18n` · `build` |
 
 **다음 제시어**:
 
 ```
-영문화 #46, Preview QA — 플래너 banner EN
+영문화 #46, PROD QA — 플래너 banner EN
 @plans/feature-handoff-index.md
 @plans/2026-08-24-project-log.md
 @plans/i18n-en-plan.md
-cursor/i18n-planner-banner-en-feb4 · /qa/en · /place/yap/planner?lang=en
+main · www.gateo.kr/place/yap/planner?lang=en
 금지: GT 일괄 백필
 ```
 

@@ -5,16 +5,14 @@
 ## 영문화 #45 — 플래너 bannerNote·권역 EN
 
 - **세션** `영문화 #45, 플래너 bannerNote·권역 EN`
-- **브랜치** `cursor/i18n-planner-banner-en-feb4` · tip `3ff5d8e8` · PR #149
-- **내용** EN locale에서 공항 `bannerNote`·분할예약 `bookingNote`·권역 클러스터 노트가 한글로 남던 문제 수정. `banner-note-en-by-slug.mjs` → `generate:airports` 병합 · `notesEn` · `relatedSpotsSubtitle` i18n.
+- **main** PR #149 merge · `452c4c25`
+- **내용** EN locale에서 공항 `bannerNote`·분할예booking `bookingNote`·권역 클러스터 노트 한글 잔존 수정.
 - **VERIFY** `audit:airports` · `audit:i18n` · `build` · hangul bannerNote missing EN = 0
-- **사람 QA** git Preview `/place/yap/planner?lang=en` — 렌터 배너 노트 EN · MICRONESIA 권역 카드 EN
-  - https://days-git-cursor-i18n-planner-banner-en-feb4-catgeots-projects.vercel.app/place/yap/planner?lang=en
+- **PROD QA** `https://www.gateo.kr/place/yap/planner?lang=en` — 렌터 배너·MICRONESIA 권역 EN
 
 ## 에이전트 핸드오프
 
 | | |
 |--|--|
-| **다음** | Preview QA 후 main 병합 · 잔여 multi-rule bannerNote EN(있으면) |
-| **공유** | `/qa/en` · git Preview 브랜치 URL |
+| **다음** | PROD 배포 후 `/place/yap/planner?lang=en` 확인 |
 | **금지** | GT 일괄 백필 · UI 리디자인 · spots JSON 직편집 |
