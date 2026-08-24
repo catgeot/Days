@@ -273,6 +273,12 @@ export function clearFlightCinemaLayers(map) {
 /** 읽기 전용 — 항공 시네마 레이어 존재 여부 (map 부수 효과 없음) */
 export function isFlightCinemaGlobeReady(map) {
   if (!isGlobeMapStyleReady(map)) return false;
+  return hasFlightCinemaLayersAttached(map);
+}
+
+/** styleLoaded와 무관 — relaunch 중 isStyleLoaded flicker 대비 */
+export function hasFlightCinemaLayersAttached(map) {
+  if (!map || map._removed) return false;
   try {
     return Boolean(
       map.getSource(FLIGHT_CINEMA_ARC_SOURCE_ID)
@@ -281,7 +287,24 @@ export function isFlightCinemaGlobeReady(map) {
       && map.getLayer(FLIGHT_CINEMA_AIRPORT_LAYER_ID)
     );
   } catch {
-    // getLayer/getSource throw while style is mid-load.
+    return false;
+  }
+}
+
+function refreshFlightCinemaLayersForRelaunch(map) {
+  if (!hasFlightCinemaLayersAttached(map)) return false;
+  try {
+    for (const layerId of FLIGHT_CINEMA_ARC_LAYER_IDS) {
+      if (!map.getLayer(layerId)) continue;
+      map.setLayerZoomRange(layerId, 0, 24);
+      map.setLayoutProperty(layerId, 'visibility', 'visible');
+      map.moveLayer(layerId);
+    }
+    if (map.getLayer(FLIGHT_CINEMA_AIRPORT_LAYER_ID)) {
+      map.setLayoutProperty(FLIGHT_CINEMA_AIRPORT_LAYER_ID, 'visibility', 'none');
+    }
+    return true;
+  } catch {
     return false;
   }
 }
@@ -477,15 +500,34 @@ export function createFlightCinemaEngine(map, options = {}) {
       engineActiveBefore: active,
     };
 
-    if (!isGlobeMapStyleReady(map)) {
-      warnFlightCinemaDebug('engine.abort', { ...debugBase, reason: 'map-style-not-ready' });
+    const wantsRelaunch = params.relaunch === true;
+    const relaunchWithAttachedLayers =
+      wantsRelaunch && (active || hasFlightCinemaLayersAttached(map));
+
+    if (!relaunchWithAttachedLayers && !isGlobeMapStyleReady(map)) {
+      warnFlightCinemaDebug('engine.abort', {
+        ...debugBase,
+        reason: 'map-style-not-ready',
+        styleLoaded: Boolean(map.isStyleLoaded?.()),
+        layersAttached: hasFlightCinemaLayersAttached(map),
+      });
       return false;
     }
 
-    const originLat = Number(params?.origin?.lat);
-    const originLng = Number(params?.origin?.lng);
-    const destLat = Number(params?.dest?.lat);
-    const destLng = Number(params?.dest?.lng);
+    let originLat = Number(params?.origin?.lat);
+    let originLng = Number(params?.origin?.lng);
+    let destLat = Number(params?.dest?.lat);
+    let destLng = Number(params?.dest?.lng);
+    if (!Number.isFinite(originLat) || !Number.isFinite(originLng)) {
+      const resolved = getAirportHubCoords(params?.originIata);
+      originLat = Number(resolved?.lat);
+      originLng = Number(resolved?.lng);
+    }
+    if (!Number.isFinite(destLat) || !Number.isFinite(destLng)) {
+      const resolved = getAirportHubCoords(params?.destIata);
+      destLat = Number(resolved?.lat);
+      destLng = Number(resolved?.lng);
+    }
     if (
       !Number.isFinite(originLat) ||
       !Number.isFinite(originLng) ||
@@ -502,8 +544,6 @@ export function createFlightCinemaEngine(map, options = {}) {
       });
       return false;
     }
-
-    const wantsRelaunch = params.relaunch === true;
 
     try {
       map.stop();
@@ -566,8 +606,20 @@ export function createFlightCinemaEngine(map, options = {}) {
 
     if (isFlightCinemaGlobeReady(map)) {
       setupFlightCinemaLayers(map, { visible: true, promoteZIndex: true });
+    } else if (relaunchWithAttachedLayers && refreshFlightCinemaLayersForRelaunch(map)) {
+      logFlightCinemaDebug('engine.relaunch-layers', {
+        ...debugBase,
+        styleLoaded: Boolean(map.isStyleLoaded?.()),
+        layersAttached: true,
+      });
     } else if (!setupFlightCinemaLayers(map, { visible: true, promoteZIndex: true })) {
-      warnFlightCinemaDebug('engine.abort', { ...debugBase, reason: 'setup-layers-failed' });
+      warnFlightCinemaDebug('engine.abort', {
+        ...debugBase,
+        reason: 'setup-layers-failed',
+        styleLoaded: Boolean(map.isStyleLoaded?.()),
+        layersAttached: hasFlightCinemaLayersAttached(map),
+        relaunchWithAttachedLayers,
+      });
       return false;
     }
 

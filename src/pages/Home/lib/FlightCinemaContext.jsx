@@ -294,9 +294,12 @@ export function FlightCinemaProvider({
 
       for (let attempt = 0; attempt < startAttempts; attempt += 1) {
         const needsInitialWait = !isRelaunch && attempt === 0;
+        const needsRelaunchPrime = isRelaunch && attempt === 0;
         const needsRetryWait = attempt > 0;
         if (needsInitialWait) {
           if (!(await tryWaitReady(8000))) continue;
+        } else if (needsRelaunchPrime) {
+          if (!(await tryWaitReady(1200))) continue;
         } else if (needsRetryWait) {
           if (!(await tryWaitReady(attempt === 1 ? 2500 : 4000))) continue;
         }
