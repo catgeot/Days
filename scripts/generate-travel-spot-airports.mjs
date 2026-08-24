@@ -101,6 +101,23 @@ function flightRouteHubIatasFromOverride(override) {
   return {};
 }
 
+function flightRouteAlternativeHubsFromOverride(override) {
+  if (!Array.isArray(override?.flightRouteAlternativeHubs) || !override.flightRouteAlternativeHubs.length) {
+    return {};
+  }
+  const seen = new Set();
+  const flightRouteAlternativeHubs = [];
+  for (const hubs of override.flightRouteAlternativeHubs) {
+    if (!Array.isArray(hubs)) continue;
+    const normalized = filterRegisteredIatas(hubs).slice(0, 3);
+    const key = normalized.join('>');
+    if (seen.has(key)) continue;
+    seen.add(key);
+    flightRouteAlternativeHubs.push(normalized);
+  }
+  return flightRouteAlternativeHubs.length ? { flightRouteAlternativeHubs } : {};
+}
+
 function resolveBannerNoteEn(override, lookupKey) {
   const inline = String(override?.bannerNoteEn ?? '').trim();
   if (inline) return inline;
@@ -150,6 +167,7 @@ function rowFromOverride(override, lookupKey) {
       : {}),
     ...flightRouteWaypointsFromOverride(override),
     ...flightRouteHubIatasFromOverride(override),
+    ...flightRouteAlternativeHubsFromOverride(override),
   };
 }
 
@@ -233,6 +251,7 @@ function rowFromPlaceIdOverride(override, placeId) {
     ...(override.linkedSlug ? { linkedSlug: String(override.linkedSlug).trim() } : {}),
     ...flightRouteWaypointsFromOverride(override),
     ...flightRouteHubIatasFromOverride(override),
+    ...flightRouteAlternativeHubsFromOverride(override),
   };
 }
 

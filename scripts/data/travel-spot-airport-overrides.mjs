@@ -573,8 +573,9 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     primaryIatas: ['HKT'],
     preferredLinkIata: 'HKT',
     flightRouteHubIatas: [],
+    flightRouteAlternativeHubs: [[], ['BKK'], ['SIN'], ['KUL']],
     confidence: 'high',
-    rationale: '푸켓(HKT) ICN 직항 arc — graph 2hop(HKG-BKK) 오탐 보정',
+    rationale: '푸켓(HKT) ICN 직항 arc + Bar 경유 후보 BKK·SIN·KUL만 (graph 자동 후보 제외)',
   },
   reykjavik: {
     primaryIatas: ['KEF'],

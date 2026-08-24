@@ -29,7 +29,10 @@ import {
   hasExplicitDirectFlightRoute,
   hasManualFlightRouteHubOverride,
 } from '../../../utils/rentalAirportMatch.js';
-import { buildFlightRouteAlternativeKey } from './flightCinemaRouteAlternatives.js';
+import {
+  buildFlightRouteAlternativeKey,
+  resolveCuratedFlightRouteAlternativesForCinema,
+} from './flightCinemaRouteAlternatives.js';
 import {
   estimateAirportTimezoneDiffHours,
   formatBrowserTimezoneOriginHint,
@@ -320,9 +323,19 @@ export function FlightCinemaProvider({
           .trim()
           .toUpperCase();
 
-        const canFetchAlternatives =
+        const curatedAlternatives =
+          normalizedOrigin === DEFAULT_FLIGHT_ORIGIN_IATA && location
+            ? resolveCuratedFlightRouteAlternativesForCinema(location, {
+                originIata: normalizedOrigin,
+                destIata: normalizedDest,
+                essentialGuide,
+              })
+            : [];
+        const useCuratedAlternatives = curatedAlternatives.length > 1;
+        const canFetchEdgeAlternatives =
           location &&
           normalizedDest.length === 3 &&
+          !useCuratedAlternatives &&
           !hasManualFlightRouteHubOverride(location) &&
           !hasExplicitDirectFlightRoute(location);
 
@@ -334,12 +347,12 @@ export function FlightCinemaProvider({
           location,
           essentialGuide,
           hubIatas: hubIatasParam,
-          routeAlternatives: [],
+          routeAlternatives: useCuratedAlternatives ? curatedAlternatives : [],
           skipEdgeHubResolve,
           onComplete,
         });
 
-        if (launched && canFetchAlternatives) {
+        if (launched && canFetchEdgeAlternatives) {
           void resolveFlightRouteAlternativesForCinema(location, {
             originIata: normalizedOrigin,
             destIata: normalizedDest,
@@ -436,13 +449,19 @@ export function FlightCinemaProvider({
       // closeFlightCinema 금지 — onComplete→finishCinema→써머리 복귀. startFlightCinema가 forceReset으로 arc만 교체.
 
       try {
-        let routeAlternatives = [];
-        const canFetchAlternatives =
+        let routeAlternatives = resolveCuratedFlightRouteAlternativesForCinema(current.location, {
+          originIata: normalized,
+          destIata: current.destIata,
+          essentialGuide: current.essentialGuide,
+        });
+        const useCuratedAlternatives = routeAlternatives.length > 1;
+        const canFetchEdgeAlternatives =
           current.location &&
+          !useCuratedAlternatives &&
           !hasManualFlightRouteHubOverride(current.location) &&
           !hasExplicitDirectFlightRoute(current.location);
 
-        if (canFetchAlternatives) {
+        if (canFetchEdgeAlternatives) {
           routeAlternatives = await resolveFlightRouteAlternativesForCinema(current.location, {
             originIata: normalized,
             destIata: current.destIata,

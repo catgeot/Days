@@ -1191,6 +1191,37 @@ export function hasManualFlightRouteHubOverride(location) {
 }
 
 /**
+ * overrides `flightRouteAlternativeHubs` — Bar 경유 칩 SSOT (Edge graph 대신).
+ * @param {Record<string, unknown> | null | undefined} location
+ * @returns {string[][] | null}
+ */
+export function getCuratedFlightRouteAlternativeHubSets(location) {
+  const row = getFlightRouteAirportRow(location);
+  const raw = row?.flightRouteAlternativeHubs;
+  if (!Array.isArray(raw) || !raw.length) return null;
+
+  const seen = new Set();
+  const out = [];
+  for (const hubs of raw) {
+    if (!Array.isArray(hubs)) continue;
+    const normalized = hubs
+      .map((code) => String(code ?? '').trim().toUpperCase())
+      .filter((code) => code.length === 3 && hubByIata(code));
+    const key = normalized.join('>');
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(normalized);
+  }
+  return out.length ? out : null;
+}
+
+/** 큐레이션 경유 후보가 있으면 Edge graph 대신 Bar 칩에 사용 */
+export function hasCuratedFlightRouteAlternatives(location) {
+  const sets = getCuratedFlightRouteAlternativeHubSets(location);
+  return Boolean(sets && sets.length > 1);
+}
+
+/**
  * 항공 시네마 arc 경유점 — overrides `flightRouteWaypoints` [[lng, lat], ...] (최대 3).
  * ICN 출발일 때만 적용 — 비-ICN(BDA 등)에 Pacific waypoint가 붙으면 arc가 도쿄 동쪽으로 우회함.
  * @param {Record<string, unknown> | null | undefined} location

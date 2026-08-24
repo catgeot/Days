@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-08-24T10:42:35.569Z",
+    "generatedAt": "2026-08-24T10:53:54.064Z",
     "spotCount": 273,
     "placeIdCount": 647,
     "stats": {
@@ -1616,8 +1616,20 @@
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "푸켓(HKT) ICN 직항 arc — graph 2hop(HKG-BKK) 오탐 보정",
-      "flightRouteHubIatas": []
+      "rationale": "푸켓(HKT) ICN 직항 arc + Bar 경유 후보 BKK·SIN·KUL만 (graph 자동 후보 제외)",
+      "flightRouteHubIatas": [],
+      "flightRouteAlternativeHubs": [
+        [],
+        [
+          "BKK"
+        ],
+        [
+          "SIN"
+        ],
+        [
+          "KUL"
+        ]
+      ]
     },
     "phi-phi-islands": {
       "primaryIatas": [
