@@ -95,6 +95,11 @@ import { flushCurationGlobeSyncIfPending } from '../lib/curationPlaceBridge.js';
 import { useLocale } from '../../../i18n/LocaleProvider';
 import { useTranslation } from 'react-i18next';
 import { useOptionalFlightCinemaRoute } from '../lib/FlightCinemaContext.jsx';
+import {
+  flightCinemaDebugLocationTag,
+  logFlightCinemaDebug,
+  warnFlightCinemaDebug,
+} from '../lib/flightCinemaDebug.js';
 import FlightCinemaAirportMarkers from './FlightCinemaAirportMarkers.jsx';
 import GlobeClusterLegend from './GlobeClusterLegend.jsx';
 
@@ -1562,19 +1567,35 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   }, [markerGeoJSON]);
 
   const startFlightCinema = useCallback((params) => {
+    const debugBase = {
+      slug: flightCinemaDebugLocationTag(params?.location),
+      originIata: params?.originIata,
+      destIata: params?.destIata,
+      hubIatas: params?.hubIatas,
+      relaunch: params?.relaunch === true,
+    };
+
     if (tourActiveRef.current) {
+      warnFlightCinemaDebug('globe.abort', { ...debugBase, reason: 'tour-active' });
       return false;
     }
     const map = mapRef.current?.getMap();
-    if (!map) return false;
+    if (!map) {
+      warnFlightCinemaDebug('globe.abort', { ...debugBase, reason: 'no-map' });
+      return false;
+    }
 
     safeMapResize(map);
     if (!ensureFlightCinemaGlobeReady(map)) {
+      warnFlightCinemaDebug('globe.abort', { ...debugBase, reason: 'globe-not-ready' });
       return false;
     }
 
     const engine = ensureFlightCinemaEngine();
-    if (!engine) return false;
+    if (!engine) {
+      warnFlightCinemaDebug('globe.abort', { ...debugBase, reason: 'no-engine' });
+      return false;
+    }
 
     const wrappedOnComplete = (reason) => {
       flightCinemaOnCompleteRef.current = null;
@@ -1599,14 +1620,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (started) {
       setShowCinemaAirportMarkers(true);
       setGateoMarkerLabelVisibility(map, false);
+      logFlightCinemaDebug('globe.started', debugBase);
     } else {
       flightCinemaActiveRef.current = false;
       interactionRef.current = false;
       flightCinemaOnCompleteRef.current = null;
       flightCinemaLayersLatchedRef.current = false;
-      if (import.meta.env.DEV) {
-        console.warn('[FlightCinema] startFlightCinema: engine.start returned false');
-      }
+      warnFlightCinemaDebug('globe.abort', { ...debugBase, reason: 'engine-start-false' });
     }
     return started;
   }, [ensureFlightCinemaEngine]);

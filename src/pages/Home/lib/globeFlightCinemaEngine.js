@@ -11,6 +11,11 @@ import {
 } from './globeFlightCinema.js';
 import { normalizeLngNear } from './globeLngUtils.js';
 import { isGlobeMapStyleReady } from './globeMapStyleGuard.js';
+import {
+  flightCinemaDebugLocationTag,
+  logFlightCinemaDebug,
+  warnFlightCinemaDebug,
+} from './flightCinemaDebug.js';
 
 export const FLIGHT_CINEMA_ARC_SOURCE_ID = 'gateo-flight-cinema-arc';
 export const FLIGHT_CINEMA_ENDPOINTS_SOURCE_ID = 'gateo-flight-cinema-endpoints';
@@ -463,7 +468,19 @@ export function createFlightCinemaEngine(map, options = {}) {
    * }} params
    */
   const start = (params) => {
-    if (!isGlobeMapStyleReady(map)) return false;
+    const debugBase = {
+      slug: flightCinemaDebugLocationTag(params?.location),
+      originIata: params?.originIata,
+      destIata: params?.destIata,
+      hubIatas: params?.hubIatas,
+      relaunch: params?.relaunch === true,
+      engineActiveBefore: active,
+    };
+
+    if (!isGlobeMapStyleReady(map)) {
+      warnFlightCinemaDebug('engine.abort', { ...debugBase, reason: 'map-style-not-ready' });
+      return false;
+    }
 
     const originLat = Number(params?.origin?.lat);
     const originLng = Number(params?.origin?.lng);
@@ -475,6 +492,14 @@ export function createFlightCinemaEngine(map, options = {}) {
       !Number.isFinite(destLat) ||
       !Number.isFinite(destLng)
     ) {
+      warnFlightCinemaDebug('engine.abort', {
+        ...debugBase,
+        reason: 'invalid-coords',
+        originLat,
+        originLng,
+        destLat,
+        destLng,
+      });
       return false;
     }
 
@@ -515,10 +540,21 @@ export function createFlightCinemaEngine(map, options = {}) {
         hubIatas: params.hubIatas,
         essentialGuide: params.essentialGuide ?? null,
       }));
-    } catch {
+    } catch (err) {
+      warnFlightCinemaDebug('engine.abort', {
+        ...debugBase,
+        reason: 'build-arc-threw',
+        error: err instanceof Error ? err.message : String(err),
+      });
       return false;
     }
     fullArcRef = fullArc;
+    logFlightCinemaDebug('engine.arc-built', {
+      ...debugBase,
+      coordCount: fullArc?.length ?? 0,
+      legCount: legEndIndices?.length ?? 0,
+      wantsRelaunch,
+    });
     const durationMs = params.durationMs ?? (wantsRelaunch ? Math.round(FLIGHT_CINEMA_DURATION_MS * 0.45) : FLIGHT_CINEMA_DURATION_MS);
     arcScheduleRef = buildFlightArcDrawSchedule(legEndIndices, {
       drawMs: Math.round(durationMs * 0.68),
@@ -531,6 +567,7 @@ export function createFlightCinemaEngine(map, options = {}) {
     if (isFlightCinemaGlobeReady(map)) {
       setupFlightCinemaLayers(map, { visible: true, promoteZIndex: true });
     } else if (!setupFlightCinemaLayers(map, { visible: true, promoteZIndex: true })) {
+      warnFlightCinemaDebug('engine.abort', { ...debugBase, reason: 'setup-layers-failed' });
       return false;
     }
 
@@ -607,6 +644,13 @@ export function createFlightCinemaEngine(map, options = {}) {
     }, (arcScheduleRef?.totalMs ?? 0) + 300);
 
     rafId = requestAnimationFrame(tick);
+
+    logFlightCinemaDebug('engine.started', {
+      ...debugBase,
+      wantsRelaunch,
+      runGen: gen,
+      scheduleMs: arcScheduleRef?.totalMs ?? null,
+    });
 
     return true;
   };
