@@ -1585,16 +1585,36 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       return false;
     }
 
-    safeMapResize(map);
-    if (!ensureFlightCinemaGlobeReady(map)) {
-      warnFlightCinemaDebug('globe.abort', { ...debugBase, reason: 'globe-not-ready' });
-      return false;
-    }
-
     const engine = ensureFlightCinemaEngine();
     if (!engine) {
       warnFlightCinemaDebug('globe.abort', { ...debugBase, reason: 'no-engine' });
       return false;
+    }
+
+    const relaunchActiveSession =
+      params.relaunch === true
+      && (flightCinemaActiveRef.current || engine.isActive?.());
+
+    safeMapResize(map);
+    if (!relaunchActiveSession) {
+      if (!ensureFlightCinemaGlobeReady(map)) {
+        warnFlightCinemaDebug('globe.abort', {
+          ...debugBase,
+          reason: 'globe-not-ready',
+          styleLoaded: Boolean(map.isStyleLoaded?.()),
+          cinemaGlobeReady: isFlightCinemaGlobeReady(map),
+          layersLatched: flightCinemaLayersLatchedRef.current,
+        });
+        return false;
+      }
+    } else {
+      logFlightCinemaDebug('globe.relaunch-skip-ready', {
+        ...debugBase,
+        flightCinemaActiveRef: flightCinemaActiveRef.current,
+        engineActive: engine.isActive?.(),
+        cinemaGlobeReady: isFlightCinemaGlobeReady(map),
+        layersLatched: flightCinemaLayersLatchedRef.current,
+      });
     }
 
     const wrappedOnComplete = (reason) => {
