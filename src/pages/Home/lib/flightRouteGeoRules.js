@@ -310,7 +310,7 @@ export function filterSuspiciousGraphDirect(candidates, adjacency, airportMeta) 
     const dest = getAirportHubCoords(path[1]);
     if (!origin || !dest) return true;
 
-    const destMeta = airportMeta.get(path[1]);
+    const destMeta = airportMeta?.get(path[1]);
     const destType = String(destMeta?.type ?? '');
     const isSmall = destType === 'small_airport' || destType === 'medium_airport';
     const scheduled = destMeta?.scheduled_service !== 'no';
@@ -326,7 +326,7 @@ export function filterSuspiciousGraphDirect(candidates, adjacency, airportMeta) 
       return false;
     }
 
-    const altExists = (adjacency.get(path[0])?.size ?? 0) > 1;
+    const altExists = (adjacency?.get(path[0])?.size ?? 0) > 1;
     if (altExists && isSmall) return false;
 
     return true;

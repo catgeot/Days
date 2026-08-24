@@ -339,15 +339,22 @@ export function FlightCinemaProvider({
             destIata: normalizedDest,
             essentialGuide,
             topN: 3,
-          }).then((routeAlternatives) => {
-            if (!activeRef.current || !routeAlternatives?.length) return;
-            setActive((prev) =>
-              prev ? { ...prev, routeAlternatives } : prev
-            );
-          });
+          })
+            .then((routeAlternatives) => {
+              if (!activeRef.current || !routeAlternatives?.length) return;
+              setActive((prev) =>
+                prev ? { ...prev, routeAlternatives } : prev
+              );
+            })
+            .catch(() => {});
         }
 
         return launched;
+      } catch (err) {
+        if (import.meta.env.DEV) {
+          console.warn('[FlightCinema] requestFlightCinema failed', err);
+        }
+        return false;
       } finally {
         requestInFlightRef.current = false;
         setRequestPending(false);

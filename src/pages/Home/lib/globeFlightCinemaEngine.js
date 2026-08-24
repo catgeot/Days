@@ -465,6 +465,19 @@ export function createFlightCinemaEngine(map, options = {}) {
   const start = (params) => {
     if (!isGlobeMapStyleReady(map)) return false;
 
+    const originLat = Number(params?.origin?.lat);
+    const originLng = Number(params?.origin?.lng);
+    const destLat = Number(params?.dest?.lat);
+    const destLng = Number(params?.dest?.lng);
+    if (
+      !Number.isFinite(originLat) ||
+      !Number.isFinite(originLng) ||
+      !Number.isFinite(destLat) ||
+      !Number.isFinite(destLng)
+    ) {
+      return false;
+    }
+
     const relaunch = params.relaunch === true && active;
 
     try {
@@ -489,15 +502,21 @@ export function createFlightCinemaEngine(map, options = {}) {
       .toUpperCase();
     const normalizedDestIata = String(params.destIata || '').trim().toUpperCase();
 
-    const originLngLat = [params.origin.lng, params.origin.lat];
-    const destLngLat = [params.dest.lng, params.dest.lat];
-    const { coords: fullArc, legEndIndices } = buildFlightRouteLineWithLegs(originLngLat, destLngLat, {
-      location: params.location ?? null,
-      originIata: normalizedOriginIata,
-      destIata: normalizedDestIata,
-      hubIatas: params.hubIatas,
-      essentialGuide: params.essentialGuide ?? null,
-    });
+    const originLngLat = [originLng, originLat];
+    const destLngLat = [destLng, destLat];
+    let fullArc;
+    let legEndIndices;
+    try {
+      ({ coords: fullArc, legEndIndices } = buildFlightRouteLineWithLegs(originLngLat, destLngLat, {
+        location: params.location ?? null,
+        originIata: normalizedOriginIata,
+        destIata: normalizedDestIata,
+        hubIatas: params.hubIatas,
+        essentialGuide: params.essentialGuide ?? null,
+      }));
+    } catch {
+      return false;
+    }
     fullArcRef = fullArc;
     const durationMs = params.durationMs ?? (relaunch ? Math.round(FLIGHT_CINEMA_DURATION_MS * 0.45) : FLIGHT_CINEMA_DURATION_MS);
     arcScheduleRef = buildFlightArcDrawSchedule(legEndIndices, {

@@ -1603,6 +1603,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       flightCinemaActiveRef.current = false;
       interactionRef.current = false;
       flightCinemaOnCompleteRef.current = null;
+      flightCinemaLayersLatchedRef.current = false;
+      if (import.meta.env.DEV) {
+        console.warn('[FlightCinema] startFlightCinema: engine.start returned false');
+      }
     }
     return started;
   }, [ensureFlightCinemaEngine]);

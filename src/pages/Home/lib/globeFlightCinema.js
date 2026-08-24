@@ -109,7 +109,7 @@ export function haversineKm(a, b) {
 /** @param {{ lat: number, lng: number }} origin @param {{ lat: number, lng: number }} dest */
 export function estimateFlightHours(origin, dest) {
   const km = haversineKm(origin, dest);
-  return Math.max(1, Math.round(km / FLIGHT_SPEED_KMH));
+  return Math.max(1, Math.ceil(km / FLIGHT_SPEED_KMH));
 }
 
 /** @param {{ lat: number, lng: number }[]} chain origin → hubs → dest */
@@ -119,7 +119,7 @@ export function estimateFlightHoursChain(chain) {
   for (let i = 0; i < chain.length - 1; i += 1) {
     totalKm += haversineKm(chain[i], chain[i + 1]);
   }
-  return Math.max(1, Math.round(totalKm / FLIGHT_SPEED_KMH));
+  return Math.max(1, Math.ceil(totalKm / FLIGHT_SPEED_KMH));
 }
 
 /**
