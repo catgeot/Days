@@ -435,7 +435,7 @@ export function resolveFlightRoutePlan(originLngLat, destLngLat, location, optio
   const originIata = options.originIata ?? DEFAULT_ORIGIN_IATA;
   const normalizedOrigin = String(originIata).trim().toUpperCase();
   const destIata = options.destIata;
-  const explicitHubsFromOptions = Array.isArray(options.hubIatas) && options.hubIatas.length > 0;
+  const explicitHubsFromOptions = Array.isArray(options.hubIatas);
 
   const manualHubIatas = explicitHubsFromOptions
     ? options.hubIatas
@@ -452,9 +452,11 @@ export function resolveFlightRoutePlan(originLngLat, destLngLat, location, optio
   // explicitDirect(예: paris ICN↔CDG)는 ICN 출발만 — BDA 등 Edge hub chain과 충돌 방지
   const explicitDirect =
     hasExplicitDirectFlightRoute(location) && normalizedOrigin === DEFAULT_ORIGIN_IATA;
-  const hasManualOverride = explicitDirect
-    || hasManualFlightRouteHubOverride(location)
-    || manualHubIatas.length > 0;
+  const hasManualOverride =
+    explicitHubsFromOptions ||
+    explicitDirect ||
+    hasManualFlightRouteHubOverride(location) ||
+    manualHubIatas.length > 0;
   let routeSource = hasManualOverride ? 'override' : null;
 
   if (explicitDirect && !explicitHubsFromOptions) {
@@ -595,15 +597,18 @@ export function buildRouteLegEndIndices(anchors, hubIatas, pointsPerSegment, arc
  */
 export function buildFlightRouteLineWithLegs(originLngLat, destLngLat, options = {}) {
   const points = options.points ?? 80;
+  const explicitHubsFromOptions = Array.isArray(options.hubIatas);
   const plan = resolveFlightRoutePlan(originLngLat, destLngLat, options.location, {
     originIata: options.originIata,
     destIata: options.destIata,
-    hubIatas: options.hubIatas,
+    ...(explicitHubsFromOptions ? { hubIatas: options.hubIatas } : {}),
     essentialGuide: options.essentialGuide,
   });
   const { anchors } = plan;
-  const hubIatas = Array.isArray(options.hubIatas) && options.hubIatas.length
+  const hubIatas = explicitHubsFromOptions
     ? options.hubIatas
+        .map((c) => String(c ?? '').trim().toUpperCase())
+        .filter((c) => c.length === 3)
     : plan.hubIatas;
   const pps = Math.max(24, Math.round(points / Math.max(1, anchors.length - 1)));
   const gcLine = buildGreatCircleChain(anchors, pps);

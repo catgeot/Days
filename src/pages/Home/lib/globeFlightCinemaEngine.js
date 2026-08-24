@@ -491,6 +491,7 @@ export function createFlightCinemaEngine(map, options = {}) {
       runGen += 1;
       cancelled = false;
       animating = false;
+      fullArcRef = null;
     } else if (active) {
       forceReset();
     } else {

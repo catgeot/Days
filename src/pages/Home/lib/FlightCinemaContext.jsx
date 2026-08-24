@@ -189,12 +189,16 @@ export function FlightCinemaProvider({
         }
       }
 
-      // Edge가 빈 직항·실패여도 써머리/Bar 경유 후보가 있으면 그걸로 그림 (경유 칩에서 명시한 hub는 덮지 않음)
+      // Edge가 빈 직항·실패여도 써머리/Bar 경유 후보가 있으면 그걸로 그림 (경유 칩·큐레이션 SSOT는 제외)
+      const curatedAlternatives = routeAlternatives.some(
+        (row) => row?.source === 'curated-alternative'
+      );
       if (
         !hasExplicitHubs &&
         !hubIatas.length &&
         Array.isArray(routeAlternatives) &&
-        routeAlternatives.length
+        routeAlternatives.length &&
+        !curatedAlternatives
       ) {
         const connectingAlt = routeAlternatives.find((row) => row?.hubIatas?.length);
         if (connectingAlt) {
@@ -218,7 +222,7 @@ export function FlightCinemaProvider({
         flightLegHours = estimateFlightLegHours(routeIatas);
       }
 
-      pendingCompleteRef.current = onComplete ?? null;
+      pendingCompleteRef.current = onComplete ?? pendingCompleteRef.current ?? null;
 
       const cinemaParams = {
         originIata: normalizedOrigin,
@@ -416,6 +420,8 @@ export function FlightCinemaProvider({
         const ok = await launchFlightCinema({
           originIata: picked.originIata,
           destIata: picked.destIata,
+          origin: getAirportHubCoords(picked.originIata),
+          dest: getAirportHubCoords(picked.destIata),
           location: current.location,
           essentialGuide: current.essentialGuide,
           hubIatas: picked.hubIatas ?? [],
