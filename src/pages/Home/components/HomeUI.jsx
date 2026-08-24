@@ -26,6 +26,7 @@ import { shouldShowFaceSeaOceanChips } from '../lib/faceSeaOceans.js';
 import { useMobileFaceRegionListHeight } from '../hooks/useMobileFaceRegionListHeight';
 import { useTrendingData } from '../hooks/useTrendingData';
 import { CATEGORY_LABELS } from './SearchDiscovery/constants';
+import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
 
 const MOBILE_QUICK_LINK_DEFS = [
   {
@@ -100,7 +101,7 @@ const HomeUI = React.memo(({
   onTourBarClose,
   onTourBarStartTour,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const mobileQuickLinks = React.useMemo(
     () =>
       MOBILE_QUICK_LINK_DEFS.map((item) => ({
@@ -537,9 +538,12 @@ const HomeUI = React.memo(({
       {(isTagLoading || relatedPlaces.length > 0) && !isTickerExpanded && (
         <div className="hidden md:flex fixed right-6 top-1/2 -translate-y-[calc(50%+6.125rem)] z-[55] flex-col gap-2 md:gap-3 pointer-events-none animate-fade-in-left">
           <div className="flex flex-col gap-2 md:gap-3 pointer-events-auto items-end">
-            {!isTagLoading && relatedPlaces.map((place, idx) => (
+            {!isTagLoading && relatedPlaces.map((place, idx) => {
+              const displayName =
+                getLocalizedPlaceName(place.data, i18n.language) || place.name;
+              return (
               <button
-                key={`${place.name}-${idx}`}
+                key={`${displayName}-${idx}`}
                 type="button"
                 onClick={() => onRelatedPlaceClick(place.data, place.isBridge)}
                 className={`group relative flex items-center justify-between w-28 p-2 md:w-40 md:p-3 backdrop-blur-md border rounded-xl md:hover:w-44 transition-all duration-300 shadow-lg ${
@@ -556,10 +560,11 @@ const HomeUI = React.memo(({
                   )}
                   <span className={`text-[10px] md:text-sm font-medium truncate ${
                     place.isBridge ? 'text-fuchsia-200 group-hover:text-white' : 'text-gray-200 group-hover:text-white'
-                  }`}>{place.name}</span>
+                  }`}>{displayName}</span>
                 </div>
               </button>
-            ))}
+            );
+            })}
           </div>
         </div>
       )}

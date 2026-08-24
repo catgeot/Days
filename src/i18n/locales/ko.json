@@ -170,6 +170,17 @@
       "adventure": "모험"
     },
     "chatWithAi": "AI와 대화하기",
+    "ticker": {
+      "liveTrending": "실시간 트렌드",
+      "liveRanking": "실시간 순위",
+      "updated": "업데이트",
+      "live": "● LIVE",
+      "popularDest": "인기 여행지",
+      "rising": "상승",
+      "down": "하락",
+      "same": "-",
+      "gateSystem": "GATE 0 SYSTEM"
+    },
     "explore": {
       "backHome": "홈으로",
       "filterTheme": "테마",

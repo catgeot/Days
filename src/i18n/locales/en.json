@@ -391,6 +391,17 @@
       "adventure": "Adventure"
     },
     "chatWithAi": "Chat with AI",
+    "ticker": {
+      "liveTrending": "Live Trending",
+      "liveRanking": "Live Ranking",
+      "updated": "UPDATED",
+      "live": "● LIVE",
+      "popularDest": "Popular Dest.",
+      "rising": "Rising",
+      "down": "Down",
+      "same": "-",
+      "gateSystem": "GATE 0 SYSTEM"
+    },
     "explore": {
       "backHome": "Home",
       "filterTheme": "Theme",
