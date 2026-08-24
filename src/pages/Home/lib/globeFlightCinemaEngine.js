@@ -478,7 +478,7 @@ export function createFlightCinemaEngine(map, options = {}) {
       return false;
     }
 
-    const relaunch = params.relaunch === true && active;
+    const wantsRelaunch = params.relaunch === true;
 
     try {
       map.stop();
@@ -486,7 +486,7 @@ export function createFlightCinemaEngine(map, options = {}) {
       // ignore
     }
 
-    if (relaunch) {
+    if (wantsRelaunch) {
       cleanupTimers();
       runGen += 1;
       cancelled = false;
@@ -518,13 +518,13 @@ export function createFlightCinemaEngine(map, options = {}) {
       return false;
     }
     fullArcRef = fullArc;
-    const durationMs = params.durationMs ?? (relaunch ? Math.round(FLIGHT_CINEMA_DURATION_MS * 0.45) : FLIGHT_CINEMA_DURATION_MS);
+    const durationMs = params.durationMs ?? (wantsRelaunch ? Math.round(FLIGHT_CINEMA_DURATION_MS * 0.45) : FLIGHT_CINEMA_DURATION_MS);
     arcScheduleRef = buildFlightArcDrawSchedule(legEndIndices, {
       drawMs: Math.round(durationMs * 0.68),
-      legPauseMs: relaunch ? Math.max(80, Math.round(FLIGHT_CINEMA_LEG_PAUSE_MS * 0.35)) : FLIGHT_CINEMA_LEG_PAUSE_MS,
-      initialDelayMs: relaunch ? 0 : FLIGHT_CINEMA_INITIAL_DELAY_MS,
+      legPauseMs: wantsRelaunch ? Math.max(80, Math.round(FLIGHT_CINEMA_LEG_PAUSE_MS * 0.35)) : FLIGHT_CINEMA_LEG_PAUSE_MS,
+      initialDelayMs: wantsRelaunch ? 0 : FLIGHT_CINEMA_INITIAL_DELAY_MS,
     });
-    const cameraMs = relaunch ? Math.min(420, Math.round(durationMs * 0.35)) : Math.round(durationMs * 0.5);
+    const cameraMs = wantsRelaunch ? Math.min(420, Math.round(durationMs * 0.35)) : Math.round(durationMs * 0.5);
     const cameraView = computeRouteCameraView(fullArc, params.origin, params.dest, flyZoom);
 
     if (isFlightCinemaGlobeReady(map)) {

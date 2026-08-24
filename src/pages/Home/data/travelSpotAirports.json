@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-08-24T10:12:54.694Z",
+    "generatedAt": "2026-08-24T10:42:35.569Z",
     "spotCount": 273,
     "placeIdCount": 647,
     "stats": {
@@ -1616,12 +1616,8 @@
       "kind": "single",
       "source": "curated-override",
       "confidence": "high",
-      "rationale": "푸켓국제공항(HKT)",
-      "graphFlightRouteHubIatas": [
-        "HKG",
-        "BKK"
-      ],
-      "graphFlightRouteSource": "graph-2hop"
+      "rationale": "푸켓(HKT) ICN 직항 arc — graph 2hop(HKG-BKK) 오탐 보정",
+      "flightRouteHubIatas": []
     },
     "phi-phi-islands": {
       "primaryIatas": [

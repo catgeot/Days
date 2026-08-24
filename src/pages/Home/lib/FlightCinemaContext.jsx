@@ -131,7 +131,8 @@ export function FlightCinemaProvider({
         resolvedOrigin = resolvedOrigin ?? getAirportHubCoords(normalizedOrigin);
       }
 
-      let hubIatas = hubIatasParam ?? [];
+      const hasExplicitHubs = hubIatasParam !== undefined;
+      let hubIatas = hasExplicitHubs ? [...(hubIatasParam ?? [])] : [];
       let routeIatas = [];
       let isConnecting = false;
       let flightHours = 1;
@@ -147,7 +148,7 @@ export function FlightCinemaProvider({
         normalizedDest = od.destIata;
         resolvedOrigin = od.origin;
         resolvedDest = od.dest;
-        hubIatas = hubIatasParam ?? od.hubIatas ?? [];
+        hubIatas = hasExplicitHubs ? [...(hubIatasParam ?? [])] : [...(od.hubIatas ?? [])];
         routeIatas = od.routeIatas ?? [normalizedOrigin, normalizedDest];
         isConnecting = Boolean(od.isConnecting);
         flightHours = od.flightHours ?? estimateFlightHours(resolvedOrigin, resolvedDest);
@@ -157,7 +158,7 @@ export function FlightCinemaProvider({
           originIata: normalizedOrigin,
           essentialGuide,
         });
-        hubIatas = hubIatasParam ?? od?.hubIatas ?? [];
+        hubIatas = hasExplicitHubs ? [...(hubIatasParam ?? [])] : [...(od?.hubIatas ?? [])];
         routeIatas = normalizeFlightRouteIataChain(normalizedOrigin, hubIatas, normalizedDest);
         isConnecting = hubIatas.length > 0 || Boolean(od?.isConnecting);
         flightHours = od?.flightHours ?? estimateFlightHours(resolvedOrigin, resolvedDest);
@@ -185,8 +186,13 @@ export function FlightCinemaProvider({
         }
       }
 
-      // Edge가 빈 직항·실패여도 써머리/Bar 경유 후보가 있으면 그걸로 그림
-      if (!hubIatas.length && Array.isArray(routeAlternatives) && routeAlternatives.length) {
+      // Edge가 빈 직항·실패여도 써머리/Bar 경유 후보가 있으면 그걸로 그림 (경유 칩에서 명시한 hub는 덮지 않음)
+      if (
+        !hasExplicitHubs &&
+        !hubIatas.length &&
+        Array.isArray(routeAlternatives) &&
+        routeAlternatives.length
+      ) {
         const connectingAlt = routeAlternatives.find((row) => row?.hubIatas?.length);
         if (connectingAlt) {
           hubIatas = [...connectingAlt.hubIatas];
@@ -197,7 +203,7 @@ export function FlightCinemaProvider({
         }
       }
 
-      if (edgeHubs || hubIatasParam != null || hubIatas.length) {
+      if (edgeHubs || hasExplicitHubs || hubIatas.length) {
         routeIatas = normalizeFlightRouteIataChain(normalizedOrigin, hubIatas, normalizedDest);
         isConnecting = hubIatas.length > 0;
         const chainPoints = [
@@ -399,7 +405,7 @@ export function FlightCinemaProvider({
           destIata: picked.destIata,
           location: current.location,
           essentialGuide: current.essentialGuide,
-          hubIatas: picked.hubIatas,
+          hubIatas: picked.hubIatas ?? [],
           routeAlternatives: current.routeAlternatives,
           selectedRouteKey: picked.key,
           skipEdgeHubResolve: true,

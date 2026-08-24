@@ -572,8 +572,9 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
   phuket: {
     primaryIatas: ['HKT'],
     preferredLinkIata: 'HKT',
+    flightRouteHubIatas: [],
     confidence: 'high',
-    rationale: '푸켓국제공항(HKT)'
+    rationale: '푸켓(HKT) ICN 직항 arc — graph 2hop(HKG-BKK) 오탐 보정',
   },
   reykjavik: {
     primaryIatas: ['KEF'],
