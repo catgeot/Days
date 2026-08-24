@@ -14,6 +14,32 @@
 
 ## 활성 목록
 
+### 세계 행사·축제 일정 연동
+
+| | |
+|--|--|
+| **상태** | **플랜·Q&A 단계** — 코드 미착수 |
+| **브랜치** | `cursor/world-events-efa3` |
+| **플랜** | [`world-events-plan.md`](./world-events-plan.md) §7·§9 |
+| **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
+| **운영** | [`world-events-management.md`](./world-events-management.md) |
+| **일지** | [`2026-08-24-project-log.md`](./2026-08-24-project-log.md) |
+| **VERIFY** | (코드 착수 후) `audit:world-events` · `build` |
+
+**다음 제시어**:
+
+```
+세계행사 일정 #1, Q&A — 범위·파일럿 확정
+@plans/feature-handoff-index.md
+@plans/world-events-plan.md
+@plans/world-events-qa-index.md
+브랜치 cursor/world-events-efa3 · PR 초안 · 코드 미착수
+답변 예: Q1 C · Q2 C · Q3 vienna,iceland,munich · Q4 PlaceCard만
+금지: UI 리디자인 · spots JSON 직편집 · Q&A 없이 Phase 0 착수
+```
+
+---
+
 ### AI 큐레이션 — 지도·무니 핸드오프
 
 | | |

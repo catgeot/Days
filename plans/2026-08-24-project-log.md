@@ -18,6 +18,14 @@
 - **VERIFY** `audit:flight-routes` · `build` PASS
 - **사람 QA** localhost — 이비자 검색 → 써머리 **항공 경로** 1회 클릭 → arc+Bar `ICN~10h MUC~2h IBZ`
 
+## 세계행사 일정 #1 — 플랜·Q&A 브랜치
+
+- **세션** `세계행사 일정 #1, 플랜 수립`
+- **브랜치** `cursor/world-events-efa3` · PR 초안
+- **문서** `world-events-plan.md` · `world-events-qa-index.md` · `world-events-management.md` · `feature-handoff-index` 행 추가
+- **상태** Q1–Q7 답변 대기 · Phase 0 코드 미착수
+- **다음** Q&A로 범위·파일럿 확정 후 P0 착수
+
 ## 에이전트 핸드오프
 
 | | |
