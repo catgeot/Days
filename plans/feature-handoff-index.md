@@ -18,7 +18,8 @@
 
 | | |
 |--|--|
-| **상태** | **Q&A 1차 반영** — Q3·Q9·Q13 확정 후 P0 |
+| **상태** | **구현 착수** — Q&A 확정 · 세션 #2 P0-a 대기 |
+| **다음 세션** | `#2 P0-a` 스키마·generate·audit |
 | **브랜치** | `cursor/world-events-efa3` |
 | **플랜** | [`world-events-plan.md`](./world-events-plan.md) §7·§9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
@@ -29,13 +30,11 @@
 **다음 제시어**:
 
 ```
-세계행사 일정 #2, Q&A — Q3·Q9 확정
+세계행사 일정 #2, P0-a — 스키마·generate·audit
 @plans/feature-handoff-index.md
-@plans/world-events-plan.md
-@plans/world-events-qa-index.md
+@plans/world-events-plan.md §10
 브랜치 cursor/world-events-efa3 · PR #150
-Q3 Wave1 승인/수정 · Q9 A/B/C · Q13 /world-events OK?
-금지: UI 리디자인 · spots JSON 직편집 · Q3 확정 전 P0 착수
+금지: UI 손대기 · worldEvents.json 직편집 · 세션 #2 범위 넘기기
 ```
 
 ---

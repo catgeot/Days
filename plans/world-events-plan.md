@@ -1,15 +1,15 @@
 # 세계 축제·행사 기반 여행 일정 — 마스터 플랜
 
-**세션 표기**: `세계행사 일정 #1, Q&A — 범위·파일럿 확정`  
+**세션 표기**: `세계행사 일정 #2, P0-a — 스키마·generate·audit`  
 **브랜치**: `cursor/world-events-efa3`  
-**상태**: 📋 **Q&A 1차 반영** — Q3·Q9·Q13 확정 후 P0 착수  
+**상태**: 🚀 **구현 착수** — Q&A 확정 · 세션 #2부터 코드  
 **관련**: [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) · [`travel-spots-management.md`](./travel-spots-management.md) · [`world-events-qa-index.md`](./world-events-qa-index.md)
 
 | Phase | 내용 | 상태 |
 |-------|------|------|
-| **P0** | 공통 Event 스키마 · generate/audit · `tripWindow` | ⏳ Q&A 후 착수 |
-| **P1** | 국내 `/korea` ↔ 숙소·플래너 날짜 브리지 | 대기 |
-| **P2** | 해외 큐레이션 · PlaceCard · **`/world-events` 지역 허브** | Q3 승인 후 |
+| **P0** | 공통 Event 스키마 · generate/audit · `tripWindow` | ⏳ 세션 #2–#3 |
+| **P1** | 국내 `/korea` ↔ 숙소·플래너·항공 날짜 브리지 | 세션 #4–#5 |
+| **P2** | 해외 SSOT · PlaceCard · `/world-events` | 세션 #6–#8 |
 | **P3** | 글로벌 통합 `/events` · 외부 피드 POC | 선택 |
 
 ---
@@ -143,15 +143,70 @@ TourAPI 해외 미지원 → **핵심 행사만 수동 SSOT** (Q2 **C** 하이�
 | **`/world-events`** | 지역 칩 · 행사 카드 그리드 · PlaceCard·플래너 링크 (`/korea`와 대칭, 가칭) |
 | **`/korea`** | 국내 TourAPI만 (해외 탭 없음) |
 
-라우트명·P2 동시 착수: Q&A **Q13**.
+라우트·P2 동시: Q13 **확정** (`/world-events`).
 
 ---
 
-## 5. Phase 3 — 선택
+## 10. 세션 로드맵 (1세션 = 1 Cloud 채팅 · 1커밋·push)
 
-- `/events` 글로벌 허브 (**Q4**)
+**규칙**: 한 세션 = **한 표 행**만. 범위 넘기지 않음. 턴 종료 시 VERIFY PASS → 커밋·push → 일지 2~5줄.
+
+| # | 세션 표기 (채팅명 1행) | 작업 | 주요 산출물 | VERIFY · 사람 QA |
+|---|------------------------|------|-------------|------------------|
+| **1** | `세계행사 일정 #1, Q&A` | 범위·파일럿·Q&A | 플랜·qa-index | ✅ 완료 |
+| **2** | `세계행사 일정 #2, P0-a — 스키마·generate·audit` | WorldEvent SSOT 골격 | `world-event-overrides.mjs` 스켈레톤 · `generate-world-events.mjs` · `audit-world-events.mjs` · `worldEvents.json` · npm scripts | `audit:world-events` PASS · `build` |
+| **3** | `세계행사 일정 #3, P0-b — tripWindow` | 날짜 브리지 | `src/shared/tripWindow.js` · TourAPI→WorldEvent 어댑터 초안 · `smoke:trip-window-from-festival` | smoke PASS · `build` |
+| **4** | `세계행사 일정 #4, P1-a — 축제→숙소` | 국내 단일 축제 CTA | `FestivalDetailSheet` MRT/Trip 숙소 URL에 `checkIn`/`checkOut` | `smoke:korea-festival-*` 확장 · `build` |
+| **5** | `세계행사 일정 #5, P1-b — 플래너·항공` | 딥링크·항공 날짜 | 플래너 `?checkIn&checkOut&fromEvent` · 항공 위젯 날짜 전달 (Q8 B) | smoke · `build` · QA: `/korea` 축제 1건 |
+| **6** | `세계행사 일정 #6, P2-a — SSOT Wave1` | 해외 12건 overrides | `world-event-overrides.mjs` 유럽·아시아·아메리카·오세아니아·니치 | `generate:world-events` · `audit:world-events` PASS |
+| **7** | `세계행사 일정 #7, P2-b — PlaceCard 행사` | 도시 카드 섹션 | PlaceCard 「이 도시의 행사」접이식 + TripWindow CTA | `build` · QA: `/place/vienna` |
+| **8** | `세계행사 일정 #8, P2-c — /world-events 허브` | 해외 허브 페이지 | 라우트 `/world-events` · 지역 칩 5 · 카드 그리드 · `/qa/world-events` | `build` · Preview · QA: `/world-events` |
+| **9** | `세계행사 일정 #9, 통합 smoke·핸드오프` | 마감 검증 | smoke 묶음 · 운영 가이드 보강 · 작업 로그 | 전 smoke PASS · 사람 QA 체크리스트 |
+| **10** | _(선택)_ `… #10, P1.5 — 즐겨찾기 다건` | Q9 B 후속 | `festivalPersonalStore` 합집합 TripWindow CTA | smoke · QA |
+
+### 세션 의존 관계
+
+```mermaid
+flowchart TD
+  S2[#2 P0-a] --> S3[#3 P0-b]
+  S3 --> S4[#4 P1-a]
+  S3 --> S6[#6 P2-a]
+  S4 --> S5[#5 P1-b]
+  S6 --> S7[#7 P2-b]
+  S6 --> S8[#8 P2-c]
+  S5 --> S9[#9 통합]
+  S7 --> S9
+  S8 --> S9
+  S9 -.-> S10[#10 선택 P1.5]
+```
+
+### 세션별 금지·주의
+
+| # | 하지 말 것 |
+|---|------------|
+| 2–3 | PlaceCard·`/korea` UI 손대기 |
+| 4–5 | 해외 overrides 대량 입력 |
+| 6 | UI 라우트 추가 (데이터만) |
+| 7–8 | `worldEvents.json` 직편집 · UI 리디자인 |
+| 9 | 범위 확장(Wave2·EN·`/events` 통합) |
+
+### 사람 QA (Q12)
+
+| 시점 | 경로 | 확인 |
+|------|------|------|
+| #5 후 | `/korea` → 축제 상세 | 숙소·플래너·항공 링크에 행사 맞춤 날짜 |
+| #7 후 | `/place/vienna` | 「이 도시의 행사」+ CTA |
+| #8 후 | `/world-events` | 지역 칩 · 카드 → PlaceCard·플래너 |
+| #9 | `www.gateo.kr/qa/world-events` | Preview git URL 동일 브랜치 |
+
+---
+
+## 5. Phase 3 — 선택 (세션 #9 이후)
+
+- `/events` 글로벌 통합 허브 (국내+해외 한 화면)
 - 공식 ICS/RSS · Ticketmaster 등 Edge 피드 POC
 - [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) Phase D·E(축제로드·시트 예약) 연동
+- 영문 UI (Q10) · Wave 2 slug · Q9 P1.5 즐겨찾기 다건 (세션 #10)
 
 ---
 
@@ -175,22 +230,21 @@ TourAPI 해외 미지원 → **핵심 행사만 수동 SSOT** (Q2 **C** 하이�
 |----|------|--------|------|
 | **Q1** | 1차 범위 우선순위? | A / B / **C** | ✅ C |
 | **Q2** | 해외 데이터 전략? | A / B / **C** | ✅ C |
-| **Q3** | 파일럿 slug·지역 MVP? | §4.1 제안 12 slug | ⏳ 승인 대기 |
+| **Q3** | 파일럿 slug·지역 MVP? | 12 slug Wave 1 | ✅ |
 | **Q4** | `/events` 글로벌 허브? | A / **B** / C | ✅ B |
 | **Q5** | `TripWindow` 기본 버퍼? | 버퍼 1/1 · 2박 | ✅ 기본값 |
 | **Q6** | 오페라·시즌 행사? | **A+C** / B | ✅ A+C |
-| **Q7** | 국내·해외 UI? | **B + `/world-events`** | ✅ (Q13 라우트) |
+| **Q7** | 국내·해외 UI? | **B + `/world-events`** | ✅ |
 | **Q8** | P1 항공? | A / **B** / C | ✅ B |
-| **Q9** | 즐겨찾기 다건 TripWindow? | A / B / C | ⏳ |
+| **Q9** | 즐겨찾기 다건 TripWindow? | A / **B** / C | ✅ B (P1.5) |
 | **Q10** | 영문 UI? | **KO MVP 후** | ✅ |
-| **Q13** | 해외 페이지 라우트·시기? | `/world-events` · P2 | ⏳ |
+| **Q11** | Preview `/qa/…`? | `/qa/world-events` @ #8 | ✅ |
+| **Q12** | 1차 사람 QA? | `/korea` + `/place/vienna` + `/world-events` | ✅ |
+| **Q13** | 해외 페이지? | **`/world-events` · P2** | ✅ |
 
-### Q&A 진행 방법
+### Q&A
 
-1. 채팅에서 **Q번호 + 답** (예: `Q1: C`, `Q3: vienna, iceland, munich`)
-2. 에이전트가 `world-events-qa-index.md` 갱신 + 본 플랜 §7·해당 Phase 반영
-3. **모든 Q1–Q4 확정** 후 Phase 0 코드 착수
-4. 세션 종료 시 일지 2~5줄 + `feature-handoff-index` 갱신
+**전 항목 확정** — 상세 [`world-events-qa-index.md`](./world-events-qa-index.md). 구현은 §10 세션 로드맵 순서.
 
 ---
 
@@ -209,22 +263,16 @@ TourAPI 해외 미지원 → **핵심 행사만 수동 SSOT** (Q2 **C** 하이�
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**다음 제시어** (Q&A 이어하기):
+**다음 제시어** (세션 #2 — 코드 착수):
 
 ```
-세계행사 일정 #2, Q&A — Q3·Q9 확정
+세계행사 일정 #2, P0-a — 스키마·generate·audit
 @plans/feature-handoff-index.md
-@plans/world-events-plan.md
-@plans/world-events-qa-index.md
+@plans/world-events-plan.md §10
 브랜치 cursor/world-events-efa3 · PR #150
-Q3 Wave1 승인/수정 · Q9 A/B/C · Q13 /world-events OK?
-금지: UI 리디자인 · spots JSON 직편집 · Q3 확정 전 P0 착수
+금지: UI 손대기 · worldEvents.json 직편집 · 세션 #2 범위 넘기기
 ```
 
-**읽을 것 (이어하기)**:
+**읽을 것**: 본 파일 **§10 행 #2만** · qa-index 확정 표 · `world-events-management.md` §1
 
-1. [`world-events-qa-index.md`](./world-events-qa-index.md) 확정·열린 표
-2. Q3 §4.1 · Q9 설명 · Q13만 대화
-3. Q3+Q9 확정 후 Phase 0 착수 합의
-
-**VERIFY (코드 착수 후)**: `audit:world-events` · `build`
+**VERIFY**: `audit:world-events` · `build`
