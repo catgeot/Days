@@ -173,16 +173,18 @@ npm run audit:place-seo-en            # #3 이후
 
 ## 9. 핸드오프
 
-**세션** `검색노출 #8, 정적링크·baseline`  
+**세션** `검색노출 #6·#7, 크롤러 HTML MVP·확장` — **main 병합** PR #151  
 **main** 최신 · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
 **인덱스** [`feature-handoff-index.md`](./feature-handoff-index.md) 「검색노출」행
 
 | | |
 |--|--|
+| **완료 (#6)** | Edge `middleware.js` · tier1×gallery/planner×ko/en meta inject · `generate:crawler-place-meta` · `smoke:crawler-place-meta` |
+| **완료 (#7)** | `/` · `/korea` · tier1 base path · `crawlerHubMeta.generated.js` · Googlebot smoke 4경로 |
 | **완료 (#8)** | `generate:index-static-links` · tier1 64×intent(gallery·travel) KO 링크 128 · GSC baseline CSV 템플릿 |
-| **사람** | GSC URL Inspection — `scripts/data/gsc-seo-baseline-template.csv` 복사 → `scripts/outputs/gsc-seo-baseline.csv`에 상태 기록 |
+| **Preview QA** | view-source `?crawler=1` — `/` · `/korea` · `/place/tokyo` · `/place/tokyo/gallery` · `/place/angkor-wat/planner?lang=en` |
+| **사람** | GSC URL Inspection — `scripts/data/gsc-seo-baseline-template.csv` → `scripts/outputs/gsc-seo-baseline.csv` |
 | **다음 (#9)** | RSS·canonical — `rss-en.xml` 또는 bilingual item · canonical 점검 (`main`) |
-| **백로그** | **#6·#7** 크롤러 HTML — 권장순서상 #8 이전 · 아직 미착수 · `cursor/en-seo` |
 
 **다음 제시어 (#9)**:
 

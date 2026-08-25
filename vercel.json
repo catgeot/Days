@@ -182,6 +182,11 @@
       "permanent": false
     },
     {
+      "source": "/qa/en-seo",
+      "destination": "https://days-git-cursor-en-seo-catgeots-projects.vercel.app/place/tokyo/gallery?crawler=1",
+      "permanent": false
+    },
+    {
       "source": "/qa/en",
       "destination": "https://www.gateo.kr/?lang=en",
       "permanent": false

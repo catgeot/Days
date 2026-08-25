@@ -57,9 +57,25 @@
 - **조치**: plugin 제거 · `build`에 `generate-sitemap` 선행 · `verify-sitemap-dist` 게이트 · `npm run generate:sitemap`
 - **VERIFY**: `build` (dist hreflang 2484) · `smoke:place-seo-en` PASS
 
+## 검색노출 #6 — 크롤러 HTML MVP (2026-08-25)
+
+- **브랜치**: `cursor/en-seo` (신규 feature)
+- **조치**: Vercel Edge `middleware.js` — Googlebot·`?crawler=1` 시 tier1 `/place/:slug/gallery|planner` view-source에 tab별 title·description·keywords·canonical·hreflang 주입
+- **SSOT**: `scripts/generate-crawler-place-meta.mjs` → `src/edge/crawlerPlaceMeta.generated.js` (64 slug × 2 tab × ko/en)
+- **커밋**: `605a2ba4` · PR #151
+- **Preview**: `www.gateo.kr/qa/en-seo` → `/place/tokyo/gallery?crawler=1` view-source
+
+## 검색노출 #7 — 크롤러 HTML 확장 (2026-08-25)
+
+- **브랜치**: `cursor/en-seo`
+- **조치**: middleware matcher `/` · `/korea` · `/place/:slug`(tier1 base) · `crawlerHubMeta.generated.js` · `resolveCrawlerMeta.js` · smoke Googlebot UA 4경로
+- **VERIFY**: `smoke:crawler-place-meta` · `smoke:place-seo-en` · `build` PASS
+- **Preview QA**: view-source `?crawler=1` — `/` · `/korea` · `/place/tokyo` · `/place/tokyo/gallery` · middleware 시뮬 PASS
+- **main 병합**: PR #151 (2026-08-25)
+
 ## 검색노출 #8 — 정적링크·baseline
 
 - **조치**: `generate:index-static-links` — tier1 64 × intent(gallery·travel) KO 링크 128개 · `index.html` 마커 블록 · GSC baseline CSV 템플릿(`scripts/data/gsc-seo-baseline-template.csv`)
 - **VERIFY**: `smoke:place-seo-en` · `build` PASS
 - **사람**: GSC URL Inspection — 템플릿 CSV에 `gsc_index_status`·`gsc_last_crawl` 기록 후 `scripts/outputs/gsc-seo-baseline.csv`로 저장(로컬·gitignore)
-- **다음**: `검색노출 #9, RSS·canonical` (세션표 순서) · **#6·#7** 크롤러 HTML은 미완 백로그(`cursor/en-seo`)
+- **다음**: `검색노출 #9, RSS·canonical`

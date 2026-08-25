@@ -40,14 +40,14 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 
 | | |
 |--|--|
-| **상태** | **#8 완료** (tier1×intent KO 정적링크) · **#9 RSS·canonical** 다음 · **#6·#7 미완**(백로그·`cursor/en-seo`) |
-| **브랜치** | **#1~#5·#8~#9 → `main`** · **#6~#7 → `cursor/en-seo`** (+ PR) — [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2 SSOT |
+| **상태** | **#6·#7 main 병합** (PR #151) · **#8 완료** · **#9 RSS·canonical** 다음 |
+| **브랜치** | **#1~#9 → `main`** — [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2 SSOT |
 | **시작 필수** | `git fetch origin main && git pull --rebase origin main` |
-| **main** | `c9de2d2a` |
+| **main** | PR #151 merge 후 SHA 확인 |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2·§9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
-| **PROD QA** | view-source `/` — tier1 KO gallery·travel 링크 128 · GSC baseline CSV(사람) |
-| **VERIFY** | `smoke:place-seo-en` · `build` |
+| **PROD QA** | view-source `?crawler=1` — `/` · `/korea` · `/place/tokyo/gallery` · tier1 KO 정적링크 128 |
+| **VERIFY** | `smoke:crawler-place-meta` · `smoke:place-seo-en` · `build` |
 
 **다음 제시어 (#9)**:
 
