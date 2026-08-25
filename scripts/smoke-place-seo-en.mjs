@@ -61,8 +61,12 @@ assert(
   'gallery intent maps to gallery tab',
 );
 assert(
-  PLACE_SEARCH_INTENTS.filter((i) => i.tab === 'planner').length >= 2,
-  'planner tab has travel + planner intents',
+  PLACE_SEARCH_INTENTS.filter((i) => i.tab === 'planner').length >= 3,
+  'planner tab has travel + planner + flight-route intents',
+);
+assert(
+  PLACE_SEARCH_INTENTS.some((i) => i.intentId === 'flight-route' && i.tab === 'planner'),
+  'flight-route intent maps to planner tab',
 );
 const galleryPrimary = getPrimaryPlaceSearchIntent('gallery');
 assert(Boolean(galleryPrimary?.koTitle && galleryPrimary?.enTitle), 'gallery primary title templates');
@@ -90,6 +94,19 @@ assert(/푸켓/.test(phuketPlannerKo) && /여행/.test(phuketPlannerKo), 'phuket
 
 const phuketKwKo = getPlaceSeoKeywords(phuket, 'ko', 'gallery');
 assert(/푸켓.*갤러리|푸켓.*여행/.test(phuketKwKo.replace(/\s/g, '')), 'phuket KO gallery keywords compound');
+
+const phuketPlannerDescKo = getPlaceTabSeoDescription(phuket, 'ko', 'planner', (k, o) => o?.name ?? k);
+assert(/ICN.*HKT|인천.*HKT/i.test(phuketPlannerDescKo), 'phuket KO planner desc includes ICN→HKT route');
+assert(/항공/.test(phuketPlannerDescKo), 'phuket KO planner desc mentions flight route');
+
+const phuketPlannerKwKo = getPlaceSeoKeywords(phuket, 'ko', 'planner');
+assert(/푸켓.*항공|ICN.*HKT/i.test(phuketPlannerKwKo.replace(/\s/g, '')), 'phuket KO planner flight-route keywords');
+
+const tokyo = spots.find((s) => s.slug === 'tokyo');
+const tokyoPlannerDescEn = getPlaceTabSeoDescription(tokyo, 'en', 'planner', (k, o) => o?.name ?? k);
+assert(/ICN.*HND|nonstop/i.test(tokyoPlannerDescEn), 'tokyo EN planner desc includes ICN→HND direct route');
+const tokyoPlannerKwEn = getPlaceSeoKeywords(tokyo, 'en', 'planner');
+assert(/Tokyo flights|ICN to HND/i.test(tokyoPlannerKwEn), 'tokyo EN planner flight-route keywords');
 
 const tajMahal = spots.find((s) => s.slug === 'taj-mahal');
 const tajDesc = getLocalizedPlaceDesc(tajMahal, 'en');

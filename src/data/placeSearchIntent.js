@@ -52,6 +52,12 @@ export const PLACE_SEARCH_INTENTS = [
     enDescLead: 'Plan a trip to {name} — flights, stays, and local tips.',
   },
   {
+    intentId: 'flight-route',
+    tab: 'planner',
+    koQuerySuffix: ['항공', '항공 경로', '항공편', '직항', '비행'],
+    enQuerySuffix: ['flights', 'flight route', 'air route', 'nonstop'],
+  },
+  {
     intentId: 'video',
     tab: 'video',
     koQuerySuffix: ['여행', '영상', '여행 영상'],

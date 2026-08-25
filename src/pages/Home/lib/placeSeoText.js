@@ -6,6 +6,10 @@ import {
   getPlaceSearchTabTitle,
 } from '../../../data/placeSearchIntent.js';
 import { getLocalizedCountryName, getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay.js';
+import {
+  getPlaceFlightRouteSeoDescSnippet,
+  getPlaceFlightRouteSeoKeywords,
+} from './placeFlightRouteSeo.js';
 
 const HANGUL_REGEX = /[\u3131-\u318e\uac00-\ud7a3]/;
 
@@ -111,9 +115,26 @@ export function getPlaceTabSeoDescription(location, locale, tabKey, t) {
       tabKey,
     );
     if (lead) {
-      return `${lead} ${richDesc}`;
+      let desc = `${lead} ${richDesc}`;
+      if (tabKey === 'planner') {
+        const routeSnippet = getPlaceFlightRouteSeoDescSnippet(location, locale);
+        if (routeSnippet) desc = `${routeSnippet} ${desc}`;
+      }
+      return desc;
+    }
+    if (tabKey === 'planner') {
+      const routeSnippet = getPlaceFlightRouteSeoDescSnippet(location, locale);
+      if (routeSnippet) return `${routeSnippet} ${richDesc}`;
     }
     return richDesc;
+  }
+
+  if (tabKey === 'planner') {
+    const routeSnippet = getPlaceFlightRouteSeoDescSnippet(location, locale);
+    if (routeSnippet) {
+      const fallback = t(`place.tab.${tabKey}.desc`, { name });
+      return `${routeSnippet} ${fallback}`;
+    }
   }
 
   return t(`place.tab.${tabKey}.desc`, { name });
@@ -131,7 +152,12 @@ export function getPlaceTabSeoKeywords(location, locale, tabKey) {
       ? intents.map((w) => `${displayName} ${w}`).concat(intents)
       : intents.map((w) => `${displayName} ${w}`).concat(intents);
 
-  return [...new Set([...base, ...compound, displayName, enName].filter(Boolean))];
+  const flightRouteKw =
+    tabKey === 'planner'
+      ? getPlaceFlightRouteSeoKeywords(location, locale, displayName)
+      : [];
+
+  return [...new Set([...base, ...compound, ...flightRouteKw, displayName, enName].filter(Boolean))];
 }
 
 export function getPlaceSeoKeywords(location, locale, tabKey = 'gallery') {

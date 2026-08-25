@@ -40,23 +40,22 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 
 | | |
 |--|--|
-| **상태** | **#13 tier2 crawler 배치4 완료** · pop70–79 **109/109** · crawler **216 slug** |
+| **상태** | **#14 항공 경로 SEO 완료** · planner ICN→IATA crawler·keywords |
 | **브랜치** | **`main`** |
-| **main** | `a74d24f5` |
-| **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §3 tier2 crawler · §9 |
-| **큐 SSOT** | [`scripts/data/tier2-crawler-pop70-79-queue.json`](../scripts/data/tier2-crawler-pop70-79-queue.json) — **remaining 0** |
+| **main** | (push 후 SHA) |
+| **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §1.2 flight-route · §9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
-| **PROD QA (#13)** | `/place/bohol/gallery?crawler=1` · `/place/galapagos/gallery?crawler=1` view-source |
-| **VERIFY** | `smoke:crawler-place-meta` 216 · `smoke:place-seo-en` · `build` |
+| **PROD QA (#14)** | `/place/tokyo/planner?crawler=1` · `/place/phuket/planner?crawler=1` view-source |
+| **VERIFY** | `smoke:place-seo-en` · `smoke:crawler-place-meta` · `build` |
 
-**다음 제시어 (#14)**:
+**다음 제시어 (#15)**:
 
 ```
-검색노출 #14, 항공 경로 SEO
+검색노출 #15, 허브 crawler
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · flight-route intent · view-source ?crawler=1
+main · /korea/theme/scenic · /explore · view-source ?crawler=1
 ```
 
 ---

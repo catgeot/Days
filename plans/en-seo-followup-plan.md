@@ -64,11 +64,11 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | `reviews` | 푸켓 후기 | phuket reviews | reviews | `/place/:slug/reviews` |
 | `wiki` | 푸켓 여행 스케치 | phuket travel guide | wiki | `/place/:slug/wiki` |
 
-**백로그 (#13) — 항공 경로 intent** (제안 · 미착수):
+**백로그 (#13) — 항공 경로 intent** (✅ #14):
 
 | intentId | KO 예시 쿼리 | EN 예시 | tab | 비고 |
 |----------|-------------|---------|-----|------|
-| `flight-route` | 푸켓 항공, 푸켓 항공 경로, 서울 푸켓 직항 | phuket flights, ICN to HKT | **planner** | 신규 URL 없음 · `travelSpotFlightRoutes`·`flightRouteHubIatas`로 title/desc 보강 |
+| `flight-route` | 푸켓 항공, 푸켓 항공 경로, 서울 푸켓 직항 | phuket flights, ICN to HKT | **planner** | `placeFlightRouteSeo.js` · ICN→IATA desc·keywords · crawler planner inject |
 
 - **장점**: GATEO 3D 항공 경로·플래너 항공권 카드와 검색 의도 정합 · 「지명+항공」 한국어 쿼리 커버
 - **주의**: OTA 키워드 경쟁·실시간 운항과 무관(경로·IATA SSOT만) · crawler description에 `ICN→HKT` 등 **팩트만** (가격·스케줄 금지)
@@ -156,7 +156,7 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | **#12** | `검색노출 #12, tier2 crawler 배치2+` | pop70–79 top **40** slug · 107→147 | smoke · view-source | main ✅ |
 | **#12+** | `검색노출 #12+, tier2 crawler 배치3` | pop70–79 next **40** slug · 147→187 | smoke · view-source | main ✅ |
 | **#13** | `검색노출 #13, tier2 crawler 배치4 마무리` | pop70–79 잔여 **29** slug · 187→**216** · `INCLUDED` 80→109 | smoke · view-source | main ✅ |
-| **#14** | `검색노출 #14, 항공 경로 SEO` (제안) | `flight-route` intent → planner · ICN→IATA title/keywords · crawler route snippet | smoke · view-source | main |
+| **#14** | `검색노출 #14, 항공 경로 SEO` (제안) | `flight-route` intent → planner · ICN→IATA title/keywords · crawler route snippet | smoke · view-source | main ✅ |
 | **#15** | `검색노출 #15, 허브 crawler` | middleware **`/korea/theme/scenic`** · **`/explore`** · hub meta SSOT | view-source · smoke | main |
 | **#16** | `검색노출 #16, 큐레이션·로그북 SEO` | `/blog/curation` Helmet · sitemap `/blog` · logbook URL 정합 | smoke · build | main |
 | **#17** | `검색노출 #17, 자유여행 intent` | §1.5 planner+wiki suffix · 로컬 왓슨 keywords · wiki sitemap(선택) · 무니=desc | smoke | main |
@@ -246,30 +246,30 @@ npm run audit:place-seo-en            # #3 이후
 
 ---
 
-## 9. 핸드오프
+## 9. 핸드오ff
 
-**세션** `검색노출 #13, tier2 crawler 배치4 마무리`  
-**main** `a74d24f5` · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
+**세션** `검색노출 #14, 항공 경로 SEO`  
+**main** 최신 · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
 **인덱스** [`feature-handoff-index.md`](./feature-handoff-index.md) 「검색노출」행
 
 | | |
 |--|--|
-| **완료 (#13)** | tier2 pop70–79 **109/109** crawler · **216 slug** · bohol·galapagos batch4 |
-| **tier2 crawler** | pop≥80 + pop70–79 **전수 완료** — tier2 pop&lt;70은 SPA Helmet만 |
-| **다음** | #14 항공 경로 SEO · #15 허브 crawler |
+| **완료 (#14)** | `flight-route` intent · `placeFlightRouteSeo.js` · planner desc·keywords ICN→IATA · crawler planner regenerate |
+| **PROD QA** | view-source `?crawler=1` — `/place/tokyo/planner` ICN→HND · `/place/phuket/planner` ICN→HKT |
+| **다음** | #15 허브 crawler · GSC baseline |
 
-**다음 제시어 (#14)**:
+**다음 제시어 (#15)**:
 
 ```
-검색노출 #14, 항공 경로 SEO
+검색노출 #15, 허브 crawler
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · flight-route intent · view-source ?crawler=1
+main · /korea/theme/scenic · /explore · view-source ?crawler=1
 ```
 
-**PROD QA (#13)**:
+**PROD QA (#14)**:
 
 ```
-view-source ?crawler=1 · /place/bohol/gallery · /place/galapagos/gallery
+view-source ?crawler=1 · /place/tokyo/planner · /place/phuket/planner
 ```

@@ -110,6 +110,15 @@ assert(Boolean(boholGalleryKo?.title), 'bohol tier2 pop70–79 batch4 gallery KO
 assert(/보홀|Bohol/i.test(boholGalleryKo.title), 'bohol gallery KO title localized');
 assert(Boolean(boholGalleryKo?.ogImage), 'bohol gallery meta includes ogImage');
 
+const tokyoPlannerKo = resolveCrawlerMeta('/place/tokyo/planner', 'ko');
+assert(/ICN.*HND|인천.*HND/i.test(tokyoPlannerKo.description), 'tokyo tier1 planner crawler desc includes ICN→HND');
+assert(/항공|직항/.test(tokyoPlannerKo.description), 'tokyo planner crawler desc mentions flight route');
+assert(/ICN.*HND|항공/.test(tokyoPlannerKo.keywords), 'tokyo planner crawler keywords include flight route');
+
+const phuketPlannerKo = resolveCrawlerMeta('/place/phuket/planner', 'ko');
+assert(/ICN.*HKT|인천.*HKT/i.test(phuketPlannerKo.description), 'phuket tier2 planner crawler desc includes ICN→HKT');
+assert(/푸켓.*항공|항공 경로/.test(phuketPlannerKo.keywords.replace(/\s/g, '')), 'phuket planner crawler flight keywords');
+
 assert(
   resolveCrawlerMeta('/place/santorini/gallery', 'ko') === null,
   'tier2 pop<70 (santorini) not in crawler meta',
