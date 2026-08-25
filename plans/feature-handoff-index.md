@@ -43,7 +43,7 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 | **상태** | **#9 완료** · **#10 OG·스키마** 다음 |
 | **브랜치** | **#1~#10 → `main`** — [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2 SSOT |
 | **시작 필수** | `git fetch origin main && git pull --rebase origin main` |
-| **main** | (이번 커밋 후 SHA) |
+| **main** | `f2953e86` |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2·§9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
 | **PROD QA** | `https://www.gateo.kr/rss-en.xml` · `rss.xml` item link `/gallery` · view-source `?crawler=1` |
