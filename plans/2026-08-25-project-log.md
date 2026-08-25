@@ -95,3 +95,9 @@
 - **VERIFY**: `smoke:rss-canonical` · `smoke:place-seo-en` · `smoke:crawler-place-meta` · `build` PASS
 - **사람**: 네이버 서치어드바이저에 `https://www.gateo.kr/rss-en.xml` 추가 제출(선택)
 - **다음**: `검색노출 #10, OG·스키마`
+
+## 검색노출 #10 — OG·스키마 (2026-08-25)
+
+- **조치**: `placeSeoOg.js` · tier1 `placeSeoOgImageOverrides`(64 slug) · PlaceCard/SEO slug og:image · gallery `ImageGallery`+`ImageObject` JSON-LD · crawler inject ogImage·schema
+- **VERIFY**: `smoke:place-seo-en` · `smoke:crawler-place-meta` · `smoke:rss-canonical` · `build` PASS
+- **사람 QA**: `/place/phuket/gallery` — DevTools `og:image`·`ImageGallery` JSON-LD · view-source `?crawler=1` `/place/tokyo/gallery`

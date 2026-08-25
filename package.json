@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "set BROWSER=chrome&& vite",
     "dev:http": "set DEV_SSL=0&& set BROWSER=chrome&& vite",
-    "build": "node scripts/generate-sitemap.cjs && vite build && node scripts/verify-sitemap-dist.mjs && node scripts/verify-rss-dist.mjs && node scripts/verify-globe-engine-build.mjs && node scripts/generate-crawler-place-meta.mjs",
+    "build": "node scripts/generate-sitemap.cjs && vite build && node scripts/verify-sitemap-dist.mjs && node scripts/verify-rss-dist.mjs && node scripts/verify-globe-engine-build.mjs && node scripts/generate-place-og-images.mjs && node scripts/generate-crawler-place-meta.mjs",
     "generate:sitemap": "node scripts/generate-sitemap.cjs",
     "generate:index-static-links": "node scripts/generate-index-static-links.mjs",
     "lint": "eslint .",
@@ -88,6 +88,7 @@
     "smoke:place-seo-en": "node scripts/smoke-place-seo-en.mjs",
     "smoke:rss-canonical": "node scripts/smoke-rss-canonical.mjs",
     "generate:crawler-place-meta": "node scripts/generate-crawler-place-meta.mjs",
+    "generate:place-og-images": "node scripts/generate-place-og-images.mjs",
     "smoke:crawler-place-meta": "node scripts/smoke-crawler-place-meta.mjs",
     "smoke:essential-guide-locale": "node scripts/smoke-essential-guide-locale.mjs",
     "smoke:browser-locale-hint": "node scripts/smoke-browser-locale-hint.mjs",

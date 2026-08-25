@@ -74,7 +74,7 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | L4 | ~~explore·korea/theme hreflang~~ | ✅ (#5) |
 | L5 | ~~탭 sitemap~~ | ✅ |
 | L6 | `/en/` prefix 없음 (합의 후) | 중 |
-| L7 | 전역 og:image | 낮 |
+| L7 | ~~전역 og:image~~ | ✅ (#10) |
 | L8 | GSC baseline 없음 | 운영 |
 
 ---
@@ -95,7 +95,7 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | **#7** | `검색노출 #7, 크롤러 HTML 확장` | `/` · `/korea` · tier1 base path · Googlebot 검증 | GSC 렌더링 · PR | main ✅ |
 | **#8** | `검색노출 #8, 정적링크·baseline` | index.html tier1×intent KO 링크 보강 · GSC baseline CSV(사람) | smoke · 일지 | main ✅ |
 | **#9** | `검색노출 #9, RSS·canonical` (선택) | `rss-en.xml` 또는 bilingual item · canonical 점검 | RSS validator · smoke | main |
-| **#10** | `검색노출 #10, OG·스키마` (백로그) | slug og:image · ImageObject(갤러리) | 사람 QA | main/feature |
+| **#10** | `검색노출 #10, OG·스키마` (백로그) | slug og:image · ImageObject(갤러리) | smoke · build | main ✅ |
 
 **권장 순서**: #1 → #2 → #3 → #4 → #5 → (#6·#7 연속) → #8. #9·#10은 여유 시.
 
@@ -174,23 +174,22 @@ npm run audit:place-seo-en            # #3 이후
 
 ## 9. 핸드오프
 
-**세션** `검색노출 #9, RSS·canonical`  
+**세션** `검색노출 #10, OG·스키마`  
 **main** 최신 · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
 **인덱스** [`feature-handoff-index.md`](./feature-handoff-index.md) 「검색노출」행
 
 | | |
 |--|--|
-| **완료 (#9)** | `rss-en.xml` · KO RSS gallery canonical · bilingual item · `smoke:rss-canonical` · `verify-rss-dist` |
-| **사람** | 네이버 서치어드바이저 `rss-en.xml` 추가 제출(선택) · GSC baseline CSV |
-| **다음 (#10)** | OG·스키마 — slug og:image · ImageObject(갤러리) (`main`) |
+| **완료 (#10)** | slug og:image SSOT · gallery ImageGallery/ImageObject · crawler inject |
+| **사람 QA** | `/place/phuket/gallery` og:image·JSON-LD · view-source `?crawler=1` `/place/tokyo/gallery` |
+| **다음** | GSC baseline CSV · PROD meta·schema 재크롤 |
 
-**다음 제시어 (#10)**:
+**다음 제시어 (PROD QA)**:
 
 ```
-검색노출 #10, OG·스키마
+검색노출 #10, PROD QA — og:image·ImageGallery
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · slug og:image · ImageObject(갤러리)
-금지: full SSR·/en/ prefix·검증 없이 push
+main · www.gateo.kr/place/phuket/gallery · view-source ?crawler=1
 ```

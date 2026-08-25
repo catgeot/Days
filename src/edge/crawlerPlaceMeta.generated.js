@@ -20,6 +20,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/amsterdam/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "암스테르담",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "암스테르담 여행 사진"
+          }
         ]
       },
       "en": {
@@ -39,6 +49,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/amsterdam/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Amsterdam",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Amsterdam travel photo"
           }
         ]
       }
@@ -62,7 +82,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/amsterdam/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "암스테르담"
       },
       "en": {
         "title": "Amsterdam travel · trip planner",
@@ -82,7 +104,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/amsterdam/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Amsterdam"
       }
     }
   },
@@ -106,6 +130,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/angkor-wat/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "앙코르 와트",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "앙코르 와트 여행 사진"
+          }
         ]
       },
       "en": {
@@ -125,6 +159,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/angkor-wat/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Angkor Wat",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Angkor Wat travel photo"
           }
         ]
       }
@@ -148,7 +192,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/angkor-wat/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "앙코르 와트"
       },
       "en": {
         "title": "Angkor Wat travel · trip planner",
@@ -168,7 +214,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/angkor-wat/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Angkor Wat"
       }
     }
   },
@@ -192,6 +240,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/athens/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "아테네",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "아테네 여행 사진"
+          }
         ]
       },
       "en": {
@@ -211,6 +269,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/athens/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Athens",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Athens travel photo"
           }
         ]
       }
@@ -234,7 +302,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/athens/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "아테네"
       },
       "en": {
         "title": "Athens travel · trip planner",
@@ -254,7 +324,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/athens/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Athens"
       }
     }
   },
@@ -278,6 +350,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/auckland/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "오클랜드",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "오클랜드 여행 사진"
+          }
         ]
       },
       "en": {
@@ -297,6 +379,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/auckland/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Auckland",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Auckland travel photo"
           }
         ]
       }
@@ -320,7 +412,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/auckland/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "오클랜드"
       },
       "en": {
         "title": "Auckland travel · trip planner",
@@ -340,7 +434,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/auckland/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Auckland"
       }
     }
   },
@@ -364,6 +460,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/bangkok/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "방콕",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "방콕 여행 사진"
+          }
         ]
       },
       "en": {
@@ -383,6 +489,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/bangkok/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Bangkok",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Bangkok travel photo"
           }
         ]
       }
@@ -406,7 +522,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/bangkok/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "방콕"
       },
       "en": {
         "title": "Bangkok travel · trip planner",
@@ -426,7 +544,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/bangkok/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Bangkok"
       }
     }
   },
@@ -450,6 +570,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/barcelona/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "바르셀로나",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "바르셀로나 여행 사진"
+          }
         ]
       },
       "en": {
@@ -469,6 +599,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/barcelona/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Barcelona",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Barcelona travel photo"
           }
         ]
       }
@@ -492,7 +632,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/barcelona/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "바르셀로나"
       },
       "en": {
         "title": "Barcelona travel · trip planner",
@@ -512,7 +654,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/barcelona/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Barcelona"
       }
     }
   },
@@ -536,6 +680,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/berlin/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "베를린",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "베를린 여행 사진"
+          }
         ]
       },
       "en": {
@@ -555,6 +709,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/berlin/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Berlin",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Berlin travel photo"
           }
         ]
       }
@@ -578,7 +742,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/berlin/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "베를린"
       },
       "en": {
         "title": "Berlin travel · trip planner",
@@ -598,7 +764,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/berlin/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Berlin"
       }
     }
   },
@@ -622,6 +790,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/brisbane/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "브리즈번",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "브리즈번 여행 사진"
+          }
         ]
       },
       "en": {
@@ -641,6 +819,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/brisbane/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Brisbane",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Brisbane travel photo"
           }
         ]
       }
@@ -664,7 +852,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/brisbane/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "브리즈번"
       },
       "en": {
         "title": "Brisbane travel · trip planner",
@@ -684,7 +874,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/brisbane/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Brisbane"
       }
     }
   },
@@ -708,6 +900,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/budapest/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "부다페스트",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "부다페스트 여행 사진"
+          }
         ]
       },
       "en": {
@@ -727,6 +929,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/budapest/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Budapest",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Budapest travel photo"
           }
         ]
       }
@@ -750,7 +962,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/budapest/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "부다페스트"
       },
       "en": {
         "title": "Budapest travel · trip planner",
@@ -770,7 +984,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/budapest/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Budapest"
       }
     }
   },
@@ -794,6 +1010,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/buenos-aires/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "부에노스아이레스",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "부에노스아이레스 여행 사진"
+          }
         ]
       },
       "en": {
@@ -813,6 +1039,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/buenos-aires/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Buenos Aires",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Buenos Aires travel photo"
           }
         ]
       }
@@ -836,7 +1072,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/buenos-aires/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "부에노스아이레스"
       },
       "en": {
         "title": "Buenos Aires travel · trip planner",
@@ -856,7 +1094,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/buenos-aires/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Buenos Aires"
       }
     }
   },
@@ -880,6 +1120,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/cairo/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "카이로",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "카이로 여행 사진"
+          }
         ]
       },
       "en": {
@@ -899,6 +1149,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/cairo/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Cairo",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Cairo travel photo"
           }
         ]
       }
@@ -922,7 +1182,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/cairo/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "카이로"
       },
       "en": {
         "title": "Cairo travel · trip planner",
@@ -942,7 +1204,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/cairo/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Cairo"
       }
     }
   },
@@ -966,6 +1230,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/cape-town/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "케이프타운",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "케이프타운 여행 사진"
+          }
         ]
       },
       "en": {
@@ -985,6 +1259,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/cape-town/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Cape Town",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Cape Town travel photo"
           }
         ]
       }
@@ -1008,7 +1292,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/cape-town/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "케이프타운"
       },
       "en": {
         "title": "Cape Town travel · trip planner",
@@ -1028,7 +1314,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/cape-town/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Cape Town"
       }
     }
   },
@@ -1052,6 +1340,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/chiang-mai/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "치앙마이",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "치앙마이 여행 사진"
+          }
         ]
       },
       "en": {
@@ -1071,6 +1369,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/chiang-mai/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Chiang Mai",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Chiang Mai travel photo"
           }
         ]
       }
@@ -1094,7 +1402,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/chiang-mai/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "치앙마이"
       },
       "en": {
         "title": "Chiang Mai travel · trip planner",
@@ -1114,7 +1424,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/chiang-mai/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Chiang Mai"
       }
     }
   },
@@ -1138,6 +1450,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/chicago/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "시카고",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "시카고 여행 사진"
+          }
         ]
       },
       "en": {
@@ -1157,6 +1479,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/chicago/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Chicago",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Chicago travel photo"
           }
         ]
       }
@@ -1180,7 +1512,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/chicago/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "시카고"
       },
       "en": {
         "title": "Chicago travel · trip planner",
@@ -1200,7 +1534,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/chicago/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Chicago"
       }
     }
   },
@@ -1224,6 +1560,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/copenhagen/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "코펜하겐",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "코펜하겐 여행 사진"
+          }
         ]
       },
       "en": {
@@ -1243,6 +1589,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/copenhagen/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Copenhagen",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Copenhagen travel photo"
           }
         ]
       }
@@ -1266,7 +1622,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/copenhagen/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "코펜하겐"
       },
       "en": {
         "title": "Copenhagen travel · trip planner",
@@ -1286,7 +1644,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/copenhagen/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Copenhagen"
       }
     }
   },
@@ -1310,6 +1670,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/delhi/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "델리",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "델리 여행 사진"
+          }
         ]
       },
       "en": {
@@ -1329,6 +1699,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/delhi/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Delhi",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Delhi travel photo"
           }
         ]
       }
@@ -1352,7 +1732,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/delhi/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "델리"
       },
       "en": {
         "title": "Delhi travel · trip planner",
@@ -1372,7 +1754,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/delhi/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Delhi"
       }
     }
   },
@@ -1396,6 +1780,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/dubai/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "두바이",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "두바이 여행 사진"
+          }
         ]
       },
       "en": {
@@ -1415,6 +1809,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/dubai/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Dubai",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Dubai travel photo"
           }
         ]
       }
@@ -1438,7 +1842,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/dubai/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "두바이"
       },
       "en": {
         "title": "Dubai travel · trip planner",
@@ -1458,7 +1864,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/dubai/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Dubai"
       }
     }
   },
@@ -1482,6 +1890,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/dublin/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "더블린",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "더블린 여행 사진"
+          }
         ]
       },
       "en": {
@@ -1501,6 +1919,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/dublin/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Dublin",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Dublin travel photo"
           }
         ]
       }
@@ -1524,7 +1952,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/dublin/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "더블린"
       },
       "en": {
         "title": "Dublin travel · trip planner",
@@ -1544,7 +1974,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/dublin/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Dublin"
       }
     }
   },
@@ -1568,6 +2000,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/dubrovnik/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "두브로브니크",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "두브로브니크 여행 사진"
+          }
         ]
       },
       "en": {
@@ -1587,6 +2029,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/dubrovnik/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Dubrovnik",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Dubrovnik travel photo"
           }
         ]
       }
@@ -1610,7 +2062,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/dubrovnik/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "두브로브니크"
       },
       "en": {
         "title": "Dubrovnik travel · trip planner",
@@ -1630,7 +2084,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/dubrovnik/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Dubrovnik"
       }
     }
   },
@@ -1654,6 +2110,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/edinburgh/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "에딘버러",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "에딘버러 여행 사진"
+          }
         ]
       },
       "en": {
@@ -1673,6 +2139,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/edinburgh/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Edinburgh",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Edinburgh travel photo"
           }
         ]
       }
@@ -1696,7 +2172,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/edinburgh/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "에딘버러"
       },
       "en": {
         "title": "Edinburgh travel · trip planner",
@@ -1716,7 +2194,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/edinburgh/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Edinburgh"
       }
     }
   },
@@ -1740,6 +2220,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/florence/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "피렌체",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "피렌체 여행 사진"
+          }
         ]
       },
       "en": {
@@ -1759,6 +2249,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/florence/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Florence",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Florence travel photo"
           }
         ]
       }
@@ -1782,7 +2282,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/florence/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "피렌체"
       },
       "en": {
         "title": "Florence travel · trip planner",
@@ -1802,7 +2304,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/florence/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Florence"
       }
     }
   },
@@ -1826,6 +2330,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/giza-pyramids/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "기자 피라미드",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "기자 피라미드 여행 사진"
+          }
         ]
       },
       "en": {
@@ -1845,6 +2359,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/giza-pyramids/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Giza Pyramids",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Giza Pyramids travel photo"
           }
         ]
       }
@@ -1868,7 +2392,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/giza-pyramids/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "기자 피라미드"
       },
       "en": {
         "title": "Giza Pyramids travel · trip planner",
@@ -1888,7 +2414,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/giza-pyramids/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Giza Pyramids"
       }
     }
   },
@@ -1912,6 +2440,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/hanoi/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "하노이",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "하노이 여행 사진"
+          }
         ]
       },
       "en": {
@@ -1931,6 +2469,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/hanoi/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Hanoi",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Hanoi travel photo"
           }
         ]
       }
@@ -1954,7 +2502,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/hanoi/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "하노이"
       },
       "en": {
         "title": "Hanoi travel · trip planner",
@@ -1974,7 +2524,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/hanoi/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Hanoi"
       }
     }
   },
@@ -1998,6 +2550,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/helsinki/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "헬싱키",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "헬싱키 여행 사진"
+          }
         ]
       },
       "en": {
@@ -2017,6 +2579,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/helsinki/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Helsinki",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Helsinki travel photo"
           }
         ]
       }
@@ -2040,7 +2612,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/helsinki/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "헬싱키"
       },
       "en": {
         "title": "Helsinki travel · trip planner",
@@ -2060,7 +2634,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/helsinki/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Helsinki"
       }
     }
   },
@@ -2084,6 +2660,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/hong-kong/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "홍콩",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "홍콩 여행 사진"
+          }
         ]
       },
       "en": {
@@ -2103,6 +2689,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/hong-kong/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Hong Kong",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Hong Kong travel photo"
           }
         ]
       }
@@ -2126,7 +2722,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/hong-kong/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "홍콩"
       },
       "en": {
         "title": "Hong Kong travel · trip planner",
@@ -2146,7 +2744,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/hong-kong/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Hong Kong"
       }
     }
   },
@@ -2170,6 +2770,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/honolulu/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "호놀룰루",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "호놀룰루 여행 사진"
+          }
         ]
       },
       "en": {
@@ -2189,6 +2799,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/honolulu/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Honolulu",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Honolulu travel photo"
           }
         ]
       }
@@ -2212,7 +2832,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/honolulu/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "호놀룰루"
       },
       "en": {
         "title": "Honolulu travel · trip planner",
@@ -2232,7 +2854,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/honolulu/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Honolulu"
       }
     }
   },
@@ -2256,6 +2880,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/istanbul/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "이스탄불",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "이스탄불 여행 사진"
+          }
         ]
       },
       "en": {
@@ -2275,6 +2909,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/istanbul/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Istanbul",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Istanbul travel photo"
           }
         ]
       }
@@ -2298,7 +2942,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/istanbul/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "이스탄불"
       },
       "en": {
         "title": "Istanbul travel · trip planner",
@@ -2318,7 +2964,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/istanbul/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Istanbul"
       }
     }
   },
@@ -2342,6 +2990,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/jakarta/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "자카르타",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "자카르타 여행 사진"
+          }
         ]
       },
       "en": {
@@ -2361,6 +3019,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/jakarta/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Jakarta",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Jakarta travel photo"
           }
         ]
       }
@@ -2384,7 +3052,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/jakarta/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "자카르타"
       },
       "en": {
         "title": "Jakarta travel · trip planner",
@@ -2404,7 +3074,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/jakarta/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Jakarta"
       }
     }
   },
@@ -2428,6 +3100,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/jeju/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "제주",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "제주 여행 사진"
+          }
         ]
       },
       "en": {
@@ -2447,6 +3129,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/jeju/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Jeju",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Jeju travel photo"
           }
         ]
       }
@@ -2470,7 +3162,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/jeju/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "제주"
       },
       "en": {
         "title": "Jeju travel · trip planner",
@@ -2490,7 +3184,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/jeju/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Jeju"
       }
     }
   },
@@ -2514,6 +3210,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/jerusalem/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "예루살렘",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "예루살렘 여행 사진"
+          }
         ]
       },
       "en": {
@@ -2533,6 +3239,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/jerusalem/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Jerusalem",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Jerusalem travel photo"
           }
         ]
       }
@@ -2556,7 +3272,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/jerusalem/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "예루살렘"
       },
       "en": {
         "title": "Jerusalem travel · trip planner",
@@ -2576,7 +3294,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/jerusalem/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Jerusalem"
       }
     }
   },
@@ -2600,6 +3320,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/kuala-lumpur/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "쿠알라룸푸르",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "쿠알라룸푸르 여행 사진"
+          }
         ]
       },
       "en": {
@@ -2619,6 +3349,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/kuala-lumpur/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Kuala Lumpur",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Kuala Lumpur travel photo"
           }
         ]
       }
@@ -2642,7 +3382,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/kuala-lumpur/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "쿠알라룸푸르"
       },
       "en": {
         "title": "Kuala Lumpur travel · trip planner",
@@ -2662,7 +3404,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/kuala-lumpur/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Kuala Lumpur"
       }
     }
   },
@@ -2686,6 +3430,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/kyoto/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "교토",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "교토 여행 사진"
+          }
         ]
       },
       "en": {
@@ -2705,6 +3459,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/kyoto/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Kyoto",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Kyoto travel photo"
           }
         ]
       }
@@ -2728,7 +3492,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/kyoto/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "교토"
       },
       "en": {
         "title": "Kyoto travel · trip planner",
@@ -2748,7 +3514,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/kyoto/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Kyoto"
       }
     }
   },
@@ -2772,6 +3540,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/las-vegas/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "라스베가스",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "라스베가스 여행 사진"
+          }
         ]
       },
       "en": {
@@ -2791,6 +3569,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/las-vegas/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Las Vegas",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Las Vegas travel photo"
           }
         ]
       }
@@ -2814,7 +3602,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/las-vegas/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "라스베가스"
       },
       "en": {
         "title": "Las Vegas travel · trip planner",
@@ -2834,7 +3624,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/las-vegas/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Las Vegas"
       }
     }
   },
@@ -2858,6 +3650,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/london/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "런던",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "런던 여행 사진"
+          }
         ]
       },
       "en": {
@@ -2877,6 +3679,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/london/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "London",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "London travel photo"
           }
         ]
       }
@@ -2900,7 +3712,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/london/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "런던"
       },
       "en": {
         "title": "London travel · trip planner",
@@ -2920,7 +3734,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/london/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "London"
       }
     }
   },
@@ -2944,6 +3760,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/macau/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "마카오",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "마카오 여행 사진"
+          }
         ]
       },
       "en": {
@@ -2963,6 +3789,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/macau/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Macau",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Macau travel photo"
           }
         ]
       }
@@ -2986,7 +3822,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/macau/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "마카오"
       },
       "en": {
         "title": "Macau travel · trip planner",
@@ -3006,7 +3844,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/macau/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Macau"
       }
     }
   },
@@ -3030,6 +3870,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/machu-picchu/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "마추픽추",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "마추픽추 여행 사진"
+          }
         ]
       },
       "en": {
@@ -3049,6 +3899,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/machu-picchu/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Machu Picchu",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Machu Picchu travel photo"
           }
         ]
       }
@@ -3072,7 +3932,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/machu-picchu/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "마추픽추"
       },
       "en": {
         "title": "Machu Picchu travel · trip planner",
@@ -3092,7 +3954,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/machu-picchu/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Machu Picchu"
       }
     }
   },
@@ -3116,6 +3980,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/manila/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "마닐라",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "마닐라 여행 사진"
+          }
         ]
       },
       "en": {
@@ -3135,6 +4009,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/manila/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Manila",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Manila travel photo"
           }
         ]
       }
@@ -3158,7 +4042,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/manila/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "마닐라"
       },
       "en": {
         "title": "Manila travel · trip planner",
@@ -3178,7 +4064,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/manila/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Manila"
       }
     }
   },
@@ -3202,6 +4090,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/melbourne/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "멜버른",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "멜버른 여행 사진"
+          }
         ]
       },
       "en": {
@@ -3221,6 +4119,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/melbourne/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Melbourne",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Melbourne travel photo"
           }
         ]
       }
@@ -3244,7 +4152,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/melbourne/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "멜버른"
       },
       "en": {
         "title": "Melbourne travel · trip planner",
@@ -3264,7 +4174,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/melbourne/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Melbourne"
       }
     }
   },
@@ -3288,6 +4200,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/moscow/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "모스크바",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "모스크바 여행 사진"
+          }
         ]
       },
       "en": {
@@ -3307,6 +4229,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/moscow/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Moscow",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Moscow travel photo"
           }
         ]
       }
@@ -3330,7 +4262,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/moscow/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "모스크바"
       },
       "en": {
         "title": "Moscow travel · trip planner",
@@ -3350,7 +4284,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/moscow/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Moscow"
       }
     }
   },
@@ -3374,6 +4310,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/nairobi/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "나이로비",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "나이로비 여행 사진"
+          }
         ]
       },
       "en": {
@@ -3393,6 +4339,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/nairobi/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Nairobi",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Nairobi travel photo"
           }
         ]
       }
@@ -3416,7 +4372,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/nairobi/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "나이로비"
       },
       "en": {
         "title": "Nairobi travel · trip planner",
@@ -3436,7 +4394,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/nairobi/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Nairobi"
       }
     }
   },
@@ -3460,6 +4420,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/new-york/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "뉴욕",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "뉴욕 여행 사진"
+          }
         ]
       },
       "en": {
@@ -3479,6 +4449,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/new-york/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "New York",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "New York travel photo"
           }
         ]
       }
@@ -3502,7 +4482,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/new-york/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "뉴욕"
       },
       "en": {
         "title": "New York travel · trip planner",
@@ -3522,7 +4504,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/new-york/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "New York"
       }
     }
   },
@@ -3546,6 +4530,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/osaka/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "오사카",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "오사카 여행 사진"
+          }
         ]
       },
       "en": {
@@ -3565,6 +4559,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/osaka/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Osaka",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Osaka travel photo"
           }
         ]
       }
@@ -3588,7 +4592,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/osaka/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "오사카"
       },
       "en": {
         "title": "Osaka travel · trip planner",
@@ -3608,7 +4614,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/osaka/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Osaka"
       }
     }
   },
@@ -3632,6 +4640,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/paris/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "파리",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "파리 여행 사진"
+          }
         ]
       },
       "en": {
@@ -3651,6 +4669,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/paris/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Paris",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Paris travel photo"
           }
         ]
       }
@@ -3674,7 +4702,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/paris/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "파리"
       },
       "en": {
         "title": "Paris travel · trip planner",
@@ -3694,7 +4724,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/paris/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Paris"
       }
     }
   },
@@ -3718,6 +4750,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/petra/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "페트라",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "페트라 여행 사진"
+          }
         ]
       },
       "en": {
@@ -3737,6 +4779,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/petra/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Petra",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Petra travel photo"
           }
         ]
       }
@@ -3760,7 +4812,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/petra/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "페트라"
       },
       "en": {
         "title": "Petra travel · trip planner",
@@ -3780,7 +4834,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/petra/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Petra"
       }
     }
   },
@@ -3804,6 +4860,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/philadelphia/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "필라델피아",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "필라델피아 여행 사진"
+          }
         ]
       },
       "en": {
@@ -3823,6 +4889,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/philadelphia/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Philadelphia",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Philadelphia travel photo"
           }
         ]
       }
@@ -3846,7 +4922,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/philadelphia/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "필라델피아"
       },
       "en": {
         "title": "Philadelphia travel · trip planner",
@@ -3866,7 +4944,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/philadelphia/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Philadelphia"
       }
     }
   },
@@ -3890,6 +4970,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/prague/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "프라하",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "프라하 여행 사진"
+          }
         ]
       },
       "en": {
@@ -3909,6 +4999,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/prague/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Prague",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Prague travel photo"
           }
         ]
       }
@@ -3932,7 +5032,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/prague/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "프라하"
       },
       "en": {
         "title": "Prague travel · trip planner",
@@ -3952,7 +5054,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/prague/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Prague"
       }
     }
   },
@@ -3976,6 +5080,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/reykjavik/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "레이캬비크",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "레이캬비크 여행 사진"
+          }
         ]
       },
       "en": {
@@ -3995,6 +5109,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/reykjavik/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Reykjavik",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Reykjavik travel photo"
           }
         ]
       }
@@ -4018,7 +5142,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/reykjavik/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "레이캬비크"
       },
       "en": {
         "title": "Reykjavik travel · trip planner",
@@ -4038,7 +5164,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/reykjavik/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Reykjavik"
       }
     }
   },
@@ -4062,6 +5190,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/rio-de-janeiro/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "리우데자네이루",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "리우데자네이루 여행 사진"
+          }
         ]
       },
       "en": {
@@ -4081,6 +5219,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/rio-de-janeiro/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Rio de Janeiro",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Rio de Janeiro travel photo"
           }
         ]
       }
@@ -4104,7 +5252,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/rio-de-janeiro/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "리우데자네이루"
       },
       "en": {
         "title": "Rio de Janeiro travel · trip planner",
@@ -4124,7 +5274,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/rio-de-janeiro/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Rio de Janeiro"
       }
     }
   },
@@ -4148,6 +5300,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/rome/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "로마",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "로마 여행 사진"
+          }
         ]
       },
       "en": {
@@ -4167,6 +5329,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/rome/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Rome",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Rome travel photo"
           }
         ]
       }
@@ -4190,7 +5362,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/rome/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "로마"
       },
       "en": {
         "title": "Rome travel · trip planner",
@@ -4210,7 +5384,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/rome/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Rome"
       }
     }
   },
@@ -4234,6 +5410,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/san-diego/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "샌디에이고",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "샌디에이고 여행 사진"
+          }
         ]
       },
       "en": {
@@ -4253,6 +5439,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/san-diego/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "San Diego",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "San Diego travel photo"
           }
         ]
       }
@@ -4276,7 +5472,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/san-diego/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "샌디에이고"
       },
       "en": {
         "title": "San Diego travel · trip planner",
@@ -4296,7 +5494,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/san-diego/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "San Diego"
       }
     }
   },
@@ -4320,6 +5520,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/san-francisco/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "샌프란시스코",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "샌프란시스코 여행 사진"
+          }
         ]
       },
       "en": {
@@ -4339,6 +5549,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/san-francisco/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "San Francisco",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "San Francisco travel photo"
           }
         ]
       }
@@ -4362,7 +5582,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/san-francisco/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "샌프란시스코"
       },
       "en": {
         "title": "San Francisco travel · trip planner",
@@ -4382,7 +5604,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/san-francisco/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "San Francisco"
       }
     }
   },
@@ -4406,6 +5630,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/seattle/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "시애틀",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "시애틀 여행 사진"
+          }
         ]
       },
       "en": {
@@ -4425,6 +5659,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/seattle/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Seattle",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Seattle travel photo"
           }
         ]
       }
@@ -4448,7 +5692,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/seattle/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "시애틀"
       },
       "en": {
         "title": "Seattle travel · trip planner",
@@ -4468,7 +5714,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/seattle/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Seattle"
       }
     }
   },
@@ -4492,6 +5740,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/shanghai/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "상하이",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "상하이 여행 사진"
+          }
         ]
       },
       "en": {
@@ -4511,6 +5769,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/shanghai/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Shanghai",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Shanghai travel photo"
           }
         ]
       }
@@ -4534,7 +5802,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/shanghai/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "상하이"
       },
       "en": {
         "title": "Shanghai travel · trip planner",
@@ -4554,7 +5824,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/shanghai/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Shanghai"
       }
     }
   },
@@ -4578,6 +5850,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/singapore/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "싱가포르",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "싱가포르 여행 사진"
+          }
         ]
       },
       "en": {
@@ -4597,6 +5879,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/singapore/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Singapore",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Singapore travel photo"
           }
         ]
       }
@@ -4620,7 +5912,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/singapore/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "싱가포르"
       },
       "en": {
         "title": "Singapore travel · trip planner",
@@ -4640,7 +5934,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/singapore/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Singapore"
       }
     }
   },
@@ -4664,6 +5960,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/stockholm/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "스톡홀름",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "스톡홀름 여행 사진"
+          }
         ]
       },
       "en": {
@@ -4683,6 +5989,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/stockholm/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Stockholm",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Stockholm travel photo"
           }
         ]
       }
@@ -4706,7 +6022,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/stockholm/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "스톡홀름"
       },
       "en": {
         "title": "Stockholm travel · trip planner",
@@ -4726,7 +6044,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/stockholm/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Stockholm"
       }
     }
   },
@@ -4750,6 +6070,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/sydney/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "시드니",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "시드니 여행 사진"
+          }
         ]
       },
       "en": {
@@ -4769,6 +6099,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/sydney/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Sydney",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Sydney travel photo"
           }
         ]
       }
@@ -4792,7 +6132,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/sydney/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "시드니"
       },
       "en": {
         "title": "Sydney travel · trip planner",
@@ -4812,7 +6154,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/sydney/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Sydney"
       }
     }
   },
@@ -4836,6 +6180,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/taipei/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "타이베이",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "타이베이 여행 사진"
+          }
         ]
       },
       "en": {
@@ -4855,6 +6209,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/taipei/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Taipei",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Taipei travel photo"
           }
         ]
       }
@@ -4878,7 +6242,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/taipei/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "타이베이"
       },
       "en": {
         "title": "Taipei travel · trip planner",
@@ -4898,7 +6264,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/taipei/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Taipei"
       }
     }
   },
@@ -4922,6 +6290,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/tokyo/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "도쿄",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "도쿄 여행 사진"
+          }
         ]
       },
       "en": {
@@ -4941,6 +6319,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/tokyo/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Tokyo",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Tokyo travel photo"
           }
         ]
       }
@@ -4964,7 +6352,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/tokyo/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "도쿄"
       },
       "en": {
         "title": "Tokyo travel · trip planner",
@@ -4984,7 +6374,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/tokyo/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Tokyo"
       }
     }
   },
@@ -5008,6 +6400,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/toronto/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "토론토",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "토론토 여행 사진"
+          }
         ]
       },
       "en": {
@@ -5027,6 +6429,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/toronto/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Toronto",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Toronto travel photo"
           }
         ]
       }
@@ -5050,7 +6462,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/toronto/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "토론토"
       },
       "en": {
         "title": "Toronto travel · trip planner",
@@ -5070,7 +6484,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/toronto/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Toronto"
       }
     }
   },
@@ -5094,6 +6510,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/ushuaia/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "우수아이아",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "우수아이아 여행 사진"
+          }
         ]
       },
       "en": {
@@ -5113,6 +6539,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/ushuaia/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Ushuaia",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Ushuaia travel photo"
           }
         ]
       }
@@ -5136,7 +6572,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/ushuaia/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "우수아이아"
       },
       "en": {
         "title": "Ushuaia travel · trip planner",
@@ -5156,7 +6594,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/ushuaia/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Ushuaia"
       }
     }
   },
@@ -5180,6 +6620,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/vancouver/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "밴쿠버",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "밴쿠버 여행 사진"
+          }
         ]
       },
       "en": {
@@ -5199,6 +6649,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/vancouver/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Vancouver",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Vancouver travel photo"
           }
         ]
       }
@@ -5222,7 +6682,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/vancouver/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "밴쿠버"
       },
       "en": {
         "title": "Vancouver travel · trip planner",
@@ -5242,7 +6704,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/vancouver/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Vancouver"
       }
     }
   },
@@ -5266,6 +6730,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/venice/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "베니스",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "베니스 여행 사진"
+          }
         ]
       },
       "en": {
@@ -5285,6 +6759,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/venice/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Venice",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Venice travel photo"
           }
         ]
       }
@@ -5308,7 +6792,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/venice/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "베니스"
       },
       "en": {
         "title": "Venice travel · trip planner",
@@ -5328,7 +6814,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/venice/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Venice"
       }
     }
   },
@@ -5352,6 +6840,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/vienna/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "빈",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "빈 여행 사진"
+          }
         ]
       },
       "en": {
@@ -5371,6 +6869,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/vienna/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Vienna",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Vienna travel photo"
           }
         ]
       }
@@ -5394,7 +6902,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/vienna/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "빈"
       },
       "en": {
         "title": "Vienna travel · trip planner",
@@ -5414,7 +6924,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/vienna/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Vienna"
       }
     }
   },
@@ -5438,6 +6950,16 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/warsaw/gallery"
           }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "바르샤바",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "바르샤바 여행 사진"
+          }
         ]
       },
       "en": {
@@ -5457,6 +6979,16 @@ export default {
           {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/warsaw/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Warsaw",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Warsaw travel photo"
           }
         ]
       }
@@ -5480,7 +7012,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/warsaw/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "바르샤바"
       },
       "en": {
         "title": "Warsaw travel · trip planner",
@@ -5500,7 +7034,9 @@ export default {
             "hreflang": "x-default",
             "href": "https://www.gateo.kr/place/warsaw/planner"
           }
-        ]
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Warsaw"
       }
     }
   }

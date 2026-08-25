@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { usePlaceGallery } from './hooks/usePlaceGallery';
 import PlaceCardExpanded from './modes/PlaceCardExpanded';
 import SEO from '../SEO';
-import { getLocalizedPlaceName } from './common/locationDisplay';
 import { useLocale } from '../../i18n/LocaleProvider';
 import {
   getPlaceSeoKeywords,
@@ -46,15 +45,12 @@ const PlaceCard = () => {
   if (!contextLocation) return null;
 
   const currentTab = tab || 'gallery';
-  const locationName =
-    getLocalizedPlaceName(contextLocation, locale) || t('place.fallback.destination');
 
   const tabKey = ['wiki', 'reviews', 'gallery', 'video', 'planner'].includes(currentTab)
     ? currentTab
     : 'gallery';
   const locationDesc = getPlaceTabSeoDescription(contextLocation, locale, tabKey, t);
   const seoTitle = getPlaceTabSeoTitle(contextLocation, locale, tabKey);
-  const locationImage = contextLocation.thumbnail || contextLocation.image || `https://source.unsplash.com/1200x630/?${encodeURIComponent(contextLocation.name_en || locationName)}`;
   const seoKeywords = getPlaceSeoKeywords(contextLocation, locale, tabKey);
   const seoPath = `/place/${slug}/${tabKey}`;
 
@@ -65,8 +61,9 @@ const PlaceCard = () => {
         description={locationDesc}
         keywords={seoKeywords}
         url={seoPath}
-        image={locationImage}
         location={contextLocation}
+        tab={tabKey}
+        galleryImages={tabKey === 'gallery' ? galleryData?.images : null}
       />
       <PlaceCardExpanded
         location={contextLocation}

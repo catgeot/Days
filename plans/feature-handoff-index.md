@@ -40,7 +40,7 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 
 | | |
 |--|--|
-| **상태** | **#9 완료** · **#10 OG·스키마** 다음 |
+| **상태** | **#10 완료** · **PROD QA og:image·schema** 다음 |
 | **브랜치** | **#1~#10 → `main`** — [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2 SSOT |
 | **시작 필수** | `git fetch origin main && git pull --rebase origin main` |
 | **main** | `f2953e86` |
@@ -49,15 +49,14 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 | **PROD QA** | `https://www.gateo.kr/rss-en.xml` · `rss.xml` item link `/gallery` · view-source `?crawler=1` |
 | **VERIFY** | `smoke:rss-canonical` · `smoke:place-seo-en` · `build` |
 
-**다음 제시어 (#10)**:
+**다음 제시어 (PROD QA)**:
 
 ```
-검색노출 #10, OG·스키마
+검색노출 #10, PROD QA — og:image·ImageGallery
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · slug og:image · ImageObject(갤러리)
-금지: full SSR·/en/ prefix·검증 없이 push
+main · www.gateo.kr/place/phuket/gallery · view-source ?crawler=1
 ```
 
 ---

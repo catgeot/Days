@@ -116,6 +116,20 @@ assert(
 );
 assert(injectedTokyo.includes('rel="canonical"'), 'canonical link injected');
 assert(injectedTokyo.includes('hreflang="en"'), 'hreflang alternates injected');
+assert(
+  injectedTokyo.includes('og:image') && !injectedTokyo.includes('content="https://www.gateo.kr/og-image.png"'),
+  'tokyo crawler og:image uses slug-specific URL',
+);
+assert(
+  injectedTokyo.includes('application/ld+json') &&
+    injectedTokyo.includes('ImageGallery') &&
+    injectedTokyo.includes('ImageObject'),
+  'tokyo gallery crawler injects ImageGallery JSON-LD',
+);
+
+const tokyoGalleryKoMeta = resolveCrawlerMeta('/place/tokyo/gallery', 'ko');
+assert(Boolean(tokyoGalleryKoMeta?.ogImage), 'tokyo gallery meta includes ogImage');
+assert(tokyoGalleryKoMeta.ogImage.startsWith('https://images.unsplash.com/'), 'tokyo ogImage is stable unsplash URL');
 
 const middlewareSrc = readFileSync(join(root, 'middleware.js'), 'utf8');
 assert(middlewareSrc.includes('injectCrawlerMetaIntoHtml'), 'middleware wires HTML injection');

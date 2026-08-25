@@ -17,6 +17,10 @@ import {
   getPlaceTabSeoDescription,
   getPlaceTabSeoTitle,
 } from '../src/pages/Home/lib/placeSeoText.js';
+import {
+  getPlaceOgImageUrl,
+} from '../src/pages/Home/lib/placeSeoOg.js';
+import { getLocalizedPlaceName } from '../src/components/PlaceCard/common/locationDisplay.js';
 import { TRAVEL_SPOTS } from '../src/pages/Home/data/travelSpots.js';
 
 const SITE_ORIGIN = 'https://www.gateo.kr';
@@ -83,13 +87,28 @@ for (const spot of tier1Spots) {
       const title = getPlaceTabSeoTitle(spot, locale, tab);
       const description = getPlaceTabSeoDescription(spot, locale, tab, t);
       const keywords = getPlaceSeoKeywords(spot, locale, tab);
-      meta[spot.slug][tab][locale] = {
+      const placeName =
+        getLocalizedPlaceName(spot, locale) || spot.name_en || spot.name || spot.slug;
+      const ogImage = getPlaceOgImageUrl(spot);
+      const entry = {
         title,
         description,
         keywords,
         canonicalUrl: buildLocalePageUrl(pathname, locale),
         hreflangAlternates: buildHreflangAlternates(pathname),
+        ogImage,
+        placeName,
       };
+      if (tab === 'gallery') {
+        entry.galleryImages = [
+          {
+            urls: { regular: ogImage },
+            alt_description:
+              locale === 'en' ? `${placeName} travel photo` : `${placeName} 여행 사진`,
+          },
+        ];
+      }
+      meta[spot.slug][tab][locale] = entry;
     }
   }
 }

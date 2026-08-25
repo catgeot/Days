@@ -9,11 +9,18 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
 import { PLACE_SEO_EN_OVERRIDES } from '../src/data/placeSeoEnOverrides.js';
+import { PLACE_SEO_OG_IMAGE_OVERRIDES } from '../src/data/placeSeoOgImageOverrides.js';
 import {
   PLACE_SEARCH_INTENTS,
   getPlaceSearchQuerySuffixes,
   getPrimaryPlaceSearchIntent,
 } from '../src/data/placeSearchIntent.js';
+import {
+  buildGalleryImageObjects,
+  buildPlaceGalleryJsonLd,
+  getPlaceOgImageUrl,
+  resolvePlaceOgImageUrl,
+} from '../src/pages/Home/lib/placeSeoOg.js';
 import {
   getLocalizedPlaceDesc,
   getPlaceSeoKeywords,
@@ -91,6 +98,36 @@ assert(/taj mahal|agra|mughal/i.test(tajDesc), 'taj-mahal EN desc is search-rele
 
 const seoJs = readFileSync(join(root, 'src/components/SEO/index.jsx'), 'utf8');
 assert(seoJs.includes('meta name="keywords"'), 'SEO component renders keywords meta');
+assert(seoJs.includes('ImageGallery'), 'SEO component supports gallery ImageGallery schema');
+assert(seoJs.includes('resolvePlaceOgImageUrl'), 'SEO component resolves slug og:image');
+
+assert(Object.keys(PLACE_SEO_OG_IMAGE_OVERRIDES).length === 64, 'tier1 slug og:image overrides generated');
+const phuketOg = getPlaceOgImageUrl(phuket);
+const tokyoOg = getPlaceOgImageUrl(spots.find((s) => s.slug === 'tokyo'));
+assert(phuketOg.startsWith('https://'), 'phuket slug og:image is absolute URL');
+assert(phuketOg !== tokyoOg, 'distinct slug og:image per destination');
+assert(!phuketOg.includes('og-image.png'), 'phuket og:image not global default');
+
+const mockGallery = [
+  {
+    urls: { regular: 'https://images.unsplash.com/photo-example?w=1200' },
+    alt_description: 'Phuket beach',
+  },
+];
+const galleryOg = resolvePlaceOgImageUrl(phuket, mockGallery);
+assert(galleryOg.includes('photo-example'), 'gallery tab prefers hero image for og:image');
+
+const imageObjects = buildGalleryImageObjects(mockGallery, { placeName: 'Phuket' });
+assert(imageObjects.length === 1 && imageObjects[0]['@type'] === 'ImageObject', 'gallery ImageObject builder');
+const gallerySchema = buildPlaceGalleryJsonLd({
+  placeName: 'Phuket',
+  description: 'Phuket travel photos',
+  pageUrl: 'https://www.gateo.kr/place/phuket/gallery',
+  galleryImages: mockGallery,
+  locale: 'en',
+});
+assert(gallerySchema?.['@type'] === 'ImageGallery', 'gallery JSON-LD schema type');
+assert(Array.isArray(gallerySchema?.image), 'gallery JSON-LD includes ImageObject array');
 
 const enJson = JSON.parse(readFileSync(join(root, 'src/i18n/locales/en.json'), 'utf8'));
 assert(Boolean(enJson.seo?.defaultKeywords), 'en locale has default SEO keywords');

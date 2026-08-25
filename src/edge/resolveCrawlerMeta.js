@@ -18,6 +18,9 @@ function toMetaRow(row, locale) {
     keywords: row.keywords,
     canonicalUrl: row.canonicalUrl,
     hreflangAlternates: row.hreflangAlternates,
+    ogImage: row.ogImage,
+    placeName: row.placeName,
+    galleryImages: row.galleryImages,
   };
 }
 
