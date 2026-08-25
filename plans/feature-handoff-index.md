@@ -42,7 +42,7 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 |--|--|
 | **상태** | **#13 tier2 crawler 배치4** 준비 완료 · 잔여 **29 slug** · `INCLUDED` 80→109 |
 | **브랜치** | **`main`** |
-| **main** | `0601758e` |
+| **main** | `fe1010a6` |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §3 tier2 crawler · §9 |
 | **큐 SSOT** | [`scripts/data/tier2-crawler-pop70-79-queue.json`](../scripts/data/tier2-crawler-pop70-79-queue.json) |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
