@@ -43,7 +43,7 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 | **상태** | **#6 크롤러 HTML MVP** — Edge middleware tier1 gallery/planner · PR Preview QA |
 | **브랜치** | **`cursor/en-seo`** (+ PR) — #7도 동일 브랜치 · **#1~#5·#8~#9 → `main`** |
 | **시작 필수** | `git fetch origin cursor/en-seo && git checkout cursor/en-seo` |
-| **tip** | (이번 턴 push 후 SHA) |
+| **tip** | `605a2ba4` · PR #151 |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2·§9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
 | **Preview** | `/qa/en-seo` → `/place/tokyo/gallery?crawler=1` view-source |
