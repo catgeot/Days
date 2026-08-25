@@ -88,7 +88,7 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | **#0** | (완료) 탭 SEO·sitemap | `getPlaceTabSeoTitle` · gallery/planner sitemap | `smoke:place-seo-en` · `build` | main ✅ |
 | **#1** | `검색노출 #1, PROD QA — meta·탭 title` | 사람 QA 체크리스트 완료 · GSC URL Inspection 메모 | 사람 · `smoke:place-seo-en` | main |
 | **#2** | `검색노출 #2, 검색의도 SSOT` | [`placeSearchIntent.js`](../src/data/placeSearchIntent.js) · `placeSeoText` import · 플랜 §1.2와 동기 | `smoke:place-seo-en` · `build` | main ✅ |
-| **#3** | `검색노출 #3, tier2 EN 배치1` | overrides **+40** (popularity≥80) · `audit:place-seo-en` 스크립트 신규 | audit · smoke · `build` | main |
+| **#3** | `검색노출 #3, tier2 EN 배치1` | overrides **+40** (popularity≥80) · `audit:place-seo-en` 스크립트 신규 | audit · smoke · `build` | main ✅ |
 | **#4** | `검색노출 #4, tier2 EN 배치2` | overrides **+40** (잔여 상위) | audit · smoke | main |
 | **#5** | `검색노출 #5, explore·korea hreflang` | [`seoUrls.js`](../src/i18n/seoUrls.js) `I18N_HUB_PATHS` 확장 · sitemap 재생성 | sitemap diff · smoke · `build` | main |
 | **#6** | `검색노출 #6, 크롤러 HTML MVP` | `cursor/en-seo` · Edge middleware · tier1 gallery/planner meta inject | view-source · `build` · PR | **cursor/en-seo** |

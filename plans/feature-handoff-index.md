@@ -36,33 +36,33 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 
 ---
 
-### 검색노출 (영문 SEO tier2)
+### 검색노출 (한·영 SEO)
 
 | | |
 |--|--|
-| **상태** | **main** tier2 EN 배치1 완료 · PROD 배포 후 QA |
-| **main** | `ee3a17e1` |
-| **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §4·§9 |
+| **상태** | **#3 완료** (tier2 EN 배치1) · **#4 tier2 EN 배치2** 다음 |
+| **브랜치** | **#1~#5·#8~#9 → `main`** · **#6~#7 → `cursor/en-seo`** (+ PR) — [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2 SSOT |
+| **시작 필수** | `git fetch origin main && git pull --rebase origin main` |
+| **main** | `426b5496` (rebase 후 · push 대기) |
+| **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2·§9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
-| **PROD QA** | `/place/taj-mahal?lang=en` · `/place/grand-canyon/gallery?lang=en` — meta·써머리 EN |
+| **PROD QA** | `/place/taj-mahal?lang=en` · `/place/grand-canyon/gallery?lang=en` |
 | **VERIFY** | `audit:place-seo-en` · `smoke:place-seo-en` · `build` |
 
-**다음 제시어**:
+**다음 제시어 (#4)**:
 
 ```
 검색노출 #4, tier2 EN 배치2
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · kobe·okinawa + pop 70–79 · audit:place-seo-en
-금지: 40개 초과·travelSpots.js 직접 편집·검증 없이 push
+main · git pull --rebase origin main 후 작업 · kobe·okinawa + pop 70–79 · audit:place-seo-en
+금지: 40개 초과·travelSpots.js 직접 편집·fetch 없이 작업·검증 없이 push
 ```
 
 ---
 
-
-| | |
-|--|--|
+### 해안·해양 탐색
 | **상태** | **main 병합 완료** (2026-08-16) · PROD 배포 후 QA |
 | **main** | `14cc78ef` — PR #122 병합 + 뷰 폴링 제거 |
 | **플랜** | [`coast-sea-explore-plan.md`](./coast-sea-explore-plan.md) §9 |
@@ -105,33 +105,6 @@ main · www.gateo.kr/place/yap/planner?lang=en
 금지: GT 일괄 백필
 ```
 
----
-
-### 검색 노출 (한·영 SEO)
-
-| | |
-|--|--|
-| **상태** | **#2 완료** (검색의도 SSOT) · **#3 tier2 EN 배치1** 다음 |
-| **브랜치** | **#3~#5·#8~#9 → `main`** · **#6~#7 → `cursor/en-seo`** (+ PR) |
-| **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2 세션표 · §9 |
-| **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
-| **PROD QA** | `https://www.gateo.kr/place/phuket/gallery` · `/place/phuket/planner?lang=en` |
-| **VERIFY** | `npm run smoke:place-seo-en` · `npm run build` |
-
-**#2 완료**: `placeSearchIntent.js` · `placeSeoText` SSOT 연동 · smoke 확장
-
-**다음 제시어 (#3)**:
-
-```
-검색노출 #3, tier2 EN 배치1
-@plans/feature-handoff-index.md
-@plans/en-seo-followup-plan.md
-@plans/2026-08-25-project-log.md
-main · popularity≥80 · 40 slug · audit:place-seo-en 신규
-금지: 40개 초과·travelSpots.js 직접 편집·검증 없이 push
-```
-
----
 
 ## 행 추가 템플릿 (새 Cloud feature)
 
