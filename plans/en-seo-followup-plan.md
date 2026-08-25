@@ -246,34 +246,36 @@ node scripts/generate-sitemap.cjs   # 수동만 필요할 때
 npm run audit:place-seo-en            # #3 이후
 npm run generate:gsc-baseline         # GSC URL Inspection template (#19)
 npm run smoke:gsc-baseline
+npm run smoke:gsc-baseline-prod       # PROD Googlebot crawler meta (#21)
 ```
 
 ---
 
 ## 9. 핸드오ff
 
-**세션** `검색노출 #20, tier2 EN 배치4 마무리`  
+**세션** `검색노출 #21, GSC baseline QA`  
 **main** 최신 · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
 **인덱스** [`feature-handoff-index.md`](./feature-handoff-index.md) 「검색노출」행
 
 | | |
 |--|--|
-| **완료 (#20)** | tier2 EN batch4 +30 (216) · pop70–79 **109/109** · GSC template batch4 EN 샘플 5 URL |
-| **사람 QA** | GSC URL Inspection — `scripts/data/gsc-seo-baseline-template.csv` → `scripts/outputs/gsc-seo-baseline.csv` |
-| **잔여** | tier2 EN pop70–79 **완료** · PROD 재크롤·GSC baseline 사람 기록 |
+| **완료 (#21)** | `smoke:gsc-baseline-prod` 10 URL PROD PASS · tier1·tier2·hub·explore·wiki·flight·EN batch4 |
+| **사람 QA** | GSC URL Inspection — `scripts/data/gsc-seo-baseline-template.csv` 174 URL → `scripts/outputs/gsc-seo-baseline.csv` |
+| **잔여** | GSC baseline CSV **사람 기록** · #9 RSS·canonical(선택) · #6 `/en/` prefix(합의 후) |
 
 **다음 제시어**:
 
 ```
-검색노출 #21, GSC baseline 사람 QA
+검색노출 #22, GSC baseline CSV 기록 마무리
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · GSC baseline CSV 174 URL 기록 · PROD 재크롤
+main · scripts/outputs/gsc-seo-baseline.csv · GSC URL Inspection 174건
 ```
 
-**사람 GSC (#20)**:
+**사람 GSC (#21)**:
 
 ```
-GSC URL Inspection — template 174 URL · batch4 EN gallery seoul/bohol/samoa/iceland/palawan ?lang=en
+GSC URL Inspection — template 174 URL · PROD 재크롤 확인 후 gsc_index_status·gsc_last_crawl 기록
+샘플: tokyo/phuket/hamburg/bohol ?crawler=1 · seoul/bohol ?lang=en · explore/asia/paradise
 ```

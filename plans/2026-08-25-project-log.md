@@ -217,3 +217,11 @@
 - **사람**: GSC URL Inspection — `scripts/data/gsc-seo-baseline-template.csv` 174 URL → `scripts/outputs/gsc-seo-baseline.csv`
 - **잔여**: tier2 EN pop70–79 **완료** · PROD 재크롤·GSC baseline 기록
 - **다음**: `검색노출 #21, GSC baseline 사람 QA`
+
+## 검색노출 #21 — GSC baseline PROD QA (2026-08-25)
+
+- **PROD 재크롤**: Googlebot UA live 10 URL — tier1·tier2(hamburg/bohol)·hub(scenic)·explore·wiki·flight·EN batch4(seoul) **PASS**
+- **스크립트**: `smoke:gsc-baseline-prod` 신규 — `x-crawler-meta`·title·ICN→HND description assert
+- **VERIFY**: `audit:place-seo-en` (216 · 109/109) · `smoke:gsc-baseline` (174) · `smoke:gsc-baseline-prod` · `smoke:crawler-place-meta` · `smoke:place-seo-en` · `build` PASS
+- **사람**: GSC URL Inspection — `scripts/data/gsc-seo-baseline-template.csv` 174 URL → `scripts/outputs/gsc-seo-baseline.csv`(gitignore)에 `gsc_index_status`·`gsc_last_crawl` 기록
+- **다음**: `검색노출 #22, GSC baseline CSV 기록 마무리`

@@ -40,22 +40,22 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 
 | | |
 |--|--|
-| **상태** | **#20 tier2 EN batch4 완료** (216 · pop70–79 109/109) · GSC baseline template batch4 샘플 |
+| **상태** | **#21 GSC baseline PROD QA 완료** · `smoke:gsc-baseline-prod` 10 URL PASS |
 | **브랜치** | **`main`** |
-| **main** | `024e605a` |
+| **main** | `f9a36a2f` |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
-| **사람 QA (#20)** | GSC URL Inspection — template 174 URL · batch4 EN gallery(`seoul`·`bohol`·`samoa`·`iceland`·`palawan`) |
-| **VERIFY** | `audit:place-seo-en` · `smoke:gsc-baseline` · `smoke:place-seo-en` · `build` |
+| **사람 QA (#21)** | GSC URL Inspection — template 174 URL → `scripts/outputs/gsc-seo-baseline.csv` |
+| **VERIFY** | `audit:place-seo-en` · `smoke:gsc-baseline` · `smoke:gsc-baseline-prod` · `build` |
 
 **다음 제시어**:
 
 ```
-검색노출 #21, GSC baseline 사람 QA
+검색노출 #22, GSC baseline CSV 기록 마무리
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · GSC baseline CSV 174 URL 기록 · PROD 재크롤
+main · scripts/outputs/gsc-seo-baseline.csv · GSC URL Inspection 174건
 ```
 
 ---
