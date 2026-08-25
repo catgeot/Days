@@ -3,8 +3,9 @@
  * GSC baseline filled CSV audit — 173 URL completeness gate.
  *
  *   npm run audit:gsc-baseline
+ *   GSC_BASELINE_CSV=/path/to/file.csv npm run audit:gsc-baseline
  *
- * Human workflow:
+ * Human workflow (로컬 PC — Cloud VM과 outputs 미공유 · gitignore):
  *   1. npm run generate:gsc-baseline
  *   2. cp scripts/data/gsc-seo-baseline-template.csv scripts/outputs/gsc-seo-baseline.csv
  *   3. Fill checked_at · gsc_index_status · gsc_last_crawl from GSC URL Inspection
@@ -19,7 +20,9 @@ import { indexGscBaselineByUrl, parseGscBaselineCsv } from './lib/parse-gsc-base
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 const templatePath = join(root, 'scripts/data/gsc-seo-baseline-template.csv');
-const outputPath = join(root, 'scripts/outputs/gsc-seo-baseline.csv');
+const outputPath =
+  process.env.GSC_BASELINE_CSV?.trim() ||
+  join(root, 'scripts/outputs/gsc-seo-baseline.csv');
 const outDir = join(root, 'scripts/outputs');
 const outJson = join(outDir, 'gsc-seo-baseline-audit.json');
 
@@ -95,6 +98,7 @@ mkdirSync(outDir, { recursive: true });
 writeFileSync(outJson, `${JSON.stringify(report, null, 2)}\n`);
 
 console.log('audit:gsc-baseline');
+console.log(`  filled CSV         ${outputPath.replace(`${root}/`, '')}`);
 console.log(`  template URLs      ${report.templateUrlCount}`);
 console.log(`  filled URLs        ${report.filledUrlCount}`);
 console.log(`  complete rows      ${report.completeRowCount}/${report.filledUrlCount}`);
@@ -130,6 +134,10 @@ if (incompleteRows.length) {
     );
     console.error('  → Search Console → URL Inspection → 각 URL의 색인·크롤일을 CSV 3열에 기록');
     console.error('  → checked_at(점검일) · gsc_index_status · gsc_last_crawl');
+    console.error(
+      '  → scripts/outputs/ 는 gitignore · 로컬 PC에서 기록한 CSV는 Cloud Agent VM과 공유되지 않음',
+    );
+    console.error('  → 로컬에서 audit: GSC_BASELINE_CSV=~/path/gsc-seo-baseline.csv npm run audit:gsc-baseline');
   }
   console.error(`\nFAIL: ${incompleteRows.length} row(s) missing GSC fields`);
   for (const row of incompleteRows.slice(0, 5)) {

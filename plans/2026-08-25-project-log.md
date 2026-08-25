@@ -234,3 +234,12 @@
 - **VERIFY**: `smoke:gsc-baseline` (173) · `smoke:gsc-baseline-prod` · `audit:place-seo-en` · `build` PASS
 - **사람**: `cp scripts/data/gsc-seo-baseline-template.csv scripts/outputs/gsc-seo-baseline.csv` → GSC URL Inspection 기록 → `npm run audit:gsc-baseline`
 - **다음**: `검색노출 #23, GSC baseline audit 실행`
+
+## 검색노출 #23 — GSC baseline audit · 로컬/Cloud 분리 (2026-08-25)
+
+- **현상**: Cloud VM `audit:gsc-baseline` → 0/173 complete · 로컬 PC에서 기록한 CSV와 **VM outputs 미공유** (gitignore)
+- **결론**: GSC baseline audit PASS = **사람 로컬 전용** · Cloud 에이전트 세션 게이트 **아님**
+- **에이전트 VERIFY**: `smoke:gsc-baseline` · `smoke:gsc-baseline-prod` · `audit:place-seo-en` · `build`
+- **조치**: 핸드오ff·audit HINT에 로컬/Cloud 분리 · `GSC_BASELINE_CSV` env 지원
+- **사람 로컬**: GSC 173건 기록 후 `npm run audit:gsc-baseline` (173/173)
+- **다음**: `검색노출 #24, RSS·canonical (선택)`

@@ -220,7 +220,15 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | **#13 완료** | crawler **216 slug** · smoke bohol assert · santorini(pop&lt;70) null |
 | PROD QA | `/place/bohol/gallery?crawler=1` · `/place/galapagos/gallery?crawler=1` view-source |
 
-### #8 이후
+### #8 이후 · GSC baseline (운영)
+
+| | |
+|--|--|
+| 템플릿 | `npm run generate:gsc-baseline` → `scripts/data/gsc-seo-baseline-template.csv` (173 URL · **git**) |
+| 기록본 | `scripts/outputs/gsc-seo-baseline.csv` — **gitignore · 로컬 PC only** |
+| audit | `npm run audit:gsc-baseline` — **사람 로컬**에서 GSC 3열 기록 후 PASS 확인 |
+| Cloud | `smoke:gsc-baseline` · `smoke:gsc-baseline-prod`만 에이전트 VERIFY · **audit:gsc-baseline PASS는 Cloud 세션 게이트 아님** (#23) |
+| env | `GSC_BASELINE_CSV=/path/file.csv npm run audit:gsc-baseline` — 로컬 경로 지정 |
 
 - index KO intent 링크 · GSC baseline CSV
 - RSS EN · ImageObject · `/en/` prefix — [`i18n-en-plan.md`](./i18n-en-plan.md) 2차 URL과 **동일 결정**
@@ -256,30 +264,32 @@ npm run audit:gsc-baseline            # filled outputs CSV gate (#22)
 
 ## 9. 핸드오ff
 
-**세션** `검색노출 #22, GSC baseline CSV 기록 마무리`  
+**세션** `검색노출 #23, GSC baseline audit — 로컬/Cloud 분리`  
 **main** 최신 · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
 **인덱스** [`feature-handoff-index.md`](./feature-handoff-index.md) 「검색노출」행
 
 | | |
 |--|--|
-| **완료 (#22)** | `audit:gsc-baseline` 173 URL gate · template `explore/asia/paradise` 중복 제거 · CSV 파서 공유 |
-| **사람 QA** | GSC URL Inspection → `scripts/outputs/gsc-seo-baseline.csv` · `npm run audit:gsc-baseline` PASS |
-| **잔여** | #9 RSS·canonical(선택) · `/en/` prefix(합의 후) · GSC 재크롤 모니터링 |
+| **완료 (#23)** | Cloud VM audit 0/173 = **정상**(outputs gitignore · 로컬 CSV 미공유) · 핸드오프에 **사람 로컬 전용** 명시 |
+| **에이전트 VERIFY** | `smoke:gsc-baseline` · `smoke:gsc-baseline-prod` · `audit:place-seo-en` · `build` |
+| **사람 로컬** | GSC 173건 기록 → `npm run audit:gsc-baseline` PASS (또는 `GSC_BASELINE_CSV=…`) |
+| **잔여** | #9 RSS·canonical(선택) · `/en/` prefix(합의 후) |
 
 **다음 제시어**:
 
 ```
-검색노출 #23, GSC baseline audit 실행
+검색노출 #24, RSS·canonical (선택)
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · scripts/outputs/gsc-seo-baseline.csv 173건 · npm run audit:gsc-baseline
+main · smoke:rss-canonical · bilingual RSS
 ```
 
-**사람 GSC (#22)**:
+**사람 GSC (로컬 PC — Cloud 세션 불필요)**:
 
 ```
 1. cp scripts/data/gsc-seo-baseline-template.csv scripts/outputs/gsc-seo-baseline.csv
-2. GSC URL Inspection 173 URL — checked_at · gsc_index_status · gsc_last_crawl 기록
-3. npm run audit:gsc-baseline (173/173 complete gate)
+2. Search Console URL Inspection — checked_at · gsc_index_status · gsc_last_crawl
+3. npm run audit:gsc-baseline  → 173/173 complete 시 OK
+   (다른 경로: GSC_BASELINE_CSV=~/Downloads/gsc-seo-baseline.csv npm run audit:gsc-baseline)
 ```

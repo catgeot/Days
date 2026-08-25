@@ -40,22 +40,22 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 
 | | |
 |--|--|
-| **상태** | **#22 GSC baseline audit 완료** · template 173 URL · `audit:gsc-baseline` gate |
+| **상태** | **#23 GSC baseline — 로컬/Cloud 분리 확정** · audit PASS = **사람 로컬 only** |
 | **브랜치** | **`main`** |
-| **main** | `56fac8de` |
+| **main** | `e3801f8d` |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
-| **사람 QA (#22)** | `cp template → scripts/outputs/gsc-seo-baseline.csv` · GSC 173건 기록 · `npm run audit:gsc-baseline` |
-| **VERIFY** | `audit:gsc-baseline` · `smoke:gsc-baseline` · `smoke:gsc-baseline-prod` · `audit:place-seo-en` · `build` |
+| **에이전트 VERIFY** | `smoke:gsc-baseline` · `smoke:gsc-baseline-prod` · `audit:place-seo-en` · `build` |
+| **사람 로컬 (#23)** | GSC 173건 → `scripts/outputs/gsc-seo-baseline.csv` · `npm run audit:gsc-baseline` (Cloud VM과 **미공유**) |
 
 **다음 제시어**:
 
 ```
-검색노출 #23, GSC baseline audit 실행
+검색노출 #24, RSS·canonical (선택)
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · scripts/outputs/gsc-seo-baseline.csv 173건 · npm run audit:gsc-baseline
+main · smoke:rss-canonical · bilingual RSS
 ```
 
 ---
