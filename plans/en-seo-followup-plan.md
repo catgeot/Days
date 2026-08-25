@@ -130,7 +130,7 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | L8 | GSC baseline 없음 | 운영 |
 | L9 | **허브 crawler** — scenic·explore·blog·curation view-source | ✅ (#15·#16) |
 | L10 | **큐레이션·/blog** sitemap·Helmet 없음 | ✅ (#16) |
-| L11 | **자유여행** planner·wiki·로컬왓슨 intent·wiki sitemap | 낮~중 (#17 §1.5) |
+| L11 | **자유여행** planner·wiki·로컬왓슨 intent·wiki sitemap | ✅ (#17) |
 | L12 | **/logbook vs /blog** sitemap 불일치 | ✅ (#16 redirect+sitemap) |
 
 ---
@@ -159,7 +159,7 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | **#14** | `검색노출 #14, 항공 경로 SEO` (제안) | `flight-route` intent → planner · ICN→IATA title/keywords · crawler route snippet | smoke · view-source | main ✅ |
 | **#15** | `검색노출 #15, 허브 crawler` | middleware **`/korea/theme/scenic`** · **`/explore`** · hub meta SSOT | view-source · smoke | main ✅ |
 | **#16** | `검색노출 #16, 큐레이션·로그북 SEO` | `/blog/curation` Helmet · sitemap `/blog` · logbook URL 정합 | smoke · build | main ✅ |
-| **#17** | `검색노출 #17, 자유여행 intent` | §1.5 planner+wiki suffix · 로컬 왓슨 keywords · wiki sitemap(선택) · 무니=desc | smoke | main |
+| **#17** | `검색노출 #17, 자유여행 intent` | §1.5 planner+wiki suffix · 로컬 왓슨 keywords · wiki sitemap · 무니=desc | smoke | main ✅ |
 | **#18** | `검색노출 #18, explore 카테고리` | 대륙×테마 title/desc · index EN 링크 | smoke · sitemap | main |
 
 **권장 순서**: #1 → … → #10 → **#11~#13 tier2 crawler**(pop70–79 전수) → #14+. GSC baseline·tier2 EN 잔여는 병행.
@@ -248,28 +248,28 @@ npm run audit:place-seo-en            # #3 이후
 
 ## 9. 핸드오ff
 
-**세션** `검색노출 #16, 큐레이션·로그북 SEO`  
+**세션** `검색노출 #17, 자유여행 intent`  
 **main** 최신 · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
 **인덱스** [`feature-handoff-index.md`](./feature-handoff-index.md) 「검색노출」행
 
 | | |
 |--|--|
-| **완료 (#16)** | `/blog`·`/blog/curation` Helmet · sitemap `/blog`+curation hreflang · `/logbook` 301 · hub crawler · index 정적 링크 |
-| **PROD QA** | view-source `?crawler=1` — `/blog/curation` title·canonical · `/blog` · sitemap `/blog` only |
-| **다음** | #17 자유여행 intent · GSC baseline |
+| **완료 (#17)** | planner+wiki 자유여행 keywords · MOONi planner desc · 로컬 왓슨 wiki desc · sitemap+crawler `/wiki` |
+| **PROD QA** | view-source `?crawler=1` — `/place/tokyo/planner` · `/place/tokyo/wiki` · sitemap wiki URL |
+| **다음** | #18 explore 카테고리 · GSC baseline |
 
-**다음 제시어 (#17)**:
+**다음 제시어 (#18)**:
 
 ```
-검색노출 #17, 자유여행 intent
+검색노출 #18, explore 카테고리
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · planner+wiki keywords · wiki sitemap
+main · /explore/asia/paradise title·keywords · index EN 링크
 ```
 
-**PROD QA (#16)**:
+**PROD QA (#17)**:
 
 ```
-view-source ?crawler=1 · /blog/curation · /blog · sitemap /blog
+view-source ?crawler=1 · /place/tokyo/planner · /place/tokyo/wiki · sitemap /place/*/wiki
 ```

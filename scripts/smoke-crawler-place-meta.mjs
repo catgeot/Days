@@ -135,6 +135,14 @@ assert(/ICN.*HND|항공/.test(tokyoPlannerKo.keywords), 'tokyo planner crawler k
 const phuketPlannerKo = resolveCrawlerMeta('/place/phuket/planner', 'ko');
 assert(/ICN.*HKT|인천.*HKT/i.test(phuketPlannerKo.description), 'phuket tier2 planner crawler desc includes ICN→HKT');
 assert(/푸켓.*항공|항공 경로/.test(phuketPlannerKo.keywords.replace(/\s/g, '')), 'phuket planner crawler flight keywords');
+assert(/MOONi|무니/.test(phuketPlannerKo.description), 'phuket planner crawler desc mentions MOONi');
+
+const tokyoWikiKo = resolveCrawlerMeta('/place/tokyo/wiki', 'ko');
+assert(Boolean(tokyoWikiKo?.title), 'tokyo wiki KO meta resolved');
+assert(/도쿄|스케치/.test(tokyoWikiKo.title), 'tokyo wiki KO title has sketch intent');
+assert(/로컬 왓슨|현지 팁/.test(tokyoWikiKo.description), 'tokyo wiki crawler desc includes Local Watson');
+assert(/자유여행/.test(tokyoWikiKo.keywords), 'tokyo wiki crawler keywords include 자유여행');
+assert(parseCrawlerPath('/place/tokyo/wiki')?.tab === 'wiki', 'wiki path parsed as wiki tab');
 
 assert(
   resolveCrawlerMeta('/place/santorini/gallery', 'ko') === null,
@@ -175,7 +183,7 @@ assert(!isCrawlerRequest(humanReq), 'Chrome UA not treated as crawler');
 const previewReq = new Request('https://www.gateo.kr/place/tokyo/gallery?crawler=1');
 assert(isCrawlerRequest(previewReq), 'crawler=1 preview flag works');
 
-for (const path of ['/', '/korea', '/korea/theme/scenic', '/explore', '/blog', '/blog/curation', '/place/tokyo', '/place/tokyo/gallery']) {
+for (const path of ['/', '/korea', '/korea/theme/scenic', '/explore', '/blog', '/blog/curation', '/place/tokyo', '/place/tokyo/gallery', '/place/tokyo/wiki']) {
   const req = googlebotRequest(path);
   assert(isCrawlerRequest(req), `Googlebot on ${path}`);
   assert(Boolean(resolveCrawlerMeta(path, 'ko')), `meta resolved for ${path}`);
@@ -236,6 +244,7 @@ assert(middlewareSrc.includes('/explore'), 'middleware matcher includes explore 
 assert(middlewareSrc.includes('/blog/curation'), 'middleware matcher includes curation hub');
 assert(middlewareSrc.includes('/blog'), 'middleware matcher includes blog hub');
 assert(middlewareSrc.includes('/place/:slug'), 'middleware matcher includes tier1 base');
+assert(middlewareSrc.includes('/place/:slug/wiki'), 'middleware matcher includes wiki tab');
 
 if (failed > 0) {
   console.error(`\n${failed} check(s) failed`);

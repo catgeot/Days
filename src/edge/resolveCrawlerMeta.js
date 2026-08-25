@@ -1,7 +1,7 @@
 import crawlerHubMeta from './crawlerHubMeta.generated.js';
 import crawlerPlaceMeta from './crawlerPlaceMeta.generated.js';
 
-const PLACE_TABS = new Set(['gallery', 'planner']);
+const PLACE_TABS = new Set(['gallery', 'planner', 'wiki']);
 const HUB_PATHS = new Set(['/', '/korea', '/korea/theme/scenic', '/explore', '/blog', '/blog/curation']);
 
 function normalizePath(pathname) {
@@ -36,7 +36,7 @@ export function parseCrawlerPath(pathname) {
     return { kind: 'place-base', slug: baseMatch[1] };
   }
 
-  const tabMatch = path.match(/^\/place\/([^/]+)\/(gallery|planner)$/);
+  const tabMatch = path.match(/^\/place\/([^/]+)\/(gallery|planner|wiki)$/);
   if (tabMatch) {
     const [, slug, tab] = tabMatch;
     if (!PLACE_TABS.has(tab)) return null;

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Crawler meta — Edge middleware SSOT (hub + tier1 place gallery/planner/base).
+ * Crawler meta — Edge middleware SSOT (hub + tier1 place gallery/planner/wiki/base).
  *
  *   npm run generate:crawler-place-meta
  *
@@ -62,7 +62,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 const placeOutFile = join(root, 'src/edge/crawlerPlaceMeta.generated.js');
 const hubOutFile = join(root, 'src/edge/crawlerHubMeta.generated.js');
-const TABS = ['gallery', 'planner'];
+const TABS = ['gallery', 'planner', 'wiki'];
 const LOCALES = ['ko', 'en'];
 /** Hub crawler paths — sync with resolveCrawlerMeta HUB_PATHS + middleware matcher (#15·#16). */
 const HUB_PATHS = ['/', '/korea', '/korea/theme/scenic', '/explore', '/blog', '/blog/curation'];

@@ -128,14 +128,15 @@ function generateSitemap() {
     priority: '0.85',
   });
 
-  // 각 여행지 — 기본·갤러리·플래너 (외부 검색 「지명+여행/갤러리/플래너」)
-  const placeTabSeoRoutes = ['', '/gallery', '/planner'];
+  // 각 여행지 — 기본·갤러리·플래너·위키 (외부 검색 「지명+여행/갤러리/플래너/스케치」)
+  const placeTabSeoRoutes = ['', '/gallery', '/planner', '/wiki'];
 
   travelSpotsData.forEach((spot) => {
     const basePriority = spot.tier === 1 ? 0.9 : spot.tier === 2 ? 0.8 : 0.7;
     for (const suffix of placeTabSeoRoutes) {
       const isGallery = suffix === '/gallery';
       const isPlanner = suffix === '/planner';
+      const isWiki = suffix === '/wiki';
       urls.push({
         loc: `${baseUrl}/place/${spot.slug}${suffix}`,
         lastmod: today,
@@ -144,7 +145,9 @@ function generateSitemap() {
           ? Math.max(basePriority - 0.05, 0.65).toFixed(2)
           : isPlanner
             ? Math.max(basePriority - 0.1, 0.6).toFixed(2)
-            : String(basePriority),
+            : isWiki
+              ? Math.max(basePriority - 0.12, 0.58).toFixed(2)
+              : String(basePriority),
       });
     }
   });

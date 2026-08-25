@@ -101,6 +101,19 @@ assert(/항공/.test(phuketPlannerDescKo), 'phuket KO planner desc mentions flig
 
 const phuketPlannerKwKo = getPlaceSeoKeywords(phuket, 'ko', 'planner');
 assert(/푸켓.*항공|ICN.*HKT/i.test(phuketPlannerKwKo.replace(/\s/g, '')), 'phuket KO planner flight-route keywords');
+assert(/자유여행/.test(phuketPlannerKwKo), 'phuket KO planner keywords include 자유여행 intent');
+
+const phuketWikiTitleKo = getPlaceTabSeoTitle(phuket, 'ko', 'wiki');
+assert(/푸켓/.test(phuketWikiTitleKo) && /스케치/.test(phuketWikiTitleKo), 'phuket KO wiki title for travel sketch');
+const phuketWikiKwKo = getPlaceSeoKeywords(phuket, 'ko', 'wiki');
+assert(/로컬 팁|현지 팁/.test(phuketWikiKwKo), 'phuket KO wiki keywords include local tips');
+assert(/자유여행/.test(phuketWikiKwKo), 'phuket KO wiki keywords include 자유여행');
+
+const phuketPlannerDescMooni = getPlaceTabSeoDescription(phuket, 'ko', 'planner', (k, o) => o?.name ?? k);
+assert(/MOONi|무니/.test(phuketPlannerDescMooni), 'phuket KO planner desc mentions MOONi docent');
+
+const phuketWikiDescKo = getPlaceTabSeoDescription(phuket, 'ko', 'wiki', (k, o) => o?.name ?? k);
+assert(/로컬 왓슨|현지 팁/.test(phuketWikiDescKo), 'phuket KO wiki desc includes Local Watson lead-in');
 
 const tokyo = spots.find((s) => s.slug === 'tokyo');
 const tokyoPlannerDescEn = getPlaceTabSeoDescription(tokyo, 'en', 'planner', (k, o) => o?.name ?? k);
@@ -171,6 +184,10 @@ const sitemap = readFileSync(join(root, 'public/sitemap.xml'), 'utf8');
 assert(
   sitemap.includes('/place/phuket/gallery') && sitemap.includes('/place/phuket/planner'),
   'sitemap includes phuket gallery and planner tab URLs',
+);
+assert(
+  sitemap.includes('/place/phuket/wiki'),
+  'sitemap includes phuket wiki tab URL',
 );
 assert(
   sitemap.includes('/place/phuket/gallery?lang=en'),

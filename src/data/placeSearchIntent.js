@@ -44,12 +44,14 @@ export const PLACE_SEARCH_INTENTS = [
   {
     intentId: 'planner',
     tab: 'planner',
-    koQuerySuffix: ['플래너', '여행 준비', '여행 가이드', '여행 계획'],
-    enQuerySuffix: ['trip planner', 'plan a trip', 'trip planning'],
+    koQuerySuffix: ['플래너', '여행 준비', '여행 가이드', '여행 계획', '자유여행', '배낭'],
+    enQuerySuffix: ['trip planner', 'plan a trip', 'trip planning', 'free travel', 'independent travel', 'backpacking'],
     koTitle: '{name} 여행 · 준비 가이드',
     enTitle: '{name} travel · trip planner',
-    koDescLead: '{name} 여행 준비·항공·숙소·현지 팁.',
-    enDescLead: 'Plan a trip to {name} — flights, stays, and local tips.',
+    koDescLead:
+      '{name} 자유여행 준비·항공·숙소·현지 팁. MOONi(무니) AI 도슨트에게 일정·교통을 물어보세요.',
+    enDescLead:
+      'Plan independent travel to {name} — flights, stays, and local tips. Ask MOONi, your AI travel docent.',
   },
   {
     intentId: 'flight-route',
@@ -80,10 +82,13 @@ export const PLACE_SEARCH_INTENTS = [
   {
     intentId: 'wiki',
     tab: 'wiki',
-    koQuerySuffix: ['여행', '여행 스케치', '가이드'],
-    enQuerySuffix: ['travel guide', 'travel sketch'],
+    koQuerySuffix: ['여행', '여행 스케치', '가이드', '자유여행', '현지 팁', '로컬 팁', '자유여행 팁'],
+    enQuerySuffix: ['travel guide', 'travel sketch', 'free travel', 'local tips', 'independent travel'],
     koTitle: '{name} 여행 스케치',
     enTitle: '{name} travel sketch · guide',
+    koDescLead: '{name} 여행 스케치·로컬 왓슨 현지 팁·자유여행 가이드.',
+    enDescLead: '{name} travel sketch, Local Watson tips, and independent travel guide.',
+    sitemapPriorityOffset: -0.12,
   },
 ];
 
