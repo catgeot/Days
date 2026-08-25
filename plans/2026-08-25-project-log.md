@@ -119,3 +119,13 @@
 - **main push**: `be4dae28` → origin/main (2026-08-25)
 - **PROD QA**: 배포 후 `/place/phuket/gallery?crawler=1` view-source 재확인
 - **합의**: 「자유여행」= 플래너·여행 스케치(wiki)·로컬 왓슨·무니(대화) — §1.5 다면 랜딩 · 무니 전용 URL 없음
+
+## 검색노출 #12 — tier2 crawler 배치2 (2026-08-25)
+
+- **범위**: tier2 pop **70–79** 상위 **40 slug** → crawler meta (107→**147**)
+- **샘플**: seychelles · chichen-itza · cinque-terre · maldives (pop79–78)
+- **조치**: `generate-crawler-place-meta` batch2 로직 · smoke seychelles assert · hamburg(41위) 미포함 확인
+- **VERIFY**: `smoke:crawler-place-meta` · `smoke:place-seo-en` · `build` PASS
+- **잔여**: tier2 pop70–79 **~69 slug** (3차 배치) · #13 항공 경로 · #14–#17 허브
+- **PROD QA**: `/place/seychelles/gallery?crawler=1` view-source — title·og:image·ImageGallery JSON-LD
+- **다음**: `검색노출 #12+, tier2 crawler 배치3`

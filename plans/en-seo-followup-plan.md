@@ -120,7 +120,7 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 
 | # | 한계 | 심각도 |
 |---|------|--------|
-| L1 | SPA — 초기 HTML 한글 meta 고정 | 높음 → **tier1+tier2 pop≥80 crawler inject** (#11) · 잔여 tier2는 SPA |
+| L1 | SPA — 초기 HTML 한글 meta 고정 | 높음 → **tier1+tier2 pop≥80+pop70–79 top40 crawler** (#11–#12) · 잔여 tier2는 SPA |
 | L2 | tier2+ EN 템플릿 폴백 | 중 |
 | L3 | RSS ko only | 낮~중 |
 | L4 | ~~explore·korea/theme hreflang~~ | ✅ (#5) |
@@ -152,8 +152,8 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | **#8** | `검색노출 #8, 정적링크·baseline` | index.html tier1×intent KO 링크 보강 · GSC baseline CSV(사람) | smoke · 일지 | main ✅ |
 | **#9** | `검색노출 #9, RSS·canonical` (선택) | `rss-en.xml` 또는 bilingual item · canonical 점검 | RSS validator · smoke | main |
 | **#10** | `검색노출 #10, OG·스키마` (백로그) | slug og:image · ImageObject(갤러리) | smoke · build | main ✅ |
-| **#11** | `검색노출 #11, tier2 crawler 배치1` | crawler meta **+43** tier2 pop≥80 (phuket 등) · view-source og:image·ImageGallery | `smoke:crawler-place-meta` · `build` | main |
-| **#12** | `검색노출 #12, tier2 crawler 배치2+` | pop70–79 등 잔여 tier2 (~166) · 배치당 40 slug | smoke · view-source | main |
+| **#11** | `검색노출 #11, tier2 crawler 배치1` | crawler meta **+43** tier2 pop≥80 (phuket 등) · view-source og:image·ImageGallery | `smoke:crawler-place-meta` · `build` | main ✅ |
+| **#12** | `검색노출 #12, tier2 crawler 배치2+` | pop70–79 top **40** slug · 107→147 | smoke · view-source | main ✅ |
 | **#13** | `검색노출 #13, 항공 경로 SEO` (제안) | `flight-route` intent → planner · ICN→IATA title/keywords · crawler route snippet | smoke · view-source | main |
 | **#14** | `검색노출 #14, 허브 crawler` | middleware **`/korea/theme/scenic`** · **`/explore`** · hub meta SSOT | view-source · smoke | main |
 | **#15** | `검색노출 #15, 큐레이션·로그북 SEO` | `/blog/curation` Helmet · sitemap `/blog` · logbook URL 정합 | smoke · build | main |
@@ -237,24 +237,30 @@ npm run audit:place-seo-en            # #3 이후
 
 ## 9. 핸드오프
 
-**세션** `검색노출 #11, tier2 crawler 배치1`  
-**main** (배포 후 PROD QA) · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
+**세션** `검색노출 #12, tier2 crawler 배치2`  
+**main** (커밋 후 배포·PROD QA) · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
 **인덱스** [`feature-handoff-index.md`](./feature-handoff-index.md) 「검색노출」행
 
 | | |
 |--|--|
-| **완료 (#11)** | tier2 crawler pop≥80 · main push |
-| **백로그** | #12 tier2 crawler 잔여 · **#13 항공 경로** · **#14–#17 허브·큐레이션·팁·explore** (§1.4) |
-| **다음 (#12)** | tier2 pop70–79 crawler 40 slug |
+| **완료 (#12)** | tier2 pop70–79 top40 crawler · 147 slug |
+| **잔여** | tier2 pop70–79 **~69 slug** · #12+ 배치 또는 #13 항공 경로 |
+| **다음 (#12+)** | tier2 pop70–79 crawler 40 slug (3차) |
 
-**다음 제시어 (#12)**:
+**다음 제시어 (#12+)**:
 
 ```
-검색노출 #12, tier2 crawler 배치2
+검색노출 #12+, tier2 crawler 배치3
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · tier2 pop70–79 crawler meta 40 slug
+main · tier2 pop70–79 crawler meta 40 slug (2차)
+```
+
+**PROD QA (#12)**:
+
+```
+view-source ?crawler=1 · /place/seychelles/gallery · /place/chichen-itza/gallery
 ```
 
 **허브 SEO 착수 시 (#14)**:

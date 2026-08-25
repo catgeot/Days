@@ -40,22 +40,22 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 
 | | |
 |--|--|
-| **상태** | **#11 tier2 crawler 배치1** 완료 · **main push·PROD QA** 대기 |
+| **상태** | **#12 tier2 crawler 배치2** 완료 · **main push·PROD QA** 대기 |
 | **브랜치** | **`main`** |
 | **main** | (커밋 후) |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2·§9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
-| **PROD QA** | 배포 후 `/place/phuket/gallery?crawler=1` view-source · `/place/tokyo/gallery?crawler=1` |
+| **PROD QA** | `/place/seychelles/gallery?crawler=1` · `/place/chichen-itza/gallery?crawler=1` view-source |
 | **VERIFY** | `smoke:crawler-place-meta` · `build` |
 
-**다음 제시어 (#12)**:
+**다음 제시어 (#12+)**:
 
 ```
-검색노출 #12, tier2 crawler 배치2
+검색노출 #12+, tier2 crawler 배치3
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · tier2 pop70–79 crawler meta 40 slug
+main · tier2 pop70–79 crawler meta 40 slug (2차)
 ```
 
 ---
