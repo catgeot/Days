@@ -188,6 +188,26 @@ assert(
   sitemap.includes('href="https://www.gateo.kr/korea/theme/courses?lang=en"'),
   'sitemap korea/theme/courses has hreflang en',
 );
+assert(
+  sitemap.includes('https://www.gateo.kr/blog') && !sitemap.includes('https://www.gateo.kr/logbook'),
+  'sitemap uses /blog not legacy /logbook',
+);
+assert(
+  sitemap.includes('https://www.gateo.kr/blog/curation'),
+  'sitemap includes /blog/curation',
+);
+assert(
+  sitemap.includes('href="https://www.gateo.kr/blog?lang=en"'),
+  'sitemap /blog has hreflang en',
+);
+assert(
+  sitemap.includes('href="https://www.gateo.kr/blog/curation?lang=en"'),
+  'sitemap /blog/curation has hreflang en',
+);
+assert(
+  indexHtml.includes('/blog/curation') && !indexHtml.includes('href="/logbook"'),
+  'index.html static links use /blog paths',
+);
 
 const t = (key, opts) => {
   if (key === 'place.fallback.destination') return 'Destination';

@@ -2,7 +2,7 @@ import crawlerHubMeta from './crawlerHubMeta.generated.js';
 import crawlerPlaceMeta from './crawlerPlaceMeta.generated.js';
 
 const PLACE_TABS = new Set(['gallery', 'planner']);
-const HUB_PATHS = new Set(['/', '/korea', '/korea/theme/scenic', '/explore']);
+const HUB_PATHS = new Set(['/', '/korea', '/korea/theme/scenic', '/explore', '/blog', '/blog/curation']);
 
 function normalizePath(pathname) {
   const raw = String(pathname || '').trim();
@@ -87,6 +87,8 @@ export function getCrawlerMetaKind(pathname) {
     if (parsed.path === '/korea') return 'korea';
     if (parsed.path === '/korea/theme/scenic') return 'scenic';
     if (parsed.path === '/explore') return 'explore';
+    if (parsed.path === '/blog') return 'blog';
+    if (parsed.path === '/blog/curation') return 'curation';
     return 'hub';
   }
   if (parsed.kind === 'place-base') return 'tier1-place-base';

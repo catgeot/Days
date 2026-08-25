@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/logbook",
+      "destination": "https://www.gateo.kr/blog",
+      "permanent": true
+    },
+    {
       "source": "/qa/chrome-hit",
       "destination": "https://www.gateo.kr/",
       "permanent": false

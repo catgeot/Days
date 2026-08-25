@@ -84,8 +84,8 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | **한국의 명승** | `/korea/theme/scenic` | ✅ | ✅ | ✅ | ❌ **갭** | 명승지, 국가유산 명승, ~~선정 명소~~ |
 | **Explore·권역** | `/explore`, `/explore/:대륙/:테마` | 기본(홈) | ✅ | ✅ (#5) | ❌ **갭** | 아시아 휴양지, 유럽 문화 여행 |
 | **국가·위치** | Explore 필터 + PlaceCard `country` | place SEO 일부 | 카테고리 URL | partial | place 쪽만 | 「태국 여행지」, 「일본 어디」→ explore 또는 place |
-| **AI 큐레이션** | `/blog/curation` | ❌ **갭** | ❌ **갭** | ❌ | ❌ | 여행 큐레이션, 숨은 낙원 추천 |
-| **로그북** | `/blog` (sitemap은 `/logbook`) | ❌ **갭** | ⚠️ URL 불일치 | ❌ | ❌ | 여행 기록·후기 (자유여행 **기록** 쪽) |
+| **AI 큐레이션** | `/blog/curation` | ✅ | ✅ | ✅ | ✅ (#16) | 여행 큐레이션, 숨은 낙원 추천 |
+| **로그북** | `/blog` | ✅ | ✅ | ✅ | ✅ (#16) | 여행 기록·후기 (자유여행 **기록** 쪽) |
 
 ### 1.5 「자유여행」검색 의도 — **다면 랜딩** (합의)
 
@@ -128,10 +128,10 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | L6 | `/en/` prefix 없음 (합의 후) | 중 |
 | L7 | ~~전역 og:image~~ | ✅ (#10) |
 | L8 | GSC baseline 없음 | 운영 |
-| L9 | **허브 crawler** — scenic·explore view-source | ✅ (#15) · curation·/blog 잔여 (#16) |
-| L10 | **큐레이션·/blog** sitemap·Helmet 없음 | 중 (#15) |
-| L11 | **자유여행** planner·wiki·로컬왓슨 intent·wiki sitemap | 낮~중 (#16 §1.5) |
-| L12 | **/logbook vs /blog** sitemap 불일치 | 낮 (#15) |
+| L9 | **허브 crawler** — scenic·explore·blog·curation view-source | ✅ (#15·#16) |
+| L10 | **큐레이션·/blog** sitemap·Helmet 없음 | ✅ (#16) |
+| L11 | **자유여행** planner·wiki·로컬왓슨 intent·wiki sitemap | 낮~중 (#17 §1.5) |
+| L12 | **/logbook vs /blog** sitemap 불일치 | ✅ (#16 redirect+sitemap) |
 
 ---
 
@@ -158,7 +158,7 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | **#13** | `검색노출 #13, tier2 crawler 배치4 마무리` | pop70–79 잔여 **29** slug · 187→**216** · `INCLUDED` 80→109 | smoke · view-source | main ✅ |
 | **#14** | `검색노출 #14, 항공 경로 SEO` (제안) | `flight-route` intent → planner · ICN→IATA title/keywords · crawler route snippet | smoke · view-source | main ✅ |
 | **#15** | `검색노출 #15, 허브 crawler` | middleware **`/korea/theme/scenic`** · **`/explore`** · hub meta SSOT | view-source · smoke | main ✅ |
-| **#16** | `검색노출 #16, 큐레이션·로그북 SEO` | `/blog/curation` Helmet · sitemap `/blog` · logbook URL 정합 | smoke · build | main |
+| **#16** | `검색노출 #16, 큐레이션·로그북 SEO` | `/blog/curation` Helmet · sitemap `/blog` · logbook URL 정합 | smoke · build | main ✅ |
 | **#17** | `검색노출 #17, 자유여행 intent` | §1.5 planner+wiki suffix · 로컬 왓슨 keywords · wiki sitemap(선택) · 무니=desc | smoke | main |
 | **#18** | `검색노출 #18, explore 카테고리` | 대륙×테마 title/desc · index EN 링크 | smoke · sitemap | main |
 
@@ -248,28 +248,28 @@ npm run audit:place-seo-en            # #3 이후
 
 ## 9. 핸드오ff
 
-**세션** `검색노출 #15, 허브 crawler`  
+**세션** `검색노출 #16, 큐레이션·로그북 SEO`  
 **main** 최신 · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
 **인덱스** [`feature-handoff-index.md`](./feature-handoff-index.md) 「검색노출」행
 
 | | |
 |--|--|
-| **완료 (#15)** | hub crawler `/korea/theme/scenic` · `/explore` — `crawlerHubMeta` · middleware matcher · `resolveCrawlerMeta` · smoke |
-| **PROD QA** | view-source `?crawler=1` — `/korea/theme/scenic` title「한국의 명승」·canonical · `/explore` canonical `/explore` |
-| **다음** | #16 큐레이션·로그북 SEO · GSC baseline |
+| **완료 (#16)** | `/blog`·`/blog/curation` Helmet · sitemap `/blog`+curation hreflang · `/logbook` 301 · hub crawler · index 정적 링크 |
+| **PROD QA** | view-source `?crawler=1` — `/blog/curation` title·canonical · `/blog` · sitemap `/blog` only |
+| **다음** | #17 자유여행 intent · GSC baseline |
 
-**다음 제시어 (#16)**:
+**다음 제시어 (#17)**:
 
 ```
-검색노출 #16, 큐레이션·로그북 SEO
+검색노출 #17, 자유여행 intent
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · /blog/curation · /blog · sitemap
+main · planner+wiki keywords · wiki sitemap
 ```
 
-**PROD QA (#15)**:
+**PROD QA (#16)**:
 
 ```
-view-source ?crawler=1 · /korea/theme/scenic · /explore
+view-source ?crawler=1 · /blog/curation · /blog · sitemap /blog
 ```

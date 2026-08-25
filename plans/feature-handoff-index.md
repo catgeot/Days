@@ -40,22 +40,22 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 
 | | |
 |--|--|
-| **상태** | **#15 허브 crawler 완료** · scenic·explore view-source inject |
+| **상태** | **#16 큐레이션·로그북 SEO 완료** · **#17 자유여행 intent** 다음 |
 | **브랜치** | **`main`** |
-| **main** | `e33c2a4f` |
+| **main** | (push 후 SHA) |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
-| **PROD QA (#15)** | `/korea/theme/scenic?crawler=1` · `/explore?crawler=1` view-source |
+| **PROD QA (#16)** | `/blog/curation?crawler=1` · `/blog?crawler=1` view-source · sitemap `/blog` |
 | **VERIFY** | `smoke:crawler-place-meta` · `smoke:place-seo-en` · `build` |
 
-**다음 제시어 (#16)**:
+**다음 제시어 (#17)**:
 
 ```
-검색노출 #16, 큐레이션·로그북 SEO
+검색노출 #17, 자유여행 intent
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · /blog/curation · /blog · sitemap
+main · planner+wiki keywords · wiki sitemap
 ```
 
 ---

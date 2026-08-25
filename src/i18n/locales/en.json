@@ -1744,6 +1744,11 @@
       "travelLogTitle": "Your travel log",
       "travelLogBody": "Sign in to write reviews and vivid travel stories from around the world."
     },
+    "seo": {
+      "title": "Travel logbook · stories and reviews",
+      "description": "GATEO LogBook — write trip notes and reviews, browse public stories, and connect with AI curation picks.",
+      "keywords": "travel log, travel journal, trip reviews, GATEO LogBook, AI curation, travel stories"
+    },
     "dashboard": {
       "title": "LogBook",
       "titlePublic": "Public LogBook",
@@ -1786,6 +1791,9 @@
     "curationPage": {
       "backAria": "Back to LogBook",
       "title": "Curation",
+      "seoTitle": "AI travel curation · hidden gem picks",
+      "seoDescription": "Get AI picks for hidden gems that match your taste. Read tips, seasons, and stories on one page, then jump to the map or place card.",
+      "seoKeywords": "travel curation, hidden gems, AI travel picks, GATEO, destination recommendations",
       "subtitle": "Get hidden-gem picks and read tips, seasons, and stories here. Reopen past picks from the list.",
       "scrollTop": "Back to top",
       "scrollUp": "Top"

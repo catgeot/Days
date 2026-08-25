@@ -33,6 +33,8 @@ const i18nHubPaths = [
   '/korea/theme/packages',
   '/korea/theme/top10',
   '/korea/theme/regions',
+  '/blog',
+  '/blog/curation',
 ];
 
 function buildLocalePageUrl(path = '/', locale = 'ko') {
@@ -112,12 +114,18 @@ function generateSitemap() {
     });
   });
 
-  // 로그북 페이지
+  // 로그북 · AI 큐레이션 (실제 라우트 /blog — /logbook 레거시는 vercel redirect)
   urls.push({
-    loc: `${baseUrl}/logbook`,
+    loc: `${baseUrl}/blog`,
     lastmod: today,
     changefreq: 'daily',
-    priority: '0.8'
+    priority: '0.8',
+  });
+  urls.push({
+    loc: `${baseUrl}/blog/curation`,
+    lastmod: today,
+    changefreq: 'weekly',
+    priority: '0.85',
   });
 
   // 각 여행지 — 기본·갤러리·플래너 (외부 검색 「지명+여행/갤러리/플래너」)

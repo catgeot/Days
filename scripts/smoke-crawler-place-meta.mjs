@@ -144,12 +144,24 @@ assert(
 assert(parseCrawlerPath('/korea').kind === 'hub', 'korea parsed as hub');
 assert(parseCrawlerPath('/korea/theme/scenic').kind === 'hub', 'scenic parsed as hub');
 assert(parseCrawlerPath('/explore').kind === 'hub', 'explore parsed as hub');
+assert(parseCrawlerPath('/blog').kind === 'hub', 'blog parsed as hub');
+assert(parseCrawlerPath('/blog/curation').kind === 'hub', 'curation parsed as hub');
 assert(parseCrawlerPath('/explore/asia') === null, 'explore category path not in #15 scope');
 assert(getCrawlerMetaKind('/place/tokyo') === 'tier1-place-base', 'base path kind tag');
 assert(getCrawlerMetaKind('/') === 'home', 'home kind tag');
 assert(getCrawlerMetaKind('/korea') === 'korea', 'korea kind tag');
 assert(getCrawlerMetaKind('/korea/theme/scenic') === 'scenic', 'scenic kind tag');
 assert(getCrawlerMetaKind('/explore') === 'explore', 'explore kind tag');
+assert(getCrawlerMetaKind('/blog') === 'blog', 'blog kind tag');
+assert(getCrawlerMetaKind('/blog/curation') === 'curation', 'curation kind tag');
+
+const blogKo = resolveCrawlerMeta('/blog', 'ko');
+assert(Boolean(blogKo?.title && blogKo.description), 'blog crawler meta resolved');
+assert(blogKo.canonicalUrl === 'https://www.gateo.kr/blog', 'blog canonical URL');
+
+const curationKo = resolveCrawlerMeta('/blog/curation', 'ko');
+assert(/큐레이션|낙원/.test(curationKo.title), 'curation crawler title has intent keywords');
+assert(curationKo.canonicalUrl === 'https://www.gateo.kr/blog/curation', 'curation canonical URL');
 
 const botReq = googlebotRequest('/place/tokyo/gallery');
 assert(isCrawlerRequest(botReq), 'Googlebot detected on gallery');
@@ -162,7 +174,7 @@ assert(!isCrawlerRequest(humanReq), 'Chrome UA not treated as crawler');
 const previewReq = new Request('https://www.gateo.kr/place/tokyo/gallery?crawler=1');
 assert(isCrawlerRequest(previewReq), 'crawler=1 preview flag works');
 
-for (const path of ['/', '/korea', '/korea/theme/scenic', '/explore', '/place/tokyo', '/place/tokyo/gallery']) {
+for (const path of ['/', '/korea', '/korea/theme/scenic', '/explore', '/blog', '/blog/curation', '/place/tokyo', '/place/tokyo/gallery']) {
   const req = googlebotRequest(path);
   assert(isCrawlerRequest(req), `Googlebot on ${path}`);
   assert(Boolean(resolveCrawlerMeta(path, 'ko')), `meta resolved for ${path}`);
@@ -206,12 +218,22 @@ const injectedExplore = injectCrawlerMetaIntoHtml(indexHtml, exploreKo);
 assert(injectedExplore.includes(`${exploreKo.title} | GATEO`), 'explore title injected in head');
 assert(injectedExplore.includes('href="https://www.gateo.kr/explore"'), 'explore canonical injected');
 
+const injectedBlog = injectCrawlerMetaIntoHtml(indexHtml, blogKo);
+assert(injectedBlog.includes(`${blogKo.title} | GATEO`), 'blog title injected in head');
+assert(injectedBlog.includes('href="https://www.gateo.kr/blog"'), 'blog canonical injected');
+
+const injectedCuration = injectCrawlerMetaIntoHtml(indexHtml, curationKo);
+assert(injectedCuration.includes(`${curationKo.title} | GATEO`), 'curation title injected in head');
+assert(injectedCuration.includes('href="https://www.gateo.kr/blog/curation"'), 'curation canonical injected');
+
 const middlewareSrc = readFileSync(join(root, 'middleware.js'), 'utf8');
 assert(middlewareSrc.includes('injectCrawlerMetaIntoHtml'), 'middleware wires HTML injection');
 assert(middlewareSrc.includes('isCrawlerRequest'), 'middleware gates on crawler UA');
 assert(middlewareSrc.includes('/korea'), 'middleware matcher includes /korea');
 assert(middlewareSrc.includes('/korea/theme/scenic'), 'middleware matcher includes scenic hub');
 assert(middlewareSrc.includes('/explore'), 'middleware matcher includes explore hub');
+assert(middlewareSrc.includes('/blog/curation'), 'middleware matcher includes curation hub');
+assert(middlewareSrc.includes('/blog'), 'middleware matcher includes blog hub');
 assert(middlewareSrc.includes('/place/:slug'), 'middleware matcher includes tier1 base');
 
 if (failed > 0) {

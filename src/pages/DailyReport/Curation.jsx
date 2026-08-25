@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Sparkles, ChevronLeft, ArrowUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import SEO from '../../components/SEO';
 import CurationHub from './components/CurationHub';
 import {
   armCurationHandoffDebugSession,
@@ -66,6 +67,12 @@ const Curation = () => {
 
   return (
     <div ref={rootRef} className="min-h-screen bg-white text-gray-900 font-sans relative">
+      <SEO
+        title={t('logbook.curationPage.seoTitle')}
+        description={t('logbook.curationPage.seoDescription')}
+        keywords={t('logbook.curationPage.seoKeywords')}
+        url="/blog/curation"
+      />
       <div className="page-scroll-end-pad max-w-7xl mx-auto max-md:pt-[max(2rem,env(safe-area-inset-top,0px))] pt-8 px-4 sm:px-6">
         <div className="mb-6 border-b border-gray-100 pb-6">
           <div className="flex items-center gap-2 mb-1">

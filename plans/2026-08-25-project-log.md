@@ -176,3 +176,10 @@
 - **VERIFY**: `smoke:crawler-place-meta` · `smoke:place-seo-en` · `smoke:rss-canonical` · `build` PASS
 - **PROD QA**: view-source `?crawler=1` — `/korea/theme/scenic` title「한국의 명승」·`/explore` canonical
 - **다음**: `검색노출 #16, 큐레이션·로그북 SEO`
+
+## 검색노출 #16 — 큐레이션·로그북 SEO (2026-08-25)
+
+- **조치**: `/blog`·`/blog/curation` Helmet(`logbook.seo`·`curationPage.seo*`) · sitemap `/logbook`→`/blog`+`/blog/curation` hreflang · `/logbook`→`/blog` 301 redirect · index 정적 링크 · hub crawler meta
+- **VERIFY**: `smoke:place-seo-en` · `smoke:crawler-place-meta` · `smoke:rss-canonical` · `build` PASS
+- **PROD QA**: view-source `?crawler=1` — `/blog/curation` title·canonical · `/blog` · sitemap에 `/blog`만
+- **다음**: `검색노출 #17, 자유여행 intent`

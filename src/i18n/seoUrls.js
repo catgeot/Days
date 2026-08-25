@@ -13,6 +13,8 @@ export const I18N_HUB_PATHS = [
   '/korea/theme/packages',
   '/korea/theme/top10',
   '/korea/theme/regions',
+  '/blog',
+  '/blog/curation',
 ];
 
 /**

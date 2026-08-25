@@ -1507,6 +1507,11 @@
       "travelLogTitle": "나만의 여행 기록",
       "travelLogBody": "로그인하고 전 세계 명소 리뷰와 생생한 여행기를 작성해보세요."
     },
+    "seo": {
+      "title": "여행 로그북 · 기록과 후기",
+      "description": "GATEO LogBook — 여행지별 기록·후기·공개 피드를 남기고, AI 큐레이션과 연결하세요.",
+      "keywords": "여행 기록, 여행 후기, 로그북, 여행 일기, GATEO, LogBook, AI 큐레이션"
+    },
     "dashboard": {
       "title": "LogBook",
       "titlePublic": "Public LogBook",
@@ -1549,6 +1554,9 @@
     "curationPage": {
       "backAria": "LogBook으로 돌아가기",
       "title": "큐레이션",
+      "seoTitle": "AI 여행 큐레이션 · 숨은 낙원 추천",
+      "seoDescription": "취향에 맞는 숨은 낙원을 AI가 추천합니다. 팁·계절·이야기를 한 페이지에서 읽고, 지도·장소카드로 이어집니다.",
+      "seoKeywords": "여행 큐레이션, 숨은 낙원, AI 여행 추천, GATEO, 큐레이션, 여행지 추천",
       "subtitle": "숨은 낙원을 추천받고, 이 페이지에서 팁·계절·이야기를 바로 읽으세요. 지나간 추천은 목록에서 다시 엽니다.",
       "scrollTop": "맨 위로",
       "scrollUp": "위로"

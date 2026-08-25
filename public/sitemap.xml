@@ -87,10 +87,22 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.gateo.kr/logbook</loc>
+    <loc>https://www.gateo.kr/blog</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/blog"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/blog?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/blog"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.gateo.kr/blog/curation</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/blog/curation"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/blog/curation?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/blog/curation"/>
+    <lastmod>2026-08-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/place/bora-bora</loc>
