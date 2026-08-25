@@ -239,7 +239,7 @@ npm run audit:place-seo-en            # #3 이후
 ## 9. 핸드오프
 
 **세션** `검색노출 #12+, tier2 crawler 배치3`  
-**main** (커밋 후 배포·PROD QA) · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
+**main** `1f5156c8` · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
 **인덱스** [`feature-handoff-index.md`](./feature-handoff-index.md) 「검색노출」행
 
 | | |

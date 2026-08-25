@@ -136,6 +136,7 @@
 - **샘플**: hamburg · havana · lombok · mount-bromo (pop76)
 - **조치**: `generate-crawler-place-meta` batch3 로직 · smoke hamburg assert · bohol(81위) 미포함 확인
 - **VERIFY**: `smoke:crawler-place-meta` · `smoke:place-seo-en` · `smoke:rss-canonical` · `build` PASS
+- **main push**: `1f5156c8` → origin/main (2026-08-25)
 - **잔여**: tier2 pop70–79 **29 slug** (4차) · #13 항공 경로 · #14–#17 허브
 - **PROD QA**: `/place/hamburg/gallery?crawler=1` view-source — title·og:image·ImageGallery JSON-LD
 - **다음**: `검색노출 #13, 항공 경로 crawler` 또는 tier2 pop70–79 4차
