@@ -11,6 +11,7 @@ import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
 import GalleryAttributionLink from '../common/GalleryAttributionLink';
 import { splitPlaceOverview } from '../common/placeOverviewText';
 import PlaceOverviewProse from '../common/PlaceOverviewProse';
+import { useLocale } from '../../../i18n/LocaleProvider';
 
 /** 세로·터치 태블릿은 max-width, 가로 회전(높이 짧은 터치 기기)도 모바일 풀스크린 포털 유지 */
 const MOBILE_GALLERY_LIGHTBOX_QUERY =
@@ -189,6 +190,7 @@ const PlaceGalleryView = React.memo(({
   mobileSecondaryNav = null
 }) => {
   const { t } = useTranslation();
+  const { locale } = useLocale();
   const fullScreenContainerRef = useRef(null);
   const scrollContainerRef = useRef(null);
   const mobileSwipeStartRef = useRef(null);
@@ -416,7 +418,7 @@ const PlaceGalleryView = React.memo(({
   const isUIHidden = (!showUI && isFullScreen) || isMobileUIHidden || isMobileLandscapeImmersive;
 
   const { curation: curationOverview, fixed: fixedOverview, originalQuery: overviewQuery } =
-    useMemo(() => splitPlaceOverview(location), [location]);
+    useMemo(() => splitPlaceOverview(location, locale), [location, locale]);
   const hasPlaceOverview = Boolean(curationOverview || fixedOverview);
 
   const photoCaption = useMemo(() => {

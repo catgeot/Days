@@ -5,10 +5,12 @@ import { useLocation } from 'react-router-dom';
 
 import { useLocale } from '../../i18n/LocaleProvider';
 import { buildHreflangAlternates, buildLocalePageUrl } from '../../i18n/seoUrls';
+import { getLocalizedPlaceName } from '../PlaceCard/common/locationDisplay';
 
 const SEO = ({
   title,
   description,
+  keywords,
   url,
   image,
   type = 'website',
@@ -21,11 +23,13 @@ const SEO = ({
   const siteName = 'GATEO';
   const defaultTitle = t('seo.defaultTitle');
   const defaultDescription = t('seo.defaultDescription');
+  const defaultKeywords = t('seo.defaultKeywords');
   const defaultImage = 'https://www.gateo.kr/og-image.png';
 
   const pagePath = url ?? pathname ?? '/';
   const seoTitle = title ? `${title} | ${siteName}` : defaultTitle;
   const seoDescription = description || defaultDescription;
+  const seoKeywords = keywords || defaultKeywords;
   const seoUrl = buildLocalePageUrl(pagePath, locale);
   const seoImage = image || defaultImage;
   const hreflangAlternates = useMemo(() => buildHreflangAlternates(pagePath), [pagePath]);
@@ -35,17 +39,25 @@ const SEO = ({
   const generateTouristAttractionSchema = () => {
     if (!location) return null;
 
+    const displayName =
+      getLocalizedPlaceName(location, locale) ||
+      location.name ||
+      location.destination ||
+      location.name_en;
+
     const schema = {
       '@context': 'https://schema.org',
       '@type': 'TouristAttraction',
-      name: location.name || location.destination || location.name_en,
+      name: displayName,
       description: seoDescription,
       url: seoUrl,
       image: seoImage,
     };
 
-    if (location.name_en && location.name_en !== schema.name) {
+    if (location.name_en && location.name_en !== displayName) {
       schema.alternateName = location.name_en;
+    } else if (location.name && location.name !== displayName) {
+      schema.alternateName = location.name;
     }
 
     if (location.lat && location.lng) {
@@ -118,6 +130,7 @@ const SEO = ({
       <html lang={locale} />
       <title>{seoTitle}</title>
       <meta name="description" content={seoDescription} />
+      <meta name="keywords" content={seoKeywords} />
 
       <link rel="canonical" href={seoUrl} />
       {hreflangAlternates.map((alt) => (

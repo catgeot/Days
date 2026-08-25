@@ -52,6 +52,16 @@ function isI18nHubPath(path) {
   return i18nHubPaths.includes(path);
 }
 
+function pathFromLoc(loc) {
+  if (loc === baseUrl || loc === `${baseUrl}/`) return '/';
+  if (loc.startsWith(baseUrl)) return loc.slice(baseUrl.length);
+  return null;
+}
+
+function shouldIncludeHreflang(path) {
+  return Boolean(path && (isI18nHubPath(path) || path.startsWith('/place/')));
+}
+
 /** 국내 투톱·테마 허브 (vite-plugin-sitemap koreaRoutes 와 동기화) */
 const koreaHubRoutes = [
   { path: '/korea', changefreq: 'daily', priority: '0.95' },
@@ -133,13 +143,9 @@ function generateSitemap() {
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
         xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
 ${urls.map(url => {
-  const hubPath = url.loc === baseUrl || url.loc === `${baseUrl}/`
-    ? '/'
-    : url.loc.startsWith(baseUrl)
-      ? url.loc.slice(baseUrl.length)
-      : null;
+  const hubPath = pathFromLoc(url.loc);
   const hreflangBlock =
-    hubPath && isI18nHubPath(hubPath) ? `\n${buildHreflangXml(hubPath)}` : '';
+    hubPath && shouldIncludeHreflang(hubPath) ? `\n${buildHreflangXml(hubPath)}` : '';
   return `  <url>
     <loc>${url.loc}</loc>${hreflangBlock}
     <lastmod>${url.lastmod}</lastmod>
