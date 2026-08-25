@@ -85,14 +85,33 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | **Explore·권역** | `/explore`, `/explore/:대륙/:테마` | 기본(홈) | ✅ | ✅ (#5) | ❌ **갭** | 아시아 휴양지, 유럽 문화 여행 |
 | **국가·위치** | Explore 필터 + PlaceCard `country` | place SEO 일부 | 카테고리 URL | partial | place 쪽만 | 「태국 여행지」, 「일본 어디」→ explore 또는 place |
 | **AI 큐레이션** | `/blog/curation` | ❌ **갭** | ❌ **갭** | ❌ | ❌ | 여행 큐레이션, 숨은 낙원 추천 |
-| **로그북·팁** | `/blog` (sitemap은 `/logbook`) | ❌ **갭** | ⚠️ URL 불일치 | ❌ | ❌ | 여행 기록, 자유여행 후기 |
-| **자유여행 팁** | `/place/:slug/wiki` · 큐레이션 본문 · 플래너 툴킷 | wiki 탭 Helmet | wiki 탭 sitemap **없음** | place hreflang | tier1/2 place만 | 푸켓 여행 팁, 현지 팁 |
+| **로그북** | `/blog` (sitemap은 `/logbook`) | ❌ **갭** | ⚠️ URL 불일치 | ❌ | ❌ | 여행 기록·후기 (자유여행 **기록** 쪽) |
+
+### 1.5 「자유여행」검색 의도 — **다면 랜딩** (합의)
+
+「자유여행」= 정해진 패키지가 아니라 **자유로운 정보 탐색**. 단일 URL·단일 탭으로 묶지 않고, **의도별 1차 랜딩**만 SEO SSOT로 고정.
+
+| 탐색 유형 | 제품 표면 | 1차 SEO URL | meta·keywords 예시 | crawler |
+|-----------|-----------|-------------|-------------------|---------|
+| 준비·일정·예약 연결 | **플래너** (툴킷·체크리스트·항공·숙소) | `/place/:slug/planner` | 푸켓 자유여행, 여행 준비, 여행 계획 | place crawler |
+| 스케치·가이드·읽을거리 | **여행 스케치** (wiki 매거진) | `/place/:slug/wiki` | 푸켓 여행 스케치, 여행 가이드 | (#16) wiki sitemap·inject |
+| 실전·현지 팁 | **로컬 왓슨** (wiki 탭 내 AI 팁) | `/place/:slug/wiki` | 푸켓 현지 팁, 로컬 팁, 자유여행 팁 | wiki desc·keywords에 병기 |
+| 대화형·궁금증 | **MOONi(무니)** (FAB·채팅, **전용 URL 없음**) | planner 또는 wiki **description**에 「AI 도슨트·무니」 | 크롤러 meta 문장·홈 키워드 | view-source URL **신설 안 함** |
+
+**SSOT 원칙**
+
+- `placeSearchIntent`: `planner`·`wiki` intent에 **자유여행** suffix 공유 (`자유여행`, `배낭`, `free travel`, `independent travel` 등) — **탭은 2개로 유지**
+- 로컬 왓슨: **wiki 탭 SEO**에 흡수 (별도 `/local-watson` 라우트 금지)
+- 무니: Helmet **description 1문장** + 홈·place JSON-LD `AI docent` — 채팅 UI는 SPA·GSC 렌더링 대상
+- 큐레이션(`/blog/curation`): **발견·추천** 축 (자유여행 **입문**) — #15와 분리
+
+**#16 산출 (갱신)**: planner+wiki 자유여행 keywords · wiki title/desc에 로컬 왓슨·스케치 · 선택 wiki sitemap · smoke
 
 **우선순위 (제안)**:
 
 1. **#14 허브 crawler** — `/korea/theme/scenic` · `/explore` view-source (축제·명승·권역 탐색)
 2. **#15 큐레이션·로그북** — `/blog/curation` Helmet · sitemap `/blog` canonical · `/logbook`→`/blog` redirect 또는 sitemap 수정
-3. **#16 wiki·팁 intent** — `placeSearchIntent` wiki 키워드 보강(자유여행 팁·현지 팁) · 선택: wiki 탭 sitemap
+3. **#16 자유여행 intent** — planner+wiki 다면 랜딩(§1.5) · 로컬 왓슨 keywords · 무니는 desc만
 4. **#17 explore 대륙·테마** — `/explore/asia/paradise` 등 카테고리별 title·keywords · index 정적 링크 EN
 
 **금지**: 홈 내부 검색 파서 변경 · UI 레이아웃 변경 · `/en/` prefix (합의 전)
@@ -111,7 +130,7 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | L8 | GSC baseline 없음 | 운영 |
 | L9 | **허브 crawler** — scenic·explore·curation view-source | 중 (#14–#15) |
 | L10 | **큐레이션·/blog** sitemap·Helmet 없음 | 중 (#15) |
-| L11 | **wiki·팁** intent·sitemap 약함 | 낮~중 (#16) |
+| L11 | **자유여행** planner·wiki·로컬왓슨 intent·wiki sitemap | 낮~중 (#16 §1.5) |
 | L12 | **/logbook vs /blog** sitemap 불일치 | 낮 (#15) |
 
 ---
@@ -138,7 +157,7 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | **#13** | `검색노출 #13, 항공 경로 SEO` (제안) | `flight-route` intent → planner · ICN→IATA title/keywords · crawler route snippet | smoke · view-source | main |
 | **#14** | `검색노출 #14, 허브 crawler` | middleware **`/korea/theme/scenic`** · **`/explore`** · hub meta SSOT | view-source · smoke | main |
 | **#15** | `검색노출 #15, 큐레이션·로그북 SEO` | `/blog/curation` Helmet · sitemap `/blog` · logbook URL 정합 | smoke · build | main |
-| **#16** | `검색노출 #16, wiki·팁 intent` | wiki keywords(자유여행 팁·현지 팁) · 선택 wiki sitemap | smoke | main |
+| **#16** | `검색노출 #16, 자유여행 intent` | §1.5 planner+wiki suffix · 로컬 왓슨 keywords · wiki sitemap(선택) · 무니=desc | smoke | main |
 | **#17** | `검색노출 #17, explore 카테고리` | 대륙×테마 title/desc · index EN 링크 | smoke · sitemap | main |
 
 **권장 순서**: #1 → … → #10 → **#11 tier2 crawler** → #12. GSC baseline·tier2 EN 잔여는 병행.
