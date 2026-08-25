@@ -23,3 +23,9 @@
 - **결정**: 세션당 1 산출 · tier2 40 slug/세션 · **#1~#5·#8~#9 = main** · **#6~#7 = `cursor/en-seo`+PR**
 - **문서**: [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2 세션표 · [`feature-handoff-index.md`](./feature-handoff-index.md) 행 추가
 - **다음**: `검색노출 #1, PROD QA — meta·탭 title`
+
+## 검색노출 #2 — 검색의도 SSOT (2026-08-25)
+
+- **조치**: [`placeSearchIntent.js`](../src/data/placeSearchIntent.js) 신규 — intentId·tab·ko/enQuerySuffix·title·descLead·sitemapPriorityOffset · `placeSeoText` import 연동 (TAB_INTENT 중복 제거)
+- **VERIFY**: `npm run smoke:place-seo-en` · `npm run build` PASS
+- **다음**: `검색노출 #3, tier2 EN 배치1` — popularity≥80 · 40 slug

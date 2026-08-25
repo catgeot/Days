@@ -10,6 +10,11 @@ import { fileURLToPath } from 'url';
 
 import { PLACE_SEO_EN_OVERRIDES } from '../src/data/placeSeoEnOverrides.js';
 import {
+  PLACE_SEARCH_INTENTS,
+  getPlaceSearchQuerySuffixes,
+  getPrimaryPlaceSearchIntent,
+} from '../src/data/placeSearchIntent.js';
+import {
   getLocalizedPlaceDesc,
   getPlaceSeoKeywords,
   getPlaceTabSeoDescription,
@@ -42,6 +47,20 @@ const galapagos = spots.find((s) => s.slug === 'galapagos');
 const angkor = spots.find((s) => s.slug === 'angkor-wat');
 
 assert(Object.keys(PLACE_SEO_EN_OVERRIDES).length >= 66, 'place SEO EN overrides loaded');
+
+assert(PLACE_SEARCH_INTENTS.length >= 6, 'place search intent SSOT loaded');
+assert(
+  PLACE_SEARCH_INTENTS.some((i) => i.intentId === 'gallery' && i.tab === 'gallery'),
+  'gallery intent maps to gallery tab',
+);
+assert(
+  PLACE_SEARCH_INTENTS.filter((i) => i.tab === 'planner').length >= 2,
+  'planner tab has travel + planner intents',
+);
+const galleryPrimary = getPrimaryPlaceSearchIntent('gallery');
+assert(Boolean(galleryPrimary?.koTitle && galleryPrimary?.enTitle), 'gallery primary title templates');
+const gallerySuffixKo = getPlaceSearchQuerySuffixes('gallery', 'ko');
+assert(gallerySuffixKo.includes('갤러리') && gallerySuffixKo.includes('사진'), 'gallery KO query suffixes');
 
 const phuketDesc = getLocalizedPlaceDesc(phuket, 'en');
 assert(!/[\u3131-\u318e\uac00-\ud7a3]/.test(phuketDesc), 'phuket EN desc has no Hangul');

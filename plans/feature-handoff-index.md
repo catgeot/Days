@@ -88,24 +88,24 @@ main · www.gateo.kr/place/yap/planner?lang=en
 
 | | |
 |--|--|
-| **상태** | **#0 완료** (탭 SEO·sitemap) · **#1 PROD QA** 대기 |
-| **브랜치** | **#1~#5·#8~#9 → `main`** · **#6~#7 → `cursor/en-seo`** (+ PR) |
+| **상태** | **#2 완료** (검색의도 SSOT) · **#3 tier2 EN 배치1** 다음 |
+| **브랜치** | **#3~#5·#8~#9 → `main`** · **#6~#7 → `cursor/en-seo`** (+ PR) |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2 세션표 · §9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
-| **PROD QA** | `https://www.gateo.kr/place/phuket/gallery` · `/place/phuket/planner?lang=en` · `/place/angkor-wat/gallery?lang=en` |
+| **PROD QA** | `https://www.gateo.kr/place/phuket/gallery` · `/place/phuket/planner?lang=en` |
 | **VERIFY** | `npm run smoke:place-seo-en` · `npm run build` |
 
-**#0 완료**: `getPlaceTabSeoTitle` · gallery/planner sitemap · index KO·EN 크롤러 링크
+**#2 완료**: `placeSearchIntent.js` · `placeSeoText` SSOT 연동 · smoke 확장
 
-**다음 제시어 (#1)**:
+**다음 제시어 (#3)**:
 
 ```
-검색노출 #1, PROD QA — meta·탭 title
+검색노출 #3, tier2 EN 배치1
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-www.gateo.kr/place/phuket/gallery · /planner?lang=en · angkor-wat/gallery
-금지: /en/ prefix·SSR·홈 내부검색 변경
+main · popularity≥80 · 40 slug · audit:place-seo-en 신규
+금지: 40개 초과·travelSpots.js 직접 편집·검증 없이 push
 ```
 
 ---

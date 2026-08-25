@@ -37,13 +37,13 @@
 | 영역 | SSOT / 산출 |
 |------|-------------|
 | 여행지 EN copy | [`placeSeoEnOverrides.js`](../src/data/placeSeoEnOverrides.js) — 66 slug |
-| locale·탭 SEO | [`placeSeoText.js`](../src/pages/Home/lib/placeSeoText.js) — `getPlaceTabSeoTitle` · keywords · description |
+| locale·탭 SEO | [`placeSeoText.js`](../src/pages/Home/lib/placeSeoText.js) — SSOT [`placeSearchIntent.js`](../src/data/placeSearchIntent.js) 참조 |
 | Helmet | [`SEO/index.jsx`](../src/components/SEO/index.jsx) |
 | Sitemap | [`generate-sitemap.cjs`](../scripts/generate-sitemap.cjs) — `/place/*` · `/gallery` · `/planner` + hreflang |
 | 정적 크롤러 | [`index.html`](../index.html) — KO·EN 숨김 링크 |
 | 검증 | `npm run smoke:place-seo-en` |
 
-### 1.2 검색 의도 → URL (코드에 있음 · SSOT 파일은 #2)
+### 1.2 검색 의도 → URL (SSOT: `placeSearchIntent.js`)
 
 | intentId | KO 예시 쿼리 | EN 예시 쿼리 | tab | URL |
 |----------|---------------|--------------|-----|-----|
@@ -77,7 +77,7 @@
 |----|---------------|--------------------------------------|--------|--------|
 | **#0** | (완료) 탭 SEO·sitemap | `getPlaceTabSeoTitle` · gallery/planner sitemap | `smoke:place-seo-en` · `build` | main ✅ |
 | **#1** | `검색노출 #1, PROD QA — meta·탭 title` | 사람 QA 체크리스트 완료 · GSC URL Inspection 메모 | 사람 · `smoke:place-seo-en` | main |
-| **#2** | `검색노출 #2, 검색의도 SSOT` | [`placeSearchIntent.js`](../src/data/placeSearchIntent.js) · `placeSeoText` import · 플랜 §1.2와 동기 | `smoke:place-seo-en` · `build` | main |
+| **#2** | `검색노출 #2, 검색의도 SSOT` | [`placeSearchIntent.js`](../src/data/placeSearchIntent.js) · `placeSeoText` import · 플랜 §1.2와 동기 | `smoke:place-seo-en` · `build` | main ✅ |
 | **#3** | `검색노출 #3, tier2 EN 배치1` | overrides **+40** (popularity≥80) · `audit:place-seo-en` 스크립트 신규 | audit · smoke · `build` | main |
 | **#4** | `검색노출 #4, tier2 EN 배치2` | overrides **+40** (잔여 상위) | audit · smoke | main |
 | **#5** | `검색노출 #5, explore·korea hreflang` | [`seoUrls.js`](../src/i18n/seoUrls.js) `I18N_HUB_PATHS` 확장 · sitemap 재생성 | sitemap diff · smoke · `build` | main |
@@ -162,42 +162,32 @@ npm run audit:place-seo-en            # #3 이후
 
 ## 9. 핸드오프
 
-**세션** `검색노출 #1, PROD QA — meta·탭 title`  
+**세션** `검색노출 #2, 검색의도 SSOT`  
 **main** 최신 · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
 **인덱스** [`feature-handoff-index.md`](./feature-handoff-index.md) 「검색 노출」행
 
 | | |
 |--|--|
-| **완료 (#0)** | 탭 SEO title/keywords · gallery/planner sitemap · index KO 링크 |
-| **이번 (#1)** | PROD에서 KO·EN 탭 title·description·keywords 확인 |
-| **다음 (#2)** | `placeSearchIntent.js` SSOT |
+| **완료 (#2)** | `placeSearchIntent.js` · `placeSeoText` SSOT 연동 · smoke 확장 |
+| **다음 (#3)** | tier2 EN overrides 배치1 (40 slug · popularity≥80) |
 
-**다음 제시어 (#1 — 지금 시작)**:
-
-```
-검색노출 #1, PROD QA — meta·탭 title
-@plans/feature-handoff-index.md
-@plans/en-seo-followup-plan.md
-@plans/2026-08-25-project-log.md
-www.gateo.kr/place/phuket/gallery · /planner?lang=en · angkor-wat/gallery
-금지: /en/ prefix·SSR·홈 내부검색 변경
-```
-
-**#2 제시어 (예정)**:
-
-```
-검색노출 #2, 검색의도 SSOT
-@plans/en-seo-followup-plan.md
-main · placeSearchIntent.js · placeSeoText 연동
-금지: travelSpots.js 직접 편집·UI 변경
-```
-
-**#3 제시어 (예정)**:
+**다음 제시어 (#3)**:
 
 ```
 검색노출 #3, tier2 EN 배치1
+@plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
+@plans/2026-08-25-project-log.md
 main · popularity≥80 · 40 slug · audit:place-seo-en 신규
+금지: 40개 초과·travelSpots.js 직접 편집·검증 없이 push
+```
+
+**#4 제시어 (예정)**:
+
+```
+검색노출 #4, tier2 EN 배치2
+@plans/en-seo-followup-plan.md
+main · overrides +40 · audit · smoke
 금지: 40개 초과·검증 없이 push
 ```
 
