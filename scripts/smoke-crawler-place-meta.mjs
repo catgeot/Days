@@ -41,7 +41,7 @@ function googlebotRequest(pathname, locale = 'ko') {
   });
 }
 
-assert(getCrawlerPlaceMetaSlugCount() === 64, 'tier1 crawler meta covers 64 slugs');
+assert(getCrawlerPlaceMetaSlugCount() === 107, 'crawler meta covers tier1 64 + tier2 pop≥80 (107 slugs)');
 
 const tokyoGalleryKo = resolveCrawlerMeta('/place/tokyo/gallery', 'ko');
 assert(Boolean(tokyoGalleryKo?.title), 'tokyo gallery KO meta resolved');
@@ -76,8 +76,20 @@ assert(/Korea festivals/i.test(koreaEn.title), 'korea EN title');
 assert(koreaEn.canonicalUrl.endsWith('/korea?lang=en'), 'korea EN canonical');
 
 assert(parseCrawlerPlacePath('/place/tokyo/video') === null, 'video tab not in scope');
-assert(resolveCrawlerMeta('/place/phuket/gallery', 'ko') === null, 'tier2 slug not in meta map');
-assert(resolveCrawlerMeta('/place/phuket', 'ko') === null, 'tier2 base path not in meta map');
+const phuketGalleryKo = resolveCrawlerMeta('/place/phuket/gallery', 'ko');
+assert(Boolean(phuketGalleryKo?.title), 'phuket tier2 gallery KO meta resolved');
+assert(/푸켓|Phuket/i.test(phuketGalleryKo.title), 'phuket gallery KO title localized');
+assert(Boolean(phuketGalleryKo?.ogImage), 'phuket gallery meta includes ogImage');
+assert(phuketGalleryKo.ogImage.startsWith('https://images.unsplash.com/'), 'phuket ogImage is slug pool URL');
+assert(
+  phuketGalleryKo.ogImage !== 'https://www.gateo.kr/og-image.png',
+  'phuket ogImage not global default',
+);
+
+const phuketBaseKo = resolveCrawlerMeta('/place/phuket', 'ko');
+assert(phuketBaseKo?.title === phuketGalleryKo.title, 'phuket tier2 base path uses gallery meta');
+
+assert(resolveCrawlerMeta('/place/seychelles/gallery', 'ko') === null, 'tier2 pop<80 not in crawler meta yet');
 
 assert(parseCrawlerPath('/korea').kind === 'hub', 'korea parsed as hub');
 assert(getCrawlerMetaKind('/place/tokyo') === 'tier1-place-base', 'base path kind tag');

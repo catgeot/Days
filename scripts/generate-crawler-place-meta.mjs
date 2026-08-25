@@ -62,9 +62,19 @@ const TABS = ['gallery', 'planner'];
 const LOCALES = ['ko', 'en'];
 const HUB_PATHS = ['/', '/korea'];
 
-const tier1Spots = TRAVEL_SPOTS.filter((spot) => spot.tier === 1).sort((a, b) =>
+/** tier1 전수 + tier2 popularity≥80 (배치1 · phuket 등). 잔여 tier2는 후속 세션. */
+const TIER2_CRAWLER_MIN_POPULARITY = 80;
+
+function isCrawlerPlaceSpot(spot) {
+  if (spot.tier === 1) return true;
+  return (spot.popularity ?? 0) >= TIER2_CRAWLER_MIN_POPULARITY;
+}
+
+const crawlerSpots = TRAVEL_SPOTS.filter(isCrawlerPlaceSpot).sort((a, b) =>
   String(a.slug).localeCompare(String(b.slug)),
 );
+const tier1Count = crawlerSpots.filter((s) => s.tier === 1).length;
+const tier2Count = crawlerSpots.length - tier1Count;
 
 const t = (key, opts = {}) => {
   if (key === 'place.fallback.destination') return 'Destination';
@@ -78,7 +88,7 @@ const t = (key, opts = {}) => {
 /** @type {Record<string, Record<string, Record<string, object>>>} */
 const meta = {};
 
-for (const spot of tier1Spots) {
+for (const spot of crawlerSpots) {
   meta[spot.slug] = {};
   for (const tab of TABS) {
     meta[spot.slug][tab] = {};
@@ -151,8 +161,8 @@ writeFileSync(
 );
 
 console.log('generate:crawler-place-meta');
-console.log(`  tier1 slugs   ${tier1Spots.length}`);
-console.log(`  place entries ${tier1Spots.length * TABS.length * LOCALES.length}`);
+console.log(`  crawler slugs  ${crawlerSpots.length} (tier1 ${tier1Count} + tier2 pop≥${TIER2_CRAWLER_MIN_POPULARITY}: ${tier2Count})`);
+console.log(`  place entries ${crawlerSpots.length * TABS.length * LOCALES.length}`);
 console.log(`  hub entries   ${HUB_PATHS.length * LOCALES.length}`);
 console.log(`  place output  ${placeOutFile}`);
 console.log(`  hub output    ${hubOutFile}`);

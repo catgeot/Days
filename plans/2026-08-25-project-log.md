@@ -109,4 +109,12 @@
 - **tier2 phuket (view-source)** — `/place/phuket/gallery?crawler=1` **의도대로**: tier2는 crawler meta map 밖 → 초기 HTML은 전역 meta 유지( smoke `tier2 slug not in meta map` ). SPA 로드 후 Helmet·JSON-LD는 **DevTools** 확인
 - **phuket SPA 기대값**(DevTools): og:image pool `…/photo-1528127269322…` 또는 갤러리 hero URL · `script[data-schema-type="ImageGallery"]` (이미지 fetch 후)
 - **VERIFY**: smoke 3종 재실행 PASS
-- **잔여(사람)**: phuket 갤러리 탭 DevTools 1회 · GSC URL Inspection tier1 gallery 재크롤
+- **잔여(사람)**: phuket 갤러리 DevTools 1회 · GSC URL Inspection tier1 gallery 재크롤
+
+## 검색노출 #11 — tier2 crawler 배치1 (2026-08-25)
+
+- **배경**: #6 MVP는 tier1 64만 view-source inject — tier2(phuket 등)는 **후속 배치** 대상이었음(영구 제외 아님)
+- **조치**: `generate-crawler-place-meta` — tier1 + **tier2 popularity≥80 43 slug** (107 total) · og:image·ImageGallery crawler inject
+- **VERIFY**: `smoke:crawler-place-meta` · `smoke:place-seo-en` · `build` PASS
+- **PROD QA**: `main` push·배포 후 `/place/phuket/gallery?crawler=1` view-source — tab title·slug og:image·ImageGallery JSON-LD
+- **잔여**: tier2 pop&lt;80 **~166 slug** — #12 배치(40/세션)
