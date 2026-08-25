@@ -42,7 +42,7 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 |--|--|
 | **상태** | **#22 GSC baseline audit 완료** · template 173 URL · `audit:gsc-baseline` gate |
 | **브랜치** | **`main`** |
-| **main** | (이번 커밋 후 SHA) |
+| **main** | `56fac8de` |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
 | **사람 QA (#22)** | `cp template → scripts/outputs/gsc-seo-baseline.csv` · GSC 173건 기록 · `npm run audit:gsc-baseline` |
