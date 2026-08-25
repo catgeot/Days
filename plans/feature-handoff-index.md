@@ -42,7 +42,7 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 |--|--|
 | **상태** | **#23 GSC baseline — 로컬/Cloud 분리 확정** · audit PASS = **사람 로컬 only** |
 | **브랜치** | **`main`** |
-| **main** | `e3801f8d` |
+| **main** | `4e2e5f3b` |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
 | **에이전트 VERIFY** | `smoke:gsc-baseline` · `smoke:gsc-baseline-prod` · `audit:place-seo-en` · `build` |
