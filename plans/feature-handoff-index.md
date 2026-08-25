@@ -40,7 +40,7 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 
 | | |
 |--|--|
-| **상태** | **#8 완료** (tier1×intent KO 정적링크) · **#6 크롤러 HTML MVP** 다음 |
+| **상태** | **#8 완료** (tier1×intent KO 정적링크) · **#9 RSS·canonical** 다음 · **#6·#7 미완**(백로그·`cursor/en-seo`) |
 | **브랜치** | **#1~#5·#8~#9 → `main`** · **#6~#7 → `cursor/en-seo`** (+ PR) — [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2 SSOT |
 | **시작 필수** | `git fetch origin main && git pull --rebase origin main` |
 | **main** | `c9de2d2a` |
@@ -49,14 +49,14 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 | **PROD QA** | view-source `/` — tier1 KO gallery·travel 링크 128 · GSC baseline CSV(사람) |
 | **VERIFY** | `smoke:place-seo-en` · `build` |
 
-**다음 제시어 (#6 또는 #9)**:
+**다음 제시어 (#9)**:
 
 ```
-검색노출 #6, 크롤러 HTML MVP
+검색노출 #9, RSS·canonical
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-cursor/en-seo · Edge middleware · tier1 gallery/planner
+main · rss-en 또는 bilingual item · canonical 점검
 금지: full SSR·/en/ prefix·검증 없이 push
 ```
 

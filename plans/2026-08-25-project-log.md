@@ -62,4 +62,4 @@
 - **조치**: `generate:index-static-links` — tier1 64 × intent(gallery·travel) KO 링크 128개 · `index.html` 마커 블록 · GSC baseline CSV 템플릿(`scripts/data/gsc-seo-baseline-template.csv`)
 - **VERIFY**: `smoke:place-seo-en` · `build` PASS
 - **사람**: GSC URL Inspection — 템플릿 CSV에 `gsc_index_status`·`gsc_last_crawl` 기록 후 `scripts/outputs/gsc-seo-baseline.csv`로 저장(로컬·gitignore)
-- **다음**: `검색노출 #9, RSS·canonical` (선택) 또는 `#6 크롤러 HTML MVP` (`cursor/en-seo`)
+- **다음**: `검색노출 #9, RSS·canonical` (세션표 순서) · **#6·#7** 크롤러 HTML은 미완 백로그(`cursor/en-seo`)

@@ -181,15 +181,16 @@ npm run audit:place-seo-en            # #3 이후
 |--|--|
 | **완료 (#8)** | `generate:index-static-links` · tier1 64×intent(gallery·travel) KO 링크 128 · GSC baseline CSV 템플릿 |
 | **사람** | GSC URL Inspection — `scripts/data/gsc-seo-baseline-template.csv` 복사 → `scripts/outputs/gsc-seo-baseline.csv`에 상태 기록 |
-| **다음 (#6)** | 크롤러 HTML MVP — `cursor/en-seo` · Edge middleware |
+| **다음 (#9)** | RSS·canonical — `rss-en.xml` 또는 bilingual item · canonical 점검 (`main`) |
+| **백로그** | **#6·#7** 크롤러 HTML — 권장순서상 #8 이전 · 아직 미착수 · `cursor/en-seo` |
 
-**다음 제시어 (#6)**:
+**다음 제시어 (#9)**:
 
 ```
-검색노출 #6, 크롤러 HTML MVP
+검색노출 #9, RSS·canonical
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-cursor/en-seo · Edge middleware · tier1 gallery/planner
+main · rss-en 또는 bilingual item · canonical 점검
 금지: full SSR·/en/ prefix·검증 없이 push
 ```
