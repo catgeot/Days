@@ -17,3 +17,8 @@
 - **확정** Q3 Wave1 12 slug · Q9 B · Q13 `/world-events` · Q11–Q12
 - **문서** `world-events-plan.md` §10 세션 로드맵 #2–#10
 - **다음** `#2 P0-a` 코드 착수
+
+## 세계행사 — P3 공식 피드 계획 반영
+
+- **결정** Q14: ICS/RSS/open data를 P3-a 1순위 POC로 포함 (§5.1)
+- **원칙** P2 수동 SSOT 선행 · 피드 상세는 P3 착수 세션에서 논의
