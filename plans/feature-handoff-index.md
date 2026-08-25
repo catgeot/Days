@@ -42,7 +42,7 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 |--|--|
 | **상태** | **#14 항공 경로 SEO 완료** · planner ICN→IATA crawler·keywords |
 | **브랜치** | **`main`** |
-| **main** | (push 후 SHA) |
+| **main** | `117d422b` |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §1.2 flight-route · §9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
 | **PROD QA (#14)** | `/place/tokyo/planner?crawler=1` · `/place/phuket/planner?crawler=1` view-source |
