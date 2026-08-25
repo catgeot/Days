@@ -53,7 +53,7 @@ const phuket = spots.find((s) => s.slug === 'phuket');
 const galapagos = spots.find((s) => s.slug === 'galapagos');
 const angkor = spots.find((s) => s.slug === 'angkor-wat');
 
-assert(Object.keys(PLACE_SEO_EN_OVERRIDES).length >= 106, 'place SEO EN overrides loaded (tier1 + batch1 tier2)');
+assert(Object.keys(PLACE_SEO_EN_OVERRIDES).length >= 186, 'place SEO EN overrides loaded (tier1 + tier2 batch3)');
 
 assert(PLACE_SEARCH_INTENTS.length >= 6, 'place search intent SSOT loaded');
 assert(
@@ -125,6 +125,11 @@ const tajMahal = spots.find((s) => s.slug === 'taj-mahal');
 const tajDesc = getLocalizedPlaceDesc(tajMahal, 'en');
 assert(!/[\u3131-\u318e\uac00-\ud7a3]/.test(tajDesc), 'taj-mahal tier2 batch EN desc has no Hangul');
 assert(/taj mahal|agra|mughal/i.test(tajDesc), 'taj-mahal EN desc is search-relevant');
+
+const hamburg = spots.find((s) => s.slug === 'hamburg');
+const hamburgDesc = getLocalizedPlaceDesc(hamburg, 'en');
+assert(!/[\u3131-\u318e\uac00-\ud7a3]/.test(hamburgDesc), 'hamburg tier2 batch3 EN desc has no Hangul');
+assert(/hamburg|germany|port|elbphilharmonie/i.test(hamburgDesc), 'hamburg EN desc is search-relevant');
 
 const seoJs = readFileSync(join(root, 'src/components/SEO/index.jsx'), 'utf8');
 assert(seoJs.includes('meta name="keywords"'), 'SEO component renders keywords meta');

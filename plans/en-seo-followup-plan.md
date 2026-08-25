@@ -162,6 +162,7 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | **#16** | `검색노출 #16, 큐레이션·로그북 SEO` | `/blog/curation` Helmet · sitemap `/blog` · logbook URL 정합 | smoke · build | main ✅ |
 | **#17** | `검색노출 #17, 자유여행 intent` | §1.5 planner+wiki suffix · 로컬 왓슨 keywords · wiki sitemap · 무니=desc | smoke | main ✅ |
 | **#18** | `검색노출 #18, explore 카테고리` | 대륙×테마 title/desc · index EN 링크 | smoke · sitemap | main ✅ |
+| **#19** | `검색노출 #19, GSC baseline·tier2 EN` | GSC template 174 URL · tier2 EN **+40** (146→186) · audit pop70–79 | audit · smoke:gsc-baseline · build | main |
 
 **권장 순서**: #1 → … → #10 → **#11~#13 tier2 crawler**(pop70–79 전수) → #14+. GSC baseline·tier2 EN 잔여는 병행.
 
@@ -243,34 +244,36 @@ npm run smoke:rss-canonical
 npm run build                         # generate-sitemap → vite → verify-sitemap-dist → verify-rss-dist
 node scripts/generate-sitemap.cjs   # 수동만 필요할 때
 npm run audit:place-seo-en            # #3 이후
+npm run generate:gsc-baseline         # GSC URL Inspection template (#19)
+npm run smoke:gsc-baseline
 ```
 
 ---
 
 ## 9. 핸드오ff
 
-**세션** `검색노출 #18, explore 카테고리`  
+**세션** `검색노출 #19, GSC baseline·tier2 EN`  
 **main** 최신 · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
 **인덱스** [`feature-handoff-index.md`](./feature-handoff-index.md) 「검색노출」행
 
 | | |
 |--|--|
-| **완료 (#18)** | `exploreCategorySeo.js` · Home Helmet · crawler 30 paths · sitemap hreflang · index EN 5링크 |
-| **PROD QA** | view-source `?crawler=1` — `/explore/asia/paradise` title·keywords · `/explore/europe/culture?lang=en` |
-| **다음** | GSC baseline CSV · tier2 EN 잔여 · PROD 재크롤 |
+| **완료 (#19)** | `generate:gsc-baseline` 174 URL · tier2 EN batch3 +40 (186) · audit pop70–79 79/109 |
+| **사람 QA** | GSC URL Inspection — `scripts/data/gsc-seo-baseline-template.csv` → `scripts/outputs/gsc-seo-baseline.csv` |
+| **잔여** | tier2 EN pop70–79 **30 slug** · PROD 재크롤 |
 
-**다음 제시어 (PROD QA)**:
+**다음 제시어**:
 
 ```
-검색노출 #18, PROD QA — explore 카테고리
+검색노출 #20, tier2 EN 배치4 마무리
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · view-source ?crawler=1 /explore/asia/paradise · index EN 링크
+main · tier2 EN 잔여 30 slug · GSC baseline CSV 기록
 ```
 
-**PROD QA (#18)**:
+**사람 GSC (#19)**:
 
 ```
-view-source ?crawler=1 · /explore/asia/paradise · /explore/europe/culture?lang=en · sitemap explore hreflang
+GSC URL Inspection — template 174 URL · tier1 gallery 샘플 5 · hamburg/bohol crawler · explore/asia/paradise
 ```

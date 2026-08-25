@@ -40,22 +40,22 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 
 | | |
 |--|--|
-| **상태** | **#18 explore 카테고리 완료** · PROD QA explore crawler |
+| **상태** | **#19 GSC baseline·tier2 EN batch3 완료** · tier2 EN 잔여 30 |
 | **브랜치** | **`main`** |
-| **main** | `59250605` |
+| **main** | (push 후 SHA) |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
-| **PROD QA (#18)** | view-source `?crawler=1` — `/explore/asia/paradise` · `/explore/europe/culture?lang=en` |
-| **VERIFY** | `smoke:crawler-place-meta` · `smoke:place-seo-en` · `build` |
+| **사람 QA (#19)** | GSC URL Inspection — `scripts/data/gsc-seo-baseline-template.csv` 174 URL |
+| **VERIFY** | `audit:place-seo-en` · `smoke:gsc-baseline` · `smoke:place-seo-en` · `build` |
 
-**다음 제시어 (PROD QA)**:
+**다음 제시어**:
 
 ```
-검색노출 #18, PROD QA — explore 카테고리
+검색노출 #20, tier2 EN 배치4 마무리
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · view-source ?crawler=1 /explore/asia/paradise · index EN 링크
+main · tier2 EN 잔여 30 slug · GSC baseline CSV 기록
 ```
 
 ---

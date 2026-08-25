@@ -25,9 +25,14 @@ const HANGUL = /[\u3131-\u318e\uac00-\ud7a3]/;
 const DESC_MIN = 80;
 const DESC_MAX = 320;
 const TIER2_POP_GATE = 80;
+const TIER2_POP70_GATE = 70;
 
 const tier2Pop80 = TRAVEL_SPOTS.filter(
   (s) => s.tier === 2 && (s.popularity ?? 0) >= TIER2_POP_GATE,
+).sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0));
+
+const tier2Pop70to79 = TRAVEL_SPOTS.filter(
+  (s) => s.tier === 2 && (s.popularity ?? 0) >= TIER2_POP70_GATE && (s.popularity ?? 0) < TIER2_POP_GATE,
 ).sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0));
 
 const overrideSlugs = Object.keys(PLACE_SEO_EN_OVERRIDES);
@@ -52,6 +57,7 @@ for (const slug of overrideSlugs) {
 }
 
 const tier2Pop80Missing = tier2Pop80.filter((s) => !PLACE_SEO_EN_OVERRIDES[s.slug]);
+const tier2Pop70Missing = tier2Pop70to79.filter((s) => !PLACE_SEO_EN_OVERRIDES[s.slug]);
 
 const report = {
   generatedAt: new Date().toISOString(),
@@ -60,6 +66,13 @@ const report = {
   tier2Pop80Total: tier2Pop80.length,
   tier2Pop80Covered: tier2Pop80.length - tier2Pop80Missing.length,
   tier2Pop80Missing: tier2Pop80Missing.map((s) => ({
+    slug: s.slug,
+    popularity: s.popularity,
+    name_en: s.name_en,
+  })),
+  tier2Pop70to79Total: tier2Pop70to79.length,
+  tier2Pop70to79Covered: tier2Pop70to79.length - tier2Pop70Missing.length,
+  tier2Pop70to79Missing: tier2Pop70Missing.map((s) => ({
     slug: s.slug,
     popularity: s.popularity,
     name_en: s.name_en,
@@ -76,6 +89,9 @@ console.log('audit:place-seo-en');
 console.log(`  overrides           ${report.overrideCount}`);
 console.log(
   `  tier2 pop>=${TIER2_POP_GATE}   ${report.tier2Pop80Covered}/${report.tier2Pop80Total} covered`,
+);
+console.log(
+  `  tier2 pop70-79   ${report.tier2Pop70to79Covered}/${report.tier2Pop70to79Total} covered`,
 );
 console.log(`  hangul violations   ${hangulViolations.length}`);
 console.log(`  desc length issues  ${descLengthViolations.length}`);

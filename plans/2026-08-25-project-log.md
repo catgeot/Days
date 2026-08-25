@@ -197,3 +197,13 @@
 - **VERIFY**: `smoke:crawler-place-meta` · `smoke:place-seo-en` · `smoke:rss-canonical` · `build` PASS
 - **PROD QA**: view-source `?crawler=1` — `/explore/asia/paradise`(아시아 휴양·호캉스 title·keywords) · `/explore/europe/culture?lang=en`
 - **다음**: GSC baseline · tier2 EN 잔여
+
+## 검색노출 #19 — GSC baseline·tier2 EN (2026-08-25)
+
+- **GSC baseline**: `generate:gsc-baseline` — tier1 128 + tier2·hub·wiki·explore·flight 샘플 **174 URL** · `smoke:gsc-baseline` · `generate-index-static-links`에서 GSC 분리
+- **tier2 EN batch3**: pop70–79 상위 **40 slug** → `placeSeoEnOverrides` (146→**186**) · 샘플 hamburg·ayutthaya·serengeti
+- **audit**: pop70–79 **79/109** covered · Hangul 0 · desc 길이 0
+- **VERIFY**: `audit:place-seo-en` · `smoke:gsc-baseline` · `smoke:place-seo-en` · `build` PASS
+- **사람**: GSC URL Inspection — `scripts/data/gsc-seo-baseline-template.csv` → `scripts/outputs/gsc-seo-baseline.csv`(gitignore)
+- **잔여**: tier2 EN pop70–79 **30 slug**
+- **다음**: `검색노출 #20, tier2 EN 배치4 마무리`

@@ -18,7 +18,6 @@ import {
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 const indexPath = join(root, 'index.html');
-const gscTemplatePath = join(root, 'scripts/data/gsc-seo-baseline-template.csv');
 
 const START = '<!-- GATEO_STATIC_KO_LINKS:START -->';
 const END = '<!-- GATEO_STATIC_KO_LINKS:END -->';
@@ -99,19 +98,6 @@ const pattern = new RegExp(
 const nextHtml = indexHtml.replace(pattern, block);
 writeFileSync(indexPath, nextHtml);
 
-const gscRows = [
-  'url,slug,intent,tab,checked_at,gsc_index_status,gsc_last_crawl,notes',
-];
-for (const spot of tier1) {
-  for (const intent of staticIntents) {
-    const url = `https://www.gateo.kr/place/${spot.slug}/${intent.tab}`;
-    gscRows.push(
-      `${url},${spot.slug},${intent.intentId},${intent.tab},,,,`,
-    );
-  }
-}
-writeFileSync(gscTemplatePath, `${gscRows.join('\n')}\n`);
-
 const linkCount = tier1.length * staticIntents.length;
 console.log(`OK    index.html static KO links: ${tier1.length} tier1 × ${staticIntents.length} intents = ${linkCount}`);
-console.log(`OK    GSC baseline template: ${gscRows.length - 1} URLs → scripts/data/gsc-seo-baseline-template.csv`);
+console.log('      GSC baseline: npm run generate:gsc-baseline');
