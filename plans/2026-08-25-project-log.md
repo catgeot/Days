@@ -168,3 +168,11 @@
 - **VERIFY**: `smoke:place-seo-en` · `smoke:crawler-place-meta` · `smoke:rss-canonical` · `build` PASS
 - **PROD QA**: view-source `?crawler=1` — `/place/tokyo/planner` · `/place/phuket/planner` description·keywords에 ICN→IATA
 - **다음**: `검색노출 #15, 허브 crawler`
+
+## 검색노출 #15 — 허브 crawler (2026-08-25)
+
+- **조치**: `crawlerHubMeta` — `/korea/theme/scenic` · `/explore` (locale KO·EN) · `resolveCrawlerMeta` HUB_PATHS · middleware matcher · smoke scenic·explore assert
+- **SSOT**: `korea.theme.scenicTitle`/`scenicSeoDescription` · explore는 홈 default meta + canonical `/explore`
+- **VERIFY**: `smoke:crawler-place-meta` · `smoke:place-seo-en` · `smoke:rss-canonical` · `build` PASS
+- **PROD QA**: view-source `?crawler=1` — `/korea/theme/scenic` title「한국의 명승」·`/explore` canonical
+- **다음**: `검색노출 #16, 큐레이션·로그북 SEO`

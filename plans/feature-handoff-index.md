@@ -40,22 +40,22 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 
 | | |
 |--|--|
-| **상태** | **#14 항공 경로 SEO 완료** · planner ICN→IATA crawler·keywords |
+| **상태** | **#15 허브 crawler 완료** · scenic·explore view-source inject |
 | **브랜치** | **`main`** |
-| **main** | `117d422b` |
-| **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §1.2 flight-route · §9 |
+| **main** | (push 후 SHA) |
+| **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
-| **PROD QA (#14)** | `/place/tokyo/planner?crawler=1` · `/place/phuket/planner?crawler=1` view-source |
-| **VERIFY** | `smoke:place-seo-en` · `smoke:crawler-place-meta` · `build` |
+| **PROD QA (#15)** | `/korea/theme/scenic?crawler=1` · `/explore?crawler=1` view-source |
+| **VERIFY** | `smoke:crawler-place-meta` · `smoke:place-seo-en` · `build` |
 
-**다음 제시어 (#15)**:
+**다음 제시어 (#16)**:
 
 ```
-검색노출 #15, 허브 crawler
+검색노출 #16, 큐레이션·로그북 SEO
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · /korea/theme/scenic · /explore · view-source ?crawler=1
+main · /blog/curation · /blog · sitemap
 ```
 
 ---
