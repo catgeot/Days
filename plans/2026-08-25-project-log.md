@@ -100,4 +100,13 @@
 
 - **조치**: `placeSeoOg.js` · tier1 `placeSeoOgImageOverrides`(64 slug) · PlaceCard/SEO slug og:image · gallery `ImageGallery`+`ImageObject` JSON-LD · crawler inject ogImage·schema
 - **VERIFY**: `smoke:place-seo-en` · `smoke:crawler-place-meta` · `smoke:rss-canonical` · `build` PASS
+- **main**: `3b1816a8`
 - **사람 QA**: `/place/phuket/gallery` — DevTools `og:image`·`ImageGallery` JSON-LD · view-source `?crawler=1` `/place/tokyo/gallery`
+
+## 검색노출 #10 — PROD QA og:image·ImageGallery (2026-08-25)
+
+- **tier1 crawler (view-source `?crawler=1`)** — `/place/tokyo/gallery` **PASS**: `x-crawler-meta: tier1-place` · title `도쿄 여행 사진 · 갤러리` · og:image Unsplash slug URL(전역 `og-image.png` 아님) · `ImageGallery`+`ImageObject` JSON-LD in `<head>`
+- **tier2 phuket (view-source)** — `/place/phuket/gallery?crawler=1` **의도대로**: tier2는 crawler meta map 밖 → 초기 HTML은 전역 meta 유지( smoke `tier2 slug not in meta map` ). SPA 로드 후 Helmet·JSON-LD는 **DevTools** 확인
+- **phuket SPA 기대값**(DevTools): og:image pool `…/photo-1528127269322…` 또는 갤러리 hero URL · `script[data-schema-type="ImageGallery"]` (이미지 fetch 후)
+- **VERIFY**: smoke 3종 재실행 PASS
+- **잔여(사람)**: phuket 갤러리 탭 DevTools 1회 · GSC URL Inspection tier1 gallery 재크롤

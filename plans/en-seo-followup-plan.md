@@ -174,22 +174,24 @@ npm run audit:place-seo-en            # #3 이후
 
 ## 9. 핸드오프
 
-**세션** `검색노출 #10, OG·스키마`  
-**main** 최신 · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
+**세션** `검색노출 #10, PROD QA — og:image·ImageGallery`  
+**main** `3b1816a8` · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
 **인덱스** [`feature-handoff-index.md`](./feature-handoff-index.md) 「검색노출」행
 
 | | |
 |--|--|
-| **완료 (#10)** | slug og:image SSOT · gallery ImageGallery/ImageObject · crawler inject |
-| **사람 QA** | `/place/phuket/gallery` og:image·JSON-LD · view-source `?crawler=1` `/place/tokyo/gallery` |
-| **다음** | GSC baseline CSV · PROD meta·schema 재크롤 |
+| **완료 (#10)** | slug og:image SSOT · gallery ImageGallery/ImageObject · tier1 crawler inject |
+| **PROD QA** | view-source `?crawler=1` `/place/tokyo/gallery` PASS(og:image·ImageGallery JSON-LD) · phuket tier2=SPA only |
+| **잔여(사람)** | `/place/phuket/gallery` DevTools og:image·JSON-LD 1회 · GSC URL Inspection tier1 gallery |
+| **다음 (#11)** | GSC baseline CSV · tier2 pop70–79 EN ~70 slug 백로그 |
 
-**다음 제시어 (PROD QA)**:
+**다음 제시어 (#11)**:
 
 ```
-검색노출 #10, PROD QA — og:image·ImageGallery
+검색노출 #11, GSC baseline·tier2 EN 잔여
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · www.gateo.kr/place/phuket/gallery · view-source ?crawler=1
+main · GSC URL Inspection · tier2 pop70–79 ~70 slug
+금지: tier2 crawler inject(합의 전)
 ```

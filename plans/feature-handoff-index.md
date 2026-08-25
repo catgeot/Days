@@ -40,23 +40,24 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 
 | | |
 |--|--|
-| **상태** | **#10 완료** · **PROD QA og:image·schema** 다음 |
+| **상태** | **#10 PROD QA PASS**(tier1 crawler) · phuket DevTools·GSC baseline 잔여 |
 | **브랜치** | **#1~#10 → `main`** — [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2 SSOT |
 | **시작 필수** | `git fetch origin main && git pull --rebase origin main` |
-| **main** | `f2953e86` |
+| **main** | `3b1816a8` |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2·§9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
-| **PROD QA** | `https://www.gateo.kr/rss-en.xml` · `rss.xml` item link `/gallery` · view-source `?crawler=1` |
-| **VERIFY** | `smoke:rss-canonical` · `smoke:place-seo-en` · `build` |
+| **PROD QA** | view-source `?crawler=1` `/place/tokyo/gallery` ✅ · phuket SPA DevTools og:image·ImageGallery(사람) |
+| **VERIFY** | `smoke:crawler-place-meta` · `smoke:place-seo-en` · `build` |
 
-**다음 제시어 (PROD QA)**:
+**다음 제시어 (#11 GSC·tier2 백로그)**:
 
 ```
-검색노출 #10, PROD QA — og:image·ImageGallery
+검색노출 #11, GSC baseline·tier2 EN 잔여
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · www.gateo.kr/place/phuket/gallery · view-source ?crawler=1
+main · GSC URL Inspection · tier2 pop70–79 ~70 slug
+금지: tier2 crawler inject(합의 전)
 ```
 
 ---
