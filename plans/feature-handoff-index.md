@@ -42,7 +42,7 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 |--|--|
 | **상태** | **#17 자유여행 intent 완료** · PROD QA planner·wiki crawler |
 | **브랜치** | **`main`** |
-| **main** | (push 후 SHA) |
+| **main** | `92ca5307` |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
 | **PROD QA (#17)** | view-source `?crawler=1` — `/place/tokyo/planner` · `/place/tokyo/wiki` |
