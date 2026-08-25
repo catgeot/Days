@@ -42,7 +42,7 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 |--|--|
 | **상태** | **#15 허브 crawler 완료** · scenic·explore view-source inject |
 | **브랜치** | **`main`** |
-| **main** | (push 후 SHA) |
+| **main** | `e33c2a4f` |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
 | **PROD QA (#15)** | `/korea/theme/scenic?crawler=1` · `/explore?crawler=1` view-source |
