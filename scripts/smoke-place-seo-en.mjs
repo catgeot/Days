@@ -98,6 +98,20 @@ assert(Boolean(enJson.seo?.defaultKeywords), 'en locale has default SEO keywords
 const indexHtml = readFileSync(join(root, 'index.html'), 'utf8');
 assert(indexHtml.includes('Phuket travel photos'), 'index.html hidden EN links for Phuket');
 assert(indexHtml.includes('Angkor Wat photos'), 'index.html hidden EN links for Angkor Wat');
+assert(
+  indexHtml.includes('<!-- GATEO_STATIC_KO_LINKS:START -->'),
+  'index.html has static KO link markers',
+);
+const koGalleryLinks = (indexHtml.match(/href="\/place\/[^"]+\/gallery">[^<]+갤러리/g) || []).length;
+assert(koGalleryLinks >= 64, `index.html tier1 KO gallery links (got ${koGalleryLinks})`);
+assert(
+  indexHtml.includes('/place/tokyo/gallery') && indexHtml.includes('도쿄 여행 사진'),
+  'index.html tokyo KO gallery static link',
+);
+assert(
+  indexHtml.includes('/place/bangkok/planner') && indexHtml.includes('방콕 여행</a>'),
+  'index.html bangkok KO travel static link',
+);
 
 const sitemap = readFileSync(join(root, 'public/sitemap.xml'), 'utf8');
 assert(

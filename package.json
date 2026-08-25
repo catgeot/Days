@@ -8,6 +8,7 @@
     "dev:http": "set DEV_SSL=0&& set BROWSER=chrome&& vite",
     "build": "node scripts/generate-sitemap.cjs && vite build && node scripts/verify-sitemap-dist.mjs && node scripts/verify-globe-engine-build.mjs",
     "generate:sitemap": "node scripts/generate-sitemap.cjs",
+    "generate:index-static-links": "node scripts/generate-index-static-links.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "audit:airports": "node scripts/audit-rental-airports.mjs",

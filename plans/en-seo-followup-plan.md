@@ -173,13 +173,14 @@ npm run audit:place-seo-en            # #3 이후
 
 ## 9. 핸드오프
 
-**세션** `검색노출 #5, explore·korea hreflang`  
+**세션** `검색노출 #8, 정적링크·baseline`  
 **main** 최신 · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
 **인덱스** [`feature-handoff-index.md`](./feature-handoff-index.md) 「검색노출」행
 
 | | |
 |--|--|
-| **완료 (#5)** | `I18N_HUB_PATHS` 9경로 · sitemap explore·korea/theme hreflang · smoke 확장 |
+| **완료 (#8)** | `generate:index-static-links` · tier1 64×intent(gallery·travel) KO 링크 128 · GSC baseline CSV 템플릿 |
+| **사람** | GSC URL Inspection — `scripts/data/gsc-seo-baseline-template.csv` 복사 → `scripts/outputs/gsc-seo-baseline.csv`에 상태 기록 |
 | **다음 (#6)** | 크롤러 HTML MVP — `cursor/en-seo` · Edge middleware |
 
 **다음 제시어 (#6)**:
