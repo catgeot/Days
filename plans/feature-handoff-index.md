@@ -43,7 +43,7 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 | **상태** | **#5 완료** (explore·korea hreflang) · **#6 크롤러 HTML MVP** 다음 |
 | **브랜치** | **#1~#5·#8~#9 → `main`** · **#6~#7 → `cursor/en-seo`** (+ PR) — [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2 SSOT |
 | **시작 필수** | `git fetch origin main && git pull --rebase origin main` |
-| **main** | push 후 SHA 갱신 |
+| **main** | `8fd8d7e7` |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2·§9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
 | **PROD QA** | `/explore?lang=en` · `/korea/theme/scenic?lang=en` — sitemap hreflang · Helmet alternate |
