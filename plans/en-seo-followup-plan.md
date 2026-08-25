@@ -109,6 +109,10 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | L6 | `/en/` prefix 없음 (합의 후) | 중 |
 | L7 | ~~전역 og:image~~ | ✅ (#10) |
 | L8 | GSC baseline 없음 | 운영 |
+| L9 | **허브 crawler** — scenic·explore·curation view-source | 중 (#14–#15) |
+| L10 | **큐레이션·/blog** sitemap·Helmet 없음 | 중 (#15) |
+| L11 | **wiki·팁** intent·sitemap 약함 | 낮~중 (#16) |
+| L12 | **/logbook vs /blog** sitemap 불일치 | 낮 (#15) |
 
 ---
 
@@ -132,6 +136,10 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | **#11** | `검색노출 #11, tier2 crawler 배치1` | crawler meta **+43** tier2 pop≥80 (phuket 등) · view-source og:image·ImageGallery | `smoke:crawler-place-meta` · `build` | main |
 | **#12** | `검색노출 #12, tier2 crawler 배치2+` | pop70–79 등 잔여 tier2 (~166) · 배치당 40 slug | smoke · view-source | main |
 | **#13** | `검색노출 #13, 항공 경로 SEO` (제안) | `flight-route` intent → planner · ICN→IATA title/keywords · crawler route snippet | smoke · view-source | main |
+| **#14** | `검색노출 #14, 허브 crawler` | middleware **`/korea/theme/scenic`** · **`/explore`** · hub meta SSOT | view-source · smoke | main |
+| **#15** | `검색노출 #15, 큐레이션·로그북 SEO` | `/blog/curation` Helmet · sitemap `/blog` · logbook URL 정합 | smoke · build | main |
+| **#16** | `검색노출 #16, wiki·팁 intent` | wiki keywords(자유여행 팁·현지 팁) · 선택 wiki sitemap | smoke | main |
+| **#17** | `검색노출 #17, explore 카테고리` | 대륙×테마 title/desc · index EN 링크 | smoke · sitemap | main |
 
 **권장 순서**: #1 → … → #10 → **#11 tier2 crawler** → #12. GSC baseline·tier2 EN 잔여는 병행.
 
@@ -216,10 +224,9 @@ npm run audit:place-seo-en            # #3 이후
 
 | | |
 |--|--|
-| **완료 (#11)** | crawler meta tier1 64 + **tier2 pop≥80 43** (107 slug) · phuket view-source og:image·ImageGallery |
-| **잔여 tier2** | pop&lt;80 **~166 slug** — #12 배치(40/세션) |
-| **PROD QA** | 배포 후 `/place/phuket/gallery?crawler=1` view-source · GSC tier1·tier2 high-pop gallery |
-| **다음 (#12)** | tier2 crawler pop70–79 배치1 · GSC baseline |
+| **완료 (#11)** | tier2 crawler pop≥80 · main push |
+| **백로그** | #12 tier2 crawler 잔여 · **#13 항공 경로** · **#14–#17 허브·큐레이션·팁·explore** (§1.4) |
+| **다음 (#12)** | tier2 pop70–79 crawler 40 slug |
 
 **다음 제시어 (#12)**:
 
@@ -228,5 +235,14 @@ npm run audit:place-seo-en            # #3 이후
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · tier2 pop70–79 crawler meta 40 slug · PROD phuket view-source 재확인
+main · tier2 pop70–79 crawler meta 40 slug
+```
+
+**허브 SEO 착수 시 (#14)**:
+
+```
+검색노출 #14, 허브 crawler — 명승·explore
+@plans/feature-handoff-index.md
+@plans/en-seo-followup-plan.md
+view-source ?crawler=1 · /korea/theme/scenic · /explore
 ```
