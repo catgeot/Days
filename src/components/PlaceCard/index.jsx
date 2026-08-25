@@ -9,6 +9,7 @@ import { useLocale } from '../../i18n/LocaleProvider';
 import {
   getPlaceSeoKeywords,
   getPlaceTabSeoDescription,
+  getPlaceTabSeoTitle,
 } from '../../pages/Home/lib/placeSeoText.js';
 
 const PlaceCard = () => {
@@ -52,17 +53,18 @@ const PlaceCard = () => {
     ? currentTab
     : 'gallery';
   const locationDesc = getPlaceTabSeoDescription(contextLocation, locale, tabKey, t);
-  const tabSuffix = t(`place.tab.${tabKey}.suffix`);
+  const seoTitle = getPlaceTabSeoTitle(contextLocation, locale, tabKey);
   const locationImage = contextLocation.thumbnail || contextLocation.image || `https://source.unsplash.com/1200x630/?${encodeURIComponent(contextLocation.name_en || locationName)}`;
-  const seoKeywords = getPlaceSeoKeywords(contextLocation, locale);
+  const seoKeywords = getPlaceSeoKeywords(contextLocation, locale, tabKey);
+  const seoPath = `/place/${slug}/${tabKey}`;
 
   return (
     <>
       <SEO
-        title={`${locationName} ${tabSuffix}`}
+        title={seoTitle}
         description={locationDesc}
         keywords={seoKeywords}
-        url={`/place/${slug}${tab ? `/${tab}` : ''}`}
+        url={seoPath}
         image={locationImage}
         location={contextLocation}
       />

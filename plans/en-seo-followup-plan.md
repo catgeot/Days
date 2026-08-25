@@ -2,7 +2,9 @@
 
 **세션 표기**: `영문 SEO #{N}, {단계}`  
 **브랜치**: 짧은 SSOT·스모크 → **`main` 직행** · prerender/URL prefix 등 구조 변경 → **`cursor/en-seo`** (+ PR)  
-**선행 완료**: main `3cd50468` · `22c7e667` (2026-08-25) — `placeSeoEnOverrides` · Helmet keywords · sitemap place hreflang · `smoke:place-seo-en`
+**선행 완료**: main `3cd50468` · `22c7e667` · **탭 SEO** (2026-08-25) — `getPlaceTabSeoTitle` · gallery/planner sitemap · KO/EN 「지명+여행/갤러리/플래너」 meta
+
+**범위 (명확화)**: **홈 내부 검색**은 지명·지역 매칭만으로 충분 — **복합 쿼리 파서는 범위外**. 본 플랜 = **외부 검색엔진**(Google·Naver)에서 「여행지명 + 여행/갤러리/플래너/photos/travel」 노출.
 
 ---
 
@@ -10,9 +12,9 @@
 
 | 질문 | 답 |
 |------|----|
-| 지금 PROD에 뭐가 올라갔나? | tier1+phuket+galapagos **영문 desc/keywords** · PlaceCard **Helmet·써머리·갤러리 overview** locale 연동 · **`/place/*` sitemap hreflang** |
-| 아직 왜 구글에 약한가? | **SPA** — 크롤러가 JS 전 Helmet을 못 읽음 · **tier2+** 템플릿 폴백 · **RSS·정적 index** 한국어 중심 · **탭 URL** 미분리(갤러리/플래너 개별 인덱싱 제한) |
-| 우선순위? | **A PROD QA** → **B tier2 커버** → **C 크롤러용 HTML** → **D sitemap/RSS** → **E(합의) `/en/` URL** |
+| 지금 PROD에 뭐가 올라갔나? | tier1+phuket+galapagos EN copy · **탭별 SEO title/description/keywords** (KO·EN) · sitemap **`/place/:slug/gallery`·`/planner`** · index.html 크롤러 링크 |
+| 아직 왜 구글에 약한가? | **SPA** — JS 전 정적 HTML 한계 · **tier2+** EN 폴백 · **인덱싱·순위**는 GSC 재크롤 후 확인 |
+| 우선순위? | **#1 PROD QA** → **#2 tier2 EN** → **#3 크롤러 HTML(prerender)** → **#4 explore/korea hreflang·RSS** |
 
 ---
 
@@ -27,17 +29,19 @@
 | Helmet | [`src/components/SEO/index.jsx`](../src/components/SEO/index.jsx) — keywords · JSON-LD locale |
 | UI 써머리 | PlaceCardSummary · Gallery overview — `getLocalizedPlaceDesc` |
 | 정적 크롤러 | [`index.html`](../index.html) — EN 숨김 링크 블록 (Phuket · Galapagos · Angkor · Korea) |
-| Sitemap | [`scripts/generate-sitemap.cjs`](../scripts/generate-sitemap.cjs) — `/place/*` ko/en/x-default |
+| Sitemap | [`scripts/generate-sitemap.cjs`](../scripts/generate-sitemap.cjs) — `/place/:slug` · **`/gallery`** · **`/planner`** + hreflang |
+| 탭 SEO | `getPlaceTabSeoTitle` · `getPlaceTabSeoKeywords` — 「푸켓 여행」「푸켓 갤러리」 등 외부 검색어 정렬 |
 | 검증 | `npm run smoke:place-seo-en` |
 
-### 1.2 샘플 검색 의도 — 배포 후 기대 노출
+### 1.2 샘플 — **외부 검색** 기대 스니펫 (JS 렌더·재크롤 후)
 
-| 검색 | URL | title / description 요약 |
-|------|-----|---------------------------|
-| Phuket travel | `/place/phuket?lang=en` | `Phuket Photo gallery \| GATEO` · Andaman beaches · diving · nightlife |
-| Galapagos photos | `/place/galapagos/gallery?lang=en` | `Browse Galapagos travel photos...` · Darwin · wildlife |
-| Angkor Wat photos | `/place/angkor-wat/gallery?lang=en` | temple · sunrise · Khmer heritage |
-| Korea festivals | `/korea?lang=en` | `Korea festivals \| GATEO` · season/region hub |
+| 검색 | URL | `<title>` (Helmet) |
+|------|-----|---------------------|
+| 푸켓 갤러리 | `/place/phuket/gallery` | `푸켓 여행 사진 · 갤러리 \| GATEO` |
+| 푸켓 여행 | `/place/phuket/planner` | `푸켓 여행 · 준비 가이드 \| GATEO` |
+| Phuket travel photos | `/place/phuket/gallery?lang=en` | `Phuket travel photos · gallery \| GATEO` |
+| Angkor Wat photos | `/place/angkor-wat/gallery?lang=en` | `Angkor Wat travel photos · gallery \| GATEO` |
+| Korea festivals | `/korea?lang=en` | `Korea festivals \| GATEO` |
 
 ### 1.3 잔여 한계 (이 플랜의 대상)
 
@@ -47,7 +51,7 @@
 | L2 | **tier2+ (~207)** — `desc_en` 없으면 짧은 EN 템플릿만 | 롱테일 영문 검색 스니펫 품질 | 중 |
 | L3 | **RSS** — ko only · [`generate-sitemap.cjs`](../scripts/generate-sitemap.cjs) | 네이버·피드 구독 EN 미대응 | 낮~중 |
 | L4 | **sitemap hreflang** — `/explore/*` · `/korea/theme/*` 등 미포함 | locale alternate 불완전 | 중 |
-| L5 | **탭 딥링크** — `/place/:slug/:tab`는 있으나 구버전 가이드처럼 query 미정립 · 공유·인덱싱 일관성 | gallery vs planner 검색 분리 약함 | 중 |
+| L5 | ~~탭 URL sitemap·title~~ | ✅ gallery/planner sitemap · compound title/keywords | — |
 | L6 | **URL `?lang=en`** — `/en/place/...` prefix 없음 | 영어권 SEO·공유 URL 직관성 · GSC locale 리포트 | 중 (합의 후) |
 | L7 | **OG image** — 전역 `og-image.png` | destination별 SNS 미리보기 | 낮 |
 | L8 | **측정** — GSC hreflang·영문 쿼리 baseline 없음 | 개선 검증 불가 | 운영 |

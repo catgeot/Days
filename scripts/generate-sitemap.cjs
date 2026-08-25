@@ -110,14 +110,25 @@ function generateSitemap() {
     priority: '0.8'
   });
 
-  // 각 여행지 페이지
-  travelSpotsData.forEach(spot => {
-    urls.push({
-      loc: `${baseUrl}/place/${spot.slug}`,
-      lastmod: today,
-      changefreq: 'weekly',
-      priority: spot.tier === 1 ? '0.9' : spot.tier === 2 ? '0.8' : '0.7'
-    });
+  // 각 여행지 — 기본·갤러리·플래너 (외부 검색 「지명+여행/갤러리/플래너」)
+  const placeTabSeoRoutes = ['', '/gallery', '/planner'];
+
+  travelSpotsData.forEach((spot) => {
+    const basePriority = spot.tier === 1 ? 0.9 : spot.tier === 2 ? 0.8 : 0.7;
+    for (const suffix of placeTabSeoRoutes) {
+      const isGallery = suffix === '/gallery';
+      const isPlanner = suffix === '/planner';
+      urls.push({
+        loc: `${baseUrl}/place/${spot.slug}${suffix}`,
+        lastmod: today,
+        changefreq: 'weekly',
+        priority: isGallery
+          ? Math.max(basePriority - 0.05, 0.65).toFixed(2)
+          : isPlanner
+            ? Math.max(basePriority - 0.1, 0.6).toFixed(2)
+            : String(basePriority),
+      });
+    }
   });
 
   // 카테고리별 탐색 페이지

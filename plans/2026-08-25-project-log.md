@@ -10,4 +10,10 @@
 - **커밋**: `3cd50468` · `22c7e667` — **main push 완료** (2026-08-25)
 - **후속 플랜**: [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) — SPA prerender · tier2 · RSS · `/en/` prefix
 
-**사람 QA**: PROD 배포 후 `/?lang=en` · `/place/phuket/gallery?lang=en` · `/korea?lang=en` 페이지 소스에서 title/description/keywords·써머리 영문 확인
+**사람 QA**: PROD 배포 후 view-source — `/place/phuket/gallery` · `/place/phuket/planner?lang=en` title·keywords·description
+
+## 외부 검색 — 탭별 title·sitemap (2026-08-25)
+
+- **범위**: 홈 내부 검색 변경 없음 · **Google/Naver** 「지명+여행/갤러리/플래너」용 Helmet·sitemap
+- **조치**: `getPlaceTabSeoTitle` · 탭별 keywords · canonical `/place/:slug/:tab` · sitemap gallery/planner ×273 · index KO 링크
+- **VERIFY**: `smoke:place-seo-en` · `build` PASS

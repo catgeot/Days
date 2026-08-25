@@ -13,6 +13,7 @@ import {
   getLocalizedPlaceDesc,
   getPlaceSeoKeywords,
   getPlaceTabSeoDescription,
+  getPlaceTabSeoTitle,
 } from '../src/pages/Home/lib/placeSeoText.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -52,8 +53,17 @@ assert(/galapagos|darwin|wildlife|ecuador/i.test(galapagosDesc), 'galapagos EN d
 const angkorGallery = getPlaceTabSeoDescription(angkor, 'en', 'gallery', (k) => k);
 assert(/photo|angkor/i.test(angkorGallery), 'angkor gallery SEO leads with photo intent');
 
-const angkorKeywords = getPlaceSeoKeywords(angkor, 'en');
+const angkorKeywords = getPlaceSeoKeywords(angkor, 'en', 'gallery');
 assert(/Angkor Wat/i.test(angkorKeywords), 'angkor keywords include destination name');
+assert(/travel photos|gallery/i.test(angkorKeywords), 'angkor gallery keywords include photo intent');
+
+const phuketTitleKo = getPlaceTabSeoTitle(phuket, 'ko', 'gallery');
+assert(/푸켓/.test(phuketTitleKo) && /갤러리|사진/.test(phuketTitleKo), 'phuket KO gallery title for external search');
+const phuketPlannerKo = getPlaceTabSeoTitle(phuket, 'ko', 'planner');
+assert(/푸켓/.test(phuketPlannerKo) && /여행/.test(phuketPlannerKo), 'phuket KO planner title for 「푸켓 여행」');
+
+const phuketKwKo = getPlaceSeoKeywords(phuket, 'ko', 'gallery');
+assert(/푸켓.*갤러리|푸켓.*여행/.test(phuketKwKo.replace(/\s/g, '')), 'phuket KO gallery keywords compound');
 
 const seoJs = readFileSync(join(root, 'src/components/SEO/index.jsx'), 'utf8');
 assert(seoJs.includes('meta name="keywords"'), 'SEO component renders keywords meta');
@@ -62,13 +72,17 @@ const enJson = JSON.parse(readFileSync(join(root, 'src/i18n/locales/en.json'), '
 assert(Boolean(enJson.seo?.defaultKeywords), 'en locale has default SEO keywords');
 
 const indexHtml = readFileSync(join(root, 'index.html'), 'utf8');
-assert(indexHtml.includes('Phuket travel guide'), 'index.html hidden EN links for Phuket');
+assert(indexHtml.includes('Phuket travel photos'), 'index.html hidden EN links for Phuket');
 assert(indexHtml.includes('Angkor Wat photos'), 'index.html hidden EN links for Angkor Wat');
 
 const sitemap = readFileSync(join(root, 'public/sitemap.xml'), 'utf8');
 assert(
-  sitemap.includes('/place/phuket') && sitemap.includes('/place/phuket?lang=en'),
-  'sitemap phuket has hreflang en (regenerate sitemap if FAIL)',
+  sitemap.includes('/place/phuket/gallery') && sitemap.includes('/place/phuket/planner'),
+  'sitemap includes phuket gallery and planner tab URLs',
+);
+assert(
+  sitemap.includes('/place/phuket/gallery?lang=en'),
+  'sitemap phuket gallery has hreflang en (regenerate sitemap if FAIL)',
 );
 
 const t = (key, opts) => {

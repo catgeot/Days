@@ -28,6 +28,63 @@ function getCategory(location) {
   return location?.primaryCategory || location?.category || location?.categories?.[0] || '';
 }
 
+const TAB_INTENT_KO = {
+  gallery: ['여행', '갤러리', '사진', '여행 사진'],
+  video: ['여행', '영상', '여행 영상'],
+  planner: ['여행', '플래너', '여행 준비', '여행 가이드'],
+  wiki: ['여행', '여행 스케치', '가이드'],
+  reviews: ['여행', '후기', '리뷰'],
+};
+
+const TAB_INTENT_EN = {
+  gallery: ['travel', 'photos', 'gallery', 'pictures'],
+  video: ['travel', 'video', 'videos'],
+  planner: ['travel', 'trip planner', 'plan a trip'],
+  wiki: ['travel guide', 'travel sketch'],
+  reviews: ['travel', 'reviews'],
+};
+
+/**
+ * External search — tab-aware page title (before "| GATEO").
+ * Matches queries like 「푸켓 여행」「푸켓 갤러리」「Phuket travel photos」.
+ */
+export function getPlaceTabSeoTitle(location, locale, tabKey) {
+  const koName = getLocalizedPlaceName(location, 'ko') || location?.name || '';
+  const enName = getLocalizedPlaceName(location, 'en') || location?.name_en || koName;
+
+  if (locale === 'en') {
+    switch (tabKey) {
+      case 'gallery':
+        return `${enName} travel photos · gallery`;
+      case 'video':
+        return `${enName} travel videos`;
+      case 'planner':
+        return `${enName} travel · trip planner`;
+      case 'wiki':
+        return `${enName} travel sketch · guide`;
+      case 'reviews':
+        return `${enName} travel reviews`;
+      default:
+        return `${enName} travel guide`;
+    }
+  }
+
+  switch (tabKey) {
+    case 'gallery':
+      return `${koName} 여행 사진 · 갤러리`;
+    case 'video':
+      return `${koName} 여행 영상`;
+    case 'planner':
+      return `${koName} 여행 · 준비 가이드`;
+    case 'wiki':
+      return `${koName} 여행 스케치`;
+    case 'reviews':
+      return `${koName} 여행 후기`;
+    default:
+      return `${koName} 여행 가이드`;
+  }
+}
+
 /**
  * Locale-aware place blurb for summary cards and rich snippets.
  */
@@ -107,7 +164,13 @@ export function getPlaceTabSeoDescription(location, locale, tabKey, t) {
       return `${name} 여행 사진과 갤러리. ${richDesc}`;
     }
     if (tabKey === 'video') {
-      return `${name} 여행 영상. ${richDesc}`;
+      return `${name} 여행 영상과 현장 Vlog. ${richDesc}`;
+    }
+    if (tabKey === 'planner') {
+      return `${name} 여행 준비·항공·숙소·현지 팁. ${richDesc}`;
+    }
+    if (tabKey === 'reviews') {
+      return `${name} 여행 후기와 평점. ${richDesc}`;
     }
     return richDesc;
   }
@@ -115,6 +178,21 @@ export function getPlaceTabSeoDescription(location, locale, tabKey, t) {
   return t(`place.tab.${tabKey}.desc`, { name });
 }
 
-export function getPlaceSeoKeywords(location, locale) {
-  return getLocalizedPlaceKeywords(location, locale).join(', ');
+export function getPlaceTabSeoKeywords(location, locale, tabKey) {
+  const koName = getLocalizedPlaceName(location, 'ko') || location?.name || '';
+  const enName = getLocalizedPlaceName(location, 'en') || location?.name_en || '';
+  const base = getLocalizedPlaceKeywords(location, locale);
+  const intents = locale === 'en' ? TAB_INTENT_EN[tabKey] || [] : TAB_INTENT_KO[tabKey] || [];
+  const displayName = locale === 'en' ? enName : koName;
+
+  const compound =
+    locale === 'en'
+      ? intents.map((w) => `${displayName} ${w}`).concat(intents)
+      : intents.map((w) => `${displayName} ${w}`).concat(intents);
+
+  return [...new Set([...base, ...compound, displayName, enName].filter(Boolean))];
+}
+
+export function getPlaceSeoKeywords(location, locale, tabKey = 'gallery') {
+  return getPlaceTabSeoKeywords(location, locale, tabKey).join(', ');
 }
