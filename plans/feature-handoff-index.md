@@ -42,7 +42,7 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 |--|--|
 | **상태** | **#19 GSC baseline·tier2 EN batch3 완료** · tier2 EN 잔여 30 |
 | **브랜치** | **`main`** |
-| **main** | (push 후 SHA) |
+| **main** | `024e605a` |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
 | **사람 QA (#19)** | GSC URL Inspection — `scripts/data/gsc-seo-baseline-template.csv` 174 URL |
