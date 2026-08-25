@@ -65,3 +65,11 @@
 - **커밋**: `605a2ba4` · PR #151
 - **Preview**: `www.gateo.kr/qa/en-seo` → `/place/tokyo/gallery?crawler=1` view-source
 - **다음**: `검색노출 #7, 크롤러 HTML 확장` — `/` · `/korea` · tier1 base
+
+## 검색노출 #7 — 크롤러 HTML 확장 (2026-08-25)
+
+- **브랜치**: `cursor/en-seo`
+- **조치**: middleware matcher `/` · `/korea` · `/place/:slug`(tier1 base) · `crawlerHubMeta.generated.js` · `resolveCrawlerMeta.js` · smoke Googlebot UA 4경로
+- **VERIFY**: `smoke:crawler-place-meta` · `smoke:place-seo-en` · `build` PASS
+- **Preview QA**: view-source `?crawler=1` — `/` · `/korea` · `/place/tokyo` · `/place/tokyo/gallery`
+- **다음**: `검색노출 #8, 정적링크·baseline` (`main`)
