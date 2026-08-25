@@ -164,7 +164,7 @@
 ## 검색노출 #14 — 항공 경로 SEO (2026-08-25)
 
 - **조치**: `placeSearchIntent` `flight-route` intent(planner) · `placeFlightRouteSeo.js` — ICN→IATA desc·keywords · crawler planner meta 재생성
-- **샘플**: tokyo ICN→HND 직항 · phuket ICN→HKG·BKK→HKT 경유
+- **샘플**: tokyo ICN→HND 직항 · phuket ICN→HKT (runtime SSOT)
 - **VERIFY**: `smoke:place-seo-en` · `smoke:crawler-place-meta` · `smoke:rss-canonical` · `build` PASS
 - **PROD QA**: view-source `?crawler=1` — `/place/tokyo/planner` · `/place/phuket/planner` description·keywords에 ICN→IATA
 - **다음**: `검색노출 #15, 허브 crawler`
