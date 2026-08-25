@@ -42,8 +42,8 @@ function googlebotRequest(pathname, locale = 'ko') {
 }
 
 assert(
-  getCrawlerPlaceMetaSlugCount() === 147,
-  'crawler meta covers tier1 64 + tier2 pop≥80 (43) + pop70–79 top40 (147 slugs)',
+  getCrawlerPlaceMetaSlugCount() === 187,
+  'crawler meta covers tier1 64 + tier2 pop≥80 (43) + pop70–79 top40+next40 (187 slugs)',
 );
 
 const tokyoGalleryKo = resolveCrawlerMeta('/place/tokyo/gallery', 'ko');
@@ -97,7 +97,12 @@ assert(Boolean(seychellesGalleryKo?.title), 'seychelles tier2 pop79 gallery KO m
 assert(/세이셸|Seychelles/i.test(seychellesGalleryKo.title), 'seychelles gallery KO title localized');
 assert(Boolean(seychellesGalleryKo?.ogImage), 'seychelles gallery meta includes ogImage');
 
-assert(resolveCrawlerMeta('/place/hamburg/gallery', 'ko') === null, 'tier2 pop70–79 outside top40 not in crawler meta yet');
+const hamburgGalleryKo = resolveCrawlerMeta('/place/hamburg/gallery', 'ko');
+assert(Boolean(hamburgGalleryKo?.title), 'hamburg tier2 pop76 batch3 gallery KO meta resolved');
+assert(/함부르크|Hamburg/i.test(hamburgGalleryKo.title), 'hamburg gallery KO title localized');
+assert(Boolean(hamburgGalleryKo?.ogImage), 'hamburg gallery meta includes ogImage');
+
+assert(resolveCrawlerMeta('/place/bohol/gallery', 'ko') === null, 'tier2 pop70–79 outside top80 not in crawler meta yet');
 
 assert(parseCrawlerPath('/korea').kind === 'hub', 'korea parsed as hub');
 assert(getCrawlerMetaKind('/place/tokyo') === 'tier1-place-base', 'base path kind tag');

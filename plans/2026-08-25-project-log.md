@@ -129,3 +129,13 @@
 - **잔여**: tier2 pop70–79 **~69 slug** (3차 배치) · #13 항공 경로 · #14–#17 허브
 - **PROD QA**: `/place/seychelles/gallery?crawler=1` view-source — title·og:image·ImageGallery JSON-LD
 - **다음**: `검색노출 #12+, tier2 crawler 배치3`
+
+## 검색노출 #12+ — tier2 crawler 배치3 (2026-08-25)
+
+- **범위**: tier2 pop **70–79** 41–80위 **40 slug** → crawler meta (147→**187**)
+- **샘플**: hamburg · havana · lombok · mount-bromo (pop76)
+- **조치**: `generate-crawler-place-meta` batch3 로직 · smoke hamburg assert · bohol(81위) 미포함 확인
+- **VERIFY**: `smoke:crawler-place-meta` · `smoke:place-seo-en` · `smoke:rss-canonical` · `build` PASS
+- **잔여**: tier2 pop70–79 **29 slug** (4차) · #13 항공 경로 · #14–#17 허브
+- **PROD QA**: `/place/hamburg/gallery?crawler=1` view-source — title·og:image·ImageGallery JSON-LD
+- **다음**: `검색노출 #13, 항공 경로 crawler` 또는 tier2 pop70–79 4차

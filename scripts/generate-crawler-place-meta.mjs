@@ -62,25 +62,30 @@ const TABS = ['gallery', 'planner'];
 const LOCALES = ['ko', 'en'];
 const HUB_PATHS = ['/', '/korea'];
 
-/** tier1 전수 + tier2 pop≥80 (#11) + tier2 pop70–79 상위 40 (#12). 잔여 tier2는 후속 세션. */
+/** tier1 전수 + tier2 pop≥80 (#11) + tier2 pop70–79 40×2 (#12·#12+). 잔여 tier2는 후속 세션. */
 const TIER2_CRAWLER_BATCH1_MIN_POP = 80;
 const TIER2_CRAWLER_BATCH2_POP_MIN = 70;
 const TIER2_CRAWLER_BATCH2_POP_MAX = 79;
 const TIER2_CRAWLER_BATCH2_LIMIT = 40;
+const TIER2_CRAWLER_BATCH3_LIMIT = 40;
+
+const tier2Pop70to79Sorted = TRAVEL_SPOTS.filter(
+  (s) =>
+    s.tier === 2 &&
+    (s.popularity ?? 0) >= TIER2_CRAWLER_BATCH2_POP_MIN &&
+    (s.popularity ?? 0) <= TIER2_CRAWLER_BATCH2_POP_MAX,
+).sort(
+  (a, b) =>
+    (b.popularity ?? 0) - (a.popularity ?? 0) ||
+    String(a.slug).localeCompare(String(b.slug)),
+);
 
 const tier2Batch2Slugs = new Set(
-  TRAVEL_SPOTS.filter(
-    (s) =>
-      s.tier === 2 &&
-      (s.popularity ?? 0) >= TIER2_CRAWLER_BATCH2_POP_MIN &&
-      (s.popularity ?? 0) <= TIER2_CRAWLER_BATCH2_POP_MAX,
-  )
-    .sort(
-      (a, b) =>
-        (b.popularity ?? 0) - (a.popularity ?? 0) ||
-        String(a.slug).localeCompare(String(b.slug)),
-    )
-    .slice(0, TIER2_CRAWLER_BATCH2_LIMIT)
+  tier2Pop70to79Sorted.slice(0, TIER2_CRAWLER_BATCH2_LIMIT).map((s) => s.slug),
+);
+const tier2Batch3Slugs = new Set(
+  tier2Pop70to79Sorted
+    .slice(TIER2_CRAWLER_BATCH2_LIMIT, TIER2_CRAWLER_BATCH2_LIMIT + TIER2_CRAWLER_BATCH3_LIMIT)
     .map((s) => s.slug),
 );
 
@@ -88,7 +93,7 @@ function isCrawlerPlaceSpot(spot) {
   if (spot.tier === 1) return true;
   const pop = spot.popularity ?? 0;
   if (pop >= TIER2_CRAWLER_BATCH1_MIN_POP) return true;
-  return tier2Batch2Slugs.has(spot.slug);
+  return tier2Batch2Slugs.has(spot.slug) || tier2Batch3Slugs.has(spot.slug);
 }
 
 const crawlerSpots = TRAVEL_SPOTS.filter(isCrawlerPlaceSpot).sort((a, b) =>
@@ -99,6 +104,7 @@ const tier2Batch1Count = crawlerSpots.filter(
   (s) => s.tier === 2 && (s.popularity ?? 0) >= TIER2_CRAWLER_BATCH1_MIN_POP,
 ).length;
 const tier2Batch2Count = crawlerSpots.filter((s) => s.tier === 2 && tier2Batch2Slugs.has(s.slug)).length;
+const tier2Batch3Count = crawlerSpots.filter((s) => s.tier === 2 && tier2Batch3Slugs.has(s.slug)).length;
 
 const t = (key, opts = {}) => {
   if (key === 'place.fallback.destination') return 'Destination';
@@ -186,7 +192,7 @@ writeFileSync(
 
 console.log('generate:crawler-place-meta');
 console.log(
-  `  crawler slugs  ${crawlerSpots.length} (tier1 ${tier1Count} + tier2 pop≥${TIER2_CRAWLER_BATCH1_MIN_POP}: ${tier2Batch1Count} + pop${TIER2_CRAWLER_BATCH2_POP_MIN}–${TIER2_CRAWLER_BATCH2_POP_MAX} top${TIER2_CRAWLER_BATCH2_LIMIT}: ${tier2Batch2Count})`,
+  `  crawler slugs  ${crawlerSpots.length} (tier1 ${tier1Count} + tier2 pop≥${TIER2_CRAWLER_BATCH1_MIN_POP}: ${tier2Batch1Count} + pop${TIER2_CRAWLER_BATCH2_POP_MIN}–${TIER2_CRAWLER_BATCH2_POP_MAX} top${TIER2_CRAWLER_BATCH2_LIMIT}: ${tier2Batch2Count} + next${TIER2_CRAWLER_BATCH3_LIMIT}: ${tier2Batch3Count})`,
 );
 console.log(`  place entries ${crawlerSpots.length * TABS.length * LOCALES.length}`);
 console.log(`  hub entries   ${HUB_PATHS.length * LOCALES.length}`);
