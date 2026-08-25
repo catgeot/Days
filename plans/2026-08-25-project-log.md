@@ -149,3 +149,13 @@
 - **smoke**: count 216 · bohol assert ON · tier2 pop&lt;70 `santorini` null 유지
 - **리팩터**: batch2/3 Set → 단일 `INCLUDED` 카운터 (출력 187 동일)
 - **완료 후**: #14 항공 경로 · #15 허브 crawler
+
+## 검색노출 #13 — tier2 crawler 배치4 (2026-08-25)
+
+- **범위**: tier2 pop **70–79** 81–109위 **29 slug** → crawler meta (187→**216**)
+- **한 줄**: `TIER2_CRAWLER_POP70_79_INCLUDED` **80 → 109** · pop70–79 **전수 완료**
+- **샘플**: bohol · galapagos · seoul · ulaanbaatar
+- **smoke**: count **216** · bohol assert ON · tier2 pop&lt;70 `santorini` null
+- **VERIFY**: `smoke:crawler-place-meta` · `smoke:place-seo-en` · `smoke:rss-canonical` · `build` PASS
+- **PROD QA**: `/place/bohol/gallery?crawler=1` · `/place/galapagos/gallery?crawler=1` view-source
+- **다음**: `검색노출 #14, 항공 경로 SEO`

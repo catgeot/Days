@@ -68,7 +68,7 @@ const TIER2_CRAWLER_POP70_79_MIN = 70;
 const TIER2_CRAWLER_POP70_79_MAX = 79;
 /** pop70–79 전수 109. #12=40 · #12+=40 · #13=+29 → INCLUDED를 109로 올리면 tier2 crawler 여행지 배치 완료. */
 const TIER2_CRAWLER_POP70_79_TOTAL = 109;
-const TIER2_CRAWLER_POP70_79_INCLUDED = 80;
+const TIER2_CRAWLER_POP70_79_INCLUDED = 109;
 
 const tier2Pop70to79Sorted = TRAVEL_SPOTS.filter(
   (s) =>

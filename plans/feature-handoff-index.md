@@ -40,23 +40,23 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 
 | | |
 |--|--|
-| **상태** | **#13 tier2 crawler 배치4** 준비 완료 · 잔여 **29 slug** · `INCLUDED` 80→109 |
+| **상태** | **#13 tier2 crawler 배치4 완료** · pop70–79 **109/109** · crawler **216 slug** |
 | **브랜치** | **`main`** |
-| **main** | `fe1010a6` |
+| **main** | (push 후 SHA) |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §3 tier2 crawler · §9 |
-| **큐 SSOT** | [`scripts/data/tier2-crawler-pop70-79-queue.json`](../scripts/data/tier2-crawler-pop70-79-queue.json) |
+| **큐 SSOT** | [`scripts/data/tier2-crawler-pop70-79-queue.json`](../scripts/data/tier2-crawler-pop70-79-queue.json) — **remaining 0** |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
-| **PROD QA (#12+)** | `/place/hamburg/gallery?crawler=1` view-source (배포 후) |
-| **VERIFY (#13)** | `generate:crawler-place-meta` 216 · `smoke:crawler-place-meta` · `build` |
+| **PROD QA (#13)** | `/place/bohol/gallery?crawler=1` · `/place/galapagos/gallery?crawler=1` view-source |
+| **VERIFY** | `smoke:crawler-place-meta` 216 · `smoke:place-seo-en` · `build` |
 
-**다음 제시어 (#13)**:
+**다음 제시어 (#14)**:
 
 ```
-검색노출 #13, tier2 crawler 배치4 마무리
+검색노출 #14, 항공 경로 SEO
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · INCLUDED 80→109 · /place/bohol/gallery?crawler=1
+main · flight-route intent · view-source ?crawler=1
 ```
 
 ---

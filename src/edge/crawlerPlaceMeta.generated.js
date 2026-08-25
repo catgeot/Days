@@ -110,6 +110,116 @@ export default {
       }
     }
   },
+  "alice-springs": {
+    "gallery": {
+      "ko": {
+        "title": "앨리스스프링스 여행 사진 · 갤러리",
+        "description": "앨리스스프링스 여행 사진과 갤러리. 호주 대륙 정중앙 아웃백의 거점 도시입니다. 울루루·킹스캐니언·맥도널드 산맥 일정의 출발점으로, 사막 일출·별 관측·원주민 문화 체험이 인기입니다.",
+        "keywords": "오세아니아, 호주, 아웃백, 울루루, 레드센터, 앨리스스프링스 사진, 앨리스스프링스 갤러리, 앨리스스프링스 여행, 앨리스스프링스 여행 사진, 사진, 갤러리, 여행, 여행 사진, 앨리스스프링스, Alice Springs",
+        "canonicalUrl": "https://www.gateo.kr/place/alice-springs/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/alice-springs/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/alice-springs/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/alice-springs/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "앨리스스프링스",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "앨리스스프링스 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Alice Springs travel photos · gallery",
+        "description": "Browse Alice Springs travel photos and gallery images. Discover Alice Springs, Australia — a adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Alice Springs, Australia, Alice Springs travel, adventure, outdoors, hiking, GATEO, Alice Springs photos, Alice Springs gallery, Alice Springs pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/alice-springs/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/alice-springs/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/alice-springs/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/alice-springs/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Alice Springs",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Alice Springs travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "앨리스스프링스 여행 · 준비 가이드",
+        "description": "앨리스스프링스 여행 준비·항공·숙소·현지 팁. 호주 대륙 정중앙 아웃백의 거점 도시입니다. 울루루·킹스캐니언·맥도널드 산맥 일정의 출발점으로, 사막 일출·별 관측·원주민 문화 체험이 인기입니다.",
+        "keywords": "오세아니아, 호주, 아웃백, 울루루, 레드센터, 앨리스스프링스 여행, 앨리스스프링스 관광, 앨리스스프링스 플래너, 앨리스스프링스 여행 준비, 앨리스스프링스 여행 가이드, 앨리스스프링스 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 앨리스스프링스, Alice Springs",
+        "canonicalUrl": "https://www.gateo.kr/place/alice-springs/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/alice-springs/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/alice-springs/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/alice-springs/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "앨리스스프링스"
+      },
+      "en": {
+        "title": "Alice Springs travel · trip planner",
+        "description": "Plan a trip to Alice Springs — flights, stays, and local tips. Discover Alice Springs, Australia — a adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Alice Springs, Australia, Alice Springs travel, adventure, outdoors, hiking, GATEO, Alice Springs trip planner, Alice Springs plan a trip, Alice Springs trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/alice-springs/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/alice-springs/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/alice-springs/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/alice-springs/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Alice Springs"
+      }
+    }
+  },
   "amazon-rainforest": {
     "gallery": {
       "ko": {
@@ -2090,6 +2200,116 @@ export default {
       }
     }
   },
+  "bohol": {
+    "gallery": {
+      "ko": {
+        "title": "보홀 여행 사진 · 갤러리",
+        "description": "보홀 여행 사진과 갤러리. 필리핀의 숨겨진 보석으로 초콜릿 힐스, 세계에서 가장 작은 원숭이 안경원숭이, 맑은 바닷속 다이빙 명소를 자랑합니다.",
+        "keywords": "초콜릿힐스, 다이빙, 원숭이, 해변, 보홀 사진, 보홀 갤러리, 보홀 여행, 보홀 여행 사진, 사진, 갤러리, 여행, 여행 사진, 보홀, Bohol",
+        "canonicalUrl": "https://www.gateo.kr/place/bohol/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/bohol/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/bohol/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/bohol/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "보홀",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "보홀 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Bohol travel photos · gallery",
+        "description": "Browse Bohol travel photos and gallery images. Discover Bohol, Philippines — a beach and island getaway with photos, videos, and trip planning on GATEO.",
+        "keywords": "Bohol, Philippines, Bohol travel, beach, island, resort, vacation, GATEO, Bohol photos, Bohol gallery, Bohol pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/bohol/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/bohol/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/bohol/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/bohol/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Bohol",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Bohol travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "보홀 여행 · 준비 가이드",
+        "description": "보홀 여행 준비·항공·숙소·현지 팁. 필리핀의 숨겨진 보석으로 초콜릿 힐스, 세계에서 가장 작은 원숭이 안경원숭이, 맑은 바닷속 다이빙 명소를 자랑합니다.",
+        "keywords": "초콜릿힐스, 다이빙, 원숭이, 해변, 보홀 여행, 보홀 관광, 보홀 플래너, 보홀 여행 준비, 보홀 여행 가이드, 보홀 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 보홀, Bohol",
+        "canonicalUrl": "https://www.gateo.kr/place/bohol/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/bohol/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/bohol/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/bohol/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "보홀"
+      },
+      "en": {
+        "title": "Bohol travel · trip planner",
+        "description": "Plan a trip to Bohol — flights, stays, and local tips. Discover Bohol, Philippines — a beach and island getaway with photos, videos, and trip planning on GATEO.",
+        "keywords": "Bohol, Philippines, Bohol travel, beach, island, resort, vacation, GATEO, Bohol trip planner, Bohol plan a trip, Bohol trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/bohol/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/bohol/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/bohol/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/bohol/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Bohol"
+      }
+    }
+  },
   "bora-bora": {
     "gallery": {
       "ko": {
@@ -2747,6 +2967,226 @@ export default {
         ],
         "ogImage": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80",
         "placeName": "Brisbane"
+      }
+    }
+  },
+  "brunei": {
+    "gallery": {
+      "ko": {
+        "title": "브루나이 여행 사진 · 갤러리",
+        "description": "브루나이 여행 사진과 갤러리. 보르네오섬 북부에 있는 독립 왕국으로, 황금 돔 모스크·수상 마을·열대우림이 어우러진 소규모 목적지입니다. 말레이시아 사바(보르네오)와 입국·관문(BWN)이 다르며, 반다르스리브가완을 거점으로 프로보시스 원숭이·왕실 박물관·정글 투어를 즐기기 좋습니다.",
+        "keywords": "아시아, 브루나이, 보르네오섬, BWN, 술탄국, 브루나이 사진, 브루나이 갤러리, 브루나이 여행, 브루나이 여행 사진, 사진, 갤러리, 여행, 여행 사진, Brunei",
+        "canonicalUrl": "https://www.gateo.kr/place/brunei/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/brunei/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/brunei/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/brunei/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "브루나이",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "브루나이 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Brunei travel photos · gallery",
+        "description": "Browse Brunei travel photos and gallery images. Discover Brunei, Brunei — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Brunei, Brunei travel, heritage, landmark, temple, history, GATEO, Brunei photos, Brunei gallery, Brunei pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/brunei/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/brunei/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/brunei/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/brunei/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Brunei",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Brunei travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "브루나이 여행 · 준비 가이드",
+        "description": "브루나이 여행 준비·항공·숙소·현지 팁. 보르네오섬 북부에 있는 독립 왕국으로, 황금 돔 모스크·수상 마을·열대우림이 어우러진 소규모 목적지입니다. 말레이시아 사바(보르네오)와 입국·관문(BWN)이 다르며, 반다르스리브가완을 거점으로 프로보시스 원숭이·왕실 박물관·정글 투어를 즐기기 좋습니다.",
+        "keywords": "아시아, 브루나이, 보르네오섬, BWN, 술탄국, 브루나이 여행, 브루나이 관광, 브루나이 플래너, 브루나이 여행 준비, 브루나이 여행 가이드, 브루나이 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, Brunei",
+        "canonicalUrl": "https://www.gateo.kr/place/brunei/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/brunei/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/brunei/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/brunei/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "브루나이"
+      },
+      "en": {
+        "title": "Brunei travel · trip planner",
+        "description": "Plan a trip to Brunei — flights, stays, and local tips. Discover Brunei, Brunei — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Brunei, Brunei travel, heritage, landmark, temple, history, GATEO, Brunei trip planner, Brunei plan a trip, Brunei trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/brunei/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/brunei/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/brunei/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/brunei/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Brunei"
+      }
+    }
+  },
+  "brussels": {
+    "gallery": {
+      "ko": {
+        "title": "브뤼셀 여행 사진 · 갤러리",
+        "description": "브뤼셀 여행 사진과 갤러리. 유럽연합의 수도로 불리는 국제도시입니다. 그랑 플라스의 황금빛 길드 하우스는 유네스코 세계유산이며, 오줌싸개 소년 동상과 벨기에 와플, 초콜릿이 유명합니다. 르네 마그리트 박물관에서 초현실주의 예술을 감상할 수 있습니다.",
+        "keywords": "벨기에, 그랑플라스, 와플, 초콜릿, EU, 브뤼셀 사진, 브뤼셀 갤러리, 브뤼셀 여행, 브뤼셀 여행 사진, 사진, 갤러리, 여행, 여행 사진, 브뤼셀, Brussels",
+        "canonicalUrl": "https://www.gateo.kr/place/brussels/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/brussels/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/brussels/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/brussels/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "브뤼셀",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "브뤼셀 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Brussels travel photos · gallery",
+        "description": "Browse Brussels travel photos and gallery images. Discover Brussels, Belgium — a city travel guide with photos, videos, and trip planning on GATEO.",
+        "keywords": "Brussels, Belgium, Brussels travel, city guide, city break, sightseeing, GATEO, Brussels photos, Brussels gallery, Brussels pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/brussels/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/brussels/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/brussels/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/brussels/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Brussels",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Brussels travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "브뤼셀 여행 · 준비 가이드",
+        "description": "브뤼셀 여행 준비·항공·숙소·현지 팁. 유럽연합의 수도로 불리는 국제도시입니다. 그랑 플라스의 황금빛 길드 하우스는 유네스코 세계유산이며, 오줌싸개 소년 동상과 벨기에 와플, 초콜릿이 유명합니다. 르네 마그리트 박물관에서 초현실주의 예술을 감상할 수 있습니다.",
+        "keywords": "벨기에, 그랑플라스, 와플, 초콜릿, EU, 브뤼셀 여행, 브뤼셀 관광, 브뤼셀 플래너, 브뤼셀 여행 준비, 브뤼셀 여행 가이드, 브뤼셀 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 브뤼셀, Brussels",
+        "canonicalUrl": "https://www.gateo.kr/place/brussels/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/brussels/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/brussels/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/brussels/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "브뤼셀"
+      },
+      "en": {
+        "title": "Brussels travel · trip planner",
+        "description": "Plan a trip to Brussels — flights, stays, and local tips. Discover Brussels, Belgium — a city travel guide with photos, videos, and trip planning on GATEO.",
+        "keywords": "Brussels, Belgium, Brussels travel, city guide, city break, sightseeing, GATEO, Brussels trip planner, Brussels plan a trip, Brussels trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/brussels/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/brussels/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/brussels/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/brussels/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Brussels"
       }
     }
   },
@@ -4070,6 +4510,116 @@ export default {
       }
     }
   },
+  "corsica": {
+    "gallery": {
+      "ko": {
+        "title": "코르시카 여행 사진 · 갤러리",
+        "description": "코르시카 여행 사진과 갤러리. 프랑스령 지중해 섬으로 험준한 산과 아름다운 해변이 조화를 이룹니다. GR20 트레킹 코스로 유명하며, 나폴레옹의 고향이기도 합니다.",
+        "keywords": "지중해, 트레킹, 해변, 프랑스, 코르시카 사진, 코르시카 갤러리, 코르시카 여행, 코르시카 여행 사진, 사진, 갤러리, 여행, 여행 사진, 코르시카, Corsica",
+        "canonicalUrl": "https://www.gateo.kr/place/corsica/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/corsica/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/corsica/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/corsica/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "코르시카",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "코르시카 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Corsica travel photos · gallery",
+        "description": "Browse Corsica travel photos and gallery images. Discover Corsica, France — a beach and island getaway with photos, videos, and trip planning on GATEO.",
+        "keywords": "Corsica, France, Corsica travel, beach, island, resort, vacation, GATEO, Corsica photos, Corsica gallery, Corsica pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/corsica/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/corsica/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/corsica/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/corsica/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Corsica",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Corsica travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "코르시카 여행 · 준비 가이드",
+        "description": "코르시카 여행 준비·항공·숙소·현지 팁. 프랑스령 지중해 섬으로 험준한 산과 아름다운 해변이 조화를 이룹니다. GR20 트레킹 코스로 유명하며, 나폴레옹의 고향이기도 합니다.",
+        "keywords": "지중해, 트레킹, 해변, 프랑스, 코르시카 여행, 코르시카 관광, 코르시카 플래너, 코르시카 여행 준비, 코르시카 여행 가이드, 코르시카 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 코르시카, Corsica",
+        "canonicalUrl": "https://www.gateo.kr/place/corsica/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/corsica/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/corsica/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/corsica/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "코르시카"
+      },
+      "en": {
+        "title": "Corsica travel · trip planner",
+        "description": "Plan a trip to Corsica — flights, stays, and local tips. Discover Corsica, France — a beach and island getaway with photos, videos, and trip planning on GATEO.",
+        "keywords": "Corsica, France, Corsica travel, beach, island, resort, vacation, GATEO, Corsica trip planner, Corsica plan a trip, Corsica trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/corsica/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/corsica/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/corsica/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/corsica/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Corsica"
+      }
+    }
+  },
   "costa-rica": {
     "gallery": {
       "ko": {
@@ -4617,6 +5167,116 @@ export default {
         ],
         "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
         "placeName": "Delhi"
+      }
+    }
+  },
+  "diego-garcia": {
+    "gallery": {
+      "ko": {
+        "title": "디에고 가르시아 여행 사진 · 갤러리",
+        "description": "디에고 가르시아 여행 사진과 갤러리. 인도양 중앙에 위치한 영국령 환초로, 거대한 V자 모양의 섬입니다. 군사 구역으로 지정되어 일반인의 출입이 제한된 비밀스러운 곳입니다.",
+        "keywords": "자연/오지, 디에고 가르시아 사진, 디에고 가르시아 갤러리, 디에고 가르시아 여행, 디에고 가르시아 여행 사진, 사진, 갤러리, 여행, 여행 사진, 디에고 가르시아, Diego Garcia",
+        "canonicalUrl": "https://www.gateo.kr/place/diego-garcia/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/diego-garcia/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/diego-garcia/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/diego-garcia/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "디에고 가르시아",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "디에고 가르시아 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Diego Garcia travel photos · gallery",
+        "description": "Browse Diego Garcia travel photos and gallery images. Discover Diego Garcia, Indian Ocean — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Diego Garcia, Indian Ocean, Diego Garcia travel, wildlife, nature, national park, scenery, GATEO, Diego Garcia photos, Diego Garcia gallery, Diego Garcia pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/diego-garcia/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/diego-garcia/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/diego-garcia/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/diego-garcia/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Diego Garcia",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Diego Garcia travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "디에고 가르시아 여행 · 준비 가이드",
+        "description": "디에고 가르시아 여행 준비·항공·숙소·현지 팁. 인도양 중앙에 위치한 영국령 환초로, 거대한 V자 모양의 섬입니다. 군사 구역으로 지정되어 일반인의 출입이 제한된 비밀스러운 곳입니다.",
+        "keywords": "자연/오지, 디에고 가르시아 여행, 디에고 가르시아 관광, 디에고 가르시아 플래너, 디에고 가르시아 여행 준비, 디에고 가르시아 여행 가이드, 디에고 가르시아 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 디에고 가르시아, Diego Garcia",
+        "canonicalUrl": "https://www.gateo.kr/place/diego-garcia/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/diego-garcia/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/diego-garcia/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/diego-garcia/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "디에고 가르시아"
+      },
+      "en": {
+        "title": "Diego Garcia travel · trip planner",
+        "description": "Plan a trip to Diego Garcia — flights, stays, and local tips. Discover Diego Garcia, Indian Ocean — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Diego Garcia, Indian Ocean, Diego Garcia travel, wildlife, nature, national park, scenery, GATEO, Diego Garcia trip planner, Diego Garcia plan a trip, Diego Garcia trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/diego-garcia/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/diego-garcia/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/diego-garcia/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/diego-garcia/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Diego Garcia"
       }
     }
   },
@@ -6380,6 +7040,226 @@ export default {
       }
     }
   },
+  "galapagos": {
+    "gallery": {
+      "ko": {
+        "title": "갈라파고스 여행 사진 · 갤러리",
+        "description": "갈라파고스 여행 사진과 갤러리. 찰스 다윈의 진화론을 탄생시킨 생물학적 기적의 섬들입니다. 사람을 피하지 않는 희귀 야생동물들과 함께 걷는 경이로운 경험을 제공합니다.",
+        "keywords": "자연/오지, 역사/문화, 액티비티, 갈라파고스 사진, 갈라파고스 갤러리, 갈라파고스 여행, 갈라파고스 여행 사진, 사진, 갤러리, 여행, 여행 사진, 갈라파고스, Galapagos",
+        "canonicalUrl": "https://www.gateo.kr/place/galapagos/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/galapagos/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/galapagos/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/galapagos/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "갈라파고스",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "갈라파고스 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Galapagos travel photos · gallery",
+        "description": "Browse Galapagos travel photos and gallery images. Discover the Galapagos, Ecuador — islands where Darwin's evolution unfolded, offering close encounters with fearless wildlife on nature's most extraordinary archipelago.",
+        "keywords": "Galapagos, Ecuador, wildlife cruise, evolution, island expedition, nature travel, Galapagos photos, Galapagos gallery, Galapagos pictures, Galapagos travel, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/galapagos/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/galapagos/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/galapagos/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/galapagos/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Galapagos",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Galapagos travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "갈라파고스 여행 · 준비 가이드",
+        "description": "갈라파고스 여행 준비·항공·숙소·현지 팁. 찰스 다윈의 진화론을 탄생시킨 생물학적 기적의 섬들입니다. 사람을 피하지 않는 희귀 야생동물들과 함께 걷는 경이로운 경험을 제공합니다.",
+        "keywords": "자연/오지, 역사/문화, 액티비티, 갈라파고스 여행, 갈라파고스 관광, 갈라파고스 플래너, 갈라파고스 여행 준비, 갈라파고스 여행 가이드, 갈라파고스 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 갈라파고스, Galapagos",
+        "canonicalUrl": "https://www.gateo.kr/place/galapagos/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/galapagos/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/galapagos/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/galapagos/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "갈라파고스"
+      },
+      "en": {
+        "title": "Galapagos travel · trip planner",
+        "description": "Plan a trip to Galapagos — flights, stays, and local tips. Discover the Galapagos, Ecuador — islands where Darwin's evolution unfolded, offering close encounters with fearless wildlife on nature's most extraordinary archipelago.",
+        "keywords": "Galapagos, Ecuador, wildlife cruise, evolution, island expedition, nature travel, Galapagos travel, Galapagos trip planner, Galapagos plan a trip, Galapagos trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/galapagos/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/galapagos/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/galapagos/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/galapagos/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Galapagos"
+      }
+    }
+  },
+  "geneva": {
+    "gallery": {
+      "ko": {
+        "title": "제네바 여행 사진 · 갤러리",
+        "description": "제네바 여행 사진과 갤러리. 레만 호수 기슭의 국제도시로, 유엔과 국제적십자사 본부가 있습니다. 140m 높이의 제트 도(분수)와 꽃시계가 랜드마크입니다. 프랑스 국경과 가까워 프랑스 문화의 영향을 받은 미식과 와인을 즐길 수 있습니다.",
+        "keywords": "스위스, 레만호수, UN, 국제도시, 분수, 제네바 사진, 제네바 갤러리, 제네바 여행, 제네바 여행 사진, 사진, 갤러리, 여행, 여행 사진, 제네바, Geneva",
+        "canonicalUrl": "https://www.gateo.kr/place/geneva/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/geneva/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/geneva/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/geneva/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "제네바",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "제네바 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Geneva travel photos · gallery",
+        "description": "Browse Geneva travel photos and gallery images. Discover Geneva, Switzerland — a city travel guide with photos, videos, and trip planning on GATEO.",
+        "keywords": "Geneva, Switzerland, Geneva travel, city guide, city break, sightseeing, GATEO, Geneva photos, Geneva gallery, Geneva pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/geneva/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/geneva/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/geneva/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/geneva/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Geneva",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Geneva travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "제네바 여행 · 준비 가이드",
+        "description": "제네바 여행 준비·항공·숙소·현지 팁. 레만 호수 기슭의 국제도시로, 유엔과 국제적십자사 본부가 있습니다. 140m 높이의 제트 도(분수)와 꽃시계가 랜드마크입니다. 프랑스 국경과 가까워 프랑스 문화의 영향을 받은 미식과 와인을 즐길 수 있습니다.",
+        "keywords": "스위스, 레만호수, UN, 국제도시, 분수, 제네바 여행, 제네바 관광, 제네바 플래너, 제네바 여행 준비, 제네바 여행 가이드, 제네바 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 제네바, Geneva",
+        "canonicalUrl": "https://www.gateo.kr/place/geneva/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/geneva/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/geneva/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/geneva/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "제네바"
+      },
+      "en": {
+        "title": "Geneva travel · trip planner",
+        "description": "Plan a trip to Geneva — flights, stays, and local tips. Discover Geneva, Switzerland — a city travel guide with photos, videos, and trip planning on GATEO.",
+        "keywords": "Geneva, Switzerland, Geneva travel, city guide, city break, sightseeing, GATEO, Geneva trip planner, Geneva plan a trip, Geneva trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/geneva/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/geneva/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/geneva/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/geneva/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Geneva"
+      }
+    }
+  },
   "gili-meno": {
     "gallery": {
       "ko": {
@@ -7037,6 +7917,116 @@ export default {
         ],
         "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
         "placeName": "Great Wall of China"
+      }
+    }
+  },
+  "greenland": {
+    "gallery": {
+      "ko": {
+        "title": "그린란드 여행 사진 · 갤러리",
+        "description": "그린란드 여행 사진과 갤러리. 세계 최대 섬으로 빙상·피오르드·북극광이 어우러진 극지 여행지입니다. 코펜하겐(CPH) 등 덴마크·유럽 관문 경유 후 누크(GOH)·일룰리사트 등으로 이어지는 일정이 흔합니다.",
+        "keywords": "그린란드, 빙하, CPH, 북극, 자연/오지, 그린란드 사진, 그린란드 갤러리, 그린란드 여행, 그린란드 여행 사진, 사진, 갤러리, 여행, 여행 사진, Greenland",
+        "canonicalUrl": "https://www.gateo.kr/place/greenland/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/greenland/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/greenland/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/greenland/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "그린란드",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "그린란드 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Greenland travel photos · gallery",
+        "description": "Browse Greenland travel photos and gallery images. Discover Greenland, Greenland — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Greenland, Greenland travel, wildlife, nature, national park, scenery, GATEO, Greenland photos, Greenland gallery, Greenland pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/greenland/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/greenland/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/greenland/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/greenland/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Greenland",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Greenland travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "그린란드 여행 · 준비 가이드",
+        "description": "그린란드 여행 준비·항공·숙소·현지 팁. 세계 최대 섬으로 빙상·피오르드·북극광이 어우러진 극지 여행지입니다. 코펜하겐(CPH) 등 덴마크·유럽 관문 경유 후 누크(GOH)·일룰리사트 등으로 이어지는 일정이 흔합니다.",
+        "keywords": "그린란드, 빙하, CPH, 북극, 자연/오지, 그린란드 여행, 그린란드 관광, 그린란드 플래너, 그린란드 여행 준비, 그린란드 여행 가이드, 그린란드 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, Greenland",
+        "canonicalUrl": "https://www.gateo.kr/place/greenland/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/greenland/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/greenland/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/greenland/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "그린란드"
+      },
+      "en": {
+        "title": "Greenland travel · trip planner",
+        "description": "Plan a trip to Greenland — flights, stays, and local tips. Discover Greenland, Greenland — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Greenland, Greenland travel, wildlife, nature, national park, scenery, GATEO, Greenland trip planner, Greenland plan a trip, Greenland trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/greenland/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/greenland/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/greenland/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/greenland/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Greenland"
       }
     }
   },
@@ -8140,6 +9130,116 @@ export default {
       }
     }
   },
+  "hue": {
+    "gallery": {
+      "ko": {
+        "title": "후에 여행 사진 · 갤러리",
+        "description": "후에 여행 사진과 갤러리. 응우옌 왕조의 수도로, 자금성을 본뜬 황제의 궁궐이 있습니다. 향강을 따라 티엔무 사원과 황제 능묘가 자리하고 있으며, 베트남 중부 궁중 요리의 본고장입니다. 향강에서 드래곤 보트를 타고 일몰을 감상하는 것이 낭만적입니다.",
+        "keywords": "베트남, 황궁, 응우옌왕조, 향강, 궁중요리, 후에 사진, 후에 갤러리, 후에 여행, 후에 여행 사진, 사진, 갤러리, 여행, 여행 사진, 후에, Hue",
+        "canonicalUrl": "https://www.gateo.kr/place/hue/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/hue/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/hue/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/hue/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "후에",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "후에 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Hue travel photos · gallery",
+        "description": "Browse Hue travel photos and gallery images. Discover Hue, Vietnam — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Hue, Vietnam, Hue travel, heritage, landmark, temple, history, GATEO, Hue photos, Hue gallery, Hue pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/hue/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/hue/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/hue/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/hue/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Hue",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Hue travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "후에 여행 · 준비 가이드",
+        "description": "후에 여행 준비·항공·숙소·현지 팁. 응우옌 왕조의 수도로, 자금성을 본뜬 황제의 궁궐이 있습니다. 향강을 따라 티엔무 사원과 황제 능묘가 자리하고 있으며, 베트남 중부 궁중 요리의 본고장입니다. 향강에서 드래곤 보트를 타고 일몰을 감상하는 것이 낭만적입니다.",
+        "keywords": "베트남, 황궁, 응우옌왕조, 향강, 궁중요리, 후에 여행, 후에 관광, 후에 플래너, 후에 여행 준비, 후에 여행 가이드, 후에 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 후에, Hue",
+        "canonicalUrl": "https://www.gateo.kr/place/hue/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/hue/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/hue/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/hue/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "후에"
+      },
+      "en": {
+        "title": "Hue travel · trip planner",
+        "description": "Plan a trip to Hue — flights, stays, and local tips. Discover Hue, Vietnam — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Hue, Vietnam, Hue travel, heritage, landmark, temple, history, GATEO, Hue trip planner, Hue plan a trip, Hue trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/hue/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/hue/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/hue/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/hue/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Hue"
+      }
+    }
+  },
   "hvar": {
     "gallery": {
       "ko": {
@@ -8357,6 +9457,226 @@ export default {
         ],
         "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
         "placeName": "Ibiza"
+      }
+    }
+  },
+  "iceland": {
+    "gallery": {
+      "ko": {
+        "title": "아이슬란드 여행 사진 · 갤러리",
+        "description": "아이슬란드 여행 사진과 갤러리. 불과 얼음의 나라로 불리며, 거대한 빙하와 활화산이 공존하는 유럽의 외딴섬입니다. 겨울에는 신비로운 오로라가 하늘을 수놓고, 여름에는 백야의 태양 아래 장엄한 폭포들이 빛을 발합니다.",
+        "keywords": "유럽, 오로라, 빙하, 폭포, 아이슬란드 사진, 아이슬란드 갤러리, 아이슬란드 여행, 아이슬란드 여행 사진, 사진, 갤러리, 여행, 여행 사진, 아이슬란드, Iceland",
+        "canonicalUrl": "https://www.gateo.kr/place/iceland/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/iceland/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/iceland/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/iceland/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "아이슬란드",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "아이슬란드 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Iceland travel photos · gallery",
+        "description": "Browse Iceland travel photos and gallery images. Discover Iceland, Iceland — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Iceland, Iceland travel, wildlife, nature, national park, scenery, GATEO, Iceland photos, Iceland gallery, Iceland pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/iceland/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/iceland/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/iceland/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/iceland/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Iceland",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Iceland travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "아이슬란드 여행 · 준비 가이드",
+        "description": "아이슬란드 여행 준비·항공·숙소·현지 팁. 불과 얼음의 나라로 불리며, 거대한 빙하와 활화산이 공존하는 유럽의 외딴섬입니다. 겨울에는 신비로운 오로라가 하늘을 수놓고, 여름에는 백야의 태양 아래 장엄한 폭포들이 빛을 발합니다.",
+        "keywords": "유럽, 오로라, 빙하, 폭포, 아이슬란드 여행, 아이슬란드 관광, 아이슬란드 플래너, 아이슬란드 여행 준비, 아이슬란드 여행 가이드, 아이슬란드 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 아이슬란드, Iceland",
+        "canonicalUrl": "https://www.gateo.kr/place/iceland/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/iceland/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/iceland/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/iceland/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "아이슬란드"
+      },
+      "en": {
+        "title": "Iceland travel · trip planner",
+        "description": "Plan a trip to Iceland — flights, stays, and local tips. Discover Iceland, Iceland — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Iceland, Iceland travel, wildlife, nature, national park, scenery, GATEO, Iceland trip planner, Iceland plan a trip, Iceland trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/iceland/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/iceland/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/iceland/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/iceland/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Iceland"
+      }
+    }
+  },
+  "iguazu-falls": {
+    "gallery": {
+      "ko": {
+        "title": "이구아수 폭포 여행 사진 · 갤러리",
+        "description": "이구아수 폭포 여행 사진과 갤러리. 남미 대륙을 가로지르며 엄청난 굉음과 함께 쏟아져 내리는 세계 최대의 폭포입니다. '악마의 목구멍'이라 불리는 하이라이트 구간에 서면 대자연의 압도적인 힘과 경외감을 온몸으로 느낄 수 있습니다.",
+        "keywords": "남미, 폭포, 정글, 경이로움, 이구아수 폭포 사진, 이구아수 폭포 갤러리, 이구아수 폭포 여행, 이구아수 폭포 여행 사진, 사진, 갤러리, 여행, 여행 사진, 이구아수 폭포, Iguazu Falls",
+        "canonicalUrl": "https://www.gateo.kr/place/iguazu-falls/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/iguazu-falls/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/iguazu-falls/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/iguazu-falls/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "이구아수 폭포",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "이구아수 폭포 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Iguazu Falls travel photos · gallery",
+        "description": "Browse Iguazu Falls travel photos and gallery images. Discover Iguazu Falls, Argentina — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Iguazu Falls, Argentina, Iguazu Falls travel, wildlife, nature, national park, scenery, GATEO, Iguazu Falls photos, Iguazu Falls gallery, Iguazu Falls pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/iguazu-falls/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/iguazu-falls/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/iguazu-falls/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/iguazu-falls/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Iguazu Falls",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Iguazu Falls travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "이구아수 폭포 여행 · 준비 가이드",
+        "description": "이구아수 폭포 여행 준비·항공·숙소·현지 팁. 남미 대륙을 가로지르며 엄청난 굉음과 함께 쏟아져 내리는 세계 최대의 폭포입니다. '악마의 목구멍'이라 불리는 하이라이트 구간에 서면 대자연의 압도적인 힘과 경외감을 온몸으로 느낄 수 있습니다.",
+        "keywords": "남미, 폭포, 정글, 경이로움, 이구아수 폭포 여행, 이구아수 폭포 관광, 이구아수 폭포 플래너, 이구아수 폭포 여행 준비, 이구아수 폭포 여행 가이드, 이구아수 폭포 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 이구아수 폭포, Iguazu Falls",
+        "canonicalUrl": "https://www.gateo.kr/place/iguazu-falls/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/iguazu-falls/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/iguazu-falls/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/iguazu-falls/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "이구아수 폭포"
+      },
+      "en": {
+        "title": "Iguazu Falls travel · trip planner",
+        "description": "Plan a trip to Iguazu Falls — flights, stays, and local tips. Discover Iguazu Falls, Argentina — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Iguazu Falls, Argentina, Iguazu Falls travel, wildlife, nature, national park, scenery, GATEO, Iguazu Falls trip planner, Iguazu Falls plan a trip, Iguazu Falls trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/iguazu-falls/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/iguazu-falls/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/iguazu-falls/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/iguazu-falls/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Iguazu Falls"
       }
     }
   },
@@ -10117,6 +11437,116 @@ export default {
         ],
         "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
         "placeName": "Kuala Lumpur"
+      }
+    }
+  },
+  "kumamoto": {
+    "gallery": {
+      "ko": {
+        "title": "구마모토 여행 사진 · 갤러리",
+        "description": "구마모토 여행 사진과 갤러리. 규슈 중앙부에 위치한 역사와 자연이 어우러진 도시입니다. 일본 3대 성 중 하나인 구마모토성과 세계 최대급 칼데라 화산인 아소산, 검은색 온천수가 특징인 구로카와 온천이 유명합니다. 마스코트 캐릭터 구마몬의 고향으로도 잘 알려져 있습니다.",
+        "keywords": "아시아, 일본, 구마모토성, 아소산, 구마몬, 구마모토 사진, 구마모토 갤러리, 구마모토 여행, 구마모토 여행 사진, 사진, 갤러리, 여행, 여행 사진, 구마모토, Kumamoto",
+        "canonicalUrl": "https://www.gateo.kr/place/kumamoto/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/kumamoto/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/kumamoto/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/kumamoto/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "구마모토",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "구마모토 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Kumamoto travel photos · gallery",
+        "description": "Browse Kumamoto travel photos and gallery images. Discover Kumamoto, Japan — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Kumamoto, Japan, Kumamoto travel, heritage, landmark, temple, history, GATEO, Kumamoto photos, Kumamoto gallery, Kumamoto pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/kumamoto/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/kumamoto/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/kumamoto/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/kumamoto/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Kumamoto",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Kumamoto travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "구마모토 여행 · 준비 가이드",
+        "description": "구마모토 여행 준비·항공·숙소·현지 팁. 규슈 중앙부에 위치한 역사와 자연이 어우러진 도시입니다. 일본 3대 성 중 하나인 구마모토성과 세계 최대급 칼데라 화산인 아소산, 검은색 온천수가 특징인 구로카와 온천이 유명합니다. 마스코트 캐릭터 구마몬의 고향으로도 잘 알려져 있습니다.",
+        "keywords": "아시아, 일본, 구마모토성, 아소산, 구마몬, 구마모토 여행, 구마모토 관광, 구마모토 플래너, 구마모토 여행 준비, 구마모토 여행 가이드, 구마모토 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 구마모토, Kumamoto",
+        "canonicalUrl": "https://www.gateo.kr/place/kumamoto/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/kumamoto/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/kumamoto/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/kumamoto/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "구마모토"
+      },
+      "en": {
+        "title": "Kumamoto travel · trip planner",
+        "description": "Plan a trip to Kumamoto — flights, stays, and local tips. Discover Kumamoto, Japan — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Kumamoto, Japan, Kumamoto travel, heritage, landmark, temple, history, GATEO, Kumamoto trip planner, Kumamoto plan a trip, Kumamoto trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/kumamoto/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/kumamoto/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/kumamoto/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/kumamoto/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Kumamoto"
       }
     }
   },
@@ -12100,6 +13530,116 @@ export default {
       }
     }
   },
+  "meteora": {
+    "gallery": {
+      "ko": {
+        "title": "메테오라 여행 사진 · 갤러리",
+        "description": "메테오라 여행 사진과 갤러리. 그리스 중부, 하늘에 기둥처럼 솟아오른 거대한 암벽 꼭대기에 아슬아슬하게 세워진 수도원들이 초현실적인 경관을 연출합니다.",
+        "keywords": "역사/문화, 자연/오지, 메테오라 사진, 메테오라 갤러리, 메테오라 여행, 메테오라 여행 사진, 사진, 갤러리, 여행, 여행 사진, 메테오라, Meteora",
+        "canonicalUrl": "https://www.gateo.kr/place/meteora/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/meteora/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/meteora/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/meteora/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "메테오라",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "메테오라 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Meteora travel photos · gallery",
+        "description": "Browse Meteora travel photos and gallery images. Discover Meteora, Greece — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Meteora, Greece, Meteora travel, heritage, landmark, temple, history, GATEO, Meteora photos, Meteora gallery, Meteora pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/meteora/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/meteora/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/meteora/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/meteora/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Meteora",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Meteora travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "메테오라 여행 · 준비 가이드",
+        "description": "메테오라 여행 준비·항공·숙소·현지 팁. 그리스 중부, 하늘에 기둥처럼 솟아오른 거대한 암벽 꼭대기에 아슬아슬하게 세워진 수도원들이 초현실적인 경관을 연출합니다.",
+        "keywords": "역사/문화, 자연/오지, 메테오라 여행, 메테오라 관광, 메테오라 플래너, 메테오라 여행 준비, 메테오라 여행 가이드, 메테오라 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 메테오라, Meteora",
+        "canonicalUrl": "https://www.gateo.kr/place/meteora/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/meteora/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/meteora/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/meteora/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "메테오라"
+      },
+      "en": {
+        "title": "Meteora travel · trip planner",
+        "description": "Plan a trip to Meteora — flights, stays, and local tips. Discover Meteora, Greece — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Meteora, Greece, Meteora travel, heritage, landmark, temple, history, GATEO, Meteora trip planner, Meteora plan a trip, Meteora trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/meteora/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/meteora/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/meteora/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/meteora/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Meteora"
+      }
+    }
+  },
   "miami": {
     "gallery": {
       "ko": {
@@ -12427,6 +13967,226 @@ export default {
         ],
         "ogImage": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1200&h=630&q=80",
         "placeName": "Milford Sound"
+      }
+    }
+  },
+  "minneapolis": {
+    "gallery": {
+      "ko": {
+        "title": "미니애폴리스 여행 사진 · 갤러리",
+        "description": "미니애폴리스 여행 사진과 갤러리. 미네소타주의 트윈시티(미니애폴리스·세인트폴) 중심으로, 미술관·호수·몰 오브 아메리카가 있는 북미 중서부 도시입니다. MSP 국제공항이 관문입니다.",
+        "keywords": "미국, 미니애폴리스, MSP, 트윈시티, 미니애폴리스 사진, 미니애폴리스 갤러리, 미니애폴리스 여행, 미니애폴리스 여행 사진, 사진, 갤러리, 여행, 여행 사진, Minneapolis",
+        "canonicalUrl": "https://www.gateo.kr/place/minneapolis/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/minneapolis/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/minneapolis/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/minneapolis/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "미니애폴리스",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "미니애폴리스 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Minneapolis travel photos · gallery",
+        "description": "Browse Minneapolis travel photos and gallery images. Discover Minneapolis, United States — a city travel guide with photos, videos, and trip planning on GATEO.",
+        "keywords": "Minneapolis, United States, Minneapolis travel, city guide, city break, sightseeing, GATEO, Minneapolis photos, Minneapolis gallery, Minneapolis pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/minneapolis/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/minneapolis/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/minneapolis/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/minneapolis/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Minneapolis",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Minneapolis travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "미니애폴리스 여행 · 준비 가이드",
+        "description": "미니애폴리스 여행 준비·항공·숙소·현지 팁. 미네소타주의 트윈시티(미니애폴리스·세인트폴) 중심으로, 미술관·호수·몰 오브 아메리카가 있는 북미 중서부 도시입니다. MSP 국제공항이 관문입니다.",
+        "keywords": "미국, 미니애폴리스, MSP, 트윈시티, 미니애폴리스 여행, 미니애폴리스 관광, 미니애폴리스 플래너, 미니애폴리스 여행 준비, 미니애폴리스 여행 가이드, 미니애폴리스 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, Minneapolis",
+        "canonicalUrl": "https://www.gateo.kr/place/minneapolis/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/minneapolis/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/minneapolis/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/minneapolis/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "미니애폴리스"
+      },
+      "en": {
+        "title": "Minneapolis travel · trip planner",
+        "description": "Plan a trip to Minneapolis — flights, stays, and local tips. Discover Minneapolis, United States — a city travel guide with photos, videos, and trip planning on GATEO.",
+        "keywords": "Minneapolis, United States, Minneapolis travel, city guide, city break, sightseeing, GATEO, Minneapolis trip planner, Minneapolis plan a trip, Minneapolis trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/minneapolis/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/minneapolis/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/minneapolis/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/minneapolis/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Minneapolis"
+      }
+    }
+  },
+  "miyakojima": {
+    "gallery": {
+      "ko": {
+        "title": "미야코지마 여행 사진 · 갤러리",
+        "description": "미야코지마 여행 사진과 갤러리. '미야코 블루'라 불리는 숨막히게 아름다운 청록색 바다를 품은 산호섬입니다. 일본 최고의 해변으로 꼽히는 요나하 마에하마 비치와 스쿠버 다이빙 포인트가 넘쳐납니다.",
+        "keywords": "아시아, 산호초, 스쿠버다이빙, 미야코블루, 요나하마에하마, 미야코지마 사진, 미야코지마 갤러리, 미야코지마 여행, 미야코지마 여행 사진, 사진, 갤러리, 여행, 여행 사진, 미야코지마, Miyakojima",
+        "canonicalUrl": "https://www.gateo.kr/place/miyakojima/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/miyakojima/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/miyakojima/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/miyakojima/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "미야코지마",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "미야코지마 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Miyakojima travel photos · gallery",
+        "description": "Browse Miyakojima travel photos and gallery images. Discover Miyakojima, Japan — a beach and island getaway with photos, videos, and trip planning on GATEO.",
+        "keywords": "Miyakojima, Japan, Miyakojima travel, beach, island, resort, vacation, GATEO, Miyakojima photos, Miyakojima gallery, Miyakojima pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/miyakojima/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/miyakojima/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/miyakojima/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/miyakojima/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Miyakojima",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Miyakojima travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "미야코지마 여행 · 준비 가이드",
+        "description": "미야코지마 여행 준비·항공·숙소·현지 팁. '미야코 블루'라 불리는 숨막히게 아름다운 청록색 바다를 품은 산호섬입니다. 일본 최고의 해변으로 꼽히는 요나하 마에하마 비치와 스쿠버 다이빙 포인트가 넘쳐납니다.",
+        "keywords": "아시아, 산호초, 스쿠버다이빙, 미야코블루, 요나하마에하마, 미야코지마 여행, 미야코지마 관광, 미야코지마 플래너, 미야코지마 여행 준비, 미야코지마 여행 가이드, 미야코지마 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 미야코지마, Miyakojima",
+        "canonicalUrl": "https://www.gateo.kr/place/miyakojima/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/miyakojima/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/miyakojima/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/miyakojima/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "미야코지마"
+      },
+      "en": {
+        "title": "Miyakojima travel · trip planner",
+        "description": "Plan a trip to Miyakojima — flights, stays, and local tips. Discover Miyakojima, Japan — a beach and island getaway with photos, videos, and trip planning on GATEO.",
+        "keywords": "Miyakojima, Japan, Miyakojima travel, beach, island, resort, vacation, GATEO, Miyakojima trip planner, Miyakojima plan a trip, Miyakojima trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/miyakojima/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/miyakojima/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/miyakojima/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/miyakojima/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Miyakojima"
       }
     }
   },
@@ -13970,6 +15730,226 @@ export default {
       }
     }
   },
+  "oslo": {
+    "gallery": {
+      "ko": {
+        "title": "오슬로 여행 사진 · 갤러리",
+        "description": "오슬로 여행 사진과 갤러리. 피오르드와 숲으로 둘러싸인 노르웨이의 수도입니다. 비겔란 조각 공원의 독특한 인체 조각상과 오페라 하우스의 현대적인 건축이 인상적입니다. 바이킹 박물관에서는 실제 바이킹 선박을 볼 수 있습니다. 겨울에는 오슬로 인근에서 스키를 즐길 수 있습니다.",
+        "keywords": "노르웨이, 비겔란공원, 오페라하우스, 바이킹, 피오르드, 오슬로 사진, 오슬로 갤러리, 오슬로 여행, 오슬로 여행 사진, 사진, 갤러리, 여행, 여행 사진, 오슬로, Oslo",
+        "canonicalUrl": "https://www.gateo.kr/place/oslo/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/oslo/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/oslo/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/oslo/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "오슬로",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "오슬로 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Oslo travel photos · gallery",
+        "description": "Browse Oslo travel photos and gallery images. Discover Oslo, Norway — a city travel guide with photos, videos, and trip planning on GATEO.",
+        "keywords": "Oslo, Norway, Oslo travel, city guide, city break, sightseeing, GATEO, Oslo photos, Oslo gallery, Oslo pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/oslo/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/oslo/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/oslo/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/oslo/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Oslo",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Oslo travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "오슬로 여행 · 준비 가이드",
+        "description": "오슬로 여행 준비·항공·숙소·현지 팁. 피오르드와 숲으로 둘러싸인 노르웨이의 수도입니다. 비겔란 조각 공원의 독특한 인체 조각상과 오페라 하우스의 현대적인 건축이 인상적입니다. 바이킹 박물관에서는 실제 바이킹 선박을 볼 수 있습니다. 겨울에는 오슬로 인근에서 스키를 즐길 수 있습니다.",
+        "keywords": "노르웨이, 비겔란공원, 오페라하우스, 바이킹, 피오르드, 오슬로 여행, 오슬로 관광, 오슬로 플래너, 오슬로 여행 준비, 오슬로 여행 가이드, 오슬로 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 오슬로, Oslo",
+        "canonicalUrl": "https://www.gateo.kr/place/oslo/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/oslo/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/oslo/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/oslo/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "오슬로"
+      },
+      "en": {
+        "title": "Oslo travel · trip planner",
+        "description": "Plan a trip to Oslo — flights, stays, and local tips. Discover Oslo, Norway — a city travel guide with photos, videos, and trip planning on GATEO.",
+        "keywords": "Oslo, Norway, Oslo travel, city guide, city break, sightseeing, GATEO, Oslo trip planner, Oslo plan a trip, Oslo trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/oslo/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/oslo/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/oslo/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/oslo/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Oslo"
+      }
+    }
+  },
+  "palawan": {
+    "gallery": {
+      "ko": {
+        "title": "팔라완 여행 사진 · 갤러리",
+        "description": "팔라완 여행 사진과 갤러리. 필리핀 최후의 비경으로, 석회암 암벽과 지하 강, 투명한 라군이 환상적인 절경을 이룹니다. 엘니도 투어가 특히 유명합니다.",
+        "keywords": "휴양, 자연/오지, 액티비티, 팔라완 사진, 팔라완 갤러리, 팔라완 여행, 팔라완 여행 사진, 사진, 갤러리, 여행, 여행 사진, 팔라완, Palawan",
+        "canonicalUrl": "https://www.gateo.kr/place/palawan/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/palawan/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/palawan/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/palawan/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "팔라완",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "팔라완 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Palawan travel photos · gallery",
+        "description": "Browse Palawan travel photos and gallery images. Discover Palawan, Philippines — a beach and island getaway with photos, videos, and trip planning on GATEO.",
+        "keywords": "Palawan, Philippines, Palawan travel, beach, island, resort, vacation, GATEO, Palawan photos, Palawan gallery, Palawan pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/palawan/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/palawan/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/palawan/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/palawan/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Palawan",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Palawan travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "팔라완 여행 · 준비 가이드",
+        "description": "팔라완 여행 준비·항공·숙소·현지 팁. 필리핀 최후의 비경으로, 석회암 암벽과 지하 강, 투명한 라군이 환상적인 절경을 이룹니다. 엘니도 투어가 특히 유명합니다.",
+        "keywords": "휴양, 자연/오지, 액티비티, 팔라완 여행, 팔라완 관광, 팔라완 플래너, 팔라완 여행 준비, 팔라완 여행 가이드, 팔라완 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 팔라완, Palawan",
+        "canonicalUrl": "https://www.gateo.kr/place/palawan/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/palawan/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/palawan/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/palawan/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "팔라완"
+      },
+      "en": {
+        "title": "Palawan travel · trip planner",
+        "description": "Plan a trip to Palawan — flights, stays, and local tips. Discover Palawan, Philippines — a beach and island getaway with photos, videos, and trip planning on GATEO.",
+        "keywords": "Palawan, Philippines, Palawan travel, beach, island, resort, vacation, GATEO, Palawan trip planner, Palawan plan a trip, Palawan trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/palawan/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/palawan/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/palawan/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/palawan/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Palawan"
+      }
+    }
+  },
   "paris": {
     "gallery": {
       "ko": {
@@ -14077,6 +16057,116 @@ export default {
         ],
         "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
         "placeName": "Paris"
+      }
+    }
+  },
+  "patagonia": {
+    "gallery": {
+      "ko": {
+        "title": "파타고니아 여행 사진 · 갤러리",
+        "description": "파타고니아 여행 사진과 갤러리. 아르헨티나 북부 파타고니아(호수·안데스·바릴로체 권)입니다. 남부(우수아이아·토레스 델 파이네)와는 별도 여행지로, 보통 부에노스아이레스 경유 후 바릴로체(BRC) 등으로 들어옵니다.",
+        "keywords": "바릴로체, 호수, 안데스, 트레킹, 자연/오지, 파타고니아 사진, 파타고니아 갤러리, 파타고니아 여행, 파타고니아 여행 사진, 사진, 갤러리, 여행, 여행 사진, 파타고니아, Patagonia (Northern)",
+        "canonicalUrl": "https://www.gateo.kr/place/patagonia/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/patagonia/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/patagonia/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/patagonia/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "파타고니아",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "파타고니아 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Patagonia (Northern) travel photos · gallery",
+        "description": "Browse Patagonia (Northern) travel photos and gallery images. Discover Patagonia (Northern), Argentina — a adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Patagonia (Northern), Argentina, Patagonia (Northern) travel, adventure, outdoors, hiking, GATEO, Patagonia (Northern) photos, Patagonia (Northern) gallery, Patagonia (Northern) pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/patagonia/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/patagonia/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/patagonia/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/patagonia/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Patagonia (Northern)",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Patagonia (Northern) travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "파타고니아 여행 · 준비 가이드",
+        "description": "파타고니아 여행 준비·항공·숙소·현지 팁. 아르헨티나 북부 파타고니아(호수·안데스·바릴로체 권)입니다. 남부(우수아이아·토레스 델 파이네)와는 별도 여행지로, 보통 부에노스아이레스 경유 후 바릴로체(BRC) 등으로 들어옵니다.",
+        "keywords": "바릴로체, 호수, 안데스, 트레킹, 자연/오지, 파타고니아 여행, 파타고니아 관광, 파타고니아 플래너, 파타고니아 여행 준비, 파타고니아 여행 가이드, 파타고니아 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 파타고니아, Patagonia (Northern)",
+        "canonicalUrl": "https://www.gateo.kr/place/patagonia/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/patagonia/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/patagonia/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/patagonia/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "파타고니아"
+      },
+      "en": {
+        "title": "Patagonia (Northern) travel · trip planner",
+        "description": "Plan a trip to Patagonia (Northern) — flights, stays, and local tips. Discover Patagonia (Northern), Argentina — a adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Patagonia (Northern), Argentina, Patagonia (Northern) travel, adventure, outdoors, hiking, GATEO, Patagonia (Northern) trip planner, Patagonia (Northern) plan a trip, Patagonia (Northern) trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/patagonia/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/patagonia/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/patagonia/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/patagonia/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Patagonia (Northern)"
       }
     }
   },
@@ -15180,6 +17270,116 @@ export default {
       }
     }
   },
+  "qingdao": {
+    "gallery": {
+      "ko": {
+        "title": "칭다오 여행 사진 · 갤러리",
+        "description": "칭다오 여행 사진과 갤러리. 붉은 지붕과 푸른 바다가 어우러져 '동양의 나폴리'라 불립니다. 세계적인 명성의 칭다오 맥주와 함께 유럽풍 건축물이 가득한 구시가지를 산책해보세요.",
+        "keywords": "아시아, 맥주, 청도, 유럽풍, 가족여행, 칭다오 사진, 칭다오 갤러리, 칭다오 여행, 칭다오 여행 사진, 사진, 갤러리, 여행, 여행 사진, 칭다오, Qingdao",
+        "canonicalUrl": "https://www.gateo.kr/place/qingdao/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/qingdao/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/qingdao/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/qingdao/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "칭다오",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "칭다오 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Qingdao travel photos · gallery",
+        "description": "Browse Qingdao travel photos and gallery images. Discover Qingdao, China — a city travel guide with photos, videos, and trip planning on GATEO.",
+        "keywords": "Qingdao, China, Qingdao travel, city guide, city break, sightseeing, GATEO, Qingdao photos, Qingdao gallery, Qingdao pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/qingdao/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/qingdao/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/qingdao/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/qingdao/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Qingdao",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Qingdao travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "칭다오 여행 · 준비 가이드",
+        "description": "칭다오 여행 준비·항공·숙소·현지 팁. 붉은 지붕과 푸른 바다가 어우러져 '동양의 나폴리'라 불립니다. 세계적인 명성의 칭다오 맥주와 함께 유럽풍 건축물이 가득한 구시가지를 산책해보세요.",
+        "keywords": "아시아, 맥주, 청도, 유럽풍, 가족여행, 칭다오 여행, 칭다오 관광, 칭다오 플래너, 칭다오 여행 준비, 칭다오 여행 가이드, 칭다오 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 칭다오, Qingdao",
+        "canonicalUrl": "https://www.gateo.kr/place/qingdao/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/qingdao/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/qingdao/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/qingdao/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "칭다오"
+      },
+      "en": {
+        "title": "Qingdao travel · trip planner",
+        "description": "Plan a trip to Qingdao — flights, stays, and local tips. Discover Qingdao, China — a city travel guide with photos, videos, and trip planning on GATEO.",
+        "keywords": "Qingdao, China, Qingdao travel, city guide, city break, sightseeing, GATEO, Qingdao trip planner, Qingdao plan a trip, Qingdao trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/qingdao/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/qingdao/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/qingdao/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/qingdao/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Qingdao"
+      }
+    }
+  },
   "queenstown": {
     "gallery": {
       "ko": {
@@ -15947,6 +18147,116 @@ export default {
         ],
         "ogImage": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80",
         "placeName": "Saipan"
+      }
+    }
+  },
+  "samoa": {
+    "gallery": {
+      "ko": {
+        "title": "사모아 여행 사진 · 갤러리",
+        "description": "사모아 여행 사진과 갤러리. 폴리네시아의 심장으로 불리며, 울창한 우림 속 숨겨진 폭포와 자연이 만든 천연 수영장 토 수아(To Sua)로 유명합니다.",
+        "keywords": "자연/오지, 휴양, 사모아 사진, 사모아 갤러리, 사모아 여행, 사모아 여행 사진, 사진, 갤러리, 여행, 여행 사진, 사모아, Samoa",
+        "canonicalUrl": "https://www.gateo.kr/place/samoa/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/samoa/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/samoa/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/samoa/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "사모아",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "사모아 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Samoa travel photos · gallery",
+        "description": "Browse Samoa travel photos and gallery images. Discover Samoa, Samoa — a beach and island getaway with photos, videos, and trip planning on GATEO.",
+        "keywords": "Samoa, Samoa travel, beach, island, resort, vacation, GATEO, Samoa photos, Samoa gallery, Samoa pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/samoa/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/samoa/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/samoa/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/samoa/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Samoa",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Samoa travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "사모아 여행 · 준비 가이드",
+        "description": "사모아 여행 준비·항공·숙소·현지 팁. 폴리네시아의 심장으로 불리며, 울창한 우림 속 숨겨진 폭포와 자연이 만든 천연 수영장 토 수아(To Sua)로 유명합니다.",
+        "keywords": "자연/오지, 휴양, 사모아 여행, 사모아 관광, 사모아 플래너, 사모아 여행 준비, 사모아 여행 가이드, 사모아 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 사모아, Samoa",
+        "canonicalUrl": "https://www.gateo.kr/place/samoa/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/samoa/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/samoa/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/samoa/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "사모아"
+      },
+      "en": {
+        "title": "Samoa travel · trip planner",
+        "description": "Plan a trip to Samoa — flights, stays, and local tips. Discover Samoa, Samoa — a beach and island getaway with photos, videos, and trip planning on GATEO.",
+        "keywords": "Samoa, Samoa travel, beach, island, resort, vacation, GATEO, Samoa trip planner, Samoa plan a trip, Samoa trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/samoa/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/samoa/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/samoa/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/samoa/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Samoa"
       }
     }
   },
@@ -16720,6 +19030,116 @@ export default {
       }
     }
   },
+  "seoul": {
+    "gallery": {
+      "ko": {
+        "title": "서울 여행 사진 · 갤러리",
+        "description": "서울 여행 사진과 갤러리. 잠들지 않는 역동성의 도시입니다. 600년 역사의 고궁 주변으로 화려한 스카이라인과 최첨단 트렌드가 쉴 새 없이 교차합니다.",
+        "keywords": "대륙, 대도시, 역사/문화, 액티비티, 서울 사진, 서울 갤러리, 서울 여행, 서울 여행 사진, 사진, 갤러리, 여행, 여행 사진, 서울, Seoul",
+        "canonicalUrl": "https://www.gateo.kr/place/seoul/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/seoul/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/seoul/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/seoul/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "서울",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "서울 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Seoul travel photos · gallery",
+        "description": "Browse Seoul travel photos and gallery images. Discover Seoul, South Korea — a adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Seoul, South Korea, Seoul travel, adventure, outdoors, hiking, GATEO, Seoul photos, Seoul gallery, Seoul pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/seoul/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/seoul/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/seoul/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/seoul/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Seoul",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Seoul travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "서울 여행 · 준비 가이드",
+        "description": "서울 여행 준비·항공·숙소·현지 팁. 잠들지 않는 역동성의 도시입니다. 600년 역사의 고궁 주변으로 화려한 스카이라인과 최첨단 트렌드가 쉴 새 없이 교차합니다.",
+        "keywords": "대륙, 대도시, 역사/문화, 액티비티, 서울 여행, 서울 관광, 서울 플래너, 서울 여행 준비, 서울 여행 가이드, 서울 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 서울, Seoul",
+        "canonicalUrl": "https://www.gateo.kr/place/seoul/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/seoul/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/seoul/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/seoul/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "서울"
+      },
+      "en": {
+        "title": "Seoul travel · trip planner",
+        "description": "Plan a trip to Seoul — flights, stays, and local tips. Discover Seoul, South Korea — a adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Seoul, South Korea, Seoul travel, adventure, outdoors, hiking, GATEO, Seoul trip planner, Seoul plan a trip, Seoul trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/seoul/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/seoul/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/seoul/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/seoul/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Seoul"
+      }
+    }
+  },
   "sequoia-national-park": {
     "gallery": {
       "ko": {
@@ -17377,6 +19797,116 @@ export default {
         ],
         "ogImage": "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?auto=format&fit=crop&w=1200&h=630&q=80",
         "placeName": "Sicily"
+      }
+    }
+  },
+  "similan-islands": {
+    "gallery": {
+      "ko": {
+        "title": "시미란 제도 여행 사진 · 갤러리",
+        "description": "시미란 제도 여행 사진과 갤러리. 태국의 다이빙 천국으로 세계 10대 다이빙 포인트 중 하나입니다. 만타 가오리와 고래상어를 볼 수 있는 맑고 투명한 바다를 자랑합니다.",
+        "keywords": "다이빙, 스쿠버, 해양, 국립공원, 시미란 제도 사진, 시미란 제도 갤러리, 시미란 제도 여행, 시미란 제도 여행 사진, 사진, 갤러리, 여행, 여행 사진, 시미란 제도, Similan Islands",
+        "canonicalUrl": "https://www.gateo.kr/place/similan-islands/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/similan-islands/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/similan-islands/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/similan-islands/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "시미란 제도",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "시미란 제도 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Similan Islands travel photos · gallery",
+        "description": "Browse Similan Islands travel photos and gallery images. Discover Similan Islands, Thailand — a adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Similan Islands, Thailand, Similan Islands travel, adventure, outdoors, hiking, GATEO, Similan Islands photos, Similan Islands gallery, Similan Islands pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/similan-islands/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/similan-islands/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/similan-islands/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/similan-islands/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Similan Islands",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Similan Islands travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "시미란 제도 여행 · 준비 가이드",
+        "description": "시미란 제도 여행 준비·항공·숙소·현지 팁. 태국의 다이빙 천국으로 세계 10대 다이빙 포인트 중 하나입니다. 만타 가오리와 고래상어를 볼 수 있는 맑고 투명한 바다를 자랑합니다.",
+        "keywords": "다이빙, 스쿠버, 해양, 국립공원, 시미란 제도 여행, 시미란 제도 관광, 시미란 제도 플래너, 시미란 제도 여행 준비, 시미란 제도 여행 가이드, 시미란 제도 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 시미란 제도, Similan Islands",
+        "canonicalUrl": "https://www.gateo.kr/place/similan-islands/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/similan-islands/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/similan-islands/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/similan-islands/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "시미란 제도"
+      },
+      "en": {
+        "title": "Similan Islands travel · trip planner",
+        "description": "Plan a trip to Similan Islands — flights, stays, and local tips. Discover Similan Islands, Thailand — a adventure travel destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Similan Islands, Thailand, Similan Islands travel, adventure, outdoors, hiking, GATEO, Similan Islands trip planner, Similan Islands plan a trip, Similan Islands trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/similan-islands/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/similan-islands/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/similan-islands/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/similan-islands/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Similan Islands"
       }
     }
   },
@@ -18590,6 +21120,116 @@ export default {
       }
     }
   },
+  "tsushima": {
+    "gallery": {
+      "ko": {
+        "title": "대마도 여행 사진 · 갤러리",
+        "description": "대마도 여행 사진과 갤러리. 일본 対馬島(쓰시마)로, 한국에서는 대마도라 부릅니다. 부산국제여객터미널에서 히타카츠항까지 쾌속페리(약 1시간)가 주 경로이며, 인천 직항 항공은 없습니다. 맑은 바다·숲길 트레킹·면세 쇼핑·온천을 즐기기 좋습니다.",
+        "keywords": "아시아, 일본, 쓰시마, 쓰시마섬, 국경의섬, 부산페리, 히타카츠, 면세쇼핑, 대마도 사진, 대마도 갤러리, 대마도 여행, 대마도 여행 사진, 사진, 갤러리, 여행, 여행 사진, 대마도, Tsushima (Daemado)",
+        "canonicalUrl": "https://www.gateo.kr/place/tsushima/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/tsushima/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/tsushima/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/tsushima/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "대마도",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "대마도 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Tsushima (Daemado) travel photos · gallery",
+        "description": "Browse Tsushima (Daemado) travel photos and gallery images. Discover Tsushima (Daemado), Japan — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Tsushima (Daemado), Japan, Tsushima (Daemado) travel, wildlife, nature, national park, scenery, GATEO, Tsushima (Daemado) photos, Tsushima (Daemado) gallery, Tsushima (Daemado) pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/tsushima/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/tsushima/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/tsushima/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/tsushima/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Tsushima (Daemado)",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Tsushima (Daemado) travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "대마도 여행 · 준비 가이드",
+        "description": "대마도 여행 준비·항공·숙소·현지 팁. 일본 対馬島(쓰시마)로, 한국에서는 대마도라 부릅니다. 부산국제여객터미널에서 히타카츠항까지 쾌속페리(약 1시간)가 주 경로이며, 인천 직항 항공은 없습니다. 맑은 바다·숲길 트레킹·면세 쇼핑·온천을 즐기기 좋습니다.",
+        "keywords": "아시아, 일본, 쓰시마, 쓰시마섬, 국경의섬, 부산페리, 히타카츠, 면세쇼핑, 대마도 여행, 대마도 관광, 대마도 플래너, 대마도 여행 준비, 대마도 여행 가이드, 대마도 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 대마도, Tsushima (Daemado)",
+        "canonicalUrl": "https://www.gateo.kr/place/tsushima/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/tsushima/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/tsushima/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/tsushima/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "대마도"
+      },
+      "en": {
+        "title": "Tsushima (Daemado) travel · trip planner",
+        "description": "Plan a trip to Tsushima (Daemado) — flights, stays, and local tips. Discover Tsushima (Daemado), Japan — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Tsushima (Daemado), Japan, Tsushima (Daemado) travel, wildlife, nature, national park, scenery, GATEO, Tsushima (Daemado) trip planner, Tsushima (Daemado) plan a trip, Tsushima (Daemado) trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/tsushima/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/tsushima/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/tsushima/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/tsushima/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Tsushima (Daemado)"
+      }
+    }
+  },
   "ubud": {
     "gallery": {
       "ko": {
@@ -18700,6 +21340,116 @@ export default {
       }
     }
   },
+  "ulaanbaatar": {
+    "gallery": {
+      "ko": {
+        "title": "울란바토르 여행 사진 · 갤러리",
+        "description": "울란바토르 여행 사진과 갤러리. 끝없는 초원과 게르가 떠오르는 유목민의 심장입니다. 밤하늘에 쏟아지는 별빛 아래 말들이 달리는 몽골의 중심지입니다.",
+        "keywords": "대도시, 자연/오지, 역사/문화, 울란바토르 사진, 울란바토르 갤러리, 울란바토르 여행, 울란바토르 여행 사진, 사진, 갤러리, 여행, 여행 사진, 울란바토르, Ulaanbaatar",
+        "canonicalUrl": "https://www.gateo.kr/place/ulaanbaatar/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/ulaanbaatar/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/ulaanbaatar/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/ulaanbaatar/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "울란바토르",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "울란바토르 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Ulaanbaatar travel photos · gallery",
+        "description": "Browse Ulaanbaatar travel photos and gallery images. Discover Ulaanbaatar, Mongolia — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Ulaanbaatar, Mongolia, Ulaanbaatar travel, heritage, landmark, temple, history, GATEO, Ulaanbaatar photos, Ulaanbaatar gallery, Ulaanbaatar pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/ulaanbaatar/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/ulaanbaatar/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/ulaanbaatar/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/ulaanbaatar/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Ulaanbaatar",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Ulaanbaatar travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "울란바토르 여행 · 준비 가이드",
+        "description": "울란바토르 여행 준비·항공·숙소·현지 팁. 끝없는 초원과 게르가 떠오르는 유목민의 심장입니다. 밤하늘에 쏟아지는 별빛 아래 말들이 달리는 몽골의 중심지입니다.",
+        "keywords": "대도시, 자연/오지, 역사/문화, 울란바토르 여행, 울란바토르 관광, 울란바토르 플래너, 울란바토르 여행 준비, 울란바토르 여행 가이드, 울란바토르 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 울란바토르, Ulaanbaatar",
+        "canonicalUrl": "https://www.gateo.kr/place/ulaanbaatar/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/ulaanbaatar/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/ulaanbaatar/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/ulaanbaatar/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "울란바토르"
+      },
+      "en": {
+        "title": "Ulaanbaatar travel · trip planner",
+        "description": "Plan a trip to Ulaanbaatar — flights, stays, and local tips. Discover Ulaanbaatar, Mongolia — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Ulaanbaatar, Mongolia, Ulaanbaatar travel, heritage, landmark, temple, history, GATEO, Ulaanbaatar trip planner, Ulaanbaatar plan a trip, Ulaanbaatar trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/ulaanbaatar/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/ulaanbaatar/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/ulaanbaatar/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/ulaanbaatar/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Ulaanbaatar"
+      }
+    }
+  },
   "ushuaia": {
     "gallery": {
       "ko": {
@@ -18807,6 +21557,116 @@ export default {
         ],
         "ogImage": "https://images.unsplash.com/photo-1552832230-c0197dd311ba?auto=format&fit=crop&w=1200&h=630&q=80",
         "placeName": "Ushuaia"
+      }
+    }
+  },
+  "uyuni-salt-flat": {
+    "gallery": {
+      "ko": {
+        "title": "우유니 소금사막 여행 사진 · 갤러리",
+        "description": "우유니 소금사막 여행 사진과 갤러리. 우기가 되면 세상에서 가장 거대한 거울로 변신하는 볼리비아의 소금 사막입니다. 하늘과 땅의 경계가 무너지는 기적을 경험합니다.",
+        "keywords": "자연/오지, 낭만, 액티비티, 우유니 소금사막 사진, 우유니 소금사막 갤러리, 우유니 소금사막 여행, 우유니 소금사막 여행 사진, 사진, 갤러리, 여행, 여행 사진, 우유니 소금사막, Uyuni Salt Flat",
+        "canonicalUrl": "https://www.gateo.kr/place/uyuni-salt-flat/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/uyuni-salt-flat/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/uyuni-salt-flat/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/uyuni-salt-flat/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "우유니 소금사막",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "우유니 소금사막 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Uyuni Salt Flat travel photos · gallery",
+        "description": "Browse Uyuni Salt Flat travel photos and gallery images. Discover Uyuni Salt Flat, Bolivia — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Uyuni Salt Flat, Bolivia, Uyuni Salt Flat travel, wildlife, nature, national park, scenery, GATEO, Uyuni Salt Flat photos, Uyuni Salt Flat gallery, Uyuni Salt Flat pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/uyuni-salt-flat/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/uyuni-salt-flat/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/uyuni-salt-flat/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/uyuni-salt-flat/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Uyuni Salt Flat",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Uyuni Salt Flat travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "우유니 소금사막 여행 · 준비 가이드",
+        "description": "우유니 소금사막 여행 준비·항공·숙소·현지 팁. 우기가 되면 세상에서 가장 거대한 거울로 변신하는 볼리비아의 소금 사막입니다. 하늘과 땅의 경계가 무너지는 기적을 경험합니다.",
+        "keywords": "자연/오지, 낭만, 액티비티, 우유니 소금사막 여행, 우유니 소금사막 관광, 우유니 소금사막 플래너, 우유니 소금사막 여행 준비, 우유니 소금사막 여행 가이드, 우유니 소금사막 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 우유니 소금사막, Uyuni Salt Flat",
+        "canonicalUrl": "https://www.gateo.kr/place/uyuni-salt-flat/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/uyuni-salt-flat/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/uyuni-salt-flat/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/uyuni-salt-flat/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "우유니 소금사막"
+      },
+      "en": {
+        "title": "Uyuni Salt Flat travel · trip planner",
+        "description": "Plan a trip to Uyuni Salt Flat — flights, stays, and local tips. Discover Uyuni Salt Flat, Bolivia — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Uyuni Salt Flat, Bolivia, Uyuni Salt Flat travel, wildlife, nature, national park, scenery, GATEO, Uyuni Salt Flat trip planner, Uyuni Salt Flat plan a trip, Uyuni Salt Flat trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/uyuni-salt-flat/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/uyuni-salt-flat/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/uyuni-salt-flat/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/uyuni-salt-flat/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Uyuni Salt Flat"
       }
     }
   },
@@ -19470,6 +22330,116 @@ export default {
       }
     }
   },
+  "vientiane": {
+    "gallery": {
+      "ko": {
+        "title": "비엔티안 여행 사진 · 갤러리",
+        "description": "비엔티안 여행 사진과 갤러리. 메콩강변에 자리한 라오스의 수도로 동남아에서 가장 여유롭고 조용한 수도 중 하나입니다. 황금빛 파툭사이 개선문, 타트루앙 불탑 등 불교 사원과 프랑스 식민지 시대의 건축물이 공존하며, 메콩강 석양을 바라보며 비어라오 맥주를 즐기는 여유로운 시간이 매력적입니다.",
+        "keywords": "아시아, 동남아, 메콩강, 불교사원, 여유, 비엔티안 사진, 비엔티안 갤러리, 비엔티안 여행, 비엔티안 여행 사진, 사진, 갤러리, 여행, 여행 사진, 비엔티안, Vientiane",
+        "canonicalUrl": "https://www.gateo.kr/place/vientiane/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/vientiane/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/vientiane/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/vientiane/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "비엔티안",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "비엔티안 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Vientiane travel photos · gallery",
+        "description": "Browse Vientiane travel photos and gallery images. Discover Vientiane, Laos — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Vientiane, Laos, Vientiane travel, heritage, landmark, temple, history, GATEO, Vientiane photos, Vientiane gallery, Vientiane pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/vientiane/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/vientiane/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/vientiane/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/vientiane/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Vientiane",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Vientiane travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "비엔티안 여행 · 준비 가이드",
+        "description": "비엔티안 여행 준비·항공·숙소·현지 팁. 메콩강변에 자리한 라오스의 수도로 동남아에서 가장 여유롭고 조용한 수도 중 하나입니다. 황금빛 파툭사이 개선문, 타트루앙 불탑 등 불교 사원과 프랑스 식민지 시대의 건축물이 공존하며, 메콩강 석양을 바라보며 비어라오 맥주를 즐기는 여유로운 시간이 매력적입니다.",
+        "keywords": "아시아, 동남아, 메콩강, 불교사원, 여유, 비엔티안 여행, 비엔티안 관광, 비엔티안 플래너, 비엔티안 여행 준비, 비엔티안 여행 가이드, 비엔티안 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 비엔티안, Vientiane",
+        "canonicalUrl": "https://www.gateo.kr/place/vientiane/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/vientiane/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/vientiane/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/vientiane/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "비엔티안"
+      },
+      "en": {
+        "title": "Vientiane travel · trip planner",
+        "description": "Plan a trip to Vientiane — flights, stays, and local tips. Discover Vientiane, Laos — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Vientiane, Laos, Vientiane travel, heritage, landmark, temple, history, GATEO, Vientiane trip planner, Vientiane plan a trip, Vientiane trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/vientiane/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/vientiane/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/vientiane/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/vientiane/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Vientiane"
+      }
+    }
+  },
   "vladivostok": {
     "gallery": {
       "ko": {
@@ -19577,6 +22547,116 @@ export default {
         ],
         "ogImage": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&h=630&q=80",
         "placeName": "Vladivostok"
+      }
+    }
+  },
+  "wadi-rum": {
+    "gallery": {
+      "ko": {
+        "title": "요르단 와디 럼 여행 사진 · 갤러리",
+        "description": "요르단 와디 럼 여행 사진과 갤러리. 영화 마션과 듄의 촬영지로 화성 같은 붉은 사막 풍경이 펼쳐집니다. 베두인 캠프에서의 사막 캠핑이 인기입니다.",
+        "keywords": "사막, 캠핑, 영화, 베두인, 요르단 와디 럼 사진, 요르단 와디 럼 갤러리, 요르단 와디 럼 여행, 요르단 와디 럼 여행 사진, 사진, 갤러리, 여행, 여행 사진, 요르단 와디 럼, Wadi Rum",
+        "canonicalUrl": "https://www.gateo.kr/place/wadi-rum/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/wadi-rum/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/wadi-rum/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/wadi-rum/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "요르단 와디 럼",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "요르단 와디 럼 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Wadi Rum travel photos · gallery",
+        "description": "Browse Wadi Rum travel photos and gallery images. Discover Wadi Rum, Jordan — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Wadi Rum, Jordan, Wadi Rum travel, wildlife, nature, national park, scenery, GATEO, Wadi Rum photos, Wadi Rum gallery, Wadi Rum pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/wadi-rum/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/wadi-rum/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/wadi-rum/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/wadi-rum/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Wadi Rum",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Wadi Rum travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "요르단 와디 럼 여행 · 준비 가이드",
+        "description": "요르단 와디 럼 여행 준비·항공·숙소·현지 팁. 영화 마션과 듄의 촬영지로 화성 같은 붉은 사막 풍경이 펼쳐집니다. 베두인 캠프에서의 사막 캠핑이 인기입니다.",
+        "keywords": "사막, 캠핑, 영화, 베두인, 요르단 와디 럼 여행, 요르단 와디 럼 관광, 요르단 와디 럼 플래너, 요르단 와디 럼 여행 준비, 요르단 와디 럼 여행 가이드, 요르단 와디 럼 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 요르단 와디 럼, Wadi Rum",
+        "canonicalUrl": "https://www.gateo.kr/place/wadi-rum/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/wadi-rum/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/wadi-rum/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/wadi-rum/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "요르단 와디 럼"
+      },
+      "en": {
+        "title": "Wadi Rum travel · trip planner",
+        "description": "Plan a trip to Wadi Rum — flights, stays, and local tips. Discover Wadi Rum, Jordan — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Wadi Rum, Jordan, Wadi Rum travel, wildlife, nature, national park, scenery, GATEO, Wadi Rum trip planner, Wadi Rum plan a trip, Wadi Rum trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/wadi-rum/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/wadi-rum/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/wadi-rum/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/wadi-rum/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Wadi Rum"
       }
     }
   },
@@ -19797,6 +22877,116 @@ export default {
         ],
         "ogImage": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&h=630&q=80",
         "placeName": "Washington DC"
+      }
+    }
+  },
+  "yellowknife": {
+    "gallery": {
+      "ko": {
+        "title": "옐로나이프 여행 사진 · 갤러리",
+        "description": "옐로나이프 여행 사진과 갤러리. 미항공우주국(NASA)이 선정한 세계 최고의 오로라 관측지입니다. 쏟아지는 빛의 커튼 아래서 잊지 못할 밤을 맞이합니다.",
+        "keywords": "자연/오지, 낭만, 액티비티, 옐로나이프 사진, 옐로나이프 갤러리, 옐로나이프 여행, 옐로나이프 여행 사진, 사진, 갤러리, 여행, 여행 사진, 옐로나이프, Yellowknife",
+        "canonicalUrl": "https://www.gateo.kr/place/yellowknife/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/yellowknife/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/yellowknife/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/yellowknife/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "옐로나이프",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "옐로나이프 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Yellowknife travel photos · gallery",
+        "description": "Browse Yellowknife travel photos and gallery images. Discover Yellowknife, Canada — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Yellowknife, Canada, Yellowknife travel, wildlife, nature, national park, scenery, GATEO, Yellowknife photos, Yellowknife gallery, Yellowknife pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/yellowknife/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/yellowknife/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/yellowknife/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/yellowknife/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Yellowknife",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Yellowknife travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "옐로나이프 여행 · 준비 가이드",
+        "description": "옐로나이프 여행 준비·항공·숙소·현지 팁. 미항공우주국(NASA)이 선정한 세계 최고의 오로라 관측지입니다. 쏟아지는 빛의 커튼 아래서 잊지 못할 밤을 맞이합니다.",
+        "keywords": "자연/오지, 낭만, 액티비티, 옐로나이프 여행, 옐로나이프 관광, 옐로나이프 플래너, 옐로나이프 여행 준비, 옐로나이프 여행 가이드, 옐로나이프 여행 계획, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 옐로나이프, Yellowknife",
+        "canonicalUrl": "https://www.gateo.kr/place/yellowknife/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/yellowknife/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/yellowknife/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/yellowknife/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "옐로나이프"
+      },
+      "en": {
+        "title": "Yellowknife travel · trip planner",
+        "description": "Plan a trip to Yellowknife — flights, stays, and local tips. Discover Yellowknife, Canada — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
+        "keywords": "Yellowknife, Canada, Yellowknife travel, wildlife, nature, national park, scenery, GATEO, Yellowknife trip planner, Yellowknife plan a trip, Yellowknife trip planning, travel, trip planner, plan a trip, trip planning",
+        "canonicalUrl": "https://www.gateo.kr/place/yellowknife/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/yellowknife/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/yellowknife/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/yellowknife/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Yellowknife"
       }
     }
   },

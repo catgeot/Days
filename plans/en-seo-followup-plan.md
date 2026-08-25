@@ -155,7 +155,7 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | **#11** | `검색노출 #11, tier2 crawler 배치1` | crawler meta **+43** tier2 pop≥80 (phuket 등) · view-source og:image·ImageGallery | `smoke:crawler-place-meta` · `build` | main ✅ |
 | **#12** | `검색노출 #12, tier2 crawler 배치2+` | pop70–79 top **40** slug · 107→147 | smoke · view-source | main ✅ |
 | **#12+** | `검색노출 #12+, tier2 crawler 배치3` | pop70–79 next **40** slug · 147→187 | smoke · view-source | main ✅ |
-| **#13** | `검색노출 #13, tier2 crawler 배치4 마무리` | pop70–79 잔여 **29** slug · 187→**216** · `INCLUDED` 80→109 | smoke · view-source | main |
+| **#13** | `검색노출 #13, tier2 crawler 배치4 마무리` | pop70–79 잔여 **29** slug · 187→**216** · `INCLUDED` 80→109 | smoke · view-source | main ✅ |
 | **#14** | `검색노출 #14, 항공 경로 SEO` (제안) | `flight-route` intent → planner · ICN→IATA title/keywords · crawler route snippet | smoke · view-source | main |
 | **#15** | `검색노출 #15, 허브 crawler` | middleware **`/korea/theme/scenic`** · **`/explore`** · hub meta SSOT | view-source · smoke | main |
 | **#16** | `검색노출 #16, 큐레이션·로그북 SEO` | `/blog/curation` Helmet · sitemap `/blog` · logbook URL 정합 | smoke · build | main |
@@ -212,8 +212,8 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | | |
 |--|--|
 | SSOT | [`scripts/generate-crawler-place-meta.mjs`](../scripts/generate-crawler-place-meta.mjs) · 큐 [`scripts/data/tier2-crawler-pop70-79-queue.json`](../scripts/data/tier2-crawler-pop70-79-queue.json) |
-| 상수 | `TIER2_CRAWLER_POP70_79_INCLUDED` — 현재 **80** / 전수 **109** |
-| **#13 마무리** | `INCLUDED` → **109** · `npm run generate:crawler-place-meta` · smoke count **216** · bohol assert · santorini(pop&lt;70) null |
+| 상수 | `TIER2_CRAWLER_POP70_79_INCLUDED` — **109/109** (전수 완료) |
+| **#13 완료** | crawler **216 slug** · smoke bohol assert · santorini(pop&lt;70) null |
 | PROD QA | `/place/bohol/gallery?crawler=1` · `/place/galapagos/gallery?crawler=1` view-source |
 
 ### #8 이후
@@ -248,46 +248,28 @@ npm run audit:place-seo-en            # #3 이후
 
 ## 9. 핸드오프
 
-**세션** `검색노출 #13, tier2 crawler 배치4 마무리` (준비 완료)  
-**main** `fe1010a6` · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
+**세션** `검색노출 #13, tier2 crawler 배치4 마무리`  
+**main** (push 후 SHA) · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
 **인덱스** [`feature-handoff-index.md`](./feature-handoff-index.md) 「검색노출」행
 
 | | |
 |--|--|
-| **완료 (#12+)** | tier2 pop70–79 80/109 crawler · **187 slug** |
-| **#13 한 줄** | `TIER2_CRAWLER_POP70_79_INCLUDED` **80 → 109** · regenerate · smoke **216** |
-| **잔여 29 slug** | 큐 SSOT [`tier2-crawler-pop70-79-queue.json`](../scripts/data/tier2-crawler-pop70-79-queue.json) · 샘플 bohol·galapagos·seoul |
-| **완료 후** | tier2 pop70–79 crawler **전수** · #14 항공 경로 또는 tier2 EN 잔여 |
+| **완료 (#13)** | tier2 pop70–79 **109/109** crawler · **216 slug** · bohol·galapagos batch4 |
+| **tier2 crawler** | pop≥80 + pop70–79 **전수 완료** — tier2 pop&lt;70은 SPA Helmet만 |
+| **다음** | #14 항공 경로 SEO · #15 허브 crawler |
 
-**다음 제시어 (#13)**:
+**다음 제시어 (#14)**:
 
 ```
-검색노출 #13, tier2 crawler 배치4 마무리
+검색노출 #14, 항공 경로 SEO
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · INCLUDED 80→109 · /place/bohol/gallery?crawler=1
+main · flight-route intent · view-source ?crawler=1
 ```
 
-**#13 체크리스트 (에이전트)**:
-
-1. `git pull --rebase origin main`
-2. `scripts/generate-crawler-place-meta.mjs` — `TIER2_CRAWLER_POP70_79_INCLUDED = 109`
-3. `npm run generate:crawler-place-meta` → 216 slug
-4. `scripts/smoke-crawler-place-meta.mjs` — count 216 · bohol assert · `santorini` null
-5. `smoke:place-seo-en` · `build` PASS → main commit·push
-
-**PROD QA (#12+ 잔여)**:
+**PROD QA (#13)**:
 
 ```
-view-source ?crawler=1 · /place/hamburg/gallery · /place/havana/gallery
-```
-
-**허브 SEO 착수 시 (#15)**:
-
-```
-검색노출 #15, 허브 crawler — 명승·explore
-@plans/feature-handoff-index.md
-@plans/en-seo-followup-plan.md
-view-source ?crawler=1 · /korea/theme/scenic · /explore
+view-source ?crawler=1 · /place/bohol/gallery · /place/galapagos/gallery
 ```

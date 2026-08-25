@@ -1,7 +1,7 @@
 {
   "total": 109,
-  "included": 80,
-  "remaining": 29,
+  "included": 109,
+  "remaining": 0,
   "nextSessionIncluded": 109,
   "nextSessionCrawlerSlugs": 216,
   "generateConstant": "TIER2_CRAWLER_POP70_79_INCLUDED",
