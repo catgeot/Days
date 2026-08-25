@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * GSC baseline filled CSV audit — 174 URL completeness gate.
+ * GSC baseline filled CSV audit — 173 URL completeness gate.
  *
  *   npm run audit:gsc-baseline
  *
@@ -31,7 +31,7 @@ if (!existsSync(outputPath)) {
   console.error('audit:gsc-baseline');
   console.error(`  FAIL  missing ${outputPath.replace(`${root}/`, '')}`);
   console.error('  → cp scripts/data/gsc-seo-baseline-template.csv scripts/outputs/gsc-seo-baseline.csv');
-  console.error('  → fill checked_at · gsc_index_status · gsc_last_crawl (GSC URL Inspection 174건)');
+  console.error('  → fill checked_at · gsc_index_status · gsc_last_crawl (GSC URL Inspection 173건)');
   process.exit(1);
 }
 
@@ -124,9 +124,19 @@ if (missingUrls.length) {
 
 if (incompleteRows.length) {
   failed += 1;
+  if (report.completeRowCount === 0 && report.incompleteRowCount === report.filledUrlCount) {
+    console.error(
+      '\nHINT: outputs CSV looks like an unfilled template copy — GSC URL Inspection 값을 아직 넣지 않은 상태입니다.',
+    );
+    console.error('  → Search Console → URL Inspection → 각 URL의 색인·크롤일을 CSV 3열에 기록');
+    console.error('  → checked_at(점검일) · gsc_index_status · gsc_last_crawl');
+  }
   console.error(`\nFAIL: ${incompleteRows.length} row(s) missing GSC fields`);
   for (const row of incompleteRows.slice(0, 5)) {
     console.error(`  - ${row.url} (${row.missingFields.join(', ')})`);
+  }
+  if (incompleteRows.length > 5) {
+    console.error(`  … and ${incompleteRows.length - 5} more (see ${outJson.replace(`${root}/`, '')})`);
   }
 }
 
