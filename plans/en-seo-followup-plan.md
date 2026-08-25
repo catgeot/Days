@@ -173,22 +173,23 @@ npm run audit:place-seo-en            # #3 이후
 
 ## 9. 핸드오프
 
-**세션** `검색노출 #5, explore·korea hreflang`  
-**main** 최신 · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
+**세션** `검색노출 #6, 크롤러 HTML MVP`  
+**브랜치** `cursor/en-seo` · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
 **인덱스** [`feature-handoff-index.md`](./feature-handoff-index.md) 「검색노출」행
 
 | | |
 |--|--|
-| **완료 (#5)** | `I18N_HUB_PATHS` 9경로 · sitemap explore·korea/theme hreflang · smoke 확장 |
-| **다음 (#6)** | 크롤러 HTML MVP — `cursor/en-seo` · Edge middleware |
+| **완료 (#6)** | Edge `middleware.js` · tier1×gallery/planner×ko/en meta inject · `generate:crawler-place-meta` · `smoke:crawler-place-meta` |
+| **Preview QA** | view-source `/place/tokyo/gallery?crawler=1` · `/place/angkor-wat/planner?lang=en&crawler=1` — title·description·canonical |
+| **다음 (#7)** | `/` · `/korea` · tier1 base path · Googlebot GSC 렌더링 |
 
-**다음 제시어 (#6)**:
+**다음 제시어 (#7)**:
 
 ```
-검색노출 #6, 크롤러 HTML MVP
+검색노출 #7, 크롤러 HTML 확장
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-cursor/en-seo · Edge middleware · tier1 gallery/planner
+cursor/en-seo · `/` · `/korea` · tier1 base · Googlebot 검증
 금지: full SSR·/en/ prefix·검증 없이 push
 ```

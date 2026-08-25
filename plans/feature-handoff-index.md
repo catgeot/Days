@@ -40,23 +40,23 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 
 | | |
 |--|--|
-| **상태** | **#5 완료** (explore·korea hreflang) · **#6 크롤러 HTML MVP** 다음 |
-| **브랜치** | **#1~#5·#8~#9 → `main`** · **#6~#7 → `cursor/en-seo`** (+ PR) — [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2 SSOT |
-| **시작 필수** | `git fetch origin main && git pull --rebase origin main` |
-| **main** | `8fd8d7e7` |
+| **상태** | **#6 크롤러 HTML MVP** — Edge middleware tier1 gallery/planner · PR Preview QA |
+| **브랜치** | **`cursor/en-seo`** (+ PR) — #7도 동일 브랜치 · **#1~#5·#8~#9 → `main`** |
+| **시작 필수** | `git fetch origin cursor/en-seo && git checkout cursor/en-seo` |
+| **tip** | (이번 턴 push 후 SHA) |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2·§9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
-| **PROD QA** | `/explore?lang=en` · `/korea/theme/scenic?lang=en` — sitemap hreflang · Helmet alternate |
-| **VERIFY** | `smoke:place-seo-en` · `build` |
+| **Preview** | `/qa/en-seo` → `/place/tokyo/gallery?crawler=1` view-source |
+| **VERIFY** | `smoke:crawler-place-meta` · `smoke:place-seo-en` · `build` |
 
-**다음 제시어 (#6)**:
+**다음 제시어 (#7)**:
 
 ```
-검색노출 #6, 크롤러 HTML MVP
+검색노출 #7, 크롤러 HTML 확장
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-cursor/en-seo · Edge middleware · tier1 gallery/planner
+cursor/en-seo · `/` · `/korea` · tier1 base · Googlebot 검증
 금지: full SSR·/en/ prefix·검증 없이 push
 ```
 
