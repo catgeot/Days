@@ -84,6 +84,32 @@ main · www.gateo.kr/place/yap/planner?lang=en
 
 ---
 
+### 검색 노출 (한·영 SEO)
+
+| | |
+|--|--|
+| **상태** | **#0 완료** (탭 SEO·sitemap) · **#1 PROD QA** 대기 |
+| **브랜치** | **#1~#5·#8~#9 → `main`** · **#6~#7 → `cursor/en-seo`** (+ PR) |
+| **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2 세션표 · §9 |
+| **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
+| **PROD QA** | `https://www.gateo.kr/place/phuket/gallery` · `/place/phuket/planner?lang=en` · `/place/angkor-wat/gallery?lang=en` |
+| **VERIFY** | `npm run smoke:place-seo-en` · `npm run build` |
+
+**#0 완료**: `getPlaceTabSeoTitle` · gallery/planner sitemap · index KO·EN 크롤러 링크
+
+**다음 제시어 (#1)**:
+
+```
+검색노출 #1, PROD QA — meta·탭 title
+@plans/feature-handoff-index.md
+@plans/en-seo-followup-plan.md
+@plans/2026-08-25-project-log.md
+www.gateo.kr/place/phuket/gallery · /planner?lang=en · angkor-wat/gallery
+금지: /en/ prefix·SSR·홈 내부검색 변경
+```
+
+---
+
 ## 행 추가 템플릿 (새 Cloud feature)
 
 ```markdown

@@ -21,8 +21,9 @@
 - **국내 명소 tip 좌표 TourAPI 보정 (다음 세션)**: [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) · 제시어 `TourAPI-명소좌표-이어하기`
 - **국내 MRT TNA 인근 (Phase 4 ✅ · C표 32)**: [`mrt-tna-nearby-expand-plan.md`](./mrt-tna-nearby-expand-plan.md) · 일지 `2026-07-30`
 - **블로그 AI 큐레이션 인페이지 허브 (Phase B+C tip · Preview QA)**: [`blog-ai-curation-page-plan.md`](./blog-ai-curation-page-plan.md) · 제시어 `큐레이션-이어하기` · 일지 `2026-07-31`
+- **한·영 검색 노출 (외부 SEO)**: [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) · 세션 `검색노출 #{N}` · [`feature-handoff-index.md`](./feature-handoff-index.md)
 - **일별 작업 로그**: `YYYY-MM-DD-project-log.md`  
-  - 최신: [`2026-08-24-project-log.md`](./2026-08-24-project-log.md) · 직전 [`2026-08-22-project-log.md`](./2026-08-22-project-log.md)  
+  - 최신: [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) · 직전 [`2026-08-24-project-log.md`](./2026-08-24-project-log.md)  
 - **해안·해양 탐색 칩 (플랜+SSOT)**: [`coast-sea-explore-plan.md`](./coast-sea-explore-plan.md) · Phase 1–2 ✅ · `audit:sea-basins` · 일지 `2026-08-16`
 
 

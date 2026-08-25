@@ -1,10 +1,20 @@
-# 영문 검색 SEO — 후속 플랜
+# 한·영 검색 노출 SEO — 후속 플랜
 
-**세션 표기**: `영문 SEO #{N}, {단계}`  
-**브랜치**: 짧은 SSOT·스모크 → **`main` 직행** · prerender/URL prefix 등 구조 변경 → **`cursor/en-seo`** (+ PR)  
-**선행 완료**: main `3cd50468` · `22c7e667` · **탭 SEO** (2026-08-25) — `getPlaceTabSeoTitle` · gallery/planner sitemap · KO/EN 「지명+여행/갤러리/플래너」 meta
+**세션 표기**: `검색노출 #{N}, {단계}` (구 `영문 SEO`와 동일 주제 · #N 리셋 금지)  
+**브랜치 정책** — 아래 **§2 세션표** 「브랜치」열 SSOT:
 
-**범위 (명확화)**: **홈 내부 검색**은 지명·지역 매칭만으로 충분 — **복합 쿼리 파서는 범위外**. 본 플랜 = **외부 검색엔진**(Google·Naver)에서 「여행지명 + 여행/갤러리/플래너/photos/travel」 노출.
+| 작업 종류 | 브랜치 |
+|-----------|--------|
+| SSOT·sitemap·overrides·smoke·index 정적 링크·문서 | **`main` 직행** (원격 push는 세션 종료 시 또는 사람 요청) |
+| Edge middleware · prerender · `/en/` URL prefix | **`cursor/en-seo`** (+ PR) |
+
+**선행 완료** (main, 2026-08-25):
+
+- `placeSeoEnOverrides` · Helmet keywords · `/place/*` hreflang
+- **`getPlaceTabSeoTitle` · 탭별 keywords** — KO/EN 「지명+여행/갤러리/플래너」 meta
+- sitemap **`/place/:slug/gallery`·`/planner`** ×273 · index KO·EN 크롤러 링크
+
+**범위 (명확화)**: **홈 내부 검색**은 지명·지역 매칭만 — 복합 쿼리 파서 **범위外**. 본 플랜 = **외부 검색엔진**(Google·Naver)에서 「여행지명 + 사진/갤러리/여행/여행 계획/photos/travel/planner」 노출.
 
 ---
 
@@ -12,173 +22,190 @@
 
 | 질문 | 답 |
 |------|----|
-| 지금 PROD에 뭐가 올라갔나? | tier1+phuket+galapagos EN copy · **탭별 SEO title/description/keywords** (KO·EN) · sitemap **`/place/:slug/gallery`·`/planner`** · index.html 크롤러 링크 |
-| 아직 왜 구글에 약한가? | **SPA** — JS 전 정적 HTML 한계 · **tier2+** EN 폴백 · **인덱싱·순위**는 GSC 재크롤 후 확인 |
-| 우선순위? | **#1 PROD QA** → **#2 tier2 EN** → **#3 크롤러 HTML(prerender)** → **#4 explore/korea hreflang·RSS** |
+| 세션마다 끝낼 수 있나? | **예** — §2 표: 세션당 **1 산출·1 VERIFY 게이트** (tier2는 40 slug/세션) |
+| main에서 하나? | **#1~#5·#8~#9 = main** · **#6~#7만 `cursor/en-seo`+PR** |
+| 지금 PROD에 뭐가 올라갔나? | tier1 EN copy · **탭별 SEO title/description/keywords** (KO·EN) · sitemap gallery/planner |
+| 아직 약한 이유? | **SPA** — view-source 정적 HTML 한계 · tier2 EN 폴백 · GSC 재크롤·baseline 없음 |
+| 다음? | **#1 PROD QA** → **#2 의도 SSOT** → **#3 tier2 EN** → **#4 hreflang** → **#5~#6 크롤러 HTML** |
 
 ---
 
-## 1. 현재 상태 (2026-08-25 · main 반영됨)
+## 1. 현재 상태
 
 ### 1.1 완료
 
 | 영역 | SSOT / 산출 |
 |------|-------------|
-| 여행지 EN copy | [`src/data/placeSeoEnOverrides.js`](../src/data/placeSeoEnOverrides.js) — 66 slug |
-| locale 헬퍼 | [`src/pages/Home/lib/placeSeoText.js`](../src/pages/Home/lib/placeSeoText.js) |
-| Helmet | [`src/components/SEO/index.jsx`](../src/components/SEO/index.jsx) — keywords · JSON-LD locale |
-| UI 써머리 | PlaceCardSummary · Gallery overview — `getLocalizedPlaceDesc` |
-| 정적 크롤러 | [`index.html`](../index.html) — EN 숨김 링크 블록 (Phuket · Galapagos · Angkor · Korea) |
-| Sitemap | [`scripts/generate-sitemap.cjs`](../scripts/generate-sitemap.cjs) — `/place/:slug` · **`/gallery`** · **`/planner`** + hreflang |
-| 탭 SEO | `getPlaceTabSeoTitle` · `getPlaceTabSeoKeywords` — 「푸켓 여행」「푸켓 갤러리」 등 외부 검색어 정렬 |
+| 여행지 EN copy | [`placeSeoEnOverrides.js`](../src/data/placeSeoEnOverrides.js) — 66 slug |
+| locale·탭 SEO | [`placeSeoText.js`](../src/pages/Home/lib/placeSeoText.js) — `getPlaceTabSeoTitle` · keywords · description |
+| Helmet | [`SEO/index.jsx`](../src/components/SEO/index.jsx) |
+| Sitemap | [`generate-sitemap.cjs`](../scripts/generate-sitemap.cjs) — `/place/*` · `/gallery` · `/planner` + hreflang |
+| 정적 크롤러 | [`index.html`](../index.html) — KO·EN 숨김 링크 |
 | 검증 | `npm run smoke:place-seo-en` |
 
-### 1.2 샘플 — **외부 검색** 기대 스니펫 (JS 렌더·재크롤 후)
+### 1.2 검색 의도 → URL (코드에 있음 · SSOT 파일은 #2)
 
-| 검색 | URL | `<title>` (Helmet) |
-|------|-----|---------------------|
-| 푸켓 갤러리 | `/place/phuket/gallery` | `푸켓 여행 사진 · 갤러리 \| GATEO` |
-| 푸켓 여행 | `/place/phuket/planner` | `푸켓 여행 · 준비 가이드 \| GATEO` |
-| Phuket travel photos | `/place/phuket/gallery?lang=en` | `Phuket travel photos · gallery \| GATEO` |
-| Angkor Wat photos | `/place/angkor-wat/gallery?lang=en` | `Angkor Wat travel photos · gallery \| GATEO` |
-| Korea festivals | `/korea?lang=en` | `Korea festivals \| GATEO` |
+| intentId | KO 예시 쿼리 | EN 예시 쿼리 | tab | URL |
+|----------|---------------|--------------|-----|-----|
+| `gallery` | 푸켓 사진, 푸켓 갤러리 | phuket photos, phuket gallery | gallery | `/place/:slug/gallery` |
+| `travel` | 푸켓 여행, 푸켓 관광 | phuket travel | planner 또는 gallery | `/place/:slug/planner` |
+| `planner` | 푸켓 여행 계획 | phuket trip planning | planner | `/place/:slug/planner` |
+| `video` | 푸켓 여행 영상 | phuket travel videos | video | `/place/:slug/video` |
+| `reviews` | 푸켓 후기 | phuket reviews | reviews | `/place/:slug/reviews` |
+| `wiki` | 푸켓 여행 스케치 | phuket travel guide | wiki | `/place/:slug/wiki` |
 
-### 1.3 잔여 한계 (이 플랜의 대상)
+### 1.3 잔여 한계
 
-| # | 한계 | 영향 | 심각도 |
-|---|------|------|--------|
-| L1 | **SPA + Helmet** — 초기 HTML은 `lang=ko`·한글 meta | JS 미실행 봇·일부 SNS 스크래퍼 | 높음 |
-| L2 | **tier2+ (~207)** — `desc_en` 없으면 짧은 EN 템플릿만 | 롱테일 영문 검색 스니펫 품질 | 중 |
-| L3 | **RSS** — ko only · [`generate-sitemap.cjs`](../scripts/generate-sitemap.cjs) | 네이버·피드 구독 EN 미대응 | 낮~중 |
-| L4 | **sitemap hreflang** — `/explore/*` · `/korea/theme/*` 등 미포함 | locale alternate 불완전 | 중 |
-| L5 | ~~탭 URL sitemap·title~~ | ✅ gallery/planner sitemap · compound title/keywords | — |
-| L6 | **URL `?lang=en`** — `/en/place/...` prefix 없음 | 영어권 SEO·공유 URL 직관성 · GSC locale 리포트 | 중 (합의 후) |
-| L7 | **OG image** — 전역 `og-image.png` | destination별 SNS 미리보기 | 낮 |
-| L8 | **측정** — GSC hreflang·영문 쿼리 baseline 없음 | 개선 검증 불가 | 운영 |
-
----
-
-## 2. Phase 로드맵
-
-| Phase | 세션 | 목표 | VERIFY | 브랜치 |
-|-------|------|------|--------|--------|
-| **#1** | PROD QA | 배포 후 meta·써머리·sitemap spot-check | 사람 · `smoke:place-seo-en` | — |
-| **#2** | tier2 백필 | tier2 전체 `desc_en`/`keywords_en` 또는 상위 popularity N개 | `smoke:place-seo-en` 확장 · `audit:place-seo-en` | main |
-| **#3** | 크롤러 HTML | 봇/정적 레이어 — 아래 §3 옵션 중 1택 | Lighthouse/Google Rich Results · 수동 view-source | feature |
-| **#4** | sitemap · RSS EN | explore·korea theme hreflang · EN RSS channel 또는 dual-language item | sitemap diff · RSS validator | main |
-| **#5** | 탭·구조화 데이터 | gallery/planner URL canonical 일관 · ImageObject schema(갤러리) | smoke · GSC URL inspection | main/feature |
-| **#6** | `/en/` prefix (합의) | i18n-en-plan 2차 URL · redirect `?lang=en` ↔ `/en` | `audit:i18n` · routing smoke | feature + PR |
-| **#7** | OG · 모니터링 | slug별 og:image(썸네일) · GSC Search Analytics baseline | 사람 QA | main |
-
-**권장 순서**: #1 → #2 → #3 → #4 → (#5와 병행 가능) → #6은 사람 합의 후.
+| # | 한계 | 심각도 |
+|---|------|--------|
+| L1 | SPA — 초기 HTML 한글 meta 고정 | 높음 |
+| L2 | tier2+ EN 템플릿 폴백 | 중 |
+| L3 | RSS ko only | 낮~중 |
+| L4 | explore·korea/theme hreflang 미포함 | 중 |
+| L5 | ~~탭 sitemap~~ | ✅ |
+| L6 | `/en/` prefix 없음 (합의 후) | 중 |
+| L7 | 전역 og:image | 낮 |
+| L8 | GSC baseline 없음 | 운영 |
 
 ---
 
-## 3. Phase #3 — 크롤러용 HTML (L1 해결) 옵션
+## 2. 세션별 실행표 (1세션 = 1완료 단위)
 
-SPA 한계를 없애려면 **크롤러가 JS 없이도 locale별 title/description을 읽어야** 한다.
+**규칙**: 세션 종료 시 **해당 행 VERIFY PASS** · 일지 2~5줄 · §9 제시어 갱신. tier2는 **40 slug/세션** 고정(번역 품질·리뷰 가능 범위).
 
-| 옵션 | 개요 | 장점 | 단점 | gateo 적합 |
-|------|------|------|------|------------|
-| **A. Vercel prerender (bot UA)** | middleware/edge에서 Googlebot 등에 HTML 스냅샷 | 기존 Vite SPA 유지 · top URL만 | 봇 UA spoof · 유지보수 | **1순위 후보** |
-| **B. 빌드 타임 SSG subset** | tier1 `/place/*` + `/` + `/korea` 정적 HTML 생성 | 확실한 초기 meta | 빌드 시간 · 동적 데이터 drift | 2순위 |
-| **C. Edge HTML shell** | pathname+`lang`별 `<title>`/`<meta>`만 SSR 삽입 | 구현 작음 | 본문·schema는 여전히 SPA | **MVP** (A/B 전 단계) |
-| **D. full SSR (Remix/Next)** | 프레임워크 이전 | 최종 SEO | 대형 마이그레이션 | 장기 · 비권장 단기 |
+| #N | 채팅명 (복붙) | 산출 (이번 세션 끝에 있어야 할 것) | VERIFY | 브랜치 |
+|----|---------------|--------------------------------------|--------|--------|
+| **#0** | (완료) 탭 SEO·sitemap | `getPlaceTabSeoTitle` · gallery/planner sitemap | `smoke:place-seo-en` · `build` | main ✅ |
+| **#1** | `검색노출 #1, PROD QA — meta·탭 title` | 사람 QA 체크리스트 완료 · GSC URL Inspection 메모 | 사람 · `smoke:place-seo-en` | main |
+| **#2** | `검색노출 #2, 검색의도 SSOT` | [`placeSearchIntent.js`](../src/data/placeSearchIntent.js) · `placeSeoText` import · 플랜 §1.2와 동기 | `smoke:place-seo-en` · `build` | main |
+| **#3** | `검색노출 #3, tier2 EN 배치1` | overrides **+40** (popularity≥80) · `audit:place-seo-en` 스크립트 신규 | audit · smoke · `build` | main |
+| **#4** | `검색노출 #4, tier2 EN 배치2` | overrides **+40** (잔여 상위) | audit · smoke | main |
+| **#5** | `검색노출 #5, explore·korea hreflang` | [`seoUrls.js`](../src/i18n/seoUrls.js) `I18N_HUB_PATHS` 확장 · sitemap 재생성 | sitemap diff · smoke · `build` | main |
+| **#6** | `검색노출 #6, 크롤러 HTML MVP` | `cursor/en-seo` · Edge middleware · tier1 gallery/planner meta inject | view-source · `build` · PR | **cursor/en-seo** |
+| **#7** | `검색노출 #7, 크롤러 HTML 확장` | `/` · `/korea` · tier1 base path · Googlebot 검증 | GSC 렌더링 · PR push | **cursor/en-seo** |
+| **#8** | `검색노출 #8, 정적링크·baseline` | index.html tier1×intent KO 링크 보강 · GSC baseline CSV(사람) | smoke · 일지 | main |
+| **#9** | `검색노출 #9, RSS·canonical` (선택) | `rss-en.xml` 또는 bilingual item · canonical 점검 | RSS validator · smoke | main |
+| **#10** | `검색노출 #10, OG·스키마` (백로그) | slug og:image · ImageObject(갤러리) | 사람 QA | main/feature |
 
-**#3 MVP 제안 (C → A)**  
-1. Vercel Edge Middleware: `Accept-Language: en` 또는 `?lang=en` + 주요 path → `index.html` inject용 meta map ([`placeSeoEnOverrides`](../src/data/placeSeoEnOverrides.js) + i18n `seo.*` + korea keys).  
-2. 검증 후 Googlebot UA prerender(A) 또는 빌드 SSG(B)로 확장.  
-3. **금지**: 전역 SSR 이전 without 명시 승인.
+**권장 순서**: #1 → #2 → #3 → #4 → #5 → (#6·#7 연속) → #8. #9·#10은 여유 시.
+
+**Preview**: 본 주제는 PROD URL QA 중심 — `www.gateo.kr/place/phuket/gallery` · `?lang=en`. 크롤러 HTML(#6~)만 git Preview(`cursor/en-seo`) 사용.
 
 ---
 
-## 4. Phase #2 — tier2 EN copy (L2)
+## 3. Phase 상세 (세션표 보조)
+
+### #1 PROD QA
+
+| URL | 확인 |
+|-----|------|
+| `/place/phuket/gallery` | title `푸켓 여행 사진 · 갤러리` · 한글 description |
+| `/place/phuket/planner?lang=en` | `Phuket travel` · planner intent |
+| `/place/angkor-wat/gallery?lang=en` | photos intent |
+| `/korea?lang=en` | Korea festivals |
+| GSC | URL Inspection — 렌더 전/후 meta 차이 기록 |
+
+### #2 검색 의도 SSOT
+
+- `src/data/placeSearchIntent.js` — intentId · tab · koQuerySuffix[] · enQuerySuffix[] · sitemapPriority · staticLinkTier
+- `placeSeoText.js` — title/keyword 템플릿이 SSOT 참조 (중복 상수 제거)
+- **금지**: UI 변경 · `travelSpots.js` 직접 편집
+
+### #3·#4 tier2 EN copy
 
 | | |
 |--|--|
-| **범위** | `travelSpots.js` tier=2 (약 175) + hub 명소 tier3 중 `showOnGlobe` |
-| **SSOT** | 기존 [`placeSeoEnOverrides.js`](../src/data/placeSeoEnOverrides.js) 확장 (spots JSON 직편집 금지) |
-| **우선순위** | `popularity >= 80` → 동남아·한국 inbound 핫스팟 → 나머지 |
-| **폴백 유지** | override 없으면 현재 `Discover {name}, {country}...` |
-| **감사** | `npm run audit:place-seo-en` — override 커버율 · desc 길이 · Hangul 잔존 0 |
+| SSOT | [`placeSeoEnOverrides.js`](../src/data/placeSeoEnOverrides.js) |
+| 배치 | **40 slug/세션** · popularity≥80 우선 |
+| 감사 | `npm run audit:place-seo-en` — 커버율 · Hangul 0 · desc 길이 |
 
-**배치 예**: popularity 상위 40 → smoke PASS → main 커밋 → 잔여 135.
+### #5 sitemap · hreflang
 
----
+- `I18N_HUB_PATHS`: `/explore`, `/korea/theme`, `/korea/theme/courses`, …
+- `node scripts/generate-sitemap.cjs` → `public/sitemap.xml` 커밋
 
-## 5. Phase #4 — sitemap · RSS (L3·L4)
+### #6·#7 크롤러 HTML (L1)
 
-### Sitemap
-
-- [`I18N_HUB_PATHS`](../src/i18n/seoUrls.js) 확장 후보: `/explore`, `/korea/theme`, `/korea/theme/courses`, …  
-- `/place/:slug/gallery` 등 **탭 URL**은 Phase #5 canonical 정책 확정 후 추가 (중복 URL 주의).
-
-### RSS
-
-- **Option 1**: `rss.xml` `<language>ko</language>` 유지 + `rss-en.xml` 신규 (tier1 EN desc)  
-- **Option 2**: item `<title>` bilingual · `<link>?lang=en`  
-- 네이버는 ko SSOT 유지 — EN은 Google·Feedly 대상.
-
----
-
-## 6. Phase #5 · #6 — URL · 탭 (L5·L6)
-
-[`routing-seo-optimization.md`](./archive/misc/routing-seo-optimization.md)와 정합:
-
-- PlaceCard 탭은 이미 `/place/:slug/:tab` — **canonical**이 tab path와 Helmet `url` prop 일치 확인 (#5).  
-- `/en/place/phuket/gallery` prefix (#6)는 [`i18n-en-plan.md`](./i18n-en-plan.md) 「2차 URL」과 **동일 결정** — redirect table + `buildLocalePageUrl` 일괄 변경.
-
----
-
-## 7. 검증 · 운영 (L8)
-
-| 시점 | 액션 |
+| 옵션 | 적합 |
 |------|------|
-| #1 PROD QA | GSC URL Inspection: `/`, `/place/phuket/gallery?lang=en`, `/korea?lang=en` |
-| #3 이후 | Rich Results Test · `site:gateo.kr phuket` 수동 |
-| #7 | GSC Performance — country US/UK/AU · query `phuket`, `angkor wat`, `korea festival` baseline CSV |
+| C Edge meta shell | **MVP (#6)** |
+| A Vercel bot prerender | **확장 (#7)** |
+| D full SSR | 금지(합의 전) |
 
-**에이전트 VERIFY (매 Phase)**  
-`npm run smoke:place-seo-en` · `npm run build` · (해당 시) `node scripts/generate-sitemap.cjs`
+### #8 이후
+
+- index KO intent 링크 · GSC baseline CSV
+- RSS EN · ImageObject · `/en/` prefix — [`i18n-en-plan.md`](./i18n-en-plan.md) 2차 URL과 **동일 결정**
 
 ---
 
-## 8. 금지 · 가드
+## 4. 금지 · 가드
 
-- `travelSpots.js` / spots JSON **직접** `desc_en` 필드 추가 금지 → overrides SSOT  
-- UI 레이아웃·톤 변경 금지 (`.ai-context` §4.1 5)  
-- `/en/` prefix **사람 합의 전** 라우트 변경 금지  
-- tier2 일괄 번역 **검증 없이** main push 금지
+- `travelSpots.js` / spots JSON 직접 `desc_en` 금지 → overrides SSOT
+- UI 레이아웃·톤 변경 금지 (`.ai-context` §4.1 5)
+- `/en/` prefix **사람 합의 전** 라우트 변경 금지
+- tier2 일괄 번역 **검증 없이** push 금지
+- 홈 내부 검색·동명 지명 SSOT 변경 금지 (외부 SEO와 별 트랙)
+
+---
+
+## 5. 검증 커맨드
+
+```bash
+npm run smoke:place-seo-en
+npm run build
+node scripts/generate-sitemap.cjs   # sitemap 변경 시
+npm run audit:place-seo-en            # #3 이후
+```
 
 ---
 
 ## 9. 핸드오프
 
-**세션** `영문 SEO #1, PROD QA — meta·써머리`  
-**main** `22c7e667` (push 완료 · Vercel PROD 배포 대기)  
-**일지** [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)
+**세션** `검색노출 #1, PROD QA — meta·탭 title`  
+**main** 최신 · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
+**인덱스** [`feature-handoff-index.md`](./feature-handoff-index.md) 「검색 노출」행
 
 | | |
 |--|--|
-| **완료** | tier1+phuket+galapagos EN SEO · sitemap place hreflang · smoke |
-| **PROD QA** | view-source / Elements — `/?lang=en` · `/place/phuket/gallery?lang=en` · `/korea?lang=en` |
-| **다음 Phase** | #2 tier2 백fill 또는 #3 크롤러 HTML MVP |
+| **완료 (#0)** | 탭 SEO title/keywords · gallery/planner sitemap · index KO 링크 |
+| **이번 (#1)** | PROD에서 KO·EN 탭 title·description·keywords 확인 |
+| **다음 (#2)** | `placeSearchIntent.js` SSOT |
 
-**다음 제시어**:
+**다음 제시어 (#1 — 지금 시작)**:
 
 ```
-영문 SEO #1, PROD QA — meta·써머리
+검색노출 #1, PROD QA — meta·탭 title
+@plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-www.gateo.kr/place/phuket/gallery?lang=en · angkor-wat · korea?lang=en
-금지: /en/ prefix·SSR 이전 without 합의
+www.gateo.kr/place/phuket/gallery · /planner?lang=en · angkor-wat/gallery
+금지: /en/ prefix·SSR·홈 내부검색 변경
 ```
 
-**#2 tier2 시작 제시어**:
+**#2 제시어 (예정)**:
 
 ```
-영문 SEO #2, tier2 desc_en 백필
+검색노출 #2, 검색의도 SSOT
 @plans/en-seo-followup-plan.md
-main · popularity≥80 우선 · audit:place-seo-en
-금지: travelSpots.js 직접 desc_en
+main · placeSearchIntent.js · placeSeoText 연동
+금지: travelSpots.js 직접 편집·UI 변경
+```
+
+**#3 제시어 (예정)**:
+
+```
+검색노출 #3, tier2 EN 배치1
+@plans/en-seo-followup-plan.md
+main · popularity≥80 · 40 slug · audit:place-seo-en 신규
+금지: 40개 초과·검증 없이 push
+```
+
+**#6 제시어 (예정 · feature)**:
+
+```
+검색노출 #6, 크롤러 HTML MVP
+@plans/en-seo-followup-plan.md
+cursor/en-seo · Edge middleware · tier1 gallery/planner
+금지: full SSR·/en/ prefix
 ```

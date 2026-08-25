@@ -17,3 +17,9 @@
 - **범위**: 홈 내부 검색 변경 없음 · **Google/Naver** 「지명+여행/갤러리/플래너」용 Helmet·sitemap
 - **조치**: `getPlaceTabSeoTitle` · 탭별 keywords · canonical `/place/:slug/:tab` · sitemap gallery/planner ×273 · index KO 링크
 - **VERIFY**: `smoke:place-seo-en` · `build` PASS
+
+## 검색노출 — 세션표·핸드오프 (2026-08-25)
+
+- **결정**: 세션당 1 산출 · tier2 40 slug/세션 · **#1~#5·#8~#9 = main** · **#6~#7 = `cursor/en-seo`+PR**
+- **문서**: [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2 세션표 · [`feature-handoff-index.md`](./feature-handoff-index.md) 행 추가
+- **다음**: `검색노출 #1, PROD QA — meta·탭 title`
