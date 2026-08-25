@@ -40,24 +40,24 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 
 | | |
 |--|--|
-| **상태** | **#4 완료** (tier2 EN 배치2) · **#5 explore·korea hreflang** 다음 |
+| **상태** | **#5 완료** (explore·korea hreflang) · **#6 크롤러 HTML MVP** 다음 |
 | **브랜치** | **#1~#5·#8~#9 → `main`** · **#6~#7 → `cursor/en-seo`** (+ PR) — [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2 SSOT |
 | **시작 필수** | `git fetch origin main && git pull --rebase origin main` |
-| **main** | `3b27fb43` |
+| **main** | push 후 SHA 갱신 |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2·§9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
-| **PROD QA** | `/place/kobe?lang=en` · `/place/bali/gallery?lang=en` |
-| **VERIFY** | `audit:place-seo-en` · `smoke:place-seo-en` · `build` |
+| **PROD QA** | `/explore?lang=en` · `/korea/theme/scenic?lang=en` — sitemap hreflang · Helmet alternate |
+| **VERIFY** | `smoke:place-seo-en` · `build` |
 
-**다음 제시어 (#5)**:
+**다음 제시어 (#6)**:
 
 ```
-검색노출 #5, explore·korea hreflang
+검색노출 #6, 크롤러 HTML MVP
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · git pull --rebase origin main 후 작업 · I18N_HUB_PATHS 확장 · sitemap 재생성
-금지: /en/ prefix·travelSpots.js 직접 편집·fetch 없이 작업·검증 없이 push
+cursor/en-seo · Edge middleware · tier1 gallery/planner
+금지: full SSR·/en/ prefix·검증 없이 push
 ```
 
 ---

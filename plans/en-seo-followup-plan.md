@@ -71,7 +71,7 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | L1 | SPA — 초기 HTML 한글 meta 고정 | 높음 |
 | L2 | tier2+ EN 템플릿 폴백 | 중 |
 | L3 | RSS ko only | 낮~중 |
-| L4 | explore·korea/theme hreflang 미포함 | 중 |
+| L4 | ~~explore·korea/theme hreflang~~ | ✅ (#5) |
 | L5 | ~~탭 sitemap~~ | ✅ |
 | L6 | `/en/` prefix 없음 (합의 후) | 중 |
 | L7 | 전역 og:image | 낮 |
@@ -172,31 +172,22 @@ npm run audit:place-seo-en            # #3 이후
 
 ## 9. 핸드오프
 
-**세션** `검색노출 #4, tier2 EN 배치2`  
+**세션** `검색노출 #5, explore·korea hreflang`  
 **main** 최신 · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
 **인덱스** [`feature-handoff-index.md`](./feature-handoff-index.md) 「검색노출」행
 
 | | |
 |--|--|
-| **완료 (#4)** | overrides +40 (146 total) · tier2 pop≥80 **43/43** · kobe·okinawa·pop70–79 상위 38 |
-| **다음 (#5)** | explore·korea hreflang — `I18N_HUB_PATHS` · sitemap 재생성 |
+| **완료 (#5)** | `I18N_HUB_PATHS` 9경로 · sitemap explore·korea/theme hreflang · smoke 확장 |
+| **다음 (#6)** | 크롤러 HTML MVP — `cursor/en-seo` · Edge middleware |
 
-**다음 제시어 (#5)**:
-
-```
-검색노출 #5, explore·korea hreflang
-@plans/feature-handoff-index.md
-@plans/en-seo-followup-plan.md
-@plans/2026-08-25-project-log.md
-main · git pull --rebase origin main 후 작업 · I18N_HUB_PATHS 확장 · sitemap 재생성
-금지: /en/ prefix·travelSpots.js 직접 편집·fetch 없이 작업·검증 없이 push
-```
-
-**#6 제시어 (예정 · feature)**:
+**다음 제시어 (#6)**:
 
 ```
 검색노출 #6, 크롤러 HTML MVP
+@plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
+@plans/2026-08-25-project-log.md
 cursor/en-seo · Edge middleware · tier1 gallery/planner
-금지: full SSR·/en/ prefix
+금지: full SSR·/en/ prefix·검증 없이 push
 ```

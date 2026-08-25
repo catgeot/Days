@@ -108,6 +108,18 @@ assert(
   sitemap.includes('/place/phuket/gallery?lang=en'),
   'sitemap phuket gallery has hreflang en (regenerate sitemap if FAIL)',
 );
+assert(
+  sitemap.includes('href="https://www.gateo.kr/explore?lang=en"'),
+  'sitemap explore has hreflang en',
+);
+assert(
+  sitemap.includes('href="https://www.gateo.kr/korea/theme?lang=en"'),
+  'sitemap korea/theme has hreflang en',
+);
+assert(
+  sitemap.includes('href="https://www.gateo.kr/korea/theme/courses?lang=en"'),
+  'sitemap korea/theme/courses has hreflang en',
+);
 
 const t = (key, opts) => {
   if (key === 'place.fallback.destination') return 'Destination';

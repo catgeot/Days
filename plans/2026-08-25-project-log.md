@@ -43,3 +43,10 @@
 - **VERIFY**: `audit:place-seo-en` (tier2 pop≥80 **43/43**) · `smoke:place-seo-en` · `build` PASS
 - **잔여**: tier2 pop 70–79 미커버 **~70 slug** (백로그) · 다음 세션표 **#5 explore·korea hreflang**
 - **다음**: `검색노출 #5, explore·korea hreflang`
+
+## 검색노출 #5 — explore·korea hreflang
+
+- **조치**: `I18N_HUB_PATHS` 3→9 (`/explore` · `/korea/theme`·courses·packages·top10·regions) · `generate-sitemap.cjs` 동기 · `public/sitemap.xml` 재생성
+- **smoke**: explore·korea/theme·courses hreflang en assert 추가
+- **VERIFY**: `smoke:place-seo-en` · `build` PASS
+- **다음**: `검색노출 #6, 크롤러 HTML MVP` (`cursor/en-seo`)

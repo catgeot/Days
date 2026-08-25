@@ -2,8 +2,18 @@ import { DEFAULT_LOCALE } from './constants';
 
 export const SITE_ORIGIN = 'https://www.gateo.kr';
 
-/** i18n 허브 — sitemap xhtml alternate 와 동기 */
-export const I18N_HUB_PATHS = ['/', '/korea', '/korea/theme/scenic'];
+/** i18n 허브 — sitemap xhtml alternate 와 동기 (generate-sitemap.cjs i18nHubPaths) */
+export const I18N_HUB_PATHS = [
+  '/',
+  '/explore',
+  '/korea',
+  '/korea/theme',
+  '/korea/theme/scenic',
+  '/korea/theme/courses',
+  '/korea/theme/packages',
+  '/korea/theme/top10',
+  '/korea/theme/regions',
+];
 
 /**
  * @param {string} [path] pathname only (e.g. `/korea`, `/place/tokyo/planner`)

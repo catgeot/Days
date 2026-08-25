@@ -23,7 +23,17 @@ const baseUrl = 'https://www.gateo.kr';
 const today = new Date().toISOString().split('T')[0];
 
 /** src/i18n/seoUrls.js I18N_HUB_PATHS 와 동기 */
-const i18nHubPaths = ['/', '/korea', '/korea/theme/scenic'];
+const i18nHubPaths = [
+  '/',
+  '/explore',
+  '/korea',
+  '/korea/theme',
+  '/korea/theme/scenic',
+  '/korea/theme/courses',
+  '/korea/theme/packages',
+  '/korea/theme/top10',
+  '/korea/theme/regions',
+];
 
 function buildLocalePageUrl(path = '/', locale = 'ko') {
   const normalized = !path || path === '/' ? '/' : path.startsWith('/') ? path : `/${path}`;
