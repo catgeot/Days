@@ -41,7 +41,7 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 | | |
 |--|--|
 | **상태** | **main** tier2 EN 배치1 완료 · PROD 배포 후 QA |
-| **main** | (이번 커밋 후 SHA) |
+| **main** | `ee3a17e1` |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §4·§9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
 | **PROD QA** | `/place/taj-mahal?lang=en` · `/place/grand-canyon/gallery?lang=en` — meta·써머리 EN |
