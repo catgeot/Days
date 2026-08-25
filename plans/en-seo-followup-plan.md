@@ -90,16 +90,16 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | **#2** | `검색노출 #2, 검색의도 SSOT` | [`placeSearchIntent.js`](../src/data/placeSearchIntent.js) · `placeSeoText` import · 플랜 §1.2와 동기 | `smoke:place-seo-en` · `build` | main ✅ |
 | **#3** | `검색노출 #3, tier2 EN 배치1` | overrides **+40** (popularity≥80) · `audit:place-seo-en` 스크립트 신규 | audit · smoke · `build` | main ✅ |
 | **#4** | `검색노출 #4, tier2 EN 배치2` | overrides **+40** (kobe·okinawa + pop70–79) | audit · smoke · `build` | main ✅ |
-| **#5** | `검색노출 #5, explore·korea hreflang` | [`seoUrls.js`](../src/i18n/seoUrls.js) `I18N_HUB_PATHS` 확장 · sitemap 재생성 | sitemap diff · smoke · `build` | main |
-| **#6** | `검색노출 #6, 크롤러 HTML MVP` | `cursor/en-seo` · Edge middleware · tier1 gallery/planner meta inject | view-source · `build` · PR | **cursor/en-seo** |
-| **#7** | `검색노출 #7, 크롤러 HTML 확장` | `/` · `/korea` · tier1 base path · Googlebot 검증 | GSC 렌더링 · PR push | **cursor/en-seo** |
-| **#8** | `검색노출 #8, 정적링크·baseline` | index.html tier1×intent KO 링크 보강 · GSC baseline CSV(사람) | smoke · 일지 | main |
+| **#5** | `검색노출 #5, explore·korea hreflang` | [`seoUrls.js`](../src/i18n/seoUrls.js) `I18N_HUB_PATHS` 확장 · sitemap 재생성 | sitemap diff · smoke · `build` | main ✅ |
+| **#6** | `검색노출 #6, 크롤러 HTML MVP` | Edge middleware · tier1 gallery/planner meta inject | view-source · `build` · PR | main ✅ |
+| **#7** | `검색노출 #7, 크롤러 HTML 확장` | `/` · `/korea` · tier1 base path · Googlebot 검증 | GSC 렌더링 · PR | main ✅ |
+| **#8** | `검색노출 #8, 정적링크·baseline` | index.html tier1×intent KO 링크 보강 · GSC baseline CSV(사람) | smoke · 일지 | main ✅ |
 | **#9** | `검색노출 #9, RSS·canonical` (선택) | `rss-en.xml` 또는 bilingual item · canonical 점검 | RSS validator · smoke | main |
 | **#10** | `검색노출 #10, OG·스키마` (백로그) | slug og:image · ImageObject(갤러리) | 사람 QA | main/feature |
 
 **권장 순서**: #1 → #2 → #3 → #4 → #5 → (#6·#7 연속) → #8. #9·#10은 여유 시.
 
-**Preview**: 본 주제는 PROD URL QA 중심 — `www.gateo.kr/place/phuket/gallery` · `?lang=en`. 크롤러 HTML(#6~)만 git Preview(`cursor/en-seo`) 사용.
+**Preview**: PROD `?crawler=1` view-source — `www.gateo.kr/place/phuket/gallery` · `/korea` · `/` (배포 후). `/qa/en-seo` → tier1 gallery 샘플.
 
 ---
 

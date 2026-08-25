@@ -73,6 +73,14 @@
 - **Preview QA**: view-source `?crawler=1` — `/` · `/korea` · `/place/tokyo` · `/place/tokyo/gallery` · middleware 시뮬 PASS
 - **main 병합**: PR #151 (2026-08-25)
 
+## 검색노출 #6·#7 QA·main 병합 (2026-08-25)
+
+- **VERIFY**: `smoke:crawler-place-meta` · `smoke:place-seo-en` · `build` PASS · middleware 시뮬 5경로 OK
+- **충돌**: origin/main #8 정적링크와 merge 해결
+- **main**: `bc50e939` — PR #151 merge
+- **사람 PROD QA**: 배포 후 view-source `?crawler=1` — `/` · `/korea` · `/place/tokyo/gallery`
+- **다음**: `검색노출 #9, RSS·canonical`
+
 ## 검색노출 #8 — 정적링크·baseline
 
 - **조치**: `generate:index-static-links` — tier1 64 × intent(gallery·travel) KO 링크 128개 · `index.html` 마커 블록 · GSC baseline CSV 템플릿(`scripts/data/gsc-seo-baseline-template.csv`)

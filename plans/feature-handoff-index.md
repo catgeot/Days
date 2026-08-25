@@ -43,7 +43,7 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 | **상태** | **#6·#7 main 병합** (PR #151) · **#8 완료** · **#9 RSS·canonical** 다음 |
 | **브랜치** | **#1~#9 → `main`** — [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2 SSOT |
 | **시작 필수** | `git fetch origin main && git pull --rebase origin main` |
-| **main** | PR #151 merge 후 SHA 확인 |
+| **main** | `bc50e939` — PR #151 merge |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2·§9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
 | **PROD QA** | view-source `?crawler=1` — `/` · `/korea` · `/place/tokyo/gallery` · tier1 KO 정적링크 128 |
