@@ -50,3 +50,9 @@
 - **smoke**: explore·korea/theme·courses hreflang en assert 추가
 - **VERIFY**: `smoke:place-seo-en` · `build` PASS
 - **다음**: `검색노출 #6, 크롤러 HTML MVP` (`cursor/en-seo`)
+
+## 검색노출 #5 보완 — build·PROD sitemap SSOT
+
+- **문제**: `vite-plugin-sitemap`이 build 시 `dist/sitemap.xml`을 덮어써 hreflang·#5 작업이 PROD에 안 갔음
+- **조치**: plugin 제거 · `build`에 `generate-sitemap` 선행 · `verify-sitemap-dist` 게이트 · `npm run generate:sitemap`
+- **VERIFY**: `build` (dist hreflang 2484) · `smoke:place-seo-en` PASS

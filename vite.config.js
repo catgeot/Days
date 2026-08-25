@@ -1,50 +1,8 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import Sitemap from 'vite-plugin-sitemap';
 import basicSsl from '@vitejs/plugin-basic-ssl';
 import { writeFileSync } from 'fs';
 import { execSync } from 'child_process';
-
-import { TRAVEL_SPOTS } from './src/pages/Home/data/travelSpots.js';
-
-// 여행지 페이지 (1,200개 이상 생성)
-const placeRoutes = TRAVEL_SPOTS.flatMap(spot => [
-  `/place/${spot.slug}`,
-  `/place/${spot.slug}/wiki`,
-  `/place/${spot.slug}/reviews`,
-  `/place/${spot.slug}/gallery`,
-  `/place/${spot.slug}/video`,
-  `/place/${spot.slug}/planner`,
-]);
-
-// Explore 페이지 (정적 라우트)
-const exploreRoutes = [
-  '/explore',
-  '/explore/paradise',
-  '/explore/nature',
-  '/explore/urban',
-  '/explore/culture',
-  '/explore/adventure',
-  '/explore/asia',
-  '/explore/europe',
-  '/explore/americas',
-  '/explore/oceania',
-  '/explore/africa',
-  '/explore/middle-east',
-];
-
-// 국내 축제 허브 + 테마여행 디렉터리
-const koreaRoutes = [
-  '/korea',
-  '/korea/theme',
-  '/korea/theme/top10',
-  '/korea/theme/scenic',
-  '/korea/theme/courses',
-  '/korea/theme/regions',
-  '/korea/theme/packages',
-];
-
-const dynamicRoutes = [...placeRoutes, ...exploreRoutes, ...koreaRoutes];
 
 function gateoEmitVersionJson() {
   return {
@@ -75,11 +33,6 @@ export default defineConfig({
     react(),
     ...(devSsl ? [basicSsl()] : []),
     gateoEmitVersionJson(),
-    Sitemap({
-      hostname: 'https://www.gateo.kr',
-      dynamicRoutes,
-      generateRobotsTxt: false, // 별도로 생성할 예정
-    }),
   ],
   server: {
     // 모바일·다른 기기에서 LAN IP(예: 192.168.219.106)로 접속할 때 사용

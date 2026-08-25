@@ -162,9 +162,10 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 ## 5. 검증 커맨드
 
 ```bash
+npm run generate:sitemap              # public/sitemap.xml + rss (build 선행)
 npm run smoke:place-seo-en
-npm run build
-node scripts/generate-sitemap.cjs   # sitemap 변경 시
+npm run build                         # generate-sitemap → vite → verify-sitemap-dist
+node scripts/generate-sitemap.cjs   # 수동만 필요할 때
 npm run audit:place-seo-en            # #3 이후
 ```
 

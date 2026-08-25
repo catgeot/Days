@@ -72,7 +72,7 @@ function shouldIncludeHreflang(path) {
   return Boolean(path && (isI18nHubPath(path) || path.startsWith('/place/')));
 }
 
-/** 국내 투톱·테마 허브 (vite-plugin-sitemap koreaRoutes 와 동기화) */
+/** 국내 투톱·테마 허브 (src/i18n/seoUrls.js I18N_HUB_PATHS · vite.config koreaRoutes 레거시와 동기) */
 const koreaHubRoutes = [
   { path: '/korea', changefreq: 'daily', priority: '0.95' },
   { path: '/korea/theme', changefreq: 'weekly', priority: '0.85' },
