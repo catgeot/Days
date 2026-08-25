@@ -157,6 +157,7 @@ assert(getCrawlerMetaKind('/blog/curation') === 'curation', 'curation kind tag')
 
 const blogKo = resolveCrawlerMeta('/blog', 'ko');
 assert(Boolean(blogKo?.title && blogKo.description), 'blog crawler meta resolved');
+assert(/여행 블로그/.test(blogKo.keywords), 'blog crawler keywords include 여행 블로그');
 assert(blogKo.canonicalUrl === 'https://www.gateo.kr/blog', 'blog canonical URL');
 
 const curationKo = resolveCrawlerMeta('/blog/curation', 'ko');

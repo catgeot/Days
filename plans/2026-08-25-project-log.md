@@ -183,3 +183,9 @@
 - **VERIFY**: `smoke:place-seo-en` · `smoke:crawler-place-meta` · `smoke:rss-canonical` · `build` PASS
 - **PROD QA**: view-source `?crawler=1` — `/blog/curation` title·canonical · `/blog` · sitemap에 `/blog`만
 - **다음**: `검색노출 #17, 자유여행 intent`
+
+## 검색노출 #16 보완 — 블로그 SEO 키워드 (2026-08-25)
+
+- **조치**: `logbook.seo`·`curationPage.seo*` keywords/description에 **여행 블로그**·travel blog 보강 · crawler hub meta 재생성 · index 정적 링크
+- **유지**: Helmet title·UI `LogBook` 브랜딩
+- **VERIFY**: smoke 2종 · `build` PASS

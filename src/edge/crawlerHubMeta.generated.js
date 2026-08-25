@@ -171,8 +171,8 @@ export default {
   "/blog": {
     "ko": {
       "title": "여행 로그북 · 기록과 후기",
-      "description": "GATEO LogBook — 여행지별 기록·후기·공개 피드를 남기고, AI 큐레이션과 연결하세요.",
-      "keywords": "여행 기록, 여행 후기, 로그북, 여행 일기, GATEO, LogBook, AI 큐레이션",
+      "description": "GATEO LogBook — 여행 블로그·기록·후기·공개 피드를 남기고, AI 큐레이션과 연결하세요.",
+      "keywords": "여행 블로그, 블로그 후기, 여행 기록, 여행 후기, 로그북, 여행 일기, GATEO, LogBook, AI 큐레이션",
       "canonicalUrl": "https://www.gateo.kr/blog",
       "hreflangAlternates": [
         {
@@ -191,8 +191,8 @@ export default {
     },
     "en": {
       "title": "Travel logbook · stories and reviews",
-      "description": "GATEO LogBook — write trip notes and reviews, browse public stories, and connect with AI curation picks.",
-      "keywords": "travel log, travel journal, trip reviews, GATEO LogBook, AI curation, travel stories",
+      "description": "GATEO LogBook — a travel blog for trip notes and reviews, public stories, and AI curation picks.",
+      "keywords": "travel blog, trip blog, travel log, travel journal, trip reviews, GATEO LogBook, AI curation, travel stories",
       "canonicalUrl": "https://www.gateo.kr/blog?lang=en",
       "hreflangAlternates": [
         {
@@ -213,8 +213,8 @@ export default {
   "/blog/curation": {
     "ko": {
       "title": "AI 여행 큐레이션 · 숨은 낙원 추천",
-      "description": "취향에 맞는 숨은 낙원을 AI가 추천합니다. 팁·계절·이야기를 한 페이지에서 읽고, 지도·장소카드로 이어집니다.",
-      "keywords": "여행 큐레이션, 숨은 낙원, AI 여행 추천, GATEO, 큐레이션, 여행지 추천",
+      "description": "취향에 맞는 숨은 낙원을 AI가 추천합니다. 여행 블로그·큐레이션 팁·계절·이야기를 한 페이지에서 읽고, 지도·장소카드로 이어집니다.",
+      "keywords": "여행 큐레이션, 숨은 낙원, AI 여행 추천, 여행 블로그, GATEO, 큐레이션, 여행지 추천",
       "canonicalUrl": "https://www.gateo.kr/blog/curation",
       "hreflangAlternates": [
         {
@@ -233,8 +233,8 @@ export default {
     },
     "en": {
       "title": "AI travel curation · hidden gem picks",
-      "description": "Get AI picks for hidden gems that match your taste. Read tips, seasons, and stories on one page, then jump to the map or place card.",
-      "keywords": "travel curation, hidden gems, AI travel picks, GATEO, destination recommendations",
+      "description": "Get AI picks for hidden gems that match your taste. Read travel blog-style tips, seasons, and stories on one page, then jump to the map or place card.",
+      "keywords": "travel curation, hidden gems, AI travel picks, travel blog, GATEO, destination recommendations",
       "canonicalUrl": "https://www.gateo.kr/blog/curation?lang=en",
       "hreflangAlternates": [
         {
