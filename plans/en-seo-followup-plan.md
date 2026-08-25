@@ -252,28 +252,28 @@ npm run smoke:gsc-baseline
 
 ## 9. 핸드오ff
 
-**세션** `검색노출 #19, GSC baseline·tier2 EN`  
+**세션** `검색노출 #20, tier2 EN 배치4 마무리`  
 **main** 최신 · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
 **인덱스** [`feature-handoff-index.md`](./feature-handoff-index.md) 「검색노출」행
 
 | | |
 |--|--|
-| **완료 (#19)** | `generate:gsc-baseline` 174 URL · tier2 EN batch3 +40 (186) · audit pop70–79 79/109 |
+| **완료 (#20)** | tier2 EN batch4 +30 (216) · pop70–79 **109/109** · GSC template batch4 EN 샘플 5 URL |
 | **사람 QA** | GSC URL Inspection — `scripts/data/gsc-seo-baseline-template.csv` → `scripts/outputs/gsc-seo-baseline.csv` |
-| **잔여** | tier2 EN pop70–79 **30 slug** · PROD 재크롤 |
+| **잔여** | tier2 EN pop70–79 **완료** · PROD 재크롤·GSC baseline 사람 기록 |
 
 **다음 제시어**:
 
 ```
-검색노출 #20, tier2 EN 배치4 마무리
+검색노출 #21, GSC baseline 사람 QA
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · tier2 EN 잔여 30 slug · GSC baseline CSV 기록
+main · GSC baseline CSV 174 URL 기록 · PROD 재크롤
 ```
 
-**사람 GSC (#19)**:
+**사람 GSC (#20)**:
 
 ```
-GSC URL Inspection — template 174 URL · tier1 gallery 샘플 5 · hamburg/bohol crawler · explore/asia/paradise
+GSC URL Inspection — template 174 URL · batch4 EN gallery seoul/bohol/samoa/iceland/palawan ?lang=en
 ```

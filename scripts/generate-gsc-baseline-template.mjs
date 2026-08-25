@@ -122,13 +122,15 @@ for (const hub of hubPaths) {
   });
 }
 
-for (const spot of tier2Pop70.slice(0, 5)) {
+for (const slug of ['seoul', 'bohol', 'samoa', 'iceland', 'palawan']) {
+  const spot = spots.find((s) => s.slug === slug);
+  if (!spot) continue;
   pushRow({
-    path: `/place/${spot.slug}/gallery`,
-    slug: spot.slug,
+    path: `/place/${slug}/gallery?lang=en`,
+    slug,
     intent: 'gallery',
     tab: 'gallery',
-    notes: 'tier2-pop70-en-batch',
+    notes: 'tier2-pop70-en-batch4',
   });
 }
 

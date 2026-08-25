@@ -56,6 +56,13 @@ assert(hubRows.length >= 5, 'hub/explore baseline URLs present');
 const wikiRows = rows.filter((r) => r.intent === 'wiki');
 assert(wikiRows.length >= 2, 'wiki crawler sample URLs');
 
+const batch4EnRows = rows.filter((r) => r.notes === 'tier2-pop70-en-batch4');
+assert(batch4EnRows.length >= 5, 'tier2 EN batch4 gallery ?lang=en samples');
+assert(
+  batch4EnRows.some((r) => r.slug === 'seoul' && r.url.includes('lang=en')),
+  'GSC template includes seoul EN gallery',
+);
+
 const flightRows = rows.filter((r) => r.notes.includes('ICN'));
 assert(flightRows.length >= 2, 'flight-route planner samples');
 

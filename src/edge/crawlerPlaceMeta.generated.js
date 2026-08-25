@@ -34,8 +34,8 @@ export default {
       },
       "en": {
         "title": "Alaska travel photos · gallery",
-        "description": "Browse Alaska travel photos and gallery images. Discover Alaska, USA — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Alaska, USA, Alaska travel, adventure, outdoors, hiking, GATEO, Alaska photos, Alaska gallery, Alaska pictures, photos, gallery, pictures, travel",
+        "description": "Browse Alaska travel photos and gallery images. Discover Alaska, USA — North America's wild frontier where glaciers calve into the sea, grizzly bears roam coastlines, and whale-watching cruises reveal raw Arctic beauty.",
+        "keywords": "Alaska, USA, glacier cruise, wildlife tour, whale watching, adventure travel, Alaska photos, Alaska gallery, Alaska pictures, Alaska travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/alaska/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -88,8 +88,8 @@ export default {
       },
       "en": {
         "title": "Alaska travel · trip planner",
-        "description": "Flight route ICN→SEA→ANC via SEA. About 13 hours. Plan independent travel to Alaska — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Alaska, USA — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Alaska, USA, Alaska travel, adventure, outdoors, hiking, GATEO, Alaska trip planner, Alaska plan a trip, Alaska trip planning, Alaska free travel, Alaska independent travel, Alaska backpacking, Alaska flights, Alaska flight route, Alaska air route, Alaska nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to ANC, ICN ANC, ICN→SEA→ANC, Alaska connecting flights",
+        "description": "Flight route ICN→SEA→ANC via SEA. About 13 hours. Plan independent travel to Alaska — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Alaska, USA — North America's wild frontier where glaciers calve into the sea, grizzly bears roam coastlines, and whale-watching cruises reveal raw Arctic beauty.",
+        "keywords": "Alaska, USA, glacier cruise, wildlife tour, whale watching, adventure travel, Alaska travel, Alaska trip planner, Alaska plan a trip, Alaska trip planning, Alaska free travel, Alaska independent travel, Alaska backpacking, Alaska flights, Alaska flight route, Alaska air route, Alaska nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to ANC, ICN ANC, ICN→SEA→ANC, Alaska connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/alaska/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -134,8 +134,8 @@ export default {
       },
       "en": {
         "title": "Alaska travel sketch · guide",
-        "description": "Alaska travel sketch, Local Watson tips, and independent travel guide. Discover Alaska, USA — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Alaska, USA, Alaska travel, adventure, outdoors, hiking, GATEO, Alaska travel guide, Alaska travel sketch, Alaska free travel, Alaska local tips, Alaska independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Alaska travel sketch, Local Watson tips, and independent travel guide. Discover Alaska, USA — North America's wild frontier where glaciers calve into the sea, grizzly bears roam coastlines, and whale-watching cruises reveal raw Arctic beauty.",
+        "keywords": "Alaska, USA, glacier cruise, wildlife tour, whale watching, adventure travel, Alaska travel guide, Alaska travel sketch, Alaska free travel, Alaska local tips, Alaska independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/alaska/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -190,8 +190,8 @@ export default {
       },
       "en": {
         "title": "Alice Springs travel photos · gallery",
-        "description": "Browse Alice Springs travel photos and gallery images. Discover Alice Springs, Australia — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Alice Springs, Australia, Alice Springs travel, adventure, outdoors, hiking, GATEO, Alice Springs photos, Alice Springs gallery, Alice Springs pictures, photos, gallery, pictures, travel",
+        "description": "Browse Alice Springs travel photos and gallery images. Start from Alice Springs, Australia — the Outback hub at the continent's heart for Uluru sunrise trips, Kings Canyon hikes, MacDonnell Ranges drives, and Aboriginal culture experiences.",
+        "keywords": "Alice Springs, Australia, Uluru day trip, Outback, Kings Canyon, Northern Australia, Alice Springs photos, Alice Springs gallery, Alice Springs pictures, Alice Springs travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/alice-springs/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -244,8 +244,8 @@ export default {
       },
       "en": {
         "title": "Alice Springs travel · trip planner",
-        "description": "Flight route ICN→SYD→ASP via SYD. About 13 hours. Plan independent travel to Alice Springs — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Alice Springs, Australia — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Alice Springs, Australia, Alice Springs travel, adventure, outdoors, hiking, GATEO, Alice Springs trip planner, Alice Springs plan a trip, Alice Springs trip planning, Alice Springs free travel, Alice Springs independent travel, Alice Springs backpacking, Alice Springs flights, Alice Springs flight route, Alice Springs air route, Alice Springs nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to ASP, ICN ASP, ICN→SYD→ASP, Alice Springs connecting flights",
+        "description": "Flight route ICN→SYD→ASP via SYD. About 13 hours. Plan independent travel to Alice Springs — flights, stays, and local tips. Ask MOONi, your AI travel docent. Start from Alice Springs, Australia — the Outback hub at the continent's heart for Uluru sunrise trips, Kings Canyon hikes, MacDonnell Ranges drives, and Aboriginal culture experiences.",
+        "keywords": "Alice Springs, Australia, Uluru day trip, Outback, Kings Canyon, Northern Australia, Alice Springs travel, Alice Springs trip planner, Alice Springs plan a trip, Alice Springs trip planning, Alice Springs free travel, Alice Springs independent travel, Alice Springs backpacking, Alice Springs flights, Alice Springs flight route, Alice Springs air route, Alice Springs nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to ASP, ICN ASP, ICN→SYD→ASP, Alice Springs connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/alice-springs/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -290,8 +290,8 @@ export default {
       },
       "en": {
         "title": "Alice Springs travel sketch · guide",
-        "description": "Alice Springs travel sketch, Local Watson tips, and independent travel guide. Discover Alice Springs, Australia — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Alice Springs, Australia, Alice Springs travel, adventure, outdoors, hiking, GATEO, Alice Springs travel guide, Alice Springs travel sketch, Alice Springs free travel, Alice Springs local tips, Alice Springs independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Alice Springs travel sketch, Local Watson tips, and independent travel guide. Start from Alice Springs, Australia — the Outback hub at the continent's heart for Uluru sunrise trips, Kings Canyon hikes, MacDonnell Ranges drives, and Aboriginal culture experiences.",
+        "keywords": "Alice Springs, Australia, Uluru day trip, Outback, Kings Canyon, Northern Australia, Alice Springs travel guide, Alice Springs travel sketch, Alice Springs free travel, Alice Springs local tips, Alice Springs independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/alice-springs/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -346,8 +346,8 @@ export default {
       },
       "en": {
         "title": "Amazon Rainforest travel photos · gallery",
-        "description": "Browse Amazon Rainforest travel photos and gallery images. Discover Amazon Rainforest, Brazil — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Amazon Rainforest, Brazil, Amazon Rainforest travel, adventure, outdoors, hiking, GATEO, Amazon Rainforest photos, Amazon Rainforest gallery, Amazon Rainforest pictures, photos, gallery, pictures, travel",
+        "description": "Browse Amazon Rainforest travel photos and gallery images. Journey into the Amazon Rainforest — Earth's largest jungle and South America's life-giving lungs, where riverboat expeditions reveal pink dolphins, exotic birds, and untamed ecological wonder.",
+        "keywords": "Amazon Rainforest, Brazil, jungle trek, river cruise, wildlife, eco tourism, Amazon Rainforest photos, Amazon Rainforest gallery, Amazon Rainforest pictures, Amazon Rainforest travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/amazon-rainforest/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -400,8 +400,8 @@ export default {
       },
       "en": {
         "title": "Amazon Rainforest travel · trip planner",
-        "description": "Flight route ICN→JFK·PTY→MAO via JFK, PTY. About 21 hours. Plan independent travel to Amazon Rainforest — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Amazon Rainforest, Brazil — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Amazon Rainforest, Brazil, Amazon Rainforest travel, adventure, outdoors, hiking, GATEO, Amazon Rainforest trip planner, Amazon Rainforest plan a trip, Amazon Rainforest trip planning, Amazon Rainforest free travel, Amazon Rainforest independent travel, Amazon Rainforest backpacking, Amazon Rainforest flights, Amazon Rainforest flight route, Amazon Rainforest air route, Amazon Rainforest nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to MAO, ICN MAO, ICN→JFK·PTY→MAO, Amazon Rainforest connecting flights",
+        "description": "Flight route ICN→JFK·PTY→MAO via JFK, PTY. About 21 hours. Plan independent travel to Amazon Rainforest — flights, stays, and local tips. Ask MOONi, your AI travel docent. Journey into the Amazon Rainforest — Earth's largest jungle and South America's life-giving lungs, where riverboat expeditions reveal pink dolphins, exotic birds, and untamed ecological wonder.",
+        "keywords": "Amazon Rainforest, Brazil, jungle trek, river cruise, wildlife, eco tourism, Amazon Rainforest travel, Amazon Rainforest trip planner, Amazon Rainforest plan a trip, Amazon Rainforest trip planning, Amazon Rainforest free travel, Amazon Rainforest independent travel, Amazon Rainforest backpacking, Amazon Rainforest flights, Amazon Rainforest flight route, Amazon Rainforest air route, Amazon Rainforest nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to MAO, ICN MAO, ICN→JFK·PTY→MAO, Amazon Rainforest connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/amazon-rainforest/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -446,8 +446,8 @@ export default {
       },
       "en": {
         "title": "Amazon Rainforest travel sketch · guide",
-        "description": "Amazon Rainforest travel sketch, Local Watson tips, and independent travel guide. Discover Amazon Rainforest, Brazil — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Amazon Rainforest, Brazil, Amazon Rainforest travel, adventure, outdoors, hiking, GATEO, Amazon Rainforest travel guide, Amazon Rainforest travel sketch, Amazon Rainforest free travel, Amazon Rainforest local tips, Amazon Rainforest independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Amazon Rainforest travel sketch, Local Watson tips, and independent travel guide. Journey into the Amazon Rainforest — Earth's largest jungle and South America's life-giving lungs, where riverboat expeditions reveal pink dolphins, exotic birds, and untamed ecological wonder.",
+        "keywords": "Amazon Rainforest, Brazil, jungle trek, river cruise, wildlife, eco tourism, Amazon Rainforest travel guide, Amazon Rainforest travel sketch, Amazon Rainforest free travel, Amazon Rainforest local tips, Amazon Rainforest independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/amazon-rainforest/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -1594,8 +1594,8 @@ export default {
       },
       "en": {
         "title": "Ayutthaya travel photos · gallery",
-        "description": "Browse Ayutthaya travel photos and gallery images. Discover Ayutthaya, Thailand — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Ayutthaya, Thailand, Ayutthaya travel, heritage, landmark, temple, history, GATEO, Ayutthaya photos, Ayutthaya gallery, Ayutthaya pictures, photos, gallery, pictures, travel",
+        "description": "Browse Ayutthaya travel photos and gallery images. Explore Ayutthaya, Thailand — the ruined capital of the Siamese kingdom with towering prang temples, Buddha heads entwined in tree roots, and river island history north of Bangkok.",
+        "keywords": "Ayutthaya, Thailand, UNESCO ruins, temple travel, Bangkok day trip, heritage tour, Ayutthaya photos, Ayutthaya gallery, Ayutthaya pictures, Ayutthaya travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/ayutthaya/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -1648,8 +1648,8 @@ export default {
       },
       "en": {
         "title": "Ayutthaya travel · trip planner",
-        "description": "Flight route ICN→BKK, nonstop. About 5 hours. Plan independent travel to Ayutthaya — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Ayutthaya, Thailand — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Ayutthaya, Thailand, Ayutthaya travel, heritage, landmark, temple, history, GATEO, Ayutthaya trip planner, Ayutthaya plan a trip, Ayutthaya trip planning, Ayutthaya free travel, Ayutthaya independent travel, Ayutthaya backpacking, Ayutthaya flights, Ayutthaya flight route, Ayutthaya air route, Ayutthaya nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to BKK, ICN BKK, ICN→BKK, Ayutthaya nonstop flights",
+        "description": "Flight route ICN→BKK, nonstop. About 5 hours. Plan independent travel to Ayutthaya — flights, stays, and local tips. Ask MOONi, your AI travel docent. Explore Ayutthaya, Thailand — the ruined capital of the Siamese kingdom with towering prang temples, Buddha heads entwined in tree roots, and river island history north of Bangkok.",
+        "keywords": "Ayutthaya, Thailand, UNESCO ruins, temple travel, Bangkok day trip, heritage tour, Ayutthaya travel, Ayutthaya trip planner, Ayutthaya plan a trip, Ayutthaya trip planning, Ayutthaya free travel, Ayutthaya independent travel, Ayutthaya backpacking, Ayutthaya flights, Ayutthaya flight route, Ayutthaya air route, Ayutthaya nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to BKK, ICN BKK, ICN→BKK, Ayutthaya nonstop flights",
         "canonicalUrl": "https://www.gateo.kr/place/ayutthaya/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -1694,8 +1694,8 @@ export default {
       },
       "en": {
         "title": "Ayutthaya travel sketch · guide",
-        "description": "Ayutthaya travel sketch, Local Watson tips, and independent travel guide. Discover Ayutthaya, Thailand — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Ayutthaya, Thailand, Ayutthaya travel, heritage, landmark, temple, history, GATEO, Ayutthaya travel guide, Ayutthaya travel sketch, Ayutthaya free travel, Ayutthaya local tips, Ayutthaya independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Ayutthaya travel sketch, Local Watson tips, and independent travel guide. Explore Ayutthaya, Thailand — the ruined capital of the Siamese kingdom with towering prang temples, Buddha heads entwined in tree roots, and river island history north of Bangkok.",
+        "keywords": "Ayutthaya, Thailand, UNESCO ruins, temple travel, Bangkok day trip, heritage tour, Ayutthaya travel guide, Ayutthaya travel sketch, Ayutthaya free travel, Ayutthaya local tips, Ayutthaya independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/ayutthaya/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -1906,8 +1906,8 @@ export default {
       },
       "en": {
         "title": "Bahamas travel photos · gallery",
-        "description": "Browse Bahamas travel photos and gallery images. Discover Bahamas, Bahamas — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Bahamas, Bahamas travel, beach, island, resort, vacation, GATEO, Bahamas photos, Bahamas gallery, Bahamas pictures, photos, gallery, pictures, travel",
+        "description": "Browse Bahamas travel photos and gallery images. Escape to the Bahamas — a chain of 700 islands with turquoise Exuma waters, swimming pigs, pink-sand beaches, and Nassau's colonial forts in the heart of the Caribbean.",
+        "keywords": "Bahamas, Caribbean, Exuma, island hopping, beach vacation, snorkeling, Bahamas photos, Bahamas gallery, Bahamas pictures, Bahamas travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/bahamas/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -1960,8 +1960,8 @@ export default {
       },
       "en": {
         "title": "Bahamas travel · trip planner",
-        "description": "Flight route ICN→ATL→NAS via ATL. About 15 hours. Plan independent travel to Bahamas — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Bahamas, Bahamas — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Bahamas, Bahamas travel, beach, island, resort, vacation, GATEO, Bahamas trip planner, Bahamas plan a trip, Bahamas trip planning, Bahamas free travel, Bahamas independent travel, Bahamas backpacking, Bahamas flights, Bahamas flight route, Bahamas air route, Bahamas nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to NAS, ICN NAS, ICN→ATL→NAS, Bahamas connecting flights",
+        "description": "Flight route ICN→ATL→NAS via ATL. About 15 hours. Plan independent travel to Bahamas — flights, stays, and local tips. Ask MOONi, your AI travel docent. Escape to the Bahamas — a chain of 700 islands with turquoise Exuma waters, swimming pigs, pink-sand beaches, and Nassau's colonial forts in the heart of the Caribbean.",
+        "keywords": "Bahamas, Caribbean, Exuma, island hopping, beach vacation, snorkeling, Bahamas travel, Bahamas trip planner, Bahamas plan a trip, Bahamas trip planning, Bahamas free travel, Bahamas independent travel, Bahamas backpacking, Bahamas flights, Bahamas flight route, Bahamas air route, Bahamas nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to NAS, ICN NAS, ICN→ATL→NAS, Bahamas connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/bahamas/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -2006,8 +2006,8 @@ export default {
       },
       "en": {
         "title": "Bahamas travel sketch · guide",
-        "description": "Bahamas travel sketch, Local Watson tips, and independent travel guide. Discover Bahamas, Bahamas — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Bahamas, Bahamas travel, beach, island, resort, vacation, GATEO, Bahamas travel guide, Bahamas travel sketch, Bahamas free travel, Bahamas local tips, Bahamas independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Bahamas travel sketch, Local Watson tips, and independent travel guide. Escape to the Bahamas — a chain of 700 islands with turquoise Exuma waters, swimming pigs, pink-sand beaches, and Nassau's colonial forts in the heart of the Caribbean.",
+        "keywords": "Bahamas, Caribbean, Exuma, island hopping, beach vacation, snorkeling, Bahamas travel guide, Bahamas travel sketch, Bahamas free travel, Bahamas local tips, Bahamas independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/bahamas/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -2218,8 +2218,8 @@ export default {
       },
       "en": {
         "title": "Banff National Park travel photos · gallery",
-        "description": "Browse Banff National Park travel photos and gallery images. Discover Banff National Park, Canada — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Banff National Park, Canada, Banff National Park travel, wildlife, nature, national park, scenery, GATEO, Banff National Park photos, Banff National Park gallery, Banff National Park pictures, photos, gallery, pictures, travel",
+        "description": "Browse Banff National Park travel photos and gallery images. Discover Banff National Park, Canada — turquoise Lake Louise, Moraine Lake reflections, Johnston Canyon trails, and Rocky Mountain wildlife in the Canadian Rockies.",
+        "keywords": "Banff, Canada, Lake Louise, Rocky Mountains, national park, hiking, Banff National Park photos, Banff National Park gallery, Banff National Park pictures, Banff National Park travel, photos, gallery, pictures, travel, Banff National Park",
         "canonicalUrl": "https://www.gateo.kr/place/banff-national-park/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -2272,8 +2272,8 @@ export default {
       },
       "en": {
         "title": "Banff National Park travel · trip planner",
-        "description": "Flight route ICN→LAX→YYC via LAX. About 14 hours. Plan independent travel to Banff National Park — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Banff National Park, Canada — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Banff National Park, Canada, Banff National Park travel, wildlife, nature, national park, scenery, GATEO, Banff National Park trip planner, Banff National Park plan a trip, Banff National Park trip planning, Banff National Park free travel, Banff National Park independent travel, Banff National Park backpacking, Banff National Park flights, Banff National Park flight route, Banff National Park air route, Banff National Park nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to YYC, ICN YYC, ICN→LAX→YYC, Banff National Park connecting flights",
+        "description": "Flight route ICN→LAX→YYC via LAX. About 14 hours. Plan independent travel to Banff National Park — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Banff National Park, Canada — turquoise Lake Louise, Moraine Lake reflections, Johnston Canyon trails, and Rocky Mountain wildlife in the Canadian Rockies.",
+        "keywords": "Banff, Canada, Lake Louise, Rocky Mountains, national park, hiking, Banff National Park travel, Banff National Park trip planner, Banff National Park plan a trip, Banff National Park trip planning, Banff National Park free travel, Banff National Park independent travel, Banff National Park backpacking, Banff National Park flights, Banff National Park flight route, Banff National Park air route, Banff National Park nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to YYC, ICN YYC, ICN→LAX→YYC, Banff National Park connecting flights, Banff National Park",
         "canonicalUrl": "https://www.gateo.kr/place/banff-national-park/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -2318,8 +2318,8 @@ export default {
       },
       "en": {
         "title": "Banff National Park travel sketch · guide",
-        "description": "Banff National Park travel sketch, Local Watson tips, and independent travel guide. Discover Banff National Park, Canada — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Banff National Park, Canada, Banff National Park travel, wildlife, nature, national park, scenery, GATEO, Banff National Park travel guide, Banff National Park travel sketch, Banff National Park free travel, Banff National Park local tips, Banff National Park independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Banff National Park travel sketch, Local Watson tips, and independent travel guide. Discover Banff National Park, Canada — turquoise Lake Louise, Moraine Lake reflections, Johnston Canyon trails, and Rocky Mountain wildlife in the Canadian Rockies.",
+        "keywords": "Banff, Canada, Lake Louise, Rocky Mountains, national park, hiking, Banff National Park travel guide, Banff National Park travel sketch, Banff National Park free travel, Banff National Park local tips, Banff National Park independent travel, travel guide, travel sketch, free travel, local tips, independent travel, Banff National Park",
         "canonicalUrl": "https://www.gateo.kr/place/banff-national-park/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -2998,8 +2998,8 @@ export default {
       },
       "en": {
         "title": "Bodrum travel photos · gallery",
-        "description": "Browse Bodrum travel photos and gallery images. Discover Bodrum, Turkey — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Bodrum, Turkey, Bodrum travel, beach, island, resort, vacation, GATEO, Bodrum photos, Bodrum gallery, Bodrum pictures, photos, gallery, pictures, travel",
+        "description": "Browse Bodrum travel photos and gallery images. Relax in Bodrum, Turkey — the Aegean's whitewashed castle town with turquoise coves, windmills, yacht-filled marinas, and gateway ferries to Greek islands.",
+        "keywords": "Bodrum, Turkey, Aegean coast, beach resort, yacht charter, castle views, Bodrum photos, Bodrum gallery, Bodrum pictures, Bodrum travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/bodrum/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -3052,8 +3052,8 @@ export default {
       },
       "en": {
         "title": "Bodrum travel · trip planner",
-        "description": "Flight route ICN→IST→BJV via IST. About 10 hours. Plan independent travel to Bodrum — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Bodrum, Turkey — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Bodrum, Turkey, Bodrum travel, beach, island, resort, vacation, GATEO, Bodrum trip planner, Bodrum plan a trip, Bodrum trip planning, Bodrum free travel, Bodrum independent travel, Bodrum backpacking, Bodrum flights, Bodrum flight route, Bodrum air route, Bodrum nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to BJV, ICN BJV, ICN→IST→BJV, Bodrum connecting flights",
+        "description": "Flight route ICN→IST→BJV via IST. About 10 hours. Plan independent travel to Bodrum — flights, stays, and local tips. Ask MOONi, your AI travel docent. Relax in Bodrum, Turkey — the Aegean's whitewashed castle town with turquoise coves, windmills, yacht-filled marinas, and gateway ferries to Greek islands.",
+        "keywords": "Bodrum, Turkey, Aegean coast, beach resort, yacht charter, castle views, Bodrum travel, Bodrum trip planner, Bodrum plan a trip, Bodrum trip planning, Bodrum free travel, Bodrum independent travel, Bodrum backpacking, Bodrum flights, Bodrum flight route, Bodrum air route, Bodrum nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to BJV, ICN BJV, ICN→IST→BJV, Bodrum connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/bodrum/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -3098,8 +3098,8 @@ export default {
       },
       "en": {
         "title": "Bodrum travel sketch · guide",
-        "description": "Bodrum travel sketch, Local Watson tips, and independent travel guide. Discover Bodrum, Turkey — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Bodrum, Turkey, Bodrum travel, beach, island, resort, vacation, GATEO, Bodrum travel guide, Bodrum travel sketch, Bodrum free travel, Bodrum local tips, Bodrum independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Bodrum travel sketch, Local Watson tips, and independent travel guide. Relax in Bodrum, Turkey — the Aegean's whitewashed castle town with turquoise coves, windmills, yacht-filled marinas, and gateway ferries to Greek islands.",
+        "keywords": "Bodrum, Turkey, Aegean coast, beach resort, yacht charter, castle views, Bodrum travel guide, Bodrum travel sketch, Bodrum free travel, Bodrum local tips, Bodrum independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/bodrum/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -3154,8 +3154,8 @@ export default {
       },
       "en": {
         "title": "Bohol travel photos · gallery",
-        "description": "Browse Bohol travel photos and gallery images. Discover Bohol, Philippines — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Bohol, Philippines, Bohol travel, beach, island, resort, vacation, GATEO, Bohol photos, Bohol gallery, Bohol pictures, photos, gallery, pictures, travel",
+        "description": "Browse Bohol travel photos and gallery images. Discover Bohol, Philippines — Chocolate Hills panoramas, the world's smallest tarsier primates, pristine diving sites, and relaxed island escapes in the Visayas archipelago.",
+        "keywords": "Bohol, Philippines, Chocolate Hills, tarsier, diving, island travel, Bohol photos, Bohol gallery, Bohol pictures, Bohol travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/bohol/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -3208,8 +3208,8 @@ export default {
       },
       "en": {
         "title": "Bohol travel · trip planner",
-        "description": "Flight route ICN→MNL→TAG via MNL. About 4 hours. Plan independent travel to Bohol — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Bohol, Philippines — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Bohol, Philippines, Bohol travel, beach, island, resort, vacation, GATEO, Bohol trip planner, Bohol plan a trip, Bohol trip planning, Bohol free travel, Bohol independent travel, Bohol backpacking, Bohol flights, Bohol flight route, Bohol air route, Bohol nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to TAG, ICN TAG, ICN→MNL→TAG, Bohol connecting flights",
+        "description": "Flight route ICN→MNL→TAG via MNL. About 4 hours. Plan independent travel to Bohol — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Bohol, Philippines — Chocolate Hills panoramas, the world's smallest tarsier primates, pristine diving sites, and relaxed island escapes in the Visayas archipelago.",
+        "keywords": "Bohol, Philippines, Chocolate Hills, tarsier, diving, island travel, Bohol travel, Bohol trip planner, Bohol plan a trip, Bohol trip planning, Bohol free travel, Bohol independent travel, Bohol backpacking, Bohol flights, Bohol flight route, Bohol air route, Bohol nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to TAG, ICN TAG, ICN→MNL→TAG, Bohol connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/bohol/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -3254,8 +3254,8 @@ export default {
       },
       "en": {
         "title": "Bohol travel sketch · guide",
-        "description": "Bohol travel sketch, Local Watson tips, and independent travel guide. Discover Bohol, Philippines — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Bohol, Philippines, Bohol travel, beach, island, resort, vacation, GATEO, Bohol travel guide, Bohol travel sketch, Bohol free travel, Bohol local tips, Bohol independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Bohol travel sketch, Local Watson tips, and independent travel guide. Discover Bohol, Philippines — Chocolate Hills panoramas, the world's smallest tarsier primates, pristine diving sites, and relaxed island escapes in the Visayas archipelago.",
+        "keywords": "Bohol, Philippines, Chocolate Hills, tarsier, diving, island travel, Bohol travel guide, Bohol travel sketch, Bohol free travel, Bohol local tips, Bohol independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/bohol/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -3310,8 +3310,8 @@ export default {
       },
       "en": {
         "title": "Bora Bora travel photos · gallery",
-        "description": "Browse Bora Bora travel photos and gallery images. Discover Bora Bora, French Polynesia — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Bora Bora, French Polynesia, Bora Bora travel, beach, island, resort, vacation, GATEO, Bora Bora photos, Bora Bora gallery, Bora Bora pictures, photos, gallery, pictures, travel",
+        "description": "Browse Bora Bora travel photos and gallery images. Dream of Bora Bora, French Polynesia — overwater bungalows above a turquoise lagoon, Mount Otemanu peaks, and some of the South Pacific's most iconic island luxury.",
+        "keywords": "Bora Bora, French Polynesia, overwater bungalow, lagoon, honeymoon, island resort, Bora Bora photos, Bora Bora gallery, Bora Bora pictures, Bora Bora travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/bora-bora/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -3364,8 +3364,8 @@ export default {
       },
       "en": {
         "title": "Bora Bora travel · trip planner",
-        "description": "Flight route ICN→NRT·PPT→BOB via NRT, PPT. About 13 hours. Plan independent travel to Bora Bora — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Bora Bora, French Polynesia — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Bora Bora, French Polynesia, Bora Bora travel, beach, island, resort, vacation, GATEO, Bora Bora trip planner, Bora Bora plan a trip, Bora Bora trip planning, Bora Bora free travel, Bora Bora independent travel, Bora Bora backpacking, Bora Bora flights, Bora Bora flight route, Bora Bora air route, Bora Bora nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to BOB, ICN BOB, ICN→NRT·PPT→BOB, Bora Bora connecting flights",
+        "description": "Flight route ICN→NRT·PPT→BOB via NRT, PPT. About 13 hours. Plan independent travel to Bora Bora — flights, stays, and local tips. Ask MOONi, your AI travel docent. Dream of Bora Bora, French Polynesia — overwater bungalows above a turquoise lagoon, Mount Otemanu peaks, and some of the South Pacific's most iconic island luxury.",
+        "keywords": "Bora Bora, French Polynesia, overwater bungalow, lagoon, honeymoon, island resort, Bora Bora travel, Bora Bora trip planner, Bora Bora plan a trip, Bora Bora trip planning, Bora Bora free travel, Bora Bora independent travel, Bora Bora backpacking, Bora Bora flights, Bora Bora flight route, Bora Bora air route, Bora Bora nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to BOB, ICN BOB, ICN→NRT·PPT→BOB, Bora Bora connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/bora-bora/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -3410,8 +3410,8 @@ export default {
       },
       "en": {
         "title": "Bora Bora travel sketch · guide",
-        "description": "Bora Bora travel sketch, Local Watson tips, and independent travel guide. Discover Bora Bora, French Polynesia — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Bora Bora, French Polynesia, Bora Bora travel, beach, island, resort, vacation, GATEO, Bora Bora travel guide, Bora Bora travel sketch, Bora Bora free travel, Bora Bora local tips, Bora Bora independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Bora Bora travel sketch, Local Watson tips, and independent travel guide. Dream of Bora Bora, French Polynesia — overwater bungalows above a turquoise lagoon, Mount Otemanu peaks, and some of the South Pacific's most iconic island luxury.",
+        "keywords": "Bora Bora, French Polynesia, overwater bungalow, lagoon, honeymoon, island resort, Bora Bora travel guide, Bora Bora travel sketch, Bora Bora free travel, Bora Bora local tips, Bora Bora independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/bora-bora/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -3622,8 +3622,8 @@ export default {
       },
       "en": {
         "title": "Borneo travel photos · gallery",
-        "description": "Browse Borneo travel photos and gallery images. Discover Borneo, Malaysia — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Borneo, Malaysia, Borneo travel, adventure, outdoors, hiking, GATEO, Borneo photos, Borneo gallery, Borneo pictures, photos, gallery, pictures, travel",
+        "description": "Browse Borneo travel photos and gallery images. Adventure in Borneo — shared by Malaysia, Indonesia, and Brunei — with orangutan sanctuaries, Mount Kinabalu treks, proboscis monkeys, and ancient rainforest rivers.",
+        "keywords": "Borneo, Malaysia, orangutan, rainforest, Mount Kinabalu, wildlife travel, Borneo photos, Borneo gallery, Borneo pictures, Borneo travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/borneo/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -3676,8 +3676,8 @@ export default {
       },
       "en": {
         "title": "Borneo travel · trip planner",
-        "description": "Flight route ICN→BKI, nonstop. About 5 hours. Plan independent travel to Borneo — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Borneo, Malaysia — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Borneo, Malaysia, Borneo travel, adventure, outdoors, hiking, GATEO, Borneo trip planner, Borneo plan a trip, Borneo trip planning, Borneo free travel, Borneo independent travel, Borneo backpacking, Borneo flights, Borneo flight route, Borneo air route, Borneo nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to BKI, ICN BKI, ICN→BKI, Borneo nonstop flights",
+        "description": "Flight route ICN→BKI, nonstop. About 5 hours. Plan independent travel to Borneo — flights, stays, and local tips. Ask MOONi, your AI travel docent. Adventure in Borneo — shared by Malaysia, Indonesia, and Brunei — with orangutan sanctuaries, Mount Kinabalu treks, proboscis monkeys, and ancient rainforest rivers.",
+        "keywords": "Borneo, Malaysia, orangutan, rainforest, Mount Kinabalu, wildlife travel, Borneo travel, Borneo trip planner, Borneo plan a trip, Borneo trip planning, Borneo free travel, Borneo independent travel, Borneo backpacking, Borneo flights, Borneo flight route, Borneo air route, Borneo nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to BKI, ICN BKI, ICN→BKI, Borneo nonstop flights",
         "canonicalUrl": "https://www.gateo.kr/place/borneo/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -3722,8 +3722,8 @@ export default {
       },
       "en": {
         "title": "Borneo travel sketch · guide",
-        "description": "Borneo travel sketch, Local Watson tips, and independent travel guide. Discover Borneo, Malaysia — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Borneo, Malaysia, Borneo travel, adventure, outdoors, hiking, GATEO, Borneo travel guide, Borneo travel sketch, Borneo free travel, Borneo local tips, Borneo independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Borneo travel sketch, Local Watson tips, and independent travel guide. Adventure in Borneo — shared by Malaysia, Indonesia, and Brunei — with orangutan sanctuaries, Mount Kinabalu treks, proboscis monkeys, and ancient rainforest rivers.",
+        "keywords": "Borneo, Malaysia, orangutan, rainforest, Mount Kinabalu, wildlife travel, Borneo travel guide, Borneo travel sketch, Borneo free travel, Borneo local tips, Borneo independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/borneo/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -3934,8 +3934,8 @@ export default {
       },
       "en": {
         "title": "Boston travel photos · gallery",
-        "description": "Browse Boston travel photos and gallery images. Discover Boston, USA — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Boston, USA, Boston travel, city guide, city break, sightseeing, GATEO, Boston photos, Boston gallery, Boston pictures, photos, gallery, pictures, travel",
+        "description": "Browse Boston travel photos and gallery images. Walk Boston, USA — America's revolutionary cradle with the Freedom Trail, Harvard and MIT campuses, Fenway Park baseball, and a walkable harbor city of brick and history.",
+        "keywords": "Boston, USA, Freedom Trail, New England, city break, history travel, Boston photos, Boston gallery, Boston pictures, Boston travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/boston/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -3988,8 +3988,8 @@ export default {
       },
       "en": {
         "title": "Boston travel · trip planner",
-        "description": "Flight route ICN→ATL→BOS via ATL. About 16 hours. Plan independent travel to Boston — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Boston, USA — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Boston, USA, Boston travel, city guide, city break, sightseeing, GATEO, Boston trip planner, Boston plan a trip, Boston trip planning, Boston free travel, Boston independent travel, Boston backpacking, Boston flights, Boston flight route, Boston air route, Boston nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to BOS, ICN BOS, ICN→ATL→BOS, Boston connecting flights",
+        "description": "Flight route ICN→ATL→BOS via ATL. About 16 hours. Plan independent travel to Boston — flights, stays, and local tips. Ask MOONi, your AI travel docent. Walk Boston, USA — America's revolutionary cradle with the Freedom Trail, Harvard and MIT campuses, Fenway Park baseball, and a walkable harbor city of brick and history.",
+        "keywords": "Boston, USA, Freedom Trail, New England, city break, history travel, Boston travel, Boston trip planner, Boston plan a trip, Boston trip planning, Boston free travel, Boston independent travel, Boston backpacking, Boston flights, Boston flight route, Boston air route, Boston nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to BOS, ICN BOS, ICN→ATL→BOS, Boston connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/boston/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -4034,8 +4034,8 @@ export default {
       },
       "en": {
         "title": "Boston travel sketch · guide",
-        "description": "Boston travel sketch, Local Watson tips, and independent travel guide. Discover Boston, USA — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Boston, USA, Boston travel, city guide, city break, sightseeing, GATEO, Boston travel guide, Boston travel sketch, Boston free travel, Boston local tips, Boston independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Boston travel sketch, Local Watson tips, and independent travel guide. Walk Boston, USA — America's revolutionary cradle with the Freedom Trail, Harvard and MIT campuses, Fenway Park baseball, and a walkable harbor city of brick and history.",
+        "keywords": "Boston, USA, Freedom Trail, New England, city break, history travel, Boston travel guide, Boston travel sketch, Boston free travel, Boston local tips, Boston independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/boston/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -4246,8 +4246,8 @@ export default {
       },
       "en": {
         "title": "Brunei travel photos · gallery",
-        "description": "Browse Brunei travel photos and gallery images. Discover Brunei, Brunei — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Brunei, Brunei travel, heritage, landmark, temple, history, GATEO, Brunei photos, Brunei gallery, Brunei pictures, photos, gallery, pictures, travel",
+        "description": "Browse Brunei travel photos and gallery images. Visit Brunei — a small Borneo sultanate of golden-domed mosques, water villages, tropical rainforest, and gateway city Bandar Seri Begawan via BWN near Malaysian Sabah.",
+        "keywords": "Brunei, Borneo, Bandar Seri Begawan, mosque tour, rainforest, Southeast Asia, Brunei photos, Brunei gallery, Brunei pictures, Brunei travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/brunei/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -4300,8 +4300,8 @@ export default {
       },
       "en": {
         "title": "Brunei travel · trip planner",
-        "description": "Flight route ICN→PVG→BWN via PVG. About 5 hours. Plan independent travel to Brunei — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Brunei, Brunei — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Brunei, Brunei travel, heritage, landmark, temple, history, GATEO, Brunei trip planner, Brunei plan a trip, Brunei trip planning, Brunei free travel, Brunei independent travel, Brunei backpacking, Brunei flights, Brunei flight route, Brunei air route, Brunei nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to BWN, ICN BWN, ICN→PVG→BWN, Brunei connecting flights",
+        "description": "Flight route ICN→PVG→BWN via PVG. About 5 hours. Plan independent travel to Brunei — flights, stays, and local tips. Ask MOONi, your AI travel docent. Visit Brunei — a small Borneo sultanate of golden-domed mosques, water villages, tropical rainforest, and gateway city Bandar Seri Begawan via BWN near Malaysian Sabah.",
+        "keywords": "Brunei, Borneo, Bandar Seri Begawan, mosque tour, rainforest, Southeast Asia, Brunei travel, Brunei trip planner, Brunei plan a trip, Brunei trip planning, Brunei free travel, Brunei independent travel, Brunei backpacking, Brunei flights, Brunei flight route, Brunei air route, Brunei nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to BWN, ICN BWN, ICN→PVG→BWN, Brunei connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/brunei/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -4346,8 +4346,8 @@ export default {
       },
       "en": {
         "title": "Brunei travel sketch · guide",
-        "description": "Brunei travel sketch, Local Watson tips, and independent travel guide. Discover Brunei, Brunei — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Brunei, Brunei travel, heritage, landmark, temple, history, GATEO, Brunei travel guide, Brunei travel sketch, Brunei free travel, Brunei local tips, Brunei independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Brunei travel sketch, Local Watson tips, and independent travel guide. Visit Brunei — a small Borneo sultanate of golden-domed mosques, water villages, tropical rainforest, and gateway city Bandar Seri Begawan via BWN near Malaysian Sabah.",
+        "keywords": "Brunei, Borneo, Bandar Seri Begawan, mosque tour, rainforest, Southeast Asia, Brunei travel guide, Brunei travel sketch, Brunei free travel, Brunei local tips, Brunei independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/brunei/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -4402,8 +4402,8 @@ export default {
       },
       "en": {
         "title": "Brussels travel photos · gallery",
-        "description": "Browse Brussels travel photos and gallery images. Discover Brussels, Belgium — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Brussels, Belgium, Brussels travel, city guide, city break, sightseeing, GATEO, Brussels photos, Brussels gallery, Brussels pictures, photos, gallery, pictures, travel",
+        "description": "Browse Brussels travel photos and gallery images. Explore Brussels, Belgium — EU capital with UNESCO Grand Place guild houses, Manneken Pis, world-famous waffles and chocolate, and surrealism at the Magritte Museum.",
+        "keywords": "Brussels, Belgium, Grand Place, EU capital, Belgian chocolate, city break, Brussels photos, Brussels gallery, Brussels pictures, Brussels travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/brussels/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -4456,8 +4456,8 @@ export default {
       },
       "en": {
         "title": "Brussels travel · trip planner",
-        "description": "Flight route ICN→FRA→BRU via FRA. About 11 hours. Plan independent travel to Brussels — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Brussels, Belgium — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Brussels, Belgium, Brussels travel, city guide, city break, sightseeing, GATEO, Brussels trip planner, Brussels plan a trip, Brussels trip planning, Brussels free travel, Brussels independent travel, Brussels backpacking, Brussels flights, Brussels flight route, Brussels air route, Brussels nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to BRU, ICN BRU, ICN→FRA→BRU, Brussels connecting flights",
+        "description": "Flight route ICN→FRA→BRU via FRA. About 11 hours. Plan independent travel to Brussels — flights, stays, and local tips. Ask MOONi, your AI travel docent. Explore Brussels, Belgium — EU capital with UNESCO Grand Place guild houses, Manneken Pis, world-famous waffles and chocolate, and surrealism at the Magritte Museum.",
+        "keywords": "Brussels, Belgium, Grand Place, EU capital, Belgian chocolate, city break, Brussels travel, Brussels trip planner, Brussels plan a trip, Brussels trip planning, Brussels free travel, Brussels independent travel, Brussels backpacking, Brussels flights, Brussels flight route, Brussels air route, Brussels nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to BRU, ICN BRU, ICN→FRA→BRU, Brussels connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/brussels/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -4502,8 +4502,8 @@ export default {
       },
       "en": {
         "title": "Brussels travel sketch · guide",
-        "description": "Brussels travel sketch, Local Watson tips, and independent travel guide. Discover Brussels, Belgium — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Brussels, Belgium, Brussels travel, city guide, city break, sightseeing, GATEO, Brussels travel guide, Brussels travel sketch, Brussels free travel, Brussels local tips, Brussels independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Brussels travel sketch, Local Watson tips, and independent travel guide. Explore Brussels, Belgium — EU capital with UNESCO Grand Place guild houses, Manneken Pis, world-famous waffles and chocolate, and surrealism at the Magritte Museum.",
+        "keywords": "Brussels, Belgium, Grand Place, EU capital, Belgian chocolate, city break, Brussels travel guide, Brussels travel sketch, Brussels free travel, Brussels local tips, Brussels independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/brussels/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -6430,8 +6430,8 @@ export default {
       },
       "en": {
         "title": "Corsica travel photos · gallery",
-        "description": "Browse Corsica travel photos and gallery images. Discover Corsica, France — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Corsica, France, Corsica travel, beach, island, resort, vacation, GATEO, Corsica photos, Corsica gallery, Corsica pictures, photos, gallery, pictures, travel",
+        "description": "Browse Corsica travel photos and gallery images. Discover Corsica, France — a Mediterranean island of rugged GR20 trekking peaks, Napoleon's birthplace Ajaccio, and hidden beaches where French and Italian cultures blend.",
+        "keywords": "Corsica, France, GR20 trek, Mediterranean island, Napoleon, hiking, Corsica photos, Corsica gallery, Corsica pictures, Corsica travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/corsica/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -6484,8 +6484,8 @@ export default {
       },
       "en": {
         "title": "Corsica travel · trip planner",
-        "description": "Flight route ICN→MUC·CDG→AJA via MUC, CDG. About 12 hours. Plan independent travel to Corsica — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Corsica, France — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Corsica, France, Corsica travel, beach, island, resort, vacation, GATEO, Corsica trip planner, Corsica plan a trip, Corsica trip planning, Corsica free travel, Corsica independent travel, Corsica backpacking, Corsica flights, Corsica flight route, Corsica air route, Corsica nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to AJA, ICN AJA, ICN→MUC·CDG→AJA, Corsica connecting flights",
+        "description": "Flight route ICN→MUC·CDG→AJA via MUC, CDG. About 12 hours. Plan independent travel to Corsica — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Corsica, France — a Mediterranean island of rugged GR20 trekking peaks, Napoleon's birthplace Ajaccio, and hidden beaches where French and Italian cultures blend.",
+        "keywords": "Corsica, France, GR20 trek, Mediterranean island, Napoleon, hiking, Corsica travel, Corsica trip planner, Corsica plan a trip, Corsica trip planning, Corsica free travel, Corsica independent travel, Corsica backpacking, Corsica flights, Corsica flight route, Corsica air route, Corsica nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to AJA, ICN AJA, ICN→MUC·CDG→AJA, Corsica connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/corsica/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -6530,8 +6530,8 @@ export default {
       },
       "en": {
         "title": "Corsica travel sketch · guide",
-        "description": "Corsica travel sketch, Local Watson tips, and independent travel guide. Discover Corsica, France — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Corsica, France, Corsica travel, beach, island, resort, vacation, GATEO, Corsica travel guide, Corsica travel sketch, Corsica free travel, Corsica local tips, Corsica independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Corsica travel sketch, Local Watson tips, and independent travel guide. Discover Corsica, France — a Mediterranean island of rugged GR20 trekking peaks, Napoleon's birthplace Ajaccio, and hidden beaches where French and Italian cultures blend.",
+        "keywords": "Corsica, France, GR20 trek, Mediterranean island, Napoleon, hiking, Corsica travel guide, Corsica travel sketch, Corsica free travel, Corsica local tips, Corsica independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/corsica/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -6742,8 +6742,8 @@ export default {
       },
       "en": {
         "title": "Crete travel photos · gallery",
-        "description": "Browse Crete travel photos and gallery images. Discover Crete, Greece — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Crete, Greece, Crete travel, beach, island, resort, vacation, GATEO, Crete photos, Crete gallery, Crete pictures, photos, gallery, pictures, travel",
+        "description": "Browse Crete travel photos and gallery images. Discover Crete, Greece — the Mediterranean's largest island with Minoan Knossos ruins, Samaria Gorge hikes, Elafonissi pink beaches, and mountain villages serving raki and dakos.",
+        "keywords": "Crete, Greece, Knossos, Mediterranean island, Samaria Gorge, beach travel, Crete photos, Crete gallery, Crete pictures, Crete travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/crete/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -6796,8 +6796,8 @@ export default {
       },
       "en": {
         "title": "Crete travel · trip planner",
-        "description": "Flight route ICN→VIE→HER via VIE. About 12 hours. Plan independent travel to Crete — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Crete, Greece — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Crete, Greece, Crete travel, beach, island, resort, vacation, GATEO, Crete trip planner, Crete plan a trip, Crete trip planning, Crete free travel, Crete independent travel, Crete backpacking, Crete flights, Crete flight route, Crete air route, Crete nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to HER, ICN HER, ICN→VIE→HER, Crete connecting flights",
+        "description": "Flight route ICN→VIE→HER via VIE. About 12 hours. Plan independent travel to Crete — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Crete, Greece — the Mediterranean's largest island with Minoan Knossos ruins, Samaria Gorge hikes, Elafonissi pink beaches, and mountain villages serving raki and dakos.",
+        "keywords": "Crete, Greece, Knossos, Mediterranean island, Samaria Gorge, beach travel, Crete travel, Crete trip planner, Crete plan a trip, Crete trip planning, Crete free travel, Crete independent travel, Crete backpacking, Crete flights, Crete flight route, Crete air route, Crete nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to HER, ICN HER, ICN→VIE→HER, Crete connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/crete/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -6842,8 +6842,8 @@ export default {
       },
       "en": {
         "title": "Crete travel sketch · guide",
-        "description": "Crete travel sketch, Local Watson tips, and independent travel guide. Discover Crete, Greece — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Crete, Greece, Crete travel, beach, island, resort, vacation, GATEO, Crete travel guide, Crete travel sketch, Crete free travel, Crete local tips, Crete independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Crete travel sketch, Local Watson tips, and independent travel guide. Discover Crete, Greece — the Mediterranean's largest island with Minoan Knossos ruins, Samaria Gorge hikes, Elafonissi pink beaches, and mountain villages serving raki and dakos.",
+        "keywords": "Crete, Greece, Knossos, Mediterranean island, Samaria Gorge, beach travel, Crete travel guide, Crete travel sketch, Crete free travel, Crete local tips, Crete independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/crete/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -7366,8 +7366,8 @@ export default {
       },
       "en": {
         "title": "Diego Garcia travel photos · gallery",
-        "description": "Browse Diego Garcia travel photos and gallery images. Discover Diego Garcia, Indian Ocean — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Diego Garcia, Indian Ocean, Diego Garcia travel, wildlife, nature, national park, scenery, GATEO, Diego Garcia photos, Diego Garcia gallery, Diego Garcia pictures, photos, gallery, pictures, travel",
+        "description": "Browse Diego Garcia travel photos and gallery images. Learn about Diego Garcia — a remote British Indian Ocean coral atoll in the Chagos Archipelago, a restricted military territory rarely open to civilian travel at the ocean's center.",
+        "keywords": "Diego Garcia, Indian Ocean, Chagos Archipelago, remote atoll, geography, island, Diego Garcia photos, Diego Garcia gallery, Diego Garcia pictures, Diego Garcia travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/diego-garcia/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -7420,8 +7420,8 @@ export default {
       },
       "en": {
         "title": "Diego Garcia travel · trip planner",
-        "description": "Flight route ICN→PVG→MLE via PVG. About 8 hours. Plan independent travel to Diego Garcia — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Diego Garcia, Indian Ocean — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Diego Garcia, Indian Ocean, Diego Garcia travel, wildlife, nature, national park, scenery, GATEO, Diego Garcia trip planner, Diego Garcia plan a trip, Diego Garcia trip planning, Diego Garcia free travel, Diego Garcia independent travel, Diego Garcia backpacking, Diego Garcia flights, Diego Garcia flight route, Diego Garcia air route, Diego Garcia nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to MLE, ICN MLE, ICN→PVG→MLE, Diego Garcia connecting flights",
+        "description": "Flight route ICN→PVG→MLE via PVG. About 8 hours. Plan independent travel to Diego Garcia — flights, stays, and local tips. Ask MOONi, your AI travel docent. Learn about Diego Garcia — a remote British Indian Ocean coral atoll in the Chagos Archipelago, a restricted military territory rarely open to civilian travel at the ocean's center.",
+        "keywords": "Diego Garcia, Indian Ocean, Chagos Archipelago, remote atoll, geography, island, Diego Garcia travel, Diego Garcia trip planner, Diego Garcia plan a trip, Diego Garcia trip planning, Diego Garcia free travel, Diego Garcia independent travel, Diego Garcia backpacking, Diego Garcia flights, Diego Garcia flight route, Diego Garcia air route, Diego Garcia nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to MLE, ICN MLE, ICN→PVG→MLE, Diego Garcia connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/diego-garcia/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -7466,8 +7466,8 @@ export default {
       },
       "en": {
         "title": "Diego Garcia travel sketch · guide",
-        "description": "Diego Garcia travel sketch, Local Watson tips, and independent travel guide. Discover Diego Garcia, Indian Ocean — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Diego Garcia, Indian Ocean, Diego Garcia travel, wildlife, nature, national park, scenery, GATEO, Diego Garcia travel guide, Diego Garcia travel sketch, Diego Garcia free travel, Diego Garcia local tips, Diego Garcia independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Diego Garcia travel sketch, Local Watson tips, and independent travel guide. Learn about Diego Garcia — a remote British Indian Ocean coral atoll in the Chagos Archipelago, a restricted military territory rarely open to civilian travel at the ocean's center.",
+        "keywords": "Diego Garcia, Indian Ocean, Chagos Archipelago, remote atoll, geography, island, Diego Garcia travel guide, Diego Garcia travel sketch, Diego Garcia free travel, Diego Garcia local tips, Diego Garcia independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/diego-garcia/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -8614,8 +8614,8 @@ export default {
       },
       "en": {
         "title": "Ephesus travel photos · gallery",
-        "description": "Browse Ephesus travel photos and gallery images. Discover Ephesus, Turkey — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Ephesus, Turkey, Ephesus travel, heritage, landmark, temple, history, GATEO, Ephesus photos, Ephesus gallery, Ephesus pictures, photos, gallery, pictures, travel",
+        "description": "Browse Ephesus travel photos and gallery images. Walk Ephesus, Turkey — one of the best-preserved classical cities with the Library of Celsus facade, Great Theatre, and Terrace Houses mosaics near Kusadasi and Izmir.",
+        "keywords": "Ephesus, Turkey, ancient ruins, Library of Celsus, archaeology, heritage tour, Ephesus photos, Ephesus gallery, Ephesus pictures, Ephesus travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/ephesus/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -8668,8 +8668,8 @@ export default {
       },
       "en": {
         "title": "Ephesus travel · trip planner",
-        "description": "Flight route ICN→IST→ADB via IST. About 10 hours. Plan independent travel to Ephesus — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Ephesus, Turkey — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Ephesus, Turkey, Ephesus travel, heritage, landmark, temple, history, GATEO, Ephesus trip planner, Ephesus plan a trip, Ephesus trip planning, Ephesus free travel, Ephesus independent travel, Ephesus backpacking, Ephesus flights, Ephesus flight route, Ephesus air route, Ephesus nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to ADB, ICN ADB, ICN→IST→ADB, Ephesus connecting flights",
+        "description": "Flight route ICN→IST→ADB via IST. About 10 hours. Plan independent travel to Ephesus — flights, stays, and local tips. Ask MOONi, your AI travel docent. Walk Ephesus, Turkey — one of the best-preserved classical cities with the Library of Celsus facade, Great Theatre, and Terrace Houses mosaics near Kusadasi and Izmir.",
+        "keywords": "Ephesus, Turkey, ancient ruins, Library of Celsus, archaeology, heritage tour, Ephesus travel, Ephesus trip planner, Ephesus plan a trip, Ephesus trip planning, Ephesus free travel, Ephesus independent travel, Ephesus backpacking, Ephesus flights, Ephesus flight route, Ephesus air route, Ephesus nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to ADB, ICN ADB, ICN→IST→ADB, Ephesus connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/ephesus/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -8714,8 +8714,8 @@ export default {
       },
       "en": {
         "title": "Ephesus travel sketch · guide",
-        "description": "Ephesus travel sketch, Local Watson tips, and independent travel guide. Discover Ephesus, Turkey — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Ephesus, Turkey, Ephesus travel, heritage, landmark, temple, history, GATEO, Ephesus travel guide, Ephesus travel sketch, Ephesus free travel, Ephesus local tips, Ephesus independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Ephesus travel sketch, Local Watson tips, and independent travel guide. Walk Ephesus, Turkey — one of the best-preserved classical cities with the Library of Celsus facade, Great Theatre, and Terrace Houses mosaics near Kusadasi and Izmir.",
+        "keywords": "Ephesus, Turkey, ancient ruins, Library of Celsus, archaeology, heritage tour, Ephesus travel guide, Ephesus travel sketch, Ephesus free travel, Ephesus local tips, Ephesus independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/ephesus/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -8926,8 +8926,8 @@ export default {
       },
       "en": {
         "title": "Fernando de Noronha travel photos · gallery",
-        "description": "Browse Fernando de Noronha travel photos and gallery images. Discover Fernando de Noronha, Brazil — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Fernando de Noronha, Brazil, Fernando de Noronha travel, beach, island, resort, vacation, GATEO, Fernando de Noronha photos, Fernando de Noronha gallery, Fernando de Noronha pictures, photos, gallery, pictures, travel",
+        "description": "Browse Fernando de Noronha travel photos and gallery images. Protect paradise at Fernando de Noronha, Brazil — a restricted Atlantic archipelago with spinner dolphins, crystal dive sites, and Praia do Sancho ranked among the world's finest beaches.",
+        "keywords": "Fernando de Noronha, Brazil, marine reserve, snorkeling, beach paradise, ecotourism, Fernando de Noronha photos, Fernando de Noronha gallery, Fernando de Noronha pictures, Fernando de Noronha travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/fernando-de-noronha/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -8980,8 +8980,8 @@ export default {
       },
       "en": {
         "title": "Fernando de Noronha travel · trip planner",
-        "description": "Flight route ICN→DXB·GRU·REC→FEN via DXB, GRU, REC. About 26 hours. Plan independent travel to Fernando de Noronha — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Fernando de Noronha, Brazil — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Fernando de Noronha, Brazil, Fernando de Noronha travel, beach, island, resort, vacation, GATEO, Fernando de Noronha trip planner, Fernando de Noronha plan a trip, Fernando de Noronha trip planning, Fernando de Noronha free travel, Fernando de Noronha independent travel, Fernando de Noronha backpacking, Fernando de Noronha flights, Fernando de Noronha flight route, Fernando de Noronha air route, Fernando de Noronha nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to FEN, ICN FEN, ICN→DXB·GRU·REC→FEN, Fernando de Noronha connecting flights",
+        "description": "Flight route ICN→DXB·GRU·REC→FEN via DXB, GRU, REC. About 26 hours. Plan independent travel to Fernando de Noronha — flights, stays, and local tips. Ask MOONi, your AI travel docent. Protect paradise at Fernando de Noronha, Brazil — a restricted Atlantic archipelago with spinner dolphins, crystal dive sites, and Praia do Sancho ranked among the world's finest beaches.",
+        "keywords": "Fernando de Noronha, Brazil, marine reserve, snorkeling, beach paradise, ecotourism, Fernando de Noronha travel, Fernando de Noronha trip planner, Fernando de Noronha plan a trip, Fernando de Noronha trip planning, Fernando de Noronha free travel, Fernando de Noronha independent travel, Fernando de Noronha backpacking, Fernando de Noronha flights, Fernando de Noronha flight route, Fernando de Noronha air route, Fernando de Noronha nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to FEN, ICN FEN, ICN→DXB·GRU·REC→FEN, Fernando de Noronha connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/fernando-de-noronha/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -9026,8 +9026,8 @@ export default {
       },
       "en": {
         "title": "Fernando de Noronha travel sketch · guide",
-        "description": "Fernando de Noronha travel sketch, Local Watson tips, and independent travel guide. Discover Fernando de Noronha, Brazil — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Fernando de Noronha, Brazil, Fernando de Noronha travel, beach, island, resort, vacation, GATEO, Fernando de Noronha travel guide, Fernando de Noronha travel sketch, Fernando de Noronha free travel, Fernando de Noronha local tips, Fernando de Noronha independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Fernando de Noronha travel sketch, Local Watson tips, and independent travel guide. Protect paradise at Fernando de Noronha, Brazil — a restricted Atlantic archipelago with spinner dolphins, crystal dive sites, and Praia do Sancho ranked among the world's finest beaches.",
+        "keywords": "Fernando de Noronha, Brazil, marine reserve, snorkeling, beach paradise, ecotourism, Fernando de Noronha travel guide, Fernando de Noronha travel sketch, Fernando de Noronha free travel, Fernando de Noronha local tips, Fernando de Noronha independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/fernando-de-noronha/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -9082,8 +9082,8 @@ export default {
       },
       "en": {
         "title": "Fez travel photos · gallery",
-        "description": "Browse Fez travel photos and gallery images. Discover Fez, Morocco — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Fez, Morocco, Fez travel, heritage, landmark, temple, history, GATEO, Fez photos, Fez gallery, Fez pictures, photos, gallery, pictures, travel",
+        "description": "Browse Fez travel photos and gallery images. Get lost in Fez, Morocco — a medieval medina of 9,000 alleys, the world's oldest university, tanneries dyeing leather in vivid vats, and artisan souks unchanged for centuries.",
+        "keywords": "Fez, Morocco, medina, souks, Islamic architecture, cultural travel, Fez photos, Fez gallery, Fez pictures, Fez travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/fez/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -9136,8 +9136,8 @@ export default {
       },
       "en": {
         "title": "Fez travel · trip planner",
-        "description": "Flight route ICN→MXP·MRS→FEZ via MXP, MRS. About 13 hours. Plan independent travel to Fez — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Fez, Morocco — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Fez, Morocco, Fez travel, heritage, landmark, temple, history, GATEO, Fez trip planner, Fez plan a trip, Fez trip planning, Fez free travel, Fez independent travel, Fez backpacking, Fez flights, Fez flight route, Fez air route, Fez nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to FEZ, ICN FEZ, ICN→MXP·MRS→FEZ, Fez connecting flights",
+        "description": "Flight route ICN→MXP·MRS→FEZ via MXP, MRS. About 13 hours. Plan independent travel to Fez — flights, stays, and local tips. Ask MOONi, your AI travel docent. Get lost in Fez, Morocco — a medieval medina of 9,000 alleys, the world's oldest university, tanneries dyeing leather in vivid vats, and artisan souks unchanged for centuries.",
+        "keywords": "Fez, Morocco, medina, souks, Islamic architecture, cultural travel, Fez travel, Fez trip planner, Fez plan a trip, Fez trip planning, Fez free travel, Fez independent travel, Fez backpacking, Fez flights, Fez flight route, Fez air route, Fez nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to FEZ, ICN FEZ, ICN→MXP·MRS→FEZ, Fez connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/fez/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -9182,8 +9182,8 @@ export default {
       },
       "en": {
         "title": "Fez travel sketch · guide",
-        "description": "Fez travel sketch, Local Watson tips, and independent travel guide. Discover Fez, Morocco — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Fez, Morocco, Fez travel, heritage, landmark, temple, history, GATEO, Fez travel guide, Fez travel sketch, Fez free travel, Fez local tips, Fez independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Fez travel sketch, Local Watson tips, and independent travel guide. Get lost in Fez, Morocco — a medieval medina of 9,000 alleys, the world's oldest university, tanneries dyeing leather in vivid vats, and artisan souks unchanged for centuries.",
+        "keywords": "Fez, Morocco, medina, souks, Islamic architecture, cultural travel, Fez travel guide, Fez travel sketch, Fez free travel, Fez local tips, Fez independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/fez/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -9394,8 +9394,8 @@ export default {
       },
       "en": {
         "title": "Fiordland travel photos · gallery",
-        "description": "Browse Fiordland travel photos and gallery images. Discover Fiordland, New Zealand — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Fiordland, New Zealand, Fiordland travel, wildlife, nature, national park, scenery, GATEO, Fiordland photos, Fiordland gallery, Fiordland pictures, photos, gallery, pictures, travel",
+        "description": "Browse Fiordland travel photos and gallery images. Cruise Fiordland, New Zealand — Milford and Doubtful Sound fjords carved by glaciers, with Mitre Peak reflections, waterfalls, and rare penguins in UNESCO wilderness.",
+        "keywords": "Fiordland, New Zealand, Milford Sound, fjord cruise, Mitre Peak, nature travel, Fiordland photos, Fiordland gallery, Fiordland pictures, Fiordland travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/fiordland/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -9448,8 +9448,8 @@ export default {
       },
       "en": {
         "title": "Fiordland travel · trip planner",
-        "description": "Flight route ICN→SYD→ZQN via SYD. About 13 hours. Plan independent travel to Fiordland — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Fiordland, New Zealand — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Fiordland, New Zealand, Fiordland travel, wildlife, nature, national park, scenery, GATEO, Fiordland trip planner, Fiordland plan a trip, Fiordland trip planning, Fiordland free travel, Fiordland independent travel, Fiordland backpacking, Fiordland flights, Fiordland flight route, Fiordland air route, Fiordland nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to ZQN, ICN ZQN, ICN→SYD→ZQN, Fiordland connecting flights",
+        "description": "Flight route ICN→SYD→ZQN via SYD. About 13 hours. Plan independent travel to Fiordland — flights, stays, and local tips. Ask MOONi, your AI travel docent. Cruise Fiordland, New Zealand — Milford and Doubtful Sound fjords carved by glaciers, with Mitre Peak reflections, waterfalls, and rare penguins in UNESCO wilderness.",
+        "keywords": "Fiordland, New Zealand, Milford Sound, fjord cruise, Mitre Peak, nature travel, Fiordland travel, Fiordland trip planner, Fiordland plan a trip, Fiordland trip planning, Fiordland free travel, Fiordland independent travel, Fiordland backpacking, Fiordland flights, Fiordland flight route, Fiordland air route, Fiordland nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to ZQN, ICN ZQN, ICN→SYD→ZQN, Fiordland connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/fiordland/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -9494,8 +9494,8 @@ export default {
       },
       "en": {
         "title": "Fiordland travel sketch · guide",
-        "description": "Fiordland travel sketch, Local Watson tips, and independent travel guide. Discover Fiordland, New Zealand — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Fiordland, New Zealand, Fiordland travel, wildlife, nature, national park, scenery, GATEO, Fiordland travel guide, Fiordland travel sketch, Fiordland free travel, Fiordland local tips, Fiordland independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Fiordland travel sketch, Local Watson tips, and independent travel guide. Cruise Fiordland, New Zealand — Milford and Doubtful Sound fjords carved by glaciers, with Mitre Peak reflections, waterfalls, and rare penguins in UNESCO wilderness.",
+        "keywords": "Fiordland, New Zealand, Milford Sound, fjord cruise, Mitre Peak, nature travel, Fiordland travel guide, Fiordland travel sketch, Fiordland free travel, Fiordland local tips, Fiordland independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/fiordland/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -10174,8 +10174,8 @@ export default {
       },
       "en": {
         "title": "Geneva travel photos · gallery",
-        "description": "Browse Geneva travel photos and gallery images. Discover Geneva, Switzerland — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Geneva, Switzerland, Geneva travel, city guide, city break, sightseeing, GATEO, Geneva photos, Geneva gallery, Geneva pictures, photos, gallery, pictures, travel",
+        "description": "Browse Geneva travel photos and gallery images. Visit Geneva, Switzerland — a lakeside international city home to the UN and Red Cross, crowned by the 140 m Jet d'Eau fountain, flower clock, and French-inspired Lake Geneva dining.",
+        "keywords": "Geneva, Switzerland, Lake Geneva, Jet d Eau, UN headquarters, city break, Geneva photos, Geneva gallery, Geneva pictures, Geneva travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/geneva/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -10228,8 +10228,8 @@ export default {
       },
       "en": {
         "title": "Geneva travel · trip planner",
-        "description": "Flight route ICN→MUC·ZRH→GVA via MUC, ZRH. About 11 hours. Plan independent travel to Geneva — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Geneva, Switzerland — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Geneva, Switzerland, Geneva travel, city guide, city break, sightseeing, GATEO, Geneva trip planner, Geneva plan a trip, Geneva trip planning, Geneva free travel, Geneva independent travel, Geneva backpacking, Geneva flights, Geneva flight route, Geneva air route, Geneva nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to GVA, ICN GVA, ICN→MUC·ZRH→GVA, Geneva connecting flights",
+        "description": "Flight route ICN→MUC·ZRH→GVA via MUC, ZRH. About 11 hours. Plan independent travel to Geneva — flights, stays, and local tips. Ask MOONi, your AI travel docent. Visit Geneva, Switzerland — a lakeside international city home to the UN and Red Cross, crowned by the 140 m Jet d'Eau fountain, flower clock, and French-inspired Lake Geneva dining.",
+        "keywords": "Geneva, Switzerland, Lake Geneva, Jet d Eau, UN headquarters, city break, Geneva travel, Geneva trip planner, Geneva plan a trip, Geneva trip planning, Geneva free travel, Geneva independent travel, Geneva backpacking, Geneva flights, Geneva flight route, Geneva air route, Geneva nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to GVA, ICN GVA, ICN→MUC·ZRH→GVA, Geneva connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/geneva/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -10274,8 +10274,8 @@ export default {
       },
       "en": {
         "title": "Geneva travel sketch · guide",
-        "description": "Geneva travel sketch, Local Watson tips, and independent travel guide. Discover Geneva, Switzerland — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Geneva, Switzerland, Geneva travel, city guide, city break, sightseeing, GATEO, Geneva travel guide, Geneva travel sketch, Geneva free travel, Geneva local tips, Geneva independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Geneva travel sketch, Local Watson tips, and independent travel guide. Visit Geneva, Switzerland — a lakeside international city home to the UN and Red Cross, crowned by the 140 m Jet d'Eau fountain, flower clock, and French-inspired Lake Geneva dining.",
+        "keywords": "Geneva, Switzerland, Lake Geneva, Jet d Eau, UN headquarters, city break, Geneva travel guide, Geneva travel sketch, Geneva free travel, Geneva local tips, Geneva independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/geneva/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -10954,8 +10954,8 @@ export default {
       },
       "en": {
         "title": "Great Barrier Reef travel photos · gallery",
-        "description": "Browse Great Barrier Reef travel photos and gallery images. Discover Great Barrier Reef, Australia — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Great Barrier Reef, Australia, Great Barrier Reef travel, wildlife, nature, national park, scenery, GATEO, Great Barrier Reef photos, Great Barrier Reef gallery, Great Barrier Reef pictures, photos, gallery, pictures, travel",
+        "description": "Browse Great Barrier Reef travel photos and gallery images. Dive the Great Barrier Reef, Australia — the planet's largest coral system stretching 2,300 km with rainbow fish, sea turtles, and reef islands off Queensland's coast.",
+        "keywords": "Great Barrier Reef, Australia, snorkeling, scuba diving, coral reef, Queensland, Great Barrier Reef photos, Great Barrier Reef gallery, Great Barrier Reef pictures, Great Barrier Reef travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/great-barrier-reef/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -11008,8 +11008,8 @@ export default {
       },
       "en": {
         "title": "Great Barrier Reef travel · trip planner",
-        "description": "Flight route ICN→KIX→CNS via KIX. About 8 hours. Plan independent travel to Great Barrier Reef — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Great Barrier Reef, Australia — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Great Barrier Reef, Australia, Great Barrier Reef travel, wildlife, nature, national park, scenery, GATEO, Great Barrier Reef trip planner, Great Barrier Reef plan a trip, Great Barrier Reef trip planning, Great Barrier Reef free travel, Great Barrier Reef independent travel, Great Barrier Reef backpacking, Great Barrier Reef flights, Great Barrier Reef flight route, Great Barrier Reef air route, Great Barrier Reef nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to CNS, ICN CNS, ICN→KIX→CNS, Great Barrier Reef connecting flights",
+        "description": "Flight route ICN→KIX→CNS via KIX. About 8 hours. Plan independent travel to Great Barrier Reef — flights, stays, and local tips. Ask MOONi, your AI travel docent. Dive the Great Barrier Reef, Australia — the planet's largest coral system stretching 2,300 km with rainbow fish, sea turtles, and reef islands off Queensland's coast.",
+        "keywords": "Great Barrier Reef, Australia, snorkeling, scuba diving, coral reef, Queensland, Great Barrier Reef travel, Great Barrier Reef trip planner, Great Barrier Reef plan a trip, Great Barrier Reef trip planning, Great Barrier Reef free travel, Great Barrier Reef independent travel, Great Barrier Reef backpacking, Great Barrier Reef flights, Great Barrier Reef flight route, Great Barrier Reef air route, Great Barrier Reef nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to CNS, ICN CNS, ICN→KIX→CNS, Great Barrier Reef connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/great-barrier-reef/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -11054,8 +11054,8 @@ export default {
       },
       "en": {
         "title": "Great Barrier Reef travel sketch · guide",
-        "description": "Great Barrier Reef travel sketch, Local Watson tips, and independent travel guide. Discover Great Barrier Reef, Australia — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Great Barrier Reef, Australia, Great Barrier Reef travel, wildlife, nature, national park, scenery, GATEO, Great Barrier Reef travel guide, Great Barrier Reef travel sketch, Great Barrier Reef free travel, Great Barrier Reef local tips, Great Barrier Reef independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Great Barrier Reef travel sketch, Local Watson tips, and independent travel guide. Dive the Great Barrier Reef, Australia — the planet's largest coral system stretching 2,300 km with rainbow fish, sea turtles, and reef islands off Queensland's coast.",
+        "keywords": "Great Barrier Reef, Australia, snorkeling, scuba diving, coral reef, Queensland, Great Barrier Reef travel guide, Great Barrier Reef travel sketch, Great Barrier Reef free travel, Great Barrier Reef local tips, Great Barrier Reef independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/great-barrier-reef/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -11266,8 +11266,8 @@ export default {
       },
       "en": {
         "title": "Greenland travel photos · gallery",
-        "description": "Browse Greenland travel photos and gallery images. Discover Greenland, Greenland — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Greenland, Greenland travel, wildlife, nature, national park, scenery, GATEO, Greenland photos, Greenland gallery, Greenland pictures, photos, gallery, pictures, travel",
+        "description": "Browse Greenland travel photos and gallery images. Explore Greenland — the world's largest island where ice sheets, Arctic fjords, and northern lights meet Inuit culture, usually via Copenhagen gateway flights to Nuuk or Ilulissat.",
+        "keywords": "Greenland, Arctic travel, Northern Lights, Ilulissat, iceberg cruise, adventure, Greenland photos, Greenland gallery, Greenland pictures, Greenland travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/greenland/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -11320,8 +11320,8 @@ export default {
       },
       "en": {
         "title": "Greenland travel · trip planner",
-        "description": "Flight route ICN→HEL·AMS→CPH via HEL, AMS. About 11 hours. Plan independent travel to Greenland — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Greenland, Greenland — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Greenland, Greenland travel, wildlife, nature, national park, scenery, GATEO, Greenland trip planner, Greenland plan a trip, Greenland trip planning, Greenland free travel, Greenland independent travel, Greenland backpacking, Greenland flights, Greenland flight route, Greenland air route, Greenland nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to CPH, ICN CPH, ICN→HEL·AMS→CPH, Greenland connecting flights",
+        "description": "Flight route ICN→HEL·AMS→CPH via HEL, AMS. About 11 hours. Plan independent travel to Greenland — flights, stays, and local tips. Ask MOONi, your AI travel docent. Explore Greenland — the world's largest island where ice sheets, Arctic fjords, and northern lights meet Inuit culture, usually via Copenhagen gateway flights to Nuuk or Ilulissat.",
+        "keywords": "Greenland, Arctic travel, Northern Lights, Ilulissat, iceberg cruise, adventure, Greenland travel, Greenland trip planner, Greenland plan a trip, Greenland trip planning, Greenland free travel, Greenland independent travel, Greenland backpacking, Greenland flights, Greenland flight route, Greenland air route, Greenland nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to CPH, ICN CPH, ICN→HEL·AMS→CPH, Greenland connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/greenland/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -11366,8 +11366,8 @@ export default {
       },
       "en": {
         "title": "Greenland travel sketch · guide",
-        "description": "Greenland travel sketch, Local Watson tips, and independent travel guide. Discover Greenland, Greenland — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Greenland, Greenland travel, wildlife, nature, national park, scenery, GATEO, Greenland travel guide, Greenland travel sketch, Greenland free travel, Greenland local tips, Greenland independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Greenland travel sketch, Local Watson tips, and independent travel guide. Explore Greenland — the world's largest island where ice sheets, Arctic fjords, and northern lights meet Inuit culture, usually via Copenhagen gateway flights to Nuuk or Ilulissat.",
+        "keywords": "Greenland, Arctic travel, Northern Lights, Ilulissat, iceberg cruise, adventure, Greenland travel guide, Greenland travel sketch, Greenland free travel, Greenland local tips, Greenland independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/greenland/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -11422,8 +11422,8 @@ export default {
       },
       "en": {
         "title": "Guam travel photos · gallery",
-        "description": "Browse Guam travel photos and gallery images. Discover Guam, Guam — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Guam, Guam travel, beach, island, resort, vacation, GATEO, Guam photos, Guam gallery, Guam pictures, photos, gallery, pictures, travel",
+        "description": "Browse Guam travel photos and gallery images. Visit Guam — a U.S. Pacific island mixing Chamorro culture, Tumon beach resorts, WWII memorials, and duty-free shopping just hours from East Asia by air.",
+        "keywords": "Guam, Micronesia, Tumon Beach, Pacific island, beach vacation, WWII history, Guam photos, Guam gallery, Guam pictures, Guam travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/guam/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -11476,8 +11476,8 @@ export default {
       },
       "en": {
         "title": "Guam travel · trip planner",
-        "description": "Flight route ICN→GUM, nonstop. About 4 hours. Plan independent travel to Guam — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Guam, Guam — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Guam, Guam travel, beach, island, resort, vacation, GATEO, Guam trip planner, Guam plan a trip, Guam trip planning, Guam free travel, Guam independent travel, Guam backpacking, Guam flights, Guam flight route, Guam air route, Guam nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to GUM, ICN GUM, ICN→GUM, Guam nonstop flights",
+        "description": "Flight route ICN→GUM, nonstop. About 4 hours. Plan independent travel to Guam — flights, stays, and local tips. Ask MOONi, your AI travel docent. Visit Guam — a U.S. Pacific island mixing Chamorro culture, Tumon beach resorts, WWII memorials, and duty-free shopping just hours from East Asia by air.",
+        "keywords": "Guam, Micronesia, Tumon Beach, Pacific island, beach vacation, WWII history, Guam travel, Guam trip planner, Guam plan a trip, Guam trip planning, Guam free travel, Guam independent travel, Guam backpacking, Guam flights, Guam flight route, Guam air route, Guam nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to GUM, ICN GUM, ICN→GUM, Guam nonstop flights",
         "canonicalUrl": "https://www.gateo.kr/place/guam/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -11522,8 +11522,8 @@ export default {
       },
       "en": {
         "title": "Guam travel sketch · guide",
-        "description": "Guam travel sketch, Local Watson tips, and independent travel guide. Discover Guam, Guam — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Guam, Guam travel, beach, island, resort, vacation, GATEO, Guam travel guide, Guam travel sketch, Guam free travel, Guam local tips, Guam independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Guam travel sketch, Local Watson tips, and independent travel guide. Visit Guam — a U.S. Pacific island mixing Chamorro culture, Tumon beach resorts, WWII memorials, and duty-free shopping just hours from East Asia by air.",
+        "keywords": "Guam, Micronesia, Tumon Beach, Pacific island, beach vacation, WWII history, Guam travel guide, Guam travel sketch, Guam free travel, Guam local tips, Guam independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/guam/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -11734,8 +11734,8 @@ export default {
       },
       "en": {
         "title": "Hamburg travel photos · gallery",
-        "description": "Browse Hamburg travel photos and gallery images. Discover Hamburg, Germany — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Hamburg, Germany, Hamburg travel, city guide, city break, sightseeing, GATEO, Hamburg photos, Hamburg gallery, Hamburg pictures, photos, gallery, pictures, travel",
+        "description": "Browse Hamburg travel photos and gallery images. Explore Hamburg, Germany — Europe's third-largest port with Speicherstadt warehouses, Elbphilharmonie concerts, Reeperbahn nightlife, and canals earning it the Venice of the North nickname.",
+        "keywords": "Hamburg, Germany, Elbphilharmonie, port city, Speicherstadt, city break, Hamburg photos, Hamburg gallery, Hamburg pictures, Hamburg travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/hamburg/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -11788,8 +11788,8 @@ export default {
       },
       "en": {
         "title": "Hamburg travel · trip planner",
-        "description": "Flight route ICN→HEL·FRA→HAM via HEL, FRA. About 11 hours. Plan independent travel to Hamburg — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Hamburg, Germany — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Hamburg, Germany, Hamburg travel, city guide, city break, sightseeing, GATEO, Hamburg trip planner, Hamburg plan a trip, Hamburg trip planning, Hamburg free travel, Hamburg independent travel, Hamburg backpacking, Hamburg flights, Hamburg flight route, Hamburg air route, Hamburg nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to HAM, ICN HAM, ICN→HEL·FRA→HAM, Hamburg connecting flights",
+        "description": "Flight route ICN→HEL·FRA→HAM via HEL, FRA. About 11 hours. Plan independent travel to Hamburg — flights, stays, and local tips. Ask MOONi, your AI travel docent. Explore Hamburg, Germany — Europe's third-largest port with Speicherstadt warehouses, Elbphilharmonie concerts, Reeperbahn nightlife, and canals earning it the Venice of the North nickname.",
+        "keywords": "Hamburg, Germany, Elbphilharmonie, port city, Speicherstadt, city break, Hamburg travel, Hamburg trip planner, Hamburg plan a trip, Hamburg trip planning, Hamburg free travel, Hamburg independent travel, Hamburg backpacking, Hamburg flights, Hamburg flight route, Hamburg air route, Hamburg nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to HAM, ICN HAM, ICN→HEL·FRA→HAM, Hamburg connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/hamburg/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -11834,8 +11834,8 @@ export default {
       },
       "en": {
         "title": "Hamburg travel sketch · guide",
-        "description": "Hamburg travel sketch, Local Watson tips, and independent travel guide. Discover Hamburg, Germany — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Hamburg, Germany, Hamburg travel, city guide, city break, sightseeing, GATEO, Hamburg travel guide, Hamburg travel sketch, Hamburg free travel, Hamburg local tips, Hamburg independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Hamburg travel sketch, Local Watson tips, and independent travel guide. Explore Hamburg, Germany — Europe's third-largest port with Speicherstadt warehouses, Elbphilharmonie concerts, Reeperbahn nightlife, and canals earning it the Venice of the North nickname.",
+        "keywords": "Hamburg, Germany, Elbphilharmonie, port city, Speicherstadt, city break, Hamburg travel guide, Hamburg travel sketch, Hamburg free travel, Hamburg local tips, Hamburg independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/hamburg/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -12046,8 +12046,8 @@ export default {
       },
       "en": {
         "title": "Havana travel photos · gallery",
-        "description": "Browse Havana travel photos and gallery images. Discover Havana, Cuba — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Havana, Cuba, Havana travel, city guide, city break, sightseeing, GATEO, Havana photos, Havana gallery, Havana pictures, photos, gallery, pictures, travel",
+        "description": "Browse Havana travel photos and gallery images. Feel Havana, Cuba — a time-capsule capital of pastel colonial facades, vintage American cars, live salsa, Malecón sunsets, and cigars rolled in historic Habana Vieja.",
+        "keywords": "Havana, Cuba, Old Havana, salsa music, colonial architecture, Caribbean travel, Havana photos, Havana gallery, Havana pictures, Havana travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/havana/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -12100,8 +12100,8 @@ export default {
       },
       "en": {
         "title": "Havana travel · trip planner",
-        "description": "Flight route ICN→YYZ→HAV via YYZ. About 16 hours. Plan independent travel to Havana — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Havana, Cuba — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Havana, Cuba, Havana travel, city guide, city break, sightseeing, GATEO, Havana trip planner, Havana plan a trip, Havana trip planning, Havana free travel, Havana independent travel, Havana backpacking, Havana flights, Havana flight route, Havana air route, Havana nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to HAV, ICN HAV, ICN→YYZ→HAV, Havana connecting flights",
+        "description": "Flight route ICN→YYZ→HAV via YYZ. About 16 hours. Plan independent travel to Havana — flights, stays, and local tips. Ask MOONi, your AI travel docent. Feel Havana, Cuba — a time-capsule capital of pastel colonial facades, vintage American cars, live salsa, Malecón sunsets, and cigars rolled in historic Habana Vieja.",
+        "keywords": "Havana, Cuba, Old Havana, salsa music, colonial architecture, Caribbean travel, Havana travel, Havana trip planner, Havana plan a trip, Havana trip planning, Havana free travel, Havana independent travel, Havana backpacking, Havana flights, Havana flight route, Havana air route, Havana nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to HAV, ICN HAV, ICN→YYZ→HAV, Havana connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/havana/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -12146,8 +12146,8 @@ export default {
       },
       "en": {
         "title": "Havana travel sketch · guide",
-        "description": "Havana travel sketch, Local Watson tips, and independent travel guide. Discover Havana, Cuba — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Havana, Cuba, Havana travel, city guide, city break, sightseeing, GATEO, Havana travel guide, Havana travel sketch, Havana free travel, Havana local tips, Havana independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Havana travel sketch, Local Watson tips, and independent travel guide. Feel Havana, Cuba — a time-capsule capital of pastel colonial facades, vintage American cars, live salsa, Malecón sunsets, and cigars rolled in historic Habana Vieja.",
+        "keywords": "Havana, Cuba, Old Havana, salsa music, colonial architecture, Caribbean travel, Havana travel guide, Havana travel sketch, Havana free travel, Havana local tips, Havana independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/havana/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -12982,8 +12982,8 @@ export default {
       },
       "en": {
         "title": "Hue travel photos · gallery",
-        "description": "Browse Hue travel photos and gallery images. Discover Hue, Vietnam — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Hue, Vietnam, Hue travel, heritage, landmark, temple, history, GATEO, Hue photos, Hue gallery, Hue pictures, photos, gallery, pictures, travel",
+        "description": "Browse Hue travel photos and gallery images. Explore Hue, Vietnam — former Nguyen dynasty capital with Imperial Citadel palaces, Perfume River dragon boats, royal tombs, and legendary central Vietnamese imperial cuisine.",
+        "keywords": "Hue, Vietnam, Imperial Citadel, Perfume River, royal tombs, heritage tour, Hue photos, Hue gallery, Hue pictures, Hue travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/hue/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -13036,8 +13036,8 @@ export default {
       },
       "en": {
         "title": "Hue travel · trip planner",
-        "description": "Flight route ICN→HKG→DAD via HKG. About 4 hours. Plan independent travel to Hue — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Hue, Vietnam — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Hue, Vietnam, Hue travel, heritage, landmark, temple, history, GATEO, Hue trip planner, Hue plan a trip, Hue trip planning, Hue free travel, Hue independent travel, Hue backpacking, Hue flights, Hue flight route, Hue air route, Hue nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to DAD, ICN DAD, ICN→HKG→DAD, Hue connecting flights",
+        "description": "Flight route ICN→HKG→DAD via HKG. About 4 hours. Plan independent travel to Hue — flights, stays, and local tips. Ask MOONi, your AI travel docent. Explore Hue, Vietnam — former Nguyen dynasty capital with Imperial Citadel palaces, Perfume River dragon boats, royal tombs, and legendary central Vietnamese imperial cuisine.",
+        "keywords": "Hue, Vietnam, Imperial Citadel, Perfume River, royal tombs, heritage tour, Hue travel, Hue trip planner, Hue plan a trip, Hue trip planning, Hue free travel, Hue independent travel, Hue backpacking, Hue flights, Hue flight route, Hue air route, Hue nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to DAD, ICN DAD, ICN→HKG→DAD, Hue connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/hue/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -13082,8 +13082,8 @@ export default {
       },
       "en": {
         "title": "Hue travel sketch · guide",
-        "description": "Hue travel sketch, Local Watson tips, and independent travel guide. Discover Hue, Vietnam — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Hue, Vietnam, Hue travel, heritage, landmark, temple, history, GATEO, Hue travel guide, Hue travel sketch, Hue free travel, Hue local tips, Hue independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Hue travel sketch, Local Watson tips, and independent travel guide. Explore Hue, Vietnam — former Nguyen dynasty capital with Imperial Citadel palaces, Perfume River dragon boats, royal tombs, and legendary central Vietnamese imperial cuisine.",
+        "keywords": "Hue, Vietnam, Imperial Citadel, Perfume River, royal tombs, heritage tour, Hue travel guide, Hue travel sketch, Hue free travel, Hue local tips, Hue independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/hue/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -13138,8 +13138,8 @@ export default {
       },
       "en": {
         "title": "Hvar travel photos · gallery",
-        "description": "Browse Hvar travel photos and gallery images. Discover Hvar, Croatia — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Hvar, Croatia, Hvar travel, beach, island, resort, vacation, GATEO, Hvar photos, Hvar gallery, Hvar pictures, photos, gallery, pictures, travel",
+        "description": "Browse Hvar travel photos and gallery images. Sail to Hvar, Croatia — a sun-drenched Adriatic island of lavender fields, Hvar Town's marble squares, hidden coves, and Croatia's liveliest island nightlife.",
+        "keywords": "Hvar, Croatia, Adriatic island, Dalmatian coast, beach club, sailing trip, Hvar photos, Hvar gallery, Hvar pictures, Hvar travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/hvar/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -13192,8 +13192,8 @@ export default {
       },
       "en": {
         "title": "Hvar travel · trip planner",
-        "description": "Flight route ICN→MUC→SPU via MUC. About 11 hours. Plan independent travel to Hvar — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Hvar, Croatia — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Hvar, Croatia, Hvar travel, beach, island, resort, vacation, GATEO, Hvar trip planner, Hvar plan a trip, Hvar trip planning, Hvar free travel, Hvar independent travel, Hvar backpacking, Hvar flights, Hvar flight route, Hvar air route, Hvar nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to SPU, ICN SPU, ICN→MUC→SPU, Hvar connecting flights",
+        "description": "Flight route ICN→MUC→SPU via MUC. About 11 hours. Plan independent travel to Hvar — flights, stays, and local tips. Ask MOONi, your AI travel docent. Sail to Hvar, Croatia — a sun-drenched Adriatic island of lavender fields, Hvar Town's marble squares, hidden coves, and Croatia's liveliest island nightlife.",
+        "keywords": "Hvar, Croatia, Adriatic island, Dalmatian coast, beach club, sailing trip, Hvar travel, Hvar trip planner, Hvar plan a trip, Hvar trip planning, Hvar free travel, Hvar independent travel, Hvar backpacking, Hvar flights, Hvar flight route, Hvar air route, Hvar nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to SPU, ICN SPU, ICN→MUC→SPU, Hvar connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/hvar/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -13238,8 +13238,8 @@ export default {
       },
       "en": {
         "title": "Hvar travel sketch · guide",
-        "description": "Hvar travel sketch, Local Watson tips, and independent travel guide. Discover Hvar, Croatia — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Hvar, Croatia, Hvar travel, beach, island, resort, vacation, GATEO, Hvar travel guide, Hvar travel sketch, Hvar free travel, Hvar local tips, Hvar independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Hvar travel sketch, Local Watson tips, and independent travel guide. Sail to Hvar, Croatia — a sun-drenched Adriatic island of lavender fields, Hvar Town's marble squares, hidden coves, and Croatia's liveliest island nightlife.",
+        "keywords": "Hvar, Croatia, Adriatic island, Dalmatian coast, beach club, sailing trip, Hvar travel guide, Hvar travel sketch, Hvar free travel, Hvar local tips, Hvar independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/hvar/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -13450,8 +13450,8 @@ export default {
       },
       "en": {
         "title": "Iceland travel photos · gallery",
-        "description": "Browse Iceland travel photos and gallery images. Discover Iceland, Iceland — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Iceland, Iceland travel, wildlife, nature, national park, scenery, GATEO, Iceland photos, Iceland gallery, Iceland pictures, photos, gallery, pictures, travel",
+        "description": "Browse Iceland travel photos and gallery images. Discover Iceland — the Land of Fire and Ice where glaciers, active volcanoes, midnight sun summers, aurora winters, and thundering waterfalls define Europe's most dramatic island edge.",
+        "keywords": "Iceland, Northern Lights, Golden Circle, volcano, waterfalls, adventure travel, Iceland photos, Iceland gallery, Iceland pictures, Iceland travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/iceland/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -13504,8 +13504,8 @@ export default {
       },
       "en": {
         "title": "Iceland travel · trip planner",
-        "description": "Flight route ICN→MUC→KEF via MUC. About 14 hours. Plan independent travel to Iceland — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Iceland, Iceland — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Iceland, Iceland travel, wildlife, nature, national park, scenery, GATEO, Iceland trip planner, Iceland plan a trip, Iceland trip planning, Iceland free travel, Iceland independent travel, Iceland backpacking, Iceland flights, Iceland flight route, Iceland air route, Iceland nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to KEF, ICN KEF, ICN→MUC→KEF, Iceland connecting flights",
+        "description": "Flight route ICN→MUC→KEF via MUC. About 14 hours. Plan independent travel to Iceland — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Iceland — the Land of Fire and Ice where glaciers, active volcanoes, midnight sun summers, aurora winters, and thundering waterfalls define Europe's most dramatic island edge.",
+        "keywords": "Iceland, Northern Lights, Golden Circle, volcano, waterfalls, adventure travel, Iceland travel, Iceland trip planner, Iceland plan a trip, Iceland trip planning, Iceland free travel, Iceland independent travel, Iceland backpacking, Iceland flights, Iceland flight route, Iceland air route, Iceland nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to KEF, ICN KEF, ICN→MUC→KEF, Iceland connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/iceland/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -13550,8 +13550,8 @@ export default {
       },
       "en": {
         "title": "Iceland travel sketch · guide",
-        "description": "Iceland travel sketch, Local Watson tips, and independent travel guide. Discover Iceland, Iceland — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Iceland, Iceland travel, wildlife, nature, national park, scenery, GATEO, Iceland travel guide, Iceland travel sketch, Iceland free travel, Iceland local tips, Iceland independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Iceland travel sketch, Local Watson tips, and independent travel guide. Discover Iceland — the Land of Fire and Ice where glaciers, active volcanoes, midnight sun summers, aurora winters, and thundering waterfalls define Europe's most dramatic island edge.",
+        "keywords": "Iceland, Northern Lights, Golden Circle, volcano, waterfalls, adventure travel, Iceland travel guide, Iceland travel sketch, Iceland free travel, Iceland local tips, Iceland independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/iceland/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -13606,8 +13606,8 @@ export default {
       },
       "en": {
         "title": "Iguazu Falls travel photos · gallery",
-        "description": "Browse Iguazu Falls travel photos and gallery images. Discover Iguazu Falls, Argentina — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Iguazu Falls, Argentina, Iguazu Falls travel, wildlife, nature, national park, scenery, GATEO, Iguazu Falls photos, Iguazu Falls gallery, Iguazu Falls pictures, photos, gallery, pictures, travel",
+        "description": "Browse Iguazu Falls travel photos and gallery images. Witness Iguazu Falls, Argentina — South America's roaring cascade where hundreds of falls thunder into the Devil's Throat gorge amid subtropical rainforest on the Brazil border.",
+        "keywords": "Iguazu Falls, Argentina, Devils Throat, waterfall tour, rainforest, South America, Iguazu Falls photos, Iguazu Falls gallery, Iguazu Falls pictures, Iguazu Falls travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/iguazu-falls/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -13660,8 +13660,8 @@ export default {
       },
       "en": {
         "title": "Iguazu Falls travel · trip planner",
-        "description": "Flight route ICN→DXB·GRU→IGR via DXB, GRU. About 24 hours. Plan independent travel to Iguazu Falls — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Iguazu Falls, Argentina — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Iguazu Falls, Argentina, Iguazu Falls travel, wildlife, nature, national park, scenery, GATEO, Iguazu Falls trip planner, Iguazu Falls plan a trip, Iguazu Falls trip planning, Iguazu Falls free travel, Iguazu Falls independent travel, Iguazu Falls backpacking, Iguazu Falls flights, Iguazu Falls flight route, Iguazu Falls air route, Iguazu Falls nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to IGR, ICN IGR, ICN→DXB·GRU→IGR, Iguazu Falls connecting flights",
+        "description": "Flight route ICN→DXB·GRU→IGR via DXB, GRU. About 24 hours. Plan independent travel to Iguazu Falls — flights, stays, and local tips. Ask MOONi, your AI travel docent. Witness Iguazu Falls, Argentina — South America's roaring cascade where hundreds of falls thunder into the Devil's Throat gorge amid subtropical rainforest on the Brazil border.",
+        "keywords": "Iguazu Falls, Argentina, Devils Throat, waterfall tour, rainforest, South America, Iguazu Falls travel, Iguazu Falls trip planner, Iguazu Falls plan a trip, Iguazu Falls trip planning, Iguazu Falls free travel, Iguazu Falls independent travel, Iguazu Falls backpacking, Iguazu Falls flights, Iguazu Falls flight route, Iguazu Falls air route, Iguazu Falls nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to IGR, ICN IGR, ICN→DXB·GRU→IGR, Iguazu Falls connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/iguazu-falls/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -13706,8 +13706,8 @@ export default {
       },
       "en": {
         "title": "Iguazu Falls travel sketch · guide",
-        "description": "Iguazu Falls travel sketch, Local Watson tips, and independent travel guide. Discover Iguazu Falls, Argentina — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Iguazu Falls, Argentina, Iguazu Falls travel, wildlife, nature, national park, scenery, GATEO, Iguazu Falls travel guide, Iguazu Falls travel sketch, Iguazu Falls free travel, Iguazu Falls local tips, Iguazu Falls independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Iguazu Falls travel sketch, Local Watson tips, and independent travel guide. Witness Iguazu Falls, Argentina — South America's roaring cascade where hundreds of falls thunder into the Devil's Throat gorge amid subtropical rainforest on the Brazil border.",
+        "keywords": "Iguazu Falls, Argentina, Devils Throat, waterfall tour, rainforest, South America, Iguazu Falls travel guide, Iguazu Falls travel sketch, Iguazu Falls free travel, Iguazu Falls local tips, Iguazu Falls independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/iguazu-falls/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -13918,8 +13918,8 @@ export default {
       },
       "en": {
         "title": "Irkutsk travel photos · gallery",
-        "description": "Browse Irkutsk travel photos and gallery images. Discover Irkutsk, Russia — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Irkutsk, Russia, Irkutsk travel, wildlife, nature, national park, scenery, GATEO, Irkutsk photos, Irkutsk gallery, Irkutsk pictures, photos, gallery, pictures, travel",
+        "description": "Browse Irkutsk travel photos and gallery images. Gateway through Irkutsk, Russia — Siberia's wooden-architecture city on the Angara River, launch point for Lake Baikal's crystal depths and the Trans-Siberian Railway.",
+        "keywords": "Irkutsk, Russia, Lake Baikal, Trans-Siberian, Siberia travel, wooden architecture, Irkutsk photos, Irkutsk gallery, Irkutsk pictures, Irkutsk travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/irkutsk/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -13972,8 +13972,8 @@ export default {
       },
       "en": {
         "title": "Irkutsk travel · trip planner",
-        "description": "Flight route ICN→PEK→IKT via PEK. About 3 hours. Plan independent travel to Irkutsk — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Irkutsk, Russia — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Irkutsk, Russia, Irkutsk travel, wildlife, nature, national park, scenery, GATEO, Irkutsk trip planner, Irkutsk plan a trip, Irkutsk trip planning, Irkutsk free travel, Irkutsk independent travel, Irkutsk backpacking, Irkutsk flights, Irkutsk flight route, Irkutsk air route, Irkutsk nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to IKT, ICN IKT, ICN→PEK→IKT, Irkutsk connecting flights",
+        "description": "Flight route ICN→PEK→IKT via PEK. About 3 hours. Plan independent travel to Irkutsk — flights, stays, and local tips. Ask MOONi, your AI travel docent. Gateway through Irkutsk, Russia — Siberia's wooden-architecture city on the Angara River, launch point for Lake Baikal's crystal depths and the Trans-Siberian Railway.",
+        "keywords": "Irkutsk, Russia, Lake Baikal, Trans-Siberian, Siberia travel, wooden architecture, Irkutsk travel, Irkutsk trip planner, Irkutsk plan a trip, Irkutsk trip planning, Irkutsk free travel, Irkutsk independent travel, Irkutsk backpacking, Irkutsk flights, Irkutsk flight route, Irkutsk air route, Irkutsk nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to IKT, ICN IKT, ICN→PEK→IKT, Irkutsk connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/irkutsk/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -14018,8 +14018,8 @@ export default {
       },
       "en": {
         "title": "Irkutsk travel sketch · guide",
-        "description": "Irkutsk travel sketch, Local Watson tips, and independent travel guide. Discover Irkutsk, Russia — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Irkutsk, Russia, Irkutsk travel, wildlife, nature, national park, scenery, GATEO, Irkutsk travel guide, Irkutsk travel sketch, Irkutsk free travel, Irkutsk local tips, Irkutsk independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Irkutsk travel sketch, Local Watson tips, and independent travel guide. Gateway through Irkutsk, Russia — Siberia's wooden-architecture city on the Angara River, launch point for Lake Baikal's crystal depths and the Trans-Siberian Railway.",
+        "keywords": "Irkutsk, Russia, Lake Baikal, Trans-Siberian, Siberia travel, wooden architecture, Irkutsk travel guide, Irkutsk travel sketch, Irkutsk free travel, Irkutsk local tips, Irkutsk independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/irkutsk/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -14854,8 +14854,8 @@ export default {
       },
       "en": {
         "title": "Kanazawa travel photos · gallery",
-        "description": "Browse Kanazawa travel photos and gallery images. Discover Kanazawa, Japan — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Kanazawa, Japan, Kanazawa travel, heritage, landmark, temple, history, GATEO, Kanazawa photos, Kanazawa gallery, Kanazawa pictures, photos, gallery, pictures, travel",
+        "description": "Browse Kanazawa travel photos and gallery images. Discover Kanazawa, Japan — a preserved samurai and geisha district city with Kenroku-en garden, gold-leaf crafts, fresh Omicho Market seafood, and fewer crowds than Kyoto.",
+        "keywords": "Kanazawa, Japan, Kenroku-en, samurai district, geisha culture, city break, Kanazawa photos, Kanazawa gallery, Kanazawa pictures, Kanazawa travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/kanazawa/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -14908,8 +14908,8 @@ export default {
       },
       "en": {
         "title": "Kanazawa travel · trip planner",
-        "description": "Flight route ICN→KIX, nonstop. About 2 hours. Plan independent travel to Kanazawa — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Kanazawa, Japan — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Kanazawa, Japan, Kanazawa travel, heritage, landmark, temple, history, GATEO, Kanazawa trip planner, Kanazawa plan a trip, Kanazawa trip planning, Kanazawa free travel, Kanazawa independent travel, Kanazawa backpacking, Kanazawa flights, Kanazawa flight route, Kanazawa air route, Kanazawa nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to KIX, ICN KIX, ICN→KIX, Kanazawa nonstop flights",
+        "description": "Flight route ICN→KIX, nonstop. About 2 hours. Plan independent travel to Kanazawa — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Kanazawa, Japan — a preserved samurai and geisha district city with Kenroku-en garden, gold-leaf crafts, fresh Omicho Market seafood, and fewer crowds than Kyoto.",
+        "keywords": "Kanazawa, Japan, Kenroku-en, samurai district, geisha culture, city break, Kanazawa travel, Kanazawa trip planner, Kanazawa plan a trip, Kanazawa trip planning, Kanazawa free travel, Kanazawa independent travel, Kanazawa backpacking, Kanazawa flights, Kanazawa flight route, Kanazawa air route, Kanazawa nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to KIX, ICN KIX, ICN→KIX, Kanazawa nonstop flights",
         "canonicalUrl": "https://www.gateo.kr/place/kanazawa/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -14954,8 +14954,8 @@ export default {
       },
       "en": {
         "title": "Kanazawa travel sketch · guide",
-        "description": "Kanazawa travel sketch, Local Watson tips, and independent travel guide. Discover Kanazawa, Japan — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Kanazawa, Japan, Kanazawa travel, heritage, landmark, temple, history, GATEO, Kanazawa travel guide, Kanazawa travel sketch, Kanazawa free travel, Kanazawa local tips, Kanazawa independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Kanazawa travel sketch, Local Watson tips, and independent travel guide. Discover Kanazawa, Japan — a preserved samurai and geisha district city with Kenroku-en garden, gold-leaf crafts, fresh Omicho Market seafood, and fewer crowds than Kyoto.",
+        "keywords": "Kanazawa, Japan, Kenroku-en, samurai district, geisha culture, city break, Kanazawa travel guide, Kanazawa travel sketch, Kanazawa free travel, Kanazawa local tips, Kanazawa independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/kanazawa/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -15790,8 +15790,8 @@ export default {
       },
       "en": {
         "title": "Kotor travel photos · gallery",
-        "description": "Browse Kotor travel photos and gallery images. Discover Kotor, Montenegro — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Kotor, Montenegro, Kotor travel, heritage, landmark, temple, history, GATEO, Kotor photos, Kotor gallery, Kotor pictures, photos, gallery, pictures, travel",
+        "description": "Browse Kotor travel photos and gallery images. Climb Kotor, Montenegro — a fjord-like Bay of Kotor walled town with Venetian palaces, fortress walls ascending to San Giovanni, and cruise ports beneath dramatic mountains.",
+        "keywords": "Kotor, Montenegro, Bay of Kotor, UNESCO old town, Adriatic cruise, fortress hike, Kotor photos, Kotor gallery, Kotor pictures, Kotor travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/kotor/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -15844,8 +15844,8 @@ export default {
       },
       "en": {
         "title": "Kotor travel · trip planner",
-        "description": "Flight route ICN→CDG→TIV via CDG. About 13 hours. Plan independent travel to Kotor — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Kotor, Montenegro — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Kotor, Montenegro, Kotor travel, heritage, landmark, temple, history, GATEO, Kotor trip planner, Kotor plan a trip, Kotor trip planning, Kotor free travel, Kotor independent travel, Kotor backpacking, Kotor flights, Kotor flight route, Kotor air route, Kotor nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to TIV, ICN TIV, ICN→CDG→TIV, Kotor connecting flights",
+        "description": "Flight route ICN→CDG→TIV via CDG. About 13 hours. Plan independent travel to Kotor — flights, stays, and local tips. Ask MOONi, your AI travel docent. Climb Kotor, Montenegro — a fjord-like Bay of Kotor walled town with Venetian palaces, fortress walls ascending to San Giovanni, and cruise ports beneath dramatic mountains.",
+        "keywords": "Kotor, Montenegro, Bay of Kotor, UNESCO old town, Adriatic cruise, fortress hike, Kotor travel, Kotor trip planner, Kotor plan a trip, Kotor trip planning, Kotor free travel, Kotor independent travel, Kotor backpacking, Kotor flights, Kotor flight route, Kotor air route, Kotor nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to TIV, ICN TIV, ICN→CDG→TIV, Kotor connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/kotor/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -15890,8 +15890,8 @@ export default {
       },
       "en": {
         "title": "Kotor travel sketch · guide",
-        "description": "Kotor travel sketch, Local Watson tips, and independent travel guide. Discover Kotor, Montenegro — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Kotor, Montenegro, Kotor travel, heritage, landmark, temple, history, GATEO, Kotor travel guide, Kotor travel sketch, Kotor free travel, Kotor local tips, Kotor independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Kotor travel sketch, Local Watson tips, and independent travel guide. Climb Kotor, Montenegro — a fjord-like Bay of Kotor walled town with Venetian palaces, fortress walls ascending to San Giovanni, and cruise ports beneath dramatic mountains.",
+        "keywords": "Kotor, Montenegro, Bay of Kotor, UNESCO old town, Adriatic cruise, fortress hike, Kotor travel guide, Kotor travel sketch, Kotor free travel, Kotor local tips, Kotor independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/kotor/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -16258,8 +16258,8 @@ export default {
       },
       "en": {
         "title": "Kumamoto travel photos · gallery",
-        "description": "Browse Kumamoto travel photos and gallery images. Discover Kumamoto, Japan — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Kumamoto, Japan, Kumamoto travel, heritage, landmark, temple, history, GATEO, Kumamoto photos, Kumamoto gallery, Kumamoto pictures, photos, gallery, pictures, travel",
+        "description": "Browse Kumamoto travel photos and gallery images. Explore Kumamoto, Japan — Kyushu heartland of one of Japan's three great castles, mighty Aso caldera volcano, black-spring Kurokawa Onsen, and hometown of mascot Kumamon.",
+        "keywords": "Kumamoto, Japan, Kumamoto Castle, Aso volcano, Kurokawa Onsen, Kyushu travel, Kumamoto photos, Kumamoto gallery, Kumamoto pictures, Kumamoto travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/kumamoto/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -16312,8 +16312,8 @@ export default {
       },
       "en": {
         "title": "Kumamoto travel · trip planner",
-        "description": "Flight route ICN→KMJ, nonstop. About 1 hours. Plan independent travel to Kumamoto — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Kumamoto, Japan — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Kumamoto, Japan, Kumamoto travel, heritage, landmark, temple, history, GATEO, Kumamoto trip planner, Kumamoto plan a trip, Kumamoto trip planning, Kumamoto free travel, Kumamoto independent travel, Kumamoto backpacking, Kumamoto flights, Kumamoto flight route, Kumamoto air route, Kumamoto nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to KMJ, ICN KMJ, ICN→KMJ, Kumamoto nonstop flights",
+        "description": "Flight route ICN→KMJ, nonstop. About 1 hours. Plan independent travel to Kumamoto — flights, stays, and local tips. Ask MOONi, your AI travel docent. Explore Kumamoto, Japan — Kyushu heartland of one of Japan's three great castles, mighty Aso caldera volcano, black-spring Kurokawa Onsen, and hometown of mascot Kumamon.",
+        "keywords": "Kumamoto, Japan, Kumamoto Castle, Aso volcano, Kurokawa Onsen, Kyushu travel, Kumamoto travel, Kumamoto trip planner, Kumamoto plan a trip, Kumamoto trip planning, Kumamoto free travel, Kumamoto independent travel, Kumamoto backpacking, Kumamoto flights, Kumamoto flight route, Kumamoto air route, Kumamoto nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to KMJ, ICN KMJ, ICN→KMJ, Kumamoto nonstop flights",
         "canonicalUrl": "https://www.gateo.kr/place/kumamoto/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -16358,8 +16358,8 @@ export default {
       },
       "en": {
         "title": "Kumamoto travel sketch · guide",
-        "description": "Kumamoto travel sketch, Local Watson tips, and independent travel guide. Discover Kumamoto, Japan — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Kumamoto, Japan, Kumamoto travel, heritage, landmark, temple, history, GATEO, Kumamoto travel guide, Kumamoto travel sketch, Kumamoto free travel, Kumamoto local tips, Kumamoto independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Kumamoto travel sketch, Local Watson tips, and independent travel guide. Explore Kumamoto, Japan — Kyushu heartland of one of Japan's three great castles, mighty Aso caldera volcano, black-spring Kurokawa Onsen, and hometown of mascot Kumamon.",
+        "keywords": "Kumamoto, Japan, Kumamoto Castle, Aso volcano, Kurokawa Onsen, Kyushu travel, Kumamoto travel guide, Kumamoto travel sketch, Kumamoto free travel, Kumamoto local tips, Kumamoto independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/kumamoto/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -16570,8 +16570,8 @@ export default {
       },
       "en": {
         "title": "La Reunion travel photos · gallery",
-        "description": "Browse La Reunion travel photos and gallery images. Discover La Reunion, La Reunion — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "La Reunion, La Reunion travel, adventure, outdoors, hiking, GATEO, La Reunion photos, La Reunion gallery, La Reunion pictures, photos, gallery, pictures, travel",
+        "description": "Browse La Reunion travel photos and gallery images. Trek La Reunion, France — a volcanic Indian Ocean island with Piton de la Fournaise eruptions, cirque calderas, helicopter views, and Creole culture east of Madagascar.",
+        "keywords": "La Reunion, France, volcano trek, Indian Ocean, Piton de la Fournaise, hiking, La Reunion photos, La Reunion gallery, La Reunion pictures, La Reunion travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/la-reunion/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -16624,8 +16624,8 @@ export default {
       },
       "en": {
         "title": "La Reunion travel · trip planner",
-        "description": "Flight route ICN→BKK·MAA→RUN via BKK, MAA. About 13 hours. Plan independent travel to La Reunion — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover La Reunion, La Reunion — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "La Reunion, La Reunion travel, adventure, outdoors, hiking, GATEO, La Reunion trip planner, La Reunion plan a trip, La Reunion trip planning, La Reunion free travel, La Reunion independent travel, La Reunion backpacking, La Reunion flights, La Reunion flight route, La Reunion air route, La Reunion nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to RUN, ICN RUN, ICN→BKK·MAA→RUN, La Reunion connecting flights",
+        "description": "Flight route ICN→BKK·MAA→RUN via BKK, MAA. About 13 hours. Plan independent travel to La Reunion — flights, stays, and local tips. Ask MOONi, your AI travel docent. Trek La Reunion, France — a volcanic Indian Ocean island with Piton de la Fournaise eruptions, cirque calderas, helicopter views, and Creole culture east of Madagascar.",
+        "keywords": "La Reunion, France, volcano trek, Indian Ocean, Piton de la Fournaise, hiking, La Reunion travel, La Reunion trip planner, La Reunion plan a trip, La Reunion trip planning, La Reunion free travel, La Reunion independent travel, La Reunion backpacking, La Reunion flights, La Reunion flight route, La Reunion air route, La Reunion nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to RUN, ICN RUN, ICN→BKK·MAA→RUN, La Reunion connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/la-reunion/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -16670,8 +16670,8 @@ export default {
       },
       "en": {
         "title": "La Reunion travel sketch · guide",
-        "description": "La Reunion travel sketch, Local Watson tips, and independent travel guide. Discover La Reunion, La Reunion — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "La Reunion, La Reunion travel, adventure, outdoors, hiking, GATEO, La Reunion travel guide, La Reunion travel sketch, La Reunion free travel, La Reunion local tips, La Reunion independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "La Reunion travel sketch, Local Watson tips, and independent travel guide. Trek La Reunion, France — a volcanic Indian Ocean island with Piton de la Fournaise eruptions, cirque calderas, helicopter views, and Creole culture east of Madagascar.",
+        "keywords": "La Reunion, France, volcano trek, Indian Ocean, Piton de la Fournaise, hiking, La Reunion travel guide, La Reunion travel sketch, La Reunion free travel, La Reunion local tips, La Reunion independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/la-reunion/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -17350,8 +17350,8 @@ export default {
       },
       "en": {
         "title": "Lombok travel photos · gallery",
-        "description": "Browse Lombok travel photos and gallery images. Discover Lombok, Indonesia — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Lombok, Indonesia, Lombok travel, beach, island, resort, vacation, GATEO, Lombok photos, Lombok gallery, Lombok pictures, photos, gallery, pictures, travel",
+        "description": "Browse Lombok travel photos and gallery images. Unwind on Lombok, Indonesia — Bali's quieter neighbor with Mount Rinjani treks, pink beaches, Gili Islands snorkeling, and Sasak villages on an unhurried tropical island.",
+        "keywords": "Lombok, Indonesia, Mount Rinjani, Gili Islands, beach vacation, Bali alternative, Lombok photos, Lombok gallery, Lombok pictures, Lombok travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/lombok/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -17404,8 +17404,8 @@ export default {
       },
       "en": {
         "title": "Lombok travel · trip planner",
-        "description": "Flight route ICN→DPS→LOP via DPS. About 7 hours. Plan independent travel to Lombok — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Lombok, Indonesia — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Lombok, Indonesia, Lombok travel, beach, island, resort, vacation, GATEO, Lombok trip planner, Lombok plan a trip, Lombok trip planning, Lombok free travel, Lombok independent travel, Lombok backpacking, Lombok flights, Lombok flight route, Lombok air route, Lombok nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to LOP, ICN LOP, ICN→DPS→LOP, Lombok connecting flights",
+        "description": "Flight route ICN→DPS→LOP via DPS. About 7 hours. Plan independent travel to Lombok — flights, stays, and local tips. Ask MOONi, your AI travel docent. Unwind on Lombok, Indonesia — Bali's quieter neighbor with Mount Rinjani treks, pink beaches, Gili Islands snorkeling, and Sasak villages on an unhurried tropical island.",
+        "keywords": "Lombok, Indonesia, Mount Rinjani, Gili Islands, beach vacation, Bali alternative, Lombok travel, Lombok trip planner, Lombok plan a trip, Lombok trip planning, Lombok free travel, Lombok independent travel, Lombok backpacking, Lombok flights, Lombok flight route, Lombok air route, Lombok nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to LOP, ICN LOP, ICN→DPS→LOP, Lombok connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/lombok/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -17450,8 +17450,8 @@ export default {
       },
       "en": {
         "title": "Lombok travel sketch · guide",
-        "description": "Lombok travel sketch, Local Watson tips, and independent travel guide. Discover Lombok, Indonesia — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Lombok, Indonesia, Lombok travel, beach, island, resort, vacation, GATEO, Lombok travel guide, Lombok travel sketch, Lombok free travel, Lombok local tips, Lombok independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Lombok travel sketch, Local Watson tips, and independent travel guide. Unwind on Lombok, Indonesia — Bali's quieter neighbor with Mount Rinjani treks, pink beaches, Gili Islands snorkeling, and Sasak villages on an unhurried tropical island.",
+        "keywords": "Lombok, Indonesia, Mount Rinjani, Gili Islands, beach vacation, Bali alternative, Lombok travel guide, Lombok travel sketch, Lombok free travel, Lombok local tips, Lombok independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/lombok/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -17662,8 +17662,8 @@ export default {
       },
       "en": {
         "title": "Luang Prabang travel photos · gallery",
-        "description": "Browse Luang Prabang travel photos and gallery images. Discover Luang Prabang, Laos — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Luang Prabang, Laos, Luang Prabang travel, heritage, landmark, temple, history, GATEO, Luang Prabang photos, Luang Prabang gallery, Luang Prabang pictures, photos, gallery, pictures, travel",
+        "description": "Browse Luang Prabang travel photos and gallery images. Slow down in Luang Prabang, Laos — a UNESCO Mekong town where saffron-robed monks collect dawn alms, French villas meet Buddhist temples, and Kuang Si waterfalls glow turquoise.",
+        "keywords": "Luang Prabang, Laos, Mekong River, Buddhist temples, Kuang Si Falls, UNESCO town, Luang Prabang photos, Luang Prabang gallery, Luang Prabang pictures, Luang Prabang travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/luang-prabang/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -17716,8 +17716,8 @@ export default {
       },
       "en": {
         "title": "Luang Prabang travel · trip planner",
-        "description": "Flight route ICN→BKK→LPQ via BKK. About 6 hours. Plan independent travel to Luang Prabang — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Luang Prabang, Laos — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Luang Prabang, Laos, Luang Prabang travel, heritage, landmark, temple, history, GATEO, Luang Prabang trip planner, Luang Prabang plan a trip, Luang Prabang trip planning, Luang Prabang free travel, Luang Prabang independent travel, Luang Prabang backpacking, Luang Prabang flights, Luang Prabang flight route, Luang Prabang air route, Luang Prabang nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to LPQ, ICN LPQ, ICN→BKK→LPQ, Luang Prabang connecting flights",
+        "description": "Flight route ICN→BKK→LPQ via BKK. About 6 hours. Plan independent travel to Luang Prabang — flights, stays, and local tips. Ask MOONi, your AI travel docent. Slow down in Luang Prabang, Laos — a UNESCO Mekong town where saffron-robed monks collect dawn alms, French villas meet Buddhist temples, and Kuang Si waterfalls glow turquoise.",
+        "keywords": "Luang Prabang, Laos, Mekong River, Buddhist temples, Kuang Si Falls, UNESCO town, Luang Prabang travel, Luang Prabang trip planner, Luang Prabang plan a trip, Luang Prabang trip planning, Luang Prabang free travel, Luang Prabang independent travel, Luang Prabang backpacking, Luang Prabang flights, Luang Prabang flight route, Luang Prabang air route, Luang Prabang nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to LPQ, ICN LPQ, ICN→BKK→LPQ, Luang Prabang connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/luang-prabang/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -17762,8 +17762,8 @@ export default {
       },
       "en": {
         "title": "Luang Prabang travel sketch · guide",
-        "description": "Luang Prabang travel sketch, Local Watson tips, and independent travel guide. Discover Luang Prabang, Laos — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Luang Prabang, Laos, Luang Prabang travel, heritage, landmark, temple, history, GATEO, Luang Prabang travel guide, Luang Prabang travel sketch, Luang Prabang free travel, Luang Prabang local tips, Luang Prabang independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Luang Prabang travel sketch, Local Watson tips, and independent travel guide. Slow down in Luang Prabang, Laos — a UNESCO Mekong town where saffron-robed monks collect dawn alms, French villas meet Buddhist temples, and Kuang Si waterfalls glow turquoise.",
+        "keywords": "Luang Prabang, Laos, Mekong River, Buddhist temples, Kuang Si Falls, UNESCO town, Luang Prabang travel guide, Luang Prabang travel sketch, Luang Prabang free travel, Luang Prabang local tips, Luang Prabang independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/luang-prabang/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -18754,8 +18754,8 @@ export default {
       },
       "en": {
         "title": "Malta travel photos · gallery",
-        "description": "Browse Malta travel photos and gallery images. Discover Malta, Malta — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Malta, Malta travel, heritage, landmark, temple, history, GATEO, Malta photos, Malta gallery, Malta pictures, photos, gallery, pictures, travel",
+        "description": "Browse Malta travel photos and gallery images. Explore Malta — a Mediterranean archipelago of Knights of St. John fortresses, prehistoric Hypogeum temples, Azure Window coastlines, and English-speaking island charm.",
+        "keywords": "Malta, Mediterranean, Valletta, Knights of Malta, historic travel, island getaway, Malta photos, Malta gallery, Malta pictures, Malta travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/malta/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -18808,8 +18808,8 @@ export default {
       },
       "en": {
         "title": "Malta travel · trip planner",
-        "description": "Flight route ICN→IST→MLA via IST. About 11 hours. Plan independent travel to Malta — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Malta, Malta — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Malta, Malta travel, heritage, landmark, temple, history, GATEO, Malta trip planner, Malta plan a trip, Malta trip planning, Malta free travel, Malta independent travel, Malta backpacking, Malta flights, Malta flight route, Malta air route, Malta nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to MLA, ICN MLA, ICN→IST→MLA, Malta connecting flights",
+        "description": "Flight route ICN→IST→MLA via IST. About 11 hours. Plan independent travel to Malta — flights, stays, and local tips. Ask MOONi, your AI travel docent. Explore Malta — a Mediterranean archipelago of Knights of St. John fortresses, prehistoric Hypogeum temples, Azure Window coastlines, and English-speaking island charm.",
+        "keywords": "Malta, Mediterranean, Valletta, Knights of Malta, historic travel, island getaway, Malta travel, Malta trip planner, Malta plan a trip, Malta trip planning, Malta free travel, Malta independent travel, Malta backpacking, Malta flights, Malta flight route, Malta air route, Malta nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to MLA, ICN MLA, ICN→IST→MLA, Malta connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/malta/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -18854,8 +18854,8 @@ export default {
       },
       "en": {
         "title": "Malta travel sketch · guide",
-        "description": "Malta travel sketch, Local Watson tips, and independent travel guide. Discover Malta, Malta — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Malta, Malta travel, heritage, landmark, temple, history, GATEO, Malta travel guide, Malta travel sketch, Malta free travel, Malta local tips, Malta independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Malta travel sketch, Local Watson tips, and independent travel guide. Explore Malta — a Mediterranean archipelago of Knights of St. John fortresses, prehistoric Hypogeum temples, Azure Window coastlines, and English-speaking island charm.",
+        "keywords": "Malta, Mediterranean, Valletta, Knights of Malta, historic travel, island getaway, Malta travel guide, Malta travel sketch, Malta free travel, Malta local tips, Malta independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/malta/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -19222,8 +19222,8 @@ export default {
       },
       "en": {
         "title": "Meteora travel photos · gallery",
-        "description": "Browse Meteora travel photos and gallery images. Discover Meteora, Greece — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Meteora, Greece, Meteora travel, heritage, landmark, temple, history, GATEO, Meteora photos, Meteora gallery, Meteora pictures, photos, gallery, pictures, travel",
+        "description": "Browse Meteora travel photos and gallery images. Marvel at Meteora, Greece — gravity-defying medieval monasteries perched atop towering sandstone pillars in central Greece, creating one of Europe's most surreal spiritual landscapes.",
+        "keywords": "Meteora, Greece, monastery, UNESCO heritage, rock formations, photo spot, Meteora photos, Meteora gallery, Meteora pictures, Meteora travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/meteora/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -19276,8 +19276,8 @@ export default {
       },
       "en": {
         "title": "Meteora travel · trip planner",
-        "description": "Flight route ICN→IST→SKG via IST. About 10 hours. Plan independent travel to Meteora — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Meteora, Greece — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Meteora, Greece, Meteora travel, heritage, landmark, temple, history, GATEO, Meteora trip planner, Meteora plan a trip, Meteora trip planning, Meteora free travel, Meteora independent travel, Meteora backpacking, Meteora flights, Meteora flight route, Meteora air route, Meteora nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to SKG, ICN SKG, ICN→IST→SKG, Meteora connecting flights",
+        "description": "Flight route ICN→IST→SKG via IST. About 10 hours. Plan independent travel to Meteora — flights, stays, and local tips. Ask MOONi, your AI travel docent. Marvel at Meteora, Greece — gravity-defying medieval monasteries perched atop towering sandstone pillars in central Greece, creating one of Europe's most surreal spiritual landscapes.",
+        "keywords": "Meteora, Greece, monastery, UNESCO heritage, rock formations, photo spot, Meteora travel, Meteora trip planner, Meteora plan a trip, Meteora trip planning, Meteora free travel, Meteora independent travel, Meteora backpacking, Meteora flights, Meteora flight route, Meteora air route, Meteora nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to SKG, ICN SKG, ICN→IST→SKG, Meteora connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/meteora/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -19322,8 +19322,8 @@ export default {
       },
       "en": {
         "title": "Meteora travel sketch · guide",
-        "description": "Meteora travel sketch, Local Watson tips, and independent travel guide. Discover Meteora, Greece — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Meteora, Greece, Meteora travel, heritage, landmark, temple, history, GATEO, Meteora travel guide, Meteora travel sketch, Meteora free travel, Meteora local tips, Meteora independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Meteora travel sketch, Local Watson tips, and independent travel guide. Marvel at Meteora, Greece — gravity-defying medieval monasteries perched atop towering sandstone pillars in central Greece, creating one of Europe's most surreal spiritual landscapes.",
+        "keywords": "Meteora, Greece, monastery, UNESCO heritage, rock formations, photo spot, Meteora travel guide, Meteora travel sketch, Meteora free travel, Meteora local tips, Meteora independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/meteora/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -19846,8 +19846,8 @@ export default {
       },
       "en": {
         "title": "Minneapolis travel photos · gallery",
-        "description": "Browse Minneapolis travel photos and gallery images. Discover Minneapolis, United States — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Minneapolis, United States, Minneapolis travel, city guide, city break, sightseeing, GATEO, Minneapolis photos, Minneapolis gallery, Minneapolis pictures, photos, gallery, pictures, travel",
+        "description": "Browse Minneapolis travel photos and gallery images. Visit Minneapolis, USA — Twin Cities hub of world-class art museums, Chain of Lakes parks, Mall of America shopping, and MSP airport gateway to the American Midwest.",
+        "keywords": "Minneapolis, USA, Twin Cities, Mall of America, MSP airport, city break, Minneapolis photos, Minneapolis gallery, Minneapolis pictures, Minneapolis travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/minneapolis/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -19900,8 +19900,8 @@ export default {
       },
       "en": {
         "title": "Minneapolis travel · trip planner",
-        "description": "Flight route ICN→ATL→MSP via ATL. About 16 hours. Plan independent travel to Minneapolis — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Minneapolis, United States — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Minneapolis, United States, Minneapolis travel, city guide, city break, sightseeing, GATEO, Minneapolis trip planner, Minneapolis plan a trip, Minneapolis trip planning, Minneapolis free travel, Minneapolis independent travel, Minneapolis backpacking, Minneapolis flights, Minneapolis flight route, Minneapolis air route, Minneapolis nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to MSP, ICN MSP, ICN→ATL→MSP, Minneapolis connecting flights",
+        "description": "Flight route ICN→ATL→MSP via ATL. About 16 hours. Plan independent travel to Minneapolis — flights, stays, and local tips. Ask MOONi, your AI travel docent. Visit Minneapolis, USA — Twin Cities hub of world-class art museums, Chain of Lakes parks, Mall of America shopping, and MSP airport gateway to the American Midwest.",
+        "keywords": "Minneapolis, USA, Twin Cities, Mall of America, MSP airport, city break, Minneapolis travel, Minneapolis trip planner, Minneapolis plan a trip, Minneapolis trip planning, Minneapolis free travel, Minneapolis independent travel, Minneapolis backpacking, Minneapolis flights, Minneapolis flight route, Minneapolis air route, Minneapolis nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to MSP, ICN MSP, ICN→ATL→MSP, Minneapolis connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/minneapolis/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -19946,8 +19946,8 @@ export default {
       },
       "en": {
         "title": "Minneapolis travel sketch · guide",
-        "description": "Minneapolis travel sketch, Local Watson tips, and independent travel guide. Discover Minneapolis, United States — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Minneapolis, United States, Minneapolis travel, city guide, city break, sightseeing, GATEO, Minneapolis travel guide, Minneapolis travel sketch, Minneapolis free travel, Minneapolis local tips, Minneapolis independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Minneapolis travel sketch, Local Watson tips, and independent travel guide. Visit Minneapolis, USA — Twin Cities hub of world-class art museums, Chain of Lakes parks, Mall of America shopping, and MSP airport gateway to the American Midwest.",
+        "keywords": "Minneapolis, USA, Twin Cities, Mall of America, MSP airport, city break, Minneapolis travel guide, Minneapolis travel sketch, Minneapolis free travel, Minneapolis local tips, Minneapolis independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/minneapolis/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -20002,8 +20002,8 @@ export default {
       },
       "en": {
         "title": "Miyakojima travel photos · gallery",
-        "description": "Browse Miyakojima travel photos and gallery images. Discover Miyakojima, Japan — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Miyakojima, Japan, Miyakojima travel, beach, island, resort, vacation, GATEO, Miyakojima photos, Miyakojima gallery, Miyakojima pictures, photos, gallery, pictures, travel",
+        "description": "Browse Miyakojima travel photos and gallery images. Relax on Miyakojima, Japan — Okinawa's coral isle famed for Miyako Blue seas, Yonaha Maehama Beach, and crystal snorkeling among Japan's finest tropical shores.",
+        "keywords": "Miyakojima, Japan, Miyako Blue, beach vacation, snorkeling, Okinawa islands, Miyakojima photos, Miyakojima gallery, Miyakojima pictures, Miyakojima travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/miyakojima/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -20056,8 +20056,8 @@ export default {
       },
       "en": {
         "title": "Miyakojima travel · trip planner",
-        "description": "Flight route ICN→SHI, nonstop. About 2 hours. Plan independent travel to Miyakojima — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Miyakojima, Japan — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Miyakojima, Japan, Miyakojima travel, beach, island, resort, vacation, GATEO, Miyakojima trip planner, Miyakojima plan a trip, Miyakojima trip planning, Miyakojima free travel, Miyakojima independent travel, Miyakojima backpacking, Miyakojima flights, Miyakojima flight route, Miyakojima air route, Miyakojima nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to SHI, ICN SHI, ICN→SHI, Miyakojima nonstop flights",
+        "description": "Flight route ICN→SHI, nonstop. About 2 hours. Plan independent travel to Miyakojima — flights, stays, and local tips. Ask MOONi, your AI travel docent. Relax on Miyakojima, Japan — Okinawa's coral isle famed for Miyako Blue seas, Yonaha Maehama Beach, and crystal snorkeling among Japan's finest tropical shores.",
+        "keywords": "Miyakojima, Japan, Miyako Blue, beach vacation, snorkeling, Okinawa islands, Miyakojima travel, Miyakojima trip planner, Miyakojima plan a trip, Miyakojima trip planning, Miyakojima free travel, Miyakojima independent travel, Miyakojima backpacking, Miyakojima flights, Miyakojima flight route, Miyakojima air route, Miyakojima nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to SHI, ICN SHI, ICN→SHI, Miyakojima nonstop flights",
         "canonicalUrl": "https://www.gateo.kr/place/miyakojima/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -20102,8 +20102,8 @@ export default {
       },
       "en": {
         "title": "Miyakojima travel sketch · guide",
-        "description": "Miyakojima travel sketch, Local Watson tips, and independent travel guide. Discover Miyakojima, Japan — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Miyakojima, Japan, Miyakojima travel, beach, island, resort, vacation, GATEO, Miyakojima travel guide, Miyakojima travel sketch, Miyakojima free travel, Miyakojima local tips, Miyakojima independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Miyakojima travel sketch, Local Watson tips, and independent travel guide. Relax on Miyakojima, Japan — Okinawa's coral isle famed for Miyako Blue seas, Yonaha Maehama Beach, and crystal snorkeling among Japan's finest tropical shores.",
+        "keywords": "Miyakojima, Japan, Miyako Blue, beach vacation, snorkeling, Okinawa islands, Miyakojima travel guide, Miyakojima travel sketch, Miyakojima free travel, Miyakojima local tips, Miyakojima independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/miyakojima/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -20314,8 +20314,8 @@ export default {
       },
       "en": {
         "title": "Montreal travel photos · gallery",
-        "description": "Browse Montreal travel photos and gallery images. Discover Montreal, Canada — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Montreal, Canada, Montreal travel, city guide, city break, sightseeing, GATEO, Montreal photos, Montreal gallery, Montreal pictures, photos, gallery, pictures, travel",
+        "description": "Browse Montreal travel photos and gallery images. Experience Montreal, Canada — a bilingual city of Old Montreal cobblestones, Mount Royal views, jazz festivals, bagels and poutine, and North America's most European vibe.",
+        "keywords": "Montreal, Canada, Old Montreal, Mount Royal, French culture, city break, Montreal photos, Montreal gallery, Montreal pictures, Montreal travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/montreal/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -20368,8 +20368,8 @@ export default {
       },
       "en": {
         "title": "Montreal travel · trip planner",
-        "description": "Flight route ICN→YYZ→YUL via YYZ. About 14 hours. Plan independent travel to Montreal — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Montreal, Canada — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Montreal, Canada, Montreal travel, city guide, city break, sightseeing, GATEO, Montreal trip planner, Montreal plan a trip, Montreal trip planning, Montreal free travel, Montreal independent travel, Montreal backpacking, Montreal flights, Montreal flight route, Montreal air route, Montreal nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to YUL, ICN YUL, ICN→YYZ→YUL, Montreal connecting flights",
+        "description": "Flight route ICN→YYZ→YUL via YYZ. About 14 hours. Plan independent travel to Montreal — flights, stays, and local tips. Ask MOONi, your AI travel docent. Experience Montreal, Canada — a bilingual city of Old Montreal cobblestones, Mount Royal views, jazz festivals, bagels and poutine, and North America's most European vibe.",
+        "keywords": "Montreal, Canada, Old Montreal, Mount Royal, French culture, city break, Montreal travel, Montreal trip planner, Montreal plan a trip, Montreal trip planning, Montreal free travel, Montreal independent travel, Montreal backpacking, Montreal flights, Montreal flight route, Montreal air route, Montreal nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to YUL, ICN YUL, ICN→YYZ→YUL, Montreal connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/montreal/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -20414,8 +20414,8 @@ export default {
       },
       "en": {
         "title": "Montreal travel sketch · guide",
-        "description": "Montreal travel sketch, Local Watson tips, and independent travel guide. Discover Montreal, Canada — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Montreal, Canada, Montreal travel, city guide, city break, sightseeing, GATEO, Montreal travel guide, Montreal travel sketch, Montreal free travel, Montreal local tips, Montreal independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Montreal travel sketch, Local Watson tips, and independent travel guide. Experience Montreal, Canada — a bilingual city of Old Montreal cobblestones, Mount Royal views, jazz festivals, bagels and poutine, and North America's most European vibe.",
+        "keywords": "Montreal, Canada, Old Montreal, Mount Royal, French culture, city break, Montreal travel guide, Montreal travel sketch, Montreal free travel, Montreal local tips, Montreal independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/montreal/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -20626,8 +20626,8 @@ export default {
       },
       "en": {
         "title": "Mount Bromo travel photos · gallery",
-        "description": "Browse Mount Bromo travel photos and gallery images. Discover Mount Bromo, Indonesia — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Mount Bromo, Indonesia, Mount Bromo travel, wildlife, nature, national park, scenery, GATEO, Mount Bromo photos, Mount Bromo gallery, Mount Bromo pictures, photos, gallery, pictures, travel",
+        "description": "Browse Mount Bromo travel photos and gallery images. Witness Mount Bromo, Indonesia — an active volcano in East Java's Sea of Sand, best at pre-dawn jeep rides and horseback treks to a crater rim above the Tengger caldera.",
+        "keywords": "Mount Bromo, Indonesia, volcano sunrise, Java travel, Tengger caldera, adventure travel, Mount Bromo photos, Mount Bromo gallery, Mount Bromo pictures, Mount Bromo travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/mount-bromo/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -20680,8 +20680,8 @@ export default {
       },
       "en": {
         "title": "Mount Bromo travel · trip planner",
-        "description": "Flight route ICN→DPS→SUB via DPS. About 7 hours. Plan independent travel to Mount Bromo — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Mount Bromo, Indonesia — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Mount Bromo, Indonesia, Mount Bromo travel, wildlife, nature, national park, scenery, GATEO, Mount Bromo trip planner, Mount Bromo plan a trip, Mount Bromo trip planning, Mount Bromo free travel, Mount Bromo independent travel, Mount Bromo backpacking, Mount Bromo flights, Mount Bromo flight route, Mount Bromo air route, Mount Bromo nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to SUB, ICN SUB, ICN→DPS→SUB, Mount Bromo connecting flights",
+        "description": "Flight route ICN→DPS→SUB via DPS. About 7 hours. Plan independent travel to Mount Bromo — flights, stays, and local tips. Ask MOONi, your AI travel docent. Witness Mount Bromo, Indonesia — an active volcano in East Java's Sea of Sand, best at pre-dawn jeep rides and horseback treks to a crater rim above the Tengger caldera.",
+        "keywords": "Mount Bromo, Indonesia, volcano sunrise, Java travel, Tengger caldera, adventure travel, Mount Bromo travel, Mount Bromo trip planner, Mount Bromo plan a trip, Mount Bromo trip planning, Mount Bromo free travel, Mount Bromo independent travel, Mount Bromo backpacking, Mount Bromo flights, Mount Bromo flight route, Mount Bromo air route, Mount Bromo nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to SUB, ICN SUB, ICN→DPS→SUB, Mount Bromo connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/mount-bromo/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -20726,8 +20726,8 @@ export default {
       },
       "en": {
         "title": "Mount Bromo travel sketch · guide",
-        "description": "Mount Bromo travel sketch, Local Watson tips, and independent travel guide. Discover Mount Bromo, Indonesia — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Mount Bromo, Indonesia, Mount Bromo travel, wildlife, nature, national park, scenery, GATEO, Mount Bromo travel guide, Mount Bromo travel sketch, Mount Bromo free travel, Mount Bromo local tips, Mount Bromo independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Mount Bromo travel sketch, Local Watson tips, and independent travel guide. Witness Mount Bromo, Indonesia — an active volcano in East Java's Sea of Sand, best at pre-dawn jeep rides and horseback treks to a crater rim above the Tengger caldera.",
+        "keywords": "Mount Bromo, Indonesia, volcano sunrise, Java travel, Tengger caldera, adventure travel, Mount Bromo travel guide, Mount Bromo travel sketch, Mount Bromo free travel, Mount Bromo local tips, Mount Bromo independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/mount-bromo/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -21562,8 +21562,8 @@ export default {
       },
       "en": {
         "title": "New Caledonia travel photos · gallery",
-        "description": "Browse New Caledonia travel photos and gallery images. Discover New Caledonia, New Caledonia — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "New Caledonia, New Caledonia travel, city guide, city break, sightseeing, GATEO, New Caledonia photos, New Caledonia gallery, New Caledonia pictures, photos, gallery, pictures, travel",
+        "description": "Browse New Caledonia travel photos and gallery images. Discover New Caledonia, France — a Pacific territory of the world's largest lagoon, Kanak culture, Nouméa cafés, and Isle of Pines beaches ranked among the planet's clearest waters.",
+        "keywords": "New Caledonia, France, Pacific lagoon, Isle of Pines, snorkeling, island travel, New Caledonia photos, New Caledonia gallery, New Caledonia pictures, New Caledonia travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/new-caledonia/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -21616,8 +21616,8 @@ export default {
       },
       "en": {
         "title": "New Caledonia travel · trip planner",
-        "description": "Flight route ICN→SYD→NOU via SYD. About 13 hours. Plan independent travel to New Caledonia — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover New Caledonia, New Caledonia — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "New Caledonia, New Caledonia travel, city guide, city break, sightseeing, GATEO, New Caledonia trip planner, New Caledonia plan a trip, New Caledonia trip planning, New Caledonia free travel, New Caledonia independent travel, New Caledonia backpacking, New Caledonia flights, New Caledonia flight route, New Caledonia air route, New Caledonia nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to NOU, ICN NOU, ICN→SYD→NOU, New Caledonia connecting flights",
+        "description": "Flight route ICN→SYD→NOU via SYD. About 13 hours. Plan independent travel to New Caledonia — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover New Caledonia, France — a Pacific territory of the world's largest lagoon, Kanak culture, Nouméa cafés, and Isle of Pines beaches ranked among the planet's clearest waters.",
+        "keywords": "New Caledonia, France, Pacific lagoon, Isle of Pines, snorkeling, island travel, New Caledonia travel, New Caledonia trip planner, New Caledonia plan a trip, New Caledonia trip planning, New Caledonia free travel, New Caledonia independent travel, New Caledonia backpacking, New Caledonia flights, New Caledonia flight route, New Caledonia air route, New Caledonia nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to NOU, ICN NOU, ICN→SYD→NOU, New Caledonia connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/new-caledonia/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -21662,8 +21662,8 @@ export default {
       },
       "en": {
         "title": "New Caledonia travel sketch · guide",
-        "description": "New Caledonia travel sketch, Local Watson tips, and independent travel guide. Discover New Caledonia, New Caledonia — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "New Caledonia, New Caledonia travel, city guide, city break, sightseeing, GATEO, New Caledonia travel guide, New Caledonia travel sketch, New Caledonia free travel, New Caledonia local tips, New Caledonia independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "New Caledonia travel sketch, Local Watson tips, and independent travel guide. Discover New Caledonia, France — a Pacific territory of the world's largest lagoon, Kanak culture, Nouméa cafés, and Isle of Pines beaches ranked among the planet's clearest waters.",
+        "keywords": "New Caledonia, France, Pacific lagoon, Isle of Pines, snorkeling, island travel, New Caledonia travel guide, New Caledonia travel sketch, New Caledonia free travel, New Caledonia local tips, New Caledonia independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/new-caledonia/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -22342,8 +22342,8 @@ export default {
       },
       "en": {
         "title": "Oslo travel photos · gallery",
-        "description": "Browse Oslo travel photos and gallery images. Discover Oslo, Norway — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Oslo, Norway, Oslo travel, city guide, city break, sightseeing, GATEO, Oslo photos, Oslo gallery, Oslo pictures, photos, gallery, pictures, travel",
+        "description": "Browse Oslo travel photos and gallery images. Explore Oslo, Norway — a capital framed by fjords and forests with Vigeland Sculpture Park, iconic Opera House architecture, Viking Ship Museum, and nearby northern lights winters.",
+        "keywords": "Oslo, Norway, Vigeland Park, Opera House, Viking Museum, city break, Oslo photos, Oslo gallery, Oslo pictures, Oslo travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/oslo/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -22396,8 +22396,8 @@ export default {
       },
       "en": {
         "title": "Oslo travel · trip planner",
-        "description": "Flight route ICN→HEL→OSL via HEL. About 10 hours. Plan independent travel to Oslo — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Oslo, Norway — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Oslo, Norway, Oslo travel, city guide, city break, sightseeing, GATEO, Oslo trip planner, Oslo plan a trip, Oslo trip planning, Oslo free travel, Oslo independent travel, Oslo backpacking, Oslo flights, Oslo flight route, Oslo air route, Oslo nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to OSL, ICN OSL, ICN→HEL→OSL, Oslo connecting flights",
+        "description": "Flight route ICN→HEL→OSL via HEL. About 10 hours. Plan independent travel to Oslo — flights, stays, and local tips. Ask MOONi, your AI travel docent. Explore Oslo, Norway — a capital framed by fjords and forests with Vigeland Sculpture Park, iconic Opera House architecture, Viking Ship Museum, and nearby northern lights winters.",
+        "keywords": "Oslo, Norway, Vigeland Park, Opera House, Viking Museum, city break, Oslo travel, Oslo trip planner, Oslo plan a trip, Oslo trip planning, Oslo free travel, Oslo independent travel, Oslo backpacking, Oslo flights, Oslo flight route, Oslo air route, Oslo nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to OSL, ICN OSL, ICN→HEL→OSL, Oslo connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/oslo/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -22442,8 +22442,8 @@ export default {
       },
       "en": {
         "title": "Oslo travel sketch · guide",
-        "description": "Oslo travel sketch, Local Watson tips, and independent travel guide. Discover Oslo, Norway — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Oslo, Norway, Oslo travel, city guide, city break, sightseeing, GATEO, Oslo travel guide, Oslo travel sketch, Oslo free travel, Oslo local tips, Oslo independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Oslo travel sketch, Local Watson tips, and independent travel guide. Explore Oslo, Norway — a capital framed by fjords and forests with Vigeland Sculpture Park, iconic Opera House architecture, Viking Ship Museum, and nearby northern lights winters.",
+        "keywords": "Oslo, Norway, Vigeland Park, Opera House, Viking Museum, city break, Oslo travel guide, Oslo travel sketch, Oslo free travel, Oslo local tips, Oslo independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/oslo/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -22498,8 +22498,8 @@ export default {
       },
       "en": {
         "title": "Palawan travel photos · gallery",
-        "description": "Browse Palawan travel photos and gallery images. Discover Palawan, Philippines — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Palawan, Philippines, Palawan travel, beach, island, resort, vacation, GATEO, Palawan photos, Palawan gallery, Palawan pictures, photos, gallery, pictures, travel",
+        "description": "Browse Palawan travel photos and gallery images. Discover Palawan, Philippines — the country's last frontier of limestone cliffs, underground rivers, turquoise lagoons, and legendary El Nido island-hopping adventures.",
+        "keywords": "Palawan, Philippines, El Nido, island hopping, limestone lagoon, beach paradise, Palawan photos, Palawan gallery, Palawan pictures, Palawan travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/palawan/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -22552,8 +22552,8 @@ export default {
       },
       "en": {
         "title": "Palawan travel · trip planner",
-        "description": "Flight route ICN→MNL→PPS via MNL. About 4 hours. Plan independent travel to Palawan — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Palawan, Philippines — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Palawan, Philippines, Palawan travel, beach, island, resort, vacation, GATEO, Palawan trip planner, Palawan plan a trip, Palawan trip planning, Palawan free travel, Palawan independent travel, Palawan backpacking, Palawan flights, Palawan flight route, Palawan air route, Palawan nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to PPS, ICN PPS, ICN→MNL→PPS, Palawan connecting flights",
+        "description": "Flight route ICN→MNL→PPS via MNL. About 4 hours. Plan independent travel to Palawan — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Palawan, Philippines — the country's last frontier of limestone cliffs, underground rivers, turquoise lagoons, and legendary El Nido island-hopping adventures.",
+        "keywords": "Palawan, Philippines, El Nido, island hopping, limestone lagoon, beach paradise, Palawan travel, Palawan trip planner, Palawan plan a trip, Palawan trip planning, Palawan free travel, Palawan independent travel, Palawan backpacking, Palawan flights, Palawan flight route, Palawan air route, Palawan nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to PPS, ICN PPS, ICN→MNL→PPS, Palawan connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/palawan/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -22598,8 +22598,8 @@ export default {
       },
       "en": {
         "title": "Palawan travel sketch · guide",
-        "description": "Palawan travel sketch, Local Watson tips, and independent travel guide. Discover Palawan, Philippines — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Palawan, Philippines, Palawan travel, beach, island, resort, vacation, GATEO, Palawan travel guide, Palawan travel sketch, Palawan free travel, Palawan local tips, Palawan independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Palawan travel sketch, Local Watson tips, and independent travel guide. Discover Palawan, Philippines — the country's last frontier of limestone cliffs, underground rivers, turquoise lagoons, and legendary El Nido island-hopping adventures.",
+        "keywords": "Palawan, Philippines, El Nido, island hopping, limestone lagoon, beach paradise, Palawan travel guide, Palawan travel sketch, Palawan free travel, Palawan local tips, Palawan independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/palawan/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -22810,8 +22810,8 @@ export default {
       },
       "en": {
         "title": "Patagonia (Northern) travel photos · gallery",
-        "description": "Browse Patagonia (Northern) travel photos and gallery images. Discover Patagonia (Northern), Argentina — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Patagonia (Northern), Argentina, Patagonia (Northern) travel, adventure, outdoors, hiking, GATEO, Patagonia (Northern) photos, Patagonia (Northern) gallery, Patagonia (Northern) pictures, photos, gallery, pictures, travel",
+        "description": "Browse Patagonia (Northern) travel photos and gallery images. Explore Northern Patagonia, Argentina — Andean lakes, Bariloche resort town, and Nahuel Huapi scenery distinct from southern Torres del Paine, usually via Buenos Aires to BRC airport.",
+        "keywords": "Patagonia, Argentina, Bariloche, Andes lakes, ski resort, South America, Patagonia (Northern) photos, Patagonia (Northern) gallery, Patagonia (Northern) pictures, Patagonia (Northern) travel, photos, gallery, pictures, travel, Patagonia (Northern)",
         "canonicalUrl": "https://www.gateo.kr/place/patagonia/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -22864,8 +22864,8 @@ export default {
       },
       "en": {
         "title": "Patagonia (Northern) travel · trip planner",
-        "description": "Flight route ICN→MAD·EZE→BRC via MAD, EZE. About 26 hours. Plan independent travel to Patagonia (Northern) — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Patagonia (Northern), Argentina — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Patagonia (Northern), Argentina, Patagonia (Northern) travel, adventure, outdoors, hiking, GATEO, Patagonia (Northern) trip planner, Patagonia (Northern) plan a trip, Patagonia (Northern) trip planning, Patagonia (Northern) free travel, Patagonia (Northern) independent travel, Patagonia (Northern) backpacking, Patagonia (Northern) flights, Patagonia (Northern) flight route, Patagonia (Northern) air route, Patagonia (Northern) nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to BRC, ICN BRC, ICN→MAD·EZE→BRC, Patagonia (Northern) connecting flights",
+        "description": "Flight route ICN→MAD·EZE→BRC via MAD, EZE. About 26 hours. Plan independent travel to Patagonia (Northern) — flights, stays, and local tips. Ask MOONi, your AI travel docent. Explore Northern Patagonia, Argentina — Andean lakes, Bariloche resort town, and Nahuel Huapi scenery distinct from southern Torres del Paine, usually via Buenos Aires to BRC airport.",
+        "keywords": "Patagonia, Argentina, Bariloche, Andes lakes, ski resort, South America, Patagonia (Northern) travel, Patagonia (Northern) trip planner, Patagonia (Northern) plan a trip, Patagonia (Northern) trip planning, Patagonia (Northern) free travel, Patagonia (Northern) independent travel, Patagonia (Northern) backpacking, Patagonia (Northern) flights, Patagonia (Northern) flight route, Patagonia (Northern) air route, Patagonia (Northern) nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to BRC, ICN BRC, ICN→MAD·EZE→BRC, Patagonia (Northern) connecting flights, Patagonia (Northern)",
         "canonicalUrl": "https://www.gateo.kr/place/patagonia/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -22910,8 +22910,8 @@ export default {
       },
       "en": {
         "title": "Patagonia (Northern) travel sketch · guide",
-        "description": "Patagonia (Northern) travel sketch, Local Watson tips, and independent travel guide. Discover Patagonia (Northern), Argentina — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Patagonia (Northern), Argentina, Patagonia (Northern) travel, adventure, outdoors, hiking, GATEO, Patagonia (Northern) travel guide, Patagonia (Northern) travel sketch, Patagonia (Northern) free travel, Patagonia (Northern) local tips, Patagonia (Northern) independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Patagonia (Northern) travel sketch, Local Watson tips, and independent travel guide. Explore Northern Patagonia, Argentina — Andean lakes, Bariloche resort town, and Nahuel Huapi scenery distinct from southern Torres del Paine, usually via Buenos Aires to BRC airport.",
+        "keywords": "Patagonia, Argentina, Bariloche, Andes lakes, ski resort, South America, Patagonia (Northern) travel guide, Patagonia (Northern) travel sketch, Patagonia (Northern) free travel, Patagonia (Northern) local tips, Patagonia (Northern) independent travel, travel guide, travel sketch, free travel, local tips, independent travel, Patagonia (Northern)",
         "canonicalUrl": "https://www.gateo.kr/place/patagonia/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -22966,8 +22966,8 @@ export default {
       },
       "en": {
         "title": "Persepolis travel photos · gallery",
-        "description": "Browse Persepolis travel photos and gallery images. Discover Persepolis, Iran — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Persepolis, Iran, Persepolis travel, heritage, landmark, temple, history, GATEO, Persepolis photos, Persepolis gallery, Persepolis pictures, photos, gallery, pictures, travel",
+        "description": "Browse Persepolis travel photos and gallery images. Stand at Persepolis, Iran — the ceremonial capital of the Achaemenid Empire with monumental stairways, carved immortals, and Apadana Palace ruins near Shiraz.",
+        "keywords": "Persepolis, Iran, ancient Persia, archaeology, UNESCO heritage, Shiraz day trip, Persepolis photos, Persepolis gallery, Persepolis pictures, Persepolis travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/persepolis/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -23020,8 +23020,8 @@ export default {
       },
       "en": {
         "title": "Persepolis travel · trip planner",
-        "description": "Flight route ICN→DXB·DOH→SYZ via DXB, DOH. About 9 hours. Plan independent travel to Persepolis — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Persepolis, Iran — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Persepolis, Iran, Persepolis travel, heritage, landmark, temple, history, GATEO, Persepolis trip planner, Persepolis plan a trip, Persepolis trip planning, Persepolis free travel, Persepolis independent travel, Persepolis backpacking, Persepolis flights, Persepolis flight route, Persepolis air route, Persepolis nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to SYZ, ICN SYZ, ICN→DXB·DOH→SYZ, Persepolis connecting flights",
+        "description": "Flight route ICN→DXB·DOH→SYZ via DXB, DOH. About 9 hours. Plan independent travel to Persepolis — flights, stays, and local tips. Ask MOONi, your AI travel docent. Stand at Persepolis, Iran — the ceremonial capital of the Achaemenid Empire with monumental stairways, carved immortals, and Apadana Palace ruins near Shiraz.",
+        "keywords": "Persepolis, Iran, ancient Persia, archaeology, UNESCO heritage, Shiraz day trip, Persepolis travel, Persepolis trip planner, Persepolis plan a trip, Persepolis trip planning, Persepolis free travel, Persepolis independent travel, Persepolis backpacking, Persepolis flights, Persepolis flight route, Persepolis air route, Persepolis nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to SYZ, ICN SYZ, ICN→DXB·DOH→SYZ, Persepolis connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/persepolis/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -23066,8 +23066,8 @@ export default {
       },
       "en": {
         "title": "Persepolis travel sketch · guide",
-        "description": "Persepolis travel sketch, Local Watson tips, and independent travel guide. Discover Persepolis, Iran — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Persepolis, Iran, Persepolis travel, heritage, landmark, temple, history, GATEO, Persepolis travel guide, Persepolis travel sketch, Persepolis free travel, Persepolis local tips, Persepolis independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Persepolis travel sketch, Local Watson tips, and independent travel guide. Stand at Persepolis, Iran — the ceremonial capital of the Achaemenid Empire with monumental stairways, carved immortals, and Apadana Palace ruins near Shiraz.",
+        "keywords": "Persepolis, Iran, ancient Persia, archaeology, UNESCO heritage, Shiraz day trip, Persepolis travel guide, Persepolis travel sketch, Persepolis free travel, Persepolis local tips, Persepolis independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/persepolis/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -23122,8 +23122,8 @@ export default {
       },
       "en": {
         "title": "Perth travel photos · gallery",
-        "description": "Browse Perth travel photos and gallery images. Discover Perth, Australia — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Perth, Australia, Perth travel, city guide, city break, sightseeing, GATEO, Perth photos, Perth gallery, Perth pictures, photos, gallery, pictures, travel",
+        "description": "Browse Perth travel photos and gallery images. Enjoy Perth, Australia — a sunny Indian Ocean capital with Kings Park wildflowers, Rottnest Island quokkas, Swan Valley wineries, and beaches stretching along the Sunset Coast.",
+        "keywords": "Perth, Australia, Rottnest Island, quokka, Kings Park, Western Australia, Perth photos, Perth gallery, Perth pictures, Perth travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/perth/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -23176,8 +23176,8 @@ export default {
       },
       "en": {
         "title": "Perth travel · trip planner",
-        "description": "Flight route ICN→DPS→PER via DPS. About 10 hours. Plan independent travel to Perth — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Perth, Australia — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Perth, Australia, Perth travel, city guide, city break, sightseeing, GATEO, Perth trip planner, Perth plan a trip, Perth trip planning, Perth free travel, Perth independent travel, Perth backpacking, Perth flights, Perth flight route, Perth air route, Perth nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to PER, ICN PER, ICN→DPS→PER, Perth connecting flights",
+        "description": "Flight route ICN→DPS→PER via DPS. About 10 hours. Plan independent travel to Perth — flights, stays, and local tips. Ask MOONi, your AI travel docent. Enjoy Perth, Australia — a sunny Indian Ocean capital with Kings Park wildflowers, Rottnest Island quokkas, Swan Valley wineries, and beaches stretching along the Sunset Coast.",
+        "keywords": "Perth, Australia, Rottnest Island, quokka, Kings Park, Western Australia, Perth travel, Perth trip planner, Perth plan a trip, Perth trip planning, Perth free travel, Perth independent travel, Perth backpacking, Perth flights, Perth flight route, Perth air route, Perth nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to PER, ICN PER, ICN→DPS→PER, Perth connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/perth/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -23222,8 +23222,8 @@ export default {
       },
       "en": {
         "title": "Perth travel sketch · guide",
-        "description": "Perth travel sketch, Local Watson tips, and independent travel guide. Discover Perth, Australia — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Perth, Australia, Perth travel, city guide, city break, sightseeing, GATEO, Perth travel guide, Perth travel sketch, Perth free travel, Perth local tips, Perth independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Perth travel sketch, Local Watson tips, and independent travel guide. Enjoy Perth, Australia — a sunny Indian Ocean capital with Kings Park wildflowers, Rottnest Island quokkas, Swan Valley wineries, and beaches stretching along the Sunset Coast.",
+        "keywords": "Perth, Australia, Rottnest Island, quokka, Kings Park, Western Australia, Perth travel guide, Perth travel sketch, Perth free travel, Perth local tips, Perth independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/perth/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -24058,8 +24058,8 @@ export default {
       },
       "en": {
         "title": "Plitvice Lakes travel photos · gallery",
-        "description": "Browse Plitvice Lakes travel photos and gallery images. Discover Plitvice Lakes, Croatia — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Plitvice Lakes, Croatia, Plitvice Lakes travel, wildlife, nature, national park, scenery, GATEO, Plitvice Lakes photos, Plitvice Lakes gallery, Plitvice Lakes pictures, photos, gallery, pictures, travel",
+        "description": "Browse Plitvice Lakes travel photos and gallery images. Wander Plitvice Lakes, Croatia — sixteen terraced turquoise lakes linked by waterfalls and wooden boardwalks through beech forests in Croatia's most visited national park.",
+        "keywords": "Plitvice Lakes, Croatia, national park, waterfalls, UNESCO nature, hiking trails, Plitvice Lakes photos, Plitvice Lakes gallery, Plitvice Lakes pictures, Plitvice Lakes travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/plitvice-lakes/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -24112,8 +24112,8 @@ export default {
       },
       "en": {
         "title": "Plitvice Lakes travel · trip planner",
-        "description": "Flight route ICN→MUC→ZAG via MUC. About 11 hours. Plan independent travel to Plitvice Lakes — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Plitvice Lakes, Croatia — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Plitvice Lakes, Croatia, Plitvice Lakes travel, wildlife, nature, national park, scenery, GATEO, Plitvice Lakes trip planner, Plitvice Lakes plan a trip, Plitvice Lakes trip planning, Plitvice Lakes free travel, Plitvice Lakes independent travel, Plitvice Lakes backpacking, Plitvice Lakes flights, Plitvice Lakes flight route, Plitvice Lakes air route, Plitvice Lakes nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to ZAG, ICN ZAG, ICN→MUC→ZAG, Plitvice Lakes connecting flights",
+        "description": "Flight route ICN→MUC→ZAG via MUC. About 11 hours. Plan independent travel to Plitvice Lakes — flights, stays, and local tips. Ask MOONi, your AI travel docent. Wander Plitvice Lakes, Croatia — sixteen terraced turquoise lakes linked by waterfalls and wooden boardwalks through beech forests in Croatia's most visited national park.",
+        "keywords": "Plitvice Lakes, Croatia, national park, waterfalls, UNESCO nature, hiking trails, Plitvice Lakes travel, Plitvice Lakes trip planner, Plitvice Lakes plan a trip, Plitvice Lakes trip planning, Plitvice Lakes free travel, Plitvice Lakes independent travel, Plitvice Lakes backpacking, Plitvice Lakes flights, Plitvice Lakes flight route, Plitvice Lakes air route, Plitvice Lakes nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to ZAG, ICN ZAG, ICN→MUC→ZAG, Plitvice Lakes connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/plitvice-lakes/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -24158,8 +24158,8 @@ export default {
       },
       "en": {
         "title": "Plitvice Lakes travel sketch · guide",
-        "description": "Plitvice Lakes travel sketch, Local Watson tips, and independent travel guide. Discover Plitvice Lakes, Croatia — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Plitvice Lakes, Croatia, Plitvice Lakes travel, wildlife, nature, national park, scenery, GATEO, Plitvice Lakes travel guide, Plitvice Lakes travel sketch, Plitvice Lakes free travel, Plitvice Lakes local tips, Plitvice Lakes independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Plitvice Lakes travel sketch, Local Watson tips, and independent travel guide. Wander Plitvice Lakes, Croatia — sixteen terraced turquoise lakes linked by waterfalls and wooden boardwalks through beech forests in Croatia's most visited national park.",
+        "keywords": "Plitvice Lakes, Croatia, national park, waterfalls, UNESCO nature, hiking trails, Plitvice Lakes travel guide, Plitvice Lakes travel sketch, Plitvice Lakes free travel, Plitvice Lakes local tips, Plitvice Lakes independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/plitvice-lakes/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -24526,8 +24526,8 @@ export default {
       },
       "en": {
         "title": "Qingdao travel photos · gallery",
-        "description": "Browse Qingdao travel photos and gallery images. Discover Qingdao, China — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Qingdao, China, Qingdao travel, city guide, city break, sightseeing, GATEO, Qingdao photos, Qingdao gallery, Qingdao pictures, photos, gallery, pictures, travel",
+        "description": "Browse Qingdao travel photos and gallery images. Stroll Qingdao, China — the Oriental Naples where red-roofed German colonial streets meet blue coastlines, famous Tsingtao beer, and seafood along the waterfront.",
+        "keywords": "Qingdao, China, Tsingtao beer, German architecture, coastal city, city break, Qingdao photos, Qingdao gallery, Qingdao pictures, Qingdao travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/qingdao/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -24580,8 +24580,8 @@ export default {
       },
       "en": {
         "title": "Qingdao travel · trip planner",
-        "description": "Flight route ICN→TAO, nonstop. About 1 hours. Plan independent travel to Qingdao — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Qingdao, China — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Qingdao, China, Qingdao travel, city guide, city break, sightseeing, GATEO, Qingdao trip planner, Qingdao plan a trip, Qingdao trip planning, Qingdao free travel, Qingdao independent travel, Qingdao backpacking, Qingdao flights, Qingdao flight route, Qingdao air route, Qingdao nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to TAO, ICN TAO, ICN→TAO, Qingdao nonstop flights",
+        "description": "Flight route ICN→TAO, nonstop. About 1 hours. Plan independent travel to Qingdao — flights, stays, and local tips. Ask MOONi, your AI travel docent. Stroll Qingdao, China — the Oriental Naples where red-roofed German colonial streets meet blue coastlines, famous Tsingtao beer, and seafood along the waterfront.",
+        "keywords": "Qingdao, China, Tsingtao beer, German architecture, coastal city, city break, Qingdao travel, Qingdao trip planner, Qingdao plan a trip, Qingdao trip planning, Qingdao free travel, Qingdao independent travel, Qingdao backpacking, Qingdao flights, Qingdao flight route, Qingdao air route, Qingdao nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to TAO, ICN TAO, ICN→TAO, Qingdao nonstop flights",
         "canonicalUrl": "https://www.gateo.kr/place/qingdao/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -24626,8 +24626,8 @@ export default {
       },
       "en": {
         "title": "Qingdao travel sketch · guide",
-        "description": "Qingdao travel sketch, Local Watson tips, and independent travel guide. Discover Qingdao, China — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Qingdao, China, Qingdao travel, city guide, city break, sightseeing, GATEO, Qingdao travel guide, Qingdao travel sketch, Qingdao free travel, Qingdao local tips, Qingdao independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Qingdao travel sketch, Local Watson tips, and independent travel guide. Stroll Qingdao, China — the Oriental Naples where red-roofed German colonial streets meet blue coastlines, famous Tsingtao beer, and seafood along the waterfront.",
+        "keywords": "Qingdao, China, Tsingtao beer, German architecture, coastal city, city break, Qingdao travel guide, Qingdao travel sketch, Qingdao free travel, Qingdao local tips, Qingdao independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/qingdao/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -25774,8 +25774,8 @@ export default {
       },
       "en": {
         "title": "Samoa travel photos · gallery",
-        "description": "Browse Samoa travel photos and gallery images. Discover Samoa, Samoa — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Samoa, Samoa travel, beach, island, resort, vacation, GATEO, Samoa photos, Samoa gallery, Samoa pictures, photos, gallery, pictures, travel",
+        "description": "Browse Samoa travel photos and gallery images. Discover Samoa — Polynesia's heart of lush rainforest waterfalls, crystal To Sua ocean trench swimming, fa'a Samoa culture, and uncrowded South Pacific island life.",
+        "keywords": "Samoa, Polynesia, To Sua trench, South Pacific, island culture, beach vacation, Samoa photos, Samoa gallery, Samoa pictures, Samoa travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/samoa/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -25828,8 +25828,8 @@ export default {
       },
       "en": {
         "title": "Samoa travel · trip planner",
-        "description": "Flight route ICN→AKL·NAN→APW via AKL, NAN. About 16 hours. Plan independent travel to Samoa — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Samoa, Samoa — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Samoa, Samoa travel, beach, island, resort, vacation, GATEO, Samoa trip planner, Samoa plan a trip, Samoa trip planning, Samoa free travel, Samoa independent travel, Samoa backpacking, Samoa flights, Samoa flight route, Samoa air route, Samoa nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to APW, ICN APW, ICN→AKL·NAN→APW, Samoa connecting flights",
+        "description": "Flight route ICN→AKL·NAN→APW via AKL, NAN. About 16 hours. Plan independent travel to Samoa — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Samoa — Polynesia's heart of lush rainforest waterfalls, crystal To Sua ocean trench swimming, fa'a Samoa culture, and uncrowded South Pacific island life.",
+        "keywords": "Samoa, Polynesia, To Sua trench, South Pacific, island culture, beach vacation, Samoa travel, Samoa trip planner, Samoa plan a trip, Samoa trip planning, Samoa free travel, Samoa independent travel, Samoa backpacking, Samoa flights, Samoa flight route, Samoa air route, Samoa nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to APW, ICN APW, ICN→AKL·NAN→APW, Samoa connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/samoa/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -25874,8 +25874,8 @@ export default {
       },
       "en": {
         "title": "Samoa travel sketch · guide",
-        "description": "Samoa travel sketch, Local Watson tips, and independent travel guide. Discover Samoa, Samoa — a beach and island getaway with photos, videos, and trip planning on GATEO.",
-        "keywords": "Samoa, Samoa travel, beach, island, resort, vacation, GATEO, Samoa travel guide, Samoa travel sketch, Samoa free travel, Samoa local tips, Samoa independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Samoa travel sketch, Local Watson tips, and independent travel guide. Discover Samoa — Polynesia's heart of lush rainforest waterfalls, crystal To Sua ocean trench swimming, fa'a Samoa culture, and uncrowded South Pacific island life.",
+        "keywords": "Samoa, Polynesia, To Sua trench, South Pacific, island culture, beach vacation, Samoa travel guide, Samoa travel sketch, Samoa free travel, Samoa local tips, Samoa independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/samoa/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -26398,8 +26398,8 @@ export default {
       },
       "en": {
         "title": "Sapa travel photos · gallery",
-        "description": "Browse Sapa travel photos and gallery images. Discover Sapa, Vietnam — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Sapa, Vietnam, Sapa travel, wildlife, nature, national park, scenery, GATEO, Sapa photos, Sapa gallery, Sapa pictures, photos, gallery, pictures, travel",
+        "description": "Browse Sapa travel photos and gallery images. Trek Sapa, Vietnam — misty rice terraces carved into Hoang Lien Son mountains, Hmong and Dao hill-tribe villages, and Fansipan peak treks near the Chinese border.",
+        "keywords": "Sapa, Vietnam, rice terraces, hill tribe trek, Fansipan, mountain travel, Sapa photos, Sapa gallery, Sapa pictures, Sapa travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/sapa/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -26452,8 +26452,8 @@ export default {
       },
       "en": {
         "title": "Sapa travel · trip planner",
-        "description": "Flight route ICN→HAN, nonstop. About 4 hours. Plan independent travel to Sapa — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Sapa, Vietnam — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Sapa, Vietnam, Sapa travel, wildlife, nature, national park, scenery, GATEO, Sapa trip planner, Sapa plan a trip, Sapa trip planning, Sapa free travel, Sapa independent travel, Sapa backpacking, Sapa flights, Sapa flight route, Sapa air route, Sapa nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to HAN, ICN HAN, ICN→HAN, Sapa nonstop flights",
+        "description": "Flight route ICN→HAN, nonstop. About 4 hours. Plan independent travel to Sapa — flights, stays, and local tips. Ask MOONi, your AI travel docent. Trek Sapa, Vietnam — misty rice terraces carved into Hoang Lien Son mountains, Hmong and Dao hill-tribe villages, and Fansipan peak treks near the Chinese border.",
+        "keywords": "Sapa, Vietnam, rice terraces, hill tribe trek, Fansipan, mountain travel, Sapa travel, Sapa trip planner, Sapa plan a trip, Sapa trip planning, Sapa free travel, Sapa independent travel, Sapa backpacking, Sapa flights, Sapa flight route, Sapa air route, Sapa nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to HAN, ICN HAN, ICN→HAN, Sapa nonstop flights",
         "canonicalUrl": "https://www.gateo.kr/place/sapa/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -26498,8 +26498,8 @@ export default {
       },
       "en": {
         "title": "Sapa travel sketch · guide",
-        "description": "Sapa travel sketch, Local Watson tips, and independent travel guide. Discover Sapa, Vietnam — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Sapa, Vietnam, Sapa travel, wildlife, nature, national park, scenery, GATEO, Sapa travel guide, Sapa travel sketch, Sapa free travel, Sapa local tips, Sapa independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Sapa travel sketch, Local Watson tips, and independent travel guide. Trek Sapa, Vietnam — misty rice terraces carved into Hoang Lien Son mountains, Hmong and Dao hill-tribe villages, and Fansipan peak treks near the Chinese border.",
+        "keywords": "Sapa, Vietnam, rice terraces, hill tribe trek, Fansipan, mountain travel, Sapa travel guide, Sapa travel sketch, Sapa free travel, Sapa local tips, Sapa independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/sapa/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -27022,8 +27022,8 @@ export default {
       },
       "en": {
         "title": "Seoul travel photos · gallery",
-        "description": "Browse Seoul travel photos and gallery images. Discover Seoul, South Korea — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Seoul, South Korea, Seoul travel, adventure, outdoors, hiking, GATEO, Seoul photos, Seoul gallery, Seoul pictures, photos, gallery, pictures, travel",
+        "description": "Browse Seoul travel photos and gallery images. Experience Seoul, South Korea — a sleepless megacity where 600-year royal palaces meet glittering skylines, cutting-edge fashion, K-culture, night markets, and world-class dining.",
+        "keywords": "Seoul, South Korea, palace tour, K-pop culture, street food, city break, Seoul photos, Seoul gallery, Seoul pictures, Seoul travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/seoul/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -27076,8 +27076,8 @@ export default {
       },
       "en": {
         "title": "Seoul travel · trip planner",
-        "description": "Plan independent travel to Seoul — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Seoul, South Korea — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Seoul, South Korea, Seoul travel, adventure, outdoors, hiking, GATEO, Seoul trip planner, Seoul plan a trip, Seoul trip planning, Seoul free travel, Seoul independent travel, Seoul backpacking, Seoul flights, Seoul flight route, Seoul air route, Seoul nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop",
+        "description": "Plan independent travel to Seoul — flights, stays, and local tips. Ask MOONi, your AI travel docent. Experience Seoul, South Korea — a sleepless megacity where 600-year royal palaces meet glittering skylines, cutting-edge fashion, K-culture, night markets, and world-class dining.",
+        "keywords": "Seoul, South Korea, palace tour, K-pop culture, street food, city break, Seoul travel, Seoul trip planner, Seoul plan a trip, Seoul trip planning, Seoul free travel, Seoul independent travel, Seoul backpacking, Seoul flights, Seoul flight route, Seoul air route, Seoul nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop",
         "canonicalUrl": "https://www.gateo.kr/place/seoul/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -27122,8 +27122,8 @@ export default {
       },
       "en": {
         "title": "Seoul travel sketch · guide",
-        "description": "Seoul travel sketch, Local Watson tips, and independent travel guide. Discover Seoul, South Korea — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Seoul, South Korea, Seoul travel, adventure, outdoors, hiking, GATEO, Seoul travel guide, Seoul travel sketch, Seoul free travel, Seoul local tips, Seoul independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Seoul travel sketch, Local Watson tips, and independent travel guide. Experience Seoul, South Korea — a sleepless megacity where 600-year royal palaces meet glittering skylines, cutting-edge fashion, K-culture, night markets, and world-class dining.",
+        "keywords": "Seoul, South Korea, palace tour, K-pop culture, street food, city break, Seoul travel guide, Seoul travel sketch, Seoul free travel, Seoul local tips, Seoul independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/seoul/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -27178,8 +27178,8 @@ export default {
       },
       "en": {
         "title": "Sequoia National Park travel photos · gallery",
-        "description": "Browse Sequoia National Park travel photos and gallery images. Discover Sequoia National Park, United States — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Sequoia National Park, United States, Sequoia National Park travel, adventure, outdoors, hiking, GATEO, Sequoia National Park photos, Sequoia National Park gallery, Sequoia National Park pictures, photos, gallery, pictures, travel",
+        "description": "Browse Sequoia National Park travel photos and gallery images. Stand among giants at Sequoia National Park, USA — home to General Sherman, the world's largest tree, granite domes, Moro Rock vistas, and Sierra Nevada wilderness in California.",
+        "keywords": "Sequoia National Park, USA, giant sequoia, General Sherman, national park, California hiking, Sequoia National Park photos, Sequoia National Park gallery, Sequoia National Park pictures, Sequoia National Park travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/sequoia-national-park/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -27232,8 +27232,8 @@ export default {
       },
       "en": {
         "title": "Sequoia National Park travel · trip planner",
-        "description": "Flight route ICN→SFO→LAX via SFO. About 12 hours. Plan independent travel to Sequoia National Park — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Sequoia National Park, United States — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Sequoia National Park, United States, Sequoia National Park travel, adventure, outdoors, hiking, GATEO, Sequoia National Park trip planner, Sequoia National Park plan a trip, Sequoia National Park trip planning, Sequoia National Park free travel, Sequoia National Park independent travel, Sequoia National Park backpacking, Sequoia National Park flights, Sequoia National Park flight route, Sequoia National Park air route, Sequoia National Park nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to LAX, ICN LAX, ICN→SFO→LAX, Sequoia National Park connecting flights",
+        "description": "Flight route ICN→SFO→LAX via SFO. About 12 hours. Plan independent travel to Sequoia National Park — flights, stays, and local tips. Ask MOONi, your AI travel docent. Stand among giants at Sequoia National Park, USA — home to General Sherman, the world's largest tree, granite domes, Moro Rock vistas, and Sierra Nevada wilderness in California.",
+        "keywords": "Sequoia National Park, USA, giant sequoia, General Sherman, national park, California hiking, Sequoia National Park travel, Sequoia National Park trip planner, Sequoia National Park plan a trip, Sequoia National Park trip planning, Sequoia National Park free travel, Sequoia National Park independent travel, Sequoia National Park backpacking, Sequoia National Park flights, Sequoia National Park flight route, Sequoia National Park air route, Sequoia National Park nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to LAX, ICN LAX, ICN→SFO→LAX, Sequoia National Park connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/sequoia-national-park/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -27278,8 +27278,8 @@ export default {
       },
       "en": {
         "title": "Sequoia National Park travel sketch · guide",
-        "description": "Sequoia National Park travel sketch, Local Watson tips, and independent travel guide. Discover Sequoia National Park, United States — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Sequoia National Park, United States, Sequoia National Park travel, adventure, outdoors, hiking, GATEO, Sequoia National Park travel guide, Sequoia National Park travel sketch, Sequoia National Park free travel, Sequoia National Park local tips, Sequoia National Park independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Sequoia National Park travel sketch, Local Watson tips, and independent travel guide. Stand among giants at Sequoia National Park, USA — home to General Sherman, the world's largest tree, granite domes, Moro Rock vistas, and Sierra Nevada wilderness in California.",
+        "keywords": "Sequoia National Park, USA, giant sequoia, General Sherman, national park, California hiking, Sequoia National Park travel guide, Sequoia National Park travel sketch, Sequoia National Park free travel, Sequoia National Park local tips, Sequoia National Park independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/sequoia-national-park/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -27334,8 +27334,8 @@ export default {
       },
       "en": {
         "title": "Serengeti travel photos · gallery",
-        "description": "Browse Serengeti travel photos and gallery images. Discover Serengeti, Tanzania — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Serengeti, Tanzania, Serengeti travel, adventure, outdoors, hiking, GATEO, Serengeti photos, Serengeti gallery, Serengeti pictures, photos, gallery, pictures, travel",
+        "description": "Browse Serengeti travel photos and gallery images. Safari the Serengeti, Tanzania — endless golden plains where the Great Migration crosses crocodile-filled rivers and lions, elephants, and cheetahs roam Africa's most iconic park.",
+        "keywords": "Serengeti, Tanzania, safari, Great Migration, wildlife photography, Africa travel, Serengeti photos, Serengeti gallery, Serengeti pictures, Serengeti travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/serengeti/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -27388,8 +27388,8 @@ export default {
       },
       "en": {
         "title": "Serengeti travel · trip planner",
-        "description": "Flight route ICN→ADD→JRO via ADD. About 13 hours. Plan independent travel to Serengeti — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Serengeti, Tanzania — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Serengeti, Tanzania, Serengeti travel, adventure, outdoors, hiking, GATEO, Serengeti trip planner, Serengeti plan a trip, Serengeti trip planning, Serengeti free travel, Serengeti independent travel, Serengeti backpacking, Serengeti flights, Serengeti flight route, Serengeti air route, Serengeti nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to JRO, ICN JRO, ICN→ADD→JRO, Serengeti connecting flights",
+        "description": "Flight route ICN→ADD→JRO via ADD. About 13 hours. Plan independent travel to Serengeti — flights, stays, and local tips. Ask MOONi, your AI travel docent. Safari the Serengeti, Tanzania — endless golden plains where the Great Migration crosses crocodile-filled rivers and lions, elephants, and cheetahs roam Africa's most iconic park.",
+        "keywords": "Serengeti, Tanzania, safari, Great Migration, wildlife photography, Africa travel, Serengeti travel, Serengeti trip planner, Serengeti plan a trip, Serengeti trip planning, Serengeti free travel, Serengeti independent travel, Serengeti backpacking, Serengeti flights, Serengeti flight route, Serengeti air route, Serengeti nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to JRO, ICN JRO, ICN→ADD→JRO, Serengeti connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/serengeti/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -27434,8 +27434,8 @@ export default {
       },
       "en": {
         "title": "Serengeti travel sketch · guide",
-        "description": "Serengeti travel sketch, Local Watson tips, and independent travel guide. Discover Serengeti, Tanzania — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Serengeti, Tanzania, Serengeti travel, adventure, outdoors, hiking, GATEO, Serengeti travel guide, Serengeti travel sketch, Serengeti free travel, Serengeti local tips, Serengeti independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Serengeti travel sketch, Local Watson tips, and independent travel guide. Safari the Serengeti, Tanzania — endless golden plains where the Great Migration crosses crocodile-filled rivers and lions, elephants, and cheetahs roam Africa's most iconic park.",
+        "keywords": "Serengeti, Tanzania, safari, Great Migration, wildlife photography, Africa travel, Serengeti travel guide, Serengeti travel sketch, Serengeti free travel, Serengeti local tips, Serengeti independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/serengeti/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -27490,8 +27490,8 @@ export default {
       },
       "en": {
         "title": "Seville travel photos · gallery",
-        "description": "Browse Seville travel photos and gallery images. Discover Seville, Spain — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Seville, Spain, Seville travel, city guide, city break, sightseeing, GATEO, Seville photos, Seville gallery, Seville pictures, photos, gallery, pictures, travel",
+        "description": "Browse Seville travel photos and gallery images. Feel Seville, Spain — Andalusia's flamenco heart with the Alcázar palace gardens, Gothic cathedral and Giralda tower, orange-scented lanes, and tapas bars alive until dawn.",
+        "keywords": "Seville, Spain, Alcazar, flamenco, Andalusia, tapas tour, Seville photos, Seville gallery, Seville pictures, Seville travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/seville/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -27544,8 +27544,8 @@ export default {
       },
       "en": {
         "title": "Seville travel · trip planner",
-        "description": "Flight route ICN→FRA·MAD→SVQ via FRA, MAD. About 13 hours. Plan independent travel to Seville — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Seville, Spain — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Seville, Spain, Seville travel, city guide, city break, sightseeing, GATEO, Seville trip planner, Seville plan a trip, Seville trip planning, Seville free travel, Seville independent travel, Seville backpacking, Seville flights, Seville flight route, Seville air route, Seville nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to SVQ, ICN SVQ, ICN→FRA·MAD→SVQ, Seville connecting flights",
+        "description": "Flight route ICN→FRA·MAD→SVQ via FRA, MAD. About 13 hours. Plan independent travel to Seville — flights, stays, and local tips. Ask MOONi, your AI travel docent. Feel Seville, Spain — Andalusia's flamenco heart with the Alcázar palace gardens, Gothic cathedral and Giralda tower, orange-scented lanes, and tapas bars alive until dawn.",
+        "keywords": "Seville, Spain, Alcazar, flamenco, Andalusia, tapas tour, Seville travel, Seville trip planner, Seville plan a trip, Seville trip planning, Seville free travel, Seville independent travel, Seville backpacking, Seville flights, Seville flight route, Seville air route, Seville nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to SVQ, ICN SVQ, ICN→FRA·MAD→SVQ, Seville connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/seville/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -27590,8 +27590,8 @@ export default {
       },
       "en": {
         "title": "Seville travel sketch · guide",
-        "description": "Seville travel sketch, Local Watson tips, and independent travel guide. Discover Seville, Spain — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Seville, Spain, Seville travel, city guide, city break, sightseeing, GATEO, Seville travel guide, Seville travel sketch, Seville free travel, Seville local tips, Seville independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Seville travel sketch, Local Watson tips, and independent travel guide. Feel Seville, Spain — Andalusia's flamenco heart with the Alcázar palace gardens, Gothic cathedral and Giralda tower, orange-scented lanes, and tapas bars alive until dawn.",
+        "keywords": "Seville, Spain, Alcazar, flamenco, Andalusia, tapas tour, Seville travel guide, Seville travel sketch, Seville free travel, Seville local tips, Seville independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/seville/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -28114,8 +28114,8 @@ export default {
       },
       "en": {
         "title": "Similan Islands travel photos · gallery",
-        "description": "Browse Similan Islands travel photos and gallery images. Discover Similan Islands, Thailand — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Similan Islands, Thailand, Similan Islands travel, adventure, outdoors, hiking, GATEO, Similan Islands photos, Similan Islands gallery, Similan Islands pictures, photos, gallery, pictures, travel",
+        "description": "Browse Similan Islands travel photos and gallery images. Dive the Similan Islands, Thailand — one of the world's top ten dive sites with manta rays, whale sharks, and impossibly clear Andaman waters in a protected marine park.",
+        "keywords": "Similan Islands, Thailand, scuba diving, manta ray, marine park, snorkeling, Similan Islands photos, Similan Islands gallery, Similan Islands pictures, Similan Islands travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/similan-islands/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -28168,8 +28168,8 @@ export default {
       },
       "en": {
         "title": "Similan Islands travel · trip planner",
-        "description": "Flight route ICN→HKG·BKK→HKT via HKG, BKK. About 6 hours. Plan independent travel to Similan Islands — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Similan Islands, Thailand — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Similan Islands, Thailand, Similan Islands travel, adventure, outdoors, hiking, GATEO, Similan Islands trip planner, Similan Islands plan a trip, Similan Islands trip planning, Similan Islands free travel, Similan Islands independent travel, Similan Islands backpacking, Similan Islands flights, Similan Islands flight route, Similan Islands air route, Similan Islands nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to HKT, ICN HKT, ICN→HKG·BKK→HKT, Similan Islands connecting flights",
+        "description": "Flight route ICN→HKG·BKK→HKT via HKG, BKK. About 6 hours. Plan independent travel to Similan Islands — flights, stays, and local tips. Ask MOONi, your AI travel docent. Dive the Similan Islands, Thailand — one of the world's top ten dive sites with manta rays, whale sharks, and impossibly clear Andaman waters in a protected marine park.",
+        "keywords": "Similan Islands, Thailand, scuba diving, manta ray, marine park, snorkeling, Similan Islands travel, Similan Islands trip planner, Similan Islands plan a trip, Similan Islands trip planning, Similan Islands free travel, Similan Islands independent travel, Similan Islands backpacking, Similan Islands flights, Similan Islands flight route, Similan Islands air route, Similan Islands nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to HKT, ICN HKT, ICN→HKG·BKK→HKT, Similan Islands connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/similan-islands/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -28214,8 +28214,8 @@ export default {
       },
       "en": {
         "title": "Similan Islands travel sketch · guide",
-        "description": "Similan Islands travel sketch, Local Watson tips, and independent travel guide. Discover Similan Islands, Thailand — a adventure travel destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Similan Islands, Thailand, Similan Islands travel, adventure, outdoors, hiking, GATEO, Similan Islands travel guide, Similan Islands travel sketch, Similan Islands free travel, Similan Islands local tips, Similan Islands independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Similan Islands travel sketch, Local Watson tips, and independent travel guide. Dive the Similan Islands, Thailand — one of the world's top ten dive sites with manta rays, whale sharks, and impossibly clear Andaman waters in a protected marine park.",
+        "keywords": "Similan Islands, Thailand, scuba diving, manta ray, marine park, snorkeling, Similan Islands travel guide, Similan Islands travel sketch, Similan Islands free travel, Similan Islands local tips, Similan Islands independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/similan-islands/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -29986,8 +29986,8 @@ export default {
       },
       "en": {
         "title": "Tsushima (Daemado) travel photos · gallery",
-        "description": "Browse Tsushima (Daemado) travel photos and gallery images. Discover Tsushima (Daemado), Japan — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Tsushima (Daemado), Japan, Tsushima (Daemado) travel, wildlife, nature, national park, scenery, GATEO, Tsushima (Daemado) photos, Tsushima (Daemado) gallery, Tsushima (Daemado) pictures, photos, gallery, pictures, travel",
+        "description": "Browse Tsushima (Daemado) travel photos and gallery images. Visit Tsushima, Japan — the Korean Daemado island reached by fast ferry from Busan to Hitakatsu in about one hour for coastal trails, hot springs, duty-free shopping, and clear seas.",
+        "keywords": "Tsushima, Japan, Daemado, Busan ferry, island day trip, Korea Japan travel, Tsushima (Daemado) photos, Tsushima (Daemado) gallery, Tsushima (Daemado) pictures, Tsushima (Daemado) travel, photos, gallery, pictures, travel, Tsushima (Daemado)",
         "canonicalUrl": "https://www.gateo.kr/place/tsushima/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -30040,8 +30040,8 @@ export default {
       },
       "en": {
         "title": "Tsushima (Daemado) travel · trip planner",
-        "description": "Flight route ICN→FUK, nonstop. About 1 hours. Plan independent travel to Tsushima (Daemado) — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Tsushima (Daemado), Japan — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Tsushima (Daemado), Japan, Tsushima (Daemado) travel, wildlife, nature, national park, scenery, GATEO, Tsushima (Daemado) trip planner, Tsushima (Daemado) plan a trip, Tsushima (Daemado) trip planning, Tsushima (Daemado) free travel, Tsushima (Daemado) independent travel, Tsushima (Daemado) backpacking, Tsushima (Daemado) flights, Tsushima (Daemado) flight route, Tsushima (Daemado) air route, Tsushima (Daemado) nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to FUK, ICN FUK, ICN→FUK, Tsushima (Daemado) nonstop flights",
+        "description": "Flight route ICN→FUK, nonstop. About 1 hours. Plan independent travel to Tsushima (Daemado) — flights, stays, and local tips. Ask MOONi, your AI travel docent. Visit Tsushima, Japan — the Korean Daemado island reached by fast ferry from Busan to Hitakatsu in about one hour for coastal trails, hot springs, duty-free shopping, and clear seas.",
+        "keywords": "Tsushima, Japan, Daemado, Busan ferry, island day trip, Korea Japan travel, Tsushima (Daemado) travel, Tsushima (Daemado) trip planner, Tsushima (Daemado) plan a trip, Tsushima (Daemado) trip planning, Tsushima (Daemado) free travel, Tsushima (Daemado) independent travel, Tsushima (Daemado) backpacking, Tsushima (Daemado) flights, Tsushima (Daemado) flight route, Tsushima (Daemado) air route, Tsushima (Daemado) nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to FUK, ICN FUK, ICN→FUK, Tsushima (Daemado) nonstop flights, Tsushima (Daemado)",
         "canonicalUrl": "https://www.gateo.kr/place/tsushima/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -30086,8 +30086,8 @@ export default {
       },
       "en": {
         "title": "Tsushima (Daemado) travel sketch · guide",
-        "description": "Tsushima (Daemado) travel sketch, Local Watson tips, and independent travel guide. Discover Tsushima (Daemado), Japan — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Tsushima (Daemado), Japan, Tsushima (Daemado) travel, wildlife, nature, national park, scenery, GATEO, Tsushima (Daemado) travel guide, Tsushima (Daemado) travel sketch, Tsushima (Daemado) free travel, Tsushima (Daemado) local tips, Tsushima (Daemado) independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Tsushima (Daemado) travel sketch, Local Watson tips, and independent travel guide. Visit Tsushima, Japan — the Korean Daemado island reached by fast ferry from Busan to Hitakatsu in about one hour for coastal trails, hot springs, duty-free shopping, and clear seas.",
+        "keywords": "Tsushima, Japan, Daemado, Busan ferry, island day trip, Korea Japan travel, Tsushima (Daemado) travel guide, Tsushima (Daemado) travel sketch, Tsushima (Daemado) free travel, Tsushima (Daemado) local tips, Tsushima (Daemado) independent travel, travel guide, travel sketch, free travel, local tips, independent travel, Tsushima (Daemado)",
         "canonicalUrl": "https://www.gateo.kr/place/tsushima/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -30142,8 +30142,8 @@ export default {
       },
       "en": {
         "title": "Ubud travel photos · gallery",
-        "description": "Browse Ubud travel photos and gallery images. Discover Ubud, Indonesia — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Ubud, Indonesia, Ubud travel, heritage, landmark, temple, history, GATEO, Ubud photos, Ubud gallery, Ubud pictures, photos, gallery, pictures, travel",
+        "description": "Browse Ubud travel photos and gallery images. Restore in Ubud, Bali — the island's cultural soul of rice terraces, monkey forest temples, yoga retreats, artisan markets, and lush valleys that inspired Eat Pray Love.",
+        "keywords": "Ubud, Bali, Indonesia, rice terraces, yoga retreat, art village, Ubud photos, Ubud gallery, Ubud pictures, Ubud travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/ubud/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -30196,8 +30196,8 @@ export default {
       },
       "en": {
         "title": "Ubud travel · trip planner",
-        "description": "Flight route ICN→DPS, nonstop. About 7 hours. Plan independent travel to Ubud — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Ubud, Indonesia — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Ubud, Indonesia, Ubud travel, heritage, landmark, temple, history, GATEO, Ubud trip planner, Ubud plan a trip, Ubud trip planning, Ubud free travel, Ubud independent travel, Ubud backpacking, Ubud flights, Ubud flight route, Ubud air route, Ubud nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to DPS, ICN DPS, ICN→DPS, Ubud nonstop flights",
+        "description": "Flight route ICN→DPS, nonstop. About 7 hours. Plan independent travel to Ubud — flights, stays, and local tips. Ask MOONi, your AI travel docent. Restore in Ubud, Bali — the island's cultural soul of rice terraces, monkey forest temples, yoga retreats, artisan markets, and lush valleys that inspired Eat Pray Love.",
+        "keywords": "Ubud, Bali, Indonesia, rice terraces, yoga retreat, art village, Ubud travel, Ubud trip planner, Ubud plan a trip, Ubud trip planning, Ubud free travel, Ubud independent travel, Ubud backpacking, Ubud flights, Ubud flight route, Ubud air route, Ubud nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to DPS, ICN DPS, ICN→DPS, Ubud nonstop flights",
         "canonicalUrl": "https://www.gateo.kr/place/ubud/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -30242,8 +30242,8 @@ export default {
       },
       "en": {
         "title": "Ubud travel sketch · guide",
-        "description": "Ubud travel sketch, Local Watson tips, and independent travel guide. Discover Ubud, Indonesia — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Ubud, Indonesia, Ubud travel, heritage, landmark, temple, history, GATEO, Ubud travel guide, Ubud travel sketch, Ubud free travel, Ubud local tips, Ubud independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Ubud travel sketch, Local Watson tips, and independent travel guide. Restore in Ubud, Bali — the island's cultural soul of rice terraces, monkey forest temples, yoga retreats, artisan markets, and lush valleys that inspired Eat Pray Love.",
+        "keywords": "Ubud, Bali, Indonesia, rice terraces, yoga retreat, art village, Ubud travel guide, Ubud travel sketch, Ubud free travel, Ubud local tips, Ubud independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/ubud/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -30298,8 +30298,8 @@ export default {
       },
       "en": {
         "title": "Ulaanbaatar travel photos · gallery",
-        "description": "Browse Ulaanbaatar travel photos and gallery images. Discover Ulaanbaatar, Mongolia — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Ulaanbaatar, Mongolia, Ulaanbaatar travel, heritage, landmark, temple, history, GATEO, Ulaanbaatar photos, Ulaanbaatar gallery, Ulaanbaatar pictures, photos, gallery, pictures, travel",
+        "description": "Browse Ulaanbaatar travel photos and gallery images. Discover Ulaanbaatar, Mongolia — nomadic heart of the steppe where endless grasslands, gers, and star-filled skies frame the capital gateway to the Gobi and horse country beyond.",
+        "keywords": "Ulaanbaatar, Mongolia, Gobi Desert, nomad culture, steppe tour, adventure travel, Ulaanbaatar photos, Ulaanbaatar gallery, Ulaanbaatar pictures, Ulaanbaatar travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/ulaanbaatar/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -30352,8 +30352,8 @@ export default {
       },
       "en": {
         "title": "Ulaanbaatar travel · trip planner",
-        "description": "Flight route ICN→UBN, nonstop. About 3 hours. Plan independent travel to Ulaanbaatar — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Ulaanbaatar, Mongolia — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Ulaanbaatar, Mongolia, Ulaanbaatar travel, heritage, landmark, temple, history, GATEO, Ulaanbaatar trip planner, Ulaanbaatar plan a trip, Ulaanbaatar trip planning, Ulaanbaatar free travel, Ulaanbaatar independent travel, Ulaanbaatar backpacking, Ulaanbaatar flights, Ulaanbaatar flight route, Ulaanbaatar air route, Ulaanbaatar nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to UBN, ICN UBN, ICN→UBN, Ulaanbaatar nonstop flights",
+        "description": "Flight route ICN→UBN, nonstop. About 3 hours. Plan independent travel to Ulaanbaatar — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Ulaanbaatar, Mongolia — nomadic heart of the steppe where endless grasslands, gers, and star-filled skies frame the capital gateway to the Gobi and horse country beyond.",
+        "keywords": "Ulaanbaatar, Mongolia, Gobi Desert, nomad culture, steppe tour, adventure travel, Ulaanbaatar travel, Ulaanbaatar trip planner, Ulaanbaatar plan a trip, Ulaanbaatar trip planning, Ulaanbaatar free travel, Ulaanbaatar independent travel, Ulaanbaatar backpacking, Ulaanbaatar flights, Ulaanbaatar flight route, Ulaanbaatar air route, Ulaanbaatar nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to UBN, ICN UBN, ICN→UBN, Ulaanbaatar nonstop flights",
         "canonicalUrl": "https://www.gateo.kr/place/ulaanbaatar/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -30398,8 +30398,8 @@ export default {
       },
       "en": {
         "title": "Ulaanbaatar travel sketch · guide",
-        "description": "Ulaanbaatar travel sketch, Local Watson tips, and independent travel guide. Discover Ulaanbaatar, Mongolia — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Ulaanbaatar, Mongolia, Ulaanbaatar travel, heritage, landmark, temple, history, GATEO, Ulaanbaatar travel guide, Ulaanbaatar travel sketch, Ulaanbaatar free travel, Ulaanbaatar local tips, Ulaanbaatar independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Ulaanbaatar travel sketch, Local Watson tips, and independent travel guide. Discover Ulaanbaatar, Mongolia — nomadic heart of the steppe where endless grasslands, gers, and star-filled skies frame the capital gateway to the Gobi and horse country beyond.",
+        "keywords": "Ulaanbaatar, Mongolia, Gobi Desert, nomad culture, steppe tour, adventure travel, Ulaanbaatar travel guide, Ulaanbaatar travel sketch, Ulaanbaatar free travel, Ulaanbaatar local tips, Ulaanbaatar independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/ulaanbaatar/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -30610,8 +30610,8 @@ export default {
       },
       "en": {
         "title": "Uyuni Salt Flat travel photos · gallery",
-        "description": "Browse Uyuni Salt Flat travel photos and gallery images. Discover Uyuni Salt Flat, Bolivia — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Uyuni Salt Flat, Bolivia, Uyuni Salt Flat travel, wildlife, nature, national park, scenery, GATEO, Uyuni Salt Flat photos, Uyuni Salt Flat gallery, Uyuni Salt Flat pictures, photos, gallery, pictures, travel",
+        "description": "Browse Uyuni Salt Flat travel photos and gallery images. Marvel at Bolivia's Uyuni Salt Flat — the world's largest salt desert that becomes a vast mirror in wet season, erasing the horizon between sky and earth in an otherworldly spectacle.",
+        "keywords": "Uyuni Salt Flat, Bolivia, salt desert, mirror reflection, Salar de Uyuni, photo tour, Uyuni Salt Flat photos, Uyuni Salt Flat gallery, Uyuni Salt Flat pictures, Uyuni Salt Flat travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/uyuni-salt-flat/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -30664,8 +30664,8 @@ export default {
       },
       "en": {
         "title": "Uyuni Salt Flat travel · trip planner",
-        "description": "Flight route ICN→LAX·LIM·LPB→UYU via LAX, LIM, LPB. About 22 hours. Plan independent travel to Uyuni Salt Flat — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Uyuni Salt Flat, Bolivia — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Uyuni Salt Flat, Bolivia, Uyuni Salt Flat travel, wildlife, nature, national park, scenery, GATEO, Uyuni Salt Flat trip planner, Uyuni Salt Flat plan a trip, Uyuni Salt Flat trip planning, Uyuni Salt Flat free travel, Uyuni Salt Flat independent travel, Uyuni Salt Flat backpacking, Uyuni Salt Flat flights, Uyuni Salt Flat flight route, Uyuni Salt Flat air route, Uyuni Salt Flat nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to UYU, ICN UYU, ICN→LAX·LIM·LPB→UYU, Uyuni Salt Flat connecting flights",
+        "description": "Flight route ICN→LAX·LIM·LPB→UYU via LAX, LIM, LPB. About 22 hours. Plan independent travel to Uyuni Salt Flat — flights, stays, and local tips. Ask MOONi, your AI travel docent. Marvel at Bolivia's Uyuni Salt Flat — the world's largest salt desert that becomes a vast mirror in wet season, erasing the horizon between sky and earth in an otherworldly spectacle.",
+        "keywords": "Uyuni Salt Flat, Bolivia, salt desert, mirror reflection, Salar de Uyuni, photo tour, Uyuni Salt Flat travel, Uyuni Salt Flat trip planner, Uyuni Salt Flat plan a trip, Uyuni Salt Flat trip planning, Uyuni Salt Flat free travel, Uyuni Salt Flat independent travel, Uyuni Salt Flat backpacking, Uyuni Salt Flat flights, Uyuni Salt Flat flight route, Uyuni Salt Flat air route, Uyuni Salt Flat nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to UYU, ICN UYU, ICN→LAX·LIM·LPB→UYU, Uyuni Salt Flat connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/uyuni-salt-flat/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -30710,8 +30710,8 @@ export default {
       },
       "en": {
         "title": "Uyuni Salt Flat travel sketch · guide",
-        "description": "Uyuni Salt Flat travel sketch, Local Watson tips, and independent travel guide. Discover Uyuni Salt Flat, Bolivia — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Uyuni Salt Flat, Bolivia, Uyuni Salt Flat travel, wildlife, nature, national park, scenery, GATEO, Uyuni Salt Flat travel guide, Uyuni Salt Flat travel sketch, Uyuni Salt Flat free travel, Uyuni Salt Flat local tips, Uyuni Salt Flat independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Uyuni Salt Flat travel sketch, Local Watson tips, and independent travel guide. Marvel at Bolivia's Uyuni Salt Flat — the world's largest salt desert that becomes a vast mirror in wet season, erasing the horizon between sky and earth in an otherworldly spectacle.",
+        "keywords": "Uyuni Salt Flat, Bolivia, salt desert, mirror reflection, Salar de Uyuni, photo tour, Uyuni Salt Flat travel guide, Uyuni Salt Flat travel sketch, Uyuni Salt Flat free travel, Uyuni Salt Flat local tips, Uyuni Salt Flat independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/uyuni-salt-flat/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -30922,8 +30922,8 @@ export default {
       },
       "en": {
         "title": "Varanasi travel photos · gallery",
-        "description": "Browse Varanasi travel photos and gallery images. Discover Varanasi, India — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Varanasi, India, Varanasi travel, heritage, landmark, temple, history, GATEO, Varanasi photos, Varanasi gallery, Varanasi pictures, photos, gallery, pictures, travel",
+        "description": "Browse Varanasi travel photos and gallery images. Witness Varanasi, India — Hinduism's holiest city on the Ganges where dawn boat rituals, burning ghats, labyrinthine alleys, and silk weavers reveal ancient spiritual life.",
+        "keywords": "Varanasi, India, Ganges River, ghats, spiritual travel, Hindu pilgrimage, Varanasi photos, Varanasi gallery, Varanasi pictures, Varanasi travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/varanasi/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -30976,8 +30976,8 @@ export default {
       },
       "en": {
         "title": "Varanasi travel · trip planner",
-        "description": "Flight route ICN→DEL→VNS via DEL. About 7 hours. Plan independent travel to Varanasi — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Varanasi, India — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Varanasi, India, Varanasi travel, heritage, landmark, temple, history, GATEO, Varanasi trip planner, Varanasi plan a trip, Varanasi trip planning, Varanasi free travel, Varanasi independent travel, Varanasi backpacking, Varanasi flights, Varanasi flight route, Varanasi air route, Varanasi nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to VNS, ICN VNS, ICN→DEL→VNS, Varanasi connecting flights",
+        "description": "Flight route ICN→DEL→VNS via DEL. About 7 hours. Plan independent travel to Varanasi — flights, stays, and local tips. Ask MOONi, your AI travel docent. Witness Varanasi, India — Hinduism's holiest city on the Ganges where dawn boat rituals, burning ghats, labyrinthine alleys, and silk weavers reveal ancient spiritual life.",
+        "keywords": "Varanasi, India, Ganges River, ghats, spiritual travel, Hindu pilgrimage, Varanasi travel, Varanasi trip planner, Varanasi plan a trip, Varanasi trip planning, Varanasi free travel, Varanasi independent travel, Varanasi backpacking, Varanasi flights, Varanasi flight route, Varanasi air route, Varanasi nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to VNS, ICN VNS, ICN→DEL→VNS, Varanasi connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/varanasi/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -31022,8 +31022,8 @@ export default {
       },
       "en": {
         "title": "Varanasi travel sketch · guide",
-        "description": "Varanasi travel sketch, Local Watson tips, and independent travel guide. Discover Varanasi, India — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Varanasi, India, Varanasi travel, heritage, landmark, temple, history, GATEO, Varanasi travel guide, Varanasi travel sketch, Varanasi free travel, Varanasi local tips, Varanasi independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Varanasi travel sketch, Local Watson tips, and independent travel guide. Witness Varanasi, India — Hinduism's holiest city on the Ganges where dawn boat rituals, burning ghats, labyrinthine alleys, and silk weavers reveal ancient spiritual life.",
+        "keywords": "Varanasi, India, Ganges River, ghats, spiritual travel, Hindu pilgrimage, Varanasi travel guide, Varanasi travel sketch, Varanasi free travel, Varanasi local tips, Varanasi independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/varanasi/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -31702,8 +31702,8 @@ export default {
       },
       "en": {
         "title": "Vientiane travel photos · gallery",
-        "description": "Browse Vientiane travel photos and gallery images. Discover Vientiane, Laos — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Vientiane, Laos, Vientiane travel, heritage, landmark, temple, history, GATEO, Vientiane photos, Vientiane gallery, Vientiane pictures, photos, gallery, pictures, travel",
+        "description": "Browse Vientiane travel photos and gallery images. Unwind in Vientiane, Laos — one of Southeast Asia's most relaxed capitals on the Mekong with golden Pha That Luang, Patuxai arch, French colonial villas, and riverside Beerlao sunsets.",
+        "keywords": "Vientiane, Laos, Mekong River, Buddhist temple, Patuxai, Southeast Asia, Vientiane photos, Vientiane gallery, Vientiane pictures, Vientiane travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/vientiane/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -31756,8 +31756,8 @@ export default {
       },
       "en": {
         "title": "Vientiane travel · trip planner",
-        "description": "Flight route ICN→VTE, nonstop. About 4 hours. Plan independent travel to Vientiane — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Vientiane, Laos — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Vientiane, Laos, Vientiane travel, heritage, landmark, temple, history, GATEO, Vientiane trip planner, Vientiane plan a trip, Vientiane trip planning, Vientiane free travel, Vientiane independent travel, Vientiane backpacking, Vientiane flights, Vientiane flight route, Vientiane air route, Vientiane nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to VTE, ICN VTE, ICN→VTE, Vientiane nonstop flights",
+        "description": "Flight route ICN→VTE, nonstop. About 4 hours. Plan independent travel to Vientiane — flights, stays, and local tips. Ask MOONi, your AI travel docent. Unwind in Vientiane, Laos — one of Southeast Asia's most relaxed capitals on the Mekong with golden Pha That Luang, Patuxai arch, French colonial villas, and riverside Beerlao sunsets.",
+        "keywords": "Vientiane, Laos, Mekong River, Buddhist temple, Patuxai, Southeast Asia, Vientiane travel, Vientiane trip planner, Vientiane plan a trip, Vientiane trip planning, Vientiane free travel, Vientiane independent travel, Vientiane backpacking, Vientiane flights, Vientiane flight route, Vientiane air route, Vientiane nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to VTE, ICN VTE, ICN→VTE, Vientiane nonstop flights",
         "canonicalUrl": "https://www.gateo.kr/place/vientiane/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -31802,8 +31802,8 @@ export default {
       },
       "en": {
         "title": "Vientiane travel sketch · guide",
-        "description": "Vientiane travel sketch, Local Watson tips, and independent travel guide. Discover Vientiane, Laos — a cultural heritage destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Vientiane, Laos, Vientiane travel, heritage, landmark, temple, history, GATEO, Vientiane travel guide, Vientiane travel sketch, Vientiane free travel, Vientiane local tips, Vientiane independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Vientiane travel sketch, Local Watson tips, and independent travel guide. Unwind in Vientiane, Laos — one of Southeast Asia's most relaxed capitals on the Mekong with golden Pha That Luang, Patuxai arch, French colonial villas, and riverside Beerlao sunsets.",
+        "keywords": "Vientiane, Laos, Mekong River, Buddhist temple, Patuxai, Southeast Asia, Vientiane travel guide, Vientiane travel sketch, Vientiane free travel, Vientiane local tips, Vientiane independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/vientiane/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -31858,8 +31858,8 @@ export default {
       },
       "en": {
         "title": "Vladivostok travel photos · gallery",
-        "description": "Browse Vladivostok travel photos and gallery images. Discover Vladivostok, Russia — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Vladivostok, Russia, Vladivostok travel, city guide, city break, sightseeing, GATEO, Vladivostok photos, Vladivostok gallery, Vladivostok pictures, photos, gallery, pictures, travel",
+        "description": "Browse Vladivostok travel photos and gallery images. Reach Vladivostok, Russia — the Trans-Siberian's Pacific terminus with Golden Horn bridges, fresh seafood markets, Russky Island vistas, and gateway ferries to Japan and Korea.",
+        "keywords": "Vladivostok, Russia, Trans-Siberian, Pacific port, Far East travel, bridge views, Vladivostok photos, Vladivostok gallery, Vladivostok pictures, Vladivostok travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/vladivostok/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -31912,8 +31912,8 @@ export default {
       },
       "en": {
         "title": "Vladivostok travel · trip planner",
-        "description": "Flight route ICN→VVO, nonstop. About 1 hours. Plan independent travel to Vladivostok — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Vladivostok, Russia — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Vladivostok, Russia, Vladivostok travel, city guide, city break, sightseeing, GATEO, Vladivostok trip planner, Vladivostok plan a trip, Vladivostok trip planning, Vladivostok free travel, Vladivostok independent travel, Vladivostok backpacking, Vladivostok flights, Vladivostok flight route, Vladivostok air route, Vladivostok nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to VVO, ICN VVO, ICN→VVO, Vladivostok nonstop flights",
+        "description": "Flight route ICN→VVO, nonstop. About 1 hours. Plan independent travel to Vladivostok — flights, stays, and local tips. Ask MOONi, your AI travel docent. Reach Vladivostok, Russia — the Trans-Siberian's Pacific terminus with Golden Horn bridges, fresh seafood markets, Russky Island vistas, and gateway ferries to Japan and Korea.",
+        "keywords": "Vladivostok, Russia, Trans-Siberian, Pacific port, Far East travel, bridge views, Vladivostok travel, Vladivostok trip planner, Vladivostok plan a trip, Vladivostok trip planning, Vladivostok free travel, Vladivostok independent travel, Vladivostok backpacking, Vladivostok flights, Vladivostok flight route, Vladivostok air route, Vladivostok nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to VVO, ICN VVO, ICN→VVO, Vladivostok nonstop flights",
         "canonicalUrl": "https://www.gateo.kr/place/vladivostok/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -31958,8 +31958,8 @@ export default {
       },
       "en": {
         "title": "Vladivostok travel sketch · guide",
-        "description": "Vladivostok travel sketch, Local Watson tips, and independent travel guide. Discover Vladivostok, Russia — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Vladivostok, Russia, Vladivostok travel, city guide, city break, sightseeing, GATEO, Vladivostok travel guide, Vladivostok travel sketch, Vladivostok free travel, Vladivostok local tips, Vladivostok independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Vladivostok travel sketch, Local Watson tips, and independent travel guide. Reach Vladivostok, Russia — the Trans-Siberian's Pacific terminus with Golden Horn bridges, fresh seafood markets, Russky Island vistas, and gateway ferries to Japan and Korea.",
+        "keywords": "Vladivostok, Russia, Trans-Siberian, Pacific port, Far East travel, bridge views, Vladivostok travel guide, Vladivostok travel sketch, Vladivostok free travel, Vladivostok local tips, Vladivostok independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/vladivostok/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -32014,8 +32014,8 @@ export default {
       },
       "en": {
         "title": "Wadi Rum travel photos · gallery",
-        "description": "Browse Wadi Rum travel photos and gallery images. Discover Wadi Rum, Jordan — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Wadi Rum, Jordan, Wadi Rum travel, wildlife, nature, national park, scenery, GATEO, Wadi Rum photos, Wadi Rum gallery, Wadi Rum pictures, photos, gallery, pictures, travel",
+        "description": "Browse Wadi Rum travel photos and gallery images. Camp in Wadi Rum, Jordan — Mars-like red desert canyons where Lawrence of Arabia and Dune were filmed, best explored on camel treks and Bedouin camp stargazing nights.",
+        "keywords": "Wadi Rum, Jordan, desert camp, Bedouin culture, stargazing, adventure travel, Wadi Rum photos, Wadi Rum gallery, Wadi Rum pictures, Wadi Rum travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/wadi-rum/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -32068,8 +32068,8 @@ export default {
       },
       "en": {
         "title": "Wadi Rum travel · trip planner",
-        "description": "Flight route ICN→PEK·CAI→AMM via PEK, CAI. About 11 hours. Plan independent travel to Wadi Rum — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Wadi Rum, Jordan — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Wadi Rum, Jordan, Wadi Rum travel, wildlife, nature, national park, scenery, GATEO, Wadi Rum trip planner, Wadi Rum plan a trip, Wadi Rum trip planning, Wadi Rum free travel, Wadi Rum independent travel, Wadi Rum backpacking, Wadi Rum flights, Wadi Rum flight route, Wadi Rum air route, Wadi Rum nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to AMM, ICN AMM, ICN→PEK·CAI→AMM, Wadi Rum connecting flights",
+        "description": "Flight route ICN→PEK·CAI→AMM via PEK, CAI. About 11 hours. Plan independent travel to Wadi Rum — flights, stays, and local tips. Ask MOONi, your AI travel docent. Camp in Wadi Rum, Jordan — Mars-like red desert canyons where Lawrence of Arabia and Dune were filmed, best explored on camel treks and Bedouin camp stargazing nights.",
+        "keywords": "Wadi Rum, Jordan, desert camp, Bedouin culture, stargazing, adventure travel, Wadi Rum travel, Wadi Rum trip planner, Wadi Rum plan a trip, Wadi Rum trip planning, Wadi Rum free travel, Wadi Rum independent travel, Wadi Rum backpacking, Wadi Rum flights, Wadi Rum flight route, Wadi Rum air route, Wadi Rum nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to AMM, ICN AMM, ICN→PEK·CAI→AMM, Wadi Rum connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/wadi-rum/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -32114,8 +32114,8 @@ export default {
       },
       "en": {
         "title": "Wadi Rum travel sketch · guide",
-        "description": "Wadi Rum travel sketch, Local Watson tips, and independent travel guide. Discover Wadi Rum, Jordan — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Wadi Rum, Jordan, Wadi Rum travel, wildlife, nature, national park, scenery, GATEO, Wadi Rum travel guide, Wadi Rum travel sketch, Wadi Rum free travel, Wadi Rum local tips, Wadi Rum independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Wadi Rum travel sketch, Local Watson tips, and independent travel guide. Camp in Wadi Rum, Jordan — Mars-like red desert canyons where Lawrence of Arabia and Dune were filmed, best explored on camel treks and Bedouin camp stargazing nights.",
+        "keywords": "Wadi Rum, Jordan, desert camp, Bedouin culture, stargazing, adventure travel, Wadi Rum travel guide, Wadi Rum travel sketch, Wadi Rum free travel, Wadi Rum local tips, Wadi Rum independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/wadi-rum/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -32326,8 +32326,8 @@ export default {
       },
       "en": {
         "title": "Washington DC travel photos · gallery",
-        "description": "Browse Washington DC travel photos and gallery images. Discover Washington DC, USA — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Washington DC, USA, Washington DC travel, city guide, city break, sightseeing, GATEO, Washington DC photos, Washington DC gallery, Washington DC pictures, photos, gallery, pictures, travel",
+        "description": "Browse Washington DC travel photos and gallery images. Tour Washington DC, USA — the U.S. capital of Smithsonian museums, the National Mall monuments, Capitol Hill, cherry blossoms, and free world-class galleries along the Potomac.",
+        "keywords": "Washington DC, USA, National Mall, Smithsonian, monuments tour, city break, Washington DC photos, Washington DC gallery, Washington DC pictures, Washington DC travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/washington-dc/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -32380,8 +32380,8 @@ export default {
       },
       "en": {
         "title": "Washington DC travel · trip planner",
-        "description": "Flight route ICN→ATL→IAD via ATL. About 15 hours. Plan independent travel to Washington DC — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Washington DC, USA — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Washington DC, USA, Washington DC travel, city guide, city break, sightseeing, GATEO, Washington DC trip planner, Washington DC plan a trip, Washington DC trip planning, Washington DC free travel, Washington DC independent travel, Washington DC backpacking, Washington DC flights, Washington DC flight route, Washington DC air route, Washington DC nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to IAD, ICN IAD, ICN→ATL→IAD, Washington DC connecting flights",
+        "description": "Flight route ICN→ATL→IAD via ATL. About 15 hours. Plan independent travel to Washington DC — flights, stays, and local tips. Ask MOONi, your AI travel docent. Tour Washington DC, USA — the U.S. capital of Smithsonian museums, the National Mall monuments, Capitol Hill, cherry blossoms, and free world-class galleries along the Potomac.",
+        "keywords": "Washington DC, USA, National Mall, Smithsonian, monuments tour, city break, Washington DC travel, Washington DC trip planner, Washington DC plan a trip, Washington DC trip planning, Washington DC free travel, Washington DC independent travel, Washington DC backpacking, Washington DC flights, Washington DC flight route, Washington DC air route, Washington DC nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to IAD, ICN IAD, ICN→ATL→IAD, Washington DC connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/washington-dc/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -32426,8 +32426,8 @@ export default {
       },
       "en": {
         "title": "Washington DC travel sketch · guide",
-        "description": "Washington DC travel sketch, Local Watson tips, and independent travel guide. Discover Washington DC, USA — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Washington DC, USA, Washington DC travel, city guide, city break, sightseeing, GATEO, Washington DC travel guide, Washington DC travel sketch, Washington DC free travel, Washington DC local tips, Washington DC independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Washington DC travel sketch, Local Watson tips, and independent travel guide. Tour Washington DC, USA — the U.S. capital of Smithsonian museums, the National Mall monuments, Capitol Hill, cherry blossoms, and free world-class galleries along the Potomac.",
+        "keywords": "Washington DC, USA, National Mall, Smithsonian, monuments tour, city break, Washington DC travel guide, Washington DC travel sketch, Washington DC free travel, Washington DC local tips, Washington DC independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/washington-dc/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -32482,8 +32482,8 @@ export default {
       },
       "en": {
         "title": "Yellowknife travel photos · gallery",
-        "description": "Browse Yellowknife travel photos and gallery images. Discover Yellowknife, Canada — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Yellowknife, Canada, Yellowknife travel, wildlife, nature, national park, scenery, GATEO, Yellowknife photos, Yellowknife gallery, Yellowknife pictures, photos, gallery, pictures, travel",
+        "description": "Browse Yellowknife travel photos and gallery images. Chase auroras in Yellowknife, Canada — a NASA-ranked northern lights capital on Great Slave Lake where curtains of color fill Arctic night skies in Northwest Territories wilderness.",
+        "keywords": "Yellowknife, Canada, Northern Lights, aurora tour, Great Slave Lake, Arctic travel, Yellowknife photos, Yellowknife gallery, Yellowknife pictures, Yellowknife travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/yellowknife/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -32536,8 +32536,8 @@ export default {
       },
       "en": {
         "title": "Yellowknife travel · trip planner",
-        "description": "Flight route ICN→LAX→YZF via LAX. About 16 hours. Plan independent travel to Yellowknife — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Yellowknife, Canada — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Yellowknife, Canada, Yellowknife travel, wildlife, nature, national park, scenery, GATEO, Yellowknife trip planner, Yellowknife plan a trip, Yellowknife trip planning, Yellowknife free travel, Yellowknife independent travel, Yellowknife backpacking, Yellowknife flights, Yellowknife flight route, Yellowknife air route, Yellowknife nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to YZF, ICN YZF, ICN→LAX→YZF, Yellowknife connecting flights",
+        "description": "Flight route ICN→LAX→YZF via LAX. About 16 hours. Plan independent travel to Yellowknife — flights, stays, and local tips. Ask MOONi, your AI travel docent. Chase auroras in Yellowknife, Canada — a NASA-ranked northern lights capital on Great Slave Lake where curtains of color fill Arctic night skies in Northwest Territories wilderness.",
+        "keywords": "Yellowknife, Canada, Northern Lights, aurora tour, Great Slave Lake, Arctic travel, Yellowknife travel, Yellowknife trip planner, Yellowknife plan a trip, Yellowknife trip planning, Yellowknife free travel, Yellowknife independent travel, Yellowknife backpacking, Yellowknife flights, Yellowknife flight route, Yellowknife air route, Yellowknife nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to YZF, ICN YZF, ICN→LAX→YZF, Yellowknife connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/yellowknife/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -32582,8 +32582,8 @@ export default {
       },
       "en": {
         "title": "Yellowknife travel sketch · guide",
-        "description": "Yellowknife travel sketch, Local Watson tips, and independent travel guide. Discover Yellowknife, Canada — a nature and wildlife destination with photos, videos, and trip planning on GATEO.",
-        "keywords": "Yellowknife, Canada, Yellowknife travel, wildlife, nature, national park, scenery, GATEO, Yellowknife travel guide, Yellowknife travel sketch, Yellowknife free travel, Yellowknife local tips, Yellowknife independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Yellowknife travel sketch, Local Watson tips, and independent travel guide. Chase auroras in Yellowknife, Canada — a NASA-ranked northern lights capital on Great Slave Lake where curtains of color fill Arctic night skies in Northwest Territories wilderness.",
+        "keywords": "Yellowknife, Canada, Northern Lights, aurora tour, Great Slave Lake, Arctic travel, Yellowknife travel guide, Yellowknife travel sketch, Yellowknife free travel, Yellowknife local tips, Yellowknife independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/yellowknife/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -32950,8 +32950,8 @@ export default {
       },
       "en": {
         "title": "Zagreb travel photos · gallery",
-        "description": "Browse Zagreb travel photos and gallery images. Discover Zagreb, Croatia — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Zagreb, Croatia, Zagreb travel, city guide, city break, sightseeing, GATEO, Zagreb photos, Zagreb gallery, Zagreb pictures, photos, gallery, pictures, travel",
+        "description": "Browse Zagreb travel photos and gallery images. Stroll Zagreb, Croatia — a Central European capital of Austro-Hungarian architecture, lively Tkalciceva café street, quirky Museum of Broken Relationships, and nearby Plitvice access.",
+        "keywords": "Zagreb, Croatia, Upper Town, café culture, Central Europe, city break, Zagreb photos, Zagreb gallery, Zagreb pictures, Zagreb travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/zagreb/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -33004,8 +33004,8 @@ export default {
       },
       "en": {
         "title": "Zagreb travel · trip planner",
-        "description": "Flight route ICN→MUC→ZAG via MUC. About 11 hours. Plan independent travel to Zagreb — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Zagreb, Croatia — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Zagreb, Croatia, Zagreb travel, city guide, city break, sightseeing, GATEO, Zagreb trip planner, Zagreb plan a trip, Zagreb trip planning, Zagreb free travel, Zagreb independent travel, Zagreb backpacking, Zagreb flights, Zagreb flight route, Zagreb air route, Zagreb nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to ZAG, ICN ZAG, ICN→MUC→ZAG, Zagreb connecting flights",
+        "description": "Flight route ICN→MUC→ZAG via MUC. About 11 hours. Plan independent travel to Zagreb — flights, stays, and local tips. Ask MOONi, your AI travel docent. Stroll Zagreb, Croatia — a Central European capital of Austro-Hungarian architecture, lively Tkalciceva café street, quirky Museum of Broken Relationships, and nearby Plitvice access.",
+        "keywords": "Zagreb, Croatia, Upper Town, café culture, Central Europe, city break, Zagreb travel, Zagreb trip planner, Zagreb plan a trip, Zagreb trip planning, Zagreb free travel, Zagreb independent travel, Zagreb backpacking, Zagreb flights, Zagreb flight route, Zagreb air route, Zagreb nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to ZAG, ICN ZAG, ICN→MUC→ZAG, Zagreb connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/zagreb/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -33050,8 +33050,8 @@ export default {
       },
       "en": {
         "title": "Zagreb travel sketch · guide",
-        "description": "Zagreb travel sketch, Local Watson tips, and independent travel guide. Discover Zagreb, Croatia — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Zagreb, Croatia, Zagreb travel, city guide, city break, sightseeing, GATEO, Zagreb travel guide, Zagreb travel sketch, Zagreb free travel, Zagreb local tips, Zagreb independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Zagreb travel sketch, Local Watson tips, and independent travel guide. Stroll Zagreb, Croatia — a Central European capital of Austro-Hungarian architecture, lively Tkalciceva café street, quirky Museum of Broken Relationships, and nearby Plitvice access.",
+        "keywords": "Zagreb, Croatia, Upper Town, café culture, Central Europe, city break, Zagreb travel guide, Zagreb travel sketch, Zagreb free travel, Zagreb local tips, Zagreb independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/zagreb/wiki?lang=en",
         "hreflangAlternates": [
           {
@@ -33574,8 +33574,8 @@ export default {
       },
       "en": {
         "title": "Zurich travel photos · gallery",
-        "description": "Browse Zurich travel photos and gallery images. Discover Zurich, Switzerland — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Zurich, Switzerland, Zurich travel, city guide, city break, sightseeing, GATEO, Zurich photos, Zurich gallery, Zurich pictures, photos, gallery, pictures, travel",
+        "description": "Browse Zurich travel photos and gallery images. Discover Zurich, Switzerland — a pristine lakeside financial hub with medieval Altstadt lanes, Bahnhofstrasse shopping, Limmat swimming spots, and Alps day trips within an hour.",
+        "keywords": "Zurich, Switzerland, Lake Zurich, Altstadt, Swiss Alps day trip, city break, Zurich photos, Zurich gallery, Zurich pictures, Zurich travel, photos, gallery, pictures, travel",
         "canonicalUrl": "https://www.gateo.kr/place/zurich/gallery?lang=en",
         "hreflangAlternates": [
           {
@@ -33628,8 +33628,8 @@ export default {
       },
       "en": {
         "title": "Zurich travel · trip planner",
-        "description": "Flight route ICN→MUC→ZRH via MUC. About 11 hours. Plan independent travel to Zurich — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Zurich, Switzerland — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Zurich, Switzerland, Zurich travel, city guide, city break, sightseeing, GATEO, Zurich trip planner, Zurich plan a trip, Zurich trip planning, Zurich free travel, Zurich independent travel, Zurich backpacking, Zurich flights, Zurich flight route, Zurich air route, Zurich nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to ZRH, ICN ZRH, ICN→MUC→ZRH, Zurich connecting flights",
+        "description": "Flight route ICN→MUC→ZRH via MUC. About 11 hours. Plan independent travel to Zurich — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Zurich, Switzerland — a pristine lakeside financial hub with medieval Altstadt lanes, Bahnhofstrasse shopping, Limmat swimming spots, and Alps day trips within an hour.",
+        "keywords": "Zurich, Switzerland, Lake Zurich, Altstadt, Swiss Alps day trip, city break, Zurich travel, Zurich trip planner, Zurich plan a trip, Zurich trip planning, Zurich free travel, Zurich independent travel, Zurich backpacking, Zurich flights, Zurich flight route, Zurich air route, Zurich nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to ZRH, ICN ZRH, ICN→MUC→ZRH, Zurich connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/zurich/planner?lang=en",
         "hreflangAlternates": [
           {
@@ -33674,8 +33674,8 @@ export default {
       },
       "en": {
         "title": "Zurich travel sketch · guide",
-        "description": "Zurich travel sketch, Local Watson tips, and independent travel guide. Discover Zurich, Switzerland — a city travel guide with photos, videos, and trip planning on GATEO.",
-        "keywords": "Zurich, Switzerland, Zurich travel, city guide, city break, sightseeing, GATEO, Zurich travel guide, Zurich travel sketch, Zurich free travel, Zurich local tips, Zurich independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "description": "Zurich travel sketch, Local Watson tips, and independent travel guide. Discover Zurich, Switzerland — a pristine lakeside financial hub with medieval Altstadt lanes, Bahnhofstrasse shopping, Limmat swimming spots, and Alps day trips within an hour.",
+        "keywords": "Zurich, Switzerland, Lake Zurich, Altstadt, Swiss Alps day trip, city break, Zurich travel guide, Zurich travel sketch, Zurich free travel, Zurich local tips, Zurich independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
         "canonicalUrl": "https://www.gateo.kr/place/zurich/wiki?lang=en",
         "hreflangAlternates": [
           {

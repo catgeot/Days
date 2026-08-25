@@ -1,4 +1,19 @@
 export const PLACE_SEO_EN_OVERRIDES = {
+  'alaska': {
+    desc_en:
+      'Discover Alaska, USA — North America\'s wild frontier where glaciers calve into the sea, grizzly bears roam coastlines, and whale-watching cruises reveal raw Arctic beauty.',
+    keywords_en: ['Alaska', 'USA', 'glacier cruise', 'wildlife tour', 'whale watching', 'adventure travel'],
+  },
+  'alice-springs': {
+    desc_en:
+      'Start from Alice Springs, Australia — the Outback hub at the continent\'s heart for Uluru sunrise trips, Kings Canyon hikes, MacDonnell Ranges drives, and Aboriginal culture experiences.',
+    keywords_en: ['Alice Springs', 'Australia', 'Uluru day trip', 'Outback', 'Kings Canyon', 'Northern Australia'],
+  },
+  'amazon-rainforest': {
+    desc_en:
+      'Journey into the Amazon Rainforest — Earth\'s largest jungle and South America\'s life-giving lungs, where riverboat expeditions reveal pink dolphins, exotic birds, and untamed ecological wonder.',
+    keywords_en: ['Amazon Rainforest', 'Brazil', 'jungle trek', 'river cruise', 'wildlife', 'eco tourism'],
+  },
   'amsterdam': {
     desc_en:
       'Explore Amsterdam\'s picturesque canals, world-class museums like the Van Gogh Museum, and Anne Frank House in the Netherlands\' most vibrant, bike-friendly city.',
@@ -84,6 +99,11 @@ export const PLACE_SEO_EN_OVERRIDES = {
       'Relax in Bodrum, Turkey — the Aegean\'s whitewashed castle town with turquoise coves, windmills, yacht-filled marinas, and gateway ferries to Greek islands.',
     keywords_en: ['Bodrum', 'Turkey', 'Aegean coast', 'beach resort', 'yacht charter', 'castle views'],
   },
+  'bohol': {
+    desc_en:
+      'Discover Bohol, Philippines — Chocolate Hills panoramas, the world\'s smallest tarsier primates, pristine diving sites, and relaxed island escapes in the Visayas archipelago.',
+    keywords_en: ['Bohol', 'Philippines', 'Chocolate Hills', 'tarsier', 'diving', 'island travel'],
+  },
   'bora-bora': {
     desc_en:
       'Dream of Bora Bora, French Polynesia — overwater bungalows above a turquoise lagoon, Mount Otemanu peaks, and some of the South Pacific\'s most iconic island luxury.',
@@ -113,6 +133,16 @@ export const PLACE_SEO_EN_OVERRIDES = {
     desc_en:
       'Visit Brisbane, Australia — Queensland\'s sunny capital with South Bank Parklands, Lone Pine koalas, and easy access to the Gold Coast and Sunshine Coast.',
     keywords_en: ['Brisbane', 'Australia', 'Queensland', 'koala sanctuary', 'city break', 'Gold Coast day trip'],
+  },
+  'brunei': {
+    desc_en:
+      'Visit Brunei — a small Borneo sultanate of golden-domed mosques, water villages, tropical rainforest, and gateway city Bandar Seri Begawan via BWN near Malaysian Sabah.',
+    keywords_en: ['Brunei', 'Borneo', 'Bandar Seri Begawan', 'mosque tour', 'rainforest', 'Southeast Asia'],
+  },
+  'brussels': {
+    desc_en:
+      'Explore Brussels, Belgium — EU capital with UNESCO Grand Place guild houses, Manneken Pis, world-famous waffles and chocolate, and surrealism at the Magritte Museum.',
+    keywords_en: ['Brussels', 'Belgium', 'Grand Place', 'EU capital', 'Belgian chocolate', 'city break'],
   },
   'budapest': {
     desc_en:
@@ -174,6 +204,11 @@ export const PLACE_SEO_EN_OVERRIDES = {
       'Discover Copenhagen, Denmark — one of the world\'s happiest capitals, with Nyhavn\'s colorful harbor, the Little Mermaid, Tivoli Gardens, and Nordic design.',
     keywords_en: ['Copenhagen', 'Denmark', 'Nyhavn', 'cycling city', 'Nordic design', 'city break'],
   },
+  'corsica': {
+    desc_en:
+      'Discover Corsica, France — a Mediterranean island of rugged GR20 trekking peaks, Napoleon\'s birthplace Ajaccio, and hidden beaches where French and Italian cultures blend.',
+    keywords_en: ['Corsica', 'France', 'GR20 trek', 'Mediterranean island', 'Napoleon', 'hiking'],
+  },
   'costa-rica': {
     desc_en:
       'Explore Costa Rica — Central America\'s eco-tourism paradise of zip-lines through rainforest canopy, volcano hikes, whitewater rafting, surfing, and cloud-forest wildlife.',
@@ -198,6 +233,11 @@ export const PLACE_SEO_EN_OVERRIDES = {
     desc_en:
       'Explore Delhi, India — a vast capital where Humayun\'s Tomb and the India Gate meet bustling bazaars and legendary cuisine on the gateway to the Taj Mahal.',
     keywords_en: ['Delhi', 'India', 'Taj Mahal gateway', 'street food', 'historic monuments', 'city travel'],
+  },
+  'diego-garcia': {
+    desc_en:
+      'Learn about Diego Garcia — a remote British Indian Ocean coral atoll in the Chagos Archipelago, a restricted military territory rarely open to civilian travel at the ocean\'s center.',
+    keywords_en: ['Diego Garcia', 'Indian Ocean', 'Chagos Archipelago', 'remote atoll', 'geography', 'island'],
   },
   'dolomites': {
     desc_en:
@@ -284,6 +324,11 @@ export const PLACE_SEO_EN_OVERRIDES = {
       'Discover the Galapagos, Ecuador — islands where Darwin\'s evolution unfolded, offering close encounters with fearless wildlife on nature\'s most extraordinary archipelago.',
     keywords_en: ['Galapagos', 'Ecuador', 'wildlife cruise', 'evolution', 'island expedition', 'nature travel'],
   },
+  'geneva': {
+    desc_en:
+      'Visit Geneva, Switzerland — a lakeside international city home to the UN and Red Cross, crowned by the 140 m Jet d\'Eau fountain, flower clock, and French-inspired Lake Geneva dining.',
+    keywords_en: ['Geneva', 'Switzerland', 'Lake Geneva', 'Jet d Eau', 'UN headquarters', 'city break'],
+  },
   'gili-meno': {
     desc_en:
       'Escape to Gili Meno, Indonesia — the quietest of the Gili Islands with turtle snorkeling, bioluminescent nights, and unspoiled beaches near Lombok.',
@@ -313,6 +358,11 @@ export const PLACE_SEO_EN_OVERRIDES = {
     desc_en:
       'Walk the Great Wall of China — 21,196 km of ancient fortifications with iconic Badaling and Mutianyu sections snaking across mountain ridges near Beijing.',
     keywords_en: ['Great Wall of China', 'Beijing', 'China', 'Badaling', 'Mutianyu', 'UNESCO heritage'],
+  },
+  'greenland': {
+    desc_en:
+      'Explore Greenland — the world\'s largest island where ice sheets, Arctic fjords, and northern lights meet Inuit culture, usually via Copenhagen gateway flights to Nuuk or Ilulissat.',
+    keywords_en: ['Greenland', 'Arctic travel', 'Northern Lights', 'Ilulissat', 'iceberg cruise', 'adventure'],
   },
   'guam': {
     desc_en:
@@ -364,6 +414,11 @@ export const PLACE_SEO_EN_OVERRIDES = {
       'Visit Honolulu, Hawaii — Waikiki Beach energy and Diamond Head vistas combine world-class resorts, shopping, and island adventure in the heart of the Pacific.',
     keywords_en: ['Honolulu', 'Hawaii', 'Waikiki Beach', 'island vacation', 'Diamond Head', 'beach travel'],
   },
+  'hue': {
+    desc_en:
+      'Explore Hue, Vietnam — former Nguyen dynasty capital with Imperial Citadel palaces, Perfume River dragon boats, royal tombs, and legendary central Vietnamese imperial cuisine.',
+    keywords_en: ['Hue', 'Vietnam', 'Imperial Citadel', 'Perfume River', 'royal tombs', 'heritage tour'],
+  },
   'hvar': {
     desc_en:
       'Sail to Hvar, Croatia — a sun-drenched Adriatic island of lavender fields, Hvar Town\'s marble squares, hidden coves, and Croatia\'s liveliest island nightlife.',
@@ -373,6 +428,16 @@ export const PLACE_SEO_EN_OVERRIDES = {
     desc_en:
       'Experience Ibiza, Spain — legendary Mediterranean nightlife meets hidden coves, bohemian beach clubs, Dalt Vila old town, and sunset views from dramatic sea cliffs.',
     keywords_en: ['Ibiza', 'Spain', 'beach club', 'nightlife', 'Mediterranean island', 'summer vacation'],
+  },
+  'iceland': {
+    desc_en:
+      'Discover Iceland — the Land of Fire and Ice where glaciers, active volcanoes, midnight sun summers, aurora winters, and thundering waterfalls define Europe\'s most dramatic island edge.',
+    keywords_en: ['Iceland', 'Northern Lights', 'Golden Circle', 'volcano', 'waterfalls', 'adventure travel'],
+  },
+  'iguazu-falls': {
+    desc_en:
+      'Witness Iguazu Falls, Argentina — South America\'s roaring cascade where hundreds of falls thunder into the Devil\'s Throat gorge amid subtropical rainforest on the Brazil border.',
+    keywords_en: ['Iguazu Falls', 'Argentina', 'Devils Throat', 'waterfall tour', 'rainforest', 'South America'],
   },
   'inca-trail': {
     desc_en:
@@ -453,6 +518,11 @@ export const PLACE_SEO_EN_OVERRIDES = {
     desc_en:
       'Explore Kuala Lumpur, Malaysia — home to the Petronas Towers, Batu Caves temples, and a multicultural mix of mosques, Chinese shrines, shopping, and street food.',
     keywords_en: ['Kuala Lumpur', 'Malaysia', 'Petronas Towers', 'Batu Caves', 'street food', 'city travel'],
+  },
+  'kumamoto': {
+    desc_en:
+      'Explore Kumamoto, Japan — Kyushu heartland of one of Japan\'s three great castles, mighty Aso caldera volcano, black-spring Kurokawa Onsen, and hometown of mascot Kumamon.',
+    keywords_en: ['Kumamoto', 'Japan', 'Kumamoto Castle', 'Aso volcano', 'Kurokawa Onsen', 'Kyushu travel'],
   },
   'kyoto': {
     desc_en:
@@ -544,6 +614,11 @@ export const PLACE_SEO_EN_OVERRIDES = {
       'Discover Melbourne, Australia — the culture capital for flat whites, laneway street art, and the gateway to the Great Ocean Road\'s unforgettable coastal drives.',
     keywords_en: ['Melbourne', 'Australia', 'street art', 'coffee culture', 'Great Ocean Road', 'city break'],
   },
+  'meteora': {
+    desc_en:
+      'Marvel at Meteora, Greece — gravity-defying medieval monasteries perched atop towering sandstone pillars in central Greece, creating one of Europe\'s most surreal spiritual landscapes.',
+    keywords_en: ['Meteora', 'Greece', 'monastery', 'UNESCO heritage', 'rock formations', 'photo spot'],
+  },
   'miami': {
     desc_en:
       'Feel Miami, USA — Art Deco South Beach, Cuban culture in Little Havana, Wynwood street art, cruise-ship capital energy, and year-round Florida sunshine.',
@@ -558,6 +633,16 @@ export const PLACE_SEO_EN_OVERRIDES = {
     desc_en:
       'Cruise Milford Sound, New Zealand — Rudyard Kipling\'s eighth wonder with 1,200 m cliffs, cascading waterfalls, dolphins, and misty fiord drama.',
     keywords_en: ['Milford Sound', 'New Zealand', 'fiord cruise', 'waterfalls', 'Fiordland', 'scenic tour'],
+  },
+  'minneapolis': {
+    desc_en:
+      'Visit Minneapolis, USA — Twin Cities hub of world-class art museums, Chain of Lakes parks, Mall of America shopping, and MSP airport gateway to the American Midwest.',
+    keywords_en: ['Minneapolis', 'USA', 'Twin Cities', 'Mall of America', 'MSP airport', 'city break'],
+  },
+  'miyakojima': {
+    desc_en:
+      'Relax on Miyakojima, Japan — Okinawa\'s coral isle famed for Miyako Blue seas, Yonaha Maehama Beach, and crystal snorkeling among Japan\'s finest tropical shores.',
+    keywords_en: ['Miyakojima', 'Japan', 'Miyako Blue', 'beach vacation', 'snorkeling', 'Okinawa islands'],
   },
   'mont-blanc': {
     desc_en:
@@ -629,10 +714,25 @@ export const PLACE_SEO_EN_OVERRIDES = {
       'Explore Osaka, Japan — Japan\'s kitchen with Dotonbori neon, street food feasts, Universal Studios Japan, and unbeatable access to nearby Kyoto and Nara day trips.',
     keywords_en: ['Osaka', 'Japan', 'street food', 'Dotonbori', 'Universal Studios Japan', 'city break'],
   },
+  'oslo': {
+    desc_en:
+      'Explore Oslo, Norway — a capital framed by fjords and forests with Vigeland Sculpture Park, iconic Opera House architecture, Viking Ship Museum, and nearby northern lights winters.',
+    keywords_en: ['Oslo', 'Norway', 'Vigeland Park', 'Opera House', 'Viking Museum', 'city break'],
+  },
+  'palawan': {
+    desc_en:
+      'Discover Palawan, Philippines — the country\'s last frontier of limestone cliffs, underground rivers, turquoise lagoons, and legendary El Nido island-hopping adventures.',
+    keywords_en: ['Palawan', 'Philippines', 'El Nido', 'island hopping', 'limestone lagoon', 'beach paradise'],
+  },
   'paris': {
     desc_en:
       'Discover Paris, France — the City of Light with the Eiffel Tower, Louvre masterpieces, Notre-Dame, Champs-Élysées strolls, cafés, and timeless romance.',
     keywords_en: ['Paris', 'France', 'Eiffel Tower', 'Louvre Museum', 'romantic travel', 'city break'],
+  },
+  'patagonia': {
+    desc_en:
+      'Explore Northern Patagonia, Argentina — Andean lakes, Bariloche resort town, and Nahuel Huapi scenery distinct from southern Torres del Paine, usually via Buenos Aires to BRC airport.',
+    keywords_en: ['Patagonia', 'Argentina', 'Bariloche', 'Andes lakes', 'ski resort', 'South America'],
   },
   'persepolis': {
     desc_en:
@@ -684,6 +784,11 @@ export const PLACE_SEO_EN_OVERRIDES = {
       'Explore Prague, Czech Republic — Charles Bridge over the Vltava frames fairy-tale spires, red rooftops, and one of Eastern Europe\'s most romantic evening skylines.',
     keywords_en: ['Prague', 'Czech Republic', 'Charles Bridge', 'old town', 'romantic travel', 'city break'],
   },
+  'qingdao': {
+    desc_en:
+      'Stroll Qingdao, China — the Oriental Naples where red-roofed German colonial streets meet blue coastlines, famous Tsingtao beer, and seafood along the waterfront.',
+    keywords_en: ['Qingdao', 'China', 'Tsingtao beer', 'German architecture', 'coastal city', 'city break'],
+  },
   'queenstown': {
     desc_en:
       'Thrill-seek in Queenstown, New Zealand — bungee jumping, skydiving, and Milford Sound tours from a lakeside adventure hub beneath the Remarkables.',
@@ -718,6 +823,11 @@ export const PLACE_SEO_EN_OVERRIDES = {
     desc_en:
       'Discover Saipan, Northern Mariana Islands — crystal-clear lagoons, Managaha Island snorkeling, WWII history, and family-friendly Pacific beaches.',
     keywords_en: ['Saipan', 'Northern Mariana Islands', 'snorkeling', 'Managaha Island', 'beach vacation', 'Pacific island'],
+  },
+  'samoa': {
+    desc_en:
+      'Discover Samoa — Polynesia\'s heart of lush rainforest waterfalls, crystal To Sua ocean trench swimming, fa\'a Samoa culture, and uncrowded South Pacific island life.',
+    keywords_en: ['Samoa', 'Polynesia', 'To Sua trench', 'South Pacific', 'island culture', 'beach vacation'],
   },
   'san-diego': {
     desc_en:
@@ -754,6 +864,11 @@ export const PLACE_SEO_EN_OVERRIDES = {
       'Explore Seogwipo, South Korea — Jeju\'s southern hub with Cheonjiyeon and Jeongbang waterfalls, Jusangjeolli cliffs, Seopjikoji coast, and tangerine groves.',
     keywords_en: ['Seogwipo', 'Jeju', 'South Korea', 'waterfalls', 'coastal hike', 'island travel'],
   },
+  'seoul': {
+    desc_en:
+      'Experience Seoul, South Korea — a sleepless megacity where 600-year royal palaces meet glittering skylines, cutting-edge fashion, K-culture, night markets, and world-class dining.',
+    keywords_en: ['Seoul', 'South Korea', 'palace tour', 'K-pop culture', 'street food', 'city break'],
+  },
   'sequoia-national-park': {
     desc_en:
       'Stand among giants at Sequoia National Park, USA — home to General Sherman, the world\'s largest tree, granite domes, Moro Rock vistas, and Sierra Nevada wilderness in California.',
@@ -783,6 +898,11 @@ export const PLACE_SEO_EN_OVERRIDES = {
     desc_en:
       'Discover Sicily, Italy — Mount Etna volcanoes, baroque towns, Greek temples at Agrigento, and Mediterranean cuisine on Italy\'s largest island.',
     keywords_en: ['Sicily', 'Italy', 'Mount Etna', 'Mediterranean island', 'food travel', 'heritage tour'],
+  },
+  'similan-islands': {
+    desc_en:
+      'Dive the Similan Islands, Thailand — one of the world\'s top ten dive sites with manta rays, whale sharks, and impossibly clear Andaman waters in a protected marine park.',
+    keywords_en: ['Similan Islands', 'Thailand', 'scuba diving', 'manta ray', 'marine park', 'snorkeling'],
   },
   'singapore': {
     desc_en:
@@ -839,15 +959,30 @@ export const PLACE_SEO_EN_OVERRIDES = {
       'Trek Torres del Paine, Chile — Patagonia\'s granite towers, W and O circuit trails, glacial lakes, and wild guanaco country near Punta Arenas gateway.',
     keywords_en: ['Torres del Paine', 'Chile', 'Patagonia trek', 'W circuit', 'national park', 'hiking'],
   },
+  'tsushima': {
+    desc_en:
+      'Visit Tsushima, Japan — the Korean Daemado island reached by fast ferry from Busan to Hitakatsu in about one hour for coastal trails, hot springs, duty-free shopping, and clear seas.',
+    keywords_en: ['Tsushima', 'Japan', 'Daemado', 'Busan ferry', 'island day trip', 'Korea Japan travel'],
+  },
   'ubud': {
     desc_en:
       'Restore in Ubud, Bali — the island\'s cultural soul of rice terraces, monkey forest temples, yoga retreats, artisan markets, and lush valleys that inspired Eat Pray Love.',
     keywords_en: ['Ubud', 'Bali', 'Indonesia', 'rice terraces', 'yoga retreat', 'art village'],
   },
+  'ulaanbaatar': {
+    desc_en:
+      'Discover Ulaanbaatar, Mongolia — nomadic heart of the steppe where endless grasslands, gers, and star-filled skies frame the capital gateway to the Gobi and horse country beyond.',
+    keywords_en: ['Ulaanbaatar', 'Mongolia', 'Gobi Desert', 'nomad culture', 'steppe tour', 'adventure travel'],
+  },
   'ushuaia': {
     desc_en:
       'Visit Ushuaia, Argentina — the world\'s southernmost city on Tierra del Fuego, gateway port (USH) for Antarctica and Patagonia cruises at the end of the Earth.',
     keywords_en: ['Ushuaia', 'Argentina', 'Antarctica cruise', 'Tierra del Fuego', 'Patagonia', 'end of the world'],
+  },
+  'uyuni-salt-flat': {
+    desc_en:
+      'Marvel at Bolivia\'s Uyuni Salt Flat — the world\'s largest salt desert that becomes a vast mirror in wet season, erasing the horizon between sky and earth in an otherworldly spectacle.',
+    keywords_en: ['Uyuni Salt Flat', 'Bolivia', 'salt desert', 'mirror reflection', 'Salar de Uyuni', 'photo tour'],
   },
   'vancouver': {
     desc_en:
@@ -879,10 +1014,20 @@ export const PLACE_SEO_EN_OVERRIDES = {
       'Visit Vienna, Austria — the City of Music and former Habsburg capital with Schönbrunn Palace, the Opera House, grand cafés, and timeless Viennese waltz elegance.',
     keywords_en: ['Vienna', 'Austria', 'Schonbrunn Palace', 'classical music', 'coffee culture', 'city break'],
   },
+  'vientiane': {
+    desc_en:
+      'Unwind in Vientiane, Laos — one of Southeast Asia\'s most relaxed capitals on the Mekong with golden Pha That Luang, Patuxai arch, French colonial villas, and riverside Beerlao sunsets.',
+    keywords_en: ['Vientiane', 'Laos', 'Mekong River', 'Buddhist temple', 'Patuxai', 'Southeast Asia'],
+  },
   'vladivostok': {
     desc_en:
       'Reach Vladivostok, Russia — the Trans-Siberian\'s Pacific terminus with Golden Horn bridges, fresh seafood markets, Russky Island vistas, and gateway ferries to Japan and Korea.',
     keywords_en: ['Vladivostok', 'Russia', 'Trans-Siberian', 'Pacific port', 'Far East travel', 'bridge views'],
+  },
+  'wadi-rum': {
+    desc_en:
+      'Camp in Wadi Rum, Jordan — Mars-like red desert canyons where Lawrence of Arabia and Dune were filmed, best explored on camel treks and Bedouin camp stargazing nights.',
+    keywords_en: ['Wadi Rum', 'Jordan', 'desert camp', 'Bedouin culture', 'stargazing', 'adventure travel'],
   },
   'warsaw': {
     desc_en:
@@ -893,6 +1038,11 @@ export const PLACE_SEO_EN_OVERRIDES = {
     desc_en:
       'Tour Washington DC, USA — the U.S. capital of Smithsonian museums, the National Mall monuments, Capitol Hill, cherry blossoms, and free world-class galleries along the Potomac.',
     keywords_en: ['Washington DC', 'USA', 'National Mall', 'Smithsonian', 'monuments tour', 'city break'],
+  },
+  'yellowknife': {
+    desc_en:
+      'Chase auroras in Yellowknife, Canada — a NASA-ranked northern lights capital on Great Slave Lake where curtains of color fill Arctic night skies in Northwest Territories wilderness.',
+    keywords_en: ['Yellowknife', 'Canada', 'Northern Lights', 'aurora tour', 'Great Slave Lake', 'Arctic travel'],
   },
   'yokohama': {
     desc_en:

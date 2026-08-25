@@ -40,22 +40,22 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 
 | | |
 |--|--|
-| **상태** | **#19 GSC baseline·tier2 EN batch3 완료** · tier2 EN 잔여 30 |
+| **상태** | **#20 tier2 EN batch4 완료** (216 · pop70–79 109/109) · GSC baseline template batch4 샘플 |
 | **브랜치** | **`main`** |
 | **main** | `024e605a` |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
-| **사람 QA (#19)** | GSC URL Inspection — `scripts/data/gsc-seo-baseline-template.csv` 174 URL |
+| **사람 QA (#20)** | GSC URL Inspection — template 174 URL · batch4 EN gallery(`seoul`·`bohol`·`samoa`·`iceland`·`palawan`) |
 | **VERIFY** | `audit:place-seo-en` · `smoke:gsc-baseline` · `smoke:place-seo-en` · `build` |
 
 **다음 제시어**:
 
 ```
-검색노출 #20, tier2 EN 배치4 마무리
+검색노출 #21, GSC baseline 사람 QA
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · tier2 EN 잔여 30 slug · GSC baseline CSV 기록
+main · GSC baseline CSV 174 URL 기록 · PROD 재크롤
 ```
 
 ---

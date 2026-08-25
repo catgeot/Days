@@ -207,3 +207,13 @@
 - **사람**: GSC URL Inspection — `scripts/data/gsc-seo-baseline-template.csv` → `scripts/outputs/gsc-seo-baseline.csv`(gitignore)
 - **잔여**: tier2 EN pop70–79 **30 slug**
 - **다음**: `검색노출 #20, tier2 EN 배치4 마무리`
+
+## 검색노출 #20 — tier2 EN 배치4 마무리 (2026-08-25)
+
+- **범위**: tier2 pop **70–79** 잔여 **30 slug** → `placeSeoEnOverrides` (186→**216**) · pop70–79 **109/109 전수**
+- **샘플**: seoul · bohol · samoa · iceland · palawan · uyuni-salt-flat
+- **GSC baseline**: `generate:gsc-baseline` — tier2 EN batch4 샘플 5 URL(`?lang=en`) · `smoke:gsc-baseline` assert
+- **VERIFY**: `audit:place-seo-en` (109/109) · `smoke:gsc-baseline` · `smoke:place-seo-en` · `build` PASS
+- **사람**: GSC URL Inspection — `scripts/data/gsc-seo-baseline-template.csv` 174 URL → `scripts/outputs/gsc-seo-baseline.csv`
+- **잔여**: tier2 EN pop70–79 **완료** · PROD 재크롤·GSC baseline 기록
+- **다음**: `검색노출 #21, GSC baseline 사람 QA`

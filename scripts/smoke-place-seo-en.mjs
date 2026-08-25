@@ -53,7 +53,7 @@ const phuket = spots.find((s) => s.slug === 'phuket');
 const galapagos = spots.find((s) => s.slug === 'galapagos');
 const angkor = spots.find((s) => s.slug === 'angkor-wat');
 
-assert(Object.keys(PLACE_SEO_EN_OVERRIDES).length >= 186, 'place SEO EN overrides loaded (tier1 + tier2 batch3)');
+assert(Object.keys(PLACE_SEO_EN_OVERRIDES).length >= 216, 'place SEO EN overrides loaded (tier1 + tier2 batch4 complete)');
 
 assert(PLACE_SEARCH_INTENTS.length >= 6, 'place search intent SSOT loaded');
 assert(
@@ -130,6 +130,16 @@ const hamburg = spots.find((s) => s.slug === 'hamburg');
 const hamburgDesc = getLocalizedPlaceDesc(hamburg, 'en');
 assert(!/[\u3131-\u318e\uac00-\ud7a3]/.test(hamburgDesc), 'hamburg tier2 batch3 EN desc has no Hangul');
 assert(/hamburg|germany|port|elbphilharmonie/i.test(hamburgDesc), 'hamburg EN desc is search-relevant');
+
+const bohol = spots.find((s) => s.slug === 'bohol');
+const boholDesc = getLocalizedPlaceDesc(bohol, 'en');
+assert(!/[\u3131-\u318e\uac00-\ud7a3]/.test(boholDesc), 'bohol tier2 batch4 EN desc has no Hangul');
+assert(/bohol|chocolate hills|tarsier|philippines/i.test(boholDesc), 'bohol EN desc is search-relevant');
+
+const seoulSpot = spots.find((s) => s.slug === 'seoul');
+const seoulDesc = getLocalizedPlaceDesc(seoulSpot, 'en');
+assert(!/[\u3131-\u318e\uac00-\ud7a3]/.test(seoulDesc), 'seoul tier2 batch4 EN desc has no Hangul');
+assert(/seoul|palace|k-pop|south korea/i.test(seoulDesc), 'seoul EN desc is search-relevant');
 
 const seoJs = readFileSync(join(root, 'src/components/SEO/index.jsx'), 'utf8');
 assert(seoJs.includes('meta name="keywords"'), 'SEO component renders keywords meta');
