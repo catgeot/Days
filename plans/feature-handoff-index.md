@@ -42,7 +42,7 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 |--|--|
 | **상태** | **#16 큐레이션·로그북 SEO 완료** · **#17 자유여행 intent** 다음 |
 | **브랜치** | **`main`** |
-| **main** | (push 후 SHA) |
+| **main** | `5f628b19` |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
 | **PROD QA (#16)** | `/blog/curation?crawler=1` · `/blog?crawler=1` view-source · sitemap `/blog` |
