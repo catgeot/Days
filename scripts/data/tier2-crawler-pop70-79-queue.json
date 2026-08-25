@@ -1,0 +1,56 @@
+{
+  "total": 109,
+  "included": 80,
+  "remaining": 29,
+  "nextSessionIncluded": 109,
+  "nextSessionCrawlerSlugs": 216,
+  "generateConstant": "TIER2_CRAWLER_POP70_79_INCLUDED",
+  "generateFile": "scripts/generate-crawler-place-meta.mjs",
+  "batches": {
+    "batch2": { "session": "#12", "range": "1-40", "sample": ["seychelles", "chichen-itza"] },
+    "batch3": { "session": "#12+", "range": "41-80", "sample": ["hamburg", "havana"] },
+    "batch4": {
+      "session": "#13",
+      "range": "81-109",
+      "count": 29,
+      "sample": ["bohol", "galapagos", "seoul"],
+      "slugs": [
+        "bohol",
+        "brussels",
+        "diego-garcia",
+        "galapagos",
+        "geneva",
+        "hue",
+        "samoa",
+        "seoul",
+        "ulaanbaatar",
+        "uyuni-salt-flat",
+        "vientiane",
+        "alice-springs",
+        "corsica",
+        "greenland",
+        "miyakojima",
+        "oslo",
+        "patagonia",
+        "similan-islands",
+        "tsushima",
+        "wadi-rum",
+        "yellowknife",
+        "iceland",
+        "iguazu-falls",
+        "brunei",
+        "kumamoto",
+        "meteora",
+        "minneapolis",
+        "palawan",
+        "qingdao"
+      ]
+    }
+  },
+  "smokeAfterBatch4": {
+    "slugCount": 216,
+    "includeAssert": "bohol",
+    "excludeAssert": "santorini",
+    "prodQa": ["/place/bohol/gallery?crawler=1", "/place/galapagos/gallery?crawler=1"]
+  }
+}

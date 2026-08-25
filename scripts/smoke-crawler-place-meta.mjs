@@ -3,6 +3,9 @@
  * Crawler HTML — hub + tier1 place meta inject smoke (Googlebot UA).
  *
  *   npm run smoke:crawler-place-meta
+ *
+ * #13 tier2 batch4: generate script INCLUDED 80→109 · count 187→216
+ * · bohol gallery assert ON · tier2 pop<70 (santorini) still null
  */
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -43,7 +46,7 @@ function googlebotRequest(pathname, locale = 'ko') {
 
 assert(
   getCrawlerPlaceMetaSlugCount() === 187,
-  'crawler meta covers tier1 64 + tier2 pop≥80 (43) + pop70–79 top40+next40 (187 slugs)',
+  'crawler meta covers tier1 64 + tier2 pop≥80 (43) + pop70–79 80/109 (187 slugs)',
 );
 
 const tokyoGalleryKo = resolveCrawlerMeta('/place/tokyo/gallery', 'ko');

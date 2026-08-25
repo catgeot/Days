@@ -139,4 +139,13 @@
 - **main push**: `1f5156c8` → origin/main (2026-08-25)
 - **잔여**: tier2 pop70–79 **29 slug** (4차) · #13 항공 경로 · #14–#17 허브
 - **PROD QA**: `/place/hamburg/gallery?crawler=1` view-source — title·og:image·ImageGallery JSON-LD
-- **다음**: `검색노출 #13, 항공 경로 crawler` 또는 tier2 pop70–79 4차
+- **다음**: `검색노출 #13, tier2 crawler 배치4 마무리`
+
+## 검색노출 #13 준비 — tier2 crawler 배치4 (2026-08-25)
+
+- **목표**: pop70–79 잔여 **29 slug** → crawler meta **187→216** (tier2 pop70–79 **전수 완료**)
+- **한 줄**: `generate-crawler-place-meta.mjs` — `TIER2_CRAWLER_POP70_79_INCLUDED` **80 → 109**
+- **큐 SSOT**: [`scripts/data/tier2-crawler-pop70-79-queue.json`](../scripts/data/tier2-crawler-pop70-79-queue.json) · 샘플 bohol·galapagos·seoul
+- **smoke**: count 216 · bohol assert ON · tier2 pop&lt;70 `santorini` null 유지
+- **리팩터**: batch2/3 Set → 단일 `INCLUDED` 카운터 (출력 187 동일)
+- **완료 후**: #14 항공 경로 · #15 허브 crawler

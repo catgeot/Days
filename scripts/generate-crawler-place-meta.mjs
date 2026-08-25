@@ -62,38 +62,34 @@ const TABS = ['gallery', 'planner'];
 const LOCALES = ['ko', 'en'];
 const HUB_PATHS = ['/', '/korea'];
 
-/** tier1 전수 + tier2 pop≥80 (#11) + tier2 pop70–79 40×2 (#12·#12+). 잔여 tier2는 후속 세션. */
+/** tier1 전수 + tier2 pop≥80 (#11) + tier2 pop70–79 순위 포함 (#12~#13). */
 const TIER2_CRAWLER_BATCH1_MIN_POP = 80;
-const TIER2_CRAWLER_BATCH2_POP_MIN = 70;
-const TIER2_CRAWLER_BATCH2_POP_MAX = 79;
-const TIER2_CRAWLER_BATCH2_LIMIT = 40;
-const TIER2_CRAWLER_BATCH3_LIMIT = 40;
+const TIER2_CRAWLER_POP70_79_MIN = 70;
+const TIER2_CRAWLER_POP70_79_MAX = 79;
+/** pop70–79 전수 109. #12=40 · #12+=40 · #13=+29 → INCLUDED를 109로 올리면 tier2 crawler 여행지 배치 완료. */
+const TIER2_CRAWLER_POP70_79_TOTAL = 109;
+const TIER2_CRAWLER_POP70_79_INCLUDED = 80;
 
 const tier2Pop70to79Sorted = TRAVEL_SPOTS.filter(
   (s) =>
     s.tier === 2 &&
-    (s.popularity ?? 0) >= TIER2_CRAWLER_BATCH2_POP_MIN &&
-    (s.popularity ?? 0) <= TIER2_CRAWLER_BATCH2_POP_MAX,
+    (s.popularity ?? 0) >= TIER2_CRAWLER_POP70_79_MIN &&
+    (s.popularity ?? 0) <= TIER2_CRAWLER_POP70_79_MAX,
 ).sort(
   (a, b) =>
     (b.popularity ?? 0) - (a.popularity ?? 0) ||
     String(a.slug).localeCompare(String(b.slug)),
 );
 
-const tier2Batch2Slugs = new Set(
-  tier2Pop70to79Sorted.slice(0, TIER2_CRAWLER_BATCH2_LIMIT).map((s) => s.slug),
-);
-const tier2Batch3Slugs = new Set(
-  tier2Pop70to79Sorted
-    .slice(TIER2_CRAWLER_BATCH2_LIMIT, TIER2_CRAWLER_BATCH2_LIMIT + TIER2_CRAWLER_BATCH3_LIMIT)
-    .map((s) => s.slug),
+const tier2Pop70to79Slugs = new Set(
+  tier2Pop70to79Sorted.slice(0, TIER2_CRAWLER_POP70_79_INCLUDED).map((s) => s.slug),
 );
 
 function isCrawlerPlaceSpot(spot) {
   if (spot.tier === 1) return true;
   const pop = spot.popularity ?? 0;
   if (pop >= TIER2_CRAWLER_BATCH1_MIN_POP) return true;
-  return tier2Batch2Slugs.has(spot.slug) || tier2Batch3Slugs.has(spot.slug);
+  return tier2Pop70to79Slugs.has(spot.slug);
 }
 
 const crawlerSpots = TRAVEL_SPOTS.filter(isCrawlerPlaceSpot).sort((a, b) =>
@@ -103,8 +99,10 @@ const tier1Count = crawlerSpots.filter((s) => s.tier === 1).length;
 const tier2Batch1Count = crawlerSpots.filter(
   (s) => s.tier === 2 && (s.popularity ?? 0) >= TIER2_CRAWLER_BATCH1_MIN_POP,
 ).length;
-const tier2Batch2Count = crawlerSpots.filter((s) => s.tier === 2 && tier2Batch2Slugs.has(s.slug)).length;
-const tier2Batch3Count = crawlerSpots.filter((s) => s.tier === 2 && tier2Batch3Slugs.has(s.slug)).length;
+const tier2Pop70to79Count = crawlerSpots.filter(
+  (s) => s.tier === 2 && tier2Pop70to79Slugs.has(s.slug),
+).length;
+const tier2Pop70to79Remaining = TIER2_CRAWLER_POP70_79_TOTAL - TIER2_CRAWLER_POP70_79_INCLUDED;
 
 const t = (key, opts = {}) => {
   if (key === 'place.fallback.destination') return 'Destination';
@@ -192,7 +190,7 @@ writeFileSync(
 
 console.log('generate:crawler-place-meta');
 console.log(
-  `  crawler slugs  ${crawlerSpots.length} (tier1 ${tier1Count} + tier2 pop≥${TIER2_CRAWLER_BATCH1_MIN_POP}: ${tier2Batch1Count} + pop${TIER2_CRAWLER_BATCH2_POP_MIN}–${TIER2_CRAWLER_BATCH2_POP_MAX} top${TIER2_CRAWLER_BATCH2_LIMIT}: ${tier2Batch2Count} + next${TIER2_CRAWLER_BATCH3_LIMIT}: ${tier2Batch3Count})`,
+  `  crawler slugs  ${crawlerSpots.length} (tier1 ${tier1Count} + tier2 pop≥${TIER2_CRAWLER_BATCH1_MIN_POP}: ${tier2Batch1Count} + pop${TIER2_CRAWLER_POP70_79_MIN}–${TIER2_CRAWLER_POP70_79_MAX}: ${tier2Pop70to79Count}/${TIER2_CRAWLER_POP70_79_TOTAL}, remaining ${tier2Pop70to79Remaining})`,
 );
 console.log(`  place entries ${crawlerSpots.length * TABS.length * LOCALES.length}`);
 console.log(`  hub entries   ${HUB_PATHS.length * LOCALES.length}`);

@@ -40,22 +40,23 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 
 | | |
 |--|--|
-| **상태** | **#12+ tier2 crawler 배치3** 완료 · **main push·PROD QA** 대기 |
+| **상태** | **#13 tier2 crawler 배치4** 준비 완료 · 잔여 **29 slug** · `INCLUDED` 80→109 |
 | **브랜치** | **`main`** |
-| **main** | `1f5156c8` |
-| **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2·§9 |
+| **main** | `0601758e` |
+| **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §3 tier2 crawler · §9 |
+| **큐 SSOT** | [`scripts/data/tier2-crawler-pop70-79-queue.json`](../scripts/data/tier2-crawler-pop70-79-queue.json) |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
-| **PROD QA** | `/place/hamburg/gallery?crawler=1` · `/place/havana/gallery?crawler=1` view-source |
-| **VERIFY** | `smoke:crawler-place-meta` · `build` |
+| **PROD QA (#12+)** | `/place/hamburg/gallery?crawler=1` view-source (배포 후) |
+| **VERIFY (#13)** | `generate:crawler-place-meta` 216 · `smoke:crawler-place-meta` · `build` |
 
 **다음 제시어 (#13)**:
 
 ```
-검색노출 #13, 항공 경로 crawler
+검색노출 #13, tier2 crawler 배치4 마무리
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · view-source ?crawler=1 · /place/hamburg/gallery
+main · INCLUDED 80→109 · /place/bohol/gallery?crawler=1
 ```
 
 ---
