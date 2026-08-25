@@ -118,4 +118,4 @@
 - **VERIFY**: `smoke:crawler-place-meta` · `smoke:place-seo-en` · `build` PASS
 - **main push**: `be4dae28` → origin/main (2026-08-25)
 - **PROD QA**: 배포 후 `/place/phuket/gallery?crawler=1` view-source 재확인
-- **잔여**: tier2 pop&lt;80 **~166 slug** — #12 배치(40/세션)
+- **잔여**: tier2 pop&lt;80 ~166 slug (#12) · **허브 SEO #14–#17** (명승·축제·큐레이션·explore·팁) · 항공 경로 #13

@@ -74,6 +74,29 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 - **주의**: OTA 키워드 경쟁·실시간 운항과 무관(경로·IATA SSOT만) · crawler description에 `ICN→HKT` 등 **팩트만** (가격·스케줄 금지)
 - **1세션 산출**: `placeSearchIntent` flight-route · planner keywords/title · tier1 crawler meta route snippet · smoke
 
+### 1.4 허브·기능 SEO (큐레이션·명승·축제·탐색·팁) — **고려 대상**
+
+여행지(`/place/*`)와 별 트랙. **신규 URL 남발 금지** — 기존 라우트·Helmet·crawler·sitemap 정합.
+
+| 기능 | URL | Helmet(SPA) | sitemap | hreflang | crawler `?crawler=1` | 검색 의도 예시 |
+|------|-----|-------------|---------|----------|----------------------|----------------|
+| **축제** | `/korea` | ✅ | ✅ | ✅ | ✅ (#7) | 국내 축제, 지역별 축제 |
+| **한국의 명승** | `/korea/theme/scenic` | ✅ | ✅ | ✅ | ❌ **갭** | 명승지, 국가유산 명승, ~~선정 명소~~ |
+| **Explore·권역** | `/explore`, `/explore/:대륙/:테마` | 기본(홈) | ✅ | ✅ (#5) | ❌ **갭** | 아시아 휴양지, 유럽 문화 여행 |
+| **국가·위치** | Explore 필터 + PlaceCard `country` | place SEO 일부 | 카테고리 URL | partial | place 쪽만 | 「태국 여행지」, 「일본 어디」→ explore 또는 place |
+| **AI 큐레이션** | `/blog/curation` | ❌ **갭** | ❌ **갭** | ❌ | ❌ | 여행 큐레이션, 숨은 낙원 추천 |
+| **로그북·팁** | `/blog` (sitemap은 `/logbook`) | ❌ **갭** | ⚠️ URL 불일치 | ❌ | ❌ | 여행 기록, 자유여행 후기 |
+| **자유여행 팁** | `/place/:slug/wiki` · 큐레이션 본문 · 플래너 툴킷 | wiki 탭 Helmet | wiki 탭 sitemap **없음** | place hreflang | tier1/2 place만 | 푸켓 여행 팁, 현지 팁 |
+
+**우선순위 (제안)**:
+
+1. **#14 허브 crawler** — `/korea/theme/scenic` · `/explore` view-source (축제·명승·권역 탐색)
+2. **#15 큐레이션·로그북** — `/blog/curation` Helmet · sitemap `/blog` canonical · `/logbook`→`/blog` redirect 또는 sitemap 수정
+3. **#16 wiki·팁 intent** — `placeSearchIntent` wiki 키워드 보강(자유여행 팁·현지 팁) · 선택: wiki 탭 sitemap
+4. **#17 explore 대륙·테마** — `/explore/asia/paradise` 등 카테고리별 title·keywords · index 정적 링크 EN
+
+**금지**: 홈 내부 검색 파서 변경 · UI 레이아웃 변경 · `/en/` prefix (합의 전)
+
 ### 1.3 잔여 한계
 
 | # | 한계 | 심각도 |
@@ -108,6 +131,7 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | **#10** | `검색노출 #10, OG·스키마` (백로그) | slug og:image · ImageObject(갤러리) | smoke · build | main ✅ |
 | **#11** | `검색노출 #11, tier2 crawler 배치1` | crawler meta **+43** tier2 pop≥80 (phuket 등) · view-source og:image·ImageGallery | `smoke:crawler-place-meta` · `build` | main |
 | **#12** | `검색노출 #12, tier2 crawler 배치2+` | pop70–79 등 잔여 tier2 (~166) · 배치당 40 slug | smoke · view-source | main |
+| **#13** | `검색노출 #13, 항공 경로 SEO` (제안) | `flight-route` intent → planner · ICN→IATA title/keywords · crawler route snippet | smoke · view-source | main |
 
 **권장 순서**: #1 → … → #10 → **#11 tier2 crawler** → #12. GSC baseline·tier2 EN 잔여는 병행.
 
