@@ -8,6 +8,8 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { GSC_BASELINE_HEADER, parseGscBaselineCsv } from './lib/parse-gsc-baseline-csv.mjs';
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 const templatePath = join(root, 'scripts/data/gsc-seo-baseline-template.csv');
@@ -23,23 +25,10 @@ function assert(cond, msg) {
   return true;
 }
 
-const raw = readFileSync(templatePath, 'utf8').trim();
-const lines = raw.split('\n');
-const header = lines[0];
-const requiredCols = ['url', 'slug', 'intent', 'tab', 'checked_at', 'gsc_index_status', 'gsc_last_crawl', 'notes'];
+const raw = readFileSync(templatePath, 'utf8');
+assert(raw.trim().split('\n')[0] === GSC_BASELINE_HEADER, 'GSC template header columns');
 
-assert(header === requiredCols.join(','), 'GSC template header columns');
-
-const rows = lines.slice(1).map((line) => {
-  const parts = line.split(',');
-  return {
-    url: parts[0],
-    slug: parts[1],
-    intent: parts[2],
-    tab: parts[3],
-    notes: parts[7] || '',
-  };
-});
+const rows = parseGscBaselineCsv(raw);
 
 assert(rows.length >= 128, `GSC template has tier1 minimum rows (${rows.length})`);
 assert(rows.every((r) => r.url.startsWith('https://www.gateo.kr/')), 'all URLs use www.gateo.kr origin');

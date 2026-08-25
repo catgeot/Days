@@ -225,3 +225,12 @@
 - **VERIFY**: `audit:place-seo-en` (216 · 109/109) · `smoke:gsc-baseline` (174) · `smoke:gsc-baseline-prod` · `smoke:crawler-place-meta` · `smoke:place-seo-en` · `build` PASS
 - **사람**: GSC URL Inspection — `scripts/data/gsc-seo-baseline-template.csv` 174 URL → `scripts/outputs/gsc-seo-baseline.csv`(gitignore)에 `gsc_index_status`·`gsc_last_crawl` 기록
 - **다음**: `검색노출 #22, GSC baseline CSV 기록 마무리`
+
+## 검색노출 #22 — GSC baseline CSV 기록 마무리 (2026-08-25)
+
+- **audit**: `audit:gsc-baseline` 신규 — `scripts/outputs/gsc-seo-baseline.csv` 173 URL completeness gate · `gsc_index_status`·`gsc_last_crawl`·`checked_at` 필수
+- **파서**: `scripts/lib/parse-gsc-baseline-csv.mjs` — smoke·audit 공유
+- **템플릿**: `explore/asia/paradise` 중복 제거 — 174→**173** URL
+- **VERIFY**: `smoke:gsc-baseline` (173) · `smoke:gsc-baseline-prod` · `audit:place-seo-en` · `build` PASS
+- **사람**: `cp scripts/data/gsc-seo-baseline-template.csv scripts/outputs/gsc-seo-baseline.csv` → GSC URL Inspection 기록 → `npm run audit:gsc-baseline`
+- **다음**: `검색노출 #23, GSC baseline audit 실행`

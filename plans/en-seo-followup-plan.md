@@ -127,7 +127,7 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | L5 | ~~탭 sitemap~~ | ✅ |
 | L6 | `/en/` prefix 없음 (합의 후) | 중 |
 | L7 | ~~전역 og:image~~ | ✅ (#10) |
-| L8 | GSC baseline 없음 | 운영 |
+| L8 | ~~GSC baseline 없음~~ | ✅ template·audit·outputs (#22) |
 | L9 | **허브 crawler** — scenic·explore·blog·curation view-source | ✅ (#15·#16) |
 | L10 | **큐레이션·/blog** sitemap·Helmet 없음 | ✅ (#16) |
 | L11 | **자유여행** planner·wiki·로컬왓슨 intent·wiki sitemap | ✅ (#17) |
@@ -162,7 +162,9 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | **#16** | `검색노출 #16, 큐레이션·로그북 SEO` | `/blog/curation` Helmet · sitemap `/blog` · logbook URL 정합 | smoke · build | main ✅ |
 | **#17** | `검색노출 #17, 자유여행 intent` | §1.5 planner+wiki suffix · 로컬 왓슨 keywords · wiki sitemap · 무니=desc | smoke | main ✅ |
 | **#18** | `검색노출 #18, explore 카테고리` | 대륙×테마 title/desc · index EN 링크 | smoke · sitemap | main ✅ |
-| **#19** | `검색노출 #19, GSC baseline·tier2 EN` | GSC template 174 URL · tier2 EN **+40** (146→186) · audit pop70–79 | audit · smoke:gsc-baseline · build | main |
+| **#19** | `검색노출 #19, GSC baseline·tier2 EN` | GSC template 173 URL · tier2 EN **+40** (146→186) · audit pop70–79 | audit · smoke:gsc-baseline · build | main |
+| **#21** | `검색노출 #21, GSC baseline PROD QA` | `smoke:gsc-baseline-prod` 10 URL Googlebot live | smoke:gsc-baseline-prod · build | main ✅ |
+| **#22** | `검색노출 #22, GSC baseline CSV 기록 마무리` | `audit:gsc-baseline` · template dedupe 173 URL · outputs gitignore | audit:gsc-baseline · smoke:gsc-baseline | main ✅ |
 
 **권장 순서**: #1 → … → #10 → **#11~#13 tier2 crawler**(pop70–79 전수) → #14+. GSC baseline·tier2 EN 잔여는 병행.
 
@@ -247,35 +249,37 @@ npm run audit:place-seo-en            # #3 이후
 npm run generate:gsc-baseline         # GSC URL Inspection template (#19)
 npm run smoke:gsc-baseline
 npm run smoke:gsc-baseline-prod       # PROD Googlebot crawler meta (#21)
+npm run audit:gsc-baseline            # filled outputs CSV gate (#22)
 ```
 
 ---
 
 ## 9. 핸드오ff
 
-**세션** `검색노출 #21, GSC baseline QA`  
+**세션** `검색노출 #22, GSC baseline CSV 기록 마무리`  
 **main** 최신 · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
 **인덱스** [`feature-handoff-index.md`](./feature-handoff-index.md) 「검색노출」행
 
 | | |
 |--|--|
-| **완료 (#21)** | `smoke:gsc-baseline-prod` 10 URL PROD PASS · tier1·tier2·hub·explore·wiki·flight·EN batch4 |
-| **사람 QA** | GSC URL Inspection — `scripts/data/gsc-seo-baseline-template.csv` 174 URL → `scripts/outputs/gsc-seo-baseline.csv` |
-| **잔여** | GSC baseline CSV **사람 기록** · #9 RSS·canonical(선택) · #6 `/en/` prefix(합의 후) |
+| **완료 (#22)** | `audit:gsc-baseline` 173 URL gate · template `explore/asia/paradise` 중복 제거 · CSV 파서 공유 |
+| **사람 QA** | GSC URL Inspection → `scripts/outputs/gsc-seo-baseline.csv` · `npm run audit:gsc-baseline` PASS |
+| **잔여** | #9 RSS·canonical(선택) · `/en/` prefix(합의 후) · GSC 재크롤 모니터링 |
 
 **다음 제시어**:
 
 ```
-검색노출 #22, GSC baseline CSV 기록 마무리
+검색노출 #23, GSC baseline audit 실행
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · scripts/outputs/gsc-seo-baseline.csv · GSC URL Inspection 174건
+main · scripts/outputs/gsc-seo-baseline.csv 173건 · npm run audit:gsc-baseline
 ```
 
-**사람 GSC (#21)**:
+**사람 GSC (#22)**:
 
 ```
-GSC URL Inspection — template 174 URL · PROD 재크롤 확인 후 gsc_index_status·gsc_last_crawl 기록
-샘플: tokyo/phuket/hamburg/bohol ?crawler=1 · seoul/bohol ?lang=en · explore/asia/paradise
+1. cp scripts/data/gsc-seo-baseline-template.csv scripts/outputs/gsc-seo-baseline.csv
+2. GSC URL Inspection 173 URL — checked_at · gsc_index_status · gsc_last_crawl 기록
+3. npm run audit:gsc-baseline (173/173 complete gate)
 ```

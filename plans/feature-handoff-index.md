@@ -40,22 +40,22 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 
 | | |
 |--|--|
-| **상태** | **#21 GSC baseline PROD QA 완료** · `smoke:gsc-baseline-prod` 10 URL PASS |
+| **상태** | **#22 GSC baseline audit 완료** · template 173 URL · `audit:gsc-baseline` gate |
 | **브랜치** | **`main`** |
-| **main** | `f9a36a2f` |
+| **main** | (이번 커밋 후 SHA) |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
-| **사람 QA (#21)** | GSC URL Inspection — template 174 URL → `scripts/outputs/gsc-seo-baseline.csv` |
-| **VERIFY** | `audit:place-seo-en` · `smoke:gsc-baseline` · `smoke:gsc-baseline-prod` · `build` |
+| **사람 QA (#22)** | `cp template → scripts/outputs/gsc-seo-baseline.csv` · GSC 173건 기록 · `npm run audit:gsc-baseline` |
+| **VERIFY** | `audit:gsc-baseline` · `smoke:gsc-baseline` · `smoke:gsc-baseline-prod` · `audit:place-seo-en` · `build` |
 
 **다음 제시어**:
 
 ```
-검색노출 #22, GSC baseline CSV 기록 마무리
+검색노출 #23, GSC baseline audit 실행
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · scripts/outputs/gsc-seo-baseline.csv · GSC URL Inspection 174건
+main · scripts/outputs/gsc-seo-baseline.csv 173건 · npm run audit:gsc-baseline
 ```
 
 ---

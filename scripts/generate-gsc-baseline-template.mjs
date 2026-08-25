@@ -5,8 +5,10 @@
  *
  *   npm run generate:gsc-baseline
  *
- * Human workflow: fill gsc_index_status · gsc_last_crawl in GSC URL Inspection,
- * save copy to scripts/outputs/gsc-seo-baseline.csv (gitignored).
+ * Human workflow:
+ *   cp scripts/data/gsc-seo-baseline-template.csv scripts/outputs/gsc-seo-baseline.csv
+ *   fill checked_at · gsc_index_status · gsc_last_crawl (GSC URL Inspection)
+ *   npm run audit:gsc-baseline
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -43,10 +45,14 @@ const tier2Pop70 = spots
 
 const staticIntents = PLACE_SEARCH_INTENTS.filter((i) => i.staticLinkTier === 1);
 const rows = [];
+const seenUrls = new Set();
 
 function pushRow({ path, slug = '', intent = '', tab = '', notes = '' }) {
+  const url = `${ORIGIN}${path}`;
+  if (seenUrls.has(url)) return;
+  seenUrls.add(url);
   rows.push({
-    url: `${ORIGIN}${path}`,
+    url,
     slug,
     intent,
     tab,
