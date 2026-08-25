@@ -251,5 +251,1265 @@ export default {
         }
       ]
     }
+  },
+  "/explore/asia/paradise": {
+    "ko": {
+      "title": "아시아 휴양·호캉스 여행지",
+      "description": "GATEO 3D 지구본에서 아시아 휴양·호캉스 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "아시아, 휴양지, 호캉스, 리조트, 해변, 휴양, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/asia/paradise",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/asia/paradise"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/asia/paradise?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/asia/paradise"
+        }
+      ]
+    },
+    "en": {
+      "title": "Asia resort & beach getaways",
+      "description": "Browse asia resort & beach getaways on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "Asia, resort, beach getaway, tropical, honeymoon, island resort, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/asia/paradise?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/asia/paradise"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/asia/paradise?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/asia/paradise"
+        }
+      ]
+    }
+  },
+  "/explore/asia/culture": {
+    "ko": {
+      "title": "아시아 랜드마크·문화 여행지",
+      "description": "GATEO 3D 지구본에서 아시아 랜드마크·문화 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "아시아, 문화, 랜드마크, 유적, 박물관, 문화유산, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/asia/culture",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/asia/culture"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/asia/culture?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/asia/culture"
+        }
+      ]
+    },
+    "en": {
+      "title": "Asia landmarks & culture",
+      "description": "Browse asia landmarks & culture on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "Asia, landmarks, culture, heritage, museums, historic sites, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/asia/culture?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/asia/culture"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/asia/culture?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/asia/culture"
+        }
+      ]
+    }
+  },
+  "/explore/asia/urban": {
+    "ko": {
+      "title": "아시아 대도시·쇼핑 여행지",
+      "description": "GATEO 3D 지구본에서 아시아 대도시·쇼핑 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "아시아, 도시, 대도시, 쇼핑, 시티, 도심, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/asia/urban",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/asia/urban"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/asia/urban?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/asia/urban"
+        }
+      ]
+    },
+    "en": {
+      "title": "Asia cities & shopping",
+      "description": "Browse asia cities & shopping on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "Asia, city break, shopping, urban travel, downtown, metropolis, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/asia/urban?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/asia/urban"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/asia/urban?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/asia/urban"
+        }
+      ]
+    }
+  },
+  "/explore/asia/nature": {
+    "ko": {
+      "title": "아시아 대자연 여행지",
+      "description": "GATEO 3D 지구본에서 아시아 대자연 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "아시아, 자연, 대자연, 국립공원, 트레킹, 풍경, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/asia/nature",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/asia/nature"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/asia/nature?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/asia/nature"
+        }
+      ]
+    },
+    "en": {
+      "title": "Asia nature & outdoors",
+      "description": "Browse asia nature & outdoors on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "Asia, nature, national park, outdoors, scenery, wildlife, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/asia/nature?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/asia/nature"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/asia/nature?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/asia/nature"
+        }
+      ]
+    }
+  },
+  "/explore/asia/adventure": {
+    "ko": {
+      "title": "아시아 모험·액티비티 여행지",
+      "description": "GATEO 3D 지구본에서 아시아 모험·액티비티 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "아시아, 모험, 액티비티, 익스트림, 트레킹, 스릴, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/asia/adventure",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/asia/adventure"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/asia/adventure?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/asia/adventure"
+        }
+      ]
+    },
+    "en": {
+      "title": "Asia adventure travel",
+      "description": "Browse asia adventure travel on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "Asia, adventure, active travel, extreme sports, hiking, expedition, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/asia/adventure?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/asia/adventure"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/asia/adventure?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/asia/adventure"
+        }
+      ]
+    }
+  },
+  "/explore/europe/paradise": {
+    "ko": {
+      "title": "유럽 휴양·호캉스 여행지",
+      "description": "GATEO 3D 지구본에서 유럽 휴양·호캉스 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "유럽, 휴양지, 호캉스, 리조트, 해변, 휴양, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/europe/paradise",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/europe/paradise"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/europe/paradise?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/europe/paradise"
+        }
+      ]
+    },
+    "en": {
+      "title": "Europe resort & beach getaways",
+      "description": "Browse europe resort & beach getaways on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "Europe, resort, beach getaway, tropical, honeymoon, island resort, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/europe/paradise?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/europe/paradise"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/europe/paradise?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/europe/paradise"
+        }
+      ]
+    }
+  },
+  "/explore/europe/culture": {
+    "ko": {
+      "title": "유럽 랜드마크·문화 여행지",
+      "description": "GATEO 3D 지구본에서 유럽 랜드마크·문화 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "유럽, 문화, 랜드마크, 유적, 박물관, 문화유산, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/europe/culture",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/europe/culture"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/europe/culture?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/europe/culture"
+        }
+      ]
+    },
+    "en": {
+      "title": "Europe landmarks & culture",
+      "description": "Browse europe landmarks & culture on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "Europe, landmarks, culture, heritage, museums, historic sites, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/europe/culture?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/europe/culture"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/europe/culture?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/europe/culture"
+        }
+      ]
+    }
+  },
+  "/explore/europe/urban": {
+    "ko": {
+      "title": "유럽 대도시·쇼핑 여행지",
+      "description": "GATEO 3D 지구본에서 유럽 대도시·쇼핑 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "유럽, 도시, 대도시, 쇼핑, 시티, 도심, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/europe/urban",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/europe/urban"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/europe/urban?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/europe/urban"
+        }
+      ]
+    },
+    "en": {
+      "title": "Europe cities & shopping",
+      "description": "Browse europe cities & shopping on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "Europe, city break, shopping, urban travel, downtown, metropolis, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/europe/urban?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/europe/urban"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/europe/urban?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/europe/urban"
+        }
+      ]
+    }
+  },
+  "/explore/europe/nature": {
+    "ko": {
+      "title": "유럽 대자연 여행지",
+      "description": "GATEO 3D 지구본에서 유럽 대자연 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "유럽, 자연, 대자연, 국립공원, 트레킹, 풍경, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/europe/nature",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/europe/nature"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/europe/nature?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/europe/nature"
+        }
+      ]
+    },
+    "en": {
+      "title": "Europe nature & outdoors",
+      "description": "Browse europe nature & outdoors on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "Europe, nature, national park, outdoors, scenery, wildlife, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/europe/nature?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/europe/nature"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/europe/nature?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/europe/nature"
+        }
+      ]
+    }
+  },
+  "/explore/europe/adventure": {
+    "ko": {
+      "title": "유럽 모험·액티비티 여행지",
+      "description": "GATEO 3D 지구본에서 유럽 모험·액티비티 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "유럽, 모험, 액티비티, 익스트림, 트레킹, 스릴, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/europe/adventure",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/europe/adventure"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/europe/adventure?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/europe/adventure"
+        }
+      ]
+    },
+    "en": {
+      "title": "Europe adventure travel",
+      "description": "Browse europe adventure travel on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "Europe, adventure, active travel, extreme sports, hiking, expedition, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/europe/adventure?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/europe/adventure"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/europe/adventure?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/europe/adventure"
+        }
+      ]
+    }
+  },
+  "/explore/north_america/paradise": {
+    "ko": {
+      "title": "북미 휴양·호캉스 여행지",
+      "description": "GATEO 3D 지구본에서 북미 휴양·호캉스 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "북미, 휴양지, 호캉스, 리조트, 해변, 휴양, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/north_america/paradise",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/north_america/paradise"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/north_america/paradise?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/north_america/paradise"
+        }
+      ]
+    },
+    "en": {
+      "title": "North America resort & beach getaways",
+      "description": "Browse north america resort & beach getaways on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "North America, resort, beach getaway, tropical, honeymoon, island resort, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/north_america/paradise?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/north_america/paradise"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/north_america/paradise?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/north_america/paradise"
+        }
+      ]
+    }
+  },
+  "/explore/north_america/culture": {
+    "ko": {
+      "title": "북미 랜드마크·문화 여행지",
+      "description": "GATEO 3D 지구본에서 북미 랜드마크·문화 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "북미, 문화, 랜드마크, 유적, 박물관, 문화유산, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/north_america/culture",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/north_america/culture"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/north_america/culture?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/north_america/culture"
+        }
+      ]
+    },
+    "en": {
+      "title": "North America landmarks & culture",
+      "description": "Browse north america landmarks & culture on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "North America, landmarks, culture, heritage, museums, historic sites, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/north_america/culture?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/north_america/culture"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/north_america/culture?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/north_america/culture"
+        }
+      ]
+    }
+  },
+  "/explore/north_america/urban": {
+    "ko": {
+      "title": "북미 대도시·쇼핑 여행지",
+      "description": "GATEO 3D 지구본에서 북미 대도시·쇼핑 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "북미, 도시, 대도시, 쇼핑, 시티, 도심, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/north_america/urban",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/north_america/urban"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/north_america/urban?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/north_america/urban"
+        }
+      ]
+    },
+    "en": {
+      "title": "North America cities & shopping",
+      "description": "Browse north america cities & shopping on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "North America, city break, shopping, urban travel, downtown, metropolis, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/north_america/urban?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/north_america/urban"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/north_america/urban?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/north_america/urban"
+        }
+      ]
+    }
+  },
+  "/explore/north_america/nature": {
+    "ko": {
+      "title": "북미 대자연 여행지",
+      "description": "GATEO 3D 지구본에서 북미 대자연 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "북미, 자연, 대자연, 국립공원, 트레킹, 풍경, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/north_america/nature",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/north_america/nature"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/north_america/nature?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/north_america/nature"
+        }
+      ]
+    },
+    "en": {
+      "title": "North America nature & outdoors",
+      "description": "Browse north america nature & outdoors on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "North America, nature, national park, outdoors, scenery, wildlife, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/north_america/nature?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/north_america/nature"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/north_america/nature?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/north_america/nature"
+        }
+      ]
+    }
+  },
+  "/explore/north_america/adventure": {
+    "ko": {
+      "title": "북미 모험·액티비티 여행지",
+      "description": "GATEO 3D 지구본에서 북미 모험·액티비티 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "북미, 모험, 액티비티, 익스트림, 트레킹, 스릴, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/north_america/adventure",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/north_america/adventure"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/north_america/adventure?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/north_america/adventure"
+        }
+      ]
+    },
+    "en": {
+      "title": "North America adventure travel",
+      "description": "Browse north america adventure travel on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "North America, adventure, active travel, extreme sports, hiking, expedition, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/north_america/adventure?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/north_america/adventure"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/north_america/adventure?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/north_america/adventure"
+        }
+      ]
+    }
+  },
+  "/explore/south_america/paradise": {
+    "ko": {
+      "title": "남미 휴양·호캉스 여행지",
+      "description": "GATEO 3D 지구본에서 남미 휴양·호캉스 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "남미, 휴양지, 호캉스, 리조트, 해변, 휴양, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/south_america/paradise",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/south_america/paradise"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/south_america/paradise?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/south_america/paradise"
+        }
+      ]
+    },
+    "en": {
+      "title": "South America resort & beach getaways",
+      "description": "Browse south america resort & beach getaways on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "South America, resort, beach getaway, tropical, honeymoon, island resort, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/south_america/paradise?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/south_america/paradise"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/south_america/paradise?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/south_america/paradise"
+        }
+      ]
+    }
+  },
+  "/explore/south_america/culture": {
+    "ko": {
+      "title": "남미 랜드마크·문화 여행지",
+      "description": "GATEO 3D 지구본에서 남미 랜드마크·문화 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "남미, 문화, 랜드마크, 유적, 박물관, 문화유산, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/south_america/culture",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/south_america/culture"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/south_america/culture?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/south_america/culture"
+        }
+      ]
+    },
+    "en": {
+      "title": "South America landmarks & culture",
+      "description": "Browse south america landmarks & culture on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "South America, landmarks, culture, heritage, museums, historic sites, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/south_america/culture?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/south_america/culture"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/south_america/culture?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/south_america/culture"
+        }
+      ]
+    }
+  },
+  "/explore/south_america/urban": {
+    "ko": {
+      "title": "남미 대도시·쇼핑 여행지",
+      "description": "GATEO 3D 지구본에서 남미 대도시·쇼핑 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "남미, 도시, 대도시, 쇼핑, 시티, 도심, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/south_america/urban",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/south_america/urban"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/south_america/urban?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/south_america/urban"
+        }
+      ]
+    },
+    "en": {
+      "title": "South America cities & shopping",
+      "description": "Browse south america cities & shopping on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "South America, city break, shopping, urban travel, downtown, metropolis, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/south_america/urban?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/south_america/urban"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/south_america/urban?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/south_america/urban"
+        }
+      ]
+    }
+  },
+  "/explore/south_america/nature": {
+    "ko": {
+      "title": "남미 대자연 여행지",
+      "description": "GATEO 3D 지구본에서 남미 대자연 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "남미, 자연, 대자연, 국립공원, 트레킹, 풍경, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/south_america/nature",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/south_america/nature"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/south_america/nature?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/south_america/nature"
+        }
+      ]
+    },
+    "en": {
+      "title": "South America nature & outdoors",
+      "description": "Browse south america nature & outdoors on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "South America, nature, national park, outdoors, scenery, wildlife, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/south_america/nature?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/south_america/nature"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/south_america/nature?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/south_america/nature"
+        }
+      ]
+    }
+  },
+  "/explore/south_america/adventure": {
+    "ko": {
+      "title": "남미 모험·액티비티 여행지",
+      "description": "GATEO 3D 지구본에서 남미 모험·액티비티 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "남미, 모험, 액티비티, 익스트림, 트레킹, 스릴, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/south_america/adventure",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/south_america/adventure"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/south_america/adventure?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/south_america/adventure"
+        }
+      ]
+    },
+    "en": {
+      "title": "South America adventure travel",
+      "description": "Browse south america adventure travel on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "South America, adventure, active travel, extreme sports, hiking, expedition, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/south_america/adventure?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/south_america/adventure"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/south_america/adventure?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/south_america/adventure"
+        }
+      ]
+    }
+  },
+  "/explore/oceania/paradise": {
+    "ko": {
+      "title": "오세아니아 휴양·호캉스 여행지",
+      "description": "GATEO 3D 지구본에서 오세아니아 휴양·호캉스 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "오세아니아, 휴양지, 호캉스, 리조트, 해변, 휴양, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/oceania/paradise",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/oceania/paradise"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/oceania/paradise?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/oceania/paradise"
+        }
+      ]
+    },
+    "en": {
+      "title": "Oceania resort & beach getaways",
+      "description": "Browse oceania resort & beach getaways on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "Oceania, resort, beach getaway, tropical, honeymoon, island resort, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/oceania/paradise?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/oceania/paradise"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/oceania/paradise?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/oceania/paradise"
+        }
+      ]
+    }
+  },
+  "/explore/oceania/culture": {
+    "ko": {
+      "title": "오세아니아 랜드마크·문화 여행지",
+      "description": "GATEO 3D 지구본에서 오세아니아 랜드마크·문화 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "오세아니아, 문화, 랜드마크, 유적, 박물관, 문화유산, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/oceania/culture",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/oceania/culture"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/oceania/culture?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/oceania/culture"
+        }
+      ]
+    },
+    "en": {
+      "title": "Oceania landmarks & culture",
+      "description": "Browse oceania landmarks & culture on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "Oceania, landmarks, culture, heritage, museums, historic sites, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/oceania/culture?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/oceania/culture"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/oceania/culture?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/oceania/culture"
+        }
+      ]
+    }
+  },
+  "/explore/oceania/urban": {
+    "ko": {
+      "title": "오세아니아 대도시·쇼핑 여행지",
+      "description": "GATEO 3D 지구본에서 오세아니아 대도시·쇼핑 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "오세아니아, 도시, 대도시, 쇼핑, 시티, 도심, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/oceania/urban",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/oceania/urban"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/oceania/urban?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/oceania/urban"
+        }
+      ]
+    },
+    "en": {
+      "title": "Oceania cities & shopping",
+      "description": "Browse oceania cities & shopping on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "Oceania, city break, shopping, urban travel, downtown, metropolis, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/oceania/urban?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/oceania/urban"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/oceania/urban?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/oceania/urban"
+        }
+      ]
+    }
+  },
+  "/explore/oceania/nature": {
+    "ko": {
+      "title": "오세아니아 대자연 여행지",
+      "description": "GATEO 3D 지구본에서 오세아니아 대자연 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "오세아니아, 자연, 대자연, 국립공원, 트레킹, 풍경, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/oceania/nature",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/oceania/nature"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/oceania/nature?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/oceania/nature"
+        }
+      ]
+    },
+    "en": {
+      "title": "Oceania nature & outdoors",
+      "description": "Browse oceania nature & outdoors on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "Oceania, nature, national park, outdoors, scenery, wildlife, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/oceania/nature?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/oceania/nature"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/oceania/nature?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/oceania/nature"
+        }
+      ]
+    }
+  },
+  "/explore/oceania/adventure": {
+    "ko": {
+      "title": "오세아니아 모험·액티비티 여행지",
+      "description": "GATEO 3D 지구본에서 오세아니아 모험·액티비티 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "오세아니아, 모험, 액티비티, 익스트림, 트레킹, 스릴, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/oceania/adventure",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/oceania/adventure"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/oceania/adventure?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/oceania/adventure"
+        }
+      ]
+    },
+    "en": {
+      "title": "Oceania adventure travel",
+      "description": "Browse oceania adventure travel on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "Oceania, adventure, active travel, extreme sports, hiking, expedition, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/oceania/adventure?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/oceania/adventure"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/oceania/adventure?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/oceania/adventure"
+        }
+      ]
+    }
+  },
+  "/explore/africa/paradise": {
+    "ko": {
+      "title": "아프리카 휴양·호캉스 여행지",
+      "description": "GATEO 3D 지구본에서 아프리카 휴양·호캉스 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "아프리카, 휴양지, 호캉스, 리조트, 해변, 휴양, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/africa/paradise",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/africa/paradise"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/africa/paradise?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/africa/paradise"
+        }
+      ]
+    },
+    "en": {
+      "title": "Africa resort & beach getaways",
+      "description": "Browse africa resort & beach getaways on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "Africa, resort, beach getaway, tropical, honeymoon, island resort, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/africa/paradise?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/africa/paradise"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/africa/paradise?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/africa/paradise"
+        }
+      ]
+    }
+  },
+  "/explore/africa/culture": {
+    "ko": {
+      "title": "아프리카 랜드마크·문화 여행지",
+      "description": "GATEO 3D 지구본에서 아프리카 랜드마크·문화 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "아프리카, 문화, 랜드마크, 유적, 박물관, 문화유산, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/africa/culture",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/africa/culture"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/africa/culture?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/africa/culture"
+        }
+      ]
+    },
+    "en": {
+      "title": "Africa landmarks & culture",
+      "description": "Browse africa landmarks & culture on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "Africa, landmarks, culture, heritage, museums, historic sites, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/africa/culture?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/africa/culture"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/africa/culture?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/africa/culture"
+        }
+      ]
+    }
+  },
+  "/explore/africa/urban": {
+    "ko": {
+      "title": "아프리카 대도시·쇼핑 여행지",
+      "description": "GATEO 3D 지구본에서 아프리카 대도시·쇼핑 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "아프리카, 도시, 대도시, 쇼핑, 시티, 도심, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/africa/urban",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/africa/urban"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/africa/urban?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/africa/urban"
+        }
+      ]
+    },
+    "en": {
+      "title": "Africa cities & shopping",
+      "description": "Browse africa cities & shopping on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "Africa, city break, shopping, urban travel, downtown, metropolis, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/africa/urban?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/africa/urban"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/africa/urban?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/africa/urban"
+        }
+      ]
+    }
+  },
+  "/explore/africa/nature": {
+    "ko": {
+      "title": "아프리카 대자연 여행지",
+      "description": "GATEO 3D 지구본에서 아프리카 대자연 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "아프리카, 자연, 대자연, 국립공원, 트레킹, 풍경, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/africa/nature",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/africa/nature"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/africa/nature?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/africa/nature"
+        }
+      ]
+    },
+    "en": {
+      "title": "Africa nature & outdoors",
+      "description": "Browse africa nature & outdoors on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "Africa, nature, national park, outdoors, scenery, wildlife, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/africa/nature?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/africa/nature"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/africa/nature?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/africa/nature"
+        }
+      ]
+    }
+  },
+  "/explore/africa/adventure": {
+    "ko": {
+      "title": "아프리카 모험·액티비티 여행지",
+      "description": "GATEO 3D 지구본에서 아프리카 모험·액티비티 여행지를 탐색하세요. 사진·영상·AI 도슨트와 함께 여행을 계획하세요.",
+      "keywords": "아프리카, 모험, 액티비티, 익스트림, 트레킹, 스릴, GATEO, 게이트제로, 여행지 탐색, 3D 지구본, AI 도슨트",
+      "canonicalUrl": "https://www.gateo.kr/explore/africa/adventure",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/africa/adventure"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/africa/adventure?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/africa/adventure"
+        }
+      ]
+    },
+    "en": {
+      "title": "Africa adventure travel",
+      "description": "Browse africa adventure travel on GATEO — photos, videos, and an AI docent on a 3D globe to plan your trip.",
+      "keywords": "Africa, adventure, active travel, extreme sports, hiking, expedition, GATEO, travel destinations, 3D globe, AI docent, explore",
+      "canonicalUrl": "https://www.gateo.kr/explore/africa/adventure?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore/africa/adventure"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore/africa/adventure?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore/africa/adventure"
+        }
+      ]
+    }
   }
 };

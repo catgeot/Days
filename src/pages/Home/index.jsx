@@ -10,6 +10,11 @@ import LogoPanel from './components/LogoPanel';
 import SiteUpdateBanner from '../../shared/components/SiteUpdateBanner';
 import HomePlaceCardSummary from './components/HomePlaceCardSummary';
 import SEO from '../../components/SEO';
+import { useLocale } from '../../i18n/LocaleProvider';
+import {
+  getExploreCategorySeoBundle,
+  parseExploreCategoryPath,
+} from './lib/exploreCategorySeo';
 
 import { supabase } from '../../shared/api/supabase';
 import { logSeaExplore } from '../../shared/cloudPreview/seaExploreDebug.js';
@@ -136,6 +141,7 @@ function Home() {
 
   const navigate = useNavigate();
   const routeLocation = useLocation();
+  const { locale } = useLocale();
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUser(data.user));
@@ -1450,6 +1456,12 @@ function Home() {
     await globeRef.current?.endTour?.();
   }, []);
 
+  const exploreCategorySeo = useMemo(() => {
+    const parsed = parseExploreCategoryPath(routeLocation.pathname);
+    if (!parsed) return null;
+    return getExploreCategorySeoBundle(parsed.continent, parsed.category, locale);
+  }, [routeLocation.pathname, locale]);
+
   return (
     <FlightCinemaProvider
       globeRef={globeRef}
@@ -1459,7 +1471,12 @@ function Home() {
       onPendingChange={setFlightCinemaLaunchPending}
     >
     <div className="relative w-full h-screen bg-black text-white overflow-hidden font-sans">
-      <SEO />
+      <SEO
+        title={exploreCategorySeo?.title}
+        description={exploreCategorySeo?.description}
+        keywords={exploreCategorySeo?.keywords}
+        url={exploreCategorySeo?.path}
+      />
       <div className="w-full h-full">
         <HomeGlobe
           ref={globeRef}

@@ -40,22 +40,22 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 
 | | |
 |--|--|
-| **상태** | **#17 자유여행 intent 완료** · PROD QA planner·wiki crawler |
+| **상태** | **#18 explore 카테고리 완료** · PROD QA explore crawler |
 | **브랜치** | **`main`** |
-| **main** | `92ca5307` |
+| **main** | (push 후 SHA) |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
-| **PROD QA (#17)** | view-source `?crawler=1` — `/place/tokyo/planner` · `/place/tokyo/wiki` |
+| **PROD QA (#18)** | view-source `?crawler=1` — `/explore/asia/paradise` · `/explore/europe/culture?lang=en` |
 | **VERIFY** | `smoke:crawler-place-meta` · `smoke:place-seo-en` · `build` |
 
-**다음 제시어 (#18)**:
+**다음 제시어 (PROD QA)**:
 
 ```
-검색노출 #18, explore 카테고리
+검색노출 #18, PROD QA — explore 카테고리
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · /explore/asia/paradise title·keywords · index EN 링크
+main · view-source ?crawler=1 /explore/asia/paradise · index EN 링크
 ```
 
 ---

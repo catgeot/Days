@@ -190,3 +190,10 @@
 - **VERIFY**: `smoke:place-seo-en` · `smoke:crawler-place-meta` · `smoke:rss-canonical` · `build` PASS (sitemap **1133** URL)
 - **PROD QA**: view-source `?crawler=1` — `/place/tokyo/planner`(MOONi·자유여행 keywords) · `/place/tokyo/wiki`(로컬 왓슨·스케치)
 - **다음**: `검색노출 #18, explore 카테고리`
+
+## 검색노출 #18 — explore 카테고리 (2026-08-25)
+
+- **조치**: `exploreCategorySeo.js` SSOT(6대륙×5테마) · Home Helmet · crawler hub 30경로 · middleware `/explore/:continent/:category` · sitemap explore hreflang · index EN 5링크
+- **VERIFY**: `smoke:crawler-place-meta` · `smoke:place-seo-en` · `smoke:rss-canonical` · `build` PASS
+- **PROD QA**: view-source `?crawler=1` — `/explore/asia/paradise`(아시아 휴양·호캉스 title·keywords) · `/explore/europe/culture?lang=en`
+- **다음**: GSC baseline · tier2 EN 잔여

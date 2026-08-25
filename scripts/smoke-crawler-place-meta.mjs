@@ -154,7 +154,10 @@ assert(parseCrawlerPath('/korea/theme/scenic').kind === 'hub', 'scenic parsed as
 assert(parseCrawlerPath('/explore').kind === 'hub', 'explore parsed as hub');
 assert(parseCrawlerPath('/blog').kind === 'hub', 'blog parsed as hub');
 assert(parseCrawlerPath('/blog/curation').kind === 'hub', 'curation parsed as hub');
-assert(parseCrawlerPath('/explore/asia') === null, 'explore category path not in #15 scope');
+assert(parseCrawlerPath('/explore/asia') === null, 'explore single-segment path not in crawler scope');
+assert(parseCrawlerPath('/explore/asia/paradise')?.kind === 'explore-category', 'explore category parsed');
+assert(parseCrawlerPath('/explore/asia/island') === null, 'explore island category not in SEO SSOT');
+assert(getCrawlerMetaKind('/explore/asia/paradise') === 'explore-category', 'explore category kind tag');
 assert(getCrawlerMetaKind('/place/tokyo') === 'tier1-place-base', 'base path kind tag');
 assert(getCrawlerMetaKind('/') === 'home', 'home kind tag');
 assert(getCrawlerMetaKind('/korea') === 'korea', 'korea kind tag');
@@ -183,7 +186,16 @@ assert(!isCrawlerRequest(humanReq), 'Chrome UA not treated as crawler');
 const previewReq = new Request('https://www.gateo.kr/place/tokyo/gallery?crawler=1');
 assert(isCrawlerRequest(previewReq), 'crawler=1 preview flag works');
 
-for (const path of ['/', '/korea', '/korea/theme/scenic', '/explore', '/blog', '/blog/curation', '/place/tokyo', '/place/tokyo/gallery', '/place/tokyo/wiki']) {
+const exploreAsiaParadiseKo = resolveCrawlerMeta('/explore/asia/paradise', 'ko');
+assert(/아시아/.test(exploreAsiaParadiseKo.title) && /휴양|호캉스/.test(exploreAsiaParadiseKo.title), 'explore asia paradise KO title');
+assert(/휴양지|호캉스/.test(exploreAsiaParadiseKo.keywords), 'explore asia paradise KO keywords');
+assert(exploreAsiaParadiseKo.canonicalUrl.endsWith('/explore/asia/paradise'), 'explore asia paradise KO canonical');
+
+const exploreAsiaParadiseEn = resolveCrawlerMeta('/explore/asia/paradise', 'en');
+assert(/Asia/i.test(exploreAsiaParadiseEn.title) && /resort|beach/i.test(exploreAsiaParadiseEn.title), 'explore asia paradise EN title');
+assert(exploreAsiaParadiseEn.canonicalUrl.includes('/explore/asia/paradise?lang=en'), 'explore asia paradise EN canonical');
+
+for (const path of ['/', '/korea', '/korea/theme/scenic', '/explore', '/explore/asia/paradise', '/blog', '/blog/curation', '/place/tokyo', '/place/tokyo/gallery', '/place/tokyo/wiki']) {
   const req = googlebotRequest(path);
   assert(isCrawlerRequest(req), `Googlebot on ${path}`);
   assert(Boolean(resolveCrawlerMeta(path, 'ko')), `meta resolved for ${path}`);
@@ -223,6 +235,10 @@ const injectedScenic = injectCrawlerMetaIntoHtml(indexHtml, scenicKo);
 assert(injectedScenic.includes(`${scenicKo.title} | GATEO`), 'scenic title injected in head');
 assert(injectedScenic.includes('rel="canonical"'), 'scenic canonical link injected');
 
+const injectedExploreCategory = injectCrawlerMetaIntoHtml(indexHtml, exploreAsiaParadiseKo);
+assert(injectedExploreCategory.includes(`${exploreAsiaParadiseKo.title} | GATEO`), 'explore category title injected in head');
+assert(injectedExploreCategory.includes('href="https://www.gateo.kr/explore/asia/paradise"'), 'explore category canonical injected');
+
 const injectedExplore = injectCrawlerMetaIntoHtml(indexHtml, exploreKo);
 assert(injectedExplore.includes(`${exploreKo.title} | GATEO`), 'explore title injected in head');
 assert(injectedExplore.includes('href="https://www.gateo.kr/explore"'), 'explore canonical injected');
@@ -240,7 +256,7 @@ assert(middlewareSrc.includes('injectCrawlerMetaIntoHtml'), 'middleware wires HT
 assert(middlewareSrc.includes('isCrawlerRequest'), 'middleware gates on crawler UA');
 assert(middlewareSrc.includes('/korea'), 'middleware matcher includes /korea');
 assert(middlewareSrc.includes('/korea/theme/scenic'), 'middleware matcher includes scenic hub');
-assert(middlewareSrc.includes('/explore'), 'middleware matcher includes explore hub');
+assert(middlewareSrc.includes('/explore/:continent/:category'), 'middleware matcher includes explore category');
 assert(middlewareSrc.includes('/blog/curation'), 'middleware matcher includes curation hub');
 assert(middlewareSrc.includes('/blog'), 'middleware matcher includes blog hub');
 assert(middlewareSrc.includes('/place/:slug'), 'middleware matcher includes tier1 base');

@@ -70,8 +70,12 @@ function pathFromLoc(loc) {
   return null;
 }
 
+function isExploreCategoryPath(path) {
+  return /^\/explore\/[^/]+\/[^/]+$/.test(path);
+}
+
 function shouldIncludeHreflang(path) {
-  return Boolean(path && (isI18nHubPath(path) || path.startsWith('/place/')));
+  return Boolean(path && (isI18nHubPath(path) || path.startsWith('/place/') || isExploreCategoryPath(path)));
 }
 
 /** 국내 투톱·테마 허브 (src/i18n/seoUrls.js I18N_HUB_PATHS · vite.config koreaRoutes 레거시와 동기) */

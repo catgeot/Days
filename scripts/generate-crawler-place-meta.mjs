@@ -22,6 +22,10 @@ import {
 } from '../src/pages/Home/lib/placeSeoOg.js';
 import { getLocalizedPlaceName } from '../src/components/PlaceCard/common/locationDisplay.js';
 import { TRAVEL_SPOTS } from '../src/pages/Home/data/travelSpots.js';
+import {
+  getExploreCategorySeoBundle,
+  listExploreCategoryPaths,
+} from '../src/pages/Home/lib/exploreCategorySeo.js';
 
 const SITE_ORIGIN = 'https://www.gateo.kr';
 
@@ -210,6 +214,23 @@ for (const hubPath of HUB_PATHS) {
   }
 }
 
+for (const explorePath of listExploreCategoryPaths()) {
+  hubMeta[explorePath] = {};
+  const segments = explorePath.split('/').filter(Boolean);
+  const continent = segments[1];
+  const category = segments[2];
+  for (const locale of LOCALES) {
+    const seo = getExploreCategorySeoBundle(continent, category, locale);
+    hubMeta[explorePath][locale] = {
+      title: seo.title,
+      description: seo.description,
+      keywords: seo.keywords,
+      canonicalUrl: buildLocalePageUrl(explorePath, locale),
+      hreflangAlternates: buildHreflangAlternates(explorePath),
+    };
+  }
+}
+
 mkdirSync(dirname(placeOutFile), { recursive: true });
 writeFileSync(
   placeOutFile,
@@ -225,6 +246,6 @@ console.log(
   `  crawler slugs  ${crawlerSpots.length} (tier1 ${tier1Count} + tier2 pop≥${TIER2_CRAWLER_BATCH1_MIN_POP}: ${tier2Batch1Count} + pop${TIER2_CRAWLER_POP70_79_MIN}–${TIER2_CRAWLER_POP70_79_MAX}: ${tier2Pop70to79Count}/${TIER2_CRAWLER_POP70_79_TOTAL}, remaining ${tier2Pop70to79Remaining})`,
 );
 console.log(`  place entries ${crawlerSpots.length * TABS.length * LOCALES.length}`);
-console.log(`  hub entries   ${HUB_PATHS.length * LOCALES.length}`);
+console.log(`  hub entries   ${Object.keys(hubMeta).length * LOCALES.length} (${HUB_PATHS.length} hubs + ${listExploreCategoryPaths().length} explore categories)`);
 console.log(`  place output  ${placeOutFile}`);
 console.log(`  hub output    ${hubOutFile}`);

@@ -9934,180 +9934,270 @@
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/asia/paradise</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/asia/paradise"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/asia/paradise?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/asia/paradise"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/asia/culture</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/asia/culture"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/asia/culture?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/asia/culture"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/asia/urban</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/asia/urban"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/asia/urban?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/asia/urban"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/asia/nature</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/asia/nature"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/asia/nature?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/asia/nature"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/asia/adventure</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/asia/adventure"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/asia/adventure?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/asia/adventure"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/europe/paradise</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/europe/paradise"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/europe/paradise?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/europe/paradise"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/europe/culture</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/europe/culture"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/europe/culture?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/europe/culture"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/europe/urban</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/europe/urban"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/europe/urban?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/europe/urban"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/europe/nature</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/europe/nature"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/europe/nature?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/europe/nature"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/europe/adventure</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/europe/adventure"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/europe/adventure?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/europe/adventure"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/north_america/paradise</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/north_america/paradise"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/north_america/paradise?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/north_america/paradise"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/north_america/culture</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/north_america/culture"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/north_america/culture?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/north_america/culture"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/north_america/urban</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/north_america/urban"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/north_america/urban?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/north_america/urban"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/north_america/nature</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/north_america/nature"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/north_america/nature?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/north_america/nature"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/north_america/adventure</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/north_america/adventure"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/north_america/adventure?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/north_america/adventure"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/south_america/paradise</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/south_america/paradise"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/south_america/paradise?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/south_america/paradise"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/south_america/culture</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/south_america/culture"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/south_america/culture?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/south_america/culture"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/south_america/urban</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/south_america/urban"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/south_america/urban?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/south_america/urban"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/south_america/nature</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/south_america/nature"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/south_america/nature?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/south_america/nature"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/south_america/adventure</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/south_america/adventure"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/south_america/adventure?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/south_america/adventure"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/oceania/paradise</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/oceania/paradise"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/oceania/paradise?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/oceania/paradise"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/oceania/culture</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/oceania/culture"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/oceania/culture?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/oceania/culture"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/oceania/urban</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/oceania/urban"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/oceania/urban?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/oceania/urban"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/oceania/nature</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/oceania/nature"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/oceania/nature?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/oceania/nature"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/oceania/adventure</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/oceania/adventure"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/oceania/adventure?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/oceania/adventure"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/africa/paradise</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/africa/paradise"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/africa/paradise?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/africa/paradise"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/africa/culture</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/africa/culture"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/africa/culture?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/africa/culture"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/africa/urban</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/africa/urban"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/africa/urban?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/africa/urban"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/africa/nature</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/africa/nature"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/africa/nature?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/africa/nature"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gateo.kr/explore/africa/adventure</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://www.gateo.kr/explore/africa/adventure"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.gateo.kr/explore/africa/adventure?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.gateo.kr/explore/africa/adventure"/>
     <lastmod>2026-08-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>

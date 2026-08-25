@@ -222,6 +222,14 @@ assert(
   'sitemap /blog/curation has hreflang en',
 );
 assert(
+  indexHtml.includes('/explore/asia/paradise?lang=en') && indexHtml.includes('Asia resort'),
+  'index.html hidden EN links for explore asia paradise',
+);
+assert(
+  sitemap.includes('/explore/asia/paradise?lang=en'),
+  'sitemap explore asia paradise has hreflang en',
+);
+assert(
   indexHtml.includes('/blog/curation') && !indexHtml.includes('href="/logbook"'),
   'index.html static links use /blog paths',
 );
