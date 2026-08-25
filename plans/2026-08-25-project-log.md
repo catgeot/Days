@@ -116,5 +116,6 @@
 - **배경**: #6 MVP는 tier1 64만 view-source inject — tier2(phuket 등)는 **후속 배치** 대상이었음(영구 제외 아님)
 - **조치**: `generate-crawler-place-meta` — tier1 + **tier2 popularity≥80 43 slug** (107 total) · og:image·ImageGallery crawler inject
 - **VERIFY**: `smoke:crawler-place-meta` · `smoke:place-seo-en` · `build` PASS
-- **PROD QA**: `main` push·배포 후 `/place/phuket/gallery?crawler=1` view-source — tab title·slug og:image·ImageGallery JSON-LD
+- **main push**: `be4dae28` → origin/main (2026-08-25)
+- **PROD QA**: 배포 후 `/place/phuket/gallery?crawler=1` view-source 재확인
 - **잔여**: tier2 pop&lt;80 **~166 slug** — #12 배치(40/세션)

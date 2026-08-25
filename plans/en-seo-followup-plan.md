@@ -64,6 +64,16 @@ git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버�
 | `reviews` | 푸켓 후기 | phuket reviews | reviews | `/place/:slug/reviews` |
 | `wiki` | 푸켓 여행 스케치 | phuket travel guide | wiki | `/place/:slug/wiki` |
 
+**백로그 (#13) — 항공 경로 intent** (제안 · 미착수):
+
+| intentId | KO 예시 쿼리 | EN 예시 | tab | 비고 |
+|----------|-------------|---------|-----|------|
+| `flight-route` | 푸켓 항공, 푸켓 항공 경로, 서울 푸켓 직항 | phuket flights, ICN to HKT | **planner** | 신규 URL 없음 · `travelSpotFlightRoutes`·`flightRouteHubIatas`로 title/desc 보강 |
+
+- **장점**: GATEO 3D 항공 경로·플래너 항공권 카드와 검색 의도 정합 · 「지명+항공」 한국어 쿼리 커버
+- **주의**: OTA 키워드 경쟁·실시간 운항과 무관(경로·IATA SSOT만) · crawler description에 `ICN→HKT` 등 **팩트만** (가격·스케줄 금지)
+- **1세션 산출**: `placeSearchIntent` flight-route · planner keywords/title · tier1 crawler meta route snippet · smoke
+
 ### 1.3 잔여 한계
 
 | # | 한계 | 심각도 |
