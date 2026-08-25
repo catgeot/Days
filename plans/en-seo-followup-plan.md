@@ -8,6 +8,16 @@
 | SSOT·sitemap·overrides·smoke·index 정적 링크·문서 | **`main` 직행** (원격 push는 세션 종료 시 또는 사람 요청) |
 | Edge middleware · prerender · `/en/` URL prefix | **`cursor/en-seo`** (+ PR) |
 
+**세션 시작 (필수)** — 동일 계획서·동일 브랜치(`main`) 기준선 맞추기:
+
+```bash
+git fetch origin main
+git checkout main
+git pull --rebase origin main   # 로컬 only 작업 금지 · 스냅샷 구버전 금지
+```
+
+세션 종료: VERIFY PASS → `git push origin main` (또는 사람 요청 시).
+
 **선행 완료** (main, 2026-08-25):
 
 - `placeSeoEnOverrides` · Helmet keywords · `/place/*` hreflang
@@ -36,12 +46,12 @@
 
 | 영역 | SSOT / 산출 |
 |------|-------------|
-| 여행지 EN copy | [`placeSeoEnOverrides.js`](../src/data/placeSeoEnOverrides.js) — 66 slug |
+| 여행지 EN copy | [`placeSeoEnOverrides.js`](../src/data/placeSeoEnOverrides.js) — **106 slug** (tier1 + tier2 batch1) |
 | locale·탭 SEO | [`placeSeoText.js`](../src/pages/Home/lib/placeSeoText.js) — SSOT [`placeSearchIntent.js`](../src/data/placeSearchIntent.js) 참조 |
 | Helmet | [`SEO/index.jsx`](../src/components/SEO/index.jsx) |
 | Sitemap | [`generate-sitemap.cjs`](../scripts/generate-sitemap.cjs) — `/place/*` · `/gallery` · `/planner` + hreflang |
 | 정적 크롤러 | [`index.html`](../index.html) — KO·EN 숨김 링크 |
-| 검증 | `npm run smoke:place-seo-en` |
+| 검증 | `npm run smoke:place-seo-en` · `npm run audit:place-seo-en` |
 
 ### 1.2 검색 의도 → URL (SSOT: `placeSearchIntent.js`)
 
@@ -162,33 +172,24 @@ npm run audit:place-seo-en            # #3 이후
 
 ## 9. 핸드오프
 
-**세션** `검색노출 #2, 검색의도 SSOT`  
+**세션** `검색노출 #3, tier2 EN 배치1`  
 **main** 최신 · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
-**인덱스** [`feature-handoff-index.md`](./feature-handoff-index.md) 「검색 노출」행
+**인덱스** [`feature-handoff-index.md`](./feature-handoff-index.md) 「검색노출」행
 
 | | |
 |--|--|
-| **완료 (#2)** | `placeSearchIntent.js` · `placeSeoText` SSOT 연동 · smoke 확장 |
-| **다음 (#3)** | tier2 EN overrides 배치1 (40 slug · popularity≥80) |
+| **완료 (#3)** | overrides +40 (106 total) · `audit:place-seo-en` 신규 · smoke 확장 |
+| **다음 (#4)** | tier2 EN 배치2 — `kobe`·`okinawa` + pop 70–79 |
 
-**다음 제시어 (#3)**:
-
-```
-검색노출 #3, tier2 EN 배치1
-@plans/feature-handoff-index.md
-@plans/en-seo-followup-plan.md
-@plans/2026-08-25-project-log.md
-main · popularity≥80 · 40 slug · audit:place-seo-en 신규
-금지: 40개 초과·travelSpots.js 직접 편집·검증 없이 push
-```
-
-**#4 제시어 (예정)**:
+**다음 제시어 (#4)**:
 
 ```
 검색노출 #4, tier2 EN 배치2
+@plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
-main · overrides +40 · audit · smoke
-금지: 40개 초과·검증 없이 push
+@plans/2026-08-25-project-log.md
+main · git pull --rebase origin main 후 작업 · kobe·okinawa + pop 70–79 · audit:place-seo-en
+금지: 40개 초과·travelSpots.js 직접 편집·fetch 없이 작업·검증 없이 push
 ```
 
 **#6 제시어 (예정 · feature)**:

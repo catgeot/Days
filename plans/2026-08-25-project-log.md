@@ -22,10 +22,17 @@
 
 - **결정**: 세션당 1 산출 · tier2 40 slug/세션 · **#1~#5·#8~#9 = main** · **#6~#7 = `cursor/en-seo`+PR**
 - **문서**: [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2 세션표 · [`feature-handoff-index.md`](./feature-handoff-index.md) 행 추가
-- **다음**: `검색노출 #1, PROD QA — meta·탭 title`
+- **시작 필수**: `git fetch origin main && git pull --rebase origin main` — 스냅샷·로컬 구버전 작업 금지
 
 ## 검색노출 #2 — 검색의도 SSOT (2026-08-25)
 
 - **조치**: [`placeSearchIntent.js`](../src/data/placeSearchIntent.js) 신규 — intentId·tab·ko/enQuerySuffix·title·descLead·sitemapPriorityOffset · `placeSeoText` import 연동 (TAB_INTENT 중복 제거)
 - **VERIFY**: `npm run smoke:place-seo-en` · `npm run build` PASS
-- **다음**: `검색노출 #3, tier2 EN 배치1` — popularity≥80 · 40 slug
+
+## 검색노출 #3 — tier2 EN 배치1
+
+- **범위**: tier2 · popularity≥80 상위 **40 slug** → `placeSeoEnOverrides` (66→106)
+- **감사**: `npm run audit:place-seo-en` 신규 — Hangul 0 · desc 길이 · 커버리지 리포트
+- **VERIFY**: `audit:place-seo-en` · `smoke:place-seo-en` · `build` PASS
+- **잔여**: tier2 pop≥80 미커버 2 (`kobe` · `okinawa`) — 배치2
+- **다음**: `검색노출 #4, tier2 EN 배치2`

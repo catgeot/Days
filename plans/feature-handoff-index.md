@@ -36,7 +36,30 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 
 ---
 
-### 해안·해양 탐색
+### 검색노출 (영문 SEO tier2)
+
+| | |
+|--|--|
+| **상태** | **main** tier2 EN 배치1 완료 · PROD 배포 후 QA |
+| **main** | (이번 커밋 후 SHA) |
+| **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §4·§9 |
+| **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
+| **PROD QA** | `/place/taj-mahal?lang=en` · `/place/grand-canyon/gallery?lang=en` — meta·써머리 EN |
+| **VERIFY** | `audit:place-seo-en` · `smoke:place-seo-en` · `build` |
+
+**다음 제시어**:
+
+```
+검색노출 #4, tier2 EN 배치2
+@plans/feature-handoff-index.md
+@plans/en-seo-followup-plan.md
+@plans/2026-08-25-project-log.md
+main · kobe·okinawa + pop 70–79 · audit:place-seo-en
+금지: 40개 초과·travelSpots.js 직접 편집·검증 없이 push
+```
+
+---
+
 
 | | |
 |--|--|

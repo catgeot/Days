@@ -329,4 +329,204 @@ export const PLACE_SEO_EN_OVERRIDES = {
       'Explore Warsaw, Poland — a phoenix capital rebuilt after WWII, with UNESCO Old Town Square, Chopin heritage in Łazienki Park, and moving Uprising Museum history.',
     keywords_en: ['Warsaw', 'Poland', 'Old Town', 'Chopin', 'WWII history', 'Eastern Europe travel'],
   },
+  'angkor-thom': {
+    desc_en:
+      'Explore Angkor Thom, Cambodia — the walled Khmer capital with Bayon Temple\'s serene stone faces, the South Gate giants, and jungle temples like Ta Prohm wrapped in tree roots.',
+    keywords_en: ['Angkor Thom', 'Cambodia', 'Bayon Temple', 'Khmer heritage', 'Siem Reap travel', 'temple photos'],
+  },
+  'annapurna-circuit': {
+    desc_en:
+      'Trek the Annapurna Circuit in Nepal — a legendary 160 km loop over Thorong La pass with tropical valleys, alpine villages, and 360-degree Himalayan panoramas.',
+    keywords_en: ['Annapurna Circuit', 'Nepal', 'Himalaya trek', 'Thorong La', 'mountain hiking', 'adventure travel'],
+  },
+  'boracay': {
+    desc_en:
+      'Relax on Boracay, Philippines — a 4 km powder-white beach paradise for kite surfing by day, fire dancers at night, and crystal-clear waters after its eco restoration.',
+    keywords_en: ['Boracay', 'Philippines', 'White Beach', 'island getaway', 'kite surfing', 'beach vacation'],
+  },
+  'borobudur': {
+    desc_en:
+      'Visit Borobudur, Indonesia — the world\'s largest Buddhist temple with nine terraced levels, 2,672 reliefs, and 504 Buddha statues rising from Java\'s misty dawn.',
+    keywords_en: ['Borobudur', 'Indonesia', 'Buddhist temple', 'Java travel', 'sunrise tour', 'UNESCO heritage'],
+  },
+  'cappadocia': {
+    desc_en:
+      'Discover Cappadocia, Turkey — fairy chimneys, rock-cut churches, underground cities, and unforgettable hot-air balloon sunrises over a volcanic wonderland.',
+    keywords_en: ['Cappadocia', 'Turkey', 'hot air balloon', 'fairy chimneys', 'cave hotel', 'Goreme'],
+  },
+  'cusco': {
+    desc_en:
+      'Explore Cusco, Peru — the former Inca capital with precisely fitted stone walls, Sacsayhuaman fortress, and the gateway to Machu Picchu and the Sacred Valley.',
+    keywords_en: ['Cusco', 'Peru', 'Inca heritage', 'Machu Picchu gateway', 'Sacred Valley', 'Andes travel'],
+  },
+  'da-nang': {
+    desc_en:
+      'Visit Da Nang, Vietnam — golden beaches, the Marble Mountains, and easy access to Hoi An\'s lantern-lit old town on one of Southeast Asia\'s best-value coasts.',
+    keywords_en: ['Da Nang', 'Vietnam', 'beach vacation', 'Hoi An day trip', 'Marble Mountains', 'family travel'],
+  },
+  'el-nido': {
+    desc_en:
+      'Discover El Nido, Philippines — limestone cliffs, secret lagoons, and emerald waters at the tip of Palawan, best explored on island-hopping boat tours.',
+    keywords_en: ['El Nido', 'Philippines', 'Palawan', 'island hopping', 'lagoon tour', 'beach paradise'],
+  },
+  'everest-base-camp': {
+    desc_en:
+      'Trek to Everest Base Camp, Nepal — a 12–14 day pilgrimage to 5,364 m beneath the world\'s highest peak, past Khumbu Glacier and towering Himalayan summits.',
+    keywords_en: ['Everest Base Camp', 'Nepal', 'Himalaya trek', 'Khumbu', 'mountain adventure', 'EBC hiking'],
+  },
+  'forbidden-city': {
+    desc_en:
+      'Tour the Forbidden City, China — Beijing\'s imperial palace of 980 buildings where Ming and Qing emperors ruled amid crimson walls and golden-roofed halls.',
+    keywords_en: ['Forbidden City', 'Beijing', 'China', 'imperial palace', 'UNESCO heritage', 'history travel'],
+  },
+  'fukuoka': {
+    desc_en:
+      'Taste Fukuoka, Japan — Kyushu\'s ramen capital with tonkotsu bowls, Nakasu yatai food stalls, ancient shrines, and quick flights from Korea.',
+    keywords_en: ['Fukuoka', 'Japan', 'tonkotsu ramen', 'yatai stalls', 'Kyushu travel', 'food city'],
+  },
+  'gili-meno': {
+    desc_en:
+      'Escape to Gili Meno, Indonesia — the quietest of the Gili Islands with turtle snorkeling, bioluminescent nights, and unspoiled beaches near Lombok.',
+    keywords_en: ['Gili Meno', 'Indonesia', 'Lombok', 'turtle snorkeling', 'island escape', 'beach getaway'],
+  },
+  'gold-coast': {
+    desc_en:
+      'Surf the Gold Coast, Australia — 57 km of golden beaches, world-class breaks at Surfers Paradise, theme parks, and hinterland rainforest day trips.',
+    keywords_en: ['Gold Coast', 'Australia', 'Surfers Paradise', 'surfing', 'theme parks', 'beach vacation'],
+  },
+  'grand-canyon': {
+    desc_en:
+      'Marvel at the Grand Canyon, USA — a 1.6 km deep, 446 km long Colorado River gorge with unforgettable South Rim sunrise and sunset vistas.',
+    keywords_en: ['Grand Canyon', 'USA', 'national park', 'South Rim', 'hiking', 'scenic overlook'],
+  },
+  'great-wall': {
+    desc_en:
+      'Walk the Great Wall of China — 21,196 km of ancient fortifications with iconic Badaling and Mutianyu sections snaking across mountain ridges near Beijing.',
+    keywords_en: ['Great Wall of China', 'Beijing', 'China', 'Badaling', 'Mutianyu', 'UNESCO heritage'],
+  },
+  'halong-bay': {
+    desc_en:
+      'Cruise Halong Bay, Vietnam — over 1,600 limestone islets rising from emerald waters, sea caves, and junk-boat nights in a UNESCO karst seascape.',
+    keywords_en: ['Halong Bay', 'Vietnam', 'cruise tour', 'limestone karst', 'UNESCO site', 'island cruise'],
+  },
+  'hokkaido': {
+    desc_en:
+      'Explore Hokkaido, Japan — powder snow in winter, lavender fields and scenic drives in summer, fresh seafood, and vast wilderness across Japan\'s northern island.',
+    keywords_en: ['Hokkaido', 'Japan', 'ski resort', 'lavender fields', 'Sapporo', 'nature travel'],
+  },
+  'inca-trail': {
+    desc_en:
+      'Hike the Inca Trail, Peru — a four-day Andean trek over Dead Woman\'s Pass to the Sun Gate sunrise entrance of Machu Picchu on ancient stone paths.',
+    keywords_en: ['Inca Trail', 'Peru', 'Machu Picchu trek', 'Andes hiking', 'Sun Gate', 'adventure travel'],
+  },
+  'kilimanjaro': {
+    desc_en:
+      'Climb Mount Kilimanjaro, Tanzania — Africa\'s highest peak at 5,895 m, a non-technical summit trek through rainforest, moorland, and glaciers near the equator.',
+    keywords_en: ['Kilimanjaro', 'Tanzania', 'Africa summit', 'mountain trek', 'Uhuru Peak', 'adventure travel'],
+  },
+  'koh-samui': {
+    desc_en:
+      'Unwind on Koh Samui, Thailand — coconut palms, Chaweng and Lamai beaches, Ang Thong Marine Park kayaking, and resorts from luxury villas to beach bungalows.',
+    keywords_en: ['Koh Samui', 'Thailand', 'island resort', 'Chaweng Beach', 'Ang Thong', 'beach vacation'],
+  },
+  'kota-kinabalu': {
+    desc_en:
+      'Discover Kota Kinabalu, Malaysia — Borneo gateway with one of the world\'s finest sunsets, firefly river tours, Mount Kinabalu treks, and island snorkeling.',
+    keywords_en: ['Kota Kinabalu', 'Malaysia', 'Borneo', 'Mount Kinabalu', 'sunset cruise', 'island hopping'],
+  },
+  'krabi': {
+    desc_en:
+      'Explore Krabi, Thailand — dramatic limestone karsts, Railay Beach accessible only by boat, rock climbing cliffs, emerald pools, and jungle hot springs.',
+    keywords_en: ['Krabi', 'Thailand', 'Railay Beach', 'rock climbing', 'limestone karst', 'island travel'],
+  },
+  'lisbon': {
+    desc_en:
+      'Wander Lisbon, Portugal — seven hills, Tram 28 through Alfama, Belem Tower, Jeronimos Monastery, azulejo tiles, and soulful fado nights by the Tagus.',
+    keywords_en: ['Lisbon', 'Portugal', 'Tram 28', 'Belem Tower', 'fado music', 'city break'],
+  },
+  'luxor': {
+    desc_en:
+      'Explore Luxor, Egypt — the world\'s greatest open-air museum with Karnak and Luxor temples on the Nile\'s east bank and the Valley of the Kings on the west.',
+    keywords_en: ['Luxor', 'Egypt', 'Valley of the Kings', 'Karnak Temple', 'Nile cruise', 'ancient history'],
+  },
+  'madrid': {
+    desc_en:
+      'Experience Madrid, Spain — Prado masterpieces, Retiro Park strolls, late-night tapas bars, flamenco tablaos, and Real Madrid passion in the capital.',
+    keywords_en: ['Madrid', 'Spain', 'Prado Museum', 'tapas', 'Retiro Park', 'city break'],
+  },
+  'milford-sound': {
+    desc_en:
+      'Cruise Milford Sound, New Zealand — Rudyard Kipling\'s eighth wonder with 1,200 m cliffs, cascading waterfalls, dolphins, and misty fiord drama.',
+    keywords_en: ['Milford Sound', 'New Zealand', 'fiord cruise', 'waterfalls', 'Fiordland', 'scenic tour'],
+  },
+  'nara': {
+    desc_en:
+      'Visit Nara, Japan — 1,000 free-roaming deer in Nara Park, Todai-ji\'s giant bronze Buddha, and eighth-century temples at the heart of ancient Japan.',
+    keywords_en: ['Nara', 'Japan', 'deer park', 'Todai-ji', 'temple travel', 'day trip from Kyoto'],
+  },
+  'phi-phi-islands': {
+    desc_en:
+      'Island-hop the Phi Phi Islands, Thailand — Maya Bay\'s turquoise lagoon from The Beach, vertical limestone cliffs, and vibrant snorkeling reefs.',
+    keywords_en: ['Phi Phi Islands', 'Thailand', 'Maya Bay', 'island hopping', 'snorkeling', 'beach paradise'],
+  },
+  'phu-quoc': {
+    desc_en:
+      'Relax on Phu Quoc, Vietnam — the country\'s island Maldives with long cable-car sunsets, pristine beaches, pepper farms, and upscale beach resorts.',
+    keywords_en: ['Phu Quoc', 'Vietnam', 'island resort', 'beach vacation', 'cable car', 'sunset views'],
+  },
+  'queenstown': {
+    desc_en:
+      'Thrill-seek in Queenstown, New Zealand — bungee jumping, skydiving, and Milford Sound tours from a lakeside adventure hub beneath the Remarkables.',
+    keywords_en: ['Queenstown', 'New Zealand', 'bungee jump', 'adventure travel', 'Milford Sound', 'ski resort'],
+  },
+  'rocky-mountains': {
+    desc_en:
+      'Explore the Rocky Mountains, USA — soaring peaks, glacier lakes, elk and bighorn country, and world-class hiking in Rocky Mountain National Park.',
+    keywords_en: ['Rocky Mountains', 'USA', 'national park', 'mountain hiking', 'wildlife', 'scenic drive'],
+  },
+  'saipan': {
+    desc_en:
+      'Discover Saipan, Northern Mariana Islands — crystal-clear lagoons, Managaha Island snorkeling, WWII history, and family-friendly Pacific beaches.',
+    keywords_en: ['Saipan', 'Northern Mariana Islands', 'snorkeling', 'Managaha Island', 'beach vacation', 'Pacific island'],
+  },
+  'sapporo': {
+    desc_en:
+      'Visit Sapporo, Japan — Hokkaido\'s capital famed for snow festivals, miso ramen, beer gardens, Odori Park, and cool summer escapes from the heat.',
+    keywords_en: ['Sapporo', 'Japan', 'snow festival', 'miso ramen', 'Hokkaido', 'city break'],
+  },
+  'seogwipo': {
+    desc_en:
+      'Explore Seogwipo, South Korea — Jeju\'s southern hub with Cheonjiyeon and Jeongbang waterfalls, Jusangjeolli cliffs, Seopjikoji coast, and tangerine groves.',
+    keywords_en: ['Seogwipo', 'Jeju', 'South Korea', 'waterfalls', 'coastal hike', 'island travel'],
+  },
+  'sicily': {
+    desc_en:
+      'Discover Sicily, Italy — Mount Etna volcanoes, baroque towns, Greek temples at Agrigento, and Mediterranean cuisine on Italy\'s largest island.',
+    keywords_en: ['Sicily', 'Italy', 'Mount Etna', 'Mediterranean island', 'food travel', 'heritage tour'],
+  },
+  'taj-mahal': {
+    desc_en:
+      'Witness the Taj Mahal, India — Mughal emperor Shah Jahan\'s white marble mausoleum with intricate inlay, gardens, and legendary sunrise reflections in Agra.',
+    keywords_en: ['Taj Mahal', 'India', 'Agra', 'UNESCO heritage', 'sunrise tour', 'monument photos'],
+  },
+  'terracotta-army': {
+    desc_en:
+      'See the Terracotta Army, China — over 8,000 life-size warrior statues guarding Emperor Qin\'s tomb near Xi\'an, each with a unique face and expression.',
+    keywords_en: ['Terracotta Army', 'Xi\'an', 'China', 'ancient history', 'archaeology', 'museum tour'],
+  },
+  'yosemite': {
+    desc_en:
+      'Explore Yosemite National Park, USA — El Capitan granite walls, Yosemite Falls, Half Dome hikes, and giant sequoia groves in California\'s Sierra wilderness.',
+    keywords_en: ['Yosemite', 'USA', 'national park', 'Half Dome', 'El Capitan', 'hiking'],
+  },
+  'zermatt': {
+    desc_en:
+      'Visit Zermatt, Switzerland — a car-free alpine village beneath the Matterhorn with Gornergrat views of 29 peaks above 4,000 m and glacier railway rides.',
+    keywords_en: ['Zermatt', 'Switzerland', 'Matterhorn', 'Gornergrat', 'ski resort', 'alpine village'],
+  },
+  'zhangjiajie': {
+    desc_en:
+      'Explore Zhangjiajie, China — Avatar-inspired sandstone pillars, forested peaks, glass skywalks, and misty Zhangjiajie National Forest Park vistas.',
+    keywords_en: ['Zhangjiajie', 'China', 'Avatar mountains', 'glass bridge', 'national park', 'scenic hike'],
+  },
 };
