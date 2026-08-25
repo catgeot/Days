@@ -40,23 +40,23 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 
 | | |
 |--|--|
-| **상태** | **#7 크롤러 HTML 확장** — `/`·`/korea`·tier1 base · Preview QA |
-| **브랜치** | **`cursor/en-seo`** (+ PR) · **#8~#9 → `main`** |
-| **시작 필수** | `git fetch origin cursor/en-seo && git checkout cursor/en-seo` |
-| **tip** | (이번 턴 push 후 SHA) · PR #151 |
+| **상태** | **#6·#7 main 병합** (PR #151) · **#8 완료** · **#9 RSS·canonical** 다음 |
+| **브랜치** | **#1~#9 → `main`** — [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2 SSOT |
+| **시작 필수** | `git fetch origin main && git pull --rebase origin main` |
+| **main** | PR #151 merge 후 SHA 확인 |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §2·§9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
-| **Preview** | `/qa/en-seo` → `?crawler=1` view-source `/` · `/korea` · `/place/tokyo` |
+| **PROD QA** | view-source `?crawler=1` — `/` · `/korea` · `/place/tokyo/gallery` · tier1 KO 정적링크 128 |
 | **VERIFY** | `smoke:crawler-place-meta` · `smoke:place-seo-en` · `build` |
 
-**다음 제시어 (#8)**:
+**다음 제시어 (#9)**:
 
 ```
-검색노출 #8, 정적링크·baseline
+검색노출 #9, RSS·canonical
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
 @plans/2026-08-25-project-log.md
-main · index.html tier1×intent KO 링크 · GSC baseline CSV(사람)
+main · rss-en 또는 bilingual item · canonical 점검
 금지: full SSR·/en/ prefix·검증 없이 push
 ```
 
