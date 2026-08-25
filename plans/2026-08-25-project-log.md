@@ -36,3 +36,10 @@
 - **VERIFY**: `audit:place-seo-en` · `smoke:place-seo-en` · `build` PASS
 - **잔여**: tier2 pop≥80 미커버 2 (`kobe` · `okinawa`) — 배치2
 - **다음**: `검색노출 #4, tier2 EN 배치2`
+
+## 검색노출 #4 — tier2 EN 배치2
+
+- **범위**: `kobe`·`okinawa` + tier2 pop **70–79** 상위 **38 slug** → overrides (106→146)
+- **VERIFY**: `audit:place-seo-en` (tier2 pop≥80 **43/43**) · `smoke:place-seo-en` · `build` PASS
+- **잔여**: tier2 pop 70–79 미커버 **~70 slug** (백로그) · 다음 세션표 **#5 explore·korea hreflang**
+- **다음**: `검색노출 #5, explore·korea hreflang`
