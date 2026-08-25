@@ -157,5 +157,6 @@
 - **샘플**: bohol · galapagos · seoul · ulaanbaatar
 - **smoke**: count **216** · bohol assert ON · tier2 pop&lt;70 `santorini` null
 - **VERIFY**: `smoke:crawler-place-meta` · `smoke:place-seo-en` · `smoke:rss-canonical` · `build` PASS
+- **main push**: `a74d24f5` → origin/main (2026-08-25)
 - **PROD QA**: `/place/bohol/gallery?crawler=1` · `/place/galapagos/gallery?crawler=1` view-source
 - **다음**: `검색노출 #14, 항공 경로 SEO`
