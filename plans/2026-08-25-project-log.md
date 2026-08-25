@@ -87,3 +87,11 @@
 - **VERIFY**: `smoke:place-seo-en` · `build` PASS
 - **사람**: GSC URL Inspection — 템플릿 CSV에 `gsc_index_status`·`gsc_last_crawl` 기록 후 `scripts/outputs/gsc-seo-baseline.csv`로 저장(로컬·gitignore)
 - **다음**: `검색노출 #9, RSS·canonical`
+
+## 검색노출 #9 — RSS·canonical (2026-08-25)
+
+- **조치**: `public/rss-en.xml` 신규 · KO `rss.xml` gallery canonical 링크·bilingual item(EN/KO 상호 링크) · `generate-sitemap.cjs` locale 분기 · `smoke:rss-canonical` · `verify-rss-dist`
+- **canonical**: RSS item·guid → `/place/:slug/gallery` (PlaceCard·crawler SSOT와 동일) · EN `?lang=en`
+- **VERIFY**: `smoke:rss-canonical` · `smoke:place-seo-en` · `smoke:crawler-place-meta` · `build` PASS
+- **사람**: 네이버 서치어드바이저에 `https://www.gateo.kr/rss-en.xml` 추가 제출(선택)
+- **다음**: `검색노출 #10, OG·스키마`
