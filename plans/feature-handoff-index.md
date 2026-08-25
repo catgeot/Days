@@ -42,7 +42,7 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 |--|--|
 | **상태** | **#18 explore 카테고리 완료** · PROD QA explore crawler |
 | **브랜치** | **`main`** |
-| **main** | (push 후 SHA) |
+| **main** | `59250605` |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
 | **PROD QA (#18)** | view-source `?crawler=1` — `/explore/asia/paradise` · `/explore/europe/culture?lang=en` |
