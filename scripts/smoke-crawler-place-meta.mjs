@@ -81,6 +81,23 @@ const koreaEn = resolveCrawlerMeta('/korea', 'en');
 assert(/Korea festivals/i.test(koreaEn.title), 'korea EN title');
 assert(koreaEn.canonicalUrl.endsWith('/korea?lang=en'), 'korea EN canonical');
 
+const scenicKo = resolveCrawlerMeta('/korea/theme/scenic', 'ko');
+assert(scenicKo.title.includes('명승'), 'scenic KO title');
+assert(scenicKo.description.includes('명승'), 'scenic KO description');
+assert(scenicKo.canonicalUrl.endsWith('/korea/theme/scenic'), 'scenic KO canonical');
+
+const scenicEn = resolveCrawlerMeta('/korea/theme/scenic', 'en');
+assert(/scenic/i.test(scenicEn.title), 'scenic EN title');
+assert(scenicEn.canonicalUrl.includes('/korea/theme/scenic?lang=en'), 'scenic EN canonical');
+
+const exploreKo = resolveCrawlerMeta('/explore', 'ko');
+assert(/3D|도슨트|세계 여행/i.test(exploreKo.title), 'explore KO title matches home default');
+assert(exploreKo.canonicalUrl.endsWith('/explore'), 'explore KO canonical');
+
+const exploreEn = resolveCrawlerMeta('/explore', 'en');
+assert(/AI docent|3D/i.test(exploreEn.title), 'explore EN title');
+assert(exploreEn.canonicalUrl.includes('/explore?lang=en'), 'explore EN canonical');
+
 assert(parseCrawlerPlacePath('/place/tokyo/video') === null, 'video tab not in scope');
 const phuketGalleryKo = resolveCrawlerMeta('/place/phuket/gallery', 'ko');
 assert(Boolean(phuketGalleryKo?.title), 'phuket tier2 gallery KO meta resolved');
@@ -125,9 +142,14 @@ assert(
 );
 
 assert(parseCrawlerPath('/korea').kind === 'hub', 'korea parsed as hub');
+assert(parseCrawlerPath('/korea/theme/scenic').kind === 'hub', 'scenic parsed as hub');
+assert(parseCrawlerPath('/explore').kind === 'hub', 'explore parsed as hub');
+assert(parseCrawlerPath('/explore/asia') === null, 'explore category path not in #15 scope');
 assert(getCrawlerMetaKind('/place/tokyo') === 'tier1-place-base', 'base path kind tag');
 assert(getCrawlerMetaKind('/') === 'home', 'home kind tag');
 assert(getCrawlerMetaKind('/korea') === 'korea', 'korea kind tag');
+assert(getCrawlerMetaKind('/korea/theme/scenic') === 'scenic', 'scenic kind tag');
+assert(getCrawlerMetaKind('/explore') === 'explore', 'explore kind tag');
 
 const botReq = googlebotRequest('/place/tokyo/gallery');
 assert(isCrawlerRequest(botReq), 'Googlebot detected on gallery');
@@ -140,7 +162,7 @@ assert(!isCrawlerRequest(humanReq), 'Chrome UA not treated as crawler');
 const previewReq = new Request('https://www.gateo.kr/place/tokyo/gallery?crawler=1');
 assert(isCrawlerRequest(previewReq), 'crawler=1 preview flag works');
 
-for (const path of ['/', '/korea', '/place/tokyo', '/place/tokyo/gallery']) {
+for (const path of ['/', '/korea', '/korea/theme/scenic', '/explore', '/place/tokyo', '/place/tokyo/gallery']) {
   const req = googlebotRequest(path);
   assert(isCrawlerRequest(req), `Googlebot on ${path}`);
   assert(Boolean(resolveCrawlerMeta(path, 'ko')), `meta resolved for ${path}`);
@@ -176,10 +198,20 @@ const tokyoGalleryKoMeta = resolveCrawlerMeta('/place/tokyo/gallery', 'ko');
 assert(Boolean(tokyoGalleryKoMeta?.ogImage), 'tokyo gallery meta includes ogImage');
 assert(tokyoGalleryKoMeta.ogImage.startsWith('https://images.unsplash.com/'), 'tokyo ogImage is stable unsplash URL');
 
+const injectedScenic = injectCrawlerMetaIntoHtml(indexHtml, scenicKo);
+assert(injectedScenic.includes(`${scenicKo.title} | GATEO`), 'scenic title injected in head');
+assert(injectedScenic.includes('rel="canonical"'), 'scenic canonical link injected');
+
+const injectedExplore = injectCrawlerMetaIntoHtml(indexHtml, exploreKo);
+assert(injectedExplore.includes(`${exploreKo.title} | GATEO`), 'explore title injected in head');
+assert(injectedExplore.includes('href="https://www.gateo.kr/explore"'), 'explore canonical injected');
+
 const middlewareSrc = readFileSync(join(root, 'middleware.js'), 'utf8');
 assert(middlewareSrc.includes('injectCrawlerMetaIntoHtml'), 'middleware wires HTML injection');
 assert(middlewareSrc.includes('isCrawlerRequest'), 'middleware gates on crawler UA');
 assert(middlewareSrc.includes('/korea'), 'middleware matcher includes /korea');
+assert(middlewareSrc.includes('/korea/theme/scenic'), 'middleware matcher includes scenic hub');
+assert(middlewareSrc.includes('/explore'), 'middleware matcher includes explore hub');
 assert(middlewareSrc.includes('/place/:slug'), 'middleware matcher includes tier1 base');
 
 if (failed > 0) {

@@ -49,6 +49,10 @@ function stripSiteSuffix(title) {
     .trim();
 }
 
+function getLocaleValue(bundle, keyPath) {
+  return String(keyPath.split('.').reduce((obj, key) => obj?.[key], bundle) || '').trim();
+}
+
 function readLocaleBundle(locale) {
   const file = join(dirname(fileURLToPath(import.meta.url)), '..', 'src/i18n/locales', `${locale}.json`);
   return JSON.parse(readFileSync(file, 'utf8'));
@@ -60,7 +64,33 @@ const placeOutFile = join(root, 'src/edge/crawlerPlaceMeta.generated.js');
 const hubOutFile = join(root, 'src/edge/crawlerHubMeta.generated.js');
 const TABS = ['gallery', 'planner'];
 const LOCALES = ['ko', 'en'];
-const HUB_PATHS = ['/', '/korea'];
+/** Hub crawler paths — sync with resolveCrawlerMeta HUB_PATHS + middleware matcher (#15). */
+const HUB_PATHS = ['/', '/korea', '/korea/theme/scenic', '/explore'];
+
+const HUB_LOCALE_KEYS = {
+  '/': {
+    title: 'seo.defaultTitle',
+    description: 'seo.defaultDescription',
+    keywords: 'seo.defaultKeywords',
+    stripTitle: true,
+  },
+  '/korea': {
+    title: 'korea.festival.title',
+    description: 'korea.festival.seoDescription',
+    keywords: 'seo.defaultKeywords',
+  },
+  '/korea/theme/scenic': {
+    title: 'korea.theme.scenicTitle',
+    description: 'korea.theme.scenicSeoDescription',
+    keywords: 'seo.defaultKeywords',
+  },
+  '/explore': {
+    title: 'seo.defaultTitle',
+    description: 'seo.defaultDescription',
+    keywords: 'seo.defaultKeywords',
+    stripTitle: true,
+  },
+};
 
 /** tier1 전수 + tier2 pop≥80 (#11) + tier2 pop70–79 순위 포함 (#12~#13). */
 const TIER2_CRAWLER_BATCH1_MIN_POP = 80;
@@ -156,25 +186,17 @@ const hubMeta = {};
 
 for (const hubPath of HUB_PATHS) {
   hubMeta[hubPath] = {};
+  const source = HUB_LOCALE_KEYS[hubPath];
   for (const locale of LOCALES) {
     const bundle = readLocaleBundle(locale);
-    if (hubPath === '/') {
-      hubMeta[hubPath][locale] = {
-        title: stripSiteSuffix(bundle.seo.defaultTitle),
-        description: bundle.seo.defaultDescription,
-        keywords: bundle.seo.defaultKeywords,
-        canonicalUrl: buildLocalePageUrl('/', locale),
-        hreflangAlternates: buildHreflangAlternates('/'),
-      };
-    } else {
-      hubMeta[hubPath][locale] = {
-        title: bundle.korea.festival.title,
-        description: bundle.korea.festival.seoDescription,
-        keywords: bundle.seo.defaultKeywords,
-        canonicalUrl: buildLocalePageUrl('/korea', locale),
-        hreflangAlternates: buildHreflangAlternates('/korea'),
-      };
-    }
+    const rawTitle = getLocaleValue(bundle, source.title);
+    hubMeta[hubPath][locale] = {
+      title: source.stripTitle ? stripSiteSuffix(rawTitle) : rawTitle,
+      description: getLocaleValue(bundle, source.description),
+      keywords: getLocaleValue(bundle, source.keywords),
+      canonicalUrl: buildLocalePageUrl(hubPath, locale),
+      hreflangAlternates: buildHreflangAlternates(hubPath),
+    };
   }
 }
 

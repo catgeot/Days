@@ -3,7 +3,7 @@ import { injectCrawlerMetaIntoHtml } from './src/edge/injectCrawlerMeta.js';
 import { getCrawlerMetaKind, parseCrawlerPath, resolveCrawlerMeta } from './src/edge/resolveCrawlerMeta.js';
 
 export const config = {
-  matcher: ['/', '/korea', '/place/:slug', '/place/:slug/gallery', '/place/:slug/planner'],
+  matcher: ['/', '/korea', '/korea/theme/scenic', '/explore', '/place/:slug', '/place/:slug/gallery', '/place/:slug/planner'],
 };
 
 export default async function middleware(request) {

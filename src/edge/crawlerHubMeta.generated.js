@@ -83,5 +83,89 @@ export default {
         }
       ]
     }
+  },
+  "/korea/theme/scenic": {
+    "ko": {
+      "title": "한국의 명승",
+      "description": "GATEO 명승 허브. 국가유산 지정 명승·선정 명소·관광지를 권역별로 보고, 주변 맛집·숙소·투어로 이어갑니다.",
+      "keywords": "여행, AI 도슨트, 3D 지구본, 여행 기록, 여행 계획, GATEO, 게이트제로, 국내 축제, 한국의 명승, 명승지, 푸켓 여행, 갈라파고스, 앙코르 와트",
+      "canonicalUrl": "https://www.gateo.kr/korea/theme/scenic",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/korea/theme/scenic"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/korea/theme/scenic?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/korea/theme/scenic"
+        }
+      ]
+    },
+    "en": {
+      "title": "Korea scenic spots",
+      "description": "GATEO scenic hub. Browse heritage sites, curated spots, and attractions by region, then nearby dining, stays, and tours.",
+      "keywords": "travel, AI docent, 3D globe, trip planner, GATEO, Korea festivals, scenic spots, Phuket travel, Galapagos photos, Angkor Wat photos, world destinations",
+      "canonicalUrl": "https://www.gateo.kr/korea/theme/scenic?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/korea/theme/scenic"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/korea/theme/scenic?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/korea/theme/scenic"
+        }
+      ]
+    }
+  },
+  "/explore": {
+    "ko": {
+      "title": "AI 도슨트와 함께하는 3D 세계 여행",
+      "description": "당신의 여행을 계획하고 기록하는 가장 스마트한 방법, AI 도슨트와 함께하는 3D 세계 여행 GATEO(게이트제로)",
+      "keywords": "여행, AI 도슨트, 3D 지구본, 여행 기록, 여행 계획, GATEO, 게이트제로, 국내 축제, 한국의 명승, 명승지, 푸켓 여행, 갈라파고스, 앙코르 와트",
+      "canonicalUrl": "https://www.gateo.kr/explore",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore"
+        }
+      ]
+    },
+    "en": {
+      "title": "AI docent for 3D world travel",
+      "description": "Plan and record trips with an AI docent on a 3D globe — GATEO, your smart travel toolkit.",
+      "keywords": "travel, AI docent, 3D globe, trip planner, GATEO, Korea festivals, scenic spots, Phuket travel, Galapagos photos, Angkor Wat photos, world destinations",
+      "canonicalUrl": "https://www.gateo.kr/explore?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/explore"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/explore?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/explore"
+        }
+      ]
+    }
   }
 };
