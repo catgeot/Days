@@ -19,7 +19,7 @@
 | | |
 |--|--|
 | **상태** | **P2 MVP 완료** · PR #150 **main 병합** · PROD 배포 후 QA |
-| **main** | `d4fbca71` — PR #150 merge |
+| **main** | `94aedcb5` — PR #150 merge (`d4fbca71`) + 핸드오프 |
 | **플랜** | [`world-events-plan.md`](./world-events-plan.md) §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) §6.1 |
