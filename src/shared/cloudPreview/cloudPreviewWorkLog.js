@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 15,
-  sessionPhase: '샘플5~8 tokyo·kyoto·bangkok·bali',
+  sessionNo: 16,
+  sessionPhase: '샘플9~12 · in-page 숙소항공',
   branch: 'cursor/world-events-efa3',
-  previewPath: '/world-events/tokyo-sakura-season-2027',
+  previewPath: '/world-events/rio-carnival-2027',
   qaShareSlug: 'world-events',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-26-world-events-phase-d-stay-strip',
+    session: '세계행사 일정 #16, 샘플9~12 · in-page 숙소항공',
+    title: 'Phase D EventStayStrip · 샘플9~12',
+    detail:
+      'EventStayStrip(StayRangeCalendar·visitPresets·MRT 숙소·Trip 항공+숙소) · CTA maxNights cap(에든버러 4박). sample #9~#12 rio·nyc·iceland·sydney Tier0.5. Preview /qa/world-events → /world-events/rio-carnival-2027 — 「내 여행 일정」프리셋·달력·숙소 카드·상단 플래너/숙소 CTA 날짜(전체 span 아님) 확인. /place/edinburgh GlobeStayStrip 회귀.',
+    at: '2026-08-26',
+  },
   {
     id: '2026-08-26-world-events-tier05-tokyo-kyoto-bangkok-bali',
     session: '세계행사 일정 #15, 샘플5~8 tokyo·kyoto·bangkok·bali',
