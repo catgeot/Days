@@ -126,4 +126,12 @@
 - **산출** EventTravelGuide v0.1 · `update-event-travel-guide` Edge · `event_travel_guide` migration · audit/smoke · `EventTravelGuidePanel` · edinburgh fixture · Preview fixture 폴백
 - **VERIFY** `audit:event-travel-guide` · `smoke:event-travel-guide` · `smoke:world-events-detail` · `build` PASS
 - **사람 QA** Preview `/world-events/edinburgh-fringe-2026` — Tier3 AI 패널·하단 raw JSON · Edge deploy 후 LIVE invoke
-- **다음** #14 sample #2 munich · vienna · amsterdam
+- **다음** #14 sample #2~#4 Tier0.5
+
+## 세계행사 일정 #14 — 샘플2~4 Tier0.5
+
+- **세션** `세계행사 일정 #14, 샘플2~4 munich·vienna·amsterdam`
+- **브랜치** `cursor/world-events-efa3` · PR #153
+- **산출** munich·vienna·amsterdam Tier0.5 overrides · `smoke:world-events-detail` 4건 assert · sample-log
+- **VERIFY** `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **다음** #15 샘플 #5~#8 tokyo·kyoto·bangkok·bali
