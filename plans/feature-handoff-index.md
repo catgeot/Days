@@ -29,7 +29,7 @@
 | **샘플** | [`world-events-sample-log.md`](./world-events-sample-log.md) |
 | **일지** | [`2026-08-26-project-log.md`](./2026-08-26-project-log.md) |
 | **PROD QA** | `https://www.gateo.kr/world-events` · `/place/vienna` · `/korea` · 홈 「세계의 행사」 |
-| **VERIFY** | `smoke:world-events` · `smoke:world-events-detail` · `build` |
+| **VERIFY** | `smoke:world-events` · `smoke:world-events-detail` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `build` |
 | **Preview** | `https://www.gateo.kr/qa/world-events` · git `…-git-cursor-world-events-efa3-….vercel.app` |
 
 **P2 MVP (main)**: Wave1 15건 · PlaceCard · `/world-events` 허브 · TripWindow 프리셋 · 홈 진입  

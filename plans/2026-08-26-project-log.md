@@ -123,9 +123,10 @@
 
 - **세션** `세계행사 일정 #13, AI 가이드 · 샘플1 edinburgh`
 - **브랜치** `cursor/world-events-efa3` · PR #153
-- **산출** EventTravelGuide v0.1 · Edge `update-event-travel-guide` · EventTravelGuidePanel · edinburgh fixture
-- **VERIFY** `smoke:event-travel-guide` · `build` PASS
-- **다음** #14 샘플 #2~#4 Tier0.5
+- **산출** EventTravelGuide v0.1 · `update-event-travel-guide` Edge · `event_travel_guide` migration · audit/smoke · `EventTravelGuidePanel` · edinburgh fixture · Preview fixture 폴백
+- **VERIFY** `audit:event-travel-guide` · `smoke:event-travel-guide` · `smoke:world-events-detail` · `build` PASS
+- **사람 QA** Preview `/world-events/edinburgh-fringe-2026` — Tier3 AI 패널·하단 raw JSON · Edge deploy 후 LIVE invoke
+- **다음** #14 sample #2~#4 Tier0.5
 
 ## 세계행사 일정 #14 — 샘플2~4 Tier0.5
 
