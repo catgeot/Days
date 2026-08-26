@@ -54,6 +54,10 @@ function assertTier05(eventId, nights) {
 assertTier05('munich-oktoberfest-2026', 3);
 assertTier05('vienna-staatsoper-season-2026', 3);
 assertTier05('amsterdam-kings-day-2027', 2);
+assertTier05('tokyo-sakura-season-2027', 4);
+assertTier05('kyoto-gion-matsuri-2027', 3);
+assertTier05('bangkok-songkran-2027', 3);
+assertTier05('bali-galungan-season-2026', 4);
 
 const appSrc = readFileSync(join(root, 'src/App.jsx'), 'utf8');
 assert.match(appSrc, /\/world-events\/:eventId/, 'App route for event detail');

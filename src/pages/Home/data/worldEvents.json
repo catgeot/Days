@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-26T13:19:29.059Z",
+    "generatedAt": "2026-08-26T14:03:03.304Z",
     "eventCount": 15,
     "source": "scripts/data/world-event-overrides.mjs"
   },
@@ -99,6 +99,25 @@
       },
       "sourceUrl": "https://www.baligoldentour.com/galungan-kuningan/",
       "bookingHints": "우붓·스미냑 — 사원 방문 시 사례 복장 준비",
+      "detailOverview": "발리 힌두력 210일 주기로 돌아오는 갈룽안·쿠닝안 시즌으로, 사원·가옥 앞 펜져(penjor) 장식·제례가 섬 전역에서 이어집니다. 갈룽안 당일·쿠닝안 전후 3~4박으로 우붓·스미냑 기점 사원·마을 행사를 둘러보는 방문이 일반적입니다.",
+      "highlights": [
+        "갈룽안(Galungan) — 사원·가옥 펜져·제례(사례 복장·사원 입장 규정 준수)",
+        "쿠닝안(Kuningan) — 갈룽안 10일 후 · 사원 방문·지역 행사",
+        "우붓·스미냑 — 사원·전통 마을 투어 기점 · 렌터카·드라이버 예약 권장"
+      ],
+      "stayAreas": [
+        {
+          "name": "우붓 · Ubud",
+          "mrtKeyword": "Ubud Bali",
+          "note": "사원·전통 마을 · 갈룽안 제례 밀집"
+        },
+        {
+          "name": "스미냑 · Seminyak",
+          "mrtKeyword": "Seminyak Bali",
+          "note": "해변·레스토랑 · 우붓 당일 투어 1~1.5시간"
+        }
+      ],
+      "recommendedNights": 4,
       "priority": 1
     },
     {
@@ -194,6 +213,25 @@
       },
       "sourceUrl": "https://www.japan.travel/en/sg/see-and-do/cherry-blossom-viewing-spots-in-tokyo/",
       "bookingHints": "우에노·신주쿠·야마노테선 접근 숙소 조기 마감",
+      "detailOverview": "3월 말~4월 초 도쿄 전역에서 벚꽃(사쿠라) 개화·낙화 시기가 해마다 달라지는 시즌 행사입니다. 개화 예보(1~2주 전)를 확인한 뒤 만개 전후 3~5박을 잡는 방문이 일반적이며, 우에노·치도리가후치 등 명소는 주말·야간 라이트업에 혼잡합니다.",
+      "highlights": [
+        "우에노 공원·신주쿠 교엔 — 대규모 벚나무·피크닉(하나미) 명소",
+        "치도리가후치·메구로강 — 야간 라이트업·산책 코스(혼잡·사전 숙소 권장)",
+        "개화 예보(JMA·현지 뉴스) 확인 후 항공·숙소 — 만개 전후 1주 버퍼"
+      ],
+      "stayAreas": [
+        {
+          "name": "우에노 · Ueno",
+          "mrtKeyword": "Tokyo Ueno",
+          "note": "우에노 공원·아메요코 도보 · 야마노테선 환승"
+        },
+        {
+          "name": "신주쿠 · Shinjuku",
+          "mrtKeyword": "Tokyo Shinjuku",
+          "note": "신주쿠 교엔·도심 접근 · 야마노테선·지하철"
+        }
+      ],
+      "recommendedNights": 4,
       "priority": 1
     },
     {
@@ -213,6 +251,25 @@
       },
       "sourceUrl": "https://www.tourismthailand.org/Articles/songkran-festival",
       "bookingHints": "실롬·카오산 근처 — 방수 가방·의류 준비",
+      "detailOverview": "4월 13~15일 태국 설(송크란)로, 방콕 전역에서 물 축제·거리 파티가 이어집니다. 실롬·카오산 등 핵심 구역은 교통 통제·전면 젖음을 전제로 하며, 2~3박 일정으로 핵심 날짜를 커버하는 방문이 일반적입니다.",
+      "highlights": [
+        "실롬(Silom) — BTS 실롬·Sathorn 로드 물놀이·파티(혼잡·교통 통제)",
+        "카오산(Khao San) — 배낭여행가 거리 중심 축제(방수 가방·휴대폰 보호 필수)",
+        "4/13~15 공휴일 연속 — 항공·숙소 조기 마감 · 당일 이동은 BTS·MRT·보트 혼잡"
+      ],
+      "stayAreas": [
+        {
+          "name": "실롬 · Silom",
+          "mrtKeyword": "Bangkok Silom",
+          "note": "BTS 실롬·MRT 실롬 — 송크란 핵심 구역 도보"
+        },
+        {
+          "name": "카오산 · Khao San",
+          "mrtKeyword": "Bangkok Khao San",
+          "note": "배낭여행가 거리 · 실롬 택시·보트 20~30분"
+        }
+      ],
+      "recommendedNights": 3,
       "priority": 1
     },
     {
@@ -307,6 +364,25 @@
       },
       "sourceUrl": "https://www.yasaka-jinja.or.jp/en/",
       "bookingHints": "기온·사가노·교토역 숙소는 7월 성수기",
+      "detailOverview": "7월 한 달간 이어지는 교토 대표 축제로, 7/16~17 요이야마(전야제·본행)가 절정입니다. 한 달 전체 숙박보다 요이야마 전후 2~3박으로 산마이(거리 행렬)·야마보코(마을 축)를 중심으로 보는 일정이 일반적입니다.",
+      "highlights": [
+        "7/16~17 요이야마 — 야마보코·야마하oko 거리 행렬(교토 중심 교통 통제)",
+        "7/17 본행(本行) — 시조·카라스마 일대 최대 혼잡 · 전날 밤 체크인 권장",
+        "기온·사가노 — 축제 전후 전통 거리·야사카 신사 접근"
+      ],
+      "stayAreas": [
+        {
+          "name": "기온 · Gion",
+          "mrtKeyword": "Kyoto Gion",
+          "note": "야사카 신사·시조 도보 · 요이야마 거리 접근"
+        },
+        {
+          "name": "교토역 · Kawaramachi",
+          "mrtKeyword": "Kyoto Station",
+          "note": "JR·지하철 허브 · 기온 버스 15~20분"
+        }
+      ],
+      "recommendedNights": 3,
       "priority": 1
     },
     {
