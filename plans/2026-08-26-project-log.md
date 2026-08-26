@@ -161,3 +161,13 @@
 - **배경** #14 — `main` docs push 후 feature `merge` 생략 → `feature-handoff-index` stash 충돌
 - **규칙** `plans/**` **feature 커밋 금지** · 종료 시 C + `audit:docs-handoff-sync` · §충돌 방지 절
 - **산출** `scripts/audit-docs-handoff-sync.mjs` · `gateo-docs-on-main` 등 동기화 · `main` `0a48dab1`
+
+## 세계행사 일정 #15 — 샘플5~8 Tier0.5
+
+- **세션** `세계행사 일정 #15, 샘플5~8 tokyo·kyoto·bangkok·bali`
+- **브랜치** `cursor/world-events-efa3` · PR #153 · tip `6d707772`
+- **산출** tokyo·kyoto·bangkok·bali Tier0.5 overrides · `smoke:world-events-detail` 8건 assert · sample-log
+- **권장 박수** tokyo 4 · kyoto 3(요이야마) · bangkok 3 · bali 4(갈룽안) · AI 미적용(Tier0.5만)
+- **VERIFY** `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → 아시아 칩 → 4건 「행사 상세」
+- **다음** #16 sample #9~#12 + Phase D in-page 위젯

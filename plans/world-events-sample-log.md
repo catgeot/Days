@@ -9,14 +9,14 @@
 | 2 | `munich-oktoberfest-2026` | #14 | ✅ overview·highlights·stayAreas·3박 | ✅ v0.1 fixture | Tier0~2+AI v0.1 |
 | 3 | `vienna-staatsoper-season-2026` | #14 | ✅ overview·highlights·stayAreas·3박 | ✅ v0.1 fixture | Tier0~2+AI v0.1 |
 | 4 | `amsterdam-kings-day-2027` | #14 | ✅ overview·highlights·stayAreas·2박 | ✅ v0.1 fixture | Tier0~2+AI v0.1 |
-| 5 | `tokyo-sakura-season-2027` | #15 | — | — | 대기 |
-| 6 | `kyoto-gion-matsuri-2027` | #15 | — | — | 대기 |
-| 7 | `bangkok-songkran-2027` | #15 | — | — | 대기 |
-| 8 | `bali-galungan-season-2026` | #15 | — | — | 대기 |
-| 9 | `rio-carnival-2027` | #15 | — | — | 대기 |
-| 10 | `new-york-thanksgiving-season-2026` | #15 | — | — | 대기 |
-| 11 | `iceland-midnight-sun-2027` | #15 | — | — | 대기 |
-| 12 | `sydney-vivid-2027` | #15 | — | — | 대기 |
+| 5 | `tokyo-sakura-season-2027` | #15 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2 |
+| 6 | `kyoto-gion-matsuri-2027` | #15 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2 |
+| 7 | `bangkok-songkran-2027` | #15 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2 |
+| 8 | `bali-galungan-season-2026` | #15 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2 |
+| 9 | `rio-carnival-2027` | #16 | — | — | 대기 |
+| 10 | `new-york-thanksgiving-season-2026` | #16 | — | — | 대기 |
+| 11 | `iceland-midnight-sun-2027` | #16 | — | — | 대기 |
+| 12 | `sydney-vivid-2027` | #16 | — | — | 대기 |
 | 13 | `prague-spring-festival-2027` | #16 | — | — | 대기 |
 | 14 | `marrakech-rose-festival-2027` | #16 | — | — | 대기 |
 | 15 | `hanoi-tet-2027` | #16 | — | — | 대기 |
@@ -86,6 +86,39 @@
 - **Tier0~2**: detailOverview · highlights 3 · stayAreas 2(Jordaan·De Pijp) · bookingHints(교통 통제) 연계
 - **라우트**: `/world-events/amsterdam-kings-day-2027`
 - **VERIFY**: `smoke:world-events-detail` PASS
+
+## #5 tokyo-sakura-season-2027 — #15 Tier0.5
+
+- **일시**: 2026-08-26
+- **패턴**: season · 개화 시기 변동(약 17일) · recommendedNights **4** (만개 전후·예보 버퍼)
+- **Tier0~2**: detailOverview · highlights 3 · stayAreas 2(우에노·신주쿠) · typeIntro season · bookingHints 유지
+- **라우트**: `/world-events/tokyo-sakura-season-2027`
+- **VERIFY**: `smoke:world-events-detail` Tier0.5 assert PASS
+
+## #6 kyoto-gion-matsuri-2027 — #15 Tier0.5
+
+- **일시**: 2026-08-26
+- **패턴**: festival · 장기(31일) · 피크 7/16~17 요이야마 · recommendedNights **3**
+- **Tier0~2**: detailOverview · highlights 3 · stayAreas 2(기온·교토역) · typeIntro festival
+- **라우트**: `/world-events/kyoto-gion-matsuri-2027`
+- **VERIFY**: `smoke:world-events-detail` PASS
+
+## #7 bangkok-songkran-2027 — #15 Tier0.5
+
+- **일시**: 2026-08-26
+- **패턴**: festival · 중기(3일) · recommendedNights **3** (4/13~15 커버)
+- **Tier0~2**: detailOverview · highlights 3 · stayAreas 2(실롬·카오산) · bookingHints(방수) 연계
+- **라우트**: `/world-events/bangkok-songkran-2027`
+- **VERIFY**: `smoke:world-events-detail` PASS
+
+## #8 bali-galungan-season-2026 — #15 Tier0.5
+
+- **일시**: 2026-08-26
+- **패턴**: season · 종교 시즌(약 10일) · recommendedNights **4** (갈룽안·쿠닝안 전후)
+- **Tier0~2**: detailOverview · highlights 3 · stayAreas 2(우붓·스미냑) · typeIntro season
+- **라우트**: `/world-events/bali-galungan-season-2026`
+- **VERIFY**: `smoke:world-events-detail` PASS · `smoke:world-events` · `build` PASS
+- **다음**: #16 sample #9~#12 + Phase D in-page 위젯
 
 ## v2 pivot — Preview QA 피드백 (#12 전)
 
