@@ -84,6 +84,10 @@
         "short": "Fest",
         "label": "Korea festivals"
       },
+      "worldEvents": {
+        "short": "Events",
+        "label": "World events"
+      },
       "scenic": {
         "short": "Scenic",
         "label": "Korea scenic spots"

@@ -58,6 +58,14 @@ assert.match(hubSrc, /WORLD_EVENT_HUB_REGIONS/, 'WorldEvents hub uses region SSO
 assert.match(hubSrc, /getWorldEventsForHubRegion/, 'WorldEvents hub filters by region');
 assert.match(hubSrc, /buildPlacePlannerPathFromEvent/, 'WorldEvents hub links planner with TripWindow');
 
+const homeUiSrc = readFileSync(join(root, 'src/pages/Home/components/HomeUI.jsx'), 'utf8');
+assert.match(homeUiSrc, /to: '\/world-events'/, 'Home quick link to /world-events');
+assert.match(
+  homeUiSrc,
+  /key: 'worldEvents'/,
+  'Home quick link worldEvents after festival',
+);
+
 const placeSectionSrc = readFileSync(
   join(root, 'src/components/PlaceCard/common/PlaceWorldEventsSection.jsx'),
   'utf8',

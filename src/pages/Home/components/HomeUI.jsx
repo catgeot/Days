@@ -8,6 +8,7 @@ import {
   LogOut,
   Sparkles,
   CalendarDays,
+  Globe2,
   Map,
   ChevronUp,
 } from 'lucide-react';
@@ -36,6 +37,14 @@ const MOBILE_QUICK_LINK_DEFS = [
     chipClass:
       'border-amber-400/45 bg-[#14110c] shadow-[0_0_18px_rgba(245,158,11,0.22)] hover:border-amber-300/70 hover:bg-[#1c1710]',
     iconWrapClass: 'border-amber-400/35 bg-amber-500/15 text-amber-300 group-hover:bg-amber-500/25',
+  },
+  {
+    key: 'worldEvents',
+    to: '/world-events',
+    icon: Globe2,
+    chipClass:
+      'border-orange-400/45 bg-[#14120c] shadow-[0_0_18px_rgba(251,146,60,0.22)] hover:border-orange-300/70 hover:bg-[#1c1710]',
+    iconWrapClass: 'border-orange-400/35 bg-orange-500/15 text-orange-300 group-hover:bg-orange-500/25',
   },
   {
     key: 'scenic',

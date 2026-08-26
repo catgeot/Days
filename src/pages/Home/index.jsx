@@ -1745,6 +1745,7 @@ function Home() {
 
         {/* 국내 축제·명승 투톱 */}
         <Link to="/korea">한국의 축제</Link>
+        <Link to="/world-events">세계의 행사</Link>
         <Link to="/korea/theme/scenic">한국의 명승</Link>
       </div>
     </div>

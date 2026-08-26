@@ -84,6 +84,10 @@
         "short": "축제",
         "label": "한국의 축제"
       },
+      "worldEvents": {
+        "short": "행사",
+        "label": "세계의 행사"
+      },
       "scenic": {
         "short": "명승",
         "label": "한국의 명승"
