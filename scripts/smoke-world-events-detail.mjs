@@ -97,9 +97,17 @@ assert.match(stayStripSrc, /event-detail-flight/, 'EventStayStrip event-detail-f
 
 const affiliateSrc = readFileSync(join(root, 'src/utils/affiliate.js'), 'utf8');
 assert.match(affiliateSrc, /event-detail-flight/, 'affiliate event-detail-flight tracking');
-assert.match(affiliateSrc, /packages\/list/, 'affiliate packages/list prefill path');
-assert.match(affiliateSrc, /iDate/, 'affiliate packages hotel check-in param');
-assert.match(affiliateSrc, /dportCode/, 'affiliate packages departure port param');
+assert.match(affiliateSrc, /if \(mode === 'packages'\)/, 'packages/list gated by mode=packages only');
+assert.doesNotMatch(
+  stayStripSrc,
+  /packages\/list/,
+  'EventStayStrip does not link packages/list directly',
+);
+assert.doesNotMatch(
+  stayStripSrc,
+  /isMobileDevice/,
+  'EventStayStrip uses WhiteLabelWidget on all viewports',
+);
 
 const globeSrc = readFileSync(join(root, 'src/pages/Home/components/HomePlaceCardSummary.jsx'), 'utf8');
 assert.match(globeSrc, /GlobeStayStrip/, 'GlobeStayStrip still wired on place summary (regression)');

@@ -28,7 +28,7 @@ export const cloudPreviewWorkLog = [
     session: '세계행사 일정 #17, 항공+숙소 Trip prefill',
     title: 'EventStayStrip Trip parity · packages/list prefill',
     detail:
-      'EventStayStrip — GlobeStayStrip 패턴(WhiteLabelWidget·모바일 packages/list)·TripcomFlightSearchProvider · affiliate event-detail-flight · iDate/oDate·dportCode/aportCode prefill. Preview /qa/world-events → /world-events/rio-carnival-2027 — 「항공+숙소」클릭 시 선택 일정·ICN→GIG·인원 반영 확인. /place/rio-de-janeiro GlobeStayStrip 회귀.',
+      'EventStayStrip 「항공+숙소」— packages/list 직링크 제거 · WhiteLabelWidget(항공 검색 ad/flights + ICN→GIG·일정 prefill)만 사용. Trip 내 「항공+호텔」은 검색 화면에서 클릭. Preview /qa/world-events → /world-events/rio-carnival-2027 — 버튼 클릭 시 항공 검색에 공항·날짜 채워지는지 확인.',
     at: '2026-08-26',
   },
   {

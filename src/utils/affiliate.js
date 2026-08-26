@@ -916,11 +916,7 @@ export function buildTripcomPlannerFlightUrl(location, options = {}) {
     return `${origin}/partners/ad/${adId}?${params.toString()}`;
   }
 
-  if (
-    mode === 'packages' ||
-    options.tracking === 'stay-modal-flight' ||
-    options.tracking === 'event-detail-flight'
-  ) {
+  if (mode === 'packages') {
     const hotelCheckIn = normalizeTripcomFlightYmd(options.checkIn ?? options.departDate);
     const hotelCheckOut = normalizeTripcomFlightYmd(options.checkOut ?? options.returnDate);
     if (departDate) {

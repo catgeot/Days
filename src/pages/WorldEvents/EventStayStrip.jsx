@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BedDouble, CalendarDays, ExternalLink, Loader2, Plane } from 'lucide-react';
+import { BedDouble, CalendarDays, Loader2, Plane } from 'lucide-react';
 import WhiteLabelWidget from '../../components/PlaceCard/common/WhiteLabelWidget.jsx';
-import { isMobileDevice } from '../../components/PlaceCard/common/device';
 import {
   GuestStepper,
   StayRangeCalendar,
@@ -10,9 +9,7 @@ import {
 } from '../Home/components/stayDateControls';
 import {
   buildMrtMylinkUrl,
-  buildTripcomPlannerFlightUrl,
   getPlannerFlightArrivalIata,
-  resolveTripcomPartnerLocale,
 } from '../../utils/affiliate';
 import {
   canShowMrtStayStrip,
@@ -21,7 +18,6 @@ import {
   normalizeMrtGuestCounts,
   normalizeMrtStayDates,
 } from '../../utils/fetchMrtStays';
-import { getTripcomLinkRel, getTripcomPackageLinkTarget } from '../../components/PlaceCard/common/partnerNavigation';
 import { resolveFlightDepartureIataForTrip } from '../Home/lib/flightOriginPreference.js';
 import { getWorldEventPlaceMeta } from '../../utils/worldEvents';
 
@@ -181,27 +177,7 @@ export default function EventStayStrip({
   }, [eligible, fetchKey, location, checkIn, checkOut, guests]);
 
   const flightArrivalIata = getPlannerFlightArrivalIata(location);
-  const flightSearchOpts = useMemo(
-    () => ({
-      tracking: 'event-detail-flight',
-      departDate: checkIn,
-      returnDate: checkOut,
-      checkIn,
-      checkOut,
-      adultCount: guests.adultCount,
-      childCount: guests.childCount,
-      partnerLocale: resolveTripcomPartnerLocale(i18n.language),
-      departureIata: resolveFlightDepartureIataForTrip('ICN'),
-    }),
-    [checkIn, checkOut, guests, i18n.language],
-  );
-  const packageUrl = useMemo(() => {
-    if (!location || !flightArrivalIata) return null;
-    return buildTripcomPlannerFlightUrl(location, {
-      ...flightSearchOpts,
-      mode: 'packages',
-    });
-  }, [location, flightArrivalIata, flightSearchOpts]);
+  const departureIata = resolveFlightDepartureIataForTrip('ICN');
   const showFlightCta = Boolean(location && flightArrivalIata);
 
   if (!eligible) return null;
@@ -287,39 +263,26 @@ export default function EventStayStrip({
             onChange={(n) => setGuests((g) => normalizeMrtGuestCounts(g.adultCount, n))}
           />
           {showFlightCta ? (
-            isMobileDevice() && packageUrl ? (
-              <a
-                href={packageUrl}
-                target={getTripcomPackageLinkTarget()}
-                rel={getTripcomLinkRel(getTripcomPackageLinkTarget())}
-                className="ml-auto inline-flex items-center gap-1 rounded-lg border border-sky-300 bg-sky-50 px-2.5 py-1.5 text-[11px] font-bold text-sky-900 hover:bg-sky-100"
-              >
-                <Plane size={13} aria-hidden />
-                {t('worldEventDetail.stayStrip.flightCta')}
-                <ExternalLink size={10} aria-hidden />
-              </a>
-            ) : (
-              <span className="ml-auto">
-                <WhiteLabelWidget
-                  location={location}
-                  tracking="event-detail-flight"
-                  departureIata={flightSearchOpts.departureIata}
-                  departDate={checkIn}
-                  returnDate={checkOut}
-                  adultCount={guests.adultCount}
-                  childCount={guests.childCount}
-                  customTrigger={
-                    <button
-                      type="button"
-                      className="inline-flex items-center gap-1 rounded-lg border border-sky-300 bg-sky-50 px-2.5 py-1.5 text-[11px] font-bold text-sky-900 hover:bg-sky-100"
-                    >
-                      <Plane size={13} aria-hidden />
-                      {t('worldEventDetail.stayStrip.flightCta')}
-                    </button>
-                  }
-                />
-              </span>
-            )
+            <span className="ml-auto">
+              <WhiteLabelWidget
+                location={location}
+                tracking="event-detail-flight"
+                departureIata={departureIata}
+                departDate={checkIn}
+                returnDate={checkOut}
+                adultCount={guests.adultCount}
+                childCount={guests.childCount}
+                customTrigger={
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-1 rounded-lg border border-sky-300 bg-sky-50 px-2.5 py-1.5 text-[11px] font-bold text-sky-900 hover:bg-sky-100"
+                  >
+                    <Plane size={13} aria-hidden />
+                    {t('worldEventDetail.stayStrip.flightCta')}
+                  </button>
+                }
+              />
+            </span>
           ) : null}
         </div>
       </div>
