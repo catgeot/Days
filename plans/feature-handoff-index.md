@@ -18,11 +18,11 @@
 
 | | |
 |--|--|
-| **상태** | **v2 #16 완료** — Phase D EventStayStrip · 샘플9~12 Tier0.5 · visitPresets · edinburgh CTA cap |
-| **다음** | #17 prague·marrakech·hanoi Tier0.5 · 15 URL smoke · Mooni FAB |
+| **상태** | **v2 #16 완료** · 사람 QA — EventStayStrip 「항공+숙소」Trip prefill 갭 → **#17** |
+| **다음** | #17 EventStayStrip ↔ GlobeStayStrip Trip parity · #18 sample #13~#15 · Mooni FAB |
 | **브랜치** | `cursor/world-events-efa3` |
 | **PR** | [#153](https://github.com/catgeot/Days/pull/153) (v2 draft) |
-| **feature tip** | `e165c4c5` — #16 Phase D · 샘플9~12 |
+| **feature tip** | `074bbcc8` — #16 Phase D · Preview 작업 로그 |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) · [`world-events-plan.md`](./world-events-plan.md) §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) §6.1 |
@@ -38,13 +38,13 @@
 **다음 제시어** (#17):
 
 ```
-세계행사 일정 #17, 샘플13~15 · 위젯 마감
+세계행사 일정 #17, 항공+숙소 Trip prefill
 @plans/feature-handoff-index.md
 @plans/2026-08-26-project-log.md
 @plans/world-events-detail-ux-plan.md
-브랜치 cursor/world-events-efa3 · PR #153 · /world-events/hanoi-tet-2027
-금지: 새 feature 브랜치 · worldEvents.json 직편집 · UI 리디자인 · Wave2 overrides
-작업: sample #13 prague #14 marrakech #15 hanoi · 15 URL 전건 smoke · Mooni FAB
+브랜치 cursor/world-events-efa3 · PR #153 · /world-events/rio-carnival-2027
+금지: 새 feature 브랜치 · worldEvents.json 직편집 · UI 리디자인 · #18 전 main 병합
+작업: EventStayStrip WhiteLabelWidget · TripcomFlightSearchProvider · affiliate event-detail-flight · GlobeStayStrip 회귀 대조 · rio QA
 ```
 
 ---
