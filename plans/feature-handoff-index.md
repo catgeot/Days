@@ -22,7 +22,7 @@
 | **다음** | #12 상세 셸 · 에든버러 샘플 #1 (Phase B) |
 | **브랜치** | `cursor/world-events-efa3` |
 | **PR** | **#151** (v2 · draft — 다음 세션 생성) |
-| **main tip** | `f5441a97`+ (v2 docs 동기화 후 갱신) |
+| **main tip** | `66bd1791` — v2 docs 동기화 · P2 `d4fbca71` |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) · [`world-events-plan.md`](./world-events-plan.md) §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) §6.1 |
