@@ -100,7 +100,7 @@
 - **배경** #9~#10 Preview QA — 장기 TripWindow(26박)·상세 페이지 갭
 - **결정** P2는 `main` 유지 · v2 **additive** on `cursor/world-events-efa3` · Wave1 통합 후 **#18** main 병합
 - **docs** `world-events-detail-ux-plan.md` · `world-events-sample-log.md` · 핸드오프 `main` cherry-pick
-- **다음 세션 #12** — Phase B · `EventDetailPage` · edinburgh Tier0~2 · PR #151 · `/world-events/edinburgh-fringe-2026`
+- **다음 세션 #12** — Phase B · `EventDetailPage` · edinburgh Tier0~2 · PR #152 · `/world-events/edinburgh-fringe-2026`
 
 ## 운영 — 푸시·커밋 규칙 정리
 

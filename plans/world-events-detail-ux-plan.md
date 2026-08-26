@@ -5,7 +5,7 @@
 **세션 번호 (핸드오프 SSOT)**  
 - Cloud 채팅 **`#12`** = 다음 구현(Phase B · edinburgh).  
 - 본문 표의 `#11`~`#18` = v2 **내부 단계** (main 일지 **#11=PR #150 병합 완료**와 별개).  
-- PR **#151** (v2 draft) · 브랜치 `cursor/world-events-efa3` 고정.
+- PR **#152** (v2 draft) · 브랜치 `cursor/world-events-efa3` 고정.
 
 ## AskQuestion 도구
 
@@ -407,13 +407,13 @@ flowchart LR
 | 사실 | 내용 |
 |------|------|
 | P2 · PR #150 | **`main` 반영 완료** (`d4fbca71`) |
-| v2 델타 | `cursor/world-events-efa3` · PR **#151** |
+| v2 델타 | `cursor/world-events-efa3` · PR **#152** |
 | main 병합 | **v2 #18** 통합 QA 후 사람 OK |
 
 ```text
 #9~#11  P2 MVP + PR #150 → main ✅
 #12~#17  cursor/world-events-efa3 — v2 additive only
-#18      사람 Preview QA OK → PR #151 → main 병합
+#18      사람 Preview QA OK → PR #152 → main 병합
 ```
 
 **에이전트 금지**: #12~#17 중간에 `gh pr merge` · `origin/main` push · 「병합 완료」단정.

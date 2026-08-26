@@ -21,7 +21,7 @@
 | **상태** | **P2 MVP `main` 반영** (`d4fbca71`) · **v2 상세 UX 진행** (#12~#18) |
 | **다음** | #12 상세 셸 · 에든버러 샘플 #1 (Phase B) |
 | **브랜치** | `cursor/world-events-efa3` |
-| **PR** | **#151** (v2 · draft — 다음 세션 생성) |
+| **PR** | [#152](https://github.com/catgeot/Days/pull/152) (v2 draft) |
 | **main tip** | `66bd1791` — v2 docs 동기화 · P2 `d4fbca71` |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) · [`world-events-plan.md`](./world-events-plan.md) §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
@@ -42,7 +42,7 @@
 @plans/feature-handoff-index.md
 @plans/2026-08-26-project-log.md
 @plans/world-events-detail-ux-plan.md
-브랜치 cursor/world-events-efa3 · PR #151 · /world-events/edinburgh-fringe-2026
+브랜치 cursor/world-events-efa3 · PR #152 · /world-events/edinburgh-fringe-2026
 금지: 새 feature 브랜치 · worldEvents.json 직편집 · UI 리디자인 · AI 일괄 15건 · #18 전 main 병합
 작업: `git checkout cursor/world-events-efa3` → Phase B · EventDetailPage · Tier0~2 · sample-log #1 · 허브→상세
 ```
