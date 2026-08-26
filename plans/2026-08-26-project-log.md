@@ -189,3 +189,13 @@
 - **목표** 선택 checkIn/checkOut·도착 IATA를 Trip ad/modal로 전달(플레이스 카드 숙소 모달과 동일 패턴)
 - **참고** `GlobeStayStrip.jsx` `StayFlightHotelCta` · `affiliate.js` `buildTripcomPlannerFlightUrl` · `TripcomFlightSearchContext.jsx`
 - **feature tip** `074bbcc8` pushed `origin/cursor/world-events-efa3`
+
+## 세계행사 일정 #17 — 항공+숙소 Trip prefill
+
+- **세션** `세계행사 일정 #17, 항공+숙소 Trip prefill`
+- **브랜치** `cursor/world-events-efa3` · PR #153 · tip `2554ca52`
+- **산출** EventStayStrip WhiteLabelWidget(데스크톱)·모바일 packages/list · TripcomFlightSearchProvider · affiliate `event-detail-flight` · packages/list iDate/oDate·dportCode prefill
+- **회귀** GlobeStayStrip WhiteLabelWidget 유지 · smoke rio GIG assert
+- **VERIFY** `smoke:world-events` · `smoke:world-events-detail` · `smoke:trip-window-edinburgh` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/rio-carnival-2027` — 「항공+숙소」일정·ICN→GIG prefill
+- **다음** #18 sample #13~#15 · Mooni FAB
