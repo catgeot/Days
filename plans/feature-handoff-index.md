@@ -18,23 +18,24 @@
 
 | | |
 |--|--|
-| **상태** | **구현 착수** — Q&A 확정 · 세션 #2 P0-a 대기 |
-| **다음 세션** | `#2 P0-a` 스키마·generate·audit |
+| **상태** | **P0-a 완료** — 스키마·generate·audit · 세션 #3 P0-b 대기 |
+| **다음 세션** | `#3 P0-b` tripWindow |
 | **브랜치** | `cursor/world-events-efa3` |
-| **플랜** | [`world-events-plan.md`](./world-events-plan.md) §7·§9 |
+| **PR** | #150 |
+| **플랜** | [`world-events-plan.md`](./world-events-plan.md) §10 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) |
-| **일지** | [`2026-08-24-project-log.md`](./2026-08-24-project-log.md) |
-| **VERIFY** | (코드 착수 후) `audit:world-events` · `build` |
+| **일지** | [`2026-08-26-project-log.md`](./2026-08-26-project-log.md) |
+| **VERIFY** | `audit:world-events` PASS · `build` PASS |
 
 **다음 제시어**:
 
 ```
-세계행사 일정 #2, P0-a — 스키마·generate·audit
+세계행사 일정 #3, P0-b — tripWindow
 @plans/feature-handoff-index.md
 @plans/world-events-plan.md §10
 브랜치 cursor/world-events-efa3 · PR #150
-금지: UI 손대기 · worldEvents.json 직편집 · 세션 #2 범위 넘기기
+금지: UI 손대기 · worldEvents.json 직편집 · 세션 #3 범위 넘기기
 ```
 
 ---

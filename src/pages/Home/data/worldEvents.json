@@ -1,0 +1,9 @@
+{
+  "meta": {
+    "version": 1,
+    "generatedAt": "2026-08-26T03:25:21.551Z",
+    "eventCount": 0,
+    "source": "scripts/data/world-event-overrides.mjs"
+  },
+  "events": []
+}

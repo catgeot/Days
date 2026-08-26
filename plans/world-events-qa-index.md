@@ -65,6 +65,6 @@
 
 ## 다음 액션
 
-1. **세션 #2** `P0-a` — 스키마 · generate · audit (코드 착수)
+1. **세션 #3** `P0-b` — `tripWindow` · TourAPI 어댑터 초안 · smoke
 2. 이후 [`world-events-plan.md`](./world-events-plan.md) §10 표 순서
 3. 세션 종료마다 일지 2~5줄 · `feature-handoff-index` 행 갱신

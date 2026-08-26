@@ -319,16 +319,16 @@ flowchart LR
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**다음 제시어** (세션 #2 — 코드 착수):
+**다음 제시어** (세션 #3 — tripWindow):
 
 ```
-세계행사 일정 #2, P0-a — 스키마·generate·audit
+세계행사 일정 #3, P0-b — tripWindow
 @plans/feature-handoff-index.md
 @plans/world-events-plan.md §10
 브랜치 cursor/world-events-efa3 · PR #150
-금지: UI 손대기 · worldEvents.json 직편집 · 세션 #2 범위 넘기기
+금지: UI 손대기 · worldEvents.json 직편집 · 세션 #3 범위 넘기기
 ```
 
-**읽을 것**: 본 파일 **§10 행 #2만** · qa-index 확정 표 · `world-events-management.md` §1
+**읽을 것**: 본 파일 **§10 행 #3만** · `world-events-management.md` §1
 
-**VERIFY**: `audit:world-events` · `build`
+**VERIFY**: `smoke:trip-window-from-festival` · `build`

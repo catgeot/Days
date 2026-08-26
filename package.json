@@ -105,6 +105,8 @@
     "db:apply-migrations": "node scripts/apply-supabase-migration.mjs",
     "generate:ferries": "node scripts/generate-travel-spot-ferries.mjs",
     "generate:transport": "node scripts/generate-travel-spot-transport.mjs",
+    "generate:world-events": "node scripts/generate-world-events.mjs",
+    "audit:world-events": "node scripts/audit-world-events.mjs",
     "generate:sea-basins": "node scripts/generate-sea-basins.mjs",
     "generate:travel-spot-coast": "node scripts/generate-travel-spot-coast.mjs",
     "audit:sea-basins": "node scripts/audit-sea-basins.mjs",
