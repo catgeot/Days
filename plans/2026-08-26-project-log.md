@@ -96,4 +96,5 @@
 - **충돌** `PlaceGalleryView`(useLocale+PlaceWorldEventsSection) · `vite.config` · `2026-08-25-project-log` — 해결 후 main rebase
 - **P2 MVP** Wave1 15건 · PlaceCard · `/world-events` · TripWindow 프리셋 · 홈 진입 — **완료**
 - **VERIFY** `smoke:world-events` · `smoke:trip-window-edinburgh` · `build` PASS
+- **main** `d4fbca71` — PR #150 merge · origin/main push
 - **다음** PROD 배포 후 QA · 선택 P3-a(공식 피드 POC) 또는 P1.5(Q9)
