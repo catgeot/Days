@@ -161,7 +161,7 @@ TourAPI 해외 미지원 → **핵심 행사만 수동 SSOT** (Q2 **C** 하이�
 | **6** | `세계행사 일정 #6, P2-a — SSOT Wave1` | 해외 12건 overrides | `world-event-overrides.mjs` 유럽·아시아·아메리카·오세아니아·니치 | `generate:world-events` · `audit:world-events` PASS |
 | **7** | `세계행사 일정 #7, P2-b — PlaceCard 행사` | 도시 카드 섹션 | PlaceCard 「이 도시의 행사」접이식 + TripWindow CTA | `build` · QA: `/place/vienna` |
 | **8** | `세계행사 일정 #8, P2-c — /world-events 허브` | 해외 허브 페이지 | 라우트 `/world-events` · 지역 칩 5 · 카드 그리드 · `/qa/world-events` | `build` · Preview · QA: `/world-events` |
-| **9** | `세계행사 일정 #9, 통합 smoke·핸드오프` | 마감 검증 | smoke 묶음 · 운영 가이드 보강 · 작업 로그 | 전 smoke PASS · 사람 QA 체크리스트 |
+| **9** | `세계행사 일정 #9, 통합 smoke·핸드오프` | 마감 검증 | smoke 묶음 · 운영 가이드 보강 · 작업 로그 | ✅ `smoke:world-events` · `build` PASS · 사람 QA |
 | **10** | _(선택)_ `… #10, P1.5 — 즐겨찾기 다건` | Q9 B 후속 | `festivalPersonalStore` 합집합 TripWindow CTA | smoke · QA |
 | **11** | _(선택·P3)_ `… #11, P3-a — 공식 피드 POC` | ICS/RSS 1~2건 Edge fetch | §5.1 — **착수 시 세부 논의** | smoke · audit |
 
@@ -271,7 +271,7 @@ flowchart LR
 |------|------|
 | 브랜치 | 본 주제 = `cursor/world-events-efa3` 고정 · 세션마다 새 브랜치 금지 |
 | UI | §4.1 — 기존 비주얼 유지, CTA·섹션만 |
-| 검증 | `audit:world-events` + `build` + domain smoke |
+| 검증 | `smoke:world-events` + `build` |
 | 릴리스 노트 | 공개 시 1회만 제안 |
 | 운영 | [`world-events-management.md`](./world-events-management.md) |
 
@@ -319,16 +319,16 @@ flowchart LR
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**다음 제시어** (세션 #9 — 통합 smoke·핸드오프):
+**다음 제시어** (사람 Preview QA · PR #150 병합):
 
 ```
-세계행사 일정 #9, 통합 smoke·핸드오프
+세계행사 일정 #9, 사람 Preview QA
 @plans/feature-handoff-index.md
-@plans/world-events-plan.md §10
+@plans/world-events-management.md §6.1
 브랜치 cursor/world-events-efa3 · PR #150
-금지: worldEvents.json 직편집 · 범위 확장(Wave2·EN·/events 통합)
+www.gateo.kr/qa/world-events · /korea · /place/vienna
 ```
 
-**읽을 것**: 본 파일 **§10 행 #9만** · smoke 스크립트 목록
+**읽을 것**: [`world-events-management.md`](./world-events-management.md) **§6.1 QA 체크리스트**
 
-**VERIFY**: 전 smoke PASS · QA `/world-events` · `/place/vienna` · `/korea`
+**VERIFY**: `smoke:world-events` · `build` PASS · 사람 QA `/world-events` · `/place/vienna` · `/korea`

@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 8,
-  sessionPhase: 'P2-c /world-events 허브',
+  sessionNo: 9,
+  sessionPhase: '통합 smoke·핸드오프',
   branch: 'cursor/world-events-efa3',
   previewPath: '/world-events',
   qaShareSlug: 'world-events',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-26-world-events-p2-mvp-smoke',
+    session: '세계행사 일정 #9, 통합 smoke·핸드오프',
+    title: 'P0–P2 통합 smoke · QA 체크리스트',
+    detail:
+      'smoke:world-events로 generate·audit·TripWindow·축제 CTA·허브/PlaceCard 검증을 한 번에 돌립니다. Preview /qa/world-events · /korea 축제 1건 · /place/vienna 에서 Q12 체크리스트(숙소·플래너 날짜, 도시 행사 섹션, 지역 칩)를 확인해 주세요.',
+    at: '2026-08-26',
+  },
   {
     id: '2026-08-26-world-events-p2c-hub',
     session: '세계행사 일정 #8, P2-c — /world-events 허브',

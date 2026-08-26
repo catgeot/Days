@@ -109,6 +109,8 @@
     "generate:transport": "node scripts/generate-travel-spot-transport.mjs",
     "generate:world-events": "node scripts/generate-world-events.mjs",
     "audit:world-events": "node scripts/audit-world-events.mjs",
+    "smoke:world-events-hub": "node scripts/smoke-world-events-hub.mjs",
+    "smoke:world-events": "node scripts/smoke-world-events.mjs",
     "smoke:trip-window-from-festival": "node scripts/smoke-trip-window-from-festival.mjs",
     "generate:sea-basins": "node scripts/generate-sea-basins.mjs",
     "generate:travel-spot-coast": "node scripts/generate-travel-spot-coast.mjs",

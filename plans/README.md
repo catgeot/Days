@@ -13,7 +13,7 @@
 - **사이트 점검·헬스 모니터링**: [`site-health-monitoring-plan.md`](./site-health-monitoring-plan.md) (스모크·E2E·Billing 알림·구현 Phase 0~3)
 - **TourAPI 국내 관광 (3단계 ⏳ · 시드40·v1.7 · UI/릴리스 합의)**: [`tourapi-edge-proxy-plan.md`](./tourapi-edge-proxy-plan.md) · 제시어 `TourAPI-이어하기` · 일지 핸드오프
 - **국내 축제·지역 허브 `/korea` (리스트 우선 · tip `d32894e`)** : [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) · 일지 `2026-07-29`
-- **세계 행사·축제 일정 연동 (플랜·Q&A ⏳ · 코드 미착수)** : [`world-events-plan.md`](./world-events-plan.md) · Q&A [`world-events-qa-index.md`](./world-events-qa-index.md) · 브랜치 `cursor/world-events-efa3`
+- **세계 행사·축제 일정 연동 (P0–P2 MVP · Preview QA)** : [`world-events-plan.md`](./world-events-plan.md) · Q&A [`world-events-qa-index.md`](./world-events-qa-index.md) · 운영 [`world-events-management.md`](./world-events-management.md) · 브랜치 `cursor/world-events-efa3` · PR #150
 - **한국의 명승 · 축제 투톱 ✅ main** (`/korea` + `/korea/theme/scenic` · PR [#58](https://github.com/catgeot/Days/pull/58) MERGED): [`korea-theme-travel-plan.md`](./korea-theme-travel-plan.md) · 일지 `2026-08-07` #63 · 다음 폴리시·릴리스
 - **명소 세권(중분류) 칩 방안**: [`korea-scenic-mid-cluster-plan.md`](./korea-scenic-mid-cluster-plan.md) · **경기=동서남북 4세권 합의** · 타 시도·UI 대기 · 일지 `2026-08-09` #111
 - **해안·해양 탐색 (플랜+SSOT Phase 1–2 ✅)**: [`coast-sea-explore-plan.md`](./coast-sea-explore-plan.md) · `seaBasins`/`travelSpotCoast` · `audit:sea-basins` · 일지 `2026-08-16`  

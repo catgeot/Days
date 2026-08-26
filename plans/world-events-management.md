@@ -75,13 +75,37 @@
 
 ---
 
-## 6. 검증 명령 (Phase 0 착수 후)
+## 6. 검증 명령 (P0–P2 통합)
 
 ```bash
+# 통합 smoke (generate · audit · P0–P2 domain smokes)
+npm run smoke:world-events
+
+# 개별 (디버그용)
+npm run smoke:world-events-hub
+npm run smoke:trip-window-from-festival
+npm run smoke:korea-festival-stay-url
+npm run smoke:korea-festival-planner-link
 npm run generate:world-events
 npm run audit:world-events
 npm run build
 ```
+
+**세션 #9 게이트**: `smoke:world-events` + `build` PASS.
+
+---
+
+## 6.1 사람 QA 체크리스트 (P0–P2 · Q12)
+
+Preview: `https://www.gateo.kr/qa/world-events` → git Preview `/world-events`
+
+| 경로 | 확인 |
+|------|------|
+| `/korea` → 축제 상세 1건 | 숙소·플래너·항공 링크에 행사 맞춤 `checkIn`/`checkOut` |
+| `/place/vienna` | 「이 도시의 행사」접이식 · 플래너·숙소·공식 일정 CTA |
+| `/world-events` | 지역 칩 5개 전환 · 카드 → PlaceCard·플래너 링크 |
+
+**금지**: `worldEvents.json` 직편집 · Wave2·EN·`/events` 통합(세션 #9 범위 밖).
 
 ---
 

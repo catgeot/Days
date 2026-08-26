@@ -18,24 +18,25 @@
 
 | | |
 |--|--|
-| **상태** | **P2-c 완료** — `/world-events` 허브 · 세션 #9 통합 smoke 대기 |
-| **다음 세션** | `#9` 통합 smoke·핸드오프 |
+| **상태** | **P0–P2 MVP 완료** — 통합 smoke PASS · **사람 Preview QA** 후 PR #150 병합 |
+| **다음** | 사람 QA(Q12) · 병합 후 선택 #10 P1.5 또는 P3 |
 | **브랜치** | `cursor/world-events-efa3` |
 | **PR** | #150 |
 | **플랜** | [`world-events-plan.md`](./world-events-plan.md) §10 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) |
 | **일지** | [`2026-08-26-project-log.md`](./2026-08-26-project-log.md) |
-| **VERIFY** | `generate:world-events` · `audit:world-events` · `build` PASS |
+| **Preview** | `https://www.gateo.kr/qa/world-events` |
+| **VERIFY** | `smoke:world-events` · `build` PASS |
 
-**다음 제시어**:
+**다음 제시어** (사람 QA · 병합):
 
 ```
-세계행사 일정 #9, 통합 smoke·핸드오프
+세계행사 일정 #9, 사람 Preview QA
 @plans/feature-handoff-index.md
-@plans/world-events-plan.md §10
+@plans/world-events-management.md §6.1
 브랜치 cursor/world-events-efa3 · PR #150
-금지: worldEvents.json 직편집 · 범위 확장(Wave2·EN·/events 통합)
+www.gateo.kr/qa/world-events · /korea · /place/vienna
 ```
 
 ---

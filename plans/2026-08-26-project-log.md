@@ -57,3 +57,11 @@
 - **산출** `/world-events` 라우트 · 지역 칩 5 · 행사 카드 그리드 · `/qa/world-events` · `worldEvents.js` 허브 조회
 - **VERIFY** `build` PASS
 - **다음** 세션 #9 통합 smoke·핸드오프
+
+## 세계행사 일정 #9 — 통합 smoke·핸드오프
+
+- **세션** `세계행사 일정 #9, 통합 smoke·핸드오프`
+- **브랜치** `cursor/world-events-efa3` · PR #150
+- **산출** `smoke:world-events` · `smoke:world-events-hub` 통합 스크립트 · `world-events-management.md` §6·§6.1 QA 체크리스트
+- **VERIFY** `smoke:world-events` · `build` PASS
+- **다음** 사람 Preview QA → PR #150 병합 · 선택 #10 P1.5 또는 P3
