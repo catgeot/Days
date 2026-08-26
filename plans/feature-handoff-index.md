@@ -18,7 +18,11 @@
 
 | | |
 |--|--|
+<<<<<<< Updated upstream
 | **상태** | **v2 Phase C 완료** (#13) · **#14 샘플2~4 Tier0.5 완료** · Preview 빌드 복구(`8bad7636`) · 다음 #15 샘플5~8 |
+=======
+| **상태** | **v2 #14 완료** — Tier0.5 + Tier3 fixture munich·vienna·amsterdam · 다음 #15 샘플5~8 |
+>>>>>>> Stashed changes
 | **다음** | #15 tokyo·kyoto·bangkok·bali Tier0.5 |
 | **브랜치** | `cursor/world-events-efa3` |
 | **PR** | [#153](https://github.com/catgeot/Days/pull/153) (v2 draft) |
