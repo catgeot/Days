@@ -1735,13 +1735,14 @@
     "title": "World events",
     "seoTitle": "World events — GATEO",
     "seoDescription": "Browse flagship festivals and seasonal events across Europe, Asia-Pacific, the Americas, Oceania, and niche cities — then open place cards and event-tailored planners.",
-    "intro": "Wave 1 curated city events. Open a card to continue to the place page, planner, or stays.",
+    "intro": "Wave 1 curated city events. Open a card for event details, place pages, planners, or stays.",
     "koreaLink": "Korea festivals",
     "regionChipsAria": "Region filter",
     "headlineAll": "All {{count}}",
     "headlineRegion": "{{region}} · {{count}}",
     "empty": "No events in this region yet.",
     "card": {
+      "detailCta": "Event details",
       "placeCta": "Place card"
     },
     "region": {
@@ -1751,6 +1752,32 @@
       "americas": "Americas",
       "oceaniaNature": "Oceania & nature",
       "niche": "Niche cities"
+    }
+  },
+  "worldEventDetail": {
+    "seoTitle": "{{title}} — World events — GATEO",
+    "seoDescription": "Event dates, stays, and planner links for world events on GATEO",
+    "backToHub": "All events",
+    "overview": "About this event",
+    "highlights": "Highlights",
+    "typeGuide": "Event type guide",
+    "bookingHints": "Booking & stay tips",
+    "stayAreas": "Suggested stay areas",
+    "recommendedNights": "Suggested {{nights}} nights (short visit — not the full event span)",
+    "staticFallback": "Detailed copy is coming soon. Use official links, place cards, and planner CTAs for now.",
+    "type": {
+      "festival": "Festival",
+      "season": "Season",
+      "opera": "Opera",
+      "concert": "Concert",
+      "heritage": "Heritage"
+    },
+    "typeIntro": {
+      "festival": "Festivals are often short or mid-length peaks. Plan 2–5 nights around key dates and prioritize access to venues.",
+      "season": "Seasonal events can run for weeks. Pick a 3–7 night window instead of staying for the entire season.",
+      "opera": "Opera and performance seasons work best with short visits aligned to ticket dates near the venue or transit.",
+      "concert": "Secure tickets first, then book stays close to the venue or reliable transit.",
+      "heritage": "Heritage events may spread across districts — anchor stays near the main sites you plan to visit."
     }
   },
   "logbook": {

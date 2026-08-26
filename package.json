@@ -122,6 +122,7 @@
     "generate:world-events": "node scripts/generate-world-events.mjs",
     "audit:world-events": "node scripts/audit-world-events.mjs",
     "smoke:world-events-hub": "node scripts/smoke-world-events-hub.mjs",
+    "smoke:world-events-detail": "node scripts/smoke-world-events-detail.mjs",
     "smoke:world-events": "node scripts/smoke-world-events.mjs",
     "smoke:trip-window-from-festival": "node scripts/smoke-trip-window-from-festival.mjs",
     "smoke:trip-window-edinburgh": "node scripts/smoke-trip-window-edinburgh.mjs",

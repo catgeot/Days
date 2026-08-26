@@ -33,6 +33,7 @@ assert.equal(presets.tripWindow.checkOut, '2026-09-01');
 assert.ok(tripWindowNights(presets.tripWindow.checkIn, presets.tripWindow.checkOut) >= 2);
 
 assert.ok(presets.detailHref?.startsWith('/place/edinburgh?'), 'detailHref is place detail with query');
+assert.equal(presets.eventDetailHref, '/world-events/edinburgh-fringe-2026', 'eventDetailHref is event detail');
 assert.ok(presets.plannerHref?.startsWith('/place/edinburgh/planner?'), 'plannerHref uses planner path');
 
 const detailUrl = new URL(presets.detailHref, 'https://www.gateo.kr');
@@ -49,6 +50,6 @@ assert.equal(presets.sourceUrl, fringe.sourceUrl);
 
 const hubSrc = readFileSync(join(root, 'src/pages/WorldEvents/index.jsx'), 'utf8');
 assert.match(hubSrc, /tripWindowPresetsFromEvent/, 'WorldEvents hub uses tripWindowPresetsFromEvent');
-assert.match(hubSrc, /detailHref/, 'WorldEvents hub links place CTA via detailHref');
+assert.match(hubSrc, /eventDetailHref/, 'WorldEvents hub links event detail via eventDetailHref');
 
 console.log('OK    smoke:trip-window-edinburgh — all assertions passed');

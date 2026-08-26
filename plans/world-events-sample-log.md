@@ -5,7 +5,7 @@
 
 | # | eventId | 세션 | Tier0.5 | AI | 상태 |
 |---|---------|------|---------|-----|------|
-| 1 | `edinburgh-fringe-2026` | #11, #12 | — | — | 대기 |
+| 1 | `edinburgh-fringe-2026` | #11, #12 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2 완료 |
 | 2 | `munich-oktoberfest-2026` | #13 | — | — | 대기 |
 | 3 | `vienna-staatsoper-season-2026` | #13 | — | — | 대기 |
 | 4 | `amsterdam-kings-day-2027` | #13 | — | — | 대기 |
@@ -23,7 +23,14 @@
 
 ---
 
-## #9 Preview QA — pivot 입력 (코드 세션 아님)
+## #1 edinburgh-fringe-2026 — #12 Phase B
+
+- **일시**: 2026-08-26
+- **Tier0~2**: Hero(SSOT) · detailOverview 1단락 · highlights 3 · stayAreas 2 · recommendedNights 4 · festival typeIntro · bookingHints
+- **라우트**: `/world-events/edinburgh-fringe-2026` · 15건 lookup OK (`getWorldEventById`)
+- **허브**: 카드 제목·「행사 상세」→ 상세 URL · 「여행지 카드」→ `/place/edinburgh?fromEvent=…`
+- **VERIFY**: `smoke:world-events-detail` PASS
+- **다음**: #13 Tier3 AI 1건 (Edge `update-event-travel-guide`)
 
 - **일시**: 2026-08-26
 - **피드백**: 장기 행사 TripWindow → 30박 숙소·항공 · 플래너에 행사 맥락 없음 · 상세 페이지 필요

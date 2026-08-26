@@ -1,4 +1,5 @@
 import { tripWindowFromEvent } from '../shared/tripWindow.js';
+import { buildWorldEventDetailPath } from './worldEventDetailPath.js';
 import {
   buildPlaceDetailPathFromEvent,
   buildPlacePlannerPathFromEvent,
@@ -23,6 +24,7 @@ export function tripWindowPresetsFromEvent(event, opts = {}) {
     tripWindow,
     slug,
     eventId,
+    eventDetailHref: buildWorldEventDetailPath(eventId),
     detailHref: buildPlaceDetailPathFromEvent(slug, windowArgs),
     plannerHref: buildPlacePlannerPathFromEvent(slug, windowArgs),
     sourceUrl: String(event?.sourceUrl ?? '').trim(),

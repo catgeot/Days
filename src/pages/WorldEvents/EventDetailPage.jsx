@@ -1,0 +1,153 @@
+import React, { useMemo } from 'react';
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import {
+  ArrowLeft,
+  CalendarDays,
+  ExternalLink,
+  Globe2,
+  Home,
+  Plane,
+} from 'lucide-react';
+import SEO from '../../components/SEO';
+import { useLocale } from '../../i18n/LocaleProvider';
+import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
+import { tripWindowPresetsFromEvent } from '../../utils/worldEventTripPresets';
+import {
+  formatWorldEventDateRange,
+  getWorldEventById,
+  getWorldEventPlaceMeta,
+  getWorldEventTitle,
+} from '../../utils/worldEvents';
+import EventDetailStaticPanel from './EventDetailStaticPanel';
+
+export default function EventDetailPage() {
+  const { eventId } = useParams();
+  const { t } = useTranslation();
+  const { locale } = useLocale();
+  const navigate = useNavigate();
+
+  const event = useMemo(() => getWorldEventById(eventId), [eventId]);
+  if (!event) {
+    return <Navigate to="/world-events" replace />;
+  }
+
+  const title = getWorldEventTitle(event, locale);
+  const dateLabel = formatWorldEventDateRange(event, locale);
+  const placeMeta = getWorldEventPlaceMeta(event.slug, locale);
+  const presets = tripWindowPresetsFromEvent(event);
+  const { plannerHref, detailHref: placeHref } = presets;
+  const stayHref = placeMeta.label
+    ? getMrtAccommodationSearchUrl(placeMeta.label, {
+        isDomestic: false,
+        checkIn: presets.tripWindow.checkIn,
+        checkOut: presets.tripWindow.checkOut,
+      })
+    : '';
+
+  const seoDescription = [
+    dateLabel,
+    placeMeta.label,
+    event.detailOverview || event.bookingHints || t('worldEventDetail.seoDescription'),
+  ]
+    .filter(Boolean)
+    .join(' · ');
+
+  return (
+    <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
+      <SEO
+        title={t('worldEventDetail.seoTitle', { title })}
+        description={seoDescription}
+        url={`/world-events/${event.id}`}
+      />
+
+      <header className="relative z-30 shrink-0 border-b border-stone-200/80 bg-stone-100/95 pt-[max(0.5rem,env(safe-area-inset-top,0px))] backdrop-blur-md">
+        <div className="mx-auto w-full max-w-3xl px-3 pb-2.5 md:px-5 lg:max-w-6xl lg:px-8">
+          <div className="rounded-2xl border border-stone-200/90 bg-white px-3 py-2.5 shadow-sm md:px-4">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => navigate('/world-events')}
+                className="inline-flex shrink-0 items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs font-bold text-stone-700 hover:bg-stone-100"
+              >
+                <ArrowLeft size={14} aria-hidden />
+                {t('worldEventDetail.backToHub')}
+              </button>
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-amber-700">
+                  World
+                </p>
+                <p className="truncate text-sm font-extrabold tracking-tight md:text-base">
+                  {title}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate('/')}
+                className="inline-flex shrink-0 items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs font-bold text-stone-700 hover:bg-stone-100"
+              >
+                <Home size={14} aria-hidden />
+                {t('korea.common.home')}
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="min-h-0 flex-1 overflow-y-auto">
+        <div className="mx-auto w-full max-w-3xl px-3 py-3 md:px-5 lg:max-w-6xl lg:px-8">
+          <div className="mb-3 flex flex-wrap gap-2">
+            {plannerHref ? (
+              <Link
+                to={plannerHref}
+                className="inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-900 hover:bg-amber-100"
+              >
+                <Plane size={13} aria-hidden />
+                {t('place.worldEvents.plannerCta')}
+              </Link>
+            ) : null}
+            {stayHref ? (
+              <a
+                href={stayHref}
+                target="_blank"
+                rel="noopener noreferrer sponsored"
+                className="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs font-bold text-stone-700 hover:border-amber-300 hover:bg-amber-50"
+              >
+                <CalendarDays size={13} aria-hidden />
+                {t('place.worldEvents.stayCta', { keyword: placeMeta.label })}
+                <ExternalLink size={11} aria-hidden />
+              </a>
+            ) : null}
+            {placeHref ? (
+              <Link
+                to={placeHref}
+                className="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-700 hover:border-amber-300 hover:bg-amber-50"
+              >
+                <Globe2 size={13} aria-hidden />
+                {t('worldEventsHub.card.placeCta')}
+              </Link>
+            ) : null}
+            {event.sourceUrl ? (
+              <a
+                href={event.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs font-bold text-stone-600 hover:border-amber-300 hover:bg-amber-50"
+              >
+                {t('place.worldEvents.official')}
+                <ExternalLink size={11} aria-hidden />
+              </a>
+            ) : null}
+          </div>
+
+          <EventDetailStaticPanel
+            event={event}
+            locale={locale}
+            checkIn={presets.tripWindow.checkIn}
+            checkOut={presets.tripWindow.checkOut}
+          />
+        </div>
+      </main>
+    </div>
+  );
+}

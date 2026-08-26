@@ -16,9 +16,14 @@ for (const spot of travelSpotsList ?? []) {
   });
 }
 
+const eventsById = new Map();
 const eventsBySlug = new Map();
 
 for (const event of worldEventsData.events ?? []) {
+  const eventId = String(event.id || '').trim();
+  if (eventId) {
+    eventsById.set(eventId, event);
+  }
   const slug = String(event.slug || '').trim().toLowerCase();
   if (!slug) continue;
   const list = eventsBySlug.get(slug) ?? [];
@@ -34,6 +39,16 @@ for (const [slug, list] of eventsBySlug) {
     return String(a.startDate).localeCompare(String(b.startDate));
   });
   eventsBySlug.set(slug, list);
+}
+
+/**
+ * @param {string | null | undefined} eventId
+ * @returns {WorldEvent | null}
+ */
+export function getWorldEventById(eventId) {
+  const key = String(eventId || '').trim();
+  if (!key) return null;
+  return eventsById.get(key) ?? null;
 }
 
 /**

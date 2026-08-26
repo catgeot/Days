@@ -58,6 +58,26 @@ export const WORLD_EVENT_OVERRIDES = [
     source: 'official_url',
     sourceUrl: 'https://www.edfringe.com/',
     bookingHints: '올드타운·뉴타운 숙소는 공연장 도보권 위주',
+    detailOverview:
+      '세계 최대 규모의 공연예술 축제로, 8월 한 달간 에든버러 올드타운·프린지 등록 공연장 전역에서 수천 편의 쇼가 상연됩니다. 전체 기간 숙박보다 3~5박 짧은 방문으로 핵심 공연을 골라 보는 것이 일반적입니다.',
+    highlights: [
+      'Royal Mile 주변 프리 공연·스트리트 퍼포먼스',
+      '오후·저녁 시간대 예약 공연 — 온라인 사전 예매 권장',
+      '올드타운·뉴타운 도보권 숙소가 이동 부담 최소',
+    ],
+    stayAreas: [
+      {
+        name: '올드타운 · Royal Mile',
+        mrtKeyword: 'Edinburgh Old Town',
+        note: '공연장 도보 10분 이내 · 성수기 조기 마감',
+      },
+      {
+        name: '뉴타운',
+        mrtKeyword: 'Edinburgh New Town',
+        note: '조용한 숙소 · 올드타운 버스 10~15분',
+      },
+    ],
+    recommendedNights: 4,
     priority: 1,
   },
   {

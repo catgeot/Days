@@ -37,8 +37,7 @@ function WorldEventHubCard({ event, locale, t }) {
   const title = getWorldEventTitle(event, locale);
   const dateLabel = formatWorldEventDateRange(event, locale);
   const presets = tripWindowPresetsFromEvent(event);
-  const detailHref = presets.detailHref || `/place/${event.slug}`;
-  const { plannerHref } = presets;
+  const { eventDetailHref, detailHref: placeHref, plannerHref } = presets;
   const stayHref = placeMeta.label
     ? getMrtAccommodationSearchUrl(placeMeta.label, {
         isDomestic: false,
@@ -56,7 +55,13 @@ function WorldEventHubCard({ event, locale, t }) {
           </div>
           <div className="min-w-0 flex-1 space-y-1">
             <h2 className="text-sm font-extrabold leading-snug text-stone-900 sm:text-[15px]">
-              {title}
+              <Link
+                to={eventDetailHref}
+                state={{ returnTo: '/world-events' }}
+                className="hover:text-amber-900"
+              >
+                {title}
+              </Link>
             </h2>
             <p className="flex items-center gap-1 text-xs font-semibold text-stone-600">
               <MapPin size={12} className="shrink-0 text-amber-700" aria-hidden />
@@ -78,7 +83,15 @@ function WorldEventHubCard({ event, locale, t }) {
 
         <div className="flex flex-wrap gap-2 pt-1">
           <Link
-            to={detailHref}
+            to={eventDetailHref}
+            state={{ returnTo: '/world-events' }}
+            className="inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-2.5 py-1 text-[11px] font-bold text-amber-900 hover:bg-amber-100"
+          >
+            <CalendarDays size={12} aria-hidden />
+            {t('worldEventsHub.card.detailCta')}
+          </Link>
+          <Link
+            to={placeHref}
             state={{ returnTo: '/world-events' }}
             className="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-[11px] font-bold text-stone-700 hover:border-amber-300 hover:bg-amber-50"
           >

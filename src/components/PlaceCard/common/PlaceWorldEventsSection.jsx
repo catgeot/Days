@@ -89,7 +89,7 @@ export default function PlaceWorldEventsSection({
             const title = getWorldEventTitle(event, locale);
             const dateLabel = formatWorldEventDateRange(event, locale);
             const presets = tripWindowPresetsFromEvent(event);
-            const { plannerHref } = presets;
+            const { eventDetailHref, plannerHref } = presets;
             const stayHref = stayKeyword
               ? getMrtAccommodationSearchUrl(stayKeyword, {
                   isDomestic: false,
@@ -109,7 +109,13 @@ export default function PlaceWorldEventsSection({
               >
                 <div className="space-y-1">
                   <h4 className={`font-bold leading-snug ${isSummary ? 'text-xs text-white' : 'text-sm text-white'}`}>
-                    {title}
+                    <Link
+                      to={eventDetailHref}
+                      onClick={(e) => e.stopPropagation()}
+                      className="hover:text-amber-100"
+                    >
+                      {title}
+                    </Link>
                   </h4>
                   {dateLabel ? (
                     <p className={`${isSummary ? 'text-[10px]' : 'text-xs'} text-white/65`}>{dateLabel}</p>
@@ -123,6 +129,17 @@ export default function PlaceWorldEventsSection({
                 </div>
 
                 <div className="flex flex-col gap-1.5 sm:flex-row sm:flex-wrap">
+                  <Link
+                    to={eventDetailHref}
+                    onClick={(e) => e.stopPropagation()}
+                    className={
+                      isSummary
+                        ? 'inline-flex items-center justify-center gap-1.5 rounded-full border border-amber-300/70 bg-amber-500/20 px-2.5 py-1.5 text-[11px] font-bold text-amber-50 hover:bg-amber-500/30'
+                        : 'inline-flex items-center justify-center gap-1.5 rounded-full border border-amber-300/80 bg-amber-500/15 px-3 py-2 text-xs font-bold text-amber-100 hover:bg-amber-500/25'
+                    }
+                  >
+                    {t('worldEventsHub.card.detailCta')}
+                  </Link>
                   {plannerHref ? (
                     <Link
                       to={plannerHref}

@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 10,
-  sessionPhase: '사람 Preview QA',
+  sessionNo: 12,
+  sessionPhase: '상세 셸 · 샘플1 edinburgh',
   branch: 'cursor/world-events-efa3',
-  previewPath: '/world-events',
+  previewPath: '/world-events/edinburgh-fringe-2026',
   qaShareSlug: 'world-events',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-26-world-events-detail-phase-b',
+    session: '세계행사 일정 #12, 상세 셸 · 샘플1 edinburgh',
+    title: 'EventDetailPage · Tier0~2 · 허브→상세',
+    detail:
+      'Phase B: /world-events/:eventId 라우트 · EventDetailStaticPanel · edinburgh Tier0.5 overrides · 허브·PlaceCard 「행사 상세」CTA. Preview /qa/world-events → 에든버러 프린지 「행사 상세」→ /world-events/edinburgh-fringe-2026 · 개요·하이라이트·숙소 권역·권장 4박·플래너/숙소 CTA 확인해 주세요.',
+    at: '2026-08-26',
+  },
   {
     id: '2026-08-26-world-events-human-preview-qa',
     session: '세계행사 일정 #10, 사람 Preview QA',
