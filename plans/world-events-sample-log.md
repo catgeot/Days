@@ -5,7 +5,7 @@
 
 | # | eventId | 세션 | Tier0.5 | AI | 상태 |
 |---|---------|------|---------|-----|------|
-| 1 | `edinburgh-fringe-2026` | #11, #12 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2 완료 |
+| 1 | `edinburgh-fringe-2026` | #11, #12, #13 | ✅ overview·highlights·stayAreas·4박 | ✅ v0.1 fixture | Tier0~2+AI v0.1 |
 | 2 | `munich-oktoberfest-2026` | #13 | — | — | 대기 |
 | 3 | `vienna-staatsoper-season-2026` | #13 | — | — | 대기 |
 | 4 | `amsterdam-kings-day-2027` | #13 | — | — | 대기 |
@@ -31,6 +31,17 @@
 - **허브**: 카드 제목·「행사 상세」→ 상세 URL · 「여행지 카드」→ `/place/edinburgh?fromEvent=…`
 - **VERIFY**: `smoke:world-events-detail` PASS
 - **다음**: #13 Tier3 AI 1건 (Edge `update-event-travel-guide`)
+
+## #1 edinburgh-fringe-2026 — #13 Phase C AI v0.1
+
+- **일시**: 2026-08-26
+- **인프라**: `EventTravelGuide` 스키마 v0.1 · `audit:event-travel-guide` · Edge `update-event-travel-guide` · `event_travel_guide` · `EventTravelGuidePanel`(Preview raw JSON)
+- **샘플 #1**: Tier0 facts → fixture `edinburgh-fringe-2026.json` · audit PASS
+- **프리셋 품질**: 개막 3박·중순 2박·막바지 3박 — 장기(25일) 행사에 짧은 윈도 3종 ✅
+- **환각 점검**: venue·stayAreas·recommendedNights(4) facts 일치 · 전체 기간 숙박 미권장 cautions ✅
+- **누락**: LIVE Edge invoke·DB 배포는 Secrets·migration 후 — Preview는 fixture 기반 audit만
+- **VERIFY**: `smoke:event-travel-guide` · `smoke:world-events-detail` · `build` PASS
+- **다음**: #14 sample #2 munich · (선택) LIVE invoke 후 사람 Preview Tier3 QA
 
 - **일시**: 2026-08-26
 - **피드백**: 장기 행사 TripWindow → 30박 숙소·항공 · 플래너에 행사 맥락 없음 · 상세 페이지 필요

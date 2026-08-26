@@ -18,8 +18,8 @@
 
 | | |
 |--|--|
-| **상태** | **v2 Phase B 완료** (#12) · **다음 #13 AI 가이드** (Phase C-0~1) |
-| **다음** | #13 AI 인프라 · edinburgh Tier3 1건 |
+| **상태** | **v2 Phase C-0~1 완료** (#13) · **다음 #14 munich~amsterdam** |
+| **다음** | #14 sample #2~#4 상세 · (건별) AI |
 | **브랜치** | `cursor/world-events-efa3` |
 | **PR** | [#153](https://github.com/catgeot/Days/pull/153) (v2 draft) |
 | **main tip** | `66bd1791` — v2 docs 동기화 · P2 `d4fbca71` |
@@ -29,22 +29,22 @@
 | **샘플** | [`world-events-sample-log.md`](./world-events-sample-log.md) |
 | **일지** | [`2026-08-26-project-log.md`](./2026-08-26-project-log.md) |
 | **PROD QA** | `https://www.gateo.kr/world-events` · `/place/vienna` · `/korea` · 홈 「세계의 행사」 |
-| **VERIFY** | `smoke:world-events` · `smoke:world-events-detail` · `build` |
+| **VERIFY** | `smoke:world-events` · `smoke:world-events-detail` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `build` |
 | **Preview** | `https://www.gateo.kr/qa/world-events` · git `…-git-cursor-world-events-efa3-….vercel.app` |
 
 **P2 MVP (main)**: Wave1 15건 · PlaceCard · `/world-events` 허브 · TripWindow 프리셋 · 홈 진입  
 **v2 (브랜치)**: `/world-events/:eventId` · Tier0~2 · 샘플 15건 · **v2 델타 main 병합 = #18**
 
-**다음 제시어** (#13):
+**다음 제시어** (#14):
 
 ```
-세계행사 일정 #13, AI 가이드 · 샘플1 edinburgh
+세계행사 일정 #14, 샘플2~4 munich·vienna·amsterdam
 @plans/feature-handoff-index.md
 @plans/2026-08-26-project-log.md
 @plans/world-events-detail-ux-plan.md
 브랜치 cursor/world-events-efa3 · PR #153 · /world-events/edinburgh-fringe-2026
 금지: 새 feature 브랜치 · worldEvents.json 직편집 · UI 리디자인 · 15건 일괄 AI pregen · #18 전 main 병합
-작업: Phase C-0~1 · update-event-travel-guide · edinburgh 1건만 · sample-log AI v0.1
+작업: sample #2~#4 · overrides Tier0.5 · sample-log · (선택) AI 건별
 ```
 
 ---
