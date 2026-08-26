@@ -135,3 +135,10 @@
 - **산출** munich·vienna·amsterdam Tier0.5 overrides · `smoke:world-events-detail` 4건 assert · sample-log
 - **VERIFY** `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
 - **다음** #15 샘플 #5~#8 tokyo·kyoto·bangkok·bali
+
+## 세계행사 일정 #14 — Preview 빌드 복구
+
+- **이슈** #14 핸드오프 커밋에서 `cloudPreviewWorkLog.js` #13 edinburgh 항목 `{`·`id` 누락 → Vercel Preview `Expected ',', got ':'` (14508e4 등 연쇄 ERROR)
+- **조치** `8bad7636` — 누락 객체 헤더 복구 · Preview **Ready**
+- **재검증** `build` · `smoke:world-events` · `smoke:event-travel-guide` · `audit:event-travel-guide` PASS
+- **Preview** `https://www.gateo.kr/qa/world-events` · git `days-git-cursor-world-events-efa3-catgeots-projects.vercel.app`
