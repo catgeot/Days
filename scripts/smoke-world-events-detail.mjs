@@ -98,6 +98,22 @@ assert.match(stayStripSrc, /event-detail-flight/, 'EventStayStrip event-detail-f
 const affiliateSrc = readFileSync(join(root, 'src/utils/affiliate.js'), 'utf8');
 assert.match(affiliateSrc, /event-detail-flight/, 'affiliate event-detail-flight tracking');
 assert.match(affiliateSrc, /if \(mode === 'packages'\)/, 'packages/list gated by mode=packages only');
+
+const partnerNavSrc = readFileSync(
+  join(root, 'src/components/PlaceCard/common/partnerNavigation.js'),
+  'utf8',
+);
+assert.match(
+  partnerNavSrc,
+  /hasTripcomFlightSchedulePrefill/,
+  'partnerNavigation skips ad modal when departDate set',
+);
+assert.match(
+  partnerNavSrc,
+  /mode: 'flights'/,
+  'partnerNavigation uses /flights/ for schedule prefill',
+);
+
 assert.doesNotMatch(
   stayStripSrc,
   /packages\/list/,

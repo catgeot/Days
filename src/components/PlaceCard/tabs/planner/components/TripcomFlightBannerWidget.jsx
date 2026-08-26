@@ -110,7 +110,10 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, departDate, retur
         }
     };
 
-    const fullScreenLinkProps = shouldUseTripcomFlightSearchModal()
+    const fullScreenModalOpts = {
+        ...(departDate ? { departDate } : {}),
+    };
+    const fullScreenLinkProps = shouldUseTripcomFlightSearchModal(fullScreenModalOpts)
         ? { href: '#', onClick: handleFullScreenClick, role: 'button' }
         : { href: clickUrl, target: linkTarget, rel: linkRel };
 
