@@ -9,7 +9,7 @@ export const cloudPreviewProject = {
   sessionNo: 14,
   sessionPhase: '샘플2~4 munich·vienna·amsterdam',
   branch: 'cursor/world-events-efa3',
-  previewPath: '/world-events/munich-oktoberfest-2026',
+  previewPath: '/world-events/amsterdam-kings-day-2027',
   qaShareSlug: 'world-events',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-26-world-events-recommended-nights-section',
+    session: '세계행사 일정 #14, 샘플2~4 munich·vienna·amsterdam',
+    title: '상세 「권장 박수」섹션 분리',
+    detail:
+      'Tier0.5 recommendedNights를 Hero 인라인에서 독립 섹션(제목 「권장 박수」)으로 옮겼습니다. Preview /qa/world-events → 킹스데이 상세 — 하이라이트 아래 「권장 박수」2박 섹션이 보이는지 확인해 주세요.',
+    at: '2026-08-26',
+  },
   {
     id: '2026-08-26-world-events-tier05-munich-vienna-amsterdam',
     session: '세계행사 일정 #14, 샘플2~4 munich·vienna·amsterdam',
