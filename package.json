@@ -112,6 +112,7 @@
     "smoke:world-events-hub": "node scripts/smoke-world-events-hub.mjs",
     "smoke:world-events": "node scripts/smoke-world-events.mjs",
     "smoke:trip-window-from-festival": "node scripts/smoke-trip-window-from-festival.mjs",
+    "smoke:trip-window-edinburgh": "node scripts/smoke-trip-window-edinburgh.mjs",
     "generate:sea-basins": "node scripts/generate-sea-basins.mjs",
     "generate:travel-spot-coast": "node scripts/generate-travel-spot-coast.mjs",
     "audit:sea-basins": "node scripts/audit-sea-basins.mjs",

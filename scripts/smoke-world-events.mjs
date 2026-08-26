@@ -16,6 +16,7 @@ const steps = [
   'audit:world-events',
   'smoke:world-events-hub',
   'smoke:trip-window-from-festival',
+  'smoke:trip-window-edinburgh',
   'smoke:korea-festival-stay-url',
   'smoke:korea-festival-planner-link',
 ];

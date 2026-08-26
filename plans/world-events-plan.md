@@ -322,13 +322,14 @@ flowchart LR
 **다음 제시어** (사람 Preview QA · PR #150 병합):
 
 ```
-세계행사 일정 #9, 사람 Preview QA
+세계행사 일정 #10, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/world-events-management.md §6.1
 브랜치 cursor/world-events-efa3 · PR #150
-www.gateo.kr/qa/world-events · /korea · /place/vienna
+www.gateo.kr/qa/world-events · /world-events 에든버러 카드 상세 URL
+금지: Wave2 · worldEvents.json 직편집 · UI 리디자인
 ```
 
 **읽을 것**: [`world-events-management.md`](./world-events-management.md) **§6.1 QA 체크리스트**
 
-**VERIFY**: `smoke:world-events` · `build` PASS · 사람 QA `/world-events` · `/place/vienna` · `/korea`
+**VERIFY**: `smoke:world-events` · `smoke:trip-window-edinburgh` · `build` PASS · 사람 QA `/world-events` · `/place/vienna` · `/korea`

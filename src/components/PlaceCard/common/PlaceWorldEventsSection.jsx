@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CalendarDays, ChevronDown, ExternalLink, Plane } from 'lucide-react';
 import { useLocale } from '../../../i18n/LocaleProvider';
-import { tripWindowFromEvent } from '../../../shared/tripWindow';
-import { buildPlacePlannerPathFromEvent } from '../../../utils/placePlannerPath';
+import { tripWindowPresetsFromEvent } from '../../../utils/worldEventTripPresets';
 import { getMrtAccommodationSearchUrl } from '../../../utils/affiliate';
 import { getLocalizedPlaceName } from './locationDisplay';
 import {
@@ -89,17 +88,13 @@ export default function PlaceWorldEventsSection({
           {events.map((event) => {
             const title = getWorldEventTitle(event, locale);
             const dateLabel = formatWorldEventDateRange(event, locale);
-            const tripWindow = tripWindowFromEvent(event);
-            const plannerHref = buildPlacePlannerPathFromEvent(placeSlug, {
-              checkIn: tripWindow.checkIn,
-              checkOut: tripWindow.checkOut,
-              eventId: tripWindow.eventId || event.id,
-            });
+            const presets = tripWindowPresetsFromEvent(event);
+            const { plannerHref } = presets;
             const stayHref = stayKeyword
               ? getMrtAccommodationSearchUrl(stayKeyword, {
                   isDomestic: false,
-                  checkIn: tripWindow.checkIn,
-                  checkOut: tripWindow.checkOut,
+                  checkIn: presets.tripWindow.checkIn,
+                  checkOut: presets.tripWindow.checkOut,
                 })
               : '';
 

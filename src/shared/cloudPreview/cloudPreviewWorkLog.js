@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 9,
-  sessionPhase: '홈 진입 링크',
+  sessionNo: 10,
+  sessionPhase: 'TripWindow 프리셋',
   branch: 'cursor/world-events-efa3',
   previewPath: '/world-events',
   qaShareSlug: 'world-events',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-26-world-events-tripwindow-presets',
+    session: '세계행사 일정 #10, TripWindow 프리셋',
+    title: '허브 「여행지 카드」→ 행사 맞춤 상세 URL',
+    detail:
+      'tripWindowPresetsFromEvent로 TripWindow·플래너·상세 URL을 SSOT화했습니다. /world-events 카드 「여행지 카드」가 /place/edinburgh?fromEvent=…&checkIn&checkOut 형태로 연결됩니다. Preview /qa/world-events → 에든버러 프린지 카드 CTA URL·플래너 날짜를 확인해 주세요.',
+    at: '2026-08-26',
+  },
   {
     id: '2026-08-26-world-events-home-entry',
     session: '세계행사 일정 #9, 홈 진입 링크',

@@ -72,3 +72,11 @@
 - **브랜치** `cursor/world-events-efa3` · PR #150
 - **산출** 홈 `HomeUI` 바로가기 「세계의 행사」(`/world-events`) — 「한국의 축제」 바로 아래
 - **VERIFY** `smoke:world-events-hub` · `build` PASS
+
+## 세계행사 일정 #10 — TripWindow 프리셋
+
+- **세션** `세계행사 일정 #10, TripWindow 프리셋`
+- **브랜치** `cursor/world-events-efa3` · PR #150
+- **산출** `tripWindowPresetsFromEvent` · `buildPlaceDetailPathFromEvent` · 허브 「여행지 카드」→ 상세 URL · `smoke:trip-window-edinburgh`
+- **VERIFY** `smoke:world-events` · `smoke:trip-window-edinburgh` · `build` PASS
+- **다음** 사람 Preview QA(Q12) · PR #150 병합

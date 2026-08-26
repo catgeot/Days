@@ -56,7 +56,8 @@ assert.match(appSrc, /path="\/world-events"/, 'App registers /world-events route
 const hubSrc = readFileSync(join(root, 'src/pages/WorldEvents/index.jsx'), 'utf8');
 assert.match(hubSrc, /WORLD_EVENT_HUB_REGIONS/, 'WorldEvents hub uses region SSOT');
 assert.match(hubSrc, /getWorldEventsForHubRegion/, 'WorldEvents hub filters by region');
-assert.match(hubSrc, /buildPlacePlannerPathFromEvent/, 'WorldEvents hub links planner with TripWindow');
+assert.match(hubSrc, /tripWindowPresetsFromEvent/, 'WorldEvents hub uses TripWindow presets');
+assert.match(hubSrc, /detailHref/, 'WorldEvents hub place CTA uses detail URL');
 
 const homeUiSrc = readFileSync(join(root, 'src/pages/Home/components/HomeUI.jsx'), 'utf8');
 assert.match(homeUiSrc, /to: '\/world-events'/, 'Home quick link to /world-events');
@@ -71,7 +72,7 @@ const placeSectionSrc = readFileSync(
   'utf8',
 );
 assert.match(placeSectionSrc, /getWorldEventsForSlug/, 'PlaceWorldEventsSection reads slug events');
-assert.match(placeSectionSrc, /tripWindowFromEvent/, 'PlaceWorldEventsSection uses TripWindow');
+assert.match(placeSectionSrc, /tripWindowPresetsFromEvent/, 'PlaceWorldEventsSection uses TripWindow presets');
 
 const qaSrc = readFileSync(
   join(root, 'src/shared/cloudPreview/cloudQaShareLinks.js'),

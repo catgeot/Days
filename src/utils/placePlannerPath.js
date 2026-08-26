@@ -1,14 +1,24 @@
 import { parseEventYmd } from '../shared/tripWindow.js';
 
 /**
+ * PlaceCard 기본 경로 — 라우트 SSOT (`/place/:slug`).
+ * @param {string | null | undefined} slug
+ */
+export function buildPlacePath(slug) {
+  if (!slug) return null;
+  const key = String(slug).trim().toLowerCase();
+  if (!key) return null;
+  return `/place/${key}`;
+}
+
+/**
  * PlaceCard 플래너 탭 경로 — 라우트 SSOT (`/place/:slug/planner`, query `?tab=` 아님).
  * @param {string | null | undefined} slug
  */
 export function buildPlacePlannerPath(slug) {
-  if (!slug) return null;
-  const key = String(slug).trim().toLowerCase();
-  if (!key) return null;
-  return `/place/${key}/planner`;
+  const path = buildPlacePath(slug);
+  if (!path) return null;
+  return `${path}/planner`;
 }
 
 /** 항공 시네마 Bar 「여행 플랜」→ 플래너 진입 query */
@@ -94,17 +104,39 @@ export function clearEventPlannerEntryParams(searchParams) {
  * @param {string | null | undefined} slug
  * @param {{ checkIn: string, checkOut: string, eventId: string }} options
  */
-export function buildPlacePlannerPathFromEvent(slug, options = {}) {
-  const path = buildPlacePlannerPath(slug);
+function buildEventTripWindowSearchParams(options = {}) {
   const checkIn = parseEventYmd(options.checkIn);
   const checkOut = parseEventYmd(options.checkOut);
   const eventId = String(options.eventId ?? '').trim();
-  if (!path || !checkIn || !checkOut || !eventId || checkOut <= checkIn) return null;
-  const params = new URLSearchParams({
+  if (!checkIn || !checkOut || !eventId || checkOut <= checkIn) return null;
+  return new URLSearchParams({
     checkIn,
     checkOut,
     [EVENT_PLANNER_QUERY_KEY]: eventId,
   });
+}
+
+/**
+ * 축제·행사 TripWindow → PlaceCard 상세(기본 탭) 딥링크.
+ * @param {string | null | undefined} slug
+ * @param {{ checkIn: string, checkOut: string, eventId: string }} options
+ */
+export function buildPlaceDetailPathFromEvent(slug, options = {}) {
+  const path = buildPlacePath(slug);
+  const params = buildEventTripWindowSearchParams(options);
+  if (!path || !params) return path;
+  return `${path}?${params.toString()}`;
+}
+
+/**
+ * 축제·행사 TripWindow → 플래너 딥링크.
+ * @param {string | null | undefined} slug
+ * @param {{ checkIn: string, checkOut: string, eventId: string }} options
+ */
+export function buildPlacePlannerPathFromEvent(slug, options = {}) {
+  const path = buildPlacePlannerPath(slug);
+  const params = buildEventTripWindowSearchParams(options);
+  if (!path || !params) return null;
   return `${path}?${params.toString()}`;
 }
 

@@ -84,6 +84,7 @@ npm run smoke:world-events
 # 개별 (디버그용)
 npm run smoke:world-events-hub
 npm run smoke:trip-window-from-festival
+npm run smoke:trip-window-edinburgh
 npm run smoke:korea-festival-stay-url
 npm run smoke:korea-festival-planner-link
 npm run generate:world-events
@@ -103,7 +104,7 @@ Preview: `https://www.gateo.kr/qa/world-events` → git Preview `/world-events`
 |------|------|
 | `/korea` → 축제 상세 1건 | 숙소·플래너·항공 링크에 행사 맞춤 `checkIn`/`checkOut` |
 | `/place/vienna` | 「이 도시의 행사」접이식 · 플래너·숙소·공식 일정 CTA |
-| `/world-events` | 지역 칩 5개 전환 · 카드 → PlaceCard·플래너 링크 |
+| `/world-events` | 지역 칩 5개 전환 · 카드 「여행지 카드」→ `/place/:slug?fromEvent&checkIn&checkOut` · 플래너·숙소 CTA |
 | **홈** 좌상단 바로가기 | 「한국의 축제」 아래 **「세계의 행사」** → `/world-events` |
 
 **금지**: `worldEvents.json` 직편집 · Wave2·EN·`/events` 통합(세션 #9 범위 밖).

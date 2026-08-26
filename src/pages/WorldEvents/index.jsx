@@ -11,8 +11,7 @@ import {
 } from 'lucide-react';
 import SEO from '../../components/SEO';
 import { useLocale } from '../../i18n/LocaleProvider';
-import { tripWindowFromEvent } from '../../shared/tripWindow';
-import { buildPlacePlannerPathFromEvent } from '../../utils/placePlannerPath';
+import { tripWindowPresetsFromEvent } from '../../utils/worldEventTripPresets';
 import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
 import {
   formatWorldEventDateRange,
@@ -37,18 +36,14 @@ function WorldEventHubCard({ event, locale, t }) {
   const placeMeta = getWorldEventPlaceMeta(event.slug, locale);
   const title = getWorldEventTitle(event, locale);
   const dateLabel = formatWorldEventDateRange(event, locale);
-  const tripWindow = tripWindowFromEvent(event);
-  const placeHref = `/place/${event.slug}`;
-  const plannerHref = buildPlacePlannerPathFromEvent(event.slug, {
-    checkIn: tripWindow.checkIn,
-    checkOut: tripWindow.checkOut,
-    eventId: tripWindow.eventId || event.id,
-  });
+  const presets = tripWindowPresetsFromEvent(event);
+  const detailHref = presets.detailHref || `/place/${event.slug}`;
+  const { plannerHref } = presets;
   const stayHref = placeMeta.label
     ? getMrtAccommodationSearchUrl(placeMeta.label, {
         isDomestic: false,
-        checkIn: tripWindow.checkIn,
-        checkOut: tripWindow.checkOut,
+        checkIn: presets.tripWindow.checkIn,
+        checkOut: presets.tripWindow.checkOut,
       })
     : '';
 
@@ -83,7 +78,7 @@ function WorldEventHubCard({ event, locale, t }) {
 
         <div className="flex flex-wrap gap-2 pt-1">
           <Link
-            to={placeHref}
+            to={detailHref}
             state={{ returnTo: '/world-events' }}
             className="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-[11px] font-bold text-stone-700 hover:border-amber-300 hover:bg-amber-50"
           >
