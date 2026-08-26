@@ -319,28 +319,28 @@ flowchart LR
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (2026-08-26)**: **P2 MVP `main` 반영** · **v2 #14 샘플2~4 Tier0.5** (`cursor/world-events-efa3`)
+**상태 (2026-08-26)**: **P2 MVP `main` 반영** · **v2 #15 샘플5~8 Tier0.5** (`cursor/world-events-efa3`)
 
 | Phase | 결과 |
 |-------|------|
 | **P0** | `tripWindow` · generate/audit PASS |
 | **P1** | `/korea` 축제 → MRT·플래너 TripWindow |
 | **P2** | Wave1 15건 · PlaceCard · `/world-events` · 홈 · TripWindow 프리셋 — **main** |
-| **v2 B+** | #12 edinburgh · **#14 munich·vienna·amsterdam** Tier0~2 |
+| **v2 B+** | #12 edinburgh · **#14 munich·vienna·amsterdam** · **#15 tokyo·kyoto·bangkok·bali** Tier0~2 |
 
 **v2 (#12~#18)**: [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) · 샘플 로그 [`world-events-sample-log.md`](./world-events-sample-log.md)  
 **세션 번호**: Cloud 채팅 `#12`~ (main 일지 #11=PR150 병합과 별도)
 
-**다음 제시어** (#15):
+**다음 제시어** (#16):
 
 ```
-세계행사 일정 #15, 샘플5~8 상세 Tier0.5
+세계행사 일정 #16, 샘플9~12 · in-page 숙소항공
 @plans/feature-handoff-index.md
 @plans/2026-08-26-project-log.md
 @plans/world-events-detail-ux-plan.md
-브랜치 cursor/world-events-efa3 · PR #153 · /world-events/tokyo-sakura-season-2027
-금지: 새 feature 브랜치 · worldEvents.json 직편집 · UI 리디자인 · 이전 샘플 일괄 AI 재생성 · #18 전 main 병합
-작업: sample #5~#8 tokyo·kyoto·bangkok·bali · overrides Tier0.5 · sample-log · AI는 v0.2+ 고정 프롬pt만
+브랜치 cursor/world-events-efa3 · PR #153 · /world-events/rio-carnival-2027
+금지: 새 feature 브랜치 · worldEvents.json 직편집 · UI 리디자인 · 행사 전체 span CTA · #18 전 main 병합
+작업: Phase D · EventStayStrip · StayRangeCalendar · sample #9~#12 · edinburgh 위젯 회귀
 ```
 
 **읽을 것**: [`world-events-management.md`](./world-events-management.md) **§6.1 QA 체크리스트**
