@@ -149,14 +149,16 @@
 - **조치** `77e64e8c` — `EventDetailStaticPanel` 독립 섹션(제목 「권장 박수」) · 하이라이트 아래 배치
 - **VERIFY** `build` · `smoke:world-events-detail` PASS
 
+## 세계행사 일정 #14 — Tier3 AI fixture munich·vienna·amsterdam
+
+- **세션** `세계행사 일정 #14, 샘플2~4 munich·vienna·amsterdam` (잔여)
+- **이슈** 옥토버페스트 등 Tier0~2만 있고 에든버러 대비 「행사 맞춤 여행 가이드」Tier3 누락
+- **조치** fixture 3건 · `loadEventTravelGuideFixture` · Preview fixture 전건 로드 · `dde4fe4f`
+- **VERIFY** `audit:event-travel-guide` · `smoke:event-travel-guide` · `smoke:world-events` · `build` PASS
+- **다음** #15 샘플 #5~#8 tokyo·kyoto·bangkok·bali
+
 ## 운영 — docs-handoff 충돌 방지 규칙·audit
 
 - **배경** #14 — `main` docs push 후 feature `merge` 생략 → `feature-handoff-index` stash 충돌
 - **규칙** `plans/**` **feature 커밋 금지** · 종료 시 C + `audit:docs-handoff-sync` · §충돌 방지 절
-- **산출** `scripts/audit-docs-handoff-sync.mjs` · `gateo-docs-on-main` 등 동기화
-
-- **세션** `세계행사 일정 #14, 샘플2~4 munich·vienna·amsterdam` (잔여)
-- **이슈** 옥토버페스트 등 Tier0~2만 있고 에든버러 대비 「행사 맞춤 여행 가이드」Tier3 누락
-- **조치** fixture 3건 · `loadEventTravelGuideFixture` · Preview fixture 전건 로드
-- **VERIFY** `audit:event-travel-guide` · `smoke:event-travel-guide` · `smoke:world-events` · `build` PASS
-- **다음** #15 샘플 #5~#8 tokyo·kyoto·bangkok·bali
+- **산출** `scripts/audit-docs-handoff-sync.mjs` · `gateo-docs-on-main` 등 동기화 · `main` `0a48dab1`
