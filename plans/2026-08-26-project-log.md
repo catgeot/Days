@@ -135,3 +135,9 @@
 - **산출** munich·vienna·amsterdam Tier0.5 overrides · `smoke:world-events-detail` 4건 assert · sample-log
 - **VERIFY** `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
 - **다음** #15 샘플 #5~#8 tokyo·kyoto·bangkok·bali
+
+## 세계행사 일정 #14 — 권장 박수 섹션
+
+- **이슈** 사람 QA — 킹스데이 상세에 「권장 박수」섹션 없음(Hero 인라인 「권장 숙박」만)
+- **조치** `77e64e8c` — `EventDetailStaticPanel` 독립 섹션(제목 「권장 박수」) · 하이라이트 아래 배치
+- **VERIFY** `build` · `smoke:world-events-detail` PASS
