@@ -13,7 +13,7 @@ import { useTryOpenTripcomFlightSearch } from '../TripcomFlightSearchContext';
 import { getFlightDestinationSearchHint } from '../../../../../utils/rentalAirportMatch.js';
 import { plannerCaption, plannerMicroLabel } from '../readableText';
 
-const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) => {
+const PreTravelChecklist = ({ items, locationName, location, essentialGuide, eventTripWindow }) => {
     const { t } = useTranslation();
     const tryOpenFlightSearch = useTryOpenTripcomFlightSearch();
     const tripcomHotelOverride = getTripcomHotelOverrideUrlForLocation(location);
@@ -26,12 +26,21 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
             buildTripcomPlannerNavigationUrl(location, {
                 essentialGuide,
                 tracking: 'planner-pre-travel',
+                ...(eventTripWindow?.departDate ? { departDate: eventTripWindow.departDate } : {}),
+                ...(eventTripWindow?.returnDate ? { returnDate: eventTripWindow.returnDate } : {}),
             }),
-        [location, essentialGuide],
+        [location, essentialGuide, eventTripWindow?.departDate, eventTripWindow?.returnDate],
     );
 
     const handlePreTravelFlightClick = (event) => {
-        if (tryOpenFlightSearch(location, { essentialGuide, tracking: 'planner-pre-travel' })) {
+        if (
+            tryOpenFlightSearch(location, {
+                essentialGuide,
+                tracking: 'planner-pre-travel',
+                ...(eventTripWindow?.departDate ? { departDate: eventTripWindow.departDate } : {}),
+                ...(eventTripWindow?.returnDate ? { returnDate: eventTripWindow.returnDate } : {}),
+            })
+        ) {
             event.preventDefault();
         }
     };
@@ -119,6 +128,9 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide }) =
                         <MrtTimelineAction
                             mrtQuery={mrtQuery}
                             label={t('place.planner.preTravel.staySearch')}
+                            checkIn={eventTripWindow?.checkIn}
+                            checkOut={eventTripWindow?.checkOut}
+                            isDomestic={location?.country === '대한민국' || location?.country_en === 'South Korea'}
                             customTrigger={
                                 <button type="button" className="bg-white border-2 border-emerald-300 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all w-full">
                                     <span className="bg-emerald-100 text-emerald-600 p-2 rounded-lg shrink-0 inline-flex">

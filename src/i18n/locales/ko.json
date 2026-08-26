@@ -1129,6 +1129,7 @@
         "nearScenicMore": "{{region}} 명소 더보기",
         "stayTour": "숙소 · 투어",
         "stayKeyword": "숙소 · {{keyword}}",
+        "plannerKeyword": "플래너 · {{keyword}}",
         "tourKeyword": "투어 · {{keyword}}",
         "packages": "패키지",
         "packageCtaFallback": "패키지 보기",

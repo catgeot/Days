@@ -1,8 +1,24 @@
 import React from 'react';
-import { getMrtSearchUrl } from '../../../../../utils/affiliate';
+import { getMrtAccommodationSearchUrl, getMrtSearchUrl } from '../../../../../utils/affiliate';
 
-const MrtTimelineAction = ({ mrtQuery, label, icon, colorClass, customTrigger }) => {
-    const url = getMrtSearchUrl(mrtQuery);
+const MrtTimelineAction = ({
+    mrtQuery,
+    label,
+    icon,
+    colorClass,
+    customTrigger,
+    checkIn,
+    checkOut,
+    isDomestic,
+}) => {
+    const url =
+        checkIn && checkOut
+            ? getMrtAccommodationSearchUrl(mrtQuery, {
+                  isDomestic: Boolean(isDomestic),
+                  checkIn,
+                  checkOut,
+              })
+            : getMrtSearchUrl(mrtQuery);
 
     // customTrigger가 있으면 그것을 사용
     if (customTrigger) {

@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 4,
-  sessionPhase: 'P1-a 축제→숙소',
+  sessionNo: 5,
+  sessionPhase: 'P1-b 플래너·항공',
   branch: 'cursor/world-events-efa3',
   previewPath: '/korea',
   qaShareSlug: null,

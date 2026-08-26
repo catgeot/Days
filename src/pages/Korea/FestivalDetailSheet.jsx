@@ -13,6 +13,7 @@ import {
   Landmark,
   Loader2,
   MapPin,
+  Plane,
   Phone,
   Route,
   Star,
@@ -57,6 +58,7 @@ import { resolveFestivalThemeCrossLinks } from '../Home/lib/koreaThemeCrossLinks
 import { pushThemeNavBack } from '../Home/lib/koreaThemeNavBack';
 import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
 import { tripWindowFromTourApiFestival } from './worldEventFromTourApiFestival';
+import { buildPlacePlannerPathFromEvent } from '../../utils/placePlannerPath';
 import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
 import { festivalLngLat } from './koreaFestivalCorridors';
 import { detectSidoCode } from './festivalRegionTags';
@@ -430,6 +432,14 @@ export default function FestivalDetailSheet({
     ? buildMrtTnaSearchMoreUrl(festivalCross.tna.keyword)
     : '';
   const nearestHub = festivalCross?.nearbyHubs?.[0];
+  const festivalPlannerHref =
+    nearestHub?.hubId && festivalTripWindow?.checkIn && festivalTripWindow?.checkOut
+      ? buildPlacePlannerPathFromEvent(nearestHub.hubId, {
+          checkIn: festivalTripWindow.checkIn,
+          checkOut: festivalTripWindow.checkOut,
+          eventId: festivalTripWindow.eventId || `korea-festival-${item?.contentId || ''}`,
+        })
+      : '';
   const stayDisplayKeyword =
     localizedHubLabel(locale, {
       hubId: nearestHub?.hubId,
@@ -1339,9 +1349,10 @@ export default function FestivalDetailSheet({
 
               {(festivalStayHref ||
                 festivalTnaHref ||
+                festivalPlannerHref ||
                 festivalCross?.packageCta?.url) && (
                 <div className="space-y-3 pt-1">
-                  {festivalStayHref || festivalTnaHref ? (
+                  {festivalStayHref || festivalTnaHref || festivalPlannerHref ? (
                     <div className="space-y-2">
                       <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
                         {t('korea.festival.detail.stayTour')}
@@ -1358,6 +1369,17 @@ export default function FestivalDetailSheet({
                               keyword: stayDisplayKeyword,
                             })}
                             <ExternalLink size={12} aria-hidden="true" />
+                          </a>
+                        ) : null}
+                        {festivalPlannerHref ? (
+                          <a
+                            href={festivalPlannerHref}
+                            className="inline-flex items-center justify-center gap-1.5 rounded-full border border-indigo-300/90 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-950 hover:bg-indigo-100"
+                          >
+                            {t('korea.festival.detail.plannerKeyword', {
+                              keyword: stayDisplayKeyword,
+                            })}
+                            <Plane size={12} aria-hidden="true" />
                           </a>
                         ) : null}
                         {festivalTnaHref ? (

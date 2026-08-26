@@ -34,6 +34,7 @@ const ToolkitCard = ({
     isOfficial,
     location,
     essentialGuide,
+    eventTripWindow,
     themeColor = 'gray',
     className = ''
 }) => {
@@ -96,6 +97,12 @@ const ToolkitCard = ({
                                     text={link.text}
                                     colorClass={link.colorClass}
                                     isColSpan2={isColSpan2}
+                                    checkIn={eventTripWindow?.checkIn}
+                                    checkOut={eventTripWindow?.checkOut}
+                                    isDomestic={
+                                        location?.country === '대한민국' ||
+                                        location?.country_en === 'South Korea'
+                                    }
                                 />
                             );
                         }
@@ -150,6 +157,8 @@ const ToolkitCard = ({
                     <WhiteLabelWidget
                         location={location}
                         essentialGuide={essentialGuide}
+                        departDate={eventTripWindow?.departDate}
+                        returnDate={eventTripWindow?.returnDate}
                         customTrigger={
                             <FlightSearchCta location={location} essentialGuide={essentialGuide} />
                         }

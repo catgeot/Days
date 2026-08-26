@@ -25,3 +25,11 @@
 - **산출** `FestivalDetailSheet` tripWindow→MRT 숙소 URL · `getMrtAccommodationSearchUrl` checkIn/checkOut · `smoke:korea-festival-stay-url`
 - **VERIFY** `smoke:korea-festival-stay-url` · `smoke:korea-festival-nearby` · `smoke:trip-window-from-festival` · `audit:world-events` · `build` PASS
 - **다음** 세션 #5 P1-b 플래너·항공 딥링크
+
+## 세계행사 일정 #5 — P1-b 플래너·항공
+
+- **세션** `세계행사 일정 #5, P1-b — 플래너·항공`
+- **브랜치** `cursor/world-events-efa3` · PR #150
+- **산출** `buildPlacePlannerPathFromEvent` · `FestivalDetailSheet` 플래너 CTA · `PlannerTab` eventTripWindow → 항공·숙소 위젯 날짜 · `smoke:korea-festival-planner-link`
+- **VERIFY** `smoke:korea-festival-planner-link` · `smoke:korea-festival-stay-url` · `smoke:korea-festival-nearby` · `smoke:trip-window-from-festival` · `audit:world-events` · `build` PASS
+- **다음** 세션 #6 P2-a 해외 12건 overrides

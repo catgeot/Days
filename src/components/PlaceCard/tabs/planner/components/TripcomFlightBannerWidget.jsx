@@ -25,7 +25,7 @@ const MIN_DISPLAY_HEIGHT = 120;
  * 모바일(≤767px) 320×480, 데스크톱 900×200.
  * 배너 iframe에서 출발·도착·일자 등을 직접 수정할 수 있도록 클릭을 iframe에 전달합니다.
  */
-const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3' }) => {
+const TripcomFlightBannerWidget = ({ location, essentialGuide, departDate, returnDate, className = 'mt-3' }) => {
     const { t } = useTranslation();
     const tryOpenFlightSearch = useTryOpenTripcomFlightSearch();
     const containerRef = useRef(null);
@@ -54,13 +54,20 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3
                 mode: 'ad',
                 adId: flightAdId,
                 ...(isMobileBanner ? { tracking: 'planner-flight-mobile' } : {}),
+                ...(departDate ? { departDate } : {}),
+                ...(returnDate ? { returnDate } : {}),
             }),
-        [location, essentialGuide, flightAdId, isMobileBanner],
+        [location, essentialGuide, flightAdId, isMobileBanner, departDate, returnDate],
     );
 
     const clickUrl = useMemo(
-        () => buildTripcomPlannerNavigationUrl(location, { essentialGuide }),
-        [location, essentialGuide],
+        () =>
+            buildTripcomPlannerNavigationUrl(location, {
+                essentialGuide,
+                ...(departDate ? { departDate } : {}),
+                ...(returnDate ? { returnDate } : {}),
+            }),
+        [location, essentialGuide, departDate, returnDate],
     );
 
     useEffect(() => {
@@ -92,7 +99,13 @@ const TripcomFlightBannerWidget = ({ location, essentialGuide, className = 'mt-3
     }, [nativeW, nativeH, isMobileBanner]);
 
     const handleFullScreenClick = (event) => {
-        if (tryOpenFlightSearch(location, { essentialGuide })) {
+        if (
+            tryOpenFlightSearch(location, {
+                essentialGuide,
+                ...(departDate ? { departDate } : {}),
+                ...(returnDate ? { returnDate } : {}),
+            })
+        ) {
             event.preventDefault();
         }
     };

@@ -1366,6 +1366,7 @@
         "nearScenicMore": "More {{region}} scenic spots",
         "stayTour": "Stays · tours",
         "stayKeyword": "Stays · {{keyword}}",
+        "plannerKeyword": "Planner · {{keyword}}",
         "tourKeyword": "Tours · {{keyword}}",
         "packages": "Packages",
         "packageCtaFallback": "View packages",

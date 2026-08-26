@@ -3,8 +3,12 @@ import { ExternalLink } from 'lucide-react';
 import { getMrtAccommodationSearchUrl } from '../../../../../utils/affiliate';
 import { isMobileDevice } from '../../../common/device';
 
-const MrtDynamicLink = ({ mrtQuery, text, colorClass, isColSpan2 }) => {
-    const url = getMrtAccommodationSearchUrl(mrtQuery);
+const MrtDynamicLink = ({ mrtQuery, text, colorClass, isColSpan2, checkIn, checkOut, isDomestic }) => {
+    const url = getMrtAccommodationSearchUrl(mrtQuery, {
+        isDomestic: Boolean(isDomestic),
+        checkIn,
+        checkOut,
+    });
 
     return (
         <a

@@ -36,6 +36,7 @@ import {
 import {
   clearFlightCinemaPlannerEntryParams,
   parseFlightCinemaPlannerEntry,
+  parseEventPlannerEntry,
 } from '../../../utils/placePlannerPath';
 
 // 🆕 [Phase 8 Fix] 전역 요청 캐시 - API 중복 호출 방지 (React StrictMode 대응)
@@ -65,6 +66,20 @@ const PlannerTab = ({
         () => parseFlightCinemaPlannerEntry(searchParams),
         [searchParams],
     );
+    const eventPlannerEntry = useMemo(
+        () => parseEventPlannerEntry(searchParams),
+        [searchParams],
+    );
+    const eventTripWindow = useMemo(() => {
+        if (!eventPlannerEntry) return null;
+        return {
+            checkIn: eventPlannerEntry.checkIn,
+            checkOut: eventPlannerEntry.checkOut,
+            eventId: eventPlannerEntry.eventId,
+            departDate: eventPlannerEntry.checkIn,
+            returnDate: eventPlannerEntry.checkOut,
+        };
+    }, [eventPlannerEntry]);
     const [cinemaNoticeDismissed, setCinemaNoticeDismissed] = useState(false);
     const plannerFocusId = parsePlannerFocusFromHash(routeLocation.hash);
     const lastScrolledFocusRef = useRef(null);
@@ -437,6 +452,8 @@ const PlannerTab = ({
                             <TripcomFlightBannerWidget
                                 location={location}
                                 essentialGuide={guideData}
+                                departDate={eventTripWindow?.departDate}
+                                returnDate={eventTripWindow?.returnDate}
                                 className="mb-0"
                             />
                         </div>
@@ -461,6 +478,7 @@ const PlannerTab = ({
                             locationName={localizedPlaceName}
                             location={location}
                             essentialGuide={guideData}
+                            eventTripWindow={eventTripWindow}
                         />
                         {(guideData?.journey_timeline?.length ?? 0) > 0 ? (
                             <JourneyTimeline
@@ -485,10 +503,10 @@ const PlannerTab = ({
                         <ToolkitCard icon={FileText} title={t('place.planner.toolkit.visa')} type="visa" data={guideData?.categories?.visa || guideData?.visa} isOfficial location={location} essentialGuide={guideData} themeColor="warning" />
                         </div>
                         <div id="planner-prep-flight" className="scroll-mt-24">
-                        <ToolkitCard icon={Plane} title={t('place.planner.toolkit.flight')} type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
+                        <ToolkitCard icon={Plane} title={t('place.planner.toolkit.flight')} type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} essentialGuide={guideData} eventTripWindow={eventTripWindow} themeColor="default" />
                         </div>
                         <div id="planner-prep-accommodation" className="scroll-mt-24">
-                        <ToolkitCard icon={Bed} title={t('place.planner.toolkit.accommodation')} type="accommodation" data={guideData?.categories?.accommodation || guideData?.accommodation} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
+                        <ToolkitCard icon={Bed} title={t('place.planner.toolkit.accommodation')} type="accommodation" data={guideData?.categories?.accommodation || guideData?.accommodation} isSponsored location={location} essentialGuide={guideData} eventTripWindow={eventTripWindow} themeColor="default" />
                         </div>
                         <div id="planner-prep-safety" className="scroll-mt-24">
                         <ToolkitCard icon={ShieldAlert} title={t('place.planner.toolkit.safety')} type="safety" data={guideData?.categories?.safety || guideData?.safety} isOfficial location={location} essentialGuide={guideData} themeColor="danger" />
