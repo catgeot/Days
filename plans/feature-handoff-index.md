@@ -18,8 +18,8 @@
 
 | | |
 |--|--|
-| **상태** | **v2 Phase B 완료** (#12) · **다음 #13 AI 가이드** (Phase C-0~1) |
-| **다음** | #13 AI 인프라 · edinburgh Tier3 1건 |
+| **상태** | **v2 Phase C 완료** (#13) · **#14 샘플2~4 Tier0.5 완료** · 다음 #15 샘플5~8 |
+| **다음** | #15 tokyo·kyoto·bangkok·bali Tier0.5 |
 | **브랜치** | `cursor/world-events-efa3` |
 | **PR** | [#153](https://github.com/catgeot/Days/pull/153) (v2 draft) |
 | **main tip** | `66bd1791` — v2 docs 동기화 · P2 `d4fbca71` |
@@ -35,16 +35,16 @@
 **P2 MVP (main)**: Wave1 15건 · PlaceCard · `/world-events` 허브 · TripWindow 프리셋 · 홈 진입  
 **v2 (브랜치)**: `/world-events/:eventId` · Tier0~2 · 샘플 15건 · **v2 델타 main 병합 = #18**
 
-**다음 제시어** (#13):
+**다음 제시어** (#15):
 
 ```
-세계행사 일정 #13, AI 가이드 · 샘플1 edinburgh
+세계행사 일정 #15, 샘플5~8 상세 Tier0.5
 @plans/feature-handoff-index.md
 @plans/2026-08-26-project-log.md
 @plans/world-events-detail-ux-plan.md
-브랜치 cursor/world-events-efa3 · PR #153 · /world-events/edinburgh-fringe-2026
-금지: 새 feature 브랜치 · worldEvents.json 직편집 · UI 리디자인 · 15건 일괄 AI pregen · #18 전 main 병합
-작업: Phase C-0~1 · update-event-travel-guide · edinburgh 1건만 · sample-log AI v0.1
+브랜치 cursor/world-events-efa3 · PR #153 · /world-events/tokyo-sakura-season-2027
+금지: 새 feature 브랜치 · worldEvents.json 직편집 · UI 리디자인 · 이전 샘플 일괄 AI 재생성 · #18 전 main 병합
+작업: sample #5~#8 tokyo·kyoto·bangkok·bali · overrides Tier0.5 · sample-log · AI는 v0.2+ 고정 프롬pt만
 ```
 
 ---

@@ -118,3 +118,19 @@
 - **산출** `/world-events/:eventId` · `EventDetailPage` · `EventDetailStaticPanel` · schema Tier0.5 · edinburgh overrides · `smoke:world-events-detail` · 허브·PlaceCard 「행사 상세」
 - **VERIFY** `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
 - **다음** #13 Phase C-0~1 AI 가이드 · edinburgh 1건
+
+## 세계행사 일정 #13 — Phase C AI 가이드 · 샘플1 edinburgh
+
+- **세션** `세계행사 일정 #13, AI 가이드 · 샘플1 edinburgh`
+- **브랜치** `cursor/world-events-efa3` · PR #153
+- **산출** EventTravelGuide v0.1 · Edge `update-event-travel-guide` · EventTravelGuidePanel · edinburgh fixture
+- **VERIFY** `smoke:event-travel-guide` · `build` PASS
+- **다음** #14 샘플 #2~#4 Tier0.5
+
+## 세계행사 일정 #14 — 샘플2~4 Tier0.5
+
+- **세션** `세계행사 일정 #14, 샘플2~4 munich·vienna·amsterdam`
+- **브랜치** `cursor/world-events-efa3` · PR #153
+- **산출** munich·vienna·amsterdam Tier0.5 overrides · `smoke:world-events-detail` 4건 assert · sample-log
+- **VERIFY** `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **다음** #15 샘플 #5~#8 tokyo·kyoto·bangkok·bali
