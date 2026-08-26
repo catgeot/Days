@@ -24,7 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
-    id: '2026-08-26-world-events-recommended-nights-section',
+    id: '2026-08-26-world-events-ai-guide-munich-vienna-amsterdam',
+    session: '세계행사 일정 #14, 샘플2~4 munich·vienna·amsterdam',
+    title: 'Tier3 AI fixture · munich·vienna·amsterdam',
+    detail:
+      'sample #2~#4 EventTravelGuide fixture v0.1 추가 · Preview에서 fixture 자동 로드. /qa/world-events → 옥토버페스트·빈 오페라·킹스데이 상세 — 에든버러와 동일한 「행사 맞춤 여행 가이드」·trip presets·하단 raw JSON 확인.',
+    at: '2026-08-26',
+  },
+  {
     session: '세계행사 일정 #14, 샘플2~4 munich·vienna·amsterdam',
     title: '상세 「권장 박수」섹션 분리',
     detail:

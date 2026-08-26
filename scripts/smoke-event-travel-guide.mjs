@@ -4,7 +4,7 @@
  *
  *   npm run smoke:event-travel-guide
  */
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync, readdirSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { spawnSync } from 'child_process';
@@ -48,18 +48,24 @@ function main() {
     'migration present',
   );
 
-  const fixturePath = join(
-    __dirname,
-    'fixtures/event-travel-guide/edinburgh-fringe-2026.json',
-  );
-  assert(existsSync(fixturePath), 'edinburgh fixture present');
+  const fixtureDir = join(__dirname, 'fixtures/event-travel-guide');
+  const fixturePaths = readdirSync(fixtureDir)
+    .filter((name) => name.endsWith('.json'))
+    .map((name) => join(fixtureDir, name));
+  assert(fixturePaths.length >= 4, 'sample fixtures #1~#4 present');
 
-  const fixture = normalizeEventTravelGuide(
-    JSON.parse(readFileSync(fixturePath, 'utf8')),
-    { label: 'edinburgh-fringe-2026' },
-  );
-  assert(fixture.event_id === 'edinburgh-fringe-2026', 'fixture event_id');
-  assert(fixture.schema_version === EVENT_TRAVEL_GUIDE_SCHEMA_VERSION, 'fixture schema_version');
+  for (const fixturePath of fixturePaths) {
+    const fixture = normalizeEventTravelGuide(
+      JSON.parse(readFileSync(fixturePath, 'utf8')),
+      { label: fixturePath },
+    );
+    assert(
+      fixture.schema_version === EVENT_TRAVEL_GUIDE_SCHEMA_VERSION,
+      `${fixture.event_id} schema_version`,
+    );
+  }
+
+  assert(grepFile('src/utils/loadEventTravelGuideFixture.js', 'loadEventTravelGuideFixture'), 'fixture loader');
 
   assert(grepFile('src/pages/WorldEvents/EventTravelGuidePanel.jsx', 'EventTravelGuidePanel'), 'panel component');
   assert(grepFile('src/pages/WorldEvents/EventDetailPage.jsx', 'EventTravelGuidePanel'), 'panel wired in detail page');

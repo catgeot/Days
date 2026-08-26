@@ -20,6 +20,7 @@ import {
   getWorldEventTitle,
 } from '../../utils/worldEvents';
 import { fetchEventTravelGuide } from '../../utils/fetchEventTravelGuide';
+import { loadEventTravelGuideFixture } from '../../utils/loadEventTravelGuideFixture';
 import { isCloudPreviewSurface } from '../../shared/cloudPreview/isCloudPreviewSurface';
 import EventDetailStaticPanel from './EventDetailStaticPanel';
 import EventTravelGuidePanel from './EventTravelGuidePanel';
@@ -51,22 +52,18 @@ export default function EventDetailPage() {
         return;
       }
 
-      if (
-        isCloudPreviewSurface() &&
-        event.id === 'edinburgh-fringe-2026'
-      ) {
+      if (isCloudPreviewSurface()) {
         try {
-          const mod = await import(
-            '../../../scripts/fixtures/event-travel-guide/edinburgh-fringe-2026.json'
-          );
-          const fixture = mod.default ?? mod;
-          setTravelGuide(fixture);
-          setTravelGuideRaw({
-            guide: fixture,
-            model: 'fixture-v0.1',
-            schema_version: '0.1',
-          });
-          return;
+          const fixture = await loadEventTravelGuideFixture(event.id);
+          if (fixture) {
+            setTravelGuide(fixture);
+            setTravelGuideRaw({
+              guide: fixture,
+              model: 'fixture-v0.1',
+              schema_version: '0.1',
+            });
+            return;
+          }
         } catch (err) {
           console.warn('[EventDetailPage] preview fixture load failed', err);
         }
