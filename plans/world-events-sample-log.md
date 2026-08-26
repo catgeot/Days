@@ -13,10 +13,10 @@
 | 6 | `kyoto-gion-matsuri-2027` | #15 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2 |
 | 7 | `bangkok-songkran-2027` | #15 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2 |
 | 8 | `bali-galungan-season-2026` | #15 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2 |
-| 9 | `rio-carnival-2027` | #16 | — | — | 대기 |
-| 10 | `new-york-thanksgiving-season-2026` | #16 | — | — | 대기 |
-| 11 | `iceland-midnight-sun-2027` | #16 | — | — | 대기 |
-| 12 | `sydney-vivid-2027` | #16 | — | — | 대기 |
+| 9 | `rio-carnival-2027` | #16 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2+위젯 |
+| 10 | `new-york-thanksgiving-season-2026` | #16 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2+위젯 |
+| 11 | `iceland-midnight-sun-2027` | #16 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2+위젯 |
+| 12 | `sydney-vivid-2027` | #16 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2+위젯 |
 | 13 | `prague-spring-festival-2027` | #16 | — | — | 대기 |
 | 14 | `marrakech-rose-festival-2027` | #16 | — | — | 대기 |
 | 15 | `hanoi-tet-2027` | #16 | — | — | 대기 |
@@ -119,6 +119,39 @@
 - **라우트**: `/world-events/bali-galungan-season-2026`
 - **VERIFY**: `smoke:world-events-detail` PASS · `smoke:world-events` · `build` PASS
 - **다음**: #16 sample #9~#12 + Phase D in-page 위젯
+
+## #9 rio-carnival-2027 — #16 Tier0.5
+
+- **일시**: 2026-08-26
+- **패턴**: festival · 단기(6일) · recommendedNights **4** · Phase D EventStayStrip
+- **Tier0~2**: detailOverview · highlights 3 · stayAreas 2(코파·이파네마)
+- **라우트**: `/world-events/rio-carnival-2027`
+- **VERIFY**: `smoke:world-events-detail` PASS
+
+## #10 new-york-thanksgiving-season-2026 — #16 Tier0.5
+
+- **일시**: 2026-08-26
+- **패턴**: season · 단기(11일) · recommendedNights **3**
+- **Tier0~2**: detailOverview · highlights 3 · stayAreas 2(미드타운·헤럴드)
+- **라우트**: `/world-events/new-york-thanksgiving-season-2026`
+- **VERIFY**: `smoke:world-events-detail` PASS
+
+## #11 iceland-midnight-sun-2027 — #16 Tier0.5
+
+- **일시**: 2026-08-26
+- **패턴**: season · 장기(61일) · recommendedNights **4** · visitPresets 3
+- **Tier0~2**: detailOverview · highlights 3 · stayAreas 2(레이캬비크·라우가르달루르)
+- **라우트**: `/world-events/iceland-midnight-sun-2027`
+- **VERIFY**: `smoke:world-events-detail` PASS
+
+## #12 sydney-vivid-2027 — #16 Tier0.5
+
+- **일시**: 2026-08-26
+- **패턴**: festival · 중기(24일) · recommendedNights **3** · visitPresets 3
+- **Tier0~2**: detailOverview · highlights 3 · stayAreas 2(서큘러 키·더 록스)
+- **라우트**: `/world-events/sydney-vivid-2027`
+- **VERIFY**: `smoke:world-events-detail` · `smoke:trip-window-edinburgh` · `build` PASS
+- **다음**: #17 sample #13~#15 · 위젯 전건
 
 ## v2 pivot — Preview QA 피드백 (#12 전)
 
