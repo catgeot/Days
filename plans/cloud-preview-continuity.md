@@ -191,10 +191,11 @@ feature 코드는 브랜치에만 있어도 되지만, **맥락 문서가 `origi
 
 **절차 (에이전트 — 허가 요청 없이 · 생략 금지)**
 
-1. **feature**: 검증 PASS → 코드·문서 커밋 → **`git push origin <feature>`**
+1. **feature**: 검증 PASS → **코드만** 커밋 → **`git push origin <feature>`** — **`plans/**` 커밋 금지**
 2. **`git checkout main && git pull origin main`**
-3. docs 반영: cherry-pick(문서 커밋만) 또는 **동일 내용 docs-only 커밋** — **코드 파일을 `main`에 넣지 않음**
+3. 인덱스·§9·일지 갱신 후 **docs-only 커밋** — **코드 파일을 `main`에 넣지 않음**
 4. **`git push origin main`** — **docs-only** · Preview QA·허가 **불필요**
-5. **`git checkout <feature> && git merge origin/main`** — 다음 세션에 옛 인덱스 방지
+5. **`git checkout <feature> && git merge origin/main`**
+6. **`npm run audit:docs-handoff-sync`** PASS — FAIL이면 5번부터
 
 **주제 병합 후**: 인덱스에서 행 제거 · `cloudPreviewWorkLog` `active: false` · `/qa/…` 비활성(해당 시).

@@ -134,10 +134,30 @@
 - **브랜치** `cursor/world-events-efa3` · PR #153
 - **산출** munich·vienna·amsterdam Tier0.5 overrides · `smoke:world-events-detail` 4건 assert · sample-log
 - **VERIFY** `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
-- **다음** #15 샘플 #5~#8 tokyo·kyoto·bangkok·bali
+
+## 세계행사 일정 #14 — Preview 빌드 복구
+
+- **이슈** #14 핸드오프 커밋에서 `cloudPreviewWorkLog.js` #13 edinburgh 항목 `{`·`id` 누락 → Vercel Preview `Expected ',', got ':'` (14508e4 등 연쇄 ERROR)
+- **조치** `8bad7636` — 누락 객체 헤더 복구 · Preview **Ready**
+- **재검증** `build` · `smoke:world-events` · `smoke:event-travel-guide` · `audit:event-travel-guide` PASS
+- **Preview** `https://www.gateo.kr/qa/world-events` · git `days-git-cursor-world-events-efa3-catgeots-projects.vercel.app`
 
 ## 세계행사 일정 #14 — 권장 박수 섹션
 
 - **이슈** 사람 QA — 킹스데이 상세에 「권장 박수」섹션 없음(Hero 인라인 「권장 숙박」만)
 - **조치** `77e64e8c` — `EventDetailStaticPanel` 독립 섹션(제목 「권장 박수」) · 하이라이트 아래 배치
 - **VERIFY** `build` · `smoke:world-events-detail` PASS
+
+## 세계행사 일정 #14 — Tier3 AI fixture munich·vienna·amsterdam
+
+- **세션** `세계행사 일정 #14, 샘플2~4 munich·vienna·amsterdam` (잔여)
+- **이슈** 옥토버페스트 등 Tier0~2만 있고 에든버러 대비 「행사 맞춤 여행 가이드」Tier3 누락
+- **조치** fixture 3건 · `loadEventTravelGuideFixture` · Preview fixture 전건 로드 · `dde4fe4f`
+- **VERIFY** `audit:event-travel-guide` · `smoke:event-travel-guide` · `smoke:world-events` · `build` PASS
+- **다음** #15 샘플 #5~#8 tokyo·kyoto·bangkok·bali
+
+## 운영 — docs-handoff 충돌 방지 규칙·audit
+
+- **배경** #14 — `main` docs push 후 feature `merge` 생략 → `feature-handoff-index` stash 충돌
+- **규칙** `plans/**` **feature 커밋 금지** · 종료 시 C + `audit:docs-handoff-sync` · §충돌 방지 절
+- **산출** `scripts/audit-docs-handoff-sync.mjs` · `gateo-docs-on-main` 등 동기화 · `main` `0a48dab1`

@@ -6,9 +6,9 @@
 | # | eventId | 세션 | Tier0.5 | AI | 상태 |
 |---|---------|------|---------|-----|------|
 | 1 | `edinburgh-fringe-2026` | #11, #12, #13 | ✅ overview·highlights·stayAreas·4박 | ✅ v0.1 fixture | Tier0~2+AI v0.1 |
-| 2 | `munich-oktoberfest-2026` | #14 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2 완료 |
-| 3 | `vienna-staatsoper-season-2026` | #14 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2 완료 |
-| 4 | `amsterdam-kings-day-2027` | #14 | ✅ overview·highlights·stayAreas·2박 | — | Tier0~2 완료 |
+| 2 | `munich-oktoberfest-2026` | #14 | ✅ overview·highlights·stayAreas·3박 | ✅ v0.1 fixture | Tier0~2+AI v0.1 |
+| 3 | `vienna-staatsoper-season-2026` | #14 | ✅ overview·highlights·stayAreas·3박 | ✅ v0.1 fixture | Tier0~2+AI v0.1 |
+| 4 | `amsterdam-kings-day-2027` | #14 | ✅ overview·highlights·stayAreas·2박 | ✅ v0.1 fixture | Tier0~2+AI v0.1 |
 | 5 | `tokyo-sakura-season-2027` | #15 | — | — | 대기 |
 | 6 | `kyoto-gion-matsuri-2027` | #15 | — | — | 대기 |
 | 7 | `bangkok-songkran-2027` | #15 | — | — | 대기 |
@@ -49,7 +49,26 @@
 - **Tier0~2**: detailOverview · highlights 3 · stayAreas 2(Theresienwiese·Hauptbahnhof) · typeIntro festival · bookingHints 유지
 - **라우트**: `/world-events/munich-oktoberfest-2026`
 - **VERIFY**: `smoke:world-events-detail` Tier0.5 assert PASS
-- **다음**: #15 샘플 #5~#8 또는 (선택) munich Tier3 AI
+- **다음**: #15 샘플 #5~#8
+
+## #2 munich-oktoberfest-2026 — #14 Tier3 AI v0.1
+
+- **일시**: 2026-08-26
+- **fixture**: `munich-oktoberfest-2026.json` · 개막·중순·평일 3종 프리셋 · Theresienwiese·Hauptbahnhof facts 일치
+- **Preview**: `loadEventTravelGuideFixture` — fixture 있는 eventId 전건 Tier3 패널
+- **VERIFY**: `audit:event-travel-guide` · `smoke:event-travel-guide` PASS
+
+## #3 vienna-staatsoper-season-2026 — #14 Tier3 AI v0.1
+
+- **일시**: 2026-08-26
+- **fixture**: `vienna-staatsoper-season-2026.json` · season 짧은 방문 3종 · 1구·Karlsplatz facts 일치
+- **VERIFY**: `audit:event-travel-guide` PASS
+
+## #4 amsterdam-kings-day-2027 — #14 Tier3 AI v0.1
+
+- **일시**: 2026-08-26
+- **fixture**: `amsterdam-kings-day-2027.json` · 전날 체크인 2박 패턴 · Jordaan·De Pijp facts 일치
+- **VERIFY**: `audit:event-travel-guide` PASS · span 1일 vs 2박 preset — audit WARN 허용
 
 ## #3 vienna-staatsoper-season-2026 — #14 Tier0.5
 

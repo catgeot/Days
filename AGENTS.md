@@ -44,7 +44,7 @@
 - **디자인·소소한 UI · Cloud feature**: **매 턴 커밋·push**(로컬 커밋 보류 **적용 안 함**)
 - **브랜치**: 짧은 수정 `main` 직행 · 대형/Cloud UI feature(+PR). **§1.5.2**
 - Cloud 오케스트레이터 **§3.4**(커밋·push·PR)
-- **금지**: 검증 생략 · FAIL push · 로컬 미확정 UI 수시 커밋 · UI 임의 변경 · **코드를 `origin/main`에 에이전트 push** · feature 세션 **docs-on-main 생략** · force-push to main
+- **금지**: 검증 생략 · FAIL push · 로컬 미확정 UI 수시 커밋 · UI 임의 변경 · **코드를 `origin/main`에 에이전트 push** · feature 세션 **docs-on-main 생략** · **feature에 `plans/**` 커밋** · `main` docs push 후 **merge origin/main 생략** · force-push to main
 
 
 ## 검증 커맨드 (자주 씀)
@@ -59,6 +59,7 @@ npm run audit:city-attraction-hubs   # 도시 명소 hub SSOT (오케스트레�
 npm run audit:mapbox-settlement-places  # 정착지 SSOT (맵박스정착지 오케스트레이터)
 npm run smoke:mapbox-settlement-places
 npm run smoke:place-label-slug   # 지구본 라벨 slug/name_en · 무니 역사 L2 오탐
+npm run audit:docs-handoff-sync   # Cloud feature — origin/main 핸드오프 merge 여부
 ```
 
 ## Cursor Cloud specific instructions

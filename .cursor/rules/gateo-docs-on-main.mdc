@@ -12,23 +12,24 @@ alwaysApply: true
 | | 어디 | push |
 |--|------|------|
 | **로직·UI·`src/`·스크립트·SSOT 데이터** | 고정 **feature** `cursor/…` | **feature** (Cloud 매 턴) |
-| **핸드오프 문서** | **`main` 반영 필수** | **`origin/main` docs-only** — feature 세션 **종료 시 즉시** |
+| **핸드오프 문서** | **`main`에서만 커밋** | **`origin/main` docs-only** — feature 세션 **종료 시 즉시** |
 
 **문서** = `plans/**` · `feature-handoff-index.md` · 플랜 §9 · `.ai-context` · `AGENTS.md` · `.cursor/rules/**`
 
 ## Cloud feature 세션
 
-**시작**: `pull main` → 인덱스에서 브랜치 → `checkout feature` → **`merge origin/main`**
+**시작**: `pull main` → 인덱스에서 브랜치 → `checkout feature` → **`merge origin/main`** → **`npm run audit:docs-handoff-sync`**
 
 **종료** (생략 금지):
 
-1. feature: 검증 PASS → 코드·문서 커밋 → **feature push**
-2. `checkout main` → docs **cherry-pick 또는 docs-only 커밋** → **`push origin main`** (허가·QA 없음)
-3. `checkout feature` → **`merge origin/main`**
+1. feature: 검증 PASS → **코드만** 커밋 → **feature push** (`plans/**` 커밋 **금지**)
+2. `checkout main` → 핸드오프·일지·§9 갱신 → docs-only 커밋 → **`push origin main`**
+3. `checkout feature` → **`merge origin/main`** → **`npm run audit:docs-handoff-sync`**
 
 ## 금지
 
 - `main`에서 feature 코드 수정 (§1.5.2 짧은 예외 제외)
-- 핸드오프를 **feature에만** 두고 세션 종료
+- **feature 브랜치에 `plans/**` 커밋** (충돌 원인 — §충돌 방지)
+- `main` docs push **후** feature `merge origin/main` **생략**
 - 「main push 허가」를 **docs-only**에 요청
 - `main` 체크아웃인데 `src/` grep·수정으로 feature 작업 대체
