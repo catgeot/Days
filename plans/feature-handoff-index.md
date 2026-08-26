@@ -7,7 +7,7 @@
 |--|--|
 | **에이전트 (시작)** | 사용자 첫 메시지에 **채팅명 형식**(`{주제} #{N}, …`) 또는 **`@plans/feature-handoff-index.md`** 가 있으면 **본 파일 해당 행만** Read → 표의 **다음 제시어**·브랜치 checkout. `.ai-context` 전문·코드베이스 광역 grep **생략**. |
 | **에이전트 (종료)** | feature 세션 종료 시 **해당 주제 행 갱신** + 주제 플랜 **§9** + 최신 일지 2~5줄 + **§1.2 다음 제시어 블록** 복붙. |
-| **main 동기화** | 위 3파일은 **`main` + `origin/main` 반영 필수** (§1.5.4). feature만 두고 끝 **금지**. 절차: [`docs-on-main-workflow.md`](./docs-on-main-workflow.md) · **docs-only push = 세션 종료 시 에이전트 즉시**(허가·QA 없음). **코드** `origin/main` = PR merge 또는 사람 요청. |
+| **main 동기화** | 위 3파일은 **`main` + `origin/main` 반영 필수** (§1.5.4). feature **종료 시** `merge origin/main` + `audit:docs-handoff-sync` PASS. **feature에 `plans/**` 커밋 금지**. 절차: [`docs-on-main-workflow.md`](./docs-on-main-workflow.md) §충돌 방지.
 | **주제 종료** | PR 병합 후 해당 행 **삭제** 또는 `active: false` + 병합 SHA 기록. |
 
 ---
@@ -18,11 +18,7 @@
 
 | | |
 |--|--|
-<<<<<<< Updated upstream
-| **상태** | **v2 Phase C 완료** (#13) · **#14 샘플2~4 Tier0.5 완료** · Preview 빌드 복구(`8bad7636`) · 다음 #15 샘플5~8 |
-=======
-| **상태** | **v2 #14 완료** — Tier0.5 + Tier3 fixture munich·vienna·amsterdam · 다음 #15 샘플5~8 |
->>>>>>> Stashed changes
+| **상태** | **v2 #14 완료** — Tier0.5 + Tier3 fixture munich·vienna·amsterdam · Preview 빌드 복구 · 다음 #15 샘플5~8 |
 | **다음** | #15 tokyo·kyoto·bangkok·bali Tier0.5 |
 | **브랜치** | `cursor/world-events-efa3` |
 | **PR** | [#153](https://github.com/catgeot/Days/pull/153) (v2 draft) |

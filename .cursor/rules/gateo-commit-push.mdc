@@ -22,7 +22,8 @@ alwaysApply: true
 **에이전트 금지**
 
 - docs-only에 「main push 허가」·Preview QA
-- Cloud feature 세션 종료 시 **main 문서 동기화 생략**
+- Cloud feature 세션 종료 시 **main 문서 동기화 생략** · **`merge origin/main` 생략**
+- **feature 브랜치에 `plans/**` 커밋** (핸드오프는 `main`에서만)
 - `main`에서 feature 코드 수정 (§1.5.2 짧은 예외 제외)
 - FAIL push · 코드를 `origin/main`에 임의 push · force-push to main
 

@@ -121,6 +121,7 @@
     "generate:transport": "node scripts/generate-travel-spot-transport.mjs",
     "generate:world-events": "node scripts/generate-world-events.mjs",
     "audit:world-events": "node scripts/audit-world-events.mjs",
+    "audit:docs-handoff-sync": "node scripts/audit-docs-handoff-sync.mjs",
     "smoke:world-events-hub": "node scripts/smoke-world-events-hub.mjs",
     "smoke:world-events": "node scripts/smoke-world-events.mjs",
     "smoke:trip-window-from-festival": "node scripts/smoke-trip-window-from-festival.mjs",
