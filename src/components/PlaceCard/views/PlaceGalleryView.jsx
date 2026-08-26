@@ -11,6 +11,7 @@ import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
 import GalleryAttributionLink from '../common/GalleryAttributionLink';
 import { splitPlaceOverview } from '../common/placeOverviewText';
 import PlaceOverviewProse from '../common/PlaceOverviewProse';
+import PlaceWorldEventsSection from '../common/PlaceWorldEventsSection';
 
 /** 세로·터치 태블릿은 max-width, 가로 회전(높이 짧은 터치 기기)도 모바일 풀스크린 포털 유지 */
 const MOBILE_GALLERY_LIGHTBOX_QUERY =
@@ -832,6 +833,12 @@ const PlaceGalleryView = React.memo(({
                 </div>
               </div>
             )}
+
+            <PlaceWorldEventsSection
+              location={location}
+              variant="dark"
+              className={`md:hidden mb-4 ${mobileLandscapeChromeHidden}`}
+            />
 
             <div className={`${hasPlaceOverview ? 'mt-4' : 'mt-12'} max-md:landscape:mt-0 md:mt-0`}>
               {showLoadingChrome && <GalleryLoadingChrome />}

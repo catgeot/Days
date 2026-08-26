@@ -40,6 +40,7 @@ const PlaceCardSummary = ({
   initialOriginExpanded = false,
   isCompact = false,
   belowCard = null,
+  eventsSection = null,
   stayToggle = null,
   stayExpanded = false,
   tourTab = null,
@@ -552,6 +553,12 @@ const PlaceCardSummary = ({
             ) : null}
           </div>
         </div>
+
+        {!isScanning && !isOriginCompact && eventsSection ? (
+          <div className="relative z-[1] mt-2 px-3 pb-1 lg:px-4" onClick={(e) => e.stopPropagation()}>
+            {eventsSection}
+          </div>
+        ) : null}
 
         {!isScanning && !isOriginCompact && belowCard ? (
           <div className="relative z-[1] mt-0 lg:contents">{belowCard}</div>

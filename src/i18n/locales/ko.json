@@ -544,6 +544,13 @@
       "findToursAria": "투어 찾기",
       "closeTourListAria": "투어 목록 닫기"
     },
+    "worldEvents": {
+      "title": "이 도시의 행사",
+      "count": "{{count}}건",
+      "plannerCta": "행사 맞춤 플래너",
+      "stayCta": "{{keyword}} 숙소",
+      "official": "공식 일정"
+    },
     "planner": {
       "title": "스마트 트래블 툴킷",
       "subtitle": "{{name}} 여행을 위한 생존 정보 및 핵심 큐레이션",

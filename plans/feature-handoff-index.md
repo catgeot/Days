@@ -18,8 +18,8 @@
 
 | | |
 |--|--|
-| **상태** | **P2-a 완료** — Wave1 overrides 15건 · 세션 #7 P2-b 대기 |
-| **다음 세션** | `#7 P2-b` PlaceCard 행사 |
+| **상태** | **P2-b 완료** — PlaceCard 「이 도시의 행사」 · 세션 #8 P2-c 대기 |
+| **다음 세션** | `#8 P2-c` `/world-events` 허브 |
 | **브랜치** | `cursor/world-events-efa3` |
 | **PR** | #150 |
 | **플랜** | [`world-events-plan.md`](./world-events-plan.md) §10 |
@@ -31,11 +31,11 @@
 **다음 제시어**:
 
 ```
-세계행사 일정 #7, P2-b — PlaceCard 행사
+세계행사 일정 #8, P2-c — /world-events 허브
 @plans/feature-handoff-index.md
 @plans/world-events-plan.md §10
 브랜치 cursor/world-events-efa3 · PR #150
-금지: worldEvents.json 직편집 · UI 리디자인 · 세션 #7 범위 넘기기
+금지: worldEvents.json 직편집 · UI 리디자인 · 세션 #8 범위 넘기기
 ```
 
 ---

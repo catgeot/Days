@@ -319,16 +319,16 @@ flowchart LR
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**다음 제시어** (세션 #7 — PlaceCard 행사):
+**다음 제시어** (세션 #8 — `/world-events` 허브):
 
 ```
-세계행사 일정 #7, P2-b — PlaceCard 행사
+세계행사 일정 #8, P2-c — /world-events 허브
 @plans/feature-handoff-index.md
 @plans/world-events-plan.md §10
 브랜치 cursor/world-events-efa3 · PR #150
-금지: worldEvents.json 직편집 · UI 리디자인 · 세션 #7 범위 넘기기
+금지: worldEvents.json 직편집 · UI 리디자인 · 세션 #8 범위 넘기기
 ```
 
-**읽을 것**: 본 파일 **§10 행 #7만** · `worldEvents.json` slug별 이벤트
+**읽을 것**: 본 파일 **§10 행 #8만** · `worldEvents.json` · `/korea` 허브 패턴
 
 **VERIFY**: `build` · QA `/place/vienna`

@@ -23,6 +23,7 @@ import {
   isKoreaPlaceReturnPath,
   peekPlaceReturnTo,
 } from '../../../pages/Home/lib/placeReturnTo';
+import PlaceWorldEventsSection from '../common/PlaceWorldEventsSection';
 
 const HEADER_SCROLL_TOP_MODES = ['PLANNER', 'GALLERY', 'WIKI', 'REVIEWS'];
 
@@ -341,6 +342,7 @@ const PlaceChatPanel = React.memo(({
             />
         ) : (
             <div className="animate-fade-in flex flex-col gap-6 p-6">
+                <PlaceWorldEventsSection location={location} variant="dark" />
                 {activeInfo.mode === 'VIDEO' ? (
                     <VideoInfoView
                         videoData={activeInfo}

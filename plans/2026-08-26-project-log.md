@@ -41,3 +41,11 @@
 - **산출** `world-event-overrides.mjs` Wave1 15건(유럽·아시아·아메리카·오세아니아·니치) · `generate:world-events` → `worldEvents.json`
 - **VERIFY** `generate:world-events` · `audit:world-events` · `build` PASS
 - **다음** 세션 #7 P2-b PlaceCard 「이 도시의 행사」
+
+## 세계행사 일정 #7 — P2-b PlaceCard 행사
+
+- **세션** `세계행사 일정 #7, P2-b — PlaceCard 행사`
+- **브랜치** `cursor/world-events-efa3` · PR #150
+- **산출** `PlaceWorldEventsSection` 접이식 · `worldEvents.js` slug 조회 · PlaceChatPanel·Gallery(모바일)·홈 써머리 연동 · TripWindow 플래너·숙소 CTA
+- **VERIFY** `build` PASS
+- **다음** 세션 #8 P2-c `/world-events` 허브

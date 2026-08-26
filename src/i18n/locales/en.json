@@ -774,6 +774,13 @@
       "findToursAria": "Find tours",
       "closeTourListAria": "Close tour list"
     },
+    "worldEvents": {
+      "title": "Events in this city",
+      "count": "{{count}}",
+      "plannerCta": "Planner for this event",
+      "stayCta": "Stays in {{keyword}}",
+      "official": "Official schedule"
+    },
     "planner": {
       "title": "Smart travel toolkit",
       "subtitle": "Essential survival info and curated picks for {{name}}",

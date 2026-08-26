@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 6,
-  sessionPhase: 'P2-a SSOT Wave1',
+  sessionNo: 7,
+  sessionPhase: 'P2-b PlaceCard 행사',
   branch: 'cursor/world-events-efa3',
-  previewPath: '/korea',
+  previewPath: '/place/vienna',
   qaShareSlug: null,
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-26-world-events-p2b-placecard',
+    session: '세계행사 일정 #7, P2-b — PlaceCard 행사',
+    title: 'PlaceCard 「이 도시의 행사」접이식 + TripWindow CTA',
+    detail:
+      'worldEvents.json slug별 행사를 PlaceCard에 표시합니다. /place/vienna 등 Wave1 도시에서 「이 도시의 행사」펼침 → 행사 맞춤 플래너·숙소·공식 일정 CTA를 확인해 주세요. 홈 지구본 써머리에도 동일 섹션이 보입니다.',
+    at: '2026-08-26',
+  },
   {
     id: '2026-08-26-world-events-p2a-wave1-ssot',
     session: '세계행사 일정 #6, P2-a — SSOT Wave1',
