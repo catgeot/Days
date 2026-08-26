@@ -64,7 +64,7 @@ alwaysApply: true
 - **UI 임의 변경 금지** (`.ai-context` **§4.1 5**): 승인 없이 기존 버튼·레이아웃·톤·카피 교체 금지. **기능 추가 시에도 기존 비주얼 유지**(연결·동작만). 「커밋 보류」≠ 리디자인 허가
 - **브라우저/`computerUse` QA 금지** (`.ai-context` **§4.1 13** · **1.6**): `Task(computerUse)`·`RecordScreen`·화면 클릭 QA **기본 금지**. **사람 명시 요청 시에만**. 채팅명·일지 `… QA` = **사람 Preview** 단계(에이전트 실행 지시 아님). 에이전트 검증 = audit/smoke/`build` → push → `/qa/…`·Preview + 사람 체크 1~3줄
 - 사용자 명시 없이 `plans/`에 새 완료보고/대형 기획서 생성 금지
-- Git commit/push: **검증 게이트** (`.ai-context` **1.5.1**/**1.5.2** · `AGENTS.md` Cloud) — 로직·SSOT는 audit/스모크 PASS 시 커밋 OK · **로컬** 합의 UI는 조율 중 커밋 보류(색·폰트 난발 방지)→사람 QA 후 · **Cloud feature**는 Preview용 **매 턴 커밋·push**+PR(없으면 생성)·push 전 최소 검증(도메인 smoke 또는 `npm run build`) · Cloud 짧은 SSOT는 `main` 커밋·push는 사람 요청 · **이어하기는 열린 고정 브랜치·동일 git Preview URL 재사용**(세션마다 새 `cursor/…-xxxx` 금지 · 세션 표기 `{주제} #{N}, {단계}` · **다음 채팅명 한 줄 펜스 제안**(제시어 1행=채팅명 · `cloud-preview-continuity` §1.1) · 테스터 공유 `www.gateo.kr/qa/<slug>` · Preview 우측 작업 로그 · 턴 종료 공유/Preview 링크 · Mapbox는 git Preview URL 1회) · 짧은 수정 **`main` 직행** · 대형/Cloud UI는 feature·PR · 사람 승인 없는 `main` push·force-push 금지 · 메시지 **한글**
+- Git commit/push: **§1.5.3 판단표** — 검증 PASS면 **허가 요청 없이** commit · Cloud feature **매 턴 feature push** · 문서·핸드오프 **QA 없이** main 로컬 commit · **`origin/main` push만** 사람 요청 · force-push 금지 · 메시지 **한글**
 
 
 - **PowerShell `Set-Content`/`-replace`로 한글 `.jsx` 등 소스 일괄 수정 금지** — UTF-8·JSX 파손 (`.ai-context` 3절)
@@ -76,7 +76,7 @@ alwaysApply: true
 - 주석 **필수 아님**(§4.2). 에이전트 인수인계·가드만. 나레이션 금지.
 - 사람에게: **바꾼 동작 + (사람) QA 체크** 짧게. 워크스페이스 직접 수정. **브라우저/`computerUse` 대행 금지**(§4.1 13).
 - **오류 루프**: 동일 증상/FAIL **2회** 후 중단·보고 · 요청 밖 확장 금지 (§4.1).
-- 커밋: 로직·SSOT는 **검증 게이트 우선** · 로컬 UI는 **사람 QA 후**(§1.5.1 · 난발 방지) · Cloud feature는 Preview용 **매 턴 커밋·push**(AGENTS Cloud) · push≠완료. 미승인 UI 교체와 혼동 금지.
+- 커밋: **§1.5.3** — 검증 게이트 · **허가 요청 금지** · 로컬 UI 조율만 보류 · Cloud feature **매 턴 push** · push≠완료
 
 
 ## 세션 종료

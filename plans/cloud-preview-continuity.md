@@ -66,7 +66,7 @@ Cloud/Cursor에서 **새 채팅을 만들 때** 사람이 제목·첫 프롬프�
 2. `plans/YYYY-MM-DD-project-log.md` 2~5줄
 3. [`feature-handoff-index.md`](./feature-handoff-index.md) 해당 행 (tip·Preview·**다음 제시어**)
 
-**main 핸드오프 동기화** (§6): 위 문서 3종은 feature에만 두지 말고 **`main`에 문서 커밋** — cherry-pick 또는 docs-only 커밋. 원격 push는 사람 요청 시.
+**main 핸드오프 동기화** (§6): 문서 3종은 feature에만 두지 말고 **`main` 로컬 커밋** — cherry-pick 또는 docs-only. **에이전트가 허가 요청 없이 즉시 commit** · **사람 QA 불필요**. 원격 `origin/main` push만 사람 요청 시.
 
 **복붙용 예 (해안해양)**
 
@@ -187,10 +187,10 @@ feature 코드는 브랜치에만 있어도 되지만, **맥락 문서는 `main`
 | 주제 플랜 **§9** | 동일 | 권장 (플랜이 `main`에 있을 때) |
 | `plans/YYYY-MM-DD-project-log.md` | 동일 | 선택 (일지는 날짜별로 `main`에 쌓임) |
 
-**절차 (에이전트)**
+**절차 (에이전트 — 허가 요청 없이)**
 
-1. feature 브랜치에서 위 문서 커밋·push.
-2. `git checkout main` → `git cherry-pick <docs-commit>` (충돌 시 인덱스만 수동 병합) **또는** 동일 내용 docs-only 재커밋.
-3. 원격 `main` push — **사람 요청 시** (로컬 `main` tip만 맞춰도 로컬 Cloud는 즉시 이득).
+1. feature 브랜치에서 위 문서 커밋·**push**(Preview·핸드오프 동기).
+2. `git checkout main` → cherry-pick 또는 docs-only 재커밋 — **즉시 로컬 commit** (사람 QA·허가 **불필요**).
+3. `origin/main` push — **사람 요청 시만** (세션 끝에 한 줄 안내 가능 · 매 턴 질문 금지).
 
 **주제 병합 후**: 인덱스에서 행 제거 · `cloudPreviewWorkLog` `active: false` · `/qa/…` 비활성(해당 시).

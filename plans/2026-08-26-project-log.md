@@ -98,3 +98,9 @@
 - **VERIFY** `smoke:world-events` · `smoke:trip-window-edinburgh` · `build` PASS
 - **main** `d4fbca71` — PR #150 merge · origin/main push
 - **다음** PROD 배포 후 QA · 선택 P3-a(공식 피드 POC) 또는 P1.5(Q9)
+
+## 운영 — 푸시·커밋 규칙 정리 · 세계행사 v2 확정
+
+- **결정**: V1(P2 MVP) `main` 유지 · 이후 **v2 상세 UX** (`cursor/world-events-efa3` · `world-events-detail-ux-plan.md`)
+- **규칙 SSOT**: `.ai-context` **§1.5.3** · `AGENTS.md` — 검증 게이트 · Cloud feature **매 턴 push(허가 대기 금지)** · 문서·핸드오프 **main 로컬 commit·QA 없음** · **`origin/main` push만** 사람 요청
+- **다음**: v2 docs `main` cherry-pick · 세션 #13 상세 셸 edinburgh
