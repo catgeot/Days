@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-26T12:59:46.553Z",
+    "generatedAt": "2026-08-26T13:19:29.059Z",
     "eventCount": 15,
     "source": "scripts/data/world-event-overrides.mjs"
   },
@@ -61,6 +61,25 @@
       },
       "sourceUrl": "https://www.wiener-staatsoper.at/en/",
       "bookingHints": "오페라 시즌 숙소는 1구·카발티에르 근처",
+      "detailOverview": "9월부터 익년 6월까지 이어지는 오페라·발레·콘서트 시즌입니다. 전체 기간 숙박보다 공연 일정에 맞춘 2~4박 방문이 일반적이며, 관람하려는 작품·날짜를 먼저 정한 뒤 숙소를 잡는 것이 좋습니다.",
+      "highlights": [
+        "국립오페라 본관·Musikverein 등 클래식 공연장",
+        "스탠딩석(Stehplatz) — 당일 현장 구매 가능(인기 공연은 조기 매진)",
+        "1구·카발티에르 도보권 숙소가 공연장 이동에 유리"
+      ],
+      "stayAreas": [
+        {
+          "name": "1구 · 스테판스플atz",
+          "mrtKeyword": "Vienna Innere Stadt",
+          "note": "국립오페라·히스토릭 센터 도보 10~15분"
+        },
+        {
+          "name": "카발티에르 · Karlsplatz",
+          "mrtKeyword": "Vienna Karlsplatz",
+          "note": "U-Bahn 접근 · 1구 공연장 버스 10분"
+        }
+      ],
+      "recommendedNights": 3,
       "priority": 1
     },
     {
@@ -99,6 +118,25 @@
       },
       "sourceUrl": "https://www.oktoberfest.de/en",
       "bookingHints": "테레지엔비제·하이드하우저 근처 숙소는 6~12개월 전 예약 권장",
+      "detailOverview": "뮌헨 테레지엔비제에서 열리는 세계 최대 맥주 축제로, 약 2주간 대형 맥주 텐트·놀이기구·스트리트 푸드가 이어집니다. 개막 주말·중순 주말 등 핵심 2~3일만 방문하는 짧은 일정이 일반적입니다.",
+      "highlights": [
+        "대형 맥주 텐트 — 좌석·단체 예약은 공식 파트너·호텔 패키지 조기 마감",
+        "U4/U5 Theresienwiese·Hackerbrücke 역 도보 접근",
+        "평일 낮·저녁은 상대적으로 한산 — 주말·개막일 혼잡 최대"
+      ],
+      "stayAreas": [
+        {
+          "name": "테레지엔비제 · Schwanthalerhöhe",
+          "mrtKeyword": "Munich Theresienwiese",
+          "note": "축제장 도보 5~10분 · 성수기 6~12개월 전 마감"
+        },
+        {
+          "name": "Hauptbahnhof · Ludwigsvorstadt",
+          "mrtKeyword": "Munich Hauptbahnhof",
+          "note": "S-Bahn·U-Bahn 환승 · 텐트까지 15~20분"
+        }
+      ],
+      "recommendedNights": 3,
       "priority": 1
     },
     {
@@ -194,6 +232,25 @@
       },
       "sourceUrl": "https://www.iamsterdam.com/en/whats-on/calendar/festivals-events/kings-day",
       "bookingHints": "중심가·운하 근처는 당일 교통 통제 — 전날 체크인 권장",
+      "detailOverview": "4월 27일(킹스데이) 하루 동안 도시 전역이 오렌지색으로 물드는 국경일 축제입니다. 거리 플리마켓·운하·광장 파티가 이어지며, 당일 중심가 교통 통제가 많아 전날 밤 체크인을 권장합니다.",
+      "highlights": [
+        "Vondelpark·Jordaan 일대 플리마켓·거리 공연",
+        "운하·Dam Square 주변 — 보트·거리 파티(혼잡·교통 통제)",
+        "전날(26일) 숙소 확보 · 당일 일부 구간 도보·자전거 이동"
+      ],
+      "stayAreas": [
+        {
+          "name": "Jordaan",
+          "mrtKeyword": "Amsterdam Jordaan",
+          "note": "플리마켓·카페 밀집 · Dam Square 도보 15~20분"
+        },
+        {
+          "name": "De Pijp",
+          "mrtKeyword": "Amsterdam De Pijp",
+          "note": "상대적으로 조용 · Museumplein·센터 트램 15분"
+        }
+      ],
+      "recommendedNights": 2,
       "priority": 1
     },
     {

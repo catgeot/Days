@@ -35,6 +35,26 @@ assert.ok(Array.isArray(fringe.highlights) && fringe.highlights.length >= 2, 'ed
 assert.ok(Array.isArray(fringe.stayAreas) && fringe.stayAreas.length >= 1, 'edinburgh stayAreas');
 assert.equal(fringe.recommendedNights, 4, 'edinburgh recommendedNights');
 
+/** @param {string} eventId @param {number} nights */
+function assertTier05(eventId, nights) {
+  const event = getWorldEventById(eventId);
+  assert.ok(event, `${eventId} present`);
+  assert.ok(event.detailOverview, `${eventId} has detailOverview`);
+  assert.ok(
+    Array.isArray(event.highlights) && event.highlights.length >= 2,
+    `${eventId} highlights`,
+  );
+  assert.ok(
+    Array.isArray(event.stayAreas) && event.stayAreas.length >= 1,
+    `${eventId} stayAreas`,
+  );
+  assert.equal(event.recommendedNights, nights, `${eventId} recommendedNights`);
+}
+
+assertTier05('munich-oktoberfest-2026', 3);
+assertTier05('vienna-staatsoper-season-2026', 3);
+assertTier05('amsterdam-kings-day-2027', 2);
+
 const appSrc = readFileSync(join(root, 'src/App.jsx'), 'utf8');
 assert.match(appSrc, /\/world-events\/:eventId/, 'App route for event detail');
 
