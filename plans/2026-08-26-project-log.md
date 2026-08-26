@@ -142,3 +142,9 @@
 - **조치** `8bad7636` — 누락 객체 헤더 복구 · Preview **Ready**
 - **재검증** `build` · `smoke:world-events` · `smoke:event-travel-guide` · `audit:event-travel-guide` PASS
 - **Preview** `https://www.gateo.kr/qa/world-events` · git `days-git-cursor-world-events-efa3-catgeots-projects.vercel.app`
+
+## 세계행사 일정 #14 — 권장 박수 섹션
+
+- **이슈** 사람 QA — 킹스데이 상세에 「권장 박수」섹션 없음(Hero 인라인 「권장 숙박」만)
+- **조치** `77e64e8c` — `EventDetailStaticPanel` 독립 섹션(제목 「권장 박수」) · 하이라이트 아래 배치
+- **VERIFY** `build` · `smoke:world-events-detail` PASS
