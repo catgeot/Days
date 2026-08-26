@@ -7,7 +7,7 @@
 
 | Phase | 내용 | 상태 |
 |-------|------|------|
-| **P0** | 공통 Event 스키마 · generate/audit · `tripWindow` | ⏳ 세션 #2–#3 |
+| **P0** | 공통 Event 스키마 · generate/audit · `tripWindow` | ✅ P0-b 완료 · P1 대기 |
 | **P1** | 국내 `/korea` ↔ 숙소·플래너·항공 날짜 브리지 | 세션 #4–#5 |
 | **P2** | 해외 SSOT · PlaceCard · `/world-events` | 세션 #6–#8 |
 | **P3** | **공식 피드(ICS/RSS) POC** · 통합 `/events` · 기타 API | 세션 #9 이후 · **§5.1** |
@@ -319,16 +319,16 @@ flowchart LR
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**다음 제시어** (세션 #3 — tripWindow):
+**다음 제시어** (세션 #4 — 축제→숙소):
 
 ```
-세계행사 일정 #3, P0-b — tripWindow
+세계행사 일정 #4, P1-a — 축제→숙소
 @plans/feature-handoff-index.md
 @plans/world-events-plan.md §10
 브랜치 cursor/world-events-efa3 · PR #150
-금지: UI 손대기 · worldEvents.json 직편집 · 세션 #3 범위 넘기기
+금지: 해외 overrides 대량 · UI 리디자인 · 세션 #4 범위 넘기기
 ```
 
-**읽을 것**: 본 파일 **§10 행 #3만** · `world-events-management.md` §1
+**읽을 것**: 본 파일 **§10 행 #4만** · `world-events-management.md` §1
 
-**VERIFY**: `smoke:trip-window-from-festival` · `build`
+**VERIFY**: `smoke:korea-festival-*` 확장 · `build`

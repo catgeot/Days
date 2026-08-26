@@ -18,24 +18,24 @@
 
 | | |
 |--|--|
-| **상태** | **P0-a 완료** — 스키마·generate·audit · 세션 #3 P0-b 대기 |
-| **다음 세션** | `#3 P0-b` tripWindow |
+| **상태** | **P0-b 완료** — tripWindow · TourAPI 어댑터 초안 · 세션 #4 P1-a 대기 |
+| **다음 세션** | `#4 P1-a` 축제→숙소 |
 | **브랜치** | `cursor/world-events-efa3` |
 | **PR** | #150 |
 | **플랜** | [`world-events-plan.md`](./world-events-plan.md) §10 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) |
 | **일지** | [`2026-08-26-project-log.md`](./2026-08-26-project-log.md) |
-| **VERIFY** | `audit:world-events` PASS · `build` PASS |
+| **VERIFY** | `smoke:trip-window-from-festival` PASS · `build` PASS |
 
 **다음 제시어**:
 
 ```
-세계행사 일정 #3, P0-b — tripWindow
+세계행사 일정 #4, P1-a — 축제→숙소
 @plans/feature-handoff-index.md
 @plans/world-events-plan.md §10
 브랜치 cursor/world-events-efa3 · PR #150
-금지: UI 손대기 · worldEvents.json 직편집 · 세션 #3 범위 넘기기
+금지: 해외 overrides 대량 · UI 리디자인 · 세션 #4 범위 넘기기
 ```
 
 ---
