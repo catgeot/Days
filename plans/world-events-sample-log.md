@@ -68,6 +68,8 @@
 - **라우트**: `/world-events/amsterdam-kings-day-2027`
 - **VERIFY**: `smoke:world-events-detail` PASS
 
+## v2 pivot — Preview QA 피드백 (#12 전)
+
 - **일시**: 2026-08-26
 - **피드백**: 장기 행사 TripWindow → 30박 숙소·항공 · 플래너에 행사 맥락 없음 · 상세 페이지 필요
 - **결정**: main 병합 **#18** · v2 플랜 착수 · **#12**부터 구현 (docs `main` 동기화 완료)
