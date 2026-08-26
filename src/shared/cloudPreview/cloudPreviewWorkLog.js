@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 5,
-  sessionPhase: 'P1-b 플래너·항공',
+  sessionNo: 6,
+  sessionPhase: 'P2-a SSOT Wave1',
   branch: 'cursor/world-events-efa3',
   previewPath: '/korea',
   qaShareSlug: null,
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-26-world-events-p2a-wave1-ssot',
+    session: '세계행사 일정 #6, P2-a — SSOT Wave1',
+    title: 'Wave1 해외 행사 overrides 15건',
+    detail:
+      'world-event-overrides.mjs에 Q3 확정 slug 15건(유럽·아시아·아메리카·오세아니아·니치) 대표 행사 SSOT 추가. generate·audit PASS. UI는 #7 PlaceCard부터.',
+    at: '2026-08-26',
+  },
   {
     id: '2026-08-26-world-events-p1a-festival-stay',
     session: '세계행사 일정 #4, P1-a — 축제→숙소',
