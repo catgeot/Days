@@ -21,7 +21,7 @@
 | **상태** | **v2 Phase B 완료** (#12) · **다음 #13 AI 가이드** (Phase C-0~1) |
 | **다음** | #13 AI 인프라 · edinburgh Tier3 1건 |
 | **브랜치** | `cursor/world-events-efa3` |
-| **PR** | [#152](https://github.com/catgeot/Days/pull/152) (v2 draft) |
+| **PR** | [#153](https://github.com/catgeot/Days/pull/153) (v2 draft) |
 | **main tip** | `66bd1791` — v2 docs 동기화 · P2 `d4fbca71` |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) · [`world-events-plan.md`](./world-events-plan.md) §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
@@ -42,7 +42,7 @@
 @plans/feature-handoff-index.md
 @plans/2026-08-26-project-log.md
 @plans/world-events-detail-ux-plan.md
-브랜치 cursor/world-events-efa3 · PR #152 · /world-events/edinburgh-fringe-2026
+브랜치 cursor/world-events-efa3 · PR #153 · /world-events/edinburgh-fringe-2026
 금지: 새 feature 브랜치 · worldEvents.json 직편집 · UI 리디자인 · 15건 일괄 AI pregen · #18 전 main 병합
 작업: Phase C-0~1 · update-event-travel-guide · edinburgh 1건만 · sample-log AI v0.1
 ```
