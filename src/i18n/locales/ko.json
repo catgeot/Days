@@ -1526,7 +1526,8 @@
     "typeGuide": "행사 유형 안내",
     "bookingHints": "예약·숙소 팁",
     "stayAreas": "추천 숙소 권역",
-    "recommendedNights": "권장 숙박 {{nights}}박 (행사 전체 기간이 아닌 짧은 방문 기준)",
+    "recommendedNightsTitle": "권장 박수",
+    "recommendedNightsBody": "{{nights}}박 · 행사 전체 기간이 아닌 짧은 방문 기준",
     "staticFallback": "상세 소개는 준비 중입니다. 공식 일정·여행지 카드·플래너 CTA를 이용해 주세요.",
     "type": {
       "festival": "축제",

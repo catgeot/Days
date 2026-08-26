@@ -1763,7 +1763,8 @@
     "typeGuide": "Event type guide",
     "bookingHints": "Booking & stay tips",
     "stayAreas": "Suggested stay areas",
-    "recommendedNights": "Suggested {{nights}} nights (short visit — not the full event span)",
+    "recommendedNightsTitle": "Suggested nights",
+    "recommendedNightsBody": "{{nights}} nights · short visit, not the full event span",
     "staticFallback": "Detailed copy is coming soon. Use official links, place cards, and planner CTAs for now.",
     "type": {
       "festival": "Festival",

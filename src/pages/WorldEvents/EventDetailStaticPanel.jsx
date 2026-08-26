@@ -61,12 +61,6 @@ export default function EventDetailStaticPanel({ event, locale, checkIn, checkOu
             ) : null}
           </span>
         </p>
-
-        {event.recommendedNights != null ? (
-          <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50/70 px-3 py-2 text-sm text-amber-950">
-            {t('worldEventDetail.recommendedNights', { nights: event.recommendedNights })}
-          </p>
-        ) : null}
       </section>
 
       {event.detailOverview ? (
@@ -87,6 +81,17 @@ export default function EventDetailStaticPanel({ event, locale, checkIn, checkOu
               <li key={item}>{item}</li>
             ))}
           </ul>
+        </section>
+      ) : null}
+
+      {event.recommendedNights != null ? (
+        <section className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
+          <h2 className="text-sm font-extrabold text-stone-900">
+            {t('worldEventDetail.recommendedNightsTitle')}
+          </h2>
+          <p className="mt-2 text-sm leading-relaxed text-stone-700">
+            {t('worldEventDetail.recommendedNightsBody', { nights: event.recommendedNights })}
+          </p>
         </section>
       ) : null}
 
