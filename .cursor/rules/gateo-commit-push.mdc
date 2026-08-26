@@ -1,0 +1,29 @@
+---
+description: 커밋·푸시 판단표(§1.5.3) — 허가 요청 금지·origin/main만 사람 요청
+alwaysApply: true
+---
+
+# 커밋·푸시 (§1.5.3)
+
+**SSOT**: [`.ai-context.md`](.ai-context.md) **§1.5.1~1.5.3** · [`AGENTS.md`](AGENTS.md)
+
+**배경**: 검증 없이 `origin/main` → Vercel PROD에 깨진 빌드가 올라간 사고. 게이트 = **검증 PASS**. 「커밋/푸시해도 될까요?」는 **폐기**.
+
+**한 줄**: 검증 통과면 **커밋은 묻지 않는다** · **Cloud feature push는 매 턴 필수** · **막히는 유일한 push = `origin/main`**.
+
+| 상황 | 로컬 commit | `git push` | 사람에게 묻기 | 사람 QA |
+|------|-------------|------------|---------------|---------|
+| 로직·SSOT·버그픽스 | 검증 PASS → **즉시** | feature **즉시** · main **로컬만** | **금지** | 기능 변경 시만 |
+| 문서·핸드오프·일지·규칙 | **즉시** | feature 동기화 시 · main 원격은 요청 시 | **금지** | **불필요** |
+| Cloud UI·Preview | 매 턴 | **매 턴 feature** (필수) | **금지** | Preview 링크 1~3줄 |
+| 로컬 UI 색·폰트 조율 | 사람 OK 후 1회 | — | 조율 **시작** 시만 | 확정 전 |
+| main → PROD | — | **사람 요청 시만** | push만(선택·세션 끝) | 병합·배포 전 |
+
+**에이전트 금지**
+
+- 「커밋해도 될까요」「push 허가」「main push 해도 될까요」— 게이트 통과 시 **묻지 않고 진행** (`origin/main`만 예외)
+- 문서-only 커밋에 **Preview QA 요청**
+- Cloud feature 턴을 **커밋·push 없이** 종료
+- FAIL·미검증 상태 커밋·push · `origin/main` 에이전트 push · force-push to main
+
+**Cloud feature 추가** (상세 [`cloud-preview-continuity.md`](plans/cloud-preview-continuity.md)): 고정 `cursor/…` 브랜치 · 동일 git Preview URL · `/qa/<slug>` · 세션 `{주제} #{N}, {단계}` · PR 없으면 생성.

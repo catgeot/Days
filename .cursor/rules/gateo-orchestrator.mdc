@@ -13,7 +13,7 @@ alwaysApply: false
 1. [`plans/orchestrator-method.md`](plans/orchestrator-method.md) — **§1 · §3.0 · §3.3 · §3.4 · §4.2** (+ 주제면 §5 / 정착지 §5.3)
 2. 명소: [`plans/city-attraction-hub-queue.md`](plans/city-attraction-hub-queue.md) **다음 ⬜ R** + 일지 핸드오프 1절만
 3. 정착지: [`plans/mapbox-settlement-queue.md`](plans/mapbox-settlement-queue.md) **다음 ⬜ R** + [`mapbox-settlement-plan.md`](plans/mapbox-settlement-plan.md)
-4. [`.ai-context.md`](.ai-context.md) — **1.5.1** 커밋 게이트 · 관련 금지 1~2줄
+4. [`.ai-context.md`](.ai-context.md) — **§1.5.3** · [`gateo-commit-push.mdc`](gateo-commit-push.mdc) · 관련 금지 1~2줄
 
 **전반 코드베이스 탐색·이전 워커 로그 전체 Read 금지.**
 
@@ -24,13 +24,13 @@ alwaysApply: false
 - **후임 메인**: 현 메인이 **Task로 기동**해 역할을 넘김 → **즉시** 워커 2 재기동 → 직렬 머지 → VERIFY → §3.4 커밋 → 재이관.  
   기본 **본인 런 금지**. 예외는 워커 1회 재시도 실패 시만 · 일지에 사유 1줄.
 
-## 커밋·PR (검증 게이트 · method §3.4)
+## 커밋·PR (§1.5.3 · method §3.4)
 
-- 게이트 = **VERIFY PASS**(audit+스모크). 요청 여부 아님. PASS면 사용자 요청 없이 **커밋 OK**.
+- 게이트 = **VERIFY PASS**. PASS면 **허가 요청 없이** 커밋·(Cloud) push · 「커밋해도 될까요」 **금지**.
 - 시점: 매 라운드 VERIFY 직후(권장) · **이관·턴 종료·사람 보고 전(필수)**.
-- **Cloud**: 커밋 + push + PR(없으면 생성 / 있으면 같은 PR에 push).
-- **로컬**: 커밋 필수 · push/PR은 핸드오프·원격 공유 시.
-- **금지**: VERIFY FAIL·미검증 tip 커밋 · `main` 직접 push · 워커가 commit/PR.
+- **Cloud**: 커밋 + **feature push** + PR(없으면 생성). **`origin/main` push는 사람 요청 시만**.
+- **로컬**: tip 커밋 필수 · feature/PR push는 핸드오프·Preview 시.
+- **금지**: VERIFY FAIL tip 커밋 · `origin/main` 에이전트 push · 워커가 commit/PR.
 
 ## 이관 = 지휘권 이양 (사람 제시어 대기 금지)
 

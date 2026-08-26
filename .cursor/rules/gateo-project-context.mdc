@@ -64,7 +64,8 @@ alwaysApply: true
 - **UI 임의 변경 금지** (`.ai-context` **§4.1 5**): 승인 없이 기존 버튼·레이아웃·톤·카피 교체 금지. **기능 추가 시에도 기존 비주얼 유지**(연결·동작만). 「커밋 보류」≠ 리디자인 허가
 - **브라우저/`computerUse` QA 금지** (`.ai-context` **§4.1 13** · **1.6**): `Task(computerUse)`·`RecordScreen`·화면 클릭 QA **기본 금지**. **사람 명시 요청 시에만**. 채팅명·일지 `… QA` = **사람 Preview** 단계(에이전트 실행 지시 아님). 에이전트 검증 = audit/smoke/`build` → push → `/qa/…`·Preview + 사람 체크 1~3줄
 - 사용자 명시 없이 `plans/`에 새 완료보고/대형 기획서 생성 금지
-- Git commit/push: **§1.5.3 판단표** — 검증 PASS면 **허가 요청 없이** commit · Cloud feature **매 턴 feature push** · 문서·핸드오프 **QA 없이** main 로컬 commit · **`origin/main` push만** 사람 요청 · force-push 금지 · 메시지 **한글**
+- Git commit/push: **[`gateo-commit-push.mdc`](gateo-commit-push.mdc)** · **§1.5.3** — 검증 PASS면 **허가 요청 없이** commit · Cloud feature **매 턴 feature push**+PR · 문서·핸드오프 **QA 없이** main 로컬 commit · **`origin/main` push만** 사람 요청 · **이어하기**=고정 브랜치·동일 git Preview URL·`/qa/<slug>` · force-push 금지 · 메시지 **한글**
+- **허가 요청 금지** (§4.1 14): 게이트 통과 시 「커밋/푸시해도 될까요」 **묻지 않음** — 유일 예외 `git push origin main`
 
 
 - **PowerShell `Set-Content`/`-replace`로 한글 `.jsx` 등 소스 일괄 수정 금지** — UTF-8·JSX 파손 (`.ai-context` 3절)
@@ -81,6 +82,6 @@ alwaysApply: true
 
 ## 세션 종료
 
-- **1.5.1**에 따라 커밋(해당하면 push) → 일지 2~5줄 → `.ai-context`는 **필요할 때만** 5~6절 최소 갱신
+- **§1.5.3**에 따라 커밋(해당하면 push) → 일지 2~5줄 → `.ai-context`는 **필요할 때만** 5~6절 최소 갱신 · `origin/main` push 필요 시 세션 끝 **한 줄 안내**만(매 턴 질문 금지)
 - **Cloud feature**: [`feature-handoff-index.md`](plans/feature-handoff-index.md) 행 + 플랜 §9 + **§1.2 다음 제시어**(핀 3개) · [`cloud-preview-continuity.md`](plans/cloud-preview-continuity.md) §6 main 문서 동기화 검토
 - 릴리스 노트: **새 기능·중대 업데이트만** 초안 제안 → 합의 후 `releaseNotes.js` (`.ai-context` **1.7**). 버그픽스·미세 UI·SSOT 채움은 **묻지 않음**
