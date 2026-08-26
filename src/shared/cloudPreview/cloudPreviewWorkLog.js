@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
   sessionNo: 9,
-  sessionPhase: '통합 smoke·핸드오프',
+  sessionPhase: '홈 진입 링크',
   branch: 'cursor/world-events-efa3',
   previewPath: '/world-events',
   qaShareSlug: 'world-events',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-26-world-events-home-entry',
+    session: '세계행사 일정 #9, 홈 진입 링크',
+    title: '홈 「한국의 축제」 아래 「세계의 행사」',
+    detail:
+      '홈 좌상단 바로가기(모바일·PC)에 「세계의 행사」 칩을 「한국의 축제」 바로 아래에 추가했습니다. Preview 홈에서 칩을 눌러 /world-events 로 들어가는지 확인해 주세요.',
+    at: '2026-08-26',
+  },
   {
     id: '2026-08-26-world-events-p2-mvp-smoke',
     session: '세계행사 일정 #9, 통합 smoke·핸드오프',

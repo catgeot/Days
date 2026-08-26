@@ -65,3 +65,10 @@
 - **산출** `smoke:world-events` · `smoke:world-events-hub` 통합 스크립트 · `world-events-management.md` §6·§6.1 QA 체크리스트
 - **VERIFY** `smoke:world-events` · `build` PASS
 - **다음** 사람 Preview QA → PR #150 병합 · 선택 #10 P1.5 또는 P3
+
+## 세계행사 일정 #9 — 홈 진입 링크
+
+- **세션** `세계행사 일정 #9, 홈 진입 링크`
+- **브랜치** `cursor/world-events-efa3` · PR #150
+- **산출** 홈 `HomeUI` 바로가기 「세계의 행사」(`/world-events`) — 「한국의 축제」 바로 아래
+- **VERIFY** `smoke:world-events-hub` · `build` PASS
