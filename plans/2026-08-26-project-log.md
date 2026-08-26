@@ -104,4 +104,5 @@
 
 ## 운영 — 푸시·커밋 규칙 정리
 
-- **규칙 SSOT**: `.ai-context` **§1.5.3** · `AGENTS.md`
+- **규칙 SSOT**: `.ai-context` **§1.5.3** · `AGENTS.md` · `.cursor/rules/gateo-commit-push.mdc`
+- **Cursor User Rule** `16942118` §1.5.3 동기화 · **main** `2213a78b`+ push (사람 요청)
