@@ -447,7 +447,13 @@ export function getMrtSearchUrl(query) {
  * 플래너 숙소 툴킷(지역별·한인민박) — 장소카드「숙소 찾기」목록과 동일 패턴.
  *
  * @param {string} query
- * @param {{ isDomestic?: boolean }} [options]
+ * @param {{
+ *   isDomestic?: boolean,
+ *   checkIn?: string,
+ *   checkOut?: string,
+ *   adultCount?: number,
+ *   childCount?: number,
+ * }} [options]
  * @returns {string}
  */
 export function getMrtAccommodationSearchUrl(query, options = {}) {
@@ -456,6 +462,10 @@ export function getMrtAccommodationSearchUrl(query, options = {}) {
   const url = buildMrtStayListUrl({
     keyword,
     isDomestic: Boolean(options.isDomestic),
+    checkIn: options.checkIn,
+    checkOut: options.checkOut,
+    adultCount: options.adultCount,
+    childCount: options.childCount,
     mylinkId: MRT_HOME_MYLINK_ID,
   });
   return url || getMrtHomeAffiliateUrl();

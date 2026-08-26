@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '영문화',
-  sessionNo: 24,
-  sessionPhase: 'PROD QA — 브라우저 locale',
-  branch: 'cursor/en',
-  previewPath: '/',
-  qaShareSlug: 'en',
+  title: '세계행사 일정',
+  sessionNo: 4,
+  sessionPhase: 'P1-a 축제→숙소',
+  branch: 'cursor/world-events-efa3',
+  previewPath: '/korea',
+  qaShareSlug: null,
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-26-world-events-p1a-festival-stay',
+    session: '세계행사 일정 #4, P1-a — 축제→숙소',
+    title: '축제 상세 MRT 숙소 URL TripWindow',
+    detail:
+      '/korea 축제 상세 「숙소」 CTA가 tripWindowFromTourApiFestival checkIn/checkOut을 MRT union/products URL에 넘깁니다. Preview /korea → 축제 1건 → 숙소 링크 URL에 행사 맞춤 날짜를 확인해 주세요.',
+    at: '2026-08-26',
+  },
   {
     id: '2026-08-20-i18n-browser-locale-prod-qa',
     session: '영문화 #24, PROD QA — 브라우저 locale',

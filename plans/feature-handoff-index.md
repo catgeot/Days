@@ -18,24 +18,24 @@
 
 | | |
 |--|--|
-| **상태** | **P0-b 완료** — tripWindow · TourAPI 어댑터 초안 · 세션 #4 P1-a 대기 |
-| **다음 세션** | `#4 P1-a` 축제→숙소 |
+| **상태** | **P1-a 완료** — 축제 상세 MRT 숙소 TripWindow · 세션 #5 P1-b 대기 |
+| **다음 세션** | `#5 P1-b` 플래너·항공 |
 | **브랜치** | `cursor/world-events-efa3` |
 | **PR** | #150 |
 | **플랜** | [`world-events-plan.md`](./world-events-plan.md) §10 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) |
 | **일지** | [`2026-08-26-project-log.md`](./2026-08-26-project-log.md) |
-| **VERIFY** | `smoke:trip-window-from-festival` PASS · `build` PASS |
+| **VERIFY** | `smoke:korea-festival-stay-url` · `smoke:korea-festival-nearby` · `build` PASS |
 
 **다음 제시어**:
 
 ```
-세계행사 일정 #4, P1-a — 축제→숙소
+세계행사 일정 #5, P1-b — 플래너·항공
 @plans/feature-handoff-index.md
 @plans/world-events-plan.md §10
 브랜치 cursor/world-events-efa3 · PR #150
-금지: 해외 overrides 대량 · UI 리디자인 · 세션 #4 범위 넘기기
+금지: 해외 overrides 대량 · UI 리디자인 · 세션 #5 범위 넘기기
 ```
 
 ---

@@ -95,7 +95,10 @@ assert(
   sheetSrc.includes('fetchNearbyTourAttractions'),
   'FestivalDetailSheet imports fetchNearbyTourAttractions',
 );
-assert(sheetSrc.includes('주변 관광지'), 'FestivalDetailSheet shows 주변 관광지');
+assert(
+  sheetSrc.includes('nearEyebrowAttraction'),
+  'FestivalDetailSheet shows nearby attractions eyebrow (i18n)',
+);
 assert(
   sheetSrc.includes('nearbyPlaceLabel') || sheetSrc.includes('locality'),
   'FestivalDetailSheet shows locality not only broad region',
@@ -114,8 +117,8 @@ assert(
   'FestivalDetailSheet lists scenic spots for festival region',
 );
 assert(
-  sheetSrc.includes('인근 명승지'),
-  'FestivalDetailSheet shows 인근 명승지 (not hub place cards)',
+  sheetSrc.includes('nearScenic'),
+  'FestivalDetailSheet shows near scenic section (i18n)',
 );
 assert(
   sheetSrc.includes('/korea/theme/scenic'),
@@ -126,8 +129,8 @@ assert(
   'FestivalDetailSheet falls back to addr1 sido when areaCode missing',
 );
 assert(
-  !sheetSrc.includes('onOpenHub'),
-  'FestivalDetailSheet no longer opens place cards via hub',
+  !/\bonOpenHub\s*\(/.test(sheetSrc),
+  'FestivalDetailSheet does not invoke onOpenHub for hub cards',
 );
 
 const yeongwolCode = detectSidoCode('강원특별자치도 영월군 영월읍 하송리');

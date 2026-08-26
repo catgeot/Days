@@ -56,6 +56,7 @@ import {
 import { resolveFestivalThemeCrossLinks } from '../Home/lib/koreaThemeCrossLinks';
 import { pushThemeNavBack } from '../Home/lib/koreaThemeNavBack';
 import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
+import { tripWindowFromTourApiFestival } from './worldEventFromTourApiFestival';
 import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
 import { festivalLngLat } from './koreaFestivalCorridors';
 import { detectSidoCode } from './festivalRegionTags';
@@ -413,9 +414,16 @@ export default function FestivalDetailSheet({
     [item, festivalAreaCode, scenicRegion],
   );
 
+  const festivalTripWindow = useMemo(
+    () => tripWindowFromTourApiFestival(item),
+    [item],
+  );
+
   const festivalStayHref = festivalCross?.stay?.keyword
     ? getMrtAccommodationSearchUrl(festivalCross.stay.keyword, {
         isDomestic: true,
+        checkIn: festivalTripWindow?.checkIn,
+        checkOut: festivalTripWindow?.checkOut,
       })
     : '';
   const festivalTnaHref = festivalCross?.tna?.keyword

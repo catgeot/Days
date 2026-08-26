@@ -66,6 +66,7 @@
     "smoke:korea-scenic-personal": "node scripts/smoke-korea-scenic-personal.mjs",
     "smoke:korea-scenic-map": "node scripts/smoke-korea-scenic-map.mjs",
     "smoke:korea-festival-nearby": "node scripts/smoke-korea-festival-nearby.mjs",
+    "smoke:korea-festival-stay-url": "node scripts/smoke-korea-festival-stay-url.mjs",
     "smoke:festival-detail-locale": "node scripts/smoke-festival-detail-locale.mjs",
     "smoke:scenic-detail-locale": "node scripts/smoke-scenic-detail-locale.mjs",
     "smoke:korea-nearby-restaurants": "node scripts/smoke-korea-nearby-restaurants.mjs",

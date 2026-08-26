@@ -319,14 +319,14 @@ flowchart LR
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**다음 제시어** (세션 #4 — 축제→숙소):
+**다음 제시어** (세션 #5 — 플래너·항공):
 
 ```
-세계행사 일정 #4, P1-a — 축제→숙소
+세계행사 일정 #5, P1-b — 플래너·항공
 @plans/feature-handoff-index.md
 @plans/world-events-plan.md §10
 브랜치 cursor/world-events-efa3 · PR #150
-금지: 해외 overrides 대량 · UI 리디자인 · 세션 #4 범위 넘기기
+금지: 해외 overrides 대량 · UI 리디자인 · 세션 #5 범위 넘기기
 ```
 
 **읽을 것**: 본 파일 **§10 행 #4만** · `world-events-management.md` §1
