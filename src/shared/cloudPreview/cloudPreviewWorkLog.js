@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 14,
-  sessionPhase: '샘플2~4 munich·vienna·amsterdam',
+  sessionNo: 15,
+  sessionPhase: '샘플5~8 tokyo·kyoto·bangkok·bali',
   branch: 'cursor/world-events-efa3',
-  previewPath: '/world-events/amsterdam-kings-day-2027',
+  previewPath: '/world-events/tokyo-sakura-season-2027',
   qaShareSlug: 'world-events',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-26-world-events-tier05-tokyo-kyoto-bangkok-bali',
+    session: '세계행사 일정 #15, 샘플5~8 tokyo·kyoto·bangkok·bali',
+    title: 'Tier0.5 · tokyo·kyoto·bangkok·bali',
+    detail:
+      'sample #5~#8: world-event-overrides Tier0.5(detailOverview·highlights·stayAreas·recommendedNights). tokyo 4박(season·개화 변동)·kyoto 3박(요이야마 피크)·bangkok 3박(3일)·bali 4박(갈룽안 시즌). Preview /qa/world-events → 아시아 칩 → 도쿄 벚꽃·기온마츠리·송크란·갈룽안 「행사 상세」→ 개요·하이라이트·숙소 권역·권장 박수 확인.',
+    at: '2026-08-26',
+  },
   {
     id: '2026-08-26-world-events-ai-guide-munich-vienna-amsterdam',
     session: '세계행사 일정 #14, 샘플2~4 munich·vienna·amsterdam',
