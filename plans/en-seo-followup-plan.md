@@ -264,25 +264,25 @@ npm run audit:gsc-baseline            # filled outputs CSV gate (#22)
 
 ## 9. 핸드오ff
 
-**세션** `검색노출 #23, GSC baseline audit — 로컬/Cloud 분리`  
+**세션** `검색노출 #24, RSS·canonical (선택) — 에이전트 세션표 마무리`  
 **main** 최신 · 일지 [`2026-08-25-project-log.md`](./2026-08-25-project-log.md)  
 **인덱스** [`feature-handoff-index.md`](./feature-handoff-index.md) 「검색노출」행
 
 | | |
 |--|--|
-| **완료 (#23)** | Cloud VM audit 0/173 = **정상**(outputs gitignore · 로컬 CSV 미공유) · 핸드오프에 **사람 로컬 전용** 명시 |
-| **에이전트 VERIFY** | `smoke:gsc-baseline` · `smoke:gsc-baseline-prod` · `audit:place-seo-en` · `build` |
-| **사람 로컬** | GSC 173건 기록 → `npm run audit:gsc-baseline` PASS (또는 `GSC_BASELINE_CSV=…`) |
-| **잔여** | #9 RSS·canonical(선택) · `/en/` prefix(합의 후) |
+| **완료 (#24)** | `smoke:rss-canonical` PASS · KO/EN RSS 50 item · gallery canonical · bilingual alternate · sitemap **1133 URL** `lastmod` 갱신 |
+| **제출 (사람)** | **Sitemap** `https://www.gateo.kr/sitemap.xml` · **RSS KO** `https://www.gateo.kr/rss.xml` · **RSS EN** `https://www.gateo.kr/rss-en.xml` |
+| **에이전트 VERIFY** | `smoke:rss-canonical` · `smoke:gsc-baseline` · `smoke:gsc-baseline-prod` · `audit:place-seo-en` · `build` |
+| **사람 로컬** | GSC 173건 baseline CSV · 네이버·GSC sitemap/RSS 제출 |
+| **백로그** | `/en/` URL prefix — [`i18n-en-plan.md`](./i18n-en-plan.md) 2차 URL과 **합의 후** |
 
-**다음 제시어**:
+**다음 제시어** (백로그):
 
 ```
-검색노출 #24, RSS·canonical (선택)
+검색노출 #25, /en/ URL prefix (합의 후)
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
-@plans/2026-08-25-project-log.md
-main · smoke:rss-canonical · bilingual RSS
+/en/ prefix 합의 · i18n-en-plan 2차 URL과 동기
 ```
 
 **사람 GSC (로컬 PC — Cloud 세션 불필요)**:

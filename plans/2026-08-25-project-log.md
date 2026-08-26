@@ -243,3 +243,11 @@
 - **조치**: 핸드오ff·audit HINT에 로컬/Cloud 분리 · `GSC_BASELINE_CSV` env 지원
 - **사람 로컬**: GSC 173건 기록 후 `npm run audit:gsc-baseline` (173/173)
 - **다음**: `검색노출 #24, RSS·canonical (선택)`
+
+## 검색노출 #24 — RSS·canonical 재점검 (2026-08-26)
+
+- **범위**: #9 산출 재확인(선택) · 에이전트 세션표 **마지막 점검**
+- **VERIFY**: `smoke:rss-canonical` PASS — KO/EN RSS 50 item · gallery canonical · bilingual alternate
+- **sitemap**: `generate:sitemap` — **1133 URL** · `lastmod` 2026-08-26
+- **사람 제출**: GSC·네이버 서치어드바이저 — `sitemap.xml` · `rss.xml`(KO) · `rss-en.xml`(EN, 선택)
+- **잔여**: GSC baseline CSV(로컬) · `/en/` prefix(합의 후)

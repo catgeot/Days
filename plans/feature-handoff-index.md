@@ -40,22 +40,21 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 
 | | |
 |--|--|
-| **상태** | **#23 GSC baseline — 로컬/Cloud 분리 확정** · audit PASS = **사람 로컬 only** |
+| **상태** | **#24 RSS·canonical 재점검 PASS** · 에이전트 세션표 **완료** · 잔여 = 사람 GSC baseline · `/en/` prefix(합의 후) |
 | **브랜치** | **`main`** |
-| **main** | `4e2e5f3b` |
 | **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §9 |
 | **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
-| **에이전트 VERIFY** | `smoke:gsc-baseline` · `smoke:gsc-baseline-prod` · `audit:place-seo-en` · `build` |
-| **사람 로컬 (#23)** | GSC 173건 → `scripts/outputs/gsc-seo-baseline.csv` · `npm run audit:gsc-baseline` (Cloud VM과 **미공유**) |
+| **제출 URL** | Sitemap `https://www.gateo.kr/sitemap.xml` (1133 URL) · RSS KO `https://www.gateo.kr/rss.xml` · RSS EN `https://www.gateo.kr/rss-en.xml` · `robots.txt`에 sitemap 선언됨 |
+| **에이전트 VERIFY** | `smoke:rss-canonical` · `smoke:gsc-baseline` · `smoke:gsc-baseline-prod` · `audit:place-seo-en` · `build` |
+| **사람** | GSC·네이버 서치어드바이저 sitemap/RSS 제출 · GSC 173건 baseline CSV(로컬 only) |
 
-**다음 제시어**:
+**다음 제시어** (백로그·합의 후):
 
 ```
-검색노출 #24, RSS·canonical (선택)
+검색노출 #25, /en/ URL prefix (합의 후)
 @plans/feature-handoff-index.md
 @plans/en-seo-followup-plan.md
-@plans/2026-08-25-project-log.md
-main · smoke:rss-canonical · bilingual RSS
+/en/ prefix 합의 · i18n-en-plan 2차 URL과 동기
 ```
 
 ---
