@@ -18,11 +18,11 @@
 
 | | |
 |--|--|
-| **상태** | **v2 #15 완료** — Tier0.5 tokyo·kyoto·bangkok·bali · smoke 8건 assert · 다음 #16 샘플9~12+위젯 |
-| **다음** | #16 rio·nyc·iceland·sydney Tier0.5 + Phase D in-page 위젯 |
+| **상태** | **v2 #16 완료** — Phase D EventStayStrip · 샘플9~12 Tier0.5 · visitPresets · edinburgh CTA cap |
+| **다음** | #17 prague·marrakech·hanoi Tier0.5 · 15 URL smoke · Mooni FAB |
 | **브랜치** | `cursor/world-events-efa3` |
 | **PR** | [#153](https://github.com/catgeot/Days/pull/153) (v2 draft) |
-| **feature tip** | `6d707772` — #15 샘플5~8 Tier0.5 |
+| **feature tip** | `e165c4c5` — #16 Phase D · 샘플9~12 |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) · [`world-events-plan.md`](./world-events-plan.md) §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) §6.1 |
@@ -35,16 +35,16 @@
 **P2 MVP (main)**: Wave1 15건 · PlaceCard · `/world-events` 허브 · TripWindow 프리셋 · 홈 진입  
 **v2 (브랜치)**: `/world-events/:eventId` · Tier0~2 · 샘플 15건 · **v2 델타 main 병합 = #18**
 
-**다음 제시어** (#16):
+**다음 제시어** (#17):
 
 ```
-세계행사 일정 #16, 샘플9~12 · in-page 숙소항공
+세계행사 일정 #17, 샘플13~15 · 위젯 마감
 @plans/feature-handoff-index.md
 @plans/2026-08-26-project-log.md
 @plans/world-events-detail-ux-plan.md
-브랜치 cursor/world-events-efa3 · PR #153 · /world-events/rio-carnival-2027
-금지: 새 feature 브랜치 · worldEvents.json 직편집 · UI 리디자인 · 행사 전체 span CTA · #18 전 main 병합
-작업: Phase D · EventStayStrip · StayRangeCalendar · sample #9~#12 · edinburgh 위젯 회귀
+브랜치 cursor/world-events-efa3 · PR #153 · /world-events/hanoi-tet-2027
+금지: 새 feature 브랜치 · worldEvents.json 직편집 · UI 리디자인 · Wave2 overrides
+작업: sample #13 prague #14 marrakech #15 hanoi · 15 URL 전건 smoke · Mooni FAB
 ```
 
 ---

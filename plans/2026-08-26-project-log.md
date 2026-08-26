@@ -171,3 +171,13 @@
 - **VERIFY** `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
 - **Preview** `/qa/world-events` → 아시아 칩 → 4건 「행사 상세」
 - **다음** #16 sample #9~#12 + Phase D in-page 위젯
+
+## 세계행사 일정 #16 — Phase D · 샘플9~12
+
+- **세션** `세계행사 일정 #16, 샘플9~12 · in-page 숙소항공`
+- **브랜치** `cursor/world-events-efa3` · PR #153 · tip `e165c4c5`
+- **산출** `EventStayStrip` · `StayRangeCalendar` · `eventVisitWindows` visitPresets · CTA maxNights cap · rio·nyc·iceland·sydney Tier0.5
+- **회귀** `GlobeStayStrip` HomePlaceCardSummary 유지 · edinburgh tripWindow 4박 cap (전체 span CTA 제거)
+- **VERIFY** `smoke:world-events` · `smoke:world-events-detail` · `smoke:trip-window-edinburgh` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/rio-carnival-2027` · 내 여행 일정·숙소 스트립
+- **다음** #17 sample #13~#15 · 위젯 마감
