@@ -110,3 +110,11 @@
 ## 운영 — 로직=feature · 문서=main 워크플로 도입
 
 - **도입**: `docs-on-main-workflow.md` · §1.5.4 · Cloud §6 **필수**화 · docs-only `origin/main` push = feature 세션 종료 시 즉시
+
+## 세계행사 일정 #12 — Phase B 상세 셸 · 샘플 #1 edinburgh
+
+- **세션** `세계행사 일정 #12, 상세 셸 · 샘플1 edinburgh`
+- **브랜치** `cursor/world-events-efa3` · PR #153
+- **산출** `/world-events/:eventId` · `EventDetailPage` · `EventDetailStaticPanel` · schema Tier0.5 · edinburgh overrides · `smoke:world-events-detail` · 허브·PlaceCard 「행사 상세」
+- **VERIFY** `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **다음** #13 Phase C-0~1 AI 가이드 · edinburgh 1건
