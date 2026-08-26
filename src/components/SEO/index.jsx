@@ -5,14 +5,40 @@ import { useLocation } from 'react-router-dom';
 
 import { useLocale } from '../../i18n/LocaleProvider';
 import { buildHreflangAlternates, buildLocalePageUrl } from '../../i18n/seoUrls';
+import { getLocalizedPlaceName } from '../PlaceCard/common/locationDisplay';
+import {
+  DEFAULT_OG_IMAGE,
+  buildPlaceGalleryJsonLd,
+  resolvePlaceOgImageUrl,
+} from '../../pages/Home/lib/placeSeoOg.js';
+
+const SCHEMA_TYPES = {
+  TOURIST_ATTRACTION: 'TouristAttraction',
+  IMAGE_GALLERY: 'ImageGallery',
+};
+
+function upsertJsonLdScript(schemaType, schema) {
+  const selector = `script[data-schema-type="${schemaType}"]`;
+  document.querySelector(selector)?.remove();
+  if (!schema) return;
+
+  const script = document.createElement('script');
+  script.type = 'application/ld+json';
+  script.setAttribute('data-schema-type', schemaType);
+  script.textContent = JSON.stringify(schema, null, 2);
+  document.head.appendChild(script);
+}
 
 const SEO = ({
   title,
   description,
+  keywords,
   url,
   image,
   type = 'website',
   location = null,
+  tab = null,
+  galleryImages = null,
 }) => {
   const { t } = useTranslation();
   const { locale } = useLocale();
@@ -21,31 +47,55 @@ const SEO = ({
   const siteName = 'GATEO';
   const defaultTitle = t('seo.defaultTitle');
   const defaultDescription = t('seo.defaultDescription');
-  const defaultImage = 'https://www.gateo.kr/og-image.png';
+  const defaultKeywords = t('seo.defaultKeywords');
 
   const pagePath = url ?? pathname ?? '/';
   const seoTitle = title ? `${title} | ${siteName}` : defaultTitle;
   const seoDescription = description || defaultDescription;
+  const seoKeywords = keywords || defaultKeywords;
   const seoUrl = buildLocalePageUrl(pagePath, locale);
-  const seoImage = image || defaultImage;
+  const isGalleryTab = tab === 'gallery';
+  const resolvedOgImage = useMemo(() => {
+    if (image) return image;
+    if (location) {
+      return isGalleryTab
+        ? resolvePlaceOgImageUrl(location, galleryImages)
+        : resolvePlaceOgImageUrl(location, null);
+    }
+    return DEFAULT_OG_IMAGE;
+  }, [image, location, isGalleryTab, galleryImages]);
+  const seoImage = resolvedOgImage || DEFAULT_OG_IMAGE;
   const hreflangAlternates = useMemo(() => buildHreflangAlternates(pagePath), [pagePath]);
   const ogLocale = locale === 'en' ? 'en_US' : 'ko_KR';
   const ogLocaleAlternate = locale === 'en' ? 'ko_KR' : 'en_US';
 
-  const generateTouristAttractionSchema = () => {
+  const displayName = useMemo(() => {
+    if (!location) return '';
+    return (
+      getLocalizedPlaceName(location, locale) ||
+      location.name ||
+      location.destination ||
+      location.name_en ||
+      ''
+    );
+  }, [location, locale]);
+
+  const touristAttractionSchema = useMemo(() => {
     if (!location) return null;
 
     const schema = {
       '@context': 'https://schema.org',
-      '@type': 'TouristAttraction',
-      name: location.name || location.destination || location.name_en,
+      '@type': SCHEMA_TYPES.TOURIST_ATTRACTION,
+      name: displayName,
       description: seoDescription,
       url: seoUrl,
       image: seoImage,
     };
 
-    if (location.name_en && location.name_en !== schema.name) {
+    if (location.name_en && location.name_en !== displayName) {
       schema.alternateName = location.name_en;
+    } else if (location.name && location.name !== displayName) {
+      schema.alternateName = location.name;
     }
 
     if (location.lat && location.lng) {
@@ -86,38 +136,41 @@ const SEO = ({
     }
 
     return schema;
-  };
+  }, [location, displayName, seoDescription, seoUrl, seoImage, locale]);
 
-  const jsonLdSchema = generateTouristAttractionSchema();
+  const gallerySchema = useMemo(() => {
+    if (!isGalleryTab || !location || !galleryImages?.length) return null;
+    return buildPlaceGalleryJsonLd({
+      placeName: displayName,
+      description: seoDescription,
+      pageUrl: seoUrl,
+      galleryImages,
+      locale,
+    });
+  }, [isGalleryTab, location, galleryImages, displayName, seoDescription, seoUrl, locale]);
 
   useEffect(() => {
-    if (!jsonLdSchema) return;
-
-    const existingScript = document.querySelector('script[data-schema-type="TouristAttraction"]');
-    if (existingScript) {
-      existingScript.remove();
-    }
-
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.setAttribute('data-schema-type', 'TouristAttraction');
-    script.textContent = JSON.stringify(jsonLdSchema, null, 2);
-
-    document.head.appendChild(script);
-
+    upsertJsonLdScript(SCHEMA_TYPES.TOURIST_ATTRACTION, touristAttractionSchema);
     return () => {
-      const scriptToRemove = document.querySelector('script[data-schema-type="TouristAttraction"]');
-      if (scriptToRemove) {
-        scriptToRemove.remove();
-      }
+      document
+        .querySelector(`script[data-schema-type="${SCHEMA_TYPES.TOURIST_ATTRACTION}"]`)
+        ?.remove();
     };
-  }, [jsonLdSchema]);
+  }, [touristAttractionSchema]);
+
+  useEffect(() => {
+    upsertJsonLdScript(SCHEMA_TYPES.IMAGE_GALLERY, gallerySchema);
+    return () => {
+      document.querySelector(`script[data-schema-type="${SCHEMA_TYPES.IMAGE_GALLERY}"]`)?.remove();
+    };
+  }, [gallerySchema]);
 
   return (
     <Helmet>
       <html lang={locale} />
       <title>{seoTitle}</title>
       <meta name="description" content={seoDescription} />
+      <meta name="keywords" content={seoKeywords} />
 
       <link rel="canonical" href={seoUrl} />
       {hreflangAlternates.map((alt) => (

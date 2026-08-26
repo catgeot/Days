@@ -88,3 +88,12 @@
 - **사람 QA** `/qa/world-events` → 유럽 칩 → 에든버러 프린지 「여행지 카드」 `fromEvent=edinburgh-fringe-2026` · §6.1 `/korea`·`/place/vienna`
 - **다음** QA OK → PR #150 병합 · 선택 #11 P1.5 또는 P3-a
 - **다음** 사람 Preview QA(Q12) · PR #150 병합
+
+## 세계행사 일정 #11 — PR #150 main 병합
+
+- **세션** `세계행사 일정 #11, PR #150 병합`
+- **브랜치** `cursor/world-events-efa3` → **main** · PR #150 merge
+- **충돌** `PlaceGalleryView`(useLocale+PlaceWorldEventsSection) · `vite.config` · `2026-08-25-project-log` — 해결 후 main rebase
+- **P2 MVP** Wave1 15건 · PlaceCard · `/world-events` · TripWindow 프리셋 · 홈 진입 — **완료**
+- **VERIFY** `smoke:world-events` · `smoke:trip-window-edinburgh` · `build` PASS
+- **다음** PROD 배포 후 QA · 선택 P3-a(공식 피드 POC) 또는 P1.5(Q9)

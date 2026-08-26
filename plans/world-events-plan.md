@@ -319,17 +319,25 @@ flowchart LR
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**다음 제시어** (QA OK 후 병합):
+**상태 (2026-08-26)**: **P2 MVP 완료** · PR #150 main 병합 · Preview QA 통과
+
+| Phase | 결과 |
+|-------|------|
+| **P0** | `tripWindow` · generate/audit PASS |
+| **P1** | `/korea` 축제 → MRT·플래너 TripWindow |
+| **P2** | Wave1 15건 · PlaceCard · `/world-events` · 홈 진입 · TripWindow 프리셋 |
+
+**다음 제시어** (PROD QA 또는 P3-a):
 
 ```
-세계행사 일정 #11, PR #150 병합
+세계행사 일정 #12, PROD QA
 @plans/feature-handoff-index.md
 @plans/2026-08-26-project-log.md
 @plans/world-events-plan.md
-브랜치 main · PR #150 merge · P2 MVP 완료 확인
+main · www.gateo.kr/world-events · /place/vienna · /korea
 금지: Wave2 · worldEvents.json 직편집 · UI 리디자인
 ```
 
 **읽을 것**: [`world-events-management.md`](./world-events-management.md) **§6.1 QA 체크리스트**
 
-**VERIFY (#10)**: `smoke:world-events` · `smoke:trip-window-edinburgh` · `build` PASS · PR #150 CI SUCCESS · **사람 QA** `/world-events`(에든버러) · `/place/vienna` · `/korea`
+**VERIFY**: `smoke:world-events` · `smoke:trip-window-edinburgh` · `build` PASS

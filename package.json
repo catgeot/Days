@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "set BROWSER=chrome&& vite",
     "dev:http": "set DEV_SSL=0&& set BROWSER=chrome&& vite",
-    "build": "vite build && node scripts/verify-globe-engine-build.mjs",
+    "build": "node scripts/generate-sitemap.cjs && vite build && node scripts/verify-sitemap-dist.mjs && node scripts/verify-rss-dist.mjs && node scripts/verify-globe-engine-build.mjs && node scripts/generate-place-og-images.mjs && node scripts/generate-crawler-place-meta.mjs",
+    "generate:sitemap": "node scripts/generate-sitemap.cjs",
+    "generate:index-static-links": "node scripts/generate-index-static-links.mjs",
+    "generate:gsc-baseline": "node scripts/generate-gsc-baseline-template.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "audit:airports": "node scripts/audit-rental-airports.mjs",
@@ -84,6 +87,15 @@
     "smoke:flight-route-baseline": "node scripts/smoke-flight-route-baseline.mjs",
     "smoke:flight-origin-gateway": "node scripts/smoke-flight-origin-gateway.mjs",
     "smoke:place-label-slug": "node scripts/smoke-place-label-slug.mjs",
+    "audit:place-seo-en": "node scripts/audit-place-seo-en.mjs",
+    "audit:gsc-baseline": "node scripts/audit-gsc-baseline.mjs",
+    "smoke:place-seo-en": "node scripts/smoke-place-seo-en.mjs",
+    "smoke:rss-canonical": "node scripts/smoke-rss-canonical.mjs",
+    "smoke:gsc-baseline": "node scripts/smoke-gsc-baseline.mjs",
+    "smoke:gsc-baseline-prod": "node scripts/smoke-gsc-baseline-prod.mjs",
+    "generate:crawler-place-meta": "node scripts/generate-crawler-place-meta.mjs",
+    "generate:place-og-images": "node scripts/generate-place-og-images.mjs",
+    "smoke:crawler-place-meta": "node scripts/smoke-crawler-place-meta.mjs",
     "smoke:essential-guide-locale": "node scripts/smoke-essential-guide-locale.mjs",
     "smoke:browser-locale-hint": "node scripts/smoke-browser-locale-hint.mjs",
     "smoke:curation-place-bridge": "node scripts/smoke-curation-place-bridge.mjs",
@@ -175,7 +187,6 @@
     "pg": "^8.22.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
-    "vite": "^7.2.4",
-    "vite-plugin-sitemap": "^0.8.2"
+    "vite": "^7.2.4"
   }
 }

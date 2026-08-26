@@ -18,25 +18,25 @@
 
 | | |
 |--|--|
-| **상태** | **#10 VERIFY PASS** — `smoke:world-events` · `smoke:trip-window-edinburgh` · `build` · CI — **사람 Preview QA(Q12) 대기** |
-| **다음** | QA OK → PR #150 병합 · 선택 #11 P1.5(Q9) 또는 P3-a |
-| **브랜치** | `cursor/world-events-efa3` |
-| **PR** | #150 |
-| **플랜** | [`world-events-plan.md`](./world-events-plan.md) §10 |
+| **상태** | **P2 MVP 완료** · PR #150 **main 병합** · PROD 배포 후 QA |
+| **main** | PR #150 merge 후 SHA 확인 |
+| **플랜** | [`world-events-plan.md`](./world-events-plan.md) §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
-| **운영** | [`world-events-management.md`](./world-events-management.md) |
+| **운영** | [`world-events-management.md`](./world-events-management.md) §6.1 |
 | **일지** | [`2026-08-26-project-log.md`](./2026-08-26-project-log.md) |
-| **Preview** | `https://www.gateo.kr/qa/world-events` |
-| **VERIFY** | `smoke:world-events` · `smoke:trip-window-edinburgh` · `build` PASS · PR CI SUCCESS |
+| **PROD QA** | `https://www.gateo.kr/world-events` · `/place/vienna` · `/korea` · 홈 「세계의 행사」 |
+| **VERIFY** | `smoke:world-events` · `smoke:trip-window-edinburgh` · `build` |
 
-**다음 제시어** (QA OK 후 병합):
+**P2 MVP**: Wave1 15건 SSOT · PlaceCard 「이 도시의 행사」 · `/world-events` 허브 · TripWindow CTA · 홈 진입
+
+**다음 제시어** (PROD QA 또는 P3):
 
 ```
-세계행사 일정 #11, PR #150 병합
+세계행사 일정 #12, PROD QA
 @plans/feature-handoff-index.md
 @plans/2026-08-26-project-log.md
 @plans/world-events-plan.md
-브랜치 main · PR #150 merge · P2 MVP 완료 확인
+main · www.gateo.kr/world-events · /place/vienna · /korea
 금지: Wave2 · worldEvents.json 직편집 · UI 리디자인
 ```
 
@@ -64,10 +64,30 @@ www.gateo.kr/blog/curation?debug=curation · iPhone/Android 전체지도·무니
 
 ---
 
-### 해안·해양 탐색
+### 검색노출 (한·영 SEO)
 
 | | |
 |--|--|
+| **상태** | **#24 RSS·canonical 재점검 PASS** · 에이전트 세션표 **완료** · 잔여 = 사람 GSC baseline · `/en/` prefix(합의 후) |
+| **브랜치** | **`main`** |
+| **플랜** | [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) §9 |
+| **일지** | [`2026-08-25-project-log.md`](./2026-08-25-project-log.md) |
+| **제출 URL** | Sitemap `https://www.gateo.kr/sitemap.xml` (1133 URL) · RSS KO `https://www.gateo.kr/rss.xml` · RSS EN `https://www.gateo.kr/rss-en.xml` · `robots.txt`에 sitemap 선언됨 |
+| **에이전트 VERIFY** | `smoke:rss-canonical` · `smoke:gsc-baseline` · `smoke:gsc-baseline-prod` · `audit:place-seo-en` · `build` |
+| **사람** | GSC·네이버 서치어드바이저 sitemap/RSS 제출 · GSC 173건 baseline CSV(로컬 only) |
+
+**다음 제시어** (백로그·합의 후):
+
+```
+검색노출 #25, /en/ URL prefix (합의 후)
+@plans/feature-handoff-index.md
+@plans/en-seo-followup-plan.md
+/en/ prefix 합의 · i18n-en-plan 2차 URL과 동기
+```
+
+---
+
+### 해안·해양 탐색
 | **상태** | **main 병합 완료** (2026-08-16) · PROD 배포 후 QA |
 | **main** | `14cc78ef` — PR #122 병합 + 뷰 폴링 제거 |
 | **플랜** | [`coast-sea-explore-plan.md`](./coast-sea-explore-plan.md) §9 |
@@ -110,7 +130,6 @@ main · www.gateo.kr/place/yap/planner?lang=en
 금지: GT 일괄 백필
 ```
 
----
 
 ## 행 추가 템플릿 (새 Cloud feature)
 

@@ -4,8 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { usePlaceGallery } from './hooks/usePlaceGallery';
 import PlaceCardExpanded from './modes/PlaceCardExpanded';
 import SEO from '../SEO';
-import { getLocalizedPlaceName } from './common/locationDisplay';
 import { useLocale } from '../../i18n/LocaleProvider';
+import {
+  getPlaceSeoKeywords,
+  getPlaceTabSeoDescription,
+  getPlaceTabSeoTitle,
+} from '../../pages/Home/lib/placeSeoText.js';
 
 const PlaceCard = () => {
   const { slug, tab } = useParams();
@@ -41,24 +45,25 @@ const PlaceCard = () => {
   if (!contextLocation) return null;
 
   const currentTab = tab || 'gallery';
-  const locationName =
-    getLocalizedPlaceName(contextLocation, locale) || t('place.fallback.destination');
 
   const tabKey = ['wiki', 'reviews', 'gallery', 'video', 'planner'].includes(currentTab)
     ? currentTab
     : 'gallery';
-  const locationDesc = t(`place.tab.${tabKey}.desc`, { name: locationName });
-  const tabSuffix = t(`place.tab.${tabKey}.suffix`);
-  const locationImage = contextLocation.thumbnail || contextLocation.image || `https://source.unsplash.com/1200x630/?${encodeURIComponent(contextLocation.name_en || locationName)}`;
+  const locationDesc = getPlaceTabSeoDescription(contextLocation, locale, tabKey, t);
+  const seoTitle = getPlaceTabSeoTitle(contextLocation, locale, tabKey);
+  const seoKeywords = getPlaceSeoKeywords(contextLocation, locale, tabKey);
+  const seoPath = `/place/${slug}/${tabKey}`;
 
   return (
     <>
       <SEO
-        title={`${locationName} ${tabSuffix}`}
+        title={seoTitle}
         description={locationDesc}
-        url={`/place/${slug}${tab ? `/${tab}` : ''}`}
-        image={locationImage}
+        keywords={seoKeywords}
+        url={seoPath}
         location={contextLocation}
+        tab={tabKey}
+        galleryImages={tabKey === 'gallery' ? galleryData?.images : null}
       />
       <PlaceCardExpanded
         location={contextLocation}

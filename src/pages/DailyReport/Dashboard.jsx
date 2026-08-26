@@ -3,6 +3,7 @@ import { PenTool, Globe, Sparkles, Calendar } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
+import SEO from '../../components/SEO';
 import AICurationCard from './components/AICurationCard';
 import CalendarCard from './components/CalendarCard';
 import RecentList from './components/RecentList';
@@ -65,6 +66,12 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-white text-gray-900 font-sans relative">
+      <SEO
+        title={t('logbook.seo.title')}
+        description={t('logbook.seo.description')}
+        keywords={t('logbook.seo.keywords')}
+        url="/blog"
+      />
       <div className="max-w-7xl mx-auto pt-8 px-4 sm:px-6 pb-20">
 
         <div className="mb-6 flex flex-col lg:flex-row justify-between lg:items-end gap-6 border-b border-gray-100 pb-6">

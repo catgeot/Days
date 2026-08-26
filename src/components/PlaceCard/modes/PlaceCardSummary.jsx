@@ -13,6 +13,7 @@ import {
   useVisualViewportBottomAnchor,
 } from '../../../shared/hooks/useMobileInputViewport.js';
 import { isSyntheticOrEmptyPlaceDesc } from '../../../pages/Home/lib/placeDescText.js';
+import { getLocalizedPlaceDesc } from '../../../pages/Home/lib/placeSeoText.js';
 
 const PlaceCardSummary = ({
   location,
@@ -95,13 +96,15 @@ const PlaceCardSummary = ({
         ? t('place.summary.flightRoute')
         : t('place.summary.preparing');
 
-  const placeIntro = String(location?.desc || '').trim();
+  const placeIntro = getLocalizedPlaceDesc(location, locale).trim();
   const hasPlaceIntro =
-    Boolean(placeIntro) && !isSyntheticOrEmptyPlaceDesc(location);
+    Boolean(placeIntro) && !isSyntheticOrEmptyPlaceDesc({ ...location, desc: placeIntro });
 
   const blurbText = hasPlaceIntro
     ? placeIntro
-    : t('place.summary.blurbFallback', { name: location?.name || '' });
+    : t('place.summary.blurbFallback', {
+        name: getLocalizedPlaceName(location, locale) || location?.name || '',
+      });
   /** 항공 경로 카드는 공간 절약 — 2줄+더보기 / 그 외(국내·명소)는 3줄 */
   const introClampClass = canPreviewFlightRoute ? 'line-clamp-2' : 'line-clamp-3';
   const showIntroMore = hasPlaceIntro

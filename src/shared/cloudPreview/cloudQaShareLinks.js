@@ -283,6 +283,14 @@ export const CLOUD_QA_SHARE_LINKS = [
     active: true,
   },
   {
+    slug: 'en-seo',
+    label: '검색노출 크롤러 HTML MVP',
+    branch: 'cursor/en-seo',
+    destination:
+      'https://days-git-cursor-en-seo-catgeots-projects.vercel.app/place/tokyo/gallery?crawler=1',
+    active: true,
+  },
+  {
     slug: 'en',
     label: '영문화 PROD QA',
     branch: 'main',

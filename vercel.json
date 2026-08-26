@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/logbook",
+      "destination": "https://www.gateo.kr/blog",
+      "permanent": true
+    },
+    {
       "source": "/qa/chrome-hit",
       "destination": "https://www.gateo.kr/",
       "permanent": false
@@ -179,6 +184,11 @@
     {
       "source": "/qa/puzzle",
       "destination": "https://days-git-cursor-geography-puzzle-plan-62e0-catgeots-projects.vercel.app/play/geo",
+      "permanent": false
+    },
+    {
+      "source": "/qa/en-seo",
+      "destination": "https://days-git-cursor-en-seo-catgeots-projects.vercel.app/place/tokyo/gallery?crawler=1",
       "permanent": false
     },
     {

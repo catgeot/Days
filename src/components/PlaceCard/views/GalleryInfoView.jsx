@@ -6,9 +6,11 @@ import GalleryAttributionLink from '../common/GalleryAttributionLink';
 import { splitPlaceOverview } from '../common/placeOverviewText';
 import PlaceOverviewProse from '../common/PlaceOverviewProse';
 import { getLocalizedPlaceName } from '../common/locationDisplay';
+import { useLocale } from '../../../i18n/LocaleProvider';
 
 const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces = [], onRelatedClick }) => {
     const { i18n } = useTranslation();
+    const { locale } = useLocale();
     const isPhotoMode = !!selectedImg;
 
     const description = useMemo(() => {
@@ -19,7 +21,7 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
     }, [selectedImg, selectedPlace]);
 
     const { curation: curationOverview, fixed: fixedOverview, originalQuery: overviewQuery } =
-        useMemo(() => splitPlaceOverview(selectedPlace), [selectedPlace]);
+        useMemo(() => splitPlaceOverview(selectedPlace, locale), [selectedPlace, locale]);
 
     const photoAttribution = useMemo(
         () => (selectedImg ? getGalleryImageAttribution(selectedImg) : null),
