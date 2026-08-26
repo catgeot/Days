@@ -134,7 +134,6 @@
 - **브랜치** `cursor/world-events-efa3` · PR #153
 - **산출** munich·vienna·amsterdam Tier0.5 overrides · `smoke:world-events-detail` 4건 assert · sample-log
 - **VERIFY** `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
-- **다음** #15 샘플 #5~#8 tokyo·kyoto·bangkok·bali
 
 ## 세계행사 일정 #14 — Preview 빌드 복구
 
@@ -181,4 +180,12 @@
 - **회귀** `GlobeStayStrip` HomePlaceCardSummary 유지 · edinburgh tripWindow 4박 cap (전체 span CTA 제거)
 - **VERIFY** `smoke:world-events` · `smoke:world-events-detail` · `smoke:trip-window-edinburgh` · `build` PASS
 - **Preview** `/qa/world-events` → `/world-events/rio-carnival-2027` · 내 여행 일정·숙소 스트립
-- **다음** #17 sample #13~#15 · 위젯 마감
+- **사람 QA** MRT 숙소 일정 OK · 「항공+숙소」Trip packages — 일정·목적지 prefill 약함(알려진 갭)
+- **다음** #17 EventStayStrip Trip parity · 이후 #18 sample #13~#15
+
+## 세계행사 일정 #16 — 핸드오프 (#17 항공+숙소)
+
+- **갭** `EventStayStrip` — `/packages/` 직링크 · `EventDetailPage`에 `TripcomFlightSearchProvider` 없음 · `GlobeStayStrip`/`WhiteLabelWidget`/`stay-modal-flight` 경로 미사용
+- **목표** 선택 checkIn/checkOut·도착 IATA를 Trip ad/modal로 전달(플레이스 카드 숙소 모달과 동일 패턴)
+- **참고** `GlobeStayStrip.jsx` `StayFlightHotelCta` · `affiliate.js` `buildTripcomPlannerFlightUrl` · `TripcomFlightSearchContext.jsx`
+- **feature tip** `074bbcc8` pushed `origin/cursor/world-events-efa3`
