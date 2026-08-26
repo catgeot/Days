@@ -10,6 +10,7 @@ alwaysApply: true
 1. **루트 [`.ai-context.md`](.ai-context.md)를 Read 도구로 읽는다** (사용자가 `@`로 붙이지 않아도 필수).
 2. **1절 유지 규약**을 따른다 — 완료 로그는 `plans/YYYY-MM-DD-project-log.md`에만, `.ai-context` 5절에 이력 누적 금지.
 3. 작업 주제가 맞으면 **6절·운영 가이드**를 추가로 읽는다:
+   - **로직=feature · 문서=main**: [`plans/docs-on-main-workflow.md`](plans/docs-on-main-workflow.md) (Cloud feature **필수**)
    - 여행지·공항: [`plans/travel-spots-management.md`](plans/travel-spots-management.md)
    - 클룩 렌터카 검색어: [`plans/klook-rental-search-data.md`](plans/klook-rental-search-data.md)
    - 페리 SSOT: [`plans/ferry-ssot-validation.md`](plans/ferry-ssot-validation.md)
@@ -54,7 +55,7 @@ alwaysApply: true
 
 **이때 Read 금지**: 코드베이스 광역 grep · `travelSpots.js` 전체 · 주제 무관 플랜·닫힌 일지 · `.ai-context` 5절 이력.
 
-**세션 종료**: 플랜 §9 + 일지 + `feature-handoff-index` 행 갱신 + **§1.2 다음 제시어 블록**(핀 3개) 제안. [`cloud-preview-continuity.md`](plans/cloud-preview-continuity.md) **§1.2·§6**.
+**세션 종료**: 플랜 §9 + 일지 + `feature-handoff-index` 행 갱신 + **§1.2 다음 제시어** + **[§6 main docs push 필수](plans/docs-on-main-workflow.md)** · [`cloud-preview-continuity.md`](plans/cloud-preview-continuity.md) §6.
 
 ## 빠른 금지 사항 (상세는 .ai-context 3~4절)
 
@@ -64,7 +65,7 @@ alwaysApply: true
 - **UI 임의 변경 금지** (`.ai-context` **§4.1 5**): 승인 없이 기존 버튼·레이아웃·톤·카피 교체 금지. **기능 추가 시에도 기존 비주얼 유지**(연결·동작만). 「커밋 보류」≠ 리디자인 허가
 - **브라우저/`computerUse` QA 금지** (`.ai-context` **§4.1 13** · **1.6**): `Task(computerUse)`·`RecordScreen`·화면 클릭 QA **기본 금지**. **사람 명시 요청 시에만**. 채팅명·일지 `… QA` = **사람 Preview** 단계(에이전트 실행 지시 아님). 에이전트 검증 = audit/smoke/`build` → push → `/qa/…`·Preview + 사람 체크 1~3줄
 - 사용자 명시 없이 `plans/`에 새 완료보고/대형 기획서 생성 금지
-- Git commit/push: **[`gateo-commit-push.mdc`](gateo-commit-push.mdc)** · **§1.5.3** — 검증 PASS면 **허가 요청 없이** commit · Cloud feature **매 턴 feature push**+PR · 문서·핸드오프 **QA 없이** main 로컬 commit · **`origin/main` push만** 사람 요청 · **이어하기**=고정 브랜치·동일 git Preview URL·`/qa/<slug>` · force-push 금지 · 메시지 **한글**
+- Git commit/push: **[`gateo-commit-push.mdc`](gateo-commit-push.mdc)** · **[`gateo-docs-on-main.mdc`](gateo-docs-on-main.mdc)** · **§1.5.3~4** — 로직=**feature** · 핸드오프=**`main` push 필수** · 코드 `origin/main`=PR/요청 · force-push 금지
 - **허가 요청 금지** (§4.1 14): 게이트 통과 시 「커밋/푸시해도 될까요」 **묻지 않음** — 유일 예외 `git push origin main`
 
 
@@ -82,6 +83,6 @@ alwaysApply: true
 
 ## 세션 종료
 
-- **§1.5.3**에 따라 커밋(해당하면 push) → 일지 2~5줄 → `.ai-context`는 **필요할 때만** 5~6절 최소 갱신 · `origin/main` push 필요 시 세션 끝 **한 줄 안내**만(매 턴 질문 금지)
+- **§1.5.3~4**에 따라 커밋(해당하면 push) → Cloud feature면 **main docs push** 포함 → 일지 2~5줄
 - **Cloud feature**: [`feature-handoff-index.md`](plans/feature-handoff-index.md) 행 + 플랜 §9 + **§1.2 다음 제시어**(핀 3개) · [`cloud-preview-continuity.md`](plans/cloud-preview-continuity.md) §6 main 문서 동기화 검토
 - 릴리스 노트: **새 기능·중대 업데이트만** 초안 제안 → 합의 후 `releaseNotes.js` (`.ai-context` **1.7**). 버그픽스·미세 UI·SSOT 채움은 **묻지 않음**

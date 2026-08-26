@@ -104,5 +104,9 @@
 
 ## 운영 — 푸시·커밋 규칙 정리
 
-- **규칙 SSOT**: `.ai-context` **§1.5.3** · `AGENTS.md` · `.cursor/rules/gateo-commit-push.mdc`
-- **Cursor User Rule** `16942118` §1.5.3 동기화 · **main** `2213a78b`+ push (사람 요청)
+- **규칙 SSOT**: `.ai-context` **§1.5.3~§1.5.4** · [`docs-on-main-workflow.md`](./docs-on-main-workflow.md) · `AGENTS.md` · `.cursor/rules/gateo-docs-on-main.mdc`
+- **Cursor User Rule** `16942118` §1.5.3 동기화 · **main** push 완료
+
+## 운영 — 로직=feature · 문서=main 워크플로 도입
+
+- **도입**: `docs-on-main-workflow.md` · §1.5.4 · Cloud §6 **필수**화 · docs-only `origin/main` push = feature 세션 종료 시 즉시

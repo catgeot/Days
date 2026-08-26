@@ -66,7 +66,7 @@ Cloud/Cursor에서 **새 채팅을 만들 때** 사람이 제목·첫 프롬프�
 2. `plans/YYYY-MM-DD-project-log.md` 2~5줄
 3. [`feature-handoff-index.md`](./feature-handoff-index.md) 해당 행 (tip·Preview·**다음 제시어**)
 
-**main 핸드오프 동기화** (§6): 문서 3종은 feature에만 두지 말고 **`main` 로컬 커밋** — cherry-pick 또는 docs-only. **에이전트가 허가 요청 없이 즉시 commit** · **사람 QA 불필요**. 원격 `origin/main` push만 사람 요청 시.
+**main 핸드오프 동기화** (§6 · **필수**): 문서 3종은 feature에만 두지 말고 **`main` + `origin/main`** — [`docs-on-main-workflow.md`](./docs-on-main-workflow.md). **docs-only push = 세션 종료 시 즉시**(허가·QA 없음). **코드** `origin/main` = PR·사람 요청.
 
 **복붙용 예 (해안해양)**
 
@@ -177,20 +177,24 @@ Preview: https://…-git-…vercel.app/play/geo
 
 플랜에 복붙표가 있으면 표의 다음 `#N`과 **일치**시킨다. 표가 없으면 일지 최신 `#N`+1과 단계 한 줄로 새로 제안하고 일지·플랜·인덱스에 기록한다.
 
-### 6. main 핸드오프 동기화 (브랜치 작업 시)
+### 6. main 핸드오프 동기화 (브랜치 작업 시 · **필수**)
 
-feature 코드는 브랜치에만 있어도 되지만, **맥락 문서는 `main`에 없으면** `main` 부팅 Cloud 세션이 브랜치·제시어를 찾지 못한다.
+**규칙 한 줄**: **로직 = feature** · **문서 = `main` SSOT** — 상세·체크리스트: [`docs-on-main-workflow.md`](./docs-on-main-workflow.md).
+
+feature 코드는 브랜치에만 있어도 되지만, **맥락 문서가 `origin/main`에 없으면** `main` 부팅 Cloud 세션이 브랜치·제시어를 찾지 못한다.
 
 | 문서 | 갱신 시점 | `main` 반영 |
 |------|-----------|-------------|
-| [`feature-handoff-index.md`](./feature-handoff-index.md) | feature 세션 **종료마다** | **권장** — docs-only 커밋 또는 cherry-pick |
-| 주제 플랜 **§9** | 동일 | 권장 (플랜이 `main`에 있을 때) |
-| `plans/YYYY-MM-DD-project-log.md` | 동일 | 선택 (일지는 날짜별로 `main`에 쌓임) |
+| [`feature-handoff-index.md`](./feature-handoff-index.md) | feature 세션 **종료마다** | **필수** — docs-only 커밋 또는 cherry-pick |
+| 주제 플랜 **§9** | 동일 | **필수** |
+| `plans/YYYY-MM-DD-project-log.md` | 동일 | **필수** |
 
-**절차 (에이전트 — 허가 요청 없이)**
+**절차 (에이전트 — 허가 요청 없이 · 생략 금지)**
 
-1. feature 브랜치에서 위 문서 커밋·**push**(Preview·핸드오프 동기).
-2. `git checkout main` → cherry-pick 또는 docs-only 재커밋 — **즉시 로컬 commit** (사람 QA·허가 **불필요**).
-3. `origin/main` push — **사람 요청 시만** (세션 끝에 한 줄 안내 가능 · 매 턴 질문 금지).
+1. **feature**: 검증 PASS → 코드·문서 커밋 → **`git push origin <feature>`**
+2. **`git checkout main && git pull origin main`**
+3. docs 반영: cherry-pick(문서 커밋만) 또는 **동일 내용 docs-only 커밋** — **코드 파일을 `main`에 넣지 않음**
+4. **`git push origin main`** — **docs-only** · Preview QA·허가 **불필요**
+5. **`git checkout <feature> && git merge origin/main`** — 다음 세션에 옛 인덱스 방지
 
 **주제 병합 후**: 인덱스에서 행 제거 · `cloudPreviewWorkLog` `active: false` · `/qa/…` 비활성(해당 시).

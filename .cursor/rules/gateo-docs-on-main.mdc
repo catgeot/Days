@@ -1,0 +1,34 @@
+---
+description: 로직=feature · 문서=main 필수 — Cloud feature 핸드오프 SSOT
+alwaysApply: true
+---
+
+# 로직 = feature · 문서 = main
+
+**상세**: [`plans/docs-on-main-workflow.md`](plans/docs-on-main-workflow.md) · [`.ai-context.md`](.ai-context.md) **§1.5.4**
+
+## 분리 (오해 금지)
+
+| | 어디 | push |
+|--|------|------|
+| **로직·UI·`src/`·스크립트·SSOT 데이터** | 고정 **feature** `cursor/…` | **feature** (Cloud 매 턴) |
+| **핸드오프 문서** | **`main` 반영 필수** | **`origin/main` docs-only** — feature 세션 **종료 시 즉시** |
+
+**문서** = `plans/**` · `feature-handoff-index.md` · 플랜 §9 · `.ai-context` · `AGENTS.md` · `.cursor/rules/**`
+
+## Cloud feature 세션
+
+**시작**: `pull main` → 인덱스에서 브랜치 → `checkout feature` → **`merge origin/main`**
+
+**종료** (생략 금지):
+
+1. feature: 검증 PASS → 코드·문서 커밋 → **feature push**
+2. `checkout main` → docs **cherry-pick 또는 docs-only 커밋** → **`push origin main`** (허가·QA 없음)
+3. `checkout feature` → **`merge origin/main`**
+
+## 금지
+
+- `main`에서 feature 코드 수정 (§1.5.2 짧은 예외 제외)
+- 핸드오프를 **feature에만** 두고 세션 종료
+- 「main push 허가」를 **docs-only**에 요청
+- `main` 체크아웃인데 `src/` grep·수정으로 feature 작업 대체
