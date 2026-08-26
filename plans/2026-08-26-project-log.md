@@ -49,3 +49,11 @@
 - **산출** `PlaceWorldEventsSection` 접이식 · `worldEvents.js` slug 조회 · PlaceChatPanel·Gallery(모바일)·홈 써머리 연동 · TripWindow 플래너·숙소 CTA
 - **VERIFY** `build` PASS
 - **다음** 세션 #8 P2-c `/world-events` 허브
+
+## 세계행사 일정 #8 — P2-c /world-events 허브
+
+- **세션** `세계행사 일정 #8, P2-c — /world-events 허브`
+- **브랜치** `cursor/world-events-efa3` · PR #150
+- **산출** `/world-events` 라우트 · 지역 칩 5 · 행사 카드 그리드 · `/qa/world-events` · `worldEvents.js` 허브 조회
+- **VERIFY** `build` PASS
+- **다음** 세션 #9 통합 smoke·핸드오프

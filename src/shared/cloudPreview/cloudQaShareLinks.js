@@ -289,6 +289,14 @@ export const CLOUD_QA_SHARE_LINKS = [
     destination: 'https://www.gateo.kr/?lang=en',
     active: true,
   },
+  {
+    slug: 'world-events',
+    label: '세계 행사 일정 허브',
+    branch: 'cursor/world-events-efa3',
+    destination:
+      'https://days-git-cursor-world-events-efa3-catgeots-projects.vercel.app/world-events',
+    active: true,
+  },
 ];
 
 export function cloudQaShareUrl(slug) {

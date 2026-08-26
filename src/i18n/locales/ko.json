@@ -1489,6 +1489,28 @@
       }
     }
   },
+  "worldEventsHub": {
+    "title": "세계 행사 일정",
+    "seoTitle": "세계 행사 일정 — GATEO",
+    "seoDescription": "유럽·아시아·아메리카·오세아니아·니치 도시의 대표 축제·시즌 행사를 모아 보고, 여행지 카드·행사 맞춤 플래너로 이어갑니다.",
+    "intro": "Wave 1 큐레이션 도시의 대표 행사입니다. 카드를 눌러 여행지·플래너·숙소로 이어가세요.",
+    "koreaLink": "한국의 축제",
+    "regionChipsAria": "지역 필터",
+    "headlineAll": "전체 {{count}}건",
+    "headlineRegion": "{{region}} {{count}}건",
+    "empty": "이 지역에 등록된 행사가 없습니다.",
+    "card": {
+      "placeCta": "여행지 카드"
+    },
+    "region": {
+      "all": "전체",
+      "europe": "유럽",
+      "asiaPacific": "아시아·태평양",
+      "americas": "아메리카",
+      "oceaniaNature": "오세아니아·자연",
+      "niche": "소규모·니치"
+    }
+  },
   "logbook": {
     "common": {
       "home": "홈으로",

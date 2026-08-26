@@ -1726,6 +1726,28 @@
       }
     }
   },
+  "worldEventsHub": {
+    "title": "World events",
+    "seoTitle": "World events — GATEO",
+    "seoDescription": "Browse flagship festivals and seasonal events across Europe, Asia-Pacific, the Americas, Oceania, and niche cities — then open place cards and event-tailored planners.",
+    "intro": "Wave 1 curated city events. Open a card to continue to the place page, planner, or stays.",
+    "koreaLink": "Korea festivals",
+    "regionChipsAria": "Region filter",
+    "headlineAll": "All {{count}}",
+    "headlineRegion": "{{region}} · {{count}}",
+    "empty": "No events in this region yet.",
+    "card": {
+      "placeCta": "Place card"
+    },
+    "region": {
+      "all": "All",
+      "europe": "Europe",
+      "asiaPacific": "Asia-Pacific",
+      "americas": "Americas",
+      "oceaniaNature": "Oceania & nature",
+      "niche": "Niche cities"
+    }
+  },
   "logbook": {
     "common": {
       "home": "Home",

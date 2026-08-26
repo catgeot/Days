@@ -319,16 +319,16 @@ flowchart LR
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**다음 제시어** (세션 #8 — `/world-events` 허브):
+**다음 제시어** (세션 #9 — 통합 smoke·핸드오프):
 
 ```
-세계행사 일정 #8, P2-c — /world-events 허브
+세계행사 일정 #9, 통합 smoke·핸드오프
 @plans/feature-handoff-index.md
 @plans/world-events-plan.md §10
 브랜치 cursor/world-events-efa3 · PR #150
-금지: worldEvents.json 직편집 · UI 리디자인 · 세션 #8 범위 넘기기
+금지: worldEvents.json 직편집 · 범위 확장(Wave2·EN·/events 통합)
 ```
 
-**읽을 것**: 본 파일 **§10 행 #8만** · `worldEvents.json` · `/korea` 허브 패턴
+**읽을 것**: 본 파일 **§10 행 #9만** · smoke 스크립트 목록
 
-**VERIFY**: `build` · QA `/place/vienna`
+**VERIFY**: 전 smoke PASS · QA `/world-events` · `/place/vienna` · `/korea`

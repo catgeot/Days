@@ -1,6 +1,20 @@
 import worldEventsData from '../pages/Home/data/worldEvents.json' with { type: 'json' };
+import travelSpotsList from '../pages/Home/data/travelSpots-list.json' with { type: 'json' };
+import { resolveWorldEventHubRegionId } from '../pages/WorldEvents/worldEventHubRegions.js';
 
 /** @typedef {import('../../scripts/lib/world-event-schema.mjs').WorldEventOverride} WorldEvent */
+
+const placeLabelBySlug = new Map();
+
+for (const spot of travelSpotsList ?? []) {
+  const slug = String(spot.slug || '').trim().toLowerCase();
+  if (!slug) continue;
+  placeLabelBySlug.set(slug, {
+    name: spot.name || '',
+    name_en: spot.name_en || '',
+    country: spot.country || '',
+  });
+}
 
 const eventsBySlug = new Map();
 
@@ -70,4 +84,62 @@ export function formatWorldEventDateRange(event, locale = 'ko') {
   if (!start) return '';
   if (!end || end === start) return start;
   return `${start} – ${end}`;
+}
+
+/** @returns {WorldEvent[]} */
+export function getAllWorldEvents() {
+  return [...(worldEventsData.events ?? [])].sort((a, b) => {
+    const pa = Number(a.priority ?? 99);
+    const pb = Number(b.priority ?? 99);
+    if (pa !== pb) return pa - pb;
+    return String(a.startDate).localeCompare(String(b.startDate));
+  });
+}
+
+/**
+ * @param {string | null | undefined} slug
+ * @param {string} [locale]
+ */
+export function getWorldEventPlaceLabel(slug, locale = 'ko') {
+  const key = String(slug || '').trim().toLowerCase();
+  const spot = placeLabelBySlug.get(key);
+  if (!spot) return key;
+  if (locale === 'en' && spot.name_en) return spot.name_en;
+  return spot.name || spot.name_en || key;
+}
+
+/**
+ * @param {string | null | undefined} slug
+ * @param {string} [locale]
+ */
+export function getWorldEventPlaceMeta(slug, locale = 'ko') {
+  const key = String(slug || '').trim().toLowerCase();
+  const spot = placeLabelBySlug.get(key);
+  if (!spot) {
+    return { label: key, country: '' };
+  }
+  return {
+    label: getWorldEventPlaceLabel(key, locale),
+    country: spot.country || '',
+  };
+}
+
+/**
+ * @param {WorldEvent} event
+ * @returns {string | null}
+ */
+export function getWorldEventRegionId(event) {
+  if (!event) return null;
+  return resolveWorldEventHubRegionId(event.slug);
+}
+
+/**
+ * @param {string | null | undefined} regionId — `all` or empty = 전체
+ * @returns {WorldEvent[]}
+ */
+export function getWorldEventsForHubRegion(regionId) {
+  const events = getAllWorldEvents();
+  const key = String(regionId || '').trim();
+  if (!key || key === 'all') return events;
+  return events.filter((event) => getWorldEventRegionId(event) === key);
 }

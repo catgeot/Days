@@ -6,11 +6,11 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 7,
-  sessionPhase: 'P2-b PlaceCard 행사',
+  sessionNo: 8,
+  sessionPhase: 'P2-c /world-events 허브',
   branch: 'cursor/world-events-efa3',
-  previewPath: '/place/vienna',
-  qaShareSlug: null,
+  previewPath: '/world-events',
+  qaShareSlug: 'world-events',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-26-world-events-p2c-hub',
+    session: '세계행사 일정 #8, P2-c — /world-events 허브',
+    title: '/world-events 지역 칩 5 · 행사 카드 그리드',
+    detail:
+      '해외 행사 허브 페이지를 추가했습니다. 지역 칩(유럽·아시아·태평양·아메리카·오세아니아·니치)으로 Wave1 15건을 필터하고, 카드에서 여행지·행사 맞춤 플래너·숙소·공식 일정으로 이어갑니다. Preview /qa/world-events · /world-events 에서 칩 전환과 카드 CTA를 확인해 주세요.',
+    at: '2026-08-26',
+  },
   {
     id: '2026-08-26-world-events-p2b-placecard',
     session: '세계행사 일정 #7, P2-b — PlaceCard 행사',

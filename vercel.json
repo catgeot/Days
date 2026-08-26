@@ -185,6 +185,11 @@
       "source": "/qa/en",
       "destination": "https://www.gateo.kr/?lang=en",
       "permanent": false
+    },
+    {
+      "source": "/qa/world-events",
+      "destination": "https://days-git-cursor-world-events-efa3-catgeots-projects.vercel.app/world-events",
+      "permanent": false
     }
   ],
   "rewrites": [

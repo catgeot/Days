@@ -42,6 +42,7 @@ const koreaRoutes = [
   '/korea/theme/courses',
   '/korea/theme/regions',
   '/korea/theme/packages',
+  '/world-events',
 ];
 
 const dynamicRoutes = [...placeRoutes, ...exploreRoutes, ...koreaRoutes];

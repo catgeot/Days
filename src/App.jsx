@@ -10,6 +10,7 @@ import DashboardLayout from './pages/DailyReport/layout/DailyLayout';
 import Home from './pages/Home';
 import PlaceCard from './components/PlaceCard/index';
 import KoreaFestivalHub from './pages/Korea';
+import WorldEventsHub from './pages/WorldEvents';
 import KoreaThemeModulePage from './pages/KoreaTheme/ModulePage';
 import KoreaThemeScenicPage from './pages/KoreaTheme/ScenicPage';
 import KoreaThemeCoursesPage from './pages/KoreaTheme/CoursesPage';
@@ -98,6 +99,7 @@ function App() {
                 element={<Navigate to="/korea/theme/scenic" replace />}
               />
               <Route path="/korea" element={<KoreaFestivalHub />} />
+              <Route path="/world-events" element={<WorldEventsHub />} />
               <Route path="/qa/:slug" element={<QaShareRedirect />} />
               <Route path="/qa" element={<QaShareIndex />} />
             </Route>
