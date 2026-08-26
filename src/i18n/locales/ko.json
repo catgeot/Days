@@ -1541,6 +1541,16 @@
       "opera": "오페라·공연 시즌은 예매 일정과 맞춰 짧은 방문을 계획하세요. 공연장·역 접근 숙소가 이동 부담을 줄입니다.",
       "concert": "콘서트·공연 행사는 티켓 확보 후 숙소를 잡는 순서가 안전합니다. 공연장 인근·대중교통 접근을 우선하세요.",
       "heritage": "문화·유산 행사는 현지 교통과 개최지 분산 여부를 확인한 뒤, 핵심 구역 중심으로 숙소를 고르세요."
+    },
+    "aiGuide": {
+      "title": "행사 맞춤 여행 가이드",
+      "tierLabel": "AI",
+      "recommendedNights": "AI 권장 숙박 {{nights}}박 (행사 전체 기간 아님)",
+      "tripPresets": "추천 방문 윈도",
+      "nights": "{{count}}박",
+      "bookingTips": "예매·숙소 팁",
+      "cautions": "주의사항",
+      "rawJson": "QA — raw JSON"
     }
   },
   "logbook": {

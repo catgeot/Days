@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -19,7 +19,10 @@ import {
   getWorldEventPlaceMeta,
   getWorldEventTitle,
 } from '../../utils/worldEvents';
+import { fetchEventTravelGuide } from '../../utils/fetchEventTravelGuide';
+import { isCloudPreviewSurface } from '../../shared/cloudPreview/isCloudPreviewSurface';
 import EventDetailStaticPanel from './EventDetailStaticPanel';
+import EventTravelGuidePanel from './EventTravelGuidePanel';
 
 export default function EventDetailPage() {
   const { eventId } = useParams();
@@ -28,6 +31,56 @@ export default function EventDetailPage() {
   const navigate = useNavigate();
 
   const event = useMemo(() => getWorldEventById(eventId), [eventId]);
+  const [travelGuide, setTravelGuide] = useState(null);
+  const [travelGuideRaw, setTravelGuideRaw] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!event?.id) {
+      setTravelGuide(null);
+      setTravelGuideRaw(null);
+      return undefined;
+    }
+
+    fetchEventTravelGuide(event.id).then(async (result) => {
+      if (cancelled) return;
+
+      if (result.guide) {
+        setTravelGuide(result.guide);
+        setTravelGuideRaw(result.raw);
+        return;
+      }
+
+      if (
+        isCloudPreviewSurface() &&
+        event.id === 'edinburgh-fringe-2026'
+      ) {
+        try {
+          const mod = await import(
+            '../../../scripts/fixtures/event-travel-guide/edinburgh-fringe-2026.json'
+          );
+          const fixture = mod.default ?? mod;
+          setTravelGuide(fixture);
+          setTravelGuideRaw({
+            guide: fixture,
+            model: 'fixture-v0.1',
+            schema_version: '0.1',
+          });
+          return;
+        } catch (err) {
+          console.warn('[EventDetailPage] preview fixture load failed', err);
+        }
+      }
+
+      setTravelGuide(null);
+      setTravelGuideRaw(null);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [event?.id]);
+
   if (!event) {
     return <Navigate to="/world-events" replace />;
   }
@@ -146,6 +199,16 @@ export default function EventDetailPage() {
             checkIn={presets.tripWindow.checkIn}
             checkOut={presets.tripWindow.checkOut}
           />
+
+          {travelGuide ? (
+            <div className="mt-4">
+              <EventTravelGuidePanel
+                guide={travelGuide}
+                rawRow={travelGuideRaw}
+                locale={locale}
+              />
+            </div>
+          ) : null}
         </div>
       </main>
     </div>

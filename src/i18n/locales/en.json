@@ -1778,6 +1778,16 @@
       "opera": "Opera and performance seasons work best with short visits aligned to ticket dates near the venue or transit.",
       "concert": "Secure tickets first, then book stays close to the venue or reliable transit.",
       "heritage": "Heritage events may spread across districts — anchor stays near the main sites you plan to visit."
+    },
+    "aiGuide": {
+      "title": "Event travel guide",
+      "tierLabel": "AI",
+      "recommendedNights": "AI suggests {{nights}} nights (not the full event span)",
+      "tripPresets": "Suggested visit windows",
+      "nights": "{{count}} nights",
+      "bookingTips": "Booking & stay tips",
+      "cautions": "Cautions",
+      "rawJson": "QA — raw JSON"
     }
   },
   "logbook": {

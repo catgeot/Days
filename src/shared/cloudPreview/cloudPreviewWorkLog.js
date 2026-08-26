@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 12,
-  sessionPhase: '상세 셸 · 샘플1 edinburgh',
+  sessionNo: 13,
+  sessionPhase: 'AI 가이드 · 샘플1 edinburgh',
   branch: 'cursor/world-events-efa3',
   previewPath: '/world-events/edinburgh-fringe-2026',
   qaShareSlug: 'world-events',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-26-world-events-ai-guide-edinburgh',
+    session: '세계행사 일정 #13, AI 가이드 · 샘플1 edinburgh',
+    title: 'EventTravelGuide v0.1 · edinburgh Tier3',
+    detail:
+      'Phase C-0~1: EventTravelGuide 스키마·audit·Edge update-event-travel-guide·event_travel_guide 테이블·EventTravelGuidePanel(Preview raw JSON). edinburgh-fringe-2026 fixture 1건. Preview /qa/world-events → 에든버러 프린지 상세 — Tier3 AI 패널(있으면)·하단 QA raw JSON 확인. DB 미배포 시 정적 Tier0~2만 보임(정상).',
+    at: '2026-08-26',
+  },
   {
     id: '2026-08-26-world-events-detail-phase-b',
     session: '세계행사 일정 #12, 상세 셸 · 샘플1 edinburgh',
