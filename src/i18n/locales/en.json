@@ -1789,6 +1789,20 @@
       "bookingTips": "Booking & stay tips",
       "cautions": "Cautions",
       "rawJson": "QA — raw JSON"
+    },
+    "stayStrip": {
+      "title": "Your trip dates",
+      "hint": "Search stays and flights for your selected nights — not the full event span.",
+      "dates": "Stay dates",
+      "staysTitle": "Stays in {{place}}",
+      "flightCta": "Flight + hotel",
+      "empty": "No stays for these dates. Try adjusting your window.",
+      "presets": {
+        "default": "Suggested",
+        "opening": "Opening",
+        "midWeekend": "Mid-season weekend",
+        "closing": "Closing"
+      }
     }
   },
   "logbook": {

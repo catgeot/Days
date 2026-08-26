@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-26T14:03:03.304Z",
+    "generatedAt": "2026-08-26T20:04:21.689Z",
     "eventCount": 15,
     "source": "scripts/data/world-event-overrides.mjs"
   },
@@ -175,6 +175,25 @@
       },
       "sourceUrl": "https://www.macys.com/social/parade/",
       "bookingHints": "맨해튼 미드타운·헤럴드스퀘어 — 퍼레이드 뷰 숙소 조기 마감",
+      "detailOverview": "메이시스 추수감사절 퍼레이드와 블랙 프라이데이·홀리데이 시즌이 겹치는 11월 말 뉴욕 방문 시즌입니다. 퍼레이드 당일 전후 2~4박으로 미드타운·헤럴드스퀘어 기점을 잡는 것이 일반적입니다.",
+      "highlights": [
+        "Macy's Thanksgiving Day Parade — 6th Ave·34th St 루트",
+        "블랙 프라이데이·홀리데이 마켓 — 미드타운·브라이언트 파크",
+        "타임스퀘어·록펠러 센터 트리 라이팅 시즌"
+      ],
+      "stayAreas": [
+        {
+          "name": "미드타운 · Midtown",
+          "mrtKeyword": "Midtown Manhattan",
+          "note": "퍼레이드 루트·타임스퀘어 도보권"
+        },
+        {
+          "name": "헤럴드스퀘어 · Herald Square",
+          "mrtKeyword": "Herald Square New York",
+          "note": "Macy's·34th St 역 인근"
+        }
+      ],
+      "recommendedNights": 3,
       "priority": 1
     },
     {
@@ -194,6 +213,25 @@
       },
       "sourceUrl": "https://www.rio-carnival.net/",
       "bookingHints": "코파카바나·이파네마 — 삼바드롬 셔틀·의상 대여 사전 예약",
+      "detailOverview": "브라질 최대 카니발로, 삼바드롬 퍼레이드와 블로코(거리 삼바)가 리우 전역에서 열립니다. 전체 시즌 숙박보다 퍼레이드 전후 3~5박으로 코파카바나·이파네마 기점을 잡는 방문이 일반적입니다.",
+      "highlights": [
+        "삼바드롬(Sambadrome) 공식 퍼레이드 — 티켓·셔틀 사전 예약",
+        "블로코(Bloco) 거리 삼바 — 오전·오후 시간대별 이동",
+        "코파카바나·이파네마 해변 숙소 — 셔틀·지하철 접근"
+      ],
+      "stayAreas": [
+        {
+          "name": "코파카바나 · Copacabana",
+          "mrtKeyword": "Copacabana Rio de Janeiro",
+          "note": "해변·삼바드롬 셔틀 · 성수기 조기 마감"
+        },
+        {
+          "name": "이파네마 · Ipanema",
+          "mrtKeyword": "Ipanema Rio de Janeiro",
+          "note": "조용한 해변 · 코파카바나 버스 10분"
+        }
+      ],
+      "recommendedNights": 4,
       "priority": 1
     },
     {
@@ -327,6 +365,25 @@
       },
       "sourceUrl": "https://www.vividsydney.com/",
       "bookingHints": "서큘러 키·더 록스 — 항구 뷰 숙소·페리 예약",
+      "detailOverview": "시드니 하버·오페라 하우스 일대를 조명으로 물드는 겨울 빛 축제입니다. 개막 주말·중순 주말 2~4박으로 서큘러 키·더 록스 기점을 잡아 야간 설치·라이트쇼를 둘러보는 방문이 일반적입니다.",
+      "highlights": [
+        "Circular Quay·Opera House 조명 설치",
+        "Darling Harbour 라이트쇼·식당가",
+        "페리·트램으로 항구 구역 이동"
+      ],
+      "stayAreas": [
+        {
+          "name": "서큘러 키 · Circular Quay",
+          "mrtKeyword": "Circular Quay Sydney",
+          "note": "오페라 하우스·페리 터미널 도보"
+        },
+        {
+          "name": "더 록스 · The Rocks",
+          "mrtKeyword": "The Rocks Sydney",
+          "note": "항구 뷰 · 서큘러 키 도보 10분"
+        }
+      ],
+      "recommendedNights": 3,
       "priority": 1
     },
     {
@@ -345,6 +402,25 @@
       },
       "sourceUrl": "https://secretsolstice.is/",
       "bookingHints": "레이캬비크 기점 골든서클·남부 투어 — 렌터카·숙소 성수기",
+      "detailOverview": "6~7월 백야(미드나잇 선) 시즌과 시크릿 솔스티스 페스티벌이 겹치는 아이슬란드 여름입니다. 전체 여름 숙박보다 솔스티스 전후 3~5박으로 레이캬비크 기점 투어를 계획하는 방문이 일반적입니다.",
+      "highlights": [
+        "Secret Solstice — 6월 중순 레이캬비크 페스티벌",
+        "백야 드라이브 — 골든서클·남부 해안 일출 없는 하루",
+        "레이캬비크 구시가·하파 콘서트홀 — 도보·버스 기점"
+      ],
+      "stayAreas": [
+        {
+          "name": "레이캬비크 · Reykjavík",
+          "mrtKeyword": "Reykjavik",
+          "note": "시크릿 솔스티스·시내 투어 기점"
+        },
+        {
+          "name": "라우가르달루르 · Laugardalur",
+          "mrtKeyword": "Laugardalur Reykjavik",
+          "note": "페스티벌장 인근 · 버스 접근"
+        }
+      ],
+      "recommendedNights": 4,
       "priority": 1
     },
     {

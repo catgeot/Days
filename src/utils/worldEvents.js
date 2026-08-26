@@ -140,6 +140,24 @@ export function getWorldEventPlaceMeta(slug, locale = 'ko') {
 }
 
 /**
+ * MRT 숙소·항공 위젯용 location (slug → travelSpots-list).
+ * @param {string | null | undefined} slug
+ */
+export function getWorldEventLocation(slug) {
+  const key = String(slug || '').trim().toLowerCase();
+  const spot = placeLabelBySlug.get(key);
+  if (!spot) {
+    return { slug: key, name: key, name_en: key, country: '' };
+  }
+  return {
+    slug: key,
+    name: spot.name || key,
+    name_en: spot.name_en || spot.name || key,
+    country: spot.country || '',
+  };
+}
+
+/**
  * @param {WorldEvent} event
  * @returns {string | null}
  */

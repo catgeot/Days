@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 import { buildWorldEventDetailPath } from '../src/utils/worldEventDetailPath.js';
 import { getAllWorldEvents, getWorldEventById } from '../src/utils/worldEvents.js';
 import { tripWindowPresetsFromEvent } from '../src/utils/worldEventTripPresets.js';
+import { tripWindowNights } from '../src/shared/tripWindow.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -58,6 +59,17 @@ assertTier05('tokyo-sakura-season-2027', 4);
 assertTier05('kyoto-gion-matsuri-2027', 3);
 assertTier05('bangkok-songkran-2027', 3);
 assertTier05('bali-galungan-season-2026', 4);
+assertTier05('rio-carnival-2027', 4);
+assertTier05('new-york-thanksgiving-season-2026', 3);
+assertTier05('iceland-midnight-sun-2027', 4);
+assertTier05('sydney-vivid-2027', 3);
+
+const rio = tripWindowPresetsFromEvent(getWorldEventById('rio-carnival-2027'));
+assert.ok(rio.visitPresets.length >= 1, 'rio visit presets');
+assert.ok(
+  tripWindowNights(rio.tripWindow.checkIn, rio.tripWindow.checkOut) <= 10,
+  'rio CTA nights capped',
+);
 
 const appSrc = readFileSync(join(root, 'src/App.jsx'), 'utf8');
 assert.match(appSrc, /\/world-events\/:eventId/, 'App route for event detail');
@@ -67,5 +79,9 @@ assert.match(hubSrc, /eventDetailHref/, 'WorldEvents hub uses eventDetailHref');
 
 const detailSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventDetailPage.jsx'), 'utf8');
 assert.match(detailSrc, /EventDetailStaticPanel/, 'EventDetailPage renders static panel');
+assert.match(detailSrc, /EventStayStrip/, 'EventDetailPage renders in-page stay strip');
+
+const globeSrc = readFileSync(join(root, 'src/pages/Home/components/HomePlaceCardSummary.jsx'), 'utf8');
+assert.match(globeSrc, /GlobeStayStrip/, 'GlobeStayStrip still wired on place summary (regression)');
 
 console.log('OK    smoke:world-events-detail — all assertions passed');

@@ -16,13 +16,16 @@ import { tripWindowPresetsFromEvent } from '../../utils/worldEventTripPresets';
 import {
   formatWorldEventDateRange,
   getWorldEventById,
+  getWorldEventLocation,
   getWorldEventPlaceMeta,
   getWorldEventTitle,
 } from '../../utils/worldEvents';
 import { fetchEventTravelGuide } from '../../utils/fetchEventTravelGuide';
 import { loadEventTravelGuideFixture } from '../../utils/loadEventTravelGuideFixture';
 import { isCloudPreviewSurface } from '../../shared/cloudPreview/isCloudPreviewSurface';
+import { buildPlacePlannerPathFromEvent } from '../../utils/placePlannerPath';
 import EventDetailStaticPanel from './EventDetailStaticPanel';
+import EventStayStrip from './EventStayStrip';
 import EventTravelGuidePanel from './EventTravelGuidePanel';
 
 export default function EventDetailPage() {
@@ -85,13 +88,32 @@ export default function EventDetailPage() {
   const title = getWorldEventTitle(event, locale);
   const dateLabel = formatWorldEventDateRange(event, locale);
   const placeMeta = getWorldEventPlaceMeta(event.slug, locale);
+  const location = useMemo(() => getWorldEventLocation(event.slug), [event.slug]);
   const presets = tripWindowPresetsFromEvent(event);
-  const { plannerHref, detailHref: placeHref } = presets;
+  const [tripDates, setTripDates] = useState(() => ({
+    checkIn: presets.tripWindow.checkIn,
+    checkOut: presets.tripWindow.checkOut,
+  }));
+
+  useEffect(() => {
+    setTripDates({
+      checkIn: presets.tripWindow.checkIn,
+      checkOut: presets.tripWindow.checkOut,
+    });
+  }, [event.id, presets.tripWindow.checkIn, presets.tripWindow.checkOut]);
+
+  const { checkIn, checkOut } = tripDates;
+  const plannerHref = buildPlacePlannerPathFromEvent(presets.slug, {
+    checkIn,
+    checkOut,
+    eventId: presets.eventId,
+  });
+  const { detailHref: placeHref } = presets;
   const stayHref = placeMeta.label
     ? getMrtAccommodationSearchUrl(placeMeta.label, {
         isDomestic: false,
-        checkIn: presets.tripWindow.checkIn,
-        checkOut: presets.tripWindow.checkOut,
+        checkIn,
+        checkOut,
       })
     : '';
 
@@ -193,9 +215,21 @@ export default function EventDetailPage() {
           <EventDetailStaticPanel
             event={event}
             locale={locale}
-            checkIn={presets.tripWindow.checkIn}
-            checkOut={presets.tripWindow.checkOut}
+            checkIn={checkIn}
+            checkOut={checkOut}
           />
+
+          <div className="mt-4">
+            <EventStayStrip
+              event={event}
+              location={location}
+              checkIn={checkIn}
+              checkOut={checkOut}
+              visitPresets={presets.visitPresets}
+              onDatesChange={setTripDates}
+              locale={locale}
+            />
+          </div>
 
           {travelGuide ? (
             <div className="mt-4">

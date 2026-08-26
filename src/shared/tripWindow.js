@@ -57,7 +57,7 @@ function ymdLocal(d) {
  * @param {number} days
  * @returns {string}
  */
-function addDaysYmd(ymd, days) {
+export function addDaysYmd(ymd, days) {
   const d = parseYmdLocal(ymd);
   if (!d) return ymd;
   d.setDate(d.getDate() + days);
