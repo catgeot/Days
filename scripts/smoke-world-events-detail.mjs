@@ -71,6 +71,11 @@ assert.ok(
   'rio CTA nights capped',
 );
 
+const { resolvePlannerFlightArrivalIata } = await import('../src/utils/rentalAirportMatch.js');
+const { getWorldEventLocation } = await import('../src/utils/worldEvents.js');
+const rioLoc = getWorldEventLocation('rio-de-janeiro');
+assert.equal(resolvePlannerFlightArrivalIata(rioLoc), 'GIG', 'rio arrival IATA for packages prefill');
+
 const appSrc = readFileSync(join(root, 'src/App.jsx'), 'utf8');
 assert.match(appSrc, /\/world-events\/:eventId/, 'App route for event detail');
 
@@ -80,8 +85,28 @@ assert.match(hubSrc, /eventDetailHref/, 'WorldEvents hub uses eventDetailHref');
 const detailSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventDetailPage.jsx'), 'utf8');
 assert.match(detailSrc, /EventDetailStaticPanel/, 'EventDetailPage renders static panel');
 assert.match(detailSrc, /EventStayStrip/, 'EventDetailPage renders in-page stay strip');
+assert.match(
+  detailSrc,
+  /TripcomFlightSearchProvider/,
+  'EventDetailPage wraps TripcomFlightSearchProvider',
+);
+
+const stayStripSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventStayStrip.jsx'), 'utf8');
+assert.match(stayStripSrc, /WhiteLabelWidget/, 'EventStayStrip uses WhiteLabelWidget');
+assert.match(stayStripSrc, /event-detail-flight/, 'EventStayStrip event-detail-flight tracking');
+
+const affiliateSrc = readFileSync(join(root, 'src/utils/affiliate.js'), 'utf8');
+assert.match(affiliateSrc, /event-detail-flight/, 'affiliate event-detail-flight tracking');
+assert.match(affiliateSrc, /packages\/list/, 'affiliate packages/list prefill path');
+assert.match(affiliateSrc, /iDate/, 'affiliate packages hotel check-in param');
+assert.match(affiliateSrc, /dportCode/, 'affiliate packages departure port param');
 
 const globeSrc = readFileSync(join(root, 'src/pages/Home/components/HomePlaceCardSummary.jsx'), 'utf8');
 assert.match(globeSrc, /GlobeStayStrip/, 'GlobeStayStrip still wired on place summary (regression)');
+assert.match(
+  readFileSync(join(root, 'src/pages/Home/components/GlobeStayStrip.jsx'), 'utf8'),
+  /WhiteLabelWidget/,
+  'GlobeStayStrip WhiteLabelWidget regression',
+);
 
 console.log('OK    smoke:world-events-detail — all assertions passed');

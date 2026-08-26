@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 16,
-  sessionPhase: '샘플9~12 · in-page 숙소항공',
+  sessionNo: 17,
+  sessionPhase: '항공+숙소 Trip prefill',
   branch: 'cursor/world-events-efa3',
   previewPath: '/world-events/rio-carnival-2027',
   qaShareSlug: 'world-events',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-26-world-events-trip-prefill',
+    session: '세계행사 일정 #17, 항공+숙소 Trip prefill',
+    title: 'EventStayStrip Trip parity · packages/list prefill',
+    detail:
+      'EventStayStrip — GlobeStayStrip 패턴(WhiteLabelWidget·모바일 packages/list)·TripcomFlightSearchProvider · affiliate event-detail-flight · iDate/oDate·dportCode/aportCode prefill. Preview /qa/world-events → /world-events/rio-carnival-2027 — 「항공+숙소」클릭 시 선택 일정·ICN→GIG·인원 반영 확인. /place/rio-de-janeiro GlobeStayStrip 회귀.',
+    at: '2026-08-26',
+  },
   {
     id: '2026-08-26-world-events-phase-d-stay-strip',
     session: '세계행사 일정 #16, 샘플9~12 · in-page 숙소항공',
