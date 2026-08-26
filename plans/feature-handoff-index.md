@@ -18,8 +18,8 @@
 
 | | |
 |--|--|
-| **상태** | **#10 TripWindow 프리셋** — 허브 상세 URL · `smoke:trip-window-edinburgh` PASS |
-| **다음** | 사람 Preview QA(Q12) · PR #150 병합 · 선택 P1.5 또는 P3 |
+| **상태** | **#10 VERIFY PASS** — `smoke:world-events` · `smoke:trip-window-edinburgh` · `build` · CI — **사람 Preview QA(Q12) 대기** |
+| **다음** | QA OK → PR #150 병합 · 선택 #11 P1.5(Q9) 또는 P3-a |
 | **브랜치** | `cursor/world-events-efa3` |
 | **PR** | #150 |
 | **플랜** | [`world-events-plan.md`](./world-events-plan.md) §10 |
@@ -27,16 +27,16 @@
 | **운영** | [`world-events-management.md`](./world-events-management.md) |
 | **일지** | [`2026-08-26-project-log.md`](./2026-08-26-project-log.md) |
 | **Preview** | `https://www.gateo.kr/qa/world-events` |
-| **VERIFY** | `smoke:world-events` · `build` PASS |
+| **VERIFY** | `smoke:world-events` · `smoke:trip-window-edinburgh` · `build` PASS · PR CI SUCCESS |
 
-**다음 제시어** (사람 QA · 병합):
+**다음 제시어** (QA OK 후 병합):
 
 ```
-세계행사 일정 #10, 사람 Preview QA
+세계행사 일정 #11, PR #150 병합
 @plans/feature-handoff-index.md
-@plans/world-events-management.md §6.1
-브랜치 cursor/world-events-efa3 · PR #150
-www.gateo.kr/qa/world-events · /world-events 에든버러 카드 상세 URL
+@plans/2026-08-26-project-log.md
+@plans/world-events-plan.md
+브랜치 main · PR #150 merge · P2 MVP 완료 확인
 금지: Wave2 · worldEvents.json 직편집 · UI 리디자인
 ```
 

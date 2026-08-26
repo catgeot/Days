@@ -79,4 +79,12 @@
 - **브랜치** `cursor/world-events-efa3` · PR #150
 - **산출** `tripWindowPresetsFromEvent` · `buildPlaceDetailPathFromEvent` · 허브 「여행지 카드」→ 상세 URL · `smoke:trip-window-edinburgh`
 - **VERIFY** `smoke:world-events` · `smoke:trip-window-edinburgh` · `build` PASS
+
+## 세계행사 일정 #10 — 사람 Preview QA
+
+- **세션** `세계행사 일정 #10, 사람 Preview QA`
+- **브랜치** `cursor/world-events-efa3` · PR #150 · CI SUCCESS
+- **VERIFY** `smoke:world-events` · `smoke:trip-window-edinburgh` · `build` PASS (재실행)
+- **사람 QA** `/qa/world-events` → 유럽 칩 → 에든버러 프린지 「여행지 카드」 `fromEvent=edinburgh-fringe-2026` · §6.1 `/korea`·`/place/vienna`
+- **다음** QA OK → PR #150 병합 · 선택 #11 P1.5 또는 P3-a
 - **다음** 사람 Preview QA(Q12) · PR #150 병합

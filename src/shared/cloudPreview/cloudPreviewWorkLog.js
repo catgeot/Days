@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
   sessionNo: 10,
-  sessionPhase: 'TripWindow 프리셋',
+  sessionPhase: '사람 Preview QA',
   branch: 'cursor/world-events-efa3',
   previewPath: '/world-events',
   qaShareSlug: 'world-events',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-26-world-events-human-preview-qa',
+    session: '세계행사 일정 #10, 사람 Preview QA',
+    title: 'P0–P2 VERIFY PASS · 에든버러 상세 URL QA',
+    detail:
+      'smoke:world-events · smoke:trip-window-edinburgh · build PASS. Preview /qa/world-events → 유럽 칩 → 에든버러 프린지 「여행지 카드」가 /place/edinburgh?fromEvent=edinburgh-fringe-2026&checkIn&checkOut 형태인지 확인해 주세요. 플래너 CTA 날짜·Q12(/korea · /place/vienna)도 §6.1 체크리스트대로.',
+    at: '2026-08-26',
+  },
   {
     id: '2026-08-26-world-events-tripwindow-presets',
     session: '세계행사 일정 #10, TripWindow 프리셋',
