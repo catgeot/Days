@@ -31,6 +31,8 @@ export const cloudPreviewWorkLog = [
       'sample #2~#4: world-event-overrides Tier0.5(detailOverview·highlights·stayAreas·recommendedNights). munich 3박·vienna 3박(season)·amsterdam 2박(단기). Preview /qa/world-events → 유럽 칩 → 옥토berfest·빈 오페라·킹스데이 「행사 상세」→ 개요·하이라이트·숙소 권역·권장 박수 확인.',
     at: '2026-08-26',
   },
+  {
+    id: '2026-08-26-world-events-ai-guide-edinburgh',
     session: '세계행사 일정 #13, AI 가이드 · 샘플1 edinburgh',
     title: 'EventTravelGuide v0.1 · edinburgh Tier3',
     detail:
