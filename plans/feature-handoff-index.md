@@ -18,26 +18,33 @@
 
 | | |
 |--|--|
-| **상태** | **P2 MVP 완료** · PR #150 **main 병합** · PROD 배포 후 QA |
-| **main** | `94aedcb5` — PR #150 merge (`d4fbca71`) + 핸드오프 |
-| **플랜** | [`world-events-plan.md`](./world-events-plan.md) §9 |
+| **상태** | **P2 MVP `main` 반영** (`d4fbca71`) · **v2 상세 UX 진행** (#12~#18) |
+| **다음** | #12 상세 셸 · 에든버러 샘플 #1 (Phase B) |
+| **브랜치** | `cursor/world-events-efa3` |
+| **PR** | **#151** (v2 · draft — 다음 세션 생성) |
+| **main tip** | `f5441a97`+ (v2 docs 동기화 후 갱신) |
+| **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) · [`world-events-plan.md`](./world-events-plan.md) §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) §6.1 |
+| **샘플** | [`world-events-sample-log.md`](./world-events-sample-log.md) |
 | **일지** | [`2026-08-26-project-log.md`](./2026-08-26-project-log.md) |
 | **PROD QA** | `https://www.gateo.kr/world-events` · `/place/vienna` · `/korea` · 홈 「세계의 행사」 |
 | **VERIFY** | `smoke:world-events` · `smoke:trip-window-edinburgh` · `build` |
+| **Preview** | `https://www.gateo.kr/qa/world-events` · git `…-git-cursor-world-events-efa3-….vercel.app` |
 
-**P2 MVP**: Wave1 15건 SSOT · PlaceCard 「이 도시의 행사」 · `/world-events` 허브 · TripWindow CTA · 홈 진입
+**P2 MVP (main)**: Wave1 15건 · PlaceCard · `/world-events` 허브 · TripWindow 프리셋 · 홈 진입  
+**v2 (브랜치)**: `/world-events/:eventId` · Tier0~2 · 샘플 15건 · **v2 델타 main 병합 = #18**
 
-**다음 제시어** (PROD QA 또는 P3):
+**다음 제시어** (#12):
 
 ```
-세계행사 일정 #12, PROD QA
+세계행사 일정 #12, 상세 셸 · 샘플1 edinburgh
 @plans/feature-handoff-index.md
 @plans/2026-08-26-project-log.md
-@plans/world-events-plan.md
-main · www.gateo.kr/world-events · /place/vienna · /korea
-금지: Wave2 · worldEvents.json 직편집 · UI 리디자인
+@plans/world-events-detail-ux-plan.md
+브랜치 cursor/world-events-efa3 · PR #151 · /world-events/edinburgh-fringe-2026
+금지: 새 feature 브랜치 · worldEvents.json 직편집 · UI 리디자인 · AI 일괄 15건 · #18 전 main 병합
+작업: `git checkout cursor/world-events-efa3` → Phase B · EventDetailPage · Tier0~2 · sample-log #1 · 허브→상세
 ```
 
 ---

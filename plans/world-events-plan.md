@@ -319,23 +319,27 @@ flowchart LR
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (2026-08-26)**: **P2 MVP 완료** · PR #150 main 병합 · Preview QA 통과
+**상태 (2026-08-26)**: **P2 MVP `main` 반영** · **v2 상세 UX 진행** (`cursor/world-events-efa3`)
 
 | Phase | 결과 |
 |-------|------|
 | **P0** | `tripWindow` · generate/audit PASS |
 | **P1** | `/korea` 축제 → MRT·플래너 TripWindow |
-| **P2** | Wave1 15건 · PlaceCard · `/world-events` · 홈 진입 · TripWindow 프리셋 |
+| **P2** | Wave1 15건 · PlaceCard · `/world-events` · 홈 · TripWindow 프리셋 — **main** |
 
-**다음 제시어** (PROD QA 또는 P3-a):
+**v2 (#12~#18)**: [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) · 샘플 로그 [`world-events-sample-log.md`](./world-events-sample-log.md)  
+**세션 번호**: Cloud 채팅 `#12`~ (main 일지 #11=PR150 병합과 별도)
+
+**다음 제시어** (#12):
 
 ```
-세계행사 일정 #12, PROD QA
+세계행사 일정 #12, 상세 셸 · 샘플1 edinburgh
 @plans/feature-handoff-index.md
 @plans/2026-08-26-project-log.md
-@plans/world-events-plan.md
-main · www.gateo.kr/world-events · /place/vienna · /korea
-금지: Wave2 · worldEvents.json 직편집 · UI 리디자인
+@plans/world-events-detail-ux-plan.md
+브랜치 cursor/world-events-efa3 · PR #151 · /world-events/edinburgh-fringe-2026
+금지: 새 feature 브랜치 · worldEvents.json 직편집 · UI 리디자인 · AI 일괄 15건 · #18 전 main 병합
+작업: Phase B · EventDetailPage · Tier0~2 · sample-log #1 · 허브 카드→상세
 ```
 
 **읽을 것**: [`world-events-management.md`](./world-events-management.md) **§6.1 QA 체크리스트**

@@ -86,21 +86,22 @@
 - **브랜치** `cursor/world-events-efa3` · PR #150 · CI SUCCESS
 - **VERIFY** `smoke:world-events` · `smoke:trip-window-edinburgh` · `build` PASS (재실행)
 - **사람 QA** `/qa/world-events` → 유럽 칩 → 에든버러 프린지 「여행지 카드」 `fromEvent=edinburgh-fringe-2026` · §6.1 `/korea`·`/place/vienna`
-- **다음** QA OK → PR #150 병합 · 선택 #11 P1.5 또는 P3-a
-- **다음** 사람 Preview QA(Q12) · PR #150 병합
 
 ## 세계행사 일정 #11 — PR #150 main 병합
 
 - **세션** `세계행사 일정 #11, PR #150 병합`
 - **브랜치** `cursor/world-events-efa3` → **main** · PR #150 merge
-- **충돌** `PlaceGalleryView`(useLocale+PlaceWorldEventsSection) · `vite.config` · `2026-08-25-project-log` — 해결 후 main rebase
 - **P2 MVP** Wave1 15건 · PlaceCard · `/world-events` · TripWindow 프리셋 · 홈 진입 — **완료**
 - **VERIFY** `smoke:world-events` · `smoke:trip-window-edinburgh` · `build` PASS
-- **main** `d4fbca71` — PR #150 merge · origin/main push
-- **다음** PROD 배포 후 QA · 선택 P3-a(공식 피드 POC) 또는 P1.5(Q9)
+- **main** `d4fbca71`
 
-## 운영 — 푸시·커밋 규칙 정리 · 세계행사 v2 확정
+## 세계행사 — v2 pivot · docs `main` 동기화 (다음 #12 준비)
 
-- **결정**: V1(P2 MVP) `main` 유지 · 이후 **v2 상세 UX** (`cursor/world-events-efa3` · `world-events-detail-ux-plan.md`)
-- **규칙 SSOT**: `.ai-context` **§1.5.3** · `AGENTS.md` — 검증 게이트 · Cloud feature **매 턴 push(허가 대기 금지)** · 문서·핸드오프 **main 로컬 commit·QA 없음** · **`origin/main` push만** 사람 요청
-- **다음**: v2 docs `main` cherry-pick · 세션 #13 상세 셸 edinburgh
+- **배경** #9~#10 Preview QA — 장기 TripWindow(26박)·상세 페이지 갭
+- **결정** P2는 `main` 유지 · v2 **additive** on `cursor/world-events-efa3` · Wave1 통합 후 **#18** main 병합
+- **docs** `world-events-detail-ux-plan.md` · `world-events-sample-log.md` · 핸드오프 `main` cherry-pick
+- **다음 세션 #12** — Phase B · `EventDetailPage` · edinburgh Tier0~2 · PR #151 · `/world-events/edinburgh-fringe-2026`
+
+## 운영 — 푸시·커밋 규칙 정리
+
+- **규칙 SSOT**: `.ai-context` **§1.5.3** · `AGENTS.md`
