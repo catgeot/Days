@@ -1,9 +1,294 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-26T03:25:21.551Z",
-    "eventCount": 0,
+    "generatedAt": "2026-08-26T03:59:28.169Z",
+    "eventCount": 15,
     "source": "scripts/data/world-event-overrides.mjs"
   },
-  "events": []
+  "events": [
+    {
+      "id": "edinburgh-fringe-2026",
+      "slug": "edinburgh",
+      "type": "festival",
+      "title": "에든버러 프린지",
+      "startDate": "2026-08-07",
+      "endDate": "2026-08-31",
+      "recurrence": "annual",
+      "source": "official_url",
+      "hubId": "edinburgh",
+      "titleEn": "Edinburgh Festival Fringe",
+      "recurrenceNote": "8월 전반",
+      "venue": {
+        "name": "Royal Mile & city venues"
+      },
+      "sourceUrl": "https://www.edfringe.com/",
+      "bookingHints": "올드타운·뉴타운 숙소는 공연장 도보권 위주",
+      "priority": 1
+    },
+    {
+      "id": "vienna-staatsoper-season-2026",
+      "slug": "vienna",
+      "type": "season",
+      "title": "빈 국립오페라 시즌",
+      "startDate": "2026-09-01",
+      "endDate": "2027-06-30",
+      "recurrence": "annual",
+      "source": "official_url",
+      "hubId": "vienna",
+      "titleEn": "Vienna State Opera Season",
+      "recurrenceNote": "9월~익년 6월",
+      "venue": {
+        "name": "Vienna State Opera"
+      },
+      "sourceUrl": "https://www.wiener-staatsoper.at/en/",
+      "bookingHints": "오페라 시즌 숙소는 1구·카발티에르 근처",
+      "priority": 1
+    },
+    {
+      "id": "bali-galungan-season-2026",
+      "slug": "bali",
+      "type": "season",
+      "title": "갈룽안·사원 축제 시즌",
+      "startDate": "2026-09-16",
+      "endDate": "2026-09-26",
+      "recurrence": "annual",
+      "source": "curated",
+      "hubId": "bali",
+      "titleEn": "Galungan & Temple Festival Season",
+      "recurrenceNote": "210일 주기 · 갈룽안·쿠닝안",
+      "venue": {
+        "name": "Bali islandwide temples"
+      },
+      "sourceUrl": "https://www.baligoldentour.com/galungan-kuningan/",
+      "bookingHints": "우붓·스미냑 — 사원 방문 시 사례 복장 준비",
+      "priority": 1
+    },
+    {
+      "id": "munich-oktoberfest-2026",
+      "slug": "munich",
+      "type": "festival",
+      "title": "옥토버페스트",
+      "startDate": "2026-09-19",
+      "endDate": "2026-10-04",
+      "recurrence": "annual",
+      "source": "official_url",
+      "hubId": "munich",
+      "titleEn": "Oktoberfest",
+      "recurrenceNote": "9월 중순~10월 초",
+      "venue": {
+        "name": "Theresienwiese"
+      },
+      "sourceUrl": "https://www.oktoberfest.de/en",
+      "bookingHints": "테레지엔비제·하이드하우저 근처 숙소는 6~12개월 전 예약 권장",
+      "priority": 1
+    },
+    {
+      "id": "new-york-thanksgiving-season-2026",
+      "slug": "new-york",
+      "type": "season",
+      "title": "추수감사절·홀리데이 시즌",
+      "startDate": "2026-11-20",
+      "endDate": "2026-11-30",
+      "recurrence": "annual",
+      "source": "curated",
+      "hubId": "new-york",
+      "titleEn": "Thanksgiving & Holiday Season",
+      "recurrenceNote": "11월 넷째 목요일 전후",
+      "venue": {
+        "name": "Macy's Parade route · Midtown"
+      },
+      "sourceUrl": "https://www.macys.com/social/parade/",
+      "bookingHints": "맨해튼 미드타운·헤럴드스퀘어 — 퍼레이드 뷰 숙소 조기 마감",
+      "priority": 1
+    },
+    {
+      "id": "rio-carnival-2027",
+      "slug": "rio-de-janeiro",
+      "type": "festival",
+      "title": "리우 카니발",
+      "startDate": "2027-02-12",
+      "endDate": "2027-02-17",
+      "recurrence": "annual",
+      "source": "official_url",
+      "hubId": "rio-de-janeiro",
+      "titleEn": "Rio Carnival",
+      "recurrenceNote": "2월 사순절 전 주",
+      "venue": {
+        "name": "Sambadrome · Copacabana"
+      },
+      "sourceUrl": "https://www.rio-carnival.net/",
+      "bookingHints": "코파카바나·이파네마 — 삼바드롬 셔틀·의상 대여 사전 예약",
+      "priority": 1
+    },
+    {
+      "id": "tokyo-sakura-season-2027",
+      "slug": "tokyo",
+      "type": "season",
+      "title": "도쿄 벚꽃 시즌",
+      "startDate": "2027-03-25",
+      "endDate": "2027-04-10",
+      "recurrence": "annual",
+      "source": "curated",
+      "hubId": "tokyo",
+      "titleEn": "Tokyo Cherry Blossom Season",
+      "recurrenceNote": "3월 말~4월 초 (개화 시기 변동)",
+      "venue": {
+        "name": "Ueno Park · Chidorigafuchi"
+      },
+      "sourceUrl": "https://www.japan.travel/en/sg/see-and-do/cherry-blossom-viewing-spots-in-tokyo/",
+      "bookingHints": "우에노·신주쿠·야마노테선 접근 숙소 조기 마감",
+      "priority": 1
+    },
+    {
+      "id": "bangkok-songkran-2027",
+      "slug": "bangkok",
+      "type": "festival",
+      "title": "송크란",
+      "startDate": "2027-04-13",
+      "endDate": "2027-04-15",
+      "recurrence": "annual",
+      "source": "curated",
+      "hubId": "bangkok",
+      "titleEn": "Songkran Festival",
+      "recurrenceNote": "4월 13~15일",
+      "venue": {
+        "name": "Silom · Khao San · citywide"
+      },
+      "sourceUrl": "https://www.tourismthailand.org/Articles/songkran-festival",
+      "bookingHints": "실롬·카오산 근처 — 방수 가방·의류 준비",
+      "priority": 1
+    },
+    {
+      "id": "amsterdam-kings-day-2027",
+      "slug": "amsterdam",
+      "type": "festival",
+      "title": "킹스데이",
+      "startDate": "2027-04-27",
+      "endDate": "2027-04-27",
+      "recurrence": "annual",
+      "source": "official_url",
+      "hubId": "amsterdam",
+      "titleEn": "King's Day",
+      "recurrenceNote": "4월 27일",
+      "venue": {
+        "name": "Amsterdam citywide"
+      },
+      "sourceUrl": "https://www.iamsterdam.com/en/whats-on/calendar/festivals-events/kings-day",
+      "bookingHints": "중심가·운하 근처는 당일 교통 통제 — 전날 체크인 권장",
+      "priority": 1
+    },
+    {
+      "id": "sydney-vivid-2027",
+      "slug": "sydney",
+      "type": "festival",
+      "title": "비비드 시드니",
+      "startDate": "2027-05-22",
+      "endDate": "2027-06-14",
+      "recurrence": "annual",
+      "source": "official_url",
+      "hubId": "sydney",
+      "titleEn": "Vivid Sydney",
+      "recurrenceNote": "5월 말~6월 중순",
+      "venue": {
+        "name": "Sydney Harbour · Circular Quay"
+      },
+      "sourceUrl": "https://www.vividsydney.com/",
+      "bookingHints": "서큘러 키·더 록스 — 항구 뷰 숙소·페리 예약",
+      "priority": 1
+    },
+    {
+      "id": "iceland-midnight-sun-2027",
+      "slug": "iceland",
+      "type": "season",
+      "title": "미드나잇 선·시크릿 솔스티스",
+      "startDate": "2027-06-01",
+      "endDate": "2027-07-31",
+      "recurrence": "annual",
+      "source": "official_url",
+      "titleEn": "Midnight Sun & Secret Solstice",
+      "recurrenceNote": "6~7월 백야 · 솔스티스 페스티벌 6월 중순",
+      "venue": {
+        "name": "Reykjavík · Laugardalur"
+      },
+      "sourceUrl": "https://secretsolstice.is/",
+      "bookingHints": "레이캬비크 기점 골든서클·남부 투어 — 렌터카·숙소 성수기",
+      "priority": 1
+    },
+    {
+      "id": "kyoto-gion-matsuri-2027",
+      "slug": "kyoto",
+      "type": "festival",
+      "title": "기온마츠리",
+      "startDate": "2027-07-01",
+      "endDate": "2027-07-31",
+      "recurrence": "annual",
+      "source": "official_url",
+      "hubId": "kyoto",
+      "titleEn": "Gion Matsuri",
+      "recurrenceNote": "7월 전체 · 요이야마 7/16~17",
+      "venue": {
+        "name": "Gion · Kawaramachi"
+      },
+      "sourceUrl": "https://www.yasaka-jinja.or.jp/en/",
+      "bookingHints": "기온·사가노·교토역 숙소는 7월 성수기",
+      "priority": 1
+    },
+    {
+      "id": "hanoi-tet-2027",
+      "slug": "hanoi",
+      "type": "season",
+      "title": "뗏(Tết) 연휴 윈도",
+      "startDate": "2027-01-28",
+      "endDate": "2027-02-03",
+      "recurrence": "annual",
+      "source": "curated",
+      "hubId": "hanoi",
+      "titleEn": "Tet Holiday Window",
+      "recurrenceNote": "음력 설 연휴 (연도별 변동)",
+      "venue": {
+        "name": "Hoan Kiem · Old Quarter"
+      },
+      "sourceUrl": "https://www.vietnam.travel/things-to-do/tet-festival-vietnam",
+      "bookingHints": "올드쿼터·호안끼엠 — 연휴 전후 항공·기차 조기 마감",
+      "priority": 2
+    },
+    {
+      "id": "prague-spring-festival-2027",
+      "slug": "prague",
+      "type": "season",
+      "title": "프라하 봄 축제 시즌",
+      "startDate": "2027-04-15",
+      "endDate": "2027-05-15",
+      "recurrence": "annual",
+      "source": "official_url",
+      "hubId": "prague",
+      "titleEn": "Prague Spring Festival Season",
+      "recurrenceNote": "4~5월 클래식·봄 축제",
+      "venue": {
+        "name": "Rudolfinum · Old Town"
+      },
+      "sourceUrl": "https://www.festival.cz/en",
+      "bookingHints": "구시가·말라 스트라나 — 루돌피눔 도보권",
+      "priority": 2
+    },
+    {
+      "id": "marrakech-rose-festival-2027",
+      "slug": "marrakech",
+      "type": "festival",
+      "title": "로즈 페스티벌",
+      "startDate": "2027-05-08",
+      "endDate": "2027-05-10",
+      "recurrence": "annual",
+      "source": "curated",
+      "hubId": "marrakech",
+      "titleEn": "Rose Festival (Festival des Roses)",
+      "recurrenceNote": "5월 초 · 켈라at M'Gouna",
+      "venue": {
+        "name": "Kelaat M'Gouna · Dades Valley"
+      },
+      "sourceUrl": "https://www.visitmorocco.com/en/travel/festivals",
+      "bookingHints": "마라케시 기점 당일·1박 투어 — 계곡 숙소는 소수",
+      "priority": 2
+    }
+  ]
 }

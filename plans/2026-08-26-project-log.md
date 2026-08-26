@@ -33,3 +33,11 @@
 - **산출** `buildPlacePlannerPathFromEvent` · `FestivalDetailSheet` 플래너 CTA · `PlannerTab` eventTripWindow → 항공·숙소 위젯 날짜 · `smoke:korea-festival-planner-link`
 - **VERIFY** `smoke:korea-festival-planner-link` · `smoke:korea-festival-stay-url` · `smoke:korea-festival-nearby` · `smoke:trip-window-from-festival` · `audit:world-events` · `build` PASS
 - **다음** 세션 #6 P2-a 해외 12건 overrides
+
+## 세계행사 일정 #6 — P2-a SSOT Wave1
+
+- **세션** `세계행사 일정 #6, P2-a — SSOT Wave1`
+- **브랜치** `cursor/world-events-efa3` · PR #150
+- **산출** `world-event-overrides.mjs` Wave1 15건(유럽·아시아·아메리카·오세아니아·니치) · `generate:world-events` → `worldEvents.json`
+- **VERIFY** `generate:world-events` · `audit:world-events` · `build` PASS
+- **다음** 세션 #7 P2-b PlaceCard 「이 도시의 행사」

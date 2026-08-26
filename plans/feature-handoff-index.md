@@ -18,24 +18,24 @@
 
 | | |
 |--|--|
-| **상태** | **P1-b 완료** — 플래너 딥링크·항공 위젯 날짜 · 세션 #6 P2-a 대기 |
-| **다음 세션** | `#6 P2-a` SSOT Wave1 |
+| **상태** | **P2-a 완료** — Wave1 overrides 15건 · 세션 #7 P2-b 대기 |
+| **다음 세션** | `#7 P2-b` PlaceCard 행사 |
 | **브랜치** | `cursor/world-events-efa3` |
 | **PR** | #150 |
 | **플랜** | [`world-events-plan.md`](./world-events-plan.md) §10 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) |
 | **일지** | [`2026-08-26-project-log.md`](./2026-08-26-project-log.md) |
-| **VERIFY** | `smoke:korea-festival-planner-link` · `smoke:korea-festival-stay-url` · `smoke:korea-festival-nearby` · `build` PASS |
+| **VERIFY** | `generate:world-events` · `audit:world-events` · `build` PASS |
 
 **다음 제시어**:
 
 ```
-세계행사 일정 #6, P2-a — SSOT Wave1
+세계행사 일정 #7, P2-b — PlaceCard 행사
 @plans/feature-handoff-index.md
 @plans/world-events-plan.md §10
 브랜치 cursor/world-events-efa3 · PR #150
-금지: UI 라우트 추가 · worldEvents.json 직편집 · 세션 #6 범위 넘기기
+금지: worldEvents.json 직편집 · UI 리디자인 · 세션 #7 범위 넘기기
 ```
 
 ---
