@@ -1,16 +1,44 @@
 import { buildTripcomPlannerFlightUrl, TRIPCOM_FLIGHT_AD } from '../../../utils/affiliate';
 import { isMobileDevice } from './device';
 
+/** @param {unknown} value @returns {boolean} */
+function hasTripcomFlightSchedulePrefill(value) {
+    const s = String(value || '').trim();
+    return /^\d{4}-\d{2}-\d{2}$/.test(s);
+}
+
+/**
+ * 일정·인원 prefill이 있으면 모바일 ad iframe 대신 `/flights/` 직링크.
+ * ad 위젯은 공항은 반영되나 ddate/rdate·adult가 불안정함.
+ *
+ * @param {{ departDate?: string, forceModal?: boolean }} [options]
+ */
+export function shouldUseTripcomFlightSearchModal(options = {}) {
+    if (options.forceModal === true) {
+        return isMobileDevice() && !!TRIPCOM_FLIGHT_AD.mobileAdId;
+    }
+    if (hasTripcomFlightSchedulePrefill(options.departDate)) {
+        return false;
+    }
+    return isMobileDevice() && !!TRIPCOM_FLIGHT_AD.mobileAdId;
+}
+
 /**
  * 플래너에서 Trip.com으로 **페이지 이동**할 때 쓰는 URL.
  * 모바일 `/flights/` 직링크는 aAirportCode 자동입력이 무시되는 경우가 있어
  * 배너 iframe과 동일한 partners/ad 위젯 URL을 사용한다.
+ * 일정 prefill 시에는 `/flights/?ddate=…` 직링크.
  *
  * @param {Record<string, unknown> | null | undefined} location
- * @param {{ essentialGuide?: Record<string, unknown> | null, tracking?: string }} [options]
+ * @param {{ essentialGuide?: Record<string, unknown> | null, tracking?: string, departDate?: string }} [options]
  */
 export function buildTripcomPlannerNavigationUrl(location, options = {}) {
-    if (isMobileDevice() && TRIPCOM_FLIGHT_AD.mobileAdId) {
+    const useAdWidget =
+        isMobileDevice() &&
+        TRIPCOM_FLIGHT_AD.mobileAdId &&
+        !hasTripcomFlightSchedulePrefill(options.departDate);
+
+    if (useAdWidget) {
         return buildTripcomPlannerFlightUrl(location, {
             ...options,
             mode: 'ad',
@@ -49,7 +77,7 @@ export function getTripcomFlightAdForModal() {
 
 /** 모바일 전체 화면 모달용 ad iframe src (외부 Trip.com 페이지 이동 대신 사용) */
 export function buildTripcomPlannerFlightModalSrc(location, options = {}) {
-    const useModal = options.forceModal === true || shouldUseTripcomFlightSearchModal();
+    const useModal = shouldUseTripcomFlightSearchModal(options);
     if (!useModal) return null;
 
     const { adId, tracking } = getTripcomFlightAdForModal();
@@ -60,10 +88,6 @@ export function buildTripcomPlannerFlightModalSrc(location, options = {}) {
         adId,
         tracking: options.tracking ?? tracking ?? undefined,
     });
-}
-
-export function shouldUseTripcomFlightSearchModal() {
-    return isMobileDevice() && !!TRIPCOM_FLIGHT_AD.mobileAdId;
 }
 
 /**

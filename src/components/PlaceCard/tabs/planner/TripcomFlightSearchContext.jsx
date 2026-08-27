@@ -17,8 +17,7 @@ export function TripcomFlightSearchProvider({ children }) {
     }, []);
 
     const tryOpenFlightSearch = useCallback((location, options = {}) => {
-        const useModal = options.forceModal === true || shouldUseTripcomFlightSearchModal();
-        if (!useModal) return false;
+        if (!shouldUseTripcomFlightSearchModal(options)) return false;
 
         const iframeSrc = buildTripcomPlannerFlightModalSrc(location, options);
         if (!iframeSrc) return false;

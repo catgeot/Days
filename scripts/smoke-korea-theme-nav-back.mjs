@@ -213,8 +213,8 @@ assert(
   'festival detail wires theme cross links',
 );
 assert(
-  festSheet.includes('숙소 · 투어') && festSheet.includes('패키지'),
-  'festival detail has stay/tna/package rails',
+  festSheet.includes('FestivalStayStrip') && festSheet.includes('FestivalMooniFab'),
+  'festival detail has in-page stay strip and Mooni FAB',
 );
 assert(
   festSheet.includes('returnTo="/korea"') &&

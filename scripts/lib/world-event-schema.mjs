@@ -12,6 +12,14 @@
 
 /**
  * @typedef {{
+ *   name: string,
+ *   mrtKeyword?: string,
+ *   note?: string,
+ * }} WorldEventStayArea
+ */
+
+/**
+ * @typedef {{
  *   id: string,
  *   slug: string,
  *   hubId?: string,
@@ -26,6 +34,11 @@
  *   source: WorldEventSource,
  *   sourceUrl?: string,
  *   bookingHints?: string,
+ *   detailOverview?: string,
+ *   highlights?: string[],
+ *   stayAreas?: WorldEventStayArea[],
+ *   recommendedNights?: number,
+ *   heroImage?: string,
  *   priority?: number,
  * }} WorldEventOverride
  */
@@ -139,6 +152,65 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
   const bookingHints =
     raw.bookingHints != null ? String(raw.bookingHints).trim() : undefined;
 
+  const detailOverview =
+    raw.detailOverview != null ? String(raw.detailOverview).trim() : undefined;
+
+  let highlights;
+  if (raw.highlights != null) {
+    if (!Array.isArray(raw.highlights)) {
+      throw new Error(`[world-events] ${id}: highlights must be array`);
+    }
+    highlights = raw.highlights
+      .map((item) => String(item || '').trim())
+      .filter(Boolean);
+    if (!highlights.length) {
+      throw new Error(`[world-events] ${id}: highlights must not be empty when set`);
+    }
+  }
+
+  let stayAreas;
+  if (raw.stayAreas != null) {
+    if (!Array.isArray(raw.stayAreas)) {
+      throw new Error(`[world-events] ${id}: stayAreas must be array`);
+    }
+    stayAreas = raw.stayAreas.map((area, areaIndex) => {
+      if (!area || typeof area !== 'object') {
+        throw new Error(`[world-events] ${id}: stayAreas[${areaIndex}] must be object`);
+      }
+      const name = String(area.name || '').trim();
+      if (!name) {
+        throw new Error(`[world-events] ${id}: stayAreas[${areaIndex}].name required`);
+      }
+      /** @type {WorldEventStayArea} */
+      const normalizedArea = { name };
+      if (area.mrtKeyword != null) {
+        normalizedArea.mrtKeyword = String(area.mrtKeyword).trim();
+      }
+      if (area.note != null) {
+        normalizedArea.note = String(area.note).trim();
+      }
+      return normalizedArea;
+    });
+    if (!stayAreas.length) {
+      throw new Error(`[world-events] ${id}: stayAreas must not be empty when set`);
+    }
+  }
+
+  let recommendedNights;
+  if (raw.recommendedNights != null) {
+    recommendedNights = Number(raw.recommendedNights);
+    if (
+      !Number.isFinite(recommendedNights) ||
+      !Number.isInteger(recommendedNights) ||
+      recommendedNights < 1 ||
+      recommendedNights > 30
+    ) {
+      throw new Error(`[world-events] ${id}: recommendedNights must be integer 1..30`);
+    }
+  }
+
+  const heroImage = raw.heroImage != null ? String(raw.heroImage).trim() : undefined;
+
   let priority;
   if (raw.priority != null) {
     priority = Number(raw.priority);
@@ -165,6 +237,11 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
   if (venue) event.venue = venue;
   if (sourceUrl) event.sourceUrl = sourceUrl;
   if (bookingHints) event.bookingHints = bookingHints;
+  if (detailOverview) event.detailOverview = detailOverview;
+  if (highlights) event.highlights = highlights;
+  if (stayAreas) event.stayAreas = stayAreas;
+  if (recommendedNights != null) event.recommendedNights = recommendedNights;
+  if (heroImage) event.heroImage = heroImage;
   if (priority != null) event.priority = priority;
 
   return event;

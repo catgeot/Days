@@ -1,0 +1,174 @@
+#!/usr/bin/env node
+/**
+ * 세계행사 Phase B — 상세 URL · lookup · edinburgh Tier0.5 스모크 (DOM 없음).
+ *
+ *   npm run smoke:world-events-detail
+ */
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { buildWorldEventDetailPath } from '../src/utils/worldEventDetailPath.js';
+import { getAllWorldEvents, getWorldEventById, getWorldEventLocation } from '../src/utils/worldEvents.js';
+import { tripWindowPresetsFromEvent } from '../src/utils/worldEventTripPresets.js';
+import { tripWindowNights } from '../src/shared/tripWindow.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const root = join(__dirname, '..');
+
+const events = getAllWorldEvents();
+assert.equal(events.length, 15, 'Wave1 has 15 events');
+
+for (const event of events) {
+  const found = getWorldEventById(event.id);
+  assert.ok(found, `getWorldEventById resolves ${event.id}`);
+  assert.equal(found.id, event.id);
+  const href = buildWorldEventDetailPath(event.id);
+  assert.equal(href, `/world-events/${event.id}`);
+  const presets = tripWindowPresetsFromEvent(event);
+  assert.equal(presets.eventDetailHref, href, `${event.id} eventDetailHref`);
+}
+
+const fringe = getWorldEventById('edinburgh-fringe-2026');
+assert.ok(fringe, 'edinburgh-fringe-2026 present');
+assert.ok(fringe.detailOverview, 'edinburgh has detailOverview');
+assert.ok(Array.isArray(fringe.highlights) && fringe.highlights.length >= 2, 'edinburgh highlights');
+assert.ok(Array.isArray(fringe.stayAreas) && fringe.stayAreas.length >= 1, 'edinburgh stayAreas');
+assert.equal(fringe.recommendedNights, 4, 'edinburgh recommendedNights');
+
+/** @param {string} eventId @param {number} nights */
+function assertTier05(eventId, nights) {
+  const event = getWorldEventById(eventId);
+  assert.ok(event, `${eventId} present`);
+  assert.ok(event.detailOverview, `${eventId} has detailOverview`);
+  assert.ok(
+    Array.isArray(event.highlights) && event.highlights.length >= 2,
+    `${eventId} highlights`,
+  );
+  assert.ok(
+    Array.isArray(event.stayAreas) && event.stayAreas.length >= 1,
+    `${eventId} stayAreas`,
+  );
+  assert.equal(event.recommendedNights, nights, `${eventId} recommendedNights`);
+}
+
+assertTier05('munich-oktoberfest-2026', 3);
+assertTier05('vienna-staatsoper-season-2026', 3);
+assertTier05('amsterdam-kings-day-2027', 2);
+assertTier05('tokyo-sakura-season-2027', 4);
+assertTier05('kyoto-gion-matsuri-2027', 3);
+assertTier05('bangkok-songkran-2027', 3);
+assertTier05('bali-galungan-season-2026', 4);
+assertTier05('rio-carnival-2027', 4);
+assertTier05('new-york-thanksgiving-season-2026', 3);
+assertTier05('iceland-midnight-sun-2027', 4);
+assertTier05('sydney-vivid-2027', 3);
+assertTier05('prague-spring-festival-2027', 3);
+assertTier05('marrakech-rose-festival-2027', 2);
+assertTier05('hanoi-tet-2027', 4);
+
+const WAVE1_EVENT_IDS = [
+  'edinburgh-fringe-2026',
+  'munich-oktoberfest-2026',
+  'vienna-staatsoper-season-2026',
+  'amsterdam-kings-day-2027',
+  'tokyo-sakura-season-2027',
+  'kyoto-gion-matsuri-2027',
+  'bangkok-songkran-2027',
+  'bali-galungan-season-2026',
+  'rio-carnival-2027',
+  'new-york-thanksgiving-season-2026',
+  'iceland-midnight-sun-2027',
+  'sydney-vivid-2027',
+  'prague-spring-festival-2027',
+  'marrakech-rose-festival-2027',
+  'hanoi-tet-2027',
+];
+
+for (const eventId of WAVE1_EVENT_IDS) {
+  const event = getWorldEventById(eventId);
+  assert.ok(event, `${eventId} in Wave1 roster`);
+  assert.ok(event.detailOverview, `${eventId} Tier0.5 detailOverview`);
+}
+
+const rio = tripWindowPresetsFromEvent(getWorldEventById('rio-carnival-2027'));
+assert.ok(rio.visitPresets.length >= 1, 'rio visit presets');
+assert.ok(
+  tripWindowNights(rio.tripWindow.checkIn, rio.tripWindow.checkOut) <= 10,
+  'rio CTA nights capped',
+);
+
+const { resolvePlannerFlightArrivalIata } = await import('../src/utils/rentalAirportMatch.js');
+const rioLoc = getWorldEventLocation('rio-de-janeiro');
+assert.equal(resolvePlannerFlightArrivalIata(rioLoc), 'GIG', 'rio arrival IATA for packages prefill');
+
+const edinburghLoc = getWorldEventLocation('edinburgh');
+assert.equal(resolvePlannerFlightArrivalIata(edinburghLoc), 'EDI', 'edinburgh arrival IATA');
+const pragueLoc = getWorldEventLocation('prague');
+assert.equal(resolvePlannerFlightArrivalIata(pragueLoc), 'PRG', 'prague arrival IATA');
+const hanoiLoc = getWorldEventLocation('hanoi');
+assert.equal(resolvePlannerFlightArrivalIata(hanoiLoc), 'HAN', 'hanoi arrival IATA');
+const marrakechLoc = getWorldEventLocation('marrakech');
+assert.equal(resolvePlannerFlightArrivalIata(marrakechLoc), 'RAK', 'marrakech arrival IATA');
+
+const edinburghPresets = tripWindowPresetsFromEvent(getWorldEventById('edinburgh-fringe-2026'));
+
+const stayStripSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventStayStrip.jsx'), 'utf8');
+assert.match(
+  stayStripSrc,
+  /departDate: checkIn/,
+  'EventStayStrip passes checkIn as departDate',
+);
+assert.match(
+  stayStripSrc,
+  /checkIn,\s*\n\s*checkOut/,
+  'EventStayStrip passes hotel checkIn/checkOut to packages',
+);
+assert.match(
+  stayStripSrc,
+  /adultCount/,
+  'EventStayStrip passes adultCount to packages',
+);
+assert.ok(edinburghPresets.tripWindow.checkIn, 'edinburgh preset checkIn for packages prefill');
+assert.ok(edinburghPresets.tripWindow.checkOut, 'edinburgh preset checkOut for packages prefill');
+
+const appSrc = readFileSync(join(root, 'src/App.jsx'), 'utf8');
+assert.match(appSrc, /\/world-events\/:eventId/, 'App route for event detail');
+
+const hubSrc = readFileSync(join(root, 'src/pages/WorldEvents/index.jsx'), 'utf8');
+assert.match(hubSrc, /eventDetailHref/, 'WorldEvents hub uses eventDetailHref');
+
+const detailSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventDetailPage.jsx'), 'utf8');
+assert.match(detailSrc, /EventDetailStaticPanel/, 'EventDetailPage renders static panel');
+assert.match(detailSrc, /EventStayStrip/, 'EventDetailPage renders in-page stay strip');
+assert.match(detailSrc, /EventMooniFab/, 'EventDetailPage renders Mooni FAB');
+
+assert.match(stayStripSrc, /EventFlightHotelCta/, 'EventStayStrip uses packages CTA');
+assert.match(stayStripSrc, /event-detail-flight/, 'EventStayStrip event-detail-flight tracking');
+assert.match(stayStripSrc, /mode: 'packages'/, 'EventStayStrip packages mode');
+assert.match(stayStripSrc, /placeLabel/, 'EventStayStrip placeLabel override');
+assert.match(stayStripSrc, /accent="light"/, 'EventStayStrip light guest stepper');
+
+const mooniFabSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventMooniFab.jsx'), 'utf8');
+assert.match(mooniFabSrc, /MooniBoundChatHost/, 'EventMooniFab opens MooniBoundChatHost');
+
+const affiliateSrc = readFileSync(join(root, 'src/utils/affiliate.js'), 'utf8');
+assert.match(affiliateSrc, /event-detail-flight/, 'affiliate event-detail-flight tracking');
+assert.match(affiliateSrc, /if \(mode === 'packages'\)/, 'packages/list gated by mode=packages only');
+assert.match(affiliateSrc, /bali: '723'/, 'bali Trip.com hotel city id for packages');
+
+assert.doesNotMatch(
+  stayStripSrc,
+  /WhiteLabelWidget/,
+  'EventStayStrip uses packages link not WhiteLabelWidget',
+);
+
+const globeSrc = readFileSync(join(root, 'src/pages/Home/components/HomePlaceCardSummary.jsx'), 'utf8');
+assert.match(globeSrc, /GlobeStayStrip/, 'GlobeStayStrip still wired on place summary (regression)');
+assert.match(
+  readFileSync(join(root, 'src/pages/Home/components/GlobeStayStrip.jsx'), 'utf8'),
+  /WhiteLabelWidget/,
+  'GlobeStayStrip WhiteLabelWidget regression',
+);
+
+console.log('OK    smoke:world-events-detail — all assertions passed');

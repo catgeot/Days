@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 10,
-  sessionPhase: '사람 Preview QA',
+  sessionNo: 20,
+  sessionPhase: '국내 FestivalStayStrip · merge 준비',
   branch: 'cursor/world-events-efa3',
   previewPath: '/world-events',
   qaShareSlug: 'world-events',
@@ -23,6 +23,101 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-27-world-events-festival-mooni-fab-fix',
+    session: '세계행사 일정 #20, QA 재확인 · 국내 FestivalStayStrip',
+    title: '국내 축제 무니 FAB — 오버레이 닫힘 수정',
+    detail:
+      'FestivalMooniFab 클릭이 시트 onClose로 버블링되던 문제 — stopPropagation · mooniOpen 시 배경 닫기 차단. Preview /korea 축제 상세 — 무니 FAB 클릭 시 채팅 열리고 홈으로 안 돌아가는지 확인.',
+    at: '2026-08-27',
+  },
+  {
+    id: '2026-08-27-world-events-korea-festival-stay-strip',
+    session: '세계행사 일정 #20, QA 재확인 · 국내 FestivalStayStrip',
+    title: '국내 축제 FestivalStayStrip · Mooni FAB',
+    detail:
+      'FestivalDetailSheet 플래너·숙소 링크 → FestivalStayStrip(EventStayStrip 재사용·TripWindow 프리셋) · FestivalMooniFab. 투어·패키지 레일 유지. VERIFY smoke:world-events* · korea-festival-stay-url · build PASS. Preview /qa/world-events + /korea — 축제 상세 「내 여행 일정」·숙소 카드·항공+숙소·무니 FAB 확인 후 PR #153 merge.',
+    at: '2026-08-27',
+  },
+  {
+    id: '2026-08-27-world-events-wave1-integration-qa',
+    session: '세계행사 일정 #19, Wave1 통합 QA',
+    title: 'Wave1 15건 통합 QA · PR #153 병합 준비',
+    detail:
+      'smoke:world-events · smoke:world-events-detail · smoke:event-travel-guide · audit:event-travel-guide · build PASS. management §6.1·§6.1.1 체크리스트 정리. Preview /qa/world-events — 허브·§6.1 회귀 후 15 상세 URL(§6.1.1 표) 각각 Tier0~2·프리셋·항공+숙소 prefill·무니 FAB 확인. PR #153 병합 준비(draft 해제) — 사람 QA OK 후 merge.',
+    at: '2026-08-27',
+  },
+  {
+    id: '2026-08-27-world-events-sample13-15-mooni',
+    session: '세계행사 일정 #18, 샘플13~15 · 위젯 마감',
+    title: 'Wave1 15건 완료 · packages prefill · Mooni FAB',
+    detail:
+      'sample #13 prague·#14 marrakech·#15 hanoi Tier0.5. EventStayStrip 「항공+숙소」→ Trip packages/list(일정·ICN→도착·인원 prefill) · GuestStepper 가독성. EventMooniFab. smoke 15 URL PASS. Preview /qa/world-events → /world-events/hanoi-tet-2027 — 프리셋·인원·항공+숙소 Trip 일정·무니 FAB 확인.',
+    at: '2026-08-27',
+  },
+  {
+    id: '2026-08-26-world-events-trip-prefill',
+    session: '세계행사 일정 #17, 항공+숙소 Trip prefill',
+    title: 'EventStayStrip Trip parity · packages/list prefill',
+    detail:
+      'EventStayStrip 「항공+숙소」— packages/list 직링크 제거 · WhiteLabelWidget(항공 검색 ad/flights + ICN→GIG·일정 prefill)만 사용. Trip 내 「항공+호텔」은 검색 화면에서 클릭. Preview /qa/world-events → /world-events/rio-carnival-2027 — 버튼 클릭 시 항공 검색에 공항·날짜 채워지는지 확인.',
+    at: '2026-08-26',
+  },
+  {
+    id: '2026-08-26-world-events-phase-d-stay-strip',
+    session: '세계행사 일정 #16, 샘플9~12 · in-page 숙소항공',
+    title: 'Phase D EventStayStrip · 샘플9~12',
+    detail:
+      'EventStayStrip(StayRangeCalendar·visitPresets·MRT 숙소·Trip 항공+숙소) · CTA maxNights cap(에든버러 4박). sample #9~#12 rio·nyc·iceland·sydney Tier0.5. Preview /qa/world-events → /world-events/rio-carnival-2027 — 「내 여행 일정」프리셋·달력·숙소 카드·상단 플래너/숙소 CTA 날짜(전체 span 아님) 확인. /place/edinburgh GlobeStayStrip 회귀.',
+    at: '2026-08-26',
+  },
+  {
+    id: '2026-08-26-world-events-tier05-tokyo-kyoto-bangkok-bali',
+    session: '세계행사 일정 #15, 샘플5~8 tokyo·kyoto·bangkok·bali',
+    title: 'Tier0.5 · tokyo·kyoto·bangkok·bali',
+    detail:
+      'sample #5~#8: world-event-overrides Tier0.5(detailOverview·highlights·stayAreas·recommendedNights). tokyo 4박(season·개화 변동)·kyoto 3박(요이야마 피크)·bangkok 3박(3일)·bali 4박(갈룽안 시즌). Preview /qa/world-events → 아시아 칩 → 도쿄 벚꽃·기온마츠리·송크란·갈룽안 「행사 상세」→ 개요·하이라이트·숙소 권역·권장 박수 확인.',
+    at: '2026-08-26',
+  },
+  {
+    id: '2026-08-26-world-events-ai-guide-munich-vienna-amsterdam',
+    session: '세계행사 일정 #14, 샘플2~4 munich·vienna·amsterdam',
+    title: 'Tier3 AI fixture · munich·vienna·amsterdam',
+    detail:
+      'sample #2~#4 EventTravelGuide fixture v0.1 추가 · Preview에서 fixture 자동 로드. /qa/world-events → 옥토버페스트·빈 오페라·킹스데이 상세 — 에든버러와 동일한 「행사 맞춤 여행 가이드」·trip presets·하단 raw JSON 확인.',
+    at: '2026-08-26',
+  },
+  {
+    session: '세계행사 일정 #14, 샘플2~4 munich·vienna·amsterdam',
+    title: '상세 「권장 박수」섹션 분리',
+    detail:
+      'Tier0.5 recommendedNights를 Hero 인라인에서 독립 섹션(제목 「권장 박수」)으로 옮겼습니다. Preview /qa/world-events → 킹스데이 상세 — 하이라이트 아래 「권장 박수」2박 섹션이 보이는지 확인해 주세요.',
+    at: '2026-08-26',
+  },
+  {
+    id: '2026-08-26-world-events-tier05-munich-vienna-amsterdam',
+    session: '세계행사 일정 #14, 샘플2~4 munich·vienna·amsterdam',
+    title: 'Tier0.5 overrides · munich·vienna·amsterdam',
+    detail:
+      'sample #2~#4: world-event-overrides Tier0.5(detailOverview·highlights·stayAreas·recommendedNights). munich 3박·vienna 3박(season)·amsterdam 2박(단기). Preview /qa/world-events → 유럽 칩 → 옥토berfest·빈 오페라·킹스데이 「행사 상세」→ 개요·하이라이트·숙소 권역·권장 박수 확인.',
+    at: '2026-08-26',
+  },
+  {
+    id: '2026-08-26-world-events-ai-guide-edinburgh',
+    session: '세계행사 일정 #13, AI 가이드 · 샘플1 edinburgh',
+    title: 'EventTravelGuide v0.1 · edinburgh Tier3',
+    detail:
+      'Phase C-0~1: EventTravelGuide 스키마·audit·Edge update-event-travel-guide·event_travel_guide 테이블·EventTravelGuidePanel(Preview raw JSON). edinburgh-fringe-2026 fixture 1건. Preview /qa/world-events → 에든버러 프린지 상세 — Tier3 AI 패널(있으면)·하단 QA raw JSON 확인. DB 미배포 시 정적 Tier0~2만 보임(정상).',
+    at: '2026-08-26',
+  },
+  {
+    id: '2026-08-26-world-events-detail-phase-b',
+    session: '세계행사 일정 #12, 상세 셸 · 샘플1 edinburgh',
+    title: 'EventDetailPage · Tier0~2 · 허브→상세',
+    detail:
+      'Phase B: /world-events/:eventId 라우트 · EventDetailStaticPanel · edinburgh Tier0.5 overrides · 허브·PlaceCard 「행사 상세」CTA. Preview /qa/world-events → 에든버러 프린지 「행사 상세」→ /world-events/edinburgh-fringe-2026 · 개요·하이라이트·숙소 권역·권장 4박·플래너/숙소 CTA 확인해 주세요.',
+    at: '2026-08-26',
+  },
   {
     id: '2026-08-26-world-events-human-preview-qa',
     session: '세계행사 일정 #10, 사람 Preview QA',

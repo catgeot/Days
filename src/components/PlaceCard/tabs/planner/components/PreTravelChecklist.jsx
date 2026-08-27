@@ -45,7 +45,10 @@ const PreTravelChecklist = ({ items, locationName, location, essentialGuide, eve
         }
     };
 
-    const preTravelFlightLinkProps = shouldUseTripcomFlightSearchModal()
+    const preTravelFlightModalOpts = {
+        ...(eventTripWindow?.departDate ? { departDate: eventTripWindow.departDate } : {}),
+    };
+    const preTravelFlightLinkProps = shouldUseTripcomFlightSearchModal(preTravelFlightModalOpts)
         ? { href: '#', onClick: handlePreTravelFlightClick, role: 'button' }
         : { href: preTravelFlightUrl, target: linkTarget, rel: tripcomLinkRel };
 

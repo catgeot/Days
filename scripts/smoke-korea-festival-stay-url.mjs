@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 세계행사 P1-a — 축제 상세 MRT 숙소 URL에 TripWindow checkIn/checkOut.
+ * 국내 축제 상세 — FestivalStayStrip · TripWindow 일정 연동.
  *
  *   npm run smoke:korea-festival-stay-url
  */
@@ -17,35 +17,51 @@ const sheetSrc = readFileSync(
   join(root, 'src/pages/Korea/FestivalDetailSheet.jsx'),
   'utf8',
 );
-const affiliateSrc = readFileSync(
-  join(root, 'src/utils/affiliate.js'),
+const stripSrc = readFileSync(
+  join(root, 'src/pages/Korea/FestivalStayStrip.jsx'),
+  'utf8',
+);
+const eventStripSrc = readFileSync(
+  join(root, 'src/pages/WorldEvents/EventStayStrip.jsx'),
   'utf8',
 );
 
+assert.match(sheetSrc, /FestivalStayStrip/, 'FestivalDetailSheet renders FestivalStayStrip');
 assert.match(
   sheetSrc,
+  /FestivalMooniFab/,
+  'FestivalDetailSheet renders FestivalMooniFab',
+);
+assert.doesNotMatch(
+  sheetSrc,
+  /buildPlacePlannerPathFromEvent/,
+  'FestivalDetailSheet no longer links to place planner',
+);
+assert.doesNotMatch(
+  sheetSrc,
+  /festivalPlannerHref/,
+  'FestivalDetailSheet removed planner href rail',
+);
+
+assert.match(
+  stripSrc,
   /tripWindowFromTourApiFestival/,
-  'FestivalDetailSheet uses tripWindowFromTourApiFestival',
+  'FestivalStayStrip uses tripWindowFromTourApiFestival',
 );
 assert.match(
-  sheetSrc,
-  /checkIn:\s*festivalTripWindow/,
-  'FestivalDetailSheet passes checkIn from festivalTripWindow',
+  stripSrc,
+  /visitWindowPresetsFromEvent/,
+  'FestivalStayStrip uses visit presets',
 );
 assert.match(
-  sheetSrc,
-  /checkOut:\s*festivalTripWindow/,
-  'FestivalDetailSheet passes checkOut from festivalTripWindow',
+  stripSrc,
+  /EventStayStrip/,
+  'FestivalStayStrip reuses EventStayStrip',
 );
 assert.match(
-  affiliateSrc,
-  /checkIn:\s*options\.checkIn/,
-  'getMrtAccommodationSearchUrl forwards checkIn',
-);
-assert.match(
-  affiliateSrc,
-  /checkOut:\s*options\.checkOut/,
-  'getMrtAccommodationSearchUrl forwards checkOut',
+  eventStripSrc,
+  /placeLabel/,
+  'EventStayStrip supports placeLabel override',
 );
 
 const hwacheon = {

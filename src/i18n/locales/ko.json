@@ -1498,13 +1498,14 @@
     "title": "세계 행사 일정",
     "seoTitle": "세계 행사 일정 — GATEO",
     "seoDescription": "유럽·아시아·아메리카·오세아니아·니치 도시의 대표 축제·시즌 행사를 모아 보고, 여행지 카드·행사 맞춤 플래너로 이어갑니다.",
-    "intro": "Wave 1 큐레이션 도시의 대표 행사입니다. 카드를 눌러 여행지·플래너·숙소로 이어가세요.",
+    "intro": "Wave 1 큐레이션 도시의 대표 행사입니다. 카드를 눌러 행사 상세·여행지·플래너·숙소로 이어가세요.",
     "koreaLink": "한국의 축제",
     "regionChipsAria": "지역 필터",
     "headlineAll": "전체 {{count}}건",
     "headlineRegion": "{{region}} {{count}}건",
     "empty": "이 지역에 등록된 행사가 없습니다.",
     "card": {
+      "detailCta": "행사 상세",
       "placeCta": "여행지 카드"
     },
     "region": {
@@ -1514,6 +1515,58 @@
       "americas": "아메리카",
       "oceaniaNature": "오세아니아·자연",
       "niche": "소규모·니치"
+    }
+  },
+  "worldEventDetail": {
+    "seoTitle": "{{title}} — 세계 행사 — GATEO",
+    "seoDescription": "행사 일정·숙소·플래너로 이어지는 세계 행사 상세",
+    "backToHub": "행사 목록",
+    "overview": "행사 소개",
+    "highlights": "하이라이트",
+    "typeGuide": "행사 유형 안내",
+    "bookingHints": "예약·숙소 팁",
+    "stayAreas": "추천 숙소 권역",
+    "recommendedNightsTitle": "권장 박수",
+    "recommendedNightsBody": "{{nights}}박 · 행사 전체 기간이 아닌 짧은 방문 기준",
+    "askMooni": "무니에게 묻기",
+    "staticFallback": "상세 소개는 준비 중입니다. 공식 일정·여행지 카드·플래너 CTA를 이용해 주세요.",
+    "type": {
+      "festival": "축제",
+      "season": "시즌",
+      "opera": "오페라",
+      "concert": "콘서트",
+      "heritage": "문화유산"
+    },
+    "typeIntro": {
+      "festival": "단기·중기 집중 행사입니다. 피크 날짜 전후 2~5박으로 일정을 잡고, 공연·축제장 접근성을 우선해 숙소를 고르세요.",
+      "season": "시즌형 행사는 기간이 길 수 있습니다. 전체 시즌 숙박 대신 관심 있는 3~7박 윈도를 골라 방문하는 것이 일반적입니다.",
+      "opera": "오페라·공연 시즌은 예매 일정과 맞춰 짧은 방문을 계획하세요. 공연장·역 접근 숙소가 이동 부담을 줄입니다.",
+      "concert": "콘서트·공연 행사는 티켓 확보 후 숙소를 잡는 순서가 안전합니다. 공연장 인근·대중교통 접근을 우선하세요.",
+      "heritage": "문화·유산 행사는 현지 교통과 개최지 분산 여부를 확인한 뒤, 핵심 구역 중심으로 숙소를 고르세요."
+    },
+    "aiGuide": {
+      "title": "행사 맞춤 여행 가이드",
+      "tierLabel": "AI",
+      "recommendedNights": "AI 권장 숙박 {{nights}}박 (행사 전체 기간 아님)",
+      "tripPresets": "추천 방문 윈도",
+      "nights": "{{count}}박",
+      "bookingTips": "예매·숙소 팁",
+      "cautions": "주의사항",
+      "rawJson": "QA — raw JSON"
+    },
+    "stayStrip": {
+      "title": "내 여행 일정",
+      "hint": "행사 전체 기간이 아닌, 선택한 숙박 일정으로 숙소·항공을 조회합니다.",
+      "dates": "숙박 일정",
+      "staysTitle": "{{place}} 숙소",
+      "flightCta": "항공+숙소",
+      "empty": "선택 일정에 맞는 숙소가 없습니다. 일정을 조정해 보세요.",
+      "presets": {
+        "default": "추천 일정",
+        "opening": "개막",
+        "midWeekend": "중순 주말",
+        "closing": "막바지"
+      }
     }
   },
   "logbook": {

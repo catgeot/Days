@@ -24,6 +24,26 @@ export const WORLD_EVENT_OVERRIDES = [
     source: 'official_url',
     sourceUrl: 'https://www.wiener-staatsoper.at/en/',
     bookingHints: '오페라 시즌 숙소는 1구·카발티에르 근처',
+    detailOverview:
+      '9월부터 익년 6월까지 이어지는 오페라·발레·콘서트 시즌입니다. 전체 기간 숙박보다 공연 일정에 맞춘 2~4박 방문이 일반적이며, 관람하려는 작품·날짜를 먼저 정한 뒤 숙소를 잡는 것이 좋습니다.',
+    highlights: [
+      '국립오페라 본관·Musikverein 등 클래식 공연장',
+      '스탠딩석(Stehplatz) — 당일 현장 구매 가능(인기 공연은 조기 매진)',
+      '1구·카발티에르 도보권 숙소가 공연장 이동에 유리',
+    ],
+    stayAreas: [
+      {
+        name: '1구 · 스테판스플atz',
+        mrtKeyword: 'Vienna Innere Stadt',
+        note: '국립오페라·히스토릭 센터 도보 10~15분',
+      },
+      {
+        name: '카발티에르 · Karlsplatz',
+        mrtKeyword: 'Vienna Karlsplatz',
+        note: 'U-Bahn 접근 · 1구 공연장 버스 10분',
+      },
+    ],
+    recommendedNights: 3,
     priority: 1,
   },
   {
@@ -41,6 +61,26 @@ export const WORLD_EVENT_OVERRIDES = [
     source: 'official_url',
     sourceUrl: 'https://www.oktoberfest.de/en',
     bookingHints: '테레지엔비제·하이드하우저 근처 숙소는 6~12개월 전 예약 권장',
+    detailOverview:
+      '뮌헨 테레지엔비제에서 열리는 세계 최대 맥주 축제로, 약 2주간 대형 맥주 텐트·놀이기구·스트리트 푸드가 이어집니다. 개막 주말·중순 주말 등 핵심 2~3일만 방문하는 짧은 일정이 일반적입니다.',
+    highlights: [
+      '대형 맥주 텐트 — 좌석·단체 예약은 공식 파트너·호텔 패키지 조기 마감',
+      'U4/U5 Theresienwiese·Hackerbrücke 역 도보 접근',
+      '평일 낮·저녁은 상대적으로 한산 — 주말·개막일 혼잡 최대',
+    ],
+    stayAreas: [
+      {
+        name: '테레지엔비제 · Schwanthalerhöhe',
+        mrtKeyword: 'Munich Theresienwiese',
+        note: '축제장 도보 5~10분 · 성수기 6~12개월 전 마감',
+      },
+      {
+        name: 'Hauptbahnhof · Ludwigsvorstadt',
+        mrtKeyword: 'Munich Hauptbahnhof',
+        note: 'S-Bahn·U-Bahn 환승 · 텐트까지 15~20분',
+      },
+    ],
+    recommendedNights: 3,
     priority: 1,
   },
   {
@@ -58,6 +98,26 @@ export const WORLD_EVENT_OVERRIDES = [
     source: 'official_url',
     sourceUrl: 'https://www.edfringe.com/',
     bookingHints: '올드타운·뉴타운 숙소는 공연장 도보권 위주',
+    detailOverview:
+      '세계 최대 규모의 공연예술 축제로, 8월 한 달간 에든버러 올드타운·프린지 등록 공연장 전역에서 수천 편의 쇼가 상연됩니다. 전체 기간 숙박보다 3~5박 짧은 방문으로 핵심 공연을 골라 보는 것이 일반적입니다.',
+    highlights: [
+      'Royal Mile 주변 프리 공연·스트리트 퍼포먼스',
+      '오후·저녁 시간대 예약 공연 — 온라인 사전 예매 권장',
+      '올드타운·뉴타운 도보권 숙소가 이동 부담 최소',
+    ],
+    stayAreas: [
+      {
+        name: '올드타운 · Royal Mile',
+        mrtKeyword: 'Edinburgh Old Town',
+        note: '공연장 도보 10분 이내 · 성수기 조기 마감',
+      },
+      {
+        name: '뉴타운',
+        mrtKeyword: 'Edinburgh New Town',
+        note: '조용한 숙소 · 올드타운 버스 10~15분',
+      },
+    ],
+    recommendedNights: 4,
     priority: 1,
   },
   {
@@ -75,6 +135,26 @@ export const WORLD_EVENT_OVERRIDES = [
     source: 'official_url',
     sourceUrl: 'https://www.iamsterdam.com/en/whats-on/calendar/festivals-events/kings-day',
     bookingHints: '중심가·운하 근처는 당일 교통 통제 — 전날 체크인 권장',
+    detailOverview:
+      '4월 27일(킹스데이) 하루 동안 도시 전역이 오렌지색으로 물드는 국경일 축제입니다. 거리 플리마켓·운하·광장 파티가 이어지며, 당일 중심가 교통 통제가 많아 전날 밤 체크인을 권장합니다.',
+    highlights: [
+      'Vondelpark·Jordaan 일대 플리마켓·거리 공연',
+      '운하·Dam Square 주변 — 보트·거리 파티(혼잡·교통 통제)',
+      '전날(26일) 숙소 확보 · 당일 일부 구간 도보·자전거 이동',
+    ],
+    stayAreas: [
+      {
+        name: 'Jordaan',
+        mrtKeyword: 'Amsterdam Jordaan',
+        note: '플리마켓·카페 밀집 · Dam Square 도보 15~20분',
+      },
+      {
+        name: 'De Pijp',
+        mrtKeyword: 'Amsterdam De Pijp',
+        note: '상대적으로 조용 · Museumplein·센터 트램 15분',
+      },
+    ],
+    recommendedNights: 2,
     priority: 1,
   },
   {
@@ -92,6 +172,26 @@ export const WORLD_EVENT_OVERRIDES = [
     source: 'curated',
     sourceUrl: 'https://www.japan.travel/en/sg/see-and-do/cherry-blossom-viewing-spots-in-tokyo/',
     bookingHints: '우에노·신주쿠·야마노테선 접근 숙소 조기 마감',
+    detailOverview:
+      '3월 말~4월 초 도쿄 전역에서 벚꽃(사쿠라) 개화·낙화 시기가 해마다 달라지는 시즌 행사입니다. 개화 예보(1~2주 전)를 확인한 뒤 만개 전후 3~5박을 잡는 방문이 일반적이며, 우에노·치도리가후치 등 명소는 주말·야간 라이트업에 혼잡합니다.',
+    highlights: [
+      '우에노 공원·신주쿠 교엔 — 대규모 벚나무·피크닉(하나미) 명소',
+      '치도리가후치·메구로강 — 야간 라이트업·산책 코스(혼잡·사전 숙소 권장)',
+      '개화 예보(JMA·현지 뉴스) 확인 후 항공·숙소 — 만개 전후 1주 버퍼',
+    ],
+    stayAreas: [
+      {
+        name: '우에노 · Ueno',
+        mrtKeyword: 'Tokyo Ueno',
+        note: '우에노 공원·아메요코 도보 · 야마노테선 환승',
+      },
+      {
+        name: '신주쿠 · Shinjuku',
+        mrtKeyword: 'Tokyo Shinjuku',
+        note: '신주쿠 교엔·도심 접근 · 야마노테선·지하철',
+      },
+    ],
+    recommendedNights: 4,
     priority: 1,
   },
   {
@@ -109,6 +209,26 @@ export const WORLD_EVENT_OVERRIDES = [
     source: 'official_url',
     sourceUrl: 'https://www.yasaka-jinja.or.jp/en/',
     bookingHints: '기온·사가노·교토역 숙소는 7월 성수기',
+    detailOverview:
+      '7월 한 달간 이어지는 교토 대표 축제로, 7/16~17 요이야마(전야제·본행)가 절정입니다. 한 달 전체 숙박보다 요이야마 전후 2~3박으로 산마이(거리 행렬)·야마보코(마을 축)를 중심으로 보는 일정이 일반적입니다.',
+    highlights: [
+      '7/16~17 요이야마 — 야마보코·야마하oko 거리 행렬(교토 중심 교통 통제)',
+      '7/17 본행(本行) — 시조·카라스마 일대 최대 혼잡 · 전날 밤 체크인 권장',
+      '기온·사가노 — 축제 전후 전통 거리·야사카 신사 접근',
+    ],
+    stayAreas: [
+      {
+        name: '기온 · Gion',
+        mrtKeyword: 'Kyoto Gion',
+        note: '야사카 신사·시조 도보 · 요이야마 거리 접근',
+      },
+      {
+        name: '교토역 · Kawaramachi',
+        mrtKeyword: 'Kyoto Station',
+        note: 'JR·지하철 허브 · 기온 버스 15~20분',
+      },
+    ],
+    recommendedNights: 3,
     priority: 1,
   },
   {
@@ -126,6 +246,26 @@ export const WORLD_EVENT_OVERRIDES = [
     source: 'curated',
     sourceUrl: 'https://www.tourismthailand.org/Articles/songkran-festival',
     bookingHints: '실롬·카오산 근처 — 방수 가방·의류 준비',
+    detailOverview:
+      '4월 13~15일 태국 설(송크란)로, 방콕 전역에서 물 축제·거리 파티가 이어집니다. 실롬·카오산 등 핵심 구역은 교통 통제·전면 젖음을 전제로 하며, 2~3박 일정으로 핵심 날짜를 커버하는 방문이 일반적입니다.',
+    highlights: [
+      '실롬(Silom) — BTS 실롬·Sathorn 로드 물놀이·파티(혼잡·교통 통제)',
+      '카오산(Khao San) — 배낭여행가 거리 중심 축제(방수 가방·휴대폰 보호 필수)',
+      '4/13~15 공휴일 연속 — 항공·숙소 조기 마감 · 당일 이동은 BTS·MRT·보트 혼잡',
+    ],
+    stayAreas: [
+      {
+        name: '실롬 · Silom',
+        mrtKeyword: 'Bangkok Silom',
+        note: 'BTS 실롬·MRT 실롬 — 송크란 핵심 구역 도보',
+      },
+      {
+        name: '카오산 · Khao San',
+        mrtKeyword: 'Bangkok Khao San',
+        note: '배낭여행가 거리 · 실롬 택시·보트 20~30분',
+      },
+    ],
+    recommendedNights: 3,
     priority: 1,
   },
   {
@@ -143,6 +283,26 @@ export const WORLD_EVENT_OVERRIDES = [
     source: 'curated',
     sourceUrl: 'https://www.baligoldentour.com/galungan-kuningan/',
     bookingHints: '우붓·스미냑 — 사원 방문 시 사례 복장 준비',
+    detailOverview:
+      '발리 힌두력 210일 주기로 돌아오는 갈룽안·쿠닝안 시즌으로, 사원·가옥 앞 펜져(penjor) 장식·제례가 섬 전역에서 이어집니다. 갈룽안 당일·쿠닝안 전후 3~4박으로 우붓·스미냑 기점 사원·마을 행사를 둘러보는 방문이 일반적입니다.',
+    highlights: [
+      '갈룽안(Galungan) — 사원·가옥 펜져·제례(사례 복장·사원 입장 규정 준수)',
+      '쿠닝안(Kuningan) — 갈룽안 10일 후 · 사원 방문·지역 행사',
+      '우붓·스미냑 — 사원·전통 마을 투어 기점 · 렌터카·드라이버 예약 권장',
+    ],
+    stayAreas: [
+      {
+        name: '우붓 · Ubud',
+        mrtKeyword: 'Ubud Bali',
+        note: '사원·전통 마을 · 갈룽안 제례 밀집',
+      },
+      {
+        name: '스미냑 · Seminyak',
+        mrtKeyword: 'Seminyak Bali',
+        note: '해변·레스토랑 · 우붓 당일 투어 1~1.5시간',
+      },
+    ],
+    recommendedNights: 4,
     priority: 1,
   },
   {
@@ -160,6 +320,26 @@ export const WORLD_EVENT_OVERRIDES = [
     source: 'official_url',
     sourceUrl: 'https://www.rio-carnival.net/',
     bookingHints: '코파카바나·이파네마 — 삼바드롬 셔틀·의상 대여 사전 예약',
+    detailOverview:
+      '브라질 최대 카니발로, 삼바드롬 퍼레이드와 블로코(거리 삼바)가 리우 전역에서 열립니다. 전체 시즌 숙박보다 퍼레이드 전후 3~5박으로 코파카바나·이파네마 기점을 잡는 방문이 일반적입니다.',
+    highlights: [
+      '삼바드롬(Sambadrome) 공식 퍼레이드 — 티켓·셔틀 사전 예약',
+      '블로코(Bloco) 거리 삼바 — 오전·오후 시간대별 이동',
+      '코파카바나·이파네마 해변 숙소 — 셔틀·지하철 접근',
+    ],
+    stayAreas: [
+      {
+        name: '코파카바나 · Copacabana',
+        mrtKeyword: 'Copacabana Rio de Janeiro',
+        note: '해변·삼바드롬 셔틀 · 성수기 조기 마감',
+      },
+      {
+        name: '이파네마 · Ipanema',
+        mrtKeyword: 'Ipanema Rio de Janeiro',
+        note: '조용한 해변 · 코파카바나 버스 10분',
+      },
+    ],
+    recommendedNights: 4,
     priority: 1,
   },
   {
@@ -177,6 +357,26 @@ export const WORLD_EVENT_OVERRIDES = [
     source: 'curated',
     sourceUrl: 'https://www.macys.com/social/parade/',
     bookingHints: '맨해튼 미드타운·헤럴드스퀘어 — 퍼레이드 뷰 숙소 조기 마감',
+    detailOverview:
+      '메이시스 추수감사절 퍼레이드와 블랙 프라이데이·홀리데이 시즌이 겹치는 11월 말 뉴욕 방문 시즌입니다. 퍼레이드 당일 전후 2~4박으로 미드타운·헤럴드스퀘어 기점을 잡는 것이 일반적입니다.',
+    highlights: [
+      'Macy\'s Thanksgiving Day Parade — 6th Ave·34th St 루트',
+      '블랙 프라이데이·홀리데이 마켓 — 미드타운·브라이언트 파크',
+      '타임스퀘어·록펠러 센터 트리 라이팅 시즌',
+    ],
+    stayAreas: [
+      {
+        name: '미드타운 · Midtown',
+        mrtKeyword: 'Midtown Manhattan',
+        note: '퍼레이드 루트·타임스퀘어 도보권',
+      },
+      {
+        name: '헤럴드스퀘어 · Herald Square',
+        mrtKeyword: 'Herald Square New York',
+        note: 'Macy\'s·34th St 역 인근',
+      },
+    ],
+    recommendedNights: 3,
     priority: 1,
   },
   {
@@ -193,6 +393,26 @@ export const WORLD_EVENT_OVERRIDES = [
     source: 'official_url',
     sourceUrl: 'https://secretsolstice.is/',
     bookingHints: '레이캬비크 기점 골든서클·남부 투어 — 렌터카·숙소 성수기',
+    detailOverview:
+      '6~7월 백야(미드나잇 선) 시즌과 시크릿 솔스티스 페스티벌이 겹치는 아이슬란드 여름입니다. 전체 여름 숙박보다 솔스티스 전후 3~5박으로 레이캬비크 기점 투어를 계획하는 방문이 일반적입니다.',
+    highlights: [
+      'Secret Solstice — 6월 중순 레이캬비크 페스티벌',
+      '백야 드라이브 — 골든서클·남부 해안 일출 없는 하루',
+      '레이캬비크 구시가·하파 콘서트홀 — 도보·버스 기점',
+    ],
+    stayAreas: [
+      {
+        name: '레이캬비크 · Reykjavík',
+        mrtKeyword: 'Reykjavik',
+        note: '시크릿 솔스티스·시내 투어 기점',
+      },
+      {
+        name: '라우가르달루르 · Laugardalur',
+        mrtKeyword: 'Laugardalur Reykjavik',
+        note: '페스티벌장 인근 · 버스 접근',
+      },
+    ],
+    recommendedNights: 4,
     priority: 1,
   },
   {
@@ -210,6 +430,26 @@ export const WORLD_EVENT_OVERRIDES = [
     source: 'official_url',
     sourceUrl: 'https://www.vividsydney.com/',
     bookingHints: '서큘러 키·더 록스 — 항구 뷰 숙소·페리 예약',
+    detailOverview:
+      '시드니 하버·오페라 하우스 일대를 조명으로 물드는 겨울 빛 축제입니다. 개막 주말·중순 주말 2~4박으로 서큘러 키·더 록스 기점을 잡아 야간 설치·라이트쇼를 둘러보는 방문이 일반적입니다.',
+    highlights: [
+      'Circular Quay·Opera House 조명 설치',
+      'Darling Harbour 라이트쇼·식당가',
+      '페리·트램으로 항구 구역 이동',
+    ],
+    stayAreas: [
+      {
+        name: '서큘러 키 · Circular Quay',
+        mrtKeyword: 'Circular Quay Sydney',
+        note: '오페라 하우스·페리 터미널 도보',
+      },
+      {
+        name: '더 록스 · The Rocks',
+        mrtKeyword: 'The Rocks Sydney',
+        note: '항구 뷰 · 서큘러 키 도보 10분',
+      },
+    ],
+    recommendedNights: 3,
     priority: 1,
   },
   {
@@ -227,7 +467,27 @@ export const WORLD_EVENT_OVERRIDES = [
     source: 'official_url',
     sourceUrl: 'https://www.festival.cz/en',
     bookingHints: '구시가·말라 스트라나 — 루돌피눔 도보권',
-    priority: 2,
+    detailOverview:
+      '4~5월 프라하 봄 축제(Prague Spring)와 클래식·봄 시즌 행사가 겹치는 문화 방문 시즌입니다. 한 달 전체 숙박보다 개막 주·중순 주말 2~4박으로 루돌피눔·구시가 기점 공연·산책 일정을 잡는 방문이 일반적입니다.',
+    highlights: [
+      'Prague Spring Festival — 루돌피눔·공연장 중심 클래식·오케스트라',
+      '구시가(Old Town) — 카를교·광장 산책 · 트램·지하철 허브',
+      '말라 스트라나(Malá Strana) — 언덕 골목·성 지구 접근',
+    ],
+    stayAreas: [
+      {
+        name: '구시가 · Old Town',
+        mrtKeyword: 'Prague Old Town',
+        note: '루돌피눔·카를교 도보 · 트램 허브',
+      },
+      {
+        name: '말라 스트라나 · Malá Strana',
+        mrtKeyword: 'Prague Malá Strana',
+        note: '성 지구·언덕 골목 · 구시가 도보 10분',
+      },
+    ],
+    recommendedNights: 3,
+    priority: 1,
   },
   {
     id: 'marrakech-rose-festival-2027',
@@ -244,7 +504,27 @@ export const WORLD_EVENT_OVERRIDES = [
     source: 'curated',
     sourceUrl: 'https://www.visitmorocco.com/en/travel/festivals',
     bookingHints: '마라케시 기점 당일·1박 투어 — 계곡 숙소는 소수',
-    priority: 2,
+    detailOverview:
+      '모로코 다데스 계곡 켈라at M\'Gouna에서 열리는 장미 수확 축제로, 마라케시에서 당일·1박 투어로 방문하는 경우가 많습니다. 페스티벌 전날 체크인 2박으로 메디나 기점 투어를 잡는 일정이 일반적입니다.',
+    highlights: [
+      'Kelaat M\'Gouna — 장미 수확·시장·지역 행사(마라케시 당일 투어 3~4시간)',
+      '메디나(Medina) — 자마 엘 프나 광장·리야드 숙소',
+      '5월 초 성수기 — 투어·차량 예약 조기 마감',
+    ],
+    stayAreas: [
+      {
+        name: '메디나 · Medina',
+        mrtKeyword: 'Marrakech Medina',
+        note: '자마 엘 프나·리야드 · 투어 픽업',
+      },
+      {
+        name: '구엘리즈 · Gueliz',
+        mrtKeyword: 'Marrakech Gueliz',
+        note: '신도시·카페 · 메디나 택시 10분',
+      },
+    ],
+    recommendedNights: 2,
+    priority: 1,
   },
   {
     id: 'hanoi-tet-2027',
@@ -261,6 +541,26 @@ export const WORLD_EVENT_OVERRIDES = [
     source: 'curated',
     sourceUrl: 'https://www.vietnam.travel/things-to-do/tet-festival-vietnam',
     bookingHints: '올드쿼터·호안끼엠 — 연휴 전후 항공·기차 조기 마감',
-    priority: 2,
+    detailOverview:
+      '베트남 음력 설(뗏) 연휴로, 하노이 올드쿼터·호안끼엠 일대 꽃 시장·제례·불꽃놀이가 이어집니다. 연휴 전후 3~4박으로 올드쿼터 기점을 잡아 설 분위기와 현지 행사를 둘러보는 방문이 일반적입니다.',
+    highlights: [
+      '올드쿼터(Old Quarter) — 꽃 시장·거리 음식 · 연휴 전 최대 혼잡',
+      '호안끼엠 호수(Hoan Kiem) — 불꽃놀이·산책 · 도보 접근',
+      '연휴 기간 — 일부 상점·관광 휴무 · 항공·기차 조기 마감',
+    ],
+    stayAreas: [
+      {
+        name: '올드쿼터 · Old Quarter',
+        mrtKeyword: 'Hanoi Old Quarter',
+        note: '꽃 시장·거리 음식 · 호안끼엠 도보',
+      },
+      {
+        name: '호안끼엠 · Hoan Kiem',
+        mrtKeyword: 'Hoan Kiem Hanoi',
+        note: '호수 산책·불꽃놀이 뷰 · 올드쿼터 인접',
+      },
+    ],
+    recommendedNights: 4,
+    priority: 1,
   },
 ];

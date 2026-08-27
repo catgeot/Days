@@ -562,6 +562,8 @@ export const PLANNER_TRIPCOM_HOTEL_CITY_IDS = {
   malta: '1264',
   /** 롬복 — 섬 허브(마타람 단독 아님) */
   lombok: '1392',
+  /** 발리 — 섬 허브(DPS 관문 · packages/list htlProvinceId) */
+  bali: '723',
   /** 보라보라 */
   'bora-bora': '61019',
   /** 요세미티 — 요세미티 밸리(숙소 거점) */
@@ -738,7 +740,9 @@ export const TRIPCOM_FLIGHT_TRACKING = {
   sub1ChatFlight: '채팅 항공권',
   sub1GlobeFlightCinema: '홈 항공 시네마',
   sub1StayModalFlight: '홈 숙소 모달',
+  sub1EventDetailFlight: '행사상세 항공+숙소',
   sub3StayModalFlightHotel: 'D18887227',
+  sub3EventDetailFlightHotel: 'D18887227',
   sub3PlannerFlight: 'D17104488',
   sub3PlannerPreTravelFlight: 'D17159522',
   sub3ChatFlight: 'D17104488',
@@ -828,6 +832,13 @@ function resolveTripcomFlightTracking(options = {}) {
     };
   }
 
+  if (tracking === 'event-detail-flight') {
+    return {
+      sub1: TRIPCOM_FLIGHT_TRACKING.sub1EventDetailFlight,
+      sub3: TRIPCOM_FLIGHT_TRACKING.sub3EventDetailFlightHotel,
+    };
+  }
+
   return {
     sub1: TRIPCOM_FLIGHT_TRACKING.sub1PlannerFlight,
     sub3: TRIPCOM_FLIGHT_TRACKING.sub3PlannerFlight,
@@ -843,7 +854,7 @@ function resolveTripcomFlightTracking(options = {}) {
  *   mode?: 'flights' | 'ad' | 'packages',
  *   adId?: string,
  *   departureIata?: string,
- *   tracking?: 'planner-flight-mobile' | 'planner-pre-travel' | 'globe-flight-cinema' | 'chat-flight' | 'stay-modal-flight',
+ *   tracking?: 'planner-flight-mobile' | 'planner-pre-travel' | 'globe-flight-cinema' | 'chat-flight' | 'stay-modal-flight' | 'event-detail-flight',
  *   departDate?: string,
  *   returnDate?: string,
  *   adultCount?: number,
@@ -907,9 +918,44 @@ export function buildTripcomPlannerFlightUrl(location, options = {}) {
     return `${origin}/partners/ad/${adId}?${params.toString()}`;
   }
 
-  if (mode === 'packages' || options.tracking === 'stay-modal-flight') {
-    params.set('sourceFrom', 'IBUBundle_home');
-    return `${origin}/packages/?${params.toString()}`;
+  if (mode === 'packages') {
+    const hotelCheckIn = normalizeTripcomFlightYmd(options.checkIn ?? options.departDate);
+    const hotelCheckOut = normalizeTripcomFlightYmd(options.checkOut ?? options.returnDate);
+    if (departDate) {
+      params.set('dDate', departDate);
+    } else if (hotelCheckIn) {
+      params.set('dDate', hotelCheckIn);
+    }
+    if (returnDate && (!departDate || returnDate > departDate)) {
+      params.set('rDate', returnDate);
+      params.set('tripWay', 'round-trip');
+    } else if (hotelCheckOut) {
+      params.set('rDate', hotelCheckOut);
+      params.set('tripWay', hotelCheckIn && hotelCheckOut > hotelCheckIn ? 'round-trip' : 'one-way');
+    } else {
+      params.set('tripWay', 'one-way');
+    }
+    if (hotelCheckIn) params.set('iDate', hotelCheckIn);
+    if (hotelCheckOut) params.set('oDate', hotelCheckOut);
+    if (depart) params.set('dportCode', depart);
+    if (arriveCode) params.set('aportCode', arriveCode);
+    params.set('room', '1');
+    params.set('infants', '0');
+    params.set('showPassenger', '1');
+    params.set('classType', 'Y');
+    params.set('needdirect', 'false');
+    params.set('isOversea', '1');
+    params.set('sourceFrom', 'IBUFlt_tickbox');
+
+    const hotelCityId = getTripcomHotelCityIdForLocation(location);
+    if (hotelCityId) params.set('htlProvinceId', hotelCityId);
+
+    const destinationName = String(
+      location?.name_en || location?.name || location?.name_ko || '',
+    ).trim();
+    if (destinationName) params.set('destinationName', destinationName);
+
+    return `${origin}/packages/list?${params.toString()}`;
   }
 
   return `${origin}/flights/?${params.toString()}`;

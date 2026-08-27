@@ -392,12 +392,23 @@ export function GuestStepper({
   accent = 'amber',
 }) {
   const { t } = useTranslation();
-  const labelCls =
-    accent === 'sky' ? 'text-sky-100/75' : 'text-amber-100/75';
+  const isLight = accent === 'light';
+  const labelCls = isLight
+    ? 'text-stone-600'
+    : accent === 'sky'
+      ? 'text-sky-100/75'
+      : 'text-amber-100/75';
+  const shellCls = isLight
+    ? 'border-stone-200 bg-white'
+    : 'border-white/12 bg-black/40';
+  const btnCls = isLight
+    ? 'text-stone-700 hover:bg-stone-100'
+    : 'text-white/80 hover:bg-white/10';
+  const valueCls = isLight ? 'text-stone-900' : 'text-white';
   return (
     <div className="flex min-w-0 items-center gap-1">
       <span className={`shrink-0 text-[10px] font-semibold ${labelCls}`}>{label}</span>
-      <div className="flex items-center rounded-md border border-white/12 bg-black/40">
+      <div className={`flex items-center rounded-md border ${shellCls}`}>
         <button
           type="button"
           aria-label={t('home.stayDate.decrease', { label })}
@@ -406,11 +417,11 @@ export function GuestStepper({
             e.stopPropagation();
             if (value > min) onChange?.(value - 1);
           }}
-          className="flex h-7 w-7 items-center justify-center text-white/80 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-30 transition-colors"
+          className={`flex h-7 w-7 items-center justify-center disabled:cursor-not-allowed disabled:opacity-30 transition-colors ${btnCls}`}
         >
           <Minus size={12} aria-hidden="true" />
         </button>
-        <span className="min-w-[1.1rem] text-center text-[12px] font-bold tabular-nums text-white">
+        <span className={`min-w-[1.1rem] text-center text-[12px] font-bold tabular-nums ${valueCls}`}>
           {value}
         </span>
         <button
@@ -421,7 +432,7 @@ export function GuestStepper({
             e.stopPropagation();
             if (value < max) onChange?.(value + 1);
           }}
-          className="flex h-7 w-7 items-center justify-center text-white/80 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-30 transition-colors"
+          className={`flex h-7 w-7 items-center justify-center disabled:cursor-not-allowed disabled:opacity-30 transition-colors ${btnCls}`}
         >
           <Plus size={12} aria-hidden="true" />
         </button>
