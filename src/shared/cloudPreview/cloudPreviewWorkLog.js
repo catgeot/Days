@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 19,
-  sessionPhase: 'Wave1 통합 QA',
+  sessionNo: 20,
+  sessionPhase: '국내 FestivalStayStrip · merge 준비',
   branch: 'cursor/world-events-efa3',
   previewPath: '/world-events',
   qaShareSlug: 'world-events',

@@ -13,7 +13,6 @@ import {
   Landmark,
   Loader2,
   MapPin,
-  Plane,
   Phone,
   Route,
   Star,
@@ -56,10 +55,9 @@ import {
 } from '../Home/lib/scenicSpotPlaceLabel.js';
 import { resolveFestivalThemeCrossLinks } from '../Home/lib/koreaThemeCrossLinks';
 import { pushThemeNavBack } from '../Home/lib/koreaThemeNavBack';
-import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
-import { tripWindowFromTourApiFestival } from './worldEventFromTourApiFestival';
-import { buildPlacePlannerPathFromEvent } from '../../utils/placePlannerPath';
 import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
+import FestivalStayStrip from './FestivalStayStrip';
+import FestivalMooniFab from './FestivalMooniFab';
 import { festivalLngLat } from './koreaFestivalCorridors';
 import { detectSidoCode } from './festivalRegionTags';
 import {
@@ -416,37 +414,10 @@ export default function FestivalDetailSheet({
     [item, festivalAreaCode, scenicRegion],
   );
 
-  const festivalTripWindow = useMemo(
-    () => tripWindowFromTourApiFestival(item),
-    [item],
-  );
-
-  const festivalStayHref = festivalCross?.stay?.keyword
-    ? getMrtAccommodationSearchUrl(festivalCross.stay.keyword, {
-        isDomestic: true,
-        checkIn: festivalTripWindow?.checkIn,
-        checkOut: festivalTripWindow?.checkOut,
-      })
-    : '';
   const festivalTnaHref = festivalCross?.tna?.keyword
     ? buildMrtTnaSearchMoreUrl(festivalCross.tna.keyword)
     : '';
   const nearestHub = festivalCross?.nearbyHubs?.[0];
-  const festivalPlannerHref =
-    nearestHub?.hubId && festivalTripWindow?.checkIn && festivalTripWindow?.checkOut
-      ? buildPlacePlannerPathFromEvent(nearestHub.hubId, {
-          checkIn: festivalTripWindow.checkIn,
-          checkOut: festivalTripWindow.checkOut,
-          eventId: festivalTripWindow.eventId || `korea-festival-${item?.contentId || ''}`,
-        })
-      : '';
-  const stayDisplayKeyword =
-    localizedHubLabel(locale, {
-      hubId: nearestHub?.hubId,
-      name: festivalCross?.stay?.keyword,
-    }) ||
-    festivalCross?.stay?.keyword ||
-    '';
   const tnaDisplayKeyword =
     localizedHubLabel(locale, {
       hubId: nearestHub?.hubId,
@@ -454,6 +425,7 @@ export default function FestivalDetailSheet({
     }) ||
     festivalCross?.tna?.keyword ||
     '';
+  const showFestivalStayStrip = Boolean(festivalCross?.stay?.location);
 
   const openScenicPage = () => {
     const back = {
@@ -1347,54 +1319,35 @@ export default function FestivalDetailSheet({
                 </div>
               )}
 
-              {(festivalStayHref ||
-                festivalTnaHref ||
-                festivalPlannerHref ||
-                festivalCross?.packageCta?.url) && (
+              {showFestivalStayStrip ? (
+                <div className="pt-1">
+                  <FestivalStayStrip
+                    item={item}
+                    festivalCross={festivalCross}
+                    locale={locale}
+                  />
+                </div>
+              ) : null}
+
+              {(festivalTnaHref || festivalCross?.packageCta?.url) && (
                 <div className="space-y-3 pt-1">
-                  {festivalStayHref || festivalTnaHref || festivalPlannerHref ? (
+                  {festivalTnaHref ? (
                     <div className="space-y-2">
                       <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
                         {t('korea.festival.detail.stayTour')}
                       </p>
                       <div className="flex flex-col gap-1.5 sm:flex-row sm:flex-wrap">
-                        {festivalStayHref ? (
-                          <a
-                            href={festivalStayHref}
-                            target="_blank"
-                            rel="noopener noreferrer sponsored"
-                            className="inline-flex items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-950 hover:bg-amber-100"
-                          >
-                            {t('korea.festival.detail.stayKeyword', {
-                              keyword: stayDisplayKeyword,
-                            })}
-                            <ExternalLink size={12} aria-hidden="true" />
-                          </a>
-                        ) : null}
-                        {festivalPlannerHref ? (
-                          <a
-                            href={festivalPlannerHref}
-                            className="inline-flex items-center justify-center gap-1.5 rounded-full border border-indigo-300/90 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-950 hover:bg-indigo-100"
-                          >
-                            {t('korea.festival.detail.plannerKeyword', {
-                              keyword: stayDisplayKeyword,
-                            })}
-                            <Plane size={12} aria-hidden="true" />
-                          </a>
-                        ) : null}
-                        {festivalTnaHref ? (
-                          <a
-                            href={festivalTnaHref}
-                            target="_blank"
-                            rel="noopener noreferrer sponsored"
-                            className="inline-flex items-center justify-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-stone-100"
-                          >
-                            {t('korea.festival.detail.tourKeyword', {
-                              keyword: tnaDisplayKeyword,
-                            })}
-                            <ExternalLink size={12} aria-hidden="true" />
-                          </a>
-                        ) : null}
+                        <a
+                          href={festivalTnaHref}
+                          target="_blank"
+                          rel="noopener noreferrer sponsored"
+                          className="inline-flex items-center justify-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-stone-100"
+                        >
+                          {t('korea.festival.detail.tourKeyword', {
+                            keyword: tnaDisplayKeyword,
+                          })}
+                          <ExternalLink size={12} aria-hidden="true" />
+                        </a>
                       </div>
                     </div>
                   ) : null}
@@ -1944,6 +1897,8 @@ export default function FestivalDetailSheet({
         <ArrowUp size={18} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
         <span className="text-xs font-bold">{t('korea.common.scrollUp')}</span>
       </button>
+
+      <FestivalMooniFab item={item} location={festivalCross?.stay?.location} />
 
       {selectedNearby && (
         <ThemeSpotDetailModal

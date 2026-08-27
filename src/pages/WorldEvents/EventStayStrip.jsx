@@ -128,6 +128,7 @@ function StayCard({ item, price }) {
  *   visitPresets?: Array<{ id: string, checkIn: string, checkOut: string, nights: number }>,
  *   onDatesChange?: (next: { checkIn: string, checkOut: string }) => void,
  *   locale?: string,
+ *   placeLabel?: string,
  * }} props
  */
 export default function EventStayStrip({
@@ -138,6 +139,7 @@ export default function EventStayStrip({
   visitPresets = [],
   onDatesChange,
   locale = 'ko',
+  placeLabel: placeLabelOverride,
 }) {
   const { t, i18n } = useTranslation();
   const rootRef = useRef(null);
@@ -149,7 +151,9 @@ export default function EventStayStrip({
   const [status, setStatus] = useState('idle');
   const fetchedKeyRef = useRef('');
 
-  const placeMeta = getWorldEventPlaceMeta(event?.slug, locale);
+  const placeMeta = placeLabelOverride
+    ? { label: placeLabelOverride }
+    : getWorldEventPlaceMeta(event?.slug, locale);
   const eligible = canShowMrtStayStrip(location);
   const nights = mrtStayNights(checkIn, checkOut);
   const datesKey = `${checkIn}|${checkOut}|a${guests.adultCount}c${guests.childCount}`;

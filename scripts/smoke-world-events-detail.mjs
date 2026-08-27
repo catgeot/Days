@@ -146,6 +146,7 @@ assert.match(detailSrc, /EventMooniFab/, 'EventDetailPage renders Mooni FAB');
 assert.match(stayStripSrc, /EventFlightHotelCta/, 'EventStayStrip uses packages CTA');
 assert.match(stayStripSrc, /event-detail-flight/, 'EventStayStrip event-detail-flight tracking');
 assert.match(stayStripSrc, /mode: 'packages'/, 'EventStayStrip packages mode');
+assert.match(stayStripSrc, /placeLabel/, 'EventStayStrip placeLabel override');
 assert.match(stayStripSrc, /accent="light"/, 'EventStayStrip light guest stepper');
 
 const mooniFabSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventMooniFab.jsx'), 'utf8');
