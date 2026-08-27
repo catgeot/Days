@@ -21,3 +21,12 @@
 - **PROD** 배포 후 bundle `index-vN5gm04K.js` — EventStayStrip · FestivalStayStrip · Mooni FAB 확인 · §6.1 URL 200
 - **다음** 사람 PROD §6.1·§6.1.1 QA → Wave2 착수 합의
 
+## 세계행사 일정 #22 — PROD §6.1 QA
+
+- **세션** `세계행사 일정 #22, PROD §6.1 QA`
+- **main** `6712f777` · PR #153 merged · PROD bundle `index-vN5gm04K.js`
+- **VERIFY** `smoke:world-events` · `smoke:world-events-detail` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `smoke:korea-festival-stay-url` · `smoke:korea-festival-personal` · `build` PASS
+- **PROD** URL 18건(허브·15 상세·vienna·korea) HTTP **200**
+- **사람 QA** §6.1·§6.1.1 — 횡성한우축제 hub · 발리 packages/list · 국내 FestivalStayStrip · 15 상세 전건
+- **다음** 사람 OK → Wave2 착수 합의(`cursor/world-events-wave2` · singapore+dubai)
+

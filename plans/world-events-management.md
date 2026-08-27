@@ -98,20 +98,29 @@ npm run build
 
 ## 6.1 사람 QA 체크리스트 (P0–P2 · Q12)
 
-Preview: `https://www.gateo.kr/qa/world-events` → git Preview `/world-events`
+**PROD** (`#22`): `https://www.gateo.kr/world-events` · bundle `index-vN5gm04K.js` (PR #153 merge `6712f777`)
 
 | 경로 | 확인 |
 |------|------|
-| `/korea` → 축제 상세 1건 | 숙소·플래너·항공 링크에 행사 맞춤 `checkIn`/`checkOut` |
+| `/korea` → 축제 상세 1건 | **FestivalStayStrip** — 일정 프리셋·숙소·항공+숙소·**무니 FAB** · 플래너 직링크 **없음** |
+| `/korea` → **횡성한우축제** | 인근 hub **횡성** 우선(평창 오탐 없음) · FestivalStayStrip 일정 prefill |
 | `/place/vienna` | 「이 도시의 행사」접이식 · 플래너·숙소·공식 일정 CTA |
 | `/world-events` | 지역 칩 5개 전환 · 카드 「여행지 카드」→ `/place/:slug?fromEvent&checkIn&checkOut` · 플래너·숙소 CTA |
 | `/world-events` **에든버러 프린지** | 유럽 칩 → 「여행지 카드」 URL에 `fromEvent=edinburgh-fringe-2026` · `checkIn`/`checkOut`(행사 전후 1일 버퍼, 진행 중이면 checkIn=오늘) · 플래너 CTA 동일 날짜 |
 | **홈** 좌상단 바로가기 | 「한국의 축제」 아래 **「세계의 행사」** → `/world-events` |
 
-### 6.1.1 v2 상세 페이지 — Wave1 15건 (PR #153)
+### 6.1.1 v2 상세 페이지 — Wave1 15건 (PR #153 · main)
 
-Preview 진입: `https://www.gateo.kr/qa/world-events` → git Preview `/world-events`  
-상세 직링크: `https://days-git-cursor-world-events-efa3-catgeots-projects.vercel.app/world-events/{eventId}`
+**PROD 진입**: `https://www.gateo.kr/world-events`  
+**상세 직링크**: `https://www.gateo.kr/world-events/{eventId}`
+
+**#19~#20 재확인 (PROD 우선)**
+
+| 대상 | PROD URL | 확인 |
+|------|----------|------|
+| **발리** | `/world-events/bali-galungan-season-2026` | EventStayStrip · **항공+숙소** → Trip `packages/list` · ICN→**DPS** · 일정 prefill |
+| **국내축제** | `/korea` → 축제 상세 | FestivalStayStrip · TripWindow 프리셋 · 무니 FAB · MRT 숙소 `checkIn`/`checkOut` |
+| **횡성** | `/korea` → 횡성한우축제 | 인근 hub **횡성** · FestivalStayStrip 동작 |
 
 **공통 (15건 각각)**
 
@@ -143,9 +152,11 @@ Preview 진입: `https://www.gateo.kr/qa/world-events` → git Preview `/world-e
 | 14 | `marrakech-rose-festival-2027` | 2 | 단기 |
 | 15 | `hanoi-tet-2027` | 4 | 연휴 윈도 · #18 마감 샘플 |
 
-**에이전트 VERIFY (병합 전)**: `smoke:world-events` · `smoke:world-events-detail` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `build` PASS
+**에이전트 VERIFY**: `smoke:world-events` · `smoke:world-events-detail` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `smoke:korea-festival-stay-url` · `smoke:korea-festival-personal` · `build` PASS · PROD URL 18건 HTTP 200 (#22)
 
-**금지**: `worldEvents.json` 직편집 · Wave2·EN·`/events` 통합(세션 #9 범위 밖).
+**Wave2 착수 게이트** (G1~G4 · [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) F-0): 본 §6.1·§6.1.1 **사람 PROD OK** → 브랜치 `cursor/world-events-wave2` **합의** → overrides 착수
+
+**금지**: `worldEvents.json` 직편집 · Wave2·EN·`/events` 통합(세션 #9 범위 밖) · PROD QA 전 Wave2 overrides.
 
 ---
 

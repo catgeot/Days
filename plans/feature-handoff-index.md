@@ -18,8 +18,8 @@
 
 | | |
 |--|--|
-| **상태** | **main 병합** PR #153 · PROD 배포 후 **사람 §6.1 QA** |
-| **main** | `6712f777` — Wave1 v2 상세 · FestivalStayStrip · EventStayStrip · Mooni FAB |
+| **상태** | **#22 PROD §6.1 QA** — 사람 횡성·발리·국내축제·15 상세 확인 대기 |
+| **main** | `6712f777` — Wave1 v2 상세 · FestivalStayStrip · EventStayStrip · Mooni FAB · bundle `index-vN5gm04K.js` |
 | **PR** | [#153](https://github.com/catgeot/Days/pull/153) **merged** |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) · [`world-events-plan.md`](./world-events-plan.md) §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
@@ -31,16 +31,16 @@
 
 **Wave1 v2 (main)**: 15건 `/world-events/:eventId` · Tier0~2 · EventStayStrip · 국내 FestivalStayStrip · Mooni FAB · AI fixture #1~#4
 
-**다음 제시어** (#22):
+**다음 제시어** (#23 — PROD OK 후):
 
 ```
-세계행사 일정 #22, PROD §6.1 QA
+세계행사 일정 #23, Wave2 singapore dubai
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
-@plans/world-events-management.md
-main · www.gateo.kr/world-events · §6.1·§6.1.1 체크리스트
-금지: Wave2 overrides · releaseNotes 무단 · 새 feature 브랜치(합의 전)
-작업: PROD 횡성·발리·국내축제·15 상세 URL 사람 QA · OK 시 Wave2 착수 합의
+@plans/world-events-detail-ux-plan.md
+브랜치 cursor/world-events-wave2 · PR TBD · www.gateo.kr/qa/world-events
+금지: worldEvents.json 직편집 · Wave1 브랜치 혼동 · 15건 일괄 AI · releaseNotes 무단
+작업: overrides singapore+dubai · Tier0.5 · travelSpots slug · audit:world-events
 ```
 
 ---

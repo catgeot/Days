@@ -332,16 +332,16 @@ flowchart LR
 **v2 (#12~#21)**: [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) · 샘플 로그 [`world-events-sample-log.md`](./world-events-sample-log.md)  
 **세션 번호**: Cloud 채팅 `#12`~ (main 일지 #11=PR150 병합과 별도)
 
-**다음 제시어** (#22 — PROD QA):
+**다음 제시어** (#23 — PROD OK 후 Wave2):
 
 ```
-세계행사 일정 #22, PROD §6.1 QA
+세계행사 일정 #23, Wave2 singapore dubai
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
-@plans/world-events-management.md
-main · www.gateo.kr/world-events · §6.1·§6.1.1 체크리스트
-금지: Wave2 overrides · releaseNotes 무단 · 새 feature 브랜치(합의 전)
-작업: PROD 횡성·발리·국내축제·15 상세 URL 사람 QA · OK 시 Wave2 착수 합의
+@plans/world-events-detail-ux-plan.md
+브랜치 cursor/world-events-wave2 · PR TBD · www.gateo.kr/qa/world-events
+금지: worldEvents.json 직편집 · Wave1 브랜치 혼동 · 15건 일괄 AI · releaseNotes 무단
+작업: overrides singapore+dubai · Tier0.5 · travelSpots slug · audit:world-events
 ```
 
 **읽을 것**: [`world-events-management.md`](./world-events-management.md) **§6.1·§6.1.1 QA 체크리스트**
