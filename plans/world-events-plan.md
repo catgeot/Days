@@ -319,7 +319,7 @@ flowchart LR
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (2026-08-27)**: **v2 #20 국내 FestivalStayStrip** — VERIFY PASS · PR #153 merge 보류(Preview 재QA)
+**상태 (2026-08-27)**: **Wave1 v2 main 병합** PR #153 · **main** `6712f777` · PROD 배포 후 사람 §6.1 QA
 
 | Phase | 결과 |
 |-------|------|
@@ -327,21 +327,21 @@ flowchart LR
 | **P1** | `/korea` 축제 → FestivalStayStrip · Mooni FAB (플래너 링크 제거) |
 | **P2** | Wave1 15건 · PlaceCard · `/world-events` · 홈 · TripWindow 프리셋 — **main** |
 | **v2 B~D** | #12~#18 — 15건 Tier0.5 · EventStayStrip · Mooni FAB · AI fixture #1~#4 |
-| **v2 #19~#20** | QA fix(횡성 hub·발리 packages) · 국내 FestivalStayStrip · PR #153 |
+| **v2 #19~#21** | QA fix(횡성 hub·발리 packages) · 국내 FestivalStayStrip · PR #153 **merged** |
 
 **v2 (#12~#21)**: [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) · 샘플 로그 [`world-events-sample-log.md`](./world-events-sample-log.md)  
 **세션 번호**: Cloud 채팅 `#12`~ (main 일지 #11=PR150 병합과 별도)
 
-**다음 제시어** (#21 — Preview 재QA 후 merge):
+**다음 제시어** (#22 — PROD QA):
 
 ```
-세계행사 일정 #21, Preview 재QA · PR #153 merge
+세계행사 일정 #22, PROD §6.1 QA
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
-@plans/world-events-detail-ux-plan.md
-브랜치 cursor/world-events-efa3 · PR #153 · www.gateo.kr/qa/world-events
-금지: PR merge(재QA 전) · Wave2 overrides · releaseNotes 무단
-작업: 횡성·발리·국내축제 Preview QA → PR #153 merge · PROD §6.1 회귀
+@plans/world-events-management.md
+main · www.gateo.kr/world-events · §6.1·§6.1.1 체크리스트
+금지: Wave2 overrides · releaseNotes 무단 · 새 feature 브랜치(합의 전)
+작업: PROD 횡성·발리·국내축제·15 상세 URL 사람 QA · OK 시 Wave2 착수 합의
 ```
 
 **읽을 것**: [`world-events-management.md`](./world-events-management.md) **§6.1·§6.1.1 QA 체크리스트**

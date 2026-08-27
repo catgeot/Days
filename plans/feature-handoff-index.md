@@ -18,33 +18,29 @@
 
 | | |
 |--|--|
-| **상태** | **#20 국내 FestivalStayStrip** — merge 보류(Preview 재QA) |
-| **다음** | 횡성·발리·국내축제 Preview QA → PR #153 merge |
-| **브랜치** | `cursor/world-events-efa3` |
-| **PR** | [#153](https://github.com/catgeot/Days/pull/153) (merge 보류 · 재QA) |
-| **feature tip** | `5ca0bfb7` — FestivalStayStrip · FestivalMooniFab |
+| **상태** | **main 병합** PR #153 · PROD 배포 후 **사람 §6.1 QA** |
+| **main** | `6712f777` — Wave1 v2 상세 · FestivalStayStrip · EventStayStrip · Mooni FAB |
+| **PR** | [#153](https://github.com/catgeot/Days/pull/153) **merged** |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) · [`world-events-plan.md`](./world-events-plan.md) §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
-| **운영** | [`world-events-management.md`](./world-events-management.md) §6.1 |
+| **운영** | [`world-events-management.md`](./world-events-management.md) §6.1·§6.1.1 |
 | **샘플** | [`world-events-sample-log.md`](./world-events-sample-log.md) |
-| **일지** | [`2026-08-26-project-log.md`](./2026-08-26-project-log.md) |
-| **PROD QA** | `https://www.gateo.kr/world-events` · `/place/vienna` · `/korea` · 홈 「세계의 행사」 |
+| **일지** | [`2026-08-27-project-log.md`](./2026-08-27-project-log.md) |
+| **PROD QA** | `https://www.gateo.kr/world-events` · `/world-events/bali-galungan-season-2026` · `/place/vienna` · `/korea` 축제 상세 · 홈 「세계의 행사」 |
 | **VERIFY** | `smoke:world-events` · `smoke:world-events-detail` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `build` |
-| **Preview** | `https://www.gateo.kr/qa/world-events` · git `…-git-cursor-world-events-efa3-….vercel.app` |
 
-**P2 MVP (main)**: Wave1 15건 · PlaceCard · `/world-events` 허브 · TripWindow 프리셋 · 홈 진입  
-**v2 (브랜치)**: `/world-events/:eventId` · Tier0~2 · 샘플 15건 · **v2 델타 main 병합 = #18**
+**Wave1 v2 (main)**: 15건 `/world-events/:eventId` · Tier0~2 · EventStayStrip · 국내 FestivalStayStrip · Mooni FAB · AI fixture #1~#4
 
-**다음 제시어** (#21):
+**다음 제시어** (#22):
 
 ```
-세계행사 일정 #21, Preview 재QA · PR #153 merge
+세계행사 일정 #22, PROD §6.1 QA
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
-@plans/world-events-detail-ux-plan.md
-브랜치 cursor/world-events-efa3 · PR #153 · www.gateo.kr/qa/world-events
-금지: PR merge(재QA 전) · Wave2 overrides · releaseNotes 무단
-작업: 횡성·발리·국내축제 Preview QA → PR #153 merge · PROD §6.1 회귀
+@plans/world-events-management.md
+main · www.gateo.kr/world-events · §6.1·§6.1.1 체크리스트
+금지: Wave2 overrides · releaseNotes 무단 · 새 feature 브랜치(합의 전)
+작업: PROD 횡성·발리·국내축제·15 상세 URL 사람 QA · OK 시 Wave2 착수 합의
 ```
 
 ---

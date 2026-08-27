@@ -12,3 +12,12 @@
 - **보류** PR merge — 횡성·발리·국내축제 Preview 재QA 후
 - **다음** PR #153 merge · PROD QA
 
+## 세계행사 일정 #21 — Preview 재QA · PR #153 merge
+
+- **세션** `세계행사 일정 #21, Preview 재QA · PR #153 merge`
+- **이전 QA** #20 Preview 횡성·발리·국내축제 **통과**(사람)
+- **VERIFY** `smoke:world-events` · `smoke:world-events-detail` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `smoke:korea-festival-stay-url` · `build` PASS
+- **merge** PR #153 → **main** `6712f777`
+- **PROD** 배포 후 bundle `index-vN5gm04K.js` — EventStayStrip · FestivalStayStrip · Mooni FAB 확인 · §6.1 URL 200
+- **다음** 사람 PROD §6.1·§6.1.1 QA → Wave2 착수 합의
+
