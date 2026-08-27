@@ -75,6 +75,10 @@ function main() {
   assert(grepFile('src/utils/eventTravelGuideSurface.js', 'shouldShowEventTravelGuidePanel'), 'surface guard');
   assert(grepFile('src/pages/WorldEvents/EventDetailPage.jsx', 'shouldShowEventTravelGuidePanel'), 'panel suppress wired');
   assert(grepFile('src/pages/WorldEvents/EventDetailPage.jsx', 'EventTravelGuidePanel'), 'panel wired in detail page');
+  assert(
+    !grepFile('src/pages/WorldEvents/EventDetailPage.jsx', 'isCloudPreviewSurface()'),
+    'fixture fallback not preview-only',
+  );
   assert(grepFile('src/utils/fetchEventTravelGuide.js', 'event_travel_guide'), 'fetch helper');
 
   const audit = spawnSync('node', ['scripts/audit-event-travel-guide.mjs'], {

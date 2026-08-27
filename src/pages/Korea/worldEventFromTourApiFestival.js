@@ -36,6 +36,8 @@ export function worldEventFromTourApiFestival(item) {
   if (titleEnRaw) event.titleEn = titleEnRaw;
   if (addr) event.venue = { name: addr };
 
+  event.recommendedNights = 3;
+
   return event;
 }
 

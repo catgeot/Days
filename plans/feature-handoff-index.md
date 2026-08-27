@@ -7,7 +7,7 @@
 |--|--|
 | **에이전트 (시작)** | 사용자 첫 메시지에 **채팅명 형식**(`{주제} #{N}, …`) 또는 **`@plans/feature-handoff-index.md`** 가 있으면 **본 파일 해당 행만** Read → 표의 **다음 제시어**·브랜치 checkout. `.ai-context` 전문·코드베이스 광역 grep **생략**. |
 | **에이전트 (종료)** | feature 세션 종료 시 **해당 주제 행 갱신** + 주제 플랜 **§9** + 최신 일지 2~5줄 + **§1.2 다음 제시어 블록** 복붙. |
-| **main 동기화** | 위 3파일은 **`main` + `origin/main` 반영 필수** (§1.5.4). feature **종료 시** `merge origin/main` + `audit:docs-handoff-sync` PASS. **feature에 `plans/**` 커밋 금지**. 절차: [`docs-on-main-workflow.md`](./docs-on-main-workflow.md) §충돌 방지.
+| **main 동기화** | 위 3파일은 **`main` + `origin/main` 반영 필수** (§1.5.4). feature **종료 시** `merge origin/main` + `audit:docs-handoff-sync` PASS. **feature에 `plans/**` 커밋 금지**. **Plan 아티팩트만 갱신하고 main push 생략 금지** — [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) §1.3. 절차: [`docs-on-main-workflow.md`](./docs-on-main-workflow.md) §충돌 방지.
 | **주제 종료** | PR 병합 후 해당 행 **삭제** 또는 `active: false` + 병합 SHA 기록. |
 
 ---
@@ -18,29 +18,30 @@
 
 | | |
 |--|--|
-| **상태** | **#22 PROD §6.1 QA** — 사람 횡성·발리·국내축제·15 상세 확인 대기 |
-| **main** | `6712f777` — Wave1 v2 상세 · FestivalStayStrip · EventStayStrip · Mooni FAB · bundle `index-vN5gm04K.js` |
-| **PR** | [#153](https://github.com/catgeot/Days/pull/153) **merged** |
-| **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) · [`world-events-plan.md`](./world-events-plan.md) §9 |
+| **상태** | **#23 Wave1.5 D1 완료** — AI v0.2 정적 분리 · PROD Tier3 억제 · Preview pilot 3건 |
+| **브랜치** | `cursor/world-events-wave2` · tip `70a2a925` |
+| **PR** | [#154](https://github.com/catgeot/Days/pull/154) draft |
+| **main** | `6712f777`+ — Wave1 v2 · Phase F-0.5 · PR #154 = Wave1.5 D1 |
+| **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **Phase F-0.5** · §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) §6.1·§6.1.1 |
 | **샘플** | [`world-events-sample-log.md`](./world-events-sample-log.md) |
 | **일지** | [`2026-08-27-project-log.md`](./2026-08-27-project-log.md) |
-| **PROD QA** | `https://www.gateo.kr/world-events` · `/world-events/bali-galungan-season-2026` · `/place/vienna` · `/korea` 축제 상세 · 홈 「세계의 행사」 |
-| **VERIFY** | `smoke:world-events` · `smoke:world-events-detail` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `build` |
+| **PROD QA** | `https://www.gateo.kr/world-events` · 파일럿 3상세(edinburgh·munich·bali) |
+| **VERIFY** | D1~: `audit:event-travel-guide` · `smoke:world-events-detail` · `build` |
 
-**Wave1 v2 (main)**: 15건 `/world-events/:eventId` · Tier0~2 · EventStayStrip · 국내 FestivalStayStrip · Mooni FAB · AI fixture #1~#4
+**Wave1.5 D1 (PR #154)**: EventTravelGuide v0.2 · PROD Tier3 suppress · pilot fixture edinburgh/munich/bali
 
-**다음 제시어** (#23 — PROD OK 후):
+**다음 제시어** (#24 — D2):
 
 ```
-세계행사 일정 #23, Wave2 singapore dubai
+세계행사 일정 #24, Wave1.5 D2 무니 행사칩
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
-브랜치 cursor/world-events-wave2 · PR TBD · www.gateo.kr/qa/world-events
-금지: worldEvents.json 직편집 · Wave1 브랜치 혼동 · 15건 일괄 AI · releaseNotes 무단
-작업: overrides singapore+dubai · Tier0.5 · travelSpots slug · audit:world-events
+브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/munich-oktoberfest-2026
+금지: 새 feature 브랜치 · Wave1 브랜치 · worldEvents.json 직편집 · feature에 plans 커밋 · Wave2 overrides
+작업: D2 행사 액션 칩 · 무니 행사 시드·칩 · smoke · build
 ```
 
 ---
@@ -149,14 +150,17 @@ main · www.gateo.kr/place/yap/planner?lang=en
 | **Preview** | `https://…-git-…vercel.app/…` |
 | **VERIFY** | `npm run …` |
 
-**다음 제시어**:
+**다음 제시어** (7행 · `작업:` 포함 · [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) §1.2·§1.3):
 
 \`\`\`
 {주제} #{N}, {단계}
 @plans/feature-handoff-index.md
 @plans/YYYY-MM-DD-project-log.md
 @plans/{주제}-plan.md
-브랜치 cursor/… · PR #… · …
-금지: …
+브랜치 cursor/… · PR #… · Preview/QA
+금지: … · feature에 plans 커밋
+작업: …
 \`\`\`
+
+**docs-on-main**: 핸드오프 3종은 **`main` push 필수** — feature에 `plans/**` 커밋 금지.
 ```

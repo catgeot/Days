@@ -6,8 +6,8 @@ const fixtureModules = import.meta.glob(
 );
 
 /**
- * Preview·DEV용 EventTravelGuide fixture (DB 미배포 시 Tier3 QA).
- * Wave1.5 pilot eventId만 로드.
+ * EventTravelGuide fixture — Wave1.5 pilot 3건. DB row 없을 때 PROD·Preview 공통 폴백.
+ * UI 표시는 `shouldShowEventTravelGuidePanel` (Preview pilot만).
  *
  * @param {string} eventId
  */

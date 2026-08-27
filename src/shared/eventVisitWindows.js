@@ -7,7 +7,7 @@ import {
 } from './tripWindow.js';
 
 const DEFAULT_CTA_MAX_NIGHTS = 10;
-const LONG_EVENT_DAYS = 7;
+const LONG_EVENT_DAYS = 3;
 
 /**
  * @param {{ recommendedNights?: number }} [event]

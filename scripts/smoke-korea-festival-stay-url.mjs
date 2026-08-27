@@ -8,7 +8,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { tripWindowFromTourApiFestival } from '../src/pages/Korea/worldEventFromTourApiFestival.js';
+import { tripWindowFromTourApiFestival, worldEventFromTourApiFestival } from '../src/pages/Korea/worldEventFromTourApiFestival.js';
+import { tripWindowPresetsFromEvent } from '../src/utils/worldEventTripPresets.js';
+import { tripWindowNights } from '../src/shared/tripWindow.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -45,13 +47,8 @@ assert.doesNotMatch(
 
 assert.match(
   stripSrc,
-  /tripWindowFromTourApiFestival/,
-  'FestivalStayStrip uses tripWindowFromTourApiFestival',
-);
-assert.match(
-  stripSrc,
-  /visitWindowPresetsFromEvent/,
-  'FestivalStayStrip uses visit presets',
+  /tripWindowPresetsFromEvent/,
+  'FestivalStayStrip uses tripWindowPresetsFromEvent',
 );
 assert.match(
   stripSrc,
@@ -79,5 +76,22 @@ assert.ok(tripWindow);
 assert.equal(tripWindow.checkIn, '2025-12-31');
 assert.equal(tripWindow.checkOut, '2026-01-30');
 assert.equal(tripWindow.eventId, 'korea-festival-100');
+
+const hoengseongFest = {
+  contentId: '200',
+  title: '횡성한우축제',
+  addr1: '강원특별자치도 횡성군 횡성읍',
+  eventStartDate: '20261006',
+  eventEndDate: '20261012',
+};
+const hoengseongEvent = worldEventFromTourApiFestival(hoengseongFest);
+assert.equal(hoengseongEvent?.recommendedNights, 3);
+const hoengseongPresets = tripWindowPresetsFromEvent(hoengseongEvent, { todayYmd: '2026-08-27' });
+assert.ok(hoengseongPresets.visitPresets.length >= 2, 'multi-day festival has visit presets');
+assert.ok(
+  tripWindowNights(hoengseongPresets.tripWindow.checkIn, hoengseongPresets.tripWindow.checkOut) <= 3,
+  'festival tripWindow capped (not full span)',
+);
+assert.ok(hoengseongPresets.tripWindow.checkOut < '2026-10-13', 'default window shorter than festival end');
 
 console.log('OK    smoke:korea-festival-stay-url — all assertions passed');

@@ -319,7 +319,7 @@ flowchart LR
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (2026-08-27)**: **Wave1 v2 main 병합** PR #153 · **main** `6712f777` · PROD 배포 후 사람 §6.1 QA
+**상태 (2026-08-27)**: **Wave1.5 D1** PR [#154](https://github.com/catgeot/Days/pull/154) · `cursor/world-events-wave2` · EventTravelGuide v0.2 · PROD Tier3 suppress
 
 | Phase | 결과 |
 |-------|------|
@@ -327,21 +327,22 @@ flowchart LR
 | **P1** | `/korea` 축제 → FestivalStayStrip · Mooni FAB (플래너 링크 제거) |
 | **P2** | Wave1 15건 · PlaceCard · `/world-events` · 홈 · TripWindow 프리셋 — **main** |
 | **v2 B~D** | #12~#18 — 15건 Tier0.5 · EventStayStrip · Mooni FAB · AI fixture #1~#4 |
-| **v2 #19~#21** | QA fix(횡성 hub·발리 packages) · 국내 FestivalStayStrip · PR #153 **merged** |
+| **v2 #19~#22** | QA fix · FestivalStayStrip · PR #153 merged · PROD §6.1 QA |
+| **Wave1.5 D1 #23** | AI v0.2 정적 분리 · pilot fixture 3건 · PR **#154** draft |
 
 **v2 (#12~#21)**: [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) · 샘플 로그 [`world-events-sample-log.md`](./world-events-sample-log.md)  
 **세션 번호**: Cloud 채팅 `#12`~ (main 일지 #11=PR150 병합과 별도)
 
-**다음 제시어** (#23 — PROD OK 후 Wave2):
+**다음 제시어** (#24 — D2):
 
 ```
-세계행사 일정 #23, Wave2 singapore dubai
+세계행사 일정 #24, Wave1.5 D2 무니 행사칩
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
-브랜치 cursor/world-events-wave2 · PR TBD · www.gateo.kr/qa/world-events
-금지: worldEvents.json 직편집 · Wave1 브랜치 혼동 · 15건 일괄 AI · releaseNotes 무단
-작업: overrides singapore+dubai · Tier0.5 · travelSpots slug · audit:world-events
+브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/munich-oktoberfest-2026
+금지: 새 feature 브랜치 · Wave1 브랜치 · worldEvents.json 직편집 · feature에 plans 커밋 · Wave2 overrides
+작업: D2 행사 액션 칩 · 무니 행사 시드·칩 · smoke · build
 ```
 
 **읽을 것**: [`world-events-management.md`](./world-events-management.md) **§6.1·§6.1.1 QA 체크리스트**
