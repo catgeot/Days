@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 25,
-  sessionPhase: 'Wave1.5 D2 무니 행사칩',
+  sessionNo: 26,
+  sessionPhase: 'Wave1.5 D3 미디어·명소',
   branch: 'cursor/world-events-wave2',
   previewPath: '/world-events',
   qaShareSlug: 'world-events',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-27-world-events-d3-media-attractions',
+    session: '세계행사 일정 #26, Wave1.5 D3 미디어·명소',
+    title: 'heroImage·YouTube·검색·명소 허브 브릿지',
+    detail:
+      '파일럿 3건(edinburgh·munich·bali) heroImage·youtubeVideos overrides · EventDetailHero · EventDetailMediaSection(Google·네이버 검색·YouTube·cityAttractionHubs→/place) · smoke:world-events-detail · build PASS. Preview /qa/world-events → /world-events/bali-galungan-season-2026 — 히어로·관련 영상·검색·발리 명소 칩 확인.',
+    at: '2026-08-27T12:30:00.000Z',
+  },
   {
     id: '2026-08-27-world-events-d2-qa-redirect',
     session: '세계행사 일정 #25, Wave1.5 D2 무니 행사칩',
