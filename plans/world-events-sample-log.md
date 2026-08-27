@@ -17,9 +17,9 @@
 | 10 | `new-york-thanksgiving-season-2026` | #16 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2+위젯 |
 | 11 | `iceland-midnight-sun-2027` | #16 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2+위젯 |
 | 12 | `sydney-vivid-2027` | #16 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2+위젯 |
-| 13 | `prague-spring-festival-2027` | #16 | — | — | 대기 |
-| 14 | `marrakech-rose-festival-2027` | #16 | — | — | 대기 |
-| 15 | `hanoi-tet-2027` | #16 | — | — | 대기 |
+| 13 | `prague-spring-festival-2027` | #18 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2+위젯 |
+| 14 | `marrakech-rose-festival-2027` | #18 | ✅ overview·highlights·stayAreas·2박 | — | Tier0~2+위젯 |
+| 15 | `hanoi-tet-2027` | #18 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2+위젯 |
 
 ---
 
@@ -152,6 +152,32 @@
 - **라우트**: `/world-events/sydney-vivid-2027`
 - **VERIFY**: `smoke:world-events-detail` · `smoke:trip-window-edinburgh` · `build` PASS
 - **다음**: #17 sample #13~#15 · 위젯 전건
+
+## #13 prague-spring-festival-2027 — #18 Tier0.5
+
+- **일시**: 2026-08-27
+- **패턴**: season · 중기(31일) · recommendedNights **3** · Phase D EventStayStrip
+- **Tier0~2**: detailOverview · highlights 3 · stayAreas 2(구시가·말라 스트라나)
+- **라우트**: `/world-events/prague-spring-festival-2027`
+- **VERIFY**: `smoke:world-events-detail` PASS
+
+## #14 marrakech-rose-festival-2027 — #18 Tier0.5
+
+- **일시**: 2026-08-27
+- **패턴**: festival · 단기(3일) · recommendedNights **2** (전날 체크인·투어)
+- **Tier0~2**: detailOverview · highlights 3 · stayAreas 2(메디나·구엘리즈)
+- **라우트**: `/world-events/marrakech-rose-festival-2027`
+- **VERIFY**: `smoke:world-events-detail` PASS
+
+## #15 hanoi-tet-2027 — #18 Tier0.5 + Wave1 마감
+
+- **일시**: 2026-08-27
+- **패턴**: season · 연휴(7일) · recommendedNights **4**
+- **Tier0~2**: detailOverview · highlights 3 · stayAreas 2(올드쿼터·호안끼엠)
+- **위젯**: EventStayStrip packages/list prefill(일정·인원) · GuestStepper light · EventMooniFab
+- **라우트**: `/world-events/hanoi-tet-2027`
+- **VERIFY**: `smoke:world-events` · `smoke:world-events-detail`(15건) · `build` PASS
+- **다음**: #19 Wave1 통합 QA · 사람 Preview → PR #153 병합 준비
 
 ## v2 pivot — Preview QA 피드백 (#12 전)
 
