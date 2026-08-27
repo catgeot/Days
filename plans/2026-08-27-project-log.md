@@ -85,3 +85,12 @@
 - **이슈** `/qa/world-events`가 구 `efa3` Preview → D2 액션·무니 칩 미표시
 - **조치** `vercel.json`·`cloudQaShareLinks` → `cursor/world-events-wave2` (main `3b6fb256` 배포)
 - **확인** 에든버러 상세 — 「행사 바로가기」3칩 · 무니 질문 칩 · FAB 시드
+
+## 세계행사 일정 #26 — Wave1.5 D3 미디어·명소
+
+- **세션** `세계행사 일정 #26, Wave1.5 D3 미디어·명소`
+- **브랜치** `cursor/world-events-wave2` · PR [#154](https://github.com/catgeot/Days/pull/154) · tip `b9c52a3a`
+- **산출** pilot 3건 `heroImage`·`youtubeVideos` overrides · `EventDetailHero` · `EventDetailMediaSection`(Google·네이버 검색·YouTube·`cityAttractionHubs`→`/place`)
+- **VERIFY** `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026` — 히어로·관련 영상·검색·발리 명소 칩
+- **다음** 사람 Preview D3 QA → **#27 D4** 숙소·파일럿 회귀
