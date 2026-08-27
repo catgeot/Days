@@ -319,30 +319,31 @@ flowchart LR
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (2026-08-26)**: **P2 MVP `main` 반영** · **v2 #15 샘플5~8 Tier0.5** (`cursor/world-events-efa3`)
+**상태 (2026-08-27)**: **v2 #19 Wave1 통합 QA** — VERIFY PASS · PR #153 병합 준비 (`cursor/world-events-efa3`)
 
 | Phase | 결과 |
 |-------|------|
 | **P0** | `tripWindow` · generate/audit PASS |
 | **P1** | `/korea` 축제 → MRT·플래너 TripWindow |
 | **P2** | Wave1 15건 · PlaceCard · `/world-events` · 홈 · TripWindow 프리셋 — **main** |
-| **v2 B+** | #12 edinburgh · **#14 munich·vienna·amsterdam** · **#15 tokyo·kyoto·bangkok·bali** Tier0~2 |
+| **v2 B~D** | #12~#18 — 15건 Tier0.5 · EventStayStrip · Mooni FAB · AI fixture #1~#4 |
+| **v2 #19** | Wave1 통합 QA · §6.1.1 · PR #153 draft→ready |
 
-**v2 (#12~#18)**: [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) · 샘플 로그 [`world-events-sample-log.md`](./world-events-sample-log.md)  
+**v2 (#12~#20)**: [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) · 샘플 로그 [`world-events-sample-log.md`](./world-events-sample-log.md)  
 **세션 번호**: Cloud 채팅 `#12`~ (main 일지 #11=PR150 병합과 별도)
 
-**다음 제시어** (#16):
+**다음 제시어** (#20 — 사람 QA OK 후):
 
 ```
-세계행사 일정 #16, 샘플9~12 · in-page 숙소항공
+세계행사 일정 #20, PR #153 merge · PROD QA
 @plans/feature-handoff-index.md
-@plans/2026-08-26-project-log.md
+@plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
-브랜치 cursor/world-events-efa3 · PR #153 · /world-events/rio-carnival-2027
-금지: 새 feature 브랜치 · worldEvents.json 직편집 · UI 리디자인 · 행사 전체 span CTA · #18 전 main 병합
-작업: Phase D · EventStayStrip · StayRangeCalendar · sample #9~#12 · edinburgh 위젯 회귀
+브랜치 main · PR #153 merge 완료 후
+금지: Wave2 overrides · releaseNotes 무단 · main 코드 에이전트 임의 push(merge는 사람)
+작업: PR #153 merge · PROD /world-events · §6.1·§6.1.1 회귀 · Wave2 브랜치 합의
 ```
 
-**읽을 것**: [`world-events-management.md`](./world-events-management.md) **§6.1 QA 체크리스트**
+**읽을 것**: [`world-events-management.md`](./world-events-management.md) **§6.1·§6.1.1 QA 체크리스트**
 
-**VERIFY**: `smoke:world-events` · `smoke:trip-window-edinburgh` · `build` PASS
+**VERIFY**: `smoke:world-events` · `smoke:world-events-detail` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `build` PASS

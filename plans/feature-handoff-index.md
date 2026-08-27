@@ -18,11 +18,11 @@
 
 | | |
 |--|--|
-| **상태** | **v2 #18 완료** — Wave1 15건 Tier0.5 · packages prefill · Mooni FAB |
-| **다음** | #19 Wave1 통합 QA · 사람 Preview · PR #153 병합 준비 |
+| **상태** | **#19 Wave1 통합 QA** — VERIFY PASS · PR #153 병합 준비(draft→ready) |
+| **다음** | 사람 Preview §6.1·§6.1.1 → PR #153 merge · PROD QA |
 | **브랜치** | `cursor/world-events-efa3` |
-| **PR** | [#153](https://github.com/catgeot/Days/pull/153) (v2 draft) |
-| **feature tip** | `96282bdf` — #18 sample13~15 · packages prefill · Mooni FAB |
+| **PR** | [#153](https://github.com/catgeot/Days/pull/153) (병합 준비) |
+| **feature tip** | `013f8647` — #19 Wave1 통합 QA · Preview 작업 로그 |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) · [`world-events-plan.md`](./world-events-plan.md) §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) §6.1 |
@@ -35,16 +35,16 @@
 **P2 MVP (main)**: Wave1 15건 · PlaceCard · `/world-events` 허브 · TripWindow 프리셋 · 홈 진입  
 **v2 (브랜치)**: `/world-events/:eventId` · Tier0~2 · 샘플 15건 · **v2 델타 main 병합 = #18**
 
-**다음 제시어** (#19):
+**다음 제시어** (#20 — 사람 QA OK 후):
 
 ```
-세계행사 일정 #19, Wave1 통합 QA
+세계행사 일정 #20, PR #153 merge · PROD QA
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
-브랜치 cursor/world-events-efa3 · PR #153 · www.gateo.kr/qa/world-events
-금지: 새 feature 브랜치 · Wave2 overrides · main 병합(사람 OK 전)
-작업: 15 상세 URL 사람 QA · management §6.1 · PR #153 draft → 병합 준비
+브랜치 main · PR #153 merge 완료 후
+금지: Wave2 overrides · releaseNotes 무단 · main 코드 에이전트 임의 push(merge는 사람)
+작업: PR #153 merge · PROD /world-events · §6.1·§6.1.1 회귀 · Wave2 브랜치 합의
 ```
 
 ---
