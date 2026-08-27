@@ -177,7 +177,16 @@
 - **위젯**: EventStayStrip packages/list prefill(일정·인원) · GuestStepper light · EventMooniFab
 - **라우트**: `/world-events/hanoi-tet-2027`
 - **VERIFY**: `smoke:world-events` · `smoke:world-events-detail`(15건) · `build` PASS
-- **다음**: #19 Wave1 통합 QA · 사람 Preview → PR #153 병합 준비
+- **다음**: #20 사람 Preview OK → PR #153 merge
+
+## #19 Wave1 통합 QA — #19
+
+- **일시**: 2026-08-27
+- **범위**: 15건 상세 URL 전건 · §6.1 회귀 · PR #153 병합 준비
+- **VERIFY**: `smoke:world-events` · `smoke:world-events-detail` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `build` PASS
+- **문서**: `world-events-management.md` §6.1.1 QA 표 추가
+- **사람 QA**: §6.1.1 15건 각각 Tier0~2·프리셋·항공+숙소 prefill·무니 FAB
+- **다음**: PR #153 merge · PROD QA
 
 ## v2 pivot — Preview QA 피드백 (#12 전)
 

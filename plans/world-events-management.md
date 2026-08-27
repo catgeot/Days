@@ -108,6 +108,43 @@ Preview: `https://www.gateo.kr/qa/world-events` → git Preview `/world-events`
 | `/world-events` **에든버러 프린지** | 유럽 칩 → 「여행지 카드」 URL에 `fromEvent=edinburgh-fringe-2026` · `checkIn`/`checkOut`(행사 전후 1일 버퍼, 진행 중이면 checkIn=오늘) · 플래너 CTA 동일 날짜 |
 | **홈** 좌상단 바로가기 | 「한국의 축제」 아래 **「세계의 행사」** → `/world-events` |
 
+### 6.1.1 v2 상세 페이지 — Wave1 15건 (PR #153)
+
+Preview 진입: `https://www.gateo.kr/qa/world-events` → git Preview `/world-events`  
+상세 직링크: `https://days-git-cursor-world-events-efa3-catgeots-projects.vercel.app/world-events/{eventId}`
+
+**공통 (15건 각각)**
+
+| 항목 | 확인 |
+|------|------|
+| Tier0~2 | Hero · `detailOverview` · highlights 3 · stayAreas 2 · **권장 박수** 섹션 |
+| TripWindow | 「내 여행 일정」프리셋 2~3종 · **행사 전체 span 아님** · 플래너·숙소 CTA 동일 날짜 |
+| EventStayStrip | 숙소 카드 · **항공+숙소** → Trip `packages/list`(일정·ICN→도착 IATA·인원 prefill) |
+| 무니 FAB | 우하단 Mooni 버튼 · 행사 맥락 대화 진입 |
+| 허브 회귀 | `/world-events` 카드 「행사 상세」→ 동일 URL · 「여행지 카드」→ `/place/:slug?fromEvent&checkIn&checkOut` |
+
+**Tier3 AI fixture (#1~#4만)** — 「행사 맞춤 여행 가이드」패널 · trip presets · booking tips
+
+| # | eventId | 권장 박 | 특이 확인 |
+|---|---------|---------|-----------|
+| 1 | `edinburgh-fringe-2026` | 4 | 장기(25일) · 프리셋 cap · AI fixture |
+| 2 | `munich-oktoberfest-2026` | 3 | AI fixture · Theresienwiese 권역 |
+| 3 | `vienna-staatsoper-season-2026` | 3 | season · AI fixture |
+| 4 | `amsterdam-kings-day-2027` | 2 | 단기 · AI fixture |
+| 5 | `tokyo-sakura-season-2027` | 4 | season · 개화 변동 copy |
+| 6 | `kyoto-gion-matsuri-2027` | 3 | 요이야마 피크 |
+| 7 | `bangkok-songkran-2027` | 3 | 3일 축제 |
+| 8 | `bali-galungan-season-2026` | 4 | 종교 시즌 |
+| 9 | `rio-carnival-2027` | 4 | ICN→GIG 항공 prefill |
+| 10 | `new-york-thanksgiving-season-2026` | 3 | season 윈도 |
+| 11 | `iceland-midnight-sun-2027` | 4 | 장시즌 |
+| 12 | `sydney-vivid-2027` | 3 | 중기 페스티벌 |
+| 13 | `prague-spring-festival-2027` | 3 | #18 신규 · 위젯 전건 |
+| 14 | `marrakech-rose-festival-2027` | 2 | 단기 |
+| 15 | `hanoi-tet-2027` | 4 | 연휴 윈도 · #18 마감 샘플 |
+
+**에이전트 VERIFY (병합 전)**: `smoke:world-events` · `smoke:world-events-detail` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `build` PASS
+
 **금지**: `worldEvents.json` 직편집 · Wave2·EN·`/events` 통합(세션 #9 범위 밖).
 
 ---
