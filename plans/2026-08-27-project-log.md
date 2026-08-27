@@ -110,3 +110,11 @@
 - **VERIFY** `generate:world-events` · `smoke:world-events-detail` · `build` PASS
 - **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026` — 갈룽안·펜jor·무니 칩 3종·주제 칩
 - **다음** 사람 Preview 재QA OK → **#27 D4**
+
+## 세계행사 일정 #27 — Wave1.5 D4 개막 프리셋
+
+- **피드백** 「내 여행 일정」개막 3박 초기값·칩 불일치 · 활성 칩 재클릭 MRT 재호출 · 개막 3박=행사 당일 체크인(개막 전날 필요)
+- **조치** `ce744216` — opening=행사 전날 체크인 · tripWindow↔opening SSOT · 활성 칩 ring+disabled · 동일 날짜 apply skip
+- **VERIFY** `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → munich·bali — 개막 3박 강조·재클릭 무로딩
+- **다음** D4 stayAreas→MRT · 파일럿 회귀

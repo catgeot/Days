@@ -18,8 +18,8 @@
 
 | | |
 |--|--|
-| **상태** | **#26 D3 재QA 핫픽스** — PR [#154](https://github.com/catgeot/Days/pull/154) · tip `b3dd2863` · **#27 D4** 대기 |
-| **브랜치** | `cursor/world-events-wave2` · tip `b3dd2863` |
+| **상태** | **#27 D4 진행** — PR [#154](https://github.com/catgeot/Days/pull/154) · tip `ce744216` |
+| **브랜치** | `cursor/world-events-wave2` · tip `ce744216` |
 | **PR** | [#154](https://github.com/catgeot/Days/pull/154) draft |
 | **main** | `6712f777`+ — Wave1 v2 · Phase F-0.5 · PR #154 = Wave1.5 D1 |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **Phase F-0.5** · §9 |
@@ -30,7 +30,7 @@
 | **PROD QA** | `https://www.gateo.kr/world-events` · 파일럿 3상세(edinburgh·munich·bali) |
 | **VERIFY** | D1~: `audit:event-travel-guide` · `smoke:world-events-detail` · `build` |
 
-**Wave1.5 D3 재QA (PR #154)**: en.wikipedia Galungan · penjor en Google · MOONi chatDraft 대기
+**Wave1.5 D4 (PR #154)**: 개막 3박=행사 전날 · tripWindow↔opening · 중복 API skip
 
 **다음 제시어** (#27 D4):
 
