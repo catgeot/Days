@@ -18,11 +18,11 @@
 
 | | |
 |--|--|
-| **상태** | **#19 QA fix** — 횡성 hub·발리 packages · **merge 보류**(재QA) |
-| **다음** | Preview 재QA → PR #153 merge · #20 국내 FestivalStayStrip |
+| **상태** | **#20 국내 FestivalStayStrip** — merge 보류(Preview 재QA) |
+| **다음** | 횡성·발리·국내축제 Preview QA → PR #153 merge |
 | **브랜치** | `cursor/world-events-efa3` |
-| **PR** | [#153](https://github.com/catgeot/Days/pull/153) (QA fix · merge 보류) |
-| **feature tip** | `c26f2c1b` — 횡성 addr hub · bali packages cityId |
+| **PR** | [#153](https://github.com/catgeot/Days/pull/153) (merge 보류 · 재QA) |
+| **feature tip** | `d6424546` — FestivalStayStrip · FestivalMooniFab |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) · [`world-events-plan.md`](./world-events-plan.md) §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) §6.1 |
@@ -35,16 +35,16 @@
 **P2 MVP (main)**: Wave1 15건 · PlaceCard · `/world-events` 허브 · TripWindow 프리셋 · 홈 진입  
 **v2 (브랜치)**: `/world-events/:eventId` · Tier0~2 · 샘플 15건 · **v2 델타 main 병합 = #18**
 
-**다음 제시어** (#20):
+**다음 제시어** (#21):
 
 ```
-세계행사 일정 #20, QA 재확인 · 국내 FestivalStayStrip
+세계행사 일정 #21, Preview 재QA · PR #153 merge
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
 브랜치 cursor/world-events-efa3 · PR #153 · www.gateo.kr/qa/world-events
 금지: PR merge(재QA 전) · Wave2 overrides · releaseNotes 무단
-작업: 횡성·발리 Preview 재QA → merge · 국내 축제 해외형 본문 위젯(플래너 대체)·무니
+작업: 횡성·발리·국내축제 Preview QA → PR #153 merge · PROD §6.1 회귀
 ```
 
 ---
