@@ -82,7 +82,7 @@ export const WORLD_EVENT_OVERRIDES = [
     ],
     recommendedNights: 3,
     heroImage:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Oktoberfest_2013_%281%29.JPG/1280px-Oktoberfest_2013_%281%29.JPG',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Oktoberfest_2015_-_Impression_5.JPG/1280px-Oktoberfest_2015_-_Impression_5.JPG',
     youtubeVideos: [
       {
         id: 'B5GN30_FRWU',
@@ -173,7 +173,7 @@ export const WORLD_EVENT_OVERRIDES = [
     ],
     recommendedNights: 4,
     heroImage:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Royal_Mile%2C_Edinburgh.jpg/1280px-Royal_Mile%2C_Edinburgh.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Edinburgh_Festival_Fringe_Street_Performer.jpg/1280px-Edinburgh_Festival_Fringe_Street_Performer.jpg',
     youtubeVideos: [
       {
         id: '_YXE3yAUrvA',
@@ -389,7 +389,7 @@ export const WORLD_EVENT_OVERRIDES = [
     recurrenceNote: '210일 주기 · 갈룽안·쿠닝안',
     venue: { name: 'Bali islandwide temples' },
     source: 'curated',
-    sourceUrl: 'https://www.baligoldentour.com/galungan-kuningan/',
+    sourceUrl: 'https://ko.wikipedia.org/wiki/갈룽안',
     bookingHints: '우붓·스미냑 — 사원 방문 시 사례 복장 준비',
     detailOverview:
       '발리 힌두력 210일 주기로 돌아오는 갈룽안·쿠닝안 시즌으로, 사원·가옥 앞 펜져(penjor) 장식·제례가 섬 전역에서 이어집니다. 갈룽안 당일·쿠닝안 전후 3~4박으로 우붓·스미냑 기점 사원·마을 행사를 둘러보는 방문이 일반적입니다.',
@@ -412,7 +412,7 @@ export const WORLD_EVENT_OVERRIDES = [
     ],
     recommendedNights: 4,
     heroImage:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Penjor_Galungan.jpg/1280px-Penjor_Galungan.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Offering-Bali.jpg/1280px-Offering-Bali.jpg',
     youtubeVideos: [
       {
         id: 'AJhPk93ksso',
@@ -430,7 +430,7 @@ export const WORLD_EVENT_OVERRIDES = [
         id: 'galungan-guide',
         labelKo: '갈룽안 안내',
         labelEn: 'Galungan guide',
-        href: 'https://www.baligoldentour.com/galungan-kuningan/',
+        href: 'https://ko.wikipedia.org/wiki/갈룽안',
         kind: 'official',
       },
       {
@@ -444,7 +444,7 @@ export const WORLD_EVENT_OVERRIDES = [
         id: 'penjor-search',
         labelKo: '펜져 장식 검색',
         labelEn: 'Penjor decorations',
-        href: 'https://www.google.com/search?q=Bali+Galungan+penjor+Ubud&hl=ko',
+        href: 'https://www.google.com/search?q=%EB%B0%9C%EB%A6%AC+%EA%B0%88%EB%A5%AD%EC%95%88+%ED%8E%9C%EC%A0%80+%EC%9A%B0%EB%B6%93&hl=ko',
         kind: 'search',
       },
     ],

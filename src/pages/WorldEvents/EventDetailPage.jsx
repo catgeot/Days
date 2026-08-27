@@ -147,9 +147,17 @@ export default function EventDetailPage() {
       });
       if (!spot) return;
       const eventContext = buildWorldEventMooniSeed(event, locale);
-      setMooniBoundSpot(eventContext ? { ...spot, eventContext } : spot);
-      setMooniInitialQuery(prompt ? { text: prompt } : null);
-      setMooniOpen(true);
+      const nextSpot = eventContext ? { ...spot, eventContext } : spot;
+      const nextQuery = prompt ? { text: prompt } : null;
+
+      setMooniOpen(false);
+      setMooniBoundSpot(null);
+      setMooniInitialQuery(null);
+      window.setTimeout(() => {
+        setMooniBoundSpot(nextSpot);
+        setMooniInitialQuery(nextQuery);
+        setMooniOpen(true);
+      }, 0);
     },
     [event, locale, title],
   );

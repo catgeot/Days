@@ -28,7 +28,7 @@ export const cloudPreviewWorkLog = [
     session: '세계행사 일정 #26, Wave1.5 D3 미디어·명소',
     title: 'heroImage·YouTube·검색·명소 허브 브릿지',
     detail:
-      '파일럿 3건(edinburgh·munich·bali) heroImage·youtubeVideos overrides · EventDetailHero · EventDetailMediaSection(Google·네이버 검색·YouTube·cityAttractionHubs→/place) · smoke:world-events-detail · build PASS. Preview /qa/world-events → /world-events/bali-galungan-season-2026 — 히어로·관련 영상·검색·발리 명소 칩 확인.',
+      'D3 QA 피드백 반영: heroImage Wikimedia URL 수정 · 갈룽안 안내→위키백과 · 펜져 검색 한글 · Google 검색 쿼리 ko·무니 칩 재전송. Preview /qa/world-events → /world-events/bali-galungan-season-2026 재확인.',
     at: '2026-08-27T12:30:00.000Z',
   },
   {

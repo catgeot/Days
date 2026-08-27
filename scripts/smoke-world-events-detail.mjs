@@ -190,6 +190,8 @@ assert.ok(baliHub.hub?.href === '/place/bali', 'bali hub link');
 assert.ok(baliHub.attractions.length >= 3, 'bali hub attractions');
 assert.ok(baliHub.attractions[0].href.startsWith('/place/'), 'attraction place link');
 assert.ok(buildWorldEventSearchQuery(bali, 'ko').includes('갈룽안'), 'bali search query ko');
+assert.ok(!buildWorldEventSearchQuery(bali, 'ko').includes('islandwide'), 'bali search query no English venue');
+assert.match(bali.actionChips[0].href, /wikipedia\.org/, 'bali guide not travel agency');
 
 assert.match(stayStripSrc, /EventFlightHotelCta/, 'EventStayStrip uses packages CTA');
 assert.match(stayStripSrc, /event-detail-flight/, 'EventStayStrip event-detail-flight tracking');

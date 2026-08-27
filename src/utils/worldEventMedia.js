@@ -3,7 +3,7 @@ import {
   placeUrlSlug,
   resolveCityAttractionHub,
 } from '../pages/Home/lib/cityAttractionHubs.js';
-import { getWorldEventTitle } from './worldEvents.js';
+import { getWorldEventTitle, getWorldEventPlaceMeta } from './worldEvents.js';
 
 /** Wave1.5 pilot — shared with D2 chips / D3 media. */
 export const WORLD_EVENT_WAVE15_PILOT_EVENT_IDS = [
@@ -29,9 +29,13 @@ export function hasWorldEventD3Media(eventId) {
 export function buildWorldEventSearchQuery(event, locale = 'ko') {
   if (!event) return '';
   const title = getWorldEventTitle(event, locale);
-  const placeLabel = locale === 'en' && event.titleEn ? event.titleEn : event.title;
-  const venue = event.venue?.name ? String(event.venue.name).trim() : '';
-  return [title || placeLabel, venue].filter(Boolean).join(' ');
+  if (locale === 'en') {
+    const venue = event.venue?.name ? String(event.venue.name).trim() : '';
+    return [title, venue].filter(Boolean).join(' ');
+  }
+  const placeMeta = getWorldEventPlaceMeta(event.slug, locale);
+  const placeLabel = placeMeta?.label ? String(placeMeta.label).trim() : '';
+  return [title, placeLabel].filter(Boolean).join(' ');
 }
 
 /**
