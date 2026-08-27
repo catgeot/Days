@@ -1784,6 +1784,7 @@
     "aiGuide": {
       "title": "Event travel guide",
       "tierLabel": "AI",
+      "staticSeparationNote": "Overview and recommended nights are in the static sections above. Below are AI visit windows and event-specific tips.",
       "recommendedNights": "AI suggests {{nights}} nights (not the full event span)",
       "tripPresets": "Suggested visit windows",
       "nights": "{{count}} nights",

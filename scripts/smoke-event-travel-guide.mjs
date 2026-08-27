@@ -10,6 +10,7 @@ import { fileURLToPath } from 'url';
 import { spawnSync } from 'child_process';
 import {
   EVENT_TRAVEL_GUIDE_SCHEMA_VERSION,
+  EVENT_TRAVEL_GUIDE_PILOT_EVENT_IDS,
   normalizeEventTravelGuide,
 } from './lib/event-travel-guide-schema.mjs';
 
@@ -52,7 +53,11 @@ function main() {
   const fixturePaths = readdirSync(fixtureDir)
     .filter((name) => name.endsWith('.json'))
     .map((name) => join(fixtureDir, name));
-  assert(fixturePaths.length >= 4, 'sample fixtures #1~#4 present');
+  assert(fixturePaths.length >= 3, 'Wave1.5 pilot fixtures edinburgh/munich/bali present');
+  assert(
+    fixturePaths.length === EVENT_TRAVEL_GUIDE_PILOT_EVENT_IDS.length,
+    'fixture count matches pilot roster',
+  );
 
   for (const fixturePath of fixturePaths) {
     const fixture = normalizeEventTravelGuide(
@@ -67,7 +72,8 @@ function main() {
 
   assert(grepFile('src/utils/loadEventTravelGuideFixture.js', 'loadEventTravelGuideFixture'), 'fixture loader');
 
-  assert(grepFile('src/pages/WorldEvents/EventTravelGuidePanel.jsx', 'EventTravelGuidePanel'), 'panel component');
+  assert(grepFile('src/utils/eventTravelGuideSurface.js', 'shouldShowEventTravelGuidePanel'), 'surface guard');
+  assert(grepFile('src/pages/WorldEvents/EventDetailPage.jsx', 'shouldShowEventTravelGuidePanel'), 'panel suppress wired');
   assert(grepFile('src/pages/WorldEvents/EventDetailPage.jsx', 'EventTravelGuidePanel'), 'panel wired in detail page');
   assert(grepFile('src/utils/fetchEventTravelGuide.js', 'event_travel_guide'), 'fetch helper');
 

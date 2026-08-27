@@ -1547,6 +1547,7 @@
     "aiGuide": {
       "title": "행사 맞춤 여행 가이드",
       "tierLabel": "AI",
+      "staticSeparationNote": "개요·권장 숙박은 위 정적 안내(Tier0~0.5)를 참고하세요. 아래는 AI 방문 윈도·행사 맞춤 조언입니다.",
       "recommendedNights": "AI 권장 숙박 {{nights}}박 (행사 전체 기간 아님)",
       "tripPresets": "추천 방문 윈도",
       "nights": "{{count}}박",

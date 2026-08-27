@@ -22,6 +22,7 @@ import {
 } from '../../utils/worldEvents';
 import { fetchEventTravelGuide } from '../../utils/fetchEventTravelGuide';
 import { loadEventTravelGuideFixture } from '../../utils/loadEventTravelGuideFixture';
+import { shouldShowEventTravelGuidePanel } from '../../utils/eventTravelGuideSurface';
 import { isCloudPreviewSurface } from '../../shared/cloudPreview/isCloudPreviewSurface';
 import { buildPlacePlannerPathFromEvent } from '../../utils/placePlannerPath';
 import EventDetailStaticPanel from './EventDetailStaticPanel';
@@ -63,8 +64,8 @@ export default function EventDetailPage() {
             setTravelGuide(fixture);
             setTravelGuideRaw({
               guide: fixture,
-              model: 'fixture-v0.1',
-              schema_version: '0.1',
+              model: 'fixture-v0.2',
+              schema_version: '0.2',
             });
             return;
           }
@@ -232,7 +233,7 @@ export default function EventDetailPage() {
             />
           </div>
 
-          {travelGuide ? (
+          {travelGuide && shouldShowEventTravelGuidePanel(event.id) ? (
             <div className="mt-4">
               <EventTravelGuidePanel
                 guide={travelGuide}

@@ -1,5 +1,4 @@
-export const EVENT_TRAVEL_GUIDE_SCHEMA_VERSION = "0.1";
-export const MAX_RECOMMENDED_NIGHTS = 10;
+export const EVENT_TRAVEL_GUIDE_SCHEMA_VERSION = "0.2";
 export const MAX_PRESET_NIGHTS = 10;
 
 export type EventTravelGuideFacts = {
@@ -36,11 +35,10 @@ export type EventTravelGuideSection = {
   content: string;
 };
 
+/** v0.2 — Tier3 only; summary/recommended_nights belong in static Tier0~0.5. */
 export type EventTravelGuide = {
   schema_version: typeof EVENT_TRAVEL_GUIDE_SCHEMA_VERSION;
   event_id: string;
-  summary: string;
-  recommended_nights: number;
   trip_presets: EventTravelGuideTripPreset[];
   sections: EventTravelGuideSection[];
   booking_tips: string[];
@@ -67,14 +65,15 @@ export function normalizeEventTravelGuide(raw: unknown): EventTravelGuide {
     throw new Error(`schema_version must be ${EVENT_TRAVEL_GUIDE_SCHEMA_VERSION}`);
   }
 
-  const eventId = String(row.event_id ?? "").trim();
-  const summary = String(row.summary ?? "").trim();
-  if (!eventId || !summary) throw new Error("event_id and summary required");
-
-  const recommendedNights = Number(row.recommended_nights);
-  if (!Number.isFinite(recommendedNights) || recommendedNights < 1 || recommendedNights > MAX_RECOMMENDED_NIGHTS) {
-    throw new Error(`recommended_nights must be 1..${MAX_RECOMMENDED_NIGHTS}`);
+  if (row.summary != null && String(row.summary).trim()) {
+    throw new Error("summary forbidden in v0.2 (use static detailOverview)");
   }
+  if (row.recommended_nights != null) {
+    throw new Error("recommended_nights forbidden in v0.2 (use static recommendedNights)");
+  }
+
+  const eventId = String(row.event_id ?? "").trim();
+  if (!eventId) throw new Error("event_id required");
 
   const tripPresetsRaw = row.trip_presets;
   if (!Array.isArray(tripPresetsRaw) || tripPresetsRaw.length === 0) {
@@ -116,8 +115,6 @@ export function normalizeEventTravelGuide(raw: unknown): EventTravelGuide {
   return {
     schema_version: EVENT_TRAVEL_GUIDE_SCHEMA_VERSION,
     event_id: eventId,
-    summary,
-    recommended_nights: recommendedNights,
     trip_presets,
     sections,
     booking_tips,
