@@ -18,11 +18,11 @@
 
 | | |
 |--|--|
-| **상태** | **v2 #17 완료** — EventStayStrip Trip prefill · packages/list · event-detail-flight |
-| **다음** | #18 sample #13~#15 Tier0.5 · 15 URL smoke · Mooni FAB |
+| **상태** | **v2 #18 완료** — Wave1 15건 Tier0.5 · packages prefill · Mooni FAB |
+| **다음** | #19 Wave1 통합 QA · 사람 Preview · PR #153 병합 준비 |
 | **브랜치** | `cursor/world-events-efa3` |
 | **PR** | [#153](https://github.com/catgeot/Days/pull/153) (v2 draft) |
-| **feature tip** | `2554ca52` — #17 Trip prefill · WhiteLabelWidget |
+| **feature tip** | `96282bdf` — #18 sample13~15 · packages prefill · Mooni FAB |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) · [`world-events-plan.md`](./world-events-plan.md) §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) §6.1 |
@@ -35,16 +35,16 @@
 **P2 MVP (main)**: Wave1 15건 · PlaceCard · `/world-events` 허브 · TripWindow 프리셋 · 홈 진입  
 **v2 (브랜치)**: `/world-events/:eventId` · Tier0~2 · 샘플 15건 · **v2 델타 main 병합 = #18**
 
-**다음 제시어** (#18):
+**다음 제시어** (#19):
 
 ```
-세계행사 일정 #18, 샘플13~15 · 위젯 마감
+세계행사 일정 #19, Wave1 통합 QA
 @plans/feature-handoff-index.md
-@plans/2026-08-26-project-log.md
+@plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
-브랜치 cursor/world-events-efa3 · PR #153 · /world-events/hanoi-tet-2027
-금지: 새 feature 브랜치 · worldEvents.json 직편집 · UI 리디자인 · Wave2 overrides
-작업: sample #13 prague #14 marrakech #15 hanoi · 15 URL 전건 smoke · Mooni FAB
+브랜치 cursor/world-events-efa3 · PR #153 · www.gateo.kr/qa/world-events
+금지: 새 feature 브랜치 · Wave2 overrides · main 병합(사람 OK 전)
+작업: 15 상세 URL 사람 QA · management §6.1 · PR #153 draft → 병합 준비
 ```
 
 ---
