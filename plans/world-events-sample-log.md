@@ -250,6 +250,13 @@
 - **핫픽스** `bd586518` — en.wikipedia/Galungan · penjor en Google · MOONi chatDraft 대기
 - **다음** 사람 Preview 재QA OK → **#27 D4**
 
+## Wave1.5 D4 — 개막 프리셋 (#27)
+
+- **피드백** 개막 3박 초기값·칩 불일치 · 재클릭 MRT 재호출 · 개막=행사 당일 체크인
+- **핫픽스** `ce744216` — 행사 전날 체크인 · tripWindow↔opening · 활성 칩·중복 skip
+- **사람 QA** munich·bali Preview OK
+- **잔여** stayAreas→MRT · 파일럿 3건 회귀
+
 ## v2 pivot — Preview QA 피드백 (#12 전)
 
 - **일시**: 2026-08-26

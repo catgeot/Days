@@ -117,4 +117,5 @@
 - **조치** `ce744216` — opening=행사 전날 체크인 · tripWindow↔opening SSOT · 활성 칩 ring+disabled · 동일 날짜 apply skip
 - **VERIFY** `smoke:world-events-detail` · `build` PASS
 - **Preview** `/qa/world-events` → munich·bali — 개막 3박 강조·재클릭 무로딩
-- **다음** D4 stayAreas→MRT · 파일럿 회귀
+- **사람 QA** Preview OK — 개막 3박·초기값·중복 API
+- **다음** D4 잔여 — stayAreas→MRT · 파일럿 3건 회귀
