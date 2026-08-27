@@ -672,8 +672,8 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#26 Wave1.5 D3 완료** — PR [#154](https://github.com/catgeot/Days/pull/154) · **#27 D4** 대기 |
-| **브랜치** | `cursor/world-events-wave2` · tip `b9c52a3a` |
+| **상태** | **#26 D3 재QA 핫픽스** — PR [#154](https://github.com/catgeot/Days/pull/154) · **#27 D4** 대기 |
+| **브랜치** | `cursor/world-events-wave2` · tip `b3dd2863` |
 | **main** | Wave1 PR #153 merged · PROD Tier3 → D1에서 Preview-only suppress |
 | **플랜** | 본 문서 **Phase F-0.5** · 표준 제시어 **#23~#28** |
 | **Preview** | `https://www.gateo.kr/qa/world-events` |
