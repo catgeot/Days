@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 17,
-  sessionPhase: '항공+숙소 Trip prefill',
+  sessionNo: 18,
+  sessionPhase: '샘플13~15 · 위젯 마감',
   branch: 'cursor/world-events-efa3',
-  previewPath: '/world-events/rio-carnival-2027',
+  previewPath: '/world-events/hanoi-tet-2027',
   qaShareSlug: 'world-events',
 };
 
