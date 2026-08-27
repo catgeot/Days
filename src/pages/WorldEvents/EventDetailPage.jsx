@@ -149,17 +149,25 @@ export default function EventDetailPage() {
       const eventContext = buildWorldEventMooniSeed(event, locale);
       const nextSpot = eventContext ? { ...spot, eventContext } : spot;
       const nextQuery = prompt ? { text: prompt } : null;
+      const promptText = nextQuery?.text?.trim() || '';
 
-      setMooniOpen(false);
-      setMooniBoundSpot(null);
-      setMooniInitialQuery(null);
-      window.setTimeout(() => {
-        setMooniBoundSpot(nextSpot);
-        setMooniInitialQuery(nextQuery);
-        setMooniOpen(true);
-      }, 0);
+      setMooniBoundSpot(nextSpot);
+
+      if (promptText && mooniOpen) {
+        setMooniOpen(false);
+        setMooniInitialQuery(null);
+        window.setTimeout(() => {
+          setMooniBoundSpot(nextSpot);
+          setMooniInitialQuery(nextQuery);
+          setMooniOpen(true);
+        }, 0);
+        return;
+      }
+
+      setMooniInitialQuery(nextQuery);
+      setMooniOpen(true);
     },
-    [event, locale, title],
+    [event, locale, title, mooniOpen],
   );
 
   const closeEventMooni = useCallback(() => {

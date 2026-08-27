@@ -909,7 +909,7 @@ const ChatModal = ({
         ? getMooniL1ChipLabel(topicDockParent, { mobile: true })
         : null,
       onOpenPlanner: handlePlannerNavigate,
-      disabled: isLoading,
+      disabled: isLoading || (!activeChatId && !chatDraft),
       prompt: topicDockPrompt,
       showPrompt: showTopicDockPrompt,
       dock: true,
@@ -921,6 +921,8 @@ const ChatModal = ({
       topicDockParent,
       handlePlannerNavigate,
       isLoading,
+      activeChatId,
+      chatDraft,
       topicDockPrompt,
       showTopicDockPrompt,
     ]
@@ -939,6 +941,7 @@ const ChatModal = ({
     }
 
     if (!queryText) return;
+    if (!activeChatId && !chatDraft) return;
     if (lastInitialQueryTextRef.current === queryText) return;
 
     lastInitialQueryTextRef.current = queryText;
@@ -947,7 +950,7 @@ const ChatModal = ({
     const queryPersona = initialQuery?.persona || PERSONA_TYPES.GENERAL;
     setCurrentPersona(queryPersona);
     handleSend(queryText, queryPersona);
-  }, [isOpen, initialQuery, handleSend]);
+  }, [isOpen, initialQuery, handleSend, activeChatId, chatDraft]);
 
   const handleSidebarClick = (id) => { if (onSwitchChat) onSwitchChat(id); };
 

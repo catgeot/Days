@@ -389,7 +389,7 @@ export const WORLD_EVENT_OVERRIDES = [
     recurrenceNote: '210일 주기 · 갈룽안·쿠닝안',
     venue: { name: 'Bali islandwide temples' },
     source: 'curated',
-    sourceUrl: 'https://ko.wikipedia.org/wiki/갈룽안',
+    sourceUrl: 'https://en.wikipedia.org/wiki/Galungan',
     bookingHints: '우붓·스미냑 — 사원 방문 시 사례 복장 준비',
     detailOverview:
       '발리 힌두력 210일 주기로 돌아오는 갈룽안·쿠닝안 시즌으로, 사원·가옥 앞 펜져(penjor) 장식·제례가 섬 전역에서 이어집니다. 갈룽안 당일·쿠닝안 전후 3~4박으로 우붓·스미냑 기점 사원·마을 행사를 둘러보는 방문이 일반적입니다.',
@@ -430,7 +430,7 @@ export const WORLD_EVENT_OVERRIDES = [
         id: 'galungan-guide',
         labelKo: '갈룽안 안내',
         labelEn: 'Galungan guide',
-        href: 'https://ko.wikipedia.org/wiki/갈룽안',
+        href: 'https://en.wikipedia.org/wiki/Galungan',
         kind: 'official',
       },
       {
@@ -444,7 +444,7 @@ export const WORLD_EVENT_OVERRIDES = [
         id: 'penjor-search',
         labelKo: '펜져 장식 검색',
         labelEn: 'Penjor decorations',
-        href: 'https://www.google.com/search?q=%EB%B0%9C%EB%A6%AC+%EA%B0%88%EB%A5%AD%EC%95%88+%ED%8E%9C%EC%A0%80+%EC%9A%B0%EB%B6%93&hl=ko',
+        href: 'https://www.google.com/search?q=Bali+Galungan+penjor+decoration+Ubud&hl=en',
         kind: 'search',
       },
     ],
