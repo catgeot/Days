@@ -7,7 +7,7 @@
 |--|--|
 | **에이전트 (시작)** | 사용자 첫 메시지에 **채팅명 형식**(`{주제} #{N}, …`) 또는 **`@plans/feature-handoff-index.md`** 가 있으면 **본 파일 해당 행만** Read → 표의 **다음 제시어**·브랜치 checkout. `.ai-context` 전문·코드베이스 광역 grep **생략**. |
 | **에이전트 (종료)** | feature 세션 종료 시 **해당 주제 행 갱신** + 주제 플랜 **§9** + 최신 일지 2~5줄 + **§1.2 다음 제시어 블록** 복붙. |
-| **main 동기화** | 위 3파일은 **`main` + `origin/main` 반영 필수** (§1.5.4). feature **종료 시** `merge origin/main` + `audit:docs-handoff-sync` PASS. **feature에 `plans/**` 커밋 금지**. 절차: [`docs-on-main-workflow.md`](./docs-on-main-workflow.md) §충돌 방지.
+| **main 동기화** | 위 3파일은 **`main` + `origin/main` 반영 필수** (§1.5.4). feature **종료 시** `merge origin/main` + `audit:docs-handoff-sync` PASS. **feature에 `plans/**` 커밋 금지**. **Plan 아티팩트만 갱신하고 main push 생략 금지** — [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) §1.3. 절차: [`docs-on-main-workflow.md`](./docs-on-main-workflow.md) §충돌 방지.
 | **주제 종료** | PR 병합 후 해당 행 **삭제** 또는 `active: false` + 병합 SHA 기록. |
 
 ---
@@ -18,29 +18,30 @@
 
 | | |
 |--|--|
-| **상태** | **#22 PROD §6.1 QA** — 사람 횡성·발리·국내축제·15 상세 확인 대기 |
-| **main** | `6712f777` — Wave1 v2 상세 · FestivalStayStrip · EventStayStrip · Mooni FAB · bundle `index-vN5gm04K.js` |
+| **상태** | **Wave 1.5 차별화** — Wave2 데이터 보류 · **#23 D1** 구현 대기 |
+| **브랜치** | `cursor/world-events-wave2` · PR TBD |
+| **main** | `6712f777`+ — Wave1 v2 · Tier3 PROD fixture #1~#4 · Phase F-0.5 계획 반영 |
 | **PR** | [#153](https://github.com/catgeot/Days/pull/153) **merged** |
-| **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) · [`world-events-plan.md`](./world-events-plan.md) §9 |
+| **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **Phase F-0.5** · §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) §6.1·§6.1.1 |
 | **샘플** | [`world-events-sample-log.md`](./world-events-sample-log.md) |
 | **일지** | [`2026-08-27-project-log.md`](./2026-08-27-project-log.md) |
-| **PROD QA** | `https://www.gateo.kr/world-events` · `/world-events/bali-galungan-season-2026` · `/place/vienna` · `/korea` 축제 상세 · 홈 「세계의 행사」 |
-| **VERIFY** | `smoke:world-events` · `smoke:world-events-detail` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `build` |
+| **PROD QA** | `https://www.gateo.kr/world-events` · 파일럿 3상세(edinburgh·munich·bali) |
+| **VERIFY** | D1~: `audit:event-travel-guide` · `smoke:world-events-detail` · `build` |
 
-**Wave1 v2 (main)**: 15건 `/world-events/:eventId` · Tier0~2 · EventStayStrip · 국내 FestivalStayStrip · Mooni FAB · AI fixture #1~#4
+**Wave1 v2 (main)**: 15건 상세 · EventStayStrip · 국내 FestivalStayStrip · Mooni FAB · AI fixture #1~#4
 
-**다음 제시어** (#23 — Wave2 착수):
+**다음 제시어** (#23 — Wave1.5 D1):
 
 ```
-세계행사 일정 #23, Wave2 singapore dubai
+세계행사 일정 #23, Wave1.5 D1 AI 정적 분리
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
-브랜치 cursor/world-events-wave2 · PR TBD · www.gateo.kr/qa/world-events · /world-events/{singapore|dubai eventId}
-금지: worldEvents.json 직편집 · Wave1 브랜치(cursor/world-events-efa3) 혼동 · 15건 일괄 AI pregen · releaseNotes 무단 · Tier3 vs Tier0 겹침 수정(보류)
-작업: Phase F · world-event-overrides singapore+dubai 2건 · Tier0.5 · travelSpots-list slug 확인 · generate:world-events · audit:world-events · Preview 상세·허브 QA · index Wave2 행 갱신
+브랜치 cursor/world-events-wave2 · PR TBD · www.gateo.kr/qa/world-events · /world-events/edinburgh-fringe-2026
+금지: 새 feature 브랜치 · Wave1 브랜치 · worldEvents.json 직편집 · feature에 plans 커밋 · Wave2 overrides
+작업: D1 EventTravelGuidePanel suppress · AI 스키마 v2 · fixture edinburgh munich bali · audit:event-travel-guide · smoke:world-events-detail · build
 ```
 
 ---
@@ -149,14 +150,17 @@ main · www.gateo.kr/place/yap/planner?lang=en
 | **Preview** | `https://…-git-…vercel.app/…` |
 | **VERIFY** | `npm run …` |
 
-**다음 제시어**:
+**다음 제시어** (7행 · `작업:` 포함 · [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) §1.2·§1.3):
 
 \`\`\`
 {주제} #{N}, {단계}
 @plans/feature-handoff-index.md
 @plans/YYYY-MM-DD-project-log.md
 @plans/{주제}-plan.md
-브랜치 cursor/… · PR #… · …
-금지: …
+브랜치 cursor/… · PR #… · Preview/QA
+금지: … · feature에 plans 커밋
+작업: …
 \`\`\`
+
+**docs-on-main**: 핸드오프 3종은 **`main` push 필수** — feature에 `plans/**` 커밋 금지.
 ```

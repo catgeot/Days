@@ -29,6 +29,8 @@
 
 **회색지대**: 플랜 **본문**(Phase 1~8)은 feature에서 크게 쓰되, **§9·다음 제시어**는 `main`과 **동일 내용**이어야 함. 큰 플랜 수정 시 본문+§9를 같이 `main`에 올린다.
 
+**Plan 아티팩트만 있는 경우**: Cursor Plan VM 아티팩트에만 계획이 있고 `plans/`·`origin/main`에 없으면 다음 세션이 **구 문서**로 작업함. 방향 전환·다세션 플랜 확정 시 **코드 없어도** `main` docs push 필수 — [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) **§1.3**.
+
 ---
 
 ## Cloud feature — 세션 **시작** (필수)

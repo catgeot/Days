@@ -353,6 +353,26 @@ flowchart LR
 - slug 없는 도시 행사 추가  
 - 영문 UI (Q10) · Ticketmaster (P3-b) · `/events` 통합 허브 (P3-c) — **별 주제 세션**
 
+### F-0.5. Wave 1.5 차별화 (**Wave2 데이터 전** · Cloud #23~#26)
+
+**결정 (2026-08-27)**: PROD QA 피드백(본문 vs AI 중복·차별성 부족) → **singapore·dubai 데이터 추가 전** 상세 UX·콘텐츠 역할 분리.
+
+| 단계 | 세션 | 산출 |
+|------|------|------|
+| **D1** | **#23** | Tier0.5 vs Tier3 **역할 분리** · AI 패널 suppress · fixture edinburgh·munich·bali |
+| **D2** | **#24** | 행사 액션 칩 · **무니 행사 시드·칩** |
+| **D3** | **#25** | heroImage·YouTube · Google·네이버 검색 · `cityAttractionHubs` 브릿지 |
+| **D4** | **#26** | EventStayStrip 확장 · stayAreas→MRT · **파일럿 3건** 사람 Preview QA |
+| **Wave2 데이터** | **#27** | singapore·dubai overrides — **D4·파일럿 OK 후만** |
+
+**고정 브랜치**: `cursor/world-events-wave2` · Preview `www.gateo.kr/qa/world-events`  
+**파일럿 3건**: `edinburgh-fringe-2026` · `munich-oktoberfest-2026` · `bali-galungan-season-2026`  
+**gateo 차별화**: TripWindow 실행 + 명소 허브 + 행사 맥락 무니 — 「행사 정보만 나열」지양.
+
+**docs-on-main**: 코드=feature · 핸드오프=main — [`docs-on-main-workflow.md`](plans/docs-on-main-workflow.md). **Plan 아티팩트만 있고 `plans/` 미반영 시 구 계획으로 작업 금지** — 착수 전 본 절·index **#N 제시어**가 `origin/main`에 있어야 함.
+
+표준 제시어 전체: 본 문서 **「표준 제시어」#23~#27** · 다세션 플랜 작성 규칙 [`cloud-preview-continuity.md`](plans/cloud-preview-continuity.md) **§1.3**.
+
 ---
 
 ## 문서
@@ -604,37 +624,66 @@ flowchart LR
 
 ---
 
-### #19~#23 — Wave2 (G1~G4 게이트 **후** · 브랜치 합의 필요)
+### #23~#27 — Wave 1.5 차별화 + Wave2 데이터 (G1~G4·파일럿 **후**)
 
-**#19** singapore · dubai
+> **세션 번호**: Cloud 채팅 `#23`~`#27` = 본 블록. 구 F-5 표의 `#19`~`#23`(Wave2만)은 **#27~#30으로 연기** — Wave 1.5가 끼어듦.
+
+**#23** Wave1.5 D1 · AI·정적 분리
 
 ```
-세계행사 일정 #19, Wave2 singapore dubai
+세계행사 일정 #23, Wave1.5 D1 AI 정적 분리
 @plans/feature-handoff-index.md
-@plans/2026-08-26-project-log.md
+@plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
-브랜치 cursor/world-events-wave2 · PR TBD · www.gateo.kr/qa/world-events
-금지: worldEvents.json 직편집 · Wave1 브랜치 재사용 혼동 · 15건 일괄 AI
-작업: Phase F · overrides 2건 · Tier0.5 · travelSpots slug 확인 · audit:world-events
+브랜치 cursor/world-events-wave2 · PR TBD · www.gateo.kr/qa/world-events · /world-events/edinburgh-fringe-2026
+금지: 새 feature 브랜치 · Wave1 브랜치 · worldEvents.json 직편집 · feature에 plans 커밋 · Wave2 overrides
+작업: D1 EventTravelGuidePanel suppress · AI 스키마 v2 · fixture edinburgh munich bali · audit:event-travel-guide · smoke:world-events-detail · build
 ```
 
-**#20** barcelona · istanbul — `#19`와 동일 형식 · eventId·slug만 변경
+**#24** D2 · 무니 행사칩 — `#23`과 동일 형식 · QA `/world-events/munich-oktoberfest-2026` · 작업=D2
 
-**#21** 축1 vienna/munich 2번째 행사 · slug 다건 뱃지
+**#25** D3 · 미디어·명소 — QA `/world-events/bali-galungan-season-2026` · 작업=D3
 
-**#22** (선택) P3-a edinburgh ICS POC
+**#26** D4 · 숙소·파일럿 QA — QA edinburgh·munich·bali 3건 · 작업=D4
 
-**#23** Wave2 통합 QA · PROD
+**#27** Wave2 singapore·dubai — **#26 사람 OK 후** · overrides 2건 · D3 미디어·명소 필수
 
-> Wave2 시작 전 `feature-handoff-index` 행의 **브랜치·PR·제시어**를 `#19` 블록으로 **일괄 갱신**. `#18` 병합 전 `#19` 제시어 사용 **금지**.
+**#28~#30** (Wave2 후속): barcelona·istanbul · 축1 vienna/munich · 통합 PROD QA — index 갱신 시 F-5 표 참고.
+
+> Wave 1.5 착수 전 index **다음 제시어** = **#23 블록**. Plan 아티팩트만 읽고 repo `plans/` 미동기화 상태로 구현 **금지**.
 
 ---
 
 ### 세션 종료 시 갱신 체크 (에이전트)
 
-1. [`feature-handoff-index.md`](plans/feature-handoff-index.md) — **다음 제시어** = 위 표 **다음 #N** 블록 통째로  
-2. [`2026-08-26-project-log.md`](plans/2026-08-26-project-log.md) — 2~5줄 (세션 표기 · SHA · sample #)  
+1. [`feature-handoff-index.md`](plans/feature-handoff-index.md) — **다음 제시어** = 위 표 **다음 #N** 블록 7줄 통째  
+2. [`2026-08-27-project-log.md`](plans/2026-08-27-project-log.md) — 2~5줄 (세션 표기 · SHA · D단계)  
 3. [`world-events-sample-log.md`](plans/world-events-sample-log.md) — 샘플 세션(#11~#16) 건별 append  
-4. (권장) docs 3종 **main** cherry-pick — main 부팅 세션 맥락 유지  
+4. **`main` docs-only push** → feature `merge origin/main` → `audit:docs-handoff-sync` PASS  
 
-**다음 세션 사람용**: 턴 종료 메시지에 **「다음 채팅명」** 으로 위 블록 **6줄 코드펜스** 통째 복붙.
+**다음 세션 사람용**: 턴 종료 메시지에 **「다음 채팅명」** 으로 위 블록 **7줄 코드펜스** 통째 복붙.
+
+---
+
+## 9. 핸드오프 (Wave 1.5 — main SSOT)
+
+| | |
+|--|--|
+| **상태** | **Wave 1.5 계획 확정** — Wave2 데이터 **보류** · 구현 **#23 D1**부터 |
+| **브랜치** | `cursor/world-events-wave2` (생성·첫 push는 #23 D1) |
+| **main** | Wave1 PR #153 merged · PROD Tier3 fixture #1~#4 |
+| **플랜** | 본 문서 **Phase F-0.5** · 표준 제시어 **#23~#27** |
+| **Preview** | `https://www.gateo.kr/qa/world-events` |
+| **VERIFY** | D1~D4 단계별 smoke/audit · `build` |
+
+**다음 제시어** (#23):
+
+```
+세계행사 일정 #23, Wave1.5 D1 AI 정적 분리
+@plans/feature-handoff-index.md
+@plans/2026-08-27-project-log.md
+@plans/world-events-detail-ux-plan.md
+브랜치 cursor/world-events-wave2 · PR TBD · www.gateo.kr/qa/world-events · /world-events/edinburgh-fringe-2026
+금지: 새 feature 브랜치 · Wave1 브랜치 · worldEvents.json 직편집 · feature에 plans 커밋 · Wave2 overrides
+작업: D1 EventTravelGuidePanel suppress · AI 스키마 v2 · fixture edinburgh munich bali · audit:event-travel-guide · smoke:world-events-detail · build
+```

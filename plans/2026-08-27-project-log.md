@@ -47,3 +47,11 @@
 - **사람 QA** PROD `/world-events/edinburgh-fringe-2026` — 보라색 AI 패널 **확인**
 - **힌트(보류)** Tier3 AI vs Tier0~2 기본 정보 **내용 겹침** 느낌 — 지금 수정 없음 · 차별화(프롬pt/UI)는 Wave2+ 또는 Tier3 iterate 시 [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) Phase C 백로그
 
+## 세계행사 일정 #23 — Wave 1.5 계획 · main 문서 동기화
+
+- **세션** `세계행사 일정 #23, Wave 1.5 계획` (계획·핸드오프 — 코드 미착수)
+- **결정** Wave2 데이터(singapore·dubai) **보류** → **Wave 1.5 차별화** D1~D4 선행 (본문·AI 중복·무니·명소·미디어)
+- **문서** `world-events-detail-ux-plan.md` Phase **F-0.5** · 표준 제시어 **#23~#27** · `feature-handoff-index` · `cloud-preview-continuity` §1.3 · 본 일지
+- **브랜치** `cursor/world-events-wave2` (고정 · #23 D1부터 코드)
+- **다음** `#23 Wave1.5 D1 AI 정적 분리` — EventTravelGuidePanel suppress · fixture 3건
+

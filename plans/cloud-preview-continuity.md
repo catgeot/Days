@@ -68,6 +68,38 @@ Cloud/Cursor에서 **새 채팅을 만들 때** 사람이 제목·첫 프롬프�
 
 **main 핸드오프 동기화** (§6 · **필수**): 문서 3종은 feature에만 두지 말고 **`main` + `origin/main`** — [`docs-on-main-workflow.md`](./docs-on-main-workflow.md). **docs-only push = 세션 종료 시 즉시**(허가·QA 없음). **코드** `origin/main` = PR·사람 요청.
 
+### 1.3 다세션 플랜 작성 · Plan 아티팩트 (필수)
+
+**문제**: Cursor Plan 아티팩트만 갱신하고 `plans/`·`origin/main`에 안 올리면, 다음 세션이 **구 `plans/*-plan.md`**로 작업함.
+
+| 시점 | 에이전트 |
+|------|----------|
+| **플랜 확정·방향 전환** | 계획 본문 말미에 **표준 제시어 #N~** + **docs-on-main** 절 포함 (선례: [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) Phase F-0.5) |
+| **같은 턴 또는 직후** | `checkout main` → 플랜·index·일지 갱신 → **`push origin main`** (코드 없어도 필수) |
+| **구현 착수** | index **다음 제시어**·플랜 §9가 `origin/main`에 있는지 확인 → feature checkout → `merge origin/main` → `audit:docs-handoff-sync` |
+
+**다세션 Cloud feature 플랜 필수 절** (말미 체크리스트):
+
+1. 로직=feature · 문서=main (세션 시작/종료)
+2. 맥락 고정 (Read 순서 · 고정 브랜치)
+3. 공통 Preview · VERIFY
+4. **표준 제시어** — 세션마다 **7행** (`작업:` 포함 · §1.2 핀 3개)
+5. 세션 종료 갱신 (index · 일지 · 플랜 §9 · main push)
+
+**7행 형식** (세계행사형 · 다른 주제도 동일 골격):
+
+```
+{주제} #{N}, {단계}
+@plans/feature-handoff-index.md
+@plans/YYYY-MM-DD-project-log.md
+@plans/{주제}-plan.md
+브랜치 cursor/… · PR #… · Preview/QA
+금지: …
+작업: …
+```
+
+**금지**: Plan 아티팩트만 읽고 repo `plans/` 미동기화 상태로 구현 · 플랜 세션만 끝내고 **main docs push 생략**.
+
 **복붙용 예 (해안해양)**
 
 ````markdown
