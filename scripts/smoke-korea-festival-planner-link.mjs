@@ -32,6 +32,7 @@ assert.match(
   'FestivalDetailSheet uses FestivalStayStrip instead of planner',
 );
 assert.match(mooniSrc, /MooniBoundChatHost/, 'FestivalMooniFab opens MooniBoundChatHost');
+assert.match(mooniSrc, /stopPropagation/, 'FestivalMooniFab stops overlay close on click');
 assert.match(
   mooniSrc,
   /buildMooniBoundSpotFromLocation/,

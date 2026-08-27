@@ -344,6 +344,7 @@ export default function FestivalDetailSheet({
   const [videosLoadedFor, setVideosLoadedFor] = useState('');
   const [videosExpanded, setVideosExpanded] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [mooniOpen, setMooniOpen] = useState(false);
   const [nearbySpots, setNearbySpots] = useState([]);
   const [nearbyStatus, setNearbyStatus] = useState('idle');
   const [nearbyFood, setNearbyFood] = useState([]);
@@ -653,6 +654,7 @@ export default function FestivalDetailSheet({
           closeLightbox();
           return;
         }
+        if (mooniOpen) return;
         if (selectedNearby || selectedScenic || selectedCourse) return;
         onClose();
         return;
@@ -668,6 +670,7 @@ export default function FestivalDetailSheet({
     return () => window.removeEventListener('keydown', onKey);
   }, [
     lightboxOpen,
+    mooniOpen,
     imageUrls.length,
     onClose,
     selectedNearby,
@@ -968,7 +971,10 @@ export default function FestivalDetailSheet({
   return (
     <div
       className="fixed inset-0 z-40 flex items-end md:items-stretch justify-center bg-stone-900/30 backdrop-blur-sm p-0 md:py-2 md:px-3 lg:px-4"
-      onClick={onClose}
+      onClick={() => {
+        if (mooniOpen || lightboxOpen) return;
+        onClose();
+      }}
       role="presentation"
     >
       <div
@@ -1898,7 +1904,11 @@ export default function FestivalDetailSheet({
         <span className="text-xs font-bold">{t('korea.common.scrollUp')}</span>
       </button>
 
-      <FestivalMooniFab item={item} location={festivalCross?.stay?.location} />
+      <FestivalMooniFab
+        item={item}
+        location={festivalCross?.stay?.location}
+        onOpenChange={setMooniOpen}
+      />
 
       {selectedNearby && (
         <ThemeSpotDetailModal

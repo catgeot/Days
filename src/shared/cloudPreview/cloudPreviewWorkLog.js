@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-27-world-events-festival-mooni-fab-fix',
+    session: '세계행사 일정 #20, QA 재확인 · 국내 FestivalStayStrip',
+    title: '국내 축제 무니 FAB — 오버레이 닫힘 수정',
+    detail:
+      'FestivalMooniFab 클릭이 시트 onClose로 버블링되던 문제 — stopPropagation · mooniOpen 시 배경 닫기 차단. Preview /korea 축제 상세 — 무니 FAB 클릭 시 채팅 열리고 홈으로 안 돌아가는지 확인.',
+    at: '2026-08-27',
+  },
+  {
     id: '2026-08-27-world-events-korea-festival-stay-strip',
     session: '세계행사 일정 #20, QA 재확인 · 국내 FestivalStayStrip',
     title: '국내 축제 FestivalStayStrip · Mooni FAB',

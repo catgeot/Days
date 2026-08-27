@@ -8,32 +8,39 @@ import { buildMooniBoundSpotFromLocation } from '../Home/lib/placeChatIntro';
  * @param {{
  *   item: Record<string, unknown>,
  *   location?: Record<string, unknown> | null,
+ *   onOpenChange?: (open: boolean) => void,
  * }} props
  */
-export default function FestivalMooniFab({ item, location }) {
+export default function FestivalMooniFab({ item, location, onOpenChange }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [boundSpot, setBoundSpot] = useState(null);
 
   const title = String(item?.title || '').trim();
 
-  const openMooni = useCallback(() => {
-    const loc = location && typeof location === 'object' ? location : null;
-    const hubName = String(loc?.name || loc?.parentCity || '').trim();
-    const spot = buildMooniBoundSpotFromLocation({
-      ...loc,
-      name: hubName || title,
-      displayLabel: title && hubName ? `${title} · ${hubName}` : title || hubName,
-    });
-    if (!spot) return;
-    setBoundSpot(spot);
-    setOpen(true);
-  }, [location, title]);
+  const openMooni = useCallback(
+    (e) => {
+      e?.stopPropagation?.();
+      const loc = location && typeof location === 'object' ? location : null;
+      const hubName = String(loc?.name || loc?.parentCity || '').trim();
+      const spot = buildMooniBoundSpotFromLocation({
+        ...loc,
+        name: hubName || title,
+        displayLabel: title && hubName ? `${title} · ${hubName}` : title || hubName,
+      });
+      if (!spot) return;
+      setBoundSpot(spot);
+      setOpen(true);
+      onOpenChange?.(true);
+    },
+    [location, onOpenChange, title],
+  );
 
   const closeMooni = useCallback(() => {
     setOpen(false);
     setBoundSpot(null);
-  }, []);
+    onOpenChange?.(false);
+  }, [onOpenChange]);
 
   if (!title && !location?.name) return null;
 
