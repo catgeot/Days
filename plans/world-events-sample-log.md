@@ -228,6 +228,16 @@
 - **VERIFY**: `smoke:world-events-detail` · `build` PASS
 - **다음**: 사람 Preview D2 QA → **#26 D3** 미디어·명소
 
+## #3 bali-galungan-season-2026 — Wave1.5 D3 (#26)
+
+- **일시**: 2026-08-27
+- **세션** `세계행사 일정 #26, Wave1.5 D3 미디어·명소` · PR #154 · `cursor/world-events-wave2`
+- **미디어** `heroImage`(펜jor) · `youtubeVideos` 2건 · Google·네이버 검색 섹션
+- **명소** `hubId:bali` → `cityAttractionHubs` 우붓·울루와뚜 등 `/place` 칩 · 도시 허브 링크
+- **파일럿** edinburgh·munich 동일 패턴(hero·YouTube·검색·명소)
+- **VERIFY**: `smoke:world-events-detail` · `build` PASS
+- **다음**: 사람 Preview D3 QA → **#27 D4** EventStayStrip·파일럿 회귀
+
 ## v2 pivot — Preview QA 피드백 (#12 전)
 
 - **일시**: 2026-08-26

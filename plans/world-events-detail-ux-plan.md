@@ -672,22 +672,22 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#25 Wave1.5 D2 완료** — PR [#154](https://github.com/catgeot/Days/pull/154) · **#26 D3** 대기 |
-| **브랜치** | `cursor/world-events-wave2` · tip `8a413ce3` |
+| **상태** | **#26 Wave1.5 D3 완료** — PR [#154](https://github.com/catgeot/Days/pull/154) · **#27 D4** 대기 |
+| **브랜치** | `cursor/world-events-wave2` · tip `b9c52a3a` |
 | **main** | Wave1 PR #153 merged · PROD Tier3 → D1에서 Preview-only suppress |
 | **플랜** | 본 문서 **Phase F-0.5** · 표준 제시어 **#23~#28** |
 | **Preview** | `https://www.gateo.kr/qa/world-events` |
 | **VERIFY** | D1~D4 단계별 smoke/audit · `build` |
 
-**다음 제시어** (#26):
+**다음 제시어** (#27):
 
 ```
-세계행사 일정 #26, Wave1.5 D3 미디어·명소
+세계행사 일정 #27, Wave1.5 D4 숙소·파일럿 회귀
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
 @plans/world-events-sample-log.md
-브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/bali-galungan-season-2026
+브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/edinburgh-fringe-2026
 금지: 새 feature 브랜치 · Wave1 브랜치 · worldEvents.json 직편집 · feature에 plans 커밋 · Wave2 overrides
-작업: D3 heroImage·YouTube · Google·네이버 검색 · cityAttractionHubs 브릿지 · smoke · build
+작업: D4 EventStayStrip 확장 · stayAreas→MRT · 파일럿 3건 회귀 smoke · build
 ```
