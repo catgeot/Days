@@ -669,21 +669,21 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **Wave 1.5 계획 확정** — Wave2 데이터 **보류** · 구현 **#23 D1**부터 |
-| **브랜치** | `cursor/world-events-wave2` (생성·첫 push는 #23 D1) |
-| **main** | Wave1 PR #153 merged · PROD Tier3 fixture #1~#4 |
+| **상태** | **#23 Wave1.5 D1 완료** — PR [#154](https://github.com/catgeot/Days/pull/154) · **#24 D2** 대기 |
+| **브랜치** | `cursor/world-events-wave2` · tip `70a2a925` |
+| **main** | Wave1 PR #153 merged · PROD Tier3 → D1에서 Preview-only suppress |
 | **플랜** | 본 문서 **Phase F-0.5** · 표준 제시어 **#23~#27** |
 | **Preview** | `https://www.gateo.kr/qa/world-events` |
 | **VERIFY** | D1~D4 단계별 smoke/audit · `build` |
 
-**다음 제시어** (#23):
+**다음 제시어** (#24):
 
 ```
-세계행사 일정 #23, Wave1.5 D1 AI 정적 분리
+세계행사 일정 #24, Wave1.5 D2 무니 행사칩
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
-브랜치 cursor/world-events-wave2 · PR TBD · www.gateo.kr/qa/world-events · /world-events/edinburgh-fringe-2026
+브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/munich-oktoberfest-2026
 금지: 새 feature 브랜치 · Wave1 브랜치 · worldEvents.json 직편집 · feature에 plans 커밋 · Wave2 overrides
-작업: D1 EventTravelGuidePanel suppress · AI 스키마 v2 · fixture edinburgh munich bali · audit:event-travel-guide · smoke:world-events-detail · build
+작업: D2 행사 액션 칩 · 무니 행사 시드·칩 · smoke · build
 ```

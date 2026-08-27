@@ -18,10 +18,10 @@
 
 | | |
 |--|--|
-| **상태** | **Wave 1.5 차별화** — Wave2 데이터 보류 · **#23 D1** 구현 대기 |
-| **브랜치** | `cursor/world-events-wave2` · PR TBD |
-| **main** | `6712f777`+ — Wave1 v2 · Tier3 PROD fixture #1~#4 · Phase F-0.5 계획 반영 |
-| **PR** | [#153](https://github.com/catgeot/Days/pull/153) **merged** |
+| **상태** | **#23 Wave1.5 D1 완료** — AI v0.2 정적 분리 · PROD Tier3 억제 · Preview pilot 3건 |
+| **브랜치** | `cursor/world-events-wave2` · tip `70a2a925` |
+| **PR** | [#154](https://github.com/catgeot/Days/pull/154) draft |
+| **main** | `6712f777`+ — Wave1 v2 · Phase F-0.5 · PR #154 = Wave1.5 D1 |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **Phase F-0.5** · §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) §6.1·§6.1.1 |
@@ -30,18 +30,18 @@
 | **PROD QA** | `https://www.gateo.kr/world-events` · 파일럿 3상세(edinburgh·munich·bali) |
 | **VERIFY** | D1~: `audit:event-travel-guide` · `smoke:world-events-detail` · `build` |
 
-**Wave1 v2 (main)**: 15건 상세 · EventStayStrip · 국내 FestivalStayStrip · Mooni FAB · AI fixture #1~#4
+**Wave1.5 D1 (PR #154)**: EventTravelGuide v0.2 · PROD Tier3 suppress · pilot fixture edinburgh/munich/bali
 
-**다음 제시어** (#23 — Wave1.5 D1):
+**다음 제시어** (#24 — D2):
 
 ```
-세계행사 일정 #23, Wave1.5 D1 AI 정적 분리
+세계행사 일정 #24, Wave1.5 D2 무니 행사칩
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
-브랜치 cursor/world-events-wave2 · PR TBD · www.gateo.kr/qa/world-events · /world-events/edinburgh-fringe-2026
+브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/munich-oktoberfest-2026
 금지: 새 feature 브랜치 · Wave1 브랜치 · worldEvents.json 직편집 · feature에 plans 커밋 · Wave2 overrides
-작업: D1 EventTravelGuidePanel suppress · AI 스키마 v2 · fixture edinburgh munich bali · audit:event-travel-guide · smoke:world-events-detail · build
+작업: D2 행사 액션 칩 · 무니 행사 시드·칩 · smoke · build
 ```
 
 ---

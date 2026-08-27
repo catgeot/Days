@@ -45,7 +45,7 @@
 - **조치** DB miss 시 번들 fixture 폴백(PROD·Preview) · DB row 있으면 DB 우선
 - **VERIFY** `smoke:event-travel-guide` · `build` PASS
 - **사람 QA** PROD `/world-events/edinburgh-fringe-2026` — 보라색 AI 패널 **확인**
-- **힌트(보류)** Tier3 AI vs Tier0~2 기본 정보 **내용 겹침** 느낌 — 지금 수정 없음 · 차별화(프롬pt/UI)는 Wave2+ 또는 Tier3 iterate 시 [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) Phase C 백로그
+- **힌트(보류)** Tier3 AI vs Tier0~2 기본 정보 **내용 겹침** 느낌 — Wave1.5 D1에서 정적 분리
 
 ## 세계행사 일정 #23 — Wave 1.5 계획 · main 문서 동기화
 
@@ -55,3 +55,11 @@
 - **브랜치** `cursor/world-events-wave2` (고정 · #23 D1부터 코드)
 - **다음** `#23 Wave1.5 D1 AI 정적 분리` — EventTravelGuidePanel suppress · fixture 3건
 
+## 세계행사 일정 #23 — Wave1.5 D1 AI 정적 분리
+
+- **세션** `세계행사 일정 #23, Wave1.5 D1 AI 정적 분리`
+- **브랜치** `cursor/world-events-wave2` · PR [#154](https://github.com/catgeot/Days/pull/154) · tip `70a2a925`
+- **산출** EventTravelGuide **v0.2**(summary/recommended_nights 제거) · `shouldShowEventTravelGuidePanel` PROD 억제 · pilot fixture edinburgh/munich/bali
+- **VERIFY** `audit:event-travel-guide` · `smoke:world-events-detail` · `smoke:event-travel-guide` · `build` PASS
+- **Preview** `/qa/world-events` → edinburgh/munich/bali — 정적 Tier0~0.5 + Preview-only AI 패널
+- **다음** 사람 Preview QA → **#24 D2** 무니 행사칩
