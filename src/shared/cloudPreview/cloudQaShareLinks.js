@@ -300,9 +300,9 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'world-events',
     label: '세계 행사 일정 허브',
-    branch: 'cursor/world-events-efa3',
+    branch: 'cursor/world-events-wave2',
     destination:
-      'https://days-git-cursor-world-events-efa3-catgeots-projects.vercel.app/world-events',
+      'https://days-git-cursor-world-events-wave2-catgeots-projects.vercel.app/world-events',
     active: true,
   },
 ];
