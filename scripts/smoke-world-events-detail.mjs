@@ -16,6 +16,7 @@ import {
   buildWorldEventSearchQuery,
   getWorldEventHubAttractions,
 } from '../src/utils/worldEventMedia.js';
+import { addDaysYmd } from '../src/shared/tripWindow.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -193,6 +194,21 @@ assert.ok(buildWorldEventSearchQuery(bali, 'ko').includes('갈룽안'), 'bali se
 assert.ok(!buildWorldEventSearchQuery(bali, 'ko').includes('islandwide'), 'bali search query no English venue');
 assert.match(bali.actionChips[0].href, /en\.wikipedia\.org\/wiki\/Galungan/, 'bali Galungan en.wikipedia guide');
 assert.match(bali.actionChips[2].href, /penjor/, 'bali penjor search query');
+
+const munichPresets = tripWindowPresetsFromEvent(getWorldEventById('munich-oktoberfest-2026'));
+const munichOpening = munichPresets.visitPresets.find((p) => p.id === 'opening');
+assert.ok(munichOpening, 'munich opening preset');
+assert.equal(
+  munichPresets.tripWindow.checkIn,
+  munichOpening.checkIn,
+  'default tripWindow matches opening preset',
+);
+assert.equal(
+  munichOpening.checkIn,
+  addDaysYmd(getWorldEventById('munich-oktoberfest-2026').startDate, -1),
+  'opening check-in is day before event start',
+);
+assert.match(stayStripSrc, /synced\.checkIn === checkIn/, 'EventStayStrip skips redundant preset apply');
 
 assert.match(stayStripSrc, /EventFlightHotelCta/, 'EventStayStrip uses packages CTA');
 assert.match(stayStripSrc, /event-detail-flight/, 'EventStayStrip event-detail-flight tracking');

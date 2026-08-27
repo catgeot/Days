@@ -167,12 +167,13 @@ export default function EventStayStrip({
   const applyDates = useCallback(
     (nextIn, nextOut) => {
       const synced = normalizeMrtStayDates(nextIn, nextOut);
+      if (synced.checkIn === checkIn && synced.checkOut === checkOut) return;
       setDraftIn(synced.checkIn);
       setDraftOut(synced.checkOut);
       setCalendarOpen(false);
       onDatesChange?.(synced);
     },
-    [onDatesChange],
+    [onDatesChange, checkIn, checkOut],
   );
 
   const handleCalendarPick = useCallback(
@@ -258,10 +259,12 @@ export default function EventStayStrip({
               <button
                 key={preset.id}
                 type="button"
+                disabled={active}
+                aria-pressed={active}
                 onClick={() => applyDates(preset.checkIn, preset.checkOut)}
-                className={`rounded-full border px-2.5 py-1 text-[11px] font-bold transition-colors ${
+                className={`rounded-full border px-2.5 py-1 text-[11px] font-bold transition-colors disabled:cursor-default ${
                   active
-                    ? 'border-amber-400 bg-amber-100 text-amber-950'
+                    ? 'border-amber-400 bg-amber-100 text-amber-950 ring-2 ring-amber-300/60'
                     : 'border-stone-200 bg-stone-50 text-stone-700 hover:border-amber-300 hover:bg-amber-50'
                 }`}
               >

@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 26,
-  sessionPhase: 'Wave1.5 D3 재QA',
+  sessionNo: 27,
+  sessionPhase: 'Wave1.5 D4 숙소·파일럿 회귀',
   branch: 'cursor/world-events-wave2',
   previewPath: '/world-events',
   qaShareSlug: 'world-events',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-27-world-events-d4-opening-preset',
+    session: '세계행사 일정 #27, Wave1.5 D4 숙소·파일럿 회귀',
+    title: '개막 3박 프리셋·초기값·중복 API 방지',
+    detail:
+      '내 여행 일정: 개막 3박=행사 전날 체크인 · tripWindow↔opening 프리셋 SSOT · 활성 칩 ring+disabled · 동일 날짜 클릭 시 MRT 재호출 생략. Preview /qa/world-events → munich·bali 상세 「내 여행 일정」개막 3박 강조·재클릭 무API 확인.',
+    at: '2026-08-27T20:00:00.000Z',
+  },
   {
     id: '2026-08-27-world-events-d3-reqa-hotfix',
     session: '세계행사 일정 #26, Wave1.5 D3 재QA',
