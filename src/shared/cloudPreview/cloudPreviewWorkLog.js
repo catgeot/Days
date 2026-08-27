@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-27-world-events-korea-festival-stay-strip',
+    session: '세계행사 일정 #20, QA 재확인 · 국내 FestivalStayStrip',
+    title: '국내 축제 FestivalStayStrip · Mooni FAB',
+    detail:
+      'FestivalDetailSheet 플래너·숙소 링크 → FestivalStayStrip(EventStayStrip 재사용·TripWindow 프리셋) · FestivalMooniFab. 투어·패키지 레일 유지. VERIFY smoke:world-events* · korea-festival-stay-url · build PASS. Preview /qa/world-events + /korea — 축제 상세 「내 여행 일정」·숙소 카드·항공+숙소·무니 FAB 확인 후 PR #153 merge.',
+    at: '2026-08-27',
+  },
+  {
     id: '2026-08-27-world-events-wave1-integration-qa',
     session: '세계행사 일정 #19, Wave1 통합 QA',
     title: 'Wave1 15건 통합 QA · PR #153 병합 준비',
