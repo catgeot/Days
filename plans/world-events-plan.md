@@ -332,16 +332,16 @@ flowchart LR
 **v2 (#12~#21)**: [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) · 샘플 로그 [`world-events-sample-log.md`](./world-events-sample-log.md)  
 **세션 번호**: Cloud 채팅 `#12`~ (main 일지 #11=PR150 병합과 별도)
 
-**다음 제시어** (#23 — PROD OK 후 Wave2):
+**다음 제시어** (#23 — Wave2 착수):
 
 ```
 세계행사 일정 #23, Wave2 singapore dubai
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
-브랜치 cursor/world-events-wave2 · PR TBD · www.gateo.kr/qa/world-events
-금지: worldEvents.json 직편집 · Wave1 브랜치 혼동 · 15건 일괄 AI · releaseNotes 무단
-작업: overrides singapore+dubai · Tier0.5 · travelSpots slug · audit:world-events
+브랜치 cursor/world-events-wave2 · PR TBD · www.gateo.kr/qa/world-events · /world-events/{singapore|dubai eventId}
+금지: worldEvents.json 직편집 · Wave1 브랜치(cursor/world-events-efa3) 혼동 · 15건 일괄 AI pregen · releaseNotes 무단 · Tier3 vs Tier0 겹침 수정(보류)
+작업: Phase F · world-event-overrides singapore+dubai 2건 · Tier0.5 · travelSpots-list slug 확인 · generate:world-events · audit:world-events · Preview 상세·허브 QA · index Wave2 행 갱신
 ```
 
 **읽을 것**: [`world-events-management.md`](./world-events-management.md) **§6.1·§6.1.1 QA 체크리스트**
