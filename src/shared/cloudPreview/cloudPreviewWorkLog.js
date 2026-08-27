@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
   sessionNo: 26,
-  sessionPhase: 'Wave1.5 D3 미디어·명소',
+  sessionPhase: 'Wave1.5 D3 재QA',
   branch: 'cursor/world-events-wave2',
   previewPath: '/world-events',
   qaShareSlug: 'world-events',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-27-world-events-d3-reqa-hotfix',
+    session: '세계행사 일정 #26, Wave1.5 D3 재QA',
+    title: '갈룽안 en위키·펜jor 검색·무니 칩 chatDraft',
+    detail:
+      'D3 재QA: ko위키 갈룽안(없음)→en.wikipedia/Galungan · 펜jor Google en 쿼리 · MOONi 대화칩 chatDraft 대기 후 전송·FAB 재오픈 최소화. Preview /qa/world-events → /world-events/bali-galungan-season-2026 — 갈룽안 안내·펜져 검색·무니 칩 3종·주제 칩 재확인.',
+    at: '2026-08-27T13:30:00.000Z',
+  },
   {
     id: '2026-08-27-world-events-d3-media-attractions',
     session: '세계행사 일정 #26, Wave1.5 D3 미디어·명소',
