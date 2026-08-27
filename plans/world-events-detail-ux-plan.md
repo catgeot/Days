@@ -625,33 +625,35 @@ flowchart LR
 
 ---
 
-### #23~#27 — Wave 1.5 차별화 + Wave2 데이터 (G1~G4·파일럿 **후**)
+### #23~#28 — Wave 1.5 차별화 + Wave2 데이터 (G1~G4·파일럿 **후**)
 
-> **세션 번호**: Cloud 채팅 `#23`~`#27` = 본 블록. 구 F-5 표의 `#19`~`#23`(Wave2만)은 **#27~#30으로 연기** — Wave 1.5가 끼어듦.
+> **세션 번호**: Cloud 채팅 `#23`~`#28` = 본 블록. 구 F-5 표의 `#19`~`#23`(Wave2만)은 **#28~#31으로 연기** — Wave 1.5가 끼어듦.
 
-**#23** Wave1.5 D1 · AI·정적 분리
+**#23** Wave1.5 D1 · AI·정적 분리 — **완료** PR #154
+
+**#24** D1 Preview QA — index **다음 제시어** SSOT
 
 ```
-세계행사 일정 #23, Wave1.5 D1 AI 정적 분리
+세계행사 일정 #24, Wave1.5 D1 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
-브랜치 cursor/world-events-wave2 · PR TBD · www.gateo.kr/qa/world-events · /world-events/edinburgh-fringe-2026
-금지: 새 feature 브랜치 · Wave1 브랜치 · worldEvents.json 직편집 · feature에 plans 커밋 · Wave2 overrides
-작업: D1 EventTravelGuidePanel suppress · AI 스키마 v2 · fixture edinburgh munich bali · audit:event-travel-guide · smoke:world-events-detail · build
+브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/edinburgh-fringe-2026
+금지: D2 구현 · 새 feature 브랜치 · Wave1 브랜치 · worldEvents.json 직편집 · feature에 plans 커밋 · Wave2 overrides
+작업: Preview·PROD QA — PROD AI 패널 없음 · Preview pilot 3건 AI v0.2 · 정적 Tier0~0.5 분리 · non-pilot AI 없음 · §6.1.1
 ```
 
-**#24** D2 · 무니 행사칩 — `#23`과 동일 형식 · QA `/world-events/munich-oktoberfest-2026` · 작업=D2
+**#25** D2 · 무니 행사칩 — `#24` QA OK 후 · QA `/world-events/munich-oktoberfest-2026` · 작업=D2
 
-**#25** D3 · 미디어·명소 — QA `/world-events/bali-galungan-season-2026` · 작업=D3
+**#26** D3 · 미디어·명소 — QA `/world-events/bali-galungan-season-2026` · 작업=D3
 
-**#26** D4 · 숙소·파일럿 QA — QA edinburgh·munich·bali 3건 · 작업=D4
+**#27** D4 · 숙소·파일럿 회귀 — QA edinburgh·munich·bali 3건 · 작업=D4
 
-**#27** Wave2 singapore·dubai — **#26 사람 OK 후** · overrides 2건 · D3 미디어·명소 필수
+**#28** Wave2 singapore·dubai — **#27 사람 OK 후** · overrides 2건
 
-**#28~#30** (Wave2 후속): barcelona·istanbul · 축1 vienna/munich · 통합 PROD QA — index 갱신 시 F-5 표 참고.
+**#29~#31** (Wave2 후속): barcelona·istanbul · 축1 vienna/munich · 통합 PROD QA — index 갱신 시 F-5 표 참고.
 
-> Wave 1.5 착수 전 index **다음 제시어** = **#23 블록**. Plan 아티팩트만 읽고 repo `plans/` 미동기화 상태로 구현 **금지**.
+> index **다음 제시어** = **#24 블록**. QA OK 전 **#25 D2 구현 금지**.
 
 ---
 
@@ -673,7 +675,7 @@ flowchart LR
 | **상태** | **#23 D1 완료 · #24 D1 QA 대기** — PR [#154](https://github.com/catgeot/Days/pull/154) |
 | **브랜치** | `cursor/world-events-wave2` · tip `abcee092` |
 | **main** | Wave1 PR #153 merged · PROD Tier3 → D1에서 Preview-only suppress |
-| **플랜** | 본 문서 **Phase F-0.5** · 표준 제시어 **#23~#27** |
+| **플랜** | 본 문서 **Phase F-0.5** · 표준 제시어 **#23~#28** |
 | **Preview** | `https://www.gateo.kr/qa/world-events` |
 | **VERIFY** | D1~D4 단계별 smoke/audit · `build` |
 
