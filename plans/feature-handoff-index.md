@@ -18,8 +18,8 @@
 
 | | |
 |--|--|
-| **상태** | **#26 Wave1.5 D3 완료** — heroImage·YouTube·검색·명소 허브 · PR #154 |
-| **브랜치** | `cursor/world-events-wave2` · tip `b9c52a3a` |
+| **상태** | **#26 D3 QA 핫픽스** — PR [#154](https://github.com/catgeot/Days/pull/154) · tip `ea74f5ee` · **D3 재QA** 대기 |
+| **브랜치** | `cursor/world-events-wave2` · tip `ea74f5ee` |
 | **PR** | [#154](https://github.com/catgeot/Days/pull/154) draft |
 | **main** | `6712f777`+ — Wave1 v2 · Phase F-0.5 · PR #154 = Wave1.5 D1 |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **Phase F-0.5** · §9 |

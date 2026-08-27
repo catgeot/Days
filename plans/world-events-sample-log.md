@@ -238,6 +238,12 @@
 - **VERIFY**: `smoke:world-events-detail` · `build` PASS
 - **다음**: 사람 Preview D3 QA → **#27 D4** EventStayStrip·파일럿 회귀
 
+## #3 bali — D3 Preview QA 피드백·핫픽스 (#26)
+
+- **피드백** 히어로 404 · 갈룽안 안내→baligoldentour 404 · 펜져 영문 Google · Google 검색 무결과(한·영 혼합 쿼리) · 무니 칩 시드 나열만·타 칩 미동작
+- **핫픽스** `ea74f5ee` — Wikimedia hero · ko.wikipedia · 한글 검색 쿼리 · 무니 칩 재전송
+- **재QA** bali 상세 — 히어로·구글/네이버·무니 칩 3종
+
 ## v2 pivot — Preview QA 피드백 (#12 전)
 
 - **일시**: 2026-08-26

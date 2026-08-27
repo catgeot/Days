@@ -94,3 +94,10 @@
 - **VERIFY** `smoke:world-events-detail` · `build` PASS
 - **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026` — 히어로·관련 영상·검색·발리 명소 칩
 - **다음** 사람 Preview D3 QA → **#27 D4** 숙소·파일럿 회귀
+
+## 세계행사 일정 #26 — D3 Preview QA 피드백·핫픽스
+
+- **피드백** 히어로 404 · 갈룽안 안내→여행사(baligoldentour) 404 · 펜져 검색 영문 · Google 검색 결과 없음(한글+영문 venue 혼합) · 무니 칩 시드만 표시·다른 칩 미동작
+- **조치** `ea74f5ee` — Wikimedia hero URL 교체 · 갈룽안→ko.wikipedia · 펜져 한글 Google · `buildWorldEventSearchQuery` ko=도시명만 · 무니 칩 재오픈·시드 숨김
+- **재QA** `/qa/world-events` → `/world-events/bali-galungan-season-2026` — 히어로·검색·무니 칩 3종
+- **다음** D3 재QA OK → **#27 D4**
