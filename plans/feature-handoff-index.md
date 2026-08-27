@@ -18,7 +18,7 @@
 
 | | |
 |--|--|
-| **상태** | **#27 D4 진행** — PR [#154](https://github.com/catgeot/Days/pull/154) · tip `ce744216` |
+| **상태** | **#27 D4 진행(개막 프리셋 QA OK)** — PR [#154](https://github.com/catgeot/Days/pull/154) · tip `ce744216` |
 | **브랜치** | `cursor/world-events-wave2` · tip `ce744216` |
 | **PR** | [#154](https://github.com/catgeot/Days/pull/154) draft |
 | **main** | `6712f777`+ — Wave1 v2 · Phase F-0.5 · PR #154 = Wave1.5 D1 |
@@ -30,9 +30,9 @@
 | **PROD QA** | `https://www.gateo.kr/world-events` · 파일럿 3상세(edinburgh·munich·bali) |
 | **VERIFY** | D1~: `audit:event-travel-guide` · `smoke:world-events-detail` · `build` |
 
-**Wave1.5 D4 (PR #154)**: 개막 3박=행사 전날 · tripWindow↔opening · 중복 API skip
+**Wave1.5 D4 (PR #154)**: 개막 3박 QA OK · stayAreas→MRT·파일럿 회귀 잔여
 
-**다음 제시어** (#27 D4):
+**다음 제시어** (#27 D4 잔여):
 
 ```
 세계행사 일정 #27, Wave1.5 D4 숙소·파일럿 회귀
