@@ -5,14 +5,14 @@
 
 | # | eventId | 세션 | Tier0.5 | AI | 상태 |
 |---|---------|------|---------|-----|------|
-| 1 | `edinburgh-fringe-2026` | #11~#13, #23 | ✅ overview·highlights·stayAreas·4박 | ✅ v0.2 pilot fixture | Tier0~0.5 + Preview AI v0.2 |
-| 2 | `munich-oktoberfest-2026` | #14, #23 | ✅ overview·highlights·stayAreas·3박 | ✅ v0.2 pilot fixture | Tier0~0.5 + Preview AI v0.2 |
+| 1 | `edinburgh-fringe-2026` | #11~#13, #23, #25 | ✅ overview·highlights·stayAreas·4박 | ✅ v0.2 pilot fixture | D2 action+mooni chips |
+| 2 | `munich-oktoberfest-2026` | #14, #23, #25 | ✅ overview·highlights·stayAreas·3박 | ✅ v0.2 pilot fixture | D2 action+mooni chips |
 | 3 | `vienna-staatsoper-season-2026` | #14 | ✅ overview·highlights·stayAreas·3박 | ✅ v0.1 fixture | Tier0~2+AI v0.1 |
 | 4 | `amsterdam-kings-day-2027` | #14 | ✅ overview·highlights·stayAreas·2박 | ✅ v0.1 fixture | Tier0~2+AI v0.1 |
 | 5 | `tokyo-sakura-season-2027` | #15 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2 |
 | 6 | `kyoto-gion-matsuri-2027` | #15 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2 |
 | 7 | `bangkok-songkran-2027` | #15 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2 |
-| 8 | `bali-galungan-season-2026` | #15, #23 | ✅ overview·highlights·stayAreas·4박 | ✅ v0.2 pilot fixture | Tier0~0.5 + Preview AI v0.2 |
+| 8 | `bali-galungan-season-2026` | #15, #23, #25 | ✅ overview·highlights·stayAreas·4박 | ✅ v0.2 pilot fixture | D2 action+mooni chips |
 | 9 | `rio-carnival-2027` | #16 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2+위젯 |
 | 10 | `new-york-thanksgiving-season-2026` | #16 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2+위젯 |
 | 11 | `iceland-midnight-sun-2027` | #16 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2+위젯 |
@@ -217,6 +217,16 @@
   - 참고 패턴: 국내 `FestivalDetailSheet` Google·네이버 검색 URL
 - **D3 (#25) 요구** — Google·네이버 검색 · `cityAttractionHubs` 브릿지(명소·지도 허브)
 - **D1 QA 결론**: 역할 분리(겹침 완화)는 목적 달성 · **실행층(링크·지도·예매 동선) 공백** → D2 착수 전 본 절로 핸드오프
+
+## #2 munich-oktoberfest-2026 — Wave1.5 D2 (#25)
+
+- **일시**: 2026-08-27
+- **세션** `세계행사 일정 #25, Wave1.5 D2 무니 행사칩` · PR #154 · `cursor/world-events-wave2`
+- **액션 칩**: 공식 사이트(oktoberfest.de) · Theresienwiese Google Maps · 텐트 예약 검색
+- **무니 칩**: 텐트 예약 · 평일/주말 · Theresienwiese 교통 — FAB 열면 행사 맥락 시드 표시
+- **에든버러 D2**(pilot): 공식 예매(edfringe) · Royal Mile 지도 · 공연장 지도 · 무니 「프리 공연」「하루 3편」
+- **VERIFY**: `smoke:world-events-detail` · `build` PASS
+- **다음**: 사람 Preview D2 QA → **#26 D3** 미디어·명소
 
 ## v2 pivot — Preview QA 피드백 (#12 전)
 
