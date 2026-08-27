@@ -43,6 +43,14 @@
 /**
  * @typedef {{
  *   id: string,
+ *   titleKo?: string,
+ *   titleEn?: string,
+ * }} WorldEventYoutubeVideo
+ */
+
+/**
+ * @typedef {{
+ *   id: string,
  *   slug: string,
  *   hubId?: string,
  *   type: WorldEventType,
@@ -61,6 +69,7 @@
  *   stayAreas?: WorldEventStayArea[],
  *   recommendedNights?: number,
  *   heroImage?: string,
+ *   youtubeVideos?: WorldEventYoutubeVideo[],
  *   actionChips?: WorldEventActionChip[],
  *   mooniChips?: WorldEventMooniChip[],
  *   priority?: number,
@@ -234,6 +243,35 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
   }
 
   const heroImage = raw.heroImage != null ? String(raw.heroImage).trim() : undefined;
+  if (heroImage && !/^https?:\/\//i.test(heroImage)) {
+    throw new Error(`[world-events] ${id}: heroImage must be http(s) URL`);
+  }
+
+  let youtubeVideos;
+  if (raw.youtubeVideos != null) {
+    if (!Array.isArray(raw.youtubeVideos)) {
+      throw new Error(`[world-events] ${id}: youtubeVideos must be array`);
+    }
+    youtubeVideos = raw.youtubeVideos.map((video, videoIndex) => {
+      if (!video || typeof video !== 'object') {
+        throw new Error(`[world-events] ${id}: youtubeVideos[${videoIndex}] must be object`);
+      }
+      const videoId = String(video.id || '').trim();
+      if (!/^[A-Za-z0-9_-]{11}$/.test(videoId)) {
+        throw new Error(`[world-events] ${id}: youtubeVideos[${videoIndex}].id must be 11-char YouTube id`);
+      }
+      /** @type {WorldEventYoutubeVideo} */
+      const normalizedVideo = { id: videoId };
+      const titleKo = video.titleKo != null ? String(video.titleKo).trim() : undefined;
+      const titleEn = video.titleEn != null ? String(video.titleEn).trim() : undefined;
+      if (titleKo) normalizedVideo.titleKo = titleKo;
+      if (titleEn) normalizedVideo.titleEn = titleEn;
+      return normalizedVideo;
+    });
+    if (!youtubeVideos.length) {
+      throw new Error(`[world-events] ${id}: youtubeVideos must not be empty when set`);
+    }
+  }
 
   let actionChips;
   if (raw.actionChips != null) {
@@ -333,6 +371,7 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
   if (stayAreas) event.stayAreas = stayAreas;
   if (recommendedNights != null) event.recommendedNights = recommendedNights;
   if (heroImage) event.heroImage = heroImage;
+  if (youtubeVideos) event.youtubeVideos = youtubeVideos;
   if (actionChips) event.actionChips = actionChips;
   if (mooniChips) event.mooniChips = mooniChips;
   if (priority != null) event.priority = priority;

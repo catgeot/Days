@@ -12,6 +12,10 @@ import { buildWorldEventDetailPath } from '../src/utils/worldEventDetailPath.js'
 import { getAllWorldEvents, getWorldEventById, getWorldEventLocation } from '../src/utils/worldEvents.js';
 import { tripWindowPresetsFromEvent } from '../src/utils/worldEventTripPresets.js';
 import { tripWindowNights } from '../src/shared/tripWindow.js';
+import {
+  buildWorldEventSearchQuery,
+  getWorldEventHubAttractions,
+} from '../src/utils/worldEventMedia.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -145,24 +149,47 @@ assert.match(detailSrc, /EventStayStrip/, 'EventDetailPage renders in-page stay 
 assert.match(detailSrc, /EventMooniFab/, 'EventDetailPage renders Mooni FAB');
 assert.match(detailSrc, /EventActionChips/, 'EventDetailPage renders action chips');
 assert.match(detailSrc, /EventMooniChips/, 'EventDetailPage renders Mooni chips');
+assert.match(detailSrc, /EventDetailHero/, 'EventDetailPage renders hero image');
+assert.match(detailSrc, /EventDetailMediaSection/, 'EventDetailPage renders D3 media section');
+assert.match(detailSrc, /hasWorldEventD3Media/, 'EventDetailPage gates D3 media');
 
 const munich = getWorldEventById('munich-oktoberfest-2026');
+assert.ok(munich.heroImage, 'munich heroImage');
+assert.ok(Array.isArray(munich.youtubeVideos) && munich.youtubeVideos.length >= 2, 'munich youtubeVideos');
 assert.ok(Array.isArray(munich.actionChips) && munich.actionChips.length >= 3, 'munich actionChips');
 assert.ok(Array.isArray(munich.mooniChips) && munich.mooniChips.length >= 3, 'munich mooniChips');
 assert.equal(munich.actionChips[0].kind, 'official', 'munich first action chip kind');
 assert.match(munich.actionChips[1].href, /google\.com\/maps/, 'munich map chip href');
 
 const edinburgh = getWorldEventById('edinburgh-fringe-2026');
+assert.ok(edinburgh.heroImage, 'edinburgh heroImage');
+assert.ok(Array.isArray(edinburgh.youtubeVideos) && edinburgh.youtubeVideos.length >= 2, 'edinburgh youtubeVideos');
 assert.ok(Array.isArray(edinburgh.actionChips) && edinburgh.actionChips.length >= 3, 'edinburgh actionChips');
 assert.ok(edinburgh.actionChips.some((chip) => /edfringe\.com/.test(chip.href)), 'edinburgh official chip');
 assert.ok(edinburgh.actionChips.some((chip) => /Royal\+Mile|Royal%20Mile/i.test(chip.href)), 'edinburgh Royal Mile chip');
 
 const bali = getWorldEventById('bali-galungan-season-2026');
+assert.ok(bali.heroImage, 'bali heroImage');
+assert.ok(Array.isArray(bali.youtubeVideos) && bali.youtubeVideos.length >= 2, 'bali youtubeVideos');
 assert.ok(Array.isArray(bali.actionChips) && bali.actionChips.length >= 3, 'bali actionChips');
 assert.ok(Array.isArray(bali.mooniChips) && bali.mooniChips.length >= 3, 'bali mooniChips');
+assert.equal(bali.hubId, 'bali', 'bali hubId for attraction bridge');
 
 const chipsUtilSrc = readFileSync(join(root, 'src/utils/worldEventChips.js'), 'utf8');
 assert.match(chipsUtilSrc, /buildWorldEventMooniSeed/, 'worldEventChips seed builder');
+
+const mediaUtilSrc = readFileSync(join(root, 'src/utils/worldEventMedia.js'), 'utf8');
+assert.match(mediaUtilSrc, /getWorldEventHubAttractions/, 'worldEventMedia hub bridge');
+assert.match(mediaUtilSrc, /buildWorldEventSearchQuery/, 'worldEventMedia search query');
+
+const outboundSrc = readFileSync(join(root, 'src/utils/worldEventOutboundLinks.js'), 'utf8');
+assert.match(outboundSrc, /naverWebSearchUrl/, 'naver search url builder');
+
+const baliHub = getWorldEventHubAttractions(bali, { locale: 'ko' });
+assert.ok(baliHub.hub?.href === '/place/bali', 'bali hub link');
+assert.ok(baliHub.attractions.length >= 3, 'bali hub attractions');
+assert.ok(baliHub.attractions[0].href.startsWith('/place/'), 'attraction place link');
+assert.ok(buildWorldEventSearchQuery(bali, 'ko').includes('갈룽안'), 'bali search query ko');
 
 assert.match(stayStripSrc, /EventFlightHotelCta/, 'EventStayStrip uses packages CTA');
 assert.match(stayStripSrc, /event-detail-flight/, 'EventStayStrip event-detail-flight tracking');

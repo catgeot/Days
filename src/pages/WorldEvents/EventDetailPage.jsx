@@ -25,9 +25,12 @@ import { loadEventTravelGuideFixture } from '../../utils/loadEventTravelGuideFix
 import { shouldShowEventTravelGuidePanel } from '../../utils/eventTravelGuideSurface';
 import { buildPlacePlannerPathFromEvent } from '../../utils/placePlannerPath';
 import { buildWorldEventMooniSeed, hasWorldEventD2Chips } from '../../utils/worldEventChips';
+import { hasWorldEventD3Media } from '../../utils/worldEventMedia';
 import { buildMooniBoundSpotFromLocation } from '../Home/lib/placeChatIntro';
 import MooniBoundChatHost from '../Home/components/MooniBoundChatHost';
 import EventActionChips from './EventActionChips';
+import EventDetailHero from './EventDetailHero';
+import EventDetailMediaSection from './EventDetailMediaSection';
 import EventDetailStaticPanel from './EventDetailStaticPanel';
 import EventStayStrip from './EventStayStrip';
 import EventTravelGuidePanel from './EventTravelGuidePanel';
@@ -133,6 +136,7 @@ export default function EventDetailPage() {
     .join(' · ');
 
   const showD2Chips = hasWorldEventD2Chips(event.id);
+  const showD3Media = hasWorldEventD3Media(event.id);
 
   const openEventMooni = useCallback(
     (prompt = null) => {
@@ -199,6 +203,8 @@ export default function EventDetailPage() {
 
       <main className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto w-full max-w-3xl px-3 py-3 md:px-5 lg:max-w-6xl lg:px-8">
+          {showD3Media ? <EventDetailHero event={event} locale={locale} /> : null}
+
           <div className="mb-3 flex flex-wrap gap-2">
             {plannerHref ? (
               <Link
@@ -251,6 +257,8 @@ export default function EventDetailPage() {
             checkIn={checkIn}
             checkOut={checkOut}
           />
+
+          {showD3Media ? <EventDetailMediaSection event={event} locale={locale} /> : null}
 
           <div className="mt-4">
             <EventStayStrip

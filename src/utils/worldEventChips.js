@@ -1,14 +1,11 @@
 import {
   formatWorldEventDateRange,
   getWorldEventTitle,
-} from './worldEvents';
+} from './worldEvents.js';
+import { WORLD_EVENT_WAVE15_PILOT_EVENT_IDS } from './worldEventMedia.js';
 
-/** Wave1.5 D2 pilot — matches EVENT_TRAVEL_GUIDE_PILOT_EVENT_IDS. */
-export const WORLD_EVENT_D2_PILOT_EVENT_IDS = [
-  'edinburgh-fringe-2026',
-  'munich-oktoberfest-2026',
-  'bali-galungan-season-2026',
-];
+/** @deprecated use WORLD_EVENT_WAVE15_PILOT_EVENT_IDS */
+export const WORLD_EVENT_D2_PILOT_EVENT_IDS = WORLD_EVENT_WAVE15_PILOT_EVENT_IDS;
 
 /**
  * @param {import('./worldEvents').WorldEvent | null | undefined} event
@@ -75,5 +72,5 @@ export function buildWorldEventMooniSeed(event, locale = 'ko') {
  */
 export function hasWorldEventD2Chips(eventId) {
   const id = String(eventId ?? '').trim();
-  return WORLD_EVENT_D2_PILOT_EVENT_IDS.includes(id);
+  return WORLD_EVENT_WAVE15_PILOT_EVENT_IDS.includes(id);
 }

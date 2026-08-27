@@ -1,5 +1,5 @@
 /**
- * External link builders for world-event action chips (D2).
+ * External link builders for world-event action chips (D2) and search (D3).
  */
 
 /**
@@ -22,4 +22,13 @@ export function googleWebSearchUrl(query, locale = 'ko') {
   if (!q) return '';
   const hl = locale === 'en' ? 'en' : 'ko';
   return `https://www.google.com/search?q=${encodeURIComponent(q)}&hl=${hl}`;
+}
+
+/**
+ * @param {string} query
+ */
+export function naverWebSearchUrl(query) {
+  const q = String(query || '').trim();
+  if (!q) return '';
+  return `https://search.naver.com/search.naver?query=${encodeURIComponent(q)}`;
 }

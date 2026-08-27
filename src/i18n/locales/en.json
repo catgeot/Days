@@ -1769,6 +1769,18 @@
     "actionChips": {
       "title": "Event shortcuts"
     },
+    "media": {
+      "heroEyebrow": "Event highlight",
+      "heroAlt": "{{title}} hero image",
+      "searchTitle": "Learn more",
+      "searchHint": "Search by event and venue keywords for official info and tips.",
+      "googleSearch": "Google search",
+      "naverSearch": "Naver search",
+      "youtubeTitle": "Related videos",
+      "attractionsTitle": "{{city}} attractions",
+      "attractionsHint": "Open city attraction hubs on the map and place cards.",
+      "attractionsHubCta": "{{city}} place card"
+    },
     "mooniChips": {
       "title": "Ask MOONi",
       "hint": "Tap a festival question to open MOONi chat with event context."

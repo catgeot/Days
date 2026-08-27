@@ -1532,6 +1532,18 @@
     "actionChips": {
       "title": "행사 바로가기"
     },
+    "media": {
+      "heroEyebrow": "행사 하이라이트",
+      "heroAlt": "{{title}} 대표 이미지",
+      "searchTitle": "더 알아보기",
+      "searchHint": "행사명·장소 키워드로 검색해 공식 정보·후기를 찾아보세요.",
+      "googleSearch": "구글 검색",
+      "naverSearch": "네이버 검색",
+      "youtubeTitle": "관련 영상",
+      "attractionsTitle": "{{city}} 명소",
+      "attractionsHint": "도시 명소 허브에서 지도·여행지 카드로 이어집니다.",
+      "attractionsHubCta": "{{city}} 여행지 카드"
+    },
     "mooniChips": {
       "title": "무니에게 물어보기",
       "hint": "행사 맥락 질문을 누르면 무니 채팅이 열립니다."
