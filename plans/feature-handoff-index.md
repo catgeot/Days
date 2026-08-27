@@ -18,8 +18,8 @@
 
 | | |
 |--|--|
-| **상태** | **#26 Wave1.5 D3 완료** — heroImage·YouTube·검색·명소 허브 · PR #154 |
-| **브랜치** | `cursor/world-events-wave2` · tip `b9c52a3a` |
+| **상태** | **#26 D3 QA 핫픽스** — PR [#154](https://github.com/catgeot/Days/pull/154) · tip `ea74f5ee` · **D3 재QA** 대기 |
+| **브랜치** | `cursor/world-events-wave2` · tip `ea74f5ee` |
 | **PR** | [#154](https://github.com/catgeot/Days/pull/154) draft |
 | **main** | `6712f777`+ — Wave1 v2 · Phase F-0.5 · PR #154 = Wave1.5 D1 |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **Phase F-0.5** · §9 |
@@ -30,19 +30,19 @@
 | **PROD QA** | `https://www.gateo.kr/world-events` · 파일럿 3상세(edinburgh·munich·bali) |
 | **VERIFY** | D1~: `audit:event-travel-guide` · `smoke:world-events-detail` · `build` |
 
-**Wave1.5 D3 (PR #154)**: heroImage·youtubeVideos pilot 3건 · EventDetailHero · EventDetailMediaSection · Google·네이버·cityAttractionHubs
+**Wave1.5 D3 QA 핫픽스 (PR #154)**: hero Wikimedia · 갈룽안→wikipedia · 한글 검색 · 무니 칩
 
-**다음 제시어** (#27 — D4):
+**다음 제시어** (#26 재QA 또는 #27 D4):
 
 ```
-세계행사 일정 #27, Wave1.5 D4 숙소·파일럿 회귀
+세계행사 일정 #26, Wave1.5 D3 재QA
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
 @plans/world-events-sample-log.md
-브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/edinburgh-fringe-2026
+브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/bali-galungan-season-2026
 금지: 새 feature 브랜치 · Wave1 브랜치 · worldEvents.json 직편집 · feature에 plans 커밋 · Wave2 overrides
-작업: D4 EventStayStrip 확장 · stayAreas→MRT · 파일럿 3건 회귀 smoke · build
+작업: D3 재QA — 히어로·갈룽안 링크·구글/네이버·무니 칩 3종 · OK면 #27 D4
 ```
 
 ---
