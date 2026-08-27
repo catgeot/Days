@@ -79,8 +79,14 @@ const qaSrc = readFileSync(
   'utf8',
 );
 assert.match(qaSrc, /slug:\s*'world-events'/, 'cloudQaShareLinks has world-events slug');
+assert.match(qaSrc, /cursor\/world-events-wave2/, 'cloudQaShareLinks world-events uses wave2 branch');
 
 const vercelSrc = readFileSync(join(root, 'vercel.json'), 'utf8');
 assert.match(vercelSrc, /\/qa\/world-events/, 'vercel.json redirects /qa/world-events');
+assert.match(
+  vercelSrc,
+  /days-git-cursor-world-events-wave2-catgeots-projects\.vercel\.app/,
+  'vercel.json /qa/world-events points to wave2 git Preview',
+);
 
 console.log('OK    smoke:world-events-hub — all assertions passed');
