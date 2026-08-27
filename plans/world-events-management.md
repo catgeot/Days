@@ -132,7 +132,7 @@ npm run build
 | 무니 FAB | 우하단 Mooni 버튼 · 행사 맥락 대화 진입 |
 | 허브 회귀 | `/world-events` 카드 「행사 상세」→ 동일 URL · 「여행지 카드」→ `/place/:slug?fromEvent&checkIn&checkOut` |
 
-**Tier3 AI fixture (#1~#4만)** — 「행사 맞춤 여행 가이드」패널 · trip presets · booking tips
+**Tier3 AI fixture (#1~#4만)** — 「행사 맞춤 여행 가이드」패널 · DB 없으면 **번들 fixture** 폴백(PROD·Preview 공통) · LIVE Edge 배포 후 DB 우선
 
 | # | eventId | 권장 박 | 특이 확인 |
 |---|---------|---------|-----------|

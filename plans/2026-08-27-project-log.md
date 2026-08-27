@@ -38,3 +38,11 @@
 - **VERIFY** `smoke:korea-festival-stay-url` · `smoke:world-events` · `build` PASS
 - **사람 QA** PROD 재확인 — 횡성한우축제 프리셋 칩·기본 3박 이내
 
+## 세계행사 일정 #22 — Tier3 AI PROD fixture 폴백
+
+- **이슈** 에든버러 등 #1~#4 PROD — 「행사 맞춤 여행 가이드」패널 없음
+- **원인** fixture 로드가 `isCloudPreviewSurface()` 안에서만 동작 · DB 미배포
+- **조치** DB miss 시 번들 fixture 폴백(PROD·Preview) · DB row 있으면 DB 우선
+- **VERIFY** `smoke:event-travel-guide` · `build` PASS
+- **사람 QA** PROD `/world-events/edinburgh-fringe-2026` — 보라색 AI 패널
+

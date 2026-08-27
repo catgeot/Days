@@ -4,7 +4,7 @@ const fixtureModules = import.meta.glob(
 );
 
 /**
- * Preview·DEV용 EventTravelGuide fixture (DB 미배포 시 Tier3 QA).
+ * EventTravelGuide fixture (Wave1 #1~#4). DB row 없을 때 PROD·Preview 공통 폴백.
  * @param {string} eventId
  */
 export async function loadEventTravelGuideFixture(eventId) {

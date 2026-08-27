@@ -22,7 +22,6 @@ import {
 } from '../../utils/worldEvents';
 import { fetchEventTravelGuide } from '../../utils/fetchEventTravelGuide';
 import { loadEventTravelGuideFixture } from '../../utils/loadEventTravelGuideFixture';
-import { isCloudPreviewSurface } from '../../shared/cloudPreview/isCloudPreviewSurface';
 import { buildPlacePlannerPathFromEvent } from '../../utils/placePlannerPath';
 import EventDetailStaticPanel from './EventDetailStaticPanel';
 import EventStayStrip from './EventStayStrip';
@@ -56,21 +55,19 @@ export default function EventDetailPage() {
         return;
       }
 
-      if (isCloudPreviewSurface()) {
-        try {
-          const fixture = await loadEventTravelGuideFixture(event.id);
-          if (fixture) {
-            setTravelGuide(fixture);
-            setTravelGuideRaw({
-              guide: fixture,
-              model: 'fixture-v0.1',
-              schema_version: '0.1',
-            });
-            return;
-          }
-        } catch (err) {
-          console.warn('[EventDetailPage] preview fixture load failed', err);
+      try {
+        const fixture = await loadEventTravelGuideFixture(event.id);
+        if (fixture) {
+          setTravelGuide(fixture);
+          setTravelGuideRaw({
+            guide: fixture,
+            model: 'fixture-v0.1',
+            schema_version: '0.1',
+          });
+          return;
         }
+      } catch (err) {
+        console.warn('[EventDetailPage] fixture load failed', err);
       }
 
       setTravelGuide(null);
