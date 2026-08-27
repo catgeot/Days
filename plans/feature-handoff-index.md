@@ -22,7 +22,7 @@
 | **다음** | 횡성·발리·국내축제 Preview QA → PR #153 merge |
 | **브랜치** | `cursor/world-events-efa3` |
 | **PR** | [#153](https://github.com/catgeot/Days/pull/153) (merge 보류 · 재QA) |
-| **feature tip** | `d6424546` — FestivalStayStrip · FestivalMooniFab |
+| **feature tip** | `5ca0bfb7` — FestivalStayStrip · FestivalMooniFab |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) · [`world-events-plan.md`](./world-events-plan.md) §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) §6.1 |
