@@ -5,14 +5,14 @@
 
 | # | eventId | 세션 | Tier0.5 | AI | 상태 |
 |---|---------|------|---------|-----|------|
-| 1 | `edinburgh-fringe-2026` | #11, #12, #13 | ✅ overview·highlights·stayAreas·4박 | ✅ v0.1 fixture | Tier0~2+AI v0.1 |
-| 2 | `munich-oktoberfest-2026` | #14 | ✅ overview·highlights·stayAreas·3박 | ✅ v0.1 fixture | Tier0~2+AI v0.1 |
+| 1 | `edinburgh-fringe-2026` | #11~#13, #23 | ✅ overview·highlights·stayAreas·4박 | ✅ v0.2 pilot fixture | Tier0~0.5 + Preview AI v0.2 |
+| 2 | `munich-oktoberfest-2026` | #14, #23 | ✅ overview·highlights·stayAreas·3박 | ✅ v0.2 pilot fixture | Tier0~0.5 + Preview AI v0.2 |
 | 3 | `vienna-staatsoper-season-2026` | #14 | ✅ overview·highlights·stayAreas·3박 | ✅ v0.1 fixture | Tier0~2+AI v0.1 |
 | 4 | `amsterdam-kings-day-2027` | #14 | ✅ overview·highlights·stayAreas·2박 | ✅ v0.1 fixture | Tier0~2+AI v0.1 |
 | 5 | `tokyo-sakura-season-2027` | #15 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2 |
 | 6 | `kyoto-gion-matsuri-2027` | #15 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2 |
 | 7 | `bangkok-songkran-2027` | #15 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2 |
-| 8 | `bali-galungan-season-2026` | #15 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2 |
+| 8 | `bali-galungan-season-2026` | #15, #23 | ✅ overview·highlights·stayAreas·4박 | ✅ v0.2 pilot fixture | Tier0~0.5 + Preview AI v0.2 |
 | 9 | `rio-carnival-2027` | #16 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2+위젯 |
 | 10 | `new-york-thanksgiving-season-2026` | #16 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2+위젯 |
 | 11 | `iceland-midnight-sun-2027` | #16 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2+위젯 |
@@ -187,6 +187,36 @@
 - **문서**: `world-events-management.md` §6.1.1 QA 표 추가
 - **사람 QA**: §6.1.1 15건 각각 Tier0~2·프리셋·항공+숙소 prefill·무니 FAB
 - **다음**: PR #153 merge · PROD QA
+
+## #1 edinburgh-fringe-2026 — Wave1.5 D1 (#23)
+
+- **일시**: 2026-08-27
+- **세션**: `세계행사 일정 #23, Wave1.5 D1 AI 정적 분리` · PR #154 · `cursor/world-events-wave2`
+- **변경**: EventTravelGuide **v0.2** — `summary`·`recommended_nights` 제거(정적 Tier0.5와 역할 분리) · PROD Tier3 억제 · Preview 파일럿 3건만 패널
+- **fixture**: `edinburgh-fringe-2026.json` v0.2 — trip_presets 3 · sections(공연 예매·이동) · booking_tips · cautions
+- **VERIFY**: `audit:event-travel-guide` · `smoke:world-events-detail` · `smoke:event-travel-guide` · `build` PASS
+- **다음**: 사람 Preview D1 QA → **#24 D2** 무니·행사 액션 칩
+
+## #1 edinburgh-fringe-2026 — D1 사람 QA 피드백 → D2/D3 (#24 논의)
+
+- **일시**: 2026-08-27
+- **맥락**: Wave1.5 D1 Preview QA — AI v0.2 섹션 본문만 검수(§6.1·15건 회귀는 Wave1 종료)
+- **피드백 (사람)**: Tier3 `sections`에 **Royal Mile** · **city venues** · **edfringe.com** 등 축제 핵심 키워드가 나오지만 **클릭·실행 링크 없음** — 사용자가 검색 사이트에 키워드를 다시 입력해야 함
+  - 「공연 선택·예매」: Royal Mile·올드타운 프리 공연 → edfringe.com 사전 예매 권장 — **예매·핵심 권역이 축제의 중심인데 페이지가 실행까지 연결하지 못함**
+  - 「일정·이동 팁」: Royal Mile 혼잡·「공연장 위치를 지도에 미리 표시」 — **지역·지도 정보가 필요하지만 사이트 내 제공 부담이면 외부 링크(지도·검색)라도 필요**
+- **이미 있는 정적층 (AI와 미연결)**:
+  - 상단 CTA `sourceUrl` → edfringe.com 「공식」
+  - Hero `venue` · highlights · stayAreas(올드타운·Royal Mile → MRT 숙소 링크)
+  - → 키워드는 SSOT에 있지만 **AI 섹션·액션 칩과 묶여 있지 않음**
+- **D1 범위 밖 (의도)** — 스키마 v0.2에 URL 필드 없음 · 무니 행사 시드·칩 미구현
+- **D2 (#24) 요구** — 행사 **액션 칩**·**무니 시드·칩** 예시:
+  - 공식 티켓 예매 → `sourceUrl` (edfringe.com)
+  - Royal Mile / 프리 공연 → Google Maps 또는 검색 `Royal Mile Edinburgh Fringe`
+  - 공연장 지도 → edfringe venue map 또는 「Edinburgh Fringe venues map」검색
+  - 무니 칩 → 「프리 공연 어디서?」「하루 3편 일정 짜줘」 등 행사 맥락 시드
+  - 참고 패턴: 국내 `FestivalDetailSheet` Google·네이버 검색 URL
+- **D3 (#25) 요구** — Google·네이버 검색 · `cityAttractionHubs` 브릿지(명소·지도 허브)
+- **D1 QA 결론**: 역할 분리(겹침 완화)는 목적 달성 · **실행층(링크·지도·예매 동선) 공백** → D2 착수 전 본 절로 핸드오프
 
 ## v2 pivot — Preview QA 피드백 (#12 전)
 
