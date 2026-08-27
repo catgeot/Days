@@ -79,3 +79,9 @@
 - **VERIFY** `smoke:world-events-detail` · `smoke:world-events` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `build` PASS
 - **Preview** `/qa/world-events` → `/world-events/munich-oktoberfest-2026` — 행사 바로가기 칩·무니 질문 칩·FAB 시드
 - **다음** 사람 Preview D2 QA → **#26 D3** 미디어·명소
+
+## 세계행사 일정 #25 — /qa Preview 리다이렉트 수정
+
+- **이슈** `/qa/world-events`가 구 `efa3` Preview → D2 액션·무니 칩 미표시
+- **조치** `vercel.json`·`cloudQaShareLinks` → `cursor/world-events-wave2` (main `3b6fb256` 배포)
+- **확인** 에든버러 상세 — 「행사 바로가기」3칩 · 무니 질문 칩 · FAB 시드
