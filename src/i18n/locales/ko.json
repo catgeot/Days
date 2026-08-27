@@ -1582,6 +1582,8 @@
       "hint": "행사 전체 기간이 아닌, 선택한 숙박 일정으로 숙소·항공을 조회합니다.",
       "dates": "숙박 일정",
       "staysTitle": "{{place}} 숙소",
+      "areasTitle": "추천 숙소 권역",
+      "moreOnMrt": "MRT에서 더보기",
       "flightCta": "항공+숙소",
       "empty": "선택 일정에 맞는 숙소가 없습니다. 일정을 조정해 보세요.",
       "presets": {

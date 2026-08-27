@@ -216,6 +216,30 @@ assert.match(stayStripSrc, /mode: 'packages'/, 'EventStayStrip packages mode');
 assert.match(stayStripSrc, /placeLabel/, 'EventStayStrip placeLabel override');
 assert.match(stayStripSrc, /accent="light"/, 'EventStayStrip light guest stepper');
 
+const PILOT_D4 = ['edinburgh-fringe-2026', 'munich-oktoberfest-2026', 'bali-galungan-season-2026'];
+for (const pilotId of PILOT_D4) {
+  const pilot = getWorldEventById(pilotId);
+  assert.ok(pilot, `${pilotId} pilot present`);
+  assert.ok(
+    Array.isArray(pilot.stayAreas) && pilot.stayAreas.length >= 2,
+    `${pilotId} has 2+ stayAreas`,
+  );
+  for (const area of pilot.stayAreas) {
+    assert.ok(area.mrtKeyword, `${pilotId} stayArea ${area.name} has mrtKeyword`);
+  }
+  const pilotPresets = tripWindowPresetsFromEvent(pilot);
+  assert.ok(pilotPresets.tripWindow.checkIn, `${pilotId} tripWindow checkIn`);
+  assert.ok(pilotPresets.tripWindow.checkOut, `${pilotId} tripWindow checkOut`);
+}
+
+assert.match(stayStripSrc, /stayAreas/, 'EventStayStrip uses event.stayAreas');
+assert.match(stayStripSrc, /keywordOverride/, 'EventStayStrip passes stayArea mrtKeyword');
+assert.match(stayStripSrc, /buildMrtStayListUrl/, 'EventStayStrip MRT list more link');
+assert.match(stayStripSrc, /selectedAreaIndex/, 'EventStayStrip area chip state');
+
+const fetchMrtSrc = readFileSync(join(root, 'src/utils/fetchMrtStays.js'), 'utf8');
+assert.match(fetchMrtSrc, /keywordOverride/, 'fetchMrtStaysForLocation keywordOverride');
+
 const mooniFabSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventMooniFab.jsx'), 'utf8');
 assert.match(mooniFabSrc, /onClick/, 'EventMooniFab triggers onClick');
 

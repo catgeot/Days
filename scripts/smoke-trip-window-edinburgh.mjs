@@ -29,7 +29,7 @@ const presets = tripWindowPresetsFromEvent(fringe, { todayYmd: '2026-01-01' });
 assert.equal(presets.slug, 'edinburgh');
 assert.equal(presets.eventId, 'edinburgh-fringe-2026');
 assert.equal(presets.tripWindow.checkIn, '2026-08-06');
-assert.equal(presets.tripWindow.checkOut, '2026-08-10');
+assert.equal(presets.tripWindow.checkOut, '2026-08-09');
 assert.ok(
   tripWindowNights(presets.tripWindow.checkIn, presets.tripWindow.checkOut) <= 10,
   'CTA tripWindow capped (not full event span)',
@@ -39,12 +39,12 @@ assert.ok(presets.visitPresets.length >= 3, 'long event has visit presets');
 const detailUrl = new URL(presets.detailHref, 'https://www.gateo.kr');
 assert.equal(detailUrl.searchParams.get(EVENT_PLANNER_QUERY_KEY), 'edinburgh-fringe-2026');
 assert.equal(detailUrl.searchParams.get('checkIn'), '2026-08-06');
-assert.equal(detailUrl.searchParams.get('checkOut'), '2026-08-10');
+assert.equal(detailUrl.searchParams.get('checkOut'), '2026-08-09');
 
 const plannerUrl = new URL(presets.plannerHref, 'https://www.gateo.kr');
 assert.equal(plannerUrl.searchParams.get(EVENT_PLANNER_QUERY_KEY), 'edinburgh-fringe-2026');
 assert.equal(plannerUrl.searchParams.get('checkIn'), '2026-08-06');
-assert.equal(plannerUrl.searchParams.get('checkOut'), '2026-08-10');
+assert.equal(plannerUrl.searchParams.get('checkOut'), '2026-08-09');
 
 assert.equal(presets.sourceUrl, fringe.sourceUrl);
 

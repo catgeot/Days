@@ -1819,6 +1819,8 @@
       "hint": "Search stays and flights for your selected nights — not the full event span.",
       "dates": "Stay dates",
       "staysTitle": "Stays in {{place}}",
+      "areasTitle": "Suggested stay areas",
+      "moreOnMrt": "More on MRT",
       "flightCta": "Flight + hotel",
       "empty": "No stays for these dates. Try adjusting your window.",
       "presets": {

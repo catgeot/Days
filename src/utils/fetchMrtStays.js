@@ -339,20 +339,24 @@ export async function fetchMrtStays(params) {
 /**
  * 홈 Summary 숙소 — SSOT slug + uiPlace. 실패·빈 결과는 호출측에서 empty 처리.
  * @param {object} location
- * @param {{ checkIn?: string, checkOut?: string, adultCount?: number, childCount?: number }} [opts]
+ * @param {{ checkIn?: string, checkOut?: string, adultCount?: number, childCount?: number, keywordOverride?: string }} [opts]
  */
 export async function fetchMrtStaysForLocation(location, opts = {}) {
   if (!location || location.isScanning) return null;
   if (!canShowMrtStayStrip(location)) return null;
 
   const query = resolveMrtStayQuery(location);
-  if (!query.keyword) return null;
+  const keywordOverride = String(opts.keywordOverride || '').trim();
+  const keyword = keywordOverride || query.keyword;
+  if (!keyword) return null;
 
   const isDomestic = isMrtDomesticLocation(location);
   const normalized = normalizeMrtStayDates(opts.checkIn, opts.checkOut);
   const guests = normalizeMrtGuestCounts(opts.adultCount, opts.childCount);
   return fetchMrtStays({
     ...query,
+    keyword,
+    altKeywords: keywordOverride ? [] : query.altKeywords,
     countryHint: normalizeMrtCountryHint(query.countryHint || location?.country, isDomestic),
     isDomestic,
     ...normalized,
