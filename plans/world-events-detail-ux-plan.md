@@ -672,21 +672,22 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#23 D1 완료 · #24 D1 QA 대기** — PR [#154](https://github.com/catgeot/Days/pull/154) |
-| **브랜치** | `cursor/world-events-wave2` · tip `abcee092` |
+| **상태** | **#25 Wave1.5 D2 완료** — PR [#154](https://github.com/catgeot/Days/pull/154) · **#26 D3** 대기 |
+| **브랜치** | `cursor/world-events-wave2` · tip `8a413ce3` |
 | **main** | Wave1 PR #153 merged · PROD Tier3 → D1에서 Preview-only suppress |
 | **플랜** | 본 문서 **Phase F-0.5** · 표준 제시어 **#23~#28** |
 | **Preview** | `https://www.gateo.kr/qa/world-events` |
 | **VERIFY** | D1~D4 단계별 smoke/audit · `build` |
 
-**다음 제시어** (#24 — D1 QA):
+**다음 제시어** (#26):
 
 ```
-세계행사 일정 #24, Wave1.5 D1 Preview QA
+세계행사 일정 #26, Wave1.5 D3 미디어·명소
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
-브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/edinburgh-fringe-2026
-금지: D2 구현 · 새 feature 브랜치 · Wave1 브랜치 · worldEvents.json 직편집 · feature에 plans 커밋 · Wave2 overrides
-작업: Preview·PROD QA — PROD AI 패널 없음 · Preview pilot 3건 AI v0.2 · 정적 Tier0~0.5 분리 · non-pilot AI 없음 · §6.1.1
+@plans/world-events-sample-log.md
+브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/bali-galungan-season-2026
+금지: 새 feature 브랜치 · Wave1 브랜치 · worldEvents.json 직편집 · feature에 plans 커밋 · Wave2 overrides
+작업: D3 heroImage·YouTube · Google·네이버 검색 · cityAttractionHubs 브릿지 · smoke · build
 ```

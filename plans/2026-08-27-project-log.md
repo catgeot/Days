@@ -69,3 +69,13 @@
 - **맥락** D1 Preview QA 논의 — 에든버러 AI v0.2 섹션에 Royal Mile·edfringe·지도 힌트만 있고 실행 링크 없음
 - **문서** [`world-events-sample-log.md`](./world-events-sample-log.md) #1 — D1 피드백 → **D2 액션 칩·무니 시드** · **D3 검색·hub** 요구 기록
 - **다음** `#24 Wave1.5 D2` 무니 행사칩 착수
+
+## 세계행사 일정 #25 — Wave1.5 D2 무니 행사칩
+
+- **세션** `세계행사 일정 #25, Wave1.5 D2 무니 행사칩`
+- **브랜치** `cursor/world-events-wave2` · PR [#154](https://github.com/catgeot/Days/pull/154) · tip `8a413ce3`
+- **산출** overrides `actionChips`·`mooniChips` (pilot edinburgh·munich·bali) · `EventActionChips` · `EventMooniChips` · 무니 `eventContext` 시드
+- **D2 요구** sample-log #1 — 공식 예매·Royal Mile·공연장 지도 링크 · 무니 「프리 공연」「하루 3편」칩
+- **VERIFY** `smoke:world-events-detail` · `smoke:world-events` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/munich-oktoberfest-2026` — 행사 바로가기 칩·무니 질문 칩·FAB 시드
+- **다음** 사람 Preview D2 QA → **#26 D3** 미디어·명소
