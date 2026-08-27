@@ -5,14 +5,14 @@
 
 | # | eventId | 세션 | Tier0.5 | AI | 상태 |
 |---|---------|------|---------|-----|------|
-| 1 | `edinburgh-fringe-2026` | #11~#13, #23 | ✅ overview·highlights·stayAreas·4박 | ✅ v0.2 pilot fixture | Tier0~0.5 + Preview AI v0.2 |
+| 1 | `edinburgh-fringe-2026` | #11~#13, #23, #25 | ✅ overview·highlights·stayAreas·4박 | ✅ v0.2 pilot fixture | D2 action+mooni chips |
 | 2 | `munich-oktoberfest-2026` | #14, #23, #25 | ✅ overview·highlights·stayAreas·3박 | ✅ v0.2 pilot fixture | D2 action+mooni chips |
 | 3 | `vienna-staatsoper-season-2026` | #14 | ✅ overview·highlights·stayAreas·3박 | ✅ v0.1 fixture | Tier0~2+AI v0.1 |
 | 4 | `amsterdam-kings-day-2027` | #14 | ✅ overview·highlights·stayAreas·2박 | ✅ v0.1 fixture | Tier0~2+AI v0.1 |
 | 5 | `tokyo-sakura-season-2027` | #15 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2 |
 | 6 | `kyoto-gion-matsuri-2027` | #15 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2 |
 | 7 | `bangkok-songkran-2027` | #15 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2 |
-| 8 | `bali-galungan-season-2026` | #15, #23 | ✅ overview·highlights·stayAreas·4박 | ✅ v0.2 pilot fixture | Tier0~0.5 + Preview AI v0.2 |
+| 8 | `bali-galungan-season-2026` | #15, #23, #25 | ✅ overview·highlights·stayAreas·4박 | ✅ v0.2 pilot fixture | D2 action+mooni chips |
 | 9 | `rio-carnival-2027` | #16 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2+위젯 |
 | 10 | `new-york-thanksgiving-season-2026` | #16 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2+위젯 |
 | 11 | `iceland-midnight-sun-2027` | #16 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2+위젯 |
