@@ -101,3 +101,12 @@
 - **조치** `ea74f5ee` — Wikimedia hero URL 교체 · 갈룽안→ko.wikipedia · 펜져 한글 Google · `buildWorldEventSearchQuery` ko=도시명만 · 무니 칩 재오픈·시드 숨김
 - **재QA** `/qa/world-events` → `/world-events/bali-galungan-season-2026` — 히어로·검색·무니 칩 3종
 - **다음** D3 재QA OK → **#27 D4**
+
+## 세계행사 일정 #26 — Wave1.5 D3 재QA
+
+- **세션** `세계행사 일정 #26, Wave1.5 D3 재QA`
+- **피드백** ko위키 갈룽안 없음 · 펜jor 한글 Google 무결과 · MOONi 대화칩 미전송
+- **조치** `bd586518` — en.wikipedia/Galungan · penjor en Google · MOONi chatDraft 대기·FAB remount 최소화
+- **VERIFY** `generate:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026` — 갈룽안·펜jor·무니 칩 3종·주제 칩
+- **다음** 사람 Preview 재QA OK → **#27 D4**

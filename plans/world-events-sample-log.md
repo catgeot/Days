@@ -244,6 +244,12 @@
 - **핫픽스** `ea74f5ee` — Wikimedia hero · ko.wikipedia · 한글 검색 쿼리 · 무니 칩 재전송
 - **재QA** bali 상세 — 히어로·구글/네이버·무니 칩 3종
 
+## #3 bali — D3 재QA 핫픽스 (#26)
+
+- **피드백** ko위키 갈룽안 없음 · 펜jor 한글 Google 무결과 · MOONi 대화칩 미전송
+- **핫픽스** `bd586518` — en.wikipedia/Galungan · penjor en Google · MOONi chatDraft 대기
+- **다음** 사람 Preview 재QA OK → **#27 D4**
+
 ## v2 pivot — Preview QA 피드백 (#12 전)
 
 - **일시**: 2026-08-26
