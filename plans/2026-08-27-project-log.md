@@ -44,5 +44,6 @@
 - **원인** fixture 로드가 `isCloudPreviewSurface()` 안에서만 동작 · DB 미배포
 - **조치** DB miss 시 번들 fixture 폴백(PROD·Preview) · DB row 있으면 DB 우선
 - **VERIFY** `smoke:event-travel-guide` · `build` PASS
-- **사람 QA** PROD `/world-events/edinburgh-fringe-2026` — 보라색 AI 패널
+- **사람 QA** PROD `/world-events/edinburgh-fringe-2026` — 보라색 AI 패널 **확인**
+- **힌트(보류)** Tier3 AI vs Tier0~2 기본 정보 **내용 겹침** 느낌 — 지금 수정 없음 · 차별화(프롬pt/UI)는 Wave2+ 또는 Tier3 iterate 시 [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) Phase C 백로그
 
