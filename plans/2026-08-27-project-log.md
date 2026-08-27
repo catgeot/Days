@@ -119,3 +119,12 @@
 - **Preview** `/qa/world-events` → munich·bali — 개막 3박 강조·재클릭 무로딩
 - **사람 QA** Preview OK — 개막 3박·초기값·중복 API
 - **다음** D4 잔여 — stayAreas→MRT · 파일럿 3건 회귀
+
+## 세계행사 일정 #27 — Wave1.5 D4 stayAreas→MRT
+
+- **세션** `세계행사 일정 #27, Wave1.5 D4 숙소·파일럿 회귀`
+- **브랜치** `cursor/world-events-wave2` · PR [#154](https://github.com/catgeot/Days/pull/154) · tip `4922f7a9`
+- **산출** EventStayStrip `stayAreas` 권역 칩 · `mrtKeyword` MRT 조회 · MRT 더보기 · `fetchMrtStays` keywordOverride
+- **VERIFY** `smoke:world-events-detail` · `smoke:world-events` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `build` PASS
+- **Preview** `/qa/world-events` → edinburgh·munich·bali — 권역 칩·숙소 카드·개막 프리셋
+- **다음** 사람 Preview D4 QA → **#28 Wave2** singapore·dubai
