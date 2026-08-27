@@ -562,6 +562,8 @@ export const PLANNER_TRIPCOM_HOTEL_CITY_IDS = {
   malta: '1264',
   /** 롬복 — 섬 허브(마타람 단독 아님) */
   lombok: '1392',
+  /** 발리 — 섬 허브(DPS 관문 · packages/list htlProvinceId) */
+  bali: '723',
   /** 보라보라 */
   'bora-bora': '61019',
   /** 요세미티 — 요세미티 밸리(숙소 거점) */

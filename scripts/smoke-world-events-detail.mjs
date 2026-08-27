@@ -9,7 +9,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildWorldEventDetailPath } from '../src/utils/worldEventDetailPath.js';
-import { getAllWorldEvents, getWorldEventById } from '../src/utils/worldEvents.js';
+import { getAllWorldEvents, getWorldEventById, getWorldEventLocation } from '../src/utils/worldEvents.js';
 import { tripWindowPresetsFromEvent } from '../src/utils/worldEventTripPresets.js';
 import { tripWindowNights } from '../src/shared/tripWindow.js';
 
@@ -99,7 +99,6 @@ assert.ok(
 );
 
 const { resolvePlannerFlightArrivalIata } = await import('../src/utils/rentalAirportMatch.js');
-const { getWorldEventLocation } = await import('../src/utils/worldEvents.js');
 const rioLoc = getWorldEventLocation('rio-de-janeiro');
 assert.equal(resolvePlannerFlightArrivalIata(rioLoc), 'GIG', 'rio arrival IATA for packages prefill');
 
@@ -155,6 +154,7 @@ assert.match(mooniFabSrc, /MooniBoundChatHost/, 'EventMooniFab opens MooniBoundC
 const affiliateSrc = readFileSync(join(root, 'src/utils/affiliate.js'), 'utf8');
 assert.match(affiliateSrc, /event-detail-flight/, 'affiliate event-detail-flight tracking');
 assert.match(affiliateSrc, /if \(mode === 'packages'\)/, 'packages/list gated by mode=packages only');
+assert.match(affiliateSrc, /bali: '723'/, 'bali Trip.com hotel city id for packages');
 
 assert.doesNotMatch(
   stayStripSrc,

@@ -204,6 +204,21 @@ assert.ok(
   ),
 );
 
+const gangwonHubs = [
+  { hubId: 'pyeongchang', name: '평창', lat: 37.3705, lng: 128.3901 },
+  { hubId: 'hoengseong', name: '횡성', lat: 37.4917, lng: 128.0019 },
+  { hubId: 'wonju', name: '원주', lat: 37.342, lng: 127.92 },
+];
+const hoengseongFest = {
+  title: '횡성한우축제',
+  addr1: '강원특별자치도 횡성군 횡성읍',
+  mapx: '128.3901',
+  mapy: '37.3705',
+  areaCode: '32',
+};
+const nearHoengseong = nearbyHubsForFestival(hoengseongFest, gangwonHubs, { limit: 3 });
+assert.equal(nearHoengseong[0]?.hubId, 'hoengseong', 'addr 횡성군 → hoengseong hub 우선');
+
 assert.equal(mem.get(FAVORITES_KEY) != null, true);
 assert.equal(mem.get(VIEWED_KEY) != null, true);
 
