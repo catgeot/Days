@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 18,
-  sessionPhase: '샘플13~15 · 위젯 마감',
+  sessionNo: 19,
+  sessionPhase: 'Wave1 통합 QA',
   branch: 'cursor/world-events-efa3',
-  previewPath: '/world-events/hanoi-tet-2027',
+  previewPath: '/world-events',
   qaShareSlug: 'world-events',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-27-world-events-wave1-integration-qa',
+    session: '세계행사 일정 #19, Wave1 통합 QA',
+    title: 'Wave1 15건 통합 QA · PR #153 병합 준비',
+    detail:
+      'smoke:world-events · smoke:world-events-detail · smoke:event-travel-guide · audit:event-travel-guide · build PASS. management §6.1·§6.1.1 체크리스트 정리. Preview /qa/world-events — 허브·§6.1 회귀 후 15 상세 URL(§6.1.1 표) 각각 Tier0~2·프리셋·항공+숙소 prefill·무니 FAB 확인. PR #153 병합 준비(draft 해제) — 사람 QA OK 후 merge.',
+    at: '2026-08-27',
+  },
   {
     id: '2026-08-27-world-events-sample13-15-mooni',
     session: '세계행사 일정 #18, 샘플13~15 · 위젯 마감',
