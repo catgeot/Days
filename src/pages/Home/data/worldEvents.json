@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-26T20:04:21.689Z",
+    "generatedAt": "2026-08-27T00:13:48.096Z",
     "eventCount": 15,
     "source": "scripts/data/world-event-overrides.mjs"
   },
@@ -197,6 +197,44 @@
       "priority": 1
     },
     {
+      "id": "hanoi-tet-2027",
+      "slug": "hanoi",
+      "type": "season",
+      "title": "뗏(Tết) 연휴 윈도",
+      "startDate": "2027-01-28",
+      "endDate": "2027-02-03",
+      "recurrence": "annual",
+      "source": "curated",
+      "hubId": "hanoi",
+      "titleEn": "Tet Holiday Window",
+      "recurrenceNote": "음력 설 연휴 (연도별 변동)",
+      "venue": {
+        "name": "Hoan Kiem · Old Quarter"
+      },
+      "sourceUrl": "https://www.vietnam.travel/things-to-do/tet-festival-vietnam",
+      "bookingHints": "올드쿼터·호안끼엠 — 연휴 전후 항공·기차 조기 마감",
+      "detailOverview": "베트남 음력 설(뗏) 연휴로, 하노이 올드쿼터·호안끼엠 일대 꽃 시장·제례·불꽃놀이가 이어집니다. 연휴 전후 3~4박으로 올드쿼터 기점을 잡아 설 분위기와 현지 행사를 둘러보는 방문이 일반적입니다.",
+      "highlights": [
+        "올드쿼터(Old Quarter) — 꽃 시장·거리 음식 · 연휴 전 최대 혼잡",
+        "호안끼엠 호수(Hoan Kiem) — 불꽃놀이·산책 · 도보 접근",
+        "연휴 기간 — 일부 상점·관광 휴무 · 항공·기차 조기 마감"
+      ],
+      "stayAreas": [
+        {
+          "name": "올드쿼터 · Old Quarter",
+          "mrtKeyword": "Hanoi Old Quarter",
+          "note": "꽃 시장·거리 음식 · 호안끼엠 도보"
+        },
+        {
+          "name": "호안끼엠 · Hoan Kiem",
+          "mrtKeyword": "Hoan Kiem Hanoi",
+          "note": "호수 산책·불꽃놀이 뷰 · 올드쿼터 인접"
+        }
+      ],
+      "recommendedNights": 4,
+      "priority": 1
+    },
+    {
       "id": "rio-carnival-2027",
       "slug": "rio-de-janeiro",
       "type": "festival",
@@ -311,6 +349,44 @@
       "priority": 1
     },
     {
+      "id": "prague-spring-festival-2027",
+      "slug": "prague",
+      "type": "season",
+      "title": "프라하 봄 축제 시즌",
+      "startDate": "2027-04-15",
+      "endDate": "2027-05-15",
+      "recurrence": "annual",
+      "source": "official_url",
+      "hubId": "prague",
+      "titleEn": "Prague Spring Festival Season",
+      "recurrenceNote": "4~5월 클래식·봄 축제",
+      "venue": {
+        "name": "Rudolfinum · Old Town"
+      },
+      "sourceUrl": "https://www.festival.cz/en",
+      "bookingHints": "구시가·말라 스트라나 — 루돌피눔 도보권",
+      "detailOverview": "4~5월 프라하 봄 축제(Prague Spring)와 클래식·봄 시즌 행사가 겹치는 문화 방문 시즌입니다. 한 달 전체 숙박보다 개막 주·중순 주말 2~4박으로 루돌피눔·구시가 기점 공연·산책 일정을 잡는 방문이 일반적입니다.",
+      "highlights": [
+        "Prague Spring Festival — 루돌피눔·공연장 중심 클래식·오케스트라",
+        "구시가(Old Town) — 카를교·광장 산책 · 트램·지하철 허브",
+        "말라 스트라나(Malá Strana) — 언덕 골목·성 지구 접근"
+      ],
+      "stayAreas": [
+        {
+          "name": "구시가 · Old Town",
+          "mrtKeyword": "Prague Old Town",
+          "note": "루돌피눔·카를교 도보 · 트램 허브"
+        },
+        {
+          "name": "말라 스트라나 · Malá Strana",
+          "mrtKeyword": "Prague Malá Strana",
+          "note": "성 지구·언덕 골목 · 구시가 도보 10분"
+        }
+      ],
+      "recommendedNights": 3,
+      "priority": 1
+    },
+    {
       "id": "amsterdam-kings-day-2027",
       "slug": "amsterdam",
       "type": "festival",
@@ -343,6 +419,44 @@
           "name": "De Pijp",
           "mrtKeyword": "Amsterdam De Pijp",
           "note": "상대적으로 조용 · Museumplein·센터 트램 15분"
+        }
+      ],
+      "recommendedNights": 2,
+      "priority": 1
+    },
+    {
+      "id": "marrakech-rose-festival-2027",
+      "slug": "marrakech",
+      "type": "festival",
+      "title": "로즈 페스티벌",
+      "startDate": "2027-05-08",
+      "endDate": "2027-05-10",
+      "recurrence": "annual",
+      "source": "curated",
+      "hubId": "marrakech",
+      "titleEn": "Rose Festival (Festival des Roses)",
+      "recurrenceNote": "5월 초 · 켈라at M'Gouna",
+      "venue": {
+        "name": "Kelaat M'Gouna · Dades Valley"
+      },
+      "sourceUrl": "https://www.visitmorocco.com/en/travel/festivals",
+      "bookingHints": "마라케시 기점 당일·1박 투어 — 계곡 숙소는 소수",
+      "detailOverview": "모로코 다데스 계곡 켈라at M'Gouna에서 열리는 장미 수확 축제로, 마라케시에서 당일·1박 투어로 방문하는 경우가 많습니다. 페스티벌 전날 체크인 2박으로 메디나 기점 투어를 잡는 일정이 일반적입니다.",
+      "highlights": [
+        "Kelaat M'Gouna — 장미 수확·시장·지역 행사(마라케시 당일 투어 3~4시간)",
+        "메디나(Medina) — 자마 엘 프나 광장·리야드 숙소",
+        "5월 초 성수기 — 투어·차량 예약 조기 마감"
+      ],
+      "stayAreas": [
+        {
+          "name": "메디나 · Medina",
+          "mrtKeyword": "Marrakech Medina",
+          "note": "자마 엘 프나·리야드 · 투어 픽업"
+        },
+        {
+          "name": "구엘리즈 · Gueliz",
+          "mrtKeyword": "Marrakech Gueliz",
+          "note": "신도시·카페 · 메디나 택시 10분"
         }
       ],
       "recommendedNights": 2,
@@ -460,63 +574,6 @@
       ],
       "recommendedNights": 3,
       "priority": 1
-    },
-    {
-      "id": "hanoi-tet-2027",
-      "slug": "hanoi",
-      "type": "season",
-      "title": "뗏(Tết) 연휴 윈도",
-      "startDate": "2027-01-28",
-      "endDate": "2027-02-03",
-      "recurrence": "annual",
-      "source": "curated",
-      "hubId": "hanoi",
-      "titleEn": "Tet Holiday Window",
-      "recurrenceNote": "음력 설 연휴 (연도별 변동)",
-      "venue": {
-        "name": "Hoan Kiem · Old Quarter"
-      },
-      "sourceUrl": "https://www.vietnam.travel/things-to-do/tet-festival-vietnam",
-      "bookingHints": "올드쿼터·호안끼엠 — 연휴 전후 항공·기차 조기 마감",
-      "priority": 2
-    },
-    {
-      "id": "prague-spring-festival-2027",
-      "slug": "prague",
-      "type": "season",
-      "title": "프라하 봄 축제 시즌",
-      "startDate": "2027-04-15",
-      "endDate": "2027-05-15",
-      "recurrence": "annual",
-      "source": "official_url",
-      "hubId": "prague",
-      "titleEn": "Prague Spring Festival Season",
-      "recurrenceNote": "4~5월 클래식·봄 축제",
-      "venue": {
-        "name": "Rudolfinum · Old Town"
-      },
-      "sourceUrl": "https://www.festival.cz/en",
-      "bookingHints": "구시가·말라 스트라나 — 루돌피눔 도보권",
-      "priority": 2
-    },
-    {
-      "id": "marrakech-rose-festival-2027",
-      "slug": "marrakech",
-      "type": "festival",
-      "title": "로즈 페스티벌",
-      "startDate": "2027-05-08",
-      "endDate": "2027-05-10",
-      "recurrence": "annual",
-      "source": "curated",
-      "hubId": "marrakech",
-      "titleEn": "Rose Festival (Festival des Roses)",
-      "recurrenceNote": "5월 초 · 켈라at M'Gouna",
-      "venue": {
-        "name": "Kelaat M'Gouna · Dades Valley"
-      },
-      "sourceUrl": "https://www.visitmorocco.com/en/travel/festivals",
-      "bookingHints": "마라케시 기점 당일·1박 투어 — 계곡 숙소는 소수",
-      "priority": 2
     }
   ]
 }
