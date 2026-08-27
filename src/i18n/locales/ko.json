@@ -1528,6 +1528,7 @@
     "stayAreas": "추천 숙소 권역",
     "recommendedNightsTitle": "권장 박수",
     "recommendedNightsBody": "{{nights}}박 · 행사 전체 기간이 아닌 짧은 방문 기준",
+    "askMooni": "무니에게 묻기",
     "staticFallback": "상세 소개는 준비 중입니다. 공식 일정·여행지 카드·플래너 CTA를 이용해 주세요.",
     "type": {
       "festival": "축제",

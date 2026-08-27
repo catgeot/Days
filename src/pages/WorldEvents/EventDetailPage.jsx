@@ -27,7 +27,7 @@ import { buildPlacePlannerPathFromEvent } from '../../utils/placePlannerPath';
 import EventDetailStaticPanel from './EventDetailStaticPanel';
 import EventStayStrip from './EventStayStrip';
 import EventTravelGuidePanel from './EventTravelGuidePanel';
-import { TripcomFlightSearchProvider } from '../../components/PlaceCard/tabs/planner/TripcomFlightSearchContext';
+import EventMooniFab from './EventMooniFab';
 
 export default function EventDetailPage() {
   const { eventId } = useParams();
@@ -127,7 +127,6 @@ export default function EventDetailPage() {
     .join(' · ');
 
   return (
-    <TripcomFlightSearchProvider>
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
       <SEO
         title={t('worldEventDetail.seoTitle', { title })}
@@ -244,7 +243,7 @@ export default function EventDetailPage() {
           ) : null}
         </div>
       </main>
+      <EventMooniFab event={event} locale={locale} />
     </div>
-    </TripcomFlightSearchProvider>
   );
 }

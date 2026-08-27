@@ -1765,6 +1765,7 @@
     "stayAreas": "Suggested stay areas",
     "recommendedNightsTitle": "Suggested nights",
     "recommendedNightsBody": "{{nights}} nights · short visit, not the full event span",
+    "askMooni": "Ask MOONi",
     "staticFallback": "Detailed copy is coming soon. Use official links, place cards, and planner CTAs for now.",
     "type": {
       "festival": "Festival",

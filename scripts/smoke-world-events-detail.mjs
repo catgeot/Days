@@ -63,6 +63,33 @@ assertTier05('rio-carnival-2027', 4);
 assertTier05('new-york-thanksgiving-season-2026', 3);
 assertTier05('iceland-midnight-sun-2027', 4);
 assertTier05('sydney-vivid-2027', 3);
+assertTier05('prague-spring-festival-2027', 3);
+assertTier05('marrakech-rose-festival-2027', 2);
+assertTier05('hanoi-tet-2027', 4);
+
+const WAVE1_EVENT_IDS = [
+  'edinburgh-fringe-2026',
+  'munich-oktoberfest-2026',
+  'vienna-staatsoper-season-2026',
+  'amsterdam-kings-day-2027',
+  'tokyo-sakura-season-2027',
+  'kyoto-gion-matsuri-2027',
+  'bangkok-songkran-2027',
+  'bali-galungan-season-2026',
+  'rio-carnival-2027',
+  'new-york-thanksgiving-season-2026',
+  'iceland-midnight-sun-2027',
+  'sydney-vivid-2027',
+  'prague-spring-festival-2027',
+  'marrakech-rose-festival-2027',
+  'hanoi-tet-2027',
+];
+
+for (const eventId of WAVE1_EVENT_IDS) {
+  const event = getWorldEventById(eventId);
+  assert.ok(event, `${eventId} in Wave1 roster`);
+  assert.ok(event.detailOverview, `${eventId} Tier0.5 detailOverview`);
+}
 
 const rio = tripWindowPresetsFromEvent(getWorldEventById('rio-carnival-2027'));
 assert.ok(rio.visitPresets.length >= 1, 'rio visit presets');
@@ -76,6 +103,36 @@ const { getWorldEventLocation } = await import('../src/utils/worldEvents.js');
 const rioLoc = getWorldEventLocation('rio-de-janeiro');
 assert.equal(resolvePlannerFlightArrivalIata(rioLoc), 'GIG', 'rio arrival IATA for packages prefill');
 
+const edinburghLoc = getWorldEventLocation('edinburgh');
+assert.equal(resolvePlannerFlightArrivalIata(edinburghLoc), 'EDI', 'edinburgh arrival IATA');
+const pragueLoc = getWorldEventLocation('prague');
+assert.equal(resolvePlannerFlightArrivalIata(pragueLoc), 'PRG', 'prague arrival IATA');
+const hanoiLoc = getWorldEventLocation('hanoi');
+assert.equal(resolvePlannerFlightArrivalIata(hanoiLoc), 'HAN', 'hanoi arrival IATA');
+const marrakechLoc = getWorldEventLocation('marrakech');
+assert.equal(resolvePlannerFlightArrivalIata(marrakechLoc), 'RAK', 'marrakech arrival IATA');
+
+const edinburghPresets = tripWindowPresetsFromEvent(getWorldEventById('edinburgh-fringe-2026'));
+
+const stayStripSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventStayStrip.jsx'), 'utf8');
+assert.match(
+  stayStripSrc,
+  /departDate: checkIn/,
+  'EventStayStrip passes checkIn as departDate',
+);
+assert.match(
+  stayStripSrc,
+  /checkIn,\s*\n\s*checkOut/,
+  'EventStayStrip passes hotel checkIn/checkOut to packages',
+);
+assert.match(
+  stayStripSrc,
+  /adultCount/,
+  'EventStayStrip passes adultCount to packages',
+);
+assert.ok(edinburghPresets.tripWindow.checkIn, 'edinburgh preset checkIn for packages prefill');
+assert.ok(edinburghPresets.tripWindow.checkOut, 'edinburgh preset checkOut for packages prefill');
+
 const appSrc = readFileSync(join(root, 'src/App.jsx'), 'utf8');
 assert.match(appSrc, /\/world-events\/:eventId/, 'App route for event detail');
 
@@ -85,44 +142,24 @@ assert.match(hubSrc, /eventDetailHref/, 'WorldEvents hub uses eventDetailHref');
 const detailSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventDetailPage.jsx'), 'utf8');
 assert.match(detailSrc, /EventDetailStaticPanel/, 'EventDetailPage renders static panel');
 assert.match(detailSrc, /EventStayStrip/, 'EventDetailPage renders in-page stay strip');
-assert.match(
-  detailSrc,
-  /TripcomFlightSearchProvider/,
-  'EventDetailPage wraps TripcomFlightSearchProvider',
-);
+assert.match(detailSrc, /EventMooniFab/, 'EventDetailPage renders Mooni FAB');
 
-const stayStripSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventStayStrip.jsx'), 'utf8');
-assert.match(stayStripSrc, /WhiteLabelWidget/, 'EventStayStrip uses WhiteLabelWidget');
+assert.match(stayStripSrc, /EventFlightHotelCta/, 'EventStayStrip uses packages CTA');
 assert.match(stayStripSrc, /event-detail-flight/, 'EventStayStrip event-detail-flight tracking');
+assert.match(stayStripSrc, /mode: 'packages'/, 'EventStayStrip packages mode');
+assert.match(stayStripSrc, /accent="light"/, 'EventStayStrip light guest stepper');
+
+const mooniFabSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventMooniFab.jsx'), 'utf8');
+assert.match(mooniFabSrc, /MooniBoundChatHost/, 'EventMooniFab opens MooniBoundChatHost');
 
 const affiliateSrc = readFileSync(join(root, 'src/utils/affiliate.js'), 'utf8');
 assert.match(affiliateSrc, /event-detail-flight/, 'affiliate event-detail-flight tracking');
 assert.match(affiliateSrc, /if \(mode === 'packages'\)/, 'packages/list gated by mode=packages only');
 
-const partnerNavSrc = readFileSync(
-  join(root, 'src/components/PlaceCard/common/partnerNavigation.js'),
-  'utf8',
-);
-assert.match(
-  partnerNavSrc,
-  /hasTripcomFlightSchedulePrefill/,
-  'partnerNavigation skips ad modal when departDate set',
-);
-assert.match(
-  partnerNavSrc,
-  /mode: 'flights'/,
-  'partnerNavigation uses /flights/ for schedule prefill',
-);
-
 assert.doesNotMatch(
   stayStripSrc,
-  /packages\/list/,
-  'EventStayStrip does not link packages/list directly',
-);
-assert.doesNotMatch(
-  stayStripSrc,
-  /isMobileDevice/,
-  'EventStayStrip uses WhiteLabelWidget on all viewports',
+  /WhiteLabelWidget/,
+  'EventStayStrip uses packages link not WhiteLabelWidget',
 );
 
 const globeSrc = readFileSync(join(root, 'src/pages/Home/components/HomePlaceCardSummary.jsx'), 'utf8');

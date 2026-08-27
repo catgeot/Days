@@ -1,16 +1,20 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BedDouble, CalendarDays, Loader2, Plane } from 'lucide-react';
-import WhiteLabelWidget from '../../components/PlaceCard/common/WhiteLabelWidget.jsx';
+import {
+  buildMrtMylinkUrl,
+  buildTripcomPlannerFlightUrl,
+  getPlannerFlightArrivalIata,
+} from '../../utils/affiliate';
+import {
+  getTripcomLinkRel,
+  getTripcomPackageLinkTarget,
+} from '../../components/PlaceCard/common/partnerNavigation';
 import {
   GuestStepper,
   StayRangeCalendar,
   formatStayDateLabel,
 } from '../Home/components/stayDateControls';
-import {
-  buildMrtMylinkUrl,
-  getPlannerFlightArrivalIata,
-} from '../../utils/affiliate';
 import {
   canShowMrtStayStrip,
   fetchMrtStaysForLocation,
@@ -19,6 +23,7 @@ import {
   normalizeMrtStayDates,
 } from '../../utils/fetchMrtStays';
 import { resolveFlightDepartureIataForTrip } from '../Home/lib/flightOriginPreference.js';
+import { resolveTripcomPartnerLocale } from '../../utils/tripcomPartnerLocale.js';
 import { getWorldEventPlaceMeta } from '../../utils/worldEvents';
 
 function todayYmd() {
@@ -33,6 +38,55 @@ function formatPrice(n, t, language) {
   if (n == null || !Number.isFinite(Number(n)) || Number(n) <= 0) return null;
   const formatted = Number(n).toLocaleString(language?.startsWith('en') ? 'en-US' : 'ko-KR');
   return t('home.stayStrip.priceFrom', { price: formatted });
+}
+
+/** Trip 항공+호텔 — packages/list 직링크 (일정·인원 prefill) */
+function EventFlightHotelCta({
+  location,
+  checkIn,
+  checkOut,
+  adultCount,
+  childCount,
+  departureIata,
+  className = '',
+}) {
+  const { t, i18n } = useTranslation();
+  const packageUrl = useMemo(() => {
+    if (!location) return null;
+    const depart = departureIata
+      ? resolveFlightDepartureIataForTrip(departureIata)
+      : undefined;
+    return buildTripcomPlannerFlightUrl(location, {
+      departureIata: depart,
+      tracking: 'event-detail-flight',
+      mode: 'packages',
+      departDate: checkIn,
+      returnDate: checkOut,
+      checkIn,
+      checkOut,
+      adultCount,
+      childCount,
+      partnerLocale: resolveTripcomPartnerLocale(i18n.language),
+    });
+  }, [location, checkIn, checkOut, adultCount, childCount, departureIata, i18n.language]);
+
+  if (!location || !packageUrl) return null;
+
+  const linkTarget = getTripcomPackageLinkTarget();
+  const linkRel = getTripcomLinkRel(linkTarget);
+
+  return (
+    <a
+      href={packageUrl}
+      target={linkTarget}
+      rel={linkRel}
+      aria-label={t('worldEventDetail.stayStrip.flightCta')}
+      className={`inline-flex shrink-0 items-center justify-center gap-1 rounded-lg border border-sky-300 bg-sky-50 px-2.5 py-1.5 text-[11px] font-bold text-sky-900 no-underline transition-colors hover:bg-sky-100 active:scale-[0.98] ${className}`}
+    >
+      <Plane size={13} aria-hidden />
+      {t('worldEventDetail.stayStrip.flightCta')}
+    </a>
+  );
 }
 
 function StayCard({ item, price }) {
@@ -253,6 +307,7 @@ export default function EventStayStrip({
             value={guests.adultCount}
             min={1}
             max={8}
+            accent="light"
             onChange={(n) => setGuests((g) => normalizeMrtGuestCounts(n, g.childCount))}
           />
           <GuestStepper
@@ -260,27 +315,18 @@ export default function EventStayStrip({
             value={guests.childCount}
             min={0}
             max={8}
+            accent="light"
             onChange={(n) => setGuests((g) => normalizeMrtGuestCounts(g.adultCount, n))}
           />
           {showFlightCta ? (
             <span className="ml-auto">
-              <WhiteLabelWidget
+              <EventFlightHotelCta
                 location={location}
-                tracking="event-detail-flight"
-                departureIata={departureIata}
-                departDate={checkIn}
-                returnDate={checkOut}
+                checkIn={checkIn}
+                checkOut={checkOut}
                 adultCount={guests.adultCount}
                 childCount={guests.childCount}
-                customTrigger={
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-1 rounded-lg border border-sky-300 bg-sky-50 px-2.5 py-1.5 text-[11px] font-bold text-sky-900 hover:bg-sky-100"
-                  >
-                    <Plane size={13} aria-hidden />
-                    {t('worldEventDetail.stayStrip.flightCta')}
-                  </button>
-                }
+                departureIata={departureIata}
               />
             </span>
           ) : null}
