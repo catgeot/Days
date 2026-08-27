@@ -1,11 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { visitWindowPresetsFromEvent } from '../../shared/eventVisitWindows.js';
 import { localizedHubLabel } from '../../i18n/koreaRegionLabels';
+import { tripWindowPresetsFromEvent } from '../../utils/worldEventTripPresets';
 import EventStayStrip from '../WorldEvents/EventStayStrip';
-import {
-  tripWindowFromTourApiFestival,
-  worldEventFromTourApiFestival,
-} from './worldEventFromTourApiFestival';
+import { worldEventFromTourApiFestival } from './worldEventFromTourApiFestival';
 
 /**
  * @param {{
@@ -19,28 +16,20 @@ export default function FestivalStayStrip({ item, festivalCross, locale = 'ko' }
   const location = festivalCross?.stay?.location;
   const nearestHub = festivalCross?.nearbyHubs?.[0];
 
-  const visitPresets = useMemo(
-    () => (event ? visitWindowPresetsFromEvent(event) : []),
-    [event],
-  );
-
-  const defaultWindow = useMemo(
-    () => tripWindowFromTourApiFestival(item),
-    [item],
-  );
+  const presets = useMemo(() => (event ? tripWindowPresetsFromEvent(event) : null), [event]);
 
   const [tripDates, setTripDates] = useState(() => ({
-    checkIn: defaultWindow?.checkIn || visitPresets[0]?.checkIn || '',
-    checkOut: defaultWindow?.checkOut || visitPresets[0]?.checkOut || '',
+    checkIn: presets?.tripWindow.checkIn || '',
+    checkOut: presets?.tripWindow.checkOut || '',
   }));
 
   useEffect(() => {
-    if (!defaultWindow) return;
+    if (!presets) return;
     setTripDates({
-      checkIn: defaultWindow.checkIn,
-      checkOut: defaultWindow.checkOut,
+      checkIn: presets.tripWindow.checkIn,
+      checkOut: presets.tripWindow.checkOut,
     });
-  }, [item?.contentId, defaultWindow?.checkIn, defaultWindow?.checkOut]);
+  }, [item?.contentId, presets?.tripWindow.checkIn, presets?.tripWindow.checkOut]);
 
   const placeLabel = useMemo(() => {
     return (
@@ -53,7 +42,7 @@ export default function FestivalStayStrip({ item, festivalCross, locale = 'ko' }
     );
   }, [locale, nearestHub?.hubId, festivalCross?.stay?.keyword]);
 
-  if (!event || !location || !tripDates.checkIn || !tripDates.checkOut) return null;
+  if (!event || !location || !presets || !tripDates.checkIn || !tripDates.checkOut) return null;
 
   return (
     <EventStayStrip
@@ -61,7 +50,7 @@ export default function FestivalStayStrip({ item, festivalCross, locale = 'ko' }
       location={location}
       checkIn={tripDates.checkIn}
       checkOut={tripDates.checkOut}
-      visitPresets={visitPresets}
+      visitPresets={presets.visitPresets}
       onDatesChange={setTripDates}
       locale={locale}
       placeLabel={placeLabel}

@@ -30,3 +30,11 @@
 - **사람 QA** §6.1·§6.1.1 — 횡성한우축제 hub · 발리 packages/list · 국내 FestivalStayStrip · 15 상세 전건
 - **다음** 사람 OK → Wave2 착수 합의(`cursor/world-events-wave2` · singapore+dubai)
 
+## 세계행사 일정 #22 — 국내축제 일정 프리셋 수정
+
+- **이슈** 횡성한우축제 PROD QA — 축제 전체 6박이 기본값 · 프리셋 칩 없음
+- **원인** `FestivalStayStrip`이 `maxNights` 없이 전체 span 사용 · 7일 이하 행사는 프리셋 1개(칩 숨김)
+- **조치** `tripWindowPresetsFromEvent` SSOT 정렬 · 국내 `recommendedNights: 3` · 4일+ 행사 프리셋 2~3종
+- **VERIFY** `smoke:korea-festival-stay-url` · `smoke:world-events` · `build` PASS
+- **사람 QA** PROD 재확인 — 횡성한우축제 프리셋 칩·기본 3박 이내
+
