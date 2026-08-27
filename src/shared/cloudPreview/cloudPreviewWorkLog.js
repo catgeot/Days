@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-08-27-world-events-sample13-15-mooni',
+    session: '세계행사 일정 #18, 샘플13~15 · 위젯 마감',
+    title: 'Wave1 15건 완료 · packages prefill · Mooni FAB',
+    detail:
+      'sample #13 prague·#14 marrakech·#15 hanoi Tier0.5. EventStayStrip 「항공+숙소」→ Trip packages/list(일정·ICN→도착·인원 prefill) · GuestStepper 가독성. EventMooniFab. smoke 15 URL PASS. Preview /qa/world-events → /world-events/hanoi-tet-2027 — 프리셋·인원·항공+숙소 Trip 일정·무니 FAB 확인.',
+    at: '2026-08-27',
+  },
+  {
     id: '2026-08-26-world-events-trip-prefill',
     session: '세계행사 일정 #17, 항공+숙소 Trip prefill',
     title: 'EventStayStrip Trip parity · packages/list prefill',
