@@ -62,4 +62,4 @@
 - **산출** EventTravelGuide **v0.2**(summary/recommended_nights 제거) · `shouldShowEventTravelGuidePanel` PROD 억제 · pilot fixture edinburgh/munich/bali
 - **VERIFY** `audit:event-travel-guide` · `smoke:world-events-detail` · `smoke:event-travel-guide` · `build` PASS
 - **Preview** `/qa/world-events` → edinburgh/munich/bali — 정적 Tier0~0.5 + Preview-only AI 패널
-- **다음** 사람 Preview QA → **#24 D2** 무니 행사칩
+- **다음** **#24 D1 Preview QA** (D2는 QA OK 후 #25)

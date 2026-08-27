@@ -333,16 +333,16 @@ flowchart LR
 **v2 (#12~#21)**: [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) · 샘플 로그 [`world-events-sample-log.md`](./world-events-sample-log.md)  
 **세션 번호**: Cloud 채팅 `#12`~ (main 일지 #11=PR150 병합과 별도)
 
-**다음 제시어** (#24 — D2):
+**다음 제시어** (#24 — D1 QA):
 
 ```
-세계행사 일정 #24, Wave1.5 D2 무니 행사칩
+세계행사 일정 #24, Wave1.5 D1 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
-브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/munich-oktoberfest-2026
-금지: 새 feature 브랜치 · Wave1 브랜치 · worldEvents.json 직편집 · feature에 plans 커밋 · Wave2 overrides
-작업: D2 행사 액션 칩 · 무니 행사 시드·칩 · smoke · build
+브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/edinburgh-fringe-2026
+금지: D2 구현 · 새 feature 브랜치 · Wave1 브랜치 · worldEvents.json 직편집 · feature에 plans 커밋 · Wave2 overrides
+작업: Preview·PROD QA — PROD AI 패널 없음 · Preview pilot 3건 AI v0.2 · 정적 Tier0~0.5 분리 · non-pilot AI 없음 · §6.1.1
 ```
 
 **읽을 것**: [`world-events-management.md`](./world-events-management.md) **§6.1·§6.1.1 QA 체크리스트**
