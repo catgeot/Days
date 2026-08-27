@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -24,10 +24,15 @@ import { fetchEventTravelGuide } from '../../utils/fetchEventTravelGuide';
 import { loadEventTravelGuideFixture } from '../../utils/loadEventTravelGuideFixture';
 import { shouldShowEventTravelGuidePanel } from '../../utils/eventTravelGuideSurface';
 import { buildPlacePlannerPathFromEvent } from '../../utils/placePlannerPath';
+import { buildWorldEventMooniSeed, hasWorldEventD2Chips } from '../../utils/worldEventChips';
+import { buildMooniBoundSpotFromLocation } from '../Home/lib/placeChatIntro';
+import MooniBoundChatHost from '../Home/components/MooniBoundChatHost';
+import EventActionChips from './EventActionChips';
 import EventDetailStaticPanel from './EventDetailStaticPanel';
 import EventStayStrip from './EventStayStrip';
 import EventTravelGuidePanel from './EventTravelGuidePanel';
 import EventMooniFab from './EventMooniFab';
+import EventMooniChips from './EventMooniChips';
 
 export default function EventDetailPage() {
   const { eventId } = useParams();
@@ -93,6 +98,9 @@ export default function EventDetailPage() {
     checkIn: presets.tripWindow.checkIn,
     checkOut: presets.tripWindow.checkOut,
   }));
+  const [mooniOpen, setMooniOpen] = useState(false);
+  const [mooniBoundSpot, setMooniBoundSpot] = useState(null);
+  const [mooniInitialQuery, setMooniInitialQuery] = useState(null);
 
   useEffect(() => {
     setTripDates({
@@ -123,6 +131,30 @@ export default function EventDetailPage() {
   ]
     .filter(Boolean)
     .join(' · ');
+
+  const showD2Chips = hasWorldEventD2Chips(event.id);
+
+  const openEventMooni = useCallback(
+    (prompt = null) => {
+      const location = getWorldEventLocation(event.slug);
+      const spot = buildMooniBoundSpotFromLocation({
+        ...location,
+        displayLabel: title ? `${title} · ${location.name}` : location.name,
+      });
+      if (!spot) return;
+      const eventContext = buildWorldEventMooniSeed(event, locale);
+      setMooniBoundSpot(eventContext ? { ...spot, eventContext } : spot);
+      setMooniInitialQuery(prompt ? { text: prompt } : null);
+      setMooniOpen(true);
+    },
+    [event, locale, title],
+  );
+
+  const closeEventMooni = useCallback(() => {
+    setMooniOpen(false);
+    setMooniBoundSpot(null);
+    setMooniInitialQuery(null);
+  }, []);
 
   return (
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
@@ -211,6 +243,8 @@ export default function EventDetailPage() {
             ) : null}
           </div>
 
+          {showD2Chips ? <EventActionChips event={event} locale={locale} /> : null}
+
           <EventDetailStaticPanel
             event={event}
             locale={locale}
@@ -230,6 +264,12 @@ export default function EventDetailPage() {
             />
           </div>
 
+          {showD2Chips ? (
+            <div className="mt-4">
+              <EventMooniChips event={event} locale={locale} onSelect={openEventMooni} />
+            </div>
+          ) : null}
+
           {travelGuide && shouldShowEventTravelGuidePanel(event.id) ? (
             <div className="mt-4">
               <EventTravelGuidePanel
@@ -241,7 +281,13 @@ export default function EventDetailPage() {
           ) : null}
         </div>
       </main>
-      <EventMooniFab event={event} locale={locale} />
+      <EventMooniFab onClick={() => openEventMooni()} />
+      <MooniBoundChatHost
+        isOpen={mooniOpen}
+        boundSpot={mooniBoundSpot}
+        initialQuery={mooniInitialQuery}
+        onClose={closeEventMooni}
+      />
     </div>
   );
 }

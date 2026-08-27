@@ -1077,6 +1077,16 @@ const ChatModal = ({
                   )}
                 </div>
               )}
+              {isMooniUi && messages.length === 0 && !isLoading && mooniPlaceContext?.eventContext?.seedText && (
+                <div className="flex flex-col items-start w-full mb-3">
+                  <span className="text-[10px] font-bold mb-1 px-1 text-amber-400 uppercase tracking-wider">
+                    {t('worldEventDetail.mooniSeed.label')}
+                  </span>
+                  <div className="w-full p-3 rounded-2xl text-sm shadow-md bg-amber-950/40 border border-amber-500/20 text-amber-50 rounded-tl-sm leading-relaxed whitespace-pre-wrap">
+                    {mooniPlaceContext.eventContext.seedText}
+                  </div>
+                </div>
+              )}
               {isMooniUi && messages.length === 0 && !isLoading && placeIntroTarget && (
                 <div className="flex flex-col items-start w-full">
                   <span className="text-[10px] font-bold mb-1 px-1 text-cyan-400 uppercase tracking-wider">MOONi</span>

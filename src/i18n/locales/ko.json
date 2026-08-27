@@ -1529,6 +1529,16 @@
     "recommendedNightsTitle": "권장 박수",
     "recommendedNightsBody": "{{nights}}박 · 행사 전체 기간이 아닌 짧은 방문 기준",
     "askMooni": "무니에게 묻기",
+    "actionChips": {
+      "title": "행사 바로가기"
+    },
+    "mooniChips": {
+      "title": "무니에게 물어보기",
+      "hint": "행사 맥락 질문을 누르면 무니 채팅이 열립니다."
+    },
+    "mooniSeed": {
+      "label": "행사 맥락"
+    },
     "staticFallback": "상세 소개는 준비 중입니다. 공식 일정·여행지 카드·플래너 CTA를 이용해 주세요.",
     "type": {
       "festival": "축제",

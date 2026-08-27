@@ -19,6 +19,28 @@
  */
 
 /**
+ * @typedef {'official' | 'map' | 'search'} WorldEventActionChipKind
+ */
+
+/**
+ * @typedef {{
+ *   id: string,
+ *   labelKo: string,
+ *   labelEn?: string,
+ *   href: string,
+ *   kind?: WorldEventActionChipKind,
+ * }} WorldEventActionChip
+ */
+
+/**
+ * @typedef {{
+ *   id: string,
+ *   promptKo: string,
+ *   promptEn?: string,
+ * }} WorldEventMooniChip
+ */
+
+/**
  * @typedef {{
  *   id: string,
  *   slug: string,
@@ -39,6 +61,8 @@
  *   stayAreas?: WorldEventStayArea[],
  *   recommendedNights?: number,
  *   heroImage?: string,
+ *   actionChips?: WorldEventActionChip[],
+ *   mooniChips?: WorldEventMooniChip[],
  *   priority?: number,
  * }} WorldEventOverride
  */
@@ -211,6 +235,73 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
 
   const heroImage = raw.heroImage != null ? String(raw.heroImage).trim() : undefined;
 
+  let actionChips;
+  if (raw.actionChips != null) {
+    if (!Array.isArray(raw.actionChips)) {
+      throw new Error(`[world-events] ${id}: actionChips must be array`);
+    }
+    actionChips = raw.actionChips.map((chip, chipIndex) => {
+      if (!chip || typeof chip !== 'object') {
+        throw new Error(`[world-events] ${id}: actionChips[${chipIndex}] must be object`);
+      }
+      const chipId = String(chip.id || '').trim();
+      const labelKo = String(chip.labelKo || '').trim();
+      const href = String(chip.href || '').trim();
+      if (!chipId) {
+        throw new Error(`[world-events] ${id}: actionChips[${chipIndex}].id required`);
+      }
+      if (!labelKo) {
+        throw new Error(`[world-events] ${id}: actionChips[${chipIndex}].labelKo required`);
+      }
+      if (!href || !/^https?:\/\//i.test(href)) {
+        throw new Error(`[world-events] ${id}: actionChips[${chipIndex}].href must be http(s) URL`);
+      }
+      /** @type {WorldEventActionChip} */
+      const normalizedChip = { id: chipId, labelKo, href };
+      const labelEn = chip.labelEn != null ? String(chip.labelEn).trim() : undefined;
+      if (labelEn) normalizedChip.labelEn = labelEn;
+      const kind = chip.kind != null ? String(chip.kind).trim() : undefined;
+      if (kind) {
+        if (!['official', 'map', 'search'].includes(kind)) {
+          throw new Error(`[world-events] ${id}: actionChips[${chipIndex}].kind invalid`);
+        }
+        normalizedChip.kind = /** @type {WorldEventActionChipKind} */ (kind);
+      }
+      return normalizedChip;
+    });
+    if (!actionChips.length) {
+      throw new Error(`[world-events] ${id}: actionChips must not be empty when set`);
+    }
+  }
+
+  let mooniChips;
+  if (raw.mooniChips != null) {
+    if (!Array.isArray(raw.mooniChips)) {
+      throw new Error(`[world-events] ${id}: mooniChips must be array`);
+    }
+    mooniChips = raw.mooniChips.map((chip, chipIndex) => {
+      if (!chip || typeof chip !== 'object') {
+        throw new Error(`[world-events] ${id}: mooniChips[${chipIndex}] must be object`);
+      }
+      const chipId = String(chip.id || '').trim();
+      const promptKo = String(chip.promptKo || '').trim();
+      if (!chipId) {
+        throw new Error(`[world-events] ${id}: mooniChips[${chipIndex}].id required`);
+      }
+      if (!promptKo) {
+        throw new Error(`[world-events] ${id}: mooniChips[${chipIndex}].promptKo required`);
+      }
+      /** @type {WorldEventMooniChip} */
+      const normalizedChip = { id: chipId, promptKo };
+      const promptEn = chip.promptEn != null ? String(chip.promptEn).trim() : undefined;
+      if (promptEn) normalizedChip.promptEn = promptEn;
+      return normalizedChip;
+    });
+    if (!mooniChips.length) {
+      throw new Error(`[world-events] ${id}: mooniChips must not be empty when set`);
+    }
+  }
+
   let priority;
   if (raw.priority != null) {
     priority = Number(raw.priority);
@@ -242,6 +333,8 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
   if (stayAreas) event.stayAreas = stayAreas;
   if (recommendedNights != null) event.recommendedNights = recommendedNights;
   if (heroImage) event.heroImage = heroImage;
+  if (actionChips) event.actionChips = actionChips;
+  if (mooniChips) event.mooniChips = mooniChips;
   if (priority != null) event.priority = priority;
 
   return event;

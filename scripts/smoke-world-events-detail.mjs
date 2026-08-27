@@ -143,6 +143,26 @@ assert.match(detailSrc, /EventDetailStaticPanel/, 'EventDetailPage renders stati
 assert.match(detailSrc, /shouldShowEventTravelGuidePanel/, 'EventDetailPage suppresses AI panel on PROD');
 assert.match(detailSrc, /EventStayStrip/, 'EventDetailPage renders in-page stay strip');
 assert.match(detailSrc, /EventMooniFab/, 'EventDetailPage renders Mooni FAB');
+assert.match(detailSrc, /EventActionChips/, 'EventDetailPage renders action chips');
+assert.match(detailSrc, /EventMooniChips/, 'EventDetailPage renders Mooni chips');
+
+const munich = getWorldEventById('munich-oktoberfest-2026');
+assert.ok(Array.isArray(munich.actionChips) && munich.actionChips.length >= 3, 'munich actionChips');
+assert.ok(Array.isArray(munich.mooniChips) && munich.mooniChips.length >= 3, 'munich mooniChips');
+assert.equal(munich.actionChips[0].kind, 'official', 'munich first action chip kind');
+assert.match(munich.actionChips[1].href, /google\.com\/maps/, 'munich map chip href');
+
+const edinburgh = getWorldEventById('edinburgh-fringe-2026');
+assert.ok(Array.isArray(edinburgh.actionChips) && edinburgh.actionChips.length >= 3, 'edinburgh actionChips');
+assert.ok(edinburgh.actionChips.some((chip) => /edfringe\.com/.test(chip.href)), 'edinburgh official chip');
+assert.ok(edinburgh.actionChips.some((chip) => /Royal\+Mile|Royal%20Mile/i.test(chip.href)), 'edinburgh Royal Mile chip');
+
+const bali = getWorldEventById('bali-galungan-season-2026');
+assert.ok(Array.isArray(bali.actionChips) && bali.actionChips.length >= 3, 'bali actionChips');
+assert.ok(Array.isArray(bali.mooniChips) && bali.mooniChips.length >= 3, 'bali mooniChips');
+
+const chipsUtilSrc = readFileSync(join(root, 'src/utils/worldEventChips.js'), 'utf8');
+assert.match(chipsUtilSrc, /buildWorldEventMooniSeed/, 'worldEventChips seed builder');
 
 assert.match(stayStripSrc, /EventFlightHotelCta/, 'EventStayStrip uses packages CTA');
 assert.match(stayStripSrc, /event-detail-flight/, 'EventStayStrip event-detail-flight tracking');
@@ -151,7 +171,7 @@ assert.match(stayStripSrc, /placeLabel/, 'EventStayStrip placeLabel override');
 assert.match(stayStripSrc, /accent="light"/, 'EventStayStrip light guest stepper');
 
 const mooniFabSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventMooniFab.jsx'), 'utf8');
-assert.match(mooniFabSrc, /MooniBoundChatHost/, 'EventMooniFab opens MooniBoundChatHost');
+assert.match(mooniFabSrc, /onClick/, 'EventMooniFab triggers onClick');
 
 const affiliateSrc = readFileSync(join(root, 'src/utils/affiliate.js'), 'utf8');
 assert.match(affiliateSrc, /event-detail-flight/, 'affiliate event-detail-flight tracking');

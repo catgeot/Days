@@ -1766,6 +1766,16 @@
     "recommendedNightsTitle": "Suggested nights",
     "recommendedNightsBody": "{{nights}} nights · short visit, not the full event span",
     "askMooni": "Ask MOONi",
+    "actionChips": {
+      "title": "Event shortcuts"
+    },
+    "mooniChips": {
+      "title": "Ask MOONi",
+      "hint": "Tap a festival question to open MOONi chat with event context."
+    },
+    "mooniSeed": {
+      "label": "Event context"
+    },
     "staticFallback": "Detailed copy is coming soon. Use official links, place cards, and planner CTAs for now.",
     "type": {
       "festival": "Festival",

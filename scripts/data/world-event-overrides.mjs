@@ -81,6 +81,46 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 3,
+    actionChips: [
+      {
+        id: 'official-site',
+        labelKo: '공식 사이트',
+        labelEn: 'Official site',
+        href: 'https://www.oktoberfest.de/en',
+        kind: 'official',
+      },
+      {
+        id: 'theresienwiese-map',
+        labelKo: 'Theresienwiese 지도',
+        labelEn: 'Theresienwiese map',
+        href: 'https://www.google.com/maps/search/?api=1&query=Theresienwiese+Munich',
+        kind: 'map',
+      },
+      {
+        id: 'tent-reservation',
+        labelKo: '텐트 예약 검색',
+        labelEn: 'Tent reservations',
+        href: 'https://www.google.com/search?q=Oktoberfest+beer+tent+reservation&hl=ko',
+        kind: 'search',
+      },
+    ],
+    mooniChips: [
+      {
+        id: 'tent-booking',
+        promptKo: '맥주 텐트 예약은 어떻게 해?',
+        promptEn: 'How do I book an Oktoberfest beer tent?',
+      },
+      {
+        id: 'weekday-weekend',
+        promptKo: '평일이랑 주말 중 언제 가는 게 나아?',
+        promptEn: 'Weekday or weekend — when is better to visit?',
+      },
+      {
+        id: 'transport',
+        promptKo: 'Theresienwiese 가는 교통 알려줘',
+        promptEn: 'How do I get to Theresienwiese?',
+      },
+    ],
     priority: 1,
   },
   {
@@ -118,6 +158,46 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 4,
+    actionChips: [
+      {
+        id: 'official-tickets',
+        labelKo: '공식 예매',
+        labelEn: 'Official tickets',
+        href: 'https://www.edfringe.com/',
+        kind: 'official',
+      },
+      {
+        id: 'royal-mile-map',
+        labelKo: 'Royal Mile 지도',
+        labelEn: 'Royal Mile map',
+        href: 'https://www.google.com/maps/search/?api=1&query=Royal+Mile+Edinburgh',
+        kind: 'map',
+      },
+      {
+        id: 'venue-map',
+        labelKo: '공연장 지도',
+        labelEn: 'Venue map',
+        href: 'https://www.edfringe.com/find-a-show/venues',
+        kind: 'map',
+      },
+    ],
+    mooniChips: [
+      {
+        id: 'free-shows',
+        promptKo: 'Royal Mile 프리 공연은 어디서 볼 수 있어?',
+        promptEn: 'Where can I catch free Fringe shows on Royal Mile?',
+      },
+      {
+        id: 'three-shows',
+        promptKo: '하루에 공연 3편 일정 짜줘',
+        promptEn: 'Plan a day with three Fringe shows',
+      },
+      {
+        id: 'opening-week',
+        promptKo: '8월 첫 주 3박으로 추천 일정 알려줘',
+        promptEn: 'Suggest a 3-night opening-week itinerary',
+      },
+    ],
     priority: 1,
   },
   {
@@ -303,6 +383,46 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 4,
+    actionChips: [
+      {
+        id: 'galungan-guide',
+        labelKo: '갈룽안 안내',
+        labelEn: 'Galungan guide',
+        href: 'https://www.baligoldentour.com/galungan-kuningan/',
+        kind: 'official',
+      },
+      {
+        id: 'ubud-temples-map',
+        labelKo: '우붓 사원 지도',
+        labelEn: 'Ubud temples map',
+        href: 'https://www.google.com/maps/search/?api=1&query=Ubud+temples+Bali',
+        kind: 'map',
+      },
+      {
+        id: 'penjor-search',
+        labelKo: '펜져 장식 검색',
+        labelEn: 'Penjor decorations',
+        href: 'https://www.google.com/search?q=Bali+Galungan+penjor+Ubud&hl=ko',
+        kind: 'search',
+      },
+    ],
+    mooniChips: [
+      {
+        id: 'temple-etiquette',
+        promptKo: '갈룽안 때 사원 방문 예절 알려줘',
+        promptEn: 'Temple etiquette during Galungan?',
+      },
+      {
+        id: 'ubud-itinerary',
+        promptKo: '우붓 기준 4박 일정 짜줘',
+        promptEn: 'Plan a 4-night Ubud-based Galungan itinerary',
+      },
+      {
+        id: 'penjor-spots',
+        promptKo: '펜져 장식 볼 수 있는 곳은?',
+        promptEn: 'Where can I see penjor decorations?',
+      },
+    ],
     priority: 1,
   },
   {
