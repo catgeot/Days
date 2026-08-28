@@ -245,6 +245,7 @@ assert.match(detailSrc, /heroEyebrow/, 'EventDetailPage season meta strip highli
 
 const termModalSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventTermExplainModal.jsx'), 'utf8');
 assert.match(termModalSrc, /fetchEventTermExplanation/, 'EventTermExplainModal cached explain');
+assert.match(termModalSrc, /peekEventTermExplanationCache/, 'EventTermExplainModal memory cache warm');
 assert.match(termModalSrc, /googleSearch/, 'EventTermExplainModal google search link');
 
 const fetchHeroGallerySrc = readFileSync(join(root, 'src/utils/fetchEventHeroGallery.js'), 'utf8');
@@ -264,8 +265,10 @@ assert.ok(
 );
 
 const fetchWorldVideosSrc = readFileSync(join(root, 'src/utils/fetchWorldEventVideos.js'), 'utf8');
-assert.match(fetchWorldVideosSrc, /world-event:/, 'fetchWorldEventVideos place_id prefix');
-assert.match(fetchWorldVideosSrc, /WORLD_EVENT_VIDEOS_PAGE/, 'fetchWorldEventVideos page size');
+assert.match(fetchWorldVideosSrc, /worldEventVideosPlaceId\(eventId, locale\)/, 'fetchWorldEventVideos locale place_id');
+assert.match(fetchWorldVideosSrc, /world-event:\$\{String\(eventId/, 'fetchWorldEventVideos place_id prefix');
+assert.match(fetchWorldVideosSrc, /:\$\{loc\}`/, 'fetchWorldEventVideos locale suffix');
+assert.match(fetchWorldVideosSrc, /WORLD_EVENT_VIDEOS_MAX/, 'fetchWorldEventVideos max count');
 
 assert.doesNotMatch(detailSrc, /EventExecutionStrip/, 'EventDetailPage no execution strip (D5-b)');
 assert.match(detailSrc, /EventTermExplainModal/, 'EventDetailPage glossary modal');
@@ -287,7 +290,9 @@ const mediaSectionSrc = readFileSync(
 assert.match(mediaSectionSrc, /buildWorldEventYoutubeSearchQuery/, 'EventDetailMediaSection youtube search');
 assert.match(mediaSectionSrc, /youtubeWebSearchUrl/, 'EventDetailMediaSection youtube search url');
 assert.match(mediaSectionSrc, /fetchWorldEventVideos/, 'EventDetailMediaSection youtube fetch');
-assert.match(mediaSectionSrc, /youtubeLoadMore/, 'EventDetailMediaSection youtube load more');
+assert.match(mediaSectionSrc, /overflow-y-auto/, 'EventDetailMediaSection youtube scroll container');
+assert.doesNotMatch(mediaSectionSrc, /youtubeLoadMore/, 'EventDetailMediaSection no youtube load more');
+assert.match(mediaSectionSrc, /locale === 'ko'/, 'EventDetailMediaSection naver ko only');
 
 assert.ok(Array.isArray(bali.glossaryTerms) && bali.glossaryTerms.length >= 5, 'bali glossaryTerms');
 assert.ok(Array.isArray(bali.heroImages) && bali.heroImages.length >= 2, 'bali heroImages');

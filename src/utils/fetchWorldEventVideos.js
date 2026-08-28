@@ -2,7 +2,6 @@ import { supabase } from '../shared/api/supabase';
 import { buildWorldEventYoutubeSearchQuery } from './worldEventMedia';
 
 const INVOKE_TIMEOUT_MS = 15_000;
-export const WORLD_EVENT_VIDEOS_PAGE = 2;
 export const WORLD_EVENT_VIDEOS_MAX = 10;
 
 /**
@@ -25,9 +24,11 @@ function withTimeout(promise, ms, label) {
 
 /**
  * @param {string} eventId
+ * @param {string} [locale]
  */
-export function worldEventVideosPlaceId(eventId) {
-  return `world-event:${String(eventId || '').trim()}`;
+export function worldEventVideosPlaceId(eventId, locale = 'ko') {
+  const loc = String(locale || 'ko').trim() === 'en' ? 'en' : 'ko';
+  return `world-event:${String(eventId || '').trim()}:${loc}`;
 }
 
 /**
@@ -56,7 +57,7 @@ export async function fetchWorldEventVideos(event, locale = 'ko') {
     return { ok: false, videos: [], error: 'eventId required' };
   }
 
-  const placeId = worldEventVideosPlaceId(eventId);
+  const placeId = worldEventVideosPlaceId(eventId, locale);
   const query = buildWorldEventYoutubeSearchQuery(event, locale);
   const fallbackQuery =
     locale === 'en'

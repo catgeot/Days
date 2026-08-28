@@ -8,11 +8,7 @@ import {
   getWorldEventHubAttractions,
   getWorldEventYoutubeVideos,
 } from '../../utils/worldEventMedia';
-import {
-  fetchWorldEventVideos,
-  WORLD_EVENT_VIDEOS_MAX,
-  WORLD_EVENT_VIDEOS_PAGE,
-} from '../../utils/fetchWorldEventVideos';
+import { fetchWorldEventVideos } from '../../utils/fetchWorldEventVideos';
 import {
   googleWebSearchUrl,
   naverWebSearchUrl,
@@ -26,7 +22,7 @@ export default function EventDetailMediaSection({ event, locale = 'ko' }) {
   const { t } = useTranslation();
   const searchQuery = buildWorldEventSearchQuery(event, locale);
   const googleHref = googleWebSearchUrl(searchQuery, locale);
-  const naverHref = naverWebSearchUrl(searchQuery);
+  const naverHref = locale === 'ko' ? naverWebSearchUrl(searchQuery) : '';
   const youtubeSearchQuery = buildWorldEventYoutubeSearchQuery(event, locale);
   const youtubeSearchHref = youtubeWebSearchUrl(youtubeSearchQuery, locale);
   const staticYoutubeVideos = useMemo(
@@ -37,11 +33,9 @@ export default function EventDetailMediaSection({ event, locale = 'ko' }) {
 
   const [videos, setVideos] = useState(staticYoutubeVideos);
   const [videosLoading, setVideosLoading] = useState(false);
-  const [videosExpanded, setVideosExpanded] = useState(false);
 
   useEffect(() => {
     setVideos(staticYoutubeVideos);
-    setVideosExpanded(false);
   }, [event.id, staticYoutubeVideos]);
 
   useEffect(() => {
@@ -60,14 +54,6 @@ export default function EventDetailMediaSection({ event, locale = 'ko' }) {
       cancelled = true;
     };
   }, [event, locale]);
-
-  const visibleVideos = videosExpanded
-    ? videos
-    : videos.slice(0, WORLD_EVENT_VIDEOS_PAGE);
-  const canLoadMoreVideos =
-    !videosLoading &&
-    !videosExpanded &&
-    videos.length > WORLD_EVENT_VIDEOS_PAGE;
 
   const hasSearch = Boolean(googleHref || naverHref);
   const hasYoutube = videos.length > 0;
@@ -120,8 +106,9 @@ export default function EventDetailMediaSection({ event, locale = 'ko' }) {
           {videosLoading && videos.length <= staticYoutubeVideos.length ? (
             <p className="mt-2 text-xs text-stone-500">{t('worldEventDetail.media.youtubeLoading')}</p>
           ) : null}
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            {visibleVideos.map((video) => (
+          <div className="mt-3 max-h-[min(28rem,52dvh)] overflow-y-auto overscroll-contain pr-0.5 [-ms-overflow-style:auto] [scrollbar-width:thin]">
+            <div className="grid gap-3 sm:grid-cols-2">
+            {videos.map((video) => (
               <a
                 key={video.id}
                 href={`https://www.youtube.com/watch?v=${video.id}`}
@@ -148,23 +135,8 @@ export default function EventDetailMediaSection({ event, locale = 'ko' }) {
                 </p>
               </a>
             ))}
-          </div>
-          {canLoadMoreVideos ? (
-            <div className="mt-3">
-              <button
-                type="button"
-                onClick={() => setVideosExpanded(true)}
-                className="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-800 hover:border-amber-300 hover:bg-amber-50"
-              >
-                {t('worldEventDetail.media.youtubeLoadMore', {
-                  count: Math.min(
-                    videos.length - WORLD_EVENT_VIDEOS_PAGE,
-                    WORLD_EVENT_VIDEOS_MAX - WORLD_EVENT_VIDEOS_PAGE,
-                  ),
-                })}
-              </button>
             </div>
-          ) : null}
+          </div>
           {youtubeSearchHref ? (
             <div className="mt-3">
               <a

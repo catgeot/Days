@@ -6,7 +6,10 @@ import {
   getGlossaryTermSearchUrl,
   getWorldEventGlossaryTermById,
 } from '../../utils/worldEventGlossary';
-import { fetchEventTermExplanation } from '../../utils/fetchEventTermExplanation';
+import {
+  fetchEventTermExplanation,
+  peekEventTermExplanationCache,
+} from '../../utils/fetchEventTermExplanation';
 
 /**
  * @param {{
@@ -32,9 +35,16 @@ export default function EventTermExplainModal({ event, termId, locale = 'ko', on
     if (!term || !prompt || !event?.id) return undefined;
 
     let cancelled = false;
-    setAnswer('');
+    const warmAnswer = peekEventTermExplanationCache(event.id, term.id, locale);
+    setAnswer(warmAnswer || '');
     setError(false);
-    setLoading(true);
+    setLoading(!warmAnswer);
+
+    if (warmAnswer) {
+      return () => {
+        cancelled = true;
+      };
+    }
 
     fetchEventTermExplanation({
       eventId: event.id,
