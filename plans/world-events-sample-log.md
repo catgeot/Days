@@ -285,6 +285,13 @@
 - **VERIFY** smoke·build PASS
 - **다음** 사람 Preview QA → OK 시 **#31 Wave2** singapore·dubai
 
+## #9 bali — D5-b Preview 3차 (#30)
+
+- **피드백** 히어로 스와이프·갤러리 모달 · 사롱 Klook 영문·Maps 이탈 · YouTube 키워드 로케일
+- **수정** `EventHeroGalleryModal` · `searchTarget` google/klook · `youtubeSearchQueryKo/En` · `14a8bf42`
+- **VERIFY** smoke·build PASS
+- **다음** 사람 Preview QA → OK 시 **#31 Wave2** singapore·dubai
+
 ## v2 pivot — Preview QA 피드백 (#12 전)
 
 - **일시**: 2026-08-26
