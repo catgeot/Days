@@ -18,8 +18,8 @@
 
 | | |
 |--|--|
-| **상태** | **#30 D5-b Preview QA 반영** — glossary 첫 등장만 · 히어로 404·summary 수정 · PR [#154](https://github.com/catgeot/Days/pull/154) · tip `f66a87b9` |
-| **브랜치** | `cursor/world-events-wave2` · tip `f66a87b9` |
+| **상태** | **#30 D5-b Preview QA** — glossary 첫 등장만 · 히어로·summary 원복 · 썸네일 분리 · PR [#154](https://github.com/catgeot/Days/pull/154) · tip `61770f65` |
+| **브랜치** | `cursor/world-events-wave2` · tip `61770f65` |
 | **PR** | [#154](https://github.com/catgeot/Days/pull/154) draft |
 | **main** | `6712f777`+ — Wave1 v2 · Phase F-0.5 · PR #154 = Wave1.5 D1 |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **Phase F-0.5** · §9 |
@@ -30,7 +30,7 @@
 | **PROD QA** | `https://www.gateo.kr/world-events` · 파일럿 3상세(edinburgh·munich·bali) |
 | **VERIFY** | D1~: `audit:event-travel-guide` · `smoke:world-events-detail` · `build` |
 
-**Wave1.5 D5-b (#30)**: Preview QA — glossary 문단 내 첫 등장만 링크 · bali heroImages 404 수정 · summary→히어로 메타 스트립
+**Wave1.5 D5-b (#30)**: glossary 첫 등장만 · heroImages 404 수정 · 히어로·summary 원복 · 썸네일 히어로 카드 밖 분리
 
 **다음 제시어** (#30 재QA):
 
