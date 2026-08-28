@@ -364,8 +364,9 @@ flowchart LR
 | **D2** | **#25** | 행사 액션 칩 · **무니 행사 시드·칩** |
 | **D3** | **#26** | heroImage·YouTube · Google·네이버 검색 · `cityAttractionHubs` 브릿지 |
 | **D4** | **#27** | EventStayStrip 확장 · stayAreas→MRT · 파일럿 3건 회귀 |
-| **D5** | **#28** | **실행·어필리에이트 체류** — Klook 렌터카 · GYG/MRT 패키지 투어 · shop 칩(사롱 등) · bali pilot |
-| **Wave2 데이터** | **#29** | singapore·dubai overrides — **D5·파일럿 OK 후만** |
+| **D5** | **#28** | **실행·어필리에이트 체류** — Klook 렌터카 · GYG/MRT 패키지 투어 · shop 칩(사롱 등) · bali pilot — **구현 완료** `c6e38c1c` |
+| **D5-b** | **#29** | **본문 중심 UX** — 바로가기·실행 스트립 제거 · 인라인 무니 용어 모달 · 맥락형 어필리에이트 · 히어로 갤러리 · bali pilot |
+| **Wave2 데이터** | **#30** | singapore·dubai overrides — **D5-b·파일럿 OK 후만** |
 
 **D5 배경 (2026-08-28)**: 발리 QA — 렌터카·기사 투어·사롱·셀endang 안내는 있으나 **실행 링크 부재** → 외부 검색 이탈. **신규 계획서 금지** — 본 절·overrides·기존 컴포넌트만 확장.
 
@@ -381,11 +382,45 @@ flowchart LR
 | 플래너 브릿지 | `buildPlacePlannerPathFromEvent` | `/place/{slug}/planner?fromEvent=…` |
 | MRT TNA 목록 | `MrtTnaActivitiesWidget` | **국내 전용** — 발리 D5에 **미사용** |
 
-**D5 산출 (구현 시)**:
+**D5 산출 (#28 — 완료)**:
 
-1. `EventExecutionStrip`(가칭) — `EventStayStrip` 패턴 · Klook CTA · GYG 컴팩트 카드 · PKC 더보기
+1. `EventExecutionStrip` — `EventStayStrip` 패턴 · Klook CTA · GYG 컴팩트 카드 · PKC 더보기
 2. `actionChips` kind `rental` \| `tour` \| `shop` — [`world-event-schema.mjs`](scripts/lib/world-event-schema.mjs)
-3. bali pilot overrides + smoke · 파일럿 3건 패턴화는 D5-b
+3. bali pilot overrides + smoke
+
+**D5-b 배경 (#29 Preview QA 피드백, 2026-08-28)**: D5 구현 후 발리 QA — 상단 **현재 행사 바로가기**(`EventActionChips`)·**실행·예약**(`EventExecutionStrip`)이 본문 맥락과 중복·흐름 단절. 목표: **행사 정보 읽기 → 궁금한 용어 즉시 설명 → 필요 시 자연스러운 실행 링크** (외부 검색 이탈 최소화).
+
+**D5-b 결정 (사용자 #29)**:
+
+| 제거·변경 | 대체 |
+|-----------|------|
+| `EventActionChips` (갈룽안 안내·우붓 사원 지도·펜져 검색·사롱 등) | 본문 `glossaryTerms` 클릭 → **무니 모달** (채팅 패널 아님) |
+| `EventExecutionStrip` (Klook 배너·GYG 위젯·PKC) | 하이라이트별 `highlightContextLinks` 인라인 텍스트 링크 |
+| 히어로 1장 | `heroImages[]` + 썸네일 갤러리 |
+| Google `hl=en` 하드코딩 | [`worldEventOutboundLinks.js`](src/utils/worldEventOutboundLinks.js) locale SSOT |
+
+**D5-b 산출 (#29 구현)**:
+
+1. **스키마** ([`world-event-schema.mjs`](scripts/lib/world-event-schema.mjs) · bali overrides만):
+   - `glossaryTerms[]` — `{ id, termKo, termEn, promptKo, promptEn, searchQueryKo, searchQueryEn, referenceUrl? }`
+   - `heroImages[]` — `heroImage` 하위호환 유지
+   - `highlightContextLinks[]` — `{ highlightIndex, links: [{ id, labelKo, labelEn, kind, href? }] }` · kind=`rental|tour|shop`
+2. **UI** (`src/pages/WorldEvents/`):
+   - `EventRichText` — overview·highlights 용어 버튼 래핑 (긴 term 우선)
+   - `EventTermExplainModal` — gemini-proxy 단답 · 모달 하단 Google·referenceUrl · 스크롤 위치 유지
+   - `EventDetailHero` — 썸네일 갤러리 ([`FestivalDetailSheet`](src/pages/Korea/FestivalDetailSheet.jsx) 패턴 축소)
+   - `EventDetailStaticPanel` — 하이라이트 하위 인라인 링크
+   - `EventDetailPage` — `EventExecutionStrip` 제거 · `EventActionChips`는 `glossaryTerms` 있으면 숨김
+3. **캐시 (2단계)**:
+   - 1단계(필수): gemini-proxy + [`buildWorldEventMooniSeed`](src/utils/worldEventChips.js)
+   - 2단계(선택): `event_term_glossary_cache` 테이블 + Edge `explain-event-term` — [`event_travel_guide`](supabase/migrations/20260826120000_event_travel_guide.sql) 패턴
+4. **발리 glossary 후보**: galungan · kuningan · penjor · ceremonial-dress(사례 복장) · sarong(사롱)
+5. **발리 highlightContextLinks**: index 0 → 사롱/복장 · index 2 → 렌터카·기사 투어 ([`getKlookRentalUrlByLocation`](src/utils/affiliate.js) 등 D5 SSOT 재사용, **배너·위젯 금지**)
+6. **파일럿 3건 패턴화**: D5-b-2 (#31 예정) — bali OK 후 edinburgh·munich
+
+**D5-b VERIFY**: `npm run generate:world-events` · `smoke:world-events-detail`(bali glossary·heroImages·contextLinks assert) · `build` · Preview `/world-events/bali-galungan-season-2026`
+
+**에이전트 SSOT**: 본 절 **F-0.5 D5·D5-b만** 따름. Cursor Plan 아티팩트(`wave1_5_d5_b_*.plan.md`)는 **참고용** — 충돌 시 **본 문서 우선**.
 
 **고정 브랜치**: `cursor/world-events-wave2` · Preview `www.gateo.kr/qa/world-events`  
 **파일럿 3건**: `edinburgh-fringe-2026` · `munich-oktoberfest-2026` · `bali-galungan-season-2026`  
@@ -683,11 +718,24 @@ flowchart LR
 작업: D5 EventExecutionStrip · Klook·GYG·PKC · shop actionChips(사롱) · bali pilot smoke · build
 ```
 
-**#29** Wave2 singapore·dubai — **#28 D5·파일럿 OK 후** · overrides 2건
+**#29** D5-b · 본문 중심 UX — QA `/world-events/bali-galungan-season-2026` · 작업=D5-b (본 절 **D5-b 산출**)
 
-**#30~#32** (Wave2 후속): barcelona·istanbul · 축1 vienna/munich · 통합 PROD QA — index 갱신 시 F-5 표 참고.
+```
+세계행사 일정 #29, Wave1.5 D5-b 본문 UX
+@plans/feature-handoff-index.md
+@plans/2026-08-27-project-log.md
+@plans/world-events-detail-ux-plan.md
+@plans/world-events-sample-log.md
+브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/bali-galungan-season-2026
+금지: Wave2 overrides · worldEvents.json 직편집 · feature에 plans 커밋 · UI 리디자인 · 신규 plans/*-plan.md
+작업: D5-b glossary 모달·인라인 링크·히어로 갤러리·EventExecutionStrip 제거 · bali pilot → OK 시 #30 Wave2
+```
 
-> index **다음 제시어** = **#28 D5 블록**. D5 착수 전 **별도 계획서 생성 금지** — [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) F-0.5 D5만 Read.
+**#30** Wave2 singapore·dubai — **#29 D5-b·파일럿 OK 후** · overrides 2건
+
+**#31~#33** (Wave2 후속): barcelona·istanbul · 축1 vienna/munich · D5-b 파일럿 3건 확장 · 통합 PROD QA — index 갱신 시 F-5 표 참고.
+
+> index **다음 제시어** = **#29 D5-b 블록**. 착수 전 **별도 계획서·Plan 아티팩트 생성 금지** — [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **F-0.5 D5-b**만 Read.
 
 ---
 
@@ -706,22 +754,22 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#28 D5 구현 완료** — PR [#154](https://github.com/catgeot/Days/pull/154) · feature tip `c6e38c1c` |
-| **브랜치** | `cursor/world-events-wave2` · tip `c6e38c1c` |
+| **상태** | **#28 D5 구현 완료** · **#29 D5-b 착수** — PR [#154](https://github.com/catgeot/Days/pull/154) |
+| **브랜치** | `cursor/world-events-wave2` |
 | **main** | Wave1 PR #153 merged · D5 bali pilot 구현 |
-| **플랜** | 본 문서 **Phase F-0.5** · 표준 제시어 **#23~#29** |
+| **플랜** | 본 문서 **Phase F-0.5 D5-b** · 표준 제시어 **#23~#30** |
 | **Preview** | `https://www.gateo.kr/qa/world-events` |
-| **VERIFY** | D1~D5 단계별 smoke/audit · `build` |
+| **VERIFY** | D1~D5-b 단계별 smoke/audit · `build` |
 
-**다음 제시어** (#29 D5 Preview QA):
+**다음 제시어** (#29 D5-b 본문 UX):
 
 ```
-세계행사 일정 #29, Wave1.5 D5 Preview QA
+세계행사 일정 #29, Wave1.5 D5-b 본문 UX
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
 @plans/world-events-sample-log.md
 브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/bali-galungan-season-2026
 금지: Wave2 overrides · worldEvents.json 직편집 · feature에 plans 커밋 · UI 리디자인 · 신규 plans/*-plan.md
-작업: bali EventExecutionStrip·shop 사롱 칩 Preview QA → OK 시 #30 Wave2 singapore·dubai
+작업: D5-b glossary 모달·인라인 링크·히어로 갤러리·EventExecutionStrip 제거 · bali pilot → OK 시 #30 Wave2
 ```

@@ -18,8 +18,8 @@
 
 | | |
 |--|--|
-| **상태** | **#28 D5 구현 완료** — PR [#154](https://github.com/catgeot/Days/pull/154) · feature tip `c6e38c1c` |
-| **브랜치** | `cursor/world-events-wave2` · tip `c6e38c1c` |
+| **상태** | **#29 D5-b 계획 확정** — D5 Preview QA 피드백 반영 · 구현 대기 · PR [#154](https://github.com/catgeot/Days/pull/154) · feature tip `0901c686` |
+| **브랜치** | `cursor/world-events-wave2` · tip `0901c686` |
 | **PR** | [#154](https://github.com/catgeot/Days/pull/154) draft |
 | **main** | `6712f777`+ — Wave1 v2 · Phase F-0.5 · PR #154 = Wave1.5 D1 |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **Phase F-0.5** · §9 |
@@ -30,19 +30,19 @@
 | **PROD QA** | `https://www.gateo.kr/world-events` · 파일럿 3상세(edinburgh·munich·bali) |
 | **VERIFY** | D1~: `audit:event-travel-guide` · `smoke:world-events-detail` · `build` |
 
-**Wave1.5 D5 (PR #154)**: EventExecutionStrip(Klook·GYG·PKC) · shop actionChips(사롱) · bali pilot
+**Wave1.5 D5-b (#29)**: 본문 중심 UX — glossary 모달 · 인라인 어필리에이트 · 히어로 갤러리 · EventExecutionStrip 제거 · bali pilot
 
-**다음 제시어** (#29 D5 Preview QA):
+**다음 제시어** (#29 D5-b):
 
 ```
-세계행사 일정 #29, Wave1.5 D5 Preview QA
+세계행사 일정 #29, Wave1.5 D5-b 본문 UX
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
 @plans/world-events-sample-log.md
 브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/bali-galungan-season-2026
 금지: Wave2 overrides · worldEvents.json 직편집 · feature에 plans 커밋 · UI 리디자인 · 신규 plans/*-plan.md
-작업: bali EventExecutionStrip·shop 사롱 칩 Preview QA → OK 시 #30 Wave2 singapore·dubai
+작업: D5-b glossary 모달·인라인 링크·히어로 갤러리·EventExecutionStrip 제거 · bali pilot → OK 시 #30 Wave2
 ```
 
 ---
