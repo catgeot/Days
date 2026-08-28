@@ -190,3 +190,14 @@
 - **VERIFY** `generate:world-events` · `smoke:world-events-detail` · `build` PASS
 - **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026`
 - **다음** 사람 Preview QA → OK 시 **#31 Wave2** singapore·dubai
+
+## 세계행사 일정 #30 — Wave1.5 D5-b Preview QA (4차)
+
+- **세션** `세계행사 일정 #30, Wave1.5 D5-b Preview QA`
+- **브랜치** `cursor/world-events-wave2` · PR [#154](https://github.com/catgeot/Days/pull/154) · tip `2b4e890f`
+- **피드백** 히어로 내 「행사 하이라이트」오버레이 · 갤러리 모달 동일 사진 3장 · glossary 무니 매클릭 API · YouTube 영문 리스트
+- **수정** 히어로 텍스트 오버레이 제거 · `fetch-event-hero-gallery`+`event_hero_gallery` DB · `explain-event-term`+`event_term_glossary_cache` · YouTube ko fetch+리스트 더보기
+- **VERIFY** `smoke:world-events-detail` · `smoke:world-events` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026`
+- **배포** migration `20260828120000_event_hero_gallery` · Edge `fetch-event-hero-gallery` · `explain-event-term` (Secrets·DB 적용 후 캐시 동작)
+- **다음** 사람 Preview 재QA → OK 시 **#31 Wave2** singapore·dubai
