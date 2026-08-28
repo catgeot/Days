@@ -1532,6 +1532,17 @@
     "actionChips": {
       "title": "행사 바로가기"
     },
+    "glossary": {
+      "loading": "설명을 불러오는 중…",
+      "error": "설명을 불러오지 못했습니다. 아래 검색 링크를 이용해 주세요.",
+      "googleSearch": "구글에서 더 찾기",
+      "referenceLink": "참고 링크",
+      "close": "닫기"
+    },
+    "heroGallery": {
+      "thumbnailsAria": "행사 사진 썸네일",
+      "imageAlt": "{{title}} 사진 {{index}}"
+    },
     "media": {
       "heroEyebrow": "행사 하이라이트",
       "heroAlt": "{{title}} 대표 이미지",

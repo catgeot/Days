@@ -1769,6 +1769,17 @@
     "actionChips": {
       "title": "Event shortcuts"
     },
+    "glossary": {
+      "loading": "Loading explanation…",
+      "error": "Could not load the explanation. Try the search links below.",
+      "googleSearch": "Search on Google",
+      "referenceLink": "Reference link",
+      "close": "Close"
+    },
+    "heroGallery": {
+      "thumbnailsAria": "Event photo thumbnails",
+      "imageAlt": "{{title}} photo {{index}}"
+    },
     "media": {
       "heroEyebrow": "Event highlight",
       "heroAlt": "{{title}} hero image",

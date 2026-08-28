@@ -51,6 +51,48 @@
 /**
  * @typedef {{
  *   id: string,
+ *   termKo: string,
+ *   termEn?: string,
+ *   promptKo: string,
+ *   promptEn?: string,
+ *   searchQueryKo: string,
+ *   searchQueryEn?: string,
+ *   referenceUrl?: string,
+ * }} WorldEventGlossaryTerm
+ */
+
+/**
+ * @typedef {{
+ *   url: string,
+ *   captionKo?: string,
+ *   captionEn?: string,
+ * }} WorldEventHeroImage
+ */
+
+/**
+ * @typedef {'rental' | 'tour' | 'shop'} WorldEventContextLinkKind
+ */
+
+/**
+ * @typedef {{
+ *   id: string,
+ *   labelKo: string,
+ *   labelEn?: string,
+ *   kind: WorldEventContextLinkKind,
+ *   href?: string,
+ * }} WorldEventContextLink
+ */
+
+/**
+ * @typedef {{
+ *   highlightIndex: number,
+ *   links: WorldEventContextLink[],
+ * }} WorldEventHighlightContextLinks
+ */
+
+/**
+ * @typedef {{
+ *   id: string,
  *   slug: string,
  *   hubId?: string,
  *   type: WorldEventType,
@@ -69,6 +111,9 @@
  *   stayAreas?: WorldEventStayArea[],
  *   recommendedNights?: number,
  *   heroImage?: string,
+ *   heroImages?: WorldEventHeroImage[],
+ *   glossaryTerms?: WorldEventGlossaryTerm[],
+ *   highlightContextLinks?: WorldEventHighlightContextLinks[],
  *   youtubeVideos?: WorldEventYoutubeVideo[],
  *   actionChips?: WorldEventActionChip[],
  *   mooniChips?: WorldEventMooniChip[],
@@ -247,6 +292,144 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
     throw new Error(`[world-events] ${id}: heroImage must be http(s) URL`);
   }
 
+  let heroImages;
+  if (raw.heroImages != null) {
+    if (!Array.isArray(raw.heroImages)) {
+      throw new Error(`[world-events] ${id}: heroImages must be array`);
+    }
+    heroImages = raw.heroImages.map((image, imageIndex) => {
+      if (!image || typeof image !== 'object') {
+        throw new Error(`[world-events] ${id}: heroImages[${imageIndex}] must be object`);
+      }
+      const url = String(image.url || '').trim();
+      if (!url || !/^https?:\/\//i.test(url)) {
+        throw new Error(`[world-events] ${id}: heroImages[${imageIndex}].url must be http(s) URL`);
+      }
+      /** @type {WorldEventHeroImage} */
+      const normalizedImage = { url };
+      const captionKo = image.captionKo != null ? String(image.captionKo).trim() : undefined;
+      const captionEn = image.captionEn != null ? String(image.captionEn).trim() : undefined;
+      if (captionKo) normalizedImage.captionKo = captionKo;
+      if (captionEn) normalizedImage.captionEn = captionEn;
+      return normalizedImage;
+    });
+    if (!heroImages.length) {
+      throw new Error(`[world-events] ${id}: heroImages must not be empty when set`);
+    }
+  }
+
+  let glossaryTerms;
+  if (raw.glossaryTerms != null) {
+    if (!Array.isArray(raw.glossaryTerms)) {
+      throw new Error(`[world-events] ${id}: glossaryTerms must be array`);
+    }
+    glossaryTerms = raw.glossaryTerms.map((term, termIndex) => {
+      if (!term || typeof term !== 'object') {
+        throw new Error(`[world-events] ${id}: glossaryTerms[${termIndex}] must be object`);
+      }
+      const termId = String(term.id || '').trim();
+      const termKo = String(term.termKo || '').trim();
+      const promptKo = String(term.promptKo || '').trim();
+      const searchQueryKo = String(term.searchQueryKo || '').trim();
+      if (!termId) {
+        throw new Error(`[world-events] ${id}: glossaryTerms[${termIndex}].id required`);
+      }
+      if (!termKo) {
+        throw new Error(`[world-events] ${id}: glossaryTerms[${termIndex}].termKo required`);
+      }
+      if (!promptKo) {
+        throw new Error(`[world-events] ${id}: glossaryTerms[${termIndex}].promptKo required`);
+      }
+      if (!searchQueryKo) {
+        throw new Error(`[world-events] ${id}: glossaryTerms[${termIndex}].searchQueryKo required`);
+      }
+      /** @type {WorldEventGlossaryTerm} */
+      const normalizedTerm = { id: termId, termKo, promptKo, searchQueryKo };
+      const termEn = term.termEn != null ? String(term.termEn).trim() : undefined;
+      const promptEn = term.promptEn != null ? String(term.promptEn).trim() : undefined;
+      const searchQueryEn =
+        term.searchQueryEn != null ? String(term.searchQueryEn).trim() : undefined;
+      const referenceUrl =
+        term.referenceUrl != null ? String(term.referenceUrl).trim() : undefined;
+      if (termEn) normalizedTerm.termEn = termEn;
+      if (promptEn) normalizedTerm.promptEn = promptEn;
+      if (searchQueryEn) normalizedTerm.searchQueryEn = searchQueryEn;
+      if (referenceUrl) {
+        if (!/^https?:\/\//i.test(referenceUrl)) {
+          throw new Error(`[world-events] ${id}: glossaryTerms[${termIndex}].referenceUrl must be http(s) URL`);
+        }
+        normalizedTerm.referenceUrl = referenceUrl;
+      }
+      return normalizedTerm;
+    });
+    if (!glossaryTerms.length) {
+      throw new Error(`[world-events] ${id}: glossaryTerms must not be empty when set`);
+    }
+  }
+
+  let highlightContextLinks;
+  if (raw.highlightContextLinks != null) {
+    if (!Array.isArray(raw.highlightContextLinks)) {
+      throw new Error(`[world-events] ${id}: highlightContextLinks must be array`);
+    }
+    highlightContextLinks = raw.highlightContextLinks.map((group, groupIndex) => {
+      if (!group || typeof group !== 'object') {
+        throw new Error(`[world-events] ${id}: highlightContextLinks[${groupIndex}] must be object`);
+      }
+      const highlightIndex = Number(group.highlightIndex);
+      if (!Number.isInteger(highlightIndex) || highlightIndex < 0) {
+        throw new Error(`[world-events] ${id}: highlightContextLinks[${groupIndex}].highlightIndex must be >= 0`);
+      }
+      if (!Array.isArray(group.links) || !group.links.length) {
+        throw new Error(`[world-events] ${id}: highlightContextLinks[${groupIndex}].links required`);
+      }
+      const links = group.links.map((link, linkIndex) => {
+        if (!link || typeof link !== 'object') {
+          throw new Error(
+            `[world-events] ${id}: highlightContextLinks[${groupIndex}].links[${linkIndex}] must be object`,
+          );
+        }
+        const linkId = String(link.id || '').trim();
+        const labelKo = String(link.labelKo || '').trim();
+        const kind = String(link.kind || '').trim();
+        if (!linkId) {
+          throw new Error(
+            `[world-events] ${id}: highlightContextLinks[${groupIndex}].links[${linkIndex}].id required`,
+          );
+        }
+        if (!labelKo) {
+          throw new Error(
+            `[world-events] ${id}: highlightContextLinks[${groupIndex}].links[${linkIndex}].labelKo required`,
+          );
+        }
+        if (!['rental', 'tour', 'shop'].includes(kind)) {
+          throw new Error(
+            `[world-events] ${id}: highlightContextLinks[${groupIndex}].links[${linkIndex}].kind invalid`,
+          );
+        }
+        /** @type {WorldEventContextLink} */
+        const normalizedLink = {
+          id: linkId,
+          labelKo,
+          kind: /** @type {WorldEventContextLinkKind} */ (kind),
+        };
+        const labelEn = link.labelEn != null ? String(link.labelEn).trim() : undefined;
+        const href = link.href != null ? String(link.href).trim() : undefined;
+        if (labelEn) normalizedLink.labelEn = labelEn;
+        if (href) {
+          if (!/^https?:\/\//i.test(href)) {
+            throw new Error(
+              `[world-events] ${id}: highlightContextLinks[${groupIndex}].links[${linkIndex}].href must be http(s) URL`,
+            );
+          }
+          normalizedLink.href = href;
+        }
+        return normalizedLink;
+      });
+      return { highlightIndex, links };
+    });
+  }
+
   let youtubeVideos;
   if (raw.youtubeVideos != null) {
     if (!Array.isArray(raw.youtubeVideos)) {
@@ -371,6 +554,9 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
   if (stayAreas) event.stayAreas = stayAreas;
   if (recommendedNights != null) event.recommendedNights = recommendedNights;
   if (heroImage) event.heroImage = heroImage;
+  if (heroImages) event.heroImages = heroImages;
+  if (glossaryTerms) event.glossaryTerms = glossaryTerms;
+  if (highlightContextLinks) event.highlightContextLinks = highlightContextLinks;
   if (youtubeVideos) event.youtubeVideos = youtubeVideos;
   if (actionChips) event.actionChips = actionChips;
   if (mooniChips) event.mooniChips = mooniChips;

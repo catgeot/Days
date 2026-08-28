@@ -26,7 +26,7 @@ import { shouldShowEventTravelGuidePanel } from '../../utils/eventTravelGuideSur
 import { buildPlacePlannerPathFromEvent } from '../../utils/placePlannerPath';
 import { buildWorldEventMooniSeed, hasWorldEventD2Chips } from '../../utils/worldEventChips';
 import { hasWorldEventD3Media } from '../../utils/worldEventMedia';
-import { hasWorldEventD5Execution } from '../../utils/worldEventExecution';
+import { hasWorldEventD5bBodyUx } from '../../utils/worldEventGlossary';
 import { buildMooniBoundSpotFromLocation } from '../Home/lib/placeChatIntro';
 import MooniBoundChatHost from '../Home/components/MooniBoundChatHost';
 import EventActionChips from './EventActionChips';
@@ -34,10 +34,10 @@ import EventDetailHero from './EventDetailHero';
 import EventDetailMediaSection from './EventDetailMediaSection';
 import EventDetailStaticPanel from './EventDetailStaticPanel';
 import EventStayStrip from './EventStayStrip';
-import EventExecutionStrip from './EventExecutionStrip';
 import EventTravelGuidePanel from './EventTravelGuidePanel';
 import EventMooniFab from './EventMooniFab';
 import EventMooniChips from './EventMooniChips';
+import EventTermExplainModal from './EventTermExplainModal';
 
 export default function EventDetailPage() {
   const { eventId } = useParams();
@@ -106,6 +106,7 @@ export default function EventDetailPage() {
   const [mooniOpen, setMooniOpen] = useState(false);
   const [mooniBoundSpot, setMooniBoundSpot] = useState(null);
   const [mooniInitialQuery, setMooniInitialQuery] = useState(null);
+  const [glossaryTermId, setGlossaryTermId] = useState(null);
 
   useEffect(() => {
     setTripDates({
@@ -139,7 +140,7 @@ export default function EventDetailPage() {
 
   const showD2Chips = hasWorldEventD2Chips(event.id);
   const showD3Media = hasWorldEventD3Media(event.id);
-  const showD5Execution = hasWorldEventD5Execution(event.id);
+  const showD5bBodyUx = hasWorldEventD5bBodyUx(event);
 
   const openEventMooni = useCallback(
     (prompt = null) => {
@@ -268,13 +269,17 @@ export default function EventDetailPage() {
             ) : null}
           </div>
 
-          {showD2Chips ? <EventActionChips event={event} locale={locale} /> : null}
+          {showD2Chips && !showD5bBodyUx ? (
+            <EventActionChips event={event} locale={locale} />
+          ) : null}
 
           <EventDetailStaticPanel
             event={event}
             locale={locale}
             checkIn={checkIn}
             checkOut={checkOut}
+            location={location}
+            onGlossaryTermClick={showD5bBodyUx ? setGlossaryTermId : undefined}
           />
 
           {showD3Media ? <EventDetailMediaSection event={event} locale={locale} /> : null}
@@ -290,12 +295,6 @@ export default function EventDetailPage() {
               locale={locale}
             />
           </div>
-
-          {showD5Execution ? (
-            <div className="mt-4">
-              <EventExecutionStrip event={event} location={location} />
-            </div>
-          ) : null}
 
           {showD2Chips ? (
             <div className="mt-4">
@@ -315,6 +314,12 @@ export default function EventDetailPage() {
         </div>
       </main>
       <EventMooniFab onClick={() => openEventMooni()} />
+      <EventTermExplainModal
+        event={event}
+        termId={glossaryTermId}
+        locale={locale}
+        onClose={() => setGlossaryTermId(null)}
+      />
       <MooniBoundChatHost
         isOpen={mooniOpen}
         boundSpot={mooniBoundSpot}

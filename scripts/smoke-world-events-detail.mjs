@@ -205,19 +205,43 @@ assert.ok(
 
 const executionUtilSrc = readFileSync(join(root, 'src/utils/worldEventExecution.js'), 'utf8');
 assert.match(executionUtilSrc, /hasWorldEventD5Execution/, 'worldEventExecution D5 gate');
-assert.match(executionUtilSrc, /bali-galungan-season-2026/, 'D5 bali pilot id');
 
-const executionStripSrc = readFileSync(
-  join(root, 'src/pages/WorldEvents/EventExecutionStrip.jsx'),
-  'utf8',
+const glossaryUtilSrc = readFileSync(join(root, 'src/utils/worldEventGlossary.js'), 'utf8');
+assert.match(glossaryUtilSrc, /hasWorldEventD5bBodyUx/, 'worldEventGlossary D5-b gate');
+assert.match(glossaryUtilSrc, /getWorldEventHeroImages/, 'worldEventGlossary hero images');
+assert.match(glossaryUtilSrc, /resolveHighlightContextLinkHref/, 'worldEventGlossary context links');
+
+const richTextSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventRichText.jsx'), 'utf8');
+assert.match(richTextSrc, /buildGlossarySegments/, 'EventRichText glossary wrapping');
+
+const termModalSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventTermExplainModal.jsx'), 'utf8');
+assert.match(termModalSrc, /fetchProxyGemini/, 'EventTermExplainModal gemini proxy');
+assert.match(termModalSrc, /googleSearch/, 'EventTermExplainModal google search link');
+
+assert.doesNotMatch(detailSrc, /EventExecutionStrip/, 'EventDetailPage no execution strip (D5-b)');
+assert.match(detailSrc, /EventTermExplainModal/, 'EventDetailPage glossary modal');
+assert.match(detailSrc, /hasWorldEventD5bBodyUx/, 'EventDetailPage gates D5-b body UX');
+assert.match(detailSrc, /onGlossaryTermClick/, 'EventDetailPage glossary click handler');
+
+const heroSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventDetailHero.jsx'), 'utf8');
+assert.match(heroSrc, /getWorldEventHeroImages/, 'EventDetailHero gallery SSOT');
+
+assert.ok(Array.isArray(bali.glossaryTerms) && bali.glossaryTerms.length >= 5, 'bali glossaryTerms');
+assert.ok(Array.isArray(bali.heroImages) && bali.heroImages.length >= 2, 'bali heroImages');
+assert.ok(
+  Array.isArray(bali.highlightContextLinks) && bali.highlightContextLinks.length >= 2,
+  'bali highlightContextLinks',
 );
-assert.match(executionStripSrc, /KlookCarBannerWidget/, 'EventExecutionStrip Klook rental');
-assert.match(executionStripSrc, /GetYourGuideActivitiesWidget/, 'EventExecutionStrip GYG tours');
-assert.match(executionStripSrc, /buildMrtPkcUrlForLocation/, 'EventExecutionStrip PKC link');
-assert.match(executionStripSrc, /event-detail-execution/, 'EventExecutionStrip PKC utm');
-
-assert.match(detailSrc, /EventExecutionStrip/, 'EventDetailPage renders execution strip');
-assert.match(detailSrc, /hasWorldEventD5Execution/, 'EventDetailPage gates D5 execution');
+assert.ok(
+  bali.highlightContextLinks.some((group) => group.highlightIndex === 0 && group.links?.length),
+  'bali highlight 0 context links',
+);
+assert.ok(
+  bali.highlightContextLinks.some((group) => group.highlightIndex === 2 && group.links?.length),
+  'bali highlight 2 context links',
+);
+assert.ok(bali.glossaryTerms.some((term) => term.id === 'galungan'), 'bali galungan glossary');
+assert.ok(bali.glossaryTerms.some((term) => term.id === 'penjor'), 'bali penjor glossary');
 
 const chipsUtilSrc2 = readFileSync(join(root, 'src/utils/worldEventChips.js'), 'utf8');
 assert.match(chipsUtilSrc2, /getKlookAffiliateUrl/, 'shop Klook chips use affiliate url');

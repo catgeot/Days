@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-28T03:45:10.031Z",
+    "generatedAt": "2026-08-28T10:20:13.148Z",
     "eventCount": 15,
     "source": "scripts/data/world-event-overrides.mjs"
   },
@@ -172,6 +172,110 @@
       ],
       "recommendedNights": 4,
       "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Offering-Bali.jpg/1280px-Offering-Bali.jpg",
+      "heroImages": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Offering-Bali.jpg/1280px-Offering-Bali.jpg",
+          "captionKo": "발리 제례 공양",
+          "captionEn": "Balinese temple offerings"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Penjor_for_Galungan%2C_Bali.jpg/1280px-Penjor_for_Galungan%2C_Bali.jpg",
+          "captionKo": "갈룽안 펜져 장식",
+          "captionEn": "Galungan penjor decorations"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Galungan_decoration_in_Bali.jpg/1280px-Galungan_decoration_in_Bali.jpg",
+          "captionKo": "갈룽안 시즌 사원 장식",
+          "captionEn": "Galungan season temple decor"
+        }
+      ],
+      "glossaryTerms": [
+        {
+          "id": "galungan",
+          "termKo": "갈룽안",
+          "promptKo": "발리 갈룽안 축제가 무엇인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.",
+          "searchQueryKo": "발리 갈룽안 축제",
+          "termEn": "Galungan",
+          "promptEn": "Explain Galungan for Bali travelers in 3 short sentences.",
+          "searchQueryEn": "Bali Galungan festival",
+          "referenceUrl": "https://en.wikipedia.org/wiki/Galungan"
+        },
+        {
+          "id": "kuningan",
+          "termKo": "쿠닝안",
+          "promptKo": "발리 쿠닝안이 갈룽안과 어떤 관계인지, 여행 일정에 왜 중요한지 3문장 이내로 설명해줘.",
+          "searchQueryKo": "발리 쿠닝안 축제",
+          "termEn": "Kuningan",
+          "promptEn": "Explain Kuningan and its relation to Galungan for travelers in 3 short sentences.",
+          "searchQueryEn": "Bali Kuningan festival",
+          "referenceUrl": "https://en.wikipedia.org/wiki/Kuningan"
+        },
+        {
+          "id": "penjor",
+          "termKo": "펜져",
+          "promptKo": "발리 갈룽안 시즌 펜져 장식이 무엇인지, 어디서 볼 수 있는지 3문장 이내로 설명해줘.",
+          "searchQueryKo": "발리 갈룽안 펜져 장식",
+          "termEn": "penjor",
+          "promptEn": "What are Galungan penjor decorations and where to see them? 3 short sentences.",
+          "searchQueryEn": "Bali Galungan penjor decoration"
+        },
+        {
+          "id": "ceremonial-dress",
+          "termKo": "사례 복장",
+          "promptKo": "발리 사원 방문 시 사례 복장(사롱·셀endang) 규정을 여행자 관점에서 3문장 이내로 설명해줘.",
+          "searchQueryKo": "발리 사원 사례 복장 사롱",
+          "termEn": "ceremonial dress",
+          "promptEn": "Temple dress code (sarong, sash) for Bali visitors in 3 short sentences.",
+          "searchQueryEn": "Bali temple dress code sarong"
+        },
+        {
+          "id": "sarong",
+          "termKo": "사롱",
+          "promptKo": "발리 사원 방문용 사롱이 무엇인지, 대여·구매 팁을 3문장 이내로 설명해줘.",
+          "searchQueryKo": "발리 사롱 대여 우붓",
+          "termEn": "sarong",
+          "promptEn": "What is a sarong for Bali temples and how to get one? 3 short sentences.",
+          "searchQueryEn": "Bali sarong rental Ubud"
+        }
+      ],
+      "highlightContextLinks": [
+        {
+          "highlightIndex": 0,
+          "links": [
+            {
+              "id": "sarong-rental",
+              "labelKo": "사롱·복장 대여",
+              "kind": "shop",
+              "labelEn": "Sarong & temple dress rental",
+              "href": "https://www.google.com/maps/search/?api=1&query=sarong+rental+Ubud+Bali"
+            },
+            {
+              "id": "sarong-klook",
+              "labelKo": "사롱 Klook 검색",
+              "kind": "shop",
+              "labelEn": "Sarong on Klook",
+              "href": "https://www.klook.com/ko/search/result/?query=Bali%20sarong%20rental"
+            }
+          ]
+        },
+        {
+          "highlightIndex": 2,
+          "links": [
+            {
+              "id": "bali-rental",
+              "labelKo": "발리 렌터카",
+              "kind": "rental",
+              "labelEn": "Bali car rental"
+            },
+            {
+              "id": "bali-driver-tour",
+              "labelKo": "기사 포함 투어",
+              "kind": "tour",
+              "labelEn": "Private driver tour"
+            }
+          ]
+        }
+      ],
       "youtubeVideos": [
         {
           "id": "AJhPk93ksso",
