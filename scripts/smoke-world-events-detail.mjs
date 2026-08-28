@@ -225,6 +225,14 @@ assert.match(chipsUtilSrc2, /getKlookAffiliateUrl/, 'shop Klook chips use affili
 const actionChipsSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventActionChips.jsx'), 'utf8');
 assert.match(actionChipsSrc, /shop: ShoppingBag/, 'EventActionChips shop icon');
 
+const plannerConstantsSrc = readFileSync(
+  join(root, 'src/components/PlaceCard/tabs/planner/constants.js'),
+  'utf8',
+);
+assert.doesNotMatch(plannerConstantsSrc, /imigresi/, 'Indonesia e-VOA no typo domain imigresi');
+assert.doesNotMatch(plannerConstantsSrc, /molina\.imigrasi/, 'Indonesia e-VOA no retired molina portal');
+assert.match(plannerConstantsSrc, /evisa\.imigrasi\.go\.id/, 'Indonesia e-VOA official evisa portal');
+
 const baliLoc = getWorldEventLocation('bali');
 const locationRulesSrc = readFileSync(
   join(root, 'src/components/PlaceCard/tabs/planner/locationRules.js'),
