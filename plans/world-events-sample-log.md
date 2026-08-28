@@ -271,6 +271,13 @@
 - **Preview** `/world-events/bali-galungan-season-2026` — Klook·GYG·PKC·사롱 칩
 - **다음** 사람 Preview D5 QA → D5-b 파일럿 3건 패턴화 → **#30 Wave2**
 
+## #8 bali — D5-b Preview QA 피드백·계획 (#29)
+
+- **피드백** `EventActionChips`(갈룽안 안내·우붓 사원·펜져·사롱) 본문과 중복 · `EventExecutionStrip`(Klook·GYG) 상업적·흐름 단절
+- **결정** D5-b — glossary 클릭→무니 모달(채팅 아님) · `highlightContextLinks` 인라인 · `heroImages` 갤러리 · Google `hl` locale SSOT
+- **제거** 바로가기 섹션 · 실행·예약 스트립(bali) — SSOT [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) F-0.5 D5-b
+- **다음** #29 구현 세션 — bali pilot → OK 시 #30 Wave2
+
 ## v2 pivot — Preview QA 피드백 (#12 전)
 
 - **일시**: 2026-08-26

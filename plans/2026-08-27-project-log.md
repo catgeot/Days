@@ -143,4 +143,11 @@
 - **산출** `EventExecutionStrip`(Klook 렌터카·GYG 투어·PKC 더보기) · bali `actionChips` shop(사롱·Klook) · schema kind `rental|tour|shop`
 - **VERIFY** `smoke:world-events-detail` · `smoke:world-events` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `build` PASS
 - **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026` — 실행·예약 스트립·사롱 칩
-- **다음** 사람 Preview D5 QA → **#30 Wave2** singapore·dubai
+- **다음** **#29 D5-b** 본문 UX (glossary 모달·인라인 링크·히어로 갤러리)
+
+## 세계행사 일정 #29 — D5-b 계획 확정 (docs)
+
+- **세션** `세계행사 일정 #29, Wave1.5 D5-b 본문 UX` — **계획만** (구현·검증은 다음 세션)
+- **피드백** 바로가기 칩·실행 스트립 흐름 단절 → 본문 glossary 모달 · 하이라이트 인라인 어필리에이트 · 히어로 갤러리
+- **문서** [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) F-0.5 **D5-b** 통합 (별도 plan 아티팩트 SSOT 아님)
+- **다음** feature `cursor/world-events-wave2` — D5-b 구현 · smoke · build · Preview QA → OK 시 **#30 Wave2**
