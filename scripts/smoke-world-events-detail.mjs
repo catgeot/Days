@@ -14,6 +14,7 @@ import { tripWindowPresetsFromEvent } from '../src/utils/worldEventTripPresets.j
 import { tripWindowNights } from '../src/shared/tripWindow.js';
 import {
   buildWorldEventSearchQuery,
+  buildWorldEventHeroGalleryQueries,
   buildWorldEventYoutubeSearchQuery,
   getWorldEventHubAttractions,
 } from '../src/utils/worldEventMedia.js';
@@ -249,6 +250,13 @@ assert.match(termModalSrc, /googleSearch/, 'EventTermExplainModal google search 
 const fetchHeroGallerySrc = readFileSync(join(root, 'src/utils/fetchEventHeroGallery.js'), 'utf8');
 assert.match(fetchHeroGallerySrc, /event_hero_gallery/, 'fetchEventHeroGallery DB cache');
 assert.match(fetchHeroGallerySrc, /fetch-event-hero-gallery/, 'fetchEventHeroGallery edge invoke');
+assert.match(fetchHeroGallerySrc, /fetchUnsplashImages/, 'fetchEventHeroGallery unsplash fallback');
+
+const heroGalleryMergeSrc = readFileSync(join(root, 'src/utils/worldEventHeroGalleryMerge.js'), 'utf8');
+assert.match(heroGalleryMergeSrc, /mergeWorldEventHeroGalleryImages/, 'hero gallery merge util');
+
+const baliGalleryQueries = buildWorldEventHeroGalleryQueries(bali, 'ko');
+assert.ok(baliGalleryQueries.primary.includes('갈룽안'), 'bali unsplash primary uses ko title');
 
 const fetchWorldVideosSrc = readFileSync(join(root, 'src/utils/fetchWorldEventVideos.js'), 'utf8');
 assert.match(fetchWorldVideosSrc, /world-event:/, 'fetchWorldEventVideos place_id prefix');

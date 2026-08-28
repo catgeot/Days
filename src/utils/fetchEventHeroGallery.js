@@ -1,9 +1,17 @@
 import { supabase } from '../shared/api/supabase';
+import { apiClient } from '../pages/Home/lib/apiClient';
 import { getWorldEventHeroImages } from './worldEventGlossary';
-import { buildWorldEventSearchQuery } from './worldEventMedia';
+import {
+  buildWorldEventHeroGalleryQueries,
+} from './worldEventMedia';
+import {
+  mapUnsplashPhotosToGalleryImages,
+  mergeWorldEventHeroGalleryImages,
+} from './worldEventHeroGalleryMerge';
 
 const INVOKE_TIMEOUT_MS = 18_000;
 const MIN_GALLERY_COUNT = 6;
+const TARGET_GALLERY_COUNT = 12;
 
 /**
  * @template T
@@ -24,6 +32,24 @@ function withTimeout(promise, ms, label) {
 }
 
 /**
+ * @param {string} primary
+ * @param {string} fallbackEn
+ */
+async function fetchClientUnsplashGallery(primary, fallbackEn) {
+  const accessKey = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
+  if (!accessKey || !primary) return [];
+
+  let photos = await apiClient.fetchUnsplashImages(accessKey, primary, 1);
+  if (photos.length < MIN_GALLERY_COUNT && fallbackEn && fallbackEn !== primary) {
+    const more = await apiClient.fetchUnsplashImages(accessKey, fallbackEn, 1);
+    const seen = new Set(photos.map((photo) => photo.id));
+    photos = [...photos, ...more.filter((photo) => !seen.has(photo.id))];
+  }
+
+  return mapUnsplashPhotosToGalleryImages(photos);
+}
+
+/**
  * @param {import('./worldEvents').WorldEvent | null | undefined} event
  * @param {string} [locale]
  * @returns {Promise<{ ok: boolean, images: Array<{ url: string, captionKo?: string, captionEn?: string }>, fromCache?: boolean, error?: string }>}
@@ -35,7 +61,7 @@ export async function fetchEventHeroGallery(event, locale = 'ko') {
   }
 
   const seedImages = getWorldEventHeroImages(event);
-  const searchQuery = buildWorldEventSearchQuery(event, locale);
+  const { primary, fallbackEn } = buildWorldEventHeroGalleryQueries(event, locale);
 
   try {
     const { data: cached } = await supabase
@@ -52,7 +78,8 @@ export async function fetchEventHeroGallery(event, locale = 'ko') {
       supabase.functions.invoke('fetch-event-hero-gallery', {
         body: {
           eventId,
-          searchQuery,
+          searchQuery: primary,
+          fallbackSearchQuery: fallbackEn,
           seedImages,
         },
       }),
@@ -62,19 +89,29 @@ export async function fetchEventHeroGallery(event, locale = 'ko') {
 
     if (error) {
       console.warn('[fetchEventHeroGallery] invoke error:', error.message || error);
-      return { ok: false, images: seedImages, error: error.message || 'invoke failed' };
+    } else if (data?.success && Array.isArray(data.images) && data.images.length >= MIN_GALLERY_COUNT) {
+      return { ok: true, images: data.images, fromCache: Boolean(data.fromCache) };
     }
 
-    if (!data?.success) {
-      return {
-        ok: false,
-        images: seedImages,
-        error: data?.error || 'gallery fetch failed',
-      };
+    const unsplashImages = await fetchClientUnsplashGallery(primary, fallbackEn);
+    const merged = mergeWorldEventHeroGalleryImages(seedImages, unsplashImages).slice(
+      0,
+      TARGET_GALLERY_COUNT,
+    );
+
+    if (merged.length >= MIN_GALLERY_COUNT) {
+      return { ok: true, images: merged, fromCache: false };
     }
 
-    const images = Array.isArray(data.images) && data.images.length ? data.images : seedImages;
-    return { ok: true, images, fromCache: Boolean(data.fromCache) };
+    if (data?.success && Array.isArray(data.images) && data.images.length > 0) {
+      return { ok: true, images: data.images, fromCache: Boolean(data.fromCache) };
+    }
+
+    return {
+      ok: false,
+      images: merged.length ? merged : seedImages,
+      error: error?.message || data?.error || 'gallery fetch failed',
+    };
   } catch (err) {
     console.warn('[fetchEventHeroGallery] failed:', err?.message || err);
     return { ok: false, images: seedImages, error: err?.message || 'failed' };

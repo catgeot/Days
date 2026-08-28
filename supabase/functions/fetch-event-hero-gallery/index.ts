@@ -47,6 +47,54 @@ function mergeImages(seed: GalleryImage[], fetched: GalleryImage[]): GalleryImag
   return merged;
 }
 
+function mapUnsplashPhoto(photo: Record<string, unknown>): GalleryImage | null {
+  const urls = photo.urls && typeof photo.urls === "object"
+    ? (photo.urls as Record<string, unknown>)
+    : {};
+  const url = normalizeImageUrl(urls.regular || urls.small);
+  if (!url.startsWith("http")) return null;
+  const caption = String(photo.alt_description || photo.description || "").trim();
+  return {
+    url,
+    captionKo: caption,
+    captionEn: caption,
+    source: "unsplash",
+  };
+}
+
+async function fetchUnsplashImages(searchQuery: string, limit = 10): Promise<GalleryImage[]> {
+  const q = String(searchQuery || "").trim();
+  if (!q) return [];
+
+  const accessKey =
+    Deno.env.get("UNSPLASH_ACCESS_KEY") ||
+    Deno.env.get("VITE_UNSPLASH_ACCESS_KEY") ||
+    "";
+  if (!accessKey) return [];
+
+  const response = await fetch(
+    `https://api.unsplash.com/search/photos?page=1&query=${encodeURIComponent(q)}&per_page=${Math.min(30, limit + 8)}&order_by=relevant`,
+    { headers: { Authorization: `Client-ID ${accessKey}` } },
+  );
+
+  if (!response.ok) {
+    throw new Error(`Unsplash API ${response.status}`);
+  }
+
+  const data = await response.json();
+  const results = Array.isArray(data.results) ? data.results : [];
+  const images: GalleryImage[] = [];
+
+  for (const photo of results) {
+    const mapped = mapUnsplashPhoto(photo as Record<string, unknown>);
+    if (!mapped) continue;
+    images.push(mapped);
+    if (images.length >= limit) break;
+  }
+
+  return images;
+}
+
 async function fetchWikimediaImages(searchQuery: string, limit = 10): Promise<GalleryImage[]> {
   const q = String(searchQuery || "").trim();
   if (!q) return [];
@@ -100,6 +148,7 @@ serve(async (req) => {
     const body = await req.json();
     const eventId = String(body.eventId || "").trim();
     const searchQuery = String(body.searchQuery || "").trim();
+    const fallbackSearchQuery = String(body.fallbackSearchQuery || "").trim();
     const seedImages = Array.isArray(body.seedImages) ? body.seedImages : [];
     const force = Boolean(body.force);
 
@@ -136,9 +185,32 @@ serve(async (req) => {
       }))
       .filter((image: GalleryImage) => image.url.startsWith("http"));
 
-    const fetched = searchQuery
-      ? await fetchWikimediaImages(searchQuery, Math.max(8, TARGET_COUNT - normalizedSeed.length))
-      : [];
+    const need = Math.max(8, TARGET_COUNT - normalizedSeed.length);
+    const fetched: GalleryImage[] = [];
+
+    if (searchQuery) {
+      try {
+        fetched.push(...await fetchUnsplashImages(searchQuery, need));
+      } catch (err) {
+        console.warn("Unsplash primary failed:", err);
+      }
+    }
+
+    if (fetched.length < need && fallbackSearchQuery && fallbackSearchQuery !== searchQuery) {
+      try {
+        fetched.push(...await fetchUnsplashImages(fallbackSearchQuery, need - fetched.length));
+      } catch (err) {
+        console.warn("Unsplash fallback failed:", err);
+      }
+    }
+
+    if (fetched.length < need && fallbackSearchQuery) {
+      try {
+        fetched.push(...await fetchWikimediaImages(fallbackSearchQuery, need - fetched.length));
+      } catch (err) {
+        console.warn("Wikimedia fallback failed:", err);
+      }
+    }
 
     const images = mergeImages(normalizedSeed, fetched).slice(0, TARGET_COUNT);
 

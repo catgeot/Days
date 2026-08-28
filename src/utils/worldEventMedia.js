@@ -35,6 +35,24 @@ export function buildWorldEventSearchQuery(event, locale = 'ko') {
 }
 
 /**
+ * Hero gallery modal — Unsplash primary (ko title), Wikimedia en fallback.
+ * @param {import('./worldEvents').WorldEvent | null | undefined} event
+ * @param {string} [locale]
+ */
+export function buildWorldEventHeroGalleryQueries(event, locale = 'ko') {
+  if (!event) return { primary: '', fallbackEn: '' };
+  const title = getWorldEventTitle(event, locale);
+  const titleEn = getWorldEventTitle(event, 'en');
+  const placeMeta = getWorldEventPlaceMeta(event.slug, 'en');
+  const placeEn = placeMeta?.label ? String(placeMeta.label).trim() : '';
+  const fallbackEn = [titleEn, placeEn].filter(Boolean).join(' ');
+  return {
+    primary: String(title || '').trim(),
+    fallbackEn: fallbackEn || String(titleEn || '').trim(),
+  };
+}
+
+/**
  * @param {import('./worldEvents').WorldEvent | null | undefined} event
  * @param {string} [locale]
  */
