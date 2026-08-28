@@ -3,8 +3,9 @@ import React, { useMemo } from 'react';
 /**
  * @param {string} text
  * @param {Array<{ id: string, displayTerm: string }>} terms
+ * @param {Set<string>} [linkedTermIds]
  */
-function buildGlossarySegments(text, terms) {
+function buildGlossarySegments(text, terms, linkedTermIds) {
   const source = String(text || '');
   if (!source || !terms?.length) {
     return source ? [{ type: 'text', value: source }] : [];
@@ -16,8 +17,7 @@ function buildGlossarySegments(text, terms) {
 
   /** @type {Array<{ type: 'text' | 'term', value: string, termId?: string }>} */
   const segments = [];
-  /** @type {Set<string>} */
-  const linkedTermIds = new Set();
+  const linked = linkedTermIds ?? new Set();
   let buffer = '';
   let index = 0;
 
@@ -39,13 +39,13 @@ function buildGlossarySegments(text, terms) {
     }
 
     if (match) {
-      if (linkedTermIds.has(match.id)) {
+      if (linked.has(match.id)) {
         buffer += match.displayTerm;
         index += match.displayTerm.length;
         continue;
       }
       flushText();
-      linkedTermIds.add(match.id);
+      linked.add(match.id);
       segments.push({ type: 'term', value: match.displayTerm, termId: match.id });
       index += match.displayTerm.length;
       continue;
@@ -65,10 +65,20 @@ function buildGlossarySegments(text, terms) {
  *   terms?: Array<{ id: string, displayTerm: string }>,
  *   onTermClick?: (termId: string) => void,
  *   className?: string,
+ *   linkedTermIds?: Set<string>,
  * }} props
  */
-export default function EventRichText({ text, terms = [], onTermClick, className = '' }) {
-  const segments = useMemo(() => buildGlossarySegments(text, terms), [text, terms]);
+export default function EventRichText({
+  text,
+  terms = [],
+  onTermClick,
+  className = '',
+  linkedTermIds,
+}) {
+  const segments = useMemo(
+    () => buildGlossarySegments(text, terms, linkedTermIds),
+    [text, terms, linkedTermIds],
+  );
 
   if (!segments.length) return null;
 

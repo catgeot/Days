@@ -7,6 +7,7 @@ import {
   ExternalLink,
   Globe2,
   Home,
+  MapPin,
   Plane,
 } from 'lucide-react';
 import SEO from '../../components/SEO';
@@ -141,6 +142,9 @@ export default function EventDetailPage() {
   const showD2Chips = hasWorldEventD2Chips(event.id);
   const showD3Media = hasWorldEventD3Media(event.id);
   const showD5bBodyUx = hasWorldEventD5bBodyUx(event);
+  const hideHeaderSummary = showD5bBodyUx && showD3Media;
+  const typeKey = String(event.type || 'festival');
+  const typeLabel = t(`worldEventDetail.type.${typeKey}`, { defaultValue: typeKey });
 
   const openEventMooni = useCallback(
     (prompt = null) => {
@@ -225,6 +229,37 @@ export default function EventDetailPage() {
         <div className="mx-auto w-full max-w-3xl px-3 py-3 md:px-5 lg:max-w-6xl lg:px-8">
           {showD3Media ? <EventDetailHero event={event} locale={locale} /> : null}
 
+          {hideHeaderSummary ? (
+            <section className="mb-3 rounded-2xl border border-stone-200 bg-white p-3.5 shadow-sm">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-[11px] font-bold text-amber-900">
+                  {typeLabel}
+                </span>
+                {event.recurrenceNote ? (
+                  <span className="text-[11px] font-semibold text-stone-500">{event.recurrenceNote}</span>
+                ) : null}
+              </div>
+              {dateLabel ? (
+                <p className="mt-1.5 text-sm font-semibold text-stone-800">{dateLabel}</p>
+              ) : null}
+              {event.venue?.name ? (
+                <p className="mt-1.5 flex items-start gap-1.5 text-xs text-stone-600">
+                  <MapPin size={13} className="mt-0.5 shrink-0 text-amber-700" aria-hidden />
+                  <span>{event.venue.name}</span>
+                </p>
+              ) : null}
+              <p className="mt-1 flex items-start gap-1.5 text-xs text-stone-600">
+                <MapPin size={13} className="mt-0.5 shrink-0 text-stone-400" aria-hidden />
+                <span>
+                  {placeMeta.label}
+                  {placeMeta.country ? (
+                    <span className="text-stone-500"> · {placeMeta.country}</span>
+                  ) : null}
+                </span>
+              </p>
+            </section>
+          ) : null}
+
           <div className="mb-3 flex flex-wrap gap-2">
             {plannerHref ? (
               <Link
@@ -280,6 +315,7 @@ export default function EventDetailPage() {
             checkOut={checkOut}
             location={location}
             onGlossaryTermClick={showD5bBodyUx ? setGlossaryTermId : undefined}
+            hideHeaderSummary={hideHeaderSummary}
           />
 
           {showD3Media ? <EventDetailMediaSection event={event} locale={locale} /> : null}

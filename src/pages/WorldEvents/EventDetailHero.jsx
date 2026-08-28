@@ -21,9 +21,12 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
       : activeImage.captionKo || '';
 
   return (
-    <div className="mb-3">
-      <section className="overflow-hidden rounded-2xl border border-stone-200 bg-stone-900 shadow-sm">
-        <div className="relative aspect-[16/9] w-full sm:aspect-[21/9]">
+    <div className="mb-4 space-y-3">
+      <section
+        className="overflow-hidden rounded-2xl border border-stone-200 bg-stone-900 shadow-sm"
+        aria-label={t('worldEventDetail.media.heroAlt', { title })}
+      >
+        <div className="relative aspect-[4/3] w-full sm:aspect-[16/9] lg:aspect-[21/9]">
           <img
             src={activeImage.url}
             alt={t('worldEventDetail.media.heroAlt', { title })}
@@ -52,42 +55,49 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
       </section>
 
       {images.length > 1 ? (
-        <div
-          className="mt-2 flex gap-2 overflow-x-auto px-0.5 py-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          role="listbox"
+        <section
+          className="rounded-2xl border border-stone-200 bg-white p-2.5 shadow-sm"
           aria-label={t('worldEventDetail.heroGallery.thumbnailsAria')}
         >
-          {images.map((image, index) => {
-            const selected = index === activeIndex;
-            const thumbCaption =
-              locale === 'en' && image.captionEn ? image.captionEn : image.captionKo || '';
-            return (
-              <button
-                key={`${image.url}-${index}`}
-                type="button"
-                role="option"
-                aria-selected={selected}
-                aria-label={t('worldEventDetail.heroGallery.imageAlt', {
-                  title,
-                  index: index + 1,
-                })}
-                onClick={() => setActiveIndex(index)}
-                className={[
-                  'relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border bg-white shadow-sm transition-colors',
-                  selected ? 'border-amber-400 ring-2 ring-amber-300/70' : 'border-stone-200',
-                ].join(' ')}
-              >
-                <img
-                  src={image.url}
-                  alt={thumbCaption || ''}
-                  className="h-full w-full object-cover"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </button>
-            );
-          })}
-        </div>
+          <p className="mb-2 px-0.5 text-[10px] font-bold tracking-[0.15em] uppercase text-stone-500">
+            {t('worldEventDetail.heroGallery.thumbnailsAria')}
+          </p>
+          <div
+            className="flex gap-2 overflow-x-auto px-0.5 py-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            role="listbox"
+          >
+            {images.map((image, index) => {
+              const selected = index === activeIndex;
+              const thumbCaption =
+                locale === 'en' && image.captionEn ? image.captionEn : image.captionKo || '';
+              return (
+                <button
+                  key={`${image.url}-${index}`}
+                  type="button"
+                  role="option"
+                  aria-selected={selected}
+                  aria-label={t('worldEventDetail.heroGallery.imageAlt', {
+                    title,
+                    index: index + 1,
+                  })}
+                  onClick={() => setActiveIndex(index)}
+                  className={[
+                    'relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border bg-white shadow-sm transition-colors sm:h-[4.5rem] sm:w-[4.5rem]',
+                    selected ? 'border-amber-400 ring-2 ring-amber-300/70' : 'border-stone-200',
+                  ].join(' ')}
+                >
+                  <img
+                    src={image.url}
+                    alt={thumbCaption || ''}
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </button>
+              );
+            })}
+          </div>
+        </section>
       ) : null}
     </div>
   );

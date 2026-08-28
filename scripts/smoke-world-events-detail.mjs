@@ -213,7 +213,12 @@ assert.match(glossaryUtilSrc, /resolveHighlightContextLinkHref/, 'worldEventGlos
 
 const richTextSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventRichText.jsx'), 'utf8');
 assert.match(richTextSrc, /buildGlossarySegments/, 'EventRichText glossary wrapping');
-assert.match(richTextSrc, /linkedTermIds/, 'EventRichText first-occurrence-only glossary links');
+assert.match(richTextSrc, /linkedTermIds/, 'EventRichText shared glossary link state');
+
+const staticPanelSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventDetailStaticPanel.jsx'), 'utf8');
+assert.match(staticPanelSrc, /linkedTermIdsRef/, 'EventDetailStaticPanel shared glossary refs');
+assert.match(staticPanelSrc, /hideHeaderSummary/, 'EventDetailStaticPanel hideHeaderSummary gate');
+assert.match(detailSrc, /hideHeaderSummary/, 'EventDetailPage D5-b summary dedupe');
 
 const termModalSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventTermExplainModal.jsx'), 'utf8');
 assert.match(termModalSrc, /fetchProxyGemini/, 'EventTermExplainModal gemini proxy');
@@ -226,6 +231,7 @@ assert.match(detailSrc, /onGlossaryTermClick/, 'EventDetailPage glossary click h
 
 const heroSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventDetailHero.jsx'), 'utf8');
 assert.match(heroSrc, /getWorldEventHeroImages/, 'EventDetailHero gallery SSOT');
+assert.match(heroSrc, /heroGallery\.thumbnailsAria/, 'EventDetailHero separate gallery list section');
 
 assert.ok(Array.isArray(bali.glossaryTerms) && bali.glossaryTerms.length >= 5, 'bali glossaryTerms');
 assert.ok(Array.isArray(bali.heroImages) && bali.heroImages.length >= 2, 'bali heroImages');
