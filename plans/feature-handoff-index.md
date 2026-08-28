@@ -30,19 +30,19 @@
 | **PROD QA** | `https://www.gateo.kr/world-events` · 파일럿 3상세(edinburgh·munich·bali) |
 | **VERIFY** | D1~: `audit:event-travel-guide` · `smoke:world-events-detail` · `build` |
 
-**Wave1.5 D5-b (#29)**: glossary 모달 · heroImages 갤러리 · highlightContextLinks 인라인 · EventExecutionStrip·바로가기 칩 제거(bali) — **구현** `a78fb520`
+**Wave1.5 D5-b (#30)**: Preview QA — glossary 문단 내 첫 등장만 링크 · bali heroImages 404 수정 · summary→히어로 메타 스트립
 
-**다음 제시어** (#30 D5-b Preview QA → Wave2):
+**다음 제시어** (#30 재QA):
 
 ```
-세계행사 일정 #30, Wave1.5 D5-b Preview QA
+세계행사 일정 #30, Wave1.5 D5-b Preview 재QA
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
 @plans/world-events-sample-log.md
 브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/bali-galungan-season-2026
 금지: Wave2 overrides · worldEvents.json 직편집 · feature에 plans 커밋 · UI 리디자인 · 신규 plans/*-plan.md
-작업: bali glossary 모달·히어로 갤러리·인라인 링크 Preview QA → OK 시 #31 Wave2 singapore·dubai
+작업: bali glossary·히어로·summary 재QA → OK 시 #31 Wave2 singapore·dubai
 ```
 
 ---
