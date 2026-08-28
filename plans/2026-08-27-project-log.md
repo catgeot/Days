@@ -214,3 +214,17 @@
 - **브랜치** `cursor/world-events-wave2` · tip `8c0e8f94`
 - **수정** 「행사 하이라이트」·제목 — **시즌 메타 스트립**(type·일정·장소 카드) 상단 · 히어로는 사진만
 - **다음** Preview 재QA
+
+## 세계행사 일정 #30 — 갤러리 Unsplash 전환
+
+- **브랜치** `cursor/world-events-wave2` · tip `fce1aba3`
+- **원인** Wikimedia 한글 검색 0건 → 모달 추가 사진 없음
+- **수정** Unsplash 우선(`갈룽안·사원 축제 시즌`) · en/Wikimedia 폴백 · Edge+클라이언트 이중 · `fetch-event-hero-gallery` 재배포
+- **다음** Preview — 사진 더보기 모달 6장+ 확인
+
+## 세계행사 일정 #30 — 갤러리 Unsplash 전환
+
+- **브랜치** `cursor/world-events-wave2` · tip `fce1aba3`
+- **원인** Wikimedia 한글 검색 0건 → 모달 추가 사진 없음
+- **수정** Unsplash 우선(`갈룽안·사원 축제 시즌`) · en/Wikimedia 폴백 · Edge+클라이언트 이중 · `fetch-event-hero-gallery` 재배포
+- **다음** Preview — 사진 더보기 모달 6장+ 확인
