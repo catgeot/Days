@@ -135,3 +135,12 @@
 - **문서** [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) F-0.5 D5 · index §9 · sample-log — **신규 계획서 없음**
 - **세션** Wave2 데이터 **#28→#29** 연기
 - **다음** **#28 D5** 구현 — `cursor/world-events-wave2` · PR #154
+
+## 세계행사 일정 #28 — Wave1.5 D5 실행·어필리에이트
+
+- **세션** `세계행사 일정 #28, Wave1.5 D5 실행·어필리에이트`
+- **브랜치** `cursor/world-events-wave2` · PR [#154](https://github.com/catgeot/Days/pull/154) · tip `c6e38c1c`
+- **산출** `EventExecutionStrip`(Klook 렌터카·GYG 투어·PKC 더보기) · bali `actionChips` shop(사롱·Klook) · schema kind `rental|tour|shop`
+- **VERIFY** `smoke:world-events-detail` · `smoke:world-events` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026` — 실행·예약 스트립·사롱 칩
+- **다음** 사람 Preview D5 QA → **#30 Wave2** singapore·dubai
