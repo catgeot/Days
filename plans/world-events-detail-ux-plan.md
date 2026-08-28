@@ -754,8 +754,8 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#30 D5-b Preview QA 반영** — glossary 첫 등장만 · 히어로 404·summary 수정 — PR [#154](https://github.com/catgeot/Days/pull/154) |
-| **브랜치** | `cursor/world-events-wave2` · tip `f66a87b9` |
+| **상태** | **#30 D5-b Preview QA** — glossary·히어로·썸네일 수정 — PR [#154](https://github.com/catgeot/Days/pull/154) |
+| **브랜치** | `cursor/world-events-wave2` · tip `61770f65` |
 | **main** | Wave1 PR #153 merged · D5-b bali pilot |
 | **플랜** | 본 문서 **Phase F-0.5 D5-b** · 표준 제시어 **#23~#31** |
 | **Preview** | `https://www.gateo.kr/qa/world-events` |
