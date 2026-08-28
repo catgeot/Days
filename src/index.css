@@ -94,7 +94,7 @@ body {
 
 .quick-links-collapsed-twinkle {
   display: inline-block;
-  animation: quick-links-label-twinkle 2.8s ease-in-out infinite;
+  animation: quick-links-label-twinkle 5.6s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {

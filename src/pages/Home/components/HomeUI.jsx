@@ -73,7 +73,7 @@ const CATEGORY_ACTIVE_MOBILE = {
   adventure: 'bg-red-500/25 border-red-400/50 shadow-[0_0_14px_rgba(248,113,113,0.35)]',
 };
 
-const QUICK_LINKS_TWINKLE_CYCLE_S = 2.8;
+const QUICK_LINKS_TWINKLE_CYCLE_S = 5.6;
 
 function QuickLinksCollapsedLabel({ label }) {
   const parts = label.split(' · ').filter(Boolean);
@@ -287,19 +287,11 @@ const HomeUI = React.memo(({
                     aria-label={`${t('home.quickLinks.expandMenu')} — ${mobileQuickLinks.map((item) => item.label).join(', ')}`}
                     title={t('home.quickLinks.expandMenu')}
                   >
-                    <span className="flex items-center gap-1">
-                      {mobileQuickLinks.map((item) => {
-                        const Icon = item.icon;
-                        return (
-                          <span
-                            key={item.to}
-                            className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border ${item.iconWrapClass}`}
-                            aria-hidden="true"
-                          >
-                            <Icon size={12} />
-                          </span>
-                        );
-                      })}
+                    <span
+                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-sky-400/35 bg-sky-500/15 text-sky-300"
+                      aria-hidden="true"
+                    >
+                      <Sparkles size={12} />
                     </span>
                     <QuickLinksCollapsedLabel label={mobileQuickLinksCollapsedLabel} />
                   </button>
