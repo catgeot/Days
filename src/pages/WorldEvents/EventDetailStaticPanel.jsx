@@ -23,7 +23,6 @@ import EventRichText from './EventRichText';
  *   checkOut?: string,
  *   location?: Record<string, unknown>,
  *   onGlossaryTermClick?: (termId: string) => void,
- *   hideHeaderSummary?: boolean,
  * }} props
  */
 export default function EventDetailStaticPanel({
@@ -33,7 +32,6 @@ export default function EventDetailStaticPanel({
   checkOut,
   location = {},
   onGlossaryTermClick,
-  hideHeaderSummary = false,
 }) {
   const { t } = useTranslation();
   const title = getWorldEventTitle(event, locale);
@@ -55,43 +53,41 @@ export default function EventDetailStaticPanel({
 
   return (
     <div className="space-y-4">
-      {!hideHeaderSummary ? (
-        <section className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-[11px] font-bold text-amber-900">
-              {typeLabel}
-            </span>
-            {event.recurrenceNote ? (
-              <span className="text-[11px] font-semibold text-stone-500">{event.recurrenceNote}</span>
-            ) : null}
-          </div>
-
-          <h1 className="mt-2 text-xl font-extrabold leading-snug text-stone-900 sm:text-2xl">
-            {title}
-          </h1>
-
-          {dateLabel ? (
-            <p className="mt-1 text-sm font-semibold text-stone-700">{dateLabel}</p>
+      <section className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="inline-flex rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-[11px] font-bold text-amber-900">
+            {typeLabel}
+          </span>
+          {event.recurrenceNote ? (
+            <span className="text-[11px] font-semibold text-stone-500">{event.recurrenceNote}</span>
           ) : null}
+        </div>
 
-          {event.venue?.name ? (
-            <p className="mt-2 flex items-start gap-1.5 text-sm text-stone-600">
-              <MapPin size={14} className="mt-0.5 shrink-0 text-amber-700" aria-hidden />
-              <span>{event.venue.name}</span>
-            </p>
-          ) : null}
+        <h1 className="mt-2 text-xl font-extrabold leading-snug text-stone-900 sm:text-2xl">
+          {title}
+        </h1>
 
-          <p className="mt-2 flex items-center gap-1.5 text-sm text-stone-600">
-            <MapPin size={14} className="shrink-0 text-stone-400" aria-hidden />
-            <span>
-              {placeMeta.label}
-              {placeMeta.country ? (
-                <span className="text-stone-500"> · {placeMeta.country}</span>
-              ) : null}
-            </span>
+        {dateLabel ? (
+          <p className="mt-1 text-sm font-semibold text-stone-700">{dateLabel}</p>
+        ) : null}
+
+        {event.venue?.name ? (
+          <p className="mt-2 flex items-start gap-1.5 text-sm text-stone-600">
+            <MapPin size={14} className="mt-0.5 shrink-0 text-amber-700" aria-hidden />
+            <span>{event.venue.name}</span>
           </p>
-        </section>
-      ) : null}
+        ) : null}
+
+        <p className="mt-2 flex items-center gap-1.5 text-sm text-stone-600">
+          <MapPin size={14} className="shrink-0 text-stone-400" aria-hidden />
+          <span>
+            {placeMeta.label}
+            {placeMeta.country ? (
+              <span className="text-stone-500"> · {placeMeta.country}</span>
+            ) : null}
+          </span>
+        </p>
+      </section>
 
       {event.detailOverview ? (
         <section className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
