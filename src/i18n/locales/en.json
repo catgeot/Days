@@ -1829,6 +1829,15 @@
         "midWeekend": "Mid-season weekend",
         "closing": "Closing"
       }
+    },
+    "executionStrip": {
+      "title": "Book & go",
+      "hint": "Rental cars, tours, and packages open via GATEO affiliate links.",
+      "rentalTitle": "Rental car",
+      "rentalHint": "Klook rentals — handy for temples and Ubud day trips.",
+      "tourTitle": "Tours & activities",
+      "packageTitle": "Package trips",
+      "packageHint": "Browse more deals on MyRealTrip package search."
     }
   },
   "logbook": {

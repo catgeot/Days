@@ -194,6 +194,51 @@ assert.ok(buildWorldEventSearchQuery(bali, 'ko').includes('갈룽안'), 'bali se
 assert.ok(!buildWorldEventSearchQuery(bali, 'ko').includes('islandwide'), 'bali search query no English venue');
 assert.match(bali.actionChips[0].href, /en\.wikipedia\.org\/wiki\/Galungan/, 'bali Galungan en.wikipedia guide');
 assert.match(bali.actionChips[2].href, /penjor/, 'bali penjor search query');
+assert.ok(
+  bali.actionChips.some((chip) => chip.kind === 'shop' && /sarong/i.test(chip.id)),
+  'bali shop sarong chip',
+);
+assert.ok(
+  bali.actionChips.filter((chip) => chip.kind === 'shop').length >= 2,
+  'bali has 2+ shop actionChips',
+);
+
+const executionUtilSrc = readFileSync(join(root, 'src/utils/worldEventExecution.js'), 'utf8');
+assert.match(executionUtilSrc, /hasWorldEventD5Execution/, 'worldEventExecution D5 gate');
+assert.match(executionUtilSrc, /bali-galungan-season-2026/, 'D5 bali pilot id');
+
+const executionStripSrc = readFileSync(
+  join(root, 'src/pages/WorldEvents/EventExecutionStrip.jsx'),
+  'utf8',
+);
+assert.match(executionStripSrc, /KlookCarBannerWidget/, 'EventExecutionStrip Klook rental');
+assert.match(executionStripSrc, /GetYourGuideActivitiesWidget/, 'EventExecutionStrip GYG tours');
+assert.match(executionStripSrc, /buildMrtPkcUrlForLocation/, 'EventExecutionStrip PKC link');
+assert.match(executionStripSrc, /event-detail-execution/, 'EventExecutionStrip PKC utm');
+
+assert.match(detailSrc, /EventExecutionStrip/, 'EventDetailPage renders execution strip');
+assert.match(detailSrc, /hasWorldEventD5Execution/, 'EventDetailPage gates D5 execution');
+
+const chipsUtilSrc2 = readFileSync(join(root, 'src/utils/worldEventChips.js'), 'utf8');
+assert.match(chipsUtilSrc2, /getKlookAffiliateUrl/, 'shop Klook chips use affiliate url');
+
+const actionChipsSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventActionChips.jsx'), 'utf8');
+assert.match(actionChipsSrc, /shop: ShoppingBag/, 'EventActionChips shop icon');
+
+const baliLoc = getWorldEventLocation('bali');
+const locationRulesSrc = readFileSync(
+  join(root, 'src/components/PlaceCard/tabs/planner/locationRules.js'),
+  'utf8',
+);
+const mrtPackageQuerySrc = readFileSync(join(root, 'src/utils/mrtPackageQuery.js'), 'utf8');
+const affiliateSrc = readFileSync(join(root, 'src/utils/affiliate.js'), 'utf8');
+assert.match(locationRulesSrc, /'bali'/, 'bali in GYG location rules');
+assert.match(affiliateSrc, /getKlookRentalUrlByLocation/, 'affiliate Klook rental helper');
+assert.match(affiliateSrc, /event-detail-flight/, 'affiliate event-detail-flight tracking');
+assert.match(affiliateSrc, /if \(mode === 'packages'\)/, 'packages/list gated by mode=packages only');
+assert.match(affiliateSrc, /bali: '723'/, 'bali Trip.com hotel city id for packages');
+assert.match(mrtPackageQuerySrc, /bali/, 'bali in MRT package keyword rules');
+assert.equal(baliLoc.slug, 'bali', 'bali location slug for execution strip');
 
 const munichPresets = tripWindowPresetsFromEvent(getWorldEventById('munich-oktoberfest-2026'));
 const munichOpening = munichPresets.visitPresets.find((p) => p.id === 'opening');
@@ -242,11 +287,6 @@ assert.match(fetchMrtSrc, /keywordOverride/, 'fetchMrtStaysForLocation keywordOv
 
 const mooniFabSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventMooniFab.jsx'), 'utf8');
 assert.match(mooniFabSrc, /onClick/, 'EventMooniFab triggers onClick');
-
-const affiliateSrc = readFileSync(join(root, 'src/utils/affiliate.js'), 'utf8');
-assert.match(affiliateSrc, /event-detail-flight/, 'affiliate event-detail-flight tracking');
-assert.match(affiliateSrc, /if \(mode === 'packages'\)/, 'packages/list gated by mode=packages only');
-assert.match(affiliateSrc, /bali: '723'/, 'bali Trip.com hotel city id for packages');
 
 assert.doesNotMatch(
   stayStripSrc,

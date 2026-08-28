@@ -447,6 +447,20 @@ export const WORLD_EVENT_OVERRIDES = [
         href: 'https://www.google.com/search?q=Bali+Galungan+penjor+decoration+Ubud&hl=en',
         kind: 'search',
       },
+      {
+        id: 'sarong-rental',
+        labelKo: '사롱·복장 대여',
+        labelEn: 'Sarong & temple dress rental',
+        href: 'https://www.google.com/maps/search/?api=1&query=sarong+rental+Ubud+Bali',
+        kind: 'shop',
+      },
+      {
+        id: 'sarong-klook',
+        labelKo: '사롱 Klook 검색',
+        labelEn: 'Sarong on Klook',
+        href: 'https://www.klook.com/ko/search/result/?query=Bali%20sarong%20rental',
+        kind: 'shop',
+      },
     ],
     mooniChips: [
       {

@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-28T03:23:33.729Z",
+    "generatedAt": "2026-08-28T03:45:10.031Z",
     "eventCount": 15,
     "source": "scripts/data/world-event-overrides.mjs"
   },
@@ -205,6 +205,20 @@
           "href": "https://www.google.com/search?q=Bali+Galungan+penjor+decoration+Ubud&hl=en",
           "labelEn": "Penjor decorations",
           "kind": "search"
+        },
+        {
+          "id": "sarong-rental",
+          "labelKo": "사롱·복장 대여",
+          "href": "https://www.google.com/maps/search/?api=1&query=sarong+rental+Ubud+Bali",
+          "labelEn": "Sarong & temple dress rental",
+          "kind": "shop"
+        },
+        {
+          "id": "sarong-klook",
+          "labelKo": "사롱 Klook 검색",
+          "href": "https://www.klook.com/ko/search/result/?query=Bali%20sarong%20rental",
+          "labelEn": "Sarong on Klook",
+          "kind": "shop"
         }
       ],
       "mooniChips": [

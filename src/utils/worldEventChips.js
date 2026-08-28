@@ -2,6 +2,7 @@ import {
   formatWorldEventDateRange,
   getWorldEventTitle,
 } from './worldEvents.js';
+import { getKlookAffiliateUrl } from './affiliate.js';
 import { WORLD_EVENT_WAVE15_PILOT_EVENT_IDS } from './worldEventMedia.js';
 
 /** @deprecated use WORLD_EVENT_WAVE15_PILOT_EVENT_IDS */
@@ -13,10 +14,17 @@ export const WORLD_EVENT_D2_PILOT_EVENT_IDS = WORLD_EVENT_WAVE15_PILOT_EVENT_IDS
  */
 export function getWorldEventActionChips(event, locale = 'ko') {
   if (!event?.actionChips?.length) return [];
-  return event.actionChips.map((chip) => ({
-    ...chip,
-    label: locale === 'en' && chip.labelEn ? chip.labelEn : chip.labelKo,
-  }));
+  return event.actionChips.map((chip) => {
+    const href =
+      chip.kind === 'shop' && /klook\.com/i.test(chip.href)
+        ? getKlookAffiliateUrl(chip.href)
+        : chip.href;
+    return {
+      ...chip,
+      href,
+      label: locale === 'en' && chip.labelEn ? chip.labelEn : chip.labelKo,
+    };
+  });
 }
 
 /**

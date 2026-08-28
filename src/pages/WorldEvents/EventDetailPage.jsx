@@ -26,6 +26,7 @@ import { shouldShowEventTravelGuidePanel } from '../../utils/eventTravelGuideSur
 import { buildPlacePlannerPathFromEvent } from '../../utils/placePlannerPath';
 import { buildWorldEventMooniSeed, hasWorldEventD2Chips } from '../../utils/worldEventChips';
 import { hasWorldEventD3Media } from '../../utils/worldEventMedia';
+import { hasWorldEventD5Execution } from '../../utils/worldEventExecution';
 import { buildMooniBoundSpotFromLocation } from '../Home/lib/placeChatIntro';
 import MooniBoundChatHost from '../Home/components/MooniBoundChatHost';
 import EventActionChips from './EventActionChips';
@@ -33,6 +34,7 @@ import EventDetailHero from './EventDetailHero';
 import EventDetailMediaSection from './EventDetailMediaSection';
 import EventDetailStaticPanel from './EventDetailStaticPanel';
 import EventStayStrip from './EventStayStrip';
+import EventExecutionStrip from './EventExecutionStrip';
 import EventTravelGuidePanel from './EventTravelGuidePanel';
 import EventMooniFab from './EventMooniFab';
 import EventMooniChips from './EventMooniChips';
@@ -137,6 +139,7 @@ export default function EventDetailPage() {
 
   const showD2Chips = hasWorldEventD2Chips(event.id);
   const showD3Media = hasWorldEventD3Media(event.id);
+  const showD5Execution = hasWorldEventD5Execution(event.id);
 
   const openEventMooni = useCallback(
     (prompt = null) => {
@@ -287,6 +290,12 @@ export default function EventDetailPage() {
               locale={locale}
             />
           </div>
+
+          {showD5Execution ? (
+            <div className="mt-4">
+              <EventExecutionStrip event={event} location={location} />
+            </div>
+          ) : null}
 
           {showD2Chips ? (
             <div className="mt-4">

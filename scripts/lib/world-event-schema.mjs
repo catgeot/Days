@@ -19,7 +19,7 @@
  */
 
 /**
- * @typedef {'official' | 'map' | 'search'} WorldEventActionChipKind
+ * @typedef {'official' | 'map' | 'search' | 'rental' | 'tour' | 'shop'} WorldEventActionChipKind
  */
 
 /**
@@ -300,7 +300,7 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
       if (labelEn) normalizedChip.labelEn = labelEn;
       const kind = chip.kind != null ? String(chip.kind).trim() : undefined;
       if (kind) {
-        if (!['official', 'map', 'search'].includes(kind)) {
+        if (!['official', 'map', 'search', 'rental', 'tour', 'shop'].includes(kind)) {
           throw new Error(`[world-events] ${id}: actionChips[${chipIndex}].kind invalid`);
         }
         normalizedChip.kind = /** @type {WorldEventActionChipKind} */ (kind);

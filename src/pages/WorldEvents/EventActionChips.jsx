@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExternalLink, MapPin, Search, Ticket } from 'lucide-react';
+import { ExternalLink, MapPin, Search, ShoppingBag, Ticket, Car } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { getWorldEventActionChips } from '../../utils/worldEventChips';
 
@@ -7,6 +7,9 @@ const KIND_ICON = {
   official: Ticket,
   map: MapPin,
   search: Search,
+  rental: Car,
+  tour: Ticket,
+  shop: ShoppingBag,
 };
 
 /**
