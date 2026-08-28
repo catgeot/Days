@@ -151,3 +151,12 @@
 - **피드백** 바로가기 칩·실행 스트립 흐름 단절 → 본문 glossary 모달 · 하이라이트 인라인 어필리에이트 · 히어로 갤러리
 - **문서** [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) F-0.5 **D5-b** 통합 (별도 plan 아티팩트 SSOT 아님)
 - **다음** feature `cursor/world-events-wave2` — D5-b 구현 · smoke · build · Preview QA → OK 시 **#30 Wave2**
+
+## 세계행사 일정 #29 — Wave1.5 D5-b 본문 UX
+
+- **세션** `세계행사 일정 #29, Wave1.5 D5-b 본문 UX`
+- **브랜치** `cursor/world-events-wave2` · PR [#154](https://github.com/catgeot/Days/pull/154) · tip `a78fb520`
+- **산출** `glossaryTerms`·`heroImages`·`highlightContextLinks` · `EventRichText`·`EventTermExplainModal` · 히어로 썸네일 갤러리 · `EventExecutionStrip`·바로가기 칩 제거(bali)
+- **VERIFY** `generate:world-events` · `smoke:world-events-detail` · `smoke:world-events` · `smoke:event-travel-guide` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026` — 본문 용어 클릭 모달 · 하이라이트 인라인 링크 · 히어로 3장
+- **다음** 사람 Preview D5-b QA → OK 시 **#31 Wave2** singapore·dubai

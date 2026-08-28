@@ -278,6 +278,13 @@
 - **제거** 바로가기 섹션 · 실행·예약 스트립(bali) — SSOT [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) F-0.5 D5-b
 - **다음** #29 구현 세션 — bali pilot → OK 시 #30 Wave2
 
+## #9 bali — D5-b 본문 UX 구현 (#29)
+
+- **산출** glossary 5종(galungan·kuningan·penjor·사례 복장·사롱) · heroImages 3장 · highlightContextLinks(0·2) · `a78fb520`
+- **UI** 본문 용어→MOONi 모달(채팅 아님) · 하이라이트 인라인 렌터카·투어·사롱 링크 · EventExecutionStrip 제거
+- **VERIFY** smoke·build PASS
+- **다음** 사람 Preview QA → OK 시 **#31 Wave2** singapore·dubai
+
 ## v2 pivot — Preview QA 피드백 (#12 전)
 
 - **일시**: 2026-08-26
