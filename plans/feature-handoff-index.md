@@ -18,8 +18,8 @@
 
 | | |
 |--|--|
-| **상태** | **#29 D5-b 구현 완료** — bali pilot Preview QA 대기 · PR [#154](https://github.com/catgeot/Days/pull/154) · feature tip `a78fb520` |
-| **브랜치** | `cursor/world-events-wave2` · tip `a78fb520` |
+| **상태** | **#30 D5-b Preview QA 반영** — glossary 첫 등장만 · 히어로 404·summary 수정 · PR [#154](https://github.com/catgeot/Days/pull/154) · tip `f66a87b9` |
+| **브랜치** | `cursor/world-events-wave2` · tip `f66a87b9` |
 | **PR** | [#154](https://github.com/catgeot/Days/pull/154) draft |
 | **main** | `6712f777`+ — Wave1 v2 · Phase F-0.5 · PR #154 = Wave1.5 D1 |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **Phase F-0.5** · §9 |

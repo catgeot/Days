@@ -754,22 +754,22 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#29 D5-b 구현 완료** · bali pilot Preview QA 대기 — PR [#154](https://github.com/catgeot/Days/pull/154) |
-| **브랜치** | `cursor/world-events-wave2` · tip `a78fb520` |
+| **상태** | **#30 D5-b Preview QA 반영** — glossary 첫 등장만 · 히어로 404·summary 수정 — PR [#154](https://github.com/catgeot/Days/pull/154) |
+| **브랜치** | `cursor/world-events-wave2` · tip `f66a87b9` |
 | **main** | Wave1 PR #153 merged · D5-b bali pilot |
 | **플랜** | 본 문서 **Phase F-0.5 D5-b** · 표준 제시어 **#23~#31** |
 | **Preview** | `https://www.gateo.kr/qa/world-events` |
 | **VERIFY** | D1~D5-b 단계별 smoke/audit · `build` |
 
-**다음 제시어** (#30 D5-b Preview QA):
+**다음 제시어** (#30 재QA):
 
 ```
-세계행사 일정 #30, Wave1.5 D5-b Preview QA
+세계행사 일정 #30, Wave1.5 D5-b Preview 재QA
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
 @plans/world-events-sample-log.md
 브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/bali-galungan-season-2026
 금지: Wave2 overrides · worldEvents.json 직편집 · feature에 plans 커밋 · UI 리디자인 · 신규 plans/*-plan.md
-작업: bali glossary 모달·히어로 갤러리·인라인 링크 Preview QA → OK 시 #31 Wave2 singapore·dubai
+작업: bali glossary·히어로·summary 재QA → OK 시 #31 Wave2 singapore·dubai
 ```
