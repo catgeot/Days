@@ -264,6 +264,13 @@
 - **계획** Wave1.5 **D5** — [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) F-0.5 (신규 plans 파일 **금지**)
 - **다음** #28 D5 bali pilot → 파일럿 3건 패턴화 → **#29 Wave2**
 
+## #8 bali — D5 구현 (#28)
+
+- **산출** `EventExecutionStrip` · shop actionChips(사롱·Klook) · `c6e38c1c`
+- **VERIFY** `smoke:world-events-detail` · `build` PASS
+- **Preview** `/world-events/bali-galungan-season-2026` — Klook·GYG·PKC·사롱 칩
+- **다음** 사람 Preview D5 QA → D5-b 파일럿 3건 패턴화 → **#30 Wave2**
+
 ## v2 pivot — Preview QA 피드백 (#12 전)
 
 - **일시**: 2026-08-26

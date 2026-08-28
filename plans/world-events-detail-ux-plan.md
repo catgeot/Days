@@ -706,22 +706,22 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#28 D5 착수 대기** — PR [#154](https://github.com/catgeot/Days/pull/154) · feature tip `03316edf` |
-| **브랜치** | `cursor/world-events-wave2` · tip `03316edf` |
-| **main** | Wave1 PR #153 merged · D4 완료 · **D5 계획 본 문서 F-0.5 반영** |
+| **상태** | **#28 D5 구현 완료** — PR [#154](https://github.com/catgeot/Days/pull/154) · feature tip `c6e38c1c` |
+| **브랜치** | `cursor/world-events-wave2` · tip `c6e38c1c` |
+| **main** | Wave1 PR #153 merged · D5 bali pilot 구현 |
 | **플랜** | 본 문서 **Phase F-0.5** · 표준 제시어 **#23~#29** |
 | **Preview** | `https://www.gateo.kr/qa/world-events` |
 | **VERIFY** | D1~D5 단계별 smoke/audit · `build` |
 
-**다음 제시어** (#28 D5):
+**다음 제시어** (#29 D5 Preview QA):
 
 ```
-세계행사 일정 #28, Wave1.5 D5 실행·어필리에이트
+세계행사 일정 #29, Wave1.5 D5 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
 @plans/world-events-sample-log.md
 브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/bali-galungan-season-2026
 금지: Wave2 overrides · worldEvents.json 직편집 · feature에 plans 커밋 · UI 리디자인 · 신규 plans/*-plan.md
-작업: D5 EventExecutionStrip · Klook·GYG·PKC · shop actionChips(사롱) · bali pilot smoke · build
+작업: bali EventExecutionStrip·shop 사롱 칩 Preview QA → OK 시 #30 Wave2 singapore·dubai
 ```
