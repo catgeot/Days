@@ -1778,7 +1778,13 @@
     },
     "heroGallery": {
       "thumbnailsAria": "Event photo thumbnails",
-      "imageAlt": "{{title}} photo {{index}}"
+      "imageAlt": "{{title}} photo {{index}}",
+      "viewMore": "View more photos",
+      "modalAria": "Event photo gallery",
+      "close": "Close",
+      "prev": "Previous photo",
+      "next": "Next photo",
+      "swipeHint": "Swipe left or right to browse photos"
     },
     "media": {
       "heroEyebrow": "Event highlight",
@@ -1788,6 +1794,7 @@
       "googleSearch": "Google search",
       "naverSearch": "Naver search",
       "youtubeTitle": "Related videos",
+      "youtubeSearch": "Search more on YouTube",
       "attractionsTitle": "{{city}} attractions",
       "attractionsHint": "Open city attraction hubs on the map and place cards.",
       "attractionsHubCta": "{{city}} place card"

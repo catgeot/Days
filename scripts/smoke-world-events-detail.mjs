@@ -14,6 +14,7 @@ import { tripWindowPresetsFromEvent } from '../src/utils/worldEventTripPresets.j
 import { tripWindowNights } from '../src/shared/tripWindow.js';
 import {
   buildWorldEventSearchQuery,
+  buildWorldEventYoutubeSearchQuery,
   getWorldEventHubAttractions,
 } from '../src/utils/worldEventMedia.js';
 import { addDaysYmd } from '../src/shared/tripWindow.js';
@@ -182,9 +183,11 @@ assert.match(chipsUtilSrc, /buildWorldEventMooniSeed/, 'worldEventChips seed bui
 const mediaUtilSrc = readFileSync(join(root, 'src/utils/worldEventMedia.js'), 'utf8');
 assert.match(mediaUtilSrc, /getWorldEventHubAttractions/, 'worldEventMedia hub bridge');
 assert.match(mediaUtilSrc, /buildWorldEventSearchQuery/, 'worldEventMedia search query');
+assert.match(mediaUtilSrc, /buildWorldEventYoutubeSearchQuery/, 'worldEventMedia youtube search query');
 
 const outboundSrc = readFileSync(join(root, 'src/utils/worldEventOutboundLinks.js'), 'utf8');
 assert.match(outboundSrc, /naverWebSearchUrl/, 'naver search url builder');
+assert.match(outboundSrc, /youtubeWebSearchUrl/, 'youtube search url builder');
 
 const baliHub = getWorldEventHubAttractions(bali, { locale: 'ko' });
 assert.ok(baliHub.hub?.href === '/place/bali', 'bali hub link');
@@ -192,6 +195,22 @@ assert.ok(baliHub.attractions.length >= 3, 'bali hub attractions');
 assert.ok(baliHub.attractions[0].href.startsWith('/place/'), 'attraction place link');
 assert.ok(buildWorldEventSearchQuery(bali, 'ko').includes('갈룽안'), 'bali search query ko');
 assert.ok(!buildWorldEventSearchQuery(bali, 'ko').includes('islandwide'), 'bali search query no English venue');
+assert.ok(buildWorldEventSearchQuery(bali, 'en').includes('Galungan'), 'bali search query en');
+assert.ok(!buildWorldEventSearchQuery(bali, 'en').includes('islandwide'), 'bali en search query no venue name');
+assert.equal(buildWorldEventYoutubeSearchQuery(bali, 'ko'), '발리 갈룽안 축제', 'bali youtube search ko');
+assert.equal(buildWorldEventYoutubeSearchQuery(bali, 'en'), 'Bali Galungan festival', 'bali youtube search en');
+
+const baliSarongGoogle = bali.highlightContextLinks
+  .find((group) => group.highlightIndex === 0)
+  ?.links.find((link) => link.id === 'sarong-rental');
+const baliSarongKlook = bali.highlightContextLinks
+  .find((group) => group.highlightIndex === 0)
+  ?.links.find((link) => link.id === 'sarong-klook');
+assert.ok(baliSarongGoogle?.searchTarget === 'google', 'bali sarong google search target');
+assert.ok(baliSarongKlook?.searchTarget === 'klook', 'bali sarong klook search target');
+assert.match(baliSarongGoogle?.searchQueryKo || '', /사롱/, 'bali sarong google query ko');
+assert.match(baliSarongKlook?.searchQueryKo || '', /사롱/, 'bali sarong klook query ko');
+assert.match(baliSarongKlook?.searchQueryEn || '', /sarong/i, 'bali sarong klook query en');
 assert.match(bali.actionChips[0].href, /en\.wikipedia\.org\/wiki\/Galungan/, 'bali Galungan en.wikipedia guide');
 assert.match(bali.actionChips[2].href, /penjor/, 'bali penjor search query');
 assert.ok(
@@ -210,6 +229,8 @@ const glossaryUtilSrc = readFileSync(join(root, 'src/utils/worldEventGlossary.js
 assert.match(glossaryUtilSrc, /hasWorldEventD5bBodyUx/, 'worldEventGlossary D5-b gate');
 assert.match(glossaryUtilSrc, /getWorldEventHeroImages/, 'worldEventGlossary hero images');
 assert.match(glossaryUtilSrc, /resolveHighlightContextLinkHref/, 'worldEventGlossary context links');
+assert.match(glossaryUtilSrc, /getKlookSearchUrl/, 'worldEventGlossary klook search url');
+assert.match(glossaryUtilSrc, /searchTarget === 'google'/, 'worldEventGlossary google search target');
 
 const richTextSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventRichText.jsx'), 'utf8');
 assert.match(richTextSrc, /buildGlossarySegments/, 'EventRichText glossary wrapping');
@@ -232,6 +253,15 @@ assert.match(detailSrc, /onGlossaryTermClick/, 'EventDetailPage glossary click h
 const heroSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventDetailHero.jsx'), 'utf8');
 assert.match(heroSrc, /getWorldEventHeroImages/, 'EventDetailHero gallery SSOT');
 assert.match(heroSrc, /heroGallery\.thumbnailsAria/, 'EventDetailHero separate gallery list section');
+assert.match(heroSrc, /EventHeroGalleryModal/, 'EventDetailHero gallery modal');
+assert.match(heroSrc, /heroGallery\.viewMore/, 'EventDetailHero view more button');
+
+const mediaSectionSrc = readFileSync(
+  join(root, 'src/pages/WorldEvents/EventDetailMediaSection.jsx'),
+  'utf8',
+);
+assert.match(mediaSectionSrc, /buildWorldEventYoutubeSearchQuery/, 'EventDetailMediaSection youtube search');
+assert.match(mediaSectionSrc, /youtubeWebSearchUrl/, 'EventDetailMediaSection youtube search url');
 
 assert.ok(Array.isArray(bali.glossaryTerms) && bali.glossaryTerms.length >= 5, 'bali glossaryTerms');
 assert.ok(Array.isArray(bali.heroImages) && bali.heroImages.length >= 2, 'bali heroImages');

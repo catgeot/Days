@@ -1,5 +1,10 @@
 import { buildGygActivitiesSearchQuery } from '../components/PlaceCard/tabs/planner/locationRules.js';
-import { buildGygSearchUrl, getKlookAffiliateUrl, getKlookRentalUrlByLocation } from './affiliate.js';
+import {
+  buildGygSearchUrl,
+  getKlookAffiliateUrl,
+  getKlookRentalUrlByLocation,
+  getKlookSearchUrl,
+} from './affiliate.js';
 import { googleWebSearchUrl } from './worldEventOutboundLinks.js';
 
 /**
@@ -79,13 +84,33 @@ export function getGlossaryTermSearchUrl(term, locale = 'ko') {
  * @param {Record<string, unknown>} location
  * @param {string} [locale]
  */
+function getHighlightContextLinkSearchQuery(link, locale = 'ko') {
+  if (!link) return '';
+  return locale === 'en' && link.searchQueryEn
+    ? String(link.searchQueryEn).trim()
+    : String(link.searchQueryKo || '').trim();
+}
+
 export function resolveHighlightContextLinkHref(link, location, locale = 'ko') {
   if (!link) return '';
+
+  const searchQuery = getHighlightContextLinkSearchQuery(link, locale);
+  const searchTarget = String(link.searchTarget || '').trim();
+
+  if (searchQuery && searchTarget === 'google') {
+    return googleWebSearchUrl(searchQuery, locale);
+  }
+  if (searchQuery && searchTarget === 'klook') {
+    return getKlookSearchUrl(searchQuery, locale);
+  }
 
   const explicitHref = String(link.href || '').trim();
   if (explicitHref) {
     if (link.kind === 'shop' && /klook\.com/i.test(explicitHref)) {
       return getKlookAffiliateUrl(explicitHref);
+    }
+    if (link.kind === 'shop' && /google\.com\/maps/i.test(explicitHref) && searchQuery) {
+      return googleWebSearchUrl(searchQuery, locale);
     }
     return explicitHref;
   }

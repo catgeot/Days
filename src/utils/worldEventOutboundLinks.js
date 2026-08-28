@@ -32,3 +32,14 @@ export function naverWebSearchUrl(query) {
   if (!q) return '';
   return `https://search.naver.com/search.naver?query=${encodeURIComponent(q)}`;
 }
+
+/**
+ * @param {string} query
+ * @param {string} [locale]
+ */
+export function youtubeWebSearchUrl(query, locale = 'ko') {
+  const q = String(query || '').trim();
+  if (!q) return '';
+  const hl = locale === 'en' ? 'en' : 'ko';
+  return `https://www.youtube.com/results?search_query=${encodeURIComponent(q)}&hl=${hl}`;
+}

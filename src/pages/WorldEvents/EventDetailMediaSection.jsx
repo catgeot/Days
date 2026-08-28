@@ -4,10 +4,15 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   buildWorldEventSearchQuery,
+  buildWorldEventYoutubeSearchQuery,
   getWorldEventHubAttractions,
   getWorldEventYoutubeVideos,
 } from '../../utils/worldEventMedia';
-import { googleWebSearchUrl, naverWebSearchUrl } from '../../utils/worldEventOutboundLinks';
+import {
+  googleWebSearchUrl,
+  naverWebSearchUrl,
+  youtubeWebSearchUrl,
+} from '../../utils/worldEventOutboundLinks';
 
 /**
  * @param {{ event: import('../../utils/worldEvents').WorldEvent, locale?: string }} props
@@ -17,6 +22,8 @@ export default function EventDetailMediaSection({ event, locale = 'ko' }) {
   const searchQuery = buildWorldEventSearchQuery(event, locale);
   const googleHref = googleWebSearchUrl(searchQuery, locale);
   const naverHref = naverWebSearchUrl(searchQuery);
+  const youtubeSearchQuery = buildWorldEventYoutubeSearchQuery(event, locale);
+  const youtubeSearchHref = youtubeWebSearchUrl(youtubeSearchQuery, locale);
   const youtubeVideos = getWorldEventYoutubeVideos(event, locale);
   const { hub, attractions } = getWorldEventHubAttractions(event, { locale });
 
@@ -97,6 +104,19 @@ export default function EventDetailMediaSection({ event, locale = 'ko' }) {
               </a>
             ))}
           </div>
+          {youtubeSearchHref ? (
+            <div className="mt-3">
+              <a
+                href={youtubeSearchHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-800 hover:border-amber-300 hover:bg-amber-50"
+              >
+                {t('worldEventDetail.media.youtubeSearch')}
+                <ExternalLink size={10} className="opacity-60" aria-hidden />
+              </a>
+            </div>
+          ) : null}
         </section>
       ) : null}
 

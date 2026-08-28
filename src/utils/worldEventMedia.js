@@ -29,13 +29,24 @@ export function hasWorldEventD3Media(eventId) {
 export function buildWorldEventSearchQuery(event, locale = 'ko') {
   if (!event) return '';
   const title = getWorldEventTitle(event, locale);
-  if (locale === 'en') {
-    const venue = event.venue?.name ? String(event.venue.name).trim() : '';
-    return [title, venue].filter(Boolean).join(' ');
-  }
   const placeMeta = getWorldEventPlaceMeta(event.slug, locale);
   const placeLabel = placeMeta?.label ? String(placeMeta.label).trim() : '';
   return [title, placeLabel].filter(Boolean).join(' ');
+}
+
+/**
+ * @param {import('./worldEvents').WorldEvent | null | undefined} event
+ * @param {string} [locale]
+ */
+export function buildWorldEventYoutubeSearchQuery(event, locale = 'ko') {
+  if (!event) return '';
+  if (locale === 'en' && event.youtubeSearchQueryEn) {
+    return String(event.youtubeSearchQueryEn).trim();
+  }
+  if (event.youtubeSearchQueryKo) {
+    return String(event.youtubeSearchQueryKo).trim();
+  }
+  return buildWorldEventSearchQuery(event, locale);
 }
 
 /**

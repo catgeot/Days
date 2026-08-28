@@ -272,6 +272,21 @@ export const getKlookAffiliateUrl = (targetUrl, adId = KLOOK_DEFAULT_AD_ID) => {
   return `https://affiliate.klook.com/redirect?aid=${KLOOK_AID}&aff_adid=${adId}&k_site=${encodeURIComponent(targetUrl)}`;
 };
 
+/**
+ * @param {string} query
+ * @param {string} [locale]
+ * @returns {string}
+ */
+export const getKlookSearchUrl = (query, locale = 'ko') => {
+  const q = String(query || '').trim();
+  if (!q) return '';
+  const lang = locale === 'en' ? 'en' : 'ko';
+  return getKlookAffiliateUrl(
+    `https://www.klook.com/${lang}/search/result/?query=${encodeURIComponent(q)}`,
+    KLOOK_DEFAULT_AD_ID,
+  );
+};
+
 /** Klook 페리 통합 페이지 제휴 URL */
 export const getKlookFerryUrl = () =>
   getKlookAffiliateUrl(KLOOK_FERRY_TARGET, KLOOK_FERRY_AD_ID);

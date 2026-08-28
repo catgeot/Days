@@ -1541,7 +1541,13 @@
     },
     "heroGallery": {
       "thumbnailsAria": "행사 사진 썸네일",
-      "imageAlt": "{{title}} 사진 {{index}}"
+      "imageAlt": "{{title}} 사진 {{index}}",
+      "viewMore": "사진 더보기",
+      "modalAria": "행사 사진 갤러리",
+      "close": "닫기",
+      "prev": "이전 사진",
+      "next": "다음 사진",
+      "swipeHint": "좌우로 넘겨 더 많은 사진을 볼 수 있어요"
     },
     "media": {
       "heroEyebrow": "행사 하이라이트",
@@ -1551,6 +1557,7 @@
       "googleSearch": "구글 검색",
       "naverSearch": "네이버 검색",
       "youtubeTitle": "관련 영상",
+      "youtubeSearch": "YouTube에서 더 찾기",
       "attractionsTitle": "{{city}} 명소",
       "attractionsHint": "도시 명소 허브에서 지도·여행지 카드로 이어집니다.",
       "attractionsHubCta": "{{city}} 여행지 카드"

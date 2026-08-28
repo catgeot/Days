@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-28T12:15:51.706Z",
+    "generatedAt": "2026-08-28T17:35:03.371Z",
     "eventCount": 15,
     "source": "scripts/data/world-event-overrides.mjs"
   },
@@ -247,14 +247,18 @@
               "labelKo": "사롱·복장 대여",
               "kind": "shop",
               "labelEn": "Sarong & temple dress rental",
-              "href": "https://www.google.com/maps/search/?api=1&query=sarong+rental+Ubud+Bali"
+              "searchQueryKo": "발리 사원 사례 복장 사롱",
+              "searchQueryEn": "Bali temple dress code sarong",
+              "searchTarget": "google"
             },
             {
               "id": "sarong-klook",
               "labelKo": "사롱 Klook 검색",
               "kind": "shop",
               "labelEn": "Sarong on Klook",
-              "href": "https://www.klook.com/ko/search/result/?query=Bali%20sarong%20rental"
+              "searchQueryKo": "발리 사롱 대여",
+              "searchQueryEn": "Bali sarong rental",
+              "searchTarget": "klook"
             }
           ]
         },
@@ -288,6 +292,8 @@
           "titleEn": "Galungan in Ubud"
         }
       ],
+      "youtubeSearchQueryKo": "발리 갈룽안 축제",
+      "youtubeSearchQueryEn": "Bali Galungan festival",
       "actionChips": [
         {
           "id": "galungan-guide",
@@ -313,14 +319,14 @@
         {
           "id": "sarong-rental",
           "labelKo": "사롱·복장 대여",
-          "href": "https://www.google.com/maps/search/?api=1&query=sarong+rental+Ubud+Bali",
+          "href": "https://www.google.com/search?q=%EB%B0%9C%EB%A6%AC+%EC%82%AC%EC%9B%90+%EC%82%AC%EB%A1%80+%EB%B3%B5%EC%9E%A5+%EC%82%AC%EB%A1%B1&hl=ko",
           "labelEn": "Sarong & temple dress rental",
           "kind": "shop"
         },
         {
           "id": "sarong-klook",
           "labelKo": "사롱 Klook 검색",
-          "href": "https://www.klook.com/ko/search/result/?query=Bali%20sarong%20rental",
+          "href": "https://www.klook.com/ko/search/result/?query=%EB%B0%9C%EB%A6%AC+%EC%82%AC%EB%A1%B1+%EB%8C%80%EC%97%AC",
           "labelEn": "Sarong on Klook",
           "kind": "shop"
         }

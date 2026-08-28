@@ -80,6 +80,9 @@
  *   labelEn?: string,
  *   kind: WorldEventContextLinkKind,
  *   href?: string,
+ *   searchQueryKo?: string,
+ *   searchQueryEn?: string,
+ *   searchTarget?: 'google' | 'klook',
  * }} WorldEventContextLink
  */
 
@@ -115,6 +118,8 @@
  *   glossaryTerms?: WorldEventGlossaryTerm[],
  *   highlightContextLinks?: WorldEventHighlightContextLinks[],
  *   youtubeVideos?: WorldEventYoutubeVideo[],
+ *   youtubeSearchQueryKo?: string,
+ *   youtubeSearchQueryEn?: string,
  *   actionChips?: WorldEventActionChip[],
  *   mooniChips?: WorldEventMooniChip[],
  *   priority?: number,
@@ -415,7 +420,28 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
         };
         const labelEn = link.labelEn != null ? String(link.labelEn).trim() : undefined;
         const href = link.href != null ? String(link.href).trim() : undefined;
+        const searchQueryKo =
+          link.searchQueryKo != null ? String(link.searchQueryKo).trim() : undefined;
+        const searchQueryEn =
+          link.searchQueryEn != null ? String(link.searchQueryEn).trim() : undefined;
+        const searchTarget =
+          link.searchTarget != null ? String(link.searchTarget).trim() : undefined;
         if (labelEn) normalizedLink.labelEn = labelEn;
+        if (searchQueryKo) normalizedLink.searchQueryKo = searchQueryKo;
+        if (searchQueryEn) normalizedLink.searchQueryEn = searchQueryEn;
+        if (searchTarget) {
+          if (!['google', 'klook'].includes(searchTarget)) {
+            throw new Error(
+              `[world-events] ${id}: highlightContextLinks[${groupIndex}].links[${linkIndex}].searchTarget invalid`,
+            );
+          }
+          normalizedLink.searchTarget = /** @type {'google' | 'klook'} */ (searchTarget);
+        }
+        if (searchTarget && !searchQueryKo) {
+          throw new Error(
+            `[world-events] ${id}: highlightContextLinks[${groupIndex}].links[${linkIndex}].searchQueryKo required when searchTarget is set`,
+          );
+        }
         if (href) {
           if (!/^https?:\/\//i.test(href)) {
             throw new Error(
@@ -558,6 +584,12 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
   if (glossaryTerms) event.glossaryTerms = glossaryTerms;
   if (highlightContextLinks) event.highlightContextLinks = highlightContextLinks;
   if (youtubeVideos) event.youtubeVideos = youtubeVideos;
+  const youtubeSearchQueryKo =
+    raw.youtubeSearchQueryKo != null ? String(raw.youtubeSearchQueryKo).trim() : undefined;
+  const youtubeSearchQueryEn =
+    raw.youtubeSearchQueryEn != null ? String(raw.youtubeSearchQueryEn).trim() : undefined;
+  if (youtubeSearchQueryKo) event.youtubeSearchQueryKo = youtubeSearchQueryKo;
+  if (youtubeSearchQueryEn) event.youtubeSearchQueryEn = youtubeSearchQueryEn;
   if (actionChips) event.actionChips = actionChips;
   if (mooniChips) event.mooniChips = mooniChips;
   if (priority != null) event.priority = priority;
