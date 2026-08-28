@@ -18,8 +18,8 @@
 
 | | |
 |--|--|
-| **상태** | **#30 D5-b Preview QA** — glossary 첫 등장만 · 히어로·summary 원복 · 썸네일 분리 · PR [#154](https://github.com/catgeot/Days/pull/154) · tip `61770f65` |
-| **브랜치** | `cursor/world-events-wave2` · tip `61770f65` |
+| **상태** | **#30 D5-b Preview 재QA 반영** — 히어로·갤러리 분리 · glossary·어필리에이트 — PR [#154](https://github.com/catgeot/Days/pull/154) · tip `9f66dac5` |
+| **브랜치** | `cursor/world-events-wave2` · tip `9f66dac5` |
 | **PR** | [#154](https://github.com/catgeot/Days/pull/154) draft |
 | **main** | `6712f777`+ — Wave1 v2 · Phase F-0.5 · PR #154 = Wave1.5 D1 |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **Phase F-0.5** · §9 |
@@ -30,19 +30,19 @@
 | **PROD QA** | `https://www.gateo.kr/world-events` · 파일럿 3상세(edinburgh·munich·bali) |
 | **VERIFY** | D1~: `audit:event-travel-guide` · `smoke:world-events-detail` · `build` |
 
-**Wave1.5 D5-b (#30)**: glossary 첫 등장만 · heroImages 404 수정 · 히어로·summary 원복 · 썸네일 히어로 카드 밖 분리
+**Wave1.5 D5-b (#30)**: 히어로·갤러리 3영역 분리 · 패널 전체 glossary 첫 등장 · 어필리에이트 버튼 amber 강조
 
-**다음 제시어** (#30 재QA):
+**다음 제시어** (#30 재QA 확인):
 
 ```
-세계행사 일정 #30, Wave1.5 D5-b Preview 재QA
+세계행사 일정 #30, Wave1.5 D5-b Preview 재QA 확인
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
 @plans/world-events-sample-log.md
 브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/bali-galungan-season-2026
 금지: Wave2 overrides · worldEvents.json 직편집 · feature에 plans 커밋 · UI 리디자인 · 신규 plans/*-plan.md
-작업: bali glossary·히어로·summary 재QA → OK 시 #31 Wave2 singapore·dubai
+작업: bali 히어로·glossary·어필리에이트 버튼 Preview 확인 → OK 시 #31 Wave2 singapore·dubai
 ```
 
 ---
