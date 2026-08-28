@@ -180,3 +180,13 @@
 - **VERIFY** `smoke:world-events-detail` · `build` PASS
 - **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026`
 - **다음** 사람 Preview 재QA → OK 시 **#31 Wave2** singapore·dubai
+
+## 세계행사 일정 #30 — Wave1.5 D5-b Preview 3차
+
+- **세션** `세계행사 일정 #30, Wave1.5 D5-b Preview 재QA 확인`
+- **브랜치** `cursor/world-events-wave2` · PR [#154](https://github.com/catgeot/Days/pull/154) · tip `14a8bf42`
+- **피드백** 히어로 사진 스와이프·갤러리 모달 요청 · 사롱 Klook 영문·Google Maps 이탈 · 영상 키워드 로케일
+- **수정** 히어로 스와이프·더보기 모달 · `highlightContextLinks` Google/Klook 로케일 SSOT · YouTube 검색 버튼
+- **VERIFY** `generate:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026`
+- **다음** 사람 Preview QA → OK 시 **#31 Wave2** singapore·dubai
