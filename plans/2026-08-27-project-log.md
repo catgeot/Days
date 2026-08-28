@@ -127,4 +127,11 @@
 - **산출** EventStayStrip `stayAreas` 권역 칩 · `mrtKeyword` MRT 조회 · MRT 더보기 · `fetchMrtStays` keywordOverride
 - **VERIFY** `smoke:world-events-detail` · `smoke:world-events` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `build` PASS
 - **Preview** `/qa/world-events` → edinburgh·munich·bali — 권역 칩·숙소 카드·개막 프리셋
-- **다음** 사람 Preview D4 QA → **#28 Wave2** singapore·dubai
+- **다음** 사람 Preview D4 QA → **#28 D5** 실행·어필리에이트
+
+## 세계행사 일정 #27 — D5 계획 반영 (docs)
+
+- **결정** Wave1.5 **D5** 신설 — 렌터카·투어·사롱 등 **실행 링크·제휴 체류** (발리 pilot)
+- **문서** [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) F-0.5 D5 · index §9 · sample-log — **신규 계획서 없음**
+- **세션** Wave2 데이터 **#28→#29** 연기
+- **다음** **#28 D5** 구현 — `cursor/world-events-wave2` · PR #154
