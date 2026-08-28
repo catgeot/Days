@@ -214,3 +214,15 @@
 - **브랜치** `cursor/world-events-wave2` · tip `8c0e8f94`
 - **수정** 「행사 하이라이트」·제목 — **시즌 메타 스트립**(type·일정·장소 카드) 상단 · 히어로는 사진만
 - **다음** Preview 재QA
+
+## 세계행사 일정 #30 — 갤러리 Wikimedia 다중 폴백
+
+- **세션** `세계행사 일정 #30, Wave1.5 D5-b Preview 재QA`
+- **브랜치** `cursor/world-events-wave2` · PR [#154](https://github.com/catgeot/Days/pull/154) · tip `ad875626`
+- **피드백** Unsplash에 「갈룽안·사원 축제 시즌」사진 많음 · 모달 추가 사진 없음
+- **원인** Supabase Secrets에 `UNSPLASH_ACCESS_KEY` 없음 · Wikimedia 폴백 쿼리(`Galungan & Temple…`) 0건 · 3장만 DB 캐시
+- **수정** glossary en·짧은 en 다중 Wikimedia 쿼리 · Edge·클라이언트 폴백 · 6장 미만 캐시 저장 금지 · `fetch-event-hero-gallery` 재배포
+- **VERIFY** Edge live 11장(시드3+wikimedia8) · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026` — 사진 더보기 6장+
+- **선택** Supabase Secrets에 `UNSPLASH_ACCESS_KEY`(=Vercel `VITE_UNSPLASH_ACCESS_KEY`) 등록 시 Unsplash 우선
+- **다음** 사람 Preview 재QA → OK 시 **#31 Wave2** singapore·dubai
