@@ -19,7 +19,7 @@
 | | |
 |--|--|
 | **상태** | **#30 D5-b Preview 4차** — 히어로 오버레이 제거 · 갤러리·glossary DB 캐시 · YouTube ko+더보기 — PR [#154](https://github.com/catgeot/Days/pull/154) · tip `2b4e890f` |
-| **브랜치** | `cursor/world-events-wave2` · tip `8c0e8f94` |
+| **브랜치** | `cursor/world-events-wave2` · tip `fce1aba3` |
 | **PR** | [#154](https://github.com/catgeot/Days/pull/154) draft |
 | **main** | `6712f777`+ — Wave1 v2 · Phase F-0.5 · PR #154 = Wave1.5 D1 |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **Phase F-0.5** · §9 |
