@@ -18,8 +18,8 @@
 
 | | |
 |--|--|
-| **상태** | **#27 D4 완료** — PR [#154](https://github.com/catgeot/Days/pull/154) · tip `4922f7a9` |
-| **브랜치** | `cursor/world-events-wave2` · tip `4922f7a9` |
+| **상태** | **#28 D5 착수 대기** — PR [#154](https://github.com/catgeot/Days/pull/154) · feature tip `03316edf` |
+| **브랜치** | `cursor/world-events-wave2` · tip `03316edf` |
 | **PR** | [#154](https://github.com/catgeot/Days/pull/154) draft |
 | **main** | `6712f777`+ — Wave1 v2 · Phase F-0.5 · PR #154 = Wave1.5 D1 |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **Phase F-0.5** · §9 |
@@ -30,19 +30,19 @@
 | **PROD QA** | `https://www.gateo.kr/world-events` · 파일럿 3상세(edinburgh·munich·bali) |
 | **VERIFY** | D1~: `audit:event-travel-guide` · `smoke:world-events-detail` · `build` |
 
-**Wave1.5 D4 (PR #154)**: stayAreas→MRT 권역 칩 · MRT 더보기 · 파일럿 회귀 smoke
+**Wave1.5 D5 (PR #154)**: 실행·어필리에이트 체류 — Klook·GYG·PKC · shop 칩 · bali pilot
 
-**다음 제시어** (#27 D4 QA):
+**다음 제시어** (#28 D5):
 
 ```
-세계행사 일정 #27, Wave1.5 D4 Preview QA
+세계행사 일정 #28, Wave1.5 D5 실행·어필리에이트
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
 @plans/world-events-sample-log.md
-브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/edinburgh-fringe-2026
-금지: 새 feature 브랜치 · Wave1 브랜치 · worldEvents.json 직편집 · feature에 plans 커밋 · Wave2 overrides
-작업: 파일럿 3건(edinburgh·munich·bali) stayAreas 칩·MRT 숙소·개막 프리셋 회귀 QA → OK 시 #28 Wave2
+브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/bali-galungan-season-2026
+금지: Wave2 overrides · worldEvents.json 직편집 · feature에 plans 커밋 · UI 리디자인 · 신규 plans/*-plan.md
+작업: D5 EventExecutionStrip · Klook·GYG·PKC · shop actionChips(사롱) · bali pilot smoke · build
 ```
 
 ---

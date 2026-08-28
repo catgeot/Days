@@ -255,7 +255,14 @@
 - **산출** EventStayStrip 권역 칩 · `mrtKeyword` MRT 조회 · MRT 더보기 · `4922f7a9`
 - **VERIFY** `smoke:world-events-detail` · `smoke:world-events` · `build` PASS
 - **Preview** edinburgh·munich·bali — 권역 칩·숙소 카드·개막 프리셋
-- **다음** 사람 Preview D4 QA → **#28 Wave2**
+- **다음** 사람 Preview D4 QA → **#28 D5**
+
+## #8 bali — D5 실행·어필리에이트 피드백 (#28)
+
+- **피드백** 렌터카·기사 투어·사롱·셀endang 안내는 충분하나 **실행 링크 부재** — Google 등 외부 검색 이탈
+- **요구** Klook 렌터카·GYG/MRT 투어는 **사이트 내 제휴** · 사롱·대여는 **큐레이션 외부 칩**으로 gateo에서 연결
+- **계획** Wave1.5 **D5** — [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) F-0.5 (신규 plans 파일 **금지**)
+- **다음** #28 D5 bali pilot → 파일럿 3건 패턴화 → **#29 Wave2**
 
 ## v2 pivot — Preview QA 피드백 (#12 전)
 

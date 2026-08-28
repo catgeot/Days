@@ -30,8 +30,9 @@
 | 6 | `npm run generate:world-events` | ✅ |
 | 7 | `npm run audit:world-events` PASS | ✅ |
 | 8 | PlaceCard에서 해당 slug QA | ✅ |
+| 9 | (D5+) `actionChips` 실행 링크 — `rental`/`tour`/`shop` · Klook·GYG·PKC·큐레이션 URL | 권장 |
 
-**금지**: `worldEvents.json` 직접 편집 · 존재하지 않는 slug
+**금지**: `worldEvents.json` 직접 편집 · 존재하지 않는 slug · **신규 `plans/*-plan.md`** (D5는 [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) F-0.5만)
 
 ---
 
