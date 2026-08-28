@@ -208,3 +208,9 @@
 - **배포 완료** Edge `fetch-event-hero-gallery` · `explain-event-term` · DB migration 적용
 - **수정** 히어로 「행사 하이라이트」·제목·캡션 — 이미지 **하단 흰 영역** 배치(오버레이 아님)
 - **다음** Preview 재QA — 갤러리 확장·glossary 재클릭·YouTube ko
+
+## 세계행사 일정 #30 — 히어로 문구 시즌 파트 복원
+
+- **브랜치** `cursor/world-events-wave2` · tip `8c0e8f94`
+- **수정** 「행사 하이라이트」·제목 — **시즌 메타 스트립**(type·일정·장소 카드) 상단 · 히어로는 사진만
+- **다음** Preview 재QA
