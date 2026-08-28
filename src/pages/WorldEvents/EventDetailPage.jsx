@@ -231,7 +231,13 @@ export default function EventDetailPage() {
 
           {hideHeaderSummary ? (
             <section className="mb-3 rounded-2xl border border-stone-200 bg-white p-3.5 shadow-sm">
-              <div className="flex flex-wrap items-center gap-2">
+              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-amber-700">
+                {t('worldEventDetail.media.heroEyebrow')}
+              </p>
+              <h1 className="mt-1 text-xl font-extrabold leading-snug text-stone-900 sm:text-2xl">
+                {title}
+              </h1>
+              <div className="mt-2 flex flex-wrap items-center gap-2">
                 <span className="inline-flex rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-[11px] font-bold text-amber-900">
                   {typeLabel}
                 </span>

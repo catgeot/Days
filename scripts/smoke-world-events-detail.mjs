@@ -240,6 +240,7 @@ const staticPanelSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventDetai
 assert.match(staticPanelSrc, /linkedTermIdsRef/, 'EventDetailStaticPanel shared glossary refs');
 assert.match(staticPanelSrc, /hideHeaderSummary/, 'EventDetailStaticPanel hideHeaderSummary gate');
 assert.match(detailSrc, /hideHeaderSummary/, 'EventDetailPage D5-b summary dedupe');
+assert.match(detailSrc, /heroEyebrow/, 'EventDetailPage season meta strip highlight label');
 
 const termModalSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventTermExplainModal.jsx'), 'utf8');
 assert.match(termModalSrc, /fetchEventTermExplanation/, 'EventTermExplainModal cached explain');
@@ -261,7 +262,7 @@ assert.match(detailSrc, /onGlossaryTermClick/, 'EventDetailPage glossary click h
 const heroSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventDetailHero.jsx'), 'utf8');
 assert.match(heroSrc, /getWorldEventHeroImages/, 'EventDetailHero gallery SSOT');
 assert.match(heroSrc, /fetchEventHeroGallery/, 'EventDetailHero extended gallery fetch');
-assert.match(heroSrc, /heroEyebrow/, 'EventDetailHero highlight text below image');
+assert.doesNotMatch(heroSrc, /heroEyebrow/, 'EventDetailHero no highlight text on image');
 assert.match(heroSrc, /heroGallery\.thumbnailsAria/, 'EventDetailHero separate gallery list section');
 assert.match(heroSrc, /EventHeroGalleryModal/, 'EventDetailHero gallery modal');
 assert.match(heroSrc, /heroGallery\.viewMore/, 'EventDetailHero view more button');
