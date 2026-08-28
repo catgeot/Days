@@ -201,3 +201,10 @@
 - **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026`
 - **배포** migration `20260828120000_event_hero_gallery` · Edge `fetch-event-hero-gallery` · `explain-event-term` (Secrets·DB 적용 후 캐시 동작)
 - **다음** 사람 Preview 재QA → OK 시 **#31 Wave2** singapore·dubai
+
+## 세계행사 일정 #30 — Edge 배포·히어로 문구 (#30 후속)
+
+- **브랜치** `cursor/world-events-wave2` · tip `021eab6a`
+- **배포 완료** Edge `fetch-event-hero-gallery` · `explain-event-term` · DB migration 적용
+- **수정** 히어로 「행사 하이라이트」·제목·캡션 — 이미지 **하단 흰 영역** 배치(오버레이 아님)
+- **다음** Preview 재QA — 갤러리 확장·glossary 재클릭·YouTube ko

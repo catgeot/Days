@@ -755,7 +755,7 @@ flowchart LR
 | | |
 |--|--|
 | **상태** | **#30 D5-b Preview 4차** — 히어로 오버레이 제거 · 갤러리·glossary DB 캐시 · YouTube ko+더보기 — PR [#154](https://github.com/catgeot/Days/pull/154) |
-| **브랜치** | `cursor/world-events-wave2` · tip `2b4e890f` |
+| **브랜치** | `cursor/world-events-wave2` · tip `021eab6a` |
 | **main** | Wave1 PR #153 merged · D5-b bali pilot |
 | **플랜** | 본 문서 **Phase F-0.5 D5-b** · 표준 제시어 **#23~#31** |
 | **Preview** | `https://www.gateo.kr/qa/world-events` |
