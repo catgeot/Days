@@ -261,6 +261,7 @@ assert.match(detailSrc, /onGlossaryTermClick/, 'EventDetailPage glossary click h
 const heroSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventDetailHero.jsx'), 'utf8');
 assert.match(heroSrc, /getWorldEventHeroImages/, 'EventDetailHero gallery SSOT');
 assert.match(heroSrc, /fetchEventHeroGallery/, 'EventDetailHero extended gallery fetch');
+assert.match(heroSrc, /heroEyebrow/, 'EventDetailHero highlight text below image');
 assert.match(heroSrc, /heroGallery\.thumbnailsAria/, 'EventDetailHero separate gallery list section');
 assert.match(heroSrc, /EventHeroGalleryModal/, 'EventDetailHero gallery modal');
 assert.match(heroSrc, /heroGallery\.viewMore/, 'EventDetailHero view more button');

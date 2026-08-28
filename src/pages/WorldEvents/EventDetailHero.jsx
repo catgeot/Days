@@ -98,6 +98,10 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
   if (!seedImages.length) return null;
 
   const activeImage = seedImages[activeIndex] || seedImages[0];
+  const activeCaption =
+    locale === 'en' && activeImage.captionEn
+      ? activeImage.captionEn
+      : activeImage.captionKo || '';
 
   return (
     <>
@@ -153,6 +157,18 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
                 <Images size={13} aria-hidden />
                 {t('worldEventDetail.heroGallery.viewMore')}
               </button>
+            ) : null}
+          </div>
+
+          <div className="border-t border-stone-100 bg-white px-4 py-3">
+            <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-amber-700">
+              {t('worldEventDetail.media.heroEyebrow')}
+            </p>
+            <p className="mt-1 line-clamp-2 text-lg font-extrabold leading-snug text-stone-900 sm:text-xl">
+              {title}
+            </p>
+            {activeCaption ? (
+              <p className="mt-1 line-clamp-2 text-xs font-semibold text-stone-600">{activeCaption}</p>
             ) : null}
           </div>
         </section>
