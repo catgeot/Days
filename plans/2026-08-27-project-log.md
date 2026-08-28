@@ -226,3 +226,13 @@
 - **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026` — 사진 더보기 6장+
 - **선택** Supabase Secrets에 `UNSPLASH_ACCESS_KEY`(=Vercel `VITE_UNSPLASH_ACCESS_KEY`) 등록 시 Unsplash 우선
 - **다음** 사람 Preview 재QA → OK 시 **#31 Wave2** singapore·dubai
+
+## 세계행사 일정 #30 — Wave1.5 D5-b Preview 재QA (locale·영상)
+
+- **세션** `세계행사 일정 #30, Wave1.5 D5-b Preview 재QA`
+- **브랜치** `cursor/world-events-wave2` · PR [#154](https://github.com/catgeot/Days/pull/154) · tip `a6c91f6e`
+- **피드백** 영상 더보기가 본문 길이 확장 · glossary 재클릭 로딩 · en/ko YouTube·검색 locale 혼선
+- **수정** YouTube 10개 패널 내부 스크롤(더보기 제거) · glossary 메모리 캐시 · `place_videos` locale 분리 · en에서 네이버 숨김
+- **VERIFY** `smoke:world-events-detail` · `smoke:world-events` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026` — ko/en 무니·검색·YouTube·갤러리 6장+
+- **다음** 사람 Preview 재QA OK → **#31 Wave2** singapore·dubai

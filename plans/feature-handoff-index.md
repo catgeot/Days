@@ -18,8 +18,8 @@
 
 | | |
 |--|--|
-| **상태** | **#30 D5-b Preview 4차** — 갤러리 Wikimedia 다중 폴백(11장 live) — PR [#154](https://github.com/catgeot/Days/pull/154) · tip `ad875626` |
-| **브랜치** | `cursor/world-events-wave2` · tip `ad875626` |
+| **상태** | **#30 D5-b Preview 재QA** — YouTube 내부 스크롤·glossary 메모리 캐시·locale 영상 — PR [#154](https://github.com/catgeot/Days/pull/154) · tip `a6c91f6e` |
+| **브랜치** | `cursor/world-events-wave2` · tip `a6c91f6e` |
 | **PR** | [#154](https://github.com/catgeot/Days/pull/154) draft |
 | **main** | `6712f777`+ — Wave1 v2 · Phase F-0.5 · PR #154 = Wave1.5 D1 |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **Phase F-0.5** · §9 |
@@ -30,19 +30,19 @@
 | **PROD QA** | `https://www.gateo.kr/world-events` · 파일럿 3상세(edinburgh·munich·bali) |
 | **VERIFY** | D1~: `audit:event-travel-guide` · `smoke:world-events-detail` · `build` |
 
-**Wave1.5 D5-b (#30)**: 히어로 정리 · 갤러리 Wikimedia+Unsplash · glossary MOONi 캐시 · YouTube ko 리스트·더보기
+**Wave1.5 D5-b (#30)**: 히어로·갤러리 6장+ · glossary MOONi 캐시(재클릭 즉시) · YouTube ko/en 10개 내부 스크롤
 
-**다음 제시어** (#30 Preview 재QA):
+**다음 제시어** (#31 Wave2 — 사람 Preview OK 후):
 
 ```
-세계행사 일정 #30, Wave1.5 D5-b Preview 재QA
+세계행사 일정 #31, Wave2 singapore·dubai
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
 @plans/world-events-sample-log.md
 브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/bali-galungan-season-2026
-금지: Wave2 overrides · worldEvents.json 직편집 · feature에 plans 커밋 · UI 리디자인 · 신규 plans/*-plan.md
-작업: bali 사진 더보기 6장+ · glossary 재클릭 · YouTube ko Preview 확인 → OK 시 #31 Wave2 singapore·dubai
+금지: worldEvents.json 직편집 · feature에 plans 커밋 · UI 리디자인 · 신규 plans/*-plan.md
+작업: singapore·dubai overrides · generate:world-events · smoke · Preview QA
 ```
 
 ---
