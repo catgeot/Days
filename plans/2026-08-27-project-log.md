@@ -160,3 +160,13 @@
 - **VERIFY** `generate:world-events` · `smoke:world-events-detail` · `smoke:world-events` · `smoke:event-travel-guide` · `build` PASS
 - **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026` — 본문 용어 클릭 모달 · 하이라이트 인라인 링크 · 히어로 3장
 - **다음** 사람 Preview D5-b QA → OK 시 **#31 Wave2** singapore·dubai
+
+## 세계행사 일정 #30 — Wave1.5 D5-b Preview QA
+
+- **세션** `세계행사 일정 #30, Wave1.5 D5-b Preview QA`
+- **브랜치** `cursor/world-events-wave2` · PR [#154](https://github.com/catgeot/Days/pull/154) · tip `f66a87b9`
+- **피드백** glossary 동일 단어 문단 내 반복 링크(가독성·중복 API) · 히어로 썸네일 2·3장 404 · summary 카드가 히어로와 중복·축소감
+- **수정** `EventRichText` 문단 내 첫 등장만 링크 · bali `heroImages` Wikimedia URL 교체 · D5-b summary 카드 숨김→히어로 하단 메타 스트립
+- **VERIFY** `generate:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026`
+- **다음** 사람 재QA → OK 시 **#31 Wave2** singapore·dubai
