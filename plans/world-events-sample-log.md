@@ -292,6 +292,13 @@
 - **VERIFY** smoke·build PASS
 - **다음** 사람 Preview QA → OK 시 **#31 Wave2** singapore·dubai
 
+## #9 bali — D5-b Preview 4차 (#30)
+
+- **피드백** 히어로 「행사 하이라이트」오버레이 · 갤러리 모달 동일 3장 · glossary 무니 매클릭 API · YouTube 영문 리스트
+- **수정** 히어로 텍스트 제거 · `event_hero_gallery`+Wikimedia Edge · `event_term_glossary_cache` · YouTube ko fetch·리스트 더보기 · `2b4e890f`
+- **VERIFY** smoke·audit·build PASS
+- **다음** 사람 Preview 재QA → OK 시 **#31 Wave2** singapore·dubai
+
 ## v2 pivot — Preview QA 피드백 (#12 전)
 
 - **일시**: 2026-08-26
