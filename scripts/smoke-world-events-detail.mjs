@@ -250,6 +250,7 @@ assert.match(termModalSrc, /googleSearch/, 'EventTermExplainModal google search 
 const fetchHeroGallerySrc = readFileSync(join(root, 'src/utils/fetchEventHeroGallery.js'), 'utf8');
 assert.match(fetchHeroGallerySrc, /event_hero_gallery/, 'fetchEventHeroGallery DB cache');
 assert.match(fetchHeroGallerySrc, /fetch-event-hero-gallery/, 'fetchEventHeroGallery edge invoke');
+assert.match(fetchHeroGallerySrc, /fetchUnsplashImages/, 'fetchEventHeroGallery unsplash fallback');
 assert.match(fetchHeroGallerySrc, /fetchWikimediaGalleryFromQueries/, 'fetchEventHeroGallery wikimedia fallback');
 
 const heroGalleryMergeSrc = readFileSync(join(root, 'src/utils/worldEventHeroGalleryMerge.js'), 'utf8');
