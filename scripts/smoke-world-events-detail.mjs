@@ -250,13 +250,17 @@ assert.match(termModalSrc, /googleSearch/, 'EventTermExplainModal google search 
 const fetchHeroGallerySrc = readFileSync(join(root, 'src/utils/fetchEventHeroGallery.js'), 'utf8');
 assert.match(fetchHeroGallerySrc, /event_hero_gallery/, 'fetchEventHeroGallery DB cache');
 assert.match(fetchHeroGallerySrc, /fetch-event-hero-gallery/, 'fetchEventHeroGallery edge invoke');
-assert.match(fetchHeroGallerySrc, /fetchUnsplashImages/, 'fetchEventHeroGallery unsplash fallback');
+assert.match(fetchHeroGallerySrc, /fetchWikimediaGalleryFromQueries/, 'fetchEventHeroGallery wikimedia fallback');
 
 const heroGalleryMergeSrc = readFileSync(join(root, 'src/utils/worldEventHeroGalleryMerge.js'), 'utf8');
 assert.match(heroGalleryMergeSrc, /mergeWorldEventHeroGalleryImages/, 'hero gallery merge util');
 
 const baliGalleryQueries = buildWorldEventHeroGalleryQueries(bali, 'ko');
 assert.ok(baliGalleryQueries.primary.includes('갈룽안'), 'bali unsplash primary uses ko title');
+assert.ok(
+  baliGalleryQueries.wikimediaQueries.some((query) => /galungan/i.test(query)),
+  'bali wikimedia queries include galungan',
+);
 
 const fetchWorldVideosSrc = readFileSync(join(root, 'src/utils/fetchWorldEventVideos.js'), 'utf8');
 assert.match(fetchWorldVideosSrc, /world-event:/, 'fetchWorldEventVideos place_id prefix');

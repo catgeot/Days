@@ -7,6 +7,7 @@ import {
 import {
   mapUnsplashPhotosToGalleryImages,
   mergeWorldEventHeroGalleryImages,
+  fetchWikimediaGalleryFromQueries,
 } from './worldEventHeroGalleryMerge';
 
 const INVOKE_TIMEOUT_MS = 18_000;
@@ -61,7 +62,7 @@ export async function fetchEventHeroGallery(event, locale = 'ko') {
   }
 
   const seedImages = getWorldEventHeroImages(event);
-  const { primary, fallbackEn } = buildWorldEventHeroGalleryQueries(event, locale);
+  const { primary, fallbackEn, wikimediaQueries } = buildWorldEventHeroGalleryQueries(event, locale);
 
   try {
     const { data: cached } = await supabase
@@ -80,6 +81,7 @@ export async function fetchEventHeroGallery(event, locale = 'ko') {
           eventId,
           searchQuery: primary,
           fallbackSearchQuery: fallbackEn,
+          wikimediaQueries,
           seedImages,
         },
       }),
@@ -94,10 +96,17 @@ export async function fetchEventHeroGallery(event, locale = 'ko') {
     }
 
     const unsplashImages = await fetchClientUnsplashGallery(primary, fallbackEn);
-    const merged = mergeWorldEventHeroGalleryImages(seedImages, unsplashImages).slice(
-      0,
-      TARGET_GALLERY_COUNT,
-    );
+    let merged = mergeWorldEventHeroGalleryImages(seedImages, unsplashImages);
+
+    if (merged.length < MIN_GALLERY_COUNT && wikimediaQueries?.length) {
+      const wikiImages = await fetchWikimediaGalleryFromQueries(
+        wikimediaQueries,
+        TARGET_GALLERY_COUNT,
+      );
+      merged = mergeWorldEventHeroGalleryImages(merged, wikiImages).slice(0, TARGET_GALLERY_COUNT);
+    } else {
+      merged = merged.slice(0, TARGET_GALLERY_COUNT);
+    }
 
     if (merged.length >= MIN_GALLERY_COUNT) {
       return { ok: true, images: merged, fromCache: false };

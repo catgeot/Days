@@ -36,6 +36,74 @@ function imageDedupeKey(url) {
   }
 }
 
+const WIKIMEDIA_API = 'https://commons.wikimedia.org/w/api.php';
+
+/**
+ * @param {string} searchQuery
+ * @param {number} [limit]
+ */
+export async function fetchWikimediaGalleryImages(searchQuery, limit = 10) {
+  const q = String(searchQuery || '').trim();
+  if (!q) return [];
+
+  const params = new URLSearchParams({
+    action: 'query',
+    format: 'json',
+    origin: '*',
+    generator: 'search',
+    gsrsearch: q,
+    gsrnamespace: '6',
+    gsrlimit: String(Math.min(20, limit + 4)),
+    prop: 'imageinfo',
+    iiprop: 'url',
+    iiurlwidth: '1280',
+  });
+
+  const response = await fetch(`${WIKIMEDIA_API}?${params.toString()}`);
+  if (!response.ok) {
+    throw new Error(`Wikimedia API ${response.status}`);
+  }
+
+  const data = await response.json();
+  const pages = data?.query?.pages;
+  if (!pages || typeof pages !== 'object') return [];
+
+  const images = [];
+  for (const page of Object.values(pages)) {
+    const info = Array.isArray(page.imageinfo) ? page.imageinfo[0] : null;
+    const url = String(info?.thumburl || info?.url || '').trim();
+    if (!url.startsWith('http')) continue;
+    const title = String(page.title || '').replace(/^File:/, '').replace(/_/g, ' ').trim();
+    images.push({
+      url,
+      captionKo: title,
+      captionEn: title,
+      source: 'wikimedia',
+    });
+    if (images.length >= limit) break;
+  }
+
+  return images;
+}
+
+/**
+ * @param {string[]} queries
+ * @param {number} [limit]
+ */
+export async function fetchWikimediaGalleryFromQueries(queries, limit = 10) {
+  const fetched = [];
+  for (const query of queries) {
+    if (fetched.length >= limit) break;
+    try {
+      const batch = await fetchWikimediaGalleryImages(query, limit - fetched.length);
+      fetched.push(...batch);
+    } catch (err) {
+      console.warn('[fetchWikimediaGalleryFromQueries]', query, err?.message || err);
+    }
+  }
+  return fetched;
+}
+
 /**
  * @param {Array<Record<string, unknown>>} photos
  */

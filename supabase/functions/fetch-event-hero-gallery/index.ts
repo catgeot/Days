@@ -139,6 +139,21 @@ async function fetchWikimediaImages(searchQuery: string, limit = 10): Promise<Ga
   return images;
 }
 
+async function fetchWikimediaFromQueries(queries: string[], limit = 10): Promise<GalleryImage[]> {
+  const fetched: GalleryImage[] = [];
+
+  for (const query of queries) {
+    if (fetched.length >= limit) break;
+    try {
+      fetched.push(...await fetchWikimediaImages(query, limit - fetched.length));
+    } catch (err) {
+      console.warn("Wikimedia query failed:", query, err);
+    }
+  }
+
+  return fetched;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -149,6 +164,9 @@ serve(async (req) => {
     const eventId = String(body.eventId || "").trim();
     const searchQuery = String(body.searchQuery || "").trim();
     const fallbackSearchQuery = String(body.fallbackSearchQuery || "").trim();
+    const wikimediaQueries = Array.isArray(body.wikimediaQueries)
+      ? body.wikimediaQueries.map((query: unknown) => String(query || "").trim()).filter(Boolean)
+      : [];
     const seedImages = Array.isArray(body.seedImages) ? body.seedImages : [];
     const force = Boolean(body.force);
 
@@ -204,17 +222,24 @@ serve(async (req) => {
       }
     }
 
-    if (fetched.length < need && fallbackSearchQuery) {
-      try {
-        fetched.push(...await fetchWikimediaImages(fallbackSearchQuery, need - fetched.length));
-      } catch (err) {
-        console.warn("Wikimedia fallback failed:", err);
+    if (fetched.length < need) {
+      const wikiQueries = [
+        ...wikimediaQueries,
+        fallbackSearchQuery,
+      ].filter((query, index, list) => query && list.indexOf(query) === index);
+
+      if (wikiQueries.length) {
+        try {
+          fetched.push(...await fetchWikimediaFromQueries(wikiQueries, need - fetched.length));
+        } catch (err) {
+          console.warn("Wikimedia fallback failed:", err);
+        }
       }
     }
 
     const images = mergeImages(normalizedSeed, fetched).slice(0, TARGET_COUNT);
 
-    if (images.length > 0) {
+    if (images.length >= MIN_CACHE_COUNT) {
       const { error: dbError } = await supabaseAdmin.from("event_hero_gallery").upsert({
         event_id: eventId,
         images,

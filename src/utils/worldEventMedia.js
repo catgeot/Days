@@ -35,20 +35,66 @@ export function buildWorldEventSearchQuery(event, locale = 'ko') {
 }
 
 /**
- * Hero gallery modal — Unsplash primary (ko title), Wikimedia en fallback.
+ * @param {string[]} values
+ */
+function uniqueNonEmptyStrings(values) {
+  const seen = new Set();
+  const out = [];
+  for (const value of values) {
+    const trimmed = String(value || '').trim();
+    if (!trimmed) continue;
+    const key = trimmed.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(trimmed);
+  }
+  return out;
+}
+
+/**
+ * Hero gallery modal — Unsplash primary (ko title), short en + glossary for Wikimedia.
  * @param {import('./worldEvents').WorldEvent | null | undefined} event
  * @param {string} [locale]
  */
 export function buildWorldEventHeroGalleryQueries(event, locale = 'ko') {
-  if (!event) return { primary: '', fallbackEn: '' };
+  if (!event) return { primary: '', fallbackEn: '', wikimediaQueries: [] };
+
   const title = getWorldEventTitle(event, locale);
   const titleEn = getWorldEventTitle(event, 'en');
   const placeMeta = getWorldEventPlaceMeta(event.slug, 'en');
   const placeEn = placeMeta?.label ? String(placeMeta.label).trim() : '';
-  const fallbackEn = [titleEn, placeEn].filter(Boolean).join(' ');
+  const glossaryTerms = Array.isArray(event.glossaryTerms) ? event.glossaryTerms : [];
+
+  const primary = String(event.heroGallerySearchQueryKo || title || '').trim();
+  const primaryAlt = primary.replace(/[·•]/g, ' ').replace(/\s+/g, ' ').trim();
+
+  const glossaryEnQueries = glossaryTerms
+    .map((term) => term.searchQueryEn || term.termEn)
+    .filter(Boolean);
+
+  const shortTitleEn = String(titleEn || '')
+    .split(/[·&]/)[0]
+    .trim();
+
+  const fallbackEn = String(
+    event.heroGallerySearchQueryEn ||
+      glossaryEnQueries[0] ||
+      [shortTitleEn, placeEn].filter(Boolean).join(' ') ||
+      titleEn,
+  ).trim();
+
+  const wikimediaQueries = uniqueNonEmptyStrings([
+    event.heroGallerySearchQueryEn,
+    ...glossaryEnQueries.slice(0, 3),
+    shortTitleEn && placeEn ? `${shortTitleEn} ${placeEn}` : '',
+    placeEn ? `${placeEn} temple festival` : '',
+    fallbackEn,
+  ]);
+
   return {
-    primary: String(title || '').trim(),
-    fallbackEn: fallbackEn || String(titleEn || '').trim(),
+    primary: primaryAlt || primary,
+    fallbackEn,
+    wikimediaQueries,
   };
 }
 

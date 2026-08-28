@@ -36,7 +36,9 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
       setGalleryLoading(true);
       try {
         const result = await fetchEventHeroGallery(event, locale);
-        if (result.ok && result.images.length > 0) {
+        if (result.images.length > seedImages.length) {
+          setGalleryImages(result.images);
+        } else if (result.ok && result.images.length > 0) {
           setGalleryImages(result.images);
         }
       } finally {
