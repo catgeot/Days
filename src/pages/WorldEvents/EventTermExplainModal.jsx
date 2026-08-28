@@ -2,16 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ExternalLink, Sparkles, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { apiClient } from '../Home/lib/apiClient';
 import {
   getGlossaryTermSearchUrl,
   getWorldEventGlossaryTermById,
 } from '../../utils/worldEventGlossary';
-
-const SYSTEM_KO =
-  '당신은 GATEO 무니(MOONi) 여행 도우미입니다. 행사·여행 맥락에서 용어를 2~4문장으로 간결히 설명하세요. 실용적이고 사실 위주로 답하세요.';
-const SYSTEM_EN =
-  'You are MOONi, GATEO travel assistant. Explain the term in 2-4 short sentences for event travel context. Be practical and factual.';
+import { fetchEventTermExplanation } from '../../utils/fetchEventTermExplanation';
 
 /**
  * @param {{
@@ -34,18 +29,26 @@ export default function EventTermExplainModal({ event, termId, locale = 'ko', on
   const searchUrl = getGlossaryTermSearchUrl(term, locale);
 
   useEffect(() => {
-    if (!term || !prompt) return undefined;
+    if (!term || !prompt || !event?.id) return undefined;
 
     let cancelled = false;
     setAnswer('');
     setError(false);
     setLoading(true);
 
-    apiClient
-      .fetchProxyGemini(null, [], locale === 'en' ? SYSTEM_EN : SYSTEM_KO, prompt, [], 'gemini-2.5-flash')
-      .then((text) => {
+    fetchEventTermExplanation({
+      eventId: event.id,
+      termId: term.id,
+      prompt,
+      locale,
+    })
+      .then((result) => {
         if (cancelled) return;
-        setAnswer(String(text || '').trim());
+        if (result.ok && result.answer) {
+          setAnswer(result.answer);
+        } else {
+          setError(true);
+        }
         setLoading(false);
       })
       .catch(() => {
@@ -57,7 +60,7 @@ export default function EventTermExplainModal({ event, termId, locale = 'ko', on
     return () => {
       cancelled = true;
     };
-  }, [term?.id, prompt, locale]);
+  }, [event?.id, term?.id, prompt, locale]);
 
   useEffect(() => {
     if (!term) return undefined;

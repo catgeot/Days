@@ -12,6 +12,7 @@ const PHOTO_SWIPE_DIRECTION_RATIO = 1.2;
  *   activeIndex: number,
  *   locale?: string,
  *   title: string,
+ *   loading?: boolean,
  *   onClose: () => void,
  *   onIndexChange: (index: number) => void,
  * }} props
@@ -21,6 +22,7 @@ export default function EventHeroGalleryModal({
   activeIndex,
   locale = 'ko',
   title,
+  loading = false,
   onClose,
   onIndexChange,
 }) {
@@ -158,6 +160,9 @@ export default function EventHeroGalleryModal({
       </div>
 
       <div className="relative z-10 px-4 pb-[max(1rem,env(safe-area-inset-bottom,0px))] pt-2 text-center">
+        {loading ? (
+          <p className="text-xs text-white/60">{t('worldEventDetail.heroGallery.loading')}</p>
+        ) : null}
         {caption ? <p className="text-sm font-semibold text-white/90">{caption}</p> : null}
         {images.length > 1 ? (
           <p className="mt-1 text-xs text-white/50">{t('worldEventDetail.heroGallery.swipeHint')}</p>

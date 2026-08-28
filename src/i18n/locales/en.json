@@ -1784,7 +1784,8 @@
       "close": "Close",
       "prev": "Previous photo",
       "next": "Next photo",
-      "swipeHint": "Swipe left or right to browse photos"
+      "swipeHint": "Swipe left or right to browse photos",
+      "loading": "Loading more photos…"
     },
     "media": {
       "heroEyebrow": "Event highlight",
@@ -1794,6 +1795,8 @@
       "googleSearch": "Google search",
       "naverSearch": "Naver search",
       "youtubeTitle": "Related videos",
+      "youtubeLoading": "Loading videos…",
+      "youtubeLoadMore": "Show {{count}} more videos",
       "youtubeSearch": "Search more on YouTube",
       "attractionsTitle": "{{city}} attractions",
       "attractionsHint": "Open city attraction hubs on the map and place cards.",

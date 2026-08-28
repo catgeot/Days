@@ -1547,7 +1547,8 @@
       "close": "닫기",
       "prev": "이전 사진",
       "next": "다음 사진",
-      "swipeHint": "좌우로 넘겨 더 많은 사진을 볼 수 있어요"
+      "swipeHint": "좌우로 넘겨 더 많은 사진을 볼 수 있어요",
+      "loading": "추가 사진을 불러오는 중…"
     },
     "media": {
       "heroEyebrow": "행사 하이라이트",
@@ -1557,6 +1558,8 @@
       "googleSearch": "구글 검색",
       "naverSearch": "네이버 검색",
       "youtubeTitle": "관련 영상",
+      "youtubeLoading": "한국어 영상을 불러오는 중…",
+      "youtubeLoadMore": "영상 {{count}}개 더보기",
       "youtubeSearch": "YouTube에서 더 찾기",
       "attractionsTitle": "{{city}} 명소",
       "attractionsHint": "도시 명소 허브에서 지도·여행지 카드로 이어집니다.",

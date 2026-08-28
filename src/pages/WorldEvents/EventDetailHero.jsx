@@ -1,8 +1,9 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Images } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { getWorldEventTitle } from '../../utils/worldEvents';
 import { getWorldEventHeroImages } from '../../utils/worldEventGlossary';
+import { fetchEventHeroGallery } from '../../utils/fetchEventHeroGallery';
 import EventHeroGalleryModal from './EventHeroGalleryModal';
 
 const PHOTO_SWIPE_THRESHOLD_PX = 40;
@@ -13,24 +14,56 @@ const PHOTO_SWIPE_DIRECTION_RATIO = 1.2;
  */
 export default function EventDetailHero({ event, locale = 'ko' }) {
   const { t } = useTranslation();
-  const images = useMemo(() => getWorldEventHeroImages(event), [event]);
+  const seedImages = useMemo(() => getWorldEventHeroImages(event), [event]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [galleryOpen, setGalleryOpen] = useState(false);
+  const [galleryImages, setGalleryImages] = useState(seedImages);
+  const [galleryLoading, setGalleryLoading] = useState(false);
+  const galleryFetchRef = useRef(null);
   const swipeStartRef = useRef(null);
 
   const title = getWorldEventTitle(event, locale);
 
+  useEffect(() => {
+    setGalleryImages(seedImages);
+    setActiveIndex(0);
+  }, [event.id, seedImages]);
+
+  const loadExtendedGallery = useCallback(async () => {
+    if (galleryFetchRef.current) return galleryFetchRef.current;
+
+    galleryFetchRef.current = (async () => {
+      setGalleryLoading(true);
+      try {
+        const result = await fetchEventHeroGallery(event, locale);
+        if (result.ok && result.images.length > 0) {
+          setGalleryImages(result.images);
+        }
+      } finally {
+        setGalleryLoading(false);
+        galleryFetchRef.current = null;
+      }
+    })();
+
+    return galleryFetchRef.current;
+  }, [event, locale]);
+
+  const openGallery = useCallback(() => {
+    setGalleryOpen(true);
+    void loadExtendedGallery();
+  }, [loadExtendedGallery]);
+
   const step = useCallback(
     (delta) => {
-      if (images.length < 2) return;
-      setActiveIndex((index) => (index + delta + images.length) % images.length);
+      if (seedImages.length < 2) return;
+      setActiveIndex((index) => (index + delta + seedImages.length) % seedImages.length);
     },
-    [images.length],
+    [seedImages.length],
   );
 
   const consumeHorizontalSwipe = useCallback(
     (start, endX, endY) => {
-      if (!start || images.length < 2) return false;
+      if (!start || seedImages.length < 2) return false;
       const dx = endX - start.x;
       const dy = endY - start.y;
       if (Math.abs(dx) < PHOTO_SWIPE_THRESHOLD_PX) return false;
@@ -38,20 +71,20 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
       step(dx > 0 ? -1 : 1);
       return true;
     },
-    [images.length, step],
+    [seedImages.length, step],
   );
 
-  const onHeroTouchStart = useCallback((event) => {
-    if (event.touches.length !== 1) return;
-    const touch = event.touches[0];
+  const onHeroTouchStart = useCallback((touchEvent) => {
+    if (touchEvent.touches.length !== 1) return;
+    const touch = touchEvent.touches[0];
     swipeStartRef.current = { x: touch.clientX, y: touch.clientY };
   }, []);
 
   const onHeroTouchEnd = useCallback(
-    (event) => {
+    (touchEvent) => {
       const start = swipeStartRef.current;
       swipeStartRef.current = null;
-      const touch = event.changedTouches?.[0];
+      const touch = touchEvent.changedTouches?.[0];
       if (!touch) return;
       consumeHorizontalSwipe(start, touch.clientX, touch.clientY);
     },
@@ -62,13 +95,9 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
     swipeStartRef.current = null;
   }, []);
 
-  if (!images.length) return null;
+  if (!seedImages.length) return null;
 
-  const activeImage = images[activeIndex] || images[0];
-  const activeCaption =
-    locale === 'en' && activeImage.captionEn
-      ? activeImage.captionEn
-      : activeImage.captionKo || '';
+  const activeImage = seedImages[activeIndex] || seedImages[0];
 
   return (
     <>
@@ -91,20 +120,7 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
               decoding="async"
               draggable={false}
             />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 p-4">
-              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-amber-200/90">
-                {t('worldEventDetail.media.heroEyebrow')}
-              </p>
-              <p className="mt-1 line-clamp-2 text-lg font-extrabold leading-snug text-white sm:text-xl">
-                {title}
-              </p>
-              {activeCaption ? (
-                <p className="mt-1 line-clamp-1 text-xs font-semibold text-white/85">{activeCaption}</p>
-              ) : null}
-            </div>
-
-            {images.length > 1 ? (
+            {seedImages.length > 1 ? (
               <>
                 <button
                   type="button"
@@ -123,15 +139,15 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
                   <ChevronRight size={18} aria-hidden />
                 </button>
                 <span className="absolute bottom-4 right-4 rounded-full bg-black/55 px-2 py-0.5 text-[10px] font-bold text-white tabular-nums">
-                  {activeIndex + 1}/{images.length}
+                  {activeIndex + 1}/{seedImages.length}
                 </span>
               </>
             ) : null}
 
-            {images.length > 1 ? (
+            {seedImages.length > 1 ? (
               <button
                 type="button"
-                onClick={() => setGalleryOpen(true)}
+                onClick={openGallery}
                 className="absolute bottom-4 left-4 inline-flex items-center gap-1 rounded-full border border-white/30 bg-black/55 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-black/70"
               >
                 <Images size={13} aria-hidden />
@@ -141,7 +157,7 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
           </div>
         </section>
 
-        {images.length > 1 ? (
+        {seedImages.length > 1 ? (
           <section
             className="rounded-2xl border border-stone-200 bg-white p-2.5 shadow-sm"
             aria-label={t('worldEventDetail.heroGallery.thumbnailsAria')}
@@ -152,7 +168,7 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
               </p>
               <button
                 type="button"
-                onClick={() => setGalleryOpen(true)}
+                onClick={openGallery}
                 className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 hover:text-amber-900"
               >
                 <Images size={12} aria-hidden />
@@ -163,7 +179,7 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
               className="flex gap-2 overflow-x-auto px-0.5 py-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               role="listbox"
             >
-              {images.map((image, index) => {
+              {seedImages.map((image, index) => {
                 const selected = index === activeIndex;
                 const thumbCaption =
                   locale === 'en' && image.captionEn ? image.captionEn : image.captionKo || '';
@@ -200,10 +216,11 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
 
       {galleryOpen ? (
         <EventHeroGalleryModal
-          images={images}
-          activeIndex={activeIndex}
+          images={galleryImages}
+          activeIndex={Math.min(activeIndex, Math.max(galleryImages.length - 1, 0))}
           locale={locale}
           title={title}
+          loading={galleryLoading}
           onClose={() => setGalleryOpen(false)}
           onIndexChange={setActiveIndex}
         />
