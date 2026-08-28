@@ -170,3 +170,13 @@
 - **VERIFY** `generate:world-events` · `smoke:world-events-detail` · `build` PASS
 - **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026`
 - **다음** 사람 재QA → OK 시 **#31 Wave2** singapore·dubai
+
+## 세계행사 일정 #30 — Wave1.5 D5-b Preview 재QA (2차)
+
+- **세션** `세계행사 일정 #30, Wave1.5 D5-b Preview 재QA`
+- **브랜치** `cursor/world-events-wave2` · PR [#154](https://github.com/catgeot/Days/pull/154) · tip `9f66dac5`
+- **피드백** 히어로·썸네일 동일 영역 분할로 축소감 · 하이라이트 간 glossary 링크 반복 · 어필리에이트 버튼 시인성 부족
+- **수정** 히어로(4:3~16:9) 단독 + 썸네일 갤러리 카드 분리 · D5-b summary 숨김·메타 스트립 · 패널 전체 glossary 첫 등장만 · amber 버튼 강조
+- **VERIFY** `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026`
+- **다음** 사람 Preview 재QA → OK 시 **#31 Wave2** singapore·dubai
