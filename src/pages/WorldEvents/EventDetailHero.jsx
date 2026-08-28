@@ -1,12 +1,31 @@
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { MapPin } from 'lucide-react';
 import { getWorldEventTitle } from '../../utils/worldEvents';
 import { getWorldEventHeroImages } from '../../utils/worldEventGlossary';
 
 /**
- * @param {{ event: import('../../utils/worldEvents').WorldEvent, locale?: string }} props
+ * @param {{
+ *   event: import('../../utils/worldEvents').WorldEvent,
+ *   locale?: string,
+ *   dateLabel?: string,
+ *   placeLabel?: string,
+ *   placeCountry?: string,
+ *   venueName?: string,
+ *   recurrenceNote?: string,
+ *   typeLabel?: string,
+ * }} props
  */
-export default function EventDetailHero({ event, locale = 'ko' }) {
+export default function EventDetailHero({
+  event,
+  locale = 'ko',
+  dateLabel = '',
+  placeLabel = '',
+  placeCountry = '',
+  venueName = '',
+  recurrenceNote = '',
+  typeLabel = '',
+}) {
   const { t } = useTranslation();
   const images = useMemo(() => getWorldEventHeroImages(event), [event]);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -19,6 +38,7 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
     locale === 'en' && activeImage.captionEn
       ? activeImage.captionEn
       : activeImage.captionKo || '';
+  const showMetaStrip = Boolean(dateLabel || placeLabel || venueName || recurrenceNote || typeLabel);
 
   return (
     <section className="mb-3 overflow-hidden rounded-2xl border border-stone-200 bg-stone-900 shadow-sm">
@@ -48,6 +68,39 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
           </span>
         ) : null}
       </div>
+
+      {showMetaStrip ? (
+        <div className="border-t border-stone-700/40 bg-stone-950/90 px-4 py-3">
+          <div className="flex flex-wrap items-center gap-2">
+            {typeLabel ? (
+              <span className="inline-flex rounded-full border border-amber-300/70 bg-amber-50/10 px-2.5 py-0.5 text-[11px] font-bold text-amber-100">
+                {typeLabel}
+              </span>
+            ) : null}
+            {recurrenceNote ? (
+              <span className="text-[11px] font-semibold text-stone-300">{recurrenceNote}</span>
+            ) : null}
+          </div>
+          {dateLabel ? (
+            <p className="mt-1.5 text-sm font-semibold text-white">{dateLabel}</p>
+          ) : null}
+          {venueName ? (
+            <p className="mt-1 flex items-start gap-1.5 text-xs text-stone-300">
+              <MapPin size={13} className="mt-0.5 shrink-0 text-amber-200/80" aria-hidden />
+              <span>{venueName}</span>
+            </p>
+          ) : null}
+          {placeLabel ? (
+            <p className="mt-1 flex items-start gap-1.5 text-xs text-stone-300">
+              <MapPin size={13} className="mt-0.5 shrink-0 text-amber-200/80" aria-hidden />
+              <span>
+                {placeLabel}
+                {placeCountry ? <span className="text-stone-400"> · {placeCountry}</span> : null}
+              </span>
+            </p>
+          ) : null}
+        </div>
+      ) : null}
 
       {images.length > 1 ? (
         <div

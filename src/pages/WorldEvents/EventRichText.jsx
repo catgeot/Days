@@ -16,6 +16,8 @@ function buildGlossarySegments(text, terms) {
 
   /** @type {Array<{ type: 'text' | 'term', value: string, termId?: string }>} */
   const segments = [];
+  /** @type {Set<string>} */
+  const linkedTermIds = new Set();
   let buffer = '';
   let index = 0;
 
@@ -37,7 +39,13 @@ function buildGlossarySegments(text, terms) {
     }
 
     if (match) {
+      if (linkedTermIds.has(match.id)) {
+        buffer += match.displayTerm;
+        index += match.displayTerm.length;
+        continue;
+      }
       flushText();
+      linkedTermIds.add(match.id);
       segments.push({ type: 'term', value: match.displayTerm, termId: match.id });
       index += match.displayTerm.length;
       continue;

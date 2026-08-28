@@ -141,6 +141,9 @@ export default function EventDetailPage() {
   const showD2Chips = hasWorldEventD2Chips(event.id);
   const showD3Media = hasWorldEventD3Media(event.id);
   const showD5bBodyUx = hasWorldEventD5bBodyUx(event);
+  const hideHeaderSummary = showD5bBodyUx && showD3Media;
+  const typeKey = String(event.type || 'festival');
+  const typeLabel = t(`worldEventDetail.type.${typeKey}`, { defaultValue: typeKey });
 
   const openEventMooni = useCallback(
     (prompt = null) => {
@@ -223,7 +226,18 @@ export default function EventDetailPage() {
 
       <main className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto w-full max-w-3xl px-3 py-3 md:px-5 lg:max-w-6xl lg:px-8">
-          {showD3Media ? <EventDetailHero event={event} locale={locale} /> : null}
+          {showD3Media ? (
+            <EventDetailHero
+              event={event}
+              locale={locale}
+              dateLabel={hideHeaderSummary ? dateLabel : ''}
+              placeLabel={hideHeaderSummary ? placeMeta.label : ''}
+              placeCountry={hideHeaderSummary ? placeMeta.country : ''}
+              venueName={hideHeaderSummary ? event.venue?.name || '' : ''}
+              recurrenceNote={hideHeaderSummary ? event.recurrenceNote || '' : ''}
+              typeLabel={hideHeaderSummary ? typeLabel : ''}
+            />
+          ) : null}
 
           <div className="mb-3 flex flex-wrap gap-2">
             {plannerHref ? (
@@ -280,6 +294,7 @@ export default function EventDetailPage() {
             checkOut={checkOut}
             location={location}
             onGlossaryTermClick={showD5bBodyUx ? setGlossaryTermId : undefined}
+            hideHeaderSummary={hideHeaderSummary}
           />
 
           {showD3Media ? <EventDetailMediaSection event={event} locale={locale} /> : null}

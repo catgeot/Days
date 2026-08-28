@@ -213,6 +213,7 @@ assert.match(glossaryUtilSrc, /resolveHighlightContextLinkHref/, 'worldEventGlos
 
 const richTextSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventRichText.jsx'), 'utf8');
 assert.match(richTextSrc, /buildGlossarySegments/, 'EventRichText glossary wrapping');
+assert.match(richTextSrc, /linkedTermIds/, 'EventRichText first-occurrence-only glossary links');
 
 const termModalSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventTermExplainModal.jsx'), 'utf8');
 assert.match(termModalSrc, /fetchProxyGemini/, 'EventTermExplainModal gemini proxy');
@@ -225,6 +226,8 @@ assert.match(detailSrc, /onGlossaryTermClick/, 'EventDetailPage glossary click h
 
 const heroSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventDetailHero.jsx'), 'utf8');
 assert.match(heroSrc, /getWorldEventHeroImages/, 'EventDetailHero gallery SSOT');
+assert.match(heroSrc, /showMetaStrip/, 'EventDetailHero meta strip below gallery');
+assert.match(detailSrc, /hideHeaderSummary/, 'EventDetailPage hides duplicate summary for D5-b hero');
 
 assert.ok(Array.isArray(bali.glossaryTerms) && bali.glossaryTerms.length >= 5, 'bali glossaryTerms');
 assert.ok(Array.isArray(bali.heroImages) && bali.heroImages.length >= 2, 'bali heroImages');

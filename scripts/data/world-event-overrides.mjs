@@ -420,12 +420,12 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Balinese temple offerings',
       },
       {
-        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Penjor_for_Galungan%2C_Bali.jpg/1280px-Penjor_for_Galungan%2C_Bali.jpg',
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Penjor_Galungan_Ubud_Bali_20120906a.jpg/1280px-Penjor_Galungan_Ubud_Bali_20120906a.jpg',
         captionKo: '갈룽안 펜져 장식',
         captionEn: 'Galungan penjor decorations',
       },
       {
-        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Galungan_decoration_in_Bali.jpg/1280px-Galungan_decoration_in_Bali.jpg',
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Penjor_Galungan_Ubud_Bali_20120906b.jpg/1280px-Penjor_Galungan_Ubud_Bali_20120906b.jpg',
         captionKo: '갈룽안 시즌 사원 장식',
         captionEn: 'Galungan season temple decor',
       },
