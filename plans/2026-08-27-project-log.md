@@ -288,3 +288,9 @@
 - **VERIFY** (병합 전) `smoke:world-events-detail` · `build` PASS · Vercel CI SUCCESS
 - **PROD QA** `https://www.gateo.kr/world-events` — Vercel 배포 후
 - **다음** 사람 PROD 테스트 → OK 시 **#33 Wave2** singapore·dubai
+
+## 세계행사 일정 #32 — Edge fetch-event-hero-gallery 배포
+
+- **배포** `npx supabase functions deploy fetch-event-hero-gallery --project-ref phdjnbfitvmrguqzverm --no-verify-jwt` ✅
+- **LIVE** invoke edinburgh `force:true` → 12장 · `fromCache:false`
+- **다음** PROD 갤러리·썸네일 재QA
