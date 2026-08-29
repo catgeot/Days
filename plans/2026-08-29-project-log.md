@@ -20,4 +20,5 @@
 - **증상** PROD `VITE_PEXELS_API_KEY missing` 반복 · Unsplash 0건 · 더보기 실패 (Summarizer/tp/ads는 제3자)
 - **main** `5873092c` — PR #161 merge · `pexels-proxy` Edge · Unsplash 보조 쿼리
 - **Edge** `npx supabase functions deploy pexels-proxy --project-ref phdjnbfitvmrguqzverm --no-verify-jwt` ✅ 2026-08-29
-- **사람 QA** PROD `/place/whakarewarewa-village/gallery` — 갤러리·더보기 · Network `pexels-proxy` 200
+- **후속** `a10e02c1+` — 갤러리 **최대 60장** · Pexels 배치 20장 · 60장 도달 시 더보기 숨김
+- **사람 QA** PROD `/place/whakarewarewa-village/gallery` — ≤60장 · 더보기(60 미만만)

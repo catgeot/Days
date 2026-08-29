@@ -18,7 +18,9 @@ assert.match(src, /shouldMergePexelsStock/, 'pexels merge when gallery has no pe
 assert.match(src, /needsPexelsBackfill/, 'pexels backfill after DB/cache hit');
 assert.doesNotMatch(src, /VITE_PEXELS_API_KEY missing/, 'no noisy missing-key warnings');
 assert.doesNotMatch(src, /needsPexelsBackfill[\s\S]*images\.length > 15/, 'no 15-image cap on pexels backfill');
-assert.match(src, /mergeGalleryAppend/, 'dedup append helper');
+assert.match(src, /GALLERY_MAX_IMAGES/, 'gallery max image cap');
+assert.match(src, /GALLERY_PEXELS_BATCH_LIMIT/, 'pexels batch limit');
+assert.match(src, /capGalleryImages/, 'cap helper');
 assert.match(src, /신규 사진 없음/, 'no-op refresh logs warning');
 
 const apiSrc = readFileSync(join(root, 'src/pages/Home/lib/apiClient.js'), 'utf8');

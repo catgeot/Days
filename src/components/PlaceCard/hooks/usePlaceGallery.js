@@ -21,9 +21,14 @@ import {
   readGalleryAttributionReturnState,
 } from '../common/galleryAttributionNavigation';
 
-/** v1.17 — slug 오버라이드 DB 생략 분리 · thin stock 재수집 */
-const CACHE_VERSION = 'v1.17';
+/** v1.18 — 갤러리 최대 60장 · Pexels 배치 상한 */
+const CACHE_VERSION = 'v1.18';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
+
+/** 장소 갤러리 UI·세션 캐시 상한 (Pexels 다중 쿼리 백필 과다 방지) */
+const GALLERY_MAX_IMAGES = 60;
+/** fetchPexelsBatch 1회 호출당 최대 신규 장수 */
+const GALLERY_PEXELS_BATCH_LIMIT = 20;
 
 // 🚨 [Fix] 오지/자연경관 등 citiesData에 영문명이 없는 경우를 위한 Fallback Dictionary 복구
 const FALLBACK_DICTIONARY = {
@@ -73,7 +78,6 @@ const GALLERY_DB_SKIP_SLUGS = new Set(['yap', 'gongjicheon']);
 /** Pexels 백필·더보기용 보조 검색어 (Unsplash primary는 건드리지 않음) */
 const GALLERY_PEXELS_EXTRA_QUERIES = {
   'whakarewarewa-village': [
-    'Whakarewarewa Village',
     'Whakarewarewa geothermal village',
     'Rotorua Maori village New Zealand',
   ],
@@ -84,7 +88,6 @@ const GALLERY_UNSPLASH_EXTRA_QUERIES = {
   'whakarewarewa-village': [
     'Rotorua Maori village New Zealand',
     'Whakarewarewa geothermal village',
-    'Rotorua New Zealand',
   ],
 };
 
@@ -142,14 +145,26 @@ function galleryHasPexels(images) {
   return Array.isArray(images) && images.some(isPexelsGalleryImage);
 }
 
+function galleryRemainingSlots(images, max = GALLERY_MAX_IMAGES) {
+  const len = Array.isArray(images) ? images.filter(Boolean).length : 0;
+  return Math.max(0, max - len);
+}
+
+function capGalleryImages(images, max = GALLERY_MAX_IMAGES) {
+  const list = Array.isArray(images) ? images.filter(Boolean) : [];
+  return list.length <= max ? list : list.slice(0, max);
+}
+
 function needsPexelsBackfill(images, thumbnailOnly) {
   if (thumbnailOnly) return false;
   if (!Array.isArray(images) || images.length === 0) return false;
+  if (galleryRemainingSlots(images) <= 0) return false;
   return !galleryHasPexels(images);
 }
 
 function shouldMergePexelsStock({ thumbnailOnly, forceRefresh, results, existingImages }) {
   if (thumbnailOnly) return false;
+  if (galleryRemainingSlots(existingImages) <= 0) return false;
   const existing = Array.isArray(existingImages) ? existingImages : [];
   const batch = Array.isArray(results) ? results : [];
   if (forceRefresh) return true;
@@ -168,20 +183,26 @@ function resolvePexelsQueries(primaryQuery, backupQuery, koreanName, spotSlug) {
   return [...new Set([primaryQuery, backupQuery, ...extras, koreanName].filter(Boolean))];
 }
 
-function mergeGalleryAppend(existing, incoming) {
-  const existingIds = new Set((existing || []).map((img) => img.id));
+function mergeGalleryAppend(existing, incoming, max = GALLERY_MAX_IMAGES) {
+  const cappedExisting = capGalleryImages(existing, max);
+  const existingIds = new Set(cappedExisting.map((img) => img.id));
   const fresh = (incoming || []).filter((img) => img?.id && !existingIds.has(img.id));
-  if (!fresh.length) return { merged: existing || [], added: 0 };
-  return { merged: [...(existing || []), ...fresh], added: fresh.length };
+  if (!fresh.length) return { merged: cappedExisting, added: 0 };
+  const slots = galleryRemainingSlots(cappedExisting, max);
+  if (slots <= 0) return { merged: cappedExisting, added: 0 };
+  const toAdd = fresh.slice(0, slots);
+  return { merged: [...cappedExisting, ...toAdd], added: toAdd.length };
 }
 
-async function fetchPexelsBatch(apiKey, queries, page) {
+async function fetchPexelsBatch(apiKey, queries, page, limit = GALLERY_PEXELS_BATCH_LIMIT) {
   const seenPexelsIds = new Set();
   const merged = [];
   for (const query of queries) {
+    if (merged.length >= limit) break;
     const images = await apiClient.fetchPexelsImages(apiKey, query, page);
     if (!images?.length) continue;
     for (const img of images) {
+      if (merged.length >= limit) break;
       if (!seenPexelsIds.has(img.id)) {
         seenPexelsIds.add(img.id);
         merged.push(img);
@@ -279,12 +300,14 @@ export const usePlaceGallery = (locationSource, options = {}) => {
 
   // 이미지 상태 업데이트 (Unsplash/Pexels 경로 그대로 · TourAPI 교차는 fetch 쪽에서만)
   const processAndSetImages = useCallback((rawImages) => {
-    if (!rawImages || rawImages.length === 0) {
+    const capped = capGalleryImages(rawImages);
+    if (!capped.length) {
       setImages([]);
+      allImagesRef.current = [];
       return;
     }
-    allImagesRef.current = rawImages;
-    setImages(rawImages);
+    allImagesRef.current = capped;
+    setImages(capped);
   }, []);
 
   const fetchImages = useCallback(async (forceRefresh = false) => {
@@ -500,7 +523,12 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         if (needsPexelsBackfill(validCache, thumbnailOnly)) {
           const backfillRunId = runId;
           pexelsPageRef.current += 1;
-          void fetchPexelsBatch(PEXELS_KEY, pexelsQueries, pexelsPageRef.current)
+          void fetchPexelsBatch(
+            PEXELS_KEY,
+            pexelsQueries,
+            pexelsPageRef.current,
+            Math.min(GALLERY_PEXELS_BATCH_LIMIT, galleryRemainingSlots(allImagesRef.current)),
+          )
             .then((pexelsImages) => {
               if (backfillRunId !== galleryLoadSeqRef.current || !pexelsImages.length) return;
               const { merged, added } = mergeGalleryAppend(allImagesRef.current, pexelsImages);
@@ -586,7 +614,12 @@ export const usePlaceGallery = (locationSource, options = {}) => {
                 if (needsPexelsBackfill(gallerySlice, thumbnailOnly)) {
                   const backfillRunId = runId;
                   pexelsPageRef.current += 1;
-                  void fetchPexelsBatch(PEXELS_KEY, pexelsQueries, pexelsPageRef.current)
+                  void fetchPexelsBatch(
+            PEXELS_KEY,
+            pexelsQueries,
+            pexelsPageRef.current,
+            Math.min(GALLERY_PEXELS_BATCH_LIMIT, galleryRemainingSlots(allImagesRef.current)),
+          )
                     .then((pexelsImages) => {
                       if (backfillRunId !== galleryLoadSeqRef.current || !pexelsImages.length) return;
                       const { merged, added } = mergeGalleryAppend(allImagesRef.current, pexelsImages);
@@ -707,9 +740,22 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       ) {
         try {
           pexelsPageRef.current += 1;
-          const mergedPexels = await fetchPexelsBatch(PEXELS_KEY, pexelsQueries, pexelsPageRef.current);
+          const pexelsLimit = Math.min(
+            GALLERY_PEXELS_BATCH_LIMIT,
+            galleryRemainingSlots(
+              forceRefresh
+                ? allImagesRef.current
+                : capGalleryImages([...(allImagesRef.current || []), ...results]),
+            ),
+          );
+          const mergedPexels = await fetchPexelsBatch(
+            PEXELS_KEY,
+            pexelsQueries,
+            pexelsPageRef.current,
+            pexelsLimit,
+          );
           if (mergedPexels.length > 0) {
-            results = [...results, ...mergedPexels];
+            results = capGalleryImages([...results, ...mergedPexels]);
             console.log(`✅ Pexels 이미지 ${mergedPexels.length}개 병합 완료. 총 ${results.length}개`);
           }
         } catch (pexelsError) {
@@ -771,7 +817,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           results = [results[0]];
         }
         // 새로고침(Refresh) 시 페이지네이션처럼 기존 데이터를 유지하며 병합 (Append)
-        let finalResults = results;
+        let finalResults = capGalleryImages(results);
         if (!thumbnailOnly && forceRefresh && allImagesRef.current && allImagesRef.current.length > 0) {
           const { merged, added } = mergeGalleryAppend(allImagesRef.current, results);
           if (added === 0) {
@@ -1006,6 +1052,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     const placeKey =
       resolveGalleryStablePlaceKey(locationSource) || currentPlaceKeyRef.current;
     if (!placeKey) return false;
+    if (allImagesRef.current.length >= GALLERY_MAX_IMAGES) return false;
 
     const now = Date.now();
     const lastAt = lastRefreshAtByPlaceRef.current.get(placeKey) || 0;
@@ -1041,5 +1088,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     handleRefresh,
     getRefreshCooldownRemaining,
     refreshCooldownSec: GALLERY_REFRESH_COOLDOWN_MS / 1000,
+    galleryMaxImages: GALLERY_MAX_IMAGES,
+    galleryAtMax: images.length >= GALLERY_MAX_IMAGES,
   };
 };
