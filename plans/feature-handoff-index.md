@@ -18,31 +18,31 @@
 
 | | |
 |--|--|
-| **상태** | **#32 D5-b-2 구현** — PR [#154](https://github.com/catgeot/Days/pull/154) merged · feature `3bd88e99` edinburgh·munich D5-b · **main 재병합 대기** |
-| **브랜치** | `cursor/world-events-wave2` · tip `3bd88e99` |
-| **PR** | [#154](https://github.com/catgeot/Days/pull/154) **merged** (D5-b) · D5-b-2 = feature push 후 재병합 |
+| **상태** | **#32 히어로 수정** — PR [#156](https://github.com/catgeot/Days/pull/156) open · tip `b5c352dc` 위키 404 교체·Unsplash 갤러리 마운트 로드 |
+| **브랜치** | `cursor/world-events-wave2` · tip `b5c352dc` |
+| **PR** | [#156](https://github.com/catgeot/Days/pull/156) D5-b-2 + 히어로 fix · **merge 대기** |
 | **main** | `73f4ccdc` — D5-b UI만 · overrides는 bali만 |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **Phase F-0.5 D5-b-2** · §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) §6.1·§6.1.1 |
 | **샘플** | [`world-events-sample-log.md`](./world-events-sample-log.md) |
 | **일지** | [`2026-08-27-project-log.md`](./2026-08-27-project-log.md) |
-| **PROD QA** | `https://www.gateo.kr/world-events` · 파일럿 3상세 — **edinburgh·munich는 D5-b-2 병합 후** bali와 동일 틀 |
+| **PROD QA** | `https://www.gateo.kr/world-events` · **PR #156 merge 후** 파일럿 3상세 §6.1.1 |
 | **VERIFY** | D1~: `audit:event-travel-guide` · `smoke:world-events-detail` · `build` |
 
 **게이트**: 파일럿 3건 D5-b 패턴화 → §6.1.1 PROD OK → **#33 Wave2** singapore·dubai
 
-**다음 제시어** (#32 main 재병합·PROD QA):
+**다음 제시어** (#32 Preview 히어로 재QA → PR #156 merge → PROD):
 
 ```
-세계행사 일정 #32, PROD QA — D5-b 파일럿 3건
+세계행사 일정 #32, PROD QA — D5-b 파일럿 3건 (히어로 재QA)
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
 @plans/world-events-sample-log.md
-브랜치 cursor/world-events-wave2 · PR #154 재병합 · www.gateo.kr/world-events
+브랜치 cursor/world-events-wave2 · PR #156 · https://www.gateo.kr/qa/world-events
 금지: worldEvents.json 직편집 · UI 리디자인 · D5-b-2 PROD OK 전 Wave2 overrides
-작업: feature→main 재병합 → PROD edinburgh·munich·bali §6.1.1 → OK 시 #33 singapore·dubai
+작업: Preview edinburgh·munich 히어로 썸네일 3장 → PR #156 merge → PROD §6.1.1 → OK 시 #33 singapore·dubai
 ```
 
 ---

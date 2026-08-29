@@ -761,15 +761,15 @@ flowchart LR
 | **PROD QA** | 파일럿 3건 D5-b 동일 틀 — **D5-b-2 main 병합 후** |
 | **VERIFY** | D1~D5-b smoke/audit · `build` |
 
-**다음 제시어** (#32 main 재병합·PROD QA → OK 시 #33 Wave2):
+**다음 제시어** (#32 Preview 히어로 재QA → PR #156 merge → PROD):
 
 ```
-세계행사 일정 #32, PROD QA — D5-b 파일럿 3건
+세계행사 일정 #32, PROD QA — D5-b 파일럿 3건 (히어로 재QA)
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
 @plans/world-events-sample-log.md
-브랜치 cursor/world-events-wave2 · PR #154 재병합 · www.gateo.kr/world-events
+브랜치 cursor/world-events-wave2 · PR #156 · https://www.gateo.kr/qa/world-events
 금지: worldEvents.json 직편집 · UI 리디자인 · D5-b-2 PROD OK 전 Wave2 overrides
-작업: feature→main 재병합 → PROD edinburgh·munich·bali §6.1.1 → OK 시 #33 singapore·dubai
+작업: Preview edinburgh·munich 히어로 썸네일 3장 → PR #156 merge → PROD §6.1.1 → OK 시 #33 singapore·dubai
 ```
