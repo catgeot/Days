@@ -37,6 +37,7 @@ const HomeGlobeAdapter = forwardRef((props, ref) => {
     pauseRotation: () => childRef.current?.pauseRotation?.(),
     resumeRotation: () => childRef.current?.resumeRotation?.(),
     wakeAfterOverlay: () => childRef.current?.wakeAfterOverlay?.(),
+    markCameraBusy: () => childRef.current?.markCameraBusy?.(),
     flyToAndPin: (lat, lng, name, category, options) => childRef.current?.flyToAndPin?.(lat, lng, name, category, options),
     flyToRegion: (lat, lng, zoom) => childRef.current?.flyToRegion?.(lat, lng, zoom) ?? false,
     clearRegionFocus: () => childRef.current?.clearRegionFocus?.(),

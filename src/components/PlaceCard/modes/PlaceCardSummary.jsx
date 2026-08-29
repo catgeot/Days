@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { X, Sparkles, Maximize2, Cuboid, Plane, Loader2, ChevronRight, ScanSearch, ScanEye, LayoutList } from 'lucide-react';
 import BookmarkButton from '../common/BookmarkButton';
-import { getPlaceTitleLinesForLocale, getLocalizedCountryName } from '../common/locationDisplay';
+import { getPlaceTitleLinesForLocale, getLocalizedCountryName, getLocalizedPlaceName } from '../common/locationDisplay';
 import { useLocale } from '../../../i18n/LocaleProvider';
 import { canStartGlobeTour } from '../../../pages/Home/lib/globeTourEngine';
 import FlightOriginSelector from '../../../pages/Home/components/FlightOriginSelector.jsx';
