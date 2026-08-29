@@ -312,3 +312,13 @@
 - **Preview** `/qa/world-events` → `/world-events/singapore-gp-2026` · `/world-events/dubai-fitness-challenge-2026`
 - **사람 QA** PROD 파일럿 3 §6.1.1(edinburgh·munich·bali) · Wave2 Preview D5-b
 - **다음** Preview OK + PROD §6.1.1 OK → PR #157 merge → **#34** D5-b 배치 A(vienna·amsterdam·prague·marrakech)
+
+## 세계행사 일정 #33 — Preview QA · Wave2 merge · #34 배치 A
+
+- **세션** `세계행사 일정 #33, Preview QA · Wave2 merge`
+- **PROD §6.1.1** 파일럿 3 HTTP 200 · bundle `glossaryTerms`·galungan·Theresienwiese 확인
+- **PR #157 merged** → main `4caf5b1c` — Wave2 singapore·dubai PROD 배포 대기
+- **#34** D5-b 배치 A — vienna·amsterdam·prague·marrakech overrides · tip `541e5dbe` · PR [#158](https://github.com/catgeot/Days/pull/158)
+- **VERIFY** `generate:world-events` · `smoke:world-events-detail` · `smoke:world-events` · `audit:event-travel-guide` · `build` PASS
+- **Preview** `/qa/world-events` → singapore·dubai · vienna·amsterdam·prague·marrakech
+- **다음** 사람 Preview 배치 A QA → **#35** D5-b 배치 B(tokyo·kyoto·bangkok)
