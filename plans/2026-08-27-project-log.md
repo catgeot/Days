@@ -262,3 +262,12 @@
 - **VERIFY** `generate:world-events` · `smoke:world-events-detail` · `build` PASS
 - **Preview** `https://www.gateo.kr/qa/world-events` → `/world-events/edinburgh-fringe-2026` · munich · bali — 썸네일 3장
 - **다음** 사람 Preview 히어로 재QA → PR [#156](https://github.com/catgeot/Days/pull/156) merge → PROD §6.1.1
+
+## 세계행사 일정 #32 — 히어로 stale 캐시 (재수정)
+
+- **피드백** Preview 재QA 후에도 edinburgh 썸네일 2·3번 깨짐(1/12·4·5번은 정상)
+- **원인** `event_hero_gallery` DB 캐시에 **예전 404 URL**이 남아 클라이언트가 캐시를 그대로 반환 · overrides URL 교체만으로는 미반영
+- **수정** `6df63661` — 시드 URL 불일치 시 `force` 재fetch · 캐시 hit 시 현재 시드 재병합 · `img onError` 제거 · Edge 동일 로직
+- **VERIFY** `smoke:world-events-detail` · `build` PASS
+- **배포** Edge `fetch-event-hero-gallery` 재배포 필요(Supabase link 없으면 사람)
+- **Preview** `/qa/world-events` → edinburgh — 썸네일 1~3 모두 로드 확인
