@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-28T17:35:03.371Z",
+    "generatedAt": "2026-08-29T00:51:53.101Z",
     "eventCount": 15,
     "source": "scripts/data/world-event-overrides.mjs"
   },
@@ -43,6 +43,95 @@
       ],
       "recommendedNights": 4,
       "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Edinburgh_Festival_Fringe_Street_Performer.jpg/1280px-Edinburgh_Festival_Fringe_Street_Performer.jpg",
+      "heroImages": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Edinburgh_Festival_Fringe_Street_Performer.jpg/1280px-Edinburgh_Festival_Fringe_Street_Performer.jpg",
+          "captionKo": "프린지 스트리트 퍼포먼스",
+          "captionEn": "Fringe street performer"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Edinburgh_Royal_Mile_2010.jpg/1280px-Edinburgh_Royal_Mile_2010.jpg",
+          "captionKo": "로얄 마일",
+          "captionEn": "Royal Mile"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Edinburgh_Old_Town_from_Princes_Street_Gardens.jpg/1280px-Edinburgh_Old_Town_from_Princes_Street_Gardens.jpg",
+          "captionKo": "에든버러 올드타운",
+          "captionEn": "Edinburgh Old Town"
+        }
+      ],
+      "glossaryTerms": [
+        {
+          "id": "fringe",
+          "termKo": "프린지",
+          "promptKo": "에든버러 프린지 축제가 무엇인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.",
+          "searchQueryKo": "에든버러 프린지 축제",
+          "termEn": "Fringe",
+          "promptEn": "What is the Edinburgh Festival Fringe for travelers? 3 short sentences.",
+          "searchQueryEn": "Edinburgh Festival Fringe",
+          "referenceUrl": "https://en.wikipedia.org/wiki/Edinburgh_Festival_Fringe"
+        },
+        {
+          "id": "royal-mile",
+          "termKo": "Royal Mile",
+          "promptKo": "에든버러 Royal Mile이 프린지와 어떤 관계인지, 어디서 프리 공연을 볼 수 있는지 3문장 이내로 설명해줘.",
+          "searchQueryKo": "에든버러 Royal Mile 프린지",
+          "termEn": "Royal Mile",
+          "promptEn": "Royal Mile and free Fringe performances — 3 short sentences for travelers.",
+          "searchQueryEn": "Edinburgh Royal Mile Fringe"
+        },
+        {
+          "id": "old-town",
+          "termKo": "올드타운",
+          "promptKo": "에든버러 올드타운이 프린지 방문에 왜 중요한지 3문장 이내로 설명해줘.",
+          "searchQueryKo": "에든버러 올드타운 프린지",
+          "termEn": "Old Town",
+          "promptEn": "Why Edinburgh Old Town matters for Fringe visitors in 3 short sentences.",
+          "searchQueryEn": "Edinburgh Old Town Fringe"
+        },
+        {
+          "id": "new-town",
+          "termKo": "뉴타운",
+          "promptKo": "에든버러 뉴타운 숙소의 장단점을 프린지 방문 관점에서 3문장 이내로 설명해줘.",
+          "searchQueryKo": "에든버러 뉴타운 숙소 프린지",
+          "termEn": "New Town",
+          "promptEn": "New Town accommodation pros and cons for Fringe visitors in 3 short sentences.",
+          "searchQueryEn": "Edinburgh New Town Fringe stay"
+        }
+      ],
+      "highlightContextLinks": [
+        {
+          "highlightIndex": 0,
+          "links": [
+            {
+              "id": "royal-mile-map",
+              "labelKo": "Royal Mile 지도",
+              "kind": "shop",
+              "labelEn": "Royal Mile map",
+              "href": "https://www.google.com/maps/search/?api=1&query=Royal+Mile+Edinburgh"
+            }
+          ]
+        },
+        {
+          "highlightIndex": 1,
+          "links": [
+            {
+              "id": "official-tickets",
+              "labelKo": "공식 예매",
+              "kind": "tour",
+              "labelEn": "Official tickets",
+              "href": "https://www.edfringe.com/"
+            },
+            {
+              "id": "venue-map",
+              "labelKo": "공연장 지도",
+              "kind": "shop",
+              "labelEn": "Venue map",
+              "href": "https://www.edfringe.com/find-a-show/venues"
+            }
+          ]
+        }
+      ],
       "youtubeVideos": [
         {
           "id": "_YXE3yAUrvA",
@@ -387,6 +476,91 @@
       ],
       "recommendedNights": 3,
       "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Oktoberfest_2015_-_Impression_5.JPG/1280px-Oktoberfest_2015_-_Impression_5.JPG",
+      "heroImages": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Oktoberfest_2015_-_Impression_5.JPG/1280px-Oktoberfest_2015_-_Impression_5.JPG",
+          "captionKo": "옥토버페스트 현장",
+          "captionEn": "Oktoberfest grounds"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Oktoberfest_2010_046.JPG/1280px-Oktoberfest_2010_046.JPG",
+          "captionKo": "맥주 텐트",
+          "captionEn": "Beer tents"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Theresienwiese_Munich.jpg/1280px-Theresienwiese_Munich.jpg",
+          "captionKo": "테레지엔비제",
+          "captionEn": "Theresienwiese"
+        }
+      ],
+      "glossaryTerms": [
+        {
+          "id": "theresienwiese",
+          "termKo": "테레지엔비제",
+          "promptKo": "뮌헨 테레지엔비제가 옥토버페스트와 어떤 관계인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.",
+          "searchQueryKo": "뮌헨 테레지엔비제 옥토버페스트",
+          "termEn": "Theresienwiese",
+          "promptEn": "What is Theresienwiese and why it matters for Oktoberfest visitors? 3 short sentences.",
+          "searchQueryEn": "Theresienwiese Munich Oktoberfest",
+          "referenceUrl": "https://en.wikipedia.org/wiki/Theresienwiese"
+        },
+        {
+          "id": "beer-tent",
+          "termKo": "맥주 텐트",
+          "promptKo": "옥토버페스트 맥주 텐트 예약·좌석 규정을 여행자 관점에서 3문장 이내로 설명해줘.",
+          "searchQueryKo": "옥토버페스트 맥주 텐트 예약",
+          "termEn": "beer tent",
+          "promptEn": "Oktoberfest beer tent seating and reservations for travelers in 3 short sentences.",
+          "searchQueryEn": "Oktoberfest beer tent reservation"
+        },
+        {
+          "id": "oktoberfest",
+          "termKo": "옥토버페스트",
+          "promptKo": "뮌헨 옥토버페스트의 역사와 여행 일정 팁을 3문장 이내로 설명해줘.",
+          "searchQueryKo": "뮌헨 옥토버페스트 가이드",
+          "termEn": "Oktoberfest",
+          "promptEn": "Munich Oktoberfest basics and trip tips in 3 short sentences.",
+          "searchQueryEn": "Munich Oktoberfest guide",
+          "referenceUrl": "https://en.wikipedia.org/wiki/Oktoberfest"
+        },
+        {
+          "id": "hackerbruecke",
+          "termKo": "Hackerbrücke",
+          "promptKo": "옥토버페스트 때 Hackerbrücke 역 접근과 혼잡 팁을 3문장 이내로 설명해줘.",
+          "searchQueryKo": "옥토버페스트 Hackerbrücke 역",
+          "termEn": "Hackerbrücke",
+          "promptEn": "Hackerbrücke station access during Oktoberfest in 3 short sentences.",
+          "searchQueryEn": "Oktoberfest Hackerbrücke station"
+        }
+      ],
+      "highlightContextLinks": [
+        {
+          "highlightIndex": 0,
+          "links": [
+            {
+              "id": "tent-reservation",
+              "labelKo": "텐트 예약 검색",
+              "kind": "shop",
+              "labelEn": "Tent reservations",
+              "searchQueryKo": "옥토버페스트 맥주 텐트 예약",
+              "searchQueryEn": "Oktoberfest beer tent reservation",
+              "searchTarget": "google"
+            }
+          ]
+        },
+        {
+          "highlightIndex": 1,
+          "links": [
+            {
+              "id": "theresienwiese-map",
+              "labelKo": "Theresienwiese 지도",
+              "kind": "shop",
+              "labelEn": "Theresienwiese map",
+              "href": "https://www.google.com/maps/search/?api=1&query=Theresienwiese+Munich"
+            }
+          ]
+        }
+      ],
       "youtubeVideos": [
         {
           "id": "B5GN30_FRWU",

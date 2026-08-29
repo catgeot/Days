@@ -311,6 +311,30 @@ assert.ok(
 assert.ok(bali.glossaryTerms.some((term) => term.id === 'galungan'), 'bali galungan glossary');
 assert.ok(bali.glossaryTerms.some((term) => term.id === 'penjor'), 'bali penjor glossary');
 
+assert.ok(
+  Array.isArray(edinburgh.glossaryTerms) && edinburgh.glossaryTerms.length >= 4,
+  'edinburgh glossaryTerms',
+);
+assert.ok(Array.isArray(edinburgh.heroImages) && edinburgh.heroImages.length >= 2, 'edinburgh heroImages');
+assert.ok(
+  Array.isArray(edinburgh.highlightContextLinks) && edinburgh.highlightContextLinks.length >= 2,
+  'edinburgh highlightContextLinks',
+);
+assert.ok(edinburgh.glossaryTerms.some((term) => term.id === 'fringe'), 'edinburgh fringe glossary');
+assert.ok(edinburgh.glossaryTerms.some((term) => term.id === 'royal-mile'), 'edinburgh royal-mile glossary');
+
+assert.ok(
+  Array.isArray(munich.glossaryTerms) && munich.glossaryTerms.length >= 4,
+  'munich glossaryTerms',
+);
+assert.ok(Array.isArray(munich.heroImages) && munich.heroImages.length >= 2, 'munich heroImages');
+assert.ok(
+  Array.isArray(munich.highlightContextLinks) && munich.highlightContextLinks.length >= 2,
+  'munich highlightContextLinks',
+);
+assert.ok(munich.glossaryTerms.some((term) => term.id === 'theresienwiese'), 'munich theresienwiese glossary');
+assert.ok(munich.glossaryTerms.some((term) => term.id === 'beer-tent'), 'munich beer-tent glossary');
+
 const chipsUtilSrc2 = readFileSync(join(root, 'src/utils/worldEventChips.js'), 'utf8');
 assert.match(chipsUtilSrc2, /getKlookAffiliateUrl/, 'shop Klook chips use affiliate url');
 
