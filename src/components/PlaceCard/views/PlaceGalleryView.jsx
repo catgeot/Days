@@ -483,7 +483,7 @@ const PlaceGalleryView = React.memo(({
           aria-modal="true"
           aria-label={t('place.gallery.zoomView')}
         >
-          <div className="relative h-full w-full portrait:flex portrait:flex-col">
+          <div className="relative h-full min-h-0 w-full portrait:flex portrait:flex-col">
           <div
             className={`relative z-[220] flex shrink-0 items-start gap-3 px-4 pb-2 pt-[max(0.75rem,env(safe-area-inset-top,0px))] transition-opacity duration-300 portrait:static landscape:absolute landscape:inset-x-0 landscape:top-0 landscape:bg-gradient-to-b landscape:from-black/85 landscape:to-transparent landscape:px-3 landscape:pb-1 landscape:pt-[max(0.5rem,env(safe-area-inset-top,0px))] ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
             onClick={(e) => e.stopPropagation()}
@@ -572,14 +572,11 @@ const PlaceGalleryView = React.memo(({
           )}
 
           <div
-            className="relative z-[220] shrink-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent px-4 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] portrait:static landscape:absolute landscape:inset-x-0 landscape:bottom-0 landscape:bg-gradient-to-t landscape:from-black/85 landscape:to-transparent landscape:px-3 landscape:pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] landscape:pt-2"
+            className="relative z-[220] shrink-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent px-4 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] pt-2 portrait:static landscape:absolute landscape:inset-x-0 landscape:bottom-0 landscape:bg-gradient-to-t landscape:from-black/85 landscape:to-transparent landscape:px-3 landscape:pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] landscape:pt-2"
             onClick={(e) => e.stopPropagation()}
           >
-            {renderAttributionBar(
-              'flex w-full justify-center px-1 pb-2 pt-2 portrait:flex landscape:mb-1 landscape:px-0 landscape:pb-0 landscape:pt-0',
-            )}
             <div
-              className={`pt-2 transition-opacity duration-300 landscape:pt-0 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+              className={`transition-opacity duration-300 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
             >
             <div className="flex items-center gap-3 landscape:justify-center landscape:gap-3">
               {showNavControls ? (
@@ -601,6 +598,11 @@ const PlaceGalleryView = React.memo(({
                   <span className="shrink-0 text-sm font-semibold tabular-nums tracking-wide text-white/85 landscape:text-xs">
                     {currentIndex + 1} / {images.length}
                   </span>
+                )}
+                {photoAttribution && (
+                  renderAttributionLinks(
+                    'hidden max-w-[min(42vw,14rem)] shrink truncate rounded-full border border-white/10 bg-black/45 px-2.5 py-1 text-[10px] leading-none text-white/75 backdrop-blur-sm transition-all hover:bg-white/15 hover:text-white landscape:inline',
+                  )
                 )}
                 <button
                   type="button"
@@ -630,6 +632,9 @@ const PlaceGalleryView = React.memo(({
             </div>
           </div>
           </div>
+          {renderAttributionBar(
+            'pointer-events-auto absolute inset-x-0 z-[235] flex justify-center px-4 portrait:bottom-[calc(5.75rem+env(safe-area-inset-bottom,0px))] landscape:bottom-[calc(4.25rem+env(safe-area-inset-bottom,0px))]',
+          )}
         </div>
       );
     }
@@ -729,11 +734,11 @@ const PlaceGalleryView = React.memo(({
         `pointer-events-auto absolute z-[225] left-1/2 flex -translate-x-1/2 justify-center max-w-[min(calc(100vw-4rem),28rem)] ${
           showNavControls
             ? isFullScreen
-              ? 'bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))]'
-              : 'bottom-20 md:bottom-24'
+              ? 'bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))] md:bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))]'
+              : 'bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] md:bottom-24'
             : isFullScreen
               ? 'bottom-[max(1rem,env(safe-area-inset-bottom,0px))]'
-              : 'bottom-8 md:bottom-10'
+              : 'bottom-[calc(3.5rem+env(safe-area-inset-bottom,0px))] md:bottom-10'
         }`,
       )}
 
