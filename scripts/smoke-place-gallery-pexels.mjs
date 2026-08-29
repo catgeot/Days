@@ -13,7 +13,9 @@ assert.match(src, /GALLERY_DB_SKIP_SLUGS/, 'explicit DB skip slugs');
 assert.match(src, /isThinStockGallery/, 'thin stock refetch guard');
 assert.doesNotMatch(src, /whakarewarewa-village[\s\S]*primary:/, 'no unsplash override for whakarewarewa');
 assert.match(src, /GALLERY_PEXELS_EXTRA_QUERIES/, 'pexels extra queries for whakarewarewa');
+assert.match(src, /shouldMergePexelsStock/, 'pexels merge when gallery has no pexels yet');
 assert.match(src, /needsPexelsBackfill/, 'pexels backfill after DB/cache hit');
+assert.doesNotMatch(src, /needsPexelsBackfill[\s\S]*images\.length > 15/, 'no 15-image cap on pexels backfill');
 assert.match(src, /mergeGalleryAppend/, 'dedup append helper');
 assert.match(src, /신규 사진 없음/, 'no-op refresh logs warning');
 
