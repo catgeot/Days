@@ -236,3 +236,11 @@
 - **VERIFY** `smoke:world-events-detail` · `smoke:world-events` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `build` PASS
 - **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026` — ko/en 무니·검색·YouTube·갤러리 6장+
 - **다음** 사람 Preview 재QA OK → **#31 Wave2** singapore·dubai
+
+## 세계행사 일정 #31 — Wave1.5 main 병합
+
+- **세션** `세계행사 일정 #31, Wave2 singapore·dubai` (요청: Wave2 전 main 병합·테스트)
+- **병합** PR [#154](https://github.com/catgeot/Days/pull/154) → `main` `c7de9736`
+- **VERIFY** (feature·main) `audit:event-travel-guide` · `smoke:world-events-detail` · `smoke:world-events` · `smoke:event-travel-guide` · `build` PASS
+- **PROD QA** `https://www.gateo.kr/world-events` · 파일럿 3상세(edinburgh·munich·bali) — Vercel 배포 후
+- **다음** 사람 PROD QA OK → **#32 Wave2** singapore·dubai (`cursor/world-events-wave2` 재개)

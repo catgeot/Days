@@ -18,10 +18,10 @@
 
 | | |
 |--|--|
-| **상태** | **#30 D5-b Preview 재QA** — YouTube 내부 스크롤·glossary 메모리 캐시·locale 영상 — PR [#154](https://github.com/catgeot/Days/pull/154) · tip `a6c91f6e` |
-| **브랜치** | `cursor/world-events-wave2` · tip `a6c91f6e` |
-| **PR** | [#154](https://github.com/catgeot/Days/pull/154) draft |
-| **main** | `6712f777`+ — Wave1 v2 · Phase F-0.5 · PR #154 = Wave1.5 D1 |
+| **상태** | **#31 main 병합 완료** — PR [#154](https://github.com/catgeot/Days/pull/154) merge `c7de9736` · **사람 PROD QA 대기** → OK 시 Wave2 |
+| **브랜치** | `cursor/world-events-wave2` (Wave2 재개용 · main 동기화 후) |
+| **PR** | [#154](https://github.com/catgeot/Days/pull/154) **merged** |
+| **main** | `c7de9736` — Wave1.5 D5-b (파일럿 3상세 UX) |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **Phase F-0.5** · §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) §6.1·§6.1.1 |
@@ -30,19 +30,19 @@
 | **PROD QA** | `https://www.gateo.kr/world-events` · 파일럿 3상세(edinburgh·munich·bali) |
 | **VERIFY** | D1~: `audit:event-travel-guide` · `smoke:world-events-detail` · `build` |
 
-**Wave1.5 D5-b (#30)**: 히어로·갤러리 6장+ · glossary MOONi 캐시(재클릭 즉시) · YouTube ko/en 10개 내부 스크롤
+**Wave1.5 D5-b (main)**: 히어로·갤러리 6장+ · glossary MOONi 캐시 · YouTube ko/en 10개 내부 스크롤 · 파일럿 3건
 
-**다음 제시어** (#31 Wave2 — 사람 Preview OK 후):
+**다음 제시어** (#31 PROD QA → OK 시 #32 Wave2):
 
 ```
-세계행사 일정 #31, Wave2 singapore·dubai
+세계행사 일정 #31, PROD QA — Wave1.5 D5-b
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
 @plans/world-events-sample-log.md
-브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/bali-galungan-season-2026
-금지: worldEvents.json 직편집 · feature에 plans 커밋 · UI 리디자인 · 신규 plans/*-plan.md
-작업: singapore·dubai overrides · generate:world-events · smoke · Preview QA
+main c7de9736 · www.gateo.kr/world-events · /world-events/bali-galungan-season-2026
+금지: worldEvents.json 직편집 · UI 리디자인 · PROD QA 전 Wave2 overrides
+작업: PROD edinburgh·munich·bali QA(§6.1.1) → OK 시 #32 singapore·dubai
 ```
 
 ---
