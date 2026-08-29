@@ -4,6 +4,7 @@
  *
  * Wave 1 (P2-a): Q3 확정 slug 15건 — 유럽·아시아·아메리카·오세아니아·니치
  * Wave 2 (#33): singapore · dubai — D5-b 템플릿
+ * D5-b-3 #34 배치 A: vienna · amsterdam · prague · marrakech
  *
  * @typedef {import('../lib/world-event-schema.mjs').WorldEventOverride} WorldEventOverride
  */
@@ -47,6 +48,123 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 3,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Staatsoper_Wien_DSC_5273w.jpg/1280px-Staatsoper_Wien_DSC_5273w.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Staatsoper_Wien_DSC_5273w.jpg/1280px-Staatsoper_Wien_DSC_5273w.jpg',
+        captionKo: '빈 국립오페라',
+        captionEn: 'Vienna State Opera',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Wien_-_Haus_des_Wiener_Musikvereins_%281%29.JPG/1280px-Wien_-_Haus_des_Wiener_Musikvereins_%281%29.JPG',
+        captionKo: '빈 뮤직페어라인',
+        captionEn: 'Musikverein Vienna',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Wiener_Staatsoper_Front.jpg/1280px-Wiener_Staatsoper_Front.jpg',
+        captionKo: '국립오페라 정면',
+        captionEn: 'State Opera front',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'staatsoper',
+        termKo: '국립오페라',
+        termEn: 'State Opera',
+        promptKo:
+          '빈 국립오페라(Staatsoper)가 오페라 시즌 방문에서 왜 중심인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.',
+        promptEn: 'Why Vienna State Opera matters for opera season visitors in 3 short sentences.',
+        searchQueryKo: '빈 국립오페라 공연 예매',
+        searchQueryEn: 'Vienna State Opera tickets',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Vienna_State_Opera',
+      },
+      {
+        id: 'stehplatz',
+        termKo: '스탠딩석',
+        termEn: 'Stehplatz',
+        promptKo:
+          '빈 오페라 스탠딩석(Stehplatz)이 무엇인지, 당일 구매 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'What is Stehplatz standing room at Vienna Opera? 3 short sentences.',
+        searchQueryKo: '빈 오페라 스탠딩석 Stehplatz',
+        searchQueryEn: 'Vienna Opera Stehplatz standing tickets',
+      },
+      {
+        id: 'musikverein',
+        termKo: '뮤직페어라인',
+        termEn: 'Musikverein',
+        promptKo:
+          '빈 뮤직페어라인이 국립오페라와 어떤 차이가 있는지, 클래식 공연 방문 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Musikverein vs State Opera for classical concerts in 3 short sentences.',
+        searchQueryKo: '빈 뮤직페어라인 공연',
+        searchQueryEn: 'Vienna Musikverein concerts',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Musikverein',
+      },
+      {
+        id: 'innere-stadt',
+        termKo: '1구 Innere Stadt',
+        termEn: 'Innere Stadt',
+        promptKo:
+          '빈 1구(Innere Stadt) 숙소가 오페라 시즌 방문에 왜 유리한지 3문장 이내로 설명해줘.',
+        promptEn: 'Why stay in Vienna Innere Stadt for opera season in 3 short sentences.',
+        searchQueryKo: '빈 1구 숙소 오페라',
+        searchQueryEn: 'Vienna Innere Stadt hotel opera',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'staatsoper-tickets',
+            labelKo: '국립오페라 예매',
+            labelEn: 'State Opera tickets',
+            kind: 'tour',
+            href: 'https://www.wiener-staatsoper.at/en/',
+          },
+          {
+            id: 'musikverein-search',
+            labelKo: '뮤직페어라인 검색',
+            labelEn: 'Musikverein search',
+            kind: 'shop',
+            searchQueryKo: '빈 뮤직페어라인 공연',
+            searchQueryEn: 'Vienna Musikverein concerts',
+            searchTarget: 'google',
+          },
+        ],
+      },
+      {
+        highlightIndex: 1,
+        links: [
+          {
+            id: 'stehplatz-guide',
+            labelKo: '스탠딩석 가이드',
+            labelEn: 'Stehplatz guide',
+            kind: 'shop',
+            searchQueryKo: '빈 오페라 스탠딩석',
+            searchQueryEn: 'Vienna Opera Stehplatz',
+            searchTarget: 'google',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '빈 국립오페라',
+    youtubeSearchQueryEn: 'Vienna State Opera',
+    mooniChips: [
+      {
+        id: 'stehplatz-tips',
+        promptKo: '스탠딩석 당일 구매 팁 알려줘',
+        promptEn: 'Tips for buying Stehplatz standing tickets?',
+      },
+      {
+        id: 'best-shows',
+        promptKo: '오페라 시즌 추천 공연 알려줘',
+        promptEn: 'Which shows to book during opera season?',
+      },
+      {
+        id: 'innere-stadt-stay',
+        promptKo: '1구 숙소 추천 기준 알려줘',
+        promptEn: 'How to pick a hotel in Innere Stadt?',
+      },
+    ],
     priority: 1,
   },
   {
@@ -454,6 +572,115 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 2,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Kings_Day_Amsterdam_2015_3.JPG/1280px-Kings_Day_Amsterdam_2015_3.JPG',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Kings_Day_Amsterdam_2015_3.JPG/1280px-Kings_Day_Amsterdam_2015_3.JPG',
+        captionKo: '킹스데이 축제',
+        captionEn: "King's Day festival",
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/4/43/Amsterdam%27s_Canals.jpg',
+        captionKo: '암스테르담 운하',
+        captionEn: "Amsterdam canals",
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Amsterdam%2C_Vondelpark%2C_at_the_pond-2.jpg/1280px-Amsterdam%2C_Vondelpark%2C_at_the_pond-2.jpg',
+        captionKo: '본델파크',
+        captionEn: 'Vondelpark',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'kings-day',
+        termKo: '킹스데이',
+        termEn: "King's Day",
+        promptKo:
+          '암스테르담 킹스데이(4월 27일)가 무엇인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.',
+        promptEn: "What is Amsterdam King's Day for travelers? 3 short sentences.",
+        searchQueryKo: '암스테르담 킹스데이',
+        searchQueryEn: "Amsterdam King's Day",
+        referenceUrl: 'https://en.wikipedia.org/wiki/Koningsdag',
+      },
+      {
+        id: 'jordaan',
+        termKo: 'Jordaan',
+        termEn: 'Jordaan',
+        promptKo:
+          '암스테르담 Jordaan 지역이 킹스데이에 왜 인기인지, 플리마켓·파티 팁을 3문장 이내로 설명해줘.',
+        promptEn: "Why Jordaan is popular on King's Day in 3 short sentences.",
+        searchQueryKo: '암스테르담 Jordaan 킹스데이',
+        searchQueryEn: "Amsterdam Jordaan King's Day",
+      },
+      {
+        id: 'vondelpark',
+        termKo: 'Vondelpark',
+        termEn: 'Vondelpark',
+        promptKo:
+          '킹스데이에 Vondelpark에서 무엇을 볼 수 있는지 3문장 이내로 설명해줘.',
+        promptEn: "What happens at Vondelpark on King's Day? 3 short sentences.",
+        searchQueryKo: '암스테르담 Vondelpark 킹스데이',
+        searchQueryEn: "Amsterdam Vondelpark King's Day",
+      },
+      {
+        id: 'orange-tradition',
+        termKo: '오렌지색 전통',
+        termEn: 'orange tradition',
+        promptKo:
+          '킹스데이에 오렌지색 옷·장식을 입는 전통의 의미를 3문장 이내로 설명해줘.',
+        promptEn: "Why everyone wears orange on King's Day in 3 short sentences.",
+        searchQueryKo: '킹스데이 오렌지색 의미',
+        searchQueryEn: "King's Day orange tradition",
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'jordaan-map',
+            labelKo: 'Jordaan 지도',
+            labelEn: 'Jordaan map',
+            kind: 'shop',
+            searchQueryKo: '암스테르담 Jordaan',
+            searchQueryEn: 'Amsterdam Jordaan',
+            searchTarget: 'google',
+          },
+        ],
+      },
+      {
+        highlightIndex: 1,
+        links: [
+          {
+            id: 'dam-square',
+            labelKo: 'Dam Square 검색',
+            labelEn: 'Dam Square search',
+            kind: 'shop',
+            searchQueryKo: '암스테르담 Dam Square 킹스데이',
+            searchQueryEn: "Amsterdam Dam Square King's Day",
+            searchTarget: 'google',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '암스테르담 킹스데이',
+    youtubeSearchQueryEn: "Amsterdam King's Day",
+    mooniChips: [
+      {
+        id: 'what-to-wear',
+        promptKo: '킹스데이에 무슨 옷 입어야 해?',
+        promptEn: "What should I wear on King's Day?",
+      },
+      {
+        id: 'best-areas',
+        promptKo: '킹스데이 어디 구역이 좋아?',
+        promptEn: "Best areas to celebrate King's Day?",
+      },
+      {
+        id: 'checkin-timing',
+        promptKo: '전날 체크인이 왜 중요해?',
+        promptEn: 'Why check in the day before?',
+      },
+    ],
     priority: 1,
   },
   {
@@ -980,6 +1207,114 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 3,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/G_N_Rozhdestvensky_at_Prague_Spring_Festival_2007.jpg/1280px-G_N_Rozhdestvensky_at_Prague_Spring_Festival_2007.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/G_N_Rozhdestvensky_at_Prague_Spring_Festival_2007.jpg/1280px-G_N_Rozhdestvensky_at_Prague_Spring_Festival_2007.jpg',
+        captionKo: '프라하 봄 축제',
+        captionEn: 'Prague Spring Festival',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Praha_Rudolfinum_front.jpg/1280px-Praha_Rudolfinum_front.jpg',
+        captionKo: '루돌피눔',
+        captionEn: 'Rudolfinum',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Prague_Old_Town_Square%2C_Czech_Republic_-_Oct_2010.jpg/1280px-Prague_Old_Town_Square%2C_Czech_Republic_-_Oct_2010.jpg',
+        captionKo: '프라하 구시가',
+        captionEn: 'Prague Old Town',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'prague-spring',
+        termKo: '프라하 봄 축제',
+        termEn: 'Prague Spring',
+        promptKo:
+          '프라하 봄 축제(Prague Spring)가 무엇인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.',
+        promptEn: 'What is the Prague Spring Festival for travelers? 3 short sentences.',
+        searchQueryKo: '프라하 봄 축제',
+        searchQueryEn: 'Prague Spring Festival',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Prague_Spring_International_Music_Festival',
+      },
+      {
+        id: 'rudolfinum',
+        termKo: '루돌피눔',
+        termEn: 'Rudolfinum',
+        promptKo:
+          '프라하 루돌피눔이 봄 축제에서 어떤 역할을 하는지 3문장 이내로 설명해줘.',
+        promptEn: 'Why Rudolfinum matters for Prague Spring in 3 short sentences.',
+        searchQueryKo: '프라하 루돌피눔 공연',
+        searchQueryEn: 'Prague Rudolfinum concerts',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Rudolfinum',
+      },
+      {
+        id: 'old-town',
+        termKo: '구시가',
+        termEn: 'Old Town',
+        promptKo:
+          '프라하 구시가(Old Town)가 봄 축제 방문에 왜 좋은 기점인지 3문장 이내로 설명해줘.',
+        promptEn: 'Why Prague Old Town is a good base for Spring Festival in 3 short sentences.',
+        searchQueryKo: '프라하 구시가 숙소',
+        searchQueryEn: 'Prague Old Town stay',
+      },
+      {
+        id: 'mala-strana',
+        termKo: '말라 스트라나',
+        termEn: 'Malá Strana',
+        promptKo:
+          '프라하 말라 스트라나(Malá Strana) 숙소의 장단점을 봄 축제 방문 관점에서 3문장 이내로 설명해줘.',
+        promptEn: 'Malá Strana pros and cons for Prague Spring visitors in 3 short sentences.',
+        searchQueryKo: '프라하 말라 스트라나 숙소',
+        searchQueryEn: 'Prague Malá Strana hotel',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'festival-tickets',
+            labelKo: '공식 축제 사이트',
+            labelEn: 'Official festival site',
+            kind: 'tour',
+            href: 'https://www.festival.cz/en',
+          },
+        ],
+      },
+      {
+        highlightIndex: 1,
+        links: [
+          {
+            id: 'old-town-map',
+            labelKo: '구시가 검색',
+            labelEn: 'Old Town search',
+            kind: 'shop',
+            searchQueryKo: '프라하 구시가 카를교',
+            searchQueryEn: 'Prague Old Town Charles Bridge',
+            searchTarget: 'google',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '프라하 봄 축제',
+    youtubeSearchQueryEn: 'Prague Spring Festival',
+    mooniChips: [
+      {
+        id: 'opening-week',
+        promptKo: '개막 주에 가면 뭐가 좋아?',
+        promptEn: 'Why visit during opening week?',
+      },
+      {
+        id: 'rudolfinum-tips',
+        promptKo: '루돌피눔 공연 예매 팁 알려줘',
+        promptEn: 'Tips for booking Rudolfinum shows?',
+      },
+      {
+        id: 'old-town-stay',
+        promptKo: '구시가 vs 말라 스트라나 숙소 비교해줘',
+        promptEn: 'Old Town vs Malá Strana for stays?',
+      },
+    ],
     priority: 1,
   },
   {
@@ -1019,6 +1354,115 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 2,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/At_fountain_of_Morocco_Royal_rose_garden_in_Flower_festival_commemorative_park._%288131033157%29.jpg/1280px-At_fountain_of_Morocco_Royal_rose_garden_in_Flower_festival_commemorative_park._%288131033157%29.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/At_fountain_of_Morocco_Royal_rose_garden_in_Flower_festival_commemorative_park._%288131033157%29.jpg/1280px-At_fountain_of_Morocco_Royal_rose_garden_in_Flower_festival_commemorative_park._%288131033157%29.jpg',
+        captionKo: '로즈 페스티벌',
+        captionEn: 'Rose Festival',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/9/9c/Pavillon_Menarag%C3%A4rten.jpg',
+        captionKo: '마라케시 메나라 정원',
+        captionEn: 'Marrakesh Menara gardens',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Djemaa_el_Fna.jpg/1280px-Djemaa_el_Fna.jpg',
+        captionKo: '자마 엘 프나 광장',
+        captionEn: 'Jemaa el-Fnaa square',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'rose-festival',
+        termKo: '로즈 페스티벌',
+        termEn: 'Rose Festival',
+        promptKo:
+          '마라케시 로즈 페스티벌(Festival des Roses)이 무엇인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.',
+        promptEn: 'What is the Marrakech Rose Festival for travelers? 3 short sentences.',
+        searchQueryKo: '마라케시 로즈 페스티벌',
+        searchQueryEn: 'Marrakech Rose Festival',
+      },
+      {
+        id: 'kelaat-mgouna',
+        termKo: 'Kelaat M\'Gouna',
+        termEn: "Kelaat M'Gouna",
+        promptKo:
+          '로즈 페스티벌이 열리는 Kelaat M\'Gouna가 마라케시에서 어떻게 방문하는지 3문장 이내로 설명해줘.',
+        promptEn: "How to visit Kelaat M'Gouna from Marrakech in 3 short sentences.",
+        searchQueryKo: 'Kelaat M\'Gouna 로즈 페스티벌 투어',
+        searchQueryEn: "Kelaat M'Gouna rose festival tour",
+      },
+      {
+        id: 'medina',
+        termKo: '메디나',
+        termEn: 'Medina',
+        promptKo:
+          '마라케시 메디나(Medina)가 로즈 페스티벌 방문 기점으로 왜 좋은지 3문장 이내로 설명해줘.',
+        promptEn: 'Why Marrakech Medina is a good base for the Rose Festival in 3 short sentences.',
+        searchQueryKo: '마라케시 메디나 리야드',
+        searchQueryEn: 'Marrakech Medina riad',
+      },
+      {
+        id: 'jemaa-el-fnaa',
+        termKo: '자마 엘 프나',
+        termEn: 'Jemaa el-Fnaa',
+        promptKo:
+          '자마 엘 프나(Jemaa el-Fnaa) 광장이 마라케시 방문에서 어떤 역할을 하는지 3문장 이내로 설명해줘.',
+        promptEn: 'What is Jemaa el-Fnaa square for Marrakech visitors in 3 short sentences.',
+        searchQueryKo: '마라케시 자마 엘 프나',
+        searchQueryEn: 'Marrakech Jemaa el-Fnaa',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Jemaa_el-Fnaa',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'rose-tour',
+            labelKo: '로즈 페스티벌 투어',
+            labelEn: 'Rose Festival tour',
+            kind: 'shop',
+            searchQueryKo: 'Kelaat M\'Gouna 로즈 페스티벌 당일 투어',
+            searchQueryEn: "Kelaat M'Gouna rose festival day tour",
+            searchTarget: 'google',
+          },
+        ],
+      },
+      {
+        highlightIndex: 1,
+        links: [
+          {
+            id: 'medina-riad',
+            labelKo: '메디나 리야드 검색',
+            labelEn: 'Medina riad search',
+            kind: 'shop',
+            searchQueryKo: '마라케시 메디나 리야드',
+            searchQueryEn: 'Marrakech Medina riad',
+            searchTarget: 'google',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '마라케시 로즈 페스티벌',
+    youtubeSearchQueryEn: 'Marrakech Rose Festival',
+    mooniChips: [
+      {
+        id: 'day-tour',
+        promptKo: '로즈 페스티벌 당일 투어 일정 알려줘',
+        promptEn: 'Day tour schedule for Rose Festival?',
+      },
+      {
+        id: 'medina-stay',
+        promptKo: '메디나 리야드 고르는 팁 알려줘',
+        promptEn: 'Tips for picking a Medina riad?',
+      },
+      {
+        id: 'festival-dates',
+        promptKo: '5월 초 페스티벌 날짜 확인 방법 알려줘',
+        promptEn: 'How to confirm festival dates in May?',
+      },
+    ],
     priority: 1,
   },
   {

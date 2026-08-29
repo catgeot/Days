@@ -98,6 +98,13 @@ const WAVE1_EVENT_IDS = [
 
 const WAVE2_EVENT_IDS = ['singapore-gp-2026', 'dubai-fitness-challenge-2026'];
 
+const D5_B_BATCH_A_EVENT_IDS = [
+  'vienna-staatsoper-season-2026',
+  'amsterdam-kings-day-2027',
+  'prague-spring-festival-2027',
+  'marrakech-rose-festival-2027',
+];
+
 for (const eventId of WAVE1_EVENT_IDS) {
   const event = getWorldEventById(eventId);
   assert.ok(event, `${eventId} in Wave1 roster`);
@@ -108,6 +115,18 @@ for (const eventId of WAVE2_EVENT_IDS) {
   const event = getWorldEventById(eventId);
   assert.ok(event, `${eventId} in Wave2 roster`);
   assert.ok(event.detailOverview, `${eventId} Tier0.5 detailOverview`);
+  assert.ok(Array.isArray(event.glossaryTerms) && event.glossaryTerms.length >= 4, `${eventId} glossaryTerms`);
+  assert.ok(Array.isArray(event.heroImages) && event.heroImages.length >= 3, `${eventId} heroImages`);
+  assert.ok(
+    Array.isArray(event.highlightContextLinks) && event.highlightContextLinks.length >= 2,
+    `${eventId} highlightContextLinks`,
+  );
+  assert.ok(!Array.isArray(event.actionChips) || event.actionChips.length === 0, `${eventId} no actionChips`);
+}
+
+for (const eventId of D5_B_BATCH_A_EVENT_IDS) {
+  const event = getWorldEventById(eventId);
+  assert.ok(event, `${eventId} in D5-b batch A`);
   assert.ok(Array.isArray(event.glossaryTerms) && event.glossaryTerms.length >= 4, `${eventId} glossaryTerms`);
   assert.ok(Array.isArray(event.heroImages) && event.heroImages.length >= 3, `${eventId} heroImages`);
   assert.ok(
@@ -429,6 +448,7 @@ for (const pilotId of [
   'bali-galungan-season-2026',
   'singapore-gp-2026',
   'dubai-fitness-challenge-2026',
+  ...D5_B_BATCH_A_EVENT_IDS,
 ]) {
   await assertPilotHeroImagesReachable(pilotId);
 }
