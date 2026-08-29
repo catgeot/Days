@@ -23,6 +23,7 @@ import {
   extractGoogleMapsSearchQuery,
   googleWebSearchUrl,
 } from '../src/utils/worldEventOutboundLinks.js';
+import { isLikelyTruncatedGlossaryAnswer } from '../src/utils/worldEventGlossaryAnswer.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -290,6 +291,32 @@ const termModalSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventTermExp
 assert.match(termModalSrc, /fetchEventTermExplanation/, 'EventTermExplainModal cached explain');
 assert.match(termModalSrc, /peekEventTermExplanationCache/, 'EventTermExplainModal memory cache warm');
 assert.match(termModalSrc, /googleSearch/, 'EventTermExplainModal google search link');
+
+const stehplatzTruncated =
+  '빈 오페라 스탠딩석(Stehplatz)은 빈 국립 오페라 극장에서 가장 저렴하게 오페라를 관람할 수 있는 입석 티';
+assert.ok(isLikelyTruncatedGlossaryAnswer(stehplatzTruncated, 'ko'), 'truncated stehplatz sample');
+assert.ok(
+  !isLikelyTruncatedGlossaryAnswer(
+    '빈 오페라 스탠딩석은 당일 현장 구매가 가능하며, 인기 공연은 조기 매진됩니다. 편한 신발과 여유 시간을 준비하세요.',
+    'ko',
+  ),
+  'complete stehplatz sample',
+);
+
+const explainTermSrc = readFileSync(
+  join(root, 'supabase/functions/explain-event-term/index.ts'),
+  'utf8',
+);
+assert.match(explainTermSrc, /thinkingBudget:\s*0/, 'explain-event-term disables thinking budget');
+assert.match(explainTermSrc, /isLikelyTruncatedGlossaryAnswer/, 'explain-event-term trunc guard');
+assert.match(explainTermSrc, /!part\?\.thought/, 'explain-event-term skips thought parts');
+
+const fetchExplainSrc = readFileSync(join(root, 'src/utils/fetchEventTermExplanation.js'), 'utf8');
+assert.match(fetchExplainSrc, /isLikelyTruncatedGlossaryAnswer/, 'fetch explain trunc guard');
+assert.match(fetchExplainSrc, /force/, 'fetch explain force retry');
+
+const glossaryAnswerSrc = readFileSync(join(root, 'src/utils/worldEventGlossaryAnswer.js'), 'utf8');
+assert.match(glossaryAnswerSrc, /isLikelyTruncatedGlossaryAnswer/, 'worldEventGlossaryAnswer trunc guard');
 
 const glossarySearchUrl = googleWebSearchUrl(bali.glossaryTerms[0].searchQueryKo, 'ko');
 assert.match(glossarySearchUrl, /google\.com\/search/, 'glossary modal google web search');
