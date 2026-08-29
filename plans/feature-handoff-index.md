@@ -18,8 +18,8 @@
 
 | | |
 |--|--|
-| **상태** | **#32 히어로 수정** — PR [#156](https://github.com/catgeot/Days/pull/156) open · tip `b5c352dc` 위키 404 교체·Unsplash 갤러리 마운트 로드 |
-| **브랜치** | `cursor/world-events-wave2` · tip `b5c352dc` |
+| **상태** | **#32 stale 캐시 수정** — PR [#156](https://github.com/catgeot/Days/pull/156) · tip `6df63661` |
+| **브랜치** | `cursor/world-events-wave2` · tip `6df63661` |
 | **PR** | [#156](https://github.com/catgeot/Days/pull/156) D5-b-2 + 히어로 fix · **merge 대기** |
 | **main** | `73f4ccdc` — D5-b UI만 · overrides는 bali만 |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **Phase F-0.5 D5-b-2** · §9 |
