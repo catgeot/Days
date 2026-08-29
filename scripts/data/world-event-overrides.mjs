@@ -90,12 +90,12 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Oktoberfest grounds',
       },
       {
-        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Oktoberfest_2010_046.JPG/1280px-Oktoberfest_2010_046.JPG',
-        captionKo: '맥주 텐트',
-        captionEn: 'Beer tents',
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Oktoberfest_Schaugeschaeft_2007_Richard_Bartz.jpg/1280px-Oktoberfest_Schaugeschaeft_2007_Richard_Bartz.jpg',
+        captionKo: '옥토버페스트 현장',
+        captionEn: 'Oktoberfest fairground',
       },
       {
-        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Theresienwiese_Munich.jpg/1280px-Theresienwiese_Munich.jpg',
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/U-Bahnhof_Theresienwiese_03.jpg/1280px-U-Bahnhof_Theresienwiese_03.jpg',
         captionKo: '테레지엔비제',
         captionEn: 'Theresienwiese',
       },
@@ -273,12 +273,12 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Fringe street performer',
       },
       {
-        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Edinburgh_Royal_Mile_2010.jpg/1280px-Edinburgh_Royal_Mile_2010.jpg',
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Edinburgh_Royal_Mile_from_Salisbury_Crags_20211019.jpg/1280px-Edinburgh_Royal_Mile_from_Salisbury_Crags_20211019.jpg',
         captionKo: '로얄 마일',
         captionEn: 'Royal Mile',
       },
       {
-        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Edinburgh_Old_Town_from_Princes_Street_Gardens.jpg/1280px-Edinburgh_Old_Town_from_Princes_Street_Gardens.jpg',
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Edinburgh_cannon_and_old_town_20211020.jpg/1280px-Edinburgh_cannon_and_old_town_20211020.jpg',
         captionKo: '에든버러 올드타운',
         captionEn: 'Edinburgh Old Town',
       },

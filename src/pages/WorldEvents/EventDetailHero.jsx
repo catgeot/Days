@@ -15,9 +15,9 @@ const PHOTO_SWIPE_DIRECTION_RATIO = 1.2;
 export default function EventDetailHero({ event, locale = 'ko' }) {
   const { t } = useTranslation();
   const seedImages = useMemo(() => getWorldEventHeroImages(event), [event]);
+  const [displayImages, setDisplayImages] = useState(seedImages);
   const [activeIndex, setActiveIndex] = useState(0);
   const [galleryOpen, setGalleryOpen] = useState(false);
-  const [galleryImages, setGalleryImages] = useState(seedImages);
   const [galleryLoading, setGalleryLoading] = useState(false);
   const galleryFetchRef = useRef(null);
   const swipeStartRef = useRef(null);
@@ -25,7 +25,7 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
   const title = getWorldEventTitle(event, locale);
 
   useEffect(() => {
-    setGalleryImages(seedImages);
+    setDisplayImages(seedImages);
     setActiveIndex(0);
   }, [event.id, seedImages]);
 
@@ -36,11 +36,10 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
       setGalleryLoading(true);
       try {
         const result = await fetchEventHeroGallery(event, locale);
-        if (result.images.length > seedImages.length) {
-          setGalleryImages(result.images);
-        } else if (result.ok && result.images.length > 0) {
-          setGalleryImages(result.images);
+        if (result.images.length > 0) {
+          setDisplayImages(result.images);
         }
+        return result;
       } finally {
         setGalleryLoading(false);
         galleryFetchRef.current = null;
@@ -50,6 +49,10 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
     return galleryFetchRef.current;
   }, [event, locale]);
 
+  useEffect(() => {
+    void loadExtendedGallery();
+  }, [loadExtendedGallery]);
+
   const openGallery = useCallback(() => {
     setGalleryOpen(true);
     void loadExtendedGallery();
@@ -57,15 +60,15 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
 
   const step = useCallback(
     (delta) => {
-      if (seedImages.length < 2) return;
-      setActiveIndex((index) => (index + delta + seedImages.length) % seedImages.length);
+      if (displayImages.length < 2) return;
+      setActiveIndex((index) => (index + delta + displayImages.length) % displayImages.length);
     },
-    [seedImages.length],
+    [displayImages.length],
   );
 
   const consumeHorizontalSwipe = useCallback(
     (start, endX, endY) => {
-      if (!start || seedImages.length < 2) return false;
+      if (!start || displayImages.length < 2) return false;
       const dx = endX - start.x;
       const dy = endY - start.y;
       if (Math.abs(dx) < PHOTO_SWIPE_THRESHOLD_PX) return false;
@@ -73,7 +76,7 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
       step(dx > 0 ? -1 : 1);
       return true;
     },
-    [seedImages.length, step],
+    [displayImages.length, step],
   );
 
   const onHeroTouchStart = useCallback((touchEvent) => {
@@ -97,9 +100,9 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
     swipeStartRef.current = null;
   }, []);
 
-  if (!seedImages.length) return null;
+  if (!displayImages.length) return null;
 
-  const activeImage = seedImages[activeIndex] || seedImages[0];
+  const activeImage = displayImages[activeIndex] || displayImages[0];
 
   return (
     <>
@@ -122,7 +125,7 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
               decoding="async"
               draggable={false}
             />
-            {seedImages.length > 1 ? (
+            {displayImages.length > 1 ? (
               <>
                 <button
                   type="button"
@@ -141,12 +144,12 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
                   <ChevronRight size={18} aria-hidden />
                 </button>
                 <span className="absolute bottom-4 right-4 rounded-full bg-black/55 px-2 py-0.5 text-[10px] font-bold text-white tabular-nums">
-                  {activeIndex + 1}/{seedImages.length}
+                  {activeIndex + 1}/{displayImages.length}
                 </span>
               </>
             ) : null}
 
-            {seedImages.length > 1 ? (
+            {displayImages.length > 1 ? (
               <button
                 type="button"
                 onClick={openGallery}
@@ -159,7 +162,7 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
           </div>
         </section>
 
-        {seedImages.length > 1 ? (
+        {displayImages.length > 1 ? (
           <section
             className="rounded-2xl border border-stone-200 bg-white p-2.5 shadow-sm"
             aria-label={t('worldEventDetail.heroGallery.thumbnailsAria')}
@@ -181,7 +184,7 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
               className="flex gap-2 overflow-x-auto px-0.5 py-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               role="listbox"
             >
-              {seedImages.map((image, index) => {
+              {displayImages.map((image, index) => {
                 const selected = index === activeIndex;
                 const thumbCaption =
                   locale === 'en' && image.captionEn ? image.captionEn : image.captionKo || '';
@@ -218,8 +221,8 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
 
       {galleryOpen ? (
         <EventHeroGalleryModal
-          images={galleryImages}
-          activeIndex={Math.min(activeIndex, Math.max(galleryImages.length - 1, 0))}
+          images={displayImages}
+          activeIndex={Math.min(activeIndex, Math.max(displayImages.length - 1, 0))}
           locale={locale}
           title={title}
           loading={galleryLoading}

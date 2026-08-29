@@ -301,6 +301,8 @@ assert.doesNotMatch(heroSrc, /heroEyebrow/, 'EventDetailHero no highlight text o
 assert.match(heroSrc, /heroGallery\.thumbnailsAria/, 'EventDetailHero separate gallery list section');
 assert.match(heroSrc, /EventHeroGalleryModal/, 'EventDetailHero gallery modal');
 assert.match(heroSrc, /heroGallery\.viewMore/, 'EventDetailHero view more button');
+assert.match(heroSrc, /loadExtendedGallery\(\)/, 'EventDetailHero auto-fetches hero gallery on mount');
+assert.match(heroSrc, /displayImages/, 'EventDetailHero uses displayImages for hero and thumbnails');
 
 const mediaSectionSrc = readFileSync(
   join(root, 'src/pages/WorldEvents/EventDetailMediaSection.jsx'),
@@ -353,6 +355,48 @@ assert.ok(
 );
 assert.ok(munich.glossaryTerms.some((term) => term.id === 'theresienwiese'), 'munich theresienwiese glossary');
 assert.ok(munich.glossaryTerms.some((term) => term.id === 'beer-tent'), 'munich beer-tent glossary');
+
+/**
+ * @param {string} eventId
+ */
+async function assertPilotHeroImagesReachable(eventId) {
+  const event = getWorldEventById(eventId);
+  const images = Array.isArray(event?.heroImages) ? event.heroImages : [];
+  for (const image of images) {
+    const url = String(image?.url || '').trim();
+    if (!url.startsWith('http')) continue;
+
+    let ok = false;
+    let status = 0;
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      if (attempt > 0) {
+        await new Promise((resolve) => setTimeout(resolve, 1200 * attempt));
+      }
+      const response = await fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(12_000) });
+      status = response.status;
+      if (response.ok) {
+        ok = true;
+        break;
+      }
+      if (status !== 429) break;
+    }
+
+    assert.equal(
+      ok,
+      true,
+      `${eventId} hero image reachable (${status}): ${url}`,
+    );
+    await new Promise((resolve) => setTimeout(resolve, 400));
+  }
+}
+
+for (const pilotId of [
+  'edinburgh-fringe-2026',
+  'munich-oktoberfest-2026',
+  'bali-galungan-season-2026',
+]) {
+  await assertPilotHeroImagesReachable(pilotId);
+}
 
 const chipsUtilSrc2 = readFileSync(join(root, 'src/utils/worldEventChips.js'), 'utf8');
 assert.match(chipsUtilSrc2, /getKlookAffiliateUrl/, 'shop Klook chips use affiliate url');
