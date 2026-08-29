@@ -81,6 +81,60 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Oktoberfest_2015_-_Impression_5.JPG/1280px-Oktoberfest_2015_-_Impression_5.JPG',
+    youtubeVideos: [
+      {
+        id: 'B5GN30_FRWU',
+        titleKo: '뮌헨·옥토버페스트 가이드',
+        titleEn: 'Munich & Oktoberfest guide',
+      },
+      {
+        id: 'wHr51Uh9a0E',
+        titleKo: '옥토버페스트 현장',
+        titleEn: 'Inside Oktoberfest',
+      },
+    ],
+    actionChips: [
+      {
+        id: 'official-site',
+        labelKo: '공식 사이트',
+        labelEn: 'Official site',
+        href: 'https://www.oktoberfest.de/en',
+        kind: 'official',
+      },
+      {
+        id: 'theresienwiese-map',
+        labelKo: 'Theresienwiese 지도',
+        labelEn: 'Theresienwiese map',
+        href: 'https://www.google.com/maps/search/?api=1&query=Theresienwiese+Munich',
+        kind: 'map',
+      },
+      {
+        id: 'tent-reservation',
+        labelKo: '텐트 예약 검색',
+        labelEn: 'Tent reservations',
+        href: 'https://www.google.com/search?q=Oktoberfest+beer+tent+reservation&hl=ko',
+        kind: 'search',
+      },
+    ],
+    mooniChips: [
+      {
+        id: 'tent-booking',
+        promptKo: '맥주 텐트 예약은 어떻게 해?',
+        promptEn: 'How do I book an Oktoberfest beer tent?',
+      },
+      {
+        id: 'weekday-weekend',
+        promptKo: '평일이랑 주말 중 언제 가는 게 나아?',
+        promptEn: 'Weekday or weekend — when is better to visit?',
+      },
+      {
+        id: 'transport',
+        promptKo: 'Theresienwiese 가는 교통 알려줘',
+        promptEn: 'How do I get to Theresienwiese?',
+      },
+    ],
     priority: 1,
   },
   {
@@ -118,6 +172,60 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 4,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Edinburgh_Festival_Fringe_Street_Performer.jpg/1280px-Edinburgh_Festival_Fringe_Street_Performer.jpg',
+    youtubeVideos: [
+      {
+        id: '_YXE3yAUrvA',
+        titleKo: '에든버러 프린지·올드타운 가이드',
+        titleEn: 'Edinburgh Fringe Old Town guide',
+      },
+      {
+        id: '6jxgY3vCAjw',
+        titleKo: '프린지 방문 전 알아둘 것',
+        titleEn: 'Before you go to the Fringe',
+      },
+    ],
+    actionChips: [
+      {
+        id: 'official-tickets',
+        labelKo: '공식 예매',
+        labelEn: 'Official tickets',
+        href: 'https://www.edfringe.com/',
+        kind: 'official',
+      },
+      {
+        id: 'royal-mile-map',
+        labelKo: 'Royal Mile 지도',
+        labelEn: 'Royal Mile map',
+        href: 'https://www.google.com/maps/search/?api=1&query=Royal+Mile+Edinburgh',
+        kind: 'map',
+      },
+      {
+        id: 'venue-map',
+        labelKo: '공연장 지도',
+        labelEn: 'Venue map',
+        href: 'https://www.edfringe.com/find-a-show/venues',
+        kind: 'map',
+      },
+    ],
+    mooniChips: [
+      {
+        id: 'free-shows',
+        promptKo: 'Royal Mile 프리 공연은 어디서 볼 수 있어?',
+        promptEn: 'Where can I catch free Fringe shows on Royal Mile?',
+      },
+      {
+        id: 'three-shows',
+        promptKo: '하루에 공연 3편 일정 짜줘',
+        promptEn: 'Plan a day with three Fringe shows',
+      },
+      {
+        id: 'opening-week',
+        promptKo: '8월 첫 주 3박으로 추천 일정 알려줘',
+        promptEn: 'Suggest a 3-night opening-week itinerary',
+      },
+    ],
     priority: 1,
   },
   {
@@ -281,14 +389,14 @@ export const WORLD_EVENT_OVERRIDES = [
     recurrenceNote: '210일 주기 · 갈룽안·쿠닝안',
     venue: { name: 'Bali islandwide temples' },
     source: 'curated',
-    sourceUrl: 'https://www.baligoldentour.com/galungan-kuningan/',
+    sourceUrl: 'https://en.wikipedia.org/wiki/Galungan',
     bookingHints: '우붓·스미냑 — 사원 방문 시 사례 복장 준비',
     detailOverview:
-      '발리 힌두력 210일 주기로 돌아오는 갈룽안·쿠닝안 시즌으로, 사원·가옥 앞 펜져(penjor) 장식·제례가 섬 전역에서 이어집니다. 갈룽안 당일·쿠닝안 전후 3~4박으로 우붓·스미냑 기점 사원·마을 행사를 둘러보는 방문이 일반적입니다.',
+      '발리 힌두력 210일 주기 축제로, 9월 16일(수) 갈룽안에 시즌이 열리고 9월 26일(토) 쿠닝안(갈룽안 10일 후)에 마무리됩니다. 이 10일 사이 펜져 장식·사원 제례가 섬 전역에서 이어지며, 방문 일정은 보통 「갈룽안 전후」「쿠닝안 전후」「둘 다 커버」 중 하나를 기준으로 잡습니다.',
     highlights: [
-      '갈룽안(Galungan) — 사원·가옥 펜져·제례(사례 복장·사원 입장 규정 준수)',
-      '쿠닝안(Kuningan) — 갈룽안 10일 후 · 사원 방문·지역 행사',
-      '우붓·스미냑 — 사원·전통 마을 투어 기점 · 렌터카·드라이버 예약 권장',
+      '9/16(수) 갈룽안 — 조상을 맞이하는 날 · 사원·가옥 펜져·제례 절정(사례 복장 필수)',
+      '9/26(토) 쿠닝안 — 갈룽안 10일 후 마무리 제례 · 사원 방문·지역 행사 재피크',
+      '우붓(사원·마을) + 스미냑(해변) 분할 숙박 — 시즌 중 이동 1~1.5시간 · 렌터카·드라이버 권장',
     ],
     stayAreas: [
       {
@@ -303,6 +411,184 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 4,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Offering-Bali.jpg/1280px-Offering-Bali.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Offering-Bali.jpg/1280px-Offering-Bali.jpg',
+        captionKo: '발리 제례 공양',
+        captionEn: 'Balinese temple offerings',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Penjor_Galungan_Ubud_Bali_20120906a.jpg/1280px-Penjor_Galungan_Ubud_Bali_20120906a.jpg',
+        captionKo: '갈룽안 펜져 장식',
+        captionEn: 'Galungan penjor decorations',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Penjor_Galungan_Ubud_Bali_20120906b.jpg/1280px-Penjor_Galungan_Ubud_Bali_20120906b.jpg',
+        captionKo: '갈룽안 시즌 사원 장식',
+        captionEn: 'Galungan season temple decor',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'galungan',
+        termKo: '갈룽안',
+        termEn: 'Galungan',
+        promptKo: '발리 갈룽안 축제가 무엇인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.',
+        promptEn: 'Explain Galungan for Bali travelers in 3 short sentences.',
+        searchQueryKo: '발리 갈룽안 축제',
+        searchQueryEn: 'Bali Galungan festival',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Galungan',
+      },
+      {
+        id: 'kuningan',
+        termKo: '쿠닝안',
+        termEn: 'Kuningan',
+        promptKo: '발리 쿠닝안이 갈룽안과 어떤 관계인지, 여행 일정에 왜 중요한지 3문장 이내로 설명해줘.',
+        promptEn: 'Explain Kuningan and its relation to Galungan for travelers in 3 short sentences.',
+        searchQueryKo: '발리 쿠닝안 축제',
+        searchQueryEn: 'Bali Kuningan festival',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Kuningan',
+      },
+      {
+        id: 'penjor',
+        termKo: '펜져',
+        termEn: 'penjor',
+        promptKo: '발리 갈룽안 시즌 펜져 장식이 무엇인지, 어디서 볼 수 있는지 3문장 이내로 설명해줘.',
+        promptEn: 'What are Galungan penjor decorations and where to see them? 3 short sentences.',
+        searchQueryKo: '발리 갈룽안 펜져 장식',
+        searchQueryEn: 'Bali Galungan penjor decoration',
+      },
+      {
+        id: 'ceremonial-dress',
+        termKo: '사례 복장',
+        termEn: 'ceremonial dress',
+        promptKo: '발리 사원 방문 시 사례 복장(사롱·셀endang) 규정을 여행자 관점에서 3문장 이내로 설명해줘.',
+        promptEn: 'Temple dress code (sarong, sash) for Bali visitors in 3 short sentences.',
+        searchQueryKo: '발리 사원 사례 복장 사롱',
+        searchQueryEn: 'Bali temple dress code sarong',
+      },
+      {
+        id: 'sarong',
+        termKo: '사롱',
+        termEn: 'sarong',
+        promptKo: '발리 사원 방문용 사롱이 무엇인지, 대여·구매 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'What is a sarong for Bali temples and how to get one? 3 short sentences.',
+        searchQueryKo: '발리 사롱 대여 우붓',
+        searchQueryEn: 'Bali sarong rental Ubud',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'sarong-rental',
+            labelKo: '사롱·복장 대여',
+            labelEn: 'Sarong & temple dress rental',
+            kind: 'shop',
+            searchQueryKo: '발리 사원 사례 복장 사롱',
+            searchQueryEn: 'Bali temple dress code sarong',
+            searchTarget: 'google',
+          },
+          {
+            id: 'sarong-klook',
+            labelKo: '사롱 Klook 검색',
+            labelEn: 'Sarong on Klook',
+            kind: 'shop',
+            searchQueryKo: '발리 사롱 대여',
+            searchQueryEn: 'Bali sarong rental',
+            searchTarget: 'klook',
+          },
+        ],
+      },
+      {
+        highlightIndex: 2,
+        links: [
+          {
+            id: 'bali-rental',
+            labelKo: '발리 렌터카',
+            labelEn: 'Bali car rental',
+            kind: 'rental',
+          },
+          {
+            id: 'bali-driver-tour',
+            labelKo: '기사 포함 투어',
+            labelEn: 'Private driver tour',
+            kind: 'tour',
+          },
+        ],
+      },
+    ],
+    youtubeVideos: [
+      {
+        id: 'AJhPk93ksso',
+        titleKo: '갈룽안 축제 영상',
+        titleEn: 'Galungan festival film',
+      },
+      {
+        id: '8ix-YkhHl_E',
+        titleKo: '발리 갈룽안·우붓 체험',
+        titleEn: 'Galungan in Ubud',
+      },
+    ],
+    youtubeSearchQueryKo: '발리 갈룽안 축제',
+    youtubeSearchQueryEn: 'Bali Galungan festival',
+    actionChips: [
+      {
+        id: 'galungan-guide',
+        labelKo: '갈룽안 안내',
+        labelEn: 'Galungan guide',
+        href: 'https://en.wikipedia.org/wiki/Galungan',
+        kind: 'official',
+      },
+      {
+        id: 'ubud-temples-map',
+        labelKo: '우붓 사원 지도',
+        labelEn: 'Ubud temples map',
+        href: 'https://www.google.com/maps/search/?api=1&query=Ubud+temples+Bali',
+        kind: 'map',
+      },
+      {
+        id: 'penjor-search',
+        labelKo: '펜져 장식 검색',
+        labelEn: 'Penjor decorations',
+        href: 'https://www.google.com/search?q=Bali+Galungan+penjor+decoration+Ubud&hl=en',
+        kind: 'search',
+      },
+      {
+        id: 'sarong-rental',
+        labelKo: '사롱·복장 대여',
+        labelEn: 'Sarong & temple dress rental',
+        href: 'https://www.google.com/search?q=%EB%B0%9C%EB%A6%AC+%EC%82%AC%EC%9B%90+%EC%82%AC%EB%A1%80+%EB%B3%B5%EC%9E%A5+%EC%82%AC%EB%A1%B1&hl=ko',
+        kind: 'shop',
+      },
+      {
+        id: 'sarong-klook',
+        labelKo: '사롱 Klook 검색',
+        labelEn: 'Sarong on Klook',
+        href: 'https://www.klook.com/ko/search/result/?query=%EB%B0%9C%EB%A6%AC+%EC%82%AC%EB%A1%B1+%EB%8C%80%EC%97%AC',
+        kind: 'shop',
+      },
+    ],
+    mooniChips: [
+      {
+        id: 'temple-etiquette',
+        promptKo: '갈룽안 때 사원 방문 예절 알려줘',
+        promptEn: 'Temple etiquette during Galungan?',
+      },
+      {
+        id: 'ubud-itinerary',
+        promptKo: '우붓 기준 4박 일정 짜줘',
+        promptEn: 'Plan a 4-night Ubud-based Galungan itinerary',
+      },
+      {
+        id: 'penjor-spots',
+        promptKo: '펜져 장식 볼 수 있는 곳은?',
+        promptEn: 'Where can I see penjor decorations?',
+      },
+    ],
     priority: 1,
   },
   {

@@ -1766,6 +1766,49 @@
     "recommendedNightsTitle": "Suggested nights",
     "recommendedNightsBody": "{{nights}} nights · short visit, not the full event span",
     "askMooni": "Ask MOONi",
+    "actionChips": {
+      "title": "Event shortcuts"
+    },
+    "glossary": {
+      "loading": "Loading explanation…",
+      "error": "Could not load the explanation. Try the search links below.",
+      "googleSearch": "Search on Google",
+      "referenceLink": "Reference link",
+      "close": "Close"
+    },
+    "heroGallery": {
+      "thumbnailsAria": "Event photo thumbnails",
+      "imageAlt": "{{title}} photo {{index}}",
+      "viewMore": "View more photos",
+      "modalAria": "Event photo gallery",
+      "close": "Close",
+      "prev": "Previous photo",
+      "next": "Next photo",
+      "swipeHint": "Swipe left or right to browse photos",
+      "loading": "Loading more photos…"
+    },
+    "media": {
+      "heroEyebrow": "Event highlight",
+      "heroAlt": "{{title}} hero image",
+      "searchTitle": "Learn more",
+      "searchHint": "Search by event and venue keywords for official info and tips.",
+      "googleSearch": "Google search",
+      "naverSearch": "Naver search",
+      "youtubeTitle": "Related videos",
+      "youtubeLoading": "Loading videos…",
+      "youtubeLoadMore": "Show {{count}} more videos",
+      "youtubeSearch": "Search more on YouTube",
+      "attractionsTitle": "{{city}} attractions",
+      "attractionsHint": "Open city attraction hubs on the map and place cards.",
+      "attractionsHubCta": "{{city}} place card"
+    },
+    "mooniChips": {
+      "title": "Ask MOONi",
+      "hint": "Tap a festival question to open MOONi chat with event context."
+    },
+    "mooniSeed": {
+      "label": "Event context"
+    },
     "staticFallback": "Detailed copy is coming soon. Use official links, place cards, and planner CTAs for now.",
     "type": {
       "festival": "Festival",
@@ -1784,6 +1827,7 @@
     "aiGuide": {
       "title": "Event travel guide",
       "tierLabel": "AI",
+      "staticSeparationNote": "Overview and recommended nights are in the static sections above. Below are AI visit windows and event-specific tips.",
       "recommendedNights": "AI suggests {{nights}} nights (not the full event span)",
       "tripPresets": "Suggested visit windows",
       "nights": "{{count}} nights",
@@ -1796,6 +1840,8 @@
       "hint": "Search stays and flights for your selected nights — not the full event span.",
       "dates": "Stay dates",
       "staysTitle": "Stays in {{place}}",
+      "areasTitle": "Suggested stay areas",
+      "moreOnMrt": "More on MRT",
       "flightCta": "Flight + hotel",
       "empty": "No stays for these dates. Try adjusting your window.",
       "presets": {
@@ -1804,6 +1850,15 @@
         "midWeekend": "Mid-season weekend",
         "closing": "Closing"
       }
+    },
+    "executionStrip": {
+      "title": "Book & go",
+      "hint": "Rental cars, tours, and packages open via GATEO affiliate links.",
+      "rentalTitle": "Rental car",
+      "rentalHint": "Klook rentals — handy for temples and Ubud day trips.",
+      "tourTitle": "Tours & activities",
+      "packageTitle": "Package trips",
+      "packageHint": "Browse more deals on MyRealTrip package search."
     }
   },
   "logbook": {

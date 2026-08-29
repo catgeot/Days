@@ -104,6 +104,7 @@ const ChatModal = ({
   const chatInputRef = useRef(null);
   const mobileDockInputRef = useRef(null);
   const hasSentInitialRef = useRef(false);
+  const lastInitialQueryTextRef = useRef('');
   const mobileDockBlurTimerRef = useRef(null);
 
   const collapseMobileDockInput = useCallback(() => {
@@ -908,7 +909,7 @@ const ChatModal = ({
         ? getMooniL1ChipLabel(topicDockParent, { mobile: true })
         : null,
       onOpenPlanner: handlePlannerNavigate,
-      disabled: isLoading,
+      disabled: isLoading || (!activeChatId && !chatDraft),
       prompt: topicDockPrompt,
       showPrompt: showTopicDockPrompt,
       dock: true,
@@ -920,33 +921,36 @@ const ChatModal = ({
       topicDockParent,
       handlePlannerNavigate,
       isLoading,
+      activeChatId,
+      chatDraft,
       topicDockPrompt,
       showTopicDockPrompt,
     ]
   );
 
   useEffect(() => {
-    if (isOpen && initialQuery && !hasSentInitialRef.current) {
-      hasSentInitialRef.current = true;
+    const queryText =
+      typeof initialQuery === 'string'
+        ? initialQuery.trim()
+        : String(initialQuery?.text || initialQuery?.display || initialQuery?.query || '').trim();
 
-      let queryText = "";
-      if (typeof initialQuery === 'string') {
-        queryText = initialQuery;
-      } else if (typeof initialQuery === 'object') {
-        queryText = initialQuery?.text || initialQuery?.display || initialQuery?.query || "";
-      }
-
-      const queryPersona = initialQuery?.persona || PERSONA_TYPES.GENERAL;
-      setCurrentPersona(queryPersona);
-
-      if (queryText.trim().length > 0) {
-        handleSend(queryText, queryPersona);
-      }
-
-    } else if (!isOpen) {
+    if (!isOpen) {
       hasSentInitialRef.current = false;
+      lastInitialQueryTextRef.current = '';
+      return;
     }
-  }, [isOpen, initialQuery, handleSend]);
+
+    if (!queryText) return;
+    if (!activeChatId && !chatDraft) return;
+    if (lastInitialQueryTextRef.current === queryText) return;
+
+    lastInitialQueryTextRef.current = queryText;
+    hasSentInitialRef.current = true;
+
+    const queryPersona = initialQuery?.persona || PERSONA_TYPES.GENERAL;
+    setCurrentPersona(queryPersona);
+    handleSend(queryText, queryPersona);
+  }, [isOpen, initialQuery, handleSend, activeChatId, chatDraft]);
 
   const handleSidebarClick = (id) => { if (onSwitchChat) onSwitchChat(id); };
 
@@ -1075,6 +1079,26 @@ const ChatModal = ({
                   {placeIntro && (
                     <p className="text-sm text-gray-200 leading-relaxed whitespace-pre-wrap">{placeIntro}</p>
                   )}
+                </div>
+              )}
+              {isMooniUi &&
+                messages.length === 0 &&
+                !isLoading &&
+                mooniPlaceContext?.eventContext?.seedText &&
+                !(
+                  typeof initialQuery === 'string'
+                    ? initialQuery.trim()
+                    : String(
+                        initialQuery?.text || initialQuery?.display || initialQuery?.query || '',
+                      ).trim()
+                ) && (
+                <div className="flex flex-col items-start w-full mb-3">
+                  <span className="text-[10px] font-bold mb-1 px-1 text-amber-400 uppercase tracking-wider">
+                    {t('worldEventDetail.mooniSeed.label')}
+                  </span>
+                  <div className="w-full p-3 rounded-2xl text-sm shadow-md bg-amber-950/40 border border-amber-500/20 text-amber-50 rounded-tl-sm leading-relaxed whitespace-pre-wrap">
+                    {mooniPlaceContext.eventContext.seedText}
+                  </div>
                 </div>
               )}
               {isMooniUi && messages.length === 0 && !isLoading && placeIntroTarget && (

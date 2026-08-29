@@ -16,7 +16,7 @@ const THEME_CHAT_CATEGORY = 'korea-theme';
  * Home(`/`) 밖(테마·명승 등)에서 라우트를 바꾸지 않고 MOONi ChatModal을 연다.
  * 닫으면 호출측 화면(상세 모달 등)이 그대로 남는다.
  */
-export default function MooniBoundChatHost({ isOpen, boundSpot, onClose }) {
+export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = null, onClose }) {
   const [user, setUser] = useState(null);
   const {
     savedTrips,
@@ -29,7 +29,6 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, onClose }) {
     deleteTrip,
   } = useTravelData(user);
   const [chatDraft, setChatDraft] = useState(null);
-  const [initialQuery, setInitialQuery] = useState(null);
   const [mooniPlaceContext, setMooniPlaceContext] = useState(null);
   const openedKeyRef = useRef(null);
 
@@ -50,7 +49,6 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, onClose }) {
   const resetSession = useCallback(() => {
     setChatDraft(null);
     setActiveChatId(null);
-    setInitialQuery(null);
     setMooniPlaceContext(null);
     openedKeyRef.current = null;
   }, [setActiveChatId]);
@@ -71,7 +69,6 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, onClose }) {
       if (placeTrip) {
         setChatDraft(null);
         setActiveChatId(placeTrip.id);
-        setInitialQuery(null);
         return;
       }
 
@@ -85,7 +82,6 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, onClose }) {
         category: THEME_CHAT_CATEGORY,
       });
       setActiveChatId(null);
-      setInitialQuery(null);
     },
     [savedTrips, setActiveChatId],
   );
@@ -95,11 +91,15 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, onClose }) {
       if (!isOpen) openedKeyRef.current = null;
       return;
     }
-    const key = `${boundSpot.slug || ''}|${boundSpot.name}|${boundSpot.lat ?? ''}|${boundSpot.lng ?? ''}`;
+    const queryKey =
+      typeof initialQuery === 'string'
+        ? initialQuery
+        : initialQuery?.text || initialQuery?.query || '';
+    const key = `${boundSpot.slug || ''}|${boundSpot.name}|${boundSpot.lat ?? ''}|${boundSpot.lng ?? ''}|${queryKey}`;
     if (openedKeyRef.current === key) return;
     openedKeyRef.current = key;
     openBound(boundSpot);
-  }, [isOpen, boundSpot, openBound]);
+  }, [isOpen, boundSpot, initialQuery, openBound]);
 
   const createTripOnFirstUserMessage = useCallback(
     async ({ destination, lat, lng, persona, firstUserText }) => {

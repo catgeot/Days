@@ -164,7 +164,7 @@ Example shape:
     { "step": 2, "title": "Arrive Bali (DPS) & rest 🏨", "duration": "6h" }
   ],
   "categories": {
-    "pre_travel": [{ "title": "Indonesia e-Visa", "url": "https://molina.imigrasi.go.id/", "cost": "$35" }],
+    "pre_travel": [{ "title": "Indonesia e-Visa", "url": "https://evisa.imigrasi.go.id/", "cost": "$35" }],
     "visa": { "advice": "**Requirements**\\n- Passport valid 6+ months", "url": null },
     "flight": { "advice": "**Booking tips**\\n- Nonstop: …", "url": null }
   }
@@ -220,7 +220,7 @@ URL이 있다면 반드시 해당 공식 사이트의 유효한 예약 링크나
   ],
   "categories": {
     "pre_travel": [
-      { "title": "인도네시아 E-비자 신청", "url": "https://molina.imigrasi.go.id/", "cost": "$35" }
+      { "title": "인도네시아 E-비자 신청", "url": "https://evisa.imigrasi.go.id/", "cost": "$35" }
     ],
     "airport_transfer": { "advice": "[@Eka Jaya@] 공항 픽업 포함 추천", "url": "https://ekajayafastboat.com/" },
     "ferry_booking": { "advice": "[@BlueWater Express@]", "url": "https://www.bluewaterexpress.com/" },

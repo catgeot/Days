@@ -1529,6 +1529,49 @@
     "recommendedNightsTitle": "권장 박수",
     "recommendedNightsBody": "{{nights}}박 · 행사 전체 기간이 아닌 짧은 방문 기준",
     "askMooni": "무니에게 묻기",
+    "actionChips": {
+      "title": "행사 바로가기"
+    },
+    "glossary": {
+      "loading": "설명을 불러오는 중…",
+      "error": "설명을 불러오지 못했습니다. 아래 검색 링크를 이용해 주세요.",
+      "googleSearch": "구글에서 더 찾기",
+      "referenceLink": "참고 링크",
+      "close": "닫기"
+    },
+    "heroGallery": {
+      "thumbnailsAria": "행사 사진 썸네일",
+      "imageAlt": "{{title}} 사진 {{index}}",
+      "viewMore": "사진 더보기",
+      "modalAria": "행사 사진 갤러리",
+      "close": "닫기",
+      "prev": "이전 사진",
+      "next": "다음 사진",
+      "swipeHint": "좌우로 넘겨 더 많은 사진을 볼 수 있어요",
+      "loading": "추가 사진을 불러오는 중…"
+    },
+    "media": {
+      "heroEyebrow": "행사 하이라이트",
+      "heroAlt": "{{title}} 대표 이미지",
+      "searchTitle": "더 알아보기",
+      "searchHint": "행사명·장소 키워드로 검색해 공식 정보·후기를 찾아보세요.",
+      "googleSearch": "구글 검색",
+      "naverSearch": "네이버 검색",
+      "youtubeTitle": "관련 영상",
+      "youtubeLoading": "한국어 영상을 불러오는 중…",
+      "youtubeLoadMore": "영상 {{count}}개 더보기",
+      "youtubeSearch": "YouTube에서 더 찾기",
+      "attractionsTitle": "{{city}} 명소",
+      "attractionsHint": "도시 명소 허브에서 지도·여행지 카드로 이어집니다.",
+      "attractionsHubCta": "{{city}} 여행지 카드"
+    },
+    "mooniChips": {
+      "title": "무니에게 물어보기",
+      "hint": "행사 맥락 질문을 누르면 무니 채팅이 열립니다."
+    },
+    "mooniSeed": {
+      "label": "행사 맥락"
+    },
     "staticFallback": "상세 소개는 준비 중입니다. 공식 일정·여행지 카드·플래너 CTA를 이용해 주세요.",
     "type": {
       "festival": "축제",
@@ -1547,6 +1590,7 @@
     "aiGuide": {
       "title": "행사 맞춤 여행 가이드",
       "tierLabel": "AI",
+      "staticSeparationNote": "개요·권장 숙박은 위 정적 안내(Tier0~0.5)를 참고하세요. 아래는 AI 방문 윈도·행사 맞춤 조언입니다.",
       "recommendedNights": "AI 권장 숙박 {{nights}}박 (행사 전체 기간 아님)",
       "tripPresets": "추천 방문 윈도",
       "nights": "{{count}}박",
@@ -1559,6 +1603,8 @@
       "hint": "행사 전체 기간이 아닌, 선택한 숙박 일정으로 숙소·항공을 조회합니다.",
       "dates": "숙박 일정",
       "staysTitle": "{{place}} 숙소",
+      "areasTitle": "추천 숙소 권역",
+      "moreOnMrt": "MRT에서 더보기",
       "flightCta": "항공+숙소",
       "empty": "선택 일정에 맞는 숙소가 없습니다. 일정을 조정해 보세요.",
       "presets": {
@@ -1567,6 +1613,15 @@
         "midWeekend": "중순 주말",
         "closing": "막바지"
       }
+    },
+    "executionStrip": {
+      "title": "실행·예약",
+      "hint": "렌터카·투어·패키지는 gateo 제휴 링크로 이어집니다.",
+      "rentalTitle": "렌터카",
+      "rentalHint": "Klook 렌터카 — 사원·우붓 이동에 유용합니다.",
+      "tourTitle": "투어·체험",
+      "packageTitle": "패키지 여행",
+      "packageHint": "마이리얼트립 패키지 검색으로 더 많은 상품을 볼 수 있습니다."
     }
   },
   "logbook": {

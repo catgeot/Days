@@ -6,9 +6,9 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 20,
-  sessionPhase: '국내 FestivalStayStrip · merge 준비',
-  branch: 'cursor/world-events-efa3',
+  sessionNo: 27,
+  sessionPhase: 'Wave1.5 D4 숙소·파일럿 회귀',
+  branch: 'cursor/world-events-wave2',
   previewPath: '/world-events',
   qaShareSlug: 'world-events',
 };
@@ -23,6 +23,38 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-08-27-world-events-d4-opening-preset',
+    session: '세계행사 일정 #27, Wave1.5 D4 숙소·파일럿 회귀',
+    title: '개막 3박 프리셋·초기값·중복 API 방지',
+    detail:
+      '내 여행 일정: 개막 3박=행사 전날 체크인 · tripWindow↔opening 프리셋 SSOT · 활성 칩 ring+disabled · 동일 날짜 클릭 시 MRT 재호출 생략. Preview /qa/world-events → munich·bali 상세 「내 여행 일정」개막 3박 강조·재클릭 무API 확인.',
+    at: '2026-08-27T20:00:00.000Z',
+  },
+  {
+    id: '2026-08-27-world-events-d3-reqa-hotfix',
+    session: '세계행사 일정 #26, Wave1.5 D3 재QA',
+    title: '갈룽안 en위키·펜jor 검색·무니 칩 chatDraft',
+    detail:
+      'D3 재QA: ko위키 갈룽안(없음)→en.wikipedia/Galungan · 펜jor Google en 쿼리 · MOONi 대화칩 chatDraft 대기 후 전송·FAB 재오픈 최소화. Preview /qa/world-events → /world-events/bali-galungan-season-2026 — 갈룽안 안내·펜져 검색·무니 칩 3종·주제 칩 재확인.',
+    at: '2026-08-27T13:30:00.000Z',
+  },
+  {
+    id: '2026-08-27-world-events-d3-media-attractions',
+    session: '세계행사 일정 #26, Wave1.5 D3 미디어·명소',
+    title: 'heroImage·YouTube·검색·명소 허브 브릿지',
+    detail:
+      'D3 QA 피드백 반영: heroImage Wikimedia URL 수정 · 갈룽안 안내→위키백과 · 펜져 검색 한글 · Google 검색 쿼리 ko·무니 칩 재전송. Preview /qa/world-events → /world-events/bali-galungan-season-2026 재확인.',
+    at: '2026-08-27T12:30:00.000Z',
+  },
+  {
+    id: '2026-08-27-world-events-d2-qa-redirect',
+    session: '세계행사 일정 #25, Wave1.5 D2 무니 행사칩',
+    title: '/qa/world-events → wave2 Preview 고정',
+    detail:
+      '/qa/world-events·cloudQaShareLinks가 구 efa3 Preview를 가리키던 문제 수정 → cursor/world-events-wave2. Preview /qa/world-events → /world-events/edinburgh-fringe-2026 — 「행사 바로가기」3칩·무니 질문 칩·FAB 행사 맥락 시드 확인.',
+    at: '2026-08-27',
+  },
   {
     id: '2026-08-27-world-events-festival-mooni-fab-fix',
     session: '세계행사 일정 #20, QA 재확인 · 국내 FestivalStayStrip',
