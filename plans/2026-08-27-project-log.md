@@ -280,3 +280,11 @@
 - **VERIFY** `generate:world-events`(15) · `smoke:world-events-detail` · `build` PASS
 - **Preview** `/qa/world-events` → vienna·hanoi·new-york-thanksgiving 등 히어로 1장
 - **다음** PR #156 merge → PROD 파일럿 3건 D5-b §6.1.1 → OK 시 #33 Wave2
+
+## 세계행사 일정 #32 — PR #156 main 병합
+
+- **병합** PR [#156](https://github.com/catgeot/Days/pull/156) → `main` `b2ac6888`
+- **포함** D5-b-2(edinburgh·munich·bali) · 히어로 stale 캐시 fix · Wave1 15건 heroImage · D3 게이트 데이터화
+- **VERIFY** (병합 전) `smoke:world-events-detail` · `build` PASS · Vercel CI SUCCESS
+- **PROD QA** `https://www.gateo.kr/world-events` — Vercel 배포 후
+- **다음** 사람 PROD 테스트 → OK 시 **#33 Wave2** singapore·dubai
