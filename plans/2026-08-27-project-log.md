@@ -244,3 +244,21 @@
 - **VERIFY** (feature·main) `audit:event-travel-guide` · `smoke:world-events-detail` · `smoke:world-events` · `smoke:event-travel-guide` · `build` PASS
 - **PROD QA** `https://www.gateo.kr/world-events` · 파일럿 3상세(edinburgh·munich·bali) — Vercel 배포 후
 - **다음** 사람 PROD QA OK → **#32 Wave2** singapore·dubai (`cursor/world-events-wave2` 재개)
+
+## 세계행사 일정 #31 — PROD QA 피드백·D5-b-2 착수
+
+- **세션** `세계행사 일정 #31, PROD QA — Wave1.5 D5-b`
+- **피드백** main `73f4ccdc` 병합 후 bali만 D5-b 본문 틀(glossary·갤러리·인라인 링크) · edinburgh·munich는 D2 바로가기 칩 잔존
+- **원인** D5-b overrides는 bali pilot만 · 플랜 F-0.5 **D5-b-2**(파일럿 3건 패턴화)가 Wave2 전 게이트
+- **수정** feature `3bd88e99` — edinburgh·munich `glossaryTerms`·`heroImages`·`highlightContextLinks` · smoke assert
+- **다음** feature→main 재병합 → PROD 파일럿 3건 §6.1.1 → OK 시 **#33 Wave2** singapore·dubai
+
+## 세계행사 일정 #32 — PROD QA 히어로 썸네일 404
+
+- **세션** `세계행사 일정 #32, PROD QA — D5-b 파일럿 3건`
+- **피드백** edinburgh·munich 히어로 썸네일 2·3장 깨짐(위키 URL 404) · bali는 정상
+- **원인** overrides `heroImages` 2·3번 Wikimedia 경로 만료 · 갤러리 fetch는 모달 열 때만 동작
+- **수정** `b5c352dc` — edinburgh·munich 위키 URL 교체 · `EventDetailHero` 마운트 시 `fetch-event-hero-gallery`(Unsplash→위키)로 썸네일·히어로 갱신 · smoke HEAD 검증
+- **VERIFY** `generate:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `https://www.gateo.kr/qa/world-events` → `/world-events/edinburgh-fringe-2026` · munich · bali — 썸네일 3장
+- **다음** 사람 Preview 히어로 재QA → PR [#156](https://github.com/catgeot/Days/pull/156) merge → PROD §6.1.1

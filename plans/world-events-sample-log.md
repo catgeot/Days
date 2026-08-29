@@ -271,6 +271,16 @@
 - **Preview** `/world-events/bali-galungan-season-2026` — Klook·GYG·PKC·사롱 칩
 - **다음** 사람 Preview D5 QA → D5-b 파일럿 3건 패턴화 → **#30 Wave2**
 
+## #1 edinburgh — D5-b-2 (#31)
+
+- **산출** glossary 4종(fringe·royal-mile·old-town·new-town) · heroImages 3장 · highlightContextLinks(0·1) · feature `3bd88e99`
+- **다음** main 병합 후 PROD QA
+
+## #2 munich — D5-b-2 (#31)
+
+- **산출** glossary 4종(theresienwiese·beer-tent·oktoberfest·hackerbruecke) · heroImages 3장 · highlightContextLinks(0·1)
+- **다음** main 병합 후 PROD QA
+
 ## #8 bali — D5-b Preview QA 피드백·계획 (#29)
 
 - **피드백** `EventActionChips`(갈룽안 안내·우붓 사원·펜져·사롱) 본문과 중복 · `EventExecutionStrip`(Klook·GYG) 상업적·흐름 단절
