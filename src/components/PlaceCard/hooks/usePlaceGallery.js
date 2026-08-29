@@ -21,8 +21,8 @@ import {
   readGalleryAttributionReturnState,
 } from '../common/galleryAttributionNavigation';
 
-/** v1.16 — Unsplash/Pexels 페이지 분리 · DB 히트 후 Pexels 백필 */
-const CACHE_VERSION = 'v1.16';
+/** v1.17 — slug 오버라이드 DB 생략 분리 · thin stock 재수집 */
+const CACHE_VERSION = 'v1.17';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
 
 // 🚨 [Fix] 오지/자연경관 등 citiesData에 영문명이 없는 경우를 위한 Fallback Dictionary 복구
@@ -65,11 +65,20 @@ const GALLERY_QUERY_OVERRIDES = {
     primary: 'Gongjicheon Chuncheon',
     backup: 'Chuncheon cherry blossom riverside park Korea',
   },
-  'whakarewarewa-village': {
-    primary: 'Whakarewarewa geothermal village',
-    backup: 'Rotorua Maori village New Zealand',
-  },
 };
+
+/** 쿼리 오버라이드가 있어도 place_stats를 쓰는 slug — 오버라이드만으로 DB 생략 금지 */
+const GALLERY_DB_SKIP_SLUGS = new Set(['yap', 'gongjicheon']);
+
+/** Pexels 백필·더보기용 보조 검색어 (Unsplash primary는 건드리지 않음) */
+const GALLERY_PEXELS_EXTRA_QUERIES = {
+  'whakarewarewa-village': [
+    'Whakarewarewa geothermal village',
+    'Rotorua Maori village New Zealand',
+  ],
+};
+
+const GALLERY_THIN_STOCK_REFETCH_MAX = 7;
 
 const GALLERY_REFRESH_COOLDOWN_MS = 30_000;
 /** place_stats / Unsplash 등 TourAPI 이후 단계 hang 시 스켈레톤 고착 방지 */
@@ -127,6 +136,17 @@ function needsPexelsBackfill(images, thumbnailOnly) {
   if (thumbnailOnly) return false;
   if (!Array.isArray(images) || images.length === 0 || images.length > 15) return false;
   return !galleryHasPexels(images);
+}
+
+function isThinStockGallery(images) {
+  const list = Array.isArray(images) ? images.filter(Boolean) : [];
+  if (list.length === 0 || list.length > GALLERY_THIN_STOCK_REFETCH_MAX) return false;
+  return !galleryHasPexels(list) && !isTourApiDominantGallery(list);
+}
+
+function resolvePexelsQueries(primaryQuery, backupQuery, koreanName, spotSlug) {
+  const extras = spotSlug ? (GALLERY_PEXELS_EXTRA_QUERIES[spotSlug] || []) : [];
+  return [...new Set([primaryQuery, backupQuery, koreanName, ...extras].filter(Boolean))];
 }
 
 function mergeGalleryAppend(existing, incoming) {
@@ -313,6 +333,10 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       typeof targetSpot === 'object' && targetSpot?.slug
         ? GALLERY_QUERY_OVERRIDES[targetSpot.slug]
         : null;
+    const spotSlugForDb =
+      typeof targetSpot === 'object' && targetSpot?.slug
+        ? String(targetSpot.slug).trim().toLowerCase()
+        : '';
     if (slugOverride) {
       primaryQuery = slugOverride.primary;
       backupQuery = slugOverride.backup || backupQuery;
@@ -444,18 +468,19 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       }
     };
 
+    const pexelsQueries = resolvePexelsQueries(primaryQuery, backupQuery, koreanName, spotSlugForDb);
+
     if (!forceRefresh) {
       unsplashPageRef.current = 1;
       pexelsPageRef.current = 0;
       const validCache = loadFromSmartCache(CACHE_KEY);
-      if (validCache && validCache.length > 0) {
+      if (validCache && validCache.length > 0 && !isThinStockGallery(validCache)) {
         if (isStale()) return;
         processAndSetImages(validCache);
         markFetchDone();
         finishLoading();
         if (needsPexelsBackfill(validCache, thumbnailOnly) && PEXELS_KEY) {
           const backfillRunId = runId;
-          const pexelsQueries = [...new Set([primaryQuery, backupQuery, koreanName].filter(Boolean))];
           pexelsPageRef.current += 1;
           void fetchPexelsBatch(PEXELS_KEY, pexelsQueries, pexelsPageRef.current)
             .then((pexelsImages) => {
@@ -470,11 +495,14 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         }
         return;
       }
+      if (validCache?.length > 0 && isThinStockGallery(validCache)) {
+        console.warn('⚠️ session cache thin stock — live Unsplash/Pexels refetch');
+      }
 
       // 2) DB 선조회 — 국내·해외 공통. 히트면 Tour/스톡 LIVE 생략.
       // soft 국내만: TourAPI 우세 DB는 건너뛰고 스톡 재수집(공지천 404 고착 방지).
       // 공식 contentId DB(Tour 포함)는 재사용 — LIVE TourAPI보다 우선.
-      if (!slugOverride && dbCandidates.length) {
+      if (!GALLERY_DB_SKIP_SLUGS.has(spotSlugForDb) && dbCandidates.length) {
         try {
           const dbSelect = thumbnailOnly ? 'image_url, gallery_urls' : 'gallery_urls';
           const { data: dbRows, error: dbError } = await withTimeout(
@@ -526,6 +554,10 @@ export const usePlaceGallery = (locationSource, options = {}) => {
                 console.warn(
                   '⚠️ place_stats stock-heavy curated — prefer TourAPI (skip DB short-circuit)',
                 );
+              } else if (isThinStockGallery(gallerySlice)) {
+                console.warn(
+                  '⚠️ place_stats thin stock-only gallery — live Unsplash/Pexels refetch',
+                );
               } else {
                 processAndSetImages(gallerySlice);
                 saveToSmartCache(CACHE_KEY, gallerySlice);
@@ -535,7 +567,6 @@ export const usePlaceGallery = (locationSource, options = {}) => {
                 finishLoading();
                 if (needsPexelsBackfill(gallerySlice, thumbnailOnly) && PEXELS_KEY) {
                   const backfillRunId = runId;
-                  const pexelsQueries = [...new Set([primaryQuery, backupQuery, koreanName].filter(Boolean))];
                   pexelsPageRef.current += 1;
                   void fetchPexelsBatch(PEXELS_KEY, pexelsQueries, pexelsPageRef.current)
                     .then((pexelsImages) => {
@@ -624,8 +655,6 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         `🔄 더 많은 사진: 기존 ${allImagesRef.current.length}장 유지 · Unsplash/Pexels append (${primaryQuery}, unsplash p${unsplashPageRef.current})`,
       );
     }
-
-    const pexelsQueries = [...new Set([primaryQuery, backupQuery, koreanName].filter(Boolean))];
 
     try {
       let results = [];

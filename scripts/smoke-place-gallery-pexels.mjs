@@ -9,7 +9,10 @@ const src = readFileSync(join(root, 'src/components/PlaceCard/hooks/usePlaceGall
 
 assert.match(src, /const unsplashPageRef = useRef\(1\)/, 'unsplash page ref split');
 assert.match(src, /const pexelsPageRef = useRef\(0\)/, 'pexels page ref starts at 0');
-assert.match(src, /whakarewarewa-village/, 'whakarewarewa gallery query override');
+assert.match(src, /GALLERY_DB_SKIP_SLUGS/, 'explicit DB skip slugs');
+assert.match(src, /isThinStockGallery/, 'thin stock refetch guard');
+assert.doesNotMatch(src, /whakarewarewa-village[\s\S]*primary:/, 'no unsplash override for whakarewarewa');
+assert.match(src, /GALLERY_PEXELS_EXTRA_QUERIES/, 'pexels extra queries for whakarewarewa');
 assert.match(src, /needsPexelsBackfill/, 'pexels backfill after DB/cache hit');
 assert.match(src, /mergeGalleryAppend/, 'dedup append helper');
 assert.match(src, /신규 사진 없음/, 'no-op refresh logs warning');
