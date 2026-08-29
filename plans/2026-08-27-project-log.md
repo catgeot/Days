@@ -271,3 +271,12 @@
 - **VERIFY** `smoke:world-events-detail` · `build` PASS
 - **배포** Edge `fetch-event-hero-gallery` 재배포 필요(Supabase link 없으면 사람)
 - **Preview** `/qa/world-events` → edinburgh — 썸네일 1~3 모두 로드 확인
+
+## 세계행사 일정 #32 — Wave1 12건 히어로 추가
+
+- **피드백** 빈·하노이·뉴욕 등 비파일럿 상세에 히어로 없음 · 뮌헨 PROD는 D2 바로가기 칩( D5-b-2 미병합)
+- **원인** `hasWorldEventD3Media`가 파일럿 3 ID만 허용 · 나머지 12건 `heroImage` 미설정
+- **수정** `e0e6e22b` — Wave1 15건 전체 `heroImage` · D3 게이트=데이터 보유 시 표시
+- **VERIFY** `generate:world-events`(15) · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → vienna·hanoi·new-york-thanksgiving 등 히어로 1장
+- **다음** PR #156 merge → PROD 파일럿 3건 D5-b §6.1.1 → OK 시 #33 Wave2
