@@ -281,11 +281,87 @@ export function setupGateoMarkerLayers(map) {
   }
 }
 
+/** @type {WeakMap<object, { busy: boolean, safetyTimer: ReturnType<typeof setTimeout> | null }>} */
+const globeCameraBusyState = new WeakMap();
+
+export function markGlobeCameraBusy(map) {
+  if (!map) return;
+  let state = globeCameraBusyState.get(map);
+  if (!state) {
+    state = { busy: false, safetyTimer: null };
+    globeCameraBusyState.set(map, state);
+  }
+  state.busy = true;
+  if (state.safetyTimer) clearTimeout(state.safetyTimer);
+  state.safetyTimer = setTimeout(() => {
+    state.busy = false;
+    state.safetyTimer = null;
+    runPendingGateoMarkerFlush(map);
+  }, 5000);
+}
+
+export function clearGlobeCameraBusy(map) {
+  if (!map) return;
+  const state = globeCameraBusyState.get(map);
+  if (!state) return;
+  state.busy = false;
+  if (state.safetyTimer) {
+    clearTimeout(state.safetyTimer);
+    state.safetyTimer = null;
+  }
+}
+
+export function isGlobeCameraBusy(map) {
+  return Boolean(globeCameraBusyState.get(map)?.busy);
+}
+
 export function updateGateoMarkerSource(map, geojson) {
   safeMapUpdate(map, () => {
     const source = map.getSource(GATEO_SOURCE_ID);
     if (source) source.setData(geojson || { type: 'FeatureCollection', features: [] });
   });
+}
+
+/** @type {WeakMap<object, { pending: object | null }>} */
+const scheduledMarkerUpdates = new WeakMap();
+
+function runPendingGateoMarkerFlush(map) {
+  if (!map) return false;
+  const state = scheduledMarkerUpdates.get(map);
+  const data = state?.pending;
+  if (!data) return false;
+
+  if (typeof map.isMoving === 'function' && map.isMoving()) return false;
+  if (isGlobeCameraBusy(map)) return false;
+
+  if (state) state.pending = null;
+  updateGateoMarkerSource(map, data);
+  return true;
+}
+
+/** flyTo/easeTo 종료·idle 후 호출 — 대기 중인 GeoJSON flush */
+export function flushPendingGateoMarkerSource(map) {
+  return runPendingGateoMarkerFlush(map);
+}
+
+/**
+ * flyTo/easeTo 중 symbol continuePlacement 크래시 방지 — camera idle 전 setData 금지.
+ */
+export function scheduleUpdateGateoMarkerSource(map, geojson) {
+  if (!map) return;
+
+  let state = scheduledMarkerUpdates.get(map);
+  if (!state) {
+    state = { pending: null };
+    scheduledMarkerUpdates.set(map, state);
+  }
+  state.pending = geojson || { type: 'FeatureCollection', features: [] };
+
+  if (isGlobeCameraBusy(map) || (typeof map.isMoving === 'function' && map.isMoving())) {
+    return;
+  }
+
+  requestAnimationFrame(() => requestAnimationFrame(() => runPendingGateoMarkerFlush(map)));
 }
 
 const LAYER_HIT_PRIORITY = {
