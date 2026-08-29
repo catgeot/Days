@@ -154,6 +154,18 @@ async function fetchWikimediaFromQueries(queries: string[], limit = 10): Promise
   return fetched;
 }
 
+function seedCacheMatches(cachedImages: GalleryImage[], seedImages: GalleryImage[]): boolean {
+  if (!seedImages.length) return true;
+  if (!cachedImages.length || cachedImages.length < seedImages.length) return false;
+
+  return seedImages.every((seed, index) => {
+    const cachedUrl = normalizeImageUrl(cachedImages[index]?.url);
+    const seedUrl = normalizeImageUrl(seed?.url);
+    if (!cachedUrl || !seedUrl) return false;
+    return imageKey(cachedUrl) === imageKey(seedUrl);
+  });
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -179,21 +191,6 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
 
-    if (!force) {
-      const { data: cached } = await supabaseAdmin
-        .from("event_hero_gallery")
-        .select("images")
-        .eq("event_id", eventId)
-        .maybeSingle();
-
-      if (cached && Array.isArray(cached.images) && cached.images.length >= MIN_CACHE_COUNT) {
-        return new Response(
-          JSON.stringify({ success: true, images: cached.images, fromCache: true }),
-          { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 },
-        );
-      }
-    }
-
     const normalizedSeed: GalleryImage[] = seedImages
       .map((image: GalleryImage) => ({
         url: normalizeImageUrl(image?.url),
@@ -202,6 +199,24 @@ serve(async (req) => {
         source: image?.source || "seed",
       }))
       .filter((image: GalleryImage) => image.url.startsWith("http"));
+
+    if (!force) {
+      const { data: cached } = await supabaseAdmin
+        .from("event_hero_gallery")
+        .select("images")
+        .eq("event_id", eventId)
+        .maybeSingle();
+
+      if (cached && Array.isArray(cached.images) && cached.images.length >= MIN_CACHE_COUNT) {
+        if (seedCacheMatches(cached.images as GalleryImage[], normalizedSeed)) {
+          const images = mergeImages(normalizedSeed, cached.images as GalleryImage[]).slice(0, TARGET_COUNT);
+          return new Response(
+            JSON.stringify({ success: true, images, fromCache: true }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 },
+          );
+        }
+      }
+    }
 
     const need = Math.max(8, TARGET_COUNT - normalizedSeed.length);
     const fetched: GalleryImage[] = [];

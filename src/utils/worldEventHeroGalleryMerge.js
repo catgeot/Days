@@ -26,14 +26,50 @@ export function mergeWorldEventHeroGalleryImages(seed, fetched) {
 /**
  * @param {string} url
  */
-function imageDedupeKey(url) {
+export function heroGalleryImageKey(url) {
   try {
     const parsed = new URL(url);
-    const path = parsed.pathname.replace(/\/\d+x\d+\//, '/').replace(/w=\d+/, 'w=0');
+    const path = parsed.pathname
+      .replace(/\/thumb\//, '/')
+      .replace(/\/\d+px-[^/]+$/, '')
+      .replace(/\/\d+x\d+\//, '/')
+      .replace(/w=\d+/, 'w=0');
     return `${parsed.hostname}${path}`.toLowerCase();
   } catch {
-    return url.toLowerCase();
+    return String(url || '').toLowerCase();
   }
+}
+
+/**
+ * @param {Array<{ url?: string }>} cachedImages
+ * @param {Array<{ url?: string }>} seedImages
+ */
+export function heroGallerySeedCacheMatches(cachedImages, seedImages) {
+  if (!Array.isArray(seedImages) || seedImages.length === 0) return true;
+  if (!Array.isArray(cachedImages) || cachedImages.length < seedImages.length) return false;
+
+  return seedImages.every((seed, index) => {
+    const cachedUrl = String(cachedImages[index]?.url || '').trim();
+    const seedUrl = String(seed?.url || '').trim();
+    if (!cachedUrl || !seedUrl) return false;
+    return heroGalleryImageKey(cachedUrl) === heroGalleryImageKey(seedUrl);
+  });
+}
+
+/**
+ * @param {Array<{ url?: string, captionKo?: string, captionEn?: string, source?: string }>} seedImages
+ * @param {Array<{ url?: string, captionKo?: string, captionEn?: string, source?: string }>} cachedImages
+ * @param {number} [limit]
+ */
+export function buildHeroGalleryFromCache(seedImages, cachedImages, limit = 12) {
+  return mergeWorldEventHeroGalleryImages(seedImages, cachedImages).slice(0, limit);
+}
+
+/**
+ * @param {string} url
+ */
+function imageDedupeKey(url) {
+  return heroGalleryImageKey(url);
 }
 
 const WIKIMEDIA_API = 'https://commons.wikimedia.org/w/api.php';

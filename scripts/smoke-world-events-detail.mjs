@@ -272,6 +272,8 @@ assert.match(fetchHeroGallerySrc, /event_hero_gallery/, 'fetchEventHeroGallery D
 assert.match(fetchHeroGallerySrc, /fetch-event-hero-gallery/, 'fetchEventHeroGallery edge invoke');
 assert.match(fetchHeroGallerySrc, /fetchUnsplashImages/, 'fetchEventHeroGallery unsplash fallback');
 assert.match(fetchHeroGallerySrc, /fetchWikimediaGalleryFromQueries/, 'fetchEventHeroGallery wikimedia fallback');
+assert.match(fetchHeroGallerySrc, /heroGallerySeedCacheMatches/, 'fetchEventHeroGallery stale cache detection');
+assert.match(fetchHeroGallerySrc, /buildHeroGalleryFromCache/, 'fetchEventHeroGallery cache re-merge');
 
 const heroGalleryMergeSrc = readFileSync(join(root, 'src/utils/worldEventHeroGalleryMerge.js'), 'utf8');
 assert.match(heroGalleryMergeSrc, /mergeWorldEventHeroGalleryImages/, 'hero gallery merge util');
@@ -303,6 +305,7 @@ assert.match(heroSrc, /EventHeroGalleryModal/, 'EventDetailHero gallery modal');
 assert.match(heroSrc, /heroGallery\.viewMore/, 'EventDetailHero view more button');
 assert.match(heroSrc, /loadExtendedGallery\(\)/, 'EventDetailHero auto-fetches hero gallery on mount');
 assert.match(heroSrc, /displayImages/, 'EventDetailHero uses displayImages for hero and thumbnails');
+assert.match(heroSrc, /handleImageError/, 'EventDetailHero drops broken image URLs');
 
 const mediaSectionSrc = readFileSync(
   join(root, 'src/pages/WorldEvents/EventDetailMediaSection.jsx'),

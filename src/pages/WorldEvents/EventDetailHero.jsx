@@ -58,6 +58,15 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
     void loadExtendedGallery();
   }, [loadExtendedGallery]);
 
+  const handleImageError = useCallback((badUrl) => {
+    setDisplayImages((images) => {
+      const next = images.filter((image) => image.url !== badUrl);
+      if (!next.length) return images;
+      return next;
+    });
+    setActiveIndex((index) => Math.max(0, index));
+  }, []);
+
   const step = useCallback(
     (delta) => {
       if (displayImages.length < 2) return;
@@ -124,6 +133,7 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
               loading="eager"
               decoding="async"
               draggable={false}
+              onError={() => handleImageError(activeImage.url)}
             />
             {displayImages.length > 1 ? (
               <>
@@ -210,6 +220,7 @@ export default function EventDetailHero({ event, locale = 'ko' }) {
                       className="h-full w-full object-cover"
                       loading="lazy"
                       decoding="async"
+                      onError={() => handleImageError(image.url)}
                     />
                   </button>
                 );

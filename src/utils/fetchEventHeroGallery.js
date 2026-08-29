@@ -8,6 +8,8 @@ import {
   mapUnsplashPhotosToGalleryImages,
   mergeWorldEventHeroGalleryImages,
   fetchWikimediaGalleryFromQueries,
+  heroGallerySeedCacheMatches,
+  buildHeroGalleryFromCache,
 } from './worldEventHeroGalleryMerge';
 
 const INVOKE_TIMEOUT_MS = 18_000;
@@ -71,8 +73,16 @@ export async function fetchEventHeroGallery(event, locale = 'ko') {
       .eq('event_id', eventId)
       .maybeSingle();
 
-    if (cached && Array.isArray(cached.images) && cached.images.length >= MIN_GALLERY_COUNT) {
-      return { ok: true, images: cached.images, fromCache: true };
+    const cachedImages = Array.isArray(cached?.images) ? cached.images : [];
+    const cacheUsable = cachedImages.length >= MIN_GALLERY_COUNT;
+    const cacheSeedsMatch = heroGallerySeedCacheMatches(cachedImages, seedImages);
+
+    if (cacheUsable && cacheSeedsMatch) {
+      return {
+        ok: true,
+        images: buildHeroGalleryFromCache(seedImages, cachedImages, TARGET_GALLERY_COUNT),
+        fromCache: true,
+      };
     }
 
     const { data, error } = await withTimeout(
@@ -83,6 +93,7 @@ export async function fetchEventHeroGallery(event, locale = 'ko') {
           fallbackSearchQuery: fallbackEn,
           wikimediaQueries,
           seedImages,
+          force: cacheUsable && !cacheSeedsMatch,
         },
       }),
       INVOKE_TIMEOUT_MS,
@@ -91,8 +102,9 @@ export async function fetchEventHeroGallery(event, locale = 'ko') {
 
     if (error) {
       console.warn('[fetchEventHeroGallery] invoke error:', error.message || error);
-    } else if (data?.success && Array.isArray(data.images) && data.images.length >= MIN_GALLERY_COUNT) {
-      return { ok: true, images: data.images, fromCache: Boolean(data.fromCache) };
+    } else if (data?.success && Array.isArray(data.images) && data.images.length > 0) {
+      const images = buildHeroGalleryFromCache(seedImages, data.images, TARGET_GALLERY_COUNT);
+      return { ok: true, images, fromCache: Boolean(data.fromCache) };
     }
 
     const unsplashImages = await fetchClientUnsplashGallery(primary, fallbackEn);
