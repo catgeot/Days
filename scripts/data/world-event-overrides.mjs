@@ -3,6 +3,7 @@
  * `worldEvents.json` 직접 편집 금지.
  *
  * Wave 1 (P2-a): Q3 확정 slug 15건 — 유럽·아시아·아메리카·오세아니아·니치
+ * Wave 2 (#33): singapore · dubai — D5-b 템플릿
  *
  * @typedef {import('../lib/world-event-schema.mjs').WorldEventOverride} WorldEventOverride
  */
@@ -1057,6 +1058,302 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 4,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Hansers_tim_hieu_Tet_Nguyen_Dan_16-02-2026_1771376540207.jpg/1280px-Hansers_tim_hieu_Tet_Nguyen_Dan_16-02-2026_1771376540207.jpg',
+    priority: 1,
+  },
+  {
+    id: 'singapore-gp-2026',
+    slug: 'singapore',
+    hubId: 'singapore',
+    type: 'festival',
+    title: '싱가포르 그랑프리',
+    titleEn: 'Singapore Grand Prix',
+    startDate: '2026-10-09',
+    endDate: '2026-10-11',
+    recurrence: 'annual',
+    recurrenceNote: '10월 첫째 주말 전후',
+    venue: { name: 'Marina Bay Street Circuit' },
+    source: 'official_url',
+    sourceUrl: 'https://singaporegp.sg/en/',
+    bookingHints: '마리나 베이·버기스·시티홀 — 레이스 주말 3~6개월 전 숙소·티켓 조기 마감',
+    detailOverview:
+      '마리나 베이 스트리트 서킷에서 열리는 F1 나이트 레이스로, 금~일 3일간 레이스·콘서트·축제가 이어집니다. 전체 시즌 숙박보다 레이스 주말 전후 2~3박으로 마리나 베이·시티홀 기점을 잡아 야간 레이스와 주변 행사를 둘러보는 방문이 일반적입니다.',
+    highlights: [
+      'Marina Bay Street Circuit — 세계 유일의 F1 나이트 스트리트 레이스 · Padang 콘서트·불꽃',
+      'Bayfront·Promenade·Esplanade MRT — 서킷 도보·셔틀 접근 · 레이스 당일 교통 통제',
+      '그랜드스탠드·Zone 4 패스 — 공식 티켓 조기 매진 · 호텔 패키지·재판매 주의',
+    ],
+    stayAreas: [
+      {
+        name: '마리나 베이 · Marina Bay',
+        mrtKeyword: 'Marina Bay Singapore',
+        note: '서킷·MBS 도보 · 레이스 주말 최고가',
+      },
+      {
+        name: '버기스 · Bugis',
+        mrtKeyword: 'Bugis Singapore',
+        note: 'MRT 2~3정거장 · 상대적 가성비',
+      },
+    ],
+    recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Formula_One_Grand_Prix_Singapore_2013_-_Ferrari_3.jpg/1280px-Formula_One_Grand_Prix_Singapore_2013_-_Ferrari_3.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Formula_One_Grand_Prix_Singapore_2013_-_Ferrari_3.jpg/1280px-Formula_One_Grand_Prix_Singapore_2013_-_Ferrari_3.jpg',
+        captionKo: '싱가포르 GP 나이트 레이스',
+        captionEn: 'Singapore GP night race',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Valtteri_Bottas_on_track%2C_Singapore_Grand_Prix_2024.jpg/1280px-Valtteri_Bottas_on_track%2C_Singapore_Grand_Prix_2024.jpg',
+        captionKo: '마리나 베이 서킷',
+        captionEn: 'Marina Bay circuit',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Singapore_Marina_Bay_Dusk_2018-02-27.jpg/1280px-Singapore_Marina_Bay_Dusk_2018-02-27.jpg',
+        captionKo: '마리나 베이 스카이라인',
+        captionEn: 'Marina Bay skyline',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'marina-bay-circuit',
+        termKo: '마리나 베이 서킷',
+        termEn: 'Marina Bay Street Circuit',
+        promptKo:
+          '싱가포르 그랑프리 마리나 베이 스트리트 서킷의 특징과 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.',
+        promptEn:
+          'Marina Bay Street Circuit and Singapore GP basics for travelers in 3 short sentences.',
+        searchQueryKo: '싱가포르 그랑프리 마리나 베이 서킷',
+        searchQueryEn: 'Singapore Grand Prix Marina Bay circuit',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Marina_Bay_Street_Circuit',
+      },
+      {
+        id: 'night-race',
+        termKo: '나이트 레이스',
+        termEn: 'night race',
+        promptKo: 'F1 나이트 레이스가 싱가포르 GP에서 왜 특별한지 3문장 이내로 설명해줘.',
+        promptEn: 'Why the Singapore GP night race is special for visitors in 3 short sentences.',
+        searchQueryKo: '싱가포르 그랑프리 나이트 레이스',
+        searchQueryEn: 'Singapore Grand Prix night race',
+      },
+      {
+        id: 'grandstand',
+        termKo: '그랜드스탠드',
+        termEn: 'grandstand',
+        promptKo:
+          '싱가포르 GP 그랜드스탠드·Zone 티켓 종류와 예매 팁을 여행자 관점에서 3문장 이내로 설명해줘.',
+        promptEn: 'Singapore GP grandstand and zone tickets for travelers in 3 short sentences.',
+        searchQueryKo: '싱가포르 그랑프리 티켓 예매',
+        searchQueryEn: 'Singapore Grand Prix tickets',
+      },
+      {
+        id: 'padang',
+        termKo: 'Padang',
+        termEn: 'Padang',
+        promptKo:
+          '싱가포르 GP Padang 콘서트·축제 구역이 레이스 주말에 어떤 역할을 하는지 3문장 이내로 설명해줘.',
+        promptEn: 'Padang concerts during Singapore GP race weekend in 3 short sentences.',
+        searchQueryKo: '싱가포르 그랑프리 Padang 콘서트',
+        searchQueryEn: 'Singapore GP Padang concerts',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'gp-tickets',
+            labelKo: '공식 티켓 검색',
+            labelEn: 'Official tickets',
+            kind: 'shop',
+            searchQueryKo: '싱가포르 그랑프리 티켓',
+            searchQueryEn: 'Singapore Grand Prix tickets',
+            searchTarget: 'google',
+          },
+        ],
+      },
+      {
+        highlightIndex: 1,
+        links: [
+          {
+            id: 'marina-bay-mrt',
+            labelKo: 'Marina Bay MRT',
+            labelEn: 'Marina Bay MRT',
+            kind: 'shop',
+            searchQueryKo: '싱가포르 마리나 베이 MRT 그랑프리',
+            searchQueryEn: 'Marina Bay MRT Singapore Grand Prix',
+            searchTarget: 'google',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '싱가포르 그랑프리',
+    youtubeSearchQueryEn: 'Singapore Grand Prix',
+    mooniChips: [
+      {
+        id: 'ticket-types',
+        promptKo: '그랜드스탠드랑 Zone 패스 차이 알려줘',
+        promptEn: 'What is the difference between grandstand and zone passes?',
+      },
+      {
+        id: 'best-days',
+        promptKo: '레이스 주말 중 언제 가는 게 좋아?',
+        promptEn: 'Which day of race weekend is best to visit?',
+      },
+      {
+        id: 'marina-bay-stay',
+        promptKo: '마리나 베이 근처 숙소 추천 기준 알려줘',
+        promptEn: 'How to pick a hotel near Marina Bay for the GP?',
+      },
+    ],
+    priority: 1,
+  },
+  {
+    id: 'dubai-fitness-challenge-2026',
+    slug: 'dubai',
+    hubId: 'dubai',
+    type: 'festival',
+    title: '두바이 피트니스 챌린지',
+    titleEn: 'Dubai Fitness Challenge',
+    startDate: '2026-10-31',
+    endDate: '2026-11-29',
+    recurrence: 'annual',
+    recurrenceNote: '10월 말~11월 · 30×30',
+    venue: { name: 'Citywide · Zabeel Park · Sheikh Zayed Road' },
+    source: 'official_url',
+    sourceUrl: 'https://www.dubaifitnesschallenge.com/en/',
+    bookingHints: '다운타운·마리나·JBR — Dubai Run·Ride 전후 2~4박',
+    detailOverview:
+      '두바이 전역에서 「하루 30분 운동 × 30일」을 목표로 하는 도시형 피트니스 페스티벌입니다. 10월 31일 개막부터 11월 29일까지 Fitness Village·허브·무료 클래스가 이어지며, Dubai Ride·Dubai Run 등 플래그십 일정 전후 3~4박 방문이 일반적입니다.',
+    highlights: [
+      'Dubai Ride(11/1) — 셰이크 자ayed 로드 자전거 · 4km·12km 코스 · 사전 등록',
+      'Dubai Run(11/22) — 셰이크 자ayed 로드 러닝 · 5km·10km · 새벽 출발',
+      'Fitness Village(Zabeel Park) — 클래스·부스 · Dubai Yoga(11/29) 피날레',
+    ],
+    stayAreas: [
+      {
+        name: '다운타운 · Downtown',
+        mrtKeyword: 'Downtown Dubai',
+        note: 'Dubai Ride·Run 셰이크 자ayed 접근 · 메트로',
+      },
+      {
+        name: '마리나 · Dubai Marina',
+        mrtKeyword: 'Dubai Marina',
+        note: 'JBR·해변 러닝 · 다운타운 택시 15~20분',
+      },
+    ],
+    recommendedNights: 4,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Dubai_Marina_Skyline.jpg/1280px-Dubai_Marina_Skyline.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Dubai_Marina_Skyline.jpg/1280px-Dubai_Marina_Skyline.jpg',
+        captionKo: '두바이 마리나 스카이라인',
+        captionEn: 'Dubai Marina skyline',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Dubai_Marina_Skyline_93.jpg/1280px-Dubai_Marina_Skyline_93.jpg',
+        captionKo: '두바이 야경',
+        captionEn: 'Dubai skyline at night',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Burj_Khalifa_Dubai%2C_UAE_at_Sunset_001_by_Eric_Chamchoum.jpg/1280px-Burj_Khalifa_Dubai%2C_UAE_at_Sunset_001_by_Eric_Chamchoum.jpg',
+        captionKo: '부르즈 할리파 일대',
+        captionEn: 'Burj Khalifa area',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: '30x30',
+        termKo: '30×30',
+        termEn: '30x30',
+        promptKo:
+          '두바이 피트니스 챌린지 30×30(30분×30일)이 무엇인지 여행자 관점에서 3문장 이내로 설명해줘.',
+        promptEn: 'What is Dubai Fitness Challenge 30x30 for visitors in 3 short sentences.',
+        searchQueryKo: '두바이 피트니스 챌린지 30x30',
+        searchQueryEn: 'Dubai Fitness Challenge 30x30',
+        referenceUrl: 'https://www.dubaifitnesschallenge.com/en/',
+      },
+      {
+        id: 'dubai-run',
+        termKo: 'Dubai Run',
+        termEn: 'Dubai Run',
+        promptKo:
+          'Dubai Run 일정·코스·등록 방법을 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.',
+        promptEn: 'Dubai Run schedule, routes and registration for travelers in 3 short sentences.',
+        searchQueryKo: 'Dubai Run 2026 등록',
+        searchQueryEn: 'Dubai Run 2026 registration',
+      },
+      {
+        id: 'dubai-ride',
+        termKo: 'Dubai Ride',
+        termEn: 'Dubai Ride',
+        promptKo:
+          'Dubai Ride가 셰이크 자ayed 로드에서 어떻게 진행되는지 3문장 이내로 설명해줘.',
+        promptEn: 'How Dubai Ride works on Sheikh Zayed Road in 3 short sentences.',
+        searchQueryKo: 'Dubai Ride 2026',
+        searchQueryEn: 'Dubai Ride 2026',
+      },
+      {
+        id: 'fitness-village',
+        termKo: 'Fitness Village',
+        termEn: 'Fitness Village',
+        promptKo:
+          '두바이 피트니스 챌린지 Fitness Village(Zabeel Park)에서 무엇을 할 수 있는지 3문장 이내로 설명해줘.',
+        promptEn: 'What to do at Dubai Fitness Challenge Fitness Village in 3 short sentences.',
+        searchQueryKo: 'Dubai Fitness Challenge Zabeel Park',
+        searchQueryEn: 'Dubai Fitness Challenge Fitness Village',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'dubai-ride-register',
+            labelKo: 'Dubai Ride 등록',
+            labelEn: 'Dubai Ride registration',
+            kind: 'shop',
+            searchQueryKo: 'Dubai Ride 2026 등록',
+            searchQueryEn: 'Dubai Ride 2026 register',
+            searchTarget: 'google',
+          },
+        ],
+      },
+      {
+        highlightIndex: 1,
+        links: [
+          {
+            id: 'dubai-run-register',
+            labelKo: 'Dubai Run 등록',
+            labelEn: 'Dubai Run registration',
+            kind: 'shop',
+            searchQueryKo: 'Dubai Run 2026 등록',
+            searchQueryEn: 'Dubai Run 2026 register',
+            searchTarget: 'google',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '두바이 피트니스 챌린지',
+    youtubeSearchQueryEn: 'Dubai Fitness Challenge',
+    mooniChips: [
+      {
+        id: 'register-flagship',
+        promptKo: 'Dubai Run·Ride 등록은 어떻게 해?',
+        promptEn: 'How do I register for Dubai Run and Ride?',
+      },
+      {
+        id: 'best-week',
+        promptKo: '11월 중 어느 주에 가는 게 좋아?',
+        promptEn: 'Which week in November is best to visit?',
+      },
+      {
+        id: 'where-stay',
+        promptKo: '다운타운이랑 마리나 중 어디 숙소가 나아?',
+        promptEn: 'Downtown or Marina — where should I stay?',
+      },
+    ],
     priority: 1,
   },
 ];
