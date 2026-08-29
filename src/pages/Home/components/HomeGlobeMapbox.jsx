@@ -42,6 +42,7 @@ import {
   markersToGeoJSON,
   setupGateoMarkerLayers,
   updateGateoMarkerSource,
+  scheduleUpdateGateoMarkerSource,
   findGateoMarkerAtPoint,
   isGateoLayer,
   gateoMarkerLayersReady,
@@ -1074,7 +1075,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       if (isFlightCinemaGlobeReady(map)) {
         flightCinemaLayersLatchedRef.current = true;
       }
-      updateGateoMarkerSource(map, markerGeoJSON);
+      scheduleUpdateGateoMarkerSource(map, markerGeoJSON);
     }
     restoreReachBoundaryLayersIfNeeded();
     syncClusterOverlayLayers();
@@ -1082,7 +1083,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
   useEffect(() => {
     if (pauseRender || flightCinemaActiveRef.current) return;
-    updateGateoMarkerSource(mapRef.current?.getMap(), markerGeoJSON);
+    scheduleUpdateGateoMarkerSource(mapRef.current?.getMap(), markerGeoJSON);
   }, [markerGeoJSON, pauseRender]);
 
   useEffect(() => {
@@ -1205,6 +1206,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }
 
     try {
+      setGateoMarkerLabelVisibility(map, false);
       map.flyTo({
         center: [normalizedLng, lat],
         zoom: targetZoom,
@@ -1212,7 +1214,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         duration: flyDuration,
         essential: true
       });
+      map.once('moveend', () => {
+        requestAnimationFrame(() => {
+          setGateoMarkerLabelVisibility(map, true);
+        });
+      });
     } catch {
+      setGateoMarkerLabelVisibility(map, true);
       return false;
     }
 

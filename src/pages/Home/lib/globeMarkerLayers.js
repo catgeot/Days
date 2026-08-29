@@ -288,6 +288,61 @@ export function updateGateoMarkerSource(map, geojson) {
   });
 }
 
+/** @type {WeakMap<object, { pending: object | null, moveEndHandler: (() => void) | null }>} */
+const scheduledMarkerUpdates = new WeakMap();
+
+/**
+ * flyTo/easeTo 중 symbol continuePlacement 크래시 방지 — moveend + 2×rAF 후 setData.
+ * hub 명소(신규 temp-base 핀) 검색 선택 시 즉시 setData + flyTo가 겹치면 Mapbox가 다운될 수 있음.
+ */
+export function scheduleUpdateGateoMarkerSource(map, geojson) {
+  if (!map) return;
+
+  let state = scheduledMarkerUpdates.get(map);
+  if (!state) {
+    state = { pending: null, moveEndHandler: null };
+    scheduledMarkerUpdates.set(map, state);
+  }
+  state.pending = geojson || { type: 'FeatureCollection', features: [] };
+
+  const flush = () => {
+    const data = state.pending;
+    state.pending = null;
+    if (state.moveEndHandler) {
+      try {
+        map.off('moveend', state.moveEndHandler);
+      } catch {
+        // map may be removed
+      }
+      state.moveEndHandler = null;
+    }
+    if (!data) return;
+    updateGateoMarkerSource(map, data);
+  };
+
+  const runDeferred = () => {
+    requestAnimationFrame(() => requestAnimationFrame(flush));
+  };
+
+  if (typeof map.isMoving === 'function' && map.isMoving()) {
+    if (!state.moveEndHandler) {
+      state.moveEndHandler = () => runDeferred();
+      map.on('moveend', state.moveEndHandler);
+    }
+    return;
+  }
+
+  if (state.moveEndHandler) {
+    try {
+      map.off('moveend', state.moveEndHandler);
+    } catch {
+      // ignore
+    }
+    state.moveEndHandler = null;
+  }
+  runDeferred();
+}
+
 const LAYER_HIT_PRIORITY = {
   [GATEO_LABEL_LAYER_ID]: 0,
   [GATEO_DOT_LAYER_ID]: 1,
