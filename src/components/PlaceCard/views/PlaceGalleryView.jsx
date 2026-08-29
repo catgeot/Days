@@ -462,6 +462,18 @@ const PlaceGalleryView = React.memo(({
     );
   };
 
+  const attributionPillClass =
+    'flex max-w-full items-center gap-1.5 rounded-full border border-white/10 bg-black/55 px-3 py-1.5 text-xs text-white/85 backdrop-blur-md transition-all hover:bg-white/20 hover:text-white';
+
+  const renderAttributionBar = (wrapperClassName = 'flex justify-center') => {
+    if (!photoAttribution || !selectedImg) return null;
+    return (
+      <div className={wrapperClassName} onClick={(e) => e.stopPropagation()}>
+        {renderAttributionLinks(attributionPillClass)}
+      </div>
+    );
+  };
+
   const renderPhotoViewer = (wrapperClassName, { mobilePortal = false } = {}) => {
     if (mobilePortal) {
       return (
@@ -559,18 +571,14 @@ const PlaceGalleryView = React.memo(({
             </>
           )}
 
+          {renderAttributionBar(
+            'relative z-[230] shrink-0 px-4 pb-1 pt-2 portrait:flex landscape:absolute landscape:inset-x-0 landscape:bottom-[calc(4.25rem+env(safe-area-inset-bottom,0px))] landscape:justify-center landscape:px-3 landscape:pt-0',
+          )}
+
           <div
-            className={`relative z-[220] shrink-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent px-4 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] pt-4 transition-opacity duration-300 portrait:static landscape:absolute landscape:inset-x-0 landscape:bottom-0 landscape:bg-gradient-to-t landscape:from-black/85 landscape:to-transparent landscape:px-3 landscape:pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] landscape:pt-2 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+            className={`relative z-[220] shrink-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent px-4 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] pt-2 transition-opacity duration-300 portrait:static landscape:absolute landscape:inset-x-0 landscape:bottom-0 landscape:bg-gradient-to-t landscape:from-black/85 landscape:to-transparent landscape:px-3 landscape:pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] landscape:pt-2 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
             onClick={(e) => e.stopPropagation()}
           >
-            {photoAttribution && (
-              <div className="mb-3 flex justify-center portrait:flex landscape:hidden">
-                {renderAttributionLinks(
-                  'flex max-w-full items-center gap-1.5 rounded-full border border-white/10 bg-black/55 px-3 py-1.5 text-xs text-white/85 backdrop-blur-md transition-all hover:bg-white/20 hover:text-white'
-                )}
-              </div>
-            )}
-
             <div className="flex items-center gap-3 landscape:justify-center landscape:gap-3">
               {showNavControls ? (
                 <button
@@ -591,11 +599,6 @@ const PlaceGalleryView = React.memo(({
                   <span className="shrink-0 text-sm font-semibold tabular-nums tracking-wide text-white/85 landscape:text-xs">
                     {currentIndex + 1} / {images.length}
                   </span>
-                )}
-                {photoAttribution && (
-                  renderAttributionLinks(
-                    'hidden max-w-[min(42vw,14rem)] shrink truncate rounded-full border border-white/10 bg-black/45 px-2.5 py-1 text-[10px] leading-none text-white/75 backdrop-blur-sm transition-all hover:bg-white/15 hover:text-white landscape:inline'
-                  )
                 )}
                 <button
                   type="button"
@@ -673,7 +676,7 @@ const PlaceGalleryView = React.memo(({
             <ChevronLeft className="h-7 w-7 md:h-6 md:w-6" strokeWidth={2.5} />
           </button>
 
-          <div className={`flex min-w-0 items-center justify-center gap-3 ${isFullScreen ? '' : 'flex-1'}`}>
+          <div className={`flex min-w-0 items-center justify-center gap-3 ${isFullScreen ? '' : 'flex-1 flex-wrap'}`}>
             {currentIndex >= 0 && (
               <span
                 className="shrink-0 rounded-full border border-white/10 bg-black/50 px-3.5 py-1.5 text-sm font-semibold tabular-nums tracking-wide text-white/90 shadow-xl backdrop-blur-md"
@@ -708,7 +711,7 @@ const PlaceGalleryView = React.memo(({
 
       {!showNavControls && currentIndex >= 0 && (
         <div
-          className={`absolute bottom-4 left-1/2 z-[220] -translate-x-1/2 transition-opacity duration-300 ${isFullScreen ? 'md:bottom-0 md:mb-[max(0.75rem,env(safe-area-inset-bottom,0px))]' : 'md:bottom-8'} ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+          className={`absolute bottom-4 left-1/2 z-[220] -translate-x-1/2 flex flex-col items-center gap-2 transition-opacity duration-300 ${isFullScreen ? 'md:bottom-0 md:mb-[max(0.75rem,env(safe-area-inset-bottom,0px))]' : 'md:bottom-8'} ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
           onClick={(e) => e.stopPropagation()}
           aria-live="polite"
           aria-atomic="true"
@@ -719,14 +722,24 @@ const PlaceGalleryView = React.memo(({
         </div>
       )}
 
+      {renderAttributionBar(
+        `pointer-events-auto absolute z-[225] left-1/2 hidden -translate-x-1/2 md:flex justify-center max-w-[min(calc(100vw-4rem),28rem)] ${
+          showNavControls
+            ? isFullScreen
+              ? 'bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))]'
+              : 'bottom-20 md:bottom-24'
+            : isFullScreen
+              ? 'bottom-[max(1rem,env(safe-area-inset-bottom,0px))]'
+              : 'bottom-8 md:bottom-10'
+        }`,
+      )}
+
       {isFullScreen && photoAttribution && (
         <div
-          className={`absolute z-[220] max-w-[min(calc(100%-7.5rem),38rem)] transition-opacity duration-300 top-4 left-4 md:top-[max(0.5rem,env(safe-area-inset-top,0px))] md:left-[max(0.75rem,5%)] ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+          className="absolute z-[220] max-w-[min(calc(100%-7.5rem),38rem)] top-4 left-4 md:top-[max(0.5rem,env(safe-area-inset-top,0px))] md:left-[max(0.75rem,5%)] md:hidden"
           onClick={(e) => e.stopPropagation()}
         >
-          {renderAttributionLinks(
-            'inline-flex max-w-full items-center gap-1.5 rounded-full border border-white/10 bg-black/50 px-3 py-1.5 text-xs text-white/80 backdrop-blur-md transition-all hover:bg-white/20 hover:text-white md:px-4 md:py-2 md:text-sm'
-          )}
+          {renderAttributionLinks(attributionPillClass)}
         </div>
       )}
 
