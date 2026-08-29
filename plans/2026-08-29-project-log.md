@@ -18,6 +18,6 @@
 ## 갤러리 — Whakarewarewa PROD 콘솔 (#161)
 
 - **증상** PROD `VITE_PEXELS_API_KEY missing` 반복 · Unsplash 0건 · 더보기 실패 (Summarizer/tp/ads는 제3자)
-- **브랜치** `cursor/gallery-whakarewarewa-prod-3ef1` · PR #161
-- **조치** `pexels-proxy` Edge · VITE 없이 Pexels · whakarewarewa Unsplash 보조 쿼리
-- **배포** merge 후 `npx supabase functions deploy pexels-proxy` + Secrets `PEXELS_API_KEY`
+- **main** `5873092c` — PR #161 merge · `pexels-proxy` Edge · Unsplash 보조 쿼리
+- **Edge** `npx supabase functions deploy pexels-proxy --project-ref phdjnbfitvmrguqzverm --no-verify-jwt` ✅ 2026-08-29
+- **사람 QA** PROD `/place/whakarewarewa-village/gallery` — 갤러리·더보기 · Network `pexels-proxy` 200
