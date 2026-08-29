@@ -754,11 +754,11 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#32 D5-b-2** — feature `3bd88e99` edinburgh·munich 패턴화 · main 재병합·PROD QA 대기 |
-| **브랜치** | `cursor/world-events-wave2` · tip `3bd88e99` |
-| **main** | `73f4ccdc` — D5-b UI · overrides bali만 (edinburgh·munich는 feature) |
+| **상태** | **#32 히어로 수정** — PR [#156](https://github.com/catgeot/Days/pull/156) · tip `b5c352dc` |
+| **브랜치** | `cursor/world-events-wave2` · tip `b5c352dc` |
+| **main** | `73f4ccdc` — D5-b UI · overrides bali만 (edinburgh·munich는 PR #156) |
 | **플랜** | 본 문서 **Phase F-0.5 D5-b-2** · 표준 제시어 **#23~#33** |
-| **PROD QA** | 파일럿 3건 D5-b 동일 틀 — **D5-b-2 main 병합 후** |
+| **PROD QA** | PR #156 merge 후 파일럿 3건 §6.1.1 |
 | **VERIFY** | D1~D5-b smoke/audit · `build` |
 
 **다음 제시어** (#32 Preview 히어로 재QA → PR #156 merge → PROD):
