@@ -113,12 +113,24 @@ npm run build
 
 ### 6.1.1 v2 상세 페이지 — Wave1 15건 (main `b2ac6888`+)
 
-**표준 상세 (D5-b)** = 발리 [`bali-galungan-season-2026`](https://www.gateo.kr/world-events/bali-galungan-season-2026) 패턴. **현재 D5-b 완료: 파일럿 3건만** · 나머지 12건은 Tier0.5+위젯(미달).
+**표준 상세 (D5-b)** = 발리 [`bali-galungan-season-2026`](https://www.gateo.kr/world-events/bali-galungan-season-2026) 패턴. **Preview D5-b: 7/15**(파일럿 3 + Wave2 2 + 배치 A 4) · 나머지 8건 #35~#37.
 
 **PROD 진입**: `https://www.gateo.kr/world-events`  
-**상세 직링크**: `https://www.gateo.kr/world-events/{eventId}`
+**Preview 진입**: `https://www.gateo.kr/qa/world-events`  
+**상세 직링크**: `https://www.gateo.kr/world-events/{eventId}` (Preview는 git URL 동일 path)
 
-**파일럿 3건 D5-b (#32 병합 후)**
+**배치 A D5-b Preview (#34 · PR #158)**
+
+| eventId | Preview path | D5-b 확인 |
+|---------|--------------|-----------|
+| `vienna-staatsoper-season-2026` | `/world-events/vienna-staatsoper-season-2026` | glossary 4 · 갤러리 3 · Tier3 AI 패널 |
+| `amsterdam-kings-day-2027` | `/world-events/amsterdam-kings-day-2027` | glossary 4 · 갤러리 3 · Tier3 AI 패널 |
+| `prague-spring-festival-2027` | `/world-events/prague-spring-festival-2027` | glossary 4 · 갤러리 3 · 인라인 링크 |
+| `marrakech-rose-festival-2027` | `/world-events/marrakech-rose-festival-2027` | glossary 4 · 갤러리 3 · 인라인 링크 |
+
+**공통 D5-b 체크**: 상단 바로가기 칩·실행 스트립 **없음** · 본문 용어 첫 등장 클릭→MOONi 모달 · 하이라이트 인라인 링크 · 히어로+썸네일 갤러리
+
+**파일럿 3건 D5-b (#32 병합 후 · PROD)**
 
 | 대상 | PROD URL | 확인 |
 |------|----------|------|
