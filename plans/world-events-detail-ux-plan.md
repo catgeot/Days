@@ -813,25 +813,25 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#32 완료** — PR [#156](https://github.com/catgeot/Days/pull/156) merged `b2ac6888` · **중간점검 로드맵 반영** |
-| **브랜치** | `cursor/world-events-wave2` (병합됨 · Wave2 재개 시 동일 브랜치) |
+| **상태** | **#33 Wave2 overrides** — PR [#157](https://github.com/catgeot/Days/pull/157) · Preview QA · PROD 파일럿 §6.1.1 |
+| **브랜치** | `cursor/world-events-wave2` · tip `37bac1fe` |
 | **main** | `b2ac6888`+ — D5-b-2 파일럿 3 · Wave1 15건 heroImage · Edge 갤러리 배포 |
-| **플랜** | F-0.5 **D5-b-2 ✅** · **D5-b-3**(#34~#37) · **F-0.6 i18n**(#38) |
-| **PROD QA** | 파일럿 3건 §6.1.1 · 비파일럿 히어로 1장 |
-| **VERIFY** | `smoke:world-events-detail` · `audit:event-travel-guide` · `build` |
+| **플랜** | F-0.5 **D5-b-2 ✅** · **Wave2 2/4 ✅** · **D5-b-3**(#34~#37) · **F-0.6 i18n**(#38) |
+| **PROD QA** | 파일럿 3 §6.1.1 · Wave2 Preview singapore·dubai |
+| **VERIFY** | `smoke:world-events` · `smoke:world-events-detail` · `build` |
 
-**마일스톤**: M1 파일럿 PROD OK → M2 #33 Wave2 → M3 15/15 D5-b → M4 i18n-1
+**마일스톤**: M1 파일럿 PROD OK → M2 #33 Wave2 overrides ✅ Preview → M3 15/15 D5-b → M4 i18n-1
 
-**다음 제시어** (#33):
+**다음 제시어** (#33 Preview):
 
 ```
-세계행사 일정 #33, PROD QA · Wave2 singapore·dubai
+세계행사 일정 #33, Preview QA · Wave2 merge
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
 @plans/world-events-management.md
 @plans/world-events-sample-log.md
-브랜치 cursor/world-events-wave2 · main b2ac6888 · https://www.gateo.kr/world-events
+브랜치 cursor/world-events-wave2 · PR #157 · www.gateo.kr/qa/world-events
 금지: worldEvents.json 직편집 · UI 리디자인 · PROD §6.1.1 OK 전 Wave2 merge
-작업: PROD 파일럿 3건 D5-b §6.1.1 → OK 시 singapore·dubai overrides(D5-b 템플릿) · F-0.5 D5-b-3·#34~#37 로드맵 Read
+작업: Preview singapore·dubai D5-b · PROD 파일럿 3 §6.1.1 확인 → OK 시 PR #157 merge · #34 D5-b 배치 A
 ```

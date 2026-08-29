@@ -18,32 +18,32 @@
 
 | | |
 |--|--|
-| **상태** | **#33 착수** — PR #156 merged · 중간점검 로드맵 main 반영 · **사람 PROD QA** |
-| **브랜치** | `cursor/world-events-wave2` (Wave2·D5-b-3 재개) |
-| **PR** | [#156](https://github.com/catgeot/Days/pull/156) **merged** |
+| **상태** | **#33 Wave2 overrides** — PR [#157](https://github.com/catgeot/Days/pull/157) · Preview QA · PROD 파일럿 3 §6.1.1 |
+| **브랜치** | `cursor/world-events-wave2` · tip `37bac1fe` |
+| **PR** | [#157](https://github.com/catgeot/Days/pull/157) **open** (Wave2 singapore·dubai) |
 | **main** | `b2ac6888`+ — D5-b-2 파일럿 3 · Wave1 15건 heroImage |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **F-0.5 D5-b-3** · **F-0.6** · §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) (Q15 추가) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) §6.1·§6.1.1·§8.1 |
 | **샘플** | [`world-events-sample-log.md`](./world-events-sample-log.md) |
 | **일지** | [`2026-08-27-project-log.md`](./2026-08-27-project-log.md) |
-| **PROD QA** | `https://www.gateo.kr/world-events` · 파일럿 3 D5-b §6.1.1 |
-| **VERIFY** | `smoke:world-events-detail` · `audit:event-travel-guide` · `build` |
+| **PROD QA** | 파일럿 3 §6.1.1 · Wave2 Preview `/world-events/singapore-gp-2026` · `dubai-fitness-challenge-2026` |
+| **VERIFY** | `smoke:world-events` · `smoke:world-events-detail` · `audit:event-travel-guide` · `build` |
 
-**게이트**: 파일럿 3 PROD §6.1.1 OK → **#33 Wave2** singapore·dubai → **#34~#37** D5-b 12건
+**게이트**: PROD 파일럿 3 §6.1.1 OK + Preview Wave2 OK → **PR #157 merge** → **#34** D5-b 배치 A
 
-**다음 제시어** (#33):
+**다음 제시어** (#33 Preview):
 
 ```
-세계행사 일정 #33, PROD QA · Wave2 singapore·dubai
+세계행사 일정 #33, Preview QA · Wave2 merge
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
 @plans/world-events-management.md
 @plans/world-events-sample-log.md
-브랜치 cursor/world-events-wave2 · main b2ac6888 · https://www.gateo.kr/world-events
+브랜치 cursor/world-events-wave2 · PR #157 · www.gateo.kr/qa/world-events
 금지: worldEvents.json 직편집 · UI 리디자인 · PROD §6.1.1 OK 전 Wave2 merge
-작업: PROD 파일럿 3건 D5-b §6.1.1 → OK 시 singapore·dubai overrides(D5-b) · F-0.5 D5-b-3·#34~#37 Read
+작업: Preview singapore·dubai D5-b · PROD 파일럿 3 §6.1.1 확인 → OK 시 PR #157 merge · #34 D5-b 배치 A
 ```
 
 ---
