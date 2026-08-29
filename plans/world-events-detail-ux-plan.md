@@ -420,7 +420,66 @@ flowchart LR
 
 **D5-b VERIFY**: `npm run generate:world-events` · `smoke:world-events-detail`(bali glossary·heroImages·contextLinks assert) · `build` · Preview `/world-events/bali-galungan-season-2026`
 
-**에이전트 SSOT**: 본 절 **F-0.5 D5·D5-b만** 따름. Cursor Plan 아티팩트(`wave1_5_d5_b_*.plan.md`)는 **참고용** — 충돌 시 **본 문서 우선**.
+### F-0.5 D5-b-2 — 파일럿 3건 패턴화 (**완료** · PR #156 → `main` `b2ac6888`)
+
+| eventId | glossary | heroImages | highlightContextLinks | D2 actionChips |
+|---------|----------|------------|----------------------|----------------|
+| `edinburgh-fringe-2026` | 4종 | 3장 | 0·1 | **제거**(D5-b 대체) |
+| `munich-oktoberfest-2026` | 4종 | 3장 | 0·1 | **제거** |
+| `bali-galungan-season-2026` | 5종 | 3장+ | 0·2 | **제거** |
+
+**표준 상세** = 발리 갈룽안 D5-b 패턴(glossary 모달 · 히어로 갤러리 · 하이라이트 인라인 링크 · EventExecutionStrip 없음).
+
+### F-0.5 중간점검 — Wave1 콘텐츠 티어 (2026-08-29)
+
+| 계층 | 15건 전체 | 파일럿 3 | 비고 |
+|------|-----------|----------|------|
+| Tier0·0.5·2 + TripWindow·StayStrip·Mooni FAB | 15/15 | 3/3 | 코드 템플릿 공통 |
+| D3 미디어(heroImage·YouTube·검색) | 15/15 | 3/3 | #32 `hasWorldEventD3Media` 데이터 보유 시 |
+| **D5-b** (glossary·heroImages·contextLinks) | **3/15** | 3/3 | **표준 미달 12건** |
+| Tier3 AI 패널 | PROD 전건 억제 | Preview 3건만 | |
+
+**결론**: 허브 리스트 15건 모두 상세 URL은 있으나, **「갈룽안급」본문 UX는 파일럿 3건만**. Wave2 데이터 전에 **Wave1 12건 D5-b 배치(#34~#37)** 로 표준화.
+
+### F-0.5 D5-b-3 — Wave1 12건 D5-b 배치 (#34~#37)
+
+**게이트**: #33 Wave2 2건 **또는** 파일럿 3 PROD §6.1.1 OK 후 착수(병행 가능).
+
+| 세션 | 표기 | eventId (배치) | 건수 |
+|------|------|----------------|------|
+| **#34** | D5-b 배치 A | vienna · amsterdam · prague · marrakech | 4 |
+| **#35** | D5-b 배치 B | tokyo · kyoto · bangkok | 3 |
+| **#36** | D5-b 배치 C | rio · new-york · iceland · sydney | 4 |
+| **#37** | D5-b 배치 D | hanoi | 1 + 회귀 smoke 15건 |
+
+**건당 체크** ([`world-events-management.md`](./world-events-management.md) §2):
+1. Tier0.5 유지 + `glossaryTerms` 3~5 · `heroImages` 3 · `highlightContextLinks` 1~2
+2. D2 `actionChips` **추가 금지** — D5-b가 대체
+3. `generate:world-events` · `audit:world-events` · `smoke:world-events-detail` assert
+4. Preview `/world-events/{eventId}` — 용어 모달·갤러리·인라인 링크
+
+**코드 (선택 #34 전)**: `WORLD_EVENT_WAVE15_PILOT_EVENT_IDS` 하드코드 제거 → D3/D5-b = **데이터 존재 여부**로 판별(bali 패턴 이미 부분 적용).
+
+### F-0.6 i18n 로드맵 (Q10 구체화)
+
+| 단계 | 세션 | 범위 |
+|------|------|------|
+| **i18n-0** | 현재 | UI 셸·`titleEn`·chip/glossary En·외부 링크 `hl` — **부분 EN** |
+| **i18n-1** | **#38** | 스키마 `detailOverviewEn`·`highlightsEn` 등 · audit · 파일럿 3 En |
+| **i18n-2** | #39+ | EN 본문·허브·모달 전면 분기 · `/en/world-events` SEO ([`en-seo-followup-plan.md`](./en-seo-followup-plan.md) 조율) |
+
+**금지**: D5-b KO 배치 도중 En 필드 일괄 번역(재작업). **MVP = Wave1 15건 D5-b KO 완성 후** i18n-1.
+
+### F-0.5 세션 로드맵 (#33~#38)
+
+| # | 표기 | 산출 |
+|---|------|------|
+| **#33** | PROD QA · Wave2 singapore·dubai | §6.1.1 파일럿 3 · overrides 2건 D5-b |
+| **#34~#37** | D5-b-3 배치 A~D | Wave1 12건 표준화 |
+| **#38** | i18n-1 | En 본문 스키마·파일럿 |
+| **#39+** | Wave2 barcelona·istanbul · P3-a | F-5 표 연기분 |
+
+**에이전트 SSOT**: 본 절 **F-0.5 D5·D5-b·D5-b-2·D5-b-3·F-0.6** 따름. Cursor Plan 아티팩트(`wave1_5_d5_b_*.plan.md`)는 **참고용** — 충돌 시 **본 문서 우선**.
 
 **고정 브랜치**: `cursor/world-events-wave2` · Preview `www.gateo.kr/qa/world-events`  
 **파일럿 3건**: `edinburgh-fringe-2026` · `munich-oktoberfest-2026` · `bali-galungan-season-2026`  
@@ -754,22 +813,25 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#32 히어로 수정** — PR [#156](https://github.com/catgeot/Days/pull/156) · tip `b5c352dc` |
-| **브랜치** | `cursor/world-events-wave2` · tip `b5c352dc` |
-| **main** | `73f4ccdc` — D5-b UI · overrides bali만 (edinburgh·munich는 PR #156) |
-| **플랜** | 본 문서 **Phase F-0.5 D5-b-2** · 표준 제시어 **#23~#33** |
-| **PROD QA** | PR #156 merge 후 파일럿 3건 §6.1.1 |
-| **VERIFY** | D1~D5-b smoke/audit · `build` |
+| **상태** | **#32 완료** — PR [#156](https://github.com/catgeot/Days/pull/156) merged `b2ac6888` · **중간점검 로드맵 반영** |
+| **브랜치** | `cursor/world-events-wave2` (병합됨 · Wave2 재개 시 동일 브랜치) |
+| **main** | `b2ac6888`+ — D5-b-2 파일럿 3 · Wave1 15건 heroImage · Edge 갤러리 배포 |
+| **플랜** | F-0.5 **D5-b-2 ✅** · **D5-b-3**(#34~#37) · **F-0.6 i18n**(#38) |
+| **PROD QA** | 파일럿 3건 §6.1.1 · 비파일럿 히어로 1장 |
+| **VERIFY** | `smoke:world-events-detail` · `audit:event-travel-guide` · `build` |
 
-**다음 제시어** (#32 PROD QA → OK 시 #33 Wave2):
+**마일스톤**: M1 파일럿 PROD OK → M2 #33 Wave2 → M3 15/15 D5-b → M4 i18n-1
+
+**다음 제시어** (#33):
 
 ```
-세계행사 일정 #32, PROD QA — D5-b·히어로 배포 확인
+세계행사 일정 #33, PROD QA · Wave2 singapore·dubai
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
+@plans/world-events-management.md
 @plans/world-events-sample-log.md
-main b2ac6888 · www.gateo.kr/world-events
-금지: worldEvents.json 직편집 · UI 리디자인 · PROD OK 전 Wave2 overrides
-작업: PROD 파일럿 3건 §6.1.1 + vienna/hanoi/nyc 히어로 → OK 시 #33 singapore·dubai
+브랜치 cursor/world-events-wave2 · main b2ac6888 · https://www.gateo.kr/world-events
+금지: worldEvents.json 직편집 · UI 리디자인 · PROD §6.1.1 OK 전 Wave2 merge
+작업: PROD 파일럿 3건 D5-b §6.1.1 → OK 시 singapore·dubai overrides(D5-b 템플릿) · F-0.5 D5-b-3·#34~#37 로드맵 Read
 ```

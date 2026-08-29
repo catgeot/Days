@@ -29,8 +29,9 @@
 | 5 | `bookingHints` — MRT/Trip 검색어·시즌 메모 | 권장 |
 | 6 | `npm run generate:world-events` | ✅ |
 | 7 | `npm run audit:world-events` PASS | ✅ |
-| 8 | PlaceCard에서 해당 slug QA | ✅ |
-| 9 | (D5+) `actionChips` 실행 링크 — `rental`/`tour`/`shop` · Klook·GYG·PKC·큐레이션 URL | 권장 |
+| 8 | PlaceCard·상세 `/world-events/{id}` QA | ✅ |
+| 9 | **D5-b** `glossaryTerms` 3~5 · `heroImages` 3 · `highlightContextLinks` 1~2 | **표준 상세 필수** (#34~) |
+| 10 | D2 `actionChips` | **신규 추가 금지** — D5-b가 대체(bali 패턴) |
 
 **금지**: `worldEvents.json` 직접 편집 · 존재하지 않는 slug · **신규 `plans/*-plan.md`** (D5는 [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) F-0.5만)
 
@@ -110,12 +111,14 @@ npm run build
 | `/world-events` **에든버러 프린지** | 유럽 칩 → 「여행지 카드」 URL에 `fromEvent=edinburgh-fringe-2026` · `checkIn`/`checkOut`(행사 전후 1일 버퍼, 진행 중이면 checkIn=오늘) · 플래너 CTA 동일 날짜 |
 | **홈** 좌상단 바로가기 | 「한국의 축제」 아래 **「세계의 행사」** → `/world-events` |
 
-### 6.1.1 v2 상세 페이지 — Wave1 15건 (PR #153 · main)
+### 6.1.1 v2 상세 페이지 — Wave1 15건 (main `b2ac6888`+)
+
+**표준 상세 (D5-b)** = 발리 [`bali-galungan-season-2026`](https://www.gateo.kr/world-events/bali-galungan-season-2026) 패턴. **현재 D5-b 완료: 파일럿 3건만** · 나머지 12건은 Tier0.5+위젯(미달).
 
 **PROD 진입**: `https://www.gateo.kr/world-events`  
 **상세 직링크**: `https://www.gateo.kr/world-events/{eventId}`
 
-**#19~#20 재확인 (PROD 우선)**
+**파일럿 3건 D5-b (#32 병합 후)**
 
 | 대상 | PROD URL | 확인 |
 |------|----------|------|
@@ -182,6 +185,15 @@ npm run build
 
 ## 8. 기타 미정 (P0–P2)
 
-- i18n: `titleEn` 필수 여부 (Q10 — KO MVP 후)
 - 감사 스크립트: 중복 id · 과거 행사 만료 정책
 - 상용 API (Ticketmaster 등): P3-b — 비용·약관
+
+## 8.1 i18n (Q10 — 세션 #38)
+
+| 단계 | 시점 | 내용 |
+|------|------|------|
+| **i18n-0** | 현재 | `titleEn`·chip/glossary En·외부 링크 locale — 부분 EN |
+| **i18n-1** | **#38** | `detailOverviewEn`·`highlightsEn` 스키마 · audit · 파일럿 3 En |
+| **i18n-2** | Wave1 15 D5-b KO + Wave2 1차 후 | EN 본문·허브 전면 분기 |
+
+**MVP 정의**: Wave1 **15건 D5-b KO 완성** 후 i18n-1. 상세: [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **F-0.6**.

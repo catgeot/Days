@@ -294,3 +294,11 @@
 - **배포** `npx supabase functions deploy fetch-event-hero-gallery --project-ref phdjnbfitvmrguqzverm --no-verify-jwt` ✅
 - **LIVE** invoke edinburgh `force:true` → 12장 · `fromCache:false`
 - **다음** PROD 갤러리·썸네일 재QA
+
+## 세계행사 일정 — 중간점검·로드맵 (docs)
+
+- **세션** 중간점검 (계획서 갱신만)
+- **결정** 갈룽안 D5-b = **표준 상세** · Wave1 15건 중 **3/15만** D5-b · 12건은 #34~#37 배치
+- **영문** Q10 — MVP = 15건 D5-b KO 후 **#38 i18n-1** ([`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) F-0.6)
+- **문서** `world-events-detail-ux-plan` F-0.5 D5-b-3·F-0.6 · `world-events-plan` §9 · `management` §8.1 · qa-index Q15
+- **다음** **#33** PROD §6.1.1 → Wave2 singapore·dubai
