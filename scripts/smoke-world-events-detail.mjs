@@ -189,6 +189,7 @@ const mediaUtilSrc = readFileSync(join(root, 'src/utils/worldEventMedia.js'), 'u
 assert.match(mediaUtilSrc, /getWorldEventHubAttractions/, 'worldEventMedia hub bridge');
 assert.match(mediaUtilSrc, /buildWorldEventSearchQuery/, 'worldEventMedia search query');
 assert.match(mediaUtilSrc, /buildWorldEventYoutubeSearchQuery/, 'worldEventMedia youtube search query');
+assert.match(mediaUtilSrc, /heroImage/, 'hasWorldEventD3Media checks heroImage data');
 
 const outboundSrc = readFileSync(join(root, 'src/utils/worldEventOutboundLinks.js'), 'utf8');
 assert.match(outboundSrc, /naverWebSearchUrl/, 'naver search url builder');
@@ -317,6 +318,16 @@ assert.match(mediaSectionSrc, /fetchWorldEventVideos/, 'EventDetailMediaSection 
 assert.match(mediaSectionSrc, /overflow-y-auto/, 'EventDetailMediaSection youtube scroll container');
 assert.doesNotMatch(mediaSectionSrc, /youtubeLoadMore/, 'EventDetailMediaSection no youtube load more');
 assert.match(mediaSectionSrc, /locale === 'ko'/, 'EventDetailMediaSection naver ko only');
+
+
+for (const event of events) {
+  const hero = String(event.heroImage || '').trim();
+  const gallery = Array.isArray(event.heroImages) ? event.heroImages : [];
+  assert.ok(
+    hero.startsWith('http') || gallery.length > 0,
+    `${event.id} has heroImage or heroImages`,
+  );
+}
 
 assert.ok(Array.isArray(bali.glossaryTerms) && bali.glossaryTerms.length >= 5, 'bali glossaryTerms');
 assert.ok(Array.isArray(bali.heroImages) && bali.heroImages.length >= 2, 'bali heroImages');

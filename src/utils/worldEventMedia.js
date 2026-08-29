@@ -15,10 +15,19 @@ export const WORLD_EVENT_WAVE15_PILOT_EVENT_IDS = [
 export const WORLD_EVENT_D3_ATTRACTION_LIMIT = 5;
 
 /**
- * @param {string | null | undefined} eventId
+ * D3 hero·갤러리·미디어 섹션 — heroImage/heroImages가 있으면 표시.
+ * @param {import('./worldEvents').WorldEvent | string | null | undefined} eventOrId
  */
-export function hasWorldEventD3Media(eventId) {
-  const id = String(eventId ?? '').trim();
+export function hasWorldEventD3Media(eventOrId) {
+  const event =
+    eventOrId && typeof eventOrId === 'object'
+      ? eventOrId
+      : null;
+  if (event) {
+    if (Array.isArray(event.heroImages) && event.heroImages.length > 0) return true;
+    if (String(event.heroImage || '').trim().startsWith('http')) return true;
+  }
+  const id = String(event?.id ?? eventOrId ?? '').trim();
   return WORLD_EVENT_WAVE15_PILOT_EVENT_IDS.includes(id);
 }
 

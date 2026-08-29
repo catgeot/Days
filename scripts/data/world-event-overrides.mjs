@@ -44,6 +44,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Staatsoper_Wien_DSC_5273w.jpg/1280px-Staatsoper_Wien_DSC_5273w.jpg',
     priority: 1,
   },
   {
@@ -449,6 +451,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 2,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Kings_Day_Amsterdam_2015_3.JPG/1280px-Kings_Day_Amsterdam_2015_3.JPG',
     priority: 1,
   },
   {
@@ -486,6 +490,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 4,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Sakura_Tokyo_2026.jpg/1280px-Sakura_Tokyo_2026.jpg',
     priority: 1,
   },
   {
@@ -523,6 +529,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Kyoto_Gion_Matsuri_20100716_2544.jpg/1280px-Kyoto_Gion_Matsuri_20100716_2544.jpg',
     priority: 1,
   },
   {
@@ -560,6 +568,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/14_April_2025_-_Songkran_on_Si_Lom_Road%2C_Bangkok_-_img_02.jpg/1280px-14_April_2025_-_Songkran_on_Si_Lom_Road%2C_Bangkok_-_img_02.jpg',
     priority: 1,
   },
   {
@@ -812,6 +822,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 4,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Clube_de_Frevo_Carnavalesco_P%C3%A1s_Douradas%2C_Carnaval_do_Rio_de_Janeiro%2C_1967.jpg/1280px-Clube_de_Frevo_Carnavalesco_P%C3%A1s_Douradas%2C_Carnaval_do_Rio_de_Janeiro%2C_1967.jpg',
     priority: 1,
   },
   {
@@ -849,6 +861,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Macy%27s_parade_balloon_inflation_%2811678%29.jpg/1280px-Macy%27s_parade_balloon_inflation_%2811678%29.jpg',
     priority: 1,
   },
   {
@@ -885,6 +899,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 4,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Midnight_Sun_on_the_Rocks.jpg/1280px-Midnight_Sun_on_the_Rocks.jpg',
     priority: 1,
   },
   {
@@ -922,6 +938,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Vivid_Lights_Sydney_%2818358343820%29.jpg/1280px-Vivid_Lights_Sydney_%2818358343820%29.jpg',
     priority: 1,
   },
   {
@@ -959,6 +977,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/G_N_Rozhdestvensky_at_Prague_Spring_Festival_2007.jpg/1280px-G_N_Rozhdestvensky_at_Prague_Spring_Festival_2007.jpg',
     priority: 1,
   },
   {
@@ -996,6 +1016,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 2,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/At_fountain_of_Morocco_Royal_rose_garden_in_Flower_festival_commemorative_park._%288131033157%29.jpg/1280px-At_fountain_of_Morocco_Royal_rose_garden_in_Flower_festival_commemorative_park._%288131033157%29.jpg',
     priority: 1,
   },
   {
@@ -1033,6 +1055,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 4,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Hansers_tim_hieu_Tet_Nguyen_Dan_16-02-2026_1771376540207.jpg/1280px-Hansers_tim_hieu_Tet_Nguyen_Dan_16-02-2026_1771376540207.jpg',
     priority: 1,
   },
 ];
