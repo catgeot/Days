@@ -7,8 +7,8 @@
 |---|---------|------|---------|-----|------|
 | 1 | `edinburgh-fringe-2026` | #11~#13, #23, #25 | ✅ overview·highlights·stayAreas·4박 | ✅ v0.2 pilot fixture | D2 action+mooni chips |
 | 2 | `munich-oktoberfest-2026` | #14, #23, #25 | ✅ overview·highlights·stayAreas·3박 | ✅ v0.2 pilot fixture | D2 action+mooni chips |
-| 3 | `vienna-staatsoper-season-2026` | #14 | ✅ overview·highlights·stayAreas·3박 | ✅ v0.1 fixture | Tier0~2+AI v0.1 |
-| 4 | `amsterdam-kings-day-2027` | #14 | ✅ overview·highlights·stayAreas·2박 | ✅ v0.1 fixture | Tier0~2+AI v0.1 |
+| 3 | `vienna-staatsoper-season-2026` | #14, #34 | ✅ overview·highlights·stayAreas·3박 | ✅ v0.1 fixture | **D5-b** (#34) |
+| 4 | `amsterdam-kings-day-2027` | #14, #34 | ✅ overview·highlights·stayAreas·2박 | ✅ v0.1 fixture | **D5-b** (#34) |
 | 5 | `tokyo-sakura-season-2027` | #15 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2 |
 | 6 | `kyoto-gion-matsuri-2027` | #15 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2 |
 | 7 | `bangkok-songkran-2027` | #15 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2 |
@@ -17,8 +17,8 @@
 | 10 | `new-york-thanksgiving-season-2026` | #16 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2+위젯 |
 | 11 | `iceland-midnight-sun-2027` | #16 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2+위젯 |
 | 12 | `sydney-vivid-2027` | #16 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2+위젯 |
-| 13 | `prague-spring-festival-2027` | #18 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2+위젯 |
-| 14 | `marrakech-rose-festival-2027` | #18 | ✅ overview·highlights·stayAreas·2박 | — | Tier0~2+위젯 |
+| 13 | `prague-spring-festival-2027` | #18, #34 | ✅ overview·highlights·stayAreas·3박 | — | **D5-b** (#34) |
+| 14 | `marrakech-rose-festival-2027` | #18, #34 | ✅ overview·highlights·stayAreas·2박 | — | **D5-b** (#34) |
 | 15 | `hanoi-tet-2027` | #18 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2+위젯 |
 
 ---
@@ -314,3 +314,25 @@
 - **일시**: 2026-08-26
 - **피드백**: 장기 행사 TripWindow → 30박 숙소·항공 · 플래너에 행사 맥락 없음 · 상세 페이지 필요
 - **결정**: main 병합 **#18** · v2 플랜 착수 · **#12**부터 구현 (docs `main` 동기화 완료)
+
+## #3 vienna — D5-b-3 배치 A (#34)
+
+- **산출** glossary 4종(staatsoper·stehplatz·musikverein·innere-stadt) · heroImages 3장 · highlightContextLinks(0·1) · `541e5dbe`
+- **VERIFY** smoke D5-b batch A assert PASS
+- **Preview** `/world-events/vienna-staatsoper-season-2026` — Tier3 AI 패널 유지
+
+## #4 amsterdam — D5-b-3 배치 A (#34)
+
+- **산출** glossary 4종(kings-day·jordaan·vondelpark·orange-tradition) · heroImages 3장 · highlightContextLinks(0·1)
+- **Preview** `/world-events/amsterdam-kings-day-2027` — Tier3 AI 패널 유지
+
+## #13 prague — D5-b-3 배치 A (#34)
+
+- **산출** glossary 4종(prague-spring·rudolfinum·old-town·mala-strana) · heroImages 3장 · highlightContextLinks(0·1)
+- **Preview** `/world-events/prague-spring-festival-2027`
+
+## #14 marrakech — D5-b-3 배치 A (#34)
+
+- **산출** glossary 4종(rose-festival·kelaat-mgouna·medina·gueliz) · heroImages 3장 · highlightContextLinks(0·1)
+- **Preview** `/world-events/marrakech-rose-festival-2027`
+- **다음** 사람 Preview 배치 A QA → **#35** 배치 B(tokyo·kyoto·bangkok)

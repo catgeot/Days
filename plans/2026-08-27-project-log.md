@@ -322,3 +322,13 @@
 - **VERIFY** `generate:world-events` · `smoke:world-events-detail` · `smoke:world-events` · `audit:event-travel-guide` · `build` PASS
 - **Preview** `/qa/world-events` → singapore·dubai · vienna·amsterdam·prague·marrakech
 - **다음** 사람 Preview 배치 A QA → **#35** D5-b 배치 B(tokyo·kyoto·bangkok)
+
+## 세계행사 일정 #34 — D5-b 배치 A Preview QA
+
+- **세션** `세계행사 일정 #34, D5-b 배치 A Preview QA`
+- **브랜치** `cursor/world-events-wave2` · PR [#158](https://github.com/catgeot/Days/pull/158) · tip `24ab4d6f`
+- **에이전트 VERIFY** `generate:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `audit:event-travel-guide` · `build` PASS
+- **배치 A** vienna·amsterdam·prague·marrakech — glossary 4 · heroImages 3 · highlightContextLinks 2 · actionChips 없음
+- **Preview** 4 URL HTTP **200** · `/qa/world-events` → 4건 상세
+- **사람 QA** D5-b 본문(용어 모달·갤러리·인라인 링크) · 바로가기/실행 스트립 없음 · vienna/amsterdam Tier3 AI 패널
+- **다음** Preview OK → **#35** D5-b 배치 B(tokyo·kyoto·bangkok)
