@@ -28,7 +28,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 
 const events = getAllWorldEvents();
-assert.equal(events.length, 15, 'Wave1 has 15 events');
+assert.equal(events.length, 17, 'Wave1+Wave2 has 17 events');
 
 for (const event of events) {
   const found = getWorldEventById(event.id);
@@ -96,10 +96,25 @@ const WAVE1_EVENT_IDS = [
   'hanoi-tet-2027',
 ];
 
+const WAVE2_EVENT_IDS = ['singapore-gp-2026', 'dubai-fitness-challenge-2026'];
+
 for (const eventId of WAVE1_EVENT_IDS) {
   const event = getWorldEventById(eventId);
   assert.ok(event, `${eventId} in Wave1 roster`);
   assert.ok(event.detailOverview, `${eventId} Tier0.5 detailOverview`);
+}
+
+for (const eventId of WAVE2_EVENT_IDS) {
+  const event = getWorldEventById(eventId);
+  assert.ok(event, `${eventId} in Wave2 roster`);
+  assert.ok(event.detailOverview, `${eventId} Tier0.5 detailOverview`);
+  assert.ok(Array.isArray(event.glossaryTerms) && event.glossaryTerms.length >= 4, `${eventId} glossaryTerms`);
+  assert.ok(Array.isArray(event.heroImages) && event.heroImages.length >= 3, `${eventId} heroImages`);
+  assert.ok(
+    Array.isArray(event.highlightContextLinks) && event.highlightContextLinks.length >= 2,
+    `${eventId} highlightContextLinks`,
+  );
+  assert.ok(!Array.isArray(event.actionChips) || event.actionChips.length === 0, `${eventId} no actionChips`);
 }
 
 const rio = tripWindowPresetsFromEvent(getWorldEventById('rio-carnival-2027'));
@@ -121,6 +136,10 @@ const hanoiLoc = getWorldEventLocation('hanoi');
 assert.equal(resolvePlannerFlightArrivalIata(hanoiLoc), 'HAN', 'hanoi arrival IATA');
 const marrakechLoc = getWorldEventLocation('marrakech');
 assert.equal(resolvePlannerFlightArrivalIata(marrakechLoc), 'RAK', 'marrakech arrival IATA');
+const singaporeLoc = getWorldEventLocation('singapore');
+assert.equal(resolvePlannerFlightArrivalIata(singaporeLoc), 'SIN', 'singapore arrival IATA');
+const dubaiLoc = getWorldEventLocation('dubai');
+assert.equal(resolvePlannerFlightArrivalIata(dubaiLoc), 'DXB', 'dubai arrival IATA');
 
 const edinburghPresets = tripWindowPresetsFromEvent(getWorldEventById('edinburgh-fringe-2026'));
 
@@ -408,6 +427,8 @@ for (const pilotId of [
   'edinburgh-fringe-2026',
   'munich-oktoberfest-2026',
   'bali-galungan-season-2026',
+  'singapore-gp-2026',
+  'dubai-fitness-challenge-2026',
 ]) {
   await assertPilotHeroImagesReachable(pilotId);
 }

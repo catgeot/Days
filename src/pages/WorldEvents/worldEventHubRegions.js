@@ -1,4 +1,4 @@
-/** Q3 Wave1 — `/world-events` 지역 칩 SSOT (5개) */
+/** Q3 Wave1 + Wave2 — `/world-events` 지역 칩 SSOT (5개) */
 export const WORLD_EVENT_HUB_REGIONS = [
   {
     id: 'europe',
@@ -6,7 +6,7 @@ export const WORLD_EVENT_HUB_REGIONS = [
   },
   {
     id: 'asiaPacific',
-    slugs: ['tokyo', 'kyoto', 'bangkok', 'bali'],
+    slugs: ['tokyo', 'kyoto', 'bangkok', 'bali', 'singapore'],
   },
   {
     id: 'americas',
@@ -18,7 +18,7 @@ export const WORLD_EVENT_HUB_REGIONS = [
   },
   {
     id: 'niche',
-    slugs: ['prague', 'marrakech', 'hanoi'],
+    slugs: ['prague', 'marrakech', 'hanoi', 'dubai'],
   },
 ];
 
