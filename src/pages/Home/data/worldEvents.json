@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-29T00:51:53.101Z",
+    "generatedAt": "2026-08-29T02:41:50.814Z",
     "eventCount": 15,
     "source": "scripts/data/world-event-overrides.mjs"
   },
@@ -104,11 +104,13 @@
           "highlightIndex": 0,
           "links": [
             {
-              "id": "royal-mile-map",
-              "labelKo": "Royal Mile 지도",
+              "id": "royal-mile-search",
+              "labelKo": "Royal Mile 검색",
               "kind": "shop",
-              "labelEn": "Royal Mile map",
-              "href": "https://www.google.com/maps/search/?api=1&query=Royal+Mile+Edinburgh"
+              "labelEn": "Search Royal Mile",
+              "searchQueryKo": "에든버러 Royal Mile 프린지",
+              "searchQueryEn": "Edinburgh Royal Mile Fringe",
+              "searchTarget": "google"
             }
           ]
         },
@@ -552,11 +554,13 @@
           "highlightIndex": 1,
           "links": [
             {
-              "id": "theresienwiese-map",
-              "labelKo": "Theresienwiese 지도",
+              "id": "theresienwiese-search",
+              "labelKo": "Theresienwiese 검색",
               "kind": "shop",
-              "labelEn": "Theresienwiese map",
-              "href": "https://www.google.com/maps/search/?api=1&query=Theresienwiese+Munich"
+              "labelEn": "Search Theresienwiese",
+              "searchQueryKo": "뮌헨 테레지엔비제 옥토버페스트",
+              "searchQueryEn": "Theresienwiese Munich Oktoberfest",
+              "searchTarget": "google"
             }
           ]
         }

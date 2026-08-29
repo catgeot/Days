@@ -19,6 +19,10 @@ import {
   getWorldEventHubAttractions,
 } from '../src/utils/worldEventMedia.js';
 import { addDaysYmd } from '../src/shared/tripWindow.js';
+import {
+  extractGoogleMapsSearchQuery,
+  googleWebSearchUrl,
+} from '../src/utils/worldEventOutboundLinks.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -231,7 +235,7 @@ assert.match(glossaryUtilSrc, /hasWorldEventD5bBodyUx/, 'worldEventGlossary D5-b
 assert.match(glossaryUtilSrc, /getWorldEventHeroImages/, 'worldEventGlossary hero images');
 assert.match(glossaryUtilSrc, /resolveHighlightContextLinkHref/, 'worldEventGlossary context links');
 assert.match(glossaryUtilSrc, /getKlookSearchUrl/, 'worldEventGlossary klook search url');
-assert.match(glossaryUtilSrc, /searchTarget === 'google'/, 'worldEventGlossary google search target');
+assert.match(glossaryUtilSrc, /extractGoogleMapsSearchQuery/, 'worldEventGlossary maps to web search');
 
 const richTextSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventRichText.jsx'), 'utf8');
 assert.match(richTextSrc, /buildGlossarySegments/, 'EventRichText glossary wrapping');
@@ -247,6 +251,21 @@ const termModalSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventTermExp
 assert.match(termModalSrc, /fetchEventTermExplanation/, 'EventTermExplainModal cached explain');
 assert.match(termModalSrc, /peekEventTermExplanationCache/, 'EventTermExplainModal memory cache warm');
 assert.match(termModalSrc, /googleSearch/, 'EventTermExplainModal google search link');
+
+const glossarySearchUrl = googleWebSearchUrl(bali.glossaryTerms[0].searchQueryKo, 'ko');
+assert.match(glossarySearchUrl, /google\.com\/search/, 'glossary modal google web search');
+assert.doesNotMatch(glossarySearchUrl, /google\.com\/maps/, 'glossary modal not maps');
+assert.match(glossarySearchUrl, /udm=14/, 'glossary google search uses web tab param');
+
+const mapsQuery = extractGoogleMapsSearchQuery(
+  'https://www.google.com/maps/search/?api=1&query=Royal+Mile+Edinburgh',
+);
+assert.equal(mapsQuery, 'Royal Mile Edinburgh', 'extract maps search query');
+const mapsFallbackHref = googleWebSearchUrl(mapsQuery, 'ko');
+assert.match(mapsFallbackHref, /google\.com\/search/, 'maps query maps to web search');
+assert.doesNotMatch(mapsFallbackHref, /google\.com\/maps/, 'maps query not maps url');
+
+assert.match(googleWebSearchUrl('test query', 'ko'), /udm=14/, 'googleWebSearchUrl web tab param');
 
 const fetchHeroGallerySrc = readFileSync(join(root, 'src/utils/fetchEventHeroGallery.js'), 'utf8');
 assert.match(fetchHeroGallerySrc, /event_hero_gallery/, 'fetchEventHeroGallery DB cache');
