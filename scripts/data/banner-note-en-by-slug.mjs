@@ -61,7 +61,7 @@ export const BANNER_NOTE_EN_BY_SLUG = {
   "christmas-island":
     "Direct flights to Australian Christmas Island arrive at Christmas Island (XCH). Schedules usually connect from mainland Australia such as Perth (PER). Confirm the final arrival code on your ticket.",
   bagan:
-    "International arrivals often go via Yangon (RGN) or Mandalay (MDL), then a domestic flight to Bagan landing at NYU (Nyaung U). Car rental, pickup, and flight affiliates are based on final arrival NYU.",
+    "Bagan's final arrival airport is Nyaung U (NYU). NYU is hard to search on international flight sites — use Mandalay (MDL) or Yangon (RGN) as the Trip flight-search gateway, then a domestic leg (~30 minutes) to NYU. Car rental and pickup are based on final arrival NYU.",
   tikal:
     "Tikal is usually entered after Guatemala City (GUA) international, then Flores (FRS) by domestic flight or road. Car rental and pickup are based on final arrival FRS; Trip flight search uses the international gateway GUA.",
   "torres-del-paine":

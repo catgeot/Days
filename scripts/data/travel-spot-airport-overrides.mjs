@@ -345,12 +345,16 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
       '호주령 크리스마스섬 직항은 크리스마스섬(XCH)입니다. 퍼스(PER) 등 호주 본토에서 정기편·경유로 이어지는 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.'
   },
   bagan: {
-    primaryIatas: ['NYU'],
+    primaryIatas: ['NYU', 'MDL', 'RGN'],
     preferredLinkIata: 'NYU',
+    tripFlightArrivalIata: 'MDL',
+    flightRouteHubIatas: ['KMG', 'MDL'],
+    kind: 'multi',
+    searchHintIatas: ['MDL', 'RGN'],
     confidence: 'high',
-    rationale: '바간 관문 냥우(NYU) 공항',
+    rationale: '바간 최종 NYU(냥우) · 국제선 MDL·RGN 관문 후 국내선',
     bannerNote:
-      '국제선은 양곤(RGN) 또는 만달레이(MDL) 경유 후 바간행 국내선이 NYU(냥우)에 도착하는 일정이 많습니다. 렌터카·픽업·항공 제휴는 최종 도착 NYU 기준입니다.',
+      '바간 최종 도착은 냥우(NYU) 공항입니다. NYU는 국제선 검색이 어려우므로 Trip 항공 검색은 만달레이(MDL) 또는 양곤(RGN) 국제선 관문을 사용하세요. 입국 후 바간행 국내선(약 30분)으로 NYU에 도착하는 일정이 일반적입니다. 렌터카·픽업은 최종 도착 NYU 기준입니다.',
   },
   tikal: {
     primaryIatas: ['FRS', 'GUA'],
