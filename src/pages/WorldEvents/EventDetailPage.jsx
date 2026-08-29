@@ -140,7 +140,7 @@ export default function EventDetailPage() {
     .join(' · ');
 
   const showD2Chips = hasWorldEventD2Chips(event.id);
-  const showD3Media = hasWorldEventD3Media(event.id);
+  const showD3Media = hasWorldEventD3Media(event);
   const showD5bBodyUx = hasWorldEventD5bBodyUx(event);
   const hideHeaderSummary = showD5bBodyUx && showD3Media;
   const typeKey = String(event.type || 'festival');

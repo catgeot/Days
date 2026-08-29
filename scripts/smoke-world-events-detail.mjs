@@ -19,6 +19,10 @@ import {
   getWorldEventHubAttractions,
 } from '../src/utils/worldEventMedia.js';
 import { addDaysYmd } from '../src/shared/tripWindow.js';
+import {
+  extractGoogleMapsSearchQuery,
+  googleWebSearchUrl,
+} from '../src/utils/worldEventOutboundLinks.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -185,6 +189,7 @@ const mediaUtilSrc = readFileSync(join(root, 'src/utils/worldEventMedia.js'), 'u
 assert.match(mediaUtilSrc, /getWorldEventHubAttractions/, 'worldEventMedia hub bridge');
 assert.match(mediaUtilSrc, /buildWorldEventSearchQuery/, 'worldEventMedia search query');
 assert.match(mediaUtilSrc, /buildWorldEventYoutubeSearchQuery/, 'worldEventMedia youtube search query');
+assert.match(mediaUtilSrc, /heroImage/, 'hasWorldEventD3Media checks heroImage data');
 
 const outboundSrc = readFileSync(join(root, 'src/utils/worldEventOutboundLinks.js'), 'utf8');
 assert.match(outboundSrc, /naverWebSearchUrl/, 'naver search url builder');
@@ -231,7 +236,7 @@ assert.match(glossaryUtilSrc, /hasWorldEventD5bBodyUx/, 'worldEventGlossary D5-b
 assert.match(glossaryUtilSrc, /getWorldEventHeroImages/, 'worldEventGlossary hero images');
 assert.match(glossaryUtilSrc, /resolveHighlightContextLinkHref/, 'worldEventGlossary context links');
 assert.match(glossaryUtilSrc, /getKlookSearchUrl/, 'worldEventGlossary klook search url');
-assert.match(glossaryUtilSrc, /searchTarget === 'google'/, 'worldEventGlossary google search target');
+assert.match(glossaryUtilSrc, /extractGoogleMapsSearchQuery/, 'worldEventGlossary maps to web search');
 
 const richTextSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventRichText.jsx'), 'utf8');
 assert.match(richTextSrc, /buildGlossarySegments/, 'EventRichText glossary wrapping');
@@ -248,11 +253,28 @@ assert.match(termModalSrc, /fetchEventTermExplanation/, 'EventTermExplainModal c
 assert.match(termModalSrc, /peekEventTermExplanationCache/, 'EventTermExplainModal memory cache warm');
 assert.match(termModalSrc, /googleSearch/, 'EventTermExplainModal google search link');
 
+const glossarySearchUrl = googleWebSearchUrl(bali.glossaryTerms[0].searchQueryKo, 'ko');
+assert.match(glossarySearchUrl, /google\.com\/search/, 'glossary modal google web search');
+assert.doesNotMatch(glossarySearchUrl, /google\.com\/maps/, 'glossary modal not maps');
+assert.match(glossarySearchUrl, /udm=14/, 'glossary google search uses web tab param');
+
+const mapsQuery = extractGoogleMapsSearchQuery(
+  'https://www.google.com/maps/search/?api=1&query=Royal+Mile+Edinburgh',
+);
+assert.equal(mapsQuery, 'Royal Mile Edinburgh', 'extract maps search query');
+const mapsFallbackHref = googleWebSearchUrl(mapsQuery, 'ko');
+assert.match(mapsFallbackHref, /google\.com\/search/, 'maps query maps to web search');
+assert.doesNotMatch(mapsFallbackHref, /google\.com\/maps/, 'maps query not maps url');
+
+assert.match(googleWebSearchUrl('test query', 'ko'), /udm=14/, 'googleWebSearchUrl web tab param');
+
 const fetchHeroGallerySrc = readFileSync(join(root, 'src/utils/fetchEventHeroGallery.js'), 'utf8');
 assert.match(fetchHeroGallerySrc, /event_hero_gallery/, 'fetchEventHeroGallery DB cache');
 assert.match(fetchHeroGallerySrc, /fetch-event-hero-gallery/, 'fetchEventHeroGallery edge invoke');
 assert.match(fetchHeroGallerySrc, /fetchUnsplashImages/, 'fetchEventHeroGallery unsplash fallback');
 assert.match(fetchHeroGallerySrc, /fetchWikimediaGalleryFromQueries/, 'fetchEventHeroGallery wikimedia fallback');
+assert.match(fetchHeroGallerySrc, /heroGallerySeedCacheMatches/, 'fetchEventHeroGallery stale cache detection');
+assert.match(fetchHeroGallerySrc, /buildHeroGalleryFromCache/, 'fetchEventHeroGallery cache re-merge');
 
 const heroGalleryMergeSrc = readFileSync(join(root, 'src/utils/worldEventHeroGalleryMerge.js'), 'utf8');
 assert.match(heroGalleryMergeSrc, /mergeWorldEventHeroGalleryImages/, 'hero gallery merge util');
@@ -282,6 +304,9 @@ assert.doesNotMatch(heroSrc, /heroEyebrow/, 'EventDetailHero no highlight text o
 assert.match(heroSrc, /heroGallery\.thumbnailsAria/, 'EventDetailHero separate gallery list section');
 assert.match(heroSrc, /EventHeroGalleryModal/, 'EventDetailHero gallery modal');
 assert.match(heroSrc, /heroGallery\.viewMore/, 'EventDetailHero view more button');
+assert.match(heroSrc, /loadExtendedGallery\(\)/, 'EventDetailHero auto-fetches hero gallery on mount');
+assert.match(heroSrc, /displayImages/, 'EventDetailHero uses displayImages for hero and thumbnails');
+assert.match(heroSrc, /handleImageError/, 'EventDetailHero drops broken image URLs');
 
 const mediaSectionSrc = readFileSync(
   join(root, 'src/pages/WorldEvents/EventDetailMediaSection.jsx'),
@@ -293,6 +318,16 @@ assert.match(mediaSectionSrc, /fetchWorldEventVideos/, 'EventDetailMediaSection 
 assert.match(mediaSectionSrc, /overflow-y-auto/, 'EventDetailMediaSection youtube scroll container');
 assert.doesNotMatch(mediaSectionSrc, /youtubeLoadMore/, 'EventDetailMediaSection no youtube load more');
 assert.match(mediaSectionSrc, /locale === 'ko'/, 'EventDetailMediaSection naver ko only');
+
+
+for (const event of events) {
+  const hero = String(event.heroImage || '').trim();
+  const gallery = Array.isArray(event.heroImages) ? event.heroImages : [];
+  assert.ok(
+    hero.startsWith('http') || gallery.length > 0,
+    `${event.id} has heroImage or heroImages`,
+  );
+}
 
 assert.ok(Array.isArray(bali.glossaryTerms) && bali.glossaryTerms.length >= 5, 'bali glossaryTerms');
 assert.ok(Array.isArray(bali.heroImages) && bali.heroImages.length >= 2, 'bali heroImages');
@@ -310,6 +345,72 @@ assert.ok(
 );
 assert.ok(bali.glossaryTerms.some((term) => term.id === 'galungan'), 'bali galungan glossary');
 assert.ok(bali.glossaryTerms.some((term) => term.id === 'penjor'), 'bali penjor glossary');
+
+assert.ok(
+  Array.isArray(edinburgh.glossaryTerms) && edinburgh.glossaryTerms.length >= 4,
+  'edinburgh glossaryTerms',
+);
+assert.ok(Array.isArray(edinburgh.heroImages) && edinburgh.heroImages.length >= 2, 'edinburgh heroImages');
+assert.ok(
+  Array.isArray(edinburgh.highlightContextLinks) && edinburgh.highlightContextLinks.length >= 2,
+  'edinburgh highlightContextLinks',
+);
+assert.ok(edinburgh.glossaryTerms.some((term) => term.id === 'fringe'), 'edinburgh fringe glossary');
+assert.ok(edinburgh.glossaryTerms.some((term) => term.id === 'royal-mile'), 'edinburgh royal-mile glossary');
+
+assert.ok(
+  Array.isArray(munich.glossaryTerms) && munich.glossaryTerms.length >= 4,
+  'munich glossaryTerms',
+);
+assert.ok(Array.isArray(munich.heroImages) && munich.heroImages.length >= 2, 'munich heroImages');
+assert.ok(
+  Array.isArray(munich.highlightContextLinks) && munich.highlightContextLinks.length >= 2,
+  'munich highlightContextLinks',
+);
+assert.ok(munich.glossaryTerms.some((term) => term.id === 'theresienwiese'), 'munich theresienwiese glossary');
+assert.ok(munich.glossaryTerms.some((term) => term.id === 'beer-tent'), 'munich beer-tent glossary');
+
+/**
+ * @param {string} eventId
+ */
+async function assertPilotHeroImagesReachable(eventId) {
+  const event = getWorldEventById(eventId);
+  const images = Array.isArray(event?.heroImages) ? event.heroImages : [];
+  for (const image of images) {
+    const url = String(image?.url || '').trim();
+    if (!url.startsWith('http')) continue;
+
+    let ok = false;
+    let status = 0;
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      if (attempt > 0) {
+        await new Promise((resolve) => setTimeout(resolve, 1200 * attempt));
+      }
+      const response = await fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(12_000) });
+      status = response.status;
+      if (response.ok) {
+        ok = true;
+        break;
+      }
+      if (status !== 429) break;
+    }
+
+    assert.equal(
+      ok,
+      true,
+      `${eventId} hero image reachable (${status}): ${url}`,
+    );
+    await new Promise((resolve) => setTimeout(resolve, 400));
+  }
+}
+
+for (const pilotId of [
+  'edinburgh-fringe-2026',
+  'munich-oktoberfest-2026',
+  'bali-galungan-season-2026',
+]) {
+  await assertPilotHeroImagesReachable(pilotId);
+}
 
 const chipsUtilSrc2 = readFileSync(join(root, 'src/utils/worldEventChips.js'), 'utf8');
 assert.match(chipsUtilSrc2, /getKlookAffiliateUrl/, 'shop Klook chips use affiliate url');

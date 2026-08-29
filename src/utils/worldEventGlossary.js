@@ -5,7 +5,7 @@ import {
   getKlookRentalUrlByLocation,
   getKlookSearchUrl,
 } from './affiliate.js';
-import { googleWebSearchUrl } from './worldEventOutboundLinks.js';
+import { extractGoogleMapsSearchQuery, googleWebSearchUrl } from './worldEventOutboundLinks.js';
 
 /**
  * @param {import('./worldEvents').WorldEvent | null | undefined} event
@@ -109,8 +109,10 @@ export function resolveHighlightContextLinkHref(link, location, locale = 'ko') {
     if (link.kind === 'shop' && /klook\.com/i.test(explicitHref)) {
       return getKlookAffiliateUrl(explicitHref);
     }
-    if (link.kind === 'shop' && /google\.com\/maps/i.test(explicitHref) && searchQuery) {
-      return googleWebSearchUrl(searchQuery, locale);
+    if (/google\.com\/maps/i.test(explicitHref)) {
+      const mapsQuery = extractGoogleMapsSearchQuery(explicitHref);
+      const webQuery = searchQuery || mapsQuery;
+      if (webQuery) return googleWebSearchUrl(webQuery, locale);
     }
     return explicitHref;
   }

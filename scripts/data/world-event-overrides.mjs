@@ -44,6 +44,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Staatsoper_Wien_DSC_5273w.jpg/1280px-Staatsoper_Wien_DSC_5273w.jpg',
     priority: 1,
   },
   {
@@ -83,6 +85,98 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 3,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Oktoberfest_2015_-_Impression_5.JPG/1280px-Oktoberfest_2015_-_Impression_5.JPG',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Oktoberfest_2015_-_Impression_5.JPG/1280px-Oktoberfest_2015_-_Impression_5.JPG',
+        captionKo: '옥토버페스트 현장',
+        captionEn: 'Oktoberfest grounds',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Oktoberfest_Schaugeschaeft_2007_Richard_Bartz.jpg/1280px-Oktoberfest_Schaugeschaeft_2007_Richard_Bartz.jpg',
+        captionKo: '옥토버페스트 현장',
+        captionEn: 'Oktoberfest fairground',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/U-Bahnhof_Theresienwiese_03.jpg/1280px-U-Bahnhof_Theresienwiese_03.jpg',
+        captionKo: '테레지엔비제',
+        captionEn: 'Theresienwiese',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'theresienwiese',
+        termKo: '테레지엔비제',
+        termEn: 'Theresienwiese',
+        promptKo:
+          '뮌헨 테레지엔비제가 옥토버페스트와 어떤 관계인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.',
+        promptEn:
+          'What is Theresienwiese and why it matters for Oktoberfest visitors? 3 short sentences.',
+        searchQueryKo: '뮌헨 테레지엔비제 옥토버페스트',
+        searchQueryEn: 'Theresienwiese Munich Oktoberfest',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Theresienwiese',
+      },
+      {
+        id: 'beer-tent',
+        termKo: '맥주 텐트',
+        termEn: 'beer tent',
+        promptKo:
+          '옥토버페스트 맥주 텐트 예약·좌석 규정을 여행자 관점에서 3문장 이내로 설명해줘.',
+        promptEn:
+          'Oktoberfest beer tent seating and reservations for travelers in 3 short sentences.',
+        searchQueryKo: '옥토버페스트 맥주 텐트 예약',
+        searchQueryEn: 'Oktoberfest beer tent reservation',
+      },
+      {
+        id: 'oktoberfest',
+        termKo: '옥토버페스트',
+        termEn: 'Oktoberfest',
+        promptKo: '뮌헨 옥토버페스트의 역사와 여행 일정 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Munich Oktoberfest basics and trip tips in 3 short sentences.',
+        searchQueryKo: '뮌헨 옥토버페스트 가이드',
+        searchQueryEn: 'Munich Oktoberfest guide',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Oktoberfest',
+      },
+      {
+        id: 'hackerbruecke',
+        termKo: 'Hackerbrücke',
+        termEn: 'Hackerbrücke',
+        promptKo:
+          '옥토버페스트 때 Hackerbrücke 역 접근과 혼잡 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Hackerbrücke station access during Oktoberfest in 3 short sentences.',
+        searchQueryKo: '옥토버페스트 Hackerbrücke 역',
+        searchQueryEn: 'Oktoberfest Hackerbrücke station',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'tent-reservation',
+            labelKo: '텐트 예약 검색',
+            labelEn: 'Tent reservations',
+            kind: 'shop',
+            searchQueryKo: '옥토버페스트 맥주 텐트 예약',
+            searchQueryEn: 'Oktoberfest beer tent reservation',
+            searchTarget: 'google',
+          },
+        ],
+      },
+      {
+        highlightIndex: 1,
+        links: [
+          {
+            id: 'theresienwiese-search',
+            labelKo: 'Theresienwiese 검색',
+            labelEn: 'Search Theresienwiese',
+            kind: 'shop',
+            searchQueryKo: '뮌헨 테레지엔비제 옥토버페스트',
+            searchQueryEn: 'Theresienwiese Munich Oktoberfest',
+            searchTarget: 'google',
+          },
+        ],
+      },
+    ],
     youtubeVideos: [
       {
         id: 'B5GN30_FRWU',
@@ -174,6 +268,100 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 4,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Edinburgh_Festival_Fringe_Street_Performer.jpg/1280px-Edinburgh_Festival_Fringe_Street_Performer.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Edinburgh_Festival_Fringe_Street_Performer.jpg/1280px-Edinburgh_Festival_Fringe_Street_Performer.jpg',
+        captionKo: '프린지 스트리트 퍼포먼스',
+        captionEn: 'Fringe street performer',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Edinburgh_Royal_Mile_from_Salisbury_Crags_20211019.jpg/1280px-Edinburgh_Royal_Mile_from_Salisbury_Crags_20211019.jpg',
+        captionKo: '로얄 마일',
+        captionEn: 'Royal Mile',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Edinburgh_cannon_and_old_town_20211020.jpg/1280px-Edinburgh_cannon_and_old_town_20211020.jpg',
+        captionKo: '에든버러 올드타운',
+        captionEn: 'Edinburgh Old Town',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'fringe',
+        termKo: '프린지',
+        termEn: 'Fringe',
+        promptKo:
+          '에든버러 프린지 축제가 무엇인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.',
+        promptEn: 'What is the Edinburgh Festival Fringe for travelers? 3 short sentences.',
+        searchQueryKo: '에든버러 프린지 축제',
+        searchQueryEn: 'Edinburgh Festival Fringe',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Edinburgh_Festival_Fringe',
+      },
+      {
+        id: 'royal-mile',
+        termKo: 'Royal Mile',
+        termEn: 'Royal Mile',
+        promptKo:
+          '에든버러 Royal Mile이 프린지와 어떤 관계인지, 어디서 프리 공연을 볼 수 있는지 3문장 이내로 설명해줘.',
+        promptEn: 'Royal Mile and free Fringe performances — 3 short sentences for travelers.',
+        searchQueryKo: '에든버러 Royal Mile 프린지',
+        searchQueryEn: 'Edinburgh Royal Mile Fringe',
+      },
+      {
+        id: 'old-town',
+        termKo: '올드타운',
+        termEn: 'Old Town',
+        promptKo: '에든버러 올드타운이 프린지 방문에 왜 중요한지 3문장 이내로 설명해줘.',
+        promptEn: 'Why Edinburgh Old Town matters for Fringe visitors in 3 short sentences.',
+        searchQueryKo: '에든버러 올드타운 프린지',
+        searchQueryEn: 'Edinburgh Old Town Fringe',
+      },
+      {
+        id: 'new-town',
+        termKo: '뉴타운',
+        termEn: 'New Town',
+        promptKo:
+          '에든버러 뉴타운 숙소의 장단점을 프린지 방문 관점에서 3문장 이내로 설명해줘.',
+        promptEn: 'New Town accommodation pros and cons for Fringe visitors in 3 short sentences.',
+        searchQueryKo: '에든버러 뉴타운 숙소 프린지',
+        searchQueryEn: 'Edinburgh New Town Fringe stay',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'royal-mile-search',
+            labelKo: 'Royal Mile 검색',
+            labelEn: 'Search Royal Mile',
+            kind: 'shop',
+            searchQueryKo: '에든버러 Royal Mile 프린지',
+            searchQueryEn: 'Edinburgh Royal Mile Fringe',
+            searchTarget: 'google',
+          },
+        ],
+      },
+      {
+        highlightIndex: 1,
+        links: [
+          {
+            id: 'official-tickets',
+            labelKo: '공식 예매',
+            labelEn: 'Official tickets',
+            kind: 'tour',
+            href: 'https://www.edfringe.com/',
+          },
+          {
+            id: 'venue-map',
+            labelKo: '공연장 지도',
+            labelEn: 'Venue map',
+            kind: 'shop',
+            href: 'https://www.edfringe.com/find-a-show/venues',
+          },
+        ],
+      },
+    ],
     youtubeVideos: [
       {
         id: '_YXE3yAUrvA',
@@ -263,6 +451,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 2,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Kings_Day_Amsterdam_2015_3.JPG/1280px-Kings_Day_Amsterdam_2015_3.JPG',
     priority: 1,
   },
   {
@@ -300,6 +490,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 4,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Sakura_Tokyo_2026.jpg/1280px-Sakura_Tokyo_2026.jpg',
     priority: 1,
   },
   {
@@ -337,6 +529,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Kyoto_Gion_Matsuri_20100716_2544.jpg/1280px-Kyoto_Gion_Matsuri_20100716_2544.jpg',
     priority: 1,
   },
   {
@@ -374,6 +568,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/14_April_2025_-_Songkran_on_Si_Lom_Road%2C_Bangkok_-_img_02.jpg/1280px-14_April_2025_-_Songkran_on_Si_Lom_Road%2C_Bangkok_-_img_02.jpg',
     priority: 1,
   },
   {
@@ -626,6 +822,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 4,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Clube_de_Frevo_Carnavalesco_P%C3%A1s_Douradas%2C_Carnaval_do_Rio_de_Janeiro%2C_1967.jpg/1280px-Clube_de_Frevo_Carnavalesco_P%C3%A1s_Douradas%2C_Carnaval_do_Rio_de_Janeiro%2C_1967.jpg',
     priority: 1,
   },
   {
@@ -663,6 +861,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Macy%27s_parade_balloon_inflation_%2811678%29.jpg/1280px-Macy%27s_parade_balloon_inflation_%2811678%29.jpg',
     priority: 1,
   },
   {
@@ -699,6 +899,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 4,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Midnight_Sun_on_the_Rocks.jpg/1280px-Midnight_Sun_on_the_Rocks.jpg',
     priority: 1,
   },
   {
@@ -736,6 +938,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Vivid_Lights_Sydney_%2818358343820%29.jpg/1280px-Vivid_Lights_Sydney_%2818358343820%29.jpg',
     priority: 1,
   },
   {
@@ -773,6 +977,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/G_N_Rozhdestvensky_at_Prague_Spring_Festival_2007.jpg/1280px-G_N_Rozhdestvensky_at_Prague_Spring_Festival_2007.jpg',
     priority: 1,
   },
   {
@@ -810,6 +1016,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 2,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/At_fountain_of_Morocco_Royal_rose_garden_in_Flower_festival_commemorative_park._%288131033157%29.jpg/1280px-At_fountain_of_Morocco_Royal_rose_garden_in_Flower_festival_commemorative_park._%288131033157%29.jpg',
     priority: 1,
   },
   {
@@ -847,6 +1055,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     recommendedNights: 4,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Hansers_tim_hieu_Tet_Nguyen_Dan_16-02-2026_1771376540207.jpg/1280px-Hansers_tim_hieu_Tet_Nguyen_Dan_16-02-2026_1771376540207.jpg',
     priority: 1,
   },
 ];
