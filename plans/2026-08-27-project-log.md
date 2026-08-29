@@ -244,3 +244,11 @@
 - **VERIFY** (feature·main) `audit:event-travel-guide` · `smoke:world-events-detail` · `smoke:world-events` · `smoke:event-travel-guide` · `build` PASS
 - **PROD QA** `https://www.gateo.kr/world-events` · 파일럿 3상세(edinburgh·munich·bali) — Vercel 배포 후
 - **다음** 사람 PROD QA OK → **#32 Wave2** singapore·dubai (`cursor/world-events-wave2` 재개)
+
+## 세계행사 일정 #31 — PROD QA 피드백·D5-b-2 착수
+
+- **세션** `세계행사 일정 #31, PROD QA — Wave1.5 D5-b`
+- **피드백** main `73f4ccdc` 병합 후 bali만 D5-b 본문 틀(glossary·갤러리·인라인 링크) · edinburgh·munich는 D2 바로가기 칩 잔존
+- **원인** D5-b overrides는 bali pilot만 · 플랜 F-0.5 **D5-b-2**(파일럿 3건 패턴화)가 Wave2 전 게이트
+- **수정** feature `3bd88e99` — edinburgh·munich `glossaryTerms`·`heroImages`·`highlightContextLinks` · smoke assert
+- **다음** feature→main 재병합 → PROD 파일럿 3건 §6.1.1 → OK 시 **#33 Wave2** singapore·dubai
