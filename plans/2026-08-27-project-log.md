@@ -302,3 +302,13 @@
 - **영문** Q10 — MVP = 15건 D5-b KO 후 **#38 i18n-1** ([`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) F-0.6)
 - **문서** `world-events-detail-ux-plan` F-0.5 D5-b-3·F-0.6 · `world-events-plan` §9 · `management` §8.1 · qa-index Q15
 - **다음** **#33** PROD §6.1.1 → Wave2 singapore·dubai
+
+## 세계행사 일정 #33 — PROD QA · Wave2 singapore·dubai
+
+- **세션** `세계행사 일정 #33, PROD QA · Wave2 singapore·dubai`
+- **브랜치** `cursor/world-events-wave2` · PR [#157](https://github.com/catgeot/Days/pull/157) · tip `37bac1fe`
+- **에이전트 VERIFY** PROD 파일럿 3 URL HTTP 200 · `smoke:world-events` · `smoke:world-events-detail` · `audit:event-travel-guide` · `build` PASS
+- **산출** `singapore-gp-2026` · `dubai-fitness-challenge-2026` D5-b overrides · 허브 지역 singapore/dubai · 17건
+- **Preview** `/qa/world-events` → `/world-events/singapore-gp-2026` · `/world-events/dubai-fitness-challenge-2026`
+- **사람 QA** PROD 파일럿 3 §6.1.1(edinburgh·munich·bali) · Wave2 Preview D5-b
+- **다음** Preview OK + PROD §6.1.1 OK → PR #157 merge → **#34** D5-b 배치 A(vienna·amsterdam·prague·marrakech)
