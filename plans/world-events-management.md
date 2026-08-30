@@ -113,7 +113,7 @@ npm run build
 
 ### 6.1.1 v2 상세 페이지 — Wave1 15건 (main `b2ac6888`+)
 
-**표준 상세 (D5-b)** = 발리 [`bali-galungan-season-2026`](https://www.gateo.kr/world-events/bali-galungan-season-2026) 패턴. **Preview D5-b: 10/15**(파일럿 3 + Wave2 2 + 배치 A 4 + 배치 B 3) · 나머지 5건 #36~#37.
+**표준 상세 (D5-b)** = 발리 [`bali-galungan-season-2026`](https://www.gateo.kr/world-events/bali-galungan-season-2026) 패턴. **Preview D5-b: 14/15**(파일럿 3 + Wave2 2 + 배치 A 4 + 배치 B 3 + 배치 C 4) · 잔여 1건 #37 hanoi.
 
 **PROD 진입**: `https://www.gateo.kr/world-events`  
 **Preview 진입**: `https://www.gateo.kr/qa/world-events`  
@@ -135,6 +135,15 @@ npm run build
 | `tokyo-sakura-season-2027` | `/world-events/tokyo-sakura-season-2027` | glossary 4 · 갤러리 3 · 인라인 링크 |
 | `kyoto-gion-matsuri-2027` | `/world-events/kyoto-gion-matsuri-2027` | glossary 4 · 갤러리 3 · 야사카 공식 링크 |
 | `bangkok-songkran-2027` | `/world-events/bangkok-songkran-2027` | glossary 4 · 갤러리 3 · 방수 Klook 링크 |
+
+**배치 C D5-b Preview (#36 · PR #158)**
+
+| eventId | Preview path | D5-b 확인 |
+|---------|--------------|-----------|
+| `rio-carnival-2027` | `/world-events/rio-carnival-2027` | glossary 4 · 갤러리 3 · 삼바드롬 공식 링크 |
+| `new-york-thanksgiving-season-2026` | `/world-events/new-york-thanksgiving-season-2026` | glossary 4 · 갤러리 3 · 메이시스 퍼레이드 공식 |
+| `iceland-midnight-sun-2027` | `/world-events/iceland-midnight-sun-2027` | glossary 4 · 갤러리 3 · 골든서클 렌터카 |
+| `sydney-vivid-2027` | `/world-events/sydney-vivid-2027` | glossary 4 · 갤러리 3 · 비비드 공식 링크 |
 
 **공통 D5-b 체크**: 상단 바로가기 칩·실행 스트립 **없음** · 본문 용어 첫 등장 클릭→MOONi 모달 · 하이라이트 인라인 링크 · 히어로+썸네일 갤러리
 

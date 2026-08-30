@@ -813,19 +813,19 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#35 D5-b 배치 B** — 에이전트 VERIFY PASS · PR [#158](https://github.com/catgeot/Days/pull/158) · **사람 Preview QA** |
-| **브랜치** | `cursor/world-events-wave2` · tip `a3cfba49` |
+| **상태** | **#36 D5-b 배치 C** — 에이전트 VERIFY PASS · PR [#158](https://github.com/catgeot/Days/pull/158) · **사람 Preview QA** |
+| **브랜치** | `cursor/world-events-wave2` · tip `74bced2a` |
 | **main** | `4caf5b1c` — Wave2 singapore·dubai |
-| **플랜** | F-0.5 **D5-b-2 ✅** · **Wave2 ✅** · **D5-b-3 A ✅**(#34) · **B ✅**(#35) · **C~D**(#36~#37) · **F-0.6 i18n**(#38) |
-| **PROD QA** | Wave2 Vercel 배포 후 singapore·dubai · 배치 A·B Preview |
+| **플랜** | F-0.5 **D5-b-2 ✅** · **Wave2 ✅** · **D5-b-3 A ✅**(#34) · **B ✅**(#35) · **C ✅**(#36) · **D**(#37) · **F-0.6 i18n**(#38) |
+| **PROD QA** | Wave2 Vercel 배포 후 singapore·dubai · 배치 A·B·C Preview |
 | **VERIFY** | `smoke:world-events` · `smoke:world-events-detail` · `build` |
 
-**마일스톤**: M1 파일럿 PROD OK → M2 Wave2 merged → M3 **10/15 D5-b**(Preview) → M4 i18n-1
+**마일스톤**: M1 파일럿 PROD OK → M2 Wave2 merged → M3 **14/15 D5-b**(Preview) → M4 i18n-1
 
-**다음 제시어** (#36):
+**다음 제시어** (#37):
 
 ```
-세계행사 일정 #36, D5-b 배치 C overrides
+세계행사 일정 #37, D5-b 배치 D overrides
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
@@ -833,5 +833,5 @@ flowchart LR
 @plans/world-events-sample-log.md
 브랜치 cursor/world-events-wave2 · PR #158 · https://www.gateo.kr/qa/world-events
 금지: worldEvents.json 직편집 · UI 리디자인
-작업: rio·new-york·iceland·sydney D5-b overrides · smoke · Preview QA
+작업: hanoi D5-b overrides · 15건 회귀 smoke · Preview QA
 ```

@@ -357,3 +357,13 @@
 - **원인** `referenceUrl`만 EN Wikipedia SSOT · 로케일 분기 없음
 - **수정** `referenceUrlKo` + `getGlossaryTermReferenceUrl` · overrides KO URL(우에노 공원 등) · tip `df61ed3c`
 - **Preview** `/qa/world-events` → tokyo 상세 · 우에노 공원 참고 링크 `ko.wikipedia.org/wiki/우에노_공원` 재QA
+
+## 세계행사 일정 #36 — D5-b 배치 C overrides
+
+- **세션** `세계행사 일정 #36, D5-b 배치 C overrides`
+- **브랜치** `cursor/world-events-wave2` · PR [#158](https://github.com/catgeot/Days/pull/158) · tip `74bced2a`
+- **산출** rio·new-york·iceland·sydney D5-b overrides — glossary 4 · heroImages 3 · highlightContextLinks 2 · mooniChips · actionChips 없음
+- **VERIFY** `generate:world-events` · `smoke:world-events` · `smoke:world-events-detail`(D5_B_BATCH_C assert) · `audit:event-travel-guide` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/rio-carnival-2027` · new-york-thanksgiving-season-2026 · iceland-midnight-sun-2027 · sydney-vivid-2027
+- **사람 QA** D5-b 본문(용어 모달·갤러리·인라인 링크) · 바로가기/실행 스트립 없음
+- **다음** Preview OK → **#37** D5-b 배치 D(hanoi + 15건 회귀)
