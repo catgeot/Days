@@ -440,3 +440,11 @@
 - **PROD crawler** `?lang=en` 허브 title 「World events」·canonical·hreflang · JS `www.trip.com` packages 분기
 - **사람 QA** EN singapore 명소 라벨(Park/Museum) · Flight+hotel `www.trip.com` — Preview #40과 동일 경로 PROD 재확인
 - **다음** **#42** Wave2 barcelona·istanbul overrides
+
+## 세계행사 일정 #41 — Tier3 AI PROD 패널 hotfix
+
+- **이슈** PROD 배포본 — edinburgh·munich·bali 「행사 맞춤 여행 가이드」AI 섹션 없음
+- **원인** `shouldShowEventTravelGuidePanel` → `isCloudPreviewSurface()` Preview 전용 · fixture는 PROD 로드되지만 UI 숨김
+- **수정** `93872cdf` — 파일럿 3건 guide 있을 때 PROD·Preview 공통 표시 · PR [#162](https://github.com/catgeot/Days/pull/162) merge
+- **VERIFY** `smoke:event-travel-guide` · `smoke:world-events-detail` · `build` PASS
+- **PROD QA** edinburgh·munich·bali 상세 — Tier3 AI 패널 재확인

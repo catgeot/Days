@@ -21,7 +21,7 @@
 | **상태** | **#41 i18n-2 PROD QA** · main `d7216431` · PR [#158](https://github.com/catgeot/Days/pull/158) **merged** |
 | **브랜치** | `cursor/world-events-wave2` · tip `89ce43e5` (merge 후) |
 | **PR** | [#158](https://github.com/catgeot/Days/pull/158) **merged** · [#157](https://github.com/catgeot/Days/pull/157) **merged** |
-| **main** | `d7216431` — i18n-2 EN 허브·Trip www · PROD bundle `index-DFeajkMU.js` |
+| **main** | PR [#162](https://github.com/catgeot/Days/pull/162) merge — Tier3 AI PROD 패널 hotfix |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **F-0.5 D5-b-3** · **F-0.6** · §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) (Q15 추가) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) §6.1·§6.1.1·§8.1 |
