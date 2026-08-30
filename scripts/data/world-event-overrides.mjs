@@ -1939,13 +1939,11 @@ export const WORLD_EVENT_OVERRIDES = [
         highlightIndex: 2,
         links: [
           {
-            id: 'sydney-ferry-search',
-            labelKo: '페리 검색',
-            labelEn: 'Search ferry',
-            kind: 'shop',
-            searchQueryKo: '시드니 서큘러 키 맨리 페리',
-            searchQueryEn: 'Sydney Circular Quay Manly ferry Opal',
-            searchTarget: 'google',
+            id: 'sydney-ferry-official',
+            labelKo: '페리 공식',
+            labelEn: 'Official ferry',
+            kind: 'tour',
+            href: 'https://transportnsw.info/routes/details/sydney-ferries-network/f1/090f1',
           },
           {
             id: 'sydney-tram-pass',
