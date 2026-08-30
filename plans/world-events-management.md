@@ -113,7 +113,7 @@ npm run build
 
 ### 6.1.1 v2 상세 페이지 — Wave1 15건 (main `b2ac6888`+)
 
-**표준 상세 (D5-b)** = 발리 [`bali-galungan-season-2026`](https://www.gateo.kr/world-events/bali-galungan-season-2026) 패턴. **Preview D5-b: 14/15**(파일럿 3 + Wave2 2 + 배치 A 4 + 배치 B 3 + 배치 C 4) · 잔여 1건 #37 hanoi.
+**표준 상세 (D5-b)** = 발리 [`bali-galungan-season-2026`](https://www.gateo.kr/world-events/bali-galungan-season-2026) 패턴. **Preview D5-b: 15/15**(파일럿 3 + Wave2 2 + 배치 A 4 + 배치 B 3 + 배치 C 4 + 배치 D 1).
 
 **PROD 진입**: `https://www.gateo.kr/world-events`  
 **Preview 진입**: `https://www.gateo.kr/qa/world-events`  
@@ -144,6 +144,12 @@ npm run build
 | `new-york-thanksgiving-season-2026` | `/world-events/new-york-thanksgiving-season-2026` | glossary 4 · 갤러리 3 · 메이시스 퍼레이드 공식 |
 | `iceland-midnight-sun-2027` | `/world-events/iceland-midnight-sun-2027` | glossary 4 · 갤러리 3 · 골든서클 렌터카 |
 | `sydney-vivid-2027` | `/world-events/sydney-vivid-2027` | glossary 4 · 갤러리 3 · 비비드 공식 링크 |
+
+**배치 D D5-b Preview (#37 · PR #158)**
+
+| eventId | Preview path | D5-b 확인 |
+|---------|--------------|-----------|
+| `hanoi-tet-2027` | `/world-events/hanoi-tet-2027` | glossary 4 · 갤러리 3 · vietnam.travel 뗏 안내 링크 |
 
 **공통 D5-b 체크**: 상단 바로가기 칩·실행 스트립 **없음** · 본문 용어 첫 등장 클릭→MOONi 모달 · 하이라이트 인라인 링크 · 히어로+썸네일 갤러리
 
