@@ -1393,6 +1393,117 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 4,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Clube_de_Frevo_Carnavalesco_P%C3%A1s_Douradas%2C_Carnaval_do_Rio_de_Janeiro%2C_1967.jpg/1280px-Clube_de_Frevo_Carnavalesco_P%C3%A1s_Douradas%2C_Carnaval_do_Rio_de_Janeiro%2C_1967.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Clube_de_Frevo_Carnavalesco_P%C3%A1s_Douradas%2C_Carnaval_do_Rio_de_Janeiro%2C_1967.jpg/1280px-Clube_de_Frevo_Carnavalesco_P%C3%A1s_Douradas%2C_Carnaval_do_Rio_de_Janeiro%2C_1967.jpg',
+        captionKo: '리우 카니발 퍼레이드',
+        captionEn: 'Rio Carnival parade',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Carnival_in_Sambadrome_Rio_09s.jpg/1280px-Carnival_in_Sambadrome_Rio_09s.jpg',
+        captionKo: '삼바드롬 퍼레이드',
+        captionEn: 'Sambadrome parade',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Copacabana%2C_Rio_de_Janeiro.jpg/1280px-Copacabana%2C_Rio_de_Janeiro.jpg',
+        captionKo: '코파카바나 해변',
+        captionEn: 'Copacabana Beach',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'sambadrome',
+        termKo: '삼바드롬',
+        termEn: 'Sambadrome',
+        promptKo:
+          '리우 카니발 삼바드롬(Sambadrome) 퍼레이드가 무엇인지, 티켓·셔틀 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'What is the Rio Carnival Sambadrome parade for travelers? 3 short sentences.',
+        searchQueryKo: '리우 카니발 삼바드롬 티켓',
+        searchQueryEn: 'Rio Carnival Sambadrome tickets',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Sambadrome_Marqu%C3%AAs_de_Sapuca%C3%AD',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/삼바드롬',
+      },
+      {
+        id: 'bloco',
+        termKo: '블로코',
+        termEn: 'bloco',
+        promptKo:
+          '리우 카니발 블로코(거리 삼바 파티)가 삼바드롬과 어떻게 다른지 3문장 이내로 설명해줘.',
+        promptEn: 'Rio Carnival bloco street parties vs Sambadrome in 3 short sentences.',
+        searchQueryKo: '리우 카니발 블로코 거리 삼바',
+        searchQueryEn: 'Rio Carnival bloco street party',
+      },
+      {
+        id: 'samba-school',
+        termKo: '삼바스쿨라',
+        termEn: 'samba school',
+        promptKo:
+          '리우 카니발 삼바스쿨라(escola de samba)가 퍼레이드에서 어떤 역할인지 3문장 이내로 설명해줘.',
+        promptEn: 'What are Rio samba schools in the Carnival parade? 3 short sentences.',
+        searchQueryKo: '리우 삼바스쿨라 카니발',
+        searchQueryEn: 'Rio samba school carnival',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Samba_school',
+      },
+      {
+        id: 'copacabana',
+        termKo: '코파카바나',
+        termEn: 'Copacabana',
+        promptKo:
+          '카니발 시즌 코파카바나·이파네마 숙소를 잡을 때 알아둘 점을 3문장 이내로 설명해줘.',
+        promptEn: 'Staying in Copacabana or Ipanema during Rio Carnival in 3 short sentences.',
+        searchQueryKo: '리우 코파카바나 카니발 숙소',
+        searchQueryEn: 'Copacabana Rio Carnival stay',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Copacabana,_Rio_de_Janeiro',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/코파카바나_(리우데자네이루)',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'sambadrome-tickets',
+            labelKo: '삼바드롬 티켓',
+            labelEn: 'Sambadrome tickets',
+            kind: 'tour',
+            href: 'https://www.rio-carnival.net/',
+          },
+        ],
+      },
+      {
+        highlightIndex: 2,
+        links: [
+          {
+            id: 'copacabana-map',
+            labelKo: '코파카바나 지도',
+            labelEn: 'Copacabana map',
+            kind: 'shop',
+            searchQueryKo: '리우 코파카바나 해변',
+            searchQueryEn: 'Copacabana Beach Rio',
+            searchTarget: 'google',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '리우 카니발 삼바드롬',
+    youtubeSearchQueryEn: 'Rio Carnival Sambadrome',
+    mooniChips: [
+      {
+        id: 'sambadrome-nights',
+        promptKo: '삼바드롬 퍼레이드 전후 4박 일정 짜줘',
+        promptEn: 'Plan a 4-night Rio Carnival trip around Sambadrome nights',
+      },
+      {
+        id: 'bloco-vs-sambadrome',
+        promptKo: '블로코랑 삼바드롬 중 뭐부터 볼까?',
+        promptEn: 'Should I prioritize blocos or the Sambadrome parade?',
+      },
+      {
+        id: 'costume-rental',
+        promptKo: '카니발 의상 대여는 어디서 해?',
+        promptEn: 'Where to rent Carnival costumes in Rio?',
+      },
+    ],
     priority: 1,
   },
   {
@@ -1432,6 +1543,118 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 3,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Macy%27s_parade_balloon_inflation_%2811678%29.jpg/1280px-Macy%27s_parade_balloon_inflation_%2811678%29.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Macy%27s_parade_balloon_inflation_%2811678%29.jpg/1280px-Macy%27s_parade_balloon_inflation_%2811678%29.jpg',
+        captionKo: '퍼레이드 풍선 준비',
+        captionEn: 'Parade balloon inflation',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/Macy%27s_Thanksgiving_Day_Parade_2012_Jennette_McCurdy_03.jpg',
+        captionKo: '메이시스 추수감사절 퍼레이드',
+        captionEn: "Macy's Thanksgiving Day Parade",
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/2011_Rockefeller_Center_Christmas_tree_Manhattan_NYC.jpg/1280px-2011_Rockefeller_Center_Christmas_tree_Manhattan_NYC.jpg',
+        captionKo: '록펠러 센터 크리스마스 트리',
+        captionEn: 'Rockefeller Center Christmas tree',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'macys-parade',
+        termKo: '메이시스 퍼레이드',
+        termEn: "Macy's Parade",
+        promptKo:
+          '뉴욕 메이시스 추수감사절 퍼레이드가 무엇인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.',
+        promptEn: "What is Macy's Thanksgiving Day Parade for NYC visitors? 3 short sentences.",
+        searchQueryKo: '뉴욕 메이시스 추수감사절 퍼레이드',
+        searchQueryEn: "Macy's Thanksgiving Day Parade New York",
+        referenceUrl: "https://en.wikipedia.org/wiki/Macy's_Thanksgiving_Day_Parade",
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/메이시스_추수감사절_퍼레이드',
+      },
+      {
+        id: 'thanksgiving',
+        termKo: '추수감사절',
+        termEn: 'Thanksgiving',
+        promptKo:
+          '미국 추수감사절(Thanksgiving)이 뉴욕 방문 일정에 어떤 영향을 주는지 3문장 이내로 설명해줘.',
+        promptEn: 'How Thanksgiving affects a New York trip in 3 short sentences.',
+        searchQueryKo: '뉴욕 추수감사절 여행',
+        searchQueryEn: 'New York Thanksgiving travel',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Thanksgiving_(United_States)',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/추수감사절',
+      },
+      {
+        id: 'black-friday',
+        termKo: '블랙 프라이데이',
+        termEn: 'Black Friday',
+        promptKo:
+          '추수감사절 다음 날 블랙 프라이데이 쇼핑 시즌을 뉴욕에서 즐길 때 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Black Friday shopping tips in NYC in 3 short sentences.',
+        searchQueryKo: '뉴욕 블랙 프라이데이 쇼핑',
+        searchQueryEn: 'New York Black Friday shopping',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Black_Friday_(shopping)',
+      },
+      {
+        id: 'herald-square',
+        termKo: '헤럴드스퀘어',
+        termEn: 'Herald Square',
+        promptKo:
+          '헤럴드스퀘어·34th St가 퍼레이드 뷰 숙소로 인기인 이유를 3문장 이내로 설명해줘.',
+        promptEn: 'Why Herald Square is popular for parade-view stays in 3 short sentences.',
+        searchQueryKo: '뉴욕 헤럴드스퀘어 퍼레이드 숙소',
+        searchQueryEn: 'Herald Square Macy parade view hotel',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Herald_Square',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'macys-official',
+            labelKo: '메이시스 퍼레이드 공식',
+            labelEn: 'Macy\'s Parade official',
+            kind: 'tour',
+            href: 'https://www.macys.com/social/parade/',
+          },
+        ],
+      },
+      {
+        highlightIndex: 2,
+        links: [
+          {
+            id: 'rockefeller-tree',
+            labelKo: '록펠러 트리 검색',
+            labelEn: 'Rockefeller tree search',
+            kind: 'shop',
+            searchQueryKo: '뉴욕 록펠러 센터 크리스마스 트리',
+            searchQueryEn: 'Rockefeller Center Christmas tree NYC',
+            searchTarget: 'google',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '뉴욕 메이시스 추수감사절 퍼레이드',
+    youtubeSearchQueryEn: "Macy's Thanksgiving Day Parade New York",
+    mooniChips: [
+      {
+        id: 'parade-view',
+        promptKo: '퍼레이드 잘 보이는 미드타운 숙소 구역 알려줘',
+        promptEn: 'Best Midtown areas for parade views?',
+      },
+      {
+        id: 'thanksgiving-weekend',
+        promptKo: '추수감사절 주말 3박 일정 짜줘',
+        promptEn: 'Plan a 3-night Thanksgiving weekend in NYC',
+      },
+      {
+        id: 'black-friday-tips',
+        promptKo: '블랙 프라이데이 쇼핑 동선 추천해줘',
+        promptEn: 'Black Friday shopping route in Manhattan?',
+      },
+    ],
     priority: 1,
   },
   {
@@ -1470,6 +1693,116 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 4,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Midnight_Sun_on_the_Rocks.jpg/1280px-Midnight_Sun_on_the_Rocks.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Midnight_Sun_on_the_Rocks.jpg/1280px-Midnight_Sun_on_the_Rocks.jpg',
+        captionKo: '아이슬란드 백야',
+        captionEn: 'Iceland midnight sun',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/View_of_Reykjav%C3%ADk_from_Hallgr%C3%ADmskirkja%2C_20230507_1227_5715.jpg/1280px-View_of_Reykjav%C3%ADk_from_Hallgr%C3%ADmskirkja%2C_20230507_1227_5715.jpg',
+        captionKo: '레이캬비크 전경',
+        captionEn: 'Reykjavík skyline',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Gullfoss%2C_Iceland.jpg/1280px-Gullfoss%2C_Iceland.jpg',
+        captionKo: '굴포스 폭포',
+        captionEn: 'Gullfoss waterfall',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'midnight-sun',
+        termKo: '미드나잇 선',
+        termEn: 'midnight sun',
+        promptKo:
+          '아이슬란드 여름 백야(미드나잇 선)가 여행 일정에 어떤 영향을 주는지 3문장 이내로 설명해줘.',
+        promptEn: 'How Iceland midnight sun affects summer travel in 3 short sentences.',
+        searchQueryKo: '아이슬란드 백야 미드나잇 선',
+        searchQueryEn: 'Iceland midnight sun summer',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Midnight_sun',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/백야',
+      },
+      {
+        id: 'secret-solstice',
+        termKo: '시크릿 솔스티스',
+        termEn: 'Secret Solstice',
+        promptKo:
+          '레이캬비크 시크릿 솔스티스 페스티벌이 무엇인지 3문장 이내로 설명해줘.',
+        promptEn: 'What is Reykjavík Secret Solstice festival? 3 short sentences.',
+        searchQueryKo: '아이슬란드 시크릿 솔스티스 페스티벌',
+        searchQueryEn: 'Iceland Secret Solstice festival',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Secret_Solstice',
+      },
+      {
+        id: 'golden-circle',
+        termKo: '골든서클',
+        termEn: 'Golden Circle',
+        promptKo:
+          '아이슬란드 골든서클 투어가 백야 시즌에 인기인 이유를 3문장 이내로 설명해줘.',
+        promptEn: 'Why Golden Circle tours are popular in midnight sun season in 3 short sentences.',
+        searchQueryKo: '아이슬란드 골든서클 투어',
+        searchQueryEn: 'Iceland Golden Circle tour',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Golden_Circle_(Iceland)',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/골든_서클',
+      },
+      {
+        id: 'reykjavik',
+        termKo: '레이캬비크',
+        termEn: 'Reykjavík',
+        promptKo:
+          '백야 시즌 레이캬비크를 기점으로 숙소·투어를 잡을 때 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Tips for basing midnight sun trips in Reykjavík in 3 short sentences.',
+        searchQueryKo: '레이캬비크 여름 숙소',
+        searchQueryEn: 'Reykjavik summer stay',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Reykjav%C3%ADk',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/레이캬비크',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'secret-solstice-official',
+            labelKo: '시크릿 솔스티스 공식',
+            labelEn: 'Secret Solstice official',
+            kind: 'tour',
+            href: 'https://secretsolstice.is/',
+          },
+        ],
+      },
+      {
+        highlightIndex: 1,
+        links: [
+          {
+            id: 'golden-circle-rental',
+            labelKo: '골든서클 렌터카',
+            labelEn: 'Golden Circle car rental',
+            kind: 'rental',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '아이슬란드 백야 골든서클',
+    youtubeSearchQueryEn: 'Iceland midnight sun Golden Circle',
+    mooniChips: [
+      {
+        id: 'solstice-timing',
+        promptKo: '솔스티스 전후 4박 일정은 언제 잡는 게 좋아?',
+        promptEn: 'When to book a 4-night trip around summer solstice?',
+      },
+      {
+        id: 'golden-circle-drive',
+        promptKo: '백야에 골든서클 자가운전 일정 짜줘',
+        promptEn: 'Plan a midnight sun Golden Circle self-drive day',
+      },
+      {
+        id: 'reykjavik-base',
+        promptKo: '레이캬비크 기점 숙소 구역 추천해줘',
+        promptEn: 'Best Reykjavík base areas for summer festivals?',
+      },
+    ],
     priority: 1,
   },
   {
@@ -1509,6 +1842,119 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 3,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Vivid_Lights_Sydney_%2818358343820%29.jpg/1280px-Vivid_Lights_Sydney_%2818358343820%29.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Vivid_Lights_Sydney_%2818358343820%29.jpg/1280px-Vivid_Lights_Sydney_%2818358343820%29.jpg',
+        captionKo: '비비드 시드니 조명',
+        captionEn: 'Vivid Sydney lights',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Sydney_Opera_House_-_Vivid_2025.jpg/1280px-Sydney_Opera_House_-_Vivid_2025.jpg',
+        captionKo: '오페라 하우스 라이트쇼',
+        captionEn: 'Opera House light show',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Vivid_sydney_2014_Darling_Harbour_%2814549756665%29.jpg/1280px-Vivid_sydney_2014_Darling_Harbour_%2814549756665%29.jpg',
+        captionKo: '달링 하버',
+        captionEn: 'Darling Harbour',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'vivid-sydney',
+        termKo: '비비드 시드니',
+        termEn: 'Vivid Sydney',
+        promptKo:
+          '시드니 비비드(Vivid Sydney) 빛 축제가 무엇인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.',
+        promptEn: 'What is Vivid Sydney for travelers? 3 short sentences.',
+        searchQueryKo: '시드니 비비드 축제',
+        searchQueryEn: 'Vivid Sydney festival',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Vivid_Sydney',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/비비드_시드니',
+      },
+      {
+        id: 'circular-quay',
+        termKo: '서큘러 키',
+        termEn: 'Circular Quay',
+        promptKo:
+          '비비드 시즌 서큘러 키가 숙소·이동 기점으로 인기인 이유를 3문장 이내로 설명해줘.',
+        promptEn: 'Why Circular Quay is a Vivid Sydney base in 3 short sentences.',
+        searchQueryKo: '시드니 서큘러 키 비비드',
+        searchQueryEn: 'Circular Quay Vivid Sydney',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Circular_Quay',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/서큘러_키',
+      },
+      {
+        id: 'opera-house',
+        termKo: '오페라 하우스',
+        termEn: 'Opera House',
+        promptKo:
+          '비비드 시즌 시드니 오페라 하우스 조명 설치를 볼 때 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Tips for seeing Vivid lights on the Sydney Opera House in 3 short sentences.',
+        searchQueryKo: '시드니 오페라 하우스 비비드',
+        searchQueryEn: 'Sydney Opera House Vivid lights',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Sydney_Opera_House',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/시드니_오페라_하우스',
+      },
+      {
+        id: 'darling-harbour',
+        termKo: '달링 하버',
+        termEn: 'Darling Harbour',
+        promptKo:
+          '비비드 시즌 달링 하버 라이트쇼·식당가를 즐길 때 알아둘 점을 3문장 이내로 설명해줘.',
+        promptEn: 'Darling Harbour during Vivid Sydney in 3 short sentences.',
+        searchQueryKo: '시드니 달링 하버 비비드',
+        searchQueryEn: 'Darling Harbour Vivid Sydney',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Darling_Harbour',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'vivid-official',
+            labelKo: '비비드 공식',
+            labelEn: 'Vivid official',
+            kind: 'tour',
+            href: 'https://www.vividsydney.com/',
+          },
+        ],
+      },
+      {
+        highlightIndex: 1,
+        links: [
+          {
+            id: 'darling-harbour-search',
+            labelKo: '달링 하버 검색',
+            labelEn: 'Search Darling Harbour',
+            kind: 'shop',
+            searchQueryKo: '시드니 달링 하버 비비드',
+            searchQueryEn: 'Darling Harbour Vivid Sydney',
+            searchTarget: 'google',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '시드니 비비드 오페라 하우스',
+    youtubeSearchQueryEn: 'Vivid Sydney Opera House lights',
+    mooniChips: [
+      {
+        id: 'opening-weekend',
+        promptKo: '비비드 개막 주말 3박 일정 짜줘',
+        promptEn: 'Plan a 3-night Vivid opening weekend',
+      },
+      {
+        id: 'harbour-walk',
+        promptKo: '항구 야간 라이트 산책 코스 추천해줘',
+        promptEn: 'Best harbour walk for Vivid light installations?',
+      },
+      {
+        id: 'ferry-tips',
+        promptKo: '비비드 때 페리·트램 이용 팁 알려줘',
+        promptEn: 'Ferry and tram tips during Vivid Sydney?',
+      },
+    ],
     priority: 1,
   },
   {
