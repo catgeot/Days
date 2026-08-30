@@ -9,9 +9,9 @@
 | 2 | `munich-oktoberfest-2026` | #14, #23, #25 | ✅ overview·highlights·stayAreas·3박 | ✅ v0.2 pilot fixture | D2 action+mooni chips |
 | 3 | `vienna-staatsoper-season-2026` | #14, #34 | ✅ overview·highlights·stayAreas·3박 | ✅ v0.1 fixture | **D5-b** (#34) |
 | 4 | `amsterdam-kings-day-2027` | #14, #34 | ✅ overview·highlights·stayAreas·2박 | ✅ v0.1 fixture | **D5-b** (#34) |
-| 5 | `tokyo-sakura-season-2027` | #15 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2 |
-| 6 | `kyoto-gion-matsuri-2027` | #15 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2 |
-| 7 | `bangkok-songkran-2027` | #15 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2 |
+| 5 | `tokyo-sakura-season-2027` | #15, #35 | ✅ overview·highlights·stayAreas·4박 | — | **D5-b** (#35) |
+| 6 | `kyoto-gion-matsuri-2027` | #15, #35 | ✅ overview·highlights·stayAreas·3박 | — | **D5-b** (#35) |
+| 7 | `bangkok-songkran-2027` | #15, #35 | ✅ overview·highlights·stayAreas·3박 | — | **D5-b** (#35) |
 | 8 | `bali-galungan-season-2026` | #15, #23, #25 | ✅ overview·highlights·stayAreas·4박 | ✅ v0.2 pilot fixture | D2 action+mooni chips |
 | 9 | `rio-carnival-2027` | #16 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2+위젯 |
 | 10 | `new-york-thanksgiving-season-2026` | #16 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2+위젯 |
@@ -336,3 +336,20 @@
 - **산출** glossary 4종(rose-festival·kelaat-mgouna·medina·gueliz) · heroImages 3장 · highlightContextLinks(0·1)
 - **Preview** `/world-events/marrakech-rose-festival-2027`
 - **다음** 사람 Preview 배치 A QA → **#35** 배치 B(tokyo·kyoto·bangkok)
+
+## #5 tokyo — D5-b-3 배치 B (#35)
+
+- **산출** glossary 4종(sakura·hanami·ueno-park·chidorigafuchi) · heroImages 3장 · highlightContextLinks(0·2) · mooniChips
+- **VERIFY** smoke D5-b batch B assert PASS
+- **Preview** `/world-events/tokyo-sakura-season-2027`
+
+## #6 kyoto — D5-b-3 배치 B (#35)
+
+- **산출** glossary 4종(yoi-yama·yamaboko·gion·yasaka-jinja) · heroImages 3장 · highlightContextLinks(0·2) · 야사카 공식 href
+- **Preview** `/world-events/kyoto-gion-matsuri-2027`
+
+## #7 bangkok — D5-b-3 배치 B (#35)
+
+- **산출** glossary 4종(songkran·silom·khao-san·water-proof) · heroImages 3장 · highlightContextLinks(0·1) · 방수 Klook 링크
+- **Preview** `/world-events/bangkok-songkran-2027`
+- **다음** 사람 Preview 배치 B QA → **#36** 배치 C(rio·new-york·iceland·sydney)
