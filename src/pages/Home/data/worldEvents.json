@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-30T08:38:05.022Z",
+    "generatedAt": "2026-08-30T08:43:56.432Z",
     "eventCount": 17,
     "source": "scripts/data/world-event-overrides.mjs"
   },
@@ -24,10 +24,16 @@
       "sourceUrl": "https://www.edfringe.com/",
       "bookingHints": "올드타운·뉴타운 숙소는 공연장 도보권 위주",
       "detailOverview": "세계 최대 규모의 공연예술 축제로, 8월 한 달간 에든버러 올드타운·프린지 등록 공연장 전역에서 수천 편의 쇼가 상연됩니다. 전체 기간 숙박보다 3~5박 짧은 방문으로 핵심 공연을 골라 보는 것이 일반적입니다.",
+      "detailOverviewEn": "The world's largest performing arts festival fills Edinburgh's Old Town and registered Fringe venues with thousands of shows throughout August. Most visitors pick a focused 3–5 night stay rather than booking for the full month.",
       "highlights": [
         "Royal Mile 주변 프리 공연·스트리트 퍼포먼스",
         "오후·저녁 시간대 예약 공연 — 온라인 사전 예매 권장",
         "올드타운·뉴타운 도보권 숙소가 이동 부담 최소"
+      ],
+      "highlightsEn": [
+        "Free shows and street performances around the Royal Mile",
+        "Afternoon and evening ticketed shows — book online in advance",
+        "Stay in walkable Old Town or New Town to cut down on daily travel"
       ],
       "stayAreas": [
         {
@@ -361,10 +367,16 @@
       "sourceUrl": "https://en.wikipedia.org/wiki/Galungan",
       "bookingHints": "우붓·스미냑 — 사원 방문 시 사례 복장 준비",
       "detailOverview": "발리 힌두력 210일 주기 축제로, 9월 16일(수) 갈룽안에 시즌이 열리고 9월 26일(토) 쿠닝안(갈룽안 10일 후)에 마무리됩니다. 이 10일 사이 펜져 장식·사원 제례가 섬 전역에서 이어지며, 방문 일정은 보통 「갈룽안 전후」「쿠닝안 전후」「둘 다 커버」 중 하나를 기준으로 잡습니다.",
+      "detailOverviewEn": "Bali's Galungan season follows the 210-day Balinese calendar, opening on Wed 16 Sep 2026 and closing with Kuningan ten days later on Sat 26 Sep. Penjor decorations and temple ceremonies ripple across the island — plan around Galungan, Kuningan, or a trip that covers both.",
       "highlights": [
         "9/16(수) 갈룽안 — 조상을 맞이하는 날 · 사원·가옥 펜져·제례 절정(사례 복장 필수)",
         "9/26(토) 쿠닝안 — 갈룽안 10일 후 마무리 제례 · 사원 방문·지역 행사 재피크",
         "우붓(사원·마을) + 스미냑(해변) 분할 숙박 — 시즌 중 이동 1~1.5시간 · 렌터카·드라이버 권장"
+      ],
+      "highlightsEn": [
+        "Wed 16 Sep Galungan — ancestors return home; penjor poles and temple offerings peak (modest temple dress required)",
+        "Sat 26 Sep Kuningan — closing ceremonies ten days after Galungan; temple visits and village events pick up again",
+        "Split stays in Ubud (temples, villages) and Seminyak (beach) — 1–1.5 hr drives in season; car or driver recommended"
       ],
       "stayAreas": [
         {
@@ -576,10 +588,16 @@
       "sourceUrl": "https://www.oktoberfest.de/en",
       "bookingHints": "테레지엔비제·하이드하우저 근처 숙소는 6~12개월 전 예약 권장",
       "detailOverview": "뮌헨 테레지엔비제에서 열리는 세계 최대 맥주 축제로, 약 2주간 대형 맥주 텐트·놀이기구·스트리트 푸드가 이어집니다. 개막 주말·중순 주말 등 핵심 2~3일만 방문하는 짧은 일정이 일반적입니다.",
+      "detailOverviewEn": "Munich's Theresienwiese hosts the world's biggest beer festival for about two weeks of giant beer tents, rides, and street food. Most travelers visit just the key 2–3 days around opening weekend or mid-festival weekends.",
       "highlights": [
         "대형 맥주 텐트 — 좌석·단체 예약은 공식 파트너·호텔 패키지 조기 마감",
         "U4/U5 Theresienwiese·Hackerbrücke 역 도보 접근",
         "평일 낮·저녁은 상대적으로 한산 — 주말·개막일 혼잡 최대"
+      ],
+      "highlightsEn": [
+        "Large beer tents — table and group reservations sell out through official partners and hotel packages",
+        "Walk from U4/U5 Theresienwiese or Hackerbrücke stations",
+        "Weekday afternoons and evenings are calmer — weekends and opening day are busiest"
       ],
       "stayAreas": [
         {
@@ -1293,11 +1311,9 @@
             {
               "id": "tet-travel-guide",
               "labelKo": "뗏 연휴 여행 안내",
-              "kind": "shop",
+              "kind": "tour",
               "labelEn": "Tet holiday travel guide",
-              "searchQueryKo": "베트남 뗏 설 연휴 하노이 여행 안내",
-              "searchQueryEn": "Vietnam Tet holiday Hanoi travel guide",
-              "searchTarget": "google"
+              "href": "https://www.vietnam.travel/"
             }
           ]
         }

@@ -17,6 +17,8 @@ import { tripWindowPresetsFromEvent } from '../../utils/worldEventTripPresets';
 import {
   formatWorldEventDateRange,
   getWorldEventById,
+  getWorldEventDetailOverview,
+  getWorldEventHighlights,
   getWorldEventLocation,
   getWorldEventPlaceMeta,
   getWorldEventTitle,
@@ -98,6 +100,8 @@ export default function EventDetailPage() {
   const title = getWorldEventTitle(event, locale);
   const dateLabel = formatWorldEventDateRange(event, locale);
   const placeMeta = getWorldEventPlaceMeta(event.slug, locale);
+  const detailOverview = getWorldEventDetailOverview(event, locale);
+  const highlights = getWorldEventHighlights(event, locale);
   const location = useMemo(() => getWorldEventLocation(event.slug), [event.slug]);
   const presets = tripWindowPresetsFromEvent(event);
   const [tripDates, setTripDates] = useState(() => ({
@@ -134,7 +138,7 @@ export default function EventDetailPage() {
   const seoDescription = [
     dateLabel,
     placeMeta.label,
-    event.detailOverview || event.bookingHints || t('worldEventDetail.seoDescription'),
+    detailOverview || event.bookingHints || t('worldEventDetail.seoDescription'),
   ]
     .filter(Boolean)
     .join(' · ');

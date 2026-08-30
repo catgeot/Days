@@ -111,7 +111,9 @@
  *   sourceUrl?: string,
  *   bookingHints?: string,
  *   detailOverview?: string,
+ *   detailOverviewEn?: string,
  *   highlights?: string[],
+ *   highlightsEn?: string[],
  *   stayAreas?: WorldEventStayArea[],
  *   recommendedNights?: number,
  *   heroImage?: string,
@@ -138,6 +140,13 @@ export const WORLD_EVENT_TYPES = new Set([
 export const WORLD_EVENT_RECURRENCES = new Set(['annual', 'fixed', 'tbd']);
 
 export const WORLD_EVENT_SOURCES = new Set(['tourapi', 'curated', 'official_url']);
+
+/** i18n-1 pilot — En body fields required in audit */
+export const WORLD_EVENT_I18N_PILOT_EVENT_IDS = [
+  'edinburgh-fringe-2026',
+  'munich-oktoberfest-2026',
+  'bali-galungan-season-2026',
+];
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -239,6 +248,12 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
   const detailOverview =
     raw.detailOverview != null ? String(raw.detailOverview).trim() : undefined;
 
+  const detailOverviewEn =
+    raw.detailOverviewEn != null ? String(raw.detailOverviewEn).trim() : undefined;
+  if (detailOverviewEn && !detailOverview) {
+    throw new Error(`[world-events] ${id}: detailOverviewEn requires detailOverview`);
+  }
+
   let highlights;
   if (raw.highlights != null) {
     if (!Array.isArray(raw.highlights)) {
@@ -249,6 +264,27 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
       .filter(Boolean);
     if (!highlights.length) {
       throw new Error(`[world-events] ${id}: highlights must not be empty when set`);
+    }
+  }
+
+  let highlightsEn;
+  if (raw.highlightsEn != null) {
+    if (!Array.isArray(raw.highlightsEn)) {
+      throw new Error(`[world-events] ${id}: highlightsEn must be array`);
+    }
+    highlightsEn = raw.highlightsEn
+      .map((item) => String(item || '').trim())
+      .filter(Boolean);
+    if (!highlightsEn.length) {
+      throw new Error(`[world-events] ${id}: highlightsEn must not be empty when set`);
+    }
+    if (!highlights) {
+      throw new Error(`[world-events] ${id}: highlightsEn requires highlights`);
+    }
+    if (highlightsEn.length !== highlights.length) {
+      throw new Error(
+        `[world-events] ${id}: highlightsEn length (${highlightsEn.length}) must match highlights (${highlights.length})`,
+      );
     }
   }
 
@@ -587,7 +623,9 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
   if (sourceUrl) event.sourceUrl = sourceUrl;
   if (bookingHints) event.bookingHints = bookingHints;
   if (detailOverview) event.detailOverview = detailOverview;
+  if (detailOverviewEn) event.detailOverviewEn = detailOverviewEn;
   if (highlights) event.highlights = highlights;
+  if (highlightsEn) event.highlightsEn = highlightsEn;
   if (stayAreas) event.stayAreas = stayAreas;
   if (recommendedNights != null) event.recommendedNights = recommendedNights;
   if (heroImage) event.heroImage = heroImage;

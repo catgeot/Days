@@ -72,6 +72,32 @@ export function getWorldEventTitle(event, locale = 'ko') {
 }
 
 /**
+ * @param {WorldEvent} event
+ * @param {string} [locale]
+ */
+export function getWorldEventDetailOverview(event, locale = 'ko') {
+  if (!event) return '';
+  if (locale === 'en' && event.detailOverviewEn) {
+    return String(event.detailOverviewEn).trim();
+  }
+  return event.detailOverview ? String(event.detailOverview).trim() : '';
+}
+
+/**
+ * @param {WorldEvent} event
+ * @param {string} [locale]
+ * @returns {string[]}
+ */
+export function getWorldEventHighlights(event, locale = 'ko') {
+  if (!event) return [];
+  if (locale === 'en' && Array.isArray(event.highlightsEn) && event.highlightsEn.length > 0) {
+    return event.highlightsEn.map((item) => String(item).trim()).filter(Boolean);
+  }
+  if (!Array.isArray(event.highlights)) return [];
+  return event.highlights.map((item) => String(item).trim()).filter(Boolean);
+}
+
+/**
  * @param {string} ymd
  * @param {string} [locale]
  */

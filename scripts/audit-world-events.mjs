@@ -10,6 +10,7 @@ import { readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import {
+  WORLD_EVENT_I18N_PILOT_EVENT_IDS,
   WORLD_EVENT_RECURRENCES,
   WORLD_EVENT_SOURCES,
   WORLD_EVENT_TYPES,
@@ -90,6 +91,35 @@ function main() {
 
     if (normalized.endDate < today) {
       expiredCount += 1;
+    }
+
+    if (normalized.detailOverviewEn) {
+      assert(
+        Boolean(normalized.detailOverview),
+        `${normalized.id}: detailOverviewEn paired with detailOverview`,
+      );
+    }
+
+    if (normalized.highlightsEn) {
+      assert(
+        Array.isArray(normalized.highlights) && normalized.highlights.length > 0,
+        `${normalized.id}: highlightsEn paired with highlights`,
+      );
+      assert(
+        normalized.highlightsEn.length === normalized.highlights.length,
+        `${normalized.id}: highlightsEn length matches highlights`,
+      );
+    }
+
+    if (WORLD_EVENT_I18N_PILOT_EVENT_IDS.includes(normalized.id)) {
+      assert(
+        Boolean(normalized.detailOverviewEn),
+        `${normalized.id}: i18n pilot requires detailOverviewEn`,
+      );
+      assert(
+        Array.isArray(normalized.highlightsEn) && normalized.highlightsEn.length >= 2,
+        `${normalized.id}: i18n pilot requires highlightsEn`,
+      );
     }
   }
 

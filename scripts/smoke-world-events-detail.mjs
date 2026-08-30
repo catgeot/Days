@@ -9,7 +9,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildWorldEventDetailPath } from '../src/utils/worldEventDetailPath.js';
-import { getAllWorldEvents, getWorldEventById, getWorldEventLocation } from '../src/utils/worldEvents.js';
+import { getAllWorldEvents, getWorldEventById, getWorldEventDetailOverview, getWorldEventHighlights, getWorldEventLocation } from '../src/utils/worldEvents.js';
 import { tripWindowPresetsFromEvent } from '../src/utils/worldEventTripPresets.js';
 import { tripWindowNights } from '../src/shared/tripWindow.js';
 import {
@@ -289,6 +289,8 @@ assert.equal(bali.hubId, 'bali', 'bali hubId for attraction bridge');
 
 const chipsUtilSrc = readFileSync(join(root, 'src/utils/worldEventChips.js'), 'utf8');
 assert.match(chipsUtilSrc, /buildWorldEventMooniSeed/, 'worldEventChips seed builder');
+assert.match(chipsUtilSrc, /getWorldEventDetailOverview/, 'worldEventChips locale overview seed');
+assert.match(chipsUtilSrc, /getWorldEventHighlights/, 'worldEventChips locale highlights seed');
 
 const mediaUtilSrc = readFileSync(join(root, 'src/utils/worldEventMedia.js'), 'utf8');
 assert.match(mediaUtilSrc, /getWorldEventHubAttractions/, 'worldEventMedia hub bridge');
@@ -348,7 +350,41 @@ const richTextSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventRichText
 assert.match(richTextSrc, /buildGlossarySegments/, 'EventRichText glossary wrapping');
 assert.match(richTextSrc, /linkedTermIds/, 'EventRichText shared glossary link state');
 
+const PILOT_I18N_EVENT_IDS = [
+  'edinburgh-fringe-2026',
+  'munich-oktoberfest-2026',
+  'bali-galungan-season-2026',
+];
+
+for (const eventId of PILOT_I18N_EVENT_IDS) {
+  const event = getWorldEventById(eventId);
+  assert.ok(event?.detailOverviewEn, `${eventId} has detailOverviewEn`);
+  assert.ok(
+    Array.isArray(event.highlightsEn) && event.highlightsEn.length >= 2,
+    `${eventId} has highlightsEn`,
+  );
+  assert.equal(
+    event.highlightsEn.length,
+    event.highlights.length,
+    `${eventId} highlightsEn length matches highlights`,
+  );
+  const overviewEn = getWorldEventDetailOverview(event, 'en');
+  const highlightsEn = getWorldEventHighlights(event, 'en');
+  assert.ok(overviewEn && overviewEn === event.detailOverviewEn, `${eventId} locale en overview`);
+  assert.equal(highlightsEn.length, event.highlightsEn.length, `${eventId} locale en highlights count`);
+  assert.ok(
+    highlightsEn.every((item, index) => item === event.highlightsEn[index]),
+    `${eventId} locale en highlights items`,
+  );
+  assert.ok(
+    getWorldEventDetailOverview(event, 'ko') === event.detailOverview,
+    `${eventId} locale ko overview fallback`,
+  );
+}
+
 const staticPanelSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventDetailStaticPanel.jsx'), 'utf8');
+assert.match(staticPanelSrc, /getWorldEventDetailOverview/, 'EventDetailStaticPanel locale overview');
+assert.match(staticPanelSrc, /getWorldEventHighlights/, 'EventDetailStaticPanel locale highlights');
 assert.match(staticPanelSrc, /linkedTermIdsRef/, 'EventDetailStaticPanel shared glossary refs');
 assert.match(staticPanelSrc, /hideHeaderSummary/, 'EventDetailStaticPanel hideHeaderSummary gate');
 assert.match(detailSrc, /hideHeaderSummary/, 'EventDetailPage D5-b summary dedupe');

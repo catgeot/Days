@@ -4,6 +4,8 @@ import { ExternalLink, MapPin, Sparkles } from 'lucide-react';
 import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
 import {
   formatWorldEventDateRange,
+  getWorldEventDetailOverview,
+  getWorldEventHighlights,
   getWorldEventPlaceMeta,
   getWorldEventTitle,
 } from '../../utils/worldEvents';
@@ -39,6 +41,8 @@ export default function EventDetailStaticPanel({
   const title = getWorldEventTitle(event, locale);
   const dateLabel = formatWorldEventDateRange(event, locale);
   const placeMeta = getWorldEventPlaceMeta(event.slug, locale);
+  const detailOverview = getWorldEventDetailOverview(event, locale);
+  const highlights = getWorldEventHighlights(event, locale);
   const typeKey = String(event.type || 'festival');
   const typeLabel = t(`worldEventDetail.type.${typeKey}`, { defaultValue: typeKey });
   const typeIntro = t(`worldEventDetail.typeIntro.${typeKey}`, { defaultValue: '' });
@@ -52,8 +56,8 @@ export default function EventDetailStaticPanel({
     linkedTermIdsRef.current = new Set();
   }, [event.id, locale]);
   const hasTier05 =
-    Boolean(event.detailOverview) ||
-    (Array.isArray(event.highlights) && event.highlights.length > 0) ||
+    Boolean(detailOverview) ||
+    highlights.length > 0 ||
     (Array.isArray(event.stayAreas) && event.stayAreas.length > 0) ||
     event.recommendedNights != null;
 
@@ -97,32 +101,32 @@ export default function EventDetailStaticPanel({
         </section>
       ) : null}
 
-      {event.detailOverview ? (
+      {detailOverview ? (
         <section className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
           <h2 className="text-sm font-extrabold text-stone-900">{t('worldEventDetail.overview')}</h2>
           <p className="mt-2 text-sm leading-relaxed text-stone-700">
             {useGlossary && onGlossaryTermClick ? (
               <EventRichText
-                text={event.detailOverview}
+                text={detailOverview}
                 terms={glossaryTerms}
                 onTermClick={onGlossaryTermClick}
                 linkedTermIds={linkedTermIdsRef.current}
               />
             ) : (
-              event.detailOverview
+              detailOverview
             )}
           </p>
         </section>
       ) : null}
 
-      {Array.isArray(event.highlights) && event.highlights.length > 0 ? (
+      {highlights.length > 0 ? (
         <section className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
           <h2 className="flex items-center gap-1.5 text-sm font-extrabold text-stone-900">
             <Sparkles size={15} className="text-amber-700" aria-hidden />
             {t('worldEventDetail.highlights')}
           </h2>
           <ul className="mt-2 list-disc space-y-3 pl-5 text-sm text-stone-700">
-            {event.highlights.map((item, index) => {
+            {highlights.map((item, index) => {
               const contextLinks = getHighlightContextLinks(event, index)
                 .map((link) => getResolvedHighlightContextLink(link, location, locale))
                 .filter(Boolean);
