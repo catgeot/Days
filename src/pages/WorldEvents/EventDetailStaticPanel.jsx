@@ -4,6 +4,7 @@ import { ExternalLink, MapPin, Sparkles } from 'lucide-react';
 import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
 import {
   formatWorldEventDateRange,
+  getWorldEventBookingHints,
   getWorldEventDetailOverview,
   getWorldEventHighlights,
   getWorldEventPlaceMeta,
@@ -46,6 +47,7 @@ export default function EventDetailStaticPanel({
   const detailOverview = getWorldEventDetailOverview(event, locale);
   const highlights = getWorldEventHighlights(event, locale);
   const recurrenceNote = getWorldEventRecurrenceNote(event, locale);
+  const bookingHints = getWorldEventBookingHints(event, locale);
   const stayAreas = getWorldEventStayAreas(event, locale);
   const typeKey = String(event.type || 'festival');
   const typeLabel = t(`worldEventDetail.type.${typeKey}`, { defaultValue: typeKey });
@@ -190,19 +192,19 @@ export default function EventDetailStaticPanel({
         </section>
       ) : null}
 
-      {event.bookingHints ? (
+      {bookingHints ? (
         <section className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
           <h2 className="text-sm font-extrabold text-stone-900">{t('worldEventDetail.bookingHints')}</h2>
           <p className="mt-2 text-sm leading-relaxed text-stone-700">
             {useGlossary && onGlossaryTermClick ? (
               <EventRichText
-                text={event.bookingHints}
+                text={bookingHints}
                 terms={glossaryTerms}
                 onTermClick={onGlossaryTermClick}
                 linkedTermIds={linkedTermIdsRef.current}
               />
             ) : (
-              event.bookingHints
+              bookingHints
             )}
           </p>
         </section>
@@ -249,7 +251,7 @@ export default function EventDetailStaticPanel({
         </section>
       ) : null}
 
-      {!hasTier05 && !event.bookingHints && !typeIntro ? (
+      {!hasTier05 && !bookingHints && !typeIntro ? (
         <section className="rounded-2xl border border-dashed border-stone-200 bg-white/70 p-4 text-sm text-stone-500">
           {t('worldEventDetail.staticFallback')}
         </section>

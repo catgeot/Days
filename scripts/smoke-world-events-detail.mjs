@@ -9,7 +9,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildWorldEventDetailPath } from '../src/utils/worldEventDetailPath.js';
-import { getAllWorldEvents, getWorldEventById, getWorldEventDetailOverview, getWorldEventHighlights, getWorldEventLocation, getWorldEventRecurrenceNote, getWorldEventStayAreas } from '../src/utils/worldEvents.js';
+import { getAllWorldEvents, getWorldEventById, getWorldEventBookingHints, getWorldEventDetailOverview, getWorldEventHighlights, getWorldEventLocation, getWorldEventRecurrenceNote, getWorldEventStayAreas } from '../src/utils/worldEvents.js';
 import { localizeEventTravelGuide } from '../src/utils/eventTravelGuideLocale.js';
 import { tripWindowPresetsFromEvent } from '../src/utils/worldEventTripPresets.js';
 import { tripWindowNights } from '../src/shared/tripWindow.js';
@@ -353,6 +353,8 @@ assert.match(glossaryUtilSrc, /resolveHighlightContextLinkHref/, 'worldEventGlos
 assert.match(glossaryUtilSrc, /getKlookSearchUrl/, 'worldEventGlossary klook search url');
 assert.match(glossaryUtilSrc, /get12GoAffiliateUrl/, 'worldEventGlossary 12go affiliate url');
 assert.match(glossaryUtilSrc, /getGlossaryTermReferenceUrl/, 'worldEventGlossary reference url locale');
+assert.match(glossaryUtilSrc, /getWorldEventGlossaryTermById/, 'worldEventGlossary term by id locale');
+assert.match(glossaryUtilSrc, /term\.termEn && term\.promptEn/, 'worldEventGlossary EN terms require En fields');
 
 const richTextSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventRichText.jsx'), 'utf8');
 assert.match(richTextSrc, /buildGlossarySegments/, 'EventRichText glossary wrapping');
@@ -402,6 +404,28 @@ for (const eventId of PILOT_I18N_EVENT_IDS) {
   }
 }
 
+const singapore = getWorldEventById('singapore-gp-2026');
+assert.ok(singapore, 'singapore present for i18n-2 non-pilot');
+assert.equal(getWorldEventDetailOverview(singapore, 'en'), '', 'non-pilot EN overview has no KO fallback');
+assert.deepEqual(getWorldEventHighlights(singapore, 'en'), [], 'non-pilot EN highlights has no KO fallback');
+assert.equal(getWorldEventBookingHints(singapore, 'en'), '', 'non-pilot EN bookingHints hidden');
+assert.equal(
+  getWorldEventRecurrenceNote(singapore, 'en'),
+  singapore.recurrenceNoteEn,
+  'non-pilot EN recurrenceNote uses En field',
+);
+assert.equal(getWorldEventStayAreas(singapore, 'en').length, 0, 'non-pilot EN stayAreas without nameEn hidden');
+
+const seoUrlsSrc = readFileSync(join(root, 'src/i18n/seoUrls.js'), 'utf8');
+assert.match(seoUrlsSrc, /'\/world-events'/, 'I18N_HUB_PATHS includes /world-events');
+
+const vercelSrc = readFileSync(join(root, 'vercel.json'), 'utf8');
+assert.match(vercelSrc, /"\/en\/world-events"/, 'vercel /en/world-events redirect');
+assert.match(vercelSrc, /"\/en\/world-events\/:eventId"/, 'vercel /en/world-events/:eventId redirect');
+
+const staticPanelSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventDetailStaticPanel.jsx'), 'utf8');
+assert.match(staticPanelSrc, /getWorldEventBookingHints/, 'EventDetailStaticPanel locale bookingHints');
+
 const edinburghGuideFixture = JSON.parse(
   readFileSync(join(root, 'scripts/fixtures/event-travel-guide/edinburgh-fringe-2026.json'), 'utf8'),
 );
@@ -415,7 +439,6 @@ assert.ok(
   'event travel guide locale en section title',
 );
 
-const staticPanelSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventDetailStaticPanel.jsx'), 'utf8');
 assert.match(staticPanelSrc, /getWorldEventDetailOverview/, 'EventDetailStaticPanel locale overview');
 assert.match(staticPanelSrc, /getWorldEventHighlights/, 'EventDetailStaticPanel locale highlights');
 assert.match(staticPanelSrc, /getWorldEventRecurrenceNote/, 'EventDetailStaticPanel locale recurrenceNote');
@@ -430,7 +453,7 @@ assert.match(termModalSrc, /fetchEventTermExplanation/, 'EventTermExplainModal c
 assert.match(termModalSrc, /peekEventTermExplanationCache/, 'EventTermExplainModal memory cache warm');
 assert.match(termModalSrc, /getGlossaryTermReferenceUrl/, 'EventTermExplainModal locale reference url');
 assert.match(termModalSrc, /safe-area-inset-bottom/, 'EventTermExplainModal safe area bottom');
-assert.match(termModalSrc, /googleSearch/, 'EventTermExplainModal google search link');
+assert.match(termModalSrc, /getWorldEventGlossaryTermById\(event, termId, locale\)/, 'EventTermExplainModal locale term lookup');
 
 const stehplatzTruncated =
   '빈 오페라 스탠딩석(Stehplatz)은 빈 국립 오페라 극장에서 가장 저렴하게 오페라를 관람할 수 있는 입석 티';

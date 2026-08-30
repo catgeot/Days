@@ -22,14 +22,13 @@ import {
  */
 export default function EventTermExplainModal({ event, termId, locale = 'ko', onClose }) {
   const { t } = useTranslation();
-  const term = getWorldEventGlossaryTermById(event, termId);
+  const term = getWorldEventGlossaryTermById(event, termId, locale);
   const [answer, setAnswer] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
-  const displayTerm =
-    term && (locale === 'en' && term.termEn ? term.termEn : term.termKo);
-  const prompt = term && (locale === 'en' && term.promptEn ? term.promptEn : term.promptKo);
+  const displayTerm = term ? (locale === 'en' ? term.termEn : term.termKo) : '';
+  const prompt = term ? (locale === 'en' ? term.promptEn : term.promptKo) : '';
   const searchUrl = getGlossaryTermSearchUrl(term, locale);
   const referenceUrl = getGlossaryTermReferenceUrl(term, locale);
 

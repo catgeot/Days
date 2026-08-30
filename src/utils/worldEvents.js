@@ -73,13 +73,20 @@ export function getWorldEventTitle(event, locale = 'ko') {
 }
 
 /**
+ * @param {string} [locale]
+ */
+function isEnLocale(locale) {
+  return locale === 'en';
+}
+
+/**
  * @param {WorldEvent} event
  * @param {string} [locale]
  */
 export function getWorldEventDetailOverview(event, locale = 'ko') {
   if (!event) return '';
-  if (locale === 'en' && event.detailOverviewEn) {
-    return String(event.detailOverviewEn).trim();
+  if (isEnLocale(locale)) {
+    return event.detailOverviewEn ? String(event.detailOverviewEn).trim() : '';
   }
   return event.detailOverview ? String(event.detailOverview).trim() : '';
 }
@@ -91,7 +98,8 @@ export function getWorldEventDetailOverview(event, locale = 'ko') {
  */
 export function getWorldEventHighlights(event, locale = 'ko') {
   if (!event) return [];
-  if (locale === 'en' && Array.isArray(event.highlightsEn) && event.highlightsEn.length > 0) {
+  if (isEnLocale(locale)) {
+    if (!Array.isArray(event.highlightsEn) || event.highlightsEn.length === 0) return [];
     return event.highlightsEn.map((item) => String(item).trim()).filter(Boolean);
   }
   if (!Array.isArray(event.highlights)) return [];
@@ -104,8 +112,8 @@ export function getWorldEventHighlights(event, locale = 'ko') {
  */
 export function getWorldEventRecurrenceNote(event, locale = 'ko') {
   if (!event) return '';
-  if (locale === 'en' && event.recurrenceNoteEn) {
-    return String(event.recurrenceNoteEn).trim();
+  if (isEnLocale(locale)) {
+    return event.recurrenceNoteEn ? String(event.recurrenceNoteEn).trim() : '';
   }
   return event.recurrenceNote ? String(event.recurrenceNote).trim() : '';
 }
@@ -114,23 +122,38 @@ export function getWorldEventRecurrenceNote(event, locale = 'ko') {
  * @param {WorldEvent} event
  * @param {string} [locale]
  */
+export function getWorldEventBookingHints(event, locale = 'ko') {
+  if (!event?.bookingHints || isEnLocale(locale)) return '';
+  return String(event.bookingHints).trim();
+}
+
+/**
+ * @param {WorldEvent} event
+ * @param {string} [locale]
+ */
 export function getWorldEventStayAreas(event, locale = 'ko') {
   if (!Array.isArray(event?.stayAreas)) return [];
-  return event.stayAreas.map((area) => {
-    const name =
-      locale === 'en' && area.nameEn ? String(area.nameEn).trim() : String(area.name || '').trim();
-    const note =
-      locale === 'en' && area.noteEn
-        ? String(area.noteEn).trim()
-        : area.note != null
-          ? String(area.note).trim()
-          : undefined;
-    return {
-      ...area,
-      name,
-      ...(note ? { note } : {}),
-    };
-  });
+  return event.stayAreas
+    .map((area) => {
+      if (isEnLocale(locale)) {
+        const name = String(area.nameEn || '').trim();
+        if (!name) return null;
+        const note = area.noteEn != null ? String(area.noteEn).trim() : undefined;
+        return {
+          ...area,
+          name,
+          ...(note ? { note } : {}),
+        };
+      }
+      const name = String(area.name || '').trim();
+      const note = area.note != null ? String(area.note).trim() : undefined;
+      return {
+        ...area,
+        name,
+        ...(note ? { note } : {}),
+      };
+    })
+    .filter(Boolean);
 }
 
 /**

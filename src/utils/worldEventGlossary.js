@@ -34,13 +34,20 @@ export function getWorldEventHeroImages(event) {
  */
 export function getWorldEventGlossaryTerms(event, locale = 'ko') {
   if (!event?.glossaryTerms?.length) return [];
-  return event.glossaryTerms.map((term) => ({
-    ...term,
-    displayTerm: locale === 'en' && term.termEn ? term.termEn : term.termKo,
-    prompt: locale === 'en' && term.promptEn ? term.promptEn : term.promptKo,
-    searchQuery:
-      locale === 'en' && term.searchQueryEn ? term.searchQueryEn : term.searchQueryKo,
-  }));
+  return event.glossaryTerms
+    .map((term) => ({
+      ...term,
+      displayTerm: locale === 'en' ? term.termEn : term.termKo,
+      prompt: locale === 'en' ? term.promptEn : term.promptKo,
+      searchQuery:
+        locale === 'en' && term.searchQueryEn ? term.searchQueryEn : term.searchQueryKo,
+    }))
+    .filter((term) => {
+      if (locale !== 'en') {
+        return Boolean(term.displayTerm && term.prompt);
+      }
+      return Boolean(term.termEn && term.promptEn && term.displayTerm && term.prompt);
+    });
 }
 
 /**
@@ -59,10 +66,13 @@ export function getHighlightContextLinks(event, highlightIndex) {
  * @param {import('./worldEvents').WorldEvent | null | undefined} event
  * @param {string} termId
  */
-export function getWorldEventGlossaryTermById(event, termId) {
+export function getWorldEventGlossaryTermById(event, termId, locale = 'ko') {
   const id = String(termId || '').trim();
   if (!id || !event?.glossaryTerms?.length) return null;
-  return event.glossaryTerms.find((term) => term.id === id) ?? null;
+  const term = event.glossaryTerms.find((item) => item.id === id) ?? null;
+  if (!term) return null;
+  if (locale === 'en' && (!term.termEn || !term.promptEn)) return null;
+  return term;
 }
 
 /**

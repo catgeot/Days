@@ -16,6 +16,7 @@ import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
 import { tripWindowPresetsFromEvent } from '../../utils/worldEventTripPresets';
 import {
   formatWorldEventDateRange,
+  getWorldEventBookingHints,
   getWorldEventById,
   getWorldEventDetailOverview,
   getWorldEventHighlights,
@@ -103,6 +104,7 @@ export default function EventDetailPage() {
   const placeMeta = getWorldEventPlaceMeta(event.slug, locale);
   const detailOverview = getWorldEventDetailOverview(event, locale);
   const highlights = getWorldEventHighlights(event, locale);
+  const bookingHints = getWorldEventBookingHints(event, locale);
   const recurrenceNote = getWorldEventRecurrenceNote(event, locale);
   const location = useMemo(() => getWorldEventLocation(event.slug), [event.slug]);
   const presets = tripWindowPresetsFromEvent(event);
@@ -140,7 +142,7 @@ export default function EventDetailPage() {
   const seoDescription = [
     dateLabel,
     placeMeta.label,
-    detailOverview || event.bookingHints || t('worldEventDetail.seoDescription'),
+    detailOverview || bookingHints || t('worldEventDetail.seoDescription'),
   ]
     .filter(Boolean)
     .join(' · ');
