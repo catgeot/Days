@@ -970,7 +970,8 @@ export function buildTripcomPlannerFlightUrl(location, options = {}) {
     ).trim();
     if (destinationName) params.set('destinationName', destinationName);
 
-    return `${origin}/packages/list?${params.toString()}`;
+    const packagesOrigin = resolveTripcomSiteOrigin(partnerLocale, { surface: 'packages' });
+    return `${packagesOrigin}/packages/list?${params.toString()}`;
   }
 
   return `${origin}/flights/?${params.toString()}`;
@@ -1033,7 +1034,9 @@ function mergeTripcomHotelStayParams(baseUrl, options = {}) {
   const partnerLocale = options.partnerLocale ?? getTripcomPartnerLocale();
   try {
     const url = new URL(baseUrl);
-    url.hostname = new URL(resolveTripcomSiteOrigin(partnerLocale)).hostname;
+    url.hostname = new URL(
+      resolveTripcomSiteOrigin(partnerLocale, { surface: 'hotels' }),
+    ).hostname;
     if (!url.searchParams.has('Allianceid')) {
       url.searchParams.set('Allianceid', TRIPCOM_KR_PARTNER.allianceId);
     }
@@ -1101,7 +1104,7 @@ export function buildTripcomHotelSearchUrl(location, options = {}) {
   ).trim();
   const cityId = getTripcomHotelCityIdForLocation(location);
   const partnerLocale = options.partnerLocale ?? getTripcomPartnerLocale();
-  const origin = resolveTripcomSiteOrigin(partnerLocale);
+  const origin = resolveTripcomSiteOrigin(partnerLocale, { surface: 'hotels' });
   const params = new URLSearchParams({
     locale: partnerLocale,
     curr: resolveTripcomCurrency(partnerLocale),

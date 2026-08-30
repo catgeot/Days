@@ -685,6 +685,7 @@ assert.match(locationRulesSrc, /'bali'/, 'bali in GYG location rules');
 assert.match(affiliateSrc, /getKlookRentalUrlByLocation/, 'affiliate Klook rental helper');
 assert.match(affiliateSrc, /event-detail-flight/, 'affiliate event-detail-flight tracking');
 assert.match(affiliateSrc, /if \(mode === 'packages'\)/, 'packages/list gated by mode=packages only');
+assert.match(affiliateSrc, /surface: 'packages'/, 'packages uses EN www host branch');
 assert.match(affiliateSrc, /resolveTripcomCurrency/, 'affiliate tripcom currency by locale');
 assert.match(affiliateSrc, /bali: '723'/, 'bali Trip.com hotel city id for packages');
 assert.match(mrtPackageQuerySrc, /bali/, 'bali in MRT package keyword rules');
