@@ -416,3 +416,17 @@
 - **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
 - **Preview** `/qa/world-events?lang=en` → 허브·edinburgh·singapore(비파일럿 staticFallback)·bali glossary
 - **다음** **#40** i18n-2 Preview QA
+
+## 세계행사 일정 #40 — i18n-2 Preview QA 피드백·보정
+
+- **피드백** EN singapore — 명소 카드 구분 한글(명소·공원) · Flight+hotel → Trip `kr.trip.com` 한글 IBU
+- **수정** `bdfd968f` — `getKindLabel(kind, locale)` · Trip `locale=en-US`+`curr=USD` · EventStayStrip locale SSOT
+- **수정** `7cafc78a` — EN packages/hotels → `www.trip.com` (kr 호스트·쿠키 한국 IBU 고정)
+- **VERIFY** `smoke-tripcom-flight-locale` · `smoke:world-events-detail` · `build` PASS
+
+## 세계행사 일정 #40 — i18n-2 Preview QA
+
+- **세션** `세계행사 일정 #40, i18n-2 Preview QA`
+- **브랜치** `cursor/world-events-wave2` · PR [#158](https://github.com/catgeot/Days/pull/158) · tip `7cafc78a`
+- **사람 QA PASS** — EN 허브·singapore 명소 En 라벨 · Trip Flight+hotel `www.trip.com` 영문
+- **다음** **#41** PR #158 merge → PROD i18n-2 QA
