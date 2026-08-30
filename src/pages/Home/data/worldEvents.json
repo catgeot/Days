@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-30T03:45:21.300Z",
+    "generatedAt": "2026-08-30T03:48:12.160Z",
     "eventCount": 17,
     "source": "scripts/data/world-event-overrides.mjs"
   },
@@ -2216,13 +2216,11 @@
           "highlightIndex": 2,
           "links": [
             {
-              "id": "sydney-ferry-search",
-              "labelKo": "페리 검색",
-              "kind": "shop",
-              "labelEn": "Search ferry",
-              "searchQueryKo": "시드니 서큘러 키 맨리 페리",
-              "searchQueryEn": "Sydney Circular Quay Manly ferry Opal",
-              "searchTarget": "google"
+              "id": "sydney-ferry-official",
+              "labelKo": "페리 공식",
+              "kind": "tour",
+              "labelEn": "Official ferry",
+              "href": "https://transportnsw.info/routes/details/sydney-ferries-network/f1/090f1"
             },
             {
               "id": "sydney-tram-pass",
