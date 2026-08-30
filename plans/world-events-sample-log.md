@@ -19,7 +19,7 @@
 | 12 | `sydney-vivid-2027` | #16, #36 | ✅ overview·highlights·stayAreas·3박 | — | **D5-b** (#36) |
 | 13 | `prague-spring-festival-2027` | #18, #34 | ✅ overview·highlights·stayAreas·3박 | — | **D5-b** (#34) |
 | 14 | `marrakech-rose-festival-2027` | #18, #34 | ✅ overview·highlights·stayAreas·2박 | — | **D5-b** (#34) |
-| 15 | `hanoi-tet-2027` | #18 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2+위젯 |
+| 15 | `hanoi-tet-2027` | #18, #37 | ✅ overview·highlights·stayAreas·4박 | — | **D5-b** (#37) |
 
 ---
 
@@ -375,3 +375,10 @@
 - **산출** glossary 4종(vivid-sydney·circular-quay·opera-house·darling-harbour) · heroImages 3장 · highlightContextLinks(0·1) · 비비드 공식 href
 - **Preview** `/world-events/sydney-vivid-2027`
 - **다음** 사람 Preview 배치 C QA → **#37** 배치 D(hanoi + 15건 회귀)
+
+## #15 hanoi-tet-2027 — D5-b-3 배치 D (#37)
+
+- **산출** glossary 4종(tet·old-quarter·hoan-kiem·flower-market) · heroImages 3장 · highlightContextLinks(0·2) · vietnam.travel 뗏 안내 href
+- **VERIFY** smoke D5-b batch D assert · `smoke:world-events`(15건 회귀) PASS
+- **Preview** `/world-events/hanoi-tet-2027`
+- **다음** 사람 Preview 배치 D QA → **#38** i18n-1
