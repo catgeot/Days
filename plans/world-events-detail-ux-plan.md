@@ -814,7 +814,7 @@ flowchart LR
 | | |
 |--|--|
 | **상태** | **#38 i18n-1** — 에이전트 VERIFY PASS · PR [#158](https://github.com/catgeot/Days/pull/158) · **사람 Preview QA** |
-| **브랜치** | `cursor/world-events-wave2` · tip `a67ba91f` |
+| **브랜치** | `cursor/world-events-wave2` · tip `cac341e2` |
 | **main** | `4caf5b1c` — Wave2 singapore·dubai |
 | **플랜** | F-0.5 **D5-b-3 ✅** · **F-0.6 i18n-1 ✅**(#38) · **i18n-2**(#39) |
 | **PROD QA** | Wave2 Vercel 배포 후 singapore·dubai · i18n-1 Preview |
