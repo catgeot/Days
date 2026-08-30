@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { ExternalLink, Sparkles, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import {
+  getGlossaryTermReferenceUrl,
   getGlossaryTermSearchUrl,
   getWorldEventGlossaryTermById,
 } from '../../utils/worldEventGlossary';
@@ -30,6 +31,7 @@ export default function EventTermExplainModal({ event, termId, locale = 'ko', on
     term && (locale === 'en' && term.termEn ? term.termEn : term.termKo);
   const prompt = term && (locale === 'en' && term.promptEn ? term.promptEn : term.promptKo);
   const searchUrl = getGlossaryTermSearchUrl(term, locale);
+  const referenceUrl = getGlossaryTermReferenceUrl(term, locale);
 
   useEffect(() => {
     if (!term || !prompt || !event?.id) return undefined;
@@ -143,9 +145,9 @@ export default function EventTermExplainModal({ event, termId, locale = 'ko', on
               <ExternalLink size={10} className="opacity-60" aria-hidden />
             </a>
           ) : null}
-          {term.referenceUrl ? (
+          {referenceUrl ? (
             <a
-              href={term.referenceUrl}
+              href={referenceUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-800 hover:border-amber-300 hover:bg-amber-50"

@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-30T00:16:17.165Z",
+    "generatedAt": "2026-08-30T01:34:39.248Z",
     "eventCount": 17,
     "source": "scripts/data/world-event-overrides.mjs"
   },
@@ -69,7 +69,8 @@
           "termEn": "Fringe",
           "promptEn": "What is the Edinburgh Festival Fringe for travelers? 3 short sentences.",
           "searchQueryEn": "Edinburgh Festival Fringe",
-          "referenceUrl": "https://en.wikipedia.org/wiki/Edinburgh_Festival_Fringe"
+          "referenceUrl": "https://en.wikipedia.org/wiki/Edinburgh_Festival_Fringe",
+          "referenceUrlKo": "https://ko.wikipedia.org/wiki/에든버러_프린지"
         },
         {
           "id": "royal-mile",
@@ -251,7 +252,8 @@
           "termEn": "State Opera",
           "promptEn": "Why Vienna State Opera matters for opera season visitors in 3 short sentences.",
           "searchQueryEn": "Vienna State Opera tickets",
-          "referenceUrl": "https://en.wikipedia.org/wiki/Vienna_State_Opera"
+          "referenceUrl": "https://en.wikipedia.org/wiki/Vienna_State_Opera",
+          "referenceUrlKo": "https://ko.wikipedia.org/wiki/빈_국립_오페라_극장"
         },
         {
           "id": "stehplatz",
@@ -270,7 +272,8 @@
           "termEn": "Musikverein",
           "promptEn": "Musikverein vs State Opera for classical concerts in 3 short sentences.",
           "searchQueryEn": "Vienna Musikverein concerts",
-          "referenceUrl": "https://en.wikipedia.org/wiki/Musikverein"
+          "referenceUrl": "https://en.wikipedia.org/wiki/Musikverein",
+          "referenceUrlKo": "https://ko.wikipedia.org/wiki/뮤직_페어"
         },
         {
           "id": "innere-stadt",
@@ -637,7 +640,8 @@
           "termEn": "Oktoberfest",
           "promptEn": "Munich Oktoberfest basics and trip tips in 3 short sentences.",
           "searchQueryEn": "Munich Oktoberfest guide",
-          "referenceUrl": "https://en.wikipedia.org/wiki/Oktoberfest"
+          "referenceUrl": "https://en.wikipedia.org/wiki/Oktoberfest",
+          "referenceUrlKo": "https://ko.wikipedia.org/wiki/옥토버페스트"
         },
         {
           "id": "hackerbruecke",
@@ -796,7 +800,8 @@
           "termEn": "Marina Bay Street Circuit",
           "promptEn": "Marina Bay Street Circuit and Singapore GP basics for travelers in 3 short sentences.",
           "searchQueryEn": "Singapore Grand Prix Marina Bay circuit",
-          "referenceUrl": "https://en.wikipedia.org/wiki/Marina_Bay_Street_Circuit"
+          "referenceUrl": "https://en.wikipedia.org/wiki/Marina_Bay_Street_Circuit",
+          "referenceUrlKo": "https://ko.wikipedia.org/wiki/마리나_베이_시가지_서킷"
         },
         {
           "id": "night-race",
@@ -940,7 +945,8 @@
           "termEn": "30x30",
           "promptEn": "What is Dubai Fitness Challenge 30x30 for visitors in 3 short sentences.",
           "searchQueryEn": "Dubai Fitness Challenge 30x30",
-          "referenceUrl": "https://www.dubaifitnesschallenge.com/en/"
+          "referenceUrl": "https://www.dubaifitnesschallenge.com/en/",
+          "referenceUrlKo": "https://www.dubaifitnesschallenge.com/"
         },
         {
           "id": "dubai-run",
@@ -1201,7 +1207,8 @@
           "termEn": "sakura",
           "promptEn": "Why sakura bloom timing matters for Tokyo cherry blossom trips in 3 short sentences.",
           "searchQueryEn": "Tokyo cherry blossom season bloom",
-          "referenceUrl": "https://en.wikipedia.org/wiki/Cherry_blossom"
+          "referenceUrl": "https://en.wikipedia.org/wiki/Cherry_blossom",
+          "referenceUrlKo": "https://ko.wikipedia.org/wiki/벚꽃"
         },
         {
           "id": "hanami",
@@ -1220,7 +1227,8 @@
           "termEn": "Ueno Park",
           "promptEn": "Why Ueno Park is popular for cherry blossoms in 3 short sentences.",
           "searchQueryEn": "Tokyo Ueno Park cherry blossoms",
-          "referenceUrl": "https://en.wikipedia.org/wiki/Ueno_Park"
+          "referenceUrl": "https://en.wikipedia.org/wiki/Ueno_Park",
+          "referenceUrlKo": "https://ko.wikipedia.org/wiki/우에노_공원"
         },
         {
           "id": "chidorigafuchi",
@@ -1346,7 +1354,8 @@
           "termEn": "Songkran",
           "promptEn": "What is Bangkok Songkran for travelers? 3 short sentences.",
           "searchQueryEn": "Bangkok Songkran festival",
-          "referenceUrl": "https://en.wikipedia.org/wiki/Songkran"
+          "referenceUrl": "https://en.wikipedia.org/wiki/Songkran",
+          "referenceUrlKo": "https://ko.wikipedia.org/wiki/송크란"
         },
         {
           "id": "silom",
@@ -1365,7 +1374,8 @@
           "termEn": "Khao San",
           "promptEn": "Khao San vs Silom Songkran for travelers in 3 short sentences.",
           "searchQueryEn": "Bangkok Khao San Songkran",
-          "referenceUrl": "https://en.wikipedia.org/wiki/Khaosan_Road"
+          "referenceUrl": "https://en.wikipedia.org/wiki/Khaosan_Road",
+          "referenceUrlKo": "https://ko.wikipedia.org/wiki/카오산_로드"
         },
         {
           "id": "water-proof",
@@ -1501,7 +1511,8 @@
           "termEn": "Rudolfinum",
           "promptEn": "Why Rudolfinum matters for Prague Spring in 3 short sentences.",
           "searchQueryEn": "Prague Rudolfinum concerts",
-          "referenceUrl": "https://en.wikipedia.org/wiki/Rudolfinum"
+          "referenceUrl": "https://en.wikipedia.org/wiki/Rudolfinum",
+          "referenceUrlKo": "https://ko.wikipedia.org/wiki/루돌피눔"
         },
         {
           "id": "old-town",
@@ -1805,7 +1816,8 @@
           "termEn": "Jemaa el-Fnaa",
           "promptEn": "What is Jemaa el-Fnaa square for Marrakech visitors in 3 short sentences.",
           "searchQueryEn": "Marrakech Jemaa el-Fnaa",
-          "referenceUrl": "https://en.wikipedia.org/wiki/Jemaa_el-Fnaa"
+          "referenceUrl": "https://en.wikipedia.org/wiki/Jemaa_el-Fnaa",
+          "referenceUrlKo": "https://ko.wikipedia.org/wiki/자마엘프나"
         }
       ],
       "highlightContextLinks": [
@@ -1999,7 +2011,8 @@
           "termEn": "Yoiyama",
           "promptEn": "What is Gion Matsuri Yoiyama for travelers? 3 short sentences.",
           "searchQueryEn": "Kyoto Gion Matsuri Yoiyama",
-          "referenceUrl": "https://en.wikipedia.org/wiki/Gion_Matsuri"
+          "referenceUrl": "https://en.wikipedia.org/wiki/Gion_Matsuri",
+          "referenceUrlKo": "https://ko.wikipedia.org/wiki/기온_마쓰리"
         },
         {
           "id": "yamaboko",
@@ -2018,7 +2031,8 @@
           "termEn": "Gion",
           "promptEn": "Why Gion district matters for Gion Matsuri visitors in 3 short sentences.",
           "searchQueryEn": "Kyoto Gion Matsuri Gion stay",
-          "referenceUrl": "https://en.wikipedia.org/wiki/Gion"
+          "referenceUrl": "https://en.wikipedia.org/wiki/Gion",
+          "referenceUrlKo": "https://ko.wikipedia.org/wiki/기온"
         },
         {
           "id": "yasaka-jinja",
@@ -2028,7 +2042,8 @@
           "termEn": "Yasaka Shrine",
           "promptEn": "Yasaka Shrine and Gion Matsuri connection in 3 short sentences.",
           "searchQueryEn": "Yasaka Shrine Gion Matsuri",
-          "referenceUrl": "https://en.wikipedia.org/wiki/Yasaka_Shrine"
+          "referenceUrl": "https://en.wikipedia.org/wiki/Yasaka_Shrine",
+          "referenceUrlKo": "https://ko.wikipedia.org/wiki/야사카_신사"
         }
       ],
       "highlightContextLinks": [

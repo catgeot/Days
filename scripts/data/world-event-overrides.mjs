@@ -77,6 +77,7 @@ export const WORLD_EVENT_OVERRIDES = [
         searchQueryKo: '빈 국립오페라 공연 예매',
         searchQueryEn: 'Vienna State Opera tickets',
         referenceUrl: 'https://en.wikipedia.org/wiki/Vienna_State_Opera',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/빈_국립_오페라_극장',
       },
       {
         id: 'stehplatz',
@@ -98,6 +99,7 @@ export const WORLD_EVENT_OVERRIDES = [
         searchQueryKo: '빈 뮤직페어라인 공연',
         searchQueryEn: 'Vienna Musikverein concerts',
         referenceUrl: 'https://en.wikipedia.org/wiki/Musikverein',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/뮤직_페어',
       },
       {
         id: 'innere-stadt',
@@ -255,6 +257,7 @@ export const WORLD_EVENT_OVERRIDES = [
         searchQueryKo: '뮌헨 옥토버페스트 가이드',
         searchQueryEn: 'Munich Oktoberfest guide',
         referenceUrl: 'https://en.wikipedia.org/wiki/Oktoberfest',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/옥토버페스트',
       },
       {
         id: 'hackerbruecke',
@@ -416,6 +419,7 @@ export const WORLD_EVENT_OVERRIDES = [
         searchQueryKo: '에든버러 프린지 축제',
         searchQueryEn: 'Edinburgh Festival Fringe',
         referenceUrl: 'https://en.wikipedia.org/wiki/Edinburgh_Festival_Fringe',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/에든버러_프린지',
       },
       {
         id: 'royal-mile',
@@ -749,6 +753,7 @@ export const WORLD_EVENT_OVERRIDES = [
         searchQueryKo: '도쿄 벚꽃 시즌 개화',
         searchQueryEn: 'Tokyo cherry blossom season bloom',
         referenceUrl: 'https://en.wikipedia.org/wiki/Cherry_blossom',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/벚꽃',
       },
       {
         id: 'hanami',
@@ -770,6 +775,7 @@ export const WORLD_EVENT_OVERRIDES = [
         searchQueryKo: '도쿄 우에노 공원 벚꽃',
         searchQueryEn: 'Tokyo Ueno Park cherry blossoms',
         referenceUrl: 'https://en.wikipedia.org/wiki/Ueno_Park',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/우에노_공원',
       },
       {
         id: 'chidorigafuchi',
@@ -898,6 +904,7 @@ export const WORLD_EVENT_OVERRIDES = [
         searchQueryKo: '교토 기온마츠리 요이야마',
         searchQueryEn: 'Kyoto Gion Matsuri Yoiyama',
         referenceUrl: 'https://en.wikipedia.org/wiki/Gion_Matsuri',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/기온_마쓰리',
       },
       {
         id: 'yamaboko',
@@ -919,6 +926,7 @@ export const WORLD_EVENT_OVERRIDES = [
         searchQueryKo: '교토 기온마츠리 기온 숙소',
         searchQueryEn: 'Kyoto Gion Matsuri Gion stay',
         referenceUrl: 'https://en.wikipedia.org/wiki/Gion',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/기온',
       },
       {
         id: 'yasaka-jinja',
@@ -930,6 +938,7 @@ export const WORLD_EVENT_OVERRIDES = [
         searchQueryKo: '교토 야사카 신사 기온마츠리',
         searchQueryEn: 'Yasaka Shrine Gion Matsuri',
         referenceUrl: 'https://en.wikipedia.org/wiki/Yasaka_Shrine',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/야사카_신사',
       },
     ],
     highlightContextLinks: [
@@ -1046,6 +1055,7 @@ export const WORLD_EVENT_OVERRIDES = [
         searchQueryKo: '방콕 송크란 축제',
         searchQueryEn: 'Bangkok Songkran festival',
         referenceUrl: 'https://en.wikipedia.org/wiki/Songkran',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/송크란',
       },
       {
         id: 'silom',
@@ -1067,6 +1077,7 @@ export const WORLD_EVENT_OVERRIDES = [
         searchQueryKo: '방콕 카오산 송크란',
         searchQueryEn: 'Bangkok Khao San Songkran',
         referenceUrl: 'https://en.wikipedia.org/wiki/Khaosan_Road',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/카오산_로드',
       },
       {
         id: 'water-proof',
@@ -1576,6 +1587,7 @@ export const WORLD_EVENT_OVERRIDES = [
         searchQueryKo: '프라하 루돌피눔 공연',
         searchQueryEn: 'Prague Rudolfinum concerts',
         referenceUrl: 'https://en.wikipedia.org/wiki/Rudolfinum',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/루돌피눔',
       },
       {
         id: 'old-town',
@@ -1742,6 +1754,7 @@ export const WORLD_EVENT_OVERRIDES = [
         searchQueryKo: '마라케시 자마 엘 프나',
         searchQueryEn: 'Marrakech Jemaa el-Fnaa',
         referenceUrl: 'https://en.wikipedia.org/wiki/Jemaa_el-Fnaa',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/자마엘프나',
       },
     ],
     highlightContextLinks: [
@@ -1900,6 +1913,7 @@ export const WORLD_EVENT_OVERRIDES = [
         searchQueryKo: '싱가포르 그랑프리 마리나 베이 서킷',
         searchQueryEn: 'Singapore Grand Prix Marina Bay circuit',
         referenceUrl: 'https://en.wikipedia.org/wiki/Marina_Bay_Street_Circuit',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/마리나_베이_시가지_서킷',
       },
       {
         id: 'night-race',
@@ -2047,6 +2061,7 @@ export const WORLD_EVENT_OVERRIDES = [
         searchQueryKo: '두바이 피트니스 챌린지 30x30',
         searchQueryEn: 'Dubai Fitness Challenge 30x30',
         referenceUrl: 'https://www.dubaifitnesschallenge.com/en/',
+        referenceUrlKo: 'https://www.dubaifitnesschallenge.com/',
       },
       {
         id: 'dubai-run',

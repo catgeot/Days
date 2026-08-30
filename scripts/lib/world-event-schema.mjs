@@ -58,6 +58,7 @@
  *   searchQueryKo: string,
  *   searchQueryEn?: string,
  *   referenceUrl?: string,
+ *   referenceUrlKo?: string,
  * }} WorldEventGlossaryTerm
  */
 
@@ -356,6 +357,8 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
         term.searchQueryEn != null ? String(term.searchQueryEn).trim() : undefined;
       const referenceUrl =
         term.referenceUrl != null ? String(term.referenceUrl).trim() : undefined;
+      const referenceUrlKo =
+        term.referenceUrlKo != null ? String(term.referenceUrlKo).trim() : undefined;
       if (termEn) normalizedTerm.termEn = termEn;
       if (promptEn) normalizedTerm.promptEn = promptEn;
       if (searchQueryEn) normalizedTerm.searchQueryEn = searchQueryEn;
@@ -364,6 +367,14 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
           throw new Error(`[world-events] ${id}: glossaryTerms[${termIndex}].referenceUrl must be http(s) URL`);
         }
         normalizedTerm.referenceUrl = referenceUrl;
+      }
+      if (referenceUrlKo) {
+        if (!/^https?:\/\//i.test(referenceUrlKo)) {
+          throw new Error(
+            `[world-events] ${id}: glossaryTerms[${termIndex}].referenceUrlKo must be http(s) URL`,
+          );
+        }
+        normalizedTerm.referenceUrlKo = referenceUrlKo;
       }
       return normalizedTerm;
     });

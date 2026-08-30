@@ -74,6 +74,18 @@ export function getGlossaryTermSearchUrl(term, locale = 'ko') {
 }
 
 /**
+ * @param {import('./worldEvents').WorldEventGlossaryTerm | null | undefined} term
+ * @param {string} [locale]
+ */
+export function getGlossaryTermReferenceUrl(term, locale = 'ko') {
+  if (!term) return '';
+  const referenceUrlKo = String(term.referenceUrlKo || '').trim();
+  const referenceUrl = String(term.referenceUrl || '').trim();
+  if (locale === 'en') return referenceUrl || referenceUrlKo;
+  return referenceUrlKo || referenceUrl;
+}
+
+/**
  * @param {{
  *   id: string,
  *   labelKo: string,

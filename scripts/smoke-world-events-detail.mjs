@@ -293,7 +293,7 @@ assert.match(glossaryUtilSrc, /hasWorldEventD5bBodyUx/, 'worldEventGlossary D5-b
 assert.match(glossaryUtilSrc, /getWorldEventHeroImages/, 'worldEventGlossary hero images');
 assert.match(glossaryUtilSrc, /resolveHighlightContextLinkHref/, 'worldEventGlossary context links');
 assert.match(glossaryUtilSrc, /getKlookSearchUrl/, 'worldEventGlossary klook search url');
-assert.match(glossaryUtilSrc, /extractGoogleMapsSearchQuery/, 'worldEventGlossary maps to web search');
+assert.match(glossaryUtilSrc, /getGlossaryTermReferenceUrl/, 'worldEventGlossary reference url locale');
 
 const richTextSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventRichText.jsx'), 'utf8');
 assert.match(richTextSrc, /buildGlossarySegments/, 'EventRichText glossary wrapping');
@@ -308,6 +308,7 @@ assert.match(detailSrc, /heroEyebrow/, 'EventDetailPage season meta strip highli
 const termModalSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventTermExplainModal.jsx'), 'utf8');
 assert.match(termModalSrc, /fetchEventTermExplanation/, 'EventTermExplainModal cached explain');
 assert.match(termModalSrc, /peekEventTermExplanationCache/, 'EventTermExplainModal memory cache warm');
+assert.match(termModalSrc, /getGlossaryTermReferenceUrl/, 'EventTermExplainModal locale reference url');
 assert.match(termModalSrc, /googleSearch/, 'EventTermExplainModal google search link');
 
 const stehplatzTruncated =
@@ -340,6 +341,14 @@ const glossarySearchUrl = googleWebSearchUrl(bali.glossaryTerms[0].searchQueryKo
 assert.match(glossarySearchUrl, /google\.com\/search/, 'glossary modal google web search');
 assert.doesNotMatch(glossarySearchUrl, /google\.com\/maps/, 'glossary modal not maps');
 assert.match(glossarySearchUrl, /udm=14/, 'glossary google search uses web tab param');
+
+const tokyo = getWorldEventById('tokyo-sakura-season-2027');
+const uenoTerm = tokyo.glossaryTerms.find((term) => term.id === 'ueno-park');
+assert.ok(uenoTerm?.referenceUrlKo, 'ueno-park referenceUrlKo');
+const uenoRefKo = uenoTerm.referenceUrlKo || uenoTerm.referenceUrl;
+const uenoRefEn = uenoTerm.referenceUrl || uenoTerm.referenceUrlKo;
+assert.match(uenoRefKo, /ko\.wikipedia\.org/, 'ueno reference ko locale data');
+assert.match(uenoRefEn, /en\.wikipedia\.org/, 'ueno reference en locale data');
 
 const mapsQuery = extractGoogleMapsSearchQuery(
   'https://www.google.com/maps/search/?api=1&query=Royal+Mile+Edinburgh',
