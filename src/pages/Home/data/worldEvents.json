@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-30T08:22:59.507Z",
+    "generatedAt": "2026-08-30T08:38:05.022Z",
     "eventCount": 17,
     "source": "scripts/data/world-event-overrides.mjs"
   },
@@ -1182,14 +1182,14 @@
       "startDate": "2027-01-28",
       "endDate": "2027-02-03",
       "recurrence": "annual",
-      "source": "curated",
+      "source": "official_url",
       "hubId": "hanoi",
       "titleEn": "Tet Holiday Window",
       "recurrenceNote": "음력 설 연휴 (연도별 변동)",
       "venue": {
         "name": "Hoan Kiem · Old Quarter"
       },
-      "sourceUrl": "https://en.wikipedia.org/wiki/Tết",
+      "sourceUrl": "https://www.vietnam.travel/",
       "bookingHints": "올드쿼터·호안끼엠 — 연휴 전후 항공·기차 조기 마감",
       "detailOverview": "베트남 음력 설(뗏) 연휴로, 하노이 올드쿼터·호안끼엠 일대 꽃 시장·제례·불꽃놀이가 이어집니다. 연휴 전후 3~4박으로 올드쿼터 기점을 잡아 설 분위기와 현지 행사를 둘러보는 방문이 일반적입니다.",
       "highlights": [
