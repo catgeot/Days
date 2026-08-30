@@ -340,3 +340,13 @@
 - **수정** Edge `explain-event-term` — thought 파트 제외 · `thinkingBudget:0` · 잘림 검증·재시도 · 클라 `force` 재호출 · tip `bbed5c49`
 - **배포** Edge `explain-event-term` LIVE · force 재생성 144자 완전 문장 확인
 - **Preview** `/qa/world-events` → vienna 스탠딩석 재QA
+
+## 세계행사 일정 #35 — D5-b 배치 B overrides
+
+- **세션** `세계행사 일정 #35, D5-b 배치 B overrides`
+- **브랜치** `cursor/world-events-wave2` · PR [#158](https://github.com/catgeot/Days/pull/158) · tip `a3cfba49`
+- **산출** tokyo·kyoto·bangkok D5-b overrides — glossary 4 · heroImages 3 · highlightContextLinks 2 · mooniChips · actionChips 없음
+- **VERIFY** `generate:world-events` · `smoke:world-events` · `smoke:world-events-detail`(D5_B_BATCH_B assert) · `audit:event-travel-guide` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/tokyo-sakura-season-2027` · kyoto-gion-matsuri-2027 · bangkok-songkran-2027
+- **사람 QA** D5-b 본문(용어 모달·갤러리·인라인 링크) · 바로가기/실행 스트립 없음
+- **다음** Preview OK → **#36** D5-b 배치 C(rio·new-york·iceland·sydney)
