@@ -5,6 +5,7 @@
  * Wave 1 (P2-a): Q3 확정 slug 15건 — 유럽·아시아·아메리카·오세아니아·니치
  * Wave 2 (#33): singapore · dubai — D5-b 템플릿
  * D5-b-3 #34 배치 A: vienna · amsterdam · prague · marrakech
+ * D5-b-3 #35 배치 B: tokyo · kyoto · bangkok
  *
  * @typedef {import('../lib/world-event-schema.mjs').WorldEventOverride} WorldEventOverride
  */
@@ -720,6 +721,116 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 4,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Sakura_Tokyo_2026.jpg/1280px-Sakura_Tokyo_2026.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Sakura_Tokyo_2026.jpg/1280px-Sakura_Tokyo_2026.jpg',
+        captionKo: '도쿄 벚꽃',
+        captionEn: 'Tokyo cherry blossoms',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Cherry_blossom_at_Ueno_park%2C_near_JR_entrance.jpg/1280px-Cherry_blossom_at_Ueno_park%2C_near_JR_entrance.jpg',
+        captionKo: '우에노 공원 벚꽃',
+        captionEn: 'Ueno Park cherry blossoms',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cherry_blossoms_and_boat_at_Chidorigafuchi.jpg/1280px-Cherry_blossoms_and_boat_at_Chidorigafuchi.jpg',
+        captionKo: '치도리가후치 야간 라이트업',
+        captionEn: 'Chidorigafuchi night lights',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'sakura',
+        termKo: '사쿠라',
+        termEn: 'sakura',
+        promptKo:
+          '도쿄 벚꽃 시즌에서 사쿠라(벚꽃) 개화·만개가 여행 일정에 왜 중요한지 3문장 이내로 설명해줘.',
+        promptEn: 'Why sakura bloom timing matters for Tokyo cherry blossom trips in 3 short sentences.',
+        searchQueryKo: '도쿄 벚꽃 시즌 개화',
+        searchQueryEn: 'Tokyo cherry blossom season bloom',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Cherry_blossom',
+      },
+      {
+        id: 'hanami',
+        termKo: '하나미',
+        termEn: 'hanami',
+        promptKo:
+          '도쿄 하나미(벚꽃 피크닉)가 무엇인지, 여행자가 알아야 할 예절·팁을 3문장 이내로 설명해줘.',
+        promptEn: 'What is hanami cherry blossom viewing in Tokyo? 3 short sentences for travelers.',
+        searchQueryKo: '도쿄 하나미 벚꽃 피크닉',
+        searchQueryEn: 'Tokyo hanami cherry blossom picnic',
+      },
+      {
+        id: 'ueno-park',
+        termKo: '우에노 공원',
+        termEn: 'Ueno Park',
+        promptKo:
+          '도쿄 우에노 공원이 벚꽃 시즌 방문에 왜 인기인지 3문장 이내로 설명해줘.',
+        promptEn: 'Why Ueno Park is popular for cherry blossoms in 3 short sentences.',
+        searchQueryKo: '도쿄 우에노 공원 벚꽃',
+        searchQueryEn: 'Tokyo Ueno Park cherry blossoms',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Ueno_Park',
+      },
+      {
+        id: 'chidorigafuchi',
+        termKo: '치도리가후치',
+        termEn: 'Chidorigafuchi',
+        promptKo:
+          '치도리가후치 벚꽃·야간 라이트업 코스의 특징과 혼잡 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Chidorigafuchi cherry blossom walk and night lights in 3 short sentences.',
+        searchQueryKo: '도쿄 치도리가후치 벚꽃',
+        searchQueryEn: 'Tokyo Chidorigafuchi cherry blossoms',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'ueno-hanami',
+            labelKo: '우에노 하나미 검색',
+            labelEn: 'Search Ueno hanami',
+            kind: 'shop',
+            searchQueryKo: '도쿄 우에노 공원 벚꽃 하나미',
+            searchQueryEn: 'Tokyo Ueno Park hanami',
+            searchTarget: 'google',
+          },
+        ],
+      },
+      {
+        highlightIndex: 2,
+        links: [
+          {
+            id: 'bloom-forecast',
+            labelKo: '개화 예보 검색',
+            labelEn: 'Bloom forecast search',
+            kind: 'shop',
+            searchQueryKo: '도쿄 벚꽃 개화 예보 2027',
+            searchQueryEn: 'Tokyo cherry blossom forecast 2027',
+            searchTarget: 'google',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '도쿄 벚꽃 시즌',
+    youtubeSearchQueryEn: 'Tokyo cherry blossom season',
+    mooniChips: [
+      {
+        id: 'bloom-timing',
+        promptKo: '만개 전후 4박 일정은 언제 잡는 게 좋아?',
+        promptEn: 'When to book a 4-night trip around peak bloom?',
+      },
+      {
+        id: 'ueno-vs-shinjuku',
+        promptKo: '우에노랑 신주쿠 숙소 어디가 나아?',
+        promptEn: 'Ueno vs Shinjuku for cherry blossom stay?',
+      },
+      {
+        id: 'night-lights',
+        promptKo: '야간 라이트업 볼 만한 곳 알려줘',
+        promptEn: 'Best spots for cherry blossom night lights?',
+      },
+    ],
     priority: 1,
   },
   {
@@ -759,6 +870,115 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 3,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Kyoto_Gion_Matsuri_20100716_2544.jpg/1280px-Kyoto_Gion_Matsuri_20100716_2544.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Kyoto_Gion_Matsuri_20100716_2544.jpg/1280px-Kyoto_Gion_Matsuri_20100716_2544.jpg',
+        captionKo: '기온마츠리 행렬',
+        captionEn: 'Gion Matsuri procession',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Gion-matsuri_in_Kyoto%3B_July_2010_%2804%29.jpg/1280px-Gion-matsuri_in_Kyoto%3B_July_2010_%2804%29.jpg',
+        captionKo: '야마보코 산마이',
+        captionEn: 'Gion Matsuri yamaboko float',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Nishiromon_Gate%2C_Yasaka_Shrine%2C_Kyoto%2C_20240820_1721_5183.jpg/1280px-Nishiromon_Gate%2C_Yasaka_Shrine%2C_Kyoto%2C_20240820_1721_5183.jpg',
+        captionKo: '야사카 신사',
+        captionEn: 'Yasaka Shrine',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'yoi-yama',
+        termKo: '요이야마',
+        termEn: 'Yoiyama',
+        promptKo:
+          '기온마츠리 요이야마(7/16~17 전야제)가 무엇인지 여행자 관점에서 3문장 이내로 설명해줘.',
+        promptEn: 'What is Gion Matsuri Yoiyama for travelers? 3 short sentences.',
+        searchQueryKo: '교토 기온마츠리 요이야마',
+        searchQueryEn: 'Kyoto Gion Matsuri Yoiyama',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Gion_Matsuri',
+      },
+      {
+        id: 'yamaboko',
+        termKo: '야마보코',
+        termEn: 'yamaboko',
+        promptKo:
+          '기온마츠리 야마보코(산마이·거리 행렬)가 무엇인지 3문장 이내로 설명해줘.',
+        promptEn: 'What are Gion Matsuri yamaboko floats? 3 short sentences.',
+        searchQueryKo: '기온마츠리 야마보코 산마이',
+        searchQueryEn: 'Gion Matsuri yamaboko floats',
+      },
+      {
+        id: 'gion',
+        termKo: '기온',
+        termEn: 'Gion',
+        promptKo:
+          '교토 기온 지역이 기온마츠리 방문에 왜 중심인지 3문장 이내로 설명해줘.',
+        promptEn: 'Why Gion district matters for Gion Matsuri visitors in 3 short sentences.',
+        searchQueryKo: '교토 기온마츠리 기온 숙소',
+        searchQueryEn: 'Kyoto Gion Matsuri Gion stay',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Gion',
+      },
+      {
+        id: 'yasaka-jinja',
+        termKo: '야사카 신사',
+        termEn: 'Yasaka Shrine',
+        promptKo:
+          '야사카 신사가 기온마츠리와 어떤 관계인지 3문장 이내로 설명해줘.',
+        promptEn: 'Yasaka Shrine and Gion Matsuri connection in 3 short sentences.',
+        searchQueryKo: '교토 야사카 신사 기온마츠리',
+        searchQueryEn: 'Yasaka Shrine Gion Matsuri',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Yasaka_Shrine',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'yoiyama-guide',
+            labelKo: '요이야마 일정 검색',
+            labelEn: 'Yoiyama schedule search',
+            kind: 'shop',
+            searchQueryKo: '기온마츠리 요이야마 7월 16 17',
+            searchQueryEn: 'Gion Matsuri Yoiyama July 16 17',
+            searchTarget: 'google',
+          },
+        ],
+      },
+      {
+        highlightIndex: 2,
+        links: [
+          {
+            id: 'yasaka-official',
+            labelKo: '야사카 신사 공식',
+            labelEn: 'Yasaka Shrine official',
+            kind: 'tour',
+            href: 'https://www.yasaka-jinja.or.jp/en/',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '교토 기온마츠리',
+    youtubeSearchQueryEn: 'Kyoto Gion Matsuri',
+    mooniChips: [
+      {
+        id: 'yoiyama-nights',
+        promptKo: '요이야마 7/16·17 중 어느 날이 더 좋아?',
+        promptEn: 'Which Yoiyama night is better, July 16 or 17?',
+      },
+      {
+        id: 'gion-stay',
+        promptKo: '기온 숙소 잡을 때 주의할 점 알려줘',
+        promptEn: 'Tips for booking a Gion stay during the festival?',
+      },
+      {
+        id: 'traffic-tips',
+        promptKo: '행렬 날 교통 통제 어떻게 대비해?',
+        promptEn: 'How to deal with parade-day traffic controls?',
+      },
+    ],
     priority: 1,
   },
   {
@@ -798,6 +1018,116 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 3,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/14_April_2025_-_Songkran_on_Si_Lom_Road%2C_Bangkok_-_img_02.jpg/1280px-14_April_2025_-_Songkran_on_Si_Lom_Road%2C_Bangkok_-_img_02.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/14_April_2025_-_Songkran_on_Si_Lom_Road%2C_Bangkok_-_img_02.jpg/1280px-14_April_2025_-_Songkran_on_Si_Lom_Road%2C_Bangkok_-_img_02.jpg',
+        captionKo: '실롬 송크란',
+        captionEn: 'Songkran on Silom Road',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Le_Songkran%2CSilom_road_%2C_Bang_Rak%2C_Bangkok%2C_Th%C3%A1i_Lan_-_panoramio.jpg/1280px-Le_Songkran%2CSilom_road_%2C_Bang_Rak%2C_Bangkok%2C_Th%C3%A1i_Lan_-_panoramio.jpg',
+        captionKo: '실롬 물 축제',
+        captionEn: 'Silom water festival',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/2016_Bangkok%2C_Dystrykt_Phra_Nakhon%2C_Ulica_Khaosan_%2808%29.jpg/1280px-2016_Bangkok%2C_Dystrykt_Phra_Nakhon%2C_Ulica_Khaosan_%2808%29.jpg',
+        captionKo: '카오산 로드',
+        captionEn: 'Khao San Road',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'songkran',
+        termKo: '송크란',
+        termEn: 'Songkran',
+        promptKo:
+          '방콕 송크란(태국 설·물 축제)이 무엇인지 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.',
+        promptEn: 'What is Bangkok Songkran for travelers? 3 short sentences.',
+        searchQueryKo: '방콕 송크란 축제',
+        searchQueryEn: 'Bangkok Songkran festival',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Songkran',
+      },
+      {
+        id: 'silom',
+        termKo: '실롬',
+        termEn: 'Silom',
+        promptKo:
+          '방콕 실롬 일대 송크란 축제 구역의 특징과 준비물을 3문장 이내로 설명해줘.',
+        promptEn: 'Silom Songkran zone highlights and prep tips in 3 short sentences.',
+        searchQueryKo: '방콕 실롬 송크란',
+        searchQueryEn: 'Bangkok Silom Songkran',
+      },
+      {
+        id: 'khao-san',
+        termKo: '카오산',
+        termEn: 'Khao San',
+        promptKo:
+          '카오산 로드 송크란이 실롬과 어떻게 다른지 3문장 이내로 설명해줘.',
+        promptEn: 'Khao San vs Silom Songkran for travelers in 3 short sentences.',
+        searchQueryKo: '방콕 카오산 송크란',
+        searchQueryEn: 'Bangkok Khao San Songkran',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Khaosan_Road',
+      },
+      {
+        id: 'water-proof',
+        termKo: '방수 준비',
+        termEn: 'water-proof gear',
+        promptKo:
+          '송크란 방문 시 방수 가방·휴대폰 보호 등 준비물을 3문장 이내로 설명해줘.',
+        promptEn: 'Essential waterproof gear for Songkran in 3 short sentences.',
+        searchQueryKo: '송크란 방수 가방 휴대폰',
+        searchQueryEn: 'Songkran waterproof bag phone',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'silom-songkran',
+            labelKo: '실롬 송크란 검색',
+            labelEn: 'Search Silom Songkran',
+            kind: 'shop',
+            searchQueryKo: '방콕 실롬 송크란',
+            searchQueryEn: 'Bangkok Silom Songkran',
+            searchTarget: 'google',
+          },
+        ],
+      },
+      {
+        highlightIndex: 1,
+        links: [
+          {
+            id: 'waterproof-bag',
+            labelKo: '방수 가방 검색',
+            labelEn: 'Waterproof bag search',
+            kind: 'shop',
+            searchQueryKo: '송크란 방수 가방',
+            searchQueryEn: 'Songkran waterproof bag',
+            searchTarget: 'klook',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '방콕 송크란',
+    youtubeSearchQueryEn: 'Bangkok Songkran',
+    mooniChips: [
+      {
+        id: 'silom-vs-khaosan',
+        promptKo: '실롬과 카오산 중 어디가 나아?',
+        promptEn: 'Silom or Khao San for Songkran?',
+      },
+      {
+        id: 'waterproof-tips',
+        promptKo: '휴대폰·지갑 방수 어떻게 해?',
+        promptEn: 'How to waterproof phone and wallet?',
+      },
+      {
+        id: 'three-day-plan',
+        promptKo: '4/13~15 3박 일정 짜줘',
+        promptEn: 'Plan a 3-night trip for April 13-15?',
+      },
+    ],
     priority: 1,
   },
   {
