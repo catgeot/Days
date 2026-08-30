@@ -171,7 +171,7 @@ npm run build
 | 무니 FAB | 우하단 Mooni 버튼 · 행사 맥락 대화 진입 |
 | 허브 회귀 | `/world-events` 카드 「행사 상세」→ 동일 URL · 「여행지 카드」→ `/place/:slug?fromEvent&checkIn&checkOut` |
 
-**Tier3 AI fixture (#1~#4만)** — 「행사 맞춤 여행 가이드」패널 · DB 없으면 **번들 fixture** 폴백(PROD·Preview 공통) · LIVE Edge 배포 후 DB 우선
+**Tier3 AI fixture (#1~#4만 · 파일럿 3건)** — 「행사 맞춤 여행 가이드」패널 · DB 없으면 **번들 fixture** 폴백(PROD·Preview) · `#41 hotfix` Preview 전용 게이트 제거
 
 > **PROD QA 힌트 (#22, 수정 보류)** — Tier3 요약·섹션이 Tier0~2(행사 소개·하이라이트·예약 팁)와 **겹쳐 보일 수 있음**. Wave1 fixture는 Tier0 기반 샘플이라 중복 가능. 차별화(액션형 조언·일정 시나리오·Tier0에 없는 fact만)는 **Tier3 iterate / Wave2+** 에서 검토 — 지금 코드·카피 수정 **하지 않음**.
 
