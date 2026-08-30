@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-30T03:52:16.488Z",
+    "generatedAt": "2026-08-30T08:22:59.507Z",
     "eventCount": 17,
     "source": "scripts/data/world-event-overrides.mjs"
   },
@@ -1189,7 +1189,7 @@
       "venue": {
         "name": "Hoan Kiem · Old Quarter"
       },
-      "sourceUrl": "https://www.vietnam.travel/things-to-do/tet-festival-vietnam",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Tết",
       "bookingHints": "올드쿼터·호안끼엠 — 연휴 전후 항공·기차 조기 마감",
       "detailOverview": "베트남 음력 설(뗏) 연휴로, 하노이 올드쿼터·호안끼엠 일대 꽃 시장·제례·불꽃놀이가 이어집니다. 연휴 전후 3~4박으로 올드쿼터 기점을 잡아 설 분위기와 현지 행사를 둘러보는 방문이 일반적입니다.",
       "highlights": [
@@ -1293,9 +1293,11 @@
             {
               "id": "tet-travel-guide",
               "labelKo": "뗏 연휴 여행 안내",
-              "kind": "tour",
+              "kind": "shop",
               "labelEn": "Tet holiday travel guide",
-              "href": "https://www.vietnam.travel/things-to-do/tet-festival-vietnam"
+              "searchQueryKo": "베트남 뗏 설 연휴 하노이 여행 안내",
+              "searchQueryEn": "Vietnam Tet holiday Hanoi travel guide",
+              "searchTarget": "google"
             }
           ]
         }

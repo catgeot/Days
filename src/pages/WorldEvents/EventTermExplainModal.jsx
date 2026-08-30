@@ -90,7 +90,7 @@ export default function EventTermExplainModal({ event, termId, locale = 'ko', on
   if (!term || !displayTerm) return null;
 
   const modal = (
-    <div className="fixed inset-0 z-[9999] flex items-end justify-center p-0 sm:items-center sm:p-4">
+    <div className="fixed inset-0 z-[9999] flex items-end justify-center px-0 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:items-center sm:p-4">
       <button
         type="button"
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
@@ -123,17 +123,17 @@ export default function EventTermExplainModal({ event, termId, locale = 'ko', on
           </button>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
           {loading ? (
-            <p className="text-sm text-stone-500">{t('worldEventDetail.glossary.loading')}</p>
+            <p className="text-[15px] leading-7 text-stone-500">{t('worldEventDetail.glossary.loading')}</p>
           ) : error ? (
-            <p className="text-sm text-stone-600">{t('worldEventDetail.glossary.error')}</p>
+            <p className="text-[15px] leading-7 text-stone-600">{t('worldEventDetail.glossary.error')}</p>
           ) : (
-            <p className="whitespace-pre-wrap text-sm leading-relaxed text-stone-700">{answer}</p>
+            <p className="whitespace-pre-wrap text-[15px] leading-7 text-stone-800">{answer}</p>
           )}
         </div>
 
-        <div className="flex flex-wrap gap-2 border-t border-stone-100 px-4 py-3">
+        <div className="flex flex-wrap gap-2 border-t border-stone-100 px-4 pt-3 pb-[max(1.25rem,calc(env(safe-area-inset-bottom,0px)+0.5rem))]">
           {searchUrl ? (
             <a
               href={searchUrl}

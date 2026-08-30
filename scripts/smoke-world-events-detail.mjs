@@ -358,6 +358,7 @@ const termModalSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventTermExp
 assert.match(termModalSrc, /fetchEventTermExplanation/, 'EventTermExplainModal cached explain');
 assert.match(termModalSrc, /peekEventTermExplanationCache/, 'EventTermExplainModal memory cache warm');
 assert.match(termModalSrc, /getGlossaryTermReferenceUrl/, 'EventTermExplainModal locale reference url');
+assert.match(termModalSrc, /safe-area-inset-bottom/, 'EventTermExplainModal safe area bottom');
 assert.match(termModalSrc, /googleSearch/, 'EventTermExplainModal google search link');
 
 const stehplatzTruncated =
