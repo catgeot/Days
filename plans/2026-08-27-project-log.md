@@ -407,3 +407,12 @@
 - **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
 - **Preview** `/qa/world-events?lang=en` → edinburgh·munich·bali — `detailOverviewEn`·`highlightsEn`·`recurrenceNoteEn`·stayArea En · HTTP 200
 - **게이트** i18n-1 Preview QA **PASS** → **#39** i18n-2(En 허브·모달 전면 분기)
+
+## 세계행사 일정 #39 — i18n-2 En 허브·모달 분기
+
+- **세션** `세계행사 일정 #39, i18n-2 En 허브·모달 분기`
+- **브랜치** `cursor/world-events-wave2` · PR [#158](https://github.com/catgeot/Days/pull/158) · tip `7ea0d0b1`
+- **산출** EN locale KO 본문·bookingHints·stayAreas(nameEn 없음) 폴백 차단 · glossary 모달 EN 필드 필수 · `getWorldEventBookingHints` · `/world-events` I18N_HUB·sitemap·crawler meta · `/en/world-events` 리다이렉트
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events?lang=en` → 허브·edinburgh·singapore(비파일럿 staticFallback)·bali glossary
+- **다음** **#40** i18n-2 Preview QA
