@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-30T01:43:36.003Z",
+    "generatedAt": "2026-08-30T03:34:08.502Z",
     "eventCount": 17,
     "source": "scripts/data/world-event-overrides.mjs"
   },
@@ -1627,7 +1627,7 @@
               "labelEn": "Waterproof bag search",
               "searchQueryKo": "송크란 방수 가방",
               "searchQueryEn": "Songkran waterproof bag",
-              "searchTarget": "klook"
+              "searchTarget": "google"
             }
           ]
         }
@@ -2209,6 +2209,27 @@
               "searchQueryKo": "시드니 달링 하버 비비드",
               "searchQueryEn": "Darling Harbour Vivid Sydney",
               "searchTarget": "google"
+            }
+          ]
+        },
+        {
+          "highlightIndex": 2,
+          "links": [
+            {
+              "id": "sydney-ferry-12go",
+              "labelKo": "페리 12Go",
+              "kind": "tour",
+              "labelEn": "Ferry on 12Go",
+              "href": "https://12go.asia/ko/travel/sydney/manly"
+            },
+            {
+              "id": "sydney-tram-pass",
+              "labelKo": "트램 교통 패스",
+              "kind": "shop",
+              "labelEn": "Tram transport pass",
+              "searchQueryKo": "시드니 교통 패스",
+              "searchQueryEn": "Sydney transport pass",
+              "searchTarget": "klook"
             }
           ]
         }

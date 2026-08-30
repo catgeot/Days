@@ -251,6 +251,20 @@ assert.ok(Array.isArray(edinburgh.actionChips) && edinburgh.actionChips.length >
 assert.ok(edinburgh.actionChips.some((chip) => /edfringe\.com/.test(chip.href)), 'edinburgh official chip');
 assert.ok(edinburgh.actionChips.some((chip) => /Royal\+Mile|Royal%20Mile/i.test(chip.href)), 'edinburgh Royal Mile chip');
 
+const bangkok = getWorldEventById('bangkok-songkran-2027');
+const bangkokWaterproof = bangkok.highlightContextLinks
+  .find((group) => group.highlightIndex === 1)
+  ?.links.find((link) => link.id === 'waterproof-bag');
+assert.ok(bangkokWaterproof?.searchTarget === 'google', 'bangkok waterproof bag google search target');
+
+const sydney = getWorldEventById('sydney-vivid-2027');
+const sydneyTransport = sydney.highlightContextLinks.find((group) => group.highlightIndex === 2);
+const sydneyFerry = sydneyTransport?.links.find((link) => link.id === 'sydney-ferry-12go');
+const sydneyTram = sydneyTransport?.links.find((link) => link.id === 'sydney-tram-pass');
+assert.ok(sydneyFerry?.href?.includes('12go.asia'), 'sydney ferry 12go href');
+assert.ok(sydneyTram?.searchTarget === 'klook', 'sydney tram klook search target');
+assert.match(sydneyTram?.searchQueryKo || '', /교통 패스/, 'sydney tram transit pass query ko');
+
 const bali = getWorldEventById('bali-galungan-season-2026');
 assert.ok(bali.heroImage, 'bali heroImage');
 assert.ok(Array.isArray(bali.youtubeVideos) && bali.youtubeVideos.length >= 2, 'bali youtubeVideos');
@@ -312,6 +326,7 @@ assert.match(glossaryUtilSrc, /hasWorldEventD5bBodyUx/, 'worldEventGlossary D5-b
 assert.match(glossaryUtilSrc, /getWorldEventHeroImages/, 'worldEventGlossary hero images');
 assert.match(glossaryUtilSrc, /resolveHighlightContextLinkHref/, 'worldEventGlossary context links');
 assert.match(glossaryUtilSrc, /getKlookSearchUrl/, 'worldEventGlossary klook search url');
+assert.match(glossaryUtilSrc, /get12GoAffiliateUrl/, 'worldEventGlossary 12go affiliate url');
 assert.match(glossaryUtilSrc, /getGlossaryTermReferenceUrl/, 'worldEventGlossary reference url locale');
 
 const richTextSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventRichText.jsx'), 'utf8');

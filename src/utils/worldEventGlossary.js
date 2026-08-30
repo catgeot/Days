@@ -1,6 +1,9 @@
-import { buildGygActivitiesSearchQuery } from '../components/PlaceCard/tabs/planner/locationRules.js';
+import {
+  buildGygActivitiesSearchQuery,
+} from '../components/PlaceCard/tabs/planner/locationRules.js';
 import {
   buildGygSearchUrl,
+  get12GoAffiliateUrl,
   getKlookAffiliateUrl,
   getKlookRentalUrlByLocation,
   getKlookSearchUrl,
@@ -118,6 +121,9 @@ export function resolveHighlightContextLinkHref(link, location, locale = 'ko') {
 
   const explicitHref = String(link.href || '').trim();
   if (explicitHref) {
+    if (/12go\.asia/i.test(explicitHref)) {
+      return get12GoAffiliateUrl(explicitHref);
+    }
     if (link.kind === 'shop' && /klook\.com/i.test(explicitHref)) {
       return getKlookAffiliateUrl(explicitHref);
     }
@@ -160,6 +166,10 @@ export function getResolvedHighlightContextLink(link, location, locale = 'ko') {
     label: locale === 'en' && link.labelEn ? link.labelEn : link.labelKo,
     href,
     kind: link.kind,
-    sponsored: link.kind === 'rental' || link.kind === 'tour' || /klook\.com/i.test(href),
+    sponsored:
+      link.kind === 'rental' ||
+      link.kind === 'tour' ||
+      /klook\.com/i.test(href) ||
+      /12go\.asia/i.test(href),
   };
 }
