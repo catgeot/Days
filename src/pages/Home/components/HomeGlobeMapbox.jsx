@@ -42,13 +42,18 @@ import {
   markersToGeoJSON,
   setupGateoMarkerLayers,
   updateGateoMarkerSource,
+  scheduleUpdateGateoMarkerSource,
+  flushPendingGateoMarkerSource,
   findGateoMarkerAtPoint,
   isGateoLayer,
   gateoMarkerLayersReady,
   areGateoMarkerLayersVisible,
   setGateoMarkerLayerVisibility,
   setGateoMarkerLabelVisibility,
-  syncGateoMarkerLayerStyle
+  syncGateoMarkerLayerStyle,
+  markGlobeCameraBusy,
+  clearGlobeCameraBusy,
+  isGlobeCameraBusy,
 } from '../lib/globeMarkerLayers';
 import { GLOBE_MODE, canEndTour, canSkipTour, isTourMode } from '../lib/globeMode';
 import { createGlobeTourEngine } from '../lib/globeTourEngine';
@@ -424,6 +429,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const hasRaisedFatalRef = useRef(false);
   const suppressClickUntilRef = useRef(0);
   const markerClickGuardUntilRef = useRef(0);
+  /** flyTo/easeTo 중 basemap symbol continuePlacement race 방지 */
+  const cameraAnimatingRef = useRef(false);
   const allMarkersLookupRef = useRef([]);
   const placeLabelLayerIdsRef = useRef([]);
   const poiLabelLayerIdsRef = useRef([]);
@@ -618,6 +625,12 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const applyKoreanSatelliteLabels = useCallback(() => {
     const map = mapRef.current?.getMap();
     if (!map || globeTheme === 'bright' || !map.isStyleLoaded?.()) return;
+    if (
+      cameraAnimatingRef.current || isGlobeCameraBusy(map)
+      || (typeof map.isMoving === 'function' && map.isMoving())
+    ) {
+      return;
+    }
 
     [
       ...placeLabelLayerIdsRef.current,
@@ -642,6 +655,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const applyPlaceLabelVisibility = useCallback(() => {
     const map = mapRef.current?.getMap();
     if (!map) return;
+    if (cameraAnimatingRef.current || isGlobeCameraBusy(map) || (typeof map.isMoving === 'function' && map.isMoving())) {
+      return;
+    }
 
     if (map.isStyleLoaded?.()) {
       refreshPlaceLabelLayers();
@@ -674,6 +690,14 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   }, []);
 
   const resetAndApplyPlaceLabelVisibility = useCallback(() => {
+    const map = mapRef.current?.getMap();
+    if (
+      map
+      && (cameraAnimatingRef.current || isGlobeCameraBusy(map)
+        || (typeof map.isMoving === 'function' && map.isMoving()))
+    ) {
+      return;
+    }
     lastPlaceLabelVisibleRef.current = null;
     applyPlaceLabelVisibility();
   }, [applyPlaceLabelVisibility]);
@@ -1043,6 +1067,12 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const syncGateoMarkerLayers = useCallback(() => {
     const map = mapRef.current?.getMap();
     if (!map || (pauseRender && !flightCinemaActiveRef.current)) return;
+    if (
+      cameraAnimatingRef.current || isGlobeCameraBusy(map)
+      || (typeof map.isMoving === 'function' && map.isMoving())
+    ) {
+      return;
+    }
     if (!gateoMarkerLayersReady(map)) {
       setupGateoMarkerLayers(map);
     } else {
@@ -1074,7 +1104,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       if (isFlightCinemaGlobeReady(map)) {
         flightCinemaLayersLatchedRef.current = true;
       }
-      updateGateoMarkerSource(map, markerGeoJSON);
+      scheduleUpdateGateoMarkerSource(map, markerGeoJSON);
     }
     restoreReachBoundaryLayersIfNeeded();
     syncClusterOverlayLayers();
@@ -1082,7 +1112,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
   useEffect(() => {
     if (pauseRender || flightCinemaActiveRef.current) return;
-    updateGateoMarkerSource(mapRef.current?.getMap(), markerGeoJSON);
+    scheduleUpdateGateoMarkerSource(mapRef.current?.getMap(), markerGeoJSON);
   }, [markerGeoJSON, pauseRender]);
 
   useEffect(() => {
@@ -1110,6 +1140,12 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (pauseRender) return;
     const map = mapRef.current?.getMap();
     if (!map) return;
+    if (
+      cameraAnimatingRef.current || isGlobeCameraBusy(map)
+      || (typeof map.isMoving === 'function' && map.isMoving())
+    ) {
+      return;
+    }
 
     if (map.isStyleLoaded?.()) {
       syncGateoMarkerLayers();
@@ -1205,6 +1241,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }
 
     try {
+      markGlobeCameraBusy(map);
+      cameraAnimatingRef.current = true;
+      setGateoMarkerLayerVisibility(map, false);
       map.flyTo({
         center: [normalizedLng, lat],
         zoom: targetZoom,
@@ -1212,7 +1251,19 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         duration: flyDuration,
         essential: true
       });
+      map.once('moveend', () => {
+        cameraAnimatingRef.current = false;
+        map.once('idle', () => {
+          flushPendingGateoMarkerSource(map);
+          setGateoMarkerLayerVisibility(map, true);
+          clearGlobeCameraBusy(map);
+          applyPlaceLabelVisibility();
+        });
+      });
     } catch {
+      clearGlobeCameraBusy(map);
+      cameraAnimatingRef.current = false;
+      setGateoMarkerLayerVisibility(map, true);
       return false;
     }
 
@@ -1970,6 +2021,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         flightCinemaLayersLatchedRef.current = true;
       }
     },
+    markCameraBusy: () => {
+      markGlobeCameraBusy(mapRef.current?.getMap());
+    },
     flyToAndPin,
     flyToRegion,
     clearRegionFocus,
@@ -2443,6 +2497,12 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         onStyleData={() => {
           const map = mapRef.current?.getMap();
           if (!map) return;
+          if (
+            cameraAnimatingRef.current || isGlobeCameraBusy(map)
+            || (typeof map.isMoving === 'function' && map.isMoving())
+          ) {
+            return;
+          }
 
           if (!map.isStyleLoaded?.()) {
             flightCinemaLayersLatchedRef.current = false;

@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-08-24T10:53:54.064Z",
+    "generatedAt": "2026-08-29T08:31:16.938Z",
     "spotCount": 273,
     "placeIdCount": 647,
     "stats": {
@@ -899,20 +899,25 @@
     },
     "bagan": {
       "primaryIatas": [
-        "NYU"
+        "NYU",
+        "MDL",
+        "RGN"
       ],
       "preferredLinkIata": "NYU",
-      "kind": "single",
+      "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "bannerNote": "국제선은 양곤(RGN) 또는 만달레이(MDL) 경유 후 바간행 국내선이 NYU(냥우)에 도착하는 일정이 많습니다. 렌터카·픽업·항공 제휴는 최종 도착 NYU 기준입니다.",
-      "bannerNoteEn": "International arrivals often go via Yangon (RGN) or Mandalay (MDL), then a domestic flight to Bagan landing at NYU (Nyaung U). Car rental, pickup, and flight affiliates are based on final arrival NYU.",
-      "rationale": "바간 관문 냥우(NYU) 공항",
-      "graphFlightRouteHubIatas": [
-        "KMG",
-        "MDL"
+      "bannerNote": "바간 최종 도착은 냥우(NYU) 공항입니다. NYU는 국제선 검색이 어려우므로 Trip 항공 검색은 만달레이(MDL) 또는 양곤(RGN) 국제선 관문을 사용하세요. 입국 후 바간행 국내선(약 30분)으로 NYU에 도착하는 일정이 일반적입니다. 렌터카·픽업은 최종 도착 NYU 기준입니다.",
+      "bannerNoteEn": "Bagan's final arrival airport is Nyaung U (NYU). NYU is hard to search on international flight sites — use Mandalay (MDL) or Yangon (RGN) as the Trip flight-search gateway, then a domestic leg (~30 minutes) to NYU. Car rental and pickup are based on final arrival NYU.",
+      "rationale": "바간 최종 NYU(냥우) · 국제선 MDL·RGN 관문 후 국내선",
+      "searchHintIatas": [
+        "MDL",
+        "RGN"
       ],
-      "graphFlightRouteSource": "graph-2hop"
+      "tripFlightArrivalIata": "MDL",
+      "flightRouteHubIatas": [
+        "MDL"
+      ]
     },
     "fiji": {
       "primaryIatas": [

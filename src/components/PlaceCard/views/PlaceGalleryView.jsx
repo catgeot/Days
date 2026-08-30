@@ -186,6 +186,7 @@ const PlaceGalleryView = React.memo(({
   handleRefresh,
   getRefreshCooldownRemaining,
   refreshCooldownSec = 30,
+  galleryAtMax = false,
   handleRemoveImage,
   handleDropBrokenImage,
   mobileSecondaryNav = null
@@ -247,7 +248,7 @@ const PlaceGalleryView = React.memo(({
       paintedCount < paintTarget,
   );
   const showLoadingChrome = Boolean(showInitialSkeleton || isPaintPending);
-  const showRefreshButton = Boolean(hasImages && handleRefresh && !showInitialSkeleton);
+  const showRefreshButton = Boolean(hasImages && handleRefresh && !showInitialSkeleton && !galleryAtMax);
 
   useEffect(() => {
     setPaintedCount(0);
