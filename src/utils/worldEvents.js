@@ -13,6 +13,7 @@ for (const spot of travelSpotsList ?? []) {
     name: spot.name || '',
     name_en: spot.name_en || '',
     country: spot.country || '',
+    country_en: spot.country_en || '',
   });
 }
 
@@ -98,6 +99,41 @@ export function getWorldEventHighlights(event, locale = 'ko') {
 }
 
 /**
+ * @param {WorldEvent} event
+ * @param {string} [locale]
+ */
+export function getWorldEventRecurrenceNote(event, locale = 'ko') {
+  if (!event) return '';
+  if (locale === 'en' && event.recurrenceNoteEn) {
+    return String(event.recurrenceNoteEn).trim();
+  }
+  return event.recurrenceNote ? String(event.recurrenceNote).trim() : '';
+}
+
+/**
+ * @param {WorldEvent} event
+ * @param {string} [locale]
+ */
+export function getWorldEventStayAreas(event, locale = 'ko') {
+  if (!Array.isArray(event?.stayAreas)) return [];
+  return event.stayAreas.map((area) => {
+    const name =
+      locale === 'en' && area.nameEn ? String(area.nameEn).trim() : String(area.name || '').trim();
+    const note =
+      locale === 'en' && area.noteEn
+        ? String(area.noteEn).trim()
+        : area.note != null
+          ? String(area.note).trim()
+          : undefined;
+    return {
+      ...area,
+      name,
+      ...(note ? { note } : {}),
+    };
+  });
+}
+
+/**
  * @param {string} ymd
  * @param {string} [locale]
  */
@@ -159,9 +195,11 @@ export function getWorldEventPlaceMeta(slug, locale = 'ko') {
   if (!spot) {
     return { label: key, country: '' };
   }
+  const country =
+    locale === 'en' && spot.country_en ? spot.country_en : spot.country || '';
   return {
     label: getWorldEventPlaceLabel(key, locale),
-    country: spot.country || '',
+    country,
   };
 }
 
@@ -180,6 +218,7 @@ export function getWorldEventLocation(slug) {
     name: spot.name || key,
     name_en: spot.name_en || spot.name || key,
     country: spot.country || '',
+    country_en: spot.country_en || spot.country || '',
   };
 }
 

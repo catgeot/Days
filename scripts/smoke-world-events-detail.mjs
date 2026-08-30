@@ -9,7 +9,8 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildWorldEventDetailPath } from '../src/utils/worldEventDetailPath.js';
-import { getAllWorldEvents, getWorldEventById, getWorldEventDetailOverview, getWorldEventHighlights, getWorldEventLocation } from '../src/utils/worldEvents.js';
+import { getAllWorldEvents, getWorldEventById, getWorldEventDetailOverview, getWorldEventHighlights, getWorldEventLocation, getWorldEventRecurrenceNote, getWorldEventStayAreas } from '../src/utils/worldEvents.js';
+import { localizeEventTravelGuide } from '../src/utils/eventTravelGuideLocale.js';
 import { tripWindowPresetsFromEvent } from '../src/utils/worldEventTripPresets.js';
 import { tripWindowNights } from '../src/shared/tripWindow.js';
 import {
@@ -215,6 +216,7 @@ assert.equal(resolvePlannerFlightArrivalIata(dubaiLoc), 'DXB', 'dubai arrival IA
 const edinburghPresets = tripWindowPresetsFromEvent(getWorldEventById('edinburgh-fringe-2026'));
 
 const stayStripSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventStayStrip.jsx'), 'utf8');
+assert.match(stayStripSrc, /getWorldEventStayAreas/, 'EventStayStrip locale stayAreas');
 assert.match(
   stayStripSrc,
   /departDate: checkIn/,
@@ -237,11 +239,17 @@ const appSrc = readFileSync(join(root, 'src/App.jsx'), 'utf8');
 assert.match(appSrc, /\/world-events\/:eventId/, 'App route for event detail');
 
 const hubSrc = readFileSync(join(root, 'src/pages/WorldEvents/index.jsx'), 'utf8');
+assert.match(hubSrc, /getWorldEventRecurrenceNote/, 'WorldEvents hub locale recurrenceNote');
 assert.match(hubSrc, /eventDetailHref/, 'WorldEvents hub uses eventDetailHref');
 
 const detailSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventDetailPage.jsx'), 'utf8');
 assert.match(detailSrc, /EventDetailStaticPanel/, 'EventDetailPage renders static panel');
 assert.match(detailSrc, /shouldShowEventTravelGuidePanel/, 'EventDetailPage suppresses AI panel on PROD');
+const travelGuidePanelSrc = readFileSync(
+  join(root, 'src/pages/WorldEvents/EventTravelGuidePanel.jsx'),
+  'utf8',
+);
+assert.match(travelGuidePanelSrc, /localizeEventTravelGuide/, 'EventTravelGuidePanel locale guide');
 assert.match(detailSrc, /EventStayStrip/, 'EventDetailPage renders in-page stay strip');
 assert.match(detailSrc, /EventMooniFab/, 'EventDetailPage renders Mooni FAB');
 assert.match(detailSrc, /EventActionChips/, 'EventDetailPage renders action chips');
@@ -380,11 +388,38 @@ for (const eventId of PILOT_I18N_EVENT_IDS) {
     getWorldEventDetailOverview(event, 'ko') === event.detailOverview,
     `${eventId} locale ko overview fallback`,
   );
+  assert.ok(
+    getWorldEventRecurrenceNote(event, 'en') === event.recurrenceNoteEn,
+    `${eventId} locale en recurrenceNote`,
+  );
+  const stayAreasEn = getWorldEventStayAreas(event, 'en');
+  if (Array.isArray(event.stayAreas) && event.stayAreas.length > 0) {
+    assert.equal(stayAreasEn.length, event.stayAreas.length, `${eventId} stayAreas en count`);
+    assert.ok(
+      stayAreasEn.every((area, index) => area.name === event.stayAreas[index].nameEn),
+      `${eventId} stayAreas en names`,
+    );
+  }
 }
+
+const edinburghGuideFixture = JSON.parse(
+  readFileSync(join(root, 'scripts/fixtures/event-travel-guide/edinburgh-fringe-2026.json'), 'utf8'),
+);
+const edinburghGuideEn = localizeEventTravelGuide(edinburghGuideFixture, 'en');
+assert.ok(
+  edinburghGuideEn.trip_presets[0].label.includes('Opening week'),
+  'event travel guide locale en trip preset label',
+);
+assert.ok(
+  edinburghGuideEn.sections[0].title.includes('Choosing shows'),
+  'event travel guide locale en section title',
+);
 
 const staticPanelSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventDetailStaticPanel.jsx'), 'utf8');
 assert.match(staticPanelSrc, /getWorldEventDetailOverview/, 'EventDetailStaticPanel locale overview');
 assert.match(staticPanelSrc, /getWorldEventHighlights/, 'EventDetailStaticPanel locale highlights');
+assert.match(staticPanelSrc, /getWorldEventRecurrenceNote/, 'EventDetailStaticPanel locale recurrenceNote');
+assert.match(staticPanelSrc, /getWorldEventStayAreas/, 'EventDetailStaticPanel locale stayAreas');
 assert.match(staticPanelSrc, /linkedTermIdsRef/, 'EventDetailStaticPanel shared glossary refs');
 assert.match(staticPanelSrc, /hideHeaderSummary/, 'EventDetailStaticPanel hideHeaderSummary gate');
 assert.match(detailSrc, /hideHeaderSummary/, 'EventDetailPage D5-b summary dedupe');

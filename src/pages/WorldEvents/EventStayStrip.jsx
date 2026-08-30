@@ -27,7 +27,7 @@ import {
 import { MRT_HOME_MYLINK_ID } from '../Home/data/mrtPackageThemeLinks';
 import { resolveFlightDepartureIataForTrip } from '../Home/lib/flightOriginPreference.js';
 import { resolveTripcomPartnerLocale } from '../../utils/tripcomPartnerLocale.js';
-import { getWorldEventPlaceMeta } from '../../utils/worldEvents';
+import { getWorldEventPlaceMeta, getWorldEventStayAreas } from '../../utils/worldEvents';
 
 function todayYmd() {
   const d = new Date();
@@ -159,10 +159,10 @@ export default function EventStayStrip({
     : getWorldEventPlaceMeta(event?.slug, locale);
   const stayAreas = useMemo(
     () =>
-      Array.isArray(event?.stayAreas)
-        ? event.stayAreas.filter((area) => area?.name && (area.mrtKeyword || area.name))
-        : [],
-    [event?.stayAreas],
+      getWorldEventStayAreas(event, locale).filter(
+        (area) => area?.name && (area.mrtKeyword || area.name),
+      ),
+    [event, locale],
   );
   const [selectedAreaIndex, setSelectedAreaIndex] = useState(0);
   const selectedArea = stayAreas[selectedAreaIndex] ?? null;

@@ -68,6 +68,13 @@ function auditFixture(path) {
     EVENT_TRAVEL_GUIDE_PILOT_EVENT_IDS.includes(eventId),
     `${eventId}: pilot fixture roster`,
   );
+
+  const raw = JSON.parse(readFileSync(path, 'utf8'));
+  if (EVENT_TRAVEL_GUIDE_PILOT_EVENT_IDS.includes(eventId)) {
+    assert(Array.isArray(raw.trip_presets_en) && raw.trip_presets_en.length >= 2, `${eventId}: trip_presets_en`);
+    assert(Array.isArray(raw.sections_en) && raw.sections_en.length >= 2, `${eventId}: sections_en`);
+    assert(Array.isArray(raw.booking_tips_en) && raw.booking_tips_en.length >= 1, `${eventId}: booking_tips_en`);
+  }
 }
 
 function listFixturePaths() {

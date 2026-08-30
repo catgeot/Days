@@ -120,6 +120,25 @@ function main() {
         Array.isArray(normalized.highlightsEn) && normalized.highlightsEn.length >= 2,
         `${normalized.id}: i18n pilot requires highlightsEn`,
       );
+      assert(
+        Boolean(normalized.recurrenceNoteEn),
+        `${normalized.id}: i18n pilot requires recurrenceNoteEn`,
+      );
+      if (Array.isArray(normalized.stayAreas) && normalized.stayAreas.length > 0) {
+        for (const area of normalized.stayAreas) {
+          assert(Boolean(area.nameEn), `${normalized.id}: stayArea nameEn (${area.name})`);
+          if (area.note) {
+            assert(Boolean(area.noteEn), `${normalized.id}: stayArea noteEn (${area.name})`);
+          }
+        }
+      }
+    }
+
+    if (normalized.recurrenceNoteEn) {
+      assert(
+        Boolean(normalized.recurrenceNote),
+        `${normalized.id}: recurrenceNoteEn paired with recurrenceNote`,
+      );
     }
   }
 

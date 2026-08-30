@@ -24,6 +24,29 @@
       "rationale": "낮·저녁은 비교적 한산한 편이라 짧은 평일 방문에 적합합니다. 주말 대비 숙소 가용성이 좋을 수 있습니다."
     }
   ],
+  "trip_presets_en": [
+    {
+      "id": "opening",
+      "label": "Opening weekend · 3 nights",
+      "nights": 3,
+      "timing_hint": "Around Sep 19–20 (opening weekend)",
+      "rationale": "The core weekend when giant tents open and opening buzz peaks. Book stays 6–12 months ahead."
+    },
+    {
+      "id": "mid",
+      "label": "Mid-month weekend · 2 nights",
+      "nights": 2,
+      "timing_hint": "Mid-Sep Fri–Sun",
+      "rationale": "Still busy on weekends, but tent and table availability can be a bit more flexible than opening or closing."
+    },
+    {
+      "id": "weekday",
+      "label": "Weekday · 2 nights",
+      "nights": 2,
+      "timing_hint": "Mid-Sep Mon–Thu",
+      "rationale": "Afternoons and evenings are calmer — good for a short weekday visit with better lodging availability than weekends."
+    }
+  ],
   "sections": [
     {
       "id": "tents",
@@ -36,13 +59,34 @@
       "content": "텐트 내 테이블은 공유 좌석인 경우가 많습니다. 현금·카드 결제 가능 여부를 미리 확인하고, 과음·소지품 관리에 유의하세요. Theresienwiese 입장 전 보안 검색 시간을 감안해 일정에 15~20분 여유를 두세요."
     }
   ],
+  "sections_en": [
+    {
+      "id": "tents",
+      "title": "Tents & reservations",
+      "content": "Beer tent tables and group bookings sell out early — check official partners and hotel packages first. Walk in via U4/U5 Theresienwiese or Hackerbrücke. Weekday afternoons are calmer; weekends and opening day are busiest."
+    },
+    {
+      "id": "etiquette",
+      "title": "On-site etiquette",
+      "content": "Tables are often shared. Confirm cash/card acceptance, pace drinks, and watch your belongings. Allow 15–20 minutes for security checks before entering Theresienwiese."
+    }
+  ],
   "booking_tips": [
     "인기 텐트·좌석은 개막 2~4개월 전 공식 파트너·패키지 예약을 완료하는 것이 안전합니다.",
     "평일 오후 방문은 주말 대비 대기·혼잡이 적은 편입니다.",
     "S-Bahn·U-Bahn 지연 가능성을 감안해 마지막 날 공항 이동은 여유 있게 잡으세요."
   ],
+  "booking_tips_en": [
+    "Finish official partner or package bookings 2–4 months before opening for popular tents.",
+    "Weekday afternoons mean shorter queues than weekends.",
+    "Leave extra time for airport transfers on your last day — S-Bahn/U-Bahn delays happen."
+  ],
   "cautions": [
     "9월 뮌헨 숙소·항공은 성수기라 가격 변동이 큽니다.",
     "행사 기간 전체를 숙박 일정으로 잡지 마세요 — 짧은 방문이 일반적입니다."
+  ],
+  "cautions_en": [
+    "September Munich flights and hotels are peak season — prices move fast.",
+    "Do not book the entire festival fortnight — short focused trips are the norm."
   ]
 }

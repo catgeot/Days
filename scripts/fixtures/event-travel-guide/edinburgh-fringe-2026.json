@@ -24,6 +24,29 @@
       "rationale": "막판 할인·잔여 티켓 기회가 있으나 숙소 변동이 클 수 있어 조기 예약을 권합니다."
     }
   ],
+  "trip_presets_en": [
+    {
+      "id": "opening",
+      "label": "Opening week · 3 nights",
+      "nights": 3,
+      "timing_hint": "First week of August (right after opening)",
+      "rationale": "Free shows and street performances peak — the fastest way to feel the festival buzz. Book stays in June–July to be safe."
+    },
+    {
+      "id": "mid",
+      "label": "Mid-month weekend · 2 nights",
+      "nights": 2,
+      "timing_hint": "Mid-August Fri–Sun",
+      "rationale": "Reviews are in for hit shows, making it easier to pick tickets for a short weekend trip."
+    },
+    {
+      "id": "closing",
+      "label": "Final stretch · 3 nights",
+      "nights": 3,
+      "timing_hint": "Fourth week of August (before closing)",
+      "rationale": "Last-minute deals and leftover tickets may appear, but lodging swings — book early if you can."
+    }
+  ],
   "sections": [
     {
       "id": "shows",
@@ -36,13 +59,34 @@
       "content": "공연 간 이동은 도보·버스가 대부분이며, 인기 공연 직전 Royal Mile 혼잡을 감안해 20~30분 여유를 두세요. 하루 3편 이상 예약 시 공연장 위치를 지도에 미리 표시해 두면 좋습니다."
     }
   ],
+  "sections_en": [
+    {
+      "id": "shows",
+      "title": "Choosing shows & tickets",
+      "content": "Start with free shows and street performances around the Royal Mile and Old Town, then plan 2–3 ticketed shows per afternoon/evening. Royal Mile & city venues are the core stages — book ahead on edfringe.com."
+    },
+    {
+      "id": "timing",
+      "title": "Schedule & getting around",
+      "content": "Most hops are on foot or by bus. Allow 20–30 minutes before popular shows when the Royal Mile is packed. If you book 3+ shows a day, pin venues on a map first."
+    }
+  ],
   "booking_tips": [
     "프리 공연은 오후 늦게·저녁 시간대가 가장 활발합니다 — 예약 공연 전후로 Royal Mile을 산책하세요.",
     "인기 공연은 개막 2~4주 전 온라인 예매를 완료하는 것이 안전합니다.",
     "평일 낮 공연은 상대적으로 여유 있어 첫 방문 날 일정 채우기에 좋습니다."
   ],
+  "booking_tips_en": [
+    "Free shows peak late afternoon and evening — stroll the Royal Mile between your ticketed performances.",
+    "For hit shows, finish online booking 2–4 weeks before opening.",
+    "Weekday matinees are easier to fill a first-day schedule."
+  ],
   "cautions": [
     "8월 에든버러 숙소·항공은 성수기라 가격 변동이 큽니다.",
     "행사 기간 전체를 숙박 일정으로 잡지 마세요 — 짧은 방문이 일반적입니다."
+  ],
+  "cautions_en": [
+    "August Edinburgh flights and hotels are peak season — prices move fast.",
+    "Do not book the entire festival month — short focused trips are the norm."
   ]
 }

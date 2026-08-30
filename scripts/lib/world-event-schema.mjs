@@ -13,8 +13,10 @@
 /**
  * @typedef {{
  *   name: string,
+ *   nameEn?: string,
  *   mrtKeyword?: string,
  *   note?: string,
+ *   noteEn?: string,
  * }} WorldEventStayArea
  */
 
@@ -106,6 +108,7 @@
  *   endDate: string,
  *   recurrence: WorldEventRecurrence,
  *   recurrenceNote?: string,
+ *   recurrenceNoteEn?: string,
  *   venue?: WorldEventVenue,
  *   source: WorldEventSource,
  *   sourceUrl?: string,
@@ -212,6 +215,12 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
   const recurrenceNote =
     raw.recurrenceNote != null ? String(raw.recurrenceNote).trim() : undefined;
 
+  const recurrenceNoteEn =
+    raw.recurrenceNoteEn != null ? String(raw.recurrenceNoteEn).trim() : undefined;
+  if (recurrenceNoteEn && !recurrenceNote) {
+    throw new Error(`[world-events] ${id}: recurrenceNoteEn requires recurrenceNote`);
+  }
+
   const source = String(raw.source || '').trim();
   if (!WORLD_EVENT_SOURCES.has(source)) {
     throw new Error(`[world-events] ${id}: invalid source ${raw.source}`);
@@ -303,12 +312,16 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
       }
       /** @type {WorldEventStayArea} */
       const normalizedArea = { name };
+      const nameEn = area.nameEn != null ? String(area.nameEn).trim() : undefined;
+      if (nameEn) normalizedArea.nameEn = nameEn;
       if (area.mrtKeyword != null) {
         normalizedArea.mrtKeyword = String(area.mrtKeyword).trim();
       }
       if (area.note != null) {
         normalizedArea.note = String(area.note).trim();
       }
+      const noteEn = area.noteEn != null ? String(area.noteEn).trim() : undefined;
+      if (noteEn) normalizedArea.noteEn = noteEn;
       return normalizedArea;
     });
     if (!stayAreas.length) {
@@ -619,6 +632,7 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
   if (hubId) event.hubId = hubId;
   if (titleEn) event.titleEn = titleEn;
   if (recurrenceNote) event.recurrenceNote = recurrenceNote;
+  if (recurrenceNoteEn) event.recurrenceNoteEn = recurrenceNoteEn;
   if (venue) event.venue = venue;
   if (sourceUrl) event.sourceUrl = sourceUrl;
   if (bookingHints) event.bookingHints = bookingHints;

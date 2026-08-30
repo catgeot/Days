@@ -24,6 +24,29 @@
       "rationale": "시작(9/16 갈룽안)과 마무리(9/26 쿠닝안)를 한 번에 경험하려는 5박 일정입니다. 앞 2~3박 우붓에서 갈룽안 제례, 뒤 2박 스미냑으로 옮기면 이동 부담을 줄일 수 있습니다."
     }
   ],
+  "trip_presets_en": [
+    {
+      "id": "galungan",
+      "label": "Galungan focus",
+      "nights": 4,
+      "timing_hint": "Galungan Wed Sep 16 · check in Sep 14–15 recommended",
+      "rationale": "Sep 16 opens the season. Check in the night before and spend 4 nights in Ubud for peak penjor decorations and temple ceremonies on Sep 16–17."
+    },
+    {
+      "id": "kuningan",
+      "label": "Kuningan focus",
+      "nights": 3,
+      "timing_hint": "Kuningan Sat Sep 26 · check in Sep 24–25 · check out around Sep 27",
+      "rationale": "Sep 26 is Kuningan, ten days after Galungan. A Sep 24–26 stay fits closing ceremonies and temple visits in 3 nights."
+    },
+    {
+      "id": "long-weekend",
+      "label": "Galungan → Kuningan combo",
+      "nights": 5,
+      "timing_hint": "Season Sep 16 (Galungan)–Sep 26 (Kuningan) · e.g. check in Sep 15, out Sep 20",
+      "rationale": "A 5-night plan to catch both opening and closing. Start 2–3 nights in Ubud for Galungan, then move to Seminyak to cut driving."
+    }
+  ],
   "sections": [
     {
       "id": "temples",
@@ -36,13 +59,34 @@
       "content": "사원·마을 행사는 분산되어 있어 렌터카 또는 기사 포함 투어가 효율적입니다. 갈룽안 당일(9/16)·쿠닝안 전후(9/25~26) 도로·사원 주변 혼잡을 감안해 하루 2~3곳만 계획하세요."
     }
   ],
+  "sections_en": [
+    {
+      "id": "temples",
+      "title": "Temples & ceremonies",
+      "content": "Galungan (Sep 16) peaks with ancestor ceremonies and penjor poles; Kuningan (Sep 26) closes the season. Wear modest temple dress (sarong & sash), respect photography rules, and expect crowds at Ubud temples during morning and evening rites."
+    },
+    {
+      "id": "transport",
+      "title": "Getting around",
+      "content": "Ceremonies are spread out — a car with driver or rental works best. On Galungan day and around Kuningan, plan only 2–3 stops per day for traffic and temple crowds."
+    }
+  ],
   "booking_tips": [
     "갈룽안(9/16)·쿠닝안(9/26) 전후 우붓 숙소는 2~3개월 전 예약을 권장합니다.",
     "사원 방문용 사롱·셀endang은 현지 대여·구매 일정을 미리 잡으세요.",
     "제례 시간대(오전·저녁) 교통 체증을 감안해 공항 이동은 비행기 4시간 전 출발을 권합니다."
   ],
+  "booking_tips_en": [
+    "Book Ubud stays 2–3 months ahead around Galungan (Sep 16) and Kuningan (Sep 26).",
+    "Schedule sarong and sash rental or purchase before temple visits.",
+    "Leave for the airport 4 hours before your flight during morning/evening ceremony traffic."
+  ],
   "cautions": [
     "종교 행사 기간 일부 상점·레스토랑 휴무·단축 영업이 있을 수 있습니다.",
     "사원·제례 촬영은 현지 안내·표지판을 반드시 확인하세요."
+  ],
+  "cautions_en": [
+    "Some shops and restaurants may close or shorten hours during religious events.",
+    "Always follow local signs and guides for photography at temples and ceremonies."
   ]
 }

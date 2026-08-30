@@ -10,17 +10,19 @@ const travelSpotsContent = fs.readFileSync(travelSpotsPath, 'utf-8');
 const spots = [];
 
 // 각 여행지 객체 추출 (간단한 정규식으로)
-const spotMatches = travelSpotsContent.matchAll(/\{\s*"id":\s*(\d+),\s*"slug":\s*"([^"]+)",\s*"name":\s*"([^"]+)",\s*"name_en":\s*"([^"]+)",\s*"country":\s*"([^"]+)"/g);
+const spotMatches = travelSpotsContent.matchAll(
+  /\{\s*"id":\s*(\d+),\s*"slug":\s*"([^"]+)",\s*"name":\s*"([^"]+)",\s*"name_en":\s*"([^"]+)",\s*"country":\s*"([^"]+)"(?:,\s*"country_en":\s*"([^"]+)")?/g,
+);
 
 for (const match of spotMatches) {
-  const [, id, slug, name, name_en, country] = match;
-  spots.push({
-    id: parseInt(id),
+  const [, id, slug, name, name_en, country, country_en] = match;
+  /** @type {{ id: number, slug: string, name: string, name_en: string, country: string, country_en?: string, searchKeys: string[] }} */
+  const spot = {
+    id: parseInt(id, 10),
     slug,
     name,
     name_en,
     country,
-    // 검색을 위한 정규화된 키들
     searchKeys: [
       slug,
       name.toLowerCase(),
@@ -28,8 +30,10 @@ for (const match of spotMatches) {
       slug.replace(/-/g, ' '),
       slug.replace(/-/g, ''),
       name_en.toLowerCase().replace(/ /g, ''),
-    ]
-  });
+    ],
+  };
+  if (country_en) spot.country_en = country_en;
+  spots.push(spot);
 }
 
 // 정렬 (id 순)
