@@ -228,7 +228,7 @@ npm run build
 | 단계 | 시점 | 내용 |
 |------|------|------|
 | **i18n-0** | 현재 | `titleEn`·chip/glossary En·외부 링크 locale — 부분 EN |
-| **i18n-1** | **#38** | `detailOverviewEn`·`highlightsEn` 스키마 · audit · 파일럿 3 En |
+| **i18n-1** | **#38 ✅** | `detailOverviewEn`·`highlightsEn` 스키마 · audit · 파일럿 3 En |
 | **i18n-2** | Wave1 15 D5-b KO + Wave2 1차 후 | EN 본문·허브 전면 분기 |
 
 **MVP 정의**: Wave1 **15건 D5-b KO 완성** 후 i18n-1. 상세: [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **F-0.6**.
