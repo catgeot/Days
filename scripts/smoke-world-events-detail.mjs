@@ -259,9 +259,10 @@ assert.ok(bangkokWaterproof?.searchTarget === 'google', 'bangkok waterproof bag 
 
 const sydney = getWorldEventById('sydney-vivid-2027');
 const sydneyTransport = sydney.highlightContextLinks.find((group) => group.highlightIndex === 2);
-const sydneyFerry = sydneyTransport?.links.find((link) => link.id === 'sydney-ferry-12go');
+const sydneyFerry = sydneyTransport?.links.find((link) => link.id === 'sydney-ferry-search');
 const sydneyTram = sydneyTransport?.links.find((link) => link.id === 'sydney-tram-pass');
-assert.ok(sydneyFerry?.href?.includes('12go.asia'), 'sydney ferry 12go href');
+assert.ok(sydneyFerry?.searchTarget === 'google', 'sydney ferry google search target');
+assert.match(sydneyFerry?.searchQueryKo || '', /페리/, 'sydney ferry query ko');
 assert.ok(sydneyTram?.searchTarget === 'klook', 'sydney tram klook search target');
 assert.match(sydneyTram?.searchQueryKo || '', /교통 패스/, 'sydney tram transit pass query ko');
 

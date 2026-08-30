@@ -1939,11 +1939,13 @@ export const WORLD_EVENT_OVERRIDES = [
         highlightIndex: 2,
         links: [
           {
-            id: 'sydney-ferry-12go',
-            labelKo: '페리 12Go',
-            labelEn: 'Ferry on 12Go',
-            kind: 'tour',
-            href: 'https://12go.asia/ko/travel/sydney/manly',
+            id: 'sydney-ferry-search',
+            labelKo: '페리 검색',
+            labelEn: 'Search ferry',
+            kind: 'shop',
+            searchQueryKo: '시드니 서큘러 키 맨리 페리',
+            searchQueryEn: 'Sydney Circular Quay Manly ferry Opal',
+            searchTarget: 'google',
           },
           {
             id: 'sydney-tram-pass',

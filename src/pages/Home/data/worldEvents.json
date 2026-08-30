@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-30T03:34:08.502Z",
+    "generatedAt": "2026-08-30T03:40:34.908Z",
     "eventCount": 17,
     "source": "scripts/data/world-event-overrides.mjs"
   },
@@ -2216,11 +2216,13 @@
           "highlightIndex": 2,
           "links": [
             {
-              "id": "sydney-ferry-12go",
-              "labelKo": "페리 12Go",
-              "kind": "tour",
-              "labelEn": "Ferry on 12Go",
-              "href": "https://12go.asia/ko/travel/sydney/manly"
+              "id": "sydney-ferry-search",
+              "labelKo": "페리 검색",
+              "kind": "shop",
+              "labelEn": "Search ferry",
+              "searchQueryKo": "시드니 서큘러 키 맨리 페리",
+              "searchQueryEn": "Sydney Circular Quay Manly ferry Opal",
+              "searchTarget": "google"
             },
             {
               "id": "sydney-tram-pass",
