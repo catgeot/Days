@@ -13,10 +13,10 @@
 | 6 | `kyoto-gion-matsuri-2027` | #15, #35 | ✅ overview·highlights·stayAreas·3박 | — | **D5-b** (#35) |
 | 7 | `bangkok-songkran-2027` | #15, #35 | ✅ overview·highlights·stayAreas·3박 | — | **D5-b** (#35) |
 | 8 | `bali-galungan-season-2026` | #15, #23, #25 | ✅ overview·highlights·stayAreas·4박 | ✅ v0.2 pilot fixture | D2 action+mooni chips |
-| 9 | `rio-carnival-2027` | #16 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2+위젯 |
-| 10 | `new-york-thanksgiving-season-2026` | #16 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2+위젯 |
-| 11 | `iceland-midnight-sun-2027` | #16 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2+위젯 |
-| 12 | `sydney-vivid-2027` | #16 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2+위젯 |
+| 9 | `rio-carnival-2027` | #16, #36 | ✅ overview·highlights·stayAreas·4박 | — | **D5-b** (#36) |
+| 10 | `new-york-thanksgiving-season-2026` | #16, #36 | ✅ overview·highlights·stayAreas·3박 | — | **D5-b** (#36) |
+| 11 | `iceland-midnight-sun-2027` | #16, #36 | ✅ overview·highlights·stayAreas·4박 | — | **D5-b** (#36) |
+| 12 | `sydney-vivid-2027` | #16, #36 | ✅ overview·highlights·stayAreas·3박 | — | **D5-b** (#36) |
 | 13 | `prague-spring-festival-2027` | #18, #34 | ✅ overview·highlights·stayAreas·3박 | — | **D5-b** (#34) |
 | 14 | `marrakech-rose-festival-2027` | #18, #34 | ✅ overview·highlights·stayAreas·2박 | — | **D5-b** (#34) |
 | 15 | `hanoi-tet-2027` | #18 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2+위젯 |
@@ -353,3 +353,25 @@
 - **산출** glossary 4종(songkran·silom·khao-san·water-proof) · heroImages 3장 · highlightContextLinks(0·1) · 방수 Klook 링크
 - **Preview** `/world-events/bangkok-songkran-2027`
 - **다음** 사람 Preview 배치 B QA → **#36** 배치 C(rio·new-york·iceland·sydney)
+
+## #9 rio — D5-b-3 배치 C (#36)
+
+- **산출** glossary 4종(sambadrome·bloco·samba-school·copacabana) · heroImages 3장 · highlightContextLinks(0·2) · 삼바드롬 공식 href
+- **VERIFY** smoke D5-b batch C assert PASS
+- **Preview** `/world-events/rio-carnival-2027`
+
+## #10 new-york — D5-b-3 배치 C (#36)
+
+- **산출** glossary 4종(macys-parade·thanksgiving·black-friday·herald-square) · heroImages 3장 · highlightContextLinks(0·2) · 메이시스 공식 href
+- **Preview** `/world-events/new-york-thanksgiving-season-2026`
+
+## #11 iceland — D5-b-3 배치 C (#36)
+
+- **산출** glossary 4종(midnight-sun·secret-solstice·golden-circle·reykjavik) · heroImages 3장 · highlightContextLinks(0·1) · 골든서클 렌터카
+- **Preview** `/world-events/iceland-midnight-sun-2027`
+
+## #12 sydney — D5-b-3 배치 C (#36)
+
+- **산출** glossary 4종(vivid-sydney·circular-quay·opera-house·darling-harbour) · heroImages 3장 · highlightContextLinks(0·1) · 비비드 공식 href
+- **Preview** `/world-events/sydney-vivid-2027`
+- **다음** 사람 Preview 배치 C QA → **#37** 배치 D(hanoi + 15건 회귀)
