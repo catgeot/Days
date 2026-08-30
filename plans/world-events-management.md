@@ -229,6 +229,6 @@ npm run build
 |------|------|------|
 | **i18n-0** | 현재 | `titleEn`·chip/glossary En·외부 링크 locale — 부분 EN |
 | **i18n-1** | **#38 ✅** | `detailOverviewEn`·`highlightsEn` 스키마 · audit · 파일럿 3 En · Preview QA PASS |
-| **i18n-2** | **#39~#40 ✅** | EN 허브·glossary·비파일럿 폴백 · `/en/world-events` SEO · Preview QA PASS(명소 En·Trip www) |
+| **i18n-2** | **#39~#41 ✅ PROD** | EN 허브·glossary·비파일럿 폴백 · `/en/world-events` SEO · PR #158 merge `d7216431` · PROD `?lang=en`·Trip `www.trip.com` |
 
 **MVP 정의**: Wave1 **15건 D5-b KO 완성** 후 i18n-1. 상세: [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **F-0.6**.

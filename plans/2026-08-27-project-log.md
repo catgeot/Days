@@ -430,3 +430,13 @@
 - **브랜치** `cursor/world-events-wave2` · PR [#158](https://github.com/catgeot/Days/pull/158) · tip `7cafc78a`
 - **사람 QA PASS** — EN 허브·singapore 명소 En 라벨 · Trip Flight+hotel `www.trip.com` 영문
 - **다음** **#41** PR #158 merge → PROD i18n-2 QA
+
+## 세계행사 일정 #41 — i18n-2 main 병합·PROD QA
+
+- **세션** `세계행사 일정 #41, i18n-2 main 병합·PROD QA`
+- **merge** PR [#158](https://github.com/catgeot/Days/pull/158) → **main** `d7216431`
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `smoke-tripcom-flight-locale` · `build` PASS
+- **PROD** bundle `index-DFeajkMU.js` · URL 6건 HTTP **200** (`?lang=en` 허브·singapore·edinburgh·bali · `/en/world-events`→`?lang=en`)
+- **PROD crawler** `?lang=en` 허브 title 「World events」·canonical·hreflang · JS `www.trip.com` packages 분기
+- **사람 QA** EN singapore 명소 라벨(Park/Museum) · Flight+hotel `www.trip.com` — Preview #40과 동일 경로 PROD 재확인
+- **다음** **#42** Wave2 barcelona·istanbul overrides
