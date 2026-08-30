@@ -18,8 +18,8 @@
 
 | | |
 |--|--|
-| **상태** | **#37 D5-b 배치 D** — 에이전트 VERIFY PASS · PR [#158](https://github.com/catgeot/Days/pull/158) · **사람 Preview QA** |
-| **브랜치** | `cursor/world-events-wave2` · tip `2ec65536` |
+| **상태** | **#38 i18n-1** — 에이전트 VERIFY PASS · PR [#158](https://github.com/catgeot/Days/pull/158) · **사람 Preview QA** |
+| **브랜치** | `cursor/world-events-wave2` · tip `a67ba91f` |
 | **PR** | [#158](https://github.com/catgeot/Days/pull/158) · [#157](https://github.com/catgeot/Days/pull/157) **merged** |
 | **main** | `4caf5b1c` — Wave2 singapore·dubai |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **F-0.5 D5-b-3** · **F-0.6** · §9 |
@@ -28,21 +28,21 @@
 | **샘플** | [`world-events-sample-log.md`](./world-events-sample-log.md) |
 | **일지** | [`2026-08-27-project-log.md`](./2026-08-27-project-log.md) |
 | **PROD QA** | Wave2 Vercel 배포 후 singapore·dubai · 배치 A~D Preview |
-| **VERIFY** | `smoke:world-events` · `smoke:world-events-detail` · `audit:event-travel-guide` · `build` |
+| **VERIFY** | `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` |
 
-**게이트**: 배치 D Preview OK → **#38** i18n-1(En 본문 스키마·파일럿 3)
+**게이트**: i18n-1 Preview OK → **#39** i18n-2(En 허브·모달 전면 분기)
 
-**다음 제시어** (#38):
+**다음 제시어** (#38 Preview QA):
 
 ```
-세계행사 일정 #38, i18n-1 En 본문 스키마
+세계행사 일정 #38, i18n-1 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
 @plans/world-events-management.md
 브랜치 cursor/world-events-wave2 · PR #158 · https://www.gateo.kr/qa/world-events
 금지: worldEvents.json 직편집 · UI 리디자인 · Wave1 KO 본문 일괄 En 번역
-작업: detailOverviewEn·highlightsEn 스키마 · audit · 파일럿 3 En · Preview QA
+작업: EN locale 파일럿 3(edinburgh·munich·bali) 개요·하이라이트 Preview 확인 → OK 시 #39 i18n-2
 ```
 
 ---

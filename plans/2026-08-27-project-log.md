@@ -383,3 +383,12 @@
 - **피드백** 무니 용어 모달 하단 여백 부족(모바일 크롬 버튼 오탭) · 본문 가독성 · 「뗏 연휴 여행 안내」vietnam.travel 404
 - **수정** `EventTermExplainModal` safe-area 하단 패딩·15px/leading-7 · hanoi 링크→구글 검색 · sourceUrl Wikipedia Tet · tip `131352c1`
 - **사람 재QA** hanoi 상세 · 용어 모달 하단·「뗏 연휴 여행 안내」구글 검색 열림
+
+## 세계행사 일정 #38 — i18n-1 En 본문 스키마
+
+- **세션** `세계행사 일정 #38, i18n-1 En 본문 스키마`
+- **브랜치** `cursor/world-events-wave2` · PR [#158](https://github.com/catgeot/Days/pull/158) · tip `a67ba91f`
+- **산출** `detailOverviewEn`·`highlightsEn` 스키마·audit · 파일럿 3(edinburgh·munich·bali) En 본문 · `getWorldEventDetailOverview`·`getWorldEventHighlights` locale 분기
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → EN locale 파일럿 3 상세 — 개요·하이라이트 En 표시(ko 폴백 없음)
+- **다음** 사람 Preview i18n-1 QA → OK 시 **#39** i18n-2
