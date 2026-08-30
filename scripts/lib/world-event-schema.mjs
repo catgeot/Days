@@ -13,8 +13,10 @@
 /**
  * @typedef {{
  *   name: string,
+ *   nameEn?: string,
  *   mrtKeyword?: string,
  *   note?: string,
+ *   noteEn?: string,
  * }} WorldEventStayArea
  */
 
@@ -58,6 +60,7 @@
  *   searchQueryKo: string,
  *   searchQueryEn?: string,
  *   referenceUrl?: string,
+ *   referenceUrlKo?: string,
  * }} WorldEventGlossaryTerm
  */
 
@@ -105,12 +108,15 @@
  *   endDate: string,
  *   recurrence: WorldEventRecurrence,
  *   recurrenceNote?: string,
+ *   recurrenceNoteEn?: string,
  *   venue?: WorldEventVenue,
  *   source: WorldEventSource,
  *   sourceUrl?: string,
  *   bookingHints?: string,
  *   detailOverview?: string,
+ *   detailOverviewEn?: string,
  *   highlights?: string[],
+ *   highlightsEn?: string[],
  *   stayAreas?: WorldEventStayArea[],
  *   recommendedNights?: number,
  *   heroImage?: string,
@@ -137,6 +143,13 @@ export const WORLD_EVENT_TYPES = new Set([
 export const WORLD_EVENT_RECURRENCES = new Set(['annual', 'fixed', 'tbd']);
 
 export const WORLD_EVENT_SOURCES = new Set(['tourapi', 'curated', 'official_url']);
+
+/** i18n-1 pilot — En body fields required in audit */
+export const WORLD_EVENT_I18N_PILOT_EVENT_IDS = [
+  'edinburgh-fringe-2026',
+  'munich-oktoberfest-2026',
+  'bali-galungan-season-2026',
+];
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -202,6 +215,12 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
   const recurrenceNote =
     raw.recurrenceNote != null ? String(raw.recurrenceNote).trim() : undefined;
 
+  const recurrenceNoteEn =
+    raw.recurrenceNoteEn != null ? String(raw.recurrenceNoteEn).trim() : undefined;
+  if (recurrenceNoteEn && !recurrenceNote) {
+    throw new Error(`[world-events] ${id}: recurrenceNoteEn requires recurrenceNote`);
+  }
+
   const source = String(raw.source || '').trim();
   if (!WORLD_EVENT_SOURCES.has(source)) {
     throw new Error(`[world-events] ${id}: invalid source ${raw.source}`);
@@ -238,6 +257,12 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
   const detailOverview =
     raw.detailOverview != null ? String(raw.detailOverview).trim() : undefined;
 
+  const detailOverviewEn =
+    raw.detailOverviewEn != null ? String(raw.detailOverviewEn).trim() : undefined;
+  if (detailOverviewEn && !detailOverview) {
+    throw new Error(`[world-events] ${id}: detailOverviewEn requires detailOverview`);
+  }
+
   let highlights;
   if (raw.highlights != null) {
     if (!Array.isArray(raw.highlights)) {
@@ -248,6 +273,27 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
       .filter(Boolean);
     if (!highlights.length) {
       throw new Error(`[world-events] ${id}: highlights must not be empty when set`);
+    }
+  }
+
+  let highlightsEn;
+  if (raw.highlightsEn != null) {
+    if (!Array.isArray(raw.highlightsEn)) {
+      throw new Error(`[world-events] ${id}: highlightsEn must be array`);
+    }
+    highlightsEn = raw.highlightsEn
+      .map((item) => String(item || '').trim())
+      .filter(Boolean);
+    if (!highlightsEn.length) {
+      throw new Error(`[world-events] ${id}: highlightsEn must not be empty when set`);
+    }
+    if (!highlights) {
+      throw new Error(`[world-events] ${id}: highlightsEn requires highlights`);
+    }
+    if (highlightsEn.length !== highlights.length) {
+      throw new Error(
+        `[world-events] ${id}: highlightsEn length (${highlightsEn.length}) must match highlights (${highlights.length})`,
+      );
     }
   }
 
@@ -266,12 +312,16 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
       }
       /** @type {WorldEventStayArea} */
       const normalizedArea = { name };
+      const nameEn = area.nameEn != null ? String(area.nameEn).trim() : undefined;
+      if (nameEn) normalizedArea.nameEn = nameEn;
       if (area.mrtKeyword != null) {
         normalizedArea.mrtKeyword = String(area.mrtKeyword).trim();
       }
       if (area.note != null) {
         normalizedArea.note = String(area.note).trim();
       }
+      const noteEn = area.noteEn != null ? String(area.noteEn).trim() : undefined;
+      if (noteEn) normalizedArea.noteEn = noteEn;
       return normalizedArea;
     });
     if (!stayAreas.length) {
@@ -356,6 +406,8 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
         term.searchQueryEn != null ? String(term.searchQueryEn).trim() : undefined;
       const referenceUrl =
         term.referenceUrl != null ? String(term.referenceUrl).trim() : undefined;
+      const referenceUrlKo =
+        term.referenceUrlKo != null ? String(term.referenceUrlKo).trim() : undefined;
       if (termEn) normalizedTerm.termEn = termEn;
       if (promptEn) normalizedTerm.promptEn = promptEn;
       if (searchQueryEn) normalizedTerm.searchQueryEn = searchQueryEn;
@@ -364,6 +416,14 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
           throw new Error(`[world-events] ${id}: glossaryTerms[${termIndex}].referenceUrl must be http(s) URL`);
         }
         normalizedTerm.referenceUrl = referenceUrl;
+      }
+      if (referenceUrlKo) {
+        if (!/^https?:\/\//i.test(referenceUrlKo)) {
+          throw new Error(
+            `[world-events] ${id}: glossaryTerms[${termIndex}].referenceUrlKo must be http(s) URL`,
+          );
+        }
+        normalizedTerm.referenceUrlKo = referenceUrlKo;
       }
       return normalizedTerm;
     });
@@ -572,11 +632,14 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
   if (hubId) event.hubId = hubId;
   if (titleEn) event.titleEn = titleEn;
   if (recurrenceNote) event.recurrenceNote = recurrenceNote;
+  if (recurrenceNoteEn) event.recurrenceNoteEn = recurrenceNoteEn;
   if (venue) event.venue = venue;
   if (sourceUrl) event.sourceUrl = sourceUrl;
   if (bookingHints) event.bookingHints = bookingHints;
   if (detailOverview) event.detailOverview = detailOverview;
+  if (detailOverviewEn) event.detailOverviewEn = detailOverviewEn;
   if (highlights) event.highlights = highlights;
+  if (highlightsEn) event.highlightsEn = highlightsEn;
   if (stayAreas) event.stayAreas = stayAreas;
   if (recommendedNights != null) event.recommendedNights = recommendedNights;
   if (heroImage) event.heroImage = heroImage;

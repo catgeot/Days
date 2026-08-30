@@ -161,7 +161,7 @@ export function getWorldEventHubAttractions(event, options = {}) {
       id: `${hub.hubId}-${slug}`,
       name,
       slug,
-      kindLabel: getKindLabel(attraction.kind),
+      kindLabel: getKindLabel(attraction.kind, locale),
       href: slug ? `/place/${slug}` : '',
     };
   });

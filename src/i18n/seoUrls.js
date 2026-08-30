@@ -15,6 +15,7 @@ export const I18N_HUB_PATHS = [
   '/korea/theme/regions',
   '/blog',
   '/blog/curation',
+  '/world-events',
 ];
 
 /**

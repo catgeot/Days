@@ -4,7 +4,12 @@ import { ExternalLink, MapPin, Sparkles } from 'lucide-react';
 import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
 import {
   formatWorldEventDateRange,
+  getWorldEventBookingHints,
+  getWorldEventDetailOverview,
+  getWorldEventHighlights,
   getWorldEventPlaceMeta,
+  getWorldEventRecurrenceNote,
+  getWorldEventStayAreas,
   getWorldEventTitle,
 } from '../../utils/worldEvents';
 import {
@@ -39,6 +44,11 @@ export default function EventDetailStaticPanel({
   const title = getWorldEventTitle(event, locale);
   const dateLabel = formatWorldEventDateRange(event, locale);
   const placeMeta = getWorldEventPlaceMeta(event.slug, locale);
+  const detailOverview = getWorldEventDetailOverview(event, locale);
+  const highlights = getWorldEventHighlights(event, locale);
+  const recurrenceNote = getWorldEventRecurrenceNote(event, locale);
+  const bookingHints = getWorldEventBookingHints(event, locale);
+  const stayAreas = getWorldEventStayAreas(event, locale);
   const typeKey = String(event.type || 'festival');
   const typeLabel = t(`worldEventDetail.type.${typeKey}`, { defaultValue: typeKey });
   const typeIntro = t(`worldEventDetail.typeIntro.${typeKey}`, { defaultValue: '' });
@@ -52,9 +62,9 @@ export default function EventDetailStaticPanel({
     linkedTermIdsRef.current = new Set();
   }, [event.id, locale]);
   const hasTier05 =
-    Boolean(event.detailOverview) ||
-    (Array.isArray(event.highlights) && event.highlights.length > 0) ||
-    (Array.isArray(event.stayAreas) && event.stayAreas.length > 0) ||
+    Boolean(detailOverview) ||
+    highlights.length > 0 ||
+    stayAreas.length > 0 ||
     event.recommendedNights != null;
 
   return (
@@ -65,8 +75,8 @@ export default function EventDetailStaticPanel({
             <span className="inline-flex rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-[11px] font-bold text-amber-900">
               {typeLabel}
             </span>
-            {event.recurrenceNote ? (
-              <span className="text-[11px] font-semibold text-stone-500">{event.recurrenceNote}</span>
+            {recurrenceNote ? (
+              <span className="text-[11px] font-semibold text-stone-500">{recurrenceNote}</span>
             ) : null}
           </div>
 
@@ -97,32 +107,32 @@ export default function EventDetailStaticPanel({
         </section>
       ) : null}
 
-      {event.detailOverview ? (
+      {detailOverview ? (
         <section className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
           <h2 className="text-sm font-extrabold text-stone-900">{t('worldEventDetail.overview')}</h2>
           <p className="mt-2 text-sm leading-relaxed text-stone-700">
             {useGlossary && onGlossaryTermClick ? (
               <EventRichText
-                text={event.detailOverview}
+                text={detailOverview}
                 terms={glossaryTerms}
                 onTermClick={onGlossaryTermClick}
                 linkedTermIds={linkedTermIdsRef.current}
               />
             ) : (
-              event.detailOverview
+              detailOverview
             )}
           </p>
         </section>
       ) : null}
 
-      {Array.isArray(event.highlights) && event.highlights.length > 0 ? (
+      {highlights.length > 0 ? (
         <section className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
           <h2 className="flex items-center gap-1.5 text-sm font-extrabold text-stone-900">
             <Sparkles size={15} className="text-amber-700" aria-hidden />
             {t('worldEventDetail.highlights')}
           </h2>
           <ul className="mt-2 list-disc space-y-3 pl-5 text-sm text-stone-700">
-            {event.highlights.map((item, index) => {
+            {highlights.map((item, index) => {
               const contextLinks = getHighlightContextLinks(event, index)
                 .map((link) => getResolvedHighlightContextLink(link, location, locale))
                 .filter(Boolean);
@@ -182,29 +192,29 @@ export default function EventDetailStaticPanel({
         </section>
       ) : null}
 
-      {event.bookingHints ? (
+      {bookingHints ? (
         <section className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
           <h2 className="text-sm font-extrabold text-stone-900">{t('worldEventDetail.bookingHints')}</h2>
           <p className="mt-2 text-sm leading-relaxed text-stone-700">
             {useGlossary && onGlossaryTermClick ? (
               <EventRichText
-                text={event.bookingHints}
+                text={bookingHints}
                 terms={glossaryTerms}
                 onTermClick={onGlossaryTermClick}
                 linkedTermIds={linkedTermIdsRef.current}
               />
             ) : (
-              event.bookingHints
+              bookingHints
             )}
           </p>
         </section>
       ) : null}
 
-      {Array.isArray(event.stayAreas) && event.stayAreas.length > 0 ? (
+      {stayAreas.length > 0 ? (
         <section className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
           <h2 className="text-sm font-extrabold text-stone-900">{t('worldEventDetail.stayAreas')}</h2>
           <div className="mt-2 space-y-2">
-            {event.stayAreas.map((area) => {
+            {stayAreas.map((area) => {
               const keyword = area.mrtKeyword || area.name;
               const stayHref =
                 keyword && checkIn && checkOut
@@ -241,7 +251,7 @@ export default function EventDetailStaticPanel({
         </section>
       ) : null}
 
-      {!hasTier05 && !event.bookingHints && !typeIntro ? (
+      {!hasTier05 && !bookingHints && !typeIntro ? (
         <section className="rounded-2xl border border-dashed border-stone-200 bg-white/70 p-4 text-sm text-stone-500">
           {t('worldEventDetail.staticFallback')}
         </section>

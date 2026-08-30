@@ -27,7 +27,7 @@ import {
 import { MRT_HOME_MYLINK_ID } from '../Home/data/mrtPackageThemeLinks';
 import { resolveFlightDepartureIataForTrip } from '../Home/lib/flightOriginPreference.js';
 import { resolveTripcomPartnerLocale } from '../../utils/tripcomPartnerLocale.js';
-import { getWorldEventPlaceMeta } from '../../utils/worldEvents';
+import { getWorldEventPlaceMeta, getWorldEventStayAreas } from '../../utils/worldEvents';
 
 function todayYmd() {
   const d = new Date();
@@ -51,9 +51,11 @@ function EventFlightHotelCta({
   adultCount,
   childCount,
   departureIata,
+  locale = 'ko',
   className = '',
 }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const partnerLocale = resolveTripcomPartnerLocale(locale);
   const packageUrl = useMemo(() => {
     if (!location) return null;
     const depart = departureIata
@@ -69,9 +71,9 @@ function EventFlightHotelCta({
       checkOut,
       adultCount,
       childCount,
-      partnerLocale: resolveTripcomPartnerLocale(i18n.language),
+      partnerLocale,
     });
-  }, [location, checkIn, checkOut, adultCount, childCount, departureIata, i18n.language]);
+  }, [location, checkIn, checkOut, adultCount, childCount, departureIata, partnerLocale]);
 
   if (!location || !packageUrl) return null;
 
@@ -159,10 +161,10 @@ export default function EventStayStrip({
     : getWorldEventPlaceMeta(event?.slug, locale);
   const stayAreas = useMemo(
     () =>
-      Array.isArray(event?.stayAreas)
-        ? event.stayAreas.filter((area) => area?.name && (area.mrtKeyword || area.name))
-        : [],
-    [event?.stayAreas],
+      getWorldEventStayAreas(event, locale).filter(
+        (area) => area?.name && (area.mrtKeyword || area.name),
+      ),
+    [event, locale],
   );
   const [selectedAreaIndex, setSelectedAreaIndex] = useState(0);
   const selectedArea = stayAreas[selectedAreaIndex] ?? null;
@@ -421,6 +423,7 @@ export default function EventStayStrip({
                 adultCount={guests.adultCount}
                 childCount={guests.childCount}
                 departureIata={departureIata}
+                locale={locale}
               />
             </span>
           ) : null}

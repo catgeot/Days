@@ -9,7 +9,8 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildWorldEventDetailPath } from '../src/utils/worldEventDetailPath.js';
-import { getAllWorldEvents, getWorldEventById, getWorldEventLocation } from '../src/utils/worldEvents.js';
+import { getAllWorldEvents, getWorldEventById, getWorldEventBookingHints, getWorldEventDetailOverview, getWorldEventHighlights, getWorldEventLocation, getWorldEventRecurrenceNote, getWorldEventStayAreas } from '../src/utils/worldEvents.js';
+import { localizeEventTravelGuide } from '../src/utils/eventTravelGuideLocale.js';
 import { tripWindowPresetsFromEvent } from '../src/utils/worldEventTripPresets.js';
 import { tripWindowNights } from '../src/shared/tripWindow.js';
 import {
@@ -23,6 +24,7 @@ import {
   extractGoogleMapsSearchQuery,
   googleWebSearchUrl,
 } from '../src/utils/worldEventOutboundLinks.js';
+import { isLikelyTruncatedGlossaryAnswer } from '../src/utils/worldEventGlossaryAnswer.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -98,6 +100,28 @@ const WAVE1_EVENT_IDS = [
 
 const WAVE2_EVENT_IDS = ['singapore-gp-2026', 'dubai-fitness-challenge-2026'];
 
+const D5_B_BATCH_A_EVENT_IDS = [
+  'vienna-staatsoper-season-2026',
+  'amsterdam-kings-day-2027',
+  'prague-spring-festival-2027',
+  'marrakech-rose-festival-2027',
+];
+
+const D5_B_BATCH_B_EVENT_IDS = [
+  'tokyo-sakura-season-2027',
+  'kyoto-gion-matsuri-2027',
+  'bangkok-songkran-2027',
+];
+
+const D5_B_BATCH_C_EVENT_IDS = [
+  'rio-carnival-2027',
+  'new-york-thanksgiving-season-2026',
+  'iceland-midnight-sun-2027',
+  'sydney-vivid-2027',
+];
+
+const D5_B_BATCH_D_EVENT_IDS = ['hanoi-tet-2027'];
+
 for (const eventId of WAVE1_EVENT_IDS) {
   const event = getWorldEventById(eventId);
   assert.ok(event, `${eventId} in Wave1 roster`);
@@ -108,6 +132,54 @@ for (const eventId of WAVE2_EVENT_IDS) {
   const event = getWorldEventById(eventId);
   assert.ok(event, `${eventId} in Wave2 roster`);
   assert.ok(event.detailOverview, `${eventId} Tier0.5 detailOverview`);
+  assert.ok(Array.isArray(event.glossaryTerms) && event.glossaryTerms.length >= 4, `${eventId} glossaryTerms`);
+  assert.ok(Array.isArray(event.heroImages) && event.heroImages.length >= 3, `${eventId} heroImages`);
+  assert.ok(
+    Array.isArray(event.highlightContextLinks) && event.highlightContextLinks.length >= 2,
+    `${eventId} highlightContextLinks`,
+  );
+  assert.ok(!Array.isArray(event.actionChips) || event.actionChips.length === 0, `${eventId} no actionChips`);
+}
+
+for (const eventId of D5_B_BATCH_A_EVENT_IDS) {
+  const event = getWorldEventById(eventId);
+  assert.ok(event, `${eventId} in D5-b batch A`);
+  assert.ok(Array.isArray(event.glossaryTerms) && event.glossaryTerms.length >= 4, `${eventId} glossaryTerms`);
+  assert.ok(Array.isArray(event.heroImages) && event.heroImages.length >= 3, `${eventId} heroImages`);
+  assert.ok(
+    Array.isArray(event.highlightContextLinks) && event.highlightContextLinks.length >= 2,
+    `${eventId} highlightContextLinks`,
+  );
+  assert.ok(!Array.isArray(event.actionChips) || event.actionChips.length === 0, `${eventId} no actionChips`);
+}
+
+for (const eventId of D5_B_BATCH_B_EVENT_IDS) {
+  const event = getWorldEventById(eventId);
+  assert.ok(event, `${eventId} in D5-b batch B`);
+  assert.ok(Array.isArray(event.glossaryTerms) && event.glossaryTerms.length >= 4, `${eventId} glossaryTerms`);
+  assert.ok(Array.isArray(event.heroImages) && event.heroImages.length >= 3, `${eventId} heroImages`);
+  assert.ok(
+    Array.isArray(event.highlightContextLinks) && event.highlightContextLinks.length >= 2,
+    `${eventId} highlightContextLinks`,
+  );
+  assert.ok(!Array.isArray(event.actionChips) || event.actionChips.length === 0, `${eventId} no actionChips`);
+}
+
+for (const eventId of D5_B_BATCH_C_EVENT_IDS) {
+  const event = getWorldEventById(eventId);
+  assert.ok(event, `${eventId} in D5-b batch C`);
+  assert.ok(Array.isArray(event.glossaryTerms) && event.glossaryTerms.length >= 4, `${eventId} glossaryTerms`);
+  assert.ok(Array.isArray(event.heroImages) && event.heroImages.length >= 3, `${eventId} heroImages`);
+  assert.ok(
+    Array.isArray(event.highlightContextLinks) && event.highlightContextLinks.length >= 2,
+    `${eventId} highlightContextLinks`,
+  );
+  assert.ok(!Array.isArray(event.actionChips) || event.actionChips.length === 0, `${eventId} no actionChips`);
+}
+
+for (const eventId of D5_B_BATCH_D_EVENT_IDS) {
+  const event = getWorldEventById(eventId);
+  assert.ok(event, `${eventId} in D5-b batch D`);
   assert.ok(Array.isArray(event.glossaryTerms) && event.glossaryTerms.length >= 4, `${eventId} glossaryTerms`);
   assert.ok(Array.isArray(event.heroImages) && event.heroImages.length >= 3, `${eventId} heroImages`);
   assert.ok(
@@ -144,6 +216,7 @@ assert.equal(resolvePlannerFlightArrivalIata(dubaiLoc), 'DXB', 'dubai arrival IA
 const edinburghPresets = tripWindowPresetsFromEvent(getWorldEventById('edinburgh-fringe-2026'));
 
 const stayStripSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventStayStrip.jsx'), 'utf8');
+assert.match(stayStripSrc, /getWorldEventStayAreas/, 'EventStayStrip locale stayAreas');
 assert.match(
   stayStripSrc,
   /departDate: checkIn/,
@@ -166,11 +239,17 @@ const appSrc = readFileSync(join(root, 'src/App.jsx'), 'utf8');
 assert.match(appSrc, /\/world-events\/:eventId/, 'App route for event detail');
 
 const hubSrc = readFileSync(join(root, 'src/pages/WorldEvents/index.jsx'), 'utf8');
+assert.match(hubSrc, /getWorldEventRecurrenceNote/, 'WorldEvents hub locale recurrenceNote');
 assert.match(hubSrc, /eventDetailHref/, 'WorldEvents hub uses eventDetailHref');
 
 const detailSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventDetailPage.jsx'), 'utf8');
 assert.match(detailSrc, /EventDetailStaticPanel/, 'EventDetailPage renders static panel');
 assert.match(detailSrc, /shouldShowEventTravelGuidePanel/, 'EventDetailPage suppresses AI panel on PROD');
+const travelGuidePanelSrc = readFileSync(
+  join(root, 'src/pages/WorldEvents/EventTravelGuidePanel.jsx'),
+  'utf8',
+);
+assert.match(travelGuidePanelSrc, /localizeEventTravelGuide/, 'EventTravelGuidePanel locale guide');
 assert.match(detailSrc, /EventStayStrip/, 'EventDetailPage renders in-page stay strip');
 assert.match(detailSrc, /EventMooniFab/, 'EventDetailPage renders Mooni FAB');
 assert.match(detailSrc, /EventActionChips/, 'EventDetailPage renders action chips');
@@ -194,6 +273,21 @@ assert.ok(Array.isArray(edinburgh.actionChips) && edinburgh.actionChips.length >
 assert.ok(edinburgh.actionChips.some((chip) => /edfringe\.com/.test(chip.href)), 'edinburgh official chip');
 assert.ok(edinburgh.actionChips.some((chip) => /Royal\+Mile|Royal%20Mile/i.test(chip.href)), 'edinburgh Royal Mile chip');
 
+const bangkok = getWorldEventById('bangkok-songkran-2027');
+const bangkokWaterproof = bangkok.highlightContextLinks
+  .find((group) => group.highlightIndex === 1)
+  ?.links.find((link) => link.id === 'waterproof-bag');
+assert.ok(bangkokWaterproof?.searchTarget === 'google', 'bangkok waterproof bag google search target');
+
+const sydney = getWorldEventById('sydney-vivid-2027');
+const sydneyTransport = sydney.highlightContextLinks.find((group) => group.highlightIndex === 2);
+const sydneyFerry = sydneyTransport?.links.find((link) => link.id === 'sydney-ferry-official');
+const sydneyTram = sydneyTransport?.links.find((link) => link.id === 'sydney-tram-pass');
+assert.ok(sydneyFerry?.href?.includes('transportnsw.info'), 'sydney ferry official transportnsw href');
+assert.match(sydneyFerry?.href || '', /f1|ferry/i, 'sydney ferry manly route href');
+assert.ok(sydneyTram?.searchTarget === 'klook', 'sydney tram klook search target');
+assert.match(sydneyTram?.searchQueryKo || '', /교통 패스/, 'sydney tram transit pass query ko');
+
 const bali = getWorldEventById('bali-galungan-season-2026');
 assert.ok(bali.heroImage, 'bali heroImage');
 assert.ok(Array.isArray(bali.youtubeVideos) && bali.youtubeVideos.length >= 2, 'bali youtubeVideos');
@@ -203,6 +297,8 @@ assert.equal(bali.hubId, 'bali', 'bali hubId for attraction bridge');
 
 const chipsUtilSrc = readFileSync(join(root, 'src/utils/worldEventChips.js'), 'utf8');
 assert.match(chipsUtilSrc, /buildWorldEventMooniSeed/, 'worldEventChips seed builder');
+assert.match(chipsUtilSrc, /getWorldEventDetailOverview/, 'worldEventChips locale overview seed');
+assert.match(chipsUtilSrc, /getWorldEventHighlights/, 'worldEventChips locale highlights seed');
 
 const mediaUtilSrc = readFileSync(join(root, 'src/utils/worldEventMedia.js'), 'utf8');
 assert.match(mediaUtilSrc, /getWorldEventHubAttractions/, 'worldEventMedia hub bridge');
@@ -218,6 +314,12 @@ const baliHub = getWorldEventHubAttractions(bali, { locale: 'ko' });
 assert.ok(baliHub.hub?.href === '/place/bali', 'bali hub link');
 assert.ok(baliHub.attractions.length >= 3, 'bali hub attractions');
 assert.ok(baliHub.attractions[0].href.startsWith('/place/'), 'attraction place link');
+const baliHubEn = getWorldEventHubAttractions(bali, { locale: 'en' });
+assert.ok(
+  baliHubEn.attractions.every((item) => !/[가-힣]/.test(item.kindLabel || '')),
+  'en hub attraction kind labels are not Korean',
+);
+assert.equal(baliHubEn.attractions[0].kindLabel, 'Neighborhood', 'en hub kind label localized');
 assert.ok(buildWorldEventSearchQuery(bali, 'ko').includes('갈룽안'), 'bali search query ko');
 assert.ok(!buildWorldEventSearchQuery(bali, 'ko').includes('islandwide'), 'bali search query no English venue');
 assert.ok(buildWorldEventSearchQuery(bali, 'en').includes('Galungan'), 'bali search query en');
@@ -255,13 +357,98 @@ assert.match(glossaryUtilSrc, /hasWorldEventD5bBodyUx/, 'worldEventGlossary D5-b
 assert.match(glossaryUtilSrc, /getWorldEventHeroImages/, 'worldEventGlossary hero images');
 assert.match(glossaryUtilSrc, /resolveHighlightContextLinkHref/, 'worldEventGlossary context links');
 assert.match(glossaryUtilSrc, /getKlookSearchUrl/, 'worldEventGlossary klook search url');
-assert.match(glossaryUtilSrc, /extractGoogleMapsSearchQuery/, 'worldEventGlossary maps to web search');
+assert.match(glossaryUtilSrc, /get12GoAffiliateUrl/, 'worldEventGlossary 12go affiliate url');
+assert.match(glossaryUtilSrc, /getGlossaryTermReferenceUrl/, 'worldEventGlossary reference url locale');
+assert.match(glossaryUtilSrc, /getWorldEventGlossaryTermById/, 'worldEventGlossary term by id locale');
+assert.match(glossaryUtilSrc, /term\.termEn && term\.promptEn/, 'worldEventGlossary EN terms require En fields');
 
 const richTextSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventRichText.jsx'), 'utf8');
 assert.match(richTextSrc, /buildGlossarySegments/, 'EventRichText glossary wrapping');
 assert.match(richTextSrc, /linkedTermIds/, 'EventRichText shared glossary link state');
 
+const PILOT_I18N_EVENT_IDS = [
+  'edinburgh-fringe-2026',
+  'munich-oktoberfest-2026',
+  'bali-galungan-season-2026',
+];
+
+for (const eventId of PILOT_I18N_EVENT_IDS) {
+  const event = getWorldEventById(eventId);
+  assert.ok(event?.detailOverviewEn, `${eventId} has detailOverviewEn`);
+  assert.ok(
+    Array.isArray(event.highlightsEn) && event.highlightsEn.length >= 2,
+    `${eventId} has highlightsEn`,
+  );
+  assert.equal(
+    event.highlightsEn.length,
+    event.highlights.length,
+    `${eventId} highlightsEn length matches highlights`,
+  );
+  const overviewEn = getWorldEventDetailOverview(event, 'en');
+  const highlightsEn = getWorldEventHighlights(event, 'en');
+  assert.ok(overviewEn && overviewEn === event.detailOverviewEn, `${eventId} locale en overview`);
+  assert.equal(highlightsEn.length, event.highlightsEn.length, `${eventId} locale en highlights count`);
+  assert.ok(
+    highlightsEn.every((item, index) => item === event.highlightsEn[index]),
+    `${eventId} locale en highlights items`,
+  );
+  assert.ok(
+    getWorldEventDetailOverview(event, 'ko') === event.detailOverview,
+    `${eventId} locale ko overview fallback`,
+  );
+  assert.ok(
+    getWorldEventRecurrenceNote(event, 'en') === event.recurrenceNoteEn,
+    `${eventId} locale en recurrenceNote`,
+  );
+  const stayAreasEn = getWorldEventStayAreas(event, 'en');
+  if (Array.isArray(event.stayAreas) && event.stayAreas.length > 0) {
+    assert.equal(stayAreasEn.length, event.stayAreas.length, `${eventId} stayAreas en count`);
+    assert.ok(
+      stayAreasEn.every((area, index) => area.name === event.stayAreas[index].nameEn),
+      `${eventId} stayAreas en names`,
+    );
+  }
+}
+
+const singapore = getWorldEventById('singapore-gp-2026');
+assert.ok(singapore, 'singapore present for i18n-2 non-pilot');
+assert.equal(getWorldEventDetailOverview(singapore, 'en'), '', 'non-pilot EN overview has no KO fallback');
+assert.deepEqual(getWorldEventHighlights(singapore, 'en'), [], 'non-pilot EN highlights has no KO fallback');
+assert.equal(getWorldEventBookingHints(singapore, 'en'), '', 'non-pilot EN bookingHints hidden');
+assert.equal(
+  getWorldEventRecurrenceNote(singapore, 'en'),
+  singapore.recurrenceNoteEn,
+  'non-pilot EN recurrenceNote uses En field',
+);
+assert.equal(getWorldEventStayAreas(singapore, 'en').length, 0, 'non-pilot EN stayAreas without nameEn hidden');
+
+const seoUrlsSrc = readFileSync(join(root, 'src/i18n/seoUrls.js'), 'utf8');
+assert.match(seoUrlsSrc, /'\/world-events'/, 'I18N_HUB_PATHS includes /world-events');
+
+const vercelSrc = readFileSync(join(root, 'vercel.json'), 'utf8');
+assert.match(vercelSrc, /"\/en\/world-events"/, 'vercel /en/world-events redirect');
+assert.match(vercelSrc, /"\/en\/world-events\/:eventId"/, 'vercel /en/world-events/:eventId redirect');
+
 const staticPanelSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventDetailStaticPanel.jsx'), 'utf8');
+assert.match(staticPanelSrc, /getWorldEventBookingHints/, 'EventDetailStaticPanel locale bookingHints');
+
+const edinburghGuideFixture = JSON.parse(
+  readFileSync(join(root, 'scripts/fixtures/event-travel-guide/edinburgh-fringe-2026.json'), 'utf8'),
+);
+const edinburghGuideEn = localizeEventTravelGuide(edinburghGuideFixture, 'en');
+assert.ok(
+  edinburghGuideEn.trip_presets[0].label.includes('Opening week'),
+  'event travel guide locale en trip preset label',
+);
+assert.ok(
+  edinburghGuideEn.sections[0].title.includes('Choosing shows'),
+  'event travel guide locale en section title',
+);
+
+assert.match(staticPanelSrc, /getWorldEventDetailOverview/, 'EventDetailStaticPanel locale overview');
+assert.match(staticPanelSrc, /getWorldEventHighlights/, 'EventDetailStaticPanel locale highlights');
+assert.match(staticPanelSrc, /getWorldEventRecurrenceNote/, 'EventDetailStaticPanel locale recurrenceNote');
+assert.match(staticPanelSrc, /getWorldEventStayAreas/, 'EventDetailStaticPanel locale stayAreas');
 assert.match(staticPanelSrc, /linkedTermIdsRef/, 'EventDetailStaticPanel shared glossary refs');
 assert.match(staticPanelSrc, /hideHeaderSummary/, 'EventDetailStaticPanel hideHeaderSummary gate');
 assert.match(detailSrc, /hideHeaderSummary/, 'EventDetailPage D5-b summary dedupe');
@@ -270,12 +457,48 @@ assert.match(detailSrc, /heroEyebrow/, 'EventDetailPage season meta strip highli
 const termModalSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventTermExplainModal.jsx'), 'utf8');
 assert.match(termModalSrc, /fetchEventTermExplanation/, 'EventTermExplainModal cached explain');
 assert.match(termModalSrc, /peekEventTermExplanationCache/, 'EventTermExplainModal memory cache warm');
-assert.match(termModalSrc, /googleSearch/, 'EventTermExplainModal google search link');
+assert.match(termModalSrc, /getGlossaryTermReferenceUrl/, 'EventTermExplainModal locale reference url');
+assert.match(termModalSrc, /safe-area-inset-bottom/, 'EventTermExplainModal safe area bottom');
+assert.match(termModalSrc, /getWorldEventGlossaryTermById\(event, termId, locale\)/, 'EventTermExplainModal locale term lookup');
+
+const stehplatzTruncated =
+  '빈 오페라 스탠딩석(Stehplatz)은 빈 국립 오페라 극장에서 가장 저렴하게 오페라를 관람할 수 있는 입석 티';
+assert.ok(isLikelyTruncatedGlossaryAnswer(stehplatzTruncated, 'ko'), 'truncated stehplatz sample');
+assert.ok(
+  !isLikelyTruncatedGlossaryAnswer(
+    '빈 오페라 스탠딩석은 당일 현장 구매가 가능하며, 인기 공연은 조기 매진됩니다. 편한 신발과 여유 시간을 준비하세요.',
+    'ko',
+  ),
+  'complete stehplatz sample',
+);
+
+const explainTermSrc = readFileSync(
+  join(root, 'supabase/functions/explain-event-term/index.ts'),
+  'utf8',
+);
+assert.match(explainTermSrc, /thinkingBudget:\s*0/, 'explain-event-term disables thinking budget');
+assert.match(explainTermSrc, /isLikelyTruncatedGlossaryAnswer/, 'explain-event-term trunc guard');
+assert.match(explainTermSrc, /!part\?\.thought/, 'explain-event-term skips thought parts');
+
+const fetchExplainSrc = readFileSync(join(root, 'src/utils/fetchEventTermExplanation.js'), 'utf8');
+assert.match(fetchExplainSrc, /isLikelyTruncatedGlossaryAnswer/, 'fetch explain trunc guard');
+assert.match(fetchExplainSrc, /force/, 'fetch explain force retry');
+
+const glossaryAnswerSrc = readFileSync(join(root, 'src/utils/worldEventGlossaryAnswer.js'), 'utf8');
+assert.match(glossaryAnswerSrc, /isLikelyTruncatedGlossaryAnswer/, 'worldEventGlossaryAnswer trunc guard');
 
 const glossarySearchUrl = googleWebSearchUrl(bali.glossaryTerms[0].searchQueryKo, 'ko');
 assert.match(glossarySearchUrl, /google\.com\/search/, 'glossary modal google web search');
 assert.doesNotMatch(glossarySearchUrl, /google\.com\/maps/, 'glossary modal not maps');
 assert.match(glossarySearchUrl, /udm=14/, 'glossary google search uses web tab param');
+
+const tokyo = getWorldEventById('tokyo-sakura-season-2027');
+const uenoTerm = tokyo.glossaryTerms.find((term) => term.id === 'ueno-park');
+assert.ok(uenoTerm?.referenceUrlKo, 'ueno-park referenceUrlKo');
+const uenoRefKo = uenoTerm.referenceUrlKo || uenoTerm.referenceUrl;
+const uenoRefEn = uenoTerm.referenceUrl || uenoTerm.referenceUrlKo;
+assert.match(uenoRefKo, /ko\.wikipedia\.org/, 'ueno reference ko locale data');
+assert.match(uenoRefEn, /en\.wikipedia\.org/, 'ueno reference en locale data');
 
 const mapsQuery = extractGoogleMapsSearchQuery(
   'https://www.google.com/maps/search/?api=1&query=Royal+Mile+Edinburgh',
@@ -429,6 +652,10 @@ for (const pilotId of [
   'bali-galungan-season-2026',
   'singapore-gp-2026',
   'dubai-fitness-challenge-2026',
+  ...D5_B_BATCH_A_EVENT_IDS,
+  ...D5_B_BATCH_B_EVENT_IDS,
+  ...D5_B_BATCH_C_EVENT_IDS,
+  ...D5_B_BATCH_D_EVENT_IDS,
 ]) {
   await assertPilotHeroImagesReachable(pilotId);
 }
@@ -458,6 +685,8 @@ assert.match(locationRulesSrc, /'bali'/, 'bali in GYG location rules');
 assert.match(affiliateSrc, /getKlookRentalUrlByLocation/, 'affiliate Klook rental helper');
 assert.match(affiliateSrc, /event-detail-flight/, 'affiliate event-detail-flight tracking');
 assert.match(affiliateSrc, /if \(mode === 'packages'\)/, 'packages/list gated by mode=packages only');
+assert.match(affiliateSrc, /surface: 'packages'/, 'packages uses EN www host branch');
+assert.match(affiliateSrc, /resolveTripcomCurrency/, 'affiliate tripcom currency by locale');
 assert.match(affiliateSrc, /bali: '723'/, 'bali Trip.com hotel city id for packages');
 assert.match(mrtPackageQuerySrc, /bali/, 'bali in MRT package keyword rules');
 assert.equal(baliLoc.slug, 'bali', 'bali location slug for execution strip');
@@ -478,6 +707,7 @@ assert.equal(
 assert.match(stayStripSrc, /synced\.checkIn === checkIn/, 'EventStayStrip skips redundant preset apply');
 
 assert.match(stayStripSrc, /EventFlightHotelCta/, 'EventStayStrip uses packages CTA');
+assert.match(stayStripSrc, /locale=\{locale\}/, 'EventStayStrip passes locale to packages CTA');
 assert.match(stayStripSrc, /event-detail-flight/, 'EventStayStrip event-detail-flight tracking');
 assert.match(stayStripSrc, /mode: 'packages'/, 'EventStayStrip packages mode');
 assert.match(stayStripSrc, /placeLabel/, 'EventStayStrip placeLabel override');

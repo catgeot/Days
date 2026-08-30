@@ -16,6 +16,7 @@ import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
 import {
   formatWorldEventDateRange,
   getWorldEventPlaceMeta,
+  getWorldEventRecurrenceNote,
   getWorldEventTitle,
   getWorldEventsForHubRegion,
 } from '../../utils/worldEvents';
@@ -36,6 +37,7 @@ function WorldEventHubCard({ event, locale, t }) {
   const placeMeta = getWorldEventPlaceMeta(event.slug, locale);
   const title = getWorldEventTitle(event, locale);
   const dateLabel = formatWorldEventDateRange(event, locale);
+  const recurrenceNote = getWorldEventRecurrenceNote(event, locale);
   const presets = tripWindowPresetsFromEvent(event);
   const { eventDetailHref, detailHref: placeHref, plannerHref } = presets;
   const stayHref = placeMeta.label
@@ -75,8 +77,8 @@ function WorldEventHubCard({ event, locale, t }) {
             {dateLabel ? (
               <p className="text-xs text-stone-500">{dateLabel}</p>
             ) : null}
-            {event.recurrenceNote ? (
-              <p className="text-[11px] text-stone-400">{event.recurrenceNote}</p>
+            {recurrenceNote ? (
+              <p className="text-[11px] text-stone-400">{recurrenceNote}</p>
             ) : null}
           </div>
         </div>

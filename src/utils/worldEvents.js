@@ -13,6 +13,7 @@ for (const spot of travelSpotsList ?? []) {
     name: spot.name || '',
     name_en: spot.name_en || '',
     country: spot.country || '',
+    country_en: spot.country_en || '',
   });
 }
 
@@ -69,6 +70,90 @@ export function getWorldEventTitle(event, locale = 'ko') {
   if (!event) return '';
   if (locale === 'en' && event.titleEn) return event.titleEn;
   return event.title || event.titleEn || '';
+}
+
+/**
+ * @param {string} [locale]
+ */
+function isEnLocale(locale) {
+  return locale === 'en';
+}
+
+/**
+ * @param {WorldEvent} event
+ * @param {string} [locale]
+ */
+export function getWorldEventDetailOverview(event, locale = 'ko') {
+  if (!event) return '';
+  if (isEnLocale(locale)) {
+    return event.detailOverviewEn ? String(event.detailOverviewEn).trim() : '';
+  }
+  return event.detailOverview ? String(event.detailOverview).trim() : '';
+}
+
+/**
+ * @param {WorldEvent} event
+ * @param {string} [locale]
+ * @returns {string[]}
+ */
+export function getWorldEventHighlights(event, locale = 'ko') {
+  if (!event) return [];
+  if (isEnLocale(locale)) {
+    if (!Array.isArray(event.highlightsEn) || event.highlightsEn.length === 0) return [];
+    return event.highlightsEn.map((item) => String(item).trim()).filter(Boolean);
+  }
+  if (!Array.isArray(event.highlights)) return [];
+  return event.highlights.map((item) => String(item).trim()).filter(Boolean);
+}
+
+/**
+ * @param {WorldEvent} event
+ * @param {string} [locale]
+ */
+export function getWorldEventRecurrenceNote(event, locale = 'ko') {
+  if (!event) return '';
+  if (isEnLocale(locale)) {
+    return event.recurrenceNoteEn ? String(event.recurrenceNoteEn).trim() : '';
+  }
+  return event.recurrenceNote ? String(event.recurrenceNote).trim() : '';
+}
+
+/**
+ * @param {WorldEvent} event
+ * @param {string} [locale]
+ */
+export function getWorldEventBookingHints(event, locale = 'ko') {
+  if (!event?.bookingHints || isEnLocale(locale)) return '';
+  return String(event.bookingHints).trim();
+}
+
+/**
+ * @param {WorldEvent} event
+ * @param {string} [locale]
+ */
+export function getWorldEventStayAreas(event, locale = 'ko') {
+  if (!Array.isArray(event?.stayAreas)) return [];
+  return event.stayAreas
+    .map((area) => {
+      if (isEnLocale(locale)) {
+        const name = String(area.nameEn || '').trim();
+        if (!name) return null;
+        const note = area.noteEn != null ? String(area.noteEn).trim() : undefined;
+        return {
+          ...area,
+          name,
+          ...(note ? { note } : {}),
+        };
+      }
+      const name = String(area.name || '').trim();
+      const note = area.note != null ? String(area.note).trim() : undefined;
+      return {
+        ...area,
+        name,
+        ...(note ? { note } : {}),
+      };
+    })
+    .filter(Boolean);
 }
 
 /**
@@ -133,9 +218,11 @@ export function getWorldEventPlaceMeta(slug, locale = 'ko') {
   if (!spot) {
     return { label: key, country: '' };
   }
+  const country =
+    locale === 'en' && spot.country_en ? spot.country_en : spot.country || '';
   return {
     label: getWorldEventPlaceLabel(key, locale),
-    country: spot.country || '',
+    country,
   };
 }
 
@@ -154,6 +241,7 @@ export function getWorldEventLocation(slug) {
     name: spot.name || key,
     name_en: spot.name_en || spot.name || key,
     country: spot.country || '',
+    country_en: spot.country_en || spot.country || '',
   };
 }
 

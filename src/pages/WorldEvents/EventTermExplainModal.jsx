@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { ExternalLink, Sparkles, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import {
+  getGlossaryTermReferenceUrl,
   getGlossaryTermSearchUrl,
   getWorldEventGlossaryTermById,
 } from '../../utils/worldEventGlossary';
@@ -21,15 +22,15 @@ import {
  */
 export default function EventTermExplainModal({ event, termId, locale = 'ko', onClose }) {
   const { t } = useTranslation();
-  const term = getWorldEventGlossaryTermById(event, termId);
+  const term = getWorldEventGlossaryTermById(event, termId, locale);
   const [answer, setAnswer] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
-  const displayTerm =
-    term && (locale === 'en' && term.termEn ? term.termEn : term.termKo);
-  const prompt = term && (locale === 'en' && term.promptEn ? term.promptEn : term.promptKo);
+  const displayTerm = term ? (locale === 'en' ? term.termEn : term.termKo) : '';
+  const prompt = term ? (locale === 'en' ? term.promptEn : term.promptKo) : '';
   const searchUrl = getGlossaryTermSearchUrl(term, locale);
+  const referenceUrl = getGlossaryTermReferenceUrl(term, locale);
 
   useEffect(() => {
     if (!term || !prompt || !event?.id) return undefined;
@@ -88,7 +89,7 @@ export default function EventTermExplainModal({ event, termId, locale = 'ko', on
   if (!term || !displayTerm) return null;
 
   const modal = (
-    <div className="fixed inset-0 z-[9999] flex items-end justify-center p-0 sm:items-center sm:p-4">
+    <div className="fixed inset-0 z-[9999] flex items-end justify-center px-0 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:items-center sm:p-4">
       <button
         type="button"
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
@@ -121,17 +122,17 @@ export default function EventTermExplainModal({ event, termId, locale = 'ko', on
           </button>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
           {loading ? (
-            <p className="text-sm text-stone-500">{t('worldEventDetail.glossary.loading')}</p>
+            <p className="text-[15px] leading-7 text-stone-500">{t('worldEventDetail.glossary.loading')}</p>
           ) : error ? (
-            <p className="text-sm text-stone-600">{t('worldEventDetail.glossary.error')}</p>
+            <p className="text-[15px] leading-7 text-stone-600">{t('worldEventDetail.glossary.error')}</p>
           ) : (
-            <p className="whitespace-pre-wrap text-sm leading-relaxed text-stone-700">{answer}</p>
+            <p className="whitespace-pre-wrap text-[15px] leading-7 text-stone-800">{answer}</p>
           )}
         </div>
 
-        <div className="flex flex-wrap gap-2 border-t border-stone-100 px-4 py-3">
+        <div className="flex flex-wrap gap-2 border-t border-stone-100 px-4 pt-3 pb-[max(1.25rem,calc(env(safe-area-inset-bottom,0px)+0.5rem))]">
           {searchUrl ? (
             <a
               href={searchUrl}
@@ -143,9 +144,9 @@ export default function EventTermExplainModal({ event, termId, locale = 'ko', on
               <ExternalLink size={10} className="opacity-60" aria-hidden />
             </a>
           ) : null}
-          {term.referenceUrl ? (
+          {referenceUrl ? (
             <a
-              href={term.referenceUrl}
+              href={referenceUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-800 hover:border-amber-300 hover:bg-amber-50"

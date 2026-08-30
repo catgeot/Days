@@ -52,12 +52,14 @@ assert.ok(viennaEvents[0].startDate, 'vienna event has startDate');
 
 const appSrc = readFileSync(join(root, 'src/App.jsx'), 'utf8');
 assert.match(appSrc, /path="\/world-events"/, 'App registers /world-events route');
+assert.match(appSrc, /\/en\/world-events/, 'App registers /en/world-events redirect');
 
 const hubSrc = readFileSync(join(root, 'src/pages/WorldEvents/index.jsx'), 'utf8');
 assert.match(hubSrc, /WORLD_EVENT_HUB_REGIONS/, 'WorldEvents hub uses region SSOT');
 assert.match(hubSrc, /getWorldEventsForHubRegion/, 'WorldEvents hub filters by region');
 assert.match(hubSrc, /tripWindowPresetsFromEvent/, 'WorldEvents hub uses TripWindow presets');
-assert.match(hubSrc, /detailHref/, 'WorldEvents hub place CTA uses detail URL');
+assert.match(hubSrc, /getWorldEventRecurrenceNote/, 'WorldEvents hub locale recurrenceNote');
+assert.match(hubSrc, /locale={locale}/, 'WorldEvents hub passes locale to cards');
 
 const homeUiSrc = readFileSync(join(root, 'src/pages/Home/components/HomeUI.jsx'), 'utf8');
 assert.match(homeUiSrc, /to: '\/world-events'/, 'Home quick link to /world-events');
@@ -88,5 +90,6 @@ assert.match(
   /days-git-cursor-world-events-wave2-catgeots-projects\.vercel\.app/,
   'vercel.json /qa/world-events points to wave2 git Preview',
 );
+assert.match(vercelSrc, /"\/en\/world-events"/, 'vercel.json /en/world-events redirect');
 
 console.log('OK    smoke:world-events-hub — all assertions passed');

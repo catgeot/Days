@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Sparkles } from 'lucide-react';
 import { isCloudPreviewSurface } from '../../shared/cloudPreview/isCloudPreviewSurface';
+import { localizeEventTravelGuide } from '../../utils/eventTravelGuideLocale';
 
 function isDevQaSurface() {
   return isCloudPreviewSurface() || import.meta.env.DEV;
@@ -20,17 +21,18 @@ export default function EventTravelGuidePanel({ guide, rawRow = null, locale = '
   const { t } = useTranslation();
 
   const parsed = useMemo(() => {
-    if (!guide || typeof guide !== 'object') return null;
+    const localized = localizeEventTravelGuide(guide, locale);
+    if (!localized || typeof localized !== 'object') return null;
 
-    const tripPresets = Array.isArray(guide.trip_presets) ? guide.trip_presets : [];
-    const sections = Array.isArray(guide.sections) ? guide.sections : [];
-    const bookingTips = Array.isArray(guide.booking_tips) ? guide.booking_tips : [];
-    const cautions = Array.isArray(guide.cautions) ? guide.cautions : [];
+    const tripPresets = Array.isArray(localized.trip_presets) ? localized.trip_presets : [];
+    const sections = Array.isArray(localized.sections) ? localized.sections : [];
+    const bookingTips = Array.isArray(localized.booking_tips) ? localized.booking_tips : [];
+    const cautions = Array.isArray(localized.cautions) ? localized.cautions : [];
 
     if (tripPresets.length === 0 && sections.length === 0) return null;
 
     return { tripPresets, sections, bookingTips, cautions };
-  }, [guide]);
+  }, [guide, locale]);
 
   if (!parsed) return null;
 

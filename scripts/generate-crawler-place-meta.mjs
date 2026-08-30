@@ -69,7 +69,7 @@ const hubOutFile = join(root, 'src/edge/crawlerHubMeta.generated.js');
 const TABS = ['gallery', 'planner', 'wiki'];
 const LOCALES = ['ko', 'en'];
 /** Hub crawler paths — sync with resolveCrawlerMeta HUB_PATHS + middleware matcher (#15·#16). */
-const HUB_PATHS = ['/', '/korea', '/korea/theme/scenic', '/explore', '/blog', '/blog/curation'];
+const HUB_PATHS = ['/', '/korea', '/korea/theme/scenic', '/explore', '/blog', '/blog/curation', '/world-events'];
 
 const HUB_LOCALE_KEYS = {
   '/': {
@@ -103,6 +103,11 @@ const HUB_LOCALE_KEYS = {
     title: 'logbook.curationPage.seoTitle',
     description: 'logbook.curationPage.seoDescription',
     keywords: 'logbook.curationPage.seoKeywords',
+  },
+  '/world-events': {
+    title: 'worldEventsHub.seoTitle',
+    description: 'worldEventsHub.seoDescription',
+    keywords: 'seo.defaultKeywords',
   },
 };
 

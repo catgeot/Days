@@ -1,6 +1,9 @@
-import { buildGygActivitiesSearchQuery } from '../components/PlaceCard/tabs/planner/locationRules.js';
+import {
+  buildGygActivitiesSearchQuery,
+} from '../components/PlaceCard/tabs/planner/locationRules.js';
 import {
   buildGygSearchUrl,
+  get12GoAffiliateUrl,
   getKlookAffiliateUrl,
   getKlookRentalUrlByLocation,
   getKlookSearchUrl,
@@ -31,13 +34,20 @@ export function getWorldEventHeroImages(event) {
  */
 export function getWorldEventGlossaryTerms(event, locale = 'ko') {
   if (!event?.glossaryTerms?.length) return [];
-  return event.glossaryTerms.map((term) => ({
-    ...term,
-    displayTerm: locale === 'en' && term.termEn ? term.termEn : term.termKo,
-    prompt: locale === 'en' && term.promptEn ? term.promptEn : term.promptKo,
-    searchQuery:
-      locale === 'en' && term.searchQueryEn ? term.searchQueryEn : term.searchQueryKo,
-  }));
+  return event.glossaryTerms
+    .map((term) => ({
+      ...term,
+      displayTerm: locale === 'en' ? term.termEn : term.termKo,
+      prompt: locale === 'en' ? term.promptEn : term.promptKo,
+      searchQuery:
+        locale === 'en' && term.searchQueryEn ? term.searchQueryEn : term.searchQueryKo,
+    }))
+    .filter((term) => {
+      if (locale !== 'en') {
+        return Boolean(term.displayTerm && term.prompt);
+      }
+      return Boolean(term.termEn && term.promptEn && term.displayTerm && term.prompt);
+    });
 }
 
 /**
@@ -56,10 +66,13 @@ export function getHighlightContextLinks(event, highlightIndex) {
  * @param {import('./worldEvents').WorldEvent | null | undefined} event
  * @param {string} termId
  */
-export function getWorldEventGlossaryTermById(event, termId) {
+export function getWorldEventGlossaryTermById(event, termId, locale = 'ko') {
   const id = String(termId || '').trim();
   if (!id || !event?.glossaryTerms?.length) return null;
-  return event.glossaryTerms.find((term) => term.id === id) ?? null;
+  const term = event.glossaryTerms.find((item) => item.id === id) ?? null;
+  if (!term) return null;
+  if (locale === 'en' && (!term.termEn || !term.promptEn)) return null;
+  return term;
 }
 
 /**
@@ -71,6 +84,18 @@ export function getGlossaryTermSearchUrl(term, locale = 'ko') {
   const query =
     locale === 'en' && term.searchQueryEn ? term.searchQueryEn : term.searchQueryKo;
   return googleWebSearchUrl(query, locale);
+}
+
+/**
+ * @param {import('./worldEvents').WorldEventGlossaryTerm | null | undefined} term
+ * @param {string} [locale]
+ */
+export function getGlossaryTermReferenceUrl(term, locale = 'ko') {
+  if (!term) return '';
+  const referenceUrlKo = String(term.referenceUrlKo || '').trim();
+  const referenceUrl = String(term.referenceUrl || '').trim();
+  if (locale === 'en') return referenceUrl || referenceUrlKo;
+  return referenceUrlKo || referenceUrl;
 }
 
 /**
@@ -106,6 +131,9 @@ export function resolveHighlightContextLinkHref(link, location, locale = 'ko') {
 
   const explicitHref = String(link.href || '').trim();
   if (explicitHref) {
+    if (/12go\.asia/i.test(explicitHref)) {
+      return get12GoAffiliateUrl(explicitHref);
+    }
     if (link.kind === 'shop' && /klook\.com/i.test(explicitHref)) {
       return getKlookAffiliateUrl(explicitHref);
     }
@@ -148,6 +176,10 @@ export function getResolvedHighlightContextLink(link, location, locale = 'ko') {
     label: locale === 'en' && link.labelEn ? link.labelEn : link.labelKo,
     href,
     kind: link.kind,
-    sponsored: link.kind === 'rental' || link.kind === 'tour' || /klook\.com/i.test(href),
+    sponsored:
+      link.kind === 'rental' ||
+      link.kind === 'tour' ||
+      /klook\.com/i.test(href) ||
+      /12go\.asia/i.test(href),
   };
 }

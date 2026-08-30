@@ -1,5 +1,7 @@
 import {
   formatWorldEventDateRange,
+  getWorldEventDetailOverview,
+  getWorldEventHighlights,
   getWorldEventTitle,
 } from './worldEvents.js';
 import { getKlookAffiliateUrl } from './affiliate.js';
@@ -49,10 +51,8 @@ export function buildWorldEventMooniSeed(event, locale = 'ko') {
   const title = getWorldEventTitle(event, locale);
   const dateLabel = formatWorldEventDateRange(event, locale);
   const venue = event.venue?.name ? String(event.venue.name).trim() : '';
-  const overview = event.detailOverview ? String(event.detailOverview).trim() : '';
-  const highlights = Array.isArray(event.highlights)
-    ? event.highlights.slice(0, 3).map((item) => String(item).trim()).filter(Boolean)
-    : [];
+  const overview = getWorldEventDetailOverview(event, locale);
+  const highlights = getWorldEventHighlights(event, locale).slice(0, 3);
 
   const lines = [];
   if (title) lines.push(title);

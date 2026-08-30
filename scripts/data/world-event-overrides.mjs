@@ -4,6 +4,8 @@
  *
  * Wave 1 (P2-a): Q3 확정 slug 15건 — 유럽·아시아·아메리카·오세아니아·니치
  * Wave 2 (#33): singapore · dubai — D5-b 템플릿
+ * D5-b-3 #34 배치 A: vienna · amsterdam · prague · marrakech
+ * D5-b-3 #35 배치 B: tokyo · kyoto · bangkok
  *
  * @typedef {import('../lib/world-event-schema.mjs').WorldEventOverride} WorldEventOverride
  */
@@ -21,6 +23,7 @@ export const WORLD_EVENT_OVERRIDES = [
     endDate: '2027-06-30',
     recurrence: 'annual',
     recurrenceNote: '9월~익년 6월',
+    recurrenceNoteEn: 'Sep–Jun (following year)',
     venue: { name: 'Vienna State Opera' },
     source: 'official_url',
     sourceUrl: 'https://www.wiener-staatsoper.at/en/',
@@ -47,6 +50,125 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 3,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Staatsoper_Wien_DSC_5273w.jpg/1280px-Staatsoper_Wien_DSC_5273w.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Staatsoper_Wien_DSC_5273w.jpg/1280px-Staatsoper_Wien_DSC_5273w.jpg',
+        captionKo: '빈 국립오페라',
+        captionEn: 'Vienna State Opera',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Wien_-_Haus_des_Wiener_Musikvereins_%281%29.JPG/1280px-Wien_-_Haus_des_Wiener_Musikvereins_%281%29.JPG',
+        captionKo: '빈 뮤직페어라인',
+        captionEn: 'Musikverein Vienna',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Wiener_Staatsoper_Front.jpg/1280px-Wiener_Staatsoper_Front.jpg',
+        captionKo: '국립오페라 정면',
+        captionEn: 'State Opera front',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'staatsoper',
+        termKo: '국립오페라',
+        termEn: 'State Opera',
+        promptKo:
+          '빈 국립오페라(Staatsoper)가 오페라 시즌 방문에서 왜 중심인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.',
+        promptEn: 'Why Vienna State Opera matters for opera season visitors in 3 short sentences.',
+        searchQueryKo: '빈 국립오페라 공연 예매',
+        searchQueryEn: 'Vienna State Opera tickets',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Vienna_State_Opera',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/빈_국립_오페라_극장',
+      },
+      {
+        id: 'stehplatz',
+        termKo: '스탠딩석',
+        termEn: 'Stehplatz',
+        promptKo:
+          '빈 오페라 스탠딩석(Stehplatz)이 무엇인지, 당일 구매 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'What is Stehplatz standing room at Vienna Opera? 3 short sentences.',
+        searchQueryKo: '빈 오페라 스탠딩석 Stehplatz',
+        searchQueryEn: 'Vienna Opera Stehplatz standing tickets',
+      },
+      {
+        id: 'musikverein',
+        termKo: '뮤직페어라인',
+        termEn: 'Musikverein',
+        promptKo:
+          '빈 뮤직페어라인이 국립오페라와 어떤 차이가 있는지, 클래식 공연 방문 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Musikverein vs State Opera for classical concerts in 3 short sentences.',
+        searchQueryKo: '빈 뮤직페어라인 공연',
+        searchQueryEn: 'Vienna Musikverein concerts',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Musikverein',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/뮤직_페어',
+      },
+      {
+        id: 'innere-stadt',
+        termKo: '1구 Innere Stadt',
+        termEn: 'Innere Stadt',
+        promptKo:
+          '빈 1구(Innere Stadt) 숙소가 오페라 시즌 방문에 왜 유리한지 3문장 이내로 설명해줘.',
+        promptEn: 'Why stay in Vienna Innere Stadt for opera season in 3 short sentences.',
+        searchQueryKo: '빈 1구 숙소 오페라',
+        searchQueryEn: 'Vienna Innere Stadt hotel opera',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'staatsoper-tickets',
+            labelKo: '국립오페라 예매',
+            labelEn: 'State Opera tickets',
+            kind: 'tour',
+            href: 'https://www.wiener-staatsoper.at/en/',
+          },
+          {
+            id: 'musikverein-search',
+            labelKo: '뮤직페어라인 검색',
+            labelEn: 'Musikverein search',
+            kind: 'shop',
+            searchQueryKo: '빈 뮤직페어라인 공연',
+            searchQueryEn: 'Vienna Musikverein concerts',
+            searchTarget: 'google',
+          },
+        ],
+      },
+      {
+        highlightIndex: 1,
+        links: [
+          {
+            id: 'stehplatz-guide',
+            labelKo: '스탠딩석 가이드',
+            labelEn: 'Stehplatz guide',
+            kind: 'shop',
+            searchQueryKo: '빈 오페라 스탠딩석',
+            searchQueryEn: 'Vienna Opera Stehplatz',
+            searchTarget: 'google',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '빈 국립오페라',
+    youtubeSearchQueryEn: 'Vienna State Opera',
+    mooniChips: [
+      {
+        id: 'stehplatz-tips',
+        promptKo: '스탠딩석 당일 구매 팁 알려줘',
+        promptEn: 'Tips for buying Stehplatz standing tickets?',
+      },
+      {
+        id: 'best-shows',
+        promptKo: '오페라 시즌 추천 공연 알려줘',
+        promptEn: 'Which shows to book during opera season?',
+      },
+      {
+        id: 'innere-stadt-stay',
+        promptKo: '1구 숙소 추천 기준 알려줘',
+        promptEn: 'How to pick a hotel in Innere Stadt?',
+      },
+    ],
     priority: 1,
   },
   {
@@ -60,27 +182,39 @@ export const WORLD_EVENT_OVERRIDES = [
     endDate: '2026-10-04',
     recurrence: 'annual',
     recurrenceNote: '9월 중순~10월 초',
+    recurrenceNoteEn: 'Mid-Sep–early Oct',
     venue: { name: 'Theresienwiese' },
     source: 'official_url',
     sourceUrl: 'https://www.oktoberfest.de/en',
     bookingHints: '테레지엔비제·하이드하우저 근처 숙소는 6~12개월 전 예약 권장',
     detailOverview:
       '뮌헨 테레지엔비제에서 열리는 세계 최대 맥주 축제로, 약 2주간 대형 맥주 텐트·놀이기구·스트리트 푸드가 이어집니다. 개막 주말·중순 주말 등 핵심 2~3일만 방문하는 짧은 일정이 일반적입니다.',
+    detailOverviewEn:
+      "Munich's Theresienwiese hosts the world's biggest beer festival for about two weeks of giant beer tents, rides, and street food. Most travelers visit just the key 2–3 days around opening weekend or mid-festival weekends.",
     highlights: [
       '대형 맥주 텐트 — 좌석·단체 예약은 공식 파트너·호텔 패키지 조기 마감',
       'U4/U5 Theresienwiese·Hackerbrücke 역 도보 접근',
       '평일 낮·저녁은 상대적으로 한산 — 주말·개막일 혼잡 최대',
     ],
+    highlightsEn: [
+      'Large beer tents — table and group reservations sell out through official partners and hotel packages',
+      'Walk from U4/U5 Theresienwiese or Hackerbrücke stations',
+      'Weekday afternoons and evenings are calmer — weekends and opening day are busiest',
+    ],
     stayAreas: [
       {
         name: '테레지엔비제 · Schwanthalerhöhe',
+        nameEn: 'Theresienwiese · Schwanthalerhöhe',
         mrtKeyword: 'Munich Theresienwiese',
         note: '축제장 도보 5~10분 · 성수기 6~12개월 전 마감',
+        noteEn: '5–10 min walk to grounds · books out 6–12 months ahead in peak season',
       },
       {
         name: 'Hauptbahnhof · Ludwigsvorstadt',
+        nameEn: 'Hauptbahnhof · Ludwigsvorstadt',
         mrtKeyword: 'Munich Hauptbahnhof',
         note: 'S-Bahn·U-Bahn 환승 · 텐트까지 15~20분',
+        noteEn: 'S-Bahn/U-Bahn hub · 15–20 min to tents',
       },
     ],
     recommendedNights: 3,
@@ -136,6 +270,7 @@ export const WORLD_EVENT_OVERRIDES = [
         searchQueryKo: '뮌헨 옥토버페스트 가이드',
         searchQueryEn: 'Munich Oktoberfest guide',
         referenceUrl: 'https://en.wikipedia.org/wiki/Oktoberfest',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/옥토버페스트',
       },
       {
         id: 'hackerbruecke',
@@ -243,27 +378,39 @@ export const WORLD_EVENT_OVERRIDES = [
     endDate: '2026-08-31',
     recurrence: 'annual',
     recurrenceNote: '8월 전반',
+    recurrenceNoteEn: 'Early August',
     venue: { name: 'Royal Mile & city venues' },
     source: 'official_url',
     sourceUrl: 'https://www.edfringe.com/',
     bookingHints: '올드타운·뉴타운 숙소는 공연장 도보권 위주',
     detailOverview:
       '세계 최대 규모의 공연예술 축제로, 8월 한 달간 에든버러 올드타운·프린지 등록 공연장 전역에서 수천 편의 쇼가 상연됩니다. 전체 기간 숙박보다 3~5박 짧은 방문으로 핵심 공연을 골라 보는 것이 일반적입니다.',
+    detailOverviewEn:
+      "The world's largest performing arts festival fills Edinburgh's Old Town and registered Fringe venues with thousands of shows throughout August. Most visitors pick a focused 3–5 night stay rather than booking for the full month.",
     highlights: [
       'Royal Mile 주변 프리 공연·스트리트 퍼포먼스',
       '오후·저녁 시간대 예약 공연 — 온라인 사전 예매 권장',
       '올드타운·뉴타운 도보권 숙소가 이동 부담 최소',
     ],
+    highlightsEn: [
+      'Free shows and street performances around the Royal Mile',
+      'Afternoon and evening ticketed shows — book online in advance',
+      'Stay in walkable Old Town or New Town to cut down on daily travel',
+    ],
     stayAreas: [
       {
         name: '올드타운 · Royal Mile',
+        nameEn: 'Old Town · Royal Mile',
         mrtKeyword: 'Edinburgh Old Town',
         note: '공연장 도보 10분 이내 · 성수기 조기 마감',
+        noteEn: 'Within 10 min walk of venues · books early in peak season',
       },
       {
         name: '뉴타운',
+        nameEn: 'New Town',
         mrtKeyword: 'Edinburgh New Town',
         note: '조용한 숙소 · 올드타운 버스 10~15분',
+        noteEn: 'Quieter stays · 10–15 min bus to Old Town',
       },
     ],
     recommendedNights: 4,
@@ -297,6 +444,7 @@ export const WORLD_EVENT_OVERRIDES = [
         searchQueryKo: '에든버러 프린지 축제',
         searchQueryEn: 'Edinburgh Festival Fringe',
         referenceUrl: 'https://en.wikipedia.org/wiki/Edinburgh_Festival_Fringe',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/에든버러_프린지',
       },
       {
         id: 'royal-mile',
@@ -428,6 +576,7 @@ export const WORLD_EVENT_OVERRIDES = [
     endDate: '2027-04-27',
     recurrence: 'annual',
     recurrenceNote: '4월 27일',
+    recurrenceNoteEn: 'April 27',
     venue: { name: 'Amsterdam citywide' },
     source: 'official_url',
     sourceUrl: 'https://www.iamsterdam.com/en/whats-on/calendar/festivals-events/kings-day',
@@ -454,6 +603,115 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 2,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Kings_Day_Amsterdam_2015_3.JPG/1280px-Kings_Day_Amsterdam_2015_3.JPG',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Kings_Day_Amsterdam_2015_3.JPG/1280px-Kings_Day_Amsterdam_2015_3.JPG',
+        captionKo: '킹스데이 축제',
+        captionEn: "King's Day festival",
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/4/43/Amsterdam%27s_Canals.jpg',
+        captionKo: '암스테르담 운하',
+        captionEn: "Amsterdam canals",
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Amsterdam%2C_Vondelpark%2C_at_the_pond-2.jpg/1280px-Amsterdam%2C_Vondelpark%2C_at_the_pond-2.jpg',
+        captionKo: '본델파크',
+        captionEn: 'Vondelpark',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'kings-day',
+        termKo: '킹스데이',
+        termEn: "King's Day",
+        promptKo:
+          '암스테르담 킹스데이(4월 27일)가 무엇인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.',
+        promptEn: "What is Amsterdam King's Day for travelers? 3 short sentences.",
+        searchQueryKo: '암스테르담 킹스데이',
+        searchQueryEn: "Amsterdam King's Day",
+        referenceUrl: 'https://en.wikipedia.org/wiki/Koningsdag',
+      },
+      {
+        id: 'jordaan',
+        termKo: 'Jordaan',
+        termEn: 'Jordaan',
+        promptKo:
+          '암스테르담 Jordaan 지역이 킹스데이에 왜 인기인지, 플리마켓·파티 팁을 3문장 이내로 설명해줘.',
+        promptEn: "Why Jordaan is popular on King's Day in 3 short sentences.",
+        searchQueryKo: '암스테르담 Jordaan 킹스데이',
+        searchQueryEn: "Amsterdam Jordaan King's Day",
+      },
+      {
+        id: 'vondelpark',
+        termKo: 'Vondelpark',
+        termEn: 'Vondelpark',
+        promptKo:
+          '킹스데이에 Vondelpark에서 무엇을 볼 수 있는지 3문장 이내로 설명해줘.',
+        promptEn: "What happens at Vondelpark on King's Day? 3 short sentences.",
+        searchQueryKo: '암스테르담 Vondelpark 킹스데이',
+        searchQueryEn: "Amsterdam Vondelpark King's Day",
+      },
+      {
+        id: 'orange-tradition',
+        termKo: '오렌지색 전통',
+        termEn: 'orange tradition',
+        promptKo:
+          '킹스데이에 오렌지색 옷·장식을 입는 전통의 의미를 3문장 이내로 설명해줘.',
+        promptEn: "Why everyone wears orange on King's Day in 3 short sentences.",
+        searchQueryKo: '킹스데이 오렌지색 의미',
+        searchQueryEn: "King's Day orange tradition",
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'jordaan-map',
+            labelKo: 'Jordaan 지도',
+            labelEn: 'Jordaan map',
+            kind: 'shop',
+            searchQueryKo: '암스테르담 Jordaan',
+            searchQueryEn: 'Amsterdam Jordaan',
+            searchTarget: 'google',
+          },
+        ],
+      },
+      {
+        highlightIndex: 1,
+        links: [
+          {
+            id: 'dam-square',
+            labelKo: 'Dam Square 검색',
+            labelEn: 'Dam Square search',
+            kind: 'shop',
+            searchQueryKo: '암스테르담 Dam Square 킹스데이',
+            searchQueryEn: "Amsterdam Dam Square King's Day",
+            searchTarget: 'google',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '암스테르담 킹스데이',
+    youtubeSearchQueryEn: "Amsterdam King's Day",
+    mooniChips: [
+      {
+        id: 'what-to-wear',
+        promptKo: '킹스데이에 무슨 옷 입어야 해?',
+        promptEn: "What should I wear on King's Day?",
+      },
+      {
+        id: 'best-areas',
+        promptKo: '킹스데이 어디 구역이 좋아?',
+        promptEn: "Best areas to celebrate King's Day?",
+      },
+      {
+        id: 'checkin-timing',
+        promptKo: '전날 체크인이 왜 중요해?',
+        promptEn: 'Why check in the day before?',
+      },
+    ],
     priority: 1,
   },
   {
@@ -467,6 +725,7 @@ export const WORLD_EVENT_OVERRIDES = [
     endDate: '2027-04-10',
     recurrence: 'annual',
     recurrenceNote: '3월 말~4월 초 (개화 시기 변동)',
+    recurrenceNoteEn: 'Late Mar–early Apr (bloom varies)',
     venue: { name: 'Ueno Park · Chidorigafuchi' },
     source: 'curated',
     sourceUrl: 'https://www.japan.travel/en/sg/see-and-do/cherry-blossom-viewing-spots-in-tokyo/',
@@ -493,6 +752,118 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 4,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Sakura_Tokyo_2026.jpg/1280px-Sakura_Tokyo_2026.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Sakura_Tokyo_2026.jpg/1280px-Sakura_Tokyo_2026.jpg',
+        captionKo: '도쿄 벚꽃',
+        captionEn: 'Tokyo cherry blossoms',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Cherry_blossom_at_Ueno_park%2C_near_JR_entrance.jpg/1280px-Cherry_blossom_at_Ueno_park%2C_near_JR_entrance.jpg',
+        captionKo: '우에노 공원 벚꽃',
+        captionEn: 'Ueno Park cherry blossoms',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cherry_blossoms_and_boat_at_Chidorigafuchi.jpg/1280px-Cherry_blossoms_and_boat_at_Chidorigafuchi.jpg',
+        captionKo: '치도리가후치 야간 라이트업',
+        captionEn: 'Chidorigafuchi night lights',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'sakura',
+        termKo: '사쿠라',
+        termEn: 'sakura',
+        promptKo:
+          '도쿄 벚꽃 시즌에서 사쿠라(벚꽃) 개화·만개가 여행 일정에 왜 중요한지 3문장 이내로 설명해줘.',
+        promptEn: 'Why sakura bloom timing matters for Tokyo cherry blossom trips in 3 short sentences.',
+        searchQueryKo: '도쿄 벚꽃 시즌 개화',
+        searchQueryEn: 'Tokyo cherry blossom season bloom',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Cherry_blossom',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/벚꽃',
+      },
+      {
+        id: 'hanami',
+        termKo: '하나미',
+        termEn: 'hanami',
+        promptKo:
+          '도쿄 하나미(벚꽃 피크닉)가 무엇인지, 여행자가 알아야 할 예절·팁을 3문장 이내로 설명해줘.',
+        promptEn: 'What is hanami cherry blossom viewing in Tokyo? 3 short sentences for travelers.',
+        searchQueryKo: '도쿄 하나미 벚꽃 피크닉',
+        searchQueryEn: 'Tokyo hanami cherry blossom picnic',
+      },
+      {
+        id: 'ueno-park',
+        termKo: '우에노 공원',
+        termEn: 'Ueno Park',
+        promptKo:
+          '도쿄 우에노 공원이 벚꽃 시즌 방문에 왜 인기인지 3문장 이내로 설명해줘.',
+        promptEn: 'Why Ueno Park is popular for cherry blossoms in 3 short sentences.',
+        searchQueryKo: '도쿄 우에노 공원 벚꽃',
+        searchQueryEn: 'Tokyo Ueno Park cherry blossoms',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Ueno_Park',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/우에노_공원',
+      },
+      {
+        id: 'chidorigafuchi',
+        termKo: '치도리가후치',
+        termEn: 'Chidorigafuchi',
+        promptKo:
+          '치도리가후치 벚꽃·야간 라이트업 코스의 특징과 혼잡 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Chidorigafuchi cherry blossom walk and night lights in 3 short sentences.',
+        searchQueryKo: '도쿄 치도리가후치 벚꽃',
+        searchQueryEn: 'Tokyo Chidorigafuchi cherry blossoms',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'ueno-hanami',
+            labelKo: '우에노 하나미 검색',
+            labelEn: 'Search Ueno hanami',
+            kind: 'shop',
+            searchQueryKo: '도쿄 우에노 공원 벚꽃 하나미',
+            searchQueryEn: 'Tokyo Ueno Park hanami',
+            searchTarget: 'google',
+          },
+        ],
+      },
+      {
+        highlightIndex: 2,
+        links: [
+          {
+            id: 'bloom-forecast',
+            labelKo: '개화 예보 검색',
+            labelEn: 'Bloom forecast search',
+            kind: 'shop',
+            searchQueryKo: '도쿄 벚꽃 개화 예보 2027',
+            searchQueryEn: 'Tokyo cherry blossom forecast 2027',
+            searchTarget: 'google',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '도쿄 벚꽃 시즌',
+    youtubeSearchQueryEn: 'Tokyo cherry blossom season',
+    mooniChips: [
+      {
+        id: 'bloom-timing',
+        promptKo: '만개 전후 4박 일정은 언제 잡는 게 좋아?',
+        promptEn: 'When to book a 4-night trip around peak bloom?',
+      },
+      {
+        id: 'ueno-vs-shinjuku',
+        promptKo: '우에노랑 신주쿠 숙소 어디가 나아?',
+        promptEn: 'Ueno vs Shinjuku for cherry blossom stay?',
+      },
+      {
+        id: 'night-lights',
+        promptKo: '야간 라이트업 볼 만한 곳 알려줘',
+        promptEn: 'Best spots for cherry blossom night lights?',
+      },
+    ],
     priority: 1,
   },
   {
@@ -506,6 +877,7 @@ export const WORLD_EVENT_OVERRIDES = [
     endDate: '2027-07-31',
     recurrence: 'annual',
     recurrenceNote: '7월 전체 · 요이야마 7/16~17',
+    recurrenceNoteEn: 'All July · Yoiyama Jul 16–17',
     venue: { name: 'Gion · Kawaramachi' },
     source: 'official_url',
     sourceUrl: 'https://www.yasaka-jinja.or.jp/en/',
@@ -532,6 +904,118 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 3,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Kyoto_Gion_Matsuri_20100716_2544.jpg/1280px-Kyoto_Gion_Matsuri_20100716_2544.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Kyoto_Gion_Matsuri_20100716_2544.jpg/1280px-Kyoto_Gion_Matsuri_20100716_2544.jpg',
+        captionKo: '기온마츠리 행렬',
+        captionEn: 'Gion Matsuri procession',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Gion-matsuri_in_Kyoto%3B_July_2010_%2804%29.jpg/1280px-Gion-matsuri_in_Kyoto%3B_July_2010_%2804%29.jpg',
+        captionKo: '야마보코 산마이',
+        captionEn: 'Gion Matsuri yamaboko float',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Nishiromon_Gate%2C_Yasaka_Shrine%2C_Kyoto%2C_20240820_1721_5183.jpg/1280px-Nishiromon_Gate%2C_Yasaka_Shrine%2C_Kyoto%2C_20240820_1721_5183.jpg',
+        captionKo: '야사카 신사',
+        captionEn: 'Yasaka Shrine',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'yoi-yama',
+        termKo: '요이야마',
+        termEn: 'Yoiyama',
+        promptKo:
+          '기온마츠리 요이야마(7/16~17 전야제)가 무엇인지 여행자 관점에서 3문장 이내로 설명해줘.',
+        promptEn: 'What is Gion Matsuri Yoiyama for travelers? 3 short sentences.',
+        searchQueryKo: '교토 기온마츠리 요이야마',
+        searchQueryEn: 'Kyoto Gion Matsuri Yoiyama',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Gion_Matsuri',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/기온_마쓰리',
+      },
+      {
+        id: 'yamaboko',
+        termKo: '야마보코',
+        termEn: 'yamaboko',
+        promptKo:
+          '기온마츠리 야마보코(산마이·거리 행렬)가 무엇인지 3문장 이내로 설명해줘.',
+        promptEn: 'What are Gion Matsuri yamaboko floats? 3 short sentences.',
+        searchQueryKo: '기온마츠리 야마보코 산마이',
+        searchQueryEn: 'Gion Matsuri yamaboko floats',
+      },
+      {
+        id: 'gion',
+        termKo: '기온',
+        termEn: 'Gion',
+        promptKo:
+          '교토 기온 지역이 기온마츠리 방문에 왜 중심인지 3문장 이내로 설명해줘.',
+        promptEn: 'Why Gion district matters for Gion Matsuri visitors in 3 short sentences.',
+        searchQueryKo: '교토 기온마츠리 기온 숙소',
+        searchQueryEn: 'Kyoto Gion Matsuri Gion stay',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Gion',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/기온',
+      },
+      {
+        id: 'yasaka-jinja',
+        termKo: '야사카 신사',
+        termEn: 'Yasaka Shrine',
+        promptKo:
+          '야사카 신사가 기온마츠리와 어떤 관계인지 3문장 이내로 설명해줘.',
+        promptEn: 'Yasaka Shrine and Gion Matsuri connection in 3 short sentences.',
+        searchQueryKo: '교토 야사카 신사 기온마츠리',
+        searchQueryEn: 'Yasaka Shrine Gion Matsuri',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Yasaka_Shrine',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/야사카_신사',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'yoiyama-guide',
+            labelKo: '요이야마 일정 검색',
+            labelEn: 'Yoiyama schedule search',
+            kind: 'shop',
+            searchQueryKo: '기온마츠리 요이야마 7월 16 17',
+            searchQueryEn: 'Gion Matsuri Yoiyama July 16 17',
+            searchTarget: 'google',
+          },
+        ],
+      },
+      {
+        highlightIndex: 2,
+        links: [
+          {
+            id: 'yasaka-official',
+            labelKo: '야사카 신사 공식',
+            labelEn: 'Yasaka Shrine official',
+            kind: 'tour',
+            href: 'https://www.yasaka-jinja.or.jp/en/',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '교토 기온마츠리',
+    youtubeSearchQueryEn: 'Kyoto Gion Matsuri',
+    mooniChips: [
+      {
+        id: 'yoiyama-nights',
+        promptKo: '요이야마 7/16·17 중 어느 날이 더 좋아?',
+        promptEn: 'Which Yoiyama night is better, July 16 or 17?',
+      },
+      {
+        id: 'gion-stay',
+        promptKo: '기온 숙소 잡을 때 주의할 점 알려줘',
+        promptEn: 'Tips for booking a Gion stay during the festival?',
+      },
+      {
+        id: 'traffic-tips',
+        promptKo: '행렬 날 교통 통제 어떻게 대비해?',
+        promptEn: 'How to deal with parade-day traffic controls?',
+      },
+    ],
     priority: 1,
   },
   {
@@ -545,6 +1029,7 @@ export const WORLD_EVENT_OVERRIDES = [
     endDate: '2027-04-15',
     recurrence: 'annual',
     recurrenceNote: '4월 13~15일',
+    recurrenceNoteEn: 'Apr 13–15',
     venue: { name: 'Silom · Khao San · citywide' },
     source: 'curated',
     sourceUrl: 'https://www.tourismthailand.org/Articles/songkran-festival',
@@ -571,6 +1056,118 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 3,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/14_April_2025_-_Songkran_on_Si_Lom_Road%2C_Bangkok_-_img_02.jpg/1280px-14_April_2025_-_Songkran_on_Si_Lom_Road%2C_Bangkok_-_img_02.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/14_April_2025_-_Songkran_on_Si_Lom_Road%2C_Bangkok_-_img_02.jpg/1280px-14_April_2025_-_Songkran_on_Si_Lom_Road%2C_Bangkok_-_img_02.jpg',
+        captionKo: '실롬 송크란',
+        captionEn: 'Songkran on Silom Road',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Le_Songkran%2CSilom_road_%2C_Bang_Rak%2C_Bangkok%2C_Th%C3%A1i_Lan_-_panoramio.jpg/1280px-Le_Songkran%2CSilom_road_%2C_Bang_Rak%2C_Bangkok%2C_Th%C3%A1i_Lan_-_panoramio.jpg',
+        captionKo: '실롬 물 축제',
+        captionEn: 'Silom water festival',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/2016_Bangkok%2C_Dystrykt_Phra_Nakhon%2C_Ulica_Khaosan_%2808%29.jpg/1280px-2016_Bangkok%2C_Dystrykt_Phra_Nakhon%2C_Ulica_Khaosan_%2808%29.jpg',
+        captionKo: '카오산 로드',
+        captionEn: 'Khao San Road',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'songkran',
+        termKo: '송크란',
+        termEn: 'Songkran',
+        promptKo:
+          '방콕 송크란(태국 설·물 축제)이 무엇인지 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.',
+        promptEn: 'What is Bangkok Songkran for travelers? 3 short sentences.',
+        searchQueryKo: '방콕 송크란 축제',
+        searchQueryEn: 'Bangkok Songkran festival',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Songkran',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/송크란',
+      },
+      {
+        id: 'silom',
+        termKo: '실롬',
+        termEn: 'Silom',
+        promptKo:
+          '방콕 실롬 일대 송크란 축제 구역의 특징과 준비물을 3문장 이내로 설명해줘.',
+        promptEn: 'Silom Songkran zone highlights and prep tips in 3 short sentences.',
+        searchQueryKo: '방콕 실롬 송크란',
+        searchQueryEn: 'Bangkok Silom Songkran',
+      },
+      {
+        id: 'khao-san',
+        termKo: '카오산',
+        termEn: 'Khao San',
+        promptKo:
+          '카오산 로드 송크란이 실롬과 어떻게 다른지 3문장 이내로 설명해줘.',
+        promptEn: 'Khao San vs Silom Songkran for travelers in 3 short sentences.',
+        searchQueryKo: '방콕 카오산 송크란',
+        searchQueryEn: 'Bangkok Khao San Songkran',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Khaosan_Road',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/카오산_로드',
+      },
+      {
+        id: 'water-proof',
+        termKo: '방수 준비',
+        termEn: 'water-proof gear',
+        promptKo:
+          '송크란 방문 시 방수 가방·휴대폰 보호 등 준비물을 3문장 이내로 설명해줘.',
+        promptEn: 'Essential waterproof gear for Songkran in 3 short sentences.',
+        searchQueryKo: '송크란 방수 가방 휴대폰',
+        searchQueryEn: 'Songkran waterproof bag phone',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'silom-songkran',
+            labelKo: '실롬 송크란 검색',
+            labelEn: 'Search Silom Songkran',
+            kind: 'shop',
+            searchQueryKo: '방콕 실롬 송크란',
+            searchQueryEn: 'Bangkok Silom Songkran',
+            searchTarget: 'google',
+          },
+        ],
+      },
+      {
+        highlightIndex: 1,
+        links: [
+          {
+            id: 'waterproof-bag',
+            labelKo: '방수 가방 검색',
+            labelEn: 'Waterproof bag search',
+            kind: 'shop',
+            searchQueryKo: '송크란 방수 가방',
+            searchQueryEn: 'Songkran waterproof bag',
+            searchTarget: 'google',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '방콕 송크란',
+    youtubeSearchQueryEn: 'Bangkok Songkran',
+    mooniChips: [
+      {
+        id: 'silom-vs-khaosan',
+        promptKo: '실롬과 카오산 중 어디가 나아?',
+        promptEn: 'Silom or Khao San for Songkran?',
+      },
+      {
+        id: 'waterproof-tips',
+        promptKo: '휴대폰·지갑 방수 어떻게 해?',
+        promptEn: 'How to waterproof phone and wallet?',
+      },
+      {
+        id: 'three-day-plan',
+        promptKo: '4/13~15 3박 일정 짜줘',
+        promptEn: 'Plan a 3-night trip for April 13-15?',
+      },
+    ],
     priority: 1,
   },
   {
@@ -584,27 +1181,39 @@ export const WORLD_EVENT_OVERRIDES = [
     endDate: '2026-09-26',
     recurrence: 'annual',
     recurrenceNote: '210일 주기 · 갈룽안·쿠닝안',
+    recurrenceNoteEn: '210-day cycle · Galungan & Kuningan',
     venue: { name: 'Bali islandwide temples' },
     source: 'curated',
     sourceUrl: 'https://en.wikipedia.org/wiki/Galungan',
     bookingHints: '우붓·스미냑 — 사원 방문 시 사례 복장 준비',
     detailOverview:
       '발리 힌두력 210일 주기 축제로, 9월 16일(수) 갈룽안에 시즌이 열리고 9월 26일(토) 쿠닝안(갈룽안 10일 후)에 마무리됩니다. 이 10일 사이 펜져 장식·사원 제례가 섬 전역에서 이어지며, 방문 일정은 보통 「갈룽안 전후」「쿠닝안 전후」「둘 다 커버」 중 하나를 기준으로 잡습니다.',
+    detailOverviewEn:
+      "Bali's Galungan season follows the 210-day Balinese calendar, opening on Wed 16 Sep 2026 and closing with Kuningan ten days later on Sat 26 Sep. Penjor decorations and temple ceremonies ripple across the island — plan around Galungan, Kuningan, or a trip that covers both.",
     highlights: [
       '9/16(수) 갈룽안 — 조상을 맞이하는 날 · 사원·가옥 펜져·제례 절정(사례 복장 필수)',
       '9/26(토) 쿠닝안 — 갈룽안 10일 후 마무리 제례 · 사원 방문·지역 행사 재피크',
       '우붓(사원·마을) + 스미냑(해변) 분할 숙박 — 시즌 중 이동 1~1.5시간 · 렌터카·드라이버 권장',
     ],
+    highlightsEn: [
+      'Wed 16 Sep Galungan — ancestors return home; penjor poles and temple offerings peak (modest temple dress required)',
+      'Sat 26 Sep Kuningan — closing ceremonies ten days after Galungan; temple visits and village events pick up again',
+      'Split stays in Ubud (temples, villages) and Seminyak (beach) — 1–1.5 hr drives in season; car or driver recommended',
+    ],
     stayAreas: [
       {
         name: '우붓 · Ubud',
+        nameEn: 'Ubud',
         mrtKeyword: 'Ubud Bali',
         note: '사원·전통 마을 · 갈룽안 제례 밀집',
+        noteEn: 'Temples & villages · dense Galungan ceremonies',
       },
       {
         name: '스미냑 · Seminyak',
+        nameEn: 'Seminyak',
         mrtKeyword: 'Seminyak Bali',
         note: '해변·레스토랑 · 우붓 당일 투어 1~1.5시간',
+        noteEn: 'Beach & dining · 1–1.5 hr day trip to Ubud',
       },
     ],
     recommendedNights: 4,
@@ -799,6 +1408,7 @@ export const WORLD_EVENT_OVERRIDES = [
     endDate: '2027-02-17',
     recurrence: 'annual',
     recurrenceNote: '2월 사순절 전 주',
+    recurrenceNoteEn: 'Week before Lent',
     venue: { name: 'Sambadrome · Copacabana' },
     source: 'official_url',
     sourceUrl: 'https://www.rio-carnival.net/',
@@ -825,6 +1435,117 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 4,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Clube_de_Frevo_Carnavalesco_P%C3%A1s_Douradas%2C_Carnaval_do_Rio_de_Janeiro%2C_1967.jpg/1280px-Clube_de_Frevo_Carnavalesco_P%C3%A1s_Douradas%2C_Carnaval_do_Rio_de_Janeiro%2C_1967.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Clube_de_Frevo_Carnavalesco_P%C3%A1s_Douradas%2C_Carnaval_do_Rio_de_Janeiro%2C_1967.jpg/1280px-Clube_de_Frevo_Carnavalesco_P%C3%A1s_Douradas%2C_Carnaval_do_Rio_de_Janeiro%2C_1967.jpg',
+        captionKo: '리우 카니발 퍼레이드',
+        captionEn: 'Rio Carnival parade',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Carnival_in_Sambadrome_Rio_09s.jpg/1280px-Carnival_in_Sambadrome_Rio_09s.jpg',
+        captionKo: '삼바드롬 퍼레이드',
+        captionEn: 'Sambadrome parade',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Copacabana%2C_Rio_de_Janeiro.jpg/1280px-Copacabana%2C_Rio_de_Janeiro.jpg',
+        captionKo: '코파카바나 해변',
+        captionEn: 'Copacabana Beach',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'sambadrome',
+        termKo: '삼바드롬',
+        termEn: 'Sambadrome',
+        promptKo:
+          '리우 카니발 삼바드롬(Sambadrome) 퍼레이드가 무엇인지, 티켓·셔틀 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'What is the Rio Carnival Sambadrome parade for travelers? 3 short sentences.',
+        searchQueryKo: '리우 카니발 삼바드롬 티켓',
+        searchQueryEn: 'Rio Carnival Sambadrome tickets',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Sambadrome_Marqu%C3%AAs_de_Sapuca%C3%AD',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/삼바드롬',
+      },
+      {
+        id: 'bloco',
+        termKo: '블로코',
+        termEn: 'bloco',
+        promptKo:
+          '리우 카니발 블로코(거리 삼바 파티)가 삼바드롬과 어떻게 다른지 3문장 이내로 설명해줘.',
+        promptEn: 'Rio Carnival bloco street parties vs Sambadrome in 3 short sentences.',
+        searchQueryKo: '리우 카니발 블로코 거리 삼바',
+        searchQueryEn: 'Rio Carnival bloco street party',
+      },
+      {
+        id: 'samba-school',
+        termKo: '삼바스쿨라',
+        termEn: 'samba school',
+        promptKo:
+          '리우 카니발 삼바스쿨라(escola de samba)가 퍼레이드에서 어떤 역할인지 3문장 이내로 설명해줘.',
+        promptEn: 'What are Rio samba schools in the Carnival parade? 3 short sentences.',
+        searchQueryKo: '리우 삼바스쿨라 카니발',
+        searchQueryEn: 'Rio samba school carnival',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Samba_school',
+      },
+      {
+        id: 'copacabana',
+        termKo: '코파카바나',
+        termEn: 'Copacabana',
+        promptKo:
+          '카니발 시즌 코파카바나·이파네마 숙소를 잡을 때 알아둘 점을 3문장 이내로 설명해줘.',
+        promptEn: 'Staying in Copacabana or Ipanema during Rio Carnival in 3 short sentences.',
+        searchQueryKo: '리우 코파카바나 카니발 숙소',
+        searchQueryEn: 'Copacabana Rio Carnival stay',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Copacabana,_Rio_de_Janeiro',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/코파카바나_(리우데자네이루)',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'sambadrome-tickets',
+            labelKo: '삼바드롬 티켓',
+            labelEn: 'Sambadrome tickets',
+            kind: 'tour',
+            href: 'https://www.rio-carnival.net/',
+          },
+        ],
+      },
+      {
+        highlightIndex: 2,
+        links: [
+          {
+            id: 'copacabana-map',
+            labelKo: '코파카바나 지도',
+            labelEn: 'Copacabana map',
+            kind: 'shop',
+            searchQueryKo: '리우 코파카바나 해변',
+            searchQueryEn: 'Copacabana Beach Rio',
+            searchTarget: 'google',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '리우 카니발 삼바드롬',
+    youtubeSearchQueryEn: 'Rio Carnival Sambadrome',
+    mooniChips: [
+      {
+        id: 'sambadrome-nights',
+        promptKo: '삼바드롬 퍼레이드 전후 4박 일정 짜줘',
+        promptEn: 'Plan a 4-night Rio Carnival trip around Sambadrome nights',
+      },
+      {
+        id: 'bloco-vs-sambadrome',
+        promptKo: '블로코랑 삼바드롬 중 뭐부터 볼까?',
+        promptEn: 'Should I prioritize blocos or the Sambadrome parade?',
+      },
+      {
+        id: 'costume-rental',
+        promptKo: '카니발 의상 대여는 어디서 해?',
+        promptEn: 'Where to rent Carnival costumes in Rio?',
+      },
+    ],
     priority: 1,
   },
   {
@@ -838,6 +1559,7 @@ export const WORLD_EVENT_OVERRIDES = [
     endDate: '2026-11-30',
     recurrence: 'annual',
     recurrenceNote: '11월 넷째 목요일 전후',
+    recurrenceNoteEn: 'Around Thanksgiving (4th Thu in Nov)',
     venue: { name: 'Macy\'s Parade route · Midtown' },
     source: 'curated',
     sourceUrl: 'https://www.macys.com/social/parade/',
@@ -864,6 +1586,118 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 3,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Macy%27s_parade_balloon_inflation_%2811678%29.jpg/1280px-Macy%27s_parade_balloon_inflation_%2811678%29.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Macy%27s_parade_balloon_inflation_%2811678%29.jpg/1280px-Macy%27s_parade_balloon_inflation_%2811678%29.jpg',
+        captionKo: '퍼레이드 풍선 준비',
+        captionEn: 'Parade balloon inflation',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/Macy%27s_Thanksgiving_Day_Parade_2012_Jennette_McCurdy_03.jpg',
+        captionKo: '메이시스 추수감사절 퍼레이드',
+        captionEn: "Macy's Thanksgiving Day Parade",
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/2011_Rockefeller_Center_Christmas_tree_Manhattan_NYC.jpg/1280px-2011_Rockefeller_Center_Christmas_tree_Manhattan_NYC.jpg',
+        captionKo: '록펠러 센터 크리스마스 트리',
+        captionEn: 'Rockefeller Center Christmas tree',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'macys-parade',
+        termKo: '메이시스 퍼레이드',
+        termEn: "Macy's Parade",
+        promptKo:
+          '뉴욕 메이시스 추수감사절 퍼레이드가 무엇인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.',
+        promptEn: "What is Macy's Thanksgiving Day Parade for NYC visitors? 3 short sentences.",
+        searchQueryKo: '뉴욕 메이시스 추수감사절 퍼레이드',
+        searchQueryEn: "Macy's Thanksgiving Day Parade New York",
+        referenceUrl: "https://en.wikipedia.org/wiki/Macy's_Thanksgiving_Day_Parade",
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/메이시스_추수감사절_퍼레이드',
+      },
+      {
+        id: 'thanksgiving',
+        termKo: '추수감사절',
+        termEn: 'Thanksgiving',
+        promptKo:
+          '미국 추수감사절(Thanksgiving)이 뉴욕 방문 일정에 어떤 영향을 주는지 3문장 이내로 설명해줘.',
+        promptEn: 'How Thanksgiving affects a New York trip in 3 short sentences.',
+        searchQueryKo: '뉴욕 추수감사절 여행',
+        searchQueryEn: 'New York Thanksgiving travel',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Thanksgiving_(United_States)',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/추수감사절',
+      },
+      {
+        id: 'black-friday',
+        termKo: '블랙 프라이데이',
+        termEn: 'Black Friday',
+        promptKo:
+          '추수감사절 다음 날 블랙 프라이데이 쇼핑 시즌을 뉴욕에서 즐길 때 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Black Friday shopping tips in NYC in 3 short sentences.',
+        searchQueryKo: '뉴욕 블랙 프라이데이 쇼핑',
+        searchQueryEn: 'New York Black Friday shopping',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Black_Friday_(shopping)',
+      },
+      {
+        id: 'herald-square',
+        termKo: '헤럴드스퀘어',
+        termEn: 'Herald Square',
+        promptKo:
+          '헤럴드스퀘어·34th St가 퍼레이드 뷰 숙소로 인기인 이유를 3문장 이내로 설명해줘.',
+        promptEn: 'Why Herald Square is popular for parade-view stays in 3 short sentences.',
+        searchQueryKo: '뉴욕 헤럴드스퀘어 퍼레이드 숙소',
+        searchQueryEn: 'Herald Square Macy parade view hotel',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Herald_Square',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'macys-official',
+            labelKo: '메이시스 퍼레이드 공식',
+            labelEn: 'Macy\'s Parade official',
+            kind: 'tour',
+            href: 'https://www.macys.com/social/parade/',
+          },
+        ],
+      },
+      {
+        highlightIndex: 2,
+        links: [
+          {
+            id: 'rockefeller-tree',
+            labelKo: '록펠러 트리 검색',
+            labelEn: 'Rockefeller tree search',
+            kind: 'shop',
+            searchQueryKo: '뉴욕 록펠러 센터 크리스마스 트리',
+            searchQueryEn: 'Rockefeller Center Christmas tree NYC',
+            searchTarget: 'google',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '뉴욕 메이시스 추수감사절 퍼레이드',
+    youtubeSearchQueryEn: "Macy's Thanksgiving Day Parade New York",
+    mooniChips: [
+      {
+        id: 'parade-view',
+        promptKo: '퍼레이드 잘 보이는 미드타운 숙소 구역 알려줘',
+        promptEn: 'Best Midtown areas for parade views?',
+      },
+      {
+        id: 'thanksgiving-weekend',
+        promptKo: '추수감사절 주말 3박 일정 짜줘',
+        promptEn: 'Plan a 3-night Thanksgiving weekend in NYC',
+      },
+      {
+        id: 'black-friday-tips',
+        promptKo: '블랙 프라이데이 쇼핑 동선 추천해줘',
+        promptEn: 'Black Friday shopping route in Manhattan?',
+      },
+    ],
     priority: 1,
   },
   {
@@ -876,6 +1710,7 @@ export const WORLD_EVENT_OVERRIDES = [
     endDate: '2027-07-31',
     recurrence: 'annual',
     recurrenceNote: '6~7월 백야 · 솔스티스 페스티벌 6월 중순',
+    recurrenceNoteEn: 'Jun–Jul midnight sun · Solstice festival mid-Jun',
     venue: { name: 'Reykjavík · Laugardalur' },
     source: 'official_url',
     sourceUrl: 'https://secretsolstice.is/',
@@ -902,6 +1737,116 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 4,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Midnight_Sun_on_the_Rocks.jpg/1280px-Midnight_Sun_on_the_Rocks.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Midnight_Sun_on_the_Rocks.jpg/1280px-Midnight_Sun_on_the_Rocks.jpg',
+        captionKo: '아이슬란드 백야',
+        captionEn: 'Iceland midnight sun',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/View_of_Reykjav%C3%ADk_from_Hallgr%C3%ADmskirkja%2C_20230507_1227_5715.jpg/1280px-View_of_Reykjav%C3%ADk_from_Hallgr%C3%ADmskirkja%2C_20230507_1227_5715.jpg',
+        captionKo: '레이캬비크 전경',
+        captionEn: 'Reykjavík skyline',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Gullfoss%2C_Iceland.jpg/1280px-Gullfoss%2C_Iceland.jpg',
+        captionKo: '굴포스 폭포',
+        captionEn: 'Gullfoss waterfall',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'midnight-sun',
+        termKo: '미드나잇 선',
+        termEn: 'midnight sun',
+        promptKo:
+          '아이슬란드 여름 백야(미드나잇 선)가 여행 일정에 어떤 영향을 주는지 3문장 이내로 설명해줘.',
+        promptEn: 'How Iceland midnight sun affects summer travel in 3 short sentences.',
+        searchQueryKo: '아이슬란드 백야 미드나잇 선',
+        searchQueryEn: 'Iceland midnight sun summer',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Midnight_sun',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/백야',
+      },
+      {
+        id: 'secret-solstice',
+        termKo: '시크릿 솔스티스',
+        termEn: 'Secret Solstice',
+        promptKo:
+          '레이캬비크 시크릿 솔스티스 페스티벌이 무엇인지 3문장 이내로 설명해줘.',
+        promptEn: 'What is Reykjavík Secret Solstice festival? 3 short sentences.',
+        searchQueryKo: '아이슬란드 시크릿 솔스티스 페스티벌',
+        searchQueryEn: 'Iceland Secret Solstice festival',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Secret_Solstice',
+      },
+      {
+        id: 'golden-circle',
+        termKo: '골든서클',
+        termEn: 'Golden Circle',
+        promptKo:
+          '아이슬란드 골든서클 투어가 백야 시즌에 인기인 이유를 3문장 이내로 설명해줘.',
+        promptEn: 'Why Golden Circle tours are popular in midnight sun season in 3 short sentences.',
+        searchQueryKo: '아이슬란드 골든서클 투어',
+        searchQueryEn: 'Iceland Golden Circle tour',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Golden_Circle_(Iceland)',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/골든_서클',
+      },
+      {
+        id: 'reykjavik',
+        termKo: '레이캬비크',
+        termEn: 'Reykjavík',
+        promptKo:
+          '백야 시즌 레이캬비크를 기점으로 숙소·투어를 잡을 때 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Tips for basing midnight sun trips in Reykjavík in 3 short sentences.',
+        searchQueryKo: '레이캬비크 여름 숙소',
+        searchQueryEn: 'Reykjavik summer stay',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Reykjav%C3%ADk',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/레이캬비크',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'secret-solstice-official',
+            labelKo: '시크릿 솔스티스 공식',
+            labelEn: 'Secret Solstice official',
+            kind: 'tour',
+            href: 'https://secretsolstice.is/',
+          },
+        ],
+      },
+      {
+        highlightIndex: 1,
+        links: [
+          {
+            id: 'golden-circle-rental',
+            labelKo: '골든서클 렌터카',
+            labelEn: 'Golden Circle car rental',
+            kind: 'rental',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '아이슬란드 백야 골든서클',
+    youtubeSearchQueryEn: 'Iceland midnight sun Golden Circle',
+    mooniChips: [
+      {
+        id: 'solstice-timing',
+        promptKo: '솔스티스 전후 4박 일정은 언제 잡는 게 좋아?',
+        promptEn: 'When to book a 4-night trip around summer solstice?',
+      },
+      {
+        id: 'golden-circle-drive',
+        promptKo: '백야에 골든서클 자가운전 일정 짜줘',
+        promptEn: 'Plan a midnight sun Golden Circle self-drive day',
+      },
+      {
+        id: 'reykjavik-base',
+        promptKo: '레이캬비크 기점 숙소 구역 추천해줘',
+        promptEn: 'Best Reykjavík base areas for summer festivals?',
+      },
+    ],
     priority: 1,
   },
   {
@@ -915,6 +1860,7 @@ export const WORLD_EVENT_OVERRIDES = [
     endDate: '2027-06-14',
     recurrence: 'annual',
     recurrenceNote: '5월 말~6월 중순',
+    recurrenceNoteEn: 'Late May–mid Jun',
     venue: { name: 'Sydney Harbour · Circular Quay' },
     source: 'official_url',
     sourceUrl: 'https://www.vividsydney.com/',
@@ -941,6 +1887,140 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 3,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Vivid_Lights_Sydney_%2818358343820%29.jpg/1280px-Vivid_Lights_Sydney_%2818358343820%29.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Vivid_Lights_Sydney_%2818358343820%29.jpg/1280px-Vivid_Lights_Sydney_%2818358343820%29.jpg',
+        captionKo: '비비드 시드니 조명',
+        captionEn: 'Vivid Sydney lights',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Sydney_Opera_House_-_Vivid_2025.jpg/1280px-Sydney_Opera_House_-_Vivid_2025.jpg',
+        captionKo: '오페라 하우스 라이트쇼',
+        captionEn: 'Opera House light show',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Vivid_sydney_2014_Darling_Harbour_%2814549756665%29.jpg/1280px-Vivid_sydney_2014_Darling_Harbour_%2814549756665%29.jpg',
+        captionKo: '달링 하버',
+        captionEn: 'Darling Harbour',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'vivid-sydney',
+        termKo: '비비드 시드니',
+        termEn: 'Vivid Sydney',
+        promptKo:
+          '시드니 비비드(Vivid Sydney) 빛 축제가 무엇인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.',
+        promptEn: 'What is Vivid Sydney for travelers? 3 short sentences.',
+        searchQueryKo: '시드니 비비드 축제',
+        searchQueryEn: 'Vivid Sydney festival',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Vivid_Sydney',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/비비드_시드니',
+      },
+      {
+        id: 'circular-quay',
+        termKo: '서큘러 키',
+        termEn: 'Circular Quay',
+        promptKo:
+          '비비드 시즌 서큘러 키가 숙소·이동 기점으로 인기인 이유를 3문장 이내로 설명해줘.',
+        promptEn: 'Why Circular Quay is a Vivid Sydney base in 3 short sentences.',
+        searchQueryKo: '시드니 서큘러 키 비비드',
+        searchQueryEn: 'Circular Quay Vivid Sydney',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Circular_Quay',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/서큘러_키',
+      },
+      {
+        id: 'opera-house',
+        termKo: '오페라 하우스',
+        termEn: 'Opera House',
+        promptKo:
+          '비비드 시즌 시드니 오페라 하우스 조명 설치를 볼 때 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Tips for seeing Vivid lights on the Sydney Opera House in 3 short sentences.',
+        searchQueryKo: '시드니 오페라 하우스 비비드',
+        searchQueryEn: 'Sydney Opera House Vivid lights',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Sydney_Opera_House',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/시드니_오페라_하우스',
+      },
+      {
+        id: 'darling-harbour',
+        termKo: '달링 하버',
+        termEn: 'Darling Harbour',
+        promptKo:
+          '비비드 시즌 달링 하버 라이트쇼·식당가를 즐길 때 알아둘 점을 3문장 이내로 설명해줘.',
+        promptEn: 'Darling Harbour during Vivid Sydney in 3 short sentences.',
+        searchQueryKo: '시드니 달링 하버 비비드',
+        searchQueryEn: 'Darling Harbour Vivid Sydney',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Darling_Harbour',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'vivid-official',
+            labelKo: '비비드 공식',
+            labelEn: 'Vivid official',
+            kind: 'tour',
+            href: 'https://www.vividsydney.com/',
+          },
+        ],
+      },
+      {
+        highlightIndex: 1,
+        links: [
+          {
+            id: 'darling-harbour-search',
+            labelKo: '달링 하버 검색',
+            labelEn: 'Search Darling Harbour',
+            kind: 'shop',
+            searchQueryKo: '시드니 달링 하버 비비드',
+            searchQueryEn: 'Darling Harbour Vivid Sydney',
+            searchTarget: 'google',
+          },
+        ],
+      },
+      {
+        highlightIndex: 2,
+        links: [
+          {
+            id: 'sydney-ferry-official',
+            labelKo: '페리 공식',
+            labelEn: 'Official ferry',
+            kind: 'tour',
+            href: 'https://transportnsw.info/routes/details/sydney-ferries-network/f1/090f1',
+          },
+          {
+            id: 'sydney-tram-pass',
+            labelKo: '트램 교통 패스',
+            labelEn: 'Tram transport pass',
+            kind: 'shop',
+            searchQueryKo: '시드니 교통 패스',
+            searchQueryEn: 'Sydney transport pass',
+            searchTarget: 'klook',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '시드니 비비드 오페라 하우스',
+    youtubeSearchQueryEn: 'Vivid Sydney Opera House lights',
+    mooniChips: [
+      {
+        id: 'opening-weekend',
+        promptKo: '비비드 개막 주말 3박 일정 짜줘',
+        promptEn: 'Plan a 3-night Vivid opening weekend',
+      },
+      {
+        id: 'harbour-walk',
+        promptKo: '항구 야간 라이트 산책 코스 추천해줘',
+        promptEn: 'Best harbour walk for Vivid light installations?',
+      },
+      {
+        id: 'ferry-tips',
+        promptKo: '비비드 때 페리·트램 이용 팁 알려줘',
+        promptEn: 'Ferry and tram tips during Vivid Sydney?',
+      },
+    ],
     priority: 1,
   },
   {
@@ -954,6 +2034,7 @@ export const WORLD_EVENT_OVERRIDES = [
     endDate: '2027-05-15',
     recurrence: 'annual',
     recurrenceNote: '4~5월 클래식·봄 축제',
+    recurrenceNoteEn: 'Apr–May classical & spring festivals',
     venue: { name: 'Rudolfinum · Old Town' },
     source: 'official_url',
     sourceUrl: 'https://www.festival.cz/en',
@@ -980,6 +2061,115 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 3,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/G_N_Rozhdestvensky_at_Prague_Spring_Festival_2007.jpg/1280px-G_N_Rozhdestvensky_at_Prague_Spring_Festival_2007.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/G_N_Rozhdestvensky_at_Prague_Spring_Festival_2007.jpg/1280px-G_N_Rozhdestvensky_at_Prague_Spring_Festival_2007.jpg',
+        captionKo: '프라하 봄 축제',
+        captionEn: 'Prague Spring Festival',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Praha_Rudolfinum_front.jpg/1280px-Praha_Rudolfinum_front.jpg',
+        captionKo: '루돌피눔',
+        captionEn: 'Rudolfinum',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Prague_Old_Town_Square%2C_Czech_Republic_-_Oct_2010.jpg/1280px-Prague_Old_Town_Square%2C_Czech_Republic_-_Oct_2010.jpg',
+        captionKo: '프라하 구시가',
+        captionEn: 'Prague Old Town',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'prague-spring',
+        termKo: '프라하 봄 축제',
+        termEn: 'Prague Spring',
+        promptKo:
+          '프라하 봄 축제(Prague Spring)가 무엇인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.',
+        promptEn: 'What is the Prague Spring Festival for travelers? 3 short sentences.',
+        searchQueryKo: '프라하 봄 축제',
+        searchQueryEn: 'Prague Spring Festival',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Prague_Spring_International_Music_Festival',
+      },
+      {
+        id: 'rudolfinum',
+        termKo: '루돌피눔',
+        termEn: 'Rudolfinum',
+        promptKo:
+          '프라하 루돌피눔이 봄 축제에서 어떤 역할을 하는지 3문장 이내로 설명해줘.',
+        promptEn: 'Why Rudolfinum matters for Prague Spring in 3 short sentences.',
+        searchQueryKo: '프라하 루돌피눔 공연',
+        searchQueryEn: 'Prague Rudolfinum concerts',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Rudolfinum',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/루돌피눔',
+      },
+      {
+        id: 'old-town',
+        termKo: '구시가',
+        termEn: 'Old Town',
+        promptKo:
+          '프라하 구시가(Old Town)가 봄 축제 방문에 왜 좋은 기점인지 3문장 이내로 설명해줘.',
+        promptEn: 'Why Prague Old Town is a good base for Spring Festival in 3 short sentences.',
+        searchQueryKo: '프라하 구시가 숙소',
+        searchQueryEn: 'Prague Old Town stay',
+      },
+      {
+        id: 'mala-strana',
+        termKo: '말라 스트라나',
+        termEn: 'Malá Strana',
+        promptKo:
+          '프라하 말라 스트라나(Malá Strana) 숙소의 장단점을 봄 축제 방문 관점에서 3문장 이내로 설명해줘.',
+        promptEn: 'Malá Strana pros and cons for Prague Spring visitors in 3 short sentences.',
+        searchQueryKo: '프라하 말라 스트라나 숙소',
+        searchQueryEn: 'Prague Malá Strana hotel',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'festival-tickets',
+            labelKo: '공식 축제 사이트',
+            labelEn: 'Official festival site',
+            kind: 'tour',
+            href: 'https://www.festival.cz/en',
+          },
+        ],
+      },
+      {
+        highlightIndex: 1,
+        links: [
+          {
+            id: 'old-town-map',
+            labelKo: '구시가 검색',
+            labelEn: 'Old Town search',
+            kind: 'shop',
+            searchQueryKo: '프라하 구시가 카를교',
+            searchQueryEn: 'Prague Old Town Charles Bridge',
+            searchTarget: 'google',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '프라하 봄 축제',
+    youtubeSearchQueryEn: 'Prague Spring Festival',
+    mooniChips: [
+      {
+        id: 'opening-week',
+        promptKo: '개막 주에 가면 뭐가 좋아?',
+        promptEn: 'Why visit during opening week?',
+      },
+      {
+        id: 'rudolfinum-tips',
+        promptKo: '루돌피눔 공연 예매 팁 알려줘',
+        promptEn: 'Tips for booking Rudolfinum shows?',
+      },
+      {
+        id: 'old-town-stay',
+        promptKo: '구시가 vs 말라 스트라나 숙소 비교해줘',
+        promptEn: 'Old Town vs Malá Strana for stays?',
+      },
+    ],
     priority: 1,
   },
   {
@@ -992,7 +2182,8 @@ export const WORLD_EVENT_OVERRIDES = [
     startDate: '2027-05-08',
     endDate: '2027-05-10',
     recurrence: 'annual',
-    recurrenceNote: '5월 초 · 켈라at M\'Gouna',
+    recurrenceNote: "5월 초 · 켈라at M'Gouna",
+    recurrenceNoteEn: "Early May · Kelaat M'Gouna",
     venue: { name: 'Kelaat M\'Gouna · Dades Valley' },
     source: 'curated',
     sourceUrl: 'https://www.visitmorocco.com/en/travel/festivals',
@@ -1019,6 +2210,116 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 2,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/At_fountain_of_Morocco_Royal_rose_garden_in_Flower_festival_commemorative_park._%288131033157%29.jpg/1280px-At_fountain_of_Morocco_Royal_rose_garden_in_Flower_festival_commemorative_park._%288131033157%29.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/At_fountain_of_Morocco_Royal_rose_garden_in_Flower_festival_commemorative_park._%288131033157%29.jpg/1280px-At_fountain_of_Morocco_Royal_rose_garden_in_Flower_festival_commemorative_park._%288131033157%29.jpg',
+        captionKo: '로즈 페스티벌',
+        captionEn: 'Rose Festival',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/9/9c/Pavillon_Menarag%C3%A4rten.jpg',
+        captionKo: '마라케시 메나라 정원',
+        captionEn: 'Marrakesh Menara gardens',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Djemaa_el_Fna.jpg/1280px-Djemaa_el_Fna.jpg',
+        captionKo: '자마 엘 프나 광장',
+        captionEn: 'Jemaa el-Fnaa square',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'rose-festival',
+        termKo: '로즈 페스티벌',
+        termEn: 'Rose Festival',
+        promptKo:
+          '마라케시 로즈 페스티벌(Festival des Roses)이 무엇인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.',
+        promptEn: 'What is the Marrakech Rose Festival for travelers? 3 short sentences.',
+        searchQueryKo: '마라케시 로즈 페스티벌',
+        searchQueryEn: 'Marrakech Rose Festival',
+      },
+      {
+        id: 'kelaat-mgouna',
+        termKo: 'Kelaat M\'Gouna',
+        termEn: "Kelaat M'Gouna",
+        promptKo:
+          '로즈 페스티벌이 열리는 Kelaat M\'Gouna가 마라케시에서 어떻게 방문하는지 3문장 이내로 설명해줘.',
+        promptEn: "How to visit Kelaat M'Gouna from Marrakech in 3 short sentences.",
+        searchQueryKo: 'Kelaat M\'Gouna 로즈 페스티벌 투어',
+        searchQueryEn: "Kelaat M'Gouna rose festival tour",
+      },
+      {
+        id: 'medina',
+        termKo: '메디나',
+        termEn: 'Medina',
+        promptKo:
+          '마라케시 메디나(Medina)가 로즈 페스티벌 방문 기점으로 왜 좋은지 3문장 이내로 설명해줘.',
+        promptEn: 'Why Marrakech Medina is a good base for the Rose Festival in 3 short sentences.',
+        searchQueryKo: '마라케시 메디나 리야드',
+        searchQueryEn: 'Marrakech Medina riad',
+      },
+      {
+        id: 'jemaa-el-fnaa',
+        termKo: '자마 엘 프나',
+        termEn: 'Jemaa el-Fnaa',
+        promptKo:
+          '자마 엘 프나(Jemaa el-Fnaa) 광장이 마라케시 방문에서 어떤 역할을 하는지 3문장 이내로 설명해줘.',
+        promptEn: 'What is Jemaa el-Fnaa square for Marrakech visitors in 3 short sentences.',
+        searchQueryKo: '마라케시 자마 엘 프나',
+        searchQueryEn: 'Marrakech Jemaa el-Fnaa',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Jemaa_el-Fnaa',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/자마엘프나',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'rose-tour',
+            labelKo: '로즈 페스티벌 투어',
+            labelEn: 'Rose Festival tour',
+            kind: 'shop',
+            searchQueryKo: 'Kelaat M\'Gouna 로즈 페스티벌 당일 투어',
+            searchQueryEn: "Kelaat M'Gouna rose festival day tour",
+            searchTarget: 'google',
+          },
+        ],
+      },
+      {
+        highlightIndex: 1,
+        links: [
+          {
+            id: 'medina-riad',
+            labelKo: '메디나 리야드 검색',
+            labelEn: 'Medina riad search',
+            kind: 'shop',
+            searchQueryKo: '마라케시 메디나 리야드',
+            searchQueryEn: 'Marrakech Medina riad',
+            searchTarget: 'google',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '마라케시 로즈 페스티벌',
+    youtubeSearchQueryEn: 'Marrakech Rose Festival',
+    mooniChips: [
+      {
+        id: 'day-tour',
+        promptKo: '로즈 페스티벌 당일 투어 일정 알려줘',
+        promptEn: 'Day tour schedule for Rose Festival?',
+      },
+      {
+        id: 'medina-stay',
+        promptKo: '메디나 리야드 고르는 팁 알려줘',
+        promptEn: 'Tips for picking a Medina riad?',
+      },
+      {
+        id: 'festival-dates',
+        promptKo: '5월 초 페스티벌 날짜 확인 방법 알려줘',
+        promptEn: 'How to confirm festival dates in May?',
+      },
+    ],
     priority: 1,
   },
   {
@@ -1032,9 +2333,10 @@ export const WORLD_EVENT_OVERRIDES = [
     endDate: '2027-02-03',
     recurrence: 'annual',
     recurrenceNote: '음력 설 연휴 (연도별 변동)',
+    recurrenceNoteEn: 'Lunar New Year (Tet) — dates vary yearly',
     venue: { name: 'Hoan Kiem · Old Quarter' },
-    source: 'curated',
-    sourceUrl: 'https://www.vietnam.travel/things-to-do/tet-festival-vietnam',
+    source: 'official_url',
+    sourceUrl: 'https://www.vietnam.travel/',
     bookingHints: '올드쿼터·호안끼엠 — 연휴 전후 항공·기차 조기 마감',
     detailOverview:
       '베트남 음력 설(뗏) 연휴로, 하노이 올드쿼터·호안끼엠 일대 꽃 시장·제례·불꽃놀이가 이어집니다. 연휴 전후 3~4박으로 올드쿼터 기점을 잡아 설 분위기와 현지 행사를 둘러보는 방문이 일반적입니다.',
@@ -1058,6 +2360,118 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 4,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Hansers_tim_hieu_Tet_Nguyen_Dan_16-02-2026_1771376540207.jpg/1280px-Hansers_tim_hieu_Tet_Nguyen_Dan_16-02-2026_1771376540207.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Hansers_tim_hieu_Tet_Nguyen_Dan_16-02-2026_1771376540207.jpg/1280px-Hansers_tim_hieu_Tet_Nguyen_Dan_16-02-2026_1771376540207.jpg',
+        captionKo: '뗏(설) 분위기',
+        captionEn: 'Tet holiday atmosphere',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Hanoi_Old_Quarter_%2825397128097%29.jpg/1280px-Hanoi_Old_Quarter_%2825397128097%29.jpg',
+        captionKo: '하노이 올드쿼터',
+        captionEn: 'Hanoi Old Quarter',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Hoan_Kiem_Lake_4123.jpg/1280px-Hoan_Kiem_Lake_4123.jpg',
+        captionKo: '호안끼엠 호수',
+        captionEn: 'Hoan Kiem Lake',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'tet',
+        termKo: '뗏',
+        termEn: 'Tet',
+        promptKo:
+          '베트남 음력 설(뗏·Tết)이 무엇인지, 하노이 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.',
+        promptEn: 'What is Vietnamese Tet (Tết) for Hanoi travelers? 3 short sentences.',
+        searchQueryKo: '베트남 뗏 설 연휴',
+        searchQueryEn: 'Vietnam Tet holiday',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Tết',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/뗏',
+      },
+      {
+        id: 'old-quarter',
+        termKo: '올드쿼터',
+        termEn: 'Old Quarter',
+        promptKo:
+          '하노이 올드쿼터(Old Quarter)가 뗏 시즌 방문에서 왜 중심인지 3문장 이내로 설명해줘.',
+        promptEn: 'Why Hanoi Old Quarter matters during Tet in 3 short sentences.',
+        searchQueryKo: '하노이 올드쿼터 뗏 꽃 시장',
+        searchQueryEn: 'Hanoi Old Quarter Tet flower market',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Old_Quarter,_Hanoi',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/하노이_올드쿼터',
+      },
+      {
+        id: 'hoan-kiem',
+        termKo: '호안끼엠',
+        termEn: 'Hoan Kiem',
+        promptKo:
+          '호안끼엠 호(Hoan Kiem Lake)가 뗏 연휴 하노이 일정에서 어떤 역할을 하는지 3문장 이내로 설명해줘.',
+        promptEn: 'Hoan Kiem Lake role during Hanoi Tet holidays in 3 short sentences.',
+        searchQueryKo: '하노이 호안끼엠 호수 뗏',
+        searchQueryEn: 'Hoan Kiem Lake Hanoi Tet',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Hoàn_Kiếm_Lake',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/호안끼엠_호',
+      },
+      {
+        id: 'flower-market',
+        termKo: '꽃 시장',
+        termEn: 'flower market',
+        promptKo:
+          '뗏 전 하노이 꽃 시장(연휴 준비)의 특징과 방문 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Hanoi Tet flower markets before the holiday in 3 short sentences.',
+        searchQueryKo: '하노이 뗏 꽃 시장',
+        searchQueryEn: 'Hanoi Tet flower market',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'tet-flower-market',
+            labelKo: '꽃 시장·올드쿼터 검색',
+            labelEn: 'Flower market & Old Quarter search',
+            kind: 'shop',
+            searchQueryKo: '하노이 올드쿼터 뗏 꽃 시장',
+            searchQueryEn: 'Hanoi Old Quarter Tet flower market',
+            searchTarget: 'google',
+          },
+        ],
+      },
+      {
+        highlightIndex: 2,
+        links: [
+          {
+            id: 'tet-travel-guide',
+            labelKo: '뗏 연휴 여행 안내',
+            labelEn: 'Tet holiday travel guide',
+            kind: 'tour',
+            href: 'https://www.vietnam.travel/',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '하노이 뗏 설 연휴',
+    youtubeSearchQueryEn: 'Hanoi Tet holiday',
+    mooniChips: [
+      {
+        id: 'tet-timing',
+        promptKo: '뗏 연휴 전후 4박 일정은 언제 잡는 게 좋아?',
+        promptEn: 'When to book a 4-night trip around Tet in Hanoi?',
+      },
+      {
+        id: 'old-quarter-stay',
+        promptKo: '올드쿼터랑 호안끼엠 숙소 어디가 나아?',
+        promptEn: 'Old Quarter vs Hoan Kiem for Tet stay?',
+      },
+      {
+        id: 'holiday-closures',
+        promptKo: '연휴 기간 상점·교통 휴무 어떻게 대비해?',
+        promptEn: 'How to plan around Tet shop and transport closures?',
+      },
+    ],
     priority: 1,
   },
   {
@@ -1071,6 +2485,7 @@ export const WORLD_EVENT_OVERRIDES = [
     endDate: '2026-10-11',
     recurrence: 'annual',
     recurrenceNote: '10월 첫째 주말 전후',
+    recurrenceNoteEn: 'Around the first weekend in Oct',
     venue: { name: 'Marina Bay Street Circuit' },
     source: 'official_url',
     sourceUrl: 'https://singaporegp.sg/en/',
@@ -1126,6 +2541,7 @@ export const WORLD_EVENT_OVERRIDES = [
         searchQueryKo: '싱가포르 그랑프리 마리나 베이 서킷',
         searchQueryEn: 'Singapore Grand Prix Marina Bay circuit',
         referenceUrl: 'https://en.wikipedia.org/wiki/Marina_Bay_Street_Circuit',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/마리나_베이_시가지_서킷',
       },
       {
         id: 'night-race',
@@ -1219,6 +2635,7 @@ export const WORLD_EVENT_OVERRIDES = [
     endDate: '2026-11-29',
     recurrence: 'annual',
     recurrenceNote: '10월 말~11월 · 30×30',
+    recurrenceNoteEn: 'Late Oct–Nov · 30×30 challenge',
     venue: { name: 'Citywide · Zabeel Park · Sheikh Zayed Road' },
     source: 'official_url',
     sourceUrl: 'https://www.dubaifitnesschallenge.com/en/',
@@ -1273,6 +2690,7 @@ export const WORLD_EVENT_OVERRIDES = [
         searchQueryKo: '두바이 피트니스 챌린지 30x30',
         searchQueryEn: 'Dubai Fitness Challenge 30x30',
         referenceUrl: 'https://www.dubaifitnesschallenge.com/en/',
+        referenceUrlKo: 'https://www.dubaifitnesschallenge.com/',
       },
       {
         id: 'dubai-run',

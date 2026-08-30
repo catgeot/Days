@@ -200,6 +200,16 @@
       "source": "/qa/world-events",
       "destination": "https://days-git-cursor-world-events-wave2-catgeots-projects.vercel.app/world-events",
       "permanent": false
+    },
+    {
+      "source": "/en/world-events",
+      "destination": "https://www.gateo.kr/world-events?lang=en",
+      "permanent": false
+    },
+    {
+      "source": "/en/world-events/:eventId",
+      "destination": "https://www.gateo.kr/world-events/:eventId?lang=en",
+      "permanent": false
     }
   ],
   "rewrites": [

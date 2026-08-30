@@ -16,9 +16,13 @@ import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
 import { tripWindowPresetsFromEvent } from '../../utils/worldEventTripPresets';
 import {
   formatWorldEventDateRange,
+  getWorldEventBookingHints,
   getWorldEventById,
+  getWorldEventDetailOverview,
+  getWorldEventHighlights,
   getWorldEventLocation,
   getWorldEventPlaceMeta,
+  getWorldEventRecurrenceNote,
   getWorldEventTitle,
 } from '../../utils/worldEvents';
 import { fetchEventTravelGuide } from '../../utils/fetchEventTravelGuide';
@@ -98,6 +102,10 @@ export default function EventDetailPage() {
   const title = getWorldEventTitle(event, locale);
   const dateLabel = formatWorldEventDateRange(event, locale);
   const placeMeta = getWorldEventPlaceMeta(event.slug, locale);
+  const detailOverview = getWorldEventDetailOverview(event, locale);
+  const highlights = getWorldEventHighlights(event, locale);
+  const bookingHints = getWorldEventBookingHints(event, locale);
+  const recurrenceNote = getWorldEventRecurrenceNote(event, locale);
   const location = useMemo(() => getWorldEventLocation(event.slug), [event.slug]);
   const presets = tripWindowPresetsFromEvent(event);
   const [tripDates, setTripDates] = useState(() => ({
@@ -134,7 +142,7 @@ export default function EventDetailPage() {
   const seoDescription = [
     dateLabel,
     placeMeta.label,
-    event.detailOverview || event.bookingHints || t('worldEventDetail.seoDescription'),
+    detailOverview || bookingHints || t('worldEventDetail.seoDescription'),
   ]
     .filter(Boolean)
     .join(' · ');
@@ -241,8 +249,8 @@ export default function EventDetailPage() {
                 <span className="inline-flex rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-[11px] font-bold text-amber-900">
                   {typeLabel}
                 </span>
-                {event.recurrenceNote ? (
-                  <span className="text-[11px] font-semibold text-stone-500">{event.recurrenceNote}</span>
+                {recurrenceNote ? (
+                  <span className="text-[11px] font-semibold text-stone-500">{recurrenceNote}</span>
                 ) : null}
               </div>
               {dateLabel ? (

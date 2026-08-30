@@ -7,17 +7,58 @@ const corsHeaders = {
 };
 
 const SYSTEM_KO =
-  "당신은 GATEO 무니(MOONi) 여행 도우미입니다. 행사·여행 맥락에서 용어를 2~4문장으로 간결히 설명하세요. 실용적이고 사실 위주로 답하세요.";
+  "당신은 GATEO 무니(MOONi) 여행 도우미입니다. 행사·여행 맥락에서 용어를 2~4문장으로 간결히 설명하세요. 실용적이고 사실 위주로 답하세요. 반드시 완전한 문장으로 끝내세요.";
 const SYSTEM_EN =
-  "You are MOONi, GATEO travel assistant. Explain the term in 2-4 short sentences for event travel context. Be practical and factual.";
+  "You are MOONi, GATEO travel assistant. Explain the term in 2-4 short sentences for event travel context. Be practical and factual. End with complete sentences.";
 
 const MODEL = "gemini-2.5-flash";
+const MAX_OUTPUT_TOKENS = 2048;
+
+type GeminiPart = { text?: string; thought?: boolean };
+
+function extractGeminiText(candidate: unknown): { text: string; finishReason: string | null } {
+  const row = candidate as {
+    finishReason?: string;
+    content?: { parts?: GeminiPart[] };
+  } | null;
+  const finishReason = row?.finishReason ? String(row.finishReason) : null;
+  const parts = row?.content?.parts;
+  const text = Array.isArray(parts)
+    ? parts
+      .filter((part) => !part?.thought && part?.text)
+      .map((part) => part.text ?? "")
+      .join("")
+      .trim()
+    : "";
+  return { text, finishReason };
+}
+
+function isFinishTruncated(finishReason: string | null): boolean {
+  if (!finishReason) return false;
+  return finishReason.toUpperCase().includes("MAX_TOKEN");
+}
+
+/** Incomplete glossary answers (e.g. mid-word cuts) should not be cached or returned. */
+function isLikelyTruncatedGlossaryAnswer(answer: string, locale: "ko" | "en"): boolean {
+  const trimmed = String(answer ?? "").trim();
+  if (!trimmed) return true;
+
+  if (/[.!?。…]["'」』)]?\s*$/.test(trimmed)) return false;
+
+  const minChars = locale === "en" ? 60 : 80;
+  return trimmed.length < minChars;
+}
 
 function normalizeLocale(raw: unknown): "ko" | "en" {
   return String(raw ?? "").trim().toLowerCase() === "en" ? "en" : "ko";
 }
 
-async function callGemini(apiKey: string, system: string, prompt: string): Promise<string> {
+async function callGemini(
+  apiKey: string,
+  system: string,
+  prompt: string,
+  maxOutputTokens = MAX_OUTPUT_TOKENS,
+): Promise<{ text: string; finishReason: string | null }> {
   const apiUrl =
     `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey}`;
 
@@ -27,8 +68,9 @@ async function callGemini(apiKey: string, system: string, prompt: string): Promi
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: system }] },
       generationConfig: {
-        maxOutputTokens: 1024,
+        maxOutputTokens,
         temperature: 0.4,
+        thinkingConfig: { thinkingBudget: 0 },
       },
       contents: [{ role: "user", parts: [{ text: prompt }] }],
     }),
@@ -40,8 +82,7 @@ async function callGemini(apiKey: string, system: string, prompt: string): Promi
   }
 
   const data = await response.json();
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-  return String(text).trim();
+  return extractGeminiText(data.candidates?.[0]);
 }
 
 serve(async (req) => {
@@ -75,7 +116,7 @@ serve(async (req) => {
         .eq("locale", locale)
         .maybeSingle();
 
-      if (cached?.answer) {
+      if (cached?.answer && !isLikelyTruncatedGlossaryAnswer(String(cached.answer), locale)) {
         return new Response(
           JSON.stringify({
             success: true,
@@ -94,9 +135,24 @@ serve(async (req) => {
     }
 
     const system = locale === "en" ? SYSTEM_EN : SYSTEM_KO;
-    const answer = await callGemini(apiKey, system, prompt);
+    let { text: answer, finishReason } = await callGemini(apiKey, system, prompt);
+
+    if (
+      !answer ||
+      isFinishTruncated(finishReason) ||
+      isLikelyTruncatedGlossaryAnswer(answer, locale)
+    ) {
+      const retry = await callGemini(apiKey, system, prompt, 4096);
+      answer = retry.text;
+      finishReason = retry.finishReason;
+    }
+
     if (!answer) {
       throw new Error("empty Gemini response");
+    }
+
+    if (isFinishTruncated(finishReason) || isLikelyTruncatedGlossaryAnswer(answer, locale)) {
+      throw new Error("truncated Gemini response");
     }
 
     const { error: dbError } = await supabaseAdmin.from("event_term_glossary_cache").upsert({
