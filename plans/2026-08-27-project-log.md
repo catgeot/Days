@@ -392,3 +392,10 @@
 - **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
 - **Preview** `/qa/world-events` → EN locale 파일럿 3 상세 — 개요·하이라이트 En 표시(ko 폴백 없음)
 - **다음** 사람 Preview i18n-1 QA → OK 시 **#39** i18n-2
+
+## 세계행사 일정 #38 — i18n-1 Preview QA 한글 잔여 수정
+
+- **피드백** EN locale — 허브·상세 `recurrenceNote`·국가명(ko) · 숙소 권역(ko) · AI 가이드 패널(ko)
+- **수정** `recurrenceNoteEn`(17건) · `travelSpots-list` `country_en` · 파일럿 3 `stayArea` En · EventTravelGuide `*_en` fixture · tip `cac341e2`
+- **VERIFY** `audit:world-events` · `audit:event-travel-guide` · `smoke:world-events` · `build` PASS
+- **다음** Preview 재QA — EN edinburgh·munich·bali · 허브 카드 국가·시즌 메타

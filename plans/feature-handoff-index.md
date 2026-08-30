@@ -19,7 +19,7 @@
 | | |
 |--|--|
 | **상태** | **#38 i18n-1** — 에이전트 VERIFY PASS · PR [#158](https://github.com/catgeot/Days/pull/158) · **사람 Preview QA** |
-| **브랜치** | `cursor/world-events-wave2` · tip `a67ba91f` |
+| **브랜치** | `cursor/world-events-wave2` · tip `cac341e2` |
 | **PR** | [#158](https://github.com/catgeot/Days/pull/158) · [#157](https://github.com/catgeot/Days/pull/157) **merged** |
 | **main** | `4caf5b1c` — Wave2 singapore·dubai |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **F-0.5 D5-b-3** · **F-0.6** · §9 |
