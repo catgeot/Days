@@ -367,3 +367,13 @@
 - **Preview** `/qa/world-events` → `/world-events/rio-carnival-2027` · new-york-thanksgiving-season-2026 · iceland-midnight-sun-2027 · sydney-vivid-2027
 - **사람 QA** D5-b 본문(용어 모달·갤러리·인라인 링크) · 바로가기/실행 스트립 없음
 - **다음** Preview OK → **#37** D5-b 배치 D(hanoi + 15건 회귀)
+
+## 세계행사 일정 #37 — D5-b 배치 D overrides
+
+- **세션** `세계행사 일정 #37, D5-b 배치 D overrides`
+- **브랜치** `cursor/world-events-wave2` · tip `2ec65536` · PR [#158](https://github.com/catgeot/Days/pull/158)
+- **산출** hanoi-tet-2027 D5-b overrides — glossary 4 · heroImages 3 · highlightContextLinks 2 · mooniChips · actionChips 없음
+- **VERIFY** `generate:world-events` · `smoke:world-events`(15건 회귀) · `smoke:world-events-detail`(D5_B_BATCH_D assert) · `audit:event-travel-guide` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/hanoi-tet-2027` · Wave1 15건 D5-b KO **완성**(Preview)
+- **사람 QA** D5-b 본문(용어 모달·갤러리·인라인 링크) · 바로가기/실행 스트립 없음
+- **다음** Preview OK → **#38** i18n-1(En 본문 스키마·파일럿 3)
