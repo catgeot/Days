@@ -2312,6 +2312,118 @@ export const WORLD_EVENT_OVERRIDES = [
     recommendedNights: 4,
     heroImage:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Hansers_tim_hieu_Tet_Nguyen_Dan_16-02-2026_1771376540207.jpg/1280px-Hansers_tim_hieu_Tet_Nguyen_Dan_16-02-2026_1771376540207.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Hansers_tim_hieu_Tet_Nguyen_Dan_16-02-2026_1771376540207.jpg/1280px-Hansers_tim_hieu_Tet_Nguyen_Dan_16-02-2026_1771376540207.jpg',
+        captionKo: '뗏(설) 분위기',
+        captionEn: 'Tet holiday atmosphere',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Hanoi_Old_Quarter_%2825397128097%29.jpg/1280px-Hanoi_Old_Quarter_%2825397128097%29.jpg',
+        captionKo: '하노이 올드쿼터',
+        captionEn: 'Hanoi Old Quarter',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Hoan_Kiem_Lake_4123.jpg/1280px-Hoan_Kiem_Lake_4123.jpg',
+        captionKo: '호안끼엠 호수',
+        captionEn: 'Hoan Kiem Lake',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'tet',
+        termKo: '뗏',
+        termEn: 'Tet',
+        promptKo:
+          '베트남 음력 설(뗏·Tết)이 무엇인지, 하노이 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.',
+        promptEn: 'What is Vietnamese Tet (Tết) for Hanoi travelers? 3 short sentences.',
+        searchQueryKo: '베트남 뗏 설 연휴',
+        searchQueryEn: 'Vietnam Tet holiday',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Tết',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/뗏',
+      },
+      {
+        id: 'old-quarter',
+        termKo: '올드쿼터',
+        termEn: 'Old Quarter',
+        promptKo:
+          '하노이 올드쿼터(Old Quarter)가 뗏 시즌 방문에서 왜 중심인지 3문장 이내로 설명해줘.',
+        promptEn: 'Why Hanoi Old Quarter matters during Tet in 3 short sentences.',
+        searchQueryKo: '하노이 올드쿼터 뗏 꽃 시장',
+        searchQueryEn: 'Hanoi Old Quarter Tet flower market',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Old_Quarter,_Hanoi',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/하노이_올드쿼터',
+      },
+      {
+        id: 'hoan-kiem',
+        termKo: '호안끼엠',
+        termEn: 'Hoan Kiem',
+        promptKo:
+          '호안끼엠 호(Hoan Kiem Lake)가 뗏 연휴 하노이 일정에서 어떤 역할을 하는지 3문장 이내로 설명해줘.',
+        promptEn: 'Hoan Kiem Lake role during Hanoi Tet holidays in 3 short sentences.',
+        searchQueryKo: '하노이 호안끼엠 호수 뗏',
+        searchQueryEn: 'Hoan Kiem Lake Hanoi Tet',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Hoàn_Kiếm_Lake',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/호안끼엠_호',
+      },
+      {
+        id: 'flower-market',
+        termKo: '꽃 시장',
+        termEn: 'flower market',
+        promptKo:
+          '뗏 전 하노이 꽃 시장(연휴 준비)의 특징과 방문 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Hanoi Tet flower markets before the holiday in 3 short sentences.',
+        searchQueryKo: '하노이 뗏 꽃 시장',
+        searchQueryEn: 'Hanoi Tet flower market',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'tet-flower-market',
+            labelKo: '꽃 시장·올드쿼터 검색',
+            labelEn: 'Flower market & Old Quarter search',
+            kind: 'shop',
+            searchQueryKo: '하노이 올드쿼터 뗏 꽃 시장',
+            searchQueryEn: 'Hanoi Old Quarter Tet flower market',
+            searchTarget: 'google',
+          },
+        ],
+      },
+      {
+        highlightIndex: 2,
+        links: [
+          {
+            id: 'tet-travel-guide',
+            labelKo: '뗏 연휴 여행 안내',
+            labelEn: 'Tet holiday travel guide',
+            kind: 'tour',
+            href: 'https://www.vietnam.travel/things-to-do/tet-festival-vietnam',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '하노이 뗏 설 연휴',
+    youtubeSearchQueryEn: 'Hanoi Tet holiday',
+    mooniChips: [
+      {
+        id: 'tet-timing',
+        promptKo: '뗏 연휴 전후 4박 일정은 언제 잡는 게 좋아?',
+        promptEn: 'When to book a 4-night trip around Tet in Hanoi?',
+      },
+      {
+        id: 'old-quarter-stay',
+        promptKo: '올드쿼터랑 호안끼엠 숙소 어디가 나아?',
+        promptEn: 'Old Quarter vs Hoan Kiem for Tet stay?',
+      },
+      {
+        id: 'holiday-closures',
+        promptKo: '연휴 기간 상점·교통 휴무 어떻게 대비해?',
+        promptEn: 'How to plan around Tet shop and transport closures?',
+      },
+    ],
     priority: 1,
   },
   {

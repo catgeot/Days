@@ -119,6 +119,8 @@ const D5_B_BATCH_C_EVENT_IDS = [
   'sydney-vivid-2027',
 ];
 
+const D5_B_BATCH_D_EVENT_IDS = ['hanoi-tet-2027'];
+
 for (const eventId of WAVE1_EVENT_IDS) {
   const event = getWorldEventById(eventId);
   assert.ok(event, `${eventId} in Wave1 roster`);
@@ -165,6 +167,18 @@ for (const eventId of D5_B_BATCH_B_EVENT_IDS) {
 for (const eventId of D5_B_BATCH_C_EVENT_IDS) {
   const event = getWorldEventById(eventId);
   assert.ok(event, `${eventId} in D5-b batch C`);
+  assert.ok(Array.isArray(event.glossaryTerms) && event.glossaryTerms.length >= 4, `${eventId} glossaryTerms`);
+  assert.ok(Array.isArray(event.heroImages) && event.heroImages.length >= 3, `${eventId} heroImages`);
+  assert.ok(
+    Array.isArray(event.highlightContextLinks) && event.highlightContextLinks.length >= 2,
+    `${eventId} highlightContextLinks`,
+  );
+  assert.ok(!Array.isArray(event.actionChips) || event.actionChips.length === 0, `${eventId} no actionChips`);
+}
+
+for (const eventId of D5_B_BATCH_D_EVENT_IDS) {
+  const event = getWorldEventById(eventId);
+  assert.ok(event, `${eventId} in D5-b batch D`);
   assert.ok(Array.isArray(event.glossaryTerms) && event.glossaryTerms.length >= 4, `${eventId} glossaryTerms`);
   assert.ok(Array.isArray(event.heroImages) && event.heroImages.length >= 3, `${eventId} heroImages`);
   assert.ok(
@@ -540,6 +554,7 @@ for (const pilotId of [
   ...D5_B_BATCH_A_EVENT_IDS,
   ...D5_B_BATCH_B_EVENT_IDS,
   ...D5_B_BATCH_C_EVENT_IDS,
+  ...D5_B_BATCH_D_EVENT_IDS,
 ]) {
   await assertPilotHeroImagesReachable(pilotId);
 }
