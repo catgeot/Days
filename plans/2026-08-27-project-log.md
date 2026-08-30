@@ -350,3 +350,10 @@
 - **Preview** `/qa/world-events` → `/world-events/tokyo-sakura-season-2027` · kyoto-gion-matsuri-2027 · bangkok-songkran-2027
 - **사람 QA** D5-b 본문(용어 모달·갤러리·인라인 링크) · 바로가기/실행 스트립 없음
 - **다음** Preview OK → **#36** D5-b 배치 C(rio·new-york·iceland·sydney)
+
+## 세계행사 일정 #35 — glossary 참고 링크 KO (#35 QA)
+
+- **피드백** tokyo `우에노 공원` MOONi 모달 「참고 링크」→ `en.wikipedia.org/wiki/Ueno_Park`
+- **원인** `referenceUrl`만 EN Wikipedia SSOT · 로케일 분기 없음
+- **수정** `referenceUrlKo` + `getGlossaryTermReferenceUrl` · overrides KO URL(우에노 공원 등) · tip `df61ed3c`
+- **Preview** `/qa/world-events` → tokyo 상세 · 우에노 공원 참고 링크 `ko.wikipedia.org/wiki/우에노_공원` 재QA
