@@ -244,7 +244,7 @@ assert.match(hubSrc, /eventDetailHref/, 'WorldEvents hub uses eventDetailHref');
 
 const detailSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventDetailPage.jsx'), 'utf8');
 assert.match(detailSrc, /EventDetailStaticPanel/, 'EventDetailPage renders static panel');
-assert.match(detailSrc, /shouldShowEventTravelGuidePanel/, 'EventDetailPage suppresses AI panel on PROD');
+assert.match(detailSrc, /shouldShowEventTravelGuidePanel/, 'EventDetailPage gates AI panel to pilot events');
 const travelGuidePanelSrc = readFileSync(
   join(root, 'src/pages/WorldEvents/EventTravelGuidePanel.jsx'),
   'utf8',

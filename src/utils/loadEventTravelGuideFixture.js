@@ -7,7 +7,7 @@ const fixtureModules = import.meta.glob(
 
 /**
  * EventTravelGuide fixture — Wave1.5 pilot 3건. DB row 없을 때 PROD·Preview 공통 폴백.
- * UI 표시는 `shouldShowEventTravelGuidePanel` (Preview pilot만).
+ * UI 표시는 `shouldShowEventTravelGuidePanel` (pilot 3건 · PROD·Preview).
  *
  * @param {string} eventId
  */

@@ -73,6 +73,10 @@ function main() {
   assert(grepFile('src/utils/loadEventTravelGuideFixture.js', 'loadEventTravelGuideFixture'), 'fixture loader');
 
   assert(grepFile('src/utils/eventTravelGuideSurface.js', 'shouldShowEventTravelGuidePanel'), 'surface guard');
+  assert(
+    !grepFile('src/utils/eventTravelGuideSurface.js', 'isCloudPreviewSurface'),
+    'AI panel not preview-only',
+  );
   assert(grepFile('src/pages/WorldEvents/EventDetailPage.jsx', 'shouldShowEventTravelGuidePanel'), 'panel suppress wired');
   assert(grepFile('src/pages/WorldEvents/EventDetailPage.jsx', 'EventTravelGuidePanel'), 'panel wired in detail page');
   assert(
