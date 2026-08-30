@@ -813,24 +813,24 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#39 i18n-2** — i18n-1 Preview QA **PASS** · PR [#158](https://github.com/catgeot/Days/pull/158) |
-| **브랜치** | `cursor/world-events-wave2` · tip `cac341e2` (merge `9c8669b5`) |
+| **상태** | **#40 i18n-2 Preview QA** — i18n-2 구현 tip `7ea0d0b1` · PR [#158](https://github.com/catgeot/Days/pull/158) |
+| **브랜치** | `cursor/world-events-wave2` · tip `7ea0d0b1` |
 | **main** | `4caf5b1c` — Wave2 singapore·dubai |
-| **플랜** | F-0.5 **D5-b-3 ✅** · **F-0.6 i18n-1 ✅**(#38 Preview QA) · **i18n-2**(#39) |
+| **플랜** | F-0.5 **D5-b-3 ✅** · **F-0.6 i18n-1 ✅** · **i18n-2 ✅**(#39) |
 | **PROD QA** | Wave2 Vercel 배포 후 singapore·dubai · i18n-2 Preview |
 | **VERIFY** | `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` |
 
-**마일스톤**: M1 파일럿 PROD OK → M2 Wave2 merged → M3 **15/15 D5-b** → M4 **i18n-1 ✅** → M5 **i18n-2**
+**마일스톤**: M1 파일럿 PROD OK → M2 Wave2 merged → M3 **15/15 D5-b** → M4 **i18n-1 ✅** → M5 **i18n-2 ✅**
 
-**다음 제시어** (#39 i18n-2):
+**다음 제시어** (#40 i18n-2 Preview QA):
 
 ```
-세계행사 일정 #39, i18n-2 En 허브·모달 분기
+세계행사 일정 #40, i18n-2 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
 @plans/world-events-management.md
 브랜치 cursor/world-events-wave2 · PR #158 · https://www.gateo.kr/qa/world-events
 금지: worldEvents.json 직편집 · UI 리디자인 · Wave1 KO 본문 일괄 En 번역
-작업: EN 허브·glossary 모달·비파일럿 폴백 전면 locale 분기 · /en/world-events SEO 조율
+작업: EN 허브·singapore 비파일럿 staticFallback·glossary 모달·/en/world-events SEO 사람 Preview QA
 ```
