@@ -18,8 +18,8 @@
 
 | | |
 |--|--|
-| **상태** | **#40 i18n-2 Preview QA** — i18n-2 구현 tip `7ea0d0b1` · PR [#158](https://github.com/catgeot/Days/pull/158) |
-| **브랜치** | `cursor/world-events-wave2` · tip `7ea0d0b1` |
+| **상태** | **#40 i18n-2 Preview QA PASS** · tip `7cafc78a` · PR [#158](https://github.com/catgeot/Days/pull/158) **merge 대기** |
+| **브랜치** | `cursor/world-events-wave2` · tip `7cafc78a` |
 | **PR** | [#158](https://github.com/catgeot/Days/pull/158) · [#157](https://github.com/catgeot/Days/pull/157) **merged** |
 | **main** | `4caf5b1c` — Wave2 singapore·dubai |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **F-0.5 D5-b-3** · **F-0.6** · §9 |
@@ -30,19 +30,18 @@
 | **PROD QA** | Wave2 Vercel 배포 후 singapore·dubai · 배치 A~D Preview |
 | **VERIFY** | `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` |
 
-**게이트**: i18n-2 Preview QA — EN 허브·비파일럿 staticFallback·glossary·/en/world-events
+**게이트**: PR #158 merge → PROD i18n-2 QA (`?lang=en` singapore·edinburgh·bali · Trip Flight+hotel `www.trip.com`)
 
-**다음 제시어** (#40 i18n-2 Preview QA):
+**다음 제시어** (#41 i18n-2 main 병합·PROD QA):
 
 ```
-세계행사 일정 #40, i18n-2 Preview QA
+세계행사 일정 #41, i18n-2 main 병합·PROD QA
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
 @plans/world-events-management.md
-브랜치 cursor/world-events-wave2 · PR #158 · https://www.gateo.kr/qa/world-events
-금지: worldEvents.json 직편집 · UI 리디자인 · Wave1 KO 본문 일괄 En 번역
-작업: EN 허브·singapore 비파일럿 staticFallback·glossary 모달·/en/world-events SEO 사람 Preview QA
+브랜치 cursor/world-events-wave2 · PR #158 merge · https://www.gateo.kr/qa/world-events
+작업: PR #158 merge(사람 요청 시) → PROD ?lang=en 허브·singapore 상세·Trip Flight+hotel www.trip.com
 ```
 
 ---
