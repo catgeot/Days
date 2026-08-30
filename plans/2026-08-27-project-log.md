@@ -377,3 +377,9 @@
 - **Preview** `/qa/world-events` → `/world-events/hanoi-tet-2027` · Wave1 15건 D5-b KO **완성**(Preview)
 - **사람 QA** D5-b 본문(용어 모달·갤러리·인라인 링크) · 바로가기/실행 스트립 없음
 - **다음** Preview OK → **#38** i18n-1(En 본문 스키마·파일럿 3)
+
+## 세계행사 일정 #37 — Preview QA 피드백 (무니 모달·뗏 링크)
+
+- **피드백** 무니 용어 모달 하단 여백 부족(모바일 크롬 버튼 오탭) · 본문 가독성 · 「뗏 연휴 여행 안내」vietnam.travel 404
+- **수정** `EventTermExplainModal` safe-area 하단 패딩·15px/leading-7 · hanoi 링크→구글 검색 · sourceUrl Wikipedia Tet · tip `131352c1`
+- **사람 재QA** hanoi 상세 · 용어 모달 하단·「뗏 연휴 여행 안내」구글 검색 열림
