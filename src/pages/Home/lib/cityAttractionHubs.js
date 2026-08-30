@@ -16,6 +16,18 @@ const KIND_LABELS = {
   park: '공원',
 };
 
+const KIND_LABELS_EN = {
+  beach: 'Beach',
+  market: 'Market',
+  temple: 'Temple',
+  shrine: 'Shrine',
+  viewpoint: 'Viewpoint',
+  landmark: 'Sight',
+  museum: 'Museum',
+  neighborhood: 'Neighborhood',
+  park: 'Park',
+};
+
 const normalizeKey = (s) =>
   String(s ?? '')
     .trim()
@@ -90,7 +102,8 @@ for (const hub of HUBS) {
   }
 }
 
-export function getKindLabel(kind) {
+export function getKindLabel(kind, locale = 'ko') {
+  if (locale === 'en') return KIND_LABELS_EN[kind] || 'Sight';
   return KIND_LABELS[kind] || '명소';
 }
 

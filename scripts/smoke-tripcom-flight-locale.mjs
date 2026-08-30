@@ -20,10 +20,13 @@ async function main() {
   const {
     resolveTripcomPartnerLocale,
     resolveTripcomSiteOrigin,
+    resolveTripcomCurrency,
   } = await load('src/utils/tripcomPartnerLocale.js');
 
   assert(resolveTripcomPartnerLocale('ko') === 'ko-KR', 'ko locale');
   assert(resolveTripcomPartnerLocale('en') === 'en-US', 'en locale');
+  assert(resolveTripcomCurrency('en-US') === 'USD', 'en currency USD');
+  assert(resolveTripcomCurrency('ko-KR') === 'KRW', 'ko currency KRW');
   assert(
     resolveTripcomSiteOrigin('en-US') === 'https://kr.trip.com',
     'affiliate host stays kr.trip.com',
@@ -35,11 +38,12 @@ async function main() {
 
   const enParams = new URLSearchParams({
     locale: resolveTripcomPartnerLocale('en'),
-    curr: 'KRW',
+    curr: resolveTripcomCurrency('en-US'),
     dAirportCode: 'ICN',
     aAirportCode: 'FUK',
   });
   assert(enParams.get('locale') === 'en-US', 'en query locale');
+  assert(enParams.get('curr') === 'USD', 'en query currency USD');
 
   const koParams = new URLSearchParams({
     locale: resolveTripcomPartnerLocale('ko'),
@@ -51,8 +55,9 @@ async function main() {
   );
   assert(enPackages.hostname === 'kr.trip.com', 'en packages host');
   assert(enPackages.searchParams.get('locale') === 'en-US', 'en packages locale');
+  assert(enPackages.searchParams.get('curr') === 'USD', 'en packages currency USD');
 
-  console.log('OK: tripcom-flight-locale — en-US on kr.trip.com (affiliate host fixed)');
+  console.log('OK: tripcom-flight-locale — en-US+USD on kr.trip.com (affiliate host fixed)');
   console.log('SMOKE OK');
 }
 

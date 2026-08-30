@@ -51,9 +51,11 @@ function EventFlightHotelCta({
   adultCount,
   childCount,
   departureIata,
+  locale = 'ko',
   className = '',
 }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const partnerLocale = resolveTripcomPartnerLocale(locale);
   const packageUrl = useMemo(() => {
     if (!location) return null;
     const depart = departureIata
@@ -69,9 +71,9 @@ function EventFlightHotelCta({
       checkOut,
       adultCount,
       childCount,
-      partnerLocale: resolveTripcomPartnerLocale(i18n.language),
+      partnerLocale,
     });
-  }, [location, checkIn, checkOut, adultCount, childCount, departureIata, i18n.language]);
+  }, [location, checkIn, checkOut, adultCount, childCount, departureIata, partnerLocale]);
 
   if (!location || !packageUrl) return null;
 
@@ -421,6 +423,7 @@ export default function EventStayStrip({
                 adultCount={guests.adultCount}
                 childCount={guests.childCount}
                 departureIata={departureIata}
+                locale={locale}
               />
             </span>
           ) : null}

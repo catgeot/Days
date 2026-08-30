@@ -314,6 +314,12 @@ const baliHub = getWorldEventHubAttractions(bali, { locale: 'ko' });
 assert.ok(baliHub.hub?.href === '/place/bali', 'bali hub link');
 assert.ok(baliHub.attractions.length >= 3, 'bali hub attractions');
 assert.ok(baliHub.attractions[0].href.startsWith('/place/'), 'attraction place link');
+const baliHubEn = getWorldEventHubAttractions(bali, { locale: 'en' });
+assert.ok(
+  baliHubEn.attractions.every((item) => !/[가-힣]/.test(item.kindLabel || '')),
+  'en hub attraction kind labels are not Korean',
+);
+assert.equal(baliHubEn.attractions[0].kindLabel, 'Neighborhood', 'en hub kind label localized');
 assert.ok(buildWorldEventSearchQuery(bali, 'ko').includes('갈룽안'), 'bali search query ko');
 assert.ok(!buildWorldEventSearchQuery(bali, 'ko').includes('islandwide'), 'bali search query no English venue');
 assert.ok(buildWorldEventSearchQuery(bali, 'en').includes('Galungan'), 'bali search query en');
@@ -679,6 +685,7 @@ assert.match(locationRulesSrc, /'bali'/, 'bali in GYG location rules');
 assert.match(affiliateSrc, /getKlookRentalUrlByLocation/, 'affiliate Klook rental helper');
 assert.match(affiliateSrc, /event-detail-flight/, 'affiliate event-detail-flight tracking');
 assert.match(affiliateSrc, /if \(mode === 'packages'\)/, 'packages/list gated by mode=packages only');
+assert.match(affiliateSrc, /resolveTripcomCurrency/, 'affiliate tripcom currency by locale');
 assert.match(affiliateSrc, /bali: '723'/, 'bali Trip.com hotel city id for packages');
 assert.match(mrtPackageQuerySrc, /bali/, 'bali in MRT package keyword rules');
 assert.equal(baliLoc.slug, 'bali', 'bali location slug for execution strip');
@@ -699,6 +706,7 @@ assert.equal(
 assert.match(stayStripSrc, /synced\.checkIn === checkIn/, 'EventStayStrip skips redundant preset apply');
 
 assert.match(stayStripSrc, /EventFlightHotelCta/, 'EventStayStrip uses packages CTA');
+assert.match(stayStripSrc, /locale=\{locale\}/, 'EventStayStrip passes locale to packages CTA');
 assert.match(stayStripSrc, /event-detail-flight/, 'EventStayStrip event-detail-flight tracking');
 assert.match(stayStripSrc, /mode: 'packages'/, 'EventStayStrip packages mode');
 assert.match(stayStripSrc, /placeLabel/, 'EventStayStrip placeLabel override');

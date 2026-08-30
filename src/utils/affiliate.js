@@ -20,7 +20,7 @@ export {
   resolveMrtPackageThemeHref,
   resolveMrtPackageThemeForLocation,
 } from './mrtPackageLinks.js';
-import { resolveTripcomPartnerLocale, resolveTripcomSiteOrigin } from './tripcomPartnerLocale.js';
+import { resolveTripcomPartnerLocale, resolveTripcomSiteOrigin, resolveTripcomCurrency } from './tripcomPartnerLocale.js';
 import { resolveGygLocale, resolveGygCurrency } from './gygPartnerLocale.js';
 import {
   GYG_PARTNER_ID,
@@ -32,7 +32,7 @@ import {
   buildGygSearchUrl as buildGygSearchUrlRaw,
 } from './gygAffiliateLinks.js';
 
-export { resolveTripcomPartnerLocale, resolveTripcomSiteOrigin, resolveGygLocale, resolveGygCurrency };
+export { resolveTripcomPartnerLocale, resolveTripcomSiteOrigin, resolveTripcomCurrency, resolveGygLocale, resolveGygCurrency };
 export {
   GYG_PARTNER_ID,
   GYG_DEFAULT_CMP,
@@ -733,7 +733,7 @@ export function getTripcomHomeUrl(options = {}) {
   const origin = resolveTripcomSiteOrigin(partnerLocale);
   const params = new URLSearchParams({
     locale: partnerLocale,
-    curr: 'KRW',
+    curr: resolveTripcomCurrency(partnerLocale),
     Allianceid: TRIPCOM_KR_PARTNER.allianceId,
     SID: TRIPCOM_KR_PARTNER.sid,
   });
@@ -891,7 +891,7 @@ export function buildTripcomPlannerFlightUrl(location, options = {}) {
     SID: TRIPCOM_KR_PARTNER.sid,
     trip_sub1: sub1,
     locale: partnerLocale,
-    curr: 'KRW',
+    curr: resolveTripcomCurrency(partnerLocale),
     trip_sub3: sub3,
   });
 
@@ -1041,7 +1041,9 @@ function mergeTripcomHotelStayParams(baseUrl, options = {}) {
       url.searchParams.set('SID', TRIPCOM_KR_PARTNER.sid);
     }
     url.searchParams.set('locale', partnerLocale);
-    if (!url.searchParams.has('curr')) url.searchParams.set('curr', 'KRW');
+    if (!url.searchParams.has('curr')) {
+      url.searchParams.set('curr', resolveTripcomCurrency(partnerLocale));
+    }
     if (options.campaign) url.searchParams.set('trip_sub1', options.campaign);
     if (options.checkIn) url.searchParams.set('checkIn', String(options.checkIn));
     if (options.checkOut) url.searchParams.set('checkOut', String(options.checkOut));
@@ -1102,7 +1104,7 @@ export function buildTripcomHotelSearchUrl(location, options = {}) {
   const origin = resolveTripcomSiteOrigin(partnerLocale);
   const params = new URLSearchParams({
     locale: partnerLocale,
-    curr: 'KRW',
+    curr: resolveTripcomCurrency(partnerLocale),
     Allianceid: TRIPCOM_KR_PARTNER.allianceId,
     SID: TRIPCOM_KR_PARTNER.sid,
     trip_sub1: campaign,
