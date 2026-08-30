@@ -18,8 +18,8 @@
 
 | | |
 |--|--|
-| **상태** | **#38 i18n-1** — 에이전트 VERIFY PASS · PR [#158](https://github.com/catgeot/Days/pull/158) · **사람 Preview QA** |
-| **브랜치** | `cursor/world-events-wave2` · tip `cac341e2` |
+| **상태** | **#39 i18n-2** — i18n-1 Preview QA **PASS** · PR [#158](https://github.com/catgeot/Days/pull/158) |
+| **브랜치** | `cursor/world-events-wave2` · tip `cac341e2` (merge `9c8669b5`) |
 | **PR** | [#158](https://github.com/catgeot/Days/pull/158) · [#157](https://github.com/catgeot/Days/pull/157) **merged** |
 | **main** | `4caf5b1c` — Wave2 singapore·dubai |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **F-0.5 D5-b-3** · **F-0.6** · §9 |
@@ -30,19 +30,19 @@
 | **PROD QA** | Wave2 Vercel 배포 후 singapore·dubai · 배치 A~D Preview |
 | **VERIFY** | `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` |
 
-**게이트**: i18n-1 Preview OK → **#39** i18n-2(En 허브·모달 전면 분기)
+**게이트**: i18n-2 허브·모달 전면 분기 · `/en/world-events` SEO
 
-**다음 제시어** (#38 Preview QA):
+**다음 제시어** (#39 i18n-2):
 
 ```
-세계행사 일정 #38, i18n-1 Preview QA
+세계행사 일정 #39, i18n-2 En 허브·모달 분기
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
 @plans/world-events-management.md
 브랜치 cursor/world-events-wave2 · PR #158 · https://www.gateo.kr/qa/world-events
 금지: worldEvents.json 직편집 · UI 리디자인 · Wave1 KO 본문 일괄 En 번역
-작업: EN locale 파일럿 3(edinburgh·munich·bali) 개요·하이라이트 Preview 확인 → OK 시 #39 i18n-2
+작업: EN 허브·glossary 모달·비파일럿 폴백 전면 locale 분기 · /en/world-events SEO 조율
 ```
 
 ---

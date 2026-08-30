@@ -399,3 +399,11 @@
 - **수정** `recurrenceNoteEn`(17건) · `travelSpots-list` `country_en` · 파일럿 3 `stayArea` En · EventTravelGuide `*_en` fixture · tip `cac341e2`
 - **VERIFY** `audit:world-events` · `audit:event-travel-guide` · `smoke:world-events` · `build` PASS
 - **다음** Preview 재QA — EN edinburgh·munich·bali · 허브 카드 국가·시즌 메타
+
+## 세계행사 일정 #38 — i18n-1 Preview QA
+
+- **세션** `세계행사 일정 #38, i18n-1 Preview QA`
+- **브랜치** `cursor/world-events-wave2` · PR [#158](https://github.com/catgeot/Days/pull/158) · tip `cac341e2`
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events?lang=en` → edinburgh·munich·bali — `detailOverviewEn`·`highlightsEn`·`recurrenceNoteEn`·stayArea En · HTTP 200
+- **게이트** i18n-1 Preview QA **PASS** → **#39** i18n-2(En 허브·모달 전면 분기)
