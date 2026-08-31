@@ -32,7 +32,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 
 const events = getAllWorldEvents();
-assert.equal(events.length, 20, 'Wave1+Wave2+Wave3 paris has 20 events');
+assert.equal(events.length, 21, 'Wave1+Wave2+Wave3 paris+los-angeles has 21 events');
 
 for (const event of events) {
   const found = getWorldEventById(event.id);
@@ -82,6 +82,7 @@ assertTier05('prague-spring-festival-2027', 3);
 assertTier05('marrakech-rose-festival-2027', 2);
 assertTier05('hanoi-tet-2027', 4);
 assertTier05('paris-nuit-blanche-2027', 3);
+assertTier05('los-angeles-rose-parade-2027', 3);
 
 const WAVE1_EVENT_IDS = [
   'edinburgh-fringe-2026',
@@ -108,7 +109,7 @@ const WAVE2_EVENT_IDS = [
   'istanbul-marathon-2026',
 ];
 
-const WAVE3_EVENT_IDS = ['paris-nuit-blanche-2027'];
+const WAVE3_EVENT_IDS = ['paris-nuit-blanche-2027', 'los-angeles-rose-parade-2027'];
 
 const D5_B_BATCH_A_EVENT_IDS = [
   'vienna-staatsoper-season-2026',
@@ -280,6 +281,29 @@ assert.equal(
 );
 assert.equal(resolveWorldEventHubRegionId('paris'), 'europe', 'paris hub region europe');
 assert.equal(resolveWorldEventHubRegionId('prague'), 'europe', 'prague hub region europe after reorg');
+const losAngelesLoc = getWorldEventLocation('los-angeles');
+assert.equal(resolvePlannerFlightArrivalIata(losAngelesLoc), 'LAX', 'los-angeles arrival IATA');
+const losAngeles = getWorldEventById('los-angeles-rose-parade-2027');
+const roseParadeOfficial = losAngeles.highlightContextLinks
+  .find((group) => group.highlightIndex === 0)
+  ?.links.find((link) => link.id === 'rose-parade-official');
+assert.equal(roseParadeOfficial?.href, 'https://www.tournamentofroses.com/', 'los-angeles official site');
+assert.equal(losAngeles.sourceUrl, 'https://www.tournamentofroses.com/', 'los-angeles sourceUrl official');
+const floatfestMap = losAngeles.highlightContextLinks
+  .find((group) => group.highlightIndex === 2)
+  ?.links.find((link) => link.id === 'floatfest-map');
+assert.equal(floatfestMap?.searchTarget, 'maps', 'los-angeles floatfest map searchTarget');
+assert.equal(
+  googleMapsSearchUrl(floatfestMap?.searchQueryKo, 'ko'),
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('패서디나 콜로라도 대로')}&hl=ko`,
+  'los-angeles floatfest map opens Google Maps at Colorado Blvd (KO)',
+);
+assert.equal(
+  googleMapsSearchUrl(floatfestMap?.searchQueryEn, 'en'),
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Colorado Blvd, Pasadena, CA, USA')}&hl=en`,
+  'los-angeles floatfest map opens Google Maps at Colorado Blvd (EN)',
+);
+assert.equal(resolveWorldEventHubRegionId('los-angeles'), 'americas', 'los-angeles hub region americas');
 
 /** @param {string} eventId @param {string} linkId @param {string} expectedHref */
 function assertOfficialUrlSsot(eventId, linkId, expectedHref) {
@@ -778,6 +802,7 @@ for (const pilotId of [
   'barcelona-la-merce-2026',
   'istanbul-marathon-2026',
   'paris-nuit-blanche-2027',
+  'los-angeles-rose-parade-2027',
   ...D5_B_BATCH_A_EVENT_IDS,
   ...D5_B_BATCH_B_EVENT_IDS,
   ...D5_B_BATCH_C_EVENT_IDS,

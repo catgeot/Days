@@ -3206,4 +3206,159 @@ export const WORLD_EVENT_OVERRIDES = [
     ],
     priority: 1,
   },
+  {
+    id: 'los-angeles-rose-parade-2027',
+    slug: 'los-angeles',
+    hubId: 'los-angeles',
+    type: 'festival',
+    title: '로즈 퍼레이드',
+    titleEn: 'Rose Parade',
+    startDate: '2027-01-01',
+    endDate: '2027-01-01',
+    recurrence: 'annual',
+    recurrenceNote: '매년 1월 1일 (신년의 날)',
+    recurrenceNoteEn: "Every January 1 (New Year's Day)",
+    venue: { name: 'Colorado Blvd · Pasadena · Rose Bowl' },
+    source: 'official_url',
+    sourceUrl: 'https://www.tournamentofroses.com/',
+    bookingHints:
+      '패서디나·올드타운 — 퍼레이드 당일 전후 2~3박 · 새벽 자리·메트로·트래픽 통제 구간 조기 이동',
+    detailOverview:
+      '캘리포니아 패서디나에서 매년 1월 1일 열리는 장미 축제 퍼레이드(Tournament of Roses Parade)로, 꽃으로 덮은 플로트가 콜로라도 대로를 따라 이동합니다. 같은 날 오후 로즈볼 대학 미식축구 경기가 이어지므로, 퍼레이드 전후 2~3박으로 패서디나·올드타운 기점을 잡아 새벽 관람·경기 관람을 묶는 방문이 일반적입니다.',
+    highlights: [
+      'Tournament of Roses Parade — Colorado Blvd 루트 · 꽃 플로트·밴드·마슈 유닛',
+      'Rose Bowl Game — 같은 날 오후 패서디나 로즈볼 경기장',
+      'Floatfest — 퍼레이드 후 플로트 전시·Sierra Madre·Washington Blvd',
+    ],
+    stayAreas: [
+      {
+        name: '패서디나 · Pasadena',
+        mrtKeyword: 'Pasadena Los Angeles',
+        note: '퍼레이드 루트·로즈볼 도보·메트로 Gold Line',
+      },
+      {
+        name: '올드타운 · Old Pasadena',
+        mrtKeyword: 'Old Pasadena',
+        note: 'Colorado Blvd 인근 · 식당·쇼핑·Gold Line',
+      },
+    ],
+    recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Tournament_of_Roses_Parade_2010_Float.jpg/1280px-Tournament_of_Roses_Parade_2010_Float.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Tournament_of_Roses_Parade_2010_Float.jpg/1280px-Tournament_of_Roses_Parade_2010_Float.jpg',
+        captionKo: '로즈 퍼레이드 꽃 플로트',
+        captionEn: 'Rose Parade floral float',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/TOR_New_Orleans_float.jpg/1280px-TOR_New_Orleans_float.jpg',
+        captionKo: '콜로라도 대로 플로트 행진',
+        captionEn: 'Float on Colorado Boulevard',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/2018.06.17_Over_the_Rose_Bowl%2C_Pasadena%2C_CA_USA_0046_%2842855686701%29.jpg/1280px-2018.06.17_Over_the_Rose_Bowl%2C_Pasadena%2C_CA_USA_0046_%2842855686701%29.jpg',
+        captionKo: '패서디나 로즈볼 경기장',
+        captionEn: 'Rose Bowl Stadium in Pasadena',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'rose-parade',
+        termKo: '로즈 퍼레이드',
+        termEn: 'Rose Parade',
+        promptKo:
+          '로스앤젤레스 로즈 퍼레이드(Rose Parade)가 무엇인지 여행자 관점에서 3문장 이내로 설명해줘.',
+        promptEn: 'What is the Rose Parade in Los Angeles for travelers in 3 short sentences.',
+        searchQueryKo: '로스앤젤레스 로즈 퍼레이드',
+        searchQueryEn: 'Rose Parade Pasadena Los Angeles',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Rose_Parade',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/%EB%A1%9C%EC%A6%88_%ED%8D%BC%EB%A0%88%EC%9D%B4%EB%93%9C',
+      },
+      {
+        id: 'tournament-of-roses',
+        termKo: '토너먼트 오브 로즈',
+        termEn: 'Tournament of Roses',
+        promptKo:
+          '토너먼트 오브 로즈(Tournament of Roses)가 로즈 퍼레이드와 어떤 관계인지 3문장 이내로 설명해줘.',
+        promptEn:
+          'How does the Tournament of Roses relate to the Rose Parade in 3 short sentences.',
+        searchQueryKo: '토너먼트 오브 로즈 퍼레이드',
+        searchQueryEn: 'Tournament of Roses Pasadena',
+        referenceUrl: 'https://www.tournamentofroses.com/',
+      },
+      {
+        id: 'pasadena',
+        termKo: '패서디나',
+        termEn: 'Pasadena',
+        promptKo:
+          '로즈 퍼레이드 때문에 패서디나(Pasadena)가 숙소·동선 허브인 이유를 3문장 이내로 설명해줘.',
+        promptEn: 'Why Pasadena is the hub for Rose Parade trips in 3 short sentences.',
+        searchQueryKo: '패서디나 로즈 퍼레이드 숙소',
+        searchQueryEn: 'Pasadena Rose Parade hotels',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Pasadena,_California',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/%ED%8C%A8%EC%84%9C%EB%94%94%EB%82%98',
+      },
+      {
+        id: 'rose-bowl',
+        termKo: '로즈볼',
+        termEn: 'Rose Bowl',
+        promptKo:
+          '로즈 퍼레이드 당일 로즈볼(Rose Bowl) 미식축구 경기가 여행 일정에 어떤 영향을 주는지 3문장 이내로 설명해줘.',
+        promptEn: 'How the Rose Bowl game affects a parade-day itinerary in 3 short sentences.',
+        searchQueryKo: '로즈볼 경기 로즈 퍼레이드',
+        searchQueryEn: 'Rose Bowl game Rose Parade day',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Rose_Bowl_Game',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/%EB%A1%9C%EC%A6%88%EB%B3%BC',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'rose-parade-official',
+            labelKo: '공식 일정',
+            labelEn: 'Official programme',
+            kind: 'shop',
+            href: 'https://www.tournamentofroses.com/',
+          },
+        ],
+      },
+      {
+        highlightIndex: 2,
+        links: [
+          {
+            id: 'floatfest-map',
+            labelKo: 'Floatfest 지도',
+            labelEn: 'Floatfest map',
+            kind: 'shop',
+            searchQueryKo: '패서디나 콜로라도 대로',
+            searchQueryEn: 'Colorado Blvd, Pasadena, CA, USA',
+            searchTarget: 'maps',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '로스앤젤레스 로즈 퍼레이드',
+    youtubeSearchQueryEn: 'Rose Parade Pasadena',
+    mooniChips: [
+      {
+        id: 'parade-view',
+        promptKo: '퍼레이드 잘 보이는 패서디나 구역 알려줘',
+        promptEn: 'Best Pasadena areas to watch the parade?',
+      },
+      {
+        id: 'new-years-logistics',
+        promptKo: '1월 1일 새벽 퍼레이드 관람 팁 알려줘',
+        promptEn: 'Tips for watching the parade on New Year morning?',
+      },
+      {
+        id: 'stay-area',
+        promptKo: '패서디나랑 올드타운 중 어디 숙소가 나아?',
+        promptEn: 'Pasadena or Old Pasadena — where should I stay?',
+      },
+    ],
+    priority: 1,
+  },
 ];

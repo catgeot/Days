@@ -10,7 +10,7 @@ export const WORLD_EVENT_HUB_REGIONS = [
   },
   {
     id: 'americas',
-    slugs: ['rio-de-janeiro', 'new-york'],
+    slugs: ['rio-de-janeiro', 'new-york', 'los-angeles'],
   },
   {
     id: 'oceaniaNature',
