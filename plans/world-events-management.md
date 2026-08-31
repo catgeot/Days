@@ -277,10 +277,11 @@ npm run build
 
 **허브 재편 (#47)**: `prague` niche→europe · `paris` europe 추가 · niche=`marrakech`·`hanoi`·`dubai`·`istanbul`
 
-**Wave3 D5-b Preview (#47 · `cursor/world-events-wave3`)**
+**Wave3 D5-b Preview (#47~#48 · `cursor/world-events-wave3`)**
 
 | eventId | Preview path | D5-b 확인 |
 |---------|--------------|-----------|
 | `paris-nuit-blanche-2027` | `/world-events/paris-nuit-blanche-2027` | glossary 4 · 갤러리 3 · `paris.fr/nuit-blanche` 공식 |
+| `los-angeles-rose-parade-2027` | `/world-events/los-angeles-rose-parade-2027` | glossary 4 · 갤러리 3 · `tournamentofroses.com` 공식 |
 
 **금지**: Wave1 KO 일괄 En · `worldEvents.json` 직편집 · 로그인 포털 직링크(istanbul 교훈).
