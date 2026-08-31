@@ -219,6 +219,12 @@ const dubaiLoc = getWorldEventLocation('dubai');
 assert.equal(resolvePlannerFlightArrivalIata(dubaiLoc), 'DXB', 'dubai arrival IATA');
 const barcelonaLoc = getWorldEventLocation('barcelona');
 assert.equal(resolvePlannerFlightArrivalIata(barcelonaLoc), 'BCN', 'barcelona arrival IATA');
+const barcelona = getWorldEventById('barcelona-la-merce-2026');
+const barcelonaOfficial = barcelona.highlightContextLinks
+  .find((group) => group.highlightIndex === 0)
+  ?.links.find((link) => link.id === 'merce-official');
+assert.equal(barcelonaOfficial?.href, 'https://www.barcelona.cat/lamerce/en', 'barcelona official site');
+assert.equal(barcelona.sourceUrl, 'https://www.barcelona.cat/lamerce/en', 'barcelona sourceUrl official');
 const istanbulLoc = getWorldEventLocation('istanbul');
 assert.equal(resolvePlannerFlightArrivalIata(istanbulLoc), 'IST', 'istanbul arrival IATA');
 const istanbul = getWorldEventById('istanbul-marathon-2026');

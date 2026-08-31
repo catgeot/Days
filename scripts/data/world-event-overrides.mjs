@@ -2789,7 +2789,7 @@ export const WORLD_EVENT_OVERRIDES = [
     recurrenceNoteEn: 'Third week of Sep · feast day Sep 24',
     venue: { name: 'Barcelona citywide · Plaça de Sant Jaume' },
     source: 'official_url',
-    sourceUrl: 'https://www.barcelona.cat/capdesetmana/en/merce',
+    sourceUrl: 'https://www.barcelona.cat/lamerce/en',
     bookingHints: '고딕 지구·엘 본·그라시아 — 축제 주간 2~4박 · 9/24 전후 교통 통제',
     detailOverview:
       '바르셀로나 수호성인 메르세(Mercè)를 기념하는 도시 축제로, 9월 셋째 주 전후 약 일주일간 거리 공연·카스텔레르스(인탑)·코레포크(불꽃 퍼레이드)가 이어집니다. 전체 시즌 숙박보다 9/22~24 절정 전후 2~3박으로 고딕 지구·엘 본 기점을 잡아 야간 행사와 메트로 이동을 묶는 방문이 일반적입니다.',
@@ -2884,7 +2884,7 @@ export const WORLD_EVENT_OVERRIDES = [
             labelKo: '공식 일정',
             labelEn: 'Official programme',
             kind: 'shop',
-            href: 'https://www.barcelona.cat/capdesetmana/en/merce',
+            href: 'https://www.barcelona.cat/lamerce/en',
           },
         ],
       },
