@@ -5,6 +5,7 @@
  * Wave 1 (P2-a): Q3 확정 slug 15건 — 유럽·아시아·아메리카·오세아니아·니치
  * Wave 2 (#33): singapore · dubai — D5-b 템플릿
  * Wave 2 (#42): barcelona · istanbul — D5-b 템플릿
+ * Wave 3 (#47): paris — D5-b 템플릿
  * D5-b-3 #34 배치 A: vienna · amsterdam · prague · marrakech
  * D5-b-3 #35 배치 B: tokyo · kyoto · bangkok
  *
@@ -3053,6 +3054,154 @@ export const WORLD_EVENT_OVERRIDES = [
         id: 'bridge-closure',
         promptKo: '레이스 당일 보스포루스 교통 통제 어떻게 돼?',
         promptEn: 'How does Bosphorus traffic work on race day?',
+      },
+    ],
+    priority: 1,
+  },
+  {
+    id: 'paris-nuit-blanche-2027',
+    slug: 'paris',
+    hubId: 'paris',
+    type: 'festival',
+    title: '뉘 블랑쉬',
+    titleEn: 'Nuit Blanche',
+    startDate: '2027-06-05',
+    endDate: '2027-06-06',
+    recurrence: 'annual',
+    recurrenceNote: '6월 첫째 토요일 밤 (연도별 변동)',
+    recurrenceNoteEn: 'First Saturday night in June (varies)',
+    venue: { name: 'Paris citywide · Centre Pompidou · Seine' },
+    source: 'official_url',
+    sourceUrl: 'https://www.paris.fr/nuit-blanche',
+    bookingHints: '마레·르 마레·생제르맹 — 밤샘 행사 전후 2~3박 · 메트로 야간 운행·혼잡 구간 조기 이동',
+    detailOverview:
+      '파리 시청이 주최하는 연중 밤샘 현대미술 축제로, 6월 첫째 토요일 밤부터 일요일 새벽까지 도시 곳곳에서 설치·공연·투영이 열립니다. 전 시즌 숙박보다 행사 전후 2~3박으로 마레·생제르맹·루브르 기점을 잡아 야간 파르쿠르(예술 루트)와 메트로 이동을 묶는 방문이 일반적입니다.',
+    highlights: [
+      'Centre Pompidou · Hôtel de Ville — 공식 허브·개막 행사 · 마레·시테 도보권',
+      'Seine riverbank · IMA — 야간 설치·투영 · 루브르·생제르맹 환승',
+      'Parcours nocturne — 구역별 예술 루트 · 당일 지도·앱으로 동선 확인',
+    ],
+    stayAreas: [
+      {
+        name: '마레 · Le Marais',
+        mrtKeyword: 'Paris Le Marais',
+        note: 'Centre Pompidou·시테 도보 · 밤샘 행사 밀집',
+      },
+      {
+        name: '생제르맹 · Saint-Germain',
+        mrtKeyword: 'Paris Saint-Germain',
+        note: '루브르·세느 도보 · RER B·4·6호선 환승',
+      },
+    ],
+    recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Nuit_Blanche_2011_-_Paris.jpg/1280px-Nuit_Blanche_2011_-_Paris.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Nuit_Blanche_2011_-_Paris.jpg/1280px-Nuit_Blanche_2011_-_Paris.jpg',
+        captionKo: '뉘 블랑쉬 야간 설치',
+        captionEn: 'Nuit Blanche night installation',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Nuit_Blanche_2012_-_Paris_(8061256670).jpg/1280px-Nuit_Blanche_2012_-_Paris_(8061256670).jpg',
+        captionKo: '세느 강변 설치',
+        captionEn: 'Seine riverbank installation',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Hotel_de_Ville_Paris_Nuit_blanche_2010.jpg/1280px-Hotel_de_Ville_Paris_Nuit_blanche_2010.jpg',
+        captionKo: '파리 시청 야간 행사',
+        captionEn: 'Hôtel de Ville at Nuit Blanche',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'nuit-blanche',
+        termKo: '뉘 블랑쉬',
+        termEn: 'Nuit Blanche',
+        promptKo:
+          '파리 뉘 블랑쉬(Nuit Blanche)가 무엇인지 여행자 관점에서 3문장 이내로 설명해줘.',
+        promptEn: 'What is Paris Nuit Blanche for travelers in 3 short sentences.',
+        searchQueryKo: '파리 뉘 블랑쉬 축제',
+        searchQueryEn: 'Paris Nuit Blanche festival',
+        referenceUrl: 'https://www.paris.fr/nuit-blanche',
+        referenceUrlKo: 'https://fr.wikipedia.org/wiki/Nuit_blanche_(Paris)',
+      },
+      {
+        id: 'parcours',
+        termKo: '파르쿠르',
+        termEn: 'parcours',
+        promptKo:
+          '뉘 블랑쉬 파르쿠르(예술 루트)가 무엇인지 동선 잡는 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'What is the Nuit Blanche parcours and how to plan routes in 3 short sentences.',
+        searchQueryKo: '파리 뉘 블랑쉬 파르쿠르 지도',
+        searchQueryEn: 'Paris Nuit Blanche parcours map',
+      },
+      {
+        id: 'centre-pompidou',
+        termKo: '퐁피두 센터',
+        termEn: 'Centre Pompidou',
+        promptKo:
+          '뉘 블랑쉬에서 퐁피두 센터가 왜 중요한 허브인지 3문장 이내로 설명해줘.',
+        promptEn: 'Why Centre Pompidou matters during Nuit Blanche in 3 short sentences.',
+        searchQueryKo: '파리 퐁피두 센터 뉘 블랑쉬',
+        searchQueryEn: 'Centre Pompidou Nuit Blanche Paris',
+      },
+      {
+        id: 'seine-installations',
+        termKo: '세느 강변 설치',
+        termEn: 'Seine installations',
+        promptKo:
+          '뉘 블랑쉬 세느 강변 설치·투영을 보기 좋은 구간을 3문장 이내로 설명해줘.',
+        promptEn: 'Best Seine riverbank spots for Nuit Blanche in 3 short sentences.',
+        searchQueryKo: '파리 세느 강변 뉘 블랑쉬',
+        searchQueryEn: 'Paris Seine Nuit Blanche installations',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'nuit-blanche-official',
+            labelKo: '공식 일정',
+            labelEn: 'Official programme',
+            kind: 'shop',
+            href: 'https://www.paris.fr/nuit-blanche',
+          },
+        ],
+      },
+      {
+        highlightIndex: 2,
+        links: [
+          {
+            id: 'parcours-map',
+            labelKo: '파르쿠르 지도',
+            labelEn: 'Parcours map',
+            kind: 'shop',
+            searchQueryKo: '파리 뉘 블랑쉬 파르쿠르 지도',
+            searchQueryEn: 'Paris Nuit Blanche parcours map',
+            searchTarget: 'google',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '파리 뉘 블랑쉬',
+    youtubeSearchQueryEn: 'Paris Nuit Blanche',
+    mooniChips: [
+      {
+        id: 'best-nights',
+        promptKo: '6월 중 어느 밤이 뉘 블랑쉬야?',
+        promptEn: 'Which night in June is Nuit Blanche?',
+      },
+      {
+        id: 'parcours-tips',
+        promptKo: '밤샘 파르쿠르 동선 어떻게 잡아?',
+        promptEn: 'How should I plan an all-night parcours route?',
+      },
+      {
+        id: 'stay-area',
+        promptKo: '마레랑 생제르맹 중 어디 숙소가 나아?',
+        promptEn: 'Le Marais or Saint-Germain — where should I stay?',
       },
     ],
     priority: 1,

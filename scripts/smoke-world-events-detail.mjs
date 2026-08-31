@@ -25,12 +25,13 @@ import {
   googleWebSearchUrl,
 } from '../src/utils/worldEventOutboundLinks.js';
 import { isLikelyTruncatedGlossaryAnswer } from '../src/utils/worldEventGlossaryAnswer.js';
+import { resolveWorldEventHubRegionId } from '../src/pages/WorldEvents/worldEventHubRegions.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 
 const events = getAllWorldEvents();
-assert.equal(events.length, 19, 'Wave1+Wave2 has 19 events');
+assert.equal(events.length, 20, 'Wave1+Wave2+Wave3 paris has 20 events');
 
 for (const event of events) {
   const found = getWorldEventById(event.id);
@@ -79,6 +80,7 @@ assertTier05('sydney-vivid-2027', 3);
 assertTier05('prague-spring-festival-2027', 3);
 assertTier05('marrakech-rose-festival-2027', 2);
 assertTier05('hanoi-tet-2027', 4);
+assertTier05('paris-nuit-blanche-2027', 3);
 
 const WAVE1_EVENT_IDS = [
   'edinburgh-fringe-2026',
@@ -104,6 +106,8 @@ const WAVE2_EVENT_IDS = [
   'barcelona-la-merce-2026',
   'istanbul-marathon-2026',
 ];
+
+const WAVE3_EVENT_IDS = ['paris-nuit-blanche-2027'];
 
 const D5_B_BATCH_A_EVENT_IDS = [
   'vienna-staatsoper-season-2026',
@@ -136,6 +140,19 @@ for (const eventId of WAVE1_EVENT_IDS) {
 for (const eventId of WAVE2_EVENT_IDS) {
   const event = getWorldEventById(eventId);
   assert.ok(event, `${eventId} in Wave2 roster`);
+  assert.ok(event.detailOverview, `${eventId} Tier0.5 detailOverview`);
+  assert.ok(Array.isArray(event.glossaryTerms) && event.glossaryTerms.length >= 4, `${eventId} glossaryTerms`);
+  assert.ok(Array.isArray(event.heroImages) && event.heroImages.length >= 3, `${eventId} heroImages`);
+  assert.ok(
+    Array.isArray(event.highlightContextLinks) && event.highlightContextLinks.length >= 2,
+    `${eventId} highlightContextLinks`,
+  );
+  assert.ok(!Array.isArray(event.actionChips) || event.actionChips.length === 0, `${eventId} no actionChips`);
+}
+
+for (const eventId of WAVE3_EVENT_IDS) {
+  const event = getWorldEventById(eventId);
+  assert.ok(event, `${eventId} in Wave3 roster`);
   assert.ok(event.detailOverview, `${eventId} Tier0.5 detailOverview`);
   assert.ok(Array.isArray(event.glossaryTerms) && event.glossaryTerms.length >= 4, `${eventId} glossaryTerms`);
   assert.ok(Array.isArray(event.heroImages) && event.heroImages.length >= 3, `${eventId} heroImages`);
@@ -238,6 +255,16 @@ assert.equal(
   2,
   'istanbul two highlight link groups',
 );
+const parisLoc = getWorldEventLocation('paris');
+assert.equal(resolvePlannerFlightArrivalIata(parisLoc), 'CDG', 'paris arrival IATA');
+const paris = getWorldEventById('paris-nuit-blanche-2027');
+const parisOfficial = paris.highlightContextLinks
+  .find((group) => group.highlightIndex === 0)
+  ?.links.find((link) => link.id === 'nuit-blanche-official');
+assert.equal(parisOfficial?.href, 'https://www.paris.fr/nuit-blanche', 'paris official site');
+assert.equal(paris.sourceUrl, 'https://www.paris.fr/nuit-blanche', 'paris sourceUrl official');
+assert.equal(resolveWorldEventHubRegionId('paris'), 'europe', 'paris hub region europe');
+assert.equal(resolveWorldEventHubRegionId('prague'), 'europe', 'prague hub region europe after reorg');
 
 /** @param {string} eventId @param {string} linkId @param {string} expectedHref */
 function assertOfficialUrlSsot(eventId, linkId, expectedHref) {
@@ -735,6 +762,7 @@ for (const pilotId of [
   'dubai-fitness-challenge-2026',
   'barcelona-la-merce-2026',
   'istanbul-marathon-2026',
+  'paris-nuit-blanche-2027',
   ...D5_B_BATCH_A_EVENT_IDS,
   ...D5_B_BATCH_B_EVENT_IDS,
   ...D5_B_BATCH_C_EVENT_IDS,
