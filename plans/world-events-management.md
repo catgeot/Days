@@ -193,7 +193,14 @@ npm run build
 | 14 | `marrakech-rose-festival-2027` | 2 | 단기 |
 | 15 | `hanoi-tet-2027` | 4 | 연휴 윈도 · #18 마감 샘플 |
 
-**에이전트 VERIFY**: `smoke:world-events` · `smoke:world-events-detail` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `smoke:korea-festival-stay-url` · `smoke:korea-festival-personal` · `build` PASS · PROD URL 18건 HTTP 200 (#22)
+**Wave2 D5-b Preview (#42~#43 · PR #163 merged)**
+
+| eventId | Preview path | D5-b 확인 |
+|---------|--------------|-----------|
+| `barcelona-la-merce-2026` | `/world-events/barcelona-la-merce-2026` | glossary 4 · 갤러리 3 · 공식 일정·코레포크 링크 |
+| `istanbul-marathon-2026` | `/world-events/istanbul-marathon-2026` | glossary 4 · 갤러리 3 · `maraton.istanbul` 공식 |
+
+**에이전트 VERIFY**: `smoke:world-events` · `smoke:world-events-detail` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `smoke:korea-festival-stay-url` · `smoke:korea-festival-personal` · `build` PASS · PROD URL **19건** HTTP 200
 
 **Wave2 착수 게이트** (G1~G4 · [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) F-0): 본 §6.1·§6.1.1 **사람 PROD OK** → 브랜치 `cursor/world-events-wave2` **합의** → overrides 착수
 

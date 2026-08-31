@@ -457,3 +457,12 @@
 - **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
 - **Preview** `/qa/world-events` → `/world-events/barcelona-la-merce-2026` · `/world-events/istanbul-marathon-2026`
 - **다음** 사람 Preview D5-b QA → OK 시 PR merge
+
+## 세계행사 일정 #43 — Wave2 barcelona·istanbul Preview QA
+
+- **세션** `세계행사 일정 #43, Wave2 barcelona·istanbul Preview QA`
+- **브랜치** `cursor/world-events-wave2` · tip `1acee381` · PR [#163](https://github.com/catgeot/Days/pull/163) **merged**
+- **main** `544bc64c` — Wave2 4/4 slug 완료 · **19건**
+- **§6.1.1** D5-b glossary 4 · heroImages 3 · highlightContextLinks 2 · actionChips 없음 · istanbul `maraton.istanbul` 공식 링크
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS · Preview HTTP 200
+- **다음** 사람 PROD §6.1.1 barcelona·istanbul · 허브 europe/niche 회귀
