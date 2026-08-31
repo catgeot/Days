@@ -507,3 +507,9 @@
 - **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
 - **Preview** `/qa/world-events` → `/world-events/paris-nuit-blanche-2027` · `?region=europe`
 - **다음** **#48** Wave3 `los-angeles` 1건 overrides
+
+## 세계행사 일정 #47 — /qa Preview wave3 리다이렉트 수정
+
+- **이슈** `/qa/world-events`가 구 wave2 Preview(19건) → 파리 행사 리스트 미표시
+- **조치** `main` `vercel.json` `/qa/world-events` → `cursor/world-events-wave3` git Preview
+- **확인** `/qa/world-events` · `?region=europe` — **뉘 블랑쉬** 20건 중 표시

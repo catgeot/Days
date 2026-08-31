@@ -1,6 +1,7 @@
 import worldEventsData from '../pages/Home/data/worldEvents.json' with { type: 'json' };
 import travelSpotsList from '../pages/Home/data/travelSpots-list.json' with { type: 'json' };
 import { resolveWorldEventHubRegionId } from '../pages/WorldEvents/worldEventHubRegions.js';
+import { compareWorldEventsForList } from '../shared/worldEventTimeline.js';
 
 /** @typedef {import('../../scripts/lib/world-event-schema.mjs').WorldEventOverride} WorldEvent */
 
@@ -33,12 +34,7 @@ for (const event of worldEventsData.events ?? []) {
 }
 
 for (const [slug, list] of eventsBySlug) {
-  list.sort((a, b) => {
-    const pa = Number(a.priority ?? 99);
-    const pb = Number(b.priority ?? 99);
-    if (pa !== pb) return pa - pb;
-    return String(a.startDate).localeCompare(String(b.startDate));
-  });
+  list.sort(compareWorldEventsForList);
   eventsBySlug.set(slug, list);
 }
 
@@ -188,12 +184,7 @@ export function formatWorldEventDateRange(event, locale = 'ko') {
 
 /** @returns {WorldEvent[]} */
 export function getAllWorldEvents() {
-  return [...(worldEventsData.events ?? [])].sort((a, b) => {
-    const pa = Number(a.priority ?? 99);
-    const pb = Number(b.priority ?? 99);
-    if (pa !== pb) return pa - pb;
-    return String(a.startDate).localeCompare(String(b.startDate));
-  });
+  return [...(worldEventsData.events ?? [])].sort(compareWorldEventsForList);
 }
 
 /**
