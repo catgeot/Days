@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-31T10:31:36.283Z",
+    "generatedAt": "2026-08-31T11:25:13.822Z",
     "eventCount": 19,
     "source": "scripts/data/world-event-overrides.mjs"
   },
@@ -141,7 +141,7 @@
               "labelKo": "공연장 지도",
               "kind": "shop",
               "labelEn": "Venue map",
-              "href": "https://www.edfringe.com/find-a-show/venues"
+              "href": "https://www.edfringe.com/tickets"
             }
           ]
         }
@@ -176,7 +176,7 @@
         {
           "id": "venue-map",
           "labelKo": "공연장 지도",
-          "href": "https://www.edfringe.com/find-a-show/venues",
+          "href": "https://www.edfringe.com/tickets",
           "labelEn": "Venue map",
           "kind": "map"
         }
@@ -474,13 +474,11 @@
           "highlightIndex": 0,
           "links": [
             {
-              "id": "sarong-rental",
-              "labelKo": "사롱·복장 대여",
+              "id": "galungan-official",
+              "labelKo": "갈룽안 안내",
               "kind": "shop",
-              "labelEn": "Sarong & temple dress rental",
-              "searchQueryKo": "발리 사원 사례 복장 사롱",
-              "searchQueryEn": "Bali temple dress code sarong",
-              "searchTarget": "google"
+              "labelEn": "Galungan guide",
+              "href": "https://en.wikipedia.org/wiki/Galungan"
             },
             {
               "id": "sarong-klook",
@@ -1017,12 +1015,10 @@
           "links": [
             {
               "id": "gp-tickets",
-              "labelKo": "공식 티켓 검색",
+              "labelKo": "공식 티켓",
               "kind": "shop",
               "labelEn": "Official tickets",
-              "searchQueryKo": "싱가포르 그랑프리 티켓",
-              "searchQueryEn": "Singapore Grand Prix tickets",
-              "searchTarget": "google"
+              "href": "https://singaporegp.sg/en/tickets"
             }
           ]
         },
@@ -1163,12 +1159,10 @@
           "links": [
             {
               "id": "dubai-ride-register",
-              "labelKo": "Dubai Ride 등록",
+              "labelKo": "Dubai Ride 안내",
               "kind": "shop",
-              "labelEn": "Dubai Ride registration",
-              "searchQueryKo": "Dubai Ride 2026 등록",
-              "searchQueryEn": "Dubai Ride 2026 register",
-              "searchTarget": "google"
+              "labelEn": "Dubai Ride info",
+              "href": "https://www.dubaifitnesschallenge.com/en/"
             }
           ]
         },
@@ -1177,12 +1171,10 @@
           "links": [
             {
               "id": "dubai-run-register",
-              "labelKo": "Dubai Run 등록",
+              "labelKo": "Dubai Run 안내",
               "kind": "shop",
-              "labelEn": "Dubai Run registration",
-              "searchQueryKo": "Dubai Run 2026 등록",
-              "searchQueryEn": "Dubai Run 2026 register",
-              "searchTarget": "google"
+              "labelEn": "Dubai Run info",
+              "href": "https://www.dubaifitnesschallenge.com/en/"
             }
           ]
         }
@@ -1369,7 +1361,7 @@
       "venue": {
         "name": "Macy's Parade route · Midtown"
       },
-      "sourceUrl": "https://www.macys.com/social/parade/",
+      "sourceUrl": "https://www.macys.com/s/parade/",
       "bookingHints": "맨해튼 미드타운·헤럴드스퀘어 — 퍼레이드 뷰 숙소 조기 마감",
       "detailOverview": "메이시스 추수감사절 퍼레이드와 블랙 프라이데이·홀리데이 시즌이 겹치는 11월 말 뉴욕 방문 시즌입니다. 퍼레이드 당일 전후 2~4박으로 미드타운·헤럴드스퀘어 기점을 잡는 것이 일반적입니다.",
       "highlights": [
@@ -1461,7 +1453,7 @@
               "labelKo": "메이시스 퍼레이드 공식",
               "kind": "tour",
               "labelEn": "Macy's Parade official",
-              "href": "https://www.macys.com/social/parade/"
+              "href": "https://www.macys.com/s/parade/"
             }
           ]
         },
@@ -1657,7 +1649,7 @@
       "startDate": "2027-02-12",
       "endDate": "2027-02-17",
       "recurrence": "annual",
-      "source": "official_url",
+      "source": "curated",
       "hubId": "rio-de-janeiro",
       "titleEn": "Rio Carnival",
       "recurrenceNote": "2월 사순절 전 주",
@@ -1665,7 +1657,7 @@
       "venue": {
         "name": "Sambadrome · Copacabana"
       },
-      "sourceUrl": "https://www.rio-carnival.net/",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Rio_Carnival",
       "bookingHints": "코파카바나·이파네마 — 삼바드롬 셔틀·의상 대여 사전 예약",
       "detailOverview": "브라질 최대 카니발로, 삼바드롬 퍼레이드와 블로코(거리 삼바)가 리우 전역에서 열립니다. 전체 시즌 숙박보다 퍼레이드 전후 3~5박으로 코파카바나·이파네마 기점을 잡는 방문이 일반적입니다.",
       "highlights": [
@@ -1753,10 +1745,10 @@
           "links": [
             {
               "id": "sambadrome-tickets",
-              "labelKo": "삼바드롬 티켓",
+              "labelKo": "리우 카니발 안내",
               "kind": "tour",
-              "labelEn": "Sambadrome tickets",
-              "href": "https://www.rio-carnival.net/"
+              "labelEn": "Rio Carnival guide",
+              "href": "https://en.wikipedia.org/wiki/Rio_Carnival"
             }
           ]
         },
@@ -1804,7 +1796,7 @@
       "startDate": "2027-03-25",
       "endDate": "2027-04-10",
       "recurrence": "annual",
-      "source": "curated",
+      "source": "official_url",
       "hubId": "tokyo",
       "titleEn": "Tokyo Cherry Blossom Season",
       "recurrenceNote": "3월 말~4월 초 (개화 시기 변동)",
@@ -1812,7 +1804,7 @@
       "venue": {
         "name": "Ueno Park · Chidorigafuchi"
       },
-      "sourceUrl": "https://www.japan.travel/en/sg/see-and-do/cherry-blossom-viewing-spots-in-tokyo/",
+      "sourceUrl": "https://www.japan.travel/en/spot/23/",
       "bookingHints": "우에노·신주쿠·야마노테선 접근 숙소 조기 마감",
       "detailOverview": "3월 말~4월 초 도쿄 전역에서 벚꽃(사쿠라) 개화·낙화 시기가 해마다 달라지는 시즌 행사입니다. 개화 예보(1~2주 전)를 확인한 뒤 만개 전후 3~5박을 잡는 방문이 일반적이며, 우에노·치도리가후치 등 명소는 주말·야간 라이트업에 혼잡합니다.",
       "highlights": [
@@ -1898,13 +1890,11 @@
           "highlightIndex": 0,
           "links": [
             {
-              "id": "ueno-hanami",
-              "labelKo": "우에노 하나미 검색",
+              "id": "tokyo-sakura-official",
+              "labelKo": "도쿄 벚꽃 안내",
               "kind": "shop",
-              "labelEn": "Search Ueno hanami",
-              "searchQueryKo": "도쿄 우에노 공원 벚꽃 하나미",
-              "searchQueryEn": "Tokyo Ueno Park hanami",
-              "searchTarget": "google"
+              "labelEn": "Tokyo cherry blossom guide",
+              "href": "https://www.japan.travel/en/spot/23/"
             }
           ]
         },
@@ -1960,7 +1950,7 @@
       "venue": {
         "name": "Silom · Khao San · citywide"
       },
-      "sourceUrl": "https://www.tourismthailand.org/Articles/songkran-festival",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Songkran_(Thailand)",
       "bookingHints": "실롬·카오산 근처 — 방수 가방·의류 준비",
       "detailOverview": "4월 13~15일 태국 설(송크란)로, 방콕 전역에서 물 축제·거리 파티가 이어집니다. 실롬·카오산 등 핵심 구역은 교통 통제·전면 젖음을 전제로 하며, 2~3박 일정으로 핵심 날짜를 커버하는 방문이 일반적입니다.",
       "highlights": [
@@ -2046,13 +2036,11 @@
           "highlightIndex": 0,
           "links": [
             {
-              "id": "silom-songkran",
-              "labelKo": "실롬 송크란 검색",
+              "id": "songkran-official",
+              "labelKo": "송크란 안내",
               "kind": "shop",
-              "labelEn": "Search Silom Songkran",
-              "searchQueryKo": "방콕 실롬 송크란",
-              "searchQueryEn": "Bangkok Silom Songkran",
-              "searchTarget": "google"
+              "labelEn": "Songkran guide",
+              "href": "https://en.wikipedia.org/wiki/Songkran_(Thailand)"
             }
           ]
         },
@@ -2108,7 +2096,7 @@
       "venue": {
         "name": "Rudolfinum · Old Town"
       },
-      "sourceUrl": "https://www.festival.cz/en",
+      "sourceUrl": "https://festival.cz/en/",
       "bookingHints": "구시가·말라 스트라나 — 루돌피눔 도보권",
       "detailOverview": "4~5월 프라하 봄 축제(Prague Spring)와 클래식·봄 시즌 행사가 겹치는 문화 방문 시즌입니다. 한 달 전체 숙박보다 개막 주·중순 주말 2~4박으로 루돌피눔·구시가 기점 공연·산책 일정을 잡는 방문이 일반적입니다.",
       "highlights": [
@@ -2197,7 +2185,7 @@
               "labelKo": "공식 축제 사이트",
               "kind": "tour",
               "labelEn": "Official festival site",
-              "href": "https://www.festival.cz/en"
+              "href": "https://festival.cz/en/"
             }
           ]
         },
@@ -2245,7 +2233,7 @@
       "startDate": "2027-04-27",
       "endDate": "2027-04-27",
       "recurrence": "annual",
-      "source": "official_url",
+      "source": "curated",
       "hubId": "amsterdam",
       "titleEn": "King's Day",
       "recurrenceNote": "4월 27일",
@@ -2253,7 +2241,7 @@
       "venue": {
         "name": "Amsterdam citywide"
       },
-      "sourceUrl": "https://www.iamsterdam.com/en/whats-on/calendar/festivals-events/kings-day",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Koningsdag",
       "bookingHints": "중심가·운하 근처는 당일 교통 통제 — 전날 체크인 권장",
       "detailOverview": "4월 27일(킹스데이) 하루 동안 도시 전역이 오렌지색으로 물드는 국경일 축제입니다. 거리 플리마켓·운하·광장 파티가 이어지며, 당일 중심가 교통 통제가 많아 전날 밤 체크인을 권장합니다.",
       "highlights": [
@@ -2336,13 +2324,11 @@
           "highlightIndex": 0,
           "links": [
             {
-              "id": "jordaan-map",
-              "labelKo": "Jordaan 지도",
+              "id": "kings-day-official",
+              "labelKo": "킹스데이 안내",
               "kind": "shop",
-              "labelEn": "Jordaan map",
-              "searchQueryKo": "암스테르담 Jordaan",
-              "searchQueryEn": "Amsterdam Jordaan",
-              "searchTarget": "google"
+              "labelEn": "King's Day guide",
+              "href": "https://en.wikipedia.org/wiki/Koningsdag"
             }
           ]
         },
@@ -2482,13 +2468,11 @@
           "highlightIndex": 0,
           "links": [
             {
-              "id": "rose-tour",
-              "labelKo": "로즈 페스티벌 투어",
+              "id": "rose-festival-official",
+              "labelKo": "로즈 페스티벌 안내",
               "kind": "shop",
-              "labelEn": "Rose Festival tour",
-              "searchQueryKo": "Kelaat M'Gouna 로즈 페스티벌 당일 투어",
-              "searchQueryEn": "Kelaat M'Gouna rose festival day tour",
-              "searchTarget": "google"
+              "labelEn": "Rose Festival guide",
+              "href": "https://www.visitmorocco.com/en/travel/festivals"
             }
           ]
         },
