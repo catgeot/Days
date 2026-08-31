@@ -474,4 +474,8 @@
 - **Preview** `/qa/world-events` → amsterdam · tokyo · singapore · dubai · bali · hanoi 상세 공식 링크
 - **다음** 사람 Preview·PROD §6.1.1 (#44) barcelona·istanbul + URL 회귀
 
-## 세계행사 일정 #42 — istanbul Preview QA 후속
+## 세계행사 일정 #44 — Wave2 barcelona·istanbul PROD QA
+
+- **세션** `세계행사 일정 #44, Wave2 barcelona·istanbul PROD QA`
+- **상태** 사람 PROD §6.1.1 **완료** — barcelona·istanbul D5-b · 허브 europe/niche 회귀
+- **다음** PR [#165](https://github.com/catgeot/Days/pull/165) merge → PROD URL SSOT (#45)
