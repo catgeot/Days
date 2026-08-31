@@ -18,10 +18,10 @@
 
 | | |
 |--|--|
-| **상태** | **#43 Wave2 barcelona·istanbul merged** · main `544bc64c` · **19건** |
-| **브랜치** | `cursor/world-events-wave2` · tip `1acee381` |
-| **PR** | [#163](https://github.com/catgeot/Days/pull/163) **merged** · [#158](https://github.com/catgeot/Days/pull/158) · [#157](https://github.com/catgeot/Days/pull/157) |
-| **main** | `544bc64c` — Wave2 4/4 slug · PR #163 merge |
+| **상태** | **#43 merged** · **#43 hotfix** 라 메르세 URL PR #164 · **19건** |
+| **브랜치** | `cursor/world-events-wave2` · tip `74d42ca7` (라 메르세 URL) |
+| **PR** | [#164](https://github.com/catgeot/Days/pull/164) **merged** · [#163](https://github.com/catgeot/Days/pull/163) · [#158](https://github.com/catgeot/Days/pull/158) |
+| **main** | `6c780c54` — Wave2 4/4 · barcelona `barcelona.cat/lamerce/en` |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **F-0.5 D5-b-3** · **F-0.6** · §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) (Q15 추가) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) §6.1·§6.1.1·§8.1 |
@@ -31,18 +31,19 @@
 | **Preview** | `/qa/world-events` → Wave2 4/4 · PROD 배포 대기 |
 | **VERIFY** | `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` |
 
-**게이트**: Wave2 barcelona·istanbul **PROD §6.1.1** (#44)
+**게이트**: **19건** `sourceUrl`·하이라이트 공식 `href` SSOT (#45) · istanbul 패턴(공식 루트 + 검색/지도 최소)
 
-**다음 제시어** (#44 Wave2 PROD QA):
+**다음 제시어** (#45 공식 사이트 URL SSOT):
 
 ```
-세계행사 일정 #44, Wave2 barcelona·istanbul PROD QA
+세계행사 일정 #45, 공식 사이트 URL SSOT 점검
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
+@plans/world-events-detail-ux-plan.md
 @plans/world-events-management.md
-브랜치 cursor/world-events-wave2 · https://www.gateo.kr/world-events
-금지: worldEvents.json 직편집 · UI 리디자인 · Wave1 KO 본문 일괄 En 번역
-작업: PROD §6.1.1 barcelona·istanbul D5-b · 허브 europe/niche 회귀
+브랜치 cursor/world-events-wave2 · https://www.gateo.kr/qa/world-events
+금지: worldEvents.json 직편집 · UI 리디자인 · Wave1 KO 본문 일괄 En 번역 · 로그인 포털 직링크
+작업: 19건 sourceUrl·하이라이트 공식 href 위키·모바일 확인 · 우선 amsterdam·tokyo·singapore·dubai·galungan·hanoi · generate·smoke·feature push
 ```
 
 ---

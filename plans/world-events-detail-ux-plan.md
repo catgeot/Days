@@ -820,16 +820,17 @@ flowchart LR
 | **Preview** | `/qa/world-events` → Wave2 4/4 · PROD 배포 대기 |
 | **VERIFY** | `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` |
 
-**마일스톤**: M1 파일럿 PROD OK → M2 Wave2 merged → M3 **15/15 D5-b** → M4 **i18n-1 ✅** → M5 **i18n-2 ✅** → M6 **PR #158 merge·PROD ✅** → M7 **Wave2 4/4 slug ✅** → M8 **PROD §6.1.1 barcelona·istanbul (#44)**
+**마일스톤**: M1 파일럿 PROD OK → M2 Wave2 merged → M3 **15/15 D5-b** → M4 **i18n-1 ✅** → M5 **i18n-2 ✅** → M6 **PR #158 merge·PROD ✅** → M7 **Wave2 4/4 slug ✅** → M8 **barcelona URL hotfix #164 ✅** → M9 **19건 공식 URL SSOT (#45)**
 
-**다음 제시어** (#44 Wave2 PROD QA):
+**다음 제시어** (#45 공식 사이트 URL SSOT):
 
 ```
-세계행사 일정 #44, Wave2 barcelona·istanbul PROD QA
+세계행사 일정 #45, 공식 사이트 URL SSOT 점검
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
+@plans/world-events-detail-ux-plan.md
 @plans/world-events-management.md
-브랜치 cursor/world-events-wave2 · https://www.gateo.kr/world-events
-금지: worldEvents.json 직편집 · UI 리디자인 · Wave1 KO 본문 일괄 En 번역
-작업: PROD §6.1.1 barcelona·istanbul D5-b · 허브 europe/niche 회귀
+브랜치 cursor/world-events-wave2 · https://www.gateo.kr/qa/world-events
+금지: worldEvents.json 직편집 · UI 리디자인 · Wave1 KO 본문 일괄 En 번역 · 로그인 포털 직링크
+작업: 19건 sourceUrl·하이라이트 공식 href 위키·모바일 확인 · 우선 amsterdam·tokyo·singapore·dubai·galungan·hanoi · generate·smoke·feature push
 ```

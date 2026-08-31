@@ -458,6 +458,13 @@
 - **Preview** `/qa/world-events` → `/world-events/barcelona-la-merce-2026` · `/world-events/istanbul-marathon-2026`
 - **다음** 사람 Preview D5-b QA → OK 시 PR merge
 
+## 세계행사 일정 #42 — istanbul Preview QA 후속
+
+- **피드백** glossary 모달 하단 링크 모바일 클리핑 · `maraton.istanbul/en/` 로고만 · `event.spor.istanbul` 로그인 벽 · 하이라이트 버튼 과다
+- **수정** `ce9a647f`~`1acee381` — 모달 footer shrink-0 · 공식 `https://maraton.istanbul/` + 코스지도 1개씩 단순화
+- **결정** 공식 URL = 위키·공식 홈 루트 우선 · 등록 포털 직링크 금지(로그인)
+- **다음** **#44** barcelona Preview · **19건 sourceUrl·하이라이트 공식 링크** 일괄 점검
+
 ## 세계행사 일정 #43 — Wave2 barcelona·istanbul Preview QA
 
 - **세션** `세계행사 일정 #43, Wave2 barcelona·istanbul Preview QA`
@@ -472,3 +479,10 @@
 - **이슈** 「공식 일정」`barcelona.cat/capdesetmana/en/merce` → 404
 - **수정** `barcelona.cat/lamerce/en` (위키·시청 공식과 동일) · smoke assert 추가
 - **PR** [#164](https://github.com/catgeot/Days/pull/164) **merged** → main `c0eaeb46`
+
+## 세계행사 일정 #45 제시어 — 공식 사이트 URL SSOT
+
+- **요청** istanbul과 같이 **19건** `sourceUrl`·하이라이트 공식 `href`를 위키·공식 홈 기준으로 점검
+- **패턴** 공식 루트 우선 · 로그인 포털·404 경로 금지 · 하이라이트는 공식 1 + 검색/지도 최소(istanbul·barcelona 참고)
+- **우선 후보** amsterdam(하이라이트 검색만) · tokyo(japan.travel) · singapore·dubai(검색만) · galungan(위키) · hanoi(vietnam.travel)
+- **다음** index **#45** 제시어 블록
