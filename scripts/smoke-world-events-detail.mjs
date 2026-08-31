@@ -26,6 +26,7 @@ import {
 } from '../src/utils/worldEventOutboundLinks.js';
 import { isLikelyTruncatedGlossaryAnswer } from '../src/utils/worldEventGlossaryAnswer.js';
 import { resolveWorldEventHubRegionId } from '../src/pages/WorldEvents/worldEventHubRegions.js';
+import { googleMapsSearchUrl } from '../src/utils/worldEventOutboundLinks.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -263,6 +264,15 @@ const parisOfficial = paris.highlightContextLinks
   ?.links.find((link) => link.id === 'nuit-blanche-official');
 assert.equal(parisOfficial?.href, 'https://www.paris.fr/nuit-blanche', 'paris official site');
 assert.equal(paris.sourceUrl, 'https://www.paris.fr/nuit-blanche', 'paris sourceUrl official');
+const parisParcoursLink = paris.highlightContextLinks
+  .find((group) => group.highlightIndex === 2)
+  ?.links.find((link) => link.id === 'parcours-map');
+assert.equal(parisParcoursLink?.searchTarget, 'maps', 'paris parcours map searchTarget');
+assert.equal(
+  googleMapsSearchUrl(parisParcoursLink?.searchQueryKo, 'ko'),
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('파리 뉘 블랑쉬 파르쿠르')}&hl=ko`,
+  'paris parcours map opens Google Maps',
+);
 assert.equal(resolveWorldEventHubRegionId('paris'), 'europe', 'paris hub region europe');
 assert.equal(resolveWorldEventHubRegionId('prague'), 'europe', 'prague hub region europe after reorg');
 

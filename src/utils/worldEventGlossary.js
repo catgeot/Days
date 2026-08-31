@@ -8,7 +8,7 @@ import {
   getKlookRentalUrlByLocation,
   getKlookSearchUrl,
 } from './affiliate.js';
-import { extractGoogleMapsSearchQuery, googleWebSearchUrl } from './worldEventOutboundLinks.js';
+import { extractGoogleMapsSearchQuery, googleMapsSearchUrl, googleWebSearchUrl } from './worldEventOutboundLinks.js';
 
 /**
  * @param {import('./worldEvents').WorldEvent | null | undefined} event
@@ -124,6 +124,9 @@ export function resolveHighlightContextLinkHref(link, location, locale = 'ko') {
 
   if (searchQuery && searchTarget === 'google') {
     return googleWebSearchUrl(searchQuery, locale);
+  }
+  if (searchQuery && searchTarget === 'maps') {
+    return googleMapsSearchUrl(searchQuery, locale);
   }
   if (searchQuery && searchTarget === 'klook') {
     return getKlookSearchUrl(searchQuery, locale);

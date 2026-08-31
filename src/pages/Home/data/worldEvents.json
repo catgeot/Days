@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-31T12:15:01.391Z",
+    "generatedAt": "2026-08-31T12:25:00.687Z",
     "eventCount": 20,
     "source": "scripts/data/world-event-overrides.mjs"
   },
@@ -2943,9 +2943,9 @@
               "labelKo": "파르쿠르 지도",
               "kind": "shop",
               "labelEn": "Parcours map",
-              "searchQueryKo": "파리 뉘 블랑쉬 파르쿠르 지도",
-              "searchQueryEn": "Paris Nuit Blanche parcours map",
-              "searchTarget": "google"
+              "searchQueryKo": "파리 뉘 블랑쉬 파르쿠르",
+              "searchQueryEn": "Paris Nuit Blanche parcours",
+              "searchTarget": "maps"
             }
           ]
         }
