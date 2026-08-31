@@ -448,3 +448,12 @@
 - **수정** `93872cdf` — 파일럿 3건 guide 있을 때 PROD·Preview 공통 표시 · PR [#162](https://github.com/catgeot/Days/pull/162) merge
 - **VERIFY** `smoke:event-travel-guide` · `smoke:world-events-detail` · `build` PASS
 - **PROD QA** edinburgh·munich·bali 상세 — Tier3 AI 패널 재확인
+
+## 세계행사 일정 #42 — Wave2 barcelona·istanbul
+
+- **세션** `세계행사 일정 #42, Wave2 barcelona·istanbul`
+- **브랜치** `cursor/world-events-wave2` · tip `115b620d`
+- **산출** `barcelona-la-merce-2026` · `istanbul-marathon-2026` D5-b overrides · 허브 europe(barcelona)·niche(istanbul) · **19건**
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/barcelona-la-merce-2026` · `/world-events/istanbul-marathon-2026`
+- **다음** 사람 Preview D5-b QA → OK 시 PR merge

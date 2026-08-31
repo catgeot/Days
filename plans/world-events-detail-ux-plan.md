@@ -813,24 +813,24 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#41 i18n-2 PROD QA** · main `d7216431` · PR [#158](https://github.com/catgeot/Days/pull/158) **merged** |
-| **브랜치** | `cursor/world-events-wave2` · tip `89ce43e5` |
+| **상태** | **#42 Wave2 barcelona·istanbul** · feature tip `115b620d` |
+| **브랜치** | `cursor/world-events-wave2` · tip `115b620d` |
 | **main** | `d7216431` — i18n-2 · PROD `index-DFeajkMU.js` |
-| **플랜** | F-0.5 **D5-b-3 ✅** · **F-0.6 i18n-1 ✅** · **i18n-2 ✅ PROD**(#39~#41) |
-| **PROD QA** | `?lang=en` 허브·singapore · Trip `www.trip.com` (#41) |
+| **플랜** | F-0.5 **D5-b-3 ✅** · **F-0.6 i18n-1 ✅** · **i18n-2 ✅ PROD**(#39~#41) · **Wave2 #42 ✅** |
+| **Preview** | `/qa/world-events` → barcelona·istanbul D5-b |
 | **VERIFY** | `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` |
 
-**마일스톤**: M1 파일럿 PROD OK → M2 Wave2 merged → M3 **15/15 D5-b** → M4 **i18n-1 ✅** → M5 **i18n-2 ✅** → M6 **PR #158 merge·PROD ✅**
+**마일스톤**: M1 파일럿 PROD OK → M2 Wave2 merged → M3 **15/15 D5-b** → M4 **i18n-1 ✅** → M5 **i18n-2 ✅** → M6 **PR #158 merge·PROD ✅** → M7 **Wave2 4/4 slug (#42)**
 
-**다음 제시어** (#42 Wave2 barcelona·istanbul):
+**다음 제시어** (#43 Wave2 Preview QA):
 
 ```
-세계행사 일정 #42, Wave2 barcelona·istanbul
+세계행사 일정 #43, Wave2 barcelona·istanbul Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
 @plans/world-events-management.md
 브랜치 cursor/world-events-wave2 · https://www.gateo.kr/qa/world-events
 금지: worldEvents.json 직편집 · UI 리디자인 · Wave1 KO 본문 일괄 En 번역
-작업: overrides barcelona·istanbul 2건 · D5-b 패턴 · smoke · Preview QA
+작업: Preview D5-b barcelona·istanbul · §6.1.1 체크 · OK 시 PR merge
 ```

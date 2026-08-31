@@ -18,9 +18,9 @@
 
 | | |
 |--|--|
-| **상태** | **#41 i18n-2 PROD QA** · main `d7216431` · PR [#158](https://github.com/catgeot/Days/pull/158) **merged** |
-| **브랜치** | `cursor/world-events-wave2` · tip `89ce43e5` (merge 후) |
-| **PR** | [#158](https://github.com/catgeot/Days/pull/158) **merged** · [#157](https://github.com/catgeot/Days/pull/157) **merged** |
+| **상태** | **#42 Wave2 barcelona·istanbul** · feature tip `115b620d` · PR 신규 |
+| **브랜치** | `cursor/world-events-wave2` · tip `115b620d` |
+| **PR** | [#158](https://github.com/catgeot/Days/pull/158) **merged** · [#157](https://github.com/catgeot/Days/pull/157) **merged** · Wave2 #42 PR 대기 |
 | **main** | PR [#162](https://github.com/catgeot/Days/pull/162) merge — Tier3 AI PROD 패널 hotfix |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **F-0.5 D5-b-3** · **F-0.6** · §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) (Q15 추가) |
@@ -28,21 +28,22 @@
 | **샘플** | [`world-events-sample-log.md`](./world-events-sample-log.md) |
 | **일지** | [`2026-08-27-project-log.md`](./2026-08-27-project-log.md) |
 | **PROD QA** | `?lang=en` 허브·singapore·Trip www (#41) · dubai·배치 A~D |
+| **Preview** | `/qa/world-events` → barcelona·istanbul D5-b (#42) |
 | **VERIFY** | `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` |
 
-**게이트**: Wave2 barcelona·istanbul overrides (#42)
+**게이트**: Wave2 barcelona·istanbul **Preview QA** (#43)
 
-**다음 제시어** (#42 Wave2 barcelona·istanbul):
+**다음 제시어** (#43 Wave2 Preview QA):
 
 ```
-세계행사 일정 #42, Wave2 barcelona·istanbul
+세계행사 일정 #43, Wave2 barcelona·istanbul Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
 @plans/world-events-management.md
 브랜치 cursor/world-events-wave2 · https://www.gateo.kr/qa/world-events
 금지: worldEvents.json 직편집 · UI 리디자인 · Wave1 KO 본문 일괄 En 번역
-작업: overrides barcelona·istanbul 2건 · D5-b 패턴 · smoke · Preview QA
+작업: Preview D5-b barcelona·istanbul · §6.1.1 체크 · OK 시 PR merge
 ```
 
 ---
