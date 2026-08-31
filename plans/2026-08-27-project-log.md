@@ -479,3 +479,12 @@
 - **세션** `세계행사 일정 #44, Wave2 barcelona·istanbul PROD QA`
 - **상태** 사람 PROD §6.1.1 **완료** — barcelona·istanbul D5-b · 허브 europe/niche 회귀
 - **다음** PR [#165](https://github.com/catgeot/Days/pull/165) merge → PROD URL SSOT (#45)
+
+## 세계행사 일정 #45 — PR #165 merge·PROD URL SSOT
+
+- **세션** `세계행사 일정 #45, PR #165 merge·PROD URL SSOT`
+- **merge** PR [#165](https://github.com/catgeot/Days/pull/165) → **main** `43a3768c`
+- **PROD** bundle `index-BRKeheKG.js` · URL 11건 HTTP **200** (허브·6 상세·barcelona·istanbul)
+- **PROD SSOT** amsterdam·tokyo·singapore·dubai·galungan·hanoi 공식 `sourceUrl`·bundle needle **PASS**
+- **허브** `?region=europe`·`?region=niche` 200 · barcelona·amsterdam·istanbul·dubai·hanoi 카드 SSOT
+- **다음** 사람 모바일 §6.1.1 공식 링크 탭 QA · Wave3 후보 합의

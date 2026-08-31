@@ -18,31 +18,31 @@
 
 | | |
 |--|--|
-| **상태** | **#43 URL SSOT ✅** · **#44 PROD QA ✅** · PR [#165](https://github.com/catgeot/Days/pull/165) open · **19건** |
-| **브랜치** | `cursor/world-events-wave2` · tip `4d0913fd` |
-| **PR** | [#165](https://github.com/catgeot/Days/pull/165) · [#164](https://github.com/catgeot/Days/pull/164) · [#163](https://github.com/catgeot/Days/pull/163) |
-| **main** | `67a04d6b` — barcelona URL hotfix #164 |
+| **상태** | **#45 merged ✅** · **19건 PROD** · Wave2 4/4 + URL SSOT |
+| **브랜치** | `cursor/world-events-wave2` (병합 완료) |
+| **PR** | [#165](https://github.com/catgeot/Days/pull/165) **merged** · [#164](https://github.com/catgeot/Days/pull/164) · [#163](https://github.com/catgeot/Days/pull/163) |
+| **main** | `43a3768c` — 19건 공식 URL SSOT |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **F-0.5 D5-b-3** · **F-0.6** · §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) (Q15 추가) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) §6.1·§6.1.1·§8.1 |
 | **샘플** | [`world-events-sample-log.md`](./world-events-sample-log.md) |
 | **일지** | [`2026-08-27-project-log.md`](./2026-08-27-project-log.md) |
-| **PROD QA** | `?lang=en` 허브·singapore·Trip www (#41) · dubai·배치 A~D |
-| **Preview** | `/qa/world-events` → Wave2 4/4 · PROD 배포 대기 |
+| **PROD QA** | `https://www.gateo.kr/world-events` · 6건 URL SSOT (#45) · 허브 europe/niche |
+| **Preview** | `/qa/world-events` → Wave2 4/4 |
 | **VERIFY** | `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` |
 
-**게이트**: **#45** PR #165 merge → PROD URL SSOT 배포
+**게이트**: **19건** PROD URL SSOT 배포 완료 (#45)
 
-**다음 제시어** (#45 PR merge·PROD URL):
+**다음 제시어** (#46 모바일 PROD QA):
 
 ```
-세계행사 일정 #45, PR #165 merge·PROD URL SSOT
+세계행사 일정 #46, PROD 공식 링크 모바일 QA
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-management.md
-브랜치 cursor/world-events-wave2 · https://www.gateo.kr/world-events
+main · https://www.gateo.kr/world-events
 금지: worldEvents.json 직편집 · UI 리디자인 · Wave1 KO 본문 일괄 En 번역
-작업: PR #165 merge · PROD §6.1.1 URL 회귀(amsterdam·tokyo·singapore·dubai·galungan·hanoi) · 허브 europe/niche
+작업: 모바일 §6.1.1 amsterdam·tokyo·singapore·dubai·galungan·hanoi 공식 href 탭 · Wave3 후보 합의
 ```
 
 ---
