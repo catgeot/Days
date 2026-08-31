@@ -18,31 +18,31 @@
 
 | | |
 |--|--|
-| **상태** | **#46 ✅** · **19건 PROD** · URL SSOT·모바일 QA 에이전트 PASS |
-| **브랜치** | `cursor/world-events-wave3` (신규 · #47부터) |
-| **PR** | [#165](https://github.com/catgeot/Days/pull/165) **merged** · Wave2 브랜치 병합 완료 |
-| **main** | `8382089c` — Wave3 후보 합의 |
+| **상태** | **#47 Wave3 paris** · **20건** · europe 허브 재편 |
+| **브랜치** | `cursor/world-events-wave3` · tip `662ad39f` |
+| **PR** | (생성 예정) |
+| **main** | `0fdc3159` — Wave3 paris Preview 대기 |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **F-0.5 D5-b-3** · **F-0.6** · §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) (Q15 추가) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) §6.1·§6.1.1·§8.1 |
 | **샘플** | [`world-events-sample-log.md`](./world-events-sample-log.md) |
 | **일지** | [`2026-08-27-project-log.md`](./2026-08-27-project-log.md) |
 | **PROD QA** | §6.1.1 6건 공식 pill — 에이전트 PASS · 사람 모바일 탭 1줄씩 |
-| **Preview** | `/qa/world-events` → Wave3 착수 시 브랜치 갱신 |
+| **Preview** | `/qa/world-events` → `/world-events/paris-nuit-blanche-2027` · `?region=europe` |
 | **VERIFY** | `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` |
 
-**게이트**: Wave3 1차 **4 slug 4건** 합의 (#46) · 허브 `europe` 재편 후 overrides
+**게이트**: Wave3 1/4 slug ✅ · **#48** los-angeles
 
-**다음 제시어** (#47 Wave3 paris):
+**다음 제시어** (#48 Wave3 los-angeles):
 
 ```
-세계행사 일정 #47, Wave3 paris overrides
+세계행사 일정 #48, Wave3 los-angeles overrides
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-management.md
 브랜치 cursor/world-events-wave3 · https://www.gateo.kr/qa/world-events
 금지: worldEvents.json 직편집 · UI 리디자인 · Wave1 KO 본문 일괄 En 번역
-작업: 허브 europe 재편 · paris-nuit-blanche-2027 D5-b overrides · generate·smoke·feature push
+작업: los-angeles-rose-parade-2027 D5-b overrides · generate·smoke·feature push
 ```
 
 ---
