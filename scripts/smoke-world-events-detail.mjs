@@ -270,8 +270,8 @@ const parisParcoursLink = paris.highlightContextLinks
 assert.equal(parisParcoursLink?.searchTarget, 'maps', 'paris parcours map searchTarget');
 assert.equal(
   googleMapsSearchUrl(parisParcoursLink?.searchQueryKo, 'ko'),
-  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('파리 뉘 블랑쉬 파르쿠르')}&hl=ko`,
-  'paris parcours map opens Google Maps',
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Centre Pompidou, Paris, France')}&hl=ko`,
+  'paris parcours map opens Google Maps at Centre Pompidou',
 );
 assert.equal(resolveWorldEventHubRegionId('paris'), 'europe', 'paris hub region europe');
 assert.equal(resolveWorldEventHubRegionId('prague'), 'europe', 'prague hub region europe after reorg');

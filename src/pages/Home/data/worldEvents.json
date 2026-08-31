@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-31T12:25:00.687Z",
+    "generatedAt": "2026-08-31T12:32:50.685Z",
     "eventCount": 20,
     "source": "scripts/data/world-event-overrides.mjs"
   },
@@ -2943,8 +2943,8 @@
               "labelKo": "파르쿠르 지도",
               "kind": "shop",
               "labelEn": "Parcours map",
-              "searchQueryKo": "파리 뉘 블랑쉬 파르쿠르",
-              "searchQueryEn": "Paris Nuit Blanche parcours",
+              "searchQueryKo": "Centre Pompidou, Paris, France",
+              "searchQueryEn": "Centre Pompidou, Paris, France",
               "searchTarget": "maps"
             }
           ]
