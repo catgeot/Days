@@ -813,23 +813,22 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#46 ✅** · **19건 PROD** · M12 완료 |
-| **브랜치** | `cursor/world-events-wave3` (신규 · #47부터) |
-| **main** | `8382089c` — Wave3 후보 합의 |
-| **플랜** | F-0.5 **D5-b-3 ✅** · **F-0.6 i18n-2 ✅** · **Wave2 4/4 ✅** · **URL SSOT ✅** · **Wave3 합의 ✅** |
-| **Preview** | `/qa/world-events` → Wave3 착수 시 브랜치 갱신 |
+| **상태** | **#47 Wave3 paris** · **20건** · europe 허브 재편 |
+| **브랜치** | `cursor/world-events-wave3` · tip `662ad39f` |
+| **플랜** | F-0.5 **D5-b-3 ✅** · **Wave3 1/4 ✅** |
+| **Preview** | `/qa/world-events` → `/world-events/paris-nuit-blanche-2027` |
 | **VERIFY** | `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` |
 
-**마일스톤**: … → M11 **PR #165 merge #45 ✅** → M12 **§6.1.1 PROD QA·Wave3 합의 #46 ✅**
+**마일스톤**: … → M12 **§6.1.1 PROD QA·Wave3 합의 #46 ✅** → M13 **Wave3 paris·europe 재편 #47 ✅**
 
-**다음 제시어** (#47 Wave3 paris):
+**다음 제시어** (#48 Wave3 los-angeles):
 
 ```
-세계행사 일정 #47, Wave3 paris overrides
+세계행사 일정 #48, Wave3 los-angeles overrides
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-management.md
 브랜치 cursor/world-events-wave3 · https://www.gateo.kr/qa/world-events
 금지: worldEvents.json 직편집 · UI 리디자인 · Wave1 KO 본문 일괄 En 번역
-작업: 허브 europe 재편 · paris-nuit-blanche-2027 D5-b overrides · generate·smoke·feature push
+작업: los-angeles-rose-parade-2027 D5-b overrides · generate·smoke·feature push
 ```
