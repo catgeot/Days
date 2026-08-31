@@ -102,7 +102,7 @@ export default function EventTermExplainModal({ event, termId, locale = 'ko', on
         aria-labelledby="event-term-modal-title"
         className="relative z-10 flex max-h-[min(85dvh,32rem)] w-full max-w-lg flex-col overflow-hidden rounded-t-2xl border border-stone-200 bg-white shadow-2xl sm:rounded-2xl"
       >
-        <div className="flex items-start justify-between gap-3 border-b border-stone-100 px-4 py-3">
+        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-stone-100 px-4 py-3">
           <div className="min-w-0">
             <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-amber-700">
               <Sparkles size={12} aria-hidden />
@@ -132,7 +132,7 @@ export default function EventTermExplainModal({ event, termId, locale = 'ko', on
           )}
         </div>
 
-        <div className="flex flex-wrap gap-2 border-t border-stone-100 px-4 pt-3 pb-[max(1.25rem,calc(env(safe-area-inset-bottom,0px)+0.5rem))]">
+        <div className="flex shrink-0 flex-wrap gap-2 border-t border-stone-100 px-4 pt-3 pb-[max(1.25rem,calc(env(safe-area-inset-bottom,0px)+0.5rem))]">
           {searchUrl ? (
             <a
               href={searchUrl}

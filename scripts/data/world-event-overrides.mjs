@@ -4,6 +4,7 @@
  *
  * Wave 1 (P2-a): Q3 확정 slug 15건 — 유럽·아시아·아메리카·오세아니아·니치
  * Wave 2 (#33): singapore · dubai — D5-b 템플릿
+ * Wave 2 (#42): barcelona · istanbul — D5-b 템플릿
  * D5-b-3 #34 배치 A: vienna · amsterdam · prague · marrakech
  * D5-b-3 #35 배치 B: tokyo · kyoto · bangkok
  *
@@ -2770,6 +2771,304 @@ export const WORLD_EVENT_OVERRIDES = [
         id: 'where-stay',
         promptKo: '다운타운이랑 마리나 중 어디 숙소가 나아?',
         promptEn: 'Downtown or Marina — where should I stay?',
+      },
+    ],
+    priority: 1,
+  },
+  {
+    id: 'barcelona-la-merce-2026',
+    slug: 'barcelona',
+    hubId: 'barcelona',
+    type: 'festival',
+    title: '라 메르세',
+    titleEn: 'La Mercè',
+    startDate: '2026-09-18',
+    endDate: '2026-09-24',
+    recurrence: 'annual',
+    recurrenceNote: '9월 셋째 주 · 수호성인의 날 9/24',
+    recurrenceNoteEn: 'Third week of Sep · feast day Sep 24',
+    venue: { name: 'Barcelona citywide · Plaça de Sant Jaume' },
+    source: 'official_url',
+    sourceUrl: 'https://www.barcelona.cat/capdesetmana/en/merce',
+    bookingHints: '고딕 지구·엘 본·그라시아 — 축제 주간 2~4박 · 9/24 전후 교통 통제',
+    detailOverview:
+      '바르셀로나 수호성인 메르세(Mercè)를 기념하는 도시 축제로, 9월 셋째 주 전후 약 일주일간 거리 공연·카스텔레르스(인탑)·코레포크(불꽃 퍼레이드)가 이어집니다. 전체 시즌 숙박보다 9/22~24 절정 전후 2~3박으로 고딕 지구·엘 본 기점을 잡아 야간 행사와 메트로 이동을 묶는 방문이 일반적입니다.',
+    highlights: [
+      'Plaça de Sant Jaume — 개막·폐막·공식 행사 중심 · 고딕 지구 도보권',
+      'Castellers(인탑) — 광장·거리 공연 · 혼잡 구간 조기 도착 권장',
+      'Correfoc·불꽃·콘서트 — 야간 행사 다수 · 9/24 전후 교통·지하철 운행 변경',
+    ],
+    stayAreas: [
+      {
+        name: '고딕 지구 · El Born',
+        mrtKeyword: 'Barcelona Gothic Quarter',
+        note: '산트 자우메·엘 본 도보 · 축제 행사 밀집',
+      },
+      {
+        name: '그라시아 · Gràcia',
+        mrtKeyword: 'Barcelona Gracia',
+        note: '현지 분위기 · L3·L4 환승으로 중심가 15분',
+      },
+    ],
+    recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Merc%C3%A8_2016_-_Castellers_a_la_Pla%C3%A7a_de_Sant_Jaume_01.jpg/1280px-Merc%C3%A8_2016_-_Castellers_a_la_Pla%C3%A7a_de_Sant_Jaume_01.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Merc%C3%A8_2016_-_Castellers_a_la_Pla%C3%A7a_de_Sant_Jaume_01.jpg/1280px-Merc%C3%A8_2016_-_Castellers_a_la_Pla%C3%A7a_de_Sant_Jaume_01.jpg',
+        captionKo: '라 메르세 카스텔레르스',
+        captionEn: 'La Mercè castellers',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Sagrada_Familia_March_2015-19bw.jpg/1280px-Sagrada_Familia_March_2015-19bw.jpg',
+        captionKo: '사그라다 파밀리아',
+        captionEn: 'Sagrada Família',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/La_Merc%C3%A8_2024_-_Diada_castellera_de_la_Merc%C3%A8_-_20240924_152106.jpg/1280px-La_Merc%C3%A8_2024_-_Diada_castellera_de_la_Merc%C3%A8_-_20240924_152106.jpg',
+        captionKo: '라 메르세 2024 인탑 행사',
+        captionEn: 'La Mercè 2024 castell diada',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'la-merce',
+        termKo: '라 메르세',
+        termEn: 'La Mercè',
+        promptKo:
+          '바르셀로나 라 메르세(La Mercè) 축제가 무엇인지 여행자 관점에서 3문장 이내로 설명해줘.',
+        promptEn: 'What is La Mercè festival in Barcelona for travelers in 3 short sentences.',
+        searchQueryKo: '바르셀로나 라 메르세 축제',
+        searchQueryEn: 'Barcelona La Mercè festival',
+        referenceUrl: 'https://en.wikipedia.org/wiki/La_Merc%C3%A8',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/%EB%9D%BC_%EB%A9%94%EB%A5%B4%EC%84%B8',
+      },
+      {
+        id: 'castellers',
+        termKo: '카스텔레르스',
+        termEn: 'castellers',
+        promptKo:
+          '카스텔레르스(인탑)가 라 메르세에서 왜 중요한지 3문장 이내로 설명해줘.',
+        promptEn: 'Why castellers matter at La Mercè in 3 short sentences.',
+        searchQueryKo: '바르셀로나 카스텔레르스 인탑',
+        searchQueryEn: 'Barcelona castellers human towers',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Castell',
+      },
+      {
+        id: 'correfoc',
+        termKo: '코레포크',
+        termEn: 'correfoc',
+        promptKo:
+          '라 메르세 코레포크(불꽃 퍼레이드)가 무엇인지 안전·관람 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'What is correfoc at La Mercè and how to watch safely in 3 short sentences.',
+        searchQueryKo: '바르셀로나 코레포크 라 메르세',
+        searchQueryEn: 'Barcelona correfoc La Mercè',
+      },
+      {
+        id: 'sant-jaume',
+        termKo: '산트 자우메 광장',
+        termEn: 'Plaça de Sant Jaume',
+        promptKo:
+          '산트 자우메 광장이 라 메르세 공식 행사의 중심인 이유를 3문장 이내로 설명해줘.',
+        promptEn: 'Why Plaça de Sant Jaume is the hub of La Mercè in 3 short sentences.',
+        searchQueryKo: '바르셀로나 산트 자우메 광장',
+        searchQueryEn: 'Plaça de Sant Jaume Barcelona',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'merce-official',
+            labelKo: '공식 일정',
+            labelEn: 'Official programme',
+            kind: 'shop',
+            href: 'https://www.barcelona.cat/capdesetmana/en/merce',
+          },
+        ],
+      },
+      {
+        highlightIndex: 2,
+        links: [
+          {
+            id: 'correfoc-guide',
+            labelKo: '코레포크 안내',
+            labelEn: 'Correfoc guide',
+            kind: 'shop',
+            searchQueryKo: '바르셀로나 코레포크 라 메르세',
+            searchQueryEn: 'Barcelona correfoc La Mercè',
+            searchTarget: 'google',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '바르셀로나 라 메르세',
+    youtubeSearchQueryEn: 'Barcelona La Mercè',
+    mooniChips: [
+      {
+        id: 'best-nights',
+        promptKo: '9월 중 어느 박이 라 메르세 보기 좋아?',
+        promptEn: 'Which nights in September are best for La Mercè?',
+      },
+      {
+        id: 'castellers-spots',
+        promptKo: '카스텔레르스 보기 좋은 장소 알려줘',
+        promptEn: 'Where is best to watch castellers?',
+      },
+      {
+        id: 'stay-area',
+        promptKo: '고딕 지구랑 그라시아 중 어디 숙소가 나아?',
+        promptEn: 'Gothic Quarter or Gràcia — where should I stay?',
+      },
+    ],
+    priority: 1,
+  },
+  {
+    id: 'istanbul-marathon-2026',
+    slug: 'istanbul',
+    hubId: 'istanbul',
+    type: 'festival',
+    title: '이스탄불 마라톤',
+    titleEn: 'Istanbul Marathon',
+    startDate: '2026-11-01',
+    endDate: '2026-11-01',
+    recurrence: 'annual',
+    recurrenceNote: '11월 첫째 일요일',
+    recurrenceNoteEn: 'First Sunday in November',
+    venue: { name: 'Asian side start · Bosphorus Bridge · European finish' },
+    source: 'official_url',
+    sourceUrl: 'https://maraton.istanbul/',
+    bookingHints: '카드키쾌·베식타스·술탄아흐메트 — 레이스 전후 2~3박 · 보스포루스 교통 통제',
+    detailOverview:
+      '아시아와 유럽을 잇는 보스포루스 대교를 넘는 세계 유일의 대륙횡단 마라톤입니다. 11월 첫째 일요일 새벽 출발로 풀·하프·15K·10K·8K 코스가 운영되며, 레이스 전후 2~3박으로 카드키쾌·베식타스 기점 숙소를 잡아 등록·교통 통제·관람을 묶는 방문이 일반적입니다.',
+    highlights: [
+      'Bosphorus Bridge — 풀코스 유일 구간 · 대륙횡단 상징 · 당일 교통 통제',
+      '15K·하프·풀 — 사전 등록·피니셔 패키지 · 출발(아시아)·도착(유럽) 시간대 확인',
+      'Sultanahmet·Beşiktaş 일대 — 레이스 후 관광·트램·페리 이동 · 주말 혼잡',
+    ],
+    stayAreas: [
+      {
+        name: '카드키쾌 · Kadıköy',
+        mrtKeyword: 'Istanbul Kadikoy',
+        note: '아시아 측 · 페리·메트로 · 레이스 전 숙소',
+      },
+      {
+        name: '베식타스 · Beşiktaş',
+        mrtKeyword: 'Istanbul Besiktas',
+        note: '유럽 측 · 보스포루스·트램 · 피니시 인근',
+      },
+    ],
+    recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/28thIntercontinentalIstanbulEurasiaMarathon.jpg/1280px-28thIntercontinentalIstanbulEurasiaMarathon.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/28thIntercontinentalIstanbulEurasiaMarathon.jpg/1280px-28thIntercontinentalIstanbulEurasiaMarathon.jpg',
+        captionKo: '이스탄불 대륙횡단 마라톤',
+        captionEn: 'Intercontinental Istanbul Marathon',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/2021_11_07_09_56_IMG_3460.jpg/1280px-2021_11_07_09_56_IMG_3460.jpg',
+        captionKo: '마라톤 당일 보스포루스',
+        captionEn: 'Marathon day on the Bosphorus',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Historical_peninsula_and_modern_skyline_of_Istanbul.jpg/1280px-Historical_peninsula_and_modern_skyline_of_Istanbul.jpg',
+        captionKo: '이스탄불 스카이라인',
+        captionEn: 'Istanbul skyline',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'continental-marathon',
+        termKo: '대륙횡단 마라톤',
+        termEn: 'continental marathon',
+        promptKo:
+          '이스탄불 마라톤이 아시아-유럽 대륙횡단으로 유명한 이유를 3문장 이내로 설명해줘.',
+        promptEn: 'Why Istanbul Marathon is famous as a continental race in 3 short sentences.',
+        searchQueryKo: '이스탄불 마라톤 대륙횡단',
+        searchQueryEn: 'Istanbul Marathon Asia Europe',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Istanbul_Marathon',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%8A%A4%ED%83%84%EB%B6%88_%EB%A7%88%EB%9D%BC%ED%86%A4',
+      },
+      {
+        id: 'bosphorus-bridge',
+        termKo: '보스포루스 대교',
+        termEn: 'Bosphorus Bridge',
+        promptKo:
+          '마라톤 당일 보스포루스 대교 구간이 여행자에게 왜 특별한지 3문장 이내로 설명해줘.',
+        promptEn: 'Why the Bosphorus Bridge leg matters on race day in 3 short sentences.',
+        searchQueryKo: '이스탄불 마라톤 보스포루스 대교',
+        searchQueryEn: 'Istanbul Marathon Bosphorus Bridge',
+        referenceUrl: 'https://en.wikipedia.org/wiki/15_July_Martyrs_Bridge',
+      },
+      {
+        id: 'race-categories',
+        termKo: '15K·하프·풀',
+        termEn: '15K half full',
+        promptKo:
+          '이스탄불 마라톤 15K·하프·풀 코스 차이와 등록 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Istanbul Marathon 15K, half and full course differences in 3 short sentences.',
+        searchQueryKo: '이스탄불 마라톤 등록 15K 하프',
+        searchQueryEn: 'Istanbul Marathon registration 15K half full',
+      },
+      {
+        id: 'kadikoy-besiktas',
+        termKo: '카드키쾌·베식타스',
+        termEn: 'Kadıköy Beşiktaş',
+        promptKo:
+          '레이스 전후 카드키쾌(아시아)와 베식타스(유럽) 숙소를 고를 때 기준을 3문장 이내로 설명해줘.',
+        promptEn: 'How to choose Kadıköy vs Beşiktaş stays for race weekend in 3 short sentences.',
+        searchQueryKo: '이스탄불 마라톤 숙소 카드키쾌 베식타스',
+        searchQueryEn: 'Istanbul Marathon hotel Kadıköy Beşiktaş',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'marathon-official',
+            labelKo: '공식 사이트',
+            labelEn: 'Official site',
+            kind: 'shop',
+            href: 'https://maraton.istanbul/',
+          },
+        ],
+      },
+      {
+        highlightIndex: 1,
+        links: [
+          {
+            id: 'course-map',
+            labelKo: '코스 지도',
+            labelEn: 'Course map',
+            kind: 'shop',
+            searchQueryKo: '이스탄불 마라톤 코스 지도',
+            searchQueryEn: 'Istanbul Marathon course map',
+            searchTarget: 'google',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '이스탄불 마라톤',
+    youtubeSearchQueryEn: 'Istanbul Marathon',
+    mooniChips: [
+      {
+        id: 'register-deadline',
+        promptKo: '마라톤 등록은 언제까지 해?',
+        promptEn: 'When is Istanbul Marathon registration deadline?',
+      },
+      {
+        id: 'spectator-spots',
+        promptKo: '관람하기 좋은 구간 알려줘',
+        promptEn: 'Best spots to watch the marathon?',
+      },
+      {
+        id: 'bridge-closure',
+        promptKo: '레이스 당일 보스포루스 교통 통제 어떻게 돼?',
+        promptEn: 'How does Bosphorus traffic work on race day?',
       },
     ],
     priority: 1,

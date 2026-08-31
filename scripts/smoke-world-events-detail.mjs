@@ -30,7 +30,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 
 const events = getAllWorldEvents();
-assert.equal(events.length, 17, 'Wave1+Wave2 has 17 events');
+assert.equal(events.length, 19, 'Wave1+Wave2 has 19 events');
 
 for (const event of events) {
   const found = getWorldEventById(event.id);
@@ -98,7 +98,12 @@ const WAVE1_EVENT_IDS = [
   'hanoi-tet-2027',
 ];
 
-const WAVE2_EVENT_IDS = ['singapore-gp-2026', 'dubai-fitness-challenge-2026'];
+const WAVE2_EVENT_IDS = [
+  'singapore-gp-2026',
+  'dubai-fitness-challenge-2026',
+  'barcelona-la-merce-2026',
+  'istanbul-marathon-2026',
+];
 
 const D5_B_BATCH_A_EVENT_IDS = [
   'vienna-staatsoper-season-2026',
@@ -212,6 +217,21 @@ const singaporeLoc = getWorldEventLocation('singapore');
 assert.equal(resolvePlannerFlightArrivalIata(singaporeLoc), 'SIN', 'singapore arrival IATA');
 const dubaiLoc = getWorldEventLocation('dubai');
 assert.equal(resolvePlannerFlightArrivalIata(dubaiLoc), 'DXB', 'dubai arrival IATA');
+const barcelonaLoc = getWorldEventLocation('barcelona');
+assert.equal(resolvePlannerFlightArrivalIata(barcelonaLoc), 'BCN', 'barcelona arrival IATA');
+const istanbulLoc = getWorldEventLocation('istanbul');
+assert.equal(resolvePlannerFlightArrivalIata(istanbulLoc), 'IST', 'istanbul arrival IATA');
+const istanbul = getWorldEventById('istanbul-marathon-2026');
+const istanbulOfficial = istanbul.highlightContextLinks
+  .find((group) => group.highlightIndex === 0)
+  ?.links.find((link) => link.id === 'marathon-official');
+assert.equal(istanbulOfficial?.href, 'https://maraton.istanbul/', 'istanbul official site');
+assert.equal(istanbul.sourceUrl, 'https://maraton.istanbul/', 'istanbul sourceUrl official');
+assert.equal(
+  istanbul.highlightContextLinks.filter((group) => group.links.length > 0).length,
+  2,
+  'istanbul two highlight link groups',
+);
 
 const edinburghPresets = tripWindowPresetsFromEvent(getWorldEventById('edinburgh-fringe-2026'));
 
@@ -459,6 +479,9 @@ assert.match(termModalSrc, /fetchEventTermExplanation/, 'EventTermExplainModal c
 assert.match(termModalSrc, /peekEventTermExplanationCache/, 'EventTermExplainModal memory cache warm');
 assert.match(termModalSrc, /getGlossaryTermReferenceUrl/, 'EventTermExplainModal locale reference url');
 assert.match(termModalSrc, /safe-area-inset-bottom/, 'EventTermExplainModal safe area bottom');
+assert.match(termModalSrc, /shrink-0 flex-wrap gap-2 border-t/, 'EventTermExplainModal footer shrink-0');
+assert.match(termModalSrc, /worldEventDetail\.glossary\.googleSearch/, 'EventTermExplainModal google search link');
+assert.match(termModalSrc, /worldEventDetail\.glossary\.referenceLink/, 'EventTermExplainModal reference link');
 assert.match(termModalSrc, /getWorldEventGlossaryTermById\(event, termId, locale\)/, 'EventTermExplainModal locale term lookup');
 
 const stehplatzTruncated =
@@ -652,6 +675,8 @@ for (const pilotId of [
   'bali-galungan-season-2026',
   'singapore-gp-2026',
   'dubai-fitness-challenge-2026',
+  'barcelona-la-merce-2026',
+  'istanbul-marathon-2026',
   ...D5_B_BATCH_A_EVENT_IDS,
   ...D5_B_BATCH_B_EVENT_IDS,
   ...D5_B_BATCH_C_EVENT_IDS,
