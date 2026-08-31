@@ -468,6 +468,9 @@ assert.match(termModalSrc, /fetchEventTermExplanation/, 'EventTermExplainModal c
 assert.match(termModalSrc, /peekEventTermExplanationCache/, 'EventTermExplainModal memory cache warm');
 assert.match(termModalSrc, /getGlossaryTermReferenceUrl/, 'EventTermExplainModal locale reference url');
 assert.match(termModalSrc, /safe-area-inset-bottom/, 'EventTermExplainModal safe area bottom');
+assert.match(termModalSrc, /shrink-0 flex-wrap gap-2 border-t/, 'EventTermExplainModal footer shrink-0');
+assert.match(termModalSrc, /worldEventDetail\.glossary\.googleSearch/, 'EventTermExplainModal google search link');
+assert.match(termModalSrc, /worldEventDetail\.glossary\.referenceLink/, 'EventTermExplainModal reference link');
 assert.match(termModalSrc, /getWorldEventGlossaryTermById\(event, termId, locale\)/, 'EventTermExplainModal locale term lookup');
 
 const stehplatzTruncated =
