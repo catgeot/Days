@@ -222,19 +222,15 @@ assert.equal(resolvePlannerFlightArrivalIata(barcelonaLoc), 'BCN', 'barcelona ar
 const istanbulLoc = getWorldEventLocation('istanbul');
 assert.equal(resolvePlannerFlightArrivalIata(istanbulLoc), 'IST', 'istanbul arrival IATA');
 const istanbul = getWorldEventById('istanbul-marathon-2026');
-const istanbulRegCriteria = istanbul.highlightContextLinks
-  .find((group) => group.highlightIndex === 1)
-  ?.links.find((link) => link.id === 'marathon-42k-criteria');
-assert.match(
-  istanbulRegCriteria?.href || '',
-  /maraton\.istanbul\/marathon-42k-run/,
-  'istanbul registration info page not login portal',
-);
-assert.ok(
-  istanbul.highlightContextLinks
-    .flatMap((group) => group.links)
-    .every((link) => !String(link.href || '').includes('event.spor.istanbul')),
-  'istanbul links avoid spor login portal',
+const istanbulOfficial = istanbul.highlightContextLinks
+  .find((group) => group.highlightIndex === 0)
+  ?.links.find((link) => link.id === 'marathon-official');
+assert.equal(istanbulOfficial?.href, 'https://maraton.istanbul/', 'istanbul official site');
+assert.equal(istanbul.sourceUrl, 'https://maraton.istanbul/', 'istanbul sourceUrl official');
+assert.equal(
+  istanbul.highlightContextLinks.filter((group) => group.links.length > 0).length,
+  2,
+  'istanbul two highlight link groups',
 );
 
 const edinburghPresets = tripWindowPresetsFromEvent(getWorldEventById('edinburgh-fringe-2026'));

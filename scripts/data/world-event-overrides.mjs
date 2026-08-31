@@ -2938,7 +2938,7 @@ export const WORLD_EVENT_OVERRIDES = [
     recurrenceNoteEn: 'First Sunday in November',
     venue: { name: 'Asian side start · Bosphorus Bridge · European finish' },
     source: 'official_url',
-    sourceUrl: 'https://maraton.istanbul/?lang=en',
+    sourceUrl: 'https://maraton.istanbul/',
     bookingHints: '카드키쾌·베식타스·술탄아흐메트 — 레이스 전후 2~3박 · 보스포루스 교통 통제',
     detailOverview:
       '아시아와 유럽을 잇는 보스포루스 대교를 넘는 세계 유일의 대륙횡단 마라톤입니다. 11월 첫째 일요일 새벽 출발로 풀·하프·15K·10K·8K 코스가 운영되며, 레이스 전후 2~3박으로 카드키쾌·베식타스 기점 숙소를 잡아 등록·교통 통제·관람을 묶는 방문이 일반적입니다.',
@@ -3029,35 +3029,17 @@ export const WORLD_EVENT_OVERRIDES = [
         highlightIndex: 0,
         links: [
           {
-            id: 'bosphorus-spectator',
-            labelKo: '대교 구간 관람 검색',
-            labelEn: 'Bridge spectator info',
+            id: 'marathon-official',
+            labelKo: '공식 사이트',
+            labelEn: 'Official site',
             kind: 'shop',
-            searchQueryKo: '이스탄불 마라톤 보스포루스 대교 관람',
-            searchQueryEn: 'Istanbul Marathon Bosphorus Bridge spectator',
-            searchTarget: 'google',
+            href: 'https://maraton.istanbul/',
           },
         ],
       },
       {
         highlightIndex: 1,
         links: [
-          {
-            id: 'marathon-42k-criteria',
-            labelKo: '42K 등록 기준',
-            labelEn: '42K registration info',
-            kind: 'shop',
-            href: 'https://maraton.istanbul/marathon-42k-run/?lang=en',
-          },
-          {
-            id: 'marathon-register-search',
-            labelKo: '등록 안내 검색',
-            labelEn: 'Registration search',
-            kind: 'shop',
-            searchQueryKo: '이스탄불 마라톤 2026 등록',
-            searchQueryEn: 'Istanbul Marathon 2026 registration',
-            searchTarget: 'google',
-          },
           {
             id: 'course-map',
             labelKo: '코스 지도',
