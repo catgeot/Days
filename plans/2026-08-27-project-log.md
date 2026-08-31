@@ -498,3 +498,12 @@
 - **Wave3 합의** 1차 4 slug 4건 — `paris`·`los-angeles`·`london`·`rome` (§management §8.2) · 허브 europe 재편 선행
 - **사람 QA** iPhone/Android — 6 URL 하이라이트 pill 탭·새 탭·로그인 벽 없음 1줄씩
 - **다음** **#47** Wave3 `paris` 1건 overrides
+
+## 세계행사 일정 #47 — Wave3 paris overrides
+
+- **세션** `세계행사 일정 #47, Wave3 paris overrides`
+- **브랜치** `cursor/world-events-wave3` · tip `662ad39f`
+- **산출** europe 허브 재편(`prague`→europe·`paris` 추가) · `paris-nuit-blanche-2027` D5-b · **20건**
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/paris-nuit-blanche-2027` · `?region=europe`
+- **다음** **#48** Wave3 `los-angeles` 1건 overrides
