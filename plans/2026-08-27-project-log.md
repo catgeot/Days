@@ -466,3 +466,9 @@
 - **§6.1.1** D5-b glossary 4 · heroImages 3 · highlightContextLinks 2 · actionChips 없음 · istanbul `maraton.istanbul` 공식 링크
 - **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS · Preview HTTP 200
 - **다음** 사람 PROD §6.1.1 barcelona·istanbul · 허브 europe/niche 회귀
+
+## 세계행사 일정 #43 — 라 메르세 공식 URL hotfix
+
+- **이슈** 「공식 일정」`barcelona.cat/capdesetmana/en/merce` → 404
+- **수정** `barcelona.cat/lamerce/en` (위키·시청 공식과 동일) · smoke assert 추가
+- **PR** [#164](https://github.com/catgeot/Days/pull/164) **merged** → main `c0eaeb46`
