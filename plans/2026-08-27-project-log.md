@@ -502,7 +502,7 @@
 ## 세계행사 일정 #47 — Wave3 paris overrides
 
 - **세션** `세계행사 일정 #47, Wave3 paris overrides`
-- **브랜치** `cursor/world-events-wave3` · tip `662ad39f`
+- **브랜치** `cursor/world-events-wave3` · PR [#166](https://github.com/catgeot/Days/pull/166) · tip `9d14aba0`
 - **산출** europe 허브 재편(`prague`→europe·`paris` 추가) · `paris-nuit-blanche-2027` D5-b · **20건**
 - **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
 - **Preview** `/qa/world-events` → `/world-events/paris-nuit-blanche-2027` · `?region=europe`
