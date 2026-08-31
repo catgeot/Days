@@ -329,4 +329,53 @@ const openGroups = sortFestivalGroupsByOpenDate(
 );
 assert.equal(openGroups[0].id, 'a', 'group with sooner festival first');
 
+const {
+  inferFestivalTasteIds,
+  buildTasteTags,
+  filterByTaste,
+  tasteLabel,
+  FESTIVAL_TASTE_THEMES,
+} = await import('../src/pages/Korea/festivalTasteTags.js');
+
+assert.ok(FESTIVAL_TASTE_THEMES.length >= 18, 'theme taxonomy breadth');
+assert.ok(
+  inferFestivalTasteIds({ title: '춘천 술 페스타' }).has('drink'),
+  '술 페스타 → drink',
+);
+assert.ok(
+  inferFestivalTasteIds({ title: '제38회 춘천인형극제' }).has('performance'),
+  '인형극제 → performance',
+);
+assert.ok(
+  inferFestivalTasteIds({ title: '한강수계 걷기행사' }).has('sports'),
+  '걷기행사 → sports',
+);
+assert.ok(
+  inferFestivalTasteIds({ title: '2026 창작 실경뮤지컬' }).has('performance'),
+  '뮤지컬 → performance',
+);
+assert.ok(
+  inferFestivalTasteIds({
+    title: '일반 축제',
+    cat3: 'A02070100',
+  }).has('culture'),
+  'TourAPI 문화관광축제 cat3',
+);
+const tastePool = [
+  { title: '춘천 술 페스타' },
+  { title: '제38회 춘천인형극제' },
+  { title: '한강수계 걷기행사' },
+  { title: '2026 창작 실경뮤지컬' },
+];
+const tasteChips = buildTasteTags(tastePool);
+assert.ok(tasteChips.some((t) => t.id === 'drink'), 'pool shows drink chip');
+assert.ok(tasteChips.some((t) => t.id === 'performance'), 'pool shows performance chip');
+assert.ok(tasteChips.some((t) => t.id === 'sports'), 'pool shows sports chip');
+assert.equal(
+  filterByTaste(tastePool, 'performance').length,
+  2,
+  'performance filter count',
+);
+assert.equal(tasteLabel('music'), '음악');
+
 console.log('smoke-korea-festival-personal: PASS');

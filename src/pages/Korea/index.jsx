@@ -1238,7 +1238,6 @@ export default function KoreaFestivalHub() {
         return true;
       }
 
-      setTimeTab('now');
       setTasteId('all');
       setAreaCode(String(hubResolved.areaCode));
       setCityName('all');
@@ -1253,7 +1252,7 @@ export default function KoreaFestivalHub() {
       const label = hubResolved.hubName || '';
       const nearby = rankFestivalsByDistance(
         festivalsWithinKm(
-          filterByTimeTab('now', sourceItems, now),
+          filterByTimeTab(timeTab, sourceItems, now),
           lat,
           lng,
           NEAR_KM,
@@ -1270,11 +1269,11 @@ export default function KoreaFestivalHub() {
       setNearMsg(
         ids.length
           ? t('korea.festival.nearPanelMeta', { km: NEAR_KM, count: ids.length })
-          : t('korea.festival.nearEmptyNow', { km: NEAR_KM }),
+          : t('korea.festival.nearEmpty', { km: NEAR_KM }),
       );
       return true;
     },
-    [items, now, dismissLocHint, t],
+    [items, now, timeTab, dismissLocHint, t],
   );
 
   useEffect(() => {
