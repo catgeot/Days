@@ -3356,4 +3356,155 @@ export const WORLD_EVENT_OVERRIDES = [
     ],
     priority: 1,
   },
+  {
+    id: 'london-notting-hill-2026',
+    slug: 'london',
+    hubId: 'london',
+    type: 'festival',
+    title: '노팅힐 카니발',
+    titleEn: 'Notting Hill Carnival',
+    startDate: '2026-08-29',
+    endDate: '2026-08-31',
+    recurrence: 'annual',
+    recurrenceNote: '8월 은행 휴일 주말 (토~월, 연도별 변동)',
+    recurrenceNoteEn: 'August bank holiday weekend (Sat–Mon, varies)',
+    venue: { name: 'Ladbroke Grove · Great Western Road · Notting Hill' },
+    source: 'official_url',
+    sourceUrl: 'https://nhcarnival.org/',
+    bookingHints:
+      '노팅힐·Ladbroke Grove — 주말 전후 2~3박 · 퍼레이드 루트·사운드 시스템 구간 조기 이동 · 일요일 패밀리데이·월요일 성인 퍼레이드',
+    detailOverview:
+      '런던 서부 노팅힐 일대에서 8월 은행 휴일 주말에 열리는 캐리비안 계열 거리 축제로, 마스 밴드·사운드 시스템·강철 드럼 밴드가 Ladbroke Grove·Great Western Road를 따라 이동합니다. 토요일 Panorama 강철 밴드 대회, 일요일 J\'Ouvert·어린이 퍼레이드, 월요일 성인 퍼레이드로 이어지므로 주말 전후 2~3박으로 노팅힐·Bayswater 기점을 잡아 패밀리데이와 성인 퍼레이드를 나눠 보는 방문이 일반적입니다.',
+    highlights: [
+      'Adults\' parade — Great Western Road · Ladbroke Grove 루트 · 마스 밴드·코스튬 행진',
+      'Family Day (Sunday) — J\'Ouvert 새벽 · 어린이 퍼레이드 · 월요일보다 상대적으로 한산',
+      'Panorama Steel Band — 토요일 Emslie Horniman\'s Pleasance Park · 강철 드럼 밴드 대회',
+    ],
+    stayAreas: [
+      {
+        name: '노팅힐 · Notting Hill',
+        mrtKeyword: 'London Notting Hill',
+        note: '퍼레이드 루트·Ladbroke Grove 도보 · Circle·District·Central Line',
+      },
+      {
+        name: '베이스워터 · Bayswater',
+        mrtKeyword: 'London Bayswater',
+        note: '퍼레이드 구간에서 한 블록 · Queensway·Bayswater 역',
+      },
+    ],
+    recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Notting_Hill_Carnival_2014_%282%29.JPG/1280px-Notting_Hill_Carnival_2014_%282%29.JPG',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Notting_Hill_Carnival_2014_%282%29.JPG/1280px-Notting_Hill_Carnival_2014_%282%29.JPG',
+        captionKo: '노팅힐 카니발 퍼레이드',
+        captionEn: 'Notting Hill Carnival parade',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Notting_Hill_Carnival_1_-_August_2006.jpg/1280px-Notting_Hill_Carnival_1_-_August_2006.jpg',
+        captionKo: 'Ladbroke Grove 거리 행진',
+        captionEn: 'Parade on Ladbroke Grove',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Notting_Hill_Carnival_2014_%288%29.JPG/1280px-Notting_Hill_Carnival_2014_%288%29.JPG',
+        captionKo: '마스 밴드·코스튬',
+        captionEn: 'Mas band costumes',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'notting-hill-carnival',
+        termKo: '노팅힐 카니발',
+        termEn: 'Notting Hill Carnival',
+        promptKo:
+          '런던 노팅힐 카니발(Notting Hill Carnival)이 무엇인지 여행자 관점에서 3문장 이내로 설명해줘.',
+        promptEn: 'What is Notting Hill Carnival for travelers in 3 short sentences.',
+        searchQueryKo: '런던 노팅힐 카니발',
+        searchQueryEn: 'Notting Hill Carnival London',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Notting_Hill_Carnival',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/%EB%85%B8%ED%8C%85%ED%9E%90_%EC%B9%B4%EB%8B%88%EB%B0%9C',
+      },
+      {
+        id: 'jouvert',
+        termKo: 'J\'Ouvert',
+        termEn: "J'Ouvert",
+        promptKo:
+          '노팅힐 카니발 J\'Ouvert(주베르)가 무엇인지 일요일 새벽 일정 팁을 3문장 이내로 설명해줘.',
+        promptEn: "What is J'Ouvert at Notting Hill Carnival in 3 short sentences.",
+        searchQueryKo: '노팅힐 카니발 J Ouvert',
+        searchQueryEn: "Notting Hill Carnival J'Ouvert",
+        referenceUrl: 'https://nhcarnival.org/sunday',
+      },
+      {
+        id: 'mas-band',
+        termKo: '마스 밴드',
+        termEn: 'mas band',
+        promptKo:
+          '노팅힐 카니발 마스 밴드(mas band)가 퍼레이드에서 어떤 역할인지 3문장 이내로 설명해줘.',
+        promptEn: 'What mas bands do in the Notting Hill Carnival parade in 3 short sentences.',
+        searchQueryKo: '노팅힐 카니발 마스 밴드',
+        searchQueryEn: 'Notting Hill Carnival mas band',
+      },
+      {
+        id: 'ladbroke-grove',
+        termKo: 'Ladbroke Grove',
+        termEn: 'Ladbroke Grove',
+        promptKo:
+          '노팅힐 카니발에서 Ladbroke Grove가 왜 핵심 거리인지 동선 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Why Ladbroke Grove matters for Notting Hill Carnival routes in 3 short sentences.',
+        searchQueryKo: '런던 Ladbroke Grove 카니발',
+        searchQueryEn: 'Ladbroke Grove Notting Hill Carnival',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Ladbroke_Grove',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'carnival-official',
+            labelKo: '공식 일정',
+            labelEn: 'Official programme',
+            kind: 'shop',
+            href: 'https://nhcarnival.org/',
+          },
+        ],
+      },
+      {
+        highlightIndex: 2,
+        links: [
+          {
+            id: 'parade-route-map',
+            labelKo: '퍼레이드 루트',
+            labelEn: 'Parade route',
+            kind: 'shop',
+            searchQueryKo: '런던 Great Western Road 노팅힐',
+            searchQueryEn: 'Great Western Road, Notting Hill, London, UK',
+            searchTarget: 'maps',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '런던 노팅힐 카니발',
+    youtubeSearchQueryEn: 'Notting Hill Carnival London',
+    mooniChips: [
+      {
+        id: 'family-vs-adults',
+        promptKo: '일요일 패밀리데이랑 월요일 성인 퍼레이드 차이 알려줘',
+        promptEn: 'How do Family Day Sunday and Adults Monday differ?',
+      },
+      {
+        id: 'parade-view',
+        promptKo: '퍼레이드 잘 보이는 Ladbroke Grove 구간 알려줘',
+        promptEn: 'Best Ladbroke Grove spots to watch the parade?',
+      },
+      {
+        id: 'stay-area',
+        promptKo: '노팅힐이랑 Bayswater 중 어디 숙소가 나아?',
+        promptEn: 'Notting Hill or Bayswater — where should I stay?',
+      },
+    ],
+    priority: 1,
+  },
 ];

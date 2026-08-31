@@ -32,7 +32,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 
 const events = getAllWorldEvents();
-assert.equal(events.length, 21, 'Wave1+Wave2+Wave3 paris+los-angeles has 21 events');
+assert.equal(events.length, 22, 'Wave1+Wave2+Wave3 paris+los-angeles+london has 22 events');
 
 for (const event of events) {
   const found = getWorldEventById(event.id);
@@ -83,6 +83,7 @@ assertTier05('marrakech-rose-festival-2027', 2);
 assertTier05('hanoi-tet-2027', 4);
 assertTier05('paris-nuit-blanche-2027', 3);
 assertTier05('los-angeles-rose-parade-2027', 3);
+assertTier05('london-notting-hill-2026', 3);
 
 const WAVE1_EVENT_IDS = [
   'edinburgh-fringe-2026',
@@ -109,7 +110,11 @@ const WAVE2_EVENT_IDS = [
   'istanbul-marathon-2026',
 ];
 
-const WAVE3_EVENT_IDS = ['paris-nuit-blanche-2027', 'los-angeles-rose-parade-2027'];
+const WAVE3_EVENT_IDS = [
+  'paris-nuit-blanche-2027',
+  'los-angeles-rose-parade-2027',
+  'london-notting-hill-2026',
+];
 
 const D5_B_BATCH_A_EVENT_IDS = [
   'vienna-staatsoper-season-2026',
@@ -308,6 +313,30 @@ for (const area of losAngeles.stayAreas) {
   assert.equal(area.mrtKeyword, 'Pasadena', `${area.name} uses Pasadena CITY mrtKeyword`);
 }
 assert.equal(losAngeles.stayAreas.length, 1, 'los-angeles single Pasadena stay area (MRT CITY SSOT)');
+const londonLoc = getWorldEventLocation('london');
+assert.equal(resolvePlannerFlightArrivalIata(londonLoc), 'LHR', 'london arrival IATA');
+const london = getWorldEventById('london-notting-hill-2026');
+const carnivalOfficial = london.highlightContextLinks
+  .find((group) => group.highlightIndex === 0)
+  ?.links.find((link) => link.id === 'carnival-official');
+assert.equal(carnivalOfficial?.href, 'https://nhcarnival.org/', 'london official site');
+assert.equal(london.sourceUrl, 'https://nhcarnival.org/', 'london sourceUrl official');
+const paradeRouteMap = london.highlightContextLinks
+  .find((group) => group.highlightIndex === 2)
+  ?.links.find((link) => link.id === 'parade-route-map');
+assert.equal(paradeRouteMap?.searchTarget, 'maps', 'london parade route map searchTarget');
+assert.equal(
+  googleMapsSearchUrl(paradeRouteMap?.searchQueryKo, 'ko'),
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('런던 Great Western Road 노팅힐')}&hl=ko`,
+  'london parade route map opens Google Maps at Great Western Road (KO)',
+);
+assert.equal(
+  googleMapsSearchUrl(paradeRouteMap?.searchQueryEn, 'en'),
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Great Western Road, Notting Hill, London, UK')}&hl=en`,
+  'london parade route map opens Google Maps at Great Western Road (EN)',
+);
+assert.equal(resolveWorldEventHubRegionId('london'), 'europe', 'london hub region europe');
+assert.equal(london.stayAreas.length, 2, 'london Notting Hill + Bayswater stay areas');
 
 /** @param {string} eventId @param {string} linkId @param {string} expectedHref */
 function assertOfficialUrlSsot(eventId, linkId, expectedHref) {
@@ -807,6 +836,7 @@ for (const pilotId of [
   'istanbul-marathon-2026',
   'paris-nuit-blanche-2027',
   'los-angeles-rose-parade-2027',
+  'london-notting-hill-2026',
   ...D5_B_BATCH_A_EVENT_IDS,
   ...D5_B_BATCH_B_EVENT_IDS,
   ...D5_B_BATCH_C_EVENT_IDS,
