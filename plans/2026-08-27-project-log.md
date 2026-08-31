@@ -465,4 +465,13 @@
 - **결정** 공식 URL = 위키·공식 홈 루트 우선 · 등록 포털 직링크 금지(로그인)
 - **다음** **#44** barcelona Preview · **19건 sourceUrl·하이라이트 공식 링크** 일괄 점검
 
+## 세계행사 일정 #43 — 공식 사이트 URL SSOT
+
+- **세션** `세계행사 일정 #43, 공식 사이트 URL SSOT 점검`
+- **브랜치** `cursor/world-events-wave2` · PR [#165](https://github.com/catgeot/Days/pull/165) · tip `4d0913fd`
+- **산출** 19건 `sourceUrl`·하이라이트 공식 `href` — amsterdam·tokyo·bangkok·rio 위키/루트 · singapore 티켓 · dubai 공식 루트 · galungan·hanoi 유지 · edinburgh·macys·prague 정규화
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → amsterdam · tokyo · singapore · dubai · bali · hanoi 상세 공식 링크
+- **다음** 사람 Preview·PROD §6.1.1 (#44) barcelona·istanbul + URL 회귀
+
 ## 세계행사 일정 #42 — istanbul Preview QA 후속
