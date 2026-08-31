@@ -30,7 +30,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 
 const events = getAllWorldEvents();
-assert.equal(events.length, 17, 'Wave1+Wave2 has 17 events');
+assert.equal(events.length, 19, 'Wave1+Wave2 has 19 events');
 
 for (const event of events) {
   const found = getWorldEventById(event.id);
@@ -98,7 +98,12 @@ const WAVE1_EVENT_IDS = [
   'hanoi-tet-2027',
 ];
 
-const WAVE2_EVENT_IDS = ['singapore-gp-2026', 'dubai-fitness-challenge-2026'];
+const WAVE2_EVENT_IDS = [
+  'singapore-gp-2026',
+  'dubai-fitness-challenge-2026',
+  'barcelona-la-merce-2026',
+  'istanbul-marathon-2026',
+];
 
 const D5_B_BATCH_A_EVENT_IDS = [
   'vienna-staatsoper-season-2026',
@@ -212,6 +217,10 @@ const singaporeLoc = getWorldEventLocation('singapore');
 assert.equal(resolvePlannerFlightArrivalIata(singaporeLoc), 'SIN', 'singapore arrival IATA');
 const dubaiLoc = getWorldEventLocation('dubai');
 assert.equal(resolvePlannerFlightArrivalIata(dubaiLoc), 'DXB', 'dubai arrival IATA');
+const barcelonaLoc = getWorldEventLocation('barcelona');
+assert.equal(resolvePlannerFlightArrivalIata(barcelonaLoc), 'BCN', 'barcelona arrival IATA');
+const istanbulLoc = getWorldEventLocation('istanbul');
+assert.equal(resolvePlannerFlightArrivalIata(istanbulLoc), 'IST', 'istanbul arrival IATA');
 
 const edinburghPresets = tripWindowPresetsFromEvent(getWorldEventById('edinburgh-fringe-2026'));
 
@@ -652,6 +661,8 @@ for (const pilotId of [
   'bali-galungan-season-2026',
   'singapore-gp-2026',
   'dubai-fitness-challenge-2026',
+  'barcelona-la-merce-2026',
+  'istanbul-marathon-2026',
   ...D5_B_BATCH_A_EVENT_IDS,
   ...D5_B_BATCH_B_EVENT_IDS,
   ...D5_B_BATCH_C_EVENT_IDS,
