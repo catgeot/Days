@@ -304,6 +304,9 @@ assert.equal(
   'los-angeles floatfest map opens Google Maps at Colorado Blvd (EN)',
 );
 assert.equal(resolveWorldEventHubRegionId('los-angeles'), 'americas', 'los-angeles hub region americas');
+for (const area of losAngeles.stayAreas) {
+  assert.equal(area.mrtKeyword, 'Pasadena', `${area.name} uses Pasadena CITY mrtKeyword`);
+}
 
 /** @param {string} eventId @param {string} linkId @param {string} expectedHref */
 function assertOfficialUrlSsot(eventId, linkId, expectedHref) {
@@ -882,6 +885,7 @@ for (const pilotId of PILOT_D4) {
 
 assert.match(stayStripSrc, /stayAreas/, 'EventStayStrip uses event.stayAreas');
 assert.match(stayStripSrc, /keywordOverride/, 'EventStayStrip passes stayArea mrtKeyword');
+assert.match(stayStripSrc, /filterBookableMrtStays/, 'EventStayStrip prefers bookable MRT stays');
 assert.match(stayStripSrc, /buildMrtStayListUrl/, 'EventStayStrip MRT list more link');
 assert.match(stayStripSrc, /selectedAreaIndex/, 'EventStayStrip area chip state');
 

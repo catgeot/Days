@@ -3233,12 +3233,12 @@ export const WORLD_EVENT_OVERRIDES = [
     stayAreas: [
       {
         name: '패서디나 · Pasadena',
-        mrtKeyword: 'Pasadena Los Angeles',
+        mrtKeyword: 'Pasadena',
         note: '퍼레이드 루트·로즈볼 도보·메트로 Gold Line',
       },
       {
         name: '올드타운 · Old Pasadena',
-        mrtKeyword: 'Old Pasadena',
+        mrtKeyword: 'Pasadena',
         note: 'Colorado Blvd 인근 · 식당·쇼핑·Gold Line',
       },
     ],
