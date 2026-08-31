@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-31T12:32:50.685Z",
+    "generatedAt": "2026-08-31T12:48:24.421Z",
     "eventCount": 20,
     "source": "scripts/data/world-event-overrides.mjs"
   },
@@ -2943,8 +2943,8 @@
               "labelKo": "파르쿠르 지도",
               "kind": "shop",
               "labelEn": "Parcours map",
-              "searchQueryKo": "Centre Pompidou, Paris, France",
-              "searchQueryEn": "Centre Pompidou, Paris, France",
+              "searchQueryKo": "파리 시청",
+              "searchQueryEn": "Hôtel de Ville, Paris, France",
               "searchTarget": "maps"
             }
           ]

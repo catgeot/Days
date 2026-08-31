@@ -270,8 +270,13 @@ const parisParcoursLink = paris.highlightContextLinks
 assert.equal(parisParcoursLink?.searchTarget, 'maps', 'paris parcours map searchTarget');
 assert.equal(
   googleMapsSearchUrl(parisParcoursLink?.searchQueryKo, 'ko'),
-  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Centre Pompidou, Paris, France')}&hl=ko`,
-  'paris parcours map opens Google Maps at Centre Pompidou',
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('파리 시청')}&hl=ko`,
+  'paris parcours map opens Google Maps at Hôtel de Ville (KO place name)',
+);
+assert.equal(
+  googleMapsSearchUrl(parisParcoursLink?.searchQueryEn, 'en'),
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Hôtel de Ville, Paris, France')}&hl=en`,
+  'paris parcours map opens Google Maps at Hôtel de Ville (EN)',
 );
 assert.equal(resolveWorldEventHubRegionId('paris'), 'europe', 'paris hub region europe');
 assert.equal(resolveWorldEventHubRegionId('prague'), 'europe', 'prague hub region europe after reorg');
