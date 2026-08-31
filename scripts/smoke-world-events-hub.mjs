@@ -18,6 +18,10 @@ import {
   getWorldEventsForHubRegion,
   getWorldEventsForSlug,
 } from '../src/utils/worldEvents.js';
+import {
+  compareWorldEventsForList,
+  getWorldEventTimelineBucket,
+} from '../src/shared/worldEventTimeline.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -26,6 +30,24 @@ assert.equal(WORLD_EVENT_HUB_REGIONS.length, 5, 'hub has 5 regions');
 
 const allEvents = getAllWorldEvents();
 assert.ok(allEvents.length >= 12, `Wave1 events present (got ${allEvents.length})`);
+
+const bucketRank = { ongoing: 0, upcoming: 1, past: 2 };
+for (let i = 0; i < allEvents.length - 1; i += 1) {
+  const left = allEvents[i];
+  const right = allEvents[i + 1];
+  const leftBucket = getWorldEventTimelineBucket(left);
+  const rightBucket = getWorldEventTimelineBucket(right);
+  assert.ok(
+    bucketRank[leftBucket] <= bucketRank[rightBucket],
+    `events sorted ongoing→upcoming→past (${left.id} ${leftBucket} before ${right.id} ${rightBucket})`,
+  );
+  if (leftBucket === rightBucket) {
+    assert.ok(
+      compareWorldEventsForList(left, right) <= 0,
+      `events in same bucket sorted by startDate (${left.id} before ${right.id})`,
+    );
+  }
+}
 assert.equal(
   getWorldEventsForHubRegion('all').length,
   allEvents.length,
