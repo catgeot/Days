@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-31T09:53:34.560Z",
+    "generatedAt": "2026-08-31T09:58:23.325Z",
     "eventCount": 19,
     "source": "scripts/data/world-event-overrides.mjs"
   },
@@ -1309,17 +1309,35 @@
           "highlightIndex": 0,
           "links": [
             {
-              "id": "marathon-register",
-              "labelKo": "공식 등록",
+              "id": "bosphorus-spectator",
+              "labelKo": "대교 구간 관람 검색",
               "kind": "shop",
-              "labelEn": "Official registration",
-              "href": "https://event.spor.istanbul/"
+              "labelEn": "Bridge spectator info",
+              "searchQueryKo": "이스탄불 마라톤 보스포루스 대교 관람",
+              "searchQueryEn": "Istanbul Marathon Bosphorus Bridge spectator",
+              "searchTarget": "google"
             }
           ]
         },
         {
           "highlightIndex": 1,
           "links": [
+            {
+              "id": "marathon-42k-criteria",
+              "labelKo": "42K 등록 기준",
+              "kind": "shop",
+              "labelEn": "42K registration info",
+              "href": "https://maraton.istanbul/marathon-42k-run/?lang=en"
+            },
+            {
+              "id": "marathon-register-search",
+              "labelKo": "등록 안내 검색",
+              "kind": "shop",
+              "labelEn": "Registration search",
+              "searchQueryKo": "이스탄불 마라톤 2026 등록",
+              "searchQueryEn": "Istanbul Marathon 2026 registration",
+              "searchTarget": "google"
+            },
             {
               "id": "course-map",
               "labelKo": "코스 지도",

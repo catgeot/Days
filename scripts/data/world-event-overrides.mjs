@@ -3029,17 +3029,35 @@ export const WORLD_EVENT_OVERRIDES = [
         highlightIndex: 0,
         links: [
           {
-            id: 'marathon-register',
-            labelKo: '공식 등록',
-            labelEn: 'Official registration',
+            id: 'bosphorus-spectator',
+            labelKo: '대교 구간 관람 검색',
+            labelEn: 'Bridge spectator info',
             kind: 'shop',
-            href: 'https://event.spor.istanbul/',
+            searchQueryKo: '이스탄불 마라톤 보스포루스 대교 관람',
+            searchQueryEn: 'Istanbul Marathon Bosphorus Bridge spectator',
+            searchTarget: 'google',
           },
         ],
       },
       {
         highlightIndex: 1,
         links: [
+          {
+            id: 'marathon-42k-criteria',
+            labelKo: '42K 등록 기준',
+            labelEn: '42K registration info',
+            kind: 'shop',
+            href: 'https://maraton.istanbul/marathon-42k-run/?lang=en',
+          },
+          {
+            id: 'marathon-register-search',
+            labelKo: '등록 안내 검색',
+            labelEn: 'Registration search',
+            kind: 'shop',
+            searchQueryKo: '이스탄불 마라톤 2026 등록',
+            searchQueryEn: 'Istanbul Marathon 2026 registration',
+            searchTarget: 'google',
+          },
           {
             id: 'course-map',
             labelKo: '코스 지도',
