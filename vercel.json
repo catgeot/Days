@@ -198,7 +198,7 @@
     },
     {
       "source": "/qa/world-events",
-      "destination": "https://days-git-cursor-world-events-wave2-catgeots-projects.vercel.app/world-events",
+      "destination": "https://days-git-cursor-world-events-wave3-catgeots-projects.vercel.app/world-events",
       "permanent": false
     },
     {
