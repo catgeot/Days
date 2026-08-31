@@ -660,15 +660,11 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
   return event;
 }
 
+import { compareWorldEventsForList } from '../../src/shared/worldEventTimeline.js';
+
 /**
  * @param {WorldEventOverride[]} events
  */
 export function sortWorldEvents(events) {
-  return [...events].sort((a, b) => {
-    const pa = a.priority ?? 999;
-    const pb = b.priority ?? 999;
-    if (pa !== pb) return pa - pb;
-    if (a.startDate !== b.startDate) return a.startDate.localeCompare(b.startDate);
-    return a.id.localeCompare(b.id);
-  });
+  return [...events].sort(compareWorldEventsForList);
 }
