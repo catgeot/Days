@@ -813,23 +813,23 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#43 URL SSOT ✅** · PR #165 · **19건** |
+| **상태** | **#43 URL SSOT ✅** · **#44 PROD QA ✅** · PR #165 open · **19건** |
 | **브랜치** | `cursor/world-events-wave2` · tip `4d0913fd` |
 | **main** | `67a04d6b` — barcelona URL hotfix #164 |
 | **플랜** | F-0.5 **D5-b-3 ✅** · **F-0.6 i18n-1 ✅** · **i18n-2 ✅ PROD**(#39~#41) · **Wave2 4/4 ✅** |
 | **Preview** | `/qa/world-events` → Wave2 4/4 · PROD 배포 대기 |
 | **VERIFY** | `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` |
 
-**마일스톤**: … → M8 **barcelona URL hotfix #164 ✅** → M9 **19건 공식 URL SSOT #43 ✅** → M10 **PROD §6.1.1 (#44)**
+**마일스톤**: … → M9 **19건 공식 URL SSOT #43 ✅** → M10 **PROD §6.1.1 #44 ✅** → M11 **PR #165 merge·PROD URL (#45)**
 
-**다음 제시어** (#44 Wave2 PROD QA):
+**다음 제시어** (#45 PR merge·PROD URL):
 
 ```
-세계행사 일정 #44, Wave2 barcelona·istanbul PROD QA
+세계행사 일정 #45, PR #165 merge·PROD URL SSOT
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-management.md
 브랜치 cursor/world-events-wave2 · https://www.gateo.kr/world-events
 금지: worldEvents.json 직편집 · UI 리디자인 · Wave1 KO 본문 일괄 En 번역
-작업: PROD §6.1.1 barcelona·istanbul D5-b · amsterdam·tokyo·singapore·dubai URL 회귀 · 허브 europe/niche
+작업: PR #165 merge · PROD §6.1.1 URL 회귀(amsterdam·tokyo·singapore·dubai·galungan·hanoi) · 허브 europe/niche
 ```
