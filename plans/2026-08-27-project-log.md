@@ -513,3 +513,12 @@
 - **이슈** `/qa/world-events`가 구 wave2 Preview(19건) → 파리 행사 리스트 미표시
 - **조치** `main` `vercel.json` `/qa/world-events` → `cursor/world-events-wave3` git Preview
 - **확인** `/qa/world-events` · `?region=europe` — **뉘 블랑쉬** 20건 중 표시
+
+## 세계행사 일정 #48 — Wave3 los-angeles overrides
+
+- **세션** `세계행사 일정 #48, Wave3 los-angeles overrides`
+- **브랜치** `cursor/world-events-wave3` · PR [#166](https://github.com/catgeot/Days/pull/166) · tip `aae6eb3d`
+- **산출** americas 허브 `los-angeles` 추가 · `los-angeles-rose-parade-2027` D5-b · **21건**
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/los-angeles-rose-parade-2027` · `?region=americas`
+- **다음** **#49** Wave3 `london` 1건 overrides
