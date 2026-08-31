@@ -18,31 +18,31 @@
 
 | | |
 |--|--|
-| **상태** | **#45 merged ✅** · **19건 PROD** · Wave2 4/4 + URL SSOT |
-| **브랜치** | `cursor/world-events-wave2` (병합 완료) |
-| **PR** | [#165](https://github.com/catgeot/Days/pull/165) **merged** · [#164](https://github.com/catgeot/Days/pull/164) · [#163](https://github.com/catgeot/Days/pull/163) |
-| **main** | `43a3768c` — 19건 공식 URL SSOT |
+| **상태** | **#46 ✅** · **19건 PROD** · URL SSOT·모바일 QA 에이전트 PASS |
+| **브랜치** | `cursor/world-events-wave3` (신규 · #47부터) |
+| **PR** | [#165](https://github.com/catgeot/Days/pull/165) **merged** · Wave2 브랜치 병합 완료 |
+| **main** | `8382089c` — Wave3 후보 합의 |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **F-0.5 D5-b-3** · **F-0.6** · §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) (Q15 추가) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) §6.1·§6.1.1·§8.1 |
 | **샘플** | [`world-events-sample-log.md`](./world-events-sample-log.md) |
 | **일지** | [`2026-08-27-project-log.md`](./2026-08-27-project-log.md) |
-| **PROD QA** | `https://www.gateo.kr/world-events` · 6건 URL SSOT (#45) · 허브 europe/niche |
-| **Preview** | `/qa/world-events` → Wave2 4/4 |
+| **PROD QA** | §6.1.1 6건 공식 pill — 에이전트 PASS · 사람 모바일 탭 1줄씩 |
+| **Preview** | `/qa/world-events` → Wave3 착수 시 브랜치 갱신 |
 | **VERIFY** | `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` |
 
-**게이트**: **19건** PROD URL SSOT 배포 완료 (#45)
+**게이트**: Wave3 1차 **4 slug 4건** 합의 (#46) · 허브 `europe` 재편 후 overrides
 
-**다음 제시어** (#46 모바일 PROD QA):
+**다음 제시어** (#47 Wave3 paris):
 
 ```
-세계행사 일정 #46, PROD 공식 링크 모바일 QA
+세계행사 일정 #47, Wave3 paris overrides
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-management.md
-main · https://www.gateo.kr/world-events
+브랜치 cursor/world-events-wave3 · https://www.gateo.kr/qa/world-events
 금지: worldEvents.json 직편집 · UI 리디자인 · Wave1 KO 본문 일괄 En 번역
-작업: 모바일 §6.1.1 amsterdam·tokyo·singapore·dubai·galungan·hanoi 공식 href 탭 · Wave3 후보 합의
+작업: 허브 europe 재편 · paris-nuit-blanche-2027 D5-b overrides · generate·smoke·feature push
 ```
 
 ---

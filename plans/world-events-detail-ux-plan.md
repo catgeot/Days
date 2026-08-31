@@ -813,23 +813,23 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#45 merged ✅** · **19건 PROD** · M11 완료 |
-| **브랜치** | `cursor/world-events-wave2` (병합 완료) |
-| **main** | `43a3768c` — 19건 공식 URL SSOT |
-| **플랜** | F-0.5 **D5-b-3 ✅** · **F-0.6 i18n-2 ✅ PROD** · **Wave2 4/4 ✅** · **URL SSOT ✅** |
-| **Preview** | `/qa/world-events` → Wave2 4/4 |
+| **상태** | **#46 ✅** · **19건 PROD** · M12 완료 |
+| **브랜치** | `cursor/world-events-wave3` (신규 · #47부터) |
+| **main** | `8382089c` — Wave3 후보 합의 |
+| **플랜** | F-0.5 **D5-b-3 ✅** · **F-0.6 i18n-2 ✅** · **Wave2 4/4 ✅** · **URL SSOT ✅** · **Wave3 합의 ✅** |
+| **Preview** | `/qa/world-events` → Wave3 착수 시 브랜치 갱신 |
 | **VERIFY** | `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` |
 
-**마일스톤**: … → M9 **19건 공식 URL SSOT #43 ✅** → M10 **PROD §6.1.1 #44 ✅** → M11 **PR #165 merge·PROD URL #45 ✅**
+**마일스톤**: … → M11 **PR #165 merge #45 ✅** → M12 **§6.1.1 PROD QA·Wave3 합의 #46 ✅**
 
-**다음 제시어** (#46 모바일 PROD QA):
+**다음 제시어** (#47 Wave3 paris):
 
 ```
-세계행사 일정 #46, PROD 공식 링크 모바일 QA
+세계행사 일정 #47, Wave3 paris overrides
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-management.md
-main · https://www.gateo.kr/world-events
+브랜치 cursor/world-events-wave3 · https://www.gateo.kr/qa/world-events
 금지: worldEvents.json 직편집 · UI 리디자인 · Wave1 KO 본문 일괄 En 번역
-작업: 모바일 §6.1.1 amsterdam·tokyo·singapore·dubai·galungan·hanoi 공식 href 탭 · Wave3 후보 합의
+작업: 허브 europe 재편 · paris-nuit-blanche-2027 D5-b overrides · generate·smoke·feature push
 ```

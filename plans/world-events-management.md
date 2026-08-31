@@ -206,6 +206,21 @@ npm run build
 
 **금지**: `worldEvents.json` 직편집 · Wave2·EN·`/events` 통합(세션 #9 범위 밖) · PROD QA 전 Wave2 overrides.
 
+### 6.1.2 공식 링크 PROD QA (#46)
+
+**에이전트 VERIFY** (main `8382089c`+): bundle `index-BRKeheKG.js` · 6 상세 HTTP 200 · 공식 `href` needle PASS · 외부 URL HTTP 200.
+
+| eventId | PROD path | 탭할 pill (하이라이트) | 공식 `href` |
+|---------|-----------|------------------------|-------------|
+| `amsterdam-kings-day-2027` | `/world-events/amsterdam-kings-day-2027` | 킹스데이 안내 | `en.wikipedia.org/wiki/Koningsdag` |
+| `tokyo-sakura-season-2027` | `/world-events/tokyo-sakura-season-2027` | 도쿄 벚꽃 안내 | `japan.travel/en/spot/23/` |
+| `singapore-gp-2026` | `/world-events/singapore-gp-2026` | 공식 티켓 | `singaporegp.sg/en/tickets` |
+| `dubai-fitness-challenge-2026` | `/world-events/dubai-fitness-challenge-2026` | Dubai Ride·Run 안내 | `dubaifitnesschallenge.com/en/` |
+| `bali-galungan-season-2026` | `/world-events/bali-galungan-season-2026` | 갈룽안 안내 | `en.wikipedia.org/wiki/Galungan` |
+| `hanoi-tet-2027` | `/world-events/hanoi-tet-2027` | 뗏 연휴 여행 안내 | `vietnam.travel/` |
+
+**사람 모바일 QA** (iPhone/Android): 각 상세 → 하이라이트 pill 탭 → 새 탭·로그인 벽 없음 1줄.
+
 ---
 
 ## 7. P3-a 공식 피드 — 계획 포함 · 구현 시 논의
@@ -239,3 +254,25 @@ npm run build
 | **i18n-2** | **#39~#41 ✅ PROD** | EN 허브·glossary·비파일럿 폴백 · `/en/world-events` SEO · PR #158 merge `d7216431` · PROD `?lang=en`·Trip `www.trip.com` |
 
 **MVP 정의**: Wave1 **15건 D5-b KO 완성** 후 i18n-1. 상세: [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **F-0.6**.
+
+## 8.2 Wave3 후보 (#46 합의)
+
+**전제**: Wave2 4/4·19건 URL SSOT·§6.1.1 에이전트 PASS 완료. 브랜치 **`cursor/world-events-wave3`** (신규).
+
+| 축 | 내용 | 세션 |
+|----|------|------|
+| **1차 4건** | 새 slug 4 · D5-b 표준 | #47~#50 (1건/세션 권장) |
+| **허브** | `europe` 5칩 포화 → **paris·london·rome** 추가 전 재편 | #47 선행 |
+| **2차 백로그** | slug당 2번째 행사(munich·edinburgh·sydney) | #51+ |
+| **P3-a** | ICS/RSS POC(edinburgh·munich·sydney) — **Wave3 데이터와 별 트랙** | 합의 후 |
+
+**Wave3 1차 eventId (합의)**:
+
+| slug | eventId (제안) | 허브 | 공식 URL 방향 |
+|------|----------------|------|---------------|
+| `paris` | `paris-nuit-blanche-2027` | europe | `paris.fr` / Nuit Blanche 공식 |
+| `los-angeles` | `los-angeles-rose-parade-2027` | americas | `tournamentofroses.com` |
+| `london` | `london-notting-hill-2026` | europe | `nhcarnival.org` |
+| `rome` | `rome-carnevale-2027` | europe | `carnevale.roma.it` |
+
+**금지**: Wave1 KO 일괄 En · `worldEvents.json` 직편집 · 로그인 포털 직링크(istanbul 교훈).

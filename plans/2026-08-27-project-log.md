@@ -488,3 +488,13 @@
 - **PROD SSOT** amsterdam·tokyo·singapore·dubai·galungan·hanoi 공식 `sourceUrl`·bundle needle **PASS**
 - **허브** `?region=europe`·`?region=niche` 200 · barcelona·amsterdam·istanbul·dubai·hanoi 카드 SSOT
 - **다음** 사람 모바일 §6.1.1 공식 링크 탭 QA · Wave3 후보 합의
+
+## 세계행사 일정 #46 — PROD 공식 링크 모바일 QA
+
+- **세션** `세계행사 일정 #46, PROD 공식 링크 모바일 QA`
+- **에이전트 VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` PASS
+- **PROD** bundle `index-BRKeheKG.js` · 6 상세 HTTP **200** · 공식 `href` needle **PASS** · 외부 URL 7건 HTTP **200**
+- **§6.1.1 공식 탭** (하이라이트 pill): amsterdam `Koningsdag` · tokyo `japan.travel/spot/23` · singapore `singaporegp.sg/en/tickets` · dubai `dubaifitnesschallenge.com` ×2 · galungan `wikipedia/Galungan` · hanoi `vietnam.travel`
+- **Wave3 합의** 1차 4 slug 4건 — `paris`·`los-angeles`·`london`·`rome` (§management §8.2) · 허브 europe 재편 선행
+- **사람 QA** iPhone/Android — 6 URL 하이라이트 pill 탭·새 탭·로그인 벽 없음 1줄씩
+- **다음** **#47** Wave3 `paris` 1건 overrides
