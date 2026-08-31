@@ -465,24 +465,4 @@
 - **결정** 공식 URL = 위키·공식 홈 루트 우선 · 등록 포털 직링크 금지(로그인)
 - **다음** **#44** barcelona Preview · **19건 sourceUrl·하이라이트 공식 링크** 일괄 점검
 
-## 세계행사 일정 #43 — Wave2 barcelona·istanbul Preview QA
-
-- **세션** `세계행사 일정 #43, Wave2 barcelona·istanbul Preview QA`
-- **브랜치** `cursor/world-events-wave2` · tip `1acee381` · PR [#163](https://github.com/catgeot/Days/pull/163) **merged**
-- **main** `544bc64c` — Wave2 4/4 slug 완료 · **19건**
-- **§6.1.1** D5-b glossary 4 · heroImages 3 · highlightContextLinks 2 · actionChips 없음 · istanbul `maraton.istanbul` 공식 링크
-- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS · Preview HTTP 200
-- **다음** 사람 PROD §6.1.1 barcelona·istanbul · 허브 europe/niche 회귀
-
-## 세계행사 일정 #43 — 라 메르세 공식 URL hotfix
-
-- **이슈** 「공식 일정」`barcelona.cat/capdesetmana/en/merce` → 404
-- **수정** `barcelona.cat/lamerce/en` (위키·시청 공식과 동일) · smoke assert 추가
-- **PR** [#164](https://github.com/catgeot/Days/pull/164) **merged** → main `c0eaeb46`
-
-## 세계행사 일정 #45 제시어 — 공식 사이트 URL SSOT
-
-- **요청** istanbul과 같이 **19건** `sourceUrl`·하이라이트 공식 `href`를 위키·공식 홈 기준으로 점검
-- **패턴** 공식 루트 우선 · 로그인 포털·404 경로 금지 · 하이라이트는 공식 1 + 검색/지도 최소(istanbul·barcelona 참고)
-- **우선 후보** amsterdam(하이라이트 검색만) · tokyo(japan.travel) · singapore·dubai(검색만) · galungan(위키) · hanoi(vietnam.travel)
-- **다음** index **#45** 제시어 블록
+## 세계행사 일정 #42 — istanbul Preview QA 후속

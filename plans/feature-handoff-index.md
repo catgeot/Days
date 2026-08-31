@@ -31,12 +31,12 @@
 | **Preview** | `/qa/world-events` → Wave2 4/4 · PROD 배포 대기 |
 | **VERIFY** | `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` |
 
-**게이트**: **19건** `sourceUrl`·하이라이트 공식 `href` SSOT (#45) · istanbul 패턴(공식 루트 + 검색/지도 최소)
+**게이트**: **19건** `sourceUrl`·하이라이트 공식 `href` SSOT (#43) · istanbul 패턴(공식 루트 + 검색/지도 최소)
 
-**다음 제시어** (#45 공식 사이트 URL SSOT):
+**다음 제시어** (#43 공식 사이트 URL SSOT):
 
 ```
-세계행사 일정 #45, 공식 사이트 URL SSOT 점검
+세계행사 일정 #43, 공식 사이트 URL SSOT 점검
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
