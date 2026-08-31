@@ -221,6 +221,12 @@ const barcelonaLoc = getWorldEventLocation('barcelona');
 assert.equal(resolvePlannerFlightArrivalIata(barcelonaLoc), 'BCN', 'barcelona arrival IATA');
 const istanbulLoc = getWorldEventLocation('istanbul');
 assert.equal(resolvePlannerFlightArrivalIata(istanbulLoc), 'IST', 'istanbul arrival IATA');
+const istanbul = getWorldEventById('istanbul-marathon-2026');
+const istanbulRegLink = istanbul.highlightContextLinks
+  .find((group) => group.highlightIndex === 0)
+  ?.links.find((link) => link.id === 'marathon-register');
+assert.equal(istanbulRegLink?.href, 'https://event.spor.istanbul/', 'istanbul registration portal');
+assert.doesNotMatch(String(istanbul.sourceUrl), /\/en\/$/, 'istanbul sourceUrl not broken /en/ path');
 
 const edinburghPresets = tripWindowPresetsFromEvent(getWorldEventById('edinburgh-fringe-2026'));
 
