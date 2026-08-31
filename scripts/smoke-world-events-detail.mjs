@@ -239,6 +239,59 @@ assert.equal(
   'istanbul two highlight link groups',
 );
 
+/** @param {string} eventId @param {string} linkId @param {string} expectedHref */
+function assertOfficialUrlSsot(eventId, linkId, expectedHref) {
+  const event = getWorldEventById(eventId);
+  assert.ok(event, `${eventId} present for URL SSOT`);
+  assert.equal(event.sourceUrl, expectedHref, `${eventId} sourceUrl official`);
+  const link = event.highlightContextLinks
+    ?.flatMap((group) => group.links)
+    .find((item) => item.id === linkId);
+  assert.equal(link?.href, expectedHref, `${eventId} highlight ${linkId}`);
+}
+
+assertOfficialUrlSsot(
+  'amsterdam-kings-day-2027',
+  'kings-day-official',
+  'https://en.wikipedia.org/wiki/Koningsdag',
+);
+assertOfficialUrlSsot(
+  'tokyo-sakura-season-2027',
+  'tokyo-sakura-official',
+  'https://www.japan.travel/en/spot/23/',
+);
+assertOfficialUrlSsot('bali-galungan-season-2026', 'galungan-official', 'https://en.wikipedia.org/wiki/Galungan');
+assertOfficialUrlSsot('hanoi-tet-2027', 'tet-travel-guide', 'https://www.vietnam.travel/');
+
+const singaporeGp = getWorldEventById('singapore-gp-2026');
+assert.equal(singaporeGp.sourceUrl, 'https://singaporegp.sg/en/', 'singapore sourceUrl official');
+const singaporeTickets = singaporeGp.highlightContextLinks
+  .find((group) => group.highlightIndex === 0)
+  ?.links.find((link) => link.id === 'gp-tickets');
+assert.equal(singaporeTickets?.href, 'https://singaporegp.sg/en/tickets', 'singapore official tickets');
+
+const dubaiFitness = getWorldEventById('dubai-fitness-challenge-2026');
+assert.equal(dubaiFitness.sourceUrl, 'https://www.dubaifitnesschallenge.com/en/', 'dubai sourceUrl official');
+for (const linkId of ['dubai-ride-register', 'dubai-run-register']) {
+  const link = dubaiFitness.highlightContextLinks
+    ?.flatMap((group) => group.links)
+    .find((item) => item.id === linkId);
+  assert.equal(link?.href, 'https://www.dubaifitnesschallenge.com/en/', `${linkId} official root`);
+}
+
+for (const event of events) {
+  const hrefs = [
+    event.sourceUrl,
+    ...(event.highlightContextLinks || []).flatMap((group) =>
+      (group.links || []).map((link) => link.href).filter(Boolean),
+    ),
+    ...(event.actionChips || []).map((chip) => chip.href).filter(Boolean),
+  ];
+  for (const href of hrefs) {
+    assert.ok(!/event\.spor\.istanbul/i.test(href), `${event.id} avoids login portal ${href}`);
+  }
+}
+
 const edinburghPresets = tripWindowPresetsFromEvent(getWorldEventById('edinburgh-fringe-2026'));
 
 const stayStripSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventStayStrip.jsx'), 'utf8');
@@ -353,15 +406,14 @@ assert.ok(!buildWorldEventSearchQuery(bali, 'en').includes('islandwide'), 'bali 
 assert.equal(buildWorldEventYoutubeSearchQuery(bali, 'ko'), '발리 갈룽안 축제', 'bali youtube search ko');
 assert.equal(buildWorldEventYoutubeSearchQuery(bali, 'en'), 'Bali Galungan festival', 'bali youtube search en');
 
-const baliSarongGoogle = bali.highlightContextLinks
+const baliGalunganOfficial = bali.highlightContextLinks
   .find((group) => group.highlightIndex === 0)
-  ?.links.find((link) => link.id === 'sarong-rental');
+  ?.links.find((link) => link.id === 'galungan-official');
 const baliSarongKlook = bali.highlightContextLinks
   .find((group) => group.highlightIndex === 0)
   ?.links.find((link) => link.id === 'sarong-klook');
-assert.ok(baliSarongGoogle?.searchTarget === 'google', 'bali sarong google search target');
+assert.equal(baliGalunganOfficial?.href, 'https://en.wikipedia.org/wiki/Galungan', 'bali galungan official highlight');
 assert.ok(baliSarongKlook?.searchTarget === 'klook', 'bali sarong klook search target');
-assert.match(baliSarongGoogle?.searchQueryKo || '', /사롱/, 'bali sarong google query ko');
 assert.match(baliSarongKlook?.searchQueryKo || '', /사롱/, 'bali sarong klook query ko');
 assert.match(baliSarongKlook?.searchQueryEn || '', /sarong/i, 'bali sarong klook query en');
 assert.match(bali.actionChips[0].href, /en\.wikipedia\.org\/wiki\/Galungan/, 'bali Galungan en.wikipedia guide');
