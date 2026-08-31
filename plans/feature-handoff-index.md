@@ -20,7 +20,7 @@
 |--|--|
 | **상태** | **#47 Wave3 paris** · **20건** · europe 허브 재편 |
 | **브랜치** | `cursor/world-events-wave3` · tip `662ad39f` |
-| **PR** | (생성 예정) |
+| **PR** | [#166](https://github.com/catgeot/Days/pull/166) |
 | **main** | `0fdc3159` — Wave3 paris Preview 대기 |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **F-0.5 D5-b-3** · **F-0.6** · §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) (Q15 추가) |
