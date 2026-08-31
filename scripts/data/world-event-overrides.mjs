@@ -3234,12 +3234,7 @@ export const WORLD_EVENT_OVERRIDES = [
       {
         name: '패서디나 · Pasadena',
         mrtKeyword: 'Pasadena',
-        note: '퍼레이드 루트·로즈볼 도보·메트로 Gold Line',
-      },
-      {
-        name: '올드타운 · Old Pasadena',
-        mrtKeyword: 'Pasadena',
-        note: 'Colorado Blvd 인근 · 식당·쇼핑·Gold Line',
+        note: '퍼레이드 루트·올드타운(Colorado Blvd)·로즈볼 · Gold Line',
       },
     ],
     recommendedNights: 3,
@@ -3355,8 +3350,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
       {
         id: 'stay-area',
-        promptKo: '패서디나랑 올드타운 중 어디 숙소가 나아?',
-        promptEn: 'Pasadena or Old Pasadena — where should I stay?',
+        promptKo: '패서디나 시내 어느 구역에 숙소 잡는 게 나아?',
+        promptEn: 'Which part of Pasadena is best to stay for the parade?',
       },
     ],
     priority: 1,

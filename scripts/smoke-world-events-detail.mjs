@@ -307,6 +307,7 @@ assert.equal(resolveWorldEventHubRegionId('los-angeles'), 'americas', 'los-angel
 for (const area of losAngeles.stayAreas) {
   assert.equal(area.mrtKeyword, 'Pasadena', `${area.name} uses Pasadena CITY mrtKeyword`);
 }
+assert.equal(losAngeles.stayAreas.length, 1, 'los-angeles single Pasadena stay area (MRT CITY SSOT)');
 
 /** @param {string} eventId @param {string} linkId @param {string} expectedHref */
 function assertOfficialUrlSsot(eventId, linkId, expectedHref) {
