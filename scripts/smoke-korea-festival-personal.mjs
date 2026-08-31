@@ -224,9 +224,11 @@ assert.equal(mem.get(VIEWED_KEY) != null, true);
 
 const {
   buildFestivalTimeTabs,
+  compareFestivalsByOpenDate,
   currentSeasonIndex,
   filterByTimeTab,
   seasonRangeById,
+  sortFestivalGroupsByOpenDate,
 } = await import('../src/pages/Korea/festivalTimeFilter.js');
 const july = new Date(2026, 6, 29);
 assert.equal(currentSeasonIndex(july), 1);
@@ -246,5 +248,39 @@ const seasonItems = [
 ];
 assert.equal(filterByTimeTab('summer', seasonItems, july).length, 1);
 assert.equal(filterByTimeTab('winter', seasonItems, july)[0].title, '겨울');
+
+const aug31 = new Date(2026, 7, 31);
+const soonOpening = {
+  contentId: '301',
+  title: '개막임박축제',
+  eventStartDate: '20260905',
+};
+const laterOpening = {
+  contentId: '302',
+  title: '다음달축제',
+  eventStartDate: '20261010',
+};
+const ongoing = {
+  contentId: '303',
+  title: '진행중축제',
+  eventStartDate: '20260801',
+  eventEndDate: '20260930',
+};
+assert.ok(
+  compareFestivalsByOpenDate(soonOpening, ongoing, aug31) < 0,
+  'upcoming before ongoing',
+);
+assert.ok(
+  compareFestivalsByOpenDate(soonOpening, laterOpening, aug31) < 0,
+  'earlier upcoming first',
+);
+const openGroups = sortFestivalGroupsByOpenDate(
+  [
+    { id: 'b', label: '부산', items: [laterOpening] },
+    { id: 'a', label: '강원', items: [soonOpening] },
+  ],
+  aug31,
+);
+assert.equal(openGroups[0].id, 'a', 'group with sooner festival first');
 
 console.log('smoke-korea-festival-personal: PASS');

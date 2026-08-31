@@ -249,3 +249,44 @@ export function filterByTimeTab(timeId, items, now = new Date()) {
 
   return list;
 }
+
+/**
+ * 여행 계획용 — 미개막(오픈 임박) 먼저, 각각 eventStartDate 오름차순.
+ * @param {object} a
+ * @param {object} b
+ * @param {Date} [now]
+ */
+export function compareFestivalsByOpenDate(a, b, now = new Date()) {
+  const today = todayYmd(now);
+  const as = String(a?.eventStartDate || '');
+  const bs = String(b?.eventStartDate || '');
+  const aUpcoming = /^\d{8}$/.test(as) && as >= today;
+  const bUpcoming = /^\d{8}$/.test(bs) && bs >= today;
+  if (aUpcoming !== bUpcoming) return aUpcoming ? -1 : 1;
+  const dateCmp = as.localeCompare(bs);
+  if (dateCmp !== 0) return dateCmp;
+  return String(a?.title || '').localeCompare(String(b?.title || ''), 'ko');
+}
+
+/**
+ * 그룹 내·그룹 간 모두 오픈일 순 (개막 임박 그룹이 위).
+ * @param {{ id: string, label: string, items: object[] }[]} groups
+ * @param {Date} [now]
+ */
+export function sortFestivalGroupsByOpenDate(groups, now = new Date()) {
+  const sorted = (groups || []).map((g) => ({
+    ...g,
+    items: [...(g.items || [])].sort((a, b) =>
+      compareFestivalsByOpenDate(a, b, now),
+    ),
+  }));
+  sorted.sort((a, b) => {
+    const cmp = compareFestivalsByOpenDate(
+      a.items[0] || {},
+      b.items[0] || {},
+      now,
+    );
+    return cmp !== 0 ? cmp : a.label.localeCompare(b.label, 'ko');
+  });
+  return sorted;
+}
