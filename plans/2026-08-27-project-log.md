@@ -522,3 +522,12 @@
 - **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
 - **Preview** `/qa/world-events` → `/world-events/los-angeles-rose-parade-2027` · `?region=americas`
 - **다음** **#49** Wave3 `london` 1건 overrides
+
+## 세계행사 일정 #49 — Wave3 london overrides
+
+- **세션** `세계행사 일정 #49, Wave3 london overrides`
+- **브랜치** `cursor/world-events-wave3` · PR [#166](https://github.com/catgeot/Days/pull/166) · tip `a7abe8d7`
+- **산출** europe 허브 `london` 추가 · `london-notting-hill-2026` D5-b · **22건**
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/london-notting-hill-2026` · `?region=europe`
+- **다음** **#50** Wave3 `rome` 1건 overrides
