@@ -29,6 +29,17 @@ export function todayYmd(now = new Date()) {
 }
 
 /**
+ * 오늘 ~ +30일 — 「이번 달」 칩(달력 월말 수렴 방지).
+ * @param {Date} [now]
+ */
+export function rolling30DayRangeYmd(now = new Date()) {
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const end = new Date(start);
+  end.setDate(end.getDate() + 30);
+  return { eventStartDate: toYmd(start), eventEndDate: toYmd(end) };
+}
+
+/**
  * 다가오는 금~일 (이미 일요일이면 오늘까지).
  * @param {Date} [now]
  * @returns {{ startYmd: string, endYmd: string }}
@@ -211,7 +222,7 @@ export function filterByTimeTab(timeId, items, now = new Date()) {
   }
 
   if (timeId === 'thisMonth') {
-    const range = monthRangeYmd(now.getFullYear(), now.getMonth());
+    const range = rolling30DayRangeYmd(now);
     return list.filter((item) =>
       rangesOverlap(
         item?.eventStartDate,

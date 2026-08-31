@@ -227,6 +227,7 @@ const {
   compareFestivalsByOpenDate,
   currentSeasonIndex,
   filterByTimeTab,
+  rolling30DayRangeYmd,
   seasonRangeById,
   sortFestivalGroupsByOpenDate,
 } = await import('../src/pages/Korea/festivalTimeFilter.js');
@@ -248,6 +249,26 @@ const seasonItems = [
 ];
 assert.equal(filterByTimeTab('summer', seasonItems, july).length, 1);
 assert.equal(filterByTimeTab('winter', seasonItems, july)[0].title, '겨울');
+
+const aug31 = new Date(2026, 7, 31);
+const rolling30 = rolling30DayRangeYmd(aug31);
+assert.equal(rolling30.eventStartDate, '20260831');
+assert.equal(rolling30.eventEndDate, '20260930');
+const septFest = {
+  title: '9월축제',
+  eventStartDate: '20260915',
+  eventEndDate: '20260917',
+};
+const octFest = {
+  title: '10월축제',
+  eventStartDate: '20261005',
+  eventEndDate: '20261007',
+};
+assert.equal(filterByTimeTab('thisMonth', [septFest, octFest], aug31).length, 1);
+assert.equal(
+  filterByTimeTab('thisMonth', [septFest, octFest], aug31)[0].title,
+  '9월축제',
+);
 
 const aug20 = new Date(2026, 7, 20);
 const soonOpening = {
