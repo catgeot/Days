@@ -249,7 +249,7 @@ const seasonItems = [
 assert.equal(filterByTimeTab('summer', seasonItems, july).length, 1);
 assert.equal(filterByTimeTab('winter', seasonItems, july)[0].title, '겨울');
 
-const aug31 = new Date(2026, 7, 31);
+const aug20 = new Date(2026, 7, 20);
 const soonOpening = {
   contentId: '301',
   title: '개막임박축제',
@@ -260,26 +260,51 @@ const laterOpening = {
   title: '다음달축제',
   eventStartDate: '20261010',
 };
-const ongoing = {
+const shortOngoing = {
   contentId: '303',
-  title: '진행중축제',
-  eventStartDate: '20260801',
-  eventEndDate: '20260930',
+  title: '단기축제',
+  eventStartDate: '20260814',
+  eventEndDate: '20260830',
+};
+const longOngoing = {
+  contentId: '304',
+  title: '장기상설',
+  eventStartDate: '20260418',
+  eventEndDate: '20261215',
 };
 assert.ok(
-  compareFestivalsByOpenDate(soonOpening, ongoing, aug31) < 0,
-  'upcoming before ongoing',
+  compareFestivalsByOpenDate(soonOpening, shortOngoing, aug20) < 0,
+  'upcoming before short ongoing',
 );
 assert.ok(
-  compareFestivalsByOpenDate(soonOpening, laterOpening, aug31) < 0,
+  compareFestivalsByOpenDate(soonOpening, longOngoing, aug20) < 0,
+  'upcoming before long ongoing',
+);
+assert.ok(
+  compareFestivalsByOpenDate(shortOngoing, longOngoing, aug20) < 0,
+  'short ongoing before long ongoing',
+);
+assert.ok(
+  compareFestivalsByOpenDate(soonOpening, laterOpening, aug20) < 0,
   'earlier upcoming first',
 );
+const suwonSorted = [
+  longOngoing,
+  {
+    contentId: '305',
+    title: '화성행궁야간',
+    eventStartDate: '20260501',
+    eventEndDate: '20261101',
+  },
+  shortOngoing,
+].sort((a, b) => compareFestivalsByOpenDate(a, b, aug20));
+assert.equal(suwonSorted[0].contentId, '303', 'short ongoing above long-term');
 const openGroups = sortFestivalGroupsByOpenDate(
   [
     { id: 'b', label: '부산', items: [laterOpening] },
     { id: 'a', label: '강원', items: [soonOpening] },
   ],
-  aug31,
+  aug20,
 );
 assert.equal(openGroups[0].id, 'a', 'group with sooner festival first');
 

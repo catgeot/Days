@@ -250,19 +250,56 @@ export function filterByTimeTab(timeId, items, now = new Date()) {
   return list;
 }
 
+/** 장기 상설·야간개장 등 — 개막 임박·단기 축제보다 목록 하단 */
+const LONG_TERM_FESTIVAL_DAYS = 60;
+
 /**
- * 여행 계획용 — 미개막(오픈 임박) 먼저, 각각 eventStartDate 오름차순.
+ * @param {string} startYmd
+ * @param {string} endYmd
+ */
+function festivalSpanDays(startYmd, endYmd) {
+  const sy = Number(startYmd.slice(0, 4));
+  const sm = Number(startYmd.slice(4, 6)) - 1;
+  const sd = Number(startYmd.slice(6, 8));
+  const ey = Number(endYmd.slice(0, 4));
+  const em = Number(endYmd.slice(4, 6)) - 1;
+  const ed = Number(endYmd.slice(6, 8));
+  const start = new Date(sy, sm, sd);
+  const end = new Date(ey, em, ed);
+  const ms = end.getTime() - start.getTime();
+  if (!Number.isFinite(ms) || ms < 0) return 0;
+  return Math.floor(ms / 86400000) + 1;
+}
+
+/**
+ * 0=미개막 · 1=단기 진행중 · 2=장기 진행중 · 3=종료
+ * @param {object} item
+ * @param {string} today
+ */
+export function festivalOpenSortTier(item, today) {
+  const start = String(item?.eventStartDate || '');
+  const endRaw = String(item?.eventEndDate || '');
+  const end = /^\d{8}$/.test(endRaw) ? endRaw : start;
+  if (!/^\d{8}$/.test(start)) return 3;
+  if (start > today) return 0;
+  if (end < today) return 3;
+  if (festivalSpanDays(start, end) > LONG_TERM_FESTIVAL_DAYS) return 2;
+  return 1;
+}
+
+/**
+ * 여행 계획용 — 미개막 → 단기 진행 → 장기 상설, 각각 eventStartDate 오름차순.
  * @param {object} a
  * @param {object} b
  * @param {Date} [now]
  */
 export function compareFestivalsByOpenDate(a, b, now = new Date()) {
   const today = todayYmd(now);
+  const tierA = festivalOpenSortTier(a, today);
+  const tierB = festivalOpenSortTier(b, today);
+  if (tierA !== tierB) return tierA - tierB;
   const as = String(a?.eventStartDate || '');
   const bs = String(b?.eventStartDate || '');
-  const aUpcoming = /^\d{8}$/.test(as) && as >= today;
-  const bUpcoming = /^\d{8}$/.test(bs) && bs >= today;
-  if (aUpcoming !== bUpcoming) return aUpcoming ? -1 : 1;
   const dateCmp = as.localeCompare(bs);
   if (dateCmp !== 0) return dateCmp;
   return String(a?.title || '').localeCompare(String(b?.title || ''), 'ko');
