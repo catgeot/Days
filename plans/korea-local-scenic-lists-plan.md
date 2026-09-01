@@ -1,6 +1,6 @@
 # 지자체 팔경·구경 → 도시 명소 SSOT (오케스트레이터)
 
-**상태**: 📋 플랜 확정 · **코드 미착수** (2026-09-01)  
+**상태**: 📋 S0 스키마·검색 ✅ · **파일럿 P0 대기** (2026-09-01)  
 **주제 표기**: `지자체 팔경 #{N}, {단계}`  
 **고정 브랜치**(착수 시 1회): `cursor/palgyeong`  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.6** · 본 플랜  
@@ -249,20 +249,20 @@ issues **0** · 스모크 PASS 전에 커밋·이관·다음 R **금지**.
 
 | | |
 |--|--|
-| **지금** | 플랜·큐·오케 §5.6·index **docs only** · 코드 미착수 |
-| **다음 세션** | **#1 스키마·검색** — feature 분기 · SSOT·audit·검색 브리지 |
-| **브랜치** | 착수 시 `cursor/palgyeong` 생성 |
+| **지금** | **#1 S0** ✅ — SSOT·lib·audit·smoke·검색 브리지 · 시드 0 |
+| **다음 세션** | **#2 파일럿 3건** — 홍천·양구·인제 수집→hub append |
+| **브랜치** | `cursor/palgyeong` · tip `ebe47009` |
 | **금지** | UI 변경 · scenic 자동승격 · 광역 팔경 큐 · tip 전면 rewrite · 출처 없는 verified |
-| **VERIFY(예정)** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · smoke local-scenic · `build` |
+| **VERIFY** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · `smoke:korea-local-scenic-lists` · `build` |
 
 ### §1.2 다음 제시어
 
 ```
-지자체 팔경 #1, 스키마·검색
+지자체 팔경 #2, 파일럿 3건
 @plans/feature-handoff-index.md
 @plans/2026-09-01-project-log.md
 @plans/korea-local-scenic-lists-plan.md
-브랜치 신규 cursor/palgyeong · 플랜 §2·§5·§9
+브랜치 cursor/palgyeong · 플랜 §2.2·§3 · 큐 P0
 금지: UI 변경 · koreaScenicSpots 승격 · 광역 팔경 · feature에 plans 커밋
-작업: koreaLocalScenicLists 스키마·audit·검색 브리지·스모크 · 시드 0~1 · build
+작업: 홍천·양구·인제 verified 수집→hub append·aliases→VERIFY
 ```
