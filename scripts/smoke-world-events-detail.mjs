@@ -315,6 +315,8 @@ for (const area of losAngeles.stayAreas) {
   assert.equal(area.mrtKeyword, 'Pasadena', `${area.name} uses Pasadena CITY mrtKeyword`);
 }
 assert.equal(losAngeles.stayAreas.length, 1, 'los-angeles single Pasadena stay area (MRT CITY SSOT)');
+const pasadenaTerm = losAngeles.glossaryTerms.find((term) => term.id === 'pasadena');
+assert.equal(pasadenaTerm?.searchQueryKo, '패서디나 로즈 퍼레이드', 'pasadena glossary google query');
 const londonLoc = getWorldEventLocation('london');
 assert.equal(resolvePlannerFlightArrivalIata(londonLoc), 'LHR', 'london arrival IATA');
 const london = getWorldEventById('london-notting-hill-2026');
@@ -363,6 +365,22 @@ assert.equal(
 );
 assert.equal(resolveWorldEventHubRegionId('rome'), 'europe', 'rome hub region europe');
 assert.equal(rome.stayAreas.length, 2, 'rome Centro Storico + Tridente stay areas');
+assert.ok(
+  london.glossaryTerms.some((term) => term.id === 'sound-system'),
+  'london sound-system glossary',
+);
+assert.ok(
+  london.glossaryTerms.some((term) => term.id === 'family-day'),
+  'london family-day glossary',
+);
+assert.ok(
+  rome.glossaryTerms.some((term) => term.id === 'piazza-navona'),
+  'rome piazza-navona glossary',
+);
+assert.ok(
+  rome.glossaryTerms.some((term) => term.id === 'carnival-mask'),
+  'rome carnival-mask glossary',
+);
 
 /** @param {string} eventId @param {string} linkId @param {string} expectedHref */
 function assertOfficialUrlSsot(eventId, linkId, expectedHref) {
@@ -459,7 +477,8 @@ assert.match(travelGuidePanelSrc, /localizeEventTravelGuide/, 'EventTravelGuideP
 assert.match(detailSrc, /EventStayStrip/, 'EventDetailPage renders in-page stay strip');
 assert.match(detailSrc, /EventMooniFab/, 'EventDetailPage renders Mooni FAB');
 assert.match(detailSrc, /EventActionChips/, 'EventDetailPage renders action chips');
-assert.match(detailSrc, /EventMooniChips/, 'EventDetailPage renders Mooni chips');
+assert.match(detailSrc, /placeMeta\.label/, 'EventDetailPage header shows city label');
+assert.match(detailSrc, /showMooniChips/, 'EventDetailPage mooni chips gate');
 assert.match(detailSrc, /EventDetailHero/, 'EventDetailPage renders hero image');
 assert.match(detailSrc, /EventDetailMediaSection/, 'EventDetailPage renders D3 media section');
 assert.match(detailSrc, /hasWorldEventD3Media/, 'EventDetailPage gates D3 media');

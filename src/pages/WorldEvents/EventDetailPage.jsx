@@ -30,7 +30,11 @@ import { fetchEventTravelGuide } from '../../utils/fetchEventTravelGuide';
 import { loadEventTravelGuideFixture } from '../../utils/loadEventTravelGuideFixture';
 import { shouldShowEventTravelGuidePanel } from '../../utils/eventTravelGuideSurface';
 import { buildPlacePlannerPathFromEvent } from '../../utils/placePlannerPath';
-import { buildWorldEventMooniSeed, hasWorldEventD2Chips } from '../../utils/worldEventChips';
+import {
+  buildWorldEventMooniSeed,
+  getWorldEventMooniChips,
+  hasWorldEventD2Chips,
+} from '../../utils/worldEventChips';
 import { hasWorldEventD3Media } from '../../utils/worldEventMedia';
 import { hasWorldEventD5bBodyUx } from '../../utils/worldEventGlossary';
 import { buildMooniBoundSpotFromLocation } from '../Home/lib/placeChatIntro';
@@ -150,6 +154,8 @@ export default function EventDetailPage() {
     .join(' · ');
 
   const showD2Chips = hasWorldEventD2Chips(event.id);
+  const mooniChips = useMemo(() => getWorldEventMooniChips(event, locale), [event, locale]);
+  const showMooniChips = mooniChips.length > 0;
   const showD3Media = hasWorldEventD3Media(event);
   const showD5bBodyUx = hasWorldEventD5bBodyUx(event);
   const showStayStrip = canShowMrtStayStrip(location);
@@ -216,12 +222,19 @@ export default function EventDetailPage() {
                 {t('worldEventDetail.backToHub')}
               </button>
               <div className="min-w-0 flex-1">
-                <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-amber-700">
-                  World
+                <p className="truncate text-[10px] font-bold tracking-[0.2em] uppercase text-amber-700">
+                  {placeMeta.label}
                 </p>
-                <p className="truncate text-sm font-extrabold tracking-tight md:text-base">
-                  {title}
-                </p>
+                <div className="flex min-w-0 items-baseline gap-2">
+                  <p className="truncate text-sm font-extrabold tracking-tight md:text-base">
+                    {title}
+                  </p>
+                  {dateLabel ? (
+                    <p className="hidden shrink-0 text-[11px] font-semibold text-stone-500 md:block">
+                      {dateLabel}
+                    </p>
+                  ) : null}
+                </div>
               </div>
               <button
                 type="button"
@@ -361,7 +374,7 @@ export default function EventDetailPage() {
             />
           </div>
 
-          {showD2Chips ? (
+          {showMooniChips ? (
             <div className="mt-4">
               <EventMooniChips event={event} locale={locale} onSelect={openEventMooni} />
             </div>
