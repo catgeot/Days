@@ -813,22 +813,22 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#49 Wave3 london** · **22건** · europe 허브 `london` |
-| **브랜치** | `cursor/world-events-wave3` · tip `a7abe8d7` |
-| **플랜** | F-0.5 **D5-b-3 ✅** · **Wave3 3/4 ✅** |
-| **Preview** | `/qa/world-events` → `/world-events/london-notting-hill-2026` |
+| **상태** | **#50 Wave3 rome** · **23건** · europe 허브 `rome` |
+| **브랜치** | `cursor/world-events-wave3` · tip `dcdc0d95` |
+| **플랜** | F-0.5 **D5-b-3 ✅** · **Wave3 4/4 ✅** |
+| **Preview** | `/qa/world-events` → `/world-events/rome-carnevale-2027` |
 | **VERIFY** | `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` |
 
-**마일스톤**: … → M14 **Wave3 los-angeles·americas #48 ✅** → M15 **Wave3 london·europe #49 ✅**
+**마일스톤**: … → M15 **Wave3 london·europe #49 ✅** → M16 **Wave3 rome·europe #50 ✅**
 
-**다음 제시어** (#50 Wave3 rome):
+**다음 제시어** (#51 Wave3 Preview QA):
 
 ```
-세계행사 일정 #50, Wave3 rome overrides
+세계행사 일정 #51, Wave3 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-management.md
 브랜치 cursor/world-events-wave3 · https://www.gateo.kr/qa/world-events
 금지: worldEvents.json 직편집 · UI 리디자인 · Wave1 KO 본문 일괄 En 번역
-작업: rome-carnevale-2027 D5-b overrides · generate·smoke·feature push
+작업: Wave3 4건 D5-b Preview QA — paris·los-angeles·london·rome
 ```

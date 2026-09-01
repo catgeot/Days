@@ -531,3 +531,12 @@
 - **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
 - **Preview** `/qa/world-events` → `/world-events/london-notting-hill-2026` · `?region=europe`
 - **다음** **#50** Wave3 `rome` 1건 overrides
+
+## 세계행사 일정 #50 — Wave3 rome overrides
+
+- **세션** `세계행사 일정 #50, Wave3 rome overrides`
+- **브랜치** `cursor/world-events-wave3` · PR [#166](https://github.com/catgeot/Days/pull/166) · tip `dcdc0d95`
+- **산출** europe 허브 `rome` 추가 · `rome-carnevale-2027` D5-b · **23건**
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/rome-carnevale-2027` · `?region=europe`
+- **다음** **#51** Wave3 4건 Preview D5-b QA
