@@ -59,3 +59,11 @@
 - **산출** [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) · [`korea-local-scenic-lists-queue.md`](./korea-local-scenic-lists-queue.md) · 오케 **§5.6** · index 행
 - **분량** P=3 · F 라운드=6(A3+B3) · 세션상한 ~12 · **3R마다 I 무결성** · 정지=§3.3+플랜 §6.2
 - **다음** **#1 스키마·검색** — `cursor/palgyeong` · SSOT·audit·검색 브리지
+
+### #1 스키마·검색 ✅
+
+- **세션** `지자체 팔경 #1, 스키마·검색`
+- **브랜치** `cursor/palgyeong` · tip `ebe47009`
+- **산출** `koreaLocalScenicLists.json`(시드 0) · `koreaLocalScenicLists.js` · `audit:korea-local-scenic-lists` · `smoke:korea-local-scenic-lists` · `searchSuggestions`·`scenicSearch` 브리지
+- **VERIFY** audit 0 · smoke PASS · build PASS
+- **다음** **#2 파일럿 3건** — 홍천·양구·인제(P0)
