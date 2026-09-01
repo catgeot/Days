@@ -25,6 +25,10 @@ import {
   resolveSettlement,
 } from './mapboxSettlementPlaces';
 import {
+  resolveLocalScenicList,
+  buildLocalScenicListHubCluster,
+} from './koreaLocalScenicLists';
+import {
   findCityBySearchQuery,
   cityToSuggestion,
   matchCitiesPrefix,
@@ -176,14 +180,24 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
   }
 
   const exactHub = resolveCityAttractionHub(q);
-  const exactAttraction = exactHub ? null : resolveHubAttraction(q);
+  const exactLocalScenicList = exactHub ? null : resolveLocalScenicList(q);
+  const exactAttraction =
+    exactHub || exactLocalScenicList ? null : resolveHubAttraction(q);
   const exactSettlement =
-    exactHub || exactAttraction ? null : resolveSettlement(q);
+    exactHub || exactLocalScenicList || exactAttraction ? null : resolveSettlement(q);
   const { hubs, attractions } = matchCityAttractionHubsPrefix(q, { limit: 6 });
 
   if (exactHub) {
     // hub exact: 도시 + 명소 + 정착지(≤3)
     pushHubAttractionCluster(exactHub, out, seen, { includeSettlements: true });
+  } else if (exactLocalScenicList) {
+    // 지자체 팔경·구경 exact: hub + 리스트 멤버 요약
+    for (const item of buildLocalScenicListHubCluster(
+      exactLocalScenicList.list,
+      exactLocalScenicList.hub,
+    )) {
+      pushUnique(out, seen, item);
+    }
   } else if (exactAttraction) {
     // 명소 exact: 부모 도시 + 형제 명소만 (정착지 비포함)
     pushHubAttractionCluster(exactAttraction.hub, out, seen, {
@@ -239,12 +253,20 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
   const local = buildLocalSearchSuggestions(q, { spotLimit: opts.spotLimit ?? 5 });
   const includeMapbox = opts.includeMapbox !== false;
   const exactHub = resolveCityAttractionHub(q);
-  const exactAttraction = exactHub ? null : resolveHubAttraction(q);
+  const exactLocalScenicList = exactHub ? null : resolveLocalScenicList(q);
+  const exactAttraction =
+    exactHub || exactLocalScenicList ? null : resolveHubAttraction(q);
   const exactSettlement =
-    exactHub || exactAttraction ? null : resolveSettlement(q);
+    exactHub || exactLocalScenicList || exactAttraction ? null : resolveSettlement(q);
 
-  // 허브/명소/정착지 exact는 큐레이션만 — Mapbox 대기로 지연시키지 않음
-  if (!includeMapbox || exactHub || exactAttraction || exactSettlement) {
+  // 허브/명소/정착지/지자체리스트 exact는 큐레이션만 — Mapbox 대기로 지연시키지 않음
+  if (
+    !includeMapbox ||
+    exactHub ||
+    exactLocalScenicList ||
+    exactAttraction ||
+    exactSettlement
+  ) {
     return local;
   }
 
@@ -340,6 +362,7 @@ export async function buildCuratedEnterDisambiguation(query) {
   if (!q) return null;
 
   const hubHit = resolveCityAttractionHub(q);
+  const localScenicHit = hubHit ? null : resolveLocalScenicList(q);
   if (hubHit) {
     let candidates = await buildHubCandidatesForEnter(hubHit);
     const spot =
@@ -355,6 +378,16 @@ export async function buildCuratedEnterDisambiguation(query) {
       }
     }
     return ensureDisambiguation(q, candidates, `'${hubHit.name}' → 도시와 명소를 골라주세요`);
+  }
+
+  if (localScenicHit) {
+    const { list, hub } = localScenicHit;
+    const candidates = buildLocalScenicListHubCluster(list, hub);
+    return ensureDisambiguation(
+      q,
+      candidates,
+      `'${list.title}' → 도시와 명소를 골라주세요`,
+    );
   }
 
   const attractionHit = resolveHubAttraction(q);

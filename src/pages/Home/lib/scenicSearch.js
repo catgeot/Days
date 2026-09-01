@@ -1,7 +1,12 @@
 /**
  * /korea/theme/scenic 텍스트 검색 — name·addr·지역 부분 일치.
+ * 지자체 팔경·구경 title/alias 매칭 시 curated 멤버만 (§5.2).
  * (호출측: 전국 풀에서 매칭한 뒤 권역·종목 칩으로 분해)
  */
+import {
+  matchLocalScenicListForScenicSearch,
+  spotMatchesLocalScenicListMember,
+} from './koreaLocalScenicLists.js';
 
 /**
  * @param {string} value
@@ -106,6 +111,12 @@ function spotMatchesScenicQuery(spot, normalizedQuery) {
 export function filterScenicSpotsByQuery(items, query) {
   const q = normalizeScenicQuery(query);
   if (!q) return Array.isArray(items) ? items : [];
+
+  const listMatch = matchLocalScenicListForScenicSearch(query);
+  if (listMatch) {
+    return (items || []).filter((item) => spotMatchesLocalScenicListMember(item, listMatch));
+  }
+
   return (items || []).filter((item) => spotMatchesScenicQuery(item, q));
 }
 
