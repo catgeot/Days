@@ -139,13 +139,9 @@ for (const list of lists) {
         );
       }
     }
-    if (
-      list.status === 'verified' &&
-      m.linkStatus === 'appended' &&
-      hubAttrs.has(memberKey)
-    ) {
+    if (list.status === 'verified' && m.linkStatus === 'appended' && !hubAttrs.has(memberKey)) {
       issues.push(
-        `${list.listId}: appended member "${m.attractionName}" already in hub ${list.hubId}`,
+        `${list.listId}: appended member "${m.attractionName}" not in hub ${list.hubId}`,
       );
     }
   }
