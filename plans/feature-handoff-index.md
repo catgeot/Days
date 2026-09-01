@@ -47,6 +47,35 @@
 
 ---
 
+### 축제 로드 — `/korea` 킬러 맵
+
+| | |
+|--|--|
+| **상태** | **#3-a 진입 QA** · 벨트 스크롤 수정 · 사람 Preview → **#4 leg UI** |
+| **브랜치** | `cursor/korea-festival-proxy` · tip `0708af9b` |
+| **PR** | [#170](https://github.com/catgeot/Days/pull/170) |
+| **플랜** | [`korea-festival-road-plan.md`](./korea-festival-road-plan.md) §9 · [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) S5 벨트 |
+| **일지** | [`2026-09-01-project-log.md`](./2026-09-01-project-log.md) |
+| **Preview** | `/qa/korea` → `/korea` · **로드** 칩·카드·선택 |
+| **순번** | 로드 트랙 **#0~** · 미완 이어하기 **#Na** ([`korea-festival-road-plan.md`](./korea-festival-road-plan.md)) |
+| **VERIFY** | `generate:korea-festival-belts` · `audit:korea-festival-belts` · `smoke:korea-festival-belts` · `build` |
+
+**게이트**: #3 belt 진입 smoke·build PASS ✅ · #6·#8 = 사람 Preview QA.
+
+**다음 제시어 (#4 leg UI)**:
+
+```
+축제 로드 #4, leg UI
+@plans/feature-handoff-index.md
+@plans/2026-09-01-project-log.md
+@plans/korea-festival-road-plan.md
+브랜치 cursor/korea-festival-proxy · PR #170 · Preview /qa/korea
+금지: 지도(#5) 착수 · plans/ feature 커밋 · corridor 부활 · 한 세션 leg UI+지도
+작업: FestivalBeltLegList · connector · 빈 leg · belt 모드 리스트 전환
+```
+
+---
+
 ### AI 큐레이션 — 지도·무니 핸드오프
 
 | | |
