@@ -549,3 +549,14 @@
 - **Wave3 4건** paris·los-angeles·london·rome — glossary 4 · hero 3(HTTP 200) · highlightContextLinks 2 · actionChips 없음 · 공식 URL SSOT
 - **Preview** `/qa/world-events` → 4상세 · `?region=europe`·`?region=americas`
 - **다음** 사람 Preview QA → OK 시 PR #166 merge
+
+## 세계행사 일정 #51 — Wave3 QA 피드백 (헤더·glossary·무니칩)
+
+- **세션** `세계행사 일정 #51, Wave3 Preview QA` (피드백 반영)
+- **브랜치** `cursor/world-events-wave3` · PR [#166](https://github.com/catgeot/Days/pull/166) · tip `ea03ce2b`
+- **UI** 상세 헤더 `World`→도시명 · PC 행사명 옆 기간 · 모바일 도시명만
+- **데이터** 패서디나 glossary 구글검색 `패서디나 로즈 퍼레이드` · 노팅힐 glossary 13종·무니칩 · 로마 glossary 9종·무니칩
+- **로직** `mooniChips` 데이터 있으면 D5-b 전 행사 노출
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → paris·los-angeles·london·rome
+- **다음** 사람 Preview 재QA → OK 시 PR #166 merge
