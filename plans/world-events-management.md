@@ -277,7 +277,7 @@ npm run build
 
 **허브 재편 (#47)**: `prague` niche→europe · `paris` europe 추가 · niche=`marrakech`·`hanoi`·`dubai`·`istanbul`
 
-**Wave3 D5-b Preview (#47~#49 · `cursor/world-events-wave3`)**
+**Wave3 D5-b Preview (#47~#51 · `cursor/world-events-wave3` · 에이전트 PASS #51)**
 
 | eventId | Preview path | D5-b 확인 |
 |---------|--------------|-----------|

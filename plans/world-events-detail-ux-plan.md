@@ -813,22 +813,22 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#50 Wave3 rome** · **23건** · europe 허브 `rome` |
-| **브랜치** | `cursor/world-events-wave3` · tip `dcdc0d95` |
+| **상태** | **#51 Wave3 D5-b QA** · **23건** · 에이전트 VERIFY PASS · 사람 Preview 대기 |
+| **브랜치** | `cursor/world-events-wave3` · tip `981f66fd` |
 | **플랜** | F-0.5 **D5-b-3 ✅** · **Wave3 4/4 ✅** |
 | **Preview** | `/qa/world-events` → `/world-events/rome-carnevale-2027` |
 | **VERIFY** | `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` |
 
-**마일스톤**: … → M15 **Wave3 london·europe #49 ✅** → M16 **Wave3 rome·europe #50 ✅**
+**마일스톤**: … → M16 **Wave3 rome·europe #50 ✅** → M17 **Wave3 D5-b 에이전트 QA #51 ✅**
 
-**다음 제시어** (#51 Wave3 Preview QA):
+**다음 제시어** (#52 사람 Preview QA):
 
 ```
-세계행사 일정 #51, Wave3 Preview QA
+세계행사 일정 #52, Wave3 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-management.md
-브랜치 cursor/world-events-wave3 · https://www.gateo.kr/qa/world-events
+브랜치 cursor/world-events-wave3 · PR #166 · https://www.gateo.kr/qa/world-events
 금지: worldEvents.json 직편집 · UI 리디자인 · Wave1 KO 본문 일괄 En 번역
-작업: Wave3 4건 D5-b Preview QA — paris·los-angeles·london·rome
+작업: Wave3 4건 모바일 Preview — paris·los-angeles·london·rome · OK 시 PR #166 merge
 ```

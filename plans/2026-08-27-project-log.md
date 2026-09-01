@@ -540,3 +540,12 @@
 - **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
 - **Preview** `/qa/world-events` → `/world-events/rome-carnevale-2027` · `?region=europe`
 - **다음** **#51** Wave3 4건 Preview D5-b QA
+
+## 세계행사 일정 #51 — Wave3 D5-b Preview QA
+
+- **세션** `세계행사 일정 #51, Wave3 Preview QA`
+- **브랜치** `cursor/world-events-wave3` · PR [#166](https://github.com/catgeot/Days/pull/166) · tip `981f66fd`
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Wave3 4건** paris·los-angeles·london·rome — glossary 4 · hero 3(HTTP 200) · highlightContextLinks 2 · actionChips 없음 · 공식 URL SSOT
+- **Preview** `/qa/world-events` → 4상세 · `?region=europe`·`?region=americas`
+- **다음** 사람 Preview QA → OK 시 PR #166 merge
