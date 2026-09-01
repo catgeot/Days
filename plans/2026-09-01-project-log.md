@@ -47,3 +47,15 @@
 - **VERIFY** build PASS
 - **Preview** https://www.gateo.kr/qa/korea → **로드** 칩 → 스크롤 하단 → 로드 클릭·펼침 시 카드 상단 유지
 - **다음** 사람 Preview 1~2줄 → **#4 leg UI**
+
+---
+
+## 지자체 팔경·구경 → 도시 명소
+
+### #0 플랜·핸드오프 ✅
+
+- **세션** `지자체 팔경 #0, 플랜·핸드오프`
+- **결정** 시·군·구 단위 · 기존 hub 유지+지자체 선정 **append** · **UI·scenic 자동승격 금지** · 검색 키워드만 보강
+- **산출** [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) · [`korea-local-scenic-lists-queue.md`](./korea-local-scenic-lists-queue.md) · 오케 **§5.6** · index 행
+- **분량** P=3 · F 라운드=6(A3+B3) · 세션상한 ~12 · **3R마다 I 무결성** · 정지=§3.3+플랜 §6.2
+- **다음** **#1 스키마·검색** — `cursor/palgyeong` · SSOT·audit·검색 브리지

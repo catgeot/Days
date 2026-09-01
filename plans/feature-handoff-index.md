@@ -164,6 +164,33 @@ main · www.gateo.kr/place/yap/planner?lang=en
 금지: GT 일괄 백필
 ```
 
+---
+
+### 지자체 팔경·구경 → 도시 명소
+
+| | |
+|--|--|
+| **상태** | **#0 플랜·핸드오프** ✅ · 다음 **#1 스키마·검색** |
+| **브랜치** | 착수 시 `cursor/palgyeong` (아직 미생성) |
+| **플랜** | [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) §9 |
+| **큐** | [`korea-local-scenic-lists-queue.md`](./korea-local-scenic-lists-queue.md) |
+| **오케** | [`orchestrator-method.md`](./orchestrator-method.md) **§5.6** |
+| **일지** | [`2026-09-01-project-log.md`](./2026-09-01-project-log.md) |
+| **정책** | 시·군·구 · 기존 hub 유지+append · **UI·scenic 승격 금지** · 공식 URL 필수 |
+| **VERIFY(예정)** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · smoke · `build` |
+
+**다음 제시어 (#1)**:
+
+```
+지자체 팔경 #1, 스키마·검색
+@plans/feature-handoff-index.md
+@plans/2026-09-01-project-log.md
+@plans/korea-local-scenic-lists-plan.md
+브랜치 신규 cursor/palgyeong · 플랜 §2·§5·§9
+금지: UI 변경 · koreaScenicSpots 승격 · 광역 팔경 · feature에 plans 커밋
+작업: koreaLocalScenicLists 스키마·audit·검색 브리지·스모크 · 시드 0~1 · build
+```
+
 
 ## 행 추가 템플릿 (새 Cloud feature)
 

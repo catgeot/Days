@@ -1,19 +1,20 @@
 ---
-description: "오케스트레이터 — 다배치 SSOT를 메인+워커2로 돌릴 때. 제시어 오케스트레이터/명소-오케스트레이터/맵박스정착지"
+description: "오케스트레이터 — 다배치 SSOT를 메인+워커2로 돌릴 때. 제시어 오케스트레이터/명소-오케스트레이터/맵박스정착지/지자체팔경"
 alwaysApply: false
 ---
 
 # 오케스트레이터 세션
 
-사용자가 **`오케스트레이터`** · **`명소-오케스트레이터`** · **`맵박스정착지`** 를 쓰거나 `@plans/orchestrator-method.md` 를 연결하면 이 규칙을 따른다.  
+사용자가 **`오케스트레이터`** · **`명소-오케스트레이터`** · **`맵박스정착지`** · **`지자체팔경`** 를 쓰거나 `@plans/orchestrator-method.md` 를 연결하면 이 규칙을 따른다.  
 방법 SSOT: [`plans/orchestrator-method.md`](plans/orchestrator-method.md) **v2.3**.
 
 ## 필수 읽기 (짧게)
 
-1. [`plans/orchestrator-method.md`](plans/orchestrator-method.md) — **§1 · §3.0 · §3.3 · §3.4 · §4.2** (+ 주제면 §5 / 정착지 §5.3)
+1. [`plans/orchestrator-method.md`](plans/orchestrator-method.md) — **§1 · §3.0 · §3.3 · §3.4 · §4.2** (+ 주제면 §5 / 정착지 §5.3 / 팔경 §5.6)
 2. 명소: [`plans/city-attraction-hub-queue.md`](plans/city-attraction-hub-queue.md) **다음 ⬜ R** + 일지 핸드오프 1절만
 3. 정착지: [`plans/mapbox-settlement-queue.md`](plans/mapbox-settlement-queue.md) **다음 ⬜ R** + [`mapbox-settlement-plan.md`](plans/mapbox-settlement-plan.md)
-4. [`.ai-context.md`](.ai-context.md) — **§1.5.3** · [`gateo-commit-push.mdc`](gateo-commit-push.mdc) · 관련 금지 1~2줄
+4. 지자체 팔경: [`plans/korea-local-scenic-lists-queue.md`](plans/korea-local-scenic-lists-queue.md) **다음 ⬜** + [`korea-local-scenic-lists-plan.md`](plans/korea-local-scenic-lists-plan.md) **§9** · method **§5.6**
+5. [`.ai-context.md`](.ai-context.md) — **§1.5.3** · [`gateo-commit-push.mdc`](gateo-commit-push.mdc) · 관련 금지 1~2줄
 
 **전반 코드베이스 탐색·이전 워커 로그 전체 Read 금지.**
 
@@ -76,6 +77,14 @@ alwaysApply: false
 - 개수: 목표3 · 최대5 · 최소2 · 미달 스킵 · 시드 `sokcho`/`paris` 덮어쓰기 금지  
 - 게이트: `npm run audit:mapbox-settlement-places` + `smoke:mapbox-settlement-places`  
 - 큐: [`plans/mapbox-settlement-queue.md`](plans/mapbox-settlement-queue.md) 순서만 · hub 밖 임의 금지  
+
+## 지자체 팔경·구경 (§5.6)
+
+- SSOT: `koreaLocalScenicLists.json` + hub **append·aliases만** · 기존 명소 삭제/교체 금지  
+- 단위: **시·군·구** · 광역 팔경 1차 금지 · UI·`koreaScenicSpots` 자동승격 금지  
+- 라운드: A3+B3=6 · 출처 공식 URL 필수 · 큐 [`korea-local-scenic-lists-queue.md`](plans/korea-local-scenic-lists-queue.md)  
+- 게이트: `audit:korea-local-scenic-lists` + `audit:city-attraction-hubs` · 파일럿 후·3R마다 **I 무결성**  
+- 제시어: `오케스트레이터` + `지자체팔경`
 
 ## 세션 종료(체인 끝)
 

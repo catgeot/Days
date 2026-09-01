@@ -344,6 +344,34 @@ KR: >50m면 반드시 snap. NO_HIT는 drop/rename만.
 
 제시어: `오케스트레이터` + `TourAPI-명소좌표` · 계획 §6 복붙 블록.
 
+### 5.6 지자체 팔경·구경 → KR hub append (3호 확장)
+
+| 항목 | 값 |
+|------|-----|
+| 계획 | [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) |
+| 큐 | [`korea-local-scenic-lists-queue.md`](./korea-local-scenic-lists-queue.md) |
+| SSOT | `koreaLocalScenicLists.json` + `cityAttractionHubs.json` **멤버 append·aliases** |
+| 단위 | **시·군·구**만 · 광역 팔경 1차 금지 |
+| 라운드 | 워커A **3** + 워커B **3** = **6 리스트** |
+| 정책 | 기존 명소 **유지** · 없는 멤버만 append · **UI·scenic 자동승격 금지** |
+| 출처 | 지자체 공식 URL 필수 · 없으면 skip |
+| audit | `audit:korea-local-scenic-lists` + `audit:city-attraction-hubs` |
+| 파일럿 | P0 3건(홍천·양구·인제) → **I 무결성** → F · **3R마다 I** |
+| 정지 | §3.3 + 플랜 §6.2 (FAIL 2회·출처 대량 부재·시드 손상) |
+
+**워커 프롬프트 최소 골격**
+
+```
+역할: koreaLocalScenicLists 워커. 배정 listId/hubId만.
+출력: JSON 조각 + sourceUrl + 스모크 쿼리(리스트명·명소1).
+금지: tip 직접 append, 기존 명소 삭제/교체, scenic 승격, UI, 광역 팔경, 출처 없는 verified.
+좌표: 지명 매칭만 · hub 중심 추정 금지 · NO_HIT=pending_coord.
+```
+
+**오케스트레이터 체크** — §5.1과 동일 루프 · 게이트만 위 audit 쌍 + 검색 exact 스모크.
+
+제시어: `오케스트레이터` + `지자체팔경` · 큐 다음 ⬜ · 「§5.6 · 워커2 · §3.3·§3.4·§4.2」
+
 ---
 
 ## 6. 제시어 (복붙 · 최초·복구용)
@@ -356,6 +384,7 @@ KR: >50m면 반드시 snap. NO_HIT는 drop/rename만.
 | 명소 재개/복구 | `오케스트레이터` + `명소` + `@plans/city-attraction-hub-queue.md` · 「큐 다음 R · 워커2 · §3.3·§3.4·§4.2」 |
 | 명소 좌표 수리 | `오케스트레이터` + `명소좌표수리` · 「§5.4 · verify 큐 · P0 또는 전수 SNAP · §3.4」 |
 | 국내 명소 TourAPI 좌표 | `오케스트레이터` + `TourAPI-명소좌표` + [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) **§6** · Cloud · 「G0→G1+ · KR HIT만 · §3.4」 |
+| 지자체 팔경·구경 | `오케스트레이터` + `지자체팔경` + [`korea-local-scenic-lists-queue.md`](./korea-local-scenic-lists-queue.md) · 「§5.6 · 큐 다음 R · 워커2 · UI/scenic승격 금지 · §3.3·§3.4·§4.2」 |
 | 정착지 재개/복구 | `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「큐 다음 R · 워커2 · 목표3/최대5/최소2 · §3.3·§3.4·§4.2」 |
 | 파이프 단절 복구 | `오케스트레이터` · 「후임 Task 실패 복구 · 큐 다음 R · 워커2 재기동 · §3.4」 |
 
