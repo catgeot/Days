@@ -1,351 +1,11 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-31T21:59:41.281Z",
-    "eventCount": 22,
+    "generatedAt": "2026-09-01T06:24:18.732Z",
+    "eventCount": 23,
     "source": "scripts/data/world-event-overrides.mjs"
   },
   "events": [
-    {
-      "id": "edinburgh-fringe-2026",
-      "slug": "edinburgh",
-      "type": "festival",
-      "title": "에든버러 프린지",
-      "startDate": "2026-08-07",
-      "endDate": "2026-08-31",
-      "recurrence": "annual",
-      "source": "official_url",
-      "hubId": "edinburgh",
-      "titleEn": "Edinburgh Festival Fringe",
-      "recurrenceNote": "8월 전반",
-      "recurrenceNoteEn": "Early August",
-      "venue": {
-        "name": "Royal Mile & city venues"
-      },
-      "sourceUrl": "https://www.edfringe.com/",
-      "bookingHints": "올드타운·뉴타운 숙소는 공연장 도보권 위주",
-      "detailOverview": "세계 최대 규모의 공연예술 축제로, 8월 한 달간 에든버러 올드타운·프린지 등록 공연장 전역에서 수천 편의 쇼가 상연됩니다. 전체 기간 숙박보다 3~5박 짧은 방문으로 핵심 공연을 골라 보는 것이 일반적입니다.",
-      "detailOverviewEn": "The world's largest performing arts festival fills Edinburgh's Old Town and registered Fringe venues with thousands of shows throughout August. Most visitors pick a focused 3–5 night stay rather than booking for the full month.",
-      "highlights": [
-        "Royal Mile 주변 프리 공연·스트리트 퍼포먼스",
-        "오후·저녁 시간대 예약 공연 — 온라인 사전 예매 권장",
-        "올드타운·뉴타운 도보권 숙소가 이동 부담 최소"
-      ],
-      "highlightsEn": [
-        "Free shows and street performances around the Royal Mile",
-        "Afternoon and evening ticketed shows — book online in advance",
-        "Stay in walkable Old Town or New Town to cut down on daily travel"
-      ],
-      "stayAreas": [
-        {
-          "name": "올드타운 · Royal Mile",
-          "nameEn": "Old Town · Royal Mile",
-          "mrtKeyword": "Edinburgh Old Town",
-          "note": "공연장 도보 10분 이내 · 성수기 조기 마감",
-          "noteEn": "Within 10 min walk of venues · books early in peak season"
-        },
-        {
-          "name": "뉴타운",
-          "nameEn": "New Town",
-          "mrtKeyword": "Edinburgh New Town",
-          "note": "조용한 숙소 · 올드타운 버스 10~15분",
-          "noteEn": "Quieter stays · 10–15 min bus to Old Town"
-        }
-      ],
-      "recommendedNights": 4,
-      "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Edinburgh_Festival_Fringe_Street_Performer.jpg/1280px-Edinburgh_Festival_Fringe_Street_Performer.jpg",
-      "heroImages": [
-        {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Edinburgh_Festival_Fringe_Street_Performer.jpg/1280px-Edinburgh_Festival_Fringe_Street_Performer.jpg",
-          "captionKo": "프린지 스트리트 퍼포먼스",
-          "captionEn": "Fringe street performer"
-        },
-        {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Edinburgh_Royal_Mile_from_Salisbury_Crags_20211019.jpg/1280px-Edinburgh_Royal_Mile_from_Salisbury_Crags_20211019.jpg",
-          "captionKo": "로얄 마일",
-          "captionEn": "Royal Mile"
-        },
-        {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Edinburgh_cannon_and_old_town_20211020.jpg/1280px-Edinburgh_cannon_and_old_town_20211020.jpg",
-          "captionKo": "에든버러 올드타운",
-          "captionEn": "Edinburgh Old Town"
-        }
-      ],
-      "glossaryTerms": [
-        {
-          "id": "fringe",
-          "termKo": "프린지",
-          "promptKo": "에든버러 프린지 축제가 무엇인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.",
-          "searchQueryKo": "에든버러 프린지 축제",
-          "termEn": "Fringe",
-          "promptEn": "What is the Edinburgh Festival Fringe for travelers? 3 short sentences.",
-          "searchQueryEn": "Edinburgh Festival Fringe",
-          "referenceUrl": "https://en.wikipedia.org/wiki/Edinburgh_Festival_Fringe",
-          "referenceUrlKo": "https://ko.wikipedia.org/wiki/에든버러_프린지"
-        },
-        {
-          "id": "royal-mile",
-          "termKo": "Royal Mile",
-          "promptKo": "에든버러 Royal Mile이 프린지와 어떤 관계인지, 어디서 프리 공연을 볼 수 있는지 3문장 이내로 설명해줘.",
-          "searchQueryKo": "에든버러 Royal Mile 프린지",
-          "termEn": "Royal Mile",
-          "promptEn": "Royal Mile and free Fringe performances — 3 short sentences for travelers.",
-          "searchQueryEn": "Edinburgh Royal Mile Fringe"
-        },
-        {
-          "id": "old-town",
-          "termKo": "올드타운",
-          "promptKo": "에든버러 올드타운이 프린지 방문에 왜 중요한지 3문장 이내로 설명해줘.",
-          "searchQueryKo": "에든버러 올드타운 프린지",
-          "termEn": "Old Town",
-          "promptEn": "Why Edinburgh Old Town matters for Fringe visitors in 3 short sentences.",
-          "searchQueryEn": "Edinburgh Old Town Fringe"
-        },
-        {
-          "id": "new-town",
-          "termKo": "뉴타운",
-          "promptKo": "에든버러 뉴타운 숙소의 장단점을 프린지 방문 관점에서 3문장 이내로 설명해줘.",
-          "searchQueryKo": "에든버러 뉴타운 숙소 프린지",
-          "termEn": "New Town",
-          "promptEn": "New Town accommodation pros and cons for Fringe visitors in 3 short sentences.",
-          "searchQueryEn": "Edinburgh New Town Fringe stay"
-        }
-      ],
-      "highlightContextLinks": [
-        {
-          "highlightIndex": 0,
-          "links": [
-            {
-              "id": "royal-mile-search",
-              "labelKo": "Royal Mile 검색",
-              "kind": "shop",
-              "labelEn": "Search Royal Mile",
-              "searchQueryKo": "에든버러 Royal Mile 프린지",
-              "searchQueryEn": "Edinburgh Royal Mile Fringe",
-              "searchTarget": "google"
-            }
-          ]
-        },
-        {
-          "highlightIndex": 1,
-          "links": [
-            {
-              "id": "official-tickets",
-              "labelKo": "공식 예매",
-              "kind": "tour",
-              "labelEn": "Official tickets",
-              "href": "https://www.edfringe.com/"
-            },
-            {
-              "id": "venue-map",
-              "labelKo": "공연장 지도",
-              "kind": "shop",
-              "labelEn": "Venue map",
-              "href": "https://www.edfringe.com/tickets"
-            }
-          ]
-        }
-      ],
-      "youtubeVideos": [
-        {
-          "id": "_YXE3yAUrvA",
-          "titleKo": "에든버러 프린지·올드타운 가이드",
-          "titleEn": "Edinburgh Fringe Old Town guide"
-        },
-        {
-          "id": "6jxgY3vCAjw",
-          "titleKo": "프린지 방문 전 알아둘 것",
-          "titleEn": "Before you go to the Fringe"
-        }
-      ],
-      "actionChips": [
-        {
-          "id": "official-tickets",
-          "labelKo": "공식 예매",
-          "href": "https://www.edfringe.com/",
-          "labelEn": "Official tickets",
-          "kind": "official"
-        },
-        {
-          "id": "royal-mile-map",
-          "labelKo": "Royal Mile 지도",
-          "href": "https://www.google.com/maps/search/?api=1&query=Royal+Mile+Edinburgh",
-          "labelEn": "Royal Mile map",
-          "kind": "map"
-        },
-        {
-          "id": "venue-map",
-          "labelKo": "공연장 지도",
-          "href": "https://www.edfringe.com/tickets",
-          "labelEn": "Venue map",
-          "kind": "map"
-        }
-      ],
-      "mooniChips": [
-        {
-          "id": "free-shows",
-          "promptKo": "Royal Mile 프리 공연은 어디서 볼 수 있어?",
-          "promptEn": "Where can I catch free Fringe shows on Royal Mile?"
-        },
-        {
-          "id": "three-shows",
-          "promptKo": "하루에 공연 3편 일정 짜줘",
-          "promptEn": "Plan a day with three Fringe shows"
-        },
-        {
-          "id": "opening-week",
-          "promptKo": "8월 첫 주 3박으로 추천 일정 알려줘",
-          "promptEn": "Suggest a 3-night opening-week itinerary"
-        }
-      ],
-      "priority": 1
-    },
-    {
-      "id": "london-notting-hill-2026",
-      "slug": "london",
-      "type": "festival",
-      "title": "노팅힐 카니발",
-      "startDate": "2026-08-29",
-      "endDate": "2026-08-31",
-      "recurrence": "annual",
-      "source": "official_url",
-      "hubId": "london",
-      "titleEn": "Notting Hill Carnival",
-      "recurrenceNote": "8월 은행 휴일 주말 (토~월, 연도별 변동)",
-      "recurrenceNoteEn": "August bank holiday weekend (Sat–Mon, varies)",
-      "venue": {
-        "name": "Ladbroke Grove · Great Western Road · Notting Hill"
-      },
-      "sourceUrl": "https://nhcarnival.org/",
-      "bookingHints": "노팅힐·Ladbroke Grove — 주말 전후 2~3박 · 퍼레이드 루트·사운드 시스템 구간 조기 이동 · 일요일 패밀리데이·월요일 성인 퍼레이드",
-      "detailOverview": "런던 서부 노팅힐 일대에서 8월 은행 휴일 주말에 열리는 캐리비안 계열 거리 축제로, 마스 밴드·사운드 시스템·강철 드럼 밴드가 Ladbroke Grove·Great Western Road를 따라 이동합니다. 토요일 Panorama 강철 밴드 대회, 일요일 J'Ouvert·어린이 퍼레이드, 월요일 성인 퍼레이드로 이어지므로 주말 전후 2~3박으로 노팅힐·Bayswater 기점을 잡아 패밀리데이와 성인 퍼레이드를 나눠 보는 방문이 일반적입니다.",
-      "highlights": [
-        "Adults' parade — Great Western Road · Ladbroke Grove 루트 · 마스 밴드·코스튬 행진",
-        "Family Day (Sunday) — J'Ouvert 새벽 · 어린이 퍼레이드 · 월요일보다 상대적으로 한산",
-        "Panorama Steel Band — 토요일 Emslie Horniman's Pleasance Park · 강철 드럼 밴드 대회"
-      ],
-      "stayAreas": [
-        {
-          "name": "노팅힐 · Notting Hill",
-          "mrtKeyword": "London Notting Hill",
-          "note": "퍼레이드 루트·Ladbroke Grove 도보 · Circle·District·Central Line"
-        },
-        {
-          "name": "베이스워터 · Bayswater",
-          "mrtKeyword": "London Bayswater",
-          "note": "퍼레이드 구간에서 한 블록 · Queensway·Bayswater 역"
-        }
-      ],
-      "recommendedNights": 3,
-      "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Notting_Hill_Carnival_2014_%282%29.JPG/1280px-Notting_Hill_Carnival_2014_%282%29.JPG",
-      "heroImages": [
-        {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Notting_Hill_Carnival_2014_%282%29.JPG/1280px-Notting_Hill_Carnival_2014_%282%29.JPG",
-          "captionKo": "노팅힐 카니발 퍼레이드",
-          "captionEn": "Notting Hill Carnival parade"
-        },
-        {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Notting_Hill_Carnival_1_-_August_2006.jpg/1280px-Notting_Hill_Carnival_1_-_August_2006.jpg",
-          "captionKo": "Ladbroke Grove 거리 행진",
-          "captionEn": "Parade on Ladbroke Grove"
-        },
-        {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Notting_Hill_Carnival_2014_%288%29.JPG/1280px-Notting_Hill_Carnival_2014_%288%29.JPG",
-          "captionKo": "마스 밴드·코스튬",
-          "captionEn": "Mas band costumes"
-        }
-      ],
-      "glossaryTerms": [
-        {
-          "id": "notting-hill-carnival",
-          "termKo": "노팅힐 카니발",
-          "promptKo": "런던 노팅힐 카니발(Notting Hill Carnival)이 무엇인지 여행자 관점에서 3문장 이내로 설명해줘.",
-          "searchQueryKo": "런던 노팅힐 카니발",
-          "termEn": "Notting Hill Carnival",
-          "promptEn": "What is Notting Hill Carnival for travelers in 3 short sentences.",
-          "searchQueryEn": "Notting Hill Carnival London",
-          "referenceUrl": "https://en.wikipedia.org/wiki/Notting_Hill_Carnival",
-          "referenceUrlKo": "https://ko.wikipedia.org/wiki/%EB%85%B8%ED%8C%85%ED%9E%90_%EC%B9%B4%EB%8B%88%EB%B0%9C"
-        },
-        {
-          "id": "jouvert",
-          "termKo": "J'Ouvert",
-          "promptKo": "노팅힐 카니발 J'Ouvert(주베르)가 무엇인지 일요일 새벽 일정 팁을 3문장 이내로 설명해줘.",
-          "searchQueryKo": "노팅힐 카니발 J Ouvert",
-          "termEn": "J'Ouvert",
-          "promptEn": "What is J'Ouvert at Notting Hill Carnival in 3 short sentences.",
-          "searchQueryEn": "Notting Hill Carnival J'Ouvert",
-          "referenceUrl": "https://nhcarnival.org/sunday"
-        },
-        {
-          "id": "mas-band",
-          "termKo": "마스 밴드",
-          "promptKo": "노팅힐 카니발 마스 밴드(mas band)가 퍼레이드에서 어떤 역할인지 3문장 이내로 설명해줘.",
-          "searchQueryKo": "노팅힐 카니발 마스 밴드",
-          "termEn": "mas band",
-          "promptEn": "What mas bands do in the Notting Hill Carnival parade in 3 short sentences.",
-          "searchQueryEn": "Notting Hill Carnival mas band"
-        },
-        {
-          "id": "ladbroke-grove",
-          "termKo": "Ladbroke Grove",
-          "promptKo": "노팅힐 카니발에서 Ladbroke Grove가 왜 핵심 거리인지 동선 팁을 3문장 이내로 설명해줘.",
-          "searchQueryKo": "런던 Ladbroke Grove 카니발",
-          "termEn": "Ladbroke Grove",
-          "promptEn": "Why Ladbroke Grove matters for Notting Hill Carnival routes in 3 short sentences.",
-          "searchQueryEn": "Ladbroke Grove Notting Hill Carnival",
-          "referenceUrl": "https://en.wikipedia.org/wiki/Ladbroke_Grove"
-        }
-      ],
-      "highlightContextLinks": [
-        {
-          "highlightIndex": 0,
-          "links": [
-            {
-              "id": "carnival-official",
-              "labelKo": "공식 일정",
-              "kind": "shop",
-              "labelEn": "Official programme",
-              "href": "https://nhcarnival.org/"
-            }
-          ]
-        },
-        {
-          "highlightIndex": 2,
-          "links": [
-            {
-              "id": "parade-route-map",
-              "labelKo": "퍼레이드 루트",
-              "kind": "shop",
-              "labelEn": "Parade route",
-              "searchQueryKo": "런던 Great Western Road 노팅힐",
-              "searchQueryEn": "Great Western Road, Notting Hill, London, UK",
-              "searchTarget": "maps"
-            }
-          ]
-        }
-      ],
-      "youtubeSearchQueryKo": "런던 노팅힐 카니발",
-      "youtubeSearchQueryEn": "Notting Hill Carnival London",
-      "mooniChips": [
-        {
-          "id": "family-vs-adults",
-          "promptKo": "일요일 패밀리데이랑 월요일 성인 퍼레이드 차이 알려줘",
-          "promptEn": "How do Family Day Sunday and Adults Monday differ?"
-        },
-        {
-          "id": "parade-view",
-          "promptKo": "퍼레이드 잘 보이는 Ladbroke Grove 구간 알려줘",
-          "promptEn": "Best Ladbroke Grove spots to watch the parade?"
-        },
-        {
-          "id": "stay-area",
-          "promptKo": "노팅힐이랑 Bayswater 중 어디 숙소가 나아?",
-          "promptEn": "Notting Hill or Bayswater — where should I stay?"
-        }
-      ],
-      "priority": 1
-    },
     {
       "id": "vienna-staatsoper-season-2026",
       "slug": "vienna",
@@ -1932,6 +1592,152 @@
       "priority": 1
     },
     {
+      "id": "rome-carnevale-2027",
+      "slug": "rome",
+      "type": "festival",
+      "title": "로마 카니발",
+      "startDate": "2027-01-31",
+      "endDate": "2027-02-09",
+      "recurrence": "annual",
+      "source": "official_url",
+      "hubId": "rome",
+      "titleEn": "Rome Carnival",
+      "recurrenceNote": "대림절 전 주 (연도별 변동)",
+      "recurrenceNoteEn": "Week before Lent (varies)",
+      "venue": {
+        "name": "Piazza del Popolo · Via del Corso · Piazza Navona"
+      },
+      "sourceUrl": "https://carnevale.roma.it/",
+      "bookingHints": "센트로 스토리코·트리덴테 — 대림절 전 주 전후 2~3박 · 피아차 델 포폴로·비아 델 코르소 혼잡 구간 조기 이동",
+      "detailOverview": "로마 시에서 부활하는 전통 카니발(Carnevale Romano)로, 대림절 전 주에 피아차 델 포폴로·비아 델 코르소·피아차 나보나 일대에서 퍼레이드·코스튬·거리 공연이 이어집니다. 전체 시즌 숙박보다 행사 전후 2~3박으로 센트로 스토리코·스페인 광장 기점을 잡아 개막 행사와 마르디 그라(대림절 전 화요일) 절정을 나눠 보는 방문이 일반적입니다.",
+      "highlights": [
+        "Piazza del Popolo — 개막·퍼레이드 출발점 · 코스튬·역사 재현 행진",
+        "Via del Corso — 역사적 카니발 루트 · 마스크·거리 공연·카니발 마켓",
+        "Piazza Navona · 시내 공연 — 음악·어린이 프로그램 · 마르디 그라 전후 절정"
+      ],
+      "stayAreas": [
+        {
+          "name": "센트로 스토리코 · Centro Storico",
+          "mrtKeyword": "Rome Centro Storico",
+          "note": "피아차 나보나·판테온 도보 · Line A Spagna·Barberini"
+        },
+        {
+          "name": "트리덴테 · Tridente",
+          "mrtKeyword": "Rome Spanish Steps",
+          "note": "피아차 델 포폴로·비아 델 코르소 도보 · Line A Spagna·Flaminio"
+        }
+      ],
+      "recommendedNights": 3,
+      "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Carosello_al_Carnevale_Romano_febbraio_2013.jpg/1280px-Carosello_al_Carnevale_Romano_febbraio_2013.jpg",
+      "heroImages": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Carosello_al_Carnevale_Romano_febbraio_2013.jpg/1280px-Carosello_al_Carnevale_Romano_febbraio_2013.jpg",
+          "captionKo": "로마 카니발 퍼레이드",
+          "captionEn": "Rome Carnival parade"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Piazza_del_Popolo_%28Rome%29.jpg/1280px-Piazza_del_Popolo_%28Rome%29.jpg",
+          "captionKo": "피아차 델 포폴로",
+          "captionEn": "Piazza del Popolo"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Weekend_in_Rome_-_Carnival.jpg/1280px-Weekend_in_Rome_-_Carnival.jpg",
+          "captionKo": "카니발 코스튬·거리 행사",
+          "captionEn": "Carnival costumes and street events"
+        }
+      ],
+      "glossaryTerms": [
+        {
+          "id": "carnevale-romano",
+          "termKo": "로마 카니발",
+          "promptKo": "로마 카니발(Carnevale Romano)이 무엇인지 여행자 관점에서 3문장 이내로 설명해줘.",
+          "searchQueryKo": "로마 카니발 Carnevale Romano",
+          "termEn": "Carnevale Romano",
+          "promptEn": "What is Rome Carnival (Carnevale Romano) for travelers in 3 short sentences.",
+          "searchQueryEn": "Rome Carnival Carnevale Romano",
+          "referenceUrl": "https://carnevale.roma.it/",
+          "referenceUrlKo": "https://it.wikipedia.org/wiki/Carnevale_romano"
+        },
+        {
+          "id": "piazza-del-popolo",
+          "termKo": "피아차 델 포폴로",
+          "promptKo": "로마 카니발에서 피아차 델 포폴로가 왜 핵심 광장인지 동선 팁을 3문장 이내로 설명해줘.",
+          "searchQueryKo": "로마 피아차 델 포폴로 카니발",
+          "termEn": "Piazza del Popolo",
+          "promptEn": "Why Piazza del Popolo matters during Rome Carnival in 3 short sentences.",
+          "searchQueryEn": "Piazza del Popolo Rome Carnival",
+          "referenceUrl": "https://en.wikipedia.org/wiki/Piazza_del_Popolo"
+        },
+        {
+          "id": "via-del-corso",
+          "termKo": "비아 델 코르소",
+          "promptKo": "로마 카니발 비아 델 코르소(Via del Corso) 퍼레이드 루트를 보기 좋은 팁을 3문장 이내로 설명해줘.",
+          "searchQueryKo": "로마 비아 델 코르소 카니발",
+          "termEn": "Via del Corso",
+          "promptEn": "Tips for watching the Rome Carnival parade on Via del Corso in 3 short sentences.",
+          "searchQueryEn": "Via del Corso Rome Carnival parade",
+          "referenceUrl": "https://en.wikipedia.org/wiki/Via_del_Corso"
+        },
+        {
+          "id": "martedi-grasso",
+          "termKo": "마르디 그라",
+          "promptKo": "로마 카니발 마르디 그라(Martedì Grasso, 대림절 전 화요일)가 왜 절정인지 3문장 이내로 설명해줘.",
+          "searchQueryKo": "로마 카니발 마르디 그라",
+          "termEn": "Martedì Grasso",
+          "promptEn": "Why Martedì Grasso is the peak of Rome Carnival in 3 short sentences.",
+          "searchQueryEn": "Rome Carnival Martedì Grasso Fat Tuesday"
+        }
+      ],
+      "highlightContextLinks": [
+        {
+          "highlightIndex": 0,
+          "links": [
+            {
+              "id": "carnevale-official",
+              "labelKo": "공식 일정",
+              "kind": "shop",
+              "labelEn": "Official programme",
+              "href": "https://carnevale.roma.it/"
+            }
+          ]
+        },
+        {
+          "highlightIndex": 2,
+          "links": [
+            {
+              "id": "navona-map",
+              "labelKo": "나보나 광장",
+              "kind": "shop",
+              "labelEn": "Piazza Navona",
+              "searchQueryKo": "로마 피아차 나보나",
+              "searchQueryEn": "Piazza Navona, Rome, Italy",
+              "searchTarget": "maps"
+            }
+          ]
+        }
+      ],
+      "youtubeSearchQueryKo": "로마 카니발 Carnevale Romano",
+      "youtubeSearchQueryEn": "Rome Carnival Carnevale Romano",
+      "mooniChips": [
+        {
+          "id": "martedi-grasso-date",
+          "promptKo": "2027년 마르디 그라가 언제야?",
+          "promptEn": "When is Martedì Grasso in 2027?"
+        },
+        {
+          "id": "parade-route",
+          "promptKo": "피아차 델 포폴로에서 비아 델 코르소 동선 어떻게 잡아?",
+          "promptEn": "How should I plan Piazza del Popolo to Via del Corso?"
+        },
+        {
+          "id": "stay-area",
+          "promptKo": "센트로 스토리코랑 트리덴테 중 어디 숙소가 나아?",
+          "promptEn": "Centro Storico or Tridente — where should I stay?"
+        }
+      ],
+      "priority": 1
+    },
+    {
       "id": "rio-carnival-2027",
       "slug": "rio-de-janeiro",
       "type": "festival",
@@ -3405,6 +3211,346 @@
           "id": "traffic-tips",
           "promptKo": "행렬 날 교통 통제 어떻게 대비해?",
           "promptEn": "How to deal with parade-day traffic controls?"
+        }
+      ],
+      "priority": 1
+    },
+    {
+      "id": "edinburgh-fringe-2026",
+      "slug": "edinburgh",
+      "type": "festival",
+      "title": "에든버러 프린지",
+      "startDate": "2026-08-07",
+      "endDate": "2026-08-31",
+      "recurrence": "annual",
+      "source": "official_url",
+      "hubId": "edinburgh",
+      "titleEn": "Edinburgh Festival Fringe",
+      "recurrenceNote": "8월 전반",
+      "recurrenceNoteEn": "Early August",
+      "venue": {
+        "name": "Royal Mile & city venues"
+      },
+      "sourceUrl": "https://www.edfringe.com/",
+      "bookingHints": "올드타운·뉴타운 숙소는 공연장 도보권 위주",
+      "detailOverview": "세계 최대 규모의 공연예술 축제로, 8월 한 달간 에든버러 올드타운·프린지 등록 공연장 전역에서 수천 편의 쇼가 상연됩니다. 전체 기간 숙박보다 3~5박 짧은 방문으로 핵심 공연을 골라 보는 것이 일반적입니다.",
+      "detailOverviewEn": "The world's largest performing arts festival fills Edinburgh's Old Town and registered Fringe venues with thousands of shows throughout August. Most visitors pick a focused 3–5 night stay rather than booking for the full month.",
+      "highlights": [
+        "Royal Mile 주변 프리 공연·스트리트 퍼포먼스",
+        "오후·저녁 시간대 예약 공연 — 온라인 사전 예매 권장",
+        "올드타운·뉴타운 도보권 숙소가 이동 부담 최소"
+      ],
+      "highlightsEn": [
+        "Free shows and street performances around the Royal Mile",
+        "Afternoon and evening ticketed shows — book online in advance",
+        "Stay in walkable Old Town or New Town to cut down on daily travel"
+      ],
+      "stayAreas": [
+        {
+          "name": "올드타운 · Royal Mile",
+          "nameEn": "Old Town · Royal Mile",
+          "mrtKeyword": "Edinburgh Old Town",
+          "note": "공연장 도보 10분 이내 · 성수기 조기 마감",
+          "noteEn": "Within 10 min walk of venues · books early in peak season"
+        },
+        {
+          "name": "뉴타운",
+          "nameEn": "New Town",
+          "mrtKeyword": "Edinburgh New Town",
+          "note": "조용한 숙소 · 올드타운 버스 10~15분",
+          "noteEn": "Quieter stays · 10–15 min bus to Old Town"
+        }
+      ],
+      "recommendedNights": 4,
+      "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Edinburgh_Festival_Fringe_Street_Performer.jpg/1280px-Edinburgh_Festival_Fringe_Street_Performer.jpg",
+      "heroImages": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Edinburgh_Festival_Fringe_Street_Performer.jpg/1280px-Edinburgh_Festival_Fringe_Street_Performer.jpg",
+          "captionKo": "프린지 스트리트 퍼포먼스",
+          "captionEn": "Fringe street performer"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Edinburgh_Royal_Mile_from_Salisbury_Crags_20211019.jpg/1280px-Edinburgh_Royal_Mile_from_Salisbury_Crags_20211019.jpg",
+          "captionKo": "로얄 마일",
+          "captionEn": "Royal Mile"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Edinburgh_cannon_and_old_town_20211020.jpg/1280px-Edinburgh_cannon_and_old_town_20211020.jpg",
+          "captionKo": "에든버러 올드타운",
+          "captionEn": "Edinburgh Old Town"
+        }
+      ],
+      "glossaryTerms": [
+        {
+          "id": "fringe",
+          "termKo": "프린지",
+          "promptKo": "에든버러 프린지 축제가 무엇인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.",
+          "searchQueryKo": "에든버러 프린지 축제",
+          "termEn": "Fringe",
+          "promptEn": "What is the Edinburgh Festival Fringe for travelers? 3 short sentences.",
+          "searchQueryEn": "Edinburgh Festival Fringe",
+          "referenceUrl": "https://en.wikipedia.org/wiki/Edinburgh_Festival_Fringe",
+          "referenceUrlKo": "https://ko.wikipedia.org/wiki/에든버러_프린지"
+        },
+        {
+          "id": "royal-mile",
+          "termKo": "Royal Mile",
+          "promptKo": "에든버러 Royal Mile이 프린지와 어떤 관계인지, 어디서 프리 공연을 볼 수 있는지 3문장 이내로 설명해줘.",
+          "searchQueryKo": "에든버러 Royal Mile 프린지",
+          "termEn": "Royal Mile",
+          "promptEn": "Royal Mile and free Fringe performances — 3 short sentences for travelers.",
+          "searchQueryEn": "Edinburgh Royal Mile Fringe"
+        },
+        {
+          "id": "old-town",
+          "termKo": "올드타운",
+          "promptKo": "에든버러 올드타운이 프린지 방문에 왜 중요한지 3문장 이내로 설명해줘.",
+          "searchQueryKo": "에든버러 올드타운 프린지",
+          "termEn": "Old Town",
+          "promptEn": "Why Edinburgh Old Town matters for Fringe visitors in 3 short sentences.",
+          "searchQueryEn": "Edinburgh Old Town Fringe"
+        },
+        {
+          "id": "new-town",
+          "termKo": "뉴타운",
+          "promptKo": "에든버러 뉴타운 숙소의 장단점을 프린지 방문 관점에서 3문장 이내로 설명해줘.",
+          "searchQueryKo": "에든버러 뉴타운 숙소 프린지",
+          "termEn": "New Town",
+          "promptEn": "New Town accommodation pros and cons for Fringe visitors in 3 short sentences.",
+          "searchQueryEn": "Edinburgh New Town Fringe stay"
+        }
+      ],
+      "highlightContextLinks": [
+        {
+          "highlightIndex": 0,
+          "links": [
+            {
+              "id": "royal-mile-search",
+              "labelKo": "Royal Mile 검색",
+              "kind": "shop",
+              "labelEn": "Search Royal Mile",
+              "searchQueryKo": "에든버러 Royal Mile 프린지",
+              "searchQueryEn": "Edinburgh Royal Mile Fringe",
+              "searchTarget": "google"
+            }
+          ]
+        },
+        {
+          "highlightIndex": 1,
+          "links": [
+            {
+              "id": "official-tickets",
+              "labelKo": "공식 예매",
+              "kind": "tour",
+              "labelEn": "Official tickets",
+              "href": "https://www.edfringe.com/"
+            },
+            {
+              "id": "venue-map",
+              "labelKo": "공연장 지도",
+              "kind": "shop",
+              "labelEn": "Venue map",
+              "href": "https://www.edfringe.com/tickets"
+            }
+          ]
+        }
+      ],
+      "youtubeVideos": [
+        {
+          "id": "_YXE3yAUrvA",
+          "titleKo": "에든버러 프린지·올드타운 가이드",
+          "titleEn": "Edinburgh Fringe Old Town guide"
+        },
+        {
+          "id": "6jxgY3vCAjw",
+          "titleKo": "프린지 방문 전 알아둘 것",
+          "titleEn": "Before you go to the Fringe"
+        }
+      ],
+      "actionChips": [
+        {
+          "id": "official-tickets",
+          "labelKo": "공식 예매",
+          "href": "https://www.edfringe.com/",
+          "labelEn": "Official tickets",
+          "kind": "official"
+        },
+        {
+          "id": "royal-mile-map",
+          "labelKo": "Royal Mile 지도",
+          "href": "https://www.google.com/maps/search/?api=1&query=Royal+Mile+Edinburgh",
+          "labelEn": "Royal Mile map",
+          "kind": "map"
+        },
+        {
+          "id": "venue-map",
+          "labelKo": "공연장 지도",
+          "href": "https://www.edfringe.com/tickets",
+          "labelEn": "Venue map",
+          "kind": "map"
+        }
+      ],
+      "mooniChips": [
+        {
+          "id": "free-shows",
+          "promptKo": "Royal Mile 프리 공연은 어디서 볼 수 있어?",
+          "promptEn": "Where can I catch free Fringe shows on Royal Mile?"
+        },
+        {
+          "id": "three-shows",
+          "promptKo": "하루에 공연 3편 일정 짜줘",
+          "promptEn": "Plan a day with three Fringe shows"
+        },
+        {
+          "id": "opening-week",
+          "promptKo": "8월 첫 주 3박으로 추천 일정 알려줘",
+          "promptEn": "Suggest a 3-night opening-week itinerary"
+        }
+      ],
+      "priority": 1
+    },
+    {
+      "id": "london-notting-hill-2026",
+      "slug": "london",
+      "type": "festival",
+      "title": "노팅힐 카니발",
+      "startDate": "2026-08-29",
+      "endDate": "2026-08-31",
+      "recurrence": "annual",
+      "source": "official_url",
+      "hubId": "london",
+      "titleEn": "Notting Hill Carnival",
+      "recurrenceNote": "8월 은행 휴일 주말 (토~월, 연도별 변동)",
+      "recurrenceNoteEn": "August bank holiday weekend (Sat–Mon, varies)",
+      "venue": {
+        "name": "Ladbroke Grove · Great Western Road · Notting Hill"
+      },
+      "sourceUrl": "https://nhcarnival.org/",
+      "bookingHints": "노팅힐·Ladbroke Grove — 주말 전후 2~3박 · 퍼레이드 루트·사운드 시스템 구간 조기 이동 · 일요일 패밀리데이·월요일 성인 퍼레이드",
+      "detailOverview": "런던 서부 노팅힐 일대에서 8월 은행 휴일 주말에 열리는 캐리비안 계열 거리 축제로, 마스 밴드·사운드 시스템·강철 드럼 밴드가 Ladbroke Grove·Great Western Road를 따라 이동합니다. 토요일 Panorama 강철 밴드 대회, 일요일 J'Ouvert·어린이 퍼레이드, 월요일 성인 퍼레이드로 이어지므로 주말 전후 2~3박으로 노팅힐·Bayswater 기점을 잡아 패밀리데이와 성인 퍼레이드를 나눠 보는 방문이 일반적입니다.",
+      "highlights": [
+        "Adults' parade — Great Western Road · Ladbroke Grove 루트 · 마스 밴드·코스튬 행진",
+        "Family Day (Sunday) — J'Ouvert 새벽 · 어린이 퍼레이드 · 월요일보다 상대적으로 한산",
+        "Panorama Steel Band — 토요일 Emslie Horniman's Pleasance Park · 강철 드럼 밴드 대회"
+      ],
+      "stayAreas": [
+        {
+          "name": "노팅힐 · Notting Hill",
+          "mrtKeyword": "London Notting Hill",
+          "note": "퍼레이드 루트·Ladbroke Grove 도보 · Circle·District·Central Line"
+        },
+        {
+          "name": "베이스워터 · Bayswater",
+          "mrtKeyword": "London Bayswater",
+          "note": "퍼레이드 구간에서 한 블록 · Queensway·Bayswater 역"
+        }
+      ],
+      "recommendedNights": 3,
+      "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Notting_Hill_Carnival_2014_%282%29.JPG/1280px-Notting_Hill_Carnival_2014_%282%29.JPG",
+      "heroImages": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Notting_Hill_Carnival_2014_%282%29.JPG/1280px-Notting_Hill_Carnival_2014_%282%29.JPG",
+          "captionKo": "노팅힐 카니발 퍼레이드",
+          "captionEn": "Notting Hill Carnival parade"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Notting_Hill_Carnival_1_-_August_2006.jpg/1280px-Notting_Hill_Carnival_1_-_August_2006.jpg",
+          "captionKo": "Ladbroke Grove 거리 행진",
+          "captionEn": "Parade on Ladbroke Grove"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Notting_Hill_Carnival_2014_%288%29.JPG/1280px-Notting_Hill_Carnival_2014_%288%29.JPG",
+          "captionKo": "마스 밴드·코스튬",
+          "captionEn": "Mas band costumes"
+        }
+      ],
+      "glossaryTerms": [
+        {
+          "id": "notting-hill-carnival",
+          "termKo": "노팅힐 카니발",
+          "promptKo": "런던 노팅힐 카니발(Notting Hill Carnival)이 무엇인지 여행자 관점에서 3문장 이내로 설명해줘.",
+          "searchQueryKo": "런던 노팅힐 카니발",
+          "termEn": "Notting Hill Carnival",
+          "promptEn": "What is Notting Hill Carnival for travelers in 3 short sentences.",
+          "searchQueryEn": "Notting Hill Carnival London",
+          "referenceUrl": "https://en.wikipedia.org/wiki/Notting_Hill_Carnival",
+          "referenceUrlKo": "https://ko.wikipedia.org/wiki/%EB%85%B8%ED%8C%85%ED%9E%90_%EC%B9%B4%EB%8B%88%EB%B0%9C"
+        },
+        {
+          "id": "jouvert",
+          "termKo": "J'Ouvert",
+          "promptKo": "노팅힐 카니발 J'Ouvert(주베르)가 무엇인지 일요일 새벽 일정 팁을 3문장 이내로 설명해줘.",
+          "searchQueryKo": "노팅힐 카니발 J Ouvert",
+          "termEn": "J'Ouvert",
+          "promptEn": "What is J'Ouvert at Notting Hill Carnival in 3 short sentences.",
+          "searchQueryEn": "Notting Hill Carnival J'Ouvert",
+          "referenceUrl": "https://nhcarnival.org/sunday"
+        },
+        {
+          "id": "mas-band",
+          "termKo": "마스 밴드",
+          "promptKo": "노팅힐 카니발 마스 밴드(mas band)가 퍼레이드에서 어떤 역할인지 3문장 이내로 설명해줘.",
+          "searchQueryKo": "노팅힐 카니발 마스 밴드",
+          "termEn": "mas band",
+          "promptEn": "What mas bands do in the Notting Hill Carnival parade in 3 short sentences.",
+          "searchQueryEn": "Notting Hill Carnival mas band"
+        },
+        {
+          "id": "ladbroke-grove",
+          "termKo": "Ladbroke Grove",
+          "promptKo": "노팅힐 카니발에서 Ladbroke Grove가 왜 핵심 거리인지 동선 팁을 3문장 이내로 설명해줘.",
+          "searchQueryKo": "런던 Ladbroke Grove 카니발",
+          "termEn": "Ladbroke Grove",
+          "promptEn": "Why Ladbroke Grove matters for Notting Hill Carnival routes in 3 short sentences.",
+          "searchQueryEn": "Ladbroke Grove Notting Hill Carnival",
+          "referenceUrl": "https://en.wikipedia.org/wiki/Ladbroke_Grove"
+        }
+      ],
+      "highlightContextLinks": [
+        {
+          "highlightIndex": 0,
+          "links": [
+            {
+              "id": "carnival-official",
+              "labelKo": "공식 일정",
+              "kind": "shop",
+              "labelEn": "Official programme",
+              "href": "https://nhcarnival.org/"
+            }
+          ]
+        },
+        {
+          "highlightIndex": 2,
+          "links": [
+            {
+              "id": "parade-route-map",
+              "labelKo": "퍼레이드 루트",
+              "kind": "shop",
+              "labelEn": "Parade route",
+              "searchQueryKo": "런던 Great Western Road 노팅힐",
+              "searchQueryEn": "Great Western Road, Notting Hill, London, UK",
+              "searchTarget": "maps"
+            }
+          ]
+        }
+      ],
+      "youtubeSearchQueryKo": "런던 노팅힐 카니발",
+      "youtubeSearchQueryEn": "Notting Hill Carnival London",
+      "mooniChips": [
+        {
+          "id": "family-vs-adults",
+          "promptKo": "일요일 패밀리데이랑 월요일 성인 퍼레이드 차이 알려줘",
+          "promptEn": "How do Family Day Sunday and Adults Monday differ?"
+        },
+        {
+          "id": "parade-view",
+          "promptKo": "퍼레이드 잘 보이는 Ladbroke Grove 구간 알려줘",
+          "promptEn": "Best Ladbroke Grove spots to watch the parade?"
+        },
+        {
+          "id": "stay-area",
+          "promptKo": "노팅힐이랑 Bayswater 중 어디 숙소가 나아?",
+          "promptEn": "Notting Hill or Bayswater — where should I stay?"
         }
       ],
       "priority": 1

@@ -3507,4 +3507,155 @@ export const WORLD_EVENT_OVERRIDES = [
     ],
     priority: 1,
   },
+  {
+    id: 'rome-carnevale-2027',
+    slug: 'rome',
+    hubId: 'rome',
+    type: 'festival',
+    title: '로마 카니발',
+    titleEn: 'Rome Carnival',
+    startDate: '2027-01-31',
+    endDate: '2027-02-09',
+    recurrence: 'annual',
+    recurrenceNote: '대림절 전 주 (연도별 변동)',
+    recurrenceNoteEn: 'Week before Lent (varies)',
+    venue: { name: 'Piazza del Popolo · Via del Corso · Piazza Navona' },
+    source: 'official_url',
+    sourceUrl: 'https://carnevale.roma.it/',
+    bookingHints:
+      '센트로 스토리코·트리덴테 — 대림절 전 주 전후 2~3박 · 피아차 델 포폴로·비아 델 코르소 혼잡 구간 조기 이동',
+    detailOverview:
+      '로마 시에서 부활하는 전통 카니발(Carnevale Romano)로, 대림절 전 주에 피아차 델 포폴로·비아 델 코르소·피아차 나보나 일대에서 퍼레이드·코스튬·거리 공연이 이어집니다. 전체 시즌 숙박보다 행사 전후 2~3박으로 센트로 스토리코·스페인 광장 기점을 잡아 개막 행사와 마르디 그라(대림절 전 화요일) 절정을 나눠 보는 방문이 일반적입니다.',
+    highlights: [
+      'Piazza del Popolo — 개막·퍼레이드 출발점 · 코스튬·역사 재현 행진',
+      'Via del Corso — 역사적 카니발 루트 · 마스크·거리 공연·카니발 마켓',
+      'Piazza Navona · 시내 공연 — 음악·어린이 프로그램 · 마르디 그라 전후 절정',
+    ],
+    stayAreas: [
+      {
+        name: '센트로 스토리코 · Centro Storico',
+        mrtKeyword: 'Rome Centro Storico',
+        note: '피아차 나보나·판테온 도보 · Line A Spagna·Barberini',
+      },
+      {
+        name: '트리덴테 · Tridente',
+        mrtKeyword: 'Rome Spanish Steps',
+        note: '피아차 델 포폴로·비아 델 코르소 도보 · Line A Spagna·Flaminio',
+      },
+    ],
+    recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Carosello_al_Carnevale_Romano_febbraio_2013.jpg/1280px-Carosello_al_Carnevale_Romano_febbraio_2013.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Carosello_al_Carnevale_Romano_febbraio_2013.jpg/1280px-Carosello_al_Carnevale_Romano_febbraio_2013.jpg',
+        captionKo: '로마 카니발 퍼레이드',
+        captionEn: 'Rome Carnival parade',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Piazza_del_Popolo_%28Rome%29.jpg/1280px-Piazza_del_Popolo_%28Rome%29.jpg',
+        captionKo: '피아차 델 포폴로',
+        captionEn: 'Piazza del Popolo',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Weekend_in_Rome_-_Carnival.jpg/1280px-Weekend_in_Rome_-_Carnival.jpg',
+        captionKo: '카니발 코스튬·거리 행사',
+        captionEn: 'Carnival costumes and street events',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'carnevale-romano',
+        termKo: '로마 카니발',
+        termEn: 'Carnevale Romano',
+        promptKo:
+          '로마 카니발(Carnevale Romano)이 무엇인지 여행자 관점에서 3문장 이내로 설명해줘.',
+        promptEn: 'What is Rome Carnival (Carnevale Romano) for travelers in 3 short sentences.',
+        searchQueryKo: '로마 카니발 Carnevale Romano',
+        searchQueryEn: 'Rome Carnival Carnevale Romano',
+        referenceUrl: 'https://carnevale.roma.it/',
+        referenceUrlKo: 'https://it.wikipedia.org/wiki/Carnevale_romano',
+      },
+      {
+        id: 'piazza-del-popolo',
+        termKo: '피아차 델 포폴로',
+        termEn: 'Piazza del Popolo',
+        promptKo:
+          '로마 카니발에서 피아차 델 포폴로가 왜 핵심 광장인지 동선 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Why Piazza del Popolo matters during Rome Carnival in 3 short sentences.',
+        searchQueryKo: '로마 피아차 델 포폴로 카니발',
+        searchQueryEn: 'Piazza del Popolo Rome Carnival',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Piazza_del_Popolo',
+      },
+      {
+        id: 'via-del-corso',
+        termKo: '비아 델 코르소',
+        termEn: 'Via del Corso',
+        promptKo:
+          '로마 카니발 비아 델 코르소(Via del Corso) 퍼레이드 루트를 보기 좋은 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Tips for watching the Rome Carnival parade on Via del Corso in 3 short sentences.',
+        searchQueryKo: '로마 비아 델 코르소 카니발',
+        searchQueryEn: 'Via del Corso Rome Carnival parade',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Via_del_Corso',
+      },
+      {
+        id: 'martedi-grasso',
+        termKo: '마르디 그라',
+        termEn: 'Martedì Grasso',
+        promptKo:
+          '로마 카니발 마르디 그라(Martedì Grasso, 대림절 전 화요일)가 왜 절정인지 3문장 이내로 설명해줘.',
+        promptEn: 'Why Martedì Grasso is the peak of Rome Carnival in 3 short sentences.',
+        searchQueryKo: '로마 카니발 마르디 그라',
+        searchQueryEn: 'Rome Carnival Martedì Grasso Fat Tuesday',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'carnevale-official',
+            labelKo: '공식 일정',
+            labelEn: 'Official programme',
+            kind: 'shop',
+            href: 'https://carnevale.roma.it/',
+          },
+        ],
+      },
+      {
+        highlightIndex: 2,
+        links: [
+          {
+            id: 'navona-map',
+            labelKo: '나보나 광장',
+            labelEn: 'Piazza Navona',
+            kind: 'shop',
+            searchQueryKo: '로마 피아차 나보나',
+            searchQueryEn: 'Piazza Navona, Rome, Italy',
+            searchTarget: 'maps',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '로마 카니발 Carnevale Romano',
+    youtubeSearchQueryEn: 'Rome Carnival Carnevale Romano',
+    mooniChips: [
+      {
+        id: 'martedi-grasso-date',
+        promptKo: '2027년 마르디 그라가 언제야?',
+        promptEn: 'When is Martedì Grasso in 2027?',
+      },
+      {
+        id: 'parade-route',
+        promptKo: '피아차 델 포폴로에서 비아 델 코르소 동선 어떻게 잡아?',
+        promptEn: 'How should I plan Piazza del Popolo to Via del Corso?',
+      },
+      {
+        id: 'stay-area',
+        promptKo: '센트로 스토리코랑 트리덴테 중 어디 숙소가 나아?',
+        promptEn: 'Centro Storico or Tridente — where should I stay?',
+      },
+    ],
+    priority: 1,
+  },
 ];

@@ -71,6 +71,7 @@ for (const region of WORLD_EVENT_HUB_REGIONS) {
 assert.equal(resolveWorldEventHubRegionId('prague'), 'europe', 'prague in europe after Wave3 hub reorg');
 assert.equal(resolveWorldEventHubRegionId('paris'), 'europe', 'paris in europe');
 assert.equal(resolveWorldEventHubRegionId('london'), 'europe', 'london in europe');
+assert.equal(resolveWorldEventHubRegionId('rome'), 'europe', 'rome in europe');
 assert.equal(resolveWorldEventHubRegionId('istanbul'), 'niche', 'istanbul stays niche');
 
 const viennaEvents = getWorldEventsForSlug('vienna');

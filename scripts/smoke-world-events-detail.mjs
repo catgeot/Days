@@ -32,7 +32,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 
 const events = getAllWorldEvents();
-assert.equal(events.length, 22, 'Wave1+Wave2+Wave3 paris+los-angeles+london has 22 events');
+assert.equal(events.length, 23, 'Wave1+Wave2+Wave3 paris+los-angeles+london+rome has 23 events');
 
 for (const event of events) {
   const found = getWorldEventById(event.id);
@@ -84,6 +84,7 @@ assertTier05('hanoi-tet-2027', 4);
 assertTier05('paris-nuit-blanche-2027', 3);
 assertTier05('los-angeles-rose-parade-2027', 3);
 assertTier05('london-notting-hill-2026', 3);
+assertTier05('rome-carnevale-2027', 3);
 
 const WAVE1_EVENT_IDS = [
   'edinburgh-fringe-2026',
@@ -114,6 +115,7 @@ const WAVE3_EVENT_IDS = [
   'paris-nuit-blanche-2027',
   'los-angeles-rose-parade-2027',
   'london-notting-hill-2026',
+  'rome-carnevale-2027',
 ];
 
 const D5_B_BATCH_A_EVENT_IDS = [
@@ -337,6 +339,30 @@ assert.equal(
 );
 assert.equal(resolveWorldEventHubRegionId('london'), 'europe', 'london hub region europe');
 assert.equal(london.stayAreas.length, 2, 'london Notting Hill + Bayswater stay areas');
+const romeLoc = getWorldEventLocation('rome');
+assert.equal(resolvePlannerFlightArrivalIata(romeLoc), 'FCO', 'rome arrival IATA');
+const rome = getWorldEventById('rome-carnevale-2027');
+const romeOfficial = rome.highlightContextLinks
+  .find((group) => group.highlightIndex === 0)
+  ?.links.find((link) => link.id === 'carnevale-official');
+assert.equal(romeOfficial?.href, 'https://carnevale.roma.it/', 'rome official site');
+assert.equal(rome.sourceUrl, 'https://carnevale.roma.it/', 'rome sourceUrl official');
+const navonaMap = rome.highlightContextLinks
+  .find((group) => group.highlightIndex === 2)
+  ?.links.find((link) => link.id === 'navona-map');
+assert.equal(navonaMap?.searchTarget, 'maps', 'rome navona map searchTarget');
+assert.equal(
+  googleMapsSearchUrl(navonaMap?.searchQueryKo, 'ko'),
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('로마 피아차 나보나')}&hl=ko`,
+  'rome navona map opens Google Maps at Piazza Navona (KO)',
+);
+assert.equal(
+  googleMapsSearchUrl(navonaMap?.searchQueryEn, 'en'),
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Piazza Navona, Rome, Italy')}&hl=en`,
+  'rome navona map opens Google Maps at Piazza Navona (EN)',
+);
+assert.equal(resolveWorldEventHubRegionId('rome'), 'europe', 'rome hub region europe');
+assert.equal(rome.stayAreas.length, 2, 'rome Centro Storico + Tridente stay areas');
 
 /** @param {string} eventId @param {string} linkId @param {string} expectedHref */
 function assertOfficialUrlSsot(eventId, linkId, expectedHref) {
@@ -840,6 +866,7 @@ for (const pilotId of [
   'paris-nuit-blanche-2027',
   'los-angeles-rose-parade-2027',
   'london-notting-hill-2026',
+  'rome-carnevale-2027',
   ...D5_B_BATCH_A_EVENT_IDS,
   ...D5_B_BATCH_B_EVENT_IDS,
   ...D5_B_BATCH_C_EVENT_IDS,

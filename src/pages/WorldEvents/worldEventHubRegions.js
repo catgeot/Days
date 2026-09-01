@@ -2,7 +2,7 @@
 export const WORLD_EVENT_HUB_REGIONS = [
   {
     id: 'europe',
-    slugs: ['vienna', 'munich', 'edinburgh', 'amsterdam', 'barcelona', 'prague', 'paris', 'london'],
+    slugs: ['vienna', 'munich', 'edinburgh', 'amsterdam', 'barcelona', 'prague', 'paris', 'london', 'rome'],
   },
   {
     id: 'asiaPacific',
