@@ -23,9 +23,9 @@
 
 | # | listId | hubId | 기대 title | 상태 |
 |---|--------|-------|------------|------|
-| P1 | `hongcheon-palgyeong` | `hongcheon` | 홍천팔경 | ⬜ |
-| P2 | `yanggu-gugyeong` | `yanggu` | 양구구경(또는 공식명) | ⬜ |
-| P3 | `inje-palgyeong` | `inje` | 인제팔경(공식명 확인) | ⬜ |
+| P1 | `hongcheon-palgyeong` | `hongcheon` | 홍천9경 | ✅ 2026-09-01 |
+| P2 | `yanggu-gugyeong` | `yanggu` | 양구9경 | ✅ 2026-09-01 |
+| P3 | `inje-palgyeong` | `inje` | 인제8경 | ✅ 2026-09-01 |
 
 P 완료 → **I 무결성 #1** → F R01 시작.
 
@@ -60,6 +60,6 @@ P 완료 → **I 무결성 #1** → F R01 시작.
 ### 진행 체크
 
 ```text
-다음 시작: P0 파일럿 (#2, S0 완료)
-tip lists: 0 · hubs KR append: 0
+다음 시작: I 무결성 #1 (#3, P0 완료)
+tip lists: 3 · hubs KR append: 18
 ```
