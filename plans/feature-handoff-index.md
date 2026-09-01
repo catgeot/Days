@@ -51,8 +51,8 @@
 
 | | |
 |--|--|
-| **상태** | **#3 진입 완료** · 다음 **#4 leg UI** |
-| **브랜치** | `cursor/korea-festival-proxy` · tip `87844dae` |
+| **상태** | **#3-a 진입 QA** · 벨트 스크롤 수정 · 사람 Preview → **#4 leg UI** |
+| **브랜치** | `cursor/korea-festival-proxy` · tip `0708af9b` |
 | **PR** | [#170](https://github.com/catgeot/Days/pull/170) |
 | **플랜** | [`korea-festival-road-plan.md`](./korea-festival-road-plan.md) §9 · [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) S5 벨트 |
 | **일지** | [`2026-09-01-project-log.md`](./2026-09-01-project-log.md) |

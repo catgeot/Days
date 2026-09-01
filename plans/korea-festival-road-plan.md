@@ -103,8 +103,8 @@
 
 | | |
 |--|--|
-| **상태** | **#3 진입 완료** · 다음 **#4 leg UI** |
-| **브랜치** | `cursor/korea-festival-proxy` · tip `87844dae` · PR [#170](https://github.com/catgeot/Days/pull/170) |
+| **상태** | **#3-a 진입 QA** · 벨트 스크롤 수정 · 사람 Preview → **#4 leg UI** |
+| **브랜치** | `cursor/korea-festival-proxy` · tip `0708af9b` · PR [#170](https://github.com/catgeot/Days/pull/170) |
 | **플랜** | 본 파일 · [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) S5 벨트 절 |
 | **일지** | [`2026-09-01-project-log.md`](./2026-09-01-project-log.md) |
 | **Preview** | `/qa/korea` |
@@ -119,6 +119,8 @@
 **#2 산출**: `festivalBelts.js` · `groupFestivalsForBelt()` leg[] · smoke leg 매칭 PASS · sparse stop 빈 leg 유지.
 
 **#3 산출**: `FestivalBeltPanel` · **로드** 대분류 칩 · 4로드 카드·선택 · `beltLegsToPanelGroups()` · belt 모드 시 `panelGroups` 대체.
+
+**#3-a 산출**: 벨트 아코디언 펼침 시 `scrollIntoView` — 하단 스크롤 후 로드 클릭 시 선택 카드 화면 유지.
 
 **다음 제시어 (#4 leg UI)**:
 

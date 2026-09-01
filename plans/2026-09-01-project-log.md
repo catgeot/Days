@@ -37,3 +37,13 @@
 - **VERIFY** smoke · build PASS
 - **Preview** `/qa/korea` → `/korea` · **로드** 칩 → 카드 선택 → 정류장별 리스트
 - **다음** **#4 leg UI** — `FestivalBeltLegList` · connector · 빈 leg
+
+### #3-a 진입 QA ✅
+
+- **세션** `축제 로드 #3-a, 진입 QA`
+- **브랜치** `cursor/korea-festival-proxy` · tip `0708af9b` · PR [#170](https://github.com/catgeot/Days/pull/170)
+- **이슈** 하단 스크롤 후 아래 로드 클릭 시 선택 카드가 화면 밖으로 밀림 (위쪽 아코디언 접힘 + scrollTop 유지)
+- **수정** `FestivalBeltPanel` — 펼침 후 `scrollIntoView(block:start)` · `scroll-mt-2`
+- **VERIFY** build PASS
+- **Preview** https://www.gateo.kr/qa/korea → **로드** 칩 → 스크롤 하단 → 로드 클릭·펼침 시 카드 상단 유지
+- **다음** 사람 Preview 1~2줄 → **#4 leg UI**
