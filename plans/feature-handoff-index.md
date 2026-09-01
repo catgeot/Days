@@ -51,8 +51,8 @@
 
 | | |
 |--|--|
-| **상태** | **#1 완료** · 다음 **#2 매칭** |
-| **브랜치** | `cursor/korea-festival-proxy` · tip `42072600` |
+| **상태** | **#2 매칭 완료** · 다음 **#3 진입** |
+| **브랜치** | `cursor/korea-festival-proxy` · tip `b1d44ef9` |
 | **PR** | [#170](https://github.com/catgeot/Days/pull/170) |
 | **플랜** | [`korea-festival-road-plan.md`](./korea-festival-road-plan.md) §9 · [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) S5 벨트 |
 | **일지** | [`2026-09-01-project-log.md`](./2026-09-01-project-log.md) |
@@ -60,18 +60,18 @@
 | **순번** | 로드 트랙 **#0~** · 미완 이어하기 **#Na** ([`korea-festival-road-plan.md`](./korea-festival-road-plan.md)) |
 | **VERIFY** | `generate:korea-festival-belts` · `audit:korea-festival-belts` · `smoke:korea-festival-belts` · `build` |
 
-**게이트**: #1 SSOT·smoke PASS ✅ · #6·#8 = 사람 Preview QA.
+**게이트**: #2 leg smoke PASS ✅ · #6·#8 = 사람 Preview QA.
 
-**다음 제시어 (#2 매칭)**:
+**다음 제시어 (#3 진입)**:
 
 ```
-축제 로드 #2, 매칭
+축제 로드 #3, 진입
 @plans/feature-handoff-index.md
 @plans/2026-09-01-project-log.md
 @plans/korea-festival-road-plan.md
 브랜치 cursor/korea-festival-proxy · PR #170 · Preview /qa/korea
-금지: UI 착수(leg smoke PASS 전) · plans/ feature 커밋 · corridor 부활 · 한 세션 SSOT+UI+지도
-작업: festivalBelts.js · groupFestivalsForBelt() leg[] · sparse stop 빈 leg · smoke 확장
+금지: leg UI(#4) 착수 · plans/ feature 커밋 · corridor 부활 · 한 세션 진입+leg UI+지도
+작업: belt 패널 · 로드 카드 · 선택 상태 · groupFestivalsForBelt() 연결
 ```
 
 ---
