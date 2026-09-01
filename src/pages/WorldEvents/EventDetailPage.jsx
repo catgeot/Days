@@ -13,6 +13,7 @@ import {
 import SEO from '../../components/SEO';
 import { useLocale } from '../../i18n/LocaleProvider';
 import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
+import { canShowMrtStayStrip } from '../../utils/fetchMrtStays';
 import { tripWindowPresetsFromEvent } from '../../utils/worldEventTripPresets';
 import {
   formatWorldEventDateRange,
@@ -38,6 +39,7 @@ import EventActionChips from './EventActionChips';
 import EventDetailHero from './EventDetailHero';
 import EventDetailMediaSection from './EventDetailMediaSection';
 import EventDetailStaticPanel from './EventDetailStaticPanel';
+import EventDetailStayAreasPanel from './EventDetailStayAreasPanel';
 import EventStayStrip from './EventStayStrip';
 import EventTravelGuidePanel from './EventTravelGuidePanel';
 import EventMooniFab from './EventMooniFab';
@@ -150,6 +152,7 @@ export default function EventDetailPage() {
   const showD2Chips = hasWorldEventD2Chips(event.id);
   const showD3Media = hasWorldEventD3Media(event);
   const showD5bBodyUx = hasWorldEventD5bBodyUx(event);
+  const showStayStrip = canShowMrtStayStrip(location);
   const hideHeaderSummary = showD5bBodyUx && showD3Media;
   const typeKey = String(event.type || 'festival');
   const typeLabel = t(`worldEventDetail.type.${typeKey}`, { defaultValue: typeKey });
@@ -330,9 +333,21 @@ export default function EventDetailPage() {
             location={location}
             onGlossaryTermClick={showD5bBodyUx ? setGlossaryTermId : undefined}
             hideHeaderSummary={hideHeaderSummary}
+            hideStayAreas={showStayStrip}
           />
 
           {showD3Media ? <EventDetailMediaSection event={event} locale={locale} /> : null}
+
+          {showStayStrip ? (
+            <div className="mt-4">
+              <EventDetailStayAreasPanel
+                event={event}
+                locale={locale}
+                checkIn={checkIn}
+                checkOut={checkOut}
+              />
+            </div>
+          ) : null}
 
           <div className="mt-4">
             <EventStayStrip

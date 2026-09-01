@@ -300,12 +300,45 @@ export default function EventStayStrip({
 
   return (
     <section className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
+      <div className="flex items-center gap-2">
+        <CalendarDays size={16} className="text-amber-700" aria-hidden />
+        <h2 className="text-sm font-extrabold text-stone-900">{t('worldEventDetail.stayStrip.title')}</h2>
+      </div>
+      <p className="mt-1 text-xs text-stone-500">{t('worldEventDetail.stayStrip.hint')}</p>
+
+      {visitPresets.length > 1 ? (
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {visitPresets.map((preset) => {
+            const active = preset.checkIn === checkIn && preset.checkOut === checkOut;
+            return (
+              <button
+                key={preset.id}
+                type="button"
+                disabled={active}
+                aria-pressed={active}
+                onClick={() => applyDates(preset.checkIn, preset.checkOut)}
+                className={`rounded-full border px-2.5 py-1 text-[11px] font-bold transition-colors disabled:cursor-default ${
+                  active
+                    ? 'border-amber-400 bg-amber-100 text-amber-950 ring-2 ring-amber-300/60'
+                    : 'border-stone-200 bg-stone-50 text-stone-700 hover:border-amber-300 hover:bg-amber-50'
+                }`}
+              >
+                {presetLabel(preset.id)}
+                <span className="ml-1 font-semibold text-stone-500">
+                  {t('worldEventDetail.aiGuide.nights', { count: preset.nights })}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+
       {stayAreas.length === 1 && selectedArea?.note ? (
-        <p className="text-[11px] leading-relaxed text-stone-500">{selectedArea.note}</p>
+        <p className="mt-3 text-[11px] leading-relaxed text-stone-500">{selectedArea.note}</p>
       ) : null}
 
       {stayAreas.length > 1 ? (
-        <div>
+        <div className="mt-3">
           <p className="text-[11px] font-bold text-stone-600">{t('worldEventDetail.stayStrip.areasTitle')}</p>
           <div className="mt-1.5 flex flex-wrap gap-1.5">
             {stayAreas.map((area, index) => {
@@ -335,41 +368,6 @@ export default function EventStayStrip({
           {selectedArea?.note ? (
             <p className="mt-1.5 text-[11px] leading-relaxed text-stone-500">{selectedArea.note}</p>
           ) : null}
-        </div>
-      ) : null}
-
-      <div className={stayAreas.length > 0 ? 'mt-4' : undefined}>
-        <div className="flex items-center gap-2">
-          <CalendarDays size={16} className="text-amber-700" aria-hidden />
-          <h2 className="text-sm font-extrabold text-stone-900">{t('worldEventDetail.stayStrip.title')}</h2>
-        </div>
-        <p className="mt-1 text-xs text-stone-500">{t('worldEventDetail.stayStrip.hint')}</p>
-      </div>
-
-      {visitPresets.length > 1 ? (
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {visitPresets.map((preset) => {
-            const active = preset.checkIn === checkIn && preset.checkOut === checkOut;
-            return (
-              <button
-                key={preset.id}
-                type="button"
-                disabled={active}
-                aria-pressed={active}
-                onClick={() => applyDates(preset.checkIn, preset.checkOut)}
-                className={`rounded-full border px-2.5 py-1 text-[11px] font-bold transition-colors disabled:cursor-default ${
-                  active
-                    ? 'border-amber-400 bg-amber-100 text-amber-950 ring-2 ring-amber-300/60'
-                    : 'border-stone-200 bg-stone-50 text-stone-700 hover:border-amber-300 hover:bg-amber-50'
-                }`}
-              >
-                {presetLabel(preset.id)}
-                <span className="ml-1 font-semibold text-stone-500">
-                  {t('worldEventDetail.aiGuide.nights', { count: preset.nights })}
-                </span>
-              </button>
-            );
-          })}
         </div>
       ) : null}
 

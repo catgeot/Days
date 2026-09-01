@@ -422,6 +422,8 @@ assert.match(hubSrc, /eventDetailHref/, 'WorldEvents hub uses eventDetailHref');
 
 const detailSrc = readFileSync(join(root, 'src/pages/WorldEvents/EventDetailPage.jsx'), 'utf8');
 assert.match(detailSrc, /EventDetailStaticPanel/, 'EventDetailPage renders static panel');
+assert.match(detailSrc, /EventDetailStayAreasPanel/, 'EventDetailPage renders stay areas above stay strip');
+assert.match(detailSrc, /hideStayAreas=\{showStayStrip\}/, 'EventDetailPage dedupes static stay areas when strip shown');
 assert.match(detailSrc, /shouldShowEventTravelGuidePanel/, 'EventDetailPage gates AI panel to pilot events');
 const travelGuidePanelSrc = readFileSync(
   join(root, 'src/pages/WorldEvents/EventTravelGuidePanel.jsx'),
@@ -628,6 +630,7 @@ assert.match(staticPanelSrc, /getWorldEventRecurrenceNote/, 'EventDetailStaticPa
 assert.match(staticPanelSrc, /getWorldEventStayAreas/, 'EventDetailStaticPanel locale stayAreas');
 assert.match(staticPanelSrc, /linkedTermIdsRef/, 'EventDetailStaticPanel shared glossary refs');
 assert.match(staticPanelSrc, /hideHeaderSummary/, 'EventDetailStaticPanel hideHeaderSummary gate');
+assert.match(staticPanelSrc, /hideStayAreas/, 'EventDetailStaticPanel hideStayAreas gate');
 assert.match(detailSrc, /hideHeaderSummary/, 'EventDetailPage D5-b summary dedupe');
 assert.match(detailSrc, /heroEyebrow/, 'EventDetailPage season meta strip highlight label');
 
