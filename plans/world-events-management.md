@@ -284,5 +284,6 @@ npm run build
 | `paris-nuit-blanche-2027` | `/world-events/paris-nuit-blanche-2027` | glossary 4 · 갤러리 3 · `paris.fr/nuit-blanche` 공식 |
 | `los-angeles-rose-parade-2027` | `/world-events/los-angeles-rose-parade-2027` | glossary 4 · 갤러리 3 · `tournamentofroses.com` 공식 |
 | `london-notting-hill-2026` | `/world-events/london-notting-hill-2026` | glossary 4 · 갤러리 3 · `nhcarnival.org` 공식 |
+| `rome-carnevale-2027` | `/world-events/rome-carnevale-2027` | glossary 4 · 갤러리 3 · `carnevale.roma.it` 공식 |
 
 **금지**: Wave1 KO 일괄 En · `worldEvents.json` 직편집 · 로그인 포털 직링크(istanbul 교훈).
