@@ -1,10 +1,24 @@
 # 축제 로드 — 킬러 맵 (장기·완성도 우선)
 
-**세션 표기**: `축제 페이지 #{N}, …` — 일지 #4 다음 **#5부터** ([`cloud-preview-continuity.md`](./cloud-preview-continuity.md) §1.1)  
+**세션 표기**: `축제 로드 #{N}, {단계}` — **본 트랙 전용 순번** ([`cloud-preview-continuity.md`](./cloud-preview-continuity.md) §1.1)  
 **고정 브랜치**: `cursor/korea-festival-proxy`  
 **Preview**: `/qa/korea` → `/korea`  
 **상위 플랜**: [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) S5 · corridor 칩 **부활 금지**  
 **워크플로**: 로직=feature · 문서=`main` — [`docs-on-main-workflow.md`](./docs-on-main-workflow.md)
+
+> **구 `축제 페이지 #1~#4`**(S2~S5-C UI)와 **별도** — 로드 트랙은 **#0부터** 리셋.
+
+---
+
+## 세션 순번 규칙
+
+| 표기 | 의미 |
+|------|------|
+| **`#N`** | 메인 세션. **한 채팅 = 한 번호**(해당 단계 완료·게이트 통과 시에만 **N+1**) |
+| **`#Na` · `#Nb` …** | **같은 #N** 작업이 끝나지 않아 **이어하기** — 일지·index에 **남은 작업** 명시 |
+| **리셋 금지** | 로드 트랙 안에서 `#1`로 되돌리기 금지 · suffix만 추가 |
+
+**예**: #1에서 SSOT만 끝나고 smoke 미완 → 다음 채팅 `축제 로드 #1a, 로드 검증·확장` · smoke PASS 후 → `#2` 매칭.
 
 ---
 
@@ -22,31 +36,33 @@
 
 ---
 
-## Phase 로드맵 (#5~#17)
+## Phase 로드맵 (#0~#13)
 
 | Phase | 세션 | 목표 | QA 게이트 |
 |-------|------|------|-----------|
-| **0** | (문서) | 플랜·index·일지 `main` | — |
-| **1** 골격 | **#5~#8** | SSOT → 매칭 → 진입 → **leg UI** | #8 leg 확인 |
-| **1** 지도 | **#9~#10** | line·번호 정류장·leg↔지도 | **#10 강원 1차** |
-| **2** | **#11~#12** | 카피·매칭·모바일 | **#12 강원 시범 완료** |
-| **3** | **#13~#15** | 전국 권역별 시드 | 권역별 Preview |
-| **4** | **#16~#17** | 계절·S5-D·코스 (합의 후) | PROD 전 |
+| **0** | **#0** ✅ | 플랜·index·일지 `main` | — |
+| **1** 골격 | **#1~#4** | SSOT → 매칭 → 진입 → **leg UI** | #4 leg 확인 |
+| **1** 지도 | **#5~#6** | line·번호 정류장·leg↔지도 | **#6 강원 1차** |
+| **2** | **#7~#8** | 카피·매칭·모바일 | **#8 강원 시범 완료** |
+| **3** | **#9~#11** | 전국 권역별 시드 | 권역별 Preview |
+| **4** | **#12~#13** | 계절·S5-D·코스 (합의 후) | PROD 전 |
 
 ### 채팅명 복붙표
 
 | #N | 채팅명 | 산출 |
 |----|--------|------|
-| **5** | `축제 페이지 #5, 로드 검증·확장` | hub·LIVE 매칭 검증 · overrides · generate/audit/smoke · **UI 없음** |
-| **6** | `축제 페이지 #6, 로드 매칭` | `festivalBelts.js` · leg 배열 · smoke |
-| **7** | `축제 페이지 #7, 로드 진입` | belt 패널 · 카드 · 선택 상태 |
-| **8** | `축제 페이지 #8, 로드 leg UI` | `FestivalBeltLegList` · connector · 빈 leg |
-| **9** | `축제 페이지 #9, 로드 지도` | Mapbox line · 번호 stop |
-| **10** | `축제 페이지 #10, 로드 지도동기화` | leg↔지도 · Phase1 게이트 |
-| **11** | `축제 페이지 #11, 로드 강원 다듬기` | blurb·km 튜닝 |
-| **12** | `축제 페이지 #12, 로드 킬러맵 QA` | 강원 시범 완료 |
-| **13~15** | 전국 수도권·영남·호남충청 | 벨트 시드 append |
-| **16~17** | 계절·일정연동 | 합의 후 |
+| **0** | `축제 로드 #0, 플랜·핸드오프` | ✅ 플랜·index·일지 · 제시어 #1 |
+| **1** | `축제 로드 #1, 검증·확장` | hub·LIVE 매칭 검증 · overrides · generate/audit/smoke · **UI 없음** |
+| **1a** | `축제 로드 #1a, 검증·확장` | (#1 미완 시) smoke·overrides 잔여 |
+| **2** | `축제 로드 #2, 매칭` | `festivalBelts.js` · leg 배열 · smoke |
+| **3** | `축제 로드 #3, 진입` | belt 패널 · 카드 · 선택 상태 |
+| **4** | `축제 로드 #4, leg UI` | `FestivalBeltLegList` · connector · 빈 leg |
+| **5** | `축제 로드 #5, 지도` | Mapbox line · 번호 stop |
+| **6** | `축제 로드 #6, 지도동기화` | leg↔지도 · Phase1 게이트 |
+| **7** | `축제 로드 #7, 강원 다듬기` | blurb·km 튜닝 |
+| **8** | `축제 로드 #8, 킬러맵 QA` | 강원 시범 완료 |
+| **9~11** | 전국 수도권·영남·호남충청 | 벨트 시드 append |
+| **12~13** | 계절·일정연동 | 합의 후 |
 
 ---
 
@@ -59,7 +75,7 @@
 | `gw-central` | 강원 중부 횡단로 | wonju → jeongseon → pyeongchang |
 | `gw-west-jungbu` | 원주·충북 북부로 | wonju → jecheon → danyang |
 
-`gw-west`(hongcheon→inje)는 #11 밀도 검증 후.
+`gw-west`(hongcheon→inje)는 **#7** 밀도 검증 후.
 
 ---
 
@@ -69,7 +85,7 @@
 - 스크립트: `generate:korea-festival-belts` · `audit:korea-festival-belts` · `smoke:korea-festival-belts`
 - 런타임: `festivalBelts.js` — `groupFestivalsForBelt()` → leg[] (stopIndex · nextLabel · items · empty)
 - UI: `FestivalBeltLegList.jsx` — 정류장 헤더 · connector · `FestivalRow` · **빈 leg 유지**
-- 지도: `KoreaFestivalMap` — belt line · 번호 마커 · leg 탭 동기화 (#9~#10)
+- 지도: `KoreaFestivalMap` — belt line · 번호 마커 · leg 탭 동기화 (#5~#6)
 - 벨트 모드 시 `panelGroups` **대체** (혼용 금지)
 
 ---
@@ -79,7 +95,7 @@
 | 시점 | 명령 |
 |------|------|
 | 매 세션 | 해당 `audit`/`smoke` · `build` |
-| #10·#12 | 사람 `/qa/korea` **게이트** |
+| #6·#8 | 사람 `/qa/korea` **게이트** |
 
 ---
 
@@ -87,22 +103,24 @@
 
 | | |
 |--|--|
-| **상태** | **#5 검증·확장** — 플랜 `main` 반영 · 코드 미착수 |
+| **상태** | **#0 완료** · 다음 **#1 검증·확장** |
 | **브랜치** | `cursor/korea-festival-proxy` (PR #29 병합됨 · 구현 시 **신규 PR**) |
 | **플랜** | 본 파일 · [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) S5 벨트 절 |
 | **일지** | [`2026-09-01-project-log.md`](./2026-09-01-project-log.md) |
 | **Preview** | `/qa/korea` |
 
-**다음 제시어 (#5 검증·확장)**:
+**다음 제시어 (#1 검증·확장)**:
 
 ```
-축제 페이지 #5, 로드 검증·확장
+축제 로드 #1, 검증·확장
 @plans/feature-handoff-index.md
 @plans/2026-09-01-project-log.md
 @plans/korea-festival-road-plan.md
 브랜치 cursor/korea-festival-proxy · PR 신규(구 #29 병합됨) · Preview /qa/korea
 금지: UI 착수(SSOT·smoke PASS 전) · plans/ feature 커밋 · corridor 부활 · 한 세션 SSOT+UI+지도
-작업: hubId·강원 LIVE 축제 매칭 검증 · overrides 4로드 확정 · generate/audit/smoke · #6 넘김 정리
+작업: hubId·강원 LIVE 축제 매칭 검증 · overrides 4로드 확정 · generate/audit/smoke · #2 넘김 정리
 ```
+
+**#1 미완 시 다음 채팅**: `축제 로드 #1a, 검증·확장` — index·일지에 **남은 항목**만.
 
 **금지**: corridor 헤더 칩 · hub 대량 신설 · UI 리디자인 · releaseNotes(미승인)

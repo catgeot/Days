@@ -211,14 +211,14 @@ QA 후 커밋.
 
 #### 벨트 · 축제로드 → **축제 로드 킬러 맵** (활성 · 2026-09-01)
 
-**SSOT**: [`korea-festival-road-plan.md`](./korea-festival-road-plan.md) — Phase #5~#17 · 강원 시범 → 전국 → S5-D.
+**SSOT**: [`korea-festival-road-plan.md`](./korea-festival-road-plan.md) — **로드 트랙 #0~#13** (#Na 이어하기) · 강원 시범 → 전국 → S5-D.
 
 | | |
 |--|--|
-| **제품** | 로드 선택 → **지도 동선** + **정류장 leg 타임라인**(지역→축제→다음 지역) · 일정 맞춤은 #16~#17 |
+| **제품** | 로드 선택 → **지도 동선** + **정류장 leg 타임라인**(지역→축제→다음 지역) · 일정 맞춤은 #12~#13 |
 | **≠ corridor** | [`koreaFestivalCorridors.json`](../src/pages/Korea/data/koreaFestivalCorridors.json) bbox · **헤더 corridor 칩 부활 금지** |
 | **브랜치** | `cursor/korea-festival-proxy` · 문서=`main` |
-| **다음 세션** | `축제 페이지 #5, 로드 검증·확장` — index·본 플랜 §9·일지 참고 |
+| **다음 세션** | `축제 로드 #1, 검증·확장` — index·로드 플랜 §9·일지 참고 |
 
 구 플랜(2026-07): 「지금」 형상 패턴 · C 이후 후보 → **합의·장기 세션**으로 승격.
 

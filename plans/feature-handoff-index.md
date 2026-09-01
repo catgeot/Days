@@ -51,25 +51,26 @@
 
 | | |
 |--|--|
-| **상태** | **#5 검증·확장** — 플랜·핸드오프 `main` · 코드 미착수 |
+| **상태** | **#0 완료** · 다음 **#1 검증·확장** |
 | **브랜치** | `cursor/korea-festival-proxy` · PR #29 **병합됨** → 구현 시 **신규 PR** |
 | **플랜** | [`korea-festival-road-plan.md`](./korea-festival-road-plan.md) §9 · [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) S5 벨트 |
 | **일지** | [`2026-09-01-project-log.md`](./2026-09-01-project-log.md) |
-| **Preview** | `/qa/korea` → `/korea` (벨트 탭·로드 UI는 #7~) |
+| **Preview** | `/qa/korea` → `/korea` (벨트 탭·로드 UI는 #3~) |
+| **순번** | 로드 트랙 **#0~** · 미완 이어하기 **#Na** ([`korea-festival-road-plan.md`](./korea-festival-road-plan.md)) |
 | **VERIFY** | (착수 후) `audit:korea-festival-belts` · `smoke:korea-festival-belts` · `build` |
 
-**게이트**: #5 = hub·LIVE 매칭 검증 + SSOT smoke PASS → #6 런타임. #10·#12 = 사람 Preview QA.
+**게이트**: #1 = hub·LIVE 검증 + SSOT smoke PASS → #2. #6·#8 = 사람 Preview QA.
 
-**다음 제시어 (#5 검증·확장)**:
+**다음 제시어 (#1 검증·확장)**:
 
 ```
-축제 페이지 #5, 로드 검증·확장
+축제 로드 #1, 검증·확장
 @plans/feature-handoff-index.md
 @plans/2026-09-01-project-log.md
 @plans/korea-festival-road-plan.md
 브랜치 cursor/korea-festival-proxy · PR 신규(구 #29 병합됨) · Preview /qa/korea
 금지: UI 착수(SSOT·smoke PASS 전) · plans/ feature 커밋 · corridor 부활 · 한 세션 SSOT+UI+지도
-작업: hubId·강원 LIVE 축제 매칭 검증 · overrides 4로드 확정 · generate/audit/smoke · #6 넘김 정리
+작업: hubId·강원 LIVE 축제 매칭 검증 · overrides 4로드 확정 · generate/audit/smoke · #2 넘김 정리
 ```
 
 ---
