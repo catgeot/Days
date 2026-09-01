@@ -28,3 +28,12 @@
 - **산출** `festivalBelts.js` · `groupFestivalsForBelt()` leg[] (stopIndex·nextLabel·items·empty) · smoke leg 검증 확장
 - **VERIFY** generate · audit · smoke · build PASS · sparse stop 빈 leg 유지 · 벨트 밖 축제 제외
 - **다음** **#3 진입** — belt 패널 · 로드 카드 · 선택 상태
+
+### #3 진입 ✅
+
+- **세션** `축제 로드 #3, 진입`
+- **브랜치** `cursor/korea-festival-proxy` · tip `87844dae` · PR [#170](https://github.com/catgeot/Days/pull/170)
+- **산출** `FestivalBeltPanel` · **로드** 대분류 칩 · 4로드 카드·선택·해제 · `beltLegsToPanelGroups()` · belt 모드 `panelGroups` 대체
+- **VERIFY** smoke · build PASS
+- **Preview** `/qa/korea` → `/korea` · **로드** 칩 → 카드 선택 → 정류장별 리스트
+- **다음** **#4 leg UI** — `FestivalBeltLegList` · connector · 빈 leg

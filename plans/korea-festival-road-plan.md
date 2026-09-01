@@ -103,8 +103,8 @@
 
 | | |
 |--|--|
-| **상태** | **#2 매칭 완료** · 다음 **#3 진입** |
-| **브랜치** | `cursor/korea-festival-proxy` · tip `b1d44ef9` · PR [#170](https://github.com/catgeot/Days/pull/170) |
+| **상태** | **#3 진입 완료** · 다음 **#4 leg UI** |
+| **브랜치** | `cursor/korea-festival-proxy` · tip `87844dae` · PR [#170](https://github.com/catgeot/Days/pull/170) |
 | **플랜** | 본 파일 · [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) S5 벨트 절 |
 | **일지** | [`2026-09-01-project-log.md`](./2026-09-01-project-log.md) |
 | **Preview** | `/qa/korea` |
@@ -118,16 +118,18 @@
 
 **#2 산출**: `festivalBelts.js` · `groupFestivalsForBelt()` leg[] · smoke leg 매칭 PASS · sparse stop 빈 leg 유지.
 
-**다음 제시어 (#3 진입)**:
+**#3 산출**: `FestivalBeltPanel` · **로드** 대분류 칩 · 4로드 카드·선택 · `beltLegsToPanelGroups()` · belt 모드 시 `panelGroups` 대체.
+
+**다음 제시어 (#4 leg UI)**:
 
 ```
-축제 로드 #3, 진입
+축제 로드 #4, leg UI
 @plans/feature-handoff-index.md
 @plans/2026-09-01-project-log.md
 @plans/korea-festival-road-plan.md
 브랜치 cursor/korea-festival-proxy · PR #170 · Preview /qa/korea
-금지: leg UI(#4) 착수 · plans/ feature 커밋 · corridor 부활 · 한 세션 진입+leg UI+지도
-작업: belt 패널 · 로드 카드 · 선택 상태 · groupFestivalsForBelt() 연결
+금지: 지도(#5) 착수 · plans/ feature 커밋 · corridor 부활 · 한 세션 leg UI+지도
+작업: FestivalBeltLegList · connector · 빈 leg · belt 모드 리스트 전환
 ```
 
 **#1 미완 시 다음 채팅**: `축제 로드 #1a, 검증·확장` — index·일지에 **남은 항목**만.
