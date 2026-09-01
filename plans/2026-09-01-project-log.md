@@ -67,3 +67,12 @@
 - **산출** `koreaLocalScenicLists.json`(시드 0) · `koreaLocalScenicLists.js` · `audit:korea-local-scenic-lists` · `smoke:korea-local-scenic-lists` · `searchSuggestions`·`scenicSearch` 브리지
 - **VERIFY** audit 0 · smoke PASS · build PASS
 - **다음** **#2 파일럿 3건** — 홍천·양구·인제(P0)
+
+### #2 파일럿 3건 ✅
+
+- **세션** `지자체 팔경 #2, 파일럿 3건`
+- **브랜치** `cursor/palgyeong` · tip `3faf3bca`
+- **산출** `hongcheon-palgyeong`(홍천9경 9) · `yanggu-gugyeong`(양구9경 9) · `inje-palgyeong`(인제8경 8) · hub append 18 · aliases
+- **출처** 홍천군 문화관광포털 · 양구볼구양 · injetour.co.kr/scenics
+- **VERIFY** audit:korea-local-scenic-lists 0 · audit:city-attraction-hubs 0 · smoke · build PASS
+- **다음** **#3 무결성** — I#1 §6.3 · 큐 P0✅
