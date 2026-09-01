@@ -252,10 +252,10 @@ export const CLOUD_QA_SHARE_LINKS = [
   },
   {
     slug: 'korea',
-    label: '축제 페이지',
-    branch: 'cursor/korea-photo-swipe-7d94',
+    label: '축제 로드',
+    branch: 'cursor/korea-festival-proxy',
     destination:
-      'https://days-git-cursor-korea-photo-swipe-7d94-catgeots-projects.vercel.app/korea',
+      'https://days-git-cursor-korea-festival-proxy-catgeots-projects.vercel.app/korea',
     active: true,
   },
   {
