@@ -82,7 +82,6 @@ import {
   buildFestivalHubList,
   getFestivalBeltById,
   getFestivalBelts,
-  groupFestivalsForBelt,
   localizedBeltLabel,
   summarizeBeltFestivals,
 } from './festivalBelts.js';
@@ -939,9 +938,12 @@ export default function KoreaFestivalHub() {
   );
 
   const indexTitle = useMemo(() => {
-    if (beltId) {
-      const belt = getFestivalBeltById(beltId);
-      if (belt) return localizedBeltLabel(belt, locale);
+    if (chipPanel === 'belt') {
+      if (beltId) {
+        const belt = getFestivalBeltById(beltId);
+        if (belt) return localizedBeltLabel(belt, locale);
+      }
+      return t('korea.festival.belt.major');
     }
     if (nearOrigin && nearLabel) {
       return t('korea.common.nearAround', { label: nearLabel });
@@ -959,6 +961,7 @@ export default function KoreaFestivalHub() {
       locale,
     });
   }, [
+    chipPanel,
     beltId,
     locale,
     nearOrigin,
@@ -1034,7 +1037,7 @@ export default function KoreaFestivalHub() {
     [beltId],
   );
 
-  const beltMode = Boolean(selectedBelt);
+  const beltViewActive = chipPanel === 'belt';
 
   const beltSummaries = useMemo(
     () =>
@@ -1047,23 +1050,19 @@ export default function KoreaFestivalHub() {
         return {
           belt,
           legs,
+          groups: beltLegsToPanelGroups(legs, locale),
           festivalCount,
           activeStopCount,
           stopCount: belt.stops?.length ?? 0,
         };
       }),
-    [panelItems, festivalHubList],
+    [panelItems, festivalHubList, locale],
   );
 
-  const beltLegs = useMemo(() => {
-    if (!selectedBelt) return null;
-    return groupFestivalsForBelt(selectedBelt, panelItems, festivalHubList);
-  }, [selectedBelt, panelItems, festivalHubList]);
-
-  const beltFestivalCount = useMemo(() => {
-    if (!beltLegs) return 0;
-    return beltLegs.reduce((n, leg) => n + leg.items.length, 0);
-  }, [beltLegs]);
+  const expandedBeltSummary = useMemo(
+    () => beltSummaries.find((row) => row.belt.id === beltId) || null,
+    [beltSummaries, beltId],
+  );
 
   const timeChipCounts = useMemo(() => {
     /** @type {Record<string, number>} */
@@ -1077,9 +1076,6 @@ export default function KoreaFestivalHub() {
   }, [items, areaCode, cityName, tasteId, timeTabs, now]);
 
   const panelGroups = useMemo(() => {
-    if (beltLegs) {
-      return beltLegsToPanelGroups(beltLegs, locale);
-    }
     if (nearBaseItems) {
       const groups = groupFestivalsByCity(panelItems, {});
       return groups
@@ -1114,17 +1110,15 @@ export default function KoreaFestivalHub() {
       groupFestivalsForList(panelItems, { areaCode }),
       now,
     );
-  }, [beltLegs, locale, nearBaseItems, panelItems, areaCode, nearKmByContentId, now]);
+  }, [nearBaseItems, panelItems, areaCode, nearKmByContentId, now]);
 
   const localizedPanelGroups = useMemo(
     () =>
       panelGroups.map((g) => ({
         ...g,
-        label: beltMode
-          ? g.label
-          : localizeFestivalGroupLabel(locale, g),
+        label: localizeFestivalGroupLabel(locale, g),
       })),
-    [panelGroups, locale, beltMode],
+    [panelGroups, locale],
   );
 
   const flapChildChips = useMemo(() => {
@@ -1161,7 +1155,7 @@ export default function KoreaFestivalHub() {
       : '';
 
   const flapHasRelated =
-    !beltMode &&
+    !beltViewActive &&
     (flapChildChips.length > 0 ||
       flapNeighborChips.length > 0 ||
       flapTasteChips.length > 0 ||
@@ -1459,10 +1453,15 @@ export default function KoreaFestivalHub() {
     !searchActive;
 
   const panelListMeta = useMemo(() => {
-    if (selectedBelt && beltLegs) {
-      return t('korea.festival.belt.panelMeta', {
-        stops: beltLegs.length,
-        count: beltFestivalCount,
+    if (beltViewActive) {
+      if (expandedBeltSummary) {
+        return t('korea.festival.belt.panelMeta', {
+          stops: expandedBeltSummary.stopCount,
+          count: expandedBeltSummary.festivalCount,
+        });
+      }
+      return t('korea.festival.belt.roadCount', {
+        count: beltSummaries.length,
       });
     }
     if (nearBaseItems && nearLabel) {
@@ -1480,9 +1479,9 @@ export default function KoreaFestivalHub() {
       locale,
     });
   }, [
-    selectedBelt,
-    beltLegs,
-    beltFestivalCount,
+    beltViewActive,
+    expandedBeltSummary,
+    beltSummaries.length,
     nearBaseItems,
     nearLabel,
     nearActive,
@@ -1528,13 +1527,10 @@ export default function KoreaFestivalHub() {
     setSelected(null);
   };
 
-  const selectBelt = (id) => {
+  const toggleBeltExpand = (id) => {
     const next = id ? String(id) : null;
     setBeltId(next);
     setChipPanel('belt');
-    clearSearchFilter();
-    clearNear();
-    setPersonalTab(null);
     setSelected(null);
   };
 
@@ -1577,9 +1573,10 @@ export default function KoreaFestivalHub() {
   const majorTasteDisplay =
     locale === 'en' ? t('korea.common.theme') : tasteMajorLabel;
 
-  const beltMajorLabel = selectedBelt
-    ? localizedBeltLabel(selectedBelt, locale)
-    : t('korea.festival.belt.major');
+  const beltMajorLabel =
+    beltViewActive && beltId && selectedBelt
+      ? localizedBeltLabel(selectedBelt, locale)
+      : t('korea.festival.belt.major');
   const majorBeltDisplay =
     locale === 'en' ? t('korea.festival.belt.major') : beltMajorLabel;
 
@@ -2119,16 +2116,7 @@ export default function KoreaFestivalHub() {
                   </button>
                 </div>
               </div>
-              {chipPanel === 'belt' ? (
-                <div className="pb-1">
-                  <FestivalBeltPanel
-                    summaries={beltSummaries}
-                    selectedBeltId={beltId}
-                    onSelect={selectBelt}
-                    locale={locale}
-                  />
-                </div>
-              ) : (
+              {chipPanel !== 'belt' ? (
               <ChipScrollRow
                 ariaLabel={t('korea.common.detailChips')}
                 panelKey={detailChipPanelKey}
@@ -2203,7 +2191,7 @@ export default function KoreaFestivalHub() {
                   </>
                 )}
               </ChipScrollRow>
-              )}
+              ) : null}
             </div>
           </div>
         </div>
@@ -2473,19 +2461,34 @@ export default function KoreaFestivalHub() {
                     </div>
                   ))
                 )
+              ) : beltViewActive ? (
+                <FestivalBeltPanel
+                  summaries={beltSummaries}
+                  expandedBeltId={beltId}
+                  onToggleExpand={toggleBeltExpand}
+                  locale={locale}
+                  renderFestival={(item) => (
+                    <FestivalRow
+                      key={festivalKey(item)}
+                      item={item}
+                      large={listLarge}
+                      active={
+                        selected?.contentId != null &&
+                        String(selected.contentId) === String(item.contentId)
+                      }
+                      favorited={favoriteIds.has(String(item.contentId))}
+                      onToggleFavorite={handleToggleFavorite}
+                      onSelect={openItem}
+                    />
+                  )}
+                />
               ) : panelItems.length === 0 ? (
                 <p className="px-1 py-4 text-sm text-stone-500">
                   {loading
                     ? t('korea.common.loading')
                     : searchActive
                       ? t('korea.festival.emptySearch')
-                      : beltMode
-                        ? t('korea.festival.belt.emptyRoad')
-                        : t('korea.festival.emptyFilter')}
-                </p>
-              ) : beltMode && beltFestivalCount === 0 ? (
-                <p className="px-1 py-4 text-sm text-stone-500">
-                  {t('korea.festival.belt.emptyRoad')}
+                      : t('korea.festival.emptyFilter')}
                 </p>
               ) : (
                 localizedPanelGroups.map((group) => (

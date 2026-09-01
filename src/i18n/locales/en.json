@@ -1317,7 +1317,11 @@
         "activeStops": "{{count}} stops with festivals",
         "festivals": "{{count}}",
         "clear": "Clear road · full list",
-        "emptyRoad": "No festivals on this road. Try another time tab."
+        "emptyRoad": "No festivals on this road. Try another time tab.",
+        "emptyStop": "No festivals at this stop.",
+        "roadCount": "{{count}} pilot roads (Gangwon)",
+        "expand": "Expand",
+        "collapse": "Collapse"
       },
       "mapPicked": "{{count}} picked on map",
       "mapPointCount": "Points",
