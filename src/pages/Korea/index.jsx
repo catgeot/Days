@@ -2183,7 +2183,7 @@ export default function KoreaFestivalHub() {
                     type="button"
                     onClick={closePersonal}
                     aria-label={t('korea.common.close')}
-                    className="flex h-9 items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 text-[11px] font-bold text-stone-700 hover:bg-stone-100"
+                    className="flex h-9 items-center gap-1 rounded-full border border-amber-400 bg-amber-50 px-2.5 text-[11px] font-bold text-amber-900 shadow-sm hover:bg-amber-100"
                   >
                     <X size={14} aria-hidden="true" />
                     {t('korea.common.close')}
@@ -2275,33 +2275,22 @@ export default function KoreaFestivalHub() {
               </div>
             )}
             {personalTab != null && !mapOpen && (
-              <div className="flex shrink-0 items-center gap-1.5 border-b border-stone-200 px-3 py-2">
-                <div className="flex min-w-0 flex-1 gap-1.5 overflow-x-auto">
-                  <button
-                    type="button"
-                    onClick={() => openPersonal('favorites')}
-                    className={chipClass(personalTab === 'favorites')}
-                  >
-                    {t('korea.common.favorites')}
-                    <span className="opacity-70">{favoriteList.length}</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => openPersonal('viewed')}
-                    className={chipClass(personalTab === 'viewed')}
-                  >
-                    {t('korea.common.viewed')}
-                    <span className="opacity-70">{viewedList.length}</span>
-                  </button>
-                </div>
+              <div className="flex shrink-0 gap-1.5 border-b border-stone-200 px-3 py-2">
                 <button
                   type="button"
-                  onClick={closePersonal}
-                  aria-label={t('korea.common.close')}
-                  className="flex shrink-0 items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-[11px] font-bold text-stone-700 hover:bg-stone-100"
+                  onClick={() => openPersonal('favorites')}
+                  className={chipClass(personalTab === 'favorites')}
                 >
-                  <X size={13} aria-hidden="true" />
-                  {t('korea.common.close')}
+                  {t('korea.common.favorites')}
+                  <span className="opacity-70">{favoriteList.length}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => openPersonal('viewed')}
+                  className={chipClass(personalTab === 'viewed')}
+                >
+                  {t('korea.common.viewed')}
+                  <span className="opacity-70">{viewedList.length}</span>
                 </button>
               </div>
             )}
