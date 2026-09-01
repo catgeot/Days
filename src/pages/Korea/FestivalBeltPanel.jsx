@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, Route } from 'lucide-react';
 import { localizedBeltLabel } from './festivalBelts.js';
+
+function beltSectionDomId(beltId) {
+  return `festival-belt-section-${beltId}`;
+}
 
 /**
  * @param {{
@@ -27,6 +31,24 @@ export default function FestivalBeltPanel({
 }) {
   const { t } = useTranslation();
 
+  useEffect(() => {
+    if (!expandedBeltId) return undefined;
+    const sectionId = beltSectionDomId(expandedBeltId);
+    let frame2 = 0;
+    const frame1 = requestAnimationFrame(() => {
+      frame2 = requestAnimationFrame(() => {
+        const el = document.getElementById(sectionId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+    return () => {
+      cancelAnimationFrame(frame1);
+      if (frame2) cancelAnimationFrame(frame2);
+    };
+  }, [expandedBeltId]);
+
   return (
     <div
       className="flex flex-col gap-2"
@@ -43,7 +65,8 @@ export default function FestivalBeltPanel({
           return (
             <section
               key={belt.id}
-              className={`overflow-hidden rounded-2xl border transition-colors ${
+              id={beltSectionDomId(belt.id)}
+              className={`scroll-mt-2 overflow-hidden rounded-2xl border transition-colors ${
                 expanded
                   ? 'border-amber-400 bg-amber-50/40 shadow-sm ring-1 ring-amber-200/70'
                   : 'border-stone-200 bg-white'
