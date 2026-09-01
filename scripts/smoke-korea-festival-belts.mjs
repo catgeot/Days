@@ -13,6 +13,12 @@ import { listCityAttractionHubs } from '../src/pages/Home/lib/cityAttractionHubs
 import { nearbyHubsForFestival } from '../src/pages/Korea/nearbyFestivalHubs.js';
 import { areaCodeForHubId } from '../src/pages/Korea/koreaHubSeeds.js';
 import { detectSidoCode } from '../src/pages/Korea/festivalRegionTags.js';
+import {
+  getFestivalBeltById,
+  getFestivalBelts,
+  groupFestivalsForBelt,
+  primaryHubIdForFestival,
+} from '../src/pages/Korea/festivalBelts.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -98,6 +104,8 @@ for (const belt of belts) {
 const url = String(process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '').trim();
 const anon = String(process.env.VITE_SUPABASE_ANON_KEY || '').trim();
 const liveEnabled = process.env.KOREA_FESTIVAL_BELT_LIVE === '1';
+/** @type {Record<string, unknown>[] | null} */
+let liveItems = null;
 
 if (url && anon && liveEnabled) {
   const res = await fetch(`${url.replace(/\/$/, '')}/functions/v1/tourapi-proxy`, {
@@ -127,6 +135,7 @@ if (url && anon && liveEnabled) {
           : null) || detectSidoCode(it.addr1);
       return sido === '32' || sido === '33';
     });
+    liveItems = items;
     assert(items.length >= 1, `LIVE gangwon/chungbuk festivals ≥1 (got ${items.length})`);
 
     /** @type {Map<string, number>} */
@@ -166,6 +175,114 @@ if (url && anon && liveEnabled) {
   console.log('SKIP  LIVE (no supabase secrets)');
 } else {
   console.log('SKIP  LIVE (set KOREA_FESTIVAL_BELT_LIVE=1 to enable)');
+}
+
+console.log('\n▶ groupFestivalsForBelt() leg matching');
+
+assert(getFestivalBelts().length === 4, 'getFestivalBelts() returns 4 belts');
+
+const northBelt = getFestivalBeltById('gw-north-inland');
+assert(Boolean(northBelt), 'getFestivalBeltById(gw-north-inland)');
+
+const hwacheonFest = {
+  contentId: 'belt-hwacheon-1',
+  title: '화천 산천어축제',
+  addr1: '강원특별자치도 화천군',
+  eventStartDate: '20260110',
+  areaCode: '32',
+  mapx: '127.7082',
+  mapy: '38.1063',
+};
+const chuncheonFest = {
+  contentId: 'belt-chuncheon-1',
+  title: '춘천 마임축제',
+  addr1: '강원특별자치도 춘천시',
+  eventStartDate: '20260520',
+  areaCode: '32',
+  mapx: '127.7298',
+  mapy: '37.8811',
+};
+const seoulFest = {
+  contentId: 'belt-seoul-1',
+  title: '서울빛초롱축제',
+  addr1: '서울특별시 종로구',
+  eventStartDate: '20261101',
+  areaCode: '1',
+};
+
+assert(
+  primaryHubIdForFestival(hwacheonFest, hubList) === 'hwacheon',
+  'primaryHub hwacheon festival → hwacheon',
+);
+
+const mockItems = [hwacheonFest, chuncheonFest, seoulFest];
+const northLegs = groupFestivalsForBelt(northBelt, mockItems, hubList);
+
+assert(
+  northLegs.length === northBelt.stops.length,
+  `north belt leg count === stops (${northLegs.length}/${northBelt.stops.length})`,
+);
+
+for (let i = 0; i < northBelt.stops.length; i += 1) {
+  const stop = northBelt.stops[i];
+  const leg = northLegs[i];
+  assert(leg.stopIndex === stop.stopIndex, `leg[${i}] stopIndex`);
+  assert(leg.hubId === String(stop.hubId).toLowerCase(), `leg[${i}] hubId`);
+  assert(leg.stop?.hubId === stop.hubId, `leg[${i}] stop ref`);
+  const expectedNext =
+    i < northBelt.stops.length - 1 ? northBelt.stops[i + 1].name : null;
+  assert(leg.nextLabel === expectedNext, `leg[${i}] nextLabel`);
+}
+
+const cheorwonLeg = northLegs.find((leg) => leg.hubId === 'cheorwon');
+assert(Boolean(cheorwonLeg), 'cheorwon leg exists');
+assert(cheorwonLeg.empty === true, 'sparse cheorwon leg stays empty');
+assert(cheorwonLeg.items.length === 0, 'cheorwon leg items.length === 0');
+
+const hwacheonLeg = northLegs.find((leg) => leg.hubId === 'hwacheon');
+assert(hwacheonLeg?.items.length === 1, 'hwacheon leg has 1 festival');
+assert(hwacheonLeg?.empty === false, 'hwacheon leg not empty');
+
+const chuncheonLeg = northLegs.find((leg) => leg.hubId === 'chuncheon');
+assert(chuncheonLeg?.items.length === 1, 'chuncheon leg has 1 festival');
+
+const assignedIds = new Set();
+for (const leg of northLegs) {
+  for (const item of leg.items) {
+    const id = String(item.contentId || item.title || '');
+    assert(!assignedIds.has(id), `no duplicate festival across legs: ${id}`);
+    assignedIds.add(id);
+  }
+}
+assert(!assignedIds.has('belt-seoul-1'), 'off-belt seoul festival excluded');
+
+let totalLegFestivals = 0;
+for (const belt of belts) {
+  const legs = groupFestivalsForBelt(belt, mockItems, hubList);
+  assert(legs.length === belt.stops.length, `${belt.id}: legs === stops`);
+  for (const leg of legs) {
+    assert(leg.empty === (leg.items.length === 0), `${belt.id}@${leg.hubId}: empty flag`);
+    totalLegFestivals += leg.items.length;
+  }
+}
+assert(totalLegFestivals === 2, `mock festivals on belts === 2 (got ${totalLegFestivals})`);
+
+if (liveItems?.length) {
+  console.log('\n▶ LIVE groupFestivalsForBelt()');
+  let liveLegsWithFestivals = 0;
+  for (const belt of belts) {
+    const legs = groupFestivalsForBelt(belt, liveItems, hubList);
+    let beltFestivals = 0;
+    for (const leg of legs) {
+      beltFestivals += leg.items.length;
+      if (leg.items.length > 0) liveLegsWithFestivals += 1;
+    }
+    assert(beltFestivals >= 1, `LIVE ${belt.id} groupFestivalsForBelt ≥1 (got ${beltFestivals})`);
+  }
+  assert(
+    liveLegsWithFestivals >= 4,
+    `LIVE legs with festivals ≥4 (got ${liveLegsWithFestivals})`,
+  );
 }
 
 if (failed) {

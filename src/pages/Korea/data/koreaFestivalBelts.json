@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-09-01T11:46:48.386Z",
+    "generatedAt": "2026-09-01T11:57:19.113Z",
     "pilotRegion": "gangwon",
     "beltCount": 4,
     "source": "scripts/data/korea-festival-belt-overrides.mjs"
