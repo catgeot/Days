@@ -51,26 +51,27 @@
 
 | | |
 |--|--|
-| **상태** | **#0 완료** · 다음 **#1 검증·확장** |
-| **브랜치** | `cursor/korea-festival-proxy` · PR #29 **병합됨** → 구현 시 **신규 PR** |
+| **상태** | **#1 완료** · 다음 **#2 매칭** |
+| **브랜치** | `cursor/korea-festival-proxy` · tip `42072600` |
+| **PR** | [#170](https://github.com/catgeot/Days/pull/170) |
 | **플랜** | [`korea-festival-road-plan.md`](./korea-festival-road-plan.md) §9 · [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) S5 벨트 |
 | **일지** | [`2026-09-01-project-log.md`](./2026-09-01-project-log.md) |
-| **Preview** | `/qa/korea` → `/korea` (벨트 탭·로드 UI는 #3~) |
+| **Preview** | `/qa/korea` → `/korea` (벨트 UI는 #3~) |
 | **순번** | 로드 트랙 **#0~** · 미완 이어하기 **#Na** ([`korea-festival-road-plan.md`](./korea-festival-road-plan.md)) |
-| **VERIFY** | (착수 후) `audit:korea-festival-belts` · `smoke:korea-festival-belts` · `build` |
+| **VERIFY** | `generate:korea-festival-belts` · `audit:korea-festival-belts` · `smoke:korea-festival-belts` · `build` |
 
-**게이트**: #1 = hub·LIVE 검증 + SSOT smoke PASS → #2. #6·#8 = 사람 Preview QA.
+**게이트**: #1 SSOT·smoke PASS ✅ · #6·#8 = 사람 Preview QA.
 
-**다음 제시어 (#1 검증·확장)**:
+**다음 제시어 (#2 매칭)**:
 
 ```
-축제 로드 #1, 검증·확장
+축제 로드 #2, 매칭
 @plans/feature-handoff-index.md
 @plans/2026-09-01-project-log.md
 @plans/korea-festival-road-plan.md
-브랜치 cursor/korea-festival-proxy · PR 신규(구 #29 병합됨) · Preview /qa/korea
-금지: UI 착수(SSOT·smoke PASS 전) · plans/ feature 커밋 · corridor 부활 · 한 세션 SSOT+UI+지도
-작업: hubId·강원 LIVE 축제 매칭 검증 · overrides 4로드 확정 · generate/audit/smoke · #2 넘김 정리
+브랜치 cursor/korea-festival-proxy · PR #170 · Preview /qa/korea
+금지: UI 착수(leg smoke PASS 전) · plans/ feature 커밋 · corridor 부활 · 한 세션 SSOT+UI+지도
+작업: festivalBelts.js · groupFestivalsForBelt() leg[] · sparse stop 빈 leg · smoke 확장
 ```
 
 ---

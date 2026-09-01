@@ -12,7 +12,11 @@
 - **산출** [`korea-festival-road-plan.md`](./korea-festival-road-plan.md) · index · hub-pl 벨트 절 · **순번 #0~** (#Na 이어하기 규칙)
 - **main** `25c82886` → 순번 정리 커밋 예정
 
-### 다음 #1
+### #1 검증·확장 ✅
 
-- **주제**: 검증·확장 — hubId·LIVE 매칭 · SSOT·generate/audit/smoke (UI 없음)
-- **브랜치** `cursor/korea-festival-proxy` · PR #29 병합됨 → 신규 PR
+- **세션** `축제 로드 #1, 검증·확장`
+- **브랜치** `cursor/korea-festival-proxy` · tip `42072600` · PR [#170](https://github.com/catgeot/Days/pull/170)
+- **산출** overrides 4벨트 · `koreaFestivalBelts.json` · generate/audit/smoke · `/qa/korea` Preview
+- **VERIFY** generate · audit · smoke PASS · LIVE 32건·**10/17** stop hub 매칭
+- **LIVE 0건 stop** 철원·양구·양양·속초·삼척·제천·단양 — #2 빈 leg · #7 밀도 후보
+- **다음** **#2 매칭** — `festivalBelts.js` · `groupFestivalsForBelt()` leg[]

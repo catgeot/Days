@@ -103,22 +103,29 @@
 
 | | |
 |--|--|
-| **상태** | **#0 완료** · 다음 **#1 검증·확장** |
-| **브랜치** | `cursor/korea-festival-proxy` (PR #29 병합됨 · 구현 시 **신규 PR**) |
+| **상태** | **#1 완료** · 다음 **#2 매칭** |
+| **브랜치** | `cursor/korea-festival-proxy` · tip `42072600` · PR [#170](https://github.com/catgeot/Days/pull/170) |
 | **플랜** | 본 파일 · [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) S5 벨트 절 |
 | **일지** | [`2026-09-01-project-log.md`](./2026-09-01-project-log.md) |
 | **Preview** | `/qa/korea` |
 
-**다음 제시어 (#1 검증·확장)**:
+**#1 산출**: overrides 4벨트 · `koreaFestivalBelts.json` · generate/audit/smoke · LIVE 32건·10/17 stop 매칭.
+
+**확장 제안 (#2~#7 검토)**:
+- `gw-west`(홍천→인제) — #7 밀도 검증 후 append
+- sparse stop(철원·양구·속초·제천·단양) — 빈 leg 유지 + addr alias 튜닝 후보
+- 계절 필터 leg — #12~#13 합의 후
+
+**다음 제시어 (#2 매칭)**:
 
 ```
-축제 로드 #1, 검증·확장
+축제 로드 #2, 매칭
 @plans/feature-handoff-index.md
 @plans/2026-09-01-project-log.md
 @plans/korea-festival-road-plan.md
-브랜치 cursor/korea-festival-proxy · PR 신규(구 #29 병합됨) · Preview /qa/korea
-금지: UI 착수(SSOT·smoke PASS 전) · plans/ feature 커밋 · corridor 부활 · 한 세션 SSOT+UI+지도
-작업: hubId·강원 LIVE 축제 매칭 검증 · overrides 4로드 확정 · generate/audit/smoke · #2 넘김 정리
+브랜치 cursor/korea-festival-proxy · PR #170 · Preview /qa/korea
+금지: UI 착수(leg smoke PASS 전) · plans/ feature 커밋 · corridor 부활 · 한 세션 SSOT+UI+지도
+작업: festivalBelts.js · groupFestivalsForBelt() leg[] · sparse stop 빈 leg · smoke 확장
 ```
 
 **#1 미완 시 다음 채팅**: `축제 로드 #1a, 검증·확장` — index·일지에 **남은 항목**만.
