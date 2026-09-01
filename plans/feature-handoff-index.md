@@ -18,8 +18,8 @@
 
 | | |
 |--|--|
-| **상태** | **#51 Wave3 D5-b QA** · **23건** · 에이전트 VERIFY PASS · 사람 Preview 대기 |
-| **브랜치** | `cursor/world-events-wave3` · tip `981f66fd` |
+| **상태** | **#51 QA 피드백** · tip `ea03ce2b` · 사람 Preview 대기 |
+| **브랜치** | `cursor/world-events-wave3` · tip `ea03ce2b` |
 | **PR** | [#166](https://github.com/catgeot/Days/pull/166) |
 | **main** | docs sync — Wave3 사람 Preview QA |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **F-0.5 D5-b-3** · **F-0.6** · §9 |
