@@ -1308,6 +1308,17 @@
       "emptyViewed": "No viewed festivals yet. Open a card to save it here.",
       "emptySearch": "No festivals match your search.",
       "emptyFilter": "No festivals match this filter.",
+      "belt": {
+        "major": "Roads",
+        "majorAria": "Festival road {{label}}",
+        "panelAria": "Choose a festival road",
+        "panelMeta": "{{stops}} stops · {{count}} festivals",
+        "stops": "{{count}} stops",
+        "activeStops": "{{count}} stops with festivals",
+        "festivals": "{{count}}",
+        "clear": "Clear road · full list",
+        "emptyRoad": "No festivals on this road. Try another time tab."
+      },
       "mapPicked": "{{count}} picked on map",
       "mapPointCount": "Points",
       "nearPanelMeta": "Within {{km}} km · {{count}}",

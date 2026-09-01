@@ -1,4 +1,5 @@
 import beltsSsot from './data/koreaFestivalBelts.json' with { type: 'json' };
+import { listCityAttractionHubs } from '../Home/lib/cityAttractionHubs.js';
 import { nearbyHubsForFestival } from './nearbyFestivalHubs.js';
 
 /**
@@ -16,6 +17,66 @@ import { nearbyHubsForFestival } from './nearbyFestivalHubs.js';
  *   empty: boolean,
  * }} FestivalBeltLeg
  */
+
+/** @returns {Array<{ hubId: string, name: string, lat: number, lng: number }>} */
+export function buildFestivalHubList() {
+  return listCityAttractionHubs()
+    .filter(
+      (h) =>
+        h?.hubId &&
+        Number.isFinite(Number(h.lat)) &&
+        Number.isFinite(Number(h.lng)),
+    )
+    .map((h) => ({
+      hubId: String(h.hubId).toLowerCase(),
+      name: String(h.name || h.hubId),
+      lat: Number(h.lat),
+      lng: Number(h.lng),
+    }));
+}
+
+/**
+ * @param {FestivalBelt | null | undefined} belt
+ * @param {string} [locale]
+ */
+export function localizedBeltLabel(belt, locale) {
+  if (!belt) return '';
+  if (locale === 'en') {
+    return String(belt.labelEn || belt.label || belt.id || '').trim();
+  }
+  return String(belt.label || belt.id || '').trim();
+}
+
+/**
+ * @param {FestivalBeltLeg[]} legs
+ * @param {string} [locale]
+ */
+export function beltLegsToPanelGroups(legs, locale) {
+  return (legs || []).map((leg) => ({
+    id: leg.hubId || `stop-${leg.stopIndex}`,
+    label:
+      locale === 'en'
+        ? String(leg.stop?.nameEn || leg.stop?.name || leg.hubId || '').trim()
+        : String(leg.stop?.name || leg.hubId || '').trim(),
+    items: leg.items || [],
+    stopIndex: leg.stopIndex,
+    empty: leg.empty,
+    nextLabel: leg.nextLabel,
+  }));
+}
+
+/**
+ * @param {FestivalBelt} belt
+ * @param {Record<string, unknown>[]} items
+ * @param {ReturnType<typeof buildFestivalHubList>} hubList
+ * @param {{ maxKm?: number }} [opts]
+ */
+export function summarizeBeltFestivals(belt, items, hubList, opts = {}) {
+  const legs = groupFestivalsForBelt(belt, items, hubList, opts);
+  const festivalCount = legs.reduce((n, leg) => n + leg.items.length, 0);
+  const activeStopCount = legs.filter((leg) => !leg.empty).length;
+  return { legs, festivalCount, activeStopCount };
+}
 
 /** @returns {FestivalBelt[]} */
 export function getFestivalBelts() {
