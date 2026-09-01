@@ -2188,6 +2188,16 @@ export default function KoreaFestivalHub() {
                     <X size={14} aria-hidden="true" />
                     {t('korea.common.close')}
                   </button>
+                ) : nearActive ? (
+                  <button
+                    type="button"
+                    onClick={restorePreNearState}
+                    aria-label={t('korea.common.close')}
+                    className="flex h-9 items-center gap-1 rounded-full border border-amber-400 bg-amber-50 px-2.5 text-[11px] font-bold text-amber-900 shadow-sm hover:bg-amber-100"
+                  >
+                    <X size={14} aria-hidden="true" />
+                    {t('korea.common.close')}
+                  </button>
                 ) : null}
                 <button
                   type="button"
