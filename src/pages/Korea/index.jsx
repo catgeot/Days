@@ -939,8 +939,9 @@ export default function KoreaFestivalHub() {
   );
 
   const indexTitle = useMemo(() => {
-    if (selectedBelt) {
-      return localizedBeltLabel(selectedBelt, locale);
+    if (beltId) {
+      const belt = getFestivalBeltById(beltId);
+      if (belt) return localizedBeltLabel(belt, locale);
     }
     if (nearOrigin && nearLabel) {
       return t('korea.common.nearAround', { label: nearLabel });
@@ -958,7 +959,7 @@ export default function KoreaFestivalHub() {
       locale,
     });
   }, [
-    selectedBelt,
+    beltId,
     locale,
     nearOrigin,
     nearLabel,
