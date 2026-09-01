@@ -20,3 +20,11 @@
 - **VERIFY** generate · audit · smoke PASS · LIVE 32건·**10/17** stop hub 매칭
 - **LIVE 0건 stop** 철원·양구·양양·속초·삼척·제천·단양 — #2 빈 leg · #7 밀도 후보
 - **다음** **#2 매칭** — `festivalBelts.js` · `groupFestivalsForBelt()` leg[]
+
+### #2 매칭 ✅
+
+- **세션** `축제 로드 #2, 매칭`
+- **브랜치** `cursor/korea-festival-proxy` · tip `b1d44ef9` · PR [#170](https://github.com/catgeot/Days/pull/170)
+- **산출** `festivalBelts.js` · `groupFestivalsForBelt()` leg[] (stopIndex·nextLabel·items·empty) · smoke leg 검증 확장
+- **VERIFY** generate · audit · smoke · build PASS · sparse stop 빈 leg 유지 · 벨트 밖 축제 제외
+- **다음** **#3 진입** — belt 패널 · 로드 카드 · 선택 상태
