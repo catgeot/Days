@@ -14,6 +14,32 @@
 
 ## 활성 목록
 
+### 홈 지구본 지명 (첫 로딩)
+
+| | |
+|--|--|
+| **상태** | **#1 첫 로딩 지명** · tip `8317146d` · 사람 Preview 대기 |
+| **브랜치** | `cursor/globe-labels-ddce` · tip `8317146d` |
+| **PR** | [#180](https://github.com/catgeot/Days/pull/180) |
+| **일지** | [`2026-09-02-project-log.md`](./2026-09-02-project-log.md) |
+| **Preview** | `/qa/globe-labels` → git Preview 홈 |
+| **VERIFY** | `smoke:globe-label-first-reveal` · `smoke:place-label-slug` · `vite build` |
+
+**게이트**: 사람 모바일 첫 진입 — EN 없이 여행지 지명 표시 · 자전 유지 · EN↔KO 회귀
+
+**다음 제시어** (#2 사람 Preview QA):
+
+```
+홈 지구본 지명 #2, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-02-project-log.md
+브랜치 cursor/globe-labels-ddce · PR #180 · https://www.gateo.kr/qa/globe-labels
+금지: UI 리디자인 · HomeGlobeMapbox 광역 리팩터 · 코드를 origin/main에 임의 push
+작업: 모바일 첫 진입(EN 없이) 지명 표시 · 자전 · EN↔KO · OK 시 PR #180 merge
+```
+
+---
+
 ### 홈 축제칩 (써머리 펼침) — main 병합 ✅
 
 | | |
