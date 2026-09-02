@@ -14,6 +14,14 @@
 
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <script>
+      (function () {
+        if (!/CriOS/i.test(navigator.userAgent || '')) return;
+        var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+        if (nav && (nav.type === 'reload' || nav.type === 'back_forward')) return;
+        document.documentElement.style.setProperty('--gateo-home-chrome-top', '56px');
+      })();
+    </script>
     <link rel="preconnect" href="https://api.mapbox.com" crossorigin />
     <link rel="preconnect" href="https://events.mapbox.com" crossorigin />
     <meta name="naver-site-verification" content="a7b237018315e289b9fc72a47f62817ce20f3fd2" />

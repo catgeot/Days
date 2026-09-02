@@ -147,10 +147,14 @@ export function syncHomeChromeAfterNavigation() {
   scheduleRecalibrateFixedChromeHits();
 }
 
+export const HOME_CHROME_TOP_VAR = '--gateo-home-chrome-top';
+
+/** iOS Chrome 주소창이 웹뷰 위에 덮일 때 — 새로고침 후엔 웹뷰가 이미 내려가 0 */
+export const CHROME_IOS_URLBAR_INSET_PX = 56;
+
 export function lockHomeViewport() {
   if (typeof document === 'undefined') return;
   document.documentElement.classList.add(HOME_VIEWPORT_LOCK_CLASS);
-  if (typeof window !== 'undefined') window.scrollTo(0, 0);
 }
 
 export function unlockHomeViewport() {
@@ -158,45 +162,129 @@ export function unlockHomeViewport() {
   document.documentElement.classList.remove(HOME_VIEWPORT_LOCK_CLASS);
 }
 
+export function applyHomeChromeTopPx(px) {
+  if (typeof document === 'undefined') return;
+  document.documentElement.style.setProperty(HOME_CHROME_TOP_VAR, `${Math.max(0, Math.round(px))}px`);
+}
+
+export function clearHomeChromeTop() {
+  if (typeof document === 'undefined') return;
+  document.documentElement.style.removeProperty(HOME_CHROME_TOP_VAR);
+}
+
+export function resolveHomeChromeTopPx({
+  offsetTop = 0,
+  pageTop = 0,
+  dvhSvhGap = 0,
+  allowFallback = false,
+  fallbackPx = CHROME_IOS_URLBAR_INSET_PX,
+} = {}) {
+  const measured = Math.max(0, offsetTop, pageTop, dvhSvhGap);
+  if (allowFallback) return Math.max(measured, fallbackPx);
+  return measured;
+}
+
+function isChromeIos() {
+  return typeof navigator !== 'undefined' && /CriOS/i.test(navigator.userAgent);
+}
+
+function readNavigationType() {
+  if (typeof performance === 'undefined' || typeof performance.getEntriesByType !== 'function') {
+    return '';
+  }
+  return performance.getEntriesByType('navigation')[0]?.type ?? '';
+}
+
+function readDvhSvhGapPx() {
+  if (typeof document === 'undefined') return 0;
+  const probe = document.createElement('div');
+  probe.setAttribute('aria-hidden', 'true');
+  probe.style.cssText = 'position:fixed;left:0;top:0;width:0;height:100dvh;pointer-events:none;visibility:hidden';
+  document.documentElement.appendChild(probe);
+  const dvh = probe.offsetHeight;
+  probe.style.height = '100svh';
+  const svh = probe.offsetHeight;
+  probe.remove();
+  if (!dvh || !svh) return 0;
+  return Math.max(0, dvh - svh);
+}
+
+function readMeasuredHomeChromeTopPx() {
+  const vv = typeof window !== 'undefined' ? window.visualViewport : null;
+  return resolveHomeChromeTopPx({
+    offsetTop: Math.round(vv?.offsetTop ?? 0),
+    pageTop: Math.round(vv?.pageTop ?? 0),
+    dvhSvhGap: readDvhSvhGapPx(),
+    allowFallback: false,
+  });
+}
+
 /**
- * Chrome 첫 로딩: 100vh 문서가 주소창보다 커서 상단 chrome이 URL바 뒤로 깔림.
- * offsetTop을 resize마다 바인딩하면 paint/hit가 한 줄 어긋남(#13/#15) — 스크롤 리셋·히트 재보정만.
+ * Chrome iOS 첫 진입: 웹뷰가 주소창 뒤에 깔린 채 페인트 → 새로고침이면 웹뷰가 이미 내려감.
+ * 이른 scrollTo(0,0)·즉시 리마운트는 헤더를 더 밀어 넣음. fallback inset은 CriOS 첫 navigate만.
+ * offsetTop을 세션 내내 resize 바인딩하지 않음 (#13/#15 칩 히트).
  */
-export function syncHomeChromeOnFirstPaint({ onRemount } = {}) {
+export function syncHomeChromeOnFirstPaint({ onRemount, onSettled } = {}) {
   if (typeof window === 'undefined') return () => {};
 
   let stopped = false;
-  let remounted = false;
+  let remountCount = 0;
+  let lastApplied = -1;
+  let sawWebviewInset = false;
+  const crios = isChromeIos();
+  const navType = readNavigationType();
+  const firstNavigate = navType !== 'reload' && navType !== 'back_forward';
   const timers = [];
+  const visualViewport = window.visualViewport;
+  let lastHeight = visualViewport?.height ?? window.innerHeight;
 
-  const run = (remount) => {
+  const apply = (remount, allowFallback) => {
     if (stopped) return;
-    window.scrollTo(0, 0);
+    const pageY = window.scrollY || window.pageYOffset || 0;
+    const pageTop = visualViewport?.pageTop ?? 0;
+    if (pageY > 8 || pageTop > 8) {
+      window.scrollTo(0, 0);
+    }
+    const measured = readMeasuredHomeChromeTopPx();
+    const px = resolveHomeChromeTopPx({
+      offsetTop: measured,
+      allowFallback: Boolean(allowFallback && crios && firstNavigate && !sawWebviewInset),
+    });
+    if (px !== lastApplied) {
+      applyHomeChromeTopPx(px);
+      lastApplied = px;
+    }
     scheduleRecalibrateFixedChromeHits();
-    if (remount && !remounted && typeof onRemount === 'function') {
-      remounted = true;
+    if (remount && remountCount < 2 && typeof onRemount === 'function') {
+      remountCount += 1;
       onRemount();
     }
   };
 
-  run(false);
-  const outerRaf = window.requestAnimationFrame(() => {
-    window.requestAnimationFrame(() => run(true));
-  });
-  timers.push(window.setTimeout(() => run(true), 120));
-  timers.push(window.setTimeout(() => run(false), 400));
+  apply(false, true);
 
-  const onPageShow = () => run(true);
-  window.addEventListener('pageshow', onPageShow);
-  const visualViewport = window.visualViewport;
-  const onVisualResize = () => run(true);
-  visualViewport?.addEventListener('resize', onVisualResize, { once: true });
+  const onVisualResize = () => {
+    const height = visualViewport?.height ?? window.innerHeight;
+    if (height - lastHeight <= -20) {
+      sawWebviewInset = true;
+    }
+    lastHeight = height;
+    apply(true, !sawWebviewInset);
+  };
+  visualViewport?.addEventListener('resize', onVisualResize);
+
+  timers.push(window.setTimeout(() => apply(true, true), 280));
+  timers.push(window.setTimeout(() => apply(true, true), 700));
+  timers.push(window.setTimeout(() => {
+    apply(false, !sawWebviewInset);
+    visualViewport?.removeEventListener('resize', onVisualResize);
+    if (typeof onSettled === 'function') onSettled();
+  }, 1200));
 
   return () => {
     stopped = true;
-    window.cancelAnimationFrame(outerRaf);
     timers.forEach((id) => window.clearTimeout(id));
-    window.removeEventListener('pageshow', onPageShow);
     visualViewport?.removeEventListener('resize', onVisualResize);
+    clearHomeChromeTop();
   };
 }

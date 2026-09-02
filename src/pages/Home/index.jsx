@@ -66,6 +66,7 @@ import {
   topOceanToFlyRegion,
 } from './lib/seaBasinRail.js';
 import {
+  clearHomeChromeTop,
   lockHomeViewport,
   syncHomeChromeAfterNavigation,
   syncHomeChromeOnFirstPaint,
@@ -335,13 +336,17 @@ function Home() {
   useEffect(() => {
     if (isPlaceRoute) {
       unlockHomeViewport();
+      clearHomeChromeTop();
       return undefined;
     }
-    lockHomeViewport();
-    const stop = syncHomeChromeOnFirstPaint({ onRemount: bumpHomeChromeEpoch });
+    const stop = syncHomeChromeOnFirstPaint({
+      onRemount: bumpHomeChromeEpoch,
+      onSettled: lockHomeViewport,
+    });
     return () => {
       stop();
       unlockHomeViewport();
+      clearHomeChromeTop();
     };
   }, [isPlaceRoute, bumpHomeChromeEpoch]);
 

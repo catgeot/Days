@@ -20,6 +20,16 @@ html.gateo-home-lock-viewport body {
   overscroll-behavior: none;
 }
 
+[data-home-chrome-top] {
+  top: var(--gateo-home-chrome-top, 0px);
+}
+
+@media (min-width: 768px) {
+  [data-home-chrome-top] {
+    top: 0;
+  }
+}
+
 /*
  * 스크롤 페이지 끝 여백 — 마지막 버튼·본문이 화면 하단에 붙지 않고
  * 스크롤 끝에서 대략 뷰포트 중앙에 올 수 있게 함 (명승홈 접힘 파드 등).

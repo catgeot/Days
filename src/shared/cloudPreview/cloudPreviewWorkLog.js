@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '지구본 홈 헤더',
-  sessionNo: 1,
-  sessionPhase: 'Chrome 주소창 가림',
+  sessionNo: 2,
+  sessionPhase: '첫 로딩 재현 수정',
   branch: 'cursor/home-header-3eef',
   previewPath: '/',
   qaShareSlug: 'home-header',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-02-home-header-first-load-shift',
+    session: '지구본 홈 헤더 #2, 첫 로딩 재현 수정',
+    title: '첫 로딩만 헤더가 더 위로 밀림 — CriOS inset 후 정착',
+    detail:
+      '사람 QA: 첫 진입은 칩이 주소창 뒤로 더 밀리고, 새로고침하면 정상. #1의 즉시 scrollTo(0,0)·rAF 리마운트·html 잠금이 첫 페인트 웹뷰(주소창 뒤)를 고착. CriOS 첫 navigate만 56px top 보정, 웹뷰가 줄어들면 0으로 해제. 새로고침(reload)은 보정 없음. Preview /qa/home-header — 첫 진입(새로고침 아님)에서 로고·검색·칩이 주소창 아래인지.',
+    at: '2026-09-02T21:50:00.000Z',
+  },
   {
     id: '2026-09-02-home-header-chrome-urlbar',
     session: '지구본 홈 헤더 #1, Chrome 주소창 가림',
