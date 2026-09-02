@@ -14,32 +14,43 @@
 
 ## 활성 목록
 
-### 홈 locale 토글 (EN/KO)
+### 홈 검색바 히트 (EN 토글·검색 겹침)
 
 | | |
 |--|--|
-| **상태** | **#7 사람 Preview QA PASS** · tip `3fe6077c` · merge 대기 |
-| **브랜치** | `cursor/locale-toggle-smooth-92b6` · tip `3fe6077c` |
-| **PR** | [#174](https://github.com/catgeot/Days/pull/174) |
-| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §13 A′ (`/` locale 토글) |
-| **일지** | [`2026-09-01-project-log.md`](./2026-09-01-project-log.md) |
-| **Preview** | `/qa/en` → `/?lang=en` · git Preview 홈 |
-| **VERIFY** | `audit:i18n` · `build` |
+| **상태** | **#1 브랜치·핸드오프 준비** · tip `4dff1699` · 다음 #2 HomeUI flex |
+| **브랜치** | `cursor/search-locale-hit-5f5c` · tip `4dff1699` |
+| **PR** | [#175](https://github.com/catgeot/Days/pull/175) |
+| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §13 A′′ |
+| **일지** | [`2026-09-02-project-log.md`](./2026-09-02-project-log.md) |
+| **Preview** | `/qa/search-hit` → git Preview `/` · https://days-git-cursor-search-locale-hit-5f5c-catgeots-projects.vercel.app/ |
+| **VERIFY** | `build` · (수정 후) `audit:i18n` |
 
-**게이트**: #7 QA — 깜박임 없음 · EN↔KO ≤3초 ✅ · 검색바 flex **미착수**(별 세션) · **PR #174 merge 사람 승인 대기**
+**게이트**: Preview·`/qa/search-hit` 준비 ✅ · **HomeUI flex 미착수** · #174 지구본 locale은 main(`053a4587`)
 
-**다음 제시어 (#8 merge)**:
+**증상**: 모바일 검색바 `max-md:fixed left-[7.75rem]` ↔ 로고·EN chrome 실드 `z-[110]` 겹침 → 검색 클릭이 토글/실드에 가로채임(무력화)
+
+**다음 제시어 (#2 HomeUI flex)**:
 
 ```
-홈 locale #8, PR #174 merge
+홈 검색바 히트 #2, HomeUI flex
 @plans/feature-handoff-index.md
-@plans/2026-09-01-project-log.md
+@plans/2026-09-02-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/locale-toggle-smooth-92b6 · PR #174 · tip 3fe6077c
-#7 QA PASS: 깜박임 없음 · EN↔KO ≤3초 (merge 수용)
-금지: 검색바 flex(#173) 동시 착수 · HomeGlobeMapbox 대규모 리팩터
-작업: 사람 merge 승인 → PR #174 → main · 검색바 히트는 별 세션
+브랜치 cursor/search-locale-hit-5f5c · PR #175 · Preview https://days-git-cursor-search-locale-hit-5f5c-catgeots-projects.vercel.app/
+금지: HomeGlobeMapbox · LocaleProvider Mapbox · #173 통째 cherry-pick · UI 리디자인 · plans/** feature 커밋
+작업: HomeUI.jsx만 — 모바일 [로고+EN | 검색 flex-1] · 바로가기 칩 2행 · EN 토글·검색 각각 클릭 가능 · 참고 f3ec61d7/0ba69445
 ```
+
+---
+
+### 홈 locale 토글 (EN/KO) — main 병합 ✅
+
+| | |
+|--|--|
+| **상태** | **#8 merge ✅** · main `053a4587` · PR [#174](https://github.com/catgeot/Days/pull/174) |
+| **일지** | [`2026-09-01-project-log.md`](./2026-09-01-project-log.md) · [`2026-09-02-project-log.md`](./2026-09-02-project-log.md) |
+| **잔여** | 검색바 히트 → **홈 검색바 히트** 주제 |
 
 ---
 
