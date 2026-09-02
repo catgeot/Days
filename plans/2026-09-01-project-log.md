@@ -76,3 +76,12 @@
 - **출처** 홍천군 문화관광포털 · 양구볼구양 · injetour.co.kr/scenics
 - **VERIFY** audit:korea-local-scenic-lists 0 · audit:city-attraction-hubs 0 · smoke · build PASS
 - **다음** **#3 무결성** — I#1 §6.3 · 큐 P0✅
+
+### #3 무결성 I#1 ✅
+
+- **세션** `지자체 팔경 #3, 무결성`
+- **브랜치** `cursor/palgyeong` · tip `2b4ccff0` (쓰기 0)
+- **§6.3** audit 0 · smoke PASS · build PASS · `_tmp*` 없음
+- **대조** lists 3 = 큐 P0 · members 26 · hub append 18 = 일지 #2
+- **샘플 exact** 홍천9경·양구9경·인제8경 — `resolveLocalScenicList`·hub·scenicSearch 전부 OK
+- **다음** **#4 채우기 R01** — 오케 워커2 · 강원 6리스트

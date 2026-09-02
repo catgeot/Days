@@ -170,8 +170,9 @@ main · www.gateo.kr/place/yap/planner?lang=en
 
 | | |
 |--|--|
-| **상태** | **#2 P0 파일럿** ✅ · 다음 **#3 무결성 I#1** |
-| **브랜치** | `cursor/palgyeong` · tip `3faf3bca` |
+| **상태** | **#3 I#1 무결성** ✅ · 다음 **#4 채우기 R01** |
+| **브랜치** | `cursor/palgyeong` · tip `2b4ccff0` |
+| **PR** | [#172](https://github.com/catgeot/Days/pull/172) |
 | **플랜** | [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) §9 |
 | **큐** | [`korea-local-scenic-lists-queue.md`](./korea-local-scenic-lists-queue.md) |
 | **오케** | [`orchestrator-method.md`](./orchestrator-method.md) **§5.6** |
@@ -179,16 +180,17 @@ main · www.gateo.kr/place/yap/planner?lang=en
 | **정책** | 시·군·구 · 기존 hub 유지+append · **UI·scenic 승격 금지** · 공식 URL 필수 |
 | **VERIFY** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · `smoke:korea-local-scenic-lists` · `build` |
 
-**다음 제시어 (#3 무결성 I#1)**:
+**다음 제시어 (#4 채우기 R01)**:
 
 ```
-지자체 팔경 #3, 무결성
+지자체 팔경 #4, 채우기 R01
 @plans/feature-handoff-index.md
 @plans/2026-09-01-project-log.md
 @plans/korea-local-scenic-lists-plan.md
-브랜치 cursor/palgyeong · 플랜 §6.3 · 큐 P0✅
+@plans/korea-local-scenic-lists-queue.md
+브랜치 cursor/palgyeong · PR #172 · 큐 R01 ⬜
 금지: UI 변경 · koreaScenicSpots 승격 · 광역 팔경 · feature에 plans 커밋
-작업: audit+smoke+샘플 exact(파일럿3) · 큐/일지 대조 · 쓰기 0
+작업: 오케 워커2 · R01 강원 6리스트 · VERIFY · §3.4
 ```
 
 
