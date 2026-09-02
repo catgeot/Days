@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '홈 축제칩',
-  sessionNo: 2,
-  sessionPhase: 'PC 접힘',
+  sessionNo: 3,
+  sessionPhase: 'PC 접힘 너비',
   branch: 'cursor/home-festival-chip-59c9',
   previewPath: '/',
   qaShareSlug: 'home-chip',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-02-home-festival-chip-pc-width',
+    session: '홈 축제칩 #3, PC 접힘 너비',
+    title: 'PC 접힌 칩 너비 — 짧은 라벨 전부 표시',
+    detail:
+      'PC max-w-[14rem]+truncate로 「축제 · 행사 · 명승 · 추천」이 잘림. md:max-w-none · 말줄임 해제. 모바일 14rem 유지. Preview /qa/home-chip — PC 접힌 칩 문구가 잘리지 않는지.',
+    at: '2026-09-02T14:25:00.000Z',
+  },
   {
     id: '2026-09-02-home-festival-chip-pc-collapse',
     session: '홈 축제칩 #2, PC 접힘',

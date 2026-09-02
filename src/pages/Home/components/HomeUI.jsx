@@ -247,7 +247,7 @@ const HomeUI = React.memo(({
           onFaceRegionsDismiss?.();
           setMobileQuickLinksExpanded(true);
         }}
-        className="group relative flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-white/25 bg-[#101010] px-2.5 py-1.5 shadow-[0_0_14px_rgba(255,255,255,0.08)] transition-colors hover:border-white/40 hover:bg-[#161616] touch-manipulation"
+        className="group relative flex w-auto max-w-[14rem] md:w-max md:max-w-none items-center gap-2 rounded-xl border border-white/25 bg-[#101010] px-2.5 py-1.5 shadow-[0_0_14px_rgba(255,255,255,0.08)] transition-colors hover:border-white/40 hover:bg-[#161616] touch-manipulation"
         aria-label={`${t('home.quickLinks.expandMenu')} — ${mobileQuickLinks.map((item) => item.label).join(', ')}`}
         title={t('home.quickLinks.expandMenu')}
       >
@@ -265,7 +265,7 @@ const HomeUI = React.memo(({
             );
           })}
         </span>
-        <span className="truncate text-[11px] font-bold tracking-tight text-white/95 break-keep">
+        <span className="truncate md:overflow-visible md:whitespace-nowrap md:shrink-0 text-[11px] font-bold tracking-tight text-white/95 break-keep">
           {mobileQuickLinksCollapsedLabel}
         </span>
       </button>
