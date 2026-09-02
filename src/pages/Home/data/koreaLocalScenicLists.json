@@ -2296,5 +2296,162 @@
         "linkStatus": "pending_coord"
       }
     ]
+  },
+  {
+    "listId": "yeongcheon-gugyeong",
+    "hubId": "yeongcheon",
+    "title": "영천9경",
+    "title_en": "Yeongcheon Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "영천 9경",
+      "영천구경"
+    ],
+    "sourceUrl": "https://www.yeongcheon.go.kr/tour/contents.do?mId=0603020000",
+    "sourceOrg": "영천시",
+    "sourceFetchedAt": "2026-09-02",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "영천 은해사",
+        "name_en": "Eunhaesa Yeongcheon",
+        "kind": "temple",
+        "lat": 35.9919834,
+        "lng": 128.7898616,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "영천 임고서원",
+        "name_en": "Imgo Seowon Yeongcheon",
+        "kind": "landmark",
+        "lat": 36.0167326,
+        "lng": 128.973464,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "영천 보현산천문대",
+        "name_en": "Bohyeonsan Observatory",
+        "kind": "viewpoint",
+        "lat": 36.1640698,
+        "lng": 128.976682,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "영천 치산관광지",
+        "name_en": "Chisan Tourist Site Yeongcheon",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "영천 보현산댐 짚와이어",
+        "name_en": "Bohyeonsan Dam Zip Wire",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "영천 운주산승마자연휴양림",
+        "name_en": "Unjusan Horse Riding Natural Recreation Forest",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "영천댐 벚꽃 백리길",
+        "name_en": "Yeongcheon Dam Cherry Blossom Road",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "영천 한의마을",
+        "name_en": "Yeongcheon Oriental Medicine Village",
+        "kind": "neighborhood",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "영천 별별미술마을",
+        "name_en": "Byeolbyeol Art Village Yeongcheon",
+        "kind": "neighborhood",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "cheongdo-gugyeong",
+    "hubId": "cheongdo",
+    "title": "청도 관광 9경",
+    "title_en": "Cheongdo Tourism Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "청도관광9경",
+      "청도 관광9경",
+      "청도 9경"
+    ],
+    "sourceUrl": "https://www.cheongdo.go.kr/tour/contents.do?mid=0105000000",
+    "sourceOrg": "청도군",
+    "sourceFetchedAt": "2026-09-02",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "청도읍성",
+        "name_en": "Cheongdo Eupseong",
+        "kind": "landmark",
+        "lat": 35.6498326,
+        "lng": 128.7056471,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "청도 새마을운동발상지기념공원",
+        "name_en": "Saemaul Movement Origin Memorial Park",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "청도 신화랑풍류마을",
+        "name_en": "Cheongdo Sinhwarang Pungryu Village",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "청도 운문사",
+        "name_en": "Unmunsa Cheongdo",
+        "kind": "temple",
+        "lat": 35.6610955,
+        "lng": 128.9602875,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "청도 섶마리한옥마을",
+        "name_en": "Cheongdo Seopmari Hanok Village",
+        "kind": "neighborhood",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "청도 낙대폭포",
+        "name_en": "Cheongdo Nakdae Falls",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "청도 유등연지",
+        "name_en": "Yudeung Yeonji Cheongdo",
+        "kind": "park",
+        "lat": 35.6752813,
+        "lng": 128.6929875,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "청도 와인터널",
+        "name_en": "Cheongdo Wine Tunnel",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "청도 레일바이크",
+        "name_en": "Cheongdo Rail Bike",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      }
+    ]
   }
 ]
