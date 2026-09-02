@@ -18,7 +18,7 @@
 
 | | |
 |--|--|
-| **상태** | **#4 롤백** (#173·Mapbox 연쇄 수정 이전) · tip `615553d1` · 사람 Preview QA |
+| **상태** | **#4 롤백** · main #173 revert `25887434` · feature tip `e9a29fe3` · 사람 Preview QA |
 | **브랜치** | `cursor/locale-toggle-smooth-92b6` · tip `615553d1` |
 | **PR** | [#174](https://github.com/catgeot/Days/pull/174) |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §13 A (`/` locale 토글) |
