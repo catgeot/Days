@@ -32,7 +32,7 @@
 |--|--|
 | **상태** | **#9 merge ✅** · main `a6a5ede7` · PR [#176](https://github.com/catgeot/Days/pull/176) (#174+#176) |
 | **일지** | [`2026-09-01-project-log.md`](./2026-09-01-project-log.md) · [`2026-09-02-project-log.md`](./2026-09-02-project-log.md) |
-| **잔여** | 검색바 히트 → **홈 검색바 히트** |
+| **잔여** | 검색바 히트 PR #175 merge `9824bfb8` ✅ |
 
 ---
 
