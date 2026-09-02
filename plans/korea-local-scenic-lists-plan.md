@@ -1,6 +1,6 @@
 # 지자체 팔경·구경 → 도시 명소 SSOT (오케스트레이터)
 
-**상태**: 📋 P0 ✅ · **I#1** ✅ · **F R01–R03** ✅ 2026-09-02 · **I#2 검토** ✅  
+**상태**: 📋 P0 ✅ · **I#1** ✅ · **F R01–R03** ✅ 2026-09-02 · **I#2** ✅ · **F R04–R06** ✅ · **I#3** ✅ 2026-09-02  
 **주제 표기**: `지자체 팔경 #{N}, {단계}`  
 **고정 브랜치**(착수 시 1회): `cursor/palgyeong`  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.6** · 본 플랜  
@@ -165,6 +165,111 @@ flowchart LR
 
 **I 주기**: R01–R03 → I#1 … **3R마다** §6.3(쓰기 0). I PASS면 **즉시 다음 F** (사람 대기 없음).
 
+### 4.5 오케 연속성 — 단절 원인·에이전트 필수 절차 (2026-09-02)
+
+**증상**: F 라운드 VERIFY·push까지 했는데 **후임 Task 없이 턴 종료** → 사람이 새 채팅·제시어로 다시 열어야 함. 로컬/스냅샷 문서는 **R04**인데 feature tip은 **R06**처럼 **main docs 미동기화**도 동반.
+
+#### A. 근본 원인 (우선순위)
+
+| # | 원인 | 왜 끊기나 |
+|---|------|-----------|
+| 1 | **「자동 오케」≠ 「한 R 하고 끝」** | §4.3은 사람 QA·제시어 **대기**만 금지. **다음 R 또는 후임 Task**는 필수. VERIFY 후 요약만 쓰고 종료 = **버그**. |
+| 2 | **Task 이양 미실행** | 오케 §4.2: VERIFY·§3.4 직후 **같은 턴**에 `Task(generalPurpose)` 후임 기동. `run_in_background: true`로 워커만 띄우고 **머지·VERIFY 전 종료** 금지. |
+| 3 | **세션 모델 혼동 (#0–#8 vs F)** | 초기는 `지자체 팔경 #N` **사람 새 채팅** 모델. F 전환 후에도 에이전트가 **#N+1 제시어만 남기고** Task를 안 띄움. |
+| 4 | **docs-on-main 지연** | 코드=`cursor/palgyeong` · 문서=`main`. feature에 `plans/**` 금지 → **세대 종료 시 main push 필수**. 미push면 다음 에이전트가 **옛 큐**로 착수. |
+| 5 | **고정 브랜치 vs Cloud 기본 브랜치 규칙** | Cloud 일반 지시는 `cursor/<topic>-51b9` 신규 생성. 본 주제는 **`cursor/palgyeong` 고정** — 새 브랜치·새 PR **금지**. |
+| 6 | **설계상 보고 단절** | 오케 이관 후 **첫 메인은 역할 종료**([`orchestrator-3tier-draft.md`](./orchestrator-3tier-draft.md) §4). 후임이 또 이관 없이 끝나면 **어느 채팅에도 진행이 안 보임**. |
+| 7 | **본인 런만 반복** | 워커2 없이 메인 솔로 1R → 일지 한 줄 → 종료. 처리량·컨텍스트 모두 낭비. |
+
+#### B. 에이전트 — 세션 시작 (3분)
+
+1. `git fetch origin main cursor/palgyeong` → **`checkout cursor/palgyeong`** · `merge origin/main`
+2. Read: `feature-handoff-index` **본 행** · 본 플랜 **§9** · 큐 **다음 ⬜ R 한 블록** · 오케 **§3.0·§3.3·§5.6** · 일지 **마지막 R 절 1개**
+3. `npm run audit:docs-handoff-sync` (FAIL이면 main merge 먼저)
+4. tip SHA = index §9와 일치 확인 · 불일치면 **코드 tip·일지 기준**으로 착수
+
+#### C. 세대 루프 (한 메인이 할 일)
+
+```
+큐 Rnn 배치표 확정 (워커A 3 + 워커B 3)
+  → Task 워커 2 (병렬 · tip 미터치)
+  → 직렬 머지 A→B → koreaLocalScenicLists + cityAttractionHubs append
+  → VERIFY (audit×2 + smoke + build)
+  → §3.4 commit + push cursor/palgyeong
+  → 컨텍스트 여유 & ⬜ R 남음?
+       Yes(같은 세대 2R 미만): 위 루프 반복
+       No 또는 2R 완료: §D 이관 (같은 턴)
+```
+
+**한 세대 상한**: F **1~2 라운드**(6~12 리스트) 후 **반드시** §D.
+
+#### D. 턴 종료 전 필수 분기 (이것을 안 하면 단절)
+
+⬜ R이 **남아 있고** §6.2 정지가 **아니면** 아래 **둘 중 하나를 같은 턴에** 실행. **둘 다 안 하고 final 응답 금지.**
+
+| 조건 | 행동 |
+|------|------|
+| 컨텍스트 **~40% 이하** 여유 | **같은 메인**이 큐 다음 R 즉시 착수 (§C 반복) |
+| 컨텍스트 **부족** 또는 이번 세대 **2R 완료** | **후임 Task** `run_in_background: false` · 프롬프트 = §E |
+
+**후임 Task 띄운 뒤** 현 메인은 tip 추가 작업 중단. Task 완료 알림까지 **기다리거나** 최소한 Task 기동 성공을 확인한 뒤 턴 종료.
+
+#### E. 후임 Task 프롬프트 (복붙 골격)
+
+```
+역할: 후임 메인(오케스트레이터) — 지자체 팔경 F. 사람 제시어 대기 금지. §3.0 즉시 수행.
+
+Read: plans/orchestrator-method.md §1·§3.0·§3.3·§3.4·§4.2
+      plans/korea-local-scenic-lists-plan.md §4.5·§9
+      plans/korea-local-scenic-lists-queue.md (다음 ⬜ R만)
+      plans/feature-handoff-index.md (지자체 팔경 행)
+
+브랜치: cursor/palgyeong (고정 · 새 브랜치 금지) · PR #172
+tip SHA: {방금 push SHA}
+배치표: R{nn} 워커A(3) / R{nn} 워커B(3) — 큐 표에서 복사
+
+즉시: 워커2 → 직렬 머지 → VERIFY → push → (여유 있으면 다음 R · 없으면 다시 §4.2 이관)
+금지: UI · scenic승격 · plans/ feature 커밋 · VERIFY 후 정지 · 솔로 1R만 하고 종료
+VERIFY: audit:korea-local-scenic-lists · audit:city-attraction-hubs · smoke:korea-local-scenic-lists · build
+```
+
+#### F. main 문서 동기화 (세대·I#·정지·사람 채팅 종료 시)
+
+feature push와 **별도**로 `main`에서:
+
+1. 일지 `2026-09-01-project-log.md` — 완료 R 1절 + 다음 R
+2. 큐 `korea-local-scenic-lists-queue.md` — ✅/skip 갱신
+3. 본 플랜 **§9** · `feature-handoff-index` 행
+4. `git commit` → **`git push origin main`** (docs-only · 허가 불필요)
+5. `checkout cursor/palgyeong` → `merge origin/main` → `audit:docs-handoff-sync`
+
+**I# 주기**: R04–R06=I#3 ✅ · **R07–R09 누적 후 I#4** (쓰기 0 · §6.3).
+
+#### G. 복구 (파이프 단절 시 · 사람 1회)
+
+코드 tip이 문서보다 앞서 있거나 Task 체인이 끊겼을 때:
+
+```
+오케스트레이터 지자체팔경
+@plans/korea-local-scenic-lists-plan.md §4.5·§9
+@plans/korea-local-scenic-lists-queue.md
+@plans/feature-handoff-index.md
+브랜치 cursor/palgyeong · git fetch 후 tip SHA 확인
+작업: 큐 다음 ⬜ R · 워커2 · VERIFY → 다음 R 또는 Task 이관 · main docs 동기화
+```
+
+#### H. 남은 작업 로드맵 (2026-09-02 기준)
+
+| 단계 | 내용 | 완료 조건 |
+|------|------|-----------|
+| **즉시** | **R07** — 영주·문경·봉화·예천·청송·영덕 | VERIFY + push |
+| **이어서** | **R08** · **R09** — 경북 잔여 12 hub | 큐 ⬜ 소진 |
+| **I#4** | R07–R09 누적 무결성 | §6.3 PASS |
+| **다음 권역** | 큐 확장(전국 시군구) — **사람 합의 후** 표 추가 | 별도 일지 |
+| **종료** | PR #172 merge · index `active: false` | 사람 선택 QA |
+
+**정지만 하는 경우**: §6.2 · 동일 hub FAIL 2회 · audit 롤백 후에도 ≠0.
+
 ### 4.2 이어하기 — 토큰 최소화 (필수)
 
 **첫 메시지에 세션 표기 + index + 일지 + 본 플랜 §9만.**
@@ -275,9 +380,9 @@ issues **0** · 스모크 PASS 전에 커밋·이관·다음 R **금지**.
 | | |
 |--|--|
 | **운영** | **자동 오케** (§4.3) · F=VERIFY 후 다음 R · **3R마다 I#** |
-| **지금** | **R04** ✅ — lists 16 · members 141 · 충북 skips 4 |
-| **다음** | **R05** — 큐 ⬜ · 워커2 · VERIFY PASS → R06 또는 I#3 검토 |
-| **브랜치** | `cursor/palgyeong` · tip `db428507` · PR [#172](https://github.com/catgeot/Days/pull/172) |
+| **지금** | **R06** ✅ · **I#3** ✅ — lists 23 · members 203 |
+| **다음** | **R07** — 큐 ⬜ · 워커2 · VERIFY PASS → R08 |
+| **브랜치** | `cursor/palgyeong` · tip `37b29e1e` · PR [#172](https://github.com/catgeot/Days/pull/172) |
 | **금지** | UI · scenic 승격 · 광역 팔경 · tip rewrite · **매 R 사람 QA·제시어 대기** |
 | **VERIFY** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · `smoke:korea-local-scenic-lists` · `build` |
 

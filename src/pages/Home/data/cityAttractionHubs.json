@@ -2953,6 +2953,20 @@
         "kind": "neighborhood",
         "lat": 15.8801,
         "lng": 108.338
+      },
+      {
+        "name": "랑코 해변",
+        "name_en": "Lang Co Beach",
+        "kind": "beach",
+        "lat": 16.272,
+        "lng": 108.076,
+        "aliases": [
+          "랑코",
+          "람코",
+          "lang co",
+          "langco",
+          "lang co beach"
+        ]
       }
     ]
   },
@@ -11064,6 +11078,53 @@
         "kind": "neighborhood",
         "lat": 36.5605,
         "lng": 136.6485
+      }
+    ]
+  },
+  {
+    "hubId": "takamatsu",
+    "name": "다카맀",
+    "name_en": "Takamatsu",
+    "country": "일본",
+    "country_en": "Japan",
+    "lat": 34.3401,
+    "lng": 134.0434,
+    "aliases": [
+      "takamatsu",
+      "다카마스",
+      "타카마스",
+      "타카마츠",
+      "高松",
+      "香川"
+    ],
+    "attractions": [
+      {
+        "name": "리츠린 공원",
+        "name_en": "Ritsurin Garden",
+        "kind": "park",
+        "lat": 34.3297,
+        "lng": 134.0447
+      },
+      {
+        "name": "다카맀성",
+        "name_en": "Takamatsu Castle",
+        "kind": "landmark",
+        "lat": 34.3517,
+        "lng": 134.0547
+      },
+      {
+        "name": "나오시마",
+        "name_en": "Naoshima",
+        "kind": "museum",
+        "lat": 34.4597,
+        "lng": 133.9953
+      },
+      {
+        "name": "쇼도시마",
+        "name_en": "Shodoshima",
+        "kind": "viewpoint",
+        "lat": 34.4817,
+        "lng": 134.2933
       }
     ]
   },

@@ -4,13 +4,13 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: true,
-  title: '세계행사 일정',
-  sessionNo: 27,
-  sessionPhase: 'Wave1.5 D4 숙소·파일럿 회귀',
-  branch: 'cursor/world-events-wave2',
-  previewPath: '/world-events',
-  qaShareSlug: 'world-events',
+  active: false,
+  title: '홈 축제칩',
+  sessionNo: 4,
+  sessionPhase: 'main 병합',
+  branch: 'cursor/home-festival-chip-59c9',
+  previewPath: '/',
+  qaShareSlug: 'home-chip',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,78 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-02-home-festival-chip-4-merge',
+    session: '홈 축제칩 #4, main 병합',
+    title: '사람 Preview QA PASS — PR #177 main 병합',
+    detail:
+      '모바일: 지명 탭 후 접힘 유지. PC: 접힌 칩 라벨 전부 보임 · 테마 카테고리와 겹침 없음. 작업 로그·/qa/home-chip 종료(PROD `/`).',
+    at: '2026-09-02T14:50:00.000Z',
+  },
+  {
+    id: '2026-09-02-home-festival-chip-pc-width',
+    session: '홈 축제칩 #3, PC 접힘 너비',
+    title: 'PC 접힌 칩 너비 — 짧은 라벨 전부 표시',
+    detail:
+      'PC max-w-[14rem]+truncate로 「축제 · 행사 · 명승 · 추천」이 잘림. md:max-w-none · 말줄임 해제. 모바일 14rem 유지. Preview /qa/home-chip — PC 접힌 칩 문구가 잘리지 않는지.',
+    at: '2026-09-02T14:25:00.000Z',
+  },
+  {
+    id: '2026-09-02-home-festival-chip-pc-collapse',
+    session: '홈 축제칩 #2, PC 접힘',
+    title: 'PC 좌상단 바로가기도 접힌 칩',
+    detail:
+      'PC는 축제·행사·명승·큐레이션이 항상 펼쳐져 테마 카테고리(top 17rem)와 겹침. 모바일과 같은 접힌 버튼·탭 펼침으로 통일. Preview /qa/home-chip — PC 홈에서 한 줄 접힘·카테고리와 겹침 없는지·펼침/접힘 확인.',
+    at: '2026-09-02T14:20:00.000Z',
+  },
+  {
+    id: '2026-09-02-home-festival-chip-keep-collapsed',
+    session: '홈 축제칩 #1, 써머리 펼침 방지',
+    title: '써머리 장소 카드 열 때 축제 칩 접힘 유지',
+    detail:
+      '모바일 지구본 지명 클릭 → 써머리 카드가 hideExploreChrome을 켜며 좌상단 바로가기가 축제·행사 목록으로 펼쳐지던 문제. 접힘 표시를 장소 카드와 분리하고, 카드 열림 시 자동 접힘. Preview /qa/home-chip — 지명 클릭 후 좌측 칩이 한 줄 접힘인지 확인.',
+    at: '2026-09-02T14:10:00.000Z',
+  },
+  {
+    id: '2026-09-02-search-locale-hit-3-merge',
+    session: '홈 검색바 히트 #3, main 병합',
+    title: '사람 Preview QA PASS — PR #175 main 병합',
+    detail:
+      '모바일: 검색→/explore · EN 토글 독립 클릭 · 바로가기 2행 OK. 작업 로그·/qa/search-hit 종료(PROD `/`).',
+    at: '2026-09-02T13:50:00.000Z',
+  },
+  {
+    id: '2026-09-02-search-locale-hit-2-homeui-flex',
+    session: '홈 검색바 히트 #2, HomeUI flex',
+    title: '모바일 헤더 [로고+EN | 검색 flex-1] · 바로가기 2행',
+    detail:
+      '고정 left-[7.75rem] 검색바 제거. 모바일 1행 flex [로고+EN | 검색 flex-1] · 바로가기 칩 2행. chrome 실드가 검색 클릭을 가로채지 않음. HomeGlobeMapbox·LocaleProvider 미변경. Preview /qa/search-hit — EN 토글·검색 각각 클릭.',
+    at: '2026-09-02T13:45:00.000Z',
+  },
+  {
+    id: '2026-09-02-search-locale-hit-1-prep',
+    session: '홈 검색바 히트 #1, 브랜치·핸드오프 준비',
+    title: '모바일 검색바·EN 토글 히트 겹침 — 세션 준비',
+    detail:
+      '증상: 모바일 검색바(left-[7.75rem])와 EN/KO chrome 실드(z-110) 겹침 → 검색 클릭 무력화. #173 flex는 Mapbox 연쇄와 함께 롤백됨 · #174 지구본 locale은 main. 다음: HomeUI만 flex [로고+EN | 검색 flex-1] · HomeGlobeMapbox 금지. Preview /qa/search-hit.',
+    at: '2026-09-02T13:15:00.000Z',
+  },
+  {
+    id: '2026-09-02-home-locale-9-mobile-labels',
+    session: '홈 locale #9, 모바일 지구본 지명',
+    title: '모바일 EN 토글 — 지명 고착 수정',
+    detail:
+      '모바일: UI EN은 되나 Mapbox 지명·핀이 KO 유지. 원인: 레이어 ID 미갱신 no-op에도 echo suppress 120ms → styledata 실적용 차단·idle 적어 고착. refresh 후 갱신 수>0일 때만 suppress·재시도·자전 잠시 정지·핀 setData 강제. Preview 모바일 EN 토글 → 국가·대륙·핀 영문·KO 복귀.',
+    at: '2026-09-02T13:30:00.000Z',
+  },
+  {
+    id: '2026-09-02-home-locale-6-double-flash',
+    session: '홈 locale #6, 사람 Preview QA',
+    title: 'EN 토글 이중 깜박임 — satellite setLanguage 제거',
+    detail:
+      '사람 QA: 검게→한글 지명→영문 2단 플래시. deep/neon에서 setLanguage+text-field 이중 적용이 원인. 위성은 coalesce만 1회·styledata 에코 120ms 무시. Preview /qa/en · EN 토글 시 지구본 지명이 한 번에 EN인지·KO 복귀 확인.',
+    at: '2026-09-02T13:00:00.000Z',
+  },
   {
     id: '2026-08-27-world-events-d4-opening-preset',
     session: '세계행사 일정 #27, Wave1.5 D4 숙소·파일럿 회귀',

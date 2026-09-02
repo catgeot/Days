@@ -145,3 +145,103 @@
 - **결정** F 단계 = **자동 오케스트레이터**(플랜 §4.3) · VERIFY PASS → 다음 R · **매 R 사람 Preview QA 생략** · **3R마다 I#** · §6.2만 정지
 - **문서** `korea-local-scenic-lists-plan` §4.3·§6.0 · `orchestrator-method` §5.6 · index·큐 제시어 오케 형식
 - **다음** 오케 제시어 1회로 R05~ 연속 (Task 이양 · 사람 제시어 대기 없음)
+
+### #9 채우기 R05 ✅
+
+- **세션** `지자체 팔경 오케 R05`
+- **브랜치** `cursor/palgyeong` · tip `491aade1` · PR [#172](https://github.com/catgeot/Days/pull/172)
+- **산출** `okcheon-gugyeong` · `yeongdong-yangsan-palgyeong` · `yeongdong-hancheon-palgyeong` · `jincheon-palgyeong` · `jeungpyeong-gugyeong` — lists +5 · hub append
+- **skip** `eumseong` `skip_no_source`
+- **VERIFY** audit 0 · smoke(옥천9경·양산팔경·한천팔경·상산팔경·증평구경) · build PASS
+- **다음** **R06**
+
+### #10 채우기 R06 ✅ · I#3 ✅
+
+- **세션** `지자체 팔경 오케 R06` · **I#3** 무결성
+- **브랜치** `cursor/palgyeong` · tip `37b29e1e` · PR [#172](https://github.com/catgeot/Days/pull/172)
+- **산출** `gyeongju-8gwae`(8怪) · `pohang-sipgyeong`(12) — lists 23 · members 203
+- **skip** `andong`·`gumi`·`sangju`·`gimcheon` `skip_no_source`
+- **I#3** R04–R06 audit 0 · smoke 회귀+샘플 PASS · build PASS
+- **Preview** `https://days-git-cursor-palgyeong-catgeots-projects.vercel.app`
+- **다음** **R07** — 워커2 · 경북 6(영주·문경·봉화·예천·청송·영덕)
+
+---
+
+## 홈 locale 토글 (EN/KO)
+
+### #3 콘솔·지연 ✅
+
+- **세션** `홈 locale #3, 콘솔 오류 심층`
+- **브랜치** `cursor/locale-toggle-smooth-92b6` · tip `ff2e8c20` · PR [#174](https://github.com/catgeot/Days/pull/174)
+- **증상** EN 토글 ~4초 지연 · 콘솔 tp/ads/PerformanceObserver 노이즈
+- **원인** `scheduleMapboxLanguage`가 자전 중 `isMoving`+이중 `idle` 대기 → idle 미발생 · tp/ads = `index.html` emrld 제3자(무해)
+- **수정** `isMoving` 제거·`isGlobeCameraBusy`만 대기 · locale 시 자전 잠시 정지+`forceUpdateGateoMarkerSource` · 400ms 폴백
+- **VERIFY** `audit:i18n` · `build` PASS
+- **Preview** `/qa/en` · https://days-git-cursor-locale-toggle-smooth-92b6-catgeots-projects.vercel.app/
+- **다음** **#4 사람 Preview QA** — 토글 즉시성 · Mapbox 오류 0 · `/explore` 검색바
+
+### #3-b continuePlacement 회귀 ✅
+
+- **세션** `홈 locale #3, 콘솔 회귀`
+- **브랜치** `cursor/locale-toggle-smooth-92b6` · tip `0d02bcc1` · PR [#174](https://github.com/catgeot/Days/pull/174)
+- **증상** ff2e8c20 이후 `continuePlacement` 크래시 · en/ko Mapbox 403 연쇄 · BCP-47 경고
+- **원인** locale effect에 `markerGeoJSON` deps → setLanguage 반복 · 자전 조기 재개+400ms 폴백
+- **수정** BCP-47 `en-US`/`ko-KR` · idle 직렬화 · 자전 정지→settled 후 핀·재개 · 하드 폴백 제거
+- **VERIFY** `audit:i18n` · `build` PASS
+- **다음** **#4 사람 Preview QA** (→ 롤백으로 대체)
+
+### #4 롤백 (#173 이전) ✅
+
+- **세션** `홈 locale #4, 사람 Preview QA` — 사람 요청으로 연쇄 수정 중단
+- **브랜치** `cursor/locale-toggle-smooth-92b6` · tip `615553d1` · PR [#174](https://github.com/catgeot/Days/pull/174)
+- **조치** PR #173 flex 헤더 + `fb58c296`~`0d02bcc1` Mapbox locale 수정 **5061d784 기준 롤백** (`HomeUI`·`HomeGlobeMapbox`·`LocaleProvider`·`koreaRegionLabels`·`globeMarkerLayers`)
+- **VERIFY** `audit:i18n` · `build` PASS
+- **Preview** `/qa/en` · https://days-git-cursor-locale-toggle-smooth-92b6-catgeots-projects.vercel.app/
+- **main** `25887434` — PR #173 `git revert` (검색바 flex 병합 취소)
+- **다음** 사람 Preview — 토글·검색바·지도 EN 기준선 확인 후 merge 여부 결정
+
+### #5 지구본 locale ✅
+
+- **세션** `홈 locale #5, 지구본 locale`
+- **브랜치** `cursor/locale-toggle-smooth-92b6` · tip `f51f843f` · PR [#174](https://github.com/catgeot/Days/pull/174)
+- **사람 QA** 모바일: UI·`?lang=en` OK·지구본만 KO · PC: 깜빡 후 ~10초 EN
+- **원인** `applyKoreanSatelliteLabels`가 locale 무시·`name_ko` 강제 · `MapboxLanguage` 이중 적용
+- **수정** locale별 위성 text-field · 토글/`styledata` `force` 즉시 적용 · LanguageControl 제거
+- **VERIFY** `audit:i18n` · `build` PASS
+- **다음** **#6 사람 Preview QA** — 지구본 즉시 EN · 검색바는 별 세션
+
+### #6 이중 깜박임 ✅
+
+- **세션** `홈 locale #6, 사람 Preview QA`
+- **브랜치** `cursor/locale-toggle-smooth-92b6` · tip `3fe6077c` · PR [#174](https://github.com/catgeot/Days/pull/174)
+- **사람 QA** EN 토글: 검게 → 한글 지명 → 영문 (2단 플래시)
+- **원인** deep/neon에서 `setLanguage` + `applySatelliteBasemapLabels` 이중 text-field 적용
+- **수정** 위성은 coalesce만 1회 · styledata 에코 120ms 무시 · bright만 `setLanguage`
+- **VERIFY** `audit:i18n` · `build` PASS
+- **Preview** `/qa/en` · https://days-git-cursor-locale-toggle-smooth-92b6-catgeots-projects.vercel.app/
+- **다음** **#7 사람 Preview QA** — 한 번에 EN · OK 시 merge 검토
+
+### #7 사람 Preview QA ✅
+
+- **세션** `홈 locale #7, 사람 Preview QA`
+- **브랜치** `cursor/locale-toggle-smooth-92b6` · tip `3fe6077c` · PR [#174](https://github.com/catgeot/Days/pull/174)
+- **사람 QA** 지구본 깜박임 없이 EN↔KO · 전환 ≤3초
+- **수용** merge OK — 하드 게이트=깜박임 0 · ≤3초는 Mapbox 위성 라벨 한계상 충분 (이전: 깜박+~10초)
+- **다음** **#8 PR #174 merge** (사람 승인) · 검색바 flex는 별 세션
+
+### #8 PR #174 merge ✅
+
+- **세션** `홈 locale #8, PR #174 merge`
+- **main** `053a4587` — PR [#174](https://github.com/catgeot/Days/pull/174) merge
+- **잔여** 검색바·EN 토글 히트 → **홈 검색바 히트** (`cursor/search-locale-hit-5f5c` · PR #175)
+
+### #9 모바일 지구본 지명 ✅
+
+- **세션** `홈 locale #9, 모바일 지구본 지명` → 사람 QA PASS → merge
+- **브랜치** `cursor/globe-locale-mobile-5f5c` · tip `e2214bdb` · PR [#176](https://github.com/catgeot/Days/pull/176)
+- **사람** 모바일: UI EN OK · **지명·핀 KO 고착** (Preview 모바일 QA 없이 #174 merge)
+- **원인** 레이어 ID 미갱신 no-op + echo suppress → styledata 실적용 차단 · 모바일 idle 적음
+- **수정** refresh 후 갱신>0만 suppress · 재시도 · 자전 잠시 정지 · 핀 setData 강제
+- **사람 QA** PC·모바일 실시간 EN↔KO 지명 전환 OK
+- **main** `a6a5ede7` — PR #176 merge
+- **다음** 검색바 히트 → **홈 검색바 히트 #2**

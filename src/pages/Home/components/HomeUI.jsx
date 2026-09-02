@@ -130,7 +130,7 @@ const HomeUI = React.memo(({
     (isPlaceCardVisible && !isFlightCinema) || isFlightCinema;
   /** 모바일 나라 메뉴 — 펼침일 때만 목록 노출 · 숨김 시 지도 탐색 */
   const [mobileRegionsExpanded, setMobileRegionsExpanded] = useState(true);
-  /** 모바일 좌상단 바로가기 — 기본 접힘 · 탭으로 펼침 */
+  /** 좌상단 바로가기 — 기본 접힘 · 탭으로 펼침 (모바일·PC) */
   const [mobileQuickLinksExpanded, setMobileQuickLinksExpanded] = useState(false);
   const mobileCategoryBarRef = useRef(null);
   const mobileRegionsAuxRef = useRef(null);
@@ -167,10 +167,10 @@ const HomeUI = React.memo(({
   }, [externalInput]);
 
   useEffect(() => {
-    if (faceRegionsOpen && mobileRegionsExpanded) {
+    if (hideExploreChrome || (faceRegionsOpen && mobileRegionsExpanded)) {
       setMobileQuickLinksExpanded(false);
     }
-  }, [faceRegionsOpen, mobileRegionsExpanded]);
+  }, [hideExploreChrome, faceRegionsOpen, mobileRegionsExpanded]);
 
   const CATEGORIES = [
     { id: 'paradise', icon: Palmtree, label: 'Paradise', color: 'text-cyan-400' },
@@ -189,7 +189,8 @@ const HomeUI = React.memo(({
     }
   };
   const ThemeIcon = getThemeConfig().icon;
-  const showMobileQuickLinksCollapsed = !hideExploreChrome && !mobileQuickLinksExpanded;
+  // 장소 카드(hideExploreChrome)와 분리 — 묶으면 접힌 축제 칩이 목록으로 펼쳐짐
+  const showMobileQuickLinksCollapsed = !mobileQuickLinksExpanded;
 
   const renderMobileQuickLink = (item, linkClassName = '') => {
     const Icon = item.icon;
@@ -213,18 +214,129 @@ const HomeUI = React.memo(({
 
   const [mobileQuickLinkFirst, ...mobileQuickLinkRest] = mobileQuickLinks;
 
+  const renderSearchPill = () => (
+    <>
+      <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => navigate('/explore')}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            navigate('/explore');
+          }
+        }}
+        className="relative flex w-full min-w-0 items-center bg-black/40 backdrop-blur-xl border border-white/30 shadow-lg transition-all h-10 md:h-12 rounded-full cursor-pointer hover:bg-black/50 hover:border-blue-400/50 group-hover:border-blue-400/50 md:max-w-md touch-manipulation"
+      >
+        <div className="pl-3 md:pl-4 text-gray-400 transition-colors group-hover:text-blue-400">
+          <Search size={16} className="md:w-[18px] md:h-[18px]" />
+        </div>
+        <span className="min-w-0 flex-1 bg-transparent text-gray-300/80 px-2 md:px-3 text-xs md:text-sm font-medium cursor-pointer select-none truncate">
+          {t('layout.search.placeholder')}
+        </span>
+      </div>
+    </>
+  );
+
+  const renderQuickLinks = () => (
+    showMobileQuickLinksCollapsed ? (
+      <button
+        type="button"
+        onClick={() => {
+          onFaceRegionsDismiss?.();
+          setMobileQuickLinksExpanded(true);
+        }}
+        className="group relative flex w-auto max-w-[14rem] md:w-max md:max-w-none items-center gap-2 rounded-xl border border-white/25 bg-[#101010] px-2.5 py-1.5 shadow-[0_0_14px_rgba(255,255,255,0.08)] transition-colors hover:border-white/40 hover:bg-[#161616] touch-manipulation"
+        aria-label={`${t('home.quickLinks.expandMenu')} — ${mobileQuickLinks.map((item) => item.label).join(', ')}`}
+        title={t('home.quickLinks.expandMenu')}
+      >
+        <span className="flex items-center gap-1">
+          {mobileQuickLinks.map((item) => {
+            const Icon = item.icon;
+            return (
+              <span
+                key={item.to}
+                className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border ${item.iconWrapClass}`}
+                aria-hidden="true"
+              >
+                <Icon size={12} />
+              </span>
+            );
+          })}
+        </span>
+        <span className="truncate md:overflow-visible md:whitespace-nowrap md:shrink-0 text-[11px] font-bold tracking-tight text-white/95 break-keep">
+          {mobileQuickLinksCollapsedLabel}
+        </span>
+      </button>
+    ) : (
+      <div className="flex flex-col items-start gap-2">
+        <div className="flex max-w-[17.5rem] items-stretch gap-1.5">
+          {renderMobileQuickLink(mobileQuickLinkFirst, 'min-w-0 flex-1 max-w-none')}
+          <button
+            type="button"
+            onClick={() => setMobileQuickLinksExpanded(false)}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/35 bg-black/70 text-white shadow-[0_0_14px_rgba(255,255,255,0.14)] touch-manipulation transition-colors hover:border-white/50 hover:bg-black/85 active:scale-[0.97]"
+            aria-label={t('home.quickLinks.collapseMenu')}
+            title={t('home.quickLinks.collapseTitle')}
+          >
+            <ChevronUp size={20} strokeWidth={2.5} aria-hidden="true" />
+          </button>
+        </div>
+        {mobileQuickLinkRest.map((item) => renderMobileQuickLink(item))}
+      </div>
+    )
+  );
+
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 z-[100] p-4 md:p-6 flex items-start gap-3 md:grid md:grid-cols-12 pointer-events-none w-full max-md:overflow-x-clip">
+      <div className="fixed top-0 left-0 right-0 z-[100] p-4 md:p-6 flex flex-col gap-2 md:grid md:grid-cols-12 md:items-start md:gap-3 pointer-events-none w-full max-md:overflow-x-clip">
         <div
           data-site-notice-anchor-mobile
           className="md:hidden absolute inset-x-0 bottom-0 h-px pointer-events-none"
           aria-hidden="true"
         />
 
+        {!isTourCinema ? (
+          <div className="flex md:hidden w-full items-center gap-2 min-w-0 pointer-events-auto">
+            <div
+              key={`${homeChromeEpoch}-mobile`}
+              className="relative shrink-0 z-[110]"
+              data-home-chrome-hit
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div
+                aria-hidden="true"
+                className="pointer-events-auto absolute -inset-y-2 -left-2 right-0 z-0 rounded-2xl bg-[#070707]/92"
+              />
+              <div className="relative z-10 flex items-center gap-1">
+                <div
+                  onClick={onLogoClick}
+                  className="cursor-pointer group touch-manipulation"
+                >
+                  <h1 className="group-hover:opacity-90 transition-opacity origin-left">
+                    <Logo />
+                  </h1>
+                </div>
+                <LocaleToggle compact />
+              </div>
+            </div>
+            <div className="group relative flex-1 min-w-0">
+              {renderSearchPill()}
+            </div>
+          </div>
+        ) : null}
+
+        {!isTourCinema ? (
+          <div className="md:hidden pointer-events-auto">
+            {renderQuickLinks()}
+          </div>
+        ) : null}
+
         <div
-          key={homeChromeEpoch}
-          className="md:col-span-2 flex-shrink-0 relative z-[110] pointer-events-auto pt-2 md:pl-2 max-md:animate-none md:animate-fade-in-down"
+          key={`${homeChromeEpoch}-desktop`}
+          className="hidden md:block md:col-span-2 flex-shrink-0 relative z-[110] pointer-events-auto pt-2 md:pl-2 animate-fade-in-down"
           data-home-chrome-hit
           onPointerDown={(e) => e.stopPropagation()}
           onClick={(e) => e.stopPropagation()}
@@ -251,78 +363,11 @@ const HomeUI = React.memo(({
               </div>
               {!isTourCinema ? <LocaleToggle compact /> : null}
             </div>
-            {!isTourCinema && (
-              <>
-                <div className="md:hidden">
-                  {showMobileQuickLinksCollapsed ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        onFaceRegionsDismiss?.();
-                        setMobileQuickLinksExpanded(true);
-                      }}
-                      className="group relative flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-white/25 bg-[#101010] px-2.5 py-1.5 shadow-[0_0_14px_rgba(255,255,255,0.08)] transition-colors hover:border-white/40 hover:bg-[#161616] touch-manipulation"
-                      aria-label={`${t('home.quickLinks.expandMenu')} — ${mobileQuickLinks.map((item) => item.label).join(', ')}`}
-                      title={t('home.quickLinks.expandMenu')}
-                    >
-                      <span className="flex items-center gap-1">
-                        {mobileQuickLinks.map((item) => {
-                          const Icon = item.icon;
-                          return (
-                            <span
-                              key={item.to}
-                              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border ${item.iconWrapClass}`}
-                              aria-hidden="true"
-                            >
-                              <Icon size={12} />
-                            </span>
-                          );
-                        })}
-                      </span>
-                      <span className="truncate text-[11px] font-bold tracking-tight text-white/95 break-keep">
-                        {mobileQuickLinksCollapsedLabel}
-                      </span>
-                    </button>
-                  ) : (
-                    <div className="flex flex-col items-start gap-2">
-                      <div className="flex max-w-[17.5rem] items-stretch gap-1.5">
-                        {renderMobileQuickLink(mobileQuickLinkFirst, 'min-w-0 flex-1 max-w-none')}
-                        <button
-                          type="button"
-                          onClick={() => setMobileQuickLinksExpanded(false)}
-                          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/35 bg-black/70 text-white shadow-[0_0_14px_rgba(255,255,255,0.14)] touch-manipulation transition-colors hover:border-white/50 hover:bg-black/85 active:scale-[0.97]"
-                          aria-label={t('home.quickLinks.collapseMenu')}
-                          title={t('home.quickLinks.collapseTitle')}
-                        >
-                          <ChevronUp size={20} strokeWidth={2.5} aria-hidden="true" />
-                        </button>
-                      </div>
-                      {mobileQuickLinkRest.map((item) => renderMobileQuickLink(item))}
-                    </div>
-                  )}
-                </div>
-                <div className="hidden md:flex flex-col items-start gap-2 pb-3">
-                  {mobileQuickLinks.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <Link
-                        key={item.to}
-                        to={item.to}
-                        className={`group relative flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border px-2.5 py-1.5 transition-colors touch-manipulation ${item.chipClass}`}
-                        aria-label={t('home.quickLinks.navigateTo', { label: item.label })}
-                      >
-                        <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border ${item.iconWrapClass}`}>
-                          <Icon size={15} aria-hidden="true" />
-                        </span>
-                        <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
-                          {item.label}
-                        </span>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </>
-            )}
+            {!isTourCinema ? (
+              <div className="flex flex-col items-start gap-2 pb-1">
+                {renderQuickLinks()}
+              </div>
+            ) : null}
           </div>
         </div>
 
@@ -369,20 +414,9 @@ const HomeUI = React.memo(({
         ) : !isTourCinema ? (
           <div
             data-site-notice-anchor
-            className="group pointer-events-auto min-w-0 max-md:fixed max-md:left-[7.75rem] max-md:right-4 max-md:top-6 max-md:z-[105] md:col-span-5 md:relative md:z-50 md:flex md:flex-col md:items-center md:pt-2 md:animate-fade-in-down md:delay-100"
+            className="group pointer-events-auto min-w-0 hidden md:flex md:col-span-5 md:relative md:z-50 md:flex-col md:items-center md:pt-2 md:animate-fade-in-down md:delay-100"
           >
-            <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-            <div
-              onClick={() => navigate('/explore')}
-              className="relative flex w-full min-w-0 items-center bg-black/40 backdrop-blur-xl border border-white/30 shadow-lg transition-all h-10 md:h-12 rounded-full cursor-pointer hover:bg-black/50 hover:border-blue-400/50 group-hover:border-blue-400/50 md:max-w-md"
-            >
-              <div className="pl-3 md:pl-4 text-gray-400 transition-colors group-hover:text-blue-400">
-                <Search size={16} className="md:w-[18px] md:h-[18px]" />
-              </div>
-              <span className="min-w-0 flex-1 bg-transparent text-gray-300/80 px-2 md:px-3 text-xs md:text-sm font-medium cursor-pointer select-none truncate">
-                {t('layout.search.placeholder')}
-              </span>
-            </div>
+            {renderSearchPill()}
           </div>
         ) : null}
 

@@ -359,7 +359,7 @@ KR: >50m면 반드시 snap. NO_HIT는 drop/rename만.
 | 파일럿 | P0 3건(홍천·양구·인제) → **I 무결성** → F · **3R마다 I** |
 | 정지 | §3.3 + 플랜 §6.2 (FAIL 2회·출처 대량 부재·시드 손상) |
 | **사람 QA** | **F 라운드 생략** · I# 일지 2~3줄 · PR merge 전 spot-check 선택 (플랜 §4.3·§6.0) |
-| **자동 진행** | VERIFY PASS → **다음 ⬜ R** · 사람 제시어 대기 **금지** · 컨텍스트 ~50% → **Task 후임**(§4.2) |
+| **자동 진행** | VERIFY PASS → **다음 ⬜ R** · 사람 제시어 대기 **금지** · 컨텍스트 ~50% → **Task 후임**(§4.2) · 단절 방지 상세 [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) **§4.5** |
 
 **워커 프롬프트 최소 골격**
 

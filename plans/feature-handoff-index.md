@@ -14,6 +14,40 @@
 
 ## 활성 목록
 
+### 홈 축제칩 (써머리 펼침) — main 병합 ✅
+
+| | |
+|--|--|
+| **상태** | **#4 merge ✅** · main `7f0f46ca` · PR [#177](https://github.com/catgeot/Days/pull/177) |
+| **일지** | [`2026-09-02-project-log.md`](./2026-09-02-project-log.md) |
+| **PROD** | `https://www.gateo.kr/` — 모바일 지명 탭 후 접힘 · PC 접힌 칩 라벨 전부 |
+
+**게이트**: 사람 Preview QA PASS · `/qa/home-chip` 종료(PROD `/`) · 작업 로그 `active: false`
+
+---
+
+### 홈 검색바 히트 (EN 토글·검색 겹침) — main 병합 ✅
+
+| | |
+|--|--|
+| **상태** | **#3 merge ✅** · main `9824bfb8` · PR [#175](https://github.com/catgeot/Days/pull/175) |
+| **일지** | [`2026-09-02-project-log.md`](./2026-09-02-project-log.md) |
+| **PROD** | `https://www.gateo.kr/` — 모바일 검색·EN 토글 각각 클릭 |
+
+**게이트**: 사람 Preview QA PASS · `/qa/search-hit` 종료(PROD `/`) · 작업 로그 `active: false`
+
+---
+
+### 홈 locale 토글 (EN/KO) — main 병합 ✅
+
+| | |
+|--|--|
+| **상태** | **#9 merge ✅** · main `a6a5ede7` · PR [#176](https://github.com/catgeot/Days/pull/176) (#174+#176) |
+| **일지** | [`2026-09-01-project-log.md`](./2026-09-01-project-log.md) · [`2026-09-02-project-log.md`](./2026-09-02-project-log.md) |
+| **잔여** | 검색바 히트 PR #175 merge `9824bfb8` ✅ |
+
+---
+
 ### 세계 행사·축제 일정 연동
 
 | | |
@@ -170,10 +204,10 @@ main · www.gateo.kr/place/yap/planner?lang=en
 
 | | |
 |--|--|
-| **상태** | **자동 오케** · R04 ✅ · 다음 **R05** (큐 ⬜) |
-| **브랜치** | `cursor/palgyeong` · tip `db428507` |
+| **상태** | **자동 오케** · R06 ✅ · **I#3** ✅ · 다음 **R07** |
+| **브랜치** | `cursor/palgyeong` · tip `37b29e1e` |
 | **PR** | [#172](https://github.com/catgeot/Days/pull/172) |
-| **플랜** | [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) §4.3·§9 |
+| **플랜** | [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) **§4.5·§9** |
 | **큐** | [`korea-local-scenic-lists-queue.md`](./korea-local-scenic-lists-queue.md) |
 | **오케** | [`orchestrator-method.md`](./orchestrator-method.md) **§5.6** |
 | **일지** | [`2026-09-01-project-log.md`](./2026-09-01-project-log.md) |
@@ -190,8 +224,10 @@ main · www.gateo.kr/place/yap/planner?lang=en
 @plans/feature-handoff-index.md
 브랜치 cursor/palgyeong · PR #172
 금지: UI · scenic승격 · 광역팔경 · feature plans 커밋 · 매R 사람QA · VERIFY후 제시어대기
-작업: 큐 다음 ⬜ R부터 · 워커2 · VERIFY PASS→다음R 자동 · 3R마다 I# · §6.2만 정지
+작업: 큐 다음 ⬜ R부터 · 워커2 · VERIFY PASS→다음R 또는 후임Task(§4.5-D) · 3R마다 I# · §6.2만 정지
 ```
+
+**턴 종료 체크**(⬜ R 남음 · §6.2 아님): (1) feature push (2) **같은 턴** 다음 R **또는** 후임 Task `run_in_background:false` (3) 세대 끝이면 **main docs push**. VERIFY 후 요약만 하고 종료 **금지** — [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) **§4.5**.
 
 
 ## 행 추가 템플릿 (새 Cloud feature)
