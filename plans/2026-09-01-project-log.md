@@ -197,13 +197,5 @@
 - **조치** PR #173 flex 헤더 + `fb58c296`~`0d02bcc1` Mapbox locale 수정 **5061d784 기준 롤백** (`HomeUI`·`HomeGlobeMapbox`·`LocaleProvider`·`koreaRegionLabels`·`globeMarkerLayers`)
 - **VERIFY** `audit:i18n` · `build` PASS
 - **Preview** `/qa/en` · https://days-git-cursor-locale-toggle-smooth-92b6-catgeots-projects.vercel.app/
-- **다음** 사람 Preview — 토글·검색바·지도 EN 기준선 확인 후 merge 여부 결정
-
-### #4 롤백 (#173 이전) ✅
-
-- **세션** `홈 locale #4, 사람 Preview QA` — 사람 요청으로 연쇄 수정 중단
-- **브랜치** `cursor/locale-toggle-smooth-92b6` · tip `615553d1` · PR [#174](https://github.com/catgeot/Days/pull/174)
-- **조치** PR #173 flex 헤더 + `fb58c296`~`0d02bcc1` Mapbox locale 수정 **5061d784 기준 롤백** (`HomeUI`·`HomeGlobeMapbox`·`LocaleProvider`·`koreaRegionLabels`·`globeMarkerLayers`)
-- **VERIFY** `audit:i18n` · `build` PASS
-- **Preview** `/qa/en` · https://days-git-cursor-locale-toggle-smooth-92b6-catgeots-projects.vercel.app/
+- **main** `25887434` — PR #173 `git revert` (검색바 flex 병합 취소)
 - **다음** 사람 Preview — 토글·검색바·지도 EN 기준선 확인 후 merge 여부 결정
