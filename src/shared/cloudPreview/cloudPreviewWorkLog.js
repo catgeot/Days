@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-02-home-locale-6-double-flash',
+    session: '홈 locale #6, 사람 Preview QA',
+    title: 'EN 토글 이중 깜박임 — satellite setLanguage 제거',
+    detail:
+      '사람 QA: 검게→한글 지명→영문 2단 플래시. deep/neon에서 setLanguage+text-field 이중 적용이 원인. 위성은 coalesce만 1회·styledata 에코 120ms 무시. Preview /qa/en · EN 토글 시 지구본 지명이 한 번에 EN인지·KO 복귀 확인.',
+    at: '2026-09-02T13:00:00.000Z',
+  },
+  {
     id: '2026-08-27-world-events-d4-opening-preset',
     session: '세계행사 일정 #27, Wave1.5 D4 숙소·파일럿 회귀',
     title: '개막 3박 프리셋·초기값·중복 API 방지',

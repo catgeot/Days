@@ -10,8 +10,7 @@ import React, {
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { PenTool } from 'lucide-react';
-import Map, { Marker, useControl } from 'react-map-gl/mapbox';
-import MapboxLanguage from '@mapbox/mapbox-gl-language';
+import Map, { Marker } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
 import { bindGlobeSpaceDragGuard, isClientPointOnGlobe, isMapEventOnGlobe, isScreenPointOnGlobe } from '../lib/globeSpaceHitTest';
@@ -108,11 +107,25 @@ import {
 import FlightCinemaAirportMarkers from './FlightCinemaAirportMarkers.jsx';
 import GlobeClusterLegend from './GlobeClusterLegend.jsx';
 
-function LanguageControl({ locale }) {
-  const mapLanguage = locale?.startsWith('en') ? 'en' : 'ko';
-  useControl(() => new MapboxLanguage({ defaultLanguage: mapLanguage }));
-  return null;
-}
+const SATELLITE_LABEL_FIELD_KO = [
+  'coalesce',
+  ['get', 'name_ko'],
+  ['get', 'name_kr'],
+  ['get', 'name:ko'],
+  ['get', 'name'],
+];
+
+const SATELLITE_LABEL_FIELD_EN = [
+  'coalesce',
+  ['get', 'name_en'],
+  ['get', 'name_int'],
+  ['get', 'name_latin'],
+  ['get', 'name:en'],
+  ['get', 'name'],
+  ['get', 'name_ko'],
+  ['get', 'name_kr'],
+  ['get', 'name:ko'],
+];
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -440,6 +453,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const hiddenFillLayerIdsRef = useRef([]);
   const adminBoundaryLayerIdsRef = useRef([]);
   const lastPlaceLabelVisibleRef = useRef(null);
+  /** setLayoutProperty 직후 styledata 에코 무시 시각(ms) */
+  const suppressSatelliteLabelEchoUntilRef = useRef(0);
   const waitingThemeSettleRef = useRef(false);
   const globeBaseRevealedRef = useRef(false);
   const globeOverlaysRevealedRef = useRef(false);
@@ -622,15 +637,28 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }
   }, []);
 
-  const applyKoreanSatelliteLabels = useCallback(() => {
+  /** deep/neon: locale별 text-field. force=true면 자전 중·locale 토글 즉시. */
+  const applySatelliteBasemapLabels = useCallback((options = {}) => {
+    const force = Boolean(options.force);
     const map = mapRef.current?.getMap();
     if (!map || globeTheme === 'bright' || !map.isStyleLoaded?.()) return;
+
+    // 토글 직후 styledata가 같은 text-field를 다시 쓰면 2차 깜박임
+    if (!options.reapply && Date.now() < suppressSatelliteLabelEchoUntilRef.current) {
+      return;
+    }
+
     if (
-      cameraAnimatingRef.current || isGlobeCameraBusy(map)
-      || (typeof map.isMoving === 'function' && map.isMoving())
+      !force
+      && (cameraAnimatingRef.current || isGlobeCameraBusy(map)
+        || (typeof map.isMoving === 'function' && map.isMoving()))
     ) {
       return;
     }
+
+    const textField = locale?.startsWith('en')
+      ? SATELLITE_LABEL_FIELD_EN
+      : SATELLITE_LABEL_FIELD_KO;
 
     [
       ...placeLabelLayerIdsRef.current,
@@ -639,18 +667,16 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     ].forEach((layerId) => {
       try {
         if (isGateoLayer(layerId) || isFlightCinemaLayer(layerId) || !map.getLayer(layerId)) return;
-        map.setLayoutProperty(layerId, 'text-field', [
-          'coalesce',
-          ['get', 'name_ko'],
-          ['get', 'name_kr'],
-          ['get', 'name:ko'],
-          ['get', 'name']
-        ]);
+        map.setLayoutProperty(layerId, 'text-field', textField);
       } catch {
         // Ignore per-layer label field updates during style transitions.
       }
     });
-  }, [globeTheme]);
+
+    if (options.reapply) {
+      suppressSatelliteLabelEchoUntilRef.current = Date.now() + 120;
+    }
+  }, [globeTheme, locale]);
 
   const applyPlaceLabelVisibility = useCallback(() => {
     const map = mapRef.current?.getMap();
@@ -671,7 +697,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     });
 
     if (globeTheme !== 'bright') {
-      applyKoreanSatelliteLabels();
+      applySatelliteBasemapLabels();
     }
 
     if (shouldShowMapboxContext === null) return;
@@ -679,7 +705,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (lastPlaceLabelVisibleRef.current !== shouldShowMapboxContext) {
       lastPlaceLabelVisibleRef.current = shouldShowMapboxContext;
     }
-  }, [globeTheme, isPinVisible, refreshPlaceLabelLayers, applyKoreanSatelliteLabels]);
+  }, [globeTheme, isPinVisible, refreshPlaceLabelLayers, applySatelliteBasemapLabels]);
 
   const syncMapZoom = useCallback(() => {
     const map = mapRef.current?.getMap();
@@ -783,6 +809,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     globeBaseRevealedRef.current = false;
     globeOverlaysRevealedRef.current = false;
     flightCinemaLayersLatchedRef.current = false;
+    suppressSatelliteLabelEchoUntilRef.current = 0;
     if (map && gateoMarkerLayersReady(map)) {
       setGateoMarkerLayerVisibility(map, false);
     }
@@ -969,14 +996,42 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
   useEffect(() => {
     const map = mapRef.current?.getMap?.();
-    if (!map || typeof map.setLanguage !== 'function') return;
+    if (!map) return;
+
     const mapLanguage = locale?.startsWith('en') ? 'en' : 'ko';
-    try {
-      map.setLanguage(mapLanguage);
-    } catch {
-      // Style may still be loading.
+    // satellite-streets: setLanguage 전체 rewrite = 검게 깜박 → 기본 지명(KO) → 우리 coalesce(EN) 2단 플래시.
+    // deep/neon은 레이어 text-field만 1회 패치. bright(벡터)만 setLanguage.
+    const useSatelliteLabelPatch = globeTheme !== 'bright';
+
+    const applyLocaleToMap = () => {
+      if (useSatelliteLabelPatch) {
+        // reapply: locale 키가 같아도 테마/스타일 후 강제 1회
+        applySatelliteBasemapLabels({ force: true, reapply: true });
+        return;
+      }
+      if (typeof map.setLanguage === 'function') {
+        try {
+          map.setLanguage(mapLanguage);
+        } catch {
+          // Style may still be loading.
+        }
+      }
+    };
+
+    if (map.isStyleLoaded?.()) {
+      applyLocaleToMap();
+      return undefined;
     }
-  }, [locale, globeTheme]);
+
+    const onReady = () => {
+      map.off('idle', onReady);
+      applyLocaleToMap();
+    };
+    map.on('idle', onReady);
+    return () => {
+      map.off('idle', onReady);
+    };
+  }, [locale, globeTheme, applySatelliteBasemapLabels]);
 
   useEffect(() => {
     allMarkersLookupRef.current = allMarkers;
@@ -2436,7 +2491,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
           setMapReady(true);
           syncMapZoom();
-          if (map && typeof map.setLanguage === 'function') {
+          // bright만 setLanguage — satellite는 deferLabelSync의 applySatelliteBasemapLabels
+          if (globeTheme === 'bright' && map && typeof map.setLanguage === 'function') {
             try {
               map.setLanguage(locale?.startsWith('en') ? 'en' : 'ko');
             } catch {
@@ -2482,7 +2538,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
             if (!map) return;
             applyWaterPaint();
             refreshPlaceLabelLayers();
-            applyKoreanSatelliteLabels();
+            applySatelliteBasemapLabels({ force: true });
             resetAndApplyPlaceLabelVisibility();
             tryRevealGlobeOverlays();
           };
@@ -2497,26 +2553,31 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         onStyleData={() => {
           const map = mapRef.current?.getMap();
           if (!map) return;
-          if (
-            cameraAnimatingRef.current || isGlobeCameraBusy(map)
-            || (typeof map.isMoving === 'function' && map.isMoving())
-          ) {
-            return;
-          }
 
           if (!map.isStyleLoaded?.()) {
             flightCinemaLayersLatchedRef.current = false;
           }
 
           applyEarlyMapboxGlobeLabelSuppress(map, globeTheme);
+
+          const cameraBusy =
+            cameraAnimatingRef.current || isGlobeCameraBusy(map)
+            || (typeof map.isMoving === 'function' && map.isMoving());
+
+          // satellite: locale text-field 유지. setLanguage는 쓰지 않음(이중 깜박임).
+          if (map.isStyleLoaded?.() && globeTheme !== 'bright') {
+            refreshPlaceLabelLayers();
+            applySatelliteBasemapLabels({ force: true });
+          }
+
+          if (cameraBusy) return;
+
           tryRevealGlobeOverlays();
 
           if (!map.isStyleLoaded?.()) return;
 
           ensureInteractionReady();
           applyWaterPaint();
-          refreshPlaceLabelLayers();
-          applyKoreanSatelliteLabels();
           resetAndApplyPlaceLabelVisibility();
           syncGateoMarkerLayers();
           tryRevealGlobe();
@@ -2578,8 +2639,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         attributionControl={{ compact: true }}
         fog={fogConfig}
       >
-        {globeTheme !== 'bright' && <LanguageControl locale={locale} />}
-
         {showCinemaAirportMarkers ? (
           <FlightCinemaAirportMarkers
             key={flightCinemaRouteIatas.join('>')}
