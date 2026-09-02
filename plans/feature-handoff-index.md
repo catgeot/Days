@@ -170,8 +170,8 @@ main · www.gateo.kr/place/yap/planner?lang=en
 
 | | |
 |--|--|
-| **상태** | **자동 오케** · R04 ✅ · 다음 **R05** (큐 ⬜) |
-| **브랜치** | `cursor/palgyeong` · tip `db428507` |
+| **상태** | **자동 오케** · R06 ✅ · **I#3** ✅ · 다음 **R07** |
+| **브랜치** | `cursor/palgyeong` · tip `37b29e1e` |
 | **PR** | [#172](https://github.com/catgeot/Days/pull/172) |
 | **플랜** | [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) §4.3·§9 |
 | **큐** | [`korea-local-scenic-lists-queue.md`](./korea-local-scenic-lists-queue.md) |

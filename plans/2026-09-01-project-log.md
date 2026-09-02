@@ -145,3 +145,22 @@
 - **결정** F 단계 = **자동 오케스트레이터**(플랜 §4.3) · VERIFY PASS → 다음 R · **매 R 사람 Preview QA 생략** · **3R마다 I#** · §6.2만 정지
 - **문서** `korea-local-scenic-lists-plan` §4.3·§6.0 · `orchestrator-method` §5.6 · index·큐 제시어 오케 형식
 - **다음** 오케 제시어 1회로 R05~ 연속 (Task 이양 · 사람 제시어 대기 없음)
+
+### #9 채우기 R05 ✅
+
+- **세션** `지자체 팔경 오케 R05`
+- **브랜치** `cursor/palgyeong` · tip `491aade1` · PR [#172](https://github.com/catgeot/Days/pull/172)
+- **산출** `okcheon-gugyeong` · `yeongdong-yangsan-palgyeong` · `yeongdong-hancheon-palgyeong` · `jincheon-palgyeong` · `jeungpyeong-gugyeong` — lists +5 · hub append
+- **skip** `eumseong` `skip_no_source`
+- **VERIFY** audit 0 · smoke(옥천9경·양산팔경·한천팔경·상산팔경·증평구경) · build PASS
+- **다음** **R06**
+
+### #10 채우기 R06 ✅ · I#3 ✅
+
+- **세션** `지자체 팔경 오케 R06` · **I#3** 무결성
+- **브랜치** `cursor/palgyeong` · tip `37b29e1e` · PR [#172](https://github.com/catgeot/Days/pull/172)
+- **산출** `gyeongju-8gwae`(8怪) · `pohang-sipgyeong`(12) — lists 23 · members 203
+- **skip** `andong`·`gumi`·`sangju`·`gimcheon` `skip_no_source`
+- **I#3** R04–R06 audit 0 · smoke 회귀+샘플 PASS · build PASS
+- **Preview** `https://days-git-cursor-palgyeong-catgeots-projects.vercel.app`
+- **다음** **R07** — 워커2 · 경북 6(영주·문경·봉화·예천·청송·영덕)
