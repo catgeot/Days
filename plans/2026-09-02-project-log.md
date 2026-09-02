@@ -4,11 +4,25 @@
 
 ---
 
-## 홈 locale 토글 — #8 merge ✅
+## 홈 locale 토글 — #8 merge ✅ · #9 모바일 지명
 
-- **세션** `홈 locale #8, PR #174 merge`
-- **main** `053a4587` — PR [#174](https://github.com/catgeot/Days/pull/174) merge (지구본 EN↔KO 깜박임 없음 · ≤3초)
-- **잔여** 모바일 검색바·EN 토글 히트 겹침 → 아래 주제
+- **#8** main `053a4587` — PR [#174](https://github.com/catgeot/Days/pull/174) merge
+- **#9** `cursor/globe-locale-mobile-5f5c` · tip `e2214bdb` · PR [#176](https://github.com/catgeot/Days/pull/176)
+- **증상** 모바일 EN 토글 시 UI만 EN · 지구본 지명·핀 KO 고착 (Preview 모바일 미QA)
+- **수정** suppress는 레이어 갱신>0일 때만 · refresh·재시도·자전 정지·핀 setData
+- **다음** 사람 **모바일** Preview QA → merge
+
+**다음 제시어**:
+
+```
+홈 locale #9, 모바일 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-02-project-log.md
+@plans/i18n-en-plan.md
+브랜치 cursor/globe-locale-mobile-5f5c · PR #176 · Preview https://days-git-cursor-globe-locale-mobile-5f5c-catgeots-projects.vercel.app/
+금지: 검색바 flex(#175) 동시 · HomeUI 리디자인 · plans/** feature 커밋
+작업: 모바일 EN 토글 → 지구본 지명·핀 EN · KO 복귀 · OK 시 merge
+```
 
 ---
 
@@ -20,9 +34,9 @@
 - **브랜치** `cursor/search-locale-hit-5f5c` · tip `4dff1699` · PR [#175](https://github.com/catgeot/Days/pull/175)
 - **증상** 모바일 검색바 `left-[7.75rem]` ↔ chrome 실드 `z-[110]` → 검색 클릭 무력화
 - **준비** `/qa/search-hit` · Preview 작업 로그 · 핸드오프 §13 A′′
-- **다음** **#2 HomeUI flex** — `HomeUI.jsx`만 · 참고 `f3ec61d7`/`0ba69445` · **HomeGlobeMapbox 금지**
+- **다음** **#2 HomeUI flex** — `HomeUI.jsx`만 · 참고 `f3ec61d7`/`0ba69445` · **HomeGlobeMapbox 금지** (#9 지명 수정과 분리)
 
-**다음 제시어**:
+**다음 제시어 (지명 QA 후)**:
 
 ```
 홈 검색바 히트 #2, HomeUI flex
