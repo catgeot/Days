@@ -349,24 +349,12 @@ npm run smoke:browser-locale-hint
 |------|------|------|
 | #1 | ✅ tip `4dff1699` | 브랜치·`/qa/search-hit`·작업 로그 준비 |
 | #2 | ✅ tip `7b8aa801` | `HomeUI.jsx` flex `[로고+EN \| 검색 flex-1]` · 바로가기 2행 |
-| #3 | 다음 | 사람 Preview QA — 검색·EN 토글 각각 클릭 |
+| #3 | ✅ main `9824bfb8` | 사람 Preview QA PASS · PR [#175](https://github.com/catgeot/Days/pull/175) merge |
 
 **증상**: 모바일 `left-[7.75rem]` 검색바 ↔ chrome 실드 `z-[110]` → 검색 클릭 무력화  
-**참고(롤백됨)**: `f3ec61d7` / `0ba69445` (#173) — **통째 cherry-pick 금지** · #2에서 현재 `HomeUI`에 재적용  
+**적용**: `HomeUI.jsx` 모바일 1행 `[로고+EN | 검색 flex-1]` · 바로가기 2행 · `/qa/search-hit` 종료  
 **금지**: `HomeGlobeMapbox` · LocaleProvider Mapbox · UI 리디자인  
-**배경**: #173은 #4에서 Mapbox 연쇄와 함께 revert · #174 지구본은 main → UI만 분리 가능
-
-**다음 제시어 (#3)**:
-
-```
-홈 검색바 히트 #3, 사람 Preview QA
-@plans/feature-handoff-index.md
-@plans/2026-09-02-project-log.md
-@plans/i18n-en-plan.md
-브랜치 cursor/search-locale-hit-5f5c · PR #175 · Preview https://days-git-cursor-search-locale-hit-5f5c-catgeots-projects.vercel.app/
-금지: HomeGlobeMapbox · LocaleProvider Mapbox · UI 리디자인 · plans/** feature 커밋
-작업: 모바일 Preview — 검색 탭→/explore · EN 토글 독립 클릭 · 바로가기 칩 2행 · OK 시 PR #175 merge
-```
+**배경**: #173은 #4에서 Mapbox 연쇄와 함께 revert · #174 지구본은 main → UI만 분리 반영
 
 **에이전트 VERIFY**:
 

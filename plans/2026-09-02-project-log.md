@@ -9,7 +9,7 @@
 - **#8** main `053a4587` — PR [#174](https://github.com/catgeot/Days/pull/174)
 - **#9** main `a6a5ede7` — PR [#176](https://github.com/catgeot/Days/pull/176)
 - **사람 QA** PC·모바일 실시간 EN↔KO 지명 전환 OK
-- **잔여** 검색바·EN 토글 히트 → **홈 검색바 히트 #3** 사람 Preview QA
+- **잔여** 없음 — 검색바 히트 PR [#175](https://github.com/catgeot/Days/pull/175) merge `9824bfb8`
 
 ---
 
@@ -31,14 +31,9 @@
 - **VERIFY** `audit:i18n` · `build` · `smoke:browser-locale-hint` · `smoke:place-label-slug` PASS
 - **다음** **#3 사람 Preview QA** — 검색·EN 토글 각각 클릭 · OK 시 PR #175 merge
 
-**다음 제시어**:
+### #3 사람 Preview QA · main 병합 ✅
 
-```
-홈 검색바 히트 #3, 사람 Preview QA
-@plans/feature-handoff-index.md
-@plans/2026-09-02-project-log.md
-@plans/i18n-en-plan.md
-브랜치 cursor/search-locale-hit-5f5c · PR #175 · Preview https://days-git-cursor-search-locale-hit-5f5c-catgeots-projects.vercel.app/
-금지: HomeGlobeMapbox · LocaleProvider Mapbox · UI 리디자인 · plans/** feature 커밋
-작업: 모바일 Preview — 검색 탭→/explore · EN 토글 독립 클릭 · 바로가기 칩 2행 · OK 시 PR #175 merge
-```
+- **세션** `홈 검색바 히트 #3, main 병합`
+- **사람 QA** 모바일: 검색→`/explore` · EN 토글 독립 클릭 · 바로가기 2행 OK
+- **main** `9824bfb8` — PR [#175](https://github.com/catgeot/Days/pull/175) merge
+- **종료** 작업 로그 `active: false` · `/qa/search-hit` → PROD `/`

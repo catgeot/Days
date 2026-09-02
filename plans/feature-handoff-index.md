@@ -14,33 +14,15 @@
 
 ## 활성 목록
 
-### 홈 검색바 히트 (EN 토글·검색 겹침)
+### 홈 검색바 히트 (EN 토글·검색 겹침) — main 병합 ✅
 
 | | |
 |--|--|
-| **상태** | **#2 HomeUI flex** · tip `7b8aa801` · 다음 #3 사람 Preview QA |
-| **브랜치** | `cursor/search-locale-hit-5f5c` · tip `7b8aa801` |
-| **PR** | [#175](https://github.com/catgeot/Days/pull/175) |
-| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §13 A′′ |
+| **상태** | **#3 merge ✅** · main `9824bfb8` · PR [#175](https://github.com/catgeot/Days/pull/175) |
 | **일지** | [`2026-09-02-project-log.md`](./2026-09-02-project-log.md) |
-| **Preview** | `/qa/search-hit` → git Preview `/` · https://days-git-cursor-search-locale-hit-5f5c-catgeots-projects.vercel.app/ |
-| **VERIFY** | `audit:i18n` · `build` · `smoke:browser-locale-hint` · `smoke:place-label-slug` |
+| **PROD** | `https://www.gateo.kr/` — 모바일 검색·EN 토글 각각 클릭 |
 
-**게이트**: HomeUI flex ✅ · **사람 Preview QA** — EN 토글·검색 각각 클릭
-
-**적용**: 모바일 1행 `[로고+EN | 검색 flex-1]` · 바로가기 칩 2행 · `left-[7.75rem]` 제거
-
-**다음 제시어 (#3 사람 Preview QA)**:
-
-```
-홈 검색바 히트 #3, 사람 Preview QA
-@plans/feature-handoff-index.md
-@plans/2026-09-02-project-log.md
-@plans/i18n-en-plan.md
-브랜치 cursor/search-locale-hit-5f5c · PR #175 · Preview https://days-git-cursor-search-locale-hit-5f5c-catgeots-projects.vercel.app/
-금지: HomeGlobeMapbox · LocaleProvider Mapbox · UI 리디자인 · plans/** feature 커밋
-작업: 모바일 Preview — 검색 탭→/explore · EN 토글 독립 클릭 · 바로가기 칩 2행 · OK 시 PR #175 merge
-```
+**게이트**: 사람 Preview QA PASS · `/qa/search-hit` 종료(PROD `/`) · 작업 로그 `active: false`
 
 ---
 
