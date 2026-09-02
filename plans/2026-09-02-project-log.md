@@ -33,7 +33,14 @@
 - **증상** PC 접힌 칩 `max-w-[14rem]`으로 「축제 · 행사 · 명승 · 추천」 잘림
 - **적용** `md:w-max md:max-w-none` · 말줄임 해제 · 모바일 14rem 유지
 - **VERIFY** `vite build` PASS
-- **다음** **#4 사람 Preview QA** — PC 라벨 전부 보임 · 카테고리 겹침 없음 · 모바일 접힘 유지 · OK 시 PR #177 merge
+- **다음** **#4 사람 Preview QA · main 병합**
+
+### #4 사람 Preview QA · main 병합 ✅
+
+- **세션** `홈 축제칩 #4, main 병합`
+- **사람 QA** 모바일: 지명 탭 후 접힘 유지 · PC: 접힌 칩 라벨 전부 · 카테고리 겹침 없음
+- **main** `7f0f46ca` — PR [#177](https://github.com/catgeot/Days/pull/177) merge
+- **종료** 작업 로그 `active: false` · `/qa/home-chip` → PROD `/`
 
 ---
 

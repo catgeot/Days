@@ -14,29 +14,15 @@
 
 ## 활성 목록
 
-### 홈 축제칩 (써머리 펼침)
+### 홈 축제칩 (써머리 펼침) — main 병합 ✅
 
 | | |
 |--|--|
-| **상태** | **#3 PC 접힘 너비** · tip `6735df3e` · 사람 Preview QA |
-| **브랜치** | `cursor/home-festival-chip-59c9` · tip `6735df3e` |
-| **PR** | [#177](https://github.com/catgeot/Days/pull/177) |
+| **상태** | **#4 merge ✅** · main `7f0f46ca` · PR [#177](https://github.com/catgeot/Days/pull/177) |
 | **일지** | [`2026-09-02-project-log.md`](./2026-09-02-project-log.md) |
-| **Preview** | `/qa/home-chip` → git Preview 홈 |
-| **VERIFY** | `vite build` PASS |
+| **PROD** | `https://www.gateo.kr/` — 모바일 지명 탭 후 접힘 · PC 접힌 칩 라벨 전부 |
 
-**게이트**: #1 접힘 유지 ✅ · #2 PC 접힘 ✅ · #3 PC 너비 ✅ · **#4** 사람 Preview
-
-**다음 제시어 (#4 사람 Preview QA)**:
-
-```
-홈 축제칩 #4, 사람 Preview QA
-@plans/feature-handoff-index.md
-@plans/2026-09-02-project-log.md
-브랜치 cursor/home-festival-chip-59c9 · PR #177 · Preview https://days-git-cursor-home-festival-chip-59c9-catgeots-projects.vercel.app/
-금지: HomeGlobeMapbox 리팩터 · plans/** feature 커밋 · UI 리디자인
-작업: PC 접힌 칩 「축제 · 행사 · 명승 · 추천」전부 보임 · 카테고리 겹침 없음 · 모바일 지명 탭 후 접힘 유지 · OK 시 PR #177 merge
-```
+**게이트**: 사람 Preview QA PASS · `/qa/home-chip` 종료(PROD `/`) · 작업 로그 `active: false`
 
 ---
 
