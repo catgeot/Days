@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '홈 검색바 히트',
-  sessionNo: 1,
-  sessionPhase: '브랜치·핸드오프 준비',
+  sessionNo: 2,
+  sessionPhase: 'HomeUI flex',
   branch: 'cursor/search-locale-hit-5f5c',
   previewPath: '/',
   qaShareSlug: 'search-hit',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-02-search-locale-hit-2-homeui-flex',
+    session: '홈 검색바 히트 #2, HomeUI flex',
+    title: '모바일 헤더 [로고+EN | 검색 flex-1] · 바로가기 2행',
+    detail:
+      '고정 left-[7.75rem] 검색바 제거. 모바일 1행 flex [로고+EN | 검색 flex-1] · 바로가기 칩 2행. chrome 실드가 검색 클릭을 가로채지 않음. HomeGlobeMapbox·LocaleProvider 미변경. Preview /qa/search-hit — EN 토글·검색 각각 클릭.',
+    at: '2026-09-02T13:45:00.000Z',
+  },
   {
     id: '2026-09-02-search-locale-hit-1-prep',
     session: '홈 검색바 히트 #1, 브랜치·핸드오프 준비',
