@@ -98,6 +98,7 @@ import { getCategoryGlobeFaceView, GLOBE_FACE_FLY_MS, resolveCategoryFaceMapboxZ
 import { passesGlobeTierPolicy } from '../lib/globeSpotVisibility';
 import { flushCurationGlobeSyncIfPending } from '../lib/curationPlaceBridge.js';
 import { useLocale } from '../../../i18n/LocaleProvider';
+import { scheduleMapboxLanguage } from '../../../i18n/koreaRegionLabels.js';
 import { useTranslation } from 'react-i18next';
 import { useOptionalFlightCinemaRoute } from '../lib/FlightCinemaContext.jsx';
 import {
@@ -969,13 +970,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
   useEffect(() => {
     const map = mapRef.current?.getMap?.();
-    if (!map || typeof map.setLanguage !== 'function') return;
-    const mapLanguage = locale?.startsWith('en') ? 'en' : 'ko';
-    try {
-      map.setLanguage(mapLanguage);
-    } catch {
-      // Style may still be loading.
-    }
+    return scheduleMapboxLanguage(map, locale);
   }, [locale, globeTheme]);
 
   useEffect(() => {

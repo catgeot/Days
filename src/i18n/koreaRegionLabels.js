@@ -41,6 +41,37 @@ export function mapboxLanguageForLocale(locale) {
 }
 
 /**
+ * Mapbox setLanguage — 렌더 중 continuePlacement 크래시·locale 토글 깜박임 완화.
+ * @param {import('mapbox-gl').Map | null | undefined} map
+ * @param {string | null | undefined} locale
+ * @returns {() => void} cancel
+ */
+export function scheduleMapboxLanguage(map, locale) {
+  if (!map || typeof map.setLanguage !== 'function') return () => {};
+
+  const mapLanguage = mapboxLanguageForLocale(locale);
+  let cancelled = false;
+
+  const apply = () => {
+    if (cancelled || map._removed) return;
+    try {
+      map.setLanguage(mapLanguage);
+    } catch {
+      // Style may still be loading or mid-render.
+    }
+  };
+
+  const frame = requestAnimationFrame(() => {
+    requestAnimationFrame(apply);
+  });
+
+  return () => {
+    cancelled = true;
+    cancelAnimationFrame(frame);
+  };
+}
+
+/**
  * @param {string | null | undefined} locale
  * @param {string | null | undefined} regionKo
  */
