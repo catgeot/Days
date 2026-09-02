@@ -26,12 +26,13 @@ function parseAppliedPx(cssVar) {
 }
 
 function runCriosFirstNavigateHeightDropMock() {
-  const logs = [];
   const styleMap = {};
   const listeners = new Map();
+  const startHeight = 844;
+  const dropBy = 64;
   const visualViewport = {
     width: 390,
-    height: 844,
+    height: startHeight,
     offsetTop: 0,
     pageTop: 0,
     scale: 1,
@@ -56,17 +57,14 @@ function runCriosFirstNavigateHeightDropMock() {
     window: Object.getOwnPropertyDescriptor(globalThis, 'window'),
     document: Object.getOwnPropertyDescriptor(globalThis, 'document'),
     navigator: Object.getOwnPropertyDescriptor(globalThis, 'navigator'),
-    getComputedStyle: Object.getOwnPropertyDescriptor(globalThis, 'getComputedStyle'),
     requestAnimationFrame: Object.getOwnPropertyDescriptor(globalThis, 'requestAnimationFrame'),
-    fetch: Object.getOwnPropertyDescriptor(globalThis, 'fetch'),
     performanceGetEntries: globalThis.performance?.getEntriesByType,
-    sink: globalThis.__gateoAgentLogSink,
   };
 
   const win = {
     visualViewport,
     innerWidth: 390,
-    innerHeight: 844,
+    innerHeight: startHeight,
     scrollY: 0,
     pageYOffset: 0,
     scrollTo() {},
@@ -83,7 +81,7 @@ function runCriosFirstNavigateHeightDropMock() {
         getPropertyValue(k) { return styleMap[k] ?? ''; },
       },
       classList: { add() {}, remove() {} },
-      clientHeight: 844,
+      clientHeight: startHeight,
       appendChild() {},
     },
     querySelector: (sel) => (sel === '[data-home-chrome-top]' ? header : null),
@@ -108,43 +106,35 @@ function runCriosFirstNavigateHeightDropMock() {
   globalThis.performance.getEntriesByType = (type) => (
     type === 'navigation' ? [{ type: navType }] : origGetEntries(type)
   );
-  globalThis.getComputedStyle = () => ({ top: styleMap[HOME_CHROME_TOP_VAR] || '0px' });
   globalThis.requestAnimationFrame = (cb) => globalThis.setTimeout(cb, 0);
-  globalThis.fetch = () => Promise.resolve({ ok: true });
-  globalThis.__gateoAgentLogSink = (payload) => { logs.push(payload); };
+
+  const readAppliedPx = () => parseAppliedPx(
+    globalThis.document.documentElement.style.getPropertyValue(HOME_CHROME_TOP_VAR),
+  );
 
   const stopNav = syncHomeChromeOnFirstPaint();
-  const firstApply = logs.filter((l) => l.message === 'apply chrome top');
-  const firstPx = firstApply[0]?.data?.px ?? parseAppliedPx(styleMap[HOME_CHROME_TOP_VAR]);
-  visualViewport.height = 780;
-  win.innerHeight = 780;
+  const firstPx = readAppliedPx();
+  visualViewport.height = startHeight - dropBy;
+  win.innerHeight = startHeight - dropBy;
   visualViewport.dispatch('resize');
-  const afterApply = logs.filter((l) => l.message === 'apply chrome top').at(-1);
-  const dropLog = logs.find((l) => l.data?.drop === true);
-  const afterDropPx = afterApply?.data?.px ?? parseAppliedPx(styleMap[HOME_CHROME_TOP_VAR]);
-  const headerRectTopAfterDrop = afterApply?.data?.headerRectTop ?? header.getBoundingClientRect().top;
+  const afterDropPx = readAppliedPx();
   const result = {
     firstPx,
     afterDropPx,
-    dropDelta: dropLog?.data?.delta ?? null,
-    sawWebviewInset: afterApply?.data?.sawWebviewInset ?? dropLog?.data?.sawWebviewInset,
-    clearsFallback: dropLog?.data?.clearsFallback,
-    willAllowFallback: dropLog?.data?.willAllowFallback,
-    headerRectTopAfterDrop,
-    h5: logs.some((l) => l.hypothesisId === 'H5'),
+    dropDelta: visualViewport.height - startHeight,
+    headerRectTopAfterDrop: header.getBoundingClientRect().top,
   };
   stopNav();
 
   navType = 'reload';
-  styleMap[HOME_CHROME_TOP_VAR] = undefined;
   delete styleMap[HOME_CHROME_TOP_VAR];
-  visualViewport.height = 844;
-  win.innerHeight = 844;
+  visualViewport.height = startHeight;
+  win.innerHeight = startHeight;
   const stopReload = syncHomeChromeOnFirstPaint();
-  result.reloadPx = parseAppliedPx(styleMap[HOME_CHROME_TOP_VAR]);
-  visualViewport.height = 780;
+  result.reloadPx = readAppliedPx();
+  visualViewport.height = startHeight - dropBy;
   visualViewport.dispatch('resize');
-  result.reloadAfterDropPx = parseAppliedPx(styleMap[HOME_CHROME_TOP_VAR]);
+  result.reloadAfterDropPx = readAppliedPx();
   stopReload();
 
   const restore = (key, desc, fallback) => {
@@ -155,17 +145,14 @@ function runCriosFirstNavigateHeightDropMock() {
   restore('window', prev.window);
   restore('document', prev.document);
   restore('navigator', prev.navigator);
-  restore('getComputedStyle', prev.getComputedStyle);
   restore('requestAnimationFrame', prev.requestAnimationFrame, {
     value: () => 0,
     configurable: true,
     writable: true,
   });
-  restore('fetch', prev.fetch);
   if (prev.performanceGetEntries) {
     globalThis.performance.getEntriesByType = prev.performanceGetEntries;
   }
-  globalThis.__gateoAgentLogSink = prev.sink;
   return result;
 }
 
@@ -239,8 +226,6 @@ const criosMock = runCriosFirstNavigateHeightDropMock();
 assert(criosMock.firstPx === 56, `CriOS mock first apply is 56, got ${criosMock.firstPx}`);
 assert(criosMock.dropDelta === -64, `CriOS mock height delta is -64, got ${criosMock.dropDelta}`);
 assert(criosMock.afterDropPx === 56, `CriOS mock 56 must survive height drop, got ${criosMock.afterDropPx}`);
-assert(criosMock.sawWebviewInset === true, 'CriOS mock still records height drop');
-assert(criosMock.clearsFallback === false, 'CriOS mock must not clear fallback on drop');
 assert(criosMock.headerRectTopAfterDrop >= 40, `headerRectTop after drop should not be <40, got ${criosMock.headerRectTopAfterDrop}`);
 assert(criosMock.reloadPx === 0, `reload mock stays 0, got ${criosMock.reloadPx}`);
 assert(criosMock.reloadAfterDropPx === 0, `reload mock stays 0 after height drop, got ${criosMock.reloadAfterDropPx}`);
@@ -290,9 +275,18 @@ assert(
   !viewportLib.includes('firstNavigate && !sawWebviewInset'),
   'must not clear first-navigate fallback via sawWebviewInset',
 );
+assert(!viewportLib.includes('agentHomeChromeLog'), 'mobileViewport must not keep agent debug logger');
+assert(!viewportLib.includes('__GATEO_HOME_CHROME_DBG'), 'mobileViewport must not keep debug session key');
 
 const indexHtml = read('index.html');
 assert(indexHtml.includes('--gateo-home-chrome-top'), 'index.html sets CriOS first-nav inset before paint');
 assert(indexHtml.includes('CriOS'), 'index.html gates inset to iOS Chrome');
+assert(!indexHtml.includes('__GATEO_HOME_CHROME_DBG'), 'index.html must not keep debug payload');
+assert(!indexHtml.includes('__gateo_debug_log'), 'index.html must not post debug logs');
+
+assert(!home.includes('agentHomeChromeLog'), 'Home effect must not keep agent logs');
+
+const viteCfg = read('vite.config.js');
+assert(!viteCfg.includes('__gateo_debug_log'), 'vite must not ingest debug logs');
 
 console.log('smoke-home-chrome-viewport: PASS');

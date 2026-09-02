@@ -152,47 +152,6 @@ export const HOME_CHROME_TOP_VAR = '--gateo-home-chrome-top';
 /** iOS Chrome 주소창이 웹뷰 위에 덮일 때 — 새로고침 후엔 웹뷰가 이미 내려가 0 */
 export const CHROME_IOS_URLBAR_INSET_PX = 56;
 
-// #region agent log
-export function agentHomeChromeLog(hypothesisId, location, message, data) {
-  const payload = {
-    id: `log_${Date.now()}_${hypothesisId}`,
-    timestamp: Date.now(),
-    location,
-    message,
-    data,
-    hypothesisId,
-    runId: 'post-fix',
-  };
-  try { globalThis.__gateoAgentLogSink?.(payload); } catch { /* ignore */ }
-  try {
-    if (typeof window !== 'undefined') {
-      window.__GATEO_HOME_CHROME_DBG = window.__GATEO_HOME_CHROME_DBG || [];
-      window.__GATEO_HOME_CHROME_DBG.push(payload);
-      sessionStorage.setItem('__GATEO_HOME_CHROME_DBG', JSON.stringify(window.__GATEO_HOME_CHROME_DBG.slice(-40)));
-    }
-  } catch { /* ignore */ }
-  try { console.info('[gateo-home-chrome]', payload); } catch { /* ignore */ }
-  try {
-    if (typeof fetch === 'function' && typeof window !== 'undefined') {
-      fetch('/__gateo_debug_log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), keepalive: true }).catch(() => {});
-    }
-  } catch { /* ignore */ }
-}
-
-function readHomeChromeDomSnap() {
-  const header = typeof document !== 'undefined' ? document.querySelector('[data-home-chrome-top]') : null;
-  const root = typeof document !== 'undefined' ? document.documentElement : null;
-  return {
-    cssVar: root?.style?.getPropertyValue(HOME_CHROME_TOP_VAR) ?? '',
-    headerTop: header && typeof getComputedStyle === 'function' ? getComputedStyle(header).top : null,
-    headerRectTop: header ? Math.round(header.getBoundingClientRect().top) : null,
-    clientHeight: root?.clientHeight ?? null,
-    innerWidth: typeof window !== 'undefined' ? window.innerWidth : null,
-    innerHeight: typeof window !== 'undefined' ? window.innerHeight : null,
-  };
-}
-// #endregion
-
 export function lockHomeViewport() {
   if (typeof document === 'undefined') return;
   document.documentElement.classList.add(HOME_VIEWPORT_LOCK_CLASS);
@@ -295,23 +254,11 @@ export function syncHomeChromeOnFirstPaint({ onRemount, onSettled } = {}) {
   let stopped = false;
   let remountCount = 0;
   let lastApplied = -1;
-  let sawWebviewInset = false;
   const crios = isChromeIos();
   const navType = readNavigationType();
-  const firstNavigate = navType !== 'reload' && navType !== 'back_forward';
   const timers = [];
   const visualViewport = window.visualViewport;
   let lastHeight = visualViewport?.height ?? window.innerHeight;
-
-  // #region agent log
-  const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
-  const uaTag = (ua.match(/CriOS\/[\d.]+|GSA\/[\d.]+|FxiOS\/[\d.]+|EdgiOS\/[\d.]+/) || ['none'])[0];
-  agentHomeChromeLog('H4', 'mobileViewport.js:syncHomeChromeOnFirstPaint', 'sync entry', {
-    crios, navType, firstNavigate, uaTag, lastHeight,
-    ...readHomeChromeDomSnap(),
-    inline: typeof window !== 'undefined' ? window.__GATEO_INLINE_CHROME : null,
-  });
-  // #endregion
 
   const apply = (remount) => {
     if (stopped) return;
@@ -322,14 +269,12 @@ export function syncHomeChromeOnFirstPaint({ onRemount, onSettled } = {}) {
     }
     const measured = readMeasuredHomeChromeTopPx();
     const heightDelta = (visualViewport?.height ?? lastHeight) - lastHeight;
-    const fallbackOn = isCriosFirstNavigateSession({ crios, navType });
     const px = resolveSessionHomeChromeTopPx({
       crios,
       navType,
       measuredPx: measured,
       visualViewportHeightDelta: heightDelta,
     });
-    const prevApplied = lastApplied;
     if (px !== lastApplied) {
       applyHomeChromeTopPx(px);
       lastApplied = px;
@@ -339,50 +284,12 @@ export function syncHomeChromeOnFirstPaint({ onRemount, onSettled } = {}) {
       remountCount += 1;
       onRemount();
     }
-    // #region agent log
-    const snap = readHomeChromeDomSnap();
-    agentHomeChromeLog('H1', 'mobileViewport.js:apply', 'apply chrome top', {
-      remount, allowFallback: fallbackOn, fallbackOn, measured, px, prevApplied, lastApplied,
-      sawWebviewInset, crios, firstNavigate, navType,
-      keepFirstNavigateFloor: fallbackOn,
-      vvHeight: visualViewport?.height ?? null,
-      vvOffsetTop: visualViewport?.offsetTop ?? null,
-      vvPageTop: visualViewport?.pageTop ?? null,
-      pageY,
-      ...snap,
-    });
-    if (snap.cssVar && snap.cssVar !== '0px' && snap.headerTop === '0px') {
-      agentHomeChromeLog('H3', 'mobileViewport.js:apply', 'css var set but computed top 0', {
-        cssVar: snap.cssVar, headerTop: snap.headerTop, innerWidth: snap.innerWidth, px,
-      });
-    }
-    if (fallbackOn && px >= CHROME_IOS_URLBAR_INSET_PX && snap.headerRectTop != null && snap.headerRectTop < 40) {
-      agentHomeChromeLog('H5', 'mobileViewport.js:apply', '56px applied but header still high on screen', {
-        px, headerRectTop: snap.headerRectTop, headerTop: snap.headerTop,
-      });
-    }
-    // #endregion
   };
 
   apply(false);
 
   const onVisualResize = () => {
-    const height = visualViewport?.height ?? window.innerHeight;
-    const delta = height - lastHeight;
-    const drop = delta <= -20;
-    if (drop) {
-      sawWebviewInset = true;
-    }
-    // #region agent log
-    agentHomeChromeLog('H1', 'mobileViewport.js:onVisualResize', drop ? 'height drop >=20 sets sawWebviewInset' : 'vv resize', {
-      lastHeight, height, delta, drop, sawWebviewInset,
-      vvOffsetTop: visualViewport?.offsetTop ?? null,
-      vvPageTop: visualViewport?.pageTop ?? null,
-      willAllowFallback: isCriosFirstNavigateSession({ crios, navType }),
-      clearsFallback: false,
-    });
-    // #endregion
-    lastHeight = height;
+    lastHeight = visualViewport?.height ?? window.innerHeight;
     apply(true);
   };
   visualViewport?.addEventListener('resize', onVisualResize);
@@ -396,14 +303,6 @@ export function syncHomeChromeOnFirstPaint({ onRemount, onSettled } = {}) {
   }, 1200));
 
   return () => {
-    // #region agent log
-    agentHomeChromeLog('H2', 'mobileViewport.js:cleanup', 'sync cleanup clears css var', {
-      lastApplied, sawWebviewInset, stopped,
-      cssVarBefore: typeof document !== 'undefined'
-        ? document.documentElement.style.getPropertyValue(HOME_CHROME_TOP_VAR)
-        : '',
-    });
-    // #endregion
     stopped = true;
     timers.forEach((id) => window.clearTimeout(id));
     visualViewport?.removeEventListener('resize', onVisualResize);

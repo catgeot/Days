@@ -16,40 +16,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <script>
       (function () {
-        var ua = navigator.userAgent || '';
-        var crios = /CriOS/i.test(ua);
+        if (!/CriOS/i.test(navigator.userAgent || '')) return;
         var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
-        var navType = (nav && nav.type) || '';
-        var applied = false;
-        if (crios && navType !== 'reload' && navType !== 'back_forward') {
-          document.documentElement.style.setProperty('--gateo-home-chrome-top', '56px');
-          applied = true;
-        }
-        // #region agent log
-        var uaTag = (ua.match(/CriOS\/[\d.]+|GSA\/[\d.]+|FxiOS\/[\d.]+|EdgiOS\/[\d.]+/) || ['none'])[0];
-        var payload = {
-          id: 'log_' + Date.now() + '_H4',
-          timestamp: Date.now(),
-          location: 'index.html:inline',
-          message: 'inline first-paint inset',
-          hypothesisId: 'H4',
-          runId: 'post-fix',
-          data: {
-            crios: crios,
-            navType: navType,
-            applied: applied,
-            uaTag: uaTag,
-            cssVar: document.documentElement.style.getPropertyValue('--gateo-home-chrome-top')
-          }
-        };
-        window.__GATEO_INLINE_CHROME = payload.data;
-        window.__GATEO_HOME_CHROME_DBG = window.__GATEO_HOME_CHROME_DBG || [];
-        window.__GATEO_HOME_CHROME_DBG.push(payload);
-        try { console.info('[gateo-home-chrome]', payload); } catch (e) {}
-        try {
-          fetch('/__gateo_debug_log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), keepalive: true }).catch(function () {});
-        } catch (e) {}
-        // #endregion
+        if (nav && (nav.type === 'reload' || nav.type === 'back_forward')) return;
+        document.documentElement.style.setProperty('--gateo-home-chrome-top', '56px');
       })();
     </script>
     <link rel="preconnect" href="https://api.mapbox.com" crossorigin />
