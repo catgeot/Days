@@ -14,6 +14,34 @@
 
 ## 활성 목록
 
+### 홈 locale 토글 (EN/KO)
+
+| | |
+|--|--|
+| **상태** | **#3 콘솔·지연** · tip `ff2e8c20` · 사람 Preview QA |
+| **브랜치** | `cursor/locale-toggle-smooth-92b6` · tip `ff2e8c20` |
+| **PR** | [#174](https://github.com/catgeot/Days/pull/174) |
+| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §13 A (`/` locale 토글) |
+| **일지** | [`2026-09-01-project-log.md`](./2026-09-01-project-log.md) |
+| **Preview** | `/qa/en` → `/?lang=en` · git Preview 홈 |
+| **VERIFY** | `audit:i18n` · `build` |
+
+**게이트**: #3 자전 idle 데드락 수정 ✅ · tp/ads 콘솔 = 제3자 무해 · Mapbox continuePlacement 0건 확인 = 사람 Preview
+
+**다음 제시어 (#4 사람 Preview QA)**:
+
+```
+홈 locale #4, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-01-project-log.md
+@plans/i18n-en-plan.md
+브랜치 cursor/locale-toggle-smooth-92b6 · PR #174 · Preview https://days-git-cursor-locale-toggle-smooth-92b6-catgeots-projects.vercel.app/
+금지: #173 검색바 flex 되돌리기 · HomeGlobeMapbox 대규모 리팩터 · plans/** feature 커밋
+작업: 모바일 EN/KO 토글 즉시 반응·지도·핀 EN · /explore 검색바 회귀 없음 · OK 시 PR #174 merge
+```
+
+---
+
 ### 세계 행사·축제 일정 연동
 
 | | |
