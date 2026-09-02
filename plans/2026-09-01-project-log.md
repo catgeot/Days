@@ -118,3 +118,13 @@
 - **I#2 검토** audit 0 · smoke(파일럿3+R01–R02 샘플 10) · build PASS · `_tmp*` 없음
 - **Preview** `https://days-git-cursor-palgyeong-catgeots-projects.vercel.app`
 - **다음** **#7 무결성 I#2** — §6.3 쓰기 0 · 충북·경북 큐 확장
+
+### #7 무결성 I#2 ✅
+
+- **세션** `지자체 팔경 #7, 무결성 I#2`
+- **브랜치** `cursor/palgyeong` · tip `abed4013` (쓰기 0) · PR [#172](https://github.com/catgeot/Days/pull/172)
+- **§6.3** audit:korea-local-scenic-lists 0 · audit:city-attraction-hubs 0 · smoke(파일럿3+R01–R02 8 exact) · build PASS · `_tmp*` 없음
+- **대조** lists 14 = P0(3)+R01(6)+R02(5) · members 123 · hub append 84(18+36+30) · 강원 skips 4(chuncheon·gangneung·pyeongchang·hoengseong)
+- **샘플 exact** 홍천9경·양구9경·인제8경·삼척십경·원주8경·속초8경·철원9경·영월10경·태백8경·화암8경·화천9경 — resolve·hub·scenicSearch OK
+- **큐** 충북 11·경북 24 hub — R04–R09 확장 표 추가
+- **다음** **#8 채우기 R04** — 오케 워커2 · 충북 6(단양·제천·충주·청주·보은·괴산)
