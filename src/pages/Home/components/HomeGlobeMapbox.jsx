@@ -453,6 +453,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const hiddenFillLayerIdsRef = useRef([]);
   const adminBoundaryLayerIdsRef = useRef([]);
   const lastPlaceLabelVisibleRef = useRef(null);
+  /** setLayoutProperty 직후 styledata 에코 무시 시각(ms) */
+  const suppressSatelliteLabelEchoUntilRef = useRef(0);
   const waitingThemeSettleRef = useRef(false);
   const globeBaseRevealedRef = useRef(false);
   const globeOverlaysRevealedRef = useRef(false);
@@ -635,11 +637,17 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }
   }, []);
 
-  /** deep/neon: locale별 text-field. force=true면 자전 중에도 즉시(토글). */
+  /** deep/neon: locale별 text-field. force=true면 자전 중·locale 토글 즉시. */
   const applySatelliteBasemapLabels = useCallback((options = {}) => {
     const force = Boolean(options.force);
     const map = mapRef.current?.getMap();
     if (!map || globeTheme === 'bright' || !map.isStyleLoaded?.()) return;
+
+    // 토글 직후 styledata가 같은 text-field를 다시 쓰면 2차 깜박임
+    if (!options.reapply && Date.now() < suppressSatelliteLabelEchoUntilRef.current) {
+      return;
+    }
+
     if (
       !force
       && (cameraAnimatingRef.current || isGlobeCameraBusy(map)
@@ -664,6 +672,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         // Ignore per-layer label field updates during style transitions.
       }
     });
+
+    if (options.reapply) {
+      suppressSatelliteLabelEchoUntilRef.current = Date.now() + 120;
+    }
   }, [globeTheme, locale]);
 
   const applyPlaceLabelVisibility = useCallback(() => {
@@ -797,6 +809,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     globeBaseRevealedRef.current = false;
     globeOverlaysRevealedRef.current = false;
     flightCinemaLayersLatchedRef.current = false;
+    suppressSatelliteLabelEchoUntilRef.current = 0;
     if (map && gateoMarkerLayersReady(map)) {
       setGateoMarkerLayerVisibility(map, false);
     }
@@ -986,8 +999,16 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (!map) return;
 
     const mapLanguage = locale?.startsWith('en') ? 'en' : 'ko';
+    // satellite-streets: setLanguage 전체 rewrite = 검게 깜박 → 기본 지명(KO) → 우리 coalesce(EN) 2단 플래시.
+    // deep/neon은 레이어 text-field만 1회 패치. bright(벡터)만 setLanguage.
+    const useSatelliteLabelPatch = globeTheme !== 'bright';
 
     const applyLocaleToMap = () => {
+      if (useSatelliteLabelPatch) {
+        // reapply: locale 키가 같아도 테마/스타일 후 강제 1회
+        applySatelliteBasemapLabels({ force: true, reapply: true });
+        return;
+      }
       if (typeof map.setLanguage === 'function') {
         try {
           map.setLanguage(mapLanguage);
@@ -995,8 +1016,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           // Style may still be loading.
         }
       }
-      // deep/neon: text-field를 locale에 맞게 즉시 덮어씀 (한글 강제·자전 대기 제거)
-      applySatelliteBasemapLabels({ force: true });
     };
 
     if (map.isStyleLoaded?.()) {
@@ -2472,7 +2491,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
           setMapReady(true);
           syncMapZoom();
-          if (map && typeof map.setLanguage === 'function') {
+          // bright만 setLanguage — satellite는 deferLabelSync의 applySatelliteBasemapLabels
+          if (globeTheme === 'bright' && map && typeof map.setLanguage === 'function') {
             try {
               map.setLanguage(locale?.startsWith('en') ? 'en' : 'ko');
             } catch {
@@ -2544,8 +2564,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
             cameraAnimatingRef.current || isGlobeCameraBusy(map)
             || (typeof map.isMoving === 'function' && map.isMoving());
 
-          // 자전·fly 중에도 locale text-field는 유지 (setLanguage 후 styledata가 ko로 되돌리는 것 방지)
-          if (map.isStyleLoaded?.()) {
+          // satellite: locale text-field 유지. setLanguage는 쓰지 않음(이중 깜박임).
+          if (map.isStyleLoaded?.() && globeTheme !== 'bright') {
             refreshPlaceLabelLayers();
             applySatelliteBasemapLabels({ force: true });
           }
