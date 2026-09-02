@@ -106,7 +106,7 @@
 
 ## 지구본 홈 헤더 — Chrome 주소창 가림
 
-### #1 Chrome 주소창 가림 ✅ 에이전트 · 사람 Preview 대기
+### #1 Chrome 주소창 가림 ✅ 에이전트 · 사람 QA에서 첫 진입 악화
 
 - **세션** `지구본 홈 헤더 #1, Chrome 주소창 가림`
 - **브랜치** `cursor/home-header-3eef` · tip `def1832c` · PR [#181](https://github.com/catgeot/Days/pull/181)
@@ -115,14 +115,25 @@
 - **적용** 홈 루트 100dvh 잠금 · 첫 페인트 `scrollTo(0,0)` · offsetTop 지속 보정 없음(칩 히트 회귀 방지)
 - **VERIFY** `smoke:home-chrome-viewport` · `vite build` PASS
 - **Preview** `/qa/home-header` · git Preview 홈
-- **다음** **#2 사람 Preview QA** — Chrome 새로고침 후 상단 칩이 주소창 아래인지
+- **사람 QA** 새로고침은 정상 · **첫 진입은 더 위로 밀림** → #2
+
+### #2 첫 로딩 재현 수정 ✅ 에이전트 · 사람 Preview 대기
+
+- **세션** `지구본 홈 헤더 #2, 첫 로딩 재현 수정`
+- **브랜치** `cursor/home-header-3eef` · tip `97163af3` · PR [#181](https://github.com/catgeot/Days/pull/181)
+- **증상** 첫 진입은 칩이 주소창 뒤로 더 밀림 · 새로고침하면 정상
+- **원인** #1 즉시 `scrollTo(0,0)`·rAF 리마운트·html 잠금이 첫 페인트 웹뷰(주소창 뒤)를 고착. Chrome은 새로고침에서만 웹뷰를 주소창 아래로 내림
+- **적용** CriOS 첫 navigate만 56px top(페인트 전) · 웹뷰 높이 감소 시 0 · reload는 보정 없음 · 잠금은 정착 후
+- **VERIFY** `smoke:home-chrome-viewport` · `vite build` PASS
+- **Preview** `/qa/home-header` · git Preview 홈
+- **다음** **#3 사람 Preview QA** — 첫 진입(새로고침 아님) + 새로고침 이중 여백
 
 ```
-지구본 홈 헤더 #2, 사람 Preview QA
+지구본 홈 헤더 #3, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-02-project-log.md
 브랜치 cursor/home-header-3eef · PR #181 · https://www.gateo.kr/qa/home-header
 금지: UI 리디자인 · offsetTop 지속 보정 · 코드를 origin/main에 임의 push
-작업: iPhone Chrome 홈 새로고침 후 상단 칩이 주소창에 안 가리는지 · OK 시 PR #181 merge
+작업: 첫 진입(새로고침 아님) 헤더가 주소창에 안 가리는지 · 새로고침 후 너무 안 내려가는지 · OK 시 PR #181 merge
 ```
 
