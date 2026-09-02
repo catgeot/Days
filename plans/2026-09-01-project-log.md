@@ -220,3 +220,11 @@
 - **VERIFY** `audit:i18n` · `build` PASS
 - **Preview** `/qa/en` · https://days-git-cursor-locale-toggle-smooth-92b6-catgeots-projects.vercel.app/
 - **다음** **#7 사람 Preview QA** — 한 번에 EN · OK 시 merge 검토
+
+### #7 사람 Preview QA ✅
+
+- **세션** `홈 locale #7, 사람 Preview QA`
+- **브랜치** `cursor/locale-toggle-smooth-92b6` · tip `3fe6077c` · PR [#174](https://github.com/catgeot/Days/pull/174)
+- **사람 QA** 지구본 깜박임 없이 EN↔KO · 전환 ≤3초
+- **수용** merge OK — 하드 게이트=깜박임 0 · ≤3초는 Mapbox 위성 라벨 한계상 충분 (이전: 깜박+~10초)
+- **다음** **#8 PR #174 merge** (사람 승인) · 검색바 flex는 별 세션
