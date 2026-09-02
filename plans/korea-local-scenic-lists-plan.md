@@ -249,21 +249,21 @@ issues **0** · 스모크 PASS 전에 커밋·이관·다음 R **금지**.
 
 | | |
 |--|--|
-| **지금** | **#4 채우기 R01** ✅ — lists 9 · members 79 · hub append +36 · skip chuncheon·gangneung |
-| **다음 세션** | **#5 채우기 R02** — 오케 워커2 · 강원 6리스트(samcheok·donghae 예비 소진 → R02 재조사) |
-| **브랜치** | `cursor/palgyeong` · tip `17f7ebed` · PR [#172](https://github.com/catgeot/Days/pull/172) |
+| **지금** | **#5 채우기 R02** ✅ — lists 14 · members 123 · hub append +30 · EXISTS samcheok·donghae · skip pyeongchang |
+| **다음 세션** | **#6 채우기 R03** — hoengseong·예비 · R01–R03 후 I#2 |
+| **브랜치** | `cursor/palgyeong` · tip `0337bc26` · PR [#172](https://github.com/catgeot/Days/pull/172) |
 | **금지** | UI 변경 · scenic 자동승격 · 광역 팔경 큐 · tip 전면 rewrite · 출처 없는 verified |
 | **VERIFY** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · `smoke:korea-local-scenic-lists` · `build` |
 
 ### §1.2 다음 제시어
 
 ```
-지자체 팔경 #5, 채우기 R02
+지자체 팔경 #6, 채우기 R03
 @plans/feature-handoff-index.md
 @plans/2026-09-01-project-log.md
 @plans/korea-local-scenic-lists-plan.md
 @plans/korea-local-scenic-lists-queue.md
-브랜치 cursor/palgyeong · PR #172 · 큐 R02 ⬜
+브랜치 cursor/palgyeong · PR #172 · 큐 R03 ⬜
 금지: UI 변경 · koreaScenicSpots 승격 · 광역 팔경 · feature에 plans 커밋
-작업: 오케 워커2 · R02 강원 6리스트 · VERIFY · §3.4
+작업: 오케 워커2 · R03 횡성·예비 · VERIFY · R01–R03 후 I#2 검토
 ```
