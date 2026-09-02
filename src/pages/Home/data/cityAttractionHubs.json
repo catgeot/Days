@@ -10493,7 +10493,7 @@
   },
   {
     "hubId": "takamatsu",
-    "name": "다카맀",
+    "name": "다카마스",
     "name_en": "Takamatsu",
     "country": "일본",
     "country_en": "Japan",
@@ -10501,7 +10501,7 @@
     "lng": 134.0434,
     "aliases": [
       "takamatsu",
-      "다카마스",
+      "다카맀",
       "타카마스",
       "타카마츠",
       "高松",
@@ -10516,7 +10516,7 @@
         "lng": 134.0447
       },
       {
-        "name": "다카맀성",
+        "name": "다카마스성",
         "name_en": "Takamatsu Castle",
         "kind": "landmark",
         "lat": 34.3517,
