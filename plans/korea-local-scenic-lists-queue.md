@@ -57,12 +57,16 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 
 | R | 워커A (3) | 워커B (3) | 권역 | 상태 |
 |---|-----------|-----------|------|------|
-| **R04** | `danyang-?` · `jecheon-?` · `chungju-?` | `cheongju-?` · `boeun-?` · `goesan-?` | 충북 | ⬜ |
+| **R04** | `danyang-palgyeong` · `jecheon-sipgyeong` · skip `chungju` | skip `cheongju` · skip `boeun` · skip `goesan` | 충북 | ✅ 2026-09-02 |
 | **R05** | `okcheon-?` · `yeongdong-?` · `jincheon-?` | `jeungpyeong-?` · `eumseong-?` · 예비 충북 1 | 충북 | ⬜ |
 | **R06** | `gyeongju-?` · `pohang-?` · `andong-?` | `gumi-?` · `sangju-?` · `gimcheon-?` | 경북 | ⬜ |
 | **R07** | `yeongju-?` · `mungyeong-?` · `bonghwa-?` | `yecheon-?` · `cheongsong-?` · `yeongdeok-?` | 경북 | ⬜ |
 | **R08** | `uljin-?` · `goryeong-?` · `gunwi-?` | `uiseong-?` · `chilgok-?` · `seongju-?` | 경북 | ⬜ |
 | **R09** | `gyeongsan-?` · `yeongcheon-?` · `cheongdo-?` | `yeongyang-?` · `ulleung-?` · `dokdo-?` | 경북 | ⬜ |
+
+> **R04 skip**: `chungju`·`cheongju`·`boeun`·`goesan` 시·군 단위 공식 N경 없음(`skip_no_source`) — chungju.go.kr·cheongju.go.kr·boeun.go.kr·goesan.go.kr.
+
+> **R04 충돌 접두**: `옥순봉`(jecheon) → hub `제천 옥순봉` (단양팔경·제천10경 공통 멤버).
 
 > **충북 11** hub (`cheongju`·`jincheon`·`jeungpyeong`·`eumseong`·`goesan`·`chungju`·`jecheon`·`danyang`·`boeun`·`okcheon`·`yeongdong`) — [`korea-scenic-mid-cluster-plan.md`](./korea-scenic-mid-cluster-plan.md) 청주권·북부·남부 순.
 
@@ -87,9 +91,8 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 ### 진행 체크
 
 ```text
-다음 시작: F R04 (#8, 충북 6)
-tip lists: 14 · members: 123 · hub append: 84
-강원 skips 4: chuncheon·gangneung·pyeongchang·hoengseong
-I#2 ✅ 2026-09-02 — audit 0 · smoke(파일럿3+R01–R02 8) · build PASS · 큐/일지 대조 OK
-충북·경북 큐 R04–R09 확장 ✅
+다음 시작: F R05 (#9, 충북 5+예비)
+tip lists: 16 · members: 141 · hub append: +18(R04)
+충북 skips 4: chungju·cheongju·boeun·goesan
+R04 ✅ 2026-09-02 — danyang-palgyeong(8) · jecheon-sipgyeong(10) · audit 0 · smoke(단양팔경·제천10경) · build PASS
 ```

@@ -170,8 +170,8 @@ main · www.gateo.kr/place/yap/planner?lang=en
 
 | | |
 |--|--|
-| **상태** | **#7 무결성 I#2** ✅ · 다음 **#8 채우기 R04** |
-| **브랜치** | `cursor/palgyeong` · tip `abed4013` |
+| **상태** | **#8 채우기 R04** ✅ · 다음 **#9 채우기 R05** |
+| **브랜치** | `cursor/palgyeong` · tip `db428507` |
 | **PR** | [#172](https://github.com/catgeot/Days/pull/172) |
 | **플랜** | [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) §9 |
 | **큐** | [`korea-local-scenic-lists-queue.md`](./korea-local-scenic-lists-queue.md) |
@@ -180,17 +180,17 @@ main · www.gateo.kr/place/yap/planner?lang=en
 | **정책** | 시·군·구 · 기존 hub 유지+append · **UI·scenic 승격 금지** · 공식 URL 필수 |
 | **VERIFY** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · `smoke:korea-local-scenic-lists` · `build` |
 
-**다음 제시어 (#8 채우기 R04)**:
+**다음 제시어 (#9 채우기 R05)**:
 
 ```
-지자체 팔경 #8, 채우기 R04
+지자체 팔경 #9, 채우기 R05
 @plans/feature-handoff-index.md
 @plans/2026-09-01-project-log.md
 @plans/korea-local-scenic-lists-plan.md
 @plans/korea-local-scenic-lists-queue.md
-브랜치 cursor/palgyeong · PR #172 · 큐 R04 ⬜
+브랜치 cursor/palgyeong · PR #172 · 큐 R05 ⬜
 금지: UI 변경 · koreaScenicSpots 승격 · 광역 팔경 · feature에 plans 커밋
-작업: 오케 워커2 · R04 단양·제천·충주·청주·보은·괴산 · VERIFY
+작업: 오케 워커2 · R05 옥천·영동·진천·증평·음성 · VERIFY
 ```
 
 
