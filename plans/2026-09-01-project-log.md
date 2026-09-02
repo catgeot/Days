@@ -199,3 +199,13 @@
 - **Preview** `/qa/en` · https://days-git-cursor-locale-toggle-smooth-92b6-catgeots-projects.vercel.app/
 - **main** `25887434` — PR #173 `git revert` (검색바 flex 병합 취소)
 - **다음** 사람 Preview — 토글·검색바·지도 EN 기준선 확인 후 merge 여부 결정
+
+### #5 지구본 locale ✅
+
+- **세션** `홈 locale #5, 지구본 locale`
+- **브랜치** `cursor/locale-toggle-smooth-92b6` · tip `f51f843f` · PR [#174](https://github.com/catgeot/Days/pull/174)
+- **사람 QA** 모바일: UI·`?lang=en` OK·지구본만 KO · PC: 깜빡 후 ~10초 EN
+- **원인** `applyKoreanSatelliteLabels`가 locale 무시·`name_ko` 강제 · `MapboxLanguage` 이중 적용
+- **수정** locale별 위성 text-field · 토글/`styledata` `force` 즉시 적용 · LanguageControl 제거
+- **VERIFY** `audit:i18n` · `build` PASS
+- **다음** **#6 사람 Preview QA** — 지구본 즉시 EN · 검색바는 별 세션
