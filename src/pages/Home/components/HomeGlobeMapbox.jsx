@@ -10,8 +10,7 @@ import React, {
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { PenTool } from 'lucide-react';
-import Map, { Marker, useControl } from 'react-map-gl/mapbox';
-import MapboxLanguage from '@mapbox/mapbox-gl-language';
+import Map, { Marker } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
 import { bindGlobeSpaceDragGuard, isClientPointOnGlobe, isMapEventOnGlobe, isScreenPointOnGlobe } from '../lib/globeSpaceHitTest';
@@ -108,12 +107,6 @@ import {
 } from '../lib/flightCinemaDebug.js';
 import FlightCinemaAirportMarkers from './FlightCinemaAirportMarkers.jsx';
 import GlobeClusterLegend from './GlobeClusterLegend.jsx';
-
-function LanguageControl({ locale }) {
-  const mapLanguage = locale?.startsWith('en') ? 'en' : 'ko';
-  useControl(() => new MapboxLanguage({ defaultLanguage: mapLanguage }));
-  return null;
-}
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -969,11 +962,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   }, [allMarkers, isZenMode, locale]);
 
   useEffect(() => {
-    const map = mapRef.current?.getMap?.();
-    return scheduleMapboxLanguage(map, locale);
-  }, [locale, globeTheme]);
-
-  useEffect(() => {
     allMarkersLookupRef.current = allMarkers;
   }, [allMarkers]);
 
@@ -1109,6 +1097,11 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (pauseRender || flightCinemaActiveRef.current) return;
     scheduleUpdateGateoMarkerSource(mapRef.current?.getMap(), markerGeoJSON);
   }, [markerGeoJSON, pauseRender]);
+
+  useEffect(() => {
+    const map = mapRef.current?.getMap?.();
+    return scheduleMapboxLanguage(map, locale);
+  }, [locale, globeTheme]);
 
   useEffect(() => {
     if (pauseRender) return;
@@ -2431,13 +2424,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
           setMapReady(true);
           syncMapZoom();
-          if (map && typeof map.setLanguage === 'function') {
-            try {
-              map.setLanguage(locale?.startsWith('en') ? 'en' : 'ko');
-            } catch {
-              // Style may not be ready yet.
-            }
-          }
+          scheduleMapboxLanguage(map, locale);
           ensureInteractionReady();
           applyPendingFocus();
 
@@ -2573,8 +2560,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         attributionControl={{ compact: true }}
         fog={fogConfig}
       >
-        {globeTheme !== 'bright' && <LanguageControl locale={locale} />}
-
         {showCinemaAirportMarkers ? (
           <FlightCinemaAirportMarkers
             key={flightCinemaRouteIatas.join('>')}

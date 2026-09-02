@@ -40,6 +40,21 @@ export function mapboxLanguageForLocale(locale) {
   return isEnLocale(locale) ? 'en' : 'ko';
 }
 
+function mapLanguageMatches(map, mapLanguage) {
+  if (typeof map.getLanguage !== 'function') return false;
+  const current = map.getLanguage();
+  if (current == null) return false;
+  const currentStr = Array.isArray(current) ? current[0] : current;
+  return String(currentStr || '').toLowerCase().startsWith(mapLanguage);
+}
+
+function canApplyMapLanguage(map) {
+  if (!map || map._removed) return false;
+  if (typeof map.isStyleLoaded === 'function' && !map.isStyleLoaded()) return false;
+  if (typeof map.isMoving === 'function' && map.isMoving()) return false;
+  return true;
+}
+
 /**
  * Mapbox setLanguage — 렌더 중 continuePlacement 크래시·locale 토글 깜박임 완화.
  * @param {import('mapbox-gl').Map | null | undefined} map
@@ -47,13 +62,31 @@ export function mapboxLanguageForLocale(locale) {
  * @returns {() => void} cancel
  */
 export function scheduleMapboxLanguage(map, locale) {
-  if (!map || typeof map.setLanguage !== 'function') return () => {};
+  if (!map || typeof map.setLanguage !== 'function' || map._removed) return () => {};
 
   const mapLanguage = mapboxLanguageForLocale(locale);
+  if (mapLanguageMatches(map, mapLanguage)) return () => {};
+
   let cancelled = false;
+  /** @type {(() => void) | null} */
+  let onIdle = null;
+  /** @type {(() => void) | null} */
+  let onStyleData = null;
+
+  const detach = () => {
+    if (onIdle && typeof map.off === 'function') {
+      map.off('idle', onIdle);
+    }
+    if (onStyleData && typeof map.off === 'function') {
+      map.off('styledata', onStyleData);
+    }
+    onIdle = null;
+    onStyleData = null;
+  };
 
   const apply = () => {
-    if (cancelled || map._removed) return;
+    if (cancelled || !canApplyMapLanguage(map)) return;
+    if (mapLanguageMatches(map, mapLanguage)) return;
     try {
       map.setLanguage(mapLanguage);
     } catch {
@@ -61,13 +94,67 @@ export function scheduleMapboxLanguage(map, locale) {
     }
   };
 
-  const frame = requestAnimationFrame(() => {
-    requestAnimationFrame(apply);
-  });
+  const scheduleWhenIdle = () => {
+    if (cancelled || map._removed) return;
+    if (mapLanguageMatches(map, mapLanguage)) return;
+
+    onIdle = () => {
+      onIdle = null;
+      if (cancelled || map._removed) return;
+      if (!canApplyMapLanguage(map)) {
+        waitForStyle();
+        return;
+      }
+      // Marker setData 등 sibling 업데이트가 settle한 뒤 한 프레임 더 대기.
+      requestAnimationFrame(() => {
+        if (cancelled || map._removed) return;
+        if (!canApplyMapLanguage(map)) {
+          waitForStyle();
+          return;
+        }
+        if (typeof map.once !== 'function') {
+          apply();
+          return;
+        }
+        map.once('idle', () => {
+          if (cancelled || map._removed) return;
+          apply();
+        });
+      });
+    };
+
+    if (typeof map.once === 'function') {
+      map.once('idle', onIdle);
+    } else {
+      requestAnimationFrame(() => requestAnimationFrame(apply));
+    }
+  };
+
+  const waitForStyle = () => {
+    if (cancelled || map._removed) return;
+    if (canApplyMapLanguage(map)) {
+      scheduleWhenIdle();
+      return;
+    }
+
+    onStyleData = () => {
+      onStyleData = null;
+      if (cancelled || map._removed) return;
+      scheduleWhenIdle();
+    };
+
+    if (typeof map.once === 'function') {
+      map.once('styledata', onStyleData);
+    } else {
+      scheduleWhenIdle();
+    }
+  };
+
+  waitForStyle();
 
   return () => {
     cancelled = true;
-    cancelAnimationFrame(frame);
+    detach();
   };
 }
 

@@ -297,7 +297,7 @@ const HomeUI = React.memo(({
         />
 
         {!isTourCinema ? (
-          <div className="flex md:hidden w-full items-center gap-2 min-w-0 pointer-events-auto">
+          <div className="flex md:hidden w-full min-h-10 items-center gap-2 min-w-0 pointer-events-auto">
             <div
               key={homeChromeEpoch}
               className="relative shrink-0 z-[110]"
