@@ -5160,7 +5160,10 @@
     "lng": 128.187,
     "aliases": [
       "문경시",
-      "mungyeong"
+      "mungyeong",
+      "문경8경",
+      "문경 팔경",
+      "문경시 팔경"
     ],
     "attractions": [
       {
@@ -5199,6 +5202,20 @@
         "lat": 36.6620739267,
         "lng": 128.1264681092,
         "mapboxId": null
+      },
+      {
+        "name": "새재계곡",
+        "name_en": "Saejae Valley",
+        "kind": "park",
+        "lat": 36.7585,
+        "lng": 128.0776
+      },
+      {
+        "name": "경천호",
+        "name_en": "Gyeongcheon Lake",
+        "kind": "park",
+        "lat": 36.707606,
+        "lng": 128.312229
       }
     ]
   },
@@ -12649,7 +12666,9 @@
       "Yeongdeok",
       "yeongdeok",
       "盈德",
-      "영덕대게"
+      "영덕대게",
+      "영덕9경",
+      "영덕구경"
     ],
     "attractions": [
       {
@@ -12679,6 +12698,34 @@
         "kind": "museum",
         "lat": 36.415,
         "lng": 129.425
+      },
+      {
+        "name": "영덕 삼사해상공원",
+        "name_en": "Yeongdeok Samsa Maritime Park",
+        "kind": "park",
+        "lat": 36.3483689,
+        "lng": 129.3849301
+      },
+      {
+        "name": "영덕 도천숲",
+        "name_en": "Yeongdeok Dochon Forest",
+        "kind": "park",
+        "lat": 36.3067207,
+        "lng": 129.3524499
+      },
+      {
+        "name": "영덕 죽도산",
+        "name_en": "Yeongdeok Jukdosan",
+        "kind": "park",
+        "lat": 36.5074722,
+        "lng": 129.4510917
+      },
+      {
+        "name": "영덕 괴시리전통마을",
+        "name_en": "Yeongdeok Goesiri Traditional Village",
+        "kind": "neighborhood",
+        "lat": 36.5439219,
+        "lng": 129.4168239
       }
     ]
   },
@@ -14050,7 +14097,10 @@
     "lng": 128.4528,
     "aliases": [
       "예천군",
-      "yecheon"
+      "yecheon",
+      "예천8경",
+      "예천팔경",
+      "예천 관광8경"
     ],
     "attractions": [
       {
@@ -14087,6 +14137,13 @@
         "kind": "museum",
         "lat": 36.6988248462356,
         "lng": 128.514423305395
+      },
+      {
+        "name": "삼강주막",
+        "name_en": "Samgang Tavern",
+        "kind": "landmark",
+        "lat": 36.5629092,
+        "lng": 128.2980836
       }
     ]
   },
