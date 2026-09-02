@@ -73,6 +73,29 @@ const CATEGORY_ACTIVE_MOBILE = {
   adventure: 'bg-red-500/25 border-red-400/50 shadow-[0_0_14px_rgba(248,113,113,0.35)]',
 };
 
+const QUICK_LINKS_TWINKLE_CYCLE_S = 5.6;
+
+function QuickLinksCollapsedLabel({ label }) {
+  const parts = label.split(' · ').filter(Boolean);
+  const step = QUICK_LINKS_TWINKLE_CYCLE_S / Math.max(parts.length, 1);
+
+  return (
+    <span className="truncate text-[11px] md:text-[12px] font-bold tracking-tight text-white/95 break-keep">
+      {parts.map((part, index) => (
+        <React.Fragment key={`${part}-${index}`}>
+          {index > 0 ? <span className="text-white/45"> · </span> : null}
+          <span
+            className="quick-links-collapsed-twinkle"
+            style={{ animationDelay: `${index * step}s` }}
+          >
+            {part}
+          </span>
+        </React.Fragment>
+      ))}
+    </span>
+  );
+}
+
 const HomeUI = React.memo(({
   onSearch: _onSearch, onTickerClick, externalInput, savedTrips: _savedTrips, onTripClick: _onTripClick, onTripDelete: _onTripDelete, onOpenChat, onLogoClick,
   relatedPlaces = [], isTagLoading = false, onRelatedPlaceClick,
@@ -189,7 +212,7 @@ const HomeUI = React.memo(({
     }
   };
   const ThemeIcon = getThemeConfig().icon;
-  const showMobileQuickLinksCollapsed = !hideExploreChrome && !mobileQuickLinksExpanded;
+  const showQuickLinksCollapsed = !hideExploreChrome && !mobileQuickLinksExpanded;
 
   const renderMobileQuickLink = (item, linkClassName = '') => {
     const Icon = item.icon;
@@ -253,74 +276,42 @@ const HomeUI = React.memo(({
             </div>
             {!isTourCinema && (
               <>
-                <div className="md:hidden">
-                  {showMobileQuickLinksCollapsed ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        onFaceRegionsDismiss?.();
-                        setMobileQuickLinksExpanded(true);
-                      }}
-                      className="group relative flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-white/25 bg-[#101010] px-2.5 py-1.5 shadow-[0_0_14px_rgba(255,255,255,0.08)] transition-colors hover:border-white/40 hover:bg-[#161616] touch-manipulation"
-                      aria-label={`${t('home.quickLinks.expandMenu')} — ${mobileQuickLinks.map((item) => item.label).join(', ')}`}
-                      title={t('home.quickLinks.expandMenu')}
+                {showQuickLinksCollapsed ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onFaceRegionsDismiss?.();
+                      setMobileQuickLinksExpanded(true);
+                    }}
+                    className="group relative flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-white/25 bg-[#101010] px-2.5 py-1.5 shadow-[0_0_14px_rgba(255,255,255,0.08)] transition-colors hover:border-white/40 hover:bg-[#161616] touch-manipulation"
+                    aria-label={`${t('home.quickLinks.expandMenu')} — ${mobileQuickLinks.map((item) => item.label).join(', ')}`}
+                    title={t('home.quickLinks.expandMenu')}
+                  >
+                    <span
+                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-sky-400/35 bg-sky-500/15 text-sky-300"
+                      aria-hidden="true"
                     >
-                      <span className="flex items-center gap-1">
-                        {mobileQuickLinks.map((item) => {
-                          const Icon = item.icon;
-                          return (
-                            <span
-                              key={item.to}
-                              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border ${item.iconWrapClass}`}
-                              aria-hidden="true"
-                            >
-                              <Icon size={12} />
-                            </span>
-                          );
-                        })}
-                      </span>
-                      <span className="truncate text-[11px] font-bold tracking-tight text-white/95 break-keep">
-                        {mobileQuickLinksCollapsedLabel}
-                      </span>
-                    </button>
-                  ) : (
-                    <div className="flex flex-col items-start gap-2">
-                      <div className="flex max-w-[17.5rem] items-stretch gap-1.5">
-                        {renderMobileQuickLink(mobileQuickLinkFirst, 'min-w-0 flex-1 max-w-none')}
-                        <button
-                          type="button"
-                          onClick={() => setMobileQuickLinksExpanded(false)}
-                          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/35 bg-black/70 text-white shadow-[0_0_14px_rgba(255,255,255,0.14)] touch-manipulation transition-colors hover:border-white/50 hover:bg-black/85 active:scale-[0.97]"
-                          aria-label={t('home.quickLinks.collapseMenu')}
-                          title={t('home.quickLinks.collapseTitle')}
-                        >
-                          <ChevronUp size={20} strokeWidth={2.5} aria-hidden="true" />
-                        </button>
-                      </div>
-                      {mobileQuickLinkRest.map((item) => renderMobileQuickLink(item))}
-                    </div>
-                  )}
-                </div>
-                <div className="hidden md:flex flex-col items-start gap-2 pb-3">
-                  {mobileQuickLinks.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <Link
-                        key={item.to}
-                        to={item.to}
-                        className={`group relative flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border px-2.5 py-1.5 transition-colors touch-manipulation ${item.chipClass}`}
-                        aria-label={t('home.quickLinks.navigateTo', { label: item.label })}
+                      <Sparkles size={12} />
+                    </span>
+                    <QuickLinksCollapsedLabel label={mobileQuickLinksCollapsedLabel} />
+                  </button>
+                ) : (
+                  <div className="flex flex-col items-start gap-2">
+                    <div className="flex max-w-[17.5rem] items-stretch gap-1.5">
+                      {renderMobileQuickLink(mobileQuickLinkFirst, 'min-w-0 flex-1 max-w-none')}
+                      <button
+                        type="button"
+                        onClick={() => setMobileQuickLinksExpanded(false)}
+                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/35 bg-black/70 text-white shadow-[0_0_14px_rgba(255,255,255,0.14)] touch-manipulation transition-colors hover:border-white/50 hover:bg-black/85 active:scale-[0.97]"
+                        aria-label={t('home.quickLinks.collapseMenu')}
+                        title={t('home.quickLinks.collapseTitle')}
                       >
-                        <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border ${item.iconWrapClass}`}>
-                          <Icon size={15} aria-hidden="true" />
-                        </span>
-                        <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
-                          {item.label}
-                        </span>
-                      </Link>
-                    );
-                  })}
-                </div>
+                        <ChevronUp size={20} strokeWidth={2.5} aria-hidden="true" />
+                      </button>
+                    </div>
+                    {mobileQuickLinkRest.map((item) => renderMobileQuickLink(item))}
+                  </div>
+                )}
               </>
             )}
           </div>

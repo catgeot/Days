@@ -77,6 +77,34 @@ body {
   }
 }
 
+@keyframes quick-links-label-twinkle {
+  0%, 24%, 100% {
+    color: rgba(255, 255, 255, 0.5);
+    text-shadow: none;
+    filter: brightness(0.88);
+  }
+  12% {
+    color: rgba(255, 255, 255, 1);
+    text-shadow:
+      0 0 10px rgba(255, 255, 255, 0.5),
+      0 0 14px rgba(251, 191, 36, 0.38);
+    filter: brightness(1.12);
+  }
+}
+
+.quick-links-collapsed-twinkle {
+  display: inline-block;
+  animation: quick-links-label-twinkle 5.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quick-links-collapsed-twinkle {
+    animation: none;
+    color: rgba(255, 255, 255, 0.92);
+    filter: none;
+  }
+}
+
 /* PlaceCardSummary — 열릴 때·호버 시 테두리 글로우 */
 @keyframes place-summary-border-enter {
   0% {
