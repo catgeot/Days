@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-02-home-header-h1-keep-56',
+    session: '지구본 홈 헤더 #2, 첫 로딩 재현 수정',
+    title: '첫 진입 56px — visualViewport 높이 감소로 해제하지 않음',
+    detail:
+      '원인: 지구본/100dvh/Mapbox가 visualViewport 높이를 줄이면 웹뷰 inset으로 오인하고 CriOS 56px를 0으로 지움(주소창은 그대로 덮음). 첫 navigate 세션은 56px 유지, reload/back_forward는 0. Preview /qa/home-header — 첫 진입(새로고침 아님)에서 로고·검색·칩이 주소창 아래인지.',
+    at: '2026-09-02T22:50:00.000Z',
+  },
+  {
     id: '2026-09-02-home-header-first-load-shift',
     session: '지구본 홈 헤더 #2, 첫 로딩 재현 수정',
     title: '첫 로딩만 헤더가 더 위로 밀림 — CriOS inset 후 정착',

@@ -20,6 +20,155 @@ function read(rel) {
   return readFileSync(join(root, rel), 'utf8');
 }
 
+function parseAppliedPx(cssVar) {
+  const n = Number.parseInt(String(cssVar || '0'), 10);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function runCriosFirstNavigateHeightDropMock() {
+  const logs = [];
+  const styleMap = {};
+  const listeners = new Map();
+  const visualViewport = {
+    width: 390,
+    height: 844,
+    offsetTop: 0,
+    pageTop: 0,
+    scale: 1,
+    addEventListener(type, fn) {
+      if (!listeners.has(type)) listeners.set(type, new Set());
+      listeners.get(type).add(fn);
+    },
+    removeEventListener(type, fn) {
+      listeners.get(type)?.delete(fn);
+    },
+    dispatch(type) {
+      listeners.get(type)?.forEach((fn) => fn());
+    },
+  };
+  const header = {
+    getBoundingClientRect() {
+      const top = parseAppliedPx(styleMap[HOME_CHROME_TOP_VAR]);
+      return { top, bottom: top + 56, left: 0, right: 390, width: 390, height: 56 };
+    },
+  };
+  const prev = {
+    window: Object.getOwnPropertyDescriptor(globalThis, 'window'),
+    document: Object.getOwnPropertyDescriptor(globalThis, 'document'),
+    navigator: Object.getOwnPropertyDescriptor(globalThis, 'navigator'),
+    getComputedStyle: Object.getOwnPropertyDescriptor(globalThis, 'getComputedStyle'),
+    requestAnimationFrame: Object.getOwnPropertyDescriptor(globalThis, 'requestAnimationFrame'),
+    fetch: Object.getOwnPropertyDescriptor(globalThis, 'fetch'),
+    performanceGetEntries: globalThis.performance?.getEntriesByType,
+    sink: globalThis.__gateoAgentLogSink,
+  };
+
+  const win = {
+    visualViewport,
+    innerWidth: 390,
+    innerHeight: 844,
+    scrollY: 0,
+    pageYOffset: 0,
+    scrollTo() {},
+    setTimeout: globalThis.setTimeout.bind(globalThis),
+    clearTimeout: globalThis.clearTimeout.bind(globalThis),
+    requestAnimationFrame: (cb) => globalThis.setTimeout(cb, 0),
+  };
+  Object.defineProperty(globalThis, 'window', { value: win, configurable: true, writable: true });
+  globalThis.document = {
+    documentElement: {
+      style: {
+        setProperty(k, v) { styleMap[k] = v; },
+        removeProperty(k) { delete styleMap[k]; },
+        getPropertyValue(k) { return styleMap[k] ?? ''; },
+      },
+      classList: { add() {}, remove() {} },
+      clientHeight: 844,
+      appendChild() {},
+    },
+    querySelector: (sel) => (sel === '[data-home-chrome-top]' ? header : null),
+    querySelectorAll: () => [],
+    createElement: () => ({
+      setAttribute() {},
+      style: { cssText: '', height: '' },
+      offsetHeight: visualViewport.height,
+      remove() {},
+    }),
+    activeElement: null,
+  };
+  Object.defineProperty(globalThis, 'navigator', {
+    value: {
+      userAgent:
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0.7339.122 Mobile/15E148 Safari/604.1',
+    },
+    configurable: true,
+  });
+  let navType = 'navigate';
+  const origGetEntries = globalThis.performance.getEntriesByType.bind(globalThis.performance);
+  globalThis.performance.getEntriesByType = (type) => (
+    type === 'navigation' ? [{ type: navType }] : origGetEntries(type)
+  );
+  globalThis.getComputedStyle = () => ({ top: styleMap[HOME_CHROME_TOP_VAR] || '0px' });
+  globalThis.requestAnimationFrame = (cb) => globalThis.setTimeout(cb, 0);
+  globalThis.fetch = () => Promise.resolve({ ok: true });
+  globalThis.__gateoAgentLogSink = (payload) => { logs.push(payload); };
+
+  const stopNav = syncHomeChromeOnFirstPaint();
+  const firstApply = logs.filter((l) => l.message === 'apply chrome top');
+  const firstPx = firstApply[0]?.data?.px ?? parseAppliedPx(styleMap[HOME_CHROME_TOP_VAR]);
+  visualViewport.height = 780;
+  win.innerHeight = 780;
+  visualViewport.dispatch('resize');
+  const afterApply = logs.filter((l) => l.message === 'apply chrome top').at(-1);
+  const dropLog = logs.find((l) => l.data?.drop === true);
+  const afterDropPx = afterApply?.data?.px ?? parseAppliedPx(styleMap[HOME_CHROME_TOP_VAR]);
+  const headerRectTopAfterDrop = afterApply?.data?.headerRectTop ?? header.getBoundingClientRect().top;
+  const result = {
+    firstPx,
+    afterDropPx,
+    dropDelta: dropLog?.data?.delta ?? null,
+    sawWebviewInset: afterApply?.data?.sawWebviewInset ?? dropLog?.data?.sawWebviewInset,
+    clearsFallback: dropLog?.data?.clearsFallback,
+    willAllowFallback: dropLog?.data?.willAllowFallback,
+    headerRectTopAfterDrop,
+    h5: logs.some((l) => l.hypothesisId === 'H5'),
+  };
+  stopNav();
+
+  navType = 'reload';
+  styleMap[HOME_CHROME_TOP_VAR] = undefined;
+  delete styleMap[HOME_CHROME_TOP_VAR];
+  visualViewport.height = 844;
+  win.innerHeight = 844;
+  const stopReload = syncHomeChromeOnFirstPaint();
+  result.reloadPx = parseAppliedPx(styleMap[HOME_CHROME_TOP_VAR]);
+  visualViewport.height = 780;
+  visualViewport.dispatch('resize');
+  result.reloadAfterDropPx = parseAppliedPx(styleMap[HOME_CHROME_TOP_VAR]);
+  stopReload();
+
+  const restore = (key, desc, fallback) => {
+    if (desc) Object.defineProperty(globalThis, key, desc);
+    else if (fallback) Object.defineProperty(globalThis, key, fallback);
+    else delete globalThis[key];
+  };
+  restore('window', prev.window);
+  restore('document', prev.document);
+  restore('navigator', prev.navigator);
+  restore('getComputedStyle', prev.getComputedStyle);
+  restore('requestAnimationFrame', prev.requestAnimationFrame, {
+    value: () => 0,
+    configurable: true,
+    writable: true,
+  });
+  restore('fetch', prev.fetch);
+  if (prev.performanceGetEntries) {
+    globalThis.performance.getEntriesByType = prev.performanceGetEntries;
+  }
+  globalThis.__gateoAgentLogSink = prev.sink;
+  return result;
+}
+
 const {
   HOME_VIEWPORT_LOCK_CLASS,
   HOME_CHROME_TOP_VAR,
@@ -28,6 +177,8 @@ const {
   unlockHomeViewport,
   syncHomeChromeOnFirstPaint,
   resolveHomeChromeTopPx,
+  resolveSessionHomeChromeTopPx,
+  isCriosFirstNavigateSession,
   clearHomeChromeTop,
 } = await import(pathToFileURL(join(root, 'src/shared/lib/mobileViewport.js')).href);
 
@@ -37,7 +188,8 @@ assert(CHROME_IOS_URLBAR_INSET_PX === 56, 'CriOS urlbar fallback px');
 assert(typeof lockHomeViewport === 'function', 'lockHomeViewport export');
 assert(typeof unlockHomeViewport === 'function', 'unlockHomeViewport export');
 assert(typeof clearHomeChromeTop === 'function', 'clearHomeChromeTop export');
-assert(typeof syncHomeChromeOnFirstPaint === 'function', 'syncHomeChromeOnFirstPaint export');
+assert(typeof resolveSessionHomeChromeTopPx === 'function', 'resolveSessionHomeChromeTopPx export');
+assert(typeof isCriosFirstNavigateSession === 'function', 'isCriosFirstNavigateSession export');
 
 assert(resolveHomeChromeTopPx({ allowFallback: true }) === 56, 'CriOS fallback when unmeasured');
 assert(resolveHomeChromeTopPx({ allowFallback: false }) === 0, 'no fallback when disallowed');
@@ -46,9 +198,53 @@ assert(resolveHomeChromeTopPx({ offsetTop: 80, allowFallback: true }) === 80, 'l
 assert(resolveHomeChromeTopPx({ dvhSvhGap: 40, allowFallback: false }) === 40, 'gap used when no fallback');
 assert(resolveHomeChromeTopPx({ pageTop: 8, offsetTop: 2 }) === 8, 'max of measurements');
 
+assert(isCriosFirstNavigateSession({ crios: true, navType: 'navigate' }) === true, 'CriOS navigate is first-nav session');
+assert(isCriosFirstNavigateSession({ crios: true, navType: '' }) === true, 'empty nav type is first-nav');
+assert(isCriosFirstNavigateSession({ crios: true, navType: 'reload' }) === false, 'reload is not first-nav');
+assert(isCriosFirstNavigateSession({ crios: true, navType: 'back_forward' }) === false, 'back_forward is not first-nav');
+assert(isCriosFirstNavigateSession({ crios: false, navType: 'navigate' }) === false, 'non-CriOS has no floor');
+
+assert(
+  resolveSessionHomeChromeTopPx({ crios: true, navType: 'navigate', measuredPx: 0 }) === 56,
+  'session policy first-nav floor 56',
+);
+assert(
+  resolveSessionHomeChromeTopPx({
+    crios: true,
+    navType: 'navigate',
+    measuredPx: 0,
+    visualViewportHeightDelta: -64,
+  }) === 56,
+  'height drop -64 must not clear first-nav 56',
+);
+assert(
+  resolveSessionHomeChromeTopPx({
+    crios: true,
+    navType: 'reload',
+    measuredPx: 0,
+    visualViewportHeightDelta: -64,
+  }) === 0,
+  'reload stays 0 after height drop',
+);
+assert(
+  resolveSessionHomeChromeTopPx({ crios: false, navType: 'navigate', visualViewportHeightDelta: -64 }) === 0,
+  'non-CriOS stays 0 after height drop',
+);
+
 const stop = syncHomeChromeOnFirstPaint();
 assert(typeof stop === 'function', 'first-paint returns cleanup');
 stop();
+
+const criosMock = runCriosFirstNavigateHeightDropMock();
+assert(criosMock.firstPx === 56, `CriOS mock first apply is 56, got ${criosMock.firstPx}`);
+assert(criosMock.dropDelta === -64, `CriOS mock height delta is -64, got ${criosMock.dropDelta}`);
+assert(criosMock.afterDropPx === 56, `CriOS mock 56 must survive height drop, got ${criosMock.afterDropPx}`);
+assert(criosMock.sawWebviewInset === true, 'CriOS mock still records height drop');
+assert(criosMock.clearsFallback === false, 'CriOS mock must not clear fallback on drop');
+assert(criosMock.headerRectTopAfterDrop >= 40, `headerRectTop after drop should not be <40, got ${criosMock.headerRectTopAfterDrop}`);
+assert(criosMock.reloadPx === 0, `reload mock stays 0, got ${criosMock.reloadPx}`);
+assert(criosMock.reloadAfterDropPx === 0, `reload mock stays 0 after height drop, got ${criosMock.reloadAfterDropPx}`);
+console.log('crios-mock:', JSON.stringify(criosMock));
 
 const css = read('src/index.css');
 assert(
@@ -85,6 +281,14 @@ assert(
 assert(
   viewportLib.includes('CHROME_IOS_URLBAR_INSET_PX'),
   'CriOS first-navigate fallback exists',
+);
+assert(
+  viewportLib.includes('resolveSessionHomeChromeTopPx'),
+  'session apply policy helper exists',
+);
+assert(
+  !viewportLib.includes('firstNavigate && !sawWebviewInset'),
+  'must not clear first-navigate fallback via sawWebviewInset',
 );
 
 const indexHtml = read('index.html');

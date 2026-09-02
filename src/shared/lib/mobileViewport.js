@@ -161,7 +161,7 @@ export function agentHomeChromeLog(hypothesisId, location, message, data) {
     message,
     data,
     hypothesisId,
-    runId: 'pre-fix',
+    runId: 'post-fix',
   };
   try { globalThis.__gateoAgentLogSink?.(payload); } catch { /* ignore */ }
   try {
@@ -225,6 +225,29 @@ export function resolveHomeChromeTopPx({
   return measured;
 }
 
+/** CriOS first navigate (not reload / back_forward) — 56px floor for the whole session. */
+export function isCriosFirstNavigateSession({ crios = false, navType = '' } = {}) {
+  return Boolean(crios && navType !== 'reload' && navType !== 'back_forward');
+}
+
+/**
+ * Apply policy for `--gateo-home-chrome-top`.
+ * visualViewport height drop (globe / 100dvh / Mapbox) is not a webview inset
+ * and must not clear the first-navigate 56px floor.
+ */
+export function resolveSessionHomeChromeTopPx({
+  crios = false,
+  navType = '',
+  measuredPx = 0,
+  visualViewportHeightDelta = 0,
+} = {}) {
+  void visualViewportHeightDelta;
+  return resolveHomeChromeTopPx({
+    offsetTop: measuredPx,
+    allowFallback: isCriosFirstNavigateSession({ crios, navType }),
+  });
+}
+
 function isChromeIos() {
   return typeof navigator !== 'undefined' && /CriOS/i.test(navigator.userAgent);
 }
@@ -264,6 +287,7 @@ function readMeasuredHomeChromeTopPx() {
  * Chrome iOS 첫 진입: 웹뷰가 주소창 뒤에 깔린 채 페인트 → 새로고침이면 웹뷰가 이미 내려감.
  * 이른 scrollTo(0,0)·즉시 리마운트는 헤더를 더 밀어 넣음. fallback inset은 CriOS 첫 navigate만.
  * offsetTop을 세션 내내 resize 바인딩하지 않음 (#13/#15 칩 히트).
+ * visualViewport 높이 감소는 지구본/100dvh/Mapbox shrink — 첫 navigate 56px를 해제하지 않음.
  */
 export function syncHomeChromeOnFirstPaint({ onRemount, onSettled } = {}) {
   if (typeof window === 'undefined') return () => {};
@@ -289,7 +313,7 @@ export function syncHomeChromeOnFirstPaint({ onRemount, onSettled } = {}) {
   });
   // #endregion
 
-  const apply = (remount, allowFallback) => {
+  const apply = (remount) => {
     if (stopped) return;
     const pageY = window.scrollY || window.pageYOffset || 0;
     const pageTop = visualViewport?.pageTop ?? 0;
@@ -297,10 +321,13 @@ export function syncHomeChromeOnFirstPaint({ onRemount, onSettled } = {}) {
       window.scrollTo(0, 0);
     }
     const measured = readMeasuredHomeChromeTopPx();
-    const fallbackOn = Boolean(allowFallback && crios && firstNavigate && !sawWebviewInset);
-    const px = resolveHomeChromeTopPx({
-      offsetTop: measured,
-      allowFallback: fallbackOn,
+    const heightDelta = (visualViewport?.height ?? lastHeight) - lastHeight;
+    const fallbackOn = isCriosFirstNavigateSession({ crios, navType });
+    const px = resolveSessionHomeChromeTopPx({
+      crios,
+      navType,
+      measuredPx: measured,
+      visualViewportHeightDelta: heightDelta,
     });
     const prevApplied = lastApplied;
     if (px !== lastApplied) {
@@ -315,8 +342,9 @@ export function syncHomeChromeOnFirstPaint({ onRemount, onSettled } = {}) {
     // #region agent log
     const snap = readHomeChromeDomSnap();
     agentHomeChromeLog('H1', 'mobileViewport.js:apply', 'apply chrome top', {
-      remount, allowFallback, fallbackOn, measured, px, prevApplied, lastApplied,
+      remount, allowFallback: fallbackOn, fallbackOn, measured, px, prevApplied, lastApplied,
       sawWebviewInset, crios, firstNavigate, navType,
+      keepFirstNavigateFloor: fallbackOn,
       vvHeight: visualViewport?.height ?? null,
       vvOffsetTop: visualViewport?.offsetTop ?? null,
       vvPageTop: visualViewport?.pageTop ?? null,
@@ -336,7 +364,7 @@ export function syncHomeChromeOnFirstPaint({ onRemount, onSettled } = {}) {
     // #endregion
   };
 
-  apply(false, true);
+  apply(false);
 
   const onVisualResize = () => {
     const height = visualViewport?.height ?? window.innerHeight;
@@ -350,18 +378,19 @@ export function syncHomeChromeOnFirstPaint({ onRemount, onSettled } = {}) {
       lastHeight, height, delta, drop, sawWebviewInset,
       vvOffsetTop: visualViewport?.offsetTop ?? null,
       vvPageTop: visualViewport?.pageTop ?? null,
-      willAllowFallback: !sawWebviewInset,
+      willAllowFallback: isCriosFirstNavigateSession({ crios, navType }),
+      clearsFallback: false,
     });
     // #endregion
     lastHeight = height;
-    apply(true, !sawWebviewInset);
+    apply(true);
   };
   visualViewport?.addEventListener('resize', onVisualResize);
 
-  timers.push(window.setTimeout(() => apply(true, true), 280));
-  timers.push(window.setTimeout(() => apply(true, true), 700));
+  timers.push(window.setTimeout(() => apply(true), 280));
+  timers.push(window.setTimeout(() => apply(true), 700));
   timers.push(window.setTimeout(() => {
-    apply(false, !sawWebviewInset);
+    apply(false);
     visualViewport?.removeEventListener('resize', onVisualResize);
     if (typeof onSettled === 'function') onSettled();
   }, 1200));
