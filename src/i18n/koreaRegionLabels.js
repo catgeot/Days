@@ -1,4 +1,5 @@
 import { listCityAttractionHubs } from '../pages/Home/lib/cityAttractionHubs.js';
+import { isGlobeCameraBusy } from '../pages/Home/lib/globeMarkerLayers.js';
 import { isMetroArea } from '../pages/Korea/festivalRegionTags.js';
 import {
   KOREA_AREA_CODE_EN,
@@ -51,12 +52,13 @@ function mapLanguageMatches(map, mapLanguage) {
 function canApplyMapLanguage(map) {
   if (!map || map._removed) return false;
   if (typeof map.isStyleLoaded === 'function' && !map.isStyleLoaded()) return false;
-  if (typeof map.isMoving === 'function' && map.isMoving()) return false;
+  // flyTo/easeTo만 대기 — 자전 jumpTo는 isMoving을 켜 idle을 막아 토글 지연 유발.
+  if (isGlobeCameraBusy(map)) return false;
   return true;
 }
 
 /**
- * Mapbox setLanguage — 렌더 중 continuePlacement 크래시·locale 토글 깜박임 완화.
+ * Mapbox setLanguage — continuePlacement 크래시 완화, 자전 중 idle 대기 금지.
  * @param {import('mapbox-gl').Map | null | undefined} map
  * @param {string | null | undefined} locale
  * @returns {() => void} cancel
@@ -68,93 +70,113 @@ export function scheduleMapboxLanguage(map, locale) {
   if (mapLanguageMatches(map, mapLanguage)) return () => {};
 
   let cancelled = false;
-  /** @type {(() => void) | null} */
-  let onIdle = null;
+  let rafId = 0;
+  let retryTimer = 0;
+  let hardFallbackTimer = 0;
   /** @type {(() => void) | null} */
   let onStyleData = null;
 
-  const detach = () => {
-    if (onIdle && typeof map.off === 'function') {
-      map.off('idle', onIdle);
+  const clearTimers = () => {
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+    }
+    if (retryTimer) {
+      clearTimeout(retryTimer);
+      retryTimer = 0;
+    }
+    if (hardFallbackTimer) {
+      clearTimeout(hardFallbackTimer);
+      hardFallbackTimer = 0;
     }
     if (onStyleData && typeof map.off === 'function') {
       map.off('styledata', onStyleData);
     }
-    onIdle = null;
     onStyleData = null;
   };
 
   const apply = () => {
-    if (cancelled || !canApplyMapLanguage(map)) return;
-    if (mapLanguageMatches(map, mapLanguage)) return;
+    if (cancelled || map._removed) return false;
+    if (mapLanguageMatches(map, mapLanguage)) return true;
+    if (!canApplyMapLanguage(map)) return false;
     try {
       map.setLanguage(mapLanguage);
+      return true;
     } catch {
-      // Style may still be loading or mid-render.
+      return false;
     }
   };
 
-  const scheduleWhenIdle = () => {
-    if (cancelled || map._removed) return;
-    if (mapLanguageMatches(map, mapLanguage)) return;
-
-    onIdle = () => {
-      onIdle = null;
-      if (cancelled || map._removed) return;
-      if (!canApplyMapLanguage(map)) {
-        waitForStyle();
+  const scheduleRetry = (delayMs) => {
+    if (cancelled) return;
+    retryTimer = window.setTimeout(() => {
+      retryTimer = 0;
+      if (cancelled) return;
+      if (apply()) return;
+      if (isGlobeCameraBusy(map)) {
+        scheduleRetry(48);
         return;
       }
-      // Marker setData 등 sibling 업데이트가 settle한 뒤 한 프레임 더 대기.
-      requestAnimationFrame(() => {
-        if (cancelled || map._removed) return;
-        if (!canApplyMapLanguage(map)) {
-          waitForStyle();
-          return;
-        }
-        if (typeof map.once !== 'function') {
-          apply();
-          return;
-        }
-        map.once('idle', () => {
-          if (cancelled || map._removed) return;
-          apply();
-        });
-      });
-    };
+      tryApplySoon();
+    }, delayMs);
+  };
 
-    if (typeof map.once === 'function') {
-      map.once('idle', onIdle);
-    } else {
-      requestAnimationFrame(() => requestAnimationFrame(apply));
-    }
+  const tryApplySoon = () => {
+    if (cancelled) return;
+    rafId = requestAnimationFrame(() => {
+      rafId = requestAnimationFrame(() => {
+        rafId = 0;
+        if (cancelled) return;
+        if (apply()) return;
+        if (isGlobeCameraBusy(map)) {
+          scheduleRetry(48);
+          return;
+        }
+        apply();
+      });
+    });
   };
 
   const waitForStyle = () => {
     if (cancelled || map._removed) return;
     if (canApplyMapLanguage(map)) {
-      scheduleWhenIdle();
+      tryApplySoon();
       return;
     }
 
-    onStyleData = () => {
-      onStyleData = null;
-      if (cancelled || map._removed) return;
-      scheduleWhenIdle();
-    };
-
-    if (typeof map.once === 'function') {
-      map.once('styledata', onStyleData);
-    } else {
-      scheduleWhenIdle();
+    if (typeof map.isStyleLoaded === 'function' && !map.isStyleLoaded()) {
+      onStyleData = () => {
+        onStyleData = null;
+        if (!cancelled) tryApplySoon();
+      };
+      if (typeof map.once === 'function') {
+        map.once('styledata', onStyleData);
+      } else {
+        scheduleRetry(80);
+      }
+      return;
     }
+
+    scheduleRetry(48);
   };
 
   waitForStyle();
 
+  hardFallbackTimer = window.setTimeout(() => {
+    hardFallbackTimer = 0;
+    if (cancelled || map._removed) return;
+    if (mapLanguageMatches(map, mapLanguage)) return;
+    if (typeof map.isStyleLoaded === 'function' && !map.isStyleLoaded()) return;
+    try {
+      map.setLanguage(mapLanguage);
+    } catch {
+      // Style may still be loading or mid-render.
+    }
+  }, 400);
+
   return () => {
     cancelled = true;
-    detach();
+    clearTimers();
   };
 }
 

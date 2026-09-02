@@ -43,6 +43,7 @@ import {
   updateGateoMarkerSource,
   scheduleUpdateGateoMarkerSource,
   flushPendingGateoMarkerSource,
+  forceUpdateGateoMarkerSource,
   findGateoMarkerAtPoint,
   isGateoLayer,
   gateoMarkerLayersReady,
@@ -1100,8 +1101,33 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
   useEffect(() => {
     const map = mapRef.current?.getMap?.();
-    return scheduleMapboxLanguage(map, locale);
-  }, [locale, globeTheme]);
+    if (!map || pauseRender) return undefined;
+
+    const wasRotating = autoRotateRef.current;
+    autoRotateRef.current = false;
+
+    forceUpdateGateoMarkerSource(map, markerGeoJSON);
+    const cancel = scheduleMapboxLanguage(map, locale);
+
+    const resumeId = requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (
+          wasRotating
+          && !pauseRender
+          && !interactionRef.current
+          && !tourActiveRef.current
+          && !immerseActiveRef.current
+        ) {
+          autoRotateRef.current = true;
+        }
+      });
+    });
+
+    return () => {
+      cancel();
+      cancelAnimationFrame(resumeId);
+    };
+  }, [locale, globeTheme, markerGeoJSON, pauseRender]);
 
   useEffect(() => {
     if (pauseRender) return;
