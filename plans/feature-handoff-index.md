@@ -18,17 +18,17 @@
 
 | | |
 |--|--|
-| **상태** | **#3-b 회귀 수정** · tip `0d02bcc1` · 사람 Preview QA |
-| **브랜치** | `cursor/locale-toggle-smooth-92b6` · tip `0d02bcc1` |
+| **상태** | **#4 롤백** (#173·Mapbox 연쇄 수정 이전) · tip `615553d1` · 사람 Preview QA |
+| **브랜치** | `cursor/locale-toggle-smooth-92b6` · tip `615553d1` |
 | **PR** | [#174](https://github.com/catgeot/Days/pull/174) |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §13 A (`/` locale 토글) |
 | **일지** | [`2026-09-01-project-log.md`](./2026-09-01-project-log.md) |
 | **Preview** | `/qa/en` → `/?lang=en` · git Preview 홈 |
 | **VERIFY** | `audit:i18n` · `build` |
 
-**게이트**: #3 자전 idle 데드락 수정 ✅ · tp/ads 콘솔 = 제3자 무해 · Mapbox continuePlacement 0건 확인 = 사람 Preview
+**게이트**: #173·#3~#3-b Mapbox 연쇄 수정 **롤백** ✅ · `5061d784` 기준 복원 · 추가 로직 수정 **중단** · 사람 Preview로 기준선 확인
 
-**다음 제시어 (#4 사람 Preview QA)**:
+**다음 제시어 (#4 사람 Preview QA — 롤백 후)**:
 
 ```
 홈 locale #4, 사람 Preview QA
@@ -36,8 +36,8 @@
 @plans/2026-09-01-project-log.md
 @plans/i18n-en-plan.md
 브랜치 cursor/locale-toggle-smooth-92b6 · PR #174 · Preview https://days-git-cursor-locale-toggle-smooth-92b6-catgeots-projects.vercel.app/
-금지: #173 검색바 flex 되돌리기 · HomeGlobeMapbox 대규모 리팩터 · plans/** feature 커밋
-작업: 모바일 EN/KO 토글 즉시 반응·지도·핀 EN · /explore 검색바 회귀 없음 · OK 시 PR #174 merge
+금지: Mapbox·검색바 추가 패치(사람 OK 전) · HomeGlobeMapbox 대규모 리팩터 · plans/** feature 커밋
+작업: 롤백 Preview — EN/KO 토글·검색바·/explore 클릭·지도 핀 EN · 알려진 이슈만 메모 · OK 시 PR #174 merge
 ```
 
 ---
