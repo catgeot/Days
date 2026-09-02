@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'home-chip',
+    label: '홈 축제칩 접힘',
+    branch: 'cursor/home-festival-chip-59c9',
+    destination:
+      'https://days-git-cursor-home-festival-chip-59c9-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
     slug: 'chrome-hit',
     label: '지구본 홈 Chrome 칩 히트',
     branch: 'main',

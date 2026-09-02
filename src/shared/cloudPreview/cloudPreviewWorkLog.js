@@ -4,13 +4,13 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: false,
-  title: '홈 검색바 히트',
-  sessionNo: 3,
-  sessionPhase: 'main 병합',
-  branch: 'cursor/search-locale-hit-5f5c',
+  active: true,
+  title: '홈 축제칩',
+  sessionNo: 1,
+  sessionPhase: '써머리 펼침 방지',
+  branch: 'cursor/home-festival-chip-59c9',
   previewPath: '/',
-  qaShareSlug: 'search-hit',
+  qaShareSlug: 'home-chip',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-02-home-festival-chip-keep-collapsed',
+    session: '홈 축제칩 #1, 써머리 펼침 방지',
+    title: '써머리 장소 카드 열 때 축제 칩 접힘 유지',
+    detail:
+      '모바일 지구본 지명 클릭 → 써머리 카드가 hideExploreChrome을 켜며 좌상단 바로가기가 축제·행사 목록으로 펼쳐지던 문제. 접힘 표시를 장소 카드와 분리하고, 카드 열림 시 자동 접힘. Preview /qa/home-chip — 지명 클릭 후 좌측 칩이 한 줄 접힘인지 확인.',
+    at: '2026-09-02T14:10:00.000Z',
+  },
   {
     id: '2026-09-02-search-locale-hit-3-merge',
     session: '홈 검색바 히트 #3, main 병합',

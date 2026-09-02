@@ -6,6 +6,11 @@
       "permanent": true
     },
     {
+      "source": "/qa/home-chip",
+      "destination": "https://days-git-cursor-home-festival-chip-59c9-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
       "source": "/qa/chrome-hit",
       "destination": "https://www.gateo.kr/",
       "permanent": false

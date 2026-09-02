@@ -167,10 +167,10 @@ const HomeUI = React.memo(({
   }, [externalInput]);
 
   useEffect(() => {
-    if (faceRegionsOpen && mobileRegionsExpanded) {
+    if (hideExploreChrome || (faceRegionsOpen && mobileRegionsExpanded)) {
       setMobileQuickLinksExpanded(false);
     }
-  }, [faceRegionsOpen, mobileRegionsExpanded]);
+  }, [hideExploreChrome, faceRegionsOpen, mobileRegionsExpanded]);
 
   const CATEGORIES = [
     { id: 'paradise', icon: Palmtree, label: 'Paradise', color: 'text-cyan-400' },
@@ -189,7 +189,8 @@ const HomeUI = React.memo(({
     }
   };
   const ThemeIcon = getThemeConfig().icon;
-  const showMobileQuickLinksCollapsed = !hideExploreChrome && !mobileQuickLinksExpanded;
+  // 장소 카드(hideExploreChrome)와 분리 — 묶으면 접힌 축제 칩이 목록으로 펼쳐짐
+  const showMobileQuickLinksCollapsed = !mobileQuickLinksExpanded;
 
   const renderMobileQuickLink = (item, linkClassName = '') => {
     const Icon = item.icon;
