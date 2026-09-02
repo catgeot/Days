@@ -4,11 +4,12 @@
 
 ---
 
-## 홈 locale 토글 — #8 merge ✅
+## 홈 locale 토글 — #8~#9 merge ✅
 
-- **세션** `홈 locale #8, PR #174 merge`
-- **main** `053a4587` — PR [#174](https://github.com/catgeot/Days/pull/174) merge (지구본 EN↔KO 깜박임 없음 · ≤3초)
-- **잔여** 모바일 검색바·EN 토글 히트 겹침 → 아래 주제
+- **#8** main `053a4587` — PR [#174](https://github.com/catgeot/Days/pull/174)
+- **#9** main `a6a5ede7` — PR [#176](https://github.com/catgeot/Days/pull/176)
+- **사람 QA** PC·모바일 실시간 EN↔KO 지명 전환 OK
+- **잔여** 검색바·EN 토글 히트 → **홈 검색바 히트 #2**
 
 ---
 

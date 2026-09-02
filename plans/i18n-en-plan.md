@@ -341,6 +341,7 @@ npm run smoke:browser-locale-hint
 | #6 | ✅ tip `3fe6077c` | 이중 깜박임 — satellite `setLanguage` 제거 · coalesce 1회 |
 | #7 | ✅ 사람 QA PASS | 깜박임 없음 · EN↔KO ≤3초 — **merge 수용** |
 | #8 | ✅ main `053a4587` | PR [#174](https://github.com/catgeot/Days/pull/174) merge · 검색바 히트는 §13 A′′ |
+| #9 | ✅ main `a6a5ede7` | PR [#176](https://github.com/catgeot/Days/pull/176) — 모바일 지명 EN 고착 · PC·모바일 QA PASS |
 
 ### A′′. 홈 검색바·locale 히트 (Cloud · PR #175 · `cursor/search-locale-hit-5f5c`)
 

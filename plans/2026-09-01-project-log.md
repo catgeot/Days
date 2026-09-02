@@ -234,3 +234,14 @@
 - **세션** `홈 locale #8, PR #174 merge`
 - **main** `053a4587` — PR [#174](https://github.com/catgeot/Days/pull/174) merge
 - **잔여** 검색바·EN 토글 히트 → **홈 검색바 히트** (`cursor/search-locale-hit-5f5c` · PR #175)
+
+### #9 모바일 지구본 지명 ✅
+
+- **세션** `홈 locale #9, 모바일 지구본 지명` → 사람 QA PASS → merge
+- **브랜치** `cursor/globe-locale-mobile-5f5c` · tip `e2214bdb` · PR [#176](https://github.com/catgeot/Days/pull/176)
+- **사람** 모바일: UI EN OK · **지명·핀 KO 고착** (Preview 모바일 QA 없이 #174 merge)
+- **원인** 레이어 ID 미갱신 no-op + echo suppress → styledata 실적용 차단 · 모바일 idle 적음
+- **수정** refresh 후 갱신>0만 suppress · 재시도 · 자전 잠시 정지 · 핀 setData 강제
+- **사람 QA** PC·모바일 실시간 EN↔KO 지명 전환 OK
+- **main** `a6a5ede7` — PR #176 merge
+- **다음** 검색바 히트 → **홈 검색바 히트 #2**
