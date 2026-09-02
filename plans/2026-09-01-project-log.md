@@ -164,3 +164,18 @@
 - **I#3** R04–R06 audit 0 · smoke 회귀+샘플 PASS · build PASS
 - **Preview** `https://days-git-cursor-palgyeong-catgeots-projects.vercel.app`
 - **다음** **R07** — 워커2 · 경북 6(영주·문경·봉화·예천·청송·영덕)
+
+---
+
+## 홈 locale 토글 (EN/KO)
+
+### #3 콘솔·지연 ✅
+
+- **세션** `홈 locale #3, 콘솔 오류 심층`
+- **브랜치** `cursor/locale-toggle-smooth-92b6` · tip `ff2e8c20` · PR [#174](https://github.com/catgeot/Days/pull/174)
+- **증상** EN 토글 ~4초 지연 · 콘솔 tp/ads/PerformanceObserver 노이즈
+- **원인** `scheduleMapboxLanguage`가 자전 중 `isMoving`+이중 `idle` 대기 → idle 미발생 · tp/ads = `index.html` emrld 제3자(무해)
+- **수정** `isMoving` 제거·`isGlobeCameraBusy`만 대기 · locale 시 자전 잠시 정지+`forceUpdateGateoMarkerSource` · 400ms 폴백
+- **VERIFY** `audit:i18n` · `build` PASS
+- **Preview** `/qa/en` · https://days-git-cursor-locale-toggle-smooth-92b6-catgeots-projects.vercel.app/
+- **다음** **#4 사람 Preview QA** — 토글 즉시성 · Mapbox 오류 0 · `/explore` 검색바
