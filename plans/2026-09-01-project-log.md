@@ -85,3 +85,14 @@
 - **대조** lists 3 = 큐 P0 · members 26 · hub append 18 = 일지 #2
 - **샘플 exact** 홍천9경·양구9경·인제8경 — `resolveLocalScenicList`·hub·scenicSearch 전부 OK
 - **다음** **#4 채우기 R01** — 오케 워커2 · 강원 6리스트
+
+### #4 채우기 R01 ✅
+
+- **세션** `지자체 팔경 #4, 채우기 R01`
+- **브랜치** `cursor/palgyeong` · tip `17f7ebed` · PR [#172](https://github.com/catgeot/Days/pull/172)
+- **산출** `samcheok-sipgyeong`(10) · `wonju-palgyeong`(8) · `donghae-bijing`(9) · `sokcho-palgyeong`(8) · `yangyang-sipgyeong`(10) · `goseong-palgyeong`(8) · hub append +36 · aliases
+- **skip** `chuncheon`·`gangneung` 시 단위 공식 8경 없음 → 예비 `samcheok-sipgyeong`·`donghae-bijing`
+- **충돌 접두** `설악산 대청봉`(yangyang) · `삼척 천은사`(samcheok)
+- **VERIFY** audit:korea-local-scenic-lists 0 · audit:city-attraction-hubs 0 · smoke(원주8경·속초8경·양양10경·고성8경·삼척십경·동해비경) · build PASS
+- **Preview** `https://days-git-cursor-palgyeong-catgeots-projects.vercel.app`
+- **다음** **#5 채우기 R02** — samcheok·donghae 큐 예비 소진 · R02 재조사
