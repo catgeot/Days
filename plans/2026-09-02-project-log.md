@@ -102,3 +102,27 @@
 작업: 모바일 첫 진입(EN 없이) 지명 표시 · 자전 · EN↔KO · OK 시 PR #180 merge
 ```
 
+---
+
+## 지구본 홈 헤더 — Chrome 주소창 가림
+
+### #1 Chrome 주소창 가림 ✅ 에이전트 · 사람 Preview 대기
+
+- **세션** `지구본 홈 헤더 #1, Chrome 주소창 가림`
+- **브랜치** `cursor/home-header-3eef` · tip `def1832c` · PR [#181](https://github.com/catgeot/Days/pull/181)
+- **증상** iOS Chrome 지구본 홈 첫 로딩 시 로고·검색·바로가기 칩이 주소창 뒤로 깔림(간헐)
+- **원인** `h-screen`(100vh)가 주소창보다 커서 문서가 스크롤되고 fixed 헤더가 URL바 뒤로 깔림
+- **적용** 홈 루트 100dvh 잠금 · 첫 페인트 `scrollTo(0,0)` · offsetTop 지속 보정 없음(칩 히트 회귀 방지)
+- **VERIFY** `smoke:home-chrome-viewport` · `vite build` PASS
+- **Preview** `/qa/home-header` · git Preview 홈
+- **다음** **#2 사람 Preview QA** — Chrome 새로고침 후 상단 칩이 주소창 아래인지
+
+```
+지구본 홈 헤더 #2, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-02-project-log.md
+브랜치 cursor/home-header-3eef · PR #181 · https://www.gateo.kr/qa/home-header
+금지: UI 리디자인 · offsetTop 지속 보정 · 코드를 origin/main에 임의 push
+작업: iPhone Chrome 홈 새로고침 후 상단 칩이 주소창에 안 가리는지 · OK 시 PR #181 merge
+```
+
