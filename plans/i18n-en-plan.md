@@ -339,7 +339,8 @@ npm run smoke:browser-locale-hint
 |------|------|------|
 | #5 | ✅ | 위성 `name_ko` 강제 해제 · locale별 text-field |
 | #6 | ✅ tip `3fe6077c` | 이중 깜박임 — satellite `setLanguage` 제거 · coalesce 1회 |
-| #7 | 사람 Preview | EN 한 번에 · KO 복귀 · OK 시 merge |
+| #7 | ✅ 사람 QA PASS | 깜박임 없음 · EN↔KO ≤3초 — **merge 수용** (이상 1초 미만은 Mapbox 한계로 비목표) |
+| #8 | merge 대기 | PR #174 → main · 검색바 flex는 별 세션 |
 
 **에이전트 VERIFY**:
 

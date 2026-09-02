@@ -18,26 +18,27 @@
 
 | | |
 |--|--|
-| **상태** | **#6 이중 깜박임 수정** · tip `3fe6077c` · 사람 Preview QA |
+| **상태** | **#7 사람 Preview QA PASS** · tip `3fe6077c` · merge 대기 |
 | **브랜치** | `cursor/locale-toggle-smooth-92b6` · tip `3fe6077c` |
 | **PR** | [#174](https://github.com/catgeot/Days/pull/174) |
-| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §13 A (`/` locale 토글) |
+| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §13 A′ (`/` locale 토글) |
 | **일지** | [`2026-09-01-project-log.md`](./2026-09-01-project-log.md) |
 | **Preview** | `/qa/en` → `/?lang=en` · git Preview 홈 |
 | **VERIFY** | `audit:i18n` · `build` |
 
-**게이트**: #6 satellite `setLanguage` 이중 적용 제거 ✅ · 검색바 flex **미착수** · 사람 Preview — 한 번에 EN
+**게이트**: #7 QA — 깜박임 없음 · EN↔KO ≤3초 ✅ · 검색바 flex **미착수**(별 세션) · **PR #174 merge 사람 승인 대기**
 
-**다음 제시어 (#7 사람 Preview QA)**:
+**다음 제시어 (#8 merge)**:
 
 ```
-홈 locale #7, 사람 Preview QA
+홈 locale #8, PR #174 merge
 @plans/feature-handoff-index.md
 @plans/2026-09-01-project-log.md
 @plans/i18n-en-plan.md
-브랜치 cursor/locale-toggle-smooth-92b6 · PR #174 · Preview https://days-git-cursor-locale-toggle-smooth-92b6-catgeots-projects.vercel.app/
-금지: 검색바 flex(#173) · HomeGlobeMapbox 대규모 리팩터 · plans/** feature 커밋
-작업: EN 토글 → 검게/한글 중간 없이 지명·핀 즉시 EN · KO 복귀 · OK 시 merge 검토
+브랜치 cursor/locale-toggle-smooth-92b6 · PR #174 · tip 3fe6077c
+#7 QA PASS: 깜박임 없음 · EN↔KO ≤3초 (merge 수용)
+금지: 검색바 flex(#173) 동시 착수 · HomeGlobeMapbox 대규모 리팩터
+작업: 사람 merge 승인 → PR #174 → main · 검색바 히트는 별 세션
 ```
 
 ---
