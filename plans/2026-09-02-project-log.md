@@ -4,6 +4,21 @@
 
 ---
 
+## 홈 축제칩 — 써머리 펼침 방지
+
+### #1 써머리 펼침 방지 ✅
+
+- **세션** `홈 축제칩 #1, 써머리 펼침 방지`
+- **브랜치** `cursor/home-festival-chip-59c9` · tip `1d3d324f` · PR [#177](https://github.com/catgeot/Days/pull/177)
+- **증상** 모바일 지구본 지명 클릭 → 써머리 카드 + 좌측 축제 칩이 목록으로 펼쳐짐
+- **원인** `showMobileQuickLinksCollapsed = !hideExploreChrome && !expanded` — 카드 열림이 펼침으로 떨어짐
+- **적용** 접힘 표시를 장소 카드와 분리 · 카드 열림 시 자동 접힘
+- **VERIFY** `vite build` PASS
+- **Preview** `/qa/home-chip` · git Preview 홈
+- **다음** **#2 사람 Preview QA** — 지명 탭 후 좌측 칩 한 줄 접힘 · OK 시 PR #177 merge
+
+---
+
 ## 홈 locale 토글 — #8~#9 merge ✅
 
 - **#8** main `053a4587` — PR [#174](https://github.com/catgeot/Days/pull/174)
