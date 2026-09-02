@@ -791,7 +791,11 @@
     "lng": 129.2247,
     "aliases": [
       "경주시",
-      "gyeongju"
+      "gyeongju",
+      "경주8怪",
+      "경주 팔괴",
+      "삼보3기8괴",
+      "3보3기8괴"
     ],
     "attractions": [
       {
@@ -842,6 +846,62 @@
         "kind": "landmark",
         "lat": 35.7381286,
         "lng": 129.4868756
+      },
+      {
+        "name": "남산부석",
+        "name_en": "Namsan Floating Rock",
+        "kind": "landmark",
+        "lat": 35.794,
+        "lng": 129.063
+      },
+      {
+        "name": "문천도사",
+        "name_en": "Muncheon Upside-down Sand",
+        "kind": "viewpoint",
+        "lat": 35.84,
+        "lng": 129.21
+      },
+      {
+        "name": "계림황엽",
+        "name_en": "Gyeryim Yellow Leaves",
+        "kind": "park",
+        "lat": 35.828,
+        "lng": 129.215
+      },
+      {
+        "name": "압지부평",
+        "name_en": "Apji Duckweed",
+        "kind": "landmark",
+        "lat": 35.8329004,
+        "lng": 129.2267647
+      },
+      {
+        "name": "백율송순",
+        "name_en": "Baekyul Pine Shoots",
+        "kind": "park",
+        "lat": 36.015,
+        "lng": 129
+      },
+      {
+        "name": "금장낙안",
+        "name_en": "Geumjang Falling Geese",
+        "kind": "viewpoint",
+        "lat": 35.85,
+        "lng": 129.28
+      },
+      {
+        "name": "불국영지",
+        "name_en": "Bulguk Shadow Pond",
+        "kind": "landmark",
+        "lat": 35.7889948,
+        "lng": 129.3308902
+      },
+      {
+        "name": "나원백탑",
+        "name_en": "Nawon White Pagoda",
+        "kind": "landmark",
+        "lat": 35.8936438,
+        "lng": 129.2123178
       }
     ]
   },
@@ -1897,7 +1957,9 @@
     "lng": 129.343,
     "aliases": [
       "pohang",
-      "포항시"
+      "포항시",
+      "포항12경",
+      "포항 십이경"
     ],
     "attractions": [
       {
@@ -1941,6 +2003,83 @@
         "kind": "temple",
         "lat": 36.2510959491,
         "lng": 129.3187408951
+      },
+      {
+        "name": "호미곶 일출",
+        "name_en": "Homigot Sunrise",
+        "kind": "viewpoint",
+        "lat": 36.0767516,
+        "lng": 129.5700631
+      },
+      {
+        "name": "내연산 12폭포",
+        "name_en": "Naeyeonsan Twelve Falls",
+        "kind": "viewpoint",
+        "lat": 36.352,
+        "lng": 129.385
+      },
+      {
+        "name": "운제산 오어사 사계",
+        "name_en": "Unjesan Oeosa Four Seasons",
+        "kind": "temple",
+        "lat": 35.992,
+        "lng": 129.318
+      },
+      {
+        "name": "호미반도 해안둘레길",
+        "name_en": "Homi Peninsula Coastal Trail",
+        "kind": "park",
+        "lat": 36.05,
+        "lng": 129.555
+      },
+      {
+        "name": "영일대 포스코 야경",
+        "name_en": "Yeongildae POSCO Night View",
+        "kind": "viewpoint",
+        "lat": 36.055,
+        "lng": 129.3779
+      },
+      {
+        "name": "포항운하",
+        "name_en": "Pohang Canal",
+        "kind": "landmark",
+        "lat": 36.0237772,
+        "lng": 129.377584
+      },
+      {
+        "name": "경상북도수목원 사계",
+        "name_en": "Gyeongbuk Arboretum Four Seasons",
+        "kind": "park",
+        "lat": 36.318,
+        "lng": 129.252
+      },
+      {
+        "name": "연오랑세오녀 테마공원",
+        "name_en": "Yeonorang Seonyeo Theme Park",
+        "kind": "park",
+        "lat": 36.0037327,
+        "lng": 129.4632059
+      },
+      {
+        "name": "철길숲 불의 정원",
+        "name_en": "Railway Forest Fire Garden",
+        "kind": "park",
+        "lat": 36.0090092,
+        "lng": 129.3421711
+      },
+      {
+        "name": "죽장 하옥계곡",
+        "name_en": "Jukjang Haok Valley",
+        "kind": "park",
+        "lat": 36.322,
+        "lng": 129.278
+      },
+      {
+        "name": "장기읍성 유배문화체험촌",
+        "name_en": "Janggi Fortress Exile Culture Village",
+        "kind": "landmark",
+        "lat": 35.985,
+        "lng": 129.418
       }
     ]
   },
