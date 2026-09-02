@@ -6,6 +6,11 @@
       "permanent": true
     },
     {
+      "source": "/qa/home-chip",
+      "destination": "https://www.gateo.kr/",
+      "permanent": false
+    },
+    {
       "source": "/qa/chrome-hit",
       "destination": "https://www.gateo.kr/",
       "permanent": false
