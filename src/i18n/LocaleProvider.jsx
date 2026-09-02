@@ -1,6 +1,5 @@
 import React, {
   createContext,
-  startTransition,
   useCallback,
   useContext,
   useEffect,
@@ -45,12 +44,6 @@ function syncDocumentLang(locale) {
   document.documentElement.lang = locale;
 }
 
-function applyLocaleSideEffects(locale) {
-  persistLocale(locale);
-  ensureI18n(locale);
-  syncDocumentLang(locale);
-}
-
 function resolveLocaleFromUrl(searchParams) {
   const urlLang = searchParams.get('lang');
   return isAppLocale(urlLang) ? urlLang : null;
@@ -72,10 +65,6 @@ export function LocaleProvider({ children }) {
     return initial;
   });
   const bootSyncDone = useRef(false);
-  const localeRef = useRef(locale);
-  const userLocaleIntentRef = useRef(null);
-
-  localeRef.current = locale;
 
   useEffect(() => {
     ensureI18n(locale);
@@ -93,33 +82,28 @@ export function LocaleProvider({ children }) {
     const inferred = resolveInitialLocale({ urlLang: null, storedLocale: null });
     if (inferred !== 'en') return;
 
-    userLocaleIntentRef.current = 'en';
-    applyLocaleSideEffects('en');
-    setLocaleState('en');
-    startTransition(() => {
-      setSearchParams(
-        (prev) => {
-          const next = new URLSearchParams(prev);
-          next.set('lang', 'en');
-          return next;
-        },
-        { replace: true },
-      );
-    });
+    persistLocale('en');
+    void i18n.changeLanguage('en');
+    syncDocumentLang('en');
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.set('lang', 'en');
+        return next;
+      },
+      { replace: true },
+    );
   }, [searchParams, setSearchParams]);
 
   useEffect(() => {
     const urlLocale = resolveLocaleFromUrl(searchParams);
     if (!urlLocale) return;
 
-    if (userLocaleIntentRef.current === urlLocale) {
-      userLocaleIntentRef.current = null;
-      return;
-    }
-
     setLocaleState((current) => {
       if (current === urlLocale) return current;
-      applyLocaleSideEffects(urlLocale);
+      persistLocale(urlLocale);
+      void i18n.changeLanguage(urlLocale);
+      syncDocumentLang(urlLocale);
       return urlLocale;
     });
   }, [searchParams]);
@@ -127,34 +111,30 @@ export function LocaleProvider({ children }) {
   const setLocale = useCallback(
     (nextLocale) => {
       const normalized = normalizeAppLocale(nextLocale);
-      if (normalized === localeRef.current) return;
-
-      userLocaleIntentRef.current = normalized;
-      applyLocaleSideEffects(normalized);
       setLocaleState(normalized);
+      persistLocale(normalized);
+      void i18n.changeLanguage(normalized);
+      syncDocumentLang(normalized);
 
-      startTransition(() => {
-        setSearchParams(
-          (prev) => {
-            const next = new URLSearchParams(prev);
-            if (normalized === 'en') {
-              next.set('lang', 'en');
-            } else {
-              next.delete('lang');
-            }
-            return next;
-          },
-          { replace: true },
-        );
-      });
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev);
+          if (normalized === 'en') {
+            next.set('lang', 'en');
+          } else {
+            next.delete('lang');
+          }
+          return next;
+        },
+        { replace: true },
+      );
     },
     [setSearchParams],
   );
 
   const toggleLocale = useCallback(() => {
-    const next = localeRef.current === 'en' ? 'ko' : 'en';
-    setLocale(next);
-  }, [setLocale]);
+    setLocale(locale === 'en' ? 'ko' : 'en');
+  }, [locale, setLocale]);
 
   const value = useMemo(
     () => ({

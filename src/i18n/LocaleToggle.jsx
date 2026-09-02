@@ -18,6 +18,7 @@ export default function LocaleToggle({ className = '', compact = false }) {
   };
 
   const handleClick = (event) => {
+    event.preventDefault();
     event.stopPropagation();
     toggleLocale();
   };

@@ -364,18 +364,6 @@ export function scheduleUpdateGateoMarkerSource(map, geojson) {
   requestAnimationFrame(() => requestAnimationFrame(() => runPendingGateoMarkerFlush(map)));
 }
 
-/** locale 토글 등 — 자전 중에도 핀 라벨 즉시 갱신(flyTo/easeTo 중엔 기존 스케줄러 사용). */
-export function forceUpdateGateoMarkerSource(map, geojson) {
-  if (!map) return;
-  const state = scheduledMarkerUpdates.get(map);
-  if (state) state.pending = null;
-  if (isGlobeCameraBusy(map)) {
-    scheduleUpdateGateoMarkerSource(map, geojson);
-    return;
-  }
-  updateGateoMarkerSource(map, geojson);
-}
-
 const LAYER_HIT_PRIORITY = {
   [GATEO_LABEL_LAYER_ID]: 0,
   [GATEO_DOT_LAYER_ID]: 1,
