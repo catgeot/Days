@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import basicSsl from '@vitejs/plugin-basic-ssl';
-import { writeFileSync } from 'fs';
+import { writeFileSync, appendFileSync } from 'fs';
 import { execSync } from 'child_process';
 
 import { TRAVEL_SPOTS } from './src/pages/Home/data/travelSpots.js';
@@ -46,6 +46,35 @@ const koreaRoutes = [
 
 const dynamicRoutes = [...placeRoutes, ...exploreRoutes, ...koreaRoutes];
 
+function gateoDebugLogIngest() {
+  return {
+    name: 'gateo-debug-log-ingest',
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if (req.url?.split('?')[0] !== '/__gateo_debug_log') return next();
+        if (req.method === 'OPTIONS') {
+          res.statusCode = 204;
+          res.end();
+          return;
+        }
+        if (req.method !== 'POST') return next();
+        const chunks = [];
+        req.on('data', (c) => chunks.push(c));
+        req.on('end', () => {
+          try {
+            const line = Buffer.concat(chunks).toString('utf8').trim();
+            if (line) appendFileSync('/opt/cursor/logs/debug.log', `${line}\n`);
+          } catch {
+            // ignore
+          }
+          res.statusCode = 204;
+          res.end();
+        });
+      });
+    },
+  };
+}
+
 function gateoEmitVersionJson() {
   return {
     name: 'gateo-emit-version-json',
@@ -74,6 +103,7 @@ export default defineConfig({
   plugins: [
     react(),
     ...(devSsl ? [basicSsl()] : []),
+    gateoDebugLogIngest(),
     gateoEmitVersionJson(),
   ],
   server: {

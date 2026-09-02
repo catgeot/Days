@@ -66,6 +66,7 @@ import {
   topOceanToFlyRegion,
 } from './lib/seaBasinRail.js';
 import {
+  agentHomeChromeLog,
   clearHomeChromeTop,
   lockHomeViewport,
   syncHomeChromeAfterNavigation,
@@ -334,6 +335,15 @@ function Home() {
     && (isCardExpanded || isPlaceRoute || routeLocation.pathname.startsWith('/explore'));
 
   useEffect(() => {
+    // #region agent log
+    agentHomeChromeLog('H2', 'Home/index.jsx:effect', 'chrome sync effect run', {
+      isPlaceRoute,
+      cssVar: typeof document !== 'undefined'
+        ? document.documentElement.style.getPropertyValue('--gateo-home-chrome-top')
+        : '',
+      inline: typeof window !== 'undefined' ? window.__GATEO_INLINE_CHROME : null,
+    });
+    // #endregion
     if (isPlaceRoute) {
       unlockHomeViewport();
       clearHomeChromeTop();
@@ -344,6 +354,14 @@ function Home() {
       onSettled: lockHomeViewport,
     });
     return () => {
+      // #region agent log
+      agentHomeChromeLog('H2', 'Home/index.jsx:effectCleanup', 'chrome sync effect cleanup', {
+        isPlaceRoute,
+        cssVarBefore: typeof document !== 'undefined'
+          ? document.documentElement.style.getPropertyValue('--gateo-home-chrome-top')
+          : '',
+      });
+      // #endregion
       stop();
       unlockHomeViewport();
       clearHomeChromeTop();
