@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
 import {
   User, Search, Ticket, MessageSquare, X, Trash2,
   Palmtree, Mountain, Building2, Landmark, Compass,
@@ -28,6 +28,10 @@ import { useMobileFaceRegionListHeight } from '../hooks/useMobileFaceRegionListH
 import { useTrendingData } from '../hooks/useTrendingData';
 import { CATEGORY_LABELS } from './SearchDiscovery/constants';
 import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
+
+const MOBILE_SEARCH_CHROME_GAP_PX = 8;
+/** data-home-chrome-hit 실드 -inset-x-2 — rect 밖으로 히트가 나감 */
+const MOBILE_CHROME_SHIELD_INSET_PX = 8;
 
 const MOBILE_QUICK_LINK_DEFS = [
   {
@@ -134,6 +138,37 @@ const HomeUI = React.memo(({
   const [mobileQuickLinksExpanded, setMobileQuickLinksExpanded] = useState(false);
   const mobileCategoryBarRef = useRef(null);
   const mobileRegionsAuxRef = useRef(null);
+  const mobileChromeRef = useRef(null);
+  const [mobileSearchLeftPx, setMobileSearchLeftPx] = useState(null);
+
+  useLayoutEffect(() => {
+    const chromeEl = mobileChromeRef.current;
+    if (!chromeEl || typeof window === 'undefined') return undefined;
+
+    const mq = window.matchMedia('(max-width: 767px)');
+    const update = () => {
+      if (!mq.matches) {
+        setMobileSearchLeftPx(null);
+        return;
+      }
+      const rect = chromeEl.getBoundingClientRect();
+      setMobileSearchLeftPx(
+        Math.ceil(rect.right + MOBILE_CHROME_SHIELD_INSET_PX + MOBILE_SEARCH_CHROME_GAP_PX),
+      );
+    };
+
+    update();
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(update) : null;
+    ro?.observe(chromeEl);
+    mq.addEventListener('change', update);
+    window.addEventListener('resize', update);
+
+    return () => {
+      ro?.disconnect();
+      mq.removeEventListener('change', update);
+      window.removeEventListener('resize', update);
+    };
+  }, [homeChromeEpoch, faceRegionsOpen, mobileQuickLinksExpanded, isTourCinema]);
   const showMobileSubregionBar = Boolean(
     selectedCategory
     && (shouldShowFaceSubregionChips(selectedCategory) || shouldShowFaceSeaOceanChips(selectedCategory))
@@ -224,6 +259,7 @@ const HomeUI = React.memo(({
 
         <div
           key={homeChromeEpoch}
+          ref={mobileChromeRef}
           className="md:col-span-2 flex-shrink-0 relative z-[110] pointer-events-auto pt-2 md:pl-2 max-md:animate-none md:animate-fade-in-down"
           data-home-chrome-hit
           onPointerDown={(e) => e.stopPropagation()}
@@ -369,12 +405,21 @@ const HomeUI = React.memo(({
         ) : !isTourCinema ? (
           <div
             data-site-notice-anchor
-            className="group pointer-events-auto min-w-0 max-md:fixed max-md:left-[7.75rem] max-md:right-4 max-md:top-6 max-md:z-[105] md:col-span-5 md:relative md:z-50 md:flex md:flex-col md:items-center md:pt-2 md:animate-fade-in-down md:delay-100"
+            style={mobileSearchLeftPx != null ? { left: mobileSearchLeftPx } : undefined}
+            className="group pointer-events-auto min-w-0 max-md:fixed max-md:right-4 max-md:top-6 max-md:z-[115] md:col-span-5 md:relative md:z-50 md:flex md:flex-col md:items-center md:pt-2 md:animate-fade-in-down md:delay-100"
           >
             <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
             <div
+              role="button"
+              tabIndex={0}
               onClick={() => navigate('/explore')}
-              className="relative flex w-full min-w-0 items-center bg-black/40 backdrop-blur-xl border border-white/30 shadow-lg transition-all h-10 md:h-12 rounded-full cursor-pointer hover:bg-black/50 hover:border-blue-400/50 group-hover:border-blue-400/50 md:max-w-md"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  navigate('/explore');
+                }
+              }}
+              className="relative flex w-full min-w-0 items-center bg-black/40 backdrop-blur-xl border border-white/30 shadow-lg transition-all h-10 md:h-12 rounded-full cursor-pointer hover:bg-black/50 hover:border-blue-400/50 group-hover:border-blue-400/50 md:max-w-md touch-manipulation"
             >
               <div className="pl-3 md:pl-4 text-gray-400 transition-colors group-hover:text-blue-400">
                 <Search size={16} className="md:w-[18px] md:h-[18px]" />
