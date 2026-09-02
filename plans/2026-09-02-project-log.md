@@ -24,7 +24,16 @@
 - **증상** PC 좌상단 바로가기가 항상 펼쳐져 테마 카테고리와 겹침
 - **적용** `renderQuickLinks()` 모바일·PC 공용 — 기본 접힘 · 탭 펼침
 - **VERIFY** `vite build` PASS
-- **다음** **#3 사람 Preview QA** — 모바일 지명 탭 접힘 + PC 한 줄 접힘·카테고리 겹침 없음 · OK 시 PR #177 merge
+- **다음** **#3 PC 접힘 너비** — 접힌 칩 라벨 잘림
+
+### #3 PC 접힘 너비 ✅
+
+- **세션** `홈 축제칩 #3, PC 접힘 너비`
+- **브랜치** `cursor/home-festival-chip-59c9` · tip `6735df3e` · PR [#177](https://github.com/catgeot/Days/pull/177)
+- **증상** PC 접힌 칩 `max-w-[14rem]`으로 「축제 · 행사 · 명승 · 추천」 잘림
+- **적용** `md:w-max md:max-w-none` · 말줄임 해제 · 모바일 14rem 유지
+- **VERIFY** `vite build` PASS
+- **다음** **#4 사람 Preview QA** — PC 라벨 전부 보임 · 카테고리 겹침 없음 · 모바일 접힘 유지 · OK 시 PR #177 merge
 
 ---
 
