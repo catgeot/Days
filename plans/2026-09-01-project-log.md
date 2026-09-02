@@ -209,3 +209,14 @@
 - **수정** locale별 위성 text-field · 토글/`styledata` `force` 즉시 적용 · LanguageControl 제거
 - **VERIFY** `audit:i18n` · `build` PASS
 - **다음** **#6 사람 Preview QA** — 지구본 즉시 EN · 검색바는 별 세션
+
+### #6 이중 깜박임 ✅
+
+- **세션** `홈 locale #6, 사람 Preview QA`
+- **브랜치** `cursor/locale-toggle-smooth-92b6` · tip `3fe6077c` · PR [#174](https://github.com/catgeot/Days/pull/174)
+- **사람 QA** EN 토글: 검게 → 한글 지명 → 영문 (2단 플래시)
+- **원인** deep/neon에서 `setLanguage` + `applySatelliteBasemapLabels` 이중 text-field 적용
+- **수정** 위성은 coalesce만 1회 · styledata 에코 120ms 무시 · bright만 `setLanguage`
+- **VERIFY** `audit:i18n` · `build` PASS
+- **Preview** `/qa/en` · https://days-git-cursor-locale-toggle-smooth-92b6-catgeots-projects.vercel.app/
+- **다음** **#7 사람 Preview QA** — 한 번에 EN · OK 시 merge 검토
