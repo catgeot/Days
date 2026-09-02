@@ -4,10 +4,10 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: true,
+  active: false,
   title: '홈 축제칩',
-  sessionNo: 3,
-  sessionPhase: 'PC 접힘 너비',
+  sessionNo: 4,
+  sessionPhase: 'main 병합',
   branch: 'cursor/home-festival-chip-59c9',
   previewPath: '/',
   qaShareSlug: 'home-chip',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-02-home-festival-chip-4-merge',
+    session: '홈 축제칩 #4, main 병합',
+    title: '사람 Preview QA PASS — PR #177 main 병합',
+    detail:
+      '모바일: 지명 탭 후 접힘 유지. PC: 접힌 칩 라벨 전부 보임 · 테마 카테고리와 겹침 없음. 작업 로그·/qa/home-chip 종료(PROD `/`).',
+    at: '2026-09-02T14:50:00.000Z',
+  },
   {
     id: '2026-09-02-home-festival-chip-pc-width',
     session: '홈 축제칩 #3, PC 접힘 너비',

@@ -10,10 +10,9 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'home-chip',
     label: '홈 축제칩 접힘',
-    branch: 'cursor/home-festival-chip-59c9',
-    destination:
-      'https://days-git-cursor-home-festival-chip-59c9-catgeots-projects.vercel.app/',
-    active: true,
+    branch: 'main',
+    destination: 'https://www.gateo.kr/',
+    active: false,
   },
   {
     slug: 'chrome-hit',
