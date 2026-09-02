@@ -4,10 +4,10 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: true,
+  active: false,
   title: '홈 검색바 히트',
-  sessionNo: 2,
-  sessionPhase: 'HomeUI flex',
+  sessionNo: 3,
+  sessionPhase: 'main 병합',
   branch: 'cursor/search-locale-hit-5f5c',
   previewPath: '/',
   qaShareSlug: 'search-hit',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-02-search-locale-hit-3-merge',
+    session: '홈 검색바 히트 #3, main 병합',
+    title: '사람 Preview QA PASS — PR #175 main 병합',
+    detail:
+      '모바일: 검색→/explore · EN 토글 독립 클릭 · 바로가기 2행 OK. 작업 로그·/qa/search-hit 종료(PROD `/`).',
+    at: '2026-09-02T13:50:00.000Z',
+  },
   {
     id: '2026-09-02-search-locale-hit-2-homeui-flex',
     session: '홈 검색바 히트 #2, HomeUI flex',

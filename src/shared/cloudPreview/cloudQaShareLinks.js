@@ -300,10 +300,9 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'search-hit',
     label: '홈 검색바·locale 히트',
-    branch: 'cursor/search-locale-hit-5f5c',
-    destination:
-      'https://days-git-cursor-search-locale-hit-5f5c-catgeots-projects.vercel.app/',
-    active: true,
+    branch: 'main',
+    destination: 'https://www.gateo.kr/',
+    active: false,
   },
   {
     slug: 'world-events',
