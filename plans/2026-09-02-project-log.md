@@ -117,7 +117,7 @@
 - **Preview** `/qa/home-header` · git Preview 홈
 - **사람 QA** 새로고침은 정상 · **첫 진입은 더 위로 밀림** → #2
 
-### #2 첫 로딩 재현 수정 ✅ 에이전트 · 사람 Preview 대기
+### #2 첫 로딩 재현 수정 ✅ 에이전트 · 사람 QA에서 첫 진입 잔존
 
 - **세션** `지구본 홈 헤더 #2, 첫 로딩 재현 수정`
 - **브랜치** `cursor/home-header-3eef` · tip `97163af3` · PR [#181](https://github.com/catgeot/Days/pull/181)
@@ -126,14 +126,24 @@
 - **적용** CriOS 첫 navigate만 56px top(페인트 전) · 웹뷰 높이 감소 시 0 · reload는 보정 없음 · 잠금은 정착 후
 - **VERIFY** `smoke:home-chrome-viewport` · `vite build` PASS
 - **Preview** `/qa/home-header` · git Preview 홈
-- **다음** **#3 사람 Preview QA** — 첫 진입(새로고침 아님) + 새로고침 이중 여백
+- **사람 QA** 로고·검색 상단이 주소창에 잘림 → #3
+
+### #3 서브에이전트 QA 수정 ✅ 에이전트 · 사람 Preview 대기
+
+- **세션** `지구본 홈 헤더 #3, 서브에이전트 QA 수정`
+- **브랜치** `cursor/home-header-3eef` · tip `8f4d4201` · PR [#181](https://github.com/catgeot/Days/pull/181)
+- **원인** 지구본/Mapbox가 visualViewport 높이를 줄이면(844→780) 웹뷰 inset으로 오인하고 56px를 0으로 지움. 주소창은 그대로 덮음
+- **적용** 첫 navigate 세션은 높이 감소와 무관하게 56px 유지 · reload는 0 · 계측 로그 제거
+- **VERIFY** CriOS mock `56 survives -64` · reload `0` · `vite build` PASS
+- **Preview** `/qa/home-header` · git Preview 홈
+- **다음** **#4 사람 Preview QA** — 탭 재오픈 첫 진입 + 새로고침 이중 여백
 
 ```
-지구본 홈 헤더 #3, 사람 Preview QA
+지구본 홈 헤더 #4, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-02-project-log.md
 브랜치 cursor/home-header-3eef · PR #181 · https://www.gateo.kr/qa/home-header
 금지: UI 리디자인 · offsetTop 지속 보정 · 코드를 origin/main에 임의 push
-작업: 첫 진입(새로고침 아님) 헤더가 주소창에 안 가리는지 · 새로고침 후 너무 안 내려가는지 · OK 시 PR #181 merge
+작업: 탭 닫고 다시 열기(새로고침 아님) 헤더가 주소창에 안 가리는지 · 새로고침 후 너무 안 내려가는지 · OK 시 PR #181 merge
 ```
 
