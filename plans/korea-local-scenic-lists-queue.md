@@ -35,9 +35,11 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 
 | R | 워커A (3) | 워커B (3) | 권역 | 상태 |
 |---|-----------|-----------|------|------|
-| **R01** | `chuncheon-?` · `wonju-?` · `gangneung-?` | `sokcho-?` · `yangyang-?` · `goseong-gw-?` | 강원 | ⬜ (공식 리스트명·listId는 워커가 source로 확정 후 큐 정정) |
+| **R01** | `samcheok-sipgyeong`(예비↔chuncheon skip) · `wonju-palgyeong` · `donghae-bijing`(예비↔gangneung skip) | `sokcho-palgyeong` · `yangyang-sipgyeong` · `goseong-palgyeong` | 강원 | ✅ 2026-09-02 |
 | **R02** | `samcheok-?` · `donghae-?` · `taebaek-?` | `pyeongchang-?` · `jeongseon-?` · `hwacheon-?` | 강원 | ⬜ |
 | **R03** | `cheorwon-?` · `hwengseong-?` · `yeongwol-?` | 예비 강원 3 | 강원 | ⬜ |
+
+> **R01 skip**: `chuncheon`·`gangneung` 시 단위 공식 8경 없음(`skip_no_source`) → 예비 `samcheok-sipgyeong`·`donghae-bijing` 1:1 대체.
 
 > R의 `?` = 착수 전 **소스 조사로 listKind·공식 title 확정**. 리스트가 없으면 그 칸은 예비로 교체하고 큐에 `skip_no_source` 1줄.
 
@@ -60,6 +62,6 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 ### 진행 체크
 
 ```text
-다음 시작: F R01 (#4, I#1 ✅ 2026-09-02)
-tip lists: 3 · hubs KR append: 18
+다음 시작: F R02 (#5, R01 ✅ 2026-09-02)
+tip lists: 9 · members: 79 · hub append(R01): +36
 ```
