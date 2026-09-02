@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'globe-labels',
+    label: '홈 지구본 첫 로딩 지명',
+    branch: 'cursor/globe-labels-ddce',
+    destination:
+      'https://days-git-cursor-globe-labels-ddce-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
     slug: 'home-chip',
     label: '홈 축제칩 접힘',
     branch: 'main',
