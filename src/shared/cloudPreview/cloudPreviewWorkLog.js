@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '세계행사 일정',
-  sessionNo: 27,
-  sessionPhase: 'Wave1.5 D4 숙소·파일럿 회귀',
-  branch: 'cursor/world-events-wave2',
-  previewPath: '/world-events',
-  qaShareSlug: 'world-events',
+  title: '홈 locale 모바일',
+  sessionNo: 9,
+  sessionPhase: '지구본 지명 EN 고착',
+  branch: 'cursor/globe-locale-mobile-5f5c',
+  previewPath: '/',
+  qaShareSlug: 'en',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-02-home-locale-9-mobile-labels',
+    session: '홈 locale #9, 모바일 지구본 지명',
+    title: '모바일 EN 토글 — 지명 고착 수정',
+    detail:
+      '모바일: UI EN은 되나 Mapbox 지명·핀이 KO 유지. 원인: 레이어 ID 미갱신 no-op에도 echo suppress 120ms → styledata 실적용 차단·idle 적어 고착. refresh 후 갱신 수>0일 때만 suppress·재시도·자전 잠시 정지·핀 setData 강제. Preview 모바일 EN 토글 → 국가·대륙·핀 영문·KO 복귀.',
+    at: '2026-09-02T13:30:00.000Z',
+  },
   {
     id: '2026-09-02-home-locale-6-double-flash',
     session: '홈 locale #6, 사람 Preview QA',
