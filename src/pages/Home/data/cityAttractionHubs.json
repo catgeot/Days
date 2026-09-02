@@ -9,7 +9,9 @@
     "lng": 128.5918,
     "aliases": [
       "속초시",
-      "sokcho"
+      "sokcho",
+      "속초8경",
+      "속초 팔경"
     ],
     "attractions": [
       {
@@ -74,6 +76,41 @@
         "kind": "park",
         "lat": 38.2005,
         "lng": 128.5802
+      },
+      {
+        "name": "범바위",
+        "name_en": "Beombawi Rock",
+        "kind": "landmark",
+        "lat": 38.19,
+        "lng": 128.58
+      },
+      {
+        "name": "청대산",
+        "name_en": "Cheongdaesan",
+        "kind": "viewpoint",
+        "lat": 38.21,
+        "lng": 128.59
+      },
+      {
+        "name": "조도",
+        "name_en": "Jodo Island",
+        "kind": "landmark",
+        "lat": 38.205,
+        "lng": 128.575
+      },
+      {
+        "name": "설악해맞이공원",
+        "name_en": "Seorak Sunrise Park",
+        "kind": "park",
+        "lat": 38.17,
+        "lng": 128.61
+      },
+      {
+        "name": "학무정",
+        "name_en": "Hakmujeong Pavilion",
+        "kind": "landmark",
+        "lat": 38.188,
+        "lng": 128.6
       }
     ]
   },
@@ -2202,7 +2239,9 @@
     "lng": 128.619,
     "aliases": [
       "yangyang",
-      "양양군"
+      "양양군",
+      "양양10경",
+      "양양 십경"
     ],
     "attractions": [
       {
@@ -2253,6 +2292,55 @@
         "kind": "beach",
         "lat": 38.1301333481,
         "lng": 128.6227575205
+      },
+      {
+        "name": "남대천",
+        "name_en": "Namdaecheon Stream",
+        "kind": "park",
+        "lat": 38.07,
+        "lng": 128.62
+      },
+      {
+        "name": "설악산 대청봉",
+        "name_en": "Seoraksan Daecheongbong",
+        "kind": "viewpoint",
+        "lat": 38.12,
+        "lng": 128.45
+      },
+      {
+        "name": "오색령",
+        "name_en": "Oseongnyeong Pass",
+        "kind": "viewpoint",
+        "lat": 38.1,
+        "lng": 128.5
+      },
+      {
+        "name": "오색주전골",
+        "name_en": "Oseok Jujeong Valley",
+        "kind": "park",
+        "lat": 38.11,
+        "lng": 128.48
+      },
+      {
+        "name": "죽도정",
+        "name_en": "Jukdo Pavilion",
+        "kind": "viewpoint",
+        "lat": 37.976,
+        "lng": 128.76
+      },
+      {
+        "name": "남애항",
+        "name_en": "Namae Port",
+        "kind": "landmark",
+        "lat": 37.95,
+        "lng": 128.78
+      },
+      {
+        "name": "오산리 선사유적박물관",
+        "name_en": "Osanri Prehistoric Museum",
+        "kind": "museum",
+        "lat": 38.05,
+        "lng": 128.65
       }
     ]
   },
@@ -4192,7 +4280,10 @@
       "goseong",
       "고성군",
       "강원고성",
-      "화진포"
+      "화진포",
+      "고성8경",
+      "고성 팔경",
+      "강원고성8경"
     ],
     "attractions": [
       {
@@ -4236,6 +4327,41 @@
         "kind": "museum",
         "lat": 38.5763824,
         "lng": 128.3827044
+      },
+      {
+        "name": "건봉사",
+        "name_en": "Geombongsa Temple",
+        "kind": "temple",
+        "lat": 38.48,
+        "lng": 128.44
+      },
+      {
+        "name": "천학정",
+        "name_en": "Cheonhakjeong Pavilion",
+        "kind": "viewpoint",
+        "lat": 38.47,
+        "lng": 128.445
+      },
+      {
+        "name": "청간정",
+        "name_en": "Cheongganjeong Pavilion",
+        "kind": "viewpoint",
+        "lat": 38.473,
+        "lng": 128.442
+      },
+      {
+        "name": "울산바위",
+        "name_en": "Ulsan Rock",
+        "kind": "landmark",
+        "lat": 38.55,
+        "lng": 128.38
+      },
+      {
+        "name": "마산봉설경",
+        "name_en": "Masanbong Snow Scenery",
+        "kind": "viewpoint",
+        "lat": 38.4,
+        "lng": 128.42
       }
     ]
   },
@@ -8958,7 +9084,9 @@
     "lng": 127.9202,
     "aliases": [
       "원주시",
-      "wonju"
+      "wonju",
+      "원주8경",
+      "원주 팔경"
     ],
     "attractions": [
       {
@@ -8988,6 +9116,55 @@
         "kind": "temple",
         "lat": 37.3994509348789,
         "lng": 128.049844503067
+      },
+      {
+        "name": "강원감영",
+        "name_en": "Gangwon Gamyeong",
+        "kind": "landmark",
+        "lat": 37.342,
+        "lng": 127.92
+      },
+      {
+        "name": "상원사",
+        "name_en": "Sangwonsa Temple",
+        "kind": "temple",
+        "lat": 37.38,
+        "lng": 128.05
+      },
+      {
+        "name": "비로봉",
+        "name_en": "Birobong Peak",
+        "kind": "viewpoint",
+        "lat": 37.36,
+        "lng": 128.08
+      },
+      {
+        "name": "간현관광지",
+        "name_en": "Ganhyeon Tourist Site",
+        "kind": "viewpoint",
+        "lat": 37.42,
+        "lng": 127.85
+      },
+      {
+        "name": "영원산성",
+        "name_en": "Yeongwonsanseong Fortress",
+        "kind": "landmark",
+        "lat": 37.35,
+        "lng": 127.95
+      },
+      {
+        "name": "용소막성당",
+        "name_en": "Yongsomak Cathedral",
+        "kind": "landmark",
+        "lat": 37.34,
+        "lng": 127.93
+      },
+      {
+        "name": "미륵불상",
+        "name_en": "Mireuk Buddha Statue",
+        "kind": "landmark",
+        "lat": 37.345,
+        "lng": 127.925
       }
     ]
   },
@@ -9444,7 +9621,9 @@
       "삼척시",
       "Samcheok",
       "samcheok",
-      "三陟"
+      "三陟",
+      "삼척십경",
+      "삼척10경"
     ],
     "attractions": [
       {
@@ -9516,6 +9695,48 @@
         "kind": "beach",
         "lat": 37.3208,
         "lng": 129.2685
+      },
+      {
+        "name": "새천년해안유원지",
+        "name_en": "Millennium Coast Park",
+        "kind": "park",
+        "lat": 37.468,
+        "lng": 129.17
+      },
+      {
+        "name": "황영조기념공원",
+        "name_en": "Hwang Young-jo Memorial Park",
+        "kind": "park",
+        "lat": 37.42,
+        "lng": 129.18
+      },
+      {
+        "name": "덕풍계곡",
+        "name_en": "Deokpung Valley",
+        "kind": "park",
+        "lat": 37.38,
+        "lng": 129.05
+      },
+      {
+        "name": "척주동해비",
+        "name_en": "Cheokju Donghaebi",
+        "kind": "landmark",
+        "lat": 37.468,
+        "lng": 129.169
+      },
+      {
+        "name": "삼척 천은사",
+        "name_en": "Samcheok Cheoneunsa",
+        "kind": "temple",
+        "lat": 37.35,
+        "lng": 129.08
+      },
+      {
+        "name": "준경묘",
+        "name_en": "Jungyeongmyo Tomb",
+        "kind": "landmark",
+        "lat": 37.36,
+        "lng": 129.09
       }
     ]
   },
@@ -10027,7 +10248,8 @@
       "동해시",
       "Donghae",
       "donghae",
-      "東海"
+      "東海",
+      "동해비경"
     ],
     "attractions": [
       {
@@ -10085,6 +10307,48 @@
         "kind": "viewpoint",
         "lat": 37.5498,
         "lng": 129.1162
+      },
+      {
+        "name": "용추폭포",
+        "name_en": "Yongchu Falls",
+        "kind": "viewpoint",
+        "lat": 37.463117,
+        "lng": 129.019319
+      },
+      {
+        "name": "무릉반석",
+        "name_en": "Mureung Rock",
+        "kind": "viewpoint",
+        "lat": 37.465,
+        "lng": 129.018
+      },
+      {
+        "name": "만경대",
+        "name_en": "Mangyeongdae",
+        "kind": "viewpoint",
+        "lat": 37.524,
+        "lng": 129.115
+      },
+      {
+        "name": "호해정",
+        "name_en": "Hohaejeong Pavilion",
+        "kind": "viewpoint",
+        "lat": 37.53,
+        "lng": 129.11
+      },
+      {
+        "name": "할미바위",
+        "name_en": "Halmi Rock",
+        "kind": "landmark",
+        "lat": 37.531,
+        "lng": 129.111
+      },
+      {
+        "name": "초록봉",
+        "name_en": "Chorokbong Peak",
+        "kind": "viewpoint",
+        "lat": 37.5,
+        "lng": 129.08
       }
     ]
   },
