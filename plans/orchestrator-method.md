@@ -358,6 +358,8 @@ KR: >50m면 반드시 snap. NO_HIT는 drop/rename만.
 | audit | `audit:korea-local-scenic-lists` + `audit:city-attraction-hubs` |
 | 파일럿 | P0 3건(홍천·양구·인제) → **I 무결성** → F · **3R마다 I** |
 | 정지 | §3.3 + 플랜 §6.2 (FAIL 2회·출처 대량 부재·시드 손상) |
+| **사람 QA** | **F 라운드 생략** · I# 일지 2~3줄 · PR merge 전 spot-check 선택 (플랜 §4.3·§6.0) |
+| **자동 진행** | VERIFY PASS → **다음 ⬜ R** · 사람 제시어 대기 **금지** · 컨텍스트 ~50% → **Task 후임**(§4.2) |
 
 **워커 프롬프트 최소 골격**
 
@@ -368,9 +370,9 @@ KR: >50m면 반드시 snap. NO_HIT는 drop/rename만.
 좌표: 지명 매칭만 · hub 중심 추정 금지 · NO_HIT=pending_coord.
 ```
 
-**오케스트레이터 체크** — §5.1과 동일 루프 · 게이트만 위 audit 쌍 + 검색 exact 스모크.
+**오케스트레이터 체크** — §5.1과 동일 루프 · 게이트만 위 audit 쌍 + 검색 exact 스모크 · **F는 Preview QA 없음**.
 
-제시어: `오케스트레이터` + `지자체팔경` · 큐 다음 ⬜ · 「§5.6 · 워커2 · §3.3·§3.4·§4.2」
+제시어(최초·복구): `오케스트레이터` + `지자체팔경` · 큐 다음 ⬜ · 「§5.6 · 워커2 · VERIFY→다음R 자동 · 3R마다 I# · §3.3·§3.4·§4.2」
 
 ---
 
@@ -384,7 +386,7 @@ KR: >50m면 반드시 snap. NO_HIT는 drop/rename만.
 | 명소 재개/복구 | `오케스트레이터` + `명소` + `@plans/city-attraction-hub-queue.md` · 「큐 다음 R · 워커2 · §3.3·§3.4·§4.2」 |
 | 명소 좌표 수리 | `오케스트레이터` + `명소좌표수리` · 「§5.4 · verify 큐 · P0 또는 전수 SNAP · §3.4」 |
 | 국내 명소 TourAPI 좌표 | `오케스트레이터` + `TourAPI-명소좌표` + [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) **§6** · Cloud · 「G0→G1+ · KR HIT만 · §3.4」 |
-| 지자체 팔경·구경 | `오케스트레이터` + `지자체팔경` + [`korea-local-scenic-lists-queue.md`](./korea-local-scenic-lists-queue.md) · 「§5.6 · 큐 다음 R · 워커2 · UI/scenic승격 금지 · §3.3·§3.4·§4.2」 |
+| 지자체 팔경·구경 | `오케스트레이터` + `지자체팔경` + [`korea-local-scenic-lists-queue.md`](./korea-local-scenic-lists-queue.md) · 「§5.6 · 큐 다음 ⬜ R · 워커2 · VERIFY→다음R 자동 · 3R마다 I# · UI/scenic승격·매R사람QA 금지 · §3.3·§3.4·§4.2」 |
 | 정착지 재개/복구 | `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「큐 다음 R · 워커2 · 목표3/최대5/최소2 · §3.3·§3.4·§4.2」 |
 | 파이프 단절 복구 | `오케스트레이터` · 「후임 Task 실패 복구 · 큐 다음 R · 워커2 재기동 · §3.4」 |
 

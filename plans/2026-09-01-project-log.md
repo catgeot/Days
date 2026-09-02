@@ -139,3 +139,9 @@
 - **VERIFY** audit:korea-local-scenic-lists 0 · audit:city-attraction-hubs 0 · smoke(단양팔경·제천10경) · build PASS
 - **Preview** `https://days-git-cursor-palgyeong-catgeots-projects.vercel.app`
 - **다음** **#9 채우기 R05** — 오케 워커2 · 충북 5+예비(옥천·영동·진천·증평·음성)
+
+### 운영 전환 — 자동 오케 ✅
+
+- **결정** F 단계 = **자동 오케스트레이터**(플랜 §4.3) · VERIFY PASS → 다음 R · **매 R 사람 Preview QA 생략** · **3R마다 I#** · §6.2만 정지
+- **문서** `korea-local-scenic-lists-plan` §4.3·§6.0 · `orchestrator-method` §5.6 · index·큐 제시어 오케 형식
+- **다음** 오케 제시어 1회로 R05~ 연속 (Task 이양 · 사람 제시어 대기 없음)

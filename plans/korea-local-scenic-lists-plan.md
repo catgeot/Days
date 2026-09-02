@@ -136,8 +136,8 @@ flowchart LR
 | **S0 스키마** | `지자체 팔경 #1, 스키마·검색` | 코드 1회 | JSON 시드·audit·검색 브리지·스모크 | 본 플랜 §2·§7·§9 |
 | **P 파일럿** | `지자체 팔경 #2, 파일럿 3건` | **리스트 3** | 홍천·양구·(+큐 1) 수집→머지→VERIFY | 플랜 §2.2·§3 · 큐 P0 |
 | **I 무결성** | `지자체 팔경 #3, 무결성` | **쓰기 0** | audit+스모크+샘플 exact · 큐/일지 대조 | 플랜 §6 · tip SHA |
-| **F 채우기** | `지자체 팔경 #N, 채우기 Rxx` | **라운드 1~2** = 리스트 **6~12** | 오케 워커2 → 직렬 머지 → VERIFY → §3.4 | 오케 §3.0·§3.3·§5.6 · 큐 다음 ⬜ |
-| **I-주기** | `지자체 팔경 #N, 무결성` | 쓰기 0 | **F 라운드 누적 3회마다** 또는 권역 끝날 때 | §6 |
+| **F 채우기** | `지자체 팔경 오케 Rxx` (**§4.3 자동 오케**) | **라운드 1~2** = 리스트 **6~12** | 워커2 → 직렬 머지 → VERIFY → §3.4 → **다음 R 자동** | 오케 §3.0·§3.3·§5.6 · 큐 다음 ⬜ |
+| **I-주기** | `지자체 팔경 I#N` | 쓰기 0 | **F 3R마다** · 큐/일지 대조 · **사람 요약 2~3줄만** | §6.3 |
 
 ### 4.1 오케 라운드 분량 (F)
 
@@ -148,7 +148,22 @@ flowchart LR
 | 같은 메인 세대 | 라운드 **1~2** 후 이관(§4.2) |
 | 한 Cloud 세션 상한 | **F 라운드 2** 또는 **리스트 ~12** · 그 다음 I 또는 이관 |
 
-파일럿·무결성 세션은 **워커 오케 생략**(메인 솔로 OK). F만 워커2 필수.
+파일럿·무결성 세션은 **워커 오케 생략**(메인 솔로 OK). **F = 자동 오케**(§4.3) · 워커2 필수.
+
+### 4.3 자동 오케스트레이터 모드 (F · 확정 2026-09-02)
+
+**배경**: append-only SSOT · UI·scenic 승격 금지 → **매 F 라운드 사람 Preview QA 불필요**. 게이트 = audit·smoke·build.
+
+| | 자동 오케 (F) | 사람 개입 |
+|--|---------------|-----------|
+| **루프** | 큐 다음 ⬜ R → 워커2 → 직렬 머지 → VERIFY → feature push → **다음 R**(컨텍스트 부족 시 **후임 Task** §4.2) | **§6.2 정지** · **I#** · 주제 종료·PR merge |
+| **QA** | **없음** (에이전트 VERIFY만) | I# 종료 시 일지 **2~3줄 요약** (선택) |
+| **제시어** | **최초·복구 1회** — §9·오케 §5.6 오케 제시어. **VERIFY 후 사람 제시어 대기 금지** | escalate·Task 실패 복구 |
+| **핸드오프 문서** | I#·세대 종료·정지 시 **main** 갱신 | 매 R마다 index 갱신 **필수 아님** (tip·큐·일지로 추적) |
+
+**금지**: F 라운드마다 「Preview QA 해주세요」·「다음 제시어 주세요」·VERIFY PASS 후 정지.
+
+**I 주기**: R01–R03 → I#1 … **3R마다** §6.3(쓰기 0). I PASS면 **즉시 다음 F** (사람 대기 없음).
 
 ### 4.2 이어하기 — 토큰 최소화 (필수)
 
@@ -182,6 +197,14 @@ flowchart LR
 ---
 
 ## 6. 무결성 · 정지 규칙
+
+### 6.0 사람 QA (F vs I)
+
+| 단계 | 사람 Preview QA | 에이전트 게이트 |
+|------|-----------------|-----------------|
+| **F 라운드** | **생략** (§4.3) | audit 쌍 + smoke + build |
+| **I# 무결성** | **불필요** · 일지 요약 2~3줄만 | §6.3 전항 |
+| **주제 종료·PR merge** | 검색 키워드 spot-check **선택** | 최종 I + audit 0 |
 
 ### 6.1 매 F 라운드 VERIFY (필수)
 
@@ -242,6 +265,8 @@ issues **0** · 스모크 PASS 전에 커밋·이관·다음 R **금지**.
 | 핸드오프 문서 | **main** docs-only · 세션 종료 시 push |
 | feature에 `plans/**` 커밋 | **금지** |
 | 최소 검증 | 해당 audit + 스모크 · 없으면 `build` |
+| **F 사람 QA** | **생략** (§4.3) · Preview 링크는 PR·일지 참고용 |
+| **자동 오케** | VERIFY PASS → 다음 R · **제시어 대기 금지** · 오케 §3.0·§4.2 Task 이양 |
 
 ---
 
@@ -249,21 +274,24 @@ issues **0** · 스모크 PASS 전에 커밋·이관·다음 R **금지**.
 
 | | |
 |--|--|
-| **지금** | **#8 채우기 R04** ✅ — lists 16 · members 141 · 충북 skips 4 |
-| **다음 세션** | **#9 채우기 R05** — 충북 5+예비 · 오케 워커2 |
+| **운영** | **자동 오케** (§4.3) · F=VERIFY 후 다음 R · **3R마다 I#** |
+| **지금** | **R04** ✅ — lists 16 · members 141 · 충북 skips 4 |
+| **다음** | **R05** — 큐 ⬜ · 워커2 · VERIFY PASS → R06 또는 I#3 검토 |
 | **브랜치** | `cursor/palgyeong` · tip `db428507` · PR [#172](https://github.com/catgeot/Days/pull/172) |
-| **금지** | UI 변경 · scenic 자동승격 · 광역 팔경 큐 · tip 전면 rewrite · 출처 없는 verified |
+| **금지** | UI · scenic 승격 · 광역 팔경 · tip rewrite · **매 R 사람 QA·제시어 대기** |
 | **VERIFY** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · `smoke:korea-local-scenic-lists` · `build` |
 
-### §1.2 다음 제시어
+### §1.2 오케 제시어 (최초 · 복구 · 사람이 새 채팅 열 때)
 
 ```
-지자체 팔경 #9, 채우기 R05
-@plans/feature-handoff-index.md
-@plans/2026-09-01-project-log.md
+오케스트레이터 지자체팔경
+@plans/orchestrator-method.md
 @plans/korea-local-scenic-lists-plan.md
 @plans/korea-local-scenic-lists-queue.md
-브랜치 cursor/palgyeong · PR #172 · 큐 R05 ⬜
-금지: UI 변경 · koreaScenicSpots 승격 · 광역 팔경 · feature에 plans 커밋
-작업: 오케 워커2 · R05 옥천·영동·진천·증평·음성 · VERIFY
+@plans/feature-handoff-index.md
+브랜치 cursor/palgyeong · PR #172
+금지: UI · scenic승격 · 광역팔경 · feature plans 커밋 · 매R 사람QA · VERIFY후 제시어대기
+작업: 큐 다음 ⬜ R부터 · 워커2 · VERIFY PASS→다음R 자동 · 3R마다 I# · §6.2만 정지
 ```
+
+**정상 F 진행 중**: 후임 메인이 **Task 이양**(오케 §4.2) — 사람이 매 R 제시어를 넣을 필요 **없음**.
