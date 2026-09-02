@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: false,
-  title: '홈 검색바 히트',
-  sessionNo: 3,
+  title: '홈 축제칩',
+  sessionNo: 4,
   sessionPhase: 'main 병합',
-  branch: 'cursor/search-locale-hit-5f5c',
+  branch: 'cursor/home-festival-chip-59c9',
   previewPath: '/',
-  qaShareSlug: 'search-hit',
+  qaShareSlug: 'home-chip',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,38 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-02-home-festival-chip-4-merge',
+    session: '홈 축제칩 #4, main 병합',
+    title: '사람 Preview QA PASS — PR #177 main 병합',
+    detail:
+      '모바일: 지명 탭 후 접힘 유지. PC: 접힌 칩 라벨 전부 보임 · 테마 카테고리와 겹침 없음. 작업 로그·/qa/home-chip 종료(PROD `/`).',
+    at: '2026-09-02T14:50:00.000Z',
+  },
+  {
+    id: '2026-09-02-home-festival-chip-pc-width',
+    session: '홈 축제칩 #3, PC 접힘 너비',
+    title: 'PC 접힌 칩 너비 — 짧은 라벨 전부 표시',
+    detail:
+      'PC max-w-[14rem]+truncate로 「축제 · 행사 · 명승 · 추천」이 잘림. md:max-w-none · 말줄임 해제. 모바일 14rem 유지. Preview /qa/home-chip — PC 접힌 칩 문구가 잘리지 않는지.',
+    at: '2026-09-02T14:25:00.000Z',
+  },
+  {
+    id: '2026-09-02-home-festival-chip-pc-collapse',
+    session: '홈 축제칩 #2, PC 접힘',
+    title: 'PC 좌상단 바로가기도 접힌 칩',
+    detail:
+      'PC는 축제·행사·명승·큐레이션이 항상 펼쳐져 테마 카테고리(top 17rem)와 겹침. 모바일과 같은 접힌 버튼·탭 펼침으로 통일. Preview /qa/home-chip — PC 홈에서 한 줄 접힘·카테고리와 겹침 없는지·펼침/접힘 확인.',
+    at: '2026-09-02T14:20:00.000Z',
+  },
+  {
+    id: '2026-09-02-home-festival-chip-keep-collapsed',
+    session: '홈 축제칩 #1, 써머리 펼침 방지',
+    title: '써머리 장소 카드 열 때 축제 칩 접힘 유지',
+    detail:
+      '모바일 지구본 지명 클릭 → 써머리 카드가 hideExploreChrome을 켜며 좌상단 바로가기가 축제·행사 목록으로 펼쳐지던 문제. 접힘 표시를 장소 카드와 분리하고, 카드 열림 시 자동 접힘. Preview /qa/home-chip — 지명 클릭 후 좌측 칩이 한 줄 접힘인지 확인.',
+    at: '2026-09-02T14:10:00.000Z',
+  },
   {
     id: '2026-09-02-search-locale-hit-3-merge',
     session: '홈 검색바 히트 #3, main 병합',

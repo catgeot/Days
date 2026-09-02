@@ -14,6 +14,18 @@
 
 ## 활성 목록
 
+### 홈 축제칩 (써머리 펼침) — main 병합 ✅
+
+| | |
+|--|--|
+| **상태** | **#4 merge ✅** · main `7f0f46ca` · PR [#177](https://github.com/catgeot/Days/pull/177) |
+| **일지** | [`2026-09-02-project-log.md`](./2026-09-02-project-log.md) |
+| **PROD** | `https://www.gateo.kr/` — 모바일 지명 탭 후 접힘 · PC 접힌 칩 라벨 전부 |
+
+**게이트**: 사람 Preview QA PASS · `/qa/home-chip` 종료(PROD `/`) · 작업 로그 `active: false`
+
+---
+
 ### 홈 검색바 히트 (EN 토글·검색 겹침) — main 병합 ✅
 
 | | |

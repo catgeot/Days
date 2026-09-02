@@ -8,6 +8,13 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'home-chip',
+    label: '홈 축제칩 접힘',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/',
+    active: false,
+  },
+  {
     slug: 'chrome-hit',
     label: '지구본 홈 Chrome 칩 히트',
     branch: 'main',
