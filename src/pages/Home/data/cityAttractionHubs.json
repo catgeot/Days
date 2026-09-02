@@ -13506,7 +13506,10 @@
       "Uiseong",
       "uiseong",
       "義城",
-      "조문국"
+      "조문국",
+      "빙계팔경",
+      "빙계8경",
+      "의성 빙계팔경"
     ],
     "attractions": [
       {
@@ -13543,6 +13546,13 @@
         "kind": "park",
         "lat": 36.36,
         "lng": 128.71
+      },
+      {
+        "name": "빙산사지 오층석탑",
+        "name_en": "Bingsansa Five-story Stone Pagoda",
+        "kind": "landmark",
+        "lat": 36.238134,
+        "lng": 128.770856
       }
     ]
   },
@@ -18947,7 +18957,9 @@
       "Seongju",
       "seongju",
       "星州",
-      "성주읍"
+      "성주읍",
+      "성주10경",
+      "성주 십경"
     ],
     "attractions": [
       {
@@ -18977,6 +18989,20 @@
         "kind": "viewpoint",
         "lat": 35.803262,
         "lng": 128.147799
+      },
+      {
+        "name": "세종대왕자태실",
+        "name_en": "King Sejong Birthplace",
+        "kind": "landmark",
+        "lat": 35.9743171,
+        "lng": 128.2866588
+      },
+      {
+        "name": "성주역사테마공원",
+        "name_en": "Seongju History Theme Park",
+        "kind": "park",
+        "lat": 35.9220537,
+        "lng": 128.2834101
       }
     ]
   },
