@@ -339,8 +339,29 @@ npm run smoke:browser-locale-hint
 |------|------|------|
 | #5 | ✅ | 위성 `name_ko` 강제 해제 · locale별 text-field |
 | #6 | ✅ tip `3fe6077c` | 이중 깜박임 — satellite `setLanguage` 제거 · coalesce 1회 |
-| #7 | ✅ 사람 QA PASS | 깜박임 없음 · EN↔KO ≤3초 — **merge 수용** (이상 1초 미만은 Mapbox 한계로 비목표) |
-| #8 | merge 대기 | PR #174 → main · 검색바 flex는 별 세션 |
+| #7 | ✅ 사람 QA PASS | 깜박임 없음 · EN↔KO ≤3초 — **merge 수용** |
+| #8 | ✅ main `053a4587` | PR [#174](https://github.com/catgeot/Days/pull/174) merge · 검색바 히트는 §13 A′′ |
+
+### A′′. 홈 검색바·locale 히트 (Cloud · PR #175 · `cursor/search-locale-hit-5f5c`)
+
+| 세션 | 상태 | 메모 |
+|------|------|------|
+| #1 | ✅ tip `4dff1699` | 브랜치·`/qa/search-hit`·작업 로그 준비 |
+| #2 | 다음 | `HomeUI.jsx`만 — flex `[로고+EN \| 검색 flex-1]` · 바로가기 2행 |
+
+**증상**: 모바일 `left-[7.75rem]` 검색바 ↔ chrome 실드 `z-[110]` → 검색 클릭 무력화  
+**참고(롤백됨)**: `f3ec61d7` / `0ba69445` (#173) — **통째 cherry-pick 금지** · 현재 main `HomeUI`에 재적용  
+**금지**: `HomeGlobeMapbox` · LocaleProvider Mapbox · UI 리디자인  
+**배경**: #173은 #4에서 Mapbox 연쇄와 함께 revert · #174 지구본은 main → UI만 분리 가능
+
+**다음 제시어 (#2)**:
+
+```
+홈 검색바 히트 #2, HomeUI flex
+@plans/feature-handoff-index.md
+@plans/2026-09-02-project-log.md
+@plans/i18n-en-plan.md
+```
 
 **에이전트 VERIFY**:
 

@@ -228,3 +228,9 @@
 - **사람 QA** 지구본 깜박임 없이 EN↔KO · 전환 ≤3초
 - **수용** merge OK — 하드 게이트=깜박임 0 · ≤3초는 Mapbox 위성 라벨 한계상 충분 (이전: 깜박+~10초)
 - **다음** **#8 PR #174 merge** (사람 승인) · 검색바 flex는 별 세션
+
+### #8 PR #174 merge ✅
+
+- **세션** `홈 locale #8, PR #174 merge`
+- **main** `053a4587` — PR [#174](https://github.com/catgeot/Days/pull/174) merge
+- **잔여** 검색바·EN 토글 히트 → **홈 검색바 히트** (`cursor/search-locale-hit-5f5c` · PR #175)
