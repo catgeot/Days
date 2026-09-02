@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '지구본 홈 헤더',
-  sessionNo: 2,
-  sessionPhase: '첫 로딩 재현 수정',
+  sessionNo: 3,
+  sessionPhase: '서브에이전트 QA 수정',
   branch: 'cursor/home-header-3eef',
   previewPath: '/',
   qaShareSlug: 'home-header',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-02-home-header-subagent-qa',
+    session: '지구본 홈 헤더 #3, 서브에이전트 QA 수정',
+    title: '서브에이전트 QA — 56px가 지구본 resize에 지워지던 원인 수정',
+    detail:
+      '사람 스크린샷: 첫 로딩 로고·검색 상단이 주소창에 잘림. 디버그 목: CriOS 56px 적용 후 visualViewport 844→780이면 보정을 0으로 지움. 첫 navigate는 높이 감소와 무관하게 56px 유지. Preview /qa/home-header — 탭 재오픈 첫 진입에서 로고·EN·검색이 주소창 아래인지 · 새로고침 후 이중 여백 없는지.',
+    at: '2026-09-02T23:20:00.000Z',
+  },
   {
     id: '2026-09-02-home-header-h1-keep-56',
     session: '지구본 홈 헤더 #2, 첫 로딩 재현 수정',
