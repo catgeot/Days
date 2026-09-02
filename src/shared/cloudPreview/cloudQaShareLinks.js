@@ -298,6 +298,13 @@ export const CLOUD_QA_SHARE_LINKS = [
     active: true,
   },
   {
+    slug: 'search-hit',
+    label: '홈 검색바·locale 히트',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/',
+    active: false,
+  },
+  {
     slug: 'world-events',
     label: '세계 행사 일정 허브',
     branch: 'cursor/world-events-wave2',

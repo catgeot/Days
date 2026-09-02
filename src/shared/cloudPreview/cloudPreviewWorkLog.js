@@ -4,13 +4,13 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: true,
-  title: '홈 locale 모바일',
-  sessionNo: 9,
-  sessionPhase: '지구본 지명 EN 고착',
-  branch: 'cursor/globe-locale-mobile-5f5c',
+  active: false,
+  title: '홈 검색바 히트',
+  sessionNo: 3,
+  sessionPhase: 'main 병합',
+  branch: 'cursor/search-locale-hit-5f5c',
   previewPath: '/',
-  qaShareSlug: 'en',
+  qaShareSlug: 'search-hit',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,30 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-02-search-locale-hit-3-merge',
+    session: '홈 검색바 히트 #3, main 병합',
+    title: '사람 Preview QA PASS — PR #175 main 병합',
+    detail:
+      '모바일: 검색→/explore · EN 토글 독립 클릭 · 바로가기 2행 OK. 작업 로그·/qa/search-hit 종료(PROD `/`).',
+    at: '2026-09-02T13:50:00.000Z',
+  },
+  {
+    id: '2026-09-02-search-locale-hit-2-homeui-flex',
+    session: '홈 검색바 히트 #2, HomeUI flex',
+    title: '모바일 헤더 [로고+EN | 검색 flex-1] · 바로가기 2행',
+    detail:
+      '고정 left-[7.75rem] 검색바 제거. 모바일 1행 flex [로고+EN | 검색 flex-1] · 바로가기 칩 2행. chrome 실드가 검색 클릭을 가로채지 않음. HomeGlobeMapbox·LocaleProvider 미변경. Preview /qa/search-hit — EN 토글·검색 각각 클릭.',
+    at: '2026-09-02T13:45:00.000Z',
+  },
+  {
+    id: '2026-09-02-search-locale-hit-1-prep',
+    session: '홈 검색바 히트 #1, 브랜치·핸드오프 준비',
+    title: '모바일 검색바·EN 토글 히트 겹침 — 세션 준비',
+    detail:
+      '증상: 모바일 검색바(left-[7.75rem])와 EN/KO chrome 실드(z-110) 겹침 → 검색 클릭 무력화. #173 flex는 Mapbox 연쇄와 함께 롤백됨 · #174 지구본 locale은 main. 다음: HomeUI만 flex [로고+EN | 검색 flex-1] · HomeGlobeMapbox 금지. Preview /qa/search-hit.',
+    at: '2026-09-02T13:15:00.000Z',
+  },
   {
     id: '2026-09-02-home-locale-9-mobile-labels',
     session: '홈 locale #9, 모바일 지구본 지명',

@@ -197,6 +197,11 @@
       "permanent": false
     },
     {
+      "source": "/qa/search-hit",
+      "destination": "https://www.gateo.kr/",
+      "permanent": false
+    },
+    {
       "source": "/qa/world-events",
       "destination": "https://days-git-cursor-world-events-wave3-catgeots-projects.vercel.app/world-events",
       "permanent": false
