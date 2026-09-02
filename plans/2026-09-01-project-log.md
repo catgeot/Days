@@ -128,3 +128,14 @@
 - **샘플 exact** 홍천9경·양구9경·인제8경·삼척십경·원주8경·속초8경·철원9경·영월10경·태백8경·화암8경·화천9경 — resolve·hub·scenicSearch OK
 - **큐** 충북 11·경북 24 hub — R04–R09 확장 표 추가
 - **다음** **#8 채우기 R04** — 오케 워커2 · 충북 6(단양·제천·충주·청주·보은·괴산)
+
+### #8 채우기 R04 ✅
+
+- **세션** `지자체 팔경 #8, 채우기 R04`
+- **브랜치** `cursor/palgyeong` · tip `db428507` · PR [#172](https://github.com/catgeot/Days/pull/172)
+- **산출** `danyang-palgyeong`(8) · `jecheon-sipgyeong`(10) · hub append +18 · aliases
+- **skip** `chungju`·`cheongju`·`boeun`·`goesan` 시·군 단위 공식 N경 없음(`skip_no_source`)
+- **충돌 접두** `옥순봉`(jecheon) → hub `제천 옥순봉`
+- **VERIFY** audit:korea-local-scenic-lists 0 · audit:city-attraction-hubs 0 · smoke(단양팔경·제천10경) · build PASS
+- **Preview** `https://days-git-cursor-palgyeong-catgeots-projects.vercel.app`
+- **다음** **#9 채우기 R05** — 오케 워커2 · 충북 5+예비(옥천·영동·진천·증평·음성)

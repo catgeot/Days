@@ -249,21 +249,21 @@ issues **0** · 스모크 PASS 전에 커밋·이관·다음 R **금지**.
 
 | | |
 |--|--|
-| **지금** | **#7 무결성 I#2** ✅ — lists 14 · members 123 · 강원 F 완료 · 충북·경북 큐 R04–R09 확장 |
-| **다음 세션** | **#8 채우기 R04** — 충북 6 · 오케 워커2 |
-| **브랜치** | `cursor/palgyeong` · tip `abed4013` · PR [#172](https://github.com/catgeot/Days/pull/172) |
+| **지금** | **#8 채우기 R04** ✅ — lists 16 · members 141 · 충북 skips 4 |
+| **다음 세션** | **#9 채우기 R05** — 충북 5+예비 · 오케 워커2 |
+| **브랜치** | `cursor/palgyeong` · tip `db428507` · PR [#172](https://github.com/catgeot/Days/pull/172) |
 | **금지** | UI 변경 · scenic 자동승격 · 광역 팔경 큐 · tip 전면 rewrite · 출처 없는 verified |
 | **VERIFY** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · `smoke:korea-local-scenic-lists` · `build` |
 
 ### §1.2 다음 제시어
 
 ```
-지자체 팔경 #8, 채우기 R04
+지자체 팔경 #9, 채우기 R05
 @plans/feature-handoff-index.md
 @plans/2026-09-01-project-log.md
 @plans/korea-local-scenic-lists-plan.md
 @plans/korea-local-scenic-lists-queue.md
-브랜치 cursor/palgyeong · PR #172 · 큐 R04 ⬜
+브랜치 cursor/palgyeong · PR #172 · 큐 R05 ⬜
 금지: UI 변경 · koreaScenicSpots 승격 · 광역 팔경 · feature에 plans 커밋
-작업: 오케 워커2 · R04 단양·제천·충주·청주·보은·괴산 · VERIFY
+작업: 오케 워커2 · R05 옥천·영동·진천·증평·음성 · VERIFY
 ```
