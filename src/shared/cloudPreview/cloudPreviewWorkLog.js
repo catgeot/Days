@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '세계행사 일정',
-  sessionNo: 27,
-  sessionPhase: 'Wave1.5 D4 숙소·파일럿 회귀',
-  branch: 'cursor/world-events-wave2',
-  previewPath: '/world-events',
-  qaShareSlug: 'world-events',
+  title: '홈 검색바 히트',
+  sessionNo: 1,
+  sessionPhase: '브랜치·핸드오프 준비',
+  branch: 'cursor/search-locale-hit-5f5c',
+  previewPath: '/',
+  qaShareSlug: 'search-hit',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-02-search-locale-hit-1-prep',
+    session: '홈 검색바 히트 #1, 브랜치·핸드오프 준비',
+    title: '모바일 검색바·EN 토글 히트 겹침 — 세션 준비',
+    detail:
+      '증상: 모바일 검색바(left-[7.75rem])와 EN/KO chrome 실드(z-110) 겹침 → 검색 클릭 무력화. #173 flex는 Mapbox 연쇄와 함께 롤백됨 · #174 지구본 locale은 main. 다음: HomeUI만 flex [로고+EN | 검색 flex-1] · HomeGlobeMapbox 금지. Preview /qa/search-hit.',
+    at: '2026-09-02T13:15:00.000Z',
+  },
   {
     id: '2026-09-02-home-locale-6-double-flash',
     session: '홈 locale #6, 사람 Preview QA',

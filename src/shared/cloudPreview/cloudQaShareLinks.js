@@ -298,6 +298,14 @@ export const CLOUD_QA_SHARE_LINKS = [
     active: true,
   },
   {
+    slug: 'search-hit',
+    label: '홈 검색바·locale 히트',
+    branch: 'cursor/search-locale-hit-5f5c',
+    destination:
+      'https://days-git-cursor-search-locale-hit-5f5c-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
     slug: 'world-events',
     label: '세계 행사 일정 허브',
     branch: 'cursor/world-events-wave2',
