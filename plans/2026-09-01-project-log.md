@@ -165,6 +165,17 @@
 - **Preview** `https://days-git-cursor-palgyeong-catgeots-projects.vercel.app`
 - **다음** **R07** — 워커2 · 경북 6(영주·문경·봉화·예천·청송·영덕)
 
+### #11 채우기 R07–R09 ✅ · I#4 ✅
+
+- **세션** `지자체 팔경 오케 R07–R09` · **I#4** 무결성
+- **브랜치** `cursor/palgyeong` · tip `cc2ac626` · PR [#172](https://github.com/catgeot/Days/pull/172)
+- **R07** `mungyeong-palgyeong`·`yecheon-palgyeong`·`yeongdeok-sipgyeong` — skip `yeongju`·`bonghwa`·`cheongsong`
+- **R08** `uiseong-binggye-palgyeong`·`seongju-sipgyeong` — skip `uljin`·`goryeong`·`gunwi`·`chilgok`
+- **R09** `yeongcheon-gugyeong`·`cheongdo-gugyeong` — skip `gyeongsan`·`yeongyang`·`ulleung`·`dokdo`
+- **I#4** lists 30 · members 264 · audit 0 · smoke 샘플 9건 PASS · build PASS
+- **Preview** `https://days-git-cursor-palgyeong-catgeots-projects.vercel.app`
+- **다음** 경북 큐 소진 — **큐 확장**(전국) 사람 합의 또는 PR #172 merge QA
+
 ---
 
 ## 홈 locale 토글 (EN/KO)

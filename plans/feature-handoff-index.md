@@ -204,8 +204,8 @@ main · www.gateo.kr/place/yap/planner?lang=en
 
 | | |
 |--|--|
-| **상태** | **자동 오케** · R06 ✅ · **I#3** ✅ · 다음 **R07** |
-| **브랜치** | `cursor/palgyeong` · tip `37b29e1e` |
+| **상태** | **자동 오케** · R07–R09 ✅ · **I#4** ✅ · 경북 큐 **소진** |
+| **브랜치** | `cursor/palgyeong` · tip `cc2ac626` |
 | **PR** | [#172](https://github.com/catgeot/Days/pull/172) |
 | **플랜** | [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) **§4.5·§9** |
 | **큐** | [`korea-local-scenic-lists-queue.md`](./korea-local-scenic-lists-queue.md) |
@@ -224,7 +224,7 @@ main · www.gateo.kr/place/yap/planner?lang=en
 @plans/feature-handoff-index.md
 브랜치 cursor/palgyeong · PR #172
 금지: UI · scenic승격 · 광역팔경 · feature plans 커밋 · 매R 사람QA · VERIFY후 제시어대기
-작업: 큐 다음 ⬜ R부터 · 워커2 · VERIFY PASS→다음R 또는 후임Task(§4.5-D) · 3R마다 I# · §6.2만 정지
+작업: 경북 큐 소진 — 큐 확장(사람 합의) 또는 PR #172 merge QA · §6.2만 정지
 ```
 
 **턴 종료 체크**(⬜ R 남음 · §6.2 아님): (1) feature push (2) **같은 턴** 다음 R **또는** 후임 Task `run_in_background:false` (3) 세대 끝이면 **main docs push**. VERIFY 후 요약만 하고 종료 **금지** — [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) **§4.5**.

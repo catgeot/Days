@@ -1,6 +1,6 @@
 # 지자체 팔경·구경 → 도시 명소 SSOT (오케스트레이터)
 
-**상태**: 📋 P0 ✅ · **I#1** ✅ · **F R01–R03** ✅ 2026-09-02 · **I#2** ✅ · **F R04–R06** ✅ · **I#3** ✅ 2026-09-02  
+**상태**: 📋 P0 ✅ · **I#1** ✅ · **F R01–R03** ✅ 2026-09-02 · **I#2** ✅ · **F R04–R06** ✅ · **I#3** ✅ 2026-09-02 · **F R07–R09** ✅ · **I#4** ✅ 2026-09-02  
 **주제 표기**: `지자체 팔경 #{N}, {단계}`  
 **고정 브랜치**(착수 시 1회): `cursor/palgyeong`  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.6** · 본 플랜  
@@ -380,9 +380,9 @@ issues **0** · 스모크 PASS 전에 커밋·이관·다음 R **금지**.
 | | |
 |--|--|
 | **운영** | **자동 오케** (§4.3) · F=VERIFY 후 다음 R · **3R마다 I#** |
-| **지금** | **R06** ✅ · **I#3** ✅ — lists 23 · members 203 |
-| **다음** | **R07** — 큐 ⬜ · 워커2 · VERIFY PASS → R08 |
-| **브랜치** | `cursor/palgyeong` · tip `37b29e1e` · PR [#172](https://github.com/catgeot/Days/pull/172) |
+| **지금** | **R07–R09** ✅ · **I#4** ✅ — lists **30** · members **264** · 경북 큐 **소진** |
+| **다음** | **큐 확장**(전국 시군구) — **사람 합의 후** 표 추가 · 또는 PR #172 merge QA |
+| **브랜치** | `cursor/palgyeong` · tip `cc2ac626` · PR [#172](https://github.com/catgeot/Days/pull/172) |
 | **금지** | UI · scenic 승격 · 광역 팔경 · tip rewrite · **매 R 사람 QA·제시어 대기** |
 | **VERIFY** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · `smoke:korea-local-scenic-lists` · `build` |
 
