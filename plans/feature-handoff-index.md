@@ -18,28 +18,28 @@
 
 | | |
 |--|--|
-| **상태** | **#1 브랜치·핸드오프 준비** · tip `4dff1699` · 다음 #2 HomeUI flex |
-| **브랜치** | `cursor/search-locale-hit-5f5c` · tip `4dff1699` |
+| **상태** | **#2 HomeUI flex** · tip `7b8aa801` · 다음 #3 사람 Preview QA |
+| **브랜치** | `cursor/search-locale-hit-5f5c` · tip `7b8aa801` |
 | **PR** | [#175](https://github.com/catgeot/Days/pull/175) |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §13 A′′ |
 | **일지** | [`2026-09-02-project-log.md`](./2026-09-02-project-log.md) |
 | **Preview** | `/qa/search-hit` → git Preview `/` · https://days-git-cursor-search-locale-hit-5f5c-catgeots-projects.vercel.app/ |
-| **VERIFY** | `build` · (수정 후) `audit:i18n` |
+| **VERIFY** | `audit:i18n` · `build` · `smoke:browser-locale-hint` · `smoke:place-label-slug` |
 
-**게이트**: Preview·`/qa/search-hit` 준비 ✅ · **HomeUI flex 미착수** · #9 지구본 지명 main(`a6a5ede7`)
+**게이트**: HomeUI flex ✅ · **사람 Preview QA** — EN 토글·검색 각각 클릭
 
-**증상**: 모바일 검색바 `max-md:fixed left-[7.75rem]` ↔ 로고·EN chrome 실드 `z-[110]` 겹침 → 검색 클릭이 토글/실드에 가로채임(무력화)
+**적용**: 모바일 1행 `[로고+EN | 검색 flex-1]` · 바로가기 칩 2행 · `left-[7.75rem]` 제거
 
-**다음 제시어 (#2 HomeUI flex)**:
+**다음 제시어 (#3 사람 Preview QA)**:
 
 ```
-홈 검색바 히트 #2, HomeUI flex
+홈 검색바 히트 #3, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-02-project-log.md
 @plans/i18n-en-plan.md
 브랜치 cursor/search-locale-hit-5f5c · PR #175 · Preview https://days-git-cursor-search-locale-hit-5f5c-catgeots-projects.vercel.app/
-금지: HomeGlobeMapbox · LocaleProvider Mapbox · #173 통째 cherry-pick · UI 리디자인 · plans/** feature 커밋
-작업: HomeUI.jsx만 — 모바일 [로고+EN | 검색 flex-1] · 바로가기 칩 2행 · EN 토글·검색 각각 클릭 가능 · 참고 f3ec61d7/0ba69445
+금지: HomeGlobeMapbox · LocaleProvider Mapbox · UI 리디자인 · plans/** feature 커밋
+작업: 모바일 Preview — 검색 탭→/explore · EN 토글 독립 클릭 · 바로가기 칩 2행 · OK 시 PR #175 merge
 ```
 
 ---
