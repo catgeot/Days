@@ -1,6 +1,6 @@
 # koreaLocalScenicLists — 사전 배치 큐 (기초지자체 팔경·구경)
 
-**상태**: ⬜ Phase 0 전 · 파일럿 P0만 확정 · 나머지 권역은 I#1 후 확장  
+**상태**: 강원 F R01–R03 ✅ · **I#2** ✅ 2026-09-02 · 다음 **F R04** 충북  
 **규칙**: 라운드 = **6 리스트** · 워커A **3** + 워커B **3** · 메인 직렬 머지(A→B) · VERIFY 후 다음  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.6** · 플랜 [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md)  
 **단위**: 시·군·구만 · **광역 팔경(관동팔경 등) 큐 금지**(1차)
@@ -47,7 +47,28 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 
 > R의 `?` = 착수 전 **소스 조사로 listKind·공식 title 확정**. 리스트가 없으면 그 칸은 예비로 교체하고 큐에 `skip_no_source` 1줄.
 
-**I 주기**: R01–R03 VERIFY 누적 후 → **I 무결성 #2** ✅ 2026-09-02 → 충북·경북 큐 확장(별도 커밋으로 표 추가).
+**I 주기**: R01–R03 VERIFY 누적 후 → **I 무결성 #2** ✅ 2026-09-02 → 충북·경북 큐 확장(아래).
+
+---
+
+## F 라운드 — 충북·경북 (I#2 후 확장 · 착수 전 소스 조사)
+
+> `hubId-?` = 착수 전 **공식 title·listKind·sourceUrl** 확정. hub 없음·공식 N경 없음 → `skip_no_source` · 예비 1:1.
+
+| R | 워커A (3) | 워커B (3) | 권역 | 상태 |
+|---|-----------|-----------|------|------|
+| **R04** | `danyang-?` · `jecheon-?` · `chungju-?` | `cheongju-?` · `boeun-?` · `goesan-?` | 충북 | ⬜ |
+| **R05** | `okcheon-?` · `yeongdong-?` · `jincheon-?` | `jeungpyeong-?` · `eumseong-?` · 예비 충북 1 | 충북 | ⬜ |
+| **R06** | `gyeongju-?` · `pohang-?` · `andong-?` | `gumi-?` · `sangju-?` · `gimcheon-?` | 경북 | ⬜ |
+| **R07** | `yeongju-?` · `mungyeong-?` · `bonghwa-?` | `yecheon-?` · `cheongsong-?` · `yeongdeok-?` | 경북 | ⬜ |
+| **R08** | `uljin-?` · `goryeong-?` · `gunwi-?` | `uiseong-?` · `chilgok-?` · `seongju-?` | 경북 | ⬜ |
+| **R09** | `gyeongsan-?` · `yeongcheon-?` · `cheongdo-?` | `yeongyang-?` · `ulleung-?` · `dokdo-?` | 경북 | ⬜ |
+
+> **충북 11** hub (`cheongju`·`jincheon`·`jeungpyeong`·`eumseong`·`goesan`·`chungju`·`jecheon`·`danyang`·`boeun`·`okcheon`·`yeongdong`) — [`korea-scenic-mid-cluster-plan.md`](./korea-scenic-mid-cluster-plan.md) 청주권·북부·남부 순.
+
+> **경북 24** hub — 신라·가야·유교·동해 권역 순. `ulleung`·`dokdo`는 섬·공식 N경 유무 **착수 전 확인**.
+
+**I 주기**: R04–R06 VERIFY 누적 후 → **I 무결성 #3** 검토.
 
 ### 예비 (스킵·EXISTS 시)
 
@@ -66,7 +87,9 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 ### 진행 체크
 
 ```text
-다음 시작: I#2 formal (#7) 또는 충북·경북 큐 확장 (#7)
-tip lists: 14 · members: 123 · 강원 skips 4(chuncheon·gangneung·pyeongchang·hoengseong)
-I#2 검토: audit 0 · smoke(파일럿3+R01–R02 샘플) · build PASS
+다음 시작: F R04 (#8, 충북 6)
+tip lists: 14 · members: 123 · hub append: 84
+강원 skips 4: chuncheon·gangneung·pyeongchang·hoengseong
+I#2 ✅ 2026-09-02 — audit 0 · smoke(파일럿3+R01–R02 8) · build PASS · 큐/일지 대조 OK
+충북·경북 큐 R04–R09 확장 ✅
 ```
