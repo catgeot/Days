@@ -15,13 +15,15 @@ export function needsHomeViewportInputSync() {
   return isIosWebKitBrowser();
 }
 
+export const HOME_VIEWPORT_LOCK_CLASS = 'gateo-home-lock-viewport';
+
 /** Chrome+WebGL: resize·viewport sync 후 fixed chrome paint/hit 어긋남 완화 */
 export function scheduleRecalibrateFixedChromeHits() {
   if (typeof document === 'undefined' || typeof window === 'undefined') return;
 
   const run = () => {
     document
-      .querySelectorAll('[data-home-chrome-hit], [data-place-chrome-hit], [data-summary-chrome]')
+      .querySelectorAll('[data-home-chrome-top], [data-home-chrome-hit], [data-place-chrome-hit], [data-summary-chrome]')
       .forEach((el) => {
         void el.getBoundingClientRect();
       });
@@ -143,4 +145,58 @@ export function syncHomeChromeAfterNavigation() {
 
   window.scrollTo(0, 0);
   scheduleRecalibrateFixedChromeHits();
+}
+
+export function lockHomeViewport() {
+  if (typeof document === 'undefined') return;
+  document.documentElement.classList.add(HOME_VIEWPORT_LOCK_CLASS);
+  if (typeof window !== 'undefined') window.scrollTo(0, 0);
+}
+
+export function unlockHomeViewport() {
+  if (typeof document === 'undefined') return;
+  document.documentElement.classList.remove(HOME_VIEWPORT_LOCK_CLASS);
+}
+
+/**
+ * Chrome 첫 로딩: 100vh 문서가 주소창보다 커서 상단 chrome이 URL바 뒤로 깔림.
+ * offsetTop을 resize마다 바인딩하면 paint/hit가 한 줄 어긋남(#13/#15) — 스크롤 리셋·히트 재보정만.
+ */
+export function syncHomeChromeOnFirstPaint({ onRemount } = {}) {
+  if (typeof window === 'undefined') return () => {};
+
+  let stopped = false;
+  let remounted = false;
+  const timers = [];
+
+  const run = (remount) => {
+    if (stopped) return;
+    window.scrollTo(0, 0);
+    scheduleRecalibrateFixedChromeHits();
+    if (remount && !remounted && typeof onRemount === 'function') {
+      remounted = true;
+      onRemount();
+    }
+  };
+
+  run(false);
+  const outerRaf = window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => run(true));
+  });
+  timers.push(window.setTimeout(() => run(true), 120));
+  timers.push(window.setTimeout(() => run(false), 400));
+
+  const onPageShow = () => run(true);
+  window.addEventListener('pageshow', onPageShow);
+  const visualViewport = window.visualViewport;
+  const onVisualResize = () => run(true);
+  visualViewport?.addEventListener('resize', onVisualResize, { once: true });
+
+  return () => {
+    stopped = true;
+    window.cancelAnimationFrame(outerRaf);
+    timers.forEach((id) => window.clearTimeout(id));
+    window.removeEventListener('pageshow', onPageShow);
+    visualViewport?.removeEventListener('resize', onVisualResize);
+  };
 }

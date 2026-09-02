@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'home-header',
+    label: '지구본 홈 Chrome 헤더',
+    branch: 'cursor/home-header-3eef',
+    destination:
+      'https://days-git-cursor-home-header-3eef-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
     slug: 'globe-labels',
     label: '홈 지구본 첫 로딩 지명',
     branch: 'cursor/globe-labels-ddce',

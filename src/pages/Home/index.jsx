@@ -65,7 +65,13 @@ import {
   seaBasinToFlyRegion,
   topOceanToFlyRegion,
 } from './lib/seaBasinRail.js';
-import { syncHomeViewportAfterInput, syncHomeChromeAfterNavigation } from '../../shared/lib/mobileViewport';
+import {
+  lockHomeViewport,
+  syncHomeChromeAfterNavigation,
+  syncHomeChromeOnFirstPaint,
+  syncHomeViewportAfterInput,
+  unlockHomeViewport,
+} from '../../shared/lib/mobileViewport';
 import {
   clearPlaceReturnTo,
   peekPlaceReturnTo,
@@ -325,6 +331,19 @@ function Home() {
   const shouldPauseGlobe =
     !flightCinemaActive
     && (isCardExpanded || isPlaceRoute || routeLocation.pathname.startsWith('/explore'));
+
+  useEffect(() => {
+    if (isPlaceRoute) {
+      unlockHomeViewport();
+      return undefined;
+    }
+    lockHomeViewport();
+    const stop = syncHomeChromeOnFirstPaint({ onRemount: bumpHomeChromeEpoch });
+    return () => {
+      stop();
+      unlockHomeViewport();
+    };
+  }, [isPlaceRoute, bumpHomeChromeEpoch]);
 
   const {
     handleGlobeClick,
@@ -1471,7 +1490,7 @@ function Home() {
       onActiveChange={setFlightCinemaActive}
       onPendingChange={setFlightCinemaLaunchPending}
     >
-    <div className="relative w-full h-screen bg-black text-white overflow-hidden font-sans">
+    <div className="relative w-full h-[100dvh] max-h-[100dvh] bg-black text-white overflow-hidden font-sans">
       <SEO
         title={exploreCategorySeo?.title}
         description={exploreCategorySeo?.description}

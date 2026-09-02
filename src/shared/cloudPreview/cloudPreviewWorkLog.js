@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '홈 지구본 지명',
+  title: '지구본 홈 헤더',
   sessionNo: 1,
-  sessionPhase: '첫 로딩 지명',
-  branch: 'cursor/globe-labels-ddce',
+  sessionPhase: 'Chrome 주소창 가림',
+  branch: 'cursor/home-header-3eef',
   previewPath: '/',
-  qaShareSlug: 'globe-labels',
+  qaShareSlug: 'home-header',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-02-home-header-chrome-urlbar',
+    session: '지구본 홈 헤더 #1, Chrome 주소창 가림',
+    title: 'Chrome 첫 로딩 — 상단 헤더가 주소창에 가리지 않게',
+    detail:
+      '증상: iOS Chrome에서 지구본 홈 첫 로딩 시 로고·검색·바로가기 칩이 주소창 뒤로 깔림(간헐). 100vh가 주소창보다 커 문서가 스크롤됨. 홈 루트만 100dvh 잠금·첫 페인트 스크롤 리셋. offsetTop 지속 보정은 쓰지 않음(칩 히트 어긋남). Preview /qa/home-header — Chrome 모바일에서 홈 새로고침 후 상단 칩이 주소창 아래에 전부 보이는지.',
+    at: '2026-09-02T21:30:00.000Z',
+  },
   {
     id: '2026-09-02-globe-labels-1-first-load',
     session: '홈 지구본 지명 #1, 첫 로딩 지명',

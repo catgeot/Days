@@ -290,7 +290,11 @@ const HomeUI = React.memo(({
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 z-[100] p-4 md:p-6 flex flex-col gap-2 md:grid md:grid-cols-12 md:items-start md:gap-3 pointer-events-none w-full max-md:overflow-x-clip">
+      <div
+        key={`home-chrome-top-${homeChromeEpoch}`}
+        data-home-chrome-top
+        className="fixed top-0 left-0 right-0 z-[100] p-4 md:p-6 flex flex-col gap-2 md:grid md:grid-cols-12 md:items-start md:gap-3 pointer-events-none w-full max-md:overflow-x-clip"
+      >
         <div
           data-site-notice-anchor-mobile
           className="md:hidden absolute inset-x-0 bottom-0 h-px pointer-events-none"

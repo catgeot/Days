@@ -99,6 +99,7 @@
     "smoke:crawler-place-meta": "node scripts/smoke-crawler-place-meta.mjs",
     "smoke:essential-guide-locale": "node scripts/smoke-essential-guide-locale.mjs",
     "smoke:browser-locale-hint": "node scripts/smoke-browser-locale-hint.mjs",
+    "smoke:home-chrome-viewport": "node scripts/smoke-home-chrome-viewport.mjs",
     "smoke:curation-place-bridge": "node scripts/smoke-curation-place-bridge.mjs",
     "smoke:curation-history": "node scripts/smoke-curation-history.mjs",
     "smoke:magazine-locale": "node scripts/smoke-magazine-locale.mjs",

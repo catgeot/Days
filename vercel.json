@@ -6,6 +6,11 @@
       "permanent": true
     },
     {
+      "source": "/qa/home-header",
+      "destination": "https://days-git-cursor-home-header-3eef-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
       "source": "/qa/globe-labels",
       "destination": "https://days-git-cursor-globe-labels-ddce-catgeots-projects.vercel.app/",
       "permanent": false
