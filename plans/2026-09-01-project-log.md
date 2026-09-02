@@ -107,3 +107,14 @@
 - **VERIFY** audit:korea-local-scenic-lists 0 · audit:city-attraction-hubs 0 · smoke(철원9경·영월10경·태백8경·화암8경·화천9경) · build PASS
 - **Preview** `https://days-git-cursor-palgyeong-catgeots-projects.vercel.app`
 - **다음** **#6 채우기 R03** — `hoengseong`·예비 · R01–R03 누적 후 **I#2**
+
+### #6 채우기 R03 ✅
+
+- **세션** `지자체 팔경 #6, 채우기 R03`
+- **브랜치** `cursor/palgyeong` · tip `abed4013` · PR [#172](https://github.com/catgeot/Days/pull/172)
+- **산출** R03 신규 lists 0 · `merge-local-scenic-r03.mjs` · 강원 F 라운드 마감
+- **skip** `hoengseong` 시·군 단위 공식 N경 없음(`skip_no_source`, hsg.go.kr tour 팔경/8경/구경/비경 0건)
+- **예비** 강원 5칸 소진 — lists 14 = 18 hubs − 4 skips(chuncheon·gangneung·pyeongchang·hoengseong)
+- **I#2 검토** audit 0 · smoke(파일럿3+R01–R02 샘플 10) · build PASS · `_tmp*` 없음
+- **Preview** `https://days-git-cursor-palgyeong-catgeots-projects.vercel.app`
+- **다음** **#7 무결성 I#2** — §6.3 쓰기 0 · 충북·경북 큐 확장

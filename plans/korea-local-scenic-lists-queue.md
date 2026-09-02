@@ -37,15 +37,17 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 |---|-----------|-----------|------|------|
 | **R01** | `samcheok-sipgyeong`(예비↔chuncheon skip) · `wonju-palgyeong` · `donghae-bijing`(예비↔gangneung skip) | `sokcho-palgyeong` · `yangyang-sipgyeong` · `goseong-palgyeong` | 강원 | ✅ 2026-09-02 |
 | **R02** | `cheorwon-gugyeong`(EXISTS→samcheok) · `yeongwol-sipgyeong`(EXISTS→donghae) · `taebaek-palgyeong` | `jeongseon-palgyeong` · `hwacheon-gugyeong` · skip `pyeongchang` | 강원 | ✅ 2026-09-02 |
-| **R03** | `hoengseong-?` · 예비 강원 2 | 예비 강원 3 | 강원 | ⬜ |
+| **R03** | `hoengseong` skip · 예비 강원 2 소진 | 예비 강원 3 소진 | 강원 | ✅ 2026-09-02 |
 
 > **R01 skip**: `chuncheon`·`gangneung` 시 단위 공식 8경 없음(`skip_no_source`) → 예비 `samcheok-sipgyeong`·`donghae-bijing` 1:1 대체.
 
 > **R02 EXISTS**: `samcheok-sipgyeong`·`donghae-bijing` tip 기존 → 예비 `cheorwon-gugyeong`·`yeongwol-sipgyeong` 1:1 · `pyeongchang` `skip_no_source`.
 
+> **R03 skip**: `hoengseong` 시·군 단위 공식 N경 없음(`skip_no_source`, hsg.go.kr tour 팔경/8경/구경/비경 0건) · 예비 강원 5칸 소진(P0·R01·R02로 14 lists / 18 hubs 완료).
+
 > R의 `?` = 착수 전 **소스 조사로 listKind·공식 title 확정**. 리스트가 없으면 그 칸은 예비로 교체하고 큐에 `skip_no_source` 1줄.
 
-**I 주기**: R01–R03 VERIFY 누적 후 → **I 무결성 #2** → 충북·경북 큐 확장(별도 커밋으로 표 추가).
+**I 주기**: R01–R03 VERIFY 누적 후 → **I 무결성 #2** ✅ 2026-09-02 → 충북·경북 큐 확장(별도 커밋으로 표 추가).
 
 ### 예비 (스킵·EXISTS 시)
 
@@ -64,6 +66,7 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 ### 진행 체크
 
 ```text
-다음 시작: F R03 (#6, R02 ✅ 2026-09-02)
-tip lists: 14 · members: 123 · hub append(R02): +30
+다음 시작: I#2 formal (#7) 또는 충북·경북 큐 확장 (#7)
+tip lists: 14 · members: 123 · 강원 skips 4(chuncheon·gangneung·pyeongchang·hoengseong)
+I#2 검토: audit 0 · smoke(파일럿3+R01–R02 샘플) · build PASS
 ```
