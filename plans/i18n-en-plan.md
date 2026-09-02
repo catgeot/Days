@@ -333,6 +333,14 @@ npm run smoke:browser-locale-hint
 | `/korea/theme/scenic?lang=en` | 지도 breadcrumb·핀 · 모달 UI·헤더 EN |
 | PlaceCard | P0 탭·써머리 EN (#28 잔여) |
 
+### A′. 홈 locale 토글 (Cloud · PR #174 · `cursor/locale-toggle-smooth-92b6`)
+
+| 세션 | 상태 | 메모 |
+|------|------|------|
+| #5 | ✅ | 위성 `name_ko` 강제 해제 · locale별 text-field |
+| #6 | ✅ tip `3fe6077c` | 이중 깜박임 — satellite `setLanguage` 제거 · coalesce 1회 |
+| #7 | 사람 Preview | EN 한 번에 · KO 복귀 · OK 시 merge |
+
 **에이전트 VERIFY**:
 
 ```bash
