@@ -1,6 +1,6 @@
 # 지자체 팔경·구경 → 도시 명소 SSOT (오케스트레이터)
 
-**상태**: 📋 P0 파일럿 3건 ✅ · **I#1 무결성 대기** (2026-09-01)  
+**상태**: 📋 P0 ✅ · **I#1 무결성** ✅ 2026-09-02 · **F R01 대기**  
 **주제 표기**: `지자체 팔경 #{N}, {단계}`  
 **고정 브랜치**(착수 시 1회): `cursor/palgyeong`  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.6** · 본 플랜  
@@ -249,20 +249,21 @@ issues **0** · 스모크 PASS 전에 커밋·이관·다음 R **금지**.
 
 | | |
 |--|--|
-| **지금** | **#2 P0** ✅ — 홍천9경·양구9경·인제8경 verified · hub append 18 |
-| **다음 세션** | **#3 무결성 I#1** — §6.3 쓰기 0 |
-| **브랜치** | `cursor/palgyeong` · tip `3faf3bca` |
+| **지금** | **#3 I#1** ✅ — §6.3 PASS · lists 3 · append 18 · 쓰기 0 |
+| **다음 세션** | **#4 채우기 R01** — 오케 워커2 · 강원 6리스트 |
+| **브랜치** | `cursor/palgyeong` · tip `2b4ccff0` · PR [#172](https://github.com/catgeot/Days/pull/172) |
 | **금지** | UI 변경 · scenic 자동승격 · 광역 팔경 큐 · tip 전면 rewrite · 출처 없는 verified |
 | **VERIFY** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · `smoke:korea-local-scenic-lists` · `build` |
 
 ### §1.2 다음 제시어
 
 ```
-지자체 팔경 #3, 무결성
+지자체 팔경 #4, 채우기 R01
 @plans/feature-handoff-index.md
 @plans/2026-09-01-project-log.md
 @plans/korea-local-scenic-lists-plan.md
-브랜치 cursor/palgyeong · 플랜 §6.3 · 큐 P0✅
+@plans/korea-local-scenic-lists-queue.md
+브랜치 cursor/palgyeong · PR #172 · 큐 R01 ⬜
 금지: UI 변경 · koreaScenicSpots 승격 · 광역 팔경 · feature에 plans 커밋
-작업: audit+smoke+샘플 exact(파일럿3) · 큐/일지 대조 · 쓰기 0
+작업: 오케 워커2 · R01 강원 6리스트 · VERIFY · §3.4
 ```
