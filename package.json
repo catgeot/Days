@@ -87,6 +87,7 @@
     "smoke:flight-route-baseline": "node scripts/smoke-flight-route-baseline.mjs",
     "smoke:flight-origin-gateway": "node scripts/smoke-flight-origin-gateway.mjs",
     "smoke:place-label-slug": "node scripts/smoke-place-label-slug.mjs",
+    "smoke:globe-label-first-reveal": "node scripts/smoke-globe-label-first-reveal.mjs",
     "audit:place-seo-en": "node scripts/audit-place-seo-en.mjs",
     "audit:gsc-baseline": "node scripts/audit-gsc-baseline.mjs",
     "smoke:place-seo-en": "node scripts/smoke-place-seo-en.mjs",

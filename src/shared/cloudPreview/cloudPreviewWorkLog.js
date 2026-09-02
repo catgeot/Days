@@ -4,13 +4,13 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: false,
-  title: '홈 축제칩',
-  sessionNo: 4,
-  sessionPhase: 'main 병합',
-  branch: 'cursor/home-festival-chip-59c9',
+  active: true,
+  title: '홈 지구본 지명',
+  sessionNo: 1,
+  sessionPhase: '첫 로딩 지명',
+  branch: 'cursor/globe-labels-ddce',
   previewPath: '/',
-  qaShareSlug: 'home-chip',
+  qaShareSlug: 'globe-labels',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-02-globe-labels-1-first-load',
+    session: '홈 지구본 지명 #1, 첫 로딩 지명',
+    title: '모바일 첫 로딩 — 자전 hold 후 지명 페인트',
+    detail:
+      '증상: 모바일 홈 첫 로딩 후 gateo 지명이 없음. EN 토글·재실행·새로고침만 복구. 원인: 마운트 즉시 jumpTo 자전이 Mapbox continuePlacement·idle을 끊어 overlay가 visibility:none에 고착. 첫 overlay 페인트+320ms 뒤에만 자전 재개·GeoJSON 직접 setData. Preview /qa/globe-labels — 모바일 첫 진입 시 지구본 여행지명이 EN 없이 보이는지.',
+    at: '2026-09-02T20:30:00.000Z',
+  },
   {
     id: '2026-09-02-home-festival-chip-4-merge',
     session: '홈 축제칩 #4, main 병합',

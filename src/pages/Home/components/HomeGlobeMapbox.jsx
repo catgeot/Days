@@ -94,6 +94,11 @@ import {
   isGlobeContextBasemapLabel,
 } from '../lib/globeMapboxLabelPolicy';
 import { getCategoryGlobeFaceView, GLOBE_FACE_FLY_MS, resolveCategoryFaceMapboxZoom } from '../lib/globeCategoryFocus';
+import {
+  GLOBE_LABEL_PLACEMENT_SETTLE_MS,
+  shouldHoldGlobeAutoRotate,
+  shouldRetryOverlayRevealAfterRotatePause,
+} from '../lib/globeLabelFirstReveal';
 import { passesGlobeTierPolicy } from '../lib/globeSpotVisibility';
 import { flushCurationGlobeSyncIfPending } from '../lib/curationPlaceBridge.js';
 import { useLocale } from '../../../i18n/LocaleProvider';
@@ -426,7 +431,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const { active: flightCinemaActive, routeIatas: flightCinemaRouteIatas } = useOptionalFlightCinemaRoute();
   const mapRef = useRef(null);
   const interactionRef = useRef(false);
-  const autoRotateRef = useRef(!pauseRender);
+  const autoRotateRef = useRef(false);
   const rotationFrameRef = useRef(null);
   const rotationTimer = useRef(null);
   /** 써머리「이 지역 보기」몰입 중 — 자전 금지·exitImmerse 대상 */
@@ -458,6 +463,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const waitingThemeSettleRef = useRef(false);
   const globeBaseRevealedRef = useRef(false);
   const globeOverlaysRevealedRef = useRef(false);
+  const globeLabelsSettledRef = useRef(false);
+  const resumeRotateAfterLabelsTimerRef = useRef(null);
+  const overlayRevealRetryRef = useRef(0);
   const globeThemeInitializedRef = useRef(false);
   const globeIdleMarkedRef = useRef(false);
   const prevStyleTransitioningRef = useRef(false);
@@ -820,6 +828,12 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     waitingThemeSettleRef.current = true;
     globeBaseRevealedRef.current = false;
     globeOverlaysRevealedRef.current = false;
+    globeLabelsSettledRef.current = false;
+    autoRotateRef.current = false;
+    if (resumeRotateAfterLabelsTimerRef.current) {
+      window.clearTimeout(resumeRotateAfterLabelsTimerRef.current);
+      resumeRotateAfterLabelsTimerRef.current = null;
+    }
     flightCinemaLayersLatchedRef.current = false;
     suppressSatelliteLabelEchoUntilRef.current = 0;
     if (map && gateoMarkerLayersReady(map)) {
@@ -1228,6 +1242,30 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     syncClusterOverlayLayers();
   }, [pauseRender, syncClusterOverlayLayers]);
 
+  /** jumpTo 자전은 첫 지명 placement를 끊음 — overlay 페인트 후 settle. */
+  const armAutoRotateAfterLabelSettle = useCallback((options = {}) => {
+    if (pauseRender) return;
+    if (!options.force && globeLabelsSettledRef.current) return;
+    if (resumeRotateAfterLabelsTimerRef.current) {
+      window.clearTimeout(resumeRotateAfterLabelsTimerRef.current);
+    }
+    const delay = options.immediate ? 0 : GLOBE_LABEL_PLACEMENT_SETTLE_MS;
+    resumeRotateAfterLabelsTimerRef.current = window.setTimeout(() => {
+      resumeRotateAfterLabelsTimerRef.current = null;
+      globeLabelsSettledRef.current = true;
+      if (shouldHoldGlobeAutoRotate({ pauseRender, labelsSettled: true })) return;
+      if (
+        interactionRef.current
+        || tourActiveRef.current
+        || immerseActiveRef.current
+        || flightCinemaActiveRef.current
+      ) {
+        return;
+      }
+      autoRotateRef.current = true;
+    }, delay);
+  }, [pauseRender]);
+
   /** Satellite globe — show as soon as map loads; suppress Mapbox detail labels until overlays ready. */
   const tryRevealGlobeBase = useCallback(() => {
     if (pauseRender || waitingThemeSettleRef.current) return;
@@ -1248,12 +1286,28 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (pauseRender) return;
     const map = mapRef.current?.getMap();
     if (!map) return;
+
+    const isMoving = typeof map.isMoving === 'function' && map.isMoving();
     if (
-      cameraAnimatingRef.current || isGlobeCameraBusy(map)
-      || (typeof map.isMoving === 'function' && map.isMoving())
+      shouldRetryOverlayRevealAfterRotatePause({
+        cameraAnimating: cameraAnimatingRef.current,
+        globeCameraBusy: isGlobeCameraBusy(map),
+        isMoving,
+        autoRotate: autoRotateRef.current,
+      })
     ) {
+      autoRotateRef.current = false;
+      if (overlayRevealRetryRef.current < 90) {
+        overlayRevealRetryRef.current += 1;
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => tryRevealGlobeOverlays());
+        });
+      }
       return;
     }
+
+    if (cameraAnimatingRef.current || isGlobeCameraBusy(map)) return;
+    if (isMoving) return;
 
     if (map.isStyleLoaded?.()) {
       syncGateoMarkerLayers();
@@ -1267,12 +1321,16 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (!areGateoMarkerLayersVisible(map)) {
       setGateoMarkerLayerVisibility(map, true);
     }
+    // schedule는 자전 jumpTo 중 isMoving에 막힘 — 첫 페인트는 직접 setData (EN 토글과 동일)
+    updateGateoMarkerSource(map, markerGeoJSONRef.current);
+    overlayRevealRetryRef.current = 0;
     if (!globeOverlaysRevealedRef.current) {
       globeOverlaysRevealedRef.current = true;
       markGlobeLoadPhase('tryRevealOverlays');
+      armAutoRotateAfterLabelSettle();
     }
     applyPlaceLabelVisibility();
-  }, [applyPlaceLabelVisibility, pauseRender, syncGateoMarkerLayers]);
+  }, [applyPlaceLabelVisibility, armAutoRotateAfterLabelSettle, pauseRender, syncGateoMarkerLayers]);
 
   const tryRevealGlobe = useCallback(() => {
     tryRevealGlobeBase();
@@ -1282,17 +1340,22 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   useEffect(() => {
     if (pauseRender) return undefined;
     const fallback = window.setTimeout(() => {
-      if (globeBaseRevealedRef.current || pauseRender) return;
-      if (import.meta.env.DEV) {
-        markGlobeLoadPhase('fallback-2s');
-        console.warn('[HomeGlobeMapbox] globe reveal fallback (2s safety net)');
+      if (pauseRender) return;
+      if (!globeBaseRevealedRef.current) {
+        if (import.meta.env.DEV) {
+          markGlobeLoadPhase('fallback-2s');
+          console.warn('[HomeGlobeMapbox] globe reveal fallback (2s safety net)');
+        }
+        globeBaseRevealedRef.current = true;
+        setIsStyleTransitioning(false);
       }
-      globeBaseRevealedRef.current = true;
-      setIsStyleTransitioning(false);
       tryRevealGlobeOverlays();
+      if (!globeOverlaysRevealedRef.current) {
+        armAutoRotateAfterLabelSettle({ force: true });
+      }
     }, 2000);
     return () => window.clearTimeout(fallback);
-  }, [globeTheme, tryRevealGlobeOverlays, pauseRender]);
+  }, [globeTheme, tryRevealGlobeOverlays, armAutoRotateAfterLabelSettle, pauseRender]);
 
   useEffect(() => {
     if (import.meta.env.DEV && prevStyleTransitioningRef.current && !isStyleTransitioning) {
@@ -1320,7 +1383,12 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     rotationTimer.current = setTimeout(() => {
       if (immerseActiveRef.current) return;
       const zoom = map?.getZoom?.();
-      if (!pauseRender && Number.isFinite(zoom) && zoom <= GLOBE_VIEW.rotateZoomThreshold) {
+      if (
+        !pauseRender
+        && Number.isFinite(zoom)
+        && zoom <= GLOBE_VIEW.rotateZoomThreshold
+        && !shouldHoldGlobeAutoRotate({ pauseRender, labelsSettled: globeLabelsSettledRef.current })
+      ) {
         autoRotateRef.current = true;
       }
     }, waitMs);
@@ -2118,6 +2186,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     },
     resumeRotation: () => {
       if (pauseRender || isTourMode(globeMode) || flightCinemaActiveRef.current || immerseActiveRef.current) return;
+      if (shouldHoldGlobeAutoRotate({ pauseRender, labelsSettled: globeLabelsSettledRef.current })) return;
       autoRotateRef.current = true;
     },
     /** 채팅·모달 닫힌 뒤 Mapbox 입력·리사이즈 복구 (몰입 flyTo 무반응 방지) */
@@ -2249,7 +2318,11 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     rotationTimer.current = setTimeout(() => {
       if (categoryFaceFlyGenRef.current !== gen) return;
-      if (!pauseRender && map.getZoom() <= GLOBE_VIEW.rotateZoomThreshold) {
+      if (
+        !pauseRender
+        && map.getZoom() <= GLOBE_VIEW.rotateZoomThreshold
+        && !shouldHoldGlobeAutoRotate({ pauseRender, labelsSettled: globeLabelsSettledRef.current })
+      ) {
         autoRotateRef.current = true;
       }
     }, flyMs + 400);
@@ -2282,6 +2355,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   useEffect(() => {
     if (isTourMode(globeMode)) return;
     if (tourActiveRef.current) return;
+    if (shouldHoldGlobeAutoRotate({
+      pauseRender,
+      labelsSettled: globeLabelsSettledRef.current,
+    })) {
+      autoRotateRef.current = false;
+      return;
+    }
     autoRotateRef.current = !pauseRender;
     if (pauseRender && rotationTimer.current) {
       clearTimeout(rotationTimer.current);
@@ -2358,6 +2438,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   useEffect(() => () => {
     unbindSpaceDragGuardRef.current?.();
     unbindSpaceDragGuardRef.current = null;
+    if (resumeRotateAfterLabelsTimerRef.current) {
+      window.clearTimeout(resumeRotateAfterLabelsTimerRef.current);
+      resumeRotateAfterLabelsTimerRef.current = null;
+    }
   }, []);
 
   const handleGlobeClickInternal = useCallback((event) => {
