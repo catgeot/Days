@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '홈 축제칩',
-  sessionNo: 1,
-  sessionPhase: '써머리 펼침 방지',
+  sessionNo: 2,
+  sessionPhase: 'PC 접힘',
   branch: 'cursor/home-festival-chip-59c9',
   previewPath: '/',
   qaShareSlug: 'home-chip',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-02-home-festival-chip-pc-collapse',
+    session: '홈 축제칩 #2, PC 접힘',
+    title: 'PC 좌상단 바로가기도 접힌 칩',
+    detail:
+      'PC는 축제·행사·명승·큐레이션이 항상 펼쳐져 테마 카테고리(top 17rem)와 겹침. 모바일과 같은 접힌 버튼·탭 펼침으로 통일. Preview /qa/home-chip — PC 홈에서 한 줄 접힘·카테고리와 겹침 없는지·펼침/접힘 확인.',
+    at: '2026-09-02T14:20:00.000Z',
+  },
   {
     id: '2026-09-02-home-festival-chip-keep-collapsed',
     session: '홈 축제칩 #1, 써머리 펼침 방지',

@@ -130,7 +130,7 @@ const HomeUI = React.memo(({
     (isPlaceCardVisible && !isFlightCinema) || isFlightCinema;
   /** 모바일 나라 메뉴 — 펼침일 때만 목록 노출 · 숨김 시 지도 탐색 */
   const [mobileRegionsExpanded, setMobileRegionsExpanded] = useState(true);
-  /** 모바일 좌상단 바로가기 — 기본 접힘 · 탭으로 펼침 */
+  /** 좌상단 바로가기 — 기본 접힘 · 탭으로 펼침 (모바일·PC) */
   const [mobileQuickLinksExpanded, setMobileQuickLinksExpanded] = useState(false);
   const mobileCategoryBarRef = useRef(null);
   const mobileRegionsAuxRef = useRef(null);
@@ -239,7 +239,7 @@ const HomeUI = React.memo(({
     </>
   );
 
-  const renderMobileQuickLinks = () => (
+  const renderQuickLinks = () => (
     showMobileQuickLinksCollapsed ? (
       <button
         type="button"
@@ -330,7 +330,7 @@ const HomeUI = React.memo(({
 
         {!isTourCinema ? (
           <div className="md:hidden pointer-events-auto">
-            {renderMobileQuickLinks()}
+            {renderQuickLinks()}
           </div>
         ) : null}
 
@@ -364,25 +364,8 @@ const HomeUI = React.memo(({
               {!isTourCinema ? <LocaleToggle compact /> : null}
             </div>
             {!isTourCinema ? (
-              <div className="flex flex-col items-start gap-2 pb-3">
-                {mobileQuickLinks.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <Link
-                      key={item.to}
-                      to={item.to}
-                      className={`group relative flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border px-2.5 py-1.5 transition-colors touch-manipulation ${item.chipClass}`}
-                      aria-label={t('home.quickLinks.navigateTo', { label: item.label })}
-                    >
-                      <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border ${item.iconWrapClass}`}>
-                        <Icon size={15} aria-hidden="true" />
-                      </span>
-                      <span className="truncate text-[12px] font-bold tracking-wide text-white break-keep">
-                        {item.label}
-                      </span>
-                    </Link>
-                  );
-                })}
+              <div className="flex flex-col items-start gap-2 pb-1">
+                {renderQuickLinks()}
               </div>
             ) : null}
           </div>
