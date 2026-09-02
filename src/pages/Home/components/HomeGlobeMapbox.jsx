@@ -962,6 +962,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     return markersToGeoJSON(allMarkers, locale);
   }, [allMarkers, isZenMode, locale]);
 
+  const markerGeoJSONRef = useRef(markerGeoJSON);
+  markerGeoJSONRef.current = markerGeoJSON;
+
   useEffect(() => {
     allMarkersLookupRef.current = allMarkers;
   }, [allMarkers]);
@@ -1103,31 +1106,34 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const map = mapRef.current?.getMap?.();
     if (!map || pauseRender) return undefined;
 
+    let cancelled = false;
     const wasRotating = autoRotateRef.current;
     autoRotateRef.current = false;
 
-    forceUpdateGateoMarkerSource(map, markerGeoJSON);
-    const cancel = scheduleMapboxLanguage(map, locale);
-
-    const resumeId = requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        if (
-          wasRotating
-          && !pauseRender
-          && !interactionRef.current
-          && !tourActiveRef.current
-          && !immerseActiveRef.current
-        ) {
-          autoRotateRef.current = true;
-        }
-      });
+    const cancel = scheduleMapboxLanguage(map, locale, {
+      onSettled: () => {
+        if (cancelled || map._removed) return;
+        forceUpdateGateoMarkerSource(map, markerGeoJSONRef.current);
+        requestAnimationFrame(() => {
+          if (cancelled) return;
+          if (
+            wasRotating
+            && !pauseRender
+            && !interactionRef.current
+            && !tourActiveRef.current
+            && !immerseActiveRef.current
+          ) {
+            autoRotateRef.current = true;
+          }
+        });
+      },
     });
 
     return () => {
+      cancelled = true;
       cancel();
-      cancelAnimationFrame(resumeId);
     };
-  }, [locale, globeTheme, markerGeoJSON, pauseRender]);
+  }, [locale, globeTheme, pauseRender]);
 
   useEffect(() => {
     if (pauseRender) return;

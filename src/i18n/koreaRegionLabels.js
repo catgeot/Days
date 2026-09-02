@@ -35,10 +35,10 @@ function hubKoToEnMap() {
 
 /**
  * @param {string | null | undefined} locale
- * @returns {'en' | 'ko'}
+ * @returns {'en-US' | 'ko-KR'}
  */
 export function mapboxLanguageForLocale(locale) {
-  return isEnLocale(locale) ? 'en' : 'ko';
+  return isEnLocale(locale) ? 'en-US' : 'ko-KR';
 }
 
 function mapLanguageMatches(map, mapLanguage) {
@@ -46,58 +46,65 @@ function mapLanguageMatches(map, mapLanguage) {
   const current = map.getLanguage();
   if (current == null) return false;
   const currentStr = Array.isArray(current) ? current[0] : current;
-  return String(currentStr || '').toLowerCase().startsWith(mapLanguage);
+  const want = String(mapLanguage || '').toLowerCase();
+  const have = String(currentStr || '').toLowerCase();
+  if (have === want) return true;
+  const wantBase = want.split('-')[0];
+  const haveBase = have.split('-')[0];
+  return wantBase.length > 1 && haveBase === wantBase;
 }
+
+/** @type {WeakMap<object, () => void>} */
+const activeMapLanguageSync = new WeakMap();
 
 function canApplyMapLanguage(map) {
   if (!map || map._removed) return false;
   if (typeof map.isStyleLoaded === 'function' && !map.isStyleLoaded()) return false;
-  // flyTo/easeTo만 대기 — 자전 jumpTo는 isMoving을 켜 idle을 막아 토글 지연 유발.
   if (isGlobeCameraBusy(map)) return false;
   return true;
 }
 
 /**
- * Mapbox setLanguage — continuePlacement 크래시 완화, 자전 중 idle 대기 금지.
+ * Mapbox setLanguage — 자전 정지 후 idle 1회 대기, reloadSources 완료까지 대기.
  * @param {import('mapbox-gl').Map | null | undefined} map
  * @param {string | null | undefined} locale
+ * @param {{ onSettled?: () => void }} [options]
  * @returns {() => void} cancel
  */
-export function scheduleMapboxLanguage(map, locale) {
+export function scheduleMapboxLanguage(map, locale, options = {}) {
   if (!map || typeof map.setLanguage !== 'function' || map._removed) return () => {};
 
   const mapLanguage = mapboxLanguageForLocale(locale);
-  if (mapLanguageMatches(map, mapLanguage)) return () => {};
+  if (mapLanguageMatches(map, mapLanguage)) {
+    options.onSettled?.();
+    return () => {};
+  }
+
+  activeMapLanguageSync.get(map)?.();
 
   let cancelled = false;
-  let rafId = 0;
-  let retryTimer = 0;
-  let hardFallbackTimer = 0;
+  /** @type {(() => void) | null} */
+  let onIdle = null;
   /** @type {(() => void) | null} */
   let onStyleData = null;
 
-  const clearTimers = () => {
-    if (rafId) {
-      cancelAnimationFrame(rafId);
-      rafId = 0;
-    }
-    if (retryTimer) {
-      clearTimeout(retryTimer);
-      retryTimer = 0;
-    }
-    if (hardFallbackTimer) {
-      clearTimeout(hardFallbackTimer);
-      hardFallbackTimer = 0;
-    }
-    if (onStyleData && typeof map.off === 'function') {
-      map.off('styledata', onStyleData);
-    }
+  const detach = () => {
+    if (onIdle && typeof map.off === 'function') map.off('idle', onIdle);
+    if (onStyleData && typeof map.off === 'function') map.off('styledata', onStyleData);
+    onIdle = null;
     onStyleData = null;
+  };
+
+  const settle = () => {
+    if (!cancelled) options.onSettled?.();
   };
 
   const apply = () => {
     if (cancelled || map._removed) return false;
-    if (mapLanguageMatches(map, mapLanguage)) return true;
+    if (mapLanguageMatches(map, mapLanguage)) {
+      settle();
+      return true;
+    }
     if (!canApplyMapLanguage(map)) return false;
     try {
       map.setLanguage(mapLanguage);
@@ -107,77 +114,77 @@ export function scheduleMapboxLanguage(map, locale) {
     }
   };
 
-  const scheduleRetry = (delayMs) => {
-    if (cancelled) return;
-    retryTimer = window.setTimeout(() => {
-      retryTimer = 0;
-      if (cancelled) return;
-      if (apply()) return;
-      if (isGlobeCameraBusy(map)) {
-        scheduleRetry(48);
-        return;
-      }
-      tryApplySoon();
-    }, delayMs);
+  const waitPostApplyIdle = () => {
+    if (cancelled || map._removed) return;
+    if (typeof map.once !== 'function') {
+      settle();
+      return;
+    }
+    map.once('idle', () => {
+      if (!cancelled) settle();
+    });
   };
 
-  const tryApplySoon = () => {
-    if (cancelled) return;
-    rafId = requestAnimationFrame(() => {
-      rafId = requestAnimationFrame(() => {
-        rafId = 0;
-        if (cancelled) return;
-        if (apply()) return;
-        if (isGlobeCameraBusy(map)) {
-          scheduleRetry(48);
+  const runWhenIdle = () => {
+    if (cancelled || map._removed) return;
+    onIdle = null;
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (cancelled || map._removed) return;
+        if (!apply()) {
+          if (!cancelled && typeof map.once === 'function') {
+            onIdle = runWhenIdle;
+            map.once('idle', onIdle);
+          }
           return;
         }
-        apply();
+        waitPostApplyIdle();
       });
     });
   };
 
   const waitForStyle = () => {
     if (cancelled || map._removed) return;
-    if (canApplyMapLanguage(map)) {
-      tryApplySoon();
-      return;
-    }
 
     if (typeof map.isStyleLoaded === 'function' && !map.isStyleLoaded()) {
       onStyleData = () => {
         onStyleData = null;
-        if (!cancelled) tryApplySoon();
+        if (!cancelled) queueIdle();
       };
       if (typeof map.once === 'function') {
         map.once('styledata', onStyleData);
       } else {
-        scheduleRetry(80);
+        queueIdle();
       }
       return;
     }
 
-    scheduleRetry(48);
+    queueIdle();
+  };
+
+  const queueIdle = () => {
+    if (cancelled || map._removed) return;
+    if (typeof map.once !== 'function') {
+      runWhenIdle();
+      return;
+    }
+    onIdle = runWhenIdle;
+    map.once('idle', onIdle);
   };
 
   waitForStyle();
 
-  hardFallbackTimer = window.setTimeout(() => {
-    hardFallbackTimer = 0;
-    if (cancelled || map._removed) return;
-    if (mapLanguageMatches(map, mapLanguage)) return;
-    if (typeof map.isStyleLoaded === 'function' && !map.isStyleLoaded()) return;
-    try {
-      map.setLanguage(mapLanguage);
-    } catch {
-      // Style may still be loading or mid-render.
-    }
-  }, 400);
-
-  return () => {
+  const cancel = () => {
     cancelled = true;
-    clearTimers();
+    detach();
+    if (activeMapLanguageSync.get(map) === cancel) {
+      activeMapLanguageSync.delete(map);
+    }
   };
+
+  activeMapLanguageSync.set(map, cancel);
+  return cancel;
 }
 
 /**
