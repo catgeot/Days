@@ -96,3 +96,14 @@
 - **VERIFY** audit:korea-local-scenic-lists 0 · audit:city-attraction-hubs 0 · smoke(원주8경·속초8경·양양10경·고성8경·삼척십경·동해비경) · build PASS
 - **Preview** `https://days-git-cursor-palgyeong-catgeots-projects.vercel.app`
 - **다음** **#5 채우기 R02** — samcheok·donghae 큐 예비 소진 · R02 재조사
+
+### #5 채우기 R02 ✅
+
+- **세션** `지자체 팔경 #5, 채우기 R02`
+- **브랜치** `cursor/palgyeong` · tip `0337bc26` · PR [#172](https://github.com/catgeot/Days/pull/172)
+- **산출** `cheorwon-gugyeong`(9) · `yeongwol-sipgyeong`(10) · `taebaek-palgyeong`(8) · `jeongseon-palgyeong`(8) · `hwacheon-gugyeong`(9) · hub append +30 · aliases
+- **EXISTS** `samcheok-sipgyeong`·`donghae-bijing`(R01 tip) → 예비 `cheorwon-gugyeong`·`yeongwol-sipgyeong` 1:1
+- **skip** `pyeongchang` 시·군 단위 공식 N경 없음(`skip_no_source`)
+- **VERIFY** audit:korea-local-scenic-lists 0 · audit:city-attraction-hubs 0 · smoke(철원9경·영월10경·태백8경·화암8경·화천9경) · build PASS
+- **Preview** `https://days-git-cursor-palgyeong-catgeots-projects.vercel.app`
+- **다음** **#6 채우기 R03** — `hoengseong`·예비 · R01–R03 누적 후 **I#2**
