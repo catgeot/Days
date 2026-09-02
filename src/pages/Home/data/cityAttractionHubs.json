@@ -4912,7 +4912,10 @@
     "lng": 128.191,
     "aliases": [
       "제천시",
-      "jecheon"
+      "jecheon",
+      "제천10경",
+      "제천 십경",
+      "堤川十景"
     ],
     "attractions": [
       {
@@ -4949,6 +4952,48 @@
         "kind": "park",
         "lat": 36.846807,
         "lng": 128.058428
+      },
+      {
+        "name": "박달재",
+        "name_en": "Bakdaljae Pass",
+        "kind": "viewpoint",
+        "lat": 37.149436,
+        "lng": 128.047069
+      },
+      {
+        "name": "금수산",
+        "name_en": "Geumsusan Mountain",
+        "kind": "viewpoint",
+        "lat": 36.9847255,
+        "lng": 128.2569094
+      },
+      {
+        "name": "용하구곡",
+        "name_en": "Yongha Valley",
+        "kind": "park",
+        "lat": 36.8479514,
+        "lng": 128.1884301
+      },
+      {
+        "name": "제천 옥순봉",
+        "name_en": "Jecheon Oksunbong Peak",
+        "kind": "viewpoint",
+        "lat": 36.9437039,
+        "lng": 128.2371912
+      },
+      {
+        "name": "탁사정",
+        "name_en": "Taksajeong Pavilion",
+        "kind": "viewpoint",
+        "lat": 37.1665854,
+        "lng": 128.1083244
+      },
+      {
+        "name": "배론성지",
+        "name_en": "Baeron Holy Ground",
+        "kind": "landmark",
+        "lat": 37.1597651,
+        "lng": 128.0841016
       }
     ]
   },
@@ -5014,7 +5059,10 @@
     "lng": 128.3655,
     "aliases": [
       "단양군",
-      "danyang"
+      "danyang",
+      "단양팔경",
+      "단양8경",
+      "단양군 팔경"
     ],
     "attractions": [
       {
@@ -5051,6 +5099,41 @@
         "kind": "landmark",
         "lat": 37.0632486092,
         "lng": 128.4915183165
+      },
+      {
+        "name": "석문",
+        "name_en": "Seokmun Gate Rock",
+        "kind": "landmark",
+        "lat": 37.0027238,
+        "lng": 128.3433158
+      },
+      {
+        "name": "옥순봉",
+        "name_en": "Oksunbong Peak",
+        "kind": "viewpoint",
+        "lat": 36.9437039,
+        "lng": 128.2371912
+      },
+      {
+        "name": "상선암",
+        "name_en": "Sangseonam Rock",
+        "kind": "landmark",
+        "lat": 36.8717033,
+        "lng": 128.2959419
+      },
+      {
+        "name": "중선암",
+        "name_en": "Jungseonam Rock",
+        "kind": "landmark",
+        "lat": 36.878353,
+        "lng": 128.298232
+      },
+      {
+        "name": "하선암",
+        "name_en": "Haseonam Rock",
+        "kind": "landmark",
+        "lat": 36.9081177,
+        "lng": 128.3092207
       }
     ]
   },
