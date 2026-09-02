@@ -18,24 +18,24 @@
 
 | | |
 |--|--|
-| **상태** | **#1 Chrome 주소창 가림** · tip `def1832c` · 사람 Preview 대기 |
-| **브랜치** | `cursor/home-header-3eef` · tip `def1832c` |
+| **상태** | **#2 첫 로딩 재현 수정** · tip `97163af3` · 사람 Preview 대기 |
+| **브랜치** | `cursor/home-header-3eef` · tip `97163af3` |
 | **PR** | [#181](https://github.com/catgeot/Days/pull/181) |
 | **일지** | [`2026-09-02-project-log.md`](./2026-09-02-project-log.md) |
 | **Preview** | `/qa/home-header` → git Preview 홈 |
 | **VERIFY** | `smoke:home-chrome-viewport` · `vite build` |
 
-**게이트**: iPhone Chrome 홈 새로고침 여러 번 — 로고·검색·바로가기 칩이 주소창 아래에 전부 보임 · 칩 탭 회귀 없음
+**게이트**: iPhone Chrome **첫 진입**(탭 재오픈·주소 입력) 로고·검색·칩이 주소창 아래 · **새로고침** 후 이중 여백 없음 · 칩 탭 회귀 없음
 
-**다음 제시어** (#2 사람 Preview QA):
+**다음 제시어** (#3 사람 Preview QA):
 
 ```
-지구본 홈 헤더 #2, 사람 Preview QA
+지구본 홈 헤더 #3, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-02-project-log.md
 브랜치 cursor/home-header-3eef · PR #181 · https://www.gateo.kr/qa/home-header
 금지: UI 리디자인 · offsetTop 지속 보정 · 코드를 origin/main에 임의 push
-작업: iPhone Chrome 홈 새로고침 후 상단 칩이 주소창에 안 가리는지 · OK 시 PR #181 merge
+작업: 첫 진입(새로고침 아님) 헤더가 주소창에 안 가리는지 · 새로고침 후 너무 안 내려가는지 · OK 시 PR #181 merge
 ```
 
 ---
