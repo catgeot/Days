@@ -30,6 +30,7 @@ import {
   matchCitiesPrefix,
 } from './citiesSearch';
 import { searchBoxForward } from './mapboxSearchBox';
+import { buildMapboxSearchQueries } from './exploreSearchAliases';
 
 const normalizeKey = (s) =>
   String(s ?? '')
@@ -251,13 +252,18 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
   const out = [...local];
   const seen = new Set(local.map(dedupeKey).filter(Boolean));
   const mapboxLimit = opts.mapboxLimit ?? 6;
+  const mapboxQueries = local.length < 3 ? buildMapboxSearchQueries(q) : [q];
 
   try {
-    const remote = await searchBoxForward(q, {
-      limit: mapboxLimit,
-      types: 'place,city,poi',
-    });
-    for (const item of remote) pushUnique(out, seen, item);
+    for (const mq of mapboxQueries) {
+      const remote = await searchBoxForward(mq, {
+        limit: mapboxLimit,
+        types: 'place,city,poi',
+        language: /[\uAC00-\uD7A3]/.test(mq) ? 'ko' : 'en',
+      });
+      for (const item of remote) pushUnique(out, seen, item);
+      if (out.length >= 8) break;
+    }
   } catch {
     // degrade: local only
   }
