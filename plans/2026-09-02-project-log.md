@@ -77,3 +77,28 @@
 - **사람 QA** 모바일: 검색→`/explore` · EN 토글 독립 클릭 · 바로가기 2행 OK
 - **main** `9824bfb8` — PR [#175](https://github.com/catgeot/Days/pull/175) merge
 - **종료** 작업 로그 `active: false` · `/qa/search-hit` → PROD `/`
+
+---
+
+## 홈 지구본 지명 — 첫 로딩 고착
+
+### #1 첫 로딩 지명 ✅
+
+- **세션** `홈 지구본 지명 #1, 첫 로딩 지명`
+- **브랜치** `cursor/globe-labels-ddce` · tip `8317146d` · PR [#180](https://github.com/catgeot/Days/pull/180)
+- **증상** 모바일 홈 첫 로딩 후 지명 없음 · EN 토글·재실행·새로고침만 복구
+- **원인** 마운트 즉시 `jumpTo` 자전이 Mapbox continuePlacement·idle을 끊어 gateo overlay가 숨은 채 고착
+- **적용** overlay 페인트+320ms 뒤에만 자전 재개 · 첫 페인트 GeoJSON 직접 setData
+- **VERIFY** `smoke:globe-label-first-reveal` · `smoke:place-label-slug` · `vite build` PASS
+- **Preview** `/qa/globe-labels` · git Preview 홈
+- **다음** **#2 사람 Preview QA** — 모바일 첫 진입(EN 없이) 지명 · 자전 · EN↔KO
+
+```
+홈 지구본 지명 #2, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-02-project-log.md
+브랜치 cursor/globe-labels-ddce · PR #180 · https://www.gateo.kr/qa/globe-labels
+금지: UI 리디자인 · HomeGlobeMapbox 광역 리팩터 · 코드를 origin/main에 임의 push
+작업: 모바일 첫 진입(EN 없이) 지명 표시 · 자전 · EN↔KO · OK 시 PR #180 merge
+```
+

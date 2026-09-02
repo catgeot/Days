@@ -1,6 +1,6 @@
 # koreaLocalScenicLists — 사전 배치 큐 (기초지자체 팔경·구경)
 
-**상태**: R06 ✅ · **I#3** ✅ · 다음 **R07**  
+**상태**: R09 ✅ · **I#4** ✅ · 경북 큐 **소진** (다음 권역 = 사람 합의)  
 **규칙**: 라운드 = **6 칸** · 워커A **3** + 워커B **3** · VERIFY PASS → **다음 R 자동** · **3R마다 I#** · §6.2만 정지  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.6** · 플랜 [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md)  
 **단위**: 시·군·구만 · **광역 팔경(관동팔경 등) 큐 금지**(1차)  
@@ -61,9 +61,9 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 | **R04** | `danyang-palgyeong` · `jecheon-sipgyeong` · skip `chungju` | skip `cheongju` · skip `boeun` · skip `goesan` | 충북 | ✅ 2026-09-02 |
 | **R05** | `okcheon-gugyeong` · `yeongdong-yangsan-palgyeong` · `yeongdong-hancheon-palgyeong` · `jincheon-palgyeong` | `jeungpyeong-gugyeong` · skip `eumseong` · — | 충북 | ✅ 2026-09-02 |
 | **R06** | `gyeongju-8gwae` · `pohang-sipgyeong` · skip `andong` | skip `gumi` · skip `sangju` · skip `gimcheon` | 경북 | ✅ 2026-09-02 |
-| **R07** | `yeongju-?` · `mungyeong-?` · `bonghwa-?` | `yecheon-?` · `cheongsong-?` · `yeongdeok-?` | 경북 | ⬜ |
-| **R08** | `uljin-?` · `goryeong-?` · `gunwi-?` | `uiseong-?` · `chilgok-?` · `seongju-?` | 경북 | ⬜ |
-| **R09** | `gyeongsan-?` · `yeongcheon-?` · `cheongdo-?` | `yeongyang-?` · `ulleung-?` · `dokdo-?` | 경북 | ⬜ |
+| **R07** | skip `yeongju` · `mungyeong-palgyeong` · skip `bonghwa` | `yecheon-palgyeong` · skip `cheongsong` · `yeongdeok-sipgyeong` | 경북 | ✅ 2026-09-02 |
+| **R08** | skip `uljin` · skip `goryeong` · skip `gunwi` | `uiseong-binggye-palgyeong` · skip `chilgok` · `seongju-sipgyeong` | 경북 | ✅ 2026-09-02 |
+| **R09** | skip `gyeongsan` · `yeongcheon-gugyeong` · `cheongdo-gugyeong` | skip `yeongyang` · skip `ulleung` · skip `dokdo` | 경북 | ✅ 2026-09-02 |
 
 > **R04 skip**: `chungju`·`cheongju`·`boeun`·`goesan` 시·군 단위 공식 N경 없음(`skip_no_source`) — chungju.go.kr·cheongju.go.kr·boeun.go.kr·goesan.go.kr.
 
@@ -77,11 +77,17 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 
 > **R06 verified**: `gyeongju-8gwae`(8怪 · listKind other) · `pohang-sipgyeong`(12).
 
+> **R07 verified**: `mungyeong-palgyeong`(8) · `yecheon-palgyeong`(8) · `yeongdeok-sipgyeong`(9). **skip** `yeongju`·`bonghwa` `skip_no_source` · `cheongsong` `skip_ambiguous`.
+
+> **R08 verified**: `uiseong-binggye-palgyeong`(8) · `seongju-sipgyeong`(10). **skip** `uljin`·`goryeong`·`gunwi`·`chilgok` `skip_no_source`.
+
+> **R09 verified**: `yeongcheon-gugyeong`(9) · `cheongdo-gugyeong`(9). **skip** `gyeongsan`·`ulleung`·`dokdo` `skip_no_source` · `yeongyang` `skip_ambiguous`.
+
 > **충북 11** hub (`cheongju`·`jincheon`·`jeungpyeong`·`eumseong`·`goesan`·`chungju`·`jecheon`·`danyang`·`boeun`·`okcheon`·`yeongdong`) — [`korea-scenic-mid-cluster-plan.md`](./korea-scenic-mid-cluster-plan.md) 청주권·북부·남부 순.
 
 > **경북 24** hub — 신라·가야·유교·동해 권역 순. `ulleung`·`dokdo`는 섬·공식 N경 유무 **착수 전 확인**.
 
-**I 주기**: R04–R06 VERIFY 누적 후 → **I 무결성 #3** ✅ 2026-09-02 → 다음 **R07**.
+**I 주기**: R07–R09 VERIFY 누적 후 → **I 무결성 #4** ✅ 2026-09-02 · 경북 큐 소진.
 
 ### 예비 (스킵·EXISTS 시)
 
@@ -101,6 +107,6 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 
 ```text
 운영: 자동 오케 §4.3 — VERIFY PASS → 다음 ⬜ R (사람 제시어·Preview QA 없음)
-다음: R07 · lists 23 · members 203 · 충북 skips 5 · 경북 skips 4
-I#3: R04–R06 PASS 2026-09-02
+현재: lists 30 · members 264 · 충북 skips 5 · 경북 skips 15
+I#4: R07–R09 PASS 2026-09-02 · 경북 큐 소진 — 다음 권역 큐 확장은 사람 합의
 ```

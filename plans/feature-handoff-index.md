@@ -14,6 +14,32 @@
 
 ## 활성 목록
 
+### 홈 지구본 지명 (첫 로딩)
+
+| | |
+|--|--|
+| **상태** | **#1 첫 로딩 지명** · tip `8317146d` · 사람 Preview 대기 |
+| **브랜치** | `cursor/globe-labels-ddce` · tip `8317146d` |
+| **PR** | [#180](https://github.com/catgeot/Days/pull/180) |
+| **일지** | [`2026-09-02-project-log.md`](./2026-09-02-project-log.md) |
+| **Preview** | `/qa/globe-labels` → git Preview 홈 |
+| **VERIFY** | `smoke:globe-label-first-reveal` · `smoke:place-label-slug` · `vite build` |
+
+**게이트**: 사람 모바일 첫 진입 — EN 없이 여행지 지명 표시 · 자전 유지 · EN↔KO 회귀
+
+**다음 제시어** (#2 사람 Preview QA):
+
+```
+홈 지구본 지명 #2, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-02-project-log.md
+브랜치 cursor/globe-labels-ddce · PR #180 · https://www.gateo.kr/qa/globe-labels
+금지: UI 리디자인 · HomeGlobeMapbox 광역 리팩터 · 코드를 origin/main에 임의 push
+작업: 모바일 첫 진입(EN 없이) 지명 표시 · 자전 · EN↔KO · OK 시 PR #180 merge
+```
+
+---
+
 ### 홈 축제칩 (써머리 펼침) — main 병합 ✅
 
 | | |
@@ -204,8 +230,8 @@ main · www.gateo.kr/place/yap/planner?lang=en
 
 | | |
 |--|--|
-| **상태** | **자동 오케** · R06 ✅ · **I#3** ✅ · 다음 **R07** |
-| **브랜치** | `cursor/palgyeong` · tip `37b29e1e` |
+| **상태** | **자동 오케** · R07–R09 ✅ · **I#4** ✅ · 경북 큐 **소진** |
+| **브랜치** | `cursor/palgyeong` · tip `cc2ac626` |
 | **PR** | [#172](https://github.com/catgeot/Days/pull/172) |
 | **플랜** | [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) **§4.5·§9** |
 | **큐** | [`korea-local-scenic-lists-queue.md`](./korea-local-scenic-lists-queue.md) |
@@ -224,7 +250,7 @@ main · www.gateo.kr/place/yap/planner?lang=en
 @plans/feature-handoff-index.md
 브랜치 cursor/palgyeong · PR #172
 금지: UI · scenic승격 · 광역팔경 · feature plans 커밋 · 매R 사람QA · VERIFY후 제시어대기
-작업: 큐 다음 ⬜ R부터 · 워커2 · VERIFY PASS→다음R 또는 후임Task(§4.5-D) · 3R마다 I# · §6.2만 정지
+작업: 경북 큐 소진 — 큐 확장(사람 합의) 또는 PR #172 merge QA · §6.2만 정지
 ```
 
 **턴 종료 체크**(⬜ R 남음 · §6.2 아님): (1) feature push (2) **같은 턴** 다음 R **또는** 후임 Task `run_in_background:false` (3) 세대 끝이면 **main docs push**. VERIFY 후 요약만 하고 종료 **금지** — [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) **§4.5**.
