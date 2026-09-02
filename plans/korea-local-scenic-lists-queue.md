@@ -1,9 +1,10 @@
 # koreaLocalScenicLists — 사전 배치 큐 (기초지자체 팔경·구경)
 
-**상태**: 강원 F R01–R03 ✅ · **I#2** ✅ 2026-09-02 · 다음 **F R04** 충북  
-**규칙**: 라운드 = **6 리스트** · 워커A **3** + 워커B **3** · 메인 직렬 머지(A→B) · VERIFY 후 다음  
+**상태**: R04 ✅ · **자동 오케** (플랜 §4.3) · 다음 **R05**  
+**규칙**: 라운드 = **6 칸** · 워커A **3** + 워커B **3** · VERIFY PASS → **다음 R 자동** · **3R마다 I#** · §6.2만 정지  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.6** · 플랜 [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md)  
-**단위**: 시·군·구만 · **광역 팔경(관동팔경 등) 큐 금지**(1차)
+**단위**: 시·군·구만 · **광역 팔경(관동팔경 등) 큐 금지**(1차)  
+**QA**: F 라운드 **사람 Preview 생략** · I# 일지 요약만
 
 ### 사용법
 
@@ -91,8 +92,7 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 ### 진행 체크
 
 ```text
-다음 시작: F R05 (#9, 충북 5+예비)
-tip lists: 16 · members: 141 · hub append: +18(R04)
-충북 skips 4: chungju·cheongju·boeun·goesan
-R04 ✅ 2026-09-02 — danyang-palgyeong(8) · jecheon-sipgyeong(10) · audit 0 · smoke(단양팔경·제천10경) · build PASS
+운영: 자동 오케 §4.3 — VERIFY PASS → 다음 ⬜ R (사람 제시어·Preview QA 없음)
+다음: R05 · lists 16 · members 141 · 충북 skips 4
+I#3 검토: R04–R06 누적 후 (R06 완료 시)
 ```

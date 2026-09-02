@@ -170,27 +170,27 @@ main · www.gateo.kr/place/yap/planner?lang=en
 
 | | |
 |--|--|
-| **상태** | **#8 채우기 R04** ✅ · 다음 **#9 채우기 R05** |
+| **상태** | **자동 오케** · R04 ✅ · 다음 **R05** (큐 ⬜) |
 | **브랜치** | `cursor/palgyeong` · tip `db428507` |
 | **PR** | [#172](https://github.com/catgeot/Days/pull/172) |
-| **플랜** | [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) §9 |
+| **플랜** | [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) §4.3·§9 |
 | **큐** | [`korea-local-scenic-lists-queue.md`](./korea-local-scenic-lists-queue.md) |
 | **오케** | [`orchestrator-method.md`](./orchestrator-method.md) **§5.6** |
 | **일지** | [`2026-09-01-project-log.md`](./2026-09-01-project-log.md) |
-| **정책** | 시·군·구 · 기존 hub 유지+append · **UI·scenic 승격 금지** · 공식 URL 필수 |
+| **정책** | 시·군·구 · append-only · **F=자동 오케** · **매 R 사람 QA 생략** · I#만 일지 요약 |
 | **VERIFY** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · `smoke:korea-local-scenic-lists` · `build` |
 
-**다음 제시어 (#9 채우기 R05)**:
+**오케 제시어 (최초 · 복구 · 새 채팅 1회)**:
 
 ```
-지자체 팔경 #9, 채우기 R05
-@plans/feature-handoff-index.md
-@plans/2026-09-01-project-log.md
+오케스트레이터 지자체팔경
+@plans/orchestrator-method.md
 @plans/korea-local-scenic-lists-plan.md
 @plans/korea-local-scenic-lists-queue.md
-브랜치 cursor/palgyeong · PR #172 · 큐 R05 ⬜
-금지: UI 변경 · koreaScenicSpots 승격 · 광역 팔경 · feature에 plans 커밋
-작업: 오케 워커2 · R05 옥천·영동·진천·증평·음성 · VERIFY
+@plans/feature-handoff-index.md
+브랜치 cursor/palgyeong · PR #172
+금지: UI · scenic승격 · 광역팔경 · feature plans 커밋 · 매R 사람QA · VERIFY후 제시어대기
+작업: 큐 다음 ⬜ R부터 · 워커2 · VERIFY PASS→다음R 자동 · 3R마다 I# · §6.2만 정지
 ```
 
 
