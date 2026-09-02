@@ -18,8 +18,8 @@
 
 | | |
 |--|--|
-| **상태** | **#3 콘솔·지연** · tip `ff2e8c20` · 사람 Preview QA |
-| **브랜치** | `cursor/locale-toggle-smooth-92b6` · tip `ff2e8c20` |
+| **상태** | **#3-b 회귀 수정** · tip `0d02bcc1` · 사람 Preview QA |
+| **브랜치** | `cursor/locale-toggle-smooth-92b6` · tip `0d02bcc1` |
 | **PR** | [#174](https://github.com/catgeot/Days/pull/174) |
 | **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §13 A (`/` locale 토글) |
 | **일지** | [`2026-09-01-project-log.md`](./2026-09-01-project-log.md) |

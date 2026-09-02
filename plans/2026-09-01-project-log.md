@@ -179,3 +179,13 @@
 - **VERIFY** `audit:i18n` · `build` PASS
 - **Preview** `/qa/en` · https://days-git-cursor-locale-toggle-smooth-92b6-catgeots-projects.vercel.app/
 - **다음** **#4 사람 Preview QA** — 토글 즉시성 · Mapbox 오류 0 · `/explore` 검색바
+
+### #3-b continuePlacement 회귀 ✅
+
+- **세션** `홈 locale #3, 콘솔 회귀`
+- **브랜치** `cursor/locale-toggle-smooth-92b6` · tip `0d02bcc1` · PR [#174](https://github.com/catgeot/Days/pull/174)
+- **증상** ff2e8c20 이후 `continuePlacement` 크래시 · en/ko Mapbox 403 연쇄 · BCP-47 경고
+- **원인** locale effect에 `markerGeoJSON` deps → setLanguage 반복 · 자전 조기 재개+400ms 폴백
+- **수정** BCP-47 `en-US`/`ko-KR` · idle 직렬화 · 자전 정지→settled 후 핀·재개 · 하드 폴백 제거
+- **VERIFY** `audit:i18n` · `build` PASS
+- **다음** **#4 사람 Preview QA**
