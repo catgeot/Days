@@ -15,7 +15,16 @@
 - **적용** 접힘 표시를 장소 카드와 분리 · 카드 열림 시 자동 접힘
 - **VERIFY** `vite build` PASS
 - **Preview** `/qa/home-chip` · git Preview 홈
-- **다음** **#2 사람 Preview QA** — 지명 탭 후 좌측 칩 한 줄 접힘 · OK 시 PR #177 merge
+- **다음** **#2 PC 접힘** — 항상 펼친 PC 바로가기 → 모바일과 동일 접힘
+
+### #2 PC 접힘 ✅
+
+- **세션** `홈 축제칩 #2, PC 접힘`
+- **브랜치** `cursor/home-festival-chip-59c9` · tip `b8877d34` · PR [#177](https://github.com/catgeot/Days/pull/177)
+- **증상** PC 좌상단 바로가기가 항상 펼쳐져 테마 카테고리와 겹침
+- **적용** `renderQuickLinks()` 모바일·PC 공용 — 기본 접힘 · 탭 펼침
+- **VERIFY** `vite build` PASS
+- **다음** **#3 사람 Preview QA** — 모바일 지명 탭 접힘 + PC 한 줄 접힘·카테고리 겹침 없음 · OK 시 PR #177 merge
 
 ---
 
