@@ -18,24 +18,24 @@
 
 | | |
 |--|--|
-| **상태** | **#1 써머리 펼침 방지** · tip `1d3d324f` · 사람 Preview QA |
-| **브랜치** | `cursor/home-festival-chip-59c9` · tip `1d3d324f` |
+| **상태** | **#2 PC 접힘** · tip `b8877d34` · 사람 Preview QA |
+| **브랜치** | `cursor/home-festival-chip-59c9` · tip `b8877d34` |
 | **PR** | [#177](https://github.com/catgeot/Days/pull/177) |
 | **일지** | [`2026-09-02-project-log.md`](./2026-09-02-project-log.md) |
 | **Preview** | `/qa/home-chip` → git Preview 홈 |
 | **VERIFY** | `vite build` PASS |
 
-**게이트**: #1 접힘 유지 ✅ · **#2** 사람 Preview — 지명 클릭 후 좌측 칩 한 줄 접힘
+**게이트**: #1 접힘 유지 ✅ · #2 PC 접힘 ✅ · **#3** 사람 Preview — 모바일 지명 클릭 + PC 한 줄 접힘·카테고리 겹침 없음
 
-**다음 제시어 (#2 사람 Preview QA)**:
+**다음 제시어 (#3 사람 Preview QA)**:
 
 ```
-홈 축제칩 #2, 사람 Preview QA
+홈 축제칩 #3, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-02-project-log.md
 브랜치 cursor/home-festival-chip-59c9 · PR #177 · Preview https://days-git-cursor-home-festival-chip-59c9-catgeots-projects.vercel.app/
 금지: HomeGlobeMapbox 리팩터 · plans/** feature 커밋 · UI 리디자인
-작업: 모바일 지구본 지명 탭 → 써머리 카드 · 좌측 바로가기가 한 줄 접힘인지 · OK 시 PR #177 merge
+작업: 모바일 지명 탭 후 접힘 유지 · PC 좌상단 한 줄 접힘·테마 카테고리 겹침 없음 · OK 시 PR #177 merge
 ```
 
 ---
