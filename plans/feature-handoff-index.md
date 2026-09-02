@@ -14,34 +14,6 @@
 
 ## 활성 목록
 
-### 홈 locale 토글 — 모바일 지명 (#9)
-
-| | |
-|--|--|
-| **상태** | **#9 모바일 지명 EN 고착** · tip `e2214bdb` · 사람 Preview QA (모바일) |
-| **브랜치** | `cursor/globe-locale-mobile-5f5c` · tip `e2214bdb` |
-| **PR** | [#176](https://github.com/catgeot/Days/pull/176) |
-| **플랜** | [`i18n-en-plan.md`](./i18n-en-plan.md) §13 A′ |
-| **일지** | [`2026-09-02-project-log.md`](./2026-09-02-project-log.md) |
-| **Preview** | https://days-git-cursor-globe-locale-mobile-5f5c-catgeots-projects.vercel.app/ |
-| **VERIFY** | `audit:i18n` · `build` |
-
-**게이트**: 모바일 EN 토글 → Mapbox 국가·대륙·핀 영문 · KO 복귀 · PC 회귀
-
-**다음 제시어 (#9 QA)**:
-
-```
-홈 locale #9, 모바일 Preview QA
-@plans/feature-handoff-index.md
-@plans/2026-09-02-project-log.md
-@plans/i18n-en-plan.md
-브랜치 cursor/globe-locale-mobile-5f5c · PR #176 · Preview https://days-git-cursor-globe-locale-mobile-5f5c-catgeots-projects.vercel.app/
-금지: 검색바 flex(#175) 동시 · HomeUI 리디자인 · plans/** feature 커밋
-작업: 모바일 EN 토글 → 지구본 지명·핀 EN · KO 복귀 · OK 시 merge
-```
-
----
-
 ### 홈 검색바 히트 (EN 토글·검색 겹침)
 
 | | |
@@ -54,7 +26,7 @@
 | **Preview** | `/qa/search-hit` → git Preview `/` · https://days-git-cursor-search-locale-hit-5f5c-catgeots-projects.vercel.app/ |
 | **VERIFY** | `build` · (수정 후) `audit:i18n` |
 
-**게이트**: Preview·`/qa/search-hit` 준비 ✅ · **HomeUI flex 미착수** · #174 지구본 locale은 main(`053a4587`)
+**게이트**: Preview·`/qa/search-hit` 준비 ✅ · **HomeUI flex 미착수** · #9 지구본 지명 main(`a6a5ede7`)
 
 **증상**: 모바일 검색바 `max-md:fixed left-[7.75rem]` ↔ 로고·EN chrome 실드 `z-[110]` 겹침 → 검색 클릭이 토글/실드에 가로채임(무력화)
 
@@ -76,9 +48,9 @@
 
 | | |
 |--|--|
-| **상태** | **#8 merge ✅** · main `053a4587` · PR [#174](https://github.com/catgeot/Days/pull/174) |
+| **상태** | **#9 merge ✅** · main `a6a5ede7` · PR [#176](https://github.com/catgeot/Days/pull/176) (#174+#176) |
 | **일지** | [`2026-09-01-project-log.md`](./2026-09-01-project-log.md) · [`2026-09-02-project-log.md`](./2026-09-02-project-log.md) |
-| **잔여** | 모바일 지명 → **#9** · 검색바 히트 → **홈 검색바 히트** |
+| **잔여** | 검색바 히트 → **홈 검색바 히트** |
 
 ---
 
