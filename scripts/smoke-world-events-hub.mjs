@@ -68,6 +68,12 @@ for (const region of WORLD_EVENT_HUB_REGIONS) {
   }
 }
 
+assert.equal(resolveWorldEventHubRegionId('prague'), 'europe', 'prague in europe after Wave3 hub reorg');
+assert.equal(resolveWorldEventHubRegionId('paris'), 'europe', 'paris in europe');
+assert.equal(resolveWorldEventHubRegionId('london'), 'europe', 'london in europe');
+assert.equal(resolveWorldEventHubRegionId('rome'), 'europe', 'rome in europe');
+assert.equal(resolveWorldEventHubRegionId('istanbul'), 'niche', 'istanbul stays niche');
+
 const viennaEvents = getWorldEventsForSlug('vienna');
 assert.ok(viennaEvents.length >= 1, 'vienna has world events');
 assert.ok(viennaEvents[0].startDate, 'vienna event has startDate');
@@ -103,14 +109,14 @@ const qaSrc = readFileSync(
   'utf8',
 );
 assert.match(qaSrc, /slug:\s*'world-events'/, 'cloudQaShareLinks has world-events slug');
-assert.match(qaSrc, /cursor\/world-events-wave2/, 'cloudQaShareLinks world-events uses wave2 branch');
+assert.match(qaSrc, /cursor\/world-events-wave3/, 'cloudQaShareLinks world-events uses wave3 branch');
 
 const vercelSrc = readFileSync(join(root, 'vercel.json'), 'utf8');
 assert.match(vercelSrc, /\/qa\/world-events/, 'vercel.json redirects /qa/world-events');
 assert.match(
   vercelSrc,
-  /days-git-cursor-world-events-wave2-catgeots-projects\.vercel\.app/,
-  'vercel.json /qa/world-events points to wave2 git Preview',
+  /days-git-cursor-world-events-wave3-catgeots-projects\.vercel\.app/,
+  'vercel.json /qa/world-events points to wave3 git Preview',
 );
 assert.match(vercelSrc, /"\/en\/world-events"/, 'vercel.json /en/world-events redirect');
 

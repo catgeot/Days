@@ -1782,8 +1782,8 @@ export default {
     "planner": {
       "ko": {
         "title": "바간 여행 · 준비 가이드",
-        "description": "인천(ICN)→NYU 항공 경로. 경유 KMG·MDL. 약 5시간. 바간 자유여행 준비·항공·숙소·현지 팁. MOONi(무니) AI 도슨트에게 일정·교통을 물어보세요. 미얀마의 광활한 평원 위로 솟아오른 수천 개의 불탑들이 압도적인 곳입니다. 열기구를 타고 내려다보는 일출은 평생의 감동입니다.",
-        "keywords": "대륙, 역사/문화, 낭만, 바간 여행, 바간 관광, 바간 플래너, 바간 여행 준비, 바간 여행 가이드, 바간 여행 계획, 바간 자유여행, 바간 배낭, 바간 항공, 바간 항공 경로, 바간 항공편, 바간 직항, 바간 비행, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 자유여행, 배낭, 항공, 항공 경로, 항공편, 직항, 비행, 인천 바간, 서울 바간, ICN NYU, ICN→KMG·MDL→NYU, 바간, Bagan",
+        "description": "인천(ICN)→NYU 항공 경로. 경유 MDL. 약 5시간. 바간 자유여행 준비·항공·숙소·현지 팁. MOONi(무니) AI 도슨트에게 일정·교통을 물어보세요. 미얀마의 광활한 평원 위로 솟아오른 수천 개의 불탑들이 압도적인 곳입니다. 열기구를 타고 내려다보는 일출은 평생의 감동입니다.",
+        "keywords": "대륙, 역사/문화, 낭만, 바간 여행, 바간 관광, 바간 플래너, 바간 여행 준비, 바간 여행 가이드, 바간 여행 계획, 바간 자유여행, 바간 배낭, 바간 항공, 바간 항공 경로, 바간 항공편, 바간 직항, 바간 비행, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 자유여행, 배낭, 항공, 항공 경로, 항공편, 직항, 비행, 인천 바간, 서울 바간, ICN NYU, ICN→MDL→NYU, 바간, Bagan",
         "canonicalUrl": "https://www.gateo.kr/place/bagan/planner",
         "hreflangAlternates": [
           {
@@ -1804,8 +1804,8 @@ export default {
       },
       "en": {
         "title": "Bagan travel · trip planner",
-        "description": "Flight route ICN→KMG·MDL→NYU via KMG, MDL. About 5 hours. Plan independent travel to Bagan — flights, stays, and local tips. Ask MOONi, your AI travel docent. Explore Bagan, Myanmar — thousands of ancient Buddhist pagodas across a vast plain, best seen at sunrise from a hot-air balloon over one of Asia's most awe-inspiring landscapes.",
-        "keywords": "Bagan, Myanmar, temple plain, hot air balloon, sunrise tour, Buddhist heritage, Bagan travel, Bagan trip planner, Bagan plan a trip, Bagan trip planning, Bagan free travel, Bagan independent travel, Bagan backpacking, Bagan flights, Bagan flight route, Bagan air route, Bagan nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to NYU, ICN NYU, ICN→KMG·MDL→NYU, Bagan connecting flights",
+        "description": "Flight route ICN→MDL→NYU via MDL. About 5 hours. Plan independent travel to Bagan — flights, stays, and local tips. Ask MOONi, your AI travel docent. Explore Bagan, Myanmar — thousands of ancient Buddhist pagodas across a vast plain, best seen at sunrise from a hot-air balloon over one of Asia's most awe-inspiring landscapes.",
+        "keywords": "Bagan, Myanmar, temple plain, hot air balloon, sunrise tour, Buddhist heritage, Bagan travel, Bagan trip planner, Bagan plan a trip, Bagan trip planning, Bagan free travel, Bagan independent travel, Bagan backpacking, Bagan flights, Bagan flight route, Bagan air route, Bagan nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to NYU, ICN NYU, ICN→MDL→NYU, Bagan connecting flights",
         "canonicalUrl": "https://www.gateo.kr/place/bagan/planner?lang=en",
         "hreflangAlternates": [
           {
