@@ -95,8 +95,13 @@ import {
 } from '../lib/globeMapboxLabelPolicy';
 import { getCategoryGlobeFaceView, GLOBE_FACE_FLY_MS, resolveCategoryFaceMapboxZoom } from '../lib/globeCategoryFocus';
 import {
+  GLOBE_LABEL_APPLY_PUMP_MS,
+  GLOBE_LABEL_FIRST_HOLD_MAX_MS,
   GLOBE_LABEL_PLACEMENT_SETTLE_MS,
+  hasPaintedBasemapContextLabels,
+  queryRenderedSymbolFeatures,
   shouldHoldGlobeAutoRotate,
+  shouldMarkGlobeLabelsSettled,
   shouldRetryOverlayRevealAfterRotatePause,
 } from '../lib/globeLabelFirstReveal';
 import { passesGlobeTierPolicy } from '../lib/globeSpotVisibility';
@@ -466,6 +471,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const globeLabelsSettledRef = useRef(false);
   const resumeRotateAfterLabelsTimerRef = useRef(null);
   const overlayRevealRetryRef = useRef(0);
+  const basemapLabelsAppliedRef = useRef(false);
+  const firstLabelPumpTimersRef = useRef([]);
+  const firstLabelIdleHandlerRef = useRef(null);
+  const firstLabelSettleStartedRef = useRef(false);
   const globeThemeInitializedRef = useRef(false);
   const globeIdleMarkedRef = useRef(false);
   const prevStyleTransitioningRef = useRef(false);
@@ -698,10 +707,15 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     return updated;
   }, [globeTheme, locale, refreshPlaceLabelLayers]);
 
-  const applyPlaceLabelVisibility = useCallback(() => {
+  const applyPlaceLabelVisibility = useCallback((options = {}) => {
     const map = mapRef.current?.getMap();
     if (!map) return;
-    if (cameraAnimatingRef.current || isGlobeCameraBusy(map) || (typeof map.isMoving === 'function' && map.isMoving())) {
+    const force = Boolean(options.force);
+    if (
+      !force
+      && (cameraAnimatingRef.current || isGlobeCameraBusy(map)
+        || (typeof map.isMoving === 'function' && map.isMoving()))
+    ) {
       return;
     }
 
@@ -717,7 +731,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     });
 
     if (globeTheme !== 'bright') {
-      applySatelliteBasemapLabels();
+      applySatelliteBasemapLabels(force ? { force: true } : {});
     }
 
     if (shouldShowMapboxContext === null) return;
@@ -829,10 +843,19 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     globeBaseRevealedRef.current = false;
     globeOverlaysRevealedRef.current = false;
     globeLabelsSettledRef.current = false;
+    basemapLabelsAppliedRef.current = false;
+    firstLabelSettleStartedRef.current = false;
     autoRotateRef.current = false;
     if (resumeRotateAfterLabelsTimerRef.current) {
       window.clearTimeout(resumeRotateAfterLabelsTimerRef.current);
       resumeRotateAfterLabelsTimerRef.current = null;
+    }
+    firstLabelPumpTimersRef.current.forEach((id) => window.clearTimeout(id));
+    firstLabelPumpTimersRef.current = [];
+    const idleMap = mapRef.current?.getMap?.();
+    if (idleMap && firstLabelIdleHandlerRef.current) {
+      idleMap.off('idle', firstLabelIdleHandlerRef.current);
+      firstLabelIdleHandlerRef.current = null;
     }
     flightCinemaLayersLatchedRef.current = false;
     suppressSatelliteLabelEchoUntilRef.current = 0;
@@ -1023,6 +1046,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   markerGeoJSONRef.current = markerGeoJSON;
 
   useEffect(() => {
+    if (!mapReady) return undefined;
     const map = mapRef.current?.getMap?.();
     if (!map) return undefined;
 
@@ -1098,7 +1122,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       timers.forEach((id) => window.clearTimeout(id));
       if (resumeRotate) autoRotateRef.current = true;
     };
-  }, [locale, globeTheme, applySatelliteBasemapLabels]);
+  }, [locale, globeTheme, applySatelliteBasemapLabels, mapReady]);
 
   useEffect(() => {
     allMarkersLookupRef.current = allMarkers;
@@ -1242,7 +1266,17 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     syncClusterOverlayLayers();
   }, [pauseRender, syncClusterOverlayLayers]);
 
-  /** jumpTo 자전은 첫 지명 placement를 끊음 — overlay 페인트 후 settle. */
+  const clearFirstLabelSettleTimers = useCallback(() => {
+    firstLabelPumpTimersRef.current.forEach((id) => window.clearTimeout(id));
+    firstLabelPumpTimersRef.current = [];
+    const map = mapRef.current?.getMap?.();
+    if (map && firstLabelIdleHandlerRef.current) {
+      map.off('idle', firstLabelIdleHandlerRef.current);
+      firstLabelIdleHandlerRef.current = null;
+    }
+  }, []);
+
+  /** jumpTo 자전은 첫 지명 placement를 끊음 — overlay + basemap 페인트 후 settle. */
   const armAutoRotateAfterLabelSettle = useCallback((options = {}) => {
     if (pauseRender) return;
     if (!options.force && globeLabelsSettledRef.current) return;
@@ -1265,6 +1299,83 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       autoRotateRef.current = true;
     }, delay);
   }, [pauseRender]);
+
+  /** Same path as EN toggle: stop rotate, rewrite text-field, force context visibility. */
+  const applyFirstLoadBasemapLabels = useCallback((map) => {
+    if (!map) return 0;
+    autoRotateRef.current = false;
+    safeMapResize(map);
+    let updated = 0;
+    if (globeTheme !== 'bright') {
+      updated = applySatelliteBasemapLabels({ force: true, reapply: true, refresh: true });
+    } else if (typeof map.setLanguage === 'function') {
+      try {
+        map.setLanguage(locale?.startsWith('en') ? 'en' : 'ko');
+        updated = 1;
+      } catch {
+        // Style may still be loading.
+      }
+    }
+    applyPlaceLabelVisibility({ force: true });
+    if (updated > 0) basemapLabelsAppliedRef.current = true;
+    try {
+      map.triggerRepaint?.();
+    } catch {
+      // WebGL may not be ready on first Safari frame.
+    }
+    return updated;
+  }, [applyPlaceLabelVisibility, applySatelliteBasemapLabels, globeTheme, locale]);
+
+  const beginFirstLabelSettle = useCallback((map) => {
+    if (pauseRender || !map || globeLabelsSettledRef.current) return;
+    if (firstLabelSettleStartedRef.current) return;
+    firstLabelSettleStartedRef.current = true;
+
+    clearFirstLabelSettleTimers();
+
+    const tryFinish = (force = false) => {
+      if (globeLabelsSettledRef.current) return false;
+      const painted = hasPaintedBasemapContextLabels(
+        queryRenderedSymbolFeatures(map, contextLabelLayerIdsRef.current),
+      );
+      if (painted) basemapLabelsAppliedRef.current = true;
+      const ready = shouldMarkGlobeLabelsSettled({
+        overlayRevealed: globeOverlaysRevealedRef.current,
+        basemapLabelsApplied: painted,
+      });
+      if (!force && !ready) return false;
+      if (force) basemapLabelsAppliedRef.current = true;
+      clearFirstLabelSettleTimers();
+      armAutoRotateAfterLabelSettle({ force });
+      return true;
+    };
+
+    const pump = () => {
+      if (pauseRender || globeLabelsSettledRef.current) return;
+      applyFirstLoadBasemapLabels(map);
+      tryFinish(false);
+    };
+
+    const onIdle = () => {
+      pump();
+    };
+    firstLabelIdleHandlerRef.current = onIdle;
+    map.on('idle', onIdle);
+
+    GLOBE_LABEL_APPLY_PUMP_MS.forEach((ms) => {
+      firstLabelPumpTimersRef.current.push(window.setTimeout(pump, ms));
+    });
+    firstLabelPumpTimersRef.current.push(window.setTimeout(() => {
+      if (globeLabelsSettledRef.current) return;
+      applyFirstLoadBasemapLabels(map);
+      tryFinish(true);
+    }, GLOBE_LABEL_FIRST_HOLD_MAX_MS));
+  }, [
+    applyFirstLoadBasemapLabels,
+    armAutoRotateAfterLabelSettle,
+    clearFirstLabelSettleTimers,
+    pauseRender,
+  ]);
 
   /** Satellite globe — show as soon as map loads; suppress Mapbox detail labels until overlays ready. */
   const tryRevealGlobeBase = useCallback(() => {
@@ -1293,21 +1404,18 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         cameraAnimating: cameraAnimatingRef.current,
         globeCameraBusy: isGlobeCameraBusy(map),
         isMoving,
-        autoRotate: autoRotateRef.current,
       })
+      && overlayRevealRetryRef.current < 90
     ) {
       autoRotateRef.current = false;
-      if (overlayRevealRetryRef.current < 90) {
-        overlayRevealRetryRef.current += 1;
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => tryRevealGlobeOverlays());
-        });
-      }
+      overlayRevealRetryRef.current += 1;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => tryRevealGlobeOverlays());
+      });
       return;
     }
 
     if (cameraAnimatingRef.current || isGlobeCameraBusy(map)) return;
-    if (isMoving) return;
 
     if (map.isStyleLoaded?.()) {
       syncGateoMarkerLayers();
@@ -1327,10 +1435,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (!globeOverlaysRevealedRef.current) {
       globeOverlaysRevealedRef.current = true;
       markGlobeLoadPhase('tryRevealOverlays');
-      armAutoRotateAfterLabelSettle();
+      beginFirstLabelSettle(map);
     }
-    applyPlaceLabelVisibility();
-  }, [applyPlaceLabelVisibility, armAutoRotateAfterLabelSettle, pauseRender, syncGateoMarkerLayers]);
+    applyPlaceLabelVisibility({ force: true });
+  }, [applyPlaceLabelVisibility, beginFirstLabelSettle, pauseRender, syncGateoMarkerLayers]);
 
   const tryRevealGlobe = useCallback(() => {
     tryRevealGlobeBase();
@@ -1350,12 +1458,11 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         setIsStyleTransitioning(false);
       }
       tryRevealGlobeOverlays();
-      if (!globeOverlaysRevealedRef.current) {
-        armAutoRotateAfterLabelSettle({ force: true });
-      }
+      const map = mapRef.current?.getMap?.();
+      if (map && !firstLabelSettleStartedRef.current) beginFirstLabelSettle(map);
     }, 2000);
     return () => window.clearTimeout(fallback);
-  }, [globeTheme, tryRevealGlobeOverlays, armAutoRotateAfterLabelSettle, pauseRender]);
+  }, [globeTheme, tryRevealGlobeOverlays, beginFirstLabelSettle, pauseRender]);
 
   useEffect(() => {
     if (import.meta.env.DEV && prevStyleTransitioningRef.current && !isStyleTransitioning) {
@@ -2441,6 +2548,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (resumeRotateAfterLabelsTimerRef.current) {
       window.clearTimeout(resumeRotateAfterLabelsTimerRef.current);
       resumeRotateAfterLabelsTimerRef.current = null;
+    }
+    firstLabelPumpTimersRef.current.forEach((id) => window.clearTimeout(id));
+    firstLabelPumpTimersRef.current = [];
+    const map = mapRef.current?.getMap?.();
+    if (map && firstLabelIdleHandlerRef.current) {
+      map.off('idle', firstLabelIdleHandlerRef.current);
+      firstLabelIdleHandlerRef.current = null;
     }
   }, []);
 
