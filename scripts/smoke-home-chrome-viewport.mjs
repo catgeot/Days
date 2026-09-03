@@ -213,8 +213,8 @@ assert(
     innerHeight: 844,
     screenHeight: 844,
     visualViewportHeight: 720,
-  }) === false,
-  'visualViewport inset is not overlay even if innerHeight is full',
+  }) === true,
+  'layout-full is overlay even if visualViewport is smaller (Chrome relaunch)',
 );
 assert(isCriosUrlbarOverlay({ crios: false, innerHeight: 844, screenHeight: 844 }) === false, 'non-CriOS is never overlay');
 assert(isCriosUrlbarOverlay({ crios: true, innerHeight: 0, screenHeight: 844 }) === false, 'unmeasured innerHeight is not overlay');
@@ -276,8 +276,8 @@ assert(overlayMock.firstPx === 56, `overlay after settle is 56, got ${overlayMoc
 assert(overlayMock.dropDelta === -144, `overlay height delta is -144, got ${overlayMock.dropDelta}`);
 assert(overlayMock.afterDropPx === 56, `overlay latch must keep 56 after inset-looking drop, got ${overlayMock.afterDropPx}`);
 assert(overlayMock.headerRectTopAfterDrop >= 40, `headerRectTop after drop should not be <40, got ${overlayMock.headerRectTopAfterDrop}`);
-assert(overlayMock.firstHeightPx === 844, `overlay viewport height locks innerHeight, got ${overlayMock.firstHeightPx}`);
-assert(overlayMock.heightAfterDropPx === 844, `viewport height must not shrink on drop, got ${overlayMock.heightAfterDropPx}`);
+assert(overlayMock.firstHeightPx === 844, `overlay viewport height uses visible height, got ${overlayMock.firstHeightPx}`);
+assert(overlayMock.heightAfterDropPx === 700, `overlay height may follow visualViewport, got ${overlayMock.heightAfterDropPx}`);
 console.log('crios-overlay-mock:', JSON.stringify(overlayMock));
 
 const visualInsetMock = await runCriosMock({
@@ -287,9 +287,9 @@ const visualInsetMock = await runCriosMock({
   dropBy: 40,
   navType: 'navigate',
 });
-assert(visualInsetMock.firstPx === 0, `visual inset must stay 0, got ${visualInsetMock.firstPx}`);
-assert(visualInsetMock.afterDropPx === 0, `visual inset stays 0 after drop, got ${visualInsetMock.afterDropPx}`);
-assert(visualInsetMock.firstHeightPx === 720, `visual inset locks visible height, got ${visualInsetMock.firstHeightPx}`);
+assert(visualInsetMock.firstPx === 56, `Chrome relaunch layout-full is 56 even if vv is inset, got ${visualInsetMock.firstPx}`);
+assert(visualInsetMock.afterDropPx === 56, `Chrome relaunch latch keeps 56 after vv drop, got ${visualInsetMock.afterDropPx}`);
+assert(visualInsetMock.firstHeightPx === 720, `Chrome relaunch locks visible height, got ${visualInsetMock.firstHeightPx}`);
 console.log('crios-visual-inset-mock:', JSON.stringify(visualInsetMock));
 
 const insetMock = await runCriosMock({
@@ -310,7 +310,7 @@ const reloadOverlayMock = await runCriosMock({
 });
 assert(reloadOverlayMock.firstPx === 56, `reload overlay keeps 56, got ${reloadOverlayMock.firstPx}`);
 assert(reloadOverlayMock.afterDropPx === 56, `reload overlay latch keeps 56, got ${reloadOverlayMock.afterDropPx}`);
-assert(reloadOverlayMock.firstHeightPx === 844, `reload overlay locks innerHeight, got ${reloadOverlayMock.firstHeightPx}`);
+assert(reloadOverlayMock.firstHeightPx === 844, `reload overlay uses visible height, got ${reloadOverlayMock.firstHeightPx}`);
 console.log('crios-reload-overlay-mock:', JSON.stringify(reloadOverlayMock));
 
 const css = read('src/index.css');
@@ -401,10 +401,10 @@ assert(!viewportLib.includes('__GATEO_HOME_CHROME_DBG'), 'mobileViewport must no
 
 const indexHtml = read('index.html');
 assert(indexHtml.includes('--gateo-home-chrome-top'), 'index.html may set CriOS inset before paint');
-assert(indexHtml.includes('visualViewport'), 'index.html uses visualViewport for overlay');
+assert(!indexHtml.includes('visualViewport'), 'index.html overlay uses layout innerHeight, not visualViewport');
 assert(!indexHtml.includes('--gateo-home-viewport-height'), 'index.html must not lock height before Chrome settles');
 assert(indexHtml.includes('CriOS'), 'index.html gates inset to iOS Chrome');
-assert(indexHtml.includes('screen.height'), 'index.html detects overlay via screen vs visible height');
+assert(indexHtml.includes('screen.height'), 'index.html detects overlay via screen vs innerHeight');
 assert(indexHtml.includes('<= 100'), 'index.html overlay gap matches CHROME_IOS_OVERLAY_MAX_SCREEN_GAP_PX');
 assert(!indexHtml.includes("nav.type === 'reload'"), 'index.html must not skip reload inset');
 assert(!indexHtml.includes('__GATEO_HOME_CHROME_DBG'), 'index.html must not keep debug payload');

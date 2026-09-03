@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '지구본 홈 헤더',
-  sessionNo: 7,
-  sessionPhase: 'Preview 첫 진입 점프',
+  sessionNo: 8,
+  sessionPhase: 'Chrome 재실행 overlay',
   branch: 'cursor/home-header-3eef',
   previewPath: '/',
   qaShareSlug: 'home-header',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-03-home-header-chrome-relaunch',
+    session: '지구본 홈 헤더 #8, Chrome 재실행 overlay',
+    title: '크롬 종료 후 재실행 — layout innerHeight로 overlay 유지',
+    detail:
+      '사람: 첫 진입·커서 왕복·새로고침 정상. 크롬 창 닫고 다시 열면 상단으로 밀림. Safari·네이버·구글검색 진입은 정상. PROD도 동일(feature 미병합). 원인: 재실행 때 visualViewport만 줄어 inset으로 오인하고 56px를 지움. innerHeight가 화면을 채우면 overlay 유지, 높이는 보이는 vv. Preview /qa/home-header — 크롬 완전 종료 후 재실행 시 헤더가 주소창에 안 가리는지 · 첫 진입 점프 없는지.',
+    at: '2026-09-03T03:45:00.000Z',
+  },
   {
     id: '2026-09-03-home-header-preview-jump',
     session: '지구본 홈 헤더 #7, Preview 첫 진입 점프',

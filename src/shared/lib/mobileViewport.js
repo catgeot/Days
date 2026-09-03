@@ -208,7 +208,12 @@ export function resolveHomeChromeTopPx({
   return measured;
 }
 
-/** CriOS + URL-bar overlay (not already-inset layout). */
+/**
+ * overlay: layout viewport(`innerHeight`)가 화면 거의 전체 — 주소창이 웹뷰 위.
+ * Chrome 재실행은 visualViewport만 줄어 있고 innerHeight는 그대로인 경우가 많음.
+ * visualViewport만 보면 첫 진입 inset과 구분이 안 되어 56px를 지움.
+ * 첫 진입·새로고침 inset: innerHeight도 이미 줄어 있음.
+ */
 export function isCriosUrlbarOverlay({
   crios = false,
   innerHeight = 0,
@@ -216,9 +221,9 @@ export function isCriosUrlbarOverlay({
   visualViewportHeight = 0,
 } = {}) {
   if (!crios) return false;
-  const visible = visualViewportHeight || innerHeight;
-  if (!visible || !screenHeight) return false;
-  return screenHeight - visible <= CHROME_IOS_OVERLAY_MAX_SCREEN_GAP_PX;
+  void visualViewportHeight;
+  if (!innerHeight || !screenHeight) return false;
+  return screenHeight - innerHeight <= CHROME_IOS_OVERLAY_MAX_SCREEN_GAP_PX;
 }
 
 export function isCriosChromeTopSession({ crios = false, overlay = false } = {}) {
@@ -287,11 +292,10 @@ function readMeasuredHomeChromeTopPx() {
 
 /**
  * Chrome iOS: 주소창 overlay일 때만 56px (완전 종료 후 재실행).
- * visualViewport가 이미 줄어든 첫 진입은 inset — innerHeight만 보면 overlay 오인.
- * overlay 확정은 CRIOS_OVERLAY_SETTLE_MS 이후(주소창 정착). 그 전엔 index.html 값을 유지.
- * overlay는 한 번 잡으면 유지(지구본 vv 감소로 해제 금지).
- * visualViewport.pageTop에 scrollTo(0,0) 하지 않음 — 헤더를 주소창 뒤로 올림 (#2).
- * resize remount 금지. overlay만 innerHeight 잠금. inset은 보이는 높이로 축소 허용.
+ * overlay는 layout innerHeight로 판정 — vv만 줄어든 Chrome 재실행을 inset으로 오인하지 않음.
+ * 확정은 CRIOS_OVERLAY_SETTLE_MS 이후(첫 진입 innerHeight가 줄어들 시간).
+ * overlay는 한 번 잡으면 유지. 높이는 보이는 vv로(큰 innerHeight 잠금은 화면을 위로 밈).
+ * visualViewport.pageTop에 scrollTo(0,0) 하지 않음.
  */
 export function syncHomeChromeOnFirstPaint({ onRemount, onSettled } = {}) {
   if (typeof window === 'undefined') return () => {};
@@ -331,9 +335,7 @@ export function syncHomeChromeOnFirstPaint({ onRemount, onSettled } = {}) {
       visualViewportHeightDelta: heightDelta,
     });
     if (overlayReady) {
-      if (crios && overlayLatched) {
-        applyHomeViewportHeightPx(window.innerHeight);
-      } else if (crios) {
+      if (crios) {
         applyHomeViewportHeightPx(
           visualViewport?.height ?? window.innerHeight,
           { allowShrink: true },
