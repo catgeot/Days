@@ -128,22 +128,32 @@
 - **Preview** `/qa/home-header` · git Preview 홈
 - **사람 QA** 로고·검색 상단이 주소창에 잘림 → #3
 
-### #3 서브에이전트 QA 수정 ✅ 에이전트 · 사람 Preview 대기
+### #3 서브에이전트 QA 수정 ✅ 에이전트 · 사람 QA에서 새로고침 잔존
 
 - **세션** `지구본 홈 헤더 #3, 서브에이전트 QA 수정`
 - **브랜치** `cursor/home-header-3eef` · tip `8f4d4201` · PR [#181](https://github.com/catgeot/Days/pull/181)
 - **원인** 지구본/Mapbox가 visualViewport 높이를 줄이면(844→780) 웹뷰 inset으로 오인하고 56px를 0으로 지움. 주소창은 그대로 덮음
 - **적용** 첫 navigate 세션은 높이 감소와 무관하게 56px 유지 · reload는 0 · 계측 로그 제거
 - **VERIFY** CriOS mock `56 survives -64` · reload `0` · `vite build` PASS
-- **Preview** `/qa/home-header` · git Preview 홈
-- **다음** **#4 사람 Preview QA** — 탭 재오픈 첫 진입 + 새로고침 이중 여백
+- **Preview** git Preview 홈
+- **사람 QA** 첫 진입은 정상 · **새로고침은 로고 가림 + 하단 검은 틈** → #4
+
+### #4 사람 Preview QA 수정 ✅ 에이전트 · 사람 Preview 대기
+
+- **세션** `지구본 홈 헤더 #4, 사람 Preview QA 수정`
+- **브랜치** `cursor/home-header-3eef` · tip `7313c02f` · PR [#181](https://github.com/catgeot/Days/pull/181)
+- **원인** `reload`를 웹뷰 inset으로 보고 56px를 0으로 둠. 새로고침에도 주소창이 덮고, 100dvh가 svh로 줄어 하단이 빔
+- **적용** CriOS navigate·reload 모두 56px · `innerHeight`로 홈 높이 고정(축소 금지)
+- **VERIFY** CriOS mock reload `56` · height `844` 유지 · `vite build` PASS
+- **Preview** git Preview 홈 (Vercel SSO) · `/qa/home-header`는 PROD 미반영
+- **다음** **#5 사람 Preview QA** — 탭 재오픈 + 새로고침
 
 ```
-지구본 홈 헤더 #4, 사람 Preview QA
+지구본 홈 헤더 #5, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-02-project-log.md
-브랜치 cursor/home-header-3eef · PR #181 · https://www.gateo.kr/qa/home-header
+브랜치 cursor/home-header-3eef · PR #181 · https://days-git-cursor-home-header-3eef-catgeots-projects.vercel.app/
 금지: UI 리디자인 · offsetTop 지속 보정 · 코드를 origin/main에 임의 push
-작업: 탭 닫고 다시 열기(새로고침 아님) 헤더가 주소창에 안 가리는지 · 새로고침 후 너무 안 내려가는지 · OK 시 PR #181 merge
+작업: 탭 닫고 다시 열기 + 새로고침 — 헤더가 주소창에 안 가리는지 · 하단 검은 틈 없는지 · OK 시 PR #181 merge
 ```
 
