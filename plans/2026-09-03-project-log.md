@@ -39,7 +39,7 @@
 - **Preview** `/qa/home-header` · git Preview 홈
 - **다음** **#8** 사람 Preview QA — 첫 진입 점프 없는지. PROD 확인은 Cursor 밖 `www.gateo.kr`
 
-### #8 Chrome 재실행 overlay ✅ 에이전트 · 사람 Preview 대기
+### #8 Chrome 재실행 overlay ✅ 에이전트 · 사람 Preview에서 재실행 잔존
 
 - **세션** `지구본 홈 헤더 #8, Chrome 재실행 overlay`
 - **브랜치** `cursor/home-header-3eef` · tip `8ce1e72a` · PR [#181](https://github.com/catgeot/Days/pull/181)
@@ -49,13 +49,24 @@
 - **적용** overlay는 layout `innerHeight` · 280ms 뒤 확정 · 높이는 보이는 vv
 - **VERIFY** layout-full+작은 vv `56` · 진짜 inset `0` · `vite build` PASS
 - **Preview** `/qa/home-header` · git Preview 홈
-- **다음** **#9** 사람 Preview QA — 크롬 종료 후 재실행
+- **다음** **#9** — 휴리스틱 중단
+
+### #9 100svh로 overlay 보정 중단 ✅ 에이전트 · 사람 Preview 대기
+
+- **세션** `지구본 홈 헤더 #9, 사람 Preview QA`
+- **브랜치** `cursor/home-header-3eef` · tip `ece13d6e` · PR [#181](https://github.com/catgeot/Days/pull/181)
+- **사람** 동일 가림이 계속됨. 검색바·EN 작업 이후 표면화. 해결 방안 질문
+- **판단** overlay/inset을 JS 숫자로 구분 불가(#1–#8이 여백↔가림 교차). 검색/EN은 헤더가 촘촘해져 잘림이 드러난 것. 간헐 원인 자체는 `h-screen`(100vh)
+- **적용** CriOS 56px·html lock·chrome-top **제거**. Home·MainLayout 모바일 `100svh`. 헤더 비주얼 유지
+- **VERIFY** `smoke:home-chrome-viewport` · `vite build` PASS
+- **Preview** `/qa/home-header` · git Preview 홈
+- **다음** **#10** 사람 Preview QA — 첫 진입·새로고침·크롬 재실행. 재실행만 남으면 배포 여부(56px 재도입 금지)
 
 ```
-지구본 홈 헤더 #9, 사람 Preview QA
+지구본 홈 헤더 #10, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-03-project-log.md
 브랜치 cursor/home-header-3eef · PR #181 · https://www.gateo.kr/qa/home-header
-금지: UI 리디자인 · Cursor 인앱·Vercel URL바용 56px 추가 · offsetTop 지속 보정 · 코드를 origin/main에 임의 push
-작업: iPhone Chrome Preview — 첫 진입 유지 · 크롬 완전 종료 후 재실행 시 헤더가 주소창에 안 가리는지. 배포는 이 QA 후
+금지: UI 리디자인 · CriOS 56px overlay 재도입 · offsetTop 지속 보정 · 코드를 origin/main에 임의 push
+작업: iPhone Chrome Preview — 첫 진입·새로고침·크롬 완전 종료 후 재실행에서 로고·EN·검색이 주소창 아래인지. 재실행만 남으면 배포 여부 결정
 ```
