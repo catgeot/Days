@@ -18,24 +18,24 @@
 
 | | |
 |--|--|
-| **상태** | **#10 재실행 한계 · h-screen 복귀** · tip `8994b825` · 사람 Preview 대기(배포본 비교) |
+| **상태** | **#11 배포본 정정** · tip `8994b825` · PR #181 미병합 · 사람 확인 대기 |
 | **브랜치** | `cursor/home-header-3eef` · tip `8994b825` |
 | **PR** | [#181](https://github.com/catgeot/Days/pull/181) |
 | **일지** | [`2026-09-03-project-log.md`](./2026-09-03-project-log.md) · [`2026-09-02-project-log.md`](./2026-09-02-project-log.md) |
 | **Preview** | `/qa/home-header` → git Preview 홈 |
 | **VERIFY** | `smoke:home-chrome-viewport` · `vite build` |
 
-**게이트**: 크롬 재실행 overlay는 **한계**(고치지 않음). Preview 상단이 `www.gateo.kr` 과 같은지 확인 후 **PR #181 병합하지 않음**.
+**게이트**: PR #181(56px)은 **main 미병합**. 현재 `www.gateo.kr` = 검색바·EN 헤더(PR #175). 재실행 overlay는 한계. 상단 `p-4`는 헤더 문제 이전부터 있음.
 
-**다음 제시어** (#11 배포본 상단 비교 후 PR 닫기):
+**다음 제시어** (#12 상단 여백 방향):
 
 ```
-지구본 홈 헤더 #11, 배포본 상단 비교
+지구본 홈 헤더 #12, 상단 여백 방향
 @plans/feature-handoff-index.md
 @plans/2026-09-03-project-log.md
 브랜치 cursor/home-header-3eef · PR #181 · https://www.gateo.kr/qa/home-header
 금지: UI 리디자인 · CriOS 56px overlay 재도입 · 100svh 재도입 · 코드를 origin/main에 임의 push
-작업: Preview vs www.gateo.kr 상단 여백이 같은지. OK면 PR #181 병합하지 않고 닫기
+작업: 현재 배포 p-4(16px) vs 문제 이전 p-4+pt-2/top-6(24px) 확인 후 — PR #181 닫기 또는 여백 방향만
 ```
 
 ---
