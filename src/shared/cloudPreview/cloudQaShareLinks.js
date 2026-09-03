@@ -10,10 +10,9 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'home-header',
     label: '지구본 홈 Chrome 헤더',
-    branch: 'cursor/home-header-3eef',
-    destination:
-      'https://days-git-cursor-home-header-3eef-catgeots-projects.vercel.app/',
-    active: true,
+    branch: 'main',
+    destination: 'https://www.gateo.kr/',
+    active: false,
   },
   {
     slug: 'globe-labels',

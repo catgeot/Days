@@ -4,10 +4,10 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: true,
+  active: false,
   title: '지구본 홈 헤더',
-  sessionNo: 10,
-  sessionPhase: '재실행 한계 · 배포본 h-screen 복귀',
+  sessionNo: 12,
+  sessionPhase: '여백 유지 · PR 미병합 종료',
   branch: 'cursor/home-header-3eef',
   previewPath: '/',
   qaShareSlug: 'home-header',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-03-home-header-keep-prod',
+    session: '지구본 홈 헤더 #12, 상단 여백 방향',
+    title: '여백 유지 · 배포본 손대지 않음 · PR #181 미병합',
+    detail:
+      '사람: 헤더 여백은 현재 상태 유지. 배포본을 손볼 일 없이 이대로 두면 되는지. 결론: www.gateo.kr(PR #175 p-4) 그대로. 크롬 재실행 가림은 iOS Chrome 한계. CriOS 56px·100svh 실험은 올리지 않음. PR #181 병합하지 않고 닫기.',
+    at: '2026-09-03T09:56:00.000Z',
+  },
   {
     id: '2026-09-03-home-header-prod-hscreen',
     session: '지구본 홈 헤더 #10, 사람 Preview QA',
