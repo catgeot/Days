@@ -39,11 +39,23 @@
 - **Preview** `/qa/home-header` · git Preview 홈
 - **다음** **#8** 사람 Preview QA — 첫 진입 점프 없는지. PROD 확인은 Cursor 밖 `www.gateo.kr`
 
+### #8 Chrome 재실행 overlay ✅ 에이전트 · 사람 Preview 대기
+
+- **세션** `지구본 홈 헤더 #8, Chrome 재실행 overlay`
+- **브랜치** `cursor/home-header-3eef` · tip `8ce1e72a` · PR [#181](https://github.com/catgeot/Days/pull/181)
+- **사람 QA** 첫 진입·커서 왕복·새로고침 정상. 크롬 창 닫고 재실행은 상단으로 밀림. Safari·네이버·구글검색 정상. PROD도 동일(미병합)
+- **배포** 지금은 하지 않음. PROD에는 보정이 없어 같은 증상이 맞고, 재실행 수정을 Preview에서 먼저 확인
+- **원인** 재실행 때 visualViewport만 줄어 inset으로 오인 → 56px 제거
+- **적용** overlay는 layout `innerHeight` · 280ms 뒤 확정 · 높이는 보이는 vv
+- **VERIFY** layout-full+작은 vv `56` · 진짜 inset `0` · `vite build` PASS
+- **Preview** `/qa/home-header` · git Preview 홈
+- **다음** **#9** 사람 Preview QA — 크롬 종료 후 재실행
+
 ```
-지구본 홈 헤더 #8, 사람 Preview QA
+지구본 홈 헤더 #9, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-03-project-log.md
 브랜치 cursor/home-header-3eef · PR #181 · https://www.gateo.kr/qa/home-header
 금지: UI 리디자인 · Cursor 인앱·Vercel URL바용 56px 추가 · offsetTop 지속 보정 · 코드를 origin/main에 임의 push
-작업: iPhone Chrome Preview 첫 진입이 점프하지 않는지 · 새로고침 유지. PROD는 Cursor 없이 www.gateo.kr
+작업: iPhone Chrome Preview — 첫 진입 유지 · 크롬 완전 종료 후 재실행 시 헤더가 주소창에 안 가리는지. 배포는 이 QA 후
 ```
