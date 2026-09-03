@@ -28,11 +28,22 @@
 - **Preview** `/qa/home-header` · git Preview 홈
 - **다음** **#7** 사람 Preview QA — 첫 진입 여백 · 크롬 종료 후 재실행 가림
 
+### #7 Preview 첫 진입 점프 ✅ 에이전트 · 사람 Preview 대기
+
+- **세션** `지구본 홈 헤더 #7, Preview 첫 진입 점프`
+- **브랜치** `cursor/home-header-3eef` · tip `834ece32` · PR [#181](https://github.com/catgeot/Days/pull/181)
+- **사람 QA** Preview 첫 진입은 잠깐 정상 → 화면 전체가 주소창 뒤로. 커서↔크롬 왕복은 여백 있고 정상. 새로고침 정상. 스크린샷 URL `…3eef-….vercel.app` · 「작업 로그」 · `< Cursor` → Preview (배포본 아님)
+- **원인** innerHeight만으로 overlay 확정 + `pageTop` `scrollTo(0,0)` + 큰 높이 잠금. 재현되는 타이밍 레이스(첫 페인트 후 점프).
+- **적용** visualViewport로 overlay · 280ms 뒤 확정 · pageTop scrollTo 제거 · inset은 보이는 높이로 축소
+- **VERIFY** settle 전 `0` · overlay `56` latch · visual inset `0` · `vite build` PASS
+- **Preview** `/qa/home-header` · git Preview 홈
+- **다음** **#8** 사람 Preview QA — 첫 진입 점프 없는지. PROD 확인은 Cursor 밖 `www.gateo.kr`
+
 ```
-지구본 홈 헤더 #7, 사람 Preview QA
+지구본 홈 헤더 #8, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-03-project-log.md
 브랜치 cursor/home-header-3eef · PR #181 · https://www.gateo.kr/qa/home-header
 금지: UI 리디자인 · Cursor 인앱·Vercel URL바용 56px 추가 · offsetTop 지속 보정 · 코드를 origin/main에 임의 push
-작업: iPhone Chrome 앱 Preview — 첫 진입 검은 여백 없는지 · 크롬 완전 종료 후 재실행 시 헤더가 주소창에 안 가리는지
+작업: iPhone Chrome Preview 첫 진입이 점프하지 않는지 · 새로고침 유지. PROD는 Cursor 없이 www.gateo.kr
 ```
