@@ -18,24 +18,24 @@
 
 | | |
 |--|--|
-| **상태** | **#9 100svh 리셋** · tip `ece13d6e` · 사람 Preview 대기 |
-| **브랜치** | `cursor/home-header-3eef` · tip `ece13d6e` |
+| **상태** | **#10 재실행 한계 · h-screen 복귀** · tip `8994b825` · 사람 Preview 대기(배포본 비교) |
+| **브랜치** | `cursor/home-header-3eef` · tip `8994b825` |
 | **PR** | [#181](https://github.com/catgeot/Days/pull/181) |
 | **일지** | [`2026-09-03-project-log.md`](./2026-09-03-project-log.md) · [`2026-09-02-project-log.md`](./2026-09-02-project-log.md) |
 | **Preview** | `/qa/home-header` → git Preview 홈 |
 | **VERIFY** | `smoke:home-chrome-viewport` · `vite build` |
 
-**게이트**: iPhone Chrome **첫 진입·새로고침·크롬 완전 종료 후 재실행** 헤더가 주소창에 안 가림. 재실행만 남으면 CriOS restore 한계로 배포 여부 결정. 56px overlay 재도입 금지.
+**게이트**: 크롬 재실행 overlay는 **한계**(고치지 않음). Preview 상단이 `www.gateo.kr` 과 같은지 확인 후 **PR #181 병합하지 않음**.
 
-**다음 제시어** (#10 사람 Preview QA):
+**다음 제시어** (#11 배포본 상단 비교 후 PR 닫기):
 
 ```
-지구본 홈 헤더 #10, 사람 Preview QA
+지구본 홈 헤더 #11, 배포본 상단 비교
 @plans/feature-handoff-index.md
 @plans/2026-09-03-project-log.md
 브랜치 cursor/home-header-3eef · PR #181 · https://www.gateo.kr/qa/home-header
-금지: UI 리디자인 · CriOS 56px overlay 재도입 · offsetTop 지속 보정 · 코드를 origin/main에 임의 push
-작업: iPhone Chrome Preview — 첫 진입·새로고침·크롬 완전 종료 후 재실행에서 로고·EN·검색이 주소창 아래인지. 재실행만 남으면 배포 여부 결정
+금지: UI 리디자인 · CriOS 56px overlay 재도입 · 100svh 재도입 · 코드를 origin/main에 임의 push
+작업: Preview vs www.gateo.kr 상단 여백이 같은지. OK면 PR #181 병합하지 않고 닫기
 ```
 
 ---
