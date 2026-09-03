@@ -14,29 +14,16 @@
 
 ## 활성 목록
 
-### 지구본 홈 헤더 (Chrome 주소창 가림)
+### 지구본 홈 헤더 (Chrome 주소창 가림) — 종료 · 병합 안 함
 
 | | |
 |--|--|
-| **상태** | **#11 배포본 정정** · tip `8994b825` · PR #181 미병합 · 사람 확인 대기 |
-| **브랜치** | `cursor/home-header-3eef` · tip `8994b825` |
-| **PR** | [#181](https://github.com/catgeot/Days/pull/181) |
-| **일지** | [`2026-09-03-project-log.md`](./2026-09-03-project-log.md) · [`2026-09-02-project-log.md`](./2026-09-02-project-log.md) |
-| **Preview** | `/qa/home-header` → git Preview 홈 |
-| **VERIFY** | `smoke:home-chrome-viewport` · `vite build` |
+| **상태** | **#12 종료** · 헤더 여백 유지 · PR [#181](https://github.com/catgeot/Days/pull/181) **닫음(미병합)** |
+| **배포** | `https://www.gateo.kr/` — PR #175 모바일 `[로고+EN \| 검색]` · `p-4`(16px) **그대로** |
+| **한계** | iOS Chrome 완전 종료 후 재실행 때 헤더가 주소창에 가릴 수 있음. 56px overlay 재시도 금지 |
+| **일지** | [`2026-09-03-project-log.md`](./2026-09-03-project-log.md) |
 
-**게이트**: PR #181(56px)은 **main 미병합**. 현재 `www.gateo.kr` = 검색바·EN 헤더(PR #175). 재실행 overlay는 한계. 상단 `p-4`는 헤더 문제 이전부터 있음.
-
-**다음 제시어** (#12 상단 여백 방향):
-
-```
-지구본 홈 헤더 #12, 상단 여백 방향
-@plans/feature-handoff-index.md
-@plans/2026-09-03-project-log.md
-브랜치 cursor/home-header-3eef · PR #181 · https://www.gateo.kr/qa/home-header
-금지: UI 리디자인 · CriOS 56px overlay 재도입 · 100svh 재도입 · 코드를 origin/main에 임의 push
-작업: 현재 배포 p-4(16px) vs 문제 이전 p-4+pt-2/top-6(24px) 확인 후 — PR #181 닫기 또는 여백 방향만
-```
+**다음 제시어 없음** (주제 종료). 새 채팅에서 이 헤더 overlay를 다시 열지 않음.
 
 ---
 

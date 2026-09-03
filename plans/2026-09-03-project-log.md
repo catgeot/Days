@@ -81,13 +81,17 @@
 - **현재 배포** `9824bfb8` 검색바 히트 PR [#175](https://github.com/catgeot/Days/pull/175) (2026-09-02) + locale PR #176 — 모바일 `[로고+EN | 검색]` · 헤더 `p-4`(16px)
 - **헤더 문제 이전** `9824bfb8^`: 겉은 같은 `p-4`. 로고 열 `pt-2` → 로고 24px. 검색 `max-md:top-6`(24px)·`left-[7.75rem]`. EN은 2026-08-18부터 로고 옆
 - **여백** 문제 이전이 더 아래(24px). 지금 작은 여백은 `p-4`. 56px 검은 띠는 배포에 한 번도 없음
-- **다음** **#12** 이 여백을 그대로 둘지 · PR #181 닫을지
+- **다음** **#12** 여백 유지 확인 후 PR 닫기
+
+### #12 여백 유지 · 배포본 그대로 · PR #181 미병합 종료 ✅
+
+- **세션** `지구본 홈 헤더 #12, 상단 여백 방향`
+- **사람** 헤더 여백은 현재 상태 유지. 배포본을 손볼 일 없이 이대로 두면 되는지
+- **결론** **손대지 않음.** `www.gateo.kr` = PR #175 `p-4` 그대로
+- **올리지 않음** CriOS 56px · 100svh · html lock (PR [#181](https://github.com/catgeot/Days/pull/181) **닫음**)
+- **한계** iOS Chrome 완전 종료 후 재실행 가림은 남음
+- **주제 종료** 다음 제시어 없음
 
 ```
-지구본 홈 헤더 #12, 상단 여백 방향
-@plans/feature-handoff-index.md
-@plans/2026-09-03-project-log.md
-브랜치 cursor/home-header-3eef · PR #181 · https://www.gateo.kr/qa/home-header
-금지: UI 리디자인 · CriOS 56px overlay 재도입 · 100svh 재도입 · 코드를 origin/main에 임의 push
-작업: 현재 배포 p-4(16px) vs 문제 이전 p-4+pt-2/top-6(24px) 확인 후 — PR #181 닫기 또는 여백 방향만
+(주제 종료 — 지구본 홈 헤더 overlay 재시도 금지)
 ```
