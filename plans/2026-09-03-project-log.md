@@ -95,3 +95,27 @@
 ```
 (주제 종료 — 지구본 홈 헤더 overlay 재시도 금지)
 ```
+
+---
+
+## 홈 지구본 지명 — 사파리 첫 진입
+
+### #3 사파리 첫 진입 지명 ✅ 에이전트 · 사람 Preview 대기
+
+- **세션** `홈 지구본 지명 #3, 사파리 첫 진입 지명`
+- **브랜치** `cursor/globe-labels-ddce` · tip `915772bd` · PR [#182](https://github.com/catgeot/Days/pull/182)
+- **배경** PR [#180](https://github.com/catgeot/Days/pull/180) merge `d6c91f0d` 이후에도 사파리 첫 진입에서 지명이 간헐적으로 없음 · EN 토글만 복구
+- **원인** locale 패치가 `mapReady` 전 no-op · overlay 320ms 뒤 `jumpTo`가 Safari CJK placement를 끊음 · `isMoving`이 자전 없이도 남아 overlay `return`
+- **적용** `mapReady` 후 EN 토글과 같은 text-field 강제 적용 · 페인트 또는 1.6s까지 자전 hold·pump · 첫 visibility `force`
+- **VERIFY** `smoke:globe-label-first-reveal` · `smoke:place-label-slug` · `vite build` PASS
+- **Preview** `/qa/globe-labels` · git Preview 홈
+- **다음** **#4 사람 Preview QA** — 사파리 첫 진입(EN 없이) 지명 · 완전 종료 후 재실행 2~3회
+
+```
+홈 지구본 지명 #4, 사파리 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-03-project-log.md
+브랜치 cursor/globe-labels-ddce · PR #182 · https://www.gateo.kr/qa/globe-labels
+금지: UI 리디자인 · HomeGlobeMapbox 광역 리팩터 · 코드를 origin/main에 임의 push
+작업: 사파리 첫 진입(EN 없이) 지명 · 완전 종료 후 재실행 2~3회 · 자전 · EN↔KO · OK 시 PR #182 merge
+```
