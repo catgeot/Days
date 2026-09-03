@@ -28,6 +28,7 @@ function parseAppliedPx(cssVar) {
 function runCriosMock({
   screenHeight = 844,
   startInnerHeight = 844,
+  startVisualHeight = startInnerHeight,
   dropBy = 144,
   navType = 'navigate',
 } = {}) {
@@ -36,7 +37,7 @@ function runCriosMock({
   const winListeners = new Map();
   const visualViewport = {
     width: 390,
-    height: startInnerHeight,
+    height: startVisualHeight,
     offsetTop: 0,
     pageTop: 0,
     scale: 1,
@@ -124,39 +125,46 @@ function runCriosMock({
   );
 
   const stop = syncHomeChromeOnFirstPaint();
-  const firstPx = readAppliedPx();
-  const firstHeightPx = parseAppliedPx(styleMap[HOME_VIEWPORT_HEIGHT_VAR]);
-  visualViewport.height = startInnerHeight - dropBy;
-  win.innerHeight = startInnerHeight - dropBy;
-  visualViewport.dispatch('resize');
-  const afterDropPx = readAppliedPx();
-  const result = {
-    firstPx,
-    afterDropPx,
-    dropDelta: visualViewport.height - startInnerHeight,
-    headerRectTopAfterDrop: header.getBoundingClientRect().top,
-    firstHeightPx,
-    heightAfterDropPx: parseAppliedPx(styleMap[HOME_VIEWPORT_HEIGHT_VAR]),
-  };
-  stop();
+  const beforeSettlePx = readAppliedPx();
 
-  const restore = (key, desc, fallback) => {
-    if (desc) Object.defineProperty(globalThis, key, desc);
-    else if (fallback) Object.defineProperty(globalThis, key, fallback);
-    else delete globalThis[key];
-  };
-  restore('window', prev.window);
-  restore('document', prev.document);
-  restore('navigator', prev.navigator);
-  restore('requestAnimationFrame', prev.requestAnimationFrame, {
-    value: () => 0,
-    configurable: true,
-    writable: true,
+  return new Promise((resolve) => {
+    globalThis.setTimeout(() => {
+      const firstPx = readAppliedPx();
+      const firstHeightPx = parseAppliedPx(styleMap[HOME_VIEWPORT_HEIGHT_VAR]);
+      visualViewport.height = startVisualHeight - dropBy;
+      win.innerHeight = startInnerHeight - dropBy;
+      visualViewport.dispatch('resize');
+      const afterDropPx = readAppliedPx();
+      const result = {
+        beforeSettlePx,
+        firstPx,
+        afterDropPx,
+        dropDelta: visualViewport.height - startVisualHeight,
+        headerRectTopAfterDrop: header.getBoundingClientRect().top,
+        firstHeightPx,
+        heightAfterDropPx: parseAppliedPx(styleMap[HOME_VIEWPORT_HEIGHT_VAR]),
+      };
+      stop();
+
+      const restore = (key, desc, fallback) => {
+        if (desc) Object.defineProperty(globalThis, key, desc);
+        else if (fallback) Object.defineProperty(globalThis, key, fallback);
+        else delete globalThis[key];
+      };
+      restore('window', prev.window);
+      restore('document', prev.document);
+      restore('navigator', prev.navigator);
+      restore('requestAnimationFrame', prev.requestAnimationFrame, {
+        value: () => 0,
+        configurable: true,
+        writable: true,
+      });
+      if (prev.performanceGetEntries) {
+        globalThis.performance.getEntriesByType = prev.performanceGetEntries;
+      }
+      resolve(result);
+    }, CRIOS_OVERLAY_SETTLE_MS + 20);
   });
-  if (prev.performanceGetEntries) {
-    globalThis.performance.getEntriesByType = prev.performanceGetEntries;
-  }
-  return result;
 }
 
 const {
@@ -165,6 +173,7 @@ const {
   HOME_VIEWPORT_HEIGHT_VAR,
   CHROME_IOS_URLBAR_INSET_PX,
   CHROME_IOS_OVERLAY_MAX_SCREEN_GAP_PX,
+  CRIOS_OVERLAY_SETTLE_MS,
   lockHomeViewport,
   unlockHomeViewport,
   syncHomeChromeOnFirstPaint,
@@ -180,6 +189,7 @@ assert(HOME_CHROME_TOP_VAR === '--gateo-home-chrome-top', 'chrome top CSS var');
 assert(HOME_VIEWPORT_HEIGHT_VAR === '--gateo-home-viewport-height', 'viewport height CSS var');
 assert(CHROME_IOS_URLBAR_INSET_PX === 56, 'CriOS urlbar fallback px');
 assert(CHROME_IOS_OVERLAY_MAX_SCREEN_GAP_PX === 100, 'overlay screen-gap ceiling');
+assert(CRIOS_OVERLAY_SETTLE_MS === 280, 'overlay settle delay');
 assert(typeof lockHomeViewport === 'function', 'lockHomeViewport export');
 assert(typeof unlockHomeViewport === 'function', 'unlockHomeViewport export');
 assert(typeof clearHomeChromeTop === 'function', 'clearHomeChromeTop export');
@@ -197,6 +207,15 @@ assert(resolveHomeChromeTopPx({ pageTop: 8, offsetTop: 2 }) === 8, 'max of measu
 assert(isCriosUrlbarOverlay({ crios: true, innerHeight: 844, screenHeight: 844 }) === true, 'full-screen innerHeight is overlay');
 assert(isCriosUrlbarOverlay({ crios: true, innerHeight: 796, screenHeight: 844 }) === true, 'status+toolbar-sized gap still overlay');
 assert(isCriosUrlbarOverlay({ crios: true, innerHeight: 720, screenHeight: 844 }) === false, 'urlbar-sized extra gap is inset');
+assert(
+  isCriosUrlbarOverlay({
+    crios: true,
+    innerHeight: 844,
+    screenHeight: 844,
+    visualViewportHeight: 720,
+  }) === false,
+  'visualViewport inset is not overlay even if innerHeight is full',
+);
 assert(isCriosUrlbarOverlay({ crios: false, innerHeight: 844, screenHeight: 844 }) === false, 'non-CriOS is never overlay');
 assert(isCriosUrlbarOverlay({ crios: true, innerHeight: 0, screenHeight: 844 }) === false, 'unmeasured innerHeight is not overlay');
 
@@ -246,13 +265,14 @@ const stop = syncHomeChromeOnFirstPaint();
 assert(typeof stop === 'function', 'first-paint returns cleanup');
 stop();
 
-const overlayMock = runCriosMock({
+const overlayMock = await runCriosMock({
   screenHeight: 844,
   startInnerHeight: 844,
   dropBy: 144,
   navType: 'navigate',
 });
-assert(overlayMock.firstPx === 56, `overlay first apply is 56, got ${overlayMock.firstPx}`);
+assert(overlayMock.beforeSettlePx === 0, `overlay must not latch before settle, got ${overlayMock.beforeSettlePx}`);
+assert(overlayMock.firstPx === 56, `overlay after settle is 56, got ${overlayMock.firstPx}`);
 assert(overlayMock.dropDelta === -144, `overlay height delta is -144, got ${overlayMock.dropDelta}`);
 assert(overlayMock.afterDropPx === 56, `overlay latch must keep 56 after inset-looking drop, got ${overlayMock.afterDropPx}`);
 assert(overlayMock.headerRectTopAfterDrop >= 40, `headerRectTop after drop should not be <40, got ${overlayMock.headerRectTopAfterDrop}`);
@@ -260,7 +280,19 @@ assert(overlayMock.firstHeightPx === 844, `overlay viewport height locks innerHe
 assert(overlayMock.heightAfterDropPx === 844, `viewport height must not shrink on drop, got ${overlayMock.heightAfterDropPx}`);
 console.log('crios-overlay-mock:', JSON.stringify(overlayMock));
 
-const insetMock = runCriosMock({
+const visualInsetMock = await runCriosMock({
+  screenHeight: 844,
+  startInnerHeight: 844,
+  startVisualHeight: 720,
+  dropBy: 40,
+  navType: 'navigate',
+});
+assert(visualInsetMock.firstPx === 0, `visual inset must stay 0, got ${visualInsetMock.firstPx}`);
+assert(visualInsetMock.afterDropPx === 0, `visual inset stays 0 after drop, got ${visualInsetMock.afterDropPx}`);
+assert(visualInsetMock.firstHeightPx === 720, `visual inset locks visible height, got ${visualInsetMock.firstHeightPx}`);
+console.log('crios-visual-inset-mock:', JSON.stringify(visualInsetMock));
+
+const insetMock = await runCriosMock({
   screenHeight: 844,
   startInnerHeight: 720,
   dropBy: 40,
@@ -268,10 +300,9 @@ const insetMock = runCriosMock({
 });
 assert(insetMock.firstPx === 0, `inset first apply is 0 (no black gap), got ${insetMock.firstPx}`);
 assert(insetMock.afterDropPx === 0, `inset stays 0 after height drop, got ${insetMock.afterDropPx}`);
-assert(insetMock.firstHeightPx === 0, `inset must not lock overlay height, got ${insetMock.firstHeightPx}`);
 console.log('crios-inset-mock:', JSON.stringify(insetMock));
 
-const reloadOverlayMock = runCriosMock({
+const reloadOverlayMock = await runCriosMock({
   screenHeight: 844,
   startInnerHeight: 844,
   dropBy: 144,
@@ -335,7 +366,19 @@ assert(
 );
 assert(
   viewportLib.includes('overlayLatched'),
-  'overlay latch must survive globe innerHeight drop',
+  'overlay latch must survive globe visualViewport drop',
+);
+assert(
+  viewportLib.includes('overlayReady'),
+  'overlay latch waits for Chrome URL bar settle',
+);
+assert(
+  !viewportLib.includes('pageTop > 8'),
+  'must not scrollTo on visualViewport.pageTop',
+);
+assert(
+  viewportLib.includes('apply(false)'),
+  'visualViewport resize must not remount header',
 );
 assert(
   viewportLib.includes('pageshow'),
@@ -358,9 +401,10 @@ assert(!viewportLib.includes('__GATEO_HOME_CHROME_DBG'), 'mobileViewport must no
 
 const indexHtml = read('index.html');
 assert(indexHtml.includes('--gateo-home-chrome-top'), 'index.html may set CriOS inset before paint');
-assert(indexHtml.includes('--gateo-home-viewport-height'), 'index.html may set CriOS height before paint');
+assert(indexHtml.includes('visualViewport'), 'index.html uses visualViewport for overlay');
+assert(!indexHtml.includes('--gateo-home-viewport-height'), 'index.html must not lock height before Chrome settles');
 assert(indexHtml.includes('CriOS'), 'index.html gates inset to iOS Chrome');
-assert(indexHtml.includes('screen.height'), 'index.html detects overlay via screen vs innerHeight');
+assert(indexHtml.includes('screen.height'), 'index.html detects overlay via screen vs visible height');
 assert(indexHtml.includes('<= 100'), 'index.html overlay gap matches CHROME_IOS_OVERLAY_MAX_SCREEN_GAP_PX');
 assert(!indexHtml.includes("nav.type === 'reload'"), 'index.html must not skip reload inset');
 assert(!indexHtml.includes('__GATEO_HOME_CHROME_DBG'), 'index.html must not keep debug payload');

@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '지구본 홈 헤더',
-  sessionNo: 6,
-  sessionPhase: 'PROD Chrome 확인',
+  sessionNo: 7,
+  sessionPhase: 'Preview 첫 진입 점프',
   branch: 'cursor/home-header-3eef',
   previewPath: '/',
   qaShareSlug: 'home-header',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-03-home-header-preview-jump',
+    session: '지구본 홈 헤더 #7, Preview 첫 진입 점프',
+    title: '첫 진입 잠깐 정상 후 화면이 주소창 뒤로 점프',
+    detail:
+      '사람 Preview(Cursor에서 연 Vercel): 첫 페인트는 정상 → 화면 전체가 위로 가림. 커서↔크롬 왕복은 여백 있고 정상, 새로고침 정상. 원인: innerHeight만으로 overlay 확정·pageTop scrollTo·큰 높이 잠금. visualViewport로 overlay 판정, 280ms 뒤 확정, pageTop scrollTo 제거, inset은 보이는 높이로 축소. Preview /qa/home-header — 첫 진입이 점프하지 않는지 · 새로고침 유지.',
+    at: '2026-09-03T03:25:00.000Z',
+  },
   {
     id: '2026-09-03-home-header-overlay-only-56',
     session: '지구본 홈 헤더 #6, PROD Chrome 확인',
