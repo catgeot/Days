@@ -146,14 +146,14 @@
 - **적용** CriOS navigate·reload 모두 56px · `innerHeight`로 홈 높이 고정(축소 금지)
 - **VERIFY** CriOS mock reload `56` · height `844` 유지 · `vite build` PASS
 - **Preview** git Preview 홈 (Vercel SSO) · `/qa/home-header`는 PROD 미반영
-- **다음** **#5 사람 Preview QA** — 탭 재오픈 + 새로고침
+- **다음** **#5 사람 Preview QA** — 탭 재오픈 + 새로고침 → [`2026-09-03-project-log.md`](./2026-09-03-project-log.md)
 
 ```
-지구본 홈 헤더 #5, 사람 Preview QA
+지구본 홈 헤더 #6, PROD Chrome 확인
 @plans/feature-handoff-index.md
-@plans/2026-09-02-project-log.md
-브랜치 cursor/home-header-3eef · PR #181 · https://days-git-cursor-home-header-3eef-catgeots-projects.vercel.app/
-금지: UI 리디자인 · offsetTop 지속 보정 · 코드를 origin/main에 임의 push
-작업: 탭 닫고 다시 열기 + 새로고침 — 헤더가 주소창에 안 가리는지 · 하단 검은 틈 없는지 · OK 시 PR #181 merge
+@plans/2026-09-03-project-log.md
+브랜치 cursor/home-header-3eef · PR #181 · https://www.gateo.kr/
+금지: UI 리디자인 · Cursor 인앱·Vercel URL바용 56px 추가 · offsetTop 지속 보정 · 코드를 origin/main에 임의 push
+작업: iPhone Chrome 앱에서 gateo.kr 탭 재오픈+새로고침. 정상이면 56px 축소 또는 PR 닫기. Chrome만 가리면 CriOS만 유지
 ```
 
