@@ -176,6 +176,15 @@
 - **Preview** `https://days-git-cursor-palgyeong-catgeots-projects.vercel.app`
 - **다음** 경북 큐 소진 — **큐 확장**(전국) 사람 합의 또는 PR #172 merge QA
 
+### #12 PR #172 merge QA spot-check ✅
+
+- **세션** `지자체 팔경 #12, 큐확장 또는 merge QA`
+- **브랜치** `cursor/palgyeong` · tip `423be788` · PR [#172](https://github.com/catgeot/Days/pull/172)
+- **VERIFY** audit:city-attraction-hubs 0 · audit:korea-local-scenic-lists 0 (lists 30 · members 264) · smoke 30 lists · build PASS · CI SUCCESS
+- **spot-check** 파일럿 3 + R07–R09 7 + 회귀(속초8경·경주8怪) 12건 resolveLocalScenicList exact PASS
+- **merge QA** PR #172 merge 준비 OK — 사람 Preview 선택 QA 후 merge
+- **다음** (A) 경남 큐 확장 합의 → R10–R12 표 추가 · F 재개 — 또는 (B) PR #172 merge
+
 ---
 
 ## 홈 locale 토글 (EN/KO)

@@ -380,9 +380,9 @@ issues **0** · 스모크 PASS 전에 커밋·이관·다음 R **금지**.
 | | |
 |--|--|
 | **운영** | **자동 오케** (§4.3) · F=VERIFY 후 다음 R · **3R마다 I#** |
-| **지금** | **R07–R09** ✅ · **I#4** ✅ — lists **30** · members **264** · 경북 큐 **소진** |
-| **다음** | **큐 확장**(전국 시군구) — **사람 합의 후** 표 추가 · 또는 PR #172 merge QA |
-| **브랜치** | `cursor/palgyeong` · tip `cc2ac626` · PR [#172](https://github.com/catgeot/Days/pull/172) |
+| **지금** | **R07–R09** ✅ · **I#4** ✅ · **#12 merge QA** ✅ — lists **30** · members **264** · 경북 큐 **소진** |
+| **다음** | **(A)** 경남 큐 확장 합의 → R10– 표 추가 · F 재개 — **(B)** PR #172 merge (사람) |
+| **브랜치** | `cursor/palgyeong` · tip `423be788` · PR [#172](https://github.com/catgeot/Days/pull/172) |
 | **금지** | UI · scenic 승격 · 광역 팔경 · tip rewrite · **매 R 사람 QA·제시어 대기** |
 | **VERIFY** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · `smoke:korea-local-scenic-lists` · `build` |
 
@@ -396,7 +396,7 @@ issues **0** · 스모크 PASS 전에 커밋·이관·다음 R **금지**.
 @plans/feature-handoff-index.md
 브랜치 cursor/palgyeong · PR #172
 금지: UI · scenic승격 · 광역팔경 · feature plans 커밋 · 매R 사람QA · VERIFY후 제시어대기
-작업: 큐 다음 ⬜ R부터 · 워커2 · VERIFY PASS→다음R 자동 · 3R마다 I# · §6.2만 정지
+작업: 경남 큐 확장 합의 후 R10– · 또는 PR #172 merge · §6.2만 정지
 ```
 
 **정상 F 진행 중**: 후임 메인이 **Task 이양**(오케 §4.2) — 사람이 매 R 제시어를 넣을 필요 **없음**.
