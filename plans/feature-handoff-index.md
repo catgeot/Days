@@ -14,6 +14,44 @@
 
 ## 활성 목록
 
+### 지구본 홈 헤더 (Chrome 주소창 가림) — 종료 · 병합 안 함
+
+| | |
+|--|--|
+| **상태** | **#12 종료** · 헤더 여백 유지 · PR [#181](https://github.com/catgeot/Days/pull/181) **닫음(미병합)** |
+| **배포** | `https://www.gateo.kr/` — PR #175 모바일 `[로고+EN \| 검색]` · `p-4`(16px) **그대로** |
+| **한계** | iOS Chrome 완전 종료 후 재실행 때 헤더가 주소창에 가릴 수 있음. 56px overlay 재시도 금지 |
+| **일지** | [`2026-09-03-project-log.md`](./2026-09-03-project-log.md) |
+
+**다음 제시어 없음** (주제 종료). 새 채팅에서 이 헤더 overlay를 다시 열지 않음.
+
+---
+
+### 홈 지구본 지명 (첫 로딩)
+
+| | |
+|--|--|
+| **상태** | **#4 사람 PROD QA** · main `cf63192c` · PR [#182](https://github.com/catgeot/Days/pull/182) merge ✅ |
+| **브랜치** | `cursor/globe-labels-ddce` · merge `cf63192c` |
+| **일지** | [`2026-09-03-project-log.md`](./2026-09-03-project-log.md) |
+| **PROD** | `https://www.gateo.kr/` |
+| **VERIFY** | `smoke:globe-label-first-reveal` · `smoke:place-label-slug` · `vite build` |
+
+**게이트**: 사파리 `www.gateo.kr` 첫 진입 — EN 없이 대륙·대양 지명 · 자전 · EN↔KO
+
+**다음 제시어** (#4 사람 PROD QA):
+
+```
+홈 지구본 지명 #4, 사파리 PROD QA
+@plans/feature-handoff-index.md
+@plans/2026-09-03-project-log.md
+PROD https://www.gateo.kr/
+금지: UI 리디자인 · HomeGlobeMapbox 광역 리팩터 · 코드를 origin/main에 임의 push
+작업: 사파리에서 www.gateo.kr 첫 진입(EN 없이) 지명 · 완전 종료 후 재실행 2~3회 · 자전 · EN↔KO
+```
+
+---
+
 ### 홈 축제칩 (써머리 펼침) — main 병합 ✅
 
 | | |
@@ -204,8 +242,8 @@ main · www.gateo.kr/place/yap/planner?lang=en
 
 | | |
 |--|--|
-| **상태** | **자동 오케** · R06 ✅ · **I#3** ✅ · 다음 **R07** |
-| **브랜치** | `cursor/palgyeong` · tip `37b29e1e` |
+| **상태** | **자동 오케** · R07–R09 ✅ · **I#4** ✅ · 경북 큐 **소진** |
+| **브랜치** | `cursor/palgyeong` · tip `cc2ac626` |
 | **PR** | [#172](https://github.com/catgeot/Days/pull/172) |
 | **플랜** | [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) **§4.5·§9** |
 | **큐** | [`korea-local-scenic-lists-queue.md`](./korea-local-scenic-lists-queue.md) |
@@ -224,7 +262,7 @@ main · www.gateo.kr/place/yap/planner?lang=en
 @plans/feature-handoff-index.md
 브랜치 cursor/palgyeong · PR #172
 금지: UI · scenic승격 · 광역팔경 · feature plans 커밋 · 매R 사람QA · VERIFY후 제시어대기
-작업: 큐 다음 ⬜ R부터 · 워커2 · VERIFY PASS→다음R 또는 후임Task(§4.5-D) · 3R마다 I# · §6.2만 정지
+작업: 경북 큐 소진 — 큐 확장(사람 합의) 또는 PR #172 merge QA · §6.2만 정지
 ```
 
 **턴 종료 체크**(⬜ R 남음 · §6.2 아님): (1) feature push (2) **같은 턴** 다음 R **또는** 후임 Task `run_in_background:false` (3) 세대 끝이면 **main docs push**. VERIFY 후 요약만 하고 종료 **금지** — [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) **§4.5**.

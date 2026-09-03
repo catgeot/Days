@@ -6,6 +6,11 @@
       "permanent": true
     },
     {
+      "source": "/qa/globe-labels",
+      "destination": "https://days-git-cursor-globe-labels-ddce-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
       "source": "/qa/home-chip",
       "destination": "https://www.gateo.kr/",
       "permanent": false

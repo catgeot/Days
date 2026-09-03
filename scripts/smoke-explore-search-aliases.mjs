@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 탐색창 검색 — 랑코(람코)·다카맀(다카마스) SSOT·별칭 스모크
+ * 탐색창 검색 — 랑코(람코)·다카마스 SSOT·별칭 스모크
  */
 import assert from 'node:assert/strict';
 import {
@@ -23,9 +23,14 @@ assert.ok(langCoKo, '랑코 exact');
 assert.equal(langCoKo.attraction.name_en, 'Lang Co Beach');
 
 const takamatsu = resolveCityAttractionHub('다카마스');
-assert.ok(takamatsu, '다카마스 → 다카맀 hub');
+assert.ok(takamatsu, '다카마스 hub exact');
 assert.equal(takamatsu.hubId, 'takamatsu');
+assert.equal(takamatsu.name, '다카마스');
 assert.equal(takamatsu.name_en, 'Takamatsu');
+
+const takamatsuLegacy = resolveCityAttractionHub('다카맀');
+assert.ok(takamatsuLegacy, '다카맀 alias → 다카마스 hub');
+assert.equal(takamatsuLegacy.name, '다카마스');
 
 const takamatsuEn = resolveCityAttractionHub('takamatsu');
 assert.ok(takamatsuEn, 'takamatsu exact hub');
