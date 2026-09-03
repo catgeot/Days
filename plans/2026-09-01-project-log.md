@@ -185,6 +185,13 @@
 - **merge QA** PR #172 merge 준비 OK — 사람 Preview 선택 QA 후 merge
 - **다음** (A) 경남 큐 확장 합의 → R10–R12 표 추가 · F 재개 — 또는 (B) PR #172 merge
 
+### #13 PR #172 main merge ✅ · 경남 큐 R10–R12
+
+- **세션** `지자체 팔경 #13, merge·경남 큐 준비`
+- **main** `469ba944` — PR [#172](https://github.com/catgeot/Days/pull/172) merge (lists 30 · members 264)
+- **큐** 경남 R10–R12 표 추가 (18 hub · 남해안·지리산·낙동 · `goseongnam` 주의)
+- **다음** **R10** 자동 오케 F — 통영·거제·사천·창원·경남고성·남해
+
 ---
 
 ## 홈 locale 토글 (EN/KO)

@@ -1,6 +1,6 @@
 # koreaLocalScenicLists — 사전 배치 큐 (기초지자체 팔경·구경)
 
-**상태**: R09 ✅ · **I#4** ✅ · 경북 큐 **소진** (다음 권역 = 사람 합의)  
+**상태**: R09 ✅ · **I#4** ✅ · PR #172 **main merge** ✅ · **R10– 경남** ⬜  
 **규칙**: 라운드 = **6 칸** · 워커A **3** + 워커B **3** · VERIFY PASS → **다음 R 자동** · **3R마다 I#** · §6.2만 정지  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.6** · 플랜 [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md)  
 **단위**: 시·군·구만 · **광역 팔경(관동팔경 등) 큐 금지**(1차)  
@@ -89,6 +89,23 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 
 **I 주기**: R07–R09 VERIFY 누적 후 → **I 무결성 #4** ✅ 2026-09-02 · 경북 큐 소진.
 
+---
+
+## F 라운드 — 경남 (PR #172 merge 후 · I#4 다음 · 착수 전 소스 조사)
+
+> `hubId-?` = 착수 전 **공식 title·listKind·sourceUrl** 확정. hub 없음·공식 N경 없음 → `skip_no_source` · 예비 1:1.  
+> 경남 고성 hubId = `goseongnam` (강원 `goseong`과 구분).
+
+| R | 워커A (3) | 워커B (3) | 세권 | 상태 |
+|---|-----------|-----------|------|------|
+| **R10** | `tongyeong-?` · `geoje-?` · `sacheon-?` | `changwon-?` · `goseongnam-?` · `namhae-?` | 남해안 | ⬜ |
+| **R11** | `hadong-?` · `jinju-?` · `sancheong-?` | `hamyang-?` · `geochang-?` · `hapcheon-?` | 지리산·서부 | ⬜ |
+| **R12** | `gimhae-?` · `yangsan-?` · `miryang-?` | `uiryeong-?` · `haman-?` · `changnyeong-?` | 낙동·중부 | ⬜ |
+
+> **경남 18** hub — [`korea-scenic-mid-cluster-plan.md`](./korea-scenic-mid-cluster-plan.md) 남해안·지리산·낙동 순.
+
+**I 주기**: R10–R12 VERIFY 누적 후 → **I 무결성 #5** (예정).
+
 ### 예비 (스킵·EXISTS 시)
 
 강원: `hongcheon`(P 완료 후 제외) · `yanggu` · `inje` · `gosung` 표기 주의(`goseong-gw` vs 경남) · `sokcho` 시드 append만  
@@ -107,6 +124,6 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 
 ```text
 운영: 자동 오케 §4.3 — VERIFY PASS → 다음 ⬜ R (사람 제시어·Preview QA 없음)
-현재: lists 30 · members 264 · 충북 skips 5 · 경북 skips 15
-I#4: R07–R09 PASS 2026-09-02 · 경북 큐 소진 — 다음 권역 큐 확장은 사람 합의
+현재: lists 30 · members 264 · main merge ✅ · 다음 ⬜ R10 (경남)
+I#5: R10–R12 누적 예정 · 이후 전남·전북·충남·경기 큐 확장(사람 합의)
 ```
