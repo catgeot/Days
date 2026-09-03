@@ -18,24 +18,24 @@
 
 | | |
 |--|--|
-| **상태** | **#4 사람 Preview QA 수정** · tip `7313c02f` · 사람 Preview 대기 |
+| **상태** | **#5 사람 QA** · 배포본 정상 · Preview(Cursor 인앱) 가림은 앱 크롬 · 56px 추가 금지 |
 | **브랜치** | `cursor/home-header-3eef` · tip `7313c02f` |
 | **PR** | [#181](https://github.com/catgeot/Days/pull/181) |
-| **일지** | [`2026-09-02-project-log.md`](./2026-09-02-project-log.md) |
+| **일지** | [`2026-09-03-project-log.md`](./2026-09-03-project-log.md) · [`2026-09-02-project-log.md`](./2026-09-02-project-log.md) |
 | **Preview** | git Preview 홈 (Vercel SSO) · `/qa/home-header`는 PROD 미반영 |
 | **VERIFY** | `smoke:home-chrome-viewport` · `vite build` |
 
-**게이트**: iPhone Chrome **탭 재오픈**과 **새로고침** 모두 로고·EN·검색·칩이 주소창 아래 · 하단 검은 틈 없음
+**게이트**: **www.gateo.kr iPhone Chrome 앱**(Cursor 인앱 아님). Preview 가림은 사이트 CSS로 맞추지 않음.
 
-**다음 제시어** (#5 사람 Preview QA):
+**다음 제시어** (#6 PROD Chrome 확인):
 
 ```
-지구본 홈 헤더 #5, 사람 Preview QA
+지구본 홈 헤더 #6, PROD Chrome 확인
 @plans/feature-handoff-index.md
-@plans/2026-09-02-project-log.md
-브랜치 cursor/home-header-3eef · PR #181 · https://days-git-cursor-home-header-3eef-catgeots-projects.vercel.app/
-금지: UI 리디자인 · offsetTop 지속 보정 · 코드를 origin/main에 임의 push
-작업: 탭 닫고 다시 열기 + 새로고침 — 헤더가 주소창에 안 가리는지 · 하단 검은 틈 없는지 · OK 시 PR #181 merge
+@plans/2026-09-03-project-log.md
+브랜치 cursor/home-header-3eef · PR #181 · https://www.gateo.kr/
+금지: UI 리디자인 · Cursor 인앱·Vercel URL바용 56px 추가 · offsetTop 지속 보정 · 코드를 origin/main에 임의 push
+작업: iPhone Chrome 앱에서 gateo.kr 탭 재오픈+새로고침. 정상이면 56px 축소 또는 PR 닫기. Chrome만 가리면 CriOS만 유지
 ```
 
 ---
