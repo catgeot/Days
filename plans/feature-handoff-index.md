@@ -31,24 +31,23 @@
 
 | | |
 |--|--|
-| **상태** | **#3 사파리 첫 진입** · tip `915772bd` · 사람 Preview 대기 |
-| **브랜치** | `cursor/globe-labels-ddce` · tip `915772bd` |
-| **PR** | [#182](https://github.com/catgeot/Days/pull/182) · #180 merge `d6c91f0d` |
-| **일지** | [`2026-09-03-project-log.md`](./2026-09-03-project-log.md) · [`2026-09-02-project-log.md`](./2026-09-02-project-log.md) |
-| **Preview** | `/qa/globe-labels` → git Preview 홈 |
+| **상태** | **#4 사람 PROD QA** · main `cf63192c` · PR [#182](https://github.com/catgeot/Days/pull/182) merge ✅ |
+| **브랜치** | `cursor/globe-labels-ddce` · merge `cf63192c` |
+| **일지** | [`2026-09-03-project-log.md`](./2026-09-03-project-log.md) |
+| **PROD** | `https://www.gateo.kr/` |
 | **VERIFY** | `smoke:globe-label-first-reveal` · `smoke:place-label-slug` · `vite build` |
 
-**게이트**: 사파리 첫 진입 — EN 없이 대륙·대양 지명 표시 · 자전 유지 · EN↔KO 회귀
+**게이트**: 사파리 `www.gateo.kr` 첫 진입 — EN 없이 대륙·대양 지명 · 자전 · EN↔KO
 
-**다음 제시어** (#4 사람 Preview QA):
+**다음 제시어** (#4 사람 PROD QA):
 
 ```
-홈 지구본 지명 #4, 사파리 사람 Preview QA
+홈 지구본 지명 #4, 사파리 PROD QA
 @plans/feature-handoff-index.md
 @plans/2026-09-03-project-log.md
-브랜치 cursor/globe-labels-ddce · PR #182 · https://www.gateo.kr/qa/globe-labels
+PROD https://www.gateo.kr/
 금지: UI 리디자인 · HomeGlobeMapbox 광역 리팩터 · 코드를 origin/main에 임의 push
-작업: 사파리 첫 진입(EN 없이) 지명 · 완전 종료 후 재실행 2~3회 · 자전 · EN↔KO · OK 시 PR #182 merge
+작업: 사파리에서 www.gateo.kr 첫 진입(EN 없이) 지명 · 완전 종료 후 재실행 2~3회 · 자전 · EN↔KO
 ```
 
 ---
