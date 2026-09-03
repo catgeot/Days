@@ -18,24 +18,24 @@
 
 | | |
 |--|--|
-| **상태** | **#8 Chrome 재실행 overlay** · tip `8ce1e72a` · 사람 Preview 대기 |
-| **브랜치** | `cursor/home-header-3eef` · tip `8ce1e72a` |
+| **상태** | **#9 100svh 리셋** · tip `ece13d6e` · 사람 Preview 대기 |
+| **브랜치** | `cursor/home-header-3eef` · tip `ece13d6e` |
 | **PR** | [#181](https://github.com/catgeot/Days/pull/181) |
 | **일지** | [`2026-09-03-project-log.md`](./2026-09-03-project-log.md) · [`2026-09-02-project-log.md`](./2026-09-02-project-log.md) |
 | **Preview** | `/qa/home-header` → git Preview 홈 |
 | **VERIFY** | `smoke:home-chrome-viewport` · `vite build` |
 
-**게이트**: iPhone Chrome **크롬 완전 종료 후 재실행** 헤더가 주소창에 안 가림 · 첫 진입·새로고침 유지. PROD 배포는 이 QA 후.
+**게이트**: iPhone Chrome **첫 진입·새로고침·크롬 완전 종료 후 재실행** 헤더가 주소창에 안 가림. 재실행만 남으면 CriOS restore 한계로 배포 여부 결정. 56px overlay 재도입 금지.
 
-**다음 제시어** (#9 사람 Preview QA):
+**다음 제시어** (#10 사람 Preview QA):
 
 ```
-지구본 홈 헤더 #9, 사람 Preview QA
+지구본 홈 헤더 #10, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-03-project-log.md
 브랜치 cursor/home-header-3eef · PR #181 · https://www.gateo.kr/qa/home-header
-금지: UI 리디자인 · Cursor 인앱·Vercel URL바용 56px 추가 · offsetTop 지속 보정 · 코드를 origin/main에 임의 push
-작업: iPhone Chrome Preview — 첫 진입 유지 · 크롬 완전 종료 후 재실행 시 헤더가 주소창에 안 가리는지. 배포는 이 QA 후
+금지: UI 리디자인 · CriOS 56px overlay 재도입 · offsetTop 지속 보정 · 코드를 origin/main에 임의 push
+작업: iPhone Chrome Preview — 첫 진입·새로고침·크롬 완전 종료 후 재실행에서 로고·EN·검색이 주소창 아래인지. 재실행만 남으면 배포 여부 결정
 ```
 
 ---
