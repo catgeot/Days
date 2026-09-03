@@ -18,24 +18,24 @@
 
 | | |
 |--|--|
-| **상태** | **#7 첫 진입 점프 수정** · tip `834ece32` · 사람 Preview 대기 |
-| **브랜치** | `cursor/home-header-3eef` · tip `834ece32` |
+| **상태** | **#8 Chrome 재실행 overlay** · tip `8ce1e72a` · 사람 Preview 대기 |
+| **브랜치** | `cursor/home-header-3eef` · tip `8ce1e72a` |
 | **PR** | [#181](https://github.com/catgeot/Days/pull/181) |
 | **일지** | [`2026-09-03-project-log.md`](./2026-09-03-project-log.md) · [`2026-09-02-project-log.md`](./2026-09-02-project-log.md) |
 | **Preview** | `/qa/home-header` → git Preview 홈 |
 | **VERIFY** | `smoke:home-chrome-viewport` · `vite build` |
 
-**게이트**: iPhone Chrome Preview **첫 진입이 점프하지 않음** · 새로고침 유지. PROD는 Cursor 밖 `www.gateo.kr`만.
+**게이트**: iPhone Chrome **크롬 완전 종료 후 재실행** 헤더가 주소창에 안 가림 · 첫 진입·새로고침 유지. PROD 배포는 이 QA 후.
 
-**다음 제시어** (#8 사람 Preview QA):
+**다음 제시어** (#9 사람 Preview QA):
 
 ```
-지구본 홈 헤더 #8, 사람 Preview QA
+지구본 홈 헤더 #9, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-03-project-log.md
 브랜치 cursor/home-header-3eef · PR #181 · https://www.gateo.kr/qa/home-header
 금지: UI 리디자인 · Cursor 인앱·Vercel URL바용 56px 추가 · offsetTop 지속 보정 · 코드를 origin/main에 임의 push
-작업: iPhone Chrome Preview 첫 진입이 점프하지 않는지 · 새로고침 유지. PROD는 Cursor 없이 www.gateo.kr
+작업: iPhone Chrome Preview — 첫 진입 유지 · 크롬 완전 종료 후 재실행 시 헤더가 주소창에 안 가리는지. 배포는 이 QA 후
 ```
 
 ---
