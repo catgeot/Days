@@ -9,33 +9,6 @@ body {
 }
 
 /*
- * 지구본 홈 — 100vh가 모바일 주소창보다 커서 문서가 스크롤되며
- * fixed 상단 chrome이 URL바 뒤로 깔리는 것 방지 (Chrome 첫 로딩).
- */
-html.gateo-home-lock-viewport,
-html.gateo-home-lock-viewport body {
-  height: var(--gateo-home-viewport-height, 100%);
-  max-height: var(--gateo-home-viewport-height, 100dvh);
-  overflow: hidden;
-  overscroll-behavior: none;
-}
-
-html.gateo-home-lock-viewport [data-home-viewport-root] {
-  height: var(--gateo-home-viewport-height, 100dvh);
-  max-height: var(--gateo-home-viewport-height, 100dvh);
-}
-
-[data-home-chrome-top] {
-  top: var(--gateo-home-chrome-top, 0px);
-}
-
-@media (min-width: 768px) {
-  [data-home-chrome-top] {
-    top: 0;
-  }
-}
-
-/*
  * 스크롤 페이지 끝 여백 — 마지막 버튼·본문이 화면 하단에 붙지 않고
  * 스크롤 끝에서 대략 뷰포트 중앙에 올 수 있게 함 (명승홈 접힘 파드 등).
  */

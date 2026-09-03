@@ -66,12 +66,8 @@ import {
   topOceanToFlyRegion,
 } from './lib/seaBasinRail.js';
 import {
-  clearHomeChromeTop,
-  lockHomeViewport,
   syncHomeChromeAfterNavigation,
-  syncHomeChromeOnFirstPaint,
   syncHomeViewportAfterInput,
-  unlockHomeViewport,
 } from '../../shared/lib/mobileViewport';
 import {
   clearPlaceReturnTo,
@@ -332,23 +328,6 @@ function Home() {
   const shouldPauseGlobe =
     !flightCinemaActive
     && (isCardExpanded || isPlaceRoute || routeLocation.pathname.startsWith('/explore'));
-
-  useEffect(() => {
-    if (isPlaceRoute) {
-      unlockHomeViewport();
-      clearHomeChromeTop();
-      return undefined;
-    }
-    const stop = syncHomeChromeOnFirstPaint({
-      onRemount: bumpHomeChromeEpoch,
-      onSettled: lockHomeViewport,
-    });
-    return () => {
-      stop();
-      unlockHomeViewport();
-      clearHomeChromeTop();
-    };
-  }, [isPlaceRoute, bumpHomeChromeEpoch]);
 
   const {
     handleGlobeClick,
@@ -1497,7 +1476,7 @@ function Home() {
     >
     <div
       data-home-viewport-root
-      className="relative w-full h-[100dvh] max-h-[100dvh] bg-black text-white overflow-hidden font-sans"
+      className="relative w-full h-[100svh] max-h-[100svh] md:h-[100dvh] md:max-h-[100dvh] bg-black text-white overflow-hidden font-sans"
     >
       <SEO
         title={exploreCategorySeo?.title}

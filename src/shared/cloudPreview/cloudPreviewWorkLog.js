@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '지구본 홈 헤더',
-  sessionNo: 8,
-  sessionPhase: 'Chrome 재실행 overlay',
+  sessionNo: 9,
+  sessionPhase: '100svh로 overlay 보정 중단',
   branch: 'cursor/home-header-3eef',
   previewPath: '/',
   qaShareSlug: 'home-header',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-03-home-header-svh-reset',
+    session: '지구본 홈 헤더 #9, 사람 Preview QA',
+    title: '56px overlay 보정 중단 — 셸을 100svh로',
+    detail:
+      '사람: 동일 가림이 계속됨. 검색바·EN 작업 이후 표면화. 원인: overlay/inset을 JS로 구분할 수 없음(#1–#8이 여백↔가림 교차). 검색/EN은 헤더 한 줄이 로고+EN+검색으로 촘촘해져 잘림이 눈에 띈 것. 적용: CriOS 56px·html lock·chrome-top 제거, Home·MainLayout 모바일 100svh. Preview /qa/home-header — 첫 진입·새로고침·크롬 종료 후 재실행에서 로고·EN·검색이 주소창 아래인지. 재실행만 남으면 CriOS restore 한계로 보고 배포 여부 결정.',
+    at: '2026-09-03T09:20:00.000Z',
+  },
   {
     id: '2026-09-03-home-header-chrome-relaunch',
     session: '지구본 홈 헤더 #8, Chrome 재실행 overlay',
