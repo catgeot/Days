@@ -148,8 +148,9 @@ export function syncHomeChromeAfterNavigation() {
 }
 
 export const HOME_CHROME_TOP_VAR = '--gateo-home-chrome-top';
+export const HOME_VIEWPORT_HEIGHT_VAR = '--gateo-home-viewport-height';
 
-/** iOS Chrome 주소창이 웹뷰 위에 덮일 때 — 새로고침 후엔 웹뷰가 이미 내려가 0 */
+/** iOS Chrome 주소창이 웹뷰 위에 덮일 때 — 첫 진입·새로고침 모두 overlay일 수 있음 */
 export const CHROME_IOS_URLBAR_INSET_PX = 56;
 
 export function lockHomeViewport() {
@@ -167,9 +168,22 @@ export function applyHomeChromeTopPx(px) {
   document.documentElement.style.setProperty(HOME_CHROME_TOP_VAR, `${Math.max(0, Math.round(px))}px`);
 }
 
+export function applyHomeViewportHeightPx(px) {
+  if (typeof document === 'undefined') return;
+  const next = Math.max(0, Math.round(px));
+  if (!next) return;
+  const prev = Number.parseInt(
+    document.documentElement.style.getPropertyValue(HOME_VIEWPORT_HEIGHT_VAR),
+    10,
+  ) || 0;
+  if (next <= prev) return;
+  document.documentElement.style.setProperty(HOME_VIEWPORT_HEIGHT_VAR, `${next}px`);
+}
+
 export function clearHomeChromeTop() {
   if (typeof document === 'undefined') return;
   document.documentElement.style.removeProperty(HOME_CHROME_TOP_VAR);
+  document.documentElement.style.removeProperty(HOME_VIEWPORT_HEIGHT_VAR);
 }
 
 export function resolveHomeChromeTopPx({
@@ -184,15 +198,15 @@ export function resolveHomeChromeTopPx({
   return measured;
 }
 
-/** CriOS first navigate (not reload / back_forward) — 56px floor for the whole session. */
-export function isCriosFirstNavigateSession({ crios = false, navType = '' } = {}) {
-  return Boolean(crios && navType !== 'reload' && navType !== 'back_forward');
+/** CriOS — URL bar overlays the webview on navigate and reload. */
+export function isCriosChromeTopSession({ crios = false } = {}) {
+  return Boolean(crios);
 }
 
 /**
  * Apply policy for `--gateo-home-chrome-top`.
  * visualViewport height drop (globe / 100dvh / Mapbox) is not a webview inset
- * and must not clear the first-navigate 56px floor.
+ * and must not clear the CriOS 56px floor. reload is also overlay on iPhone Chrome.
  */
 export function resolveSessionHomeChromeTopPx({
   crios = false,
@@ -200,10 +214,11 @@ export function resolveSessionHomeChromeTopPx({
   measuredPx = 0,
   visualViewportHeightDelta = 0,
 } = {}) {
+  void navType;
   void visualViewportHeightDelta;
   return resolveHomeChromeTopPx({
     offsetTop: measuredPx,
-    allowFallback: isCriosFirstNavigateSession({ crios, navType }),
+    allowFallback: isCriosChromeTopSession({ crios }),
   });
 }
 
@@ -243,10 +258,11 @@ function readMeasuredHomeChromeTopPx() {
 }
 
 /**
- * Chrome iOS 첫 진입: 웹뷰가 주소창 뒤에 깔린 채 페인트 → 새로고침이면 웹뷰가 이미 내려감.
- * 이른 scrollTo(0,0)·즉시 리마운트는 헤더를 더 밀어 넣음. fallback inset은 CriOS 첫 navigate만.
+ * Chrome iOS: 웹뷰가 주소창 뒤에 깔린 채 페인트 (navigate·reload 모두).
+ * 이른 scrollTo(0,0)·즉시 리마운트는 헤더를 더 밀어 넣음. fallback inset은 CriOS 전체.
  * offsetTop을 세션 내내 resize 바인딩하지 않음 (#13/#15 칩 히트).
- * visualViewport 높이 감소는 지구본/100dvh/Mapbox shrink — 첫 navigate 56px를 해제하지 않음.
+ * visualViewport 높이 감소는 지구본/100dvh/Mapbox shrink — 56px를 해제하지 않음.
+ * 100dvh가 svh로 줄어 하단 공백이 생기면 innerHeight로 높이를 고정(축소 금지).
  */
 export function syncHomeChromeOnFirstPaint({ onRemount, onSettled } = {}) {
   if (typeof window === 'undefined') return () => {};
@@ -275,6 +291,9 @@ export function syncHomeChromeOnFirstPaint({ onRemount, onSettled } = {}) {
       measuredPx: measured,
       visualViewportHeightDelta: heightDelta,
     });
+    if (crios) {
+      applyHomeViewportHeightPx(window.innerHeight);
+    }
     if (px !== lastApplied) {
       applyHomeChromeTopPx(px);
       lastApplied = px;

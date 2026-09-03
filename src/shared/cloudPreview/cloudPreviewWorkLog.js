@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '지구본 홈 헤더',
-  sessionNo: 3,
-  sessionPhase: '서브에이전트 QA 수정',
+  sessionNo: 4,
+  sessionPhase: '사람 Preview QA 수정',
   branch: 'cursor/home-header-3eef',
   previewPath: '/',
   qaShareSlug: 'home-header',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-02-home-header-reload-keep-56',
+    session: '지구본 홈 헤더 #4, 사람 Preview QA 수정',
+    title: '새로고침도 56px · innerHeight로 하단 공백 방지',
+    detail:
+      '사람 스크린샷: 첫 진입은 로고·검색이 주소창 아래(정상). 새로고침은 로고가 주소창에 겹치고 카테고리 아래 검은 틈. reload를 웹뷰 inset으로 보고 56px·높이를 빼서 발생. CriOS는 navigate·reload 모두 56px 유지, innerHeight로 높이 고정(축소 금지). Preview git URL — 탭 재오픈·새로고침 모두 헤더가 주소창 아래인지 · 하단 검은 틈 없는지.',
+    at: '2026-09-02T23:55:00.000Z',
+  },
   {
     id: '2026-09-02-home-header-subagent-qa',
     session: '지구본 홈 헤더 #3, 서브에이전트 QA 수정',

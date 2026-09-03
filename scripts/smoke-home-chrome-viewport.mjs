@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 지구본 홈 Chrome 첫 로딩 헤더 가림 — 100dvh · CriOS inset SSOT.
+ * 지구본 홈 Chrome 헤더 가림 — 100dvh · CriOS inset SSOT.
  * Usage: node scripts/smoke-home-chrome-viewport.mjs
  */
 import { readFileSync } from 'node:fs';
@@ -123,18 +123,23 @@ function runCriosFirstNavigateHeightDropMock() {
     afterDropPx,
     dropDelta: visualViewport.height - startHeight,
     headerRectTopAfterDrop: header.getBoundingClientRect().top,
+    firstHeightPx: parseAppliedPx(styleMap[HOME_VIEWPORT_HEIGHT_VAR]),
   };
   stopNav();
 
   navType = 'reload';
   delete styleMap[HOME_CHROME_TOP_VAR];
+  delete styleMap[HOME_VIEWPORT_HEIGHT_VAR];
   visualViewport.height = startHeight;
   win.innerHeight = startHeight;
   const stopReload = syncHomeChromeOnFirstPaint();
   result.reloadPx = readAppliedPx();
+  result.reloadHeightPx = parseAppliedPx(styleMap[HOME_VIEWPORT_HEIGHT_VAR]);
   visualViewport.height = startHeight - dropBy;
+  win.innerHeight = startHeight - dropBy;
   visualViewport.dispatch('resize');
   result.reloadAfterDropPx = readAppliedPx();
+  result.reloadHeightAfterDropPx = parseAppliedPx(styleMap[HOME_VIEWPORT_HEIGHT_VAR]);
   stopReload();
 
   const restore = (key, desc, fallback) => {
@@ -159,24 +164,26 @@ function runCriosFirstNavigateHeightDropMock() {
 const {
   HOME_VIEWPORT_LOCK_CLASS,
   HOME_CHROME_TOP_VAR,
+  HOME_VIEWPORT_HEIGHT_VAR,
   CHROME_IOS_URLBAR_INSET_PX,
   lockHomeViewport,
   unlockHomeViewport,
   syncHomeChromeOnFirstPaint,
   resolveHomeChromeTopPx,
   resolveSessionHomeChromeTopPx,
-  isCriosFirstNavigateSession,
+  isCriosChromeTopSession,
   clearHomeChromeTop,
 } = await import(pathToFileURL(join(root, 'src/shared/lib/mobileViewport.js')).href);
 
 assert(HOME_VIEWPORT_LOCK_CLASS === 'gateo-home-lock-viewport', 'lock class name');
 assert(HOME_CHROME_TOP_VAR === '--gateo-home-chrome-top', 'chrome top CSS var');
+assert(HOME_VIEWPORT_HEIGHT_VAR === '--gateo-home-viewport-height', 'viewport height CSS var');
 assert(CHROME_IOS_URLBAR_INSET_PX === 56, 'CriOS urlbar fallback px');
 assert(typeof lockHomeViewport === 'function', 'lockHomeViewport export');
 assert(typeof unlockHomeViewport === 'function', 'unlockHomeViewport export');
 assert(typeof clearHomeChromeTop === 'function', 'clearHomeChromeTop export');
 assert(typeof resolveSessionHomeChromeTopPx === 'function', 'resolveSessionHomeChromeTopPx export');
-assert(typeof isCriosFirstNavigateSession === 'function', 'isCriosFirstNavigateSession export');
+assert(typeof isCriosChromeTopSession === 'function', 'isCriosChromeTopSession export');
 
 assert(resolveHomeChromeTopPx({ allowFallback: true }) === 56, 'CriOS fallback when unmeasured');
 assert(resolveHomeChromeTopPx({ allowFallback: false }) === 0, 'no fallback when disallowed');
@@ -185,11 +192,9 @@ assert(resolveHomeChromeTopPx({ offsetTop: 80, allowFallback: true }) === 80, 'l
 assert(resolveHomeChromeTopPx({ dvhSvhGap: 40, allowFallback: false }) === 40, 'gap used when no fallback');
 assert(resolveHomeChromeTopPx({ pageTop: 8, offsetTop: 2 }) === 8, 'max of measurements');
 
-assert(isCriosFirstNavigateSession({ crios: true, navType: 'navigate' }) === true, 'CriOS navigate is first-nav session');
-assert(isCriosFirstNavigateSession({ crios: true, navType: '' }) === true, 'empty nav type is first-nav');
-assert(isCriosFirstNavigateSession({ crios: true, navType: 'reload' }) === false, 'reload is not first-nav');
-assert(isCriosFirstNavigateSession({ crios: true, navType: 'back_forward' }) === false, 'back_forward is not first-nav');
-assert(isCriosFirstNavigateSession({ crios: false, navType: 'navigate' }) === false, 'non-CriOS has no floor');
+assert(isCriosChromeTopSession({ crios: true }) === true, 'CriOS gets chrome floor');
+assert(isCriosChromeTopSession({ crios: true, navType: 'reload' }) === true, 'reload still gets chrome floor');
+assert(isCriosChromeTopSession({ crios: false }) === false, 'non-CriOS has no floor');
 
 assert(
   resolveSessionHomeChromeTopPx({ crios: true, navType: 'navigate', measuredPx: 0 }) === 56,
@@ -210,8 +215,8 @@ assert(
     navType: 'reload',
     measuredPx: 0,
     visualViewportHeightDelta: -64,
-  }) === 0,
-  'reload stays 0 after height drop',
+  }) === 56,
+  'reload keeps 56 after height drop',
 );
 assert(
   resolveSessionHomeChromeTopPx({ crios: false, navType: 'navigate', visualViewportHeightDelta: -64 }) === 0,
@@ -227,8 +232,11 @@ assert(criosMock.firstPx === 56, `CriOS mock first apply is 56, got ${criosMock.
 assert(criosMock.dropDelta === -64, `CriOS mock height delta is -64, got ${criosMock.dropDelta}`);
 assert(criosMock.afterDropPx === 56, `CriOS mock 56 must survive height drop, got ${criosMock.afterDropPx}`);
 assert(criosMock.headerRectTopAfterDrop >= 40, `headerRectTop after drop should not be <40, got ${criosMock.headerRectTopAfterDrop}`);
-assert(criosMock.reloadPx === 0, `reload mock stays 0, got ${criosMock.reloadPx}`);
-assert(criosMock.reloadAfterDropPx === 0, `reload mock stays 0 after height drop, got ${criosMock.reloadAfterDropPx}`);
+assert(criosMock.reloadPx === 56, `reload mock keeps 56, got ${criosMock.reloadPx}`);
+assert(criosMock.reloadHeightPx === 844, `reload viewport height locks innerHeight, got ${criosMock.reloadHeightPx}`);
+assert(criosMock.reloadAfterDropPx === 56, `reload mock keeps 56 after height drop, got ${criosMock.reloadAfterDropPx}`);
+assert(criosMock.firstHeightPx === 844, `first viewport height locks innerHeight, got ${criosMock.firstHeightPx}`);
+assert(criosMock.reloadHeightAfterDropPx === 844, `viewport height must not shrink on drop, got ${criosMock.reloadHeightAfterDropPx}`);
 console.log('crios-mock:', JSON.stringify(criosMock));
 
 const css = read('src/index.css');
@@ -236,11 +244,13 @@ assert(
   css.includes(`html.${HOME_VIEWPORT_LOCK_CLASS}`),
   'index.css locks html with 100dvh class',
 );
-assert(css.includes('max-height: 100dvh'), 'index.css max-height 100dvh');
+assert(css.includes('max-height: var(--gateo-home-viewport-height, 100dvh)'), 'index.css max-height uses innerHeight var');
 assert(css.includes(HOME_CHROME_TOP_VAR), 'index.css binds header top to CSS var');
+assert(css.includes(HOME_VIEWPORT_HEIGHT_VAR), 'index.css binds home height to CSS var');
+assert(css.includes('data-home-viewport-root'), 'index.css sizes tagged home roots');
 
 const home = read('src/pages/Home/index.jsx');
-assert(home.includes('h-[100dvh]'), 'Home root uses 100dvh not 100vh');
+assert(home.includes('data-home-viewport-root'), 'Home root tagged for CriOS height lock');
 assert(home.includes('onSettled: lockHomeViewport'), 'Home delays html lock until chrome settled');
 assert(home.includes('syncHomeChromeOnFirstPaint'), 'Home first-paint chrome sync');
 assert(home.includes('clearHomeChromeTop'), 'Home clears chrome top on unmount');
@@ -248,6 +258,7 @@ assert(!/\bh-screen\b/.test(home), 'Home must not use h-screen');
 
 const layout = read('src/shared/layout/MainLayout.jsx');
 assert(layout.includes('h-[100dvh]'), 'MainLayout uses 100dvh');
+assert(layout.includes('data-home-viewport-root'), 'MainLayout tagged for CriOS height lock');
 assert(!/\bh-screen\b/.test(layout), 'MainLayout must not use h-screen');
 
 const homeUi = read('src/pages/Home/components/HomeUI.jsx');
@@ -265,7 +276,15 @@ assert(
 );
 assert(
   viewportLib.includes('CHROME_IOS_URLBAR_INSET_PX'),
-  'CriOS first-navigate fallback exists',
+  'CriOS urlbar fallback exists',
+);
+assert(
+  viewportLib.includes('isCriosChromeTopSession'),
+  'CriOS chrome session helper exists',
+);
+assert(
+  !viewportLib.includes('navType !== \'reload\''),
+  'must not skip CriOS floor on reload',
 );
 assert(
   viewportLib.includes('resolveSessionHomeChromeTopPx'),
@@ -279,8 +298,10 @@ assert(!viewportLib.includes('agentHomeChromeLog'), 'mobileViewport must not kee
 assert(!viewportLib.includes('__GATEO_HOME_CHROME_DBG'), 'mobileViewport must not keep debug session key');
 
 const indexHtml = read('index.html');
-assert(indexHtml.includes('--gateo-home-chrome-top'), 'index.html sets CriOS first-nav inset before paint');
+assert(indexHtml.includes('--gateo-home-chrome-top'), 'index.html sets CriOS inset before paint');
+assert(indexHtml.includes('--gateo-home-viewport-height'), 'index.html sets CriOS height before paint');
 assert(indexHtml.includes('CriOS'), 'index.html gates inset to iOS Chrome');
+assert(!indexHtml.includes("nav.type === 'reload'"), 'index.html must not skip reload inset');
 assert(!indexHtml.includes('__GATEO_HOME_CHROME_DBG'), 'index.html must not keep debug payload');
 assert(!indexHtml.includes('__gateo_debug_log'), 'index.html must not post debug logs');
 

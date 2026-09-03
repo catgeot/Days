@@ -14,10 +14,15 @@ body {
  */
 html.gateo-home-lock-viewport,
 html.gateo-home-lock-viewport body {
-  height: 100%;
-  max-height: 100dvh;
+  height: var(--gateo-home-viewport-height, 100%);
+  max-height: var(--gateo-home-viewport-height, 100dvh);
   overflow: hidden;
   overscroll-behavior: none;
+}
+
+html.gateo-home-lock-viewport [data-home-viewport-root] {
+  height: var(--gateo-home-viewport-height, 100dvh);
+  max-height: var(--gateo-home-viewport-height, 100dvh);
 }
 
 [data-home-chrome-top] {
