@@ -51,7 +51,7 @@
 - **Preview** `/qa/home-header` · git Preview 홈
 - **다음** **#9** — 휴리스틱 중단
 
-### #9 100svh로 overlay 보정 중단 ✅ 에이전트 · 사람 Preview 대기
+### #9 100svh로 overlay 보정 중단 ✅ 에이전트 · 사람 QA에서 재실행 잔존 + 상단 여백
 
 - **세션** `지구본 홈 헤더 #9, 사람 Preview QA`
 - **브랜치** `cursor/home-header-3eef` · tip `ece13d6e` · PR [#181](https://github.com/catgeot/Days/pull/181)
@@ -60,13 +60,24 @@
 - **적용** CriOS 56px·html lock·chrome-top **제거**. Home·MainLayout 모바일 `100svh`. 헤더 비주얼 유지
 - **VERIFY** `smoke:home-chrome-viewport` · `vite build` PASS
 - **Preview** `/qa/home-header` · git Preview 홈
-- **다음** **#10** 사람 Preview QA — 첫 진입·새로고침·크롬 재실행. 재실행만 남으면 배포 여부(56px 재도입 금지)
+- **사람 QA** 3번(크롬 재실행) 여전히 가림. 크롬·사파리 모두 상단 여백 → #10
+
+### #10 재실행 한계 · 배포본 h-screen 복귀 ✅ 에이전트 · 사람 Preview 대기
+
+- **세션** `지구본 홈 헤더 #10, 사람 Preview QA`
+- **브랜치** `cursor/home-header-3eef` · tip `8994b825` · PR [#181](https://github.com/catgeot/Days/pull/181)
+- **사람** 3번은 한계로. 수정 전 배포 상단은? 지금 크롬·사파리 모두 상단 여백이 조금 있음
+- **배포본(수정 전)** `h-screen` · 헤더 `fixed top-0 p-4`(16px) · 56px 없음. 그 작은 여백이 원래 상태. 재실행 가림은 배포본에도 간헐
+- **적용** #9 `100svh` 되돌림(사파리 여백 회귀 방지). 56px 재도입 없음. 재실행은 고치지 않음
+- **VERIFY** `smoke:home-chrome-viewport` · `vite build` PASS
+- **Preview** `/qa/home-header` · git Preview 홈
+- **다음** **#11** Preview vs `www.gateo.kr` 상단 비교 · OK면 PR 병합하지 않고 닫기
 
 ```
-지구본 홈 헤더 #10, 사람 Preview QA
+지구본 홈 헤더 #11, 배포본 상단 비교
 @plans/feature-handoff-index.md
 @plans/2026-09-03-project-log.md
 브랜치 cursor/home-header-3eef · PR #181 · https://www.gateo.kr/qa/home-header
-금지: UI 리디자인 · CriOS 56px overlay 재도입 · offsetTop 지속 보정 · 코드를 origin/main에 임의 push
-작업: iPhone Chrome Preview — 첫 진입·새로고침·크롬 완전 종료 후 재실행에서 로고·EN·검색이 주소창 아래인지. 재실행만 남으면 배포 여부 결정
+금지: UI 리디자인 · CriOS 56px overlay 재도입 · 100svh 재도입 · 코드를 origin/main에 임의 push
+작업: Preview vs www.gateo.kr 상단 여백이 같은지. OK면 PR #181 병합하지 않고 닫기
 ```
