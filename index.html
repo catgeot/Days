@@ -17,9 +17,13 @@
     <script>
       (function () {
         if (!/CriOS/i.test(navigator.userAgent || '')) return;
-        document.documentElement.style.setProperty('--gateo-home-chrome-top', '56px');
-        var h = window.innerHeight;
-        if (h) document.documentElement.style.setProperty('--gateo-home-viewport-height', h + 'px');
+        var inner = window.innerHeight || 0;
+        var screenH = (window.screen && window.screen.height) || 0;
+        var overlay = inner && screenH && (screenH - inner) <= 100;
+        if (overlay) {
+          document.documentElement.style.setProperty('--gateo-home-chrome-top', '56px');
+          document.documentElement.style.setProperty('--gateo-home-viewport-height', inner + 'px');
+        }
       })();
     </script>
     <link rel="preconnect" href="https://api.mapbox.com" crossorigin />

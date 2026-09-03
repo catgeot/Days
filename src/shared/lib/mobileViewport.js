@@ -150,8 +150,15 @@ export function syncHomeChromeAfterNavigation() {
 export const HOME_CHROME_TOP_VAR = '--gateo-home-chrome-top';
 export const HOME_VIEWPORT_HEIGHT_VAR = '--gateo-home-viewport-height';
 
-/** iOS Chrome 주소창이 웹뷰 위에 덮일 때 — 첫 진입·새로고침 모두 overlay일 수 있음 */
+/** iOS Chrome 주소창이 웹뷰 위에 덮일 때 */
 export const CHROME_IOS_URLBAR_INSET_PX = 56;
+
+/**
+ * overlay: layout viewport가 화면 거의 전체(주소창이 웹뷰 위).
+ * inset: 주소창·툴바가 이미 높이를 빼 감 — 이때 56px를 넣으면 검은 여백.
+ * 값: 주소창(~56)을 뺀 갭과 하단 툴바만 뺀 갭 사이. mobileViewport · index.html 동기.
+ */
+export const CHROME_IOS_OVERLAY_MAX_SCREEN_GAP_PX = 100;
 
 export function lockHomeViewport() {
   if (typeof document === 'undefined') return;
@@ -198,27 +205,43 @@ export function resolveHomeChromeTopPx({
   return measured;
 }
 
-/** CriOS — URL bar overlays the webview on navigate and reload. */
-export function isCriosChromeTopSession({ crios = false } = {}) {
-  return Boolean(crios);
+/** CriOS + URL-bar overlay (not already-inset layout). */
+export function isCriosUrlbarOverlay({
+  crios = false,
+  innerHeight = 0,
+  screenHeight = 0,
+} = {}) {
+  if (!crios) return false;
+  if (!innerHeight || !screenHeight) return false;
+  return screenHeight - innerHeight <= CHROME_IOS_OVERLAY_MAX_SCREEN_GAP_PX;
+}
+
+export function isCriosChromeTopSession({ crios = false, overlay = false } = {}) {
+  return Boolean(crios && overlay);
 }
 
 /**
  * Apply policy for `--gateo-home-chrome-top`.
- * visualViewport height drop (globe / 100dvh / Mapbox) is not a webview inset
- * and must not clear the CriOS 56px floor. reload is also overlay on iPhone Chrome.
+ * 56px only while the URL bar overlays the webview (Chrome 재실행).
+ * 첫 진입 inset에는 0 — 항상 56이면 주소창 아래 검은 여백.
+ * visualViewport height drop (globe / 100dvh / Mapbox) is not inset
+ * and must not clear a latched overlay floor.
  */
 export function resolveSessionHomeChromeTopPx({
   crios = false,
+  overlay = false,
   navType = '',
   measuredPx = 0,
   visualViewportHeightDelta = 0,
 } = {}) {
   void navType;
   void visualViewportHeightDelta;
+  if (!isCriosChromeTopSession({ crios, overlay })) {
+    return 0;
+  }
   return resolveHomeChromeTopPx({
     offsetTop: measuredPx,
-    allowFallback: isCriosChromeTopSession({ crios }),
+    allowFallback: true,
   });
 }
 
@@ -258,11 +281,11 @@ function readMeasuredHomeChromeTopPx() {
 }
 
 /**
- * Chrome iOS: 웹뷰가 주소창 뒤에 깔린 채 페인트 (navigate·reload 모두).
- * 이른 scrollTo(0,0)·즉시 리마운트는 헤더를 더 밀어 넣음. fallback inset은 CriOS 전체.
+ * Chrome iOS: 주소창 overlay일 때만 56px (완전 종료 후 재실행).
+ * 이미 inset인 첫 진입은 0 — 항상 56이면 검은 여백.
+ * overlay는 한 번 잡으면 유지(지구본 innerHeight 감소로 해제 금지).
  * offsetTop을 세션 내내 resize 바인딩하지 않음 (#13/#15 칩 히트).
- * visualViewport 높이 감소는 지구본/100dvh/Mapbox shrink — 56px를 해제하지 않음.
- * 100dvh가 svh로 줄어 하단 공백이 생기면 innerHeight로 높이를 고정(축소 금지).
+ * overlay 세션은 innerHeight로 높이 고정(100dvh→svh 하단 공백 방지).
  */
 export function syncHomeChromeOnFirstPaint({ onRemount, onSettled } = {}) {
   if (typeof window === 'undefined') return () => {};
@@ -270,11 +293,18 @@ export function syncHomeChromeOnFirstPaint({ onRemount, onSettled } = {}) {
   let stopped = false;
   let remountCount = 0;
   let lastApplied = -1;
+  let overlayLatched = false;
   const crios = isChromeIos();
   const navType = readNavigationType();
   const timers = [];
   const visualViewport = window.visualViewport;
   let lastHeight = visualViewport?.height ?? window.innerHeight;
+
+  const readOverlay = () => isCriosUrlbarOverlay({
+    crios,
+    innerHeight: window.innerHeight,
+    screenHeight: window.screen?.height ?? 0,
+  });
 
   const apply = (remount) => {
     if (stopped) return;
@@ -283,15 +313,17 @@ export function syncHomeChromeOnFirstPaint({ onRemount, onSettled } = {}) {
     if (pageY > 8 || pageTop > 8) {
       window.scrollTo(0, 0);
     }
+    if (readOverlay()) overlayLatched = true;
     const measured = readMeasuredHomeChromeTopPx();
     const heightDelta = (visualViewport?.height ?? lastHeight) - lastHeight;
     const px = resolveSessionHomeChromeTopPx({
       crios,
+      overlay: overlayLatched,
       navType,
       measuredPx: measured,
       visualViewportHeightDelta: heightDelta,
     });
-    if (crios) {
+    if (crios && overlayLatched) {
       applyHomeViewportHeightPx(window.innerHeight);
     }
     if (px !== lastApplied) {
@@ -313,6 +345,9 @@ export function syncHomeChromeOnFirstPaint({ onRemount, onSettled } = {}) {
   };
   visualViewport?.addEventListener('resize', onVisualResize);
 
+  const onPageShow = () => apply(true);
+  window.addEventListener('pageshow', onPageShow);
+
   timers.push(window.setTimeout(() => apply(true), 280));
   timers.push(window.setTimeout(() => apply(true), 700));
   timers.push(window.setTimeout(() => {
@@ -325,6 +360,7 @@ export function syncHomeChromeOnFirstPaint({ onRemount, onSettled } = {}) {
     stopped = true;
     timers.forEach((id) => window.clearTimeout(id));
     visualViewport?.removeEventListener('resize', onVisualResize);
+    window.removeEventListener('pageshow', onPageShow);
     clearHomeChromeTop();
   };
 }

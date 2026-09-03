@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '지구본 홈 헤더',
-  sessionNo: 4,
-  sessionPhase: '사람 Preview QA 수정',
+  sessionNo: 6,
+  sessionPhase: 'PROD Chrome 확인',
   branch: 'cursor/home-header-3eef',
   previewPath: '/',
   qaShareSlug: 'home-header',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-03-home-header-overlay-only-56',
+    session: '지구본 홈 헤더 #6, PROD Chrome 확인',
+    title: '56px는 overlay만 — 첫 진입 여백 · 크롬 재실행 가림',
+    detail:
+      '사람 PROD Chrome: 주소 첫 진입은 헤더가 보이나 주소창 아래 검은 여백. 크롬 완전 종료 후 재실행은 로고·검색이 주소창에 가림. 원인: CriOS에 56px를 항상 넣어 inset 첫 진입이 내려가고, overlay(재실행)는 PROD에 보정이 없음. screen.height-innerHeight로 overlay만 56px, 한 번 잡으면 지구본 높이 감소로 해제하지 않음. Preview /qa/home-header — 첫 진입 검은 여백 없는지 · 크롬 종료 후 재실행 시 헤더가 주소창 아래인지.',
+    at: '2026-09-03T00:30:00.000Z',
+  },
   {
     id: '2026-09-02-home-header-reload-keep-56',
     session: '지구본 홈 헤더 #4, 사람 Preview QA 수정',
