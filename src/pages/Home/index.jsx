@@ -1474,10 +1474,7 @@ function Home() {
       onActiveChange={setFlightCinemaActive}
       onPendingChange={setFlightCinemaLaunchPending}
     >
-    <div
-      data-home-viewport-root
-      className="relative w-full h-[100svh] max-h-[100svh] md:h-[100dvh] md:max-h-[100dvh] bg-black text-white overflow-hidden font-sans"
-    >
+    <div className="relative w-full h-screen bg-black text-white overflow-hidden font-sans">
       <SEO
         title={exploreCategorySeo?.title}
         description={exploreCategorySeo?.description}

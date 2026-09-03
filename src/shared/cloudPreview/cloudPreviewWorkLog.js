@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '지구본 홈 헤더',
-  sessionNo: 9,
-  sessionPhase: '100svh로 overlay 보정 중단',
+  sessionNo: 10,
+  sessionPhase: '재실행 한계 · 배포본 h-screen 복귀',
   branch: 'cursor/home-header-3eef',
   previewPath: '/',
   qaShareSlug: 'home-header',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-03-home-header-prod-hscreen',
+    session: '지구본 홈 헤더 #10, 사람 Preview QA',
+    title: '크롬 재실행은 한계 · 셸을 배포본 h-screen으로',
+    detail:
+      '사람: 크롬 완전 종료 후 재실행(3번)은 여전히 가림. 크롬·사파리 모두 상단 여백이 조금 있음. 배포본(수정 전)도 헤더 p-4(16px) 여백이 있고 56px 보정은 없음. 100svh는 사파리까지 여백을 키울 수 있어 Home·MainLayout을 배포본과 같은 h-screen으로 되돌림. Preview /qa/home-header 를 www.gateo.kr 과 비교 — 상단이 배포본과 같은지. 재실행 가림은 고치지 않음. PR은 병합하지 않는 쪽으로.',
+    at: '2026-09-03T09:40:00.000Z',
+  },
   {
     id: '2026-09-03-home-header-svh-reset',
     session: '지구본 홈 헤더 #9, 사람 Preview QA',

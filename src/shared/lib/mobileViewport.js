@@ -146,7 +146,6 @@ export function syncHomeChromeAfterNavigation() {
 }
 
 /**
- * iOS Chrome 주소창 overlay vs inset은 innerHeight·visualViewport로 구분이 안 됨
- * (#1–#8 56px 보정이 첫 진입 여백 ↔ 재실행 가림을 교차). 셸은 100svh.
- * offsetTop 지속 보정·CriOS 56px·html overflow 잠금은 재도입하지 않음.
+ * iOS Chrome 완전 종료 후 재실행 overlay는 JS로 고칠 수 없음(#1–#10).
+ * 셸은 배포본과 같이 h-screen. CriOS 56px·100svh 이중 여백·html lock·offsetTop 지속 보정 재도입 금지.
  */
