@@ -1,6 +1,6 @@
 # koreaLocalScenicLists — 사전 배치 큐 (기초지자체 팔경·구경)
 
-**상태**: R09 ✅ · **I#4** ✅ · PR #172 **main merge** ✅ · **R10– 경남** ⬜  
+**상태**: R09 ✅ · **I#4** ✅ · PR #172 **main merge** ✅ · **R10–R29** ⬜ (잔류 84 hub)  
 **규칙**: 라운드 = **6 칸** · 워커A **3** + 워커B **3** · VERIFY PASS → **다음 R 자동** · **3R마다 I#** · §6.2만 정지  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.6** · 플랜 [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md)  
 **단위**: 시·군·구만 · **광역 팔경(관동팔경 등) 큐 금지**(1차)  
@@ -106,6 +106,113 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 
 **I 주기**: R10–R12 VERIFY 누적 후 → **I 무결성 #5** (예정).
 
+---
+
+## F 라운드 — 전남 (I#5 후 · 착수 전 소스 조사)
+
+> 도 4관광권 순: **동부 → 북부 → 서부 → 중남**. `hubId-?` = 공식 title·listKind·sourceUrl 확정.
+
+| R | 워커A (3) | 워커B (3) | 세권 | 상태 |
+|---|-----------|-----------|------|------|
+| **R13** | `yeosu-?` · `suncheon-?` · `gwangyang-?` | `gokseong-?` · `gurye-?` · `naju-?` | 동·북 | ⬜ |
+| **R14** | `damyang-?` · `jangseong-?` · `hwasun-?` | `hampyeong-?` · `yeonggwang-?` · `mokpo-?` | 북·서 | ⬜ |
+| **R15** | `muan-?` · `sinan-?` · `jindo-?` | `haenam-?` · `wando-?` · `gangjin-?` | 서·중남 | ⬜ |
+| **R16** | `jangheung-?` · `boseong-?` · `goheung-?` | `yeongam-?` · — · — | 중남 | ⬜ |
+
+> **전남 22** hub — [`korea-scenic-mid-cluster-plan.md`](./korea-scenic-mid-cluster-plan.md) 동·북·서·중남 순. R16은 4칸(잔여).
+
+**I 주기**: R13–R15 → **I#6** · R16–R18 → **I#7**.
+
+---
+
+## F 라운드 — 전북 (전남 R16 직후 · 착수 전 소스 조사)
+
+| R | 워커A (3) | 워커B (3) | 세권 | 상태 |
+|---|-----------|-----------|------|------|
+| **R17** | `jeonju-?` · `wanju-?` · `iksan-?` | `gimje-?` · `gunsan-?` · `buan-?` | 전주권·서부 | ⬜ |
+| **R18** | `gochang-?` · `jeongeup-?` · `namwon-?` | `muju-?` · `jinan-?` · `jangsu-?` | 서부·동부 | ⬜ |
+| **R19** | `imsil-?` · `sunchang-?` · — | — · — · — | 동부 | ⬜ |
+
+> **전북 14** hub — 전주권·서부·동부 순. R19는 2칸(잔여).
+
+**I 주기**: R19–R21 → **I#8**.
+
+---
+
+## F 라운드 — 충남 (전북 R19 직후 · 착수 전 소스 조사)
+
+| R | 워커A (3) | 워커B (3) | 세권 | 상태 |
+|---|-----------|-----------|------|------|
+| **R20** | `cheonan-?` · `asan-?` · `dangjin-?` | `seosan-?` · `taean-?` · `boryeong-?` | 북부·서해 | ⬜ |
+| **R21** | `seocheon-?` · `hongseong-?` · `yesan-?` | `cheongyang-?` · `gongju-?` · `buyeo-?` | 서해·내포·백제 | ⬜ |
+| **R22** | `nonsan-?` · `gyeryong-?` · `geumsan-?` | — · — · — | 백제·내륙 | ⬜ |
+
+> **충남 15** hub — 북부·서해·내포·백제 순. R22는 3칸(잔여).
+
+**I 주기**: R22–R24 → **I#9**.
+
+---
+
+## F 라운드 — 경기 (충남 R22 직후 · 착수 전 소스 조사)
+
+> 동서남북 4세권 순. `gwangju_gi` = 경기 광주시.
+
+| R | 워커A (3) | 워커B (3) | 세권 | 상태 |
+|---|-----------|-----------|------|------|
+| **R23** | `goyang-?` · `paju-?` · `uijeongbu-?` | `yangju-?` · `dongducheon-?` · `pocheon-?` | 북부 | ⬜ |
+| **R24** | `yeoncheon-?` · `hanam-?` · `namyangju-?` | `guri-?` · `gapyeong-?` · `yangpyeong-?` | 북·동 | ⬜ |
+| **R25** | `yeoju-?` · `icheon-?` · `gwangju_gi-?` | `gimpo-?` · `bucheon-?` · `gwangmyeong-?` | 동·서 | ⬜ |
+| **R26** | `siheung-?` · `ansan-?` · `hwaseong-?` | `pyeongtaek-?` · `suwon-?` · `seongnam-?` | 서·남 | ⬜ |
+| **R27** | `yongin-?` · `anyang-?` · `gunpo-?` | `uiwang-?` · `gwacheon-?` · `osan-?` | 남부 | ⬜ |
+| **R28** | `anseong-?` · — · — | — · — · — | 남부 | ⬜ |
+
+> **경기 31** hub — R28은 1칸(잔여).
+
+**I 주기**: R25–R27 → **I#10** · R28–R29 → **I#11**.
+
+---
+
+## F 라운드 — 제주 (경기 R28 직후)
+
+| R | 워커A (3) | 워커B (3) | 상태 |
+|---|-----------|-----------|------|
+| **R29** | `jeju-?` · `seogwipo-?` · — | — · — · — | ⬜ |
+
+> **제주 2** hub. R29는 2칸.
+
+**I 주기**: R28–R29 누적 → **I#11** · 이후 광역시 백로그.
+
+---
+
+## 백로그 — 광역시·서울 (R29 후 · 큐 미배치)
+
+세권 불필요([`korea-scenic-mid-cluster-plan.md`](./korea-scenic-mid-cluster-plan.md) §3). hub별 공식 N경 **착수 전 조사** 후 라운드 추가.
+
+| 시도 | hub 수 | hubId (tip 기준) |
+|------|-------:|------------------|
+| 서울 | 1 | `seoul` |
+| 인천 | 3 | `incheon` · `ganghwa` · `ongjin` |
+| 부산 | 2 | `busan` · `busanjin` |
+| 대구 | 1 | `daegu` |
+| 광주 | 1 | `gwangju` |
+| 대전 | 1 | `daejeon` |
+| 울산 | 1 | `ulsan` |
+| 세종 | 1 | `sejong` |
+
+> F 큐 **R29까지** 소진 후 잔여 hub 수·skip율 보고 → 사람 합의로 R30+ 추가 또는 주제 종료.
+
+### I# 주기 요약 (R10–)
+
+| I# | R 범위 | 권역 |
+|----|--------|------|
+| **#5** | R10–R12 | 경남 |
+| **#6** | R13–R15 | 전남 |
+| **#7** | R16–R18 | 전남 잔·전북 |
+| **#8** | R19–R21 | 전북 잔·충남 |
+| **#9** | R22–R24 | 충남 잔·경기 |
+| **#10** | R25–R27 | 경기 |
+| **#11** | R28–R29 | 경기 잔·제주 |
+
 ### 예비 (스킵·EXISTS 시)
 
 강원: `hongcheon`(P 완료 후 제외) · `yanggu` · `inje` · `gosung` 표기 주의(`goseong-gw` vs 경남) · `sokcho` 시드 append만  
@@ -125,5 +232,6 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 ```text
 운영: 자동 오케 §4.3 — VERIFY PASS → 다음 ⬜ R (사람 제시어·Preview QA 없음)
 현재: lists 30 · members 264 · main merge ✅ · 다음 ⬜ R10 (경남)
-I#5: R10–R12 누적 예정 · 이후 전남·전북·충남·경기 큐 확장(사람 합의)
+잔류 큐: R10–R29 (84 hub) — 경남18·전남22·전북14·충남15·경기31·제주2 · 광역시=백로그
+I#5–#11: 3R마다 무결성 · R29 후 광역시 합의 또는 주제 종료
 ```

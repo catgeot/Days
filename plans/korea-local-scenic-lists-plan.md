@@ -258,15 +258,18 @@ feature push와 **별도**로 `main`에서:
 작업: 큐 다음 ⬜ R · 워커2 · VERIFY → 다음 R 또는 Task 이관 · main docs 동기화
 ```
 
-#### H. 남은 작업 로드맵 (2026-09-02 기준)
+#### H. 남은 작업 로드맵 (2026-09-04 갱신)
 
 | 단계 | 내용 | 완료 조건 |
 |------|------|-----------|
-| **즉시** | **R07** — 영주·문경·봉화·예천·청송·영덕 | VERIFY + push |
-| **이어서** | **R08** · **R09** — 경북 잔여 12 hub | 큐 ⬜ 소진 |
-| **I#4** | R07–R09 누적 무결성 | §6.3 PASS |
-| **다음 권역** | 큐 확장(전국 시군구) — **사람 합의 후** 표 추가 | 별도 일지 |
-| **종료** | PR #172 merge · index `active: false` | 사람 선택 QA |
+| **즉시** | **R10–R12** 경남 18 hub | I#5 |
+| **이어서** | **R13–R16** 전남 22 hub | I#6–#7 |
+| **이어서** | **R17–R19** 전북 14 hub | I#8 |
+| **이어서** | **R20–R22** 충남 15 hub | I#9 |
+| **이어서** | **R23–R28** 경기 31 hub | I#10–#11 |
+| **이어서** | **R29** 제주 2 hub | I#11 |
+| **백로그** | 광역시·서울 11 hub | R29 후 합의 · 큐 추가 |
+| **종료** | index `active: false` | R29+백로그 소진 또는 §6.2 |
 
 **정지만 하는 경우**: §6.2 · 동일 hub FAIL 2회 · audit 롤백 후에도 ≠0.
 
@@ -380,9 +383,9 @@ issues **0** · 스모크 PASS 전에 커밋·이관·다음 R **금지**.
 | | |
 |--|--|
 | **운영** | **자동 오케** (§4.3) · F=VERIFY 후 다음 R · **3R마다 I#** |
-| **지금** | PR #172 **main merge** ✅ (`469ba944`) · lists **30** · members **264** · **R10 경남** ⬜ |
-| **다음** | **R10** 경남 6칸 — 자동 오케 F 재개 · R10–R12 후 **I#5** |
-| **브랜치** | `cursor/palgyeong` (고정) · main `469ba944` |
+| **지금** | PR #172 **main merge** ✅ · lists **30** · **R10–R29** 큐 확정 ⬜ |
+| **다음** | **R10** 경남 — 자동 오케 F · R29+광역시 백로그까지 연속 |
+| **브랜치** | `cursor/palgyeong` (고정) · main `367ca0b0` |
 | **금지** | UI · scenic 승격 · 광역 팔경 · tip rewrite · **매 R 사람 QA·제시어 대기** |
 | **VERIFY** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · `smoke:korea-local-scenic-lists` · `build` |
 
@@ -396,7 +399,7 @@ issues **0** · 스모크 PASS 전에 커밋·이관·다음 R **금지**.
 @plans/feature-handoff-index.md
 브랜치 cursor/palgyeong · main merge ✅
 금지: UI · scenic승격 · 광역팔경 · feature plans 커밋 · 매R 사람QA · VERIFY후 제시어대기
-작업: R10 경남 6칸 — 워커2 · VERIFY PASS→R11 자동 · §6.2만 정지
+작업: R10–R29 자동 오케 — VERIFY PASS→다음R · 3R마다 I# · §6.2만 정지
 ```
 
 **정상 F 진행 중**: 후임 메인이 **Task 이양**(오케 §4.2) — 사람이 매 R 제시어를 넣을 필요 **없음**.
