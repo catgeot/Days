@@ -44,8 +44,6 @@
 - A UX와 B contentId 오케 분리 · 표준 제시어 §1.2 · 큐 S0 ⬜
 - 코드는 다음 채팅 `cursor/palgyeong-use-e744`
 
-```
-
 ## 팔경 활용 — A/B 브랜치 분리 (동시 세션)
 
 - A UI `cursor/palgyeong-use-e744` · B contentId `cursor/palgyeong-cid` · index 행 2개
@@ -73,4 +71,23 @@
 브랜치 cursor/palgyeong-cid
 금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P1/P2 월권
 작업: R01 DB-only 워커A3+B3 → VERIFY → R02 또는 Task 이관
+```
+
+## 팔경 contentId — R01+R02 DB-only ✅ · 이관 R03
+
+- **세션** `오케스트레이터 팔경contentId`
+- **브랜치** `cursor/palgyeong-cid` · tip `4b160554` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **R01** 15/53 (`6affda87`) · **R02** 17/53 (`4b160554`) · 누적 **33**/876
+- **VERIFY** audit×2 issues 0 · smoke lists + content-ids PASS
+- **다음** R03 A `jeongseon-palgyeong`·`hwacheon-gugyeong`·`danyang-palgyeong` / B `jecheon-sipgyeong`·`okcheon-gugyeong`·`yeongdong-yangsan-palgyeong`
+- LIVE 재검토 후보: 낙산사→낙산도립공원 · 천제단→국립공원 (score 108)
+
+```
+오케스트레이터 팔경contentId
+@plans/orchestrator-method.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/feature-handoff-index.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P1/P2 월권
+작업: R03 DB-only 워커A3+B3 → VERIFY → R04 또는 Task 이관
 ```
