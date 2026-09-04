@@ -18,23 +18,27 @@
 
 | | |
 |--|--|
-| **상태** | **문서 SSOT** · UI 미착수 · B와 **동시 OK** |
-| **브랜치** | `cursor/palgyeong-use-e744` (없으면 main에서 생성) |
+| **상태** | **#1 push** · tip `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 사람 Preview QA** · B와 **동시 OK** |
+| **브랜치** | `cursor/palgyeong-use-e744` |
+| **tip** | `e8da2987` |
+| **PR** | [#186](https://github.com/catgeot/Days/pull/186) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-04-project-log.md`](./2026-09-04-project-log.md) |
+| **Preview** | `/qa/palgyeong-use` → git Preview `/` · `/korea/theme/scenic?hub=mungyeong` |
 | **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:korea-local-scenic-lists` · `audit:korea-local-scenic-lists` · `vite build` |
 
 **다음 제시어**:
 
 ```
-팔경 활용 #1, 검색·리스트
+팔경 활용 #2, Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-04-project-log.md
 @plans/korea-local-scenic-use-plan.md
-브랜치 cursor/palgyeong-use-e744
+브랜치 cursor/palgyeong-use-e744 · PR #186 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
-작업: 탐색창 문경 팔경 소제목 · 명소 같은 ul 상단 N경 · 축제 본문 인근 그룹 · Tour LIVE 없음
+작업: 홈 검색 문경 · /korea/theme/scenic 문경 hub · 축제 상세 인근 목록 소제목
 ```
 
 ---
@@ -43,10 +47,11 @@
 
 | | |
 |--|--|
-| **상태** | **S0 대기** · A와 **동시 OK** |
-| **브랜치** | `cursor/palgyeong-cid` (없으면 main에서 생성 · 수집 `cursor/palgyeong` 금지) |
+| **상태** | R01–R02 ✅ · 다음 ⬜ **R03** · membersWithContentId 33/876 · A와 **동시 OK** |
+| **브랜치** | `cursor/palgyeong-cid` · tip `4b160554` |
+| **PR** | [#185](https://github.com/catgeot/Days/pull/185) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§3·§9 B** · method **§5.7** |
-| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — S0 ⬜ |
+| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — S0–R02 ✅ · R03 ⬜ |
 | **일지** | [`2026-09-04-project-log.md`](./2026-09-04-project-log.md) |
 | **소유** | JSON `contentId` · fill · audit · **UI 금지** |
 | **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · feature에 `plans/**` 커밋 |
@@ -58,9 +63,9 @@
 @plans/orchestrator-method.md
 @plans/korea-local-scenic-contentid-queue.md
 @plans/feature-handoff-index.md
-브랜치 cursor/palgyeong-cid
+브랜치 cursor/palgyeong-cid · PR #185
 금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P1/P2 월권
-작업: S0 스크립트+문경 DB-only → 큐 다음 ⬜ P0 · VERIFY → 다음 R 또는 Task 이관
+작업: R03 DB-only 워커A3+B3 → VERIFY → R04 또는 Task 이관
 ```
 
 ---
@@ -303,7 +308,7 @@ main · www.gateo.kr/place/yap/planner?lang=en
 | **잔여(선택)** | `pending_coord` **424**/876 — 좌표 보강은 **새 합의** 전 착수 금지 |
 | **VERIFY** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · `smoke:korea-local-scenic-lists` · `build` PASS |
 
-**다음 제시어 없음** (수집 종료). `오케스트레이터 지자체팔경`을 다시 열지 않음. 검색·contentId는 **팔경 활용** 행.
+**다음 제시어 없음** (수집 종료). `오케스트레이터 지자체팔경`을 다시 열지 않음. 검색·contentId는 **팔경 활용**·**팔경 contentId** 행.
 
 
 ## 행 추가 템플릿 (새 Cloud feature)
