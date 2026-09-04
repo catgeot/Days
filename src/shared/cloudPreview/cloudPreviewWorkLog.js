@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-04-palgyeong-use-2-thumbs',
+    session: '팔경 활용 #2, Preview QA',
+    title: '팔경 리스트 썸네일 — GATEO 선정·contentId 연동',
+    detail:
+      '팔경 멤버 행에 GATEO 선정 명소(koreaScenicSpots) imageUrl을 매칭하고, contentId가 있으면 tourapi_attraction 캐시로 썸네일을 보강합니다. 명승 ul·축제 인근 그룹·홈 검색 suggestion에 적용. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=mungyeong 에서 진남교반 등 사진 확인.',
+    at: '2026-09-04T21:20:00.000Z',
+  },
+  {
     id: '2026-09-04-palgyeong-use-2-festival-crash',
     session: '팔경 활용 #2, Preview QA',
     title: '축제 리스트 클릭 크래시 — nearbyPlaceLabel 복원',

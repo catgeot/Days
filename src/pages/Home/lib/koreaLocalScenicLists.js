@@ -3,6 +3,7 @@
  * hub append·aliases 병합은 메인 세션만. koreaScenicSpots 쓰기 금지.
  */
 import listsJson from '../data/koreaLocalScenicLists.json' with { type: 'json' };
+import scenicJson from '../data/koreaScenicSpots.json' with { type: 'json' };
 import {
   resolveCityAttractionHub,
   hubToSuggestion,
@@ -96,6 +97,29 @@ function memberContentId(member, attraction) {
   const raw = member?.contentId ?? attraction?.contentId ?? null;
   const id = String(raw || '').trim();
   return /^\d{1,32}$/.test(id) ? id : null;
+}
+
+/** @type {Map<string, object>} hubId:name → GATEO 선정 명소 (썸네일·contentId) */
+const curatedScenicByHubName = new Map();
+for (const spot of Array.isArray(scenicJson?.spots) ? scenicJson.spots : []) {
+  const hubKey = normalizeKey(spot?.hubId);
+  const nameKey = normalizeKey(spot?.attractionName || spot?.name);
+  if (!hubKey || !nameKey) continue;
+  const key = `${hubKey}:${nameKey}`;
+  if (!curatedScenicByHubName.has(key)) curatedScenicByHubName.set(key, spot);
+}
+
+function lookupCuratedScenicSpot(hubId, attractionName) {
+  const key = `${normalizeKey(hubId)}:${normalizeKey(attractionName)}`;
+  return curatedScenicByHubName.get(key) || null;
+}
+
+function scenicThumbFromCurated(curated) {
+  if (!curated) return { imageUrl: null, contentId: null };
+  const imageUrl = String(curated.imageUrl || '').trim() || null;
+  const rawId = String(curated.contentId || '').trim();
+  const contentId = /^\d{1,32}$/.test(rawId) ? rawId : null;
+  return { imageUrl, contentId };
 }
 
 export function listKoreaLocalScenicLists() {
@@ -292,12 +316,16 @@ export function localScenicMemberToSuggestion(list, hub, member, locale = 'ko') 
   const base = memberSuggestionBase(list, h, member);
   if (!base) return null;
   const contentId = memberContentId(member, resolveMemberAttraction(h, member));
+  const curated = lookupCuratedScenicSpot(list.hubId, member.attractionName);
+  const fromCurated = scenicThumbFromCurated(curated);
   return {
     ...base,
     groupTitle: localScenicListDisplayTitle(list, h, locale),
     localScenicListId: list.listId,
     source: 'localScenicList',
-    contentId,
+    contentId: contentId || fromCurated.contentId,
+    imageUrl: fromCurated.imageUrl,
+    thumbUrl: fromCurated.imageUrl,
   };
 }
 
@@ -312,12 +340,16 @@ export function localScenicMemberToSuggestion(list, hub, member, locale = 'ko') 
 export function localScenicMemberToNearbyItem(list, member, hub, nearbyHit, locale = 'ko') {
   const h = hub || resolveCityAttractionHub(list.hubId);
   const attraction = resolveMemberAttraction(h, member);
+  const curated = lookupCuratedScenicSpot(list.hubId, member.attractionName);
+  const fromCurated = scenicThumbFromCurated(curated);
   const contentId =
     memberContentId(member, attraction) ||
     (nearbyHit && /^\d{1,32}$/.test(String(nearbyHit.contentId || '').trim())
       ? String(nearbyHit.contentId).trim()
-      : null);
+      : null) ||
+    fromCurated.contentId;
   const name = member.attractionName;
+  const thumb = nearbyHit?.firstImage || fromCurated.imageUrl || null;
   return {
     ...(nearbyHit || {}),
     id:
@@ -330,7 +362,8 @@ export function localScenicMemberToNearbyItem(list, member, hub, nearbyHit, loca
     lng: nearbyHit?.lng ?? member.lng ?? attraction?.lng ?? h?.lng,
     hubId: list.hubId,
     locality: nearbyHit?.locality || h?.name,
-    firstImage: nearbyHit?.firstImage || null,
+    firstImage: thumb,
+    imageUrl: thumb,
     distKm: nearbyHit?.distKm,
     source: nearbyHit?.source || 'localScenicList',
     groupTitle: localScenicListDisplayTitle(list, h, locale),
@@ -404,10 +437,12 @@ export function localScenicMemberSpotId(listId, attractionName) {
 export function memberToScenicListSpot(list, member, hub, locale = 'ko') {
   const h = hub || resolveCityAttractionHub(list.hubId);
   const attraction = resolveMemberAttraction(h, member);
+  const curated = lookupCuratedScenicSpot(list.hubId, member.attractionName);
+  const fromCurated = scenicThumbFromCurated(curated);
   const areaCode = scenicAreaCodeForHubId(list.hubId);
   const region = scenicRegionForAreaCode(areaCode) || '';
   const title = localScenicListDisplayTitle(list, h, locale);
-  const contentId = memberContentId(member, attraction);
+  const contentId = memberContentId(member, attraction) || fromCurated.contentId;
   return {
     id: localScenicMemberSpotId(list.listId, member.attractionName),
     name: member.attractionName,
@@ -423,7 +458,8 @@ export function memberToScenicListSpot(list, member, hub, locale = 'ko') {
     lat: member.lat ?? attraction?.lat ?? null,
     lng: member.lng ?? attraction?.lng ?? null,
     contentId,
-    imageUrl: null,
+    imageUrl: fromCurated.imageUrl,
+    firstImage: fromCurated.imageUrl,
     source: 'localScenicList',
     groupTitle: title,
     localScenicListId: list.listId,
@@ -476,6 +512,27 @@ export function mergeLocalScenicMembersIntoScenicSpots(spots, hubId, locale = 'k
 
 export function hasTourContentId(value) {
   return /^\d{1,32}$/.test(String(value || '').trim());
+}
+
+/**
+ * hub 팔경 멤버 contentId — JSON·GATEO 선정 명소·hub attraction.
+ * @param {string} hubId
+ */
+export function collectLocalScenicThumbContentIds(hubId) {
+  const id = String(hubId || '').trim();
+  if (!id) return [];
+  const hub = resolveCityAttractionHub(id);
+  const out = new Set();
+  for (const list of listsForHub(id)) {
+    for (const member of list.members || []) {
+      const attraction = resolveMemberAttraction(hub, member);
+      const curated = lookupCuratedScenicSpot(list.hubId, member.attractionName);
+      const fromCurated = scenicThumbFromCurated(curated);
+      const cid = memberContentId(member, attraction) || fromCurated.contentId;
+      if (cid) out.add(cid);
+    }
+  }
+  return [...out];
 }
 
 /**

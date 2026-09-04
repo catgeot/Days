@@ -105,6 +105,7 @@ import {
 } from '../Home/lib/koreaTourAttractions';
 import { resolveCityAttractionHub } from '../Home/lib/cityAttractionHubs';
 import {
+  collectLocalScenicThumbContentIds,
   hasTourContentId,
   mergeLocalScenicMembersIntoScenicSpots,
 } from '../Home/lib/koreaLocalScenicLists';
@@ -962,12 +963,16 @@ export default function KoreaThemeScenicPage() {
 
   useEffect(() => {
     let cancelled = false;
-    const ids = curatedSpots
-      .map((s) => String(s.contentId || '').trim())
-      .filter((id) => /^\d{1,32}$/.test(id));
-    if (!ids.length) return undefined;
+    const ids = [
+      ...curatedSpots
+        .map((s) => String(s.contentId || '').trim())
+        .filter((id) => /^\d{1,32}$/.test(id)),
+      ...(hubId ? collectLocalScenicThumbContentIds(hubId) : []),
+    ];
+    const uniqueIds = [...new Set(ids)];
+    if (!uniqueIds.length) return undefined;
 
-    const peeked = peekKoreaTourAttractionFirstImagesByIds(ids);
+    const peeked = peekKoreaTourAttractionFirstImagesByIds(uniqueIds);
     if (peeked.size) {
       setCuratedImageByContentId((prev) => {
         if (!prev.size) return peeked;
@@ -977,7 +982,7 @@ export default function KoreaThemeScenicPage() {
       });
     }
 
-    fetchKoreaTourAttractionFirstImagesByIds(ids).then((map) => {
+    fetchKoreaTourAttractionFirstImagesByIds(uniqueIds).then((map) => {
       if (cancelled || !map.size) return;
       setCuratedImageByContentId((prev) => {
         let changed = false;
@@ -994,7 +999,7 @@ export default function KoreaThemeScenicPage() {
     return () => {
       cancelled = true;
     };
-  }, [curatedSpots]);
+  }, [curatedSpots, hubId]);
 
   const curatedSpotsWithThumbs = useMemo(() => {
     const peeked = peekKoreaTourAttractionFirstImagesByIds(
@@ -1023,6 +1028,23 @@ export default function KoreaThemeScenicPage() {
         : curatedSpotsWithThumbs,
     [curatedSpotsWithThumbs, hubId, locale],
   );
+
+  const curatedSpotsWithLocalScenicThumbs = useMemo(() => {
+    const peeked = peekKoreaTourAttractionFirstImagesByIds(
+      curatedSpotsWithLocalScenic.map((s) => s.contentId),
+    );
+    return curatedSpotsWithLocalScenic.map((spot) => {
+      const contentId = String(spot.contentId || '').trim();
+      const firstImage =
+        curatedImageByContentId.get(contentId) ||
+        peeked.get(contentId) ||
+        spot.firstImage ||
+        spot.imageUrl ||
+        null;
+      if (!firstImage) return spot;
+      return { ...spot, firstImage, imageUrl: spot.imageUrl || firstImage };
+    });
+  }, [curatedSpotsWithLocalScenic, curatedImageByContentId]);
 
   const heritageNearRanked = useMemo(() => {
     if (!nearOrigin || searchActive) return null;
@@ -4416,10 +4438,10 @@ export default function KoreaThemeScenicPage() {
             <ul
               className={`${listLarge ? 'space-y-3' : 'space-y-2'} [overflow-anchor:none]`}
             >
-              {curatedSpotsWithLocalScenic.map((spot, index) => {
+              {curatedSpotsWithLocalScenicThumbs.map((spot, index) => {
                 const groupTitle = String(spot.groupTitle || '').trim();
                 const prevGroup = String(
-                  curatedSpotsWithLocalScenic[index - 1]?.groupTitle || '',
+                  curatedSpotsWithLocalScenicThumbs[index - 1]?.groupTitle || '',
                 ).trim();
                 const showGroup = Boolean(groupTitle) && groupTitle !== prevGroup;
                 return (
@@ -4477,7 +4499,7 @@ export default function KoreaThemeScenicPage() {
                 ) : null}
               </div>
             ) : null}
-            {curatedSpotsWithLocalScenic.length === 0 ? (
+            {curatedSpotsWithLocalScenicThumbs.length === 0 ? (
               <p className="text-sm text-stone-500 break-keep">
                 {searchActive
                   ? (curatedSearchPool?.length || 0) > 0

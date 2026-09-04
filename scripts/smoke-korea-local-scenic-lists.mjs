@@ -173,6 +173,9 @@ assert.ok(
   merged.every((s) => s.source === 'localScenicList' || s.groupTitle === '문경 팔경'),
   'injected rows are list members not koreaScenicSpots writes',
 );
+const jinnam = merged.find((s) => s.attractionName === '진남교반');
+assert.ok(jinnam?.imageUrl, '진남교반 palgyeong member gets GATEO curated thumb');
+assert.equal(jinnam?.contentId, '126570', '진남교반 inherits curated contentId');
 
 const groupedNearby = groupNearbySpotsWithLocalScenic(
   [{ name: '문경새재', contentId: '123' }],
