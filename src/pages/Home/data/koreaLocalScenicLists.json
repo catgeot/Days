@@ -22,7 +22,8 @@
         "kind": "park",
         "lat": 37.695654675826525,
         "lng": 127.6966173486738,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "125610"
       },
       {
         "attractionName": "가리산",
@@ -62,7 +63,8 @@
         "kind": "temple",
         "lat": 37.69570386540188,
         "lng": 127.9545225935472,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "125764"
       },
       {
         "attractionName": "용소계곡",
@@ -70,7 +72,8 @@
         "kind": "park",
         "lat": 37.8616996,
         "lng": 128.1354762,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "125626"
       },
       {
         "attractionName": "살둔계곡",
@@ -219,7 +222,8 @@
       },
       {
         "attractionName": "백담사",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125767"
       },
       {
         "attractionName": "합강정",
@@ -227,7 +231,8 @@
         "kind": "viewpoint",
         "lat": 38.0769814,
         "lng": 128.1863804,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "1932458"
       }
     ]
   },
@@ -258,7 +263,8 @@
         "kind": "park",
         "lat": 37.2680078425,
         "lng": 129.3273124779,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "128633"
       },
       {
         "attractionName": "새천년해안유원지",
@@ -274,7 +280,8 @@
         "kind": "park",
         "lat": 37.42,
         "lng": 129.18,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "129204"
       },
       {
         "attractionName": "삼척 환선굴",
@@ -290,7 +297,8 @@
         "kind": "park",
         "lat": 37.38,
         "lng": 129.05,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "125641"
       },
       {
         "attractionName": "척주동해비",
@@ -314,7 +322,8 @@
         "kind": "temple",
         "lat": 37.35,
         "lng": 129.08,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "125753"
       },
       {
         "attractionName": "준경묘",
@@ -348,7 +357,8 @@
         "kind": "temple",
         "lat": 37.3994509348789,
         "lng": 128.049844503067,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125761"
       },
       {
         "attractionName": "강원감영",
@@ -364,7 +374,8 @@
         "kind": "temple",
         "lat": 37.38,
         "lng": 128.05,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "125760"
       },
       {
         "attractionName": "비로봉",
@@ -380,7 +391,8 @@
         "kind": "viewpoint",
         "lat": 37.42,
         "lng": 127.85,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "126644"
       },
       {
         "attractionName": "영원산성",
@@ -430,7 +442,8 @@
         "kind": "landmark",
         "lat": 37.4786,
         "lng": 129.1594,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "129000"
       },
       {
         "attractionName": "용추폭포",
@@ -462,7 +475,8 @@
         "kind": "landmark",
         "lat": 37.5156,
         "lng": 129.1217,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "126666"
       },
       {
         "attractionName": "만경대",
@@ -470,7 +484,8 @@
         "kind": "viewpoint",
         "lat": 37.524,
         "lng": 129.115,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "125793"
       },
       {
         "attractionName": "호해정",

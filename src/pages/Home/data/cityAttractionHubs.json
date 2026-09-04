@@ -4668,7 +4668,8 @@
         "name_en": "Baekdamsa",
         "kind": "temple",
         "lat": 38.1651167536,
-        "lng": 128.3743730289
+        "lng": 128.3743730289,
+        "contentId": "125767"
       },
       {
         "name": "내린천",
@@ -4738,7 +4739,8 @@
         "name_en": "Hapgangjeong Pavilion",
         "kind": "viewpoint",
         "lat": 38.0769814,
-        "lng": 128.1863804
+        "lng": 128.1863804,
+        "contentId": "1932458"
       }
     ]
   },
@@ -9565,7 +9567,8 @@
         "name_en": "Guryongsa",
         "kind": "temple",
         "lat": 37.3994509348789,
-        "lng": 128.049844503067
+        "lng": 128.049844503067,
+        "contentId": "125761"
       },
       {
         "name": "강원감영",
@@ -9579,7 +9582,8 @@
         "name_en": "Sangwonsa Temple",
         "kind": "temple",
         "lat": 37.38,
-        "lng": 128.05
+        "lng": 128.05,
+        "contentId": "125760"
       },
       {
         "name": "비로봉",
@@ -9593,7 +9597,8 @@
         "name_en": "Ganhyeon Tourist Site",
         "kind": "viewpoint",
         "lat": 37.42,
-        "lng": 127.85
+        "lng": 127.85,
+        "contentId": "126644"
       },
       {
         "name": "영원산성",
@@ -10111,7 +10116,8 @@
         "name_en": "Haesindang Park",
         "kind": "park",
         "lat": 37.2680078425,
-        "lng": 129.3273124779
+        "lng": 129.3273124779,
+        "contentId": "128633"
       },
       {
         "name": "장호항",
@@ -10160,14 +10166,16 @@
         "name_en": "Hwang Young-jo Memorial Park",
         "kind": "park",
         "lat": 37.42,
-        "lng": 129.18
+        "lng": 129.18,
+        "contentId": "129204"
       },
       {
         "name": "덕풍계곡",
         "name_en": "Deokpung Valley",
         "kind": "park",
         "lat": 37.38,
-        "lng": 129.05
+        "lng": 129.05,
+        "contentId": "125641"
       },
       {
         "name": "척주동해비",
@@ -10181,7 +10189,8 @@
         "name_en": "Samcheok Cheoneunsa",
         "kind": "temple",
         "lat": 37.35,
-        "lng": 129.08
+        "lng": 129.08,
+        "contentId": "125753"
       },
       {
         "name": "준경묘",
@@ -10776,14 +10785,16 @@
         "name_en": "Chuam Candle Rock",
         "kind": "landmark",
         "lat": 37.4786,
-        "lng": 129.1594
+        "lng": 129.1594,
+        "contentId": "129000"
       },
       {
         "name": "천곡황금박쥐동굴",
         "name_en": "Cheongok Golden Bat Cave",
         "kind": "landmark",
         "lat": 37.5156,
-        "lng": 129.1217
+        "lng": 129.1217,
+        "contentId": "126666"
       },
       {
         "name": "묵호항",
@@ -10818,7 +10829,8 @@
         "name_en": "Mangyeongdae",
         "kind": "viewpoint",
         "lat": 37.524,
-        "lng": 129.115
+        "lng": 129.115,
+        "contentId": "125793"
       },
       {
         "name": "호해정",
@@ -11448,7 +11460,8 @@
         "name_en": "Hongcheon Palbongsan",
         "kind": "park",
         "lat": 37.695654675826525,
-        "lng": 127.6966173486738
+        "lng": 127.6966173486738,
+        "contentId": "125610"
       },
       {
         "name": "가리산",
@@ -11483,14 +11496,16 @@
         "name_en": "Gongjaksan Suta Temple",
         "kind": "temple",
         "lat": 37.69570386540188,
-        "lng": 127.9545225935472
+        "lng": 127.9545225935472,
+        "contentId": "125764"
       },
       {
         "name": "용소계곡",
         "name_en": "Yongso Valley",
         "kind": "park",
         "lat": 37.8616996,
-        "lng": 128.1354762
+        "lng": 128.1354762,
+        "contentId": "125626"
       },
       {
         "name": "살둔계곡",
