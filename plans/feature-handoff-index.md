@@ -244,7 +244,7 @@ main · www.gateo.kr/place/yap/planner?lang=en
 |--|--|
 | **상태** | **F R10–R29** ✅ · lists **89** · members **827** · tip `05285c7b` · 광역시=백로그 |
 | **브랜치** | `cursor/palgyeong` · tip `05285c7b` · main docs 동기화 중 |
-| **PR** | [#172](https://github.com/catgeot/Days/pull/172) merged (R01–R09) · **R10–R29 코드 PR 필요** |
+| **PR** | [#172](https://github.com/catgeot/Days/pull/172) merged (R01–R09) · [#183](https://github.com/catgeot/Days/pull/183) draft (R10–R29) |
 | **플랜** | [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) **§4.5·§9** |
 | **큐** | [`korea-local-scenic-lists-queue.md`](./korea-local-scenic-lists-queue.md) |
 | **오케** | [`orchestrator-method.md`](./orchestrator-method.md) **§5.6** |
