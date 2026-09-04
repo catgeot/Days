@@ -2060,7 +2060,8 @@
         "kind": "viewpoint",
         "lat": 36.619575,
         "lng": 128.367378,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "126734"
       },
       {
         "attractionName": "삼강주막",
@@ -2082,7 +2083,8 @@
         "kind": "landmark",
         "lat": 36.7013269,
         "lng": 128.3818331,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "128135"
       },
       {
         "attractionName": "예천 용문사",
@@ -2090,7 +2092,8 @@
         "kind": "temple",
         "lat": 36.7311168,
         "lng": 128.3689996,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "126163"
       },
       {
         "attractionName": "예천곤충생태원",
@@ -2108,7 +2111,8 @@
         "attractionName": "선몽대",
         "name_en": "Seonmongdae Pavilion",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "128133"
       }
     ]
   },
@@ -2171,7 +2175,8 @@
         "kind": "park",
         "lat": 36.5074722,
         "lng": 129.4510917,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "2782863"
       },
       {
         "attractionName": "영덕 괴시리전통마을",
@@ -2179,7 +2184,8 @@
         "kind": "neighborhood",
         "lat": 36.5439219,
         "lng": 129.4168239,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "127714"
       },
       {
         "attractionName": "영덕 고래불해수욕장",
@@ -2297,7 +2303,8 @@
         "kind": "landmark",
         "lat": 35.9034834,
         "lng": 128.1117824,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "127718"
       },
       {
         "attractionName": "회연서원",
@@ -2309,7 +2316,8 @@
         "attractionName": "포천계곡",
         "name_en": "Pocheon Valley",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "127458"
       },
       {
         "attractionName": "성주 성밖숲",
@@ -2341,7 +2349,8 @@
         "kind": "park",
         "lat": 35.9220537,
         "lng": 128.2834101,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "2738010"
       },
       {
         "attractionName": "성산동 고분군",
@@ -2379,7 +2388,8 @@
         "kind": "temple",
         "lat": 35.9919834,
         "lng": 128.7898616,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "128155"
       },
       {
         "attractionName": "영천 임고서원",
@@ -2387,7 +2397,8 @@
         "kind": "landmark",
         "lat": 36.0167326,
         "lng": 128.973464,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "126925"
       },
       {
         "attractionName": "영천 보현산천문대",
@@ -2458,7 +2469,8 @@
         "kind": "landmark",
         "lat": 35.6498326,
         "lng": 128.7056471,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "1621437"
       },
       {
         "attractionName": "청도 새마을운동발상지기념공원",
@@ -2470,7 +2482,8 @@
         "attractionName": "청도 신화랑풍류마을",
         "name_en": "Cheongdo Sinhwarang Pungryu Village",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2663350"
       },
       {
         "attractionName": "청도 운문사",
@@ -2504,7 +2517,8 @@
         "attractionName": "청도 와인터널",
         "name_en": "Cheongdo Wine Tunnel",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2660803"
       },
       {
         "attractionName": "청도 레일바이크",

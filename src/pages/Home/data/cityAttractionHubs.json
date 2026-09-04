@@ -12997,14 +12997,16 @@
         "name_en": "Yeongdeok Jukdosan",
         "kind": "park",
         "lat": 36.5074722,
-        "lng": 129.4510917
+        "lng": 129.4510917,
+        "contentId": "2782863"
       },
       {
         "name": "영덕 괴시리전통마을",
         "name_en": "Yeongdeok Goesiri Traditional Village",
         "kind": "neighborhood",
         "lat": 36.5439219,
-        "lng": 129.4168239
+        "lng": 129.4168239,
+        "contentId": "127714"
       }
     ]
   },
@@ -14405,21 +14407,24 @@
         "name_en": "Hoeryongpo",
         "kind": "viewpoint",
         "lat": 36.619575,
-        "lng": 128.367378
+        "lng": 128.367378,
+        "contentId": "126734"
       },
       {
         "name": "초간정",
         "name_en": "Choganjeong Pavilion",
         "kind": "landmark",
         "lat": 36.7013269461,
-        "lng": 128.3818330867
+        "lng": 128.3818330867,
+        "contentId": "128135"
       },
       {
         "name": "예천 용문사",
         "name_en": "Yecheon Yongmunsa",
         "kind": "temple",
         "lat": 36.7311168,
-        "lng": 128.3689996
+        "lng": 128.3689996,
+        "contentId": "126163"
       },
       {
         "name": "용궁시장",
@@ -19286,7 +19291,8 @@
         "name_en": "Dokyongsanseong Seongju",
         "kind": "landmark",
         "lat": 35.9034834,
-        "lng": 128.1117824
+        "lng": 128.1117824,
+        "contentId": "127718"
       },
       {
         "name": "성주 성밖숲",
@@ -19314,7 +19320,8 @@
         "name_en": "Seongju History Theme Park",
         "kind": "park",
         "lat": 35.9220537,
-        "lng": 128.2834101
+        "lng": 128.2834101,
+        "contentId": "2738010"
       }
     ]
   },
@@ -20020,14 +20027,16 @@
         "name_en": "Imgo Seowon Yeongcheon",
         "kind": "landmark",
         "lat": 36.0167326,
-        "lng": 128.973464
+        "lng": 128.973464,
+        "contentId": "126925"
       },
       {
         "name": "영천 은해사",
         "name_en": "Eunhaesa Yeongcheon",
         "kind": "temple",
         "lat": 35.9919834,
-        "lng": 128.7898616
+        "lng": 128.7898616,
+        "contentId": "128155"
       },
       {
         "name": "영천 보현산천문대",
@@ -20096,7 +20105,8 @@
         "name_en": "Cheongdo Eupseong",
         "kind": "landmark",
         "lat": 35.6498326,
-        "lng": 128.7056471
+        "lng": 128.7056471,
+        "contentId": "1621437"
       },
       {
         "name": "청도 대비사",
