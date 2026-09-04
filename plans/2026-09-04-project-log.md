@@ -2,6 +2,14 @@
 
 직전: [`2026-09-03-project-log.md`](./2026-09-03-project-log.md)
 
+## 팔경 contentId — S0 ✅
+
+- **세션** `오케스트레이터 팔경contentId` · S0
+- **브랜치** `cursor/palgyeong-cid` · tip `849096f3` · **PR [#185](https://github.com/catgeot/Days/pull/185)** draft
+- **S0** `fill:korea-local-scenic-content-ids` · audit contentId · 문경 DB-only — 진남교반 `126570` (1/8)
+- **VERIFY** audit×2 · smoke×2 · build PASS · 큐 R01 기입
+- **다음** F R01 DB-only 워커A3+B3
+
 ## 지자체 팔경 — PR #183 merge · F R30 광역시 백로그 ✅
 
 - **세션** `지자체 팔경 #N, 광역시 백로그`
@@ -64,5 +72,5 @@
 @plans/feature-handoff-index.md
 브랜치 cursor/palgyeong-cid
 금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P1/P2 월권
-작업: S0 스크립트+문경 DB-only → 큐 다음 ⬜ P0 · VERIFY → 다음 R 또는 Task 이관
+작업: R01 DB-only 워커A3+B3 → VERIFY → R02 또는 Task 이관
 ```

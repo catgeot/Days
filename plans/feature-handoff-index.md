@@ -43,10 +43,10 @@
 
 | | |
 |--|--|
-| **상태** | **S0 대기** · A와 **동시 OK** |
+| **상태** | **S0 ✅** · R01 ⬜ · A와 **동시 OK** |
 | **브랜치** | `cursor/palgyeong-cid` (없으면 main에서 생성 · 수집 `cursor/palgyeong` 금지) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§3·§9 B** · method **§5.7** |
-| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — S0 ⬜ |
+| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — S0 ✅ · R01 ⬜ |
 | **일지** | [`2026-09-04-project-log.md`](./2026-09-04-project-log.md) |
 | **소유** | JSON `contentId` · fill · audit · **UI 금지** |
 | **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · feature에 `plans/**` 커밋 |
@@ -60,7 +60,7 @@
 @plans/feature-handoff-index.md
 브랜치 cursor/palgyeong-cid
 금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P1/P2 월권
-작업: S0 스크립트+문경 DB-only → 큐 다음 ⬜ P0 · VERIFY → 다음 R 또는 Task 이관
+작업: R01 DB-only 워커A3+B3 → VERIFY → R02 또는 Task 이관
 ```
 
 ---
@@ -303,7 +303,7 @@ main · www.gateo.kr/place/yap/planner?lang=en
 | **잔여(선택)** | `pending_coord` **424**/876 — 좌표 보강은 **새 합의** 전 착수 금지 |
 | **VERIFY** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · `smoke:korea-local-scenic-lists` · `build` PASS |
 
-**다음 제시어 없음** (수집 종료). `오케스트레이터 지자체팔경`을 다시 열지 않음. 검색·contentId는 **팔경 활용** 행.
+**다음 제시어 없음** (수집 종료). `오케스트레이터 지자체팔경`을 다시 열지 않음. 검색·contentId는 **팔경 활용**·**팔경 contentId** 행.
 
 
 ## 행 추가 템플릿 (새 Cloud feature)
