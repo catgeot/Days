@@ -2550,13 +2550,15 @@
         "kind": "viewpoint",
         "lat": 34.78097,
         "lng": 128.39767,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "127103"
       },
       {
         "attractionName": "사량도 옥녀봉",
         "name_en": "Saryangdo Oknyeobong",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126832"
       },
       {
         "attractionName": "남망산공원",
@@ -2580,7 +2582,8 @@
         "kind": "viewpoint",
         "lat": 34.7687133,
         "lng": 128.4001192,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "126661"
       },
       {
         "attractionName": "소매물도 등대섬",
@@ -2602,7 +2605,8 @@
         "kind": "viewpoint",
         "lat": 34.8106641,
         "lng": 128.4161136,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "126659"
       }
     ]
   },
@@ -2636,7 +2640,8 @@
         "kind": "viewpoint",
         "lat": 34.7432915,
         "lng": 128.6633088,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "129479"
       },
       {
         "attractionName": "외도보타니아",
@@ -2684,7 +2689,8 @@
         "kind": "park",
         "lat": 34.8179993905,
         "lng": 128.7485334584,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "128035"
       },
       {
         "attractionName": "매미성",
@@ -2750,7 +2756,8 @@
         "kind": "viewpoint",
         "lat": 34.9808533,
         "lng": 128.0990438,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "129535"
       },
       {
         "attractionName": "봉명산 다솔사",
@@ -2764,7 +2771,8 @@
         "attractionName": "사천읍성 명월",
         "name_en": "Sacheon Eupseong Moonlight",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "1622455"
       },
       {
         "attractionName": "비토섬 갯벌",
@@ -2814,7 +2822,8 @@
         "kind": "landmark",
         "lat": 34.937,
         "lng": 127.871,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "128104"
       },
       {
         "attractionName": "상주은모래비치",
@@ -2822,7 +2831,8 @@
         "kind": "beach",
         "lat": 34.720841,
         "lng": 127.988094,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "126084"
       },
       {
         "attractionName": "창선교와 남해지족해협 죽방렴",
@@ -2834,13 +2844,15 @@
         "attractionName": "남해 관음포 이충무공 유적",
         "name_en": "Namhae Gwaneumpo Yi Sun-sin Historic Site",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "129480"
       },
       {
         "attractionName": "남해 가천 암수바위와 남면해안",
         "name_en": "Namhae Gacheon Rock and Nammyeon Coast",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "127456"
       },
       {
         "attractionName": "서포 김만중 선생 유허와 노도",
@@ -2852,13 +2864,15 @@
         "attractionName": "송정솔바람해변",
         "name_en": "Songjeong Solbaram Beach",
         "kind": "beach",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126085"
       },
       {
         "attractionName": "망운산과 화방사",
         "name_en": "Mangunsan and Hwabangsa",
         "kind": "temple",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "129496"
       },
       {
         "attractionName": "남해 물건리 방조어부림과 물미해안",
@@ -2870,7 +2884,8 @@
         "attractionName": "호구산과 용문사",
         "name_en": "Hogusan and Yongmunsa",
         "kind": "temple",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "127203"
       },
       {
         "attractionName": "창선-삼천포대교",
@@ -2919,7 +2934,8 @@
         "attractionName": "평사리 최참판댁",
         "name_en": "Pyeongsari Choi Champan House",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "127664"
       },
       {
         "attractionName": "형제봉 철쭉",
@@ -2937,7 +2953,8 @@
         "attractionName": "지리산 불일폭포",
         "name_en": "Jirisan Bulil Falls",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126026"
       },
       {
         "attractionName": "하동포구 백사청송",
@@ -2980,7 +2997,8 @@
         "attractionName": "진주성 촉석루",
         "name_en": "Jinju Fortress Chokseongnu",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126217"
       },
       {
         "attractionName": "남강 의암",
@@ -3024,7 +3042,8 @@
         "kind": "park",
         "lat": 35.174021,
         "lng": 128.0295489,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "2612900"
       }
     ]
   },

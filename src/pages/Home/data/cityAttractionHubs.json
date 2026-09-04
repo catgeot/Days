@@ -1073,7 +1073,8 @@
         "name_en": "Mireuksan",
         "kind": "viewpoint",
         "lat": 34.8106641,
-        "lng": 128.4161136
+        "lng": 128.4161136,
+        "contentId": "126659"
       },
       {
         "name": "이순신공원",
@@ -1087,7 +1088,8 @@
         "name_en": "Yeonhwado Yongmeori",
         "kind": "viewpoint",
         "lat": 34.78097,
-        "lng": 128.39767
+        "lng": 128.39767,
+        "contentId": "127103"
       },
       {
         "name": "남망산공원",
@@ -1101,7 +1103,8 @@
         "name_en": "Sunset at Dara Park",
         "kind": "viewpoint",
         "lat": 34.7687133,
-        "lng": 128.4001192
+        "lng": 128.4001192,
+        "contentId": "126661"
       },
       {
         "name": "소매물도 등대섬",
@@ -2560,7 +2563,8 @@
         "name_en": "Sangju Eunmorae Beach",
         "kind": "beach",
         "lat": 34.720841,
-        "lng": 127.988094
+        "lng": 127.988094,
+        "contentId": "126084"
       },
       {
         "name": "보리암",
@@ -2588,7 +2592,8 @@
         "name_en": "Namhae Bridge and Chungnyeolsa",
         "kind": "landmark",
         "lat": 34.937,
-        "lng": 127.871
+        "lng": 127.871,
+        "contentId": "128104"
       }
     ]
   },
@@ -3136,7 +3141,8 @@
         "name_en": "Jinyang Lake",
         "kind": "park",
         "lat": 35.174021,
-        "lng": 128.0295489
+        "lng": 128.0295489,
+        "contentId": "2612900"
       },
       {
         "name": "국립진주박물관",
@@ -3182,7 +3188,8 @@
         "name_en": "Windy Hill Geoje",
         "kind": "viewpoint",
         "lat": 34.7432915,
-        "lng": 128.6633088
+        "lng": 128.6633088,
+        "contentId": "129479"
       },
       {
         "name": "학동몽돌해수욕장",
@@ -3217,7 +3224,8 @@
         "name_en": "Jisimdo",
         "kind": "park",
         "lat": 34.8179993905,
-        "lng": 128.7485334584
+        "lng": 128.7485334584,
+        "contentId": "128035"
       },
       {
         "name": "거제 식물원",
@@ -12339,7 +12347,8 @@
         "name_en": "Sacheon Waryongsan",
         "kind": "viewpoint",
         "lat": 34.9808533,
-        "lng": 128.0990438
+        "lng": 128.0990438,
+        "contentId": "129535"
       },
       {
         "name": "삼천포대교",
