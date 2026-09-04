@@ -109,3 +109,22 @@
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
 작업: 홈 검색 문경 · /korea/theme/scenic 문경 hub · 축제 상세 인근 목록 소제목
 ```
+
+## 팔경 contentId — R03+R04 DB-only ✅ · 이관 R05
+
+- **세션** `오케스트레이터 팔경contentId` · 후임 Task 기동 실패(StepContext) 후 현 메인 워커2 재개
+- **브랜치** `cursor/palgyeong-cid` · tip `c0897266` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **R03** 21/52 (`003b34d8`) · **R04** 6/52 (`c0897266`) · 누적 **60**/876
+- **VERIFY** audit×2 issues 0 · smoke lists + content-ids PASS
+- **다음** R05 A `yecheon-palgyeong`·`yeongdeok-sipgyeong`·`uiseong-binggye-palgyeong` / B `seongju-sipgyeong`·`yeongcheon-gugyeong`·`cheongdo-gugyeong`
+- 진천·경주8괘는 한문명 DB miss 0 hit
+
+```
+오케스트레이터 팔경contentId
+@plans/orchestrator-method.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/feature-handoff-index.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P1/P2 월권
+작업: R05 DB-only 워커A3+B3 → VERIFY → R06 또는 Task 이관
+```
