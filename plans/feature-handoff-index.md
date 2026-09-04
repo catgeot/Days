@@ -238,33 +238,21 @@ main · www.gateo.kr/place/yap/planner?lang=en
 
 ---
 
-### 지자체 팔경·구경 → 도시 명소
+### 지자체 팔경·구경 → 도시 명소 — 1차 종료 · main 병합 ✅
 
 | | |
 |--|--|
-| **상태** | **F R30** ✅ · lists **94** · members **876** · tip `c82f85a5` · **1차 큐 소진** |
-| **브랜치** | `cursor/palgyeong` · tip `c82f85a5` · PR #183 merged |
-| **PR** | [#172](https://github.com/catgeot/Days/pull/172) merged · [#183](https://github.com/catgeot/Days/pull/183) merged · [#184](https://github.com/catgeot/Days/pull/184) draft (R30) |
-| **플랜** | [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) **§4.5·§9** |
-| **큐** | [`korea-local-scenic-lists-queue.md`](./korea-local-scenic-lists-queue.md) |
-| **오케** | [`orchestrator-method.md`](./orchestrator-method.md) **§5.6** |
-| **일지** | [`2026-09-01-project-log.md`](./2026-09-01-project-log.md) |
-| **정책** | 시·군·구 · append-only · **F=자동 오케** · **매 R 사람 QA 생략** · I#만 일지 요약 |
-| **VERIFY** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · `smoke:korea-local-scenic-lists` · `build` |
+| **상태** | **#N merge ✅ · 주제 종료** · main `55194e80` · PR [#184](https://github.com/catgeot/Days/pull/184) |
+| **브랜치** | `cursor/palgyeong` · merge `55194e80` |
+| **PR** | [#172](https://github.com/catgeot/Days/pull/172) · [#183](https://github.com/catgeot/Days/pull/183) · [#184](https://github.com/catgeot/Days/pull/184) merged |
+| **플랜** | [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) **§9** |
+| **큐** | [`korea-local-scenic-lists-queue.md`](./korea-local-scenic-lists-queue.md) — **1차 소진** |
+| **일지** | [`2026-09-04-project-log.md`](./2026-09-04-project-log.md) |
+| **PROD** | lists **94** · members **876** · I#12 ✅ |
+| **잔여(선택)** | `pending_coord` **424**/876 — 좌표 보강은 **새 합의** 전 착수 금지 |
+| **VERIFY** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · `smoke:korea-local-scenic-lists` · `build` PASS |
 
-**오케 제시어 (최초 · 복구 · 새 채팅 1회)**:
-
-```
-오케스트레이터 지자체팔경
-@plans/korea-local-scenic-lists-plan.md §9
-@plans/korea-local-scenic-lists-queue.md
-@plans/feature-handoff-index.md
-브랜치 cursor/palgyeong · tip c82f85a5
-금지: UI · scenic승격 · 광역팔경 · feature plans 커밋
-작업: PR #184 merge · pending_coord(선택) · 주제 종료 합의
-```
-
-**턴 종료 체크**(1차 큐 소진): (1) feature push ✅ (2) **PR #184** draft ✅ (3) **main docs push**. VERIFY 후 요약만 하고 종료 **금지** — [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) **§4.5**.
+**다음 제시어 없음** (주제 종료). 새 채팅에서 오케스트레이터 지자체팔경을 다시 열지 않음. 광역 팔경·scenic 승격·pending_coord는 **별도 합의** 후에만.
 
 
 ## 행 추가 템플릿 (새 Cloud feature)
