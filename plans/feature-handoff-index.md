@@ -242,9 +242,9 @@ main · www.gateo.kr/place/yap/planner?lang=en
 
 | | |
 |--|--|
-| **상태** | **F R10–R29** ✅ · lists **89** · members **827** · tip `05285c7b` · 광역시=백로그 |
-| **브랜치** | `cursor/palgyeong` · tip `05285c7b` · main docs 동기화 중 |
-| **PR** | [#172](https://github.com/catgeot/Days/pull/172) merged (R01–R09) · [#183](https://github.com/catgeot/Days/pull/183) draft (R10–R29) |
+| **상태** | **F R30** ✅ · lists **94** · members **876** · tip `c82f85a5` · **1차 큐 소진** |
+| **브랜치** | `cursor/palgyeong` · tip `c82f85a5` · PR #183 merged |
+| **PR** | [#172](https://github.com/catgeot/Days/pull/172) merged · [#183](https://github.com/catgeot/Days/pull/183) merged · [#184](https://github.com/catgeot/Days/pull/184) draft (R30) |
 | **플랜** | [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) **§4.5·§9** |
 | **큐** | [`korea-local-scenic-lists-queue.md`](./korea-local-scenic-lists-queue.md) |
 | **오케** | [`orchestrator-method.md`](./orchestrator-method.md) **§5.6** |
@@ -259,12 +259,12 @@ main · www.gateo.kr/place/yap/planner?lang=en
 @plans/korea-local-scenic-lists-plan.md §9
 @plans/korea-local-scenic-lists-queue.md
 @plans/feature-handoff-index.md
-브랜치 cursor/palgyeong · tip 05285c7b
+브랜치 cursor/palgyeong · tip c82f85a5
 금지: UI · scenic승격 · 광역팔경 · feature plans 커밋
-작업: 광역시 백로그 합의 또는 PR merge · I#12(필요 시)
+작업: PR #184 merge · pending_coord(선택) · 주제 종료 합의
 ```
 
-**턴 종료 체크**(광역시 백로그·§6.2): (1) feature push (2) **코드 PR** draft (3) 세션 종료 시 **main docs push**. VERIFY 후 요약만 하고 종료 **금지** — [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) **§4.5**.
+**턴 종료 체크**(1차 큐 소진): (1) feature push ✅ (2) **PR #184** draft ✅ (3) **main docs push**. VERIFY 후 요약만 하고 종료 **금지** — [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) **§4.5**.
 
 
 ## 행 추가 템플릿 (새 Cloud feature)
