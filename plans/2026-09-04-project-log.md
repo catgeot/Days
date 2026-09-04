@@ -72,5 +72,5 @@
 @plans/feature-handoff-index.md
 브랜치 cursor/palgyeong-cid
 금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P1/P2 월권
-작업: S0 스크립트+문경 DB-only → 큐 다음 ⬜ P0 · VERIFY → 다음 R 또는 Task 이관
+작업: R01 DB-only 워커A3+B3 → VERIFY → R02 또는 Task 이관
 ```
