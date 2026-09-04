@@ -445,7 +445,9 @@
     "aliases": [
       "인천시",
       "인천광역시",
-      "incheon"
+      "incheon",
+      "인천9경",
+      "오늘문득인천9경"
     ],
     "attractions": [
       {
@@ -503,7 +505,9 @@
     "aliases": [
       "대구시",
       "대구광역시",
-      "daegu"
+      "daegu",
+      "대구12경",
+      "대구 십이경"
     ],
     "attractions": [
       {
@@ -619,7 +623,9 @@
     "aliases": [
       "대전시",
       "대전광역시",
-      "daejeon"
+      "daejeon",
+      "대전8경",
+      "대전팔경"
     ],
     "attractions": [
       {
@@ -677,7 +683,9 @@
     "aliases": [
       "울산시",
       "울산광역시",
-      "ulsan"
+      "ulsan",
+      "울산12경",
+      "울산 십이경"
     ],
     "attractions": [
       {
@@ -3879,7 +3887,10 @@
     "aliases": [
       "ganghwa",
       "강화도",
-      "강화군"
+      "강화군",
+      "강화8경",
+      "강화 팔경",
+      "강화군 팔경"
     ],
     "attractions": [
       {
@@ -3930,6 +3941,34 @@
         "kind": "park",
         "lat": 37.6977907,
         "lng": 126.3141632
+      },
+      {
+        "name": "광성보",
+        "name_en": "Gwangseongbo Fortress",
+        "kind": "landmark",
+        "lat": 37.6639281,
+        "lng": 126.5278429
+      },
+      {
+        "name": "연미정",
+        "name_en": "Yeonmijeong Pavilion",
+        "kind": "landmark",
+        "lat": 37.7698973,
+        "lng": 126.5108613
+      },
+      {
+        "name": "적석사",
+        "name_en": "Jeokseoksa",
+        "kind": "temple",
+        "lat": 37.7323548,
+        "lng": 126.414192
+      },
+      {
+        "name": "전등사",
+        "name_en": "Jeondeungsa Ganghwa",
+        "kind": "temple",
+        "lat": 37.6369531,
+        "lng": 126.4933238
       }
     ]
   },
