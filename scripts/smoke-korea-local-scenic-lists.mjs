@@ -15,8 +15,14 @@ import {
   listKoreaLocalScenicLists,
   resolveLocalScenicList,
   matchLocalScenicListForScenicSearch,
+  matchLocalScenicListsForQuery,
   buildLocalScenicListHubCluster,
   spotMatchesLocalScenicListMember,
+  listsForHub,
+  localScenicListDisplayTitle,
+  localScenicMemberToSuggestion,
+  mergeLocalScenicMembersIntoScenicSpots,
+  groupNearbySpotsWithLocalScenic,
 } from '../src/pages/Home/lib/koreaLocalScenicLists.js';
 import {
   filterScenicSpotsByQuery,
@@ -72,6 +78,117 @@ assert.ok(
 assert.ok(
   searchSrc.includes('buildLocalScenicListHubCluster'),
   'searchSuggestions expands list cluster',
+);
+assert.ok(
+  searchSrc.includes('pushLocalScenicMembersFirst'),
+  'searchSuggestions prepends palgyeong members before hub cluster',
+);
+{
+  const idxMembers = searchSrc.indexOf('pushLocalScenicMembersFirst(exactHub');
+  const idxSpots = searchSrc.indexOf('const spotHits');
+  assert.ok(
+    idxMembers >= 0 && idxSpots >= 0 && idxMembers < idxSpots,
+    '문경 팔경 members are pushed before travel spots',
+  );
+}
+assert.ok(
+  searchSrc.includes('slice(0, 24)'),
+  'searchSuggestions raises result cap for palgyeong group',
+);
+
+const suggestionListSrc = readFileSync(
+  join(root, 'src/pages/Home/components/SearchDiscovery/SearchSuggestionList.jsx'),
+  'utf8',
+);
+assert.ok(
+  suggestionListSrc.includes('groupTitle'),
+  'SearchSuggestionList renders groupTitle subtitle',
+);
+const scenicPageSrc = readFileSync(
+  join(root, 'src/pages/KoreaTheme/ScenicPage.jsx'),
+  'utf8',
+);
+assert.ok(
+  scenicPageSrc.includes('mergeLocalScenicMembersIntoScenicSpots'),
+  'ScenicPage merges N경 into curated ul',
+);
+assert.ok(
+  !scenicPageSrc.includes('festival-home-pod'),
+  'ScenicPage has no festival home pod marker',
+);
+const festivalSrc = readFileSync(
+  join(root, 'src/pages/Korea/FestivalDetailSheet.jsx'),
+  'utf8',
+);
+assert.ok(
+  festivalSrc.includes('groupNearbySpotsWithLocalScenic'),
+  'FestivalDetailSheet groups palgyeong inside nearAttractions',
+);
+assert.ok(
+  !festivalSrc.includes('homeFestivalPod'),
+  'FestivalDetailSheet has no home festival pod',
+);
+
+const mungyeongLists = matchLocalScenicListsForQuery('문경');
+assert.ok(
+  mungyeongLists.some((l) => l.listId === 'mungyeong-palgyeong'),
+  '문경 hub → 문경 팔경 list',
+);
+const aliasLists = matchLocalScenicListsForQuery('문경 팔경');
+assert.ok(
+  aliasLists.length === 1 && aliasLists[0].listId === 'mungyeong-palgyeong',
+  '문경 팔경 alias beats hub absorption',
+);
+const mungyeongHub = resolveCityAttractionHub('문경');
+assert.equal(
+  localScenicListDisplayTitle(mungyeongLists[0], mungyeongHub),
+  '문경 팔경',
+  'display title 문경 팔경 (not SSOT 문경8경)',
+);
+assert.ok(listsForHub('mungyeong').length >= 1, 'listsForHub mungyeong');
+
+const memberRows = listsForHub('mungyeong').flatMap((list) =>
+  (list.members || [])
+    .map((member) => localScenicMemberToSuggestion(list, mungyeongHub, member))
+    .filter(Boolean),
+);
+assert.ok(memberRows.length >= 3, '문경 팔경 member suggestions');
+assert.ok(
+  memberRows.every((s) => s.groupTitle === '문경 팔경'),
+  'member groupTitle 문경 팔경',
+);
+assert.ok(
+  memberRows.some((s) => s.name === '새재계곡'),
+  '새재계곡 under 문경 팔경',
+);
+assert.ok(
+  resolveLocalScenicList('문경 팔경')?.list?.listId === 'mungyeong-palgyeong',
+  '문경 팔경 alias resolves list (hub aliases do not swallow it)',
+);
+
+const merged = mergeLocalScenicMembersIntoScenicSpots([], 'mungyeong');
+assert.ok(merged.length >= 8, 'scenic ul injects 문경 팔경 members without scenic JSON');
+assert.equal(merged[0].groupTitle, '문경 팔경');
+assert.ok(
+  merged.every((s) => s.source === 'localScenicList' || s.groupTitle === '문경 팔경'),
+  'injected rows are list members not koreaScenicSpots writes',
+);
+const jinnam = merged.find((s) => s.attractionName === '진남교반');
+assert.ok(jinnam?.imageUrl, '진남교반 palgyeong member gets GATEO curated thumb');
+assert.equal(jinnam?.contentId, '126570', '진남교반 inherits curated contentId');
+
+const groupedNearby = groupNearbySpotsWithLocalScenic(
+  [{ name: '문경새재', contentId: '123' }],
+  { hubId: 'mungyeong' },
+);
+assert.ok(groupedNearby.groups[0]?.title === '문경 팔경', 'nearby group title');
+assert.ok(
+  groupedNearby.groups[0].items.some((i) => i.name === '새재계곡'),
+  'nearby injects SSOT member',
+);
+assert.ok(
+  groupedNearby.rest.some((i) => i.name === '문경새재'),
+  'non-member nearby stays in rest',
 );
 
 // curated 멤버 필터 (리스트 있을 때만)

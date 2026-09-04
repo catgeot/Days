@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '홈 지구본 지명',
-  sessionNo: 3,
-  sessionPhase: '사파리 첫 진입 지명',
-  branch: 'cursor/globe-labels-ddce',
+  title: '팔경 활용',
+  sessionNo: 2,
+  sessionPhase: 'Preview QA',
+  branch: 'cursor/palgyeong-use-e744',
   previewPath: '/',
-  qaShareSlug: 'globe-labels',
+  qaShareSlug: 'palgyeong-use',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,30 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-04-palgyeong-use-2-thumbs',
+    session: '팔경 활용 #2, Preview QA',
+    title: '팔경 리스트 썸네일 — GATEO 선정·contentId 연동',
+    detail:
+      '팔경 멤버 행에 GATEO 선정 명소(koreaScenicSpots) imageUrl을 매칭하고, contentId가 있으면 tourapi_attraction 캐시로 썸네일을 보강합니다. 명승 ul·축제 인근 그룹·홈 검색 suggestion에 적용. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=mungyeong 에서 진남교반 등 사진 확인.',
+    at: '2026-09-04T21:20:00.000Z',
+  },
+  {
+    id: '2026-09-04-palgyeong-use-2-festival-crash',
+    session: '팔경 활용 #2, Preview QA',
+    title: '축제 리스트 클릭 크래시 — nearbyPlaceLabel 복원',
+    detail:
+      '팔경 활용 #1에서 nearbyAttractionRow 추가 시 nearbyPlaceLabel이 삭제되어 축제 상세 시트가 ReferenceError로 크래시하던 문제를 고쳤습니다. Preview /qa/palgyeong-use — /korea에서 축제 카드 클릭→상세 열림·인근 관광지 로드 확인.',
+    at: '2026-09-04T20:10:00.000Z',
+  },
+  {
+    id: '2026-09-04-palgyeong-use-1-search-list',
+    session: '팔경 활용 #1, 검색·리스트',
+    title: '탐색창 문경 팔경 소제목 · 명소 ul 상단 N경 · 축제 인근 그룹',
+    detail:
+      '홈 검색 「문경」에 소제목 문경 팔경+멤버를 여행지·지명보다 앞에 붙였습니다. 명승 같은 ul 상단에 N경 멤버(contentId 없으면 이름만). 축제 상세 인근 관광지 목록 안에만 소제목 그룹. Tour LIVE·scenic 승격·축제 홈 파드 없음. Preview /qa/palgyeong-use — 홈 검색 문경 · /korea/theme/scenic?hub=mungyeong · 축제 상세 인근 목록.',
+    at: '2026-09-04T10:00:00.000Z',
+  },
   {
     id: '2026-09-03-globe-labels-3-safari-first-load',
     session: '홈 지구본 지명 #3, 사파리 첫 진입 지명',

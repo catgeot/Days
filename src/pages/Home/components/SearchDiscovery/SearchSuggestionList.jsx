@@ -144,7 +144,7 @@ export function SearchSuggestionList({
             isPopover ? '' : 'max-h-[min(52vh,420px)] overflow-y-auto'
           }`}
         >
-          {items.map((item) => {
+          {items.map((item, index) => {
             const badgeKey = item.badge || EXPLORE_BADGE_PLACE;
             const badge = localizedExploreBadgeLabel(t, badgeKey);
             const badgeClass = BADGE_STYLES[badgeKey] || BADGE_STYLES[EXPLORE_BADGE_PLACE];
@@ -157,9 +157,20 @@ export function SearchSuggestionList({
               .filter((v, i, arr) => arr.indexOf(v) === i)
               .slice(0, 2)
               .join(' · ');
+            const groupTitle = String(item.groupTitle || '').trim();
+            const prevGroup = String(items[index - 1]?.groupTitle || '').trim();
+            const showGroup = Boolean(groupTitle) && groupTitle !== prevGroup;
 
             return (
-              <li key={item.id || `${item.name}-${item.lat}`}>
+              <React.Fragment key={item.id || `${item.name}-${item.lat}`}>
+                {showGroup ? (
+                  <li className={isPopover ? 'px-3 pt-2 pb-1' : 'px-4 pt-2.5 pb-1'}>
+                    <p className="text-[11px] font-semibold tracking-wide text-amber-200/90 break-keep">
+                      {groupTitle}
+                    </p>
+                  </li>
+                ) : null}
+                <li>
                 <button
                   type="button"
                   onClick={() => onSelect?.(item)}
@@ -182,7 +193,8 @@ export function SearchSuggestionList({
                     ) : null}
                   </div>
                 </button>
-              </li>
+                </li>
+              </React.Fragment>
             );
           })}
         </ul>
@@ -271,9 +283,19 @@ export function SearchDisambiguationCards({
             : item;
           const desc = resolveCardDesc(hydrated, locationLine);
           const showIntroMore = Boolean(desc) && desc.length >= SEARCH_INTRO_MORE_MIN_LEN;
+          const groupTitle = String(item.groupTitle || '').trim();
+          const prevGroup = String(candidates[index - 1]?.groupTitle || '').trim();
+          const showGroup = Boolean(groupTitle) && groupTitle !== prevGroup;
           return (
+            <React.Fragment key={item.id || `${item.name}-${item.lat}`}>
+              {showGroup ? (
+                <div className="col-span-full pt-1">
+                  <p className="text-[11px] font-semibold tracking-wide text-amber-200/90 break-keep">
+                    {groupTitle}
+                  </p>
+                </div>
+              ) : null}
             <button
-              key={item.id || `${item.name}-${item.lat}`}
               type="button"
               onClick={() => onSelect?.(hydrated)}
               className="group flex h-full w-full flex-col rounded-2xl border border-white/25 bg-[#32281f]/95 p-4 text-left shadow-[0_4px_20px_rgba(0,0,0,0.35)] hover:border-sky-300/50 hover:bg-[#3a2f25] transition-all"
@@ -314,6 +336,7 @@ export function SearchDisambiguationCards({
                 </div>
               ) : null}
             </button>
+            </React.Fragment>
           );
         })}
       </div>
