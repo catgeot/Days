@@ -1029,7 +1029,9 @@
     "lng": 128.4331,
     "aliases": [
       "통영시",
-      "tongyeong"
+      "tongyeong",
+      "통영팔경",
+      "통영시 팔경"
     ],
     "attractions": [
       {
@@ -1066,6 +1068,34 @@
         "kind": "park",
         "lat": 34.8447841,
         "lng": 128.4442146
+      },
+      {
+        "name": "연화도 용머리",
+        "name_en": "Yeonhwado Yongmeori",
+        "kind": "viewpoint",
+        "lat": 34.78097,
+        "lng": 128.39767
+      },
+      {
+        "name": "남망산공원",
+        "name_en": "Nammangsan Park",
+        "kind": "park",
+        "lat": 34.8408156,
+        "lng": 128.4299867
+      },
+      {
+        "name": "달아공원 일몰",
+        "name_en": "Sunset at Dara Park",
+        "kind": "viewpoint",
+        "lat": 34.7687133,
+        "lng": 128.4001192
+      },
+      {
+        "name": "소매물도 등대섬",
+        "name_en": "Somaemuldo Lighthouse Island",
+        "kind": "landmark",
+        "lat": 34.6266153,
+        "lng": 128.549357
       }
     ]
   },
@@ -2493,7 +2523,9 @@
     "lng": 127.8925,
     "aliases": [
       "namhae",
-      "남해군"
+      "남해군",
+      "남해12경",
+      "남해 십이경"
     ],
     "attractions": [
       {
@@ -2523,6 +2555,20 @@
         "kind": "park",
         "lat": 34.828,
         "lng": 127.84
+      },
+      {
+        "name": "남해 금산과 보리암",
+        "name_en": "Namhae Geumsan and Boriam",
+        "kind": "viewpoint",
+        "lat": 34.7521584,
+        "lng": 127.9829959
+      },
+      {
+        "name": "남해대교와 남해 충렬사",
+        "name_en": "Namhae Bridge and Chungnyeolsa",
+        "kind": "landmark",
+        "lat": 34.937,
+        "lng": 127.871
       }
     ]
   },
@@ -3095,7 +3141,9 @@
     "aliases": [
       "geoje",
       "거제시",
-      "거제도"
+      "거제도",
+      "거제9경",
+      "거제구경"
     ],
     "attractions": [
       {
@@ -3146,6 +3194,27 @@
         "kind": "park",
         "lat": 34.8179993905,
         "lng": 128.7485334584
+      },
+      {
+        "name": "거제 식물원",
+        "name_en": "Geoje Botanical Garden",
+        "kind": "park",
+        "lat": 34.8569942,
+        "lng": 128.5781165
+      },
+      {
+        "name": "공곶이·내도",
+        "name_en": "Gonggoji and Naedo",
+        "kind": "viewpoint",
+        "lat": 34.7949092,
+        "lng": 128.7138306
+      },
+      {
+        "name": "매미성",
+        "name_en": "Maemi Castle",
+        "kind": "landmark",
+        "lat": 34.9682217,
+        "lng": 128.7050767
       }
     ]
   },
@@ -12083,7 +12152,9 @@
       "Sacheon",
       "sacheon",
       "삼천포",
-      "泗川"
+      "泗川",
+      "사천9경",
+      "사천 구경"
     ],
     "attractions": [
       {
@@ -12120,6 +12191,55 @@
         "kind": "landmark",
         "lat": 34.9322,
         "lng": 128.0519
+      },
+      {
+        "name": "삼천포대교와 사천바다케이블카",
+        "name_en": "Samcheonpo Bridge and Sacheon Sea Cable Car",
+        "kind": "landmark",
+        "lat": 34.9315891,
+        "lng": 128.0536533
+      },
+      {
+        "name": "실안낙조",
+        "name_en": "Silan Sunset",
+        "kind": "viewpoint",
+        "lat": 34.9480596,
+        "lng": 128.03966
+      },
+      {
+        "name": "남일대 코끼리바위",
+        "name_en": "Namildae Elephant Rock",
+        "kind": "landmark",
+        "lat": 34.9265374,
+        "lng": 128.0964862
+      },
+      {
+        "name": "선진리성 벚꽃",
+        "name_en": "Seonjin-ri Fortress Cherry Blossoms",
+        "kind": "landmark",
+        "lat": 35.0440167,
+        "lng": 128.0419212
+      },
+      {
+        "name": "봉명산 다솔사",
+        "name_en": "Bongmyeongsan Dasolsa Temple",
+        "kind": "temple",
+        "lat": 35.0835355,
+        "lng": 127.9202812
+      },
+      {
+        "name": "비토섬 갯벌",
+        "name_en": "Bito Island Tidal Flats",
+        "kind": "landmark",
+        "lat": 34.9730246,
+        "lng": 127.9711691
+      },
+      {
+        "name": "용두공원과 청룡사 겹벚꽃",
+        "name_en": "Yongdu Park and Cheongnyongsa Double Cherry Blossoms",
+        "kind": "park",
+        "lat": 34.974734,
+        "lng": 128.1123524
       }
     ]
   },
