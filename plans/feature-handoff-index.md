@@ -43,10 +43,11 @@
 
 | | |
 |--|--|
-| **상태** | **S0 ✅** · R01 ⬜ · A와 **동시 OK** |
-| **브랜치** | `cursor/palgyeong-cid` (없으면 main에서 생성 · 수집 `cursor/palgyeong` 금지) |
+| **상태** | R01–R02 ✅ · 다음 ⬜ **R03** · membersWithContentId 33/876 · A와 **동시 OK** |
+| **브랜치** | `cursor/palgyeong-cid` · tip `4b160554` |
+| **PR** | [#185](https://github.com/catgeot/Days/pull/185) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§3·§9 B** · method **§5.7** |
-| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — S0 ✅ · R01 ⬜ |
+| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — S0–R02 ✅ · R03 ⬜ |
 | **일지** | [`2026-09-04-project-log.md`](./2026-09-04-project-log.md) |
 | **소유** | JSON `contentId` · fill · audit · **UI 금지** |
 | **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · feature에 `plans/**` 커밋 |
@@ -58,9 +59,9 @@
 @plans/orchestrator-method.md
 @plans/korea-local-scenic-contentid-queue.md
 @plans/feature-handoff-index.md
-브랜치 cursor/palgyeong-cid
+브랜치 cursor/palgyeong-cid · PR #185
 금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P1/P2 월권
-작업: R01 DB-only 워커A3+B3 → VERIFY → R02 또는 Task 이관
+작업: R03 DB-only 워커A3+B3 → VERIFY → R04 또는 Task 이관
 ```
 
 ---
