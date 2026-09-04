@@ -128,3 +128,22 @@
 금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P1/P2 월권
 작업: R05 DB-only 워커A3+B3 → VERIFY → R06 또는 Task 이관
 ```
+
+## 팔경 contentId — R05+R06 DB-only ✅ · 이관 R07
+
+- **세션** `오케스트레이터 팔경contentId`
+- **브랜치** `cursor/palgyeong-cid` · tip `6b2aa715` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **R05** 14/53 (`8d2e11a1`) · **R06** 19/56 (`6b2aa715`) · 누적 **93**/876
+- **VERIFY** audit×2 issues 0 · smoke lists + content-ids · build PASS
+- **다음** R07 A `sancheong-gugyeong`·`hamyang-palgyeong`·`geochang-gugyeong` / B `hapcheon-palgyeong`·`gimhae-gugyeong`·`yangsan-other`
+- 빙계팔경·하동 계절경관 DB miss 0 hit · 통영·남해 복합명 부분매칭(score 108) 다수
+
+```
+오케스트레이터 팔경contentId
+@plans/orchestrator-method.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/feature-handoff-index.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P1/P2 월권
+작업: R07 DB-only 워커A3+B3 → VERIFY → R08 또는 Task 이관
+```
