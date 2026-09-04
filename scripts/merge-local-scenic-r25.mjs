@@ -56,7 +56,7 @@ const R25_LISTS = [
     ],
   },
   {
-    listId: 'gwangju_gi-palgyeong',
+    listId: 'gwangju-gi-palgyeong',
     hubId: 'gwangju_gi',
     title: '광주8경',
     title_en: 'Gwangju (Gyeonggi) Eight Scenic Views',
