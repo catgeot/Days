@@ -1,6 +1,6 @@
 # koreaLocalScenicLists — 사전 배치 큐 (기초지자체 팔경·구경)
 
-**상태**: **F R10–R29** ✅ 2026-09-04 · **I#5–#11** ✅ · tip `05285c7b` · lists **89** · members **827** · 광역시=백로그  
+**상태**: **F R10–R29** ✅ 2026-09-04 · **I#5–#11** ✅ · **F R30** ✅ · **PR #183** merged · lists **94** · members **876** · **1차 큐 소진**  
 **규칙**: 라운드 = **6 칸** · 워커A **3** + 워커B **3** · VERIFY PASS → **다음 R 자동** · **3R마다 I#** · §6.2만 정지  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.6** · 플랜 [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md)  
 **단위**: 시·군·구만 · **광역 팔경(관동팔경 등) 큐 금지**(1차)  
@@ -194,26 +194,41 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 
 > **제주 2** hub. R29는 2칸 — **skip** `jeju`·`seogwipo` 시·군 단위 공식 N경 없음(`skip_no_source`).
 
-**I 주기**: R28–R29 누적 → **I#11** ✅ 2026-09-04 · 이후 **광역시 백로그**(사람 합의).
+**I 주기**: R28–R29 누적 → **I#11** ✅ 2026-09-04.
 
 ---
 
-## 백로그 — 광역시·서울 (R29 후 · 큐 미배치)
+## F 라운드 — 광역시·서울 (R29 후 · I#12)
 
-세권 불필요([`korea-scenic-mid-cluster-plan.md`](./korea-scenic-mid-cluster-plan.md) §3). hub별 공식 N경 **착수 전 조사** 후 라운드 추가.
+| R | 워커A (3) | 워커B (3) | 상태 |
+|---|-----------|-----------|------|
+| **R30** | `incheon-gugyeong` · `ganghwa-palgyeong` · `daegu-sipgyeong` | `daejeon-palgyeong` · `ulsan-sipgyeong` · — | ✅ 2026-09-04 |
 
-| 시도 | hub 수 | hubId (tip 기준) |
-|------|-------:|------------------|
-| 서울 | 1 | `seoul` |
-| 인천 | 3 | `incheon` · `ganghwa` · `ongjin` |
-| 부산 | 2 | `busan` · `busanjin` |
-| 대구 | 1 | `daegu` |
-| 광주 | 1 | `gwangju` |
-| 대전 | 1 | `daejeon` |
-| 울산 | 1 | `ulsan` |
-| 세종 | 1 | `sejong` |
+> **R30 verified**: `incheon-gugyeong`(9) · `ganghwa-palgyeong`(8) · `daegu-sipgyeong`(12) · `daejeon-palgyeong`(8) · `ulsan-sipgyeong`(12).
 
-> F 큐 **R29까지** 소진 후 잔여 hub 수·skip율 보고 → 사람 합의로 R30+ 추가 또는 주제 종료.
+> **R30 skip** `skip_no_source`: `seoul` · `ongjin` · `busan` · `busanjin` · `gwangju`(광역) · `sejong`.
+
+**I 주기**: R30 → **I#12** ✅ 2026-09-04 · **1차 큐 소진**.
+
+---
+
+## 백로그 — 광역시·서울 (R30 완료 · skip 6)
+
+| 시도 | hub | 결과 |
+|------|-----|------|
+| 서울 | `seoul` | skip — 시 단위 최종 8곡 미확정 |
+| 인천 | `incheon` | ✅ 인천9경 |
+| 강화 | `ganghwa` | ✅ 강화8경 |
+| 옹진 | `ongjin` | skip |
+| 부산 | `busan` | skip |
+| 부산진 | `busanjin` | skip |
+| 대구 | `daegu` | ✅ 대구12경 |
+| 광주 | `gwangju` | skip (광역시) |
+| 대전 | `daejeon` | ✅ 대전8경 |
+| 울산 | `ulsan` | ✅ 울산12경 |
+| 세종 | `sejong` | skip |
+
+> **1차 큐 소진** — 후속: pending_coord 좌표 보강 · PR [#184](https://github.com/catgeot/Days/pull/184) merge.
 
 ### I# 주기 요약 (R10–)
 
@@ -245,7 +260,7 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 
 ```text
 운영: 자동 오케 §4.3 — VERIFY PASS → 다음 ⬜ R (사람 제시어·Preview QA 없음)
-현재: lists 89 · members 827 · tip 05285c7b (cursor/palgyeong) · F R10–R29 ✅
-다음: 광역시 백로그(서울·인천·부산 등 11 hub) — 사람 합의 후 R30+ 또는 주제 종료
-I#5–#11: ✅ 2026-09-04 · 코드 PR 미병합 — feature push 완료
+현재: lists 94 · members 876 · tip c82f85a5 (cursor/palgyeong) · F R30 ✅ · 1차 큐 소진
+다음: PR #184 merge · pending_coord 좌표 보강(선택) · 주제 종료 합의
+I#12: ✅ 2026-09-04 · PR #183 merged · PR #184 draft
 ```

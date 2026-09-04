@@ -383,9 +383,9 @@ issues **0** · 스모크 PASS 전에 커밋·이관·다음 R **금지**.
 | | |
 |--|--|
 | **운영** | **자동 오케** (§4.3) · F=VERIFY 후 다음 R · **3R마다 I#** |
-| **지금** | **F R10–R29** ✅ · lists **89** · members **827** · tip `05285c7b` |
-| **다음** | **광역시 백로그**(서울·인천·부산 등 11 hub) — 사람 합의 후 R30+ 또는 주제 종료 · **PR [#183](https://github.com/catgeot/Days/pull/183)** merge |
-| **브랜치** | `cursor/palgyeong` (고정) · tip `05285c7b` · main docs `39adb540`+ |
+| **지금** | **F R30** ✅ · lists **94** · members **876** · tip `c82f85a5` · **1차 큐 소진** |
+| **다음** | **PR [#184](https://github.com/catgeot/Days/pull/184)** merge · pending_coord 좌표 보강(선택) · 주제 종료 합의 |
+| **브랜치** | `cursor/palgyeong` (고정) · tip `c82f85a5` · PR #183 merged |
 | **금지** | UI · scenic 승격 · 광역 팔경 · tip rewrite · **매 R 사람 QA·제시어 대기** |
 | **VERIFY** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · `smoke:korea-local-scenic-lists` · `build` |
 
@@ -396,9 +396,9 @@ issues **0** · 스모크 PASS 전에 커밋·이관·다음 R **금지**.
 @plans/korea-local-scenic-lists-plan.md §9
 @plans/korea-local-scenic-lists-queue.md
 @plans/feature-handoff-index.md
-브랜치 cursor/palgyeong · tip 05285c7b
+브랜치 cursor/palgyeong · tip c82f85a5
 금지: UI · scenic승격 · 광역팔경 · feature plans 커밋
-작업: 광역시 백로그 합의 또는 PR merge · I#12(필요 시)
+작업: PR #184 merge · pending_coord(선택) · 주제 종료 합의
 ```
 
 **정상 F 진행 중**: 후임 메인이 **Task 이양**(오케 §4.2) — 사람이 매 R 제시어를 넣을 필요 **없음**.
