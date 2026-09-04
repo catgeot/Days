@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 1,
-  sessionPhase: '검색·리스트',
+  sessionNo: 2,
+  sessionPhase: 'Preview QA',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-04-palgyeong-use-2-festival-crash',
+    session: '팔경 활용 #2, Preview QA',
+    title: '축제 리스트 클릭 크래시 — nearbyPlaceLabel 복원',
+    detail:
+      '팔경 활용 #1에서 nearbyAttractionRow 추가 시 nearbyPlaceLabel이 삭제되어 축제 상세 시트가 ReferenceError로 크래시하던 문제를 고쳤습니다. Preview /qa/palgyeong-use — /korea에서 축제 카드 클릭→상세 열림·인근 관광지 로드 확인.',
+    at: '2026-09-04T20:10:00.000Z',
+  },
   {
     id: '2026-09-04-palgyeong-use-1-search-list',
     session: '팔경 활용 #1, 검색·리스트',

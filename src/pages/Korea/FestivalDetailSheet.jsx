@@ -233,6 +233,10 @@ function formatDistKm(km) {
   return `${km < 10 ? km.toFixed(1) : Math.round(km)}km`;
 }
 
+function nearbyPlaceLabel(spot) {
+  return String(spot?.locality || spot?.region || '').trim();
+}
+
 function nearbyAttractionRow(spot, { onSelect }) {
   const thumb = toHttps(spot.firstImage);
   const dist = formatDistKm(spot.distKm);
