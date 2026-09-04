@@ -543,7 +543,8 @@
         "kind": "landmark",
         "lat": 38.19,
         "lng": 128.58,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "2776855"
       },
       {
         "attractionName": "청대산",
@@ -551,7 +552,8 @@
         "kind": "viewpoint",
         "lat": 38.21,
         "lng": 128.59,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "127284"
       },
       {
         "attractionName": "청초호",
@@ -583,7 +585,8 @@
         "kind": "park",
         "lat": 38.17,
         "lng": 128.61,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "2710893"
       },
       {
         "attractionName": "학무정",
@@ -649,7 +652,8 @@
         "kind": "beach",
         "lat": 38.0229894402,
         "lng": 128.7242655472,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125701"
       },
       {
         "attractionName": "죽도정",
@@ -665,7 +669,8 @@
         "kind": "landmark",
         "lat": 37.95,
         "lng": 128.78,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "126738"
       },
       {
         "attractionName": "낙산사",
@@ -673,7 +678,8 @@
         "kind": "temple",
         "lat": 38.124506,
         "lng": 128.6291359,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125589"
       },
       {
         "attractionName": "오산리 선사유적박물관",
@@ -716,7 +722,8 @@
         "kind": "temple",
         "lat": 38.48,
         "lng": 128.44,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "127228"
       },
       {
         "attractionName": "천학정",
@@ -756,7 +763,8 @@
         "kind": "viewpoint",
         "lat": 38.5867125,
         "lng": 128.3748799,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "128171"
       },
       {
         "attractionName": "송지호해수욕장",
@@ -764,7 +772,8 @@
         "kind": "beach",
         "lat": 38.34,
         "lng": 128.52,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "127874"
       },
       {
         "attractionName": "마산봉설경",
@@ -819,7 +828,8 @@
         "kind": "viewpoint",
         "lat": 38.22,
         "lng": 127.25,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "125775"
       },
       {
         "attractionName": "순담계곡",
@@ -827,7 +837,8 @@
         "kind": "park",
         "lat": 38.24,
         "lng": 127.28,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "125654"
       },
       {
         "attractionName": "소이산 재송평",
@@ -835,7 +846,8 @@
         "kind": "viewpoint",
         "lat": 38.21,
         "lng": 127.22,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "2704788"
       },
       {
         "attractionName": "용양늪",
@@ -843,7 +855,8 @@
         "kind": "park",
         "lat": 38.18,
         "lng": 127.15,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "2568512"
       },
       {
         "attractionName": "송대소 주상절리",
@@ -890,7 +903,8 @@
       },
       {
         "attractionName": "별마로천문대",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "127740"
       },
       {
         "attractionName": "김삿갓유적지",
@@ -964,7 +978,8 @@
       },
       {
         "attractionName": "구문소",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "2610122"
       },
       {
         "attractionName": "장성하부고생대화석산지",
@@ -976,7 +991,8 @@
       },
       {
         "attractionName": "황지연못",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125740"
       },
       {
         "attractionName": "검룡소",
@@ -988,7 +1004,8 @@
       },
       {
         "attractionName": "태백산 천제단",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125590"
       },
       {
         "attractionName": "용연굴",

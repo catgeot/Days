@@ -82,14 +82,16 @@
         "name_en": "Beombawi Rock",
         "kind": "landmark",
         "lat": 38.19,
-        "lng": 128.58
+        "lng": 128.58,
+        "contentId": "2776855"
       },
       {
         "name": "청대산",
         "name_en": "Cheongdaesan",
         "kind": "viewpoint",
         "lat": 38.21,
-        "lng": 128.59
+        "lng": 128.59,
+        "contentId": "127284"
       },
       {
         "name": "조도",
@@ -103,7 +105,8 @@
         "name_en": "Seorak Sunrise Park",
         "kind": "park",
         "lat": 38.17,
-        "lng": 128.61
+        "lng": 128.61,
+        "contentId": "2710893"
       },
       {
         "name": "학무정",
@@ -2428,7 +2431,8 @@
         "name_en": "Naksansa",
         "kind": "temple",
         "lat": 38.124506,
-        "lng": 128.6291359
+        "lng": 128.6291359,
+        "contentId": "125589"
       },
       {
         "name": "서피비치",
@@ -2442,7 +2446,8 @@
         "name_en": "Hajodae Beach",
         "kind": "beach",
         "lat": 38.0229894402,
-        "lng": 128.7242655472
+        "lng": 128.7242655472,
+        "contentId": "125701"
       },
       {
         "name": "낙산해수욕장",
@@ -2512,7 +2517,8 @@
         "name_en": "Namae Port",
         "kind": "landmark",
         "lat": 37.95,
-        "lng": 128.78
+        "lng": 128.78,
+        "contentId": "126738"
       },
       {
         "name": "오산리 선사유적박물관",
@@ -4574,14 +4580,16 @@
         "name_en": "Goseong Unification Observatory",
         "kind": "viewpoint",
         "lat": 38.5867125,
-        "lng": 128.3748799
+        "lng": 128.3748799,
+        "contentId": "128171"
       },
       {
         "name": "송지호해수욕장",
         "name_en": "Songjiho Beach",
         "kind": "beach",
         "lat": 38.34,
-        "lng": 128.52
+        "lng": 128.52,
+        "contentId": "127874"
       },
       {
         "name": "거진항",
@@ -4609,7 +4617,8 @@
         "name_en": "Geombongsa Temple",
         "kind": "temple",
         "lat": 38.48,
-        "lng": 128.44
+        "lng": 128.44,
+        "contentId": "127228"
       },
       {
         "name": "천학정",
@@ -5478,7 +5487,8 @@
         "name_en": "Byeolmaro Observatory",
         "kind": "viewpoint",
         "lat": 37.198366,
-        "lng": 128.486777
+        "lng": 128.486777,
+        "contentId": "127740"
       },
       {
         "name": "영월 장릉",
@@ -10669,7 +10679,8 @@
         "name_en": "Taebaeksan Cheonjedan",
         "kind": "viewpoint",
         "lat": 37.0963949,
-        "lng": 128.9165488
+        "lng": 128.9165488,
+        "contentId": "125590"
       },
       {
         "name": "태백석탄박물관",
@@ -10683,14 +10694,16 @@
         "name_en": "Gumunso",
         "kind": "landmark",
         "lat": 37.1929,
-        "lng": 129.0378
+        "lng": 129.0378,
+        "contentId": "2610122"
       },
       {
         "name": "황지연못",
         "name_en": "Hwangji Pond",
         "kind": "park",
         "lat": 37.1727622365,
-        "lng": 128.9910509427
+        "lng": 128.9910509427,
+        "contentId": "125740"
       },
       {
         "name": "철암탄광역사촌",
@@ -13610,28 +13623,32 @@
         "name_en": "Maewoldae Falls",
         "kind": "viewpoint",
         "lat": 38.22,
-        "lng": 127.25
+        "lng": 127.25,
+        "contentId": "125775"
       },
       {
         "name": "순담계곡",
         "name_en": "Sundam Valley",
         "kind": "park",
         "lat": 38.24,
-        "lng": 127.28
+        "lng": 127.28,
+        "contentId": "125654"
       },
       {
         "name": "소이산 재송평",
         "name_en": "Soisan Red Pine Field",
         "kind": "viewpoint",
         "lat": 38.21,
-        "lng": 127.22
+        "lng": 127.22,
+        "contentId": "2704788"
       },
       {
         "name": "용양늪",
         "name_en": "Yongyang Swamp",
         "kind": "park",
         "lat": 38.18,
-        "lng": 127.15
+        "lng": 127.15,
+        "contentId": "2568512"
       },
       {
         "name": "송대소 주상절리",
