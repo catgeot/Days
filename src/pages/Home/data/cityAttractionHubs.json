@@ -734,7 +734,9 @@
     "lng": 127.6622,
     "aliases": [
       "여수시",
-      "yeosu"
+      "yeosu",
+      "여수10경",
+      "여수 10미10경"
     ],
     "attractions": [
       {
@@ -1029,7 +1031,9 @@
     "lng": 128.4331,
     "aliases": [
       "통영시",
-      "tongyeong"
+      "tongyeong",
+      "통영팔경",
+      "통영시 팔경"
     ],
     "attractions": [
       {
@@ -1066,6 +1070,34 @@
         "kind": "park",
         "lat": 34.8447841,
         "lng": 128.4442146
+      },
+      {
+        "name": "연화도 용머리",
+        "name_en": "Yeonhwado Yongmeori",
+        "kind": "viewpoint",
+        "lat": 34.78097,
+        "lng": 128.39767
+      },
+      {
+        "name": "남망산공원",
+        "name_en": "Nammangsan Park",
+        "kind": "park",
+        "lat": 34.8408156,
+        "lng": 128.4299867
+      },
+      {
+        "name": "달아공원 일몰",
+        "name_en": "Sunset at Dara Park",
+        "kind": "viewpoint",
+        "lat": 34.7687133,
+        "lng": 128.4001192
+      },
+      {
+        "name": "소매물도 등대섬",
+        "name_en": "Somaemuldo Lighthouse Island",
+        "kind": "landmark",
+        "lat": 34.6266153,
+        "lng": 128.549357
       }
     ]
   },
@@ -2493,7 +2525,9 @@
     "lng": 127.8925,
     "aliases": [
       "namhae",
-      "남해군"
+      "남해군",
+      "남해12경",
+      "남해 십이경"
     ],
     "attractions": [
       {
@@ -2523,6 +2557,20 @@
         "kind": "park",
         "lat": 34.828,
         "lng": 127.84
+      },
+      {
+        "name": "남해 금산과 보리암",
+        "name_en": "Namhae Geumsan and Boriam",
+        "kind": "viewpoint",
+        "lat": 34.7521584,
+        "lng": 127.9829959
+      },
+      {
+        "name": "남해대교와 남해 충렬사",
+        "name_en": "Namhae Bridge and Chungnyeolsa",
+        "kind": "landmark",
+        "lat": 34.937,
+        "lng": 127.871
       }
     ]
   },
@@ -2980,7 +3028,9 @@
     "lng": 126.3922,
     "aliases": [
       "mokpo",
-      "목포시"
+      "목포시",
+      "목포9경",
+      "목포 구경"
     ],
     "attractions": [
       {
@@ -3044,7 +3094,9 @@
     "lng": 128.1076,
     "aliases": [
       "jinju",
-      "진주시"
+      "진주시",
+      "진주8경",
+      "진주 팔경"
     ],
     "attractions": [
       {
@@ -3095,7 +3147,9 @@
     "aliases": [
       "geoje",
       "거제시",
-      "거제도"
+      "거제도",
+      "거제9경",
+      "거제구경"
     ],
     "attractions": [
       {
@@ -3146,6 +3200,27 @@
         "kind": "park",
         "lat": 34.8179993905,
         "lng": 128.7485334584
+      },
+      {
+        "name": "거제 식물원",
+        "name_en": "Geoje Botanical Garden",
+        "kind": "park",
+        "lat": 34.8569942,
+        "lng": 128.5781165
+      },
+      {
+        "name": "공곶이·내도",
+        "name_en": "Gonggoji and Naedo",
+        "kind": "viewpoint",
+        "lat": 34.7949092,
+        "lng": 128.7138306
+      },
+      {
+        "name": "매미성",
+        "name_en": "Maemi Castle",
+        "kind": "landmark",
+        "lat": 34.9682217,
+        "lng": 128.7050767
       }
     ]
   },
@@ -3159,7 +3234,9 @@
     "lng": 126.7369,
     "aliases": [
       "gunsan",
-      "군산시"
+      "군산시",
+      "선유8경",
+      "군산 선유8경"
     ],
     "attractions": [
       {
@@ -3209,7 +3286,8 @@
     "lng": 126.988,
     "aliases": [
       "damyang",
-      "담양군"
+      "담양군",
+      "담양10경"
     ],
     "attractions": [
       {
@@ -3632,7 +3710,9 @@
     "aliases": [
       "taean",
       "태안군",
-      "안면도"
+      "안면도",
+      "태안8경",
+      "태안 팔경"
     ],
     "attractions": [
       {
@@ -3927,7 +4007,9 @@
     "lng": 127.119,
     "aliases": [
       "gongju",
-      "공주시"
+      "공주시",
+      "공주10경",
+      "공주 십경"
     ],
     "attractions": [
       {
@@ -4374,7 +4456,9 @@
     "lng": 126.91,
     "aliases": [
       "buyeo",
-      "부여군"
+      "부여군",
+      "부여10경",
+      "부여 십경"
     ],
     "attractions": [
       {
@@ -4629,7 +4713,9 @@
     "lng": 127.0798,
     "aliases": [
       "boseong",
-      "보성군"
+      "보성군",
+      "보성9경",
+      "보성 구경"
     ],
     "attractions": [
       {
@@ -5008,7 +5094,9 @@
     "lng": 127.7514,
     "aliases": [
       "하동군",
-      "hadong"
+      "hadong",
+      "하동10경",
+      "하동팔경"
     ],
     "attractions": [
       {
@@ -5785,7 +5873,9 @@
     "lat": 35.6865,
     "lng": 127.9095,
     "aliases": [
-      "거창군"
+      "거창군",
+      "거창9경",
+      "거창 구경"
     ],
     "attractions": [
       {
@@ -5849,7 +5939,9 @@
     "lng": 126.755,
     "aliases": [
       "완도군",
-      "완도읍"
+      "완도읍",
+      "완도8경",
+      "완도 팔경"
     ],
     "attractions": [
       {
@@ -5899,7 +5991,8 @@
     "lng": 126.2634,
     "aliases": [
       "진도군",
-      "진도읍"
+      "진도읍",
+      "진도10경"
     ],
     "attractions": [
       {
@@ -6318,7 +6411,9 @@
     "lat": 35.5204,
     "lng": 127.7252,
     "aliases": [
-      "함양군"
+      "함양군",
+      "함양8경",
+      "함양 팔경"
     ],
     "attractions": [
       {
@@ -6367,7 +6462,9 @@
     "lat": 35.4154,
     "lng": 127.8735,
     "aliases": [
-      "산청군"
+      "산청군",
+      "산청9경",
+      "산청 구경"
     ],
     "attractions": [
       {
@@ -6410,7 +6507,8 @@
     "lng": 127.2847,
     "aliases": [
       "고흥군",
-      "나로도"
+      "나로도",
+      "고흥10경"
     ],
     "attractions": [
       {
@@ -6459,7 +6557,9 @@
     "lat": 34.6816,
     "lng": 126.907,
     "aliases": [
-      "장흥군"
+      "장흥군",
+      "장흥9경",
+      "장흥 구경"
     ],
     "attractions": [
       {
@@ -6508,7 +6608,8 @@
     "lat": 35.2024,
     "lng": 127.4627,
     "aliases": [
-      "구례군"
+      "구례군",
+      "구례10경"
     ],
     "attractions": [
       {
@@ -6818,7 +6919,9 @@
     "lng": 128.1658,
     "aliases": [
       "합천군",
-      "hapcheon"
+      "hapcheon",
+      "합천8경",
+      "합천 팔경"
     ],
     "attractions": [
       {
@@ -6882,7 +6985,9 @@
     "lng": 127.2919,
     "aliases": [
       "곡성군",
-      "gokseong"
+      "gokseong",
+      "곡성9경",
+      "곡성관광9경"
     ],
     "attractions": [
       {
@@ -6939,7 +7044,9 @@
     "lng": 126.5119,
     "aliases": [
       "영광군",
-      "yeonggwang"
+      "yeonggwang",
+      "영광9경",
+      "영광 구경"
     ],
     "attractions": [
       {
@@ -7054,7 +7161,9 @@
     "lng": 126.733,
     "aliases": [
       "부안군",
-      "buan"
+      "buan",
+      "변산8경",
+      "변산 팔경"
     ],
     "attractions": [
       {
@@ -7487,7 +7596,9 @@
     "lng": 127.6608,
     "aliases": [
       "무주군",
-      "muju"
+      "muju",
+      "구천동33경",
+      "무주 구천동33경"
     ],
     "attractions": [
       {
@@ -7573,7 +7684,9 @@
     "lng": 127.2794,
     "aliases": [
       "임실군",
-      "imsil"
+      "imsil",
+      "임실9경",
+      "임실 구경"
     ],
     "attractions": [
       {
@@ -8054,7 +8167,9 @@
     "lng": 126.856,
     "aliases": [
       "정읍시",
-      "jeongeup"
+      "jeongeup",
+      "정읍9경",
+      "정읍 구경"
     ],
     "attractions": [
       {
@@ -8197,7 +8312,9 @@
     "lng": 127.1624,
     "aliases": [
       "완주군",
-      "wanju"
+      "wanju",
+      "완주9경",
+      "완주 구경"
     ],
     "attractions": [
       {
@@ -8261,7 +8378,9 @@
     "lng": 126.599,
     "aliases": [
       "해남군",
-      "haenam"
+      "haenam",
+      "해남8경",
+      "해남 팔경"
     ],
     "attractions": [
       {
@@ -8624,7 +8743,9 @@
     "lng": 126.4817,
     "aliases": [
       "무안군",
-      "muan"
+      "muan",
+      "무안9경",
+      "무안 구경"
     ],
     "attractions": [
       {
@@ -8710,7 +8831,8 @@
     "lng": 126.7672,
     "aliases": [
       "강진군",
-      "gangjin"
+      "gangjin",
+      "강진12경"
     ],
     "attractions": [
       {
@@ -8810,7 +8932,9 @@
     "lng": 126.5166,
     "aliases": [
       "함평군",
-      "hampyeong"
+      "hampyeong",
+      "함평8경",
+      "함평 팔경"
     ],
     "attractions": [
       {
@@ -9274,7 +9398,8 @@
     "lng": 126.9867,
     "aliases": [
       "화순군",
-      "hwasun"
+      "hwasun",
+      "화순11경"
     ],
     "attractions": [
       {
@@ -9324,7 +9449,9 @@
     "lng": 127.6956,
     "aliases": [
       "광양시",
-      "gwangyang"
+      "gwangyang",
+      "광양9경",
+      "광양 구경"
     ],
     "attractions": [
       {
@@ -9852,7 +9979,9 @@
       "천안시",
       "Cheonan",
       "cheonan",
-      "天安"
+      "天安",
+      "천안8경",
+      "천안 팔경"
     ],
     "attractions": [
       {
@@ -10094,7 +10223,9 @@
       "김해시",
       "Gimhae",
       "gimhae",
-      "金海"
+      "金海",
+      "김해9경",
+      "김해 구경"
     ],
     "attractions": [
       {
@@ -10736,7 +10867,9 @@
       "서산시",
       "Seosan",
       "seosan",
-      "瑞山"
+      "瑞山",
+      "서산9경",
+      "서산 구경"
     ],
     "attractions": [
       {
@@ -11503,7 +11636,9 @@
       "이천시",
       "Icheon",
       "icheon",
-      "利川"
+      "利川",
+      "이천9경",
+      "이천 구경"
     ],
     "attractions": [
       {
@@ -11548,7 +11683,9 @@
       "밀양시",
       "Miryang",
       "miryang",
-      "密陽"
+      "密陽",
+      "밀양8경",
+      "밀양 팔경"
     ],
     "attractions": [
       {
@@ -11971,7 +12108,9 @@
       "여주시",
       "Yeoju",
       "yeoju",
-      "驪州"
+      "驪州",
+      "여주8경",
+      "여주 팔경"
     ],
     "attractions": [
       {
@@ -12023,7 +12162,9 @@
       "양산시",
       "Yangsan",
       "yangsan",
-      "梁山"
+      "梁山",
+      "양산12경",
+      "양산 8경"
     ],
     "attractions": [
       {
@@ -12083,7 +12224,9 @@
       "Sacheon",
       "sacheon",
       "삼천포",
-      "泗川"
+      "泗川",
+      "사천9경",
+      "사천 구경"
     ],
     "attractions": [
       {
@@ -12120,6 +12263,55 @@
         "kind": "landmark",
         "lat": 34.9322,
         "lng": 128.0519
+      },
+      {
+        "name": "삼천포대교와 사천바다케이블카",
+        "name_en": "Samcheonpo Bridge and Sacheon Sea Cable Car",
+        "kind": "landmark",
+        "lat": 34.9315891,
+        "lng": 128.0536533
+      },
+      {
+        "name": "실안낙조",
+        "name_en": "Silan Sunset",
+        "kind": "viewpoint",
+        "lat": 34.9480596,
+        "lng": 128.03966
+      },
+      {
+        "name": "남일대 코끼리바위",
+        "name_en": "Namildae Elephant Rock",
+        "kind": "landmark",
+        "lat": 34.9265374,
+        "lng": 128.0964862
+      },
+      {
+        "name": "선진리성 벚꽃",
+        "name_en": "Seonjin-ri Fortress Cherry Blossoms",
+        "kind": "landmark",
+        "lat": 35.0440167,
+        "lng": 128.0419212
+      },
+      {
+        "name": "봉명산 다솔사",
+        "name_en": "Bongmyeongsan Dasolsa Temple",
+        "kind": "temple",
+        "lat": 35.0835355,
+        "lng": 127.9202812
+      },
+      {
+        "name": "비토섬 갯벌",
+        "name_en": "Bito Island Tidal Flats",
+        "kind": "landmark",
+        "lat": 34.9730246,
+        "lng": 127.9711691
+      },
+      {
+        "name": "용두공원과 청룡사 겹벚꽃",
+        "name_en": "Yongdu Park and Cheongnyongsa Double Cherry Blossoms",
+        "kind": "park",
+        "lat": 34.974734,
+        "lng": 128.1123524
       }
     ]
   },
@@ -14600,7 +14792,9 @@
       "안성시",
       "Anseong",
       "anseong",
-      "安城"
+      "安城",
+      "안성8경",
+      "안성 팔경"
     ],
     "attractions": [
       {
@@ -15258,7 +15452,9 @@
       "의정부시",
       "Uijeongbu",
       "uijeongbu",
-      "議政府"
+      "議政府",
+      "의정부8경",
+      "의정부 팔경"
     ],
     "attractions": [
       {
@@ -15310,7 +15506,9 @@
       "안양시",
       "Anyang",
       "anyang",
-      "安養"
+      "安養",
+      "안양9경",
+      "안양 구경"
     ],
     "attractions": [
       {
@@ -16603,7 +16801,9 @@
       "안산시",
       "Ansan",
       "ansan",
-      "安山"
+      "安山",
+      "안산9경",
+      "안산 구경"
     ],
     "attractions": [
       {
@@ -17056,7 +17256,9 @@
       "용인시",
       "Yongin",
       "yongin",
-      "龍仁"
+      "龍仁",
+      "용인8경",
+      "용인 팔경"
     ],
     "attractions": [
       {
@@ -17115,7 +17317,9 @@
       "화성시",
       "Hwaseong",
       "hwaseong",
-      "華城"
+      "華城",
+      "화성8경",
+      "화성 팔경"
     ],
     "attractions": [
       {
@@ -17592,7 +17796,8 @@
       "논산시",
       "Nonsan",
       "nonsan",
-      "論山"
+      "論山",
+      "논산11경"
     ],
     "attractions": [
       {
@@ -17637,7 +17842,9 @@
       "계룡시",
       "Gyeryong",
       "gyeryong",
-      "鷄龍"
+      "鷄龍",
+      "계룡9경",
+      "계룡 구경"
     ],
     "attractions": [
       {
@@ -17689,7 +17896,9 @@
       "서천군",
       "Seocheon",
       "seocheon",
-      "舒川"
+      "舒川",
+      "서천9경",
+      "서천 구경"
     ],
     "attractions": [
       {
@@ -17748,7 +17957,8 @@
       "홍성군",
       "Hongseong",
       "hongseong",
-      "洪城"
+      "洪城",
+      "홍성12경"
     ],
     "attractions": [
       {
@@ -18183,7 +18393,9 @@
       "Yesan",
       "yesan",
       "禮山",
-      "예산읍"
+      "예산읍",
+      "예산10경",
+      "예산 십경"
     ],
     "attractions": [
       {
@@ -18865,7 +19077,9 @@
       "Geumsan",
       "geumsan",
       "錦山",
-      "금산읍"
+      "금산읍",
+      "금산10경",
+      "금산 십경"
     ],
     "attractions": [
       {
@@ -19079,7 +19293,9 @@
       "Uiryeong",
       "uiryeong",
       "宜寧",
-      "의령읍"
+      "의령읍",
+      "의령9경",
+      "의령 구경"
     ],
     "attractions": [
       {
@@ -19109,6 +19325,55 @@
         "kind": "park",
         "lat": 35.3355,
         "lng": 128.2455
+      },
+      {
+        "name": "자굴산",
+        "name_en": "Jagulsan",
+        "kind": "viewpoint",
+        "lat": 35.3770754,
+        "lng": 128.2034816
+      },
+      {
+        "name": "의령 봉황대",
+        "name_en": "Bonghwangdae Uiryeong",
+        "kind": "viewpoint",
+        "lat": 35.4352846,
+        "lng": 128.24126
+      },
+      {
+        "name": "벽계관광지",
+        "name_en": "Byeokgye Tourist Site",
+        "kind": "park",
+        "lat": 35.4265497,
+        "lng": 128.211231
+      },
+      {
+        "name": "정암루(솥바위)",
+        "name_en": "Jeongamru (Sotbawi Rock)",
+        "kind": "landmark",
+        "lat": 35.3139551,
+        "lng": 128.294889
+      },
+      {
+        "name": "탑바위",
+        "name_en": "Tapbawi Rock",
+        "kind": "viewpoint",
+        "lat": 35.3648756,
+        "lng": 128.323217
+      },
+      {
+        "name": "백산안희제선생 생가",
+        "name_en": "Birthplace of An Hui-je",
+        "kind": "landmark",
+        "lat": 35.4542373,
+        "lng": 128.349735
+      },
+      {
+        "name": "호암이병철선생 생가",
+        "name_en": "Birthplace of Lee Byung-chul (Ho-am)",
+        "kind": "landmark",
+        "lat": 35.3821339,
+        "lng": 128.323257
       }
     ]
   },
@@ -19502,7 +19767,9 @@
       "Changnyeong",
       "changnyeong",
       "昌寧",
-      "우포"
+      "우포",
+      "창녕구경",
+      "창녕 9경"
     ],
     "attractions": [
       {
@@ -19532,6 +19799,27 @@
         "kind": "park",
         "lat": 35.540651,
         "lng": 128.502155
+      },
+      {
+        "name": "우포늪과 따오기",
+        "name_en": "Upo Wetland and Crested Ibis",
+        "kind": "park",
+        "lat": 35.553,
+        "lng": 128.415
+      },
+      {
+        "name": "화왕산 억새와 진달래",
+        "name_en": "Silver Grass and Azaleas on Hawangsan",
+        "kind": "viewpoint",
+        "lat": 35.5471482,
+        "lng": 128.531694
+      },
+      {
+        "name": "만옥정공원과 신라진흥왕척경비, 술정리동삼층석탑",
+        "name_en": "Manokjeong Park, Jinheung Stele, and Suljeong-ri Pagoda",
+        "kind": "park",
+        "lat": 35.540651,
+        "lng": 128.502155
       }
     ]
   },
@@ -19548,7 +19836,9 @@
       "Haman",
       "haman",
       "咸安",
-      "아라가야"
+      "아라가야",
+      "함안9경",
+      "함안 구경"
     ],
     "attractions": [
       {
@@ -19585,6 +19875,27 @@
         "kind": "viewpoint",
         "lat": 35.2364029,
         "lng": 128.4688792
+      },
+      {
+        "name": "악양의 꽃길과 노을",
+        "name_en": "Agyang Flower Path and Sunset",
+        "kind": "park",
+        "lat": 35.3352472,
+        "lng": 128.3985107
+      },
+      {
+        "name": "입곡군립공원의 단풍",
+        "name_en": "Autumn Foliage at Ipgok County Park",
+        "kind": "park",
+        "lat": 35.32,
+        "lng": 128.38
+      },
+      {
+        "name": "연꽃테마파크의 아라홍련",
+        "name_en": "Ara Hongryeon Lotus at Lotus Theme Park",
+        "kind": "park",
+        "lat": 35.29,
+        "lng": 128.42
       }
     ]
   },
@@ -20326,7 +20637,10 @@
       "광주시 경기",
       "Gwangju-si Gyeonggi",
       "곤지암",
-      "화담숲"
+      "화담숲",
+      "광주8경",
+      "경기광주8경",
+      "광주 팔경"
     ],
     "attractions": [
       {

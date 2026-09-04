@@ -2453,5 +2453,4618 @@
         "linkStatus": "pending_coord"
       }
     ]
+  },
+  {
+    "listId": "tongyeong-palgyeong",
+    "hubId": "tongyeong",
+    "title": "통영팔경",
+    "title_en": "Tongyeong Eight Scenic Views",
+    "listKind": "palgyeong",
+    "memberCountClaimed": 8,
+    "aliases": [
+      "통영 팔경",
+      "통영시 팔경"
+    ],
+    "sourceUrl": "https://www.tongyeong.go.kr/eng/02802/02833/02838.web",
+    "sourceOrg": "통영시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "연화도 용머리",
+        "name_en": "Yeonhwado Yongmeori",
+        "kind": "viewpoint",
+        "lat": 34.78097,
+        "lng": 128.39767,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "사량도 옥녀봉",
+        "name_en": "Saryangdo Oknyeobong",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "남망산공원",
+        "name_en": "Nammangsan Park",
+        "kind": "park",
+        "lat": 34.8408156,
+        "lng": 128.4299867,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "한산도제승당",
+        "name_en": "Jeseungdang",
+        "kind": "landmark",
+        "lat": 34.7942317,
+        "lng": 128.4719002,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "달아공원 일몰",
+        "name_en": "Sunset at Dara Park",
+        "kind": "viewpoint",
+        "lat": 34.7687133,
+        "lng": 128.4001192,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "소매물도 등대섬",
+        "name_en": "Somaemuldo Lighthouse Island",
+        "kind": "landmark",
+        "lat": 34.6266153,
+        "lng": 128.549357,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "통영운하 야경",
+        "name_en": "Night View of Tongyeong Canal",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "미륵산",
+        "name_en": "Mireuksan",
+        "kind": "viewpoint",
+        "lat": 34.8106641,
+        "lng": 128.4161136,
+        "linkStatus": "linked"
+      }
+    ]
+  },
+  {
+    "listId": "geoje-gugyeong",
+    "hubId": "geoje",
+    "title": "거제9경",
+    "title_en": "Geoje Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "거제 9경",
+      "거제구경"
+    ],
+    "sourceUrl": "https://tour.geoje.go.kr/index.geoje?menuCd=DOM_000008502003011",
+    "sourceOrg": "거제시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "해금강",
+        "name_en": "Haegeumgang",
+        "kind": "viewpoint",
+        "lat": 34.7327358,
+        "lng": 128.6839848,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "바람의언덕",
+        "name_en": "Windy Hill Geoje",
+        "kind": "viewpoint",
+        "lat": 34.7432915,
+        "lng": 128.6633088,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "외도보타니아",
+        "name_en": "Oedo Botania",
+        "kind": "park",
+        "lat": 34.7692662,
+        "lng": 128.7119207,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "학동몽돌해수욕장",
+        "name_en": "Hakdong Pebble Beach",
+        "kind": "beach",
+        "lat": 34.7732942,
+        "lng": 128.6405889,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "거제 식물원",
+        "name_en": "Geoje Botanical Garden",
+        "kind": "park",
+        "lat": 34.8569942,
+        "lng": 128.5781165,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "거제포로수용소유적공원",
+        "name_en": "Geoje POW Camp Park",
+        "kind": "museum",
+        "lat": 34.8760819,
+        "lng": 128.6246009,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "공곶이·내도",
+        "name_en": "Gonggoji and Naedo",
+        "kind": "viewpoint",
+        "lat": 34.7949092,
+        "lng": 128.7138306,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "지심도",
+        "name_en": "Jisimdo",
+        "kind": "park",
+        "lat": 34.8179993905,
+        "lng": 128.7485334584,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "매미성",
+        "name_en": "Maemi Castle",
+        "kind": "landmark",
+        "lat": 34.9682217,
+        "lng": 128.7050767,
+        "linkStatus": "appended"
+      }
+    ]
+  },
+  {
+    "listId": "sacheon-gugyeong",
+    "hubId": "sacheon",
+    "title": "사천9경",
+    "title_en": "Sacheon Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "사천 구경",
+      "사천 9경"
+    ],
+    "sourceUrl": "https://www.toursacheon.net/sub_2_1_1",
+    "sourceOrg": "사천시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "삼천포대교와 사천바다케이블카",
+        "name_en": "Samcheonpo Bridge and Sacheon Sea Cable Car",
+        "kind": "landmark",
+        "lat": 34.9315891,
+        "lng": 128.0536533,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "실안낙조",
+        "name_en": "Silan Sunset",
+        "kind": "viewpoint",
+        "lat": 34.9480596,
+        "lng": 128.03966,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "남일대 코끼리바위",
+        "name_en": "Namildae Elephant Rock",
+        "kind": "landmark",
+        "lat": 34.9265374,
+        "lng": 128.0964862,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "선진리성 벚꽃",
+        "name_en": "Seonjin-ri Fortress Cherry Blossoms",
+        "kind": "landmark",
+        "lat": 35.0440167,
+        "lng": 128.0419212,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "사천 와룡산",
+        "name_en": "Sacheon Waryongsan",
+        "kind": "viewpoint",
+        "lat": 34.9808533,
+        "lng": 128.0990438,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "봉명산 다솔사",
+        "name_en": "Bongmyeongsan Dasolsa Temple",
+        "kind": "temple",
+        "lat": 35.0835355,
+        "lng": 127.9202812,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "사천읍성 명월",
+        "name_en": "Sacheon Eupseong Moonlight",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "비토섬 갯벌",
+        "name_en": "Bito Island Tidal Flats",
+        "kind": "landmark",
+        "lat": 34.9730246,
+        "lng": 127.9711691,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "용두공원과 청룡사 겹벚꽃",
+        "name_en": "Yongdu Park and Cheongnyongsa Double Cherry Blossoms",
+        "kind": "park",
+        "lat": 34.974734,
+        "lng": 128.1123524,
+        "linkStatus": "appended"
+      }
+    ]
+  },
+  {
+    "listId": "namhae-sipgyeong",
+    "hubId": "namhae",
+    "title": "남해12경",
+    "title_en": "Namhae Twelve Scenic Views",
+    "listKind": "sipgyeong",
+    "memberCountClaimed": 12,
+    "aliases": [
+      "남해 12경",
+      "남해 십이경"
+    ],
+    "sourceUrl": "https://www.namhae.go.kr/tour/00007.web",
+    "sourceOrg": "남해군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "남해 금산과 보리암",
+        "name_en": "Namhae Geumsan and Boriam",
+        "kind": "viewpoint",
+        "lat": 34.7521584,
+        "lng": 127.9829959,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "남해대교와 남해 충렬사",
+        "name_en": "Namhae Bridge and Chungnyeolsa",
+        "kind": "landmark",
+        "lat": 34.937,
+        "lng": 127.871,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "상주은모래비치",
+        "name_en": "Sangju Eunmorae Beach",
+        "kind": "beach",
+        "lat": 34.720841,
+        "lng": 127.988094,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "창선교와 남해지족해협 죽방렴",
+        "name_en": "Changseon Bridge and Jukbangryeom",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "남해 관음포 이충무공 유적",
+        "name_en": "Namhae Gwaneumpo Yi Sun-sin Historic Site",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "남해 가천 암수바위와 남면해안",
+        "name_en": "Namhae Gacheon Rock and Nammyeon Coast",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "서포 김만중 선생 유허와 노도",
+        "name_en": "Nodo and Seopo Kim Man-jung Historic Site",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "송정솔바람해변",
+        "name_en": "Songjeong Solbaram Beach",
+        "kind": "beach",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "망운산과 화방사",
+        "name_en": "Mangunsan and Hwabangsa",
+        "kind": "temple",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "남해 물건리 방조어부림과 물미해안",
+        "name_en": "Namhae Mulgeon Bangjo Forest and Mulmi Coast",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "호구산과 용문사",
+        "name_en": "Hogusan and Yongmunsa",
+        "kind": "temple",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "창선-삼천포대교",
+        "name_en": "Changseon-Samcheonpo Bridge",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "hadong-sipgyeong",
+    "hubId": "hadong",
+    "title": "하동10경",
+    "title_en": "Hadong Ten Scenic Views",
+    "listKind": "sipgyeong",
+    "memberCountClaimed": 10,
+    "aliases": [
+      "하동 10경",
+      "하동10경",
+      "하동팔경"
+    ],
+    "sourceUrl": "https://tour.hadong.go.kr/02640/02649/02757.web",
+    "sourceOrg": "하동군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "화개장터십리벚꽃",
+        "name_en": "Hwagae Market Cherry Blossoms",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "금오산 일출과 다도해",
+        "name_en": "Geumo Sunrise and Dadohae",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "쌍계사의 가을",
+        "name_en": "Ssanggyesa Autumn",
+        "kind": "temple",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "평사리 최참판댁",
+        "name_en": "Pyeongsari Choi Champan House",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "형제봉 철쭉",
+        "name_en": "Hyeongjebong Azaleas",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "청학동 삼성궁",
+        "name_en": "Cheonghakdong Samsung Palace",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "지리산 불일폭포",
+        "name_en": "Jirisan Bulil Falls",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "하동포구 백사청송",
+        "name_en": "Hadong Port White Sand Pine",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "화개동천 야생차밭",
+        "name_en": "Hwagaedongcheon Wild Tea Fields",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "섬호정에서 바라본 섬진강",
+        "name_en": "Seomjin River from Seomhojeong",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "jinju-palgyeong",
+    "hubId": "jinju",
+    "title": "진주8경",
+    "title_en": "Jinju Eight Scenic Views",
+    "listKind": "palgyeong",
+    "memberCountClaimed": 8,
+    "aliases": [
+      "진주 8경",
+      "진주8경",
+      "진주 팔경"
+    ],
+    "sourceUrl": "https://www.jinju.go.kr/02232/02244.web",
+    "sourceOrg": "진주시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "진주성 촉석루",
+        "name_en": "Jinju Fortress Chokseongnu",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "남강 의암",
+        "name_en": "Namgang Uiam",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "뒤벼리",
+        "name_en": "Dwi-byeori",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "새벼리",
+        "name_en": "Sae-byeori",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "망진산 봉수대",
+        "name_en": "Mangjinsan Beacon",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "비봉산의 봄",
+        "name_en": "Bibongsan Spring",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "월아산 해돋이",
+        "name_en": "Wolaksan Sunrise",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "진양호",
+        "name_en": "Jinyang Lake",
+        "kind": "park",
+        "lat": 35.174021,
+        "lng": 128.0295489,
+        "linkStatus": "linked"
+      }
+    ]
+  },
+  {
+    "listId": "sancheong-gugyeong",
+    "hubId": "sancheong",
+    "title": "산청9경",
+    "title_en": "Sancheong Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "산청 9경",
+      "산청9경",
+      "산청 구경"
+    ],
+    "sourceUrl": "https://sancheong.sancheong.go.kr/tour/contents.do?key=547",
+    "sourceOrg": "산청군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "지리산 천왕봉",
+        "name_en": "Jirisan Cheonwangbong",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "대원사 계곡",
+        "name_en": "Daewonsa Valley",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "황매산 철쭉",
+        "name_en": "Hwangmaesan Azaleas",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "구형왕릉",
+        "name_en": "Guhyeong Royal Tomb",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "경호강 비경",
+        "name_en": "Gyeongho River Scenery",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "남사예담촌",
+        "name_en": "Namsa Yedamchon",
+        "kind": "neighborhood",
+        "lat": 35.35,
+        "lng": 127.88,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "남명조식유적지",
+        "name_en": "Nammyeong Josik Historic Site",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "정취암 조망",
+        "name_en": "Jeongchuiam View",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "산청 동의보감촌",
+        "name_en": "Sancheong Donguibogam Village",
+        "kind": "park",
+        "lat": 35.4393076,
+        "lng": 127.8280553,
+        "linkStatus": "linked"
+      }
+    ]
+  },
+  {
+    "listId": "hamyang-palgyeong",
+    "hubId": "hamyang",
+    "title": "함양8경",
+    "title_en": "Hamyang Eight Scenic Views",
+    "listKind": "palgyeong",
+    "memberCountClaimed": 8,
+    "aliases": [
+      "함양 팔경",
+      "함양8경"
+    ],
+    "sourceUrl": "https://www.hygn.go.kr/01211/01214.web",
+    "sourceOrg": "함양군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "상림공원",
+        "name_en": "Sangrim Park",
+        "kind": "park",
+        "lat": 35.526946,
+        "lng": 127.718076,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "금대지리",
+        "name_en": "Geumdaejiri",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "용추비경",
+        "name_en": "Yongchu Scenic View",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "남계서원",
+        "name_en": "Namgye Seowon",
+        "kind": "landmark",
+        "lat": 35.5488763,
+        "lng": 127.783632,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "칠선시류",
+        "name_en": "Chilseon Poetry Stream",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "서암석불",
+        "name_en": "Seoam Stone Buddha",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "덕유운해",
+        "name_en": "Deogyu Sea of Clouds",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "함양 대봉산 휴양밸리",
+        "name_en": "Daebongsan Recreation Valley",
+        "kind": "park",
+        "lat": 35.58,
+        "lng": 127.68,
+        "linkStatus": "linked"
+      }
+    ]
+  },
+  {
+    "listId": "geochang-gugyeong",
+    "hubId": "geochang",
+    "title": "거창9경",
+    "title_en": "Geochang Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "거창 9경",
+      "거창9경",
+      "거창 구경"
+    ],
+    "sourceUrl": "https://www.geochang.go.kr/tour/tourcontent/sights/major/List.do?pageCd=TU0101000000",
+    "sourceOrg": "거창군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "거창 창포원",
+        "name_en": "Geochang Iris Garden",
+        "kind": "park",
+        "lat": 35.6535267,
+        "lng": 127.9102618219,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "거창사건추모공원",
+        "name_en": "Geochang Incident Memorial Park",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "수승대",
+        "name_en": "Suseungdae",
+        "kind": "park",
+        "lat": 35.7597812,
+        "lng": 127.8344671,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "거창 산림레포츠파크",
+        "name_en": "Geochang Forest Leisure Park",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "거창 항노화힐링랜드",
+        "name_en": "Geochang Anti-aging Healing Land",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "금원산",
+        "name_en": "Geumwonsan",
+        "kind": "viewpoint",
+        "lat": 35.731,
+        "lng": 127.761,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "거창 별바람언덕",
+        "name_en": "Geochang Star Wind Hill",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "거창 월성리 계곡",
+        "name_en": "Wolseong Valley",
+        "kind": "park",
+        "lat": 35.78,
+        "lng": 127.88,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "거창 가조온천",
+        "name_en": "Geochang Gajo Hot Spring",
+        "kind": "landmark",
+        "lat": 35.6984819,
+        "lng": 128.0229847,
+        "linkStatus": "linked"
+      }
+    ]
+  },
+  {
+    "listId": "hapcheon-palgyeong",
+    "hubId": "hapcheon",
+    "title": "합천8경",
+    "title_en": "Hapcheon Eight Scenic Views",
+    "listKind": "palgyeong",
+    "memberCountClaimed": 8,
+    "aliases": [
+      "합천 팔경",
+      "합천8경"
+    ],
+    "sourceUrl": "https://www.hc.go.kr/06571/06779/06782.web",
+    "sourceOrg": "합천군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "가야산과 해인사",
+        "name_en": "Gayasan and Haeinsa",
+        "kind": "temple",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "소리길과 홍류동계곡",
+        "name_en": "Sorigil and Hongnyudong Valley",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "황매산",
+        "name_en": "Hwangmaesan",
+        "kind": "viewpoint",
+        "lat": 35.4942361,
+        "lng": 127.9745887,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "합천호",
+        "name_en": "Hapcheon Lake",
+        "kind": "park",
+        "lat": 35.5788967,
+        "lng": 128.0191136,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "합천영상테마파크",
+        "name_en": "Hapcheon Image Theme Park",
+        "kind": "landmark",
+        "lat": 35.5488884,
+        "lng": 128.0715409,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "합천 운석충돌구",
+        "name_en": "Hapcheon Impact Crater",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "옥전고분군",
+        "name_en": "Okjeon Tumuli",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "함벽루",
+        "name_en": "Hambyeongnu",
+        "kind": "landmark",
+        "lat": 35.5598,
+        "lng": 128.1655,
+        "linkStatus": "linked"
+      }
+    ]
+  },
+  {
+    "listId": "gimhae-gugyeong",
+    "hubId": "gimhae",
+    "title": "김해9경",
+    "title_en": "Gimhae Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "김해 9경",
+      "김해9경",
+      "김해 구경"
+    ],
+    "sourceUrl": "https://www.gimhae.go.kr/00204/00550/00554.web",
+    "sourceOrg": "김해시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "봉하마을",
+        "name_en": "Bongha Village",
+        "kind": "neighborhood",
+        "lat": 35.1982,
+        "lng": 128.9094,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "클레이아크김해미술관",
+        "name_en": "Clayarch Gimhae Museum",
+        "kind": "museum",
+        "lat": 35.2506781,
+        "lng": 128.7448197,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "김해 수로왕릉",
+        "name_en": "Tomb of King Suro",
+        "kind": "landmark",
+        "lat": 35.2353,
+        "lng": 128.8784,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "연지공원 사계",
+        "name_en": "Yeonji Park Four Seasons",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "화포천습지 생태공원",
+        "name_en": "Hwaposcheon Wetland Ecological Park",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "대청계곡",
+        "name_en": "Daecheong Valley",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "신어산 철쭉",
+        "name_en": "Sineosan Azaleas",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "경전철에서 바라본 가야유적",
+        "name_en": "Gaya Heritage from the Light Rail",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "분산(천문대)전경 및 운무",
+        "name_en": "Bunsan Observatory View and Sea of Clouds",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "yangsan-other",
+    "hubId": "yangsan",
+    "title": "양산12경",
+    "title_en": "Yangsan Twelve Scenic Views",
+    "listKind": "other",
+    "memberCountClaimed": 12,
+    "aliases": [
+      "양산 12경",
+      "양산12경",
+      "양산 8경"
+    ],
+    "sourceUrl": "https://www.yangsan.go.kr/tour/main.do",
+    "sourceOrg": "양산시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "통도사",
+        "name_en": "Tongdosa",
+        "kind": "temple",
+        "lat": 35.4881,
+        "lng": 129.0644,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "천성산",
+        "name_en": "Cheonseongsan",
+        "kind": "viewpoint",
+        "lat": 35.4015733,
+        "lng": 129.1062817,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "내원사 계곡",
+        "name_en": "Naewonsa Valley",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "홍룡폭포",
+        "name_en": "Hongryong Falls",
+        "kind": "viewpoint",
+        "lat": 35.3969996749,
+        "lng": 129.0864871696,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "배내골",
+        "name_en": "Baenaegol",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "천태산",
+        "name_en": "Cheontaesan",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "오봉산 임경대",
+        "name_en": "Obongsan Imgyeongdae",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "대운산 자연휴양림",
+        "name_en": "Daeunsan Natural Recreation Forest",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "황산공원",
+        "name_en": "Hwangsan Park",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "법기수원지",
+        "name_en": "Beopgi Reservoir",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "양산타워",
+        "name_en": "Yangsan Tower",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "가야진사",
+        "name_en": "Gayajinsa Shrine",
+        "kind": "shrine",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "miryang-palgyeong",
+    "hubId": "miryang",
+    "title": "밀양8경",
+    "title_en": "Miryang Eight Scenic Views",
+    "listKind": "palgyeong",
+    "memberCountClaimed": 8,
+    "aliases": [
+      "밀양 8경",
+      "밀양8경",
+      "밀양 팔경"
+    ],
+    "sourceUrl": "https://www.miryang.go.kr/tur/index.do?mnNo=10302000000",
+    "sourceOrg": "밀양시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "밀양 영남루",
+        "name_en": "Yeongnamnu Pavilion",
+        "kind": "landmark",
+        "lat": 35.4915993,
+        "lng": 128.7550955,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "시례 호박소",
+        "name_en": "Sire Hobakso",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "밀양 표충사",
+        "name_en": "Pyochungsa Temple",
+        "kind": "temple",
+        "lat": 35.5326461,
+        "lng": 128.9594529,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "월연정 풍경",
+        "name_en": "Wolyeonjeong Scenery",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "밀양 위양지",
+        "name_en": "Wiyangji Reservoir",
+        "kind": "park",
+        "lat": 35.4453,
+        "lng": 128.8042,
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "만어사 운해",
+        "name_en": "Maneosa Sea of Clouds",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "종남산 진달래",
+        "name_en": "Jongnamsan Azaleas",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "재약산 억새",
+        "name_en": "Jaeaksan Silver Grass",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "uiryeong-gugyeong",
+    "hubId": "uiryeong",
+    "title": "의령9경",
+    "title_en": "Uiryeong Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "의령 9경",
+      "의령9경",
+      "의령 구경"
+    ],
+    "sourceUrl": "https://www.uiryeong.go.kr/board/list.uiryeong?boardId=ATTRACTION",
+    "sourceOrg": "의령군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "충익사",
+        "name_en": "Chungiksa",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "자굴산",
+        "name_en": "Jagulsan",
+        "kind": "viewpoint",
+        "lat": 35.3770754,
+        "lng": 128.2034816,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "의령 봉황대",
+        "name_en": "Bonghwangdae Uiryeong",
+        "kind": "viewpoint",
+        "lat": 35.4352846,
+        "lng": 128.24126,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "벽계관광지",
+        "name_en": "Byeokgye Tourist Site",
+        "kind": "park",
+        "lat": 35.4265497,
+        "lng": 128.211231,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "정암루(솥바위)",
+        "name_en": "Jeongamru (Sotbawi Rock)",
+        "kind": "landmark",
+        "lat": 35.3139551,
+        "lng": 128.294889,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "탑바위",
+        "name_en": "Tapbawi Rock",
+        "kind": "viewpoint",
+        "lat": 35.3648756,
+        "lng": 128.323217,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "수도사",
+        "name_en": "Sudosa Temple",
+        "kind": "temple",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "백산안희제선생 생가",
+        "name_en": "Birthplace of An Hui-je",
+        "kind": "landmark",
+        "lat": 35.4542373,
+        "lng": 128.349735,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "호암이병철선생 생가",
+        "name_en": "Birthplace of Lee Byung-chul (Ho-am)",
+        "kind": "landmark",
+        "lat": 35.3821339,
+        "lng": 128.323257,
+        "linkStatus": "appended"
+      }
+    ]
+  },
+  {
+    "listId": "haman-gugyeong",
+    "hubId": "haman",
+    "title": "함안9경",
+    "title_en": "Haman Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "함안 9경",
+      "함안9경",
+      "함안 구경"
+    ],
+    "sourceUrl": "https://www.haman.go.kr/01834/01858/01872.web",
+    "sourceOrg": "함안군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "말이산고분군",
+        "name_en": "Mari Mountain Burial Mounds",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "악양의 꽃길과 노을",
+        "name_en": "Agyang Flower Path and Sunset",
+        "kind": "park",
+        "lat": 35.3352472,
+        "lng": 128.3985107,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "입곡군립공원의 단풍",
+        "name_en": "Autumn Foliage at Ipgok County Park",
+        "kind": "park",
+        "lat": 35.32,
+        "lng": 128.38,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "무진정의 사계",
+        "name_en": "Four Seasons at Mujinjeong Pavilion",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "연꽃테마파크의 아라홍련",
+        "name_en": "Ara Hongryeon Lotus at Lotus Theme Park",
+        "kind": "park",
+        "lat": 35.29,
+        "lng": 128.42,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "강나루생태공원의 청보리",
+        "name_en": "Green Barley at Gangnaru Eco Park",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "장춘사의 산사풍경",
+        "name_en": "Mountain Temple Scenery at Jangchunsa",
+        "kind": "temple",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "합강정과 반구정의 해돋이",
+        "name_en": "Sunrise at Hapgangjeong and Banggujeong",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "대평늪의 늪지식물",
+        "name_en": "Wetland Plants at Daepyeong Marsh",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "changnyeong-gugyeong",
+    "hubId": "changnyeong",
+    "title": "창녕구경",
+    "title_en": "Changnyeong Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "창녕 9경",
+      "창녕9경",
+      "창녕 구경"
+    ],
+    "sourceUrl": "https://www.cng.go.kr/01658/02072.web",
+    "sourceOrg": "창녕군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "우포늪과 따오기",
+        "name_en": "Upo Wetland and Crested Ibis",
+        "kind": "park",
+        "lat": 35.553,
+        "lng": 128.415,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "화왕산 억새와 진달래",
+        "name_en": "Silver Grass and Azaleas on Hawangsan",
+        "kind": "viewpoint",
+        "lat": 35.5471482,
+        "lng": 128.531694,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "부곡온천",
+        "name_en": "Bugok Hot Spring",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "낙동강유채축제와 남지개비리",
+        "name_en": "Nakdong River Rapeseed Festival and Namji Gaetbili Trail",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "산토끼노래동산과 생태곤충원",
+        "name_en": "Santokki Song Hill and Eco Insect Garden",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "만옥정공원과 신라진흥왕척경비, 술정리동삼층석탑",
+        "name_en": "Manokjeong Park, Jinheung Stele, and Suljeong-ri Pagoda",
+        "kind": "park",
+        "lat": 35.540651,
+        "lng": 128.502155,
+        "linkStatus": "appended"
+      },
+      {
+        "attractionName": "교동과 송현동고분군",
+        "name_en": "Gyodong and Songhyeon-dong Burial Mounds",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "3·1민속문화제와 영산만년교",
+        "name_en": "March 1 Folk Culture Festival and Yeongsan Mannyun Bridge",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "관룡사와 용선대",
+        "name_en": "Gwallyongsa Temple and Yongseondae",
+        "kind": "temple",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "yeosu-other",
+    "hubId": "yeosu",
+    "title": "여수10경",
+    "title_en": "Yeosu Ten Scenic Views",
+    "listKind": "other",
+    "memberCountClaimed": 10,
+    "aliases": [
+      "여수 10경",
+      "여수10경",
+      "여수 10미10경"
+    ],
+    "sourceUrl": "https://www.yeosu.go.kr/tour",
+    "sourceOrg": "여수시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "오동도",
+        "name_en": "Odongdo",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "거문도와 백도",
+        "name_en": "Geomundo and Baekdo",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "향일암",
+        "name_en": "Hyangiram Hermitage",
+        "kind": "temple",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "금오도 비렁길",
+        "name_en": "Geumodo Cliff Trail",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "여수세계박람회장",
+        "name_en": "Yeosu Expo Site",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "진남관",
+        "name_en": "Jinnamgwan Hall",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "여수 밤바다와 산단 야경",
+        "name_en": "Yeosu Night Sea and Industrial Night View",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "영취산 진달래",
+        "name_en": "Yeongchuisan Azaleas",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "여수해상케이블카",
+        "name_en": "Yeosu Maritime Cable Car",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "여수 이순신대교",
+        "name_en": "Yeosu Yi Sun-sin Bridge",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "gwangyang-gugyeong",
+    "hubId": "gwangyang",
+    "title": "광양9경",
+    "title_en": "Gwangyang Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "광양 9경",
+      "광양9경",
+      "광양 구경"
+    ],
+    "sourceUrl": "https://gwangyang.go.kr/tour/menu.es?mid=a31201000000",
+    "sourceOrg": "광양시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "백운산 4대 계곡",
+        "name_en": "Baekunsan Four Valleys",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "광양 매화마을",
+        "name_en": "Gwangyang Maehwa Village",
+        "kind": "neighborhood",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "백운산 자연휴양림",
+        "name_en": "Baekunsan Natural Recreation Forest",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "광양이순신대교",
+        "name_en": "Gwangyang Yi Sun-sin Bridge",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "망덕포구",
+        "name_en": "Seomjingang Mangdeok Port",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "광양만 야경",
+        "name_en": "Gwangyang Bay Night View",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "옥룡사지 동백나무 숲",
+        "name_en": "Okryongsa Site Camellia Forest",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "구봉산 케이블카",
+        "name_en": "Gubongsan Observatory",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "광양읍수와 이팝나무",
+        "name_en": "Gwangyang Eup Pond and Poplar Trees",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "gokseong-gugyeong",
+    "hubId": "gokseong",
+    "title": "곡성9경",
+    "title_en": "Gokseong Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "곡성 9경",
+      "곡성9경",
+      "곡성관광9경"
+    ],
+    "sourceUrl": "https://www.gokseong.go.kr/tour/tourist/9tour",
+    "sourceOrg": "곡성군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "섬진강기차마을",
+        "name_en": "Train Village and Rose Park",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "태안사",
+        "name_en": "Bongdusan and Taeansa",
+        "kind": "temple",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "섬진강 침실습지",
+        "name_en": "Seomjingang Chimsil Wetland",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "도림사",
+        "name_en": "Dongaksan and Dorimsa",
+        "kind": "temple",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "섬진강변 철쭉길",
+        "name_en": "Seomjingang Azalea Trail",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "대황강 출렁다리",
+        "name_en": "Daehwanggang Suspension Bridge",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "설산과 성륜사",
+        "name_en": "Seolsan and Seongryunsa",
+        "kind": "temple",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "반구정습지와 대황강자연휴식공원",
+        "name_en": "Bangujeong Wetland and Daehwanggang Park",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "압록유원지",
+        "name_en": "Amnok Recreation Area",
+        "kind": "park",
+        "linkStatus": "linked"
+      }
+    ]
+  },
+  {
+    "listId": "gurye-other",
+    "hubId": "gurye",
+    "title": "구례10경",
+    "title_en": "Gurye Ten Scenic Views",
+    "listKind": "other",
+    "memberCountClaimed": 10,
+    "aliases": [
+      "구례 10경",
+      "구례10경"
+    ],
+    "sourceUrl": "https://www.gurye.go.kr/tour/subPage.do?menuNo=101006000000",
+    "sourceOrg": "구례군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "노고단 운해",
+        "name_en": "Nogodan Sea of Clouds",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "반야봉 낙조",
+        "name_en": "Banyabong Sunset",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "피아골 단풍",
+        "name_en": "Piagol Autumn Leaves",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "구례 섬진강",
+        "name_en": "Seomjingang Clear Stream",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "산동 산수유꽃",
+        "name_en": "Sandong Cornelian Cherry Blossoms",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "섬진강 벚꽃길",
+        "name_en": "Seomjingang Cherry Blossom Road",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "수락폭포",
+        "name_en": "Surak Falls",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "화엄사",
+        "name_en": "Hwaeomsa Temple",
+        "kind": "temple",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "사성암",
+        "name_en": "Osan and Saseongam",
+        "kind": "temple",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "노고단 설경",
+        "name_en": "Nogodan Winter Scenery",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "damyang-other",
+    "hubId": "damyang",
+    "title": "담양10경",
+    "title_en": "Damyang Ten Scenic Views",
+    "listKind": "other",
+    "memberCountClaimed": 10,
+    "aliases": [
+      "담양 10경",
+      "담양10경"
+    ],
+    "sourceUrl": "https://www.damyang.go.kr/tour",
+    "sourceOrg": "담양군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "가마골용소",
+        "name_en": "Gamagol Yongso",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "추월산",
+        "name_en": "Chuwolsan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "금성산성",
+        "name_en": "Geumseongsanseong Fortress",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "병풍산",
+        "name_en": "Byeongpungsan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "삼인산",
+        "name_en": "Samin Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "메타세쿼이아 가로수길",
+        "name_en": "Metasequoia Tree Lane",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "죽녹원",
+        "name_en": "Juknokwon Bamboo Garden",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "용흥사 계곡",
+        "name_en": "Yongheungsa Valley",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "담양관방제림",
+        "name_en": "Gwanbangjelim Forest",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "소쇄원",
+        "name_en": "Soswaewon Garden",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      }
+    ]
+  },
+  {
+    "listId": "hwasun-other",
+    "hubId": "hwasun",
+    "title": "화순11경",
+    "title_en": "Hwasun Eleven Scenic Views",
+    "listKind": "other",
+    "memberCountClaimed": 11,
+    "aliases": [
+      "화순 11경",
+      "화순11경"
+    ],
+    "sourceUrl": "https://www.hwasun.go.kr/contents.do?M=010100000000&S=S05",
+    "sourceOrg": "화순군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "화순 적벽",
+        "name_en": "Hwasun Jeokbyeok Cliff",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "운주사",
+        "name_en": "Unjusa Temple",
+        "kind": "temple",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "백아산 하늘다리",
+        "name_en": "Baegasan Sky Bridge",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "고인돌 유적지",
+        "name_en": "Dolmen Heritage Site",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "수만리 철쭉공원",
+        "name_en": "Sumalli Azalea Park",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "규봉암",
+        "name_en": "Gyubongam Hermitage",
+        "kind": "temple",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "연둔리 숲정이",
+        "name_en": "Yeondunri Forest Trail",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "세량지",
+        "name_en": "Seryangji Pond",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "쌍봉사",
+        "name_en": "Ssangbongsa Temple",
+        "kind": "temple",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "화순 꽃강길 음악분수",
+        "name_en": "Hwasun Flower River Music Fountain",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "환산정",
+        "name_en": "Hwansanjeong Pavilion",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "hampyeong-palgyeong",
+    "hubId": "hampyeong",
+    "title": "함평8경",
+    "title_en": "Hampyeong Eight Scenic Views",
+    "listKind": "palgyeong",
+    "memberCountClaimed": 8,
+    "aliases": [
+      "함평 8경",
+      "함평8경",
+      "함평 팔경"
+    ],
+    "sourceUrl": "https://www.hampyeong.go.kr/tour",
+    "sourceOrg": "함평군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "함평자연생태공원",
+        "name_en": "Hampyeong Natural Ecology Park",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "함평엑스포공원",
+        "name_en": "Hampyeong Expo Park",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "용천사 함평",
+        "name_en": "Yongcheonsa Hampyeong",
+        "kind": "temple",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "돌머리해수욕장",
+        "name_en": "Dolmeori Beach",
+        "kind": "beach",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "백제고도",
+        "name_en": "Baekje Ancient Road",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "모악산",
+        "name_en": "Moaksan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "삼호천",
+        "name_en": "Samhocheon Stream",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "청계산",
+        "name_en": "Cheonggyesan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "yeonggwang-gugyeong",
+    "hubId": "yeonggwang",
+    "title": "영광9경",
+    "title_en": "Yeonggwang Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "영광 9경",
+      "영광9경",
+      "영광 구경"
+    ],
+    "sourceUrl": "https://www.yeonggwang.go.kr/tour",
+    "sourceOrg": "영광군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "불갑사",
+        "name_en": "Bulgapsa Temple",
+        "kind": "temple",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "칠산타워",
+        "name_en": "Chilsan Tower",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "가마미해수욕장",
+        "name_en": "Gamami Beach",
+        "kind": "beach",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "백사장해수욕장",
+        "name_en": "Baeksajang Beach",
+        "kind": "beach",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "불갑저수지",
+        "name_en": "Bulgap Reservoir",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "법성포",
+        "name_en": "Beopseongpo Port",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "황금산",
+        "name_en": "Hwanggeumsan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "왕글공원",
+        "name_en": "Wanggeul Park",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "백학촌",
+        "name_en": "Baekhak Village",
+        "kind": "neighborhood",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "mokpo-gugyeong",
+    "hubId": "mokpo",
+    "title": "목포9경",
+    "title_en": "Mokpo Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "목포 9경",
+      "목포9경",
+      "목포 구경"
+    ],
+    "sourceUrl": "http://www.mmcablecar.com/tour/ninth.html",
+    "sourceOrg": "목포시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "유달산",
+        "name_en": "Yudalsan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "목포대교",
+        "name_en": "Mokpo Bridge",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "목포갓바위",
+        "name_en": "Gatbawi Rock",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "해상분수",
+        "name_en": "Maritime Fountain",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "노적봉",
+        "name_en": "Nojeokbong Hill",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "목포진",
+        "name_en": "Mokpo Fortress",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "삼학도",
+        "name_en": "Samhakdo Island",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "다도해 전경",
+        "name_en": "Dadohae Panorama",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "외달도",
+        "name_en": "Oedaldo Island",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "muan-gugyeong",
+    "hubId": "muan",
+    "title": "무안9경",
+    "title_en": "Muan Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "무안 9경",
+      "무안9경",
+      "무안 구경"
+    ],
+    "sourceUrl": "http://www.muannews.com/news/articleView.html?idxno=500784",
+    "sourceOrg": "무안군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "회산백련지",
+        "name_en": "Hoesan White Lotus Pond",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "무안황토갯벌랜드",
+        "name_en": "Yellow-earth Tidal Flat Land",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "영산강 식영정과 느러지",
+        "name_en": "Seonyeongjeong and Neureoji on Yeongsangang",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "초의선사탄생지",
+        "name_en": "Birthplace of Choeuisunsa",
+        "kind": "shrine",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "톱머리·홀통 해수욕장",
+        "name_en": "Topmeori and Holtong Beaches",
+        "kind": "beach",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "백로와 왜가리 번식지",
+        "name_en": "Egret and Heron Habitat",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "도리포해수욕장",
+        "name_en": "Doripo Sunrise and Sunset",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "승달산",
+        "name_en": "Seungdalsan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "낙지공원",
+        "name_en": "Octopus Park",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "jindo-other",
+    "hubId": "jindo",
+    "title": "진도10경",
+    "title_en": "Jindo Ten Scenic Views",
+    "listKind": "other",
+    "memberCountClaimed": 10,
+    "aliases": [
+      "진도 10경",
+      "진도10경"
+    ],
+    "sourceUrl": "https://www.jindo.go.kr/tour",
+    "sourceOrg": "진도군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "진도타워",
+        "name_en": "Jindo Tower",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "운림산방",
+        "name_en": "Unrimsanbang House",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "세방낙조전망대",
+        "name_en": "Sebang Sunset Observatory",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "용장산성",
+        "name_en": "Yongjangsan Fortress",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "관매도",
+        "name_en": "Gwanmaedo Island",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "조도관음도",
+        "name_en": "Jodo Gwaneumdo Island",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "신비의 바닷길",
+        "name_en": "Mysterious Sea Road",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "의장대",
+        "name_en": "Uijangdae Pavilion",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "돈대산",
+        "name_en": "Dondaesan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "하조대",
+        "name_en": "Hajodae Coast",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "haenam-palgyeong",
+    "hubId": "haenam",
+    "title": "해남8경",
+    "title_en": "Haenam Eight Scenic Views",
+    "listKind": "palgyeong",
+    "memberCountClaimed": 8,
+    "aliases": [
+      "해남 8경",
+      "해남8경",
+      "해남 팔경"
+    ],
+    "sourceUrl": "https://www.data.go.kr/data/15059734/fileData.do",
+    "sourceOrg": "해남군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "해남 구 목포구등대 낙조 전망대",
+        "name_en": "Old Mokpo Lighthouse Sunset View",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "해남공룡박물관",
+        "name_en": "Haenam Dinosaur Museum",
+        "kind": "museum",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "해남윤씨 옥우당",
+        "name_en": "Haenam Yun Clan Okudang",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "미황사 및 도솔암",
+        "name_en": "Mihwangsa and Dosolam",
+        "kind": "temple",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "고천암 철새도래지",
+        "name_en": "Gocheonam Bird Habitat",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "대흥사",
+        "name_en": "Daeheungsa Temple",
+        "kind": "temple",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "울돌목",
+        "name_en": "Uldolmok Strait",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "땅끝탑",
+        "name_en": "Land End Tower",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "wando-palgyeong",
+    "hubId": "wando",
+    "title": "완도8경",
+    "title_en": "Wando Eight Scenic Views",
+    "listKind": "palgyeong",
+    "memberCountClaimed": 8,
+    "aliases": [
+      "완도 8경",
+      "완도8경",
+      "완도 팔경"
+    ],
+    "sourceUrl": "https://www.wando.go.kr/tour",
+    "sourceOrg": "완도군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "완도타워",
+        "name_en": "Wando Tower",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "신지명사십리해수욕장",
+        "name_en": "Sinjimyeongsa Beach",
+        "kind": "beach",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "보길도 윤선도 원림",
+        "name_en": "Bogildo Yunsundo Primeval Forest",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "정도리 구계등",
+        "name_en": "Jeongdori Gugyedong Lighthouse",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "청산도",
+        "name_en": "Cheongsando Island",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "생일도",
+        "name_en": "Saengildo Island",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "약산",
+        "name_en": "Yaksan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "국화섬",
+        "name_en": "National Flower Island",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "gangjin-other",
+    "hubId": "gangjin",
+    "title": "강진12경",
+    "title_en": "Gangjin Twelve Scenic Views",
+    "listKind": "other",
+    "memberCountClaimed": 12,
+    "aliases": [
+      "강진 12경",
+      "강진12경"
+    ],
+    "sourceUrl": "https://www.gangjin.go.kr/tour",
+    "sourceOrg": "강진군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "다산초당",
+        "name_en": "Dasan Chodang House",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "가우도",
+        "name_en": "Gaudo Island",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "금곡사 강진",
+        "name_en": "Geumgoksa Temple",
+        "kind": "temple",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "강진다원",
+        "name_en": "Gangjin Tea Plantation",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "강진만생태공원",
+        "name_en": "Gangjin Bay Ecological Park",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "월출산",
+        "name_en": "Wolchulsan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "가학산",
+        "name_en": "Gahaksan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "백야김좌진기념관",
+        "name_en": "Baekya Kim Jwa-jin Memorial",
+        "kind": "museum",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "남도별미식문화박물관",
+        "name_en": "Namdo Food Culture Museum",
+        "kind": "museum",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "강진청자박물관",
+        "name_en": "Gangjin Celadon Museum",
+        "kind": "museum",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "병영성",
+        "name_en": "Byeongyeong Fortress",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "청자단지",
+        "name_en": "Celadon Village",
+        "kind": "neighborhood",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "jangheung-gugyeong",
+    "hubId": "jangheung",
+    "title": "장흥9경",
+    "title_en": "Jangheung Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "장흥 9경",
+      "장흥9경",
+      "장흥 구경"
+    ],
+    "sourceUrl": "http://sisatotalnews.com/article.asp?aid=1750063256383140025",
+    "sourceOrg": "장흥군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "장흥 편백숲 우드랜드",
+        "name_en": "Jeongnamjin Cypress Woodland",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "천관산",
+        "name_en": "Cheongwansan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "장흥 토요시장",
+        "name_en": "Jeongnamjin Jangheung Saturday Market",
+        "kind": "market",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "장흥 126타워",
+        "name_en": "Jangheung 126 Tower",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "장흥 보림사",
+        "name_en": "Borimsa Temple",
+        "kind": "temple",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "해동사",
+        "name_en": "Haedongsa Shrine",
+        "kind": "shrine",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "선학동마을",
+        "name_en": "Seonhak-dong Village",
+        "kind": "neighborhood",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "소등섬",
+        "name_en": "Sodeungseom Island",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "하늘빛수목정원",
+        "name_en": "Sky Blue Arboretum",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "boseong-gugyeong",
+    "hubId": "boseong",
+    "title": "보성9경",
+    "title_en": "Boseong Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "보성 9경",
+      "보성9경",
+      "보성 구경"
+    ],
+    "sourceUrl": "https://linkareer.com/activity/200415",
+    "sourceOrg": "보성군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "보성녹차밭",
+        "name_en": "Boseong Tea Fields",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "한국차박물관",
+        "name_en": "Korea Tea Museum",
+        "kind": "museum",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "태백산맥문학관",
+        "name_en": "Taebaeksanmaek Literature Center",
+        "kind": "museum",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "율포해수욕장",
+        "name_en": "Yulpo Beach",
+        "kind": "beach",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "비봉공룡공원",
+        "name_en": "Bibong Dinosaur Park",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "제암산자연휴양림",
+        "name_en": "Jeamsan Natural Recreation Forest",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "일림산 용추계곡",
+        "name_en": "Ilimsan Yongchu Valley",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "대원사",
+        "name_en": "Daewonsa Temple",
+        "kind": "temple",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "주암호 서재필기념관",
+        "name_en": "Juamho and Seo Jae-pil Memorial",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "goheung-other",
+    "hubId": "goheung",
+    "title": "고흥10경",
+    "title_en": "Goheung Ten Scenic Views",
+    "listKind": "other",
+    "memberCountClaimed": 10,
+    "aliases": [
+      "고흥 10경",
+      "고흥10경"
+    ],
+    "sourceUrl": "https://www.goheung.go.kr/tour",
+    "sourceOrg": "고흥군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "팔영산 자연휴양림",
+        "name_en": "Palyeongsan Natural Recreation Forest",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "고흥 소록도",
+        "name_en": "Sorokdo Island",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "쑥섬",
+        "name_en": "Ssukseom Island",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "연홍도",
+        "name_en": "Yeonhongdo Island",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "금산 해안경관",
+        "name_en": "Geumsan Coastal Scenery",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "천등산 봉수대",
+        "name_en": "Cheondeungsan Beacon",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "나로우주센터",
+        "name_en": "Naro Space Center",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "고흥 남열해돋이해수욕장",
+        "name_en": "Namyel Sunrise Beach",
+        "kind": "beach",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "고흥만 수변노을공원",
+        "name_en": "Goheung Bay Sunset Park",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "분청문화박물관과 운암산 녹음길",
+        "name_en": "Buncheong Museum and Unamsan Green Trail",
+        "kind": "museum",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "wanju-gugyeong",
+    "hubId": "wanju",
+    "title": "완주9경",
+    "title_en": "Wanju Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "완주 9경",
+      "완주9경",
+      "완주 구경"
+    ],
+    "sourceUrl": "https://wanju.grandculture.net/wanju/toc/GC07000227",
+    "sourceOrg": "완주군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "대둔산",
+        "name_en": "Daedunsan Provincial Park",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "고산자연휴양림",
+        "name_en": "Gosan Natural Recreation Forest",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "모악산 완주",
+        "name_en": "Moaksan Provincial Park",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "대아수목원",
+        "name_en": "Dae Arboretum",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "송광사 완주",
+        "name_en": "Songgwangsa Cherry Blossom Road",
+        "kind": "temple",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "삼례문화예술촌",
+        "name_en": "Samnye Culture and Art Village",
+        "kind": "neighborhood",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "동상 운장산계곡",
+        "name_en": "Dongsang Unjangsan Valley",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "위봉사",
+        "name_en": "Wibongsa, Wibong Falls and Wibongsan",
+        "kind": "temple",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "화암사",
+        "name_en": "Hwaamsa Temple",
+        "kind": "temple",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "gunsan-palgyeong",
+    "hubId": "gunsan",
+    "title": "선유8경",
+    "title_en": "Seonyu Eight Scenic Views",
+    "listKind": "palgyeong",
+    "memberCountClaimed": 8,
+    "aliases": [
+      "선유 8경",
+      "선유8경",
+      "군산 선유8경"
+    ],
+    "sourceUrl": "https://www.gunsan.go.kr/tour/m2200",
+    "sourceOrg": "군산시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "선유낙조",
+        "name_en": "Seonyu Sunset",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "명사십리",
+        "name_en": "Myeongsa Beach",
+        "kind": "beach",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "망주폭포",
+        "name_en": "Mangju Falls",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "평사낙안",
+        "name_en": "Pingsa Migratory Birds",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "삼도귀범",
+        "name_en": "Samdo Returning Sails",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "장자어화",
+        "name_en": "Jangja Fishing Lights",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "월영단풍",
+        "name_en": "Wolyeong Autumn Leaves",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "무산십이봉",
+        "name_en": "Musan Twelve Peaks",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "buan-palgyeong",
+    "hubId": "buan",
+    "title": "변산8경",
+    "title_en": "Byeonsan Eight Scenic Views",
+    "listKind": "palgyeong",
+    "memberCountClaimed": 8,
+    "aliases": [
+      "변산 8경",
+      "변산8경",
+      "변산 팔경"
+    ],
+    "sourceUrl": "https://www.grandculture.net/buan/toc/GC08000222",
+    "sourceOrg": "부안군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "웅연조대",
+        "name_en": "Ungyeonjodae Fishing Platform",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "직소폭포",
+        "name_en": "Jikso Falls",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "소사모종",
+        "name_en": "Sosamojong Evening Bell",
+        "kind": "temple",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "월명무애",
+        "name_en": "Wolmyeongmuae Moonlit Mist",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "서해낙조",
+        "name_en": "West Sea Sunset",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "채석강",
+        "name_en": "Chaeseok Sail Rock",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "지포신경",
+        "name_en": "Jiposin-gyeong Scenic Point",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "개암고적",
+        "name_en": "Gaeam Historic Site",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "jeongeup-gugyeong",
+    "hubId": "jeongeup",
+    "title": "정읍9경",
+    "title_en": "Jeongeup Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "정읍 9경",
+      "정읍9경",
+      "정읍 구경"
+    ],
+    "sourceUrl": "https://www.kogl.or.kr/recommend/recommendDivView.do?atcUrl=personal&division=img&recommendIdx=145907",
+    "sourceOrg": "정읍시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "내장산국립공원",
+        "name_en": "Naejangsan National Park",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "정읍 구절초 지방정원",
+        "name_en": "Jeongeup Iris Garden",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "정읍사공원",
+        "name_en": "Jeongeup Lake Park and Moonlight Forest",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "동학농민혁명기념공원",
+        "name_en": "Donghak Peasant Revolution Memorial Park",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "무성서원",
+        "name_en": "Museong Seowon Academy",
+        "kind": "shrine",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "용산호",
+        "name_en": "Yongsan Lake",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "피향정",
+        "name_en": "Pihyangjeong Pavilion",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "월영습지와 솔티숲",
+        "name_en": "Wolyeong Wetland and Solti Forest",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "김명관 고택",
+        "name_en": "Kim Myeong-gwan Historic House",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "muju-other",
+    "hubId": "muju",
+    "title": "구천동33경",
+    "title_en": "Gucheondong Thirty-three Scenic Views",
+    "listKind": "other",
+    "memberCountClaimed": 33,
+    "aliases": [
+      "무주 구천동33경",
+      "구천동 33경",
+      "구천동33경"
+    ],
+    "sourceUrl": "https://korean.visitkorea.or.kr/detail/ms_detail.do?cotid=6166837d-0d68-4e02-ac27-c14a229f7c95",
+    "sourceOrg": "무주군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "라제통문",
+        "name_en": "Naje Tongmun Gate",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "은구암",
+        "name_en": "Eunguam Rock",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "청금대",
+        "name_en": "Cheonggeumdae Pavilion",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "와룡담",
+        "name_en": "Waryongdam Pond",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "학소대",
+        "name_en": "Haksodae Pavilion",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "일사대",
+        "name_en": "Ilsadae Pavilion",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "함벽소",
+        "name_en": "Hambekso Pond",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "가의암",
+        "name_en": "Gauiam Rock",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "추월담",
+        "name_en": "Chuwoldam Pond",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "만조탄",
+        "name_en": "Manjotan Beach",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "파회",
+        "name_en": "Pahoe Rapids",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "수심대",
+        "name_en": "Susimdae Pavilion",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "세심대",
+        "name_en": "Sesimdae Pavilion",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "수경대",
+        "name_en": "Sugyeongdae Pavilion",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "월하탄",
+        "name_en": "Wolhatan Beach",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "인월담",
+        "name_en": "Inwoldam Pond",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "사자담",
+        "name_en": "Sajadam Pond",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "청류동",
+        "name_en": "Cheongnyudong Cave",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "비파담",
+        "name_en": "Bipadam Pond",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "다연대",
+        "name_en": "Dayeondae Pavilion",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "구월담",
+        "name_en": "Guwoldam Pond",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "금포탄",
+        "name_en": "Geumpotan Beach",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "호탄암",
+        "name_en": "Hotanam Rock",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "청류계",
+        "name_en": "Cheongnyugye Stream",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "안심대",
+        "name_en": "Ansimdae Pavilion",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "신양담",
+        "name_en": "Sinyangdam Pond",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "명경담",
+        "name_en": "Myeonggyeongdam Pond",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "구천폭포",
+        "name_en": "Gucheom Falls",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "백련담",
+        "name_en": "Baengnyeondam Pond",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "연화폭",
+        "name_en": "Yeonhwa Falls",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "이속대",
+        "name_en": "Isokdae Pavilion",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "백련사",
+        "name_en": "Baengnyeonsa Temple",
+        "kind": "temple",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "향적봉",
+        "name_en": "Hyangjeokbong Peak",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "imsil-gugyeong",
+    "hubId": "imsil",
+    "title": "임실9경",
+    "title_en": "Imsil Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "임실 9경",
+      "임실9경",
+      "임실 구경"
+    ],
+    "sourceUrl": "https://www.imsil.go.kr/tour/board/list.imsil?boardId=BBS_0000050&menuCd=DOM_000000202001000000",
+    "sourceOrg": "임실군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "강변사리",
+        "name_en": "Gangbyeonsari Village",
+        "kind": "neighborhood",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "옥정호",
+        "name_en": "Okjeongho Suspension Bridge and Bung-eoseom",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "임실치즈마을",
+        "name_en": "Imsil Cheese Village",
+        "kind": "neighborhood",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "필봉농악전수관",
+        "name_en": "Pilbong Nongak Transmission Center",
+        "kind": "museum",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "임실치즈테마파크",
+        "name_en": "Imsil Cheese Theme Park",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "왜가리서식지",
+        "name_en": "Heron Habitat",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "오수의견",
+        "name_en": "Osu Uigyeon Scenic Rock",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "사선대",
+        "name_en": "Saseondae Observatory",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "옥정호",
+        "name_en": "Mysterious Okjeongho Island",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      }
+    ]
+  },
+  {
+    "listId": "cheonan-palgyeong",
+    "hubId": "cheonan",
+    "title": "천안8경",
+    "title_en": "Cheonan Eight Scenic Views",
+    "listKind": "palgyeong",
+    "memberCountClaimed": 8,
+    "aliases": [
+      "천안 8경",
+      "천안8경",
+      "천안 팔경"
+    ],
+    "sourceUrl": "https://www.cheonan.go.kr/tour",
+    "sourceOrg": "천안시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "천안 독립기념관",
+        "name_en": "Independence Hall of Korea",
+        "kind": "museum",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "유관순열사사적지",
+        "name_en": "Yu Gwan-sun Martyr Historic Site",
+        "kind": "shrine",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "천안삼거리공원",
+        "name_en": "Cheonan Samgeori Park",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "태조산 왕건길과 청동대좌불",
+        "name_en": "Taejosan Wanggeon Trail and Bronze Buddha",
+        "kind": "temple",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "아라리오조각광장",
+        "name_en": "Arario Sculpture Square",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "성성호수공원",
+        "name_en": "Seongseong Lake Park",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "광덕산",
+        "name_en": "Gwangdeoksan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "봉선홍경사갈기비",
+        "name_en": "Bongseon Honggyeongsa Stele",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "seosan-gugyeong",
+    "hubId": "seosan",
+    "title": "서산9경",
+    "title_en": "Seosan Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "서산 9경",
+      "서산9경",
+      "서산 구경"
+    ],
+    "sourceUrl": "https://www.seosan.go.kr/tour/index.do",
+    "sourceOrg": "서산시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "서산 해미읍성",
+        "name_en": "Haemi Fortress",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "용현리 마애여래삼존상",
+        "name_en": "Yonghyeonri Triad Buddha",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "간월암",
+        "name_en": "Ganwolam Hermitage",
+        "kind": "temple",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "개심사",
+        "name_en": "Gaesimsa Temple",
+        "kind": "temple",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "팔봉산",
+        "name_en": "Palbongsan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "가야산",
+        "name_en": "Gayasan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "황금산",
+        "name_en": "Hwanggeumsan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "서산 한우목장",
+        "name_en": "Seosan Hanwoo Ranch",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "삼길포항",
+        "name_en": "Samgilpo Port",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "taean-palgyeong",
+    "hubId": "taean",
+    "title": "태안8경",
+    "title_en": "Taean Eight Scenic Views",
+    "listKind": "palgyeong",
+    "memberCountClaimed": 8,
+    "aliases": [
+      "태안 8경",
+      "태안8경",
+      "태안 팔경"
+    ],
+    "sourceUrl": "https://www.taean.go.kr/tour",
+    "sourceOrg": "태안군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "백화산",
+        "name_en": "Baekhwasan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "안흥성",
+        "name_en": "Anheungseong Fortress",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "안면송림",
+        "name_en": "Anmyeon Pine Forest",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "만리포해수욕장",
+        "name_en": "Mallipo Beach",
+        "kind": "beach",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "신두사구",
+        "name_en": "Sindu Sand Dunes",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "가의도",
+        "name_en": "Gauido Island",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "몽산포해수욕장",
+        "name_en": "Mongsan Beach",
+        "kind": "beach",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "할미할아비바위",
+        "name_en": "Grandmother and Grandfather Rocks",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "seocheon-gugyeong",
+    "hubId": "seocheon",
+    "title": "서천9경",
+    "title_en": "Seocheon Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "서천 9경",
+      "서천9경",
+      "서천 구경"
+    ],
+    "sourceUrl": "https://seocheon.grandculture.net/seocheon/toc/GC09500011",
+    "sourceOrg": "서천군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "마량리동백숲",
+        "name_en": "Maryangri Camellia Forest Sunrise",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "신성리갈대밭",
+        "name_en": "Sinseongri Reed Field",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "한산모시관",
+        "name_en": "Hansan Mosi Village",
+        "kind": "neighborhood",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "서천 문헌서원",
+        "name_en": "Munheon Seowon Academy",
+        "kind": "shrine",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "춘장대해수욕장",
+        "name_en": "Chunjangdae Beach",
+        "kind": "beach",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "국립생태원",
+        "name_en": "National Ecological Institute and Marine Bio Center",
+        "kind": "museum",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "금강 하구 철새 도래지",
+        "name_en": "Geumgang Estuary Bird Habitat",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "장항송림산림욕장과 장항스카이워크",
+        "name_en": "Janghang Pine Forest and Skywalk",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "유부도와 서천갯벌",
+        "name_en": "Yubudo Island and Seocheon Tidal Flat",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "hongseong-other",
+    "hubId": "hongseong",
+    "title": "홍성12경",
+    "title_en": "Hongseong Twelve Scenic Views",
+    "listKind": "other",
+    "memberCountClaimed": 12,
+    "aliases": [
+      "홍성 12경",
+      "홍성12경"
+    ],
+    "sourceUrl": "https://www.hongseong.go.kr/tour",
+    "sourceOrg": "홍성군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "홍주읍성",
+        "name_en": "Hongju Eupseong Fortress",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "남당항",
+        "name_en": "Namdang Port",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "홍성 용봉산",
+        "name_en": "Yongbongsan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "죽도",
+        "name_en": "Jukdo Island",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "오서산",
+        "name_en": "Oseosan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "궁리포구",
+        "name_en": "Gungni Port",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "만해한용운생가지",
+        "name_en": "Manhae Han Yong-un Birthplace",
+        "kind": "shrine",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "백야김좌진장군생가지",
+        "name_en": "Baekya Kim Jwa-jin Birthplace",
+        "kind": "shrine",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "선상문선생 유허지",
+        "name_en": "Seonsangmun Teacher Memorial Site",
+        "kind": "shrine",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "고암이응노 생가 기념관",
+        "name_en": "Goam Lee Eung-no Birthplace Memorial",
+        "kind": "museum",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "홍주의사총",
+        "name_en": "Hongju Martyrs Cemetery",
+        "kind": "shrine",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "그림같은수목원",
+        "name_en": "Picturesque Arboretum",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "yesan-sipgyeong",
+    "hubId": "yesan",
+    "title": "예산10경",
+    "title_en": "Yesan Ten Scenic Views",
+    "listKind": "sipgyeong",
+    "memberCountClaimed": 10,
+    "aliases": [
+      "예산 10경",
+      "예산10경",
+      "예산 십경"
+    ],
+    "sourceUrl": "http://www.yesan.go.kr/tour/sub01_01_01_08_01.do",
+    "sourceOrg": "예산군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "예산 수덕사",
+        "name_en": "Sudeoksa Temple",
+        "kind": "temple",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "충의사",
+        "name_en": "Chunguisa Shrine",
+        "kind": "shrine",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "추사고택",
+        "name_en": "Chusa Historic House",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "임존성",
+        "name_en": "Imjonsanseong Fortress",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "예당호",
+        "name_en": "Yedangho Lake",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "삽교평야",
+        "name_en": "Sapgyo Plain",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "가야산",
+        "name_en": "Gayasan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "예산사과",
+        "name_en": "Yesan Apple Orchards",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "예산황새공원",
+        "name_en": "Yesan Stork Park",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "덕산온천",
+        "name_en": "Deoksan Hot Springs",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      }
+    ]
+  },
+  {
+    "listId": "gongju-sipgyeong",
+    "hubId": "gongju",
+    "title": "공주10경",
+    "title_en": "Gongju Ten Scenic Views",
+    "listKind": "sipgyeong",
+    "memberCountClaimed": 10,
+    "aliases": [
+      "공주 10경",
+      "공주10경",
+      "공주 십경"
+    ],
+    "sourceUrl": "https://www.traveli.co.kr/read/contentsView/180/0/0/1",
+    "sourceOrg": "공주시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "갑사",
+        "name_en": "Gapsa Temple",
+        "kind": "temple",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "계룡산",
+        "name_en": "Gyeryongsan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "고마나루",
+        "name_en": "Gomanaru Ferry",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "공산성",
+        "name_en": "Gongsanseong Fortress",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "금강",
+        "name_en": "Geumgang River",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "금학생태공원",
+        "name_en": "Geumhak Ecological Park",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "마곡사",
+        "name_en": "Magoksa Temple",
+        "kind": "temple",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "무령왕릉",
+        "name_en": "King Muryeong Tomb",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "석장리박물관",
+        "name_en": "Seokjangni Historic Site",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "창벽",
+        "name_en": "Changbyeok Cliff",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "buyeo-sipgyeong",
+    "hubId": "buyeo",
+    "title": "부여10경",
+    "title_en": "Buyeo Ten Scenic Views",
+    "listKind": "sipgyeong",
+    "memberCountClaimed": 10,
+    "aliases": [
+      "부여 10경",
+      "부여10경",
+      "부여 십경"
+    ],
+    "sourceUrl": "https://buyeo.go.kr/html/tour/info/info_010107.html",
+    "sourceOrg": "부여군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "낙화암",
+        "name_en": "Nakwhaam Rock of Busosan",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "정림사지 오층석탑",
+        "name_en": "Five-story Stone Pagoda at Jeongnimsa",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "궁남지",
+        "name_en": "Gungnamji Pond Four Seasons",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "부여왕릉원",
+        "name_en": "Buyeo Royal Tombs",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "천정대 백제보",
+        "name_en": "Cheonjeongdae Baekje Fort",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "백마강 수상관광",
+        "name_en": "Baekma River Boat Tour",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "백제문화단지",
+        "name_en": "Baekje Cultural Land",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "만수산 무량사",
+        "name_en": "Musangsan Muryangsa Temple",
+        "kind": "temple",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "서동요 테마파크",
+        "name_en": "Seodongyo Theme Park",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "성흥산 사랑나무",
+        "name_en": "Seongheungsan Love Tree",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "nonsan-other",
+    "hubId": "nonsan",
+    "title": "논산11경",
+    "title_en": "Nonsan Eleven Scenic Views",
+    "listKind": "other",
+    "memberCountClaimed": 11,
+    "aliases": [
+      "논산 11경",
+      "논산11경"
+    ],
+    "sourceUrl": "https://www.nonsan.go.kr/tour/html/sub02/0201.html",
+    "sourceOrg": "논산시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "관촉사",
+        "name_en": "Gwanchoksa Temple",
+        "kind": "temple",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "논산 탑정호",
+        "name_en": "Tapjeongho Lake and Suspension Bridge",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "대둔산 수락계곡",
+        "name_en": "Daedunsan Surak Valley",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "계백장군유적지",
+        "name_en": "General Gyebaek Historic Site",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "쌍계사",
+        "name_en": "Ssanggyesa Temple",
+        "kind": "temple",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "개태사",
+        "name_en": "Gaetaesa Temple",
+        "kind": "temple",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "강경포구와 근대역사거리",
+        "name_en": "Ganggyeong Port and Modern History Street",
+        "kind": "market",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "노성산성과 명재고택",
+        "name_en": "Noseongsanseong and Myeongjae House",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "돈암서원",
+        "name_en": "Donam Seowon Academy",
+        "kind": "shrine",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "선샤인랜드",
+        "name_en": "Sunshine Land",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "종학당과 한국유교문화진흥원",
+        "name_en": "Jonghakdang and Korean Confucian Culture Center",
+        "kind": "shrine",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "gyeryong-gugyeong",
+    "hubId": "gyeryong",
+    "title": "계룡9경",
+    "title_en": "Gyeryong Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "계룡 9경",
+      "계룡9경",
+      "계룡 구경"
+    ],
+    "sourceUrl": "https://www.gyeryong.go.kr/tour",
+    "sourceOrg": "계룡시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "계룡산국립공원",
+        "name_en": "Gyeryongsan Cheonhwangbong Peak",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "동학사",
+        "name_en": "Donghaksa Temple",
+        "kind": "temple",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "갑사",
+        "name_en": "Gapsa Temple",
+        "kind": "temple",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "신원사",
+        "name_en": "Sinwonsa Temple",
+        "kind": "temple",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "향적산 국사봉",
+        "name_en": "Hyangjeoksan Guksabong Peak",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "숫용추",
+        "name_en": "Sutyongchu Valley",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "암용추",
+        "name_en": "Amyongchu Valley",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "계룡대 통일탑",
+        "name_en": "Gyeryongdae Unification Tower",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "사계고택",
+        "name_en": "Sagye Historic House",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "geumsan-sipgyeong",
+    "hubId": "geumsan",
+    "title": "금산10경",
+    "title_en": "Geumsan Ten Scenic Views",
+    "listKind": "sipgyeong",
+    "memberCountClaimed": 10,
+    "aliases": [
+      "금산 10경",
+      "금산10경",
+      "금산 십경"
+    ],
+    "sourceUrl": "https://www.geumsan.go.kr/tour/html/sub02/0206.html",
+    "sourceOrg": "금산군",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "금산 적벽강",
+        "name_en": "Jeokbyeokgang Silk Water Trail",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "대둔산 낙조대",
+        "name_en": "Daedunsan Sunset Observatory",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "금산 진악산",
+        "name_en": "Jinaksan Wild Ginseng Site",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "서대산 산꽃세상",
+        "name_en": "Seodaesan Flower World",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "산림문화 힐링명소",
+        "name_en": "Forest Culture Healing Site",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "금산인삼 세계농업유산",
+        "name_en": "Geumsan Ginseng World Agricultural Heritage",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "인삼·약령시장",
+        "name_en": "Ginseng and Herbal Market",
+        "kind": "market",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "금산 칠백의총",
+        "name_en": "Chilbaeguichong Geumseongsan",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "월영산 원골",
+        "name_en": "Wolyeongsan Valley",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "태조태실 요광은행나무",
+        "name_en": "Taejo Shrine Ginkgo Tree",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "uijeongbu-palgyeong",
+    "hubId": "uijeongbu",
+    "title": "의정부8경",
+    "title_en": "Uijeongbu Eight Scenic Views",
+    "listKind": "palgyeong",
+    "memberCountClaimed": 8,
+    "aliases": [
+      "의정부 8경",
+      "의정부8경",
+      "의정부 팔경"
+    ],
+    "sourceUrl": "https://www.uijeongbu.go.kr/tour",
+    "sourceOrg": "의정부시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "망월사",
+        "name_en": "Mangwolsa Temple",
+        "kind": "temple",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "미술도서관",
+        "name_en": "Art Library",
+        "kind": "museum",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "수락산 도정봉",
+        "name_en": "Suraksan Dojeongbong Peak",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "음악도서관",
+        "name_en": "Music Library",
+        "kind": "museum",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "의정부경전철",
+        "name_en": "Uijeongbu Light Rail",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "의정부예술의전당",
+        "name_en": "Uijeongbu Arts Center",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "의정부제일시장",
+        "name_en": "Uijeongbu First Market",
+        "kind": "market",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "회룡사",
+        "name_en": "Hoeryongsa Temple",
+        "kind": "temple",
+        "linkStatus": "linked"
+      }
+    ]
+  },
+  {
+    "listId": "yeoju-palgyeong",
+    "hubId": "yeoju",
+    "title": "여주8경",
+    "title_en": "Yeoju Eight Scenic Views",
+    "listKind": "palgyeong",
+    "memberCountClaimed": 8,
+    "aliases": [
+      "여주 8경",
+      "여주8경",
+      "여주 팔경",
+      "여주팔경"
+    ],
+    "sourceUrl": "https://www.yeojunews.co.kr/news/articleView.html?idxno=42978",
+    "sourceOrg": "여주시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "신륵모종",
+        "name_en": "Silleuk Evening Bell",
+        "kind": "temple",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "마암어등",
+        "name_en": "Maam Fishing Lamps",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "학동모연",
+        "name_en": "Hakdong Evening Mist",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "연탄귀범",
+        "name_en": "Yeontan Returning Sails",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "양도낙안",
+        "name_en": "Yangdo Setting Geese",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "팔수장림",
+        "name_en": "Palsu Long Forest",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "이릉두견",
+        "name_en": "Ireung Azaleas",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "파사성",
+        "name_en": "Pasa Passing Rain",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      }
+    ]
+  },
+  {
+    "listId": "icheon-gugyeong",
+    "hubId": "icheon",
+    "title": "이천9경",
+    "title_en": "Icheon Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "이천 9경",
+      "이천9경",
+      "이천 구경"
+    ],
+    "sourceUrl": "https://www.icheon.go.kr/tour/selectTourCntntsWebList.do?ctgry=15&key=1785",
+    "sourceOrg": "이천시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "노성산 말머리바위",
+        "name_en": "Noseongsan Horsehead Rock",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "도드람산 삼봉",
+        "name_en": "Dodeuramsan Three Peaks",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "반룡송",
+        "name_en": "Banryongsong Pine",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "사기막골도예촌",
+        "name_en": "Sagimakgol Pottery Village",
+        "kind": "neighborhood",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "산수유마을",
+        "name_en": "Cornelian Cherry Village",
+        "kind": "neighborhood",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "설봉산 삼형제 바위",
+        "name_en": "Seolbongsan Three Brothers Rocks",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "설봉산성",
+        "name_en": "Seolbongsanseong Fortress",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "설봉공원",
+        "name_en": "Seolbongho Lake",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "애련정",
+        "name_en": "Aeryeonjeong Pavilion",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "gwangju-gi-palgyeong",
+    "hubId": "gwangju_gi",
+    "title": "광주8경",
+    "title_en": "Gwangju (Gyeonggi) Eight Scenic Views",
+    "listKind": "palgyeong",
+    "memberCountClaimed": 8,
+    "aliases": [
+      "광주 8경",
+      "광주8경",
+      "경기광주8경",
+      "광주 팔경"
+    ],
+    "sourceUrl": "https://www.gjcity.go.kr/oldTour/contents.do?mId=0101010100",
+    "sourceOrg": "광주시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "경기광주 남한산성",
+        "name_en": "Namhansanseong Fortress",
+        "kind": "landmark",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "경안천습지생태공원",
+        "name_en": "Gyeongancheon Wetland Ecological Park",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "곤지암도자공원",
+        "name_en": "Gonjiam Pottery Park",
+        "kind": "museum",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "화담숲",
+        "name_en": "Hwadam Forest",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "중대물빛공원",
+        "name_en": "Jungdae Water Light Park",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "무갑산",
+        "name_en": "Mugapsan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "태화산",
+        "name_en": "Taehwasan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "송정사",
+        "name_en": "Songjeongsa Shrine",
+        "kind": "shrine",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "ansan-gugyeong",
+    "hubId": "ansan",
+    "title": "안산9경",
+    "title_en": "Ansan Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "안산 9경",
+      "안산9경",
+      "안산 구경"
+    ],
+    "sourceUrl": "https://www.ansan.go.kr/vote/main/selectVoteResult.do?vote_no=486",
+    "sourceOrg": "안산시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "시화호조력발전소",
+        "name_en": "Sihwaho Tidal Power Plant",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "대부도",
+        "name_en": "Daebu Haesol Trail",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "구봉도 낙조",
+        "name_en": "Gubongdo Sunset",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "탄도 바닷길",
+        "name_en": "Tando Tidal Flat Trail",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "풍도",
+        "name_en": "Pungdo Island",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "동주염전",
+        "name_en": "Dongju Salt Field",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "안산갈대습지공원",
+        "name_en": "Ansan Reed Wetland",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "다문화거리",
+        "name_en": "Multicultural Street",
+        "kind": "neighborhood",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "노적봉공원",
+        "name_en": "Nojeokbong Park",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "hwaseong-palgyeong",
+    "hubId": "hwaseong",
+    "title": "화성8경",
+    "title_en": "Hwaseong Eight Scenic Views",
+    "listKind": "palgyeong",
+    "memberCountClaimed": 8,
+    "aliases": [
+      "화성 8경",
+      "화성8경",
+      "화성 팔경"
+    ],
+    "sourceUrl": "https://gnews.gg.go.kr/news/news_detail.do?number=201606031800046284C076&s_code=C076",
+    "sourceOrg": "화성시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "융건릉",
+        "name_en": "Yungneung and Geolleung Royal Tombs",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "용주사 범종",
+        "name_en": "Yongjusa Temple Bell",
+        "kind": "temple",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "제부도",
+        "name_en": "Jebumose Island",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "궁평리해수욕장",
+        "name_en": "Gungpyeong Sunset",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "남양황라",
+        "name_en": "Namyang Yellow Waves",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "입파홍암",
+        "name_en": "Ipahongam Red Cliffs",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "제암만세",
+        "name_en": "Jeammansae Memorial",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "남양성지",
+        "name_en": "Namyang Holy Site",
+        "kind": "shrine",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "yongin-palgyeong",
+    "hubId": "yongin",
+    "title": "용인8경",
+    "title_en": "Yongin Eight Scenic Views",
+    "listKind": "palgyeong",
+    "memberCountClaimed": 8,
+    "aliases": [
+      "용인 8경",
+      "용인8경",
+      "용인 팔경"
+    ],
+    "sourceUrl": "https://www.yongin.go.kr/home/yitour/ytour01/yttour02/yttourmn01.jsp",
+    "sourceOrg": "용인시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "용인 석성산",
+        "name_en": "Seokseongsan Sunrise",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "광교산 사계",
+        "name_en": "Gwanggyosan Four Seasons",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "기흥호수공원",
+        "name_en": "Giheung Lake Park",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "용인농촌테마파크와 연꽃단지",
+        "name_en": "Yongin Rural Theme Park and Lotus Pond",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "용인자연휴양림",
+        "name_en": "Yongin Natural Recreation Forest",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "조비산",
+        "name_en": "Jobisan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "가실벚꽃",
+        "name_en": "Gasil Cherry Blossoms",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "어비낙조",
+        "name_en": "Eobi Sunset",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "anyang-gugyeong",
+    "hubId": "anyang",
+    "title": "안양9경",
+    "title_en": "Anyang Nine Scenic Views",
+    "listKind": "gugyeong",
+    "memberCountClaimed": 9,
+    "aliases": [
+      "안양 9경",
+      "안양9경",
+      "안양 구경"
+    ],
+    "sourceUrl": "https://www.anyang.go.kr/main/contents.do?key=732",
+    "sourceOrg": "안양시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "안양예술공원",
+        "name_en": "Anyang Art Park",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "안양천생태공원",
+        "name_en": "Anyangcheon Stream",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "평촌중앙공원",
+        "name_en": "Pyeongchon Central Park",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "망해암일몰",
+        "name_en": "Manghaeam Sunset",
+        "kind": "temple",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "안양중앙시장",
+        "name_en": "Anyang First Street",
+        "kind": "market",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "수리산성지",
+        "name_en": "Surisan Holy Site",
+        "kind": "shrine",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "평촌1번가 문화의거리",
+        "name_en": "Pyeongchon Culture Street",
+        "kind": "neighborhood",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "병목안 시민공원",
+        "name_en": "Byeongmokam Citizens Park",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "만안교",
+        "name_en": "Manangyo Bridge",
+        "kind": "landmark",
+        "linkStatus": "pending_coord"
+      }
+    ]
+  },
+  {
+    "listId": "anseong-palgyeong",
+    "hubId": "anseong",
+    "title": "안성8경",
+    "title_en": "Anseong Eight Scenic Views",
+    "listKind": "palgyeong",
+    "memberCountClaimed": 8,
+    "aliases": [
+      "안성 8경",
+      "안성8경",
+      "안성 팔경"
+    ],
+    "sourceUrl": "https://www.data.go.kr/data/15078322/fileData.do",
+    "sourceOrg": "안성시",
+    "sourceFetchedAt": "2026-09-04",
+    "status": "verified",
+    "members": [
+      {
+        "attractionName": "안성 칠장사",
+        "name_en": "Chiljangsa Temple",
+        "kind": "temple",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "안성 미리내성지",
+        "name_en": "Mirinae Holy Site",
+        "kind": "shrine",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "석남사",
+        "name_en": "Seongnamsa Temple",
+        "kind": "temple",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "안성맞춤랜드",
+        "name_en": "Anseong Matchum Land",
+        "kind": "park",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "안성 서운산",
+        "name_en": "Seounsan Mountain",
+        "kind": "viewpoint",
+        "linkStatus": "linked"
+      },
+      {
+        "attractionName": "금광호수",
+        "name_en": "Geumgwang Lake",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "고삼호수",
+        "name_en": "Gosam Lake",
+        "kind": "viewpoint",
+        "linkStatus": "pending_coord"
+      },
+      {
+        "attractionName": "안성팜랜드",
+        "name_en": "Anseong Farmland",
+        "kind": "park",
+        "linkStatus": "pending_coord"
+      }
+    ]
   }
 ]
