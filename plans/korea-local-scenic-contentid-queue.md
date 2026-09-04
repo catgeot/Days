@@ -18,9 +18,9 @@
 
 | # | 작업 | 상태 |
 |---|------|------|
-| S0 | fill 스크립트 `--db-only`/`--keyword-only`/`--limit`/`--resume` · 문경(`mungyeong-palgyeong`) DB 매칭 스모크 · audit가 `contentId` 허용 | ⬜ |
+| S0 | fill 스크립트 `--db-only`/`--keyword-only`/`--limit`/`--resume` · 문경(`mungyeong-palgyeong`) DB 매칭 스모크 · audit가 `contentId` 허용 | ✅ 2026-09-04 |
 
-S0 PASS 후에만 아래 F. 라운드 표는 S0에서 `listKoreaLocalScenicLists()` 순으로 6칸씩 채운다.
+S0 PASS 후에만 아래 F. 라운드 표는 `listKoreaLocalScenicLists()` verified 순 6칸씩.
 
 ---
 
@@ -28,7 +28,7 @@ S0 PASS 후에만 아래 F. 라운드 표는 S0에서 `listKoreaLocalScenicLists
 
 | R | 워커A (3 listId) | 워커B (3 listId) | 모드 | 상태 |
 |---|------------------|------------------|------|------|
-| **R01** | *(S0 후 기입)* | *(S0 후 기입)* | DB-only | ⬜ S0 대기 |
+| **R01** | `hongcheon-palgyeong` · `yanggu-gugyeong` · `inje-palgyeong` | `samcheok-sipgyeong` · `wonju-palgyeong` · `donghae-bijing` | DB-only | ⬜ |
 
 ---
 
