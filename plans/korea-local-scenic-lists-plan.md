@@ -384,7 +384,7 @@ issues **0** · 스모크 PASS 전에 커밋·이관·다음 R **금지**.
 |--|--|
 | **운영** | **자동 오케** (§4.3) · F=VERIFY 후 다음 R · **3R마다 I#** |
 | **지금** | **F R10–R29** ✅ · lists **89** · members **827** · tip `05285c7b` |
-| **다음** | **광역시 백로그**(서울·인천·부산 등 11 hub) — 사람 합의 후 R30+ 또는 주제 종료 · **코드 PR** `cursor/palgyeong`→`main` |
+| **다음** | **광역시 백로그**(서울·인천·부산 등 11 hub) — 사람 합의 후 R30+ 또는 주제 종료 · **PR [#183](https://github.com/catgeot/Days/pull/183)** merge |
 | **브랜치** | `cursor/palgyeong` (고정) · tip `05285c7b` · main docs `39adb540`+ |
 | **금지** | UI · scenic 승격 · 광역 팔경 · tip rewrite · **매 R 사람 QA·제시어 대기** |
 | **VERIFY** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · `smoke:korea-local-scenic-lists` · `build` |
