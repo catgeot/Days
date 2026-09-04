@@ -2094,14 +2094,16 @@
         "name_en": "Gyeongbuk Arboretum Four Seasons",
         "kind": "park",
         "lat": 36.318,
-        "lng": 129.252
+        "lng": 129.252,
+        "contentId": "127432"
       },
       {
         "name": "연오랑세오녀 테마공원",
         "name_en": "Yeonorang Seonyeo Theme Park",
         "kind": "park",
         "lat": 36.0037327,
-        "lng": 129.4632059
+        "lng": 129.4632059,
+        "contentId": "2633900"
       },
       {
         "name": "철길숲 불의 정원",
@@ -2115,14 +2117,16 @@
         "name_en": "Jukjang Haok Valley",
         "kind": "park",
         "lat": 36.322,
-        "lng": 129.278
+        "lng": 129.278,
+        "contentId": "127912"
       },
       {
         "name": "장기읍성 유배문화체험촌",
         "name_en": "Janggi Fortress Exile Culture Village",
         "kind": "landmark",
         "lat": 35.985,
-        "lng": 129.418
+        "lng": 129.418,
+        "contentId": "2638529"
       }
     ]
   },
@@ -18599,7 +18603,8 @@
         "name_en": "Wollyubong",
         "kind": "viewpoint",
         "lat": 36.22824,
-        "lng": 127.88763
+        "lng": 127.88763,
+        "contentId": "2606381"
       },
       {
         "name": "난계국악박물관",
@@ -20587,7 +20592,8 @@
         "name_en": "Yeonam Geopark",
         "kind": "park",
         "lat": 36.8226,
-        "lng": 127.5953
+        "lng": 127.5953,
+        "contentId": "2782902"
       },
       {
         "name": "추성산성",

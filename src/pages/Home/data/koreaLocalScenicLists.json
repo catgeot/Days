@@ -1539,7 +1539,8 @@
     "members": [
       {
         "attractionName": "월류봉",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "2606381"
       },
       {
         "attractionName": "화헌악",
@@ -1738,7 +1739,8 @@
         "kind": "park",
         "lat": 36.8226,
         "lng": 127.5953,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "2782902"
       },
       {
         "attractionName": "추성산성",
@@ -1917,7 +1919,8 @@
         "kind": "park",
         "lat": 36.318,
         "lng": 129.252,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "127432"
       },
       {
         "attractionName": "연오랑세오녀 테마공원",
@@ -1925,7 +1928,8 @@
         "kind": "park",
         "lat": 36.0037327,
         "lng": 129.4632059,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "2633900"
       },
       {
         "attractionName": "철길숲 불의 정원",
@@ -1941,7 +1945,8 @@
         "kind": "park",
         "lat": 36.322,
         "lng": 129.278,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "127912"
       },
       {
         "attractionName": "장기읍성 유배문화체험촌",
@@ -1949,7 +1954,8 @@
         "kind": "landmark",
         "lat": 35.985,
         "lng": 129.418,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "2638529"
       },
       {
         "attractionName": "구룡포 일본인 가옥거리",
