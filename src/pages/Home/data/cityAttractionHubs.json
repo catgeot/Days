@@ -10175,7 +10175,9 @@
       "김해시",
       "Gimhae",
       "gimhae",
-      "金海"
+      "金海",
+      "김해9경",
+      "김해 구경"
     ],
     "attractions": [
       {
@@ -11629,7 +11631,9 @@
       "밀양시",
       "Miryang",
       "miryang",
-      "密陽"
+      "密陽",
+      "밀양8경",
+      "밀양 팔경"
     ],
     "attractions": [
       {
@@ -12104,7 +12108,9 @@
       "양산시",
       "Yangsan",
       "yangsan",
-      "梁山"
+      "梁山",
+      "양산12경",
+      "양산 8경"
     ],
     "attractions": [
       {
@@ -19211,7 +19217,9 @@
       "Uiryeong",
       "uiryeong",
       "宜寧",
-      "의령읍"
+      "의령읍",
+      "의령9경",
+      "의령 구경"
     ],
     "attractions": [
       {
@@ -19241,6 +19249,55 @@
         "kind": "park",
         "lat": 35.3355,
         "lng": 128.2455
+      },
+      {
+        "name": "자굴산",
+        "name_en": "Jagulsan",
+        "kind": "viewpoint",
+        "lat": 35.3770754,
+        "lng": 128.2034816
+      },
+      {
+        "name": "의령 봉황대",
+        "name_en": "Bonghwangdae Uiryeong",
+        "kind": "viewpoint",
+        "lat": 35.4352846,
+        "lng": 128.24126
+      },
+      {
+        "name": "벽계관광지",
+        "name_en": "Byeokgye Tourist Site",
+        "kind": "park",
+        "lat": 35.4265497,
+        "lng": 128.211231
+      },
+      {
+        "name": "정암루(솥바위)",
+        "name_en": "Jeongamru (Sotbawi Rock)",
+        "kind": "landmark",
+        "lat": 35.3139551,
+        "lng": 128.294889
+      },
+      {
+        "name": "탑바위",
+        "name_en": "Tapbawi Rock",
+        "kind": "viewpoint",
+        "lat": 35.3648756,
+        "lng": 128.323217
+      },
+      {
+        "name": "백산안희제선생 생가",
+        "name_en": "Birthplace of An Hui-je",
+        "kind": "landmark",
+        "lat": 35.4542373,
+        "lng": 128.349735
+      },
+      {
+        "name": "호암이병철선생 생가",
+        "name_en": "Birthplace of Lee Byung-chul (Ho-am)",
+        "kind": "landmark",
+        "lat": 35.3821339,
+        "lng": 128.323257
       }
     ]
   },
@@ -19634,7 +19691,9 @@
       "Changnyeong",
       "changnyeong",
       "昌寧",
-      "우포"
+      "우포",
+      "창녕구경",
+      "창녕 9경"
     ],
     "attractions": [
       {
@@ -19664,6 +19723,27 @@
         "kind": "park",
         "lat": 35.540651,
         "lng": 128.502155
+      },
+      {
+        "name": "우포늪과 따오기",
+        "name_en": "Upo Wetland and Crested Ibis",
+        "kind": "park",
+        "lat": 35.553,
+        "lng": 128.415
+      },
+      {
+        "name": "화왕산 억새와 진달래",
+        "name_en": "Silver Grass and Azaleas on Hawangsan",
+        "kind": "viewpoint",
+        "lat": 35.5471482,
+        "lng": 128.531694
+      },
+      {
+        "name": "만옥정공원과 신라진흥왕척경비, 술정리동삼층석탑",
+        "name_en": "Manokjeong Park, Jinheung Stele, and Suljeong-ri Pagoda",
+        "kind": "park",
+        "lat": 35.540651,
+        "lng": 128.502155
       }
     ]
   },
@@ -19680,7 +19760,9 @@
       "Haman",
       "haman",
       "咸安",
-      "아라가야"
+      "아라가야",
+      "함안9경",
+      "함안 구경"
     ],
     "attractions": [
       {
@@ -19717,6 +19799,27 @@
         "kind": "viewpoint",
         "lat": 35.2364029,
         "lng": 128.4688792
+      },
+      {
+        "name": "악양의 꽃길과 노을",
+        "name_en": "Agyang Flower Path and Sunset",
+        "kind": "park",
+        "lat": 35.3352472,
+        "lng": 128.3985107
+      },
+      {
+        "name": "입곡군립공원의 단풍",
+        "name_en": "Autumn Foliage at Ipgok County Park",
+        "kind": "park",
+        "lat": 35.32,
+        "lng": 128.38
+      },
+      {
+        "name": "연꽃테마파크의 아라홍련",
+        "name_en": "Ara Hongryeon Lotus at Lotus Theme Park",
+        "kind": "park",
+        "lat": 35.29,
+        "lng": 128.42
       }
     ]
   },
