@@ -109,3 +109,41 @@
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
 작업: 홈 검색 문경 · /korea/theme/scenic 문경 hub · 축제 상세 인근 목록 소제목
 ```
+
+## 팔경 contentId — R03+R04 DB-only ✅ · 이관 R05
+
+- **세션** `오케스트레이터 팔경contentId` · 후임 Task 기동 실패(StepContext) 후 현 메인 워커2 재개
+- **브랜치** `cursor/palgyeong-cid` · tip `c0897266` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **R03** 21/52 (`003b34d8`) · **R04** 6/52 (`c0897266`) · 누적 **60**/876
+- **VERIFY** audit×2 issues 0 · smoke lists + content-ids PASS
+- **다음** R05 A `yecheon-palgyeong`·`yeongdeok-sipgyeong`·`uiseong-binggye-palgyeong` / B `seongju-sipgyeong`·`yeongcheon-gugyeong`·`cheongdo-gugyeong`
+- 진천·경주8괘는 한문명 DB miss 0 hit
+
+```
+오케스트레이터 팔경contentId
+@plans/orchestrator-method.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/feature-handoff-index.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P1/P2 월권
+작업: R05 DB-only 워커A3+B3 → VERIFY → R06 또는 Task 이관
+```
+
+## 팔경 contentId — R05+R06 DB-only ✅ · 이관 R07
+
+- **세션** `오케스트레이터 팔경contentId`
+- **브랜치** `cursor/palgyeong-cid` · tip `6b2aa715` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **R05** 14/53 (`8d2e11a1`) · **R06** 19/56 (`6b2aa715`) · 누적 **93**/876
+- **VERIFY** audit×2 issues 0 · smoke lists + content-ids · build PASS
+- **다음** R07 A `sancheong-gugyeong`·`hamyang-palgyeong`·`geochang-gugyeong` / B `hapcheon-palgyeong`·`gimhae-gugyeong`·`yangsan-other`
+- 빙계팔경·하동 계절경관 DB miss 0 hit · 통영·남해 복합명 부분매칭(score 108) 다수
+
+```
+오케스트레이터 팔경contentId
+@plans/orchestrator-method.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/feature-handoff-index.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P1/P2 월권
+작업: R07 DB-only 워커A3+B3 → VERIFY → R08 또는 Task 이관
+```
