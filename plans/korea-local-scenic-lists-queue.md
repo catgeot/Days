@@ -1,6 +1,6 @@
 # koreaLocalScenicLists — 사전 배치 큐 (기초지자체 팔경·구경)
 
-**상태**: **F R10–R29** ✅ 2026-09-04 · **I#5–#11** ✅ · **F R30** ✅ · **PR #183** merged · lists **94** · members **876** · **1차 큐 소진**  
+**상태**: ✅ **1차 종료** 2026-09-04 · PR [#184](https://github.com/catgeot/Days/pull/184) merge `55194e80` · lists **94** · members **876** · **F R01–R30** ✅ · **I#12** ✅  
 **규칙**: 라운드 = **6 칸** · 워커A **3** + 워커B **3** · VERIFY PASS → **다음 R 자동** · **3R마다 I#** · §6.2만 정지  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.6** · 플랜 [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md)  
 **단위**: 시·군·구만 · **광역 팔경(관동팔경 등) 큐 금지**(1차)  
@@ -228,7 +228,7 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 | 울산 | `ulsan` | ✅ 울산12경 |
 | 세종 | `sejong` | skip |
 
-> **1차 큐 소진** — 후속: pending_coord 좌표 보강 · PR [#184](https://github.com/catgeot/Days/pull/184) merge.
+> **1차 큐 소진 · 주제 종료** — PR [#184](https://github.com/catgeot/Days/pull/184) merged `55194e80`. `pending_coord` 424는 선택 후속(**새 합의** 전 착수 금지).
 
 ### I# 주기 요약 (R10–)
 
@@ -241,6 +241,7 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 | **#9** | R22–R24 | 충남 잔·경기 |
 | **#10** | R25–R27 | 경기 |
 | **#11** | R28–R29 | 경기 잔·제주 |
+| **#12** | R30 | 광역시 · **1차 종료** |
 
 ### 예비 (스킵·EXISTS 시)
 
@@ -259,8 +260,8 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 ### 진행 체크
 
 ```text
-운영: 자동 오케 §4.3 — VERIFY PASS → 다음 ⬜ R (사람 제시어·Preview QA 없음)
-현재: lists 94 · members 876 · tip c82f85a5 (cursor/palgyeong) · F R30 ✅ · 1차 큐 소진
-다음: PR #184 merge · pending_coord 좌표 보강(선택) · 주제 종료 합의
-I#12: ✅ 2026-09-04 · PR #183 merged · PR #184 draft
+운영: 1차 종료 — 오케 루프 정지
+현재: lists 94 · members 876 · main 55194e80 · PR #184 merged · F R30 ✅
+다음: 없음 (주제 종료)
+I#12: ✅ 2026-09-04 · pending_coord 424 (선택 · 새 합의 전 금지)
 ```

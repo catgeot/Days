@@ -1,6 +1,6 @@
 # 지자체 팔경·구경 → 도시 명소 SSOT (오케스트레이터)
 
-**상태**: 📋 P0 ✅ · **I#1** ✅ · **F R01–R03** ✅ 2026-09-02 · **I#2** ✅ · **F R04–R06** ✅ · **I#3** ✅ 2026-09-02 · **F R07–R09** ✅ · **I#4** ✅ 2026-09-02 · **F R10–R29** ✅ 2026-09-04 · **I#5–#11** ✅  
+**상태**: ✅ **1차 종료** 2026-09-04 · PR [#184](https://github.com/catgeot/Days/pull/184) merge `55194e80` · lists **94** · members **876** · **I#12** ✅ · P0·F R01–R30 ✅  
 **주제 표기**: `지자체 팔경 #{N}, {단계}`  
 **고정 브랜치**(착수 시 1회): `cursor/palgyeong`  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.6** · 본 플랜  
@@ -268,8 +268,8 @@ feature push와 **별도**로 `main`에서:
 | **이어서** | **R20–R22** 충남 15 hub | I#9 |
 | **이어서** | **R23–R28** 경기 31 hub | I#10–#11 |
 | **이어서** | **R29** 제주 2 hub | I#11 |
-| **백로그** | 광역시·서울 11 hub | R29 후 합의 · 큐 추가 |
-| **종료** | index `active: false` | R29+백로그 소진 또는 §6.2 |
+| **백로그** | 광역시·서울 11 hub | **R30 ✅** · verified 5 · skip 6 |
+| **종료** | index 종료 행 · PR merge | **✅** 2026-09-04 · `55194e80` |
 
 **정지만 하는 경우**: §6.2 · 동일 hub FAIL 2회 · audit 롤백 후에도 ≠0.
 
@@ -382,23 +382,13 @@ issues **0** · 스모크 PASS 전에 커밋·이관·다음 R **금지**.
 
 | | |
 |--|--|
-| **운영** | **자동 오케** (§4.3) · F=VERIFY 후 다음 R · **3R마다 I#** |
-| **지금** | **F R30** ✅ · lists **94** · members **876** · tip `c82f85a5` · **1차 큐 소진** |
-| **다음** | **PR [#184](https://github.com/catgeot/Days/pull/184)** merge · pending_coord 좌표 보강(선택) · 주제 종료 합의 |
-| **브랜치** | `cursor/palgyeong` (고정) · tip `c82f85a5` · PR #183 merged |
-| **금지** | UI · scenic 승격 · 광역 팔경 · tip rewrite · **매 R 사람 QA·제시어 대기** |
-| **VERIFY** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · `smoke:korea-local-scenic-lists` · `build` |
+| **운영** | **1차 종료** · 오케 루프 **정지** |
+| **지금** | PR [#184](https://github.com/catgeot/Days/pull/184) **merged** · main `55194e80` · lists **94** · members **876** · I#12 ✅ |
+| **다음** | **없음** (주제 종료). `pending_coord` 424 · 광역 팔경 · scenic 승격은 **새 합의** 전 금지 |
+| **브랜치** | `cursor/palgyeong` · merge `55194e80` |
+| **금지** | UI · scenic 승격 · 광역 팔경 · 종료 후 오케 재개 |
+| **VERIFY** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · `smoke:korea-local-scenic-lists` · `build` PASS 2026-09-04 |
 
-### §1.2 오케 제시어 (최초 · 복구 · 사람이 새 채팅 열 때)
+### §1.2 다음 제시어
 
-```
-오케스트레이터 지자체팔경
-@plans/korea-local-scenic-lists-plan.md §9
-@plans/korea-local-scenic-lists-queue.md
-@plans/feature-handoff-index.md
-브랜치 cursor/palgyeong · tip c82f85a5
-금지: UI · scenic승격 · 광역팔경 · feature plans 커밋
-작업: PR #184 merge · pending_coord(선택) · 주제 종료 합의
-```
-
-**정상 F 진행 중**: 후임 메인이 **Task 이양**(오케 §4.2) — 사람이 매 R 제시어를 넣을 필요 **없음**.
+**없음** (주제 종료). 오케스트레이터 지자체팔경을 새 채팅에서 열지 않음.

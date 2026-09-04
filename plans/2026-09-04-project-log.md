@@ -20,3 +20,12 @@
 금지: UI · scenic승격 · 광역팔경 · feature plans 커밋
 작업: PR #184 merge · pending_coord(선택) · 주제 종료 합의
 ```
+
+## 지자체 팔경 — PR #184 merge · 1차 주제 종료 ✅
+
+- **세션** `지자체 팔경 #N, PR merge·종료`
+- **PR [#184](https://github.com/catgeot/Days/pull/184)** squash merge → main `55194e80` (R30 · lists 94 · members 876)
+- **VERIFY** audit×2 · smoke · build PASS · `pending_coord` 424는 스킵(선택 · 새 합의 전 금지)
+- **주제 종료** — index 종료 행 · 플랜 §9 · 큐 오케 정지 · 다음 제시어 없음
+
+**다음 제시어 없음** (주제 종료).
