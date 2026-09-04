@@ -5328,7 +5328,8 @@
         "kind": "viewpoint",
         "lat": 36.6620739267,
         "lng": 128.1264681092,
-        "mapboxId": null
+        "mapboxId": null,
+        "contentId": "126570"
       },
       {
         "name": "새재계곡",
