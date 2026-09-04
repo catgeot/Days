@@ -734,7 +734,9 @@
     "lng": 127.6622,
     "aliases": [
       "여수시",
-      "yeosu"
+      "yeosu",
+      "여수10경",
+      "여수 10미10경"
     ],
     "attractions": [
       {
@@ -6587,7 +6589,8 @@
     "lat": 35.2024,
     "lng": 127.4627,
     "aliases": [
-      "구례군"
+      "구례군",
+      "구례10경"
     ],
     "attractions": [
       {
@@ -6963,7 +6966,9 @@
     "lng": 127.2919,
     "aliases": [
       "곡성군",
-      "gokseong"
+      "gokseong",
+      "곡성9경",
+      "곡성관광9경"
     ],
     "attractions": [
       {
@@ -9405,7 +9410,9 @@
     "lng": 127.6956,
     "aliases": [
       "광양시",
-      "gwangyang"
+      "gwangyang",
+      "광양9경",
+      "광양 구경"
     ],
     "attractions": [
       {
