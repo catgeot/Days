@@ -199,6 +199,21 @@
 - **I#** #5–#11 매핑 표 추가 · 오케 R10–R29 연속 진행 가능
 - **다음** **R10** 자동 오케 — 경남 6칸
 
+### #15 오케 R10–R29 ✅ · I#5–#11 ✅
+
+- **세션** `지자체 팔경 오케 R10–R29` · **I#5–#11** 무결성
+- **브랜치** `cursor/palgyeong` · tip `05285c7b` · lists **89** · members **827** (30→89 · +563 members)
+- **F** R10–R28 verified **59 lists** · R24·R29 skip-only (merge 없음)
+- **I#5** R10–R12 경남 — audit 0 · smoke PASS · build PASS
+- **I#6** R13–R15 전남 — audit 0 · smoke PASS · build PASS
+- **I#7** R16–R18 전남잔·전북 — audit 0 · smoke PASS · build PASS
+- **I#8** R19–R21 전북잔·충남 — audit 0 · smoke PASS · build PASS
+- **I#9** R22–R24 충남잔·경기 — audit 0 · smoke PASS · build PASS (R24 skip 6)
+- **I#10** R25–R27 경기 — audit 0 · smoke PASS · build PASS
+- **I#11** R28–R29 경기잔·제주 — audit 0 · smoke PASS · build PASS (R29 skip 2)
+- **수정** R12 `봉황대`→`의령 봉황대` · R25 `gwangju-gi-palgyeong` kebab-case
+- **다음** 광역시 백로그 합의 또는 **PR** `cursor/palgyeong`→`main`
+
 ---
 
 ## 홈 locale 토글 (EN/KO)

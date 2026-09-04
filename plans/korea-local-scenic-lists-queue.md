@@ -1,6 +1,6 @@
 # koreaLocalScenicLists — 사전 배치 큐 (기초지자체 팔경·구경)
 
-**상태**: R09 ✅ · **I#4** ✅ · PR #172 **main merge** ✅ · **R10–R29** ⬜ (잔류 84 hub)  
+**상태**: **F R10–R29** ✅ 2026-09-04 · **I#5–#11** ✅ · tip `05285c7b` · lists **89** · members **827** · 광역시=백로그  
 **규칙**: 라운드 = **6 칸** · 워커A **3** + 워커B **3** · VERIFY PASS → **다음 R 자동** · **3R마다 I#** · §6.2만 정지  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.6** · 플랜 [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md)  
 **단위**: 시·군·구만 · **광역 팔경(관동팔경 등) 큐 금지**(1차)  
@@ -98,13 +98,19 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 
 | R | 워커A (3) | 워커B (3) | 세권 | 상태 |
 |---|-----------|-----------|------|------|
-| **R10** | `tongyeong-?` · `geoje-?` · `sacheon-?` | `changwon-?` · `goseongnam-?` · `namhae-?` | 남해안 | ⬜ |
-| **R11** | `hadong-?` · `jinju-?` · `sancheong-?` | `hamyang-?` · `geochang-?` · `hapcheon-?` | 지리산·서부 | ⬜ |
-| **R12** | `gimhae-?` · `yangsan-?` · `miryang-?` | `uiryeong-?` · `haman-?` · `changnyeong-?` | 낙동·중부 | ⬜ |
+| **R10** | `tongyeong-palgyeong` · `geoje-gugyeong` · `sacheon-gugyeong` | skip `changwon` · skip `goseongnam` · `namhae-sipgyeong` | 남해안 | ✅ 2026-09-04 |
+| **R11** | `hadong-sipgyeong` · `jinju-palgyeong` · `sancheong-gugyeong` | `hamyang-palgyeong` · `geochang-gugyeong` · `hapcheon-palgyeong` | 지리산·서부 | ✅ 2026-09-04 |
+| **R12** | `gimhae-gugyeong` · `yangsan-other` · `miryang-palgyeong` | `uiryeong-gugyeong` · `haman-gugyeong` · `changnyeong-gugyeong` | 낙동·중부 | ✅ 2026-09-04 |
 
 > **경남 18** hub — [`korea-scenic-mid-cluster-plan.md`](./korea-scenic-mid-cluster-plan.md) 남해안·지리산·낙동 순.
 
-**I 주기**: R10–R12 VERIFY 누적 후 → **I 무결성 #5** (예정).
+> **R10 verified**: `tongyeong-palgyeong`(8) · `geoje-gugyeong`(9) · `sacheon-gugyeong`(9) · `namhae-sipgyeong`(10). **skip** `changwon`·`goseongnam` `skip_no_source`.
+
+> **R11 verified**: `hadong-sipgyeong`(10) · `jinju-palgyeong`(8) · `sancheong-gugyeong`(9) · `hamyang-palgyeong`(8) · `geochang-gugyeong`(8) · `hapcheon-palgyeong`(8).
+
+> **R12 verified**: `gimhae-gugyeong`(9) · `yangsan-other`(12) · `miryang-palgyeong`(8) · `uiryeong-gugyeong`(8) · `haman-gugyeong`(9) · `changnyeong-gugyeong`(9). 충돌 접두: `봉황대` → hub `의령 봉황대`.
+
+**I 주기**: R10–R12 VERIFY 누적 후 → **I 무결성 #5** ✅ 2026-09-04.
 
 ---
 
@@ -114,14 +120,16 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 
 | R | 워커A (3) | 워커B (3) | 세권 | 상태 |
 |---|-----------|-----------|------|------|
-| **R13** | `yeosu-?` · `suncheon-?` · `gwangyang-?` | `gokseong-?` · `gurye-?` · `naju-?` | 동·북 | ⬜ |
-| **R14** | `damyang-?` · `jangseong-?` · `hwasun-?` | `hampyeong-?` · `yeonggwang-?` · `mokpo-?` | 북·서 | ⬜ |
-| **R15** | `muan-?` · `sinan-?` · `jindo-?` | `haenam-?` · `wando-?` · `gangjin-?` | 서·중남 | ⬜ |
-| **R16** | `jangheung-?` · `boseong-?` · `goheung-?` | `yeongam-?` · — · — | 중남 | ⬜ |
+| **R13** | `yeosu-other` · skip `suncheon` · `gwangyang-gugyeong` | `gokseong-gugyeong` · `gurye-other` · skip `naju` | 동·북 | ✅ 2026-09-04 |
+| **R14** | `damyang-other` · skip `jangseong` · `hwasun-other` | `hampyeong-palgyeong` · `yeonggwang-gugyeong` · `mokpo-gugyeong` | 북·서 | ✅ 2026-09-04 |
+| **R15** | `muan-gugyeong` · skip `sinan` · `jindo-other` | `haenam-palgyeong` · `wando-palgyeong` · `gangjin-other` | 서·중남 | ✅ 2026-09-04 |
+| **R16** | `jangheung-gugyeong` · `boseong-gugyeong` · `goheung-other` | skip `yeongam` · — · — | 중남 | ✅ 2026-09-04 |
 
 > **전남 22** hub — [`korea-scenic-mid-cluster-plan.md`](./korea-scenic-mid-cluster-plan.md) 동·북·서·중남 순. R16은 4칸(잔여).
 
-**I 주기**: R13–R15 → **I#6** · R16–R18 → **I#7**.
+> **R13–R16 skip**: `suncheon`·`naju`·`jangseong`·`sinan`·`yeongam` `skip_no_source`.
+
+**I 주기**: R13–R15 → **I#6** ✅ 2026-09-04 · R16–R18 → **I#7** ✅ 2026-09-04.
 
 ---
 
@@ -129,13 +137,15 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 
 | R | 워커A (3) | 워커B (3) | 세권 | 상태 |
 |---|-----------|-----------|------|------|
-| **R17** | `jeonju-?` · `wanju-?` · `iksan-?` | `gimje-?` · `gunsan-?` · `buan-?` | 전주권·서부 | ⬜ |
-| **R18** | `gochang-?` · `jeongeup-?` · `namwon-?` | `muju-?` · `jinan-?` · `jangsu-?` | 서부·동부 | ⬜ |
-| **R19** | `imsil-?` · `sunchang-?` · — | — · — · — | 동부 | ⬜ |
+| **R17** | skip `jeonju` · `wanju-gugyeong` · skip `iksan` | skip `gimje` · `gunsan-palgyeong` · `buan-palgyeong` | 전주권·서부 | ✅ 2026-09-04 |
+| **R18** | skip `gochang` · `jeongeup-gugyeong` · skip `namwon` | `muju-other` · skip `jinan` · skip `jangsu` | 서부·동부 | ✅ 2026-09-04 |
+| **R19** | `imsil-gugyeong` · skip `sunchang` · — | — · — · — | 동부 | ✅ 2026-09-04 |
 
 > **전북 14** hub — 전주권·서부·동부 순. R19는 2칸(잔여).
 
-**I 주기**: R19–R21 → **I#8**.
+> **R17–R19 skip**: `jeonju`·`iksan`·`gimje`·`gochang`·`namwon`·`jinan`·`jangsu`·`sunchang` `skip_no_source`. **R18** `muju-other`(33).
+
+**I 주기**: R19–R21 → **I#8** ✅ 2026-09-04.
 
 ---
 
@@ -143,13 +153,15 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 
 | R | 워커A (3) | 워커B (3) | 세권 | 상태 |
 |---|-----------|-----------|------|------|
-| **R20** | `cheonan-?` · `asan-?` · `dangjin-?` | `seosan-?` · `taean-?` · `boryeong-?` | 북부·서해 | ⬜ |
-| **R21** | `seocheon-?` · `hongseong-?` · `yesan-?` | `cheongyang-?` · `gongju-?` · `buyeo-?` | 서해·내포·백제 | ⬜ |
-| **R22** | `nonsan-?` · `gyeryong-?` · `geumsan-?` | — · — · — | 백제·내륙 | ⬜ |
+| **R20** | `cheonan-palgyeong` · skip `asan` · skip `dangjin` | `seosan-gugyeong` · `taean-palgyeong` · skip `boryeong` | 북부·서해 | ✅ 2026-09-04 |
+| **R21** | `seocheon-gugyeong` · `hongseong-other` · `yesan-sipgyeong` | skip `cheongyang` · `gongju-sipgyeong` · `buyeo-sipgyeong` | 서해·내포·백제 | ✅ 2026-09-04 |
+| **R22** | `nonsan-other` · `gyeryong-gugyeong` · `geumsan-sipgyeong` | — · — · — | 백제·내륙 | ✅ 2026-09-04 |
 
 > **충남 15** hub — 북부·서해·내포·백제 순. R22는 3칸(잔여).
 
-**I 주기**: R22–R24 → **I#9**.
+> **R20–R21 skip**: `asan`·`dangjin`·`boryeong`·`cheongyang` `skip_no_source`.
+
+**I 주기**: R22–R24 → **I#9** ✅ 2026-09-04.
 
 ---
 
@@ -159,16 +171,18 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 
 | R | 워커A (3) | 워커B (3) | 세권 | 상태 |
 |---|-----------|-----------|------|------|
-| **R23** | `goyang-?` · `paju-?` · `uijeongbu-?` | `yangju-?` · `dongducheon-?` · `pocheon-?` | 북부 | ⬜ |
-| **R24** | `yeoncheon-?` · `hanam-?` · `namyangju-?` | `guri-?` · `gapyeong-?` · `yangpyeong-?` | 북·동 | ⬜ |
-| **R25** | `yeoju-?` · `icheon-?` · `gwangju_gi-?` | `gimpo-?` · `bucheon-?` · `gwangmyeong-?` | 동·서 | ⬜ |
-| **R26** | `siheung-?` · `ansan-?` · `hwaseong-?` | `pyeongtaek-?` · `suwon-?` · `seongnam-?` | 서·남 | ⬜ |
-| **R27** | `yongin-?` · `anyang-?` · `gunpo-?` | `uiwang-?` · `gwacheon-?` · `osan-?` | 남부 | ⬜ |
-| **R28** | `anseong-?` · — · — | — · — · — | 남부 | ⬜ |
+| **R23** | skip `goyang` · skip `paju` · `uijeongbu-palgyeong` | skip `yangju` · skip `dongducheon` · skip `pocheon` | 북부 | ✅ 2026-09-04 |
+| **R24** | skip `yeoncheon` · skip `hanam` · skip `namyangju` | skip `guri` · skip `gapyeong` · skip `yangpyeong` | 북·동 | ✅ 2026-09-04 |
+| **R25** | `yeoju-palgyeong` · `icheon-gugyeong` · `gwangju-gi-palgyeong` | skip `gimpo` · skip `bucheon` · skip `gwangmyeong` | 동·서 | ✅ 2026-09-04 |
+| **R26** | skip `siheung` · `ansan-gugyeong` · `hwaseong-palgyeong` | skip `pyeongtaek` · skip `suwon` · skip `seongnam` | 서·남 | ✅ 2026-09-04 |
+| **R27** | `yongin-palgyeong` · `anyang-gugyeong` · skip `gunpo` | skip `uiwang` · skip `gwacheon` · skip `osan` | 남부 | ✅ 2026-09-04 |
+| **R28** | `anseong-palgyeong` · — · — | — · — · — | 남부 | ✅ 2026-09-04 |
 
 > **경기 31** hub — R28은 1칸(잔여).
 
-**I 주기**: R25–R27 → **I#10** · R28–R29 → **I#11**.
+> **R23–R27 skip**: 북부 5·R24 전칸 6·R25 서부 3·R26 수도권 4·R27 남부 4 `skip_no_source`. **R25** listId `gwangju-gi-palgyeong`(kebab-case).
+
+**I 주기**: R25–R27 → **I#10** ✅ 2026-09-04 · R28–R29 → **I#11** ✅ 2026-09-04.
 
 ---
 
@@ -176,11 +190,11 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 
 | R | 워커A (3) | 워커B (3) | 상태 |
 |---|-----------|-----------|------|
-| **R29** | `jeju-?` · `seogwipo-?` · — | — · — · — | ⬜ |
+| **R29** | skip `jeju` · skip `seogwipo` · — | — · — · — | ✅ 2026-09-04 |
 
-> **제주 2** hub. R29는 2칸.
+> **제주 2** hub. R29는 2칸 — **skip** `jeju`·`seogwipo` 시·군 단위 공식 N경 없음(`skip_no_source`).
 
-**I 주기**: R28–R29 누적 → **I#11** · 이후 광역시 백로그.
+**I 주기**: R28–R29 누적 → **I#11** ✅ 2026-09-04 · 이후 **광역시 백로그**(사람 합의).
 
 ---
 
@@ -231,7 +245,7 @@ P 완료 → **I 무결성 #1** ✅ 2026-09-02 → F R01 시작.
 
 ```text
 운영: 자동 오케 §4.3 — VERIFY PASS → 다음 ⬜ R (사람 제시어·Preview QA 없음)
-현재: lists 30 · members 264 · main merge ✅ · 다음 ⬜ R10 (경남)
-잔류 큐: R10–R29 (84 hub) — 경남18·전남22·전북14·충남15·경기31·제주2 · 광역시=백로그
-I#5–#11: 3R마다 무결성 · R29 후 광역시 합의 또는 주제 종료
+현재: lists 89 · members 827 · tip 05285c7b (cursor/palgyeong) · F R10–R29 ✅
+다음: 광역시 백로그(서울·인천·부산 등 11 hub) — 사람 합의 후 R30+ 또는 주제 종료
+I#5–#11: ✅ 2026-09-04 · 코드 PR 미병합 — feature push 완료
 ```

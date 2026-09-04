@@ -1,6 +1,6 @@
 # 지자체 팔경·구경 → 도시 명소 SSOT (오케스트레이터)
 
-**상태**: 📋 P0 ✅ · **I#1** ✅ · **F R01–R03** ✅ 2026-09-02 · **I#2** ✅ · **F R04–R06** ✅ · **I#3** ✅ 2026-09-02 · **F R07–R09** ✅ · **I#4** ✅ 2026-09-02  
+**상태**: 📋 P0 ✅ · **I#1** ✅ · **F R01–R03** ✅ 2026-09-02 · **I#2** ✅ · **F R04–R06** ✅ · **I#3** ✅ 2026-09-02 · **F R07–R09** ✅ · **I#4** ✅ 2026-09-02 · **F R10–R29** ✅ 2026-09-04 · **I#5–#11** ✅  
 **주제 표기**: `지자체 팔경 #{N}, {단계}`  
 **고정 브랜치**(착수 시 1회): `cursor/palgyeong`  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.6** · 본 플랜  
@@ -383,9 +383,9 @@ issues **0** · 스모크 PASS 전에 커밋·이관·다음 R **금지**.
 | | |
 |--|--|
 | **운영** | **자동 오케** (§4.3) · F=VERIFY 후 다음 R · **3R마다 I#** |
-| **지금** | PR #172 **main merge** ✅ · lists **30** · **R10–R29** 큐 확정 ⬜ |
-| **다음** | **R10** 경남 — 자동 오케 F · R29+광역시 백로그까지 연속 |
-| **브랜치** | `cursor/palgyeong` (고정) · main `367ca0b0` |
+| **지금** | **F R10–R29** ✅ · lists **89** · members **827** · tip `05285c7b` |
+| **다음** | **광역시 백로그**(서울·인천·부산 등 11 hub) — 사람 합의 후 R30+ 또는 주제 종료 · **코드 PR** `cursor/palgyeong`→`main` |
+| **브랜치** | `cursor/palgyeong` (고정) · tip `05285c7b` · main docs `39adb540`+ |
 | **금지** | UI · scenic 승격 · 광역 팔경 · tip rewrite · **매 R 사람 QA·제시어 대기** |
 | **VERIFY** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · `smoke:korea-local-scenic-lists` · `build` |
 
@@ -393,13 +393,12 @@ issues **0** · 스모크 PASS 전에 커밋·이관·다음 R **금지**.
 
 ```
 오케스트레이터 지자체팔경
-@plans/orchestrator-method.md
-@plans/korea-local-scenic-lists-plan.md
+@plans/korea-local-scenic-lists-plan.md §9
 @plans/korea-local-scenic-lists-queue.md
 @plans/feature-handoff-index.md
-브랜치 cursor/palgyeong · main merge ✅
-금지: UI · scenic승격 · 광역팔경 · feature plans 커밋 · 매R 사람QA · VERIFY후 제시어대기
-작업: R10–R29 자동 오케 — VERIFY PASS→다음R · 3R마다 I# · §6.2만 정지
+브랜치 cursor/palgyeong · tip 05285c7b
+금지: UI · scenic승격 · 광역팔경 · feature plans 커밋
+작업: 광역시 백로그 합의 또는 PR merge · I#12(필요 시)
 ```
 
 **정상 F 진행 중**: 후임 메인이 **Task 이양**(오케 §4.2) — 사람이 매 R 제시어를 넣을 필요 **없음**.
