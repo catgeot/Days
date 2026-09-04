@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'palgyeong-use',
+    label: '팔경 활용 검색·리스트',
+    branch: 'cursor/palgyeong-use-e744',
+    destination:
+      'https://days-git-cursor-palgyeong-use-e744-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
     slug: 'globe-labels',
     label: '홈 지구본 첫 로딩 지명',
     branch: 'cursor/globe-labels-ddce',

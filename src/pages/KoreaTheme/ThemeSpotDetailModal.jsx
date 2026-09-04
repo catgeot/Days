@@ -40,6 +40,10 @@ import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
 import { fetchTourApiAttractionDetail } from '../../utils/fetchTourApiAttractionDetail';
 import { fetchNearbyTourAttractions } from '../../utils/fetchNearbyTourAttractions';
 import {
+  groupNearbySpotsWithLocalScenic,
+  hasTourContentId,
+} from '../Home/lib/koreaLocalScenicLists';
+import {
   fetchNearbyTourRestaurants,
   RESTAURANT_CONTENT_TYPE_ID,
 } from '../../utils/fetchNearbyTourRestaurants';
@@ -608,6 +612,47 @@ function foodPlaceLabel(spot) {
   return String(spot?.locality || spot?.region || '').trim();
 }
 
+function nearbyPoiAttractionRow(spot, { onSelect }) {
+  const thumb = toHttps(spot.firstImage);
+  const dist = formatDistKm(spot.distKm);
+  const place = foodPlaceLabel(spot);
+  const clickable = hasTourContentId(spot.contentId);
+  const Inner = clickable ? 'button' : 'div';
+  const innerProps = clickable
+    ? { type: 'button', onClick: () => onSelect?.(spot) }
+    : {};
+  return (
+    <li key={spot.contentId || spot.id}>
+      <Inner
+        {...innerProps}
+        className={`flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left ${
+          clickable ? 'hover:bg-amber-50 hover:border-amber-300 transition-colors' : ''
+        }`}
+      >
+        {thumb ? (
+          <img
+            src={thumb}
+            alt=""
+            className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
+          />
+        ) : (
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800">
+            <Landmark size={18} aria-hidden="true" />
+          </div>
+        )}
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
+            {spot.name}
+          </span>
+          <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
+            {[place, dist].filter(Boolean).join(' · ')}
+          </span>
+        </span>
+      </Inner>
+    </li>
+  );
+}
+
 /**
  * 네이버 검색 URL.
  * 맛집(동명 많음)만 지역+상호 · 관광지·명소·명승·레포츠·문화는 고유명만
@@ -783,6 +828,19 @@ export default function ThemeSpotDetailModal({
   const isLeports = spotType === LEPORTS_CONTENT_TYPE_ID;
   const isCulture = spotType === CULTURE_CONTENT_TYPE_ID;
   const isApiPoiCross = isRestaurant || isLeports || isCulture;
+  const nearbyAttractionsGrouped = useMemo(() => {
+    const lat = Number(spot?.lat);
+    const lng = Number(spot?.lng);
+    return groupNearbySpotsWithLocalScenic(nearbyAttractions, {
+      hubId: spot?.hubId,
+      lat: Number.isFinite(lat) ? lat : undefined,
+      lng: Number.isFinite(lng) ? lng : undefined,
+      locale,
+    });
+  }, [nearbyAttractions, spot?.hubId, spot?.lat, spot?.lng, locale]);
+  const nearbyAttractionsHasLocalScenic = nearbyAttractionsGrouped.groups.some(
+    (g) => g.items.length,
+  );
   const nestedChildZ =
     overlayZClass === 'z-50' || overlayZClass === 'z-[50]'
       ? 'z-[55]'
@@ -2006,50 +2064,37 @@ export default function ThemeSpotDetailModal({
                         {t('korea.theme.spotDetail.nearAttractionsError')}
                       </p>
                     )}
-                  {nearbyAttractionsStatus === 'empty' && (
+                  {nearbyAttractionsStatus === 'empty' &&
+                    !nearbyAttractionsHasLocalScenic && (
                     <p className="text-xs text-stone-500">
                       {t('korea.theme.spotDetail.nearAttractionsEmpty')}
                     </p>
                   )}
-                  {nearbyAttractions.length > 0 && (
+                  {(nearbyAttractions.length > 0 ||
+                    nearbyAttractionsHasLocalScenic) && (
                     <ul
                       className="space-y-2"
                       aria-label={t('korea.theme.spotDetail.nearAttractionsAria')}
                     >
-                      {nearbyAttractions.map((attr) => {
-                        const thumb = toHttps(attr.firstImage);
-                        const dist = formatDistKm(attr.distKm);
-                        const place = foodPlaceLabel(attr);
-                        return (
-                          <li key={attr.contentId || attr.id}>
-                            <button
-                              type="button"
-                              onClick={() => setSelectedAttraction(attr)}
-                              className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
-                            >
-                              {thumb ? (
-                                <img
-                                  src={thumb}
-                                  alt=""
-                                  className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
-                                />
-                              ) : (
-                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800">
-                                  <Landmark size={18} aria-hidden="true" />
-                                </div>
-                              )}
-                              <span className="min-w-0 flex-1">
-                                <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
-                                  {attr.name}
-                                </span>
-                                <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
-                                  {[place, dist].filter(Boolean).join(' · ')}
-                                </span>
-                              </span>
-                            </button>
+                      {nearbyAttractionsGrouped.groups.map((group) => (
+                        <React.Fragment key={group.listId}>
+                          <li className="list-none pt-0.5">
+                            <p className="text-[11px] font-bold tracking-wide text-stone-500 break-keep">
+                              {group.title}
+                            </p>
                           </li>
-                        );
-                      })}
+                          {group.items.map((attr) =>
+                            nearbyPoiAttractionRow(attr, {
+                              onSelect: setSelectedAttraction,
+                            }),
+                          )}
+                        </React.Fragment>
+                      ))}
+                      {nearbyAttractionsGrouped.rest.map((attr) =>
+                        nearbyPoiAttractionRow(attr, {
+                          onSelect: setSelectedAttraction,
+                        }),
+                      )}
                     </ul>
                   )}
                 </section>

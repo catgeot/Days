@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '홈 지구본 지명',
-  sessionNo: 3,
-  sessionPhase: '사파리 첫 진입 지명',
-  branch: 'cursor/globe-labels-ddce',
+  title: '팔경 활용',
+  sessionNo: 1,
+  sessionPhase: '검색·리스트',
+  branch: 'cursor/palgyeong-use-e744',
   previewPath: '/',
-  qaShareSlug: 'globe-labels',
+  qaShareSlug: 'palgyeong-use',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-04-palgyeong-use-1-search-list',
+    session: '팔경 활용 #1, 검색·리스트',
+    title: '탐색창 문경 팔경 소제목 · 명소 ul 상단 N경 · 축제 인근 그룹',
+    detail:
+      '홈 검색 「문경」에 소제목 문경 팔경+멤버를 여행지·지명보다 앞에 붙였습니다. 명승 같은 ul 상단에 N경 멤버(contentId 없으면 이름만). 축제 상세 인근 관광지 목록 안에만 소제목 그룹. Tour LIVE·scenic 승격·축제 홈 파드 없음. Preview /qa/palgyeong-use — 홈 검색 문경 · /korea/theme/scenic?hub=mungyeong · 축제 상세 인근 목록.',
+    at: '2026-09-04T10:00:00.000Z',
+  },
   {
     id: '2026-09-03-globe-labels-3-safari-first-load',
     session: '홈 지구본 지명 #3, 사파리 첫 진입 지명',

@@ -104,6 +104,10 @@ import {
   SCENIC_REGION_ORDER,
 } from '../Home/lib/koreaTourAttractions';
 import { resolveCityAttractionHub } from '../Home/lib/cityAttractionHubs';
+import {
+  hasTourContentId,
+  mergeLocalScenicMembersIntoScenicSpots,
+} from '../Home/lib/koreaLocalScenicLists';
 import { reconcileThemeNavBack } from '../Home/lib/koreaThemeNavBack';
 import { formatScenicSpotPlaceLabel } from '../Home/lib/scenicSpotPlaceLabel';
 import { useLocale } from '../../i18n/LocaleProvider';
@@ -513,17 +517,26 @@ function ScenicListRow({
   const candidates = spotListThumbCandidates(spot);
   const [thumbIndex, setThumbIndex] = useState(0);
   const thumb = candidates[thumbIndex] || '';
+  const clickable = typeof onOpen === 'function';
+  const Main = clickable ? 'button' : 'div';
+  const mainProps = clickable
+    ? {
+        type: 'button',
+        onClick: () => onOpen(spot.id),
+      }
+    : {};
   return (
     <div
-      className={`flex w-full items-stretch rounded-2xl border border-stone-200/90 bg-white shadow-sm transition-colors hover:border-amber-300/80 hover:bg-amber-50/40 ${
+      className={`flex w-full items-stretch rounded-2xl border border-stone-200/90 bg-white shadow-sm transition-colors ${
+        clickable ? 'hover:border-amber-300/80 hover:bg-amber-50/40' : ''
+      } ${
         large
           ? 'gap-2 p-3.5 sm:px-4 sm:py-3.5'
           : 'gap-1 p-2.5 sm:px-3 sm:py-3'
       }`}
     >
-      <button
-        type="button"
-        onClick={() => onOpen(spot.id)}
+      <Main
+        {...mainProps}
         className={`flex min-w-0 flex-1 items-start text-left ${
           large ? 'gap-3.5' : 'gap-3'
         }`}
@@ -594,7 +607,7 @@ function ScenicListRow({
             {spot.blurb}
           </span>
         </span>
-      </button>
+      </Main>
       {onToggleFavorite ? (
         <button
           type="button"
@@ -998,6 +1011,18 @@ export default function KoreaThemeScenicPage() {
       return { ...spot, firstImage, imageUrl: spot.imageUrl || firstImage };
     });
   }, [curatedSpots, curatedImageByContentId]);
+
+  const curatedSpotsWithLocalScenic = useMemo(
+    () =>
+      hubId
+        ? mergeLocalScenicMembersIntoScenicSpots(
+            curatedSpotsWithThumbs,
+            hubId,
+            locale,
+          )
+        : curatedSpotsWithThumbs,
+    [curatedSpotsWithThumbs, hubId, locale],
+  );
 
   const heritageNearRanked = useMemo(() => {
     if (!nearOrigin || searchActive) return null;
@@ -4391,19 +4416,33 @@ export default function KoreaThemeScenicPage() {
             <ul
               className={`${listLarge ? 'space-y-3' : 'space-y-2'} [overflow-anchor:none]`}
             >
-              {curatedSpotsWithThumbs.map((spot) => (
+              {curatedSpotsWithLocalScenic.map((spot, index) => {
+                const groupTitle = String(spot.groupTitle || '').trim();
+                const prevGroup = String(
+                  curatedSpotsWithLocalScenic[index - 1]?.groupTitle || '',
+                ).trim();
+                const showGroup = Boolean(groupTitle) && groupTitle !== prevGroup;
+                return (
                 <li key={`c-${spot.id}`} className="[overflow-anchor:none]">
+                  {showGroup ? (
+                    <p className="pb-1.5 pt-1 text-[11px] font-bold tracking-wide text-stone-500 break-keep">
+                      {groupTitle}
+                    </p>
+                  ) : null}
                   <ScenicListRow
                     spot={spot}
                     large={listLarge}
                     distanceKm={curatedKmById.get(String(spot.id))}
-                    onOpen={openSpot}
+                    onOpen={
+                      hasTourContentId(spot.contentId) ? openSpot : undefined
+                    }
                     favorited={favoriteIds.has(String(spot.id))}
                     onToggleFavorite={handleToggleFavorite}
                     locale={locale}
                   />
                 </li>
-              ))}
+                );
+              })}
             </ul>
             {nearActive && (curatedNearHiddenCount > 0 || nearCanWidenRadius) ? (
               <div className="flex flex-wrap gap-2 pt-1">
@@ -4438,7 +4477,7 @@ export default function KoreaThemeScenicPage() {
                 ) : null}
               </div>
             ) : null}
-            {curatedSpots.length === 0 ? (
+            {curatedSpotsWithLocalScenic.length === 0 ? (
               <p className="text-sm text-stone-500 break-keep">
                 {searchActive
                   ? (curatedSearchPool?.length || 0) > 0

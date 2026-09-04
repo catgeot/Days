@@ -48,6 +48,7 @@ import {
   buildLocalSearchSuggestions,
   ensureDisambiguation,
   locationToChoiceCandidate,
+  prependLocalScenicToHubCandidates,
 } from '../lib/searchSuggestions.js';
 import { searchBoxForward } from '../lib/mapboxSearchBox.js';
 import {
@@ -801,6 +802,7 @@ export function useHomeHandlers({
         if (spotDesc && candidates[0]) {
           candidates = [{ ...candidates[0], desc: spotDesc, badge: '여행지', kind: 'spot', slug: spot.slug || candidates[0].slug }, ...candidates.slice(1)];
         }
+        candidates = prependLocalScenicToHubCandidates(hubHit, candidates);
         return makeDisambiguationResult(query, candidates, {
           title: `'${hubHit.name}' → 도시와 명소를 골라주세요`,
         });
