@@ -14,19 +14,18 @@
 
 ## 활성 목록
 
-### 팔경 활용 — 검색·리스트 · contentId
+### 팔경 활용 — 검색·리스트 (A)
 
 | | |
 |--|--|
-| **상태** | **문서 SSOT** · 코드 미착수 · 다음 **A #1** |
+| **상태** | **문서 SSOT** · UI 미착수 · B와 **동시 OK** |
 | **브랜치** | `cursor/palgyeong-use-e744` (없으면 main에서 생성) |
-| **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9** |
-| **큐(B)** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — S0 ⬜ |
+| **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-04-project-log.md`](./2026-09-04-project-log.md) |
-| **수집** | [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) **종료** — 오케 `지자체팔경` 재개 금지 |
-| **금지** | scenic 승격 · 축제 홈 파드 · 칩 리디자인 · feature에 `plans/**` 커밋 |
+| **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
+| **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 |
 
-**다음 제시어** (#1 착수):
+**다음 제시어**:
 
 ```
 팔경 활용 #1, 검색·리스트
@@ -34,8 +33,34 @@
 @plans/2026-09-04-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744
-금지: scenic 승격 · 축제 홈 파드 · 칩 리디자인
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
 작업: 탐색창 문경 팔경 소제목 · 명소 같은 ul 상단 N경 · 축제 본문 인근 그룹 · Tour LIVE 없음
+```
+
+---
+
+### 팔경 contentId — 오케 (B)
+
+| | |
+|--|--|
+| **상태** | **S0 대기** · A와 **동시 OK** |
+| **브랜치** | `cursor/palgyeong-cid` (없으면 main에서 생성 · 수집 `cursor/palgyeong` 금지) |
+| **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§3·§9 B** · method **§5.7** |
+| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — S0 ⬜ |
+| **일지** | [`2026-09-04-project-log.md`](./2026-09-04-project-log.md) |
+| **소유** | JSON `contentId` · fill · audit · **UI 금지** |
+| **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · feature에 `plans/**` 커밋 |
+
+**다음 제시어**:
+
+```
+오케스트레이터 팔경contentId
+@plans/orchestrator-method.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/feature-handoff-index.md
+브랜치 cursor/palgyeong-cid
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P1/P2 월권
+작업: S0 스크립트+문경 DB-only → 큐 다음 ⬜ P0 · VERIFY → 다음 R 또는 Task 이관
 ```
 
 ---

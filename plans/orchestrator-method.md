@@ -390,6 +390,7 @@ KR: >50m면 반드시 snap. NO_HIT는 drop/rename만.
 | 429 | 즉시 정지 · 큐 `blocked: quota` · 같은 날 재시도 금지 |
 | 정책 | scenic 승격 · UI · 수집 append **금지** |
 | S0 | 메인 솔로 — 스크립트+문경 DB 스모크 후 F |
+| 브랜치 | `cursor/palgyeong-cid` · UI 브랜치와 동시 세션 OK · 수집 `cursor/palgyeong` 금지 |
 | 정지 | §3.3 + 429 + 동일 멤버 FAIL 2회 + Secrets 없음(DB-only만) |
 
 **워커 프롬프트 최소 골격**
@@ -416,7 +417,7 @@ LIVE R: 메인만 · searchKeyword 금지(워커).
 | 명소 좌표 수리 | `오케스트레이터` + `명소좌표수리` · 「§5.4 · verify 큐 · P0 또는 전수 SNAP · §3.4」 |
 | 국내 명소 TourAPI 좌표 | `오케스트레이터` + `TourAPI-명소좌표` + [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) **§6** · Cloud · 「G0→G1+ · KR HIT만 · §3.4」 |
 | 지자체 팔경·구경 | `오케스트레이터` + `지자체팔경` — **수집 종료. 재개 금지.** 활용은 아래 팔경contentId |
-| 팔경 Tour contentId | `오케스트레이터` + `팔경contentId` + [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) · 「§5.7 · P0 · DB-only 우선 · 워커 병렬 LIVE 금지 · 429 정지 · §3.3·§3.4·§4.2」 |
+| 팔경 Tour contentId | `오케스트레이터` + `팔경contentId` + [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) · 브랜치 **`cursor/palgyeong-cid`** · 「§5.7 · P0 · DB-only 우선 · 워커 병렬 LIVE 금지 · 429 정지 · UI 금지 · §3.3·§3.4·§4.2」 |
 | 정착지 재개/복구 | `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「큐 다음 R · 워커2 · 목표3/최대5/최소2 · §3.3·§3.4·§4.2」 |
 | 파이프 단절 복구 | `오케스트레이터` · 「후임 Task 실패 복구 · 큐 다음 R · 워커2 재기동 · §3.4」 |
 

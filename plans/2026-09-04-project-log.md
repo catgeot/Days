@@ -37,11 +37,32 @@
 - 코드는 다음 채팅 `cursor/palgyeong-use-e744`
 
 ```
+
+## 팔경 활용 — A/B 브랜치 분리 (동시 세션)
+
+- A UI `cursor/palgyeong-use-e744` · B contentId `cursor/palgyeong-cid` · index 행 2개
+- 같은 브랜치 동시 push 금지 · main docs 전 `git pull origin main`
+
+**A**
+
+```
 팔경 활용 #1, 검색·리스트
 @plans/feature-handoff-index.md
 @plans/2026-09-04-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744
-금지: scenic 승격 · 축제 홈 파드 · 칩 리디자인
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
 작업: 탐색창 문경 팔경 소제목 · 명소 같은 ul 상단 N경 · 축제 본문 인근 그룹 · Tour LIVE 없음
+```
+
+**B**
+
+```
+오케스트레이터 팔경contentId
+@plans/orchestrator-method.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/feature-handoff-index.md
+브랜치 cursor/palgyeong-cid
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P1/P2 월권
+작업: S0 스크립트+문경 DB-only → 큐 다음 ⬜ P0 · VERIFY → 다음 R 또는 Task 이관
 ```

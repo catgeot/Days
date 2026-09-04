@@ -386,7 +386,7 @@ issues **0** · 스모크 PASS 전에 커밋·이관·다음 R **금지**.
 | **지금** | PR [#184](https://github.com/catgeot/Days/pull/184) **merged** · main `55194e80` · lists **94** · members **876** · I#12 ✅ |
 | **다음** | **수집 오케 없음**. 활용은 [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) (검색·리스트 · contentId). `pending_coord` 424 · 광역 팔경 · scenic 승격은 그 플랜 범위 밖 |
 | **브랜치** | `cursor/palgyeong` · merge `55194e80` |
-| **금지** | 수집 오케 재개 · 이 주제로 UI 착수(활용 플랜·`cursor/palgyeong-use-e744`만) |
+| **금지** | 수집 오케 재개 · 이 주제로 UI 착수(A=`cursor/palgyeong-use-e744` · B=`cursor/palgyeong-cid`) |
 | **VERIFY** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · `smoke:korea-local-scenic-lists` · `build` PASS 2026-09-04 |
 
 ### §1.2 다음 제시어
