@@ -384,11 +384,17 @@ issues **0** · 스모크 PASS 전에 커밋·이관·다음 R **금지**.
 |--|--|
 | **운영** | **1차 종료** · 오케 루프 **정지** |
 | **지금** | PR [#184](https://github.com/catgeot/Days/pull/184) **merged** · main `55194e80` · lists **94** · members **876** · I#12 ✅ |
-| **다음** | **없음** (주제 종료). `pending_coord` 424 · 광역 팔경 · scenic 승격은 **새 합의** 전 금지 |
+| **다음** | **수집 오케 없음**. 활용은 [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) (검색·리스트 · contentId). `pending_coord` 424 · 광역 팔경 · scenic 승격은 그 플랜 범위 밖 |
 | **브랜치** | `cursor/palgyeong` · merge `55194e80` |
-| **금지** | UI · scenic 승격 · 광역 팔경 · 종료 후 오케 재개 |
+| **금지** | 수집 오케 재개 · 이 주제로 UI 착수(활용 플랜·`cursor/palgyeong-use-e744`만) |
 | **VERIFY** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · `smoke:korea-local-scenic-lists` · `build` PASS 2026-09-04 |
 
 ### §1.2 다음 제시어
 
-**없음** (주제 종료). 오케스트레이터 지자체팔경을 새 채팅에서 열지 않음.
+**없음** (수집 종료). `지자체 팔경` / `오케스트레이터 지자체팔경`을 새 채팅에서 열지 않음. 활용 착수:
+
+```
+팔경 활용 #1, 검색·리스트
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-use-plan.md
+```

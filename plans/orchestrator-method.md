@@ -374,6 +374,35 @@ KR: >50m면 반드시 snap. NO_HIT는 drop/rename만.
 
 제시어(최초·복구): `오케스트레이터` + `지자체팔경` · 큐 다음 ⬜ · 「§5.6 · 워커2 · VERIFY→다음R 자동 · 3R마다 I# · §3.3·§3.4·§4.2」
 
+**수집 1차 종료** (2026-09-04). 새 채팅에서 `지자체팔경` F를 재개하지 않음. contentId·검색 UI는 **§5.7**.
+
+### 5.7 팔경·명소 Tour contentId (쿼터)
+
+| 항목 | 값 |
+|------|-----|
+| 계획 | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) |
+| 큐 | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) |
+| SSOT | `koreaLocalScenicLists.json` 멤버 `contentId` + 동명 hub attraction 복사 |
+| 우선 | **P0 팔경 멤버** · P1 hub 잔여 · P2 테마 잔여는 P0 전 금지 |
+| 소스 | **DB 먼저** `tourapi_attraction` · LIVE `searchKeyword`는 잔여만 |
+| 라운드 | 워커A **3 listId** + 워커B **3** · **DB-only R** 병렬 OK |
+| LIVE | 메인 직렬(또는 워커 1) · **워커 병렬 LIVE 금지** |
+| 429 | 즉시 정지 · 큐 `blocked: quota` · 같은 날 재시도 금지 |
+| 정책 | scenic 승격 · UI · 수집 append **금지** |
+| S0 | 메인 솔로 — 스크립트+문경 DB 스모크 후 F |
+| 정지 | §3.3 + 429 + 동일 멤버 FAIL 2회 + Secrets 없음(DB-only만) |
+
+**워커 프롬프트 최소 골격**
+
+```
+역할: 팔경 contentId 워커. 배정 listId만.
+DB-only R: tourapi_attraction 매칭 초안(listId, attractionName, contentId|null, score).
+LIVE R: 메인만 · searchKeyword 금지(워커).
+금지: tip append, UI, scenic 승격, 429 이후 추가 호출, P1/P2 월권.
+```
+
+제시어: `오케스트레이터` + `팔경contentId` · 큐 다음 ⬜ · 플랜 §9 복붙 블록.
+
 ---
 
 ## 6. 제시어 (복붙 · 최초·복구용)
@@ -386,7 +415,8 @@ KR: >50m면 반드시 snap. NO_HIT는 drop/rename만.
 | 명소 재개/복구 | `오케스트레이터` + `명소` + `@plans/city-attraction-hub-queue.md` · 「큐 다음 R · 워커2 · §3.3·§3.4·§4.2」 |
 | 명소 좌표 수리 | `오케스트레이터` + `명소좌표수리` · 「§5.4 · verify 큐 · P0 또는 전수 SNAP · §3.4」 |
 | 국내 명소 TourAPI 좌표 | `오케스트레이터` + `TourAPI-명소좌표` + [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) **§6** · Cloud · 「G0→G1+ · KR HIT만 · §3.4」 |
-| 지자체 팔경·구경 | `오케스트레이터` + `지자체팔경` + [`korea-local-scenic-lists-queue.md`](./korea-local-scenic-lists-queue.md) · 「§5.6 · 큐 다음 ⬜ R · 워커2 · VERIFY→다음R 자동 · 3R마다 I# · UI/scenic승격·매R사람QA 금지 · §3.3·§3.4·§4.2」 |
+| 지자체 팔경·구경 | `오케스트레이터` + `지자체팔경` — **수집 종료. 재개 금지.** 활용은 아래 팔경contentId |
+| 팔경 Tour contentId | `오케스트레이터` + `팔경contentId` + [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) · 「§5.7 · P0 · DB-only 우선 · 워커 병렬 LIVE 금지 · 429 정지 · §3.3·§3.4·§4.2」 |
 | 정착지 재개/복구 | `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「큐 다음 R · 워커2 · 목표3/최대5/최소2 · §3.3·§3.4·§4.2」 |
 | 파이프 단절 복구 | `오케스트레이터` · 「후임 Task 실패 복구 · 큐 다음 R · 워커2 재기동 · §3.4」 |
 

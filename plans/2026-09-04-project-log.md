@@ -28,4 +28,20 @@
 - **VERIFY** audit×2 · smoke · build PASS · `pending_coord` 424는 스킵(선택 · 새 합의 전 금지)
 - **주제 종료** — index 종료 행 · 플랜 §9 · 큐 오케 정지 · 다음 제시어 없음
 
-**다음 제시어 없음** (주제 종료).
+**다음 제시어 없음** (수집 주제 종료).
+
+## 팔경 활용 — 플랜 main 반영 (코드 없음)
+
+- **세션** 문서만 · [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) · index **팔경 활용** 행
+- A UX와 B contentId 오케 분리 · 표준 제시어 §1.2 · 큐 S0 ⬜
+- 코드는 다음 채팅 `cursor/palgyeong-use-e744`
+
+```
+팔경 활용 #1, 검색·리스트
+@plans/feature-handoff-index.md
+@plans/2026-09-04-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744
+금지: scenic 승격 · 축제 홈 파드 · 칩 리디자인
+작업: 탐색창 문경 팔경 소제목 · 명소 같은 ul 상단 N경 · 축제 본문 인근 그룹 · Tour LIVE 없음
+```

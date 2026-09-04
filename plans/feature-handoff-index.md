@@ -14,6 +14,32 @@
 
 ## 활성 목록
 
+### 팔경 활용 — 검색·리스트 · contentId
+
+| | |
+|--|--|
+| **상태** | **문서 SSOT** · 코드 미착수 · 다음 **A #1** |
+| **브랜치** | `cursor/palgyeong-use-e744` (없으면 main에서 생성) |
+| **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9** |
+| **큐(B)** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — S0 ⬜ |
+| **일지** | [`2026-09-04-project-log.md`](./2026-09-04-project-log.md) |
+| **수집** | [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) **종료** — 오케 `지자체팔경` 재개 금지 |
+| **금지** | scenic 승격 · 축제 홈 파드 · 칩 리디자인 · feature에 `plans/**` 커밋 |
+
+**다음 제시어** (#1 착수):
+
+```
+팔경 활용 #1, 검색·리스트
+@plans/feature-handoff-index.md
+@plans/2026-09-04-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744
+금지: scenic 승격 · 축제 홈 파드 · 칩 리디자인
+작업: 탐색창 문경 팔경 소제목 · 명소 같은 ul 상단 N경 · 축제 본문 인근 그룹 · Tour LIVE 없음
+```
+
+---
+
 ### 지구본 홈 헤더 (Chrome 주소창 가림) — 종료 · 병합 안 함
 
 | | |
@@ -252,7 +278,7 @@ main · www.gateo.kr/place/yap/planner?lang=en
 | **잔여(선택)** | `pending_coord` **424**/876 — 좌표 보강은 **새 합의** 전 착수 금지 |
 | **VERIFY** | `audit:korea-local-scenic-lists` · `audit:city-attraction-hubs` · `smoke:korea-local-scenic-lists` · `build` PASS |
 
-**다음 제시어 없음** (주제 종료). 새 채팅에서 오케스트레이터 지자체팔경을 다시 열지 않음. 광역 팔경·scenic 승격·pending_coord는 **별도 합의** 후에만.
+**다음 제시어 없음** (수집 종료). `오케스트레이터 지자체팔경`을 다시 열지 않음. 검색·contentId는 **팔경 활용** 행.
 
 
 ## 행 추가 템플릿 (새 Cloud feature)
