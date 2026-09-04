@@ -1,6 +1,6 @@
 # 팔경 활용 — 검색·리스트 · Tour contentId
 
-**상태**: 문서 착수 2026-09-04 · 코드 **미착수** · **A/B 동시 세션 OK** (브랜치 2개)  
+**상태**: A #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · B R01–R02 ✅ · **A/B 동시 세션 OK**  
 **수집 플랜**(열지 않음): [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) — 오케 재개 금지  
 **SSOT**: [`koreaLocalScenicLists.json`](../src/pages/Home/data/koreaLocalScenicLists.json) (lists **94** · members **876**)
 
@@ -88,7 +88,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`는 잔여만 · 워커 *
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | UI **미착수** | R01–R02 ✅ · 다음 ⬜ R03 · cid 33/876 |
+| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | R01–R02 ✅ · 다음 ⬜ R03 · cid 33/876 |
 | **index 행** | 팔경 활용 | 팔경 contentId |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · 워커 병렬 LIVE · 429 재호출 |
 
@@ -96,8 +96,8 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`는 잔여만 · 워커 *
 
 | #N | 채팅명 한 줄 | 갈래 | 상태 |
 |----|--------------|------|------|
-| 1 | `팔경 활용 #1, 검색·리스트` | A | **다음 착수** (B와 동시 OK) |
-| 2 | `팔경 활용 #2, Preview QA` | A 사람 | #1 push 후 |
+| 1 | `팔경 활용 #1, 검색·리스트` | A | **완료** · tip `e8da2987` |
+| 2 | `팔경 활용 #2, Preview QA` | A 사람 | **다음** |
 | — | `오케스트레이터 팔경contentId` | B | R03 ⬜ (R01–R02 ✅) |
 | — | `지자체 팔경 #…` | 수집 종료 | **열지 않음** |
 
@@ -120,7 +120,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`는 잔여만 · 워커 *
 @plans/feature-handoff-index.md
 @plans/2026-09-04-project-log.md
 @plans/korea-local-scenic-use-plan.md
-브랜치 cursor/palgyeong-use-e744
+브랜치 cursor/palgyeong-use-e744 · PR #186 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
 작업: 홈 검색 문경 · /korea/theme/scenic 문경 hub · 축제 상세 인근 목록 소제목
 ```

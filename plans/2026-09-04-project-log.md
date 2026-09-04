@@ -91,3 +91,21 @@
 금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P1/P2 월권
 작업: R03 DB-only 워커A3+B3 → VERIFY → R04 또는 Task 이관
 ```
+
+## 팔경 활용 #1 — 검색·리스트 ✅
+
+- **세션** `팔경 활용 #1, 검색·리스트`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186)
+- 홈 검색 문경 팔경 소제목 · 명승 같은 ul 상단 N경 · 축제 본문 인근 그룹 · Tour LIVE 없음
+- **VERIFY** `smoke:korea-local-scenic-lists` · audit issues 0 · `vite build` PASS
+- **Preview** `/qa/palgyeong-use`
+
+```
+팔경 활용 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-04-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · PR #186 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
+작업: 홈 검색 문경 · /korea/theme/scenic 문경 hub · 축제 상세 인근 목록 소제목
+```
