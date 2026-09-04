@@ -1092,7 +1092,8 @@
         "kind": "viewpoint",
         "lat": 37.38,
         "lng": 128.75,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "127842"
       },
       {
         "attractionName": "광대곡",
@@ -1123,7 +1124,8 @@
     "members": [
       {
         "attractionName": "파로호",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125801"
       },
       {
         "attractionName": "딴산",
@@ -1139,7 +1141,8 @@
       },
       {
         "attractionName": "평화의댐",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "1626292"
       },
       {
         "attractionName": "용화산",
@@ -1171,7 +1174,8 @@
         "kind": "viewpoint",
         "lat": 38.02,
         "lng": 127.55,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "128097"
       },
       {
         "attractionName": "광덕산",
@@ -1179,7 +1183,8 @@
         "kind": "viewpoint",
         "lat": 38,
         "lng": 127.5,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "128098"
       }
     ]
   },
@@ -1202,7 +1207,8 @@
     "members": [
       {
         "attractionName": "도담삼봉",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125913"
       },
       {
         "attractionName": "석문",
@@ -1210,7 +1216,8 @@
         "kind": "landmark",
         "lat": 37.0027238,
         "lng": 128.3433158,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "129684"
       },
       {
         "attractionName": "사인암",
@@ -1234,7 +1241,8 @@
         "kind": "landmark",
         "lat": 36.8717033,
         "lng": 128.2959419,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "1627287"
       },
       {
         "attractionName": "중선암",
@@ -1242,7 +1250,8 @@
         "kind": "landmark",
         "lat": 36.878353,
         "lng": 128.298232,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "1626649"
       },
       {
         "attractionName": "하선암",
@@ -1273,7 +1282,8 @@
     "members": [
       {
         "attractionName": "의림지",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "2751857"
       },
       {
         "attractionName": "박달재",
@@ -1281,11 +1291,13 @@
         "kind": "viewpoint",
         "lat": 37.149436,
         "lng": 128.047069,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "2751855"
       },
       {
         "attractionName": "월악산",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "1683936"
       },
       {
         "attractionName": "청풍문화재단지",
@@ -1305,11 +1317,13 @@
         "kind": "park",
         "lat": 36.8479514,
         "lng": 128.1884301,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "127607"
       },
       {
         "attractionName": "송계계곡",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125834"
       },
       {
         "attractionName": "제천 옥순봉",
@@ -1317,7 +1331,8 @@
         "kind": "viewpoint",
         "lat": 36.9437039,
         "lng": 128.2371912,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "2774290"
       },
       {
         "attractionName": "탁사정",
@@ -1325,7 +1340,8 @@
         "kind": "viewpoint",
         "lat": 37.1665854,
         "lng": 128.1083244,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "127904"
       },
       {
         "attractionName": "배론성지",
@@ -1356,7 +1372,8 @@
     "members": [
       {
         "attractionName": "옥천 둔주봉",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "2610563"
       },
       {
         "attractionName": "옛37번 국도변 벚꽃길",
@@ -1400,7 +1417,8 @@
         "kind": "park",
         "lat": 36.2876041,
         "lng": 127.6534897,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "127618"
       },
       {
         "attractionName": "향수호수길",
@@ -1416,7 +1434,8 @@
         "kind": "neighborhood",
         "lat": 36.3295181,
         "lng": 127.5558726,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "2782452"
       }
     ]
   },
@@ -1439,7 +1458,8 @@
     "members": [
       {
         "attractionName": "영동 영국사",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "337518"
       },
       {
         "attractionName": "강선대",
@@ -1447,7 +1467,8 @@
         "kind": "viewpoint",
         "lat": 36.1310315,
         "lng": 127.6829461,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "2743393"
       },
       {
         "attractionName": "비봉산",

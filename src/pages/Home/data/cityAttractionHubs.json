@@ -5214,7 +5214,8 @@
         "name_en": "Uirimji Reservoir",
         "kind": "park",
         "lat": 37.174,
-        "lng": 128.208
+        "lng": 128.208,
+        "contentId": "2751857"
       },
       {
         "name": "청풍문화재단지",
@@ -5228,7 +5229,8 @@
         "name_en": "Woraksan",
         "kind": "viewpoint",
         "lat": 36.8860792,
-        "lng": 128.1058367
+        "lng": 128.1058367,
+        "contentId": "1683936"
       },
       {
         "name": "제천한방엑스포공원",
@@ -5242,14 +5244,16 @@
         "name_en": "Songgye Valley",
         "kind": "park",
         "lat": 36.846807,
-        "lng": 128.058428
+        "lng": 128.058428,
+        "contentId": "125834"
       },
       {
         "name": "박달재",
         "name_en": "Bakdaljae Pass",
         "kind": "viewpoint",
         "lat": 37.149436,
-        "lng": 128.047069
+        "lng": 128.047069,
+        "contentId": "2751855"
       },
       {
         "name": "금수산",
@@ -5263,21 +5267,24 @@
         "name_en": "Yongha Valley",
         "kind": "park",
         "lat": 36.8479514,
-        "lng": 128.1884301
+        "lng": 128.1884301,
+        "contentId": "127607"
       },
       {
         "name": "제천 옥순봉",
         "name_en": "Jecheon Oksunbong Peak",
         "kind": "viewpoint",
         "lat": 36.9437039,
-        "lng": 128.2371912
+        "lng": 128.2371912,
+        "contentId": "2774290"
       },
       {
         "name": "탁사정",
         "name_en": "Taksajeong Pavilion",
         "kind": "viewpoint",
         "lat": 37.1665854,
-        "lng": 128.1083244
+        "lng": 128.1083244,
+        "contentId": "127904"
       },
       {
         "name": "배론성지",
@@ -5379,7 +5386,8 @@
         "name_en": "Dodamsambong Peaks",
         "kind": "landmark",
         "lat": 37.0002949216,
-        "lng": 128.3448007565
+        "lng": 128.3448007565,
+        "contentId": "125913"
       },
       {
         "name": "고수동굴",
@@ -5414,7 +5422,8 @@
         "name_en": "Seokmun Gate Rock",
         "kind": "landmark",
         "lat": 37.0027238,
-        "lng": 128.3433158
+        "lng": 128.3433158,
+        "contentId": "129684"
       },
       {
         "name": "옥순봉",
@@ -5428,14 +5437,16 @@
         "name_en": "Sangseonam Rock",
         "kind": "landmark",
         "lat": 36.8717033,
-        "lng": 128.2959419
+        "lng": 128.2959419,
+        "contentId": "1627287"
       },
       {
         "name": "중선암",
         "name_en": "Jungseonam Rock",
         "kind": "landmark",
         "lat": 36.878353,
-        "lng": 128.298232
+        "lng": 128.298232,
+        "contentId": "1626649"
       },
       {
         "name": "하선암",
@@ -11629,7 +11640,8 @@
         "name_en": "Molundae Cliff",
         "kind": "viewpoint",
         "lat": 37.38,
-        "lng": 128.75
+        "lng": 128.75,
+        "contentId": "127842"
       },
       {
         "name": "광대곡",
@@ -12846,7 +12858,8 @@
         "name_en": "Okcheon Dunjubong",
         "kind": "viewpoint",
         "lat": 36.3519815498,
-        "lng": 127.6645652307
+        "lng": 127.6645652307,
+        "contentId": "2610563"
       },
       {
         "name": "옥천향교",
@@ -12895,7 +12908,8 @@
         "name_en": "Geumgang Resort",
         "kind": "park",
         "lat": 36.2876041,
-        "lng": 127.6534897
+        "lng": 127.6534897,
+        "contentId": "127618"
       },
       {
         "name": "향수호수길",
@@ -12909,7 +12923,8 @@
         "name_en": "Okcheon Old Village",
         "kind": "neighborhood",
         "lat": 36.3295181,
-        "lng": 127.5558726
+        "lng": 127.5558726,
+        "contentId": "2782452"
       }
     ]
   },
@@ -13491,14 +13506,16 @@
         "name_en": "Peace Dam",
         "kind": "landmark",
         "lat": 38.2065846349,
-        "lng": 127.8501282864
+        "lng": 127.8501282864,
+        "contentId": "1626292"
       },
       {
         "name": "파로호",
         "name_en": "Paroho Lake",
         "kind": "park",
         "lat": 38.1442141,
-        "lng": 127.9081864
+        "lng": 127.9081864,
+        "contentId": "125801"
       },
       {
         "name": "화천 붕어섬",
@@ -13547,14 +13564,16 @@
         "name_en": "Hwaaksan",
         "kind": "viewpoint",
         "lat": 38.02,
-        "lng": 127.55
+        "lng": 127.55,
+        "contentId": "128097"
       },
       {
         "name": "광덕산",
         "name_en": "Gwangdeoksan",
         "kind": "viewpoint",
         "lat": 38,
-        "lng": 127.5
+        "lng": 127.5,
+        "contentId": "128098"
       }
     ]
   },
@@ -18594,7 +18613,8 @@
         "name_en": "Yeongguksa Yeongdong",
         "kind": "temple",
         "lat": 36.15813,
-        "lng": 127.6104873
+        "lng": 127.6104873,
+        "contentId": "337518"
       },
       {
         "name": "물한계곡",
@@ -18615,7 +18635,8 @@
         "name_en": "Gangseondae Pavilion",
         "kind": "viewpoint",
         "lat": 36.1310315,
-        "lng": 127.6829461
+        "lng": 127.6829461,
+        "contentId": "2743393"
       },
       {
         "name": "비봉산",
