@@ -2,6 +2,25 @@
 
 직전: [`2026-09-04-project-log.md`](./2026-09-04-project-log.md)
 
+## 팔경 contentId — R09 DB-only ✅ · 이관 R10
+
+- **세션** `오케스트레이터 팔경contentId`
+- **브랜치** `cursor/palgyeong-cid` · tip `d1e36e5b` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **R09** 26/57 (`d1e36e5b`) · 누적 **150**/876 · hub 14건
+- **VERIFY** audit×2 issues 0 · smoke lists + content-ids · build PASS
+- **다음 R10** A `mokpo-gugyeong`·`muan-gugyeong`·`jindo-other` / B `haenam-palgyeong`·`wando-palgyeong`·`gangjin-other`
+- 곡성·담양·화순·함평·영광 고정명소 다수 hit · 구례·담양 계절·경관 수식어 MISS 다수
+
+```
+오케스트레이터 팔경contentId
+@plans/orchestrator-method.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/feature-handoff-index.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P1/P2 월권
+작업: R10 DB-only 워커A3+B3 → VERIFY → R11 또는 Task 이관
+```
+
 ## 팔경 contentId — R08 DB-only ✅ · 이관 R09
 
 - **세션** `오케스트레이터 팔경contentId` (후임 메인 R08)
