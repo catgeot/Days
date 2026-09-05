@@ -3063,7 +3063,8 @@
         "name_en": "Yudalsan",
         "kind": "viewpoint",
         "lat": 34.7899134,
-        "lng": 126.3726439
+        "lng": 126.3726439,
+        "contentId": "126257"
       },
       {
         "name": "목포해상케이블카",
@@ -3077,14 +3078,16 @@
         "name_en": "Mokpo Gatbawi",
         "kind": "landmark",
         "lat": 34.7919401,
-        "lng": 126.4255319
+        "lng": 126.4255319,
+        "contentId": "1624356"
       },
       {
         "name": "삼학도",
         "name_en": "Samhakdo",
         "kind": "park",
         "lat": 34.781,
-        "lng": 126.393
+        "lng": 126.393,
+        "contentId": "127550"
       },
       {
         "name": "목포근대역사관",
@@ -6027,7 +6030,8 @@
         "name_en": "Wando Tower",
         "kind": "viewpoint",
         "lat": 34.3102860244624,
-        "lng": 126.7662771324
+        "lng": 126.7662771324,
+        "contentId": "3010637"
       },
       {
         "name": "신지명사십리해수욕장",
@@ -6079,7 +6083,8 @@
         "kind": "viewpoint",
         "lat": 34.5660078857,
         "lng": 126.3025094229,
-        "mapboxId": null
+        "mapboxId": null,
+        "contentId": "2406053"
       },
       {
         "name": "운림산방",
@@ -6093,7 +6098,8 @@
         "name_en": "Sebang Sunset Observatory",
         "kind": "viewpoint",
         "lat": 34.4403388,
-        "lng": 126.1022812
+        "lng": 126.1022812,
+        "contentId": "128224"
       },
       {
         "name": "용장산성",
@@ -6107,7 +6113,8 @@
         "name_en": "Gwanmaedo",
         "kind": "beach",
         "lat": 34.2411375211,
-        "lng": 126.0520835135
+        "lng": 126.0520835135,
+        "contentId": "127549"
       }
     ]
   },
@@ -8843,7 +8850,8 @@
         "name_en": "Muan Hwangto Tidal Flat Land",
         "kind": "park",
         "lat": 34.98,
-        "lng": 126.4
+        "lng": 126.4,
+        "contentId": "1330332"
       },
       {
         "name": "회산백련지",
@@ -8857,7 +8865,8 @@
         "name_en": "Doripo Beach",
         "kind": "beach",
         "lat": 35.07,
-        "lng": 126.28
+        "lng": 126.28,
+        "contentId": "126617"
       },
       {
         "name": "법천사 무안",
@@ -8930,35 +8939,40 @@
         "name_en": "Dasanchodang",
         "kind": "landmark",
         "lat": 34.58064974606685,
-        "lng": 126.74507297037698
+        "lng": 126.74507297037698,
+        "contentId": "126419"
       },
       {
         "name": "가우도",
         "name_en": "Gaudo Island",
         "kind": "viewpoint",
         "lat": 34.5283354655862,
-        "lng": 126.77263792879
+        "lng": 126.77263792879,
+        "contentId": "2024432"
       },
       {
         "name": "금곡사 강진",
         "name_en": "Geumgoksa Gangjin",
         "kind": "temple",
         "lat": 34.6665888,
-        "lng": 126.7776283
+        "lng": 126.7776283,
+        "contentId": "298106"
       },
       {
         "name": "강진다원",
         "name_en": "Gangjin Tea Plantation",
         "kind": "park",
         "lat": 34.64,
-        "lng": 126.78
+        "lng": 126.78,
+        "contentId": "128151"
       },
       {
         "name": "강진만생태공원",
         "name_en": "Gangjin Bay Ecological Park",
         "kind": "park",
         "lat": 34.62,
-        "lng": 126.77
+        "lng": 126.77,
+        "contentId": "126645"
       }
     ]
   },
