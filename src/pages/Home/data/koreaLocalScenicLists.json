@@ -4051,55 +4051,64 @@
         "attractionName": "섬진강기차마을",
         "name_en": "Train Village and Rose Park",
         "kind": "park",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "128578"
       },
       {
         "attractionName": "태안사",
         "name_en": "Bongdusan and Taeansa",
         "kind": "temple",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "126365"
       },
       {
         "attractionName": "섬진강 침실습지",
         "name_en": "Seomjingang Chimsil Wetland",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2616185"
       },
       {
         "attractionName": "도림사",
         "name_en": "Dongaksan and Dorimsa",
         "kind": "temple",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "128083"
       },
       {
         "attractionName": "섬진강변 철쭉길",
         "name_en": "Seomjingang Azalea Trail",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "128086"
       },
       {
         "attractionName": "대황강 출렁다리",
         "name_en": "Daehwanggang Suspension Bridge",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2616177"
       },
       {
         "attractionName": "설산과 성륜사",
         "name_en": "Seolsan and Seongryunsa",
         "kind": "temple",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "1623712"
       },
       {
         "attractionName": "반구정습지와 대황강자연휴식공원",
         "name_en": "Bangujeong Wetland and Daehwanggang Park",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2674979"
       },
       {
         "attractionName": "압록유원지",
         "name_en": "Amnok Recreation Area",
         "kind": "park",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "128087"
       }
     ]
   },
@@ -4159,13 +4168,15 @@
         "attractionName": "수락폭포",
         "name_en": "Surak Falls",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126638"
       },
       {
         "attractionName": "화엄사",
         "name_en": "Hwaeomsa Temple",
         "kind": "temple",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "127923"
       },
       {
         "attractionName": "사성암",
@@ -4219,7 +4230,8 @@
         "attractionName": "병풍산",
         "name_en": "Byeongpungsan Mountain",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126252"
       },
       {
         "attractionName": "삼인산",
@@ -4237,13 +4249,15 @@
         "attractionName": "죽녹원",
         "name_en": "Juknokwon Bamboo Garden",
         "kind": "park",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "128834"
       },
       {
         "attractionName": "용흥사 계곡",
         "name_en": "Yongheungsa Valley",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2760827"
       },
       {
         "attractionName": "담양관방제림",
@@ -4285,7 +4299,8 @@
         "attractionName": "운주사",
         "name_en": "Unjusa Temple",
         "kind": "temple",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "126359"
       },
       {
         "attractionName": "백아산 하늘다리",
@@ -4309,7 +4324,8 @@
         "attractionName": "규봉암",
         "name_en": "Gyubongam Hermitage",
         "kind": "temple",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "127347"
       },
       {
         "attractionName": "연둔리 숲정이",
@@ -4321,13 +4337,15 @@
         "attractionName": "세량지",
         "name_en": "Seryangji Pond",
         "kind": "viewpoint",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "1915088"
       },
       {
         "attractionName": "쌍봉사",
         "name_en": "Ssangbongsa Temple",
         "kind": "temple",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126358"
       },
       {
         "attractionName": "화순 꽃강길 음악분수",
@@ -4339,7 +4357,8 @@
         "attractionName": "환산정",
         "name_en": "Hwansanjeong Pavilion",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "127346"
       }
     ]
   },
@@ -4364,7 +4383,8 @@
         "attractionName": "함평자연생태공원",
         "name_en": "Hampyeong Natural Ecology Park",
         "kind": "park",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "129235"
       },
       {
         "attractionName": "함평엑스포공원",
@@ -4376,13 +4396,15 @@
         "attractionName": "용천사 함평",
         "name_en": "Yongcheonsa Hampyeong",
         "kind": "temple",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "129246"
       },
       {
         "attractionName": "돌머리해수욕장",
         "name_en": "Dolmeori Beach",
         "kind": "beach",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "126291"
       },
       {
         "attractionName": "백제고도",
@@ -4431,7 +4453,8 @@
         "attractionName": "불갑사",
         "name_en": "Bulgapsa Temple",
         "kind": "temple",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "126349"
       },
       {
         "attractionName": "칠산타워",
@@ -4443,7 +4466,8 @@
         "attractionName": "가마미해수욕장",
         "name_en": "Gamami Beach",
         "kind": "beach",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "126289"
       },
       {
         "attractionName": "백사장해수욕장",
@@ -4455,13 +4479,15 @@
         "attractionName": "불갑저수지",
         "name_en": "Bulgap Reservoir",
         "kind": "viewpoint",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "1623859"
       },
       {
         "attractionName": "법성포",
         "name_en": "Beopseongpo Port",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "129217"
       },
       {
         "attractionName": "황금산",
