@@ -1,6 +1,6 @@
 # 팔경·명소 Tour contentId 큐
 
-**상태**: R01–R06 ✅ · 다음 ⬜ **R07** · membersWithContentId **93**/876 · LIVE 쿼터 주의  
+**상태**: R01–R07 ✅ · 다음 ⬜ **R08** · membersWithContentId **112**/876 · LIVE 쿼터 주의  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.7** · 플랜 [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md)  
 **브랜치**: `cursor/palgyeong-cid` (A UI `cursor/palgyeong-use-e744`와 **분리** · 수집 `cursor/palgyeong` 금지)  
 **금지**: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재호출 · P1/P2를 P0 전에
@@ -34,7 +34,8 @@ S0 PASS 후에만 아래 F. 라운드 표는 `listKoreaLocalScenicLists()` verif
 | **R04** | `yeongdong-hancheon-palgyeong` · `jincheon-palgyeong` · `jeungpyeong-gugyeong` | `gyeongju-8gwae` · `pohang-sipgyeong` · `mungyeong-palgyeong` | DB-only | ✅ 2026-09-04 6/52 · `c0897266` |
 | **R05** | `yecheon-palgyeong` · `yeongdeok-sipgyeong` · `uiseong-binggye-palgyeong` | `seongju-sipgyeong` · `yeongcheon-gugyeong` · `cheongdo-gugyeong` | DB-only | ✅ 2026-09-04 14/53 · `8d2e11a1` |
 | **R06** | `tongyeong-palgyeong` · `geoje-gugyeong` · `sacheon-gugyeong` | `namhae-sipgyeong` · `hadong-sipgyeong` · `jinju-palgyeong` | DB-only | ✅ 2026-09-04 19/56 · `6b2aa715` |
-| **R07** | `sancheong-gugyeong` · `hamyang-palgyeong` · `geochang-gugyeong` | `hapcheon-palgyeong` · `gimhae-gugyeong` · `yangsan-other` | DB-only | ⬜ |
+| **R07** | `sancheong-gugyeong` · `hamyang-palgyeong` · `geochang-gugyeong` | `hapcheon-palgyeong` · `gimhae-gugyeong` · `yangsan-other` | DB-only | ✅ 2026-09-05 19/55 · `97039b14` |
+| **R08** | `miryang-palgyeong` · `uiryeong-gugyeong` · `haman-gugyeong` | `changnyeong-gugyeong` · `yeosu-other` · `gwangyang-gugyeong` | DB-only | ⬜ |
 
 ---
 
