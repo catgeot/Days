@@ -762,14 +762,16 @@
         "name_en": "Odongdo",
         "kind": "park",
         "lat": 34.745035,
-        "lng": 127.7670926
+        "lng": 127.7670926,
+        "contentId": "129152"
       },
       {
         "name": "향일암",
         "name_en": "Hyangiram",
         "kind": "temple",
         "lat": 34.5915967,
-        "lng": 127.8038089
+        "lng": 127.8038089,
+        "contentId": "127715"
       },
       {
         "name": "여수엑스포해양공원",
@@ -9545,7 +9547,8 @@
         "name_en": "Gwangyang Maehwa Village",
         "kind": "park",
         "lat": 35.0782227,
-        "lng": 127.717456
+        "lng": 127.717456,
+        "contentId": "126669"
       },
       {
         "name": "광양 백운산",
@@ -19479,7 +19482,8 @@
         "name_en": "Tapbawi Rock",
         "kind": "viewpoint",
         "lat": 35.3648756,
-        "lng": 128.323217
+        "lng": 128.323217,
+        "contentId": "127400"
       },
       {
         "name": "백산안희제선생 생가",
@@ -20008,7 +20012,8 @@
         "name_en": "Autumn Foliage at Ipgok County Park",
         "kind": "park",
         "lat": 35.32,
-        "lng": 128.38
+        "lng": 128.38,
+        "contentId": "127970"
       },
       {
         "name": "연꽃테마파크의 아라홍련",

@@ -3617,7 +3617,8 @@
         "attractionName": "재약산 억새",
         "name_en": "Jaeaksan Silver Grass",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126231"
       }
     ]
   },
@@ -3682,7 +3683,8 @@
         "kind": "viewpoint",
         "lat": 35.3648756,
         "lng": 128.323217,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "127400"
       },
       {
         "attractionName": "수도사",
@@ -3745,7 +3747,8 @@
         "kind": "park",
         "lat": 35.32,
         "lng": 128.38,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "127970"
       },
       {
         "attractionName": "무진정의 사계",
@@ -3765,7 +3768,8 @@
         "attractionName": "강나루생태공원의 청보리",
         "name_en": "Green Barley at Gangnaru Eco Park",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2712922"
       },
       {
         "attractionName": "장춘사의 산사풍경",
@@ -3836,7 +3840,8 @@
         "attractionName": "산토끼노래동산과 생태곤충원",
         "name_en": "Santokki Song Hill and Eco Insect Garden",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2713277"
       },
       {
         "attractionName": "만옥정공원과 신라진흥왕척경비, 술정리동삼층석탑",
@@ -3862,7 +3867,8 @@
         "attractionName": "관룡사와 용선대",
         "name_en": "Gwallyongsa Temple and Yongseondae",
         "kind": "temple",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126575"
       }
     ]
   },
@@ -3887,25 +3893,29 @@
         "attractionName": "오동도",
         "name_en": "Odongdo",
         "kind": "park",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "129152"
       },
       {
         "attractionName": "거문도와 백도",
         "name_en": "Geomundo and Baekdo",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126283"
       },
       {
         "attractionName": "향일암",
         "name_en": "Hyangiram Hermitage",
         "kind": "temple",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "127715"
       },
       {
         "attractionName": "금오도 비렁길",
         "name_en": "Geumodo Cliff Trail",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "129414"
       },
       {
         "attractionName": "여수세계박람회장",
@@ -3929,7 +3939,8 @@
         "attractionName": "영취산 진달래",
         "name_en": "Yeongchuisan Azaleas",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "128017"
       },
       {
         "attractionName": "여수해상케이블카",
@@ -3972,7 +3983,8 @@
         "attractionName": "광양 매화마을",
         "name_en": "Gwangyang Maehwa Village",
         "kind": "neighborhood",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "126669"
       },
       {
         "attractionName": "백운산 자연휴양림",
