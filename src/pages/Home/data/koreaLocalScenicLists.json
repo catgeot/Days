@@ -3068,13 +3068,15 @@
         "attractionName": "지리산 천왕봉",
         "name_en": "Jirisan Cheonwangbong",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "250411"
       },
       {
         "attractionName": "대원사 계곡",
         "name_en": "Daewonsa Valley",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "127798"
       },
       {
         "attractionName": "황매산 철쭉",
@@ -3092,7 +3094,8 @@
         "attractionName": "경호강 비경",
         "name_en": "Gyeongho River Scenery",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "127633"
       },
       {
         "attractionName": "남사예담촌",
@@ -3112,7 +3115,8 @@
         "attractionName": "정취암 조망",
         "name_en": "Jeongchuiam View",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "250398"
       },
       {
         "attractionName": "산청 동의보감촌",
@@ -3146,7 +3150,8 @@
         "kind": "park",
         "lat": 35.526946,
         "lng": 127.718076,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "126861"
       },
       {
         "attractionName": "금대지리",
@@ -3166,7 +3171,8 @@
         "kind": "landmark",
         "lat": 35.5488763,
         "lng": 127.783632,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "129700"
       },
       {
         "attractionName": "칠선시류",
@@ -3192,7 +3198,8 @@
         "kind": "park",
         "lat": 35.58,
         "lng": 127.68,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "2718744"
       }
     ]
   },
@@ -3299,13 +3306,15 @@
         "attractionName": "가야산과 해인사",
         "name_en": "Gayasan and Haeinsa",
         "kind": "temple",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126175"
       },
       {
         "attractionName": "소리길과 홍류동계곡",
         "name_en": "Sorigil and Hongnyudong Valley",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126066"
       },
       {
         "attractionName": "황매산",
@@ -3313,7 +3322,8 @@
         "kind": "viewpoint",
         "lat": 35.4942361,
         "lng": 127.9745887,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "1914082"
       },
       {
         "attractionName": "합천호",
@@ -3376,7 +3386,8 @@
         "kind": "neighborhood",
         "lat": 35.1982,
         "lng": 128.9094,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "2514460"
       },
       {
         "attractionName": "클레이아크김해미술관",
@@ -3410,13 +3421,15 @@
         "attractionName": "대청계곡",
         "name_en": "Daecheong Valley",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2784242"
       },
       {
         "attractionName": "신어산 철쭉",
         "name_en": "Sineosan Azaleas",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "127660"
       },
       {
         "attractionName": "경전철에서 바라본 가야유적",
@@ -3455,7 +3468,8 @@
         "kind": "temple",
         "lat": 35.4881,
         "lng": 129.0644,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "2784332"
       },
       {
         "attractionName": "천성산",
@@ -3483,19 +3497,22 @@
         "attractionName": "배내골",
         "name_en": "Baenaegol",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "128497"
       },
       {
         "attractionName": "천태산",
         "name_en": "Cheontaesan",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "125907"
       },
       {
         "attractionName": "오봉산 임경대",
         "name_en": "Obongsan Imgyeongdae",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "128180"
       },
       {
         "attractionName": "대운산 자연휴양림",
@@ -3519,13 +3536,15 @@
         "attractionName": "양산타워",
         "name_en": "Yangsan Tower",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2784427"
       },
       {
         "attractionName": "가야진사",
         "name_en": "Gayajinsa Shrine",
         "kind": "shrine",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "1236556"
       }
     ]
   },

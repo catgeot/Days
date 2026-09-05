@@ -6496,14 +6496,16 @@
         "name_en": "Sangrim Park",
         "kind": "park",
         "lat": 35.526946,
-        "lng": 127.718076
+        "lng": 127.718076,
+        "contentId": "126861"
       },
       {
         "name": "남계서원",
         "name_en": "Namgye Seowon",
         "kind": "landmark",
         "lat": 35.5488763,
-        "lng": 127.783632
+        "lng": 127.783632,
+        "contentId": "129700"
       },
       {
         "name": "함양 개평한옥마을",
@@ -6517,7 +6519,8 @@
         "name_en": "Daebongsan Recreation Valley",
         "kind": "park",
         "lat": 35.58,
-        "lng": 127.68
+        "lng": 127.68,
+        "contentId": "2718744"
       },
       {
         "name": "함양 지안재",
@@ -7018,7 +7021,8 @@
         "name_en": "Hwangmaesan",
         "kind": "viewpoint",
         "lat": 35.4942361,
-        "lng": 127.9745887
+        "lng": 127.9745887,
+        "contentId": "1914082"
       },
       {
         "name": "합천호",
@@ -10343,7 +10347,8 @@
         "name_en": "Bongha Village",
         "kind": "neighborhood",
         "lat": 35.1982,
-        "lng": 128.9094
+        "lng": 128.9094,
+        "contentId": "2514460"
       },
       {
         "name": "수로왕비릉",
@@ -12264,7 +12269,8 @@
         "name_en": "Tongdosa",
         "kind": "temple",
         "lat": 35.4881,
-        "lng": 129.0644
+        "lng": 129.0644,
+        "contentId": "2784332"
       },
       {
         "name": "양산 내원사",
