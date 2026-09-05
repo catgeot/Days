@@ -47,12 +47,12 @@
 
 | | |
 |--|--|
-| **상태** | R01–R06 ✅ · 다음 ⬜ **R07** · membersWithContentId 93/876 · A와 **동시 OK** |
-| **브랜치** | `cursor/palgyeong-cid` · tip `6b2aa715` |
+| **상태** | R01–R07 ✅ · 다음 ⬜ **R08** · membersWithContentId 112/876 · A와 **동시 OK** |
+| **브랜치** | `cursor/palgyeong-cid` · tip `97039b14` |
 | **PR** | [#185](https://github.com/catgeot/Days/pull/185) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§3·§9 B** · method **§5.7** |
-| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — S0–R06 ✅ · R07 ⬜ |
-| **일지** | [`2026-09-04-project-log.md`](./2026-09-04-project-log.md) |
+| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — S0–R07 ✅ · R08 ⬜ |
+| **일지** | [`2026-09-05-project-log.md`](./2026-09-05-project-log.md) |
 | **소유** | JSON `contentId` · fill · audit · **UI 금지** |
 | **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · feature에 `plans/**` 커밋 |
 
@@ -65,7 +65,7 @@
 @plans/feature-handoff-index.md
 브랜치 cursor/palgyeong-cid · PR #185
 금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P1/P2 월권
-작업: R07 DB-only 워커A3+B3 → VERIFY → R08 또는 Task 이관
+작업: R08 DB-only 워커A3+B3 → VERIFY → R09 또는 Task 이관
 ```
 
 ---
