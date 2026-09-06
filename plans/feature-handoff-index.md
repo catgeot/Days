@@ -14,6 +14,33 @@
 
 ## 활성 목록
 
+### 리뷰 연관 여행지
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `d73ffc19` · PR [#201](https://github.com/catgeot/Days/pull/201) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/reviews-related-b9fa` |
+| **tip** | `d73ffc19` |
+| **PR** | [#201](https://github.com/catgeot/Days/pull/201) |
+| **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
+| **Preview** | `/qa/reviews-related` → git Preview `/place/paris/reviews` |
+| **소유** | `PlaceChatPanel` · `relatedPlaceTab.js` · `ReviewsTab` |
+| **금지** | UI 리디자인 · 갤러리 칩을 리뷰로 바꾸기 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:reviews-related-tab` · `smoke:gallery-related-scroll` · `vite build` |
+
+**다음 제시어**:
+
+```
+리뷰 연관 여행지 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/reviews-related-b9fa · PR #201 · Preview /qa/reviews-related
+금지: UI 리디자인 · 갤러리 칩을 리뷰로 바꾸기
+작업: 파리 리뷰탭 좌측 칩 → 새 여행지도 리뷰탭 · 글이 없어도 칩으로 이어서 탐색 · 갤러리 칩은 갤러리 유지
+```
+
+---
+
 ### 갤러리 좌측 패널
 
 | | |
