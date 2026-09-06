@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '자킨토스 검색',
-  sessionNo: 4,
-  sessionPhase: '사바섬 여행지 동명',
+  sessionNo: 5,
+  sessionPhase: '사바섬 카리브 동명',
   branch: 'cursor/zakynthos-search-e84a',
   previewPath: '/',
   qaShareSlug: 'zakynthos',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-06-zakynthos-5-caribbean-saba',
+    session: '자킨토스 검색 #5, 사바섬 Preview QA',
+    title: '사바섬 — 말레이시아 사바 앞 · 카리브 Saba 둘째 고정',
+    detail:
+      'Preview QA에서 사바(말레이시아)만 나옴. Mapbox ko 표기「사바」가 SSOT와 이름 충돌해 카리브 카드가 사라짐. 네덜란드령 Saba를 고정 동명으로 Enter·제안 둘째에 유지. 한국 사원 아님. Preview /qa/zakynthos — 사바섬 → 사바(말레이시아) · 사바섬(Saba, 네덜란드).',
+    at: '2026-09-06T11:30:00.000Z',
+  },
   {
     id: '2026-09-06-zakynthos-4-sabah-homonym',
     session: '자킨토스 검색 #4, 사바섬 Preview QA',

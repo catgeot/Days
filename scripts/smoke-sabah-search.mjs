@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 자킨토스 검색 #4 — 사바섬 = 말레이시아 사바 여행지 + 카리브 동명 쿼리
+ * 자킨토스 검색 #5 — 사바섬 = 말레이시아 사바 여행지 앞 + 카리브 Saba 둘째
  */
 import assert from 'node:assert/strict';
 
@@ -10,7 +10,13 @@ import {
   resolveExploreSearchAlias,
   buildMapboxSearchQueries,
 } from '../src/pages/Home/lib/exploreSearchAliases.js';
-import { isDistinctTravelPlace } from '../src/pages/Home/lib/travelSearchHomonyms.js';
+import {
+  CARIBBEAN_SABA_HOMONYM,
+  collectKnownTravelHomonyms,
+  homonymIdentityKey,
+  isDistinctTravelPlace,
+  relabelHomonymDisplay,
+} from '../src/pages/Home/lib/travelSearchHomonyms.js';
 import { RENTAL_AIRPORT_HUBS } from '../src/utils/rentalAirportHubs.js';
 
 const spot = TRAVEL_SPOTS.find((s) => s.slug === 'sabah');
@@ -81,8 +87,43 @@ assert.equal(isDistinctTravelPlace(caribbean, [sabahPin]), true, 'Caribbean Saba
 assert.equal(isDistinctTravelPlace(temple, [sabahPin]), false, 'Korean temple excluded');
 assert.equal(isDistinctTravelPlace(kk, [sabahPin]), false, 'KK is the same region');
 
+const known = collectKnownTravelHomonyms('사바섬', [spot]);
+assert.equal(known.length, 1, '사바섬 seeds Caribbean Saba');
+assert.equal(known[0].name_en, 'Saba');
+assert.equal(known[0].name, '사바섬');
+assert.equal(known[0].country_en, 'Caribbean Netherlands');
+assert.equal(collectKnownTravelHomonyms('사바', [spot]).length, 0, 'bare 사바 does not seed Caribbean');
+assert.equal(collectKnownTravelHomonyms('사바 섬', [spot]).length, 1, '사바 섬 also seeds Caribbean');
+
+const collidingMapbox = relabelHomonymDisplay(
+  { name: '사바', name_en: 'Saba', lat: 17.635, lng: -63.232, country: 'Netherlands' },
+  [spot],
+);
+assert.equal(collidingMapbox.name, 'Saba', 'Hangul 사바 collision uses official Saba');
+assert.notEqual(
+  homonymIdentityKey(spot),
+  homonymIdentityKey(CARIBBEAN_SABA_HOMONYM),
+  'Sabah and Caribbean Saba are different pins',
+);
+
+const enterCards = [spot, ...known];
+assert.equal(enterCards[0]?.slug, 'sabah', 'Enter 1 = Malaysia Sabah');
+assert.equal(enterCards[1]?.name_en, 'Saba', 'Enter 2 = Caribbean Saba');
+assert.equal(enterCards[1]?.country, '네덜란드');
+assert.equal(
+  enterCards.some((item) => /사헤브|gurdwara|시크/i.test(`${item.name} ${item.desc || ''}`)),
+  false,
+  'no Korean temple on Enter cards',
+);
+
+assert.equal(
+  resolveTravelSpotFromSearchQuery('자킨토스'),
+  null,
+  '자킨토스 still not SSOT',
+);
+
 const bki = RENTAL_AIRPORT_HUBS.find((h) => h.iata === 'BKI');
 assert.ok(bki?.aliases?.includes('사바섬'), 'BKI alias 사바섬');
 assert.ok(bki?.aliases?.includes('sabah'), 'BKI alias sabah');
 
-console.log('PASS sabah-search (Malaysia SSOT + Caribbean homonym queries · temple excluded)');
+console.log('PASS sabah-search (Malaysia first + Caribbean Saba second · temple excluded)');

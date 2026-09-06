@@ -35,7 +35,12 @@ import {
 } from './citiesSearch';
 import { searchBoxForward, searchBoxTypesForQuery } from './mapboxSearchBox';
 import { buildMapboxSearchQueries } from './exploreSearchAliases';
-import { isDistinctTravelPlace } from './travelSearchHomonyms';
+import {
+  collectKnownTravelHomonyms,
+  homonymIdentityKey,
+  isDistinctTravelPlace,
+  relabelHomonymDisplay,
+} from './travelSearchHomonyms';
 
 const normalizeKey = (s) =>
   String(s ?? '')
@@ -73,7 +78,8 @@ function pushUnique(out, seen, item) {
 }
 
 /**
- * SSOT 여행지 Enter 카드에, 멀리 떨어진 Mapbox 동명을 붙인다 (사바↔카리브 사바).
+ * SSOT 여행지 Enter 카드에, 멀리 떨어진 동명을 붙인다 (사바↔카리브 사바).
+ * 고정 동명이 먼저 — Mapbox ko 표기가 SSOT와 같은 한글명이면 둘째 카드가 사라진다.
  * @param {string} query
  * @param {object[]} ssotCandidates
  */
@@ -81,27 +87,38 @@ export async function collectDistinctMapboxHomonyms(query, ssotCandidates) {
   const anchors = (ssotCandidates || []).filter(Boolean);
   if (!anchors.length) return [];
 
-  const extras = [];
-  const seen = new Set(anchors.map(dedupeKey).filter(Boolean));
-  const queries = buildMapboxSearchQueries(query);
-  const searchBoxTypes = searchBoxTypesForQuery(query);
+  const extras = collectKnownTravelHomonyms(query, anchors).map((item) =>
+    relabelHomonymDisplay(item, anchors),
+  );
+  const distinctAnchors = [...anchors, ...extras];
+  const seenIds = new Set(distinctAnchors.map(homonymIdentityKey).filter(Boolean));
+  const seenNames = new Set(
+    distinctAnchors.map((item) => normalizeKey(item?.name)).filter(Boolean),
+  );
 
   try {
+    const queries = buildMapboxSearchQueries(query);
+    const searchBoxTypes = searchBoxTypesForQuery(query);
     for (const mq of queries) {
       const remote = await searchBoxForward(mq, {
         limit: 5,
         types: searchBoxTypes,
       });
       for (const item of remote || []) {
-        const k = dedupeKey(item);
-        if (!k || seen.has(k)) continue;
-        if (!isDistinctTravelPlace(item, anchors)) continue;
-        seen.add(k);
-        extras.push(item);
+        const idKey = homonymIdentityKey(item);
+        if (!idKey || seenIds.has(idKey)) continue;
+        if (!isDistinctTravelPlace(item, distinctAnchors)) continue;
+        const labeled = relabelHomonymDisplay(item, distinctAnchors);
+        const nameKey = normalizeKey(labeled.name);
+        if (nameKey && seenNames.has(nameKey)) continue;
+        seenIds.add(idKey);
+        if (nameKey) seenNames.add(nameKey);
+        extras.push(labeled);
+        distinctAnchors.push(labeled);
       }
     }
   } catch {
-    return extras;
+    return extras.slice(0, 3);
   }
   return extras.slice(0, 3);
 }
@@ -194,6 +211,9 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
 
   const officialSpot = resolveTravelSpotFromSearchQuery(q);
   if (officialSpot) pushUnique(out, seen, spotToSuggestion(officialSpot));
+  for (const extra of collectKnownTravelHomonyms(q, officialSpot ? [officialSpot] : [])) {
+    pushUnique(out, seen, extra);
+  }
 
   const spotHits = TRAVEL_SPOTS.filter((spot) => {
     const name = (spot.name || '').toLowerCase();
