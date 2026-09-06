@@ -92,7 +92,7 @@ const PlaceChatPanel = React.memo(({
     if (scrollRef.current) {
         scrollRef.current.scrollTop = 0;
     }
-  }, [activeInfo.title, activeInfo.mode, mediaMode]);
+  }, [activeInfo.title, activeInfo.mode, mediaMode, location?.id, location?.name, location?.slug]);
 
   const openMooni = () => {
     onOpenMooni?.({ persona: PERSONA_TYPES.GENERAL });
@@ -114,19 +114,27 @@ const PlaceChatPanel = React.memo(({
       }
       skipRelatedRefreshRef.current = true;
 
+      if (scrollRef.current) scrollRef.current.scrollTop = 0;
+      if (mediaMode === 'GALLERY') {
+        dispatchPlaceScrollToTop('GALLERY', { behavior: 'auto' });
+      }
+
+      const relatedNavOpts = mediaMode === 'GALLERY' ? { tab: 'gallery' } : undefined;
+
       if (onNavigateToPlace) {
-          onNavigateToPlace(targetPlace);
+          onNavigateToPlace(targetPlace, relatedNavOpts);
           return;
       }
 
       const param = getPlaceUrlParam(mergeCanonicalTravelSpot(targetPlace));
       if (param) {
-          navigate(`/place/${param}`);
+          const suffix = mediaMode === 'GALLERY' ? '/gallery' : '';
+          navigate(`/place/${param}${suffix}`);
           return;
       }
 
       if (targetPlace.lat !== undefined && targetPlace.lng !== undefined) {
-          navigate(`/place/city-${targetPlace.lat}-${targetPlace.lng}`);
+          navigate(`/place/city-${targetPlace.lat}-${targetPlace.lng}${mediaMode === 'GALLERY' ? '/gallery' : ''}`);
           return;
       }
 
