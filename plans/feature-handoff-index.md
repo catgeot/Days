@@ -14,6 +14,33 @@
 
 ## 활성 목록
 
+### 갤러리 사진 관리
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `36992c74` · PR [#188](https://github.com/catgeot/Days/pull/188) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/gallery-manage-173f` |
+| **tip** | `36992c74` |
+| **PR** | [#188](https://github.com/catgeot/Days/pull/188) |
+| **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
+| **Preview** | `/qa/gallery` → git Preview `/place/paris/gallery` |
+| **소유** | `PlaceGalleryView` · 길게 누르기 · `handleRemoveImage` |
+| **금지** | 상시 휴지통 버튼 · PC Ctrl+더블클릭 제거 · UI 리디자인 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:gallery-photo-manage` · `smoke:gallery-portrait-filter` · `vite build` |
+
+**다음 제시어**:
+
+```
+갤러리 사진 관리 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/gallery-manage-173f · PR #188 · Preview /qa/gallery
+금지: 상시 휴지통 버튼 · PC Ctrl+더블클릭 제거 · UI 리디자인
+작업: 모바일 타일 꾹 → 제거 확인 · 짧은 탭은 확대 · 확대 보기도 길게 누르기 · PC Ctrl+더블클릭 유지
+```
+
+---
+
 ### 갤러리 인물 제외 — main 병합 ✅
 
 | | |
