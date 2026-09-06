@@ -14,17 +14,30 @@
 
 ## 활성 목록
 
-### 자킨토스 검색 — main 병합 ✅
+### 자킨토스 검색
 
 | | |
 |--|--|
-| **상태** | **#5 merge ✅** · main `9299f3e8` · PR [#196](https://github.com/catgeot/Days/pull/196) |
-| **브랜치** | `cursor/zakynthos-search-e84a` · merge `9299f3e8` |
+| **상태** | **#6 push** · tip `a6ef54b4` · PR [#197](https://github.com/catgeot/Days/pull/197) · **#7 사람 Preview QA** |
+| **브랜치** | `cursor/zakynthos-search-e84a` |
+| **tip** | `a6ef54b4` |
+| **PR** | [#197](https://github.com/catgeot/Days/pull/197) |
 | **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
-| **PROD** | `https://www.gateo.kr/` — 탐색창 사바섬·자킨토스 |
-| **VERIFY** | `smoke:sabah-search` · `smoke:explore-search-aliases` · `smoke:zakynthos-search` · `vite build` PASS |
+| **Preview** | `/qa/zakynthos` → git Preview `/` (탐색창 자킨토스 드롭다운·사바섬) |
+| **소유** | `geocoding.js` 섬 쿼리 순위 · `mapboxSearchBox.js` `hydrateSearchBoxLatinName` · `uiPlaceAssetQuery.js` |
+| **금지** | UI 리디자인 · 자킨토스 SSOT 재등록 · `orientation=landscape` 재도입 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:explore-search-aliases` · `smoke:zakynthos-search` · `smoke:sabah-search` · `vite build` |
 
-**다음 제시어 없음** (주제 종료). 자킨토스는 여행지 SSOT가 아님(Mapbox uiPlace). 사바섬은 말레이시아 사바 앞 · 카리브 Saba 둘째. `/qa/zakynthos` → PROD `/`.
+**다음 제시어**:
+
+```
+자킨토스 검색 #7, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/zakynthos-search-e84a · PR #197 · Preview /qa/zakynthos
+금지: UI 리디자인 · 자킨토스 SSOT 재등록 · orientation=landscape 재도입
+작업: 자킨토스 드롭다운·좌측 카드 동일 핀(Zakynthos 해변) · 사바섬 말레이시아 앞·카리브 둘째 · 한국 사원 아님
+```
 
 ---
 

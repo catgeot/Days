@@ -2,6 +2,23 @@
 
 직전: [`2026-09-05-project-log.md`](./2026-09-05-project-log.md)
 
+## 자킨토스 검색 #6, 드롭다운·선택 카드 동일 핀
+
+- **브랜치** `cursor/zakynthos-search-e84a` · tip `a6ef54b4` · **PR [#197](https://github.com/catgeot/Days/pull/197)** (#196은 main 병합됨)
+- Preview QA: 우측 드롭다운「자킨토스」와 좌측 선택 카드가 다른 핀. 드롭다운은 Search Box 한글 도시 → 한글 place_id 인물 갤러리. 좌측은 지오코딩 Zakynthos
+- ko/en을 좌표로도 병합 · 선택 전 retrieve(en) · Enter 영문을 동명 히트에 이식 · 선택 카드가 있으면 드롭다운 재오픈 금지
+- **VERIFY** `smoke:zakynthos-search` · `smoke:sabah-search` · `smoke:explore-search-aliases` · `vite build` PASS
+- **다음** 사람 Preview `/qa/zakynthos` — 드롭다운·좌측 카드 모두 (Zakynthos) 해변 · 사바섬 말레이시아 앞·카리브 둘째
+
+```
+자킨토스 검색 #7, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/zakynthos-search-e84a · PR #197 · Preview /qa/zakynthos
+금지: UI 리디자인 · 자킨토스 SSOT 재등록 · orientation=landscape 재도입
+작업: 자킨토스 드롭다운·좌측 카드 동일 핀(Zakynthos 해변) · 사바섬 말레이시아 앞·카리브 둘째 · 한국 사원 아님
+```
+
 ## 자킨토스 검색 — PR #196 merge ✅
 
 - **PR [#196](https://github.com/catgeot/Days/pull/196)** FF merge → main `9299f3e8` (사람 요청)
