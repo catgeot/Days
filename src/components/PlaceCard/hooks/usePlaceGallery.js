@@ -16,14 +16,22 @@ import { isDomesticKoreaLocation, resolveTourApiPlace } from '../../../utils/tou
 import { fetchTourApiGallery } from '../../../utils/fetchTourApiGallery';
 import { filterOutSinglePersonPortraits } from '../../../utils/galleryPortraitFilter';
 import {
+  GALLERY_SWR_TTL_MS,
+  filterHiddenGalleryIncoming,
+  galleryHiddenIdsKey,
+  gallerySwrStampKey,
+  mergeGalleryFreshKeepHero,
+  shouldRunGalleryStockSwr,
+} from '../../../utils/galleryCachePolicy';
+import {
   clearGalleryAttributionReturnState,
   consumeGalleryAttributionReturnState,
   findImageForReturnState,
   readGalleryAttributionReturnState,
 } from '../common/galleryAttributionNavigation';
 
-/** v1.19 — 갤러리 최대 60장 · 단일 인물 사진 제외 */
-const CACHE_VERSION = 'v1.19';
+/** v1.20 — 갤러리 최대 60장 · 단일 인물 제외 · DB 즉시 + 스톡 SWR */
+const CACHE_VERSION = 'v1.20';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
 
 /** 장소 갤러리 UI·세션 캐시 상한 (Pexels 다중 쿼리 백필 과다 방지) */
@@ -193,6 +201,47 @@ function mergeGalleryAppend(existing, incoming, max = GALLERY_MAX_IMAGES) {
   if (slots <= 0) return { merged: cappedExisting, added: 0 };
   const toAdd = fresh.slice(0, slots);
   return { merged: [...cappedExisting, ...toAdd], added: toAdd.length };
+}
+
+function readGallerySwrAt(placeKey) {
+  if (!placeKey) return 0;
+  try {
+    const n = Number(localStorage.getItem(gallerySwrStampKey(CACHE_VERSION, placeKey)));
+    return Number.isFinite(n) ? n : 0;
+  } catch {
+    return 0;
+  }
+}
+
+function writeGallerySwrAt(placeKey, at = Date.now()) {
+  if (!placeKey) return;
+  try {
+    localStorage.setItem(gallerySwrStampKey(CACHE_VERSION, placeKey), String(at));
+  } catch {
+    /* quota — next visit may SWR again */
+  }
+}
+
+function readHiddenGalleryIds(placeKey) {
+  if (!placeKey) return new Set();
+  try {
+    const raw = localStorage.getItem(galleryHiddenIdsKey(CACHE_VERSION, placeKey));
+    const arr = raw ? JSON.parse(raw) : [];
+    return new Set(Array.isArray(arr) ? arr : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function addHiddenGalleryId(placeKey, imageId) {
+  if (!placeKey || !imageId) return;
+  const next = readHiddenGalleryIds(placeKey);
+  next.add(imageId);
+  try {
+    localStorage.setItem(galleryHiddenIdsKey(CACHE_VERSION, placeKey), JSON.stringify([...next]));
+  } catch {
+    /* quota */
+  }
 }
 
 async function fetchPexelsBatch(apiKey, queries, page, limit = GALLERY_PEXELS_BATCH_LIMIT) {
@@ -513,6 +562,96 @@ export const usePlaceGallery = (locationSource, options = {}) => {
 
     const pexelsQueries = resolvePexelsQueries(primaryQuery, backupQuery, koreanName, spotSlugForDb);
 
+    const persistGalleryKeepThumb = (galleryUrls) => {
+      const statsPlaceId = dbStatsId || koreanName;
+      if (!statsPlaceId) return;
+      supabase
+        .from('place_stats')
+        .upsert(
+          { place_id: statsPlaceId, gallery_urls: galleryUrls },
+          { onConflict: 'place_id' },
+        )
+        .then(({ error }) => {
+          if (error) console.error('⚠️ SWR gallery upsert Error:', error);
+        });
+    };
+
+    const runStockSwr = async () => {
+      if (
+        !shouldRunGalleryStockSwr({
+          thumbnailOnly,
+          lastSwrAt: readGallerySwrAt(stablePlaceKey),
+          isTourDominant: isTourApiDominantGallery(allImagesRef.current),
+          imageCount: allImagesRef.current.length,
+          ttlMs: GALLERY_SWR_TTL_MS,
+        })
+      ) {
+        return;
+      }
+      if (!ACCESS_KEY) {
+        writeGallerySwrAt(stablePlaceKey);
+        return;
+      }
+      try {
+        let results = await apiClient.fetchUnsplashImages(ACCESS_KEY, primaryQuery, 1);
+        if (runId !== galleryLoadSeqRef.current) return;
+        if (results.length === 0 && backupQuery) {
+          results = await apiClient.fetchUnsplashImages(ACCESS_KEY, backupQuery, 1);
+        }
+        if (runId !== galleryLoadSeqRef.current) return;
+        const incoming = filterHiddenGalleryIncoming(results, readHiddenGalleryIds(stablePlaceKey));
+        const { merged, added } = mergeGalleryFreshKeepHero(
+          allImagesRef.current,
+          incoming,
+          GALLERY_MAX_IMAGES,
+        );
+        writeGallerySwrAt(stablePlaceKey);
+        if (added === 0) {
+          console.log('✅ Gallery SWR — 신규 사진 없음 (hero 유지)');
+          return;
+        }
+        processAndSetImages(merged);
+        saveToSmartCache(CACHE_KEY, allImagesRef.current);
+        persistGalleryKeepThumb(allImagesRef.current);
+        console.log(`✅ Gallery SWR ${added}장 병합 (hero 유지)`);
+      } catch (err) {
+        console.warn('⚠️ Gallery SWR miss — DB/session 유지', err);
+      }
+    };
+
+    const afterInstantGallery = () => {
+      const backfillRunId = runId;
+      const startSwr = () => {
+        if (backfillRunId !== galleryLoadSeqRef.current) return;
+        void runStockSwr();
+      };
+      if (needsPexelsBackfill(allImagesRef.current, thumbnailOnly)) {
+        pexelsPageRef.current += 1;
+        void fetchPexelsBatch(
+          PEXELS_KEY,
+          pexelsQueries,
+          pexelsPageRef.current,
+          Math.min(GALLERY_PEXELS_BATCH_LIMIT, galleryRemainingSlots(allImagesRef.current)),
+        )
+          .then((pexelsImages) => {
+            if (backfillRunId !== galleryLoadSeqRef.current || !pexelsImages.length) return;
+            const incoming = filterHiddenGalleryIncoming(
+              pexelsImages,
+              readHiddenGalleryIds(stablePlaceKey),
+            );
+            const { merged, added } = mergeGalleryAppend(allImagesRef.current, incoming);
+            if (added === 0) return;
+            processAndSetImages(merged);
+            saveToSmartCache(CACHE_KEY, allImagesRef.current);
+            console.log(`✅ Pexels backfill ${added}장 병합 (캐시 히트 후)`);
+          })
+          .catch((err) => console.error('⚠️ Pexels backfill error:', err))
+          .finally(startSwr);
+        return;
+      }
+      startSwr();
+    };
+
     if (!forceRefresh) {
       unsplashPageRef.current = 1;
       pexelsPageRef.current = 0;
@@ -523,34 +662,15 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         saveToSmartCache(CACHE_KEY, allImagesRef.current);
         markFetchDone();
         finishLoading();
-        if (needsPexelsBackfill(allImagesRef.current, thumbnailOnly)) {
-          const backfillRunId = runId;
-          pexelsPageRef.current += 1;
-          void fetchPexelsBatch(
-            PEXELS_KEY,
-            pexelsQueries,
-            pexelsPageRef.current,
-            Math.min(GALLERY_PEXELS_BATCH_LIMIT, galleryRemainingSlots(allImagesRef.current)),
-          )
-            .then((pexelsImages) => {
-              if (backfillRunId !== galleryLoadSeqRef.current || !pexelsImages.length) return;
-              const { merged, added } = mergeGalleryAppend(allImagesRef.current, pexelsImages);
-              if (added === 0) return;
-              processAndSetImages(merged);
-              saveToSmartCache(CACHE_KEY, allImagesRef.current);
-              console.log(`✅ Pexels backfill ${added}장 병합 (세션 캐시 히트 후)`);
-            })
-            .catch((err) => console.error('⚠️ Pexels backfill error:', err));
-        }
+        afterInstantGallery();
         return;
       }
       if (validCache?.length > 0 && isThinStockGallery(validCache)) {
         console.warn('⚠️ session cache thin stock — live Unsplash/Pexels refetch');
       }
 
-      // 2) DB 선조회 — 국내·해외 공통. 히트면 Tour/스톡 LIVE 생략.
-      // soft 국내만: TourAPI 우세 DB는 건너뛰고 스톡 재수집(공지천 404 고착 방지).
-      // 공식 contentId DB(Tour 포함)는 재사용 — LIVE TourAPI보다 우선.
+      // 2) DB 선조회 — 히트면 즉시 표시(LIVE 대기 없음). 갤러리 탭은 7일 스톡 SWR(hero·image_url 유지).
+      // 더보기(append)는 DB 미반영. thumbnailOnly는 SWR/Pexels 없음.
       if (!GALLERY_DB_SKIP_SLUGS.has(spotSlugForDb) && dbCandidates.length) {
         try {
           const dbSelect = thumbnailOnly ? 'image_url, gallery_urls' : 'gallery_urls';
@@ -614,25 +734,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
                 pexelsPageRef.current = 0;
                 markFetchDone();
                 finishLoading();
-                if (needsPexelsBackfill(allImagesRef.current, thumbnailOnly)) {
-                  const backfillRunId = runId;
-                  pexelsPageRef.current += 1;
-                  void fetchPexelsBatch(
-            PEXELS_KEY,
-            pexelsQueries,
-            pexelsPageRef.current,
-            Math.min(GALLERY_PEXELS_BATCH_LIMIT, galleryRemainingSlots(allImagesRef.current)),
-          )
-                    .then((pexelsImages) => {
-                      if (backfillRunId !== galleryLoadSeqRef.current || !pexelsImages.length) return;
-                      const { merged, added } = mergeGalleryAppend(allImagesRef.current, pexelsImages);
-                      if (added === 0) return;
-                      processAndSetImages(merged);
-                      saveToSmartCache(CACHE_KEY, allImagesRef.current);
-                      console.log(`✅ Pexels backfill ${added}장 병합 (place_stats 히트 후)`);
-                    })
-                    .catch((err) => console.error('⚠️ Pexels backfill error:', err));
-                }
+                afterInstantGallery();
                 return;
               }
             }
@@ -696,6 +798,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
               }
             }
             finishLoading();
+            writeGallerySwrAt(stablePlaceKey);
             return;
           }
         } catch (tourErr) {
@@ -867,6 +970,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
               });
           }
         }
+        if (!forceRefresh) writeGallerySwrAt(stablePlaceKey);
       } else {
         console.warn(`⚠️ 검색 최종 실패. 기본 Fallback 이미지를 렌더링합니다.`);
         const fallbackImgs = [
@@ -1019,6 +1123,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     const newImages = allImagesRef.current.filter(img => img.id !== imageToRemove.id);
     allImagesRef.current = newImages;
     setImages(newImages);
+    addHiddenGalleryId(currentPlaceKeyRef.current, imageToRemove.id);
 
     const koreanName = currentKoreanNameRef.current;
     const primaryQuery = currentQueryRef.current;

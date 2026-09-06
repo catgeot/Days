@@ -12,8 +12,8 @@ import useClickWithDragPrevention from '../../../../hooks/useClickWithDragPreven
 
 const CardBackgroundImage = ({ spot, categoryStyle, icon, displayName }) => {
   const CategoryIcon = icon;
-  const { images, isImgLoading } = usePlaceGallery(spot);
-  const bgImgUrl = images && images.length > 0 ? (images[0].urls?.regular || images[0].url) : null;
+  const { images, isImgLoading } = usePlaceGallery(spot, { thumbnailOnly: true });
+  const bgImgUrl = images && images.length > 0 ? (images[0].urls?.regular || images[0].urls?.small || images[0].url) : null;
   const alt = displayName || String(spot?.name || '').trim() || 'Travel destination';
 
   if (bgImgUrl) {

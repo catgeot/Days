@@ -95,6 +95,7 @@
     "smoke:place-gallery-pexels": "node scripts/smoke-place-gallery-pexels.mjs",
     "smoke:place-gallery-pexels-live": "node scripts/smoke-place-gallery-pexels-live.mjs",
     "smoke:gallery-portrait-filter": "node scripts/smoke-gallery-portrait-filter.mjs",
+    "smoke:gallery-cache-policy": "node scripts/smoke-gallery-cache-policy.mjs",
     "smoke:gallery-photo-manage": "node scripts/smoke-gallery-photo-manage.mjs",
     "smoke:rss-canonical": "node scripts/smoke-rss-canonical.mjs",
     "smoke:gsc-baseline": "node scripts/smoke-gsc-baseline.mjs",

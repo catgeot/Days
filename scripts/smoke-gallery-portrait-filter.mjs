@@ -113,7 +113,7 @@ assert.doesNotMatch(
 );
 
 const gallerySrc = readFileSync(join(root, 'src/components/PlaceCard/hooks/usePlaceGallery.js'), 'utf8');
-assert.match(gallerySrc, /CACHE_VERSION = 'v1\.19'/, 'session cache bumps after portrait filter');
+assert.match(gallerySrc, /CACHE_VERSION = 'v1\.20'/, 'session cache bumps after gallery SWR');
 assert.match(gallerySrc, /filterOutSinglePersonPortraits\(rawImages\)/, 'cached galleries also drop portraits');
 
 const pexelsSrc = readFileSync(join(root, 'src/pages/Home/lib/apiClient.js'), 'utf8');
