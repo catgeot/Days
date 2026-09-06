@@ -2,6 +2,22 @@
 
 직전: [`2026-09-05-project-log.md`](./2026-09-05-project-log.md)
 
+## 자킨토스 검색 #12, 오염된 방문 행
+
+- **브랜치** `cursor/zakynthos-search-e84a` · tip `795c16ec` · **PR [#199](https://github.com/catgeot/Days/pull/199)**
+- #11 사람 QA: 다른 미등록 지명은 되는데 자킨토스만 국가 없음·사진 없음. `place_stats` 한글 `place_id=자킨토스`가 좌표 0,0·인물 갤러리로 지도를 가로챔. 그 행은 방문 카드로 안 쓰고, 갤러리는 라틴 `zakynthos` 해변 행. 공유 DB 한글 행 좌표·인물 비움
+- **VERIFY** `smoke:visited-place-search` · `smoke:gallery-portrait-filter` · `smoke:unseen-place-search` · `smoke:zakynthos-search` · `smoke:sabah-search` · `vite build` PASS
+- **다음** 사람 Preview `/qa/zakynthos` — 드롭다운·써머리·장소 헤더 그리스 · 해변 사진
+
+```
+자킨토스 검색 #13, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/zakynthos-search-e84a · PR #199 · Preview /qa/zakynthos
+금지: UI 리디자인 · 자킨토스 SSOT 재등록 · orientation=landscape 재도입
+작업: 자킨토스 재검색 드롭다운·써머리·장소 헤더가 그리스 · 해변 사진 · Global/Explore 아님 · 사바섬 회귀
+```
+
 ## 자킨토스 검색 #11, GLOBAL 대신 그리스
 
 - **브랜치** `cursor/zakynthos-search-e84a` · tip `03a07a7c` · **PR [#199](https://github.com/catgeot/Days/pull/199)**
