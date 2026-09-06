@@ -113,3 +113,21 @@
 금지: 로고/탐색/플래너 리디자인 · 예약 대행 카피
 작업: 로고 패널에서 마이리얼트립 · 숙소 연 뒤 방문 기록 · 탐색 여행사 칩 · 파리 플래너 접힌 목록
 ```
+
+## 여행사 목록 #2, 겟유어가이드 방문 기록
+
+- **브랜치** `cursor/agencies-85ab` · tip `779ea69b` · **PR [#192](https://github.com/catgeot/Days/pull/192)**
+- 사람 QA: MRT·트립닷컴 방문 기록 OK · 겟유어가이드는 iframe 위젯이라 투어를 눌러도 안 남음. 위젯 포커스 시 제휴 검색/홈 URL 저장.
+- **VERIFY** `smoke:travel-agencies` · `vite build` PASS
+- **다음** 사람 Preview `/qa/agencies` — 파리 플래너·투어 찾기 GYG → 로고 패널 방문 기록
+
+**다음 제시어**:
+
+```
+여행사 목록 #3, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/agencies-85ab · PR #192 · Preview /qa/agencies
+금지: 로고/탐색/플래너 리디자인 · 예약 대행 카피
+작업: 파리 플래너·투어 찾기에서 겟유어가이드 투어 연 뒤 로고 패널 방문 기록 · MRT·트립닷컴 회귀
+```

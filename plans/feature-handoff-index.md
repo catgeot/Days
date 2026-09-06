@@ -18,9 +18,9 @@
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `8ed679af` · PR [#192](https://github.com/catgeot/Days/pull/192) · **#2 사람 Preview QA** |
+| **상태** | **#2 push** · tip `779ea69b` · PR [#192](https://github.com/catgeot/Days/pull/192) · **#3 사람 Preview QA** (GYG 위젯 방문 기록) |
 | **브랜치** | `cursor/agencies-85ab` |
-| **tip** | `8ed679af` |
+| **tip** | `779ea69b` |
 | **PR** | [#192](https://github.com/catgeot/Days/pull/192) |
 | **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
 | **Preview** | `/qa/agencies` → git Preview `/` · `/explore` · `/place/paris/planner` |
@@ -31,12 +31,12 @@
 **다음 제시어**:
 
 ```
-여행사 목록 #2, Preview QA
+여행사 목록 #3, Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-06-project-log.md
 브랜치 cursor/agencies-85ab · PR #192 · Preview /qa/agencies
 금지: 로고/탐색/플래너 리디자인 · 예약 대행 카피
-작업: 로고 패널에서 마이리얼트립 · 숙소 연 뒤 방문 기록 · 탐색 여행사 칩 · 파리 플래너 접힌 목록
+작업: 파리 플래너·투어 찾기에서 겟유어가이드 투어 연 뒤 로고 패널 방문 기록 · MRT·트립닷컴 회귀
 ```
 
 ---
