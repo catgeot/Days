@@ -14,30 +14,17 @@
 
 ## 활성 목록
 
-### 갤러리 인물 제외
+### 갤러리 인물 제외 — main 병합 ✅
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `7decd79c` · PR [#187](https://github.com/catgeot/Days/pull/187) · **#2 사람 Preview QA** |
-| **브랜치** | `cursor/gallery-c260` |
-| **tip** | `7decd79c` |
-| **PR** | [#187](https://github.com/catgeot/Days/pull/187) |
+| **상태** | **#1 merge ✅** · main `eb1189b6` · PR [#187](https://github.com/catgeot/Days/pull/187) |
+| **브랜치** | `cursor/gallery-c260` · merge `eb1189b6` |
 | **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
-| **Preview** | `/qa/gallery` → git Preview `/place/paris/gallery` |
-| **소유** | Unsplash/Pexels 인물 필터 · 세션 캐시 v1.19 |
-| **금지** | `orientation=landscape` 재도입 · UI 리디자인 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `smoke:gallery-portrait-filter` · `smoke:place-gallery-pexels` · `vite build` |
+| **PROD** | `https://www.gateo.kr/place/paris/gallery` |
+| **VERIFY** | `smoke:gallery-portrait-filter` · `smoke:place-gallery-pexels` · `vite build` PASS |
 
-**다음 제시어**:
-
-```
-갤러리 인물 제외 #2, Preview QA
-@plans/feature-handoff-index.md
-@plans/2026-09-06-project-log.md
-브랜치 cursor/gallery-c260 · PR #187 · Preview /qa/gallery
-금지: orientation=landscape 재도입 · UI 리디자인 · feature에 plans 커밋
-작업: 파리 갤러리에서 단일 인물(셀카·얼굴)이 줄었는지 · 거리·랜드마크 전경은 남는지
-```
+**다음 제시어 없음** (주제 종료). 단일 인물 필터는 PROD. DB `place_stats` 캐시 정책은 유지(LIVE 생략 · 더보기 DB 덮어쓰기 금지).
 
 ---
 

@@ -10,11 +10,10 @@
 - **VERIFY** `smoke:gallery-portrait-filter` · `smoke:place-gallery-pexels` · `vite build` PASS
 - **다음** 사람 Preview `/qa/gallery` · `/place/paris/gallery`
 
-```
-갤러리 인물 제외 #2, Preview QA
-@plans/feature-handoff-index.md
-@plans/2026-09-06-project-log.md
-브랜치 cursor/gallery-c260 · PR #187 · Preview /qa/gallery
-금지: orientation=landscape 재도입 · UI 리디자인 · feature에 plans 커밋
-작업: 파리 갤러리에서 단일 인물(셀카·얼굴)이 줄었는지 · 거리·랜드마크 전경은 남는지
-```
+## 갤러리 인물 제외 — PR #187 merge ✅
+
+- **PR [#187](https://github.com/catgeot/Days/pull/187)** squash merge → main `eb1189b6`
+- **PROD** `https://www.gateo.kr/place/paris/gallery`
+- **주제 종료** — 인덱스 종료 행 · 캐시 정책 유지(DB 히트 시 LIVE 생략 · 더보기 DB 미반영)
+
+**다음 제시어 없음** (주제 종료).
