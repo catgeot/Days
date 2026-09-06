@@ -14,6 +14,33 @@
 
 ## 활성 목록
 
+### 자킨토스 검색
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `3a27c4dc` · PR [#195](https://github.com/catgeot/Days/pull/195) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/zakynthos-search-b651` |
+| **tip** | `3a27c4dc` |
+| **PR** | [#195](https://github.com/catgeot/Days/pull/195) |
+| **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
+| **Preview** | `/qa/zakynthos` → git Preview `/place/zakynthos` |
+| **소유** | `travelSpots.js` `zakynthos` · search aliases · ZTH hub |
+| **금지** | UI 리디자인 · `orientation=landscape` 재도입 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:zakynthos-search` · `audit:airports` · `audit:ferries` · `vite build` |
+
+**다음 제시어**:
+
+```
+자킨토스 검색 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/zakynthos-search-b651 · PR #195 · Preview /qa/zakynthos
+금지: UI 리디자인 · orientation=landscape 재도입
+작업: 탐색창 자킨토스·자킨토시 → (Zakynthos) 영문·여행지 뱃지·해변 갤러리
+```
+
+---
+
 ### 공항픽업 링크
 
 | | |
