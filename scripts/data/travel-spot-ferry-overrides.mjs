@@ -476,27 +476,6 @@ export const TRAVEL_SPOT_FERRY_OVERRIDES = {
     confidence: 'high',
     rationale: '12Go split/hvar·dubrovnik/hvar · Jadrolinija split-hvar 공식',
   },
-  zakynthos: {
-    tier: 'common',
-    summary: '자킨토스는 킬리니(펠로폰네소스)에서 페리로도 접근합니다. 공항(ZTH) 직항·경유도 있습니다.',
-    routes: [
-      {
-        id: 'kyllini-zakynthos',
-        label: '킬리니 → 자킨토스',
-        duration: '약 1시간',
-        directFerries: true,
-        bookings: [
-          { provider: 'direct', name: 'Levante Ferries', url: 'https://www.levanteferries.com/' },
-          { provider: 'direct_ferries', name: 'Direct Ferries' },
-        ],
-      },
-    ],
-    dfRecommendations: [
-      '킬리니(Kyllini) - 자킨토스(Zakynthos) (약 1시간)',
-    ],
-    confidence: 'high',
-    rationale: 'Levante 공식 + Direct Ferries (이오니아 킬리니 노선)',
-  },
   santorini: {
     tier: 'common',
     summary: '산토리니는 피레우스(아테네) 또는 다른 키클라데스 섬에서 페리로 접근합니다.',

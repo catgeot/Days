@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '자킨토스 검색',
-  sessionNo: 1,
-  sessionPhase: 'SSOT 등록',
-  branch: 'cursor/zakynthos-search-b651',
-  previewPath: '/place/zakynthos',
+  sessionNo: 2,
+  sessionPhase: 'Preview QA',
+  branch: 'cursor/zakynthos-search-e84a',
+  previewPath: '/',
   qaShareSlug: 'zakynthos',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-06-zakynthos-2-uiplace-en',
+    session: '자킨토스 검색 #2, Preview QA',
+    title: '검색 uiPlace — 맵박스 영문명으로 갤러리·영상 연결',
+    detail:
+      '자킨토스는 SSOT가 아님. Mapbox ko가 name_en에 한글을 넣던 구멍을 ko+en으로 메움. 라틴 지명으로 카드 부제·Unsplash·YouTube가 붙고, 캐시된 한글 name_en은 역지오로 치유. Preview /qa/zakynthos — 탐색창 자킨토스 → (Zakynthos) · 해변 갤러리 · 영상·플래너.',
+    at: '2026-09-06T10:10:00.000Z',
+  },
   {
     id: '2026-09-06-zakynthos-1-ssot',
     session: '자킨토스 검색 #1, SSOT 등록',

@@ -4366,21 +4366,5 @@
       "okinawa"
     ],
     "country_en": "Japan"
-  },
-  {
-    "id": 395,
-    "slug": "zakynthos",
-    "name": "자킨토스",
-    "name_en": "Zakynthos",
-    "country": "그리스",
-    "searchKeys": [
-      "zakynthos",
-      "자킨토스",
-      "zakynthos",
-      "zakynthos",
-      "zakynthos",
-      "zakynthos"
-    ],
-    "country_en": "Greece"
   }
 ]

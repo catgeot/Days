@@ -9,10 +9,10 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'zakynthos',
-    label: '자킨토스 검색·영문명',
-    branch: 'cursor/zakynthos-search-b651',
+    label: '자킨토스 검색 uiPlace',
+    branch: 'cursor/zakynthos-search-e84a',
     destination:
-      'https://days-git-cursor-zakynthos-search-b651-catgeots-projects.vercel.app/place/zakynthos',
+      'https://days-git-cursor-zakynthos-search-e84a-catgeots-projects.vercel.app/',
     active: true,
   },
   {

@@ -7416,34 +7416,5 @@ export const TRAVEL_SPOTS = [
       "슈리성",
       "OKA"
     ]
-  },
-  {
-    "id": 395,
-    "slug": "zakynthos",
-    "name": "자킨토스",
-    "name_en": "Zakynthos",
-    "country": "그리스",
-    "country_en": "Greece",
-    "lat": 37.787,
-    "lng": 20.8999,
-    "tier": 2,
-    "popularity": 64,
-    "continent": "europe",
-    "categories": [
-      "paradise"
-    ],
-    "primaryCategory": "paradise",
-    "category": "paradise",
-    "showOnGlobe": false,
-    "denseRegion": null,
-    "desc": "에메랄드빛 이오니아해와 하얀 절벽이 어우러진 그리스 서부 섬입니다. 난파선 해변(Navagio)과 블루 케이브, 로가나스 해변의 바다거북으로 유명하며, 공항은 자킨토스(ZTH)입니다.",
-    "keywords": [
-      "이오니아",
-      "나바지오",
-      "Navagio",
-      "Zante",
-      "잔테",
-      "ZTH"
-    ]
   }
 ];

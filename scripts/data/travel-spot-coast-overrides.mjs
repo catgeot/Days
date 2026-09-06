@@ -17,7 +17,6 @@
 export const TRAVEL_SPOT_COAST_OVERRIDES = {
   // --- 에게 · 지중 · 아드리아 · 티레니아 ---
   santorini: { coastKind: 'island', seaPrimary: 'aegean', seaIds: ['aegean', 'mediterranean'] },
-  zakynthos: { coastKind: 'island', seaPrimary: 'ionian', seaIds: ['ionian', 'mediterranean'] },
   crete: { coastKind: 'island', seaPrimary: 'aegean', seaIds: ['aegean', 'mediterranean'] },
   bodrum: { coastKind: 'coastal-city', seaPrimary: 'aegean', seaIds: ['aegean', 'mediterranean'] },
   malta: { coastKind: 'archipelago', seaPrimary: 'mediterranean' },

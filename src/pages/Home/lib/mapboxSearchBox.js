@@ -2,6 +2,8 @@
  * Mapbox Search Box — 타이핑 제안·도시 주변 명소 보강.
  * 실패 시 null/[] 반환 (큐레이션만으로 degrade).
  */
+import { isLatinPlaceName, mergeLatinPlaceFields, mergeSearchBoxEnglishHits } from './uiPlaceAssetQuery.js';
+
 const MAPBOX_TOKEN = typeof import.meta !== 'undefined' ? import.meta.env?.VITE_MAPBOX_TOKEN : '';
 const SEARCHBOX_BASE = 'https://api.mapbox.com/search/searchbox/v1';
 
@@ -75,16 +77,23 @@ function featureToSuggestion(feature, { hubId, parentCity, source = 'mapbox' } =
 
   const poiCats = props.poi_category_ids || props.poi_category || [];
   const firstCat = Array.isArray(poiCats) ? poiCats[0] : '';
+  const preferred = String(props.name_preferred || props.name || name).trim();
+  const latinName = isLatinPlaceName(preferred)
+    ? preferred
+    : isLatinPlaceName(name)
+      ? name
+      : '';
+  const latinCountry = isLatinPlaceName(country) ? country : '';
 
   return {
     id: `mapbox-${props.mapbox_id || `${lat}-${lng}`}`,
     kind: isPoi ? 'attraction' : featureType === 'place' || featureType === 'city' ? 'city' : 'poi',
     badge: isPoi ? '명소' : featureType === 'place' || featureType === 'city' ? '도시' : '장소',
     name,
-    name_en: props.name_preferred || props.name || name,
+    name_en: latinName,
     name_ko: HAS_HANGUL_RE.test(name) ? name : '',
     country,
-    country_en: country,
+    country_en: latinCountry || country,
     lat,
     lng,
     mapboxId: props.mapbox_id,
@@ -102,7 +111,7 @@ function featureToSuggestion(feature, { hubId, parentCity, source = 'mapbox' } =
  * @param {string} query
  * @param {{ limit?: number, types?: string, proximity?: [number, number], country?: string, language?: string }} [opts]
  */
-export async function searchBoxForward(query, opts = {}) {
+async function searchBoxForwardRaw(query, opts = {}) {
   if (!MAPBOX_TOKEN || searchBoxAvailable === false) return [];
   const q = String(query || '').trim();
   if (!q) return [];
@@ -135,6 +144,16 @@ export async function searchBoxForward(query, opts = {}) {
     warnOnce(`forward 실패: ${err?.message || err}`);
     return [];
   }
+}
+
+export async function searchBoxForward(query, opts = {}) {
+  const language = opts.language || 'ko';
+  const hits = await searchBoxForwardRaw(query, { ...opts, language });
+  if (language === 'en' || hits.every((h) => isLatinPlaceName(h.name_en))) {
+    return hits;
+  }
+  const enHits = await searchBoxForwardRaw(query, { ...opts, language: 'en' });
+  return mergeSearchBoxEnglishHits(hits, enHits);
 }
 
 /**
@@ -178,9 +197,9 @@ export async function searchBoxSuggest(query, opts = {}) {
         kind: isPoi ? 'attraction' : featureType === 'place' || featureType === 'city' ? 'city' : 'poi',
         badge: isPoi ? '명소' : featureType === 'place' || featureType === 'city' ? '도시' : '장소',
         name: String(s.name || '').trim(),
-        name_en: s.name || '',
+        name_en: isLatinPlaceName(s.name) ? String(s.name).trim() : '',
         country: s.place_formatted?.split(',').pop()?.trim() || s.full_address || 'Explore',
-        country_en: 'Explore',
+        country_en: '',
         mapboxId: s.mapbox_id,
         needsRetrieve: true,
         sessionToken,
@@ -204,20 +223,28 @@ export async function searchBoxSuggest(query, opts = {}) {
  * @param {string} mapboxId
  * @param {string} sessionToken
  */
+async function searchBoxRetrieveOnce(mapboxId, sessionToken, language) {
+  const params = new URLSearchParams({
+    access_token: MAPBOX_TOKEN,
+    session_token: sessionToken || newSessionToken(),
+    language,
+  });
+  const response = await fetch(
+    `${SEARCHBOX_BASE}/retrieve/${encodeURIComponent(mapboxId)}?${params}`,
+  );
+  const data = await parseJsonOrNull(response);
+  const feature = data?.features?.[0];
+  return featureToSuggestion(feature, { source: 'mapbox' });
+}
+
 export async function searchBoxRetrieve(mapboxId, sessionToken) {
   if (!MAPBOX_TOKEN || !mapboxId) return null;
   try {
-    const params = new URLSearchParams({
-      access_token: MAPBOX_TOKEN,
-      session_token: sessionToken || newSessionToken(),
-      language: 'ko',
-    });
-    const response = await fetch(
-      `${SEARCHBOX_BASE}/retrieve/${encodeURIComponent(mapboxId)}?${params}`,
-    );
-    const data = await parseJsonOrNull(response);
-    const feature = data?.features?.[0];
-    return featureToSuggestion(feature, { source: 'mapbox' });
+    const ko = await searchBoxRetrieveOnce(mapboxId, sessionToken, 'ko');
+    if (!ko) return null;
+    if (isLatinPlaceName(ko.name_en)) return ko;
+    const en = await searchBoxRetrieveOnce(mapboxId, sessionToken, 'en');
+    return mergeLatinPlaceFields(ko, en);
   } catch (err) {
     warnOnce(`retrieve 실패: ${err?.message || err}`);
     return null;

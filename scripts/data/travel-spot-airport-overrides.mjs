@@ -73,12 +73,6 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '안나푸르나 서킷은 보통 인천→카트만두 트리부반국제공항(KTM) 국제선 도착 후 시내 준비·베시사하르(Besisahar) 육로로 서킷에 들어갑니다. 포카라(PKR) 경유·국내선으로 접근하는 일정도 있습니다. 항공권·Trip 검색 도착 코드는 KTM을 사용하세요.',
   },
-  zakynthos: {
-    primaryIatas: ['ZTH'],
-    preferredLinkIata: 'ZTH',
-    confidence: 'high',
-    rationale: '자킨토스 국제공항(ZTH, Dionysios Solomos)',
-  },
   bodrum: { primaryIatas: ['BJV'], preferredLinkIata: 'BJV', confidence: 'high', rationale: '밀라스·보드룸 공항' },
   bled: {
     primaryIatas: ['LJU', 'ZAG', 'VCE'],

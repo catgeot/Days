@@ -15,6 +15,7 @@ import { buildPlaceDbIdCandidates, getPlaceStableKey, getPlaceStatsId } from '..
 import { isDomesticKoreaLocation, resolveTourApiPlace } from '../../../utils/tourApiMatch';
 import { fetchTourApiGallery } from '../../../utils/fetchTourApiGallery';
 import { filterOutSinglePersonPortraits } from '../../../utils/galleryPortraitFilter';
+import { resolveGalleryStockQuery, isLatinPlaceName } from '../../../pages/Home/lib/uiPlaceAssetQuery.js';
 import {
   clearGalleryAttributionReturnState,
   consumeGalleryAttributionReturnState,
@@ -22,8 +23,8 @@ import {
   readGalleryAttributionReturnState,
 } from '../common/galleryAttributionNavigation';
 
-/** v1.20 — 갤러리 최대 60장 · DB 인물 고착 시 LIVE 재조회 */
-const CACHE_VERSION = 'v1.20';
+/** v1.21 — 한글 Mapbox name_en 갤러리 쿼리 폐기 · 라틴 지명만 스톡 검색 */
+const CACHE_VERSION = 'v1.21';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
 
 /** 장소 갤러리 UI·세션 캐시 상한 (Pexels 다중 쿼리 백필 과다 방지) */
@@ -57,9 +58,7 @@ const FALLBACK_DICTIONARY = {
   "피지": "Fiji",
   "나이아가라 폭포": "Niagara Falls",
   "나이아가라": "Niagara Falls",
-  "나이야 가라": "Niagara Falls",
-  "자킨토스": "Zakynthos",
-  "자킨토시": "Zakynthos"
+  "나이야 가라": "Niagara Falls"
 };
 
 /** 지명 단독 검색 시 결과가 빈약한 장소 — 국가/광역 키워드로 대체 */
@@ -183,7 +182,8 @@ function isThinStockGallery(images) {
 
 function resolvePexelsQueries(primaryQuery, backupQuery, koreanName, spotSlug) {
   const extras = spotSlug ? (GALLERY_PEXELS_EXTRA_QUERIES[spotSlug] || []) : [];
-  return [...new Set([primaryQuery, backupQuery, ...extras, koreanName].filter(Boolean))];
+  const extraName = isLatinPlaceName(koreanName) ? koreanName : '';
+  return [...new Set([primaryQuery, backupQuery, ...extras, extraName].filter(Boolean))];
 }
 
 function mergeGalleryAppend(existing, incoming, max = GALLERY_MAX_IMAGES) {
@@ -344,27 +344,22 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     let koreanName = '';
 
     if (typeof targetSpot === 'object') {
-        // 🚨 [Fix] 검색 정확도 향상을 위해 영어 지명에 쉼표가 있을 경우 첫 번째 구역(단어)만 추출
-        const rawNameEn = targetSpot.name_en || '';
-        const simpleNameEn = rawNameEn.split(',')[0].trim();
-
-        primaryQuery = simpleNameEn || targetSpot.name || '';
-        koreanName = targetSpot.name || '';
-
-        const regionSpot =
-          (typeof locationSource === 'object' && locationSource?.galleryRegionSpot) ||
-          (typeof targetSpot === 'object' && targetSpot?.galleryRegionSpot) ||
-          null;
-        const country = targetSpot.country_en || targetSpot.country;
-
-        if (regionSpot?.name_en && primaryQuery && regionSpot.name_en.toLowerCase() !== primaryQuery.toLowerCase()) {
-          backupQuery = `${primaryQuery} ${regionSpot.name_en}`;
-        } else if (country && primaryQuery && country !== primaryQuery) {
-          backupQuery = `${primaryQuery} ${country}`;
-        }
+        const resolved = resolveGalleryStockQuery(
+          {
+            ...targetSpot,
+            galleryRegionSpot:
+              targetSpot.galleryRegionSpot ||
+              (typeof locationSource === 'object' ? locationSource.galleryRegionSpot : null),
+          },
+          FALLBACK_DICTIONARY,
+        );
+        primaryQuery = resolved.primaryQuery;
+        backupQuery = resolved.backupQuery;
+        koreanName = resolved.koreanName;
     } else {
-        primaryQuery = String(targetSpot);
-        koreanName = String(targetSpot);
+        const resolved = resolveGalleryStockQuery({ name: String(targetSpot) }, FALLBACK_DICTIONARY);
+        primaryQuery = resolved.primaryQuery;
+        koreanName = resolved.koreanName;
     }
 
     primaryQuery = primaryQuery.trim();
@@ -385,13 +380,6 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     if (slugOverride) {
       primaryQuery = slugOverride.primary;
       backupQuery = slugOverride.backup || backupQuery;
-    }
-
-    // 🚨 [Fix] 한글 검색어로 API 호출 시 결과가 희박하므로 Dictionary로 영문 강제 치환
-    if (FALLBACK_DICTIONARY[koreanName]) {
-      primaryQuery = FALLBACK_DICTIONARY[koreanName];
-    } else if (FALLBACK_DICTIONARY[primaryQuery]) {
-      primaryQuery = FALLBACK_DICTIONARY[primaryQuery];
     }
 
     const placeKey =

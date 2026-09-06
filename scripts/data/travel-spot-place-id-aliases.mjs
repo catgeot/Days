@@ -24,12 +24,6 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   '플리트비체호수': 'plitvice-lakes',
   '쿄토': 'kyoto',
 
-  // —— 그리스 이오니아 (오타·영문 별칭) ——
-  '자킨토시': 'zakynthos',
-  '잔테': 'zakynthos',
-  'Zante': 'zakynthos',
-  'Zakynthos Island': 'zakynthos',
-
   // —— 남극·알래스카 ——
   // 맥머도/McMurdo → antarctica 금지. 앵커리지→alaska 금지(hub anchorage / cities).
   '남극해': 'antarctica',
@@ -191,7 +185,6 @@ export const TRAVEL_SPOT_TOOLKIT_SYNONYMS = {
   'ishigaki': ['이시가키', 'Ishigaki'],
   'kuala-lumpur': ['쿠알라셀랑고르'],
   'bohol': ['보홀', 'Bohol'],
-  zakynthos: ['자킨토스', '자킨토시', '잔테', 'Zakynthos', 'Zante'],
   'seattle': ['Seattle', 'seattle'],
   'antarctica': ['남극해'],
   patagonia: ['Bariloche', '바릴로체', 'Patagonia (Northern)'],
