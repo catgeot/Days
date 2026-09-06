@@ -163,30 +163,17 @@
 
 ---
 
-### 갤러리 인물 제외
+### 갤러리 인물 제외 — main 병합 ✅
 
 | | |
 |--|--|
-| **상태** | **#2 push** · tip `0dee0daa` · PR [#194](https://github.com/catgeot/Days/pull/194) · **#3 사람 Preview QA** (자킨토스 DB 고착) |
-| **브랜치** | `cursor/gallery-2-c260` |
-| **tip** | `0dee0daa` |
-| **PR** | [#194](https://github.com/catgeot/Days/pull/194) · #1 merge `eb1189b6` ([#187](https://github.com/catgeot/Days/pull/187)) |
+| **상태** | **#2 merge ✅** · main `4e748b4b` · PR [#194](https://github.com/catgeot/Days/pull/194) |
+| **브랜치** | `cursor/gallery-2-c260` · merge `4e748b4b` |
 | **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
-| **Preview** | `/qa/gallery-portrait` → git Preview에서 자킨토스 갤러리 |
-| **소유** | `galleryPortraitFilter.js` · DB 전-인물 miss → LIVE |
-| **금지** | `orientation=landscape` 재도입 · UI 리디자인 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `smoke:gallery-portrait-filter` · `smoke:place-gallery-pexels` · `vite build` |
+| **PROD** | `https://www.gateo.kr/` — 자킨토스 갤러리 |
+| **VERIFY** | `smoke:gallery-portrait-filter` · `smoke:place-gallery-pexels` · `vite build` PASS |
 
-**다음 제시어**:
-
-```
-갤러리 인물 제외 #3, Preview QA
-@plans/feature-handoff-index.md
-@plans/2026-09-06-project-log.md
-브랜치 cursor/gallery-2-c260 · PR #194 · Preview /qa/gallery-portrait
-금지: orientation=landscape 재도입 · UI 리디자인
-작업: 자킨토스 갤러리에서 셀카·얼굴 클로즈업이 빠지는지 · 해변·절벽 전경은 남는지
-```
+**다음 제시어 없음** (주제 종료). DB 인물 고착 시 LIVE 재조회는 PROD.
 
 ---
 

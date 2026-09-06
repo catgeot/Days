@@ -10,9 +10,8 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'gallery-portrait',
     label: '갤러리 단일 인물 제외',
-    branch: 'cursor/gallery-2-c260',
-    destination:
-      'https://days-git-cursor-gallery-2-c260-catgeots-projects.vercel.app/',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/',
     active: true,
   },
   {

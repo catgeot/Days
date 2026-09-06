@@ -23,14 +23,13 @@
 - **VERIFY** `smoke:gallery-portrait-filter` · `smoke:place-gallery-pexels` · `vite build` PASS
 - **다음** 사람 Preview `/qa/gallery-portrait` · 자킨토스 갤러리
 
-```
-갤러리 인물 제외 #3, Preview QA
-@plans/feature-handoff-index.md
-@plans/2026-09-06-project-log.md
-브랜치 cursor/gallery-2-c260 · PR #194 · Preview /qa/gallery-portrait
-금지: orientation=landscape 재도입 · UI 리디자인
-작업: 자킨토스 갤러리에서 셀카·얼굴 클로즈업이 빠지는지 · 해변·절벽 전경은 남는지
-```
+## 갤러리 인물 제외 — PR #194 merge ✅
+
+- **PR [#194](https://github.com/catgeot/Days/pull/194)** FF merge → main `4e748b4b` (사람 요청)
+- **PROD** `https://www.gateo.kr/` — 자킨토스 갤러리
+- **주제 종료** — DB 인물 고착 시 LIVE 재조회
+
+**다음 제시어 없음** (주제 종료).
 
 ## 갤러리 사진 관리 #1, 모바일 길게 누르기
 
