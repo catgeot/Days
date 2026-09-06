@@ -3,11 +3,13 @@
  * 실패 시 null/[] 반환 (큐레이션만으로 degrade).
  */
 import { isIslandPlaceQuery } from './exploreSearchAliases.js';
+import { shouldSupplementGeocodeHits } from './travelSearchHomonyms.js';
 import {
   ensureLatinPlaceSlug,
   isLatinPlaceName,
   mergeLatinPlaceFields,
   mergeSearchBoxEnglishHits,
+  mergeSearchBoxWithGeocodeHits,
   needsLatinPlaceName,
 } from './uiPlaceAssetQuery.js';
 
@@ -174,11 +176,22 @@ async function searchBoxForwardRaw(query, opts = {}) {
 export async function searchBoxForward(query, opts = {}) {
   const language = opts.language || 'ko';
   const hits = await searchBoxForwardRaw(query, { ...opts, language });
-  if (language === 'en' || hits.every((h) => isLatinPlaceName(h.name_en))) {
-    return hits.map(ensureLatinPlaceSlug);
+  const koEmpty = !hits.length;
+  let merged;
+  if (language === 'en') {
+    merged = hits.map(ensureLatinPlaceSlug);
+  } else if (!koEmpty && hits.every((h) => isLatinPlaceName(h.name_en))) {
+    merged = hits.map(ensureLatinPlaceSlug);
+  } else {
+    const enHits = await searchBoxForwardRaw(query, { ...opts, language: 'en' });
+    merged = mergeSearchBoxEnglishHits(hits, enHits);
   }
-  const enHits = await searchBoxForwardRaw(query, { ...opts, language: 'en' });
-  return mergeSearchBoxEnglishHits(hits, enHits);
+  if (opts.skipGeocodeFallback) return merged;
+  if (!shouldSupplementGeocodeHits(query, merged)) return merged;
+  const { geocodeForwardSuggestionHits } = await import('./geocoding.js');
+  const geoHits = await geocodeForwardSuggestionHits(query, { limit: opts.limit ?? 6 });
+  if (!geoHits.length) return merged;
+  return mergeSearchBoxWithGeocodeHits(merged, geoHits);
 }
 
 /**

@@ -8,7 +8,12 @@
 import { KEYWORD_SYNONYMS } from '../data/keywordData';
 import { isIslandPlaceQuery, resolveExploreSearchAlias } from './exploreSearchAliases.js';
 import { resolveTravelCountryFromAddresses } from './travelRegionCountry.js';
-import { isLatinPlaceName, mergeLatinPlaceFields } from './uiPlaceAssetQuery.js';
+import {
+  ensureLatinPlaceSlug,
+  isLatinPlaceName,
+  mergeLatinPlaceFields,
+  samePlaceCenter,
+} from './uiPlaceAssetQuery.js';
 
 const RETRY_FILTERS = [
   "고원", "섬", "산", "해변", "폭포", "마을", "대륙", "반도", "시", "군", "구",
@@ -344,6 +349,76 @@ const pickRankedMapboxFeature = (features, searchQuery, landmarkPlan) => {
   if (facilityQ && best.score < 40) return null;
   return best.feature;
 };
+
+function geocodeParsedToSuggestion(place, feature) {
+  const types = Array.isArray(feature?.place_type) ? feature.place_type : [];
+  const isPoi = types.includes('poi');
+  const isPlaceLike = types.some(
+    (type) => type === 'place' || type === 'city' || type === 'region' || type === 'locality',
+  );
+  return {
+    id: `geocode-${place.mapboxId || `${place.lat}-${place.lng}`}`,
+    kind: isPoi ? 'attraction' : isPlaceLike ? 'city' : 'poi',
+    badge: isPoi ? '명소' : types.includes('place') || types.includes('city') ? '도시' : '장소',
+    name: place.name,
+    name_en: place.name_en,
+    country: place.country,
+    country_en: place.country_en,
+    lat: place.lat,
+    lng: place.lng,
+    mapboxId: place.mapboxId,
+    source: 'mapbox-geocode',
+    uiPlace: true,
+  };
+}
+
+/**
+ * Search Box가 못 찾는 한글 지명용 Geocoding 후보 (ko+en 라틴 name_en).
+ * 드롭다운·Enter가 같은 인덱스를 쓰게.
+ */
+export async function geocodeForwardSuggestionHits(query, { limit = 6 } = {}) {
+  if (!MAPBOX_TOKEN) return [];
+  const q = String(query || '').trim();
+  if (!q) return [];
+
+  try {
+    const [koFeatures, enFeatures] = await Promise.all([
+      fetchMapboxGeocodeFeatures(q, { language: 'ko' }),
+      fetchMapboxGeocodeFeatures(q, { language: 'en' }),
+    ]);
+    const facilityQ = isFacilityQuery(q);
+    const rankedKo = [...koFeatures]
+      .map((feature) => ({
+        feature,
+        score: scoreMapboxFeature(feature, q, facilityQ, null),
+      }))
+      .sort((a, b) => b.score - a.score)
+      .map((row) => row.feature);
+    const source = rankedKo.length ? rankedKo : enFeatures;
+    const out = [];
+    for (const feature of source) {
+      if (out.length >= limit) break;
+      const parsed = parseMapboxForwardPlace(feature, q);
+      if (!parsed) continue;
+      let place = parsed;
+      if (!isLatinPlaceName(place.name_en)) {
+        const enMatch =
+          enFeatures.find((row) => row?.id && row.id === feature.id) ||
+          enFeatures.find((row) => sameMapboxCenter(row, feature));
+        if (enMatch) {
+          const parsedEn = parseMapboxForwardPlace(enMatch, q);
+          if (parsedEn) place = mergeLatinPlaceFields(place, parsedEn);
+        }
+      }
+      if (out.some((hit) => samePlaceCenter(hit, place))) continue;
+      out.push(geocodeParsedToSuggestion(place, feature));
+    }
+    return out.map(ensureLatinPlaceSlug);
+  } catch (error) {
+    console.warn('Mapbox geocode suggestion fallback failed:', error);
+    return [];
+  }
+}
 
 const parseMapboxForwardPlace = (feature, searchQuery) => {
   const [lng, lat] = feature.center || [];

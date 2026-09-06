@@ -21,9 +21,30 @@ export function placeDistanceKm(a, b) {
   return 2 * 6371 * Math.asin(Math.min(1, Math.sqrt(h)));
 }
 
-function isKoreaPlace(item) {
-  const blob = `${item?.country || ''} ${item?.country_en || ''}`.toLowerCase();
+export function isKoreaPlace(item) {
+  const blob = `${item?.country || ''} ${item?.country_en || ''} ${item?.place_formatted || ''}`.toLowerCase();
   return /korea|대한민국|한국/.test(blob);
+}
+
+/** 히트 표기가 검색어(섬 접미 무시)를 덮는지 — 파포스≠파로스 */
+export function hitCoversSearchQuery(hit, query) {
+  const q = normalizeKey(query).replace(/섬$/u, '').replace(/islands?$/i, '');
+  if (!q) return false;
+  const names = [hit?.name, hit?.name_en, hit?.name_ko]
+    .map((value) => normalizeKey(value).replace(/섬$/u, '').replace(/islands?$/i, ''))
+    .filter((value) => value.length >= 2);
+  return names.some((name) => name === q || name.includes(q) || (name.length >= 3 && q.includes(name)));
+}
+
+/**
+ * Search Box가 비었거나, 한글 쿼리를 해외 지명으로 못 덮으면 Geocoding 보강.
+ * 미등록 지명(케팔로니아·시프노스)은 Search Box 공백·한국 POI가 잦다.
+ */
+export function shouldSupplementGeocodeHits(query, hits) {
+  const list = Array.isArray(hits) ? hits : [];
+  if (!list.length) return true;
+  if (!/[\uAC00-\uD7A3]/.test(String(query || ''))) return false;
+  return !list.some((hit) => hitCoversSearchQuery(hit, query) && !isKoreaPlace(hit));
 }
 
 /** Mapbox 동명 — 한국 POI·근접 중복 제외, 다른 나라 여행지만 */

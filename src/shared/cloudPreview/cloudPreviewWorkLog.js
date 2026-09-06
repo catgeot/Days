@@ -6,7 +6,7 @@
 export const cloudPreviewProject = {
   active: true,
   title: '자킨토스 검색',
-  sessionNo: 7,
+  sessionNo: 8,
   sessionPhase: 'Preview QA',
   branch: 'cursor/zakynthos-search-e84a',
   previewPath: '/',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-06-zakynthos-8-unseen-geocode',
+    session: '자킨토스 검색 #8, Preview QA',
+    title: '미등록 한글 지명은 Search Box 공백이면 Geocoding으로 보강',
+    detail:
+      '자킨토스·사바 별칭이 아니라 검색 성능. Search Box ko 공백이면 en을 건너뛰던 .every 구멍 수정. 한글 쿼리를 해외 지명이 못 덮으면 Mapbox Geocoding(ko+en)을 드롭다운 앞에 붙임. Preview /qa/zakynthos — 케팔로니아·시프노스·포르멘테라·파로스 등 미등록 지명.',
+    at: '2026-09-06T12:20:00.000Z',
+  },
   {
     id: '2026-09-06-zakynthos-7-restore-dropdown',
     session: '자킨토스 검색 #7, Preview QA',
