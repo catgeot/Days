@@ -6,6 +6,11 @@
       "permanent": true
     },
     {
+      "source": "/qa/gallery",
+      "destination": "https://days-git-cursor-gallery-c260-catgeots-projects.vercel.app/place/paris/gallery",
+      "permanent": false
+    },
+    {
       "source": "/qa/globe-labels",
       "destination": "https://days-git-cursor-globe-labels-ddce-catgeots-projects.vercel.app/",
       "permanent": false

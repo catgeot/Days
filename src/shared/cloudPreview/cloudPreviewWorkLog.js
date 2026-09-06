@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '홈 지구본 지명',
-  sessionNo: 3,
-  sessionPhase: '사파리 첫 진입 지명',
-  branch: 'cursor/globe-labels-ddce',
-  previewPath: '/',
-  qaShareSlug: 'globe-labels',
+  title: '갤러리 인물 제외',
+  sessionNo: 1,
+  sessionPhase: '단일 인물 필터',
+  branch: 'cursor/gallery-c260',
+  previewPath: '/place/paris/gallery',
+  qaShareSlug: 'gallery',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-06-gallery-1-no-portrait',
+    session: '갤러리 인물 제외 #1, 단일 인물 필터',
+    title: '스톡 갤러리에서 단일 인물 사진 제외',
+    detail:
+      'Unsplash/Pexels에 인물 제외 파라미터가 없어 orientation=landscape는 쓰지 않음(세로 전경 유지). 설명·태그·비율로 셀카·헤드샷·세로 인물만 빼고, 전경 속 사람은 유지. Preview /qa/gallery — 파리 갤러리에 단일 인물 사진이 줄었는지, 거리·랜드마크 전경은 남는지.',
+    at: '2026-09-06T00:48:00.000Z',
+  },
   {
     id: '2026-09-03-globe-labels-3-safari-first-load',
     session: '홈 지구본 지명 #3, 사파리 첫 진입 지명',

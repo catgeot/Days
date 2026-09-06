@@ -22,6 +22,8 @@ assert.match(src, /GALLERY_MAX_IMAGES/, 'gallery max image cap');
 assert.match(src, /GALLERY_PEXELS_BATCH_LIMIT/, 'pexels batch limit');
 assert.match(src, /capGalleryImages/, 'cap helper');
 assert.match(src, /신규 사진 없음/, 'no-op refresh logs warning');
+assert.match(src, /filterOutSinglePersonPortraits/, 'cached galleries drop single-person portraits');
+assert.match(src, /CACHE_VERSION = 'v1\.19'/, 'cache version after portrait filter');
 
 const apiSrc = readFileSync(join(root, 'src/pages/Home/lib/apiClient.js'), 'utf8');
 assert.match(apiSrc, /fetchPexelsImagesViaProxy/, 'pexels edge proxy fallback');

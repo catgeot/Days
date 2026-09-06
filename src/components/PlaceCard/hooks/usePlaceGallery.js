@@ -14,6 +14,7 @@ import { supabase } from '../../../shared/api/supabase';
 import { buildPlaceDbIdCandidates, getPlaceStableKey, getPlaceStatsId } from '../../../utils/travelSpotResolve';
 import { isDomesticKoreaLocation, resolveTourApiPlace } from '../../../utils/tourApiMatch';
 import { fetchTourApiGallery } from '../../../utils/fetchTourApiGallery';
+import { filterOutSinglePersonPortraits } from '../../../utils/galleryPortraitFilter';
 import {
   clearGalleryAttributionReturnState,
   consumeGalleryAttributionReturnState,
@@ -21,8 +22,8 @@ import {
   readGalleryAttributionReturnState,
 } from '../common/galleryAttributionNavigation';
 
-/** v1.18 — 갤러리 최대 60장 · Pexels 배치 상한 */
-const CACHE_VERSION = 'v1.18';
+/** v1.19 — 갤러리 최대 60장 · 단일 인물 사진 제외 */
+const CACHE_VERSION = 'v1.19';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
 
 /** 장소 갤러리 UI·세션 캐시 상한 (Pexels 다중 쿼리 백필 과다 방지) */
@@ -300,14 +301,15 @@ export const usePlaceGallery = (locationSource, options = {}) => {
 
   // 이미지 상태 업데이트 (Unsplash/Pexels 경로 그대로 · TourAPI 교차는 fetch 쪽에서만)
   const processAndSetImages = useCallback((rawImages) => {
-    const capped = capGalleryImages(rawImages);
+    const capped = capGalleryImages(filterOutSinglePersonPortraits(rawImages));
     if (!capped.length) {
       setImages([]);
       allImagesRef.current = [];
-      return;
+      return capped;
     }
     allImagesRef.current = capped;
     setImages(capped);
+    return capped;
   }, []);
 
   const fetchImages = useCallback(async (forceRefresh = false) => {
@@ -518,9 +520,10 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       if (validCache && validCache.length > 0 && !isThinStockGallery(validCache)) {
         if (isStale()) return;
         processAndSetImages(validCache);
+        saveToSmartCache(CACHE_KEY, allImagesRef.current);
         markFetchDone();
         finishLoading();
-        if (needsPexelsBackfill(validCache, thumbnailOnly)) {
+        if (needsPexelsBackfill(allImagesRef.current, thumbnailOnly)) {
           const backfillRunId = runId;
           pexelsPageRef.current += 1;
           void fetchPexelsBatch(
@@ -534,7 +537,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
               const { merged, added } = mergeGalleryAppend(allImagesRef.current, pexelsImages);
               if (added === 0) return;
               processAndSetImages(merged);
-              saveToSmartCache(CACHE_KEY, merged);
+              saveToSmartCache(CACHE_KEY, allImagesRef.current);
               console.log(`✅ Pexels backfill ${added}장 병합 (세션 캐시 히트 후)`);
             })
             .catch((err) => console.error('⚠️ Pexels backfill error:', err));
@@ -606,12 +609,12 @@ export const usePlaceGallery = (locationSource, options = {}) => {
                 );
               } else {
                 processAndSetImages(gallerySlice);
-                saveToSmartCache(CACHE_KEY, gallerySlice);
+                saveToSmartCache(CACHE_KEY, allImagesRef.current);
                 unsplashPageRef.current = 1;
                 pexelsPageRef.current = 0;
                 markFetchDone();
                 finishLoading();
-                if (needsPexelsBackfill(gallerySlice, thumbnailOnly)) {
+                if (needsPexelsBackfill(allImagesRef.current, thumbnailOnly)) {
                   const backfillRunId = runId;
                   pexelsPageRef.current += 1;
                   void fetchPexelsBatch(
@@ -625,7 +628,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
                       const { merged, added } = mergeGalleryAppend(allImagesRef.current, pexelsImages);
                       if (added === 0) return;
                       processAndSetImages(merged);
-                      saveToSmartCache(CACHE_KEY, merged);
+                      saveToSmartCache(CACHE_KEY, allImagesRef.current);
                       console.log(`✅ Pexels backfill ${added}장 병합 (place_stats 히트 후)`);
                     })
                     .catch((err) => console.error('⚠️ Pexels backfill error:', err));
@@ -658,11 +661,11 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           if (isStale()) return;
           if (tourImages.length > 0) {
             processAndSetImages(tourImages);
-            saveToSmartCache(CACHE_KEY, tourImages);
+            saveToSmartCache(CACHE_KEY, allImagesRef.current);
             markFetchDone();
             if (dbStatsId || koreanName) {
               const thumbnailToSave =
-                tourImages[0]?.urls?.small || tourImages[0]?.urls?.regular || '';
+                allImagesRef.current[0]?.urls?.small || allImagesRef.current[0]?.urls?.regular || '';
               const statsPlaceId = dbStatsId || koreanName;
               if (thumbnailOnly) {
                 if (thumbnailToSave) {
@@ -682,7 +685,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
                   .upsert(
                     {
                       place_id: statsPlaceId,
-                      gallery_urls: tourImages,
+                      gallery_urls: allImagesRef.current,
                       image_url: thumbnailToSave,
                     },
                     { onConflict: 'place_id' },
@@ -835,11 +838,11 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         if (isStale()) return;
 
         processAndSetImages(finalResults);
-        saveToSmartCache(CACHE_KEY, finalResults);
+        saveToSmartCache(CACHE_KEY, allImagesRef.current);
 
         // 더보기(append)는 세션만 — place_stats 큐레이션을 Unsplash 병합본으로 덮지 않음
         if (!forceRefresh && (dbStatsId || koreanName)) {
-          const thumbnailToSave = finalResults[0]?.urls?.small || finalResults[0]?.urls?.regular || '';
+          const thumbnailToSave = allImagesRef.current[0]?.urls?.small || allImagesRef.current[0]?.urls?.regular || '';
           const statsPlaceId = dbStatsId || koreanName;
 
           if (thumbnailOnly) {
@@ -856,7 +859,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
               .from('place_stats')
               .upsert({
                 place_id: statsPlaceId,
-                gallery_urls: finalResults,
+                gallery_urls: allImagesRef.current,
                 image_url: thumbnailToSave
               }, { onConflict: 'place_id' })
               .then(({ error }) => {

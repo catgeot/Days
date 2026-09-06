@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'gallery',
+    label: '갤러리 단일 인물 제외',
+    branch: 'cursor/gallery-c260',
+    destination:
+      'https://days-git-cursor-gallery-c260-catgeots-projects.vercel.app/place/paris/gallery',
+    active: true,
+  },
+  {
     slug: 'globe-labels',
     label: '홈 지구본 첫 로딩 지명',
     branch: 'cursor/globe-labels-ddce',
