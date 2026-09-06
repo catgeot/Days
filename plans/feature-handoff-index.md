@@ -72,25 +72,25 @@
 
 | | |
 |--|--|
-| **상태** | **#8 push** · tip `c03f3e5c` · PR [#199](https://github.com/catgeot/Days/pull/199) · 에이전트 QA PASS · **#9 사람 Preview QA** |
+| **상태** | **#9 push** · tip `cffe174f` · PR [#199](https://github.com/catgeot/Days/pull/199) · #9 사람 Preview QA PASS · **#10 방문 요약 카드 QA** |
 | **브랜치** | `cursor/zakynthos-search-e84a` |
-| **tip** | `c03f3e5c` |
+| **tip** | `cffe174f` |
 | **PR** | [#199](https://github.com/catgeot/Days/pull/199) |
 | **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
-| **Preview** | `/qa/zakynthos` → git Preview `/` (미등록 한글 지명 드롭다운) |
-| **소유** | `mapboxSearchBox.js` · `mapboxGeocodeSuggestions.js` · `travelSearchHomonyms.js` `shouldSupplementGeocodeHits` |
+| **Preview** | `/qa/zakynthos` → git Preview `/` (지도 우선 로딩 · 방문 후 요약 카드) |
+| **소유** | `visitedPlaceSearch.js` · `visitedPlaceSearchLookup.js` · `mapboxSearchBox.js` · `useHomeHandlers.js` Smart Search |
 | **금지** | UI 리디자인 · 자킨토스 SSOT 재등록 · `orientation=landscape` 재도입 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `smoke:unseen-place-search` · `smoke:explore-search-aliases` · `smoke:zakynthos-search` · `smoke:sabah-search` · `vite build` |
+| **VERIFY** | `smoke:visited-place-search` · `smoke:unseen-place-search` · `smoke:zakynthos-search` · `smoke:sabah-search` · `vite build` |
 
 **다음 제시어**:
 
 ```
-자킨토스 검색 #9, Preview QA
+자킨토스 검색 #10, 방문 요약 카드 QA
 @plans/feature-handoff-index.md
 @plans/2026-09-06-project-log.md
 브랜치 cursor/zakynthos-search-e84a · PR #199 · Preview /qa/zakynthos
 금지: UI 리디자인 · 자킨토스 SSOT 재등록 · orientation=landscape 재도입
-작업: 탐색창 케팔로니아·시프노스·포르멘테라·파로스 → 해외 핀·영문 부제 · 자킨토스·사바섬 회귀
+작업: Enter 로딩이 지도 찾기인지 · 자킨토스 방문 후 재검색 시 요약/썸네일 카드 · 사바섬 회귀
 ```
 
 ---
