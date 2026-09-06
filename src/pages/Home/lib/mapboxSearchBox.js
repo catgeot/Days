@@ -3,6 +3,7 @@
  * 실패 시 null/[] 반환 (큐레이션만으로 degrade).
  */
 import { isIslandPlaceQuery } from './exploreSearchAliases.js';
+import { geocodeForwardSuggestionHits } from './mapboxGeocodeSuggestions.js';
 import { shouldSupplementGeocodeHits } from './travelSearchHomonyms.js';
 import {
   ensureLatinPlaceSlug,
@@ -189,7 +190,6 @@ export async function searchBoxForward(query, opts = {}) {
   }
   if (opts.skipGeocodeFallback) return merged;
   if (!shouldSupplementGeocodeHits(query, merged)) return merged;
-  const { geocodeForwardSuggestionHits } = await import('./geocoding.js');
   const geoHits = await geocodeForwardSuggestionHits(query, { limit: opts.limit ?? 6 });
   if (!geoHits.length) return merged;
   return mergeSearchBoxWithGeocodeHits(merged, geoHits);

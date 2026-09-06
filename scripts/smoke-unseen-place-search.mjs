@@ -12,6 +12,7 @@ import { fileURLToPath } from 'node:url';
 import { TRAVEL_SPOTS } from '../src/pages/Home/data/travelSpots.js';
 import { resolveTravelSpotFromSearchQuery } from '../src/utils/travelSpotResolve.js';
 import { resolveExploreSearchAlias } from '../src/pages/Home/lib/exploreSearchAliases.js';
+import { geocodeForwardSuggestionHits } from '../src/pages/Home/lib/mapboxGeocodeSuggestions.js';
 import {
   hitCoversSearchQuery,
   shouldSupplementGeocodeHits,
@@ -89,6 +90,8 @@ const boxSrc = readFileSync(join(root, 'src/pages/Home/lib/mapboxSearchBox.js'),
 assert.match(boxSrc, /koEmpty/, 'empty Search Box no longer short-circuits en merge');
 assert.match(boxSrc, /shouldSupplementGeocodeHits/, 'Search Box supplements from geocoding');
 assert.match(boxSrc, /geocodeForwardSuggestionHits/, 'Search Box calls geocode fallback');
+assert.match(boxSrc, /mapboxGeocodeSuggestions/, 'geocode fallback is a static Search Box sibling');
+assert.doesNotMatch(boxSrc, /await import\('\.\/geocoding\.js'\)/, 'does not dynamic-import geocoding.js');
 assert.doesNotMatch(
   boxSrc,
   /if \(language === 'en' \|\| hits\.every/,
@@ -106,7 +109,6 @@ if (!TOKEN) {
 }
 
 const SEARCHBOX = 'https://api.mapbox.com/search/searchbox/v1/forward';
-const GEOCODE = 'https://api.mapbox.com/geocoding/v5/mapbox.places';
 
 function searchBoxTypes(query) {
   return /섬$|\bislands?\b/i.test(query) ? 'region,place,city' : 'place,city,poi';
@@ -130,23 +132,6 @@ function sbFeatureToHit(feature) {
   };
 }
 
-function geoFeatureToHit(feature) {
-  const [lng, lat] = feature?.center || [];
-  const name = String(feature?.text || '').trim();
-  const placeName = String(feature?.place_name || '');
-  const country = placeName.split(',').pop()?.trim() || '';
-  const latin = isLatinPlaceName(name) ? name : '';
-  return {
-    name,
-    name_en: latin,
-    country,
-    country_en: isLatinPlaceName(country) ? country : '',
-    lat: Number(lat),
-    lng: Number(lng),
-    source: 'geocode',
-  };
-}
-
 async function fetchJson(url) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`${response.status} ${url}`);
@@ -166,17 +151,6 @@ async function searchBoxHits(query, language) {
   return (data.features || []).map(sbFeatureToHit).filter((h) => h.name && Number.isFinite(h.lat));
 }
 
-async function geocodeHits(query, language) {
-  const params = new URLSearchParams({
-    access_token: TOKEN,
-    language,
-    limit: '5',
-    types: 'place,region,locality',
-  });
-  const data = await fetchJson(`${GEOCODE}/${encodeURIComponent(query)}.json?${params}`);
-  return (data.features || []).map(geoFeatureToHit).filter((h) => h.name && Number.isFinite(h.lat));
-}
-
 async function pipelineHits(query) {
   const ko = await searchBoxHits(query, 'ko');
   let merged;
@@ -187,9 +161,7 @@ async function pipelineHits(query) {
     merged = mergeSearchBoxEnglishHits(ko, en);
   }
   if (!shouldSupplementGeocodeHits(query, merged)) return merged;
-  const geoKo = await geocodeHits(query, 'ko');
-  const geoEn = await geocodeHits(query, 'en');
-  const geoMerged = mergeSearchBoxEnglishHits(geoKo, geoEn);
+  const geoMerged = await geocodeForwardSuggestionHits(query, { limit: 6 });
   if (!geoMerged.length) return merged;
   return mergeSearchBoxWithGeocodeHits(merged, geoMerged);
 }
