@@ -14,6 +14,33 @@
 
 ## 활성 목록
 
+### 갤러리 인물 제외
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `7decd79c` · PR [#187](https://github.com/catgeot/Days/pull/187) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/gallery-c260` |
+| **tip** | `7decd79c` |
+| **PR** | [#187](https://github.com/catgeot/Days/pull/187) |
+| **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
+| **Preview** | `/qa/gallery` → git Preview `/place/paris/gallery` |
+| **소유** | Unsplash/Pexels 인물 필터 · 세션 캐시 v1.19 |
+| **금지** | `orientation=landscape` 재도입 · UI 리디자인 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:gallery-portrait-filter` · `smoke:place-gallery-pexels` · `vite build` |
+
+**다음 제시어**:
+
+```
+갤러리 인물 제외 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/gallery-c260 · PR #187 · Preview /qa/gallery
+금지: orientation=landscape 재도입 · UI 리디자인 · feature에 plans 커밋
+작업: 파리 갤러리에서 단일 인물(셀카·얼굴)이 줄었는지 · 거리·랜드마크 전경은 남는지
+```
+
+---
+
 ### 팔경 활용 — 검색·리스트 (A)
 
 | | |
