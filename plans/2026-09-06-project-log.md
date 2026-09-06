@@ -95,3 +95,21 @@
 금지: 릴리스 노트 홈 팝업 재도입 · UI 리디자인 · 버그픽스/미세 UI를 Updates에 넣기
 작업: 홈 진입 시 공지 모달 없음 · 로고 패널 푸터 Updates에 기존 내역 · 배포 새로고침 안내는 PROD만
 ```
+
+## 여행사 목록 #1, 재접속 경로
+
+- **브랜치** `cursor/agencies-85ab` · tip `8ed679af` · **PR [#192](https://github.com/catgeot/Days/pull/192)**
+- 로고 패널(비로그인 포함)·탐색 「여행사」칩·플래너에 연결된 제휴 여행사 + 이 기기 방문 기록(마지막 URL). MRT 예약 후 사이트 미저장 이탈 시 재접속 경로.
+- **VERIFY** `smoke:travel-agencies` · `vite build` PASS
+- **다음** 사람 Preview `/qa/agencies` · git Preview `/` · `/explore` · `/place/paris/planner`
+
+**다음 제시어**:
+
+```
+여행사 목록 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/agencies-85ab · PR #192 · Preview /qa/agencies
+금지: 로고/탐색/플래너 리디자인 · 예약 대행 카피
+작업: 로고 패널에서 마이리얼트립 · 숙소 연 뒤 방문 기록 · 탐색 여행사 칩 · 파리 플래너 접힌 목록
+```
