@@ -6,6 +6,7 @@
 // 4. [Free Explore] Mapbox Geocoding 우선 — 지구본 POI 라벨과 동일 소스. 휴게소·세부 장소 검색이 상위 행정구역으로 떨어지지 않게.
 
 import { KEYWORD_SYNONYMS } from '../data/keywordData';
+import { isIslandPlaceQuery, resolveExploreSearchAlias } from './exploreSearchAliases.js';
 import { resolveTravelCountryFromAddresses } from './travelRegionCountry.js';
 import { isLatinPlaceName, mergeLatinPlaceFields } from './uiPlaceAssetQuery.js';
 
@@ -123,6 +124,10 @@ export function expandForwardQueryAliases(query) {
     for (const preferred of landmarkPlan.queries) add(preferred);
   }
 
+  const explore = resolveExploreSearchAlias(q);
+  if (explore?.canonical) add(explore.canonical);
+  if (explore?.romanized) add(explore.romanized);
+
   return out;
 }
 
@@ -160,7 +165,7 @@ const isPlausibleForwardHit = (query, result) => {
     if (!allowRest) return false;
   }
 
-  if (HAS_HANGUL_RE.test(query)) {
+  if (HAS_HANGUL_RE.test(query) && !isIslandPlaceQuery(query) && !LANDMARK_QUERY_RE.test(query)) {
     const cc = String(result.address?.country_code || '').toLowerCase();
     const display = String(result.display_name || '');
     if (cc && cc !== 'kr') return false;
@@ -241,6 +246,17 @@ const scoreMapboxFeature = (feature, searchQuery, facilityQ, landmarkPlan = null
   // 「Eiffel Tower Street」(필리핀 등) — 명소 검색에서 도로명 배제
   if (STREETISH_LABEL_RE.test(text) || STREETISH_LABEL_RE.test(placeName)) {
     score -= 160;
+  }
+
+  if (isIslandPlaceQuery(searchQuery)) {
+    const types = Array.isArray(feature?.place_type) ? feature.place_type : [];
+    if (types.includes('region')) score += 50;
+    if (types.includes('poi')) score -= 70;
+    const compactText = text.replace(/\s+/g, '');
+    const compactQuery = String(searchQuery).replace(/\s+/g, '');
+    if (compactText && compactQuery && (compactText === compactQuery || compactText.includes(compactQuery))) {
+      score += 24;
+    }
   }
 
   if (landmarkPlan) {
@@ -464,8 +480,9 @@ export const getCoordinatesFromAddress = async (query) => {
     const tryMapboxBundle = async (q) => {
       if (!MAPBOX_TOKEN) return null;
       let mapboxHit = null;
-      // 해외 명소 한글명(에펠탑 등)은 KR 우선이 오탐·무응답을 낳음 → 글로벌만
-      if (HAS_HANGUL_RE.test(q) && !LANDMARK_QUERY_RE.test(q)) {
+      const skipKrFirst = LANDMARK_QUERY_RE.test(q) || isIslandPlaceQuery(q);
+      // 한글 국내 지명은 KR 우선. 해외 섬·랜드마크는 글로벌만 (사바섬→사바 사헤브 방지)
+      if (HAS_HANGUL_RE.test(q) && !skipKrFirst) {
         mapboxHit = await fetchMapboxForward(q, { countrycodes: 'kr' });
       }
       if (!mapboxHit) {
@@ -476,7 +493,8 @@ export const getCoordinatesFromAddress = async (query) => {
 
     const tryNominatimBundle = async (q) => {
       let rows = null;
-      if (HAS_HANGUL_RE.test(q) && !LANDMARK_QUERY_RE.test(q)) {
+      const skipKrFirst = LANDMARK_QUERY_RE.test(q) || isIslandPlaceQuery(q);
+      if (HAS_HANGUL_RE.test(q) && !skipKrFirst) {
         rows = await fetchCoords(q, 1, { acceptLanguage: 'ko,en', countrycodes: 'kr' });
         if (!rows) {
           rows = await fetchCoords(q, 1, { acceptLanguage: 'en', countrycodes: 'kr' });
@@ -529,6 +547,7 @@ export const getCoordinatesFromAddress = async (query) => {
     if (!data && !facilityQ) {
       let retryQuery = cleanQuery;
       RETRY_FILTERS.forEach(filter => {
+        if (filter === '섬' && isIslandPlaceQuery(cleanQuery)) return;
         if (retryQuery.endsWith(filter)) retryQuery = retryQuery.slice(0, -filter.length).trim();
       });
       if (retryQuery !== cleanQuery && retryQuery.length >= 2) {

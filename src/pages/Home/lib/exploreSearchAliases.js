@@ -71,3 +71,8 @@ export function buildMapboxSearchQueries(query) {
   if (alias?.romanized) push(alias.romanized);
   return out;
 }
+
+/** 해외 섬 한글명 — KR 우선·POI·「섬」수식어 제거하면 사바↔사보·사바 사헤브로 어긋남 */
+export function isIslandPlaceQuery(query) {
+  return /섬$|\bislands?\b/i.test(String(query || '').trim());
+}

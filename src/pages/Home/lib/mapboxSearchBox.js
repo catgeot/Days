@@ -2,6 +2,7 @@
  * Mapbox Search Box — 타이핑 제안·도시 주변 명소 보강.
  * 실패 시 null/[] 반환 (큐레이션만으로 degrade).
  */
+import { isIslandPlaceQuery } from './exploreSearchAliases.js';
 import { isLatinPlaceName, mergeLatinPlaceFields, mergeSearchBoxEnglishHits } from './uiPlaceAssetQuery.js';
 
 const MAPBOX_TOKEN = typeof import.meta !== 'undefined' ? import.meta.env?.VITE_MAPBOX_TOKEN : '';
@@ -22,16 +23,15 @@ export const TOURISM_CATEGORY_IDS = [
 const HAS_HANGUL_RE = /[\uAC00-\uD7A3]/;
 
 export const SEARCH_BOX_PLACE_TYPES = 'place,city,poi';
-/** 사바 등 Mapbox가 region으로 분류하는 섬 — place-only면 사보섬(솔로몬)만 남음 */
-export const SEARCH_BOX_ISLAND_TYPES = 'region,place,city,poi';
+/** region 포함 · poi 제외 — 한국 IP에서 사바 사헤브 같은 POI가 섬을 가리지 않게 */
+export const SEARCH_BOX_ISLAND_TYPES = 'region,place,city';
 
 /**
- * Search Box types. 섬/island 쿼리는 region을 넣는다 (제주 같은 비-섬 검색에 region을 항상 켜면 오탐).
+ * Search Box types. 섬/island 쿼리는 region을 넣고 poi는 뺀다.
  * @param {string} query
  */
 export function searchBoxTypesForQuery(query) {
-  const q = String(query || '').trim();
-  if (/섬$|\bislands?\b/i.test(q)) return SEARCH_BOX_ISLAND_TYPES;
+  if (isIslandPlaceQuery(query)) return SEARCH_BOX_ISLAND_TYPES;
   return SEARCH_BOX_PLACE_TYPES;
 }
 

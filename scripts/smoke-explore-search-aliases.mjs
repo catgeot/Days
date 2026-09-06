@@ -11,6 +11,7 @@ import {
 import {
   resolveExploreSearchAlias,
   buildMapboxSearchQueries,
+  isIslandPlaceQuery,
 } from '../src/pages/Home/lib/exploreSearchAliases.js';
 import {
   searchBoxTypesForQuery,
@@ -84,5 +85,7 @@ assert.equal(searchBoxTypesForQuery('Saba Island'), SEARCH_BOX_ISLAND_TYPES);
 assert.equal(searchBoxTypesForQuery('제주'), SEARCH_BOX_PLACE_TYPES);
 assert.equal(searchBoxTypesForQuery('파리'), SEARCH_BOX_PLACE_TYPES);
 assert.equal(searchBoxTypesForQuery('자킨토스'), SEARCH_BOX_PLACE_TYPES);
+assert.equal(isIslandPlaceQuery('사바섬'), true);
+assert.doesNotMatch(SEARCH_BOX_ISLAND_TYPES, /\bpoi\b/, 'island search box excludes poi');
 
 console.log('PASS explore-search-aliases (lang co + takamatsu + saba island types)');
