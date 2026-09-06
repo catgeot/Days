@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-05-22T12:42:51.842Z",
-    "spotCount": 34
+    "generatedAt": "2026-09-06T08:51:00.719Z",
+    "spotCount": 37
   },
   "spots": {
     "santorini": {
@@ -208,6 +208,11 @@
           ]
         }
       ]
+    },
+    "antarctica": {
+      "tier": "cruise_only",
+      "source": "cruise-only",
+      "confidence": "medium"
     },
     "barcelona": {
       "tier": "common",
@@ -639,6 +644,27 @@
       "confidence": "high",
       "summary": "코모도 일대는 리브어보드·보트 투어(크루즈형)가 흔합니다.",
       "rationale": "Trip.com 크루즈·현지 보트 투어 — 페리 카드 미노출"
+    },
+    "costa-rica": {
+      "tier": "required",
+      "source": "required-keyword",
+      "confidence": "medium",
+      "routes": [
+        {
+          "id": "costa-rica-ferry",
+          "label": "페리·쾌속선 예약",
+          "directFerries": false,
+          "bookings": [
+            {
+              "provider": "klook_ferry",
+              "name": "Klook 페리"
+            }
+          ]
+        }
+      ],
+      "fallbacks": [
+        "klook_ferry"
+      ]
     },
     "ibiza": {
       "tier": "common",
@@ -1145,6 +1171,35 @@
         "슬리에마(Sliema) - 발레타(Valletta) (약 10분)",
         "발레타(Valletta) - 고조(Gozo) 쾌속선 (약 45분)",
         "치르케우아(Cirkewwa) - 고조(Gozo) (약 25~45분)"
+      ]
+    },
+    "zakynthos": {
+      "tier": "common",
+      "source": "curated-override",
+      "confidence": "high",
+      "summary": "자킨토스는 킬리니(펠로폰네소스)에서 페리로도 접근합니다. 공항(ZTH) 직항·경유도 있습니다.",
+      "rationale": "Levante 공식 + Direct Ferries (이오니아 킬리니 노선)",
+      "routes": [
+        {
+          "id": "kyllini-zakynthos",
+          "label": "킬리니 → 자킨토스",
+          "duration": "약 1시간",
+          "directFerries": true,
+          "bookings": [
+            {
+              "provider": "direct",
+              "name": "Levante Ferries",
+              "url": "https://www.levanteferries.com/"
+            },
+            {
+              "provider": "direct_ferries",
+              "name": "Direct Ferries"
+            }
+          ]
+        }
+      ],
+      "dfRecommendations": [
+        "킬리니(Kyllini) - 자킨토스(Zakynthos) (약 1시간)"
       ]
     }
   }

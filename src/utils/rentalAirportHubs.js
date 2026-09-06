@@ -332,6 +332,14 @@ export const RENTAL_AIRPORT_HUBS = [
     aliases: ['santorini', '산토리니', 'thira', '티라', 'jtr']
   },
   {
+    iata: 'ZTH',
+    officialKo: '자킨토스 국제공항',
+    lat: 37.7509,
+    lng: 20.8843,
+    radiusKm: 80,
+    aliases: ['zakynthos', '자킨토스', '자킨토시', 'zante', '잔테', 'zth']
+  },
+  {
     iata: 'HER',
     officialKo: '이라클리온 국제공항',
     lat: 35.3397,
