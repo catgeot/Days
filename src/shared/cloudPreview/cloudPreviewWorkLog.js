@@ -6,7 +6,7 @@
 export const cloudPreviewProject = {
   active: true,
   title: '여행사 목록',
-  sessionNo: 2,
+  sessionNo: 3,
   sessionPhase: 'Preview QA',
   branch: 'cursor/agencies-85ab',
   previewPath: '/',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-06-agencies-3-collapsed',
+    session: '여행사 목록 #3, Preview QA',
+    title: '로고 패널 — 방문한 여행사 접힘 기본',
+    detail:
+      '로고 패널을 여행사 리스트가 가득 채우던 문제를 접힌 「방문한 여행사」로 바꿈. 탐색창 칩 명칭도 「방문한 여행사」(기록 있으면 개수). Preview /qa/agencies — 로고 열어 접힘 확인 후 펼침, 탐색 칩 명칭.',
+    at: '2026-09-06T11:50:00.000Z',
+  },
   {
     id: '2026-09-06-zakynthos-5-caribbean-saba',
     session: '자킨토스 검색 #5, 사바섬 Preview QA',

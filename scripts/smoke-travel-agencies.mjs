@@ -148,9 +148,23 @@ const panel = readFileSync(join(root, 'src/pages/Home/components/LogoPanel.jsx')
 assert.match(panel, /TravelAgencyDirectory/, '로고패널에 여행사 목록');
 assert.match(panel, /variant="panel"/, '로고패널 panel variant');
 
+const directory = readFileSync(join(root, 'src/components/travelAgencies/TravelAgencyDirectory.jsx'), 'utf8');
+assert.match(directory, /variant === 'panel'/, '로고패널 접힘 variant');
+assert.match(
+  directory,
+  /<details className="rounded-xl border border-white\/10/,
+  '로고패널 방문한 여행사 details',
+);
+assert.doesNotMatch(
+  directory,
+  /<details[^>]*\bopen\b/,
+  '여행사 목록 기본 펼침 금지',
+);
+
 const explore = readFileSync(join(root, 'src/pages/Home/components/SearchDiscoveryModal.jsx'), 'utf8');
 assert.match(explore, /activeQuickSection === 'agencies'/, '탐색 여행사 칩');
 assert.match(explore, /TravelAgencyDirectory variant="explore"/, '탐색 popover 목록');
+assert.match(explore, /home\.agencies\.title/, '탐색 칩 명칭 home.agencies.title');
 
 const planner = readFileSync(join(root, 'src/components/PlaceCard/tabs/PlannerTab.jsx'), 'utf8');
 assert.match(planner, /TravelAgencyDirectory variant="planner"/, '플래너 목록');
@@ -183,6 +197,9 @@ for (const key of ['title', 'visitedTitle', 'catalogTitle', 'hint', 'clearVisits
 }
 assert.equal(typeof ko.home.explore.agenciesVisitedCount, 'string');
 assert.equal(typeof en.home.explore.agenciesVisitedCount, 'string');
+assert.equal(ko.home.agencies.title, '방문한 여행사');
+assert.equal(en.home.agencies.title, 'Visited agencies');
+assert.match(ko.home.explore.agenciesVisitedCount, /방문한 여행사/);
 assert.ok(ko.home.agencies.kind.stay);
 assert.ok(en.home.agencies.kind.stay);
 
