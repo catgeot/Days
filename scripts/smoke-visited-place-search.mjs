@@ -104,6 +104,20 @@ const sabahKept = overlayGeoFieldsOnVisitedSpot(sabahVisited, [caribbeanSaba]);
 assert.notEqual(sabahKept.country_en, 'Caribbean Netherlands');
 assert.equal(overlayGeoFieldsOnVisitedSpots([spot], [greeceHit])[0].country, '그리스');
 
+const reverseOnly = overlayGeoFieldsOnVisitedSpot(spot, [
+  {
+    name: '자킨토스',
+    name_en: 'Zakynthos',
+    country: '그리스',
+    country_en: 'Greece',
+    lat: 37.787,
+    lng: 20.9,
+  },
+]);
+assert.equal(reverseOnly.country, '그리스');
+assert.equal(reverseOnly.country_en, 'Greece');
+assert.equal(resolveGalleryStockQuery(reverseOnly).primaryQuery, 'Zakynthos');
+
 const identity = buildPlaceStatsIdentityPayload({
   slug: 'zakynthos',
   name: '자킨토스',

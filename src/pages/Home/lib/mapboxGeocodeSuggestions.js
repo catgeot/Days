@@ -15,6 +15,57 @@ function readMapboxToken() {
 
 const GEOCODE_BASE = 'https://api.mapbox.com/geocoding/v5/mapbox.places';
 
+async function fetchReverseFeatures(lng, lat, language) {
+  const token = readMapboxToken();
+  if (!token) return [];
+  const params = new URLSearchParams({
+    access_token: token,
+    language,
+    limit: '1',
+    types: 'place,region,country',
+  });
+  const response = await fetch(`${GEOCODE_BASE}/${lng},${lat}.json?${params}`);
+  if (!response.ok) return [];
+  const data = await response.json();
+  return Array.isArray(data?.features) ? data.features : [];
+}
+
+const reversePlaceCache = new Map();
+
+/**
+ * 방문 좌표 → 국가·라틴 지명. Search Box 객체 context를 못 읽을 때 카드가 Explore/Global로 떨어지는 구멍 메움.
+ */
+export async function geocodeReversePlaceFields(lat, lng) {
+  const latN = Number(lat);
+  const lngN = Number(lng);
+  if (!Number.isFinite(latN) || !Number.isFinite(lngN) || !readMapboxToken()) return null;
+  const cacheKey = `${latN.toFixed(3)},${lngN.toFixed(3)}`;
+  if (reversePlaceCache.has(cacheKey)) return reversePlaceCache.get(cacheKey);
+  try {
+    const [koFeatures, enFeatures] = await Promise.all([
+      fetchReverseFeatures(lngN, latN, 'ko'),
+      fetchReverseFeatures(lngN, latN, 'en'),
+    ]);
+    const merged = mergeSearchBoxEnglishHits(
+      koFeatures.map(featureToHit).filter(Boolean),
+      enFeatures.map(featureToHit).filter(Boolean),
+    );
+    const placeHit = merged.find((row) => {
+      const n = String(row?.name || '').trim();
+      const c = String(row?.country || '').trim();
+      return n && (!c || n !== c);
+    });
+    const hit = placeHit || merged[0]
+      ? { ...(placeHit || merged[0]), lat: latN, lng: lngN }
+      : null;
+    reversePlaceCache.set(cacheKey, hit);
+    return hit;
+  } catch {
+    reversePlaceCache.set(cacheKey, null);
+    return null;
+  }
+}
+
 async function fetchGeocodeFeatures(query, language) {
   const token = readMapboxToken();
   if (!token) return [];

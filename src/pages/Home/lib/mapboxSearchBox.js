@@ -31,6 +31,32 @@ export const TOURISM_CATEGORY_IDS = [
 
 const HAS_HANGUL_RE = /[\uAC00-\uD7A3]/;
 
+/** Search Box v1 context는 객체. Geocoding v5는 배열. Explore 기본값 금지. */
+export function countryFromSearchBoxProperties(props = {}) {
+  const ctx = props.context;
+  if (ctx && typeof ctx === 'object' && !Array.isArray(ctx)) {
+    const fromObj = ctx.country?.name || ctx.country?.country_code;
+    if (fromObj) return String(fromObj).trim();
+  }
+  if (Array.isArray(ctx)) {
+    const row = ctx.find((c) => c?.country || String(c?.id || '').startsWith('country'));
+    const fromArr = row?.country?.name || row?.name || row?.text;
+    if (fromArr) return String(fromArr).trim();
+  }
+  const name = String(props.name || props.name_preferred || '').trim();
+  const formatted = String(props.place_formatted || '').trim();
+  if (formatted.includes(',')) {
+    const tail = formatted.split(',').pop()?.trim() || '';
+    if (tail && tail !== name) return tail;
+  }
+  const address = String(props.full_address || '').trim();
+  if (address.includes(',')) {
+    const tail = address.split(',').pop()?.trim() || '';
+    if (tail && tail !== name) return tail;
+  }
+  return '';
+}
+
 export const SEARCH_BOX_PLACE_TYPES = 'place,city,poi';
 /** region 포함 · poi 제외 — 한국 IP에서 사바 사헤브 같은 POI가 섬을 가리지 않게 */
 export const SEARCH_BOX_ISLAND_TYPES = 'region,place,city';
@@ -94,14 +120,7 @@ function featureToSuggestion(feature, { hubId, parentCity, source = 'mapbox' } =
     featureType === 'city' ||
     featureType === 'region' ||
     featureType === 'locality';
-  const contextCountry = Array.isArray(props.context)
-    ? props.context.find((c) => c?.country || String(c?.id || '').startsWith('country'))
-    : null;
-  const country =
-    props.place_formatted?.split(',').pop()?.trim() ||
-    contextCountry?.country?.name ||
-    contextCountry?.name ||
-    'Explore';
+  const country = countryFromSearchBoxProperties(props);
 
   const poiCats = props.poi_category_ids || props.poi_category || [];
   const firstCat = Array.isArray(poiCats) ? poiCats[0] : '';
@@ -257,14 +276,15 @@ export async function searchBoxSuggest(query, opts = {}) {
     const suggestions = raw.map((s) => {
       const featureType = String(s.feature_type || '').toLowerCase();
       const isPoi = featureType === 'poi';
+      const country = countryFromSearchBoxProperties(s);
       return {
         id: `suggest-${s.mapbox_id}`,
         kind: isPoi ? 'attraction' : featureType === 'place' || featureType === 'city' ? 'city' : 'poi',
         badge: isPoi ? '명소' : featureType === 'place' || featureType === 'city' ? '도시' : '장소',
         name: String(s.name || '').trim(),
         name_en: isLatinPlaceName(s.name) ? String(s.name).trim() : '',
-        country: s.place_formatted?.split(',').pop()?.trim() || s.full_address || 'Explore',
-        country_en: '',
+        country,
+        country_en: isLatinPlaceName(country) ? country : '',
         mapboxId: s.mapbox_id,
         needsRetrieve: true,
         sessionToken,

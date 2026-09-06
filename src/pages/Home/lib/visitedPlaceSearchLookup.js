@@ -3,15 +3,29 @@
  */
 import { supabase } from '../../../shared/api/supabase.js';
 import { fetchPlaceChatIntroSummaryForLocation } from './placeChatIntro.js';
+import { geocodeReversePlaceFields } from './mapboxGeocodeSuggestions.js';
 import {
   buildVisitedLookupTokens,
   isSafeVisitedSearchQuery,
+  overlayGeoFieldsOnVisitedSpot,
   rowMatchesVisitedSearchQuery,
   visitedRowToSearchSpot,
+  visitedSpotNeedsGeoCountry,
 } from './visitedPlaceSearch.js';
 
 function postgrestQuoted(value) {
   return `"${String(value).replace(/"/g, '')}"`;
+}
+
+async function healVisitedSpot(spot) {
+  if (!spot || !visitedSpotNeedsGeoCountry(spot)) return spot;
+  try {
+    const reverse = await geocodeReversePlaceFields(spot.lat, spot.lng);
+    if (!reverse) return spot;
+    return overlayGeoFieldsOnVisitedSpot(spot, [reverse]);
+  } catch {
+    return spot;
+  }
 }
 
 async function attachIntroDesc(spot) {
@@ -62,7 +76,8 @@ export async function lookupVisitedPlacesForSearch(query) {
     }
 
     if (!spots.length) return [];
-    return Promise.all(spots.map((spot) => attachIntroDesc(spot)));
+    const healed = await Promise.all(spots.map((spot) => healVisitedSpot(spot)));
+    return Promise.all(healed.map((spot) => attachIntroDesc(spot)));
   } catch {
     return [];
   }

@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 import { TRAVEL_SPOTS } from '../src/pages/Home/data/travelSpots.js';
 import { resolveTravelSpotFromSearchQuery } from '../src/utils/travelSpotResolve.js';
 import { getPlaceTitleLines } from '../src/components/PlaceCard/common/locationDisplay.js';
+import { countryFromSearchBoxProperties } from '../src/pages/Home/lib/mapboxSearchBox.js';
 import {
   mergeLatinPlaceFields,
   mergeSearchBoxEnglishHits,
@@ -192,6 +193,23 @@ const gallerySrc = readFileSync(
 assert.match(gallerySrc, /CACHE_VERSION = 'v1\.21'/);
 assert.match(gallerySrc, /isLatinPlaceName\(koreanName\)/, 'pexels extras skip hangul names');
 assert.doesNotMatch(gallerySrc, /"자킨토스": "Zakynthos"/);
+
+assert.equal(
+  countryFromSearchBoxProperties({
+    name: '자킨토스',
+    context: { country: { name: '그리스', country_code: 'GR' } },
+  }),
+  '그리스',
+);
+assert.equal(
+  countryFromSearchBoxProperties({
+    name: 'Zakynthos',
+    place_formatted: 'Zakynthos, Greece',
+  }),
+  'Greece',
+);
+assert.equal(countryFromSearchBoxProperties({ name: '자킨토스' }), '');
+assert.notEqual(countryFromSearchBoxProperties({ name: '자킨토스' }), 'Explore');
 
 const qa = readFileSync(join(root, 'src/shared/cloudPreview/cloudQaShareLinks.js'), 'utf8');
 assert.match(qa, /slug:\s*'zakynthos'/);

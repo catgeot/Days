@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '자킨토스 검색',
-  sessionNo: 10,
-  sessionPhase: '방문 요약 카드',
+  sessionNo: 11,
+  sessionPhase: '그리스 표기',
   branch: 'cursor/zakynthos-search-e84a',
   previewPath: '/',
   qaShareSlug: 'zakynthos',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-06-zakynthos-11-greece-label',
+    session: '자킨토스 검색 #11, Preview QA',
+    title: '방문 카드 — GLOBAL 대신 그리스',
+    detail:
+      '#10이 Explore를 비우면서 헤더가 Global로 떨어짐. Search Box 객체 context에서 나라를 읽고, 방문 좌표를 역지오해서 그리스·Zakynthos를 카드에 붙인다. 인물 image_url은 그리드에 쓰지 않음. Preview /qa/zakynthos — 드롭다운·써머리·장소 헤더가 그리스 자킨토스인지.',
+    at: '2026-09-06T20:00:00.000Z',
+  },
   {
     id: '2026-09-06-zakynthos-10-visited-country',
     session: '자킨토스 검색 #10, 방문 요약 카드 QA',

@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 import { TRAVEL_SPOTS } from '../src/pages/Home/data/travelSpots.js';
 import { resolveTravelSpotFromSearchQuery } from '../src/utils/travelSpotResolve.js';
 import { resolveExploreSearchAlias } from '../src/pages/Home/lib/exploreSearchAliases.js';
-import { geocodeForwardSuggestionHits } from '../src/pages/Home/lib/mapboxGeocodeSuggestions.js';
+import { geocodeForwardSuggestionHits, geocodeReversePlaceFields } from '../src/pages/Home/lib/mapboxGeocodeSuggestions.js';
 import {
   hitCoversSearchQuery,
   shouldSupplementGeocodeHits,
@@ -188,5 +188,13 @@ for (const row of LIVE) {
   assert.match(blob, row.country, `${row.q} country=${blob}`);
   assert.doesNotMatch(blob, /korea|한국|대한민국/i, `${row.q} is not a Korean POI`);
 }
+
+const reverse = await geocodeReversePlaceFields(37.787, 20.9);
+assert.ok(reverse, 'reverse Zakynthos coords');
+assert.match(
+  `${reverse.country} ${reverse.country_en}`,
+  /greece|그리스/i,
+  `reverse country=${reverse.country}/${reverse.country_en}`,
+);
 
 console.log('PASS unseen-place-search (helpers + LIVE Mapbox unseen Hangul places)');
