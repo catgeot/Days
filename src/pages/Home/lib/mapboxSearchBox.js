@@ -176,6 +176,7 @@ async function searchBoxForwardRaw(query, opts = {}) {
 export async function searchBoxForward(query, opts = {}) {
   const language = opts.language || 'ko';
   const hits = await searchBoxForwardRaw(query, { ...opts, language });
+  // 빈 배열 .every()는 true라 ko 공백이면 en 병합을 건너뛰지 않는다
   const koEmpty = !hits.length;
   let merged;
   if (language === 'en') {
