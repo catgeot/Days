@@ -423,6 +423,7 @@
       "recentVisitedCount": "Recent places {{count}}",
       "keywordVisits": "Keyword history",
       "keywordVisitsCount": "Keyword history {{count}}",
+      "agenciesVisitedCount": "Agencies opened {{count}}",
       "recentSearch": "Recent search",
       "removeItem": "Remove {{item}}",
       "removeRecord": "Remove {{keyword}} record",
@@ -628,6 +629,29 @@
       "signInBody": "Sign in to build your bucket list and use the globe without limits.",
       "signIn": "Sign in",
       "signOut": "Sign out"
+    },
+    "agencies": {
+      "title": "Travel agencies",
+      "visitedTitle": "Agencies I opened",
+      "visitedEmpty": "No agencies opened on this device yet. Stay and tour links you open will show up here.",
+      "catalogTitle": "Connected agencies",
+      "hint": "Even if you did not bookmark the booking site, you can return to agencies opened from GATEO. You may need to sign in on that site to see reservations.",
+      "clearVisits": "Clear visit history",
+      "removeVisit": "Remove {{name}} from visit history",
+      "kind": {
+        "stay": "Stays",
+        "tour": "Tours",
+        "package": "Packages",
+        "flight": "Flights",
+        "rental": "Car rental",
+        "esim": "eSIM",
+        "ferry": "Ferry",
+        "transfer": "Transfer",
+        "tickets": "Tickets",
+        "luggage": "Luggage",
+        "scooter": "Scooter",
+        "browse": "Browse"
+      }
     },
     "footerModal": {
       "tab": {

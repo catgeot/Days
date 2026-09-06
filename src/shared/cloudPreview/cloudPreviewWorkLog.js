@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '릴리스 노트 푸터',
-  sessionNo: 1,
-  sessionPhase: '자동 팝업 제거',
-  branch: 'cursor/updates-0e16',
+  title: '여행사 목록',
+  sessionNo: 2,
+  sessionPhase: 'Preview QA',
+  branch: 'cursor/agencies-85ab',
   previewPath: '/',
-  qaShareSlug: 'updates',
+  qaShareSlug: 'agencies',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-06-agencies-2-gyg-iframe',
+    session: '여행사 목록 #2, Preview QA',
+    title: '겟유어가이드 위젯 방문도 기록',
+    detail:
+      'MRT·트립닷컴은 <a>라 방문이 남았는데, 겟유어가이드는 iframe 위젯이라 투어를 눌러도 기록이 안 남았음. 위젯 포커스 시 제휴 검색/홈 URL을 저장. Preview /qa/agencies — 파리 플래너·투어 찾기에서 겟유어가이드 투어를 연 뒤 로고 패널 방문 기록.',
+    at: '2026-09-06T05:50:00.000Z',
+  },
+  {
+    id: '2026-09-06-agencies-1-reentry',
+    session: '여행사 목록 #1, 재접속 경로',
+    title: '로고패널·탐색·플래너에 여행사 목록',
+    detail:
+      'MRT 등 제휴 사이트를 북마크하지 않고 이탈해도, 로고 패널·탐색「여행사」칩·플래너에서 방문 기록(마지막 URL)과 연결된 여행사 홈으로 다시 들어갈 수 있음. 기록은 이 기기 localStorage. Preview /qa/agencies — 로고 열어 마이리얼트립 확인, 탐색 칩, /place/paris/planner 접힌 목록.',
+    at: '2026-09-06T04:30:00.000Z',
+  },
   {
     id: '2026-09-06-updates-1-no-popup',
     session: '릴리스 노트 푸터 #1, 자동 팝업 제거',

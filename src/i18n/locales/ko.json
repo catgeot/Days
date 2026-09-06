@@ -202,6 +202,7 @@
       "recentVisitedCount": "최근 방문지 {{count}}",
       "keywordVisits": "키워드 방문 기록",
       "keywordVisitsCount": "키워드 방문 기록 {{count}}",
+      "agenciesVisitedCount": "방문한 여행사 {{count}}",
       "recentSearch": "최근 검색",
       "removeItem": "{{item}} 삭제",
       "removeRecord": "{{keyword}} 기록 삭제",
@@ -398,6 +399,29 @@
       "signInBody": "로그인하고 나만의 버킷리스트를 만들고 지구본의 모든 기능을 제한 없이 이용할 수 있습니다.",
       "signIn": "로그인",
       "signOut": "로그아웃"
+    },
+    "agencies": {
+      "title": "여행사",
+      "visitedTitle": "내가 방문한 여행사",
+      "visitedEmpty": "아직 이 기기에서 연 여행사가 없습니다. 숙소·투어를 열면 여기에 남습니다.",
+      "catalogTitle": "연결된 여행사",
+      "hint": "예약한 사이트를 저장하지 않았어도, 게이트오에서 열었던 여행사로 바로 돌아갈 수 있습니다. 예약 확인은 해당 사이트 로그인이 필요할 수 있습니다.",
+      "clearVisits": "방문 기록 지우기",
+      "removeVisit": "{{name}} 방문 기록 삭제",
+      "kind": {
+        "stay": "숙소",
+        "tour": "투어",
+        "package": "패키지",
+        "flight": "항공",
+        "rental": "렌터카",
+        "esim": "eSIM",
+        "ferry": "페리",
+        "transfer": "픽업",
+        "tickets": "티켓",
+        "luggage": "짐보관",
+        "scooter": "스쿠터",
+        "browse": "둘러보기"
+      }
     },
     "footerModal": {
       "tab": {

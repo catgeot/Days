@@ -51,6 +51,8 @@ import {
   CURATION_POPULAR_ISLAND_SLUGS,
   CURATION_RESORT_TARGETS,
 } from './SearchDiscovery/curationTargets';
+import TravelAgencyDirectory from '../../../components/travelAgencies/TravelAgencyDirectory';
+import { useTravelAgencyVisits } from '../../../hooks/useTravelAgencyVisits';
 
 const pickVisibleElementRect = (...refs) => {
   for (const ref of refs) {
@@ -92,6 +94,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   const [recentVisitedDestinations, setRecentVisitedDestinations] = useState([]);
   const [keywordVisitHistory, setKeywordVisitHistory] = useState([]);
   const [activeQuickSection, setActiveQuickSection] = useState(null);
+  const { visits: agencyVisits } = useTravelAgencyVisits();
   const [isSearchHistoryOpen, setIsSearchHistoryOpen] = useState(false);
   /** fixed 오버레이 위치 (페이지 레이아웃을 밀지 않음) */
   const [popoverLayout, setPopoverLayout] = useState(null);
@@ -950,13 +953,28 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
         )}
 
         {/* 검색바 클릭 후에도 칩 버튼은 그대로 노출 (popover는 칩 행 아래로 anchor) */}
-        {(recentSearches.length > 0 || recentVisitedDestinations.length > 0 || keywordVisitHistory.length > 0) && (
-          <div
+        <div
             data-quick-menu-root="true"
             ref={isMobileView ? quickMenuRowRefMobile : quickMenuRowRefPc}
             className="relative mt-2 px-1"
           >
             <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSearchHistoryOpen(false);
+                  setActiveQuickSection((prev) => (prev === 'agencies' ? null : 'agencies'));
+                }}
+                className={`rounded-full border px-2.5 py-1 text-[11px] transition-colors ${
+                  activeQuickSection === 'agencies'
+                    ? 'border-emerald-400/40 bg-emerald-500/20 text-emerald-100'
+                    : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/20'
+                }`}
+              >
+                {agencyVisits.length > 0
+                  ? t('home.explore.agenciesVisitedCount', { count: agencyVisits.length })
+                  : t('home.agencies.title')}
+              </button>
               {recentSearches.length > 0 && (
                 <button
                   type="button"
@@ -1007,7 +1025,6 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
               )}
             </div>
           </div>
-        )}
       </div>
     </div>
   );
@@ -1372,6 +1389,10 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                   </div>
                 ))}
               </div>
+            )}
+
+            {activeQuickSection === 'agencies' && (
+              <TravelAgencyDirectory variant="explore" />
             )}
           </div>
         </div>
