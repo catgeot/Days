@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '갤러리 좌측 패널',
+  title: '리뷰 연관 여행지',
   sessionNo: 1,
-  sessionPhase: '공간 조정',
-  branch: 'cursor/gallery-panel-032e',
-  previewPath: '/place/paris/gallery',
-  qaShareSlug: 'gallery-panel',
+  sessionPhase: '탭 유지',
+  branch: 'cursor/reviews-related-b9fa',
+  previewPath: '/place/paris/reviews',
+  qaShareSlug: 'reviews-related',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-06-reviews-related-1-keep-tab',
+    session: '리뷰 연관 여행지 #1, 탭 유지',
+    title: '리뷰탭 연관 칩 — 리뷰를 유지한 채 여행지 전환',
+    detail:
+      '좌측 연관 칩은 리뷰탭에도 보이는데, 클릭하면 탭을 넘기지 않아 기본 갤러리로 열림. 리뷰에서 누르면 /reviews를 유지하고 목록을 맨 위로 맞춤. Preview /qa/reviews-related — 파리 리뷰에서 연관 칩 → 새 여행지도 리뷰탭인지.',
+    at: '2026-09-06T12:40:00.000Z',
+  },
   {
     id: '2026-09-06-gallery-panel-1-info-dock',
     session: '갤러리 좌측 패널 #1, 공간 조정',
