@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '자킨토스 검색',
-  sessionNo: 6,
-  sessionPhase: '드롭다운·선택 카드 동일 핀',
+  sessionNo: 7,
+  sessionPhase: 'Preview QA',
   branch: 'cursor/zakynthos-search-e84a',
   previewPath: '/',
   qaShareSlug: 'zakynthos',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-06-zakynthos-7-restore-dropdown',
+    session: '자킨토스 검색 #7, Preview QA',
+    title: '자킨토스 타이핑 드롭다운을 다시 연다',
+    detail:
+      '왼쪽 자킨토스 카드는 맞았고 드롭다운이 사라진 것은 과교정. #6이 Enter 뒤 선택 카드가 있으면 검색바 재오픈을 막아 자동완성이 안 됨. 포커스·클릭·타이핑은 다시 열고, Enter 선택 카드와 드롭다운은 같은 핀(Zakynthos)을 쓴다. Preview /qa/zakynthos — 자킨토스 타이핑 자동완성 · 좌측 카드 해변.',
+    at: '2026-09-06T12:05:00.000Z',
+  },
   {
     id: '2026-09-06-zakynthos-6-dropdown-latin',
     session: '자킨토스 검색 #6, 사바섬 Preview QA',

@@ -165,8 +165,18 @@ const modalSrc = readFileSync(
 assert.match(modalSrc, /hydrateSearchBoxLatinName/, 'dropdown select hydrates latin name');
 assert.match(
   modalSrc,
-  /disambiguation\?\.candidates\?\.length\) return/,
-  'choice cards keep the search dropdown closed',
+  /setIsSearchHistoryOpen\(keepChoiceDropdown\)/,
+  'Enter choice cards keep the typing dropdown open',
+);
+assert.match(
+  modalSrc,
+  /disambiguation\?\.candidates\?\.length\s*\?\s*disambiguation\.candidates/,
+  'dropdown lists the same pins as left choice cards',
+);
+assert.doesNotMatch(
+  modalSrc,
+  /if \(disambiguation\?\.candidates\?\.length\) return;/,
+  'focus/click still open autocomplete when choice cards exist',
 );
 
 const handlersSrc = readFileSync(

@@ -403,17 +403,18 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     setIsAILoading(true);
     setDisambiguation(null);
     setIsSearchHistoryOpen(false);
+    let keepChoiceDropdown = false;
     try {
       const result = await onSearch(finalQuery);
       if (isSearchDisambiguation(result)) {
         setDisambiguation(result);
-        // 선택 카드가 열린 뒤에도 키보드가 남아 있으면 한 번 더
+        keepChoiceDropdown = true;
         dismissSearchKeyboard();
         return;
       }
     } finally {
       setIsAILoading(false);
-      setIsSearchHistoryOpen(false);
+      setIsSearchHistoryOpen(keepChoiceDropdown);
       setActiveQuickSection(null);
     }
   };
@@ -903,7 +904,6 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
               if (e.button !== 0) return;
               if (e.target instanceof Element && e.target.closest('[data-search-clear]')) return;
               setActiveQuickSection(null);
-              if (disambiguation?.candidates?.length) return;
               setIsSearchHistoryOpen((prev) => !prev);
             }}
             className="relative flex h-12 items-center overflow-hidden rounded-2xl border border-white/[0.25] bg-white/[0.12] focus-within:bg-white/[0.15] md:h-10"
@@ -917,7 +917,6 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
               value={query}
               onFocus={() => {
                 setActiveQuickSection(null);
-                if (disambiguation?.candidates?.length) return;
                 setIsSearchHistoryOpen(true);
               }}
               onChange={(e) => {
