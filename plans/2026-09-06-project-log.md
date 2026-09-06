@@ -2,6 +2,22 @@
 
 직전: [`2026-09-05-project-log.md`](./2026-09-05-project-log.md)
 
+## 자킨토스 검색 #11, GLOBAL 대신 그리스
+
+- **브랜치** `cursor/zakynthos-search-e84a` · tip `03a07a7c` · **PR [#199](https://github.com/catgeot/Days/pull/199)**
+- #11 사람 QA: Explore를 비운 뒤 헤더가 Global. Search Box 객체 context + 방문 좌표 역지오로 그리스·Zakynthos를 붙임. 인물 썸네일 그리드 사용 안 함
+- **VERIFY** `smoke:visited-place-search` · `smoke:unseen-place-search` · `smoke:zakynthos-search` · `smoke:sabah-search` · `vite build` PASS
+- **다음** 사람 Preview `/qa/zakynthos` — 드롭다운·써머리·장소 헤더 그리스 · 해변 사진
+
+```
+자킨토스 검색 #12, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/zakynthos-search-e84a · PR #199 · Preview /qa/zakynthos
+금지: UI 리디자인 · 자킨토스 SSOT 재등록 · orientation=landscape 재도입
+작업: 자킨토스 재검색 드롭다운·써머리·장소 헤더가 그리스 · 해변 사진 · Global/Explore 아님 · 사바섬 회귀
+```
+
 ## 자킨토스 검색 #10, 방문 요약 카드 — 그리스 · 사진
 
 - **브랜치** `cursor/zakynthos-search-e84a` · tip `6c47ed6a` · **PR [#199](https://github.com/catgeot/Days/pull/199)**
