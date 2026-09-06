@@ -59,3 +59,21 @@
 금지: image_url SWR 덮어쓰기 · Tour 우세 스톡 치환 · 더보기 DB upsert · UI 리디자인
 작업: 파리 갤러리 즉시 표시 · 대표 사진 유지 · 새 장이 뒤에 붙는지 · 검색/버킷 썸네일 흔들림 없음
 ```
+
+## 갤러리 연관 스크롤 #1, 여행지 전환 상단
+
+- **브랜치** `cursor/gallery-scroll-76a6` · tip `41b747c1` · **PR [#190](https://github.com/catgeot/Days/pull/190)**
+- 하단 연관 칩 클릭 시 이전 갤러리 스크롤이 남아 새 여행지 중간부터 보이던 UX → 장소 전환 시 중첩 스크롤 즉시 상단 · 갤러리 탭 유지
+- **VERIFY** `smoke:gallery-related-scroll` · `smoke:gallery-photo-manage` · `smoke:gallery-portrait-filter` · `vite build` PASS
+- **다음** 사람 Preview `/qa/gallery-related` · git Preview `/place/paris/gallery`
+
+**다음 제시어**:
+
+```
+갤러리 연관 스크롤 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/gallery-scroll-76a6 · PR #190 · Preview /qa/gallery-related
+금지: UI 리디자인 · 더보기 스크롤 리셋 · 헤더 탭 smooth 제거
+작업: 파리 갤러리 중간 스크롤 → 하단 연관 칩 → 새 여행지 상단(소개·첫 사진) · 한 번 더 전환
+```
