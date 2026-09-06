@@ -32,6 +32,14 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-06T12:05:00.000Z',
   },
   {
+    id: '2026-09-06-agencies-3-collapsed',
+    session: '여행사 목록 #3, Preview QA',
+    title: '로고 패널 — 방문한 여행사 접힘 기본',
+    detail:
+      '로고 패널을 여행사 리스트가 가득 채우던 문제를 접힌 「방문한 여행사」로 바꿈. 탐색창 칩 명칭도 「방문한 여행사」(기록 있으면 개수). Preview /qa/agencies — 로고 열어 접힘 확인 후 펼침, 탐색 칩 명칭.',
+    at: '2026-09-06T11:50:00.000Z',
+  },
+  {
     id: '2026-09-06-zakynthos-6-dropdown-latin',
     session: '자킨토스 검색 #6, 사바섬 Preview QA',
     title: '자킨토스 드롭다운과 선택 카드를 같은 핀으로',

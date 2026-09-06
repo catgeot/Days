@@ -18,9 +18,9 @@
 
 | | |
 |--|--|
-| **상태** | **#6 push** · tip `a6ef54b4` · PR [#197](https://github.com/catgeot/Days/pull/197) · **#7 사람 Preview QA** |
+| **상태** | **#7 push** · tip `13aaffb4` · PR [#197](https://github.com/catgeot/Days/pull/197) · **#8 사람 Preview QA** |
 | **브랜치** | `cursor/zakynthos-search-e84a` |
-| **tip** | `a6ef54b4` |
+| **tip** | `13aaffb4` |
 | **PR** | [#197](https://github.com/catgeot/Days/pull/197) |
 | **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
 | **Preview** | `/qa/zakynthos` → git Preview `/` (탐색창 자킨토스 드롭다운·사바섬) |
@@ -31,12 +31,12 @@
 **다음 제시어**:
 
 ```
-자킨토스 검색 #7, Preview QA
+자킨토스 검색 #8, Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-06-project-log.md
 브랜치 cursor/zakynthos-search-e84a · PR #197 · Preview /qa/zakynthos
 금지: UI 리디자인 · 자킨토스 SSOT 재등록 · orientation=landscape 재도입
-작업: 자킨토스 드롭다운·좌측 카드 동일 핀(Zakynthos 해변) · 사바섬 말레이시아 앞·카리브 둘째 · 한국 사원 아님
+작업: 자킨토스 타이핑 자동완성 드롭다운 · 좌측 카드 동일 핀(Zakynthos 해변) · 사바섬 말레이시아 앞·카리브 둘째 · 한국 사원 아님
 ```
 
 ---

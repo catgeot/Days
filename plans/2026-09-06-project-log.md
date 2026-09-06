@@ -2,6 +2,23 @@
 
 직전: [`2026-09-05-project-log.md`](./2026-09-05-project-log.md)
 
+## 자킨토스 검색 #7, 타이핑 드롭다운 복구
+
+- **브랜치** `cursor/zakynthos-search-e84a` · tip `13aaffb4` · **PR [#197](https://github.com/catgeot/Days/pull/197)**
+- Preview QA: 좌측 자킨토스 카드는 맞음. 드롭다운이 사라지고 타이핑 자동완성이 없음 → **의도 아님**. #6이 선택 카드 있으면 검색바 재오픈을 막음
+- 포커스·클릭·타이핑은 다시 열고, Enter 선택 카드와 드롭다운은 같은 Zakynthos 핀. 라틴 hydrate 유지
+- **VERIFY** `smoke:zakynthos-search` · `smoke:sabah-search` · `smoke:explore-search-aliases` · `vite build` PASS
+- **다음** 사람 Preview `/qa/zakynthos` — 자킨토스 타이핑 시 드롭다운 · 좌측 카드 해변 · 사바섬 회귀
+
+```
+자킨토스 검색 #8, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/zakynthos-search-e84a · PR #197 · Preview /qa/zakynthos
+금지: UI 리디자인 · 자킨토스 SSOT 재등록 · orientation=landscape 재도입
+작업: 자킨토스 타이핑 자동완성 드롭다운 · 좌측 카드 동일 핀(Zakynthos 해변) · 사바섬 말레이시아 앞·카리브 둘째 · 한국 사원 아님
+```
+
 ## 자킨토스 검색 #6, 드롭다운·선택 카드 동일 핀
 
 - **브랜치** `cursor/zakynthos-search-e84a` · tip `a6ef54b4` · **PR [#197](https://github.com/catgeot/Days/pull/197)** (#196은 main 병합됨)

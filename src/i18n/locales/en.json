@@ -631,7 +631,7 @@
       "signOut": "Sign out"
     },
     "agencies": {
-      "title": "Travel agencies",
+      "title": "Visited agencies",
       "visitedTitle": "Agencies I opened",
       "visitedEmpty": "No agencies opened on this device yet. Stay and tour links you open will show up here.",
       "catalogTitle": "Connected agencies",
