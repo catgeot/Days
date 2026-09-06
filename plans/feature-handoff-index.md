@@ -14,6 +14,33 @@
 
 ## 활성 목록
 
+### 갤러리 좌측 패널
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `7495e095` · PR [#200](https://github.com/catgeot/Days/pull/200) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/gallery-panel-032e` |
+| **tip** | `7495e095` |
+| **PR** | [#200](https://github.com/catgeot/Days/pull/200) |
+| **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
+| **Preview** | `/qa/gallery-panel` → git Preview `/place/paris/gallery` |
+| **소유** | `GalleryInfoView` · `PlaceChatPanel` |
+| **금지** | UI 리디자인 · 연관 칩을 써머리 스크롤 안으로 되돌리기 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:gallery-related-scroll` · `smoke:gallery-photo-manage` · `vite build` |
+
+**다음 제시어**:
+
+```
+갤러리 좌측 패널 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/gallery-panel-032e · PR #200 · Preview /qa/gallery-panel
+금지: UI 리디자인 · 연관 칩을 써머리 스크롤 안으로 되돌리기
+작업: PC 파리 갤러리 좌측 — 스크롤 없이 하단 연관 검색어 · 무니 입력창 바로 위
+```
+
+---
+
 ### 자킨토스 검색
 
 | | |
@@ -122,30 +149,17 @@
 
 ---
 
-### 갤러리 연관 스크롤
+### 갤러리 연관 스크롤 — main 병합 ✅
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `41b747c1` · PR [#190](https://github.com/catgeot/Days/pull/190) · **#2 사람 Preview QA** |
-| **브랜치** | `cursor/gallery-scroll-76a6` |
-| **tip** | `41b747c1` |
-| **PR** | [#190](https://github.com/catgeot/Days/pull/190) |
+| **상태** | **#1 merge ✅** · main `6b6d7b12` · PR [#190](https://github.com/catgeot/Days/pull/190) |
+| **브랜치** | `cursor/gallery-scroll-76a6` · merge `6b6d7b12` |
 | **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
-| **Preview** | `/qa/gallery-related` → git Preview `/place/paris/gallery` |
-| **소유** | `PlaceGalleryView` · `PlaceChatPanel` · `placeScrollSurface` |
-| **금지** | UI 리디자인 · 더보기 스크롤 리셋 · 헤더 탭 smooth 제거 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `smoke:gallery-related-scroll` · `smoke:gallery-photo-manage` · `smoke:gallery-portrait-filter` · `vite build` |
+| **PROD** | `https://www.gateo.kr/place/paris/gallery` |
+| **VERIFY** | `smoke:gallery-related-scroll` · `vite build` PASS |
 
-**다음 제시어**:
-
-```
-갤러리 연관 스크롤 #2, Preview QA
-@plans/feature-handoff-index.md
-@plans/2026-09-06-project-log.md
-브랜치 cursor/gallery-scroll-76a6 · PR #190 · Preview /qa/gallery-related
-금지: UI 리디자인 · 더보기 스크롤 리셋 · 헤더 탭 smooth 제거
-작업: 파리 갤러리 중간 스크롤 → 하단 연관 칩 → 새 여행지 상단(소개·첫 사진) · 한 번 더 전환
-```
+**다음 제시어 없음** (주제 종료). 연관 칩 전환 시 갤러리 상단 리셋은 PROD. PC 좌측 패널 공간은 [`갤러리 좌측 패널`](#갤러리-좌측-패널).
 
 ---
 
