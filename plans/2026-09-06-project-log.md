@@ -77,3 +77,21 @@
 금지: UI 리디자인 · 더보기 스크롤 리셋 · 헤더 탭 smooth 제거
 작업: 파리 갤러리 중간 스크롤 → 하단 연관 칩 → 새 여행지 상단(소개·첫 사진) · 한 번 더 전환
 ```
+
+## 릴리스 노트 푸터 #1, 자동 팝업 제거
+
+- **브랜치** `cursor/updates-0e16` · tip `6dcd5b93` · **PR [#191](https://github.com/catgeot/Days/pull/191)**
+- 홈·Preview 진입 릴리스 노트 모달 제거. 내역은 로고 패널 푸터 Updates만. 배포 새로고침 안내는 유지. §1.7 = 푸터만·자동 팝업 금지.
+- **VERIFY** `smoke:release-notes-footer` · `vite build` PASS
+- **다음** 사람 Preview `/qa/updates` · git Preview `/`
+
+**다음 제시어**:
+
+```
+릴리스 노트 푸터 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/updates-0e16 · PR #191 · Preview /qa/updates
+금지: 릴리스 노트 홈 팝업 재도입 · UI 리디자인 · 버그픽스/미세 UI를 Updates에 넣기
+작업: 홈 진입 시 공지 모달 없음 · 로고 패널 푸터 Updates에 기존 내역 · 배포 새로고침 안내는 PROD만
+```

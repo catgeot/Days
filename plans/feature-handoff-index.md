@@ -14,6 +14,33 @@
 
 ## 활성 목록
 
+### 릴리스 노트 푸터
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `6dcd5b93` · PR [#191](https://github.com/catgeot/Days/pull/191) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/updates-0e16` |
+| **tip** | `6dcd5b93` |
+| **PR** | [#191](https://github.com/catgeot/Days/pull/191) |
+| **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
+| **Preview** | `/qa/updates` → git Preview `/` |
+| **소유** | `SiteUpdateBanner`(배포 새로고침만) · FooterModal Updates · `releaseNotes.js` |
+| **금지** | 릴리스 노트 홈 팝업 재도입 · UI 리디자인 · 버그픽스/미세 UI를 Updates에 넣기 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:release-notes-footer` · `vite build` |
+
+**다음 제시어**:
+
+```
+릴리스 노트 푸터 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/updates-0e16 · PR #191 · Preview /qa/updates
+금지: 릴리스 노트 홈 팝업 재도입 · UI 리디자인 · 버그픽스/미세 UI를 Updates에 넣기
+작업: 홈 진입 시 공지 모달 없음 · 로고 패널 푸터 Updates에 기존 내역 · 배포 새로고침 안내는 PROD만
+```
+
+---
+
 ### 갤러리 연관 스크롤
 
 | | |

@@ -86,4 +86,4 @@ alwaysApply: true
 
 - **§1.5.3~4**에 따라 커밋(해당하면 push) → Cloud feature면 **main docs push** 포함 → 일지 2~5줄
 - **Cloud feature**: [`feature-handoff-index.md`](plans/feature-handoff-index.md) 행 + 플랜 §9 + **§1.2 다음 제시어**(핀 3개) · [`cloud-preview-continuity.md`](plans/cloud-preview-continuity.md) §6 main 문서 동기화 검토
-- 릴리스 노트: **새 기능·중대 업데이트만** 초안 제안 → 합의 후 `releaseNotes.js` (`.ai-context` **1.7**). 버그픽스·미세 UI·SSOT 채움은 **묻지 않음**
+- 릴리스 노트: **새 기능·중대 업데이트만** 초안 제안 → 합의 후 `releaseNotes.js` **푸터 Updates** (`.ai-context` **1.7**). **자동 팝업 금지**. 버그픽스·미세 UI·SSOT 채움은 **묻지 않음**
