@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '갤러리 사진 관리',
+  title: '갤러리 연관 스크롤',
   sessionNo: 1,
-  sessionPhase: '모바일 길게 누르기',
-  branch: 'cursor/gallery-manage-173f',
+  sessionPhase: '여행지 전환 상단',
+  branch: 'cursor/gallery-scroll-76a6',
   previewPath: '/place/paris/gallery',
-  qaShareSlug: 'gallery',
+  qaShareSlug: 'gallery-related',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-06-gallery-related-1-scroll-top',
+    session: '갤러리 연관 스크롤 #1, 여행지 전환 상단',
+    title: '연관 여행지 탭 — 새 갤러리 상단부터',
+    detail:
+      '갤러리를 내려보다 하단 연관 여행지를 누르면 이전 스크롤 위치에서 다음 지역이 열려 중간부터 보임. 전환 시 중첩 스크롤을 즉시 맨 위로 맞추고 갤러리 탭을 유지. Preview /qa/gallery-related — 파리 갤러리 중간까지 스크롤 후 하단 칩 → 새 여행지 상단(소개·첫 사진)인지.',
+    at: '2026-09-06T03:40:00.000Z',
+  },
   {
     id: '2026-09-06-gallery-manage-1-long-press',
     session: '갤러리 사진 관리 #1, 모바일 길게 누르기',
