@@ -39,20 +39,34 @@ assert.match(
 );
 assert.match(chat, /tab:\s*'gallery'/, 'related chips stay on the gallery tab');
 assert.match(chat, /\/gallery/, 'fallback navigate keeps /gallery');
+assert.match(
+  chat,
+  /mediaMode !== 'WIKI' && activeInfo\.mode !== 'VIDEO' \? 'overflow-hidden'/,
+  'gallery info panel uses leftover height instead of a nested page scroll',
+);
+
+const info = readFileSync(join(root, 'src/components/PlaceCard/views/GalleryInfoView.jsx'), 'utf8');
+assert.equal(info.includes('max-h-[400px]'), false, 'overview is not capped at 400px above empty MOONi space');
+assert.match(info, /data-gallery-related-dock/, 'related chips dock above MOONi, outside the overview scroller');
+assert.match(
+  info,
+  /min-h-0 flex-1 overflow-y-auto/,
+  'only the summary scrolls when it is actually taller than the leftover panel',
+);
 
 const hook = readFileSync(join(root, 'src/components/PlaceCard/common/usePlaceMediaScrollToTop.js'), 'utf8');
 assert.match(hook, /behavior === 'auto'/, 'header tap stays smooth; place switch can request auto');
 
 const vercel = readFileSync(join(root, 'vercel.json'), 'utf8');
-assert.match(vercel, /\/qa\/gallery-related/, 'vercel.json has /qa/gallery-related');
+assert.match(vercel, /\/qa\/gallery-panel/, 'vercel.json has /qa/gallery-panel');
 assert.match(
   vercel,
-  /days-git-cursor-gallery-scroll-76a6-catgeots-projects\.vercel\.app\/place\/paris\/gallery/,
-  'qa/gallery-related points at this Preview',
+  /days-git-cursor-gallery-panel-032e-catgeots-projects\.vercel\.app\/place\/paris\/gallery/,
+  'qa/gallery-panel points at this Preview',
 );
 
 const qa = readFileSync(join(root, 'src/shared/cloudPreview/cloudQaShareLinks.js'), 'utf8');
-assert.match(qa, /slug:\s*'gallery-related'/, 'qa share slug is gallery-related');
-assert.match(qa, /branch:\s*'cursor\/gallery-scroll-76a6'/, 'qa share branch is gallery-scroll');
+assert.match(qa, /slug:\s*'gallery-panel'/, 'qa share slug is gallery-panel');
+assert.match(qa, /branch:\s*'cursor\/gallery-panel-032e'/, 'qa share branch is gallery-panel');
 
 console.log('smoke:gallery-related-scroll PASS');
