@@ -17,3 +17,21 @@
 - **주제 종료** — 인덱스 종료 행 · 캐시 정책 유지(DB 히트 시 LIVE 생략 · 더보기 DB 미반영)
 
 **다음 제시어 없음** (주제 종료).
+
+## 갤러리 사진 관리 #1, 모바일 길게 누르기
+
+- **브랜치** `cursor/gallery-manage-173f` · tip `36992c74` · **PR [#188](https://github.com/catgeot/Days/pull/188)**
+- 모바일 그리드·확대 보기 **길게 누르기** → 확인 시트 → 기존 `handleRemoveImage`로 `place_stats`에서 제거. PC Ctrl/⌘+더블클릭 유지. 상시 휴지통 버튼 없음.
+- **VERIFY** `smoke:gallery-photo-manage` · `smoke:gallery-portrait-filter` · `vite build` PASS
+- **다음** 사람 Preview `/qa/gallery` · git Preview `/place/paris/gallery`
+
+**다음 제시어**:
+
+```
+갤러리 사진 관리 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/gallery-manage-173f · PR #188 · Preview /qa/gallery
+금지: 상시 휴지통 버튼 · PC Ctrl+더블클릭 제거 · UI 리디자인
+작업: 모바일 타일 꾹 → 제거 확인 · 짧은 탭은 확대 · 확대 보기도 길게 누르기 · PC Ctrl+더블클릭 유지
+```
