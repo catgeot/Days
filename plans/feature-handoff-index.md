@@ -14,6 +14,33 @@
 
 ## 활성 목록
 
+### 갤러리 연관 스크롤
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `41b747c1` · PR [#190](https://github.com/catgeot/Days/pull/190) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/gallery-scroll-76a6` |
+| **tip** | `41b747c1` |
+| **PR** | [#190](https://github.com/catgeot/Days/pull/190) |
+| **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
+| **Preview** | `/qa/gallery-related` → git Preview `/place/paris/gallery` |
+| **소유** | `PlaceGalleryView` · `PlaceChatPanel` · `placeScrollSurface` |
+| **금지** | UI 리디자인 · 더보기 스크롤 리셋 · 헤더 탭 smooth 제거 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:gallery-related-scroll` · `smoke:gallery-photo-manage` · `smoke:gallery-portrait-filter` · `vite build` |
+
+**다음 제시어**:
+
+```
+갤러리 연관 스크롤 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/gallery-scroll-76a6 · PR #190 · Preview /qa/gallery-related
+금지: UI 리디자인 · 더보기 스크롤 리셋 · 헤더 탭 smooth 제거
+작업: 파리 갤러리 중간 스크롤 → 하단 연관 칩 → 새 여행지 상단(소개·첫 사진) · 한 번 더 전환
+```
+
+---
+
 ### 갤러리 캐시 신선도
 
 | | |
