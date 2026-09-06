@@ -14,29 +14,83 @@
 
 ## 활성 목록
 
-### 자킨토스 검색
+### 리뷰 연관 여행지
 
 | | |
 |--|--|
-| **상태** | **#7 push** · tip `13aaffb4` · PR [#197](https://github.com/catgeot/Days/pull/197) · **#8 사람 Preview QA** |
-| **브랜치** | `cursor/zakynthos-search-e84a` |
-| **tip** | `13aaffb4` |
-| **PR** | [#197](https://github.com/catgeot/Days/pull/197) |
+| **상태** | **#1 push** · tip `d73ffc19` · PR [#201](https://github.com/catgeot/Days/pull/201) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/reviews-related-b9fa` |
+| **tip** | `d73ffc19` |
+| **PR** | [#201](https://github.com/catgeot/Days/pull/201) |
 | **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
-| **Preview** | `/qa/zakynthos` → git Preview `/` (탐색창 자킨토스 드롭다운·사바섬) |
-| **소유** | `geocoding.js` 섬 쿼리 순위 · `mapboxSearchBox.js` `hydrateSearchBoxLatinName` · `uiPlaceAssetQuery.js` |
-| **금지** | UI 리디자인 · 자킨토스 SSOT 재등록 · `orientation=landscape` 재도입 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `smoke:explore-search-aliases` · `smoke:zakynthos-search` · `smoke:sabah-search` · `vite build` |
+| **Preview** | `/qa/reviews-related` → git Preview `/place/paris/reviews` |
+| **소유** | `PlaceChatPanel` · `relatedPlaceTab.js` · `ReviewsTab` |
+| **금지** | UI 리디자인 · 갤러리 칩을 리뷰로 바꾸기 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:reviews-related-tab` · `smoke:gallery-related-scroll` · `vite build` |
 
 **다음 제시어**:
 
 ```
-자킨토스 검색 #8, Preview QA
+리뷰 연관 여행지 #2, Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-06-project-log.md
-브랜치 cursor/zakynthos-search-e84a · PR #197 · Preview /qa/zakynthos
+브랜치 cursor/reviews-related-b9fa · PR #201 · Preview /qa/reviews-related
+금지: UI 리디자인 · 갤러리 칩을 리뷰로 바꾸기
+작업: 파리 리뷰탭 좌측 칩 → 새 여행지도 리뷰탭 · 글이 없어도 칩으로 이어서 탐색 · 갤러리 칩은 갤러리 유지
+```
+
+---
+
+### 갤러리 좌측 패널
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `7495e095` · PR [#200](https://github.com/catgeot/Days/pull/200) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/gallery-panel-032e` |
+| **tip** | `7495e095` |
+| **PR** | [#200](https://github.com/catgeot/Days/pull/200) |
+| **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
+| **Preview** | `/qa/gallery-panel` → git Preview `/place/paris/gallery` |
+| **소유** | `GalleryInfoView` · `PlaceChatPanel` |
+| **금지** | UI 리디자인 · 연관 칩을 써머리 스크롤 안으로 되돌리기 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:gallery-related-scroll` · `smoke:gallery-photo-manage` · `vite build` |
+
+**다음 제시어**:
+
+```
+갤러리 좌측 패널 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/gallery-panel-032e · PR #200 · Preview /qa/gallery-panel
+금지: UI 리디자인 · 연관 칩을 써머리 스크롤 안으로 되돌리기
+작업: PC 파리 갤러리 좌측 — 스크롤 없이 하단 연관 검색어 · 무니 입력창 바로 위
+```
+
+---
+
+### 자킨토스 검색
+
+| | |
+|--|--|
+| **상태** | **#8 push** · tip `c03f3e5c` · PR [#199](https://github.com/catgeot/Days/pull/199) · 에이전트 QA PASS · **#9 사람 Preview QA** |
+| **브랜치** | `cursor/zakynthos-search-e84a` |
+| **tip** | `c03f3e5c` |
+| **PR** | [#199](https://github.com/catgeot/Days/pull/199) |
+| **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
+| **Preview** | `/qa/zakynthos` → git Preview `/` (미등록 한글 지명 드롭다운) |
+| **소유** | `mapboxSearchBox.js` · `mapboxGeocodeSuggestions.js` · `travelSearchHomonyms.js` `shouldSupplementGeocodeHits` |
+| **금지** | UI 리디자인 · 자킨토스 SSOT 재등록 · `orientation=landscape` 재도입 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:unseen-place-search` · `smoke:explore-search-aliases` · `smoke:zakynthos-search` · `smoke:sabah-search` · `vite build` |
+
+**다음 제시어**:
+
+```
+자킨토스 검색 #9, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/zakynthos-search-e84a · PR #199 · Preview /qa/zakynthos
 금지: UI 리디자인 · 자킨토스 SSOT 재등록 · orientation=landscape 재도입
-작업: 자킨토스 타이핑 자동완성 드롭다운 · 좌측 카드 동일 핀(Zakynthos 해변) · 사바섬 말레이시아 앞·카리브 둘째 · 한국 사원 아님
+작업: 탐색창 케팔로니아·시프노스·포르멘테라·파로스 → 해외 핀·영문 부제 · 자킨토스·사바섬 회귀
 ```
 
 ---
@@ -122,30 +176,17 @@
 
 ---
 
-### 갤러리 연관 스크롤
+### 갤러리 연관 스크롤 — main 병합 ✅
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `41b747c1` · PR [#190](https://github.com/catgeot/Days/pull/190) · **#2 사람 Preview QA** |
-| **브랜치** | `cursor/gallery-scroll-76a6` |
-| **tip** | `41b747c1` |
-| **PR** | [#190](https://github.com/catgeot/Days/pull/190) |
+| **상태** | **#1 merge ✅** · main `6b6d7b12` · PR [#190](https://github.com/catgeot/Days/pull/190) |
+| **브랜치** | `cursor/gallery-scroll-76a6` · merge `6b6d7b12` |
 | **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
-| **Preview** | `/qa/gallery-related` → git Preview `/place/paris/gallery` |
-| **소유** | `PlaceGalleryView` · `PlaceChatPanel` · `placeScrollSurface` |
-| **금지** | UI 리디자인 · 더보기 스크롤 리셋 · 헤더 탭 smooth 제거 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `smoke:gallery-related-scroll` · `smoke:gallery-photo-manage` · `smoke:gallery-portrait-filter` · `vite build` |
+| **PROD** | `https://www.gateo.kr/place/paris/gallery` |
+| **VERIFY** | `smoke:gallery-related-scroll` · `vite build` PASS |
 
-**다음 제시어**:
-
-```
-갤러리 연관 스크롤 #2, Preview QA
-@plans/feature-handoff-index.md
-@plans/2026-09-06-project-log.md
-브랜치 cursor/gallery-scroll-76a6 · PR #190 · Preview /qa/gallery-related
-금지: UI 리디자인 · 더보기 스크롤 리셋 · 헤더 탭 smooth 제거
-작업: 파리 갤러리 중간 스크롤 → 하단 연관 칩 → 새 여행지 상단(소개·첫 사진) · 한 번 더 전환
-```
+**다음 제시어 없음** (주제 종료). 연관 칩 전환 시 갤러리 상단 리셋은 PROD. PC 좌측 패널 공간은 [`갤러리 좌측 패널`](#갤러리-좌측-패널).
 
 ---
 

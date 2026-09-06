@@ -327,10 +327,12 @@ const PlaceChatPanel = React.memo(({
          </div>
       </div>
 
-      {/* Body */}
+      {/* Body — gallery: fill leftover height; related chips stay above MOONi */}
       <div
         ref={scrollRef}
-        className="hidden md:flex flex-col flex-1 overflow-y-auto relative custom-scrollbar"
+        className={`hidden md:flex flex-col flex-1 min-h-0 relative custom-scrollbar ${
+            mediaMode !== 'WIKI' && activeInfo.mode !== 'VIDEO' ? 'overflow-hidden' : 'overflow-y-auto'
+        }`}
       >
         <style>{`
             .custom-scrollbar::-webkit-scrollbar { width: 6px; }
@@ -349,8 +351,14 @@ const PlaceChatPanel = React.memo(({
                 onOpenPackage={onOpenPackage}
             />
         ) : (
-            <div className="animate-fade-in flex flex-col gap-6 p-6">
-                <PlaceWorldEventsSection location={location} variant="dark" />
+            <div
+                className={`animate-fade-in flex flex-col ${
+                    activeInfo.mode === 'VIDEO'
+                        ? 'gap-6 p-6'
+                        : 'min-h-0 flex-1 gap-4 px-6 pt-6 pb-3'
+                }`}
+            >
+                <PlaceWorldEventsSection location={location} variant="dark" className="shrink-0" />
                 {activeInfo.mode === 'VIDEO' ? (
                     <VideoInfoView
                         videoData={activeInfo}

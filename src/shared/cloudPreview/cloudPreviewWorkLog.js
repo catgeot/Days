@@ -32,6 +32,14 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-06T12:20:00.000Z',
   },
   {
+    id: '2026-09-06-gallery-panel-1-info-dock',
+    session: '갤러리 좌측 패널 #1, 공간 조정',
+    title: 'PC 정보 패널 — 연관 검색어가 무니 위에 보이게',
+    detail:
+      '본문 써머리가 길어지면 400px 안쪽 스크롤에 연관 칩이 숨고, 무니 입력창 위 공간은 비어 있었음. 써머리만 남은 높이를 쓰고 연관 칩은 스크롤 밖(무니 바로 위)에 둠. Preview /qa/gallery-panel — 파리 갤러리 PC 좌측에서 스크롤 없이 하단 연관 칩이 보이는지.',
+    at: '2026-09-06T12:30:00.000Z',
+  },
+  {
     id: '2026-09-06-zakynthos-7-restore-dropdown',
     session: '자킨토스 검색 #7, Preview QA',
     title: '자킨토스 타이핑 드롭다운을 다시 연다',

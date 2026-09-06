@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'gallery-panel',
+    label: '갤러리 좌측 패널 공간',
+    branch: 'cursor/gallery-panel-032e',
+    destination:
+      'https://days-git-cursor-gallery-panel-032e-catgeots-projects.vercel.app/place/paris/gallery',
+    active: true,
+  },
+  {
     slug: 'zakynthos',
     label: '자킨토스·사바섬 검색',
     branch: 'cursor/zakynthos-search-e84a',
