@@ -2,6 +2,23 @@
 
 직전: [`2026-09-05-project-log.md`](./2026-09-05-project-log.md)
 
+## 자킨토스 검색 #3, 사바섬 Search Box region
+
+- **브랜치** `cursor/zakynthos-search-e84a` · tip `15dc3902` · **PR [#196](https://github.com/catgeot/Days/pull/196)**
+- 자킨토스 사람 Preview PASS. 「사바섬」= 카리브 네덜란드 Saba (BQ, SAB). Search Box `place,city,poi`가 region 제외 → 솔로몬 사보섬만 남음
+- 섬/island 쿼리에 region 포함 · 별칭 `Saba, Caribbean Netherlands` · 맨몸「사바」는 별칭 안 함 (Sabah 모호)
+- **VERIFY** `smoke:explore-search-aliases` · `smoke:zakynthos-search` · LIVE Mapbox 1순위 BQ · `vite build` PASS
+- **다음** 사람 Preview `/qa/zakynthos` — 탐색창 사바섬 → `(Saba)` · 사보섬 1순위 아님
+
+```
+자킨토스 검색 #4, 사바섬 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/zakynthos-search-e84a · PR #196 · Preview /qa/zakynthos
+금지: UI 리디자인 · 자킨토스 SSOT 재등록 · orientation=landscape 재도입
+작업: 탐색창 사바섬 → 카리브 네덜란드 (Saba) · 사보섬(솔로몬) 1순위 아님 · 자킨토스 회귀
+```
+
 ## 자킨토스 검색 #2, Preview QA — 맵박스 영문명 uiPlace
 
 - **브랜치** `cursor/zakynthos-search-e84a` · tip `14f0b204` · **PR [#196](https://github.com/catgeot/Days/pull/196)**

@@ -18,25 +18,25 @@
 
 | | |
 |--|--|
-| **상태** | **#2 push** · tip `14f0b204` · PR [#196](https://github.com/catgeot/Days/pull/196) · **#3 사람 Preview QA** |
+| **상태** | **#3 push** · tip `15dc3902` · PR [#196](https://github.com/catgeot/Days/pull/196) · 자킨토스 사람 PASS · **#4 사바섬 Preview QA** |
 | **브랜치** | `cursor/zakynthos-search-e84a` |
-| **tip** | `14f0b204` |
+| **tip** | `15dc3902` |
 | **PR** | [#196](https://github.com/catgeot/Days/pull/196) |
 | **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
-| **Preview** | `/qa/zakynthos` → git Preview `/` (탐색창 자킨토스) |
-| **소유** | `uiPlaceAssetQuery.js` · `mapboxSearchBox.js` · `geocoding.js` · `usePlaceGallery` · `useYouTubeSearch` |
+| **Preview** | `/qa/zakynthos` → git Preview `/` (탐색창 사바섬·자킨토스) |
+| **소유** | `mapboxSearchBox.js` `searchBoxTypesForQuery` · `exploreSearchAliases.js` · `searchSuggestions.js` |
 | **금지** | UI 리디자인 · 자킨토스 SSOT 재등록 · `orientation=landscape` 재도입 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `smoke:zakynthos-search` · `smoke:gallery-portrait-filter` · `vite build` |
+| **VERIFY** | `smoke:explore-search-aliases` · `smoke:zakynthos-search` · `vite build` |
 
 **다음 제시어**:
 
 ```
-자킨토스 검색 #3, Preview QA
+자킨토스 검색 #4, 사바섬 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-06-project-log.md
 브랜치 cursor/zakynthos-search-e84a · PR #196 · Preview /qa/zakynthos
 금지: UI 리디자인 · 자킨토스 SSOT 재등록 · orientation=landscape 재도입
-작업: 탐색창 자킨토스 → (Zakynthos) 부제 · 해변 갤러리 · 영상 · 플래너 · 여행지 SSOT 뱃지 아님
+작업: 탐색창 사바섬 → 카리브 네덜란드 (Saba) · 사보섬(솔로몬) 1순위 아님 · 자킨토스 회귀
 ```
 
 ---
