@@ -72,10 +72,10 @@
 
 | | |
 |--|--|
-| **상태** | **#2 push** · tip `779ea69b` · PR [#192](https://github.com/catgeot/Days/pull/192) · **#3 사람 Preview QA** (GYG 위젯 방문 기록) |
+| **상태** | **#3 push** · tip `c6fdd253` · PR [#198](https://github.com/catgeot/Days/pull/198) · **#4 사람 Preview QA** (접힌 방문한 여행사) |
 | **브랜치** | `cursor/agencies-85ab` |
-| **tip** | `779ea69b` |
-| **PR** | [#192](https://github.com/catgeot/Days/pull/192) |
+| **tip** | `c6fdd253` |
+| **PR** | [#198](https://github.com/catgeot/Days/pull/198) · [#192](https://github.com/catgeot/Days/pull/192) merge ✅ |
 | **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
 | **Preview** | `/qa/agencies` → git Preview `/` · `/explore` · `/place/paris/planner` |
 | **소유** | `travelAgencies.js` · `travelAgencyVisits.js` · `TravelAgencyDirectory` · LogoPanel · SearchDiscovery · PlannerTab |
@@ -85,12 +85,12 @@
 **다음 제시어**:
 
 ```
-여행사 목록 #3, Preview QA
+여행사 목록 #4, Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-06-project-log.md
-브랜치 cursor/agencies-85ab · PR #192 · Preview /qa/agencies
+브랜치 cursor/agencies-85ab · PR #198 · Preview /qa/agencies
 금지: 로고/탐색/플래너 리디자인 · 예약 대행 카피
-작업: 파리 플래너·투어 찾기에서 겟유어가이드 투어 연 뒤 로고 패널 방문 기록 · MRT·트립닷컴 회귀
+작업: 로고 패널 「방문한 여행사」접힘 · 펼치면 목록 · 탐색창 칩 명칭 · 방문 기록 회귀
 ```
 
 ---
