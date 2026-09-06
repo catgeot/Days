@@ -2,6 +2,24 @@
 
 직전: [`2026-09-05-project-log.md`](./2026-09-05-project-log.md)
 
+## 갤러리 좌측 패널 #1, 공간 조정
+
+- **브랜치** `cursor/gallery-panel-032e` · tip `7495e095` · **PR [#200](https://github.com/catgeot/Days/pull/200)**
+- PC 갤러리 좌측 써머리가 길어지면 400px 안쪽 스크롤에 연관 검색어가 숨고, 무니 입력창 위는 비어 있었음. 본문만 남은 높이를 쓰고 칩은 무니 바로 위(스크롤 밖)
+- **VERIFY** `smoke:gallery-related-scroll` · `smoke:gallery-photo-manage` · `vite build` PASS
+- **다음** 사람 Preview `/qa/gallery-panel` · git Preview `/place/paris/gallery`
+
+**다음 제시어**:
+
+```
+갤러리 좌측 패널 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/gallery-panel-032e · PR #200 · Preview /qa/gallery-panel
+금지: UI 리디자인 · 연관 칩을 써머리 스크롤 안으로 되돌리기
+작업: PC 파리 갤러리 좌측 — 스크롤 없이 하단 연관 검색어 · 무니 입력창 바로 위
+```
+
 ## 자킨토스 검색 #7, 타이핑 드롭다운 복구
 
 - **브랜치** `cursor/zakynthos-search-e84a` · tip `13aaffb4` · **PR [#197](https://github.com/catgeot/Days/pull/197)**
