@@ -182,9 +182,9 @@
   "greece-region": {
     "labelKo": "그리스 권역",
     "labelEn": "Greece",
-    "slugs": ["santorini", "crete", "athens", "meteora"],
-    "notes": "JTR · HER · ATH · SKG — 섬·수도·내륙 관문이 다름",
-    "notesEn": "JTR · HER · ATH · SKG — islands · capital · inland gateways differ"
+    "slugs": ["santorini", "crete", "athens", "meteora", "zakynthos"],
+    "notes": "JTR · HER · ATH · SKG · ZTH — 섬·수도·내륙 관문이 다름",
+    "notesEn": "JTR · HER · ATH · SKG · ZTH — islands · capital · inland gateways differ"
   },
   "italy-region": {
     "labelKo": "이탈리아 권역",

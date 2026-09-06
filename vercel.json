@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/zakynthos",
+      "destination": "https://days-git-cursor-zakynthos-search-b651-catgeots-projects.vercel.app/place/zakynthos",
+      "permanent": false
+    },
+    {
       "source": "/qa/gallery-portrait",
       "destination": "https://www.gateo.kr/",
       "permanent": false

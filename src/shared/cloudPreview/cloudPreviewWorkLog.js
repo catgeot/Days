@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '공항픽업 링크',
+  title: '자킨토스 검색',
   sessionNo: 1,
-  sessionPhase: 'OneLink 우회',
-  branch: 'cursor/klook-pickup-d5a5',
-  previewPath: '/place/fukuoka/planner',
-  qaShareSlug: 'pickup',
+  sessionPhase: 'SSOT 등록',
+  branch: 'cursor/zakynthos-search-b651',
+  previewPath: '/place/zakynthos',
+  qaShareSlug: 'zakynthos',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-06-zakynthos-1-ssot',
+    session: '자킨토스 검색 #1, SSOT 등록',
+    title: '자킨토스 — 영문명 있는 여행지 카드',
+    detail:
+      '배포본 탐색창「자킨토스」가 Mapbox 한글 도시(영문 없음·인물 갤러리)로 열림. SSOT 여행지 등록 + 자킨토시/잔테/Zante 별칭. Preview /qa/zakynthos — 탐색창 자킨토스·자킨토시 → (Zakynthos) 영문·여행지 뱃지·해변 갤러리.',
+    at: '2026-09-06T08:50:00.000Z',
+  },
   {
     id: '2026-09-06-pickup-1-onelink-web',
     session: '공항픽업 링크 #1, OneLink 우회',

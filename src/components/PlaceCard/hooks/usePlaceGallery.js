@@ -57,7 +57,9 @@ const FALLBACK_DICTIONARY = {
   "피지": "Fiji",
   "나이아가라 폭포": "Niagara Falls",
   "나이아가라": "Niagara Falls",
-  "나이야 가라": "Niagara Falls"
+  "나이야 가라": "Niagara Falls",
+  "자킨토스": "Zakynthos",
+  "자킨토시": "Zakynthos"
 };
 
 /** 지명 단독 검색 시 결과가 빈약한 장소 — 국가/광역 키워드로 대체 */

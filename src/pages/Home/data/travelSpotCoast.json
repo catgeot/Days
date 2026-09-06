@@ -1,7 +1,7 @@
 {
   "meta": {
-    "generatedAt": "2026-08-16T06:20:37.242Z",
-    "spotCount": 124,
+    "generatedAt": "2026-09-06T08:51:00.811Z",
+    "spotCount": 125,
     "source": "scripts/data/travel-spot-coast-overrides.mjs"
   },
   "spots": {
@@ -10,6 +10,15 @@
       "seaPrimary": "aegean",
       "seaIds": [
         "aegean",
+        "mediterranean"
+      ],
+      "source": "curated-override"
+    },
+    "zakynthos": {
+      "coastKind": "island",
+      "seaPrimary": "ionian",
+      "seaIds": [
+        "ionian",
         "mediterranean"
       ],
       "source": "curated-override"

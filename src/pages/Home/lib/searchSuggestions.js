@@ -157,6 +157,9 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
   const out = [];
   const seen = new Set();
 
+  const officialSpot = resolveTravelSpotFromSearchQuery(q);
+  if (officialSpot) pushUnique(out, seen, spotToSuggestion(officialSpot));
+
   const spotHits = TRAVEL_SPOTS.filter((spot) => {
     const name = (spot.name || '').toLowerCase();
     const nameEn = (spot.name_en || '').toLowerCase();
