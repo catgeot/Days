@@ -82,6 +82,34 @@ assert.equal(
   'landscape with a person in scenery stays',
 );
 
+assert.equal(
+  isSinglePersonPortraitPhoto({
+    width: 3000,
+    height: 4500,
+    alt_description: 'a man wearing a black blazer',
+    tags: [
+      { title: 'zakynthos' },
+      { title: 'island' },
+      { title: 'travel' },
+      { title: 'greece' },
+      { title: 'man' },
+    ],
+  }),
+  true,
+  'vertical person photo is not saved by island/travel place tags',
+);
+
+assert.equal(
+  isSinglePersonPortraitPhoto({
+    width: 800,
+    height: 1200,
+    alt_description: 'close up of a man wearing glasses',
+    tags: [{ title: 'zakynthos' }, { title: 'portrait' }],
+  }),
+  true,
+  'headshot with place tags drops',
+);
+
 const mixed = filterOutSinglePersonPortraits([
   { id: 'keep-scene', width: 1600, height: 900, alt_description: 'bali beach sunset with people' },
   { id: 'drop-portrait', width: 800, height: 1200, alt_description: 'headshot of a model' },
@@ -99,8 +127,8 @@ const allPortraits = [
 ];
 assert.equal(
   filterOutSinglePersonPortraits(allPortraits).length,
-  2,
-  'do not empty a gallery if every photo matches the heuristic',
+  0,
+  'all-portrait lists become empty so the gallery can live-refetch',
 );
 
 const apiSrc = readFileSync(join(root, 'src/pages/Home/lib/apiClient.js'), 'utf8');
@@ -113,7 +141,8 @@ assert.doesNotMatch(
 );
 
 const gallerySrc = readFileSync(join(root, 'src/components/PlaceCard/hooks/usePlaceGallery.js'), 'utf8');
-assert.match(gallerySrc, /CACHE_VERSION = 'v1\.19'/, 'session cache bumps after portrait filter');
+assert.match(gallerySrc, /CACHE_VERSION = 'v1\.20'/, 'cache version after DB portrait refetch');
+assert.match(gallerySrc, /place_stats all portraits/, 'DB all-portrait miss falls through to live');
 assert.match(gallerySrc, /filterOutSinglePersonPortraits\(rawImages\)/, 'cached galleries also drop portraits');
 
 const pexelsSrc = readFileSync(join(root, 'src/pages/Home/lib/apiClient.js'), 'utf8');

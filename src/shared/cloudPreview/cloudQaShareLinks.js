@@ -16,6 +16,13 @@ export const CLOUD_QA_SHARE_LINKS = [
     active: true,
   },
   {
+    slug: 'gallery-portrait',
+    label: '갤러리 단일 인물 제외',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/',
+    active: true,
+  },
+  {
     slug: 'agencies',
     label: '여행사 목록·방문 기록',
     branch: 'cursor/agencies-85ab',

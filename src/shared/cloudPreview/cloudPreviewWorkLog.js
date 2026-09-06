@@ -32,6 +32,14 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-06T06:40:00.000Z',
   },
   {
+    id: '2026-09-06-gallery-2-db-portrait-refetch',
+    session: '갤러리 인물 제외 #2, DB 고착 수정',
+    title: 'DB에 쌓인 단일 인물도 걸러 LIVE 재조회',
+    detail:
+      '자킨토스처럼 place_stats에 인물만 있으면 빈 갤러리 방지 가드가 원본을 그대로 보여 줌. 장소 태그 island/travel만으로는 전경으로 보지 않음. 필터 후 0장이면 DB를 건너뛰고 Unsplash/Pexels를 다시 받음. Preview /qa/gallery-portrait — 자킨토스 갤러리에서 셀카·얼굴 클로즈업이 빠지는지.',
+    at: '2026-09-06T06:31:00.000Z',
+  },
+  {
     id: '2026-09-06-agencies-2-gyg-iframe',
     session: '여행사 목록 #2, Preview QA',
     title: '겟유어가이드 위젯 방문도 기록',

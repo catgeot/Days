@@ -167,13 +167,13 @@
 
 | | |
 |--|--|
-| **상태** | **#1 merge ✅** · main `eb1189b6` · PR [#187](https://github.com/catgeot/Days/pull/187) |
-| **브랜치** | `cursor/gallery-c260` · merge `eb1189b6` |
+| **상태** | **#2 merge ✅** · main `4e748b4b` · PR [#194](https://github.com/catgeot/Days/pull/194) |
+| **브랜치** | `cursor/gallery-2-c260` · merge `4e748b4b` |
 | **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
-| **PROD** | `https://www.gateo.kr/place/paris/gallery` |
+| **PROD** | `https://www.gateo.kr/` — 자킨토스 갤러리 |
 | **VERIFY** | `smoke:gallery-portrait-filter` · `smoke:place-gallery-pexels` · `vite build` PASS |
 
-**다음 제시어 없음** (주제 종료). 단일 인물 필터는 PROD. DB `place_stats` 캐시 정책은 유지(LIVE 생략 · 더보기 DB 덮어쓰기 금지).
+**다음 제시어 없음** (주제 종료). DB 인물 고착 시 LIVE 재조회는 PROD.
 
 ---
 
