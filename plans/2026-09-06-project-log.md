@@ -131,3 +131,22 @@
 금지: 로고/탐색/플래너 리디자인 · 예약 대행 카피
 작업: 파리 플래너·투어 찾기에서 겟유어가이드 투어 연 뒤 로고 패널 방문 기록 · MRT·트립닷컴 회귀
 ```
+
+## 공항픽업 링크 #1, OneLink 우회
+
+- **브랜치** `cursor/klook-pickup-d5a5` · tip `3828b09b` · **PR [#193](https://github.com/catgeot/Days/pull/193)**
+- 배포본이 괜찮아 보여도 `affiliate.klook.com/redirect` 는 Referer 무관하게 `klook.onelink.me` + `klook://` — 첫 방문·사파리에서 동일 경고 가능. Preview에서 더 잘 드러남.
+- `klook.com?aid=118544` 웹 직행. UI 변경 없음.
+- **VERIFY** `smoke:klook-affiliate` · `smoke:travel-agencies` · `vite build` PASS
+- **다음** 사람 Preview `/qa/pickup` · git Preview `/place/fukuoka/planner`
+
+**다음 제시어**:
+
+```
+공항픽업 링크 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/klook-pickup-d5a5 · PR #193 · Preview /qa/pickup
+금지: UI 리디자인 · 제휴 aid 변경
+작업: 후쿠오카 플래너 공항 픽업 → 클룩 웹(GATEO) · iOS 앱 열기 경고 없는지
+```
