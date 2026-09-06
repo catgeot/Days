@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '릴리스 노트 푸터',
+  title: '여행사 목록',
   sessionNo: 1,
-  sessionPhase: '자동 팝업 제거',
-  branch: 'cursor/updates-0e16',
+  sessionPhase: '재접속 경로',
+  branch: 'cursor/agencies-85ab',
   previewPath: '/',
-  qaShareSlug: 'updates',
+  qaShareSlug: 'agencies',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-06-agencies-1-reentry',
+    session: '여행사 목록 #1, 재접속 경로',
+    title: '로고패널·탐색·플래너에 여행사 목록',
+    detail:
+      'MRT 등 제휴 사이트를 북마크하지 않고 이탈해도, 로고 패널·탐색「여행사」칩·플래너에서 방문 기록(마지막 URL)과 연결된 여행사 홈으로 다시 들어갈 수 있음. 기록은 이 기기 localStorage. Preview /qa/agencies — 로고 열어 마이리얼트립 확인, 탐색 칩, /place/paris/planner 접힌 목록.',
+    at: '2026-09-06T04:30:00.000Z',
+  },
   {
     id: '2026-09-06-updates-1-no-popup',
     session: '릴리스 노트 푸터 #1, 자동 팝업 제거',

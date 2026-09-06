@@ -8,6 +8,7 @@ import { useReport } from '../../../context/ReportContext';
 import { usePlaceGallery } from '../../../components/PlaceCard/hooks/usePlaceGallery';
 import { hydrateLocationFromSavedTrip, getSavedTripDisplayName } from '../lib/placeRouteHydrate';
 import FooterModal from './FooterModal';
+import TravelAgencyDirectory from '../../../components/travelAgencies/TravelAgencyDirectory';
 
 const DEFAULT_THUMB =
   'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=400&q=80';
@@ -105,6 +106,8 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
 
           {user ? (
             <div className="space-y-8 animate-fade-in">
+              <TravelAgencyDirectory variant="panel" />
+
               <button
                 onClick={() => {
                   openReport('dashboard');
@@ -149,24 +152,28 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
               </div>
             </div>
           ) : (
-            <div className="h-full flex flex-col justify-center items-center text-center space-y-8 animate-fade-in pb-10">
-              <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-2 border border-white/10">
-                <BookOpen size={28} className="text-gray-600" />
-              </div>
-              <div className="space-y-3">
-                <h3 className="text-xl font-bold text-white tracking-tight">{t('home.logoPanel.signInTitle')}</h3>
-                <p className="text-gray-500 text-xs leading-relaxed max-w-[240px]">
-                  {t('home.logoPanel.signInBody')}
-                </p>
-              </div>
+            <div className="space-y-8 animate-fade-in pb-10">
+              <TravelAgencyDirectory variant="panel" />
 
-              <button
-                onClick={() => navigate('/auth/login', { state: { from: window.location.pathname + window.location.search } })}
-                className="w-full max-w-[180px] py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-900/30 transition-all flex items-center justify-center gap-2 group text-sm"
-              >
-                <LogIn size={16} className="group-hover:-translate-x-1 transition-transform" />
-                {t('home.logoPanel.signIn')}
-              </button>
+              <div className="flex flex-col items-center text-center space-y-8">
+                <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-2 border border-white/10">
+                  <BookOpen size={28} className="text-gray-600" />
+                </div>
+                <div className="space-y-3">
+                  <h3 className="text-xl font-bold text-white tracking-tight">{t('home.logoPanel.signInTitle')}</h3>
+                  <p className="text-gray-500 text-xs leading-relaxed max-w-[240px]">
+                    {t('home.logoPanel.signInBody')}
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => navigate('/auth/login', { state: { from: window.location.pathname + window.location.search } })}
+                  className="w-full max-w-[180px] py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-900/30 transition-all flex items-center justify-center gap-2 group text-sm"
+                >
+                  <LogIn size={16} className="group-hover:-translate-x-1 transition-transform" />
+                  {t('home.logoPanel.signIn')}
+                </button>
+              </div>
             </div>
           )}
         </div>
