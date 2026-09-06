@@ -24492,162 +24492,6 @@ export default {
       }
     }
   },
-  "qingdao": {
-    "gallery": {
-      "ko": {
-        "title": "칭다오 여행 사진 · 갤러리",
-        "description": "칭다오 여행 사진과 갤러리. 붉은 지붕과 푸른 바다가 어우러져 '동양의 나폴리'라 불립니다. 세계적인 명성의 칭다오 맥주와 함께 유럽풍 건축물이 가득한 구시가지를 산책해보세요.",
-        "keywords": "아시아, 맥주, 청도, 유럽풍, 가족여행, 칭다오 사진, 칭다오 갤러리, 칭다오 여행, 칭다오 여행 사진, 사진, 갤러리, 여행, 여행 사진, 칭다오, Qingdao",
-        "canonicalUrl": "https://www.gateo.kr/place/qingdao/gallery",
-        "hreflangAlternates": [
-          {
-            "hreflang": "ko",
-            "href": "https://www.gateo.kr/place/qingdao/gallery"
-          },
-          {
-            "hreflang": "en",
-            "href": "https://www.gateo.kr/place/qingdao/gallery?lang=en"
-          },
-          {
-            "hreflang": "x-default",
-            "href": "https://www.gateo.kr/place/qingdao/gallery"
-          }
-        ],
-        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
-        "placeName": "칭다오",
-        "galleryImages": [
-          {
-            "urls": {
-              "regular": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80"
-            },
-            "alt_description": "칭다오 여행 사진"
-          }
-        ]
-      },
-      "en": {
-        "title": "Qingdao travel photos · gallery",
-        "description": "Browse Qingdao travel photos and gallery images. Stroll Qingdao, China — the Oriental Naples where red-roofed German colonial streets meet blue coastlines, famous Tsingtao beer, and seafood along the waterfront.",
-        "keywords": "Qingdao, China, Tsingtao beer, German architecture, coastal city, city break, Qingdao photos, Qingdao gallery, Qingdao pictures, Qingdao travel, photos, gallery, pictures, travel",
-        "canonicalUrl": "https://www.gateo.kr/place/qingdao/gallery?lang=en",
-        "hreflangAlternates": [
-          {
-            "hreflang": "ko",
-            "href": "https://www.gateo.kr/place/qingdao/gallery"
-          },
-          {
-            "hreflang": "en",
-            "href": "https://www.gateo.kr/place/qingdao/gallery?lang=en"
-          },
-          {
-            "hreflang": "x-default",
-            "href": "https://www.gateo.kr/place/qingdao/gallery"
-          }
-        ],
-        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
-        "placeName": "Qingdao",
-        "galleryImages": [
-          {
-            "urls": {
-              "regular": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80"
-            },
-            "alt_description": "Qingdao travel photo"
-          }
-        ]
-      }
-    },
-    "planner": {
-      "ko": {
-        "title": "칭다오 여행 · 준비 가이드",
-        "description": "인천(ICN)→TAO 항공 경로. 직항. 약 1시간. 칭다오 자유여행 준비·항공·숙소·현지 팁. MOONi(무니) AI 도슨트에게 일정·교통을 물어보세요. 붉은 지붕과 푸른 바다가 어우러져 '동양의 나폴리'라 불립니다. 세계적인 명성의 칭다오 맥주와 함께 유럽풍 건축물이 가득한 구시가지를 산책해보세요.",
-        "keywords": "아시아, 맥주, 청도, 유럽풍, 가족여행, 칭다오 여행, 칭다오 관광, 칭다오 플래너, 칭다오 여행 준비, 칭다오 여행 가이드, 칭다오 여행 계획, 칭다오 자유여행, 칭다오 배낭, 칭다오 항공, 칭다오 항공 경로, 칭다오 항공편, 칭다오 직항, 칭다오 비행, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 자유여행, 배낭, 항공, 항공 경로, 항공편, 직항, 비행, 인천 칭다오, 서울 칭다오, ICN TAO, ICN→TAO, 서울 칭다오 직항, 칭다오, Qingdao",
-        "canonicalUrl": "https://www.gateo.kr/place/qingdao/planner",
-        "hreflangAlternates": [
-          {
-            "hreflang": "ko",
-            "href": "https://www.gateo.kr/place/qingdao/planner"
-          },
-          {
-            "hreflang": "en",
-            "href": "https://www.gateo.kr/place/qingdao/planner?lang=en"
-          },
-          {
-            "hreflang": "x-default",
-            "href": "https://www.gateo.kr/place/qingdao/planner"
-          }
-        ],
-        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
-        "placeName": "칭다오"
-      },
-      "en": {
-        "title": "Qingdao travel · trip planner",
-        "description": "Flight route ICN→TAO, nonstop. About 1 hours. Plan independent travel to Qingdao — flights, stays, and local tips. Ask MOONi, your AI travel docent. Stroll Qingdao, China — the Oriental Naples where red-roofed German colonial streets meet blue coastlines, famous Tsingtao beer, and seafood along the waterfront.",
-        "keywords": "Qingdao, China, Tsingtao beer, German architecture, coastal city, city break, Qingdao travel, Qingdao trip planner, Qingdao plan a trip, Qingdao trip planning, Qingdao free travel, Qingdao independent travel, Qingdao backpacking, Qingdao flights, Qingdao flight route, Qingdao air route, Qingdao nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to TAO, ICN TAO, ICN→TAO, Qingdao nonstop flights",
-        "canonicalUrl": "https://www.gateo.kr/place/qingdao/planner?lang=en",
-        "hreflangAlternates": [
-          {
-            "hreflang": "ko",
-            "href": "https://www.gateo.kr/place/qingdao/planner"
-          },
-          {
-            "hreflang": "en",
-            "href": "https://www.gateo.kr/place/qingdao/planner?lang=en"
-          },
-          {
-            "hreflang": "x-default",
-            "href": "https://www.gateo.kr/place/qingdao/planner"
-          }
-        ],
-        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
-        "placeName": "Qingdao"
-      }
-    },
-    "wiki": {
-      "ko": {
-        "title": "칭다오 여행 스케치",
-        "description": "칭다오 여행 스케치·로컬 왓슨 현지 팁·자유여행 가이드. 붉은 지붕과 푸른 바다가 어우러져 '동양의 나폴리'라 불립니다. 세계적인 명성의 칭다오 맥주와 함께 유럽풍 건축물이 가득한 구시가지를 산책해보세요.",
-        "keywords": "아시아, 맥주, 청도, 유럽풍, 가족여행, 칭다오 여행, 칭다오 여행 스케치, 칭다오 가이드, 칭다오 자유여행, 칭다오 현지 팁, 칭다오 로컬 팁, 칭다오 자유여행 팁, 여행, 여행 스케치, 가이드, 자유여행, 현지 팁, 로컬 팁, 자유여행 팁, 칭다오, Qingdao",
-        "canonicalUrl": "https://www.gateo.kr/place/qingdao/wiki",
-        "hreflangAlternates": [
-          {
-            "hreflang": "ko",
-            "href": "https://www.gateo.kr/place/qingdao/wiki"
-          },
-          {
-            "hreflang": "en",
-            "href": "https://www.gateo.kr/place/qingdao/wiki?lang=en"
-          },
-          {
-            "hreflang": "x-default",
-            "href": "https://www.gateo.kr/place/qingdao/wiki"
-          }
-        ],
-        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
-        "placeName": "칭다오"
-      },
-      "en": {
-        "title": "Qingdao travel sketch · guide",
-        "description": "Qingdao travel sketch, Local Watson tips, and independent travel guide. Stroll Qingdao, China — the Oriental Naples where red-roofed German colonial streets meet blue coastlines, famous Tsingtao beer, and seafood along the waterfront.",
-        "keywords": "Qingdao, China, Tsingtao beer, German architecture, coastal city, city break, Qingdao travel guide, Qingdao travel sketch, Qingdao free travel, Qingdao local tips, Qingdao independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
-        "canonicalUrl": "https://www.gateo.kr/place/qingdao/wiki?lang=en",
-        "hreflangAlternates": [
-          {
-            "hreflang": "ko",
-            "href": "https://www.gateo.kr/place/qingdao/wiki"
-          },
-          {
-            "hreflang": "en",
-            "href": "https://www.gateo.kr/place/qingdao/wiki?lang=en"
-          },
-          {
-            "hreflang": "x-default",
-            "href": "https://www.gateo.kr/place/qingdao/wiki"
-          }
-        ],
-        "ogImage": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&h=630&q=80",
-        "placeName": "Qingdao"
-      }
-    }
-  },
   "queenstown": {
     "gallery": {
       "ko": {
@@ -25581,6 +25425,162 @@ export default {
         ],
         "ogImage": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=630&q=80",
         "placeName": "Rome"
+      }
+    }
+  },
+  "sabah": {
+    "gallery": {
+      "ko": {
+        "title": "사바 여행 사진 · 갤러리",
+        "description": "사바 여행 사진과 갤러리. 말레이시아 보르네오 북부의 사바주입니다. 코타키나발루를 거점으로 키나발루 산·세피록 오랑우탄·근해 섬을 여행하며, 관문은 코타키나발루공항(BKI)입니다. 카리브해 네덜란드령 사바섬과는 다른 여행지입니다.",
+        "keywords": "사바섬, 사바주, 키나발루, 세피록, BKI, 사바 사진, 사바 갤러리, 사바 여행, 사바 여행 사진, 사진, 갤러리, 여행, 여행 사진, 사바, Sabah",
+        "canonicalUrl": "https://www.gateo.kr/place/sabah/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/sabah/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/sabah/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/sabah/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "사바",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "사바 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Sabah travel photos · gallery",
+        "description": "Browse Sabah travel photos and gallery images. Discover Sabah, Malaysia — a beach and island getaway with photos, videos, and trip planning on GATEO.",
+        "keywords": "Sabah, Malaysia, Sabah travel, beach, island, resort, vacation, GATEO, Sabah photos, Sabah gallery, Sabah pictures, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/sabah/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/sabah/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/sabah/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/sabah/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Sabah",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Sabah travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "사바 여행 · 준비 가이드",
+        "description": "인천(ICN)→BKI 항공 경로. 직항. 약 5시간. 사바 자유여행 준비·항공·숙소·현지 팁. MOONi(무니) AI 도슨트에게 일정·교통을 물어보세요. 말레이시아 보르네오 북부의 사바주입니다. 코타키나발루를 거점으로 키나발루 산·세피록 오랑우탄·근해 섬을 여행하며, 관문은 코타키나발루공항(BKI)입니다. 카리브해 네덜란드령 사바섬과는 다른 여행지입니다.",
+        "keywords": "사바섬, 사바주, 키나발루, 세피록, BKI, 사바 여행, 사바 관광, 사바 플래너, 사바 여행 준비, 사바 여행 가이드, 사바 여행 계획, 사바 자유여행, 사바 배낭, 사바 항공, 사바 항공 경로, 사바 항공편, 사바 직항, 사바 비행, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 자유여행, 배낭, 항공, 항공 경로, 항공편, 직항, 비행, 인천 사바, 서울 사바, ICN BKI, ICN→BKI, 서울 사바 직항, 사바, Sabah",
+        "canonicalUrl": "https://www.gateo.kr/place/sabah/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/sabah/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/sabah/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/sabah/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "사바"
+      },
+      "en": {
+        "title": "Sabah travel · trip planner",
+        "description": "Flight route ICN→BKI, nonstop. About 5 hours. Plan independent travel to Sabah — flights, stays, and local tips. Ask MOONi, your AI travel docent. Discover Sabah, Malaysia — a beach and island getaway with photos, videos, and trip planning on GATEO.",
+        "keywords": "Sabah, Malaysia, Sabah travel, beach, island, resort, vacation, GATEO, Sabah trip planner, Sabah plan a trip, Sabah trip planning, Sabah free travel, Sabah independent travel, Sabah backpacking, Sabah flights, Sabah flight route, Sabah air route, Sabah nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to BKI, ICN BKI, ICN→BKI, Sabah nonstop flights",
+        "canonicalUrl": "https://www.gateo.kr/place/sabah/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/sabah/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/sabah/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/sabah/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Sabah"
+      }
+    },
+    "wiki": {
+      "ko": {
+        "title": "사바 여행 스케치",
+        "description": "사바 여행 스케치·로컬 왓슨 현지 팁·자유여행 가이드. 말레이시아 보르네오 북부의 사바주입니다. 코타키나발루를 거점으로 키나발루 산·세피록 오랑우탄·근해 섬을 여행하며, 관문은 코타키나발루공항(BKI)입니다. 카리브해 네덜란드령 사바섬과는 다른 여행지입니다.",
+        "keywords": "사바섬, 사바주, 키나발루, 세피록, BKI, 사바 여행, 사바 여행 스케치, 사바 가이드, 사바 자유여행, 사바 현지 팁, 사바 로컬 팁, 사바 자유여행 팁, 여행, 여행 스케치, 가이드, 자유여행, 현지 팁, 로컬 팁, 자유여행 팁, 사바, Sabah",
+        "canonicalUrl": "https://www.gateo.kr/place/sabah/wiki",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/sabah/wiki"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/sabah/wiki?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/sabah/wiki"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "사바"
+      },
+      "en": {
+        "title": "Sabah travel sketch · guide",
+        "description": "Sabah travel sketch, Local Watson tips, and independent travel guide. Discover Sabah, Malaysia — a beach and island getaway with photos, videos, and trip planning on GATEO.",
+        "keywords": "Sabah, Malaysia, Sabah travel, beach, island, resort, vacation, GATEO, Sabah travel guide, Sabah travel sketch, Sabah free travel, Sabah local tips, Sabah independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "canonicalUrl": "https://www.gateo.kr/place/sabah/wiki?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/sabah/wiki"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/sabah/wiki?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/sabah/wiki"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Sabah"
       }
     }
   },

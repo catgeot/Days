@@ -9,7 +9,7 @@ const normalizeKey = (s) =>
     .toLowerCase()
     .replace(/\s+/g, '');
 
-/** @type {Map<string, { canonical: string, romanized?: string }>} */
+/** @type {Map<string, { canonical: string, romanized?: string, also?: string[] }>} */
 const QUERY_ALIASES = new Map(
   [
     ['람코', { canonical: '랑코 해변', romanized: 'Lang Co Beach, Vietnam' }],
@@ -22,15 +22,36 @@ const QUERY_ALIASES = new Map(
     ['타카마스', { canonical: '다카마스', romanized: 'Takamatsu, Japan' }],
     ['타카마츠', { canonical: '다카마스', romanized: 'Takamatsu, Japan' }],
     ['다카마츠', { canonical: '다카마스', romanized: 'Takamatsu, Japan' }],
-    ['사바섬', { canonical: '사바섬', romanized: 'Saba, Caribbean Netherlands' }],
-    ['사바 섬', { canonical: '사바섬', romanized: 'Saba, Caribbean Netherlands' }],
-    ['saba island', { canonical: 'Saba', romanized: 'Saba, Caribbean Netherlands' }],
+    [
+      '사바섬',
+      {
+        canonical: '사바',
+        romanized: 'Sabah, Malaysia',
+        also: ['Saba, Caribbean Netherlands'],
+      },
+    ],
+    [
+      '사바 섬',
+      {
+        canonical: '사바',
+        romanized: 'Sabah, Malaysia',
+        also: ['Saba, Caribbean Netherlands'],
+      },
+    ],
+    [
+      'saba island',
+      {
+        canonical: 'Saba',
+        romanized: 'Saba, Caribbean Netherlands',
+        also: ['Sabah, Malaysia'],
+      },
+    ],
   ].map(([key, value]) => [normalizeKey(key), value]),
 );
 
 /**
  * @param {string} query
- * @returns {{ canonical: string, romanized?: string } | null}
+ * @returns {{ canonical: string, romanized?: string, also?: string[] } | null}
  */
 export function resolveExploreSearchAlias(query) {
   const key = normalizeKey(query);
@@ -69,6 +90,7 @@ export function buildMapboxSearchQueries(query) {
   const alias = resolveExploreSearchAlias(q);
   if (alias?.canonical) push(alias.canonical);
   if (alias?.romanized) push(alias.romanized);
+  for (const extra of alias?.also || []) push(extra);
   return out;
 }
 

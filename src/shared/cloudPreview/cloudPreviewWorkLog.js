@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '자킨토스 검색',
-  sessionNo: 2,
-  sessionPhase: 'Preview QA',
+  sessionNo: 4,
+  sessionPhase: '사바섬 여행지 동명',
   branch: 'cursor/zakynthos-search-e84a',
   previewPath: '/',
   qaShareSlug: 'zakynthos',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-06-zakynthos-4-sabah-homonym',
+    session: '자킨토스 검색 #4, 사바섬 Preview QA',
+    title: '사바섬 — 말레이시아 사바 여행지 + 카리브 사바 동명',
+    detail:
+      '여행 프로「사바섬」은 말레이시아 사바주(코타키나발루·BKI). Mapbox만 쓰면 카리브 네덜란드 Saba 한 장만 나옴. SSOT 사바를 앞에 두고, 멀리 떨어진 카리브 사바는 선택 카드로 유지. 한국 시크 사원·사보섬은 1순위 아님. Preview /qa/zakynthos — 탐색창 사바섬 → 사바(말레이시아) 여행지 · (있으면) Saba 카리브.',
+    at: '2026-09-06T11:20:00.000Z',
+  },
   {
     id: '2026-09-06-zakynthos-2-uiplace-en',
     session: '자킨토스 검색 #2, Preview QA',

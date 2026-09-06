@@ -56,6 +56,7 @@ export const TRAVEL_SPOT_COAST_OVERRIDES = {
   'hong-kong': { coastKind: 'coastal-city', seaPrimary: 'south-china-sea' },
   macau: { coastKind: 'coastal-city', seaPrimary: 'south-china-sea' },
   'kota-kinabalu': { coastKind: 'coastal-city', seaPrimary: 'south-china-sea', seaIds: ['south-china-sea', 'celebes'] },
+  sabah: { coastKind: 'coastal-city', seaPrimary: 'south-china-sea', seaIds: ['south-china-sea', 'celebes'] },
   brunei: { coastKind: 'coastal-city', seaPrimary: 'south-china-sea' },
   boracay: { coastKind: 'island', seaPrimary: 'philippine-sea', seaIds: ['philippine-sea', 'south-china-sea'] },
   cebu: { coastKind: 'island', seaPrimary: 'philippine-sea' },

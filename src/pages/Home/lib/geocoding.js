@@ -127,6 +127,7 @@ export function expandForwardQueryAliases(query) {
   const explore = resolveExploreSearchAlias(q);
   if (explore?.canonical) add(explore.canonical);
   if (explore?.romanized) add(explore.romanized);
+  for (const extra of explore?.also || []) add(extra);
 
   return out;
 }

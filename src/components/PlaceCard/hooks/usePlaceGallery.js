@@ -49,6 +49,8 @@ const FALLBACK_DICTIONARY = {
   "아마존 분지": "Amazon Basin",
   "갈라파고스": "Galapagos Islands",
   "이스터 섬": "Easter Island",
+  "사바": "Sabah",
+  "사바섬": "Sabah",
   "세렝게티": "Serengeti",
   "통가": "Tonga",
   "투발루": "Tuvalu",

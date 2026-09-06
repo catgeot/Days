@@ -7416,5 +7416,35 @@ export const TRAVEL_SPOTS = [
       "슈리성",
       "OKA"
     ]
+  },
+  {
+    "id": 395,
+    "slug": "sabah",
+    "name": "사바",
+    "name_en": "Sabah",
+    "country": "말레이시아",
+    "country_en": "Malaysia",
+    "lat": 5.9804,
+    "lng": 116.0735,
+    "tier": 2,
+    "popularity": 76,
+    "continent": "asia",
+    "categories": [
+      "paradise",
+      "nature",
+      "adventure"
+    ],
+    "primaryCategory": "paradise",
+    "category": "paradise",
+    "showOnGlobe": false,
+    "denseRegion": "east-asia",
+    "desc": "말레이시아 보르네오 북부의 사바주입니다. 코타키나발루를 거점으로 키나발루 산·세피록 오랑우탄·근해 섬을 여행하며, 관문은 코타키나발루공항(BKI)입니다. 카리브해 네덜란드령 사바섬과는 다른 여행지입니다.",
+    "keywords": [
+      "사바섬",
+      "사바주",
+      "키나발루",
+      "세피록",
+      "BKI"
+    ]
   }
 ];

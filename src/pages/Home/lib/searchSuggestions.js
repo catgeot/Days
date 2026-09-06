@@ -35,6 +35,7 @@ import {
 } from './citiesSearch';
 import { searchBoxForward, searchBoxTypesForQuery } from './mapboxSearchBox';
 import { buildMapboxSearchQueries } from './exploreSearchAliases';
+import { isDistinctTravelPlace } from './travelSearchHomonyms';
 
 const normalizeKey = (s) =>
   String(s ?? '')
@@ -69,6 +70,40 @@ function pushUnique(out, seen, item) {
   if (!k || seen.has(k)) return;
   seen.add(k);
   out.push(item);
+}
+
+/**
+ * SSOT 여행지 Enter 카드에, 멀리 떨어진 Mapbox 동명을 붙인다 (사바↔카리브 사바).
+ * @param {string} query
+ * @param {object[]} ssotCandidates
+ */
+export async function collectDistinctMapboxHomonyms(query, ssotCandidates) {
+  const anchors = (ssotCandidates || []).filter(Boolean);
+  if (!anchors.length) return [];
+
+  const extras = [];
+  const seen = new Set(anchors.map(dedupeKey).filter(Boolean));
+  const queries = buildMapboxSearchQueries(query);
+  const searchBoxTypes = searchBoxTypesForQuery(query);
+
+  try {
+    for (const mq of queries) {
+      const remote = await searchBoxForward(mq, {
+        limit: 5,
+        types: searchBoxTypes,
+      });
+      for (const item of remote || []) {
+        const k = dedupeKey(item);
+        if (!k || seen.has(k)) continue;
+        if (!isDistinctTravelPlace(item, anchors)) continue;
+        seen.add(k);
+        extras.push(item);
+      }
+    }
+  } catch {
+    return extras;
+  }
+  return extras.slice(0, 3);
 }
 
 /**
@@ -437,7 +472,16 @@ export async function buildCuratedEnterDisambiguation(query) {
 
   const querySpot = resolveTravelSpotFromSearchQuery(q);
   if (querySpot) {
-    return ensureDisambiguation(q, [spotToSuggestion(querySpot)], `'${querySpot.name}' → 이 여행지로 갈까요?`);
+    const ssot = [spotToSuggestion(querySpot)];
+    const extras = await collectDistinctMapboxHomonyms(q, ssot);
+    if (extras.length) {
+      return ensureDisambiguation(
+        q,
+        [...ssot, ...extras],
+        `'${q}' → 원하는 장소를 선택하세요`,
+      );
+    }
+    return ensureDisambiguation(q, ssot, `'${querySpot.name}' → 이 여행지로 갈까요?`);
   }
 
   const seaHit = resolveSeaBasinFromQuery(q);

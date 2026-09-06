@@ -146,6 +146,7 @@
     "smoke:sea-basin-search": "node scripts/smoke-sea-basin-search.mjs",
     "smoke:explore-search-aliases": "node scripts/smoke-explore-search-aliases.mjs",
     "smoke:zakynthos-search": "node scripts/smoke-zakynthos-search.mjs",
+    "smoke:sabah-search": "node scripts/smoke-sabah-search.mjs",
     "smoke:sea-basin-rail": "node scripts/smoke-sea-basin-rail.mjs",
     "audit:ferries": "node scripts/audit-ferry-routes.mjs",
     "generate:airports": "node scripts/generate-travel-spot-airports.mjs",

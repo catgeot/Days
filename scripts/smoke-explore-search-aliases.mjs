@@ -70,14 +70,22 @@ assert.ok(
 );
 
 const sabaAlias = resolveExploreSearchAlias('사바섬');
-assert.ok(sabaAlias?.romanized?.includes('Caribbean Netherlands'), '사바섬 → Saba Caribbean');
-assert.equal(resolveExploreSearchAlias('사바'), null, 'bare 사바 is not aliased (Sabah/Sanaa 모호)');
+assert.ok(sabaAlias?.romanized?.includes('Sabah, Malaysia'), '사바섬 → Sabah Malaysia');
+assert.ok(
+  sabaAlias?.also?.some((q) => /Saba,\s*Caribbean Netherlands/i.test(q)),
+  '사바섬 also → Caribbean Saba',
+);
+assert.equal(resolveExploreSearchAlias('사바'), null, 'bare 사바 is not a Mapbox alias');
 
 const sabaQueries = buildMapboxSearchQueries('사바섬');
 assert.ok(sabaQueries.includes('사바섬'), '사바섬 queries keep original');
 assert.ok(
+  sabaQueries.some((q) => /Sabah,\s*Malaysia/i.test(q)),
+  '사바섬 mapbox queries include Sabah Malaysia',
+);
+assert.ok(
   sabaQueries.some((q) => /Saba,\s*Caribbean Netherlands/i.test(q)),
-  '사바섬 mapbox queries include romanized',
+  '사바섬 mapbox queries include Caribbean Saba',
 );
 
 assert.equal(searchBoxTypesForQuery('사바섬'), SEARCH_BOX_ISLAND_TYPES);

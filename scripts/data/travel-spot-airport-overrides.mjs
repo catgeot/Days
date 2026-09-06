@@ -977,6 +977,14 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     bannerNote:
       '앙코르 권역(SAI)은 구 REP 폐쇄 후 관문입니다. 인천 직항은 드물고, 베트남항공 등 호치민(SGN)·하노이(HAN) 경유 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.'
   },
+  sabah: {
+    primaryIatas: ['BKI'],
+    preferredLinkIata: 'BKI',
+    confidence: 'high',
+    rationale: '사바주 관문 코타키나발루(BKI)',
+    bannerNote:
+      '말레이시아 사바는 보통 코타키나발루공항(BKI)이 관문입니다. 국제선은 쿠알라룸푸르(KUL) 경유가 흔합니다. 카리브해 네덜란드령 사바(SAB)와 도착 공항이 다릅니다. 티켓의 최종 도착 코드를 확인해 주세요.',
+  },
   borneo: {
     primaryIatas: ['BKI', 'KCH', 'KUL'],
     preferredLinkIata: 'BKI',
