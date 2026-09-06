@@ -16,13 +16,10 @@
     },
     "siteNotice": {
       "refreshHeader": "Update",
-      "systemHeader": "Notice",
       "refreshTitle": "A new version is available",
       "refreshBody": "Refresh the page to use the latest features.",
       "close": "Close",
-      "reload": "Refresh",
-      "pastNotices": "Past notices",
-      "dismissPermanent": "Don't show again"
+      "reload": "Refresh"
     },
     "auth": {
       "signIn": "Sign in",

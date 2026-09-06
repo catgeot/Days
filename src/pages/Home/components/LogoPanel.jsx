@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { X, LogIn, LogOut, Plane, Star, BookOpen, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +8,6 @@ import { useReport } from '../../../context/ReportContext';
 import { usePlaceGallery } from '../../../components/PlaceCard/hooks/usePlaceGallery';
 import { hydrateLocationFromSavedTrip, getSavedTripDisplayName } from '../lib/placeRouteHydrate';
 import FooterModal from './FooterModal';
-import { OPEN_UPDATES_LIST_EVENT } from '../../../shared/lib/siteNoticeEvents';
 
 const DEFAULT_THUMB =
   'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=400&q=80';
@@ -65,12 +64,6 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
     setActiveFooterTab(tab);
     setIsFooterOpen(true);
   };
-
-  useEffect(() => {
-    const handleOpenUpdates = () => handleOpenFooter('updates');
-    window.addEventListener(OPEN_UPDATES_LIST_EVENT, handleOpenUpdates);
-    return () => window.removeEventListener(OPEN_UPDATES_LIST_EVENT, handleOpenUpdates);
-  }, []);
 
   return (
     <>

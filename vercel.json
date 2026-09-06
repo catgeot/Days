@@ -6,6 +6,11 @@
       "permanent": true
     },
     {
+      "source": "/qa/updates",
+      "destination": "https://days-git-cursor-updates-0e16-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
       "source": "/qa/gallery-related",
       "destination": "https://days-git-cursor-gallery-scroll-76a6-catgeots-projects.vercel.app/place/paris/gallery",
       "permanent": false
