@@ -2,6 +2,13 @@
 
 직전: [`2026-09-05-project-log.md`](./2026-09-05-project-log.md)
 
+## 자킨토스 검색 — PR #196 merge ✅
+
+- **PR [#196](https://github.com/catgeot/Days/pull/196)** FF merge → main `9299f3e8` (사람 요청)
+- **PROD** `https://www.gateo.kr/` — 사바섬 Enter: 말레이시아 사바 앞 · 카리브 Saba 둘째
+- **주제 종료** — 작업 로그 `active: false` · `/qa/zakynthos` → PROD `/`
+- 자킨토스는 여행지 SSOT가 아님. #1(`b651`)에서 등록했다가 #2(`e84a`)에서 되돌림. 검색은 Mapbox uiPlace 카드(영문 Zakynthos)
+
 ## 자킨토스 검색 #5, 사바섬 카리브 Saba 둘째
 
 - **브랜치** `cursor/zakynthos-search-e84a` · tip `75979aa7` · **PR [#196](https://github.com/catgeot/Days/pull/196)**
