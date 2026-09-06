@@ -2,6 +2,22 @@
 
 직전: [`2026-09-05-project-log.md`](./2026-09-05-project-log.md)
 
+## 자킨토스 검색 #1, SSOT 등록
+
+- **브랜치** `cursor/zakynthos-search-b651` · tip `3a27c4dc` · **PR [#195](https://github.com/catgeot/Days/pull/195)**
+- 배포본 탐색창「자킨토스」가 Mapbox 한글 도시(영문 없음·인물 갤러리)로 열리던 문제 → SSOT 여행지 + 자킨토시/잔테/Zante 별칭
+- **VERIFY** `smoke:zakynthos-search` · `audit:airports` none: 0 · `audit:ferries` · `vite build` PASS
+- **다음** 사람 Preview `/qa/zakynthos` · git Preview `/place/zakynthos`
+
+```
+자킨토스 검색 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/zakynthos-search-b651 · PR #195 · Preview /qa/zakynthos
+금지: UI 리디자인 · orientation=landscape 재도입
+작업: 탐색창 자킨토스·자킨토시 → (Zakynthos) 영문·여행지 뱃지·해변 갤러리
+```
+
 ## 갤러리 인물 제외 #1, 단일 인물 필터
 
 - **브랜치** `cursor/gallery-c260` · tip `7decd79c` · **PR [#187](https://github.com/catgeot/Days/pull/187)**
