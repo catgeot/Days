@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '갤러리 연관 스크롤',
+  title: '릴리스 노트 푸터',
   sessionNo: 1,
-  sessionPhase: '여행지 전환 상단',
-  branch: 'cursor/gallery-scroll-76a6',
-  previewPath: '/place/paris/gallery',
-  qaShareSlug: 'gallery-related',
+  sessionPhase: '자동 팝업 제거',
+  branch: 'cursor/updates-0e16',
+  previewPath: '/',
+  qaShareSlug: 'updates',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-06-updates-1-no-popup',
+    session: '릴리스 노트 푸터 #1, 자동 팝업 제거',
+    title: '홈 진입 시 릴리스 노트 모달 없음',
+    detail:
+      '신규·Preview 방문마다 뜨던 릴리스 노트 팝업을 제거. 내역은 로고 패널 푸터 Updates에만 둠. 배포 후 새로고침 안내는 유지. Preview /qa/updates — 홈에 공지 모달이 안 뜨고, 로고→Updates에 기존 목록이 있는지.',
+    at: '2026-09-06T04:15:00.000Z',
+  },
   {
     id: '2026-09-06-gallery-related-1-scroll-top',
     session: '갤러리 연관 스크롤 #1, 여행지 전환 상단',
