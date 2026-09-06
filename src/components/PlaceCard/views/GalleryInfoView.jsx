@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Camera, MapPin, Compass, Sparkles } from 'lucide-react';
 import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
@@ -12,6 +12,8 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
     const { i18n } = useTranslation();
     const { locale } = useLocale();
     const isPhotoMode = !!selectedImg;
+    const summaryScrollRef = useRef(null);
+    const showRelatedDock = !isPhotoMode && relatedPlaces.length > 0;
 
     const description = useMemo(() => {
         if (selectedImg?.alt_description) {
@@ -28,8 +30,12 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
         [selectedImg],
     );
 
+    useEffect(() => {
+        if (summaryScrollRef.current) summaryScrollRef.current.scrollTop = 0;
+    }, [selectedPlace?.id, selectedPlace?.name, selectedPlace?.slug, selectedImg]);
+
     return (
-        <div className="animate-fade-in space-y-8 min-h-[200px] max-h-[400px] overflow-y-auto pr-1 custom-scrollbar">
+        <div className="animate-fade-in flex min-h-0 flex-1 flex-col gap-3">
             <style>{`
                 .custom-scrollbar::-webkit-scrollbar { width: 2px; }
                 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -39,8 +45,7 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
                 }
             `}</style>
 
-             {/* Header */}
-             <div className={`items-center justify-between border-b border-white/5 pb-3 sticky top-0 bg-[#1a1a1a]/40 backdrop-blur-md z-10 ${!isPhotoMode ? 'hidden xl:flex' : 'flex'}`}>
+             <div className={`shrink-0 items-center justify-between border-b border-white/5 pb-3 bg-[#1a1a1a]/40 backdrop-blur-md z-10 ${!isPhotoMode ? 'hidden xl:flex' : 'flex'}`}>
                  <span className={`text-[11px] font-semibold uppercase tracking-[0.25em] flex items-center gap-2.5 ${
                      isPhotoMode ? 'text-blue-400/90' : 'text-gray-500'
                  }`}>
@@ -57,9 +62,12 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
                     )}
                  </span>
              </div>
-             
-             {/* Content Area */}
-             <div className="px-0.5">
+
+             <div
+                ref={summaryScrollRef}
+                className="min-h-0 flex-1 overflow-y-auto pr-1 custom-scrollbar"
+             >
+                <div className="px-0.5">
                 {isPhotoMode ? (
                     <div className="animate-fade-in space-y-4">
                         <p className="text-[16px] text-gray-200 leading-relaxed font-normal opacity-90 tracking-tight">
@@ -94,7 +102,7 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
                         )}
                     </div>
                 ) : (
-                    <div className="animate-fade-in space-y-10">
+                    <div className="animate-fade-in space-y-5">
                         <div className="space-y-4">
                             {(overviewQuery || curationOverview) && (
                                 <div className="rounded-xl border border-violet-400/25 bg-violet-500/10 px-3.5 py-3.5">
@@ -119,47 +127,51 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
                                 />
                             )}
                         </div>
-                        
-                        <div className="pt-6 border-t border-white/5">
-                            {selectedPlace?.keywords && (
-                                <div className="flex flex-wrap gap-2 mb-5">
-                                    {selectedPlace.keywords.map((tag, idx) => (
-                                        <span 
-                                            key={`tag-${idx}`} 
-                                            className="px-2 py-0.5 rounded border transition-all duration-300 cursor-default font-medium text-[11px] bg-white/5 border-white/10 text-gray-400 hover:text-blue-400 hover:border-blue-400/30 hover:bg-blue-400/5"
-                                        >
-                                            #{tag}
-                                        </span>
-                                    ))}
-                                </div>
-                            )}
-                            
-                            {relatedPlaces.length > 0 && (
-                                <div className="flex flex-wrap gap-2">                                   
-                                    {relatedPlaces.map((place, idx) => (
-                                        <button 
-                                            key={`rel-${idx}`} 
-                                            onClick={() => onRelatedClick && onRelatedClick(place.data, place.isBridge)}
-                                            className={`group px-3 py-1.5 rounded-lg border transition-all duration-300 font-medium text-[12px] flex items-center gap-1.5 ${
-                                                place.isBridge 
-                                                ? 'bg-fuchsia-500/10 border-fuchsia-500/30 text-fuchsia-300 hover:text-white hover:border-fuchsia-400/60 hover:bg-fuchsia-500/30'
-                                                : 'bg-blue-500/5 border-blue-500/20 text-gray-300 hover:text-white hover:border-blue-400/50 hover:bg-blue-500/20'
-                                            }`}
-                                        >
-                                            {place.isBridge ? (
-                                                <Sparkles size={13} className="text-fuchsia-400 group-hover:animate-pulse" />
-                                            ) : (
-                                                <Compass size={13} className="text-blue-400 group-hover:animate-pulse" />
-                                            )}
-                                            {getLocalizedPlaceName(place.data, i18n.language) || place.name}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
+
+                        {selectedPlace?.keywords && (
+                            <div className="flex flex-wrap gap-2 border-t border-white/5 pt-4">
+                                {selectedPlace.keywords.map((tag, idx) => (
+                                    <span
+                                        key={`tag-${idx}`}
+                                        className="px-2 py-0.5 rounded border transition-all duration-300 cursor-default font-medium text-[11px] bg-white/5 border-white/10 text-gray-400 hover:text-blue-400 hover:border-blue-400/30 hover:bg-blue-400/5"
+                                    >
+                                        #{tag}
+                                    </span>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 )}
+                </div>
              </div>
+
+            {showRelatedDock && (
+                <div
+                    data-gallery-related-dock
+                    className="shrink-0 border-t border-white/5 pt-3"
+                >
+                    <div className="flex flex-wrap gap-2">
+                        {relatedPlaces.map((place, idx) => (
+                            <button
+                                key={`rel-${idx}`}
+                                onClick={() => onRelatedClick && onRelatedClick(place.data, place.isBridge)}
+                                className={`group px-3 py-1.5 rounded-lg border transition-all duration-300 font-medium text-[12px] flex items-center gap-1.5 ${
+                                    place.isBridge
+                                    ? 'bg-fuchsia-500/10 border-fuchsia-500/30 text-fuchsia-300 hover:text-white hover:border-fuchsia-400/60 hover:bg-fuchsia-500/30'
+                                    : 'bg-blue-500/5 border-blue-500/20 text-gray-300 hover:text-white hover:border-blue-400/50 hover:bg-blue-500/20'
+                                }`}
+                            >
+                                {place.isBridge ? (
+                                    <Sparkles size={13} className="text-fuchsia-400 group-hover:animate-pulse" />
+                                ) : (
+                                    <Compass size={13} className="text-blue-400 group-hover:animate-pulse" />
+                                )}
+                                {getLocalizedPlaceName(place.data, i18n.language) || place.name}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 });

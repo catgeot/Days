@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '자킨토스 검색',
-  sessionNo: 7,
-  sessionPhase: 'Preview QA',
-  branch: 'cursor/zakynthos-search-e84a',
-  previewPath: '/',
-  qaShareSlug: 'zakynthos',
+  title: '갤러리 좌측 패널',
+  sessionNo: 1,
+  sessionPhase: '공간 조정',
+  branch: 'cursor/gallery-panel-032e',
+  previewPath: '/place/paris/gallery',
+  qaShareSlug: 'gallery-panel',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-06-gallery-panel-1-info-dock',
+    session: '갤러리 좌측 패널 #1, 공간 조정',
+    title: 'PC 정보 패널 — 연관 검색어가 무니 위에 보이게',
+    detail:
+      '본문 써머리가 길어지면 400px 안쪽 스크롤에 연관 칩이 숨고, 무니 입력창 위 공간은 비어 있었음. 써머리만 남은 높이를 쓰고 연관 칩은 스크롤 밖(무니 바로 위)에 둠. Preview /qa/gallery-panel — 파리 갤러리 PC 좌측에서 스크롤 없이 하단 연관 칩이 보이는지.',
+    at: '2026-09-06T12:30:00.000Z',
+  },
   {
     id: '2026-09-06-zakynthos-7-restore-dropdown',
     session: '자킨토스 검색 #7, Preview QA',
