@@ -35,7 +35,8 @@ import {
 } from '../lib/exploreRecentHistory';
 import { buildHybridSearchSuggestions, buildLocalSearchSuggestions } from '../lib/searchSuggestions';
 import { isSearchDisambiguation } from '../lib/cityAttractionHubs';
-import { searchBoxRetrieve } from '../lib/mapboxSearchBox';
+import { hydrateSearchBoxLatinName } from '../lib/mapboxSearchBox';
+import { needsLatinPlaceName } from '../lib/uiPlaceAssetQuery';
 import { syncHomeViewportAfterInput } from '../../../shared/lib/mobileViewport';
 import {
   localizedExploreContinentLabel,
@@ -402,17 +403,18 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     setIsAILoading(true);
     setDisambiguation(null);
     setIsSearchHistoryOpen(false);
+    let keepChoiceDropdown = false;
     try {
       const result = await onSearch(finalQuery);
       if (isSearchDisambiguation(result)) {
         setDisambiguation(result);
-        // 선택 카드가 열린 뒤에도 키보드가 남아 있으면 한 번 더
+        keepChoiceDropdown = true;
         dismissSearchKeyboard();
         return;
       }
     } finally {
       setIsAILoading(false);
-      setIsSearchHistoryOpen(false);
+      setIsSearchHistoryOpen(keepChoiceDropdown);
       setActiveQuickSection(null);
     }
   };
@@ -433,14 +435,14 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     }
 
     let place = item;
-    if (item.needsRetrieve && item.mapboxId) {
-      setIsAILoading(true);
-      try {
-        const retrieved = await searchBoxRetrieve(item.mapboxId, item.sessionToken);
-        if (retrieved) place = { ...item, ...retrieved, needsRetrieve: false };
-      } finally {
-        setIsAILoading(false);
-      }
+    const needsLatinHydrate = Boolean(
+      item.mapboxId && (item.needsRetrieve || needsLatinPlaceName(item)),
+    );
+    if (needsLatinHydrate) setIsAILoading(true);
+    try {
+      place = await hydrateSearchBoxLatinName(item);
+    } finally {
+      if (needsLatinHydrate) setIsAILoading(false);
     }
 
     const lat = Number(place?.lat);
@@ -1216,7 +1218,11 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
               <SearchSuggestionList
                 variant="popover"
                 query={query}
-                items={hybridSuggestions}
+                items={
+                  disambiguation?.candidates?.length
+                    ? disambiguation.candidates
+                    : hybridSuggestions
+                }
                 loading={suggestionsLoading}
                 onSelect={(item) => {
                   setIsSearchHistoryOpen(false);

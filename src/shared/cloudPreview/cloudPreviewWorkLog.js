@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '여행사 목록',
-  sessionNo: 3,
+  title: '자킨토스 검색',
+  sessionNo: 7,
   sessionPhase: 'Preview QA',
-  branch: 'cursor/agencies-85ab',
+  branch: 'cursor/zakynthos-search-e84a',
   previewPath: '/',
-  qaShareSlug: 'agencies',
+  qaShareSlug: 'zakynthos',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -24,12 +24,28 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-06-zakynthos-7-restore-dropdown',
+    session: '자킨토스 검색 #7, Preview QA',
+    title: '자킨토스 타이핑 드롭다운을 다시 연다',
+    detail:
+      '왼쪽 자킨토스 카드는 맞았고 드롭다운이 사라진 것은 과교정. #6이 Enter 뒤 선택 카드가 있으면 검색바 재오픈을 막아 자동완성이 안 됨. 포커스·클릭·타이핑은 다시 열고, Enter 선택 카드와 드롭다운은 같은 핀(Zakynthos)을 쓴다. Preview /qa/zakynthos — 자킨토스 타이핑 자동완성 · 좌측 카드 해변.',
+    at: '2026-09-06T12:05:00.000Z',
+  },
+  {
     id: '2026-09-06-agencies-3-collapsed',
     session: '여행사 목록 #3, Preview QA',
     title: '로고 패널 — 방문한 여행사 접힘 기본',
     detail:
       '로고 패널을 여행사 리스트가 가득 채우던 문제를 접힌 「방문한 여행사」로 바꿈. 탐색창 칩 명칭도 「방문한 여행사」(기록 있으면 개수). Preview /qa/agencies — 로고 열어 접힘 확인 후 펼침, 탐색 칩 명칭.',
     at: '2026-09-06T11:50:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-6-dropdown-latin',
+    session: '자킨토스 검색 #6, 사바섬 Preview QA',
+    title: '자킨토스 드롭다운과 선택 카드를 같은 핀으로',
+    detail:
+      '타이핑 드롭다운은 Search Box 한글 도시, Enter 카드는 지오코딩 Zakynthos라 클릭 경로가 갈라짐. 한글 place_id로 열리면 인물 갤러리 고착. ko/en을 좌표로도 붙이고, 드롭다운 선택 전에 retrieve(en)로 라틴 name_en·slug를 넣음. Enter 후 선택 카드가 떠 있으면 검색바가 다른 키워드 드롭다운을 다시 열지 않음. Preview /qa/zakynthos — 자킨토스 드롭다운·좌측 카드 모두 (Zakynthos) 해변 · 사바섬 회귀.',
+    at: '2026-09-06T11:45:00.000Z',
   },
   {
     id: '2026-09-06-zakynthos-5-caribbean-saba',

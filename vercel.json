@@ -2,7 +2,7 @@
   "redirects": [
     {
       "source": "/qa/zakynthos",
-      "destination": "https://www.gateo.kr/",
+      "destination": "https://days-git-cursor-zakynthos-search-e84a-catgeots-projects.vercel.app/",
       "permanent": false
     },
     {
