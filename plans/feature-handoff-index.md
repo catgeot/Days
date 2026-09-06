@@ -72,20 +72,20 @@
 
 | | |
 |--|--|
-| **상태** | **#11 push** · tip `03a07a7c` · PR [#199](https://github.com/catgeot/Days/pull/199) · **#12 사람 Preview QA** — 그리스 표기·해변 사진 |
+| **상태** | **#12 push** · tip `795c16ec` · PR [#199](https://github.com/catgeot/Days/pull/199) · **#13 사람 Preview QA** — 그리스 표기·해변 사진 |
 | **브랜치** | `cursor/zakynthos-search-e84a` |
-| **tip** | `03a07a7c` |
+| **tip** | `795c16ec` |
 | **PR** | [#199](https://github.com/catgeot/Days/pull/199) |
 | **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
 | **Preview** | `/qa/zakynthos` → git Preview `/` (방문 카드 그리스 · 해변 사진) |
-| **소유** | `visitedPlaceSearch.js` · `visitedPlaceSearchLookup.js` · `mapboxSearchBox.js` · `useHomeHandlers.js` Smart Search |
+| **소유** | `visitedPlaceSearch.js` · `visitedPlaceSearchLookup.js` · `galleryPortraitFilter.js` · `useHomeHandlers.js` Smart Search |
 | **금지** | UI 리디자인 · 자킨토스 SSOT 재등록 · `orientation=landscape` 재도입 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `smoke:visited-place-search` · `smoke:unseen-place-search` · `smoke:zakynthos-search` · `smoke:sabah-search` · `vite build` |
+| **VERIFY** | `smoke:visited-place-search` · `smoke:unseen-place-search` · `smoke:zakynthos-search` · `smoke:sabah-search` · `smoke:gallery-portrait-filter` · `vite build` |
 
 **다음 제시어**:
 
 ```
-자킨토스 검색 #12, Preview QA
+자킨토스 검색 #13, Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-06-project-log.md
 브랜치 cursor/zakynthos-search-e84a · PR #199 · Preview /qa/zakynthos
