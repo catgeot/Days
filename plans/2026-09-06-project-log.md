@@ -2,6 +2,22 @@
 
 직전: [`2026-09-05-project-log.md`](./2026-09-05-project-log.md)
 
+## 자킨토스 검색 #5, 사바섬 카리브 Saba 둘째
+
+- **브랜치** `cursor/zakynthos-search-e84a` · tip `75979aa7` · **PR [#196](https://github.com/catgeot/Days/pull/196)**
+- Preview QA: 사바섬 Enter가 말레이시아 사바만. Mapbox ko「사바」가 SSOT와 이름 충돌. 카리브 네덜란드 Saba를 고정 동명으로 둘째 카드에 유지
+- **VERIFY** `smoke:sabah-search` · `smoke:explore-search-aliases` · `smoke:zakynthos-search` · `vite build` PASS
+- **다음** 사람 Preview `/qa/zakynthos` — 사바섬 → 사바(말레이시아) 앞 · 사바섬(Saba, 네덜란드) 둘째
+
+```
+자킨토스 검색 #6, 사바섬 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/zakynthos-search-e84a · PR #196 · Preview /qa/zakynthos
+금지: UI 리디자인 · 자킨토스 SSOT 재등록 · orientation=landscape 재도입
+작업: 탐색창 사바섬 Enter → 사바(말레이시아) 앞 · 사바섬(Saba, 네덜란드) 둘째 · 한국 사원 아님 · 자킨토스 회귀
+```
+
 ## 자킨토스 검색 #4, 사바섬 말레이시아 여행지
 
 - **브랜치** `cursor/zakynthos-search-e84a` · tip `82c2acfb` · **PR [#196](https://github.com/catgeot/Days/pull/196)**
