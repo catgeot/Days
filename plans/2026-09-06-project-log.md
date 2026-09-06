@@ -35,3 +35,27 @@
 금지: 상시 휴지통 버튼 · PC Ctrl+더블클릭 제거 · UI 리디자인
 작업: 모바일 타일 꾹 → 제거 확인 · 짧은 탭은 확대 · 확대 보기도 길게 누르기 · PC Ctrl+더블클릭 유지
 ```
+
+## 갤러리 사진 관리 — PR #188 merge ✅
+
+- **PR [#188](https://github.com/catgeot/Days/pull/188)** squash merge → main `d575c9a7`
+- **PROD** `https://www.gateo.kr/place/paris/gallery`
+- **주제 종료** — 모바일 길게 누르기 제거는 PROD
+
+## 갤러리 캐시 신선도 #1, DB 즉시 + 스톡 SWR
+
+- **브랜치** `cursor/gallery-swr-6b36` · tip `b7ee61e5` · **PR [#189](https://github.com/catgeot/Days/pull/189)**
+- DB/세션 **즉시 표시** · 갤러리 탭만 **7일 Unsplash SWR**(hero·`image_url` 유지) · 검색 카드 `thumbnailOnly` · 제거 사진은 SWR 재유입 금지
+- **VERIFY** `smoke:gallery-cache-policy` · `smoke:place-gallery-pexels` · `smoke:gallery-portrait-filter` · `smoke:gallery-photo-manage` · `vite build` PASS
+- **다음** 사람 Preview `/qa/gallery-fresh` · git Preview `/place/paris/gallery`
+
+**다음 제시어**:
+
+```
+갤러리 캐시 신선도 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/gallery-swr-6b36 · PR #189 · Preview /qa/gallery-fresh
+금지: image_url SWR 덮어쓰기 · Tour 우세 스톡 치환 · 더보기 DB upsert · UI 리디자인
+작업: 파리 갤러리 즉시 표시 · 대표 사진 유지 · 새 장이 뒤에 붙는지 · 검색/버킷 썸네일 흔들림 없음
+```

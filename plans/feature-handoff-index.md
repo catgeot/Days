@@ -14,30 +14,44 @@
 
 ## 활성 목록
 
-### 갤러리 사진 관리
+### 갤러리 캐시 신선도
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `36992c74` · PR [#188](https://github.com/catgeot/Days/pull/188) · **#2 사람 Preview QA** |
-| **브랜치** | `cursor/gallery-manage-173f` |
-| **tip** | `36992c74` |
-| **PR** | [#188](https://github.com/catgeot/Days/pull/188) |
+| **상태** | **#1 push** · tip `b7ee61e5` · PR [#189](https://github.com/catgeot/Days/pull/189) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/gallery-swr-6b36` |
+| **tip** | `b7ee61e5` |
+| **PR** | [#189](https://github.com/catgeot/Days/pull/189) |
 | **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
-| **Preview** | `/qa/gallery` → git Preview `/place/paris/gallery` |
-| **소유** | `PlaceGalleryView` · 길게 누르기 · `handleRemoveImage` |
-| **금지** | 상시 휴지통 버튼 · PC Ctrl+더블클릭 제거 · UI 리디자인 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `smoke:gallery-photo-manage` · `smoke:gallery-portrait-filter` · `vite build` |
+| **Preview** | `/qa/gallery-fresh` → git Preview `/place/paris/gallery` |
+| **소유** | `usePlaceGallery` · `galleryCachePolicy.js` · 검색 카드 thumbnailOnly |
+| **금지** | `image_url` SWR 덮어쓰기 · Tour 우세 갤러리 스톡 치환 · 더보기 DB upsert · UI 리디자인 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:gallery-cache-policy` · `smoke:place-gallery-pexels` · `smoke:gallery-portrait-filter` · `smoke:gallery-photo-manage` · `vite build` |
 
 **다음 제시어**:
 
 ```
-갤러리 사진 관리 #2, Preview QA
+갤러리 캐시 신선도 #2, Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-06-project-log.md
-브랜치 cursor/gallery-manage-173f · PR #188 · Preview /qa/gallery
-금지: 상시 휴지통 버튼 · PC Ctrl+더블클릭 제거 · UI 리디자인
-작업: 모바일 타일 꾹 → 제거 확인 · 짧은 탭은 확대 · 확대 보기도 길게 누르기 · PC Ctrl+더블클릭 유지
+브랜치 cursor/gallery-swr-6b36 · PR #189 · Preview /qa/gallery-fresh
+금지: image_url SWR 덮어쓰기 · Tour 우세 스톡 치환 · 더보기 DB upsert · UI 리디자인
+작업: 파리 갤러리 즉시 표시 · 대표 사진 유지 · 새 장이 뒤에 붙는지 · 검색/버킷 썸네일 흔들림 없음
 ```
+
+---
+
+### 갤러리 사진 관리 — main 병합 ✅
+
+| | |
+|--|--|
+| **상태** | **#1 merge ✅** · main `d575c9a7` · PR [#188](https://github.com/catgeot/Days/pull/188) |
+| **브랜치** | `cursor/gallery-manage-173f` · merge `d575c9a7` |
+| **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
+| **PROD** | `https://www.gateo.kr/place/paris/gallery` |
+| **VERIFY** | `smoke:gallery-photo-manage` · `vite build` PASS |
+
+**다음 제시어 없음** (주제 종료). 모바일 길게 누르기 제거는 PROD. `/qa/gallery`는 관리 Preview(구 브랜치) — 신선도 QA는 `/qa/gallery-fresh`.
 
 ---
 
