@@ -2,6 +2,23 @@
 
 직전: [`2026-09-05-project-log.md`](./2026-09-05-project-log.md)
 
+## 자킨토스 검색 #8, 미등록 지명 Geocoding 보강
+
+- **브랜치** `cursor/zakynthos-search-e84a` · tip `c03f3e5c` · **PR [#199](https://github.com/catgeot/Days/pull/199)**
+- 자킨토스·사바 별칭이 아니라 검색 성능. Search Box ko 공백 `.every` 구멍 + 한글 쿼리를 해외 지명이 못 덮으면 Geocoding ko+en을 드롭다운 앞에 붙임. 지명별 SSOT 없음
+- **VERIFY** `smoke:unseen-place-search` LIVE · `smoke:zakynthos-search` · `smoke:sabah-search` · `smoke:explore-search-aliases` · `vite build` PASS · 에이전트 QA: 케팔로니아·시프노스·포르멘테라·파로스·자킨토스
+- **다음** 사람 Preview `/qa/zakynthos` — 미등록 한글 지명 드롭다운·영문 부제 · 자킨토스·사바 회귀
+- **한계** 밀로스·코르푸·앙귈라·쿠라사오·스코펠로스는 Mapbox 인덱스 오탐/공백일 수 있음
+
+```
+자킨토스 검색 #9, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/zakynthos-search-e84a · PR #199 · Preview /qa/zakynthos
+금지: UI 리디자인 · 자킨토스 SSOT 재등록 · orientation=landscape 재도입
+작업: 탐색창 케팔로니아·시프노스·포르멘테라·파로스 → 해외 핀·영문 부제 · 자킨토스·사바섬 회귀
+```
+
 ## 리뷰 연관 여행지 #1, 탭 유지
 
 - **브랜치** `cursor/reviews-related-b9fa` · tip `d73ffc19` · **PR [#201](https://github.com/catgeot/Days/pull/201)**
