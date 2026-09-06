@@ -4,6 +4,7 @@
  */
 
 import { TRAVEL_AGENCIES, getTravelAgencyById } from '../data/travelAgencies.js';
+import { buildGygSearchUrl, getGygHomeUrl } from './gygAffiliateLinks.js';
 
 export const TRAVEL_AGENCY_VISITS_KEY = 'gateo:travel-agencies:v1:visits';
 export const TRAVEL_AGENCY_VISITS_EVENT = 'gateo:travel-agency-visits';
@@ -12,7 +13,7 @@ export const MAX_TRAVEL_AGENCY_VISITS = 12;
 const KIND_FROM_PATH = [
   [/accommodation|\/hotels?|\/hotel\b|숙소/, 'stay'],
   [/\/pkc\b|package/, 'package'],
-  [/experiences|activit|\/tours?\b|\/tna\b/, 'tour'],
+  [/experiences|activit|\/tours?\b|\/tna\b|getyourguide/, 'tour'],
   [/\/flights?\b|\/flight\b/, 'flight'],
   [/car-rental|\/rental/, 'rental'],
   [/esim|airalo|holafly/, 'esim'],
@@ -76,11 +77,65 @@ export function matchTravelAgencyFromUrl(rawHref) {
 export function inferTravelAgencyKind(rawHref) {
   const url = parseHttpUrl(rawHref);
   if (!url) return 'browse';
-  const hay = `${url.pathname} ${url.search}`.toLowerCase();
+  const hay = `${url.hostname} ${url.pathname} ${url.search}`.toLowerCase();
   for (const [re, kind] of KIND_FROM_PATH) {
     if (re.test(hay)) return kind;
   }
   return 'browse';
+}
+
+/**
+ * 위젯 frame URL은 재방문에 부적합 (GYG activities.frame 등).
+ * @param {string} rawHref
+ * @returns {boolean}
+ */
+export function isTravelAgencyWidgetHref(rawHref) {
+  const url = parseHttpUrl(rawHref);
+  if (!url) return false;
+  const host = normalizeHost(url.hostname);
+  if (host.startsWith('widget.')) return true;
+  if (/\.frame$/i.test(url.pathname)) return true;
+  return false;
+}
+
+/**
+ * iframe/data-gyg-* 임베드에서 여행사 식별.
+ * @param {{ src?: string, embedHref?: string, query?: string }} [input]
+ * @returns {{ agency: import('../data/travelAgencies.js').TravelAgency, rawHref: string, isWidget: boolean, query: string } | null}
+ */
+export function describeTravelAgencyEmbed(input = {}) {
+  const src = String(input.src || '').trim();
+  const embedHref = String(input.embedHref || '').trim();
+  const fromSrc = matchTravelAgencyFromUrl(src);
+  const agency = fromSrc || matchTravelAgencyFromUrl(embedHref);
+  if (!agency) return null;
+  const rawHref = fromSrc ? src : embedHref;
+  const query = String(input.query || inferPlaceLabelFromHref(rawHref) || '').trim().slice(0, 80);
+  return {
+    agency,
+    rawHref,
+    isWidget: isTravelAgencyWidgetHref(src) || isTravelAgencyWidgetHref(embedHref),
+    query,
+  };
+}
+
+/**
+ * GYG 위젯 등 iframe 클릭 — frame URL 대신 제휴 홈/검색을 저장.
+ * @param {{ src?: string, embedHref?: string, query?: string }} input
+ * @returns {object[]}
+ */
+export function recordTravelAgencyEmbedVisit(input) {
+  const desc = describeTravelAgencyEmbed(input);
+  if (!desc) return loadTravelAgencyVisits();
+  let href = desc.rawHref;
+  if (desc.isWidget && desc.agency.id === 'getyourguide') {
+    href = desc.query ? buildGygSearchUrl(desc.query) : getGygHomeUrl();
+  }
+  return recordTravelAgencyVisit({
+    href,
+    placeLabel: desc.query,
+    kind: desc.agency.kinds[0] || inferTravelAgencyKind(href),
+  });
 }
 
 /**

@@ -30,6 +30,9 @@ const {
   inferPlaceLabelFromHref,
   loadTravelAgencyVisits,
   recordTravelAgencyVisit,
+  recordTravelAgencyEmbedVisit,
+  describeTravelAgencyEmbed,
+  isTravelAgencyWidgetHref,
   removeTravelAgencyVisit,
   clearTravelAgencyVisits,
   sanitizeTravelAgencyHref,
@@ -48,12 +51,17 @@ assert.equal(matchTravelAgencyFromUrl('https://affiliate.klook.com/redirect?aid=
 assert.equal(matchTravelAgencyFromUrl('https://www.klook.com/ko/car-rentals/')?.id, 'klook');
 assert.equal(matchTravelAgencyFromUrl('https://kr.trip.com/flights/')?.id, 'tripcom');
 assert.equal(matchTravelAgencyFromUrl('https://www.getyourguide.com/')?.id, 'getyourguide');
+assert.equal(matchTravelAgencyFromUrl('https://www.getyourguide.com/ko-kr/?partner_id=LRKVVU4')?.id, 'getyourguide');
+assert.equal(matchTravelAgencyFromUrl('https://www.getyourguide.com/s/?q=Paris')?.id, 'getyourguide');
+assert.equal(matchTravelAgencyFromUrl('https://widget.getyourguide.com/default/activities.frame')?.id, 'getyourguide');
 assert.equal(matchTravelAgencyFromUrl('https://www.gateo.kr/') , null);
 assert.equal(matchTravelAgencyFromUrl('javascript:alert(1)'), null);
 
 assert.equal(inferTravelAgencyKind('https://www.myrealtrip.com/accommodations?q=파리'), 'stay');
 assert.equal(inferTravelAgencyKind('https://www.myrealtrip.com/pkc'), 'package');
 assert.equal(inferTravelAgencyKind('https://kr.trip.com/flights/'), 'flight');
+assert.equal(inferTravelAgencyKind('https://www.getyourguide.com/ko-kr/'), 'tour');
+assert.equal(inferTravelAgencyKind('https://widget.getyourguide.com/default/activities.frame'), 'tour');
 assert.equal(inferPlaceLabelFromHref('https://www.myrealtrip.com/search?q=%ED%8C%8C%EB%A6%AC%20%EC%88%99%EC%86%8C'), '파리 숙소');
 
 assert.deepEqual(loadTravelAgencyVisits(), []);
@@ -91,6 +99,50 @@ assert.deepEqual(clearTravelAgencyVisits(), []);
 
 const ignored = recordTravelAgencyVisit({ href: 'https://www.google.com/search?q=mrt' });
 assert.equal(ignored.length, 0, '비제휴 도메인은 기록하지 않음');
+
+assert.equal(
+  isTravelAgencyWidgetHref('https://widget.getyourguide.com/default/activities.frame'),
+  true,
+);
+assert.equal(isTravelAgencyWidgetHref('https://www.getyourguide.com/ko-kr/'), false);
+
+const embed = describeTravelAgencyEmbed({
+  src: 'about:blank',
+  embedHref: 'https://widget.getyourguide.com/default/activities.frame',
+  query: 'Paris',
+});
+assert.equal(embed?.agency.id, 'getyourguide');
+assert.equal(embed?.isWidget, true);
+assert.equal(embed?.query, 'Paris');
+
+list = recordTravelAgencyEmbedVisit({
+  src: 'https://widget.getyourguide.com/default/activities.frame',
+  embedHref: 'https://widget.getyourguide.com/default/activities.frame',
+  query: 'Paris',
+});
+assert.equal(list[0].agencyId, 'getyourguide');
+assert.equal(list[0].kind, 'tour');
+assert.equal(list[0].placeLabel, 'Paris');
+assert.match(list[0].href, /getyourguide\.com\/s\//);
+assert.doesNotMatch(list[0].href, /widget\.getyourguide/, '위젯 frame URL을 재방문 주소로 저장하지 않음');
+
+list = recordTravelAgencyEmbedVisit({
+  src: '',
+  embedHref: 'https://widget.getyourguide.com/default/city.frame',
+});
+assert.equal(list[0].agencyId, 'getyourguide');
+assert.match(list[0].href, /getyourguide\.com/);
+assert.doesNotMatch(list[0].href, /widget\.getyourguide/);
+
+const capture = readFileSync(join(root, 'src/components/travelAgencies/TravelAgencyVisitCapture.jsx'), 'utf8');
+assert.match(capture, /recordTravelAgencyEmbedVisit/, 'iframe 위젯 방문 기록');
+assert.match(capture, /HTMLIFrameElement/, 'iframe 포커스 포착');
+
+const gygWidget = readFileSync(
+  join(root, 'src/components/PlaceCard/tabs/planner/components/GetYourGuideActivitiesWidget.jsx'),
+  'utf8',
+);
+assert.match(gygWidget, /recordTravelAgencyVisit/, 'GYG 더보기·라벨 클릭 기록');
 
 const panel = readFileSync(join(root, 'src/pages/Home/components/LogoPanel.jsx'), 'utf8');
 assert.match(panel, /TravelAgencyDirectory/, '로고패널에 여행사 목록');

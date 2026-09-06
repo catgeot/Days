@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '여행사 목록',
-  sessionNo: 1,
-  sessionPhase: '재접속 경로',
+  sessionNo: 2,
+  sessionPhase: 'Preview QA',
   branch: 'cursor/agencies-85ab',
   previewPath: '/',
   qaShareSlug: 'agencies',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-06-agencies-2-gyg-iframe',
+    session: '여행사 목록 #2, Preview QA',
+    title: '겟유어가이드 위젯 방문도 기록',
+    detail:
+      'MRT·트립닷컴은 <a>라 방문이 남았는데, 겟유어가이드는 iframe 위젯이라 투어를 눌러도 기록이 안 남았음. 위젯 포커스 시 제휴 검색/홈 URL을 저장. Preview /qa/agencies — 파리 플래너·투어 찾기에서 겟유어가이드 투어를 연 뒤 로고 패널 방문 기록.',
+    at: '2026-09-06T05:50:00.000Z',
+  },
   {
     id: '2026-09-06-agencies-1-reentry',
     session: '여행사 목록 #1, 재접속 경로',
