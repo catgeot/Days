@@ -59,6 +59,10 @@ import {
   needsPlaceChatIntroHydration,
 } from '../lib/placeChatIntro.js';
 import { lookupVisitedPlacesForSearch } from '../lib/visitedPlaceSearchLookup.js';
+import {
+  overlayGeoFieldsOnVisitedSpots,
+  visitedSpotNeedsGeoCountry,
+} from '../lib/visitedPlaceSearch.js';
 
 const prepareLocation = (loc) =>
   enrichLocationWithRentalAirport(healPlaceholderCountry(mergeCanonicalTravelSpot(loc)));
@@ -1094,11 +1098,31 @@ export function useHomeHandlers({
       try {
         const visitedHits = await lookupVisitedPlacesForSearch(query);
         if (visitedHits.length >= 1) {
-          return requireChoice || visitedHits.length >= 2
-            ? makeDisambiguationResult(query, visitedHits, {
+          let mergedVisited = visitedHits;
+          try {
+            const remoteHits = await searchBoxForward(query, {
+              limit: 5,
+              types: searchBoxTypesForQuery(query),
+            });
+            mergedVisited = overlayGeoFieldsOnVisitedSpots(visitedHits, remoteHits);
+          } catch {
+            mergedVisited = visitedHits;
+          }
+          if (mergedVisited.some(visitedSpotNeedsGeoCountry)) {
+            try {
+              const coords = await getCoordinatesFromAddress(query);
+              if (coords) {
+                mergedVisited = overlayGeoFieldsOnVisitedSpots(mergedVisited, [coords]);
+              }
+            } catch {
+              // keep visited names
+            }
+          }
+          return requireChoice || mergedVisited.length >= 2
+            ? makeDisambiguationResult(query, mergedVisited, {
                 title: `'${query}' → 원하는 장소를 선택하세요`,
               })
-            : commitLocation(visitedHits[0]);
+            : commitLocation(mergedVisited[0]);
         }
       } catch {
         // 방문 DB 실패 시 지오코딩으로 진행

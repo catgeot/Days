@@ -36,6 +36,7 @@ import {
 } from './citiesSearch';
 import { searchBoxForward, searchBoxTypesForQuery } from './mapboxSearchBox';
 import { lookupVisitedPlacesForSearch } from './visitedPlaceSearchLookup.js';
+import { overlayGeoFieldsOnVisitedSpots } from './visitedPlaceSearch.js';
 import { buildMapboxSearchQueries } from './exploreSearchAliases';
 import {
   collectKnownTravelHomonyms,
@@ -354,9 +355,12 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
 
   try {
     const visited = await visitedPromise;
+    const overlaid = overlayGeoFieldsOnVisitedSpots(visited || [], out);
+    const localKeys = new Set(local.map(dedupeKey).filter(Boolean));
     const withVisited = [];
     const visitedSeen = new Set();
-    for (const item of visited || []) {
+    for (const item of overlaid) {
+      if (localKeys.has(dedupeKey(item))) continue;
       pushUnique(withVisited, visitedSeen, item);
     }
     for (const item of out) pushUnique(withVisited, visitedSeen, item);

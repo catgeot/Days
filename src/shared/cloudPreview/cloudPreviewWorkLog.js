@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '자킨토스 검색',
-  sessionNo: 9,
-  sessionPhase: 'Preview QA',
+  sessionNo: 10,
+  sessionPhase: '방문 요약 카드',
   branch: 'cursor/zakynthos-search-e84a',
   previewPath: '/',
   qaShareSlug: 'zakynthos',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-06-zakynthos-10-visited-country',
+    session: '자킨토스 검색 #10, 방문 요약 카드 QA',
+    title: '방문 카드 — 그리스 표기 · 사진 호출',
+    detail:
+      '방문 place_stats 카드가 국가 없이 Explore로 떨어지고 한글 name_en이라 사진을 안 불렀음. 지도 히트의 그리스·Zakynthos를 겹치고, 탐색 그리드는 저장 썸네일·한 장 조회를 쓴다. SSOT 사바는 방문 카드가 가리지 않음. Preview /qa/zakynthos — 자킨토스 재검색 요약에 그리스·해변 사진.',
+    at: '2026-09-06T15:20:00.000Z',
+  },
   {
     id: '2026-09-06-zakynthos-9-visited-summary',
     session: '자킨토스 검색 #9, Preview QA',
