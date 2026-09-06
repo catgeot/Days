@@ -14,9 +14,23 @@
 
 - **PR [#187](https://github.com/catgeot/Days/pull/187)** squash merge → main `eb1189b6`
 - **PROD** `https://www.gateo.kr/place/paris/gallery`
-- **주제 종료** — 인덱스 종료 행 · 캐시 정책 유지(DB 히트 시 LIVE 생략 · 더보기 DB 미반영)
+- **한계** DB에 인물만 쌓인 곳은 빈 갤러리 가드·island/travel 태그로 필터가 통과함 (자킨토스)
 
-**다음 제시어 없음** (주제 종료).
+## 갤러리 인물 제외 #2, DB 고착 수정
+
+- **브랜치** `cursor/gallery-2-c260` · tip `0dee0daa` · **PR [#194](https://github.com/catgeot/Days/pull/194)**
+- 캡션에 전경이 있을 때만 사람 컷 유지 · 필터 후 0장이면 `place_stats` 건너뛰고 LIVE · 캐시 v1.20
+- **VERIFY** `smoke:gallery-portrait-filter` · `smoke:place-gallery-pexels` · `vite build` PASS
+- **다음** 사람 Preview `/qa/gallery-portrait` · 자킨토스 갤러리
+
+```
+갤러리 인물 제외 #3, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/gallery-2-c260 · PR #194 · Preview /qa/gallery-portrait
+금지: orientation=landscape 재도입 · UI 리디자인
+작업: 자킨토스 갤러리에서 셀카·얼굴 클로즈업이 빠지는지 · 해변·절벽 전경은 남는지
+```
 
 ## 갤러리 사진 관리 #1, 모바일 길게 누르기
 
