@@ -4,6 +4,7 @@
  * 명소 exact/단일허브 prefix → 부모 hub+형제 명소 역펼침 (정착지 제외).
  * 정착지 exact → 허브형 역펼침 (부모 hub + 히트 지역 + 명소 + 형제 지역).
  * 큐레이션·SSOT는 동기 즉시, Mapbox는 허브/명소/정착지 exact가 아닐 때만 보강.
+ * 방문 place_stats 히트는 Mapbox 앞에 붙인다 (요약 카드·썸네일).
  */
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve.js';
@@ -34,6 +35,7 @@ import {
   matchCitiesPrefix,
 } from './citiesSearch';
 import { searchBoxForward, searchBoxTypesForQuery } from './mapboxSearchBox';
+import { lookupVisitedPlacesForSearch } from './visitedPlaceSearchLookup.js';
 import { buildMapboxSearchQueries } from './exploreSearchAliases';
 import {
   collectKnownTravelHomonyms,
@@ -335,6 +337,7 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
   const mapboxQueries = local.length < 3 ? buildMapboxSearchQueries(q) : [q];
   const searchBoxTypes = searchBoxTypesForQuery(q);
 
+  const visitedPromise = lookupVisitedPlacesForSearch(q);
   try {
     for (const mq of mapboxQueries) {
       const remote = await searchBoxForward(mq, {
@@ -349,7 +352,18 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
     // degrade: local only
   }
 
-  return out.slice(0, 16);
+  try {
+    const visited = await visitedPromise;
+    const withVisited = [];
+    const visitedSeen = new Set();
+    for (const item of visited || []) {
+      pushUnique(withVisited, visitedSeen, item);
+    }
+    for (const item of out) pushUnique(withVisited, visitedSeen, item);
+    return withVisited.slice(0, 16);
+  } catch {
+    return out.slice(0, 16);
+  }
 }
 
 /**

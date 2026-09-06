@@ -6,7 +6,7 @@
 export const cloudPreviewProject = {
   active: true,
   title: '자킨토스 검색',
-  sessionNo: 8,
+  sessionNo: 9,
   sessionPhase: 'Preview QA',
   branch: 'cursor/zakynthos-search-e84a',
   previewPath: '/',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-06-zakynthos-9-visited-summary',
+    session: '자킨토스 검색 #9, Preview QA',
+    title: '검색은 지도 우선 · 방문한 지명은 요약 카드',
+    detail:
+      'Enter 로딩이 「AI 탐색」으로 보이던 것은 지오코딩 실패가 아님. 문구를 지도 검색으로 바꿨다. 장소카드를 열어 방문이 쌓이면 place_stats에 한글·영문·좌표를 남기고, 다음 검색부터 드롭다운·탐색 그리드·Enter 선택 카드에 그 지명 요약이 뜬다. AI는 지도를 못 찾았을 때만. Preview /qa/zakynthos — 자킨토스 방문 후 다시 검색.',
+    at: '2026-09-06T14:50:00.000Z',
+  },
   {
     id: '2026-09-06-zakynthos-8-unseen-geocode',
     session: '자킨토스 검색 #8, Preview QA',

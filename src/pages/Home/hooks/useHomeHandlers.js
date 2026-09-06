@@ -58,6 +58,7 @@ import {
   ensurePlaceChatIntroForLocation,
   needsPlaceChatIntroHydration,
 } from '../lib/placeChatIntro.js';
+import { lookupVisitedPlacesForSearch } from '../lib/visitedPlaceSearchLookup.js';
 
 const prepareLocation = (loc) =>
   enrichLocationWithRentalAirport(healPlaceholderCountry(mergeCanonicalTravelSpot(loc)));
@@ -1087,6 +1088,21 @@ export function useHomeHandlers({
     const seaSpotBeforeGeocode = pickSeaBasinCurationSpot(query, category);
     if (seaSpotBeforeGeocode) {
       return commitLocation(seaSpotBeforeGeocode);
+    }
+
+    if (!shouldSkipGeocodeForMood(query)) {
+      try {
+        const visitedHits = await lookupVisitedPlacesForSearch(query);
+        if (visitedHits.length >= 1) {
+          return requireChoice || visitedHits.length >= 2
+            ? makeDisambiguationResult(query, visitedHits, {
+                title: `'${query}' → 원하는 장소를 선택하세요`,
+              })
+            : commitLocation(visitedHits[0]);
+        }
+      } catch {
+        // 방문 DB 실패 시 지오코딩으로 진행
+      }
     }
 
     const coords = shouldSkipGeocodeForMood(query)

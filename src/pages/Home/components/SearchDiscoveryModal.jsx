@@ -540,6 +540,16 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     }
   }, [query, filterMode, selectedContinent, selectedTheme, isSearching]);
 
+  const visitedGridSpots = useMemo(
+    () =>
+      hybridSuggestions.filter(
+        (item) => item?.source === 'visited' && Number.isFinite(Number(item.lat)),
+      ),
+    [hybridSuggestions],
+  );
+  const searchGridSpots =
+    isSearching && filteredSpots.length === 0 ? visitedGridSpots : filteredSpots;
+
   // 일일 무작위 셔플이 적용된 큐레이션 데이터
   const curationData = useMemo(() => {
     if (!isCurationMode) return null;
@@ -687,14 +697,14 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     if (isSearching) {
       return (
         <div className="w-full pb-20 pt-2">
-          {filteredSpots.length > 0 ? (
+          {searchGridSpots.length > 0 ? (
             <>
               <div className="mb-4 text-sm font-medium text-gray-300 flex items-center gap-2">
                 <Search size={16} />
-                <span>{t('home.explore.collectionCount', { count: filteredSpots.length })}</span>
+                <span>{t('home.explore.collectionCount', { count: searchGridSpots.length })}</span>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-6 lg:gap-8">
-                {filteredSpots.map((spot) => (
+                {searchGridSpots.map((spot) => (
                   <SpotThumbnailCard key={spot.id} spot={spot} onClick={handleSpotSelect} isGrid={true} />
                 ))}
               </div>
