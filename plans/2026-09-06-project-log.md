@@ -2,6 +2,22 @@
 
 직전: [`2026-09-05-project-log.md`](./2026-09-05-project-log.md)
 
+## 자킨토스 검색 #10, 방문 요약 카드 — 그리스 · 사진
+
+- **브랜치** `cursor/zakynthos-search-e84a` · tip `6c47ed6a` · **PR [#199](https://github.com/catgeot/Days/pull/199)**
+- #10 사람 QA: 방문 요약은 뜨지만 Explore(익스플로러) 표기·사진 미호출. 방문 카드에 지도 히트의 그리스·Zakynthos를 겹침. 그리드는 저장 썸네일. SSOT 재등록 없음
+- **VERIFY** `smoke:visited-place-search` · `smoke:unseen-place-search` · `smoke:zakynthos-search` · `smoke:sabah-search` · `vite build` PASS
+- **다음** 사람 Preview `/qa/zakynthos` — 재검색 요약 그리스·해변 사진 · 사바 회귀
+
+```
+자킨토스 검색 #11, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/zakynthos-search-e84a · PR #199 · Preview /qa/zakynthos
+금지: UI 리디자인 · 자킨토스 SSOT 재등록 · orientation=landscape 재도입
+작업: 자킨토스 재검색 요약에 그리스 · 해변 사진 · Explore 아님 · 사바섬 회귀
+```
+
 ## 자킨토스 검색 #9, 지도 우선 · 방문 요약 카드
 
 - **브랜치** `cursor/zakynthos-search-e84a` · tip `cffe174f` · **PR [#199](https://github.com/catgeot/Days/pull/199)**
