@@ -11,6 +11,11 @@
       "permanent": true
     },
     {
+      "source": "/qa/pickup",
+      "destination": "https://days-git-cursor-klook-pickup-d5a5-catgeots-projects.vercel.app/place/fukuoka/planner",
+      "permanent": false
+    },
+    {
       "source": "/qa/updates",
       "destination": "https://days-git-cursor-updates-0e16-catgeots-projects.vercel.app/",
       "permanent": false

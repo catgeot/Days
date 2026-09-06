@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'pickup',
+    label: '공항픽업 링크',
+    branch: 'cursor/klook-pickup-d5a5',
+    destination:
+      'https://days-git-cursor-klook-pickup-d5a5-catgeots-projects.vercel.app/place/fukuoka/planner',
+    active: true,
+  },
+  {
     slug: 'agencies',
     label: '여행사 목록·방문 기록',
     branch: 'cursor/agencies-85ab',
