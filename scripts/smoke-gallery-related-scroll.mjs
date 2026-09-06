@@ -34,11 +34,11 @@ assert.match(view, /\[galleryPlaceKey\]/, 'reset is keyed to the place, not ÎçîÎ
 const chat = readFileSync(join(root, 'src/components/PlaceCard/panels/PlaceChatPanel.jsx'), 'utf8');
 assert.match(
   chat,
-  /dispatchPlaceScrollToTop\('GALLERY',\s*\{\s*behavior:\s*'auto'\s*\}\)/,
+  /dispatchPlaceScrollToTop\(mediaMode,\s*\{\s*behavior:\s*'auto'\s*\}\)/,
   'related chips jump to gallery top instantly, not smooth through the previous photos',
 );
-assert.match(chat, /tab:\s*'gallery'/, 'related chips stay on the gallery tab');
-assert.match(chat, /\/gallery/, 'fallback navigate keeps /gallery');
+assert.match(chat, /relatedPlaceTabForMediaMode\(mediaMode\)/, 'related chips stay on the gallery tab');
+assert.match(chat, /relatedPlacePathSuffix\(mediaMode\)/, 'fallback navigate keeps /gallery');
 assert.match(
   chat,
   /mediaMode !== 'WIKI' && activeInfo\.mode !== 'VIDEO' \? 'overflow-hidden'/,

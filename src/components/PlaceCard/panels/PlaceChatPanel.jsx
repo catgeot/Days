@@ -16,6 +16,7 @@ import { useLocale } from '../../../i18n/LocaleProvider';
 import { copyToClipboard } from '../common/copyToClipboard';
 import PlaceMobileSecondaryNav from '../common/PlaceMobileSecondaryNav';
 import { dispatchPlaceScrollToTop } from '../common/placeScrollSurface';
+import { relatedPlacePathSuffix, relatedPlaceTabForMediaMode } from '../common/relatedPlaceTab';
 import { mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import mooniChar from '../../../assets/MOONI_transparent.png';
 import {
@@ -115,11 +116,12 @@ const PlaceChatPanel = React.memo(({
       skipRelatedRefreshRef.current = true;
 
       if (scrollRef.current) scrollRef.current.scrollTop = 0;
-      if (mediaMode === 'GALLERY') {
-        dispatchPlaceScrollToTop('GALLERY', { behavior: 'auto' });
+      const relatedTab = relatedPlaceTabForMediaMode(mediaMode);
+      if (relatedTab) {
+        dispatchPlaceScrollToTop(mediaMode, { behavior: 'auto' });
       }
 
-      const relatedNavOpts = mediaMode === 'GALLERY' ? { tab: 'gallery' } : undefined;
+      const relatedNavOpts = relatedTab ? { tab: relatedTab } : undefined;
 
       if (onNavigateToPlace) {
           onNavigateToPlace(targetPlace, relatedNavOpts);
@@ -127,14 +129,14 @@ const PlaceChatPanel = React.memo(({
       }
 
       const param = getPlaceUrlParam(mergeCanonicalTravelSpot(targetPlace));
+      const suffix = relatedPlacePathSuffix(mediaMode);
       if (param) {
-          const suffix = mediaMode === 'GALLERY' ? '/gallery' : '';
           navigate(`/place/${param}${suffix}`);
           return;
       }
 
       if (targetPlace.lat !== undefined && targetPlace.lng !== undefined) {
-          navigate(`/place/city-${targetPlace.lat}-${targetPlace.lng}${mediaMode === 'GALLERY' ? '/gallery' : ''}`);
+          navigate(`/place/city-${targetPlace.lat}-${targetPlace.lng}${suffix}`);
           return;
       }
 
@@ -396,7 +398,7 @@ const PlaceChatPanel = React.memo(({
           </div>
       )}
 
-      {relatedPlaces.length > 0 && mediaMode === 'GALLERY' && !selectedImg && !isFullScreen && !isMooniChatOpen && createPortal(
+      {relatedPlaces.length > 0 && relatedPlaceTabForMediaMode(mediaMode) && !selectedImg && !isFullScreen && !isMooniChatOpen && createPortal(
           <div className={`md:hidden fixed bottom-0 left-0 w-full z-[160] bg-[#05070a]/90 backdrop-blur-xl border-t border-white/10 p-3 pb-8 animate-fade-in-up shadow-[0_-10px_30px_rgba(0,0,0,0.5)] ${mobileLandscapeChromeHidden}`}>
               <style>{`
                   .no-scrollbar::-webkit-scrollbar { display: none; }

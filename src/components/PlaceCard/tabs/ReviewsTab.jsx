@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
@@ -8,7 +8,7 @@ import { useRelatedBlogs } from '../hooks/useRelatedBlogs';
 import { supabase } from '../../../shared/api/supabase';
 import ReviewEditorModal from '../modals/ReviewEditorModal';
 import { mobilePlaceHeaderSpacerClass, mobilePlaceFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
-import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
+import { placeScrollSurfaceClass, resetPlaceMediaScrollInstant } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 
 // --- 추가: 긴 글 접기 및 이미지 썸네일 렌더링을 담당하는 단일 리뷰 카드 컴포넌트 ---
@@ -188,6 +188,11 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
     idStr.startsWith('search-') || idStr.startsWith('loc-')
       ? idStr
       : (location.slug || idStr);
+
+  useLayoutEffect(() => {
+    resetPlaceMediaScrollInstant(scrollContainerRef.current);
+  }, [placeSlug]);
+
   const {
     reviews,
     isLoading,
