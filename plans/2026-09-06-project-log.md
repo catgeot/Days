@@ -2,6 +2,24 @@
 
 직전: [`2026-09-05-project-log.md`](./2026-09-05-project-log.md)
 
+## 리뷰 연관 여행지 #1, 탭 유지
+
+- **브랜치** `cursor/reviews-related-b9fa` · tip `d73ffc19` · **PR [#201](https://github.com/catgeot/Days/pull/201)**
+- 리뷰탭 좌측 연관 칩 클릭이 탭을 안 넘겨 기본 갤러리로 열리던 문제. 리뷰에서 누르면 `/reviews` 유지 · 목록 맨 위 · 모바일 하단 칩도 리뷰에서 사용
+- **VERIFY** `smoke:reviews-related-tab` · `smoke:gallery-related-scroll` · `vite build` PASS
+- **다음** 사람 Preview `/qa/reviews-related` · git Preview `/place/paris/reviews`
+
+**다음 제시어**:
+
+```
+리뷰 연관 여행지 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/reviews-related-b9fa · PR #201 · Preview /qa/reviews-related
+금지: UI 리디자인 · 갤러리 칩을 리뷰로 바꾸기
+작업: 파리 리뷰탭 좌측 칩 → 새 여행지도 리뷰탭 · 글이 없어도 칩으로 이어서 탐색 · 갤러리 칩은 갤러리 유지
+```
+
 ## 갤러리 좌측 패널 #1, 공간 조정
 
 - **브랜치** `cursor/gallery-panel-032e` · tip `7495e095` · **PR [#200](https://github.com/catgeot/Days/pull/200)**
