@@ -2,6 +2,22 @@
 
 직전: [`2026-09-05-project-log.md`](./2026-09-05-project-log.md)
 
+## 자킨토스 검색 #9, 지도 우선 · 방문 요약 카드
+
+- **브랜치** `cursor/zakynthos-search-e84a` · tip `cffe174f` · **PR [#199](https://github.com/catgeot/Days/pull/199)**
+- #9 사람 Preview QA PASS. 「AI 탐색」표시는 지오코딩 실패가 아니라 Enter 공통 문구 → 지도 우선 카피로 수정. 방문 시 `place_stats`에 한글·영문·좌표를 남기고, 다음 검색부터 드롭다운·그리드·선택 카드에 요약이 뜸. AI는 지도 실패 후만. SSOT 재등록 없음
+- **VERIFY** `smoke:visited-place-search` · `smoke:unseen-place-search` · `smoke:zakynthos-search` · `smoke:sabah-search` · `vite build` PASS
+- **다음** 사람 Preview `/qa/zakynthos` — Enter 지도 로딩 · 방문 후 재검색 요약 카드 · 사바 회귀
+
+```
+자킨토스 검색 #10, 방문 요약 카드 QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/zakynthos-search-e84a · PR #199 · Preview /qa/zakynthos
+금지: UI 리디자인 · 자킨토스 SSOT 재등록 · orientation=landscape 재도입
+작업: Enter 로딩이 지도 찾기인지 · 자킨토스 방문 후 재검색 시 요약/썸네일 카드 · 사바섬 회귀
+```
+
 ## 자킨토스 검색 #8, 미등록 지명 Geocoding 보강
 
 - **브랜치** `cursor/zakynthos-search-e84a` · tip `c03f3e5c` · **PR [#199](https://github.com/catgeot/Days/pull/199)**
