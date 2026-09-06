@@ -2,6 +2,22 @@
 
 직전: [`2026-09-05-project-log.md`](./2026-09-05-project-log.md)
 
+## 자킨토스 검색 #2, Preview QA — 맵박스 영문명 uiPlace
+
+- **브랜치** `cursor/zakynthos-search-e84a` · tip `14f0b204` · **PR [#196](https://github.com/catgeot/Days/pull/196)**
+- #195 SSOT 등록을 되돌림. 자킨토스는 검색·DB uiPlace. Mapbox ko+en으로 라틴 `name_en` → 카드 부제·갤러리·영상. 캐시 v1.21
+- **VERIFY** `smoke:zakynthos-search` · `smoke:gallery-portrait-filter` · `smoke:place-gallery-pexels` · `vite build` PASS
+- **다음** 사람 Preview `/qa/zakynthos` — 탐색창 자킨토스 → `(Zakynthos)` · 해변 갤러리 · 영상·플래너 · 여행지 뱃지 아님
+
+```
+자킨토스 검색 #3, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/zakynthos-search-e84a · PR #196 · Preview /qa/zakynthos
+금지: UI 리디자인 · 자킨토스 SSOT 재등록 · orientation=landscape 재도입
+작업: 탐색창 자킨토스 → (Zakynthos) 부제 · 해변 갤러리 · 영상 · 플래너 · 여행지 SSOT 뱃지 아님
+```
+
 ## 자킨토스 검색 #1, SSOT 등록
 
 - **브랜치** `cursor/zakynthos-search-b651` · tip `3a27c4dc` · **PR [#195](https://github.com/catgeot/Days/pull/195)**
