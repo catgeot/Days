@@ -105,9 +105,9 @@ assert.doesNotMatch(gallerySrc, /"자킨토스": "Zakynthos"/);
 
 const qa = readFileSync(join(root, 'src/shared/cloudPreview/cloudQaShareLinks.js'), 'utf8');
 assert.match(qa, /slug:\s*'zakynthos'/);
-assert.match(qa, /cursor\/zakynthos-search-e84a/);
+assert.match(qa, /www\.gateo\.kr/);
 const vercel = readFileSync(join(root, 'vercel.json'), 'utf8');
 assert.match(vercel, /\/qa\/zakynthos/);
-assert.match(vercel, /zakynthos-search-e84a/);
+assert.match(vercel, /www\.gateo\.kr/);
 
 console.log('PASS zakynthos-search (uiPlace latin name · no SSOT · gallery/video query)');
