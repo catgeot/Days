@@ -1,4 +1,4 @@
-import { isUrlSafeEnglishLabel } from './formatUrlName.js';
+import { formatUrlName, isEphemeralSlug, isUrlSafeEnglishLabel } from './formatUrlName.js';
 
 const PLACEHOLDER_COUNTRY = new Set([
   'Explore',
@@ -53,13 +53,73 @@ export function mergeLatinPlaceFields(base, english) {
   };
 }
 
+const normalizePlaceKey = (s) =>
+  String(s ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '');
+
+/** Search Box ko/en·지오코딩이 같은 핀인지 — mapbox_id가 달라도 좌표로 붙인다 */
+export const SAME_PLACE_CENTER_DEG = 0.08;
+
+export function samePlaceCenter(a, b, maxDeg = SAME_PLACE_CENTER_DEG) {
+  const lat1 = Number(a?.lat);
+  const lng1 = Number(a?.lng);
+  const lat2 = Number(b?.lat);
+  const lng2 = Number(b?.lng);
+  if (![lat1, lng1, lat2, lng2].every(Number.isFinite)) return false;
+  return Math.abs(lat1 - lat2) <= maxDeg && Math.abs(lng1 - lng2) <= maxDeg;
+}
+
+/** 라틴 name_en이 있으면 uiPlace slug를 영문으로 — 한글 place_id 인물 갤러리 고착 방지 */
+export function ensureLatinPlaceSlug(place) {
+  if (!place || typeof place !== 'object') return place;
+  const latin = pickLatinPlaceName(place);
+  if (!latin) return place;
+  const next = { ...place, name_en: latin };
+  const slug = formatUrlName(latin);
+  if (!slug) return next;
+  const current = String(place.slug || '').trim();
+  if (current && !isEphemeralSlug(current) && !/[\uAC00-\uD7A3]/.test(current)) {
+    return next;
+  }
+  return { ...next, slug };
+}
+
 export function mergeSearchBoxEnglishHits(koHits, enHits) {
-  const byId = new Map(
-    (enHits || []).filter((h) => h?.mapboxId).map((h) => [h.mapboxId, h]),
-  );
+  const enList = enHits || [];
+  const byId = new Map(enList.filter((h) => h?.mapboxId).map((h) => [h.mapboxId, h]));
   return (koHits || []).map((hit) => {
-    if (isLatinPlaceName(hit?.name_en)) return hit;
-    return mergeLatinPlaceFields(hit, byId.get(hit?.mapboxId));
+    if (isLatinPlaceName(hit?.name_en)) return ensureLatinPlaceSlug(hit);
+    const byMapbox = hit?.mapboxId ? byId.get(hit.mapboxId) : null;
+    const byCenter = byMapbox ? null : enList.find((h) => samePlaceCenter(h, hit));
+    return ensureLatinPlaceSlug(mergeLatinPlaceFields(hit, byMapbox || byCenter));
+  });
+}
+
+/** Enter 지오코딩 영문을 Search Box 동명·근접 히트에 이식 — 드롭다운·선택 카드가 다른 핀이 되지 않게 */
+export function overlayGeocodeLatinOnHits(hits, coords) {
+  const list = Array.isArray(hits) ? hits : [];
+  if (!coords) return list;
+  const geo = {
+    name: coords.name,
+    name_en: coords.name_en,
+    country: coords.country,
+    country_en: coords.country_en,
+    lat: coords.lat,
+    lng: coords.lng,
+  };
+  const geoNameKey = normalizePlaceKey(geo.name);
+  const geoLatinKey = normalizePlaceKey(pickLatinPlaceName(geo));
+  return list.map((hit) => {
+    if (!hit) return hit;
+    const nameHit = normalizePlaceKey(hit.name);
+    const latinHit = normalizePlaceKey(pickLatinPlaceName(hit));
+    const sameName =
+      (geoNameKey && nameHit === geoNameKey) ||
+      (geoLatinKey && (nameHit === geoLatinKey || latinHit === geoLatinKey));
+    if (!sameName && !samePlaceCenter(hit, geo)) return hit;
+    return ensureLatinPlaceSlug(mergeLatinPlaceFields(hit, geo));
   });
 }
 

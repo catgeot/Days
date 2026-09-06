@@ -4,10 +4,10 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: false,
+  active: true,
   title: '자킨토스 검색',
-  sessionNo: 5,
-  sessionPhase: '사바섬 카리브 동명',
+  sessionNo: 6,
+  sessionPhase: '드롭다운·선택 카드 동일 핀',
   branch: 'cursor/zakynthos-search-e84a',
   previewPath: '/',
   qaShareSlug: 'zakynthos',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-06-zakynthos-6-dropdown-latin',
+    session: '자킨토스 검색 #6, 사바섬 Preview QA',
+    title: '자킨토스 드롭다운과 선택 카드를 같은 핀으로',
+    detail:
+      '타이핑 드롭다운은 Search Box 한글 도시, Enter 카드는 지오코딩 Zakynthos라 클릭 경로가 갈라짐. 한글 place_id로 열리면 인물 갤러리 고착. ko/en을 좌표로도 붙이고, 드롭다운 선택 전에 retrieve(en)로 라틴 name_en·slug를 넣음. Enter 후 선택 카드가 떠 있으면 검색바가 다른 키워드 드롭다운을 다시 열지 않음. Preview /qa/zakynthos — 자킨토스 드롭다운·좌측 카드 모두 (Zakynthos) 해변 · 사바섬 회귀.',
+    at: '2026-09-06T11:45:00.000Z',
+  },
   {
     id: '2026-09-06-zakynthos-5-caribbean-saba',
     session: '자킨토스 검색 #5, 사바섬 Preview QA',

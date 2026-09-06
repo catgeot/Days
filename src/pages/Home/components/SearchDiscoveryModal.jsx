@@ -35,7 +35,8 @@ import {
 } from '../lib/exploreRecentHistory';
 import { buildHybridSearchSuggestions, buildLocalSearchSuggestions } from '../lib/searchSuggestions';
 import { isSearchDisambiguation } from '../lib/cityAttractionHubs';
-import { searchBoxRetrieve } from '../lib/mapboxSearchBox';
+import { hydrateSearchBoxLatinName } from '../lib/mapboxSearchBox';
+import { needsLatinPlaceName } from '../lib/uiPlaceAssetQuery';
 import { syncHomeViewportAfterInput } from '../../../shared/lib/mobileViewport';
 import {
   localizedExploreContinentLabel,
@@ -433,14 +434,14 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     }
 
     let place = item;
-    if (item.needsRetrieve && item.mapboxId) {
-      setIsAILoading(true);
-      try {
-        const retrieved = await searchBoxRetrieve(item.mapboxId, item.sessionToken);
-        if (retrieved) place = { ...item, ...retrieved, needsRetrieve: false };
-      } finally {
-        setIsAILoading(false);
-      }
+    const needsLatinHydrate = Boolean(
+      item.mapboxId && (item.needsRetrieve || needsLatinPlaceName(item)),
+    );
+    if (needsLatinHydrate) setIsAILoading(true);
+    try {
+      place = await hydrateSearchBoxLatinName(item);
+    } finally {
+      if (needsLatinHydrate) setIsAILoading(false);
     }
 
     const lat = Number(place?.lat);
@@ -902,6 +903,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
               if (e.button !== 0) return;
               if (e.target instanceof Element && e.target.closest('[data-search-clear]')) return;
               setActiveQuickSection(null);
+              if (disambiguation?.candidates?.length) return;
               setIsSearchHistoryOpen((prev) => !prev);
             }}
             className="relative flex h-12 items-center overflow-hidden rounded-2xl border border-white/[0.25] bg-white/[0.12] focus-within:bg-white/[0.15] md:h-10"
@@ -915,6 +917,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
               value={query}
               onFocus={() => {
                 setActiveQuickSection(null);
+                if (disambiguation?.candidates?.length) return;
                 setIsSearchHistoryOpen(true);
               }}
               onChange={(e) => {
@@ -1216,7 +1219,11 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
               <SearchSuggestionList
                 variant="popover"
                 query={query}
-                items={hybridSuggestions}
+                items={
+                  disambiguation?.candidates?.length
+                    ? disambiguation.candidates
+                    : hybridSuggestions
+                }
                 loading={suggestionsLoading}
                 onSelect={(item) => {
                   setIsSearchHistoryOpen(false);

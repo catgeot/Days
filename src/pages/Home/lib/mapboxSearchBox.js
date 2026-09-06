@@ -3,7 +3,13 @@
  * 실패 시 null/[] 반환 (큐레이션만으로 degrade).
  */
 import { isIslandPlaceQuery } from './exploreSearchAliases.js';
-import { isLatinPlaceName, mergeLatinPlaceFields, mergeSearchBoxEnglishHits } from './uiPlaceAssetQuery.js';
+import {
+  ensureLatinPlaceSlug,
+  isLatinPlaceName,
+  mergeLatinPlaceFields,
+  mergeSearchBoxEnglishHits,
+  needsLatinPlaceName,
+} from './uiPlaceAssetQuery.js';
 
 const MAPBOX_TOKEN = typeof import.meta !== 'undefined' ? import.meta.env?.VITE_MAPBOX_TOKEN : '';
 const SEARCHBOX_BASE = 'https://api.mapbox.com/search/searchbox/v1';
@@ -169,10 +175,36 @@ export async function searchBoxForward(query, opts = {}) {
   const language = opts.language || 'ko';
   const hits = await searchBoxForwardRaw(query, { ...opts, language });
   if (language === 'en' || hits.every((h) => isLatinPlaceName(h.name_en))) {
-    return hits;
+    return hits.map(ensureLatinPlaceSlug);
   }
   const enHits = await searchBoxForwardRaw(query, { ...opts, language: 'en' });
   return mergeSearchBoxEnglishHits(hits, enHits);
+}
+
+/**
+ * 좌표가 있어도 ko 전용 히트면 retrieve(en)로 라틴 name_en을 붙인다.
+ * 드롭다운 클릭이 한글 place_id 인물 갤러리로 빠지지 않게.
+ */
+export async function hydrateSearchBoxLatinName(place) {
+  if (!place || typeof place !== 'object') return place;
+  let next = place;
+  if (needsLatinPlaceName(next) && next.mapboxId) {
+    const retrieved = await searchBoxRetrieve(next.mapboxId, next.sessionToken);
+    if (retrieved) {
+      const lat = Number(next.lat);
+      const lng = Number(next.lng);
+      next = mergeLatinPlaceFields(
+        {
+          ...next,
+          lat: Number.isFinite(lat) ? next.lat : retrieved.lat,
+          lng: Number.isFinite(lng) ? next.lng : retrieved.lng,
+          needsRetrieve: false,
+        },
+        retrieved,
+      );
+    }
+  }
+  return ensureLatinPlaceSlug(next);
 }
 
 /**

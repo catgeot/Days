@@ -51,6 +51,10 @@ import {
 } from '../lib/searchSuggestions.js';
 import { searchBoxForward, searchBoxTypesForQuery } from '../lib/mapboxSearchBox.js';
 import {
+  overlayGeocodeLatinOnHits,
+  samePlaceCenter,
+} from '../lib/uiPlaceAssetQuery.js';
+import {
   ensurePlaceChatIntroForLocation,
   needsPlaceChatIntroHydration,
 } from '../lib/placeChatIntro.js';
@@ -1131,8 +1135,17 @@ export function useHomeHandlers({
             if (requireChoice || (distinct.length >= 2 && ambiguous)) {
               const geoName = String(coords.name || query).trim();
               const geoKey = geoName.toLowerCase().replace(/\s+/g, '');
-              if (!seenNames.has(geoKey)) {
-                distinct.unshift({
+              const withLatin = overlayGeocodeLatinOnHits(distinct, coords);
+              const sameAsGeocode = withLatin.some(
+                (hit) =>
+                  samePlaceCenter(hit, coords) ||
+                  String(hit?.name || '')
+                    .trim()
+                    .toLowerCase()
+                    .replace(/\s+/g, '') === geoKey,
+              );
+              if (!sameAsGeocode && !seenNames.has(geoKey)) {
+                withLatin.unshift({
                   id: `geocode-${coords.lat}-${coords.lng}`,
                   kind: 'city',
                   badge: '도시',
@@ -1147,7 +1160,7 @@ export function useHomeHandlers({
                   desc: `${geoName} (${coords.country || 'Explore'})`,
                 });
               }
-              return makeDisambiguationResult(query, distinct.slice(0, 8), {
+              return makeDisambiguationResult(query, withLatin.slice(0, 8), {
                 title: `'${query}' → 원하는 장소를 선택하세요`,
               });
             }

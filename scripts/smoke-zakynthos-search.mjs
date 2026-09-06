@@ -18,6 +18,8 @@ import {
   resolveGalleryStockQuery,
   resolvePlaceVideoQueries,
   needsLatinPlaceName,
+  ensureLatinPlaceSlug,
+  overlayGeocodeLatinOnHits,
 } from '../src/pages/Home/lib/uiPlaceAssetQuery.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -94,6 +96,84 @@ const mergedHits = mergeSearchBoxEnglishHits(
 assert.equal(mergedHits[0].name, '자킨토스');
 assert.equal(mergedHits[0].name_en, 'Zakynthos');
 assert.equal(mergedHits[0].country_en, 'Greece');
+assert.equal(mergedHits[0].slug, 'zakynthos');
+
+const mergedByCenter = mergeSearchBoxEnglishHits(
+  [
+    {
+      mapboxId: 'zak-ko',
+      name: '자킨토스',
+      name_en: '',
+      country: '그리스',
+      lat: 37.787,
+      lng: 20.9,
+      uiPlace: true,
+    },
+  ],
+  [
+    {
+      mapboxId: 'zak-en',
+      name: 'Zakynthos',
+      name_en: 'Zakynthos',
+      country: 'Greece',
+      country_en: 'Greece',
+      lat: 37.79,
+      lng: 20.89,
+    },
+  ],
+);
+assert.equal(mergedByCenter[0].name, '자킨토스');
+assert.equal(mergedByCenter[0].name_en, 'Zakynthos');
+assert.equal(mergedByCenter[0].slug, 'zakynthos');
+
+const stamped = ensureLatinPlaceSlug({
+  name: '자킨토스',
+  name_en: 'Zakynthos',
+  country: '그리스',
+  uiPlace: true,
+});
+assert.equal(stamped.slug, 'zakynthos');
+
+const overlaid = overlayGeocodeLatinOnHits(
+  [
+    {
+      name: '자킨토스',
+      name_en: '',
+      country: '그리스',
+      lat: 37.787,
+      lng: 20.9,
+      uiPlace: true,
+    },
+  ],
+  {
+    name: '자킨토스',
+    name_en: 'Zakynthos',
+    country: '그리스',
+    country_en: 'Greece',
+    lat: 37.787,
+    lng: 20.9,
+  },
+);
+assert.equal(overlaid[0].name_en, 'Zakynthos');
+assert.equal(overlaid[0].slug, 'zakynthos');
+assert.equal(overlaid[0].name, '자킨토스');
+
+const modalSrc = readFileSync(
+  join(root, 'src/pages/Home/components/SearchDiscoveryModal.jsx'),
+  'utf8',
+);
+assert.match(modalSrc, /hydrateSearchBoxLatinName/, 'dropdown select hydrates latin name');
+assert.match(
+  modalSrc,
+  /disambiguation\?\.candidates\?\.length\) return/,
+  'choice cards keep the search dropdown closed',
+);
+
+const handlersSrc = readFileSync(
+  join(root, 'src/pages/Home/hooks/useHomeHandlers.js'),
+  'utf8',
+);
+assert.match(handlersSrc, /overlayGeocodeLatinOnHits/, 'Enter cards reuse geocode latin');
 
 const gallerySrc = readFileSync(
   join(root, 'src/components/PlaceCard/hooks/usePlaceGallery.js'),
@@ -105,9 +185,10 @@ assert.doesNotMatch(gallerySrc, /"자킨토스": "Zakynthos"/);
 
 const qa = readFileSync(join(root, 'src/shared/cloudPreview/cloudQaShareLinks.js'), 'utf8');
 assert.match(qa, /slug:\s*'zakynthos'/);
-assert.match(qa, /www\.gateo\.kr/);
+assert.match(qa, /cursor\/zakynthos-search-e84a/);
+assert.match(qa, /days-git-cursor-zakynthos-search-e84a/);
 const vercel = readFileSync(join(root, 'vercel.json'), 'utf8');
 assert.match(vercel, /\/qa\/zakynthos/);
-assert.match(vercel, /www\.gateo\.kr/);
+assert.match(vercel, /days-git-cursor-zakynthos-search-e84a/);
 
 console.log('PASS zakynthos-search (uiPlace latin name · no SSOT · gallery/video query)');
