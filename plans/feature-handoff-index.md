@@ -14,6 +14,33 @@
 
 ## 활성 목록
 
+### 공항픽업 링크
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `3828b09b` · PR [#193](https://github.com/catgeot/Days/pull/193) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/klook-pickup-d5a5` |
+| **tip** | `3828b09b` |
+| **PR** | [#193](https://github.com/catgeot/Days/pull/193) |
+| **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
+| **Preview** | `/qa/pickup` → git Preview `/place/fukuoka/planner` |
+| **소유** | `klookAffiliateUrl.js` · `affiliate.js` `getKlookAffiliateUrl` · PreTravelChecklist 픽업 |
+| **금지** | UI 리디자인 · 제휴 aid 변경 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:klook-affiliate` · `smoke:travel-agencies` · `vite build` |
+
+**다음 제시어**:
+
+```
+공항픽업 링크 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/klook-pickup-d5a5 · PR #193 · Preview /qa/pickup
+금지: UI 리디자인 · 제휴 aid 변경
+작업: 후쿠오카 플래너 공항 픽업 → 클룩 웹(GATEO) · iOS 앱 열기 경고 없는지
+```
+
+---
+
 ### 여행사 목록
 
 | | |
