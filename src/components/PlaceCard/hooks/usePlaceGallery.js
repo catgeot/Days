@@ -22,8 +22,8 @@ import {
   readGalleryAttributionReturnState,
 } from '../common/galleryAttributionNavigation';
 
-/** v1.19 — 갤러리 최대 60장 · 단일 인물 사진 제외 */
-const CACHE_VERSION = 'v1.19';
+/** v1.20 — 갤러리 최대 60장 · DB 인물 고착 시 LIVE 재조회 */
+const CACHE_VERSION = 'v1.20';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
 
 /** 장소 갤러리 UI·세션 캐시 상한 (Pexels 다중 쿼리 백필 과다 방지) */
@@ -520,29 +520,33 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       if (validCache && validCache.length > 0 && !isThinStockGallery(validCache)) {
         if (isStale()) return;
         processAndSetImages(validCache);
-        saveToSmartCache(CACHE_KEY, allImagesRef.current);
-        markFetchDone();
-        finishLoading();
-        if (needsPexelsBackfill(allImagesRef.current, thumbnailOnly)) {
-          const backfillRunId = runId;
-          pexelsPageRef.current += 1;
-          void fetchPexelsBatch(
-            PEXELS_KEY,
-            pexelsQueries,
-            pexelsPageRef.current,
-            Math.min(GALLERY_PEXELS_BATCH_LIMIT, galleryRemainingSlots(allImagesRef.current)),
-          )
-            .then((pexelsImages) => {
-              if (backfillRunId !== galleryLoadSeqRef.current || !pexelsImages.length) return;
-              const { merged, added } = mergeGalleryAppend(allImagesRef.current, pexelsImages);
-              if (added === 0) return;
-              processAndSetImages(merged);
-              saveToSmartCache(CACHE_KEY, allImagesRef.current);
-              console.log(`✅ Pexels backfill ${added}장 병합 (세션 캐시 히트 후)`);
-            })
-            .catch((err) => console.error('⚠️ Pexels backfill error:', err));
+        if (allImagesRef.current.length === 0) {
+          console.warn('⚠️ session cache all portraits — live Unsplash/Pexels refetch');
+        } else {
+          saveToSmartCache(CACHE_KEY, allImagesRef.current);
+          markFetchDone();
+          finishLoading();
+          if (needsPexelsBackfill(allImagesRef.current, thumbnailOnly)) {
+            const backfillRunId = runId;
+            pexelsPageRef.current += 1;
+            void fetchPexelsBatch(
+              PEXELS_KEY,
+              pexelsQueries,
+              pexelsPageRef.current,
+              Math.min(GALLERY_PEXELS_BATCH_LIMIT, galleryRemainingSlots(allImagesRef.current)),
+            )
+              .then((pexelsImages) => {
+                if (backfillRunId !== galleryLoadSeqRef.current || !pexelsImages.length) return;
+                const { merged, added } = mergeGalleryAppend(allImagesRef.current, pexelsImages);
+                if (added === 0) return;
+                processAndSetImages(merged);
+                saveToSmartCache(CACHE_KEY, allImagesRef.current);
+                console.log(`✅ Pexels backfill ${added}장 병합 (세션 캐시 히트 후)`);
+              })
+              .catch((err) => console.error('⚠️ Pexels backfill error:', err));
+          }
+          return;
         }
-        return;
       }
       if (validCache?.length > 0 && isThinStockGallery(validCache)) {
         console.warn('⚠️ session cache thin stock — live Unsplash/Pexels refetch');
@@ -609,31 +613,37 @@ export const usePlaceGallery = (locationSource, options = {}) => {
                 );
               } else {
                 processAndSetImages(gallerySlice);
-                saveToSmartCache(CACHE_KEY, allImagesRef.current);
-                unsplashPageRef.current = 1;
-                pexelsPageRef.current = 0;
-                markFetchDone();
-                finishLoading();
-                if (needsPexelsBackfill(allImagesRef.current, thumbnailOnly)) {
-                  const backfillRunId = runId;
-                  pexelsPageRef.current += 1;
-                  void fetchPexelsBatch(
-            PEXELS_KEY,
-            pexelsQueries,
-            pexelsPageRef.current,
-            Math.min(GALLERY_PEXELS_BATCH_LIMIT, galleryRemainingSlots(allImagesRef.current)),
-          )
-                    .then((pexelsImages) => {
-                      if (backfillRunId !== galleryLoadSeqRef.current || !pexelsImages.length) return;
-                      const { merged, added } = mergeGalleryAppend(allImagesRef.current, pexelsImages);
-                      if (added === 0) return;
-                      processAndSetImages(merged);
-                      saveToSmartCache(CACHE_KEY, allImagesRef.current);
-                      console.log(`✅ Pexels backfill ${added}장 병합 (place_stats 히트 후)`);
-                    })
-                    .catch((err) => console.error('⚠️ Pexels backfill error:', err));
+                if (allImagesRef.current.length === 0) {
+                  console.warn(
+                    '⚠️ place_stats all portraits — live Unsplash/Pexels refetch',
+                  );
+                } else {
+                  saveToSmartCache(CACHE_KEY, allImagesRef.current);
+                  unsplashPageRef.current = 1;
+                  pexelsPageRef.current = 0;
+                  markFetchDone();
+                  finishLoading();
+                  if (needsPexelsBackfill(allImagesRef.current, thumbnailOnly)) {
+                    const backfillRunId = runId;
+                    pexelsPageRef.current += 1;
+                    void fetchPexelsBatch(
+                      PEXELS_KEY,
+                      pexelsQueries,
+                      pexelsPageRef.current,
+                      Math.min(GALLERY_PEXELS_BATCH_LIMIT, galleryRemainingSlots(allImagesRef.current)),
+                    )
+                      .then((pexelsImages) => {
+                        if (backfillRunId !== galleryLoadSeqRef.current || !pexelsImages.length) return;
+                        const { merged, added } = mergeGalleryAppend(allImagesRef.current, pexelsImages);
+                        if (added === 0) return;
+                        processAndSetImages(merged);
+                        saveToSmartCache(CACHE_KEY, allImagesRef.current);
+                        console.log(`✅ Pexels backfill ${added}장 병합 (place_stats 히트 후)`);
+                      })
+                      .catch((err) => console.error('⚠️ Pexels backfill error:', err));
+                  }
+                  return;
                 }
-                return;
               }
             }
           }
@@ -841,7 +851,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         saveToSmartCache(CACHE_KEY, allImagesRef.current);
 
         // 더보기(append)는 세션만 — place_stats 큐레이션을 Unsplash 병합본으로 덮지 않음
-        if (!forceRefresh && (dbStatsId || koreanName)) {
+        if (!forceRefresh && allImagesRef.current.length > 0 && (dbStatsId || koreanName)) {
           const thumbnailToSave = allImagesRef.current[0]?.urls?.small || allImagesRef.current[0]?.urls?.regular || '';
           const statsPlaceId = dbStatsId || koreanName;
 
