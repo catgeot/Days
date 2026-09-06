@@ -99,6 +99,7 @@
     "smoke:gallery-photo-manage": "node scripts/smoke-gallery-photo-manage.mjs",
     "smoke:gallery-related-scroll": "node scripts/smoke-gallery-related-scroll.mjs",
     "smoke:release-notes-footer": "node scripts/smoke-release-notes-footer.mjs",
+    "smoke:klook-affiliate": "node scripts/smoke-klook-affiliate.mjs",
     "smoke:rss-canonical": "node scripts/smoke-rss-canonical.mjs",
     "smoke:gsc-baseline": "node scripts/smoke-gsc-baseline.mjs",
     "smoke:gsc-baseline-prod": "node scripts/smoke-gsc-baseline-prod.mjs",

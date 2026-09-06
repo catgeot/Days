@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '갤러리 인물 제외',
-  sessionNo: 2,
-  sessionPhase: 'DB 고착 수정',
-  branch: 'cursor/gallery-2-c260',
-  previewPath: '/',
-  qaShareSlug: 'gallery-portrait',
+  title: '공항픽업 링크',
+  sessionNo: 1,
+  sessionPhase: 'OneLink 우회',
+  branch: 'cursor/klook-pickup-d5a5',
+  previewPath: '/place/fukuoka/planner',
+  qaShareSlug: 'pickup',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-06-pickup-1-onelink-web',
+    session: '공항픽업 링크 #1, OneLink 우회',
+    title: '클룩 공항 픽업 — 웹 직행 (앱 열기 경고 없음)',
+    detail:
+      'affiliate.klook.com/redirect 가 klook.onelink.me + klook:// 로 가서 iOS가 「다른 애플리케이션을 열려고 합니다」를 띄움. Preview(vercel.app)에서 더 잘 드러남. klook.com?aid=118544 웹 직행. Preview /qa/pickup — 후쿠오카 플래너 공항 픽업 → 클룩 웹(GATEO) · 앱 열기 경고 없는지.',
+    at: '2026-09-06T06:40:00.000Z',
+  },
   {
     id: '2026-09-06-gallery-2-db-portrait-refetch',
     session: '갤러리 인물 제외 #2, DB 고착 수정',
