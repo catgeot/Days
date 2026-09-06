@@ -18,13 +18,13 @@
 
 | | |
 |--|--|
-| **상태** | **#3 push** · tip `15dc3902` · PR [#196](https://github.com/catgeot/Days/pull/196) · 자킨토스 사람 PASS · **#4 사바섬 Preview QA** |
+| **상태** | **#3 push** · tip `5d708a67` · PR [#196](https://github.com/catgeot/Days/pull/196) · 자킨토스 사람 PASS · **#4 사바섬 Preview QA** |
 | **브랜치** | `cursor/zakynthos-search-e84a` |
-| **tip** | `15dc3902` |
+| **tip** | `5d708a67` |
 | **PR** | [#196](https://github.com/catgeot/Days/pull/196) |
 | **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
 | **Preview** | `/qa/zakynthos` → git Preview `/` (탐색창 사바섬·자킨토스) |
-| **소유** | `mapboxSearchBox.js` `searchBoxTypesForQuery` · `exploreSearchAliases.js` · `searchSuggestions.js` |
+| **소유** | `geocoding.js` 섬 쿼리 순위 · `mapboxSearchBox.js` `searchBoxTypesForQuery` · `exploreSearchAliases.js` |
 | **금지** | UI 리디자인 · 자킨토스 SSOT 재등록 · `orientation=landscape` 재도입 · feature에 `plans/**` 커밋 |
 | **VERIFY** | `smoke:explore-search-aliases` · `smoke:zakynthos-search` · `vite build` |
 
@@ -36,7 +36,7 @@
 @plans/2026-09-06-project-log.md
 브랜치 cursor/zakynthos-search-e84a · PR #196 · Preview /qa/zakynthos
 금지: UI 리디자인 · 자킨토스 SSOT 재등록 · orientation=landscape 재도입
-작업: 탐색창 사바섬 → 카리브 네덜란드 (Saba) · 사보섬(솔로몬) 1순위 아님 · 자킨토스 회귀
+작업: 탐색창 사바섬 Enter → 카리브 네덜란드 (Saba) · 한국 시크 사원·사보섬 1순위 아님 · 자킨토스 회귀
 ```
 
 ---
