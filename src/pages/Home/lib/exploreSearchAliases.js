@@ -22,6 +22,9 @@ const QUERY_ALIASES = new Map(
     ['타카마스', { canonical: '다카마스', romanized: 'Takamatsu, Japan' }],
     ['타카마츠', { canonical: '다카마스', romanized: 'Takamatsu, Japan' }],
     ['다카마츠', { canonical: '다카마스', romanized: 'Takamatsu, Japan' }],
+    ['사바섬', { canonical: '사바섬', romanized: 'Saba, Caribbean Netherlands' }],
+    ['사바 섬', { canonical: '사바섬', romanized: 'Saba, Caribbean Netherlands' }],
+    ['saba island', { canonical: 'Saba', romanized: 'Saba, Caribbean Netherlands' }],
   ].map(([key, value]) => [normalizeKey(key), value]),
 );
 

@@ -21,6 +21,20 @@ export const TOURISM_CATEGORY_IDS = [
 
 const HAS_HANGUL_RE = /[\uAC00-\uD7A3]/;
 
+export const SEARCH_BOX_PLACE_TYPES = 'place,city,poi';
+/** 사바 등 Mapbox가 region으로 분류하는 섬 — place-only면 사보섬(솔로몬)만 남음 */
+export const SEARCH_BOX_ISLAND_TYPES = 'region,place,city,poi';
+
+/**
+ * Search Box types. 섬/island 쿼리는 region을 넣는다 (제주 같은 비-섬 검색에 region을 항상 켜면 오탐).
+ * @param {string} query
+ */
+export function searchBoxTypesForQuery(query) {
+  const q = String(query || '').trim();
+  if (/섬$|\bislands?\b/i.test(q)) return SEARCH_BOX_ISLAND_TYPES;
+  return SEARCH_BOX_PLACE_TYPES;
+}
+
 let searchBoxAvailable = null;
 let warnedUnavailable = false;
 
@@ -66,6 +80,11 @@ function featureToSuggestion(feature, { hubId, parentCity, source = 'mapbox' } =
 
   const featureType = String(props.feature_type || props.place_type?.[0] || '').toLowerCase();
   const isPoi = featureType === 'poi' || (Array.isArray(props.poi_category) && props.poi_category.length > 0);
+  const isPlaceLike =
+    featureType === 'place' ||
+    featureType === 'city' ||
+    featureType === 'region' ||
+    featureType === 'locality';
   const contextCountry = Array.isArray(props.context)
     ? props.context.find((c) => c?.country || String(c?.id || '').startsWith('country'))
     : null;
@@ -87,7 +106,7 @@ function featureToSuggestion(feature, { hubId, parentCity, source = 'mapbox' } =
 
   return {
     id: `mapbox-${props.mapbox_id || `${lat}-${lng}`}`,
-    kind: isPoi ? 'attraction' : featureType === 'place' || featureType === 'city' ? 'city' : 'poi',
+    kind: isPoi ? 'attraction' : isPlaceLike ? 'city' : 'poi',
     badge: isPoi ? '명소' : featureType === 'place' || featureType === 'city' ? '도시' : '장소',
     name,
     name_en: latinName,
@@ -125,7 +144,7 @@ async function searchBoxForwardRaw(query, opts = {}) {
       auto_complete: 'true',
     });
     if (opts.types) params.set('types', opts.types);
-    else params.set('types', 'place,city,locality,poi');
+    else params.set('types', searchBoxTypesForQuery(q));
     if (opts.country) params.set('country', opts.country);
     if (Array.isArray(opts.proximity) && opts.proximity.length === 2) {
       params.set('proximity', `${opts.proximity[0]},${opts.proximity[1]}`);
@@ -177,7 +196,7 @@ export async function searchBoxSuggest(query, opts = {}) {
       session_token: sessionToken,
       language: opts.language || 'ko',
       limit: String(opts.limit ?? 8),
-      types: opts.types || 'place,city,poi',
+      types: opts.types || searchBoxTypesForQuery(q),
     });
     if (Array.isArray(opts.proximity) && opts.proximity.length === 2) {
       params.set('proximity', `${opts.proximity[0]},${opts.proximity[1]}`);

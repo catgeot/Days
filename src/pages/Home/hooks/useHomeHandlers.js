@@ -49,7 +49,7 @@ import {
   ensureDisambiguation,
   locationToChoiceCandidate,
 } from '../lib/searchSuggestions.js';
-import { searchBoxForward } from '../lib/mapboxSearchBox.js';
+import { searchBoxForward, searchBoxTypesForQuery } from '../lib/mapboxSearchBox.js';
 import {
   ensurePlaceChatIntroForLocation,
   needsPlaceChatIntroHydration,
@@ -1103,7 +1103,7 @@ export function useHomeHandlers({
         try {
           const remoteHits = await searchBoxForward(query, {
             limit: 5,
-            types: 'place,city,poi',
+            types: searchBoxTypesForQuery(query),
           });
           const seenNames = new Set();
           const distinct = [];

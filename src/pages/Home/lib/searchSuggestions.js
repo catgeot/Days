@@ -33,7 +33,7 @@ import {
   cityToSuggestion,
   matchCitiesPrefix,
 } from './citiesSearch';
-import { searchBoxForward } from './mapboxSearchBox';
+import { searchBoxForward, searchBoxTypesForQuery } from './mapboxSearchBox';
 import { buildMapboxSearchQueries } from './exploreSearchAliases';
 
 const normalizeKey = (s) =>
@@ -278,12 +278,13 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
   const seen = new Set(local.map(dedupeKey).filter(Boolean));
   const mapboxLimit = opts.mapboxLimit ?? 6;
   const mapboxQueries = local.length < 3 ? buildMapboxSearchQueries(q) : [q];
+  const searchBoxTypes = searchBoxTypesForQuery(q);
 
   try {
     for (const mq of mapboxQueries) {
       const remote = await searchBoxForward(mq, {
         limit: mapboxLimit,
-        types: 'place,city,poi',
+        types: searchBoxTypes,
         language: /[\uAC00-\uD7A3]/.test(mq) ? 'ko' : 'en',
       });
       for (const item of remote) pushUnique(out, seen, item);
