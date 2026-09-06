@@ -1118,11 +1118,14 @@ export function useHomeHandlers({
               // keep visited names
             }
           }
-          return requireChoice || mergedVisited.length >= 2
-            ? makeDisambiguationResult(query, mergedVisited, {
-                title: `'${query}' → 원하는 장소를 선택하세요`,
-              })
-            : commitLocation(mergedVisited[0]);
+          const readyVisited = mergedVisited.filter((spot) => !visitedSpotNeedsGeoCountry(spot));
+          if (readyVisited.length >= 1) {
+            return requireChoice || readyVisited.length >= 2
+              ? makeDisambiguationResult(query, readyVisited, {
+                  title: `'${query}' → 원하는 장소를 선택하세요`,
+                })
+              : commitLocation(readyVisited[0]);
+          }
         }
       } catch {
         // 방문 DB 실패 시 지오코딩으로 진행

@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '자킨토스 검색',
-  sessionNo: 11,
-  sessionPhase: '그리스 표기',
+  sessionNo: 12,
+  sessionPhase: '오염된 방문 행 무시',
   branch: 'cursor/zakynthos-search-e84a',
   previewPath: '/',
   qaShareSlug: 'zakynthos',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-06-zakynthos-12-stale-visit-row',
+    session: '자킨토스 검색 #12, Preview QA',
+    title: '한글 방문 행(0,0·인물)은 검색에 안 씀',
+    detail:
+      '자킨토스만 place_stats에 한글 place_id·좌표 0,0·인물 갤러리가 남아 지도 검색을 가로챘다. 그 행은 방문 카드로 쓰지 않고, 갤러리는 라틴 zakynthos 해변 행을 고른다. Preview /qa/zakynthos — 재검색 시 그리스·해변 사진 · Explore 아님.',
+    at: '2026-09-06T20:40:00.000Z',
+  },
   {
     id: '2026-09-06-zakynthos-11-greece-label',
     session: '자킨토스 검색 #11, Preview QA',

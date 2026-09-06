@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import {
   filterOutSinglePersonPortraits,
   isSinglePersonPortraitPhoto,
+  pickPlaceStatsGalleryRow,
 } from '../src/utils/galleryPortraitFilter.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -143,7 +144,41 @@ assert.doesNotMatch(
 const gallerySrc = readFileSync(join(root, 'src/components/PlaceCard/hooks/usePlaceGallery.js'), 'utf8');
 assert.match(gallerySrc, /CACHE_VERSION = 'v1\.21'/, 'cache version after latin gallery query');
 assert.match(gallerySrc, /place_stats all portraits/, 'DB all-portrait miss falls through to live');
+assert.match(gallerySrc, /pickPlaceStatsGalleryRow/, 'prefer latin scenery row over hangul portraits');
 assert.match(gallerySrc, /filterOutSinglePersonPortraits\(rawImages\)/, 'cached galleries also drop portraits');
+
+const hangulPortraits = {
+  place_id: '자킨토스',
+  image_url: 'https://images.pexels.com/photos/7956482/pexels-photo-7956482.jpeg',
+  gallery_urls: [
+    {
+      id: 'pexels-7956482',
+      alt_description: 'headshot of a handsome man with his hands in his pockets',
+      links: { html: 'https://www.pexels.com/photo/handsome-man-7956482/' },
+    },
+  ],
+};
+const latinBeaches = {
+  place_id: 'zakynthos',
+  image_url: 'https://images.unsplash.com/photo-1612279427382-f8349a383af8',
+  gallery_urls: [
+    {
+      id: 'd-0aXM8cm6o',
+      alt_description: 'aerial view of boats on sea during daytime',
+      description: 'Zakynthos Shipwreck beach in Greece',
+    },
+  ],
+};
+assert.equal(
+  pickPlaceStatsGalleryRow([hangulPortraits, latinBeaches], '자킨토스')?.place_id,
+  'zakynthos',
+  'hangul portrait row loses to latin scenery even if preferred',
+);
+assert.equal(
+  pickPlaceStatsGalleryRow([hangulPortraits], '자킨토스'),
+  null,
+  'all-portrait hangul row is skipped so live refetch can run',
+);
 
 const pexelsSrc = readFileSync(join(root, 'src/pages/Home/lib/apiClient.js'), 'utf8');
 assert.match(pexelsSrc, /width: photo\.width/, 'pexels mapping keeps dimensions for the filter');

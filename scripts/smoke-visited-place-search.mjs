@@ -15,6 +15,7 @@ import {
   rowMatchesVisitedSearchQuery,
   visitedRowToSearchSpot,
   visitedSpotNeedsGeoCountry,
+  hasUsableVisitedCoords,
 } from '../src/pages/Home/lib/visitedPlaceSearch.js';
 import { resolveGalleryStockQuery } from '../src/pages/Home/lib/uiPlaceAssetQuery.js';
 
@@ -54,6 +55,14 @@ assert.notEqual(spot.country, 'Explore');
 assert.notEqual(spot.country_en, 'Explore');
 assert.equal(visitedSpotNeedsGeoCountry(spot), true);
 assert.ok(!visitedRowToSearchSpot({ ...zakynthosRow, lat: 'x' }));
+assert.equal(
+  visitedRowToSearchSpot({ ...zakynthosRow, lat: 0, lng: 0 }),
+  null,
+  'Null Island visit row is not a search card',
+);
+assert.equal(hasUsableVisitedCoords(37.787, 20.9), true);
+assert.equal(hasUsableVisitedCoords(0, 0), false);
+assert.equal(hasUsableVisitedCoords(null, 20.9), false);
 
 const hangulEnRow = visitedRowToSearchSpot({
   ...zakynthosRow,
@@ -135,6 +144,16 @@ assert.equal(
   buildPlaceStatsIdentityPayload({ name: '자킨토스', name_en: 'Zakynthos' }),
   null,
   'coords required',
+);
+assert.equal(
+  buildPlaceStatsIdentityPayload({
+    name: '자킨토스',
+    name_en: 'Zakynthos',
+    lat: 0,
+    lng: 0,
+  }),
+  null,
+  'Null Island coords are not persisted',
 );
 
 console.log('smoke:visited-place-search OK');

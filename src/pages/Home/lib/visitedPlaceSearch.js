@@ -9,6 +9,16 @@ import { pickLatinPlaceName, samePlaceCenter } from './uiPlaceAssetQuery.js';
 const HAS_HANGUL_RE = /[\uAC00-\uD7A3]/;
 const SKIP_STATS_IDS = new Set(['New Session', 'Scanning...', 'Searching...', '위치 탐색 중...']);
 
+/** 0,0(Null Island)은 지오코딩 실패 기본값 — 방문 카드로 쓰지 않는다 */
+export function hasUsableVisitedCoords(lat, lng) {
+  if (lat == null || lng == null || lat === '' || lng === '') return false;
+  const latN = Number(lat);
+  const lngN = Number(lng);
+  if (!Number.isFinite(latN) || !Number.isFinite(lngN)) return false;
+  if (latN === 0 && lngN === 0) return false;
+  return Math.abs(latN) <= 90 && Math.abs(lngN) <= 180;
+}
+
 export function normalizeVisitedSearchKey(value) {
   return String(value ?? '')
     .trim()
@@ -63,7 +73,7 @@ export function visitedRowToSearchSpot(row, extras = {}) {
   if (!row || typeof row !== 'object') return null;
   const lat = Number(row.lat);
   const lng = Number(row.lng);
-  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  if (!hasUsableVisitedCoords(lat, lng)) return null;
 
   const nameKo = String(row.name_ko || '').trim();
   const nameEn = String(row.name_en || '').trim();
@@ -151,7 +161,7 @@ export function buildPlaceStatsIdentityPayload(location) {
 
   const lat = Number(location.lat);
   const lng = Number(location.lng);
-  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  if (!hasUsableVisitedCoords(lat, lng)) return null;
 
   const nameKo = pickHangulPlaceName(location);
   const nameEn = pickLatinPlaceNameFromLocation(location);

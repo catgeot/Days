@@ -34,6 +34,7 @@ import {
   resolveDestinationToSpot,
 } from '../lib/exploreRecentHistory';
 import { buildHybridSearchSuggestions, buildLocalSearchSuggestions } from '../lib/searchSuggestions';
+import { hasUsableVisitedCoords } from '../lib/visitedPlaceSearch';
 import { isSearchDisambiguation } from '../lib/cityAttractionHubs';
 import { hydrateSearchBoxLatinName } from '../lib/mapboxSearchBox';
 import { needsLatinPlaceName } from '../lib/uiPlaceAssetQuery';
@@ -543,7 +544,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   const visitedGridSpots = useMemo(
     () =>
       hybridSuggestions.filter(
-        (item) => item?.source === 'visited' && Number.isFinite(Number(item.lat)),
+        (item) => item?.source === 'visited' && hasUsableVisitedCoords(item.lat, item.lng),
       ),
     [hybridSuggestions],
   );

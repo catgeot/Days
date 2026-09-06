@@ -14,7 +14,7 @@ import { supabase } from '../../../shared/api/supabase';
 import { buildPlaceDbIdCandidates, getPlaceStableKey, getPlaceStatsId } from '../../../utils/travelSpotResolve';
 import { isDomesticKoreaLocation, resolveTourApiPlace } from '../../../utils/tourApiMatch';
 import { fetchTourApiGallery } from '../../../utils/fetchTourApiGallery';
-import { filterOutSinglePersonPortraits } from '../../../utils/galleryPortraitFilter';
+import { filterOutSinglePersonPortraits, pickPlaceStatsGalleryRow } from '../../../utils/galleryPortraitFilter';
 import { resolveGalleryStockQuery, isLatinPlaceName } from '../../../pages/Home/lib/uiPlaceAssetQuery.js';
 import {
   clearGalleryAttributionReturnState,
@@ -549,18 +549,20 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       // 공식 contentId DB(Tour 포함)는 재사용 — LIVE TourAPI보다 우선.
       if (!GALLERY_DB_SKIP_SLUGS.has(spotSlugForDb) && dbCandidates.length) {
         try {
-          const dbSelect = thumbnailOnly ? 'image_url, gallery_urls' : 'gallery_urls';
+          const dbSelect = thumbnailOnly
+            ? 'place_id, image_url, gallery_urls'
+            : 'place_id, gallery_urls';
           const { data: dbRows, error: dbError } = await withTimeout(
             supabase
               .from('place_stats')
               .select(dbSelect)
               .in('place_id', dbCandidates)
-              .limit(1),
+              .limit(8),
             PLACE_STATS_QUERY_MS,
             'place_stats gallery',
           );
 
-          const dbData = dbRows?.[0];
+          const dbData = pickPlaceStatsGalleryRow(dbRows, dbStatsId);
 
           if (isStale()) return;
 
