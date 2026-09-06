@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { EditorialReviewText } from './EditorialReviewText.jsx';
 import { ReviewLinkChips } from './ReviewLinkChips.jsx';
 import { createPortal } from 'react-dom';
@@ -10,7 +10,7 @@ import { useRelatedBlogs } from '../hooks/useRelatedBlogs';
 import { supabase } from '../../../shared/api/supabase';
 import ReviewEditorModal from '../modals/ReviewEditorModal';
 import { mobilePlaceHeaderSpacerClass, mobilePlaceFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
-import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
+import { placeScrollSurfaceClass, resetPlaceMediaScrollInstant } from '../common/placeScrollSurface';
 import {
   PLACE_GALLERY_SECTION,
   queuePlaceGallerySectionAfterReview,
@@ -512,6 +512,11 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
     idStr.startsWith('search-') || idStr.startsWith('loc-')
       ? idStr
       : (location.slug || idStr);
+
+  useLayoutEffect(() => {
+    resetPlaceMediaScrollInstant(scrollContainerRef.current);
+  }, [placeSlug]);
+
   const {
     reviews,
     isLoading,
