@@ -11,7 +11,13 @@ import {
 import {
   resolveExploreSearchAlias,
   buildMapboxSearchQueries,
+  isIslandPlaceQuery,
 } from '../src/pages/Home/lib/exploreSearchAliases.js';
+import {
+  searchBoxTypesForQuery,
+  SEARCH_BOX_ISLAND_TYPES,
+  SEARCH_BOX_PLACE_TYPES,
+} from '../src/pages/Home/lib/mapboxSearchBox.js';
 
 const langCo = resolveHubAttraction('람코');
 assert.ok(langCo, '람코 → 랑코 해변 attraction');
@@ -63,4 +69,31 @@ assert.ok(
   '람코 mapbox queries include romanized',
 );
 
-console.log('PASS explore-search-aliases (lang co + takamatsu)');
+const sabaAlias = resolveExploreSearchAlias('사바섬');
+assert.ok(sabaAlias?.romanized?.includes('Sabah, Malaysia'), '사바섬 → Sabah Malaysia');
+assert.ok(
+  sabaAlias?.also?.some((q) => /Saba,\s*Caribbean Netherlands/i.test(q)),
+  '사바섬 also → Caribbean Saba',
+);
+assert.equal(resolveExploreSearchAlias('사바'), null, 'bare 사바 is not a Mapbox alias');
+
+const sabaQueries = buildMapboxSearchQueries('사바섬');
+assert.ok(sabaQueries.includes('사바섬'), '사바섬 queries keep original');
+assert.ok(
+  sabaQueries.some((q) => /Sabah,\s*Malaysia/i.test(q)),
+  '사바섬 mapbox queries include Sabah Malaysia',
+);
+assert.ok(
+  sabaQueries.some((q) => /Saba,\s*Caribbean Netherlands/i.test(q)),
+  '사바섬 mapbox queries include Caribbean Saba',
+);
+
+assert.equal(searchBoxTypesForQuery('사바섬'), SEARCH_BOX_ISLAND_TYPES);
+assert.equal(searchBoxTypesForQuery('Saba Island'), SEARCH_BOX_ISLAND_TYPES);
+assert.equal(searchBoxTypesForQuery('제주'), SEARCH_BOX_PLACE_TYPES);
+assert.equal(searchBoxTypesForQuery('파리'), SEARCH_BOX_PLACE_TYPES);
+assert.equal(searchBoxTypesForQuery('자킨토스'), SEARCH_BOX_PLACE_TYPES);
+assert.equal(isIslandPlaceQuery('사바섬'), true);
+assert.doesNotMatch(SEARCH_BOX_ISLAND_TYPES, /\bpoi\b/, 'island search box excludes poi');
+
+console.log('PASS explore-search-aliases (lang co + takamatsu + saba island types)');

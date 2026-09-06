@@ -2,6 +2,94 @@
 
 직전: [`2026-09-05-project-log.md`](./2026-09-05-project-log.md)
 
+## 자킨토스 검색 — PR #196 merge ✅
+
+- **PR [#196](https://github.com/catgeot/Days/pull/196)** FF merge → main `9299f3e8` (사람 요청)
+- **PROD** `https://www.gateo.kr/` — 사바섬 Enter: 말레이시아 사바 앞 · 카리브 Saba 둘째
+- **주제 종료** — 작업 로그 `active: false` · `/qa/zakynthos` → PROD `/`
+- 자킨토스는 여행지 SSOT가 아님. #1(`b651`)에서 등록했다가 #2(`e84a`)에서 되돌림. 검색은 Mapbox uiPlace 카드(영문 Zakynthos)
+
+## 자킨토스 검색 #5, 사바섬 카리브 Saba 둘째
+
+- **브랜치** `cursor/zakynthos-search-e84a` · tip `75979aa7` · **PR [#196](https://github.com/catgeot/Days/pull/196)**
+- Preview QA: 사바섬 Enter가 말레이시아 사바만. Mapbox ko「사바」가 SSOT와 이름 충돌. 카리브 네덜란드 Saba를 고정 동명으로 둘째 카드에 유지
+- **VERIFY** `smoke:sabah-search` · `smoke:explore-search-aliases` · `smoke:zakynthos-search` · `vite build` PASS
+- **다음** 사람 Preview `/qa/zakynthos` — 사바섬 → 사바(말레이시아) 앞 · 사바섬(Saba, 네덜란드) 둘째
+
+```
+자킨토스 검색 #6, 사바섬 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/zakynthos-search-e84a · PR #196 · Preview /qa/zakynthos
+금지: UI 리디자인 · 자킨토스 SSOT 재등록 · orientation=landscape 재도입
+작업: 탐색창 사바섬 Enter → 사바(말레이시아) 앞 · 사바섬(Saba, 네덜란드) 둘째 · 한국 사원 아님 · 자킨토스 회귀
+```
+
+## 자킨토스 검색 #4, 사바섬 말레이시아 여행지
+
+- **브랜치** `cursor/zakynthos-search-e84a` · tip `82c2acfb` · **PR [#196](https://github.com/catgeot/Days/pull/196)**
+- 사람 QA: 사바섬 카드가 카리브 Saba만. 여행 프로「사바섬」= 말레이시아 사바주. SSOT `sabah` + Mapbox 카리브는 동명 카드
+- **VERIFY** `smoke:sabah-search` · `smoke:explore-search-aliases` · `smoke:zakynthos-search` · `audit:airports` none: 0 · `vite build` PASS
+- **다음** 사람 Preview `/qa/zakynthos` — 사바섬 → 사바(말레이시아) 여행지 앞 · 카리브 Saba 둘째(있으면)
+
+```
+자킨토스 검색 #5, 사바섬 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/zakynthos-search-e84a · PR #196 · Preview /qa/zakynthos
+금지: UI 리디자인 · 자킨토스 SSOT 재등록 · orientation=landscape 재도입
+작업: 탐색창 사바섬 Enter → 사바(말레이시아) 여행지 앞 · (있으면) 카리브 Saba 둘째 · 한국 사원 아님 · 자킨토스 회귀
+```
+
+## 자킨토스 검색 #3, 사바섬 Search Box region
+
+- **브랜치** `cursor/zakynthos-search-e84a` · tip `5d708a67` · **PR [#196](https://github.com/catgeot/Days/pull/196)**
+- 자킨토스 사람 Preview PASS. 「사바섬」= 카리브 네덜란드 Saba. Search Box region 누락 → 사보섬. Enter는 region 점수 미달·Nominatim KR 필터 → AI가 서울 구르두와라 시리 싱 사바 사헤브로 교정
+- 섬 쿼리: region 가산·POI 감점·KR 우선 생략·「섬」strip 생략 · Search Box `region,place,city`
+- **VERIFY** `smoke:explore-search-aliases` · `smoke:zakynthos-search` · `vite build` PASS
+- **다음** 사람 Preview `/qa/zakynthos` — 사바섬 Enter → `(Saba)` · 한국 사원 1순위 아님
+
+```
+자킨토스 검색 #4, 사바섬 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/zakynthos-search-e84a · PR #196 · Preview /qa/zakynthos
+금지: UI 리디자인 · 자킨토스 SSOT 재등록 · orientation=landscape 재도입
+작업: 탐색창 사바섬 Enter → 카리브 네덜란드 (Saba) · 한국 시크 사원·사보섬 1순위 아님 · 자킨토스 회귀
+```
+
+## 자킨토스 검색 #2, Preview QA — 맵박스 영문명 uiPlace
+
+- **브랜치** `cursor/zakynthos-search-e84a` · tip `14f0b204` · **PR [#196](https://github.com/catgeot/Days/pull/196)**
+- #195 SSOT 등록을 되돌림. 자킨토스는 검색·DB uiPlace. Mapbox ko+en으로 라틴 `name_en` → 카드 부제·갤러리·영상. 캐시 v1.21
+- **VERIFY** `smoke:zakynthos-search` · `smoke:gallery-portrait-filter` · `smoke:place-gallery-pexels` · `vite build` PASS
+- **다음** 사람 Preview `/qa/zakynthos` — 탐색창 자킨토스 → `(Zakynthos)` · 해변 갤러리 · 영상·플래너 · 여행지 뱃지 아님
+
+```
+자킨토스 검색 #3, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/zakynthos-search-e84a · PR #196 · Preview /qa/zakynthos
+금지: UI 리디자인 · 자킨토스 SSOT 재등록 · orientation=landscape 재도입
+작업: 탐색창 자킨토스 → (Zakynthos) 부제 · 해변 갤러리 · 영상 · 플래너 · 여행지 SSOT 뱃지 아님
+```
+
+## 자킨토스 검색 #1, SSOT 등록
+
+- **브랜치** `cursor/zakynthos-search-b651` · tip `3a27c4dc` · **PR [#195](https://github.com/catgeot/Days/pull/195)**
+- 배포본 탐색창「자킨토스」가 Mapbox 한글 도시(영문 없음·인물 갤러리)로 열리던 문제 → SSOT 여행지 + 자킨토시/잔테/Zante 별칭
+- **VERIFY** `smoke:zakynthos-search` · `audit:airports` none: 0 · `audit:ferries` · `vite build` PASS
+- **다음** 사람 Preview `/qa/zakynthos` · git Preview `/place/zakynthos`
+
+```
+자킨토스 검색 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/zakynthos-search-b651 · PR #195 · Preview /qa/zakynthos
+금지: UI 리디자인 · orientation=landscape 재도입
+작업: 탐색창 자킨토스·자킨토시 → (Zakynthos) 영문·여행지 뱃지·해변 갤러리
+```
+
 ## 갤러리 인물 제외 #1, 단일 인물 필터
 
 - **브랜치** `cursor/gallery-c260` · tip `7decd79c` · **PR [#187](https://github.com/catgeot/Days/pull/187)**
@@ -14,7 +102,20 @@
 
 - **PR [#187](https://github.com/catgeot/Days/pull/187)** squash merge → main `eb1189b6`
 - **PROD** `https://www.gateo.kr/place/paris/gallery`
-- **주제 종료** — 인덱스 종료 행 · 캐시 정책 유지(DB 히트 시 LIVE 생략 · 더보기 DB 미반영)
+- **한계** DB에 인물만 쌓인 곳은 빈 갤러리 가드·island/travel 태그로 필터가 통과함 (자킨토스)
+
+## 갤러리 인물 제외 #2, DB 고착 수정
+
+- **브랜치** `cursor/gallery-2-c260` · tip `0dee0daa` · **PR [#194](https://github.com/catgeot/Days/pull/194)**
+- 캡션에 전경이 있을 때만 사람 컷 유지 · 필터 후 0장이면 `place_stats` 건너뛰고 LIVE · 캐시 v1.20
+- **VERIFY** `smoke:gallery-portrait-filter` · `smoke:place-gallery-pexels` · `vite build` PASS
+- **다음** 사람 Preview `/qa/gallery-portrait` · 자킨토스 갤러리
+
+## 갤러리 인물 제외 — PR #194 merge ✅
+
+- **PR [#194](https://github.com/catgeot/Days/pull/194)** FF merge → main `4e748b4b` (사람 요청)
+- **PROD** `https://www.gateo.kr/` — 자킨토스 갤러리
+- **주제 종료** — DB 인물 고착 시 LIVE 재조회
 
 **다음 제시어 없음** (주제 종료).
 
@@ -130,4 +231,23 @@
 브랜치 cursor/agencies-85ab · PR #192 · Preview /qa/agencies
 금지: 로고/탐색/플래너 리디자인 · 예약 대행 카피
 작업: 파리 플래너·투어 찾기에서 겟유어가이드 투어 연 뒤 로고 패널 방문 기록 · MRT·트립닷컴 회귀
+```
+
+## 공항픽업 링크 #1, OneLink 우회
+
+- **브랜치** `cursor/klook-pickup-d5a5` · tip `3828b09b` · **PR [#193](https://github.com/catgeot/Days/pull/193)**
+- 배포본이 괜찮아 보여도 `affiliate.klook.com/redirect` 는 Referer 무관하게 `klook.onelink.me` + `klook://` — 첫 방문·사파리에서 동일 경고 가능. Preview에서 더 잘 드러남.
+- `klook.com?aid=118544` 웹 직행. UI 변경 없음.
+- **VERIFY** `smoke:klook-affiliate` · `smoke:travel-agencies` · `vite build` PASS
+- **다음** 사람 Preview `/qa/pickup` · git Preview `/place/fukuoka/planner`
+
+**다음 제시어**:
+
+```
+공항픽업 링크 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/klook-pickup-d5a5 · PR #193 · Preview /qa/pickup
+금지: UI 리디자인 · 제휴 aid 변경
+작업: 후쿠오카 플래너 공항 픽업 → 클룩 웹(GATEO) · iOS 앱 열기 경고 없는지
 ```

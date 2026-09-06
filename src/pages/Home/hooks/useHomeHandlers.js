@@ -12,7 +12,7 @@ import {
   collectKoHomonymPlaceCandidates,
   isKoHomonymPlaceSearchQuery,
 } from '../lib/koHomonymRiSearch';
-import { formatUrlName, pickUrlSafeEnglishName } from '../lib/formatUrlName';
+import { formatUrlName, pickUrlSafeEnglishName, isUrlSafeEnglishLabel, isEphemeralSlug } from '../lib/formatUrlName';
 import { resolveGlobeLabelPinFields } from '../lib/resolveGlobeLabelPin';
 import { supabase } from '../../../shared/api/supabase';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
@@ -49,7 +49,7 @@ import {
   ensureDisambiguation,
   locationToChoiceCandidate,
 } from '../lib/searchSuggestions.js';
-import { searchBoxForward } from '../lib/mapboxSearchBox.js';
+import { searchBoxForward, searchBoxTypesForQuery } from '../lib/mapboxSearchBox.js';
 import {
   ensurePlaceChatIntroForLocation,
   needsPlaceChatIntroHydration,
@@ -436,29 +436,43 @@ export function useHomeHandlers({
       category: loc.category || category
     });
 
-    /** SSOT 미등록(살타 등) + 구즐겨찾기 Explore — 역지오코딩으로 국가 자가치유 */
-    const scheduleCountryHeal = (pin) => {
-      if (!isPlaceholderCountry(pin?.country) && !isPlaceholderCountry(pin?.country_en)) return;
+    /** SSOT 미등록(살타·자킨토스 등) — 역지오로 국가·라틴 name_en 자가치유 */
+    const scheduleUiPlaceHeal = (pin) => {
+      const needsCountry =
+        isPlaceholderCountry(pin?.country) || isPlaceholderCountry(pin?.country_en);
+      const needsLatinName = !isUrlSafeEnglishLabel(pin?.name_en) && !isUrlSafeEnglishLabel(pin?.name);
+      if (!needsCountry && !needsLatinName) return;
       const lat = Number(pin?.lat);
       const lng = Number(pin?.lng);
       if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
 
       getAddressFromCoordinates(lat, lng).then((address) => {
-        if (!address?.country || isPlaceholderCountry(address.country)) return;
+        if (!address) return;
+        const healedCountry = address.country && !isPlaceholderCountry(address.country);
+        const healedNameEn = isUrlSafeEnglishLabel(address.name_en) ? String(address.name_en).trim() : '';
+        if (!healedCountry && !healedNameEn) return;
         setSelectedLocation((prev) => {
           if (!prev) return prev;
           const samePlace =
             isSameCanonicalPlace(prev, pin) ||
             (Number(prev.lat) === lat && Number(prev.lng) === lng);
           if (!samePlace) return prev;
-          if (!isPlaceholderCountry(prev.country) && !isPlaceholderCountry(prev.country_en)) {
-            return prev;
+          const stillNeedsCountry =
+            isPlaceholderCountry(prev.country) || isPlaceholderCountry(prev.country_en);
+          const stillNeedsName = !isUrlSafeEnglishLabel(prev.name_en);
+          if (!stillNeedsCountry && !stillNeedsName) return prev;
+          const next = { ...prev };
+          if (stillNeedsCountry && healedCountry) {
+            next.country = address.country;
+            next.country_en = address.country_en || address.country;
           }
-          const healed = prepareResolvedLocation({
-            ...prev,
-            country: address.country,
-            country_en: address.country_en || address.country,
-          });
+          if (stillNeedsName && healedNameEn) {
+            next.name_en = healedNameEn;
+            if (!next.slug || isEphemeralSlug(next.slug)) {
+              next.slug = formatUrlName(healedNameEn) || next.slug;
+            }
+          }
+          const healed = prepareResolvedLocation(next);
           addScoutPin(healed);
           return healed;
         });
@@ -509,7 +523,7 @@ export function useHomeHandlers({
       setSelectedLocation(unified);
       setIsPlaceCardOpen(true);
       setIsCardExpanded(false);
-      scheduleCountryHeal(unified);
+      scheduleUiPlaceHeal(unified);
       scheduleIntroHydrate(unified);
       return;
     }
@@ -525,7 +539,7 @@ export function useHomeHandlers({
     setSelectedLocation(finalLoc);
     setIsPlaceCardOpen(true);
     setIsCardExpanded(false);
-    scheduleCountryHeal(finalLoc);
+    scheduleUiPlaceHeal(finalLoc);
     scheduleIntroHydrate(finalLoc);
   }, [selectedLocation, category, moveToLocation, addScoutPin, processSearchKeywords, setSelectedLocation, setIsPlaceCardOpen, setIsCardExpanded]);
 
@@ -1089,7 +1103,7 @@ export function useHomeHandlers({
         try {
           const remoteHits = await searchBoxForward(query, {
             limit: 5,
-            types: 'place,city,poi',
+            types: searchBoxTypesForQuery(query),
           });
           const seenNames = new Set();
           const distinct = [];

@@ -2,6 +2,7 @@
  * 갤러리 스톡(Unsplash/Pexels)에서 단일 인물 사진만 제외.
  * orientation=landscape 재도입 금지 — 세로 전경(폭포·사원)까지 잘림.
  * 전경 속 사람·거리 군중은 유지.
+ * 장소 검색 태그(island/travel)만으로는 전경으로 보지 않음 — 자킨토스 인물 고착 방지.
  */
 
 const ALWAYS_PORTRAIT_RE =
@@ -18,6 +19,8 @@ const SCENE_RE =
 const SCENIC_PORTRAIT_PHRASE_RE =
   /\bportrait of (a |an |the )?(city|mountain|landscape|place|building|temple|castle|valley|coast|island|skyline)/i;
 
+const FACE_TAG_RE = /^(portraits?|face|headshot|selfie|men|women|man|woman)$/i;
+
 function tagTitles(img) {
   const tags = img?.tags || img?.tags_preview || [];
   if (!Array.isArray(tags)) return [];
@@ -31,17 +34,16 @@ function tagTitles(img) {
     .filter(Boolean);
 }
 
-function collectPhotoText(img) {
+function collectCaptionText(img) {
   if (!img || typeof img !== 'object') return '';
-  return [
-    img.description,
-    img.alt_description,
-    img.alt,
-    img.tourApi?.title,
-    tagTitles(img).join(' '),
-  ]
+  return [img.description, img.alt_description, img.alt, img.tourApi?.title]
     .filter(Boolean)
     .join(' ');
+}
+
+function collectPhotoText(img) {
+  if (!img || typeof img !== 'object') return '';
+  return [collectCaptionText(img), tagTitles(img).join(' ')].filter(Boolean).join(' ');
 }
 
 function isPortraitAspect(img) {
@@ -51,33 +53,35 @@ function isPortraitAspect(img) {
   return height / width >= 1.25;
 }
 
-function hasSceneSignal(text, tags) {
-  if (SCENE_RE.test(text)) return true;
-  return tags.some((title) => SCENE_RE.test(title));
-}
-
 export function isSinglePersonPortraitPhoto(img) {
   if (!img || typeof img !== 'object') return false;
 
+  const caption = collectCaptionText(img);
   const text = collectPhotoText(img);
   const tags = tagTitles(img);
   const portraitAspect = isPortraitAspect(img);
-  const scene = hasSceneSignal(text, tags);
+  const sceneInCaption = SCENE_RE.test(caption);
 
-  if (SCENIC_PORTRAIT_PHRASE_RE.test(text)) return false;
+  if (SCENIC_PORTRAIT_PHRASE_RE.test(caption) || SCENIC_PORTRAIT_PHRASE_RE.test(text)) {
+    return false;
+  }
 
   if (ALWAYS_PORTRAIT_RE.test(text) || tags.some((title) => ALWAYS_PORTRAIT_RE.test(title))) {
-    if (scene && !portraitAspect) return false;
+    if (sceneInCaption && !portraitAspect) return false;
     return true;
   }
 
   const portraitWord =
     PORTRAIT_WORD_RE.test(text) || tags.some((title) => /^portraits?$/i.test(title));
   const personSubject =
-    PERSON_SUBJECT_RE.test(text) || tags.some((title) => PERSON_SUBJECT_RE.test(title));
+    PERSON_SUBJECT_RE.test(caption) ||
+    PERSON_SUBJECT_RE.test(text) ||
+    tags.some((title) => PERSON_SUBJECT_RE.test(title));
+  const faceTag = tags.some((title) => FACE_TAG_RE.test(title));
 
-  if (portraitWord && personSubject && !scene) return true;
-  if (portraitAspect && personSubject && !scene) return true;
+  if (portraitWord && personSubject && !sceneInCaption) return true;
+  if (portraitAspect && personSubject && !sceneInCaption) return true;
+  if (portraitAspect && faceTag && !sceneInCaption) return true;
 
   return false;
 }
@@ -85,7 +89,5 @@ export function isSinglePersonPortraitPhoto(img) {
 export function filterOutSinglePersonPortraits(images) {
   const list = Array.isArray(images) ? images.filter(Boolean) : [];
   if (list.length === 0) return list;
-  const kept = list.filter((img) => !isSinglePersonPortraitPhoto(img));
-  if (kept.length === 0) return list;
-  return kept;
+  return list.filter((img) => !isSinglePersonPortraitPhoto(img));
 }

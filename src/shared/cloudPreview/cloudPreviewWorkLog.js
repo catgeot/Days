@@ -24,6 +24,54 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-06-zakynthos-5-caribbean-saba',
+    session: '자킨토스 검색 #5, 사바섬 Preview QA',
+    title: '사바섬 — 말레이시아 사바 앞 · 카리브 Saba 둘째 고정',
+    detail:
+      'Preview QA에서 사바(말레이시아)만 나옴. Mapbox ko 표기「사바」가 SSOT와 이름 충돌해 카리브 카드가 사라짐. 네덜란드령 Saba를 고정 동명으로 Enter·제안 둘째에 유지. 한국 사원 아님. Preview /qa/zakynthos — 사바섬 → 사바(말레이시아) · 사바섬(Saba, 네덜란드).',
+    at: '2026-09-06T11:30:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-4-sabah-homonym',
+    session: '자킨토스 검색 #4, 사바섬 Preview QA',
+    title: '사바섬 — 말레이시아 사바 여행지 + 카리브 사바 동명',
+    detail:
+      '여행 프로「사바섬」은 말레이시아 사바주(코타키나발루·BKI). Mapbox만 쓰면 카리브 네덜란드 Saba 한 장만 나옴. SSOT 사바를 앞에 두고, 멀리 떨어진 카리브 사바는 선택 카드로 유지. 한국 시크 사원·사보섬은 1순위 아님. Preview /qa/zakynthos — 탐색창 사바섬 → 사바(말레이시아) 여행지 · (있으면) Saba 카리브.',
+    at: '2026-09-06T11:20:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-2-uiplace-en',
+    session: '자킨토스 검색 #2, Preview QA',
+    title: '검색 uiPlace — 맵박스 영문명으로 갤러리·영상 연결',
+    detail:
+      '자킨토스는 SSOT가 아님. Mapbox ko가 name_en에 한글을 넣던 구멍을 ko+en으로 메움. 라틴 지명으로 카드 부제·Unsplash·YouTube가 붙고, 캐시된 한글 name_en은 역지오로 치유. Preview /qa/zakynthos — 탐색창 자킨토스 → (Zakynthos) · 해변 갤러리 · 영상·플래너.',
+    at: '2026-09-06T10:10:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-1-ssot',
+    session: '자킨토스 검색 #1, SSOT 등록',
+    title: '자킨토스 — 영문명 있는 여행지 카드',
+    detail:
+      '배포본 탐색창「자킨토스」가 Mapbox 한글 도시(영문 없음·인물 갤러리)로 열림. SSOT 여행지 등록 + 자킨토시/잔테/Zante 별칭. Preview /qa/zakynthos — 탐색창 자킨토스·자킨토시 → (Zakynthos) 영문·여행지 뱃지·해변 갤러리.',
+    at: '2026-09-06T08:50:00.000Z',
+  },
+  {
+    id: '2026-09-06-pickup-1-onelink-web',
+    session: '공항픽업 링크 #1, OneLink 우회',
+    title: '클룩 공항 픽업 — 웹 직행 (앱 열기 경고 없음)',
+    detail:
+      'affiliate.klook.com/redirect 가 klook.onelink.me + klook:// 로 가서 iOS가 「다른 애플리케이션을 열려고 합니다」를 띄움. Preview(vercel.app)에서 더 잘 드러남. klook.com?aid=118544 웹 직행. Preview /qa/pickup — 후쿠오카 플래너 공항 픽업 → 클룩 웹(GATEO) · 앱 열기 경고 없는지.',
+    at: '2026-09-06T06:40:00.000Z',
+  },
+  {
+    id: '2026-09-06-gallery-2-db-portrait-refetch',
+    session: '갤러리 인물 제외 #2, DB 고착 수정',
+    title: 'DB에 쌓인 단일 인물도 걸러 LIVE 재조회',
+    detail:
+      '자킨토스처럼 place_stats에 인물만 있으면 빈 갤러리 방지 가드가 원본을 그대로 보여 줌. 장소 태그 island/travel만으로는 전경으로 보지 않음. 필터 후 0장이면 DB를 건너뛰고 Unsplash/Pexels를 다시 받음. Preview /qa/gallery-portrait — 자킨토스 갤러리에서 셀카·얼굴 클로즈업이 빠지는지.',
+    at: '2026-09-06T06:31:00.000Z',
+  },
+  {
     id: '2026-09-06-agencies-2-gyg-iframe',
     session: '여행사 목록 #2, Preview QA',
     title: '겟유어가이드 위젯 방문도 기록',

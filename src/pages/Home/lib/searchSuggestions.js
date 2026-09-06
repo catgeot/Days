@@ -33,8 +33,14 @@ import {
   cityToSuggestion,
   matchCitiesPrefix,
 } from './citiesSearch';
-import { searchBoxForward } from './mapboxSearchBox';
+import { searchBoxForward, searchBoxTypesForQuery } from './mapboxSearchBox';
 import { buildMapboxSearchQueries } from './exploreSearchAliases';
+import {
+  collectKnownTravelHomonyms,
+  homonymIdentityKey,
+  isDistinctTravelPlace,
+  relabelHomonymDisplay,
+} from './travelSearchHomonyms';
 
 const normalizeKey = (s) =>
   String(s ?? '')
@@ -69,6 +75,52 @@ function pushUnique(out, seen, item) {
   if (!k || seen.has(k)) return;
   seen.add(k);
   out.push(item);
+}
+
+/**
+ * SSOT 여행지 Enter 카드에, 멀리 떨어진 동명을 붙인다 (사바↔카리브 사바).
+ * 고정 동명이 먼저 — Mapbox ko 표기가 SSOT와 같은 한글명이면 둘째 카드가 사라진다.
+ * @param {string} query
+ * @param {object[]} ssotCandidates
+ */
+export async function collectDistinctMapboxHomonyms(query, ssotCandidates) {
+  const anchors = (ssotCandidates || []).filter(Boolean);
+  if (!anchors.length) return [];
+
+  const extras = collectKnownTravelHomonyms(query, anchors).map((item) =>
+    relabelHomonymDisplay(item, anchors),
+  );
+  const distinctAnchors = [...anchors, ...extras];
+  const seenIds = new Set(distinctAnchors.map(homonymIdentityKey).filter(Boolean));
+  const seenNames = new Set(
+    distinctAnchors.map((item) => normalizeKey(item?.name)).filter(Boolean),
+  );
+
+  try {
+    const queries = buildMapboxSearchQueries(query);
+    const searchBoxTypes = searchBoxTypesForQuery(query);
+    for (const mq of queries) {
+      const remote = await searchBoxForward(mq, {
+        limit: 5,
+        types: searchBoxTypes,
+      });
+      for (const item of remote || []) {
+        const idKey = homonymIdentityKey(item);
+        if (!idKey || seenIds.has(idKey)) continue;
+        if (!isDistinctTravelPlace(item, distinctAnchors)) continue;
+        const labeled = relabelHomonymDisplay(item, distinctAnchors);
+        const nameKey = normalizeKey(labeled.name);
+        if (nameKey && seenNames.has(nameKey)) continue;
+        seenIds.add(idKey);
+        if (nameKey) seenNames.add(nameKey);
+        extras.push(labeled);
+        distinctAnchors.push(labeled);
+      }
+    }
+  } catch {
+    return extras.slice(0, 3);
+  }
+  return extras.slice(0, 3);
 }
 
 /**
@@ -156,6 +208,12 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
   const key = normalizeKey(q);
   const out = [];
   const seen = new Set();
+
+  const officialSpot = resolveTravelSpotFromSearchQuery(q);
+  if (officialSpot) pushUnique(out, seen, spotToSuggestion(officialSpot));
+  for (const extra of collectKnownTravelHomonyms(q, officialSpot ? [officialSpot] : [])) {
+    pushUnique(out, seen, extra);
+  }
 
   const spotHits = TRAVEL_SPOTS.filter((spot) => {
     const name = (spot.name || '').toLowerCase();
@@ -275,12 +333,13 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
   const seen = new Set(local.map(dedupeKey).filter(Boolean));
   const mapboxLimit = opts.mapboxLimit ?? 6;
   const mapboxQueries = local.length < 3 ? buildMapboxSearchQueries(q) : [q];
+  const searchBoxTypes = searchBoxTypesForQuery(q);
 
   try {
     for (const mq of mapboxQueries) {
       const remote = await searchBoxForward(mq, {
         limit: mapboxLimit,
-        types: 'place,city,poi',
+        types: searchBoxTypes,
         language: /[\uAC00-\uD7A3]/.test(mq) ? 'ko' : 'en',
       });
       for (const item of remote) pushUnique(out, seen, item);
@@ -433,7 +492,16 @@ export async function buildCuratedEnterDisambiguation(query) {
 
   const querySpot = resolveTravelSpotFromSearchQuery(q);
   if (querySpot) {
-    return ensureDisambiguation(q, [spotToSuggestion(querySpot)], `'${querySpot.name}' → 이 여행지로 갈까요?`);
+    const ssot = [spotToSuggestion(querySpot)];
+    const extras = await collectDistinctMapboxHomonyms(q, ssot);
+    if (extras.length) {
+      return ensureDisambiguation(
+        q,
+        [...ssot, ...extras],
+        `'${q}' → 원하는 장소를 선택하세요`,
+      );
+    }
+    return ensureDisambiguation(q, ssot, `'${querySpot.name}' → 이 여행지로 갈까요?`);
   }
 
   const seaHit = resolveSeaBasinFromQuery(q);

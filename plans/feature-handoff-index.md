@@ -14,6 +14,47 @@
 
 ## 활성 목록
 
+### 자킨토스 검색 — main 병합 ✅
+
+| | |
+|--|--|
+| **상태** | **#5 merge ✅** · main `9299f3e8` · PR [#196](https://github.com/catgeot/Days/pull/196) |
+| **브랜치** | `cursor/zakynthos-search-e84a` · merge `9299f3e8` |
+| **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
+| **PROD** | `https://www.gateo.kr/` — 탐색창 사바섬·자킨토스 |
+| **VERIFY** | `smoke:sabah-search` · `smoke:explore-search-aliases` · `smoke:zakynthos-search` · `vite build` PASS |
+
+**다음 제시어 없음** (주제 종료). 자킨토스는 여행지 SSOT가 아님(Mapbox uiPlace). 사바섬은 말레이시아 사바 앞 · 카리브 Saba 둘째. `/qa/zakynthos` → PROD `/`.
+
+---
+
+### 공항픽업 링크
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `3828b09b` · PR [#193](https://github.com/catgeot/Days/pull/193) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/klook-pickup-d5a5` |
+| **tip** | `3828b09b` |
+| **PR** | [#193](https://github.com/catgeot/Days/pull/193) |
+| **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
+| **Preview** | `/qa/pickup` → git Preview `/place/fukuoka/planner` |
+| **소유** | `klookAffiliateUrl.js` · `affiliate.js` `getKlookAffiliateUrl` · PreTravelChecklist 픽업 |
+| **금지** | UI 리디자인 · 제휴 aid 변경 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:klook-affiliate` · `smoke:travel-agencies` · `vite build` |
+
+**다음 제시어**:
+
+```
+공항픽업 링크 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/klook-pickup-d5a5 · PR #193 · Preview /qa/pickup
+금지: UI 리디자인 · 제휴 aid 변경
+작업: 후쿠오카 플래너 공항 픽업 → 클룩 웹(GATEO) · iOS 앱 열기 경고 없는지
+```
+
+---
+
 ### 여행사 목록
 
 | | |
@@ -140,13 +181,13 @@
 
 | | |
 |--|--|
-| **상태** | **#1 merge ✅** · main `eb1189b6` · PR [#187](https://github.com/catgeot/Days/pull/187) |
-| **브랜치** | `cursor/gallery-c260` · merge `eb1189b6` |
+| **상태** | **#2 merge ✅** · main `4e748b4b` · PR [#194](https://github.com/catgeot/Days/pull/194) |
+| **브랜치** | `cursor/gallery-2-c260` · merge `4e748b4b` |
 | **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
-| **PROD** | `https://www.gateo.kr/place/paris/gallery` |
+| **PROD** | `https://www.gateo.kr/` — 자킨토스 갤러리 |
 | **VERIFY** | `smoke:gallery-portrait-filter` · `smoke:place-gallery-pexels` · `vite build` PASS |
 
-**다음 제시어 없음** (주제 종료). 단일 인물 필터는 PROD. DB `place_stats` 캐시 정책은 유지(LIVE 생략 · 더보기 DB 덮어쓰기 금지).
+**다음 제시어 없음** (주제 종료). DB 인물 고착 시 LIVE 재조회는 PROD.
 
 ---
 
