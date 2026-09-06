@@ -161,19 +161,14 @@ const TravelAgencyDirectory = ({ variant = 'panel', className = '' }) => {
     );
   });
 
-  return (
-    <section className={`${styles.wrap} ${className}`.trim()} aria-label={t('home.agencies.title')}>
-      <div className="flex items-end justify-between gap-2">
-        <h3 className={styles.heading}>
-          <Building2 size={16} className={styles.headingIcon} />
-          {t('home.agencies.title')}
-        </h3>
-        {visits.length > 0 ? (
-          <button type="button" onClick={clearVisits} className={styles.clear}>
-            {t('home.agencies.clearVisits')}
-          </button>
-        ) : null}
-      </div>
+  const clearButton = visits.length > 0 ? (
+    <button type="button" onClick={clearVisits} className={styles.clear}>
+      {t('home.agencies.clearVisits')}
+    </button>
+  ) : null;
+
+  const body = (
+    <>
       <p className={styles.hint}>{t('home.agencies.hint')}</p>
 
       {visits.length > 0 ? (
@@ -219,6 +214,38 @@ const TravelAgencyDirectory = ({ variant = 'panel', className = '' }) => {
           <div className={styles.catalogGrid}>{catalogRows}</div>
         </div>
       )}
+    </>
+  );
+
+  if (variant === 'panel') {
+    return (
+      <section className={`${styles.wrap} ${className}`.trim()} aria-label={t('home.agencies.title')}>
+        <details className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+          <summary className="cursor-pointer py-1 text-lg font-bold text-white">
+            <span className="inline-flex items-center gap-2">
+              <Building2 size={16} className={styles.headingIcon} />
+              {t('home.agencies.title')}
+            </span>
+          </summary>
+          <div className="mt-3 space-y-4">
+            {clearButton ? <div className="flex justify-end">{clearButton}</div> : null}
+            {body}
+          </div>
+        </details>
+      </section>
+    );
+  }
+
+  return (
+    <section className={`${styles.wrap} ${className}`.trim()} aria-label={t('home.agencies.title')}>
+      <div className="flex items-end justify-between gap-2">
+        <h3 className={styles.heading}>
+          <Building2 size={16} className={styles.headingIcon} />
+          {t('home.agencies.title')}
+        </h3>
+        {clearButton}
+      </div>
+      {body}
     </section>
   );
 };

@@ -401,7 +401,7 @@
       "signOut": "로그아웃"
     },
     "agencies": {
-      "title": "여행사",
+      "title": "방문한 여행사",
       "visitedTitle": "내가 방문한 여행사",
       "visitedEmpty": "아직 이 기기에서 연 여행사가 없습니다. 숙소·투어를 열면 여기에 남습니다.",
       "catalogTitle": "연결된 여행사",
