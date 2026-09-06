@@ -829,7 +829,11 @@
       "refreshTitle": "Unsplash·Pexels에서 추가 사진 불러오기",
       "sourcesRateLimit": "Unsplash · Pexels · {{seconds}}초에 한 번",
       "enlargeImage": "{{alt}} 확대하기",
-      "imageFallback": "갤러리 이미지"
+      "imageFallback": "갤러리 이미지",
+      "manageTitle": "관련 없는 사진인가요?",
+      "manageBody": "이 사진을 갤러리에서 제거합니다. 저장된 목록에서도 빠집니다.",
+      "manageRemove": "갤러리에서 제거",
+      "manageCancel": "취소"
     },
     "video": {
       "loading": "관련 영상을 불러오는 중...",

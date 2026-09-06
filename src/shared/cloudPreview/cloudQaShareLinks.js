@@ -9,10 +9,10 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'gallery',
-    label: '갤러리 단일 인물 제외',
-    branch: 'cursor/gallery-c260',
+    label: '갤러리 사진 관리',
+    branch: 'cursor/gallery-manage-173f',
     destination:
-      'https://days-git-cursor-gallery-c260-catgeots-projects.vercel.app/place/paris/gallery',
+      'https://days-git-cursor-gallery-manage-173f-catgeots-projects.vercel.app/place/paris/gallery',
     active: true,
   },
   {

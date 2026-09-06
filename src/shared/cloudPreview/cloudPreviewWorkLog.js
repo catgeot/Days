@@ -5,10 +5,10 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '갤러리 인물 제외',
+  title: '갤러리 사진 관리',
   sessionNo: 1,
-  sessionPhase: '단일 인물 필터',
-  branch: 'cursor/gallery-c260',
+  sessionPhase: '모바일 길게 누르기',
+  branch: 'cursor/gallery-manage-173f',
   previewPath: '/place/paris/gallery',
   qaShareSlug: 'gallery',
 };
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-06-gallery-manage-1-long-press',
+    session: '갤러리 사진 관리 #1, 모바일 길게 누르기',
+    title: '모바일 갤러리 — 길게 눌러 관련 없는 사진 제거',
+    detail:
+      'PC는 Ctrl(⌘)+더블클릭으로 DB에서 빼는 기능이 있었는데 모바일에는 없었음. 그리드·확대 사진을 길게 누르면 확인 시트가 뜨고, 제거 시 place_stats 갤러리에서 빠짐. Preview /qa/gallery — 모바일에서 사진 꾹 → 제거 → 목록에서 사라지는지.',
+    at: '2026-09-06T02:40:00.000Z',
+  },
   {
     id: '2026-09-06-gallery-1-no-portrait',
     session: '갤러리 인물 제외 #1, 단일 인물 필터',

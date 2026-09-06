@@ -1059,7 +1059,11 @@
       "refreshTitle": "Load more from Unsplash · Pexels",
       "sourcesRateLimit": "Unsplash · Pexels · once every {{seconds}}s",
       "enlargeImage": "Enlarge {{alt}}",
-      "imageFallback": "Gallery image"
+      "imageFallback": "Gallery image",
+      "manageTitle": "Unrelated photo?",
+      "manageBody": "Remove this photo from the gallery. It will also drop from the saved list.",
+      "manageRemove": "Remove from gallery",
+      "manageCancel": "Cancel"
     },
     "video": {
       "loading": "Loading related videos...",
