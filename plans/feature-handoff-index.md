@@ -14,6 +14,33 @@
 
 ## 활성 목록
 
+### 여행사 목록
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `8ed679af` · PR [#192](https://github.com/catgeot/Days/pull/192) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/agencies-85ab` |
+| **tip** | `8ed679af` |
+| **PR** | [#192](https://github.com/catgeot/Days/pull/192) |
+| **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
+| **Preview** | `/qa/agencies` → git Preview `/` · `/explore` · `/place/paris/planner` |
+| **소유** | `travelAgencies.js` · `travelAgencyVisits.js` · `TravelAgencyDirectory` · LogoPanel · SearchDiscovery · PlannerTab |
+| **금지** | 로고/탐색/플래너 리디자인 · 예약 대행 카피 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:travel-agencies` · `vite build` |
+
+**다음 제시어**:
+
+```
+여행사 목록 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/agencies-85ab · PR #192 · Preview /qa/agencies
+금지: 로고/탐색/플래너 리디자인 · 예약 대행 카피
+작업: 로고 패널에서 마이리얼트립 · 숙소 연 뒤 방문 기록 · 탐색 여행사 칩 · 파리 플래너 접힌 목록
+```
+
+---
+
 ### 릴리스 노트 푸터
 
 | | |
