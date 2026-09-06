@@ -72,9 +72,9 @@
 
 | | |
 |--|--|
-| **상태** | **#9 push** · tip `cffe174f` · PR [#199](https://github.com/catgeot/Days/pull/199) · #9 사람 Preview QA PASS · **#10 방문 요약 카드 QA** |
+| **상태** | **#10 push** · tip `6c47ed6a` · PR [#199](https://github.com/catgeot/Days/pull/199) · **#11 사람 Preview QA** — 방문 카드 그리스·사진 |
 | **브랜치** | `cursor/zakynthos-search-e84a` |
-| **tip** | `cffe174f` |
+| **tip** | `6c47ed6a` |
 | **PR** | [#199](https://github.com/catgeot/Days/pull/199) |
 | **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
 | **Preview** | `/qa/zakynthos` → git Preview `/` (지도 우선 로딩 · 방문 후 요약 카드) |
@@ -85,12 +85,12 @@
 **다음 제시어**:
 
 ```
-자킨토스 검색 #10, 방문 요약 카드 QA
+자킨토스 검색 #11, Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-06-project-log.md
 브랜치 cursor/zakynthos-search-e84a · PR #199 · Preview /qa/zakynthos
 금지: UI 리디자인 · 자킨토스 SSOT 재등록 · orientation=landscape 재도입
-작업: Enter 로딩이 지도 찾기인지 · 자킨토스 방문 후 재검색 시 요약/썸네일 카드 · 사바섬 회귀
+작업: 자킨토스 재검색 요약에 그리스 · 해변 사진 · Explore 아님 · 사바섬 회귀
 ```
 
 ---
