@@ -18,9 +18,9 @@
 
 | | |
 |--|--|
-| **상태** | **#4 push** · tip `82c2acfb` · PR [#196](https://github.com/catgeot/Days/pull/196) · **#5 사람 Preview QA** (사바섬 말레이시아) |
+| **상태** | **#5 push** · tip `75979aa7` · PR [#196](https://github.com/catgeot/Days/pull/196) · **#6 사람 Preview QA** (사바섬 + 카리브 Saba) |
 | **브랜치** | `cursor/zakynthos-search-e84a` |
-| **tip** | `82c2acfb` |
+| **tip** | `75979aa7` |
 | **PR** | [#196](https://github.com/catgeot/Days/pull/196) |
 | **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
 | **Preview** | `/qa/zakynthos` → git Preview `/` (탐색창 사바섬·자킨토스) |
@@ -31,12 +31,12 @@
 **다음 제시어**:
 
 ```
-자킨토스 검색 #5, 사바섬 Preview QA
+자킨토스 검색 #6, 사바섬 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-06-project-log.md
 브랜치 cursor/zakynthos-search-e84a · PR #196 · Preview /qa/zakynthos
 금지: UI 리디자인 · 자킨토스 SSOT 재등록 · orientation=landscape 재도입
-작업: 탐색창 사바섬 Enter → 사바(말레이시아) 여행지 앞 · (있으면) 카리브 Saba 둘째 · 한국 사원 아님 · 자킨토스 회귀
+작업: 탐색창 사바섬 Enter → 사바(말레이시아) 앞 · 사바섬(Saba, 네덜란드) 둘째 · 한국 사원 아님 · 자킨토스 회귀
 ```
 
 ---
