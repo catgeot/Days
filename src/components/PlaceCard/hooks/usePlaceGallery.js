@@ -4,7 +4,7 @@
 // 2. [Maintain] Unsplash API 최종 실패 시 기본 대체 이미지를 제공하는 3차 방어막(Fallback) '유지'
 // 3. 🚨 [Subtraction] 영문 매핑 사전(FALLBACK_DICTIONARY) '제거' -> 기형적인 로직을 버리고 citiesData.js의 원본 데이터(name_en)를 직접 참조하도록 아키텍처 원복
 // 4. 🚨 [New] Unsplash 프로덕션 승인 요건: 다운로드 트래킹(download_location) 호출 및 실제 파일 다운로드 로직(handleDownload) 추가
-// 5. 🚨 [New] 갤러리 이미지 영구 삭제 기능(Ctrl + 더블클릭) 지원을 위한 handleRemoveImage 추가 및 쿼리/이름 Ref 추가
+// 5. 갤러리 이미지 영구 삭제(PC: Ctrl+더블클릭 · 모바일: 길게 누르기) — handleRemoveImage · 쿼리/이름 Ref
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { apiClient } from '../../../pages/Home/lib/apiClient';
