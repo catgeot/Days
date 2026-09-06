@@ -250,6 +250,24 @@
 작업: 파리 플래너·투어 찾기에서 겟유어가이드 투어 연 뒤 로고 패널 방문 기록 · MRT·트립닷컴 회귀
 ```
 
+## 여행사 목록 #3, 방문한 여행사 접힘
+
+- **브랜치** `cursor/agencies-85ab` · tip `c6fdd253` · **PR [#198](https://github.com/catgeot/Days/pull/198)** (#192 merge ✅)
+- 로고 패널 목록이 패널을 가득 채우던 UX → 「방문한 여행사」**접힌 기본값**. 탐색창 칩 명칭만 「여행사」→「방문한 여행사」.
+- **VERIFY** `smoke:travel-agencies` · `vite build` PASS
+- **다음** 사람 Preview `/qa/agencies` — 로고 패널 접힘·펼침 · 탐색 칩 명칭 · 방문 기록 회귀
+
+**다음 제시어**:
+
+```
+여행사 목록 #4, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/agencies-85ab · PR #198 · Preview /qa/agencies
+금지: 로고/탐색/플래너 리디자인 · 예약 대행 카피
+작업: 로고 패널 「방문한 여행사」접힘 · 펼치면 목록 · 탐색창 칩 명칭 · 방문 기록 회귀
+```
+
 ## 공항픽업 링크 #1, OneLink 우회
 
 - **브랜치** `cursor/klook-pickup-d5a5` · tip `3828b09b` · **PR [#193](https://github.com/catgeot/Days/pull/193)**
