@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '갤러리 좌측 패널',
-  sessionNo: 1,
-  sessionPhase: '공간 조정',
-  branch: 'cursor/gallery-panel-032e',
-  previewPath: '/place/paris/gallery',
-  qaShareSlug: 'gallery-panel',
+  title: '자킨토스 검색',
+  sessionNo: 12,
+  sessionPhase: '오염된 방문 행 무시',
+  branch: 'cursor/zakynthos-search-e84a',
+  previewPath: '/',
+  qaShareSlug: 'zakynthos',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,46 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-06-zakynthos-12-stale-visit-row',
+    session: '자킨토스 검색 #12, Preview QA',
+    title: '한글 방문 행(0,0·인물)은 검색에 안 씀',
+    detail:
+      '자킨토스만 place_stats에 한글 place_id·좌표 0,0·인물 갤러리가 남아 지도 검색을 가로챘다. 그 행은 방문 카드로 쓰지 않고, 갤러리는 라틴 zakynthos 해변 행을 고른다. Preview /qa/zakynthos — 재검색 시 그리스·해변 사진 · Explore 아님.',
+    at: '2026-09-06T20:40:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-11-greece-label',
+    session: '자킨토스 검색 #11, Preview QA',
+    title: '방문 카드 — GLOBAL 대신 그리스',
+    detail:
+      '#10이 Explore를 비우면서 헤더가 Global로 떨어짐. Search Box 객체 context에서 나라를 읽고, 방문 좌표를 역지오해서 그리스·Zakynthos를 카드에 붙인다. 인물 image_url은 그리드에 쓰지 않음. Preview /qa/zakynthos — 드롭다운·써머리·장소 헤더가 그리스 자킨토스인지.',
+    at: '2026-09-06T20:00:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-10-visited-country',
+    session: '자킨토스 검색 #10, 방문 요약 카드 QA',
+    title: '방문 카드 — 그리스 표기 · 사진 호출',
+    detail:
+      '방문 place_stats 카드가 국가 없이 Explore로 떨어지고 한글 name_en이라 사진을 안 불렀음. 지도 히트의 그리스·Zakynthos를 겹치고, 탐색 그리드는 저장 썸네일·한 장 조회를 쓴다. SSOT 사바는 방문 카드가 가리지 않음. Preview /qa/zakynthos — 자킨토스 재검색 요약에 그리스·해변 사진.',
+    at: '2026-09-06T15:20:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-9-visited-summary',
+    session: '자킨토스 검색 #9, Preview QA',
+    title: '검색은 지도 우선 · 방문한 지명은 요약 카드',
+    detail:
+      'Enter 로딩이 「AI 탐색」으로 보이던 것은 지오코딩 실패가 아님. 문구를 지도 검색으로 바꿨다. 장소카드를 열어 방문이 쌓이면 place_stats에 한글·영문·좌표를 남기고, 다음 검색부터 드롭다운·탐색 그리드·Enter 선택 카드에 그 지명 요약이 뜬다. AI는 지도를 못 찾았을 때만. Preview /qa/zakynthos — 자킨토스 방문 후 다시 검색.',
+    at: '2026-09-06T14:50:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-8-unseen-geocode',
+    session: '자킨토스 검색 #8, Preview QA',
+    title: '미등록 한글 지명은 Search Box 공백이면 Geocoding으로 보강',
+    detail:
+      '자킨토스·사바 별칭이 아니라 검색 성능. Search Box ko 공백이면 en을 건너뛰던 .every 구멍 수정. 한글 쿼리를 해외 지명이 못 덮으면 Mapbox Geocoding(ko+en)을 드롭다운 앞에 붙임. Preview /qa/zakynthos — 케팔로니아·시프노스·포르멘테라·파로스 등 미등록 지명.',
+    at: '2026-09-06T12:20:00.000Z',
+  },
   {
     id: '2026-09-06-gallery-panel-1-info-dock',
     session: '갤러리 좌측 패널 #1, 공간 조정',

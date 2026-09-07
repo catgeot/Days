@@ -10,7 +10,7 @@ import { PERSONA_TYPES } from '../../../pages/Home/lib/prompts';
 import BookmarkButton from '../common/BookmarkButton';
 import { getRelatedPlaces } from '../../../pages/Home/hooks/useSearchEngine';
 import { getPlaceUrlParam } from '../../../pages/Home/lib/formatUrlName';
-import { mergeCanonicalTravelSpot } from '../../../utils/travelSpotResolve';
+import { mergeCanonicalTravelSpot, isPlaceholderCountry } from '../../../utils/travelSpotResolve';
 import { getPlaceTitleLinesForLocale, getLocalizedCountryName, getLocalizedPlaceName } from '../common/locationDisplay';
 import { useLocale } from '../../../i18n/LocaleProvider';
 import { copyToClipboard } from '../common/copyToClipboard';
@@ -67,7 +67,8 @@ const PlaceChatPanel = React.memo(({
   const skipRelatedRefreshRef = useRef(false);
   const [relatedPlaces, setRelatedPlaces] = useState([]);
   const { primaryName, secondaryName } = getPlaceTitleLinesForLocale(location, locale);
-  const countryLabel = getLocalizedCountryName(location, locale) || t('place.fallback.global');
+  const rawCountry = getLocalizedCountryName(location, locale);
+  const countryLabel = isPlaceholderCountry(rawCountry) ? '' : rawCountry;
 
   const getPlaceKey = (place) => `${place?.id ?? ''}:${place?.name ?? ''}`;
 

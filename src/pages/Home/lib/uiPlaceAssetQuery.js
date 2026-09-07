@@ -89,12 +89,29 @@ export function ensureLatinPlaceSlug(place) {
 export function mergeSearchBoxEnglishHits(koHits, enHits) {
   const enList = enHits || [];
   const byId = new Map(enList.filter((h) => h?.mapboxId).map((h) => [h.mapboxId, h]));
-  return (koHits || []).map((hit) => {
+  const koList = koHits || [];
+  if (!koList.length) {
+    return enList.map((hit) => ensureLatinPlaceSlug(hit));
+  }
+  return koList.map((hit) => {
     if (isLatinPlaceName(hit?.name_en)) return ensureLatinPlaceSlug(hit);
     const byMapbox = hit?.mapboxId ? byId.get(hit.mapboxId) : null;
     const byCenter = byMapbox ? null : enList.find((h) => samePlaceCenter(h, hit));
     return ensureLatinPlaceSlug(mergeLatinPlaceFields(hit, byMapbox || byCenter));
   });
+}
+
+/** Geocoding 보강 히트를 Search Box 앞에 — 같은 핀은 한 장만 */
+export function mergeSearchBoxWithGeocodeHits(searchHits, geocodeHits) {
+  const out = [];
+  const push = (hit) => {
+    if (!hit) return;
+    if (out.some((row) => samePlaceCenter(row, hit))) return;
+    out.push(ensureLatinPlaceSlug(hit));
+  };
+  for (const hit of geocodeHits || []) push(hit);
+  for (const hit of searchHits || []) push(hit);
+  return out;
 }
 
 /** Enter 지오코딩 영문을 Search Box 동명·근접 히트에 이식 — 드롭다운·선택 카드가 다른 핀이 되지 않게 */

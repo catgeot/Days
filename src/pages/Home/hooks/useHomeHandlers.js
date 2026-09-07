@@ -58,6 +58,11 @@ import {
   ensurePlaceChatIntroForLocation,
   needsPlaceChatIntroHydration,
 } from '../lib/placeChatIntro.js';
+import { lookupVisitedPlacesForSearch } from '../lib/visitedPlaceSearchLookup.js';
+import {
+  overlayGeoFieldsOnVisitedSpots,
+  visitedSpotNeedsGeoCountry,
+} from '../lib/visitedPlaceSearch.js';
 
 const prepareLocation = (loc) =>
   enrichLocationWithRentalAirport(healPlaceholderCountry(mergeCanonicalTravelSpot(loc)));
@@ -1087,6 +1092,44 @@ export function useHomeHandlers({
     const seaSpotBeforeGeocode = pickSeaBasinCurationSpot(query, category);
     if (seaSpotBeforeGeocode) {
       return commitLocation(seaSpotBeforeGeocode);
+    }
+
+    if (!shouldSkipGeocodeForMood(query)) {
+      try {
+        const visitedHits = await lookupVisitedPlacesForSearch(query);
+        if (visitedHits.length >= 1) {
+          let mergedVisited = visitedHits;
+          try {
+            const remoteHits = await searchBoxForward(query, {
+              limit: 5,
+              types: searchBoxTypesForQuery(query),
+            });
+            mergedVisited = overlayGeoFieldsOnVisitedSpots(visitedHits, remoteHits);
+          } catch {
+            mergedVisited = visitedHits;
+          }
+          if (mergedVisited.some(visitedSpotNeedsGeoCountry)) {
+            try {
+              const coords = await getCoordinatesFromAddress(query);
+              if (coords) {
+                mergedVisited = overlayGeoFieldsOnVisitedSpots(mergedVisited, [coords]);
+              }
+            } catch {
+              // keep visited names
+            }
+          }
+          const readyVisited = mergedVisited.filter((spot) => !visitedSpotNeedsGeoCountry(spot));
+          if (readyVisited.length >= 1) {
+            return requireChoice || readyVisited.length >= 2
+              ? makeDisambiguationResult(query, readyVisited, {
+                  title: `'${query}' → 원하는 장소를 선택하세요`,
+                })
+              : commitLocation(readyVisited[0]);
+          }
+        }
+      } catch {
+        // 방문 DB 실패 시 지오코딩으로 진행
+      }
     }
 
     const coords = shouldSkipGeocodeForMood(query)

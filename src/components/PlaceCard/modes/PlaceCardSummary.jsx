@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { X, Sparkles, Maximize2, Cuboid, Plane, Loader2, ChevronRight, ScanSearch, ScanEye, LayoutList } from 'lucide-react';
 import BookmarkButton from '../common/BookmarkButton';
+import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
 import { getPlaceTitleLinesForLocale, getLocalizedCountryName, getLocalizedPlaceName } from '../common/locationDisplay';
 import { useLocale } from '../../../i18n/LocaleProvider';
 import { canStartGlobeTour } from '../../../pages/Home/lib/globeTourEngine';
@@ -84,7 +85,8 @@ const PlaceCardSummary = ({
   const allowSummaryIntroExpandTap = !isScanning && !isCompact;
   const isEnterGlow = !isMobileCoarse && glowPhase === 'enter';
   const { primaryName, secondaryName } = getPlaceTitleLinesForLocale(location, locale);
-  const countryLabel = getLocalizedCountryName(location, locale) || t('place.fallback.global');
+  const rawCountry = getLocalizedCountryName(location, locale);
+  const countryLabel = isPlaceholderCountry(rawCountry) ? '' : rawCountry;
   const canStartTour = canStartGlobeTour(location);
   const flightRouteInteractive = isFlightRouteReady && !isFlightRoutePending;
   const flightRouteBusy = canPreviewFlightRoute && !flightRouteInteractive && !isFlightRoutePending;

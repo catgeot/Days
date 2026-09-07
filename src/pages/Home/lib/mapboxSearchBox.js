@@ -3,11 +3,14 @@
  * 실패 시 null/[] 반환 (큐레이션만으로 degrade).
  */
 import { isIslandPlaceQuery } from './exploreSearchAliases.js';
+import { geocodeForwardSuggestionHits } from './mapboxGeocodeSuggestions.js';
+import { shouldSupplementGeocodeHits } from './travelSearchHomonyms.js';
 import {
   ensureLatinPlaceSlug,
   isLatinPlaceName,
   mergeLatinPlaceFields,
   mergeSearchBoxEnglishHits,
+  mergeSearchBoxWithGeocodeHits,
   needsLatinPlaceName,
 } from './uiPlaceAssetQuery.js';
 
@@ -27,6 +30,32 @@ export const TOURISM_CATEGORY_IDS = [
 ];
 
 const HAS_HANGUL_RE = /[\uAC00-\uD7A3]/;
+
+/** Search Box v1 context는 객체. Geocoding v5는 배열. Explore 기본값 금지. */
+export function countryFromSearchBoxProperties(props = {}) {
+  const ctx = props.context;
+  if (ctx && typeof ctx === 'object' && !Array.isArray(ctx)) {
+    const fromObj = ctx.country?.name || ctx.country?.country_code;
+    if (fromObj) return String(fromObj).trim();
+  }
+  if (Array.isArray(ctx)) {
+    const row = ctx.find((c) => c?.country || String(c?.id || '').startsWith('country'));
+    const fromArr = row?.country?.name || row?.name || row?.text;
+    if (fromArr) return String(fromArr).trim();
+  }
+  const name = String(props.name || props.name_preferred || '').trim();
+  const formatted = String(props.place_formatted || '').trim();
+  if (formatted.includes(',')) {
+    const tail = formatted.split(',').pop()?.trim() || '';
+    if (tail && tail !== name) return tail;
+  }
+  const address = String(props.full_address || '').trim();
+  if (address.includes(',')) {
+    const tail = address.split(',').pop()?.trim() || '';
+    if (tail && tail !== name) return tail;
+  }
+  return '';
+}
 
 export const SEARCH_BOX_PLACE_TYPES = 'place,city,poi';
 /** region 포함 · poi 제외 — 한국 IP에서 사바 사헤브 같은 POI가 섬을 가리지 않게 */
@@ -91,14 +120,7 @@ function featureToSuggestion(feature, { hubId, parentCity, source = 'mapbox' } =
     featureType === 'city' ||
     featureType === 'region' ||
     featureType === 'locality';
-  const contextCountry = Array.isArray(props.context)
-    ? props.context.find((c) => c?.country || String(c?.id || '').startsWith('country'))
-    : null;
-  const country =
-    props.place_formatted?.split(',').pop()?.trim() ||
-    contextCountry?.country?.name ||
-    contextCountry?.name ||
-    'Explore';
+  const country = countryFromSearchBoxProperties(props);
 
   const poiCats = props.poi_category_ids || props.poi_category || [];
   const firstCat = Array.isArray(poiCats) ? poiCats[0] : '';
@@ -174,11 +196,22 @@ async function searchBoxForwardRaw(query, opts = {}) {
 export async function searchBoxForward(query, opts = {}) {
   const language = opts.language || 'ko';
   const hits = await searchBoxForwardRaw(query, { ...opts, language });
-  if (language === 'en' || hits.every((h) => isLatinPlaceName(h.name_en))) {
-    return hits.map(ensureLatinPlaceSlug);
+  // 빈 배열 .every()는 true라 ko 공백이면 en 병합을 건너뛰지 않는다
+  const koEmpty = !hits.length;
+  let merged;
+  if (language === 'en') {
+    merged = hits.map(ensureLatinPlaceSlug);
+  } else if (!koEmpty && hits.every((h) => isLatinPlaceName(h.name_en))) {
+    merged = hits.map(ensureLatinPlaceSlug);
+  } else {
+    const enHits = await searchBoxForwardRaw(query, { ...opts, language: 'en' });
+    merged = mergeSearchBoxEnglishHits(hits, enHits);
   }
-  const enHits = await searchBoxForwardRaw(query, { ...opts, language: 'en' });
-  return mergeSearchBoxEnglishHits(hits, enHits);
+  if (opts.skipGeocodeFallback) return merged;
+  if (!shouldSupplementGeocodeHits(query, merged)) return merged;
+  const geoHits = await geocodeForwardSuggestionHits(query, { limit: opts.limit ?? 6 });
+  if (!geoHits.length) return merged;
+  return mergeSearchBoxWithGeocodeHits(merged, geoHits);
 }
 
 /**
@@ -243,14 +276,15 @@ export async function searchBoxSuggest(query, opts = {}) {
     const suggestions = raw.map((s) => {
       const featureType = String(s.feature_type || '').toLowerCase();
       const isPoi = featureType === 'poi';
+      const country = countryFromSearchBoxProperties(s);
       return {
         id: `suggest-${s.mapbox_id}`,
         kind: isPoi ? 'attraction' : featureType === 'place' || featureType === 'city' ? 'city' : 'poi',
         badge: isPoi ? '명소' : featureType === 'place' || featureType === 'city' ? '도시' : '장소',
         name: String(s.name || '').trim(),
         name_en: isLatinPlaceName(s.name) ? String(s.name).trim() : '',
-        country: s.place_formatted?.split(',').pop()?.trim() || s.full_address || 'Explore',
-        country_en: '',
+        country,
+        country_en: isLatinPlaceName(country) ? country : '',
         mapboxId: s.mapbox_id,
         needsRetrieve: true,
         sessionToken,

@@ -91,3 +91,41 @@ export function filterOutSinglePersonPortraits(images) {
   if (list.length === 0) return list;
   return list.filter((img) => !isSinglePersonPortraitPhoto(img));
 }
+
+const HANGUL_PLACE_ID_RE = /[\uAC00-\uD7A3]/;
+
+function galleryLen(row) {
+  const gallery = Array.isArray(row?.gallery_urls) ? row.gallery_urls : [];
+  return gallery.length;
+}
+
+function sceneryPhotoCount(row) {
+  const gallery = Array.isArray(row?.gallery_urls) ? row.gallery_urls : [];
+  return filterOutSinglePersonPortraits(gallery).length;
+}
+
+function isLatinPlaceId(placeId) {
+  const id = String(placeId || '').trim();
+  return Boolean(id) && !HANGUL_PLACE_ID_RE.test(id);
+}
+
+/**
+ * 한글 place_id 인물 행과 라틴 slug 전경 행이 같이 있으면 라틴 행을 쓴다.
+ * 전경이 하나도 없으면 null — 라이브 Unsplash/Pexels로 넘긴다.
+ */
+export function pickPlaceStatsGalleryRow(rows, preferredPlaceId) {
+  const list = Array.isArray(rows) ? rows.filter(Boolean) : [];
+  if (!list.length) return null;
+  const preferred = String(preferredPlaceId || '').trim();
+
+  const latinWithPhotos = list.filter((row) => isLatinPlaceId(row.place_id) && galleryLen(row) > 0);
+  if (latinWithPhotos.length) {
+    const preferredLatin = latinWithPhotos.find((row) => String(row.place_id || '').trim() === preferred);
+    return preferredLatin || latinWithPhotos[0];
+  }
+
+  const withScenery = list.filter((row) => sceneryPhotoCount(row) > 0);
+  if (!withScenery.length) return null;
+  const preferredRow = withScenery.find((row) => String(row.place_id || '').trim() === preferred);
+  return preferredRow || withScenery[0];
+}
