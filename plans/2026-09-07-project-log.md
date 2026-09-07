@@ -66,6 +66,24 @@
 작업: P1-R02 DB-only — 지휘자=Cloud 메인 · 워커A(yanggu·inje·wonju)+B(donghae·sokcho·yangyang) Foreground → 직렬 머지 VERIFY. 중첩 후임 Task 금지.
 ```
 
+## 팔경 contentId — P1-R02·R03 hub DB-only ✅
+
+- **세션** `오케스트레이터 팔경contentId` · 지휘자=Cloud 메인 · 워커A→B Foreground · 중첩 후임 없음
+- **브랜치** `cursor/palgyeong-cid` · tip `fc4e85d0` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **P1-R02** 9/63 (`2e4bac58`) · **P1-R03** 9/50 (`fc4e85d0`) · hub+P1 누적 **27**
+- **VERIFY** audit issues 0 · smoke lists + content-ids · build PASS (매 R)
+- **다음 P1-R04** A `danyang`·`jecheon`·`okcheon` / B `jeungpyeong`·`mungyeong`·`yecheon`
+
+```
+오케스트레이터 팔경contentId
+@plans/orchestrator-method.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/feature-handoff-index.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P2 월권 · 워커 커밋 · Cloud 중첩 후임 · 남은 R 전부 기동
+작업: P1-R04 DB-only — 메인 장수. 워커A3+B3 파일+요약 → 직렬 머지 VERIFY 커밋 → 큐 남으면 워커 재기동
+```
+
 ## 팔경 contentId — P1-R01 hub DB-only ✅
 
 - **세션** `오케스트레이터 팔경contentId` · 지휘자=Cloud 메인 · 워커A→B Foreground 직렬 · 중첩 후임 없음
