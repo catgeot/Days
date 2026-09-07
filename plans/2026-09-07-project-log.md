@@ -2,6 +2,25 @@
 
 직전: [`2026-09-06-project-log.md`](./2026-09-06-project-log.md)
 
+## 팔경 contentId — S0-P2·P2 DB-only F·P2-L01 ✅
+
+- **세션** `팔경contentId #S0-P2, 파서→P2-R01` · 같은 지휘자 연장
+- **브랜치** `cursor/palgyeong-cid` · tip `3c67e133` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **S0-P2** `nullIdsFromOverrides` → `KOREA_SCENIC_SPOTS_OVERRIDES` import · dry-run targets=142
+- **P2-R01–R13** DB-only 전 라운드 **유효 0건** · 월악산→약초마을 1건은 overrides 오탐 제외(롤백)
+- **P2-L01** `--keyword-only --limit=20` **0/20** · 429 없음 · null **142** 유지
+- **VERIFY** audit/smoke scenic PASS(채움 없음 · tip 동일)
+- **다음** P2-L02+ 메인 직렬 keyword-only(≤20/세션)
+
+```
+오케스트레이터 팔경contentId
+@plans/korea-local-scenic-contentid-queue.md
+@plans/feature-handoff-index.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · 같은 날 429 재시도
+작업: P2-L02+ — fill-korea-scenic-spot-content-ids --keyword-only --limit=20
+```
+
 ## 써머리 닫기 #1, Android Chrome 고스트 클릭
 
 - **세션** `써머리 닫기 #1, Android Chrome 고스트 클릭`

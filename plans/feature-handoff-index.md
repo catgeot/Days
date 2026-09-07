@@ -305,11 +305,11 @@
 
 | | |
 |--|--|
-| **상태** | R01–R16 ✅ · **P0·P1 F 소진** · membersWithContentId 292/876 · hub+P1 **68** · P2 **null 142**/871 · 다음 **P2-R01** DB-only · A와 **동시 OK** |
-| **브랜치** | `cursor/palgyeong-cid` · tip `a248e546` |
+| **상태** | R01–R16 ✅ · **P0·P1 F 소진** · membersWithContentId 292/876 · hub+P1 **68** · P2 **null 142**/871 · **P2 DB-only F 소진 0건** · P2-L01 **0/20** · 다음 **P2-L02+** LIVE · A와 **동시 OK** |
+| **브랜치** | `cursor/palgyeong-cid` · tip `3c67e133` |
 | **PR** | [#185](https://github.com/catgeot/Days/pull/185) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§3·§9 B** · method **§5.7** |
-| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — S0–R16 ✅ · P0·P1 ✅ · **P2-R01–R13** ⬜ DB-only · P2-L LIVE 대기 |
+| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — S0–R16 ✅ · P0·P1 ✅ · **P2-R01–R13** ✅ DB-only 0건 · **P2-L01** ✅ 0/20 · **P2-L02+** ⬜ |
 | **일지** | [`2026-09-07-project-log.md`](./2026-09-07-project-log.md) |
 | **소유** | JSON `contentId` · fill · audit · **UI 금지** |
 | **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · feature에 `plans/**` 커밋 |
@@ -323,7 +323,7 @@
 @plans/feature-handoff-index.md
 브랜치 cursor/palgyeong-cid · PR #185
 금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · 같은 날 429 재시도 · 워커 커밋 · Cloud 중첩 후임
-작업: P2-R01 DB-only — S0-P2 파서 확인 후 워커A(samcheok·hapcheon·hadong)+B(uiryeong·sokcho·buyeo) · fill:korea-scenic-spot-content-ids --hubs=…
+작업: P2-L02+ 메인 직렬 — node scripts/fill-korea-scenic-spot-content-ids.mjs --keyword-only --limit=20 · 429 시 그날 정지 · null 142 잔여
 ```
 
 ---
