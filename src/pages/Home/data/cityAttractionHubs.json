@@ -896,42 +896,48 @@
         "name_en": "Muncheon Upside-down Sand",
         "kind": "viewpoint",
         "lat": 35.84,
-        "lng": 129.21
+        "lng": 129.21,
+        "contentId": "2603509"
       },
       {
         "name": "계림황엽",
         "name_en": "Gyeryim Yellow Leaves",
         "kind": "park",
         "lat": 35.828,
-        "lng": 129.215
+        "lng": 129.215,
+        "contentId": "128116"
       },
       {
         "name": "압지부평",
         "name_en": "Apji Duckweed",
         "kind": "landmark",
         "lat": 35.8329004,
-        "lng": 129.2267647
+        "lng": 129.2267647,
+        "contentId": "128526"
       },
       {
         "name": "백율송순",
         "name_en": "Baekyul Pine Shoots",
         "kind": "park",
         "lat": 36.015,
-        "lng": 129
+        "lng": 129,
+        "contentId": "126165"
       },
       {
         "name": "금장낙안",
         "name_en": "Geumjang Falling Geese",
         "kind": "viewpoint",
         "lat": 35.85,
-        "lng": 129.28
+        "lng": 129.28,
+        "contentId": "2756715"
       },
       {
         "name": "불국영지",
         "name_en": "Bulguk Shadow Pond",
         "kind": "landmark",
         "lat": 35.7889948,
-        "lng": 129.3308902
+        "lng": 129.3308902,
+        "contentId": "126166"
       },
       {
         "name": "나원백탑",
@@ -14565,7 +14571,8 @@
         "name_en": "Dutamojong",
         "kind": "viewpoint",
         "lat": 36.8305681,
-        "lng": 127.5661495
+        "lng": 127.5661495,
+        "contentId": "125920"
       },
       {
         "name": "상산모운",
@@ -14579,7 +14586,8 @@
         "name_en": "Nongammoseol",
         "kind": "viewpoint",
         "lat": 36.8260662,
-        "lng": 127.4933092
+        "lng": 127.4933092,
+        "contentId": "125973"
       },
       {
         "name": "어은계석",

@@ -1703,7 +1703,8 @@
         "kind": "viewpoint",
         "lat": 36.8305681,
         "lng": 127.5661495,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "125920"
       },
       {
         "attractionName": "상산모운",
@@ -1719,7 +1720,8 @@
         "kind": "viewpoint",
         "lat": 36.8260662,
         "lng": 127.4933092,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "125973"
       },
       {
         "attractionName": "어은계석",
@@ -1855,7 +1857,8 @@
         "kind": "viewpoint",
         "lat": 35.84,
         "lng": 129.21,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "2603509"
       },
       {
         "attractionName": "계림황엽",
@@ -1863,7 +1866,8 @@
         "kind": "park",
         "lat": 35.828,
         "lng": 129.215,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "128116"
       },
       {
         "attractionName": "압지부평",
@@ -1871,7 +1875,8 @@
         "kind": "landmark",
         "lat": 35.8329004,
         "lng": 129.2267647,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "128526"
       },
       {
         "attractionName": "백율송순",
@@ -1879,7 +1884,8 @@
         "kind": "park",
         "lat": 36.015,
         "lng": 129,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "126165"
       },
       {
         "attractionName": "금장낙안",
@@ -1887,7 +1893,8 @@
         "kind": "viewpoint",
         "lat": 35.85,
         "lng": 129.28,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "2756715"
       },
       {
         "attractionName": "불국영지",
@@ -1895,7 +1902,8 @@
         "kind": "landmark",
         "lat": 35.7889948,
         "lng": 129.3308902,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "126166"
       },
       {
         "attractionName": "나원백탑",

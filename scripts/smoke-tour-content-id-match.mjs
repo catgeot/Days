@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import assert from 'node:assert';
 import {
+  KEYWORD_ALIASES,
   looksLikeSigunguDisambiguator,
   memberCoords,
   memberQueries,
@@ -14,6 +15,11 @@ const hwacheonHub = { hubId: 'hwacheon', name: '화천', aliases: [] };
 const samcheokQueries = memberQueries({ attractionName: '삼척 환선굴' }, samcheokHub);
 assert.ok(samcheokQueries.includes('환선굴'), 'memberQueries strips hub prefix');
 assert.ok(samcheokQueries.includes('삼척 환선굴'), 'memberQueries keeps full name');
+
+const jincheonHub = { hubId: 'jincheon', name: '진천', aliases: [] };
+const dutaQueries = memberQueries({ attractionName: '두타모종' }, jincheonHub);
+assert.ok(dutaQueries.includes('영수사'), 'P0-A01 시호 alias 영수사');
+assert.ok(KEYWORD_ALIASES['농암모설']?.includes('진천 농다리'), 'P0-A01 농암모설 alias');
 
 assert.equal(looksLikeSigunguDisambiguator('천연기념물'), false);
 assert.equal(looksLikeSigunguDisambiguator('고성'), true);
