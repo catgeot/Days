@@ -1,6 +1,6 @@
 # 팔경·명소 Tour contentId 큐
 
-**상태**: R01–R16 ✅ · **P0 F 소진** · **P1 F 소진** (R01–R10 ✅) · membersWithContentId **292**/876 · hub+P1 **68** · 다음 **P2** (LIVE·월권) · LIVE 쿼터 주의  
+**상태**: R01–R16 ✅ · **P0·P1 F 소진** · membersWithContentId **292**/876 · hub+P1 **68** · P2 **null 142**/871(78 hub) · 다음 **P2-R01** DB-only · LIVE 쿼터 주의  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.7** · 플랜 [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md)  
 **브랜치**: `cursor/palgyeong-cid` (A UI `cursor/palgyeong-use-e744`와 **분리** · 수집 `cursor/palgyeong` 금지)  
 **금지**: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재호출 · P1/P2를 P0 전에
@@ -8,9 +8,10 @@
 ### 사용법
 
 1. **S0** 끝날 때까지 F 오케 금지 (메인 솔로: 스크립트 + 문경 DB-only).  
-2. F: 다음 ⬜ R만 · 워커A 3 listId + 워커B 3. **DB-only R** 우선.  
+2. F: 다음 ⬜ R만 · 워커A 3 + 워커B 3. **DB-only R** 우선.  
 3. LIVE R은 메인 직렬(또는 워커 1). 429 → `blocked: quota` · 그날 정지.  
-4. listId는 [`koreaLocalScenicLists.json`](../src/pages/Home/data/koreaLocalScenicLists.json) `verified`만. 큐 밖 임의 시군 금지.
+4. **P0/P1** `listId`·hub — [`koreaLocalScenicLists.json`](../src/pages/Home/data/koreaLocalScenicLists.json) `verified`만. 큐 밖 임의 시군 금지.  
+5. **P2** 대상 — [`korea-scenic-spots-overrides.mjs`](../scripts/data/korea-scenic-spots-overrides.mjs) `contentId: null`만 · 스크립트 `fill:korea-scenic-spot-content-ids` · `--hubs=` 큐 배정 hub · 적용 후 `generate:korea-scenic-spots` · VERIFY `audit:korea-scenic-spots` + `smoke:korea-scenic-spots`.
 
 ---
 
@@ -52,7 +53,7 @@ S0 PASS 후에만 아래 F. 라운드 표는 `listKoreaLocalScenicLists()` verif
 | 순위 | 대상 | 상태 |
 |------|------|------|
 | P1 | hub `attractions[]` 중 `contentId` 없는 KR 명소 | **P1-R01–R10** ✅ 68/197 · **P1 F 소진** |
-| P2 | 테마 선정 contentId 잔여(~75, 기존 429) | 대기 |
+| P2 | 테마 선정 `contentId: null` **142**/871 (78 hub) — 구 ~75·429 백로그 포함 | **P2-R01** ⬜ |
 
 ### P1 F (워커A 3 hub + 워커B 3 hub) — hub attraction DB-only
 
@@ -68,3 +69,43 @@ S0 PASS 후에만 아래 F. 라운드 표는 `listKoreaLocalScenicLists()` verif
 | **P1-R08** | `hamyang` · `gimhae` · `yangsan` | `miryang` · `yeosu` · `gwangyang` | DB-only | ✅ 2026-09-07 5/24 · `8ea8bdd6` |
 | **P1-R09** | `ansan` · `anseong` · `anyang` | `boseong` · `buan` · `buyeo` | DB-only | ✅ 2026-09-07 8/27 · `0ab99f56` |
 | **P1-R10** | `cheonan` · `daegu` · `daejeon` | `damyang` · `geumsan` · `goheung` | DB-only | ✅ 2026-09-07 7/25 · `a248e546` · **P1 소진** |
+
+---
+
+## P2 (테마 선정 · `koreaScenicSpots`)
+
+**SSOT**: overrides `contentId: null` **142**건 · **78** hub (2026-09-07 `cursor/palgyeong-cid` tip 기준 · 구 일지 ~75는 동일 백로그의 이전 스냅샷).  
+**스크립트**: `npm run fill:korea-scenic-spot-content-ids` → `npm run generate:korea-scenic-spots`  
+**워커 예**: `node scripts/fill-korea-scenic-spot-content-ids.mjs --db-only --hubs=samcheok,hapcheon,hadong --dry-run`  
+**착수 전 게이트 (S0-P2)**: `nullIdsFromOverrides` 파서가 overrides 배열 형식과 불일치 시 dry-run `targets=0` — **메인 솔로 1회 수정** 후 F. (대안: 스크립트가 `KOREA_SCENIC_SPOTS_OVERRIDES` import로 null 목록 로드)
+
+### P2 F DB-only (워커A 3 hub + 워커B 3 hub)
+
+| R | 워커A (3 hub) | 워커B (3 hub) | null≈ | 모드 | 상태 |
+|---|---------------|---------------|-------|------|------|
+| **P2-R01** | `samcheok` · `hapcheon` · `hadong` | `uiryeong` · `sokcho` · `buyeo` | 28 | DB-only | ⬜ |
+| **P2-R02** | `namwon` · `seongnam` · `wando` | `hanam` · `geochang` · `gunwi` | 21 | DB-only | ⬜ |
+| **P2-R03** | `chuncheon` · `boseong` · `gwangju` | `jeongeup` · `danyang` · `gurye` | 18 | DB-only | ⬜ |
+| **P2-R04** | `jecheon` · `pyeongchang` · `siheung` | `eumseong` · `yangsan` · `changwon` | 13 | DB-only | ⬜ |
+| **P2-R05** | `yeongcheon` · `dokdo` · `goryeong` | `gyeongsan` · `yeongdeok` · `donghae` | 12 | DB-only | ⬜ |
+| **P2-R06** | `buan` · `cheongju` · `ansan` | `gwangmyeong` · `yangpyeong` · `gunpo` | 8 | DB-only | ⬜ |
+| **P2-R07** | `gwacheon` · `osan` · `jincheon` | `yeoju` · `dongducheon` · `icheon` | 6 | DB-only | ⬜ |
+| **P2-R08** | `pyeongtaek` · `ulljin` · `chungju` | `sejong` · `seosan` · `dangjin` | 6 | DB-only | ⬜ |
+| **P2-R09** | `sangju` · `gyeryong` · `mungyeong` | `bonghwa` · `hongseong` · `yeongi` | 6 | DB-only | ⬜ |
+| **P2-R10** | `yesan` · `gokseong` · `seocheon` | `hwasun` · `imsil` · `jangseong` | 6 | DB-only | ⬜ |
+| **P2-R11** | `yeonggwang` · `gimje` · `iksan` | `yeongam` · `cheongdo` · `gijang` | 6 | DB-only | ⬜ |
+| **P2-R12** | `uiseong` · `yecheon` · `chilgok` | `gwangyang` · `sancheong` · `yeongyang` | 6 | DB-only | ⬜ |
+| **P2-R13** | `pohang` · `mokpo` · `ulleung` | `gapyeong` · `gongju` · `yanggu` | 6 | DB-only | ⬜ |
+
+P2-R13 완료 후 `null` 재집계 · DB-only F 소진 표기.
+
+### P2 LIVE (메인 직렬 · 워커 병렬 금지)
+
+DB-only 종료 후 overrides에 `contentId: null`이 남은 hub만. 라운드는 **잔여 수 재집계 후** 아래 패턴으로 추가.
+
+| R | 방식 | 한도 | 모드 | 상태 |
+|---|------|------|------|------|
+| **P2-L01+** | 메인 직렬 `--keyword-only --limit=20` | 세션당 ≤20 KW 호출 | LIVE | ⬜ (DB-only 후) |
+
+- 429 → 해당 R `blocked: quota` · **그날 정지** · 다음날 [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) §1.2 B 429 블록.  
+- 상업·리조트·아울렛 등은 스크립트 `COMMERCIAL_RE`로 MISS 가능 — 무리한 LIVE 반복 금지.

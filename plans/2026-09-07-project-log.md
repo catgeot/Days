@@ -21,6 +21,12 @@
 작업: Android Chrome에서 지구본 써머리 X → 카드만 닫힘 · 다른 여행지 써머리가 바로 안 열림
 ```
 
+## 팔경 contentId — P2 큐 초안 (문서만)
+
+- **세션** 계획 반영 · overrides `contentId: null` **142**/871 · **78** hub · P2-R01–R13 DB-only · P2-L LIVE 패턴
+- **착수 게이트 S0-P2**: `fill-korea-scenic-spot-content-ids` `nullIdsFromOverrides` 파서 — dry-run `targets=0` 확인됨 · F 전 메인 솔로 수정
+- **다음** P2-R01 A `samcheok`·`hapcheon`·`hadong` / B `uiryeong`·`sokcho`·`buyeo` · 큐 [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md)
+
 ## 팔경 contentId — P1-R10 hub DB-only ✅ · P1 F 소진
 
 - **세션** `오케스트레이터 팔경contentId` · 로컬 메인 장수 · 워커A→B dry-run+apply · 중첩 후임 없음
@@ -28,7 +34,7 @@
 - **P1-R10** 7/25 · A 4/15 · B 3/10 · hub+P1 누적 **68** · **P1 F 소진**
 - **채움** 천안 각원사·병천순대거리 · 대전 한밭수목원·뿌리공원 · 담양호 · 고흥 유자공원 · 금산 보석사
 - **VERIFY** audit issues 0 · smoke lists + content-ids · build PASS
-- **다음** P2 테마 선정 contentId(LIVE·월권) — 429·같은 날 재호출 금지
+- **다음** P2-R01 DB-only — S0-P2 파서 수정 후 착수
 
 ```
 오케스트레이터 팔경contentId
@@ -37,7 +43,7 @@
 @plans/feature-handoff-index.md
 브랜치 cursor/palgyeong-cid · PR #185
 금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · 같은 날 429 재시도 · 워커 커밋 · Cloud 중첩 후임
-작업: P2 테마 선정 contentId — 메인 직렬 LIVE · DB-only 잔여 우선 · 한도 내만 · blocked:quota 시 정지
+작업: P2-R01 DB-only — S0-P2 파서 확인 후 워커A(samcheok·hapcheon·hadong)+B(uiryeong·sokcho·buyeo)
 ```
 
 ## 팔경 contentId — P1-R09 hub DB-only ✅
