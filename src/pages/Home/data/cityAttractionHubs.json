@@ -3145,14 +3145,16 @@
         "name_en": "Jinju Fortress",
         "kind": "landmark",
         "lat": 35.1897050218524,
-        "lng": 128.080253761737
+        "lng": 128.080253761737,
+        "contentId": "126833"
       },
       {
         "name": "촉석루",
         "name_en": "Chokseongnu",
         "kind": "viewpoint",
         "lat": 35.1894180407,
-        "lng": 128.0818706984
+        "lng": 128.0818706984,
+        "contentId": "126217"
       },
       {
         "name": "진양호",
@@ -6604,7 +6606,8 @@
         "name_en": "Gyeongho River",
         "kind": "park",
         "lat": 35.41,
-        "lng": 127.87
+        "lng": 127.87,
+        "contentId": "127633"
       },
       {
         "name": "산청 한방테마파크",
@@ -20240,7 +20243,8 @@
         "name_en": "Provence Cheongdo",
         "kind": "park",
         "lat": 35.647,
-        "lng": 128.68
+        "lng": 128.68,
+        "contentId": "2729992"
       },
       {
         "name": "청도 유등연지",
@@ -20262,7 +20266,8 @@
         "name_en": "Daebisa Cheongdo",
         "kind": "temple",
         "lat": 35.6562737,
-        "lng": 128.9362018
+        "lng": 128.9362018,
+        "contentId": "299997"
       }
     ]
   },
