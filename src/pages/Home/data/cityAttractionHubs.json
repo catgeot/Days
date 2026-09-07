@@ -19,7 +19,8 @@
         "name_en": "Sokcho Beach",
         "kind": "beach",
         "lat": 38.1902,
-        "lng": 128.6035
+        "lng": 128.6035,
+        "contentId": "2814180"
       },
       {
         "name": "속초관광수산시장",
@@ -40,14 +41,16 @@
         "name_en": "Gwongeumseong",
         "kind": "viewpoint",
         "lat": 38.163732,
-        "lng": 128.4849601
+        "lng": 128.4849601,
+        "contentId": "125798"
       },
       {
         "name": "영금정",
         "name_en": "Yeonggeumjeong",
         "kind": "landmark",
         "lat": 38.2118201,
-        "lng": 128.6014768
+        "lng": 128.6014768,
+        "contentId": "125779"
       },
       {
         "name": "아바이마을",
@@ -2471,7 +2474,8 @@
         "name_en": "Naksan Beach",
         "kind": "beach",
         "lat": 38.11733156584656,
-        "lng": 128.63355006579656
+        "lng": 128.63355006579656,
+        "contentId": "125702"
       },
       {
         "name": "죽도해변",
@@ -2492,7 +2496,8 @@
         "name_en": "Seorak Beach",
         "kind": "beach",
         "lat": 38.1301333481,
-        "lng": 128.6227575205
+        "lng": 128.6227575205,
+        "contentId": "2710820"
       },
       {
         "name": "남대천",
@@ -9642,14 +9647,16 @@
         "name_en": "Wonju Hanji Theme Park",
         "kind": "museum",
         "lat": 37.3343754538755,
-        "lng": 127.93539604152095
+        "lng": 127.93539604152095,
+        "contentId": "2470366"
       },
       {
         "name": "치악산국립공원",
         "name_en": "Chiaksan National Park",
         "kind": "park",
         "lat": 37.3355368,
-        "lng": 128.049952
+        "lng": 128.049952,
+        "contentId": "125587"
       },
       {
         "name": "뮤지엄산",
@@ -10902,14 +10909,16 @@
         "name_en": "Mukho Port",
         "kind": "viewpoint",
         "lat": 37.5518,
-        "lng": 129.1165
+        "lng": 129.1165,
+        "contentId": "129588"
       },
       {
         "name": "도째비골스카이밸리",
         "name_en": "Dotjaebi Sky Valley",
         "kind": "viewpoint",
         "lat": 37.5498,
-        "lng": 129.1162
+        "lng": 129.1162,
+        "contentId": "2711035"
       },
       {
         "name": "용추폭포",
