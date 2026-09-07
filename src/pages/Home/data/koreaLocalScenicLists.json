@@ -6047,7 +6047,8 @@
         "attractionName": "신성리갈대밭",
         "name_en": "Sinseongri Reed Field",
         "kind": "viewpoint",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "129457"
       },
       {
         "attractionName": "한산모시관",
@@ -6071,13 +6072,15 @@
         "attractionName": "국립생태원",
         "name_en": "National Ecological Institute and Marine Bio Center",
         "kind": "museum",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "3036904"
       },
       {
         "attractionName": "금강 하구 철새 도래지",
         "name_en": "Geumgang Estuary Bird Habitat",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2782219"
       },
       {
         "attractionName": "장항송림산림욕장과 장항스카이워크",
@@ -6119,31 +6122,36 @@
         "attractionName": "남당항",
         "name_en": "Namdang Port",
         "kind": "landmark",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "129054"
       },
       {
         "attractionName": "홍성 용봉산",
         "name_en": "Yongbongsan Mountain",
         "kind": "viewpoint",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125821"
       },
       {
         "attractionName": "죽도",
         "name_en": "Jukdo Island",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126721"
       },
       {
         "attractionName": "오서산",
         "name_en": "Oseosan Mountain",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126746"
       },
       {
         "attractionName": "궁리포구",
         "name_en": "Gungni Port",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "1937784"
       },
       {
         "attractionName": "만해한용운생가지",
@@ -6155,7 +6163,8 @@
         "attractionName": "백야김좌진장군생가지",
         "name_en": "Baekya Kim Jwa-jin Birthplace",
         "kind": "shrine",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "125932"
       },
       {
         "attractionName": "선상문선생 유허지",
@@ -6204,7 +6213,8 @@
         "attractionName": "예산 수덕사",
         "name_en": "Sudeoksa Temple",
         "kind": "temple",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125896"
       },
       {
         "attractionName": "충의사",
@@ -6228,7 +6238,8 @@
         "attractionName": "예당호",
         "name_en": "Yedangho Lake",
         "kind": "viewpoint",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "128054"
       },
       {
         "attractionName": "삽교평야",
@@ -6258,7 +6269,8 @@
         "attractionName": "덕산온천",
         "name_en": "Deoksan Hot Springs",
         "kind": "landmark",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125815"
       }
     ]
   },
@@ -6283,13 +6295,15 @@
         "attractionName": "갑사",
         "name_en": "Gapsa Temple",
         "kind": "temple",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "125891"
       },
       {
         "attractionName": "계룡산",
         "name_en": "Gyeryongsan Mountain",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "125817"
       },
       {
         "attractionName": "고마나루",
@@ -6301,25 +6315,29 @@
         "attractionName": "공산성",
         "name_en": "Gongsanseong Fortress",
         "kind": "landmark",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "2916020"
       },
       {
         "attractionName": "금강",
         "name_en": "Geumgang River",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "127850"
       },
       {
         "attractionName": "금학생태공원",
         "name_en": "Geumhak Ecological Park",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2770295"
       },
       {
         "attractionName": "마곡사",
         "name_en": "Magoksa Temple",
         "kind": "temple",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125894"
       },
       {
         "attractionName": "무령왕릉",
@@ -6362,7 +6380,8 @@
         "attractionName": "낙화암",
         "name_en": "Nakwhaam Rock of Busosan",
         "kind": "viewpoint",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "127794"
       },
       {
         "attractionName": "정림사지 오층석탑",
@@ -6392,25 +6411,29 @@
         "attractionName": "백마강 수상관광",
         "name_en": "Baekma River Boat Tour",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "125874"
       },
       {
         "attractionName": "백제문화단지",
         "name_en": "Baekje Cultural Land",
         "kind": "landmark",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "1103949"
       },
       {
         "attractionName": "만수산 무량사",
         "name_en": "Musangsan Muryangsa Temple",
         "kind": "temple",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "127676"
       },
       {
         "attractionName": "서동요 테마파크",
         "name_en": "Seodongyo Theme Park",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "251994"
       },
       {
         "attractionName": "성흥산 사랑나무",
@@ -6440,7 +6463,8 @@
         "attractionName": "관촉사",
         "name_en": "Gwanchoksa Temple",
         "kind": "temple",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125905"
       },
       {
         "attractionName": "논산 탑정호",
@@ -6458,19 +6482,22 @@
         "attractionName": "계백장군유적지",
         "name_en": "General Gyebaek Historic Site",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "525648"
       },
       {
         "attractionName": "쌍계사",
         "name_en": "Ssanggyesa Temple",
         "kind": "temple",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "125904"
       },
       {
         "attractionName": "개태사",
         "name_en": "Gaetaesa Temple",
         "kind": "temple",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125899"
       },
       {
         "attractionName": "강경포구와 근대역사거리",
@@ -6494,7 +6521,8 @@
         "attractionName": "선샤인랜드",
         "name_en": "Sunshine Land",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2606192"
       },
       {
         "attractionName": "종학당과 한국유교문화진흥원",

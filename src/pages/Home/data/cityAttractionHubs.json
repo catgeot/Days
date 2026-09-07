@@ -4082,14 +4082,16 @@
         "name_en": "Gongsanseong",
         "kind": "landmark",
         "lat": 36.4631426,
-        "lng": 127.1264411
+        "lng": 127.1264411,
+        "contentId": "2916020"
       },
       {
         "name": "마곡사",
         "name_en": "Magoksa",
         "kind": "temple",
         "lat": 36.5581751,
-        "lng": 127.0125524
+        "lng": 127.0125524,
+        "contentId": "125894"
       },
       {
         "name": "무령왕릉",
@@ -4552,14 +4554,16 @@
         "name_en": "Baekje Cultural Land",
         "kind": "landmark",
         "lat": 36.3065343564356,
-        "lng": 126.906760402927
+        "lng": 126.906760402927,
+        "contentId": "1103949"
       },
       {
         "name": "낙화암",
         "name_en": "Nakhwaam",
         "kind": "viewpoint",
         "lat": 36.2920445455,
-        "lng": 126.9114147845
+        "lng": 126.9114147845,
+        "contentId": "127794"
       },
       {
         "name": "국립부여박물관",
@@ -17969,7 +17973,8 @@
         "name_en": "Gwanchoksa",
         "kind": "temple",
         "lat": 36.1888348777,
-        "lng": 127.1136855228
+        "lng": 127.1136855228,
+        "contentId": "125905"
       },
       {
         "name": "논산 탑정호",
@@ -17983,7 +17988,8 @@
         "name_en": "Gaetaesa",
         "kind": "temple",
         "lat": 36.2407281973,
-        "lng": 127.2293710155
+        "lng": 127.2293710155,
+        "contentId": "125899"
       },
       {
         "name": "논산 백제군사박물관",
@@ -18070,7 +18076,8 @@
         "name_en": "National Institute of Ecology",
         "kind": "park",
         "lat": 36.0349778,
-        "lng": 126.7190077
+        "lng": 126.7190077,
+        "contentId": "3036904"
       },
       {
         "name": "한산모시관",
@@ -18084,7 +18091,8 @@
         "name_en": "Sinseongri Reed Field",
         "kind": "viewpoint",
         "lat": 36.0668152,
-        "lng": 126.862564
+        "lng": 126.862564,
+        "contentId": "129457"
       },
       {
         "name": "마량리동백숲",
@@ -18130,14 +18138,16 @@
         "name_en": "Namdang Port",
         "kind": "landmark",
         "lat": 36.5379350075214,
-        "lng": 126.470993432407
+        "lng": 126.470993432407,
+        "contentId": "129054"
       },
       {
         "name": "홍성 용봉산",
         "name_en": "Yongbongsan Hongseong",
         "kind": "viewpoint",
         "lat": 36.644146801,
-        "lng": 126.6495123169
+        "lng": 126.6495123169,
+        "contentId": "125821"
       },
       {
         "name": "홍주읍성",
@@ -18567,21 +18577,24 @@
         "name_en": "Sudeoksa",
         "kind": "temple",
         "lat": 36.6618145,
-        "lng": 126.6221048
+        "lng": 126.6221048,
+        "contentId": "125896"
       },
       {
         "name": "예당호",
         "name_en": "Yedang Lake",
         "kind": "viewpoint",
         "lat": 36.5855,
-        "lng": 126.7955
+        "lng": 126.7955,
+        "contentId": "128054"
       },
       {
         "name": "덕산온천",
         "name_en": "Deoksan Hot Springs",
         "kind": "landmark",
         "lat": 36.6655,
-        "lng": 126.6355
+        "lng": 126.6355,
+        "contentId": "125815"
       },
       {
         "name": "예산성지",
