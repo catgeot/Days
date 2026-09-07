@@ -648,7 +648,8 @@
         "name_en": "Hanbat Arboretum",
         "kind": "park",
         "lat": 36.3685826107,
-        "lng": 127.3862516305
+        "lng": 127.3862516305,
+        "contentId": "741658"
       },
       {
         "name": "유성온천",
@@ -677,7 +678,8 @@
         "name_en": "Ppuri Park",
         "kind": "park",
         "lat": 36.2845065219,
-        "lng": 127.3864280203
+        "lng": 127.3864280203,
+        "contentId": "126838"
       }
     ]
   },
@@ -3366,7 +3368,8 @@
         "name_en": "Damyang Lake",
         "kind": "viewpoint",
         "lat": 35.4003496,
-        "lng": 127.0094027
+        "lng": 127.0094027,
+        "contentId": "126323"
       },
       {
         "name": "한국대나무박물관",
@@ -6655,7 +6658,8 @@
         "name_en": "Goheung Yuzu Park",
         "kind": "park",
         "lat": 34.61,
-        "lng": 127.28
+        "lng": 127.28,
+        "contentId": "250440"
       },
       {
         "name": "고흥 소록도",
@@ -10163,7 +10167,8 @@
         "name_en": "Gakwonsa",
         "kind": "temple",
         "lat": 36.8338567886,
-        "lng": 127.1964300734
+        "lng": 127.1964300734,
+        "contentId": "125885"
       },
       {
         "name": "천안삼거리공원",
@@ -10185,7 +10190,8 @@
         "name_en": "Byeongcheon Sundae Street",
         "kind": "neighborhood",
         "lat": 36.7586255622,
-        "lng": 127.2964314761
+        "lng": 127.2964314761,
+        "contentId": "699587"
       }
     ]
   },
@@ -19355,7 +19361,8 @@
         "name_en": "Boseoksa Geumsan",
         "kind": "temple",
         "lat": 36.0544668,
-        "lng": 127.4759977
+        "lng": 127.4759977,
+        "contentId": "125888"
       },
       {
         "name": "금산 적벽강",
