@@ -1,6 +1,6 @@
 # 팔경·명소 Tour contentId 큐
 
-**상태**: R01–R16 ✅ · **P0·P1 F 소진** · membersWithContentId **400**/876 · hub+P1 **68** · P2 **null 104**/871(78 hub) · **P2-L2** ✅ 0/104 · **P0-L** ✅ 109/584 · **P0-L02** ✅ 0/100 · **P0-L03** ✅ 0/100 · Tour API **운영 승인 ~10만/일** · 다음 **P0-L04+ keyword**  
+**상태**: R01–R16 ✅ · **P0·P1 F 소진** · membersWithContentId **400**/876 · hub+P1 **68** · P2 **null 104**/871(78 hub) · **P2-L2** ✅ 0/104 · **P0-L** ✅ 109/584 · **P0-L02** ✅ 0/100 · **P0-L03** ✅ 0/100 · **P0-L05** ✅ 0/100 · Tour API **운영 승인 ~10만/일** · 다음 **P0-L06+ keyword**  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.7** · 플랜 [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md)  
 **브랜치**: `cursor/palgyeong-cid` (A UI `cursor/palgyeong-use-e744`와 **분리** · 수집 `cursor/palgyeong` 금지)  
 **금지**: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재호출 · P1/P2를 P0 전에
@@ -111,16 +111,17 @@ DB-only 종료 후 overrides에 `contentId: null`이 남은 hub만. 라운드는
 | **P0-L** | `fill-korea-local-scenic-content-ids.mjs --keyword-only` (멤버 null **584**) | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-07 **109/584** · members **400/876** · hub 72 |
 | **P0-L02** | `--keyword-only --limit=100` (null **476** · resume 전부 소진 → **--resume 없이** 재시도) | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-07 **0/100** · null **476** · 429 없음 |
 | **P0-L03** | `--keyword-only --limit=100` (null **476** · P0-L02 동일 100건 재시도) | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-07 **0/100** · null **476** · 429 없음 |
-| **P0-L04+** | 동일 `--keyword-only --limit=100` (잔여 null **476**) | 쿼터 ~10만/일 | LIVE | ⬜ **다음 세션** |
+| **P0-L05** | `--keyword-only --limit=100` (`--resume` dry-run targets=0 → **--resume 없이**) | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-07 **0/100** · null **476** · 429 없음 |
+| **P0-L06+** | 동일 `--keyword-only --limit=100` (잔여 null **476**) | 쿼터 ~10만/일 | LIVE | ⬜ **다음 세션** |
 
 ### 다음 세션 (복붙)
 
-**채팅명** `팔경contentId #P0-L04, 멤버 keyword`
+**채팅명** `팔경contentId #P0-L06, 멤버 keyword`
 
 | | |
 |--|--|
 | **브랜치** | `cursor/palgyeong-cid` · tip `4c141c27` · PR [#185](https://github.com/catgeot/Days/pull/185) |
-| **스냅샷** | P0 멤버 **400/876** (null **476**) · P2 테마 null **104**/871 · P0-L02·L03 연속 **0/100** · resume **584**건(476 null 전부 포함) · 429 없음 |
+| **스냅샷** | P0 멤버 **400/876** (null **476**) · P2 테마 null **104**/871 · P0-L02·L03·L05 연속 **0/100** · resume **584**건(476 null 전부 포함) · 429 없음 |
 | **1순위** | `node scripts/fill-korea-local-scenic-content-ids.mjs --keyword-only --limit=100` (**--resume 금지** — targets=0) → audit/smoke lists |
 | **읽기** | index 팔경 contentId 행 · 본 큐 이 절 · method **§5.7** |
 | **금지** | UI · scenic 승격 · 워커 병렬 LIVE · 429 같은 날 재시도 · feature에 `plans/**` |
