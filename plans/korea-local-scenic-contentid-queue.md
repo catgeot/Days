@@ -107,6 +107,23 @@ DB-only 종료 후 overrides에 `contentId: null`이 남은 hub만. 라운드는
 | R | 방식 | 한도 | 모드 | 상태 |
 |---|------|------|------|------|
 | **P2-L01+** | 메인 직렬 `--keyword-only` (전수 또는 `--limit`) · 잔여는 `areaBased`+`keyword` | 쿼터 ~10만/일 | LIVE | **P2-L keyword** ✅ 2026-09-07 **38/142** · null **104** · tip `768b1635` |
+| **P2-L2** | 메인 직렬 **플래그 없음** — DB(잔여) → `areaBased` → `keyword` | 쿼터 ~10만/일 | LIVE | ⬜ **다음 세션** |
+| **P0-L** | `fill-korea-local-scenic-content-ids.mjs --keyword-only` (멤버 null **584**) | 쿼터 ~10만/일 | LIVE | ⬜ P2-L2 후 |
+
+### 다음 세션 (복붙)
+
+**채팅명** `팔경contentId #P2-L2, 잔여 LIVE`
+
+| | |
+|--|--|
+| **브랜치** | `cursor/palgyeong-cid` · tip `15f6e56c` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **스냅샷** | P0 멤버 292/876 · P2 테마 null **104**/871 · Tour API 운영 **~10만/일** · keyword 1회 **38건** 완료 |
+| **1순위** | `node scripts/fill-korea-scenic-spot-content-ids.mjs` → `npm run generate:korea-scenic-spots` → audit/smoke scenic |
+| **2순위** | P0 멤버 null 584 — `node scripts/fill-korea-local-scenic-content-ids.mjs --keyword-only` (필요 시 `--limit=100`) |
+| **읽기** | index 팔경 contentId 행 · 본 큐 이 절 · method **§5.7** |
+| **금지** | UI · scenic 승격 · 워커 병렬 LIVE · 429 같은 날 재시도 · feature에 `plans/**` |
+
+**Auth**: `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` (Edge `tourapi-proxy`)
 
 - 429 → 해당 R `blocked: quota` · **그날 정지** · 다음날 [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) §1.2 B 429 블록.  
 - 상업·리조트·아울렛 등은 스크립트 `COMMERCIAL_RE`로 MISS 가능 — 무리한 LIVE 반복 금지.
