@@ -87,6 +87,49 @@ function escapeRe(s) {
   return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+const SIGUNGU_DISAMBIG_RE =
+  /천연|기념|세계|문화|유산|탐방|코스|정상|입구|휴양|야영|캠핑|주차|매표|관광|명승|유네스코|생태|습지|봉우리|정계|계곡|동굴|폭포|사찰|서원|향교/;
+
+export function looksLikeSigunguDisambiguator(s) {
+  const raw = String(s || '').trim();
+  if (!raw || raw.length < 2) return false;
+  if (/[시군구]$/.test(raw)) return true;
+  if (
+    /^(경기|경남|경북|전남|전북|충남|충북|강원|제주|서울|부산|대구|인천|광주|대전|울산|세종)\s/.test(
+      raw,
+    )
+  ) {
+    return true;
+  }
+  if (SIGUNGU_DISAMBIG_RE.test(raw)) return false;
+  const bare = raw
+    .replace(/^(경기|경남|경북|전남|전북|충남|충북|강원|제주)\s*/, '')
+    .trim();
+  const n = norm(bare);
+  if (n.length === 2 && /^[가-힣]{2}$/.test(bare)) return true;
+  return false;
+}
+
+export function memberCoords(member, hub) {
+  if (Number.isFinite(member?.lat) && Number.isFinite(member?.lng)) {
+    return { lat: member.lat, lng: member.lng };
+  }
+  const nameKey = normalizeKey(member?.attractionName || member?.name || '');
+  const attr = (hub?.attractions || []).find((a) => normalizeKey(a.name) === nameKey);
+  if (attr && Number.isFinite(attr.lat) && Number.isFinite(attr.lng)) {
+    return { lat: attr.lat, lng: attr.lng };
+  }
+  if (Number.isFinite(hub?.lat) && Number.isFinite(hub?.lng)) {
+    return { lat: hub.lat, lng: hub.lng };
+  }
+  return { lat: undefined, lng: undefined };
+}
+
+export function memberForMatch(member, hub) {
+  const { lat, lng } = memberCoords(member, hub);
+  return { ...member, lat, lng };
+}
+
 export function memberQueries(member, hub) {
   const name = member.attractionName || member.name || '';
   const queries = new Set([name].filter(Boolean));
@@ -122,6 +165,7 @@ export function memberQueries(member, hub) {
 }
 
 export function scoreHit(query, item, hub, member) {
+  const scoped = memberForMatch(member, hub);
   const title = String(item?.title || '');
   const addr = String(item?.addr1 || item?.addr || '');
   const type = String(item?.contentTypeId || item?.contenttypeid || item?.content_type_id || '');
@@ -171,28 +215,26 @@ export function scoreHit(query, item, hub, member) {
   const addrOk = hints.some((h) => addr.includes(h));
   if (addrOk) score += 8;
   else if (hints.some((h) => title.includes(h))) score += 4;
-  else if (Number.isFinite(member.lat) && Number.isFinite(member.lng)) {
+  else if (Number.isFinite(scoped.lat) && Number.isFinite(scoped.lng)) {
     const lat = Number(item.mapy ?? item.lat);
     const lng = Number(item.mapx ?? item.lng);
     if (Number.isFinite(lat) && Number.isFinite(lng)) {
-      const km = haversineKm(member.lat, member.lng, lat, lng);
+      const km = haversineKm(scoped.lat, scoped.lng, lat, lng);
       if (km <= 2.5) score += 2;
       else return 0;
     } else return 0;
   } else return 0;
 
   const paren = title.match(/\(([^)]+)\)/);
-  if (paren) {
+  if (paren && looksLikeSigunguDisambiguator(paren[1])) {
     const inside = norm(paren[1]);
+    const hints = hubHints(hub).map((h) => norm(h)).filter(Boolean);
     const token = hubToken(hub);
-    if (
-      inside &&
-      token &&
-      !inside.includes(norm(token).slice(0, 2)) &&
-      !q.includes(inside)
-    ) {
-      return 0;
-    }
+    const hubMatch =
+      hints.some((h) => inside.includes(h) || h.includes(inside)) ||
+      (token && inside.includes(norm(token).slice(0, 2))) ||
+      q.includes(inside);
+    if (!hubMatch) return 0;
   }
   return score;
 }

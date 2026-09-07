@@ -15,6 +15,7 @@ import {
   createSupabaseClient,
   fetchKeywordItems,
   loadDbRows,
+  memberQueries,
   normalizeKey,
   pickBest,
   sleep,
@@ -211,7 +212,7 @@ async function main() {
         hubId: list.hubId,
         name: list.hubId,
       };
-      const queries = [...new Set([member.attractionName])];
+      const queries = memberQueries(member, hub);
       let best = null;
       for (const q of queries) {
         if (rateLimited) break;
