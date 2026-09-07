@@ -3967,7 +3967,8 @@
         "name_en": "Goryeogungji",
         "kind": "landmark",
         "lat": 37.7508294681445,
-        "lng": 126.485422800679
+        "lng": 126.485422800679,
+        "contentId": "127184"
       },
       {
         "name": "마니산",
@@ -3982,7 +3983,8 @@
         "name_en": "Seokmodo",
         "kind": "park",
         "lat": 37.6977907,
-        "lng": 126.3141632
+        "lng": 126.3141632,
+        "contentId": "127801"
       },
       {
         "name": "광성보",
@@ -12417,7 +12419,8 @@
         "name_en": "Korea Aerospace Museum Sacheon",
         "kind": "museum",
         "lat": 35.0716828,
-        "lng": 128.0631926
+        "lng": 128.0631926,
+        "contentId": "2473002"
       },
       {
         "name": "사천 노산공원",
@@ -20096,7 +20099,8 @@
         "name_en": "Ipgok County Park Haman",
         "kind": "park",
         "lat": 35.32,
-        "lng": 128.38
+        "lng": 128.38,
+        "contentId": "127970"
       },
       {
         "name": "함안 악양루",
@@ -20110,14 +20114,16 @@
         "name_en": "Haman Lotus Theme Park",
         "kind": "park",
         "lat": 35.29,
-        "lng": 128.42
+        "lng": 128.42,
+        "contentId": "2754745"
       },
       {
         "name": "함안 입곡저수지",
         "name_en": "Ipgok Reservoir Haman",
         "kind": "viewpoint",
         "lat": 35.2364029,
-        "lng": 128.4688792
+        "lng": 128.4688792,
+        "contentId": "127970"
       },
       {
         "name": "악양의 꽃길과 노을",
