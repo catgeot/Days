@@ -2,6 +2,23 @@
 
 직전: [`2026-09-06-project-log.md`](./2026-09-06-project-log.md)
 
+## 팔경 contentId — P0-L07 확장 keyword (#P0-L07)
+
+- **브랜치** `cursor/palgyeong-cid` · tip `6212fab3` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--keyword-only --limit=100` (memberQueries) **11/100** · members **470/876** (null **406**) · 429 없음
+- **히트** 양구 광치계곡·오색령·오산리선사박물관·삼부연·직탕·송대소주상절리·요선암·화암약수·소금강·용화산·부소담악
+- **VERIFY** `audit:korea-local-scenic-lists` · `smoke:korea-local-scenic-lists` · `smoke:korea-local-scenic-content-ids` · `smoke:tour-content-id-match` PASS
+- **다음** P0-A01 시호 alias · 잔여 null은 L07+ `--limit=100` 가능
+
+```
+팔경contentId #P0-A01, 시호 alias
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: L07 MISS 시호·별칭만 웹/공식명 후보 → KEYWORD_ALIASES → LIVE 검증. Tour 미등재는 null 유지
+```
+
 ## 팔경 contentId — P0-S01 검색어·가드 (#P0-S01)
 
 - **브랜치** `cursor/palgyeong-cid` · tip `55cfd8ab` · PR [#185](https://github.com/catgeot/Days/pull/185)
