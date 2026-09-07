@@ -788,21 +788,24 @@
         "name_en": "Yeosu Expo Ocean Park",
         "kind": "park",
         "lat": 34.7315,
-        "lng": 127.745
+        "lng": 127.745,
+        "contentId": "2037308"
       },
       {
         "name": "돌산공원",
         "name_en": "Dolsan Park",
         "kind": "viewpoint",
         "lat": 34.730596892,
-        "lng": 127.7415234884
+        "lng": 127.7415234884,
+        "contentId": "128755"
       },
       {
         "name": "이순신광장",
         "name_en": "Yi Sun-sin Square",
         "kind": "landmark",
         "lat": 34.7399013049,
-        "lng": 127.7357348686
+        "lng": 127.7357348686,
+        "contentId": "2612869"
       }
     ]
   },
@@ -6554,7 +6557,8 @@
         "name_en": "Gaepyeong Hanok Village",
         "kind": "neighborhood",
         "lat": 35.52,
-        "lng": 127.75
+        "lng": 127.75,
+        "contentId": "893974"
       },
       {
         "name": "함양 대봉산 휴양밸리",
@@ -9627,7 +9631,8 @@
         "name_en": "Baegunsan Gwangyang",
         "kind": "viewpoint",
         "lat": 35.1063783,
-        "lng": 127.6213246
+        "lng": 127.6213246,
+        "contentId": "2394017"
       },
       {
         "name": "망덕포구",
