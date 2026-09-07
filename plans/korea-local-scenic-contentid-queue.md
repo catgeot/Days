@@ -138,29 +138,29 @@ P0-L02·L03·L05는 **같은 앞 100멤버**에 JSON `attractionName` **한 단�
 | **P0-C01** | 같은 `hubId`+`attractionName`(정규화) · scenic `contentId` → 팔경 멤버 + 동명 hub attraction. 스크립트 신규 또는 일회 복사. **LIVE 금지** | 62 | 오프라인 | ✅ 2026-09-07 **59/62** · tip `48b16e11` |
 | **P0-S01** | `fill-korea-local-scenic-content-ids.mjs` keyword를 `memberQueries` 루프로 · `scoreHit` 괄호는 지자체 동명이인만 거름 · 멤버에 hub attraction lat/lng 폴백 | — | 코드 | ✅ 2026-09-07 · tip `55cfd8ab` |
 | **P0-L07** | S01 후 `--keyword-only` 잔여 null · **본명-only 재시도 금지** · `--resume`은 새 쿼리 집합일 때만 | 쿼터 ~10만/일 · 세션 `--limit` | LIVE | ✅ 2026-09-07 **11/100** · tip `6212fab3` |
-| **P0-A01** | 시호·별칭 MISS만 공식 출처/웹으로 후보 → `KEYWORD_ALIASES` → LIVE 1~2회 검증 | 소수 건 | 혼합 | ⬜ **다음 세션** |
+| **P0-A01** | 시호·별칭 MISS만 공식 출처/웹으로 후보 → `KEYWORD_ALIASES` → LIVE 1~2회 검증 | 소수 건 | 혼합 | ✅ 2026-09-08 **8/16** L07 cohort · tip `dc608b4b` |
 
-### 다음 세션 (복붙) — 1순위 P0-A01
+### 다음 세션 (복붙) — 1순위 P0-L07+
 
-**채팅명** `팔경contentId #P0-A01, 시호 alias`
+**채팅명** `팔경contentId #P0-L07+, 확장 keyword`
 
 | | |
 |--|--|
-| **브랜치** | `cursor/palgyeong-cid` · tip `6212fab3` · PR [#185](https://github.com/catgeot/Days/pull/185) |
-| **스냅샷** | P0 멤버 **470/876** (null **406**) · P0-C01·S01·L07 ✅ · P2 null **104** |
-| **1순위** | L07 MISS 시호·별칭 → `KEYWORD_ALIASES` → LIVE 검증 · 잔여 null은 L07+ `--limit=100` 가능 |
+| **브랜치** | `cursor/palgyeong-cid` · tip `dc608b4b` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **스냅샷** | P0 멤버 **478/876** (null **398**) · P0-A01 ✅ 8/16 · P2 null **104** |
+| **1순위** | `--keyword-only --limit=100` (memberQueries) · gunsan 등 시호 alias 2차는 합의 후 |
 | **읽기** | index 팔경 contentId 행 · 본 큐 「P0 잔여 전략」· method **§5.7** |
 | **금지** | UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 `plans/**` |
 
-**이어질 제시어** (A01 또는 L07+ 잔여):
+**이어질 제시어**:
 
 ```
-팔경contentId #P0-A01, 시호 alias
+팔경contentId #P0-L07+, 확장 keyword
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
 브랜치 cursor/palgyeong-cid · PR #185
 금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
-작업: L07 MISS 시호·별칭만 웹/공식명 후보 → KEYWORD_ALIASES → LIVE 검증. Tour 미등재는 null 유지
+작업: 잔여 null --keyword-only --limit=100 (memberQueries) · gunsan 등 시호 alias 2차는 합의 후
 ```
 
 **Auth**: `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` (Edge `tourapi-proxy`) — **C01에는 불필요**. S01·L07·A01 LIVE만.
