@@ -7314,21 +7314,24 @@
         "name_en": "Naesosa",
         "kind": "temple",
         "lat": 35.617518,
-        "lng": 126.5872515
+        "lng": 126.5872515,
+        "contentId": "1608731"
       },
       {
         "name": "변산반도국립공원",
         "name_en": "Byeonsanbando National Park",
         "kind": "park",
         "lat": 35.6418575196,
-        "lng": 126.5797696087
+        "lng": 126.5797696087,
+        "contentId": "126239"
       },
       {
         "name": "격포해수욕장",
         "name_en": "Gyeokpo Beach",
         "kind": "beach",
         "lat": 35.6292793235,
-        "lng": 126.4698102873
+        "lng": 126.4698102873,
+        "contentId": "126288"
       },
       {
         "name": "직소폭포",
@@ -15034,7 +15037,8 @@
         "name_en": "Anseong Jukjusanseong",
         "kind": "landmark",
         "lat": 37.0895231758,
-        "lng": 127.4298268955
+        "lng": 127.4298268955,
+        "contentId": "128287"
       },
       {
         "name": "안성맞춤박물관",
@@ -15781,7 +15785,8 @@
         "name_en": "Anyangsa Temple",
         "kind": "temple",
         "lat": 37.4220525,
-        "lng": 126.9234462
+        "lng": 126.9234462,
+        "contentId": "337412"
       }
     ]
   },
@@ -17063,14 +17068,16 @@
         "name_en": "Byeolmangseong Fortress",
         "kind": "landmark",
         "lat": 37.29982921,
-        "lng": 126.7979338201
+        "lng": 126.7979338201,
+        "contentId": "128062"
       },
       {
         "name": "성호공원",
         "name_en": "Seongho Park Ansan",
         "kind": "park",
         "lat": 37.31402570568867,
-        "lng": 126.86103668377933
+        "lng": 126.86103668377933,
+        "contentId": "128826"
       },
       {
         "name": "안산갈대습지공원",
@@ -17085,7 +17092,8 @@
         "name_en": "Hwarang Recreation Area",
         "kind": "park",
         "lat": 37.3267818975,
-        "lng": 126.8124400868
+        "lng": 126.8124400868,
+        "contentId": "2615489"
       }
     ]
   },
