@@ -2,6 +2,34 @@
 
 직전: [`2026-09-06-project-log.md`](./2026-09-06-project-log.md)
 
+## 팔경 contentId — 다음 세션 핸드오프 (#P0-L06)
+
+- **채팅명** `팔경contentId #P0-L06, 멤버 keyword`
+- **브랜치** `cursor/palgyeong-cid` · tip `4c141c27` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **스냅샷** P0 멤버 **400/876** (null **476**) · P2 테마 null **104**/871 · P0-L02·L03·L05 연속 **0/100** · resume **584** · 429 없음
+- **완료** P0-L05 keyword **0/100** — `--resume` dry-run **targets=0** → 큐 SSOT대로 `--resume` 없이 동일 cohort 재시도 · JSON 무변
+- **1순위** `node scripts/fill-korea-local-scenic-content-ids.mjs --keyword-only --limit=100` (**--resume 금지**) 또는 전략 합의(areaBased·alias)
+- **읽기 3** index 팔경 contentId 행 · 큐 「다음 세션」절 · method §5.7
+- **금지 3** UI · scenic 승격 · 워커 병렬 LIVE
+
+```
+팔경contentId #P0-L06, 멤버 keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재시도 · feature에 plans/** 커밋
+작업: P0-L06+ — fill-korea-local-scenic-content-ids --keyword-only --limit=100 → audit/smoke lists
+```
+
+## 팔경 contentId — P0-L05 keyword 0/100 ✅
+
+- **세션** `팔경contentId #P0-L05, 멤버 keyword resume`
+- **브랜치** `cursor/palgyeong-cid` · tip `4c141c27` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **P0-L05** `--keyword-only --limit=100` **0/100** — `--resume`은 targets=0(476 null 전부 processed) → `--resume` 없이 실행 · P0-L02~L04 동일 cohort MISS · members **400/876** 유지
+- **VERIFY** audit:korea-local-scenic-lists OK · smoke lists · smoke content-ids PASS
+- **다음** P0-L06+ 동일 배치 또는 전략 합의
+
 ## 팔경 contentId — 다음 세션 핸드오프 (#P0-L04)
 
 - **채팅명** `팔경contentId #P0-L04, 멤버 keyword`
