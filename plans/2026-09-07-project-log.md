@@ -58,8 +58,16 @@
 @plans/feature-handoff-index.md
 브랜치 cursor/palgyeong-cid · PR #185
 금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P2 월권
-작업: P1 hub attraction contentId — DB-only 우선 · 지휘자=Cloud 메인 · 워커A+B Foreground → 직렬 머지 VERIFY. 중첩 후임 Task 금지.
+작업: P1-R02 DB-only — 지휘자=Cloud 메인 · 워커A(yanggu·inje·wonju)+B(donghae·sokcho·yangyang) Foreground → 직렬 머지 VERIFY. 중첩 후임 Task 금지.
 ```
+
+## 팔경 contentId — P1-R01 hub DB-only ✅
+
+- **세션** `오케스트레이터 팔경contentId` · 지휘자=Cloud 메인 · 워커A→B Foreground 직렬 · 중첩 후임 없음
+- **브랜치** `cursor/palgyeong-cid` · tip `0725230f` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **P1-R01** 9/83 hub attraction (`yeongdong`·`gyeongju`·`jincheon` + `pohang`·`samcheok`·`hongcheon`) · `fill-korea-hub-attraction-content-ids.mjs` 신규
+- **VERIFY** audit issues 0 · smoke lists + content-ids · build PASS
+- **다음 P1-R02** A `yanggu`·`inje`·`wonju` / B `donghae`·`sokcho`·`yangyang`
 
 ## 오케스트레이터 v2.4.1 — Cloud 2회는 하드캡 아님
 

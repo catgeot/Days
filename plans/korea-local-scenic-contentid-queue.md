@@ -1,6 +1,6 @@
 # 팔경·명소 Tour contentId 큐
 
-**상태**: R01–R16 ✅ · **P0 F 소진** · membersWithContentId **292**/876 · 다음 **P1** hub 잔여 · LIVE 쿼터 주의  
+**상태**: R01–R16 ✅ · **P0 F 소진** · P1-R01 ✅ · membersWithContentId **292**/876 · hub+P1 **9** · 다음 **P1-R02** · LIVE 쿼터 주의  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.7** · 플랜 [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md)  
 **브랜치**: `cursor/palgyeong-cid` (A UI `cursor/palgyeong-use-e744`와 **분리** · 수집 `cursor/palgyeong` 금지)  
 **금지**: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재호출 · P1/P2를 P0 전에
@@ -51,5 +51,12 @@ S0 PASS 후에만 아래 F. 라운드 표는 `listKoreaLocalScenicLists()` verif
 
 | 순위 | 대상 | 상태 |
 |------|------|------|
-| P1 | hub `attractions[]` 중 `contentId` 없는 KR 명소 | ⬜ **다음** (P0 소진 후) |
+| P1 | hub `attractions[]` 중 `contentId` 없는 KR 명소 | **P1-R01** ✅ 9/83 · **P1-R02** ⬜ |
 | P2 | 테마 선정 contentId 잔여(~75, 기존 429) | 대기 |
+
+### P1 F (워커A 3 hub + 워커B 3 hub) — hub attraction DB-only
+
+| R | 워커A (3 hub) | 워커B (3 hub) | 모드 | 상태 |
+|---|---------------|---------------|------|------|
+| **P1-R01** | `yeongdong` · `gyeongju` · `jincheon` | `pohang` · `samcheok` · `hongcheon` | DB-only | ✅ 2026-09-07 9/83 · `0725230f` |
+| **P1-R02** | `yanggu` · `inje` · `wonju` | `donghae` · `sokcho` · `yangyang` | DB-only | ⬜ |
