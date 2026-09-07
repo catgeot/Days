@@ -169,7 +169,8 @@
         "kind": "park",
         "lat": 38.137451046534,
         "lng": 128.061541678097,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "2568819"
       }
     ]
   },
@@ -657,7 +658,8 @@
         "kind": "viewpoint",
         "lat": 38.1,
         "lng": 128.5,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "125618"
       },
       {
         "attractionName": "오색주전골",
@@ -708,7 +710,8 @@
         "kind": "museum",
         "lat": 38.05,
         "lng": 128.65,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "130930"
       },
       {
         "attractionName": "서피비치",
@@ -838,7 +841,8 @@
         "kind": "viewpoint",
         "lat": 38.1396,
         "lng": 127.3265,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "125652"
       },
       {
         "attractionName": "직탕폭포",
@@ -846,7 +850,8 @@
         "kind": "viewpoint",
         "lat": 38.255,
         "lng": 127.295,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "125653"
       },
       {
         "attractionName": "매월대폭포",
@@ -890,7 +895,8 @@
         "kind": "landmark",
         "lat": 38.19,
         "lng": 127.29,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "2785713"
       },
       {
         "attractionName": "학저수지 여명",
@@ -980,7 +986,8 @@
         "kind": "temple",
         "lat": 37.08,
         "lng": 128.48,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "2616104"
       }
     ]
   },
@@ -1082,7 +1089,8 @@
         "kind": "viewpoint",
         "lat": 37.35,
         "lng": 128.79,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "128660"
       },
       {
         "attractionName": "거북바위",
@@ -1119,7 +1127,8 @@
         "kind": "viewpoint",
         "lat": 37.37,
         "lng": 128.76,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "125666"
       },
       {
         "attractionName": "몰운대",
@@ -1188,7 +1197,8 @@
         "kind": "viewpoint",
         "lat": 38.08,
         "lng": 127.7,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "125599"
       },
       {
         "attractionName": "비래바위",
@@ -1430,7 +1440,8 @@
         "kind": "viewpoint",
         "lat": 36.3510085,
         "lng": 127.5651863,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "1940660"
       },
       {
         "attractionName": "용암사 일출",
