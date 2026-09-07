@@ -1,6 +1,6 @@
 # 팔경·명소 Tour contentId 큐
 
-**상태**: R01–R16 ✅ · **P0·P1 F 소진** · membersWithContentId **292**/876 · hub+P1 **68** · P2 **null 142**/871(78 hub) · **P2 DB-only F 소진 0건** · 다음 **P2-L02+** keyword-only(≤20) · LIVE 쿼터 주의  
+**상태**: R01–R16 ✅ · **P0·P1 F 소진** · membersWithContentId **292**/876 · hub+P1 **68** · P2 **null 104**/871(78 hub) · **P2-L keyword 38/142** · Tour API **운영 승인 ~10만/일** · 다음 **P2 잔여 LIVE(areaBased+keyword)**  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.7** · 플랜 [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md)  
 **브랜치**: `cursor/palgyeong-cid` (A UI `cursor/palgyeong-use-e744`와 **분리** · 수집 `cursor/palgyeong` 금지)  
 **금지**: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재호출 · P1/P2를 P0 전에
@@ -9,7 +9,7 @@
 
 1. **S0** 끝날 때까지 F 오케 금지 (메인 솔로: 스크립트 + 문경 DB-only).  
 2. F: 다음 ⬜ R만 · 워커A 3 + 워커B 3. **DB-only R** 우선.  
-3. LIVE R은 메인 직렬(또는 워커 1). 429 → `blocked: quota` · 그날 정지.  
+3. LIVE R은 메인 직렬(또는 워커 1). **운영 쿼터 ~10만/일**(2026-09-07 승인) — P2 세션당 20건 상한 해제 · 429 → `blocked: quota` · 그날 정지.  
 4. **P0/P1** `listId`·hub — [`koreaLocalScenicLists.json`](../src/pages/Home/data/koreaLocalScenicLists.json) `verified`만. 큐 밖 임의 시군 금지.  
 5. **P2** 대상 — [`korea-scenic-spots-overrides.mjs`](../scripts/data/korea-scenic-spots-overrides.mjs) `contentId: null`만 · 스크립트 `fill:korea-scenic-spot-content-ids` · `--hubs=` 큐 배정 hub · 적용 후 `generate:korea-scenic-spots` · VERIFY `audit:korea-scenic-spots` + `smoke:korea-scenic-spots`.
 
@@ -106,7 +106,7 @@ DB-only 종료 후 overrides에 `contentId: null`이 남은 hub만. 라운드는
 
 | R | 방식 | 한도 | 모드 | 상태 |
 |---|------|------|------|------|
-| **P2-L01+** | 메인 직렬 `--keyword-only --limit=20` | 세션당 ≤20 KW 호출 | LIVE | **P2-L01** ✅ 2026-09-07 **0/20** · 429 없음 · **다음 P2-L02+** |
+| **P2-L01+** | 메인 직렬 `--keyword-only` (전수 또는 `--limit`) · 잔여는 `areaBased`+`keyword` | 쿼터 ~10만/일 | LIVE | **P2-L keyword** ✅ 2026-09-07 **38/142** · null **104** · tip `768b1635` |
 
 - 429 → 해당 R `blocked: quota` · **그날 정지** · 다음날 [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) §1.2 B 429 블록.  
 - 상업·리조트·아울렛 등은 스크립트 `COMMERCIAL_RE`로 MISS 가능 — 무리한 LIVE 반복 금지.
