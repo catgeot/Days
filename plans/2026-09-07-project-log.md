@@ -2,6 +2,28 @@
 
 직전: [`2026-09-06-project-log.md`](./2026-09-06-project-log.md)
 
+## 팔경 contentId — 다음 세션 핸드오프 (#P2-L2)
+
+- **채팅명** `팔경contentId #P2-L2, 잔여 LIVE`
+- **브랜치** `cursor/palgyeong-cid` · tip `15f6e56c` · 코드 `768b1635` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **스냅샷** P0 멤버 **292/876** (null **584**) · P2 테마 null **104**/871 · Tour API 운영 **~10만/일**
+- **완료** keyword-only 전수 **38/142** · DB-only F **0건** · S0-P2 파서 `3c67e133`
+- **시작** `checkout cursor/palgyeong-cid` → `merge origin/main` → `npm run audit:docs-handoff-sync`
+- **1순위 P2-L2** `node scripts/fill-korea-scenic-spot-content-ids.mjs` (DB→areaBased→keyword) → `generate:korea-scenic-spots` → audit/smoke
+- **2순위 P0-L** `node scripts/fill-korea-local-scenic-content-ids.mjs --keyword-only` (null 584 · 배치 `--limit=100` OK)
+- **읽기 3** index 팔경 contentId 행 · 큐 「다음 세션」절 · method §5.7
+- **금지 3** UI · scenic 승격 · 워커 병렬 LIVE
+
+```
+팔경contentId #P2-L2, 잔여 LIVE
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재시도 · feature에 plans/** 커밋
+작업: P2-L2 fill-korea-scenic-spot-content-ids (areaBased+keyword) → generate+audit/smoke · 이후 P0-L keyword
+```
+
 ## 팔경 contentId — P2-L LIVE keyword 38건 ✅
 
 - **세션** Tour API **운영 승인**(쿼터 ~10만/일) · P2 keyword-only 전수 1회
@@ -9,7 +31,7 @@
 - **채움** 38/142 — 환선굴·청평사·아바이마을·쌍계사(하동)·월악산국립공원·부여박물관 등
 - **null** 142→**104** · 429 없음
 - **VERIFY** audit/smoke scenic PASS
-- **다음** 잔여 104 — `areaBased`+`keyword` 또는 팔경 멤버 잔여 LIVE
+- **다음** #P2-L2 areaBased+keyword · P0-L 멤버 keyword — 핸드오프 절 상단
 
 ## 팔경 contentId — S0-P2·P2 DB-only F·P2-L01 ✅
 

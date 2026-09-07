@@ -88,7 +88,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | S0-P2 ✅ · P2 DB-only 0건 · **P2-L keyword 38/142** · null **104** · tip `768b1635` · **운영 쿼터 ~10만** |
+| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | P2-L keyword **38/142** · null **104** · **다음 P2-L2** · P0 null **584** · tip `15f6e56c` |
 | **index 행** | 팔경 활용 | 팔경 contentId |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · 워커 병렬 LIVE · 429 재호출 |
 
@@ -98,7 +98,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 |----|--------------|------|------|
 | 1 | `팔경 활용 #1, 검색·리스트` | A | **완료** · tip `e8da2987` |
 | 2 | `팔경 활용 #2, Preview QA` | A 사람 | **다음** |
-| — | `오케스트레이터 팔경contentId` | B | P2-L **38/142** ✅ · null **104** · areaBased+keyword 잔여 |
+| — | `팔경contentId #P2-L2, 잔여 LIVE` | B | **P2-L2** ⬜ · P0-L ⬜ |
 | — | `지자체 팔경 #…` | 수집 종료 | **열지 않음** |
 
 ### §1.2 A #1
@@ -125,16 +125,17 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 작업: 홈 검색 문경 · /korea/theme/scenic 문경 hub · 축제 상세 인근 목록 소제목
 ```
 
-### §1.2 B 다음 (P2 · LIVE·월권)
+### §1.2 B 다음 (#P2-L2)
 
 ```
-오케스트레이터 팔경contentId
-@plans/orchestrator-method.md
-@plans/korea-local-scenic-contentid-queue.md
+팔경contentId #P2-L2, 잔여 LIVE
 @plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
 브랜치 cursor/palgyeong-cid · PR #185
-금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재시도 · 워커 커밋
-작업: P2 잔여 null 104 — fill-korea-scenic-spot-content-ids (areaBased+keyword, 쿼터 여유) · 또는 팔경 멤버 잔여 keyword
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재시도 · feature에 plans/** 커밋
+작업: 1) node scripts/fill-korea-scenic-spot-content-ids.mjs → generate:korea-scenic-spots → audit/smoke scenic
+      2) (선택) node scripts/fill-korea-local-scenic-content-ids.mjs --keyword-only [--limit=100]
 ```
 
 ### §1.2 B 429 다음날
