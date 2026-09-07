@@ -294,11 +294,13 @@ const PlaceCardSummary = ({
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
+                  e.nativeEvent?.stopImmediatePropagation?.();
                   onClose?.();
                 }}
                 onPointerDown={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
+                  e.nativeEvent?.stopImmediatePropagation?.();
                   onClose?.();
                 }}
                 className="relative z-20 inline-flex items-center justify-center min-h-11 min-w-11 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors touch-manipulation"
