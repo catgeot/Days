@@ -1,6 +1,6 @@
 # 팔경·명소 Tour contentId 큐
 
-**상태**: R01–R16 ✅ · **P0·P1 F 소진** · membersWithContentId **292**/876 · hub+P1 **68** · P2 **null 142**/871(78 hub) · 다음 **P2-R01** DB-only · LIVE 쿼터 주의  
+**상태**: R01–R16 ✅ · **P0·P1 F 소진** · membersWithContentId **292**/876 · hub+P1 **68** · P2 **null 142**/871(78 hub) · **P2 DB-only F 소진 0건** · 다음 **P2-L02+** keyword-only(≤20) · LIVE 쿼터 주의  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.7** · 플랜 [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md)  
 **브랜치**: `cursor/palgyeong-cid` (A UI `cursor/palgyeong-use-e744`와 **분리** · 수집 `cursor/palgyeong` 금지)  
 **금지**: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재호출 · P1/P2를 P0 전에
@@ -20,6 +20,7 @@
 | # | 작업 | 상태 |
 |---|------|------|
 | S0 | fill 스크립트 `--db-only`/`--keyword-only`/`--limit`/`--resume` · 문경(`mungyeong-palgyeong`) DB 매칭 스모크 · audit가 `contentId` 허용 | ✅ 2026-09-04 |
+| S0-P2 | `nullIdsFromOverrides` → `KOREA_SCENIC_SPOTS_OVERRIDES` import · dry-run `targets>0` | ✅ 2026-09-07 · `3c67e133` |
 
 S0 PASS 후에만 아래 F. 라운드 표는 `listKoreaLocalScenicLists()` verified 순 6칸씩.
 
@@ -83,21 +84,21 @@ S0 PASS 후에만 아래 F. 라운드 표는 `listKoreaLocalScenicLists()` verif
 
 | R | 워커A (3 hub) | 워커B (3 hub) | null≈ | 모드 | 상태 |
 |---|---------------|---------------|-------|------|------|
-| **P2-R01** | `samcheok` · `hapcheon` · `hadong` | `uiryeong` · `sokcho` · `buyeo` | 28 | DB-only | ⬜ |
-| **P2-R02** | `namwon` · `seongnam` · `wando` | `hanam` · `geochang` · `gunwi` | 21 | DB-only | ⬜ |
-| **P2-R03** | `chuncheon` · `boseong` · `gwangju` | `jeongeup` · `danyang` · `gurye` | 18 | DB-only | ⬜ |
-| **P2-R04** | `jecheon` · `pyeongchang` · `siheung` | `eumseong` · `yangsan` · `changwon` | 13 | DB-only | ⬜ |
-| **P2-R05** | `yeongcheon` · `dokdo` · `goryeong` | `gyeongsan` · `yeongdeok` · `donghae` | 12 | DB-only | ⬜ |
-| **P2-R06** | `buan` · `cheongju` · `ansan` | `gwangmyeong` · `yangpyeong` · `gunpo` | 8 | DB-only | ⬜ |
-| **P2-R07** | `gwacheon` · `osan` · `jincheon` | `yeoju` · `dongducheon` · `icheon` | 6 | DB-only | ⬜ |
-| **P2-R08** | `pyeongtaek` · `ulljin` · `chungju` | `sejong` · `seosan` · `dangjin` | 6 | DB-only | ⬜ |
-| **P2-R09** | `sangju` · `gyeryong` · `mungyeong` | `bonghwa` · `hongseong` · `yeongi` | 6 | DB-only | ⬜ |
-| **P2-R10** | `yesan` · `gokseong` · `seocheon` | `hwasun` · `imsil` · `jangseong` | 6 | DB-only | ⬜ |
-| **P2-R11** | `yeonggwang` · `gimje` · `iksan` | `yeongam` · `cheongdo` · `gijang` | 6 | DB-only | ⬜ |
-| **P2-R12** | `uiseong` · `yecheon` · `chilgok` | `gwangyang` · `sancheong` · `yeongyang` | 6 | DB-only | ⬜ |
-| **P2-R13** | `pohang` · `mokpo` · `ulleung` | `gapyeong` · `gongju` · `yanggu` | 6 | DB-only | ⬜ |
+| **P2-R01** | `samcheok` · `hapcheon` · `hadong` | `uiryeong` · `sokcho` · `buyeo` | 28 | DB-only | ✅ 2026-09-07 **0/28** |
+| **P2-R02** | `namwon` · `seongnam` · `wando` | `hanam` · `geochang` · `gunwi` | 21 | DB-only | ✅ 2026-09-07 **0/21** |
+| **P2-R03** | `chuncheon` · `boseong` · `gwangju` | `jeongeup` · `danyang` · `gurye` | 18 | DB-only | ✅ 2026-09-07 **0/18** |
+| **P2-R04** | `jecheon` · `pyeongchang` · `siheung` | `eumseong` · `yangsan` · `changwon` | 13 | DB-only | ✅ 2026-09-07 **0/13** · 월악산 약초마을 오탐 제외 |
+| **P2-R05** | `yeongcheon` · `dokdo` · `goryeong` | `gyeongsan` · `yeongdeok` · `donghae` | 12 | DB-only | ✅ 2026-09-07 **0/12** |
+| **P2-R06** | `buan` · `cheongju` · `ansan` | `gwangmyeong` · `yangpyeong` · `gunpo` | 8 | DB-only | ✅ 2026-09-07 **0/8** |
+| **P2-R07** | `gwacheon` · `osan` · `jincheon` | `yeoju` · `dongducheon` · `icheon` | 6 | DB-only | ✅ 2026-09-07 **0/6** |
+| **P2-R08** | `pyeongtaek` · `ulljin` · `chungju` | `sejong` · `seosan` · `dangjin` | 6 | DB-only | ✅ 2026-09-07 **0/5** |
+| **P2-R09** | `sangju` · `gyeryong` · `mungyeong` | `bonghwa` · `hongseong` · `yeongi` | 6 | DB-only | ✅ 2026-09-07 **0/6** |
+| **P2-R10** | `yesan` · `gokseong` · `seocheon` | `hwasun` · `imsil` · `jangseong` | 6 | DB-only | ✅ 2026-09-07 **0/6** |
+| **P2-R11** | `yeonggwang` · `gimje` · `iksan` | `yeongam` · `cheongdo` · `gijang` | 6 | DB-only | ✅ 2026-09-07 **0/6** |
+| **P2-R12** | `uiseong` · `yecheon` · `chilgok` | `gwangyang` · `sancheong` · `yeongyang` | 6 | DB-only | ✅ 2026-09-07 **0/6** |
+| **P2-R13** | `pohang` · `mokpo` · `ulleung` | `gapyeong` · `gongju` · `yanggu` | 6 | DB-only | ✅ 2026-09-07 **0/6** · **P2 DB-only F 소진** |
 
-P2-R13 완료 후 `null` 재집계 · DB-only F 소진 표기.
+P2-R13 완료 후 `null` 재집계 · DB-only F 소진 표기. **2026-09-07**: 전수 DB-only **유효 0건**(월악산→약초마을 1건은 overrides 오탐 제외) · null **142** 유지.
 
 ### P2 LIVE (메인 직렬 · 워커 병렬 금지)
 
@@ -105,7 +106,7 @@ DB-only 종료 후 overrides에 `contentId: null`이 남은 hub만. 라운드는
 
 | R | 방식 | 한도 | 모드 | 상태 |
 |---|------|------|------|------|
-| **P2-L01+** | 메인 직렬 `--keyword-only --limit=20` | 세션당 ≤20 KW 호출 | LIVE | ⬜ (DB-only 후) |
+| **P2-L01+** | 메인 직렬 `--keyword-only --limit=20` | 세션당 ≤20 KW 호출 | LIVE | **P2-L01** ✅ 2026-09-07 **0/20** · 429 없음 · **다음 P2-L02+** |
 
 - 429 → 해당 R `blocked: quota` · **그날 정지** · 다음날 [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) §1.2 B 429 블록.  
 - 상업·리조트·아울렛 등은 스크립트 `COMMERCIAL_RE`로 MISS 가능 — 무리한 LIVE 반복 금지.

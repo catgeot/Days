@@ -88,7 +88,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`는 잔여만 · 워커 *
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | R01–R16 ✅ · **P0·P1 F 소진** · cid 292/876 · hub+P1 **68** · P2 **null 142** · 다음 **P2-R01** DB-only |
+| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | S0-P2 ✅ `3c67e133` · P2 DB-only R01–R13 **0건** · P2-L01 **0/20** · null **142** · **P2-L02+** |
 | **index 행** | 팔경 활용 | 팔경 contentId |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · 워커 병렬 LIVE · 429 재호출 |
 
@@ -98,7 +98,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`는 잔여만 · 워커 *
 |----|--------------|------|------|
 | 1 | `팔경 활용 #1, 검색·리스트` | A | **완료** · tip `e8da2987` |
 | 2 | `팔경 활용 #2, Preview QA` | A 사람 | **다음** |
-| — | `오케스트레이터 팔경contentId` | B | P0·P1 ✅ · **P2-R01** ⬜ DB-only |
+| — | `오케스트레이터 팔경contentId` | B | P2 DB-only ✅ 0건 · **P2-L02+** ⬜ |
 | — | `지자체 팔경 #…` | 수집 종료 | **열지 않음** |
 
 ### §1.2 A #1
@@ -134,7 +134,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`는 잔여만 · 워커 *
 @plans/feature-handoff-index.md
 브랜치 cursor/palgyeong-cid · PR #185
 금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · 같은 날 429 재시도 · 워커 커밋 · Cloud 중첩 후임
-작업: P2-R01 DB-only — S0-P2 파서 확인 후 워커A(samcheok·hapcheon·hadong)+B(uiryeong·sokcho·buyeo) · generate:korea-scenic-spots · audit/smoke scenic
+작업: P2-L02+ 메인 직렬 keyword-only --limit=20 · 429 시 그날 정지 · generate+audit/smoke scenic(채움 있을 때만)
 ```
 
 ### §1.2 B 429 다음날
