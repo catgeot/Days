@@ -7,7 +7,7 @@
 1. [`.cursor/rules/gateo-project-context.mdc`](.cursor/rules/gateo-project-context.mdc) 규칙을 따른다.
 2. 루트 [`.ai-context.md`](.ai-context.md)를 **Read**한다 (사용자가 `@`로 안 붙여도).
 3. 작업 주제면 최신 일지(`plans/YYYY-MM-DD-project-log.md`)와 해당 운영 가이드만 추가로 읽는다.
-4. **`오케스트레이터`** 제시어(다배치 SSOT) → [`plans/orchestrator-method.md`](plans/orchestrator-method.md) **v2.3**(VERIFY PASS 후 §3.4 커밋 · Cloud는 push·PR · 후임 Task 이양) · Rule [`gateo-orchestrator.mdc`](.cursor/rules/gateo-orchestrator.mdc).
+4. **`오케스트레이터`** 제시어(다배치 SSOT) → [`plans/orchestrator-method.md`](plans/orchestrator-method.md) **v2.4**(지휘자 1 + 워커 N 기본 2 · VERIFY PASS 후 §3.4 · Cloud는 중첩 후임 금지·같은 지휘자 연장) · Rule [`gateo-orchestrator.mdc`](.cursor/rules/gateo-orchestrator.mdc).
 
 ## 금지 (요약)
 
@@ -134,10 +134,10 @@ Vercel은 **배포 해시 URL**(푸시마다 변경)과 **브랜치 git Preview 
 
 다배치 SSOT 오케스트레이터([`orchestrator-method.md`](plans/orchestrator-method.md) **§3.4**):
 
-1. 워커2 → tip 직렬 머지 → VERIFY PASS  
+1. 워커 N(기본 2) → tip 직렬 머지 → VERIFY PASS  
 2. **커밋**(한글) — 로컬·Cloud 공통 · 턴/이관 전  
 3. **Cloud**: push → PR 생성(없으면) 또는 기존 PR에 push · 일지에 SHA·PR URL  
-4. 후임 Task 이관  
+4. **Cloud 이관**: 같은 지휘자가 워커 재기동(중첩 후임 금지). Desktop은 컨트롤러가 다음 지휘자 L1.  
 
 VERIFY FAIL tip은 커밋하지 않는다. 워커는 commit/PR 금지.
 
