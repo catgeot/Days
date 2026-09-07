@@ -2,6 +2,14 @@
 
 직전: [`2026-09-06-project-log.md`](./2026-09-06-project-log.md)
 
+## 팔경 contentId — P1-R05 hub DB-only ✅
+
+- **세션** `오케스트레이터 팔경contentId` · 지휘자=Cloud 메인 · 워커A→B Foreground · 중첩 후임 없음
+- **브랜치** `cursor/palgyeong-cid` · tip `3648d7b1` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **P1-R05** 6/51 (`3648d7b1`) · 워커A 1/29 · 워커B 5/22 · hub+P1 누적 **39**
+- **VERIFY** audit issues 0 · smoke lists + content-ids · build PASS
+- **다음 P1-R06** A `changnyeong`·`yeongdeok`·`uiseong` / B `tongyeong`·`hadong`·`hapcheon`
+
 ## 팔경 contentId — P1-R04 hub DB-only ✅
 
 - **세션** `오케스트레이터 팔경contentId` · 지휘자=Cloud 메인 · 워커A→B Foreground · 중첩 후임 없음
