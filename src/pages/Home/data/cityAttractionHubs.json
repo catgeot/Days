@@ -2057,7 +2057,8 @@
         "name_en": "Bogyeongsa",
         "kind": "temple",
         "lat": 36.2510959491,
-        "lng": 129.3187408951
+        "lng": 129.3187408951,
+        "contentId": "126179"
       },
       {
         "name": "호미곶 일출",
@@ -11529,14 +11530,16 @@
         "name_en": "Suta Temple",
         "kind": "temple",
         "lat": 37.6987235582,
-        "lng": 127.9592113786
+        "lng": 127.9592113786,
+        "contentId": "125764"
       },
       {
         "name": "팔봉산관광지",
         "name_en": "Palbongsan Recreation Area",
         "kind": "park",
         "lat": 37.7030542408,
-        "lng": 127.6951129928
+        "lng": 127.6951129928,
+        "contentId": "125610"
       },
       {
         "name": "홍천 은행나무숲",
@@ -11550,7 +11553,8 @@
         "name_en": "Garisan Recreation Forest",
         "kind": "park",
         "lat": 37.8655595924949,
-        "lng": 127.979484575743
+        "lng": 127.979484575743,
+        "contentId": "126905"
       },
       {
         "name": "삼봉약수터",
@@ -14327,7 +14331,8 @@
         "name_en": "Baekgok Reservoir",
         "kind": "viewpoint",
         "lat": 36.8695620983,
-        "lng": 127.4123207495
+        "lng": 127.4123207495,
+        "contentId": "127789"
       },
       {
         "name": "생거진천종합휴양단지",
@@ -14341,7 +14346,8 @@
         "name_en": "Botapsa Temple",
         "kind": "temple",
         "lat": 36.8398864577,
-        "lng": 127.341130762
+        "lng": 127.341130762,
+        "contentId": "128057"
       },
       {
         "name": "진천종박물관",
@@ -14362,7 +14368,8 @@
         "name_en": "Jincheon Hyanggyo",
         "kind": "landmark",
         "lat": 36.8497064593,
-        "lng": 127.4350442577
+        "lng": 127.4350442577,
+        "contentId": "125914"
       },
       {
         "name": "평사낙안",
@@ -18733,14 +18740,16 @@
         "name_en": "Mulhan Valley",
         "kind": "park",
         "lat": 36.1255,
-        "lng": 127.8555
+        "lng": 127.8555,
+        "contentId": "125839"
       },
       {
         "name": "송호관광지",
         "name_en": "Songho Resort",
         "kind": "park",
         "lat": 36.1555,
-        "lng": 127.7855
+        "lng": 127.7855,
+        "contentId": "2789692"
       },
       {
         "name": "강선대",
