@@ -1,6 +1,6 @@
 # 팔경·명소 Tour contentId 큐
 
-**상태**: R01–R13 ✅ · 다음 ⬜ **R14** · membersWithContentId **240**/876 · LIVE 쿼터 주의  
+**상태**: R01–R16 ✅ · **P0 F 소진** · membersWithContentId **292**/876 · 다음 **P1** hub 잔여 · LIVE 쿼터 주의  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.7** · 플랜 [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md)  
 **브랜치**: `cursor/palgyeong-cid` (A UI `cursor/palgyeong-use-e744`와 **분리** · 수집 `cursor/palgyeong` 금지)  
 **금지**: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재호출 · P1/P2를 P0 전에
@@ -41,9 +41,9 @@ S0 PASS 후에만 아래 F. 라운드 표는 `listKoreaLocalScenicLists()` verif
 | **R11** | `jangheung-gugyeong` · `boseong-gugyeong` · `goheung-other` | `wanju-gugyeong` · `gunsan-palgyeong` · `buan-palgyeong` | DB-only | ✅ 2026-09-07 17/53 · `9862b617` |
 | **R12** | `jeongeup-gugyeong` · `muju-other` · `imsil-gugyeong` | `cheonan-palgyeong` · `seosan-gugyeong` · `taean-palgyeong` | DB-only | ✅ 2026-09-07 24/76 · `9d9a7276` |
 | **R13** | `seocheon-gugyeong` · `hongseong-other` · `yesan-sipgyeong` | `gongju-sipgyeong` · `buyeo-sipgyeong` · `nonsan-other` | DB-only | ✅ 2026-09-07 28/62 · `5276a853` |
-| **R14** | `gyeryong-gugyeong` · `geumsan-sipgyeong` · `uijeongbu-palgyeong` | `yeoju-palgyeong` · `icheon-gugyeong` · `gwangju-gi-palgyeong` | DB-only | ⬜ |
-| **R15** | `ansan-gugyeong` · `hwaseong-palgyeong` · `yongin-palgyeong` | `anyang-gugyeong` · `anseong-palgyeong` · `incheon-gugyeong` | DB-only | ⬜ |
-| **R16** | `ganghwa-palgyeong` · `daegu-sipgyeong` · `daejeon-palgyeong` | `ulsan-sipgyeong` | DB-only | ⬜ P0 잔여 4 |
+| **R14** | `gyeryong-gugyeong` · `geumsan-sipgyeong` · `uijeongbu-palgyeong` | `yeoju-palgyeong` · `icheon-gugyeong` · `gwangju-gi-palgyeong` | DB-only | ✅ 2026-09-07 15/52 · `e088c22b` |
+| **R15** | `ansan-gugyeong` · `hwaseong-palgyeong` · `yongin-palgyeong` | `anyang-gugyeong` · `anseong-palgyeong` · `incheon-gugyeong` | DB-only | ✅ 2026-09-07 20/51 · `1e297c87` |
+| **R16** | `ganghwa-palgyeong` · `daegu-sipgyeong` · `daejeon-palgyeong` | `ulsan-sipgyeong` | DB-only | ✅ 2026-09-07 17/40 · `d8556c2e` · **P0 소진** |
 
 ---
 
@@ -51,5 +51,5 @@ S0 PASS 후에만 아래 F. 라운드 표는 `listKoreaLocalScenicLists()` verif
 
 | 순위 | 대상 | 상태 |
 |------|------|------|
-| P1 | hub `attractions[]` 중 `contentId` 없는 KR 명소 | 대기 |
+| P1 | hub `attractions[]` 중 `contentId` 없는 KR 명소 | ⬜ **다음** (P0 소진 후) |
 | P2 | 테마 선정 contentId 잔여(~75, 기존 429) | 대기 |

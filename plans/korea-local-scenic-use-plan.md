@@ -88,7 +88,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`는 잔여만 · 워커 *
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | R01–R13 ✅ · 다음 ⬜ R14 · cid 240/876 |
+| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | R01–R16 ✅ · **P0 소진** · cid 292/876 · 다음 P1 |
 | **index 행** | 팔경 활용 | 팔경 contentId |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · 워커 병렬 LIVE · 429 재호출 |
 
@@ -98,7 +98,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`는 잔여만 · 워커 *
 |----|--------------|------|------|
 | 1 | `팔경 활용 #1, 검색·리스트` | A | **완료** · tip `e8da2987` |
 | 2 | `팔경 활용 #2, Preview QA` | A 사람 | **다음** |
-| — | `오케스트레이터 팔경contentId` | B | R14 ⬜ (R01–R13 ✅) |
+| — | `오케스트레이터 팔경contentId` | B | P0 ✅ · P1 ⬜ hub 잔여 |
 | — | `지자체 팔경 #…` | 수집 종료 | **열지 않음** |
 
 ### §1.2 A #1
@@ -125,16 +125,17 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`는 잔여만 · 워커 *
 작업: 홈 검색 문경 · /korea/theme/scenic 문경 hub · 축제 상세 인근 목록 소제목
 ```
 
-### §1.2 B 다음 (R14)
+### §1.2 B 다음 (P1 hub)
 
 ```
 오케스트레이터 팔경contentId
 @plans/orchestrator-method.md
 @plans/korea-local-scenic-contentid-queue.md
+@plans/korea-local-scenic-use-plan.md
 @plans/feature-handoff-index.md
 브랜치 cursor/palgyeong-cid · PR #185
-금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P1/P2 월권
-작업: R14 DB-only — 지휘자(Cloud 메인)가 워커A3+B3 Foreground 기동 → 직렬 머지 VERIFY → 큐 남으면 워커 재기동(2회 하드캡 아님). 중첩 후임 Task 금지.
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P2 월권
+작업: P1 hub attraction contentId — DB-only 우선 · 지휘자=Cloud 메인 · 워커A+B Foreground → 직렬 머지 VERIFY. 중첩 후임 Task 금지.
 ```
 
 ### §1.2 B 429 다음날

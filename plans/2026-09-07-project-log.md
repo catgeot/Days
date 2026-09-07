@@ -42,6 +42,25 @@
 작업: R14 DB-only — 지휘자(Cloud 메인)가 워커A3+B3 Foreground 기동 → 직렬 머지 VERIFY → 큐 남으면 워커 재기동(2회 하드캡 아님)
 ```
 
+## 팔경 contentId — R14–R16 DB-only ✅ · P0 F 소진 · 같은 지휘자 3세대
+
+- **세션** `오케스트레이터 팔경contentId` · 지휘자=Cloud 메인 · 워커 Foreground · 중첩 후임 없음
+- **브랜치** `cursor/palgyeong-cid` · tip `d8556c2e` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **R14** 15/52 (`e088c22b`) · **R15** 20/51 (`1e297c87`) · **R16** 17/40 (`d8556c2e`) · 누적 **292**/876
+- **VERIFY** audit issues 0 · smoke lists + content-ids PASS (매 R)
+- **P0 F 라운드 소진** (R01–R16). 다음 **P1** hub `attractions[]` 잔여
+
+```
+오케스트레이터 팔경contentId
+@plans/orchestrator-method.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/korea-local-scenic-use-plan.md
+@plans/feature-handoff-index.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P2 월권
+작업: P1 hub attraction contentId — DB-only 우선 · 지휘자=Cloud 메인 · 워커A+B Foreground → 직렬 머지 VERIFY. 중첩 후임 Task 금지.
+```
+
 ## 오케스트레이터 v2.4.1 — Cloud 2회는 하드캡 아님
 
 - **문서만** (`main` docs-only)
