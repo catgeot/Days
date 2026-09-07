@@ -2,27 +2,35 @@
 
 직전: [`2026-09-06-project-log.md`](./2026-09-06-project-log.md)
 
-## 팔경 contentId — 다음 세션 핸드오프 (#P2-L2)
+## 팔경 contentId — 다음 세션 핸드오프 (#P0-L02)
 
-- **채팅명** `팔경contentId #P2-L2, 잔여 LIVE`
-- **브랜치** `cursor/palgyeong-cid` · tip `15f6e56c` · 코드 `768b1635` · PR [#185](https://github.com/catgeot/Days/pull/185)
-- **스냅샷** P0 멤버 **292/876** (null **584**) · P2 테마 null **104**/871 · Tour API 운영 **~10만/일**
-- **완료** keyword-only 전수 **38/142** · DB-only F **0건** · S0-P2 파서 `3c67e133`
+- **채팅명** `팔경contentId #P0-L02, 멤버 keyword`
+- **브랜치** `cursor/palgyeong-cid` · tip `4c141c27` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **스냅샷** P0 멤버 **400/876** (null **476**) · P2 테마 null **104**/871 · 429 없음
+- **완료** P2-L2 areaBased+keyword **0/104** · P0-L keyword **109/584** (hub 72)
 - **시작** `checkout cursor/palgyeong-cid` → `merge origin/main` → `npm run audit:docs-handoff-sync`
-- **1순위 P2-L2** `node scripts/fill-korea-scenic-spot-content-ids.mjs` (DB→areaBased→keyword) → `generate:korea-scenic-spots` → audit/smoke
-- **2순위 P0-L** `node scripts/fill-korea-local-scenic-content-ids.mjs --keyword-only` (null 584 · 배치 `--limit=100` OK)
+- **1순위** `node scripts/fill-korea-local-scenic-content-ids.mjs --keyword-only` (`--limit=100` OK)
 - **읽기 3** index 팔경 contentId 행 · 큐 「다음 세션」절 · method §5.7
 - **금지 3** UI · scenic 승격 · 워커 병렬 LIVE
 
 ```
-팔경contentId #P2-L2, 잔여 LIVE
+팔경contentId #P0-L02, 멤버 keyword
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
 @plans/orchestrator-method.md
 브랜치 cursor/palgyeong-cid · PR #185
 금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재시도 · feature에 plans/** 커밋
-작업: P2-L2 fill-korea-scenic-spot-content-ids (areaBased+keyword) → generate+audit/smoke · 이후 P0-L keyword
+작업: P0-L02 — fill-korea-local-scenic-content-ids --keyword-only (null 476) → audit/smoke lists
 ```
+
+## 팔경 contentId — P2-L2 + P0-L ✅
+
+- **세션** `팔경contentId #P2-L2, 잔여 LIVE`
+- **브랜치** `cursor/palgyeong-cid` · tip `4c141c27` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **P2-L2** areaBased+keyword 전수 **0/104** — 리조트·시장·상업 등 MISS 유지
+- **P0-L** keyword **109/584** — members 292→**400/876** · hub 72 동기
+- **VERIFY** audit/smoke scenic + lists + content-ids PASS
+- **다음** P0-L02 멤버 keyword 잔여 476
 
 ## 팔경 contentId — P2-L LIVE keyword 38건 ✅
 
