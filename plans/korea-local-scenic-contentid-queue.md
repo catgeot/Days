@@ -1,6 +1,6 @@
 # 팔경·명소 Tour contentId 큐
 
-**상태**: R01–R16 ✅ · **P0 F 소진** · P1-R01–R07 ✅ · membersWithContentId **292**/876 · hub+P1 **48** · 다음 **P1-R08** · LIVE 쿼터 주의  
+**상태**: R01–R16 ✅ · **P0 F 소진** · P1-R01–R08 ✅ · membersWithContentId **292**/876 · hub+P1 **53** · 다음 **P1-R09** · LIVE 쿼터 주의  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.7** · 플랜 [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md)  
 **브랜치**: `cursor/palgyeong-cid` (A UI `cursor/palgyeong-use-e744`와 **분리** · 수집 `cursor/palgyeong` 금지)  
 **금지**: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재호출 · P1/P2를 P0 전에
@@ -51,7 +51,7 @@ S0 PASS 후에만 아래 F. 라운드 표는 `listKoreaLocalScenicLists()` verif
 
 | 순위 | 대상 | 상태 |
 |------|------|------|
-| P1 | hub `attractions[]` 중 `contentId` 없는 KR 명소 | **P1-R01–R07** ✅ 48/146 · **P1-R08** ⬜ |
+| P1 | hub `attractions[]` 중 `contentId` 없는 KR 명소 | **P1-R01–R08** ✅ 53/170 · **P1-R09** ⬜ |
 | P2 | 테마 선정 contentId 잔여(~75, 기존 429) | 대기 |
 
 ### P1 F (워커A 3 hub + 워커B 3 hub) — hub attraction DB-only
@@ -65,4 +65,5 @@ S0 PASS 후에만 아래 F. 라운드 표는 `listKoreaLocalScenicLists()` verif
 | **P1-R05** | `sacheon` · `uiryeong` · `geoje` | `ganghwa` · `geochang` · `haman` | DB-only | ✅ 2026-09-07 6/51 · `3648d7b1` |
 | **P1-R06** | `changnyeong` · `yeongdeok` · `uiseong` | `tongyeong` · `hadong` · `hapcheon` | DB-only | ✅ 2026-09-07 4/37 · `ec615db9` |
 | **P1-R07** | `seongju` · `yeongcheon` · `cheongdo` | `namhae` · `jinju` · `sancheong` | DB-only | ✅ 2026-09-07 5/23 · `7c0d040a` |
-| **P1-R08** | `hamyang` · `gimhae` · `yangsan` | `miryang` · `yeosu` · `gwangyang` | DB-only | ⬜ |
+| **P1-R08** | `hamyang` · `gimhae` · `yangsan` | `miryang` · `yeosu` · `gwangyang` | DB-only | ✅ 2026-09-07 5/24 · `8ea8bdd6` |
+| **P1-R09** | `ansan` · `anseong` · `anyang` | `boseong` · `buan` · `buyeo` | DB-only | ⬜ |
