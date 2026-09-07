@@ -4819,7 +4819,8 @@
         "name_en": "Jeamsan Recreation Forest",
         "kind": "park",
         "lat": 34.6984876656,
-        "lng": 126.9890735769
+        "lng": 126.9890735769,
+        "contentId": "125425"
       },
       {
         "name": "봇재",
@@ -6676,7 +6677,8 @@
         "name_en": "Borimsa Temple",
         "kind": "temple",
         "lat": 34.80782,
-        "lng": 126.8967307
+        "lng": 126.8967307,
+        "contentId": "126367"
       },
       {
         "name": "장흥 수문해수욕장",
@@ -8426,28 +8428,32 @@
         "name_en": "Wibongsa",
         "kind": "temple",
         "lat": 35.9104469175,
-        "lng": 127.2571773196
+        "lng": 127.2571773196,
+        "contentId": "126356"
       },
       {
         "name": "송광사 완주",
         "name_en": "Songgwangsa Wanju",
         "kind": "temple",
         "lat": 35.885567,
-        "lng": 127.241796
+        "lng": 127.241796,
+        "contentId": "126333"
       },
       {
         "name": "삼례문화예술촌",
         "name_en": "Samnye Culture Village",
         "kind": "neighborhood",
         "lat": 35.9,
-        "lng": 127.11
+        "lng": 127.11,
+        "contentId": "2469088"
       },
       {
         "name": "고산자연휴양림",
         "name_en": "Gosan Natural Recreation Forest",
         "kind": "park",
         "lat": 35.9629766259,
-        "lng": 127.2331252962
+        "lng": 127.2331252962,
+        "contentId": "127533"
       },
       {
         "name": "모악산 완주",
