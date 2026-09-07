@@ -88,7 +88,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | P2-L2 ✅ 0/104 · P0-L ✅ **109/584** · members **400/876** · **다음 P0-L02** · tip `4c141c27` |
+| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | P2-L2 ✅ 0/104 · P0-L ✅ **109/584** · P0-L02·L03 ✅ 0/100 · members **400/876** · **다음 P0-L04** · tip `4c141c27` |
 | **index 행** | 팔경 활용 | 팔경 contentId |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · 워커 병렬 LIVE · 429 재호출 |
 
@@ -98,7 +98,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 |----|--------------|------|------|
 | 1 | `팔경 활용 #1, 검색·리스트` | A | **완료** · tip `e8da2987` |
 | 2 | `팔경 활용 #2, Preview QA` | A 사람 | **다음** |
-| — | `팔경contentId #P0-L02, 멤버 keyword` | B | **P2-L2** ✅ · **P0-L** ✅ · **P0-L02** ⬜ |
+| — | `팔경contentId #P0-L04, 멤버 keyword` | B | **P2-L2** ✅ · **P0-L** ✅ · **P0-L02·L03** ✅ · **P0-L04** ⬜ |
 | — | `지자체 팔경 #…` | 수집 종료 | **열지 않음** |
 
 ### §1.2 A #1
@@ -125,10 +125,10 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 작업: 홈 검색 문경 · /korea/theme/scenic 문경 hub · 축제 상세 인근 목록 소제목
 ```
 
-### §1.2 B 다음 (#P0-L02)
+### §1.2 B 다음 (#P0-L04)
 
 ```
-팔경contentId #P0-L02, 멤버 keyword
+팔경contentId #P0-L04, 멤버 keyword
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
 @plans/orchestrator-method.md
