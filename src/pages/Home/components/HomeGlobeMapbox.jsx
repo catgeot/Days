@@ -14,6 +14,7 @@ import Map, { Marker } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
 import { bindGlobeSpaceDragGuard, isClientPointOnGlobe, isMapEventOnGlobe, isScreenPointOnGlobe } from '../lib/globeSpaceHitTest';
+import { resetVisualViewportPageZoom } from '../../../shared/lib/mobileViewport';
 import {
   OVERLAY_CLICK_GUARD_MS,
   eventTargetIsGlobeMap,
@@ -2049,6 +2050,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (!map) return;
 
     onReturnToSpace?.();
+    resetVisualViewportPageZoom();
 
     if (isTourMode(globeMode) || tourActiveRef.current) {
       await endTour();
@@ -2752,7 +2754,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
   return (
     <div
-      className={`absolute inset-0 z-0 transition-opacity duration-500 ${
+      className={`absolute inset-0 z-0 touch-none transition-opacity duration-500 ${
         globePaused ? 'pointer-events-none invisible' : globeDimmed ? 'opacity-30' : 'opacity-100'
       }`}
       onPointerDown={handleInteractionStart}
