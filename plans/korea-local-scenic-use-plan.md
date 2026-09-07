@@ -7,7 +7,7 @@
 | 갈래 | 채팅명 | 브랜치 | Tour LIVE |
 |------|--------|--------|-----------|
 | **A UX/UI** | `팔경 활용 #{N}, …` | `cursor/palgyeong-use-e744` | **없음** |
-| **B contentId 오케** | `오케스트레이터 팔경contentId` | `cursor/palgyeong-cid` | DB 먼저 · LIVE 잔여만 · **429면 그날 정지** |
+| **B contentId 오케** | `오케스트레이터 팔경contentId` | `cursor/palgyeong-cid` | DB 먼저 · LIVE 잔여 · **Tour API 운영 승인(쿼터 ~10만/일)** · 429면 그날 정지 |
 
 수집 `cursor/palgyeong` **재사용 금지**. 같은 브랜치에 A+B 동시 push **금지**.
 
@@ -77,7 +77,7 @@ method **§5.7** · 큐 [`korea-local-scenic-contentid-queue.md`](./korea-local-
 | P1 | hub attractions 잔여 |
 | P2 | 테마 선정 `contentId: null` **142**/871 (78 hub) — P0·P1 소진 후 | **P2-R01–R13** DB-only · P2-L LIVE |
 
-DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`는 잔여만 · 워커 **병렬 LIVE 금지** · 429 → `blocked: quota` · 같은 날 재시도 금지. HIT → 멤버+hub attraction `contentId`. scenic 승격 금지.
+DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만 · 워커 **병렬 LIVE 금지** · **2026-09-07** Tour API 홈 **운영 계정 승인** · 쿼터 **~10만/일** — P2-L 세션당 20건 상한 **해제**(오탐·COMMERCIAL_RE 가드 유지) · 429 → `blocked: quota` · 같은 날 재시도 금지. HIT → 멤버+hub attraction `contentId`. scenic 승격 금지.
 
 **S0**(메인 솔로): fill 스크립트(`--db-only`/`--keyword-only`/`--limit`/`--resume`) + 문경 1건 스모크. 그다음 F = 오케 §3.0.
 
@@ -88,7 +88,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`는 잔여만 · 워커 *
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | S0-P2 ✅ `3c67e133` · P2 DB-only R01–R13 **0건** · P2-L01 **0/20** · null **142** · **P2-L02+** |
+| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | S0-P2 ✅ · P2 DB-only 0건 · **P2-L keyword 38/142** · null **104** · tip `768b1635` · **운영 쿼터 ~10만** |
 | **index 행** | 팔경 활용 | 팔경 contentId |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · 워커 병렬 LIVE · 429 재호출 |
 
@@ -98,7 +98,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`는 잔여만 · 워커 *
 |----|--------------|------|------|
 | 1 | `팔경 활용 #1, 검색·리스트` | A | **완료** · tip `e8da2987` |
 | 2 | `팔경 활용 #2, Preview QA` | A 사람 | **다음** |
-| — | `오케스트레이터 팔경contentId` | B | P2 DB-only ✅ 0건 · **P2-L02+** ⬜ |
+| — | `오케스트레이터 팔경contentId` | B | P2-L **38/142** ✅ · null **104** · areaBased+keyword 잔여 |
 | — | `지자체 팔경 #…` | 수집 종료 | **열지 않음** |
 
 ### §1.2 A #1
@@ -133,8 +133,8 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`는 잔여만 · 워커 *
 @plans/korea-local-scenic-contentid-queue.md
 @plans/feature-handoff-index.md
 브랜치 cursor/palgyeong-cid · PR #185
-금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · 같은 날 429 재시도 · 워커 커밋 · Cloud 중첩 후임
-작업: P2-L02+ 메인 직렬 keyword-only --limit=20 · 429 시 그날 정지 · generate+audit/smoke scenic(채움 있을 때만)
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재시도 · 워커 커밋
+작업: P2 잔여 null 104 — fill-korea-scenic-spot-content-ids (areaBased+keyword, 쿼터 여유) · 또는 팔경 멤버 잔여 keyword
 ```
 
 ### §1.2 B 429 다음날

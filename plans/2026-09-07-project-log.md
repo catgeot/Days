@@ -2,6 +2,15 @@
 
 직전: [`2026-09-06-project-log.md`](./2026-09-06-project-log.md)
 
+## 팔경 contentId — P2-L LIVE keyword 38건 ✅
+
+- **세션** Tour API **운영 승인**(쿼터 ~10만/일) · P2 keyword-only 전수 1회
+- **브랜치** `cursor/palgyeong-cid` · tip `768b1635` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **채움** 38/142 — 환선굴·청평사·아바이마을·쌍계사(하동)·월악산국립공원·부여박물관 등
+- **null** 142→**104** · 429 없음
+- **VERIFY** audit/smoke scenic PASS
+- **다음** 잔여 104 — `areaBased`+`keyword` 또는 팔경 멤버 잔여 LIVE
+
 ## 팔경 contentId — S0-P2·P2 DB-only F·P2-L01 ✅
 
 - **세션** `팔경contentId #S0-P2, 파서→P2-R01` · 같은 지휘자 연장
