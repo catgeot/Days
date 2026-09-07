@@ -18,6 +18,7 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { createClient } from '@supabase/supabase-js';
 import { loadEnvFile } from './lib/load-env-file.mjs';
+import { KOREA_SCENIC_SPOTS_OVERRIDES } from './data/korea-scenic-spots-overrides.mjs';
 
 loadEnvFile();
 
@@ -416,15 +417,11 @@ async function loadDbRows(sb) {
   return all;
 }
 
-/** overrides.mjs 블록에서 contentId null인 spot id 목록 */
-function nullIdsFromOverrides(source) {
+/** overrides 모듈에서 contentId === null 인 spot id */
+function nullIdsFromOverrides(overrides) {
   const ids = new Set();
-  const blocks = source.split(/\n\s*\{\n/);
-  for (const block of blocks) {
-    const idM = block.match(/^\s*order:\s*\d+,\s*\n\s*id:\s*'([^']+)'/);
-    if (!idM) continue;
-    const cidM = block.match(/contentId:\s*(null|'[^']*')\s*,/);
-    if (cidM && cidM[1] === 'null') ids.add(idM[1]);
+  for (const spot of overrides.spots || []) {
+    if (spot?.id && spot.contentId === null) ids.add(spot.id);
   }
   return ids;
 }
@@ -458,7 +455,7 @@ async function main() {
   const hubById = new Map(hubList.map((h) => [String(h.hubId).toLowerCase(), h]));
   const byHubSig = sigungu.byHubId || {};
   const overridesSrc = readFileSync(OVERRIDES_PATH, 'utf8');
-  const nullOverrideIds = nullIdsFromOverrides(overridesSrc);
+  const nullOverrideIds = nullIdsFromOverrides(KOREA_SCENIC_SPOTS_OVERRIDES);
 
   const nulls = (scenic.spots || [])
     .filter((s) => nullOverrideIds.has(s.id) || !s.contentId)
