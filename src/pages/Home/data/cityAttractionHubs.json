@@ -64,7 +64,8 @@
         "name_en": "Sokcho Lighthouse Observatory",
         "kind": "viewpoint",
         "lat": 38.2148,
-        "lng": 128.5985
+        "lng": 128.5985,
+        "contentId": "128803"
       },
       {
         "name": "대포항",
@@ -78,7 +79,8 @@
         "name_en": "Cheongcho Lake",
         "kind": "park",
         "lat": 38.2005,
-        "lng": 128.5802
+        "lng": 128.5802,
+        "contentId": "125750"
       },
       {
         "name": "범바위",
@@ -116,7 +118,8 @@
         "name_en": "Hakmujeong Pavilion",
         "kind": "landmark",
         "lat": 38.188,
-        "lng": 128.6
+        "lng": 128.6,
+        "contentId": "2715992"
       }
     ]
   },
@@ -664,7 +667,8 @@
         "name_en": "Gyejoksan Hwangtotgil",
         "kind": "viewpoint",
         "lat": 36.3947042,
-        "lng": 127.4538486
+        "lng": 127.4538486,
+        "contentId": "1720749"
       },
       {
         "name": "신중앙시장",
@@ -728,7 +732,8 @@
         "name_en": "Jangsaengpo Whale Culture Village",
         "kind": "museum",
         "lat": 35.5059156009,
-        "lng": 129.3830959043
+        "lng": 129.3830959043,
+        "contentId": "2381176"
       },
       {
         "name": "간절곶",
@@ -1128,7 +1133,8 @@
         "name_en": "Somaemuldo Lighthouse Island",
         "kind": "landmark",
         "lat": 34.6266153,
-        "lng": 128.549357
+        "lng": 128.549357,
+        "contentId": "129153"
       }
     ]
   },
@@ -2058,7 +2064,8 @@
         "name_en": "Guryongpo Japanese House Street",
         "kind": "neighborhood",
         "lat": 35.9903,
-        "lng": 129.5606
+        "lng": 129.5606,
+        "contentId": "1909659"
       },
       {
         "name": "보경사",
@@ -2094,7 +2101,8 @@
         "name_en": "Homi Peninsula Coastal Trail",
         "kind": "park",
         "lat": 36.05,
-        "lng": 129.555
+        "lng": 129.555,
+        "contentId": "2606232"
       },
       {
         "name": "영일대 포스코 야경",
@@ -2108,7 +2116,8 @@
         "name_en": "Pohang Canal",
         "kind": "landmark",
         "lat": 36.0237772,
-        "lng": 129.377584
+        "lng": 129.377584,
+        "contentId": "2383570"
       },
       {
         "name": "경상북도수목원 사계",
@@ -2464,7 +2473,8 @@
         "name_en": "Surfyy Beach",
         "kind": "beach",
         "lat": 38.0735,
-        "lng": 128.6685
+        "lng": 128.6685,
+        "contentId": "2501905"
       },
       {
         "name": "하조대해수욕장",
@@ -2509,14 +2519,16 @@
         "name_en": "Namdaecheon Stream",
         "kind": "park",
         "lat": 38.07,
-        "lng": 128.62
+        "lng": 128.62,
+        "contentId": "252571"
       },
       {
         "name": "설악산 대청봉",
         "name_en": "Seoraksan Daecheongbong",
         "kind": "viewpoint",
         "lat": 38.12,
-        "lng": 128.45
+        "lng": 128.45,
+        "contentId": "125621"
       },
       {
         "name": "오색령",
@@ -3271,7 +3283,8 @@
         "name_en": "Maemi Castle",
         "kind": "landmark",
         "lat": 34.9682217,
-        "lng": 128.7050767
+        "lng": 128.7050767,
+        "contentId": "2536133"
       }
     ]
   },
@@ -3999,7 +4012,8 @@
         "name_en": "Gwangseongbo Fortress",
         "kind": "landmark",
         "lat": 37.6639281,
-        "lng": 126.5278429
+        "lng": 126.5278429,
+        "contentId": "127213"
       },
       {
         "name": "연미정",
@@ -4013,7 +4027,8 @@
         "name_en": "Jeokseoksa",
         "kind": "temple",
         "lat": 37.7323548,
-        "lng": 126.414192
+        "lng": 126.414192,
+        "contentId": "479632"
       },
       {
         "name": "전등사",
@@ -4138,7 +4153,8 @@
         "name_en": "Seokjangni Museum",
         "kind": "museum",
         "lat": 36.4474830064,
-        "lng": 127.1899017464
+        "lng": 127.1899017464,
+        "contentId": "1184872"
       },
       {
         "name": "공주한옥마을",
@@ -4559,7 +4575,8 @@
         "name_en": "Jeongnimsa Five-story Pagoda",
         "kind": "landmark",
         "lat": 36.2796849209123,
-        "lng": 126.913246608324
+        "lng": 126.913246608324,
+        "contentId": "126650"
       },
       {
         "name": "부소산성",
@@ -4676,14 +4693,16 @@
         "name_en": "Cheonhakjeong Pavilion",
         "kind": "viewpoint",
         "lat": 38.47,
-        "lng": 128.445
+        "lng": 128.445,
+        "contentId": "126791"
       },
       {
         "name": "청간정",
         "name_en": "Cheongganjeong Pavilion",
         "kind": "viewpoint",
         "lat": 38.473,
-        "lng": 128.442
+        "lng": 128.442,
+        "contentId": "125796"
       },
       {
         "name": "울산바위",
@@ -4792,7 +4811,8 @@
         "name_en": "Bangdong Mineral Spring",
         "kind": "landmark",
         "lat": 37.9438021,
-        "lng": 128.3963164
+        "lng": 128.3963164,
+        "contentId": "125723"
       },
       {
         "name": "합강정",
@@ -4845,7 +4865,8 @@
         "name_en": "Korea Tea Museum",
         "kind": "museum",
         "lat": 34.7198264152315,
-        "lng": 127.081720822431
+        "lng": 127.081720822431,
+        "contentId": "2470539"
       },
       {
         "name": "제암산자연휴양림",
@@ -5313,7 +5334,8 @@
         "name_en": "Geumsusan Mountain",
         "kind": "viewpoint",
         "lat": 36.9847255,
-        "lng": 128.2569094
+        "lng": 128.2569094,
+        "contentId": "127840"
       },
       {
         "name": "용하구곡",
@@ -5344,7 +5366,8 @@
         "name_en": "Baeron Holy Ground",
         "kind": "landmark",
         "lat": 37.1597651,
-        "lng": 128.0841016
+        "lng": 128.0841016,
+        "contentId": "125982"
       }
     ]
   },
@@ -5416,7 +5439,8 @@
         "name_en": "Gyeongcheon Lake",
         "kind": "park",
         "lat": 36.707606,
-        "lng": 128.312229
+        "lng": 128.312229,
+        "contentId": "131064"
       }
     ]
   },
@@ -5569,7 +5593,8 @@
         "name_en": "Korean Peninsula Landform",
         "kind": "viewpoint",
         "lat": 37.2195343,
-        "lng": 128.350964
+        "lng": 128.350964,
+        "contentId": "3072217"
       },
       {
         "name": "동강",
@@ -5597,7 +5622,8 @@
         "name_en": "Beopheungsa Temple",
         "kind": "temple",
         "lat": 37.12,
-        "lng": 128.52
+        "lng": 128.52,
+        "contentId": "125758"
       },
       {
         "name": "요선암",
@@ -6023,7 +6049,8 @@
         "name_en": "Geumwonsan",
         "kind": "viewpoint",
         "lat": 35.731,
-        "lng": 127.761
+        "lng": 127.761,
+        "contentId": "127509"
       },
       {
         "name": "거창 월성리 계곡",
@@ -6076,28 +6103,32 @@
         "name_en": "Sinji Myeongsasipri Beach",
         "kind": "beach",
         "lat": 34.327145,
-        "lng": 126.81224
+        "lng": 126.81224,
+        "contentId": "147317"
       },
       {
         "name": "보길도 윤선도 원림",
         "name_en": "Bogildo Yun Seon-do Garden",
         "kind": "park",
         "lat": 34.162956,
-        "lng": 126.556708
+        "lng": 126.556708,
+        "contentId": "126422"
       },
       {
         "name": "정도리 구계등",
         "name_en": "Jeongdori Gugyedung",
         "kind": "beach",
         "lat": 34.298129,
-        "lng": 126.70689
+        "lng": 126.70689,
+        "contentId": "147777"
       },
       {
         "name": "청산도",
         "name_en": "Cheongsando",
         "kind": "viewpoint",
         "lat": 34.1834269,
-        "lng": 126.8811435
+        "lng": 126.8811435,
+        "contentId": "126970"
       }
     ]
   },
@@ -6599,14 +6630,16 @@
         "name_en": "Namsa Yedamchon",
         "kind": "neighborhood",
         "lat": 35.35,
-        "lng": 127.88
+        "lng": 127.88,
+        "contentId": "128440"
       },
       {
         "name": "산청 동의보감촌",
         "name_en": "Sancheong Donguibogam Village",
         "kind": "park",
         "lat": 35.4393076,
-        "lng": 127.8280553
+        "lng": 127.8280553,
+        "contentId": "2620990"
       },
       {
         "name": "산청 경호강",
@@ -6644,7 +6677,8 @@
         "name_en": "Naro Space Center",
         "kind": "landmark",
         "lat": 34.453525,
-        "lng": 127.517777
+        "lng": 127.517777,
+        "contentId": "751881"
       },
       {
         "name": "고흥 녹동항",
@@ -6747,7 +6781,8 @@
         "name_en": "Seomjingang River Gurye",
         "kind": "park",
         "lat": 35.2,
-        "lng": 127.46
+        "lng": 127.46,
+        "contentId": "2648994"
       },
       {
         "name": "구례 수목원",
@@ -6771,7 +6806,8 @@
         "kind": "temple",
         "lat": 35.1801260865484,
         "lng": 127.480604895138,
-        "mapboxId": null
+        "mapboxId": null,
+        "contentId": "317559"
       },
       {
         "name": "천은사",
@@ -7083,7 +7119,8 @@
         "name_en": "Hapcheon Lake",
         "kind": "park",
         "lat": 35.5788967,
-        "lng": 128.0191136
+        "lng": 128.0191136,
+        "contentId": "126118"
       },
       {
         "name": "대장경테마파크",
@@ -7104,7 +7141,8 @@
         "name_en": "Hambyeongnu",
         "kind": "landmark",
         "lat": 35.5598,
-        "lng": 128.1655
+        "lng": 128.1655,
+        "contentId": "1622710"
       }
     ]
   },
@@ -7199,7 +7237,8 @@
         "name_en": "Chilsan Tower",
         "kind": "viewpoint",
         "lat": 35.1686333574949,
-        "lng": 126.360305672303
+        "lng": 126.360305672303,
+        "contentId": "2684009"
       },
       {
         "name": "가마미해수욕장",
@@ -7311,7 +7350,8 @@
         "name_en": "Chaeseokgang",
         "kind": "viewpoint",
         "lat": 35.6270358,
-        "lng": 126.4681785
+        "lng": 126.4681785,
+        "contentId": "2743380"
       },
       {
         "name": "내소사",
@@ -8346,7 +8386,8 @@
         "name_en": "Museongseowon",
         "kind": "landmark",
         "lat": 35.6016367934,
-        "lng": 126.9839382344
+        "lng": 126.9839382344,
+        "contentId": "126401"
       },
       {
         "name": "정읍천",
@@ -8540,7 +8581,8 @@
         "name_en": "Daeheungsa",
         "kind": "temple",
         "lat": 34.476,
-        "lng": 126.616
+        "lng": 126.616,
+        "contentId": "126373"
       },
       {
         "name": "두륜산",
@@ -8554,7 +8596,8 @@
         "name_en": "Haenam Dinosaur Museum",
         "kind": "museum",
         "lat": 34.5898990614,
-        "lng": 126.4372969769
+        "lng": 126.4372969769,
+        "contentId": "250467"
       },
       {
         "name": "고천암 철새도래지",
@@ -9109,7 +9152,8 @@
         "name_en": "Hampyeong Expo Park",
         "kind": "park",
         "lat": 35.0591629477591,
-        "lng": 126.522198564875
+        "lng": 126.522198564875,
+        "contentId": "130864"
       },
       {
         "name": "용천사 함평",
@@ -9646,7 +9690,8 @@
         "name_en": "Mangdeok Port",
         "kind": "neighborhood",
         "lat": 34.9726221899202,
-        "lng": 127.759631248697
+        "lng": 127.759631248697,
+        "contentId": "2777995"
       }
     ]
   },
@@ -9738,7 +9783,8 @@
         "name_en": "Yongsomak Cathedral",
         "kind": "landmark",
         "lat": 37.34,
-        "lng": 127.93
+        "lng": 127.93,
+        "contentId": "129683"
       },
       {
         "name": "미륵불상",
@@ -10837,7 +10883,8 @@
         "name_en": "Samsuryeong Pass",
         "kind": "viewpoint",
         "lat": 37.15,
-        "lng": 129.05
+        "lng": 129.05,
+        "contentId": "127668"
       },
       {
         "name": "장성하부고생대화석산지",
@@ -10851,7 +10898,8 @@
         "name_en": "Geomnyongso",
         "kind": "viewpoint",
         "lat": 37.14,
-        "lng": 128.98
+        "lng": 128.98,
+        "contentId": "126840"
       },
       {
         "name": "용연굴",
@@ -11610,14 +11658,16 @@
         "name_en": "Garisan",
         "kind": "park",
         "lat": 37.8639443482971,
-        "lng": 127.9846529189285
+        "lng": 127.9846529189285,
+        "contentId": "125593"
       },
       {
         "name": "미약골",
         "name_en": "Miyakgol Valley",
         "kind": "viewpoint",
         "lat": 37.7306906334682,
-        "lng": 128.292608190439
+        "lng": 128.292608190439,
+        "contentId": "2613261"
       },
       {
         "name": "금학산",
@@ -11631,7 +11681,8 @@
         "name_en": "Garyeong Falls",
         "kind": "viewpoint",
         "lat": 37.82909861024825,
-        "lng": 128.1582283826314
+        "lng": 128.1582283826314,
+        "contentId": "125658"
       },
       {
         "name": "공작산 수타사",
@@ -11661,7 +11712,8 @@
         "name_en": "Sambong Mineral Spring",
         "kind": "landmark",
         "lat": 37.857565,
-        "lng": 128.4636046
+        "lng": 128.4636046,
+        "contentId": "1837460"
       }
     ]
   },
@@ -11770,7 +11822,8 @@
         "name_en": "Gwangdaegok Valley",
         "kind": "park",
         "lat": 37.36,
-        "lng": 128.74
+        "lng": 128.74,
+        "contentId": "125635"
       }
     ]
   },
@@ -11896,7 +11949,8 @@
         "name_en": "Yeongnamnu Pavilion",
         "kind": "landmark",
         "lat": 35.4915993,
-        "lng": 128.7550955
+        "lng": 128.7550955,
+        "contentId": "126206"
       },
       {
         "name": "밀양 표충사",
@@ -12390,7 +12444,8 @@
         "name_en": "Hongryong Falls",
         "kind": "viewpoint",
         "lat": 35.3969996749,
-        "lng": 129.0864871696
+        "lng": 129.0864871696,
+        "contentId": "126076"
       },
       {
         "name": "에덴밸리리조트",
@@ -12411,7 +12466,8 @@
         "name_en": "Cheonseongsan",
         "kind": "viewpoint",
         "lat": 35.4015733,
-        "lng": 129.1062817
+        "lng": 129.1062817,
+        "contentId": "126045"
       }
     ]
   },
@@ -12482,7 +12538,8 @@
         "name_en": "Silan Sunset",
         "kind": "viewpoint",
         "lat": 34.9480596,
-        "lng": 128.03966
+        "lng": 128.03966,
+        "contentId": "2782734"
       },
       {
         "name": "남일대 코끼리바위",
@@ -13029,7 +13086,8 @@
         "name_en": "Jangnyeongsan Recreational Forest",
         "kind": "park",
         "lat": 36.2443543,
-        "lng": 127.5554117
+        "lng": 127.5554117,
+        "contentId": "127534"
       },
       {
         "name": "금강유원지",
@@ -13044,7 +13102,8 @@
         "name_en": "Hyangsu Lake Trail",
         "kind": "park",
         "lat": 36.3482881,
-        "lng": 127.6110257
+        "lng": 127.6110257,
+        "contentId": "2720204"
       },
       {
         "name": "옥천 구읍",
@@ -13211,7 +13270,8 @@
         "name_en": "Yanggu Dutayeon Valley",
         "kind": "park",
         "lat": 38.2726591,
-        "lng": 127.9939994
+        "lng": 127.9939994,
+        "contentId": "2739487"
       },
       {
         "name": "양구 박수근미술관",
@@ -13255,14 +13315,16 @@
         "name_en": "Yanggu Porcelain Museum",
         "kind": "museum",
         "lat": 38.2072701825,
-        "lng": 127.9514018354
+        "lng": 127.9514018354,
+        "contentId": "731454"
       },
       {
         "name": "양구 펀치볼",
         "name_en": "Yanggu Punchbowl",
         "kind": "viewpoint",
         "lat": 38.2882746790787,
-        "lng": 128.143418369818
+        "lng": 128.143418369818,
+        "contentId": "125810"
       },
       {
         "name": "양구 봉화산",
@@ -13667,7 +13729,8 @@
         "name_en": "Ttansan",
         "kind": "viewpoint",
         "lat": 38.1,
-        "lng": 127.72
+        "lng": 127.72,
+        "contentId": "2774567"
       },
       {
         "name": "용화산",
@@ -13688,7 +13751,8 @@
         "name_en": "Yongdam Valley",
         "kind": "park",
         "lat": 38.04,
-        "lng": 127.6
+        "lng": 127.6,
+        "contentId": "128096"
       },
       {
         "name": "화악산",
@@ -13731,7 +13795,8 @@
         "name_en": "Goseokjeong",
         "kind": "landmark",
         "lat": 38.1848963,
-        "lng": 127.2878604
+        "lng": 127.2878604,
+        "contentId": "125782"
       },
       {
         "name": "철원 노동당사",
@@ -15720,7 +15785,8 @@
         "name_en": "Uijeongbu Arts Center",
         "kind": "landmark",
         "lat": 37.7332858581,
-        "lng": 127.0345167201
+        "lng": 127.0345167201,
+        "contentId": "130409"
       },
       {
         "name": "천보산",
@@ -18062,7 +18128,8 @@
         "name_en": "Tapjeong Lake Nonsan",
         "kind": "viewpoint",
         "lat": 36.1783768,
-        "lng": 127.1798397
+        "lng": 127.1798397,
+        "contentId": "2714510"
       },
       {
         "name": "개태사",
@@ -18168,7 +18235,8 @@
         "name_en": "Hansan Mosi Center",
         "kind": "museum",
         "lat": 36.0799890767,
-        "lng": 126.7987165698
+        "lng": 126.7987165698,
+        "contentId": "2782184"
       },
       {
         "name": "신성리갈대밭",
@@ -19451,7 +19519,8 @@
         "name_en": "Hangae Village Seongju",
         "kind": "neighborhood",
         "lat": 35.8955,
-        "lng": 128.2455
+        "lng": 128.2455,
+        "contentId": "127717"
       },
       {
         "name": "성주 독용산성",
@@ -19603,7 +19672,8 @@
         "name_en": "Jagulsan",
         "kind": "viewpoint",
         "lat": 35.3770754,
-        "lng": 128.2034816
+        "lng": 128.2034816,
+        "contentId": "126774"
       },
       {
         "name": "의령 봉황대",
@@ -20734,7 +20804,8 @@
         "name_en": "Jeungpyeong Folk Experience Museum",
         "kind": "museum",
         "lat": 36.7640907,
-        "lng": 127.5956093
+        "lng": 127.5956093,
+        "contentId": "1938433"
       },
       {
         "name": "증평 별천지공원",
@@ -20756,7 +20827,8 @@
         "name_en": "Meditation Cloud Bridge",
         "kind": "landmark",
         "lat": 36.84,
-        "lng": 127.62
+        "lng": 127.62,
+        "contentId": "2633957"
       },
       {
         "name": "좌구산 천문대",
