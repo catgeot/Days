@@ -278,11 +278,11 @@
 
 | | |
 |--|--|
-| **상태** | R01–R16 ✅ · **P0 F 소진** · membersWithContentId 292/876 · 다음 **P1** hub 잔여 · A와 **동시 OK** |
-| **브랜치** | `cursor/palgyeong-cid` · tip `d8556c2e` |
+| **상태** | R01–R16 ✅ · **P0 F 소진** · P1-R01 ✅ · membersWithContentId 292/876 · hub+P1 9 · 다음 **P1-R02** · A와 **동시 OK** |
+| **브랜치** | `cursor/palgyeong-cid` · tip `0725230f` |
 | **PR** | [#185](https://github.com/catgeot/Days/pull/185) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§3·§9 B** · method **§5.7** |
-| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — S0–R16 ✅ · P0 소진 · P1 ⬜ |
+| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — S0–R16 ✅ · P0 소진 · P1-R01 ✅ · P1-R02 ⬜ |
 | **일지** | [`2026-09-07-project-log.md`](./2026-09-07-project-log.md) |
 | **소유** | JSON `contentId` · fill · audit · **UI 금지** |
 | **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · feature에 `plans/**` 커밋 |
@@ -296,8 +296,8 @@
 @plans/korea-local-scenic-use-plan.md
 @plans/feature-handoff-index.md
 브랜치 cursor/palgyeong-cid · PR #185
-금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P2 월권
-작업: P1 hub attraction contentId — DB-only 우선 · 지휘자=Cloud 메인 · 워커A+B Foreground → 직렬 머지 VERIFY. 중첩 후임 Task 금지.
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P2 월권 · 워커 커밋 · Cloud 중첩 후임 · 남은 R 전부 기동
+작업: P1-R02 DB-only — 메인 장수. 워커A3+B3 hub는 tmp/orchestrator 파일+요약만. 메인이 직렬 머지 VERIFY 커밋 후 큐 남으면 워커 재기동.
 ```
 
 ---

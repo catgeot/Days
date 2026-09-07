@@ -11,7 +11,12 @@
 - **Desktop**: 컨트롤러가 다음 지휘자 L1 · 지휘자가 워커 L2
 - SSOT: [`orchestrator-method.md`](./orchestrator-method.md) v2.4 · Rule `gateo-orchestrator.mdc`
 
-**팔경 contentId** 다음(복구·재개):
+## 오케스트레이터 v2.4.1 — 메인 장수 · 워커 커밋 금지
+
+- 메인은 이관하지 않고 컨텍스트가 찰 때까지 **다음 R 워커만** 재기동
+- 워커는 `tmp/orchestrator/` 파일 + 5줄 요약. JSON을 메인 채팅에 붙이면 메인도 참
+- 끝난 워커에게 커밋·push를 맡기지 않음 — 같은 tip 병렬 git 충돌. 커밋은 지휘자 직렬
+- 남은 R 전부 동시 기동 금지. in-flight = 지금 R의 N
 
 ```
 오케스트레이터 팔경contentId
@@ -19,8 +24,8 @@
 @plans/korea-local-scenic-contentid-queue.md
 @plans/feature-handoff-index.md
 브랜치 cursor/palgyeong-cid · PR #185
-금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P1/P2 월권 · Cloud 중첩 후임 Task
-작업: R11 DB-only — 지휘자(Cloud 메인)가 워커A3+B3 Foreground 기동 → 직렬 머지 VERIFY → 여유 있으면 R12 워커 재기동
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P2 월권 · 워커 커밋 · Cloud 중첩 후임 · 남은 R 전부 기동
+작업: P1-R02 DB-only — 메인 장수. 워커A3+B3 파일+요약 → 메인 직렬 머지 VERIFY 커밋 → 큐 남으면 워커 재기동
 ```
 
 ## 팔경 contentId — R11–R13 DB-only ✅ · 같은 지휘자 3세대
@@ -58,8 +63,16 @@
 @plans/feature-handoff-index.md
 브랜치 cursor/palgyeong-cid · PR #185
 금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P2 월권
-작업: P1 hub attraction contentId — DB-only 우선 · 지휘자=Cloud 메인 · 워커A+B Foreground → 직렬 머지 VERIFY. 중첩 후임 Task 금지.
+작업: P1-R02 DB-only — 지휘자=Cloud 메인 · 워커A(yanggu·inje·wonju)+B(donghae·sokcho·yangyang) Foreground → 직렬 머지 VERIFY. 중첩 후임 Task 금지.
 ```
+
+## 팔경 contentId — P1-R01 hub DB-only ✅
+
+- **세션** `오케스트레이터 팔경contentId` · 지휘자=Cloud 메인 · 워커A→B Foreground 직렬 · 중첩 후임 없음
+- **브랜치** `cursor/palgyeong-cid` · tip `0725230f` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **P1-R01** 9/83 hub attraction (`yeongdong`·`gyeongju`·`jincheon` + `pohang`·`samcheok`·`hongcheon`) · `fill-korea-hub-attraction-content-ids.mjs` 신규
+- **VERIFY** audit issues 0 · smoke lists + content-ids · build PASS
+- **다음 P1-R02** A `yanggu`·`inje`·`wonju` / B `donghae`·`sokcho`·`yangyang`
 
 ## 오케스트레이터 v2.4.1 — Cloud 2회는 하드캡 아님
 

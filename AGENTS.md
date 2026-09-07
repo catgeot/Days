@@ -7,7 +7,7 @@
 1. [`.cursor/rules/gateo-project-context.mdc`](.cursor/rules/gateo-project-context.mdc) 규칙을 따른다.
 2. 루트 [`.ai-context.md`](.ai-context.md)를 **Read**한다 (사용자가 `@`로 안 붙여도).
 3. 작업 주제면 최신 일지(`plans/YYYY-MM-DD-project-log.md`)와 해당 운영 가이드만 추가로 읽는다.
-4. **`오케스트레이터`** 제시어(다배치 SSOT) → [`plans/orchestrator-method.md`](plans/orchestrator-method.md) **v2.4.1**(지휘자 1 + 워커 N 기본 2 · VERIFY PASS 후 §3.4 · Cloud는 같은 지휘자 연장 · **2회 하드캡 아님** · 중첩 후임 금지) · Rule [`gateo-orchestrator.mdc`](.cursor/rules/gateo-orchestrator.mdc).
+4. **`오케스트레이터`** 제시어(다배치 SSOT) → [`plans/orchestrator-method.md`](plans/orchestrator-method.md) **v2.4.1**(메인 장수 · 워커 N 기본 2 · 파일+요약 · 워커 커밋 금지 · Cloud **2회 하드캡 아님** · 중첩 후임 금지) · Rule [`gateo-orchestrator.mdc`](.cursor/rules/gateo-orchestrator.mdc).
 
 ## 금지 (요약)
 
