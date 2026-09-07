@@ -4636,7 +4636,8 @@
         "name_en": "Geojin Port",
         "kind": "landmark",
         "lat": 38.4464534613551,
-        "lng": 128.459789156608
+        "lng": 128.459789156608,
+        "contentId": "128749"
       },
       {
         "name": "아야진해수욕장",
@@ -11670,28 +11671,32 @@
         "name_en": "High1 Resort",
         "kind": "landmark",
         "lat": 37.20730902163462,
-        "lng": 128.83908825325764
+        "lng": 128.83908825325764,
+        "contentId": "2783068"
       },
       {
         "name": "정암사",
         "name_en": "Jeongamsa Temple",
         "kind": "temple",
         "lat": 37.1830427,
-        "lng": 128.8926904
+        "lng": 128.8926904,
+        "contentId": "125765"
       },
       {
         "name": "아우라지",
         "name_en": "Auraji",
         "kind": "viewpoint",
         "lat": 37.4482,
-        "lng": 128.6641
+        "lng": 128.6641,
+        "contentId": "3036538"
       },
       {
         "name": "민둥산",
         "name_en": "Mindungsan",
         "kind": "viewpoint",
         "lat": 37.2524,
-        "lng": 128.7753
+        "lng": 128.7753,
+        "contentId": "125616"
       },
       {
         "name": "화암약수",
@@ -13620,7 +13625,8 @@
         "name_en": "Hwacheon Bungeo Island",
         "kind": "park",
         "lat": 38.0944886,
-        "lng": 127.6920794
+        "lng": 127.6920794,
+        "contentId": "128101"
       },
       {
         "name": "비수구미계곡",
@@ -13705,21 +13711,24 @@
         "name_en": "Cheorwon Labor Party Building",
         "kind": "landmark",
         "lat": 38.2552751974,
-        "lng": 127.2019861959
+        "lng": 127.2019861959,
+        "contentId": "264485"
       },
       {
         "name": "철원 제2땅굴",
         "name_en": "Cheorwon Second Tunnel",
         "kind": "landmark",
         "lat": 38.3095497,
-        "lng": 127.3113703
+        "lng": 127.3113703,
+        "contentId": "264481"
       },
       {
         "name": "도피안사",
         "name_en": "Dopiansa",
         "kind": "temple",
         "lat": 38.2402466777359,
-        "lng": 127.218278311256
+        "lng": 127.218278311256,
+        "contentId": "125759"
       },
       {
         "name": "삼부연폭포",
