@@ -28,14 +28,12 @@
 - **원인**: 지구본 밖 기본 프레임 핀치 → 브라우저 페이지 줌 → 지구본이 화면을 채우면 축소할 프레임이 없음
 - **수정**: 홈·탐색만 페이지 줌 잠금 · 확대 배율 자동 리셋 · 우주 버튼도 리셋 · `/place` 본문 핀치 유지
 - **VERIFY** `smoke:globe-page-zoom-lock` · `vite build` PASS
-- **Preview** `/qa/globe-frame-zoom` → git Preview `/`
-- **다음** 사람 Preview QA
+- **병합** PR [#203](https://github.com/catgeot/Days/pull/203) → main `386412ac`
+- **PROD** `https://www.gateo.kr/`
+- **다음 제시어 없음** (주제 종료)
 
 ```
-지구본 프레임 줌 #2, Preview QA
-@plans/feature-handoff-index.md
-@plans/2026-09-08-project-log.md
-브랜치 cursor/globe-frame-zoom-7106 · PR #203 · Preview /qa/globe-frame-zoom
-금지: UI 리디자인 · /place 본문 핀치 제거 · feature에 plans/** 커밋
-작업: 홈에서 로고·검색·지구본 밖 여백 핀치해도 페이지 확대 없음 · 확대됐다면 우주 버튼으로 복귀 · 파리 갤러리 핀치 유지
+(종료) 지구본 프레임 줌 — main 병합 ✅
+PROD https://www.gateo.kr/
+확인: 홈에서 로고·검색·지구본 밖 여백 핀치해도 페이지 확대 없음 · 확대됐다면 우주 버튼으로 복귀 · 파리 갤러리 핀치 유지
 ```

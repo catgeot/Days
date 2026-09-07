@@ -14,30 +14,17 @@
 
 ## 활성 목록
 
-### 지구본 프레임 줌
+### 지구본 프레임 줌 — main 병합 ✅
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `ca80c118` · PR [#203](https://github.com/catgeot/Days/pull/203) · **#2 사람 Preview QA** |
-| **브랜치** | `cursor/globe-frame-zoom-7106` |
-| **tip** | `ca80c118` |
-| **PR** | [#203](https://github.com/catgeot/Days/pull/203) |
+| **상태** | **#1 merge ✅** · main `386412ac` · PR [#203](https://github.com/catgeot/Days/pull/203) |
+| **브랜치** | `cursor/globe-frame-zoom-7106` · merge `386412ac` |
 | **일지** | [`2026-09-08-project-log.md`](./2026-09-08-project-log.md) |
-| **Preview** | `/qa/globe-frame-zoom` → git Preview `/` |
-| **소유** | `homeGlobePageZoomLock.js` · `useHomeGlobePageZoomLock` · `mobileViewport.js` · `HomeGlobeMapbox` |
-| **금지** | UI 리디자인 · `/place` 본문 핀치 제거 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `smoke:globe-page-zoom-lock` · `vite build` |
+| **PROD** | `https://www.gateo.kr/` |
+| **VERIFY** | `smoke:globe-page-zoom-lock` · `vite build` PASS |
 
-**다음 제시어**:
-
-```
-지구본 프레임 줌 #2, Preview QA
-@plans/feature-handoff-index.md
-@plans/2026-09-08-project-log.md
-브랜치 cursor/globe-frame-zoom-7106 · PR #203 · Preview /qa/globe-frame-zoom
-금지: UI 리디자인 · /place 본문 핀치 제거 · feature에 plans/** 커밋
-작업: 홈에서 로고·검색·지구본 밖 여백 핀치해도 페이지 확대 없음 · 확대됐다면 우주 버튼으로 복귀 · 파리 갤러리 핀치 유지
-```
+**다음 제시어 없음** (주제 종료). 홈 프레임 핀치 후 복귀는 PROD. `/qa/globe-frame-zoom`은 구 Preview — 확인은 `www.gateo.kr`.
 
 ---
 
