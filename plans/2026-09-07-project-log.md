@@ -2,6 +2,24 @@
 
 직전: [`2026-09-06-project-log.md`](./2026-09-06-project-log.md)
 
+## 팔경 contentId — P1-R04 hub DB-only ✅
+
+- **세션** `오케스트레이터 팔경contentId` · 지휘자=Cloud 메인 · 워커A→B Foreground · 중첩 후임 없음
+- **브랜치** `cursor/palgyeong-cid` · tip `8d609d90` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **P1-R04** 6/38 (`8d609d90`) · 워커A 3/18 · 워커B 3/20 · hub+P1 누적 **33**
+- **VERIFY** audit issues 0 · smoke lists + content-ids · build PASS
+- **다음 P1-R05** A `sacheon`·`uiryeong`·`geoje` / B `ganghwa`·`geochang`·`haman`
+
+```
+오케스트레이터 팔경contentId
+@plans/orchestrator-method.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/feature-handoff-index.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P2 월권 · 워커 커밋 · Cloud 중첩 후임 · 남은 R 전부 기동
+작업: P1-R05 DB-only — 메인 장수. 워커A3+B3 파일+요약 → 직렬 머지 VERIFY 커밋 → 큐 남으면 워커 재기동
+```
+
 ## 오케스트레이터 v2.4 — 지휘자+워커 N · Cloud 중첩 금지
 
 - **문서만** (`main` docs-only). 코드·UI 없음
