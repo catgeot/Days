@@ -5212,7 +5212,8 @@
         "name_en": "Choi Champan House",
         "kind": "landmark",
         "lat": 35.155594,
-        "lng": 127.68809
+        "lng": 127.68809,
+        "contentId": "127664"
       },
       {
         "name": "하동송림",
@@ -7048,7 +7049,8 @@
         "name_en": "Haeinsa",
         "kind": "temple",
         "lat": 35.801,
-        "lng": 128.098
+        "lng": 128.098,
+        "contentId": "126175"
       },
       {
         "name": "합천영상테마파크",
@@ -13915,7 +13917,8 @@
         "name_en": "Sanun Village",
         "kind": "neighborhood",
         "lat": 36.4,
-        "lng": 128.65
+        "lng": 128.65,
+        "contentId": "2781613"
       },
       {
         "name": "금성산",
@@ -13929,7 +13932,8 @@
         "name_en": "Binggye Valley",
         "kind": "park",
         "lat": 36.4,
-        "lng": 128.55
+        "lng": 128.55,
+        "contentId": "126075"
       },
       {
         "name": "고운사",
