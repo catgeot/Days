@@ -19,6 +19,7 @@ import TripcomFlightBannerWidget from './planner/components/TripcomFlightBannerW
 import FlightCinemaPlannerNotice from './planner/components/FlightCinemaPlannerNotice';
 import { TripcomFlightSearchProvider } from './planner/TripcomFlightSearchContext';
 import RelatedTravelSpots from '../RelatedTravelSpots';
+import TravelAgencyDirectory from '../../travelAgencies/TravelAgencyDirectory';
 import { getEssentialGuide, isToolkitLocationMismatch } from '../../../utils/toolkitPlaceIdResolve';
 import { shouldShowFerryCard } from '../../../utils/ferryBookingMatch';
 import { mergeCanonicalTravelSpot, getPlaceStableKey } from '../../../utils/travelSpotResolve';
@@ -379,6 +380,9 @@ const PlannerTab = ({
                         {t('place.planner.refreshSaved')}
                     </button>
                 ) : null}
+                <div className="mt-8 w-full max-w-lg text-left">
+                    <TravelAgencyDirectory variant="planner" />
+                </div>
                 </div>
             </div>
         );
@@ -464,6 +468,8 @@ const PlannerTab = ({
                     </div>
 
                     <RelatedTravelSpots location={location} className="mb-5 shrink-0" />
+
+                    <TravelAgencyDirectory variant="planner" className="mb-5 shrink-0" />
 
                 {/* 체크리스트(항공·숙소·픽업) — 툴킷 있으면 상시 · 타임라인은 있을 때만 */}
                 {guideData && (

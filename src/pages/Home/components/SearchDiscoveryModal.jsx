@@ -34,8 +34,10 @@ import {
   resolveDestinationToSpot,
 } from '../lib/exploreRecentHistory';
 import { buildHybridSearchSuggestions, buildLocalSearchSuggestions } from '../lib/searchSuggestions';
+import { hasUsableVisitedCoords } from '../lib/visitedPlaceSearch';
 import { isSearchDisambiguation } from '../lib/cityAttractionHubs';
-import { searchBoxRetrieve } from '../lib/mapboxSearchBox';
+import { hydrateSearchBoxLatinName } from '../lib/mapboxSearchBox';
+import { needsLatinPlaceName } from '../lib/uiPlaceAssetQuery';
 import { syncHomeViewportAfterInput } from '../../../shared/lib/mobileViewport';
 import {
   localizedExploreContinentLabel,
@@ -51,6 +53,8 @@ import {
   CURATION_POPULAR_ISLAND_SLUGS,
   CURATION_RESORT_TARGETS,
 } from './SearchDiscovery/curationTargets';
+import TravelAgencyDirectory from '../../../components/travelAgencies/TravelAgencyDirectory';
+import { useTravelAgencyVisits } from '../../../hooks/useTravelAgencyVisits';
 
 const pickVisibleElementRect = (...refs) => {
   for (const ref of refs) {
@@ -92,6 +96,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
   const [recentVisitedDestinations, setRecentVisitedDestinations] = useState([]);
   const [keywordVisitHistory, setKeywordVisitHistory] = useState([]);
   const [activeQuickSection, setActiveQuickSection] = useState(null);
+  const { visits: agencyVisits } = useTravelAgencyVisits();
   const [isSearchHistoryOpen, setIsSearchHistoryOpen] = useState(false);
   /** fixed 오버레이 위치 (페이지 레이아웃을 밀지 않음) */
   const [popoverLayout, setPopoverLayout] = useState(null);
@@ -399,17 +404,18 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     setIsAILoading(true);
     setDisambiguation(null);
     setIsSearchHistoryOpen(false);
+    let keepChoiceDropdown = false;
     try {
       const result = await onSearch(finalQuery);
       if (isSearchDisambiguation(result)) {
         setDisambiguation(result);
-        // 선택 카드가 열린 뒤에도 키보드가 남아 있으면 한 번 더
+        keepChoiceDropdown = true;
         dismissSearchKeyboard();
         return;
       }
     } finally {
       setIsAILoading(false);
-      setIsSearchHistoryOpen(false);
+      setIsSearchHistoryOpen(keepChoiceDropdown);
       setActiveQuickSection(null);
     }
   };
@@ -430,14 +436,14 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     }
 
     let place = item;
-    if (item.needsRetrieve && item.mapboxId) {
-      setIsAILoading(true);
-      try {
-        const retrieved = await searchBoxRetrieve(item.mapboxId, item.sessionToken);
-        if (retrieved) place = { ...item, ...retrieved, needsRetrieve: false };
-      } finally {
-        setIsAILoading(false);
-      }
+    const needsLatinHydrate = Boolean(
+      item.mapboxId && (item.needsRetrieve || needsLatinPlaceName(item)),
+    );
+    if (needsLatinHydrate) setIsAILoading(true);
+    try {
+      place = await hydrateSearchBoxLatinName(item);
+    } finally {
+      if (needsLatinHydrate) setIsAILoading(false);
     }
 
     const lat = Number(place?.lat);
@@ -534,6 +540,16 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
       return [...result].sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
     }
   }, [query, filterMode, selectedContinent, selectedTheme, isSearching]);
+
+  const visitedGridSpots = useMemo(
+    () =>
+      hybridSuggestions.filter(
+        (item) => item?.source === 'visited' && hasUsableVisitedCoords(item.lat, item.lng),
+      ),
+    [hybridSuggestions],
+  );
+  const searchGridSpots =
+    isSearching && filteredSpots.length === 0 ? visitedGridSpots : filteredSpots;
 
   // 일일 무작위 셔플이 적용된 큐레이션 데이터
   const curationData = useMemo(() => {
@@ -682,14 +698,14 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
     if (isSearching) {
       return (
         <div className="w-full pb-20 pt-2">
-          {filteredSpots.length > 0 ? (
+          {searchGridSpots.length > 0 ? (
             <>
               <div className="mb-4 text-sm font-medium text-gray-300 flex items-center gap-2">
                 <Search size={16} />
-                <span>{t('home.explore.collectionCount', { count: filteredSpots.length })}</span>
+                <span>{t('home.explore.collectionCount', { count: searchGridSpots.length })}</span>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-6 lg:gap-8">
-                {filteredSpots.map((spot) => (
+                {searchGridSpots.map((spot) => (
                   <SpotThumbnailCard key={spot.id} spot={spot} onClick={handleSpotSelect} isGrid={true} />
                 ))}
               </div>
@@ -950,13 +966,28 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
         )}
 
         {/* 검색바 클릭 후에도 칩 버튼은 그대로 노출 (popover는 칩 행 아래로 anchor) */}
-        {(recentSearches.length > 0 || recentVisitedDestinations.length > 0 || keywordVisitHistory.length > 0) && (
-          <div
+        <div
             data-quick-menu-root="true"
             ref={isMobileView ? quickMenuRowRefMobile : quickMenuRowRefPc}
             className="relative mt-2 px-1"
           >
             <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSearchHistoryOpen(false);
+                  setActiveQuickSection((prev) => (prev === 'agencies' ? null : 'agencies'));
+                }}
+                className={`rounded-full border px-2.5 py-1 text-[11px] transition-colors ${
+                  activeQuickSection === 'agencies'
+                    ? 'border-emerald-400/40 bg-emerald-500/20 text-emerald-100'
+                    : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/20'
+                }`}
+              >
+                {agencyVisits.length > 0
+                  ? t('home.explore.agenciesVisitedCount', { count: agencyVisits.length })
+                  : t('home.agencies.title')}
+              </button>
               {recentSearches.length > 0 && (
                 <button
                   type="button"
@@ -1007,7 +1038,6 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
               )}
             </div>
           </div>
-        )}
       </div>
     </div>
   );
@@ -1199,7 +1229,11 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
               <SearchSuggestionList
                 variant="popover"
                 query={query}
-                items={hybridSuggestions}
+                items={
+                  disambiguation?.candidates?.length
+                    ? disambiguation.candidates
+                    : hybridSuggestions
+                }
                 loading={suggestionsLoading}
                 onSelect={(item) => {
                   setIsSearchHistoryOpen(false);
@@ -1372,6 +1406,10 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, initialQuer
                   </div>
                 ))}
               </div>
+            )}
+
+            {activeQuickSection === 'agencies' && (
+              <TravelAgencyDirectory variant="explore" />
             )}
           </div>
         </div>

@@ -1,16 +1,16 @@
 ---
-description: "오케스트레이터 — 다배치 SSOT를 메인+워커2로 돌릴 때. 제시어 오케스트레이터/명소-오케스트레이터/맵박스정착지/지자체팔경/팔경contentId"
+description: "오케스트레이터 — 지휘자1+워커N(기본2). 제시어 오케스트레이터/명소-오케스트레이터/맵박스정착지/지자체팔경/팔경contentId"
 alwaysApply: false
 ---
 
 # 오케스트레이터 세션
 
 사용자가 **`오케스트레이터`** · **`명소-오케스트레이터`** · **`맵박스정착지`** · **`지자체팔경`** · **`팔경contentId`** 를 쓰거나 `@plans/orchestrator-method.md` 를 연결하면 이 규칙을 따른다.  
-방법 SSOT: [`plans/orchestrator-method.md`](plans/orchestrator-method.md) **v2.3**.
+방법 SSOT: [`plans/orchestrator-method.md`](plans/orchestrator-method.md) **v2.4**.
 
 ## 필수 읽기 (짧게)
 
-1. [`plans/orchestrator-method.md`](plans/orchestrator-method.md) — **§1 · §3.0 · §3.3 · §3.4 · §4.2** (+ 주제면 §5 / 정착지 §5.3 / 팔경 수집 **§5.6** / contentId **§5.7**)
+1. [`plans/orchestrator-method.md`](plans/orchestrator-method.md) — **§1 · §1.3 · §3.0 · §3.3 · §3.4 · §3.5 · §4.2** (+ 주제면 §5 / 정착지 §5.3 / 팔경 수집 **§5.6** / contentId **§5.7**)
 2. 명소: [`plans/city-attraction-hub-queue.md`](plans/city-attraction-hub-queue.md) **다음 ⬜ R** + 일지 핸드오프 1절만
 3. 정착지: [`plans/mapbox-settlement-queue.md`](plans/mapbox-settlement-queue.md) **다음 ⬜ R** + [`mapbox-settlement-plan.md`](plans/mapbox-settlement-plan.md)
 4. 지자체 팔경 **수집**: 종료. 큐 [`korea-local-scenic-lists-queue.md`](plans/korea-local-scenic-lists-queue.md) F 재개 **금지**
@@ -21,9 +21,9 @@ alwaysApply: false
 
 ## 역할 (고정)
 
-- **당신 = 오케스트레이터(메인)**: 배치표 **2개** · **워커 정확히 2** · 감사 · tip **직렬** append(A→B) · VERIFY · **§3.4 커밋**(Cloud는 push·PR) · **이관(§4.2)**
-- **워커**: 배정 1배치 **초안만**. tip append · commit/PR · `main` push · SSOT rewrite · 이관서 **금지**
-- **후임 메인**: 현 메인이 **Task로 기동**해 역할을 넘김 → **즉시** 워커 2 재기동 → 직렬 머지 → VERIFY → §3.4 커밋 → 재이관.  
+- **당신 = 지휘자(오케스트레이터)**: 배치표 N개(기본 2) · **워커 N 기동**(기본 2 · §3.5) · 감사 · tip **직렬** append(A→B) · VERIFY · **§3.4 커밋**(Cloud는 push·PR) · **이관(§4.2, 플랫폼별)**
+- **워커**: 배정 1배치 **초안만**. tip append · commit/PR · `main` push · SSOT rewrite · 이관서 · 자기 아래 Task **금지**
+- **후임 지휘자**: **워커 N을 직접 기동**할 수 있는 깊이여야 함. Cloud = 같은 메인 연장 또는 **새 Cloud 런**(중첩 Task 후임 **금지**). Desktop = 컨트롤러가 다음 지휘자 L1 기동.  
   기본 **본인 런 금지**. 예외는 워커 1회 재시도 실패 시만 · 일지에 사유 1줄.
 
 ## 커밋·PR (§1.5.3 · method §3.4)
@@ -36,12 +36,12 @@ alwaysApply: false
 
 ## 이관 = 지휘권 이양 (사람 제시어 대기 금지)
 
-- 세대(워커2 머지+VERIFY) 1~2회 후 또는 컨텍스트 ~50%: 일지 §4.1 → **같은 턴에 Task로 후임 오케스트레이터 기동**(method §4.2).
+- **Cloud**: 지휘자 = 이 런의 메인. 워커 = L1. VERIFY 후 **같은 지휘자가 워커 N 재기동**(연장). **중첩 후임 Task 금지**(후임이 워커를 못 띄움).
+- **Desktop**: 컨트롤러(사람 채팅)가 다음 지휘자 L1을 띄움. 지휘자 L1이 워커 L2 기동. 지휘자가 후임을 직접 띄우면 L3라서 불가.
 - **금지**: VERIFY 후 「다음 제시어 대기」만 하고 정지.
-- **금지**: 워커2를 백그라운드로 띄운 뒤 **초안 수신·머지·VERIFY 전에 턴 종료**/조기 `final_summary`.
-- 사람이 제시어를 넣는 경우: 최초 착수 · §3.3 E/사용자 중단 후 복구 · 후임 Task 기동 실패 시에만.
-- 같은 메인 세대 연장(§3.0 Yes)도 사람 제시어 불필요 — 워커2만 재기동.
-- 파이프 단절: tip 미반영·`_tmp*` 잔여면 **후임 resume** 또는 현 메인이 루프 재개.
+- **금지**: 워커를 백그라운드로 띄운 뒤 **초안 수신·머지·VERIFY 전에 턴 종료**/조기 `final_summary`.
+- 사람이 제시어를 넣는 경우: 최초 착수 · §3.3 E/사용자 중단 후 복구 · Cloud 런 사망 시에만.
+- 파이프 단절: tip 미반영·`_tmp*` 잔여면 같은 지휘자가 워커 N 루프 재개.
 
 ## 금지 (재발 방지)
 
@@ -50,6 +50,7 @@ alwaysApply: false
 - tip **병렬** 머지
 - VERIFY 실패 tip을 남긴 채 다음 R·이관·commit
 - VERIFY PASS인데 **커밋 없이** 이관·턴 종료 (Cloud면 PR도)
+- Cloud에서 중첩 후임 Task에게 워커 기동을 맡김
 - (명소) 큐 밖 임의 지명 · KR 구·DE/UK 중소로 새기
 
 ## 문제 조치 (요약 · 상세 method §3.3)
@@ -61,9 +62,9 @@ alwaysApply: false
 
 ## 병렬/직렬
 
-- 워커 2 초안: **병렬 필수**
+- 워커 N 초안: **병렬 필수** (기본 2 · §3.5에서 N 증가 가능)
 - 동일 tip append: **직렬만**
-- 이관: **세대** 후 · 일지 + **§4.2 후임 Task** (체인)
+- Cloud 이관: **같은 지휘자 연장** · 중첩 후임 체인 금지
 
 ## 명소 hub
 

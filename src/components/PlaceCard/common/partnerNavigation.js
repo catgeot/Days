@@ -1,4 +1,5 @@
 import { buildTripcomPlannerFlightUrl, TRIPCOM_FLIGHT_AD } from '../../../utils/affiliate';
+import { recordTravelAgencyVisit } from '../../../utils/travelAgencyVisits.js';
 import { isMobileDevice } from './device';
 
 /** @param {unknown} value @returns {boolean} */
@@ -126,8 +127,9 @@ export function getTripcomIframeReferrerPolicy() {
 }
 
 /** 프로그래밍 방식 — 일반 제휴 URL */
-export function openPartnerExternalUrl(url, { target = getPartnerLinkTarget() } = {}) {
+export function openPartnerExternalUrl(url, { target = getPartnerLinkTarget(), placeLabel } = {}) {
     if (!url) return;
+    recordTravelAgencyVisit({ href: url, placeLabel });
     if (target === '_self') {
         window.location.assign(url);
         return;
@@ -136,8 +138,9 @@ export function openPartnerExternalUrl(url, { target = getPartnerLinkTarget() } 
 }
 
 /** 프로그래밍 방식 — Trip.com (모바일 _self 시 noreferrer로 이동) */
-export function openTripcomExternalUrl(url, { target = getPartnerLinkTarget() } = {}) {
+export function openTripcomExternalUrl(url, { target = getPartnerLinkTarget(), placeLabel } = {}) {
     if (!url) return;
+    recordTravelAgencyVisit({ href: url, placeLabel });
     if (target === '_self') {
         const anchor = document.createElement('a');
         anchor.href = url;

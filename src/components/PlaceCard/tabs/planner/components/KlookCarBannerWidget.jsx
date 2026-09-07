@@ -121,7 +121,7 @@ const KlookCarBannerWidget = ({
             <div ref={containerRef} className="relative w-full overflow-hidden rounded-xl border border-gray-200 bg-white p-1 shadow-sm">
                 {/*
                   iframe 배너가 클릭을 가로채면 klook.com 직링크(aid=4053 등)로 열려 제휴 리다이렉트(aid=118544)가 빗나감.
-                  시각은 위젯 유지, 클릭만 상단 앵커(targetUrl = affiliate.klook.com/redirect…)로 통일.
+                  시각은 위젯 유지, 클릭만 상단 앵커(targetUrl = klook.com?aid=118544, OneLink 우회)로 통일.
                 */}
                 <div
                     className="pointer-events-none flex w-full justify-center overflow-hidden rounded-md"

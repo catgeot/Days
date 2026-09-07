@@ -134,7 +134,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`는 잔여만 · 워커 *
 @plans/feature-handoff-index.md
 브랜치 cursor/palgyeong-cid · PR #185
 금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P1/P2 월권
-작업: R11 DB-only 워커A3+B3 → VERIFY → R12 또는 Task 이관
+작업: R11 DB-only — 지휘자(Cloud 메인)가 워커A3+B3 Foreground 기동 → 직렬 머지 VERIFY → 여유 있으면 R12 워커 재기동. 중첩 후임 Task 금지.
 ```
 
 ### §1.2 B 429 다음날
