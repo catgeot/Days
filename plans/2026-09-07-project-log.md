@@ -2,6 +2,23 @@
 
 직전: [`2026-09-06-project-log.md`](./2026-09-06-project-log.md)
 
+## 팔경 contentId — P0-S01 검색어·가드 (#P0-S01)
+
+- **브랜치** `cursor/palgyeong-cid` · tip `55cfd8ab` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** fill keyword=`memberQueries` · `scoreHit` 괄호=지자체 동명이인만 · `memberCoords` hub attraction→hub 폴백 · `smoke:tour-content-id-match`
+- **VERIFY** `audit:korea-local-scenic-lists` · `smoke:korea-local-scenic-lists` · `smoke:korea-local-scenic-content-ids` · `smoke:tour-content-id-match` PASS
+- **다음** P0-L07 `--keyword-only --limit=100` (memberQueries · 본명-only 재시도 금지)
+
+```
+팔경contentId #P0-L07, 확장 keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재시도 · 본명-only 재시도 · feature에 plans/** 커밋
+작업: P0-S01 이후 fill --keyword-only --limit=100 (memberQueries) → audit/smoke lists
+```
+
 ## 팔경 contentId — 다음 세션 핸드오프 (#P0-C01)
 
 - **채팅명** `팔경contentId #P0-C01, scenic 복사`
