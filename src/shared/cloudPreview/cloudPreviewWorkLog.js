@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '자킨토스 검색',
-  sessionNo: 12,
-  sessionPhase: '오염된 방문 행 무시',
-  branch: 'cursor/zakynthos-search-e84a',
+  title: '써머리 닫기',
+  sessionNo: 1,
+  sessionPhase: 'Android Chrome 고스트 클릭',
+  branch: 'cursor/summary-close-1030',
   previewPath: '/',
-  qaShareSlug: 'zakynthos',
+  qaShareSlug: 'summary-close',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-07-summary-close-1-android-ghost',
+    session: '써머리 닫기 #1, Android Chrome 고스트 클릭',
+    title: '써머리 X 닫기 후 지구본 클릭 관통 차단',
+    detail:
+      'Android Chrome에서 써머리 X가 pointerdown으로 카드를 벗기면 남은 클릭이 Mapbox로 뚫려 다른 여행지 써머리가 열렸습니다. 닫기는 유지하고, 닫는 순간 500ms 지구본 클릭 가드를 겁니다. Preview /qa/summary-close — 장소카드 X → 닫힘 · 다른 써머리 안 열림.',
+    at: '2026-09-07T05:50:00.000Z',
+  },
   {
     id: '2026-09-06-zakynthos-12-stale-visit-row',
     session: '자킨토스 검색 #12, Preview QA',

@@ -14,6 +14,12 @@ import Map, { Marker } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
 import { bindGlobeSpaceDragGuard, isClientPointOnGlobe, isMapEventOnGlobe, isScreenPointOnGlobe } from '../lib/globeSpaceHitTest';
+import {
+  OVERLAY_CLICK_GUARD_MS,
+  eventTargetIsGlobeMap,
+  isGlobeClickSuppressed,
+  nextOverlayClickGuardUntil,
+} from '../lib/globeOverlayClickGuard';
 import { normalizeLngNear } from '../lib/globeLngUtils';
 import {
   GLOBE_FACE_REGION_DEFAULT_ZOOM,
@@ -452,6 +458,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const hasRaisedFatalRef = useRef(false);
   const suppressClickUntilRef = useRef(0);
   const markerClickGuardUntilRef = useRef(0);
+  const overlayClickUnbindRef = useRef(null);
   /** flyTo/easeTo 중 basemap symbol continuePlacement race 방지 */
   const cameraAnimatingRef = useRef(false);
   const allMarkersLookupRef = useRef([]);
@@ -2286,6 +2293,42 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     });
   }, [isGlobeFocusReady]);
 
+  const suppressOverlayClick = useCallback((ms = OVERLAY_CLICK_GUARD_MS) => {
+    const until = nextOverlayClickGuardUntil(Date.now(), ms);
+    suppressClickUntilRef.current = until;
+    markerClickGuardUntilRef.current = until;
+
+    overlayClickUnbindRef.current?.();
+    if (typeof document === 'undefined') return;
+
+    const block = (event) => {
+      if (!isGlobeClickSuppressed(Date.now(), suppressClickUntilRef.current)) {
+        overlayClickUnbindRef.current?.();
+        return;
+      }
+      if (!eventTargetIsGlobeMap(event.target, document)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation?.();
+    };
+
+    document.addEventListener('click', block, true);
+    document.addEventListener('pointerup', block, true);
+    document.addEventListener('touchend', block, true);
+
+    const timeoutId = window.setTimeout(() => {
+      overlayClickUnbindRef.current?.();
+    }, ms + 50);
+
+    overlayClickUnbindRef.current = () => {
+      document.removeEventListener('click', block, true);
+      document.removeEventListener('pointerup', block, true);
+      document.removeEventListener('touchend', block, true);
+      window.clearTimeout(timeoutId);
+      overlayClickUnbindRef.current = null;
+    };
+  }, []);
+
   useImperativeHandle(ref, () => ({
     pauseRotation: () => {
       autoRotateRef.current = false;
@@ -2375,8 +2418,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     },
     isGlobeFocusReady,
     whenGlobeFocusReady,
-    getGlobeMode: () => tourEngineRef.current?.getMode?.() ?? globeMode
-  }), [addRipple, clearImmerseState, clearRegionFocus, closeFlightCinema, endTour, ensureInteractionReady, exitImmerse, flyToAndPin, flyToRegion, globeMode, immerseToPin, isGlobeFocusReady, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour, whenGlobeFocusReady]);
+    getGlobeMode: () => tourEngineRef.current?.getMode?.() ?? globeMode,
+    suppressOverlayClick,
+  }), [addRipple, clearImmerseState, clearRegionFocus, closeFlightCinema, endTour, ensureInteractionReady, exitImmerse, flyToAndPin, flyToRegion, globeMode, immerseToPin, isGlobeFocusReady, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour, suppressOverlayClick, whenGlobeFocusReady]);
 
   useEffect(() => {
     highlightCategoryRef.current = highlightCategory;
@@ -2556,11 +2600,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       map.off('idle', firstLabelIdleHandlerRef.current);
       firstLabelIdleHandlerRef.current = null;
     }
+    overlayClickUnbindRef.current?.();
   }, []);
 
   const handleGlobeClickInternal = useCallback((event) => {
-    if (Date.now() < markerClickGuardUntilRef.current) return;
-    if (Date.now() < suppressClickUntilRef.current) return;
+    const now = Date.now();
+    if (isGlobeClickSuppressed(now, markerClickGuardUntilRef.current)) return;
+    if (isGlobeClickSuppressed(now, suppressClickUntilRef.current)) return;
     if (isZenMode || pauseRender) return;
     if (!onGlobeClick || !event?.lngLat) return;
     const map = mapRef.current?.getMap();

@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'summary-close',
+    label: '써머리 닫기 X · Android Chrome',
+    branch: 'cursor/summary-close-1030',
+    destination:
+      'https://days-git-cursor-summary-close-1030-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
     slug: 'gallery-panel',
     label: '갤러리 좌측 패널 공간',
     branch: 'cursor/gallery-panel-032e',
