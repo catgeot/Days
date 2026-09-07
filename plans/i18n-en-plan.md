@@ -333,6 +333,29 @@ npm run smoke:browser-locale-hint
 | `/korea/theme/scenic?lang=en` | 지도 breadcrumb·핀 · 모달 UI·헤더 EN |
 | PlaceCard | P0 탭·써머리 EN (#28 잔여) |
 
+### A′. 홈 locale 토글 (Cloud · PR #174 · `cursor/locale-toggle-smooth-92b6`)
+
+| 세션 | 상태 | 메모 |
+|------|------|------|
+| #5 | ✅ | 위성 `name_ko` 강제 해제 · locale별 text-field |
+| #6 | ✅ tip `3fe6077c` | 이중 깜박임 — satellite `setLanguage` 제거 · coalesce 1회 |
+| #7 | ✅ 사람 QA PASS | 깜박임 없음 · EN↔KO ≤3초 — **merge 수용** |
+| #8 | ✅ main `053a4587` | PR [#174](https://github.com/catgeot/Days/pull/174) merge · 검색바 히트는 §13 A′′ |
+| #9 | ✅ main `a6a5ede7` | PR [#176](https://github.com/catgeot/Days/pull/176) — 모바일 지명 EN 고착 · PC·모바일 QA PASS |
+
+### A′′. 홈 검색바·locale 히트 (Cloud · PR #175 · `cursor/search-locale-hit-5f5c`)
+
+| 세션 | 상태 | 메모 |
+|------|------|------|
+| #1 | ✅ tip `4dff1699` | 브랜치·`/qa/search-hit`·작업 로그 준비 |
+| #2 | ✅ tip `7b8aa801` | `HomeUI.jsx` flex `[로고+EN \| 검색 flex-1]` · 바로가기 2행 |
+| #3 | ✅ main `9824bfb8` | 사람 Preview QA PASS · PR [#175](https://github.com/catgeot/Days/pull/175) merge |
+
+**증상**: 모바일 `left-[7.75rem]` 검색바 ↔ chrome 실드 `z-[110]` → 검색 클릭 무력화  
+**적용**: `HomeUI.jsx` 모바일 1행 `[로고+EN | 검색 flex-1]` · 바로가기 2행 · `/qa/search-hit` 종료  
+**금지**: `HomeGlobeMapbox` · LocaleProvider Mapbox · UI 리디자인  
+**배경**: #173은 #4에서 Mapbox 연쇄와 함께 revert · #174 지구본은 main → UI만 분리 반영
+
 **에이전트 VERIFY**:
 
 ```bash

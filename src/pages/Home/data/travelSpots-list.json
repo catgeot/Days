@@ -4366,5 +4366,21 @@
       "okinawa"
     ],
     "country_en": "Japan"
+  },
+  {
+    "id": 395,
+    "slug": "sabah",
+    "name": "사바",
+    "name_en": "Sabah",
+    "country": "말레이시아",
+    "searchKeys": [
+      "sabah",
+      "사바",
+      "sabah",
+      "sabah",
+      "sabah",
+      "sabah"
+    ],
+    "country_en": "Malaysia"
   }
 ]

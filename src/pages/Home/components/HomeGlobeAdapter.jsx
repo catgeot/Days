@@ -59,7 +59,8 @@ const HomeGlobeAdapter = forwardRef((props, ref) => {
     waitForFlightCinemaReady: (options) => childRef.current?.waitForFlightCinemaReady?.(options) ?? Promise.resolve(false),
     isGlobeFocusReady: () => childRef.current?.isGlobeFocusReady?.() ?? false,
     whenGlobeFocusReady: (options) => childRef.current?.whenGlobeFocusReady?.(options) ?? Promise.resolve(false),
-    getGlobeMode: () => childRef.current?.getGlobeMode?.()
+    getGlobeMode: () => childRef.current?.getGlobeMode?.(),
+    suppressOverlayClick: (ms) => childRef.current?.suppressOverlayClick?.(ms)
     };
     globeApiRef.current = api;
     registerGlobeApi(api);

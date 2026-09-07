@@ -88,7 +88,7 @@ for (const hub of HUBS) {
     if (sk && !hubByPlaceSlug.has(sk)) hubByPlaceSlug.set(sk, hub);
   }
   for (const attraction of hub.attractions || []) {
-    for (const k of [attraction.name, attraction.name_en]) {
+    for (const k of [attraction.name, attraction.name_en, ...(attraction.aliases || [])]) {
       const nk = normalizeKey(k);
       if (nk && !attractionByKey.has(nk)) {
         attractionByKey.set(nk, { hub, attraction });
@@ -144,7 +144,11 @@ export function matchCityAttractionHubsPrefix(query, { limit = 8 } = {}) {
   const seenHub = new Set();
   for (const hub of HUBS) {
     const keys = [hub.name, hub.name_en, hub.hubId, ...(hub.aliases || [])];
-    const hit = keys.some((k) => normalizeKey(k).startsWith(key));
+    const hit = keys.some((k) => {
+      const nk = normalizeKey(k);
+      if (!nk) return false;
+      return nk.startsWith(key) || (key.length >= 2 && key.startsWith(nk));
+    });
     if (hit && !seenHub.has(hub.hubId)) {
       seenHub.add(hub.hubId);
       hubHits.push(hub);
@@ -154,8 +158,11 @@ export function matchCityAttractionHubsPrefix(query, { limit = 8 } = {}) {
   const attractionHits = [];
   for (const hub of HUBS) {
     for (const attraction of hub.attractions || []) {
-      const names = [attraction.name, attraction.name_en].filter(Boolean);
-      if (names.some((n) => normalizeKey(n).startsWith(key) || normalizeKey(n).includes(key))) {
+      const names = [attraction.name, attraction.name_en, ...(attraction.aliases || [])].filter(Boolean);
+      if (names.some((n) => {
+        const nk = normalizeKey(n);
+        return nk.startsWith(key) || (key.length >= 2 && nk.includes(key)) || (key.length >= 2 && key.startsWith(nk));
+      })) {
         attractionHits.push({ hub, attraction });
       }
     }

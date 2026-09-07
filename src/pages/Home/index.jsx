@@ -1216,6 +1216,9 @@ function Home() {
 
   /** 써머리·투어 UI만 닫고 지구본 마지막 방문 핀은 유지 */
   const dismissPlaceSelectionKeepGlobePin = useCallback(() => {
+    const globeApi = globeRef.current || getGlobeApi();
+    // Android Chrome: summary X unmounts on pointerdown, then a ghost click hits Mapbox.
+    globeApi?.suppressOverlayClick?.();
     if (selectedLocation) {
       const lat = Number(selectedLocation.lat);
       const lng = Number(selectedLocation.lng);

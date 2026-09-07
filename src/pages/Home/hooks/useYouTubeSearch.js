@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../../../shared/api/supabase';
 import { TRAVEL_VIDEOS } from '../data/travelVideos';
 import { buildPlaceDbIdCandidates, getPlaceStableKey, getPlaceStatsId } from '../../../utils/travelSpotResolve';
+import { resolvePlaceVideoQueries } from '../lib/uiPlaceAssetQuery.js';
 
 const GOOGLE_FORM_URL = "https://forms.gle/QgofLDzzYD6NfWYN7";
 
@@ -69,13 +70,7 @@ export const useYouTubeSearch = (location, mediaMode) => {
         // --- [L3] YouTube API Call (신규 검색) ---
         console.log(`[L3] Calling YouTube API for: ${location.name}`);
 
-        // 🚨 [Fix] 검색 정확도 향상을 위해 국가명이 있으면 추가하여 쿼리 전송
-        const searchQuery = location.country && location.country !== "Explore" && location.country !== "Ocean" && location.country !== "바다" && location.country !== "대륙"
-            ? `${location.name} ${location.country}`
-            : location.name;
-
-        // 🚨 [New] 1차 한글 검색 실패 시 활용할 영문 폴백 쿼리 (예: 핏케언 제도 -> Pitcairn Islands)
-        const fallbackQuery = location.name_en ? `${location.name_en} travel vlog` : `${searchQuery} travel vlog`;
+        const { query: searchQuery, fallbackQuery } = resolvePlaceVideoQueries(location);
 
         // 🚨 [Security Fix] 클라이언트 단에서 YouTube API 직접 호출 & DB Upsert 하는 것을 방지하고 Edge Function으로 위임
         const { data: edgeData, error: edgeError } = await supabase.functions.invoke('fetch-place-videos', {

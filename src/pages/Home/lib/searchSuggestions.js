@@ -4,6 +4,7 @@
  * 명소 exact/단일허브 prefix → 부모 hub+형제 명소 역펼침 (정착지 제외).
  * 정착지 exact → 허브형 역펼침 (부모 hub + 히트 지역 + 명소 + 형제 지역).
  * 큐레이션·SSOT는 동기 즉시, Mapbox는 허브/명소/정착지 exact가 아닐 때만 보강.
+ * 방문 place_stats 히트는 Mapbox 앞에 붙인다 (요약 카드·썸네일).
  */
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve.js';
@@ -25,11 +26,24 @@ import {
   resolveSettlement,
 } from './mapboxSettlementPlaces';
 import {
+  resolveLocalScenicList,
+  buildLocalScenicListHubCluster,
+} from './koreaLocalScenicLists';
+import {
   findCityBySearchQuery,
   cityToSuggestion,
   matchCitiesPrefix,
 } from './citiesSearch';
-import { searchBoxForward } from './mapboxSearchBox';
+import { searchBoxForward, searchBoxTypesForQuery } from './mapboxSearchBox';
+import { lookupVisitedPlacesForSearch } from './visitedPlaceSearchLookup.js';
+import { overlayGeoFieldsOnVisitedSpots } from './visitedPlaceSearch.js';
+import { buildMapboxSearchQueries } from './exploreSearchAliases';
+import {
+  collectKnownTravelHomonyms,
+  homonymIdentityKey,
+  isDistinctTravelPlace,
+  relabelHomonymDisplay,
+} from './travelSearchHomonyms';
 
 const normalizeKey = (s) =>
   String(s ?? '')
@@ -64,6 +78,52 @@ function pushUnique(out, seen, item) {
   if (!k || seen.has(k)) return;
   seen.add(k);
   out.push(item);
+}
+
+/**
+ * SSOT 여행지 Enter 카드에, 멀리 떨어진 동명을 붙인다 (사바↔카리브 사바).
+ * 고정 동명이 먼저 — Mapbox ko 표기가 SSOT와 같은 한글명이면 둘째 카드가 사라진다.
+ * @param {string} query
+ * @param {object[]} ssotCandidates
+ */
+export async function collectDistinctMapboxHomonyms(query, ssotCandidates) {
+  const anchors = (ssotCandidates || []).filter(Boolean);
+  if (!anchors.length) return [];
+
+  const extras = collectKnownTravelHomonyms(query, anchors).map((item) =>
+    relabelHomonymDisplay(item, anchors),
+  );
+  const distinctAnchors = [...anchors, ...extras];
+  const seenIds = new Set(distinctAnchors.map(homonymIdentityKey).filter(Boolean));
+  const seenNames = new Set(
+    distinctAnchors.map((item) => normalizeKey(item?.name)).filter(Boolean),
+  );
+
+  try {
+    const queries = buildMapboxSearchQueries(query);
+    const searchBoxTypes = searchBoxTypesForQuery(query);
+    for (const mq of queries) {
+      const remote = await searchBoxForward(mq, {
+        limit: 5,
+        types: searchBoxTypes,
+      });
+      for (const item of remote || []) {
+        const idKey = homonymIdentityKey(item);
+        if (!idKey || seenIds.has(idKey)) continue;
+        if (!isDistinctTravelPlace(item, distinctAnchors)) continue;
+        const labeled = relabelHomonymDisplay(item, distinctAnchors);
+        const nameKey = normalizeKey(labeled.name);
+        if (nameKey && seenNames.has(nameKey)) continue;
+        seenIds.add(idKey);
+        if (nameKey) seenNames.add(nameKey);
+        extras.push(labeled);
+        distinctAnchors.push(labeled);
+      }
+    }
+  } catch {
+    return extras.slice(0, 3);
+  }
+  return extras.slice(0, 3);
 }
 
 /**
@@ -152,6 +212,12 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
   const out = [];
   const seen = new Set();
 
+  const officialSpot = resolveTravelSpotFromSearchQuery(q);
+  if (officialSpot) pushUnique(out, seen, spotToSuggestion(officialSpot));
+  for (const extra of collectKnownTravelHomonyms(q, officialSpot ? [officialSpot] : [])) {
+    pushUnique(out, seen, extra);
+  }
+
   const spotHits = TRAVEL_SPOTS.filter((spot) => {
     const name = (spot.name || '').toLowerCase();
     const nameEn = (spot.name_en || '').toLowerCase();
@@ -176,14 +242,24 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
   }
 
   const exactHub = resolveCityAttractionHub(q);
-  const exactAttraction = exactHub ? null : resolveHubAttraction(q);
+  const exactLocalScenicList = exactHub ? null : resolveLocalScenicList(q);
+  const exactAttraction =
+    exactHub || exactLocalScenicList ? null : resolveHubAttraction(q);
   const exactSettlement =
-    exactHub || exactAttraction ? null : resolveSettlement(q);
+    exactHub || exactLocalScenicList || exactAttraction ? null : resolveSettlement(q);
   const { hubs, attractions } = matchCityAttractionHubsPrefix(q, { limit: 6 });
 
   if (exactHub) {
     // hub exact: 도시 + 명소 + 정착지(≤3)
     pushHubAttractionCluster(exactHub, out, seen, { includeSettlements: true });
+  } else if (exactLocalScenicList) {
+    // 지자체 팔경·구경 exact: hub + 리스트 멤버 요약
+    for (const item of buildLocalScenicListHubCluster(
+      exactLocalScenicList.list,
+      exactLocalScenicList.hub,
+    )) {
+      pushUnique(out, seen, item);
+    }
   } else if (exactAttraction) {
     // 명소 exact: 부모 도시 + 형제 명소만 (정착지 비포함)
     pushHubAttractionCluster(exactAttraction.hub, out, seen, {
@@ -239,30 +315,59 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
   const local = buildLocalSearchSuggestions(q, { spotLimit: opts.spotLimit ?? 5 });
   const includeMapbox = opts.includeMapbox !== false;
   const exactHub = resolveCityAttractionHub(q);
-  const exactAttraction = exactHub ? null : resolveHubAttraction(q);
+  const exactLocalScenicList = exactHub ? null : resolveLocalScenicList(q);
+  const exactAttraction =
+    exactHub || exactLocalScenicList ? null : resolveHubAttraction(q);
   const exactSettlement =
-    exactHub || exactAttraction ? null : resolveSettlement(q);
+    exactHub || exactLocalScenicList || exactAttraction ? null : resolveSettlement(q);
 
-  // 허브/명소/정착지 exact는 큐레이션만 — Mapbox 대기로 지연시키지 않음
-  if (!includeMapbox || exactHub || exactAttraction || exactSettlement) {
+  // 허브/명소/정착지/지자체리스트 exact는 큐레이션만 — Mapbox 대기로 지연시키지 않음
+  if (
+    !includeMapbox ||
+    exactHub ||
+    exactLocalScenicList ||
+    exactAttraction ||
+    exactSettlement
+  ) {
     return local;
   }
 
   const out = [...local];
   const seen = new Set(local.map(dedupeKey).filter(Boolean));
   const mapboxLimit = opts.mapboxLimit ?? 6;
+  const mapboxQueries = local.length < 3 ? buildMapboxSearchQueries(q) : [q];
+  const searchBoxTypes = searchBoxTypesForQuery(q);
 
+  const visitedPromise = lookupVisitedPlacesForSearch(q);
   try {
-    const remote = await searchBoxForward(q, {
-      limit: mapboxLimit,
-      types: 'place,city,poi',
-    });
-    for (const item of remote) pushUnique(out, seen, item);
+    for (const mq of mapboxQueries) {
+      const remote = await searchBoxForward(mq, {
+        limit: mapboxLimit,
+        types: searchBoxTypes,
+        language: /[\uAC00-\uD7A3]/.test(mq) ? 'ko' : 'en',
+      });
+      for (const item of remote) pushUnique(out, seen, item);
+      if (out.length >= 8) break;
+    }
   } catch {
     // degrade: local only
   }
 
-  return out.slice(0, 16);
+  try {
+    const visited = await visitedPromise;
+    const overlaid = overlayGeoFieldsOnVisitedSpots(visited || [], out);
+    const localKeys = new Set(local.map(dedupeKey).filter(Boolean));
+    const withVisited = [];
+    const visitedSeen = new Set();
+    for (const item of overlaid) {
+      if (localKeys.has(dedupeKey(item))) continue;
+      pushUnique(withVisited, visitedSeen, item);
+    }
+    for (const item of out) pushUnique(withVisited, visitedSeen, item);
+    return withVisited.slice(0, 16);
+  } catch {
+    return out.slice(0, 16);
+  }
 }
 
 /**
@@ -340,6 +445,7 @@ export async function buildCuratedEnterDisambiguation(query) {
   if (!q) return null;
 
   const hubHit = resolveCityAttractionHub(q);
+  const localScenicHit = hubHit ? null : resolveLocalScenicList(q);
   if (hubHit) {
     let candidates = await buildHubCandidatesForEnter(hubHit);
     const spot =
@@ -355,6 +461,16 @@ export async function buildCuratedEnterDisambiguation(query) {
       }
     }
     return ensureDisambiguation(q, candidates, `'${hubHit.name}' → 도시와 명소를 골라주세요`);
+  }
+
+  if (localScenicHit) {
+    const { list, hub } = localScenicHit;
+    const candidates = buildLocalScenicListHubCluster(list, hub);
+    return ensureDisambiguation(
+      q,
+      candidates,
+      `'${list.title}' → 도시와 명소를 골라주세요`,
+    );
   }
 
   const attractionHit = resolveHubAttraction(q);
@@ -394,7 +510,16 @@ export async function buildCuratedEnterDisambiguation(query) {
 
   const querySpot = resolveTravelSpotFromSearchQuery(q);
   if (querySpot) {
-    return ensureDisambiguation(q, [spotToSuggestion(querySpot)], `'${querySpot.name}' → 이 여행지로 갈까요?`);
+    const ssot = [spotToSuggestion(querySpot)];
+    const extras = await collectDistinctMapboxHomonyms(q, ssot);
+    if (extras.length) {
+      return ensureDisambiguation(
+        q,
+        [...ssot, ...extras],
+        `'${q}' → 원하는 장소를 선택하세요`,
+      );
+    }
+    return ensureDisambiguation(q, ssot, `'${querySpot.name}' → 이 여행지로 갈까요?`);
   }
 
   const seaHit = resolveSeaBasinFromQuery(q);

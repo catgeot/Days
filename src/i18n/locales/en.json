@@ -16,13 +16,10 @@
     },
     "siteNotice": {
       "refreshHeader": "Update",
-      "systemHeader": "Notice",
       "refreshTitle": "A new version is available",
       "refreshBody": "Refresh the page to use the latest features.",
       "close": "Close",
-      "reload": "Refresh",
-      "pastNotices": "Past notices",
-      "dismissPermanent": "Don't show again"
+      "reload": "Refresh"
     },
     "auth": {
       "signIn": "Sign in",
@@ -426,19 +423,20 @@
       "recentVisitedCount": "Recent places {{count}}",
       "keywordVisits": "Keyword history",
       "keywordVisitsCount": "Keyword history {{count}}",
+      "agenciesVisitedCount": "Agencies opened {{count}}",
       "recentSearch": "Recent search",
       "removeItem": "Remove {{item}}",
       "removeRecord": "Remove {{keyword}} record",
       "collectionCount": "{{count}} curated places",
-      "aiExploreTitle": "Explore the world for <query>{{query}}</query>",
-      "aiExploreHint": "Pick a suggestion below the search bar, or press <strong>Enter</strong> for AI and map search.",
+      "aiExploreTitle": "Map search for <query>{{query}}</query>",
+      "aiExploreHint": "Pick a suggestion below the search bar, or press <strong>Enter</strong> for map search. AI steps in only if the map has no match.",
       "spotCount": "{{count}} places",
-      "aiLoadingTitle": "AI is exploring destinations",
-      "aiLoadingBody": "Checking similar names and typos…",
+      "aiLoadingTitle": "Finding this place",
+      "aiLoadingBody": "Checking the map for this name…",
       "suggestionsTitle": "Cities, sights & places for \"{{query}}\"",
       "suggestionsDefault": "Suggestions for \"{{query}}\"",
       "suggestionsLoading": "Loading",
-      "suggestionsEmpty": "No suggestions. Press Enter for AI and map search.",
+      "suggestionsEmpty": "No suggestions. Press Enter for map search.",
       "disambiguationTitle": "Choose a place",
       "disambiguationBody": "This name may match several places. Tap a card to open it.",
       "more": "See more",
@@ -631,6 +629,29 @@
       "signInBody": "Sign in to build your bucket list and use the globe without limits.",
       "signIn": "Sign in",
       "signOut": "Sign out"
+    },
+    "agencies": {
+      "title": "Visited agencies",
+      "visitedTitle": "Agencies I opened",
+      "visitedEmpty": "No agencies opened on this device yet. Stay and tour links you open will show up here.",
+      "catalogTitle": "Connected agencies",
+      "hint": "Even if you did not bookmark the booking site, you can return to agencies opened from GATEO. You may need to sign in on that site to see reservations.",
+      "clearVisits": "Clear visit history",
+      "removeVisit": "Remove {{name}} from visit history",
+      "kind": {
+        "stay": "Stays",
+        "tour": "Tours",
+        "package": "Packages",
+        "flight": "Flights",
+        "rental": "Car rental",
+        "esim": "eSIM",
+        "ferry": "Ferry",
+        "transfer": "Transfer",
+        "tickets": "Tickets",
+        "luggage": "Luggage",
+        "scooter": "Scooter",
+        "browse": "Browse"
+      }
     },
     "footerModal": {
       "tab": {
@@ -1059,7 +1080,11 @@
       "refreshTitle": "Load more from Unsplash · Pexels",
       "sourcesRateLimit": "Unsplash · Pexels · once every {{seconds}}s",
       "enlargeImage": "Enlarge {{alt}}",
-      "imageFallback": "Gallery image"
+      "imageFallback": "Gallery image",
+      "manageTitle": "Unrelated photo?",
+      "manageBody": "Remove this photo from the gallery. It will also drop from the saved list.",
+      "manageRemove": "Remove from gallery",
+      "manageCancel": "Cancel"
     },
     "video": {
       "loading": "Loading related videos...",

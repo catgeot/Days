@@ -7,7 +7,7 @@
 1. [`.cursor/rules/gateo-project-context.mdc`](.cursor/rules/gateo-project-context.mdc) 규칙을 따른다.
 2. 루트 [`.ai-context.md`](.ai-context.md)를 **Read**한다 (사용자가 `@`로 안 붙여도).
 3. 작업 주제면 최신 일지(`plans/YYYY-MM-DD-project-log.md`)와 해당 운영 가이드만 추가로 읽는다.
-4. **`오케스트레이터`** 제시어(다배치 SSOT) → [`plans/orchestrator-method.md`](plans/orchestrator-method.md) **v2.3**(VERIFY PASS 후 §3.4 커밋 · Cloud는 push·PR · 후임 Task 이양) · Rule [`gateo-orchestrator.mdc`](.cursor/rules/gateo-orchestrator.mdc).
+4. **`오케스트레이터`** 제시어(다배치 SSOT) → [`plans/orchestrator-method.md`](plans/orchestrator-method.md) **v2.4.1**(메인 장수 · 워커 N 기본 2 · 파일+요약 · 워커 커밋 금지 · Cloud **2회 하드캡 아님** · 중첩 후임 금지) · Rule [`gateo-orchestrator.mdc`](.cursor/rules/gateo-orchestrator.mdc).
 
 ## 금지 (요약)
 
@@ -16,7 +16,7 @@
 - 브라우저에 MRT/`VITE_` 비밀키 노출
 - **검증 없이** git commit/push · FAIL·미확인 상태로 커밋 · `main` 강제 push
 - 사용자 승인 없는 「완료」 단정 · **UI 임의 변경** (기능 작업 중 기존 버튼·레이아웃·톤 교체 포함 · `.ai-context` **§4.1 5**)
-- 릴리스 노트 잦은 제안 — **새 기능·중대 업데이트만** (`.ai-context` **1.7**)
+- 릴리스 노트 잦은 제안 — **새 기능·중대 업데이트만** · 푸터 Updates · **자동 팝업 금지** (`.ai-context` **1.7**)
 - 복붙 Core Rules 부활 금지(구조 제안→승인→전체 코드) · 주석 **희소**(`.ai-context` **4.0**/**4.2**) · 사람에게는 동작·QA(**사람** Preview 체크 · 에이전트 대행 아님)
 - **오류 루프**: 동일 FAIL **2회** 후 추측 패치 중단·보고 · 요청 밖 확장 금지 (`.ai-context` **4.1**)
 - **브라우저/`computerUse` QA** — 사람 **명시 요청 시에만**. 기본은 `/qa/…`·Preview 핸드오프 + 사람 QA. 에이전트 검증은 audit/smoke/`build`만 (`.ai-context` **§4.1 13** · **1.6**)
@@ -134,10 +134,10 @@ Vercel은 **배포 해시 URL**(푸시마다 변경)과 **브랜치 git Preview 
 
 다배치 SSOT 오케스트레이터([`orchestrator-method.md`](plans/orchestrator-method.md) **§3.4**):
 
-1. 워커2 → tip 직렬 머지 → VERIFY PASS  
+1. 워커 N(기본 2) → tip 직렬 머지 → VERIFY PASS  
 2. **커밋**(한글) — 로컬·Cloud 공통 · 턴/이관 전  
 3. **Cloud**: push → PR 생성(없으면) 또는 기존 PR에 push · 일지에 SHA·PR URL  
-4. 후임 Task 이관  
+4. **Cloud 이관**: 같은 지휘자가 워커 재기동(중첩 후임 금지). Desktop은 컨트롤러가 다음 지휘자 L1.  
 
 VERIFY FAIL tip은 커밋하지 않는다. 워커는 commit/PR 금지.
 
