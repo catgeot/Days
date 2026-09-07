@@ -7002,13 +7002,15 @@
         "attractionName": "대부도",
         "name_en": "Daebu Haesol Trail",
         "kind": "viewpoint",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "126844"
       },
       {
         "attractionName": "구봉도 낙조",
         "name_en": "Gubongdo Sunset",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2615560"
       },
       {
         "attractionName": "탄도 바닷길",
@@ -7020,19 +7022,22 @@
         "attractionName": "풍도",
         "name_en": "Pungdo Island",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126720"
       },
       {
         "attractionName": "동주염전",
         "name_en": "Dongju Salt Field",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "619709"
       },
       {
         "attractionName": "안산갈대습지공원",
         "name_en": "Ansan Reed Wetland",
         "kind": "park",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "128066"
       },
       {
         "attractionName": "다문화거리",
@@ -7081,13 +7086,15 @@
         "attractionName": "제부도",
         "name_en": "Jebumose Island",
         "kind": "viewpoint",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125503"
       },
       {
         "attractionName": "궁평리해수욕장",
         "name_en": "Gungpyeong Sunset",
         "kind": "viewpoint",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "1932009"
       },
       {
         "attractionName": "남양황라",
@@ -7148,19 +7155,22 @@
         "attractionName": "기흥호수공원",
         "name_en": "Giheung Lake Park",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2734942"
       },
       {
         "attractionName": "용인농촌테마파크와 연꽃단지",
         "name_en": "Yongin Rural Theme Park and Lotus Pond",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "773293"
       },
       {
         "attractionName": "용인자연휴양림",
         "name_en": "Yongin Natural Recreation Forest",
         "kind": "park",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "809149"
       },
       {
         "attractionName": "조비산",
@@ -7203,7 +7213,8 @@
         "attractionName": "안양예술공원",
         "name_en": "Anyang Art Park",
         "kind": "park",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125514"
       },
       {
         "attractionName": "안양천생태공원",
@@ -7215,7 +7226,8 @@
         "attractionName": "평촌중앙공원",
         "name_en": "Pyeongchon Central Park",
         "kind": "park",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "1624639"
       },
       {
         "attractionName": "망해암일몰",
@@ -7227,7 +7239,8 @@
         "attractionName": "안양중앙시장",
         "name_en": "Anyang First Street",
         "kind": "market",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "611917"
       },
       {
         "attractionName": "수리산성지",
@@ -7288,19 +7301,22 @@
         "attractionName": "석남사",
         "name_en": "Seongnamsa Temple",
         "kind": "temple",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "127453"
       },
       {
         "attractionName": "안성맞춤랜드",
         "name_en": "Anseong Matchum Land",
         "kind": "park",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "2525563"
       },
       {
         "attractionName": "안성 서운산",
         "name_en": "Seounsan Mountain",
         "kind": "viewpoint",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125571"
       },
       {
         "attractionName": "금광호수",
@@ -7312,7 +7328,8 @@
         "attractionName": "고삼호수",
         "name_en": "Gosam Lake",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "128272"
       },
       {
         "attractionName": "안성팜랜드",
@@ -7355,7 +7372,8 @@
         "lat": 37.4722,
         "lng": 126.6001,
         "linkStatus": "linked",
-        "note": "제2경 월미바다열차·월미도"
+        "note": "제2경 월미바다열차·월미도",
+        "contentId": "127585"
       },
       {
         "attractionName": "인천 소래포구",
@@ -7378,7 +7396,8 @@
         "lat": 37.3937611252816,
         "lng": 126.64462119093,
         "linkStatus": "linked",
-        "note": "제5경 송도센트럴파크"
+        "note": "제5경 송도센트럴파크",
+        "contentId": "2465107"
       },
       {
         "attractionName": "인천 영종 씨사이드파크",
@@ -7406,7 +7425,8 @@
         "name_en": "Baengnyeongdo Incheon",
         "kind": "viewpoint",
         "linkStatus": "pending_coord",
-        "note": "제9경 백령도 물범"
+        "note": "제9경 백령도 물범",
+        "contentId": "561002"
       }
     ]
   },

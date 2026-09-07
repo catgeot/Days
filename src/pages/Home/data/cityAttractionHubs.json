@@ -458,7 +458,8 @@
         "name_en": "Wolmido",
         "kind": "neighborhood",
         "lat": 37.4722,
-        "lng": 126.6001
+        "lng": 126.6001,
+        "contentId": "127585"
       },
       {
         "name": "인천차이나타운",
@@ -472,7 +473,8 @@
         "name_en": "Songdo Central Park",
         "kind": "park",
         "lat": 37.3937611252816,
-        "lng": 126.64462119093
+        "lng": 126.64462119093,
+        "contentId": "2465107"
       },
       {
         "name": "강화도 전등사",
@@ -14971,7 +14973,8 @@
         "name_en": "Anseong Matchum Land",
         "kind": "park",
         "lat": 37.031919,
-        "lng": 127.310201
+        "lng": 127.310201,
+        "contentId": "2525563"
       },
       {
         "name": "안성 죽주산성",
@@ -14999,7 +15002,8 @@
         "name_en": "Anseong Seounsan",
         "kind": "viewpoint",
         "lat": 36.9304,
-        "lng": 127.2966
+        "lng": 127.2966,
+        "contentId": "125571"
       },
       {
         "name": "안성 미리내성지",
@@ -15686,14 +15690,16 @@
         "name_en": "Anyang Art Park",
         "kind": "park",
         "lat": 37.419055390784784,
-        "lng": 126.9195745452346
+        "lng": 126.9195745452346,
+        "contentId": "125514"
       },
       {
         "name": "평촌중앙공원",
         "name_en": "Pyeongchon Central Park",
         "kind": "park",
         "lat": 37.3901883031,
-        "lng": 126.9613442188
+        "lng": 126.9613442188,
+        "contentId": "1624639"
       },
       {
         "name": "안양박물관",
@@ -15714,7 +15720,8 @@
         "name_en": "Anyang Central Market",
         "kind": "market",
         "lat": 37.3974940146321,
-        "lng": 126.9194351625828
+        "lng": 126.9194351625828,
+        "contentId": "611917"
       },
       {
         "name": "안양사",
@@ -16981,7 +16988,8 @@
         "name_en": "Daebudo",
         "kind": "beach",
         "lat": 37.2436681190706,
-        "lng": 126.585257723861
+        "lng": 126.585257723861,
+        "contentId": "126844"
       },
       {
         "name": "안산 시화호",
@@ -17016,7 +17024,8 @@
         "name_en": "Ansan Reed Wetland Park",
         "kind": "park",
         "lat": 37.27433367068094,
-        "lng": 126.84099486048167
+        "lng": 126.84099486048167,
+        "contentId": "128066"
       },
       {
         "name": "화랑유원지",
@@ -17471,7 +17480,8 @@
         "name_en": "Yongin Natural Recreation Forest",
         "kind": "park",
         "lat": 37.3147911467191,
-        "lng": 127.267789370109
+        "lng": 127.267789370109,
+        "contentId": "809149"
       }
     ]
   },
@@ -17497,14 +17507,16 @@
         "name_en": "Jebudo Island",
         "kind": "beach",
         "lat": 37.1686580243,
-        "lng": 126.6244837546
+        "lng": 126.6244837546,
+        "contentId": "125503"
       },
       {
         "name": "궁평리해수욕장",
         "name_en": "Gungpyeong Beach Hwaseong",
         "kind": "beach",
         "lat": 37.1255,
-        "lng": 126.6755
+        "lng": 126.6755,
+        "contentId": "1932009"
       },
       {
         "name": "동탄호수공원",
