@@ -5358,7 +5358,8 @@
         "name_en": "Mungyeong Saejae Open Set",
         "kind": "landmark",
         "lat": 36.7616532703,
-        "lng": 128.0770030316
+        "lng": 128.0770030316,
+        "contentId": "2610293"
       },
       {
         "name": "문경석탄박물관",
@@ -5380,7 +5381,8 @@
         "kind": "landmark",
         "lat": 36.761552,
         "lng": 128.077002,
-        "mapboxId": null
+        "mapboxId": null,
+        "contentId": "2610293"
       },
       {
         "name": "진남교반",
@@ -5457,7 +5459,8 @@
         "name_en": "Ondal Tourist Site",
         "kind": "landmark",
         "lat": 37.0632486092,
-        "lng": 128.4915183165
+        "lng": 128.4915183165,
+        "contentId": "2616453"
       },
       {
         "name": "석문",
@@ -12967,14 +12970,16 @@
         "name_en": "Okcheon Hyanggyo",
         "kind": "landmark",
         "lat": 36.3179368182,
-        "lng": 127.5864648008
+        "lng": 127.5864648008,
+        "contentId": "1954386"
       },
       {
         "name": "옥천 이지당",
         "name_en": "Okcheon Ijidang",
         "kind": "landmark",
         "lat": 36.3295181287,
-        "lng": 127.5558725813
+        "lng": 127.5558725813,
+        "contentId": "753420"
       },
       {
         "name": "옛37번 국도변 벚꽃길",
@@ -20701,7 +20706,8 @@
         "name_en": "Byeolcheonji Park Jeungpyeong",
         "kind": "park",
         "lat": 36.79,
-        "lng": 127.58
+        "lng": 127.58,
+        "contentId": "2732536"
       },
       {
         "name": "증평 에듀팜",
