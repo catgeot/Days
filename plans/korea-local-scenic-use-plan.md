@@ -75,7 +75,7 @@ method **§5.7** · 큐 [`korea-local-scenic-contentid-queue.md`](./korea-local-
 |------|------|
 | **P0** | 팔경 멤버 (~876) — 이번 목표 |
 | P1 | hub attractions 잔여 |
-| P2 | 테마 선정 잔여(~75) — P0 소진 전 금지 |
+| P2 | 테마 선정 `contentId: null` **142**/871 (78 hub) — P0·P1 소진 후 | **P2-R01–R13** DB-only · P2-L LIVE |
 
 DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`는 잔여만 · 워커 **병렬 LIVE 금지** · 429 → `blocked: quota` · 같은 날 재시도 금지. HIT → 멤버+hub attraction `contentId`. scenic 승격 금지.
 
@@ -88,7 +88,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`는 잔여만 · 워커 *
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | R01–R16 ✅ · **P0·P1 F 소진** · cid 292/876 · hub+P1 **68** · 다음 **P2**(LIVE·월권) |
+| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | R01–R16 ✅ · **P0·P1 F 소진** · cid 292/876 · hub+P1 **68** · P2 **null 142** · 다음 **P2-R01** DB-only |
 | **index 행** | 팔경 활용 | 팔경 contentId |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · 워커 병렬 LIVE · 429 재호출 |
 
@@ -98,7 +98,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`는 잔여만 · 워커 *
 |----|--------------|------|------|
 | 1 | `팔경 활용 #1, 검색·리스트` | A | **완료** · tip `e8da2987` |
 | 2 | `팔경 활용 #2, Preview QA` | A 사람 | **다음** |
-| — | `오케스트레이터 팔경contentId` | B | P0 ✅ · **P1 F 소진** · P2 대기(LIVE·월권) |
+| — | `오케스트레이터 팔경contentId` | B | P0·P1 ✅ · **P2-R01** ⬜ DB-only |
 | — | `지자체 팔경 #…` | 수집 종료 | **열지 않음** |
 
 ### §1.2 A #1
@@ -134,7 +134,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`는 잔여만 · 워커 *
 @plans/feature-handoff-index.md
 브랜치 cursor/palgyeong-cid · PR #185
 금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · 같은 날 429 재시도 · 워커 커밋 · Cloud 중첩 후임
-작업: P2 테마 선정 contentId — 메인 직렬 LIVE(또는 워커1) · DB-only 잔여 우선 · 한도 내만 · blocked:quota 시 정지
+작업: P2-R01 DB-only — S0-P2 파서 확인 후 워커A(samcheok·hapcheon·hadong)+B(uiryeong·sokcho·buyeo) · generate:korea-scenic-spots · audit/smoke scenic
 ```
 
 ### §1.2 B 429 다음날
