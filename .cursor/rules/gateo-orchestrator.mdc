@@ -6,7 +6,7 @@ alwaysApply: false
 # 오케스트레이터 세션
 
 사용자가 **`오케스트레이터`** · **`명소-오케스트레이터`** · **`맵박스정착지`** · **`지자체팔경`** · **`팔경contentId`** 를 쓰거나 `@plans/orchestrator-method.md` 를 연결하면 이 규칙을 따른다.  
-방법 SSOT: [`plans/orchestrator-method.md`](plans/orchestrator-method.md) **v2.4**.
+방법 SSOT: [`plans/orchestrator-method.md`](plans/orchestrator-method.md) **v2.4.1**. Cloud **2회 하드캡 아님** — 같은 메인이 워커 재기동.
 
 ## 필수 읽기 (짧게)
 
@@ -36,7 +36,7 @@ alwaysApply: false
 
 ## 이관 = 지휘권 이양 (사람 제시어 대기 금지)
 
-- **Cloud**: 지휘자 = 이 런의 메인. 워커 = L1. VERIFY 후 **같은 지휘자가 워커 N 재기동**(연장). **중첩 후임 Task 금지**(후임이 워커를 못 띄움).
+- **Cloud**: 지휘자 = 이 런의 메인. 워커 = L1. VERIFY 후 **같은 지휘자가 워커 N 재기동**(연장 · **2회에서 멈추지 않음**). **중첩 후임 Task 금지**(후임이 워커를 못 띄움).
 - **Desktop**: 컨트롤러(사람 채팅)가 다음 지휘자 L1을 띄움. 지휘자 L1이 워커 L2 기동. 지휘자가 후임을 직접 띄우면 L3라서 불가.
 - **금지**: VERIFY 후 「다음 제시어 대기」만 하고 정지.
 - **금지**: 워커를 백그라운드로 띄운 뒤 **초안 수신·머지·VERIFY 전에 턴 종료**/조기 `final_summary`.
