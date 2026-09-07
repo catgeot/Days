@@ -19,6 +19,7 @@ import {
   canShowMrtStayStrip,
   buildMrtStayListUrl,
   fetchMrtStaysForLocation,
+  filterBookableMrtStays,
   isMrtDomesticLocation,
   mrtStayNights,
   normalizeMrtGuestCounts,
@@ -244,8 +245,11 @@ export default function EventStayStrip({
       });
       if (cancelled) return;
       fetchedKeyRef.current = fetchKey;
-      if (result?.items?.length) {
-        setItems(result.items.slice(0, 12));
+      const listed = Array.isArray(result?.items) ? result.items : [];
+      const bookable = filterBookableMrtStays(listed);
+      const displayItems = (bookable.length > 0 ? bookable : listed).slice(0, 12);
+      if (displayItems.length > 0 && bookable.length > 0) {
+        setItems(displayItems);
         setMrtListMeta({
           regionId: result.region?.regionId ?? null,
           keyword: result.usedKeyword || stayKeyword || placeMeta.label,
@@ -257,8 +261,8 @@ export default function EventStayStrip({
         setMrtListMeta(
           stayKeyword
             ? {
-                regionId: null,
-                keyword: stayKeyword,
+                regionId: result?.region?.regionId ?? null,
+                keyword: result?.usedKeyword || stayKeyword,
                 isDomestic: isMrtDomesticLocation(location),
               }
             : null,
