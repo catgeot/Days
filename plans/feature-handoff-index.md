@@ -305,11 +305,11 @@
 
 | | |
 |--|--|
-| **상태** | R01–R16 ✅ · **P0·P1 F 소진** · members **459/876** · P2 **null 104** · **P0-C01** ✅ · **P0-S01** ✅ · **다음 P0-L07** keyword LIVE · A와 **동시 OK** |
-| **브랜치** | `cursor/palgyeong-cid` · tip `55cfd8ab` |
+| **상태** | R01–R16 ✅ · **P0·P1 F 소진** · members **470/876** · P2 **null 104** · **P0-C01** ✅ · **P0-S01** ✅ · **P0-L07** ✅ 11/100 · **다음 P0-A01** · A와 **동시 OK** |
+| **브랜치** | `cursor/palgyeong-cid` · tip `6212fab3` |
 | **PR** | [#185](https://github.com/catgeot/Days/pull/185) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§3·§9 B** · method **§5.7** |
-| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — **P0-L07** ⬜ keyword LIVE · 이어서 A01 |
+| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — **P0-L07** ✅ · **다음 P0-A01** 시호 alias |
 | **일지** | [`2026-09-07-project-log.md`](./2026-09-07-project-log.md) |
 | **소유** | JSON `contentId` · fill · audit · **UI 금지** |
 | **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · 본명-only keyword 재시도 · AI가 ID 기입 · feature에 `plans/**` 커밋 |
@@ -317,13 +317,12 @@
 **다음 제시어**:
 
 ```
-팔경contentId #P0-L07, 확장 keyword
+팔경contentId #P0-A01, 시호 alias
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
-@plans/orchestrator-method.md
 브랜치 cursor/palgyeong-cid · PR #185
-금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재시도 · 본명-only 재시도 · feature에 plans/** 커밋
-작업: P0-S01 이후 fill --keyword-only --limit=100 (memberQueries) → audit/smoke lists
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: L07 MISS 시호·별칭만 웹/공식명 후보 → KEYWORD_ALIASES → LIVE 검증. Tour 미등재는 null 유지
 ```
 
 ---
