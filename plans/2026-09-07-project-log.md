@@ -2,6 +2,25 @@
 
 직전: [`2026-09-06-project-log.md`](./2026-09-06-project-log.md)
 
+## 써머리 닫기 #1, Android Chrome 고스트 클릭
+
+- **세션** `써머리 닫기 #1, Android Chrome 고스트 클릭`
+- **브랜치** `cursor/summary-close-1030` · tip `f1e040b4` · PR [#202](https://github.com/catgeot/Days/pull/202)
+- **원인**: 써머리 X가 `pointerdown`에서 카드를 벗기면 Android Chrome 고스트 클릭이 Mapbox로 뚫림 → 다른 여행지 써머리
+- **수정**: 닫기 직후 `suppressOverlayClick` 500ms · 지구본 capture 클릭 차단 · X 비주얼 유지
+- **VERIFY** `smoke:summary-close-guard` · `vite build` PASS
+- **Preview** `/qa/summary-close` → git Preview `/`
+- **다음** 사람 Android Chrome QA — 써머리 X → 닫힘 · 다른 카드 즉시 오픈 없음
+
+```
+써머리 닫기 #2, Android Chrome QA
+@plans/feature-handoff-index.md
+@plans/2026-09-07-project-log.md
+브랜치 cursor/summary-close-1030 · PR #202 · Preview /qa/summary-close
+금지: UI 리디자인 · 써머리 X pointerdown 닫기 제거 · feature에 plans/** 커밋
+작업: Android Chrome에서 지구본 써머리 X → 카드만 닫힘 · 다른 여행지 써머리가 바로 안 열림
+```
+
 ## 팔경 contentId — P1-R05 hub DB-only ✅
 
 - **세션** `오케스트레이터 팔경contentId` · 지휘자=Cloud 메인 · 워커A→B Foreground · 중첩 후임 없음

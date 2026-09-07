@@ -14,6 +14,33 @@
 
 ## 활성 목록
 
+### 써머리 닫기
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `f1e040b4` · PR [#202](https://github.com/catgeot/Days/pull/202) · **#2 사람 Android Chrome QA** |
+| **브랜치** | `cursor/summary-close-1030` |
+| **tip** | `f1e040b4` |
+| **PR** | [#202](https://github.com/catgeot/Days/pull/202) |
+| **일지** | [`2026-09-07-project-log.md`](./2026-09-07-project-log.md) |
+| **Preview** | `/qa/summary-close` → git Preview `/` |
+| **소유** | `PlaceCardSummary` · `HomeGlobeMapbox` `suppressOverlayClick` · `globeOverlayClickGuard.js` |
+| **금지** | UI 리디자인 · 써머리 X `pointerdown` 닫기 제거 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:summary-close-guard` · `vite build` |
+
+**다음 제시어**:
+
+```
+써머리 닫기 #2, Android Chrome QA
+@plans/feature-handoff-index.md
+@plans/2026-09-07-project-log.md
+브랜치 cursor/summary-close-1030 · PR #202 · Preview /qa/summary-close
+금지: UI 리디자인 · 써머리 X pointerdown 닫기 제거 · feature에 plans/** 커밋
+작업: Android Chrome에서 지구본 써머리 X → 카드만 닫힘 · 다른 여행지 써머리가 바로 안 열림
+```
+
+---
+
 ### 리뷰 연관 여행지
 
 | | |
