@@ -2,26 +2,34 @@
 
 직전: [`2026-09-06-project-log.md`](./2026-09-06-project-log.md)
 
-## 팔경 contentId — 다음 세션 핸드오프 (#P0-L02)
+## 팔경 contentId — 다음 세션 핸드오프 (#P0-L03)
 
-- **채팅명** `팔경contentId #P0-L02, 멤버 keyword`
+- **채팅명** `팔경contentId #P0-L03, 멤버 keyword`
 - **브랜치** `cursor/palgyeong-cid` · tip `4c141c27` · PR [#185](https://github.com/catgeot/Days/pull/185)
-- **스냅샷** P0 멤버 **400/876** (null **476**) · P2 테마 null **104**/871 · 429 없음
-- **완료** P2-L2 areaBased+keyword **0/104** · P0-L keyword **109/584** (hub 72)
-- **시작** `checkout cursor/palgyeong-cid` → `merge origin/main` → `npm run audit:docs-handoff-sync`
-- **1순위** `node scripts/fill-korea-local-scenic-content-ids.mjs --keyword-only` (`--limit=100` OK)
+- **스냅샷** P0 멤버 **400/876** (null **476**) · P2 테마 null **104**/871 · resume **584** · 429 없음
+- **완료** P0-L02 keyword **0/100** — JSON 무변 · `--resume` 시 targets=0
+- **1순위** `node scripts/fill-korea-local-scenic-content-ids.mjs --keyword-only --limit=100` (**--resume 없이**)
 - **읽기 3** index 팔경 contentId 행 · 큐 「다음 세션」절 · method §5.7
 - **금지 3** UI · scenic 승격 · 워커 병렬 LIVE
 
 ```
-팔경contentId #P0-L02, 멤버 keyword
+팔경contentId #P0-L03, 멤버 keyword
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
 @plans/orchestrator-method.md
 브랜치 cursor/palgyeong-cid · PR #185
 금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재시도 · feature에 plans/** 커밋
-작업: P0-L02 — fill-korea-local-scenic-content-ids --keyword-only (null 476) → audit/smoke lists
+작업: P0-L03+ — fill-korea-local-scenic-content-ids --keyword-only --limit=100 → audit/smoke lists
 ```
+
+## 팔경 contentId — P0-L02 keyword 0/100 ✅
+
+- **세션** `팔경contentId #P0-L02, 멤버 keyword`
+- **브랜치** `cursor/palgyeong-cid` · tip `4c141c27` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **P0-L02** `--keyword-only --limit=100` **0/100** — yeongdong·jincheon·jeungpyeong·gyeongju 등 MISS · members **400/876** 유지
+- **참고** resume **584**건 · null **476** 전부 processed — `--resume` 시 targets=0
+- **VERIFY** audit/smoke lists + content-ids PASS · feature 커밋 없음(JSON 무변)
+- **다음** P0-L03+ 동일 배치 재시도 또는 전략 합의
 
 ## 팔경 contentId — P2-L2 + P0-L ✅
 
