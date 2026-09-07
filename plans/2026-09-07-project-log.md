@@ -2,25 +2,33 @@
 
 직전: [`2026-09-06-project-log.md`](./2026-09-06-project-log.md)
 
-## 팔경 contentId — 다음 세션 핸드오프 (#P0-L03)
+## 팔경 contentId — 다음 세션 핸드오프 (#P0-L04)
 
-- **채팅명** `팔경contentId #P0-L03, 멤버 keyword`
+- **채팅명** `팔경contentId #P0-L04, 멤버 keyword`
 - **브랜치** `cursor/palgyeong-cid` · tip `4c141c27` · PR [#185](https://github.com/catgeot/Days/pull/185)
-- **스냅샷** P0 멤버 **400/876** (null **476**) · P2 테마 null **104**/871 · resume **584** · 429 없음
-- **완료** P0-L02 keyword **0/100** — JSON 무변 · `--resume` 시 targets=0
+- **스냅샷** P0 멤버 **400/876** (null **476**) · P2 테마 null **104**/871 · P0-L02·L03 연속 **0/100** · resume **584** · 429 없음
+- **완료** P0-L03 keyword **0/100** — P0-L02 동일 100건(hongcheon~gyeongju) MISS · JSON 무변
 - **1순위** `node scripts/fill-korea-local-scenic-content-ids.mjs --keyword-only --limit=100` (**--resume 없이**)
 - **읽기 3** index 팔경 contentId 행 · 큐 「다음 세션」절 · method §5.7
 - **금지 3** UI · scenic 승격 · 워커 병렬 LIVE
 
 ```
-팔경contentId #P0-L03, 멤버 keyword
+팔경contentId #P0-L04, 멤버 keyword
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
 @plans/orchestrator-method.md
 브랜치 cursor/palgyeong-cid · PR #185
 금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재시도 · feature에 plans/** 커밋
-작업: P0-L03+ — fill-korea-local-scenic-content-ids --keyword-only --limit=100 → audit/smoke lists
+작업: P0-L04+ — fill-korea-local-scenic-content-ids --keyword-only --limit=100 → audit/smoke lists
 ```
+
+## 팔경 contentId — P0-L03 keyword 0/100 ✅
+
+- **세션** `팔경contentId #P0-L03, 멤버 keyword`
+- **브랜치** `cursor/palgyeong-cid` · tip `4c141c27` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **P0-L03** `--keyword-only --limit=100` **0/100** — P0-L02와 동일 cohort MISS · members **400/876** 유지
+- **VERIFY** audit:korea-local-scenic-lists OK · smoke lists · smoke content-ids PASS
+- **다음** P0-L04+ 동일 배치 또는 전략 합의
 
 ## 팔경 contentId — P0-L02 keyword 0/100 ✅
 
