@@ -14,6 +14,33 @@
 
 ## 활성 목록
 
+### 써머리 닫기
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `f1e040b4` · PR [#202](https://github.com/catgeot/Days/pull/202) · **#2 사람 Android Chrome QA** |
+| **브랜치** | `cursor/summary-close-1030` |
+| **tip** | `f1e040b4` |
+| **PR** | [#202](https://github.com/catgeot/Days/pull/202) |
+| **일지** | [`2026-09-07-project-log.md`](./2026-09-07-project-log.md) |
+| **Preview** | `/qa/summary-close` → git Preview `/` |
+| **소유** | `PlaceCardSummary` · `HomeGlobeMapbox` `suppressOverlayClick` · `globeOverlayClickGuard.js` |
+| **금지** | UI 리디자인 · 써머리 X `pointerdown` 닫기 제거 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:summary-close-guard` · `vite build` |
+
+**다음 제시어**:
+
+```
+써머리 닫기 #2, Android Chrome QA
+@plans/feature-handoff-index.md
+@plans/2026-09-07-project-log.md
+브랜치 cursor/summary-close-1030 · PR #202 · Preview /qa/summary-close
+금지: UI 리디자인 · 써머리 X pointerdown 닫기 제거 · feature에 plans/** 커밋
+작업: Android Chrome에서 지구본 써머리 X → 카드만 닫힘 · 다른 여행지 써머리가 바로 안 열림
+```
+
+---
+
 ### 리뷰 연관 여행지
 
 | | |
@@ -278,11 +305,11 @@
 
 | | |
 |--|--|
-| **상태** | R01–R16 ✅ · **P0 F 소진** · P1-R01–R05 ✅ · membersWithContentId 292/876 · hub+P1 39 · 다음 **P1-R06** · A와 **동시 OK** |
-| **브랜치** | `cursor/palgyeong-cid` · tip `3648d7b1` |
+| **상태** | R01–R16 ✅ · **P0 F 소진** · P1-R01–R07 ✅ · membersWithContentId 292/876 · hub+P1 48 · 다음 **P1-R08** · A와 **동시 OK** |
+| **브랜치** | `cursor/palgyeong-cid` · tip `7c0d040a` |
 | **PR** | [#185](https://github.com/catgeot/Days/pull/185) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§3·§9 B** · method **§5.7** |
-| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — S0–R16 ✅ · P0 소진 · P1-R01–R05 ✅ · P1-R06 ⬜ |
+| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — S0–R16 ✅ · P0 소진 · P1-R01–R07 ✅ · P1-R08 ⬜ |
 | **일지** | [`2026-09-07-project-log.md`](./2026-09-07-project-log.md) |
 | **소유** | JSON `contentId` · fill · audit · **UI 금지** |
 | **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · feature에 `plans/**` 커밋 |
@@ -296,7 +323,7 @@
 @plans/feature-handoff-index.md
 브랜치 cursor/palgyeong-cid · PR #185
 금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P2 월권 · 워커 커밋 · Cloud 중첩 후임 · 남은 R 전부 기동
-작업: P1-R06 DB-only — 메인 장수. 워커A(changnyeong·yeongdeok·uiseong)+B(tongyeong·hadong·hapcheon) 파일+요약 → 직렬 머지 VERIFY 커밋 → 큐 남으면 워커 재기동
+작업: P1-R08 DB-only — 메인 장수. 워커A(hamyang·gimhae·yangsan)+B(miryang·yeosu·gwangyang) 파일+요약 → 직렬 머지 VERIFY 커밋 → 큐 남으면 워커 재기동
 ```
 
 ---

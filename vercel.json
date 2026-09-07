@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/summary-close",
+      "destination": "https://days-git-cursor-summary-close-1030-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
       "source": "/qa/gallery-panel",
       "destination": "https://days-git-cursor-gallery-panel-032e-catgeots-projects.vercel.app/place/paris/gallery",
       "permanent": false

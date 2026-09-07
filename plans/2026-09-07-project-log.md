@@ -2,6 +2,43 @@
 
 직전: [`2026-09-06-project-log.md`](./2026-09-06-project-log.md)
 
+## 써머리 닫기 #1, Android Chrome 고스트 클릭
+
+- **세션** `써머리 닫기 #1, Android Chrome 고스트 클릭`
+- **브랜치** `cursor/summary-close-1030` · tip `f1e040b4` · PR [#202](https://github.com/catgeot/Days/pull/202)
+- **원인**: 써머리 X가 `pointerdown`에서 카드를 벗기면 Android Chrome 고스트 클릭이 Mapbox로 뚫림 → 다른 여행지 써머리
+- **수정**: 닫기 직후 `suppressOverlayClick` 500ms · 지구본 capture 클릭 차단 · X 비주얼 유지
+- **VERIFY** `smoke:summary-close-guard` · `vite build` PASS
+- **Preview** `/qa/summary-close` → git Preview `/`
+- **다음** 사람 Android Chrome QA — 써머리 X → 닫힘 · 다른 카드 즉시 오픈 없음
+
+```
+써머리 닫기 #2, Android Chrome QA
+@plans/feature-handoff-index.md
+@plans/2026-09-07-project-log.md
+브랜치 cursor/summary-close-1030 · PR #202 · Preview /qa/summary-close
+금지: UI 리디자인 · 써머리 X pointerdown 닫기 제거 · feature에 plans/** 커밋
+작업: Android Chrome에서 지구본 써머리 X → 카드만 닫힘 · 다른 여행지 써머리가 바로 안 열림
+```
+
+## 팔경 contentId — P1-R06·R07 hub DB-only ✅
+
+- **세션** `오케스트레이터 팔경contentId` · 지휘자=Cloud 메인 · 워커A→B Foreground ×2세대 · 중첩 후임 없음
+- **브랜치** `cursor/palgyeong-cid` · tip `7c0d040a` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **P1-R06** 4/37 (`ec615db9`) · A 2/19 · B 2/18 · **P1-R07** 5/23 (`7c0d040a`) · A 2/11 · B 3/12 · hub+P1 누적 **48**
+- **VERIFY** audit issues 0 · smoke lists + content-ids · build PASS (매 R)
+- **다음 P1-R08** A `hamyang`·`gimhae`·`yangsan` / B `miryang`·`yeosu`·`gwangyang`
+
+```
+오케스트레이터 팔경contentId
+@plans/orchestrator-method.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/feature-handoff-index.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P2 월권 · 워커 커밋 · Cloud 중첩 후임 · 남은 R 전부 기동
+작업: P1-R08 DB-only — 메인 장수. 워커A3+B3 파일+요약 → 직렬 머지 VERIFY 커밋 → 큐 남으면 워커 재기동
+```
+
 ## 팔경 contentId — P1-R05 hub DB-only ✅
 
 - **세션** `오케스트레이터 팔경contentId` · 지휘자=Cloud 메인 · 워커A→B Foreground · 중첩 후임 없음
