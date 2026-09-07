@@ -278,11 +278,11 @@
 
 | | |
 |--|--|
-| **상태** | R01–R10 ✅ · 다음 ⬜ **R11** · membersWithContentId 171/876 · A와 **동시 OK** |
-| **브랜치** | `cursor/palgyeong-cid` · tip `face87c6` |
+| **상태** | R01–R13 ✅ · 다음 ⬜ **R14** · membersWithContentId 240/876 · A와 **동시 OK** |
+| **브랜치** | `cursor/palgyeong-cid` · tip `5276a853` |
 | **PR** | [#185](https://github.com/catgeot/Days/pull/185) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§3·§9 B** · method **§5.7** |
-| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — S0–R10 ✅ · R11 ⬜ |
+| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — S0–R13 ✅ · R14 ⬜ |
 | **일지** | [`2026-09-07-project-log.md`](./2026-09-07-project-log.md) |
 | **소유** | JSON `contentId` · fill · audit · **UI 금지** |
 | **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · feature에 `plans/**` 커밋 |
@@ -296,7 +296,7 @@
 @plans/feature-handoff-index.md
 브랜치 cursor/palgyeong-cid · PR #185
 금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P1/P2 월권
-작업: R11 DB-only — 지휘자(Cloud 메인)가 워커A3+B3 Foreground 기동 → 직렬 머지 VERIFY → 여유 있으면 R12 워커 재기동. 중첩 후임 Task 금지.
+작업: R14 DB-only — 지휘자(Cloud 메인)가 워커A3+B3 Foreground 기동 → 직렬 머지 VERIFY → 큐 남으면 워커 재기동(2회 하드캡 아님). 중첩 후임 Task 금지.
 ```
 
 ---

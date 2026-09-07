@@ -1,6 +1,6 @@
 # 팔경·명소 Tour contentId 큐
 
-**상태**: R01–R10 ✅ · 다음 ⬜ **R11** · membersWithContentId **171**/876 · LIVE 쿼터 주의  
+**상태**: R01–R13 ✅ · 다음 ⬜ **R14** · membersWithContentId **240**/876 · LIVE 쿼터 주의  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.7** · 플랜 [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md)  
 **브랜치**: `cursor/palgyeong-cid` (A UI `cursor/palgyeong-use-e744`와 **분리** · 수집 `cursor/palgyeong` 금지)  
 **금지**: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재호출 · P1/P2를 P0 전에
@@ -38,7 +38,12 @@ S0 PASS 후에만 아래 F. 라운드 표는 `listKoreaLocalScenicLists()` verif
 | **R08** | `miryang-palgyeong` · `uiryeong-gugyeong` · `haman-gugyeong` | `changnyeong-gugyeong` · `yeosu-other` · `gwangyang-gugyeong` | DB-only | ✅ 2026-09-05 12/54 · `06d9b915` |
 | **R09** | `gokseong-gugyeong` · `gurye-other` · `damyang-other` | `hwasun-other` · `hampyeong-palgyeong` · `yeonggwang-gugyeong` | DB-only | ✅ 2026-09-05 26/57 · `d1e36e5b` |
 | **R10** | `mokpo-gugyeong` · `muan-gugyeong` · `jindo-other` | `haenam-palgyeong` · `wando-palgyeong` · `gangjin-other` | DB-only | ✅ 2026-09-05 21/56 · `face87c6` |
-| **R11** | `jangheung-gugyeong` · `boseong-gugyeong` · `goheung-other` | `wanju-gugyeong` · `gunsan-palgyeong` · `buan-palgyeong` | DB-only | ⬜ |
+| **R11** | `jangheung-gugyeong` · `boseong-gugyeong` · `goheung-other` | `wanju-gugyeong` · `gunsan-palgyeong` · `buan-palgyeong` | DB-only | ✅ 2026-09-07 17/53 · `9862b617` |
+| **R12** | `jeongeup-gugyeong` · `muju-other` · `imsil-gugyeong` | `cheonan-palgyeong` · `seosan-gugyeong` · `taean-palgyeong` | DB-only | ✅ 2026-09-07 24/76 · `9d9a7276` |
+| **R13** | `seocheon-gugyeong` · `hongseong-other` · `yesan-sipgyeong` | `gongju-sipgyeong` · `buyeo-sipgyeong` · `nonsan-other` | DB-only | ✅ 2026-09-07 28/62 · `5276a853` |
+| **R14** | `gyeryong-gugyeong` · `geumsan-sipgyeong` · `uijeongbu-palgyeong` | `yeoju-palgyeong` · `icheon-gugyeong` · `gwangju-gi-palgyeong` | DB-only | ⬜ |
+| **R15** | `ansan-gugyeong` · `hwaseong-palgyeong` · `yongin-palgyeong` | `anyang-gugyeong` · `anseong-palgyeong` · `incheon-gugyeong` | DB-only | ⬜ |
+| **R16** | `ganghwa-palgyeong` · `daegu-sipgyeong` · `daejeon-palgyeong` | `ulsan-sipgyeong` | DB-only | ⬜ P0 잔여 4 |
 
 ---
 
