@@ -3766,14 +3766,16 @@
         "name_en": "Mallipo Beach",
         "kind": "beach",
         "lat": 36.7858023228,
-        "lng": 126.1422683553
+        "lng": 126.1422683553,
+        "contentId": "125842"
       },
       {
         "name": "몽산포해수욕장",
         "name_en": "Mongsanpo Beach",
         "kind": "beach",
         "lat": 36.6701403637,
-        "lng": 126.2875471184
+        "lng": 126.2875471184,
+        "contentId": "125845"
       },
       {
         "name": "안면도수목원",
@@ -7793,14 +7795,16 @@
         "name_en": "Imsil Cheese Theme Park",
         "kind": "landmark",
         "lat": 35.6331736386,
-        "lng": 127.30126679
+        "lng": 127.30126679,
+        "contentId": "2718832"
       },
       {
         "name": "옥정호",
         "name_en": "Okjeong Lake",
         "kind": "viewpoint",
         "lat": 35.596187,
-        "lng": 127.1119581
+        "lng": 127.1119581,
+        "contentId": "126551"
       },
       {
         "name": "사선대",
@@ -7821,7 +7825,8 @@
         "name_en": "Imsil Cheese Village",
         "kind": "neighborhood",
         "lat": 35.636818565,
-        "lng": 127.2948688768
+        "lng": 127.2948688768,
+        "contentId": "2649950"
       }
     ]
   },
@@ -8276,7 +8281,8 @@
         "name_en": "Naejangsan National Park",
         "kind": "park",
         "lat": 35.4692113,
-        "lng": 126.8420935
+        "lng": 126.8420935,
+        "contentId": "2414865"
       },
       {
         "name": "내장사",
@@ -8290,7 +8296,8 @@
         "name_en": "Jeongeupsa Park",
         "kind": "park",
         "lat": 35.5507726439,
-        "lng": 126.8615885046
+        "lng": 126.8615885046,
+        "contentId": "126318"
       },
       {
         "name": "무성서원",
@@ -10122,7 +10129,8 @@
         "name_en": "Cheonan Samgeori Park",
         "kind": "park",
         "lat": 36.7840481316,
-        "lng": 127.1681950985
+        "lng": 127.1681950985,
+        "contentId": "126922"
       },
       {
         "name": "천안중앙시장",
@@ -11007,7 +11015,8 @@
         "name_en": "Seosan Haemieupseong",
         "kind": "landmark",
         "lat": 36.7132,
-        "lng": 126.5493
+        "lng": 126.5493,
+        "contentId": "917225"
       },
       {
         "name": "서산 부석사",
@@ -11021,21 +11030,24 @@
         "name_en": "Ganwolam",
         "kind": "temple",
         "lat": 36.60378976091961,
-        "lng": 126.41140862077368
+        "lng": 126.41140862077368,
+        "contentId": "125880"
       },
       {
         "name": "개심사",
         "name_en": "Gaesimsa",
         "kind": "temple",
         "lat": 36.7468958,
-        "lng": 126.5902297
+        "lng": 126.5902297,
+        "contentId": "125908"
       },
       {
         "name": "팔봉산",
         "name_en": "Palbongsan",
         "kind": "viewpoint",
         "lat": 36.8084,
-        "lng": 126.3668
+        "lng": 126.3668,
+        "contentId": "126586"
       },
       {
         "name": "서산동부시장",

@@ -5447,19 +5447,22 @@
         "attractionName": "내장산국립공원",
         "name_en": "Naejangsan National Park",
         "kind": "viewpoint",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "2414865"
       },
       {
         "attractionName": "정읍 구절초 지방정원",
         "name_en": "Jeongeup Iris Garden",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "1626156"
       },
       {
         "attractionName": "정읍사공원",
         "name_en": "Jeongeup Lake Park and Moonlight Forest",
         "kind": "park",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "126318"
       },
       {
         "attractionName": "동학농민혁명기념공원",
@@ -5580,7 +5583,8 @@
         "attractionName": "파회",
         "name_en": "Pahoe Rapids",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2606138"
       },
       {
         "attractionName": "수심대",
@@ -5610,7 +5614,8 @@
         "attractionName": "인월담",
         "name_en": "Inwoldam Pond",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2606128"
       },
       {
         "attractionName": "사자담",
@@ -5706,7 +5711,8 @@
         "attractionName": "백련사",
         "name_en": "Baengnyeonsa Temple",
         "kind": "temple",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126360"
       },
       {
         "attractionName": "향적봉",
@@ -5743,13 +5749,15 @@
         "attractionName": "옥정호",
         "name_en": "Okjeongho Suspension Bridge and Bung-eoseom",
         "kind": "viewpoint",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "126551"
       },
       {
         "attractionName": "임실치즈마을",
         "name_en": "Imsil Cheese Village",
         "kind": "neighborhood",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "2649950"
       },
       {
         "attractionName": "필봉농악전수관",
@@ -5761,19 +5769,22 @@
         "attractionName": "임실치즈테마파크",
         "name_en": "Imsil Cheese Theme Park",
         "kind": "park",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "2718832"
       },
       {
         "attractionName": "왜가리서식지",
         "name_en": "Heron Habitat",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "1588449"
       },
       {
         "attractionName": "오수의견",
         "name_en": "Osu Uigyeon Scenic Rock",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2712746"
       },
       {
         "attractionName": "사선대",
@@ -5822,7 +5833,8 @@
         "attractionName": "천안삼거리공원",
         "name_en": "Cheonan Samgeori Park",
         "kind": "park",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "126922"
       },
       {
         "attractionName": "태조산 왕건길과 청동대좌불",
@@ -5840,13 +5852,15 @@
         "attractionName": "성성호수공원",
         "name_en": "Seongseong Lake Park",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2824534"
       },
       {
         "attractionName": "광덕산",
         "name_en": "Gwangdeoksan Mountain",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "127200"
       },
       {
         "attractionName": "봉선홍경사갈기비",
@@ -5877,7 +5891,8 @@
         "attractionName": "서산 해미읍성",
         "name_en": "Haemi Fortress",
         "kind": "landmark",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "917225"
       },
       {
         "attractionName": "용현리 마애여래삼존상",
@@ -5889,31 +5904,36 @@
         "attractionName": "간월암",
         "name_en": "Ganwolam Hermitage",
         "kind": "temple",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125880"
       },
       {
         "attractionName": "개심사",
         "name_en": "Gaesimsa Temple",
         "kind": "temple",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125908"
       },
       {
         "attractionName": "팔봉산",
         "name_en": "Palbongsan Mountain",
         "kind": "viewpoint",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "126586"
       },
       {
         "attractionName": "가야산",
         "name_en": "Gayasan Mountain",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "125822"
       },
       {
         "attractionName": "황금산",
         "name_en": "Hwanggeumsan Mountain",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2736726"
       },
       {
         "attractionName": "서산 한우목장",
@@ -5925,7 +5945,8 @@
         "attractionName": "삼길포항",
         "name_en": "Samgilpo Port",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "129184"
       }
     ]
   },
@@ -5968,7 +5989,8 @@
         "attractionName": "만리포해수욕장",
         "name_en": "Mallipo Beach",
         "kind": "beach",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125842"
       },
       {
         "attractionName": "신두사구",
@@ -5986,13 +6008,15 @@
         "attractionName": "몽산포해수욕장",
         "name_en": "Mongsan Beach",
         "kind": "beach",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125845"
       },
       {
         "attractionName": "할미할아비바위",
         "name_en": "Grandmother and Grandfather Rocks",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2753672"
       }
     ]
   },
