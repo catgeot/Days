@@ -6553,7 +6553,8 @@
         "attractionName": "계룡산국립공원",
         "name_en": "Gyeryongsan Cheonhwangbong Peak",
         "kind": "viewpoint",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125817"
       },
       {
         "attractionName": "동학사",
@@ -6565,13 +6566,15 @@
         "attractionName": "갑사",
         "name_en": "Gapsa Temple",
         "kind": "temple",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125891"
       },
       {
         "attractionName": "신원사",
         "name_en": "Sinwonsa Temple",
         "kind": "temple",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125889"
       },
       {
         "attractionName": "향적산 국사봉",
@@ -6626,25 +6629,29 @@
         "attractionName": "금산 적벽강",
         "name_en": "Jeokbyeokgang Silk Water Trail",
         "kind": "viewpoint",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "126572"
       },
       {
         "attractionName": "대둔산 낙조대",
         "name_en": "Daedunsan Sunset Observatory",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "128001"
       },
       {
         "attractionName": "금산 진악산",
         "name_en": "Jinaksan Wild Ginseng Site",
         "kind": "viewpoint",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "126811"
       },
       {
         "attractionName": "서대산 산꽃세상",
         "name_en": "Seodaesan Flower World",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "127518"
       },
       {
         "attractionName": "산림문화 힐링명소",
@@ -6668,7 +6675,8 @@
         "attractionName": "금산 칠백의총",
         "name_en": "Chilbaeguichong Geumseongsan",
         "kind": "landmark",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125957"
       },
       {
         "attractionName": "월영산 원골",
@@ -6747,7 +6755,8 @@
         "attractionName": "회룡사",
         "name_en": "Hoeryongsa Temple",
         "kind": "temple",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "488093"
       }
     ]
   },
@@ -6876,13 +6885,15 @@
         "attractionName": "설봉산성",
         "name_en": "Seolbongsanseong Fortress",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "125568"
       },
       {
         "attractionName": "설봉공원",
         "name_en": "Seolbongho Lake",
         "kind": "viewpoint",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "1624755"
       },
       {
         "attractionName": "애련정",
@@ -6914,13 +6925,15 @@
         "attractionName": "경기광주 남한산성",
         "name_en": "Namhansanseong Fortress",
         "kind": "landmark",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125449"
       },
       {
         "attractionName": "경안천습지생태공원",
         "name_en": "Gyeongancheon Wetland Ecological Park",
         "kind": "park",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "630741"
       },
       {
         "attractionName": "곤지암도자공원",
@@ -6938,7 +6951,8 @@
         "attractionName": "중대물빛공원",
         "name_en": "Jungdae Water Light Park",
         "kind": "park",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "2615479"
       },
       {
         "attractionName": "무갑산",
@@ -6950,7 +6964,8 @@
         "attractionName": "태화산",
         "name_en": "Taehwasan Mountain",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "125456"
       },
       {
         "attractionName": "송정사",

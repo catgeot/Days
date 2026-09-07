@@ -11796,7 +11796,8 @@
         "name_en": "Seolbong Park",
         "kind": "park",
         "lat": 37.27966828086488,
-        "lng": 127.4278678614609
+        "lng": 127.4278678614609,
+        "contentId": "1624755"
       },
       {
         "name": "이천시립박물관",
@@ -15630,7 +15631,8 @@
         "name_en": "Hoeryongsa Temple",
         "kind": "temple",
         "lat": 37.720262256,
-        "lng": 127.0279732457
+        "lng": 127.0279732457,
+        "contentId": "488093"
       },
       {
         "name": "직동근린공원",
@@ -18022,7 +18024,8 @@
         "name_en": "Gyeryongsan National Park",
         "kind": "park",
         "lat": 36.3568257226531,
-        "lng": 127.232444467616
+        "lng": 127.232444467616,
+        "contentId": "125817"
       },
       {
         "name": "동학사",
@@ -18036,14 +18039,16 @@
         "name_en": "Gapsa",
         "kind": "temple",
         "lat": 36.3650187978,
-        "lng": 127.1875769727
+        "lng": 127.1875769727,
+        "contentId": "125891"
       },
       {
         "name": "신원사",
         "name_en": "Sinwonsa",
         "kind": "temple",
         "lat": 36.3355165551,
-        "lng": 127.1839253154
+        "lng": 127.1839253154,
+        "contentId": "125889"
       },
       {
         "name": "계룡산 자연사박물관",
@@ -19267,7 +19272,8 @@
         "name_en": "Chilbaekuichong Geumsan",
         "kind": "landmark",
         "lat": 36.1305992,
-        "lng": 127.4927595
+        "lng": 127.4927595,
+        "contentId": "125957"
       },
       {
         "name": "금산 보석사",
@@ -19281,14 +19287,16 @@
         "name_en": "Geumsan Jeokbyeokgang",
         "kind": "viewpoint",
         "lat": 36.0785,
-        "lng": 127.4255
+        "lng": 127.4255,
+        "contentId": "126572"
       },
       {
         "name": "금산 진악산",
         "name_en": "Jinaksan Geumsan",
         "kind": "viewpoint",
         "lat": 36.0777085,
-        "lng": 127.4585692
+        "lng": 127.4585692,
+        "contentId": "126811"
       }
     ]
   },
@@ -20836,21 +20844,24 @@
         "name_en": "Namhansanseong Gwangju Gi",
         "kind": "landmark",
         "lat": 37.4791368,
-        "lng": 127.1801588
+        "lng": 127.1801588,
+        "contentId": "125449"
       },
       {
         "name": "경안천습지생태공원",
         "name_en": "Gyeongan Wetland Ecological Park",
         "kind": "park",
         "lat": 37.4566834,
-        "lng": 127.3028094
+        "lng": 127.3028094,
+        "contentId": "630741"
       },
       {
         "name": "중대물빛공원",
         "name_en": "Jungdae Mulbit Park",
         "kind": "park",
         "lat": 37.4005355,
-        "lng": 127.2204536
+        "lng": 127.2204536,
+        "contentId": "2615479"
       },
       {
         "name": "곤지암도자공원",
