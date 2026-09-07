@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-08-10T22:33:33.027Z",
+    "generatedAt": "2026-09-07T10:04:17.258Z",
     "count": 871,
     "imageCount": 778,
     "curation": "GATEO",
@@ -11614,7 +11614,7 @@
       "placeSlug": "legoland-korea",
       "lat": 37.884728,
       "lng": 127.698461,
-      "contentId": null,
+      "contentId": "2815362",
       "overview": null,
       "imageUrl": null
     },
@@ -11646,7 +11646,7 @@
       "placeSlug": "jade-garden",
       "lat": 37.8069,
       "lng": 127.6348,
-      "contentId": null,
+      "contentId": "1607565",
       "overview": null,
       "imageUrl": null
     },
@@ -11662,7 +11662,7 @@
       "placeSlug": "cheongpyeongsa",
       "lat": 37.9863,
       "lng": 127.8089,
-      "contentId": null,
+      "contentId": "125762",
       "overview": null,
       "imageUrl": null
     },
@@ -11726,7 +11726,7 @@
       "placeSlug": "daepo-port",
       "lat": 38.1748,
       "lng": 128.6065,
-      "contentId": null,
+      "contentId": "129596",
       "overview": null,
       "imageUrl": null
     },
@@ -11742,7 +11742,7 @@
       "placeSlug": "sokcho-lighthouse-observatory",
       "lat": 38.2148,
       "lng": 128.5985,
-      "contentId": null,
+      "contentId": "128803",
       "overview": null,
       "imageUrl": null
     },
@@ -11758,7 +11758,7 @@
       "placeSlug": "abai-village",
       "lat": 38.2045,
       "lng": 128.5948,
-      "contentId": null,
+      "contentId": "251738",
       "overview": null,
       "imageUrl": null
     },
@@ -11790,7 +11790,7 @@
       "placeSlug": "cheongcho-lake",
       "lat": 38.2005,
       "lng": 128.5802,
-      "contentId": null,
+      "contentId": "125750",
       "overview": null,
       "imageUrl": null
     },
@@ -11934,7 +11934,7 @@
       "placeSlug": "daeguemgul-cave",
       "lat": 37.327,
       "lng": 129.0485,
-      "contentId": null,
+      "contentId": "129560",
       "overview": null,
       "imageUrl": null
     },
@@ -11966,7 +11966,7 @@
       "placeSlug": "isabu-lion-park",
       "lat": 37.4744522275525,
       "lng": 129.159685344531,
-      "contentId": null,
+      "contentId": "1385338",
       "overview": null,
       "imageUrl": null
     },
@@ -11998,7 +11998,7 @@
       "placeSlug": "hwanseongul-cave",
       "lat": 37.3263562754826,
       "lng": 129.021222661193,
-      "contentId": null,
+      "contentId": "126729",
       "overview": null,
       "imageUrl": null
     },
@@ -12030,7 +12030,7 @@
       "placeSlug": "samcheok-ocean-rail-bike",
       "lat": 37.3825,
       "lng": 129.2345,
-      "contentId": null,
+      "contentId": "1945438",
       "overview": null,
       "imageUrl": null
     },
@@ -12558,7 +12558,7 @@
       "placeSlug": "gayasan",
       "lat": 35.8225637,
       "lng": 128.1229428,
-      "contentId": null,
+      "contentId": "126022",
       "overview": null,
       "imageUrl": null
     },
@@ -12574,7 +12574,7 @@
       "placeSlug": "tripitaka-koreana-theme-park",
       "lat": 35.7678,
       "lng": 128.1348,
-      "contentId": null,
+      "contentId": "1905508",
       "overview": null,
       "imageUrl": null
     },
@@ -12590,7 +12590,7 @@
       "placeSlug": "hambyeongnu",
       "lat": 35.5598,
       "lng": 128.1655,
-      "contentId": null,
+      "contentId": "1622710",
       "overview": null,
       "imageUrl": null
     },
@@ -12606,7 +12606,7 @@
       "placeSlug": "hapcheon-image-theme-park",
       "lat": 35.5488884,
       "lng": 128.0715409,
-      "contentId": null,
+      "contentId": "2469441",
       "overview": null,
       "imageUrl": null
     },
@@ -12622,7 +12622,7 @@
       "placeSlug": "hapcheon-lake",
       "lat": 35.5788967,
       "lng": 128.0191136,
-      "contentId": null,
+      "contentId": "126118",
       "overview": null,
       "imageUrl": null
     },
@@ -12734,7 +12734,7 @@
       "placeSlug": "buyeo-national-museum",
       "lat": 36.2763354234,
       "lng": 126.9189489282,
-      "contentId": null,
+      "contentId": "130062",
       "overview": null,
       "imageUrl": null
     },
@@ -12798,7 +12798,7 @@
       "placeSlug": "jeongnimsa-five-story-pagoda",
       "lat": 36.2796849209123,
       "lng": 126.913246608324,
-      "contentId": null,
+      "contentId": "126650",
       "overview": null,
       "imageUrl": null
     },
@@ -12878,7 +12878,7 @@
       "placeSlug": "korea-tea-museum",
       "lat": 34.7198264152315,
       "lng": 127.081720822431,
-      "contentId": null,
+      "contentId": "2470539",
       "overview": null,
       "imageUrl": null
     },
@@ -12942,7 +12942,7 @@
       "placeSlug": "saemangeum",
       "lat": 35.8531387,
       "lng": 126.7059728,
-      "contentId": null,
+      "contentId": "776934",
       "overview": null,
       "imageUrl": null
     },
@@ -13006,7 +13006,7 @@
       "placeSlug": "baemsagol-valley",
       "lat": 35.35,
       "lng": 127.58,
-      "contentId": null,
+      "contentId": "126269",
       "overview": null,
       "imageUrl": null
     },
@@ -13022,7 +13022,7 @@
       "placeSlug": "chunhyang-theme-park",
       "lat": 35.401865589223256,
       "lng": 127.38681732251506,
-      "contentId": null,
+      "contentId": "2519182",
       "overview": null,
       "imageUrl": null
     },
@@ -13038,7 +13038,7 @@
       "placeSlug": "honbul-literature-museum",
       "lat": 35.481254193626,
       "lng": 127.319878916445,
-      "contentId": null,
+      "contentId": "128126",
       "overview": null,
       "imageUrl": null
     },
@@ -13054,7 +13054,7 @@
       "placeSlug": "ssanggyesa",
       "lat": 35.2325728,
       "lng": 127.6500886,
-      "contentId": null,
+      "contentId": "128146",
       "overview": null,
       "imageUrl": null
     },
@@ -13086,7 +13086,7 @@
       "placeSlug": "hadong-pine-forest",
       "lat": 35.0627,
       "lng": 127.7445,
-      "contentId": null,
+      "contentId": "126233",
       "overview": null,
       "imageUrl": null
     },
@@ -13102,7 +13102,7 @@
       "placeSlug": "hadong-wild-tea-museum",
       "lat": 35.2272566851194,
       "lng": 127.64287725668,
-      "contentId": null,
+      "contentId": "231958",
       "overview": null,
       "imageUrl": null
     },
@@ -13182,7 +13182,7 @@
       "placeSlug": "cheongju-early-printing-museum",
       "lat": 36.64294242014988,
       "lng": 127.47221987626683,
-      "contentId": null,
+      "contentId": "2804708",
       "overview": null,
       "imageUrl": null
     },
@@ -13326,7 +13326,7 @@
       "placeSlug": "museongseowon",
       "lat": 35.6016367934,
       "lng": 126.9839382344,
-      "contentId": null,
+      "contentId": "126401",
       "overview": null,
       "imageUrl": null
     },
@@ -13422,7 +13422,7 @@
       "placeSlug": "yuldong-park-seongnam",
       "lat": 37.3765557063,
       "lng": 127.152412248,
-      "contentId": null,
+      "contentId": "128040",
       "overview": null,
       "imageUrl": null
     },
@@ -13630,7 +13630,7 @@
       "placeSlug": "seomjingang-river-gurye",
       "lat": 35.2,
       "lng": 127.46,
-      "contentId": null,
+      "contentId": "2648994",
       "overview": null,
       "imageUrl": null
     },
@@ -13662,7 +13662,7 @@
       "placeSlug": "saseongam",
       "lat": 35.1801260865484,
       "lng": 127.480604895138,
-      "contentId": null,
+      "contentId": "317559",
       "overview": null,
       "imageUrl": null
     },
@@ -13678,7 +13678,7 @@
       "placeSlug": "cheoneunsa",
       "lat": 35.2741653,
       "lng": 127.4763514,
-      "contentId": null,
+      "contentId": "126366",
       "overview": null,
       "imageUrl": null
     },
@@ -13710,7 +13710,7 @@
       "placeSlug": "woraksan",
       "lat": 36.8860792,
       "lng": 128.1058367,
-      "contentId": null,
+      "contentId": "125814",
       "overview": null,
       "imageUrl": null
     },
@@ -13726,7 +13726,7 @@
       "placeSlug": "jecheon-oriental-medicine-expo-park",
       "lat": 37.1441766591,
       "lng": 128.1596458045,
-      "contentId": null,
+      "contentId": "1842147",
       "overview": null,
       "imageUrl": null
     },
@@ -13822,7 +13822,7 @@
       "placeSlug": "bogildo-yun-seon-do-garden",
       "lat": 34.162956,
       "lng": 126.556708,
-      "contentId": null,
+      "contentId": "126422",
       "overview": null,
       "imageUrl": null
     },
@@ -13838,7 +13838,7 @@
       "placeSlug": "sinji-myeongsasipri-beach",
       "lat": 34.327145,
       "lng": 126.81224,
-      "contentId": null,
+      "contentId": "147317",
       "overview": null,
       "imageUrl": null
     },
@@ -13854,7 +13854,7 @@
       "placeSlug": "jeongdori-gugyedung",
       "lat": 34.298129,
       "lng": 126.70689,
-      "contentId": null,
+      "contentId": "147777",
       "overview": null,
       "imageUrl": null
     },
@@ -13870,7 +13870,7 @@
       "placeSlug": "cheongsando",
       "lat": 34.1834269,
       "lng": 126.8811435,
-      "contentId": null,
+      "contentId": "126970",
       "overview": null,
       "imageUrl": null
     },
