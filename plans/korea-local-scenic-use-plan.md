@@ -77,7 +77,9 @@ method **§5.7** · 큐 [`korea-local-scenic-contentid-queue.md`](./korea-local-
 | P1 | hub attractions 잔여 |
 | P2 | 테마 선정 `contentId: null` **142**/871 (78 hub) — P0·P1 소진 후 | **P2-R01–R13** DB-only · P2-L LIVE |
 
-DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만 · 워커 **병렬 LIVE 금지** · **2026-09-07** Tour API 홈 **운영 계정 승인** · 쿼터 **~10만/일** — P2-L 세션당 20건 상한 **해제**(오탐·COMMERCIAL_RE 가드 유지) · 429 → `blocked: quota` · 같은 날 재시도 금지. HIT → 멤버+hub attraction `contentId`. scenic 승격 금지.
+DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만 · 워커 **병렬 LIVE 금지** · **2026-09-07** Tour API 홈 **운영 계정 승인** · 쿼터 **~10만/일** · 429 → `blocked: quota` · 같은 날 재시도 금지. HIT → 멤버+hub attraction `contentId`. scenic 승격 금지.
+
+**P0 잔여 (2026-09-07)**: 본명-only `--keyword-only` 동일 100건 재시도(L02·L03·L05)는 **로또·폐기**. 순서 **C01 scenic 복사 → S01 검색어·가드 → L07 확장 keyword → A01 시호 alias**. AI·웹은 검색어 후보만 · contentId 숫자는 API/DB 검증만. 상세 큐 「P0 잔여 전략」.
 
 **S0**(메인 솔로): fill 스크립트(`--db-only`/`--keyword-only`/`--limit`/`--resume`) + 문경 1건 스모크. 그다음 F = 오케 §3.0.
 
@@ -88,9 +90,9 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | P2-L2 ✅ 0/104 · P0-L ✅ **109/584** · P0-L02·L03 ✅ 0/100 · members **400/876** · **다음 P0-L04** · tip `4c141c27` |
+| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | keyword 로또 **폐기** · **다음 P0-C01** scenic 복사 · members **400/876** · tip `4c141c27` |
 | **index 행** | 팔경 활용 | 팔경 contentId |
-| **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · 워커 병렬 LIVE · 429 재호출 |
+| **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · 워커 병렬 LIVE · 본명-only keyword 재시도 · AI가 ID 기입 |
 
 ### 채팅명 복붙표 (`#N` 리셋 금지)
 
@@ -98,7 +100,8 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 |----|--------------|------|------|
 | 1 | `팔경 활용 #1, 검색·리스트` | A | **완료** · tip `e8da2987` |
 | 2 | `팔경 활용 #2, Preview QA` | A 사람 | **다음** |
-| — | `팔경contentId #P0-L04, 멤버 keyword` | B | **P2-L2** ✅ · **P0-L** ✅ · **P0-L02·L03** ✅ · **P0-L04** ⬜ |
+| — | `팔경contentId #P0-C01, scenic 복사` | B | **다음** · 이어서 S01 · L07 · A01 |
+| — | `팔경contentId #P0-L04/#P0-L06` | B | **폐기** (본명 keyword 로또) |
 | — | `지자체 팔경 #…` | 수집 종료 | **열지 않음** |
 
 ### §1.2 A #1
@@ -125,16 +128,51 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 작업: 홈 검색 문경 · /korea/theme/scenic 문경 hub · 축제 상세 인근 목록 소제목
 ```
 
-### §1.2 B 다음 (#P0-L04)
+### §1.2 B 다음 (#P0-C01)
 
 ```
-팔경contentId #P0-L04, 멤버 keyword
+팔경contentId #P0-C01, scenic 복사
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
 @plans/orchestrator-method.md
 브랜치 cursor/palgyeong-cid · PR #185
-금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재시도 · feature에 plans/** 커밋
-작업: node scripts/fill-korea-local-scenic-content-ids.mjs --keyword-only [--limit=100] → audit/smoke lists
+금지: UI · scenic 승격 · Tour LIVE · 본명-only keyword 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: 같은 hub+attractionName scenic contentId → 팔경 멤버+동명 hub (약 62) → audit/smoke lists
+```
+
+### §1.2 B #P0-S01
+
+```
+팔경contentId #P0-S01, 검색어·가드
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 본명-only keyword 재시도 · feature에 plans/** 커밋
+작업: fill keyword=memberQueries · scoreHit 괄호 가드(지자체만) · hub lat/lng 폴백 → audit/smoke lists
+```
+
+### §1.2 B #P0-L07
+
+```
+팔경contentId #P0-L07, 확장 keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재시도 · 본명-only 재시도 · feature에 plans/** 커밋
+작업: P0-S01 이후 fill --keyword-only --limit=100 (memberQueries) → audit/smoke lists
+```
+
+### §1.2 B #P0-A01
+
+```
+팔경contentId #P0-A01, 시호 alias
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: L07 MISS 시호·별칭만 웹/공식명 후보 → KEYWORD_ALIASES → LIVE 검증. Tour 미등재는 null 유지
 ```
 
 ### §1.2 B 429 다음날

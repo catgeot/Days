@@ -2,6 +2,32 @@
 
 직전: [`2026-09-06-project-log.md`](./2026-09-06-project-log.md)
 
+## 팔경 contentId — 다음 세션 핸드오프 (#P0-C01)
+
+- **채팅명** `팔경contentId #P0-C01, scenic 복사`
+- **브랜치** `cursor/palgyeong-cid` · tip `4c141c27` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **스냅샷** P0 멤버 **400/876** (null **476**) · scenic 동일명 ID **62** 미복사 · P2 null **104**
+- **전략** 본명-only keyword L02·L03·L05 = 로또 **폐기** · 순서 C01→S01→L07→A01 (큐 「P0 잔여 전략」)
+- **1순위** scenic → 팔경 멤버(+동명 hub) 복사 · **Tour LIVE 금지**
+- **읽기 3** index 팔경 contentId 행 · 큐 「P0 잔여 전략」· method §5.7
+- **금지 3** UI · 본명-only keyword 재시도 · AI가 contentId 기입
+
+```
+팔경contentId #P0-C01, scenic 복사
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · 본명-only keyword 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: 같은 hub+attractionName scenic contentId → 팔경 멤버+동명 hub (약 62) → audit/smoke lists
+```
+
+## 팔경 contentId — 잔여 전략 문서화 (keyword 로또 폐기)
+
+- P0-L02·L03·L05 동일 100건 본명 `searchKeyword` **0/100 반복** → P0-L06 **폐기**
+- 채움 경로: C01 복사 62 · S01 memberQueries+괄호 가드 · L07 LIVE · A01 시호 alias
+- AI·웹 = 검색어 후보만. ID는 DB/LIVE 검증만
+
 ## 팔경 contentId — 다음 세션 핸드오프 (#P0-L06)
 
 - **채팅명** `팔경contentId #P0-L06, 멤버 keyword`

@@ -1,6 +1,6 @@
 # 팔경·명소 Tour contentId 큐
 
-**상태**: R01–R16 ✅ · **P0·P1 F 소진** · membersWithContentId **400**/876 · hub+P1 **68** · P2 **null 104**/871(78 hub) · **P2-L2** ✅ 0/104 · **P0-L** ✅ 109/584 · **P0-L02** ✅ 0/100 · **P0-L03** ✅ 0/100 · **P0-L05** ✅ 0/100 · Tour API **운영 승인 ~10만/일** · 다음 **P0-L06+ keyword**  
+**상태**: R01–R16 ✅ · **P0·P1 F 소진** · membersWithContentId **400**/876 · hub+P1 **68** · P2 **null 104**/871(78 hub) · **P2-L2** ✅ 0/104 · **P0-L** ✅ 109/584 · **P0-L02·L03·L05** ✅ 0/100(동일 본명 keyword **폐기**) · **P0-L06 폐기** · 다음 **P0-C01 scenic 복사** · Tour API **운영 승인 ~10만/일**  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.7** · 플랜 [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md)  
 **브랜치**: `cursor/palgyeong-cid` (A UI `cursor/palgyeong-use-e744`와 **분리** · 수집 `cursor/palgyeong` 금지)  
 **금지**: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재호출 · P1/P2를 P0 전에
@@ -112,21 +112,77 @@ DB-only 종료 후 overrides에 `contentId: null`이 남은 hub만. 라운드는
 | **P0-L02** | `--keyword-only --limit=100` (null **476** · resume 전부 소진 → **--resume 없이** 재시도) | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-07 **0/100** · null **476** · 429 없음 |
 | **P0-L03** | `--keyword-only --limit=100` (null **476** · P0-L02 동일 100건 재시도) | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-07 **0/100** · null **476** · 429 없음 |
 | **P0-L05** | `--keyword-only --limit=100` (`--resume` dry-run targets=0 → **--resume 없이**) | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-07 **0/100** · null **476** · 429 없음 |
-| **P0-L06+** | 동일 `--keyword-only --limit=100` (잔여 null **476**) | 쿼터 ~10만/일 | LIVE | ⬜ **다음 세션** |
+| **P0-L06** | 동일 본명 `--keyword-only --limit=100` | — | — | **폐기** 2026-09-07 — L02·L03·L05와 같은 호출 · 로또 금지 |
 
-### 다음 세션 (복붙)
+### P0 잔여 전략 (2026-09-07 진단 · keyword 로또 대체)
 
-**채팅명** `팔경contentId #P0-L06, 멤버 keyword`
+P0-L02·L03·L05는 **같은 앞 100멤버**에 JSON `attractionName` **한 단어만** `searchKeyword`로 재호출했다. Tour 카탈로그가 안 바뀌면 **결정적으로 0/100**이다. `--resume`은 476 null이 이미 processed라 targets=0. **같은 본명 keyword 라운드 추가 금지.**
+
+진단 스냅샷 (null **476**):
+
+| 갈래 | 대략 | 같은 본명 재시도 | 다음 R |
+|------|------|------------------|--------|
+| scenic JSON에 이미 같은 hub+이름 `contentId` | **62** | 무효 | **P0-C01** 복사 (API 0) |
+| 시군 접두 (`삼척 환선굴` → Tour는 `환선굴`) | `memberQueries` 2개+ **175** | 무효 | **P0-S01** 후 **P0-L07** |
+| Tour 제목 괄호 수식어 → `scoreHit` 0 | 화암동굴·용늪 등 | 무효 | **P0-S01** 가드 |
+| 시호 4글자 (`평사낙안` 등) | **85** | 무효 | **P0-A01** 웹/alias → API 검증 |
+| Tour 미등재 (`양구 수목원` 등) | 소수 | 무효 | **null 유지** |
+
+**금지**: AI 지식으로 contentId 숫자 기입 · 웹만으로 ID 확정. AI·웹은 **검색어 후보만**. 확정은 DB 또는 LIVE `searchKeyword`/`detail`.
+
+로컬 DB(`tourapi_attraction` ~7463)는 LIVE보다 구멍 큼(환선굴·박수근 행 없음). `--db-only`만으로 이 476을 풀 수 없음.
+
+| R | 방식 | 한도 | 모드 | 상태 |
+|---|------|------|------|------|
+| **P0-C01** | 같은 `hubId`+`attractionName`(정규화) · scenic `contentId` → 팔경 멤버 + 동명 hub attraction. 스크립트 신규 또는 일회 복사. **LIVE 금지** | 62 | 오프라인 | ⬜ **다음 세션** |
+| **P0-S01** | `fill-korea-local-scenic-content-ids.mjs` keyword를 `memberQueries` 루프로 · `scoreHit` 괄호는 지자체 동명이인만 거름 · 멤버에 hub attraction lat/lng 폴백 | — | 코드 | ⬜ C01 다음 |
+| **P0-L07** | S01 후 `--keyword-only` 잔여 null · **본명-only 재시도 금지** · `--resume`은 새 쿼리 집합일 때만 | 쿼터 ~10만/일 · 세션 `--limit` | LIVE | ⬜ S01 다음 |
+| **P0-A01** | 시호·별칭 MISS만 공식 출처/웹으로 후보 → `KEYWORD_ALIASES` → LIVE 1~2회 검증 | 소수 건 | 혼합 | ⬜ L07 잔여 |
+
+### 다음 세션 (복붙) — 1순위 P0-C01
+
+**채팅명** `팔경contentId #P0-C01, scenic 복사`
 
 | | |
 |--|--|
 | **브랜치** | `cursor/palgyeong-cid` · tip `4c141c27` · PR [#185](https://github.com/catgeot/Days/pull/185) |
-| **스냅샷** | P0 멤버 **400/876** (null **476**) · P2 테마 null **104**/871 · P0-L02·L03·L05 연속 **0/100** · resume **584**건(476 null 전부 포함) · 429 없음 |
-| **1순위** | `node scripts/fill-korea-local-scenic-content-ids.mjs --keyword-only --limit=100` (**--resume 금지** — targets=0) → audit/smoke lists |
-| **읽기** | index 팔경 contentId 행 · 본 큐 이 절 · method **§5.7** |
-| **금지** | UI · scenic 승격 · 워커 병렬 LIVE · 429 같은 날 재시도 · feature에 `plans/**` |
+| **스냅샷** | P0 멤버 **400/876** (null **476**) · scenic 동일명 ID **62** 미복사 · P2 null **104** · keyword 로또 **폐기** |
+| **1순위** | scenic → 팔경 멤버(+동명 hub) `contentId` 복사 · audit/smoke lists · **Tour LIVE 금지** |
+| **읽기** | index 팔경 contentId 행 · 본 큐 「P0 잔여 전략」· method **§5.7** |
+| **금지** | UI · scenic 승격 · 본명-only keyword 재시도 · 워커 병렬 LIVE · 429 같은 날 재시도 · AI가 ID 숫자 기입 · feature에 `plans/**` |
 
-**Auth**: `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` (Edge `tourapi-proxy`)
+**이어질 제시어** (C01 끝난 뒤 큐·index만 갱신하고 사람이 다음 채팅을 연다):
+
+```
+팔경contentId #P0-S01, 검색어·가드
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 본명-only keyword 재시도 · feature에 plans/** 커밋
+작업: fill-korea-local-scenic-content-ids keyword=memberQueries · scoreHit 괄호 가드(지자체만) · hub lat/lng 폴백 → audit/smoke lists
+```
+
+```
+팔경contentId #P0-L07, 확장 keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재시도 · 본명-only 재시도 · feature에 plans/** 커밋
+작업: P0-S01 이후 fill --keyword-only --limit=100 (memberQueries) → audit/smoke lists
+```
+
+```
+팔경contentId #P0-A01, 시호 alias
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: L07 MISS 시호·별칭만 웹/공식명 후보 → KEYWORD_ALIASES → LIVE 검증. Tour 미등재는 null 유지
+```
+
+**Auth**: `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` (Edge `tourapi-proxy`) — **C01에는 불필요**. S01·L07·A01 LIVE만.
 
 - 429 → 해당 R `blocked: quota` · **그날 정지** · 다음날 [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) §1.2 B 429 블록.  
 - 상업·리조트·아울렛 등은 스크립트 `COMMERCIAL_RE`로 MISS 가능 — 무리한 LIVE 반복 금지.
