@@ -99,6 +99,7 @@
     "smoke:gallery-photo-manage": "node scripts/smoke-gallery-photo-manage.mjs",
     "smoke:gallery-related-scroll": "node scripts/smoke-gallery-related-scroll.mjs",
     "smoke:summary-close-guard": "node scripts/smoke-summary-close-guard.mjs",
+    "smoke:globe-page-zoom-lock": "node scripts/smoke-globe-page-zoom-lock.mjs",
     "smoke:release-notes-footer": "node scripts/smoke-release-notes-footer.mjs",
     "smoke:klook-affiliate": "node scripts/smoke-klook-affiliate.mjs",
     "smoke:rss-canonical": "node scripts/smoke-rss-canonical.mjs",

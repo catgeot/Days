@@ -66,6 +66,8 @@ import {
   topOceanToFlyRegion,
 } from './lib/seaBasinRail.js';
 import { syncHomeViewportAfterInput, syncHomeChromeAfterNavigation } from '../../shared/lib/mobileViewport';
+import { shouldLockHomeGlobePageZoom } from './lib/homeGlobePageZoomLock';
+import { useHomeGlobePageZoomLock } from './hooks/useHomeGlobePageZoomLock';
 import {
   clearPlaceReturnTo,
   peekPlaceReturnTo,
@@ -322,6 +324,7 @@ function Home() {
   const tourReadyAnchorRef = useRef(null);
   const prevGlobeModeRef = useRef(globeMode);
   const isPlaceRoute = routeLocation.pathname.startsWith('/place/');
+  useHomeGlobePageZoomLock(shouldLockHomeGlobePageZoom(routeLocation.pathname));
   const shouldPauseGlobe =
     !flightCinemaActive
     && (isCardExpanded || isPlaceRoute || routeLocation.pathname.startsWith('/explore'));
