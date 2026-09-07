@@ -134,8 +134,8 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`는 잔여만 · 워커 *
 @plans/korea-local-scenic-use-plan.md
 @plans/feature-handoff-index.md
 브랜치 cursor/palgyeong-cid · PR #185
-금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P2 월권
-작업: P1-R02 DB-only — 지휘자=Cloud 메인 · 워커A(yanggu·inje·wonju)+B(donghae·sokcho·yangyang) Foreground → 직렬 머지 VERIFY. 중첩 후임 Task 금지.
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P2 월권 · 워커 커밋 · Cloud 중첩 후임 · 남은 R 전부 기동
+작업: P1-R02 DB-only — 메인 장수. 워커A(yanggu·inje·wonju)+B(donghae·sokcho·yangyang)는 tmp/orchestrator 파일+요약만. 메인이 직렬 머지 VERIFY 커밋 후 큐 남으면 워커 재기동.
 ```
 
 ### §1.2 B 429 다음날

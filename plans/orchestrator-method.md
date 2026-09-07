@@ -1,8 +1,10 @@
 # 오케스트레이터 (gateo 공식 작업 방식)
 
-**상태**: ✅ 공식 · 2026-09-07 (**v2.4.1** — 지휘자 1 + 워커 N(기본 2) · Cloud는 중첩 후임 금지 · **2회는 하드캡 아님**)  
+**상태**: ✅ 공식 · 2026-09-07 (**v2.4.1** — 메인 장수 · 워커는 파일+요약 · 워커 커밋 금지 · Cloud **2회 하드캡 아님**)
 **역할**: 다배치·동일 SSOT를 **지휘자 1 + 워커 N(기본 2)** 로 돌리며 tip을 깨지 않고 확장.  
 **제시어**(최초·복구용): `오케스트레이터` · 주제 붙임 예) `오케스트레이터` + `명소` / `명소-오케스트레이터`
+
+Cloud에서 **메인은 이관하지 않고 R가 남는 한 워커만 다시 띄운다.** 워커는 초안을 파일에 두고 **요약만** 반환한다. 커밋·푸시는 지휘자가 직렬로 한다. 워커에게 맡기면 같은 tip을 동시에 밀어 git이 깨진다.
 
 **한 세대** = 지휘자가 워커 N을 띄워 초안 병렬 → 지휘자가 tip **직렬** 머지 → VERIFY → §3.4 커밋(Cloud는 feature push·PR).  
 세대가 끝나면 지휘권은 **워커를 띄울 수 있는 깊이**의 후임에게 넘긴다. Cloud에서 중첩 Task 후임은 워커를 못 띄우므로 **같은 지휘자가 워커만 재기동**한다. **2세대는 상한이 아니다**(§1.4 · §3.0).
@@ -15,9 +17,9 @@
 
 | 역할 | 하는 일 | 금지 |
 |------|---------|------|
-| **지휘자**(오케스트레이터) | 배치표(워커당 1) · **워커 N 기동**(기본 2, §3.5) · 감사 · tip **직렬** append · VERIFY · **§3.4 커밋**(Cloud는 push·PR) · 이관 | 워커 없이 **본인 런**(기본) · tip 병렬 머지 · 워커 JSON 전문 장문 재읽기 · **`main` 직접 push** · **VERIFY FAIL 커밋** · Cloud에서 **중첩 후임**에게 워커 기동을 맡김 |
-| **워커** | **배정된 1배치** 초안 JSON 조각 + 스모크 쿼리 요약만 반환 | tip append · commit/PR · `main` push · SSOT 전면 rewrite · 다른 워커 tip 건드림 · 이관서 · 자기 아래 Task(워커의 워커) |
-| **후임 지휘자** | 새 세대에서 **워커 N을 직접 기동** → §3.0 | 솔로 계주 · Task만 띄우고 tip 미append · Cloud **L1 후임이 다시 Task로 워커** |
+| **지휘자**(오케스트레이터) | 다음 R 배치표 · **워커 N 기동**(기본 2, §3.5) · `tmp/orchestrator/` 조각을 **파일로** 직렬 append · VERIFY(audit **issues 줄만**) · **§3.4 커밋·push** · 컨텍스트가 찰 때까지 워커 재기동 | 워커 JSON을 채팅에 붙여 Read · tip 병렬 머지 · 워커 없이 **본인 런**(기본) · **`origin/main` 코드 push** · **VERIFY FAIL 커밋** · Cloud **중첩 후임** · 남은 R **전부** 한 번에 기동 |
+| **워커** | 배정 1배치 초안을 **`tmp/orchestrator/` 파일**에 기록 + **5줄 요약**만 반환 | tip 직접 append · **commit/PR/push** · JSON 전문을 부모 채팅에 붙임 · SSOT 전면 rewrite · 다른 워커 tip · 이관서 · 자기 아래 Task |
+| **후임 지휘자** | 메인 컨텍스트·런이 끝났을 때만. 새 Cloud 런 또는 Desktop 컨트롤러의 다음 L1 | 솔로 계주 · Cloud 중첩 Task 후임 |
 
 지휘자가 워커를 띄운다. 워커가 지휘자가 되지 않는다.
 
@@ -49,6 +51,9 @@
 | Cloud **중첩 후임 Task** | 후임이 워커를 못 띄움 · StepContext | 같은 지휘자 워커 재기동 또는 새 Cloud 런 |
 | VERIFY 후 **사람 제시어만** 남기고 정지 | 자동 오케 단절 | 연장 또는 §4.2 (플랫폼별) |
 | Cloud에서 **1~2회를 하드캡**으로 읽고 정지 | 예전 수십 세대가 끊김 | 같은 메인 워커 재기동. 2회는 Desktop 권장일 뿐(§1.4) |
+| 워커 결과를 **JSON 전문으로 부모에 반환** | 메인 컨텍스트가 워커만큼 참 · 장수 실패 | `tmp/orchestrator/` 파일 + 5줄 요약만 |
+| 끝난 워커가 **각자 커밋·push** | 같은 tip 병렬 git 충돌 · VERIFY 우회 | 지휘자가 직렬 머지 후 §3.4 |
+| 남은 R를 **한 번에 전부** 기동 | 동시 git/머지 불가 · 토큰 폭주 · LIVE 쿼터 | in-flight = 지금 R의 N만. 끝나면 다음 R |
 | 채우기 쉬운 후보만 연속 (KR 구·DE/UK 중소) | 검색 가치↓ | 주제 §5 우선순위표 따름 |
 
 ### 1.3 플랫폼 한도 (워커 수 · 중첩 · 토큰)
@@ -92,24 +97,22 @@
 ### 3.0 세대 루프 (필수 · 후임 지휘자 포함)
 
 ```
-인수인계/배치표 확인 (지휘자)
+지휘자(메인) 장수 — 이관하지 않음
     ↓
-워커 N 기동 (기본 2 · 각 1배치 초안 · tip 미터치 · Foreground)
+다음 ⬜ R만 배치표 확정 (남은 R 전부 기동 금지)
     ↓
-지휘자: 조각 수신 → EXISTS/충돌 보정 → tip 직렬 append (A→B→… 순)
+워커 N 기동 (기본 2 · Foreground · tip 미터치)
     ↓
-감사 게이트 (audit + 필요 시 resolve 스모크) = VERIFY
+워커: `tmp/orchestrator/Rxx-A.json` 기록 · 부모에는 요약 5줄만
     ↓
-VERIFY PASS → §3.4 커밋 (Cloud: + push · PR)
+지휘자: 파일로 직렬 append (JSON 전문 Read 금지) → VERIFY(issues 줄) → §3.4 커밋·push · tmp 삭제
     ↓
-컨텍스트 여유 있고 배치표 남음?
-  · Yes → 워커 N 다시 기동 (같은 지휘자 연장)     ← Cloud 기본
-  · No  또는 런 한계 → §4.2 이관 (플랫폼별)
-후임 지휘자 → 이 루프를 처음부터 (워커 N 재기동 필수)
+메인 컨텍스트 여유 & ⬜ R 남음? → 워커 N 재기동 (같은 메인)
+아니면 → §4.2 (Cloud=새 런 복구 제시어)
 ```
 
 **같은 지휘자 연속 (하드캡 없음)**  
-- **Cloud**: 같은 메인이 워커 N을 **큐가 빌 때까지** 재기동한다. **2회는 상한이 아니다.** 정지는 큐 소진 · §3.3 E · 429 · 런/컨텍스트 **실제 고갈**(대략 80%+)뿐.  
+- **Cloud**: 같은 메인이 워커 N을 **큐가 빌 때까지** 재기동한다. **2회는 상한이 아니다.** 정지는 큐 소진 · §3.3 E · 429 · 런/컨텍스트 **실제 고갈**(대략 80%+)뿐. 워커는 파일+요약만(§3.6).  
 - **Desktop**: 1~2회 후 컨트롤러가 다음 지휘자 L1을 띄운다(메인 컨텍스트 절약). 이 숫자를 Cloud에 적용하지 않는다.  
 - **배치 1개 끝나자마자 이관 금지**(솔로 계주 방지).  
 - 큐가 비거나 §3.3 E일 때만 **사람 보고 후 정지**.  
@@ -176,6 +179,31 @@ N을 늘려도 되는 조건 (모두):
 
 N>2로 올렸으면 일지에 `워커 N={n}` 1줄. 실패(기동 거부·StepContext)면 N=2로 되돌리고 한 번만 재시도.
 
+### 3.6 메인 장수 · 얇은 반환 (최대한 길게)
+
+**목표**: 메인은 디스패처로 남고, 조사 토큰은 워커 컨텍스트에서 소모. 지휘권 이양보다 **같은 메인이 R를 계속 소화**하는 쪽이 Cloud에서 더 길다.
+
+| 하고 싶은 것 | 되는가 | 이유 |
+|--------------|--------|------|
+| 메인을 R 완료까지 유지 · 이관 안 함 | ✅ Cloud 기본 | v2.4 연장과 같음. 한도는 메인 컨텍스트·런 시간 |
+| 다음 R마다 그 R에 맞는 워커 N 기동 | ✅ | R11이면 A3+B3=2. **지금 ⬜ R의 슬롯만** |
+| 남은 R를 한 번에 다 띄움 | ❌ | 같은 tip을 N×R이 동시에 못 씀. 토큰 폭주 |
+| 워커만 차고 메인은 안 참 | **조건부** | 워커가 JSON을 채팅에 반환하면 메인도 그만큼 참. **파일+5줄 요약**일 때만 메인이 얇음 |
+| 끝난 워커가 커밋·push | ❌ (병렬) | `cityAttractionHubs.json` 등 **파일 1개**. 동시 commit → 충돌·VERIFY 우회 |
+| 워커 1명만 띄워 그 워커가 커밋 | 가능하나 비권장 | 메인은 더 얇아질 수 있으나 처리량 1×. 기본은 워커 2 초안 + 지휘자 1회 커밋 |
+
+**워커 반환 (고정)**
+
+```
+파일: tmp/orchestrator/R{nn}-{A|B}.json  (gitignore `tmp/` · 머지 후 삭제 · 커밋 금지)
+채팅: R번호 · 슬롯 · 건수 · skip/EXISTS · 스모크 쿼리 3개 · 주의 1줄
+금지: JSON 배열 본문을 부모 메시지에 붙이기
+```
+
+**지휘자 커밋**: 조각을 파일에서 직렬 append → `audit` 출력은 issues **0인지 한 줄**만 사용(로그 전문을 채팅에 상주시키지 않음) → §3.4. 워커 프롬프트에 commit/push를 넣지 않음.
+
+**메인이 실제로 차는 것**(줄여도 남음): 워커 기동 프롬프트, 5줄 요약 누적, audit 한 줄, 커밋 SHA. 이게 ~50%면 그때만 새 Cloud 런(§4.2). 큐가 비거나 §3.3 E면 사람 보고.
+
 ### 3.3 문제 조치 (필수)
 
 #### A. audit `issues > 0` 또는 스모크 FAIL
@@ -204,7 +232,7 @@ N>2로 올렸으면 일지에 `워커 N={n}` 1줄. 실패(기동 거부·StepCon
 
 1. `npm run audit:city-attraction-hubs` → issues **0**인가?  
 2. tip 건수 = 일지/큐 기대와 맞는가? (부분 append 의심 시 마지막 hubId 확인)  
-3. `_batch*` / `_tmp*` / 미머지 초안 파일 잔여 삭제  
+3. `_batch*` / `tmp/orchestrator/` / 미머지 초안 파일 잔여 삭제  
 4. 큐: 진행 중 R이 ✅인지 ⬜인지 — **미VERIFY면 ⬜ 유지** · 부분 반영 hub는 제거 또는 완료로 정리  
 5. 결과 요약 후: 정상 → 큐 다음 R · 비정상 → §3.3 A · 불명이면 **사람에게 물음**(§3.3 E)
 
@@ -272,7 +300,7 @@ N>2로 올렸으면 일지에 `워커 N={n}` 1줄. 실패(기동 거부·StepCon
 
 5. 이전 워커 로그 전체 Read 금지 · tip JSON 전문 스캔 금지.  
 6. **금지**: 워커를 `run_in_background`로 띄운 뒤 **초안 수신·머지·VERIFY 전에 턴을 종료**.  
-7. **파이프 단절 복구**: tip 건수·`_tmp*` 확인 뒤 같은 지휘자가 워커 N 루프 재개(사람 제시어 불필요). 중첩 후임을 더 넣지 않음.
+7. **파이프 단절 복구**: tip 건수·`tmp/orchestrator/` 확인 뒤 같은 지휘자가 워커 N 루프 재개(사람 제시어 불필요). 중첩 후임을 더 넣지 않음.
 
 ---
 
@@ -298,7 +326,7 @@ N>2로 올렸으면 일지에 `워커 N={n}` 1줄. 실패(기동 거부·StepCon
 | 라운드 | **10 hub** = 워커A **5** + 워커B **5** |
 | 지명 선택 | 큐 **순서만** (에이전트 임의 선택 금지) |
 | EXISTS 시 | 큐 하단 **예비**에서 1:1 대체 후 큐·일지 1줄 |
-| 한 세션 | 기본 **R 2개**(20 hub) · 상한 3~4 R 후 이관 |
+| 한 세션 | 메인은 컨텍스트가 찰 때까지 **워커 재기동**(§3.6). 이관은 런 한계일 때만 |
 
 | 우선 | 대상 |
 |------|------|
@@ -314,8 +342,8 @@ N>2로 올렸으면 일지에 `워커 N={n}` 1줄. 실패(기동 거부·StepCon
 
 ```
 역할: cityAttractionHubs 워커. 배정 hubId 목록만 초안 (1배치).
-출력: JSON 배열 조각 + hub/exact 스모크 쿼리 목록 + 주의(동명 분리).
-금지: tip append, main push, JSON 전면 rewrite, shrine 제거, releaseNotes, UI 변경, 이관서 작성.
+출력: `tmp/orchestrator/R{nn}-A.json`(또는 B) + 요약 5줄. JSON 본문은 부모 채팅에 붙이지 않음.
+금지: tip append, commit/PR/push, JSON 전면 rewrite, shrine 제거, releaseNotes, UI 변경, 이관서 작성.
 스키마: hubId,name,name_en,country,country_en,lat,lng,aliases[],attractions[{name,name_en,kind,lat,lng,mapboxId|null}]
 kind: beach|market|temple|shrine|viewpoint|landmark|museum|neighborhood|park
 좌표: Mapbox(또는 Nominatim) 지명 매칭 시 그 feature만 · hub 중심 추정 금지 · KR km 허용 금지 · §5.4
@@ -346,8 +374,8 @@ kind: beach|market|temple|shrine|viewpoint|landmark|museum|neighborhood|park
 
 ```
 역할: mapboxSettlementPlaces 워커. 배정 hubId만. hub당 1행.
-출력: JSON 조각(스킵 제외) + skip/partial + exact 스모크 쿼리.
-금지: tip append, hubId 분할, POI/명소, hub 밖 지명, mapboxId 필수화, UI/releaseNotes.
+출력: `tmp/orchestrator/` 조각 파일 + 요약 5줄. JSON 본문은 부모 채팅에 붙이지 않음.
+금지: tip append, commit/PR/push, hubId 분할, POI/명소, hub 밖 지명, mapboxId 필수화, UI/releaseNotes.
 개수: 목표3 · 최대5 · 최소2 · 미달 스킵
 스키마: hubId, settlements[2..5] of {placeId,name,name_en,featureType,lat,lng,mapboxId|null,aliases}
 featureType: place|city|locality
@@ -372,8 +400,8 @@ featureType: place|city|locality
 
 ```
 역할: cityAttractionHubs 좌표 수리 워커. 배정 hub의 SNAP/NO_HIT만.
-출력: [{hubId,name,lat,lng,mapboxId|null,action:snap|drop|rename}]
-금지: tip 직접 append, hub 중심 추정, 시드 덮어쓰기, UI/releaseNotes.
+출력: `tmp/orchestrator/` 패치 파일 + 요약 5줄.
+금지: tip 직접 append, commit/PR/push, hub 중심 추정, 시드 덮어쓰기, UI/releaseNotes.
 NAMED: Mapbox(또는 verify 큐 suggested) 좌표 그대로 · mapboxId 가능하면 필수.
 KR: >50m면 반드시 snap. NO_HIT는 drop/rename만.
 ```
@@ -425,8 +453,8 @@ KR: >50m면 반드시 snap. NO_HIT는 drop/rename만.
 
 ```
 역할: koreaLocalScenicLists 워커. 배정 listId/hubId만.
-출력: JSON 조각 + sourceUrl + 스모크 쿼리(리스트명·명소1).
-금지: tip 직접 append, 기존 명소 삭제/교체, scenic 승격, UI, 광역 팔경, 출처 없는 verified.
+출력: `tmp/orchestrator/` 조각 파일 + sourceUrl + 요약 5줄. JSON 본문은 부모 채팅에 붙이지 않음.
+금지: tip 직접 append, commit/PR/push, 기존 명소 삭제/교체, scenic 승격, UI, 광역 팔경, 출처 없는 verified.
 좌표: 지명 매칭만 · hub 중심 추정 금지 · NO_HIT=pending_coord.
 ```
 
@@ -457,9 +485,9 @@ KR: >50m면 반드시 snap. NO_HIT는 drop/rename만.
 
 ```
 역할: 팔경 contentId 워커. 배정 listId만.
-DB-only R: tourapi_attraction 매칭 초안(listId, attractionName, contentId|null, score).
+DB-only R: 초안을 tmp/orchestrator/ 파일에 기록. 부모에는 요약 5줄만.
 LIVE R: 메인만 · searchKeyword 금지(워커).
-금지: tip append, UI, scenic 승격, 429 이후 추가 호출, P1/P2 월권.
+금지: tip append, commit/PR/push, JSON 본문을 부모에 붙임, UI, scenic 승격, 429 이후 추가 호출, P1/P2 월권.
 ```
 
 제시어: `오케스트레이터` + `팔경contentId` · 큐 다음 ⬜ · 플랜 §9 복붙 블록. Cloud는 같은 메인 워커 재기동 · **2회 정지 금지**.
@@ -472,12 +500,12 @@ LIVE R: 메인만 · searchKeyword 금지(워커).
 
 | 용도 | 문장 |
 |------|------|
-| 일반 시작 | `오케스트레이터` + `@plans/orchestrator-method.md` · 「지휘자가 워커 N(기본 2) · §3.4 · §3.5」 |
+| 일반 시작 | `오케스트레이터` + `@plans/orchestrator-method.md` · 「메인 장수 · 워커 N(기본 2) · 파일+요약 · 워커 커밋 금지 · §3.6」 |
 | 명소 재개/복구 | `오케스트레이터` + `명소` + `@plans/city-attraction-hub-queue.md` · 「큐 다음 R · 워커2 · §3.3·§3.4·§4.2」 |
 | 명소 좌표 수리 | `오케스트레이터` + `명소좌표수리` · 「§5.4 · verify 큐 · P0 또는 전수 SNAP · §3.4」 |
 | 국내 명소 TourAPI 좌표 | `오케스트레이터` + `TourAPI-명소좌표` + [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) **§6** · Cloud · 「G0→G1+ · KR HIT만 · §3.4」 |
 | 지자체 팔경·구경 | `오케스트레이터` + `지자체팔경` — **수집 종료. 재개 금지.** 활용은 아래 팔경contentId |
-| 팔경 Tour contentId | `오케스트레이터` + `팔경contentId` + [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) · 브랜치 **`cursor/palgyeong-cid`** · 「§5.7 · P0 · DB-only 우선 · 지휘자=Cloud 메인 · 워커2 Foreground · **같은 메인 워커 재기동(2회 하드캡 아님)** · 중첩 후임 금지 · 워커 병렬 LIVE 금지 · 429 정지 · UI 금지 · §3.3·§3.4·§3.5」 |
+| 팔경 Tour contentId | `오케스트레이터` + `팔경contentId` + [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) · 브랜치 **`cursor/palgyeong-cid`** · 「§5.7 · P0 · 메인 장수 · 워커2 파일+요약 · 워커 커밋 금지 · **같은 메인 워커 재기동(2회 하드캡 아님)** · 중첩 후임 금지 · 워커 병렬 LIVE 금지 · 429 정지 · UI 금지 · §3.6」 |
 | 정착지 재개/복구 | `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「큐 다음 R · 워커2 · 목표3/최대5/최소2 · §3.3·§3.4·§4.2」 |
 | 파이프 단절 복구 | `오케스트레이터` · 「같은 지휘자 워커 N 재기동 · Cloud 중첩 후임 넣지 말 것 · §3.4」 |
 
@@ -487,7 +515,7 @@ LIVE R: 메인만 · searchKeyword 금지(워커).
 
 | 문서 | 담는 것 |
 |------|---------|
-| **본 파일** | 방법론 SSOT (**공식 v2.4**) |
+| **본 파일** | 방법론 SSOT (**공식 v2.4.1**) |
 | [`.cursor/rules/gateo-orchestrator.mdc`](../.cursor/rules/gateo-orchestrator.mdc) | 세션 트리거·짧은 강제 규칙 |
 | [`orchestrator-3tier-draft.md`](./orchestrator-3tier-draft.md) | 3단 검토안 · **v2.4가 Cloud는 플랫(지휘자=메인+워커 L1), Desktop은 컨트롤러+지휘자L1+워커L2 로 흡수** |
 | [`.ai-context.md`](../.ai-context.md) | 스냅샷 1줄 + 링크 |

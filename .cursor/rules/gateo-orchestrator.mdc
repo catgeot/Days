@@ -6,11 +6,11 @@ alwaysApply: false
 # 오케스트레이터 세션
 
 사용자가 **`오케스트레이터`** · **`명소-오케스트레이터`** · **`맵박스정착지`** · **`지자체팔경`** · **`팔경contentId`** 를 쓰거나 `@plans/orchestrator-method.md` 를 연결하면 이 규칙을 따른다.  
-방법 SSOT: [`plans/orchestrator-method.md`](plans/orchestrator-method.md) **v2.4.1**. Cloud **2회 하드캡 아님** — 같은 메인이 워커 재기동.
+방법 SSOT: [`plans/orchestrator-method.md`](plans/orchestrator-method.md) **v2.4.1**. Cloud **2회 하드캡 아님**. 워커는 파일+요약 · 커밋은 지휘자.
 
 ## 필수 읽기 (짧게)
 
-1. [`plans/orchestrator-method.md`](plans/orchestrator-method.md) — **§1 · §1.3 · §3.0 · §3.3 · §3.4 · §3.5 · §4.2** (+ 주제면 §5 / 정착지 §5.3 / 팔경 수집 **§5.6** / contentId **§5.7**)
+1. [`plans/orchestrator-method.md`](plans/orchestrator-method.md) — **§1 · §1.3 · §3.0 · §3.3 · §3.4 · §3.5 · §3.6 · §4.2** (+ 주제면 §5 / 정착지 §5.3 / 팔경 수집 **§5.6** / contentId **§5.7**)
 2. 명소: [`plans/city-attraction-hub-queue.md`](plans/city-attraction-hub-queue.md) **다음 ⬜ R** + 일지 핸드오프 1절만
 3. 정착지: [`plans/mapbox-settlement-queue.md`](plans/mapbox-settlement-queue.md) **다음 ⬜ R** + [`mapbox-settlement-plan.md`](plans/mapbox-settlement-plan.md)
 4. 지자체 팔경 **수집**: 종료. 큐 [`korea-local-scenic-lists-queue.md`](plans/korea-local-scenic-lists-queue.md) F 재개 **금지**
@@ -21,8 +21,8 @@ alwaysApply: false
 
 ## 역할 (고정)
 
-- **당신 = 지휘자(오케스트레이터)**: 배치표 N개(기본 2) · **워커 N 기동**(기본 2 · §3.5) · 감사 · tip **직렬** append(A→B) · VERIFY · **§3.4 커밋**(Cloud는 push·PR) · **이관(§4.2, 플랫폼별)**
-- **워커**: 배정 1배치 **초안만**. tip append · commit/PR · `main` push · SSOT rewrite · 이관서 · 자기 아래 Task **금지**
+- **당신 = 지휘자**: 다음 R만 워커 N 기동(기본 2) · 워커는 `tmp/orchestrator/`+요약 · **당신이 직렬 머지·VERIFY·커밋** · 컨텍스트가 찰 때까지 워커 재기동. JSON 전문 채팅 Read 금지 · 워커에게 commit/push 맡기지 않음 · 남은 R 전부 기동 금지 · Cloud 중첩 후임 금지
+- **워커**: 배정 1배치를 **파일**에만. tip append · **commit/PR/push** · JSON을 부모 채팅에 붙임 · SSOT rewrite · 이관서 · 자기 아래 Task **금지**
 - **후임 지휘자**: **워커 N을 직접 기동**할 수 있는 깊이여야 함. Cloud = 같은 메인 연장 또는 **새 Cloud 런**(중첩 Task 후임 **금지**). Desktop = 컨트롤러가 다음 지휘자 L1 기동.  
   기본 **본인 런 금지**. 예외는 워커 1회 재시도 실패 시만 · 일지에 사유 1줄.
 
@@ -50,6 +50,7 @@ alwaysApply: false
 - tip **병렬** 머지
 - VERIFY 실패 tip을 남긴 채 다음 R·이관·commit
 - VERIFY PASS인데 **커밋 없이** 이관·턴 종료 (Cloud면 PR도)
+- 워커에게 commit/push를 맡김 · JSON 본문을 부모 채팅에 붙임 · 남은 R를 한 번에 전부 기동
 - Cloud에서 중첩 후임 Task에게 워커 기동을 맡김
 - (명소) 큐 밖 임의 지명 · KR 구·DE/UK 중소로 새기
 
