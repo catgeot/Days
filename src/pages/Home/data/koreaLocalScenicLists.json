@@ -7454,7 +7454,8 @@
         "lat": 37.7335377029,
         "lng": 126.5171140395,
         "linkStatus": "linked",
-        "note": "공식명 강화 갑곶돈"
+        "note": "공식명 강화 갑곶돈",
+        "contentId": "1254680"
       },
       {
         "attractionName": "광성보",
@@ -7488,7 +7489,8 @@
         "lat": 37.615542,
         "lng": 126.4296828,
         "linkStatus": "linked",
-        "note": "공식명 마니산(참성단)"
+        "note": "공식명 마니산(참성단)",
+        "contentId": "125468"
       },
       {
         "attractionName": "보문사",
@@ -7496,7 +7498,8 @@
         "kind": "temple",
         "lat": 37.6882523,
         "lng": 126.3215578,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125533"
       },
       {
         "attractionName": "적석사",
@@ -7537,19 +7540,22 @@
         "attractionName": "대구 비슬산",
         "name_en": "Biseulsan",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "127502"
       },
       {
         "attractionName": "대구 강정고령보",
         "name_en": "Gangjeong Goryeongbo",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2704116"
       },
       {
         "attractionName": "대구 신천",
         "name_en": "Sincheon Stream",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2993587"
       },
       {
         "attractionName": "대구 국채보상운동 기념공원",
@@ -7561,13 +7567,15 @@
         "attractionName": "대구 팔공산",
         "name_en": "Palgongsan",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2744450"
       },
       {
         "attractionName": "대구 수성못",
         "name_en": "Suseongmot Lake",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "1115613"
       },
       {
         "attractionName": "83타워",
@@ -7636,7 +7644,8 @@
         "kind": "neighborhood",
         "lat": 36.355,
         "lng": 127.345,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125858"
       },
       {
         "attractionName": "대전 구봉산",
@@ -7671,7 +7680,8 @@
         "attractionName": "대전 대청호",
         "name_en": "Daecheongho Lake",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126846"
       },
       {
         "attractionName": "대전 장태산",
@@ -7711,7 +7721,8 @@
         "lat": 35.549,
         "lng": 129.295,
         "linkStatus": "linked",
-        "note": "공식 태화강 국가정원과 십리대숲"
+        "note": "공식 태화강 국가정원과 십리대숲",
+        "contentId": "128202"
       },
       {
         "attractionName": "대왕암공원",
@@ -7719,7 +7730,8 @@
         "kind": "park",
         "lat": 35.4904590082,
         "lng": 129.4352747432,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "127515"
       },
       {
         "attractionName": "울산 가지산 사계",
@@ -7731,7 +7743,8 @@
         "attractionName": "울산 신불산 억새평원",
         "name_en": "Sinbulsan Silver Grass Plains",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "128207"
       },
       {
         "attractionName": "간절곶",
@@ -7740,7 +7753,8 @@
         "lat": 35.3589668021,
         "lng": 129.3605738299,
         "linkStatus": "linked",
-        "note": "공식 간절곶 일출"
+        "note": "공식 간절곶 일출",
+        "contentId": "128022"
       },
       {
         "attractionName": "울산 반구대암각화",
@@ -7768,7 +7782,8 @@
         "lat": 35.5017517,
         "lng": 129.4061489,
         "linkStatus": "linked",
-        "note": "공식 울산대교 야경"
+        "note": "공식 울산대교 야경",
+        "contentId": "2612976"
       },
       {
         "attractionName": "고래문화마을",
@@ -7783,13 +7798,15 @@
         "attractionName": "울산 외고산 옹기마을",
         "name_en": "Oegosan Onggi Village",
         "kind": "museum",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "128208"
       },
       {
         "attractionName": "울산 대운산 내원암",
         "name_en": "Daewunsan Naewonam",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "128214"
       }
     ]
   }

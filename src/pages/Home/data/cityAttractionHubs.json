@@ -652,7 +652,8 @@
         "name_en": "Yuseong Hot Springs",
         "kind": "neighborhood",
         "lat": 36.355,
-        "lng": 127.345
+        "lng": 127.345,
+        "contentId": "125858"
       },
       {
         "name": "계족산 황톳길",
@@ -698,21 +699,24 @@
         "name_en": "Daewangam Park",
         "kind": "park",
         "lat": 35.4904590082,
-        "lng": 129.4352747432
+        "lng": 129.4352747432,
+        "contentId": "127515"
       },
       {
         "name": "울산대교전망대",
         "name_en": "Ulsan Bridge Observatory",
         "kind": "viewpoint",
         "lat": 35.5017517,
-        "lng": 129.4061489
+        "lng": 129.4061489,
+        "contentId": "2612976"
       },
       {
         "name": "태화강국가정원",
         "name_en": "Taehwagang National Garden",
         "kind": "park",
         "lat": 35.549,
-        "lng": 129.295
+        "lng": 129.295,
+        "contentId": "128202"
       },
       {
         "name": "고래문화마을",
@@ -726,7 +730,8 @@
         "name_en": "Ganjeolgot",
         "kind": "viewpoint",
         "lat": 35.3589668021,
-        "lng": 129.3605738299
+        "lng": 129.3605738299,
+        "contentId": "128022"
       },
       {
         "name": "울산암각화박물관",
@@ -3926,7 +3931,8 @@
         "name_en": "Bomunsa Ganghwa",
         "kind": "temple",
         "lat": 37.6882523,
-        "lng": 126.3215578
+        "lng": 126.3215578,
+        "contentId": "125533"
       },
       {
         "name": "강화평화전망대",
@@ -3947,7 +3953,8 @@
         "name_en": "Gapgot Dondae",
         "kind": "landmark",
         "lat": 37.7335377029,
-        "lng": 126.5171140395
+        "lng": 126.5171140395,
+        "contentId": "1254680"
       },
       {
         "name": "고려궁지",
@@ -3961,7 +3968,8 @@
         "name_en": "Manisan",
         "kind": "viewpoint",
         "lat": 37.615542,
-        "lng": 126.4296828
+        "lng": 126.4296828,
+        "contentId": "125468"
       },
       {
         "name": "석모도",
