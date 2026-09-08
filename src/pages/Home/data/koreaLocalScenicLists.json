@@ -209,7 +209,8 @@
         "kind": "viewpoint",
         "lat": 38.125713,
         "lng": 128.3418533,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "126643"
       },
       {
         "attractionName": "십이선녀탕",
@@ -268,7 +269,8 @@
     "members": [
       {
         "attractionName": "죽서루",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125799"
       },
       {
         "attractionName": "삼척 해신당공원",
@@ -320,7 +322,8 @@
         "kind": "landmark",
         "lat": 37.468,
         "lng": 129.169,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "128963"
       },
       {
         "attractionName": "삼척 맹방해수욕장",
@@ -346,7 +349,8 @@
         "kind": "landmark",
         "lat": 37.36,
         "lng": 129.09,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "125778"
       }
     ]
   },
@@ -415,7 +419,8 @@
         "kind": "landmark",
         "lat": 37.35,
         "lng": 127.95,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "252558"
       },
       {
         "attractionName": "용소막성당",
@@ -467,7 +472,8 @@
         "kind": "viewpoint",
         "lat": 37.463117,
         "lng": 129.019319,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "125673"
       },
       {
         "attractionName": "무릉반석",
@@ -667,7 +673,8 @@
         "kind": "park",
         "lat": 38.11,
         "lng": 128.48,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "125668"
       },
       {
         "attractionName": "하조대해수욕장",
@@ -783,7 +790,8 @@
         "kind": "landmark",
         "lat": 38.55,
         "lng": 128.38,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "2747957"
       },
       {
         "attractionName": "고성통일전망타워",
@@ -964,7 +972,8 @@
         "kind": "viewpoint",
         "lat": 37.19,
         "lng": 128.47,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "125659"
       },
       {
         "attractionName": "한반도지형",
@@ -1270,7 +1279,8 @@
       },
       {
         "attractionName": "사인암",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "129648"
       },
       {
         "attractionName": "구담봉",

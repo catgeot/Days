@@ -2551,7 +2551,8 @@
         "name_en": "Oseok Jujeong Valley",
         "kind": "park",
         "lat": 38.11,
-        "lng": 128.48
+        "lng": 128.48,
+        "contentId": "125668"
       },
       {
         "name": "죽도정",
@@ -4725,7 +4726,8 @@
         "name_en": "Ulsan Rock",
         "kind": "landmark",
         "lat": 38.55,
-        "lng": 128.38
+        "lng": 128.38,
+        "contentId": "2747957"
       },
       {
         "name": "마산봉설경",
@@ -4815,7 +4817,8 @@
         "name_en": "Daeseung Falls",
         "kind": "viewpoint",
         "lat": 38.125713,
-        "lng": 128.3418533
+        "lng": 128.3418533,
+        "contentId": "126643"
       },
       {
         "name": "내린천계곡",
@@ -5506,7 +5509,8 @@
         "name_en": "Sainam Rock",
         "kind": "landmark",
         "lat": 36.8948438,
-        "lng": 128.3409803
+        "lng": 128.3409803,
+        "contentId": "129648"
       },
       {
         "name": "온달관광지",
@@ -5638,7 +5642,8 @@
         "name_en": "Eorayeon",
         "kind": "viewpoint",
         "lat": 37.19,
-        "lng": 128.47
+        "lng": 128.47,
+        "contentId": "125659"
       },
       {
         "name": "법흥사",
@@ -9815,7 +9820,8 @@
         "name_en": "Yeongwonsanseong Fortress",
         "kind": "landmark",
         "lat": 37.35,
-        "lng": 127.95
+        "lng": 127.95,
+        "contentId": "252558"
       },
       {
         "name": "용소막성당",
@@ -10326,7 +10332,8 @@
         "name_en": "Jukseoru Pavilion",
         "kind": "landmark",
         "lat": 37.4410523689599,
-        "lng": 129.16121256183317
+        "lng": 129.16121256183317,
+        "contentId": "125799"
       },
       {
         "name": "삼척 해신당공원",
@@ -10399,7 +10406,8 @@
         "name_en": "Cheokju Donghaebi",
         "kind": "landmark",
         "lat": 37.468,
-        "lng": 129.169
+        "lng": 129.169,
+        "contentId": "128963"
       },
       {
         "name": "삼척 천은사",
@@ -10414,7 +10422,8 @@
         "name_en": "Jungyeongmyo Tomb",
         "kind": "landmark",
         "lat": 37.36,
-        "lng": 129.09
+        "lng": 129.09,
+        "contentId": "125778"
       }
     ]
   },
@@ -11042,7 +11051,8 @@
         "name_en": "Yongchu Falls",
         "kind": "viewpoint",
         "lat": 37.463117,
-        "lng": 129.019319
+        "lng": 129.019319,
+        "contentId": "125673"
       },
       {
         "name": "무릉반석",

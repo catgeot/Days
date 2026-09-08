@@ -4,7 +4,7 @@
   "updated": "2026-09-08",
   "items": {
     "hongcheon-palgyeong::금학산": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "hongcheon",
       "queries": [
@@ -13,7 +13,7 @@
       ]
     },
     "hongcheon-palgyeong::살둔계곡": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "hongcheon",
       "queries": [
@@ -49,25 +49,30 @@
       ]
     },
     "inje-palgyeong::대청봉": {
-      "status": "open",
+      "status": "hub_mismatch",
       "bucket": "short",
       "hubId": "inje",
       "queries": [
         "대청봉",
         "인제 대청봉"
+      ],
+      "titles": [
+        "설악산 대청봉"
       ]
     },
     "inje-palgyeong::대승폭포": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "inje",
       "queries": [
         "대승폭포",
         "인제 대승폭포"
-      ]
+      ],
+      "contentId": "126643",
+      "tourTitle": "대승령과 대승폭포"
     },
     "inje-palgyeong::내린천계곡": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "inje",
       "queries": [
@@ -76,13 +81,15 @@
       ]
     },
     "samcheok-sipgyeong::죽서루": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "samcheok",
       "queries": [
         "죽서루",
         "삼척 죽서루"
-      ]
+      ],
+      "contentId": "125799",
+      "tourTitle": "삼척 죽서루"
     },
     "samcheok-sipgyeong::새천년해안유원지": {
       "status": "open",
@@ -94,22 +101,26 @@
       ]
     },
     "samcheok-sipgyeong::척주동해비": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "samcheok",
       "queries": [
         "척주동해비",
         "삼척 척주동해비"
-      ]
+      ],
+      "contentId": "128963",
+      "tourTitle": "삼척 척주동해비 및 평수토찬비"
     },
     "samcheok-sipgyeong::준경묘": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "samcheok",
       "queries": [
         "준경묘",
         "삼척 준경묘"
-      ]
+      ],
+      "contentId": "125778",
+      "tourTitle": "삼척 준경묘"
     },
     "wonju-palgyeong::강원감영": {
       "status": "open",
@@ -121,7 +132,7 @@
       ]
     },
     "wonju-palgyeong::비로봉": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "wonju",
       "queries": [
@@ -130,13 +141,15 @@
       ]
     },
     "wonju-palgyeong::영원산성": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "wonju",
       "queries": [
         "영원산성",
         "원주 영원산성"
-      ]
+      ],
+      "contentId": "252558",
+      "tourTitle": "원주 영원산성"
     },
     "wonju-palgyeong::미륵불상": {
       "status": "open",
@@ -148,13 +161,15 @@
       ]
     },
     "donghae-bijing::용추폭포": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "donghae",
       "queries": [
         "용추폭포",
         "동해 용추폭포"
-      ]
+      ],
+      "contentId": "125673",
+      "tourTitle": "무릉계곡 용추폭포(강원)"
     },
     "donghae-bijing::무릉반석": {
       "status": "open",
@@ -175,7 +190,7 @@
       ]
     },
     "donghae-bijing::호해정": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "donghae",
       "queries": [
@@ -184,7 +199,7 @@
       ]
     },
     "donghae-bijing::할미바위": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "donghae",
       "queries": [
@@ -193,7 +208,7 @@
       ]
     },
     "donghae-bijing::초록봉": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "donghae",
       "queries": [
@@ -202,25 +217,35 @@
       ]
     },
     "sokcho-palgyeong::조도": {
-      "status": "open",
+      "status": "hub_mismatch",
       "bucket": "short",
       "hubId": "sokcho",
       "queries": [
         "조도",
         "속초 조도"
+      ],
+      "titles": [
+        "가조도",
+        "상조도",
+        "조도",
+        "조도(조도6군도)",
+        "하조도",
+        "하조도 등대"
       ]
     },
     "yangyang-sipgyeong::오색주전골": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "yangyang",
       "queries": [
         "오색주전골",
         "양양 오색주전골"
-      ]
+      ],
+      "contentId": "125668",
+      "tourTitle": "설악산 오색주전골"
     },
     "yangyang-sipgyeong::죽도정": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "yangyang",
       "queries": [
@@ -229,13 +254,15 @@
       ]
     },
     "goseong-palgyeong::울산바위": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "goseong",
       "queries": [
         "울산바위",
         "고성 울산바위"
-      ]
+      ],
+      "contentId": "2747957",
+      "tourTitle": "[강원평화누리자전거길 16코스] 고성 울산바위비경길"
     },
     "goseong-palgyeong::마산봉설경": {
       "status": "open",
@@ -269,13 +296,15 @@
       ]
     },
     "yeongwol-sipgyeong::어라연": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "yeongwol",
       "queries": [
         "어라연",
         "영월 어라연"
-      ]
+      ],
+      "contentId": "125659",
+      "tourTitle": "영월 어라연(강원고생대 국가지질공원)"
     },
     "taebaek-palgyeong::장성하부고생대화석산지": {
       "status": "open",
@@ -287,7 +316,7 @@
       ]
     },
     "taebaek-palgyeong::용연굴": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "taebaek",
       "queries": [
@@ -305,16 +334,20 @@
       ]
     },
     "jeongseon-palgyeong::거북바위": {
-      "status": "open",
+      "status": "hub_mismatch",
       "bucket": "short",
       "hubId": "jeongseon",
       "queries": [
         "거북바위",
         "정선 거북바위"
+      ],
+      "titles": [
+        "거북바위",
+        "거북바위캠핑장"
       ]
     },
     "jeongseon-palgyeong::용마소": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "jeongseon",
       "queries": [
@@ -323,7 +356,7 @@
       ]
     },
     "jeongseon-palgyeong::화표주": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "jeongseon",
       "queries": [
@@ -332,7 +365,7 @@
       ]
     },
     "hwacheon-gugyeong::비래바위": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "hwacheon",
       "queries": [
@@ -341,16 +374,18 @@
       ]
     },
     "danyang-palgyeong::사인암": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "danyang",
       "queries": [
         "사인암",
         "단양 사인암"
-      ]
+      ],
+      "contentId": "129648",
+      "tourTitle": "단양 사인암"
     },
     "danyang-palgyeong::구담봉": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "danyang",
       "queries": [
@@ -359,16 +394,21 @@
       ]
     },
     "danyang-palgyeong::옥순봉": {
-      "status": "open",
+      "status": "hub_mismatch",
       "bucket": "short",
       "hubId": "danyang",
       "queries": [
         "옥순봉",
         "단양 옥순봉"
+      ],
+      "titles": [
+        "옥순봉생태공원",
+        "제천 옥순봉",
+        "[청풍호자드락길 5코스] 옥순봉길"
       ]
     },
     "danyang-palgyeong::하선암": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "danyang",
       "queries": [
@@ -409,34 +449,51 @@
       ]
     },
     "yeongdong-yangsan-palgyeong::비봉산": {
-      "status": "open",
+      "status": "hub_mismatch",
       "bucket": "short",
       "hubId": "yeongdong",
       "queries": [
         "비봉산",
         "영동 비봉산"
+      ],
+      "titles": [
+        "금성산·비봉산(의성)",
+        "비봉산(안성)",
+        "비봉산(양구)",
+        "비봉산(제천)",
+        "비봉산캠핑장"
       ]
     },
     "yeongdong-yangsan-palgyeong::봉황대": {
-      "status": "open",
+      "status": "hub_mismatch",
       "bucket": "short",
       "hubId": "yeongdong",
       "queries": [
         "봉황대",
         "영동 봉황대"
+      ],
+      "titles": [
+        "김해 봉황대길(봉리단길)",
+        "봉황대(의령)",
+        "봉황대(장수)",
+        "봉황대(춘천)",
+        "봉황대공원"
       ]
     },
     "yeongdong-yangsan-palgyeong::함벽정": {
-      "status": "open",
+      "status": "hub_mismatch",
       "bucket": "short",
       "hubId": "yeongdong",
       "queries": [
         "함벽정",
         "영동 함벽정"
+      ],
+      "titles": [
+        "함벽정"
       ]
     },
     "yeongdong-yangsan-palgyeong::여의정": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "yeongdong",
       "queries": [
@@ -454,16 +511,27 @@
       ]
     },
     "yeongdong-yangsan-palgyeong::용암": {
-      "status": "open",
+      "status": "hub_mismatch",
       "bucket": "short",
       "hubId": "yeongdong",
       "queries": [
         "용암",
         "영동 용암"
+      ],
+      "titles": [
+        "금용암(부산)",
+        "용암사(옥천)",
+        "용암사(장수)",
+        "용암사(파주)",
+        "용암산",
+        "용암서원(합천)",
+        "용암정(거창)",
+        "용암정(안동)",
+        "처용암"
       ]
     },
     "yeongdong-hancheon-palgyeong::화헌악": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "yeongdong",
       "queries": [
@@ -472,7 +540,7 @@
       ]
     },
     "yeongdong-hancheon-palgyeong::용연대": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "yeongdong",
       "queries": [
@@ -481,7 +549,7 @@
       ]
     },
     "yeongdong-hancheon-palgyeong::산양벽": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "yeongdong",
       "queries": [
@@ -490,7 +558,7 @@
       ]
     },
     "yeongdong-hancheon-palgyeong::청학굴": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "yeongdong",
       "queries": [
@@ -499,7 +567,7 @@
       ]
     },
     "yeongdong-hancheon-palgyeong::법존암": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "yeongdong",
       "queries": [
@@ -508,7 +576,7 @@
       ]
     },
     "yeongdong-hancheon-palgyeong::사군봉": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "yeongdong",
       "queries": [
@@ -517,7 +585,7 @@
       ]
     },
     "yeongdong-hancheon-palgyeong::냉천정": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "yeongdong",
       "queries": [
