@@ -1,6 +1,6 @@
 # 팔경·명소 Tour contentId 큐
 
-**상태**: R01–R16 ✅ · **P0·P1 F 소진** · membersWithContentId **400**/876 · hub+P1 **68** · P2 **null 104**/871(78 hub) · **P2-L2** ✅ 0/104 · **P0-L** ✅ 109/584 · **P0-L02·L03·L05** ✅ 0/100(동일 본명 keyword **폐기**) · **P0-L06 폐기** · 다음 **P0-C01 scenic 복사** · Tour API **운영 승인 ~10만/일**  
+**상태**: R01–R16 ✅ · **P0·P1 F 소진** · membersWithContentId **492**/876 · hub+P1 **68** · P2 **null 104**/871(78 hub) · **P2-L2** ✅ 0/104 · **P0-L** ✅ 109/584 · **P0-L02·L03·L05** ✅ 0/100(동일 본명 keyword **폐기**) · **P0-L06 폐기** · **P0-L07++** ✅ 2/100 · **P0-L07+++ 폐기**(같은 100명 로또) · **P0-K01** ✅ 10/40 · **다음 P0-K02** prefix 종결 · Tour API **운영 승인 ~10만/일**  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.7** · 플랜 [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md)  
 **브랜치**: `cursor/palgyeong-cid` (A UI `cursor/palgyeong-use-e744`와 **분리** · 수집 `cursor/palgyeong` 금지)  
 **금지**: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재호출 · P1/P2를 P0 전에
@@ -114,6 +114,44 @@ DB-only 종료 후 overrides에 `contentId: null`이 남은 hub만. 라운드는
 | **P0-L05** | `--keyword-only --limit=100` (`--resume` dry-run targets=0 → **--resume 없이**) | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-07 **0/100** · null **476** · 429 없음 |
 | **P0-L06** | 동일 본명 `--keyword-only --limit=100` | — | — | **폐기** 2026-09-07 — L02·L03·L05와 같은 호출 · 로또 금지 |
 | **P0-L07** | S01 후 `--keyword-only --limit=100` (memberQueries) | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-07 **11/100** · members **470/876** · tip `6212fab3` |
+| **P0-L07+** | A01 후 `--keyword-only --limit=100` (memberQueries) | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-08 **2/100** · members **480/876** · tip `851fda40` |
+| **P0-L07++** | `--keyword-only --limit=100` (memberQueries) | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-08 **2/100** · members **482/876** · tip `c914703c` |
+| **P0-L07+++** | 같은 앞 100명 `--keyword-only --limit=100` | — | — | **폐기** 2026-09-08 — HIT 정체 · 세션 무한 · **P0-K**로 대체 |
+
+### P0 키워드 종결 (K)
+
+목적: 세션마다 **같은 100명 로또가 아니라** 남은 null을 버킷별로 LIVE 검색어를 바꿔 **채우거나 닫기**. contentId는 **LIVE가 준 행만**. AI 숫자 기입 금지.
+
+**인벤토리** (2026-09-08 P0-K01 후, null **384**): siho **48** · poetic **23** · prefix **142** · short **100** · other **41** · closed **40**
+
+| 명령 | 역할 |
+|------|------|
+| `npm run inventory:korea-local-scenic-content-ids` | 버킷·queries 기록 (`scripts/data/korea-local-scenic-content-id-close.json`) · LIVE 없음 |
+| `npm run close:korea-local-scenic-content-ids -- --bucket=short --limit=40 --dry-run` | LIVE 유일·같은 시군 후보만 출력 |
+| `npm run close:korea-local-scenic-content-ids -- --bucket=short --limit=40 --apply-unique` | HIT만 lists 기입 · MISS는 종결 상태 기록 |
+
+| status | 의미 | 다음 세션 |
+|--------|------|-----------|
+| `unique_hit` | LIVE 1건 · 주소/제목이 해당 시군 | 다시 안 봄 |
+| `tour_missing` | 전략 keyword 전부 0건(또는 이름 불일치) | 다시 안 봄 |
+| `hub_mismatch` | Tour 행은 있으나 **다른 시군** | 다시 안 봄 |
+| `ambiguous` | 같은 시군 후보 2+ | 에이전트 제목 확인 또는 null |
+| `siho_wait` | 시호 · Tour 0건 | alias 세션만 |
+| `open` | 아직 LIVE 종결 전 | `--bucket=` 대상 |
+
+검색어(`strategyQueries`): 본명 · 시군 접두(`삼척 죽서루`) · 수식어 제거(`호미곶 일출`→`호미곶`) · 기존 `memberQueries`/alias.
+
+**준비 검증** (apply 없음): short 8건 dry-run **4 HIT / 3 tour_missing / 1 hub_mismatch**(대청봉→양양). 예: 죽서루→`125799` 삼척 죽서루.
+
+같은 본명 `--keyword-only --limit=100` **추가 금지.**
+
+| R | 방식 | 한도 | 모드 | 상태 |
+|---|------|------|------|------|
+| **P0-K01** | `--bucket=short --apply-unique --limit=40` | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-08 **10/40** · members **492/876** · tip `bf6e9882` |
+| **P0-K02** | `--bucket=prefix --apply-unique --limit=40` | 쿼터 ~10만/일 | LIVE | ⬜ 다음 |
+| **P0-K03** | `--bucket=poetic --apply-unique` | 쿼터 ~10만/일 | LIVE | ⬜ |
+| **P0-K04** | `--bucket=other --apply-unique` | 쿼터 ~10만/일 | LIVE | ⬜ |
+| **P0-A02** | `--bucket=siho` · 공식 본명 alias → LIVE (gunsan 등) | 소수 | 혼합 | ⬜ K 이후 또는 병행 합의 |
 
 ### P0 잔여 전략 (2026-09-07 진단 · keyword 로또 대체)
 
@@ -140,30 +178,30 @@ P0-L02·L03·L05는 **같은 앞 100멤버**에 JSON `attractionName` **한 단�
 | **P0-L07** | S01 후 `--keyword-only` 잔여 null · **본명-only 재시도 금지** · `--resume`은 새 쿼리 집합일 때만 | 쿼터 ~10만/일 · 세션 `--limit` | LIVE | ✅ 2026-09-07 **11/100** · tip `6212fab3` |
 | **P0-A01** | 시호·별칭 MISS만 공식 출처/웹으로 후보 → `KEYWORD_ALIASES` → LIVE 1~2회 검증 | 소수 건 | 혼합 | ✅ 2026-09-08 **8/16** L07 cohort · tip `dc608b4b` |
 
-### 다음 세션 (복붙) — 1순위 P0-L07+
+### 다음 세션 (복붙) — 1순위 P0-K02
 
-**채팅명** `팔경contentId #P0-L07+, 확장 keyword`
+**채팅명** `팔경contentId #P0-K02, prefix 종결`
 
 | | |
 |--|--|
-| **브랜치** | `cursor/palgyeong-cid` · tip `dc608b4b` · PR [#185](https://github.com/catgeot/Days/pull/185) |
-| **스냅샷** | P0 멤버 **478/876** (null **398**) · P0-A01 ✅ 8/16 · P2 null **104** |
-| **1순위** | `--keyword-only --limit=100` (memberQueries) · gunsan 등 시호 alias 2차는 합의 후 |
-| **읽기** | index 팔경 contentId 행 · 본 큐 「P0 잔여 전략」· method **§5.7** |
-| **금지** | UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 `plans/**` |
+| **브랜치** | `cursor/palgyeong-cid` · tip `bf6e9882` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **스냅샷** | P0 멤버 **492/876** (null **384**) · open prefix **142** · closed **40** |
+| **1순위** | `close:korea-local-scenic-content-ids --bucket=prefix --apply-unique --limit=40` · HIT는 LIVE 행만 |
+| **읽기** | index 팔경 contentId 행 · 본 큐 「P0 키워드 종결 (K)」· method **§5.7** |
+| **금지** | UI · scenic 승격 · AI가 contentId 숫자 기입 · `--keyword-only --limit=100` 로또 · feature에 `plans/**` |
 
 **이어질 제시어**:
 
 ```
-팔경contentId #P0-L07+, 확장 keyword
+팔경contentId #P0-K02, prefix 종결
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
 브랜치 cursor/palgyeong-cid · PR #185
 금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
-작업: 잔여 null --keyword-only --limit=100 (memberQueries) · gunsan 등 시호 alias 2차는 합의 후
+작업: --bucket=prefix --apply-unique --limit=40 · HIT는 LIVE 행만 · 종결을 close JSON에 기록
 ```
 
-**Auth**: `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` (Edge `tourapi-proxy`) — **C01에는 불필요**. S01·L07·A01 LIVE만.
+**Auth**: `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` (Edge `tourapi-proxy`) — inventory만이면 불필요. K·A LIVE 필요.
 
 - 429 → 해당 R `blocked: quota` · **그날 정지** · 다음날 [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) §1.2 B 429 블록.  
 - 상업·리조트·아울렛 등은 스크립트 `COMMERCIAL_RE`로 MISS 가능 — 무리한 LIVE 반복 금지.

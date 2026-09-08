@@ -14,6 +14,20 @@
 
 ## 활성 목록
 
+### 지구본 프레임 줌 — main 병합 ✅
+
+| | |
+|--|--|
+| **상태** | **#1 merge ✅** · main `386412ac` · PR [#203](https://github.com/catgeot/Days/pull/203) |
+| **브랜치** | `cursor/globe-frame-zoom-7106` · merge `386412ac` |
+| **일지** | [`2026-09-08-project-log.md`](./2026-09-08-project-log.md) |
+| **PROD** | `https://www.gateo.kr/` |
+| **VERIFY** | `smoke:globe-page-zoom-lock` · `vite build` PASS |
+
+**다음 제시어 없음** (주제 종료). 홈 프레임 핀치 후 복귀는 PROD. `/qa/globe-frame-zoom`은 구 Preview — 확인은 `www.gateo.kr`.
+
+---
+
 ### 써머리 닫기
 
 | | |
@@ -305,24 +319,24 @@
 
 | | |
 |--|--|
-| **상태** | R01–R16 ✅ · **P0·P1 F 소진** · members **478/876** · P2 **null 104** · **P0-A01** ✅ 8/16 · **다음 P0-L07+** · A와 **동시 OK** |
-| **브랜치** | `cursor/palgyeong-cid` · tip `dc608b4b` |
+| **상태** | R01–R16 ✅ · **P0·P1 F 소진** · members **492/876** · P2 **null 104** · **P0-K01** ✅ · **다음 P0-K02** prefix 종결 · A와 **동시 OK** |
+| **브랜치** | `cursor/palgyeong-cid` · tip `bf6e9882` |
 | **PR** | [#185](https://github.com/catgeot/Days/pull/185) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§3·§9 B** · method **§5.7** |
-| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — **P0-A01** ✅ · **다음 P0-L07+** |
+| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — **P0-K02** prefix 종결 (`limit` 40) |
 | **일지** | [`2026-09-08-project-log.md`](./2026-09-08-project-log.md) |
 | **소유** | JSON `contentId` · fill · audit · **UI 금지** |
-| **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · 본명-only keyword 재시도 · AI가 ID 기입 · feature에 `plans/**` 커밋 |
+| **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · 본명-only keyword 재시도 · `--limit=100` 로또 · AI가 ID 기입 · feature에 `plans/**` 커밋 |
 
 **다음 제시어**:
 
 ```
-팔경contentId #P0-L07+, 확장 keyword
+팔경contentId #P0-K02, prefix 종결
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
 브랜치 cursor/palgyeong-cid · PR #185
 금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
-작업: 잔여 null --keyword-only --limit=100 (memberQueries) · gunsan 등 시호 alias 2차는 합의 후
+작업: --bucket=prefix --apply-unique --limit=40 · HIT는 LIVE 행만 · 종결을 close JSON에 기록
 ```
 
 ---

@@ -1,6 +1,93 @@
+export const PAGE_ZOOM_SCALE_EPSILON = 0.02;
+export const VIEWPORT_PAGE_ZOOM_LOCK_SUFFIX = 'maximum-scale=1.0, user-scalable=no';
+
+let viewportPageZoomLockActive = false;
+let unlockedViewportContentSnapshot = null;
+
 function isIosWebKitBrowser() {
   if (typeof navigator === 'undefined') return false;
   return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+export function isVisualViewportPageZoomed(scale, epsilon = PAGE_ZOOM_SCALE_EPSILON) {
+  const value = Number(scale);
+  return Number.isFinite(value) && Math.abs(value - 1) > epsilon;
+}
+
+export function stripViewportPageZoomLock(content) {
+  return String(content || '')
+    .split(',')
+    .map((part) => part.trim())
+    .filter((part) => {
+      if (!part) return false;
+      const eq = part.indexOf('=');
+      const key = (eq === -1 ? part : part.slice(0, eq)).trim().toLowerCase();
+      const val = (eq === -1 ? '' : part.slice(eq + 1)).trim().toLowerCase();
+      if (key === 'maximum-scale') return false;
+      if (key === 'user-scalable' && (val === 'no' || val === '0')) return false;
+      return true;
+    })
+    .join(', ');
+}
+
+export function withViewportPageZoomLock(content) {
+  const base = stripViewportPageZoomLock(content);
+  return base ? `${base}, ${VIEWPORT_PAGE_ZOOM_LOCK_SUFFIX}` : VIEWPORT_PAGE_ZOOM_LOCK_SUFFIX;
+}
+
+export function isViewportPageZoomLocked() {
+  return viewportPageZoomLockActive;
+}
+
+export function applyViewportPageZoomLock() {
+  if (typeof document === 'undefined') return;
+  const meta = document.querySelector('meta[name="viewport"]');
+  if (!meta) return;
+  const current = meta.getAttribute('content') || '';
+  if (!unlockedViewportContentSnapshot) {
+    unlockedViewportContentSnapshot = stripViewportPageZoomLock(current);
+  }
+  viewportPageZoomLockActive = true;
+  meta.setAttribute('content', withViewportPageZoomLock(unlockedViewportContentSnapshot));
+}
+
+export function releaseViewportPageZoomLock() {
+  if (typeof document === 'undefined') return;
+  viewportPageZoomLockActive = false;
+  const meta = document.querySelector('meta[name="viewport"]');
+  if (!meta) return;
+  const unlocked = unlockedViewportContentSnapshot
+    || stripViewportPageZoomLock(meta.getAttribute('content') || '');
+  unlockedViewportContentSnapshot = null;
+  meta.setAttribute('content', unlocked);
+}
+
+/** 브라우저 페이지 줌(visualViewport.scale)을 1로 되돌린다. */
+export function resetVisualViewportPageZoom({ keepLock = isViewportPageZoomLocked() } = {}) {
+  if (typeof document === 'undefined' || typeof window === 'undefined') return;
+
+  window.scrollTo(0, 0);
+
+  const meta = document.querySelector('meta[name="viewport"]');
+  if (!meta) return;
+
+  const unlocked = stripViewportPageZoomLock(meta.getAttribute('content') || '');
+  const locked = withViewportPageZoomLock(unlocked);
+
+  if (keepLock) {
+    meta.setAttribute('content', unlocked);
+    requestAnimationFrame(() => {
+      meta.setAttribute('content', locked);
+      window.dispatchEvent(new Event('resize'));
+    });
+    return;
+  }
+
+  meta.setAttribute('content', locked);
+  requestAnimationFrame(() => {
+    meta.setAttribute('content', unlocked);
+    window.dispatchEvent(new Event('resize'));
+  });
 }
 
 /** 입력 포커스·페이지 줌·iOS Safari — full viewport meta 리셋이 필요할 때 */
@@ -11,7 +98,7 @@ export function needsHomeViewportInputSync() {
     return true;
   }
   const vv = window.visualViewport;
-  if (vv && Math.abs(vv.scale - 1) > 0.02) return true;
+  if (vv && isVisualViewportPageZoomed(vv.scale)) return true;
   return isIosWebKitBrowser();
 }
 
@@ -94,18 +181,10 @@ export function resetIosZoomAfterInput() {
 
   window.scrollTo(0, 0);
 
-  const meta = document.querySelector('meta[name="viewport"]');
-  if (!meta) return;
+  const zoomed = isVisualViewportPageZoomed(window.visualViewport?.scale);
+  if (!isIosWebKitBrowser() && !zoomed) return;
 
-  const original = meta.getAttribute('content');
-  if (!original || original.includes('maximum-scale')) return;
-  if (!isIosWebKitBrowser()) return;
-
-  meta.setAttribute('content', `${original}, maximum-scale=1.0`);
-  requestAnimationFrame(() => {
-    meta.setAttribute('content', original);
-    window.dispatchEvent(new Event('resize'));
-  });
+  resetVisualViewportPageZoom();
 }
 
 let homeViewportSyncTimer = null;

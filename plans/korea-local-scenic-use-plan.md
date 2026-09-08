@@ -90,7 +90,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | P0-A01 ✅ 8/16 · **다음 P0-L07+** · members **478/876** · tip `dc608b4b` |
+| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | P0-K02 ⬜ prefix `--apply-unique --limit=40` · members **492/876** · tip `bf6e9882` |
 | **index 행** | 팔경 활용 | 팔경 contentId |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · 워커 병렬 LIVE · 본명-only keyword 재시도 · AI가 ID 기입 |
 
@@ -100,7 +100,11 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 |----|--------------|------|------|
 | 1 | `팔경 활용 #1, 검색·리스트` | A | **완료** · tip `e8da2987` |
 | 2 | `팔경 활용 #2, Preview QA` | A 사람 | **다음** |
-| — | `팔경contentId #P0-L07+, 확장 keyword` | B | **다음** |
+| — | `팔경contentId #P0-K02, prefix 종결` | B | **다음** |
+| — | `팔경contentId #P0-K01, 키워드 종결` | B | **완료** · tip `bf6e9882` 10/40 |
+| — | `팔경contentId #P0-L07+++, 확장 keyword` | B | **폐기** (같은 100명 로또) |
+| — | `팔경contentId #P0-L07++, 확장 keyword` | B | **완료** · tip `c914703c` 2/100 |
+| — | `팔경contentId #P0-L07+, 확장 keyword` | B | **완료** · tip `851fda40` 2/100 |
 | — | `팔경contentId #P0-A01, 시호 alias` | B | **완료** · tip `dc608b4b` 8/16 |
 | — | `팔경contentId #P0-L07, 확장 keyword` | B | **완료** · tip `6212fab3` 11/100 |
 | — | `팔경contentId #P0-L04/#P0-L06` | B | **폐기** (본명 keyword 로또) |
@@ -166,10 +170,21 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 작업: P0-S01 이후 fill --keyword-only --limit=100 (memberQueries) → audit/smoke lists
 ```
 
-### §1.2 B #P0-L07+
+### §1.2 B #P0-K01
 
 ```
-팔경contentId #P0-L07+, 확장 keyword
+팔경contentId #P0-K01, 키워드 종결
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=short --apply-unique --limit=40 · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+### §1.2 B #P0-L07+++
+
+```
+팔경contentId #P0-L07+++, 확장 keyword
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
 브랜치 cursor/palgyeong-cid · PR #185
@@ -177,7 +192,18 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 작업: 잔여 null --keyword-only --limit=100 (memberQueries) · gunsan 등 시호 alias 2차는 합의 후
 ```
 
-### §1.2 B #P0-A01
+### §1.2 B #P0-L07++
+
+```
+팔경contentId #P0-L07++, 확장 keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: 잔여 null --keyword-only --limit=100 (memberQueries) · gunsan 등 시호 alias 2차는 합의 후
+```
+
+### §1.2 B #P0-L07+
 
 ```
 팔경contentId #P0-A01, 시호 alias
