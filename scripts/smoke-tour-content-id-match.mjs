@@ -2,10 +2,14 @@
 import assert from 'node:assert';
 import {
   KEYWORD_ALIASES,
+  acceptUniqueLiveHit,
+  classifyScenicMember,
   looksLikeSigunguDisambiguator,
   memberCoords,
   memberQueries,
   scoreHit,
+  strategyQueries,
+  titleCoversName,
 } from './lib/tour-content-id-match.mjs';
 
 const samcheokHub = { hubId: 'samcheok', name: '삼척', aliases: [] };
@@ -74,5 +78,36 @@ assert.equal(coords.lng, 129.16);
 const hubOnlyCoords = memberCoords({ attractionName: '미등록명소' }, hubWithAttr);
 assert.equal(hubOnlyCoords.lat, 37.45);
 assert.equal(hubOnlyCoords.lng, 129.17);
+
+assert.equal(classifyScenicMember({ attractionName: '죽서루' }), 'short');
+assert.equal(classifyScenicMember({ attractionName: '평사낙안' }), 'siho');
+assert.equal(classifyScenicMember({ attractionName: '호미곶 일출' }), 'poetic');
+assert.equal(classifyScenicMember({ attractionName: '양구 수목원' }), 'prefix');
+
+const jukQueries = strategyQueries({ attractionName: '죽서루' }, samcheokHub);
+assert.ok(jukQueries.includes('삼척 죽서루'), 'strategyQueries adds hub prefix');
+assert.ok(titleCoversName('삼척 죽서루', '죽서루'), 'title covers short name');
+
+const jukHit = acceptUniqueLiveHit(
+  { attractionName: '죽서루' },
+  samcheokHub,
+  [{ title: '삼척 죽서루', addr1: '강원 삼척시 성내동 9-3', contentTypeId: '12', contentId: '125406' }],
+);
+assert.equal(jukHit.status, 'unique_hit');
+assert.equal(jukHit.contentId, '125406');
+
+const daecheong = acceptUniqueLiveHit(
+  { attractionName: '대청봉' },
+  { hubId: 'inje', name: '인제', aliases: [] },
+  [{ title: '설악산 대청봉', addr1: '강원특별자치도 양양군 서면 오색리', contentTypeId: '12', contentId: '125587' }],
+);
+assert.equal(daecheong.status, 'hub_mismatch');
+
+const yangguArb = acceptUniqueLiveHit(
+  { attractionName: '양구 수목원' },
+  { hubId: 'yanggu', name: '양구', aliases: [] },
+  [{ title: '강릉 솔향수목원', addr1: '강원특별자치도 강릉시', contentTypeId: '12', contentId: '1' }],
+);
+assert.equal(yangguArb.status, 'tour_missing');
 
 console.log('smoke-tour-content-id-match: PASS');

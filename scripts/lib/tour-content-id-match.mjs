@@ -172,6 +172,111 @@ export function memberQueries(member, hub) {
   return [...queries];
 }
 
+export const POETIC_TAIL_RE =
+  /(일출|야경|사계|설경|여명|낙조|단풍|복사꽃|벚꽃길|들녘)$/;
+export const PLACE_TAIL_RE =
+  /(산|강|봉|굴|정|루|암|폭포|계곡|산성|주막|해수욕장|수목원|사찰|서원|향교|유원지|마을|공원|댐|다리|바위|저수지|천문대|생태원)$/;
+
+export const CLOSE_BUCKETS = ['siho', 'poetic', 'prefix', 'short', 'other'];
+
+export function classifyScenicMember(member, hub) {
+  const name = String(member?.attractionName || member?.name || '').trim();
+  if (!name) return 'other';
+  const compact = name.replace(/\s+/g, '');
+  if (POETIC_TAIL_RE.test(compact) || /\s(일출|야경|사계|여명|낙조|설경)$/.test(name)) {
+    return 'poetic';
+  }
+  if (/\s/.test(name)) return 'prefix';
+  if (/^[가-힣]{4}$/.test(compact) && !PLACE_TAIL_RE.test(compact)) return 'siho';
+  if (/^[가-힣]{2,5}$/.test(compact)) return 'short';
+  return 'other';
+}
+
+export function namesToCover(member, hub) {
+  const name = String(member?.attractionName || member?.name || '').trim();
+  const names = new Set([name].filter(Boolean));
+  for (const alias of KEYWORD_ALIASES[name] || []) names.add(alias);
+  const token = hubToken(hub);
+  if (token && name.startsWith(`${token} `)) names.add(name.slice(token.length).trim());
+  return [...names].filter((n) => {
+    const k = norm(n);
+    return k.length >= 2 && !GENERIC_RE.test(k);
+  });
+}
+
+export function strategyQueries(member, hub) {
+  const queries = new Set(memberQueries(member, hub));
+  const name = String(member?.attractionName || member?.name || '').trim();
+  const token = hubToken(hub);
+  if (token && name && !name.startsWith(token)) {
+    queries.add(`${token} ${name}`);
+  }
+  const compact = name.replace(/\s+/g, '');
+  if (POETIC_TAIL_RE.test(compact)) {
+    const stripped = compact.replace(POETIC_TAIL_RE, '').trim();
+    if (stripped.length >= 2 && !GENERIC_RE.test(norm(stripped))) {
+      queries.add(stripped);
+      if (token && !stripped.startsWith(token)) queries.add(`${token} ${stripped}`);
+    }
+  }
+  return [...queries].filter((q) => q && !GENERIC_RE.test(norm(q)));
+}
+
+export function titleCoversName(title, name) {
+  const t = norm(title);
+  const n = norm(name);
+  if (!t || !n || n.length < 2 || GENERIC_RE.test(n)) return false;
+  if (t === n) return true;
+  if (t.endsWith(n) || t.includes(n)) {
+    return t.length / n.length <= 2.6;
+  }
+  if (n.startsWith(t) && t.length >= 3 && n.length - t.length <= 4) return true;
+  return false;
+}
+
+export function hubAddrMatches(item, hub) {
+  const addr = String(item?.addr1 || item?.addr || '');
+  const title = String(item?.title || '');
+  const hints = hubHints(hub).filter((h) => /[가-힣]/.test(h) && h.length >= 2);
+  if (!hints.length) return false;
+  return hints.some((h) => addr.includes(h) || title.includes(h));
+}
+
+export function acceptUniqueLiveHit(member, hub, items) {
+  const names = namesToCover(member, hub);
+  const covered = [];
+  for (const item of items || []) {
+    const contentId = String(item.contentId || item.contentid || item.content_id || '').trim();
+    if (!/^\d{1,32}$/.test(contentId)) continue;
+    const title = String(item.title || '');
+    const type = String(item.contentTypeId || item.contenttypeid || item.content_type_id || '');
+    if (type && !['12', '14', '28'].includes(type)) continue;
+    if (COMMERCIAL_RE.test(title) && !/시장|마켓/.test(title)) continue;
+    if (!names.some((n) => titleCoversName(title, n))) continue;
+    covered.push({
+      contentId,
+      tourTitle: title.trim(),
+      hubOk: hubAddrMatches(item, hub),
+    });
+  }
+  const hubHits = covered.filter((c) => c.hubOk);
+  const uniqueIds = [...new Set(hubHits.map((c) => c.contentId))];
+  if (uniqueIds.length === 1) {
+    const hit = hubHits.find((c) => c.contentId === uniqueIds[0]);
+    return { status: 'unique_hit', contentId: hit.contentId, tourTitle: hit.tourTitle };
+  }
+  if (uniqueIds.length > 1) {
+    return { status: 'ambiguous', contentIds: uniqueIds };
+  }
+  if (covered.length) {
+    return {
+      status: 'hub_mismatch',
+      titles: [...new Set(covered.map((c) => c.tourTitle))],
+    };
+  }
+  return { status: 'tour_missing' };
+}
+
 export function scoreHit(query, item, hub, member) {
   const scoped = memberForMatch(member, hub);
   const title = String(item?.title || '');

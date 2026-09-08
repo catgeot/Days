@@ -50,6 +50,8 @@
     "fill:korea-scenic-spot-images": "node scripts/fill-korea-scenic-spot-images.mjs",
     "fill:korea-scenic-spot-content-ids": "node scripts/fill-korea-scenic-spot-content-ids.mjs",
     "fill:korea-local-scenic-content-ids": "node scripts/fill-korea-local-scenic-content-ids.mjs",
+    "inventory:korea-local-scenic-content-ids": "node scripts/close-korea-local-scenic-content-ids.mjs --inventory",
+    "close:korea-local-scenic-content-ids": "node scripts/close-korea-local-scenic-content-ids.mjs",
     "copy:korea-local-scenic-content-ids-from-scenic": "node scripts/copy-korea-local-scenic-content-ids-from-scenic.mjs",
     "fill:korea-hub-attraction-content-ids": "node scripts/fill-korea-hub-attraction-content-ids.mjs",
     "audit:korea-scenic-spots": "node scripts/audit-korea-scenic-spots.mjs",

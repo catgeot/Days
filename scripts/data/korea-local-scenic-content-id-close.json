@@ -1,0 +1,3672 @@
+{
+  "version": 1,
+  "note": "P0 팔경 멤버 contentId 종결. LIVE 행만 unique_hit. AI 숫자 기입 금지.",
+  "updated": "2026-09-08",
+  "items": {
+    "hongcheon-palgyeong::금학산": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "hongcheon",
+      "queries": [
+        "금학산",
+        "홍천 금학산"
+      ]
+    },
+    "hongcheon-palgyeong::살둔계곡": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "hongcheon",
+      "queries": [
+        "살둔계곡",
+        "홍천 살둔계곡"
+      ]
+    },
+    "yanggu-gugyeong::양구 수목원": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "yanggu",
+      "queries": [
+        "양구 수목원",
+        "수목원"
+      ]
+    },
+    "yanggu-gugyeong::양구 봉화산": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "yanggu",
+      "queries": [
+        "양구 봉화산",
+        "봉화산"
+      ]
+    },
+    "yanggu-gugyeong::양구 상무룡 출렁다리": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "yanggu",
+      "queries": [
+        "양구 상무룡 출렁다리",
+        "상무룡 출렁다리"
+      ]
+    },
+    "inje-palgyeong::대청봉": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "inje",
+      "queries": [
+        "대청봉",
+        "인제 대청봉"
+      ]
+    },
+    "inje-palgyeong::대승폭포": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "inje",
+      "queries": [
+        "대승폭포",
+        "인제 대승폭포"
+      ]
+    },
+    "inje-palgyeong::내린천계곡": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "inje",
+      "queries": [
+        "내린천계곡",
+        "인제 내린천계곡"
+      ]
+    },
+    "samcheok-sipgyeong::죽서루": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "samcheok",
+      "queries": [
+        "죽서루",
+        "삼척 죽서루"
+      ]
+    },
+    "samcheok-sipgyeong::새천년해안유원지": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "samcheok",
+      "queries": [
+        "새천년해안유원지",
+        "삼척 새천년해안유원지"
+      ]
+    },
+    "samcheok-sipgyeong::척주동해비": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "samcheok",
+      "queries": [
+        "척주동해비",
+        "삼척 척주동해비"
+      ]
+    },
+    "samcheok-sipgyeong::준경묘": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "samcheok",
+      "queries": [
+        "준경묘",
+        "삼척 준경묘"
+      ]
+    },
+    "wonju-palgyeong::강원감영": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "wonju",
+      "queries": [
+        "강원감영",
+        "원주 강원감영"
+      ]
+    },
+    "wonju-palgyeong::비로봉": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "wonju",
+      "queries": [
+        "비로봉",
+        "원주 비로봉"
+      ]
+    },
+    "wonju-palgyeong::영원산성": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "wonju",
+      "queries": [
+        "영원산성",
+        "원주 영원산성"
+      ]
+    },
+    "wonju-palgyeong::미륵불상": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "wonju",
+      "queries": [
+        "미륵불상",
+        "원주 미륵불상"
+      ]
+    },
+    "donghae-bijing::용추폭포": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "donghae",
+      "queries": [
+        "용추폭포",
+        "동해 용추폭포"
+      ]
+    },
+    "donghae-bijing::무릉반석": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "donghae",
+      "queries": [
+        "무릉반석",
+        "동해 무릉반석"
+      ]
+    },
+    "donghae-bijing::동해 망상해수욕장": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "donghae",
+      "queries": [
+        "동해 망상해수욕장",
+        "망상해수욕장"
+      ]
+    },
+    "donghae-bijing::호해정": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "donghae",
+      "queries": [
+        "호해정",
+        "동해 호해정"
+      ]
+    },
+    "donghae-bijing::할미바위": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "donghae",
+      "queries": [
+        "할미바위",
+        "동해 할미바위"
+      ]
+    },
+    "donghae-bijing::초록봉": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "donghae",
+      "queries": [
+        "초록봉",
+        "동해 초록봉"
+      ]
+    },
+    "sokcho-palgyeong::조도": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "sokcho",
+      "queries": [
+        "조도",
+        "속초 조도"
+      ]
+    },
+    "yangyang-sipgyeong::오색주전골": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yangyang",
+      "queries": [
+        "오색주전골",
+        "양양 오색주전골"
+      ]
+    },
+    "yangyang-sipgyeong::죽도정": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yangyang",
+      "queries": [
+        "죽도정",
+        "양양 죽도정"
+      ]
+    },
+    "goseong-palgyeong::울산바위": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "goseong",
+      "queries": [
+        "울산바위",
+        "고성 울산바위"
+      ]
+    },
+    "goseong-palgyeong::마산봉설경": {
+      "status": "open",
+      "bucket": "poetic",
+      "hubId": "goseong",
+      "queries": [
+        "마산봉설경",
+        "고성 마산봉설경",
+        "마산봉",
+        "고성 마산봉"
+      ]
+    },
+    "cheorwon-gugyeong::학저수지 여명": {
+      "status": "open",
+      "bucket": "poetic",
+      "hubId": "cheorwon",
+      "queries": [
+        "학저수지 여명",
+        "철원 학저수지 여명",
+        "학저수지",
+        "철원 학저수지"
+      ]
+    },
+    "yeongwol-sipgyeong::김삿갓유적지": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "yeongwol",
+      "queries": [
+        "김삿갓유적지",
+        "영월 김삿갓유적지"
+      ]
+    },
+    "yeongwol-sipgyeong::어라연": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yeongwol",
+      "queries": [
+        "어라연",
+        "영월 어라연"
+      ]
+    },
+    "taebaek-palgyeong::장성하부고생대화석산지": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "taebaek",
+      "queries": [
+        "장성하부고생대화석산지",
+        "태백 장성하부고생대화석산지"
+      ]
+    },
+    "taebaek-palgyeong::용연굴": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "taebaek",
+      "queries": [
+        "용연굴",
+        "태백 용연굴"
+      ]
+    },
+    "taebaek-palgyeong::절골마을관리휴양지": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "taebaek",
+      "queries": [
+        "절골마을관리휴양지",
+        "태백 절골마을관리휴양지"
+      ]
+    },
+    "jeongseon-palgyeong::거북바위": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "jeongseon",
+      "queries": [
+        "거북바위",
+        "정선 거북바위"
+      ]
+    },
+    "jeongseon-palgyeong::용마소": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "jeongseon",
+      "queries": [
+        "용마소",
+        "정선 용마소"
+      ]
+    },
+    "jeongseon-palgyeong::화표주": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "jeongseon",
+      "queries": [
+        "화표주",
+        "정선 화표주"
+      ]
+    },
+    "hwacheon-gugyeong::비래바위": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "hwacheon",
+      "queries": [
+        "비래바위",
+        "화천 비래바위"
+      ]
+    },
+    "danyang-palgyeong::사인암": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "danyang",
+      "queries": [
+        "사인암",
+        "단양 사인암"
+      ]
+    },
+    "danyang-palgyeong::구담봉": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "danyang",
+      "queries": [
+        "구담봉",
+        "단양 구담봉"
+      ]
+    },
+    "danyang-palgyeong::옥순봉": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "danyang",
+      "queries": [
+        "옥순봉",
+        "단양 옥순봉"
+      ]
+    },
+    "danyang-palgyeong::하선암": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "danyang",
+      "queries": [
+        "하선암",
+        "단양 하선암"
+      ]
+    },
+    "jecheon-sipgyeong::청풍문화재단지": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "jecheon",
+      "queries": [
+        "청풍문화재단지",
+        "제천 청풍문화재단지"
+      ]
+    },
+    "okcheon-gugyeong::옛37번 국도변 벚꽃길": {
+      "status": "open",
+      "bucket": "poetic",
+      "hubId": "okcheon",
+      "queries": [
+        "옛37번 국도변 벚꽃길",
+        "국도변 벚꽃길",
+        "옥천 옛37번 국도변 벚꽃길",
+        "옛37번국도변",
+        "옥천 옛37번국도변"
+      ]
+    },
+    "okcheon-gugyeong::용암사 일출": {
+      "status": "open",
+      "bucket": "poetic",
+      "hubId": "okcheon",
+      "queries": [
+        "용암사 일출",
+        "옥천 용암사 일출",
+        "용암사",
+        "옥천 용암사"
+      ]
+    },
+    "yeongdong-yangsan-palgyeong::비봉산": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yeongdong",
+      "queries": [
+        "비봉산",
+        "영동 비봉산"
+      ]
+    },
+    "yeongdong-yangsan-palgyeong::봉황대": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yeongdong",
+      "queries": [
+        "봉황대",
+        "영동 봉황대"
+      ]
+    },
+    "yeongdong-yangsan-palgyeong::함벽정": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yeongdong",
+      "queries": [
+        "함벽정",
+        "영동 함벽정"
+      ]
+    },
+    "yeongdong-yangsan-palgyeong::여의정": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yeongdong",
+      "queries": [
+        "여의정",
+        "영동 여의정"
+      ]
+    },
+    "yeongdong-yangsan-palgyeong::자풍서당": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "yeongdong",
+      "queries": [
+        "자풍서당",
+        "영동 자풍서당"
+      ]
+    },
+    "yeongdong-yangsan-palgyeong::용암": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yeongdong",
+      "queries": [
+        "용암",
+        "영동 용암"
+      ]
+    },
+    "yeongdong-hancheon-palgyeong::화헌악": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yeongdong",
+      "queries": [
+        "화헌악",
+        "영동 화헌악"
+      ]
+    },
+    "yeongdong-hancheon-palgyeong::용연대": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yeongdong",
+      "queries": [
+        "용연대",
+        "영동 용연대"
+      ]
+    },
+    "yeongdong-hancheon-palgyeong::산양벽": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yeongdong",
+      "queries": [
+        "산양벽",
+        "영동 산양벽"
+      ]
+    },
+    "yeongdong-hancheon-palgyeong::청학굴": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yeongdong",
+      "queries": [
+        "청학굴",
+        "영동 청학굴"
+      ]
+    },
+    "yeongdong-hancheon-palgyeong::법존암": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yeongdong",
+      "queries": [
+        "법존암",
+        "영동 법존암"
+      ]
+    },
+    "yeongdong-hancheon-palgyeong::사군봉": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yeongdong",
+      "queries": [
+        "사군봉",
+        "영동 사군봉"
+      ]
+    },
+    "yeongdong-hancheon-palgyeong::냉천정": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yeongdong",
+      "queries": [
+        "냉천정",
+        "영동 냉천정"
+      ]
+    },
+    "jincheon-palgyeong::평사낙안": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "jincheon",
+      "queries": [
+        "평사낙안",
+        "진천 평사낙안"
+      ]
+    },
+    "jincheon-palgyeong::우담제월": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "jincheon",
+      "queries": [
+        "우담제월",
+        "진천 우담제월"
+      ]
+    },
+    "jincheon-palgyeong::금계완사": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "jincheon",
+      "queries": [
+        "금계완사",
+        "진천 금계완사"
+      ]
+    },
+    "jincheon-palgyeong::상산모운": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "jincheon",
+      "queries": [
+        "상산모운",
+        "진천 상산모운"
+      ]
+    },
+    "jincheon-palgyeong::어은계석": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "jincheon",
+      "queries": [
+        "어은계석",
+        "진천 어은계석"
+      ]
+    },
+    "jincheon-palgyeong::적대청람": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "jincheon",
+      "queries": [
+        "적대청람",
+        "진천 적대청람"
+      ]
+    },
+    "jeungpyeong-gugyeong::좌구산 천문대": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "jeungpyeong",
+      "queries": [
+        "좌구산 천문대",
+        "천문대",
+        "증평 좌구산 천문대"
+      ]
+    },
+    "jeungpyeong-gugyeong::삼기저수지 등잔길": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "jeungpyeong",
+      "queries": [
+        "삼기저수지 등잔길",
+        "등잔길",
+        "증평 삼기저수지 등잔길"
+      ]
+    },
+    "jeungpyeong-gugyeong::추성산성": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "jeungpyeong",
+      "queries": [
+        "추성산성",
+        "증평 추성산성"
+      ]
+    },
+    "jeungpyeong-gugyeong::연병호 항일역사공원": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "jeungpyeong",
+      "queries": [
+        "연병호 항일역사공원",
+        "항일역사공원",
+        "증평 연병호 항일역사공원"
+      ]
+    },
+    "gyeongju-8gwae::남산부석": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "gyeongju",
+      "queries": [
+        "남산부석",
+        "경주 남산부석"
+      ]
+    },
+    "gyeongju-8gwae::나원백탑": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "gyeongju",
+      "queries": [
+        "나원백탑",
+        "경주 나원백탑"
+      ]
+    },
+    "pohang-sipgyeong::호미곶 일출": {
+      "status": "open",
+      "bucket": "poetic",
+      "hubId": "pohang",
+      "queries": [
+        "호미곶 일출",
+        "포항 호미곶 일출",
+        "호미곶",
+        "포항 호미곶"
+      ]
+    },
+    "pohang-sipgyeong::내연산 12폭포": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "pohang",
+      "queries": [
+        "내연산 12폭포",
+        "12폭포",
+        "포항 내연산 12폭포"
+      ]
+    },
+    "pohang-sipgyeong::운제산 오어사 사계": {
+      "status": "open",
+      "bucket": "poetic",
+      "hubId": "pohang",
+      "queries": [
+        "운제산 오어사 사계",
+        "오어사 사계",
+        "포항 운제산 오어사 사계",
+        "운제산오어사",
+        "포항 운제산오어사"
+      ]
+    },
+    "pohang-sipgyeong::영일대 포스코 야경": {
+      "status": "open",
+      "bucket": "poetic",
+      "hubId": "pohang",
+      "queries": [
+        "영일대 포스코 야경",
+        "포스코 야경",
+        "포항 영일대 포스코 야경",
+        "영일대포스코",
+        "포항 영일대포스코"
+      ]
+    },
+    "pohang-sipgyeong::철길숲 불의 정원": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "pohang",
+      "queries": [
+        "철길숲 불의 정원",
+        "불의 정원",
+        "포항 철길숲 불의 정원"
+      ]
+    },
+    "mungyeong-palgyeong::새재계곡": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "mungyeong",
+      "queries": [
+        "새재계곡",
+        "문경 새재계곡"
+      ]
+    },
+    "mungyeong-palgyeong::용추계곡": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "mungyeong",
+      "queries": [
+        "용추계곡",
+        "문경 용추계곡"
+      ]
+    },
+    "mungyeong-palgyeong::쌍용계곡": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "mungyeong",
+      "queries": [
+        "쌍용계곡",
+        "문경 쌍용계곡"
+      ]
+    },
+    "mungyeong-palgyeong::운달계곡": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "mungyeong",
+      "queries": [
+        "운달계곡",
+        "문경 운달계곡"
+      ]
+    },
+    "mungyeong-palgyeong::봉암사백운대": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "mungyeong",
+      "queries": [
+        "봉암사백운대",
+        "문경 봉암사백운대"
+      ]
+    },
+    "yecheon-palgyeong::삼강주막": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yecheon",
+      "queries": [
+        "삼강주막",
+        "예천 삼강주막"
+      ]
+    },
+    "yecheon-palgyeong::금당실 전통마을과 송림": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "yecheon",
+      "queries": [
+        "금당실 전통마을과 송림",
+        "전통마을과 송림",
+        "예천 금당실 전통마을과 송림"
+      ]
+    },
+    "yecheon-palgyeong::예천곤충생태원": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "yecheon",
+      "queries": [
+        "예천곤충생태원",
+        "곤충생태원"
+      ]
+    },
+    "yecheon-palgyeong::석송령": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yecheon",
+      "queries": [
+        "석송령",
+        "예천 석송령"
+      ]
+    },
+    "yeongdeok-sipgyeong::영덕 도천숲": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "yeongdeok",
+      "queries": [
+        "영덕 도천숲",
+        "도천숲"
+      ]
+    },
+    "yeongdeok-sipgyeong::영덕 팔각산": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "yeongdeok",
+      "queries": [
+        "영덕 팔각산",
+        "팔각산"
+      ]
+    },
+    "yeongdeok-sipgyeong::영덕 사월의 복사꽃": {
+      "status": "open",
+      "bucket": "poetic",
+      "hubId": "yeongdeok",
+      "queries": [
+        "영덕 사월의 복사꽃",
+        "사월의 복사꽃",
+        "영덕사월의"
+      ]
+    },
+    "yeongdeok-sipgyeong::영덕 나옹왕사 사적비": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "yeongdeok",
+      "queries": [
+        "영덕 나옹왕사 사적비",
+        "나옹왕사 사적비"
+      ]
+    },
+    "uiseong-binggye-palgyeong::빙계 빙혈": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "uiseong",
+      "queries": [
+        "빙계 빙혈",
+        "의성 빙계 빙혈"
+      ]
+    },
+    "uiseong-binggye-palgyeong::빙계 풍혈": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "uiseong",
+      "queries": [
+        "빙계 풍혈",
+        "의성 빙계 풍혈"
+      ]
+    },
+    "uiseong-binggye-palgyeong::빙계 인암": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "uiseong",
+      "queries": [
+        "빙계 인암",
+        "의성 빙계 인암"
+      ]
+    },
+    "uiseong-binggye-palgyeong::빙계 의각": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "uiseong",
+      "queries": [
+        "빙계 의각",
+        "의성 빙계 의각"
+      ]
+    },
+    "uiseong-binggye-palgyeong::빙계 수대": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "uiseong",
+      "queries": [
+        "빙계 수대",
+        "의성 빙계 수대"
+      ]
+    },
+    "uiseong-binggye-palgyeong::빙산사지 오층석탑": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "uiseong",
+      "queries": [
+        "빙산사지 오층석탑",
+        "오층석탑",
+        "의성 빙산사지 오층석탑"
+      ]
+    },
+    "uiseong-binggye-palgyeong::빙계 불정": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "uiseong",
+      "queries": [
+        "빙계 불정",
+        "의성 빙계 불정"
+      ]
+    },
+    "uiseong-binggye-palgyeong::빙계 용추": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "uiseong",
+      "queries": [
+        "빙계 용추",
+        "의성 빙계 용추"
+      ]
+    },
+    "seongju-sipgyeong::성주참외하우스 들녘": {
+      "status": "open",
+      "bucket": "poetic",
+      "hubId": "seongju",
+      "queries": [
+        "성주참외하우스 들녘",
+        "참외하우스 들녘",
+        "성주참외하우스"
+      ]
+    },
+    "yeongcheon-gugyeong::영천 보현산천문대": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "yeongcheon",
+      "queries": [
+        "영천 보현산천문대",
+        "보현산천문대"
+      ]
+    },
+    "yeongcheon-gugyeong::영천 치산관광지": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "yeongcheon",
+      "queries": [
+        "영천 치산관광지",
+        "치산관광지"
+      ]
+    },
+    "yeongcheon-gugyeong::영천댐 벚꽃 백리길": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "yeongcheon",
+      "queries": [
+        "영천댐 벚꽃 백리길",
+        "댐 벚꽃 백리길",
+        "벚꽃 백리길"
+      ]
+    },
+    "yeongcheon-gugyeong::영천 한의마을": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "yeongcheon",
+      "queries": [
+        "영천 한의마을",
+        "한의마을"
+      ]
+    },
+    "yeongcheon-gugyeong::영천 별별미술마을": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "yeongcheon",
+      "queries": [
+        "영천 별별미술마을",
+        "별별미술마을"
+      ]
+    },
+    "cheongdo-gugyeong::청도 새마을운동발상지기념공원": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "cheongdo",
+      "queries": [
+        "청도 새마을운동발상지기념공원",
+        "새마을운동발상지기념공원"
+      ]
+    },
+    "cheongdo-gugyeong::청도 운문사": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "cheongdo",
+      "queries": [
+        "청도 운문사",
+        "운문사"
+      ]
+    },
+    "cheongdo-gugyeong::청도 섶마리한옥마을": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "cheongdo",
+      "queries": [
+        "청도 섶마리한옥마을",
+        "섶마리한옥마을"
+      ]
+    },
+    "cheongdo-gugyeong::청도 낙대폭포": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "cheongdo",
+      "queries": [
+        "청도 낙대폭포",
+        "낙대폭포"
+      ]
+    },
+    "tongyeong-palgyeong::남망산공원": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "tongyeong",
+      "queries": [
+        "남망산공원",
+        "통영 남망산공원"
+      ]
+    },
+    "tongyeong-palgyeong::한산도제승당": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "tongyeong",
+      "queries": [
+        "한산도제승당",
+        "통영 한산도제승당"
+      ]
+    },
+    "tongyeong-palgyeong::통영운하 야경": {
+      "status": "open",
+      "bucket": "poetic",
+      "hubId": "tongyeong",
+      "queries": [
+        "통영운하 야경",
+        "운하 야경",
+        "통영운하"
+      ]
+    },
+    "geoje-gugyeong::학동몽돌해수욕장": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "geoje",
+      "queries": [
+        "학동몽돌해수욕장",
+        "거제 학동몽돌해수욕장"
+      ]
+    },
+    "geoje-gugyeong::거제 식물원": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "geoje",
+      "queries": [
+        "거제 식물원",
+        "식물원"
+      ]
+    },
+    "geoje-gugyeong::거제포로수용소유적공원": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "geoje",
+      "queries": [
+        "거제포로수용소유적공원",
+        "포로수용소유적공원"
+      ]
+    },
+    "geoje-gugyeong::공곶이·내도": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "geoje",
+      "queries": [
+        "공곶이·내도",
+        "거제 공곶이·내도"
+      ]
+    },
+    "sacheon-gugyeong::삼천포대교와 사천바다케이블카": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "sacheon",
+      "queries": [
+        "삼천포대교와 사천바다케이블카",
+        "대교와 사천바다케이블카",
+        "사천바다케이블카",
+        "사천 삼천포대교와 사천바다케이블카"
+      ]
+    },
+    "sacheon-gugyeong::남일대 코끼리바위": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "sacheon",
+      "queries": [
+        "남일대 코끼리바위",
+        "코끼리바위",
+        "사천 남일대 코끼리바위"
+      ]
+    },
+    "sacheon-gugyeong::선진리성 벚꽃": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "sacheon",
+      "queries": [
+        "선진리성 벚꽃",
+        "사천 선진리성 벚꽃"
+      ]
+    },
+    "sacheon-gugyeong::봉명산 다솔사": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "sacheon",
+      "queries": [
+        "봉명산 다솔사",
+        "다솔사",
+        "사천 봉명산 다솔사"
+      ]
+    },
+    "sacheon-gugyeong::비토섬 갯벌": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "sacheon",
+      "queries": [
+        "비토섬 갯벌",
+        "사천 비토섬 갯벌"
+      ]
+    },
+    "sacheon-gugyeong::용두공원과 청룡사 겹벚꽃": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "sacheon",
+      "queries": [
+        "용두공원과 청룡사 겹벚꽃",
+        "청룡사 겹벚꽃",
+        "사천 용두공원과 청룡사 겹벚꽃"
+      ]
+    },
+    "namhae-sipgyeong::남해 금산과 보리암": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "namhae",
+      "queries": [
+        "남해 금산과 보리암",
+        "금산과 보리암"
+      ]
+    },
+    "namhae-sipgyeong::창선교와 남해지족해협 죽방렴": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "namhae",
+      "queries": [
+        "창선교와 남해지족해협 죽방렴",
+        "남해지족해협 죽방렴",
+        "남해 창선교와 남해지족해협 죽방렴"
+      ]
+    },
+    "namhae-sipgyeong::서포 김만중 선생 유허와 노도": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "namhae",
+      "queries": [
+        "서포 김만중 선생 유허와 노도",
+        "김만중 선생 유허와 노도",
+        "남해 서포 김만중 선생 유허와 노도"
+      ]
+    },
+    "namhae-sipgyeong::남해 물건리 방조어부림과 물미해안": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "namhae",
+      "queries": [
+        "남해 물건리 방조어부림과 물미해안",
+        "물건리 방조어부림과 물미해안"
+      ]
+    },
+    "namhae-sipgyeong::창선-삼천포대교": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "namhae",
+      "queries": [
+        "창선-삼천포대교",
+        "남해 창선-삼천포대교"
+      ]
+    },
+    "hadong-sipgyeong::화개장터십리벚꽃": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "hadong",
+      "queries": [
+        "화개장터십리벚꽃",
+        "하동 화개장터십리벚꽃"
+      ]
+    },
+    "hadong-sipgyeong::금오산 일출과 다도해": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "hadong",
+      "queries": [
+        "금오산 일출과 다도해",
+        "일출과 다도해",
+        "하동 금오산 일출과 다도해"
+      ]
+    },
+    "hadong-sipgyeong::쌍계사의 가을": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "hadong",
+      "queries": [
+        "쌍계사의 가을",
+        "하동 쌍계사의 가을"
+      ]
+    },
+    "hadong-sipgyeong::형제봉 철쭉": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "hadong",
+      "queries": [
+        "형제봉 철쭉",
+        "하동 형제봉 철쭉"
+      ]
+    },
+    "hadong-sipgyeong::청학동 삼성궁": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "hadong",
+      "queries": [
+        "청학동 삼성궁",
+        "삼성궁",
+        "하동 청학동 삼성궁"
+      ]
+    },
+    "hadong-sipgyeong::하동포구 백사청송": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "hadong",
+      "queries": [
+        "하동포구 백사청송",
+        "포구 백사청송",
+        "백사청송"
+      ]
+    },
+    "hadong-sipgyeong::섬호정에서 바라본 섬진강": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "hadong",
+      "queries": [
+        "섬호정에서 바라본 섬진강",
+        "바라본 섬진강",
+        "하동 섬호정에서 바라본 섬진강"
+      ]
+    },
+    "jinju-palgyeong::남강 의암": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "jinju",
+      "queries": [
+        "남강 의암",
+        "진주 남강 의암"
+      ]
+    },
+    "jinju-palgyeong::뒤벼리": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "jinju",
+      "queries": [
+        "뒤벼리",
+        "진주 뒤벼리"
+      ]
+    },
+    "jinju-palgyeong::새벼리": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "jinju",
+      "queries": [
+        "새벼리",
+        "진주 새벼리"
+      ]
+    },
+    "jinju-palgyeong::망진산 봉수대": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "jinju",
+      "queries": [
+        "망진산 봉수대",
+        "봉수대",
+        "진주 망진산 봉수대"
+      ]
+    },
+    "jinju-palgyeong::비봉산의 봄": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "jinju",
+      "queries": [
+        "비봉산의 봄",
+        "진주 비봉산의 봄"
+      ]
+    },
+    "jinju-palgyeong::월아산 해돋이": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "jinju",
+      "queries": [
+        "월아산 해돋이",
+        "해돋이",
+        "진주 월아산 해돋이"
+      ]
+    },
+    "sancheong-gugyeong::황매산 철쭉": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "sancheong",
+      "queries": [
+        "황매산 철쭉",
+        "산청 황매산 철쭉"
+      ]
+    },
+    "sancheong-gugyeong::구형왕릉": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "sancheong",
+      "queries": [
+        "구형왕릉",
+        "산청 구형왕릉"
+      ]
+    },
+    "sancheong-gugyeong::남명조식유적지": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "sancheong",
+      "queries": [
+        "남명조식유적지",
+        "산청 남명조식유적지"
+      ]
+    },
+    "hamyang-palgyeong::금대지리": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "hamyang",
+      "queries": [
+        "금대지리",
+        "함양 금대지리"
+      ]
+    },
+    "hamyang-palgyeong::용추비경": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "hamyang",
+      "queries": [
+        "용추비경",
+        "함양 용추비경"
+      ]
+    },
+    "hamyang-palgyeong::칠선시류": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "hamyang",
+      "queries": [
+        "칠선시류",
+        "함양 칠선시류"
+      ]
+    },
+    "hamyang-palgyeong::서암석불": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "hamyang",
+      "queries": [
+        "서암석불",
+        "함양 서암석불"
+      ]
+    },
+    "hamyang-palgyeong::덕유운해": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "hamyang",
+      "queries": [
+        "덕유운해",
+        "함양 덕유운해"
+      ]
+    },
+    "geochang-gugyeong::거창 산림레포츠파크": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "geochang",
+      "queries": [
+        "거창 산림레포츠파크",
+        "산림레포츠파크"
+      ]
+    },
+    "geochang-gugyeong::거창 월성리 계곡": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "geochang",
+      "queries": [
+        "거창 월성리 계곡",
+        "월성리 계곡"
+      ]
+    },
+    "geochang-gugyeong::거창 가조온천": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "geochang",
+      "queries": [
+        "거창 가조온천",
+        "가조온천"
+      ]
+    },
+    "hapcheon-palgyeong::옥전고분군": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "hapcheon",
+      "queries": [
+        "옥전고분군",
+        "합천 옥전고분군"
+      ]
+    },
+    "gimhae-gugyeong::연지공원 사계": {
+      "status": "open",
+      "bucket": "poetic",
+      "hubId": "gimhae",
+      "queries": [
+        "연지공원 사계",
+        "김해 연지공원 사계",
+        "연지공원",
+        "김해 연지공원"
+      ]
+    },
+    "gimhae-gugyeong::화포천습지 생태공원": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "gimhae",
+      "queries": [
+        "화포천습지 생태공원",
+        "생태공원",
+        "김해 화포천습지 생태공원"
+      ]
+    },
+    "gimhae-gugyeong::경전철에서 바라본 가야유적": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "gimhae",
+      "queries": [
+        "경전철에서 바라본 가야유적",
+        "바라본 가야유적",
+        "김해 경전철에서 바라본 가야유적"
+      ]
+    },
+    "gimhae-gugyeong::분산(천문대)전경 및 운무": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "gimhae",
+      "queries": [
+        "분산(천문대)전경 및 운무",
+        "및 운무",
+        "김해 분산(천문대)전경 및 운무"
+      ]
+    },
+    "yangsan-other::내원사 계곡": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "yangsan",
+      "queries": [
+        "내원사 계곡",
+        "양산 내원사 계곡"
+      ]
+    },
+    "yangsan-other::황산공원": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yangsan",
+      "queries": [
+        "황산공원",
+        "양산 황산공원"
+      ]
+    },
+    "miryang-palgyeong::시례 호박소": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "miryang",
+      "queries": [
+        "시례 호박소",
+        "호박소",
+        "밀양 시례 호박소"
+      ]
+    },
+    "miryang-palgyeong::월연정 풍경": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "miryang",
+      "queries": [
+        "월연정 풍경",
+        "밀양 월연정 풍경"
+      ]
+    },
+    "miryang-palgyeong::만어사 운해": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "miryang",
+      "queries": [
+        "만어사 운해",
+        "밀양 만어사 운해"
+      ]
+    },
+    "miryang-palgyeong::종남산 진달래": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "miryang",
+      "queries": [
+        "종남산 진달래",
+        "진달래",
+        "밀양 종남산 진달래"
+      ]
+    },
+    "uiryeong-gugyeong::의령 봉황대": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "uiryeong",
+      "queries": [
+        "의령 봉황대",
+        "봉황대"
+      ]
+    },
+    "uiryeong-gugyeong::벽계관광지": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "uiryeong",
+      "queries": [
+        "벽계관광지",
+        "의령 벽계관광지"
+      ]
+    },
+    "uiryeong-gugyeong::정암루(솥바위)": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "uiryeong",
+      "queries": [
+        "정암루(솥바위)",
+        "의령 정암루(솥바위)"
+      ]
+    },
+    "uiryeong-gugyeong::백산안희제선생 생가": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "uiryeong",
+      "queries": [
+        "백산안희제선생 생가",
+        "의령 백산안희제선생 생가"
+      ]
+    },
+    "uiryeong-gugyeong::호암이병철선생 생가": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "uiryeong",
+      "queries": [
+        "호암이병철선생 생가",
+        "의령 호암이병철선생 생가"
+      ]
+    },
+    "haman-gugyeong::말이산고분군": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "haman",
+      "queries": [
+        "말이산고분군",
+        "함안 말이산고분군"
+      ]
+    },
+    "haman-gugyeong::악양의 꽃길과 노을": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "haman",
+      "queries": [
+        "악양의 꽃길과 노을",
+        "꽃길과 노을",
+        "함안 악양의 꽃길과 노을"
+      ]
+    },
+    "haman-gugyeong::무진정의 사계": {
+      "status": "open",
+      "bucket": "poetic",
+      "hubId": "haman",
+      "queries": [
+        "무진정의 사계",
+        "함안 무진정의 사계",
+        "무진정의",
+        "함안 무진정의"
+      ]
+    },
+    "haman-gugyeong::연꽃테마파크의 아라홍련": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "haman",
+      "queries": [
+        "연꽃테마파크의 아라홍련",
+        "아라홍련",
+        "함안 연꽃테마파크의 아라홍련"
+      ]
+    },
+    "haman-gugyeong::장춘사의 산사풍경": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "haman",
+      "queries": [
+        "장춘사의 산사풍경",
+        "산사풍경",
+        "함안 장춘사의 산사풍경"
+      ]
+    },
+    "haman-gugyeong::합강정과 반구정의 해돋이": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "haman",
+      "queries": [
+        "합강정과 반구정의 해돋이",
+        "반구정의 해돋이",
+        "함안 합강정과 반구정의 해돋이"
+      ]
+    },
+    "haman-gugyeong::대평늪의 늪지식물": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "haman",
+      "queries": [
+        "대평늪의 늪지식물",
+        "늪지식물",
+        "함안 대평늪의 늪지식물"
+      ]
+    },
+    "changnyeong-gugyeong::우포늪과 따오기": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "changnyeong",
+      "queries": [
+        "우포늪과 따오기",
+        "늪과 따오기",
+        "따오기",
+        "창녕 우포늪과 따오기"
+      ]
+    },
+    "changnyeong-gugyeong::화왕산 억새와 진달래": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "changnyeong",
+      "queries": [
+        "화왕산 억새와 진달래",
+        "억새와 진달래",
+        "창녕 화왕산 억새와 진달래"
+      ]
+    },
+    "changnyeong-gugyeong::낙동강유채축제와 남지개비리": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "changnyeong",
+      "queries": [
+        "낙동강유채축제와 남지개비리",
+        "남지개비리",
+        "창녕 낙동강유채축제와 남지개비리"
+      ]
+    },
+    "changnyeong-gugyeong::만옥정공원과 신라진흥왕척경비, 술정리동삼층석탑": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "changnyeong",
+      "queries": [
+        "만옥정공원과 신라진흥왕척경비, 술정리동삼층석탑",
+        "신라진흥왕척경비, 술정리동삼층석탑",
+        "창녕 만옥정공원과 신라진흥왕척경비, 술정리동삼층석탑"
+      ]
+    },
+    "changnyeong-gugyeong::교동과 송현동고분군": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "changnyeong",
+      "queries": [
+        "교동과 송현동고분군",
+        "송현동고분군",
+        "창녕 교동과 송현동고분군"
+      ]
+    },
+    "changnyeong-gugyeong::3·1민속문화제와 영산만년교": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "changnyeong",
+      "queries": [
+        "3·1민속문화제와 영산만년교",
+        "영산만년교",
+        "창녕 3·1민속문화제와 영산만년교"
+      ]
+    },
+    "yeosu-other::여수세계박람회장": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "yeosu",
+      "queries": [
+        "여수세계박람회장",
+        "세계박람회장"
+      ]
+    },
+    "yeosu-other::진남관": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yeosu",
+      "queries": [
+        "진남관",
+        "여수 진남관"
+      ]
+    },
+    "yeosu-other::여수 밤바다와 산단 야경": {
+      "status": "open",
+      "bucket": "poetic",
+      "hubId": "yeosu",
+      "queries": [
+        "여수 밤바다와 산단 야경",
+        "밤바다와 산단 야경",
+        "여수밤바다와산단"
+      ]
+    },
+    "yeosu-other::여수해상케이블카": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "yeosu",
+      "queries": [
+        "여수해상케이블카",
+        "해상케이블카"
+      ]
+    },
+    "yeosu-other::여수 이순신대교": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "yeosu",
+      "queries": [
+        "여수 이순신대교",
+        "이순신대교"
+      ]
+    },
+    "gwangyang-gugyeong::백운산 4대 계곡": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "gwangyang",
+      "queries": [
+        "백운산 4대 계곡",
+        "4대 계곡",
+        "광양 백운산 4대 계곡"
+      ]
+    },
+    "gwangyang-gugyeong::백운산 자연휴양림": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "gwangyang",
+      "queries": [
+        "백운산 자연휴양림",
+        "자연휴양림",
+        "광양 백운산 자연휴양림"
+      ]
+    },
+    "gwangyang-gugyeong::광양이순신대교": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "gwangyang",
+      "queries": [
+        "광양이순신대교",
+        "이순신대교"
+      ]
+    },
+    "gwangyang-gugyeong::광양만 야경": {
+      "status": "open",
+      "bucket": "poetic",
+      "hubId": "gwangyang",
+      "queries": [
+        "광양만 야경",
+        "만 야경",
+        "광양만"
+      ]
+    },
+    "gwangyang-gugyeong::옥룡사지 동백나무 숲": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "gwangyang",
+      "queries": [
+        "옥룡사지 동백나무 숲",
+        "동백나무 숲",
+        "광양 옥룡사지 동백나무 숲"
+      ]
+    },
+    "gwangyang-gugyeong::구봉산 케이블카": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "gwangyang",
+      "queries": [
+        "구봉산 케이블카",
+        "케이블카",
+        "광양 구봉산 케이블카"
+      ]
+    },
+    "gwangyang-gugyeong::광양읍수와 이팝나무": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "gwangyang",
+      "queries": [
+        "광양읍수와 이팝나무",
+        "읍수와 이팝나무",
+        "이팝나무"
+      ]
+    },
+    "gurye-other::노고단 운해": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "gurye",
+      "queries": [
+        "노고단 운해",
+        "구례 노고단 운해"
+      ]
+    },
+    "gurye-other::반야봉 낙조": {
+      "status": "open",
+      "bucket": "poetic",
+      "hubId": "gurye",
+      "queries": [
+        "반야봉 낙조",
+        "구례 반야봉 낙조",
+        "반야봉",
+        "구례 반야봉"
+      ]
+    },
+    "gurye-other::피아골 단풍": {
+      "status": "open",
+      "bucket": "poetic",
+      "hubId": "gurye",
+      "queries": [
+        "피아골 단풍",
+        "구례 피아골 단풍",
+        "피아골",
+        "구례 피아골"
+      ]
+    },
+    "gurye-other::산동 산수유꽃": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "gurye",
+      "queries": [
+        "산동 산수유꽃",
+        "산수유꽃",
+        "구례 산동 산수유꽃"
+      ]
+    },
+    "gurye-other::노고단 설경": {
+      "status": "open",
+      "bucket": "poetic",
+      "hubId": "gurye",
+      "queries": [
+        "노고단 설경",
+        "구례 노고단 설경",
+        "노고단",
+        "구례 노고단"
+      ]
+    },
+    "damyang-other::가마골용소": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "damyang",
+      "queries": [
+        "가마골용소",
+        "담양 가마골용소"
+      ]
+    },
+    "damyang-other::금성산성": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "damyang",
+      "queries": [
+        "금성산성",
+        "담양 금성산성"
+      ]
+    },
+    "damyang-other::삼인산": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "damyang",
+      "queries": [
+        "삼인산",
+        "담양 삼인산"
+      ]
+    },
+    "damyang-other::메타세쿼이아 가로수길": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "damyang",
+      "queries": [
+        "메타세쿼이아 가로수길",
+        "가로수길",
+        "담양 메타세쿼이아 가로수길"
+      ]
+    },
+    "damyang-other::담양관방제림": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "damyang",
+      "queries": [
+        "담양관방제림",
+        "관방제림"
+      ]
+    },
+    "hwasun-other::백아산 하늘다리": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "hwasun",
+      "queries": [
+        "백아산 하늘다리",
+        "하늘다리",
+        "화순 백아산 하늘다리"
+      ]
+    },
+    "hwasun-other::고인돌 유적지": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "hwasun",
+      "queries": [
+        "고인돌 유적지",
+        "유적지",
+        "화순 고인돌 유적지"
+      ]
+    },
+    "hwasun-other::수만리 철쭉공원": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "hwasun",
+      "queries": [
+        "수만리 철쭉공원",
+        "철쭉공원",
+        "화순 수만리 철쭉공원"
+      ]
+    },
+    "hwasun-other::연둔리 숲정이": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "hwasun",
+      "queries": [
+        "연둔리 숲정이",
+        "숲정이",
+        "화순 연둔리 숲정이"
+      ]
+    },
+    "hwasun-other::화순 꽃강길 음악분수": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "hwasun",
+      "queries": [
+        "화순 꽃강길 음악분수",
+        "꽃강길 음악분수"
+      ]
+    },
+    "hampyeong-palgyeong::백제고도": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "hampyeong",
+      "queries": [
+        "백제고도",
+        "함평 백제고도"
+      ]
+    },
+    "hampyeong-palgyeong::모악산": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "hampyeong",
+      "queries": [
+        "모악산",
+        "함평 모악산"
+      ]
+    },
+    "hampyeong-palgyeong::삼호천": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "hampyeong",
+      "queries": [
+        "삼호천",
+        "함평 삼호천"
+      ]
+    },
+    "hampyeong-palgyeong::청계산": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "hampyeong",
+      "queries": [
+        "청계산",
+        "함평 청계산"
+      ]
+    },
+    "yeonggwang-gugyeong::백사장해수욕장": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "yeonggwang",
+      "queries": [
+        "백사장해수욕장",
+        "영광 백사장해수욕장"
+      ]
+    },
+    "yeonggwang-gugyeong::황금산": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yeonggwang",
+      "queries": [
+        "황금산",
+        "영광 황금산"
+      ]
+    },
+    "yeonggwang-gugyeong::왕글공원": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yeonggwang",
+      "queries": [
+        "왕글공원",
+        "영광 왕글공원"
+      ]
+    },
+    "yeonggwang-gugyeong::백학촌": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yeonggwang",
+      "queries": [
+        "백학촌",
+        "영광 백학촌"
+      ]
+    },
+    "mokpo-gugyeong::해상분수": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "mokpo",
+      "queries": [
+        "해상분수",
+        "목포 해상분수"
+      ]
+    },
+    "mokpo-gugyeong::목포진": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "mokpo",
+      "queries": [
+        "목포진"
+      ]
+    },
+    "mokpo-gugyeong::다도해 전경": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "mokpo",
+      "queries": [
+        "다도해 전경",
+        "목포 다도해 전경"
+      ]
+    },
+    "muan-gugyeong::영산강 식영정과 느러지": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "muan",
+      "queries": [
+        "영산강 식영정과 느러지",
+        "식영정과 느러지",
+        "무안 영산강 식영정과 느러지"
+      ]
+    },
+    "muan-gugyeong::톱머리·홀통 해수욕장": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "muan",
+      "queries": [
+        "톱머리·홀통 해수욕장",
+        "무안 톱머리·홀통 해수욕장"
+      ]
+    },
+    "muan-gugyeong::낙지공원": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muan",
+      "queries": [
+        "낙지공원",
+        "무안 낙지공원"
+      ]
+    },
+    "jindo-other::조도관음도": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "jindo",
+      "queries": [
+        "조도관음도",
+        "진도 조도관음도"
+      ]
+    },
+    "jindo-other::의장대": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "jindo",
+      "queries": [
+        "의장대",
+        "진도 의장대"
+      ]
+    },
+    "jindo-other::돈대산": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "jindo",
+      "queries": [
+        "돈대산",
+        "진도 돈대산"
+      ]
+    },
+    "jindo-other::하조대": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "jindo",
+      "queries": [
+        "하조대",
+        "진도 하조대"
+      ]
+    },
+    "haenam-palgyeong::해남 구 목포구등대 낙조 전망대": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "haenam",
+      "queries": [
+        "해남 구 목포구등대 낙조 전망대",
+        "구 목포구등대 낙조 전망대"
+      ]
+    },
+    "haenam-palgyeong::해남윤씨 옥우당": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "haenam",
+      "queries": [
+        "해남윤씨 옥우당",
+        "윤씨 옥우당",
+        "옥우당"
+      ]
+    },
+    "haenam-palgyeong::미황사 및 도솔암": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "haenam",
+      "queries": [
+        "미황사 및 도솔암",
+        "및 도솔암",
+        "해남 미황사 및 도솔암"
+      ]
+    },
+    "haenam-palgyeong::울돌목": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "haenam",
+      "queries": [
+        "울돌목",
+        "해남 울돌목"
+      ]
+    },
+    "wando-palgyeong::약산": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "wando",
+      "queries": [
+        "약산",
+        "완도 약산"
+      ]
+    },
+    "wando-palgyeong::국화섬": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "wando",
+      "queries": [
+        "국화섬",
+        "완도 국화섬"
+      ]
+    },
+    "gangjin-other::월출산": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "gangjin",
+      "queries": [
+        "월출산",
+        "강진 월출산"
+      ]
+    },
+    "gangjin-other::가학산": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "gangjin",
+      "queries": [
+        "가학산",
+        "강진 가학산"
+      ]
+    },
+    "gangjin-other::백야김좌진기념관": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "gangjin",
+      "queries": [
+        "백야김좌진기념관",
+        "강진 백야김좌진기념관"
+      ]
+    },
+    "gangjin-other::남도별미식문화박물관": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "gangjin",
+      "queries": [
+        "남도별미식문화박물관",
+        "강진 남도별미식문화박물관"
+      ]
+    },
+    "gangjin-other::강진청자박물관": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "gangjin",
+      "queries": [
+        "강진청자박물관",
+        "청자박물관"
+      ]
+    },
+    "gangjin-other::청자단지": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "gangjin",
+      "queries": [
+        "청자단지",
+        "강진 청자단지"
+      ]
+    },
+    "jangheung-gugyeong::장흥 126타워": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "jangheung",
+      "queries": [
+        "장흥 126타워",
+        "126타워"
+      ]
+    },
+    "jangheung-gugyeong::선학동마을": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "jangheung",
+      "queries": [
+        "선학동마을",
+        "장흥 선학동마을"
+      ]
+    },
+    "jangheung-gugyeong::하늘빛수목정원": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "jangheung",
+      "queries": [
+        "하늘빛수목정원",
+        "장흥 하늘빛수목정원"
+      ]
+    },
+    "boseong-gugyeong::율포해수욕장": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "boseong",
+      "queries": [
+        "율포해수욕장",
+        "보성 율포해수욕장"
+      ]
+    },
+    "boseong-gugyeong::일림산 용추계곡": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "boseong",
+      "queries": [
+        "일림산 용추계곡",
+        "용추계곡",
+        "보성 일림산 용추계곡"
+      ]
+    },
+    "boseong-gugyeong::주암호 서재필기념관": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "boseong",
+      "queries": [
+        "주암호 서재필기념관",
+        "서재필기념관",
+        "보성 주암호 서재필기념관"
+      ]
+    },
+    "goheung-other::쑥섬": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "goheung",
+      "queries": [
+        "쑥섬",
+        "고흥 쑥섬"
+      ]
+    },
+    "goheung-other::금산 해안경관": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "goheung",
+      "queries": [
+        "금산 해안경관",
+        "해안경관",
+        "고흥 금산 해안경관"
+      ]
+    },
+    "goheung-other::고흥만 수변노을공원": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "goheung",
+      "queries": [
+        "고흥만 수변노을공원",
+        "만 수변노을공원",
+        "수변노을공원"
+      ]
+    },
+    "gunsan-palgyeong::선유낙조": {
+      "status": "open",
+      "bucket": "poetic",
+      "hubId": "gunsan",
+      "queries": [
+        "선유낙조",
+        "군산 선유낙조",
+        "선유",
+        "군산 선유"
+      ]
+    },
+    "gunsan-palgyeong::명사십리": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "gunsan",
+      "queries": [
+        "명사십리",
+        "군산 명사십리"
+      ]
+    },
+    "gunsan-palgyeong::망주폭포": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "gunsan",
+      "queries": [
+        "망주폭포",
+        "군산 망주폭포"
+      ]
+    },
+    "gunsan-palgyeong::평사낙안": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "gunsan",
+      "queries": [
+        "평사낙안",
+        "군산 평사낙안"
+      ]
+    },
+    "gunsan-palgyeong::삼도귀범": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "gunsan",
+      "queries": [
+        "삼도귀범",
+        "군산 삼도귀범"
+      ]
+    },
+    "gunsan-palgyeong::장자어화": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "gunsan",
+      "queries": [
+        "장자어화",
+        "군산 장자어화"
+      ]
+    },
+    "gunsan-palgyeong::월영단풍": {
+      "status": "open",
+      "bucket": "poetic",
+      "hubId": "gunsan",
+      "queries": [
+        "월영단풍",
+        "군산 월영단풍",
+        "월영",
+        "군산 월영"
+      ]
+    },
+    "gunsan-palgyeong::무산십이봉": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "gunsan",
+      "queries": [
+        "무산십이봉",
+        "군산 무산십이봉"
+      ]
+    },
+    "buan-palgyeong::웅연조대": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "buan",
+      "queries": [
+        "웅연조대",
+        "부안 웅연조대"
+      ]
+    },
+    "buan-palgyeong::직소폭포": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "buan",
+      "queries": [
+        "직소폭포",
+        "부안 직소폭포"
+      ]
+    },
+    "buan-palgyeong::소사모종": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "buan",
+      "queries": [
+        "소사모종",
+        "부안 소사모종"
+      ]
+    },
+    "buan-palgyeong::월명무애": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "buan",
+      "queries": [
+        "월명무애",
+        "부안 월명무애"
+      ]
+    },
+    "buan-palgyeong::서해낙조": {
+      "status": "open",
+      "bucket": "poetic",
+      "hubId": "buan",
+      "queries": [
+        "서해낙조",
+        "부안 서해낙조",
+        "서해",
+        "부안 서해"
+      ]
+    },
+    "buan-palgyeong::지포신경": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "buan",
+      "queries": [
+        "지포신경",
+        "부안 지포신경"
+      ]
+    },
+    "buan-palgyeong::개암고적": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "buan",
+      "queries": [
+        "개암고적",
+        "부안 개암고적"
+      ]
+    },
+    "jeongeup-gugyeong::동학농민혁명기념공원": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "jeongeup",
+      "queries": [
+        "동학농민혁명기념공원",
+        "정읍 동학농민혁명기념공원"
+      ]
+    },
+    "jeongeup-gugyeong::용산호": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "jeongeup",
+      "queries": [
+        "용산호",
+        "정읍 용산호"
+      ]
+    },
+    "jeongeup-gugyeong::피향정": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "jeongeup",
+      "queries": [
+        "피향정",
+        "정읍 피향정"
+      ]
+    },
+    "jeongeup-gugyeong::월영습지와 솔티숲": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "jeongeup",
+      "queries": [
+        "월영습지와 솔티숲",
+        "솔티숲",
+        "정읍 월영습지와 솔티숲"
+      ]
+    },
+    "jeongeup-gugyeong::김명관 고택": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "jeongeup",
+      "queries": [
+        "김명관 고택",
+        "정읍 김명관 고택"
+      ]
+    },
+    "muju-other::은구암": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "은구암",
+        "무주 은구암"
+      ]
+    },
+    "muju-other::청금대": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "청금대",
+        "무주 청금대"
+      ]
+    },
+    "muju-other::와룡담": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "와룡담",
+        "무주 와룡담"
+      ]
+    },
+    "muju-other::학소대": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "학소대",
+        "무주 학소대"
+      ]
+    },
+    "muju-other::일사대": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "일사대",
+        "무주 일사대"
+      ]
+    },
+    "muju-other::함벽소": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "함벽소",
+        "무주 함벽소"
+      ]
+    },
+    "muju-other::가의암": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "가의암",
+        "무주 가의암"
+      ]
+    },
+    "muju-other::추월담": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "추월담",
+        "무주 추월담"
+      ]
+    },
+    "muju-other::만조탄": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "만조탄",
+        "무주 만조탄"
+      ]
+    },
+    "muju-other::수심대": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "수심대",
+        "무주 수심대"
+      ]
+    },
+    "muju-other::세심대": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "세심대",
+        "무주 세심대"
+      ]
+    },
+    "muju-other::수경대": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "수경대",
+        "무주 수경대"
+      ]
+    },
+    "muju-other::월하탄": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "월하탄",
+        "무주 월하탄"
+      ]
+    },
+    "muju-other::사자담": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "사자담",
+        "무주 사자담"
+      ]
+    },
+    "muju-other::청류동": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "청류동",
+        "무주 청류동"
+      ]
+    },
+    "muju-other::비파담": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "비파담",
+        "무주 비파담"
+      ]
+    },
+    "muju-other::다연대": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "다연대",
+        "무주 다연대"
+      ]
+    },
+    "muju-other::구월담": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "구월담",
+        "무주 구월담"
+      ]
+    },
+    "muju-other::금포탄": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "금포탄",
+        "무주 금포탄"
+      ]
+    },
+    "muju-other::호탄암": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "호탄암",
+        "무주 호탄암"
+      ]
+    },
+    "muju-other::청류계": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "청류계",
+        "무주 청류계"
+      ]
+    },
+    "muju-other::안심대": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "안심대",
+        "무주 안심대"
+      ]
+    },
+    "muju-other::신양담": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "신양담",
+        "무주 신양담"
+      ]
+    },
+    "muju-other::명경담": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "명경담",
+        "무주 명경담"
+      ]
+    },
+    "muju-other::구천폭포": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "구천폭포",
+        "무주 구천폭포"
+      ]
+    },
+    "muju-other::백련담": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "백련담",
+        "무주 백련담"
+      ]
+    },
+    "muju-other::연화폭": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "연화폭",
+        "무주 연화폭"
+      ]
+    },
+    "muju-other::이속대": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "이속대",
+        "무주 이속대"
+      ]
+    },
+    "muju-other::향적봉": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "muju",
+      "queries": [
+        "향적봉",
+        "무주 향적봉"
+      ]
+    },
+    "imsil-gugyeong::강변사리": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "imsil",
+      "queries": [
+        "강변사리",
+        "임실 강변사리"
+      ]
+    },
+    "imsil-gugyeong::옥정호": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "imsil",
+      "queries": [
+        "옥정호",
+        "임실 옥정호"
+      ]
+    },
+    "cheonan-palgyeong::유관순열사사적지": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "cheonan",
+      "queries": [
+        "유관순열사사적지",
+        "천안 유관순열사사적지"
+      ]
+    },
+    "cheonan-palgyeong::태조산 왕건길과 청동대좌불": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "cheonan",
+      "queries": [
+        "태조산 왕건길과 청동대좌불",
+        "왕건길과 청동대좌불",
+        "천안 태조산 왕건길과 청동대좌불"
+      ]
+    },
+    "cheonan-palgyeong::아라리오조각광장": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "cheonan",
+      "queries": [
+        "아라리오조각광장",
+        "천안 아라리오조각광장"
+      ]
+    },
+    "cheonan-palgyeong::봉선홍경사갈기비": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "cheonan",
+      "queries": [
+        "봉선홍경사갈기비",
+        "천안 봉선홍경사갈기비"
+      ]
+    },
+    "seosan-gugyeong::서산 한우목장": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "seosan",
+      "queries": [
+        "서산 한우목장",
+        "한우목장"
+      ]
+    },
+    "taean-palgyeong::안흥성": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "taean",
+      "queries": [
+        "안흥성",
+        "태안 안흥성"
+      ]
+    },
+    "taean-palgyeong::안면송림": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "taean",
+      "queries": [
+        "안면송림",
+        "태안 안면송림"
+      ]
+    },
+    "taean-palgyeong::신두사구": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "taean",
+      "queries": [
+        "신두사구",
+        "태안 신두사구"
+      ]
+    },
+    "seocheon-gugyeong::마량리동백숲": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "seocheon",
+      "queries": [
+        "마량리동백숲",
+        "서천 마량리동백숲"
+      ]
+    },
+    "seocheon-gugyeong::장항송림산림욕장과 장항스카이워크": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "seocheon",
+      "queries": [
+        "장항송림산림욕장과 장항스카이워크",
+        "장항스카이워크",
+        "서천 장항송림산림욕장과 장항스카이워크"
+      ]
+    },
+    "seocheon-gugyeong::유부도와 서천갯벌": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "seocheon",
+      "queries": [
+        "유부도와 서천갯벌",
+        "서천갯벌",
+        "서천 유부도와 서천갯벌"
+      ]
+    },
+    "hongseong-other::만해한용운생가지": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "hongseong",
+      "queries": [
+        "만해한용운생가지",
+        "홍성 만해한용운생가지"
+      ]
+    },
+    "hongseong-other::선상문선생 유허지": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "hongseong",
+      "queries": [
+        "선상문선생 유허지",
+        "유허지",
+        "홍성 선상문선생 유허지"
+      ]
+    },
+    "hongseong-other::고암이응노 생가 기념관": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "hongseong",
+      "queries": [
+        "고암이응노 생가 기념관",
+        "생가 기념관",
+        "홍성 고암이응노 생가 기념관"
+      ]
+    },
+    "hongseong-other::홍주의사총": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "hongseong",
+      "queries": [
+        "홍주의사총",
+        "홍성 홍주의사총"
+      ]
+    },
+    "hongseong-other::그림같은수목원": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "hongseong",
+      "queries": [
+        "그림같은수목원",
+        "홍성 그림같은수목원"
+      ]
+    },
+    "yesan-sipgyeong::충의사": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yesan",
+      "queries": [
+        "충의사",
+        "예산 충의사"
+      ]
+    },
+    "yesan-sipgyeong::추사고택": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "yesan",
+      "queries": [
+        "추사고택",
+        "예산 추사고택"
+      ]
+    },
+    "yesan-sipgyeong::임존성": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yesan",
+      "queries": [
+        "임존성",
+        "예산 임존성"
+      ]
+    },
+    "yesan-sipgyeong::삽교평야": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "yesan",
+      "queries": [
+        "삽교평야",
+        "예산 삽교평야"
+      ]
+    },
+    "yesan-sipgyeong::가야산": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yesan",
+      "queries": [
+        "가야산",
+        "예산 가야산"
+      ]
+    },
+    "yesan-sipgyeong::예산사과": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "yesan",
+      "queries": [
+        "예산사과",
+        "사과"
+      ]
+    },
+    "yesan-sipgyeong::예산황새공원": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "yesan",
+      "queries": [
+        "예산황새공원",
+        "황새공원"
+      ]
+    },
+    "gongju-sipgyeong::고마나루": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "gongju",
+      "queries": [
+        "고마나루",
+        "공주 고마나루"
+      ]
+    },
+    "gongju-sipgyeong::창벽": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "gongju",
+      "queries": [
+        "창벽",
+        "공주 창벽"
+      ]
+    },
+    "buyeo-sipgyeong::궁남지": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "buyeo",
+      "queries": [
+        "궁남지",
+        "부여 궁남지"
+      ]
+    },
+    "buyeo-sipgyeong::부여왕릉원": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "buyeo",
+      "queries": [
+        "부여왕릉원",
+        "왕릉원"
+      ]
+    },
+    "buyeo-sipgyeong::천정대 백제보": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "buyeo",
+      "queries": [
+        "천정대 백제보",
+        "백제보",
+        "부여 천정대 백제보"
+      ]
+    },
+    "nonsan-other::대둔산 수락계곡": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "nonsan",
+      "queries": [
+        "대둔산 수락계곡",
+        "수락계곡",
+        "논산 대둔산 수락계곡"
+      ]
+    },
+    "nonsan-other::강경포구와 근대역사거리": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "nonsan",
+      "queries": [
+        "강경포구와 근대역사거리",
+        "근대역사거리",
+        "논산 강경포구와 근대역사거리"
+      ]
+    },
+    "nonsan-other::노성산성과 명재고택": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "nonsan",
+      "queries": [
+        "노성산성과 명재고택",
+        "명재고택",
+        "논산 노성산성과 명재고택"
+      ]
+    },
+    "nonsan-other::종학당과 한국유교문화진흥원": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "nonsan",
+      "queries": [
+        "종학당과 한국유교문화진흥원",
+        "한국유교문화진흥원",
+        "논산 종학당과 한국유교문화진흥원"
+      ]
+    },
+    "gyeryong-gugyeong::향적산 국사봉": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "gyeryong",
+      "queries": [
+        "향적산 국사봉",
+        "국사봉",
+        "계룡 향적산 국사봉"
+      ]
+    },
+    "gyeryong-gugyeong::숫용추": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "gyeryong",
+      "queries": [
+        "숫용추",
+        "계룡 숫용추"
+      ]
+    },
+    "gyeryong-gugyeong::암용추": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "gyeryong",
+      "queries": [
+        "암용추",
+        "계룡 암용추"
+      ]
+    },
+    "gyeryong-gugyeong::계룡대 통일탑": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "gyeryong",
+      "queries": [
+        "계룡대 통일탑",
+        "대 통일탑",
+        "통일탑"
+      ]
+    },
+    "gyeryong-gugyeong::사계고택": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "gyeryong",
+      "queries": [
+        "사계고택",
+        "계룡 사계고택"
+      ]
+    },
+    "geumsan-sipgyeong::산림문화 힐링명소": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "geumsan",
+      "queries": [
+        "산림문화 힐링명소",
+        "힐링명소",
+        "금산 산림문화 힐링명소"
+      ]
+    },
+    "geumsan-sipgyeong::금산인삼 세계농업유산": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "geumsan",
+      "queries": [
+        "금산인삼 세계농업유산",
+        "인삼 세계농업유산",
+        "세계농업유산"
+      ]
+    },
+    "geumsan-sipgyeong::인삼·약령시장": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "geumsan",
+      "queries": [
+        "인삼·약령시장",
+        "금산 인삼·약령시장"
+      ]
+    },
+    "geumsan-sipgyeong::월영산 원골": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "geumsan",
+      "queries": [
+        "월영산 원골",
+        "금산 월영산 원골"
+      ]
+    },
+    "geumsan-sipgyeong::태조태실 요광은행나무": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "geumsan",
+      "queries": [
+        "태조태실 요광은행나무",
+        "요광은행나무",
+        "금산 태조태실 요광은행나무"
+      ]
+    },
+    "uijeongbu-palgyeong::망월사": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "uijeongbu",
+      "queries": [
+        "망월사",
+        "의정부 망월사"
+      ]
+    },
+    "uijeongbu-palgyeong::미술도서관": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "uijeongbu",
+      "queries": [
+        "미술도서관",
+        "의정부 미술도서관"
+      ]
+    },
+    "uijeongbu-palgyeong::수락산 도정봉": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "uijeongbu",
+      "queries": [
+        "수락산 도정봉",
+        "도정봉",
+        "의정부 수락산 도정봉"
+      ]
+    },
+    "uijeongbu-palgyeong::음악도서관": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "uijeongbu",
+      "queries": [
+        "음악도서관",
+        "의정부 음악도서관"
+      ]
+    },
+    "uijeongbu-palgyeong::의정부경전철": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "uijeongbu",
+      "queries": [
+        "의정부경전철",
+        "경전철"
+      ]
+    },
+    "uijeongbu-palgyeong::의정부제일시장": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "uijeongbu",
+      "queries": [
+        "의정부제일시장",
+        "제일시장"
+      ]
+    },
+    "yeoju-palgyeong::신륵모종": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "yeoju",
+      "queries": [
+        "신륵모종",
+        "여주 신륵모종"
+      ]
+    },
+    "yeoju-palgyeong::마암어등": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "yeoju",
+      "queries": [
+        "마암어등",
+        "여주 마암어등"
+      ]
+    },
+    "yeoju-palgyeong::학동모연": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "yeoju",
+      "queries": [
+        "학동모연",
+        "여주 학동모연"
+      ]
+    },
+    "yeoju-palgyeong::연탄귀범": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "yeoju",
+      "queries": [
+        "연탄귀범",
+        "여주 연탄귀범"
+      ]
+    },
+    "yeoju-palgyeong::양도낙안": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "yeoju",
+      "queries": [
+        "양도낙안",
+        "여주 양도낙안"
+      ]
+    },
+    "yeoju-palgyeong::팔수장림": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "yeoju",
+      "queries": [
+        "팔수장림",
+        "여주 팔수장림"
+      ]
+    },
+    "yeoju-palgyeong::이릉두견": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "yeoju",
+      "queries": [
+        "이릉두견",
+        "여주 이릉두견"
+      ]
+    },
+    "icheon-gugyeong::노성산 말머리바위": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "icheon",
+      "queries": [
+        "노성산 말머리바위",
+        "말머리바위",
+        "이천 노성산 말머리바위"
+      ]
+    },
+    "icheon-gugyeong::도드람산 삼봉": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "icheon",
+      "queries": [
+        "도드람산 삼봉",
+        "이천 도드람산 삼봉"
+      ]
+    },
+    "icheon-gugyeong::반룡송": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "icheon",
+      "queries": [
+        "반룡송",
+        "이천 반룡송"
+      ]
+    },
+    "icheon-gugyeong::사기막골도예촌": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "icheon",
+      "queries": [
+        "사기막골도예촌",
+        "이천 사기막골도예촌"
+      ]
+    },
+    "icheon-gugyeong::산수유마을": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "icheon",
+      "queries": [
+        "산수유마을",
+        "이천 산수유마을"
+      ]
+    },
+    "icheon-gugyeong::설봉산 삼형제 바위": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "icheon",
+      "queries": [
+        "설봉산 삼형제 바위",
+        "삼형제 바위",
+        "이천 설봉산 삼형제 바위"
+      ]
+    },
+    "icheon-gugyeong::애련정": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "icheon",
+      "queries": [
+        "애련정",
+        "이천 애련정"
+      ]
+    },
+    "gwangju-gi-palgyeong::무갑산": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "gwangju_gi",
+      "queries": [
+        "무갑산",
+        "경기광주 무갑산"
+      ]
+    },
+    "gwangju-gi-palgyeong::송정사": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "gwangju_gi",
+      "queries": [
+        "송정사",
+        "경기광주 송정사"
+      ]
+    },
+    "ansan-gugyeong::시화호조력발전소": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "ansan",
+      "queries": [
+        "시화호조력발전소",
+        "안산 시화호조력발전소"
+      ]
+    },
+    "ansan-gugyeong::탄도 바닷길": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "ansan",
+      "queries": [
+        "탄도 바닷길",
+        "바닷길",
+        "안산 탄도 바닷길"
+      ]
+    },
+    "ansan-gugyeong::다문화거리": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "ansan",
+      "queries": [
+        "다문화거리",
+        "안산 다문화거리"
+      ]
+    },
+    "hwaseong-palgyeong::융건릉": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "hwaseong",
+      "queries": [
+        "융건릉",
+        "화성 융건릉"
+      ]
+    },
+    "hwaseong-palgyeong::용주사 범종": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "hwaseong",
+      "queries": [
+        "용주사 범종",
+        "화성 용주사 범종"
+      ]
+    },
+    "hwaseong-palgyeong::남양황라": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "hwaseong",
+      "queries": [
+        "남양황라",
+        "화성 남양황라"
+      ]
+    },
+    "hwaseong-palgyeong::입파홍암": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "hwaseong",
+      "queries": [
+        "입파홍암",
+        "화성 입파홍암"
+      ]
+    },
+    "hwaseong-palgyeong::제암만세": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "hwaseong",
+      "queries": [
+        "제암만세",
+        "화성 제암만세"
+      ]
+    },
+    "hwaseong-palgyeong::남양성지": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "hwaseong",
+      "queries": [
+        "남양성지",
+        "화성 남양성지"
+      ]
+    },
+    "yongin-palgyeong::광교산 사계": {
+      "status": "open",
+      "bucket": "poetic",
+      "hubId": "yongin",
+      "queries": [
+        "광교산 사계",
+        "용인 광교산 사계",
+        "광교산",
+        "용인 광교산"
+      ]
+    },
+    "yongin-palgyeong::조비산": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "yongin",
+      "queries": [
+        "조비산",
+        "용인 조비산"
+      ]
+    },
+    "yongin-palgyeong::어비낙조": {
+      "status": "open",
+      "bucket": "poetic",
+      "hubId": "yongin",
+      "queries": [
+        "어비낙조",
+        "용인 어비낙조",
+        "어비",
+        "용인 어비"
+      ]
+    },
+    "anyang-gugyeong::망해암일몰": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "anyang",
+      "queries": [
+        "망해암일몰",
+        "안양 망해암일몰"
+      ]
+    },
+    "anyang-gugyeong::수리산성지": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "anyang",
+      "queries": [
+        "수리산성지",
+        "안양 수리산성지"
+      ]
+    },
+    "anyang-gugyeong::평촌1번가 문화의거리": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "anyang",
+      "queries": [
+        "평촌1번가 문화의거리",
+        "문화의거리",
+        "안양 평촌1번가 문화의거리"
+      ]
+    },
+    "anyang-gugyeong::만안교": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "anyang",
+      "queries": [
+        "만안교",
+        "안양 만안교"
+      ]
+    },
+    "incheon-gugyeong::인천 소래포구": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "incheon",
+      "queries": [
+        "인천 소래포구",
+        "소래포구"
+      ]
+    },
+    "incheon-gugyeong::인천 계양 아라온": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "incheon",
+      "queries": [
+        "인천 계양 아라온",
+        "계양 아라온"
+      ]
+    },
+    "incheon-gugyeong::인천 영종 씨사이드파크": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "incheon",
+      "queries": [
+        "인천 영종 씨사이드파크",
+        "영종 씨사이드파크"
+      ]
+    },
+    "incheon-gugyeong::인천 강화읍 원도심": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "incheon",
+      "queries": [
+        "인천 강화읍 원도심",
+        "강화읍 원도심"
+      ]
+    },
+    "incheon-gugyeong::인천 신시모도": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "incheon",
+      "queries": [
+        "인천 신시모도",
+        "신시모도"
+      ]
+    },
+    "ganghwa-palgyeong::연미정": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "ganghwa",
+      "queries": [
+        "연미정",
+        "강화 연미정"
+      ]
+    },
+    "ganghwa-palgyeong::전등사": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "ganghwa",
+      "queries": [
+        "전등사",
+        "강화 전등사"
+      ]
+    },
+    "daegu-sipgyeong::대구 국채보상운동 기념공원": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "daegu",
+      "queries": [
+        "대구 국채보상운동 기념공원",
+        "국채보상운동 기념공원"
+      ]
+    },
+    "daegu-sipgyeong::83타워": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "daegu",
+      "queries": [
+        "83타워",
+        "대 83타워"
+      ]
+    },
+    "daegu-sipgyeong::서문시장": {
+      "status": "open",
+      "bucket": "siho",
+      "hubId": "daegu",
+      "queries": [
+        "서문시장",
+        "대 서문시장"
+      ]
+    },
+    "daegu-sipgyeong::동성로": {
+      "status": "open",
+      "bucket": "short",
+      "hubId": "daegu",
+      "queries": [
+        "동성로",
+        "대 동성로"
+      ]
+    },
+    "daegu-sipgyeong::대구 달성토성": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "daegu",
+      "queries": [
+        "대구 달성토성",
+        "달성토성"
+      ]
+    },
+    "daegu-sipgyeong::대구 경상감영과 옛골목": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "daegu",
+      "queries": [
+        "대구 경상감영과 옛골목",
+        "경상감영과 옛골목"
+      ]
+    },
+    "daejeon-palgyeong::대전 구봉산": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "daejeon",
+      "queries": [
+        "대전 구봉산",
+        "구봉산"
+      ]
+    },
+    "daejeon-palgyeong::엑스포과학공원": {
+      "status": "open",
+      "bucket": "other",
+      "hubId": "daejeon",
+      "queries": [
+        "엑스포과학공원",
+        "대전 엑스포과학공원"
+      ]
+    },
+    "daejeon-palgyeong::대전 식장산": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "daejeon",
+      "queries": [
+        "대전 식장산",
+        "식장산"
+      ]
+    },
+    "daejeon-palgyeong::대전 장태산": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "daejeon",
+      "queries": [
+        "대전 장태산",
+        "장태산"
+      ]
+    },
+    "daejeon-palgyeong::대전 보문산": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "daejeon",
+      "queries": [
+        "대전 보문산",
+        "보문산"
+      ]
+    },
+    "ulsan-sipgyeong::울산 가지산 사계": {
+      "status": "open",
+      "bucket": "poetic",
+      "hubId": "ulsan",
+      "queries": [
+        "울산 가지산 사계",
+        "가지산 사계",
+        "울산가지산"
+      ]
+    },
+    "ulsan-sipgyeong::울산 반구대암각화": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "ulsan",
+      "queries": [
+        "울산 반구대암각화",
+        "반구대암각화"
+      ]
+    },
+    "ulsan-sipgyeong::울산 강동몽돌해변": {
+      "status": "open",
+      "bucket": "prefix",
+      "hubId": "ulsan",
+      "queries": [
+        "울산 강동몽돌해변",
+        "강동몽돌해변"
+      ]
+    }
+  }
+}
