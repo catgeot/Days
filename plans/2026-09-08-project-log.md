@@ -2,6 +2,24 @@
 
 직전: [`2026-09-07-project-log.md`](./2026-09-07-project-log.md)
 
+## 팔경 contentId — P0-K01 키워드 종결 (Cloud)
+
+- **세션** `팔경contentId #P0-K01, 키워드 종결`
+- **브랜치** `cursor/palgyeong-cid` · tip `bf6e9882` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--bucket=short --apply-unique --limit=40` **10/40** unique_hit · 22 tour_missing · 8 hub_mismatch · members **492/876** (null **384**) · 429 없음
+- **HIT** 대승폭포·죽서루·척주동해비·준경묘·영원산성·용추폭포·오색주전골·울산바위·어라연·사인암 (LIVE 행만)
+- **VERIFY** audit/smoke lists · smoke content-ids PASS
+- **다음** P0-K02 `--bucket=prefix --apply-unique --limit=40`
+
+```
+팔경contentId #P0-K02, prefix 종결
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=prefix --apply-unique --limit=40 · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
 ## 팔경 contentId — P0-K01 키워드 종결 준비 (Cloud)
 
 - **세션** 준비 · 브랜치 `cursor/palgyeong-cid` · tip `2265f248` · PR [#185](https://github.com/catgeot/Days/pull/185)
