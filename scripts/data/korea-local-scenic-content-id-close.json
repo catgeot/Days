@@ -265,7 +265,7 @@
       "tourTitle": "[강원평화누리자전거길 16코스] 고성 울산바위비경길"
     },
     "goseong-palgyeong::마산봉설경": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "poetic",
       "hubId": "goseong",
       "queries": [
@@ -276,7 +276,7 @@
       ]
     },
     "cheorwon-gugyeong::학저수지 여명": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "poetic",
       "hubId": "cheorwon",
       "queries": [
@@ -284,7 +284,9 @@
         "철원 학저수지 여명",
         "학저수지",
         "철원 학저수지"
-      ]
+      ],
+      "contentId": "2568557",
+      "tourTitle": "학저수지"
     },
     "yeongwol-sipgyeong::김삿갓유적지": {
       "status": "open",
@@ -426,7 +428,7 @@
       ]
     },
     "okcheon-gugyeong::옛37번 국도변 벚꽃길": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "poetic",
       "hubId": "okcheon",
       "queries": [
@@ -438,7 +440,7 @@
       ]
     },
     "okcheon-gugyeong::용암사 일출": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "poetic",
       "hubId": "okcheon",
       "queries": [
@@ -446,7 +448,9 @@
         "옥천 용암사 일출",
         "용암사",
         "옥천 용암사"
-      ]
+      ],
+      "contentId": "125890",
+      "tourTitle": "용암사(옥천)"
     },
     "yeongdong-yangsan-palgyeong::비봉산": {
       "status": "hub_mismatch",
@@ -705,7 +709,7 @@
       ]
     },
     "pohang-sipgyeong::호미곶 일출": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "poetic",
       "hubId": "pohang",
       "queries": [
@@ -726,7 +730,7 @@
       ]
     },
     "pohang-sipgyeong::운제산 오어사 사계": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "poetic",
       "hubId": "pohang",
       "queries": [
@@ -738,7 +742,7 @@
       ]
     },
     "pohang-sipgyeong::영일대 포스코 야경": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "poetic",
       "hubId": "pohang",
       "queries": [
@@ -860,7 +864,7 @@
       ]
     },
     "yeongdeok-sipgyeong::영덕 사월의 복사꽃": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "poetic",
       "hubId": "yeongdeok",
       "queries": [
@@ -952,7 +956,7 @@
       ]
     },
     "seongju-sipgyeong::성주참외하우스 들녘": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "poetic",
       "hubId": "seongju",
       "queries": [
@@ -1068,7 +1072,7 @@
       ]
     },
     "tongyeong-palgyeong::통영운하 야경": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "poetic",
       "hubId": "tongyeong",
       "queries": [
@@ -1453,7 +1457,7 @@
       ]
     },
     "gimhae-gugyeong::연지공원 사계": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "poetic",
       "hubId": "gimhae",
       "queries": [
@@ -1461,7 +1465,9 @@
         "김해 연지공원 사계",
         "연지공원",
         "김해 연지공원"
-      ]
+      ],
+      "contentId": "2779065",
+      "tourTitle": "연지공원"
     },
     "gimhae-gugyeong::화포천습지 생태공원": {
       "status": "open",
@@ -1614,7 +1620,7 @@
       ]
     },
     "haman-gugyeong::무진정의 사계": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "poetic",
       "hubId": "haman",
       "queries": [
@@ -1744,7 +1750,7 @@
       ]
     },
     "yeosu-other::여수 밤바다와 산단 야경": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "poetic",
       "hubId": "yeosu",
       "queries": [
@@ -1801,7 +1807,7 @@
       ]
     },
     "gwangyang-gugyeong::광양만 야경": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "poetic",
       "hubId": "gwangyang",
       "queries": [
@@ -1850,7 +1856,7 @@
       ]
     },
     "gurye-other::반야봉 낙조": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "poetic",
       "hubId": "gurye",
       "queries": [
@@ -1861,7 +1867,7 @@
       ]
     },
     "gurye-other::피아골 단풍": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "poetic",
       "hubId": "gurye",
       "queries": [
@@ -1882,7 +1888,7 @@
       ]
     },
     "gurye-other::노고단 설경": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "poetic",
       "hubId": "gurye",
       "queries": [
@@ -2345,7 +2351,7 @@
       ]
     },
     "gunsan-palgyeong::선유낙조": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "poetic",
       "hubId": "gunsan",
       "queries": [
@@ -2401,7 +2407,7 @@
       ]
     },
     "gunsan-palgyeong::월영단풍": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "poetic",
       "hubId": "gunsan",
       "queries": [
@@ -2457,7 +2463,7 @@
       ]
     },
     "buan-palgyeong::서해낙조": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "poetic",
       "hubId": "buan",
       "queries": [
@@ -3487,7 +3493,7 @@
       ]
     },
     "yongin-palgyeong::광교산 사계": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "poetic",
       "hubId": "yongin",
       "queries": [
@@ -3495,7 +3501,9 @@
         "용인 광교산 사계",
         "광교산",
         "용인 광교산"
-      ]
+      ],
+      "contentId": "128064",
+      "tourTitle": "광교산"
     },
     "yongin-palgyeong::조비산": {
       "status": "open",
@@ -3507,7 +3515,7 @@
       ]
     },
     "yongin-palgyeong::어비낙조": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "poetic",
       "hubId": "yongin",
       "queries": [
@@ -3717,7 +3725,7 @@
       ]
     },
     "ulsan-sipgyeong::울산 가지산 사계": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "poetic",
       "hubId": "ulsan",
       "queries": [

@@ -912,7 +912,8 @@
         "kind": "viewpoint",
         "lat": 38.2,
         "lng": 127.3,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "2568557"
       }
     ]
   },
@@ -1459,7 +1460,8 @@
         "kind": "temple",
         "lat": 36.2595224,
         "lng": 127.5644274,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "125890"
       },
       {
         "attractionName": "장령산자연휴양림",
@@ -3528,7 +3530,8 @@
         "attractionName": "연지공원 사계",
         "name_en": "Yeonji Park Four Seasons",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2779065"
       },
       {
         "attractionName": "화포천습지 생태공원",
@@ -7338,7 +7341,8 @@
         "attractionName": "광교산 사계",
         "name_en": "Gwanggyosan Four Seasons",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "128064"
       },
       {
         "attractionName": "기흥호수공원",

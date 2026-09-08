@@ -13142,7 +13142,8 @@
         "name_en": "Yongamsa Temple Sunrise",
         "kind": "temple",
         "lat": 36.2595224,
-        "lng": 127.5644274
+        "lng": 127.5644274,
+        "contentId": "125890"
       },
       {
         "name": "장령산자연휴양림",
@@ -13954,7 +13955,8 @@
         "name_en": "Hakjeo Reservoir Dawn",
         "kind": "viewpoint",
         "lat": 38.2,
-        "lng": 127.3
+        "lng": 127.3,
+        "contentId": "2568557"
       }
     ]
   },
