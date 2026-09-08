@@ -2503,7 +2503,8 @@
         "attractionName": "영천 치산관광지",
         "name_en": "Chisan Tourist Site Yeongcheon",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "1838310"
       },
       {
         "attractionName": "영천 보현산댐 짚와이어",
@@ -2529,7 +2530,8 @@
         "attractionName": "영천 한의마을",
         "name_en": "Yeongcheon Oriental Medicine Village",
         "kind": "neighborhood",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2606217"
       },
       {
         "attractionName": "영천 별별미술마을",
@@ -2596,7 +2598,8 @@
         "attractionName": "청도 낙대폭포",
         "name_en": "Cheongdo Nakdae Falls",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "4072338"
       },
       {
         "attractionName": "청도 유등연지",
@@ -2763,7 +2766,8 @@
         "kind": "park",
         "lat": 34.8569942,
         "lng": 128.5781165,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "2648073"
       },
       {
         "attractionName": "거제포로수용소유적공원",

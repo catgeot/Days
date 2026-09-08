@@ -3282,7 +3282,8 @@
         "name_en": "Geoje Botanical Garden",
         "kind": "park",
         "lat": 34.8569942,
-        "lng": 128.5781165
+        "lng": 128.5781165,
+        "contentId": "2648073"
       },
       {
         "name": "공곶이·내도",

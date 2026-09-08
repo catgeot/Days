@@ -22,7 +22,7 @@
       ]
     },
     "yanggu-gugyeong::양구 수목원": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "yanggu",
       "queries": [
@@ -31,7 +31,7 @@
       ]
     },
     "yanggu-gugyeong::양구 봉화산": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "yanggu",
       "queries": [
@@ -40,7 +40,7 @@
       ]
     },
     "yanggu-gugyeong::양구 상무룡 출렁다리": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "yanggu",
       "queries": [
@@ -181,7 +181,7 @@
       ]
     },
     "donghae-bijing::동해 망상해수욕장": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "donghae",
       "queries": [
@@ -648,7 +648,7 @@
       ]
     },
     "jeungpyeong-gugyeong::좌구산 천문대": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "jeungpyeong",
       "queries": [
@@ -658,7 +658,7 @@
       ]
     },
     "jeungpyeong-gugyeong::삼기저수지 등잔길": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "jeungpyeong",
       "queries": [
@@ -677,7 +677,7 @@
       ]
     },
     "jeungpyeong-gugyeong::연병호 항일역사공원": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "jeungpyeong",
       "queries": [
@@ -716,7 +716,7 @@
       ]
     },
     "pohang-sipgyeong::내연산 12폭포": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "pohang",
       "queries": [
@@ -750,7 +750,7 @@
       ]
     },
     "pohang-sipgyeong::철길숲 불의 정원": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "pohang",
       "queries": [
@@ -814,7 +814,7 @@
       ]
     },
     "yecheon-palgyeong::금당실 전통마을과 송림": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "yecheon",
       "queries": [
@@ -842,7 +842,7 @@
       ]
     },
     "yeongdeok-sipgyeong::영덕 도천숲": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "yeongdeok",
       "queries": [
@@ -851,7 +851,7 @@
       ]
     },
     "yeongdeok-sipgyeong::영덕 팔각산": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "yeongdeok",
       "queries": [
@@ -870,7 +870,7 @@
       ]
     },
     "yeongdeok-sipgyeong::영덕 나옹왕사 사적비": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "yeongdeok",
       "queries": [
@@ -879,7 +879,7 @@
       ]
     },
     "uiseong-binggye-palgyeong::빙계 빙혈": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "uiseong",
       "queries": [
@@ -888,7 +888,7 @@
       ]
     },
     "uiseong-binggye-palgyeong::빙계 풍혈": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "uiseong",
       "queries": [
@@ -897,7 +897,7 @@
       ]
     },
     "uiseong-binggye-palgyeong::빙계 인암": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "uiseong",
       "queries": [
@@ -906,7 +906,7 @@
       ]
     },
     "uiseong-binggye-palgyeong::빙계 의각": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "uiseong",
       "queries": [
@@ -915,7 +915,7 @@
       ]
     },
     "uiseong-binggye-palgyeong::빙계 수대": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "uiseong",
       "queries": [
@@ -924,7 +924,7 @@
       ]
     },
     "uiseong-binggye-palgyeong::빙산사지 오층석탑": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "uiseong",
       "queries": [
@@ -934,7 +934,7 @@
       ]
     },
     "uiseong-binggye-palgyeong::빙계 불정": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "uiseong",
       "queries": [
@@ -943,7 +943,7 @@
       ]
     },
     "uiseong-binggye-palgyeong::빙계 용추": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "uiseong",
       "queries": [
@@ -962,7 +962,7 @@
       ]
     },
     "yeongcheon-gugyeong::영천 보현산천문대": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "yeongcheon",
       "queries": [
@@ -971,16 +971,18 @@
       ]
     },
     "yeongcheon-gugyeong::영천 치산관광지": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "prefix",
       "hubId": "yeongcheon",
       "queries": [
         "영천 치산관광지",
         "치산관광지"
-      ]
+      ],
+      "contentId": "1838310",
+      "tourTitle": "치산관광지 캠핑장"
     },
     "yeongcheon-gugyeong::영천댐 벚꽃 백리길": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "yeongcheon",
       "queries": [
@@ -990,16 +992,18 @@
       ]
     },
     "yeongcheon-gugyeong::영천 한의마을": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "prefix",
       "hubId": "yeongcheon",
       "queries": [
         "영천 한의마을",
         "한의마을"
-      ]
+      ],
+      "contentId": "2606217",
+      "tourTitle": "영천한의마을"
     },
     "yeongcheon-gugyeong::영천 별별미술마을": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "yeongcheon",
       "queries": [
@@ -1008,7 +1012,7 @@
       ]
     },
     "cheongdo-gugyeong::청도 새마을운동발상지기념공원": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "cheongdo",
       "queries": [
@@ -1017,7 +1021,7 @@
       ]
     },
     "cheongdo-gugyeong::청도 운문사": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "cheongdo",
       "queries": [
@@ -1026,7 +1030,7 @@
       ]
     },
     "cheongdo-gugyeong::청도 섶마리한옥마을": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "cheongdo",
       "queries": [
@@ -1035,13 +1039,15 @@
       ]
     },
     "cheongdo-gugyeong::청도 낙대폭포": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "prefix",
       "hubId": "cheongdo",
       "queries": [
         "청도 낙대폭포",
         "낙대폭포"
-      ]
+      ],
+      "contentId": "4072338",
+      "tourTitle": "낙대폭포"
     },
     "tongyeong-palgyeong::남망산공원": {
       "status": "open",
@@ -1081,13 +1087,15 @@
       ]
     },
     "geoje-gugyeong::거제 식물원": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "prefix",
       "hubId": "geoje",
       "queries": [
         "거제 식물원",
         "식물원"
-      ]
+      ],
+      "contentId": "2648073",
+      "tourTitle": "거제식물원"
     },
     "geoje-gugyeong::거제포로수용소유적공원": {
       "status": "open",
@@ -1108,7 +1116,7 @@
       ]
     },
     "sacheon-gugyeong::삼천포대교와 사천바다케이블카": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "sacheon",
       "queries": [
@@ -1119,7 +1127,7 @@
       ]
     },
     "sacheon-gugyeong::남일대 코끼리바위": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "sacheon",
       "queries": [
@@ -1129,7 +1137,7 @@
       ]
     },
     "sacheon-gugyeong::선진리성 벚꽃": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "sacheon",
       "queries": [
@@ -1138,7 +1146,7 @@
       ]
     },
     "sacheon-gugyeong::봉명산 다솔사": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "sacheon",
       "queries": [
@@ -1148,7 +1156,7 @@
       ]
     },
     "sacheon-gugyeong::비토섬 갯벌": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "sacheon",
       "queries": [
@@ -1157,7 +1165,7 @@
       ]
     },
     "sacheon-gugyeong::용두공원과 청룡사 겹벚꽃": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "sacheon",
       "queries": [
@@ -1167,7 +1175,7 @@
       ]
     },
     "namhae-sipgyeong::남해 금산과 보리암": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "namhae",
       "queries": [
@@ -1176,7 +1184,7 @@
       ]
     },
     "namhae-sipgyeong::창선교와 남해지족해협 죽방렴": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "namhae",
       "queries": [
@@ -1186,7 +1194,7 @@
       ]
     },
     "namhae-sipgyeong::서포 김만중 선생 유허와 노도": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "namhae",
       "queries": [
