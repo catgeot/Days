@@ -5667,7 +5667,8 @@
         "attractionName": "피향정",
         "name_en": "Pihyangjeong Pavilion",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126396"
       },
       {
         "attractionName": "월영습지와 솔티숲",
@@ -5900,7 +5901,8 @@
         "attractionName": "향적봉",
         "name_en": "Hyangjeokbong Peak",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "1705213"
       }
     ]
   },
@@ -6374,7 +6376,8 @@
         "attractionName": "홍주의사총",
         "name_en": "Hongju Martyrs Cemetery",
         "kind": "shrine",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "125993"
       },
       {
         "attractionName": "그림같은수목원",
@@ -6412,7 +6415,8 @@
         "attractionName": "충의사",
         "name_en": "Chunguisa Shrine",
         "kind": "shrine",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "125968"
       },
       {
         "attractionName": "추사고택",
@@ -6424,7 +6428,8 @@
         "attractionName": "임존성",
         "name_en": "Imjonsanseong Fortress",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "125965"
       },
       {
         "attractionName": "예당호",
@@ -6443,7 +6448,8 @@
         "attractionName": "가야산",
         "name_en": "Gayasan Mountain",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2740968"
       },
       {
         "attractionName": "예산사과",
@@ -6502,7 +6508,8 @@
         "attractionName": "고마나루",
         "name_en": "Gomanaru Ferry",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2035859"
       },
       {
         "attractionName": "공산성",
@@ -6595,7 +6602,8 @@
         "attractionName": "부여왕릉원",
         "name_en": "Buyeo Royal Tombs",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "125987"
       },
       {
         "attractionName": "천정대 백제보",

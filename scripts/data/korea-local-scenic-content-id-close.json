@@ -2578,13 +2578,15 @@
       ]
     },
     "jeongeup-gugyeong::피향정": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "jeongeup",
       "queries": [
         "피향정",
         "정읍 피향정"
-      ]
+      ],
+      "contentId": "126396",
+      "tourTitle": "정읍 피향정"
     },
     "jeongeup-gugyeong::월영습지와 솔티숲": {
       "status": "open",
@@ -2606,7 +2608,7 @@
       ]
     },
     "muju-other::은구암": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2615,7 +2617,7 @@
       ]
     },
     "muju-other::청금대": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2624,7 +2626,7 @@
       ]
     },
     "muju-other::와룡담": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2633,16 +2635,19 @@
       ]
     },
     "muju-other::학소대": {
-      "status": "open",
+      "status": "hub_mismatch",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
         "학소대",
         "무주 학소대"
+      ],
+      "titles": [
+        "학소대"
       ]
     },
     "muju-other::일사대": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2651,7 +2656,7 @@
       ]
     },
     "muju-other::함벽소": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2660,7 +2665,7 @@
       ]
     },
     "muju-other::가의암": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2669,7 +2674,7 @@
       ]
     },
     "muju-other::추월담": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2678,7 +2683,7 @@
       ]
     },
     "muju-other::만조탄": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2687,16 +2692,19 @@
       ]
     },
     "muju-other::수심대": {
-      "status": "open",
+      "status": "hub_mismatch",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
         "수심대",
         "무주 수심대"
+      ],
+      "titles": [
+        "수심대"
       ]
     },
     "muju-other::세심대": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2705,7 +2713,7 @@
       ]
     },
     "muju-other::수경대": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2714,7 +2722,7 @@
       ]
     },
     "muju-other::월하탄": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2723,7 +2731,7 @@
       ]
     },
     "muju-other::사자담": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2732,7 +2740,7 @@
       ]
     },
     "muju-other::청류동": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2741,7 +2749,7 @@
       ]
     },
     "muju-other::비파담": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2750,7 +2758,7 @@
       ]
     },
     "muju-other::다연대": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2759,7 +2767,7 @@
       ]
     },
     "muju-other::구월담": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2768,7 +2776,7 @@
       ]
     },
     "muju-other::금포탄": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2777,7 +2785,7 @@
       ]
     },
     "muju-other::호탄암": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2786,7 +2794,7 @@
       ]
     },
     "muju-other::청류계": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2795,7 +2803,7 @@
       ]
     },
     "muju-other::안심대": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2804,7 +2812,7 @@
       ]
     },
     "muju-other::신양담": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2813,7 +2821,7 @@
       ]
     },
     "muju-other::명경담": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2822,7 +2830,7 @@
       ]
     },
     "muju-other::구천폭포": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2831,7 +2839,7 @@
       ]
     },
     "muju-other::백련담": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2840,7 +2848,7 @@
       ]
     },
     "muju-other::연화폭": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2849,7 +2857,7 @@
       ]
     },
     "muju-other::이속대": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
@@ -2858,13 +2866,15 @@
       ]
     },
     "muju-other::향적봉": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "muju",
       "queries": [
         "향적봉",
         "무주 향적봉"
-      ]
+      ],
+      "contentId": "1705213",
+      "tourTitle": "향적봉(덕유산)"
     },
     "imsil-gugyeong::강변사리": {
       "status": "open",
@@ -2876,12 +2886,16 @@
       ]
     },
     "imsil-gugyeong::옥정호": {
-      "status": "open",
+      "status": "ambiguous",
       "bucket": "short",
       "hubId": "imsil",
       "queries": [
         "옥정호",
         "임실 옥정호"
+      ],
+      "contentIds": [
+        "126551",
+        "3082705"
       ]
     },
     "cheonan-palgyeong::유관순열사사적지": {
@@ -2931,7 +2945,7 @@
       ]
     },
     "taean-palgyeong::안흥성": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "taean",
       "queries": [
@@ -3016,13 +3030,15 @@
       ]
     },
     "hongseong-other::홍주의사총": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "hongseong",
       "queries": [
         "홍주의사총",
         "홍성 홍주의사총"
-      ]
+      ],
+      "contentId": "125993",
+      "tourTitle": "홍성 홍주의사총"
     },
     "hongseong-other::그림같은수목원": {
       "status": "tour_missing",
@@ -3034,13 +3050,15 @@
       ]
     },
     "yesan-sipgyeong::충의사": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "yesan",
       "queries": [
         "충의사",
         "예산 충의사"
-      ]
+      ],
+      "contentId": "125968",
+      "tourTitle": "충의사 (매헌 윤봉길 의사 유적)"
     },
     "yesan-sipgyeong::추사고택": {
       "status": "open",
@@ -3052,13 +3070,15 @@
       ]
     },
     "yesan-sipgyeong::임존성": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "yesan",
       "queries": [
         "임존성",
         "예산 임존성"
-      ]
+      ],
+      "contentId": "125965",
+      "tourTitle": "예산 임존성"
     },
     "yesan-sipgyeong::삽교평야": {
       "status": "open",
@@ -3070,13 +3090,15 @@
       ]
     },
     "yesan-sipgyeong::가야산": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "yesan",
       "queries": [
         "가야산",
         "예산 가야산"
-      ]
+      ],
+      "contentId": "2740968",
+      "tourTitle": "가야산캠핑장"
     },
     "yesan-sipgyeong::예산사과": {
       "status": "open",
@@ -3099,16 +3121,18 @@
       "tourTitle": "예산 황새공원"
     },
     "gongju-sipgyeong::고마나루": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "gongju",
       "queries": [
         "고마나루",
         "공주 고마나루"
-      ]
+      ],
+      "contentId": "2035859",
+      "tourTitle": "공주 고마나루"
     },
     "gongju-sipgyeong::창벽": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "gongju",
       "queries": [
@@ -3117,7 +3141,7 @@
       ]
     },
     "buyeo-sipgyeong::궁남지": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "buyeo",
       "queries": [
@@ -3126,13 +3150,15 @@
       ]
     },
     "buyeo-sipgyeong::부여왕릉원": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "buyeo",
       "queries": [
         "부여왕릉원",
         "왕릉원"
-      ]
+      ],
+      "contentId": "125987",
+      "tourTitle": "부여 왕릉원 [유네스코 세계유산]"
     },
     "buyeo-sipgyeong::천정대 백제보": {
       "status": "open",
