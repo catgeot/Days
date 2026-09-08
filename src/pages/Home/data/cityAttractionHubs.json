@@ -542,7 +542,8 @@
         "name_en": "83 Tower",
         "kind": "viewpoint",
         "lat": 35.8535044,
-        "lng": 128.5662742
+        "lng": 128.5662742,
+        "contentId": "1614282"
       },
       {
         "name": "앞산공원",
@@ -646,7 +647,8 @@
         "name_en": "Expo Science Park",
         "kind": "park",
         "lat": 36.3759931713,
-        "lng": 127.3802705364
+        "lng": 127.3802705364,
+        "contentId": "125994"
       },
       {
         "name": "한밭수목원",
@@ -4881,7 +4883,8 @@
         "name_en": "Yulpo Beach",
         "kind": "beach",
         "lat": 34.6696814499,
-        "lng": 127.0881211428
+        "lng": 127.0881211428,
+        "contentId": "2022601"
       },
       {
         "name": "한국차박물관",
@@ -19782,7 +19785,8 @@
         "name_en": "Jeongamru (Sotbawi Rock)",
         "kind": "landmark",
         "lat": 35.3139551,
-        "lng": 128.294889
+        "lng": 128.294889,
+        "contentId": "126193"
       },
       {
         "name": "탑바위",

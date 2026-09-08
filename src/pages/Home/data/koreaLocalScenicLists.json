@@ -3806,7 +3806,8 @@
         "kind": "landmark",
         "lat": 35.3139551,
         "lng": 128.294889,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "126193"
       },
       {
         "attractionName": "탑바위",
@@ -5254,7 +5255,8 @@
         "attractionName": "율포해수욕장",
         "name_en": "Yulpo Beach",
         "kind": "beach",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "2022601"
       },
       {
         "attractionName": "비봉공룡공원",
@@ -6442,7 +6444,8 @@
         "attractionName": "예산황새공원",
         "name_en": "Yesan Stork Park",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2586628"
       },
       {
         "attractionName": "덕산온천",
@@ -7787,7 +7790,8 @@
         "kind": "viewpoint",
         "lat": 35.8535044,
         "lng": 128.5662742,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "1614282"
       },
       {
         "attractionName": "서문시장",
@@ -7864,7 +7868,8 @@
         "kind": "park",
         "lat": 36.3759931713,
         "lng": 127.3802705364,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "125994"
       },
       {
         "attractionName": "계족산 황톳길",

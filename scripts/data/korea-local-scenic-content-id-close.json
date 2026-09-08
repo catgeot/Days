@@ -92,7 +92,7 @@
       "tourTitle": "삼척 죽서루"
     },
     "samcheok-sipgyeong::새천년해안유원지": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "samcheok",
       "queries": [
@@ -289,7 +289,7 @@
       "tourTitle": "학저수지"
     },
     "yeongwol-sipgyeong::김삿갓유적지": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "yeongwol",
       "queries": [
@@ -309,7 +309,7 @@
       "tourTitle": "영월 어라연(강원고생대 국가지질공원)"
     },
     "taebaek-palgyeong::장성하부고생대화석산지": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "taebaek",
       "queries": [
@@ -327,7 +327,7 @@
       ]
     },
     "taebaek-palgyeong::절골마을관리휴양지": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "taebaek",
       "queries": [
@@ -419,7 +419,7 @@
       ]
     },
     "jecheon-sipgyeong::청풍문화재단지": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "jecheon",
       "queries": [
@@ -800,7 +800,7 @@
       ]
     },
     "mungyeong-palgyeong::봉암사백운대": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "mungyeong",
       "queries": [
@@ -828,7 +828,7 @@
       ]
     },
     "yecheon-palgyeong::예천곤충생태원": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "yecheon",
       "queries": [
@@ -1063,7 +1063,7 @@
       ]
     },
     "tongyeong-palgyeong::한산도제승당": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "tongyeong",
       "queries": [
@@ -1082,7 +1082,7 @@
       ]
     },
     "geoje-gugyeong::학동몽돌해수욕장": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "geoje",
       "queries": [
@@ -1102,7 +1102,7 @@
       "tourTitle": "거제식물원"
     },
     "geoje-gugyeong::거제포로수용소유적공원": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "geoje",
       "queries": [
@@ -1111,7 +1111,7 @@
       ]
     },
     "geoje-gugyeong::공곶이·내도": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "geoje",
       "queries": [
@@ -1217,7 +1217,7 @@
       ]
     },
     "namhae-sipgyeong::창선-삼천포대교": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "namhae",
       "queries": [
@@ -1226,7 +1226,7 @@
       ]
     },
     "hadong-sipgyeong::화개장터십리벚꽃": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "hadong",
       "queries": [
@@ -1367,7 +1367,7 @@
       ]
     },
     "sancheong-gugyeong::남명조식유적지": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "sancheong",
       "queries": [
@@ -1574,13 +1574,15 @@
       ]
     },
     "uiryeong-gugyeong::정암루(솥바위)": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "other",
       "hubId": "uiryeong",
       "queries": [
         "정암루(솥바위)",
         "의령 정암루(솥바위)"
-      ]
+      ],
+      "contentId": "126193",
+      "tourTitle": "정암루(솥바위)"
     },
     "uiryeong-gugyeong::백산안희제선생 생가": {
       "status": "open",
@@ -1601,7 +1603,7 @@
       ]
     },
     "haman-gugyeong::말이산고분군": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "haman",
       "queries": [
@@ -1732,7 +1734,7 @@
       ]
     },
     "yeosu-other::여수세계박람회장": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "yeosu",
       "queries": [
@@ -1760,7 +1762,7 @@
       ]
     },
     "yeosu-other::여수해상케이블카": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "yeosu",
       "queries": [
@@ -1798,7 +1800,7 @@
       ]
     },
     "gwangyang-gugyeong::광양이순신대교": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "gwangyang",
       "queries": [
@@ -1936,7 +1938,7 @@
       ]
     },
     "damyang-other::담양관방제림": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "damyang",
       "queries": [
@@ -2030,12 +2032,15 @@
       ]
     },
     "yeonggwang-gugyeong::백사장해수욕장": {
-      "status": "open",
+      "status": "hub_mismatch",
       "bucket": "other",
       "hubId": "yeonggwang",
       "queries": [
         "백사장해수욕장",
         "영광 백사장해수욕장"
+      ],
+      "titles": [
+        "백사장해수욕장"
       ]
     },
     "yeonggwang-gugyeong::황금산": {
@@ -2230,7 +2235,7 @@
       ]
     },
     "gangjin-other::백야김좌진기념관": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "gangjin",
       "queries": [
@@ -2239,7 +2244,7 @@
       ]
     },
     "gangjin-other::남도별미식문화박물관": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "gangjin",
       "queries": [
@@ -2248,7 +2253,7 @@
       ]
     },
     "gangjin-other::강진청자박물관": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "gangjin",
       "queries": [
@@ -2284,7 +2289,7 @@
       ]
     },
     "jangheung-gugyeong::하늘빛수목정원": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "jangheung",
       "queries": [
@@ -2293,13 +2298,15 @@
       ]
     },
     "boseong-gugyeong::율포해수욕장": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "other",
       "hubId": "boseong",
       "queries": [
         "율포해수욕장",
         "보성 율포해수욕장"
-      ]
+      ],
+      "contentId": "2022601",
+      "tourTitle": "율포해수욕장(솔밭해변)"
     },
     "boseong-gugyeong::일림산 용추계곡": {
       "status": "open",
@@ -2492,12 +2499,15 @@
       ]
     },
     "jeongeup-gugyeong::동학농민혁명기념공원": {
-      "status": "open",
+      "status": "hub_mismatch",
       "bucket": "other",
       "hubId": "jeongeup",
       "queries": [
         "동학농민혁명기념공원",
         "정읍 동학농민혁명기념공원"
+      ],
+      "titles": [
+        "동학농민혁명기념공원"
       ]
     },
     "jeongeup-gugyeong::용산호": {
@@ -2817,7 +2827,7 @@
       ]
     },
     "cheonan-palgyeong::유관순열사사적지": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "cheonan",
       "queries": [
@@ -2836,7 +2846,7 @@
       ]
     },
     "cheonan-palgyeong::아라리오조각광장": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "cheonan",
       "queries": [
@@ -2845,7 +2855,7 @@
       ]
     },
     "cheonan-palgyeong::봉선홍경사갈기비": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "cheonan",
       "queries": [
@@ -2890,7 +2900,7 @@
       ]
     },
     "seocheon-gugyeong::마량리동백숲": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "seocheon",
       "queries": [
@@ -2919,7 +2929,7 @@
       ]
     },
     "hongseong-other::만해한용운생가지": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "hongseong",
       "queries": [
@@ -2957,7 +2967,7 @@
       ]
     },
     "hongseong-other::그림같은수목원": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "hongseong",
       "queries": [
@@ -3020,13 +3030,15 @@
       ]
     },
     "yesan-sipgyeong::예산황새공원": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "other",
       "hubId": "yesan",
       "queries": [
         "예산황새공원",
         "황새공원"
-      ]
+      ],
+      "contentId": "2586628",
+      "tourTitle": "예산 황새공원"
     },
     "gongju-sipgyeong::고마나루": {
       "status": "open",
@@ -3182,7 +3194,7 @@
       ]
     },
     "geumsan-sipgyeong::인삼·약령시장": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "geumsan",
       "queries": [
@@ -3247,7 +3259,7 @@
       ]
     },
     "uijeongbu-palgyeong::의정부경전철": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "uijeongbu",
       "queries": [
@@ -3256,7 +3268,7 @@
       ]
     },
     "uijeongbu-palgyeong::의정부제일시장": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "uijeongbu",
       "queries": [
@@ -3356,7 +3368,7 @@
       ]
     },
     "icheon-gugyeong::사기막골도예촌": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "icheon",
       "queries": [
@@ -3411,7 +3423,7 @@
       ]
     },
     "ansan-gugyeong::시화호조력발전소": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "other",
       "hubId": "ansan",
       "queries": [
@@ -3635,13 +3647,15 @@
       ]
     },
     "daegu-sipgyeong::83타워": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "other",
       "hubId": "daegu",
       "queries": [
         "83타워",
         "대 83타워"
-      ]
+      ],
+      "contentId": "1614282",
+      "tourTitle": "이월드 83타워"
     },
     "daegu-sipgyeong::서문시장": {
       "status": "open",
@@ -3689,13 +3703,15 @@
       ]
     },
     "daejeon-palgyeong::엑스포과학공원": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "other",
       "hubId": "daejeon",
       "queries": [
         "엑스포과학공원",
         "대전 엑스포과학공원"
-      ]
+      ],
+      "contentId": "125994",
+      "tourTitle": "대전엑스포과학공원"
     },
     "daejeon-palgyeong::대전 식장산": {
       "status": "open",
