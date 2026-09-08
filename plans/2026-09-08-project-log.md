@@ -2,6 +2,24 @@
 
 직전: [`2026-09-07-project-log.md`](./2026-09-07-project-log.md)
 
+## 팔경 contentId — P0-K07 short 종결 (Cloud)
+
+- **세션** `팔경contentId #P0-K07, short 종결`
+- **브랜치** `cursor/palgyeong-cid` · tip `c3360044` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--bucket=short --apply-unique --limit=40` **8/40** unique_hit · 29 tour_missing · 2 hub_mismatch · 1 ambiguous · members **524/876** (null **352**) · short open **21** · closed **263** · 429 없음
+- **HIT** 정읍 피향정(126396) · 무주 향적봉(1705213) · 홍성 홍주의사총(125993) · 예산 충의사(125968) · 예산 임존성(125965) · 예산 가야산(2740968) · 공주 고마나루(2035859) · 부여 왕릉원(125987) (LIVE 행만)
+- **VERIFY** audit/smoke lists · smoke content-ids PASS
+- **다음** P0-K08 `--bucket=prefix --apply-unique --limit=40`
+
+```
+팔경contentId #P0-K08, prefix 종결
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=prefix --apply-unique --limit=40 · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
 ## 팔경 contentId — P0-K06 prefix 종결 (Cloud)
 
 - **세션** `팔경contentId #P0-K06, prefix 종결`
