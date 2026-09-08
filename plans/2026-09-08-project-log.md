@@ -2,6 +2,23 @@
 
 직전: [`2026-09-07-project-log.md`](./2026-09-07-project-log.md)
 
+## 팔경 contentId — P0-K01 키워드 종결 준비 (Cloud)
+
+- **세션** 준비 · 브랜치 `cursor/palgyeong-cid` · tip `2265f248` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **스크립트** `close:korea-local-scenic-content-ids` · inventory null **394** (siho 48 · poetic 23 · prefix 142 · short 140 · other 41)
+- **dry-run** short 8건 apply 없음 · **4 HIT** (죽서루 125799 등) · 3 tour_missing · 1 hub_mismatch(대청봉)
+- **폐기** P0-L07+++ 같은 100명 keyword 로또
+- **다음** P0-K01 `--bucket=short --apply-unique --limit=40`
+
+```
+팔경contentId #P0-K01, 키워드 종결
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=short --apply-unique --limit=40 · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
 ## 팔경 contentId — P0-L07++ 확장 keyword (Cloud)
 
 - **세션** `팔경contentId #P0-L07++, 확장 keyword`

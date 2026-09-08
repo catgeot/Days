@@ -472,9 +472,9 @@ KR: >50m면 반드시 snap. NO_HIT는 drop/rename만.
 | 큐 | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) |
 | SSOT | `koreaLocalScenicLists.json` 멤버 `contentId` + 동명 hub attraction 복사 |
 | 우선 | **P0 팔경 멤버** · P1 hub 잔여 · P2 테마 잔여는 P0 전 금지 |
-| 소스 | **DB 먼저** `tourapi_attraction` · 팔경 멤버는 **scenic 동일명 ID 복사(C01)** 우선 · LIVE `searchKeyword`는 잔여만 · 검색어는 `memberQueries`(시군 접두 제거) |
-| 라운드 | 워커A **3 listId** + 워커B **3** · **DB-only R** 병렬 OK · P0 잔여는 **C01→S01→L07→A01** (큐) |
-| LIVE | 메인 직렬(또는 워커 1) · **워커 병렬 LIVE 금지** · **본명-only 동일 cohort 재시도 금지** |
+| 소스 | **DB 먼저** `tourapi_attraction` · 팔경 멤버는 **scenic 동일명 ID 복사(C01)** 우선 · LIVE 잔여는 `strategyQueries`(시군 접두·수식어 제거) · 유일·같은 시군만 `close --apply-unique` |
+| 라운드 | 워커A **3 listId** + 워커B **3** · **DB-only R** 병렬 OK · P0 잔여는 **C01→S01→L07→A01→K**(큐) |
+| LIVE | 메인 직렬(또는 워커 1) · **워커 병렬 LIVE 금지** · **본명-only 동일 cohort 재시도 금지** · `--limit=100` 로또 금지 |
 | 429 | 즉시 정지 · 큐 `blocked: quota` · 같은 날 재시도 금지 |
 | 정책 | scenic 승격 · UI · 수집 append **금지** · **AI 지식으로 contentId 숫자 기입 금지**(검색어 후보만) |
 | S0 | 메인 솔로 — 스크립트+문경 DB 스모크 후 F |
@@ -505,7 +505,7 @@ LIVE R: 메인만 · searchKeyword 금지(워커).
 | 명소 좌표 수리 | `오케스트레이터` + `명소좌표수리` · 「§5.4 · verify 큐 · P0 또는 전수 SNAP · §3.4」 |
 | 국내 명소 TourAPI 좌표 | `오케스트레이터` + `TourAPI-명소좌표` + [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) **§6** · Cloud · 「G0→G1+ · KR HIT만 · §3.4」 |
 | 지자체 팔경·구경 | `오케스트레이터` + `지자체팔경` — **수집 종료. 재개 금지.** 활용은 아래 팔경contentId |
-| 팔경 Tour contentId | `오케스트레이터` + `팔경contentId` + [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) · 브랜치 **`cursor/palgyeong-cid`** · 「§5.7 · P0 잔여 **C01→S01→L07→A01** · 본명 keyword 로또 금지 · 워커 병렬 LIVE 금지 · 429 정지 · UI 금지 · AI가 ID 기입 금지 · §3.6」 |
+| 팔경 Tour contentId | `오케스트레이터` + `팔경contentId` + [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) · 브랜치 **`cursor/palgyeong-cid`** · 「§5.7 · P0 잔여 **K01 short apply-unique** · 본명 keyword 로또 금지 · 워커 병렬 LIVE 금지 · 429 정지 · UI 금지 · AI가 ID 기입 금지 · §3.6」 |
 | 정착지 재개/복구 | `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「큐 다음 R · 워커2 · 목표3/최대5/최소2 · §3.3·§3.4·§4.2」 |
 | 파이프 단절 복구 | `오케스트레이터` · 「같은 지휘자 워커 N 재기동 · Cloud 중첩 후임 넣지 말 것 · §3.4」 |
 
