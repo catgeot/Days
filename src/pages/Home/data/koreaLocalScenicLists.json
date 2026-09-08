@@ -2499,13 +2499,15 @@
         "attractionName": "영천 보현산댐 짚와이어",
         "name_en": "Bohyeonsan Dam Zip Wire",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2606234"
       },
       {
         "attractionName": "영천 운주산승마자연휴양림",
         "name_en": "Unjusan Horse Riding Natural Recreation Forest",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "1839066"
       },
       {
         "attractionName": "영천댐 벚꽃 백리길",
