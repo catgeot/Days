@@ -2220,7 +2220,8 @@
         "kind": "park",
         "lat": 36.3483689,
         "lng": 129.3849301,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "126143"
       },
       {
         "attractionName": "영덕 도천숲",
@@ -2410,7 +2411,8 @@
         "kind": "landmark",
         "lat": 35.9743171,
         "lng": 128.2866588,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "2733119"
       },
       {
         "attractionName": "성주 한개마을",

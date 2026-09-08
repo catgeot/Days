@@ -13220,7 +13220,8 @@
         "name_en": "Yeongdeok Samsa Maritime Park",
         "kind": "park",
         "lat": 36.3483689,
-        "lng": 129.3849301
+        "lng": 129.3849301,
+        "contentId": "126143"
       },
       {
         "name": "영덕 도천숲",
@@ -19622,7 +19623,8 @@
         "name_en": "King Sejong Birthplace",
         "kind": "landmark",
         "lat": 35.9743171,
-        "lng": 128.2866588
+        "lng": 128.2866588,
+        "contentId": "2733119"
       },
       {
         "name": "성주역사테마공원",
