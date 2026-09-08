@@ -2,6 +2,24 @@
 
 직전: [`2026-09-07-project-log.md`](./2026-09-07-project-log.md)
 
+## 팔경 contentId — P0-K06 prefix 종결 (Cloud)
+
+- **세션** `팔경contentId #P0-K06, prefix 종결`
+- **브랜치** `cursor/palgyeong-cid` · tip `03881a1c` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--bucket=prefix --apply-unique --limit=40` **3/40** unique_hit · 36 tour_missing · 1 hub_mismatch · members **516/876** (null **360**) · prefix open **62** · closed **224** · 429 없음
+- **HIT** 거창 산림레포츠파크(3571372) · 의령 봉황대(126775) · 여수 이순신대교(2778041) (LIVE 행만)
+- **VERIFY** audit/smoke lists · smoke content-ids PASS
+- **다음** P0-K07 `--bucket=short --apply-unique --limit=40`
+
+```
+팔경contentId #P0-K07, short 종결
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=short --apply-unique --limit=40 · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
 ## 팔경 contentId — P0-K05 short 종결 (Cloud)
 
 - **세션** `팔경contentId #P0-K05, short 종결`
