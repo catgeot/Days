@@ -2,6 +2,24 @@
 
 직전: [`2026-09-07-project-log.md`](./2026-09-07-project-log.md)
 
+## 팔경 contentId — P0-K04 other 종결 (Cloud)
+
+- **세션** `팔경contentId #P0-K04, other 종결`
+- **브랜치** `cursor/palgyeong-cid` · tip `77e90417` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--bucket=other --apply-unique` **5/41** unique_hit · 34 tour_missing · 2 hub_mismatch · members **505/876** (null **371**) · other open **0** · closed **144** · 429 없음
+- **HIT** 의령 정암루(126193) · 보성 율포해수욕장(2022601) · 예산 황새공원(2586628) · 대구 83타워(1614282) · 대전 엑스포과학공원(125994) (LIVE 행만)
+- **VERIFY** audit/smoke lists · smoke content-ids PASS
+- **다음** P0-K05 `--bucket=short --apply-unique --limit=40`
+
+```
+팔경contentId #P0-K05, short 종결
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=short --apply-unique --limit=40 · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
 ## 팔경 contentId — P0-K03 poetic 종결 (Cloud)
 
 - **세션** `팔경contentId #P0-K03, poetic 종결`
