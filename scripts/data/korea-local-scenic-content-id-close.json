@@ -672,7 +672,7 @@
       ]
     },
     "jeungpyeong-gugyeong::추성산성": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "jeungpyeong",
       "queries": [
@@ -764,7 +764,7 @@
       ]
     },
     "mungyeong-palgyeong::새재계곡": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "mungyeong",
       "queries": [
@@ -773,16 +773,18 @@
       ]
     },
     "mungyeong-palgyeong::용추계곡": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "mungyeong",
       "queries": [
         "용추계곡",
         "문경 용추계곡"
-      ]
+      ],
+      "contentId": "127913",
+      "tourTitle": "대야산 용추계곡"
     },
     "mungyeong-palgyeong::쌍용계곡": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "mungyeong",
       "queries": [
@@ -791,7 +793,7 @@
       ]
     },
     "mungyeong-palgyeong::운달계곡": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "mungyeong",
       "queries": [
@@ -809,13 +811,15 @@
       ]
     },
     "yecheon-palgyeong::삼강주막": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "yecheon",
       "queries": [
         "삼강주막",
         "예천 삼강주막"
-      ]
+      ],
+      "contentId": "705612",
+      "tourTitle": "예천 삼강주막"
     },
     "yecheon-palgyeong::금당실 전통마을과 송림": {
       "status": "tour_missing",
@@ -837,7 +841,7 @@
       ]
     },
     "yecheon-palgyeong::석송령": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "yecheon",
       "queries": [
@@ -1054,7 +1058,7 @@
       "tourTitle": "낙대폭포"
     },
     "tongyeong-palgyeong::남망산공원": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "tongyeong",
       "queries": [
@@ -1302,7 +1306,7 @@
       ]
     },
     "jinju-palgyeong::뒤벼리": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "jinju",
       "queries": [
@@ -1311,7 +1315,7 @@
       ]
     },
     "jinju-palgyeong::새벼리": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "jinju",
       "queries": [
@@ -1448,7 +1452,7 @@
       ]
     },
     "hapcheon-palgyeong::옥전고분군": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "hapcheon",
       "queries": [
@@ -1509,12 +1513,16 @@
       ]
     },
     "yangsan-other::황산공원": {
-      "status": "open",
+      "status": "hub_mismatch",
       "bucket": "short",
       "hubId": "yangsan",
       "queries": [
         "황산공원",
         "양산 황산공원"
+      ],
+      "titles": [
+        "제황산공원",
+        "제황산공원모노레일카"
       ]
     },
     "miryang-palgyeong::시례 호박소": {
@@ -1565,13 +1573,15 @@
       ]
     },
     "uiryeong-gugyeong::벽계관광지": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "uiryeong",
       "queries": [
         "벽계관광지",
         "의령 벽계관광지"
-      ]
+      ],
+      "contentId": "3029556",
+      "tourTitle": "의령벽계관광지"
     },
     "uiryeong-gugyeong::정암루(솥바위)": {
       "status": "unique_hit",
@@ -1743,13 +1753,15 @@
       ]
     },
     "yeosu-other::진남관": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "yeosu",
       "queries": [
         "진남관",
         "여수 진남관"
-      ]
+      ],
+      "contentId": "126386",
+      "tourTitle": "여수 진남관"
     },
     "yeosu-other::여수 밤바다와 산단 야경": {
       "status": "tour_missing",
@@ -1901,7 +1913,7 @@
       ]
     },
     "damyang-other::가마골용소": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "damyang",
       "queries": [
@@ -1910,16 +1922,18 @@
       ]
     },
     "damyang-other::금성산성": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "damyang",
       "queries": [
         "금성산성",
         "담양 금성산성"
-      ]
+      ],
+      "contentId": "126407",
+      "tourTitle": "담양 금성산성"
     },
     "damyang-other::삼인산": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "damyang",
       "queries": [
@@ -2005,16 +2019,20 @@
       ]
     },
     "hampyeong-palgyeong::모악산": {
-      "status": "open",
+      "status": "hub_mismatch",
       "bucket": "short",
       "hubId": "hampyeong",
       "queries": [
         "모악산",
         "함평 모악산"
+      ],
+      "titles": [
+        "모악산",
+        "모악산도립공원"
       ]
     },
     "hampyeong-palgyeong::삼호천": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "hampyeong",
       "queries": [
@@ -2023,12 +2041,15 @@
       ]
     },
     "hampyeong-palgyeong::청계산": {
-      "status": "open",
+      "status": "hub_mismatch",
       "bucket": "short",
       "hubId": "hampyeong",
       "queries": [
         "청계산",
         "함평 청계산"
+      ],
+      "titles": [
+        "청계산"
       ]
     },
     "yeonggwang-gugyeong::백사장해수욕장": {
@@ -2044,16 +2065,21 @@
       ]
     },
     "yeonggwang-gugyeong::황금산": {
-      "status": "open",
+      "status": "hub_mismatch",
       "bucket": "short",
       "hubId": "yeonggwang",
       "queries": [
         "황금산",
         "영광 황금산"
+      ],
+      "titles": [
+        "황금산",
+        "황금산몽돌해변",
+        "황금산문화공원"
       ]
     },
     "yeonggwang-gugyeong::왕글공원": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "yeonggwang",
       "queries": [
@@ -2062,7 +2088,7 @@
       ]
     },
     "yeonggwang-gugyeong::백학촌": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "yeonggwang",
       "queries": [
@@ -2080,7 +2106,7 @@
       ]
     },
     "mokpo-gugyeong::목포진": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "mokpo",
       "queries": [
@@ -2116,16 +2142,18 @@
       ]
     },
     "muan-gugyeong::낙지공원": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "muan",
       "queries": [
         "낙지공원",
         "무안 낙지공원"
-      ]
+      ],
+      "contentId": "2748362",
+      "tourTitle": "무안낙지공원"
     },
     "jindo-other::조도관음도": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "jindo",
       "queries": [
@@ -2134,7 +2162,7 @@
       ]
     },
     "jindo-other::의장대": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "jindo",
       "queries": [
@@ -2143,7 +2171,7 @@
       ]
     },
     "jindo-other::돈대산": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "jindo",
       "queries": [
@@ -2152,12 +2180,19 @@
       ]
     },
     "jindo-other::하조대": {
-      "status": "open",
+      "status": "hub_mismatch",
       "bucket": "short",
       "hubId": "jindo",
       "queries": [
         "하조대",
         "진도 하조대"
+      ],
+      "titles": [
+        "하조대",
+        "하조대 둘레길",
+        "하조대 무인등대",
+        "하조대캠핑카",
+        "하조대해수욕장"
       ]
     },
     "haenam-palgyeong::해남 구 목포구등대 낙조 전망대": {
@@ -2190,25 +2225,30 @@
       ]
     },
     "haenam-palgyeong::울돌목": {
-      "status": "open",
+      "status": "hub_mismatch",
       "bucket": "short",
       "hubId": "haenam",
       "queries": [
         "울돌목",
         "해남 울돌목"
+      ],
+      "titles": [
+        "명량해협 울돌목"
       ]
     },
     "wando-palgyeong::약산": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "wando",
       "queries": [
         "약산",
         "완도 약산"
-      ]
+      ],
+      "contentId": "2824813",
+      "tourTitle": "약산도(조약도)"
     },
     "wando-palgyeong::국화섬": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "wando",
       "queries": [
@@ -2217,21 +2257,28 @@
       ]
     },
     "gangjin-other::월출산": {
-      "status": "open",
+      "status": "hub_mismatch",
       "bucket": "short",
       "hubId": "gangjin",
       "queries": [
         "월출산",
         "강진 월출산"
+      ],
+      "titles": [
+        "월출산 기찬랜드",
+        "월출산국립공원"
       ]
     },
     "gangjin-other::가학산": {
-      "status": "open",
+      "status": "hub_mismatch",
       "bucket": "short",
       "hubId": "gangjin",
       "queries": [
         "가학산",
         "강진 가학산"
+      ],
+      "titles": [
+        "가학산"
       ]
     },
     "gangjin-other::백야김좌진기념관": {
@@ -2280,7 +2327,7 @@
       ]
     },
     "jangheung-gugyeong::선학동마을": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "jangheung",
       "queries": [
@@ -2329,7 +2376,7 @@
       ]
     },
     "goheung-other::쑥섬": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "goheung",
       "queries": [
@@ -2378,7 +2425,7 @@
       ]
     },
     "gunsan-palgyeong::망주폭포": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "gunsan",
       "queries": [
@@ -2425,7 +2472,7 @@
       ]
     },
     "gunsan-palgyeong::무산십이봉": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "gunsan",
       "queries": [
@@ -2443,13 +2490,15 @@
       ]
     },
     "buan-palgyeong::직소폭포": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "buan",
       "queries": [
         "직소폭포",
         "부안 직소폭포"
-      ]
+      ],
+      "contentId": "126260",
+      "tourTitle": "직소폭포 (전북 서해안 국가지질공원)"
     },
     "buan-palgyeong::소사모종": {
       "status": "open",
@@ -2511,7 +2560,7 @@
       ]
     },
     "jeongeup-gugyeong::용산호": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "jeongeup",
       "queries": [

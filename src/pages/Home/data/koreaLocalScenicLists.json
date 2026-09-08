@@ -2081,7 +2081,8 @@
         "attractionName": "용추계곡",
         "name_en": "Yongchu Valley",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "127913"
       },
       {
         "attractionName": "쌍용계곡",
@@ -2153,7 +2154,8 @@
         "kind": "landmark",
         "lat": 36.5629092,
         "lng": 128.2980836,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "705612"
       },
       {
         "attractionName": "금당실 전통마을과 송림",
@@ -3798,7 +3800,8 @@
         "kind": "park",
         "lat": 35.4265497,
         "lng": 128.211231,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "3029556"
       },
       {
         "attractionName": "정암루(솥바위)",
@@ -4061,7 +4064,8 @@
         "attractionName": "진남관",
         "name_en": "Jinnamgwan Hall",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126386"
       },
       {
         "attractionName": "여수 밤바다와 산단 야경",
@@ -4363,7 +4367,8 @@
         "attractionName": "금성산성",
         "name_en": "Geumseongsanseong Fortress",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126407"
       },
       {
         "attractionName": "병풍산",
@@ -4806,7 +4811,8 @@
         "attractionName": "낙지공원",
         "name_en": "Octopus Park",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2748362"
       }
     ]
   },
@@ -5028,7 +5034,8 @@
         "attractionName": "약산",
         "name_en": "Yaksan Mountain",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2824813"
       },
       {
         "attractionName": "국화섬",
@@ -5554,7 +5561,8 @@
         "attractionName": "직소폭포",
         "name_en": "Jikso Falls",
         "kind": "viewpoint",
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "126260"
       },
       {
         "attractionName": "소사모종",

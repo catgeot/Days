@@ -7424,7 +7424,8 @@
         "name_en": "Jikso Falls",
         "kind": "viewpoint",
         "lat": 35.6410076256,
-        "lng": 126.5803140259
+        "lng": 126.5803140259,
+        "contentId": "126260"
       },
       {
         "name": "새만금",
@@ -14724,7 +14725,8 @@
         "name_en": "Samgang Tavern",
         "kind": "landmark",
         "lat": 36.5629092,
-        "lng": 128.2980836
+        "lng": 128.2980836,
+        "contentId": "705612"
       }
     ]
   },
@@ -19778,7 +19780,8 @@
         "name_en": "Byeokgye Tourist Site",
         "kind": "park",
         "lat": 35.4265497,
-        "lng": 128.211231
+        "lng": 128.211231,
+        "contentId": "3029556"
       },
       {
         "name": "정암루(솥바위)",
