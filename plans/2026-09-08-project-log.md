@@ -2,6 +2,24 @@
 
 직전: [`2026-09-07-project-log.md`](./2026-09-07-project-log.md)
 
+## 팔경 contentId — P0-K02 prefix 종결 (Cloud)
+
+- **세션** `팔경contentId #P0-K02, prefix 종결`
+- **브랜치** `cursor/palgyeong-cid` · tip `5f3a2916` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--bucket=prefix --apply-unique --limit=40` **4/40** unique_hit · 36 tour_missing · members **496/876** (null **380**) · 429 없음
+- **HIT** 영천 치산관광지(1838310) · 영천 한의마을(2606217) · 청도 낙대폭포(4072338) · 거제 식물원(2648073) (LIVE 행만)
+- **VERIFY** audit/smoke lists · smoke content-ids · smoke tour-content-id-match PASS
+- **다음** P0-K03 `--bucket=poetic --apply-unique`
+
+```
+팔경contentId #P0-K03, poetic 종결
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=poetic --apply-unique · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
 ## 팔경 contentId — P0-K01 키워드 종결 (Cloud)
 
 - **세션** `팔경contentId #P0-K01, 키워드 종결`
