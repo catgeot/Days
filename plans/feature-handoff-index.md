@@ -319,11 +319,11 @@
 
 | | |
 |--|--|
-| **상태** | R01–R16 ✅ · **P0·P1 F 소진** · members **496/876** · P2 **null 104** · **P0-K02** ✅ · **다음 P0-K03** poetic 종결 · A와 **동시 OK** |
-| **브랜치** | `cursor/palgyeong-cid` · tip `5f3a2916` |
+| **상태** | R01–R16 ✅ · **P0·P1 F 소진** · members **500/876** · P2 **null 104** · **P0-K03** ✅ · **다음 P0-K04** other 종결 · A와 **동시 OK** |
+| **브랜치** | `cursor/palgyeong-cid` · tip `4dcee055` |
 | **PR** | [#185](https://github.com/catgeot/Days/pull/185) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§3·§9 B** · method **§5.7** |
-| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — **P0-K03** poetic 종결 |
+| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — **P0-K04** other 종결 |
 | **일지** | [`2026-09-08-project-log.md`](./2026-09-08-project-log.md) |
 | **소유** | JSON `contentId` · fill · audit · **UI 금지** |
 | **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · 본명-only keyword 재시도 · `--limit=100` 로또 · AI가 ID 기입 · feature에 `plans/**` 커밋 |
@@ -331,12 +331,12 @@
 **다음 제시어**:
 
 ```
-팔경contentId #P0-K03, poetic 종결
+팔경contentId #P0-K04, other 종결
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
 브랜치 cursor/palgyeong-cid · PR #185
 금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
-작업: --bucket=poetic --apply-unique · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+작업: --bucket=other --apply-unique · HIT는 LIVE 행만 · 종결을 close JSON에 기록
 ```
 
 ---
@@ -417,31 +417,32 @@ PROD https://www.gateo.kr/
 
 | | |
 |--|--|
-| **상태** | **#51 QA 피드백** · tip `ea03ce2b` · 사람 Preview 대기 |
-| **브랜치** | `cursor/world-events-wave3` · tip `ea03ce2b` |
-| **PR** | [#166](https://github.com/catgeot/Days/pull/166) |
-| **main** | docs sync — Wave3 사람 Preview QA |
+| **상태** | **#53 push** · tip `ce26f748` · PR [#204](https://github.com/catgeot/Days/pull/204) · **#54 사람 Preview QA** |
+| **브랜치** | `cursor/world-events-wave3` · tip `ce26f748` |
+| **PR** | [#204](https://github.com/catgeot/Days/pull/204) · [#166](https://github.com/catgeot/Days/pull/166) merge ✅ |
+| **main** | docs sync — 리스트 Unsplash 사진 |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **F-0.5 D5-b-3** · **F-0.6** · §9 |
 | **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) (Q15 추가) |
 | **운영** | [`world-events-management.md`](./world-events-management.md) §6.1·§6.1.1·§8.1 |
 | **샘플** | [`world-events-sample-log.md`](./world-events-sample-log.md) |
-| **일지** | [`2026-08-27-project-log.md`](./2026-08-27-project-log.md) |
-| **PROD QA** | §6.1.1 6건 공식 pill — 에이전트 PASS · 사람 모바일 탭 1줄씩 |
-| **Preview** | `/qa/world-events` → `/world-events/rome-carnevale-2027` · `?region=europe` |
-| **VERIFY** | `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` |
+| **일지** | [`2026-09-08-project-log.md`](./2026-09-08-project-log.md) |
+| **Preview** | `/qa/world-events` → `/world-events` 리스트 썸네일 |
+| **소유** | `WorldEvents/index.jsx` · `fetchWorldEventListPhotos.js` · `worldEventListPhoto.js` |
+| **금지** | worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `generate:world-events` · `audit:world-events` · `smoke:world-events-hub` · `vite build` |
 
-**게이트**: Wave3 **4/4 D5-b 에이전트 PASS ✅** · **#52** 사람 Preview QA
+**게이트**: 리스트 Unsplash **에이전트 PASS ✅** · **#54** 사람 Preview QA
 
-**다음 제시어** (#52 사람 Preview QA):
+**다음 제시어** (#54 사람 Preview QA):
 
 ```
-세계행사 일정 #52, Wave3 사람 Preview QA
+세계행사 일정 #54, 리스트 Unsplash Preview QA
 @plans/feature-handoff-index.md
-@plans/2026-08-27-project-log.md
+@plans/2026-09-08-project-log.md
 @plans/world-events-management.md
-브랜치 cursor/world-events-wave3 · PR #166 · https://www.gateo.kr/qa/world-events
-금지: worldEvents.json 직편집 · UI 리디자인 · Wave1 KO 본문 일괄 En 번역
-작업: Wave3 4건 모바일 Preview — paris·los-angeles·london·rome · OK 시 PR #166 merge
+브랜치 cursor/world-events-wave3 · PR #204 · https://www.gateo.kr/qa/world-events
+금지: worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구
+작업: /world-events 카드 사진이 Unsplash 행사 장면인지 · 지역 칩 전환 후에도 유지되는지
 ```
 
 ---

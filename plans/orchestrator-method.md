@@ -505,7 +505,7 @@ LIVE R: 메인만 · searchKeyword 금지(워커).
 | 명소 좌표 수리 | `오케스트레이터` + `명소좌표수리` · 「§5.4 · verify 큐 · P0 또는 전수 SNAP · §3.4」 |
 | 국내 명소 TourAPI 좌표 | `오케스트레이터` + `TourAPI-명소좌표` + [`city-attraction-tourapi-coord-plan.md`](./city-attraction-tourapi-coord-plan.md) **§6** · Cloud · 「G0→G1+ · KR HIT만 · §3.4」 |
 | 지자체 팔경·구경 | `오케스트레이터` + `지자체팔경` — **수집 종료. 재개 금지.** 활용은 아래 팔경contentId |
-| 팔경 Tour contentId | `오케스트레이터` + `팔경contentId` + [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) · 브랜치 **`cursor/palgyeong-cid`** · 「§5.7 · P0 잔여 **K03 poetic apply-unique** · 본명 keyword 로또 금지 · 워커 병렬 LIVE 금지 · 429 정지 · UI 금지 · AI가 ID 기입 금지 · §3.6」 |
+| 팔경 Tour contentId | `오케스트레이터` + `팔경contentId` + [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) · 브랜치 **`cursor/palgyeong-cid`** · 「§5.7 · P0 잔여 **K04 other apply-unique** · 본명 keyword 로또 금지 · 워커 병렬 LIVE 금지 · 429 정지 · UI 금지 · AI가 ID 기입 금지 · §3.6」 |
 | 정착지 재개/복구 | `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「큐 다음 R · 워커2 · 목표3/최대5/최소2 · §3.3·§3.4·§4.2」 |
 | 파이프 단절 복구 | `오케스트레이터` · 「같은 지휘자 워커 N 재기동 · Cloud 중첩 후임 넣지 말 것 · §3.4」 |
 

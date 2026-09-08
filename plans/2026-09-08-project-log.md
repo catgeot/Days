@@ -2,6 +2,42 @@
 
 직전: [`2026-09-07-project-log.md`](./2026-09-07-project-log.md)
 
+## 팔경 contentId — P0-K03 poetic 종결 (Cloud)
+
+- **세션** `팔경contentId #P0-K03, poetic 종결`
+- **브랜치** `cursor/palgyeong-cid` · tip `4dcee055` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--bucket=poetic --apply-unique` **4/23** unique_hit · 19 tour_missing · members **500/876** (null **376**) · 429 없음
+- **HIT** 철원 학저수지 여명(2568557) · 옥천 용암사 일출(125890) · 김해 연지공원 사계(2779065) · 용인 광교산 사계(128064) (LIVE 행만)
+- **VERIFY** audit/smoke lists · smoke content-ids · smoke tour-content-id-match · audit hubs PASS
+- **다음** P0-K04 `--bucket=other --apply-unique`
+
+```
+팔경contentId #P0-K04, other 종결
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=other --apply-unique · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+## 세계행사 일정 #53 — 리스트 Unsplash 사진 (Cloud)
+
+- **세션** `세계행사 일정 #53, 리스트 Unsplash 사진`
+- **브랜치** `cursor/world-events-wave3` · tip `ce26f748` · PR [#204](https://github.com/catgeot/Days/pull/204)
+- **완료** `/world-events` 카드 썸네일 = Unsplash (`event_hero_gallery` → 검색). 위키 시드는 리스트에 안 씀. 칩·레이아웃 유지.
+- **VERIFY** generate/audit · `smoke:world-events-hub` · `vite build` PASS. detail Wikimedia HEAD는 429(위키 레이트 리밋, 이번 경로와 무관)
+- **다음** #54 사람 Preview — 리스트 사진이 행사 장면인지
+
+```
+세계행사 일정 #54, 리스트 Unsplash Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-08-project-log.md
+@plans/world-events-management.md
+브랜치 cursor/world-events-wave3 · PR #204 · https://www.gateo.kr/qa/world-events
+금지: worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구
+작업: /world-events 카드 사진이 Unsplash 행사 장면인지 · 지역 칩 전환 후에도 유지되는지
+```
+
 ## 팔경 contentId — P0-K02 prefix 종결 (Cloud)
 
 - **세션** `팔경contentId #P0-K02, prefix 종결`
