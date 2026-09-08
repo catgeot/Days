@@ -19,6 +19,10 @@ import {
   getWorldEventsForSlug,
 } from '../src/utils/worldEvents.js';
 import {
+  isUnsplashListPhoto,
+  pickWorldEventListPhoto,
+} from '../src/utils/worldEventListPhoto.js';
+import {
   compareWorldEventsForList,
   getWorldEventTimelineBucket,
 } from '../src/shared/worldEventTimeline.js';
@@ -74,6 +78,33 @@ assert.equal(resolveWorldEventHubRegionId('london'), 'europe', 'london in europe
 assert.equal(resolveWorldEventHubRegionId('rome'), 'europe', 'rome in europe');
 assert.equal(resolveWorldEventHubRegionId('istanbul'), 'niche', 'istanbul stays niche');
 
+const wikiSeed = {
+  url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/x.jpg/1280px-x.jpg',
+  source: 'seed',
+};
+const unsplashThumb = {
+  url: 'https://images.unsplash.com/photo-example?w=400',
+  source: 'unsplash',
+  photographer: 'Ada',
+};
+assert.equal(isUnsplashListPhoto(wikiSeed), false, 'wikimedia seed is not a list photo');
+assert.equal(isUnsplashListPhoto(unsplashThumb), true, 'unsplash source is a list photo');
+assert.equal(
+  pickWorldEventListPhoto([wikiSeed, unsplashThumb])?.url,
+  unsplashThumb.url,
+  'list picker skips Wikimedia and takes Unsplash',
+);
+assert.equal(
+  pickWorldEventListPhoto([wikiSeed]),
+  null,
+  'list picker does not fall back to Wikimedia',
+);
+
+const listPhotoSrc = readFileSync(join(root, 'src/utils/fetchWorldEventListPhotos.js'), 'utf8');
+assert.match(listPhotoSrc, /event_hero_gallery/, 'list photos read Unsplash gallery cache');
+assert.match(listPhotoSrc, /fetchUnsplashImages/, 'list photos live-search Unsplash');
+assert.doesNotMatch(listPhotoSrc, /fetchWikimedia/, 'list photos do not call Wikimedia');
+
 const viennaEvents = getWorldEventsForSlug('vienna');
 assert.ok(viennaEvents.length >= 1, 'vienna has world events');
 assert.ok(viennaEvents[0].startDate, 'vienna event has startDate');
@@ -88,6 +119,10 @@ assert.match(hubSrc, /getWorldEventsForHubRegion/, 'WorldEvents hub filters by r
 assert.match(hubSrc, /tripWindowPresetsFromEvent/, 'WorldEvents hub uses TripWindow presets');
 assert.match(hubSrc, /getWorldEventRecurrenceNote/, 'WorldEvents hub locale recurrenceNote');
 assert.match(hubSrc, /locale={locale}/, 'WorldEvents hub passes locale to cards');
+assert.match(hubSrc, /fetchWorldEventListPhotos/, 'WorldEvents hub fetches Unsplash list photos');
+assert.match(hubSrc, /photo=\{photoById\[event\.id\]\}/, 'WorldEvents hub passes Unsplash thumb to cards');
+assert.match(hubSrc, /images\.unsplash\.com|photoUrl/, 'WorldEvents hub card renders list photo');
+assert.doesNotMatch(hubSrc, /upload\.wikimedia\.org/, 'WorldEvents hub list does not bake Wikimedia URLs');
 
 const homeUiSrc = readFileSync(join(root, 'src/pages/Home/components/HomeUI.jsx'), 'utf8');
 assert.match(homeUiSrc, /to: '\/world-events'/, 'Home quick link to /world-events');
