@@ -2,6 +2,24 @@
 
 직전: [`2026-09-07-project-log.md`](./2026-09-07-project-log.md)
 
+## 세계행사 일정 #53 — 리스트 Unsplash 사진 (Cloud)
+
+- **세션** `세계행사 일정 #53, 리스트 Unsplash 사진`
+- **브랜치** `cursor/world-events-wave3` · tip `ce26f748` · PR [#204](https://github.com/catgeot/Days/pull/204)
+- **완료** `/world-events` 카드 썸네일 = Unsplash (`event_hero_gallery` → 검색). 위키 시드는 리스트에 안 씀. 칩·레이아웃 유지.
+- **VERIFY** generate/audit · `smoke:world-events-hub` · `vite build` PASS. detail Wikimedia HEAD는 429(위키 레이트 리밋, 이번 경로와 무관)
+- **다음** #54 사람 Preview — 리스트 사진이 행사 장면인지
+
+```
+세계행사 일정 #54, 리스트 Unsplash Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-08-project-log.md
+@plans/world-events-management.md
+브랜치 cursor/world-events-wave3 · PR #204 · https://www.gateo.kr/qa/world-events
+금지: worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구
+작업: /world-events 카드 사진이 Unsplash 행사 장면인지 · 지역 칩 전환 후에도 유지되는지
+```
+
 ## 팔경 contentId — P0-K02 prefix 종결 (Cloud)
 
 - **세션** `팔경contentId #P0-K02, prefix 종결`
