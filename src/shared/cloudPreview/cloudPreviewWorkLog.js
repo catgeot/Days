@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '써머리 닫기',
+  title: '지구본 프레임 줌',
   sessionNo: 1,
-  sessionPhase: 'Android Chrome 고스트 클릭',
-  branch: 'cursor/summary-close-1030',
+  sessionPhase: '페이지 줌 복귀',
+  branch: 'cursor/globe-frame-zoom-7106',
   previewPath: '/',
-  qaShareSlug: 'summary-close',
+  qaShareSlug: 'globe-frame-zoom',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-07-globe-frame-zoom-1-page-lock',
+    session: '지구본 프레임 줌 #1, 페이지 줌 복귀',
+    title: '지구본 밖 프레임 확대 후 복귀 불가 차단',
+    detail:
+      '홈에서 지구본 밖 기본 프레임을 핀치하면 페이지가 확대되고 지구본이 화면을 채운 뒤 축소할 프레임이 사라져 복귀가 막혔습니다. 홈·탐색만 페이지 줌을 잠그고, 이미 확대된 배율은 되돌리며, 우주 버튼도 페이지 줌을 리셋합니다. /place 본문 핀치는 유지. Preview /qa/globe-frame-zoom — 프레임 핀치 후 지구본이 화면을 채워도 우주 버튼·핀치로 기본 화면 복귀.',
+    at: '2026-09-07T21:20:00.000Z',
+  },
   {
     id: '2026-09-07-summary-close-1-android-ghost',
     session: '써머리 닫기 #1, Android Chrome 고스트 클릭',

@@ -29,6 +29,7 @@ import EventRichText from './EventRichText';
  *   location?: Record<string, unknown>,
  *   onGlossaryTermClick?: (termId: string) => void,
  *   hideHeaderSummary?: boolean,
+ *   hideStayAreas?: boolean,
  * }} props
  */
 export default function EventDetailStaticPanel({
@@ -39,6 +40,7 @@ export default function EventDetailStaticPanel({
   location = {},
   onGlossaryTermClick,
   hideHeaderSummary = false,
+  hideStayAreas = false,
 }) {
   const { t } = useTranslation();
   const title = getWorldEventTitle(event, locale);
@@ -210,7 +212,7 @@ export default function EventDetailStaticPanel({
         </section>
       ) : null}
 
-      {stayAreas.length > 0 ? (
+      {!hideStayAreas && stayAreas.length > 0 ? (
         <section className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
           <h2 className="text-sm font-extrabold text-stone-900">{t('worldEventDetail.stayAreas')}</h2>
           <div className="mt-2 space-y-2">

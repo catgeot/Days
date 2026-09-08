@@ -5,6 +5,7 @@
  * Wave 1 (P2-a): Q3 확정 slug 15건 — 유럽·아시아·아메리카·오세아니아·니치
  * Wave 2 (#33): singapore · dubai — D5-b 템플릿
  * Wave 2 (#42): barcelona · istanbul — D5-b 템플릿
+ * Wave 3 (#47): paris — D5-b 템플릿
  * D5-b-3 #34 배치 A: vienna · amsterdam · prague · marrakech
  * D5-b-3 #35 배치 B: tokyo · kyoto · bangkok
  *
@@ -3053,6 +3054,761 @@ export const WORLD_EVENT_OVERRIDES = [
         id: 'bridge-closure',
         promptKo: '레이스 당일 보스포루스 교통 통제 어떻게 돼?',
         promptEn: 'How does Bosphorus traffic work on race day?',
+      },
+    ],
+    priority: 1,
+  },
+  {
+    id: 'paris-nuit-blanche-2027',
+    slug: 'paris',
+    hubId: 'paris',
+    type: 'festival',
+    title: '뉘 블랑쉬',
+    titleEn: 'Nuit Blanche',
+    startDate: '2027-06-05',
+    endDate: '2027-06-06',
+    recurrence: 'annual',
+    recurrenceNote: '6월 첫째 토요일 밤 (연도별 변동)',
+    recurrenceNoteEn: 'First Saturday night in June (varies)',
+    venue: { name: 'Paris citywide · Centre Pompidou · Seine' },
+    source: 'official_url',
+    sourceUrl: 'https://www.paris.fr/nuit-blanche',
+    bookingHints: '마레·르 마레·생제르맹 — 밤샘 행사 전후 2~3박 · 메트로 야간 운행·혼잡 구간 조기 이동',
+    detailOverview:
+      '파리 시청이 주최하는 연중 밤샘 현대미술 축제로, 6월 첫째 토요일 밤부터 일요일 새벽까지 도시 곳곳에서 설치·공연·투영이 열립니다. 전 시즌 숙박보다 행사 전후 2~3박으로 마레·생제르맹·루브르 기점을 잡아 야간 파르쿠르(예술 루트)와 메트로 이동을 묶는 방문이 일반적입니다.',
+    highlights: [
+      'Centre Pompidou · Hôtel de Ville — 공식 허브·개막 행사 · 마레·시테 도보권',
+      'Seine riverbank · IMA — 야간 설치·투영 · 루브르·생제르맹 환승',
+      'Parcours nocturne — 구역별 예술 루트 · 당일 지도·앱으로 동선 확인',
+    ],
+    stayAreas: [
+      {
+        name: '마레 · Le Marais',
+        mrtKeyword: 'Paris Le Marais',
+        note: 'Centre Pompidou·시테 도보 · 밤샘 행사 밀집',
+      },
+      {
+        name: '생제르맹 · Saint-Germain',
+        mrtKeyword: 'Paris Saint-Germain',
+        note: '루브르·세느 도보 · RER B·4·6호선 환승',
+      },
+    ],
+    recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Nuit_Blanche_2011_-_Paris.jpg/1280px-Nuit_Blanche_2011_-_Paris.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Nuit_Blanche_2011_-_Paris.jpg/1280px-Nuit_Blanche_2011_-_Paris.jpg',
+        captionKo: '뉘 블랑쉬 야간 설치',
+        captionEn: 'Nuit Blanche night installation',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Nuit_Blanche_2012_-_Paris_(8061256670).jpg/1280px-Nuit_Blanche_2012_-_Paris_(8061256670).jpg',
+        captionKo: '세느 강변 설치',
+        captionEn: 'Seine riverbank installation',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Hotel_de_Ville_Paris_Nuit_blanche_2010.jpg/1280px-Hotel_de_Ville_Paris_Nuit_blanche_2010.jpg',
+        captionKo: '파리 시청 야간 행사',
+        captionEn: 'Hôtel de Ville at Nuit Blanche',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'nuit-blanche',
+        termKo: '뉘 블랑쉬',
+        termEn: 'Nuit Blanche',
+        promptKo:
+          '파리 뉘 블랑쉬(Nuit Blanche)가 무엇인지 여행자 관점에서 3문장 이내로 설명해줘.',
+        promptEn: 'What is Paris Nuit Blanche for travelers in 3 short sentences.',
+        searchQueryKo: '파리 뉘 블랑쉬 축제',
+        searchQueryEn: 'Paris Nuit Blanche festival',
+        referenceUrl: 'https://www.paris.fr/nuit-blanche',
+        referenceUrlKo: 'https://fr.wikipedia.org/wiki/Nuit_blanche_(Paris)',
+      },
+      {
+        id: 'parcours',
+        termKo: '파르쿠르',
+        termEn: 'parcours',
+        promptKo:
+          '뉘 블랑쉬 파르쿠르(예술 루트)가 무엇인지 동선 잡는 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'What is the Nuit Blanche parcours and how to plan routes in 3 short sentences.',
+        searchQueryKo: '파리 뉘 블랑쉬 파르쿠르 지도',
+        searchQueryEn: 'Paris Nuit Blanche parcours map',
+      },
+      {
+        id: 'centre-pompidou',
+        termKo: '퐁피두 센터',
+        termEn: 'Centre Pompidou',
+        promptKo:
+          '뉘 블랑쉬에서 퐁피두 센터가 왜 중요한 허브인지 3문장 이내로 설명해줘.',
+        promptEn: 'Why Centre Pompidou matters during Nuit Blanche in 3 short sentences.',
+        searchQueryKo: '파리 퐁피두 센터 뉘 블랑쉬',
+        searchQueryEn: 'Centre Pompidou Nuit Blanche Paris',
+      },
+      {
+        id: 'seine-installations',
+        termKo: '세느 강변 설치',
+        termEn: 'Seine installations',
+        promptKo:
+          '뉘 블랑쉬 세느 강변 설치·투영을 보기 좋은 구간을 3문장 이내로 설명해줘.',
+        promptEn: 'Best Seine riverbank spots for Nuit Blanche in 3 short sentences.',
+        searchQueryKo: '파리 세느 강변 뉘 블랑쉬',
+        searchQueryEn: 'Paris Seine Nuit Blanche installations',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'nuit-blanche-official',
+            labelKo: '공식 일정',
+            labelEn: 'Official programme',
+            kind: 'shop',
+            href: 'https://www.paris.fr/nuit-blanche',
+          },
+        ],
+      },
+      {
+        highlightIndex: 2,
+        links: [
+          {
+            id: 'parcours-map',
+            labelKo: '파르쿠르 지도',
+            labelEn: 'Parcours map',
+            kind: 'shop',
+            searchQueryKo: '파리 시청',
+            searchQueryEn: 'Hôtel de Ville, Paris, France',
+            searchTarget: 'maps',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '파리 뉘 블랑쉬',
+    youtubeSearchQueryEn: 'Paris Nuit Blanche',
+    mooniChips: [
+      {
+        id: 'best-nights',
+        promptKo: '6월 중 어느 밤이 뉘 블랑쉬야?',
+        promptEn: 'Which night in June is Nuit Blanche?',
+      },
+      {
+        id: 'parcours-tips',
+        promptKo: '밤샘 파르쿠르 동선 어떻게 잡아?',
+        promptEn: 'How should I plan an all-night parcours route?',
+      },
+      {
+        id: 'stay-area',
+        promptKo: '마레랑 생제르맹 중 어디 숙소가 나아?',
+        promptEn: 'Le Marais or Saint-Germain — where should I stay?',
+      },
+    ],
+    priority: 1,
+  },
+  {
+    id: 'los-angeles-rose-parade-2027',
+    slug: 'los-angeles',
+    hubId: 'los-angeles',
+    type: 'festival',
+    title: '로즈 퍼레이드',
+    titleEn: 'Rose Parade',
+    startDate: '2027-01-01',
+    endDate: '2027-01-01',
+    recurrence: 'annual',
+    recurrenceNote: '매년 1월 1일 (신년의 날)',
+    recurrenceNoteEn: "Every January 1 (New Year's Day)",
+    venue: { name: 'Colorado Blvd · Pasadena · Rose Bowl' },
+    source: 'official_url',
+    sourceUrl: 'https://www.tournamentofroses.com/',
+    bookingHints:
+      '패서디나·올드타운 — 퍼레이드 당일 전후 2~3박 · 새벽 자리·메트로·트래픽 통제 구간 조기 이동',
+    detailOverview:
+      '캘리포니아 패서디나에서 매년 1월 1일 열리는 장미 축제 퍼레이드(Tournament of Roses Parade)로, 꽃으로 덮은 플로트가 콜로라도 대로를 따라 이동합니다. 같은 날 오후 로즈볼 대학 미식축구 경기가 이어지므로, 퍼레이드 전후 2~3박으로 패서디나·올드타운 기점을 잡아 새벽 관람·경기 관람을 묶는 방문이 일반적입니다.',
+    highlights: [
+      'Tournament of Roses Parade — Colorado Blvd 루트 · 꽃 플로트·밴드·마슈 유닛',
+      'Rose Bowl Game — 같은 날 오후 패서디나 로즈볼 경기장',
+      'Floatfest — 퍼레이드 후 플로트 전시·Sierra Madre·Washington Blvd',
+    ],
+    stayAreas: [
+      {
+        name: '패서디나 · Pasadena',
+        mrtKeyword: 'Pasadena',
+        note: '퍼레이드 루트·올드타운(Colorado Blvd)·로즈볼 · Gold Line',
+      },
+    ],
+    recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Tournament_of_Roses_Parade_2010_Float.jpg/1280px-Tournament_of_Roses_Parade_2010_Float.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Tournament_of_Roses_Parade_2010_Float.jpg/1280px-Tournament_of_Roses_Parade_2010_Float.jpg',
+        captionKo: '로즈 퍼레이드 꽃 플로트',
+        captionEn: 'Rose Parade floral float',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/TOR_New_Orleans_float.jpg/1280px-TOR_New_Orleans_float.jpg',
+        captionKo: '콜로라도 대로 플로트 행진',
+        captionEn: 'Float on Colorado Boulevard',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/2018.06.17_Over_the_Rose_Bowl%2C_Pasadena%2C_CA_USA_0046_%2842855686701%29.jpg/1280px-2018.06.17_Over_the_Rose_Bowl%2C_Pasadena%2C_CA_USA_0046_%2842855686701%29.jpg',
+        captionKo: '패서디나 로즈볼 경기장',
+        captionEn: 'Rose Bowl Stadium in Pasadena',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'rose-parade',
+        termKo: '로즈 퍼레이드',
+        termEn: 'Rose Parade',
+        promptKo:
+          '로스앤젤레스 로즈 퍼레이드(Rose Parade)가 무엇인지 여행자 관점에서 3문장 이내로 설명해줘.',
+        promptEn: 'What is the Rose Parade in Los Angeles for travelers in 3 short sentences.',
+        searchQueryKo: '로스앤젤레스 로즈 퍼레이드',
+        searchQueryEn: 'Rose Parade Pasadena Los Angeles',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Rose_Parade',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/%EB%A1%9C%EC%A6%88_%ED%8D%BC%EB%A0%88%EC%9D%B4%EB%93%9C',
+      },
+      {
+        id: 'tournament-of-roses',
+        termKo: '토너먼트 오브 로즈',
+        termEn: 'Tournament of Roses',
+        promptKo:
+          '토너먼트 오브 로즈(Tournament of Roses)가 로즈 퍼레이드와 어떤 관계인지 3문장 이내로 설명해줘.',
+        promptEn:
+          'How does the Tournament of Roses relate to the Rose Parade in 3 short sentences.',
+        searchQueryKo: '토너먼트 오브 로즈 퍼레이드',
+        searchQueryEn: 'Tournament of Roses Pasadena',
+        referenceUrl: 'https://www.tournamentofroses.com/',
+      },
+      {
+        id: 'pasadena',
+        termKo: '패서디나',
+        termEn: 'Pasadena',
+        promptKo:
+          '로즈 퍼레이드에서 패서디나(Pasadena)가 어떤 역할인지·왜 퍼레이드 허브인지 3문장 이내로 설명해줘.',
+        promptEn: 'What role Pasadena plays in the Rose Parade in 3 short sentences.',
+        searchQueryKo: '패서디나 로즈 퍼레이드',
+        searchQueryEn: 'Pasadena Rose Parade',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Pasadena,_California',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/%ED%8C%A8%EC%84%9C%EB%94%94%EB%82%98',
+      },
+      {
+        id: 'rose-bowl',
+        termKo: '로즈볼',
+        termEn: 'Rose Bowl',
+        promptKo:
+          '로즈 퍼레이드 당일 로즈볼(Rose Bowl) 미식축구 경기가 여행 일정에 어떤 영향을 주는지 3문장 이내로 설명해줘.',
+        promptEn: 'How the Rose Bowl game affects a parade-day itinerary in 3 short sentences.',
+        searchQueryKo: '로즈볼 경기 로즈 퍼레이드',
+        searchQueryEn: 'Rose Bowl game Rose Parade day',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Rose_Bowl_Game',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/%EB%A1%9C%EC%A6%88%EB%B3%BC',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'rose-parade-official',
+            labelKo: '공식 일정',
+            labelEn: 'Official programme',
+            kind: 'shop',
+            href: 'https://www.tournamentofroses.com/',
+          },
+        ],
+      },
+      {
+        highlightIndex: 2,
+        links: [
+          {
+            id: 'floatfest-map',
+            labelKo: 'Floatfest 지도',
+            labelEn: 'Floatfest map',
+            kind: 'shop',
+            searchQueryKo: '패서디나 콜로라도 대로',
+            searchQueryEn: 'Colorado Blvd, Pasadena, CA, USA',
+            searchTarget: 'maps',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '로스앤젤레스 로즈 퍼레이드',
+    youtubeSearchQueryEn: 'Rose Parade Pasadena',
+    mooniChips: [
+      {
+        id: 'parade-view',
+        promptKo: '퍼레이드 잘 보이는 패서디나 구역 알려줘',
+        promptEn: 'Best Pasadena areas to watch the parade?',
+      },
+      {
+        id: 'new-years-logistics',
+        promptKo: '1월 1일 새벽 퍼레이드 관람 팁 알려줘',
+        promptEn: 'Tips for watching the parade on New Year morning?',
+      },
+      {
+        id: 'stay-area',
+        promptKo: '패서디나 시내 어느 구역에 숙소 잡는 게 나아?',
+        promptEn: 'Which part of Pasadena is best to stay for the parade?',
+      },
+    ],
+    priority: 1,
+  },
+  {
+    id: 'london-notting-hill-2026',
+    slug: 'london',
+    hubId: 'london',
+    type: 'festival',
+    title: '노팅힐 카니발',
+    titleEn: 'Notting Hill Carnival',
+    startDate: '2026-08-29',
+    endDate: '2026-08-31',
+    recurrence: 'annual',
+    recurrenceNote: '8월 은행 휴일 주말 (토~월, 연도별 변동)',
+    recurrenceNoteEn: 'August bank holiday weekend (Sat–Mon, varies)',
+    venue: { name: 'Ladbroke Grove · Great Western Road · Notting Hill' },
+    source: 'official_url',
+    sourceUrl: 'https://nhcarnival.org/',
+    bookingHints:
+      '노팅힐·Ladbroke Grove — 주말 전후 2~3박 · 퍼레이드 루트·사운드 시스템 구간 조기 이동 · 패밀리데이·성인 퍼레이드 일정 확인',
+    detailOverview:
+      '런던 서부에서 열리는 노팅힐 카니발은 캐리비안 거리 축제로, 마스 밴드와 사운드 시스템·강철 드럼 밴드가 Great Western Road와 Ladbroke Grove를 따라 이동합니다. 토요일 Panorama 강철 드럼 밴드 대회, 일요일 패밀리데이(J\'Ouvert·어린이 퍼레이드), 월요일 성인 퍼레이드로 이어지므로 주말 전후 2~3박으로 Bayswater·노팅힐 카니발 인근에 머물며 일정을 나눠 보는 방문이 일반적입니다.',
+    highlights: [
+      '성인 퍼레이드 — Great Western Road·Ladbroke Grove 루트 · 마스 밴드·코스튬 행진',
+      '패밀리데이 — J\'Ouvert 새벽 · 어린이 퍼레이드 · 월요일보다 한산',
+      'Panorama — 토요일 강철 드럼 밴드 대회 · 사운드 시스템 구역 겸 검열 구간',
+    ],
+    stayAreas: [
+      {
+        name: '노팅힐 · Notting Hill',
+        mrtKeyword: 'London Notting Hill',
+        note: '퍼레이드 루트·Ladbroke Grove 도보 · Circle·District·Central Line',
+      },
+      {
+        name: '베이스워터 · Bayswater',
+        mrtKeyword: 'London Bayswater',
+        note: '퍼레이드 구간에서 한 블록 · Queensway·Bayswater 역',
+      },
+    ],
+    recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Notting_Hill_Carnival_2014_%282%29.JPG/1280px-Notting_Hill_Carnival_2014_%282%29.JPG',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Notting_Hill_Carnival_2014_%282%29.JPG/1280px-Notting_Hill_Carnival_2014_%282%29.JPG',
+        captionKo: '노팅힐 카니발 퍼레이드',
+        captionEn: 'Notting Hill Carnival parade',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Notting_Hill_Carnival_1_-_August_2006.jpg/1280px-Notting_Hill_Carnival_1_-_August_2006.jpg',
+        captionKo: 'Ladbroke Grove 거리 행진',
+        captionEn: 'Parade on Ladbroke Grove',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Notting_Hill_Carnival_2014_%288%29.JPG/1280px-Notting_Hill_Carnival_2014_%288%29.JPG',
+        captionKo: '마스 밴드·코스튬',
+        captionEn: 'Mas band costumes',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'notting-hill-carnival',
+        termKo: '노팅힐 카니발',
+        termEn: 'Notting Hill Carnival',
+        promptKo:
+          '런던 노팅힐 카니발이 무엇인지 처음 가는 여행자에게 3문장 이내로 설명해줘.',
+        promptEn: 'What is Notting Hill Carnival for first-time visitors in 3 short sentences.',
+        searchQueryKo: '런던 노팅힐 카니발',
+        searchQueryEn: 'Notting Hill Carnival London',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Notting_Hill_Carnival',
+        referenceUrlKo: 'https://ko.wikipedia.org/wiki/%EB%85%B8%ED%8C%85%ED%9E%90_%EC%B9%B4%EB%8B%88%EB%B0%9C',
+      },
+      {
+        id: 'caribbean-street-festival',
+        termKo: '캐리비안 거리 축제',
+        termEn: 'Caribbean street festival',
+        promptKo:
+          '노팅힐 카니발이 캐리비안 거리 축제라 불리는 이유를 3문장 이내로 설명해줘.',
+        promptEn: 'Why Notting Hill Carnival is called a Caribbean street festival in 3 short sentences.',
+        searchQueryKo: '노팅힐 카니발 캐리비안',
+        searchQueryEn: 'Notting Hill Carnival Caribbean',
+      },
+      {
+        id: 'sound-system',
+        termKo: '사운드 시스템',
+        termEn: 'sound system',
+        promptKo:
+          '노팅힐 카니발 사운드 시스템이 무엇인지·어디서 보면 좋은지 3문장 이내로 설명해줘.',
+        promptEn: 'What sound systems are at Notting Hill Carnival and where to find them in 3 short sentences.',
+        searchQueryKo: '노팅힐 카니발 사운드 시스템',
+        searchQueryEn: 'Notting Hill Carnival sound system',
+      },
+      {
+        id: 'steel-band',
+        termKo: '강철 드럼 밴드',
+        termEn: 'steel band',
+        promptKo:
+          '노팅힐 카니발 강철 드럼 밴드(steel pan)가 무엇인지 3문장 이내로 설명해줘.',
+        promptEn: 'What steel bands are at Notting Hill Carnival in 3 short sentences.',
+        searchQueryKo: '노팅힐 카니발 강철 드럼',
+        searchQueryEn: 'Notting Hill Carnival steel band',
+      },
+      {
+        id: 'mas-band',
+        termKo: '마스 밴드',
+        termEn: 'mas band',
+        promptKo:
+          '노팅힐 카니발 마스 밴드(mas band)가 퍼레이드에서 어떤 역할인지 3문장 이내로 설명해줘.',
+        promptEn: 'What mas bands do in the Notting Hill Carnival parade in 3 short sentences.',
+        searchQueryKo: '노팅힐 카니발 마스 밴드',
+        searchQueryEn: 'Notting Hill Carnival mas band',
+      },
+      {
+        id: 'great-western-road',
+        termKo: 'Great Western Road',
+        termEn: 'Great Western Road',
+        promptKo:
+          '노팅힐 카니발에서 Great Western Road가 왜 핵심 거리인지 동선 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Why Great Western Road matters for Notting Hill Carnival routes in 3 short sentences.',
+        searchQueryKo: '런던 Great Western Road 노팅힐 카니발',
+        searchQueryEn: 'Great Western Road Notting Hill Carnival',
+      },
+      {
+        id: 'ladbroke-grove',
+        termKo: 'Ladbroke Grove',
+        termEn: 'Ladbroke Grove',
+        promptKo:
+          '노팅힐 카니발에서 Ladbroke Grove가 왜 핵심 거리인지 동선 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Why Ladbroke Grove matters for Notting Hill Carnival routes in 3 short sentences.',
+        searchQueryKo: '런던 Ladbroke Grove 카니발',
+        searchQueryEn: 'Ladbroke Grove Notting Hill Carnival',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Ladbroke_Grove',
+      },
+      {
+        id: 'panorama',
+        termKo: 'Panorama',
+        termEn: 'Panorama',
+        promptKo:
+          '노팅힐 카니발 토요일 Panorama 강철 드럼 밴드 대회가 무엇인지 3문장 이내로 설명해줘.',
+        promptEn: 'What is the Saturday Panorama steel band competition at Notting Hill Carnival in 3 short sentences.',
+        searchQueryKo: '노팅힐 카니발 Panorama 강철 드럼',
+        searchQueryEn: 'Notting Hill Carnival Panorama steel band',
+        referenceUrl: 'https://nhcarnival.org/saturday',
+      },
+      {
+        id: 'family-day',
+        termKo: '패밀리데이',
+        termEn: 'Family Day',
+        promptKo:
+          '노팅힐 카니발 패밀리데이(일요일)가 월요일 성인 퍼레이드와 어떻게 다른지 3문장 이내로 설명해줘.',
+        promptEn: 'How Family Day Sunday differs from Monday adults parade at Notting Hill Carnival in 3 short sentences.',
+        searchQueryKo: '노팅힐 카니발 패밀리데이',
+        searchQueryEn: 'Notting Hill Carnival Family Day Sunday',
+        referenceUrl: 'https://nhcarnival.org/sunday',
+      },
+      {
+        id: 'jouvert',
+        termKo: 'J\'Ouvert',
+        termEn: "J'Ouvert",
+        promptKo:
+          '노팅힐 카니발 J\'Ouvert(주베르)가 무엇인지 일요일 새벽 일정 팁을 3문장 이내로 설명해줘.',
+        promptEn: "What is J'Ouvert at Notting Hill Carnival in 3 short sentences.",
+        searchQueryKo: '노팅힐 카니발 J Ouvert',
+        searchQueryEn: "Notting Hill Carnival J'Ouvert",
+        referenceUrl: 'https://nhcarnival.org/sunday',
+      },
+      {
+        id: 'childrens-parade',
+        termKo: '어린이 퍼레이드',
+        termEn: "children's parade",
+        promptKo:
+          '노팅힐 카니발 어린이 퍼레이드가 패밀리데이에 어떻게 열리는지 3문장 이내로 설명해줘.',
+        promptEn: "How the children's parade works on Family Day at Notting Hill Carnival in 3 short sentences.",
+        searchQueryKo: '노팅힐 카니발 어린이 퍼레이드',
+        searchQueryEn: "Notting Hill Carnival children's parade",
+      },
+      {
+        id: 'adults-parade',
+        termKo: '성인 퍼레이드',
+        termEn: 'adults parade',
+        promptKo:
+          '노팅힐 카니발 월요일 성인 퍼레이드가 무엇인지·관람 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'What is the Monday adults parade at Notting Hill Carnival in 3 short sentences.',
+        searchQueryKo: '노팅힐 카니발 월요일 퍼레이드',
+        searchQueryEn: 'Notting Hill Carnival Monday adults parade',
+        referenceUrl: 'https://nhcarnival.org/monday',
+      },
+      {
+        id: 'bayswater',
+        termKo: 'Bayswater',
+        termEn: 'Bayswater',
+        promptKo:
+          '노팅힐 카니발 방문 시 Bayswater가 숙소·이동 기점으로 쓰이는 이유를 3문장 이내로 설명해줘.',
+        promptEn: 'Why Bayswater is a stay base for Notting Hill Carnival in 3 short sentences.',
+        searchQueryKo: '런던 Bayswater 노팅힐 카니발',
+        searchQueryEn: 'Bayswater Notting Hill Carnival stay',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'carnival-official',
+            labelKo: '공식 일정',
+            labelEn: 'Official programme',
+            kind: 'shop',
+            href: 'https://nhcarnival.org/',
+          },
+        ],
+      },
+      {
+        highlightIndex: 2,
+        links: [
+          {
+            id: 'parade-route-map',
+            labelKo: '퍼레이드 루트',
+            labelEn: 'Parade route',
+            kind: 'shop',
+            searchQueryKo: '런던 Great Western Road 노팅힐',
+            searchQueryEn: 'Great Western Road, Notting Hill, London, UK',
+            searchTarget: 'maps',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '런던 노팅힐 카니발',
+    youtubeSearchQueryEn: 'Notting Hill Carnival London',
+    mooniChips: [
+      {
+        id: 'beginner-intro',
+        promptKo: '노팅힐 카니발이 뭔지 처음 가는 사람에게 한 줄 요약해줘',
+        promptEn: 'Summarize Notting Hill Carnival for a first-time visitor in one line.',
+      },
+      {
+        id: 'sound-system',
+        promptKo: '사운드 시스템이 뭐고 어디서 보면 돼?',
+        promptEn: 'What are sound systems and where should I watch them?',
+      },
+      {
+        id: 'family-vs-adults',
+        promptKo: '패밀리데이랑 월요일 성인 퍼레이드 차이 알려줘',
+        promptEn: 'How do Family Day Sunday and Monday adults parade differ?',
+      },
+      {
+        id: 'stay-area',
+        promptKo: '노팅힐이랑 Bayswater 중 어디 숙소가 나아?',
+        promptEn: 'Notting Hill or Bayswater — where should I stay?',
+      },
+    ],
+    priority: 1,
+  },
+  {
+    id: 'rome-carnevale-2027',
+    slug: 'rome',
+    hubId: 'rome',
+    type: 'festival',
+    title: '로마 카니발',
+    titleEn: 'Rome Carnival',
+    startDate: '2027-01-31',
+    endDate: '2027-02-09',
+    recurrence: 'annual',
+    recurrenceNote: '대림절 전 주 (연도별 변동)',
+    recurrenceNoteEn: 'Week before Lent (varies)',
+    venue: { name: 'Piazza del Popolo · Via del Corso · Piazza Navona' },
+    source: 'official_url',
+    sourceUrl: 'https://carnevale.roma.it/',
+    bookingHints:
+      '센트로 스토리코·트리덴테 — 대림절 전 주 전후 2~3박 · 피아차 델 포폴로·비아 델 코르소 혼잡 구간 조기 이동',
+    detailOverview:
+      '로마 시에서 부활한 로마 카니발은 대림절 전 주에 피아차 델 포폴로·비아 델 코르소·피아차 나보나 일대에서 퍼레이드·카니발 마스크·역사 재현 행진이 이어집니다. 전체 시즌 숙박보다 행사 전후 2~3박으로 센트로 스토리코에 머물며 개막 행사와 마르디 그라 절정을 나눠 보는 방문이 일반적입니다.',
+    highlights: [
+      '피아차 델 포폴로 — 개막·퍼레이드 출발 · 역사 재현 행진',
+      '비아 델 코르소 — 카니발 마스크·거리 공연 · 로마 카니발 루트',
+      '피아차 나보나 — 음악·어린이 프로그램 · 마르디 그라 전후 절정',
+    ],
+    stayAreas: [
+      {
+        name: '센트로 스토리코 · Centro Storico',
+        mrtKeyword: 'Rome Centro Storico',
+        note: '피아차 나보나·판테온 도보 · Line A Spagna·Barberini',
+      },
+      {
+        name: '트리덴테 · Tridente',
+        mrtKeyword: 'Rome Spanish Steps',
+        note: '피아차 델 포폴로·비아 델 코르소 도보 · Line A Spagna·Flaminio',
+      },
+    ],
+    recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Carosello_al_Carnevale_Romano_febbraio_2013.jpg/1280px-Carosello_al_Carnevale_Romano_febbraio_2013.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Carosello_al_Carnevale_Romano_febbraio_2013.jpg/1280px-Carosello_al_Carnevale_Romano_febbraio_2013.jpg',
+        captionKo: '로마 카니발 퍼레이드',
+        captionEn: 'Rome Carnival parade',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Piazza_del_Popolo_%28Rome%29.jpg/1280px-Piazza_del_Popolo_%28Rome%29.jpg',
+        captionKo: '피아차 델 포폴로',
+        captionEn: 'Piazza del Popolo',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Weekend_in_Rome_-_Carnival.jpg/1280px-Weekend_in_Rome_-_Carnival.jpg',
+        captionKo: '카니발 코스튬·거리 행사',
+        captionEn: 'Carnival costumes and street events',
+      },
+    ],
+    glossaryTerms: [
+      {
+        id: 'carnevale-romano',
+        termKo: '로마 카니발',
+        termEn: 'Carnevale Romano',
+        promptKo:
+          '로마 카니발이 무엇인지 처음 가는 여행자에게 3문장 이내로 설명해줘.',
+        promptEn: 'What is Rome Carnival for first-time visitors in 3 short sentences.',
+        searchQueryKo: '로마 카니발 Carnevale Romano',
+        searchQueryEn: 'Rome Carnival Carnevale Romano',
+        referenceUrl: 'https://carnevale.roma.it/',
+        referenceUrlKo: 'https://it.wikipedia.org/wiki/Carnevale_romano',
+      },
+      {
+        id: 'lent',
+        termKo: '대림절',
+        termEn: 'Lent',
+        promptKo:
+          '로마 카니발이 대림절 전 주에 열리는 이유를 3문장 이내로 설명해줘.',
+        promptEn: 'Why Rome Carnival happens the week before Lent in 3 short sentences.',
+        searchQueryKo: '로마 카니발 대림절',
+        searchQueryEn: 'Rome Carnival Lent season',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Lent',
+      },
+      {
+        id: 'piazza-del-popolo',
+        termKo: '피아차 델 포폴로',
+        termEn: 'Piazza del Popolo',
+        promptKo:
+          '로마 카니발에서 피아차 델 포폴로가 왜 핵심 광장인지 동선 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Why Piazza del Popolo matters during Rome Carnival in 3 short sentences.',
+        searchQueryKo: '로마 피아차 델 포폴로 카니발',
+        searchQueryEn: 'Piazza del Popolo Rome Carnival',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Piazza_del_Popolo',
+      },
+      {
+        id: 'via-del-corso',
+        termKo: '비아 델 코르소',
+        termEn: 'Via del Corso',
+        promptKo:
+          '로마 카니발 비아 델 코르소 퍼레이드 루트를 보기 좋은 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Tips for watching the Rome Carnival parade on Via del Corso in 3 short sentences.',
+        searchQueryKo: '로마 비아 델 코르소 카니발',
+        searchQueryEn: 'Via del Corso Rome Carnival parade',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Via_del_Corso',
+      },
+      {
+        id: 'piazza-navona',
+        termKo: '피아차 나보나',
+        termEn: 'Piazza Navona',
+        promptKo:
+          '로마 카니발에서 피아차 나보나가 왜 인기 구역인지 3문장 이내로 설명해줘.',
+        promptEn: 'Why Piazza Navona is popular during Rome Carnival in 3 short sentences.',
+        searchQueryKo: '로마 피아차 나보나 카니발',
+        searchQueryEn: 'Piazza Navona Rome Carnival',
+        referenceUrl: 'https://en.wikipedia.org/wiki/Piazza_Navona',
+      },
+      {
+        id: 'carnival-mask',
+        termKo: '카니발 마스크',
+        termEn: 'carnival mask',
+        promptKo:
+          '로마 카니발 카니발 마스크·코스튬 문화가 무엇인지 3문장 이내로 설명해줘.',
+        promptEn: 'What carnival masks and costumes mean at Rome Carnival in 3 short sentences.',
+        searchQueryKo: '로마 카니발 마스크',
+        searchQueryEn: 'Rome Carnival masks costumes',
+      },
+      {
+        id: 'historical-parade',
+        termKo: '역사 재현 행진',
+        termEn: 'historical parade',
+        promptKo:
+          '로마 카니발 역사 재현 행진이 무엇인지 3문장 이내로 설명해줘.',
+        promptEn: 'What are the historical re-enactment parades at Rome Carnival in 3 short sentences.',
+        searchQueryKo: '로마 카니발 역사 재현 퍼레이드',
+        searchQueryEn: 'Rome Carnival historical parade',
+      },
+      {
+        id: 'centro-storico',
+        termKo: '센트로 스토리코',
+        termEn: 'Centro Storico',
+        promptKo:
+          '로마 카니발 방문 시 센트로 스토리코가 숙소·동선 허브인 이유를 3문장 이내로 설명해줘.',
+        promptEn: 'Why Centro Storico is a hub for Rome Carnival trips in 3 short sentences.',
+        searchQueryKo: '로마 센트로 스토리코 카니발',
+        searchQueryEn: 'Rome Centro Storico Carnival stay',
+      },
+      {
+        id: 'martedi-grasso',
+        termKo: '마르디 그라',
+        termEn: 'Martedì Grasso',
+        promptKo:
+          '로마 카니발 마르디 그라(Martedì Grasso, 대림절 전 화요일)가 왜 절정인지 3문장 이내로 설명해줘.',
+        promptEn: 'Why Martedì Grasso is the peak of Rome Carnival in 3 short sentences.',
+        searchQueryKo: '로마 카니발 마르디 그라',
+        searchQueryEn: 'Rome Carnival Martedì Grasso Fat Tuesday',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'carnevale-official',
+            labelKo: '공식 일정',
+            labelEn: 'Official programme',
+            kind: 'shop',
+            href: 'https://carnevale.roma.it/',
+          },
+        ],
+      },
+      {
+        highlightIndex: 2,
+        links: [
+          {
+            id: 'navona-map',
+            labelKo: '나보나 광장',
+            labelEn: 'Piazza Navona',
+            kind: 'shop',
+            searchQueryKo: '로마 피아차 나보나',
+            searchQueryEn: 'Piazza Navona, Rome, Italy',
+            searchTarget: 'maps',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '로마 카니발 Carnevale Romano',
+    youtubeSearchQueryEn: 'Rome Carnival Carnevale Romano',
+    mooniChips: [
+      {
+        id: 'beginner-intro',
+        promptKo: '로마 카니발이 뭔지 처음 가는 사람에게 설명해줘',
+        promptEn: 'Explain Rome Carnival for a first-time visitor.',
+      },
+      {
+        id: 'martedi-grasso',
+        promptKo: '마르디 그라가 뭐고 2027년엔 언제야?',
+        promptEn: 'What is Martedì Grasso and when is it in 2027?',
+      },
+      {
+        id: 'parade-route',
+        promptKo: '피아차 델 포폴로에서 비아 델 코르소 동선 어떻게 잡아?',
+        promptEn: 'How should I plan Piazza del Popolo to Via del Corso?',
+      },
+      {
+        id: 'stay-area',
+        promptKo: '센트로 스토리코랑 트리덴테 중 어디 숙소가 나아?',
+        promptEn: 'Centro Storico or Tridente — where should I stay?',
       },
     ],
     priority: 1,

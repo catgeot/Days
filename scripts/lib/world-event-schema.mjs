@@ -85,7 +85,7 @@
  *   href?: string,
  *   searchQueryKo?: string,
  *   searchQueryEn?: string,
- *   searchTarget?: 'google' | 'klook',
+ *   searchTarget?: 'google' | 'klook' | 'maps',
  * }} WorldEventContextLink
  */
 
@@ -490,12 +490,12 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
         if (searchQueryKo) normalizedLink.searchQueryKo = searchQueryKo;
         if (searchQueryEn) normalizedLink.searchQueryEn = searchQueryEn;
         if (searchTarget) {
-          if (!['google', 'klook'].includes(searchTarget)) {
+          if (!['google', 'klook', 'maps'].includes(searchTarget)) {
             throw new Error(
               `[world-events] ${id}: highlightContextLinks[${groupIndex}].links[${linkIndex}].searchTarget invalid`,
             );
           }
-          normalizedLink.searchTarget = /** @type {'google' | 'klook'} */ (searchTarget);
+          normalizedLink.searchTarget = /** @type {'google' | 'klook' | 'maps'} */ (searchTarget);
         }
         if (searchTarget && !searchQueryKo) {
           throw new Error(

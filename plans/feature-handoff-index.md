@@ -14,6 +14,20 @@
 
 ## 활성 목록
 
+### 지구본 프레임 줌 — main 병합 ✅
+
+| | |
+|--|--|
+| **상태** | **#1 merge ✅** · main `386412ac` · PR [#203](https://github.com/catgeot/Days/pull/203) |
+| **브랜치** | `cursor/globe-frame-zoom-7106` · merge `386412ac` |
+| **일지** | [`2026-09-08-project-log.md`](./2026-09-08-project-log.md) |
+| **PROD** | `https://www.gateo.kr/` |
+| **VERIFY** | `smoke:globe-page-zoom-lock` · `vite build` PASS |
+
+**다음 제시어 없음** (주제 종료). 홈 프레임 핀치 후 복귀는 PROD. `/qa/globe-frame-zoom`은 구 Preview — 확인은 `www.gateo.kr`.
+
+---
+
 ### 써머리 닫기
 
 | | |

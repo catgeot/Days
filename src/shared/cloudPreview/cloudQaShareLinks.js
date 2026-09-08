@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'globe-frame-zoom',
+    label: '홈 지구본 페이지 줌 복귀',
+    branch: 'cursor/globe-frame-zoom-7106',
+    destination:
+      'https://days-git-cursor-globe-frame-zoom-7106-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
     slug: 'summary-close',
     label: '써머리 닫기 X · Android Chrome',
     branch: 'cursor/summary-close-1030',
@@ -393,9 +401,9 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'world-events',
     label: '세계 행사 일정 허브',
-    branch: 'cursor/world-events-wave2',
+    branch: 'cursor/world-events-wave3',
     destination:
-      'https://days-git-cursor-world-events-wave2-catgeots-projects.vercel.app/world-events',
+      'https://days-git-cursor-world-events-wave3-catgeots-projects.vercel.app/world-events',
     active: true,
   },
 ];
