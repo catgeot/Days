@@ -2,6 +2,24 @@
 
 직전: [`2026-09-07-project-log.md`](./2026-09-07-project-log.md)
 
+## 팔경 contentId — P0-K05 short 종결 (Cloud)
+
+- **세션** `팔경contentId #P0-K05, short 종결`
+- **브랜치** `cursor/palgyeong-cid` · tip `65fd2b8d` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--bucket=short --apply-unique --limit=40` **8/40** unique_hit · 24 tour_missing · 8 hub_mismatch · members **513/876** (null **363**) · short open **60** · closed **184** · 429 없음
+- **HIT** 문경 용추계곡(127913) · 예천 삼강주막(705612) · 의령 벽계관광지(3029556) · 여수 진남관(126386) · 담양 금성산성(126407) · 무안 낙지공원(2748362) · 완도 약산(2824813) · 부안 직소폭포(126260) (LIVE 행만)
+- **VERIFY** audit/smoke lists · smoke content-ids · audit hubs PASS
+- **다음** P0-K06 `--bucket=prefix --apply-unique --limit=40`
+
+```
+팔경contentId #P0-K06, prefix 종결
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=prefix --apply-unique --limit=40 · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
 ## 팔경 contentId — P0-K04 other 종결 (Cloud)
 
 - **세션** `팔경contentId #P0-K04, other 종결`
