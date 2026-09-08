@@ -1212,7 +1212,7 @@
       ]
     },
     "namhae-sipgyeong::남해 물건리 방조어부림과 물미해안": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "namhae",
       "queries": [
@@ -1239,7 +1239,7 @@
       ]
     },
     "hadong-sipgyeong::금오산 일출과 다도해": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "hadong",
       "queries": [
@@ -1249,7 +1249,7 @@
       ]
     },
     "hadong-sipgyeong::쌍계사의 가을": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "hadong",
       "queries": [
@@ -1258,7 +1258,7 @@
       ]
     },
     "hadong-sipgyeong::형제봉 철쭉": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "hadong",
       "queries": [
@@ -1267,7 +1267,7 @@
       ]
     },
     "hadong-sipgyeong::청학동 삼성궁": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "hadong",
       "queries": [
@@ -1277,7 +1277,7 @@
       ]
     },
     "hadong-sipgyeong::하동포구 백사청송": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "hadong",
       "queries": [
@@ -1287,7 +1287,7 @@
       ]
     },
     "hadong-sipgyeong::섬호정에서 바라본 섬진강": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "hadong",
       "queries": [
@@ -1297,7 +1297,7 @@
       ]
     },
     "jinju-palgyeong::남강 의암": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "jinju",
       "queries": [
@@ -1324,7 +1324,7 @@
       ]
     },
     "jinju-palgyeong::망진산 봉수대": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "jinju",
       "queries": [
@@ -1334,7 +1334,7 @@
       ]
     },
     "jinju-palgyeong::비봉산의 봄": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "jinju",
       "queries": [
@@ -1343,7 +1343,7 @@
       ]
     },
     "jinju-palgyeong::월아산 해돋이": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "jinju",
       "queries": [
@@ -1353,7 +1353,7 @@
       ]
     },
     "sancheong-gugyeong::황매산 철쭉": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "sancheong",
       "queries": [
@@ -1425,16 +1425,18 @@
       ]
     },
     "geochang-gugyeong::거창 산림레포츠파크": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "prefix",
       "hubId": "geochang",
       "queries": [
         "거창 산림레포츠파크",
         "산림레포츠파크"
-      ]
+      ],
+      "contentId": "3571372",
+      "tourTitle": "거창산림레포츠파크"
     },
     "geochang-gugyeong::거창 월성리 계곡": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "geochang",
       "queries": [
@@ -1443,7 +1445,7 @@
       ]
     },
     "geochang-gugyeong::거창 가조온천": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "geochang",
       "queries": [
@@ -1474,7 +1476,7 @@
       "tourTitle": "연지공원"
     },
     "gimhae-gugyeong::화포천습지 생태공원": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "gimhae",
       "queries": [
@@ -1484,7 +1486,7 @@
       ]
     },
     "gimhae-gugyeong::경전철에서 바라본 가야유적": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "gimhae",
       "queries": [
@@ -1494,7 +1496,7 @@
       ]
     },
     "gimhae-gugyeong::분산(천문대)전경 및 운무": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "gimhae",
       "queries": [
@@ -1504,7 +1506,7 @@
       ]
     },
     "yangsan-other::내원사 계곡": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "yangsan",
       "queries": [
@@ -1526,7 +1528,7 @@
       ]
     },
     "miryang-palgyeong::시례 호박소": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "miryang",
       "queries": [
@@ -1536,7 +1538,7 @@
       ]
     },
     "miryang-palgyeong::월연정 풍경": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "miryang",
       "queries": [
@@ -1545,7 +1547,7 @@
       ]
     },
     "miryang-palgyeong::만어사 운해": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "miryang",
       "queries": [
@@ -1554,7 +1556,7 @@
       ]
     },
     "miryang-palgyeong::종남산 진달래": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "miryang",
       "queries": [
@@ -1564,13 +1566,15 @@
       ]
     },
     "uiryeong-gugyeong::의령 봉황대": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "prefix",
       "hubId": "uiryeong",
       "queries": [
         "의령 봉황대",
         "봉황대"
-      ]
+      ],
+      "contentId": "126775",
+      "tourTitle": "봉황대(의령)"
     },
     "uiryeong-gugyeong::벽계관광지": {
       "status": "unique_hit",
@@ -1595,7 +1599,7 @@
       "tourTitle": "정암루(솥바위)"
     },
     "uiryeong-gugyeong::백산안희제선생 생가": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "uiryeong",
       "queries": [
@@ -1604,7 +1608,7 @@
       ]
     },
     "uiryeong-gugyeong::호암이병철선생 생가": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "uiryeong",
       "queries": [
@@ -1622,7 +1626,7 @@
       ]
     },
     "haman-gugyeong::악양의 꽃길과 노을": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "haman",
       "queries": [
@@ -1643,7 +1647,7 @@
       ]
     },
     "haman-gugyeong::연꽃테마파크의 아라홍련": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "haman",
       "queries": [
@@ -1653,7 +1657,7 @@
       ]
     },
     "haman-gugyeong::장춘사의 산사풍경": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "haman",
       "queries": [
@@ -1663,7 +1667,7 @@
       ]
     },
     "haman-gugyeong::합강정과 반구정의 해돋이": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "haman",
       "queries": [
@@ -1673,7 +1677,7 @@
       ]
     },
     "haman-gugyeong::대평늪의 늪지식물": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "haman",
       "queries": [
@@ -1683,7 +1687,7 @@
       ]
     },
     "changnyeong-gugyeong::우포늪과 따오기": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "changnyeong",
       "queries": [
@@ -1694,7 +1698,7 @@
       ]
     },
     "changnyeong-gugyeong::화왕산 억새와 진달래": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "changnyeong",
       "queries": [
@@ -1704,7 +1708,7 @@
       ]
     },
     "changnyeong-gugyeong::낙동강유채축제와 남지개비리": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "changnyeong",
       "queries": [
@@ -1714,7 +1718,7 @@
       ]
     },
     "changnyeong-gugyeong::만옥정공원과 신라진흥왕척경비, 술정리동삼층석탑": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "changnyeong",
       "queries": [
@@ -1724,7 +1728,7 @@
       ]
     },
     "changnyeong-gugyeong::교동과 송현동고분군": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "changnyeong",
       "queries": [
@@ -1734,7 +1738,7 @@
       ]
     },
     "changnyeong-gugyeong::3·1민속문화제와 영산만년교": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "changnyeong",
       "queries": [
@@ -1783,16 +1787,18 @@
       ]
     },
     "yeosu-other::여수 이순신대교": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "prefix",
       "hubId": "yeosu",
       "queries": [
         "여수 이순신대교",
         "이순신대교"
-      ]
+      ],
+      "contentId": "2778041",
+      "tourTitle": "이순신대교홍보관"
     },
     "gwangyang-gugyeong::백운산 4대 계곡": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "gwangyang",
       "queries": [
@@ -1802,13 +1808,16 @@
       ]
     },
     "gwangyang-gugyeong::백운산 자연휴양림": {
-      "status": "open",
+      "status": "hub_mismatch",
       "bucket": "prefix",
       "hubId": "gwangyang",
       "queries": [
         "백운산 자연휴양림",
         "자연휴양림",
         "광양 백운산 자연휴양림"
+      ],
+      "titles": [
+        "국립 백운산자연휴양림(원주)"
       ]
     },
     "gwangyang-gugyeong::광양이순신대교": {

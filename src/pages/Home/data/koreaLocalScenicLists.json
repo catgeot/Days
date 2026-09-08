@@ -3360,7 +3360,8 @@
         "attractionName": "거창 산림레포츠파크",
         "name_en": "Geochang Forest Leisure Park",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "3571372"
       },
       {
         "attractionName": "거창 항노화힐링랜드",
@@ -3792,7 +3793,8 @@
         "kind": "viewpoint",
         "lat": 35.4352846,
         "lng": 128.24126,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "126775"
       },
       {
         "attractionName": "벽계관광지",
@@ -4090,7 +4092,8 @@
         "attractionName": "여수 이순신대교",
         "name_en": "Yeosu Yi Sun-sin Bridge",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2778041"
       }
     ]
   },
