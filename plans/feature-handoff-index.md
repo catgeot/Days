@@ -319,11 +319,11 @@
 
 | | |
 |--|--|
-| **상태** | R01–R16 ✅ · **P0·P1 F 소진** · members **480/876** · P2 **null 104** · **P0-L07+** ✅ 2/100 · **다음 P0-L07++** · A와 **동시 OK** |
-| **브랜치** | `cursor/palgyeong-cid` · tip `851fda40` |
+| **상태** | R01–R16 ✅ · **P0·P1 F 소진** · members **482/876** · P2 **null 104** · **P0-L07++** ✅ 2/100 · **다음 P0-L07+++** · A와 **동시 OK** |
+| **브랜치** | `cursor/palgyeong-cid` · tip `c914703c` |
 | **PR** | [#185](https://github.com/catgeot/Days/pull/185) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§3·§9 B** · method **§5.7** |
-| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — **P0-L07+** ✅ · **다음 P0-L07++** |
+| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — **P0-L07++** ✅ · **다음 P0-L07+++** |
 | **일지** | [`2026-09-08-project-log.md`](./2026-09-08-project-log.md) |
 | **소유** | JSON `contentId` · fill · audit · **UI 금지** |
 | **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · 본명-only keyword 재시도 · AI가 ID 기입 · feature에 `plans/**` 커밋 |
@@ -331,7 +331,7 @@
 **다음 제시어**:
 
 ```
-팔경contentId #P0-L07++, 확장 keyword
+팔경contentId #P0-L07+++, 확장 keyword
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
 브랜치 cursor/palgyeong-cid · PR #185
