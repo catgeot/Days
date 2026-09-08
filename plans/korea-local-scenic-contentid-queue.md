@@ -1,6 +1,6 @@
 # 팔경·명소 Tour contentId 큐
 
-**상태**: R01–R16 ✅ · **P0·P1 F 소진** · membersWithContentId **480**/876 · hub+P1 **68** · P2 **null 104**/871(78 hub) · **P2-L2** ✅ 0/104 · **P0-L** ✅ 109/584 · **P0-L02·L03·L05** ✅ 0/100(동일 본명 keyword **폐기**) · **P0-L06 폐기** · **P0-L07+** ✅ 2/100 · 다음 **P0-L07++** · Tour API **운영 승인 ~10만/일**  
+**상태**: R01–R16 ✅ · **P0·P1 F 소진** · membersWithContentId **482**/876 · hub+P1 **68** · P2 **null 104**/871(78 hub) · **P2-L2** ✅ 0/104 · **P0-L** ✅ 109/584 · **P0-L02·L03·L05** ✅ 0/100(동일 본명 keyword **폐기**) · **P0-L06 폐기** · **P0-L07++** ✅ 2/100 · 다음 **P0-L07+++** · Tour API **운영 승인 ~10만/일**  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.7** · 플랜 [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md)  
 **브랜치**: `cursor/palgyeong-cid` (A UI `cursor/palgyeong-use-e744`와 **분리** · 수집 `cursor/palgyeong` 금지)  
 **금지**: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재호출 · P1/P2를 P0 전에
@@ -115,6 +115,7 @@ DB-only 종료 후 overrides에 `contentId: null`이 남은 hub만. 라운드는
 | **P0-L06** | 동일 본명 `--keyword-only --limit=100` | — | — | **폐기** 2026-09-07 — L02·L03·L05와 같은 호출 · 로또 금지 |
 | **P0-L07** | S01 후 `--keyword-only --limit=100` (memberQueries) | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-07 **11/100** · members **470/876** · tip `6212fab3` |
 | **P0-L07+** | A01 후 `--keyword-only --limit=100` (memberQueries) | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-08 **2/100** · members **480/876** · tip `851fda40` |
+| **P0-L07++** | `--keyword-only --limit=100` (memberQueries) | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-08 **2/100** · members **482/876** · tip `c914703c` |
 
 ### P0 잔여 전략 (2026-09-07 진단 · keyword 로또 대체)
 
@@ -141,14 +142,14 @@ P0-L02·L03·L05는 **같은 앞 100멤버**에 JSON `attractionName` **한 단�
 | **P0-L07** | S01 후 `--keyword-only` 잔여 null · **본명-only 재시도 금지** · `--resume`은 새 쿼리 집합일 때만 | 쿼터 ~10만/일 · 세션 `--limit` | LIVE | ✅ 2026-09-07 **11/100** · tip `6212fab3` |
 | **P0-A01** | 시호·별칭 MISS만 공식 출처/웹으로 후보 → `KEYWORD_ALIASES` → LIVE 1~2회 검증 | 소수 건 | 혼합 | ✅ 2026-09-08 **8/16** L07 cohort · tip `dc608b4b` |
 
-### 다음 세션 (복붙) — 1순위 P0-L07++
+### 다음 세션 (복붙) — 1순위 P0-L07+++
 
-**채팅명** `팔경contentId #P0-L07++, 확장 keyword`
+**채팅명** `팔경contentId #P0-L07+++, 확장 keyword`
 
 | | |
 |--|--|
-| **브랜치** | `cursor/palgyeong-cid` · tip `851fda40` · PR [#185](https://github.com/catgeot/Days/pull/185) |
-| **스냅샷** | P0 멤버 **480/876** (null **396**) · P0-L07+ ✅ 2/100 · P2 null **104** |
+| **브랜치** | `cursor/palgyeong-cid` · tip `c914703c` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **스냅샷** | P0 멤버 **482/876** (null **394**) · P0-L07++ ✅ 2/100 · P2 null **104** |
 | **1순위** | `--keyword-only --limit=100` (memberQueries) · gunsan 등 시호 alias 2차는 합의 후 |
 | **읽기** | index 팔경 contentId 행 · 본 큐 「P0 잔여 전략」· method **§5.7** |
 | **금지** | UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 `plans/**` |
@@ -156,7 +157,7 @@ P0-L02·L03·L05는 **같은 앞 100멤버**에 JSON `attractionName` **한 단�
 **이어질 제시어**:
 
 ```
-팔경contentId #P0-L07++, 확장 keyword
+팔경contentId #P0-L07+++, 확장 keyword
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
 브랜치 cursor/palgyeong-cid · PR #185

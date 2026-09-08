@@ -2,6 +2,24 @@
 
 직전: [`2026-09-07-project-log.md`](./2026-09-07-project-log.md)
 
+## 팔경 contentId — P0-L07++ 확장 keyword (Cloud)
+
+- **세션** `팔경contentId #P0-L07++, 확장 keyword`
+- **브랜치** `cursor/palgyeong-cid` · tip `c914703c` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--keyword-only --limit=100` (memberQueries) **2/100** LIVE · members **482/876** (null **394**) · 429 없음
+- **채움** 영천 보현산댐 짚와이어(2606234) · 운주산승마자연휴양림(1839066)
+- **VERIFY** audit/smoke lists · smoke content-ids PASS
+- **다음** P0-L07+++ `--keyword-only --limit=100` · gunsan 등 시호 alias 2차는 합의 후
+
+```
+팔경contentId #P0-L07+++, 확장 keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: 잔여 null --keyword-only --limit=100 (memberQueries) · gunsan 등 시호 alias 2차는 합의 후
+```
+
 ## 팔경 contentId — P0-L07+ 확장 keyword (Cloud)
 
 - **세션** `팔경contentId #P0-L07+, 확장 keyword`
