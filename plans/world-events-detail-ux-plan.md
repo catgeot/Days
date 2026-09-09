@@ -813,22 +813,12 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#53 리스트 Unsplash** · tip `ce26f748` · PR [#204](https://github.com/catgeot/Days/pull/204) · 사람 Preview 대기 |
-| **브랜치** | `cursor/world-events-wave3` · tip `ce26f748` |
-| **플랜** | F-0.5 **D5-b-3 ✅** · **Wave3 4/4 ✅** · 리스트 사진 **Unsplash** |
-| **Preview** | `/qa/world-events` → `/world-events` |
-| **VERIFY** | `generate:world-events` · `audit:world-events` · `smoke:world-events-hub` · `vite build` |
+| **상태** | **#54 merge ✅** · main `2473463a` · PR [#204](https://github.com/catgeot/Days/pull/204) |
+| **브랜치** | `cursor/world-events-wave3` · merge `2473463a` |
+| **플랜** | F-0.5 **D5-b-3 ✅** · **Wave3 4/4 ✅** · 리스트 사진 **Unsplash PROD** |
+| **PROD** | `https://www.gateo.kr/world-events` |
+| **VERIFY** | `generate:world-events` · `audit:world-events` · `smoke:world-events-hub` PASS |
 
-**마일스톤**: … → M16 **Wave3 rome·europe #50 ✅** → M17 **Wave3 D5-b 에이전트 QA #51 ✅** → M18 **리스트 Unsplash #53 ✅**
+**마일스톤**: … → M16 **Wave3 rome·europe #50 ✅** → M17 **Wave3 D5-b 에이전트 QA #51 ✅** → M18 **리스트 Unsplash #53 ✅** → M19 **#54 main 병합 ✅**
 
-**다음 제시어** (#54 사람 Preview QA):
-
-```
-세계행사 일정 #54, 리스트 Unsplash Preview QA
-@plans/feature-handoff-index.md
-@plans/2026-09-08-project-log.md
-@plans/world-events-management.md
-브랜치 cursor/world-events-wave3 · PR #204 · https://www.gateo.kr/qa/world-events
-금지: worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구
-작업: /world-events 카드 사진이 Unsplash 행사 장면인지 · 지역 칩 전환 후에도 유지되는지
-```
+**다음 제시어 없음** (리스트 Unsplash는 PROD). 확인은 `www.gateo.kr/world-events`.

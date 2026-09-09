@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -13,6 +13,8 @@ import SEO from '../../components/SEO';
 import { useLocale } from '../../i18n/LocaleProvider';
 import { tripWindowPresetsFromEvent } from '../../utils/worldEventTripPresets';
 import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
+import { fetchWorldEventListPhotos } from '../../utils/fetchWorldEventListPhotos';
+import { readWorldEventListPhotoCache } from '../../utils/worldEventListPhoto';
 import {
   formatWorldEventDateRange,
   getWorldEventPlaceMeta,
@@ -31,9 +33,15 @@ function chipClass(active) {
 }
 
 /**
- * @param {{ event: import('../../utils/worldEvents').WorldEvent, locale: string, t: import('i18next').TFunction }} props
+ * @param {{
+ *   event: import('../../utils/worldEvents').WorldEvent,
+ *   locale: string,
+ *   t: import('i18next').TFunction,
+ *   photo?: { url?: string, photographer?: string } | null,
+ *   onPhotoError?: (eventId: string) => void,
+ * }} props
  */
-function WorldEventHubCard({ event, locale, t }) {
+function WorldEventHubCard({ event, locale, t, photo = null, onPhotoError }) {
   const placeMeta = getWorldEventPlaceMeta(event.slug, locale);
   const title = getWorldEventTitle(event, locale);
   const dateLabel = formatWorldEventDateRange(event, locale);
@@ -47,13 +55,31 @@ function WorldEventHubCard({ event, locale, t }) {
         checkOut: presets.tripWindow.checkOut,
       })
     : '';
+  const photoUrl = String(photo?.url || '').trim();
+  const photoTitle = photo?.photographer
+    ? `Photo by ${photo.photographer} on Unsplash`
+    : undefined;
 
   return (
     <article className="rounded-2xl border border-stone-200 bg-white p-3.5 shadow-sm transition-colors hover:border-amber-200 hover:bg-amber-50/30">
       <div className="space-y-2">
         <div className="flex items-start gap-2">
-          <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-800">
-            <CalendarDays size={16} aria-hidden />
+          <div className="mt-0.5 h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-amber-100 text-amber-800 sm:h-20 sm:w-20">
+            {photoUrl ? (
+              <img
+                src={photoUrl}
+                alt={t('worldEventDetail.heroGallery.imageAlt', { title, index: 1 })}
+                title={photoTitle}
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full object-cover"
+                onError={() => onPhotoError?.(event.id)}
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center">
+                <CalendarDays size={16} aria-hidden />
+              </div>
+            )}
           </div>
           <div className="min-w-0 flex-1 space-y-1">
             <h2 className="text-sm font-extrabold leading-snug text-stone-900 sm:text-[15px]">
@@ -154,6 +180,18 @@ export default function WorldEventsHub() {
     () => getWorldEventsForHubRegion(activeRegion),
     [activeRegion],
   );
+  const allEvents = useMemo(() => getWorldEventsForHubRegion('all'), []);
+  const [photoById, setPhotoById] = useState(readWorldEventListPhotoCache);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchWorldEventListPhotos(allEvents, locale).then((next) => {
+      if (!cancelled) setPhotoById(next);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [allEvents, locale]);
 
   const regionChips = useMemo(
     () => [
@@ -265,6 +303,15 @@ export default function WorldEventsHub() {
                   event={event}
                   locale={locale}
                   t={t}
+                  photo={photoById[event.id]}
+                  onPhotoError={(eventId) => {
+                    setPhotoById((current) => {
+                      if (!current[eventId]) return current;
+                      const next = { ...current };
+                      delete next[eventId];
+                      return next;
+                    });
+                  }}
                 />
               ))
             )}
