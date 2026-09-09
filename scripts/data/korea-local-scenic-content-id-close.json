@@ -3300,7 +3300,7 @@
       ]
     },
     "geumsan-sipgyeong::태조태실 요광은행나무": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "geumsan",
       "queries": [
@@ -3332,7 +3332,7 @@
       "tourTitle": "의정부미술도서관"
     },
     "uijeongbu-palgyeong::수락산 도정봉": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "uijeongbu",
       "queries": [
@@ -3434,7 +3434,7 @@
       ]
     },
     "icheon-gugyeong::노성산 말머리바위": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "icheon",
       "queries": [
@@ -3444,7 +3444,7 @@
       ]
     },
     "icheon-gugyeong::도드람산 삼봉": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "icheon",
       "queries": [
@@ -3482,7 +3482,7 @@
       "tourTitle": "이천 산수유마을"
     },
     "icheon-gugyeong::설봉산 삼형제 바위": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "icheon",
       "queries": [
@@ -3528,14 +3528,16 @@
       ]
     },
     "ansan-gugyeong::탄도 바닷길": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "prefix",
       "hubId": "ansan",
       "queries": [
         "탄도 바닷길",
         "바닷길",
         "안산 탄도 바닷길"
-      ]
+      ],
+      "contentId": "2615559",
+      "tourTitle": "탄도바닷길"
     },
     "ansan-gugyeong::다문화거리": {
       "status": "tour_missing",
@@ -3558,7 +3560,7 @@
       "tourTitle": "화성 융건릉"
     },
     "hwaseong-palgyeong::용주사 범종": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "hwaseong",
       "queries": [
@@ -3654,7 +3656,7 @@
       ]
     },
     "anyang-gugyeong::평촌1번가 문화의거리": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "anyang",
       "queries": [
@@ -3682,7 +3684,7 @@
       ]
     },
     "incheon-gugyeong::인천 계양 아라온": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "incheon",
       "queries": [
@@ -3691,7 +3693,7 @@
       ]
     },
     "incheon-gugyeong::인천 영종 씨사이드파크": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "incheon",
       "queries": [
@@ -3700,7 +3702,7 @@
       ]
     },
     "incheon-gugyeong::인천 강화읍 원도심": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "incheon",
       "queries": [
@@ -3709,13 +3711,15 @@
       ]
     },
     "incheon-gugyeong::인천 신시모도": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "prefix",
       "hubId": "incheon",
       "queries": [
         "인천 신시모도",
         "신시모도"
-      ]
+      ],
+      "contentId": "2024639",
+      "tourTitle": "신시모도(신도ㆍ시도ㆍ모도)"
     },
     "ganghwa-palgyeong::연미정": {
       "status": "unique_hit",
@@ -3740,7 +3744,7 @@
       "tourTitle": "강화 전등사"
     },
     "daegu-sipgyeong::대구 국채보상운동 기념공원": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "daegu",
       "queries": [
@@ -3780,7 +3784,7 @@
       "tourTitle": "대구 동성로거리"
     },
     "daegu-sipgyeong::대구 달성토성": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "daegu",
       "queries": [
@@ -3789,7 +3793,7 @@
       ]
     },
     "daegu-sipgyeong::대구 경상감영과 옛골목": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "daegu",
       "queries": [
@@ -3798,13 +3802,15 @@
       ]
     },
     "daejeon-palgyeong::대전 구봉산": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "prefix",
       "hubId": "daejeon",
       "queries": [
         "대전 구봉산",
         "구봉산"
-      ]
+      ],
+      "contentId": "127683",
+      "tourTitle": "구봉산(대전)"
     },
     "daejeon-palgyeong::엑스포과학공원": {
       "status": "unique_hit",
@@ -3827,7 +3833,7 @@
       ]
     },
     "daejeon-palgyeong::대전 장태산": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "daejeon",
       "queries": [
@@ -3836,13 +3842,15 @@
       ]
     },
     "daejeon-palgyeong::대전 보문산": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "prefix",
       "hubId": "daejeon",
       "queries": [
         "대전 보문산",
         "보문산"
-      ]
+      ],
+      "contentId": "3080289",
+      "tourTitle": "보문산"
     },
     "ulsan-sipgyeong::울산 가지산 사계": {
       "status": "tour_missing",
@@ -3855,7 +3863,7 @@
       ]
     },
     "ulsan-sipgyeong::울산 반구대암각화": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "ulsan",
       "queries": [
@@ -3864,13 +3872,15 @@
       ]
     },
     "ulsan-sipgyeong::울산 강동몽돌해변": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "prefix",
       "hubId": "ulsan",
       "queries": [
         "울산 강동몽돌해변",
         "강동몽돌해변"
-      ]
+      ],
+      "contentId": "128199",
+      "tourTitle": "강동몽돌해변 (정자해변)"
     }
   }
 }

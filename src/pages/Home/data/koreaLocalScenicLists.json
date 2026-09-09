@@ -7236,7 +7236,8 @@
         "attractionName": "탄도 바닷길",
         "name_en": "Tando Tidal Flat Trail",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2615559"
       },
       {
         "attractionName": "풍도",
@@ -7650,7 +7651,8 @@
         "name_en": "Sin-Si-Modo Islands Incheon",
         "kind": "park",
         "linkStatus": "pending_coord",
-        "note": "제8경 신·시·모도 삼형제 섬"
+        "note": "제8경 신·시·모도 삼형제 섬",
+        "contentId": "2024639"
       },
       {
         "attractionName": "인천 백령도",
@@ -7891,7 +7893,8 @@
         "attractionName": "대전 구봉산",
         "name_en": "Gubongsan",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "127683"
       },
       {
         "attractionName": "엑스포과학공원",
@@ -7935,7 +7938,8 @@
         "attractionName": "대전 보문산",
         "name_en": "Bomunsan",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "3080289"
       }
     ]
   },
@@ -8009,7 +8013,8 @@
         "attractionName": "울산 강동몽돌해변",
         "name_en": "Gangdong Pebble Beach",
         "kind": "beach",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "128199"
       },
       {
         "attractionName": "울산대공원",
