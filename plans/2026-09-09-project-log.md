@@ -2,6 +2,24 @@
 
 직전: [`2026-09-08-project-log.md`](./2026-09-08-project-log.md)
 
+## 팔경 contentId — P0-K10 prefix 종결 (Cloud)
+
+- **세션** `팔경contentId #P0-K10, prefix 종결`
+- **브랜치** `cursor/palgyeong-cid` · tip `1388e038` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--bucket=prefix --apply-unique --limit=40` **5/22** unique_hit · 15 tour_missing · 2 ambiguous · members **541/876** (null **335**) · prefix open **2** · short **1** · siho **48** · closed **343** · 429 없음
+- **HIT** 안산 탄도바닷길(2615559) · 인천 신시모도(2024639) · 대전 구봉산(127683) · 보문산(3080289) · 울산 강동몽돌해변(128199) (LIVE 행만)
+- **VERIFY** audit/smoke lists · smoke content-ids · build PASS
+- **다음** P0-K11 `--bucket=prefix --apply-unique --limit=40` (prefix 잔여 2) 또는 short ambiguous 1건
+
+```
+팔경contentId #P0-K11, prefix 잔여
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=prefix --apply-unique --limit=40 · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
 ## 팔경 contentId — P0-K09 short 종결 (Cloud)
 
 - **세션** `팔경contentId #P0-K09, short 종결`
