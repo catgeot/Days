@@ -622,12 +622,16 @@
       ]
     },
     "jincheon-palgyeong::우담제월": {
-      "status": "siho_wait",
+      "status": "hub_mismatch",
       "bucket": "siho",
       "hubId": "jincheon",
       "queries": [
         "우담제월",
+        "우암사적공원",
         "진천 우담제월"
+      ],
+      "titles": [
+        "우암사적공원"
       ]
     },
     "jincheon-palgyeong::금계완사": {
@@ -649,21 +653,31 @@
       ]
     },
     "jincheon-palgyeong::어은계석": {
-      "status": "siho_wait",
+      "status": "hub_mismatch",
       "bucket": "siho",
       "hubId": "jincheon",
       "queries": [
         "어은계석",
+        "어은돌항",
+        "어은정",
         "진천 어은계석"
+      ],
+      "titles": [
+        "어은돌항",
+        "어은정"
       ]
     },
     "jincheon-palgyeong::적대청람": {
-      "status": "siho_wait",
+      "status": "hub_mismatch",
       "bucket": "siho",
       "hubId": "jincheon",
       "queries": [
         "적대청람",
+        "적대봉",
         "진천 적대청람"
+      ],
+      "titles": [
+        "적대봉"
       ]
     },
     "jeungpyeong-gugyeong::좌구산 천문대": {
@@ -1401,13 +1415,16 @@
       ]
     },
     "hamyang-palgyeong::금대지리": {
-      "status": "siho_wait",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "hamyang",
       "queries": [
         "금대지리",
+        "금대암",
         "함양 금대지리"
-      ]
+      ],
+      "contentId": "2786889",
+      "tourTitle": "금대암"
     },
     "hamyang-palgyeong::용추비경": {
       "status": "unique_hit",
@@ -1445,12 +1462,18 @@
       "tourTitle": "서암정사(함양)"
     },
     "hamyang-palgyeong::덕유운해": {
-      "status": "siho_wait",
+      "status": "hub_mismatch",
       "bucket": "siho",
       "hubId": "hamyang",
       "queries": [
         "덕유운해",
+        "남덕유산",
+        "덕유산",
         "함양 덕유운해"
+      ],
+      "titles": [
+        "덕유산국립공원(남덕유분소)",
+        "덕유산국립공원(본소,적상분소)"
       ]
     },
     "geochang-gugyeong::거창 산림레포츠파크": {
@@ -2050,12 +2073,18 @@
       ]
     },
     "hampyeong-palgyeong::백제고도": {
-      "status": "siho_wait",
+      "status": "hub_mismatch",
       "bucket": "siho",
       "hubId": "hampyeong",
       "queries": [
         "백제고도",
+        "백제문화단지",
+        "백제문화체험박물관",
         "함평 백제고도"
+      ],
+      "titles": [
+        "백제문화단지",
+        "백제문화체험박물관"
       ]
     },
     "hampyeong-palgyeong::모악산": {
@@ -3156,13 +3185,17 @@
       "tourTitle": "예산 임존성"
     },
     "yesan-sipgyeong::삽교평야": {
-      "status": "siho_wait",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "yesan",
       "queries": [
         "삽교평야",
+        "예산 삽교읍 석조보살입상",
+        "삽교읍 석조보살입상",
         "예산 삽교평야"
-      ]
+      ],
+      "contentId": "3053601",
+      "tourTitle": "예산 삽교읍 석조보살입상"
     },
     "yesan-sipgyeong::가야산": {
       "status": "unique_hit",
@@ -3677,22 +3710,29 @@
       ]
     },
     "hwaseong-palgyeong::제암만세": {
-      "status": "siho_wait",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "hwaseong",
       "queries": [
         "제암만세",
+        "화성 제암리 3·1운동 순국 유적",
+        "제암리 3·1운동 순국 유적",
         "화성 제암만세"
-      ]
+      ],
+      "contentId": "127017",
+      "tourTitle": "화성 제암리 3·1운동 순국 유적"
     },
     "hwaseong-palgyeong::남양성지": {
-      "status": "siho_wait",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "hwaseong",
       "queries": [
         "남양성지",
+        "남양성모성지",
         "화성 남양성지"
-      ]
+      ],
+      "contentId": "126709",
+      "tourTitle": "남양성모성지"
     },
     "yongin-palgyeong::광교산 사계": {
       "status": "unique_hit",

@@ -3273,7 +3273,8 @@
         "attractionName": "금대지리",
         "name_en": "Geumdaejiri",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2786889"
       },
       {
         "attractionName": "용추비경",
@@ -6465,7 +6466,8 @@
         "attractionName": "삽교평야",
         "name_en": "Sapgyo Plain",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "3053601"
       },
       {
         "attractionName": "가야산",
@@ -7360,13 +7362,15 @@
         "attractionName": "제암만세",
         "name_en": "Jeammansae Memorial",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "127017"
       },
       {
         "attractionName": "남양성지",
         "name_en": "Namyang Holy Site",
         "kind": "shrine",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126709"
       }
     ]
   },
