@@ -319,11 +319,11 @@
 
 | | |
 |--|--|
-| **상태** | R01–R16 ✅ · **P0·P1 F 소진** · members **575/876** · P2 **null 104** · **P0-A06** ✅ siho 4/12 · **다음 P0-A07** siho alias (8) · A와 **동시 OK** |
-| **브랜치** | `cursor/palgyeong-cid` · tip `e3acbf8d` |
+| **상태** | R01–R16 ✅ · **P0·P1 F 소진** · members **577/876** · P2 **null 104** · **P0-A07** ✅ siho 2/8 · **다음 P0-P01** prefix ambiguous (2) · A와 **동시 OK** |
+| **브랜치** | `cursor/palgyeong-cid` · tip `0287f117` |
 | **PR** | [#185](https://github.com/catgeot/Days/pull/185) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§3·§9 B** · method **§5.7** |
-| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — **P0-A07** siho alias (8) |
+| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — **P0-P01** prefix ambiguous (2) · siho_wait **6** |
 | **일지** | [`2026-09-09-project-log.md`](./2026-09-09-project-log.md) |
 | **소유** | JSON `contentId` · fill · audit · **UI 금지** |
 | **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · 본명-only keyword 재시도 · `--limit=100` 로또 · AI가 ID 기입 · feature에 `plans/**` 커밋 |
@@ -331,12 +331,12 @@
 **다음 제시어**:
 
 ```
-팔경contentId #P0-A07, siho alias
+팔경contentId #P0-P01, prefix ambiguous
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
 브랜치 cursor/palgyeong-cid · PR #185
 금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
-작업: --bucket=siho --apply-unique · alias→LIVE · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+작업: prefix ambiguous 2건 제목·주소 확인 → unique면 lists 기입 · 종결을 close JSON에 기록
 ```
 
 ---
