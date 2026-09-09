@@ -319,24 +319,24 @@
 
 | | |
 |--|--|
-| **상태** | R01–R16 ✅ · **P0 종료** members **579/876** null **297**(terminal) · P2 **null 81**/871 · **P2-L8** ✅ 0/20 · **다음 P2-L9** · A와 **동시 OK** |
-| **브랜치** | `cursor/palgyeong-cid` · tip `699ac841` |
+| **상태** | R01–R16 ✅ · **P0 종료** members **579/876** null **297**(terminal) · P2 **null 78**/871 · **P2-L9** ✅ 3/10 · **다음 P2-L10** · A와 **동시 OK** |
+| **브랜치** | `cursor/palgyeong-cid` · tip `fa6d58b8` |
 | **PR** | [#185](https://github.com/catgeot/Days/pull/185) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§3·§9 B** · method **§5.7** |
-| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — **P2-L9** hub-batch keyword |
+| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — **P2-L10** 잔여 null 78건 분석 및 전략 |
 | **일지** | [`2026-09-09-project-log.md`](./2026-09-09-project-log.md) |
 | **소유** | JSON `contentId` · fill · audit · **UI 금지** |
-| **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5/L6/L7/L8 hub 본명 재시도 · `--limit=100` 로또 · AI가 ID 기입 · feature에 `plans/**` 커밋 |
+| **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · L3~L9 hub 본명 재시도 · `--limit=100` 로또 · AI가 ID 기입 · feature에 `plans/**` 커밋 |
 
 **다음 제시어**:
 
 ```
-팔경contentId #P2-L9, hub-batch keyword
+팔경contentId #P2-L10, 잔여 null 분석 및 전략
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
 브랜치 cursor/palgyeong-cid · PR #185
-금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5/L6/L7/L8 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
-작업: P2 scenic null 81 — --hubs=gwangyang,sancheong,yeongyang,pohang,mokpo,ulleung,gapyeong,gongju,jecheon,yanggu --keyword-only --limit=20
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3~L9 hub 본명 단순 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 78건 분석 — Tour 미등재/시설명 alias 발굴 또는 종결 정리
 ```
 
 ---

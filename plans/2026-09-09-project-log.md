@@ -2,6 +2,25 @@
 
 직전: [`2026-09-08-project-log.md`](./2026-09-08-project-log.md)
 
+## 팔경 contentId — P2-L9 hub-batch keyword (Cloud)
+
+- **세션** `팔경contentId #P2-L9, hub-batch keyword`
+- **브랜치** `cursor/palgyeong-cid` · tip `fa6d58b8` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** 지정 10 hub 중 10건 실행 **3/10** LIVE HIT · P2 null **81→78**/871 · 429 없음
+- **HIT** 산청 산청 한방테마파크 `2620990`(산청 동의보감촌) · 포항 구룡포일본인가옥거리 `1909659`(구룡포 일본인 가옥거리) · 가평 가평레일파크 `2361081`(가평 레일바이크)
+- **MISS** 광양(구봉산 케이블카), 영양(영양 외씨버선길), 목포(고하도 해안산책로), 울릉(향목전망대), 공주(공주한옥마을), 제천(청풍문화재단지), 양구(양구 수목원) 미등재/산책로 등 MISS 유지
+- **VERIFY** `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `build` PASS
+- **다음** P2-L10 미등재/MISS hub 분석 또는 남은 null(78건) 대상 후속 전략
+
+```
+팔경contentId #P2-L10, 잔여 null 분석 및 전략
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3~L9 hub 본명 단순 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 78건 분석 — Tour 미등재/시설명 alias 발굴 또는 종결 정리
+```
+
 ## 팔경 contentId — P2-L8 hub-batch keyword (Cloud)
 
 - **세션** `팔경contentId #P2-L8, hub-batch keyword`
