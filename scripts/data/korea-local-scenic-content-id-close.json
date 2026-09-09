@@ -2892,12 +2892,16 @@
       ]
     },
     "imsil-gugyeong::옥정호": {
-      "status": "open",
+      "status": "ambiguous",
       "bucket": "short",
       "hubId": "imsil",
       "queries": [
         "옥정호",
         "임실 옥정호"
+      ],
+      "contentIds": [
+        "126551",
+        "3082705"
       ]
     },
     "cheonan-palgyeong::유관순열사사적지": {
