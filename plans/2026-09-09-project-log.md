@@ -2,6 +2,24 @@
 
 직전: [`2026-09-08-project-log.md`](./2026-09-08-project-log.md)
 
+## 팔경 contentId — P0-P02 옥정호 ambiguous (Cloud)
+
+- **세션** `팔경contentId #P0-P02, 옥정호 ambiguous`
+- **브랜치** `cursor/palgyeong-cid` · tip `3392e61e` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** 임실 옥정호 ambiguous **1/1** · members **578/876** (null **298**) · closed **394** · short ambiguous **0**
+- **종결** `126551` 옥정호(마암리) → 출렁다리·붕어섬 멤버 유지 · `3082705` 작약 꽃밭(운종리) 불일치 → 신비의섬 멤버 **null** · close JSON titles·addrs 기록
+- **VERIFY** audit/smoke lists · smoke content-ids PASS
+- **다음** 함양 칠선시류 ambiguous 1건
+
+```
+팔경contentId #P0-P03, 칠선시류 ambiguous
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: 함양 칠선시류 ambiguous — close JSON titles·주소 확인 → unique면 lists · 아니면 null
+```
+
 ## 팔경 contentId — P0-A08 siho_wait (Cloud)
 
 - **세션** `팔경contentId #P0-A08, siho_wait`
