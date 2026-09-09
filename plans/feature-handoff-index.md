@@ -429,6 +429,8 @@ PROD https://www.gateo.kr/
 
 **게이트**: #54c 사람 Preview **PASS** ✅ — 큰 썸네일 · 카드 칩 없음 · 카드 탭 → 상세 · 지역 칩 사진 유지
 
+**#55 (속도, 별 PR)**: LIVE `event_hero_gallery` 23건은 **위키만** · Unsplash **0**. 상세를 열어도 리스트 첫 로딩은 매 사용자 Unsplash 검색 23건. sessionStorage는 같은 탭만. 시크릿 첫 진입이 거슬리면 `#55 리스트 사진 Edge 캐시`. 갤러리 12장에 리스트 검색 섞지 말 것.
+
 **다음 제시어** (#54d merge · PROD QA):
 
 ```
