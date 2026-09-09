@@ -1862,7 +1862,8 @@
         "kind": "landmark",
         "lat": 35.794,
         "lng": 129.063,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "128704"
       },
       {
         "attractionName": "문천도사",
@@ -3297,7 +3298,8 @@
         "attractionName": "서암석불",
         "name_en": "Seoam Stone Buddha",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "128628"
       },
       {
         "attractionName": "덕유운해",
@@ -5513,13 +5515,15 @@
         "attractionName": "평사낙안",
         "name_en": "Pingsa Migratory Birds",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2022531"
       },
       {
         "attractionName": "삼도귀범",
         "name_en": "Samdo Returning Sails",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "4065077"
       },
       {
         "attractionName": "장자어화",
@@ -5562,7 +5566,8 @@
         "attractionName": "웅연조대",
         "name_en": "Ungyeonjodae Fishing Platform",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "127690"
       },
       {
         "attractionName": "직소폭포",
@@ -5575,7 +5580,8 @@
         "attractionName": "소사모종",
         "name_en": "Sosamojong Evening Bell",
         "kind": "temple",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126352"
       },
       {
         "attractionName": "월명무애",
@@ -5606,7 +5612,8 @@
         "attractionName": "개암고적",
         "name_en": "Gaeam Historic Site",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126346"
       }
     ]
   },
@@ -6180,7 +6187,8 @@
         "attractionName": "안면송림",
         "name_en": "Anmyeon Pine Forest",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "128905"
       },
       {
         "attractionName": "만리포해수욕장",
@@ -7005,7 +7013,8 @@
         "attractionName": "신륵모종",
         "name_en": "Silleuk Evening Bell",
         "kind": "temple",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "128926"
       },
       {
         "attractionName": "마암어등",
@@ -7029,7 +7038,8 @@
         "attractionName": "양도낙안",
         "name_en": "Yangdo Setting Geese",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2766859"
       },
       {
         "attractionName": "팔수장림",
@@ -7041,7 +7051,8 @@
         "attractionName": "이릉두견",
         "name_en": "Ireung Azaleas",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "125573"
       },
       {
         "attractionName": "파사성",

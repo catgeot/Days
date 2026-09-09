@@ -892,7 +892,8 @@
         "name_en": "Namsan Floating Rock",
         "kind": "landmark",
         "lat": 35.794,
-        "lng": 129.063
+        "lng": 129.063,
+        "contentId": "128704"
       },
       {
         "name": "문천도사",
