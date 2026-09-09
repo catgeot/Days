@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-09-09T14:14:57.215Z",
+    "generatedAt": "2026-09-09T14:39:47.757Z",
     "count": 871,
     "imageCount": 778,
     "curation": "GATEO",
@@ -6782,7 +6782,7 @@
       "placeSlug": "buncheon-station",
       "lat": 36.9325978,
       "lng": 129.0585784,
-      "contentId": null,
+      "contentId": "2649976",
       "overview": "분천역 — V-train·산타마을. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -6974,7 +6974,7 @@
       "placeSlug": "namdang-coast-hongseong",
       "lat": 36.5225,
       "lng": 126.4825,
-      "contentId": null,
+      "contentId": "228856",
       "overview": "남당리 해안 — 갯벌·노을. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -7598,7 +7598,7 @@
       "placeSlug": "maryang-camellia-forest",
       "lat": 36.1255,
       "lng": 126.5155,
-      "contentId": null,
+      "contentId": "126010",
       "overview": "마량리동백숲 — 동백·바닷가 숲. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/68/3401268_image2_1.jpg"
     },

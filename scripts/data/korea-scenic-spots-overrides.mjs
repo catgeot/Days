@@ -4284,7 +4284,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'bonghwa',
       attractionName: '분천역',
       overview: '분천역 — V-train·산타마을. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2649976',
     }, // TODO contentId
     {
       order: 4240,
@@ -4410,7 +4410,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'hongseong',
       attractionName: '홍성 남당리 해안',
       overview: '남당리 해안 — 갯벌·노을. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '228856',
     }, // TODO contentId
     {
       order: 4360,
@@ -4813,7 +4813,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'seocheon',
       attractionName: '마량리동백숲',
       overview: '마량리동백숲 — 동백·바닷가 숲. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126010',
     }, // TODO contentId
     {
       order: 4750,
