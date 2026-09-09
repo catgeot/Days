@@ -2,6 +2,51 @@
 
 직전: [`2026-09-08-project-log.md`](./2026-09-08-project-log.md)
 
+## 팔경 contentId — P0-A04 siho alias (Cloud)
+
+- **세션** `팔경contentId #P0-A04, siho alias`
+- **브랜치** `cursor/palgyeong-cid` · tip `2b7dc375` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--bucket=siho --apply-unique` **8/29** unique_hit · **21 siho_wait** · members **567/876** (null **309**) · closed **369** · 429 없음
+- **HIT** 미륵불상·무릉반석·용추비경·해상분수·장자어화·월명무애·남양황라·서문시장 — LIVE 행만 lists 기입 · KEYWORD_ALIASES 8건 · type38 시장 허용
+- **VERIFY** audit/smoke lists · smoke content-ids · smoke tour-content-id-match · build PASS
+- **다음** P0-A05 siho alias (21) 또는 prefix ambiguous 2건
+
+```
+팔경contentId #P0-A05, siho alias
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: --bucket=siho --apply-unique · alias→LIVE · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+## 세계행사 일정 #54c — 리스트 사진 Edge 캐시 필요 여부 (점검)
+
+- **질문** 다음 사용자 첫 `/world-events` 로딩 — `event_hero_gallery` Edge 쓰기가 필요한가
+- **LIVE DB** 허브 23건 **전부 행 있음** · 이미지 270장 **전부 Wikimedia** · Unsplash URL **0**
+- **왜 느린가** 리스트는 Unsplash만 씀. 갤러리가 위키 6장+라 상세 Edge는 `fromCache`로 Unsplash를 **안 씀·안 씀**. 상세를 열어도 리스트 캐시가 안 생김. 클라 리스트는 SELECT만 · 결과는 `sessionStorage`(같은 탭만)
+- **추정** 새 사용자 = DB 1회(위키라 미스) + Unsplash 검색 23건(동시 3). 프로브 1회 274ms → 검색만 ~2초대. 같은 탭 재방문은 sessionStorage
+- **결론** 다음 사용자 첫 로딩을 빠르게 하려면 **공유 캐시(#55)가 필요**. 레이아웃(16:10)은 #54c 확정이라 URL 재작업 위험은 낮음. **지금 Edge 넣지 않음** — #54d는 PR #205 merge. #55는 시크릿 첫 진입이 거슬리면 별 PR
+- **넣을 때** 위키 12장 테이블에 리스트 검색 결과를 섞지 말 것 · 리스트 전용 1장 또는 Unsplash 1장만 앞에 붙이는 작은 Edge
+
+## 세계행사 일정 #54c — 리스트 사진 확대 Preview QA (사람)
+
+- **세션** `세계행사 일정 #54c, 리스트 사진 확대 Preview QA`
+- **브랜치** `cursor/world-events-wave3` · tip `417ce543` · PR [#205](https://github.com/catgeot/Days/pull/205)
+- **사람 QA PASS** 카드 16:10 사진 · 이동 칩 없음 · 카드 탭 → 상세 · 지역 칩 전환 후 사진 유지
+- **VERIFY** CI 2/2 · `smoke:world-events-hub` · `audit:world-events` · `build` PASS (에이전트)
+- **다음** PR #205 merge → PROD `www.gateo.kr/world-events` 회귀
+
+```
+세계행사 일정 #54d, PR #205 merge · PROD QA
+@plans/feature-handoff-index.md
+@plans/2026-09-09-project-log.md
+@plans/world-events-management.md
+브랜치 cursor/world-events-wave3 · PR #205
+금지: worldEvents.json 직편집 · UI 리디자인 · 허브에 플래너·숙소 칩 복구
+작업: PR #205 merge → PROD 큰 썸네일·이동 칩 없음·카드 탭 상세·지역 칩 사진 유지
+```
+
 ## 세계행사 일정 #54b — 리스트 카드 사진 확대 (Cloud)
 
 - **세션** `세계행사 일정 #54b, 리스트 썸네일 Preview QA`

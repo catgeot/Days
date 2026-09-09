@@ -813,12 +813,14 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#54c** Preview QA — 카드 16:10 사진 · 이동 칩 제거 · PR [#205](https://github.com/catgeot/Days/pull/205) |
+| **상태** | **#54c** Preview QA **PASS** · **#54d** PR [#205](https://github.com/catgeot/Days/pull/205) merge · PROD QA |
 | **브랜치** | `cursor/world-events-wave3` · tip `417ce543` |
-| **플랜** | F-0.5 **D5-b-3 ✅** · **Wave3 4/4 ✅** · 리스트 사진 **Unsplash** · 허브 카드 **사진 확대** |
+| **플랜** | F-0.5 **D5-b-3 ✅** · **Wave3 4/4 ✅** · 리스트 사진 **Unsplash** · 허브 카드 **사진 확대 ✅** |
 | **Preview** | `/qa/world-events` |
 | **VERIFY** | `smoke:world-events-hub` · `audit:world-events` · `build` PASS |
 
-**마일스톤**: … → M18 **리스트 Unsplash #53 ✅** → M19 **#54 main 병합 ✅** → M20 **#54b 썸네일 폴백 ✅** → M21 **#54c 사진 확대**
+**마일스톤**: … → M19 **#54 main 병합 ✅** → M20 **#54b 썸네일 폴백 ✅** → M21 **#54c 사진 확대 ✅** → M22 **#54d merge·PROD** · M23 **#55 리스트 Edge 캐시(선택)**
 
-**다음**: #54c 사람 Preview → PR #205 merge → PROD `www.gateo.kr/world-events`
+**#55 전제 (LIVE 점검)**: `event_hero_gallery` 23/23 행 · 이미지 **위키만** · Unsplash **0**. 상세 Edge는 6장+ 캐시면 Unsplash 미호출. 리스트는 Unsplash만 · 클라 쓰기 없음 · sessionStorage는 같은 탭. 다음 사용자 첫 로딩 = Unsplash 검색 23건(동시 3).
+
+**다음**: PR #205 merge → PROD 회귀. 시크릿 첫 진입이 느리면 **#55** (리스트 전용 1장 Edge, 갤러리 12장 오염 금지)
