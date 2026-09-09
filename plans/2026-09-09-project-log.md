@@ -2,6 +2,14 @@
 
 직전: [`2026-09-08-project-log.md`](./2026-09-08-project-log.md)
 
+## 세계행사 일정 #54 — 리스트 Unsplash main 병합
+
+- **세션** `세계행사 일정 #54, 리스트 Unsplash main 반영`
+- **완료** PR [#204](https://github.com/catgeot/Days/pull/204) merge ✅ · main `2473463a`
+- **PROD** `https://www.gateo.kr/world-events` — 카드 썸네일 Unsplash
+- **VERIFY** audit · `smoke:world-events-hub` PASS
+- **다음 제시어 없음** (이 슬라이스 종료)
+
 ## 팔경 contentId — P0-K12 short 종결 (Cloud)
 
 - **세션** `팔경contentId #P0-K12, short 종결`

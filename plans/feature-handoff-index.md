@@ -413,37 +413,19 @@ PROD https://www.gateo.kr/
 
 ---
 
-### 세계 행사·축제 일정 연동
+### 세계 행사·축제 일정 연동 — 리스트 Unsplash main 병합 ✅
 
 | | |
 |--|--|
-| **상태** | **#53 push** · tip `ce26f748` · PR [#204](https://github.com/catgeot/Days/pull/204) · **#54 사람 Preview QA** |
-| **브랜치** | `cursor/world-events-wave3` · tip `ce26f748` |
-| **PR** | [#204](https://github.com/catgeot/Days/pull/204) · [#166](https://github.com/catgeot/Days/pull/166) merge ✅ |
-| **main** | docs sync — 리스트 Unsplash 사진 |
-| **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **F-0.5 D5-b-3** · **F-0.6** · §9 |
-| **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) (Q15 추가) |
-| **운영** | [`world-events-management.md`](./world-events-management.md) §6.1·§6.1.1·§8.1 |
-| **샘플** | [`world-events-sample-log.md`](./world-events-sample-log.md) |
-| **일지** | [`2026-09-08-project-log.md`](./2026-09-08-project-log.md) |
-| **Preview** | `/qa/world-events` → `/world-events` 리스트 썸네일 |
-| **소유** | `WorldEvents/index.jsx` · `fetchWorldEventListPhotos.js` · `worldEventListPhoto.js` |
-| **금지** | worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `generate:world-events` · `audit:world-events` · `smoke:world-events-hub` · `vite build` |
+| **상태** | **#54 merge ✅** · main `2473463a` · PR [#204](https://github.com/catgeot/Days/pull/204) |
+| **브랜치** | `cursor/world-events-wave3` · merge `2473463a` |
+| **PR** | [#204](https://github.com/catgeot/Days/pull/204) merge ✅ · [#166](https://github.com/catgeot/Days/pull/166) merge ✅ |
+| **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **§9** |
+| **일지** | [`2026-09-09-project-log.md`](./2026-09-09-project-log.md) |
+| **PROD** | `https://www.gateo.kr/world-events` |
+| **VERIFY** | `audit:world-events` · `smoke:world-events-hub` PASS |
 
-**게이트**: 리스트 Unsplash **에이전트 PASS ✅** · **#54** 사람 Preview QA
-
-**다음 제시어** (#54 사람 Preview QA):
-
-```
-세계행사 일정 #54, 리스트 Unsplash Preview QA
-@plans/feature-handoff-index.md
-@plans/2026-09-08-project-log.md
-@plans/world-events-management.md
-브랜치 cursor/world-events-wave3 · PR #204 · https://www.gateo.kr/qa/world-events
-금지: worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구
-작업: /world-events 카드 사진이 Unsplash 행사 장면인지 · 지역 칩 전환 후에도 유지되는지
-```
+**다음 제시어 없음** (리스트 Unsplash는 PROD). 확인은 `www.gateo.kr/world-events`. `/qa/world-events`는 구 Preview.
 
 ---
 
