@@ -2,6 +2,24 @@
 
 직전: [`2026-09-08-project-log.md`](./2026-09-08-project-log.md)
 
+## 팔경 contentId — P2-L3 hub-batch keyword (Cloud)
+
+- **세션** `팔경contentId #P2-L3, hub-batch keyword`
+- **브랜치** `cursor/palgyeong-cid` · tip `cf0482cd` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** 지정 7 hub **3/22** LIVE HIT · P2 null **104→101**/871 · 429 없음
+- **HIT** 단양 고수동굴 `125861` · 구담봉 `127568`(단양 구담봉·옥순봉) · 사인암 `129648` — fill `spotQueries`에 시군 접두 추가(본명-only는 Tour 제목 `단양 고수동굴`에서 weakGeneric 0점)
+- **MISS** 하남·거창·군위·의령·광주·성남 상업·시장·미등재 유지 · L3 hub 본명 재시도 금지
+- **VERIFY** `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:tour-content-id-match` PASS
+
+```
+팔경contentId #P2-L4, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 101 — --hubs=samcheok,hadong,buyeo,namwon,boseong,jeongeup,donghae --keyword-only --limit=20
+```
+
 ## 세계행사 일정 #54c — 리스트·상세 사진 영문 검색 (Cloud)
 
 - **세션** `세계행사 일정 #54c, 리스트 사진 확대 Prod QA`
