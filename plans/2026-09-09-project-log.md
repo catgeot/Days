@@ -22,6 +22,24 @@
 작업: 카드 사진 16:10 · 이동 칩 없음 · 카드 탭 → 상세 · 지역 칩 전환 후 사진 유지
 ```
 
+## 팔경 contentId — P0-A03 siho alias (Cloud)
+
+- **세션** `팔경contentId #P0-A03, siho alias`
+- **브랜치** `cursor/palgyeong-cid` · tip `ce464d0a` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--bucket=siho --apply-unique` **11/41** unique_hit · **29 siho_wait** · **hub_mismatch +1**(진천 평사낙안) · members **559/876** (null **317**) · closed **361** · 429 없음
+- **HIT** 남산부석·서암석불·군산 평사낙안·삼도귀범·웅연조대·소사모종·개암고적·안면송림·신륵모종·양도낙안·이릉두견 — LIVE 행만 lists 기입
+- **VERIFY** audit/smoke lists · smoke content-ids · build PASS
+- **다음** P0-A04 siho alias (29) 또는 prefix ambiguous 3건
+
+```
+팔경contentId #P0-A04, siho alias
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: --bucket=siho --apply-unique · alias→LIVE · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
 ## 팔경 contentId — P0-C01 scenic 복사 (Cloud)
 
 - **세션** `팔경contentId #P0-C01, scenic 복사`
