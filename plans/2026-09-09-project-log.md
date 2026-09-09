@@ -2,6 +2,25 @@
 
 직전: [`2026-09-08-project-log.md`](./2026-09-08-project-log.md)
 
+## 팔경 contentId — P2-L4 hub-batch keyword (Cloud)
+
+- **세션** `팔경contentId #P2-L4, hub-batch keyword`
+- **브랜치** `cursor/palgyeong-cid` · tip `19bd21ee` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** 지정 7 hub **11/13** LIVE HIT · P2 null **101→90**/871 · 429 없음
+- **HIT** 동해 논골담길 `1223212` · 동해 망상해수욕장 `125713` · 삼척해수욕장 `125705` · 죽서루 `125799` · 부여 궁남지 `125984` · 부여 부소산성 `125988` · 보성 율포해수욕장 `2022601` · 남원 교룡산성 `1607157` · 하동 악양 대봉감마을 `2784697` · 하동 화개장터 `132146` · 정읍 단풍생태공원 `2715684`
+- **코드·매칭** KEYWORD_ALIASES 확장(논골담길·망상·삼척·화개장터·단풍생태공원·궁남지·부소산성·율포·악양) · `isMarket`에 `장터` 추가 · alias 괄호 제거 `stripAnnotations` · `looksLikeSigunguDisambiguator` 연동
+- **MISS** 보성군립은행나무숲 · 정읍천 (TourAPI 미등재 0건)
+- **VERIFY** `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:tour-content-id-match` · `audit:korea-local-scenic-lists` · `smoke:korea-local-scenic-lists` PASS
+
+```
+팔경contentId #P2-L5, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 90 — --hubs=pyeongchang,siheung,eumseong,yangsan,changwon,yeongcheon,goryeong,gyeongsan,yeongdeok --keyword-only --limit=20
+```
+
 ## 팔경 contentId — P2-L3 hub-batch keyword (Cloud)
 
 - **세션** `팔경contentId #P2-L3, hub-batch keyword`
