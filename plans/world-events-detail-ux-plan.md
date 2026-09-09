@@ -813,12 +813,12 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#54c** Preview QA — 카드 16:10 사진 · 이동 칩 제거 · PR [#205](https://github.com/catgeot/Days/pull/205) |
+| **상태** | **#54c** Preview QA **PASS** · **#54d** PR [#205](https://github.com/catgeot/Days/pull/205) merge · PROD QA |
 | **브랜치** | `cursor/world-events-wave3` · tip `417ce543` |
-| **플랜** | F-0.5 **D5-b-3 ✅** · **Wave3 4/4 ✅** · 리스트 사진 **Unsplash** · 허브 카드 **사진 확대** |
+| **플랜** | F-0.5 **D5-b-3 ✅** · **Wave3 4/4 ✅** · 리스트 사진 **Unsplash** · 허브 카드 **사진 확대 ✅** |
 | **Preview** | `/qa/world-events` |
 | **VERIFY** | `smoke:world-events-hub` · `audit:world-events` · `build` PASS |
 
-**마일스톤**: … → M18 **리스트 Unsplash #53 ✅** → M19 **#54 main 병합 ✅** → M20 **#54b 썸네일 폴백 ✅** → M21 **#54c 사진 확대**
+**마일스톤**: … → M19 **#54 main 병합 ✅** → M20 **#54b 썸네일 폴백 ✅** → M21 **#54c 사진 확대 ✅** → M22 **#54d merge·PROD**
 
-**다음**: #54c 사람 Preview → PR #205 merge → PROD `www.gateo.kr/world-events`
+**다음**: PR #205 merge → PROD `www.gateo.kr/world-events` 회귀 QA
