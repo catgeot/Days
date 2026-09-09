@@ -100,7 +100,8 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 |----|--------------|------|------|
 | 1 | `팔경 활용 #1, 검색·리스트` | A | **완료** · tip `e8da2987` |
 | 2 | `팔경 활용 #2, Preview QA` | A 사람 | **다음** |
-| — | `팔경contentId #P0-A05, siho alias` | B | **다음** |
+| — | `팔경contentId #P0-A06, siho alias` | B | **다음** |
+| — | `팔경contentId #P0-A05, siho alias` | B | **완료** · tip `cc3fa3cc` 4/21 |
 | — | `팔경contentId #P0-A04, siho alias` | B | **완료** · tip `2b7dc375` 8/29 |
 | — | `팔경contentId #P0-A03, siho alias` | B | **완료** · tip `ce464d0a` 11/41 |
 | — | `팔경contentId #P0-C01, scenic 복사` | B | **완료** · tip `e78f0e5a` 60/62 소진 |
@@ -148,13 +149,24 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 작업: 홈 검색 문경 · /korea/theme/scenic 문경 hub · 축제 상세 인근 목록 소제목
 ```
 
-### §1.2 B 다음 (#P0-A05) — 1순위
+### §1.2 B 다음 (#P0-A06) — 1순위
+
+```
+팔경contentId #P0-A06, siho alias
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: --bucket=siho --apply-unique · alias→LIVE · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+### §1.2 B #P0-A05
 
 ```
 팔경contentId #P0-A05, siho alias
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
-@plans/orchestrator-method.md
 브랜치 cursor/palgyeong-cid · PR #185
 금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
 작업: --bucket=siho --apply-unique · alias→LIVE · HIT는 LIVE 행만 · 종결을 close JSON에 기록
