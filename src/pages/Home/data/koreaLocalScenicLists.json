@@ -7648,7 +7648,8 @@
         "name_en": "Sorae Port Incheon",
         "kind": "market",
         "linkStatus": "pending_coord",
-        "note": "제3경 소래포구 생태자연"
+        "note": "제3경 소래포구 생태자연",
+        "contentId": "2020690"
       },
       {
         "attractionName": "인천 계양 아라온",
@@ -7955,7 +7956,8 @@
         "attractionName": "대전 식장산",
         "name_en": "Sikjangsan",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "1083960"
       },
       {
         "attractionName": "대전 대청호",
