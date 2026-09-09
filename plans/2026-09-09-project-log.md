@@ -2,6 +2,24 @@
 
 직전: [`2026-09-08-project-log.md`](./2026-09-08-project-log.md)
 
+## 팔경 contentId — P0-P03 칠선시류 ambiguous (Cloud)
+
+- **세션** `팔경contentId #P0-P03, 칠선시류 ambiguous`
+- **브랜치** `cursor/palgyeong-cid` · tip `505733e2` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** 함양 칠선시류 ambiguous **1/1** unique_hit · members **579/876** (null **297**) · closed **394** · ambiguous open **0**
+- **종결** `126058` 칠선계곡(추성리) → lists · `2739379` 글램핑(칠선로 201) 제외 · close JSON titles·addrs 기록
+- **VERIFY** audit/smoke lists · smoke content-ids · smoke tour-content-id-match PASS
+- **다음** P0 키워드 종결 소진 — inventory · null 297 갈래 분류
+
+```
+팔경contentId #P0 inv, 키워드 종결 소진
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: inventory 재집계 · P0 키워드 종결 closed 394 · 남은 null 297 갈래 분류 · 다음 R 제안
+```
+
 ## 팔경 contentId — P0-P02 옥정호 ambiguous (Cloud)
 
 - **세션** `팔경contentId #P0-P02, 옥정호 ambiguous`
