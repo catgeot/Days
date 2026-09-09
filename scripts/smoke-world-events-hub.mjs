@@ -18,6 +18,7 @@ import {
   getWorldEventsForHubRegion,
   getWorldEventsForSlug,
 } from '../src/utils/worldEvents.js';
+import { buildWorldEventListPhotoQueries } from '../src/utils/worldEventMedia.js';
 import {
   isUnsplashListPhoto,
   pickWorldEventListPhoto,
@@ -100,9 +101,26 @@ assert.equal(
   'list picker does not fall back to Wikimedia',
 );
 
+const listPhotoProbeIds = [
+  'paris-nuit-blanche-2027',
+  'dubai-fitness-challenge-2026',
+  'los-angeles-rose-parade-2027',
+];
+for (const eventId of listPhotoProbeIds) {
+  const event = allEvents.find((item) => item.id === eventId);
+  assert.ok(event, `${eventId} exists for list photo query probe`);
+  const queries = buildWorldEventListPhotoQueries(event, 'ko');
+  assert.ok(queries.length >= 3, `${eventId} has extended Unsplash query fallbacks`);
+  assert.ok(
+    queries.some((query) => /[A-Za-z]/.test(query)),
+    `${eventId} list queries include English fallback`,
+  );
+}
+
 const listPhotoSrc = readFileSync(join(root, 'src/utils/fetchWorldEventListPhotos.js'), 'utf8');
 assert.match(listPhotoSrc, /event_hero_gallery/, 'list photos read Unsplash gallery cache');
 assert.match(listPhotoSrc, /fetchUnsplashImages/, 'list photos live-search Unsplash');
+assert.match(listPhotoSrc, /onPhotos/, 'list photos emit DB hits before Unsplash pool finishes');
 assert.doesNotMatch(listPhotoSrc, /fetchWikimedia/, 'list photos do not call Wikimedia');
 
 const viennaEvents = getWorldEventsForSlug('vienna');
@@ -121,7 +139,13 @@ assert.match(hubSrc, /getWorldEventRecurrenceNote/, 'WorldEvents hub locale recu
 assert.match(hubSrc, /locale={locale}/, 'WorldEvents hub passes locale to cards');
 assert.match(hubSrc, /fetchWorldEventListPhotos/, 'WorldEvents hub fetches Unsplash list photos');
 assert.match(hubSrc, /photo=\{photoById\[event\.id\]\}/, 'WorldEvents hub passes Unsplash thumb to cards');
+assert.match(hubSrc, /aspect-\[16\/10\]/, 'WorldEvents hub card uses landscape list photo');
+assert.match(hubSrc, /onPhotos/, 'WorldEvents hub paints DB Unsplash thumbs before live search finishes');
 assert.match(hubSrc, /images\.unsplash\.com|photoUrl/, 'WorldEvents hub card renders list photo');
+assert.doesNotMatch(hubSrc, /worldEventsHub\.card\.placeCta/, 'WorldEvents hub list cards omit place CTA');
+assert.doesNotMatch(hubSrc, /place\.worldEvents\.plannerCta/, 'WorldEvents hub list cards omit planner CTA');
+assert.doesNotMatch(hubSrc, /place\.worldEvents\.stayCta/, 'WorldEvents hub list cards omit stay CTA');
+assert.doesNotMatch(hubSrc, /worldEventsHub\.card\.detailCta/, 'WorldEvents hub list cards omit detail chip');
 assert.doesNotMatch(hubSrc, /upload\.wikimedia\.org/, 'WorldEvents hub list does not bake Wikimedia URLs');
 
 const homeUiSrc = readFileSync(join(root, 'src/pages/Home/components/HomeUI.jsx'), 'utf8');

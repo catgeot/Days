@@ -108,6 +108,33 @@ export function buildWorldEventHeroGalleryQueries(event, locale = 'ko') {
 }
 
 /**
+ * Hub list thumbs — ordered Unsplash queries (ko title → en fallbacks → glossary/wiki terms).
+ * @param {import('./worldEvents').WorldEvent | null | undefined} event
+ * @param {string} [locale]
+ * @returns {string[]}
+ */
+export function buildWorldEventListPhotoQueries(event, locale = 'ko') {
+  if (!event) return [];
+
+  const { primary, fallbackEn, wikimediaQueries } = buildWorldEventHeroGalleryQueries(event, locale);
+  const titleEn = getWorldEventTitle(event, 'en');
+  const placeMeta = getWorldEventPlaceMeta(event.slug, 'en');
+  const placeEn = placeMeta?.label ? String(placeMeta.label).trim() : '';
+  const shortTitleEn = String(titleEn || '')
+    .split(/[·&]/)[0]
+    .trim();
+
+  return uniqueNonEmptyStrings([
+    primary,
+    fallbackEn,
+    shortTitleEn && placeEn ? `${shortTitleEn} ${placeEn}` : '',
+    shortTitleEn,
+    titleEn,
+    ...(wikimediaQueries || []),
+  ]);
+}
+
+/**
  * @param {import('./worldEvents').WorldEvent | null | undefined} event
  * @param {string} [locale]
  */
