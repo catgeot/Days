@@ -78,11 +78,12 @@ function applyTargets(lists, hubs, targets) {
   for (const row of targets) {
     const list = lists.find((l) => l.listId === row.listId);
     if (!list) continue;
-    const member = (list.members || []).find((m) => m.attractionName === row.attractionName);
-    if (!member) continue;
-    if (member.contentId === row.contentId) continue;
-    member.contentId = row.contentId;
-    memberApplied += 1;
+    for (const member of list.members || []) {
+      if (member.attractionName !== row.attractionName) continue;
+      if (hasContentId(member.contentId)) continue;
+      member.contentId = row.contentId;
+      memberApplied += 1;
+    }
 
     const hub = hubs.find((h) => h.hubId === list.hubId);
     if (!hub) continue;
