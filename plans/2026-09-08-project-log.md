@@ -2,6 +2,96 @@
 
 직전: [`2026-09-07-project-log.md`](./2026-09-07-project-log.md)
 
+## 팔경 contentId — P0-K07 short 종결 (Cloud)
+
+- **세션** `팔경contentId #P0-K07, short 종결`
+- **브랜치** `cursor/palgyeong-cid` · tip `c3360044` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--bucket=short --apply-unique --limit=40` **8/40** unique_hit · 29 tour_missing · 2 hub_mismatch · 1 ambiguous · members **524/876** (null **352**) · short open **21** · closed **263** · 429 없음
+- **HIT** 정읍 피향정(126396) · 무주 향적봉(1705213) · 홍성 홍주의사총(125993) · 예산 충의사(125968) · 예산 임존성(125965) · 예산 가야산(2740968) · 공주 고마나루(2035859) · 부여 왕릉원(125987) (LIVE 행만)
+- **VERIFY** audit/smoke lists · smoke content-ids PASS
+- **다음** P0-K08 `--bucket=prefix --apply-unique --limit=40`
+
+```
+팔경contentId #P0-K08, prefix 종결
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=prefix --apply-unique --limit=40 · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+## 팔경 contentId — P0-K06 prefix 종결 (Cloud)
+
+- **세션** `팔경contentId #P0-K06, prefix 종결`
+- **브랜치** `cursor/palgyeong-cid` · tip `03881a1c` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--bucket=prefix --apply-unique --limit=40` **3/40** unique_hit · 36 tour_missing · 1 hub_mismatch · members **516/876** (null **360**) · prefix open **62** · closed **224** · 429 없음
+- **HIT** 거창 산림레포츠파크(3571372) · 의령 봉황대(126775) · 여수 이순신대교(2778041) (LIVE 행만)
+- **VERIFY** audit/smoke lists · smoke content-ids PASS
+- **다음** P0-K07 `--bucket=short --apply-unique --limit=40`
+
+```
+팔경contentId #P0-K07, short 종결
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=short --apply-unique --limit=40 · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+## 팔경 contentId — P0-K05 short 종결 (Cloud)
+
+- **세션** `팔경contentId #P0-K05, short 종결`
+- **브랜치** `cursor/palgyeong-cid` · tip `65fd2b8d` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--bucket=short --apply-unique --limit=40` **8/40** unique_hit · 24 tour_missing · 8 hub_mismatch · members **513/876** (null **363**) · short open **60** · closed **184** · 429 없음
+- **HIT** 문경 용추계곡(127913) · 예천 삼강주막(705612) · 의령 벽계관광지(3029556) · 여수 진남관(126386) · 담양 금성산성(126407) · 무안 낙지공원(2748362) · 완도 약산(2824813) · 부안 직소폭포(126260) (LIVE 행만)
+- **VERIFY** audit/smoke lists · smoke content-ids · audit hubs PASS
+- **다음** P0-K06 `--bucket=prefix --apply-unique --limit=40`
+
+```
+팔경contentId #P0-K06, prefix 종결
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=prefix --apply-unique --limit=40 · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+## 팔경 contentId — P0-K04 other 종결 (Cloud)
+
+- **세션** `팔경contentId #P0-K04, other 종결`
+- **브랜치** `cursor/palgyeong-cid` · tip `77e90417` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--bucket=other --apply-unique` **5/41** unique_hit · 34 tour_missing · 2 hub_mismatch · members **505/876** (null **371**) · other open **0** · closed **144** · 429 없음
+- **HIT** 의령 정암루(126193) · 보성 율포해수욕장(2022601) · 예산 황새공원(2586628) · 대구 83타워(1614282) · 대전 엑스포과학공원(125994) (LIVE 행만)
+- **VERIFY** audit/smoke lists · smoke content-ids PASS
+- **다음** P0-K05 `--bucket=short --apply-unique --limit=40`
+
+```
+팔경contentId #P0-K05, short 종결
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=short --apply-unique --limit=40 · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+## 팔경 contentId — P0-K03 poetic 종결 (Cloud)
+
+- **세션** `팔경contentId #P0-K03, poetic 종결`
+- **브랜치** `cursor/palgyeong-cid` · tip `4dcee055` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--bucket=poetic --apply-unique` **4/23** unique_hit · 19 tour_missing · members **500/876** (null **376**) · 429 없음
+- **HIT** 철원 학저수지 여명(2568557) · 옥천 용암사 일출(125890) · 김해 연지공원 사계(2779065) · 용인 광교산 사계(128064) (LIVE 행만)
+- **VERIFY** audit/smoke lists · smoke content-ids · smoke tour-content-id-match · audit hubs PASS
+- **다음** P0-K04 `--bucket=other --apply-unique`
+
+```
+팔경contentId #P0-K04, other 종결
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=other --apply-unique · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
 ## 세계행사 일정 #53 — 리스트 Unsplash 사진 (Cloud)
 
 - **세션** `세계행사 일정 #53, 리스트 Unsplash 사진`
