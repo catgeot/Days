@@ -517,12 +517,13 @@
       ]
     },
     "yeongdong-yangsan-palgyeong::자풍서당": {
-      "status": "siho_wait",
+      "status": "tour_missing",
       "bucket": "siho",
       "hubId": "yeongdong",
       "queries": [
         "자풍서당",
-        "영동 자풍서당"
+        "영동 자풍서당",
+        "영동자풍서당"
       ]
     },
     "yeongdong-yangsan-palgyeong::용암": {
@@ -635,21 +636,23 @@
       ]
     },
     "jincheon-palgyeong::금계완사": {
-      "status": "siho_wait",
+      "status": "tour_missing",
       "bucket": "siho",
       "hubId": "jincheon",
       "queries": [
         "금계완사",
-        "진천 금계완사"
+        "진천 금계완사",
+        "광혜원"
       ]
     },
     "jincheon-palgyeong::상산모운": {
-      "status": "siho_wait",
+      "status": "tour_missing",
       "bucket": "siho",
       "hubId": "jincheon",
       "queries": [
         "상산모운",
-        "진천 상산모운"
+        "진천 상산모운",
+        "만뢰산"
       ]
     },
     "jincheon-palgyeong::어은계석": {
@@ -733,12 +736,14 @@
       "tourTitle": "경주 남산"
     },
     "gyeongju-8gwae::나원백탑": {
-      "status": "siho_wait",
+      "status": "tour_missing",
       "bucket": "siho",
       "hubId": "gyeongju",
       "queries": [
         "나원백탑",
-        "경주 나원백탑"
+        "경주 나원백탑",
+        "나원리 오층석탑",
+        "경주 나원리 오층석탑"
       ]
     },
     "pohang-sipgyeong::호미곶 일출": {
@@ -1440,12 +1445,21 @@
       "tourTitle": "기백산 용추계곡과 용추폭포"
     },
     "hamyang-palgyeong::칠선시류": {
-      "status": "siho_wait",
+      "status": "ambiguous",
       "bucket": "siho",
       "hubId": "hamyang",
       "queries": [
         "칠선시류",
-        "함양 칠선시류"
+        "함양 칠선시류",
+        "칠선계곡"
+      ],
+      "titles": [
+        "칠선계곡",
+        "칠선계곡글램핑"
+      ],
+      "contentIds": [
+        "126058",
+        "2739379"
       ]
     },
     "hamyang-palgyeong::서암석불": {
@@ -3552,12 +3566,13 @@
       "tourTitle": "양섬"
     },
     "yeoju-palgyeong::팔수장림": {
-      "status": "siho_wait",
+      "status": "tour_missing",
       "bucket": "siho",
       "hubId": "yeoju",
       "queries": [
         "팔수장림",
-        "여주 팔수장림"
+        "여주 팔수장림",
+        "팔대장림"
       ]
     },
     "yeoju-palgyeong::이릉두견": {

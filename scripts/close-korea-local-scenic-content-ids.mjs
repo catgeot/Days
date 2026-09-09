@@ -42,7 +42,7 @@ const limit = limitArg ? Number(limitArg.slice('--limit='.length)) || 0 : 0;
 const bucketArg = args.find((a) => a.startsWith('--bucket='));
 const bucketFilter = bucketArg ? bucketArg.slice('--bucket='.length).trim().toLowerCase() : '';
 
-const TERMINAL = new Set(['unique_hit', 'tour_missing', 'hub_mismatch']);
+const TERMINAL = new Set(['unique_hit', 'tour_missing', 'hub_mismatch', 'ambiguous']);
 
 function memberKey(listId, attractionName) {
   return `${listId}::${attractionName}`;
