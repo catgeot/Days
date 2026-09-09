@@ -75,7 +75,7 @@ method **§5.7** · 큐 [`korea-local-scenic-contentid-queue.md`](./korea-local-
 |------|------|
 | **P0** | 팔경 멤버 (~876) — 이번 목표 |
 | P1 | hub attractions 잔여 |
-| P2 | 테마 선정 `contentId: null` **142**/871 (78 hub) — P0·P1 소진 후 | **P2-R01–R13** DB-only · P2-L LIVE |
+| P2 | 테마 선정 `contentId: null` **142**/871 (78 hub) — P0·P1 소진 후 | **P2 종료** null **51**/871 (충족 820/871, 94.1%) · 잔여 51건 terminal 종결 |
 
 DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만 · 워커 **병렬 LIVE 금지** · **2026-09-07** Tour API 홈 **운영 계정 승인** · 쿼터 **~10만/일** · 429 → `blocked: quota` · 같은 날 재시도 금지. HIT → 멤버+hub attraction `contentId`. scenic 승격 금지.
 
@@ -162,16 +162,16 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 작업: 홈 검색 문경 · /korea/theme/scenic 문경 hub · 축제 상세 인근 목록 소제목
 ```
 
-### §1.2 B 다음 (#P2-L10) — 1순위
+### §1.2 B 다음 (#P2-END) — P2 종결 및 PR #185 검토
 
 ```
-팔경contentId #P2-L10, 잔여 null 분석 및 전략
+팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
 @plans/orchestrator-method.md
 브랜치 cursor/palgyeong-cid · PR #185
 금지: UI · scenic 승격 · 워커 병렬 LIVE · L3~L9 hub 본명 단순 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
-작업: P2 scenic null 78건 분석 — Tour 미등재/시설명 alias 발굴 또는 종결 정리
+작업: P2 scenic 820/871 충족(94.1%) · 잔여 51건 terminal 종결 확정 및 PR #185 검토
 ```
 
 ### §1.2 B #P2-L9
