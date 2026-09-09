@@ -2,6 +2,24 @@
 
 직전: [`2026-09-08-project-log.md`](./2026-09-08-project-log.md)
 
+## 팔경 contentId — P0-A04 siho alias (Cloud)
+
+- **세션** `팔경contentId #P0-A04, siho alias`
+- **브랜치** `cursor/palgyeong-cid` · tip `2b7dc375` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--bucket=siho --apply-unique` **8/29** unique_hit · **21 siho_wait** · members **567/876** (null **309**) · closed **369** · 429 없음
+- **HIT** 미륵불상·무릉반석·용추비경·해상분수·장자어화·월명무애·남양황라·서문시장 — LIVE 행만 lists 기입 · KEYWORD_ALIASES 8건 · type38 시장 허용
+- **VERIFY** audit/smoke lists · smoke content-ids · smoke tour-content-id-match · build PASS
+- **다음** P0-A05 siho alias (21) 또는 prefix ambiguous 2건
+
+```
+팔경contentId #P0-A05, siho alias
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: --bucket=siho --apply-unique · alias→LIVE · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
 ## 세계행사 일정 #54c — 리스트 사진 Edge 캐시 필요 여부 (점검)
 
 - **질문** 다음 사용자 첫 `/world-events` 로딩 — `event_hero_gallery` Edge 쓰기가 필요한가
