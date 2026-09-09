@@ -413,34 +413,34 @@ PROD https://www.gateo.kr/
 
 ---
 
-### 세계 행사·축제 일정 연동 — 리스트 카드 사진 확대 (#54d)
+### 세계 행사·축제 일정 연동 — 리스트 사진 영문 검색 (#54d)
 
 | | |
 |--|--|
-| **상태** | **#54c** Preview QA **PASS** · **#54d** PR [#205](https://github.com/catgeot/Days/pull/205) merge · PROD QA |
-| **브랜치** | `cursor/world-events-wave3` · tip `417ce543` |
-| **PR** | [#205](https://github.com/catgeot/Days/pull/205) · [#204](https://github.com/catgeot/Days/pull/204) merge ✅ |
+| **상태** | **#54c** 영문 Unsplash **push** · tip `665f2b7d` · PR [#206](https://github.com/catgeot/Days/pull/206) · **#54d** 사람 Preview QA |
+| **브랜치** | `cursor/world-events-wave3` · tip `665f2b7d` |
+| **PR** | [#206](https://github.com/catgeot/Days/pull/206) · [#205](https://github.com/catgeot/Days/pull/205) merge ✅ (16:10 카드) |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **§9** · [`world-events-management.md`](./world-events-management.md) |
 | **일지** | [`2026-09-09-project-log.md`](./2026-09-09-project-log.md) |
 | **Preview** | `/qa/world-events` → `/world-events` |
-| **소유** | `WorldEvents/index.jsx` · `fetchWorldEventListPhotos.js` · `worldEventListPhoto.js` |
+| **소유** | `worldEventMedia.js` · `fetchWorldEventListPhotos.js` · `fetchEventHeroGallery.js` · `worldEventHeroGalleryMerge.js` |
 | **금지** | worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · 허브에 플래너·숙소 칩 복구 |
-| **VERIFY** | `smoke:world-events-hub` · `audit:world-events` · `build` PASS |
+| **VERIFY** | `smoke:world-events-hub` · `smoke:world-events-detail` · `audit:world-events` · `build` PASS |
 
-**게이트**: #54c 사람 Preview **PASS** ✅ — 큰 썸네일 · 카드 칩 없음 · 카드 탭 → 상세 · 지역 칩 사진 유지
+**게이트**: #54c 사람 Prod QA — 썸네일·본문이 행사와 무관 · 한글 Unsplash가 폴백을 막음 → 영문 쿼리로 재호출. **사람 Preview** 전 merge 금지.
 
-**#55 (속도, 별 PR)**: LIVE `event_hero_gallery` 23건은 **위키만** · Unsplash **0**. 상세를 열어도 리스트 첫 로딩은 매 사용자 Unsplash 검색 23건. sessionStorage는 같은 탭만. 시크릿 첫 진입이 거슬리면 `#55 리스트 사진 Edge 캐시`. 갤러리 12장에 리스트 검색 섞지 말 것.
+**#55 (속도, 별 PR)**: LIVE `event_hero_gallery` 위키만이면 상세 캐시는 Unsplash를 다시 받음(이번 #54c `force`). 리스트 첫 로딩은 여전히 Unsplash 검색. 갤러리 12장에 리스트 검색 섞지 말 것.
 
-**다음 제시어** (#54d merge · PROD QA):
+**다음 제시어** (#54d Preview QA):
 
 ```
-세계행사 일정 #54d, PR #205 merge · PROD QA
+세계행사 일정 #54d, 영문 사진 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-09-project-log.md
 @plans/world-events-management.md
-브랜치 cursor/world-events-wave3 · PR #205
-금지: worldEvents.json 직편집 · UI 리디자인 · 허브에 플래너·숙소 칩 복구
-작업: PR #205 merge → PROD 큰 썸네일·이동 칩 없음·카드 탭 상세·지역 칩 사진 유지
+브랜치 cursor/world-events-wave3 · PR #206 · https://www.gateo.kr/qa/world-events
+금지: worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · 허브에 플래너·숙소 칩 복구
+작업: 로즈 퍼레이드·빈 오페라·뗏 카드가 행사 장면인지 · 상세 본문 무관/같은컷 아닌지 · 16:10 · 이동 칩 없음 · 카드 탭 상세
 ```
 
 ---
