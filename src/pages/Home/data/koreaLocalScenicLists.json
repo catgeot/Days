@@ -4480,7 +4480,8 @@
         "attractionName": "연둔리 숲정이",
         "name_en": "Yeondunri Forest Trail",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "3014431"
       },
       {
         "attractionName": "세량지",
@@ -5186,7 +5187,8 @@
         "attractionName": "장흥 126타워",
         "name_en": "Jangheung 126 Tower",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2514004"
       },
       {
         "attractionName": "장흥 보림사",
@@ -5680,7 +5682,8 @@
         "attractionName": "김명관 고택",
         "name_en": "Kim Myeong-gwan Historic House",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "231907"
       }
     ]
   },
@@ -6127,7 +6130,8 @@
         "attractionName": "서산 한우목장",
         "name_en": "Seosan Hanwoo Ranch",
         "kind": "park",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "3575172"
       },
       {
         "attractionName": "삼길포항",

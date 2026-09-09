@@ -1,7 +1,7 @@
 {
   "version": 1,
   "note": "P0 팔경 멤버 contentId 종결. LIVE 행만 unique_hit. AI 숫자 기입 금지.",
-  "updated": "2026-09-08",
+  "updated": "2026-09-09",
   "items": {
     "hongcheon-palgyeong::금학산": {
       "status": "tour_missing",
@@ -1840,7 +1840,7 @@
       ]
     },
     "gwangyang-gugyeong::옥룡사지 동백나무 숲": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "gwangyang",
       "queries": [
@@ -1850,7 +1850,7 @@
       ]
     },
     "gwangyang-gugyeong::구봉산 케이블카": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "gwangyang",
       "queries": [
@@ -1860,7 +1860,7 @@
       ]
     },
     "gwangyang-gugyeong::광양읍수와 이팝나무": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "gwangyang",
       "queries": [
@@ -1870,7 +1870,7 @@
       ]
     },
     "gurye-other::노고단 운해": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "gurye",
       "queries": [
@@ -1901,7 +1901,7 @@
       ]
     },
     "gurye-other::산동 산수유꽃": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "gurye",
       "queries": [
@@ -1951,7 +1951,7 @@
       ]
     },
     "damyang-other::메타세쿼이아 가로수길": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "damyang",
       "queries": [
@@ -1970,7 +1970,7 @@
       ]
     },
     "hwasun-other::백아산 하늘다리": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "hwasun",
       "queries": [
@@ -1980,7 +1980,7 @@
       ]
     },
     "hwasun-other::고인돌 유적지": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "hwasun",
       "queries": [
@@ -1990,7 +1990,7 @@
       ]
     },
     "hwasun-other::수만리 철쭉공원": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "hwasun",
       "queries": [
@@ -2000,17 +2000,19 @@
       ]
     },
     "hwasun-other::연둔리 숲정이": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "prefix",
       "hubId": "hwasun",
       "queries": [
         "연둔리 숲정이",
         "숲정이",
         "화순 연둔리 숲정이"
-      ]
+      ],
+      "contentId": "3014431",
+      "tourTitle": "화순동복연둔리숲정이"
     },
     "hwasun-other::화순 꽃강길 음악분수": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "hwasun",
       "queries": [
@@ -2123,7 +2125,7 @@
       ]
     },
     "mokpo-gugyeong::다도해 전경": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "mokpo",
       "queries": [
@@ -2132,7 +2134,7 @@
       ]
     },
     "muan-gugyeong::영산강 식영정과 느러지": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "muan",
       "queries": [
@@ -2142,7 +2144,7 @@
       ]
     },
     "muan-gugyeong::톱머리·홀통 해수욕장": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "muan",
       "queries": [
@@ -2205,7 +2207,7 @@
       ]
     },
     "haenam-palgyeong::해남 구 목포구등대 낙조 전망대": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "haenam",
       "queries": [
@@ -2214,7 +2216,7 @@
       ]
     },
     "haenam-palgyeong::해남윤씨 옥우당": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "haenam",
       "queries": [
@@ -2224,7 +2226,7 @@
       ]
     },
     "haenam-palgyeong::미황사 및 도솔암": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "haenam",
       "queries": [
@@ -2327,13 +2329,15 @@
       ]
     },
     "jangheung-gugyeong::장흥 126타워": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "prefix",
       "hubId": "jangheung",
       "queries": [
         "장흥 126타워",
         "126타워"
-      ]
+      ],
+      "contentId": "2514004",
+      "tourTitle": "장흥 126타워(정남진 전망대)"
     },
     "jangheung-gugyeong::선학동마을": {
       "status": "tour_missing",
@@ -2365,7 +2369,7 @@
       "tourTitle": "율포해수욕장(솔밭해변)"
     },
     "boseong-gugyeong::일림산 용추계곡": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "boseong",
       "queries": [
@@ -2375,7 +2379,7 @@
       ]
     },
     "boseong-gugyeong::주암호 서재필기념관": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "boseong",
       "queries": [
@@ -2394,7 +2398,7 @@
       ]
     },
     "goheung-other::금산 해안경관": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "goheung",
       "queries": [
@@ -2404,7 +2408,7 @@
       ]
     },
     "goheung-other::고흥만 수변노을공원": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "goheung",
       "queries": [
@@ -2589,7 +2593,7 @@
       "tourTitle": "정읍 피향정"
     },
     "jeongeup-gugyeong::월영습지와 솔티숲": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "jeongeup",
       "queries": [
@@ -2599,13 +2603,15 @@
       ]
     },
     "jeongeup-gugyeong::김명관 고택": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "prefix",
       "hubId": "jeongeup",
       "queries": [
         "김명관 고택",
         "정읍 김명관 고택"
-      ]
+      ],
+      "contentId": "231907",
+      "tourTitle": "정읍 김명관 고택"
     },
     "muju-other::은구암": {
       "status": "tour_missing",
@@ -2904,7 +2910,7 @@
       ]
     },
     "cheonan-palgyeong::태조산 왕건길과 청동대좌불": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "cheonan",
       "queries": [
@@ -2932,13 +2938,15 @@
       ]
     },
     "seosan-gugyeong::서산 한우목장": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "prefix",
       "hubId": "seosan",
       "queries": [
         "서산 한우목장",
         "한우목장"
-      ]
+      ],
+      "contentId": "3575172",
+      "tourTitle": "서산한우목장 웰빙산책로"
     },
     "taean-palgyeong::안흥성": {
       "status": "tour_missing",
@@ -2977,7 +2985,7 @@
       ]
     },
     "seocheon-gugyeong::장항송림산림욕장과 장항스카이워크": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "seocheon",
       "queries": [
@@ -2987,7 +2995,7 @@
       ]
     },
     "seocheon-gugyeong::유부도와 서천갯벌": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "seocheon",
       "queries": [
@@ -3006,7 +3014,7 @@
       ]
     },
     "hongseong-other::선상문선생 유허지": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "hongseong",
       "queries": [
@@ -3016,7 +3024,7 @@
       ]
     },
     "hongseong-other::고암이응노 생가 기념관": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "hongseong",
       "queries": [
@@ -3157,7 +3165,7 @@
       "tourTitle": "부여 왕릉원 [유네스코 세계유산]"
     },
     "buyeo-sipgyeong::천정대 백제보": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "buyeo",
       "queries": [
@@ -3167,7 +3175,7 @@
       ]
     },
     "nonsan-other::대둔산 수락계곡": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "nonsan",
       "queries": [
@@ -3177,7 +3185,7 @@
       ]
     },
     "nonsan-other::강경포구와 근대역사거리": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "nonsan",
       "queries": [
@@ -3187,7 +3195,7 @@
       ]
     },
     "nonsan-other::노성산성과 명재고택": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "nonsan",
       "queries": [
@@ -3197,7 +3205,7 @@
       ]
     },
     "nonsan-other::종학당과 한국유교문화진흥원": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "nonsan",
       "queries": [
@@ -3207,7 +3215,7 @@
       ]
     },
     "gyeryong-gugyeong::향적산 국사봉": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "gyeryong",
       "queries": [
@@ -3235,7 +3243,7 @@
       ]
     },
     "gyeryong-gugyeong::계룡대 통일탑": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "gyeryong",
       "queries": [
@@ -3254,7 +3262,7 @@
       ]
     },
     "geumsan-sipgyeong::산림문화 힐링명소": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "geumsan",
       "queries": [
@@ -3264,7 +3272,7 @@
       ]
     },
     "geumsan-sipgyeong::금산인삼 세계농업유산": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "geumsan",
       "queries": [
@@ -3283,7 +3291,7 @@
       ]
     },
     "geumsan-sipgyeong::월영산 원골": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "prefix",
       "hubId": "geumsan",
       "queries": [
