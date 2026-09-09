@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-09-09T21:18:25.709Z",
+    "generatedAt": "2026-09-09T23:01:30.796Z",
     "count": 871,
     "imageCount": 778,
     "curation": "GATEO",
@@ -2462,7 +2462,7 @@
       "placeSlug": "hanam-deokpung-market",
       "lat": 37.5416211,
       "lng": 127.2027489,
-      "contentId": null,
+      "contentId": "2770756",
       "overview": "하남 전통시장 — 골목 먹거리. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/76/2902476_image2_1.jpg"
     },
@@ -3390,7 +3390,7 @@
       "placeSlug": "gunpo-sanbon-market",
       "lat": 37.3700681,
       "lng": 126.9379774,
-      "contentId": null,
+      "contentId": "1750106",
       "overview": "산본시장 — 군포 전통시장 골목. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/75/4078075_image2_1.jpg"
     },
@@ -6638,7 +6638,7 @@
       "placeSlug": "mungyeong-coal-museum",
       "lat": 36.645264,
       "lng": 128.066415,
-      "contentId": null,
+      "contentId": "2599737",
       "overview": "문경석탄박물관 — 탄광 역사. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -7150,7 +7150,7 @@
       "placeSlug": "gobok-nature-park-yeongi",
       "lat": 36.522,
       "lng": 127.265,
-      "contentId": null,
+      "contentId": "125875",
       "overview": "고복자연공원 — 호수·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/76/3353976_image2_1.jpg"
     },
@@ -7262,7 +7262,7 @@
       "placeSlug": "yesan-holy-site",
       "lat": 36.6825,
       "lng": 126.8455,
-      "contentId": null,
+      "contentId": "2771833",
       "overview": "예산성지 — 순교 성지. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/39/3560639_image2_1.jpg"
     },
@@ -8062,7 +8062,7 @@
       "placeSlug": "hwasun-hot-spring",
       "lat": 35.0596021,
       "lng": 126.981915,
-      "contentId": null,
+      "contentId": "3013448",
       "overview": "화순온천 — 도곡 온천·스파. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/79/3348379_image2_1.JPG"
     },
@@ -8734,7 +8734,7 @@
       "placeSlug": "gimje-old-downtown",
       "lat": 35.803,
       "lng": 126.881,
-      "contentId": null,
+      "contentId": "1599176",
       "overview": "김제 구도심 — 읍치·골목. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/00/3556600_image2_1.jpg"
     },
@@ -9166,7 +9166,7 @@
       "placeSlug": "geochang-gajo-hot-spring",
       "lat": 35.6984819,
       "lng": 128.0229847,
-      "contentId": null,
+      "contentId": "127956",
       "overview": "가조온천 — 거창 온천휴양. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -9198,7 +9198,7 @@
       "placeSlug": "wolseong-valley",
       "lat": 35.78,
       "lng": 127.88,
-      "contentId": null,
+      "contentId": "127137",
       "overview": "월성리 계곡 — 거창 여름 피서. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -9486,7 +9486,7 @@
       "placeSlug": "samgukyusa-theme-park",
       "lat": 36.1655,
       "lng": 128.6755,
-      "contentId": null,
+      "contentId": "2703799",
       "overview": "삼국유사테마파크 — 군위 역사 테마. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -9502,7 +9502,7 @@
       "placeSlug": "gunwi-wicheon",
       "lat": 36.2636712,
       "lng": 128.4911008,
-      "contentId": null,
+      "contentId": "2743782",
       "overview": "위천 — 군위 물길·산촌. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -9566,7 +9566,7 @@
       "placeSlug": "gunwi-whistle-forest",
       "lat": 36.2255,
       "lng": 128.5855,
-      "contentId": null,
+      "contentId": "2815446",
       "overview": "휘파람숲 — 군위 숲 산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -9950,7 +9950,7 @@
       "placeSlug": "osiria-tourism-complex",
       "lat": 35.1935,
       "lng": 129.2125,
-      "contentId": null,
+      "contentId": "2782658",
       "overview": "오시리아 — 기장 관광단지. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/21/2815721_image2_1.jpg"
     },
@@ -10558,7 +10558,7 @@
       "placeSlug": "starlight-theme-park-yeongcheon",
       "lat": 36.12,
       "lng": 128.96,
-      "contentId": null,
+      "contentId": "606248",
       "overview": "별빛테마공원 — 영천 야경·천체. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/67/3590967_image2_1.jpg"
     },
@@ -11358,7 +11358,7 @@
       "placeSlug": "kwak-jae-woo-memorial-uiryeong",
       "lat": 35.3205,
       "lng": 128.2685,
-      "contentId": null,
+      "contentId": "127296",
       "overview": "곽재우기념관 — 의령 의병 역사. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/76/3375776_image2_1.JPG"
     },
@@ -11374,7 +11374,7 @@
       "placeSlug": "uiryeong-namgang-viewpoint",
       "lat": 35.2955,
       "lng": 128.2755,
-      "contentId": null,
+      "contentId": "126193",
       "overview": "남강 전망 — 의령 강변 조망. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/63/3580463_image2_1.jpg"
     },
@@ -11390,7 +11390,7 @@
       "placeSlug": "uiryeong-traditional-market",
       "lat": 35.3215,
       "lng": 128.2625,
-      "contentId": null,
+      "contentId": "132279",
       "overview": "의령 전통시장 — 오일장·먹거리. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/76/3375776_image2_1.JPG"
     },
@@ -11438,7 +11438,7 @@
       "placeSlug": "yeongdeok-blue-road",
       "lat": 36.38,
       "lng": 129.4,
-      "contentId": null,
+      "contentId": "1041317",
       "overview": "블루로드 — 영덕 해안 트레일. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/41/3576441_image2_1.jpg"
     },
@@ -11454,7 +11454,7 @@
       "placeSlug": "yeongdeok-renewable-energy-exhibition-hall",
       "lat": 36.415,
       "lng": 129.425,
-      "contentId": null,
+      "contentId": "128765",
       "overview": "신재생에너지전시관 — 영덕 창포 에너지 체험. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/99/2795399_image2_1.jpg"
     },
@@ -12222,7 +12222,7 @@
       "placeSlug": "gohado-coastal-trail",
       "lat": 34.77,
       "lng": 126.355,
-      "contentId": null,
+      "contentId": "2706019",
       "overview": null,
       "imageUrl": null
     },
@@ -12350,7 +12350,7 @@
       "placeSlug": "taeha-hyangmok-observatory",
       "lat": 37.5185674,
       "lng": 130.7973488,
-      "contentId": null,
+      "contentId": "778402",
       "overview": null,
       "imageUrl": null
     },
@@ -13246,7 +13246,7 @@
       "placeSlug": "may-18-democracy-square",
       "lat": 35.1474592,
       "lng": 126.9198527,
-      "contentId": null,
+      "contentId": "1621360",
       "overview": null,
       "imageUrl": null
     },
@@ -13262,7 +13262,7 @@
       "placeSlug": "gwangju-lake-eco-park",
       "lat": 35.185,
       "lng": 126.995,
-      "contentId": null,
+      "contentId": "129443",
       "overview": null,
       "imageUrl": null
     },
@@ -13278,7 +13278,7 @@
       "placeSlug": "yangnim-dong",
       "lat": 35.1426024,
       "lng": 126.915601,
-      "contentId": null,
+      "contentId": "2603494",
       "overview": null,
       "imageUrl": null
     },
@@ -13374,7 +13374,7 @@
       "placeSlug": "moran-market-seongnam",
       "lat": 37.4305257186745,
       "lng": 127.128864589168,
-      "contentId": null,
+      "contentId": "132266",
       "overview": null,
       "imageUrl": null
     },
@@ -13390,7 +13390,7 @@
       "placeSlug": "tancheon-seongnam",
       "lat": 37.3955,
       "lng": 127.1155,
-      "contentId": null,
+      "contentId": "2760806",
       "overview": null,
       "imageUrl": null
     },
@@ -13742,7 +13742,7 @@
       "placeSlug": "cheongpung-cultural-heritage-complex",
       "lat": 37.0030997,
       "lng": 128.1725002,
-      "contentId": null,
+      "contentId": "126004",
       "overview": null,
       "imageUrl": null
     },

@@ -117,6 +117,34 @@ const KEYWORD_ALIASES = {
   구룡포일본인가옥거리: ['구룡포 일본인 가옥거리'],
   '산청 한방테마파크': ['산청 동의보감촌', '동의보감촌'],
   가평레일파크: ['가평 레일바이크'],
+  '군포 산본시장': ['산본전통시장', '산본시장'],
+  '의령 전통시장': ['의령전통시장', '의령시장'],
+  모란시장: ['모란민속5일장', '모란민속장', '모란시장'],
+  '5.18민주광장': ['5·18 민주광장', '5.18 민주광장', '518민주광장'],
+  광주호호수생태원: ['광주호 호수생태원', '광주호생태원', '호수생태원'],
+  '의령 곽재우기념관': ['충익사(의령)', '충익사 의병탑', '충익사'],
+  '영덕 신재생에너지전시관': ['영덕풍력발전단지', '신재생에너지전시관'],
+  '군위 휘파람숲': ['사유원'],
+  '영천 별빛테마공원': ['보현산별빛테마마을', '영천보현산천문과학관'],
+  '거창 월성리 계곡': ['월성계곡', '월성리계곡'],
+  '거창 가조온천': ['가조 백두산천지온천', '가조온천'],
+  '의령 남강 전망': ['정암루(솥바위)', '정암루', '솥바위'],
+  예산성지: ['여사울성지', '예산성당'],
+  '영덕 블루로드': ['[영덕 블루로드] 3코스 바람의 언덕', '[해파랑길] 20코스(영덕 블루로드 3코스)'],
+  '고하도 해안산책로': ['고하도 전망대', '고하도 해안데크'],
+  '성남 탄천': ['탄천민물고기습지생태원', '탄천'],
+  '청풍문화재단지': ['청풍문화유산단지'],
+  '군위 삼국유사테마파크': ['군위 삼국유사 테마파크'],
+  '문경석탄박물관': ['문경에코월드', '에코랄라'],
+  '양림동역사문화마을': ['양림동 펭귄마을공예거리', '양림동 펭귄마을'],
+  '하남 덕풍시장': ['덕풍전통시장'],
+  '연기 고복자연공원': ['고복자연공원'],
+  '향목전망대': ['태하향목관광모노레일'],
+  '군위 위천': ['위천수변 테마파크', '위천수변테마파크'],
+  '오시리아 관광단지': ['오시리아 해안산책로'],
+  '화순온천': ['도곡온천단지', '도곡온천'],
+  '김제 구도심': ['김제동헌'],
+
 };
 
 function sleep(ms) {
@@ -151,6 +179,7 @@ function hubHints(hub) {
   const token = hubToken(hub);
   const hints = new Set();
   if (token && token.length >= 2) hints.add(token);
+  if (hub?.hubId === 'yeongi') hints.add('세종');
   const region = token.match(/^(경기|경남|경북|전남|전북|충남|충북|강원|제주)(.+)$/);
   if (region?.[2]?.length >= 2) hints.add(region[2]);
   for (const a of hub?.aliases || []) {
@@ -217,7 +246,8 @@ function scoreHit(query, item, hub, spot) {
   const hubNorms = hubHints(hub).map((h) => norm(h)).filter(Boolean);
   if (hubNorms.includes(q)) return 0;
 
-  const isMarket = /시장|마켓|장터/.test(title) || /시장|마켓|장터/.test(query);
+  const isMarket =
+    /시장|마켓|장터|5일장|오일장/.test(title) || /시장|마켓|장터|5일장|오일장/.test(query);
   if (type && !['12', '14', '28'].includes(type) && !(type === '38' && isMarket)) {
     return 0;
   }
@@ -481,6 +511,7 @@ function applyOverrides(source, hitsById) {
 }
 
 async function main() {
+  const isDryRun = process.argv.slice(2).includes('--dry-run');
   const scenic = JSON.parse(readFileSync(SCENIC_PATH, 'utf8'));
   const sigungu = JSON.parse(readFileSync(SIGUNGU_PATH, 'utf8'));
   const hubsJson = JSON.parse(readFileSync(HUBS_PATH, 'utf8'));
@@ -631,7 +662,7 @@ async function main() {
   console.log(
     `\nsummary hits=${hits.size}/${targets.length} (remain null ≈ ${nulls.length - hits.size})`,
   );
-  if (dryRun) {
+  if (isDryRun) {
     console.log('dry-run: overrides not written');
     for (const [id, h] of hits) {
       console.log(`  ${id} ${h.contentId} ${h.tourTitle} [${h.src}]`);
