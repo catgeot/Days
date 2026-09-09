@@ -319,24 +319,24 @@
 
 | | |
 |--|--|
-| **상태** | R01–R16 ✅ · **P0 종료** members **579/876** null **297**(terminal) · P2 **null 84**/871 · **P2-L6** ✅ 3 HIT · **다음 P2-L7** · A와 **동시 OK** |
-| **브랜치** | `cursor/palgyeong-cid` · tip `b21da98a` |
+| **상태** | R01–R16 ✅ · **P0 종료** members **579/876** null **297**(terminal) · P2 **null 81**/871 · **P2-L7** ✅ 3 HIT · **다음 P2-L8** · A와 **동시 OK** |
+| **브랜치** | `cursor/palgyeong-cid` · tip `699ac841` |
 | **PR** | [#185](https://github.com/catgeot/Days/pull/185) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§3·§9 B** · method **§5.7** |
-| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — **P2-L7** hub-batch keyword |
+| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — **P2-L8** hub-batch keyword |
 | **일지** | [`2026-09-09-project-log.md`](./2026-09-09-project-log.md) |
 | **소유** | JSON `contentId` · fill · audit · **UI 금지** |
-| **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5/L6 hub 본명 재시도 · `--limit=100` 로또 · AI가 ID 기입 · feature에 `plans/**` 커밋 |
+| **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5/L6/L7 hub 본명 재시도 · `--limit=100` 로또 · AI가 ID 기입 · feature에 `plans/**` 커밋 |
 
 **다음 제시어**:
 
 ```
-팔경contentId #P2-L7, hub-batch keyword
+팔경contentId #P2-L8, hub-batch keyword
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
 브랜치 cursor/palgyeong-cid · PR #185
-금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5/L6 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
-작업: P2 scenic null 84 — --hubs=sangju,gyeryong,mungyeong,bonghwa,hongseong,yeongi,yesan,gokseong,seocheon,hwasun,imsil,jangseong,yeonggwang,gimje,iksan,yeongam,cheongdo,gijang,uiseong,yecheon,chilgok,dokdo,gwangyang,sancheong,yeongyang,pohang,mokpo,ulleung,gapyeong,gongju,jecheon,yanggu --keyword-only --limit=20
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5/L6/L7 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 81 — --hubs=sangju,gyeryong,mungyeong,yeongi,yesan,gokseong,hwasun,imsil,jangseong,yeonggwang,gimje,iksan,yeongam,cheongdo,gijang,uiseong,yecheon,chilgok,dokdo,gwangyang,sancheong,yeongyang,pohang,mokpo,ulleung,gapyeong,gongju,jecheon,yanggu --keyword-only --limit=20
 ```
 
 ---

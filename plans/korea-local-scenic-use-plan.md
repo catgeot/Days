@@ -160,16 +160,28 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 작업: 홈 검색 문경 · /korea/theme/scenic 문경 hub · 축제 상세 인근 목록 소제목
 ```
 
-### §1.2 B 다음 (#P2-L6) — 1순위
+### §1.2 B 다음 (#P2-L8) — 1순위
 
 ```
-팔경contentId #P2-L6, hub-batch keyword
+팔경contentId #P2-L8, hub-batch keyword
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
 @plans/orchestrator-method.md
 브랜치 cursor/palgyeong-cid · PR #185
-금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
-작업: P2 scenic null 87 — --hubs=buan,cheongju,ansan,gwangmyeong,yangpyeong,gunpo,gwacheon,osan,jincheon,yeoju,dongducheon,icheon,pyeongtaek,uljin,chungju,sejong,seosan,dangjin --keyword-only --limit=20
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5/L6/L7 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 81 — --hubs=sangju,gyeryong,mungyeong,yeongi,yesan,gokseong,hwasun,imsil,jangseong,yeonggwang,gimje,iksan,yeongam,cheongdo,gijang,uiseong,yecheon,chilgok,dokdo,gwangyang,sancheong,yeongyang,pohang,mokpo,ulleung,gapyeong,gongju,jecheon,yanggu --keyword-only --limit=20
+```
+
+### §1.2 B #P2-L7
+
+```
+팔경contentId #P2-L7, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5/L6 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 84 — --hubs=sangju,gyeryong,mungyeong,bonghwa,hongseong,yeongi,yesan,gokseong,seocheon,hwasun,imsil,jangseong,yeonggwang,gimje,iksan,yeongam,cheongdo,gijang,uiseong,yecheon,chilgok,dokdo,gwangyang,sancheong,yeongyang,pohang,mokpo,ulleung,gapyeong,gongju,jecheon,yanggu --keyword-only --limit=20
 ```
 
 ### §1.2 B #P2-L5
