@@ -56,10 +56,15 @@ async function fetchOneUnsplashListPhoto(queries) {
  * Hub list thumbs — Unsplash first (DB cache, then live search). Wikimedia seeds are not used.
  * @param {import('./worldEvents').WorldEvent[]} events
  * @param {string} [locale]
+ * @param {{ onPhotos?: (photos: Record<string, { url: string, source: string, photographer?: string }>) => void }} [options]
  * @returns {Promise<Record<string, { url: string, source: string, photographer?: string }>>}
  */
-export async function fetchWorldEventListPhotos(events, locale = 'ko') {
+export async function fetchWorldEventListPhotos(events, locale = 'ko', options = {}) {
+  const onPhotos = typeof options?.onPhotos === 'function' ? options.onPhotos : null;
   const photosById = { ...readWorldEventListPhotoCache() };
+  const emit = () => {
+    if (onPhotos) onPhotos({ ...photosById });
+  };
   const list = Array.isArray(events) ? events.filter((event) => event?.id) : [];
   const missing = list.filter((event) => !photosById[event.id]?.url);
 
@@ -79,6 +84,7 @@ export async function fetchWorldEventListPhotos(events, locale = 'ko') {
           if (!picked) continue;
           photosById[row.event_id] = picked;
         }
+        emit();
       }
     } catch (err) {
       console.warn('[fetchWorldEventListPhotos] cache', err?.message || err);
@@ -91,7 +97,10 @@ export async function fetchWorldEventListPhotos(events, locale = 'ko') {
       try {
         const queries = buildWorldEventListPhotoQueries(event, locale);
         const photo = await fetchOneUnsplashListPhoto(queries);
-        if (photo) photosById[event.id] = photo;
+        if (photo) {
+          photosById[event.id] = photo;
+          emit();
+        }
       } catch (err) {
         console.warn('[fetchWorldEventListPhotos]', event.id, err?.message || err);
       }

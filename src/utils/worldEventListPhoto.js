@@ -40,7 +40,7 @@ export function pickWorldEventListPhoto(images) {
 export function mapUnsplashPhotoToListImage(photo) {
   if (!photo || typeof photo !== 'object') return null;
   const urls = photo.urls && typeof photo.urls === 'object' ? photo.urls : {};
-  const url = String(urls.small || urls.regular || '').trim();
+  const url = String(urls.regular || urls.small || '').trim();
   if (!url.startsWith('http')) return null;
   const caption = String(photo.alt_description || photo.description || '').trim();
   const photographer = String(photo.user?.name || '').trim();

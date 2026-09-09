@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 53,
-  sessionPhase: '리스트 Unsplash 사진',
+  sessionNo: 54,
+  sessionPhase: '리스트 썸네일 확대',
   branch: 'cursor/world-events-wave3',
   previewPath: '/world-events',
   qaShareSlug: 'world-events',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-09-world-events-54b-list-thumb-size',
+    session: '세계행사 일정 #54b, 리스트 썸네일 Preview QA',
+    title: '리스트 카드 사진 확대 · 이동 링크 제거',
+    detail:
+      '/world-events 카드에서 플래너·숙소·여행지·공식 링크 칩을 빼고 16:10 사진을 키웠습니다. 제목·사진 탭은 행사 상세로 갑니다. 첫 진입은 event_hero_gallery Unsplash를 먼저 그리고, 없는 건 Unsplash 검색입니다. Preview /qa/world-events — 큰 썸네일·칩 없음·지역 칩 전환 후 사진 유지.',
+    at: '2026-09-09T03:50:00.000Z',
+  },
   {
     id: '2026-09-08-world-events-53-list-unsplash',
     session: '세계행사 일정 #53, 리스트 Unsplash 사진',
