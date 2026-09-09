@@ -90,7 +90,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | P0-K12 ⬜ short 1건 · members **541/876** · tip `c12f063a` |
+| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | P0-A02 ⬜ siho 48건 · members **541/876** · tip `a5131b5a` |
 | **index 행** | 팔경 활용 | 팔경 contentId |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · 워커 병렬 LIVE · 본명-only keyword 재시도 · AI가 ID 기입 |
 
@@ -100,7 +100,8 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 |----|--------------|------|------|
 | 1 | `팔경 활용 #1, 검색·리스트` | A | **완료** · tip `e8da2987` |
 | 2 | `팔경 활용 #2, Preview QA` | A 사람 | **다음** |
-| — | `팔경contentId #P0-K12, short 종결` | B | **다음** |
+| — | `팔경contentId #P0-A02, siho alias` | B | **다음** |
+| — | `팔경contentId #P0-K12, short 종결` | B | **완료** · tip `a5131b5a` 0/1 ambiguous |
 | — | `팔경contentId #P0-K11, prefix 잔여` | B | **완료** · tip `c12f063a` 0/2 ambiguous |
 | — | `팔경contentId #P0-K10, prefix 종결` | B | **완료** · tip `1388e038` 5/22 |
 | — | `팔경contentId #P0-K09, short 종결` | B | **완료** · tip `77fe74bb` 8/21 |
@@ -177,6 +178,17 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 브랜치 cursor/palgyeong-cid · PR #185
 금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재시도 · 본명-only 재시도 · feature에 plans/** 커밋
 작업: P0-S01 이후 fill --keyword-only --limit=100 (memberQueries) → audit/smoke lists
+```
+
+### §1.2 B #P0-A02
+
+```
+팔경contentId #P0-A02, siho alias
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=siho --apply-unique · alias→LIVE · HIT는 LIVE 행만 · 종결을 close JSON에 기록
 ```
 
 ### §1.2 B #P0-K12
