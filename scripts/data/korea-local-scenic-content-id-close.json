@@ -1445,7 +1445,7 @@
       "tourTitle": "기백산 용추계곡과 용추폭포"
     },
     "hamyang-palgyeong::칠선시류": {
-      "status": "ambiguous",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "hamyang",
       "queries": [
@@ -1460,7 +1460,14 @@
       "contentIds": [
         "126058",
         "2739379"
-      ]
+      ],
+      "addrs": [
+        "경상남도 함양군 마천면 추성리",
+        "경상남도 함양군 마천면 칠선로 201"
+      ],
+      "contentId": "126058",
+      "tourTitle": "칠선계곡",
+      "note": "칠선시류=함양8경 시호 — 126058 칠선계곡(관광지) · 2739379 글램핑(레포츠) 제외"
     },
     "hamyang-palgyeong::서암석불": {
       "status": "unique_hit",

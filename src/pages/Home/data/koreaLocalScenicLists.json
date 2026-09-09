@@ -3296,7 +3296,8 @@
         "attractionName": "칠선시류",
         "name_en": "Chilseon Poetry Stream",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126058"
       },
       {
         "attractionName": "서암석불",
