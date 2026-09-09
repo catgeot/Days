@@ -3008,13 +3008,28 @@
       "tourTitle": "강변사리마을캠핑장"
     },
     "imsil-gugyeong::옥정호": {
-      "status": "open",
+      "status": "ambiguous",
       "bucket": "short",
       "hubId": "imsil",
       "queries": [
         "옥정호",
         "임실 옥정호"
-      ]
+      ],
+      "contentIds": [
+        "126551",
+        "3082705"
+      ],
+      "titles": [
+        "옥정호",
+        "옥정호 작약 꽃밭"
+      ],
+      "addrs": [
+        "전북특별자치도 임실군 운암면 마암리",
+        "전북특별자치도 임실군 운암면 운종리"
+      ],
+      "contentId": "126551",
+      "tourTitle": "옥정호",
+      "note": "동명 멤버 2 — 126551→출렁다리·붕어섬(name_en) · 신비의섬 멤버 null(3082705=작약꽃밭 불일치)"
     },
     "cheonan-palgyeong::유관순열사사적지": {
       "status": "tour_missing",
