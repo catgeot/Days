@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '지구본 프레임 줌',
-  sessionNo: 1,
-  sessionPhase: '페이지 줌 복귀',
-  branch: 'cursor/globe-frame-zoom-7106',
-  previewPath: '/',
-  qaShareSlug: 'globe-frame-zoom',
+  title: '세계행사 일정',
+  sessionNo: 53,
+  sessionPhase: '리스트 Unsplash 사진',
+  branch: 'cursor/world-events-wave3',
+  previewPath: '/world-events',
+  qaShareSlug: 'world-events',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-08-world-events-53-list-unsplash',
+    session: '세계행사 일정 #53, 리스트 Unsplash 사진',
+    title: '세계의 행사 리스트 썸네일 — Unsplash',
+    detail:
+      '/world-events 카드에 Unsplash 썸네일을 붙였습니다. 위키 시드는 쓰지 않고, 상세에서 쌓인 event_hero_gallery의 Unsplash 장을 읽고 없으면 검색합니다. Preview /qa/world-events — 리스트 사진이 행사 장면인지, 위키 옛 사진이 아닌지.',
+    at: '2026-09-08T12:20:00.000Z',
+  },
   {
     id: '2026-09-07-globe-frame-zoom-1-page-lock',
     session: '지구본 프레임 줌 #1, 페이지 줌 복귀',
