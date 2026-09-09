@@ -2,6 +2,25 @@
 
 직전: [`2026-09-08-project-log.md`](./2026-09-08-project-log.md)
 
+## 팔경 contentId — P2-L6 hub-batch keyword (Cloud)
+
+- **세션** `팔경contentId #P2-L6, hub-batch keyword`
+- **브랜치** `cursor/palgyeong-cid` · tip `b21da98a` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** 지정 18 hub **3/18** LIVE HIT · P2 null **87→84**/871 · 429 없음
+- **HIT** 서산 서산동부시장 `2489840` · 부안 직소폭포 `126260` · 청주 육거리시장 `132548`
+- **코드·매칭** KEYWORD_ALIASES 2건 보강 ('서산동부시장', '육거리시장') · `isMarket` 시장/장터 type 38 매칭 연동
+- **MISS** 안산(안산문화광장), 광명(안양천생태공원), 양평(들꽃수목원), 군포(산본시장), 과천(맑은누리공원), 오산(오산천), 진천(미호천생태공원), 여주(여주프리미엄아울렛), 동두천(보산동 외국인거리), 이천(별빛정원우주), 평택(미르섬), 울진(금강소나무숲길), 충주(비내섬), 세종(대통령기록관), 당진(당진항) 미등재/상업/산책로 등 MISS 유지
+- **VERIFY** `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `build` PASS
+
+```
+팔경contentId #P2-L7, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5/L6 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 84 — --hubs=sangju,gyeryong,mungyeong,bonghwa,hongseong,yeongi,yesan,gokseong,seocheon,hwasun,imsil,jangseong,yeonggwang,gimje,iksan,yeongam,cheongdo,gijang,uiseong,yecheon,chilgok,dokdo,gwangyang,sancheong,yeongyang,pohang,mokpo,ulleung,gapyeong,gongju,jecheon,yanggu --keyword-only --limit=20
+```
+
 ## 팔경 contentId — P2-L5 hub-batch keyword (Cloud)
 
 - **세션** `팔경contentId #P2-L5, hub-batch keyword`
