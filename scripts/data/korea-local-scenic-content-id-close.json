@@ -3172,13 +3172,17 @@
       "tourTitle": "충의사 (매헌 윤봉길 의사 유적)"
     },
     "yesan-sipgyeong::추사고택": {
-      "status": "siho_wait",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "yesan",
       "queries": [
         "추사고택",
+        "추사 김정희 선생 고택",
+        "김정희 선생 고택",
         "예산 추사고택"
-      ]
+      ],
+      "contentId": "1627167",
+      "tourTitle": "추사 김정희 선생 고택"
     },
     "yesan-sipgyeong::임존성": {
       "status": "unique_hit",
@@ -3511,13 +3515,16 @@
       "tourTitle": "여주 황포돛배"
     },
     "yeoju-palgyeong::학동모연": {
-      "status": "siho_wait",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "yeoju",
       "queries": [
         "학동모연",
+        "신륵사관광지",
         "여주 학동모연"
-      ]
+      ],
+      "contentId": "126557",
+      "tourTitle": "신륵사관광지"
     },
     "yeoju-palgyeong::연탄귀범": {
       "status": "unique_hit",

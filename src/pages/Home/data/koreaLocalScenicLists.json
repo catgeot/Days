@@ -6448,7 +6448,8 @@
         "attractionName": "추사고택",
         "name_en": "Chusa Historic House",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "1627167"
       },
       {
         "attractionName": "임존성",
@@ -7037,7 +7038,8 @@
         "attractionName": "학동모연",
         "name_en": "Hakdong Evening Mist",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126557"
       },
       {
         "attractionName": "연탄귀범",
