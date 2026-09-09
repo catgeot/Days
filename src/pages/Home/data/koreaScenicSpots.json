@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-09-09T14:39:47.757Z",
+    "generatedAt": "2026-09-09T21:18:25.709Z",
     "count": 871,
     "imageCount": 778,
     "curation": "GATEO",
@@ -11278,7 +11278,7 @@
       "placeSlug": "sancheong-herbal-theme-park",
       "lat": 35.42,
       "lng": 127.86,
-      "contentId": null,
+      "contentId": "2620990",
       "overview": "한방테마파크 — 산청 약초·체험. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/08/3341508_image2_1.jpg"
     },
@@ -12158,7 +12158,7 @@
       "placeSlug": "guryongpo-japanese-house-street",
       "lat": 35.9903,
       "lng": 129.5606,
-      "contentId": null,
+      "contentId": "1909659",
       "overview": null,
       "imageUrl": null
     },
@@ -12446,7 +12446,7 @@
       "placeSlug": "gapyeong-rail-bike",
       "lat": 37.8290936,
       "lng": 127.5162442,
-      "contentId": null,
+      "contentId": "2361081",
       "overview": null,
       "imageUrl": null
     },

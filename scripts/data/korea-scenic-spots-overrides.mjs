@@ -7245,7 +7245,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'sancheong',
       attractionName: '산청 한방테마파크',
       overview: '한방테마파크 — 산청 약초·체험. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2620990',
     }, // TODO contentId
     {
       order: 7050,
@@ -7808,7 +7808,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'pohang',
       attractionName: '구룡포일본인가옥거리',
-      contentId: null,
+      contentId: '1909659',
     }, // TODO contentId
     {
       order: 7600,
@@ -7988,7 +7988,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '수도권',
       hubId: 'gapyeong',
       attractionName: '가평레일파크',
-      contentId: null,
+      contentId: '2361081',
     }, // TODO contentId
     {
       order: 7780,
