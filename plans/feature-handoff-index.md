@@ -319,11 +319,11 @@
 
 | | |
 |--|--|
-| **상태** | R01–R16 ✅ · **P0·P1 F 소진** · members **548/876** · P2 **null 104** · **P0-C01** ✅ scenic 복사 소진 · **다음 P0-A03** siho alias · A와 **동시 OK** |
-| **브랜치** | `cursor/palgyeong-cid` · tip `e78f0e5a` |
+| **상태** | R01–R16 ✅ · **P0·P1 F 소진** · members **559/876** · P2 **null 104** · **P0-A03** ✅ siho 11/41 · **다음 P0-A04** siho alias · A와 **동시 OK** |
+| **브랜치** | `cursor/palgyeong-cid` · tip `ce464d0a` |
 | **PR** | [#185](https://github.com/catgeot/Days/pull/185) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§3·§9 B** · method **§5.7** |
-| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — **P0-A03** siho alias |
+| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — **P0-A04** siho alias |
 | **일지** | [`2026-09-09-project-log.md`](./2026-09-09-project-log.md) |
 | **소유** | JSON `contentId` · fill · audit · **UI 금지** |
 | **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · 본명-only keyword 재시도 · `--limit=100` 로또 · AI가 ID 기입 · feature에 `plans/**` 커밋 |
@@ -331,7 +331,7 @@
 **다음 제시어**:
 
 ```
-팔경contentId #P0-A03, siho alias
+팔경contentId #P0-A04, siho alias
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
 브랜치 cursor/palgyeong-cid · PR #185
@@ -413,32 +413,32 @@ PROD https://www.gateo.kr/
 
 ---
 
-### 세계 행사·축제 일정 연동 — 리스트 Unsplash 썸네일 폴백 (#54b)
+### 세계 행사·축제 일정 연동 — 리스트 카드 사진 확대 (#54c)
 
 | | |
 |--|--|
-| **상태** | **#54b** Preview QA — 3건 썸네일 폴백 수정 · PR [#205](https://github.com/catgeot/Days/pull/205) |
-| **브랜치** | `cursor/world-events-wave3` · tip `0f1fd382` |
+| **상태** | **#54c** Preview QA — 카드 16:10 사진 · 이동 칩 제거 · PR [#205](https://github.com/catgeot/Days/pull/205) |
+| **브랜치** | `cursor/world-events-wave3` · tip `417ce543` |
 | **PR** | [#205](https://github.com/catgeot/Days/pull/205) · [#204](https://github.com/catgeot/Days/pull/204) merge ✅ |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **§9** · [`world-events-management.md`](./world-events-management.md) |
 | **일지** | [`2026-09-09-project-log.md`](./2026-09-09-project-log.md) |
 | **Preview** | `/qa/world-events` → `/world-events` |
-| **소유** | `worldEventMedia.js` · `fetchWorldEventListPhotos.js` · `WorldEvents/index.jsx` |
-| **금지** | worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 |
+| **소유** | `WorldEvents/index.jsx` · `fetchWorldEventListPhotos.js` · `worldEventListPhoto.js` |
+| **금지** | worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · 허브에 플래너·숙소 칩 복구 |
 | **VERIFY** | `smoke:world-events-hub` · `audit:world-events` · `build` PASS |
 
-**게이트**: 에이전트 PASS ✅ · **#54b** 사람 Preview — 뉘 블랑쉬·두바이 피트니스·로즈 퍼레이드
+**게이트**: 에이전트 PASS ✅ · **#54c** 사람 Preview — 큰 썸네일 · 카드 칩 없음 · 카드 탭 → 상세
 
-**다음 제시어** (#54b 사람 Preview QA):
+**다음 제시어** (#54c 사람 Preview QA):
 
 ```
-세계행사 일정 #54b, 리스트 썸네일 Preview QA
+세계행사 일정 #54c, 리스트 사진 확대 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-09-project-log.md
 @plans/world-events-management.md
 브랜치 cursor/world-events-wave3 · PR #205 · https://www.gateo.kr/qa/world-events
-금지: worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구
-작업: 뉘 블랑쉬·두바이 피트니스·로즈 퍼레이드 썸네일 · 지역 칩 전환 후 유지 확인
+금지: worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · 허브에 플래너·숙소 칩 복구
+작업: 카드 사진 16:10 · 이동 칩 없음 · 카드 탭 → 상세 · 지역 칩 전환 후 사진 유지
 ```
 
 ---
