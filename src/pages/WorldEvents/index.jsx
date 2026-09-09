@@ -14,7 +14,10 @@ import { useLocale } from '../../i18n/LocaleProvider';
 import { tripWindowPresetsFromEvent } from '../../utils/worldEventTripPresets';
 import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
 import { fetchWorldEventListPhotos } from '../../utils/fetchWorldEventListPhotos';
-import { readWorldEventListPhotoCache } from '../../utils/worldEventListPhoto';
+import {
+  readWorldEventListPhotoCache,
+  removeWorldEventListPhotoCacheEntry,
+} from '../../utils/worldEventListPhoto';
 import {
   formatWorldEventDateRange,
   getWorldEventPlaceMeta,
@@ -305,12 +308,19 @@ export default function WorldEventsHub() {
                   t={t}
                   photo={photoById[event.id]}
                   onPhotoError={(eventId) => {
+                    removeWorldEventListPhotoCacheEntry(eventId);
                     setPhotoById((current) => {
                       if (!current[eventId]) return current;
                       const next = { ...current };
                       delete next[eventId];
                       return next;
                     });
+                    const failedEvent = allEvents.find((item) => item.id === eventId);
+                    if (failedEvent) {
+                      fetchWorldEventListPhotos([failedEvent], locale).then((next) => {
+                        setPhotoById((current) => ({ ...current, ...next }));
+                      });
+                    }
                   }}
                 />
               ))

@@ -1,6 +1,6 @@
 import { supabase } from '../shared/api/supabase';
 import { apiClient } from '../pages/Home/lib/apiClient';
-import { buildWorldEventHeroGalleryQueries } from './worldEventMedia';
+import { buildWorldEventListPhotoQueries } from './worldEventMedia';
 import {
   mapUnsplashPhotoToListImage,
   pickWorldEventListPhoto,
@@ -31,18 +31,17 @@ async function runPool(items, limit, worker) {
 }
 
 /**
- * @param {string} primary
- * @param {string} fallbackEn
+ * @param {string[]} queries
  */
-async function fetchOneUnsplashListPhoto(primary, fallbackEn) {
+async function fetchOneUnsplashListPhoto(queries) {
   const accessKey = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
   if (!accessKey) return null;
 
-  const queries = [primary, fallbackEn].filter(
-    (query, index, list) => query && list.indexOf(query) === index,
-  );
+  const list = Array.isArray(queries)
+    ? queries.map((query) => String(query || '').trim()).filter(Boolean)
+    : [];
 
-  for (const query of queries) {
+  for (const query of list) {
     const photos = await apiClient.fetchUnsplashImages(accessKey, query, 1);
     const mapped = Array.isArray(photos)
       ? photos.map(mapUnsplashPhotoToListImage).find(Boolean)
@@ -90,8 +89,8 @@ export async function fetchWorldEventListPhotos(events, locale = 'ko') {
   if (stillMissing.length) {
     await runPool(stillMissing, FETCH_CONCURRENCY, async (event) => {
       try {
-        const { primary, fallbackEn } = buildWorldEventHeroGalleryQueries(event, locale);
-        const photo = await fetchOneUnsplashListPhoto(primary, fallbackEn);
+        const queries = buildWorldEventListPhotoQueries(event, locale);
+        const photo = await fetchOneUnsplashListPhoto(queries);
         if (photo) photosById[event.id] = photo;
       } catch (err) {
         console.warn('[fetchWorldEventListPhotos]', event.id, err?.message || err);

@@ -18,6 +18,7 @@ import {
   getWorldEventsForHubRegion,
   getWorldEventsForSlug,
 } from '../src/utils/worldEvents.js';
+import { buildWorldEventListPhotoQueries } from '../src/utils/worldEventMedia.js';
 import {
   isUnsplashListPhoto,
   pickWorldEventListPhoto,
@@ -99,6 +100,22 @@ assert.equal(
   null,
   'list picker does not fall back to Wikimedia',
 );
+
+const listPhotoProbeIds = [
+  'paris-nuit-blanche-2027',
+  'dubai-fitness-challenge-2026',
+  'los-angeles-rose-parade-2027',
+];
+for (const eventId of listPhotoProbeIds) {
+  const event = allEvents.find((item) => item.id === eventId);
+  assert.ok(event, `${eventId} exists for list photo query probe`);
+  const queries = buildWorldEventListPhotoQueries(event, 'ko');
+  assert.ok(queries.length >= 3, `${eventId} has extended Unsplash query fallbacks`);
+  assert.ok(
+    queries.some((query) => /[A-Za-z]/.test(query)),
+    `${eventId} list queries include English fallback`,
+  );
+}
 
 const listPhotoSrc = readFileSync(join(root, 'src/utils/fetchWorldEventListPhotos.js'), 'utf8');
 assert.match(listPhotoSrc, /event_hero_gallery/, 'list photos read Unsplash gallery cache');

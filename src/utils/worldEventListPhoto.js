@@ -78,3 +78,16 @@ export function writeWorldEventListPhotoCache(photosById) {
     // quota / private mode
   }
 }
+
+/**
+ * @param {string} eventId
+ */
+export function removeWorldEventListPhotoCacheEntry(eventId) {
+  const id = String(eventId || '').trim();
+  if (!id) return;
+  const cache = readWorldEventListPhotoCache();
+  if (!cache[id]) return;
+  const next = { ...cache };
+  delete next[id];
+  writeWorldEventListPhotoCache(next);
+}
