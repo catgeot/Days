@@ -413,19 +413,33 @@ PROD https://www.gateo.kr/
 
 ---
 
-### 세계 행사·축제 일정 연동 — 리스트 Unsplash main 병합 ✅
+### 세계 행사·축제 일정 연동 — 리스트 Unsplash 썸네일 폴백 (#54b)
 
 | | |
 |--|--|
-| **상태** | **#54 merge ✅** · main `2473463a` · PR [#204](https://github.com/catgeot/Days/pull/204) |
-| **브랜치** | `cursor/world-events-wave3` · merge `2473463a` |
-| **PR** | [#204](https://github.com/catgeot/Days/pull/204) merge ✅ · [#166](https://github.com/catgeot/Days/pull/166) merge ✅ |
-| **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **§9** |
+| **상태** | **#54b** Preview QA — 3건 썸네일 폴백 수정 · PR [#205](https://github.com/catgeot/Days/pull/205) |
+| **브랜치** | `cursor/world-events-wave3` · tip `0f1fd382` |
+| **PR** | [#205](https://github.com/catgeot/Days/pull/205) · [#204](https://github.com/catgeot/Days/pull/204) merge ✅ |
+| **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **§9** · [`world-events-management.md`](./world-events-management.md) |
 | **일지** | [`2026-09-09-project-log.md`](./2026-09-09-project-log.md) |
-| **PROD** | `https://www.gateo.kr/world-events` |
-| **VERIFY** | `audit:world-events` · `smoke:world-events-hub` PASS |
+| **Preview** | `/qa/world-events` → `/world-events` |
+| **소유** | `worldEventMedia.js` · `fetchWorldEventListPhotos.js` · `WorldEvents/index.jsx` |
+| **금지** | worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 |
+| **VERIFY** | `smoke:world-events-hub` · `audit:world-events` · `build` PASS |
 
-**다음 제시어 없음** (리스트 Unsplash는 PROD). 확인은 `www.gateo.kr/world-events`. `/qa/world-events`는 구 Preview.
+**게이트**: 에이전트 PASS ✅ · **#54b** 사람 Preview — 뉘 블랑쉬·두바이 피트니스·로즈 퍼레이드
+
+**다음 제시어** (#54b 사람 Preview QA):
+
+```
+세계행사 일정 #54b, 리스트 썸네일 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-09-project-log.md
+@plans/world-events-management.md
+브랜치 cursor/world-events-wave3 · PR #205 · https://www.gateo.kr/qa/world-events
+금지: worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구
+작업: 뉘 블랑쉬·두바이 피트니스·로즈 퍼레이드 썸네일 · 지역 칩 전환 후 유지 확인
+```
 
 ---
 
