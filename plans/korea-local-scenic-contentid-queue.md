@@ -1,6 +1,6 @@
 # 팔경·명소 Tour contentId 큐
 
-**상태**: R01–R16 ✅ · **P0·P1 F 소진** · membersWithContentId **541**/876 · hub+P1 **68** · P2 **null 104**/871(78 hub) · **P2-L2** ✅ 0/104 · **P0-L** ✅ 109/584 · **P0-L02·L03·L05** ✅ 0/100(동일 본명 keyword **폐기**) · **P0-L06 폐기** · **P0-L07++** ✅ 2/100 · **P0-L07+++ 폐기**(같은 100명 로또) · **P0-K01** ✅ 10/40 · **P0-K02** ✅ 4/40 · **P0-K03** ✅ 4/23 · **P0-K04** ✅ 5/41 · **P0-K05** ✅ 8/40 · **P0-K06** ✅ 3/40 · **P0-K07** ✅ 8/40 · **P0-K08** ✅ 4/40 · **P0-K09** ✅ 8/21 · **P0-K10** ✅ 5/22 · **P0-K11** ✅ 0/2 · **P0-K12** ✅ 0/1 · **다음 P0-A02** siho · Tour API **운영 승인 ~10만/일**  
+**상태**: R01–R16 ✅ · **P0·P1 F 소진** · membersWithContentId **547**/876 · hub+P1 **68** · P2 **null 104**/871(78 hub) · **P2-L2** ✅ 0/104 · **P0-L** ✅ 109/584 · **P0-L02·L03·L05** ✅ 0/100(동일 본명 keyword **폐기**) · **P0-L06 폐기** · **P0-L07++** ✅ 2/100 · **P0-L07+++ 폐기**(같은 100명 로또) · **P0-K01** ✅ 10/40 · **P0-K02** ✅ 4/40 · **P0-K03** ✅ 4/23 · **P0-K04** ✅ 5/41 · **P0-K05** ✅ 8/40 · **P0-K06** ✅ 3/40 · **P0-K07** ✅ 8/40 · **P0-K08** ✅ 4/40 · **P0-K09** ✅ 8/21 · **P0-K10** ✅ 5/22 · **P0-K11** ✅ 0/2 · **P0-K12** ✅ 0/1 · **P0-A02** ✅ 6/48 · **다음 P0-C01** scenic 복사 · Tour API **운영 승인 ~10만/일**  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.7** · 플랜 [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md)  
 **브랜치**: `cursor/palgyeong-cid` (A UI `cursor/palgyeong-use-e744`와 **분리** · 수집 `cursor/palgyeong` 금지)  
 **금지**: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재호출 · P1/P2를 P0 전에
@@ -122,7 +122,7 @@ DB-only 종료 후 overrides에 `contentId: null`이 남은 hub만. 라운드는
 
 목적: 세션마다 **같은 100명 로또가 아니라** 남은 null을 버킷별로 LIVE 검색어를 바꿔 **채우거나 닫기**. contentId는 **LIVE가 준 행만**. AI 숫자 기입 금지.
 
-**인벤토리** (2026-09-09 P0-K12 후, null **335**): siho **48** · poetic **0** · prefix **0 open**(ambiguous **2**) · short **0**(ambiguous **1**) · other **0** · closed **344**
+**인벤토리** (2026-09-09 P0-A02 후, null **329**): siho **0 open**(siho_wait **41**·hub_mismatch **1**) · poetic **0** · prefix **0 open**(ambiguous **2**) · short **0**(ambiguous **1**) · other **0** · closed **350**
 
 | 명령 | 역할 |
 |------|------|
@@ -159,7 +159,7 @@ DB-only 종료 후 overrides에 `contentId: null`이 남은 hub만. 라운드는
 | **P0-K10** | `--bucket=prefix --apply-unique --limit=40` | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-09 **5/22** · members **541/876** · tip `1388e038` |
 | **P0-K11** | `--bucket=prefix --apply-unique --limit=40` (잔여 2) | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-09 **0/2** ambiguous · tip `c12f063a` |
 | **P0-K12** | `--bucket=short --apply-unique --limit=40` (임실 옥정호 1건) | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-09 **0/1** ambiguous · tip `a5131b5a` |
-| **P0-A02** | `--bucket=siho` · 공식 본명 alias → LIVE (gunsan 등) | 소수 | 혼합 | ⬜ 다음 |
+| **P0-A02** | `--bucket=siho` · 공식 본명 alias → LIVE (gunsan 등) | 소수 | 혼합 | ✅ 2026-09-09 **6/48** · members **547/876** · tip `f0019f88` |
 
 ### P0 잔여 전략 (2026-09-07 진단 · keyword 로또 대체)
 
@@ -186,27 +186,27 @@ P0-L02·L03·L05는 **같은 앞 100멤버**에 JSON `attractionName` **한 단�
 | **P0-L07** | S01 후 `--keyword-only` 잔여 null · **본명-only 재시도 금지** · `--resume`은 새 쿼리 집합일 때만 | 쿼터 ~10만/일 · 세션 `--limit` | LIVE | ✅ 2026-09-07 **11/100** · tip `6212fab3` |
 | **P0-A01** | 시호·별칭 MISS만 공식 출처/웹으로 후보 → `KEYWORD_ALIASES` → LIVE 1~2회 검증 | 소수 건 | 혼합 | ✅ 2026-09-08 **8/16** L07 cohort · tip `dc608b4b` |
 
-### 다음 세션 (복붙) — 1순위 P0-A02
+### 다음 세션 (복붙) — 1순위 P0-C01
 
-**채팅명** `팔경contentId #P0-A02, siho alias`
+**채팅명** `팔경contentId #P0-C01, scenic 복사`
 
 | | |
 |--|--|
-| **브랜치** | `cursor/palgyeong-cid` · tip `a5131b5a` · PR [#185](https://github.com/catgeot/Days/pull/185) |
-| **스냅샷** | P0 멤버 **541/876** (null **335**) · short **소진** · prefix **소진**(ambiguous **2**) · siho **48** · other **0** · closed **344** |
-| **1순위** | `close:korea-local-scenic-content-ids --bucket=siho --apply-unique` · alias→LIVE · HIT는 LIVE 행만 |
-| **읽기** | index 팔경 contentId 행 · 본 큐 「P0 키워드 종결 (K)」· method **§5.7** |
-| **금지** | UI · scenic 승격 · AI가 contentId 숫자 기입 · `--keyword-only --limit=100` 로또 · feature에 `plans/**` · apply 후 `inventory` 재실행(ambiguous→open 덮어씀) |
+| **브랜치** | `cursor/palgyeong-cid` · tip `f0019f88` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **스냅샷** | P0 멤버 **547/876** (null **329**) · K·A 버킷 **소진** · siho_wait **41** · ambiguous **3** · closed **350** |
+| **1순위** | `copy:korea-local-scenic-content-ids-from-scenic` — 같은 hub+attractionName scenic contentId → 팔경 멤버+동명 hub (**LIVE 금지**) |
+| **읽기** | index 팔경 contentId 행 · 본 큐 「P0 잔여 전략」· method **§5.7** |
+| **금지** | UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 `plans/**` |
 
 **이어질 제시어**:
 
 ```
-팔경contentId #P0-A02, siho alias
+팔경contentId #P0-C01, scenic 복사
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
 브랜치 cursor/palgyeong-cid · PR #185
-금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
-작업: --bucket=siho --apply-unique · alias→LIVE · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: 같은 hub+attractionName scenic contentId → 팔경 멤버+동명 hub → audit/smoke lists
 ```
 
 **Auth**: `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` (Edge `tourapi-proxy`) — inventory만이면 불필요. K·A LIVE 필요.
