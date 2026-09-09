@@ -5150,7 +5150,8 @@
         "attractionName": "청자단지",
         "name_en": "Celadon Village",
         "kind": "neighborhood",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "130135"
       }
     ]
   },
@@ -5613,7 +5614,8 @@
         "attractionName": "지포신경",
         "name_en": "Jiposin-gyeong Scenic Point",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "128982"
       },
       {
         "attractionName": "개암고적",
@@ -7028,7 +7030,8 @@
         "attractionName": "마암어등",
         "name_en": "Maam Fishing Lamps",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "128046"
       },
       {
         "attractionName": "학동모연",
@@ -7040,7 +7043,8 @@
         "attractionName": "연탄귀범",
         "name_en": "Yeontan Returning Sails",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "3018216"
       },
       {
         "attractionName": "양도낙안",

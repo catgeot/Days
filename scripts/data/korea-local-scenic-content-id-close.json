@@ -2384,13 +2384,17 @@
       ]
     },
     "gangjin-other::청자단지": {
-      "status": "siho_wait",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "gangjin",
       "queries": [
         "청자단지",
+        "강진 고려청자박물관",
+        "고려청자박물관",
         "강진 청자단지"
-      ]
+      ],
+      "contentId": "130135",
+      "tourTitle": "강진 고려청자박물관"
     },
     "jangheung-gugyeong::장흥 126타워": {
       "status": "unique_hit",
@@ -2632,13 +2636,16 @@
       ]
     },
     "buan-palgyeong::지포신경": {
-      "status": "siho_wait",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "buan",
       "queries": [
         "지포신경",
+        "채석강 (전북 서해안 국가지질공원)",
         "부안 지포신경"
-      ]
+      ],
+      "contentId": "128982",
+      "tourTitle": "채석강 (전북 서해안 국가지질공원)"
     },
     "buan-palgyeong::개암고적": {
       "status": "unique_hit",
@@ -3491,13 +3498,17 @@
       "tourTitle": "신륵사(여주)"
     },
     "yeoju-palgyeong::마암어등": {
-      "status": "siho_wait",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "yeoju",
       "queries": [
         "마암어등",
+        "여주 황포돛배",
+        "황포돛배",
         "여주 마암어등"
-      ]
+      ],
+      "contentId": "128046",
+      "tourTitle": "여주 황포돛배"
     },
     "yeoju-palgyeong::학동모연": {
       "status": "siho_wait",
@@ -3509,13 +3520,16 @@
       ]
     },
     "yeoju-palgyeong::연탄귀범": {
-      "status": "siho_wait",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "yeoju",
       "queries": [
         "연탄귀범",
+        "강천섬유원지",
         "여주 연탄귀범"
-      ]
+      ],
+      "contentId": "3018216",
+      "tourTitle": "강천섬유원지"
     },
     "yeoju-palgyeong::양도낙안": {
       "status": "unique_hit",
