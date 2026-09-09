@@ -2,6 +2,169 @@
 
 직전: [`2026-09-08-project-log.md`](./2026-09-08-project-log.md)
 
+## 팔경 contentId — P0 inv 키워드 종결 소진 (Cloud)
+
+- **세션** `팔경contentId #P0 inv, 키워드 종결 소진`
+- **브랜치** `cursor/palgyeong-cid` · tip `505733e2` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `inventory:korea-local-scenic-content-ids` — open **0** · closed **394** · members **579/876** (null **297**)
+- **null 297 갈래** `tour_missing` **268** · `hub_mismatch` **28** · `ambiguous` **1**(임실 옥정호 신비의섬·P0-P02 null 유지) — close.json terminal **100%** · P0-K/A/P **추가 라운드 없음**
+- **다음** P2 track — scenic null **104**/871(73 hub) · **P2-L3** hub-batch `--keyword-only`
+- **VERIFY** audit/smoke lists · smoke content-ids · smoke tour-content-id-match PASS
+
+```
+팔경contentId #P2-L3, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 104 — --hubs=uiryeong,hanam,geochang,gunwi,gwangju,seongnam,danyang --keyword-only --limit=20
+```
+
+## 팔경 contentId — P0-P03 칠선시류 ambiguous (Cloud)
+
+- **세션** `팔경contentId #P0-P03, 칠선시류 ambiguous`
+- **브랜치** `cursor/palgyeong-cid` · tip `505733e2` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** 함양 칠선시류 ambiguous **1/1** unique_hit · members **579/876** (null **297**) · closed **394** · ambiguous open **0**
+- **종결** `126058` 칠선계곡(추성리) → lists · `2739379` 글램핑(칠선로 201) 제외 · close JSON titles·addrs 기록
+- **VERIFY** audit/smoke lists · smoke content-ids · smoke tour-content-id-match PASS
+- **다음** P0 키워드 종결 소진 — inventory · null 297 갈래 분류
+
+```
+팔경contentId #P0 inv, 키워드 종결 소진
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: inventory 재집계 · P0 키워드 종결 closed 394 · 남은 null 297 갈래 분류 · 다음 R 제안
+```
+
+## 팔경 contentId — P0-P02 옥정호 ambiguous (Cloud)
+
+- **세션** `팔경contentId #P0-P02, 옥정호 ambiguous`
+- **브랜치** `cursor/palgyeong-cid` · tip `3392e61e` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** 임실 옥정호 ambiguous **1/1** · members **578/876** (null **298**) · closed **394** · short ambiguous **0**
+- **종결** `126551` 옥정호(마암리) → 출렁다리·붕어섬 멤버 유지 · `3082705` 작약 꽃밭(운종리) 불일치 → 신비의섬 멤버 **null** · close JSON titles·addrs 기록
+- **VERIFY** audit/smoke lists · smoke content-ids PASS
+- **다음** 함양 칠선시류 ambiguous 1건
+
+```
+팔경contentId #P0-P03, 칠선시류 ambiguous
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: 함양 칠선시류 ambiguous — close JSON titles·주소 확인 → unique면 lists · 아니면 null
+```
+
+## 팔경 contentId — P0-A08 siho_wait (Cloud)
+
+- **세션** `팔경contentId #P0-A08, siho_wait`
+- **브랜치** `cursor/palgyeong-cid` · tip `be75b1f3` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** siho_wait **6/6** alias 검토 · **0 HIT** · members **579/876** (null **297**) · closed **393** · siho_wait **0** · 429 없음
+- **종결** 5건 `tour_missing`(자풍서당·금계완사·상산모운·나원백탑·팔수장림) · 칠선시류 `ambiguous`(칠선계곡·칠선계곡글램핑) — **KEYWORD_ALIASES 신규 0**
+- **VERIFY** audit/smoke lists · smoke content-ids · smoke tour-content-id-match PASS
+- **다음** short 옥정호 ambiguous 1건
+
+```
+팔경contentId #P0-P02, 옥정호 ambiguous
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: 임실 옥정호 ambiguous — close JSON titles·주소 확인 → unique면 lists · 아니면 null
+```
+
+## 팔경 contentId — P0-P01 prefix ambiguous (Cloud)
+
+- **세션** `팔경contentId #P0-P01, prefix ambiguous`
+- **브랜치** `cursor/palgyeong-cid` · tip `fb936d9c` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** prefix ambiguous **2/2** unique_hit · members **579/876** (null **297**) · closed **387** · prefix ambiguous **0**
+- **HIT** 인천 소래포구 `2020690`(포구로 2-6 · 포차거리·해오름광장 제외) · 대전 식장산 `1083960`(문화공원 · 정상쉼터 제외) — close JSON titles·contentIds 기록
+- **VERIFY** audit/smoke lists · smoke content-ids · smoke tour-content-id-match PASS
+- **다음** siho_wait 6건(신규 alias 없으면 null 유지) 또는 short 옥정호 ambiguous 1건
+
+```
+팔경contentId #P0-A08, siho_wait
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: siho_wait 6건 alias 검토 → 신규 alias 있으면 KEYWORD_ALIASES·LIVE · 없으면 null 유지
+```
+
+## 팔경 contentId — P0-A07 siho alias (Cloud)
+
+- **세션** `팔경contentId #P0-A07, siho alias`
+- **브랜치** `cursor/palgyeong-cid` · tip `0287f117` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--bucket=siho --apply-unique` **2/8** unique_hit · **siho_wait 6** · members **577/876** (null **299**) · closed **385** · 429 없음
+- **HIT** 추사고택(1627167) · 학동모연(126557) — LIVE 행만 lists 기입 · KEYWORD_ALIASES 2건
+- **MISS** 자풍서당·금계완사·상산모운·나원백탑·칠선시류(칠선계곡 ambiguous)·팔수장림 — Tour 미등재·siho_wait 종결
+- **VERIFY** audit/smoke lists · smoke content-ids · smoke tour-content-id-match · build PASS
+- **다음** prefix ambiguous 2건 또는 siho_wait 6건(신규 alias 없으면 null 유지)
+
+```
+팔경contentId #P0-P01, prefix ambiguous
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: prefix ambiguous 2건 제목·주소 확인 → unique면 lists 기입 · 종결을 close JSON에 기록
+```
+
+## 팔경 contentId — P0-A06 siho alias (Cloud)
+
+- **세션** `팔경contentId #P0-A06, siho alias`
+- **브랜치** `cursor/palgyeong-cid` · tip `e3acbf8d` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--bucket=siho --apply-unique` **4/12** unique_hit · **siho_wait 8** · members **575/876** (null **301**) · closed **383** · 429 없음
+- **HIT** 청자단지(130135) · 지포신경(128982) · 마암어등(128046) · 연탄귀범(3018216) — LIVE 행만 lists 기입 · KEYWORD_ALIASES 4건
+- **VERIFY** audit/smoke lists · smoke content-ids · smoke tour-content-id-match · build PASS
+- **다음** P0-A07 siho alias (8) 또는 prefix ambiguous 2건
+
+```
+팔경contentId #P0-A07, siho alias
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: --bucket=siho --apply-unique · alias→LIVE · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+## 팔경 contentId — P0-A05 siho alias (Cloud)
+
+- **세션** `팔경contentId #P0-A05, siho alias`
+- **브랜치** `cursor/palgyeong-cid` · tip `cc3fa3cc` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--bucket=siho --apply-unique` **4/21** unique_hit · **hub_mismatch 5** · **siho_wait 12** · members **571/876** (null **305**) · closed **379** · 429 없음
+- **HIT** 금대지리·삽교평야·제암만세·남양성지 — LIVE 행만 lists 기입 · KEYWORD_ALIASES 9건
+- **VERIFY** audit/smoke lists · smoke content-ids · smoke tour-content-id-match · build PASS
+- **다음** P0-A06 siho alias (12) 또는 prefix ambiguous 2건
+
+```
+팔경contentId #P0-A06, siho alias
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: --bucket=siho --apply-unique · alias→LIVE · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+## 팔경 contentId — P0-A04 siho alias (Cloud)
+
+- **세션** `팔경contentId #P0-A04, siho alias`
+- **브랜치** `cursor/palgyeong-cid` · tip `2b7dc375` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--bucket=siho --apply-unique` **8/29** unique_hit · **21 siho_wait** · members **567/876** (null **309**) · closed **369** · 429 없음
+- **HIT** 미륵불상·무릉반석·용추비경·해상분수·장자어화·월명무애·남양황라·서문시장 — LIVE 행만 lists 기입 · KEYWORD_ALIASES 8건 · type38 시장 허용
+- **VERIFY** audit/smoke lists · smoke content-ids · smoke tour-content-id-match · build PASS
+- **다음** P0-A05 siho alias (21) 또는 prefix ambiguous 2건
+
+```
+팔경contentId #P0-A05, siho alias
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: --bucket=siho --apply-unique · alias→LIVE · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
 ## 세계행사 일정 #54c — 리스트 사진 Edge 캐시 필요 여부 (점검)
 
 - **질문** 다음 사용자 첫 `/world-events` 로딩 — `event_hero_gallery` Edge 쓰기가 필요한가
