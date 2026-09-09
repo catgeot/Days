@@ -2892,12 +2892,16 @@
       ]
     },
     "imsil-gugyeong::옥정호": {
-      "status": "open",
+      "status": "ambiguous",
       "bucket": "short",
       "hubId": "imsil",
       "queries": [
         "옥정호",
         "임실 옥정호"
+      ],
+      "contentIds": [
+        "126551",
+        "3082705"
       ]
     },
     "cheonan-palgyeong::유관순열사사적지": {
@@ -3225,7 +3229,7 @@
       ]
     },
     "gyeryong-gugyeong::숫용추": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "gyeryong",
       "queries": [
@@ -3234,7 +3238,7 @@
       ]
     },
     "gyeryong-gugyeong::암용추": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "gyeryong",
       "queries": [
@@ -3310,22 +3314,26 @@
       ]
     },
     "uijeongbu-palgyeong::망월사": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "uijeongbu",
       "queries": [
         "망월사",
         "의정부 망월사"
-      ]
+      ],
+      "contentId": "127029",
+      "tourTitle": "망월사(경기)"
     },
     "uijeongbu-palgyeong::미술도서관": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "uijeongbu",
       "queries": [
         "미술도서관",
         "의정부 미술도서관"
-      ]
+      ],
+      "contentId": "2705299",
+      "tourTitle": "의정부미술도서관"
     },
     "uijeongbu-palgyeong::수락산 도정봉": {
       "status": "open",
@@ -3338,13 +3346,15 @@
       ]
     },
     "uijeongbu-palgyeong::음악도서관": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "uijeongbu",
       "queries": [
         "음악도서관",
         "의정부 음악도서관"
-      ]
+      ],
+      "contentId": "2841316",
+      "tourTitle": "의정부음악도서관"
     },
     "uijeongbu-palgyeong::의정부경전철": {
       "status": "tour_missing",
@@ -3447,7 +3457,7 @@
       ]
     },
     "icheon-gugyeong::반룡송": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "icheon",
       "queries": [
@@ -3465,13 +3475,15 @@
       ]
     },
     "icheon-gugyeong::산수유마을": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "icheon",
       "queries": [
         "산수유마을",
         "이천 산수유마을"
-      ]
+      ],
+      "contentId": "127978",
+      "tourTitle": "이천 산수유마을"
     },
     "icheon-gugyeong::설봉산 삼형제 바위": {
       "status": "open",
@@ -3484,7 +3496,7 @@
       ]
     },
     "icheon-gugyeong::애련정": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "icheon",
       "queries": [
@@ -3493,7 +3505,7 @@
       ]
     },
     "gwangju-gi-palgyeong::무갑산": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "gwangju_gi",
       "queries": [
@@ -3502,7 +3514,7 @@
       ]
     },
     "gwangju-gi-palgyeong::송정사": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "gwangju_gi",
       "queries": [
@@ -3530,7 +3542,7 @@
       ]
     },
     "ansan-gugyeong::다문화거리": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "ansan",
       "queries": [
@@ -3539,13 +3551,15 @@
       ]
     },
     "hwaseong-palgyeong::융건릉": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "hwaseong",
       "queries": [
         "융건릉",
         "화성 융건릉"
-      ]
+      ],
+      "contentId": "3456908",
+      "tourTitle": "화성 융건릉"
     },
     "hwaseong-palgyeong::용주사 범종": {
       "status": "open",
@@ -3566,7 +3580,7 @@
       ]
     },
     "hwaseong-palgyeong::입파홍암": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "hwaseong",
       "queries": [
@@ -3606,7 +3620,7 @@
       "tourTitle": "광교산"
     },
     "yongin-palgyeong::조비산": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "yongin",
       "queries": [
@@ -3626,7 +3640,7 @@
       ]
     },
     "anyang-gugyeong::망해암일몰": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "anyang",
       "queries": [
@@ -3635,7 +3649,7 @@
       ]
     },
     "anyang-gugyeong::수리산성지": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "anyang",
       "queries": [
@@ -3654,7 +3668,7 @@
       ]
     },
     "anyang-gugyeong::만안교": {
-      "status": "open",
+      "status": "tour_missing",
       "bucket": "short",
       "hubId": "anyang",
       "queries": [
@@ -3708,22 +3722,26 @@
       ]
     },
     "ganghwa-palgyeong::연미정": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "ganghwa",
       "queries": [
         "연미정",
         "강화 연미정"
-      ]
+      ],
+      "contentId": "129610",
+      "tourTitle": "강화 연미정"
     },
     "ganghwa-palgyeong::전등사": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "ganghwa",
       "queries": [
         "전등사",
         "강화 전등사"
-      ]
+      ],
+      "contentId": "125534",
+      "tourTitle": "강화 전등사"
     },
     "daegu-sipgyeong::대구 국채보상운동 기념공원": {
       "status": "open",
@@ -3755,13 +3773,15 @@
       ]
     },
     "daegu-sipgyeong::동성로": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "short",
       "hubId": "daegu",
       "queries": [
         "동성로",
         "대 동성로"
-      ]
+      ],
+      "contentId": "2599899",
+      "tourTitle": "대구 동성로거리"
     },
     "daegu-sipgyeong::대구 달성토성": {
       "status": "open",

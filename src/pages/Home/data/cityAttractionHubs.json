@@ -528,7 +528,8 @@
         "name_en": "Dongseong-ro",
         "kind": "neighborhood",
         "lat": 35.8695,
-        "lng": 128.5956
+        "lng": 128.5956,
+        "contentId": "2599899"
       },
       {
         "name": "서문시장",
@@ -4038,7 +4039,8 @@
         "name_en": "Yeonmijeong Pavilion",
         "kind": "landmark",
         "lat": 37.7698973,
-        "lng": 126.5108613
+        "lng": 126.5108613,
+        "contentId": "129610"
       },
       {
         "name": "적석사",
@@ -4053,7 +4055,8 @@
         "name_en": "Jeondeungsa Ganghwa",
         "kind": "temple",
         "lat": 37.6369531,
-        "lng": 126.4933238
+        "lng": 126.4933238,
+        "contentId": "125534"
       }
     ]
   },

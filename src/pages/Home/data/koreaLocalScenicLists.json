@@ -6925,13 +6925,15 @@
         "attractionName": "망월사",
         "name_en": "Mangwolsa Temple",
         "kind": "temple",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "127029"
       },
       {
         "attractionName": "미술도서관",
         "name_en": "Art Library",
         "kind": "museum",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2705299"
       },
       {
         "attractionName": "수락산 도정봉",
@@ -6943,7 +6945,8 @@
         "attractionName": "음악도서관",
         "name_en": "Music Library",
         "kind": "museum",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2841316"
       },
       {
         "attractionName": "의정부경전철",
@@ -7087,7 +7090,8 @@
         "attractionName": "산수유마을",
         "name_en": "Cornelian Cherry Village",
         "kind": "neighborhood",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "127978"
       },
       {
         "attractionName": "설봉산 삼형제 바위",
@@ -7291,7 +7295,8 @@
         "attractionName": "융건릉",
         "name_en": "Yungneung and Geolleung Royal Tombs",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "3456908"
       },
       {
         "attractionName": "용주사 범종",
@@ -7699,7 +7704,8 @@
         "kind": "landmark",
         "lat": 37.7698973,
         "lng": 126.5108613,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "129610"
       },
       {
         "attractionName": "초지진",
@@ -7745,7 +7751,8 @@
         "kind": "temple",
         "lat": 37.6369531,
         "lng": 126.4933238,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "125534"
       }
     ]
   },
@@ -7837,7 +7844,8 @@
         "kind": "neighborhood",
         "lat": 35.8695,
         "lng": 128.5956,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "2599899"
       },
       {
         "attractionName": "대구 달성토성",
