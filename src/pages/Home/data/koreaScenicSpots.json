@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-09-09T10:14:34.618Z",
+    "generatedAt": "2026-09-09T10:42:33.051Z",
     "count": 871,
     "imageCount": 778,
     "curation": "GATEO",
@@ -11822,7 +11822,7 @@
       "placeSlug": "donghae-nongol-mural-village",
       "lat": 37.5522210485,
       "lng": 129.1183390829,
-      "contentId": null,
+      "contentId": "1223212",
       "overview": null,
       "imageUrl": null
     },
@@ -11838,7 +11838,7 @@
       "placeSlug": "donghae-mangsang-beach",
       "lat": 37.5938,
       "lng": 129.0896,
-      "contentId": null,
+      "contentId": "125713",
       "overview": null,
       "imageUrl": null
     },
@@ -12014,7 +12014,7 @@
       "placeSlug": "samcheok-beach",
       "lat": 37.4681178,
       "lng": 129.1692363,
-      "contentId": null,
+      "contentId": "125705",
       "overview": null,
       "imageUrl": null
     },
@@ -12046,7 +12046,7 @@
       "placeSlug": "jukseoru-pavilion",
       "lat": 37.4410523689599,
       "lng": 129.16121256183317,
-      "contentId": null,
+      "contentId": "125799",
       "overview": null,
       "imageUrl": null
     },
@@ -12750,7 +12750,7 @@
       "placeSlug": "gungnamji-pond",
       "lat": 36.2697027713,
       "lng": 126.9123108534,
-      "contentId": null,
+      "contentId": "125984",
       "overview": null,
       "imageUrl": null
     },
@@ -12782,7 +12782,7 @@
       "placeSlug": "busosanseong",
       "lat": 36.2854842254116,
       "lng": 126.913349221455,
-      "contentId": null,
+      "contentId": "125988",
       "overview": null,
       "imageUrl": null
     },
@@ -12846,7 +12846,7 @@
       "placeSlug": "yulpo-beach",
       "lat": 34.6696814499,
       "lng": 127.0881211428,
-      "contentId": null,
+      "contentId": "2022601",
       "overview": null,
       "imageUrl": null
     },
@@ -12974,7 +12974,7 @@
       "placeSlug": "gyoryongsanseong",
       "lat": 35.428993,
       "lng": 127.360296,
-      "contentId": null,
+      "contentId": "1607157",
       "overview": null,
       "imageUrl": null
     },
@@ -13070,7 +13070,7 @@
       "placeSlug": "akyang-persimmon-village",
       "lat": 35.1,
       "lng": 127.7,
-      "contentId": null,
+      "contentId": "2784697",
       "overview": null,
       "imageUrl": null
     },
@@ -13118,7 +13118,7 @@
       "placeSlug": "hwagae-market",
       "lat": 35.1883794,
       "lng": 127.6242799,
-      "contentId": null,
+      "contentId": "132146",
       "overview": null,
       "imageUrl": null
     },
@@ -13310,7 +13310,7 @@
       "placeSlug": "maple-ecology-park-jeongeup",
       "lat": 35.5090642612,
       "lng": 126.9069744245,
-      "contentId": null,
+      "contentId": "2715684",
       "overview": null,
       "imageUrl": null
     },

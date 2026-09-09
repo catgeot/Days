@@ -284,7 +284,7 @@ export function acceptUniqueLiveHit(member, hub, items) {
     if (!/^\d{1,32}$/.test(contentId)) continue;
     const title = String(item.title || '');
     const type = String(item.contentTypeId || item.contenttypeid || item.content_type_id || '');
-    const isMarket = /시장|마켓/.test(title);
+    const isMarket = /시장|마켓|장터/.test(title);
     if (type && !['12', '14', '28'].includes(type) && !(type === '38' && isMarket)) {
       continue;
     }
@@ -325,7 +325,7 @@ export function scoreHit(query, item, hub, member) {
   const hubNorms = hubHints(hub).map((h) => norm(h)).filter(Boolean);
   if (hubNorms.includes(q)) return 0;
 
-  const isMarket = /시장|마켓/.test(title) || /시장|마켓/.test(query);
+  const isMarket = /시장|마켓|장터/.test(title) || /시장|마켓|장터/.test(query);
   if (type && !['12', '14', '28'].includes(type) && !(type === '38' && isMarket)) {
     return 0;
   }

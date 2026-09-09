@@ -7598,7 +7598,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '강원',
       hubId: 'donghae',
       attractionName: '동해 논골담길',
-      contentId: null,
+      contentId: '1223212',
     }, // TODO contentId
     {
       order: 7390,
@@ -7608,7 +7608,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '강원',
       hubId: 'donghae',
       attractionName: '동해 망상해수욕장',
-      contentId: null,
+      contentId: '125713',
     }, // TODO contentId
     {
       order: 7400,
@@ -7718,7 +7718,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '강원',
       hubId: 'samcheok',
       attractionName: '삼척해수욕장',
-      contentId: null,
+      contentId: '125705',
     }, // TODO contentId
     {
       order: 7510,
@@ -7738,7 +7738,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '강원',
       hubId: 'samcheok',
       attractionName: '죽서루',
-      contentId: null,
+      contentId: '125799',
     }, // TODO contentId
     {
       order: 7530,
@@ -8178,7 +8178,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'buyeo',
       attractionName: '궁남지',
-      contentId: null,
+      contentId: '125984',
     }, // TODO contentId
     {
       order: 7970,
@@ -8198,7 +8198,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'buyeo',
       attractionName: '부소산성',
-      contentId: null,
+      contentId: '125988',
     }, // TODO contentId
     {
       order: 7990,
@@ -8238,7 +8238,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'boseong',
       attractionName: '율포해수욕장',
-      contentId: null,
+      contentId: '2022601',
     }, // TODO contentId
     {
       order: 8030,
@@ -8318,7 +8318,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'namwon',
       attractionName: '교룡산성',
-      contentId: null,
+      contentId: '1607157',
     }, // TODO contentId
     {
       order: 8110,
@@ -8378,7 +8378,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'hadong',
       attractionName: '악양 대봉감마을',
-      contentId: null,
+      contentId: '2784697',
     }, // TODO contentId
     {
       order: 8170,
@@ -8408,7 +8408,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'hadong',
       attractionName: '화개장터',
-      contentId: null,
+      contentId: '132146',
     }, // TODO contentId
     {
       order: 8200,
@@ -8528,7 +8528,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'jeongeup',
       attractionName: '단풍생태공원',
-      contentId: null,
+      contentId: '2715684',
     }, // TODO contentId
     {
       order: 8320,

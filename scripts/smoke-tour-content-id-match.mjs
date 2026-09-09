@@ -128,4 +128,20 @@ const yangguArb = acceptUniqueLiveHit(
 );
 assert.equal(yangguArb.status, 'tour_missing');
 
+const hwagaeItem = {
+  title: '하동 화개장터',
+  addr1: '경상남도 하동군 화개면 쌍계로 15',
+  contentTypeId: '38',
+  contentId: '132146',
+};
+const hadongHub = { hubId: 'hadong', name: '하동', aliases: ['하동군'] };
+assert.ok(
+  scoreHit('하동 화개장터', hwagaeItem, hadongHub, {
+    attractionName: '화개장터',
+    lat: 35.1883794,
+    lng: 127.6242799,
+  }) >= 80,
+  'market type 38 with 장터 keyword should score hit',
+);
+
 console.log('smoke-tour-content-id-match: PASS');

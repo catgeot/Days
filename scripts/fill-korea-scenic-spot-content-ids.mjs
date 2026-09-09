@@ -18,6 +18,7 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { createClient } from '@supabase/supabase-js';
 import { loadEnvFile } from './lib/load-env-file.mjs';
+import { looksLikeSigunguDisambiguator } from './lib/tour-content-id-match.mjs';
 import { KOREA_SCENIC_SPOTS_OVERRIDES } from './data/korea-scenic-spots-overrides.mjs';
 
 loadEnvFile();
@@ -97,6 +98,15 @@ const KEYWORD_ALIASES = {
   원남저수지: ['원남저수지', '원남저수지(원남제)', '원남제'],
   금성산: ['금성산·비봉산(의성)', '금성산'],
   금오랜드: ['금오랜드 놀이동산', '금오랜드'],
+  '동해 논골담길': ['동해 논골담길', '논골담길', '동해 논골담길(등대 담화마을)'],
+  '동해 망상해수욕장': ['망상해변'],
+  삼척해수욕장: ['삼척해변'],
+  화개장터: ['하동 화개장터', '화개장터'],
+  단풍생태공원: ['내장산 단풍생태공원', '단풍생태공원'],
+  궁남지: ['서동공원과 궁남지', '궁남지'],
+  부소산성: ['관북리유적과 부소산성', '부소산성'],
+  율포해수욕장: ['율포해수욕장', '율포해변', '율포해수욕장(솔밭해변)'],
+  '악양 대봉감마을': ['악양대봉감 정보화마을', '악양 대봉감마을'],
 };
 
 function sleep(ms) {
@@ -197,7 +207,7 @@ function scoreHit(query, item, hub, spot) {
   const hubNorms = hubHints(hub).map((h) => norm(h)).filter(Boolean);
   if (hubNorms.includes(q)) return 0;
 
-  const isMarket = /시장|마켓/.test(title) || /시장|마켓/.test(query);
+  const isMarket = /시장|마켓|장터/.test(title) || /시장|마켓|장터/.test(query);
   if (type && !['12', '14', '28'].includes(type) && !(type === '38' && isMarket)) {
     return 0;
   }
@@ -258,6 +268,7 @@ function scoreHit(query, item, hub, spot) {
     if (
       inside &&
       token &&
+      looksLikeSigunguDisambiguator(inside) &&
       !inside.includes(norm(token).slice(0, 2)) &&
       !q.includes(inside)
     ) {
@@ -306,6 +317,11 @@ function spotQueries(spot, hub) {
     for (const q of [...queries]) {
       if (!String(q).startsWith(token)) queries.add(`${token} ${q}`);
     }
+  }
+  // strip parens from aliases (e.g. "동해 논골담길(등대 담화마을)" -> "동해 논골담길")
+  for (const q of [...queries]) {
+    const unparen = stripAnnotations(q);
+    if (unparen && unparen !== q) queries.add(unparen);
   }
   return [...queries];
 }
