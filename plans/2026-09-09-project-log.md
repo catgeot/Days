@@ -2,6 +2,24 @@
 
 직전: [`2026-09-08-project-log.md`](./2026-09-08-project-log.md)
 
+## 팔경 contentId — P0-A08 siho_wait (Cloud)
+
+- **세션** `팔경contentId #P0-A08, siho_wait`
+- **브랜치** `cursor/palgyeong-cid` · tip `be75b1f3` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** siho_wait **6/6** alias 검토 · **0 HIT** · members **579/876** (null **297**) · closed **393** · siho_wait **0** · 429 없음
+- **종결** 5건 `tour_missing`(자풍서당·금계완사·상산모운·나원백탑·팔수장림) · 칠선시류 `ambiguous`(칠선계곡·칠선계곡글램핑) — **KEYWORD_ALIASES 신규 0**
+- **VERIFY** audit/smoke lists · smoke content-ids · smoke tour-content-id-match PASS
+- **다음** short 옥정호 ambiguous 1건
+
+```
+팔경contentId #P0-P02, 옥정호 ambiguous
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: 임실 옥정호 ambiguous — close JSON titles·주소 확인 → unique면 lists · 아니면 null
+```
+
 ## 팔경 contentId — P0-P01 prefix ambiguous (Cloud)
 
 - **세션** `팔경contentId #P0-P01, prefix ambiguous`
