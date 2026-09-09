@@ -2,7 +2,28 @@
 
 직전: [`2026-09-08-project-log.md`](./2026-09-08-project-log.md)
 
+## 세계행사 일정 #54c — 리스트·상세 사진 영문 검색 (Cloud)
+
+- **세션** `세계행사 일정 #54c, 리스트 사진 확대 Prod QA`
+- **브랜치** `cursor/world-events-wave3` · tip `665f2b7d` · PR [#206](https://github.com/catgeot/Days/pull/206) · [#205](https://github.com/catgeot/Days/pull/205) merge ✅
+- **원인** 한글 Unsplash가 무관 사진으로 성공해 영문 폴백이 실행되지 않음. 상세는 위키 캐시(문서·같은 컷)를 그대로 씀
+- **완료** 리스트·상세 쿼리 영문(`titleEn`·장소·`termEn`) · 위키-only 캐시 `force` · 문서/a/b 컷 필터 · sessionStorage `v2-en`
+- **VERIFY** `smoke:world-events-hub` · `smoke:world-events-detail` · `audit:world-events` · `vite build` PASS
+- **Preview** `/qa/world-events` → 로즈 퍼레이드·빈 오페라·뗏이 행사 장면인지 **사람 QA**
+- **다음** #54d Preview QA — merge는 QA 후. Edge `fetch-event-hero-gallery` 재배포는 선택
+
+```
+세계행사 일정 #54d, 영문 사진 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-09-project-log.md
+@plans/world-events-management.md
+브랜치 cursor/world-events-wave3 · PR #206 · https://www.gateo.kr/qa/world-events
+금지: worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · 허브에 플래너·숙소 칩 복구
+작업: 로즈 퍼레이드·빈 오페라·뗏 카드가 행사 장면인지 · 상세 본문 무관/같은컷 아닌지 · 16:10 · 이동 칩 없음 · 카드 탭 상세
+```
+
 ## 팔경 contentId — P0 inv 키워드 종결 소진 (Cloud)
+
 
 - **세션** `팔경contentId #P0 inv, 키워드 종결 소진`
 - **브랜치** `cursor/palgyeong-cid` · tip `505733e2` · PR [#185](https://github.com/catgeot/Days/pull/185)

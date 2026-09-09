@@ -813,14 +813,16 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#54c** Preview QA **PASS** · **#54d** PR [#205](https://github.com/catgeot/Days/pull/205) merge · PROD QA |
-| **브랜치** | `cursor/world-events-wave3` · tip `417ce543` |
-| **플랜** | F-0.5 **D5-b-3 ✅** · **Wave3 4/4 ✅** · 리스트 사진 **Unsplash** · 허브 카드 **사진 확대 ✅** |
+| **상태** | **#54c** 영문 Unsplash **push** · tip `665f2b7d` · PR [#206](https://github.com/catgeot/Days/pull/206) · **#54d** 사람 Preview QA |
+| **브랜치** | `cursor/world-events-wave3` · tip `665f2b7d` |
+| **플랜** | F-0.5 **D5-b-3 ✅** · **Wave3 4/4 ✅** · 리스트 사진 **Unsplash 영문** · 허브 카드 **사진 확대 ✅** |
 | **Preview** | `/qa/world-events` |
-| **VERIFY** | `smoke:world-events-hub` · `audit:world-events` · `build` PASS |
+| **VERIFY** | `smoke:world-events-hub` · `smoke:world-events-detail` · `audit:world-events` · `build` PASS |
 
-**마일스톤**: … → M19 **#54 main 병합 ✅** → M20 **#54b 썸네일 폴백 ✅** → M21 **#54c 사진 확대 ✅** → M22 **#54d merge·PROD** · M23 **#55 리스트 Edge 캐시(선택)**
+**마일스톤**: … → M19 **#54 main 병합 ✅** → M20 **#54b 썸네일 폴백 ✅** → M21 **#54c 사진 확대 ✅**(PR #205) → M22 **#54c 영문 검색** → M23 **#54d Preview QA** · M24 **#55 리스트 Edge 캐시(선택)**
 
-**#55 전제 (LIVE 점검)**: `event_hero_gallery` 23/23 행 · 이미지 **위키만** · Unsplash **0**. 상세 Edge는 6장+ 캐시면 Unsplash 미호출. 리스트는 Unsplash만 · 클라 쓰기 없음 · sessionStorage는 같은 탭. 다음 사용자 첫 로딩 = Unsplash 검색 23건(동시 3).
+**#54c Prod QA**: 한글 Unsplash가 무관 사진으로 “성공”해 영문 폴백이 안 돌아감. 리스트·상세는 `titleEn`·장소·`termEn`만. 위키-only 갤러리 캐시는 `force`. 문서 캡션·a/b 컷 연속 제거.
 
-**다음**: PR #205 merge → PROD 회귀. 시크릿 첫 진입이 느리면 **#55** (리스트 전용 1장 Edge, 갤러리 12장 오염 금지)
+**#55**: 리스트 첫 로딩은 여전히 Unsplash 검색. 갤러리 12장에 리스트 검색 섞지 말 것. Edge `fetch-event-hero-gallery` 재배포는 선택.
+
+**다음**: 사람 Preview — 로즈 퍼레이드·빈 오페라·뗏이 행사 장면인지. merge는 QA 후.
