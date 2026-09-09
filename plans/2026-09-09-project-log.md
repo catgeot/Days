@@ -2,6 +2,24 @@
 
 직전: [`2026-09-08-project-log.md`](./2026-09-08-project-log.md)
 
+## 세계행사 일정 #54c — 리스트 사진 확대 Preview QA (사람)
+
+- **세션** `세계행사 일정 #54c, 리스트 사진 확대 Preview QA`
+- **브랜치** `cursor/world-events-wave3` · tip `417ce543` · PR [#205](https://github.com/catgeot/Days/pull/205)
+- **사람 QA PASS** 카드 16:10 사진 · 이동 칩 없음 · 카드 탭 → 상세 · 지역 칩 전환 후 사진 유지
+- **VERIFY** CI 2/2 · `smoke:world-events-hub` · `audit:world-events` · `build` PASS (에이전트)
+- **다음** PR #205 merge → PROD `www.gateo.kr/world-events` 회귀
+
+```
+세계행사 일정 #54d, PR #205 merge · PROD QA
+@plans/feature-handoff-index.md
+@plans/2026-09-09-project-log.md
+@plans/world-events-management.md
+브랜치 cursor/world-events-wave3 · PR #205
+금지: worldEvents.json 직편집 · UI 리디자인 · 허브에 플래너·숙소 칩 복구
+작업: PR #205 merge → PROD 큰 썸네일·이동 칩 없음·카드 탭 상세·지역 칩 사진 유지
+```
+
 ## 세계행사 일정 #54b — 리스트 카드 사진 확대 (Cloud)
 
 - **세션** `세계행사 일정 #54b, 리스트 썸네일 Preview QA`

@@ -413,11 +413,11 @@ PROD https://www.gateo.kr/
 
 ---
 
-### 세계 행사·축제 일정 연동 — 리스트 카드 사진 확대 (#54c)
+### 세계 행사·축제 일정 연동 — 리스트 카드 사진 확대 (#54d)
 
 | | |
 |--|--|
-| **상태** | **#54c** Preview QA — 카드 16:10 사진 · 이동 칩 제거 · PR [#205](https://github.com/catgeot/Days/pull/205) |
+| **상태** | **#54c** Preview QA **PASS** · **#54d** PR [#205](https://github.com/catgeot/Days/pull/205) merge · PROD QA |
 | **브랜치** | `cursor/world-events-wave3` · tip `417ce543` |
 | **PR** | [#205](https://github.com/catgeot/Days/pull/205) · [#204](https://github.com/catgeot/Days/pull/204) merge ✅ |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **§9** · [`world-events-management.md`](./world-events-management.md) |
@@ -427,18 +427,18 @@ PROD https://www.gateo.kr/
 | **금지** | worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · 허브에 플래너·숙소 칩 복구 |
 | **VERIFY** | `smoke:world-events-hub` · `audit:world-events` · `build` PASS |
 
-**게이트**: 에이전트 PASS ✅ · **#54c** 사람 Preview — 큰 썸네일 · 카드 칩 없음 · 카드 탭 → 상세
+**게이트**: #54c 사람 Preview **PASS** ✅ — 큰 썸네일 · 카드 칩 없음 · 카드 탭 → 상세 · 지역 칩 사진 유지
 
-**다음 제시어** (#54c 사람 Preview QA):
+**다음 제시어** (#54d merge · PROD QA):
 
 ```
-세계행사 일정 #54c, 리스트 사진 확대 Preview QA
+세계행사 일정 #54d, PR #205 merge · PROD QA
 @plans/feature-handoff-index.md
 @plans/2026-09-09-project-log.md
 @plans/world-events-management.md
-브랜치 cursor/world-events-wave3 · PR #205 · https://www.gateo.kr/qa/world-events
-금지: worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · 허브에 플래너·숙소 칩 복구
-작업: 카드 사진 16:10 · 이동 칩 없음 · 카드 탭 → 상세 · 지역 칩 전환 후 사진 유지
+브랜치 cursor/world-events-wave3 · PR #205
+금지: worldEvents.json 직편집 · UI 리디자인 · 허브에 플래너·숙소 칩 복구
+작업: PR #205 merge → PROD 큰 썸네일·이동 칩 없음·카드 탭 상세·지역 칩 사진 유지
 ```
 
 ---
