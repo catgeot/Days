@@ -90,7 +90,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | P2-L6 ✅ 3 HIT · P2 null **84** · tip `b21da98a` · **다음 P2-L7** |
+| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | P2-L8 ✅ 0/20 · P2 null **81** · tip `699ac841` · **다음 P2-L9** |
 | **index 행** | 팔경 활용 | 팔경 contentId |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5 hub 본명 재시도 · AI가 ID 기입 |
 
@@ -100,7 +100,9 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 |----|--------------|------|------|
 | 1 | `팔경 활용 #1, 검색·리스트` | A | **완료** · tip `e8da2987` |
 | 2 | `팔경 활용 #2, Preview QA` | A 사람 | **다음** |
-| — | `팔경contentId #P2-L7, hub-batch keyword` | B | **다음** |
+| — | `팔경contentId #P2-L9, hub-batch keyword` | B | **다음** |
+| — | `팔경contentId #P2-L8, hub-batch keyword` | B | **완료** · tip `699ac841` 0/20 |
+| — | `팔경contentId #P2-L7, hub-batch keyword` | B | **완료** · tip `699ac841` 3/20 |
 | — | `팔경contentId #P2-L6, hub-batch keyword` | B | **완료** · tip `b21da98a` 3/18 |
 | — | `팔경contentId #P2-L5, hub-batch keyword` | B | **완료** · tip `90c2966d` 3/18 |
 | — | `팔경contentId #P2-L4, hub-batch keyword` | B | **완료** · tip `19bd21ee` 11/13 |
@@ -160,7 +162,19 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 작업: 홈 검색 문경 · /korea/theme/scenic 문경 hub · 축제 상세 인근 목록 소제목
 ```
 
-### §1.2 B 다음 (#P2-L8) — 1순위
+### §1.2 B 다음 (#P2-L9) — 1순위
+
+```
+팔경contentId #P2-L9, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5/L6/L7/L8 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 81 — --hubs=gwangyang,sancheong,yeongyang,pohang,mokpo,ulleung,gapyeong,gongju,jecheon,yanggu --keyword-only --limit=20
+```
+
+### §1.2 B #P2-L8
 
 ```
 팔경contentId #P2-L8, hub-batch keyword

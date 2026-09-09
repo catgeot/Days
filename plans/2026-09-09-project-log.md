@@ -2,6 +2,24 @@
 
 직전: [`2026-09-08-project-log.md`](./2026-09-08-project-log.md)
 
+## 팔경 contentId — P2-L8 hub-batch keyword (Cloud)
+
+- **세션** `팔경contentId #P2-L8, hub-batch keyword`
+- **브랜치** `cursor/palgyeong-cid` · tip `699ac841` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** 지정 29 hub 중 20건 실행 **0/20** LIVE (유효 HIT 없음) · P2 null **81**/871 유지 · 429 없음
+- **MISS** 상주(상주보: 캠핑장만 2건), 계룡(계룡산 자연사박물관), 문경(문경석탄박물관), 연기(연기 고복자연공원), 예산(예산성지), 곡성(곡성 심청한옥마을), 화순(화순온천), 임실(성수산: 수산물 상호만 검색), 장성(장성산수유마을), 영광(백사장해수욕장: 태안 백사장만 검색), 김제(김제 구도심), 익산(웅포관광지: 캠핑장만 검색), 영암(구림마을), 청도(청도 운문사: 캠핑장만 검색), 기장(오시리아 관광단지), 의성(의성마늘테마공원), 예천(용궁시장), 칠곡(숭산정원), 독도(독도접안시설), 독도(서도) 미등재/캠핑장/타지자체 등 MISS 유지
+- **VERIFY** `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:tour-content-id-match` · `audit:korea-local-scenic-lists` · `smoke:korea-local-scenic-lists` · `build` PASS
+- **다음** P2-L9 잔여 10 hub (광양, 산청, 영양, 포항, 목포, 울릉, 가평, 공주, 제천, 양구)
+
+```
+팔경contentId #P2-L9, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5/L6/L7/L8 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 81 — --hubs=gwangyang,sancheong,yeongyang,pohang,mokpo,ulleung,gapyeong,gongju,jecheon,yanggu --keyword-only --limit=20
+```
+
 ## 팔경 contentId — P2-L7 hub-batch keyword (Cloud)
 
 - **세션** `팔경contentId #P2-L7, hub-batch keyword`
