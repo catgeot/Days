@@ -154,13 +154,16 @@
       "tourTitle": "원주 영원산성"
     },
     "wonju-palgyeong::미륵불상": {
-      "status": "siho_wait",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "wonju",
       "queries": [
         "미륵불상",
+        "구룡사",
         "원주 미륵불상"
-      ]
+      ],
+      "contentId": "125761",
+      "tourTitle": "구룡사"
     },
     "donghae-bijing::용추폭포": {
       "status": "unique_hit",
@@ -174,13 +177,19 @@
       "tourTitle": "무릉계곡 용추폭포(강원)"
     },
     "donghae-bijing::무릉반석": {
-      "status": "siho_wait",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "donghae",
       "queries": [
         "무릉반석",
+        "무릉계곡 용추폭포(강원)",
+        "무릉계곡 용추폭포",
+        "용추폭포(강원)",
+        "용추폭포",
         "동해 무릉반석"
-      ]
+      ],
+      "contentId": "125673",
+      "tourTitle": "무릉계곡 용추폭포(강원)"
     },
     "donghae-bijing::동해 망상해수욕장": {
       "status": "tour_missing",
@@ -1401,13 +1410,17 @@
       ]
     },
     "hamyang-palgyeong::용추비경": {
-      "status": "siho_wait",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "hamyang",
       "queries": [
         "용추비경",
+        "기백산 용추계곡과 용추폭포",
+        "용추계곡과 용추폭포",
         "함양 용추비경"
-      ]
+      ],
+      "contentId": "126053",
+      "tourTitle": "기백산 용추계곡과 용추폭포"
     },
     "hamyang-palgyeong::칠선시류": {
       "status": "siho_wait",
@@ -2124,13 +2137,19 @@
       ]
     },
     "mokpo-gugyeong::해상분수": {
-      "status": "siho_wait",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "mokpo",
       "queries": [
         "해상분수",
+        "춤추는바다분수",
+        "목포 춤추는바다분수",
+        "춤추는 바다분수",
+        "바다분수",
         "목포 해상분수"
-      ]
+      ],
+      "contentId": "2604885",
+      "tourTitle": "춤추는 바다분수"
     },
     "mokpo-gugyeong::목포진": {
       "status": "tour_missing",
@@ -2493,13 +2512,17 @@
       "tourTitle": "고군산군도"
     },
     "gunsan-palgyeong::장자어화": {
-      "status": "siho_wait",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "gunsan",
       "queries": [
         "장자어화",
+        "군산 새만금",
+        "새만금",
         "군산 장자어화"
-      ]
+      ],
+      "contentId": "2783863",
+      "tourTitle": "새만금 비응공원"
     },
     "gunsan-palgyeong::월영단풍": {
       "status": "tour_missing",
@@ -2557,13 +2580,16 @@
       "tourTitle": "내소사(부안)"
     },
     "buan-palgyeong::월명무애": {
-      "status": "siho_wait",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "buan",
       "queries": [
         "월명무애",
+        "내소사(부안)",
         "부안 월명무애"
-      ]
+      ],
+      "contentId": "126352",
+      "tourTitle": "내소사(부안)"
     },
     "buan-palgyeong::서해낙조": {
       "status": "tour_missing",
@@ -3630,13 +3656,16 @@
       ]
     },
     "hwaseong-palgyeong::남양황라": {
-      "status": "siho_wait",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "hwaseong",
       "queries": [
         "남양황라",
+        "제부도해수욕장",
         "화성 남양황라"
-      ]
+      ],
+      "contentId": "1932056",
+      "tourTitle": "제부도해수욕장"
     },
     "hwaseong-palgyeong::입파홍암": {
       "status": "tour_missing",
@@ -3825,13 +3854,17 @@
       "tourTitle": "이월드 83타워"
     },
     "daegu-sipgyeong::서문시장": {
-      "status": "siho_wait",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "daegu",
       "queries": [
         "서문시장",
+        "대구 서문시장 & 서문시장 야시장",
+        "서문시장 & 서문시장 야시장",
         "대 서문시장"
-      ]
+      ],
+      "contentId": "132532",
+      "tourTitle": "대구 서문시장 & 서문시장 야시장"
     },
     "daegu-sipgyeong::동성로": {
       "status": "unique_hit",

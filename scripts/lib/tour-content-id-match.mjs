@@ -32,6 +32,14 @@ export const KEYWORD_ALIASES = {
   웅연조대: ['곰소항'],
   이릉두견: ['여주 영릉과 영릉', '영릉과 녕릉'],
   평사낙안: ['선유도해수욕장'],
+  무릉반석: ['무릉계곡 용추폭포(강원)', '무릉계곡 용추폭포'],
+  미륵불상: ['구룡사'],
+  용추비경: ['기백산 용추계곡과 용추폭포'],
+  해상분수: ['춤추는바다분수', '목포 춤추는바다분수', '춤추는 바다분수'],
+  장자어화: ['군산 새만금', '새만금'],
+  월명무애: ['내소사(부안)'],
+  남양황라: ['제부도해수욕장'],
+  서문시장: ['대구 서문시장 & 서문시장 야시장'],
 };
 
 export function sleep(ms) {
@@ -261,8 +269,11 @@ export function acceptUniqueLiveHit(member, hub, items) {
     if (!/^\d{1,32}$/.test(contentId)) continue;
     const title = String(item.title || '');
     const type = String(item.contentTypeId || item.contenttypeid || item.content_type_id || '');
-    if (type && !['12', '14', '28'].includes(type)) continue;
-    if (COMMERCIAL_RE.test(title) && !/시장|마켓/.test(title)) continue;
+    const isMarket = /시장|마켓/.test(title);
+    if (type && !['12', '14', '28'].includes(type) && !(type === '38' && isMarket)) {
+      continue;
+    }
+    if (COMMERCIAL_RE.test(title) && !isMarket) continue;
     if (!names.some((n) => titleCoversName(title, n))) continue;
     covered.push({
       contentId,

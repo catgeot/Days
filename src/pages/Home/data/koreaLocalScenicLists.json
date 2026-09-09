@@ -438,7 +438,8 @@
         "kind": "landmark",
         "lat": 37.345,
         "lng": 127.925,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "125761"
       }
     ]
   },
@@ -482,7 +483,8 @@
         "kind": "viewpoint",
         "lat": 37.465,
         "lng": 129.018,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "125673"
       },
       {
         "attractionName": "동해 망상해수욕장",
@@ -3277,7 +3279,8 @@
         "attractionName": "용추비경",
         "name_en": "Yongchu Scenic View",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126053"
       },
       {
         "attractionName": "남계서원",
@@ -4707,7 +4710,8 @@
         "attractionName": "해상분수",
         "name_en": "Maritime Fountain",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2604885"
       },
       {
         "attractionName": "노적봉",
@@ -5529,7 +5533,8 @@
         "attractionName": "장자어화",
         "name_en": "Jangja Fishing Lights",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2783863"
       },
       {
         "attractionName": "월영단풍",
@@ -5587,7 +5592,8 @@
         "attractionName": "월명무애",
         "name_en": "Wolmyeongmuae Moonlit Mist",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126352"
       },
       {
         "attractionName": "서해낙조",
@@ -7341,7 +7347,8 @@
         "attractionName": "남양황라",
         "name_en": "Namyang Yellow Waves",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "1932056"
       },
       {
         "attractionName": "입파홍암",
@@ -7849,7 +7856,8 @@
         "kind": "market",
         "lat": 35.86943,
         "lng": 128.5807059,
-        "linkStatus": "linked"
+        "linkStatus": "linked",
+        "contentId": "132532"
       },
       {
         "attractionName": "대구스타디움",

@@ -536,7 +536,8 @@
         "name_en": "Seomun Market",
         "kind": "market",
         "lat": 35.86943,
-        "lng": 128.5807059
+        "lng": 128.5807059,
+        "contentId": "132532"
       },
       {
         "name": "83타워",
@@ -9846,7 +9847,8 @@
         "name_en": "Mireuk Buddha Statue",
         "kind": "landmark",
         "lat": 37.345,
-        "lng": 127.925
+        "lng": 127.925,
+        "contentId": "125761"
       }
     ]
   },
@@ -11069,7 +11071,8 @@
         "name_en": "Mureung Rock",
         "kind": "viewpoint",
         "lat": 37.465,
-        "lng": 129.018
+        "lng": 129.018,
+        "contentId": "125673"
       },
       {
         "name": "만경대",
