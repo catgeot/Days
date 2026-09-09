@@ -813,12 +813,12 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#54 merge ✅** · main `2473463a` · PR [#204](https://github.com/catgeot/Days/pull/204) |
-| **브랜치** | `cursor/world-events-wave3` · merge `2473463a` |
-| **플랜** | F-0.5 **D5-b-3 ✅** · **Wave3 4/4 ✅** · 리스트 사진 **Unsplash PROD** |
-| **PROD** | `https://www.gateo.kr/world-events` |
-| **VERIFY** | `generate:world-events` · `audit:world-events` · `smoke:world-events-hub` PASS |
+| **상태** | **#54b** Preview QA — 3건 썸네일 폴백 · PR [#205](https://github.com/catgeot/Days/pull/205) |
+| **브랜치** | `cursor/world-events-wave3` · tip `0f1fd382` |
+| **플랜** | F-0.5 **D5-b-3 ✅** · **Wave3 4/4 ✅** · 리스트 사진 **Unsplash** |
+| **Preview** | `/qa/world-events` |
+| **VERIFY** | `smoke:world-events-hub` · `audit:world-events` · `build` PASS |
 
-**마일스톤**: … → M16 **Wave3 rome·europe #50 ✅** → M17 **Wave3 D5-b 에이전트 QA #51 ✅** → M18 **리스트 Unsplash #53 ✅** → M19 **#54 main 병합 ✅**
+**마일스톤**: … → M18 **리스트 Unsplash #53 ✅** → M19 **#54 main 병합 ✅** → M20 **#54b 썸네일 폴백** (뉘 블랑쉬·두바이·로즈)
 
-**다음 제시어 없음** (리스트 Unsplash는 PROD). 확인은 `www.gateo.kr/world-events`.
+**다음**: #54b 사람 Preview → PR #205 merge → PROD `www.gateo.kr/world-events`

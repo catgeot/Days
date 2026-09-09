@@ -2,13 +2,32 @@
 
 직전: [`2026-09-08-project-log.md`](./2026-09-08-project-log.md)
 
+## 세계행사 일정 #54b — 리스트 썸네일 3건 폴백 수정 (Cloud)
+
+- **세션** `세계행사 일정 #54, 리스트 Unsplash Prod QA`
+- **브랜치** `cursor/world-events-wave3` · tip `0f1fd382` · PR [#205](https://github.com/catgeot/Days/pull/205)
+- **원인** glossary `searchQueryEn`만 시도 시 Unsplash 0건 — 뉘 블랑쉬·두바이 피트니스·로즈 퍼레이드 placeholder
+- **완료** `buildWorldEventListPhotoQueries` 확장 폴백 · onPhotoError 캐시 삭제·재조회
+- **VERIFY** smoke/audit/build PASS · Unsplash 23/23 extended query HIT
+- **Preview** `/qa/world-events` → 3건 썸네일·지역 칩 유지 **사람 QA**
+
+```
+세계행사 일정 #54b, 리스트 썸네일 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-09-project-log.md
+@plans/world-events-management.md
+브랜치 cursor/world-events-wave3 · PR #205 · https://www.gateo.kr/qa/world-events
+금지: worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구
+작업: 뉘 블랑쉬·두바이 피트니스·로즈 퍼레이드 썸네일 · 지역 칩 전환 후 유지 확인
+```
+
 ## 세계행사 일정 #54 — 리스트 Unsplash main 병합
 
 - **세션** `세계행사 일정 #54, 리스트 Unsplash main 반영`
 - **완료** PR [#204](https://github.com/catgeot/Days/pull/204) merge ✅ · main `2473463a`
 - **PROD** `https://www.gateo.kr/world-events` — 카드 썸네일 Unsplash
 - **VERIFY** audit · `smoke:world-events-hub` PASS
-- **다음 제시어 없음** (이 슬라이스 종료)
+- **다음** #54b — 3건 썸네일 누락 수정
 
 ## 팔경 contentId — P0-K12 short 종결 (Cloud)
 
