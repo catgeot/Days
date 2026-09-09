@@ -385,7 +385,8 @@
         "kind": "landmark",
         "lat": 37.342,
         "lng": 127.92,
-        "linkStatus": "appended"
+        "linkStatus": "appended",
+        "contentId": "252557"
       },
       {
         "attractionName": "상원사",
@@ -3197,7 +3198,8 @@
         "attractionName": "구형왕릉",
         "name_en": "Guhyeong Royal Tomb",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "126595"
       },
       {
         "attractionName": "경호강 비경",
@@ -5930,7 +5932,8 @@
         "attractionName": "강변사리",
         "name_en": "Gangbyeonsari Village",
         "kind": "neighborhood",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2726718"
       },
       {
         "attractionName": "옥정호",
@@ -6189,7 +6192,8 @@
         "attractionName": "신두사구",
         "name_en": "Sindu Sand Dunes",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2758172"
       },
       {
         "attractionName": "가의도",
@@ -6459,7 +6463,8 @@
         "attractionName": "예산사과",
         "name_en": "Yesan Apple Orchards",
         "kind": "viewpoint",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "2468939"
       },
       {
         "attractionName": "예산황새공원",
@@ -6816,7 +6821,8 @@
         "attractionName": "사계고택",
         "name_en": "Sagye Historic House",
         "kind": "landmark",
-        "linkStatus": "pending_coord"
+        "linkStatus": "pending_coord",
+        "contentId": "1937772"
       }
     ]
   },

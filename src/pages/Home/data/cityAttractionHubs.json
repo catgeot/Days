@@ -9798,7 +9798,8 @@
         "name_en": "Gangwon Gamyeong",
         "kind": "landmark",
         "lat": 37.342,
-        "lng": 127.92
+        "lng": 127.92,
+        "contentId": "252557"
       },
       {
         "name": "상원사",

@@ -123,13 +123,15 @@
       "tourTitle": "삼척 준경묘"
     },
     "wonju-palgyeong::강원감영": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "wonju",
       "queries": [
         "강원감영",
         "원주 강원감영"
-      ]
+      ],
+      "contentId": "252557",
+      "tourTitle": "원주 강원감영"
     },
     "wonju-palgyeong::비로봉": {
       "status": "tour_missing",
@@ -152,7 +154,7 @@
       "tourTitle": "원주 영원산성"
     },
     "wonju-palgyeong::미륵불상": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "wonju",
       "queries": [
@@ -172,7 +174,7 @@
       "tourTitle": "무릉계곡 용추폭포(강원)"
     },
     "donghae-bijing::무릉반석": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "donghae",
       "queries": [
@@ -506,7 +508,7 @@
       ]
     },
     "yeongdong-yangsan-palgyeong::자풍서당": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "yeongdong",
       "queries": [
@@ -598,7 +600,7 @@
       ]
     },
     "jincheon-palgyeong::평사낙안": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "jincheon",
       "queries": [
@@ -607,7 +609,7 @@
       ]
     },
     "jincheon-palgyeong::우담제월": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "jincheon",
       "queries": [
@@ -616,7 +618,7 @@
       ]
     },
     "jincheon-palgyeong::금계완사": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "jincheon",
       "queries": [
@@ -625,7 +627,7 @@
       ]
     },
     "jincheon-palgyeong::상산모운": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "jincheon",
       "queries": [
@@ -634,7 +636,7 @@
       ]
     },
     "jincheon-palgyeong::어은계석": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "jincheon",
       "queries": [
@@ -643,7 +645,7 @@
       ]
     },
     "jincheon-palgyeong::적대청람": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "jincheon",
       "queries": [
@@ -691,7 +693,7 @@
       ]
     },
     "gyeongju-8gwae::남산부석": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "gyeongju",
       "queries": [
@@ -700,7 +702,7 @@
       ]
     },
     "gyeongju-8gwae::나원백탑": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "gyeongju",
       "queries": [
@@ -1362,13 +1364,15 @@
       ]
     },
     "sancheong-gugyeong::구형왕릉": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "sancheong",
       "queries": [
         "구형왕릉",
         "산청 구형왕릉"
-      ]
+      ],
+      "contentId": "126595",
+      "tourTitle": "산청 전 구형왕릉"
     },
     "sancheong-gugyeong::남명조식유적지": {
       "status": "tour_missing",
@@ -1380,7 +1384,7 @@
       ]
     },
     "hamyang-palgyeong::금대지리": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "hamyang",
       "queries": [
@@ -1389,7 +1393,7 @@
       ]
     },
     "hamyang-palgyeong::용추비경": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "hamyang",
       "queries": [
@@ -1398,7 +1402,7 @@
       ]
     },
     "hamyang-palgyeong::칠선시류": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "hamyang",
       "queries": [
@@ -1407,7 +1411,7 @@
       ]
     },
     "hamyang-palgyeong::서암석불": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "hamyang",
       "queries": [
@@ -1416,7 +1420,7 @@
       ]
     },
     "hamyang-palgyeong::덕유운해": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "hamyang",
       "queries": [
@@ -2021,7 +2025,7 @@
       ]
     },
     "hampyeong-palgyeong::백제고도": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "hampyeong",
       "queries": [
@@ -2108,7 +2112,7 @@
       ]
     },
     "mokpo-gugyeong::해상분수": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "mokpo",
       "queries": [
@@ -2320,7 +2324,7 @@
       ]
     },
     "gangjin-other::청자단지": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "gangjin",
       "queries": [
@@ -2429,12 +2433,18 @@
       ]
     },
     "gunsan-palgyeong::명사십리": {
-      "status": "open",
+      "status": "hub_mismatch",
       "bucket": "siho",
       "hubId": "gunsan",
       "queries": [
         "명사십리",
         "군산 명사십리"
+      ],
+      "titles": [
+        "금일명사십리해수욕장",
+        "명사십리 및 구시포  (전북 서해안 국가지질공원)",
+        "명사십리해변",
+        "신지명사십리해수욕장"
       ]
     },
     "gunsan-palgyeong::망주폭포": {
@@ -2447,7 +2457,7 @@
       ]
     },
     "gunsan-palgyeong::평사낙안": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "gunsan",
       "queries": [
@@ -2456,7 +2466,7 @@
       ]
     },
     "gunsan-palgyeong::삼도귀범": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "gunsan",
       "queries": [
@@ -2465,7 +2475,7 @@
       ]
     },
     "gunsan-palgyeong::장자어화": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "gunsan",
       "queries": [
@@ -2494,7 +2504,7 @@
       ]
     },
     "buan-palgyeong::웅연조대": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "buan",
       "queries": [
@@ -2514,7 +2524,7 @@
       "tourTitle": "직소폭포 (전북 서해안 국가지질공원)"
     },
     "buan-palgyeong::소사모종": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "buan",
       "queries": [
@@ -2523,7 +2533,7 @@
       ]
     },
     "buan-palgyeong::월명무애": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "buan",
       "queries": [
@@ -2543,7 +2553,7 @@
       ]
     },
     "buan-palgyeong::지포신경": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "buan",
       "queries": [
@@ -2552,7 +2562,7 @@
       ]
     },
     "buan-palgyeong::개암고적": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "buan",
       "queries": [
@@ -2883,25 +2893,23 @@
       "tourTitle": "향적봉(덕유산)"
     },
     "imsil-gugyeong::강변사리": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "imsil",
       "queries": [
         "강변사리",
         "임실 강변사리"
-      ]
+      ],
+      "contentId": "2726718",
+      "tourTitle": "강변사리마을캠핑장"
     },
     "imsil-gugyeong::옥정호": {
-      "status": "ambiguous",
+      "status": "open",
       "bucket": "short",
       "hubId": "imsil",
       "queries": [
         "옥정호",
         "임실 옥정호"
-      ],
-      "contentIds": [
-        "126551",
-        "3082705"
       ]
     },
     "cheonan-palgyeong::유관순열사사적지": {
@@ -2962,7 +2970,7 @@
       ]
     },
     "taean-palgyeong::안면송림": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "taean",
       "queries": [
@@ -2971,13 +2979,15 @@
       ]
     },
     "taean-palgyeong::신두사구": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "taean",
       "queries": [
         "신두사구",
         "태안 신두사구"
-      ]
+      ],
+      "contentId": "2758172",
+      "tourTitle": "신두사구 쉼터공원 (신두사구 생태공원)"
     },
     "seocheon-gugyeong::마량리동백숲": {
       "status": "tour_missing",
@@ -3069,7 +3079,7 @@
       "tourTitle": "충의사 (매헌 윤봉길 의사 유적)"
     },
     "yesan-sipgyeong::추사고택": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "yesan",
       "queries": [
@@ -3089,7 +3099,7 @@
       "tourTitle": "예산 임존성"
     },
     "yesan-sipgyeong::삽교평야": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "yesan",
       "queries": [
@@ -3109,13 +3119,15 @@
       "tourTitle": "가야산캠핑장"
     },
     "yesan-sipgyeong::예산사과": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "yesan",
       "queries": [
         "예산사과",
         "사과"
-      ]
+      ],
+      "contentId": "2468939",
+      "tourTitle": "예산사과와인 (은성농원)"
     },
     "yesan-sipgyeong::예산황새공원": {
       "status": "unique_hit",
@@ -3257,13 +3269,15 @@
       ]
     },
     "gyeryong-gugyeong::사계고택": {
-      "status": "open",
+      "status": "unique_hit",
       "bucket": "siho",
       "hubId": "gyeryong",
       "queries": [
         "사계고택",
         "계룡 사계고택"
-      ]
+      ],
+      "contentId": "1937772",
+      "tourTitle": "계룡 사계고택"
     },
     "geumsan-sipgyeong::산림문화 힐링명소": {
       "status": "tour_missing",
@@ -3375,7 +3389,7 @@
       ]
     },
     "yeoju-palgyeong::신륵모종": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "yeoju",
       "queries": [
@@ -3384,7 +3398,7 @@
       ]
     },
     "yeoju-palgyeong::마암어등": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "yeoju",
       "queries": [
@@ -3393,7 +3407,7 @@
       ]
     },
     "yeoju-palgyeong::학동모연": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "yeoju",
       "queries": [
@@ -3402,7 +3416,7 @@
       ]
     },
     "yeoju-palgyeong::연탄귀범": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "yeoju",
       "queries": [
@@ -3411,7 +3425,7 @@
       ]
     },
     "yeoju-palgyeong::양도낙안": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "yeoju",
       "queries": [
@@ -3420,7 +3434,7 @@
       ]
     },
     "yeoju-palgyeong::팔수장림": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "yeoju",
       "queries": [
@@ -3429,7 +3443,7 @@
       ]
     },
     "yeoju-palgyeong::이릉두견": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "yeoju",
       "queries": [
@@ -3573,7 +3587,7 @@
       ]
     },
     "hwaseong-palgyeong::남양황라": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "hwaseong",
       "queries": [
@@ -3591,7 +3605,7 @@
       ]
     },
     "hwaseong-palgyeong::제암만세": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "hwaseong",
       "queries": [
@@ -3600,7 +3614,7 @@
       ]
     },
     "hwaseong-palgyeong::남양성지": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "hwaseong",
       "queries": [
@@ -3679,17 +3693,12 @@
       ]
     },
     "incheon-gugyeong::인천 소래포구": {
-      "status": "ambiguous",
+      "status": "open",
       "bucket": "prefix",
       "hubId": "incheon",
       "queries": [
         "인천 소래포구",
         "소래포구"
-      ],
-      "contentIds": [
-        "2020690",
-        "3002391",
-        "2767586"
       ]
     },
     "incheon-gugyeong::인천 계양 아라온": {
@@ -3773,7 +3782,7 @@
       "tourTitle": "이월드 83타워"
     },
     "daegu-sipgyeong::서문시장": {
-      "status": "open",
+      "status": "siho_wait",
       "bucket": "siho",
       "hubId": "daegu",
       "queries": [
@@ -3833,16 +3842,12 @@
       "tourTitle": "대전엑스포과학공원"
     },
     "daejeon-palgyeong::대전 식장산": {
-      "status": "ambiguous",
+      "status": "open",
       "bucket": "prefix",
       "hubId": "daejeon",
       "queries": [
         "대전 식장산",
         "식장산"
-      ],
-      "contentIds": [
-        "1083960",
-        "3490412"
       ]
     },
     "daejeon-palgyeong::대전 장태산": {
