@@ -2,6 +2,25 @@
 
 직전: [`2026-09-08-project-log.md`](./2026-09-08-project-log.md)
 
+## 팔경 contentId — P2-L5 hub-batch keyword (Cloud)
+
+- **세션** `팔경contentId #P2-L5, hub-batch keyword`
+- **브랜치** `cursor/palgyeong-cid` · tip `90c2966d` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** 지정 9 hub **3/18** LIVE HIT · P2 null **90→87**/871 · 429 없음
+- **HIT** 창원 마산 가고파꼬부랑길 `2019720` · 영천 보현산천문대 `127293` · 경산 삼성현역사문화공원 `1999964`
+- **코드·매칭** KEYWORD_ALIASES 3건 보강 ('마산 가고파꼬부랑길', '영천 보현산천문대', '삼성현역사문화공원') · fill 스크립트 overrides dynamic import 반영
+- **MISS** 평창(알펜시아·용평 리조트), 양산(에덴밸리·통도환타지아) 등 상업/리조트 및 미등재 항목은 MISS 유지
+- **VERIFY** `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:tour-content-id-match` · `audit:korea-local-scenic-lists` · `smoke:korea-local-scenic-lists` · `build` PASS
+
+```
+팔경contentId #P2-L6, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 87 — --hubs=buan,cheongju,ansan,gwangmyeong,yangpyeong,gunpo,gwacheon,osan,jincheon,yeoju,dongducheon,icheon,pyeongtaek,uljin,chungju,sejong,seosan,dangjin --keyword-only --limit=20
+```
+
 ## 팔경 contentId — P2-L4 hub-batch keyword (Cloud)
 
 - **세션** `팔경contentId #P2-L4, hub-batch keyword`

@@ -319,24 +319,24 @@
 
 | | |
 |--|--|
-| **상태** | R01–R16 ✅ · **P0 종료** members **579/876** null **297**(terminal) · P2 **null 90**/871 · **P2-L4** ✅ 11 HIT · **다음 P2-L5** · A와 **동시 OK** |
-| **브랜치** | `cursor/palgyeong-cid` · tip `19bd21ee` |
+| **상태** | R01–R16 ✅ · **P0 종료** members **579/876** null **297**(terminal) · P2 **null 87**/871 · **P2-L5** ✅ 3 HIT · **다음 P2-L6** · A와 **동시 OK** |
+| **브랜치** | `cursor/palgyeong-cid` · tip `90c2966d` |
 | **PR** | [#185](https://github.com/catgeot/Days/pull/185) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§3·§9 B** · method **§5.7** |
-| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — **P2-L5** hub-batch keyword |
+| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — **P2-L6** hub-batch keyword |
 | **일지** | [`2026-09-09-project-log.md`](./2026-09-09-project-log.md) |
 | **소유** | JSON `contentId` · fill · audit · **UI 금지** |
-| **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · L3/L4 hub 본명 재시도 · `--limit=100` 로또 · AI가 ID 기입 · feature에 `plans/**` 커밋 |
+| **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5 hub 본명 재시도 · `--limit=100` 로또 · AI가 ID 기입 · feature에 `plans/**` 커밋 |
 
 **다음 제시어**:
 
 ```
-팔경contentId #P2-L5, hub-batch keyword
+팔경contentId #P2-L6, hub-batch keyword
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
 브랜치 cursor/palgyeong-cid · PR #185
-금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
-작업: P2 scenic null 90 — --hubs=pyeongchang,siheung,eumseong,yangsan,changwon,yeongcheon,goryeong,gyeongsan,yeongdeok --keyword-only --limit=20
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 87 — --hubs=buan,cheongju,ansan,gwangmyeong,yangpyeong,gunpo,gwacheon,osan,jincheon,yeoju,dongducheon,icheon,pyeongtaek,uljin,chungju,sejong,seosan,dangjin --keyword-only --limit=20
 ```
 
 ---
