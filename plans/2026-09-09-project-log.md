@@ -2,6 +2,24 @@
 
 직전: [`2026-09-08-project-log.md`](./2026-09-08-project-log.md)
 
+## 팔경 contentId — P0-A06 siho alias (Cloud)
+
+- **세션** `팔경contentId #P0-A06, siho alias`
+- **브랜치** `cursor/palgyeong-cid` · tip `e3acbf8d` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--bucket=siho --apply-unique` **4/12** unique_hit · **siho_wait 8** · members **575/876** (null **301**) · closed **383** · 429 없음
+- **HIT** 청자단지(130135) · 지포신경(128982) · 마암어등(128046) · 연탄귀범(3018216) — LIVE 행만 lists 기입 · KEYWORD_ALIASES 4건
+- **VERIFY** audit/smoke lists · smoke content-ids · smoke tour-content-id-match · build PASS
+- **다음** P0-A07 siho alias (8) 또는 prefix ambiguous 2건
+
+```
+팔경contentId #P0-A07, siho alias
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: --bucket=siho --apply-unique · alias→LIVE · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
 ## 팔경 contentId — P0-A05 siho alias (Cloud)
 
 - **세션** `팔경contentId #P0-A05, siho alias`
