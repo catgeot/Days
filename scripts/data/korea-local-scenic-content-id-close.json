@@ -3675,12 +3675,17 @@
       ]
     },
     "incheon-gugyeong::인천 소래포구": {
-      "status": "open",
+      "status": "ambiguous",
       "bucket": "prefix",
       "hubId": "incheon",
       "queries": [
         "인천 소래포구",
         "소래포구"
+      ],
+      "contentIds": [
+        "2020690",
+        "3002391",
+        "2767586"
       ]
     },
     "incheon-gugyeong::인천 계양 아라온": {
@@ -3824,12 +3829,16 @@
       "tourTitle": "대전엑스포과학공원"
     },
     "daejeon-palgyeong::대전 식장산": {
-      "status": "open",
+      "status": "ambiguous",
       "bucket": "prefix",
       "hubId": "daejeon",
       "queries": [
         "대전 식장산",
         "식장산"
+      ],
+      "contentIds": [
+        "1083960",
+        "3490412"
       ]
     },
     "daejeon-palgyeong::대전 장태산": {
