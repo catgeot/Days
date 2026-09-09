@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-09-07T10:18:12.057Z",
+    "generatedAt": "2026-09-09T10:14:34.618Z",
     "count": 871,
     "imageCount": 778,
     "curation": "GATEO",
@@ -13502,7 +13502,7 @@
       "placeSlug": "gosu-cave",
       "lat": 36.988401364,
       "lng": 128.3815136268,
-      "contentId": null,
+      "contentId": "125861",
       "overview": null,
       "imageUrl": null
     },
@@ -13518,7 +13518,7 @@
       "placeSlug": "gudambong-peak",
       "lat": 36.9377501023,
       "lng": 128.246921656,
-      "contentId": null,
+      "contentId": "127568",
       "overview": null,
       "imageUrl": null
     },
@@ -13534,7 +13534,7 @@
       "placeSlug": "sainam-rock",
       "lat": 36.8948438,
       "lng": 128.3409803,
-      "contentId": null,
+      "contentId": "129648",
       "overview": null,
       "imageUrl": null
     },

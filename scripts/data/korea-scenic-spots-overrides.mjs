@@ -8648,7 +8648,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'danyang',
       attractionName: '고수동굴',
-      contentId: null,
+      contentId: '125861',
     }, // TODO contentId
     {
       order: 8440,
@@ -8658,7 +8658,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'danyang',
       attractionName: '구담봉',
-      contentId: null,
+      contentId: '127568',
     }, // TODO contentId
     {
       order: 8450,
@@ -8668,7 +8668,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'danyang',
       attractionName: '사인암',
-      contentId: null,
+      contentId: '129648',
     }, // TODO contentId
     {
       order: 8460,

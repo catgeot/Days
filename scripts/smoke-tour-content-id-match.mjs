@@ -88,6 +88,24 @@ const jukQueries = strategyQueries({ attractionName: '죽서루' }, samcheokHub)
 assert.ok(jukQueries.includes('삼척 죽서루'), 'strategyQueries adds hub prefix');
 assert.ok(titleCoversName('삼척 죽서루', '죽서루'), 'title covers short name');
 
+const danyangHub = { hubId: 'danyang', name: '단양', aliases: ['단양군'] };
+const gosuQueries = strategyQueries({ attractionName: '고수동굴' }, danyangHub);
+assert.ok(gosuQueries.includes('단양 고수동굴'), 'P2 hub-prefix query for 고수동굴');
+const gosuItem = {
+  title: '단양 고수동굴',
+  addr1: '충청북도 단양군 단양읍 고수동굴길 8',
+  contentTypeId: '12',
+  contentId: '125861',
+};
+assert.ok(
+  scoreHit('단양 고수동굴', gosuItem, danyangHub, {
+    attractionName: '고수동굴',
+    lat: 36.988401364,
+    lng: 128.3815136268,
+  }) >= 80,
+  'prefixed 고수동굴 scores unique Tour title',
+);
+
 const jukHit = acceptUniqueLiveHit(
   { attractionName: '죽서루' },
   samcheokHub,

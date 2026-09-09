@@ -300,6 +300,13 @@ function spotQueries(spot, hub) {
       }
     }
   }
+  // Tour titles are often "단양 고수동굴"; 본명-only includes-match dies at weakGeneric.
+  const token = hubToken(hub);
+  if (token) {
+    for (const q of [...queries]) {
+      if (!String(q).startsWith(token)) queries.add(`${token} ${q}`);
+    }
+  }
   return [...queries];
 }
 
