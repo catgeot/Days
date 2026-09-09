@@ -31,18 +31,56 @@ function imageKey(url: string): string {
   }
 }
 
+const REJECTED_GALLERY_CAPTION =
+  /\b(pdf|svg|djvu|manuscript|document|letterhead|commission to|coat of arms|flag of|map of|logo of|scan of)\b/i;
+const REJECTED_GALLERY_FILE = /\.(pdf|svg|tif|tiff|djvu)$/i;
+
+function isHangulQuery(value: string): boolean {
+  return /[\uAC00-\uD7A3]/.test(value);
+}
+
+function isRejectedFiller(image: GalleryImage): boolean {
+  const url = normalizeImageUrl(image?.url).toLowerCase();
+  const caption = `${image?.captionEn || ""} ${image?.captionKo || ""}`.trim();
+  if (REJECTED_GALLERY_FILE.test(url) || REJECTED_GALLERY_FILE.test(caption)) return true;
+  return REJECTED_GALLERY_CAPTION.test(caption);
+}
+
+function nearDupKey(url: string): string {
+  try {
+    const parsed = new URL(url);
+    let file = decodeURIComponent(parsed.pathname.split("/").pop() || "");
+    file = file.replace(/^\d+px-/i, "").replace(/\.[a-z0-9]+$/i, "");
+    file = file.replace(/(\d)[a-z]$/i, "$1");
+    file = file.replace(/[_-][a-z]$/i, "");
+    file = file.replace(/[_-]\d{1,3}$/i, "");
+    file = file.replace(/[_-]\(\d+\)$/i, "");
+    return `${parsed.hostname}/${file}`.toLowerCase();
+  } catch {
+    return url.toLowerCase();
+  }
+}
+
 function mergeImages(seed: GalleryImage[], fetched: GalleryImage[]): GalleryImage[] {
   const seen = new Set<string>();
+  const nearSeen = new Set<string>();
   const merged: GalleryImage[] = [];
 
-  for (const image of [...seed, ...fetched]) {
+  const push = (image: GalleryImage, allowRejected: boolean, skipNear: boolean) => {
     const url = normalizeImageUrl(image?.url);
-    if (!url.startsWith("http")) continue;
+    if (!url.startsWith("http")) return;
     const key = imageKey(url);
-    if (seen.has(key)) continue;
+    if (seen.has(key)) return;
+    if (!allowRejected && isRejectedFiller(image)) return;
+    const near = nearDupKey(url);
+    if (skipNear && nearSeen.has(near)) return;
     seen.add(key);
+    nearSeen.add(near);
     merged.push({ ...image, url });
-  }
+  };
+
+  for (const image of seed) push(image, true, false);
+  for (const image of fetched) push(image, false, true);
 
   return merged;
 }
@@ -64,7 +102,7 @@ function mapUnsplashPhoto(photo: Record<string, unknown>): GalleryImage | null {
 
 async function fetchUnsplashImages(searchQuery: string, limit = 10): Promise<GalleryImage[]> {
   const q = String(searchQuery || "").trim();
-  if (!q) return [];
+  if (!q || isHangulQuery(q)) return [];
 
   const accessKey =
     Deno.env.get("UNSPLASH_ACCESS_KEY") ||
@@ -104,7 +142,7 @@ async function fetchWikimediaImages(searchQuery: string, limit = 10): Promise<Ga
     format: "json",
     origin: "*",
     generator: "search",
-    gsrsearch: q,
+    gsrsearch: `${q} filetype:bitmap`,
     gsrnamespace: "6",
     gsrlimit: String(Math.min(20, limit + 4)),
     prop: "imageinfo",
@@ -127,12 +165,14 @@ async function fetchWikimediaImages(searchQuery: string, limit = 10): Promise<Ga
     const url = normalizeImageUrl(info?.thumburl || info?.url);
     if (!url.startsWith("http")) continue;
     const title = String(page.title || "").replace(/^File:/, "").replace(/_/g, " ").trim();
-    images.push({
+    const candidate: GalleryImage = {
       url,
       captionKo: title,
       captionEn: title,
       source: "wikimedia",
-    });
+    };
+    if (isRejectedFiller(candidate)) continue;
+    images.push(candidate);
     if (images.length >= limit) break;
   }
 
@@ -144,6 +184,7 @@ async function fetchWikimediaFromQueries(queries: string[], limit = 10): Promise
 
   for (const query of queries) {
     if (fetched.length >= limit) break;
+    if (isHangulQuery(query)) continue;
     try {
       fetched.push(...await fetchWikimediaImages(query, limit - fetched.length));
     } catch (err) {

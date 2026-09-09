@@ -1,23 +1,72 @@
+import { isHangulPhotoQuery } from './worldEventMedia.js';
+
+const REJECTED_GALLERY_CAPTION =
+  /\b(pdf|svg|djvu|manuscript|document|letterhead|commission to|coat of arms|flag of|map of|logo of|scan of)\b/i;
+const REJECTED_GALLERY_FILE = /\.(pdf|svg|tif|tiff|djvu)$/i;
+
+/**
+ * Wikimedia/Unsplash filler often includes scans, documents, or near-identical crops.
+ * @param {{ url?: string, captionKo?: string, captionEn?: string } | null | undefined} image
+ */
+export function isRejectedGalleryFillerImage(image) {
+  const url = String(image?.url || '').trim().toLowerCase();
+  const caption = `${image?.captionEn || ''} ${image?.captionKo || ''}`.trim();
+  if (REJECTED_GALLERY_FILE.test(url) || REJECTED_GALLERY_FILE.test(caption)) return true;
+  if (REJECTED_GALLERY_CAPTION.test(caption)) return true;
+  return false;
+}
+
+/**
+ * Collapse same-file crops (…20120906a / _93 / (1)) so consecutive thumbs are not the same shot.
+ * @param {string} url
+ */
+export function galleryNearDupKey(url) {
+  try {
+    const parsed = new URL(url);
+    let file = decodeURIComponent(parsed.pathname.split('/').pop() || '');
+    file = file.replace(/^\d+px-/i, '').replace(/\.[a-z0-9]+$/i, '');
+    file = file.replace(/(\d)[a-z]$/i, '$1');
+    file = file.replace(/[_-][a-z]$/i, '');
+    file = file.replace(/[_-]\d{1,3}$/i, '');
+    file = file.replace(/[_-]\(\d+\)$/i, '');
+    return `${parsed.hostname}/${file}`.toLowerCase();
+  } catch {
+    return String(url || '').toLowerCase();
+  }
+}
+
 /**
  * @param {Array<{ url?: string, captionKo?: string, captionEn?: string, source?: string }>} seed
  * @param {Array<{ url?: string, captionKo?: string, captionEn?: string, source?: string }>} fetched
  */
 export function mergeWorldEventHeroGalleryImages(seed, fetched) {
   const seen = new Set();
+  const nearSeen = new Set();
   const merged = [];
 
-  for (const image of [...seed, ...fetched]) {
+  const push = (image, { allowRejected = false, nearDup = false } = {}) => {
     const url = String(image?.url || '').trim();
-    if (!url.startsWith('http')) continue;
+    if (!url.startsWith('http')) return;
     const key = imageDedupeKey(url);
-    if (seen.has(key)) continue;
+    if (seen.has(key)) return;
+    if (!allowRejected && isRejectedGalleryFillerImage(image)) return;
+    const nearKey = galleryNearDupKey(url);
+    if (nearDup && nearSeen.has(nearKey)) return;
     seen.add(key);
+    nearSeen.add(nearKey);
     merged.push({
       url,
       captionKo: image.captionKo,
       captionEn: image.captionEn,
       source: image.source,
     });
+  };
+
+  for (const image of Array.isArray(seed) ? seed : []) {
+    push(image, { allowRejected: true, nearDup: false });
+  }
+  for (const image of Array.isArray(fetched) ? fetched : []) {
+    push(image, { allowRejected: false, nearDup: true });
   }
 
   return merged;
@@ -87,7 +136,7 @@ export async function fetchWikimediaGalleryImages(searchQuery, limit = 10) {
     format: 'json',
     origin: '*',
     generator: 'search',
-    gsrsearch: q,
+    gsrsearch: `${q} filetype:bitmap`,
     gsrnamespace: '6',
     gsrlimit: String(Math.min(20, limit + 4)),
     prop: 'imageinfo',
@@ -110,12 +159,14 @@ export async function fetchWikimediaGalleryImages(searchQuery, limit = 10) {
     const url = String(info?.thumburl || info?.url || '').trim();
     if (!url.startsWith('http')) continue;
     const title = String(page.title || '').replace(/^File:/, '').replace(/_/g, ' ').trim();
-    images.push({
+    const candidate = {
       url,
       captionKo: title,
       captionEn: title,
       source: 'wikimedia',
-    });
+    };
+    if (isRejectedGalleryFillerImage(candidate)) continue;
+    images.push(candidate);
     if (images.length >= limit) break;
   }
 
@@ -130,6 +181,7 @@ export async function fetchWikimediaGalleryFromQueries(queries, limit = 10) {
   const fetched = [];
   for (const query of queries) {
     if (fetched.length >= limit) break;
+    if (isHangulPhotoQuery(query)) continue;
     try {
       const batch = await fetchWikimediaGalleryImages(query, limit - fetched.length);
       fetched.push(...batch);

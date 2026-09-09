@@ -21,6 +21,7 @@ import {
 import { buildWorldEventListPhotoQueries } from '../src/utils/worldEventMedia.js';
 import {
   isUnsplashListPhoto,
+  pickMappedUnsplashListPhoto,
   pickWorldEventListPhoto,
 } from '../src/utils/worldEventListPhoto.js';
 import {
@@ -101,6 +102,29 @@ assert.equal(
   'list picker does not fall back to Wikimedia',
 );
 
+const scored = pickMappedUnsplashListPhoto(
+  [
+    {
+      urls: { regular: 'https://images.unsplash.com/photo-mansion' },
+      alt_description: 'white mansion driveway',
+    },
+    {
+      urls: { regular: 'https://images.unsplash.com/photo-parade' },
+      alt_description: 'Rose Parade floral float Pasadena',
+    },
+  ],
+  ['rose', 'parade', 'pasadena'],
+);
+assert.equal(scored?.url, 'https://images.unsplash.com/photo-parade', 'list photo prefers caption matching event keywords');
+
+const listPhotoCacheSrc = readFileSync(join(root, 'src/utils/worldEventListPhoto.js'), 'utf8');
+assert.match(listPhotoCacheSrc, /list-photo-v2-en/, 'list photo session cache bumped for English queries');
+
+const rose = allEvents.find((item) => item.id === 'los-angeles-rose-parade-2027');
+assert.ok(rose, 'rose parade exists');
+const roseQueries = buildWorldEventListPhotoQueries(rose, 'ko');
+assert.ok(/rose parade/i.test(roseQueries[0]), 'rose parade list query starts with English event name');
+
 const listPhotoProbeIds = [
   'paris-nuit-blanche-2027',
   'dubai-fitness-challenge-2026',
@@ -110,16 +134,21 @@ for (const eventId of listPhotoProbeIds) {
   const event = allEvents.find((item) => item.id === eventId);
   assert.ok(event, `${eventId} exists for list photo query probe`);
   const queries = buildWorldEventListPhotoQueries(event, 'ko');
-  assert.ok(queries.length >= 3, `${eventId} has extended Unsplash query fallbacks`);
+  assert.ok(queries.length >= 2, `${eventId} has English Unsplash query fallbacks`);
   assert.ok(
-    queries.some((query) => /[A-Za-z]/.test(query)),
-    `${eventId} list queries include English fallback`,
+    queries.every((query) => !/[\uAC00-\uD7A3]/.test(query)),
+    `${eventId} list photo queries are English-only`,
+  );
+  assert.ok(
+    /[A-Za-z]/.test(queries[0]),
+    `${eventId} list photo primary query is English`,
   );
 }
 
 const listPhotoSrc = readFileSync(join(root, 'src/utils/fetchWorldEventListPhotos.js'), 'utf8');
 assert.match(listPhotoSrc, /event_hero_gallery/, 'list photos read Unsplash gallery cache');
-assert.match(listPhotoSrc, /fetchUnsplashImages/, 'list photos live-search Unsplash');
+assert.match(listPhotoSrc, /buildWorldEventPhotoSearchKeywords/, 'list photos score Unsplash captions');
+assert.match(listPhotoSrc, /isHangulPhotoQuery/, 'list photos skip Hangul Unsplash queries');
 assert.match(listPhotoSrc, /onPhotos/, 'list photos emit DB hits before Unsplash pool finishes');
 assert.doesNotMatch(listPhotoSrc, /fetchWikimedia/, 'list photos do not call Wikimedia');
 

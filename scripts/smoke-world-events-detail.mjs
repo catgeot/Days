@@ -19,6 +19,11 @@ import {
   buildWorldEventYoutubeSearchQuery,
   getWorldEventHubAttractions,
 } from '../src/utils/worldEventMedia.js';
+import {
+  isRejectedGalleryFillerImage,
+  galleryNearDupKey,
+  mergeWorldEventHeroGalleryImages,
+} from '../src/utils/worldEventHeroGalleryMerge.js';
 import { addDaysYmd } from '../src/shared/tripWindow.js';
 import {
   extractGoogleMapsSearchQuery,
@@ -745,15 +750,63 @@ assert.match(fetchHeroGallerySrc, /fetchUnsplashImages/, 'fetchEventHeroGallery 
 assert.match(fetchHeroGallerySrc, /fetchWikimediaGalleryFromQueries/, 'fetchEventHeroGallery wikimedia fallback');
 assert.match(fetchHeroGallerySrc, /heroGallerySeedCacheMatches/, 'fetchEventHeroGallery stale cache detection');
 assert.match(fetchHeroGallerySrc, /buildHeroGalleryFromCache/, 'fetchEventHeroGallery cache re-merge');
+assert.match(fetchHeroGallerySrc, /galleryCacheHasUnsplash/, 'fetchEventHeroGallery skips wiki-only cache');
+assert.match(fetchHeroGallerySrc, /!cacheHasUnsplash/, 'fetchEventHeroGallery forces English Unsplash when cache has no Unsplash');
 
 const heroGalleryMergeSrc = readFileSync(join(root, 'src/utils/worldEventHeroGalleryMerge.js'), 'utf8');
 assert.match(heroGalleryMergeSrc, /mergeWorldEventHeroGalleryImages/, 'hero gallery merge util');
+assert.match(heroGalleryMergeSrc, /isRejectedGalleryFillerImage/, 'hero gallery rejects document fillers');
+assert.match(heroGalleryMergeSrc, /galleryNearDupKey/, 'hero gallery collapses similar Wikimedia crops');
 
 const baliGalleryQueries = buildWorldEventHeroGalleryQueries(bali, 'ko');
-assert.ok(baliGalleryQueries.primary.includes('갈룽안'), 'bali unsplash primary uses ko title');
+assert.ok(/galungan/i.test(baliGalleryQueries.primary), 'bali unsplash primary uses English event name');
 assert.ok(
-  baliGalleryQueries.wikimediaQueries.some((query) => /galungan/i.test(query)),
-  'bali wikimedia queries include galungan',
+  !/[\uAC00-\uD7A3]/.test(baliGalleryQueries.primary),
+  'bali unsplash primary has no Hangul',
+);
+assert.ok(
+  baliGalleryQueries.wikimediaQueries.every((query) => !/[\uAC00-\uD7A3]/.test(query)),
+  'bali wikimedia queries are English-only',
+);
+
+assert.equal(
+  isRejectedGalleryFillerImage({
+    url: 'https://upload.wikimedia.org/wikipedia/commons/x.jpg',
+    captionEn: 'Philadelphia Commission to Vienna, to the Select and Common Councils',
+  }),
+  true,
+  'rejects historical document captions',
+);
+assert.equal(
+  galleryNearDupKey(
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/x/Penjor_Galungan_20120906a.jpg',
+  ),
+  galleryNearDupKey(
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/x/Penjor_Galungan_20120906b.jpg',
+  ),
+  'near-dup key collapses a/b Wikimedia crops',
+);
+const mergedGallery = mergeWorldEventHeroGalleryImages(
+  [{ url: 'https://upload.wikimedia.org/wikipedia/commons/seed.jpg', captionEn: 'seed' }],
+  [
+    {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/doc.pdf',
+      captionEn: 'Philadelphia Commission to Vienna',
+    },
+    {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/Penjor_Galungan_20120906a.jpg',
+      captionEn: 'Penjor a',
+    },
+    {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/Penjor_Galungan_20120906b.jpg',
+      captionEn: 'Penjor b',
+    },
+  ],
+);
+assert.equal(mergedGallery.length, 2, 'merge keeps seed + one near-dup filler');
+assert.ok(
+  mergedGallery.every((image) => !/commission/i.test(image.captionEn || '')),
+  'merge drops document filler',
 );
 
 const fetchWorldVideosSrc = readFileSync(join(root, 'src/utils/fetchWorldEventVideos.js'), 'utf8');
@@ -863,6 +916,11 @@ async function assertPilotHeroImagesReachable(eventId) {
         break;
       }
       if (status !== 429) break;
+    }
+
+    if (!ok && status === 429) {
+      console.warn(`[smoke-world-events-detail] skip HEAD 429 ${eventId}: ${url}`);
+      continue;
     }
 
     assert.equal(

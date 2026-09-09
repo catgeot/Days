@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
   sessionNo: 54,
-  sessionPhase: '리스트 썸네일 확대',
+  sessionPhase: '리스트 사진 영문 검색',
   branch: 'cursor/world-events-wave3',
   previewPath: '/world-events',
   qaShareSlug: 'world-events',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-09-world-events-54c-en-photos',
+    session: '세계행사 일정 #54c, 리스트 사진 확대 Prod QA',
+    title: '행사 사진 Unsplash 영문 검색',
+    detail:
+      '리스트·상세 사진 호출을 영문 행사명으로 바꿨습니다. 한글 Unsplash는 무관 사진이 나와 폴백이 안 됐습니다. 위키만 있는 갤러리 캐시는 다시 받고, 문서·같은 컷 연속은 걸러집니다. Preview /qa/world-events — 로즈 퍼레이드·빈 오페라 카드가 행사 장면인지.',
+    at: '2026-09-09T10:20:00.000Z',
+  },
   {
     id: '2026-09-09-world-events-54b-list-thumb-size',
     session: '세계행사 일정 #54b, 리스트 썸네일 Preview QA',
