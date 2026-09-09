@@ -2,6 +2,24 @@
 
 직전: [`2026-09-08-project-log.md`](./2026-09-08-project-log.md)
 
+## 팔경 contentId — P0-K12 short 종결 (Cloud)
+
+- **세션** `팔경contentId #P0-K12, short 종결`
+- **브랜치** `cursor/palgyeong-cid` · tip `a5131b5a` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--bucket=short --apply-unique --limit=40` **0/1** unique_hit · **1 ambiguous** · members **541/876** (null **335**) · short **소진**(옥정호 ambiguous 2후보) · prefix ambiguous **2** · siho **48** · 429 없음
+- **ambiguous** 임실 옥정호(`126551`·`3082705`) — close JSON 기록 · lists 변경 없음 · apply 후 `inventory` 재실행 금지(ambiguous→open 덮어씀)
+- **VERIFY** audit/smoke lists · smoke content-ids PASS
+- **다음** P0-A02 `--bucket=siho` (48건) 또는 ambiguous 3건 수동 확인
+
+```
+팔경contentId #P0-A02, siho alias
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=siho --apply-unique · alias→LIVE · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
 ## 팔경 contentId — P0-K11 prefix 잔여 (Cloud)
 
 - **세션** `팔경contentId #P0-K11, prefix 잔여`
