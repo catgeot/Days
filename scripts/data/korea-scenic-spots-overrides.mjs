@@ -3839,7 +3839,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'seosan',
       attractionName: '서산동부시장',
       overview: '동부시장 — 서산 전통시장. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2489840',
     },
     {
       order: 3800,
@@ -8308,8 +8308,8 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'buan',
       attractionName: '직소폭포',
-      contentId: null,
-    }, // TODO contentId
+      contentId: '126260',
+    },
     {
       order: 8100,
       id: 'gyoryongsanseong',
@@ -8438,8 +8438,8 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'cheongju',
       attractionName: '육거리시장',
-      contentId: null,
-    }, // TODO contentId
+      contentId: '132548',
+    },
     {
       order: 8230,
       id: 'cheongju-early-printing-museum',

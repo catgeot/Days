@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-09-09T11:50:58.209Z",
+    "generatedAt": "2026-09-09T14:14:57.215Z",
     "count": 871,
     "imageCount": 778,
     "curation": "GATEO",
@@ -6078,7 +6078,7 @@
       "placeSlug": "seosan-dongbu-market",
       "lat": 36.782599,
       "lng": 126.4558166,
-      "contentId": null,
+      "contentId": "2489840",
       "overview": "동부시장 — 서산 전통시장. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": null
     },
@@ -12958,7 +12958,7 @@
       "placeSlug": "jikso-falls",
       "lat": 35.6410076256,
       "lng": 126.5803140259,
-      "contentId": null,
+      "contentId": "126260",
       "overview": null,
       "imageUrl": null
     },
@@ -13166,7 +13166,7 @@
       "placeSlug": "yukgeori-market",
       "lat": 36.6276089,
       "lng": 127.4893215,
-      "contentId": null,
+      "contentId": "132548",
       "overview": null,
       "imageUrl": null
     },
