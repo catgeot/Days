@@ -2,6 +2,41 @@
 
 직전: [`2026-09-08-project-log.md`](./2026-09-08-project-log.md)
 
+## 팔경 contentId — P0-C01 scenic 복사 (Cloud)
+
+- **세션** `팔경contentId #P0-C01, scenic 복사`
+- **브랜치** `cursor/palgyeong-cid` · tip `e78f0e5a` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `copy:korea-local-scenic-content-ids-from-scenic` **1/1** 잔여(임실9경 옥정호 2번째 동명 멤버) · scenic `126551` · 동명 멤버 `.find` 버그 수정 · members **548/876** (null **328**) · P0-C01 **소진**
+- **VERIFY** audit/smoke lists · smoke content-ids PASS
+- **다음** P0-A03 siho alias (41) 또는 prefix ambiguous 2건
+
+```
+팔경contentId #P0-A03, siho alias
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: --bucket=siho --apply-unique · alias→LIVE · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+## 팔경 contentId — P0-A02 siho alias (Cloud)
+
+- **세션** `팔경contentId #P0-A02, siho alias`
+- **브랜치** `cursor/palgyeong-cid` · tip `f0019f88` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** `--bucket=siho --apply-unique` **6/48** unique_hit · **41 siho_wait** · **1 hub_mismatch**(군산 명사십리) · members **547/876** (null **329**) · closed **350** · 429 없음
+- **HIT** 강원감영·구형왕릉·강변사리·신두사구·예산사과·사계고택 — LIVE 행만 lists 기입
+- **VERIFY** smoke lists · smoke content-ids PASS
+- **다음** P0-C01 scenic 복사 또는 ambiguous 3건 수동 확인
+
+```
+팔경contentId #P0-C01, scenic 복사
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: 같은 hub+attractionName scenic contentId → 팔경 멤버+동명 hub → audit/smoke lists
+```
+
 ## 세계행사 일정 #54b — 리스트 썸네일 3건 폴백 수정 (Cloud)
 
 - **세션** `세계행사 일정 #54, 리스트 Unsplash Prod QA`
