@@ -19,7 +19,6 @@ import { fileURLToPath } from 'url';
 import { createClient } from '@supabase/supabase-js';
 import { loadEnvFile } from './lib/load-env-file.mjs';
 import { looksLikeSigunguDisambiguator } from './lib/tour-content-id-match.mjs';
-import { KOREA_SCENIC_SPOTS_OVERRIDES } from './data/korea-scenic-spots-overrides.mjs';
 
 loadEnvFile();
 
@@ -107,6 +106,9 @@ const KEYWORD_ALIASES = {
   부소산성: ['관북리유적과 부소산성', '부소산성'],
   율포해수욕장: ['율포해수욕장', '율포해변', '율포해수욕장(솔밭해변)'],
   '악양 대봉감마을': ['악양대봉감 정보화마을', '악양 대봉감마을'],
+  '영천 보현산천문대': ['보현산 천문대', '보현산천문대'],
+  삼성현역사문화공원: ['삼성현 역사문화관', '삼성현'],
+  '마산 가고파꼬부랑길': ['가고파 꼬부랑길 벽화마을', '가고파 꼬부랑길'],
 };
 
 function sleep(ms) {
@@ -478,7 +480,10 @@ async function main() {
   const hubById = new Map(hubList.map((h) => [String(h.hubId).toLowerCase(), h]));
   const byHubSig = sigungu.byHubId || {};
   const overridesSrc = readFileSync(OVERRIDES_PATH, 'utf8');
-  const nullOverrideIds = nullIdsFromOverrides(KOREA_SCENIC_SPOTS_OVERRIDES);
+  const { KOREA_SCENIC_SPOTS_OVERRIDES: currentOverrides } = await import(
+    `./data/korea-scenic-spots-overrides.mjs?t=${Date.now()}`
+  );
+  const nullOverrideIds = nullIdsFromOverrides(currentOverrides);
 
   const nulls = (scenic.spots || [])
     .filter((s) => nullOverrideIds.has(s.id) || !s.contentId)

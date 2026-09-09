@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-09-09T10:42:33.051Z",
+    "generatedAt": "2026-09-09T11:50:58.209Z",
     "count": 871,
     "imageCount": 778,
     "curation": "GATEO",
@@ -9678,7 +9678,7 @@
       "placeSlug": "masan-gagopa-twisting-path",
       "lat": 35.2084,
       "lng": 128.5729,
-      "contentId": null,
+      "contentId": "2019720",
       "overview": "가고파꼬부랑길 — 마산 언덕 골목. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/78/3565478_image2_1.JPG"
     },
@@ -10574,7 +10574,7 @@
       "placeSlug": "bohyeonsan-observatory",
       "lat": 36.1640698,
       "lng": 128.976682,
-      "contentId": null,
+      "contentId": "127293",
       "overview": "보현산천문대 — 영천 천체 관측. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/67/3590967_image2_1.jpg"
     },
@@ -11198,7 +11198,7 @@
       "placeSlug": "samseonghyeon-history-park",
       "lat": 35.8009036,
       "lng": 128.7979147,
-      "contentId": null,
+      "contentId": "1999964",
       "overview": "삼성현역사문화공원 — 경산 원효·설총·일연. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.",
       "imageUrl": "https://tong.visitkorea.or.kr/cms/resource/10/3385110_image2_1.JPG"
     },

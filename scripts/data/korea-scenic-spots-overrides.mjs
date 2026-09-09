@@ -6186,7 +6186,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'changwon',
       attractionName: '마산 가고파꼬부랑길',
       overview: '가고파꼬부랑길 — 마산 언덕 골목. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2019720',
     }, // TODO contentId
     {
       order: 6050,
@@ -6774,7 +6774,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'yeongcheon',
       attractionName: '영천 보현산천문대',
       overview: '보현산천문대 — 영천 천체 관측. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '127293',
     }, // TODO contentId
     {
       order: 6610,
@@ -7191,7 +7191,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gyeongsan',
       attractionName: '삼성현역사문화공원',
       overview: '삼성현역사문화공원 — 경산 원효·설총·일연. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '1999964',
     }, // TODO contentId
     {
       order: 7000,
