@@ -90,7 +90,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | P0-P03 ✅ 칠선시류 ambiguous 1/1 · members **579/876** · tip `505733e2` · **P0 키워드 종결 소진** |
+| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | P0 inv ✅ · members **579/876** null **297**(terminal) · P2 null **104** · tip `505733e2` · **다음 P2-L3** |
 | **index 행** | 팔경 활용 | 팔경 contentId |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · 워커 병렬 LIVE · 본명-only keyword 재시도 · AI가 ID 기입 |
 
@@ -100,7 +100,8 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 |----|--------------|------|------|
 | 1 | `팔경 활용 #1, 검색·리스트` | A | **완료** · tip `e8da2987` |
 | 2 | `팔경 활용 #2, Preview QA` | A 사람 | **다음** |
-| — | `팔경contentId #P0 inv, 키워드 종결 소진` | B | **다음** |
+| — | `팔경contentId #P2-L3, hub-batch keyword` | B | **다음** |
+| — | `팔경contentId #P0 inv, 키워드 종결 소진` | B | **완료** · closed **394** open **0** |
 | — | `팔경contentId #P0-P03, 칠선시류 ambiguous` | B | **완료** · tip `505733e2` 1/1 |
 | — | `팔경contentId #P0-P02, 옥정호 ambiguous` | B | **완료** · tip `3392e61e` 1/1 |
 | — | `팔경contentId #P0-A08, siho_wait` | B | **완료** · tip `be75b1f3` 0/6 |
@@ -155,13 +156,24 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 작업: 홈 검색 문경 · /korea/theme/scenic 문경 hub · 축제 상세 인근 목록 소제목
 ```
 
-### §1.2 B 다음 (#P0 inv) — 1순위
+### §1.2 B 다음 (#P2-L3) — 1순위
+
+```
+팔경contentId #P2-L3, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 104 — --hubs=uiryeong,hanam,geochang,gunwi,gwangju,seongnam,danyang --keyword-only --limit=20
+```
+
+### §1.2 B #P0 inv
 
 ```
 팔경contentId #P0 inv, 키워드 종결 소진
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
-@plans/orchestrator-method.md
 브랜치 cursor/palgyeong-cid · PR #185
 금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
 작업: inventory 재집계 · P0 키워드 종결 closed 394 · 남은 null 297 갈래 분류 · 다음 R 제안
