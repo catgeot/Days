@@ -2,6 +2,24 @@
 
 직전: [`2026-09-08-project-log.md`](./2026-09-08-project-log.md)
 
+## 팔경 contentId — P0-P01 prefix ambiguous (Cloud)
+
+- **세션** `팔경contentId #P0-P01, prefix ambiguous`
+- **브랜치** `cursor/palgyeong-cid` · tip `fb936d9c` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** prefix ambiguous **2/2** unique_hit · members **579/876** (null **297**) · closed **387** · prefix ambiguous **0**
+- **HIT** 인천 소래포구 `2020690`(포구로 2-6 · 포차거리·해오름광장 제외) · 대전 식장산 `1083960`(문화공원 · 정상쉼터 제외) — close JSON titles·contentIds 기록
+- **VERIFY** audit/smoke lists · smoke content-ids · smoke tour-content-id-match PASS
+- **다음** siho_wait 6건(신규 alias 없으면 null 유지) 또는 short 옥정호 ambiguous 1건
+
+```
+팔경contentId #P0-A08, siho_wait
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: siho_wait 6건 alias 검토 → 신규 alias 있으면 KEYWORD_ALIASES·LIVE · 없으면 null 유지
+```
+
 ## 팔경 contentId — P0-A07 siho alias (Cloud)
 
 - **세션** `팔경contentId #P0-A07, siho alias`
