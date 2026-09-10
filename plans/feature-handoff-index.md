@@ -335,10 +335,11 @@
 
 | | |
 |--|--|
-| **상태** | **#1 대기** · R00 양구수목원 시범적용 완료 · **R01 사진 미보유(TODO) 14건 착수 준비** |
+| **상태** | **#1 완료 (PR [#207](https://github.com/catgeot/Days/pull/207) open)** · R00+R01 15건 완료 (TODO 14건 -> 0건 해소) · **#2 R02 수도권·강원·충청 보강 18건 대기** |
 | **브랜치** | `cursor/curated-scenic` |
+| **PR** | [#207](https://github.com/catgeot/Days/pull/207) |
 | **가이드** | [`korea-curated-spots-guide.md`](./korea-curated-spots-guide.md) |
-| **큐** | [`curated-scenic-spots-queue.md`](./curated-scenic-spots-queue.md) (전체 51건 중 잔여 50건) |
+| **큐** | [`curated-scenic-spots-queue.md`](./curated-scenic-spots-queue.md) (전체 51건 중 15건 완료, 잔여 36건) |
 | **도구** | `scripts/report-curated-scenic-candidates.mjs` · `scripts/search-tourapi-photos.mjs` |
 | **소유** | `korea-scenic-spots-overrides.mjs` · `korea-scenic-spot-images.json` · `koreaScenicSpots.json` |
 | **금지** | AI 허구 본문 창작 금지(공식 팩트 기반 요약) · 저작권 미확인 블로그 사진 금지 · JSON 직접 편집 금지 |
@@ -347,13 +348,13 @@
 **다음 제시어**:
 
 ```
-명소 자체 큐레이션 #1, R01 사진 미보유 14건 보강
+명소 자체 큐레이션 #2, R02 수도권·강원·충청 보강 18건
 @plans/feature-handoff-index.md
 @plans/curated-scenic-spots-queue.md
 @plans/korea-curated-spots-guide.md
 브랜치 cursor/curated-scenic
 금지: AI 허구 본문 작성 금지 · 저작권 미확인 사진 금지 · feature에 plans/** 커밋
-작업: R01 14건(금강소나무숲길·비내섬·대통령기록관 등) searchPhoto 사진 및 공식 개요·주소·홈페이지 SSOT 반영
+작업: R02 18건(알펜시아·스타필드하남·들꽃수목원 등) 주소·홈페이지·갤러리·공식개요 보강 및 SSOT 반영
 ```
 
 ---
