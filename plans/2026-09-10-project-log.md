@@ -2,6 +2,23 @@
 
 직전: [`2026-09-09-project-log.md`](./2026-09-09-project-log.md)
 
+## 플래너 실행 전 여유 #1 — 하단 패딩·연결된 여행사 펼침 스크롤 (Cloud)
+
+- **세션** `플래너 실행 전 여유 #1, 하단 여유·여행사 펼침 스크롤`
+- **브랜치** `cursor/planner-empty-pad-6089` (`93168a4e`) · PR [#211](https://github.com/catgeot/Days/pull/211) (OPEN)
+- **완료** 양구 수목원처럼 툴킷 실행 전 플래너가 overflow에 막혀 하단이 잘리고, 「연결된 여행사」를 펼쳐도 스크롤되지 않던 문제를 고침. 빈 화면도 툴킷 플래너와 같은 세로 스크롤·하단 패딩. 목록 펼침 시 해당 섹션이 위로 이동.
+- **VERIFY** `smoke:planner-empty-scroll` · `smoke:travel-agencies` · `vite build` PASS
+- **다음** 사람 Preview QA — `/qa/planner-empty` → `/place/yanggu-arboretum/planner`
+
+```
+플래너 실행 전 여유 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-10-project-log.md
+브랜치 cursor/planner-empty-pad-6089 · PR #211 · Preview /qa/planner-empty
+금지: UI 리디자인 · feature에 plans/** 커밋
+작업: 양구 수목원 플래너 실행 전 하단 여유 · 연결된 여행사 펼침 후 상단 스크롤
+```
+
 ## 팔경 contentId — PR #185 main 병합 및 양구 수목원 자체 큐레이션 반영 (Cloud)
 
 - **세션** `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합`

@@ -14,6 +14,33 @@
 
 ## 활성 목록
 
+### 플래너 실행 전 여유
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `93168a4e` · PR [#211](https://github.com/catgeot/Days/pull/211) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/planner-empty-pad-6089` |
+| **tip** | `93168a4e` |
+| **PR** | [#211](https://github.com/catgeot/Days/pull/211) |
+| **일지** | [`2026-09-10-project-log.md`](./2026-09-10-project-log.md) |
+| **Preview** | `/qa/planner-empty` → git Preview `/place/yanggu-arboretum/planner` |
+| **소유** | `PlannerTab` 실행 전 빈 상태 · `TravelAgencyDirectory` planner details · `placePlannerFocus` |
+| **금지** | UI 리디자인 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:planner-empty-scroll` · `smoke:travel-agencies` · `vite build` |
+
+**다음 제시어**:
+
+```
+플래너 실행 전 여유 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-10-project-log.md
+브랜치 cursor/planner-empty-pad-6089 · PR #211 · Preview /qa/planner-empty
+금지: UI 리디자인 · feature에 plans/** 커밋
+작업: 양구 수목원 플래너 실행 전 하단 여유 · 연결된 여행사 펼침 후 상단 스크롤
+```
+
+---
+
 ### 지구본 프레임 줌 — main 병합 ✅
 
 | | |
