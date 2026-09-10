@@ -10,6 +10,7 @@ import { dirname, join } from 'node:path';
 import {
   resolveCityAttractionHub,
   resolveHubAttraction,
+  attractionToPlacePin,
 } from '../src/pages/Home/lib/cityAttractionHubs.js';
 import {
   listKoreaLocalScenicLists,
@@ -26,7 +27,9 @@ import {
   groupNearbySpotsWithLocalScenic,
   hasTourContentId,
   resolveLocalScenicListSpotById,
+  listLocalScenicMemberJobs,
 } from '../src/pages/Home/lib/koreaLocalScenicLists.js';
+import { pickTourAttractionRowForTitle } from '../src/pages/Home/lib/koreaTourAttractionTitleMatch.js';
 import {
   filterScenicSpotsByQuery,
   normalizeScenicQuery,
@@ -213,6 +216,27 @@ assert.ok(geumhak, '금학산 resolves without Tour contentId');
 assert.equal(geumhak.name, '금학산');
 assert.ok(!hasTourContentId(geumhak.contentId), '금학산 has no Tour contentId');
 assert.equal(resolveLocalScenicListSpotById('not-a-local-scenic'), null);
+
+const hongcheonJobs = listLocalScenicMemberJobs('hongcheon');
+const garisanJob = hongcheonJobs.find((j) => j.name === '가리산');
+const geumhakJob = hongcheonJobs.find((j) => j.name === '금학산');
+assert.ok(garisanJob?.contentId === '125593', '가리산 job contentId');
+assert.ok(!geumhakJob?.contentId, '금학산 job has no SSOT contentId');
+
+const pickedGarisan = pickTourAttractionRowForTitle(
+  [
+    { name: '가리산자연휴양림', contentId: '126905', addr1: '강원특별자치도 홍천군' },
+    { name: '가리산', contentId: '125593', addr1: '강원특별자치도 홍천군' },
+  ],
+  '가리산',
+  ['홍천'],
+);
+assert.equal(pickedGarisan?.contentId, '125593', 'pick exact 가리산 over 휴양림');
+
+const hongcheonHub = resolveCityAttractionHub('hongcheon');
+const garisanAttr = (hongcheonHub?.attractions || []).find((a) => a.name === '가리산');
+const garisanPin = attractionToPlacePin(hongcheonHub, garisanAttr);
+assert.equal(garisanPin.contentId, '125593', '가리산 place pin carries contentId');
 
 const groupedNearby = groupNearbySpotsWithLocalScenic(
   [{ name: '문경새재', contentId: '123' }],

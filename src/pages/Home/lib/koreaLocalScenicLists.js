@@ -541,20 +541,41 @@ export function hasTourContentId(value) {
  * @param {string} hubId
  */
 export function collectLocalScenicThumbContentIds(hubId) {
+  return listLocalScenicMemberJobs(hubId)
+    .map((job) => job.contentId)
+    .filter(Boolean);
+}
+
+/**
+ * hub 팔경 멤버 — 썸네일·contentId 런타임 조회용. JSON 쓰기 아님.
+ * @param {string} hubId
+ * @returns {{ spotId: string, name: string, contentId: string | null, hubId: string }[]}
+ */
+export function listLocalScenicMemberJobs(hubId) {
   const id = String(hubId || '').trim();
   if (!id) return [];
   const hub = resolveCityAttractionHub(id);
-  const out = new Set();
+  /** @type {{ spotId: string, name: string, contentId: string | null, hubId: string }[]} */
+  const out = [];
+  const seen = new Set();
   for (const list of listsForHub(id)) {
     for (const member of list.members || []) {
+      const name = String(member?.attractionName || '').trim();
+      const key = normalizeKey(name);
+      if (!name || seen.has(key)) continue;
+      seen.add(key);
       const attraction = resolveMemberAttraction(hub, member);
       const curated = lookupCuratedScenicSpot(list.hubId, member.attractionName);
       const fromCurated = scenicThumbFromCurated(curated);
-      const cid = memberContentId(member, attraction) || fromCurated.contentId;
-      if (cid) out.add(cid);
+      out.push({
+        spotId: localScenicMemberSpotId(list.listId, name),
+        name,
+        contentId: memberContentId(member, attraction) || fromCurated.contentId,
+        hubId: list.hubId,
+      });
     }
   }
-  return [...out];
+  return out;
 }
 
 /**

@@ -119,4 +119,21 @@ export async function fetchTourApiAttractionDetail(opts) {
   };
 }
 
+/**
+ * 리스트 썸네일용 — detailCommon firstimage만. JSON contentId 기입 아님.
+ * @param {string | number | null | undefined} contentId
+ * @returns {Promise<string | null>}
+ */
+export async function fetchTourApiFirstImage(contentId) {
+  const id = String(contentId ?? '').trim();
+  if (!/^\d{1,32}$/.test(id)) return null;
+  const common = await invokeTourApi('detailCommon', { contentId: id });
+  const item = common?.items?.[0] || null;
+  return pickImageUrl(
+    item?.imageUrl,
+    item?.firstimage,
+    item?.firstimage2,
+  );
+}
+
 export { ATTRACTION_CONTENT_TYPE_ID, RESTAURANT_CONTENT_TYPE_ID };

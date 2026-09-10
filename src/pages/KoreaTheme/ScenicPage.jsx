@@ -94,6 +94,7 @@ import {
   fetchKoreaTourAttractionFirstImagesByIds,
   fetchKoreaTourAttractions,
   fetchKoreaTourAttractionsNear,
+  lookupKoreaTourAttractionByTitle,
   peekKoreaTourAttractionFirstImagesByIds,
   fetchScenicFilterChipCounts,
   labelScenicAreaCode,
@@ -105,12 +106,13 @@ import {
 } from '../Home/lib/koreaTourAttractions';
 import { resolveCityAttractionHub } from '../Home/lib/cityAttractionHubs';
 import {
-  collectLocalScenicThumbContentIds,
   listKoreaLocalScenicLists,
+  listLocalScenicMemberJobs,
   memberToScenicListSpot,
   mergeLocalScenicMembersIntoScenicSpots,
   resolveLocalScenicListSpotById,
 } from '../Home/lib/koreaLocalScenicLists';
+import { fetchTourApiFirstImage } from '../../utils/fetchTourApiAttractionDetail';
 import { reconcileThemeNavBack } from '../Home/lib/koreaThemeNavBack';
 import { formatScenicSpotPlaceLabel } from '../Home/lib/scenicSpotPlaceLabel';
 import { useLocale } from '../../i18n/LocaleProvider';
@@ -451,6 +453,35 @@ function toHttps(url) {
   if (s.startsWith('//')) return `https:${s}`;
   if (s.startsWith('http://')) return `https://${s.slice('http://'.length)}`;
   return s;
+}
+
+function mergeContentIdImageMap(prev, entries) {
+  let changed = false;
+  const next = new Map(prev);
+  for (const [id, url] of entries) {
+    const key = String(id || '').trim();
+    const image = String(url || '').trim();
+    if (!key || !image || next.get(key) === image) continue;
+    next.set(key, image);
+    changed = true;
+  }
+  return changed ? next : prev;
+}
+
+function overlayLocalScenicTourMeta(spot, extra) {
+  if (!spot || !extra) return spot;
+  const contentId = String(spot.contentId || extra.contentId || '').trim();
+  const firstImage =
+    spot.firstImage || extra.firstImage || extra.imageUrl || null;
+  return {
+    ...spot,
+    contentId: /^\d{1,32}$/.test(contentId) ? contentId : spot.contentId,
+    cat1: spot.cat1 || extra.cat1 || null,
+    cat2: spot.cat2 || extra.cat2 || null,
+    cat3: spot.cat3 || extra.cat3 || null,
+    firstImage: firstImage || spot.firstImage || null,
+    imageUrl: spot.imageUrl || firstImage || null,
+  };
 }
 
 function spotListThumbCandidates(spot) {
@@ -962,42 +993,90 @@ export default function KoreaThemeScenicPage() {
   const [curatedImageByContentId, setCuratedImageByContentId] = useState(
     () => new Map(),
   );
+  const [localScenicTourBySpotId, setLocalScenicTourBySpotId] = useState(
+    () => new Map(),
+  );
 
   useEffect(() => {
     let cancelled = false;
-    const ids = [
-      ...curatedSpots
-        .map((s) => String(s.contentId || '').trim())
-        .filter((id) => /^\d{1,32}$/.test(id)),
-      ...(hubId ? collectLocalScenicThumbContentIds(hubId) : []),
-    ];
-    const uniqueIds = [...new Set(ids)];
-    if (!uniqueIds.length) return undefined;
+    const jobs = hubId ? listLocalScenicMemberJobs(hubId) : [];
+    const curatedIds = curatedSpots
+      .map((s) => String(s.contentId || '').trim())
+      .filter((id) => /^\d{1,32}$/.test(id));
 
-    const peeked = peekKoreaTourAttractionFirstImagesByIds(uniqueIds);
-    if (peeked.size) {
-      setCuratedImageByContentId((prev) => {
-        if (!prev.size) return peeked;
-        const next = new Map(prev);
-        for (const [id, url] of peeked) next.set(id, url);
-        return next;
-      });
-    }
+    const applyImageEntries = (entries) => {
+      if (!entries.length) return;
+      setCuratedImageByContentId((prev) => mergeContentIdImageMap(prev, entries));
+    };
 
-    fetchKoreaTourAttractionFirstImagesByIds(uniqueIds).then((map) => {
-      if (cancelled || !map.size) return;
-      setCuratedImageByContentId((prev) => {
-        let changed = false;
-        const next = new Map(prev);
-        for (const [id, url] of map) {
-          if (next.get(id) !== url) {
-            next.set(id, url);
-            changed = true;
-          }
+    (async () => {
+      const resolved = new Map();
+      const missing = jobs.filter((job) => !job.contentId);
+      if (missing.length) {
+        const lookups = await Promise.all(
+          missing.map(async (job) => {
+            const row = await lookupKoreaTourAttractionByTitle({
+              title: job.name,
+              hubId: job.hubId || hubId,
+            });
+            return { job, row };
+          }),
+        );
+        if (cancelled) return;
+        for (const { job, row } of lookups) {
+          const contentId = String(row?.contentId || '').trim();
+          if (!/^\d{1,32}$/.test(contentId)) continue;
+          resolved.set(job.spotId, {
+            contentId,
+            firstImage: row.firstImage || row.imageUrl || null,
+            cat1: row.cat1 || null,
+            cat2: row.cat2 || null,
+            cat3: row.cat3 || null,
+          });
         }
-        return changed ? next : prev;
+        if (resolved.size) {
+          setLocalScenicTourBySpotId((prev) => {
+            const next = new Map(prev);
+            for (const [key, value] of resolved) next.set(key, value);
+            return next;
+          });
+        }
+      }
+
+      const palgyeongIds = [
+        ...jobs.map((job) => job.contentId).filter(Boolean),
+        ...[...resolved.values()].map((row) => row.contentId),
+      ];
+      const uniqueIds = [...new Set([...curatedIds, ...palgyeongIds])];
+      if (!uniqueIds.length) return;
+
+      const peeked = peekKoreaTourAttractionFirstImagesByIds(uniqueIds);
+      applyImageEntries([...peeked.entries()]);
+      applyImageEntries(
+        [...resolved.values()]
+          .filter((row) => row.contentId && row.firstImage)
+          .map((row) => [row.contentId, row.firstImage]),
+      );
+
+      const dbMap = await fetchKoreaTourAttractionFirstImagesByIds(uniqueIds);
+      if (cancelled) return;
+      applyImageEntries([...dbMap.entries()]);
+
+      const liveTargets = palgyeongIds.filter((id) => {
+        const key = String(id || '').trim();
+        return key && !peeked.get(key) && !dbMap.get(key);
       });
-    });
+      if (!liveTargets.length) return;
+      const liveHits = await Promise.all(
+        liveTargets.map(async (id) => {
+          const url = await fetchTourApiFirstImage(id);
+          return [id, url];
+        }),
+      );
+      if (cancelled) return;
+      applyImageEntries(liveHits);
+    })();
+
     return () => {
       cancelled = true;
     };
@@ -1019,17 +1098,22 @@ export default function KoreaThemeScenicPage() {
     });
   }, [curatedSpots, curatedImageByContentId]);
 
-  const curatedSpotsWithLocalScenic = useMemo(
-    () =>
-      hubId
-        ? mergeLocalScenicMembersIntoScenicSpots(
-            curatedSpotsWithThumbs,
-            hubId,
-            locale,
-          )
-        : curatedSpotsWithThumbs,
-    [curatedSpotsWithThumbs, hubId, locale],
-  );
+  const curatedSpotsWithLocalScenic = useMemo(() => {
+    const merged = hubId
+      ? mergeLocalScenicMembersIntoScenicSpots(
+          curatedSpotsWithThumbs,
+          hubId,
+          locale,
+        )
+      : curatedSpotsWithThumbs;
+    if (!localScenicTourBySpotId.size) return merged;
+    return merged.map((spot) =>
+      overlayLocalScenicTourMeta(
+        spot,
+        localScenicTourBySpotId.get(String(spot.id || '')),
+      ),
+    );
+  }, [curatedSpotsWithThumbs, hubId, locale, localScenicTourBySpotId]);
 
   const curatedSpotsWithLocalScenicThumbs = useMemo(() => {
     const peeked = peekKoreaTourAttractionFirstImagesByIds(
@@ -1037,16 +1121,22 @@ export default function KoreaThemeScenicPage() {
     );
     return curatedSpotsWithLocalScenic.map((spot) => {
       const contentId = String(spot.contentId || '').trim();
+      const extra = localScenicTourBySpotId.get(String(spot.id || ''));
       const firstImage =
         curatedImageByContentId.get(contentId) ||
         peeked.get(contentId) ||
+        extra?.firstImage ||
         spot.firstImage ||
         spot.imageUrl ||
         null;
       if (!firstImage) return spot;
       return { ...spot, firstImage, imageUrl: spot.imageUrl || firstImage };
     });
-  }, [curatedSpotsWithLocalScenic, curatedImageByContentId]);
+  }, [
+    curatedSpotsWithLocalScenic,
+    curatedImageByContentId,
+    localScenicTourBySpotId,
+  ]);
 
   const heritageNearRanked = useMemo(() => {
     if (!nearOrigin || searchActive) return null;
@@ -2456,7 +2546,10 @@ export default function KoreaThemeScenicPage() {
       );
       return undefined;
     }
-    const localScenic = resolveLocalScenicListSpotById(selectedId, locale);
+    const localScenic = overlayLocalScenicTourMeta(
+      resolveLocalScenicListSpotById(selectedId, locale),
+      localScenicTourBySpotId.get(String(selectedId)),
+    );
     if (localScenic) {
       const contentId = String(localScenic.contentId || '').trim();
       const firstImage =
@@ -2477,6 +2570,9 @@ export default function KoreaThemeScenicPage() {
           firstImage: tourImage || base.firstImage || null,
           imageUrl: tourImage || base.imageUrl || null,
           contentId: base.contentId || spot.contentId,
+          cat1: base.cat1 || spot.cat1 || null,
+          cat2: base.cat2 || spot.cat2 || null,
+          cat3: base.cat3 || spot.cat3 || null,
         });
       });
       return undefined;
@@ -2505,6 +2601,7 @@ export default function KoreaThemeScenicPage() {
     selectedId,
     dbSpots,
     curatedImageByContentId,
+    localScenicTourBySpotId,
     favoriteList,
     viewedList,
     locale,
@@ -3687,17 +3784,20 @@ export default function KoreaThemeScenicPage() {
       const key = String(id || '').trim();
       if (!key) return;
       const live = scenicById.get(key);
-      const fromLocal = resolveLocalScenicListSpotById(key, locale);
       const fromMerged = curatedSpotsWithLocalScenic.find(
         (s) => String(s.id) === key,
+      );
+      const fromLocal = overlayLocalScenicTourMeta(
+        resolveLocalScenicListSpotById(key, locale),
+        localScenicTourBySpotId.get(key),
       );
       const fromPersonal = personalItems.find((s) => String(s.id) === key);
       const fromMap = mapItems.find((s) => String(s.id) === key);
       const fromTourNear = mapTourNearPool.find((s) => String(s.id) === key);
       const refSpot =
         live ||
-        fromLocal ||
         fromMerged ||
+        fromLocal ||
         fromPersonal ||
         fromMap ||
         fromTourNear ||
@@ -3710,6 +3810,7 @@ export default function KoreaThemeScenicPage() {
     [
       curatedSpotsWithLocalScenic,
       locale,
+      localScenicTourBySpotId,
       mapItems,
       mapTourNearPool,
       personalItems,

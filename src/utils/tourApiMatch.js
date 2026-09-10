@@ -97,23 +97,41 @@ export function resolveTourApiPlace(locationOrSlug) {
   }
 
   const slugKey = getTourApiSlugKey(locationOrSlug);
+  const explicitId = String(locationOrSlug.contentId || '').trim();
+  const hasExplicitId = /^\d{1,32}$/.test(explicitId);
   const bySlug = mappingFromSlug(slugKey);
-  if (bySlug) return bySlug;
+  if (bySlug) {
+    if (hasExplicitId && !bySlug.contentId) {
+      return { ...bySlug, contentId: explicitId };
+    }
+    return bySlug;
+  }
 
   const name = String(locationOrSlug.name || '').trim();
   if (name) {
     const byNameSlug = travelSpotTourApi?.byName?.[name];
-    if (byNameSlug) return mappingFromSlug(byNameSlug);
+    if (byNameSlug) {
+      const mapped = mappingFromSlug(byNameSlug);
+      if (mapped) {
+        if (hasExplicitId && !mapped.contentId) {
+          return { ...mapped, contentId: explicitId };
+        }
+        return mapped;
+      }
+    }
   }
 
-  // 국내 미등록: searchPhoto용 soft 매핑 (contentId 없음)
-  if (isDomesticKoreaLocation(locationOrSlug) && name) {
+  // 국내 미등록: 장소 contentId가 있으면 Tour 갤러리·분류에 쓰고, 없으면 searchPhoto soft
+  if (isDomesticKoreaLocation(locationOrSlug) && (name || hasExplicitId)) {
+    const label = name || explicitId;
     return {
       slug: slugKey || null,
-      photoKeyword: name.slice(0, 80),
-      photoKeywords: [`${name} 전경`.slice(0, 80), `${name} 야경`.slice(0, 80)],
-      contentId: null,
-      title: name,
+      photoKeyword: label.slice(0, 80),
+      photoKeywords: name
+        ? [`${name} 전경`.slice(0, 80), `${name} 야경`.slice(0, 80)]
+        : [],
+      contentId: hasExplicitId ? explicitId : null,
+      title: label,
       curated: false,
     };
   }

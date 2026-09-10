@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 2,
-  sessionPhase: '사진 없는 행 클릭',
+  sessionPhase: 'contentId 런타임·사진',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic?hub=hongcheon',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-10-palgyeong-use-2-tour-contentid-photos',
+    session: '팔경 활용 #2, 사람 Preview QA',
+    title: '팔경 멤버 contentId 런타임 할당 — 리스트·써머리 사진',
+    detail:
+      'JSON에 contentId를 쓰지 않고, 팔경 행은 기존 id·tourapi_attraction 제목 조회·Tour firstimage로 사진을 붙입니다. 가리산(125593)은 핀·써머리 갤러리에 id가 전달되고, 금학산처럼 JSON에 id가 없어도 DB에 있으면 같은 경로로 상세·썸네일을 엽니다. GATEO 선정 분류칩은 scenic 승격 없이 koreaScenicSpots만 셉니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hongcheon 가리산·금학산 사진.',
+    at: '2026-09-10T12:10:00.000Z',
+  },
   {
     id: '2026-09-10-palgyeong-use-2-empty-thumb-click',
     session: '팔경 활용 #2, 사진 없는 행 클릭',
