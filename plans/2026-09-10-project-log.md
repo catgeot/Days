@@ -2,6 +2,23 @@
 
 직전: [`2026-09-09-project-log.md`](./2026-09-09-project-log.md)
 
+## 플래너 실행 전 여유 #1 — 하단 패딩·연결된 여행사 펼침 스크롤 (Cloud)
+
+- **세션** `플래너 실행 전 여유 #1, 하단 여유·여행사 펼침 스크롤`
+- **브랜치** `cursor/planner-empty-pad-6089` (`93168a4e`) · PR [#211](https://github.com/catgeot/Days/pull/211) (OPEN)
+- **완료** 양구 수목원처럼 툴킷 실행 전 플래너가 overflow에 막혀 하단이 잘리고, 「연결된 여행사」를 펼쳐도 스크롤되지 않던 문제를 고침. 빈 화면도 툴킷 플래너와 같은 세로 스크롤·하단 패딩. 목록 펼침 시 해당 섹션이 위로 이동.
+- **VERIFY** `smoke:planner-empty-scroll` · `smoke:travel-agencies` · `vite build` PASS
+- **다음** 사람 Preview QA — `/qa/planner-empty` → `/place/yanggu-arboretum/planner`
+
+```
+플래너 실행 전 여유 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-10-project-log.md
+브랜치 cursor/planner-empty-pad-6089 · PR #211 · Preview /qa/planner-empty
+금지: UI 리디자인 · feature에 plans/** 커밋
+작업: 양구 수목원 플래너 실행 전 하단 여유 · 연결된 여행사 펼침 후 상단 스크롤
+```
+
 ## 팔경 contentId — PR #185 main 병합 및 양구 수목원 자체 큐레이션 반영 (Cloud)
 
 - **세션** `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합`
@@ -308,6 +325,27 @@
 브랜치 cursor/palgyeong-use-e744
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
 작업: 의성 빙계팔경(8건) 및 무주 구천동33경(28건 결손) 순수 지자체 팔경 공공 공식 팩트 기반 런타임 오버레이(LOCAL_SCENIC_MEMBER_OVERLAYS) 보강
+```
+
+## 팔경 활용 #6 — 의성·무주 결손 허브 런타임 오버레이 보강 (Cloud)
+
+- **세션** `팔경 활용 #6, 의성·무주 결손 허브 런타임 오버레이 보강`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `f1367c6f` · PR [#212](https://github.com/catgeot/Days/pull/212) (OPEN)
+- **완료**:
+  1. **의성 빙계팔경 8건 전수 오버레이**: 의성군 문화관광 공식 소개(빙혈·풍혈·인암·의각·수대·불정·용추) 및 국가유산청 보물 빙산사지 오층석탑 사진·개요를 `LOCAL_SCENIC_MEMBER_OVERLAYS`에 연결. 사진/본문 조회 가능 8/8.
+  2. **무주 구천동33경 결손 28건 오버레이**: 무주군 문화관광·디지털무주문화대전 공식 팩트와 구천동/덕유산 공식 사진, 명승 일사대·파회·수심대 일원 KHS 사진을 결손 28경에 연결. 기존 5건(라제통문·파회·인월담·백련사·향적봉) JSON `contentId`는 유지·미수정. 사진/본문 조회 가능 33/33.
+- **VERIFY** `smoke:korea-local-scenic-lists` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=uiseong` · `?hub=muju`
+- **다음** 사람 Preview QA
+
+```
+팔경 활용 #7, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-10-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · PR #212 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: /korea/theme/scenic?hub=uiseong 빙계팔경 8행 썸네일·상세 개요 · /korea/theme/scenic?hub=muju 구천동33경 결손 행(은구암·일사대 등) 사진·개요
 ```
 
 
