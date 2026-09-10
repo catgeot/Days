@@ -9,6 +9,10 @@ import {
   getPartnerLinkRel,
   getPartnerLinkTarget,
 } from '../PlaceCard/common/partnerNavigation.js';
+import {
+  PLANNER_FOCUS_ID,
+  handlePlannerConnectedAgenciesToggle,
+} from '../../utils/placePlannerFocus.js';
 
 function agencyDisplayName(agency, lang) {
   if (!agency) return '';
@@ -202,11 +206,15 @@ const TravelAgencyDirectory = ({ variant = 'panel', className = '' }) => {
       )}
 
       {variant === 'planner' ? (
-        <details className="rounded-xl border border-gray-200 bg-white/80 px-3 py-2">
+        <details
+          id={PLANNER_FOCUS_ID.CONNECTED_AGENCIES}
+          className="rounded-xl border border-gray-200 bg-white/80 px-3 py-2 scroll-mt-4"
+          onToggle={handlePlannerConnectedAgenciesToggle}
+        >
           <summary className={`${styles.sectionLabel} cursor-pointer py-1`}>
             {t('home.agencies.catalogTitle')}
           </summary>
-          <div className={`${styles.catalogGrid} mt-2 pb-1`}>{catalogRows}</div>
+          <div className={`${styles.catalogGrid} mt-2 pb-2`}>{catalogRows}</div>
         </details>
       ) : (
         <div>

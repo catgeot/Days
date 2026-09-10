@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 4,
-  sessionPhase: '사람 Preview QA 통과 및 병합 대기',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=mungyeong',
-  qaShareSlug: 'palgyeong-use',
+  title: '플래너 실행 전 여유',
+  sessionNo: 1,
+  sessionPhase: '하단 여유·여행사 펼침 스크롤',
+  branch: 'cursor/planner-empty-pad-6089',
+  previewPath: '/place/yanggu-arboretum/planner',
+  qaShareSlug: 'planner-empty',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-10-planner-empty-1-scroll-pad',
+    session: '플래너 실행 전 여유 #1, 하단 여유·여행사 펼침 스크롤',
+    title: '실행 전 플래너 하단 여유 · 연결된 여행사 펼침 후 상단 스크롤',
+    detail:
+      '양구 수목원처럼 툴킷 실행 전 기본 정보 페이지가 overflow에 막혀 하단이 잘리고, 「연결된 여행사」를 펼쳐도 스크롤되지 않던 문제를 고쳤습니다. 실행 전 화면도 툴킷 있는 플래너와 같은 세로 스크롤·하단 패딩을 쓰고, 목록을 펼치면 해당 섹션이 위로 올라갑니다. Preview /qa/planner-empty — /place/yanggu-arboretum/planner 하단 여유·펼침 스크롤.',
+    at: '2026-09-10T22:10:00.000Z',
+  },
   {
     id: '2026-09-10-palgyeong-use-4-preview-qa-passed',
     session: '팔경 활용 #4, 사람 Preview QA',
