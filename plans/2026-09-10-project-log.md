@@ -143,4 +143,32 @@
 - **VERIFY** `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `build` ALL PASS
 - **다음** 51건 전수 자체 큐레이션 완료 종결 (PR #207 검토 및 병합 대기)
 
+## 장소카드 갤러리-명소 본문 연계 #2 — 명소 모달 닫기 시 직전 갤러리 복귀(returnTo) 처리 (Cloud)
+
+- **세션** `장소카드 갤러리-명소 본문 연계 #2, Preview 확인 및 사람 QA`
+- **브랜치** `cursor/scenic-gateway-2ced` (`ff60a606`) · PR [#208](https://github.com/catgeot/Days/pull/208) (OPEN)
+- **문제점 및 해결**:
+  - 사람 QA 확인 결과, 장소카드 갤러리에서 게이트웨이를 눌러 명소 상세 페이지(모달)를 열람한 뒤 닫기 버튼을 누르면 직전 갤러리가 아닌 명소 목록 홈(`/korea/theme/scenic`)으로 이동하여 사용자가 보던 장소카드를 잃어버리는 UX 내비게이션 단절 문제 발생.
+  - 게이트웨이 진입 시 현재 장소카드 갤러리 경로(`returnTo`, 예: `/place/gyeongbokgung-palace/gallery`)를 URL 쿼리, React Router state, sessionStorage 3중으로 보존.
+  - `ScenicPage.jsx`의 `closeModal`에서 `returnTo`를 감지하여 모달 닫기 시 직전 장소카드 갤러리로 `navigate(targetReturnTo, { replace: true })` 호출하여 즉시 복귀 처리.
+  - `ThemeModuleBackButton.jsx`에서도 테마 스택이 없을 때 `returnTo`를 감지하여 상단 헤더 뒤로가기 대상으로 연계.
+- **완료**:
+  1. `src/pages/Home/lib/placeScenicGateway.js`: `resolveScenicSpotForPlace(loc, options)`에 `returnTo` 옵션 지원 및 `deepPath`에 쿼리 파라미터 첨부 로직 추가.
+  2. `src/components/PlaceCard/common/PlaceScenicGateway.jsx`: `useLocation()` 기반 현재 장소카드 갤러리 경로 추출, 딥링크 전달, state 및 sessionStorage 동시 보존.
+  3. `src/pages/KoreaTheme/ScenicPage.jsx`: `closeModal`에서 `returnTo` 감지 시 직전 장소카드로 복귀 (`replace: true`).
+  4. `src/pages/KoreaTheme/ThemeModuleBackButton.jsx`: 헤더 뒤로가기 액션에 `returnTo` 연계.
+  5. `scripts/smoke-place-scenic-gateway.mjs`: `returnTo` 쿼리 보존 스모크 테스트 3건 추가 (총 21건 PASS).
+- **VERIFY** `smoke:place-scenic-gateway` (21 passed) · `audit:korea-scenic-spots` · `build` ALL PASS
+- **다음** 사람 Preview QA 및 PR #208 검토 후 main 병합
+
+```
+장소카드 갤러리-명소 본문 연계 #2, 사람 Preview QA 및 병합 대기
+@plans/feature-handoff-index.md
+@plans/2026-09-10-project-log.md
+브랜치 cursor/scenic-gateway-2ced · PR #208
+금지: UI 임의 리디자인 · feature에 plans/** 커밋
+작업: 장소카드 갤러리에서 명소 본문 진입 후 모달 닫기 시 원래 갤러리로 정확히 복귀하는지 확인
+```
+
+
 
