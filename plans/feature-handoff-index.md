@@ -312,32 +312,19 @@
 
 ---
 
-### 팔경 활용 — 검색·리스트 (A)
+### 팔경 활용 — 검색·리스트 (A) — main 병합 완료 ✅
 
 | | |
 |--|--|
-| **상태** | **#2 push** · tip `1a721b9c` · PR [#209](https://github.com/catgeot/Days/pull/209) · **사람 Preview QA** (속초·삼척·원주·홍천 사진·개요 확인) |
-| **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `1a721b9c` |
-| **PR** | [#209](https://github.com/catgeot/Days/pull/209) |
+| **상태** | **main 병합 완료 ✅** · merge commit `6eed3aa1` / PR [#209](https://github.com/catgeot/Days/pull/209) MERGED |
+| **브랜치** | `cursor/palgyeong-use-e744` · PR [#209](https://github.com/catgeot/Days/pull/209) (MERGED) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-10-project-log.md`](./2026-09-10-project-log.md) |
-| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=hongcheon` |
+| **PROD** | `https://www.gateo.kr/korea/theme/scenic` |
 | **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
-| **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `smoke:korea-local-scenic-lists` · `smoke:place-label-slug` · `vite build` |
+| **성과** | 팔경 멤버 N경 소제목 그룹화 · 검색/리스트/모달 연동 · 미등재/사진누락 멤버 런타임 오버레이(`LOCAL_SCENIC_MEMBER_OVERLAYS`) 및 live TourAPI 썸네일 폴백 구축 |
 
-**다음 제시어**:
-
-```
-팔경 활용 #2, 사람 Preview QA
-@plans/feature-handoff-index.md
-@plans/2026-09-10-project-log.md
-@plans/korea-local-scenic-use-plan.md
-브랜치 cursor/palgyeong-use-e744 · PR #209 · Preview /qa/palgyeong-use
-금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
-작업: /korea/theme/scenic (속초·삼척·원주·홍천) 리스트 썸네일·클릭 모달 상세/갤러리 확인 후 PR #209 병합
-```
+**다음 제시어 없음** (PR #209 병합 완료 및 주제 종료). 후속 팔경 그룹화 UI 분리 및 누락 허브 본문 채우기는 별도 세션에서 진행.
 
 ---
 
