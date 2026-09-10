@@ -4934,9 +4934,20 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'gokseong',
       attractionName: '곡성 심청한옥마을',
-      overview: '심청한옥마을 — 한옥·체험. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '전남 곡성군 오곡면 섬진강변 곤방산 자락에 자리한 전통 한옥 체험 마을이다. 심청의 효행 설화를 테마로 기와집과 초가 등 전통 가옥을 복원하여 조성되었다. 돌담길과 툇마루 등 전통 건축 양식을 고스란히 간직하고 있어 고즈넉한 한옥 숙박과 전통 놀이 체험이 가능하다. 인근 섬진강 기차마을 및 레일바이크와 연계되어 온 가족이 머물기 좋은 곡성의 대표 힐링 체류 명소다.',
+      addr1: '전라남도 곡성군 오곡면 기차마을로 260-33',
+      homepage: 'https://www.gokseong.go.kr/tour/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/46/3532346_image2_1.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/46/3532346_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/38/3532338_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/40/3532340_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/41/3532341_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/42/3532342_image2_1.jpg',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 4620,
       id: 'dorimsa',
@@ -5397,9 +5408,20 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'imsil',
       attractionName: '성수산',
-      overview: '성수산 — 산행·상이암. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '전북 임실군과 진안군의 경계를 이루는 해발 876m의 명산으로, 고려 태조 왕건과 조선 태조 이성계가 기도를 올리고 건국의 대업을 얻었다는 유서 깊은 상이암을 품고 있다. 아홉 마리의 용이 구슬을 물고 하늘로 오르는 형세의 구룡쟁주 명당으로 알려져 있다. 수려한 계곡과 울창한 편백나무·참나무 원시림이 우거진 성수산자연휴양림 둘레길이 잘 조성되어 있어 사계절 산림욕과 힐링 산행지로 각광받는다.',
+      addr1: '전북특별자치도 임실군 성수면 성수산길 358',
+      homepage: 'https://www.imsil.go.kr/tour/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/03/3363803_image2_1.JPG',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/03/3363803_image2_1.JPG',
+        'https://tong.visitkorea.or.kr/cms/resource/95/3363795_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/96/3363796_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/97/3363797_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/98/3363798_image2_1.jpg',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 5060,
       id: 'okjeong-lake',
@@ -5501,9 +5523,20 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'jangseong',
       attractionName: '장성산수유마을',
-      overview: '산수유마을 — 봄꽃·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '전남 장성군 북하면 백암산 자락에 위치한 정겨운 산골 마을로 매년 초봄이면 노란 산수유꽃이 만발하는 명소다. 축령산 편백숲과 백양사로 이어지는 길목에 자리하여 산세가 수려하고 공기가 맑다. 마을 안길과 돌담을 따라 수령 수십 년의 산수유나무 군락이 이어져 꽃길 산책과 가을 붉은 열매 풍경이 운치를 더한다. 소박한 시골 정취 속에서 힐링과 여유를 만끽할 수 있는 자연 쉼터다.',
+      addr1: '전라남도 장성군 북하면 추암로 455 일원',
+      homepage: 'https://www.jangseong.go.kr/tour/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/33/3017733_image2_1.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/33/3017733_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/25/3017725_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/26/3017726_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/27/3017727_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/28/3017728_image2_1.jpg',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 5160,
       id: 'jangseong-lake',
@@ -5761,9 +5794,20 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'yeonggwang',
       attractionName: '백사장해수욕장',
-      overview: '백사장해수욕장 — 영광 백사장. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '전남 영광군 백수읍 서해안에 펼쳐진 백사장으로 고운 은빛 모래와 드넓은 갯벌이 어우러진 해변이다. 대한민국 대표 해안 드라이브 코스로 손꼽히는 백수해안도로와 바로 인접해 있어 도로변에서 탁 트인 칠산바다를 한눈에 조망할 수 있다. 썰물 때면 광활한 갯벌 생태 체험이 가능하며, 해질녘 수평선을 붉게 물들이는 서해 낙조가 장관을 이룬다.',
+      addr1: '전라남도 영광군 백수읍 백수로 1530 일원',
+      homepage: 'https://tour.yeonggwang.go.kr/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/63/3381963_image2_1.JPG',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/63/3381963_image2_1.JPG',
+        'https://tong.visitkorea.or.kr/cms/resource/55/3381955_image2_1.JPG',
+        'https://tong.visitkorea.or.kr/cms/resource/56/3381956_image2_1.JPG',
+        'https://tong.visitkorea.or.kr/cms/resource/57/3381957_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/58/3381958_image2_1.jpg',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 5410,
       id: 'bulgapsa',
@@ -5950,9 +5994,20 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'iksan',
       attractionName: '웅포관광지',
-      overview: '웅포관광지 — 금강 수변. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '전북 익산시 웅포면 금강 변에 조성된 수변 휴양 관광지로 웅포 곰개나루와 오토캠핑장 일대를 아우른다. 금강 하구의 시원한 강바람을 맞으며 자전거 하이킹과 산책을 즐길 수 있는 수변 데크길이 길게 뻗어 있다. 서해 낙조 5대 명소 중 하나인 곰개나루 덕양정에서 바라보는 황홀한 금강 일몰이 일품이며, 인근 금강 철새도래지와 연계되어 사계절 가족 휴양지로 사랑받는다.',
+      addr1: '전북특별자치도 익산시 웅포면 철새로 135',
+      homepage: 'https://www.iksan.go.kr/tour/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/54/3564054_image2_1.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/54/3564054_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/46/3564046_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/47/3564047_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/48/3564048_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/49/3564049_image2_1.jpg',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 5590,
       id: 'hamrasan',
@@ -6408,9 +6463,20 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'yangsan',
       attractionName: '에덴밸리리조트',
-      overview: '에덴밸리 — 양산 스키·리조트. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '경남 양산시 신불산 해발 800m 고원지대에 위치한 영남권 유일의 복합 스키 리조트다. 겨울철 설원을 달리는 7면의 슬로프 스키장뿐 아니라 사계절 레저 시설을 고루 갖추고 있다. 총연장 2.04km로 세계 최장 수준을 자랑하는 루지 트랙과 카트체험장, 골프클럽, 화이트팰리스 콘도가 조성되어 있어 사계절 내내 스릴 넘치는 야외 액티비티와 고원 휴양을 함께 누릴 수 있다.',
+      addr1: '경상남도 양산시 원동면 어실로 1206',
+      homepage: 'http://www.edenvalley.co.kr/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/25/3532125_image2_1.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/25/3532125_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/17/3532117_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/18/3532118_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/19/3532119_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/20/3532120_image2_1.jpg',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 6000,
       id: 'cheonseongsan',
@@ -6440,9 +6506,20 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'yangsan',
       attractionName: '통도환타지아',
-      overview: '통도환타지아 — 양산 테마파크. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '경남 양산시 하북면 영축산 자락에 자리한 영남권을 대표하는 대형 종합 테마파크다. 유네스코 세계유산 통도사 인근에 위치하며 롤러코스터, 바이킹 등 다채로운 어트랙션과 호수 보트장, 콘도미니엄, 대형 야외 물놀이 시설 아쿠아환타지아를 함께 갖추고 있다. 밤이면 화려한 조명과 야경 쇼가 펼쳐져 남녀노소 온 가족이 즐겨 찾는 추억과 모험의 놀이동산이다.',
+      addr1: '경상남도 양산시 하북면 통도7길 68',
+      homepage: 'https://www.yangsan.go.kr/tour/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/25/3589825_image2_1.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/25/3589825_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/17/3589817_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/18/3589818_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/19/3589819_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/24/3589824_image2_1.jpg',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 6030,
       id: 'hongryong-falls',
@@ -6505,9 +6582,20 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'changwon',
       attractionName: '창원 진해군항제',
-      overview: '진해군항제 — 창원 벚꽃 축제. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '경남 창원시 진해구 전역에서 매년 봄 개최되는 대한민국 최대 규모의 벚꽃 축제다. 1952년 충무공 이순신 장군의 구국의 얼을 기리기 위해 시작된 이래 70년 넘는 역사를 이어오고 있다. 여좌천 로망스다리의 벚꽃 터널, 철길 위로 벚꽃비가 흩날리는 경화역, 제황산공원 모노레일 등 진해 시가지 전체가 순백의 벚꽃으로 물들며 군악의장페스티벌과 해군사관학교 개방 등 다채로운 문화 행사가 펼쳐진다.',
+      addr1: '경상남도 창원시 진해구 통신동 중원로터리 일원',
+      homepage: 'https://www.changwon.go.kr/tour/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/69/3565769_image2_1.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/69/3565769_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/61/3565761_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/62/3565762_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/63/3565763_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/64/3565764_image2_1.jpg',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 6090,
       id: 'daebisa-cheongdo',
@@ -6526,9 +6614,20 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'cheongdo',
       attractionName: '청도 운문사',
-      overview: '운문사 — 청도 비구니 사찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '경북 청도군 운문산 자락에 자리한 신라 진흥왕 시대의 천년 고찰로 국내 최대 규모의 비구니 승가대학이 위치한 사찰이다. 경내에는 천연기념물 제180호로 지정된 처진소나무를 비롯해 보물로 지정된 동·서 삼층석탑, 석조여래좌상 등 수많은 문화유산이 보존되어 있다. 솔바람 가득한 진입로 숲길과 웅장한 가람 배치가 조화를 이루며 고요하고 청정한 수행 도량의 정취를 전한다.',
+      addr1: '경상북도 청도군 운문면 운문사길 264',
+      homepage: 'http://www.unmunsa.or.kr/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/97/3578597_image2_1.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/97/3578597_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/89/3578589_image2_1.JPG',
+        'https://tong.visitkorea.or.kr/cms/resource/90/3578590_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/91/3578591_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/92/3578592_image2_1.jpg',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 6110,
       id: 'yudeung-yeonji-cheongdo',
@@ -6976,9 +7075,20 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'uiseong',
       attractionName: '의성마늘테마공원',
-      overview: '마늘테마공원 — 의성 마늘·체험. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '전국 최고의 품질을 자랑하는 의성 한지마늘의 우수성과 역사, 농경 문화를 한눈에 볼 수 있도록 조성된 농촌 테마공원이다. 마늘의 유래와 효능을 배우는 마늘전시관, 어린이 농촌체험 놀이터, 생태 연못과 분수 광장, 야외 쉼터 등이 잘 정비되어 있다. 의성 마늘을 활용한 다양한 가공식품과 먹거리 체험 프로그램이 운영되며 계절마다 가족 단위 나들이객이 찾는 생태 학습 쉼터다.',
+      addr1: '경상북도 의성군 의성읍 충효로 88',
+      homepage: 'https://www.usc.go.kr/tour/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/62/3542362_image2_1.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/62/3542362_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/54/3542354_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/55/3542355_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/56/3542356_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/57/3542357_image2_1.jpg',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 6540,
       id: 'yecheon-yongmunsa',
@@ -7008,9 +7118,20 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'yecheon',
       attractionName: '용궁시장',
-      overview: '용궁시장 — 예천 전통 시장. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '경북 예천군 용궁면 읍부리에 위치한 유서 깊은 전통 오일장(4·9일)이다. 별주부전의 고장이라는 설화에 걸맞게 용궁이라는 지명을 품고 있으며, 예천의 대표 명물 먹거리인 용궁순대와 매콤한 오징어불고기 골목으로 전국적인 명성을 얻고 있다. 정겨운 시골 장터 풍경과 장터 주막거리의 활기가 살아 있으며, 인근 회룡포와 삼강주막으로 이어지는 예천 테마 여행의 필수 미식 코스다.',
+      addr1: '경상북도 예천군 용궁면 용궁시장길 10-4',
+      homepage: 'https://www.ycg.kr/open.content/tour/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/07/3542707_image2_1.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/07/3542707_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/99/3542699_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/00/3542700_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/01/3542701_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/08/3542708_image2_1.jpg',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 6570,
       id: 'choganjeong-pavilion',
@@ -7252,9 +7373,20 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'chilgok',
       attractionName: '숭산정원',
-      overview: '숭산정원 — 칠곡 정원·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '경북 칠곡군 왜관읍 낙동강 동쪽 자락에 조성된 사계절 자연친화형 힐링 정원이다. 숭산의 수려한 산세를 배경으로 정원수와 계절 야생화 군락, 잔디광장과 호젓한 산책로가 아기자기하게 꾸며져 있다. 도심 근교에서 자연의 사계를 느끼며 차 한 잔의 여유를 즐기기 좋은 야외 정원 명소로, 인근 왜관철교와 칠곡보 생태공원과 연계해 가족 및 연인들의 나들이 쉼터로 사랑받는다.',
+      addr1: '경상북도 칠곡군 왜관읍 봉계로 202 일원',
+      homepage: 'https://www.chilgok.go.kr/tour/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/48/3561648_image2_1.JPG',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/48/3561648_image2_1.JPG',
+        'https://tong.visitkorea.or.kr/cms/resource/40/3561640_image2_1.JPG',
+        'https://tong.visitkorea.or.kr/cms/resource/41/3561641_image2_1.JPG',
+        'https://tong.visitkorea.or.kr/cms/resource/42/3561642_image2_1.JPG',
+        'https://tong.visitkorea.or.kr/cms/resource/43/3561643_image2_1.JPG',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 6800,
       id: 'chilgok-weir',
@@ -7284,9 +7416,20 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'dokdo',
       attractionName: '독도접안시설',
-      overview: '독도접안시설 — 동도 선착·접안. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '대한민국 천연기념물 제336호 독도의 동도 남동쪽 해안에 설치된 여객선 접안시설이다. 울릉도에서 정기 여객선을 타고 독도를 찾는 국민들이 우리 땅 독도에 직접 첫발을 내딛는 관문이다. 부두에 발을 디디면 동도의 깎아지른 해안절벽과 맑고 푸른 동해 바다, 괭이갈매기 떼가 어우러진 장엄한 풍경이 펼쳐지며 대한민국의 영토 주권과 독도의 웅장한 지형미를 가슴 깊이 체감할 수 있다.',
+      addr1: '경상북도 울릉군 울릉읍 독도안용복길 3',
+      homepage: 'https://www.ulleung.go.kr/tour/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/91/2726491_image2_1.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/91/2726491_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/83/2726483_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/84/2726484_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/85/2726485_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/87/2726487_image2_1.jpg',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 6830,
       id: 'dongdo',
@@ -7305,9 +7448,20 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'dokdo',
       attractionName: '서도',
-      overview: '서도 — 독도 서섬·암벽. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '대한민국 동쪽 끝 독도를 이루는 양대 주섬 중 하나로, 해발 168.5m의 최고봉 대한봉을 품은 웅장한 원추형 화산섬이다. 동도보다 면적이 넓고 험준하며 섬 서북쪽에는 주민숙소와 담수화시설, 독도의 유일한 식수원인 물골이 위치해 있다. 거센 동해 파도가 빚어낸 탕건봉 등 기암괴석과 해식애가 병풍처럼 둘러싸여 천혜의 비경과 독도의 굳건한 기상을 상징한다.',
+      addr1: '경상북도 울릉군 울릉읍 독도안용복길 3 일원',
+      homepage: 'https://www.ulleung.go.kr/tour/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/16/2653416_image2_1.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/16/2653416_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/08/2653408_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/15/2653415_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/17/2653417_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/18/2653418_image2_1.jpg',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 6850,
       id: 'yeonhwaji-pond-gimcheon',
@@ -7359,9 +7513,20 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'goryeong',
       attractionName: '고령 개진시장',
-      overview: '개진시장 — 고령 전통 시장. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '경북 고령군 개진면에 위치한 소박하고 유서 깊은 시골 장터다. 낙동강 유역의 비옥한 사질양토에서 재배되어 전국적인 맛과 품질을 자랑하는 개진감자의 고장이다. 매년 봄 감자 출하 시기에는 직거래 장터가 활발히 열리며 시골 농촌의 정겨운 인심을 만날 수 있다. 인근 개경포기념공원 및 낙동강 자전거길과 가까워 여유롭게 들르기 좋은 고령의 향토 장터다.',
+      addr1: '경상북도 고령군 개진면 개경포로 26 일원',
+      homepage: 'https://www.goryeong.go.kr/tour/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/46/3516946_image2_1.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/46/3516946_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/47/3516947_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/48/3516948_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/49/3516949_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/50/3516950_image2_1.jpg',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 6900,
       id: 'goryeong-nakdong-viewpoint',
@@ -7370,9 +7535,20 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'goryeong',
       attractionName: '고령 낙동강 전망',
-      overview: '낙동강 전망 — 고령 강변 조망. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '경북 고령군 개진면 개포리 개경포 일원 낙동강변 절벽에 위치한 전망 명소다. 고려 팔만대장경이 강화도에서 해로와 낙동강 수로를 거쳐 해인사로 이운될 때 도착했던 옛 나루터 개경포의 역사적 현장을 굽어본다. 유유히 흐르는 낙동강 물줄기와 강변 억새숲, 산세가 파노라마로 펼쳐지며 개경포기념공원의 주막거리와 산책로, 낙동강 자전거길이 이어져 빼어난 강변 풍광을 즐길 수 있다.',
+      addr1: '경상북도 고령군 개진면 개포리 산 1-1 일원',
+      homepage: 'https://www.goryeong.go.kr/tour/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/46/3516946_image2_1.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/46/3516946_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/47/3516947_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/48/3516948_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/49/3516949_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/50/3516950_image2_1.jpg',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 6910,
       id: 'daegaya-museum',
@@ -7423,9 +7599,20 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'gwangyang',
       attractionName: '구봉산 케이블카',
-      overview: '구봉산 케이블카 — 광양 전망·야경. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '전남 광양시 골약동 해발 473m 구봉산 정상부와 도심을 연결하는 관광 케이블카 조성 권역이다. 정상에는 광양제철소의 상징인 디지털 봉수대 전망대가 자리잡고 있어 이순신대교와 광양만, 여수산단, 순천왜성까지 남해안의 수려한 다도해 풍광을 360도 파노라마로 감상할 수 있다. 해질녘 광양만의 노을과 화려한 야경이 장관을 이루는 남해안 대표 전망 명소다.',
+      addr1: '전라남도 광양시 골약동 구봉산전망대길 155',
+      homepage: 'https://gwangyang.go.kr/tour/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/61/3534661_image2_1.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/61/3534661_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/53/3534653_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/54/3534654_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/55/3534655_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/56/3534656_image2_1.jpg',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 6960,
       id: 'mangdeok-port',
@@ -7478,9 +7665,20 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'gyeongsan',
       attractionName: '환성사',
-      overview: '환성사 — 경산 팔공산 고찰. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '경북 경산시 하양읍 팔공산 자락에 자리 잡은 신라 흥덕왕 시대의 천년 고찰이다. 고려 말 왜구의 침략으로 소실되었다가 조선 시대에 중창된 유서 깊은 사찰로, 보물 제562호로 지정된 대웅전은 조선 초기 다포계 맞배지붕 건축의 뛰어난 조형미를 자랑한다. 울창한 소나무 숲길과 아담한 연못이 고즈넉한 산사 풍경을 이루며 팔공산의 청정한 기운 속에서 사색하기 좋다.',
+      addr1: '경상북도 경산시 하양읍 사기리 환성로 392',
+      homepage: 'https://www.gbgs.go.kr/tour/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/99/3028999_image2_1.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/99/3028999_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/91/3028991_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/92/3028992_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/94/3028994_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/97/3028997_image2_1.jpg',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 7010,
       id: 'namsa-yedamchon',
@@ -7608,9 +7806,20 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'uiryeong',
       attractionName: '의령 토요애랜드',
-      overview: '토요애랜드 — 의령 가족 체험. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '경남 의령군이 청정 농특산물 공동 브랜드인 토요애를 테마로 조성한 농촌 문화 체험 및 생태 쉼터다. 의령천과 남산 자락의 쾌적한 자연환경 속에서 의령의 대표 특산물인 망개떡, 수박, 한우 등을 테마로 한 농경 문화 전시와 로컬푸드 직매장, 야외 쉼터 정원을 갖추고 있다. 의병탑과 충익사가 위치한 의령 도심과 인접해 있어 가족 단위 나들이 코스로 편안하게 들르기 좋다.',
+      addr1: '경상남도 의령군 의령읍 의병로 35 일원',
+      homepage: 'https://www.uiryeong.go.kr/tour/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/51/3029551_image2_1.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/51/3029551_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/43/3029543_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/44/3029544_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/45/3029545_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/50/3029550_image2_1.jpg',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 7130,
       id: 'yeongdeok-goraebul-beach',
@@ -7683,9 +7892,20 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'yeongyang',
       attractionName: '영양 외씨버선길',
-      overview: '외씨버선길 — 영양 트레킹 명승. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '조지훈 시인의 시 승무에 나오는 외씨버선 모양을 닮은 4개 군(청송·영양·봉화·영월)을 잇는 총 240km의 대표 문화생태 탐방로다. 영양 구간은 조지훈 문학관이 있는 주실마을의 지훈문학길과 일월산 자락의 치유평화길, 반변천 물길을 따라 걷는 오들길 등으로 구성된다. 청정 백두대간의 원시림과 야생화, 고즈넉한 문학마을을 천천히 걸으며 자연과 문학의 숨결을 오롯이 느낄 수 있다.',
+      addr1: '경상북도 영양군 일월면 영양로 1799 일원',
+      homepage: 'http://www.beosun.com/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/27/3531127_image2_1.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/27/3531127_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/19/3531119_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/20/3531120_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/21/3531121_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/22/3531122_image2_1.jpg',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 7200,
       id: 'yeongyang-ilwolsan',
