@@ -339,30 +339,32 @@
 
 ---
 
-### 팔경 활용 — 검색·리스트 (A) — main 병합 ✅
+### 팔경 활용 — 검색·리스트 (A)
 
 | | |
 |--|--|
-| **상태** | **#5 merge ✅ · main 병합 완료** · main `33776ccb` · PR [#210](https://github.com/catgeot/Days/pull/210) |
-| **브랜치** | `cursor/palgyeong-use-e744` · merge commit `33776ccb` |
-| **PR** | [#210](https://github.com/catgeot/Days/pull/210) (MERGED) |
+| **상태** | **#6 push** · tip `f1367c6f` · PR [#212](https://github.com/catgeot/Days/pull/212) · **#7 사람 Preview QA** |
+| **브랜치** | `cursor/palgyeong-use-e744` |
+| **tip** | `f1367c6f` |
+| **PR** | [#212](https://github.com/catgeot/Days/pull/212) (OPEN) · [#210](https://github.com/catgeot/Days/pull/210) merge ✅ `33776ccb` |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-10-project-log.md`](./2026-09-10-project-log.md) |
-| **PROD** | `https://www.gateo.kr/korea/theme/scenic?hub=mungyeong` |
+| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=uiseong` · `?hub=muju` |
 | **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 |
-| **성과** | 지자체 팔경 누락 분석 도구(`report-local-scenic-missing-content.mjs`) 도입, 문경 4건(새재계곡·쌍용계곡·운달계곡·봉암사백운대) 및 단양 2건(하선암·옥순봉) 런타임 오버레이 보강, ScenicPage 내 팔경 전용 소제목 바 및 지역 대표 명소 분리 디바이더 적용, 사람 Preview QA 통과 후 PR #210 main 병합 완료 |
+| **VERIFY** | `npm run smoke:korea-local-scenic-lists` PASS · `npm run build` PASS |
+| **성과** | 의성 빙계팔경 8건 전수·무주 구천동33경 결손 28건 런타임 오버레이(`LOCAL_SCENIC_MEMBER_OVERLAYS`) — 사진/본문 조회 가능 의성 8/8 · 무주 33/33. JSON contentId는 채우지 않음 |
 
 **다음 제시어**:
 
 ```
-팔경 활용 #6, 의성·무주 결손 허브 런타임 오버레이 보강
+팔경 활용 #7, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-10-project-log.md
 @plans/korea-local-scenic-use-plan.md
-브랜치 cursor/palgyeong-use-e744
+브랜치 cursor/palgyeong-use-e744 · PR #212 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 의성 빙계팔경(8건) 및 무주 구천동33경(28건 결손) 순수 지자체 팔경 공공 공식 팩트 기반 런타임 오버레이(LOCAL_SCENIC_MEMBER_OVERLAYS) 보강
+작업: /korea/theme/scenic?hub=uiseong 빙계팔경 8행 썸네일·상세 개요 · /korea/theme/scenic?hub=muju 구천동33경 결손 행(은구암·일사대 등) 사진·개요
 ```
 
 ---
