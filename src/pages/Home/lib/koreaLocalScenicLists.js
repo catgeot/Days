@@ -318,14 +318,17 @@ export function localScenicMemberToSuggestion(list, hub, member, locale = 'ko') 
   const contentId = memberContentId(member, resolveMemberAttraction(h, member));
   const curated = lookupCuratedScenicSpot(list.hubId, member.attractionName);
   const fromCurated = scenicThumbFromCurated(curated);
+  const spotId = localScenicMemberSpotId(list.listId, member.attractionName);
+  const overlay = lookupLocalScenicMemberOverlay(spotId);
+  const thumb = overlay?.imageUrl || fromCurated.imageUrl;
   return {
     ...base,
     groupTitle: localScenicListDisplayTitle(list, h, locale),
     localScenicListId: list.listId,
     source: 'localScenicList',
-    contentId: contentId || fromCurated.contentId,
-    imageUrl: fromCurated.imageUrl,
-    thumbUrl: fromCurated.imageUrl,
+    contentId: overlay?.contentId || contentId || fromCurated.contentId,
+    imageUrl: thumb,
+    thumbUrl: thumb,
   };
 }
 
@@ -342,14 +345,22 @@ export function localScenicMemberToNearbyItem(list, member, hub, nearbyHit, loca
   const attraction = resolveMemberAttraction(h, member);
   const curated = lookupCuratedScenicSpot(list.hubId, member.attractionName);
   const fromCurated = scenicThumbFromCurated(curated);
+  const spotId = localScenicMemberSpotId(list.listId, member.attractionName);
+  const overlay = lookupLocalScenicMemberOverlay(spotId);
   const contentId =
     memberContentId(member, attraction) ||
     (nearbyHit && /^\d{1,32}$/.test(String(nearbyHit.contentId || '').trim())
       ? String(nearbyHit.contentId).trim()
       : null) ||
+    overlay?.contentId ||
     fromCurated.contentId;
   const name = member.attractionName;
-  const thumb = nearbyHit?.firstImage || fromCurated.imageUrl || null;
+  const thumb =
+    nearbyHit?.firstImage ||
+    overlay?.firstImage ||
+    overlay?.imageUrl ||
+    fromCurated.imageUrl ||
+    null;
   return {
     ...(nearbyHit || {}),
     id:
@@ -427,6 +438,66 @@ export function localScenicMemberSpotId(listId, attractionName) {
   return `local-scenic:${listId}:${normalizeKey(attractionName)}`;
 }
 
+const LOCAL_SCENIC_SPOT_ID_RE = /^local-scenic:([^:]+):(.+)$/;
+
+/**
+ * 명승 리스트 합성 id (`local-scenic:listId:name`) → 멤버 행.
+ * scenicById/URL `spot=` 조회용. koreaScenicSpots 쓰기 아님.
+ * @param {string} id
+ * @param {string} [locale]
+ */
+export function resolveLocalScenicListSpotById(id, locale = 'ko') {
+  const raw = String(id || '').trim();
+  const m = LOCAL_SCENIC_SPOT_ID_RE.exec(raw);
+  if (!m) return null;
+  const list = listById.get(m[1]);
+  if (!list) return null;
+  const nameKey = m[2];
+  const member = (list.members || []).find(
+    (mem) => normalizeKey(mem.attractionName) === nameKey,
+  );
+  if (!member) return null;
+  return memberToScenicListSpot(list, member, undefined, locale);
+}
+
+/**
+ * 지자체 팔경 멤버별 런타임 오버레이 — JSON contentId 직접 기입·scenic 승격 없이
+ * TourAPI 미등재 또는 사진 누락 멤버의 썸네일·개요·갤러리 보강.
+ */
+const LOCAL_SCENIC_MEMBER_OVERLAYS = {
+  'local-scenic:hongcheon-palgyeong:금학산': {
+    overview:
+      '해발 655m(652m)의 산으로, 홍천강이 산자락을 휘감아 돌며 빚어내는 수태극(태극문양)의 절경을 정상 전망대에서 한눈에 굽어볼 수 있는 홍천의 대표 명산입니다. 굽이치는 물길이 빚어낸 남노일강변의 수려한 풍광과 탁 트인 조망으로 널리 알려져 있으며, 행정안전부 주관 지역자원 경연대회에서 금상을 수상한 바 있습니다.',
+    addr1: '강원특별자치도 홍천군 북방면 원소리 / 남노일리 일원',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/51/1842051_image2_1.jpg',
+    firstImage: 'https://tong.visitkorea.or.kr/cms/resource/51/1842051_image2_1.jpg',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms/resource/51/1842051_image2_1.jpg',
+      'https://tong.visitkorea.or.kr/cms/resource/49/1842049_image2_1.jpg',
+      'https://tong.visitkorea.or.kr/cms/resource/50/1842050_image2_1.jpg',
+      'https://tong.visitkorea.or.kr/cms/resource/52/1842052_image2_1.jpg',
+      'https://tong.visitkorea.or.kr/cms/resource/53/1842053_image2_1.jpg',
+    ],
+  },
+  'local-scenic:hongcheon-palgyeong:가리산': {
+    firstImage: 'https://tong.visitkorea.or.kr/cms2/website/63/2778563.jpg',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms2/website/63/2778563.jpg',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms2/website/63/2778563.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/64/2778564.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/65/2778565.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/66/2778566.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/67/2778567.jpg',
+    ],
+    addr1: '강원특별자치도 홍천군 두촌면 가리산길 260-9',
+  },
+};
+
+function lookupLocalScenicMemberOverlay(spotId) {
+  if (!spotId) return null;
+  return LOCAL_SCENIC_MEMBER_OVERLAYS[spotId] || null;
+}
+
 /**
  * 명승 curated 행 형태. koreaScenicSpots JSON 쓰기는 금지 — 리스트 표시만.
  * @param {object} list
@@ -443,8 +514,12 @@ export function memberToScenicListSpot(list, member, hub, locale = 'ko') {
   const region = scenicRegionForAreaCode(areaCode) || '';
   const title = localScenicListDisplayTitle(list, h, locale);
   const contentId = memberContentId(member, attraction) || fromCurated.contentId;
+  const spotId = localScenicMemberSpotId(list.listId, member.attractionName);
+  const overlay = lookupLocalScenicMemberOverlay(spotId);
+  const firstImage = overlay?.firstImage || fromCurated.imageUrl || null;
+  const imageUrl = overlay?.imageUrl || fromCurated.imageUrl || null;
   return {
-    id: localScenicMemberSpotId(list.listId, member.attractionName),
+    id: spotId,
     name: member.attractionName,
     blurb: title,
     region,
@@ -457,9 +532,12 @@ export function memberToScenicListSpot(list, member, hub, locale = 'ko') {
     ),
     lat: member.lat ?? attraction?.lat ?? null,
     lng: member.lng ?? attraction?.lng ?? null,
-    contentId,
-    imageUrl: fromCurated.imageUrl,
-    firstImage: fromCurated.imageUrl,
+    contentId: overlay?.contentId || contentId,
+    imageUrl,
+    firstImage,
+    galleryUrls: overlay?.galleryUrls || null,
+    overview: overlay?.overview || null,
+    addr1: overlay?.addr1 || null,
     source: 'localScenicList',
     groupTitle: title,
     localScenicListId: list.listId,
@@ -519,20 +597,41 @@ export function hasTourContentId(value) {
  * @param {string} hubId
  */
 export function collectLocalScenicThumbContentIds(hubId) {
+  return listLocalScenicMemberJobs(hubId)
+    .map((job) => job.contentId)
+    .filter(Boolean);
+}
+
+/**
+ * hub 팔경 멤버 — 썸네일·contentId 런타임 조회용. JSON 쓰기 아님.
+ * @param {string} hubId
+ * @returns {{ spotId: string, name: string, contentId: string | null, hubId: string }[]}
+ */
+export function listLocalScenicMemberJobs(hubId) {
   const id = String(hubId || '').trim();
   if (!id) return [];
   const hub = resolveCityAttractionHub(id);
-  const out = new Set();
+  /** @type {{ spotId: string, name: string, contentId: string | null, hubId: string }[]} */
+  const out = [];
+  const seen = new Set();
   for (const list of listsForHub(id)) {
     for (const member of list.members || []) {
+      const name = String(member?.attractionName || '').trim();
+      const key = normalizeKey(name);
+      if (!name || seen.has(key)) continue;
+      seen.add(key);
       const attraction = resolveMemberAttraction(hub, member);
       const curated = lookupCuratedScenicSpot(list.hubId, member.attractionName);
       const fromCurated = scenicThumbFromCurated(curated);
-      const cid = memberContentId(member, attraction) || fromCurated.contentId;
-      if (cid) out.add(cid);
+      out.push({
+        spotId: localScenicMemberSpotId(list.listId, name),
+        name,
+        contentId: memberContentId(member, attraction) || fromCurated.contentId,
+        hubId: list.hubId,
+      });
     }
   }
-  return [...out];
+  return out;
 }
 
 /**
