@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 3,
-  sessionPhase: '누락 허브 본문 선별 및 팔경 전용 그룹 UI 준비',
+  sessionNo: 5,
+  sessionPhase: 'PR #210 main 병합 및 후속 허브 오버레이 확장 검토',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic?hub=mungyeong',
   qaShareSlug: 'palgyeong-use',
@@ -24,6 +24,21 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-10-palgyeong-use-5-pr210-merged-and-overlay-plan',
+    session: '팔경 활용 #5, PR #210 main 병합 및 후속 허브 오버레이 확장 검토',
+    title: 'PR #210 main 병합 완료 및 의성·무주 결손 허브 오버레이 확장 계획 수립',
+    detail:
+      'PR #210(문경·단양 팔경 런타임 오버레이 및 ScenicPage 팔경 그룹 분리)이 main(33776ccb)에 성공적으로 병합되었습니다. 후속 작업으로 지자체 팔경 결손 상위 허브인 의성 빙계팔경(8건 전수) 및 무주 구천동33경(28건 결손)에 대한 공식 팩트 기반 런타임 오버레이(LOCAL_SCENIC_MEMBER_OVERLAYS) 보강 계획을 수립했습니다.',
+    at: '2026-09-10T22:00:00.000Z',
+  },
+  {
+    id: '2026-09-10-palgyeong-use-4-preview-qa-passed',
+    session: '팔경 활용 #4, 사람 Preview QA',
+    title: '문경·단양 리스트 팔경 그룹 분리 및 상세 모달 사람 Preview QA 통과',
+    detail:
+      '문경 및 단양 테마 명승 페이지에서 지자체 팔경 전용 앰버 배지·디바이더 분리 표시와 지역 대표 명소 구분선, 그리고 문경 4건(새재계곡·쌍용계곡·운달계곡·봉암사백운대) 및 단양 2건(하선암·옥순봉)의 상세 모달 사진·공식 개요 본문 노출에 대해 사람 Preview QA 검증을 최종 통과했습니다.',
+    at: '2026-09-10T21:40:00.000Z',
+  },
     id: '2026-09-10-palgyeong-use-3-mungyeong-danyang-overlays-and-group-ui',
     session: '팔경 활용 #3, 누락 허브 본문 선별 및 팔경 전용 그룹 UI 준비',
     title: '문경·단양 팔경 사진·개요 보강 및 리스트 전용 소제목 바 분리',

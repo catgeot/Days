@@ -284,3 +284,30 @@
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
 작업: /korea/theme/scenic?hub=mungyeong 및 ?hub=danyang 리스트 팔경 그룹 배지/디바이더 분리 확인 및 상세 모달 사진·개요 확인
 ```
+
+## 팔경 활용 #5 — PR #210 main 병합 확인 및 의성·무주 결손 허브 오버레이 확장 계획 수립 (Cloud)
+
+- **세션** `팔경 활용 #5, PR #210 main 병합 및 후속 허브 오버레이 확장 검토`
+- **브랜치** `cursor/palgyeong-use-e744` → `main` squash merge (`33776ccb`) · PR [#210](https://github.com/catgeot/Days/pull/210) (MERGED)
+- **완료**:
+  1. **PR #210 main 병합 확인 및 동기화**:
+     - PR #210이 commit `33776ccb`로 `main`에 성공적으로 squash merge 완료됨을 확인하고 `origin/main` 최신 상태 동기화 완료.
+     - 문경·단양 팔경 오버레이 보강 및 ScenicPage 팔경 전용 그룹 UI 분리가 main(PROD)에 안정적으로 배포 반영됨.
+  2. **잔여 결손 허브(의성·무주 등) 실태 분석 및 확장 전략 수립**:
+     - `report-local-scenic-missing-content.mjs` 심층 분석 결과, 결손 최상위 2개 허브는 의성(빙계팔경 8건 전수 결손) 및 무주(구천동33경 33건 중 28건 결손)임.
+     - **의성 빙계팔경(8건)**: 의성군 공식 문화관광 포털 및 국립문화유산포털 기반으로 빙혈, 풍혈, 인암, 의각, 수대, 빙산사지 오층석탑, 불정, 용추 8건 전수 오버레이(`LOCAL_SCENIC_MEMBER_OVERLAYS`)를 구축하는 1회성 완결 배치 수립.
+     - **무주 구천동33경(28건 결손)**: 무주군 공식 문화관광 포털 및 덕유산국립공원 자원 기반으로 나제통문/파회/인월담/백련사/향적봉 5건 외 미등재 28경에 대한 공공 팩트 개요 및 공식 갤러리 오버레이를 1~2차 배치로 분할 공급하는 실행 로드맵 수립.
+- **VERIFY** `npm run audit:docs-handoff-sync` · `smoke:korea-local-scenic-lists` PASS
+- **다음** 팔경 활용 #6 — 의성 빙계팔경(8건) 및 무주 구천동33경(28건 결손) 런타임 오버레이 보강
+
+```
+팔경 활용 #6, 의성·무주 결손 허브 런타임 오버레이 보강
+@plans/feature-handoff-index.md
+@plans/2026-09-10-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: 의성 빙계팔경(8건) 및 무주 구천동33경(28건 결손) 순수 지자체 팔경 공공 공식 팩트 기반 런타임 오버레이(LOCAL_SCENIC_MEMBER_OVERLAYS) 보강
+```
+
+
