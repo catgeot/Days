@@ -577,6 +577,16 @@
       "stayCta": "{{keyword}} 숙소",
       "official": "공식 일정"
     },
+    "scenicGateway": {
+      "badgeHeritage": "국가지정 명승",
+      "badgeHub": "지역 명소 컬렉션",
+      "badgeTheme": "한국의 명승 · 테마 명소",
+      "actionHub": "명소 목록 보기",
+      "actionSpot": "명소 본문 보기",
+      "titleSuffix": "상세 해설 & 스토리",
+      "tagStory": "개요 & 사진",
+      "tagSurroundings": "주변 맛집·숙소"
+    },
     "planner": {
       "title": "스마트 트래블 툴킷",
       "subtitle": "{{name}} 여행을 위한 생존 정보 및 핵심 큐레이션",

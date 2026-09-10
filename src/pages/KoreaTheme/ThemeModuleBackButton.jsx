@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
@@ -15,18 +15,57 @@ const BTN_CLASS =
 function useThemeNavBackAction() {
   const navigate = useNavigate();
   const location = useLocation();
-  const back = resolveThemeNavBack(location.state);
+  const themeBack = resolveThemeNavBack(location.state);
+
+  const back = useMemo(() => {
+    if (themeBack?.path) return themeBack;
+
+    const searchParams = new URLSearchParams(location.search);
+    const returnToParam = searchParams.get('returnTo');
+    const returnToState =
+      location.state &&
+      typeof location.state === 'object' &&
+      'returnTo' in location.state &&
+      typeof location.state.returnTo === 'string'
+        ? location.state.returnTo
+        : null;
+    let storedReturnTo = null;
+    try {
+      storedReturnTo = sessionStorage.getItem('gateo:scenic-gateway-return-to');
+    } catch {
+      /* private mode */
+    }
+
+    const candidate = returnToParam || returnToState || storedReturnTo;
+    if (
+      typeof candidate === 'string' &&
+      candidate.startsWith('/') &&
+      !candidate.startsWith('//')
+    ) {
+      const isPlace = candidate.startsWith('/place/');
+      return {
+        path: candidate,
+        label: isPlace ? '장소카드' : '이전',
+        moduleLabel: '',
+      };
+    }
+    return null;
+  }, [themeBack, location.search, location.state]);
 
   const goBack = useCallback(() => {
-    const entry = resolveThemeNavBack(location.state);
-    if (!entry?.path) {
+    if (!back?.path) {
       navigate('/korea/theme/scenic');
       return;
     }
     const top = peekThemeNavBack();
-    if (top?.path === entry.path) consumeThemeNavBack();
-    navigate(entry.path);
-  }, [location.state, navigate]);
+    if (top?.path === back.path) consumeThemeNavBack();
+    try {
+      sessionStorage.removeItem('gateo:scenic-gateway-return-to');
+    } catch {
+      /* private mode */
+    }
+    navigate(back.path, { replace: true });
+  }, [back, navigate]);
 
   return { back, goBack };
 }

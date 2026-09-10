@@ -59,6 +59,7 @@
     "report:curated-scenic-candidates": "node scripts/report-curated-scenic-candidates.mjs",
     "draft:korea-scenic-hub-batch": "node scripts/draft-korea-scenic-hub-batch.mjs",
     "smoke:korea-scenic-spots": "node scripts/smoke-korea-scenic-spots.mjs",
+    "smoke:place-scenic-gateway": "node scripts/smoke-place-scenic-gateway.mjs",
     "smoke:korea-scenic-hub-fill": "node scripts/smoke-korea-scenic-hub-fill.mjs",
     "smoke:korea-scenic-categories": "node scripts/smoke-korea-scenic-categories.mjs",
     "smoke:korea-scenic-place-label": "node scripts/smoke-korea-scenic-place-label.mjs",
