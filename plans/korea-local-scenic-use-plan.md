@@ -99,7 +99,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | #N | 채팅명 한 줄 | 갈래 | 상태 |
 |----|--------------|------|------|
 | 1 | `팔경 활용 #1, 검색·리스트` | A | **완료** · tip `e8da2987` |
-| 2 | `팔경 활용 #2, 사람 Preview QA` | A 사람 | **진행/검토** · 사진·상세 보강 tip `37213091` · PR #209 |
+| 2 | `팔경 활용 #2, 사람 Preview QA` | A 사람 | **진행/검토** · 사진·상세 보강 tip `1a721b9c` · PR #209 |
 | — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
 | — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |
 | — | `팔경contentId #P2-L10, 잔여 null 분석 및 전략` | B | **완료** · tip `fb4c5513` 27/32 |

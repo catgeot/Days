@@ -233,5 +233,27 @@
 작업: /korea/theme/scenic?hub=hongcheon 가리산·금학산 리스트 썸네일·클릭 모달 상세/갤러리 및 써머리 카드 확인 후 PR #209 병합
 ```
 
+## 팔경 활용 #2 — 조도·새천년해안·비로봉·살둔계곡·삼봉약수·대포항 사진/본문 보강 (Cloud)
+
+- **세션** `팔경 활용 #2, 사람 Prod QA`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `1a721b9c` · PR [#209](https://github.com/catgeot/Days/pull/209)
+- **완료**:
+  1. **실태 분석**: 이전 51건의 자체 큐레이션은 `koreaScenicSpots.json` 대상이었으므로 순수 지자체 팔경 멤버(조도, 새천년해안유원지, 비로봉, 살둔계곡)는 대상이 아니었음(실제로 비어 있었음).
+  2. **순수 팔경 런타임 오버레이 보강**: `LOCAL_SCENIC_MEMBER_OVERLAYS`에 속초 조도, 삼척 새천년해안유원지, 원주 비로봉, 홍천 살둔계곡, 홍천 삼봉약수의 공식 고화질 사진 및 팩트 개요·주소·갤러리 반영.
+  3. **속초 대포항(129596)**: TourAPI 공식 사진 4장 및 개요 SSOT 반영, `ScenicPage.jsx`에서 curatedIds도 DB 미캐시 시 live TourAPI 조회를 거치도록 확장.
+- **VERIFY** `smoke:korea-local-scenic-lists` PASS · `smoke:place-label-slug` PASS · `vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=sokcho` (또는 `samcheok`, `wonju`, `hongcheon`)
+- **다음** 사람 Preview QA 확인 및 PR #209 병합
+
+```
+팔경 활용 #2, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-10-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · PR #209 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
+작업: /korea/theme/scenic (속초·삼척·원주·홍천) 리스트 썸네일·클릭 모달 상세/갤러리 확인 후 PR #209 병합
+```
+
 
 
