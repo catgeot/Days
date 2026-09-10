@@ -3493,9 +3493,20 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'uljin',
       attractionName: '울진 금강소나무숲길',
-      overview: '금강소나무숲길 — 원시림 트레킹. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '산림청이 지정한 대한민국 1호 국가숲길로, 울진군 금강송면 소광리 일대에 펼쳐진 2,247ha 규모의 천연 금강소나무 원시림 군락지이다. 수령 500년이 넘는 대왕송과 500년송을 비롯해 평균 수령 150년 이상의 곧고 붉은 소나무들이 숲을 이루고 있다. 조선 시대 왕실 황장봉산으로 지정되어 엄격히 보호되던 역사적 숲길이자 보부상들의 애환이 서린 십이령 옛길을 품고 있다. 산림 생태계 보전을 위해 예약탐방가이드제로 운영되며, 해설사와 함께 솔향 가득한 원시림을 걷는 힐링 트레킹 코스로 사랑받는다.',
+      addr1: '경상북도 울진군 금강송면 십이령로 552',
+      homepage: 'https://www.komount.or.kr/komount/contents.do?key=2105180002',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms2/website/52/2702752.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms2/website/52/2702752.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/53/2702753.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/54/2702754.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/56/2702756.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/58/2702758.jpg',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 3460,
       id: 'deokgu-hot-springs',
@@ -3615,7 +3626,17 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'chungju',
       attractionName: '비내섬',
-      overview: '비내섬 — 남한강 생태섬. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '충북 충주시 앙성면 남한강 상류에 형성된 92만㎡ 규모의 하천 하중도이자 국가습지보호지역이다. 강물과 자갈밭, 버드나무 군락이 자연 그대로 어우러져 있으며 가을이면 은빛 물억새와 갈대가 섬 전체를 뒤덮어 장관을 연출한다. 멸종위기 야생생물인 수달과 단양쑥부쟁이, 호사비오리 등이 서식하는 생태계의 보고로, 자연 훼손을 최소화한 생태 탐방로와 억새 숲길이 조성되어 있다. 고즈넉한 강변 풍경 덕분에 여러 드라마와 영화의 촬영 명소로도 널리 알려져 있다.',
+      addr1: '충청북도 충주시 앙성면 조천리 412',
+      homepage: 'https://www.chungju.go.kr/tour/contents.do?key=1246',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/50/3504950_image2_1.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/50/3504950_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/51/3504951_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/52/3504952_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/53/3504953_image2_1.jpg',
+      ],
       contentId: null,
     },
     {
@@ -3746,7 +3767,17 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'sejong',
       attractionName: '대통령기록관',
-      overview: '세종시에 있는 대통령기록관. 역대 대통령 기록과 전시를 만날 수 있으며 Tour 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '세종호수공원 북단에 자리 잡은 행정안전부 소속 국립 기록관으로, 대한민국 역대 대통령이 생산한 문서·사진·영상·행정박물과 정상외교 선물을 체계적으로 수집·보존·전시하는 문화공간이다. 국새를 형상화한 독특한 큐브 형태의 현대적 건축미를 자랑하며, 상설전시관에서는 역대 대통령의 생애와 업적, 정상외교의 역사, 대통령 전용 의전 차량, 청와대 집무실 복원 공간 등을 직접 체험할 수 있다. 호수공원 산책로와 인접해 시민과 관광객의 문화 쉼터로 각광받고 있다.',
+      addr1: '세종특별자치시 다솜로 250',
+      homepage: 'https://www.pa.go.kr',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms2/website/81/3585781.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms2/website/81/3585781.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/53/2704953.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/54/2704954.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/55/2704955.jpg',
+      ],
       contentId: null,
     },
     {
@@ -3979,7 +4010,17 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'dangjin',
       attractionName: '당진항',
-      overview: '당진항 — 서해 항구. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '충남 당진시 아산만 서해안에 위치한 무역항이자 환황해권의 핵심 산업·물류 관문이다. 거대한 서해대교가 한눈에 조망되는 해안선을 따라 현대식 항만 시설과 배후 산업단지가 펼쳐져 있으며, 인근 삽교호 함상공원 및 해양테마과학관과 이어져 바다와 어우러진 해양 경관을 선사한다. 서해의 넓은 조수간만과 웅장한 대교 야경, 일몰 무렵 붉게 물드는 아산만의 바다 풍경이 인상적인 서해안 대표 항만 명소이다.',
+      addr1: '충청남도 당진시 송악읍 고대공단2길 79-33',
+      homepage: 'https://www.dangjin.go.kr/tour/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms2/website/80/1883080.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms2/website/80/1883080.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/81/1883081.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/70/3567270.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/92/2534292.jpg',
+      ],
       contentId: null,
     },
     {
@@ -4100,7 +4141,17 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'sangju',
       attractionName: '상주보',
-      overview: '상주보 — 낙동강 보·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '경상북도 상주시 도남동과 중동면 회상리를 잇는 낙동강의 다목적 보이다. 상주의 오랜 역사와 농경문화를 상징하는 쌀·누에·곶감(삼백)의 곡선미를 현대적 수문 디자인에 담아냈으며, 상부에는 자전거와 보행자가 통행할 수 있는 공도교가 설치되어 있다. 보 주변으로 낙동강 700리 물길을 조망하는 상주보 전망대, 나비 모양의 수변 생태공원인 경천섬, 국립낙동강생물자원관 등이 인접해 있어 수변 자전거 라이딩과 산책을 즐기기 좋은 복합 휴양 명소이다.',
+      addr1: '경상북도 상주시 용마로 363',
+      homepage: 'https://www.sangju.go.kr/tour/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms2/website/99/2786999.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms2/website/99/2786999.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/00/2787000.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/01/2787001.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/02/2787002.jpg',
+      ],
       contentId: null,
     }, // TODO contentId
     {
@@ -4131,7 +4182,17 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'gyeryong',
       attractionName: '계룡산 자연사박물관',
-      overview: '계룡산자연사박물관 — 화석·자연사. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '충남 공주시 반포면 계룡산 국립공원 자락에 위치한 국내 최대 규모의 사립 자연사박물관이다. 세계에서 세 번째로 온전하게 발굴된 길이 25m의 브라키오사우루스류 청운공룡 진품 화석을 비롯해 매머드 화석, 익룡, 삼엽충, 운석 등 30만여 점의 희귀 자연사 표본을 소장·전시하고 있다. 지질시대의 화석부터 동식물 생태계, 인체와 미라에 이르기까지 지구 46억 년의 진화 역사를 한눈에 탐구할 수 있는 교육·체험 명소이다.',
+      addr1: '충청남도 공주시 반포면 임금봉길 49-25',
+      homepage: 'http://krnamu.or.kr',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/32/3390232_image2_1.JPG',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/32/3390232_image2_1.JPG',
+        'https://tong.visitkorea.or.kr/cms/resource/29/3390229_image2_1.JPG',
+        'https://tong.visitkorea.or.kr/cms/resource/30/3390230_image2_1.JPG',
+        'https://tong.visitkorea.or.kr/cms/resource/31/3390231_image2_1.JPG',
+      ],
       contentId: null,
     }, // TODO contentId
     {
@@ -4325,7 +4386,17 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'eumseong',
       attractionName: '금왕온천',
-      overview: '금왕온천 — 음성 온천. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '충북 음성군 금왕읍 무극리 일대에 위치한 온천 휴양 시설이다. 지하 암반층에서 용출되는 양질의 알칼리성 유황 식염천 온천수를 활용하여 피부 미용과 신경통, 피로 해소에 탁월한 효능을 지닌 것으로 알려져 있다. 주변으로 응천 십리벚꽃길과 금왕생활체육공원 등이 잘 정비되어 있어 사계절 지역 주민과 여행객들이 온천 목욕과 여유로운 산책을 함께 즐기는 편안한 힐링 쉼터 역할을 한다.',
+      addr1: '충청북도 음성군 금왕읍 무극로 324',
+      homepage: 'https://www.eumseong.go.kr/tour/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/54/4082154_image2_1.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/54/4082154_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/51/4082151_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/52/4082152_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/53/4082153_image2_1.jpg',
+      ],
       contentId: null,
     }, // TODO contentId
     {
@@ -4336,7 +4407,17 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'eumseong',
       attractionName: '수정산산림욕장',
-      overview: '수정산산림욕장 — 숲·산림욕. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '충북 음성읍을 병풍처럼 감싸고 있는 해발 395m의 수정산 자락에 조성된 쾌적한 도심 숲 휴양 공간이다. 울창한 소나무 숲길과 아카시아나무 군락 사이로 완만한 산책로와 체육시설, 숲속 쉼터가 정비되어 있어 삼림욕을 즐기기에 제격이다. 산 정상 부근에는 삼국시대에 축조된 둘레 577m 규모의 석축산성인 수정산성(충청북도 기념물)이 자리하여, 성곽 둘레길을 따라 걸으며 음성 분지 일대의 탁 트인 풍경과 역사의 숨결을 동시에 만끽할 수 있다.',
+      addr1: '충청북도 음성군 음성읍 읍내리 산14-1',
+      homepage: 'https://www.eumseong.go.kr/tour/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/79/3489079_image2_1.JPG',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/79/3489079_image2_1.JPG',
+        'https://tong.visitkorea.or.kr/cms/resource/80/3489080_image2_1.JPG',
+        'https://tong.visitkorea.or.kr/cms/resource/81/3489081_image2_1.JPG',
+        'https://tong.visitkorea.or.kr/cms/resource/83/3489083_image2_1.JPG',
+      ],
       contentId: null,
     }, // TODO contentId
     {
@@ -5798,7 +5879,17 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'yeongam',
       attractionName: '구림마을',
-      overview: '구림마을 — 영암 전통 마을. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '전남 영암군 월출산 서쪽 자락에 자리 잡은 2,200여 년 역사의 유서 깊은 전통 한옥마을이다. 백제 왕인 박사와 신라 말 도선국사의 탄생 설화가 깃들어 있으며, 마을 전체를 굽이굽이 감싸는 고즈넉한 토석 돌담길과 수백 년 된 정자, 사당, 고택들이 원형 그대로 보존되어 있다. 마을 어귀의 회사정과 영암도기박물관, 군립하정웅미술관 등 풍부한 문화유산이 자리하여 남도의 유구한 역사와 선비 정신을 호젓하게 산책하며 느낄 수 있다.',
+      addr1: '전라남도 영암군 군서면 서호정길 5',
+      homepage: 'https://www.yeongam.go.kr/home/tour/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms2/website/36/2437336.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms2/website/36/2437336.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/38/2437338.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/39/2437339.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/40/2437340.jpg',
+      ],
       contentId: null,
     }, // TODO contentId
     {
@@ -5853,7 +5944,17 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'geochang',
       attractionName: '거창 고제면 산수유마을',
-      overview: '고제 산수유마을 — 봄 노란 물결. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+      overview:
+        '백두대간 덕유산 자락 해발 500m 고지대에 자리 잡은 경남 거창군 고제면의 산골 마을이다. 매년 봄이면 마을 어귀와 돌담길, 산비탈을 따라 수백 그루의 산수유나무가 샛노란 꽃망울을 터뜨려 은은한 봄빛 물결을 이룬다. 청정 고랭지 산골의 맑은 공기와 돌담, 다랭이논이 어우러진 정겨운 농촌 풍경 속에서 한적하게 봄의 정취를 즐기며 걷기 좋은 거창의 숨은 봄꽃 명소이다.',
+      addr1: '경상남도 거창군 고제면 개명리 일원',
+      homepage: 'https://www.geochang.go.kr/tour/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms2/website/56/2760956.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms2/website/56/2760956.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/68/2840568.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/70/2840570.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/77/2840577.jpg',
+      ],
       contentId: null,
     }, // TODO contentId
     {
@@ -8048,8 +8149,19 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'gongju',
       attractionName: '공주한옥마을',
+      overview:
+        '유네스코 세계유산인 무령왕릉과 국립공주박물관 사이에 위치한 전통 한옥 복합 문화체험 공간이다. 친환경 소나무와 삼나무를 사용해 전통 방식으로 지어졌으며, 전통 구들장 온돌 난방을 현대적으로 재현한 숙박동과 백제차 다도, 백제 유물 공예, 전통놀이 등을 체험할 수 있는 저잣거리를 갖추고 있다. 금강변을 따라 조성된 소나무 산책로와 어우러진 백제 왕도의 고즈넉한 한옥 풍경 속에서 한국 고유의 전통 주거 문화를 오롯이 체험할 수 있다.',
+      addr1: '충청남도 공주시 관광단지길 12',
+      homepage: 'https://hanok.gongju.go.kr',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms2/website/28/1790428.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms2/website/28/1790428.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/29/1790429.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/30/1790430.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/32/1790432.jpg',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 7840,
       id: 'gayasan',
@@ -8218,8 +8330,19 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'boseong',
       attractionName: '보성군립은행나무숲',
+      overview:
+        '전남 보성군 득량면 오봉산 자락에 자리 잡은 군립 산림 휴양 공간이다. 수백 그루의 울창한 은행나무가 숲과 길을 따라 장관을 이루며, 가을철이면 숲 전체가 샛노란 황금빛 터널로 물들어 환상적인 가을 풍경을 선사한다. 오봉산 구들장 채석지 유적과 전통 마을의 고즈넉한 정취가 어우러져 있으며, 경사가 완만한 산림 산책로가 잘 정비되어 있어 가족 단위 여행객이나 연인들의 힐링 산책 명소로 각광받고 있다.',
+      addr1: '전라남도 보성군 득량면 오봉리 산1-1',
+      homepage: 'https://www.boseong.go.kr/tour/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms2/website/32/1762532.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms2/website/32/1762532.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/34/1762534.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/35/1762535.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/36/1762536.jpg',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 8010,
       id: 'botjae-pass',
@@ -8558,8 +8681,19 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'jeongeup',
       attractionName: '정읍천',
+      overview:
+        '내장산 국립공원에서 발원하여 정읍 시가지를 관통해 동진강으로 흘러드는 대표적인 생태 도심 하천이다. 맑은 물길을 따라 양안에 잘 가꿔진 산책로와 자전거 전용도로, 생태 습지공원이 이어져 시민과 여행객의 쉼터 역할을 한다. 봄철이면 천변을 따라 수천 그루의 왕벚나무가 만개해 끝없는 벚꽃 터널을 이루는 정읍 벚꽃축제의 중심 무대이며, 가을에는 은빛 갈대숲과 어우러진 수변 정취가 빼어난 도심 휴식 명소이다.',
+      addr1: '전북특별자치도 정읍시 벚꽃로 401',
+      homepage: 'https://www.jeongeup.go.kr/culture/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms2/website/98/2447898.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms2/website/98/2447898.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/01/2447901.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/08/2447908.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/57/1130557.jpg',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 8350,
       id: 'moran-market-seongnam',
@@ -8608,8 +8742,19 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '수도권',
       hubId: 'seongnam',
       attractionName: '판교테크노밸리',
+      overview:
+        '경기도 성남시 분당구 판교신도시에 조성된 대한민국 대표 첨단 혁신 클러스터이자 한국의 실리콘밸리이다. 유수의 IT, 바이오, 게임, 미래 모빌리티 기업과 연구소가 밀집해 있으며, 독창적이고 미래지향적인 현대 건축물들이 늘어서 감각적인 도심 스카이라인을 형성한다. 첨단 도시 속 여유를 주는 화랑공원과 판교박물관, 보행자 전용 문화거리, 세련된 복합 쇼핑몰과 트렌디한 식음 공간이 어우러져 현대 도시 문화를 즐기는 명소로 꼽힌다.',
+      addr1: '경기도 성남시 분당구 판교역로 235',
+      homepage: 'https://www.pangyotechnovalley.org',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/03/3053403_image2_1.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/03/3053403_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/04/3053404_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/05/3053405_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms/resource/06/3053406_image2_1.jpg',
+      ],
       contentId: null,
-    }, // TODO contentId
+    },
     {
       order: 8400,
       id: 'gaehwa-art-park',
