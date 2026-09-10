@@ -21,8 +21,11 @@ import {
   listsForHub,
   localScenicListDisplayTitle,
   localScenicMemberToSuggestion,
+  localScenicMemberSpotId,
   mergeLocalScenicMembersIntoScenicSpots,
   groupNearbySpotsWithLocalScenic,
+  hasTourContentId,
+  resolveLocalScenicListSpotById,
 } from '../src/pages/Home/lib/koreaLocalScenicLists.js';
 import {
   filterScenicSpotsByQuery,
@@ -113,6 +116,14 @@ assert.ok(
   'ScenicPage merges N경 into curated ul',
 );
 assert.ok(
+  scenicPageSrc.includes('resolveLocalScenicListSpotById'),
+  'ScenicPage resolves local-scenic: list ids for detail',
+);
+assert.ok(
+  !scenicPageSrc.includes('hasTourContentId(spot.contentId) ? openSpot'),
+  'ScenicPage does not block palgyeong rows without Tour id',
+);
+assert.ok(
   !scenicPageSrc.includes('festival-home-pod'),
   'ScenicPage has no festival home pod marker',
 );
@@ -176,6 +187,32 @@ assert.ok(
 const jinnam = merged.find((s) => s.attractionName === '진남교반');
 assert.ok(jinnam?.imageUrl, '진남교반 palgyeong member gets GATEO curated thumb');
 assert.equal(jinnam?.contentId, '126570', '진남교반 inherits curated contentId');
+
+const hongcheonMerged = mergeLocalScenicMembersIntoScenicSpots([], 'hongcheon');
+const garisanRow = hongcheonMerged.find((s) => s.attractionName === '가리산');
+assert.ok(garisanRow, '홍천 팔경 injects 가리산 even without GATEO curated name match');
+assert.equal(garisanRow.name, '가리산');
+assert.equal(garisanRow.contentId, '125593');
+assert.notEqual(
+  garisanRow.name,
+  garisanRow.id,
+  '가리산 list row title is not the synthetic id',
+);
+const garisanId = localScenicMemberSpotId('hongcheon-palgyeong', '가리산');
+assert.equal(garisanRow.id, garisanId);
+const garisanResolved = resolveLocalScenicListSpotById(garisanId);
+assert.ok(garisanResolved, 'resolveLocalScenicListSpotById 가리산');
+assert.equal(garisanResolved.name, '가리산');
+assert.equal(garisanResolved.contentId, '125593');
+assert.ok(hasTourContentId(garisanResolved.contentId), '가리산 has Tour contentId');
+assert.equal(garisanResolved.hubId, 'hongcheon');
+
+const geumhakId = localScenicMemberSpotId('hongcheon-palgyeong', '금학산');
+const geumhak = resolveLocalScenicListSpotById(geumhakId);
+assert.ok(geumhak, '금학산 resolves without Tour contentId');
+assert.equal(geumhak.name, '금학산');
+assert.ok(!hasTourContentId(geumhak.contentId), '금학산 has no Tour contentId');
+assert.equal(resolveLocalScenicListSpotById('not-a-local-scenic'), null);
 
 const groupedNearby = groupNearbySpotsWithLocalScenic(
   [{ name: '문경새재', contentId: '123' }],

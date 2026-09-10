@@ -7,9 +7,9 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 2,
-  sessionPhase: 'Preview QA',
+  sessionPhase: '사진 없는 행 클릭',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/',
+  previewPath: '/korea/theme/scenic?hub=hongcheon',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-10-palgyeong-use-2-empty-thumb-click',
+    session: '팔경 활용 #2, 사진 없는 행 클릭',
+    title: '팔경 멤버 클릭 — 합성 id 상세·무사진 행 열기',
+    detail:
+      '사진 없는 팔경 행을 누르면 local-scenic:… id가 제목으로 나오거나 클릭이 막히던 문제를 고쳤습니다. 합성 id를 멤버 이름·contentId로 풀고, Tour id가 없어도 GATEO 안내 본문으로 엽니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hongcheon 가리산·금학산.',
+    at: '2026-09-10T11:20:00.000Z',
+  },
   {
     id: '2026-09-04-palgyeong-use-2-thumbs',
     session: '팔경 활용 #2, Preview QA',

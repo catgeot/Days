@@ -427,6 +427,28 @@ export function localScenicMemberSpotId(listId, attractionName) {
   return `local-scenic:${listId}:${normalizeKey(attractionName)}`;
 }
 
+const LOCAL_SCENIC_SPOT_ID_RE = /^local-scenic:([^:]+):(.+)$/;
+
+/**
+ * 명승 리스트 합성 id (`local-scenic:listId:name`) → 멤버 행.
+ * scenicById/URL `spot=` 조회용. koreaScenicSpots 쓰기 아님.
+ * @param {string} id
+ * @param {string} [locale]
+ */
+export function resolveLocalScenicListSpotById(id, locale = 'ko') {
+  const raw = String(id || '').trim();
+  const m = LOCAL_SCENIC_SPOT_ID_RE.exec(raw);
+  if (!m) return null;
+  const list = listById.get(m[1]);
+  if (!list) return null;
+  const nameKey = m[2];
+  const member = (list.members || []).find(
+    (mem) => normalizeKey(mem.attractionName) === nameKey,
+  );
+  if (!member) return null;
+  return memberToScenicListSpot(list, member, undefined, locale);
+}
+
 /**
  * 명승 curated 행 형태. koreaScenicSpots JSON 쓰기는 금지 — 리스트 표시만.
  * @param {object} list

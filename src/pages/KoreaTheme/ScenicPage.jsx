@@ -106,8 +106,10 @@ import {
 import { resolveCityAttractionHub } from '../Home/lib/cityAttractionHubs';
 import {
   collectLocalScenicThumbContentIds,
-  hasTourContentId,
+  listKoreaLocalScenicLists,
+  memberToScenicListSpot,
   mergeLocalScenicMembersIntoScenicSpots,
+  resolveLocalScenicListSpotById,
 } from '../Home/lib/koreaLocalScenicLists';
 import { reconcileThemeNavBack } from '../Home/lib/koreaThemeNavBack';
 import { formatScenicSpotPlaceLabel } from '../Home/lib/scenicSpotPlaceLabel';
@@ -2454,6 +2456,31 @@ export default function KoreaThemeScenicPage() {
       );
       return undefined;
     }
+    const localScenic = resolveLocalScenicListSpotById(selectedId, locale);
+    if (localScenic) {
+      const contentId = String(localScenic.contentId || '').trim();
+      const firstImage =
+        curatedImageByContentId.get(contentId) ||
+        localScenic.firstImage ||
+        localScenic.imageUrl ||
+        null;
+      const base = firstImage
+        ? { ...localScenic, firstImage, imageUrl: firstImage }
+        : localScenic;
+      setSelectedSpot(base);
+      if (!/^\d{1,32}$/.test(contentId)) return undefined;
+      fetchKoreaTourAttractionById(contentId).then((spot) => {
+        if (cancelled || !spot) return;
+        const tourImage = spot.firstImage || spot.imageUrl || null;
+        setSelectedSpot({
+          ...base,
+          firstImage: tourImage || base.firstImage || null,
+          imageUrl: tourImage || base.imageUrl || null,
+          contentId: base.contentId || spot.contentId,
+        });
+      });
+      return undefined;
+    }
     const savedRef =
       favoriteList.find((s) => String(s.id) === String(selectedId)) ||
       viewedList.find((s) => String(s.id) === String(selectedId)) ||
@@ -2474,7 +2501,14 @@ export default function KoreaThemeScenicPage() {
     return () => {
       cancelled = true;
     };
-  }, [selectedId, dbSpots, curatedImageByContentId, favoriteList, viewedList]);
+  }, [
+    selectedId,
+    dbSpots,
+    curatedImageByContentId,
+    favoriteList,
+    viewedList,
+    locale,
+  ]);
 
   const setCuratedRegion = useCallback(
     (r) => {
@@ -2934,8 +2968,14 @@ export default function KoreaThemeScenicPage() {
     for (const s of dbSpots) {
       if (s?.id && !map.has(String(s.id))) map.set(String(s.id), s);
     }
+    for (const list of listKoreaLocalScenicLists()) {
+      for (const member of list.members || []) {
+        const s = memberToScenicListSpot(list, member, undefined, locale);
+        if (s?.id && !map.has(String(s.id))) map.set(String(s.id), s);
+      }
+    }
     return map;
-  }, [dbSpots]);
+  }, [dbSpots, locale]);
 
   const refreshFavorites = useCallback(() => {
     const list = loadScenicFavorites();
@@ -3647,17 +3687,29 @@ export default function KoreaThemeScenicPage() {
       const key = String(id || '').trim();
       if (!key) return;
       const live = scenicById.get(key);
+      const fromLocal = resolveLocalScenicListSpotById(key, locale);
+      const fromMerged = curatedSpotsWithLocalScenic.find(
+        (s) => String(s.id) === key,
+      );
       const fromPersonal = personalItems.find((s) => String(s.id) === key);
       const fromMap = mapItems.find((s) => String(s.id) === key);
       const fromTourNear = mapTourNearPool.find((s) => String(s.id) === key);
       const refSpot =
-        live || fromPersonal || fromMap || fromTourNear || { id: key, name: key };
+        live ||
+        fromLocal ||
+        fromMerged ||
+        fromPersonal ||
+        fromMap ||
+        fromTourNear ||
+        { id: key, name: key };
       setViewedList(pushScenicViewed(refSpot));
       const next = new URLSearchParams(searchParams);
       next.set('spot', key);
       setSearchParams(next, { replace: false });
     },
     [
+      curatedSpotsWithLocalScenic,
+      locale,
       mapItems,
       mapTourNearPool,
       personalItems,
@@ -4487,9 +4539,7 @@ export default function KoreaThemeScenicPage() {
                     spot={spot}
                     large={listLarge}
                     distanceKm={curatedKmById.get(String(spot.id))}
-                    onOpen={
-                      hasTourContentId(spot.contentId) ? openSpot : undefined
-                    }
+                    onOpen={openSpot}
                     favorited={favoriteIds.has(String(spot.id))}
                     onToggleFavorite={handleToggleFavorite}
                     locale={locale}
