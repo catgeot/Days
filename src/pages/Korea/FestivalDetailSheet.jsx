@@ -48,6 +48,10 @@ import {
 } from '../../utils/fetchNearbyTourCourses';
 import { fetchTourApiCourseDetail } from '../../utils/fetchTourApiCourses';
 import { listKoreaScenicSpots } from '../Home/lib/koreaScenicSpots';
+import {
+  groupNearbySpotsWithLocalScenic,
+  hasTourContentId,
+} from '../Home/lib/koreaLocalScenicLists';
 import { scenicRegionForAreaCode } from '../Home/lib/koreaTourAttractionMap';
 import {
   festivalMapTitle,
@@ -231,6 +235,47 @@ function formatDistKm(km) {
 
 function nearbyPlaceLabel(spot) {
   return String(spot?.locality || spot?.region || '').trim();
+}
+
+function nearbyAttractionRow(spot, { onSelect }) {
+  const thumb = toHttps(spot.firstImage);
+  const dist = formatDistKm(spot.distKm);
+  const place = nearbyPlaceLabel(spot);
+  const clickable = hasTourContentId(spot.contentId);
+  const Inner = clickable ? 'button' : 'div';
+  const innerProps = clickable
+    ? { type: 'button', onClick: () => onSelect?.(spot) }
+    : {};
+  return (
+    <li key={spot.contentId || spot.id}>
+      <Inner
+        {...innerProps}
+        className={`flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left ${
+          clickable ? 'hover:bg-amber-50 hover:border-amber-300 transition-colors' : ''
+        }`}
+      >
+        {thumb ? (
+          <img
+            src={thumb}
+            alt=""
+            className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
+          />
+        ) : (
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800">
+            <Landmark size={18} aria-hidden="true" />
+          </div>
+        )}
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
+            {spot.name}
+          </span>
+          <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
+            {[place, dist].filter(Boolean).join(' · ')}
+          </span>
+        </span>
+      </Inner>
+    </li>
+  );
 }
 
 function toNearbyModalSpot(spot) {
@@ -419,6 +464,16 @@ export default function FestivalDetailSheet({
     ? buildMrtTnaSearchMoreUrl(festivalCross.tna.keyword)
     : '';
   const nearestHub = festivalCross?.nearbyHubs?.[0];
+  const nearbyGrouped = useMemo(() => {
+    const pt = festivalLngLat(item?.mapx, item?.mapy);
+    return groupNearbySpotsWithLocalScenic(nearbySpots, {
+      hubId: nearestHub?.hubId,
+      lat: pt?.lat,
+      lng: pt?.lng,
+      locale,
+    });
+  }, [nearbySpots, nearestHub?.hubId, item?.mapx, item?.mapy, locale]);
+  const nearbyHasLocalScenic = nearbyGrouped.groups.some((g) => g.items.length);
   const tnaDisplayKeyword =
     localizedHubLabel(locale, {
       hubId: nearestHub?.hubId,
@@ -1475,50 +1530,35 @@ export default function FestivalDetailSheet({
                       {t('korea.festival.detail.nearAttractionsError')}
                     </p>
                   )}
-                  {nearbyStatus === 'empty' && (
+                  {nearbyStatus === 'empty' && !nearbyHasLocalScenic && (
                     <p className="text-xs text-stone-500">
                       {t('korea.festival.detail.nearAttractionsEmpty')}
                     </p>
                   )}
-                  {nearbySpots.length > 0 && (
+                  {(nearbySpots.length > 0 || nearbyHasLocalScenic) && (
                     <ul
                       className="space-y-2"
                       aria-label={t('korea.festival.detail.nearAttractionsAria')}
                     >
-                      {nearbySpots.map((spot) => {
-                        const thumb = toHttps(spot.firstImage);
-                        const dist = formatDistKm(spot.distKm);
-                        const place = nearbyPlaceLabel(spot);
-                        return (
-                          <li key={spot.contentId || spot.id}>
-                            <button
-                              type="button"
-                              onClick={() => setSelectedNearby(spot)}
-                              className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
-                            >
-                              {thumb ? (
-                                <img
-                                  src={thumb}
-                                  alt=""
-                                  className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
-                                />
-                              ) : (
-                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800">
-                                  <Landmark size={18} aria-hidden="true" />
-                                </div>
-                              )}
-                              <span className="min-w-0 flex-1">
-                                <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
-                                  {spot.name}
-                                </span>
-                                <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
-                                  {[place, dist].filter(Boolean).join(' · ')}
-                                </span>
-                              </span>
-                            </button>
+                      {nearbyGrouped.groups.map((group) => (
+                        <React.Fragment key={group.listId}>
+                          <li className="list-none pt-0.5">
+                            <p className="text-[11px] font-bold tracking-wide text-stone-500 break-keep">
+                              {group.title}
+                            </p>
                           </li>
-                        );
-                      })}
+                          {group.items.map((spot) =>
+                            nearbyAttractionRow(spot, {
+                              onSelect: setSelectedNearby,
+                            }),
+                          )}
+                        </React.Fragment>
+                      ))}
+                      {nearbyGrouped.rest.map((spot) =>
+                        nearbyAttractionRow(spot, {
+                          onSelect: setSelectedNearby,
+                        }),
+                      )}
                     </ul>
                   )}
                 </div>
