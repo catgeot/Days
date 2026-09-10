@@ -189,5 +189,24 @@
 작업: /korea/theme/scenic?hub=hongcheon 사진 없는 가리산·금학산 클릭 — 제목이 합성 id가 아니고 상세가 열림
 ```
 
+## 팔경 활용 #2 — contentId 런타임 할당·리스트/써머리 사진 (Cloud)
+
+- **세션** `팔경 활용 #2, 사람 Preview QA`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `f5d9be88` · PR [#209](https://github.com/catgeot/Days/pull/209)
+- **완료** JSON contentId 기입·scenic 승격 없이, 팔경 멤버는 기존 id·tourapi_attraction 제목 조회·Tour firstimage로 사진을 붙임. 가리산(125593) 핀·써머리 갤러리에 id 전달. GATEO 선정 분류칩은 koreaScenicSpots만 유지(팔경 전용은 N경 소제목).
+- **VERIFY** `smoke:korea-local-scenic-lists` PASS · `audit:korea-local-scenic-lists` issues 0 · `smoke-tourapi` PASS · `vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=hongcheon`
+- **다음** 사람 Preview QA (가리산·금학산 사진)
+
+```
+팔경 활용 #2, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-10-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · PR #209 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
+작업: /korea/theme/scenic?hub=hongcheon 가리산·금학산 클릭 — 제목 정상 · 리스트/상세/써머리 Tour 사진
+```
+
 
 

@@ -316,9 +316,9 @@
 
 | | |
 |--|--|
-| **상태** | **#2 push** · tip `6b666ad3` · PR [#209](https://github.com/catgeot/Days/pull/209) · #186 main 병합 · **사람 Preview QA** |
+| **상태** | **#2 push** · tip `f5d9be88` · PR [#209](https://github.com/catgeot/Days/pull/209) · **사람 Preview QA** (리스트·써머리 사진) |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `6b666ad3` |
+| **tip** | `f5d9be88` |
 | **PR** | [#209](https://github.com/catgeot/Days/pull/209) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-10-project-log.md`](./2026-09-10-project-log.md) |
@@ -336,7 +336,7 @@
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · PR #209 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
-작업: /korea/theme/scenic?hub=hongcheon 사진 없는 가리산·금학산 클릭 — 제목이 합성 id가 아니고 상세가 열림
+작업: /korea/theme/scenic?hub=hongcheon 가리산·금학산 클릭 — 제목 정상 · 리스트/상세/써머리 Tour 사진
 ```
 
 ---
