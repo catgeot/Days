@@ -491,6 +491,137 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     ],
     addr1: '강원특별자치도 홍천군 두촌면 가리산길 260-9',
   },
+  'local-scenic:sokcho-palgyeong:조도': {
+    overview:
+      '속초 8경 중 제6경으로 꼽히는 조도(鳥島)는 새들이 많이 찾는 섬이라 하여 붙여진 이름입니다. 속초해수욕장 정면 바다에 떠 있는 무인도로, 소나무 숲이 우거져 푸른 동해와 어우러지며 백사장과 조도 너머로 붉게 타오르는 아침 일출이 장관을 이룹니다.',
+    addr1: '강원특별자치도 속초시 조양동 (속초해수욕장 앞 해상)',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms2/website/30/1692430.jpg',
+    firstImage: 'https://tong.visitkorea.or.kr/cms2/website/30/1692430.jpg',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms2/website/30/1692430.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/32/1692432.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/52/1692452.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/84/1692484.jpg',
+    ],
+  },
+  'local-scenic:samcheok-sipgyeong:새천년해안유원지': {
+    contentId: '2610236',
+    overview:
+      '삼척 10경 중 하나로, 삼척항에서 삼척해수욕장까지 약 4.6km에 걸쳐 푸른 동해를 따라 이어지는 명품 해안도로이자 유원지입니다. ‘한국의 아름다운 길 100선’에 선정될 만큼 깎아지른 기암절벽과 푸른 바다가 어우러지는 비경을 자랑하며, 비치조각공원과 소망의 탑, 해안 산책로가 조성되어 있어 사계절 동해 일출과 산책 명소로 각광받고 있습니다.',
+    addr1: '강원특별자치도 삼척시 새천년도로 61-18 (정하동)',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/07/3503607_image2_1.jpg',
+    firstImage: 'https://tong.visitkorea.or.kr/cms/resource/07/3503607_image2_1.jpg',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms/resource/07/3503607_image2_1.jpg',
+    ],
+  },
+  'local-scenic:wonju-palgyeong:비로봉': {
+    contentId: '125587',
+    overview:
+      '원주 8경 중 제3경으로 지정된 해발 1,288m의 치악산 국립공원 최고봉입니다. 정상에는 용왕탑·산신탑·칠성탑이라 불리는 거대한 세 기의 돌탑(원주 미륵불탑)이 우뚝 솟아 있어 신비로운 자태를 뽐내며, 사방으로 막힘없이 펼쳐지는 웅장한 백두대간 능선 파노라마와 사계절 운해·설경이 장관을 이룹니다.',
+    addr1: '강원특별자치도 원주시 소초면 무쇠점2길 26 (치악산국립공원 비로봉)',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/26/4057126_image2_1.jpg',
+    firstImage: 'https://tong.visitkorea.or.kr/cms/resource/26/4057126_image2_1.jpg',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms/resource/26/4057126_image2_1.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/78/1528578.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/89/1528589.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/35/1528835.jpg',
+    ],
+  },
+  'local-scenic:hongcheon-palgyeong:살둔계곡': {
+    contentId: '802670',
+    overview:
+      '정감록에서 난을 피할 수 있는 명당으로 꼽은 삼둔사거리 중 하나로, 홍천 9경 가운데 제8경에 속하는 청정 계곡입니다. 내린천 상류의 맑고 차가운 물줄기가 원시림과 기암괴석 사이를 굽이쳐 흐르며, 고즈넉한 한국 전통 귀틀집 양식의 살둔분교와 어우러져 오지 속 힐링과 계곡 트레킹 명소로 유명합니다.',
+    addr1: '강원특별자치도 홍천군 내면 살둔길 일원 / 내린천로 638',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/80/3043180_image2_1.jpg',
+    firstImage: 'https://tong.visitkorea.or.kr/cms/resource/80/3043180_image2_1.jpg',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms/resource/80/3043180_image2_1.jpg',
+    ],
+  },
+  'local-scenic:hongcheon-palgyeong:삼봉약수': {
+    contentId: '1837460',
+    overview:
+      '홍천 9경 중 제9경으로, 2011년 천연기념물로 지정된 유서 깊은 탄산약수입니다. 가칠봉·응복산·사삼봉 세 봉우리의 정기가 모인 곳에서 솟아나며, 철분과 탄산이 풍부하여 톡 쏘는 상쾌함과 청량감을 자랑합니다. 주변 삼봉자연휴양림의 울창한 전나무·주목 숲과 깨끗한 계곡이 어우러져 사계절 휴양 명소로 꼽힙니다.',
+    addr1: '강원특별자치도 홍천군 내면 삼봉휴양길 276',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/86/1732286_image2_1.jpg',
+    firstImage: 'https://tong.visitkorea.or.kr/cms/resource/86/1732286_image2_1.jpg',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms/resource/86/1732286_image2_1.jpg',
+    ],
+  },
+  'local-scenic:danyang-palgyeong:하선암': {
+    contentId: '126654',
+    overview:
+      '단양팔경 중 제6경으로 꼽히는 하선암(下仙巖)은 선암계곡의 백미를 이루는 절경입니다. 삼선구곡의 첫 경승지로 3층으로 된 널찍한 흰 바위 위에 크고 둥근 바위가 미륵불 형상으로 얹혀 있어 불암(佛巖)이라고도 불립니다. 조선 성종 때 신선이 노닐던 바위라 하여 ‘선암’이라 명명되었으며, 거울처럼 맑은 계류에 비친 너럭바위와 사계절 기암괴석이 어우러져 예로부터 시인묵객들의 발길이 끊이지 않는 명소입니다.',
+    addr1: '충청북도 단양군 단성면 선암계곡로 1337',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms2/website/04/1800004.jpg',
+    firstImage: 'https://tong.visitkorea.or.kr/cms2/website/04/1800004.jpg',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms2/website/04/1800004.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/05/1800005.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/06/1800006.jpg',
+      'https://tong.visitkorea.or.kr/cms/resource/19/4085219_image2_1.jpg',
+    ],
+  },
+  'local-scenic:danyang-palgyeong:옥순봉': {
+    overview:
+      '단양팔경이자 명승 제48호로 지정된 옥순봉(玉荀峰)은 남한강 청풍호반 위로 힘차게 솟구쳐 오른 기암절벽입니다. 비가 갠 뒤 희고 푸른 여러 개의 바위 봉우리가 마치 대나무 죽순처럼 돋아나듯 솟아 있다 하여 붙여진 이름입니다. 조선 명종 때 단양군수 퇴계 이황이 절경에 감탄하여 석벽에 ‘단구동문(丹丘洞門)’이라 새기며 단양의 관문으로 삼았다는 일화가 전해지며, 배를 타고 호수 위에서 바라보거나 출렁다리에서 감상하는 풍광이 으뜸입니다.',
+    addr1: '충청북도 제천시 수산면 괴곡리 산9 일원 (단양·제천 경계 충주호반)',
+    imageUrl: 'https://www.khs.go.kr/unisearch/images/scenic_site/1628952.jpg',
+    firstImage: 'https://www.khs.go.kr/unisearch/images/scenic_site/1628952.jpg',
+    galleryUrls: [
+      'https://www.khs.go.kr/unisearch/images/scenic_site/1628952.jpg',
+      'https://www.khs.go.kr/unisearch/images/scenic_site/1628953.jpg',
+      'https://tong.visitkorea.or.kr/cms/resource/90/3480590_image2_1.jpg',
+    ],
+  },
+  'local-scenic:mungyeong-palgyeong:새재계곡': {
+    contentId: '126017',
+    overview:
+      '문경8경 중 제1경으로 꼽히는 새재계곡은 조령산과 주흘산 사이의 깊은 협곡을 따라 백두대간 조령(문경새재) 관문을 관통하여 흐르는 유서 깊은 명품 계곡입니다. 맑고 차가운 청정 계류를 따라 우거진 원시림과 흙길 산책로가 이어지며, 영남 제1관(주흘관)부터 제3관(조령관)에 이르는 유려한 역사 유적과 자연경관이 사계절 빼어난 정취를 선사합니다.',
+    addr1: '경상북도 문경시 문경읍 새재로 932 (문경새재도립공원 일원)',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms2/website/37/1121037.jpg',
+    firstImage: 'https://tong.visitkorea.or.kr/cms2/website/37/1121037.jpg',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms2/website/37/1121037.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/39/1121039.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/45/1121045.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/50/1121050.jpg',
+    ],
+  },
+  'local-scenic:mungyeong-palgyeong:쌍용계곡': {
+    overview:
+      '문경8경 중 제4경에 속하는 쌍용계곡은 도장산 기슭을 흐르는 청룡·황룡의 전설이 깃든 비경의 계곡입니다. 깊고 그윽한 협곡을 따라 층암절벽과 너럭바위, 푸른 소(沼)가 4km에 걸쳐 연속으로 펼쳐지며, 여름철 피서와 사계절 암반 계곡 트레킹 명소로 유명합니다.',
+    addr1: '경상북도 문경시 농암면 내서리 일원',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms2/website/06/1050806.jpg',
+    firstImage: 'https://tong.visitkorea.or.kr/cms2/website/06/1050806.jpg',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms2/website/06/1050806.jpg',
+    ],
+  },
+  'local-scenic:mungyeong-palgyeong:운달계곡': {
+    contentId: '127819',
+    overview:
+      '문경8경 중 제6경으로 꼽히는 운달계곡은 해발 1,097m의 명산 운달산 동남쪽 자락에 자리한 원시 계곡입니다. 한여름에도 손이 시릴 정도로 차가운 맑은 물이 솟아 ‘냉골’이라 불리며, 계곡을 따라 천년고찰 김룡사로 이어지는 울창한 전나무 숲길과 기암괴석이 사계절 고즈넉한 힐링 풍광을 자아냅니다.',
+    addr1: '경상북도 문경시 산북면 김용리 (운달산 김룡사 일원)',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/00/3528000_image2_1.jpg',
+    firstImage: 'https://tong.visitkorea.or.kr/cms/resource/00/3528000_image2_1.jpg',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms/resource/00/3528000_image2_1.jpg',
+    ],
+  },
+  'local-scenic:mungyeong-palgyeong:봉암사백운대': {
+    overview:
+      '문경8경 중 제8경으로 꼽히는 봉암사 백운대(白雲臺)는 희양산 남쪽 계곡, 조계종 종립특별선원인 천년고찰 봉암사 경내에 위치한 구름 같은 화강암 암반 지대입니다. 거대한 백색 암반 위로 맑고 투명한 옥수가 소리 없이 흘러내리며, 너럭바위에 새겨진 마애보살좌상과 백운대 암각, 기이한 괴석들이 어우러져 선경을 방불케 하는 불교 청정 도량의 정취를 보여줍니다.',
+    addr1: '경상북도 문경시 가은읍 원북길 313 (봉암사 백운대 계곡)',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms2/website/88/1120888.jpg',
+    firstImage: 'https://tong.visitkorea.or.kr/cms2/website/88/1120888.jpg',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms2/website/88/1120888.jpg',
+    ],
+  },
 };
 
 function lookupLocalScenicMemberOverlay(spotId) {
@@ -572,10 +703,18 @@ export function mergeLocalScenicMembersIntoScenicSpots(spots, hubId, locale = 'k
       used.add(k);
       const hit = byKey.get(k);
       if (hit) {
+        const spotId = localScenicMemberSpotId(list.listId, member.attractionName);
+        const overlay = lookupLocalScenicMemberOverlay(spotId);
         front.push({
           ...hit,
           groupTitle: title,
           localScenicListId: list.listId,
+          contentId: overlay?.contentId || hit.contentId,
+          imageUrl: overlay?.imageUrl || hit.imageUrl,
+          firstImage: overlay?.firstImage || hit.firstImage,
+          galleryUrls: overlay?.galleryUrls || hit.galleryUrls,
+          overview: overlay?.overview || hit.overview,
+          addr1: overlay?.addr1 || hit.addr1,
         });
       } else {
         front.push(memberToScenicListSpot(list, member, hub, locale));
@@ -623,10 +762,12 @@ export function listLocalScenicMemberJobs(hubId) {
       const attraction = resolveMemberAttraction(hub, member);
       const curated = lookupCuratedScenicSpot(list.hubId, member.attractionName);
       const fromCurated = scenicThumbFromCurated(curated);
+      const spotId = localScenicMemberSpotId(list.listId, name);
+      const overlay = lookupLocalScenicMemberOverlay(spotId);
       out.push({
-        spotId: localScenicMemberSpotId(list.listId, name),
+        spotId,
         name,
-        contentId: memberContentId(member, attraction) || fromCurated.contentId,
+        contentId: overlay?.contentId || memberContentId(member, attraction) || fromCurated.contentId,
         hubId: list.hubId,
       });
     }

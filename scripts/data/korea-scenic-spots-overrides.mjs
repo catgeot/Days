@@ -8036,7 +8036,16 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'sokcho',
       attractionName: '대포항',
       contentId: '129596',
-    }, // TODO contentId
+      imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/56/4066656_image2_1.jpg',
+      overview: '설악산 기슭의 깨끗한 바닷가에 자리 잡은 대포항은 남쪽에서 속초시로 들어오는 관문으로, 설악산 관광과 동해안 수산물 집산지로 널리 알려져 있습니다. 신선한 활어회를 즐길 수 있는 난전과 횟집 골목, 현대적으로 정비된 수산시장과 산책로가 조성되어 있어 사계절 미식 여행객들의 발길이 끊이지 않는 속초의 대표 어항입니다.',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms/resource/56/4066656_image2_1.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/39/2550839.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/42/2550842.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/44/2550844.jpg',
+      ],
+      addr1: '강원특별자치도 속초시 대포항길 64',
+    },
     {
       order: 7330,
       id: 'sokcho-lighthouse-observatory',
