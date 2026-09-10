@@ -63,3 +63,30 @@
 금지: AI 허구 본문 작성 금지 · 저작권 미확인 사진 금지 · feature에 plans/** 커밋
 작업: R02 18건(알펜시아·스타필드하남·들꽃수목원 등) 주소·홈페이지·갤러리·공식개요 보강 및 SSOT 반영
 ```
+
+## 명소 자체 큐레이션 #2 — R02 수도권·강원·충청 16건 보강 완료 (수도권·강원·충청 종결) (Cloud)
+
+- **세션** `명소 자체 큐레이션 #2, R02 수도권·강원·충청 보강 18건`
+- **브랜치** `cursor/curated-scenic` (`c41ae5e4`) · PR [#207](https://github.com/catgeot/Days/pull/207) (OPEN)
+- **완료**
+  1. **R02 수도권·강원·충청 16건 자체 큐레이션 SSOT 완비**:
+     - 대상: 알펜시아 리조트, 용평리조트, 안산문화광장, 광명 안양천생태공원, 스타필드 하남, 하남교산근린공원, 능곡동 유적공원, 시흥 소프트타운, 양평 들꽃수목원, 과천 맑은누리공원, 오산천, 진천 미호천생태공원, 여주프리미엄아울렛, 동두천 보산동 외국인거리, 이천 별빛정원우주, 평택 미르섬 (16건 전수)
+     - 한국관광공사 사진갤러리 공공 자원 기반 고화질 갤러리(명소당 5장씩 총 80장) 구축
+     - 지자체 대표/문화관광 포털, 공식 사이트 기반 도로명 주소(`addr1`), 공식 웹사이트(`homepage`), 200~250자 순수 팩트 개요(`overview`) 등록 (AI 허구/시스템 문구 배제)
+     - `korea-scenic-spots-overrides.mjs` 반영 및 `npm run generate:korea-scenic-spots`로 `koreaScenicSpots.json` 동기화
+  2. **수도권·강원·충청 100% 종결 및 큐레이션 통계 갱신**:
+     - `node scripts/report-curated-scenic-candidates.mjs`: 완료(DONE) 15건 -> 31건으로 대폭 증가, 미완료(PARTIAL) 36건 -> 20건 감소, 미흡(TODO) 0건 유지
+     - 수도권·강원·충청 권역의 TourAPI 미등재 명소 전수 DONE 달성
+     - 잔여 대상은 R03 전라(6건)·경상(14건) 총 20건만 남음 (최종 라운드)
+- **VERIFY** `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `audit:city-attraction-hubs` · `build` ALL PASS
+- **다음** 명소 자체 큐레이션 #3 — R03 전라·경상 보강 20건(심청한옥마을, 운문사, 진해군항제, 성수산, 용궁시장 등 전수 종결)
+
+```
+명소 자체 큐레이션 #3, R03 전라·경상 보강 20건 (최종 라운드)
+@plans/feature-handoff-index.md
+@plans/curated-scenic-spots-queue.md
+@plans/korea-curated-spots-guide.md
+브랜치 cursor/curated-scenic
+금지: AI 허구 본문 작성 금지 · 저작권 미확인 사진 금지 · feature에 plans/** 커밋
+작업: R03 20건(심청한옥마을·운문사·진해군항제·성수산 등) 주소·홈페이지·갤러리·공식개요 보강 및 SSOT 전수 종결
+```

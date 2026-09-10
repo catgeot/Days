@@ -3,7 +3,7 @@
 **문서 버전**: v1.0.0 (2026-09-10)  
 **지침서**: [`korea-curated-spots-guide.md`](./korea-curated-spots-guide.md)  
 **고정 브랜치**: `cursor/curated-scenic`  
-**전체 대상**: 51건 (완료 15건 / 미흡 TODO 0건 / 보강 PARTIAL 36건)
+**전체 대상**: 51건 (완료 31건 / 미흡 TODO 0건 / 잔여 PARTIAL 20건)
 
 ---
 
@@ -13,8 +13,8 @@
 |---|---|:---:|:---:|---|
 | **R00** | 시범 적용 (양구 수목원) | 1 | ✅ 완료 (2026-09-10) | `yanggu-arboretum` (개요 253자, 주소, 홈피, 사진 5장) |
 | **R01** | 사진 미보유(img: N) & 본문 미흡 | 14 | ✅ 완료 (2026-09-10) | 금강소나무숲길, 대통령기록관, 비내섬, 공주한옥마을 등 14건 전수 완료 (TODO 0건) |
-| **R02** | 수도권·강원·충청 사진보유 보강 | 18 | ⏳ **다음 세션 착수 대상** | 알펜시아, 스타필드 하남, 들꽃수목원, 안산문화광장 등 |
-| **R03** | 전라·경상 사진보유 보강 | 18 | 📋 대기 | 심청한옥마을, 운문사, 진해군항제, 성수산, 용궁시장 등 |
+| **R02** | 수도권·강원·충청 보강 (전수) | 16 | ✅ 완료 (2026-09-10) | 알펜시아, 용평, 스타필드 하남, 안산문화광장 등 16건 전수 완료 (수도권·강원·충청 100% 종결) |
+| **R03** | 전라·경상 보강 (최종 라운드) | 20 | ⏳ **다음 세션 착수 대상** | 심청한옥마을, 운문사, 진해군항제, 성수산, 용궁시장 등 20건 |
 
 ---
 
@@ -52,27 +52,30 @@
 
 ---
 
-### R02 (대기): 수도권·강원·충청 보강 18건 큐
-- [ ] `alpensia-resort` (알펜시아 리조트, 평창)
-- [ ] `yongpyong-resort` (용평리조트/모나용평, 평창)
-- [ ] `ansan-culture-plaza` (안산문화광장, 안산)
-- [ ] `anyangcheon-eco-park-gwangmyeong` (광명 안양천생태공원, 광명)
-- [ ] `starfield-hanam` (스타필드 하남, 하남)
-- [ ] `hanam-gyosan-neighborhood-park` (하남교산근린공원, 하남)
-- [ ] `neunggok-historic-park` (능곡동 유적공원, 시흥)
-- [ ] `siheung-soft-town` (시흥 소프트타운, 시흥)
-- [ ] `yangpyeong-wild-flower-arboretum` (양평 들꽃수목원, 양평)
-- [ ] `malgeunnuri-park-gwacheon` (맑은누리공원, 과천)
-- [ ] `osancheon` (오산천, 오산)
-- [ ] `yeoju-premium-outlets` (여주프리미엄아울렛, 여주)
-- [ ] `bosan-foreigners-street` (동두천 보산동 외국인거리, 동두천)
-- [ ] `starlight-garden-universe` (이천 별빛정원우주, 이천)
-- [ ] `pyeongtaek-mir-island` (평택 미르섬, 평택)
-- [ ] `mihocheon-ecological-park` (미호천생태공원, 진천)
+### R02 (완료): 수도권·강원·충청 보강 16건 큐 ✅
+
+> **결과**: 수도권·강원·충청의 모든 `contentId: null` 명소(16건)에 대해 한국관광공사 사진갤러리 공공자원 고화질 갤러리(명소당 5장), 도로명 주소, 공식 웹사이트, 200~250자 순수 팩트 개요 채우기 완료 (수도권·강원·충청 전수 종결)
+
+- [x] `alpensia-resort` (알펜시아 리조트, 평창) · 사진 5장 · 솔봉로 325 · alpensia.com · 244자
+- [x] `yongpyong-resort` (용평리조트/모나용평, 평창) · 사진 5장 · 올림픽로 715 · yongpyong.co.kr · 252자
+- [x] `ansan-culture-plaza` (안산문화광장, 안산) · 사진 5장 · 광덕대로 157 · ansan.go.kr · 241자
+- [x] `anyangcheon-eco-park-gwangmyeong` (광명 안양천생태공원, 광명) · 사진 5장 · 서부샛길 778 · gm.go.kr · 246자
+- [x] `starfield-hanam` (스타필드 하남, 하남) · 사진 5장 · 미사대로 750 · starfield.co.kr/hanam/ · 241자
+- [x] `hanam-gyosan-neighborhood-park` (하남교산근린공원, 하남) · 사진 5장 · 교산동 78-3 일원 · hanam.go.kr · 228자
+- [x] `neunggok-historic-park` (능곡동 유적공원, 시흥) · 사진 5장 · 능곡선사길 15 · siheung.go.kr · 244자
+- [x] `siheung-soft-town` (시흥 소프트타운, 시흥) · 사진 5장 · 장현천로 일원 · siheung.go.kr · 231자
+- [x] `yangpyeong-wild-flower-arboretum` (양평 들꽃수목원, 양평) · 사진 5장 · 경강로 1698 · wildflowergarden.co.kr · 242자
+- [x] `malgeunnuri-park-gwacheon` (맑은누리공원, 과천) · 사진 5장 · 구리안로 177 · gccity.go.kr · 229자
+- [x] `osancheon` (오산천, 오산) · 사진 5장 · 오산천로 52 · osan.go.kr · 239자
+- [x] `mihocheon-ecological-park` (미호천생태공원, 진천) · 사진 5장 · 농다리로 1032-11 일원 · jincheon.go.kr · 240자
+- [x] `yeoju-premium-outlets` (여주프리미엄아울렛, 여주) · 사진 5장 · 명품로 360 · premiumoutlets.co.kr/yeoju · 244자
+- [x] `bosan-foreigners-street` (동두천 보산동 외국인거리, 동두천) · 사진 5장 · 중앙로 345 일원 · ddc.go.kr · 240자
+- [x] `starlight-garden-universe` (이천 별빛정원우주, 이천) · 사진 5장 · 덕이로154번길 287-76 · ooozooo.co.kr · 247자
+- [x] `pyeongtaek-mir-island` (평택 미르섬, 평택) · 사진 5장 · 평택호길 159 일원 · pyeongtaek.go.kr · 233자
 
 ---
 
-### R03 (대기): 전라·경상 보강 18건 큐
+### R03 (대기): 전라·경상 보강 20건 큐 (최종 라운드) ⏳
 - [ ] `gokseong-simcheong-hanok-village` (곡성 심청한옥마을, 곡성)
 - [ ] `seongsusan` (성수산, 임실)
 - [ ] `jangseong-cornus-village` (장성산수유마을, 장성)
@@ -93,3 +96,4 @@
 - [ ] `hwanseongsa` (환성사, 경산)
 - [ ] `toyorae-land-uiryeong` (의령 토요애랜드, 의령)
 - [ ] `yeongyang-oessibeoseon-trail` (영양 외씨버선길, 영양)
+

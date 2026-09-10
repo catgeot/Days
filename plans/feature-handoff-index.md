@@ -335,11 +335,11 @@
 
 | | |
 |--|--|
-| **상태** | **#1 완료 (PR [#207](https://github.com/catgeot/Days/pull/207) open)** · R00+R01 15건 완료 (TODO 14건 -> 0건 해소) · **#2 R02 수도권·강원·충청 보강 18건 대기** |
+| **상태** | **#2 완료 (PR [#207](https://github.com/catgeot/Days/pull/207) open)** · R00+R01+R02 31건 완료 (수도권·강원·충청 100% 종결) · **#3 R03 전라·경상 보강 20건 대기 (최종 라운드)** |
 | **브랜치** | `cursor/curated-scenic` |
 | **PR** | [#207](https://github.com/catgeot/Days/pull/207) |
 | **가이드** | [`korea-curated-spots-guide.md`](./korea-curated-spots-guide.md) |
-| **큐** | [`curated-scenic-spots-queue.md`](./curated-scenic-spots-queue.md) (전체 51건 중 15건 완료, 잔여 36건) |
+| **큐** | [`curated-scenic-spots-queue.md`](./curated-scenic-spots-queue.md) (전체 51건 중 31건 완료, 잔여 20건) |
 | **도구** | `scripts/report-curated-scenic-candidates.mjs` · `scripts/search-tourapi-photos.mjs` |
 | **소유** | `korea-scenic-spots-overrides.mjs` · `korea-scenic-spot-images.json` · `koreaScenicSpots.json` |
 | **금지** | AI 허구 본문 창작 금지(공식 팩트 기반 요약) · 저작권 미확인 블로그 사진 금지 · JSON 직접 편집 금지 |
@@ -348,13 +348,13 @@
 **다음 제시어**:
 
 ```
-명소 자체 큐레이션 #2, R02 수도권·강원·충청 보강 18건
+명소 자체 큐레이션 #3, R03 전라·경상 보강 20건 (최종 라운드)
 @plans/feature-handoff-index.md
 @plans/curated-scenic-spots-queue.md
 @plans/korea-curated-spots-guide.md
 브랜치 cursor/curated-scenic
 금지: AI 허구 본문 작성 금지 · 저작권 미확인 사진 금지 · feature에 plans/** 커밋
-작업: R02 18건(알펜시아·스타필드하남·들꽃수목원 등) 주소·홈페이지·갤러리·공식개요 보강 및 SSOT 반영
+작업: R03 20건(심청한옥마을·운문사·진해군항제·성수산 등) 주소·홈페이지·갤러리·공식개요 보강 및 SSOT 전수 종결
 ```
 
 ---
