@@ -807,6 +807,16 @@
       "stayCta": "Stays in {{keyword}}",
       "official": "Official schedule"
     },
+    "scenicGateway": {
+      "badgeHeritage": "National Heritage Scenic Site",
+      "badgeHub": "Regional Attraction Collection",
+      "badgeTheme": "Korea Scenic Site",
+      "actionHub": "View Attractions",
+      "actionSpot": "View Story & Details",
+      "titleSuffix": "Overview & Story",
+      "tagStory": "Overview & Photos",
+      "tagSurroundings": "Nearby Stays & Food"
+    },
     "planner": {
       "title": "Smart travel toolkit",
       "subtitle": "Essential survival info and curated picks for {{name}}",
