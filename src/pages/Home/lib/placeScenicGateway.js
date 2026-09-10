@@ -166,10 +166,19 @@ export function isDomesticKoreaLocation(loc) {
   return false;
 }
 
+function attachReturnTo(deepPath, returnTo) {
+  if (!returnTo || typeof returnTo !== 'string' || !returnTo.startsWith('/')) {
+    return deepPath;
+  }
+  const sep = deepPath.includes('?') ? '&' : '?';
+  return `${deepPath}${sep}returnTo=${encodeURIComponent(returnTo)}`;
+}
+
 /**
  * 장소카드 location 객체로부터 명소/명승 본문 매칭 정보 및 딥링크 생성.
  *
  * @param {object} loc 장소카드 location 객체
+ * @param {{ returnTo?: string | null }} [options] 이전 장소카드 복귀 경로
  * @returns {{
  *   type: 'spot' | 'heritage' | 'hub',
  *   spotId?: string,
@@ -184,9 +193,14 @@ export function isDomesticKoreaLocation(loc) {
  *   spotCount?: number,
  * } | null}
  */
-export function resolveScenicSpotForPlace(loc) {
+export function resolveScenicSpotForPlace(loc, options = {}) {
   if (!loc || typeof loc !== 'object') return null;
   if (!isDomesticKoreaLocation(loc)) return null;
+
+  const returnTo =
+    typeof options?.returnTo === 'string' && options.returnTo.startsWith('/')
+      ? options.returnTo
+      : null;
 
   const slug = String(loc.slug || loc.canonical_slug || loc.placeSlug || '')
     .trim()
@@ -269,7 +283,7 @@ export function resolveScenicSpotForPlace(loc) {
       hubId: sHubId || '',
       contentId: matchedSpot.contentId || '',
       imageUrl: matchedSpot.imageUrl || null,
-      deepPath,
+      deepPath: attachReturnTo(deepPath, returnTo),
       badgeLabel: '한국의 명승 · 테마 명소',
     };
   }
@@ -323,7 +337,7 @@ export function resolveScenicSpotForPlace(loc) {
       hubId: hubId || '',
       contentId: '',
       imageUrl: matchedHeritage.imageUrl || null,
-      deepPath,
+      deepPath: attachReturnTo(deepPath, returnTo),
       badgeLabel: '국가지정 명승',
     };
   }
@@ -344,7 +358,7 @@ export function resolveScenicSpotForPlace(loc) {
       region: hubSpots[0]?.region || '',
       hubId: targetHubId,
       imageUrl: hubSpots[0]?.imageUrl || null,
-      deepPath: base,
+      deepPath: attachReturnTo(base, returnTo),
       badgeLabel: '한국의 명승 · 지역 컬렉션',
     };
   }

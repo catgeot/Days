@@ -3643,10 +3643,42 @@ export default function KoreaThemeScenicPage() {
   );
 
   const closeModal = useCallback(() => {
+    const returnToParam = searchParams.get('returnTo');
+    const returnToFromState =
+      location.state &&
+      typeof location.state === 'object' &&
+      'returnTo' in location.state &&
+      typeof location.state.returnTo === 'string'
+        ? location.state.returnTo
+        : null;
+    let storedReturnTo = null;
+    try {
+      storedReturnTo = sessionStorage.getItem('gateo:scenic-gateway-return-to');
+    } catch {
+      /* private mode */
+    }
+
+    const targetReturnTo = returnToParam || returnToFromState || storedReturnTo;
+
+    if (
+      typeof targetReturnTo === 'string' &&
+      targetReturnTo.startsWith('/') &&
+      !targetReturnTo.startsWith('//')
+    ) {
+      try {
+        sessionStorage.removeItem('gateo:scenic-gateway-return-to');
+      } catch {
+        /* private mode */
+      }
+      navigate(targetReturnTo, { replace: true });
+      return;
+    }
+
     const next = new URLSearchParams(searchParams);
     next.delete('spot');
+    next.delete('returnTo');
     setSearchParams(next, { replace: true });
-  }, [searchParams, setSearchParams]);
+  }, [searchParams, setSearchParams, location.state, navigate]);
 
   const totalPages = nearActive
     ? 1

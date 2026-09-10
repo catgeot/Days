@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useMemo, useCallback } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Landmark, ChevronRight, Sparkles, Compass } from 'lucide-react';
 import { resolveScenicSpotForPlace } from '../../../pages/Home/lib/placeScenicGateway';
@@ -19,10 +19,38 @@ export default function PlaceScenicGateway({
   className = '',
 }) {
   const { t } = useTranslation();
+  const routeLocation = useLocation();
+
+  const returnPath = useMemo(() => {
+    if (routeLocation?.pathname?.startsWith('/place/')) {
+      return routeLocation.pathname + (routeLocation.search || '');
+    }
+    const placeSlug =
+      location?.slug || location?.placeSlug || location?.canonical_slug;
+    if (placeSlug) {
+      return `/place/${placeSlug}/gallery`;
+    }
+    return null;
+  }, [
+    routeLocation?.pathname,
+    routeLocation?.search,
+    location?.slug,
+    location?.placeSlug,
+    location?.canonical_slug,
+  ]);
 
   const scenicInfo = useMemo(() => {
-    return resolveScenicSpotForPlace(location);
-  }, [location]);
+    return resolveScenicSpotForPlace(location, { returnTo: returnPath });
+  }, [location, returnPath]);
+
+  const handleClick = useCallback(() => {
+    if (!returnPath) return;
+    try {
+      sessionStorage.setItem('gateo:scenic-gateway-return-to', returnPath);
+    } catch {
+      /* private mode */
+    }
+  }, [returnPath]);
 
   if (!scenicInfo) return null;
 
@@ -48,6 +76,8 @@ export default function PlaceScenicGateway({
     <div className={`animate-fade-in ${className}`.trim()}>
       <Link
         to={scenicInfo.deepPath}
+        state={returnPath ? { returnTo: returnPath } : undefined}
+        onClick={handleClick}
         className={`group block w-full text-left ${shellClass}`}
         aria-label={`${scenicInfo.name} ${actionText}`}
       >

@@ -98,5 +98,47 @@ function assert(cond, msg) {
   assert(nyc === null, 'New York should be rejected');
 }
 
+// 7. returnTo 옵션 보존 및 deepPath 쿼리 전달 검증
+{
+  const gyeongbokWithReturn = resolveScenicSpotForPlace(
+    {
+      name: '경복궁',
+      slug: 'gyeongbokgung-palace',
+      hubId: 'seoul',
+      country: '대한민국',
+    },
+    { returnTo: '/place/gyeongbokgung-palace/gallery' },
+  );
+  assert(
+    gyeongbokWithReturn?.deepPath.includes('returnTo=%2Fplace%2Fgyeongbokgung-palace%2Fgallery'),
+    'Gyeongbokgung deepPath preserves returnTo',
+  );
+
+  const heritageWithReturn = resolveScenicSpotForPlace(
+    {
+      name: '담양 식영정 일원',
+      country: '대한민국',
+    },
+    { returnTo: '/place/damyang-sikyeongjeong/gallery' },
+  );
+  assert(
+    heritageWithReturn?.deepPath.includes('returnTo=%2Fplace%2Fdamyang-sikyeongjeong%2Fgallery'),
+    'Heritage deepPath preserves returnTo',
+  );
+
+  const hubWithReturn = resolveScenicSpotForPlace(
+    {
+      name: '속초',
+      slug: 'sokcho',
+      country: '대한민국',
+    },
+    { returnTo: '/place/sokcho/gallery' },
+  );
+  assert(
+    hubWithReturn?.deepPath.includes('returnTo=%2Fplace%2Fsokcho%2Fgallery'),
+    'Hub deepPath preserves returnTo',
+  );
+}
+
 console.log(`Smoke test completed: ${passed} passed, ${failed} failed.`);
 if (failed > 0) process.exit(1);
