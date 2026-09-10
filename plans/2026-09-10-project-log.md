@@ -243,17 +243,22 @@
   3. **속초 대포항(129596)**: TourAPI 공식 사진 4장 및 개요 SSOT 반영, `ScenicPage.jsx`에서 curatedIds도 DB 미캐시 시 live TourAPI 조회를 거치도록 확장.
 - **VERIFY** `smoke:korea-local-scenic-lists` PASS · `smoke:place-label-slug` PASS · `vite build` PASS
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=sokcho` (또는 `samcheok`, `wonju`, `hongcheon`)
-- **다음** 사람 Preview QA 확인 및 PR #209 병합
+- **다음** 사람 Preview QA 확인 및 PR #209 병합 완료 ✅
 
-```
-팔경 활용 #2, 사람 Preview QA
-@plans/feature-handoff-index.md
-@plans/2026-09-10-project-log.md
-@plans/korea-local-scenic-use-plan.md
-브랜치 cursor/palgyeong-use-e744 · PR #209 · Preview /qa/palgyeong-use
-금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
-작업: /korea/theme/scenic (속초·삼척·원주·홍천) 리스트 썸네일·클릭 모달 상세/갤러리 확인 후 PR #209 병합
-```
+## 팔경 활용 #2 — PR #209 main 병합 완료 및 팔경 그룹화·콘텐츠 준비 분석 (Cloud)
+
+- **세션** `팔경 활용 #2, PR #209 병합 및 후속 준비`
+- **상태** PR [#209](https://github.com/catgeot/Days/pull/209) main 병합 완료 ✅
+- **분석 및 준비**:
+  1. **팔경 항목 추가 후 비는 페이지 문제**:
+     - `koreaScenicSpots.json`(871개) 외에 지자체 팔경(`koreaLocalScenicLists.json`, 876개 멤버) 중 상당수가 TourAPI 미등재 또는 사진/본문 누락.
+     - `LOCAL_SCENIC_MEMBER_OVERLAYS`를 점진적으로 확장하거나, 허브별 배치 작업을 통해 공공자원/사진갤러리 공식 본문과 사진을 보강하는 트랙 설계.
+  2. **분류칩 숫자 불일치 해소(팔경 그룹 섹션 분리 제안)**:
+     - 현재 `ScenicPage.jsx`의 "한국의 명소(GATEO 큐레이션)" 탭은 상단에 팔경 멤버를 합성 ID로 인라인 주입하여 분류칩 숫자(GATEO 명소 871개 기준)와 목록 개수 불일치가 발생.
+     - 사용자의 혜안대로 "지자체 팔경(N경)" 전용 서브섹션(또는 별도 카드 그룹)으로 시각적으로 명확히 분리하면, 기존 명소 분류칩과의 괴리가 자연스럽게 해소되고 가독성이 극대화됨.
+  3. **누락 본문 허브 선별 및 채우기 계획 수립**:
+     - 다음 세션에서 전수 스캔 스크립트를 작성하여 TourAPI `contentId`가 없거나 사진/개요가 없는 순수 팔경 멤버 및 허브 현황을 우선순위화하고, 순차적으로 TourAPI 연결 및 공식 큐레이션을 공급할 수 있도록 준비.
+
 
 
 
