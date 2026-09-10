@@ -316,13 +316,13 @@
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 사람 Preview QA** · B와 **동시 OK** |
+| **상태** | **#2 push** · tip `6b666ad3` · PR [#209](https://github.com/catgeot/Days/pull/209) · #186 main 병합 · **사람 Preview QA** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `e8da2987` |
-| **PR** | [#186](https://github.com/catgeot/Days/pull/186) |
+| **tip** | `6b666ad3` |
+| **PR** | [#209](https://github.com/catgeot/Days/pull/209) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
-| **일지** | [`2026-09-04-project-log.md`](./2026-09-04-project-log.md) |
-| **Preview** | `/qa/palgyeong-use` → git Preview `/` · `/korea/theme/scenic?hub=mungyeong` |
+| **일지** | [`2026-09-10-project-log.md`](./2026-09-10-project-log.md) |
+| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=hongcheon` |
 | **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 |
 | **VERIFY** | `smoke:korea-local-scenic-lists` · `audit:korea-local-scenic-lists` · `vite build` |
@@ -330,13 +330,13 @@
 **다음 제시어**:
 
 ```
-팔경 활용 #2, Preview QA
+팔경 활용 #2, 사람 Preview QA
 @plans/feature-handoff-index.md
-@plans/2026-09-04-project-log.md
+@plans/2026-09-10-project-log.md
 @plans/korea-local-scenic-use-plan.md
-브랜치 cursor/palgyeong-use-e744 · PR #186 · Preview /qa/palgyeong-use
+브랜치 cursor/palgyeong-use-e744 · PR #209 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
-작업: 홈 검색 문경 · /korea/theme/scenic 문경 hub · 축제 상세 인근 목록 소제목
+작업: /korea/theme/scenic?hub=hongcheon 사진 없는 가리산·금학산 클릭 — 제목이 합성 id가 아니고 상세가 열림
 ```
 
 ---

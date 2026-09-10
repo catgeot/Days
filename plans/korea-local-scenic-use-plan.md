@@ -1,6 +1,6 @@
 # 팔경 활용 — 검색·리스트 · Tour contentId
 
-**상태**: A #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · B R01–R02 ✅ · **A/B 동시 세션 OK**  
+**상태**: A #2 push `6b666ad3` · PR [#209](https://github.com/catgeot/Days/pull/209) · **#186 main 병합** · **사람 Preview QA** · B 종료  
 **수집 플랜**(열지 않음): [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) — 오케 재개 금지  
 **SSOT**: [`koreaLocalScenicLists.json`](../src/pages/Home/data/koreaLocalScenicLists.json) (lists **94** · members **876**)
 
@@ -90,7 +90,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | #2 push `6b666ad3` · PR [#209](https://github.com/catgeot/Days/pull/209) · #186 main 병합 · **사람 Preview QA** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · AI가 ID 기입 |
 
@@ -99,7 +99,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | #N | 채팅명 한 줄 | 갈래 | 상태 |
 |----|--------------|------|------|
 | 1 | `팔경 활용 #1, 검색·리스트` | A | **완료** · tip `e8da2987` |
-| 2 | `팔경 활용 #2, Preview QA` | A 사람 | **다음** |
+| 2 | `팔경 활용 #2, 사람 Preview QA` | A 사람 | **다음** · 사진 없는 행 클릭 tip `6b666ad3` · PR #209 |
 | — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
 | — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |
 | — | `팔경contentId #P2-L10, 잔여 null 분석 및 전략` | B | **완료** · tip `fb4c5513` 27/32 |
@@ -156,13 +156,13 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 ### §1.2 A #2 Preview QA
 
 ```
-팔경 활용 #2, Preview QA
+팔경 활용 #2, 사람 Preview QA
 @plans/feature-handoff-index.md
-@plans/2026-09-04-project-log.md
+@plans/2026-09-10-project-log.md
 @plans/korea-local-scenic-use-plan.md
-브랜치 cursor/palgyeong-use-e744 · PR #186 · Preview /qa/palgyeong-use
+브랜치 cursor/palgyeong-use-e744 · PR #209 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
-작업: 홈 검색 문경 · /korea/theme/scenic 문경 hub · 축제 상세 인근 목록 소제목
+작업: /korea/theme/scenic?hub=hongcheon 사진 없는 가리산·금학산 클릭 — 제목이 합성 id가 아니고 상세가 열림
 ```
 
 ### §1.2 B 다음 (#P2-END) — P2 종결 및 PR #185 검토
