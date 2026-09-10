@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 5,
-  sessionPhase: 'PR #210 main 병합 및 후속 허브 오버레이 확장 검토',
+  sessionNo: 6,
+  sessionPhase: '의성·무주 결손 허브 런타임 오버레이 보강',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=mungyeong',
+  previewPath: '/korea/theme/scenic?hub=uiseong',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-10-palgyeong-use-6-uiseong-muju-overlays',
+    session: '팔경 활용 #6, 의성·무주 결손 허브 런타임 오버레이 보강',
+    title: '의성 빙계팔경 8건·무주 구천동33경 결손 28건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 의성 빙계팔경 8건(빙혈·풍혈·인암·의각·수대·빙산사지 오층석탑·불정·용추)과 무주 구천동33경 결손 28건의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 의성군 문화관광·국가유산청 보물 석탑 사진, 무주군 문화관광·디지털무주문화대전·명승 일사대·파회·수심대 일원 사진을 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=uiseong · ?hub=muju 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-10T22:45:00.000Z',
+  },
   {
     id: '2026-09-10-palgyeong-use-5-pr210-merged-and-overlay-plan',
     session: '팔경 활용 #5, PR #210 main 병합 및 후속 허브 오버레이 확장 검토',
