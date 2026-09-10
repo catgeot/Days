@@ -90,7 +90,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | #2 push `37213091` · PR [#209](https://github.com/catgeot/Days/pull/209) · **사람 Preview QA** (리스트·써머리·상세 사진 및 개요 확인) | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | #3 push `16eb2aee` · PR [#210](https://github.com/catgeot/Days/pull/210) · **사람 Preview QA** (문경·단양 오버레이 및 리스트 팔경 그룹 배지/디바이더 확인) | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · AI가 ID 기입 |
 
@@ -100,6 +100,8 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 |----|--------------|------|------|
 | 1 | `팔경 활용 #1, 검색·리스트` | A | **완료** · tip `e8da2987` |
 | 2 | `팔경 활용 #2, 사람 Preview QA` | A 사람 | **완료** · PR #209 MERGED · 속초·삼척·원주·홍천 사진·상세 보강 및 main 병합 |
+| 3 | `팔경 활용 #3, 누락 허브 본문 선별 및 팔경 전용 그룹 UI 준비` | A | **완료** · tip `16eb2aee` · PR [#210](https://github.com/catgeot/Days/pull/210) |
+| 4 | `팔경 활용 #4, 사람 Preview QA` | A 사람 | **열기 가능** · PR #210 검토 |
 | — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
 | — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |
 | — | `팔경contentId #P2-L10, 잔여 null 분석 및 전략` | B | **완료** · tip `fb4c5513` 27/32 |

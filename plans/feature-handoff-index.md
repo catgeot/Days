@@ -312,19 +312,32 @@
 
 ---
 
-### 팔경 활용 — 검색·리스트 (A) — main 병합 완료 ✅
+### 팔경 활용 — 검색·리스트 (A)
 
 | | |
 |--|--|
-| **상태** | **main 병합 완료 ✅** · merge commit `6eed3aa1` / PR [#209](https://github.com/catgeot/Days/pull/209) MERGED |
-| **브랜치** | `cursor/palgyeong-use-e744` · PR [#209](https://github.com/catgeot/Days/pull/209) (MERGED) |
+| **상태** | **#3 push** · tip `16eb2aee` · PR [#210](https://github.com/catgeot/Days/pull/210) · **사람 Preview QA** |
+| **브랜치** | `cursor/palgyeong-use-e744` |
+| **tip** | `16eb2aee` |
+| **PR** | [#210](https://github.com/catgeot/Days/pull/210) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-10-project-log.md`](./2026-09-10-project-log.md) |
-| **PROD** | `https://www.gateo.kr/korea/theme/scenic` |
+| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=mungyeong` |
 | **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
-| **성과** | 팔경 멤버 N경 소제목 그룹화 · 검색/리스트/모달 연동 · 미등재/사진누락 멤버 런타임 오버레이(`LOCAL_SCENIC_MEMBER_OVERLAYS`) 및 live TourAPI 썸네일 폴백 구축 |
+| **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 |
+| **성과** | 지자체 팔경 누락 분석 도구 구현, 문경 4건(새재계곡·쌍용계곡·운달계곡·봉암사백운대) 및 단양 2건(하선암·옥순봉) 런타임 오버레이 보강, ScenicPage 내 팔경 전용 소제목 바 및 지역 대표 명소 분리 디바이더 적용 |
 
-**다음 제시어 없음** (PR #209 병합 완료 및 주제 종료). 후속 팔경 그룹화 UI 분리 및 누락 허브 본문 채우기는 별도 세션에서 진행.
+**다음 제시어**:
+
+```
+팔경 활용 #4, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-10-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · PR #210 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
+작업: /korea/theme/scenic?hub=mungyeong 및 ?hub=danyang 리스트 팔경 그룹 배지/디바이더 분리 확인 및 상세 모달 사진·개요 확인
+```
 
 ---
 
