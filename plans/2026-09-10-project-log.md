@@ -284,3 +284,30 @@
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
 작업: /korea/theme/scenic?hub=mungyeong 및 ?hub=danyang 리스트 팔경 그룹 배지/디바이더 분리 확인 및 상세 모달 사진·개요 확인
 ```
+
+## 팔경 활용 #4 — 사람 Preview QA 통과 및 PR #210 검토 대기 (Cloud)
+
+- **세션** `팔경 활용 #4, 사람 Preview QA`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `138e5a20` · PR [#210](https://github.com/catgeot/Days/pull/210) (Ready for review)
+- **완료**:
+  1. **사람 Preview QA 검증 완료 (PASS ✅)**:
+     - 문경 8경(`/korea/theme/scenic?hub=mungyeong`): 새재계곡, 쌍용계곡, 운달계곡, 봉암사백운대 등 지자체 팔경 전용 앰버 배지 및 디바이더 분리 정상 확인, 클릭 상세 모달 사진·공식 개요 노출 확인.
+     - 단양 8경(`/korea/theme/scenic?hub=danyang`): 하선암, 옥순봉 등 리스트 상단 팔경 그룹 및 하단 지역 대표 명소 구분선 정상 표시 확인.
+     - 기존 GATEO 선정 명소 분류칩 카운트와의 시각적 위계 분리 완성.
+  2. **PR #210 상태 갱신**:
+     - Draft 해제 및 Ready for review 전환 완료.
+     - 작업 로그(`cloudPreviewWorkLog.js`) #4 통과 기록.
+- **VERIFY** `smoke:korea-local-scenic-lists` PASS · `npm run build` PASS · 사람 Preview QA PASS ✅
+- **Preview** https://www.gateo.kr/qa/palgyeong-use (PASS)
+- **다음** 팔경 활용 #5 — PR #210 main 병합 확인 및 후속 결손 허브 오버레이 확장 검토
+
+```
+팔경 활용 #5, PR #210 main 병합 및 후속 허브 오버레이 확장 검토
+@plans/feature-handoff-index.md
+@plans/2026-09-10-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · PR #210
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: PR #210 main 병합 확인 및 다음 결손 허브(무주 28건, 의성 8건 등) 런타임 오버레이 보강 계획 수립
+```
+
