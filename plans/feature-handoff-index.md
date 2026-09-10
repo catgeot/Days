@@ -316,9 +316,9 @@
 
 | | |
 |--|--|
-| **상태** | **#2 push** · tip `37213091` · PR [#209](https://github.com/catgeot/Days/pull/209) · **사람 Preview QA** (리스트·써머리·상세 사진 및 개요 확인) |
+| **상태** | **#2 push** · tip `1a721b9c` · PR [#209](https://github.com/catgeot/Days/pull/209) · **사람 Preview QA** (속초·삼척·원주·홍천 사진·개요 확인) |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `37213091` |
+| **tip** | `1a721b9c` |
 | **PR** | [#209](https://github.com/catgeot/Days/pull/209) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-10-project-log.md`](./2026-09-10-project-log.md) |
@@ -336,7 +336,7 @@
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · PR #209 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
-작업: /korea/theme/scenic?hub=hongcheon 가리산·금학산 리스트 썸네일·클릭 모달 상세/갤러리 및 써머리 카드 확인 후 PR #209 병합
+작업: /korea/theme/scenic (속초·삼척·원주·홍천) 리스트 썸네일·클릭 모달 상세/갤러리 확인 후 PR #209 병합
 ```
 
 ---
