@@ -90,3 +90,39 @@
 금지: AI 허구 본문 작성 금지 · 저작권 미확인 사진 금지 · feature에 plans/** 커밋
 작업: R03 20건(심청한옥마을·운문사·진해군항제·성수산 등) 주소·홈페이지·갤러리·공식개요 보강 및 SSOT 전수 종결
 ```
+
+## 장소카드 갤러리-명소 본문 연계 #1 — 게이트웨이 및 정밀 매칭 구축 (Cloud)
+
+- **세션** `장소카드 갤러리-명소 본문 연계 #1, 게이트웨이 컴포넌트 및 정밀 매칭 구축`
+- **브랜치** `cursor/scenic-gateway-2ced` (`1cedbdec`) · PR [#208](https://github.com/catgeot/Days/pull/208) (OPEN)
+- **배경 및 요구사항**:
+  - 지구본 홈 탐색 페이지에서 한국 관광지/명소를 검색하여 장소카드(`/place/:slug`)로 열었을 때, 기존에는 명소 페이지 본문과의 연결점이 없었음.
+  - 장소카드의 기본 홈인 **갤러리 페이지**(`mediaMode === 'GALLERY'`)에서 해당 명소의 **상세 본문 페이지(`ThemeSpotDetailModal`, `/korea/theme/scenic?spot=${spotId}`)**로 자연스럽게 연결되는 통로를 마련.
+- **완료**
+  1. **명소/명승 매칭 유틸리티 구현 (`src/pages/Home/lib/placeScenicGateway.js`)**:
+     - `isDomesticKoreaLocation(loc)`: 해외 장소(파리, 도쿄, 뉴욕 등)의 오탐을 철저히 차단하는 국내 위치 가드.
+     - `resolveScenicSpotForPlace(loc)`: 장소카드의 `location` 객체(slug, name, hubId, contentId 등)로부터 `koreaScenicSpots.json`(테마 명소 871곳), `koreaHeritageScenic.json`(국가지정 명승 141곳), `cityAttractionHubs.json`(한국 도시 허브)을 정밀 매칭하고 해당 명소 본문 상세 모달로 즉시 진입하는 딥링크(`deepPath`) 생성.
+  2. **명소 본문 연결 게이트웨이 컴포넌트 (`src/components/PlaceCard/common/PlaceScenicGateway.jsx`)**:
+     - 장소카드 다크 테마에 어울리는 앰버 골드 그라데이션 카드 UI.
+     - 명소명, 한 줄 소개(blurb), 권역 배지, 개요/사진/주변 맛집 안내 칩 표시.
+     - 클릭 시 해당 명소의 상세 본문 모달(`ThemeSpotDetailModal`)로 직접 이동.
+  3. **데스크톱 및 모바일 갤러리 뷰 연동**:
+     - 데스크톱 (`src/components/PlaceCard/views/GalleryInfoView.jsx`): 개요 텍스트 하단에 배치.
+     - 모바일 (`src/components/PlaceCard/views/PlaceGalleryView.jsx`): 모바일 개요 섹션 하단에 배치.
+  4. **다국어(i18n) 지원 (`ko.json`, `en.json`)**:
+     - 국가지정 명승 / 한국의 명승 테마 명소 / 지역 명소 컬렉션 배지 및 안내 레이블 다국어 적용.
+  5. **검증 및 스모크 테스트 추가 (`scripts/smoke-place-scenic-gateway.mjs`)**:
+     - 대표 명소, contentId 매칭, 국가유산 매칭, 도시 허브 매칭, 해외 장소 배제 등 18개 단위 스모크 테스트 구현 및 통과.
+     - `package.json`에 `smoke:place-scenic-gateway` 스크립트 등록.
+- **VERIFY** `smoke:place-scenic-gateway` (18 passed) · `audit:korea-scenic-spots` · `audit:city-attraction-hubs` · `smoke:place-label-slug` · `build` ALL PASS
+- **다음** 장소카드 갤러리-명소 본문 연계 #2 — Preview 확인 및 사람 QA
+
+```
+장소카드 갤러리-명소 본문 연계 #2, Preview 확인 및 사람 QA
+@plans/feature-handoff-index.md
+@plans/2026-09-10-project-log.md
+브랜치 cursor/scenic-gateway-2ced · PR #208
+금지: UI 임의 리디자인 · feature에 plans/** 커밋
+작업: 탐색에서 경복궁·속초해수욕장·경포대 등 검색 시 장소카드 갤러리 내 명소 본문 연결 카드 렌더링 및 클릭 시 명승 상세 모달 이동 확인
+```
+
