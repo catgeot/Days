@@ -5,6 +5,7 @@ import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
 import GalleryAttributionLink from '../common/GalleryAttributionLink';
 import { splitPlaceOverview } from '../common/placeOverviewText';
 import PlaceOverviewProse from '../common/PlaceOverviewProse';
+import PlaceScenicGateway from '../common/PlaceScenicGateway';
 import { getLocalizedPlaceName } from '../common/locationDisplay';
 import { useLocale } from '../../../i18n/LocaleProvider';
 
@@ -127,6 +128,8 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
                                 />
                             )}
                         </div>
+
+                        <PlaceScenicGateway location={selectedPlace} variant="dark" />
 
                         {selectedPlace?.keywords && (
                             <div className="flex flex-wrap gap-2 border-t border-white/5 pt-4">
