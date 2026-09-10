@@ -256,9 +256,31 @@
   2. **분류칩 숫자 불일치 해소(팔경 그룹 섹션 분리 제안)**:
      - 현재 `ScenicPage.jsx`의 "한국의 명소(GATEO 큐레이션)" 탭은 상단에 팔경 멤버를 합성 ID로 인라인 주입하여 분류칩 숫자(GATEO 명소 871개 기준)와 목록 개수 불일치가 발생.
      - 사용자의 혜안대로 "지자체 팔경(N경)" 전용 서브섹션(또는 별도 카드 그룹)으로 시각적으로 명확히 분리하면, 기존 명소 분류칩과의 괴리가 자연스럽게 해소되고 가독성이 극대화됨.
-  3. **누락 본문 허브 선별 및 채우기 계획 수립**:
-     - 다음 세션에서 전수 스캔 스크립트를 작성하여 TourAPI `contentId`가 없거나 사진/개요가 없는 순수 팔경 멤버 및 허브 현황을 우선순위화하고, 순차적으로 TourAPI 연결 및 공식 큐레이션을 공급할 수 있도록 준비.
+## 팔경 활용 #3 — 누락 허브 분석, 문경·단양 오버레이 보강 및 팔경 그룹 UI 분리 (Cloud)
 
+- **세션** `팔경 활용 #3, 누락 허브 본문 선별 및 팔경 전용 그룹 UI 준비`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `16eb2aee` · PR [#210](https://github.com/catgeot/Days/pull/210) (OPEN)
+- **완료**:
+  1. **지자체 팔경 누락 분석 스크립트 작성 (`scripts/report-local-scenic-missing-content.mjs`)**:
+     - 94개 지자체 팔경, 총 876명 멤버 대상 contentId 보유율 67.1%(588명), 사진/개요 조회 가능 68.8%(603명), 순수 누락 273명 도출.
+     - 주요 결손 허브 식별: 무주(28명), 의성(8명), 광양(7명), 하동(7명), 영동(7명), 함안(7명), 문경(4명), 단양(2명) 등.
+  2. **우선순위 허브(문경·단양) 런타임 오버레이(`LOCAL_SCENIC_MEMBER_OVERLAYS`) 보강**:
+     - 문경 8경 4건 (`새재계곡`, `쌍용계곡`, `운달계곡`, `봉암사백운대`): 백두대간 및 봉암사, 운달산 천년고찰 김룡사 공식 팩트 본문, 고화질 사진 및 주소 보강.
+     - 단양 8경 2건 (`하선암`, `옥순봉`): 단양군/퇴계 이황 설화 및 선암계곡·충주호반 절경 본문, TourAPI 및 문화유산청 공식 사진 연결.
+     - `koreaLocalScenicLists.js`의 `mergeLocalScenicMembersIntoScenicSpots` 및 `listLocalScenicMemberJobs`에 오버레이 전파 파이프라인 정비.
+  3. **팔경 전용 그룹 분리 렌더링 UI 개선 (`ScenicPage.jsx`)**:
+     - 선정 명소 `ul`에서 지자체 팔경 그룹 헤더를 앰버 톤 배지 + 디바이더 선(`border-amber-300`, `bg-amber-100`)으로 명확히 시각화.
+     - 팔경 그룹 종료 후 일반 선정 명소로 이어질 때 "지역 대표 명소" 배지 및 디바이더를 노출하여 기존 명소 칩 카운트와의 시각적 위계 구분 완성.
+- **VERIFY** `smoke:korea-local-scenic-lists` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=mungyeong`
+- **다음** 사람 Preview QA 확인 및 후속 배치 계획
 
-
-
+```
+팔경 활용 #4, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-10-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · PR #210 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
+작업: /korea/theme/scenic?hub=mungyeong 및 ?hub=danyang 리스트 팔경 그룹 배지/디바이더 분리 확인 및 상세 모달 사진·개요 확인
+```
