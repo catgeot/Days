@@ -170,5 +170,24 @@
 작업: 장소카드 갤러리에서 명소 본문 진입 후 모달 닫기 시 원래 갤러리로 정확히 복귀하는지 확인
 ```
 
+## 팔경 활용 #2 — 사진 없는 명승 행 클릭 상세 깨짐 (Cloud)
+
+- **세션** `팔경 활용 #2, 사진 없는 행 클릭`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `6b666ad3` · PR [#209](https://github.com/catgeot/Days/pull/209)
+- **완료** 사진 없는 팔경 멤버 클릭 시 제목이 `local-scenic:…`이거나 클릭이 막히던 문제. 합성 id를 이름·contentId로 풀고, Tour id 없어도 GATEO 안내 본문으로 연다.
+- **VERIFY** `smoke:korea-local-scenic-lists` PASS · `audit:korea-local-scenic-lists` issues 0 · `vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=hongcheon`
+- **다음** 사람 Preview QA (가리산 제목 · 금학산 클릭)
+
+```
+팔경 활용 #2, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-10-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · PR #209 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
+작업: /korea/theme/scenic?hub=hongcheon 사진 없는 가리산·금학산 클릭 — 제목이 합성 id가 아니고 상세가 열림
+```
+
 
 
