@@ -316,27 +316,27 @@
 
 | | |
 |--|--|
-| **상태** | **#3 push** · tip `16eb2aee` · PR [#210](https://github.com/catgeot/Days/pull/210) · **사람 Preview QA** |
+| **상태** | **#4 사람 Preview QA 통과 ✅** · tip `138e5a20` · PR [#210](https://github.com/catgeot/Days/pull/210) (Ready for review) · **사람 PR 검토 및 병합 대기** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `16eb2aee` |
+| **tip** | `138e5a20` |
 | **PR** | [#210](https://github.com/catgeot/Days/pull/210) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-10-project-log.md`](./2026-09-10-project-log.md) |
-| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=mungyeong` |
+| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=mungyeong` (PASS ✅) |
 | **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 |
-| **성과** | 지자체 팔경 누락 분석 도구 구현, 문경 4건(새재계곡·쌍용계곡·운달계곡·봉암사백운대) 및 단양 2건(하선암·옥순봉) 런타임 오버레이 보강, ScenicPage 내 팔경 전용 소제목 바 및 지역 대표 명소 분리 디바이더 적용 |
+| **성과** | 지자체 팔경 누락 분석 도구 구현, 문경 4건(새재계곡·쌍용계곡·운달계곡·봉암사백운대) 및 단양 2건(하선암·옥순봉) 런타임 오버레이 보강, ScenicPage 내 팔경 전용 소제목 바 및 지역 대표 명소 분리 디바이더 적용, 사람 Preview QA 통과 |
 
 **다음 제시어**:
 
 ```
-팔경 활용 #4, 사람 Preview QA
+팔경 활용 #5, PR #210 main 병합 및 후속 허브 오버레이 확장 검토
 @plans/feature-handoff-index.md
 @plans/2026-09-10-project-log.md
 @plans/korea-local-scenic-use-plan.md
-브랜치 cursor/palgyeong-use-e744 · PR #210 · Preview /qa/palgyeong-use
-금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
-작업: /korea/theme/scenic?hub=mungyeong 및 ?hub=danyang 리스트 팔경 그룹 배지/디바이더 분리 확인 및 상세 모달 사진·개요 확인
+브랜치 cursor/palgyeong-use-e744 · PR #210
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: PR #210 main 병합 확인 및 다음 결손 허브(무주 28건, 의성 8건 등) 런타임 오버레이 보강 계획 수립
 ```
 
 ---
