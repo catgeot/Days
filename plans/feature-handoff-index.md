@@ -319,11 +319,11 @@
 
 | | |
 |--|--|
-| **상태** | R01–R16 ✅ · **P0 종료** members **579/876** null **297**(terminal) · P2 **null 51**/871 (820/871 94.1%) · **P2-L10** ✅ 27/32 · **P2 종료/종결** · A와 **동시 OK** |
-| **브랜치** | `cursor/palgyeong-cid` · tip `fb4c5513` |
+| **상태** | R01–R16 ✅ · **P0 종료** members **579/876** null **297**(terminal) · P2 **종료** null **51**/871 (820/871 94.1%) · **P2 전 라운드 종결** · PR [#185](https://github.com/catgeot/Days/pull/185) 검토 완료(병합 대기) |
+| **브랜치** | `cursor/palgyeong-cid` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **PR** | [#185](https://github.com/catgeot/Days/pull/185) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§3·§9 B** · method **§5.7** |
-| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — **P2-L10** 완료 · 잔여 51건 terminal 종결 |
+| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — P0·P1·P2 전 라운드 종결 · 잔여 51건 terminal |
 | **일지** | [`2026-09-09-project-log.md`](./2026-09-09-project-log.md) |
 | **소유** | JSON `contentId` · fill · audit · **UI 금지** |
 | **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · L3~L9 hub 본명 재시도 · `--limit=100` 로또 · AI가 ID 기입 · feature에 `plans/**` 커밋 |
@@ -331,12 +331,12 @@
 **다음 제시어**:
 
 ```
-팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토
+팔경contentId PR #185 main 병합 검토
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
 브랜치 cursor/palgyeong-cid · PR #185
-금지: UI · scenic 승격 · 워커 병렬 LIVE · L3~L9 hub 본명 단순 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
-작업: P2 scenic 820/871 충족(94.1%) · 잔여 51건 terminal 종결 확정 및 PR #185 검토
+금지: UI · scenic 승격 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P0/P1/P2 contentId 수집·종결 완료(820/871 충족, 94.1%) · PR #185 최종 사람 승인 및 main 병합
 ```
 
 ---
