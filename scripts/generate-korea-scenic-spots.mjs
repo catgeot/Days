@@ -159,6 +159,16 @@ function normalizeSpots(src, hubIndex, imageUrlById = {}) {
 
     const imageUrl = toHttps(imageUrlById[id] || raw.imageUrl);
 
+    const addr1 = raw.addr1 != null && String(raw.addr1).trim()
+      ? String(raw.addr1).trim()
+      : null;
+    const homepage = raw.homepage != null && String(raw.homepage).trim()
+      ? String(raw.homepage).trim()
+      : null;
+    const galleryUrls = Array.isArray(raw.galleryUrls)
+      ? raw.galleryUrls.map(toHttps).filter(Boolean)
+      : null;
+
     spots.push({
       order,
       id,
@@ -174,6 +184,9 @@ function normalizeSpots(src, hubIndex, imageUrlById = {}) {
       contentId,
       overview,
       imageUrl,
+      ...(addr1 ? { addr1 } : {}),
+      ...(homepage ? { homepage } : {}),
+      ...(galleryUrls && galleryUrls.length > 0 ? { galleryUrls } : {}),
     });
   }
 

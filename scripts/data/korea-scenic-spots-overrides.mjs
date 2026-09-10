@@ -1558,7 +1558,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'hanam',
       attractionName: '하남 덕풍시장',
       overview: '하남 전통시장 — 골목 먹거리. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2770756',
     },
     {
       order: 1540,
@@ -2144,7 +2144,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gunpo',
       attractionName: '군포 산본시장',
       overview: '산본시장 — 군포 전통시장 골목. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '1750106',
     },
     {
       order: 2120,
@@ -3839,7 +3839,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'seosan',
       attractionName: '서산동부시장',
       overview: '동부시장 — 서산 전통시장. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2489840',
     },
     {
       order: 3800,
@@ -4193,7 +4193,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'mungyeong',
       attractionName: '문경석탄박물관',
       overview: '문경석탄박물관 — 탄광 역사. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2599737',
     }, // TODO contentId
     {
       order: 4150,
@@ -4284,7 +4284,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'bonghwa',
       attractionName: '분천역',
       overview: '분천역 — V-train·산타마을. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2649976',
     }, // TODO contentId
     {
       order: 4240,
@@ -4410,7 +4410,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'hongseong',
       attractionName: '홍성 남당리 해안',
       overview: '남당리 해안 — 갯벌·노을. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '228856',
     }, // TODO contentId
     {
       order: 4360,
@@ -4524,7 +4524,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'yeongi',
       attractionName: '연기 고복자연공원',
       overview: '고복자연공원 — 호수·산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '125875',
     }, // TODO contentId
     {
       order: 4470,
@@ -4596,7 +4596,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'yesan',
       attractionName: '예산성지',
       overview: '예산성지 — 순교 성지. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2771833',
     }, // TODO contentId
     {
       order: 4540,
@@ -4813,7 +4813,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'seocheon',
       attractionName: '마량리동백숲',
       overview: '마량리동백숲 — 동백·바닷가 숲. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126010',
     }, // TODO contentId
     {
       order: 4750,
@@ -5120,7 +5120,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'hwasun',
       attractionName: '화순온천',
       overview: '화순온천 — 도곡 온천·스파. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '3013448',
     }, // TODO contentId
     {
       order: 5040,
@@ -5559,7 +5559,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gimje',
       attractionName: '김제 구도심',
       overview: '김제 구도심 — 읍치·골목. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '1599176',
     }, // TODO contentId
     {
       order: 5460,
@@ -5843,7 +5843,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'geochang',
       attractionName: '거창 가조온천',
       overview: '가조온천 — 거창 온천휴양. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '127956',
     }, // TODO contentId
     {
       order: 5730,
@@ -5865,7 +5865,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'geochang',
       attractionName: '거창 월성리 계곡',
       overview: '월성리 계곡 — 거창 여름 피서. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '127137',
     }, // TODO contentId
     {
       order: 5750,
@@ -6056,7 +6056,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gunwi',
       attractionName: '군위 삼국유사테마파크',
       overview: '삼국유사테마파크 — 군위 역사 테마. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2703799',
     }, // TODO contentId
     {
       order: 5930,
@@ -6067,7 +6067,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gunwi',
       attractionName: '군위 위천',
       overview: '위천 — 군위 물길·산촌. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2743782',
     }, // TODO contentId
     {
       order: 5940,
@@ -6109,7 +6109,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gunwi',
       attractionName: '군위 휘파람숲',
       overview: '휘파람숲 — 군위 숲 산책. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2815446',
     }, // TODO contentId
 
     {
@@ -6186,7 +6186,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'changwon',
       attractionName: '마산 가고파꼬부랑길',
       overview: '가고파꼬부랑길 — 마산 언덕 골목. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2019720',
     }, // TODO contentId
     {
       order: 6050,
@@ -6362,7 +6362,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gijang',
       attractionName: '오시리아 관광단지',
       overview: '오시리아 — 기장 관광단지. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2782658',
     }, // TODO contentId
     {
       order: 6220,
@@ -6763,7 +6763,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'yeongcheon',
       attractionName: '영천 별빛테마공원',
       overview: '별빛테마공원 — 영천 야경·천체. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '606248',
     }, // TODO contentId
     {
       order: 6600,
@@ -6774,7 +6774,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'yeongcheon',
       attractionName: '영천 보현산천문대',
       overview: '보현산천문대 — 영천 천체 관측. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '127293',
     }, // TODO contentId
     {
       order: 6610,
@@ -7191,7 +7191,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'gyeongsan',
       attractionName: '삼성현역사문화공원',
       overview: '삼성현역사문화공원 — 경산 원효·설총·일연. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '1999964',
     }, // TODO contentId
     {
       order: 7000,
@@ -7245,7 +7245,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'sancheong',
       attractionName: '산청 한방테마파크',
       overview: '한방테마파크 — 산청 약초·체험. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '2620990',
     }, // TODO contentId
     {
       order: 7050,
@@ -7299,7 +7299,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'uiryeong',
       attractionName: '의령 곽재우기념관',
       overview: '곽재우기념관 — 의령 의병 역사. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '127296',
     }, // TODO contentId
     {
       order: 7100,
@@ -7310,7 +7310,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'uiryeong',
       attractionName: '의령 남강 전망',
       overview: '남강 전망 — 의령 강변 조망. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '126193',
     }, // TODO contentId
     {
       order: 7110,
@@ -7321,7 +7321,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'uiryeong',
       attractionName: '의령 전통시장',
       overview: '의령 전통시장 — 오일장·먹거리. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '132279',
     }, // TODO contentId
     {
       order: 7120,
@@ -7354,7 +7354,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'yeongdeok',
       attractionName: '영덕 블루로드',
       overview: '블루로드 — 영덕 해안 트레일. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '1041317',
     }, // TODO contentId
     {
       order: 7150,
@@ -7365,7 +7365,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       hubId: 'yeongdeok',
       attractionName: '영덕 신재생에너지전시관',
       overview: '신재생에너지전시관 — 영덕 창포 에너지 체험. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
-      contentId: null,
+      contentId: '128765',
     }, // TODO contentId
     {
       order: 7160,
@@ -7468,7 +7468,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '강원',
       hubId: 'chuncheon',
       attractionName: '레고랜드 코리아',
-      contentId: null,
+      contentId: '2815362',
     }, // TODO contentId
     {
       order: 7260,
@@ -7488,7 +7488,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '강원',
       hubId: 'chuncheon',
       attractionName: '제이드가든',
-      contentId: null,
+      contentId: '1607565',
     }, // TODO contentId
     {
       order: 7280,
@@ -7498,7 +7498,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '강원',
       hubId: 'chuncheon',
       attractionName: '청평사',
-      contentId: null,
+      contentId: '125762',
     }, // TODO contentId
     {
       order: 7290,
@@ -7538,7 +7538,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '강원',
       hubId: 'sokcho',
       attractionName: '대포항',
-      contentId: null,
+      contentId: '129596',
     }, // TODO contentId
     {
       order: 7330,
@@ -7548,7 +7548,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '강원',
       hubId: 'sokcho',
       attractionName: '속초등대전망대',
-      contentId: null,
+      contentId: '128803',
     }, // TODO contentId
     {
       order: 7340,
@@ -7558,7 +7558,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '강원',
       hubId: 'sokcho',
       attractionName: '아바이마을',
-      contentId: null,
+      contentId: '251738',
     }, // TODO contentId
     {
       order: 7350,
@@ -7578,7 +7578,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '강원',
       hubId: 'sokcho',
       attractionName: '청초호',
-      contentId: null,
+      contentId: '125750',
     }, // TODO contentId
     {
       order: 7370,
@@ -7598,7 +7598,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '강원',
       hubId: 'donghae',
       attractionName: '동해 논골담길',
-      contentId: null,
+      contentId: '1223212',
     }, // TODO contentId
     {
       order: 7390,
@@ -7608,7 +7608,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '강원',
       hubId: 'donghae',
       attractionName: '동해 망상해수욕장',
-      contentId: null,
+      contentId: '125713',
     }, // TODO contentId
     {
       order: 7400,
@@ -7668,7 +7668,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '강원',
       hubId: 'samcheok',
       attractionName: '대금굴',
-      contentId: null,
+      contentId: '129560',
     }, // TODO contentId
     {
       order: 7460,
@@ -7688,7 +7688,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '강원',
       hubId: 'samcheok',
       attractionName: '삼척 이사부사자공원',
-      contentId: null,
+      contentId: '1385338',
     }, // TODO contentId
     {
       order: 7480,
@@ -7708,7 +7708,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '강원',
       hubId: 'samcheok',
       attractionName: '삼척 환선굴',
-      contentId: null,
+      contentId: '126729',
     }, // TODO contentId
     {
       order: 7500,
@@ -7718,7 +7718,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '강원',
       hubId: 'samcheok',
       attractionName: '삼척해수욕장',
-      contentId: null,
+      contentId: '125705',
     }, // TODO contentId
     {
       order: 7510,
@@ -7728,7 +7728,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '강원',
       hubId: 'samcheok',
       attractionName: '삼척해양레일바이크',
-      contentId: null,
+      contentId: '1945438',
     }, // TODO contentId
     {
       order: 7520,
@@ -7738,7 +7738,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '강원',
       hubId: 'samcheok',
       attractionName: '죽서루',
-      contentId: null,
+      contentId: '125799',
     }, // TODO contentId
     {
       order: 7530,
@@ -7808,7 +7808,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'pohang',
       attractionName: '구룡포일본인가옥거리',
-      contentId: null,
+      contentId: '1909659',
     }, // TODO contentId
     {
       order: 7600,
@@ -7848,7 +7848,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'mokpo',
       attractionName: '고하도 해안산책로',
-      contentId: null,
+      contentId: '2706019',
     }, // TODO contentId
     {
       order: 7640,
@@ -7928,7 +7928,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'ulleung',
       attractionName: '향목전망대',
-      contentId: null,
+      contentId: '778402',
     }, // TODO contentId
     {
       order: 7720,
@@ -7988,7 +7988,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '수도권',
       hubId: 'gapyeong',
       attractionName: '가평레일파크',
-      contentId: null,
+      contentId: '2361081',
     }, // TODO contentId
     {
       order: 7780,
@@ -8058,7 +8058,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'hapcheon',
       attractionName: '가야산',
-      contentId: null,
+      contentId: '126022',
     }, // TODO contentId
     {
       order: 7850,
@@ -8068,7 +8068,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'hapcheon',
       attractionName: '대장경테마파크',
-      contentId: null,
+      contentId: '1905508',
     }, // TODO contentId
     {
       order: 7860,
@@ -8078,7 +8078,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'hapcheon',
       attractionName: '함벽루',
-      contentId: null,
+      contentId: '1622710',
     }, // TODO contentId
     {
       order: 7870,
@@ -8088,7 +8088,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'hapcheon',
       attractionName: '합천영상테마파크',
-      contentId: null,
+      contentId: '2469441',
     }, // TODO contentId
     {
       order: 7880,
@@ -8098,7 +8098,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'hapcheon',
       attractionName: '합천호',
-      contentId: null,
+      contentId: '126118',
     }, // TODO contentId
     {
       order: 7890,
@@ -8168,7 +8168,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'buyeo',
       attractionName: '국립부여박물관',
-      contentId: null,
+      contentId: '130062',
     }, // TODO contentId
     {
       order: 7960,
@@ -8178,7 +8178,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'buyeo',
       attractionName: '궁남지',
-      contentId: null,
+      contentId: '125984',
     }, // TODO contentId
     {
       order: 7970,
@@ -8198,7 +8198,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'buyeo',
       attractionName: '부소산성',
-      contentId: null,
+      contentId: '125988',
     }, // TODO contentId
     {
       order: 7990,
@@ -8208,7 +8208,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'buyeo',
       attractionName: '정림사지 오층석탑',
-      contentId: null,
+      contentId: '126650',
     }, // TODO contentId
     {
       order: 8000,
@@ -8238,7 +8238,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'boseong',
       attractionName: '율포해수욕장',
-      contentId: null,
+      contentId: '2022601',
     }, // TODO contentId
     {
       order: 8030,
@@ -8258,7 +8258,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'boseong',
       attractionName: '한국차박물관',
-      contentId: null,
+      contentId: '2470539',
     }, // TODO contentId
     {
       order: 8050,
@@ -8298,7 +8298,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'buan',
       attractionName: '새만금',
-      contentId: null,
+      contentId: '776934',
     }, // TODO contentId
     {
       order: 8090,
@@ -8308,8 +8308,8 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'buan',
       attractionName: '직소폭포',
-      contentId: null,
-    }, // TODO contentId
+      contentId: '126260',
+    },
     {
       order: 8100,
       id: 'gyoryongsanseong',
@@ -8318,7 +8318,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'namwon',
       attractionName: '교룡산성',
-      contentId: null,
+      contentId: '1607157',
     }, // TODO contentId
     {
       order: 8110,
@@ -8338,7 +8338,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'namwon',
       attractionName: '지리산 뱀사골',
-      contentId: null,
+      contentId: '126269',
     }, // TODO contentId
     {
       order: 8130,
@@ -8348,7 +8348,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'namwon',
       attractionName: '춘향테마파크',
-      contentId: null,
+      contentId: '2519182',
     }, // TODO contentId
     {
       order: 8140,
@@ -8358,7 +8358,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'namwon',
       attractionName: '혼불문학관',
-      contentId: null,
+      contentId: '128126',
     }, // TODO contentId
     {
       order: 8150,
@@ -8368,7 +8368,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'hadong',
       attractionName: '쌍계사',
-      contentId: null,
+      contentId: '128146',
     }, // TODO contentId
     {
       order: 8160,
@@ -8378,7 +8378,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'hadong',
       attractionName: '악양 대봉감마을',
-      contentId: null,
+      contentId: '2784697',
     }, // TODO contentId
     {
       order: 8170,
@@ -8388,7 +8388,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'hadong',
       attractionName: '하동송림',
-      contentId: null,
+      contentId: '126233',
     }, // TODO contentId
     {
       order: 8180,
@@ -8398,7 +8398,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'hadong',
       attractionName: '하동야생차박물관',
-      contentId: null,
+      contentId: '231958',
     }, // TODO contentId
     {
       order: 8190,
@@ -8408,7 +8408,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '경상',
       hubId: 'hadong',
       attractionName: '화개장터',
-      contentId: null,
+      contentId: '132146',
     }, // TODO contentId
     {
       order: 8200,
@@ -8438,8 +8438,8 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'cheongju',
       attractionName: '육거리시장',
-      contentId: null,
-    }, // TODO contentId
+      contentId: '132548',
+    },
     {
       order: 8230,
       id: 'cheongju-early-printing-museum',
@@ -8448,7 +8448,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'cheongju',
       attractionName: '청주 고인쇄박물관',
-      contentId: null,
+      contentId: '2804708',
     }, // TODO contentId
     {
       order: 8240,
@@ -8488,7 +8488,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'gwangju',
       attractionName: '5.18민주광장',
-      contentId: null,
+      contentId: '1621360',
     }, // TODO contentId
     {
       order: 8280,
@@ -8498,7 +8498,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'gwangju',
       attractionName: '광주호호수생태원',
-      contentId: null,
+      contentId: '129443',
     }, // TODO contentId
     {
       order: 8290,
@@ -8508,7 +8508,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'gwangju',
       attractionName: '양림동역사문화마을',
-      contentId: null,
+      contentId: '2603494',
     }, // TODO contentId
     {
       order: 8300,
@@ -8528,7 +8528,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'jeongeup',
       attractionName: '단풍생태공원',
-      contentId: null,
+      contentId: '2715684',
     }, // TODO contentId
     {
       order: 8320,
@@ -8538,7 +8538,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'jeongeup',
       attractionName: '무성서원',
-      contentId: null,
+      contentId: '126401',
     }, // TODO contentId
     {
       order: 8330,
@@ -8568,7 +8568,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '수도권',
       hubId: 'seongnam',
       attractionName: '모란시장',
-      contentId: null,
+      contentId: '132266',
     }, // TODO contentId
     {
       order: 8360,
@@ -8578,7 +8578,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '수도권',
       hubId: 'seongnam',
       attractionName: '성남 탄천',
-      contentId: null,
+      contentId: '2760806',
     }, // TODO contentId
     {
       order: 8370,
@@ -8598,7 +8598,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '수도권',
       hubId: 'seongnam',
       attractionName: '율동공원',
-      contentId: null,
+      contentId: '128040',
     }, // TODO contentId
     {
       order: 8390,
@@ -8648,7 +8648,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'danyang',
       attractionName: '고수동굴',
-      contentId: null,
+      contentId: '125861',
     }, // TODO contentId
     {
       order: 8440,
@@ -8658,7 +8658,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'danyang',
       attractionName: '구담봉',
-      contentId: null,
+      contentId: '127568',
     }, // TODO contentId
     {
       order: 8450,
@@ -8668,7 +8668,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'danyang',
       attractionName: '사인암',
-      contentId: null,
+      contentId: '129648',
     }, // TODO contentId
     {
       order: 8460,
@@ -8728,7 +8728,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'gurye',
       attractionName: '구례 섬진강',
-      contentId: null,
+      contentId: '2648994',
     }, // TODO contentId
     {
       order: 8520,
@@ -8748,7 +8748,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'gurye',
       attractionName: '사성암',
-      contentId: null,
+      contentId: '317559',
     }, // TODO contentId
     {
       order: 8540,
@@ -8758,7 +8758,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'gurye',
       attractionName: '천은사',
-      contentId: null,
+      contentId: '126366',
     }, // TODO contentId
 
     {
@@ -8779,7 +8779,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'jecheon',
       attractionName: '월악산',
-      contentId: null,
+      contentId: '125814',
     }, // TODO contentId · Tour에 산 본명 부재(약초마을 오탐 제외)
     {
       order: 8570,
@@ -8789,7 +8789,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'jecheon',
       attractionName: '제천한방엑스포공원',
-      contentId: null,
+      contentId: '1842147',
     }, // TODO contentId
     {
       order: 8580,
@@ -8799,7 +8799,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '충청',
       hubId: 'jecheon',
       attractionName: '청풍문화재단지',
-      contentId: null,
+      contentId: '126004',
     }, // TODO contentId
     {
       order: 8590,
@@ -8849,7 +8849,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'wando',
       attractionName: '보길도 윤선도 원림',
-      contentId: null,
+      contentId: '126422',
     }, // TODO contentId
     {
       order: 8640,
@@ -8859,7 +8859,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'wando',
       attractionName: '신지명사십리해수욕장',
-      contentId: null,
+      contentId: '147317',
     }, // TODO contentId
     {
       order: 8650,
@@ -8869,7 +8869,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'wando',
       attractionName: '정도리 구계등',
-      contentId: null,
+      contentId: '147777',
     }, // TODO contentId
     {
       order: 8660,
@@ -8879,7 +8879,7 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       region: '전라',
       hubId: 'wando',
       attractionName: '청산도',
-      contentId: null,
+      contentId: '126970',
     }, // TODO contentId
     {
       order: 8670,
@@ -8921,7 +8921,17 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       attractionName: '양구 수목원',
       contentId: null,
       overview:
-        '강원 양구 동면의 공립 수목원(옛 양구자연생태공원). 생태식물원·DMZ 야생화 분재원 일대를 산책하는 명소로, 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+        '대암산 자락 해발 400~450m 분통골에 위치한 강원특별자치도 제1호 공립수목원이자 양구9경 제1경이다. DMZ 인근 청정 자연생태를 보존한 14만 9천㎡ 규모로, 천연기념물 제372호 개느삼 서식지와 금강초롱꽃 등 희귀 고산식물을 만날 수 있는 생태식물원, DMZ 야생화 분재원, 야생동물생태관, 목재문화체험관, 독스하우스 등 다채로운 숲 테마 시설을 갖추고 있다. 사계절 야생화 군락과 솔숲 힐링 산책로를 걸으며 평화 생태의 가치를 느낄 수 있다.',
+      addr1: '강원특별자치도 양구군 동면 숨골로310번길 131',
+      homepage: 'https://www.yanggu.go.kr/arboretum/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms2/website/21/3407821.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms2/website/21/3407821.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/22/3407822.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/23/3407823.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/28/3407828.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/29/3407829.jpg',
+      ],
     },
     {
       order: 8710,
