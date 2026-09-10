@@ -1,9 +1,9 @@
 # TourAPI 미등재 명소 자체 큐레이션 작업 큐
 
-**문서 버전**: v1.0.0 (2026-09-10)  
+**문서 버전**: v1.1.0 (2026-09-10)  
 **지침서**: [`korea-curated-spots-guide.md`](./korea-curated-spots-guide.md)  
 **고정 브랜치**: `cursor/curated-scenic`  
-**전체 대상**: 51건 (완료 31건 / 미흡 TODO 0건 / 잔여 PARTIAL 20건)
+**전체 대상**: 51건 (완료 51건 / 미흡 TODO 0건 / 잔여 PARTIAL 0건 — 100% 전수 종결)
 
 ---
 
@@ -14,7 +14,7 @@
 | **R00** | 시범 적용 (양구 수목원) | 1 | ✅ 완료 (2026-09-10) | `yanggu-arboretum` (개요 253자, 주소, 홈피, 사진 5장) |
 | **R01** | 사진 미보유(img: N) & 본문 미흡 | 14 | ✅ 완료 (2026-09-10) | 금강소나무숲길, 대통령기록관, 비내섬, 공주한옥마을 등 14건 전수 완료 (TODO 0건) |
 | **R02** | 수도권·강원·충청 보강 (전수) | 16 | ✅ 완료 (2026-09-10) | 알펜시아, 용평, 스타필드 하남, 안산문화광장 등 16건 전수 완료 (수도권·강원·충청 100% 종결) |
-| **R03** | 전라·경상 보강 (최종 라운드) | 20 | ⏳ **다음 세션 착수 대상** | 심청한옥마을, 운문사, 진해군항제, 성수산, 용궁시장 등 20건 |
+| **R03** | 전라·경상 보강 (최종 라운드) | 20 | ✅ 완료 (2026-09-10) | 심청한옥마을, 운문사, 진해군항제, 성수산 등 20건 전수 완료 (51건 전수 자체 큐레이션 종결) |
 
 ---
 
@@ -75,25 +75,28 @@
 
 ---
 
-### R03 (대기): 전라·경상 보강 20건 큐 (최종 라운드) ⏳
-- [ ] `gokseong-simcheong-hanok-village` (곡성 심청한옥마을, 곡성)
-- [ ] `seongsusan` (성수산, 임실)
-- [ ] `jangseong-cornus-village` (장성산수유마을, 장성)
-- [ ] `baeksajang-beach` (백사장해수욕장, 영광)
-- [ ] `ungpo-tourist-site` (웅포관광지, 익산)
-- [ ] `eden-valley-resort` (에덴밸리리조트, 양산)
-- [ ] `tongdo-fantasia` (통도환타지아, 양산)
-- [ ] `changwon-jinhae-gunhangje` (창원 진해군항제, 창원)
-- [ ] `unmunsa-cheongdo` (청도 운문사, 청도)
-- [ ] `uiseong-garlic-theme-park` (의성마늘테마공원, 의성)
-- [ ] `yonggung-market` (용궁시장, 예천)
-- [ ] `sungshan-garden` (숭산정원, 칠곡)
-- [ ] `dokdo-landing-facility` (독도접안시설, 독도)
-- [ ] `seodo` (서도, 독도)
-- [ ] `gaejin-market-goryeong` (고령 개진시장, 고령)
-- [ ] `goryeong-nakdong-viewpoint` (고령 낙동강 전망, 고령)
-- [ ] `gubongsan-cable-car` (구봉산 케이블카, 광양)
-- [ ] `hwanseongsa` (환성사, 경산)
-- [ ] `toyorae-land-uiryeong` (의령 토요애랜드, 의령)
-- [ ] `yeongyang-oessibeoseon-trail` (영양 외씨버선길, 영양)
+### R03 (완료): 전라·경상 보강 20건 큐 (최종 라운드) ✅
+
+> **결과**: 전라·경상의 모든 `contentId: null` 명소(20건)에 대해 한국관광공사 사진갤러리 공공자원 고화질 갤러리(명소당 5장), 도로명 주소, 공식 웹사이트, 190~230자 순수 팩트 개요 채우기 완료 (전체 51건 100% 자체 큐레이션 전수 종결)
+
+- [x] `gokseong-simcheong-hanok-village` (곡성 심청한옥마을, 곡성) · 사진 5장 · 기차마을로 260-33 · gokseong.go.kr · 205자
+- [x] `seongsusan` (성수산, 임실) · 사진 5장 · 성수산길 358 · imsil.go.kr · 220자
+- [x] `jangseong-cornus-village` (장성산수유마을, 장성) · 사진 5장 · 추암로 455 일원 · jangseong.go.kr · 210자
+- [x] `baeksajang-beach` (백사장해수욕장, 영광) · 사진 5장 · 백수로 1530 일원 · yeonggwang.go.kr · 187자
+- [x] `ungpo-tourist-site` (웅포관광지, 익산) · 사진 5장 · 철새로 135 · iksan.go.kr · 203자
+- [x] `eden-valley-resort` (에덴밸리리조트, 양산) · 사진 5장 · 어실로 1206 · edenvalley.co.kr · 207자
+- [x] `tongdo-fantasia` (통도환타지아, 양산) · 사진 5장 · 통도7길 68 · yangsan.go.kr · 195자
+- [x] `changwon-jinhae-gunhangje` (창원 진해군항제, 창원) · 사진 5장 · 통신동 중원로터리 일원 · changwon.go.kr · 220자
+- [x] `unmunsa-cheongdo` (청도 운문사, 청도) · 사진 5장 · 운문사길 264 · unmunsa.or.kr · 205자
+- [x] `uiseong-garlic-theme-park` (의성마늘테마공원, 의성) · 사진 5장 · 충효로 88 · usc.go.kr · 208자
+- [x] `yonggung-market` (용궁시장, 예천) · 사진 5장 · 용궁시장길 10-4 · ycg.kr · 208자
+- [x] `sungshan-garden` (숭산정원, 칠곡) · 사진 5장 · 봉계로 202 일원 · chilgok.go.kr · 204자
+- [x] `dokdo-landing-facility` (독도접안시설, 독도) · 사진 5장 · 독도안용복길 3 · ulleung.go.kr · 210자
+- [x] `seodo` (서도, 독도) · 사진 5장 · 독도안용복길 3 일원 · ulleung.go.kr · 198자
+- [x] `gaejin-market-goryeong` (고령 개진시장, 고령) · 사진 5장 · 개경포로 26 일원 · goryeong.go.kr · 194자
+- [x] `goryeong-nakdong-viewpoint` (고령 낙동강 전망, 고령) · 사진 5장 · 개포리 산 1-1 일원 · goryeong.go.kr · 208자
+- [x] `gubongsan-cable-car` (구봉산 케이블카, 광양) · 사진 5장 · 구봉산전망대길 155 · gwangyang.go.kr · 197자
+- [x] `hwanseongsa` (환성사, 경산) · 사진 5장 · 환성로 392 · gbgs.go.kr · 201자
+- [x] `toyorae-land-uiryeong` (의령 토요애랜드, 의령) · 사진 5장 · 의병로 35 일원 · uiryeong.go.kr · 206자
+- [x] `yeongyang-oessibeoseon-trail` (영양 외씨버선길, 영양) · 사진 5장 · 영양로 1799 일원 · beosun.com · 212자
 
