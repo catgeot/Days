@@ -208,5 +208,30 @@
 작업: /korea/theme/scenic?hub=hongcheon 가리산·금학산 클릭 — 제목 정상 · 리스트/상세/써머리 Tour 사진
 ```
 
+## 팔경 활용 #2 — 홍천 가리산·금학산 사진 누락 및 본문 부재 해결 (Cloud)
+
+- **세션** `팔경 활용 #2, 사람 Preview QA`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `37213091` · PR [#209](https://github.com/catgeot/Days/pull/209)
+- **완료**:
+  1. **가리산(125593)**: TourAPI detailCommon에는 풍부한 개요/주소가 있으나 firstimage가 null이어서 리스트·써머리가 빈 아이콘으로 남던 현상 해결.
+     - `fetchTourApiFirstImage` 및 `fetchTourApiAttractionDetail`에서 firstimage 누락 시 `searchPhoto` 공식 사진갤러리로 자동 폴백하여 고화질 썸네일 및 갤러리 공급.
+     - 모달 상세에 TourAPI LIVE 개요/주소/갤러리 정상 표시.
+  2. **금학산(TourAPI 미등재 순수 지자체 팔경)**:
+     - 런타임 오버레이(`LOCAL_SCENIC_MEMBER_OVERLAYS`)를 통해 홍천 4경(홍천강 수태극 조망) 공식 소개 본문과 남노일강변 공식 갤러리/썸네일 연동.
+     - 리스트 행, 클릭 시 상세 모달, 장소카드 써머리 갤러리에서 정상 노출되도록 보강.
+- **VERIFY** `smoke:korea-local-scenic-lists` PASS · `smoke:place-label-slug` PASS · `vite build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=hongcheon`
+- **다음** 사람 Preview QA 확인 및 PR #209 병합 대기
+
+```
+팔경 활용 #2, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-10-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · PR #209 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
+작업: /korea/theme/scenic?hub=hongcheon 가리산·금학산 리스트 썸네일·클릭 모달 상세/갤러리 및 써머리 카드 확인 후 PR #209 병합
+```
+
 
 

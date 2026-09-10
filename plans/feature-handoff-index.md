@@ -316,16 +316,16 @@
 
 | | |
 |--|--|
-| **상태** | **#2 push** · tip `f5d9be88` · PR [#209](https://github.com/catgeot/Days/pull/209) · **사람 Preview QA** (리스트·써머리 사진) |
+| **상태** | **#2 push** · tip `37213091` · PR [#209](https://github.com/catgeot/Days/pull/209) · **사람 Preview QA** (리스트·써머리·상세 사진 및 개요 확인) |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `f5d9be88` |
+| **tip** | `37213091` |
 | **PR** | [#209](https://github.com/catgeot/Days/pull/209) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-10-project-log.md`](./2026-09-10-project-log.md) |
 | **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=hongcheon` |
 | **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `smoke:korea-local-scenic-lists` · `audit:korea-local-scenic-lists` · `vite build` |
+| **VERIFY** | `smoke:korea-local-scenic-lists` · `smoke:place-label-slug` · `vite build` |
 
 **다음 제시어**:
 
@@ -336,7 +336,7 @@
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · PR #209 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
-작업: /korea/theme/scenic?hub=hongcheon 가리산·금학산 클릭 — 제목 정상 · 리스트/상세/써머리 Tour 사진
+작업: /korea/theme/scenic?hub=hongcheon 가리산·금학산 리스트 썸네일·클릭 모달 상세/갤러리 및 써머리 카드 확인 후 PR #209 병합
 ```
 
 ---
