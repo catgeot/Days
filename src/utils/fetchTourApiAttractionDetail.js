@@ -104,6 +104,27 @@ export async function fetchTourApiAttractionDetail(opts) {
     );
   }
 
+  if (!imageUrl && galleryUrls.length === 0) {
+    const rawTitle = commonItem?.title || introItem?.title || '';
+    const cleanTitle = String(rawTitle).replace(/\(.*?\)/g, '').trim();
+    if (cleanTitle) {
+      try {
+        const photoRes = await invokeTourApi('searchPhoto', {
+          keyword: cleanTitle,
+          numOfRows: 8,
+          pageNo: 1,
+        });
+        for (const item of photoRes?.items || []) {
+          pushGallery(item?.imageUrl || item?.galWebImageUrl);
+        }
+      } catch {
+        /* ignore fallback photo error */
+      }
+    }
+  }
+
+  const finalImageUrl = imageUrl || galleryUrls[0] || null;
+
   return {
     contentId,
     title: commonItem?.title || introItem?.title || null,
@@ -112,7 +133,7 @@ export async function fetchTourApiAttractionDetail(opts) {
     addr2: commonItem?.addr2 || null,
     tel: commonItem?.tel || null,
     homepage: commonItem?.homepage || null,
-    imageUrl,
+    imageUrl: finalImageUrl,
     galleryUrls,
     intro: introItem,
     infoItems,
@@ -129,11 +150,25 @@ export async function fetchTourApiFirstImage(contentId) {
   if (!/^\d{1,32}$/.test(id)) return null;
   const common = await invokeTourApi('detailCommon', { contentId: id });
   const item = common?.items?.[0] || null;
-  return pickImageUrl(
+  const directImage = pickImageUrl(
     item?.imageUrl,
     item?.firstimage,
     item?.firstimage2,
   );
+  if (directImage) return directImage;
+  const title = String(item?.title || '').replace(/\(.*?\)/g, '').trim();
+  if (!title) return null;
+  try {
+    const photo = await invokeTourApi('searchPhoto', {
+      keyword: title,
+      numOfRows: 1,
+      pageNo: 1,
+    });
+    const photoItem = photo?.items?.[0];
+    return pickImageUrl(photoItem?.imageUrl, photoItem?.galWebImageUrl);
+  } catch {
+    return null;
+  }
 }
 
 export { ATTRACTION_CONTENT_TYPE_ID, RESTAURANT_CONTENT_TYPE_ID };

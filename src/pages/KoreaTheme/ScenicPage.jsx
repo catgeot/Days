@@ -481,6 +481,9 @@ function overlayLocalScenicTourMeta(spot, extra) {
     cat3: spot.cat3 || extra.cat3 || null,
     firstImage: firstImage || spot.firstImage || null,
     imageUrl: spot.imageUrl || firstImage || null,
+    galleryUrls: spot.galleryUrls || extra.galleryUrls || null,
+    overview: spot.overview || extra.overview || null,
+    addr1: spot.addr1 || extra.addr1 || null,
   };
 }
 

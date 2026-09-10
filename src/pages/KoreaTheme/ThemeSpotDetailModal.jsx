@@ -1159,7 +1159,29 @@ export default function ThemeSpotDetailModal({
         setDetailError(t('korea.theme.spotDetail.detailLoadError'));
         return;
       }
-      setDetail(data);
+      const spotGallery = Array.isArray(spot.galleryUrls)
+        ? spot.galleryUrls.map((u) => String(u || '').trim()).filter(Boolean)
+        : [];
+      const mergedGallery = [...(data.galleryUrls || [])];
+      for (const u of spotGallery) {
+        if (!mergedGallery.includes(u)) mergedGallery.push(u);
+      }
+      const finalImage =
+        data.imageUrl ||
+        mergedGallery[0] ||
+        spot.imageUrl ||
+        spot.firstImage ||
+        null;
+      if (finalImage && !mergedGallery.includes(finalImage)) {
+        mergedGallery.unshift(finalImage);
+      }
+      setDetail({
+        ...data,
+        imageUrl: finalImage,
+        galleryUrls: mergedGallery,
+        overview: data.overview || spot.overview || null,
+        addr1: data.addr1 || spot.addr1 || null,
+      });
     })();
 
     return () => {

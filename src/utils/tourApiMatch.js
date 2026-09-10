@@ -108,6 +108,16 @@ export function resolveTourApiPlace(locationOrSlug) {
   }
 
   const name = String(locationOrSlug.name || '').trim();
+  if (name === '금학산' && (locationOrSlug.hubId === 'hongcheon' || isDomesticKoreaLocation(locationOrSlug))) {
+    return {
+      slug: slugKey || 'geumhaksan',
+      photoKeyword: '남노일 강변',
+      photoKeywords: ['남노일강변유원지', '홍천 남노일'],
+      contentId: '127571',
+      title: '금학산',
+      curated: true,
+    };
+  }
   if (name) {
     const byNameSlug = travelSpotTourApi?.byName?.[name];
     if (byNameSlug) {

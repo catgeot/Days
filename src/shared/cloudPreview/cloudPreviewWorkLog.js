@@ -7,7 +7,7 @@ export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
   sessionNo: 2,
-  sessionPhase: 'contentId 런타임·사진',
+  sessionPhase: '사람 Preview QA',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic?hub=hongcheon',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-10-palgyeong-use-2-garisan-geumhaksan-photos-detail',
+    session: '팔경 활용 #2, 사람 Preview QA',
+    title: '홍천 가리산·금학산 사진 누락 및 본문 부재 해결',
+    detail:
+      '가리산(125593)은 TourAPI firstimage가 비어있던 문제를 searchPhoto 공식 사진 및 갤러리/개요 연동으로 해결했습니다. 금학산은 순수 지자체 팔경(홍천 4경, 수태극 조망)으로 런타임 오버레이를 통해 개요 본문과 홍천 남노일강변 공식 갤러리 및 썸네일을 제공하여 리스트·상세 모달·써머리 갤러리에서 정상 노출되도록 보강했습니다.',
+    at: '2026-09-10T12:20:00.000Z',
+  },
   {
     id: '2026-09-10-palgyeong-use-2-tour-contentid-photos',
     session: '팔경 활용 #2, 사람 Preview QA',
