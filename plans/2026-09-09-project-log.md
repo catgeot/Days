@@ -2,6 +2,26 @@
 
 직전: [`2026-09-08-project-log.md`](./2026-09-08-project-log.md)
 
+## 팔경 contentId — P2-END 잔여 51건 종결 및 main 병합 검토 (Cloud)
+
+- **세션** `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토`
+- **브랜치** `cursor/palgyeong-cid` · PR [#185](https://github.com/catgeot/Days/pull/185) (Ready for Review)
+- **완료** P2 테마 선정 명소 Tour contentId 수집 작업 전면 종결 확정
+  - 최종 충족률: 820/871 (94.1%) · 잔여 null 51/871
+  - 잔여 51건 6대 원인별(상업/리조트 8, 축제 1, 특수지 4, 단순지형/하천 15, 소규모공원/산단 10, 미등재사찰/시장 13) terminal 종결 재확인
+  - PR #185 검토: DRAFT 해제(Ready for Review 전환) · P0(579/876)+P1(68)+P2(820/871) 전체 contentId SSOT 정합성 검증 완료
+- **VERIFY** `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `audit:docs-handoff-sync` · `build` ALL PASS
+- **다음** 팔경 contentId PR #185 사람 최종 확인 및 main 병합
+
+```
+팔경contentId PR #185 main 병합 검토
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P0/P1/P2 contentId 수집·종결 완료(820/871 충족, 94.1%) · PR #185 최종 사람 승인 및 main 병합
+```
+
 ## 팔경 contentId — P2-L10 잔여 null 분석 및 전략 (Cloud)
 
 - **세션** `팔경contentId #P2-L10, 잔여 null 분석 및 전략`
