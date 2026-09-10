@@ -4633,16 +4633,27 @@ export default function KoreaThemeScenicPage() {
             >
               {curatedSpotsWithLocalScenicThumbs.map((spot, index) => {
                 const groupTitle = String(spot.groupTitle || '').trim();
-                const prevGroup = String(
-                  curatedSpotsWithLocalScenicThumbs[index - 1]?.groupTitle || '',
-                ).trim();
+                const prevSpot = curatedSpotsWithLocalScenicThumbs[index - 1];
+                const prevGroup = String(prevSpot?.groupTitle || '').trim();
                 const showGroup = Boolean(groupTitle) && groupTitle !== prevGroup;
+                const showRestGroup = !groupTitle && Boolean(prevGroup);
                 return (
                 <li key={`c-${spot.id}`} className="[overflow-anchor:none]">
                   {showGroup ? (
-                    <p className="pb-1.5 pt-1 text-[11px] font-bold tracking-wide text-stone-500 break-keep">
-                      {groupTitle}
-                    </p>
+                    <div className="flex items-center gap-2 pb-2 pt-2 text-[12px] font-bold tracking-wide text-stone-700 break-keep">
+                      <span className="inline-flex items-center rounded-md bg-amber-100/90 px-2 py-0.5 text-[11px] font-extrabold text-amber-950 border border-amber-300/80">
+                        {groupTitle}
+                      </span>
+                      <span className="h-px flex-1 bg-stone-200/90" />
+                    </div>
+                  ) : null}
+                  {showRestGroup ? (
+                    <div className="flex items-center gap-2 pb-2 pt-3 text-[12px] font-bold tracking-wide text-stone-600 break-keep">
+                      <span className="inline-flex items-center rounded-md bg-stone-100 px-2 py-0.5 text-[11px] font-bold text-stone-700 border border-stone-200/80">
+                        {t('korea.theme.scenicSectionCuratedRest')}
+                      </span>
+                      <span className="h-px flex-1 bg-stone-200/90" />
+                    </div>
                   ) : null}
                   <ScenicListRow
                     spot={spot}

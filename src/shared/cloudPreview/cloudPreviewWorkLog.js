@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 2,
-  sessionPhase: '사람 Preview QA',
+  sessionNo: 3,
+  sessionPhase: '누락 허브 본문 선별 및 팔경 전용 그룹 UI 준비',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=hongcheon',
+  previewPath: '/korea/theme/scenic?hub=mungyeong',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-10-palgyeong-use-3-mungyeong-danyang-overlays-and-group-ui',
+    session: '팔경 활용 #3, 누락 허브 본문 선별 및 팔경 전용 그룹 UI 준비',
+    title: '문경·단양 팔경 사진·개요 보강 및 리스트 전용 소제목 바 분리',
+    detail:
+      '94개 지자체 팔경(876명) 누락 현황을 분석하고, 문경(새재계곡·쌍용계곡·운달계곡·봉암사백운대) 및 단양(옥순봉·하선암)의 런타임 오버레이(LOCAL_SCENIC_MEMBER_OVERLAYS)를 보강하여 상세 모달과 썸네일을 완전 연결했습니다. 또한 ScenicPage에서 지자체 팔경 그룹 헤더와 기존 GATEO 선정 명소(지역 대표 명소) 구분을 명확한 배지·디바이더 UI로 분리 렌더링했습니다.',
+    at: '2026-09-10T14:30:00.000Z',
+  },
   {
     id: '2026-09-10-palgyeong-use-2-garisan-geumhaksan-photos-detail',
     session: '팔경 활용 #2, 사람 Preview QA',

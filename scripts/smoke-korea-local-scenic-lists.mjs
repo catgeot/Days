@@ -274,6 +274,15 @@ assert.equal(
 );
 assert.equal(normalizeScenicQuery('  홍천 팔경 '), '홍천팔경');
 
+// 단양·문경 팔경 오버레이 보강 검증
+const danyangOksun = resolveLocalScenicListSpotById('local-scenic:danyang-palgyeong:옥순봉');
+assert.ok(danyangOksun?.imageUrl, '단양 옥순봉 overlay imageUrl');
+assert.ok(danyangOksun?.overview?.includes('단양팔경'), '단양 옥순봉 overlay overview');
+
+const mungyeongSaejae = resolveLocalScenicListSpotById('local-scenic:mungyeong-palgyeong:새재계곡');
+assert.ok(mungyeongSaejae?.contentId === '126017', '문경 새재계곡 overlay contentId');
+assert.ok(mungyeongSaejae?.imageUrl, '문경 새재계곡 overlay imageUrl');
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

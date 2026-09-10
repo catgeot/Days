@@ -1535,6 +1535,7 @@
       "scenicCuratedDisclaimer": "Popular spots travelers search for most.",
       "scenicHeritageDisclaimer": "National heritage scenic sites designated by the Cultural Heritage Administration.",
       "scenicSectionCurated": "GATEO curated spots",
+      "scenicSectionCuratedRest": "Regional highlights",
       "scenicSectionHeritage": "National heritage scenic sites",
       "spotCount": "{{count}} spots",
       "nationwideSuffix": " · nationwide {{count}}",
