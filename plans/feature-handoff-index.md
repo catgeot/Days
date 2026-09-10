@@ -315,28 +315,45 @@
 
 ---
 
-### 팔경 contentId — 오케 (B)
+### 팔경 contentId — main 병합 완료 ✅
 
 | | |
 |--|--|
-| **상태** | R01–R16 ✅ · **P0 종료** members **579/876** null **297**(terminal) · P2 **종료** null **51**/871 (820/871 94.1%) · **P2 전 라운드 종결** · PR [#185](https://github.com/catgeot/Days/pull/185) 검토 완료(병합 대기) |
-| **브랜치** | `cursor/palgyeong-cid` · PR [#185](https://github.com/catgeot/Days/pull/185) |
-| **PR** | [#185](https://github.com/catgeot/Days/pull/185) |
-| **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§3·§9 B** · method **§5.7** |
+| **상태** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **브랜치** | `cursor/palgyeong-cid` · merge commit `53b21b00` |
+| **PR** | [#185](https://github.com/catgeot/Days/pull/185) (MERGED) |
+| **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) · method **§5.7** |
 | **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — P0·P1·P2 전 라운드 종결 · 잔여 51건 terminal |
-| **일지** | [`2026-09-09-project-log.md`](./2026-09-09-project-log.md) |
-| **소유** | JSON `contentId` · fill · audit · **UI 금지** |
-| **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · L3~L9 hub 본명 재시도 · `--limit=100` 로또 · AI가 ID 기입 · feature에 `plans/**` 커밋 |
+| **일지** | [`2026-09-04-project-log.md`](./2026-09-04-project-log.md) |
+| **종결 성과** | P0 멤버 579/876 HIT, P1 허브 68 HIT, P2 820/871(94.1%) 충족 · 양구 수목원 자체 큐레이션 반영 완료 |
+
+**다음 제시어 없음** (주제 종료). 후속 자체 큐레이션 작업은 아래 '명소 자체 큐레이션' 트랙에서 이어감.
+
+---
+
+### 명소 자체 큐레이션 — TourAPI 미등재 명소 보강
+
+| | |
+|--|--|
+| **상태** | **#1 대기** · R00 양구수목원 시범적용 완료 · **R01 사진 미보유(TODO) 14건 착수 준비** |
+| **브랜치** | `cursor/curated-scenic` |
+| **가이드** | [`korea-curated-spots-guide.md`](./korea-curated-spots-guide.md) |
+| **큐** | [`curated-scenic-spots-queue.md`](./curated-scenic-spots-queue.md) (전체 51건 중 잔여 50건) |
+| **도구** | `scripts/report-curated-scenic-candidates.mjs` · `scripts/search-tourapi-photos.mjs` |
+| **소유** | `korea-scenic-spots-overrides.mjs` · `korea-scenic-spot-images.json` · `koreaScenicSpots.json` |
+| **금지** | AI 허구 본문 창작 금지(공식 팩트 기반 요약) · 저작권 미확인 블로그 사진 금지 · JSON 직접 편집 금지 |
+| **VERIFY** | `npm run audit:korea-scenic-spots` · `npm run smoke:korea-scenic-spots` · `npm run build` |
 
 **다음 제시어**:
 
 ```
-팔경contentId PR #185 main 병합 검토
+명소 자체 큐레이션 #1, R01 사진 미보유 14건 보강
 @plans/feature-handoff-index.md
-@plans/korea-local-scenic-contentid-queue.md
-브랜치 cursor/palgyeong-cid · PR #185
-금지: UI · scenic 승격 · AI가 contentId 기입 · feature에 plans/** 커밋
-작업: P0/P1/P2 contentId 수집·종결 완료(820/871 충족, 94.1%) · PR #185 최종 사람 승인 및 main 병합
+@plans/curated-scenic-spots-queue.md
+@plans/korea-curated-spots-guide.md
+브랜치 cursor/curated-scenic
+금지: AI 허구 본문 작성 금지 · 저작권 미확인 사진 금지 · feature에 plans/** 커밋
+작업: R01 14건(금강소나무숲길·비내섬·대통령기록관 등) searchPhoto 사진 및 공식 개요·주소·홈페이지 SSOT 반영
 ```
 
 ---
