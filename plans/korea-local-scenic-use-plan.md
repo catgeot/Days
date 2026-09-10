@@ -90,8 +90,8 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | #4 사람 Preview QA 통과 ✅ · tip `138e5a20` · PR [#210](https://github.com/catgeot/Days/pull/210) (Ready for review) · 사람 PR 병합 대기 | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
-| **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
+| **지금** | #5 main 병합 완료 ✅ · merge commit `33776ccb` · PR [#210](https://github.com/catgeot/Days/pull/210) (MERGED) · 의성·무주 등 후속 오버레이 보강 계획 수립 완료 | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **index 행** | 팔경 활용 (main 병합 ✅) | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · AI가 ID 기입 |
 
 ### 채팅명 복붙표 (`#N` 리셋 금지)
@@ -102,6 +102,8 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | 2 | `팔경 활용 #2, 사람 Preview QA` | A 사람 | **완료** · PR #209 MERGED · 속초·삼척·원주·홍천 사진·상세 보강 및 main 병합 |
 | 3 | `팔경 활용 #3, 누락 허브 본문 선별 및 팔경 전용 그룹 UI 준비` | A | **완료** · tip `16eb2aee` · PR [#210](https://github.com/catgeot/Days/pull/210) |
 | 4 | `팔경 활용 #4, 사람 Preview QA` | A 사람 | **완료** · 사람 Preview QA PASS ✅ · PR #210 검토 및 병합 대기 |
+| 5 | `팔경 활용 #5, PR #210 main 병합 및 후속 허브 오버레이 확장 검토` | A | **완료** · PR #210 main 병합 확인(`33776ccb`) 및 의성·무주 오버레이 확장 계획 수립 |
+| 6 | `팔경 활용 #6, 의성·무주 결손 허브 런타임 오버레이 보강` | A | **다음 대기** |
 | — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
 | — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |
 | — | `팔경contentId #P2-L10, 잔여 null 분석 및 전략` | B | **완료** · tip `fb4c5513` 27/32 |
@@ -167,7 +169,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 작업: /korea/theme/scenic?hub=hongcheon 가리산·금학산 클릭 — 제목 정상 · 리스트/상세/써머리 Tour 사진
 ```
 
-### §1.2 A #4 Preview QA 통과 및 다음 (#5)
+### §1.2 A #4 Preview QA 통과 및 #5 병합 완료
 
 ```
 팔경 활용 #5, PR #210 main 병합 및 후속 허브 오버레이 확장 검토
@@ -177,6 +179,18 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 브랜치 cursor/palgyeong-use-e744 · PR #210
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
 작업: PR #210 main 병합 확인 및 다음 결손 허브(무주 28건, 의성 8건 등) 런타임 오버레이 보강 계획 수립
+```
+
+### §1.2 A #6 다음 제시어
+
+```
+팔경 활용 #6, 의성·무주 결손 허브 런타임 오버레이 보강
+@plans/feature-handoff-index.md
+@plans/2026-09-10-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: 의성 빙계팔경(8건) 및 무주 구천동33경(28건 결손) 순수 지자체 팔경 공공 공식 팩트 기반 런타임 오버레이(LOCAL_SCENIC_MEMBER_OVERLAYS) 보강
 ```
 
 ### §1.2 B 다음 (#P2-END) — P2 종결 및 PR #185 검토
