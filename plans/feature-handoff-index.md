@@ -28,6 +28,32 @@
 
 ---
 
+### 장소카드 갤러리-명소 본문 연계
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `1cedbdec` · PR [#208](https://github.com/catgeot/Days/pull/208) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/scenic-gateway-2ced` |
+| **tip** | `1cedbdec` |
+| **PR** | [#208](https://github.com/catgeot/Days/pull/208) |
+| **일지** | [`2026-09-10-project-log.md`](./2026-09-10-project-log.md) |
+| **소유** | `PlaceScenicGateway.jsx` · `placeScenicGateway.js` · `GalleryInfoView.jsx` · `PlaceGalleryView.jsx` |
+| **금지** | UI 리디자인 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `npm run smoke:place-scenic-gateway` · `npm run build` |
+
+**다음 제시어**:
+
+```
+장소카드 갤러리-명소 본문 연계 #2, Preview 확인 및 사람 QA
+@plans/feature-handoff-index.md
+@plans/2026-09-10-project-log.md
+브랜치 cursor/scenic-gateway-2ced · PR #208
+금지: UI 임의 리디자인 · feature에 plans/** 커밋
+작업: 탐색에서 경복궁·속초해수욕장·경포대 등 검색 시 장소카드 갤러리 내 명소 본문 연결 카드 렌더링 및 클릭 시 명승 상세 모달 이동 확인
+```
+
+---
+
 ### 써머리 닫기
 
 | | |
