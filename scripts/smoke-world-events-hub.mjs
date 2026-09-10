@@ -18,6 +18,11 @@ import {
   getWorldEventsForHubRegion,
   getWorldEventsForSlug,
 } from '../src/utils/worldEvents.js';
+import { buildWorldEventListPhotoQueries } from '../src/utils/worldEventMedia.js';
+import {
+  isUnsplashListPhoto,
+  pickWorldEventListPhoto,
+} from '../src/utils/worldEventListPhoto.js';
 import {
   compareWorldEventsForList,
   getWorldEventTimelineBucket,
@@ -68,6 +73,56 @@ for (const region of WORLD_EVENT_HUB_REGIONS) {
   }
 }
 
+assert.equal(resolveWorldEventHubRegionId('prague'), 'europe', 'prague in europe after Wave3 hub reorg');
+assert.equal(resolveWorldEventHubRegionId('paris'), 'europe', 'paris in europe');
+assert.equal(resolveWorldEventHubRegionId('london'), 'europe', 'london in europe');
+assert.equal(resolveWorldEventHubRegionId('rome'), 'europe', 'rome in europe');
+assert.equal(resolveWorldEventHubRegionId('istanbul'), 'niche', 'istanbul stays niche');
+
+const wikiSeed = {
+  url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/x.jpg/1280px-x.jpg',
+  source: 'seed',
+};
+const unsplashThumb = {
+  url: 'https://images.unsplash.com/photo-example?w=400',
+  source: 'unsplash',
+  photographer: 'Ada',
+};
+assert.equal(isUnsplashListPhoto(wikiSeed), false, 'wikimedia seed is not a list photo');
+assert.equal(isUnsplashListPhoto(unsplashThumb), true, 'unsplash source is a list photo');
+assert.equal(
+  pickWorldEventListPhoto([wikiSeed, unsplashThumb])?.url,
+  unsplashThumb.url,
+  'list picker skips Wikimedia and takes Unsplash',
+);
+assert.equal(
+  pickWorldEventListPhoto([wikiSeed]),
+  null,
+  'list picker does not fall back to Wikimedia',
+);
+
+const listPhotoProbeIds = [
+  'paris-nuit-blanche-2027',
+  'dubai-fitness-challenge-2026',
+  'los-angeles-rose-parade-2027',
+];
+for (const eventId of listPhotoProbeIds) {
+  const event = allEvents.find((item) => item.id === eventId);
+  assert.ok(event, `${eventId} exists for list photo query probe`);
+  const queries = buildWorldEventListPhotoQueries(event, 'ko');
+  assert.ok(queries.length >= 3, `${eventId} has extended Unsplash query fallbacks`);
+  assert.ok(
+    queries.some((query) => /[A-Za-z]/.test(query)),
+    `${eventId} list queries include English fallback`,
+  );
+}
+
+const listPhotoSrc = readFileSync(join(root, 'src/utils/fetchWorldEventListPhotos.js'), 'utf8');
+assert.match(listPhotoSrc, /event_hero_gallery/, 'list photos read Unsplash gallery cache');
+assert.match(listPhotoSrc, /fetchUnsplashImages/, 'list photos live-search Unsplash');
+assert.match(listPhotoSrc, /onPhotos/, 'list photos emit DB hits before Unsplash pool finishes');
+assert.doesNotMatch(listPhotoSrc, /fetchWikimedia/, 'list photos do not call Wikimedia');
+
 const viennaEvents = getWorldEventsForSlug('vienna');
 assert.ok(viennaEvents.length >= 1, 'vienna has world events');
 assert.ok(viennaEvents[0].startDate, 'vienna event has startDate');
@@ -82,6 +137,16 @@ assert.match(hubSrc, /getWorldEventsForHubRegion/, 'WorldEvents hub filters by r
 assert.match(hubSrc, /tripWindowPresetsFromEvent/, 'WorldEvents hub uses TripWindow presets');
 assert.match(hubSrc, /getWorldEventRecurrenceNote/, 'WorldEvents hub locale recurrenceNote');
 assert.match(hubSrc, /locale={locale}/, 'WorldEvents hub passes locale to cards');
+assert.match(hubSrc, /fetchWorldEventListPhotos/, 'WorldEvents hub fetches Unsplash list photos');
+assert.match(hubSrc, /photo=\{photoById\[event\.id\]\}/, 'WorldEvents hub passes Unsplash thumb to cards');
+assert.match(hubSrc, /aspect-\[16\/10\]/, 'WorldEvents hub card uses landscape list photo');
+assert.match(hubSrc, /onPhotos/, 'WorldEvents hub paints DB Unsplash thumbs before live search finishes');
+assert.match(hubSrc, /images\.unsplash\.com|photoUrl/, 'WorldEvents hub card renders list photo');
+assert.doesNotMatch(hubSrc, /worldEventsHub\.card\.placeCta/, 'WorldEvents hub list cards omit place CTA');
+assert.doesNotMatch(hubSrc, /place\.worldEvents\.plannerCta/, 'WorldEvents hub list cards omit planner CTA');
+assert.doesNotMatch(hubSrc, /place\.worldEvents\.stayCta/, 'WorldEvents hub list cards omit stay CTA');
+assert.doesNotMatch(hubSrc, /worldEventsHub\.card\.detailCta/, 'WorldEvents hub list cards omit detail chip');
+assert.doesNotMatch(hubSrc, /upload\.wikimedia\.org/, 'WorldEvents hub list does not bake Wikimedia URLs');
 
 const homeUiSrc = readFileSync(join(root, 'src/pages/Home/components/HomeUI.jsx'), 'utf8');
 assert.match(homeUiSrc, /to: '\/world-events'/, 'Home quick link to /world-events');
@@ -103,14 +168,14 @@ const qaSrc = readFileSync(
   'utf8',
 );
 assert.match(qaSrc, /slug:\s*'world-events'/, 'cloudQaShareLinks has world-events slug');
-assert.match(qaSrc, /cursor\/world-events-wave2/, 'cloudQaShareLinks world-events uses wave2 branch');
+assert.match(qaSrc, /cursor\/world-events-wave3/, 'cloudQaShareLinks world-events uses wave3 branch');
 
 const vercelSrc = readFileSync(join(root, 'vercel.json'), 'utf8');
 assert.match(vercelSrc, /\/qa\/world-events/, 'vercel.json redirects /qa/world-events');
 assert.match(
   vercelSrc,
-  /days-git-cursor-world-events-wave2-catgeots-projects\.vercel\.app/,
-  'vercel.json /qa/world-events points to wave2 git Preview',
+  /days-git-cursor-world-events-wave3-catgeots-projects\.vercel\.app/,
+  'vercel.json /qa/world-events points to wave3 git Preview',
 );
 assert.match(vercelSrc, /"\/en\/world-events"/, 'vercel.json /en/world-events redirect');
 

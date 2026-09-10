@@ -19,6 +19,10 @@ function mapPexelsPhoto(photo: Record<string, unknown>) {
   return {
     id: `pexels-${photo.id}`,
     source: "pexels",
+    width: photo.width,
+    height: photo.height,
+    alt: photo.alt,
+    alt_description: photo.alt,
     urls: {
       regular: src.large,
       small: src.medium,

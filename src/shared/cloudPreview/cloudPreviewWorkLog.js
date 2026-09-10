@@ -48,6 +48,206 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-04T10:00:00.000Z',
   },
   {
+    id: '2026-09-09-world-events-54b-list-thumb-size',
+    session: '세계행사 일정 #54b, 리스트 썸네일 Preview QA',
+    title: '리스트 카드 사진 확대 · 이동 링크 제거',
+    detail:
+      '/world-events 카드에서 플래너·숙소·여행지·공식 링크 칩을 빼고 16:10 사진을 키웠습니다. 제목·사진 탭은 행사 상세로 갑니다. 첫 진입은 event_hero_gallery Unsplash를 먼저 그리고, 없는 건 Unsplash 검색입니다. Preview /qa/world-events — 큰 썸네일·칩 없음·지역 칩 전환 후 사진 유지.',
+    at: '2026-09-09T03:50:00.000Z',
+  },
+  {
+    id: '2026-09-08-world-events-53-list-unsplash',
+    session: '세계행사 일정 #53, 리스트 Unsplash 사진',
+    title: '세계의 행사 리스트 썸네일 — Unsplash',
+    detail:
+      '/world-events 카드에 Unsplash 썸네일을 붙였습니다. 위키 시드는 쓰지 않고, 상세에서 쌓인 event_hero_gallery의 Unsplash 장을 읽고 없으면 검색합니다. Preview /qa/world-events — 리스트 사진이 행사 장면인지, 위키 옛 사진이 아닌지.',
+    at: '2026-09-08T12:20:00.000Z',
+  },
+  {
+    id: '2026-09-07-globe-frame-zoom-1-page-lock',
+    session: '지구본 프레임 줌 #1, 페이지 줌 복귀',
+    title: '지구본 밖 프레임 확대 후 복귀 불가 차단',
+    detail:
+      '홈에서 지구본 밖 기본 프레임을 핀치하면 페이지가 확대되고 지구본이 화면을 채운 뒤 축소할 프레임이 사라져 복귀가 막혔습니다. 홈·탐색만 페이지 줌을 잠그고, 이미 확대된 배율은 되돌리며, 우주 버튼도 페이지 줌을 리셋합니다. /place 본문 핀치는 유지. Preview /qa/globe-frame-zoom — 프레임 핀치 후 지구본이 화면을 채워도 우주 버튼·핀치로 기본 화면 복귀.',
+    at: '2026-09-07T21:20:00.000Z',
+  },
+  {
+    id: '2026-09-07-summary-close-1-android-ghost',
+    session: '써머리 닫기 #1, Android Chrome 고스트 클릭',
+    title: '써머리 X 닫기 후 지구본 클릭 관통 차단',
+    detail:
+      'Android Chrome에서 써머리 X가 pointerdown으로 카드를 벗기면 남은 클릭이 Mapbox로 뚫려 다른 여행지 써머리가 열렸습니다. 닫기는 유지하고, 닫는 순간 500ms 지구본 클릭 가드를 겁니다. Preview /qa/summary-close — 장소카드 X → 닫힘 · 다른 써머리 안 열림.',
+    at: '2026-09-07T05:50:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-12-stale-visit-row',
+    session: '자킨토스 검색 #12, Preview QA',
+    title: '한글 방문 행(0,0·인물)은 검색에 안 씀',
+    detail:
+      '자킨토스만 place_stats에 한글 place_id·좌표 0,0·인물 갤러리가 남아 지도 검색을 가로챘다. 그 행은 방문 카드로 쓰지 않고, 갤러리는 라틴 zakynthos 해변 행을 고른다. Preview /qa/zakynthos — 재검색 시 그리스·해변 사진 · Explore 아님.',
+    at: '2026-09-06T20:40:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-11-greece-label',
+    session: '자킨토스 검색 #11, Preview QA',
+    title: '방문 카드 — GLOBAL 대신 그리스',
+    detail:
+      '#10이 Explore를 비우면서 헤더가 Global로 떨어짐. Search Box 객체 context에서 나라를 읽고, 방문 좌표를 역지오해서 그리스·Zakynthos를 카드에 붙인다. 인물 image_url은 그리드에 쓰지 않음. Preview /qa/zakynthos — 드롭다운·써머리·장소 헤더가 그리스 자킨토스인지.',
+    at: '2026-09-06T20:00:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-10-visited-country',
+    session: '자킨토스 검색 #10, 방문 요약 카드 QA',
+    title: '방문 카드 — 그리스 표기 · 사진 호출',
+    detail:
+      '방문 place_stats 카드가 국가 없이 Explore로 떨어지고 한글 name_en이라 사진을 안 불렀음. 지도 히트의 그리스·Zakynthos를 겹치고, 탐색 그리드는 저장 썸네일·한 장 조회를 쓴다. SSOT 사바는 방문 카드가 가리지 않음. Preview /qa/zakynthos — 자킨토스 재검색 요약에 그리스·해변 사진.',
+    at: '2026-09-06T15:20:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-9-visited-summary',
+    session: '자킨토스 검색 #9, Preview QA',
+    title: '검색은 지도 우선 · 방문한 지명은 요약 카드',
+    detail:
+      'Enter 로딩이 「AI 탐색」으로 보이던 것은 지오코딩 실패가 아님. 문구를 지도 검색으로 바꿨다. 장소카드를 열어 방문이 쌓이면 place_stats에 한글·영문·좌표를 남기고, 다음 검색부터 드롭다운·탐색 그리드·Enter 선택 카드에 그 지명 요약이 뜬다. AI는 지도를 못 찾았을 때만. Preview /qa/zakynthos — 자킨토스 방문 후 다시 검색.',
+    at: '2026-09-06T14:50:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-8-unseen-geocode',
+    session: '자킨토스 검색 #8, Preview QA',
+    title: '미등록 한글 지명은 Search Box 공백이면 Geocoding으로 보강',
+    detail:
+      '자킨토스·사바 별칭이 아니라 검색 성능. Search Box ko 공백이면 en을 건너뛰던 .every 구멍 수정. 한글 쿼리를 해외 지명이 못 덮으면 Mapbox Geocoding(ko+en)을 드롭다운 앞에 붙임. Preview /qa/zakynthos — 케팔로니아·시프노스·포르멘테라·파로스 등 미등록 지명.',
+    at: '2026-09-06T12:20:00.000Z',
+  },
+  {
+    id: '2026-09-06-gallery-panel-1-info-dock',
+    session: '갤러리 좌측 패널 #1, 공간 조정',
+    title: 'PC 정보 패널 — 연관 검색어가 무니 위에 보이게',
+    detail:
+      '본문 써머리가 길어지면 400px 안쪽 스크롤에 연관 칩이 숨고, 무니 입력창 위 공간은 비어 있었음. 써머리만 남은 높이를 쓰고 연관 칩은 스크롤 밖(무니 바로 위)에 둠. Preview /qa/gallery-panel — 파리 갤러리 PC 좌측에서 스크롤 없이 하단 연관 칩이 보이는지.',
+    at: '2026-09-06T12:30:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-7-restore-dropdown',
+    session: '자킨토스 검색 #7, Preview QA',
+    title: '자킨토스 타이핑 드롭다운을 다시 연다',
+    detail:
+      '왼쪽 자킨토스 카드는 맞았고 드롭다운이 사라진 것은 과교정. #6이 Enter 뒤 선택 카드가 있으면 검색바 재오픈을 막아 자동완성이 안 됨. 포커스·클릭·타이핑은 다시 열고, Enter 선택 카드와 드롭다운은 같은 핀(Zakynthos)을 쓴다. Preview /qa/zakynthos — 자킨토스 타이핑 자동완성 · 좌측 카드 해변.',
+    at: '2026-09-06T12:05:00.000Z',
+  },
+  {
+    id: '2026-09-06-agencies-3-collapsed',
+    session: '여행사 목록 #3, Preview QA',
+    title: '로고 패널 — 방문한 여행사 접힘 기본',
+    detail:
+      '로고 패널을 여행사 리스트가 가득 채우던 문제를 접힌 「방문한 여행사」로 바꿈. 탐색창 칩 명칭도 「방문한 여행사」(기록 있으면 개수). Preview /qa/agencies — 로고 열어 접힘 확인 후 펼침, 탐색 칩 명칭.',
+    at: '2026-09-06T11:50:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-6-dropdown-latin',
+    session: '자킨토스 검색 #6, 사바섬 Preview QA',
+    title: '자킨토스 드롭다운과 선택 카드를 같은 핀으로',
+    detail:
+      '타이핑 드롭다운은 Search Box 한글 도시, Enter 카드는 지오코딩 Zakynthos라 클릭 경로가 갈라짐. 한글 place_id로 열리면 인물 갤러리 고착. ko/en을 좌표로도 붙이고, 드롭다운 선택 전에 retrieve(en)로 라틴 name_en·slug를 넣음. Enter 후 선택 카드가 떠 있으면 검색바가 다른 키워드 드롭다운을 다시 열지 않음. Preview /qa/zakynthos — 자킨토스 드롭다운·좌측 카드 모두 (Zakynthos) 해변 · 사바섬 회귀.',
+    at: '2026-09-06T11:45:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-5-caribbean-saba',
+    session: '자킨토스 검색 #5, 사바섬 Preview QA',
+    title: '사바섬 — 말레이시아 사바 앞 · 카리브 Saba 둘째 고정',
+    detail:
+      'Preview QA에서 사바(말레이시아)만 나옴. Mapbox ko 표기「사바」가 SSOT와 이름 충돌해 카리브 카드가 사라짐. 네덜란드령 Saba를 고정 동명으로 Enter·제안 둘째에 유지. 한국 사원 아님. Preview /qa/zakynthos — 사바섬 → 사바(말레이시아) · 사바섬(Saba, 네덜란드).',
+    at: '2026-09-06T11:30:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-4-sabah-homonym',
+    session: '자킨토스 검색 #4, 사바섬 Preview QA',
+    title: '사바섬 — 말레이시아 사바 여행지 + 카리브 사바 동명',
+    detail:
+      '여행 프로「사바섬」은 말레이시아 사바주(코타키나발루·BKI). Mapbox만 쓰면 카리브 네덜란드 Saba 한 장만 나옴. SSOT 사바를 앞에 두고, 멀리 떨어진 카리브 사바는 선택 카드로 유지. 한국 시크 사원·사보섬은 1순위 아님. Preview /qa/zakynthos — 탐색창 사바섬 → 사바(말레이시아) 여행지 · (있으면) Saba 카리브.',
+    at: '2026-09-06T11:20:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-2-uiplace-en',
+    session: '자킨토스 검색 #2, Preview QA',
+    title: '검색 uiPlace — 맵박스 영문명으로 갤러리·영상 연결',
+    detail:
+      '자킨토스는 SSOT가 아님. Mapbox ko가 name_en에 한글을 넣던 구멍을 ko+en으로 메움. 라틴 지명으로 카드 부제·Unsplash·YouTube가 붙고, 캐시된 한글 name_en은 역지오로 치유. Preview /qa/zakynthos — 탐색창 자킨토스 → (Zakynthos) · 해변 갤러리 · 영상·플래너.',
+    at: '2026-09-06T10:10:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-1-ssot',
+    session: '자킨토스 검색 #1, SSOT 등록',
+    title: '자킨토스 — 영문명 있는 여행지 카드',
+    detail:
+      '배포본 탐색창「자킨토스」가 Mapbox 한글 도시(영문 없음·인물 갤러리)로 열림. SSOT 여행지 등록 + 자킨토시/잔테/Zante 별칭. Preview /qa/zakynthos — 탐색창 자킨토스·자킨토시 → (Zakynthos) 영문·여행지 뱃지·해변 갤러리.',
+    at: '2026-09-06T08:50:00.000Z',
+  },
+  {
+    id: '2026-09-06-pickup-1-onelink-web',
+    session: '공항픽업 링크 #1, OneLink 우회',
+    title: '클룩 공항 픽업 — 웹 직행 (앱 열기 경고 없음)',
+    detail:
+      'affiliate.klook.com/redirect 가 klook.onelink.me + klook:// 로 가서 iOS가 「다른 애플리케이션을 열려고 합니다」를 띄움. Preview(vercel.app)에서 더 잘 드러남. klook.com?aid=118544 웹 직행. Preview /qa/pickup — 후쿠오카 플래너 공항 픽업 → 클룩 웹(GATEO) · 앱 열기 경고 없는지.',
+    at: '2026-09-06T06:40:00.000Z',
+  },
+  {
+    id: '2026-09-06-gallery-2-db-portrait-refetch',
+    session: '갤러리 인물 제외 #2, DB 고착 수정',
+    title: 'DB에 쌓인 단일 인물도 걸러 LIVE 재조회',
+    detail:
+      '자킨토스처럼 place_stats에 인물만 있으면 빈 갤러리 방지 가드가 원본을 그대로 보여 줌. 장소 태그 island/travel만으로는 전경으로 보지 않음. 필터 후 0장이면 DB를 건너뛰고 Unsplash/Pexels를 다시 받음. Preview /qa/gallery-portrait — 자킨토스 갤러리에서 셀카·얼굴 클로즈업이 빠지는지.',
+    at: '2026-09-06T06:31:00.000Z',
+  },
+  {
+    id: '2026-09-06-agencies-2-gyg-iframe',
+    session: '여행사 목록 #2, Preview QA',
+    title: '겟유어가이드 위젯 방문도 기록',
+    detail:
+      'MRT·트립닷컴은 <a>라 방문이 남았는데, 겟유어가이드는 iframe 위젯이라 투어를 눌러도 기록이 안 남았음. 위젯 포커스 시 제휴 검색/홈 URL을 저장. Preview /qa/agencies — 파리 플래너·투어 찾기에서 겟유어가이드 투어를 연 뒤 로고 패널 방문 기록.',
+    at: '2026-09-06T05:50:00.000Z',
+  },
+  {
+    id: '2026-09-06-agencies-1-reentry',
+    session: '여행사 목록 #1, 재접속 경로',
+    title: '로고패널·탐색·플래너에 여행사 목록',
+    detail:
+      'MRT 등 제휴 사이트를 북마크하지 않고 이탈해도, 로고 패널·탐색「여행사」칩·플래너에서 방문 기록(마지막 URL)과 연결된 여행사 홈으로 다시 들어갈 수 있음. 기록은 이 기기 localStorage. Preview /qa/agencies — 로고 열어 마이리얼트립 확인, 탐색 칩, /place/paris/planner 접힌 목록.',
+    at: '2026-09-06T04:30:00.000Z',
+  },
+  {
+    id: '2026-09-06-updates-1-no-popup',
+    session: '릴리스 노트 푸터 #1, 자동 팝업 제거',
+    title: '홈 진입 시 릴리스 노트 모달 없음',
+    detail:
+      '신규·Preview 방문마다 뜨던 릴리스 노트 팝업을 제거. 내역은 로고 패널 푸터 Updates에만 둠. 배포 후 새로고침 안내는 유지. Preview /qa/updates — 홈에 공지 모달이 안 뜨고, 로고→Updates에 기존 목록이 있는지.',
+    at: '2026-09-06T04:15:00.000Z',
+  },
+  {
+    id: '2026-09-06-gallery-related-1-scroll-top',
+    session: '갤러리 연관 스크롤 #1, 여행지 전환 상단',
+    title: '연관 여행지 탭 — 새 갤러리 상단부터',
+    detail:
+      '갤러리를 내려보다 하단 연관 여행지를 누르면 이전 스크롤 위치에서 다음 지역이 열려 중간부터 보임. 전환 시 중첩 스크롤을 즉시 맨 위로 맞추고 갤러리 탭을 유지. Preview /qa/gallery-related — 파리 갤러리 중간까지 스크롤 후 하단 칩 → 새 여행지 상단(소개·첫 사진)인지.',
+    at: '2026-09-06T03:40:00.000Z',
+  },
+  {
+    id: '2026-09-06-gallery-manage-1-long-press',
+    session: '갤러리 사진 관리 #1, 모바일 길게 누르기',
+    title: '모바일 갤러리 — 길게 눌러 관련 없는 사진 제거',
+    detail:
+      'PC는 Ctrl(⌘)+더블클릭으로 DB에서 빼는 기능이 있었는데 모바일에는 없었음. 그리드·확대 사진을 길게 누르면 확인 시트가 뜨고, 제거 시 place_stats 갤러리에서 빠짐. Preview /qa/gallery — 모바일에서 사진 꾹 → 제거 → 목록에서 사라지는지.',
+    at: '2026-09-06T02:40:00.000Z',
+  },
+  {
+    id: '2026-09-06-gallery-1-no-portrait',
+    session: '갤러리 인물 제외 #1, 단일 인물 필터',
+    title: '스톡 갤러리에서 단일 인물 사진 제외',
+    detail:
+      'Unsplash/Pexels에 인물 제외 파라미터가 없어 orientation=landscape는 쓰지 않음(세로 전경 유지). 설명·태그·비율로 셀카·헤드샷·세로 인물만 빼고, 전경 속 사람은 유지. Preview /qa/gallery — 파리 갤러리에 단일 인물 사진이 줄었는지, 거리·랜드마크 전경은 남는지.',
+    at: '2026-09-06T00:48:00.000Z',
+  },
+  {
     id: '2026-09-03-globe-labels-3-safari-first-load',
     session: '홈 지구본 지명 #3, 사파리 첫 진입 지명',
     title: '사파리 첫 진입 — 자전 hold 중 지명 pump',

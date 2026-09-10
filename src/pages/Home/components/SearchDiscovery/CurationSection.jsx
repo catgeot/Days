@@ -4,6 +4,7 @@ import { ChevronRight, ChevronLeft, ArrowRight } from 'lucide-react';
 import SpotThumbnailCard from './SpotThumbnailCard';
 import TripLinkSectionCard from './TripLinkSectionCard';
 import PackageThumbnailCard from './PackageThumbnailCard';
+import { openPartnerExternalUrl } from '../../../../components/PlaceCard/common/partnerNavigation';
 
 const CurationSection = ({
   title,
@@ -43,7 +44,7 @@ const CurationSection = ({
 
   const openPackageLink = () => {
     if (!packageLinkUrl) return;
-    window.open(packageLinkUrl, '_blank', 'noopener,noreferrer');
+    openPartnerExternalUrl(packageLinkUrl);
   };
 
   // 마우스 드래그 스크롤 핸들러

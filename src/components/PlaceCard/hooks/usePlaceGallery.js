@@ -4,7 +4,7 @@
 // 2. [Maintain] Unsplash API 최종 실패 시 기본 대체 이미지를 제공하는 3차 방어막(Fallback) '유지'
 // 3. 🚨 [Subtraction] 영문 매핑 사전(FALLBACK_DICTIONARY) '제거' -> 기형적인 로직을 버리고 citiesData.js의 원본 데이터(name_en)를 직접 참조하도록 아키텍처 원복
 // 4. 🚨 [New] Unsplash 프로덕션 승인 요건: 다운로드 트래킹(download_location) 호출 및 실제 파일 다운로드 로직(handleDownload) 추가
-// 5. 🚨 [New] 갤러리 이미지 영구 삭제 기능(Ctrl + 더블클릭) 지원을 위한 handleRemoveImage 추가 및 쿼리/이름 Ref 추가
+// 5. 갤러리 이미지 영구 삭제(PC: Ctrl+더블클릭 · 모바일: 길게 누르기) — handleRemoveImage · 쿼리/이름 Ref
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { apiClient } from '../../../pages/Home/lib/apiClient';
@@ -14,6 +14,8 @@ import { supabase } from '../../../shared/api/supabase';
 import { buildPlaceDbIdCandidates, getPlaceStableKey, getPlaceStatsId } from '../../../utils/travelSpotResolve';
 import { isDomesticKoreaLocation, resolveTourApiPlace } from '../../../utils/tourApiMatch';
 import { fetchTourApiGallery } from '../../../utils/fetchTourApiGallery';
+import { filterOutSinglePersonPortraits, pickPlaceStatsGalleryRow } from '../../../utils/galleryPortraitFilter';
+import { resolveGalleryStockQuery, isLatinPlaceName } from '../../../pages/Home/lib/uiPlaceAssetQuery.js';
 import {
   clearGalleryAttributionReturnState,
   consumeGalleryAttributionReturnState,
@@ -21,8 +23,8 @@ import {
   readGalleryAttributionReturnState,
 } from '../common/galleryAttributionNavigation';
 
-/** v1.18 — 갤러리 최대 60장 · Pexels 배치 상한 */
-const CACHE_VERSION = 'v1.18';
+/** v1.21 — 한글 Mapbox name_en 갤러리 쿼리 폐기 · 라틴 지명만 스톡 검색 */
+const CACHE_VERSION = 'v1.21';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
 
 /** 장소 갤러리 UI·세션 캐시 상한 (Pexels 다중 쿼리 백필 과다 방지) */
@@ -47,6 +49,8 @@ const FALLBACK_DICTIONARY = {
   "아마존 분지": "Amazon Basin",
   "갈라파고스": "Galapagos Islands",
   "이스터 섬": "Easter Island",
+  "사바": "Sabah",
+  "사바섬": "Sabah",
   "세렝게티": "Serengeti",
   "통가": "Tonga",
   "투발루": "Tuvalu",
@@ -180,7 +184,8 @@ function isThinStockGallery(images) {
 
 function resolvePexelsQueries(primaryQuery, backupQuery, koreanName, spotSlug) {
   const extras = spotSlug ? (GALLERY_PEXELS_EXTRA_QUERIES[spotSlug] || []) : [];
-  return [...new Set([primaryQuery, backupQuery, ...extras, koreanName].filter(Boolean))];
+  const extraName = isLatinPlaceName(koreanName) ? koreanName : '';
+  return [...new Set([primaryQuery, backupQuery, ...extras, extraName].filter(Boolean))];
 }
 
 function mergeGalleryAppend(existing, incoming, max = GALLERY_MAX_IMAGES) {
@@ -300,14 +305,15 @@ export const usePlaceGallery = (locationSource, options = {}) => {
 
   // 이미지 상태 업데이트 (Unsplash/Pexels 경로 그대로 · TourAPI 교차는 fetch 쪽에서만)
   const processAndSetImages = useCallback((rawImages) => {
-    const capped = capGalleryImages(rawImages);
+    const capped = capGalleryImages(filterOutSinglePersonPortraits(rawImages));
     if (!capped.length) {
       setImages([]);
       allImagesRef.current = [];
-      return;
+      return capped;
     }
     allImagesRef.current = capped;
     setImages(capped);
+    return capped;
   }, []);
 
   const fetchImages = useCallback(async (forceRefresh = false) => {
@@ -340,27 +346,22 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     let koreanName = '';
 
     if (typeof targetSpot === 'object') {
-        // 🚨 [Fix] 검색 정확도 향상을 위해 영어 지명에 쉼표가 있을 경우 첫 번째 구역(단어)만 추출
-        const rawNameEn = targetSpot.name_en || '';
-        const simpleNameEn = rawNameEn.split(',')[0].trim();
-
-        primaryQuery = simpleNameEn || targetSpot.name || '';
-        koreanName = targetSpot.name || '';
-
-        const regionSpot =
-          (typeof locationSource === 'object' && locationSource?.galleryRegionSpot) ||
-          (typeof targetSpot === 'object' && targetSpot?.galleryRegionSpot) ||
-          null;
-        const country = targetSpot.country_en || targetSpot.country;
-
-        if (regionSpot?.name_en && primaryQuery && regionSpot.name_en.toLowerCase() !== primaryQuery.toLowerCase()) {
-          backupQuery = `${primaryQuery} ${regionSpot.name_en}`;
-        } else if (country && primaryQuery && country !== primaryQuery) {
-          backupQuery = `${primaryQuery} ${country}`;
-        }
+        const resolved = resolveGalleryStockQuery(
+          {
+            ...targetSpot,
+            galleryRegionSpot:
+              targetSpot.galleryRegionSpot ||
+              (typeof locationSource === 'object' ? locationSource.galleryRegionSpot : null),
+          },
+          FALLBACK_DICTIONARY,
+        );
+        primaryQuery = resolved.primaryQuery;
+        backupQuery = resolved.backupQuery;
+        koreanName = resolved.koreanName;
     } else {
-        primaryQuery = String(targetSpot);
-        koreanName = String(targetSpot);
+        const resolved = resolveGalleryStockQuery({ name: String(targetSpot) }, FALLBACK_DICTIONARY);
+        primaryQuery = resolved.primaryQuery;
+        koreanName = resolved.koreanName;
     }
 
     primaryQuery = primaryQuery.trim();
@@ -381,13 +382,6 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     if (slugOverride) {
       primaryQuery = slugOverride.primary;
       backupQuery = slugOverride.backup || backupQuery;
-    }
-
-    // 🚨 [Fix] 한글 검색어로 API 호출 시 결과가 희박하므로 Dictionary로 영문 강제 치환
-    if (FALLBACK_DICTIONARY[koreanName]) {
-      primaryQuery = FALLBACK_DICTIONARY[koreanName];
-    } else if (FALLBACK_DICTIONARY[primaryQuery]) {
-      primaryQuery = FALLBACK_DICTIONARY[primaryQuery];
     }
 
     const placeKey =
@@ -518,28 +512,33 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       if (validCache && validCache.length > 0 && !isThinStockGallery(validCache)) {
         if (isStale()) return;
         processAndSetImages(validCache);
-        markFetchDone();
-        finishLoading();
-        if (needsPexelsBackfill(validCache, thumbnailOnly)) {
-          const backfillRunId = runId;
-          pexelsPageRef.current += 1;
-          void fetchPexelsBatch(
-            PEXELS_KEY,
-            pexelsQueries,
-            pexelsPageRef.current,
-            Math.min(GALLERY_PEXELS_BATCH_LIMIT, galleryRemainingSlots(allImagesRef.current)),
-          )
-            .then((pexelsImages) => {
-              if (backfillRunId !== galleryLoadSeqRef.current || !pexelsImages.length) return;
-              const { merged, added } = mergeGalleryAppend(allImagesRef.current, pexelsImages);
-              if (added === 0) return;
-              processAndSetImages(merged);
-              saveToSmartCache(CACHE_KEY, merged);
-              console.log(`✅ Pexels backfill ${added}장 병합 (세션 캐시 히트 후)`);
-            })
-            .catch((err) => console.error('⚠️ Pexels backfill error:', err));
+        if (allImagesRef.current.length === 0) {
+          console.warn('⚠️ session cache all portraits — live Unsplash/Pexels refetch');
+        } else {
+          saveToSmartCache(CACHE_KEY, allImagesRef.current);
+          markFetchDone();
+          finishLoading();
+          if (needsPexelsBackfill(allImagesRef.current, thumbnailOnly)) {
+            const backfillRunId = runId;
+            pexelsPageRef.current += 1;
+            void fetchPexelsBatch(
+              PEXELS_KEY,
+              pexelsQueries,
+              pexelsPageRef.current,
+              Math.min(GALLERY_PEXELS_BATCH_LIMIT, galleryRemainingSlots(allImagesRef.current)),
+            )
+              .then((pexelsImages) => {
+                if (backfillRunId !== galleryLoadSeqRef.current || !pexelsImages.length) return;
+                const { merged, added } = mergeGalleryAppend(allImagesRef.current, pexelsImages);
+                if (added === 0) return;
+                processAndSetImages(merged);
+                saveToSmartCache(CACHE_KEY, allImagesRef.current);
+                console.log(`✅ Pexels backfill ${added}장 병합 (세션 캐시 히트 후)`);
+              })
+              .catch((err) => console.error('⚠️ Pexels backfill error:', err));
+          }
+          return;
         }
-        return;
       }
       if (validCache?.length > 0 && isThinStockGallery(validCache)) {
         console.warn('⚠️ session cache thin stock — live Unsplash/Pexels refetch');
@@ -550,18 +549,20 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       // 공식 contentId DB(Tour 포함)는 재사용 — LIVE TourAPI보다 우선.
       if (!GALLERY_DB_SKIP_SLUGS.has(spotSlugForDb) && dbCandidates.length) {
         try {
-          const dbSelect = thumbnailOnly ? 'image_url, gallery_urls' : 'gallery_urls';
+          const dbSelect = thumbnailOnly
+            ? 'place_id, image_url, gallery_urls'
+            : 'place_id, gallery_urls';
           const { data: dbRows, error: dbError } = await withTimeout(
             supabase
               .from('place_stats')
               .select(dbSelect)
               .in('place_id', dbCandidates)
-              .limit(1),
+              .limit(8),
             PLACE_STATS_QUERY_MS,
             'place_stats gallery',
           );
 
-          const dbData = dbRows?.[0];
+          const dbData = pickPlaceStatsGalleryRow(dbRows, dbStatsId);
 
           if (isStale()) return;
 
@@ -606,31 +607,37 @@ export const usePlaceGallery = (locationSource, options = {}) => {
                 );
               } else {
                 processAndSetImages(gallerySlice);
-                saveToSmartCache(CACHE_KEY, gallerySlice);
-                unsplashPageRef.current = 1;
-                pexelsPageRef.current = 0;
-                markFetchDone();
-                finishLoading();
-                if (needsPexelsBackfill(gallerySlice, thumbnailOnly)) {
-                  const backfillRunId = runId;
-                  pexelsPageRef.current += 1;
-                  void fetchPexelsBatch(
-            PEXELS_KEY,
-            pexelsQueries,
-            pexelsPageRef.current,
-            Math.min(GALLERY_PEXELS_BATCH_LIMIT, galleryRemainingSlots(allImagesRef.current)),
-          )
-                    .then((pexelsImages) => {
-                      if (backfillRunId !== galleryLoadSeqRef.current || !pexelsImages.length) return;
-                      const { merged, added } = mergeGalleryAppend(allImagesRef.current, pexelsImages);
-                      if (added === 0) return;
-                      processAndSetImages(merged);
-                      saveToSmartCache(CACHE_KEY, merged);
-                      console.log(`✅ Pexels backfill ${added}장 병합 (place_stats 히트 후)`);
-                    })
-                    .catch((err) => console.error('⚠️ Pexels backfill error:', err));
+                if (allImagesRef.current.length === 0) {
+                  console.warn(
+                    '⚠️ place_stats all portraits — live Unsplash/Pexels refetch',
+                  );
+                } else {
+                  saveToSmartCache(CACHE_KEY, allImagesRef.current);
+                  unsplashPageRef.current = 1;
+                  pexelsPageRef.current = 0;
+                  markFetchDone();
+                  finishLoading();
+                  if (needsPexelsBackfill(allImagesRef.current, thumbnailOnly)) {
+                    const backfillRunId = runId;
+                    pexelsPageRef.current += 1;
+                    void fetchPexelsBatch(
+                      PEXELS_KEY,
+                      pexelsQueries,
+                      pexelsPageRef.current,
+                      Math.min(GALLERY_PEXELS_BATCH_LIMIT, galleryRemainingSlots(allImagesRef.current)),
+                    )
+                      .then((pexelsImages) => {
+                        if (backfillRunId !== galleryLoadSeqRef.current || !pexelsImages.length) return;
+                        const { merged, added } = mergeGalleryAppend(allImagesRef.current, pexelsImages);
+                        if (added === 0) return;
+                        processAndSetImages(merged);
+                        saveToSmartCache(CACHE_KEY, allImagesRef.current);
+                        console.log(`✅ Pexels backfill ${added}장 병합 (place_stats 히트 후)`);
+                      })
+                      .catch((err) => console.error('⚠️ Pexels backfill error:', err));
+                  }
+                  return;
                 }
-                return;
               }
             }
           }
@@ -658,11 +665,11 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           if (isStale()) return;
           if (tourImages.length > 0) {
             processAndSetImages(tourImages);
-            saveToSmartCache(CACHE_KEY, tourImages);
+            saveToSmartCache(CACHE_KEY, allImagesRef.current);
             markFetchDone();
             if (dbStatsId || koreanName) {
               const thumbnailToSave =
-                tourImages[0]?.urls?.small || tourImages[0]?.urls?.regular || '';
+                allImagesRef.current[0]?.urls?.small || allImagesRef.current[0]?.urls?.regular || '';
               const statsPlaceId = dbStatsId || koreanName;
               if (thumbnailOnly) {
                 if (thumbnailToSave) {
@@ -682,7 +689,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
                   .upsert(
                     {
                       place_id: statsPlaceId,
-                      gallery_urls: tourImages,
+                      gallery_urls: allImagesRef.current,
                       image_url: thumbnailToSave,
                     },
                     { onConflict: 'place_id' },
@@ -835,11 +842,11 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         if (isStale()) return;
 
         processAndSetImages(finalResults);
-        saveToSmartCache(CACHE_KEY, finalResults);
+        saveToSmartCache(CACHE_KEY, allImagesRef.current);
 
         // 더보기(append)는 세션만 — place_stats 큐레이션을 Unsplash 병합본으로 덮지 않음
-        if (!forceRefresh && (dbStatsId || koreanName)) {
-          const thumbnailToSave = finalResults[0]?.urls?.small || finalResults[0]?.urls?.regular || '';
+        if (!forceRefresh && allImagesRef.current.length > 0 && (dbStatsId || koreanName)) {
+          const thumbnailToSave = allImagesRef.current[0]?.urls?.small || allImagesRef.current[0]?.urls?.regular || '';
           const statsPlaceId = dbStatsId || koreanName;
 
           if (thumbnailOnly) {
@@ -856,7 +863,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
               .from('place_stats')
               .upsert({
                 place_id: statsPlaceId,
-                gallery_urls: finalResults,
+                gallery_urls: allImagesRef.current,
                 image_url: thumbnailToSave
               }, { onConflict: 'place_id' })
               .then(({ error }) => {

@@ -7,7 +7,7 @@
 | 갈래 | 채팅명 | 브랜치 | Tour LIVE |
 |------|--------|--------|-----------|
 | **A UX/UI** | `팔경 활용 #{N}, …` | `cursor/palgyeong-use-e744` | **없음** |
-| **B contentId 오케** | `오케스트레이터 팔경contentId` | `cursor/palgyeong-cid` | DB 먼저 · LIVE 잔여만 · **429면 그날 정지** |
+| **B contentId 오케** | `오케스트레이터 팔경contentId` | `cursor/palgyeong-cid` | DB 먼저 · LIVE 잔여 · **Tour API 운영 승인(쿼터 ~10만/일)** · 429면 그날 정지 |
 
 수집 `cursor/palgyeong` **재사용 금지**. 같은 브랜치에 A+B 동시 push **금지**.
 
@@ -75,9 +75,11 @@ method **§5.7** · 큐 [`korea-local-scenic-contentid-queue.md`](./korea-local-
 |------|------|
 | **P0** | 팔경 멤버 (~876) — 이번 목표 |
 | P1 | hub attractions 잔여 |
-| P2 | 테마 선정 잔여(~75) — P0 소진 전 금지 |
+| P2 | 테마 선정 `contentId: null` **142**/871 (78 hub) — P0·P1 소진 후 | **P2 종료** null **51**/871 (충족 820/871, 94.1%) · 잔여 51건 terminal 종결 |
 
-DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`는 잔여만 · 워커 **병렬 LIVE 금지** · 429 → `blocked: quota` · 같은 날 재시도 금지. HIT → 멤버+hub attraction `contentId`. scenic 승격 금지.
+DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만 · 워커 **병렬 LIVE 금지** · **2026-09-07** Tour API 홈 **운영 계정 승인** · 쿼터 **~10만/일** · 429 → `blocked: quota` · 같은 날 재시도 금지. HIT → 멤버+hub attraction `contentId`. scenic 승격 금지.
+
+**P0 잔여 (2026-09-07)**: 본명-only `--keyword-only` 동일 100건 재시도(L02·L03·L05)는 **로또·폐기**. 순서 **C01 scenic 복사 → S01 검색어·가드 → L07 확장 keyword → A01 시호 alias**. AI·웹은 검색어 후보만 · contentId 숫자는 API/DB 검증만. 상세 큐 「P0 잔여 전략」.
 
 **S0**(메인 솔로): fill 스크립트(`--db-only`/`--keyword-only`/`--limit`/`--resume`) + 문경 1건 스모크. 그다음 F = 오케 §3.0.
 
@@ -88,9 +90,9 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`는 잔여만 · 워커 *
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | R01–R06 ✅ · 다음 ⬜ R07 · cid 93/876 |
-| **index 행** | 팔경 활용 | 팔경 contentId |
-| **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · 워커 병렬 LIVE · 429 재호출 |
+| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
+| **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · AI가 ID 기입 |
 
 ### 채팅명 복붙표 (`#N` 리셋 금지)
 
@@ -98,7 +100,45 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`는 잔여만 · 워커 *
 |----|--------------|------|------|
 | 1 | `팔경 활용 #1, 검색·리스트` | A | **완료** · tip `e8da2987` |
 | 2 | `팔경 활용 #2, Preview QA` | A 사람 | **다음** |
-| — | `오케스트레이터 팔경contentId` | B | R07 ⬜ (R01–R06 ✅) |
+| — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
+| — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |
+| — | `팔경contentId #P2-L10, 잔여 null 분석 및 전략` | B | **완료** · tip `fb4c5513` 27/32 |
+| — | `팔경contentId #P2-L9, hub-batch keyword` | B | **완료** · tip `fa6d58b8` 3/10 |
+| — | `팔경contentId #P2-L8, hub-batch keyword` | B | **완료** · tip `699ac841` 0/20 |
+| — | `팔경contentId #P2-L7, hub-batch keyword` | B | **완료** · tip `699ac841` 3/20 |
+| — | `팔경contentId #P2-L6, hub-batch keyword` | B | **완료** · tip `b21da98a` 3/18 |
+| — | `팔경contentId #P2-L5, hub-batch keyword` | B | **완료** · tip `90c2966d` 3/18 |
+| — | `팔경contentId #P2-L4, hub-batch keyword` | B | **완료** · tip `19bd21ee` 11/13 |
+| — | `팔경contentId #P2-L3, hub-batch keyword` | B | **완료** · tip `cf0482cd` 3/22 |
+| — | `팔경contentId #P0 inv, 키워드 종결 소진` | B | **완료** · closed **394** open **0** |
+| — | `팔경contentId #P0-P03, 칠선시류 ambiguous` | B | **완료** · tip `505733e2` 1/1 |
+| — | `팔경contentId #P0-P02, 옥정호 ambiguous` | B | **완료** · tip `3392e61e` 1/1 |
+| — | `팔경contentId #P0-A08, siho_wait` | B | **완료** · tip `be75b1f3` 0/6 |
+| — | `팔경contentId #P0-P01, prefix ambiguous` | B | **완료** · tip `fb936d9c` 2/2 |
+| — | `팔경contentId #P0-A07, siho alias` | B | **완료** · tip `0287f117` 2/8 |
+| — | `팔경contentId #P0-A06, siho alias` | B | **완료** · tip `e3acbf8d` 4/12 |
+| — | `팔경contentId #P0-A05, siho alias` | B | **완료** · tip `cc3fa3cc` 4/21 |
+| — | `팔경contentId #P0-A04, siho alias` | B | **완료** · tip `2b7dc375` 8/29 |
+| — | `팔경contentId #P0-A03, siho alias` | B | **완료** · tip `ce464d0a` 11/41 |
+| — | `팔경contentId #P0-C01, scenic 복사` | B | **완료** · tip `e78f0e5a` 60/62 소진 |
+| — | `팔경contentId #P0-A02, siho alias` | B | **완료** · tip `f0019f88` 6/48 |
+| — | `팔경contentId #P0-K12, short 종결` | B | **완료** · tip `a5131b5a` 0/1 ambiguous |
+| — | `팔경contentId #P0-K11, prefix 잔여` | B | **완료** · tip `c12f063a` 0/2 ambiguous |
+| — | `팔경contentId #P0-K10, prefix 종결` | B | **완료** · tip `1388e038` 5/22 |
+| — | `팔경contentId #P0-K09, short 종결` | B | **완료** · tip `77fe74bb` 8/21 |
+| — | `팔경contentId #P0-K07, short 종결` | B | **완료** · tip `c3360044` 8/40 |
+| — | `팔경contentId #P0-K06, prefix 종결` | B | **완료** · tip `03881a1c` 3/40 |
+| — | `팔경contentId #P0-K05, short 종결` | B | **완료** · tip `65fd2b8d` 8/40 |
+| — | `팔경contentId #P0-K04, other 종결` | B | **완료** · tip `77e90417` 5/41 |
+| — | `팔경contentId #P0-K03, poetic 종결` | B | **완료** · tip `4dcee055` 4/23 |
+| — | `팔경contentId #P0-K02, prefix 종결` | B | **완료** · tip `5f3a2916` 4/40 |
+| — | `팔경contentId #P0-K01, 키워드 종결` | B | **완료** · tip `bf6e9882` 10/40 |
+| — | `팔경contentId #P0-L07+++, 확장 keyword` | B | **폐기** (같은 100명 로또) |
+| — | `팔경contentId #P0-L07++, 확장 keyword` | B | **완료** · tip `c914703c` 2/100 |
+| — | `팔경contentId #P0-L07+, 확장 keyword` | B | **완료** · tip `851fda40` 2/100 |
+| — | `팔경contentId #P0-A01, 시호 alias` | B | **완료** · tip `dc608b4b` 8/16 |
+| — | `팔경contentId #P0-L07, 확장 keyword` | B | **완료** · tip `6212fab3` 11/100 |
+| — | `팔경contentId #P0-L04/#P0-L06` | B | **폐기** (본명 keyword 로또) |
 | — | `지자체 팔경 #…` | 수집 종료 | **열지 않음** |
 
 ### §1.2 A #1
@@ -125,16 +165,365 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`는 잔여만 · 워커 *
 작업: 홈 검색 문경 · /korea/theme/scenic 문경 hub · 축제 상세 인근 목록 소제목
 ```
 
-### §1.2 B 다음 (R07)
+### §1.2 B 다음 (#P2-END) — P2 종결 및 PR #185 검토
 
 ```
-오케스트레이터 팔경contentId
-@plans/orchestrator-method.md
-@plans/korea-local-scenic-contentid-queue.md
+팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토
 @plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
 브랜치 cursor/palgyeong-cid · PR #185
-금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P1/P2 월권
-작업: R07 DB-only 워커A3+B3 → VERIFY → R08 또는 Task 이관
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3~L9 hub 본명 단순 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic 820/871 충족(94.1%) · 잔여 51건 terminal 종결 확정 및 PR #185 검토
+```
+
+### §1.2 B #P2-L9
+
+```
+팔경contentId #P2-L9, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5/L6/L7/L8 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 81 — --hubs=gwangyang,sancheong,yeongyang,pohang,mokpo,ulleung,gapyeong,gongju,jecheon,yanggu --keyword-only --limit=20
+```
+
+### §1.2 B #P2-L8
+
+```
+팔경contentId #P2-L8, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5/L6/L7 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 81 — --hubs=sangju,gyeryong,mungyeong,yeongi,yesan,gokseong,hwasun,imsil,jangseong,yeonggwang,gimje,iksan,yeongam,cheongdo,gijang,uiseong,yecheon,chilgok,dokdo,gwangyang,sancheong,yeongyang,pohang,mokpo,ulleung,gapyeong,gongju,jecheon,yanggu --keyword-only --limit=20
+```
+
+### §1.2 B #P2-L7
+
+```
+팔경contentId #P2-L7, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5/L6 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 84 — --hubs=sangju,gyeryong,mungyeong,bonghwa,hongseong,yeongi,yesan,gokseong,seocheon,hwasun,imsil,jangseong,yeonggwang,gimje,iksan,yeongam,cheongdo,gijang,uiseong,yecheon,chilgok,dokdo,gwangyang,sancheong,yeongyang,pohang,mokpo,ulleung,gapyeong,gongju,jecheon,yanggu --keyword-only --limit=20
+```
+
+### §1.2 B #P2-L5
+
+```
+팔경contentId #P2-L5, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 90 — --hubs=pyeongchang,siheung,eumseong,yangsan,changwon,yeongcheon,goryeong,gyeongsan,yeongdeok --keyword-only --limit=20
+```
+
+### §1.2 B #P2-L4
+
+```
+팔경contentId #P2-L4, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 101 — --hubs=samcheok,hadong,buyeo,namwon,boseong,jeongeup,donghae --keyword-only --limit=20
+```
+
+### §1.2 B #P2-L3
+
+```
+팔경contentId #P2-L3, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 104 — --hubs=uiryeong,hanam,geochang,gunwi,gwangju,seongnam,danyang --keyword-only --limit=20
+```
+
+### §1.2 B #P0 inv
+
+```
+팔경contentId #P0 inv, 키워드 종결 소진
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: inventory 재집계 · P0 키워드 종결 closed 394 · 남은 null 297 갈래 분류 · 다음 R 제안
+```
+
+### §1.2 B #P0-P03
+
+```
+팔경contentId #P0-P03, 칠선시류 ambiguous
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: 함양 칠선시류 ambiguous — close JSON titles·주소 확인 → unique면 lists · 아니면 null
+```
+
+### §1.2 B #P0-P02
+
+```
+팔경contentId #P0-P02, 옥정호 ambiguous
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: 임실 옥정호 ambiguous — close JSON titles·주소 확인 → unique면 lists · 아니면 null
+```
+
+### §1.2 B #P0-P01
+
+```
+팔경contentId #P0-P01, prefix ambiguous
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: prefix ambiguous 2건 제목·주소 확인 → unique면 lists 기입 · 종결을 close JSON에 기록
+```
+
+### §1.2 B #P0-A07
+
+```
+팔경contentId #P0-A07, siho alias
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: --bucket=siho --apply-unique · alias→LIVE · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+### §1.2 B #P0-A06
+
+```
+팔경contentId #P0-A06, siho alias
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: --bucket=siho --apply-unique · alias→LIVE · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+### §1.2 B #P0-A05
+
+```
+팔경contentId #P0-A05, siho alias
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: --bucket=siho --apply-unique · alias→LIVE · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+### §1.2 B #P0-A04
+
+```
+팔경contentId #P0-A03, siho alias
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · Tour LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: --bucket=siho --apply-unique · alias→LIVE · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+### §1.2 B #P0-S01
+
+```
+팔경contentId #P0-S01, 검색어·가드
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 본명-only keyword 재시도 · feature에 plans/** 커밋
+작업: fill keyword=memberQueries · scoreHit 괄호 가드(지자체만) · hub lat/lng 폴백 → audit/smoke lists
+```
+
+### §1.2 B #P0-L07
+
+```
+팔경contentId #P0-L07, 확장 keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재시도 · 본명-only 재시도 · feature에 plans/** 커밋
+작업: P0-S01 이후 fill --keyword-only --limit=100 (memberQueries) → audit/smoke lists
+```
+
+### §1.2 B #P0-A02
+
+```
+팔경contentId #P0-A02, siho alias
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=siho --apply-unique · alias→LIVE · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+### §1.2 B #P0-K12
+
+```
+팔경contentId #P0-K12, short 종결
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=short --apply-unique --limit=40 · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+### §1.2 B #P0-K11
+
+```
+팔경contentId #P0-K11, prefix 잔여
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=prefix --apply-unique --limit=40 · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+### §1.2 B #P0-K10
+
+```
+팔경contentId #P0-K10, prefix 종결
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=prefix --apply-unique --limit=40 · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+### §1.2 B #P0-K09
+
+```
+팔경contentId #P0-K09, short 종결
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=short --apply-unique --limit=40 · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+### §1.2 B #P0-K08
+
+```
+팔경contentId #P0-K08, prefix 종결
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=prefix --apply-unique --limit=40 · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+### §1.2 B #P0-K07
+
+```
+팔경contentId #P0-K07, short 종결
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=short --apply-unique --limit=40 · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+### §1.2 B #P0-K06
+
+```
+팔경contentId #P0-K06, prefix 종결
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=prefix --apply-unique --limit=40 · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+### §1.2 B #P0-K05
+
+```
+팔경contentId #P0-K05, short 종결
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=short --apply-unique --limit=40 · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+### §1.2 B #P0-K04
+
+```
+팔경contentId #P0-K04, other 종결
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=other --apply-unique · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+### §1.2 B #P0-K03
+
+```
+팔경contentId #P0-K03, poetic 종결
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=poetic --apply-unique · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+### §1.2 B #P0-K01
+
+```
+팔경contentId #P0-K01, 키워드 종결
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: --bucket=short --apply-unique --limit=40 · HIT는 LIVE 행만 · 종결을 close JSON에 기록
+```
+
+### §1.2 B #P0-L07+++
+
+```
+팔경contentId #P0-L07+++, 확장 keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: 잔여 null --keyword-only --limit=100 (memberQueries) · gunsan 등 시호 alias 2차는 합의 후
+```
+
+### §1.2 B #P0-L07++
+
+```
+팔경contentId #P0-L07++, 확장 keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: 잔여 null --keyword-only --limit=100 (memberQueries) · gunsan 등 시호 alias 2차는 합의 후
+```
+
+### §1.2 B #P0-L07+
+
+```
+팔경contentId #P0-A01, 시호 alias
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 숫자 기입 · feature에 plans/** 커밋
+작업: L07 MISS 시호·별칭만 웹/공식명 후보 → KEYWORD_ALIASES → LIVE 검증. Tour 미등재는 null 유지
 ```
 
 ### §1.2 B 429 다음날

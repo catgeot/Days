@@ -10,6 +10,7 @@ import {
   EXPLORE_BADGE_REGION,
   localizedExploreBadgeLabel,
 } from '../../../../i18n/exploreUi';
+import { isPlaceholderCountry } from '../../../../utils/travelSpotResolve.js';
 import {
   getLocalizedCountryName,
   getLocalizedPlaceName,
@@ -49,7 +50,7 @@ function buildLocationLine(item, locale = 'ko') {
   if (parent && parent !== name && !name.includes(parent)) {
     parts.push(parent);
   }
-  if (country && country !== name && country !== parent) {
+  if (country && country !== name && country !== parent && !isPlaceholderCountry(country)) {
     parts.push(country);
   }
   return parts.join(' · ');

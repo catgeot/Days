@@ -16,6 +16,85 @@ export const CLOUD_QA_SHARE_LINKS = [
     active: true,
   },
   {
+    slug: 'globe-frame-zoom',
+    label: '홈 지구본 페이지 줌 복귀',
+    branch: 'cursor/globe-frame-zoom-7106',
+    destination:
+      'https://days-git-cursor-globe-frame-zoom-7106-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'summary-close',
+    label: '써머리 닫기 X · Android Chrome',
+    branch: 'cursor/summary-close-1030',
+    destination:
+      'https://days-git-cursor-summary-close-1030-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'gallery-panel',
+    label: '갤러리 좌측 패널 공간',
+    branch: 'cursor/gallery-panel-032e',
+    destination:
+      'https://days-git-cursor-gallery-panel-032e-catgeots-projects.vercel.app/place/paris/gallery',
+    active: true,
+  },
+  {
+    slug: 'zakynthos',
+    label: '자킨토스·사바섬 검색',
+    branch: 'cursor/zakynthos-search-e84a',
+    destination:
+      'https://days-git-cursor-zakynthos-search-e84a-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'pickup',
+    label: '공항픽업 링크',
+    branch: 'cursor/klook-pickup-d5a5',
+    destination:
+      'https://days-git-cursor-klook-pickup-d5a5-catgeots-projects.vercel.app/place/fukuoka/planner',
+    active: true,
+  },
+  {
+    slug: 'gallery-portrait',
+    label: '갤러리 단일 인물 제외',
+    branch: 'main',
+    destination: 'https://www.gateo.kr/',
+    active: true,
+  },
+  {
+    slug: 'agencies',
+    label: '여행사 목록·방문 기록',
+    branch: 'cursor/agencies-85ab',
+    destination:
+      'https://days-git-cursor-agencies-85ab-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'updates',
+    label: '릴리스 노트 푸터',
+    branch: 'cursor/updates-0e16',
+    destination:
+      'https://days-git-cursor-updates-0e16-catgeots-projects.vercel.app/',
+    active: true,
+  },
+  {
+    slug: 'gallery-related',
+    label: '갤러리 연관 여행지 스크롤',
+    branch: 'cursor/gallery-scroll-76a6',
+    destination:
+      'https://days-git-cursor-gallery-scroll-76a6-catgeots-projects.vercel.app/place/paris/gallery',
+    active: true,
+  },
+  {
+    slug: 'gallery',
+    label: '갤러리 사진 관리',
+    branch: 'cursor/gallery-manage-173f',
+    destination:
+      'https://days-git-cursor-gallery-manage-173f-catgeots-projects.vercel.app/place/paris/gallery',
+    active: true,
+  },
+  {
     slug: 'globe-labels',
     label: '홈 지구본 첫 로딩 지명',
     branch: 'cursor/globe-labels-ddce',
@@ -330,9 +409,9 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'world-events',
     label: '세계 행사 일정 허브',
-    branch: 'cursor/world-events-wave2',
+    branch: 'cursor/world-events-wave3',
     destination:
-      'https://days-git-cursor-world-events-wave2-catgeots-projects.vercel.app/world-events',
+      'https://days-git-cursor-world-events-wave3-catgeots-projects.vercel.app/world-events',
     active: true,
   },
 ];

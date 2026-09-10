@@ -14,6 +14,304 @@
 
 ## 활성 목록
 
+### 지구본 프레임 줌 — main 병합 ✅
+
+| | |
+|--|--|
+| **상태** | **#1 merge ✅** · main `386412ac` · PR [#203](https://github.com/catgeot/Days/pull/203) |
+| **브랜치** | `cursor/globe-frame-zoom-7106` · merge `386412ac` |
+| **일지** | [`2026-09-08-project-log.md`](./2026-09-08-project-log.md) |
+| **PROD** | `https://www.gateo.kr/` |
+| **VERIFY** | `smoke:globe-page-zoom-lock` · `vite build` PASS |
+
+**다음 제시어 없음** (주제 종료). 홈 프레임 핀치 후 복귀는 PROD. `/qa/globe-frame-zoom`은 구 Preview — 확인은 `www.gateo.kr`.
+
+---
+
+### 장소카드 갤러리-명소 본문 연계
+
+| | |
+|--|--|
+| **상태** | **#2 push** · tip `ff60a606` · PR [#208](https://github.com/catgeot/Days/pull/208) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/scenic-gateway-2ced` |
+| **tip** | `ff60a606` |
+| **PR** | [#208](https://github.com/catgeot/Days/pull/208) |
+| **일지** | [`2026-09-10-project-log.md`](./2026-09-10-project-log.md) |
+| **소유** | `PlaceScenicGateway.jsx` · `placeScenicGateway.js` · `GalleryInfoView.jsx` · `PlaceGalleryView.jsx` · `ScenicPage.jsx` · `ThemeModuleBackButton.jsx` |
+| **금지** | UI 리디자인 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `npm run smoke:place-scenic-gateway` (21 passed) · `npm run build` |
+
+**다음 제시어**:
+
+```
+장소카드 갤러리-명소 본문 연계 #2, 사람 Preview QA 및 병합 대기
+@plans/feature-handoff-index.md
+@plans/2026-09-10-project-log.md
+브랜치 cursor/scenic-gateway-2ced · PR #208
+금지: UI 임의 리디자인 · feature에 plans/** 커밋
+작업: 장소카드 갤러리에서 명소 본문 진입 후 모달 닫기 시 원래 갤러리로 정확히 복귀하는지 확인
+```
+
+---
+
+### 써머리 닫기
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `f1e040b4` · PR [#202](https://github.com/catgeot/Days/pull/202) · **#2 사람 Android Chrome QA** |
+| **브랜치** | `cursor/summary-close-1030` |
+| **tip** | `f1e040b4` |
+| **PR** | [#202](https://github.com/catgeot/Days/pull/202) |
+| **일지** | [`2026-09-07-project-log.md`](./2026-09-07-project-log.md) |
+| **Preview** | `/qa/summary-close` → git Preview `/` |
+| **소유** | `PlaceCardSummary` · `HomeGlobeMapbox` `suppressOverlayClick` · `globeOverlayClickGuard.js` |
+| **금지** | UI 리디자인 · 써머리 X `pointerdown` 닫기 제거 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:summary-close-guard` · `vite build` |
+
+**다음 제시어**:
+
+```
+써머리 닫기 #2, Android Chrome QA
+@plans/feature-handoff-index.md
+@plans/2026-09-07-project-log.md
+브랜치 cursor/summary-close-1030 · PR #202 · Preview /qa/summary-close
+금지: UI 리디자인 · 써머리 X pointerdown 닫기 제거 · feature에 plans/** 커밋
+작업: Android Chrome에서 지구본 써머리 X → 카드만 닫힘 · 다른 여행지 써머리가 바로 안 열림
+```
+
+---
+
+### 리뷰 연관 여행지
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `d73ffc19` · PR [#201](https://github.com/catgeot/Days/pull/201) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/reviews-related-b9fa` |
+| **tip** | `d73ffc19` |
+| **PR** | [#201](https://github.com/catgeot/Days/pull/201) |
+| **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
+| **Preview** | `/qa/reviews-related` → git Preview `/place/paris/reviews` |
+| **소유** | `PlaceChatPanel` · `relatedPlaceTab.js` · `ReviewsTab` |
+| **금지** | UI 리디자인 · 갤러리 칩을 리뷰로 바꾸기 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:reviews-related-tab` · `smoke:gallery-related-scroll` · `vite build` |
+
+**다음 제시어**:
+
+```
+리뷰 연관 여행지 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/reviews-related-b9fa · PR #201 · Preview /qa/reviews-related
+금지: UI 리디자인 · 갤러리 칩을 리뷰로 바꾸기
+작업: 파리 리뷰탭 좌측 칩 → 새 여행지도 리뷰탭 · 글이 없어도 칩으로 이어서 탐색 · 갤러리 칩은 갤러리 유지
+```
+
+---
+
+### 갤러리 좌측 패널
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `7495e095` · PR [#200](https://github.com/catgeot/Days/pull/200) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/gallery-panel-032e` |
+| **tip** | `7495e095` |
+| **PR** | [#200](https://github.com/catgeot/Days/pull/200) |
+| **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
+| **Preview** | `/qa/gallery-panel` → git Preview `/place/paris/gallery` |
+| **소유** | `GalleryInfoView` · `PlaceChatPanel` |
+| **금지** | UI 리디자인 · 연관 칩을 써머리 스크롤 안으로 되돌리기 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:gallery-related-scroll` · `smoke:gallery-photo-manage` · `vite build` |
+
+**다음 제시어**:
+
+```
+갤러리 좌측 패널 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/gallery-panel-032e · PR #200 · Preview /qa/gallery-panel
+금지: UI 리디자인 · 연관 칩을 써머리 스크롤 안으로 되돌리기
+작업: PC 파리 갤러리 좌측 — 스크롤 없이 하단 연관 검색어 · 무니 입력창 바로 위
+```
+
+---
+
+### 자킨토스 검색
+
+| | |
+|--|--|
+| **상태** | **#12 push** · tip `795c16ec` · PR [#199](https://github.com/catgeot/Days/pull/199) · **#13 사람 Preview QA** — 그리스 표기·해변 사진 |
+| **브랜치** | `cursor/zakynthos-search-e84a` |
+| **tip** | `795c16ec` |
+| **PR** | [#199](https://github.com/catgeot/Days/pull/199) |
+| **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
+| **Preview** | `/qa/zakynthos` → git Preview `/` (방문 카드 그리스 · 해변 사진) |
+| **소유** | `visitedPlaceSearch.js` · `visitedPlaceSearchLookup.js` · `galleryPortraitFilter.js` · `useHomeHandlers.js` Smart Search |
+| **금지** | UI 리디자인 · 자킨토스 SSOT 재등록 · `orientation=landscape` 재도입 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:visited-place-search` · `smoke:unseen-place-search` · `smoke:zakynthos-search` · `smoke:sabah-search` · `smoke:gallery-portrait-filter` · `vite build` |
+
+**다음 제시어**:
+
+```
+자킨토스 검색 #13, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/zakynthos-search-e84a · PR #199 · Preview /qa/zakynthos
+금지: UI 리디자인 · 자킨토스 SSOT 재등록 · orientation=landscape 재도입
+작업: 자킨토스 재검색 드롭다운·써머리·장소 헤더가 그리스 · 해변 사진 · Global/Explore 아님 · 사바섬 회귀
+```
+
+---
+
+### 공항픽업 링크
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `3828b09b` · PR [#193](https://github.com/catgeot/Days/pull/193) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/klook-pickup-d5a5` |
+| **tip** | `3828b09b` |
+| **PR** | [#193](https://github.com/catgeot/Days/pull/193) |
+| **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
+| **Preview** | `/qa/pickup` → git Preview `/place/fukuoka/planner` |
+| **소유** | `klookAffiliateUrl.js` · `affiliate.js` `getKlookAffiliateUrl` · PreTravelChecklist 픽업 |
+| **금지** | UI 리디자인 · 제휴 aid 변경 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:klook-affiliate` · `smoke:travel-agencies` · `vite build` |
+
+**다음 제시어**:
+
+```
+공항픽업 링크 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/klook-pickup-d5a5 · PR #193 · Preview /qa/pickup
+금지: UI 리디자인 · 제휴 aid 변경
+작업: 후쿠오카 플래너 공항 픽업 → 클룩 웹(GATEO) · iOS 앱 열기 경고 없는지
+```
+
+---
+
+### 여행사 목록
+
+| | |
+|--|--|
+| **상태** | **#3 push** · tip `c6fdd253` · PR [#198](https://github.com/catgeot/Days/pull/198) · **#4 사람 Preview QA** (접힌 방문한 여행사) |
+| **브랜치** | `cursor/agencies-85ab` |
+| **tip** | `c6fdd253` |
+| **PR** | [#198](https://github.com/catgeot/Days/pull/198) · [#192](https://github.com/catgeot/Days/pull/192) merge ✅ |
+| **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
+| **Preview** | `/qa/agencies` → git Preview `/` · `/explore` · `/place/paris/planner` |
+| **소유** | `travelAgencies.js` · `travelAgencyVisits.js` · `TravelAgencyDirectory` · LogoPanel · SearchDiscovery · PlannerTab |
+| **금지** | 로고/탐색/플래너 리디자인 · 예약 대행 카피 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:travel-agencies` · `vite build` |
+
+**다음 제시어**:
+
+```
+여행사 목록 #4, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/agencies-85ab · PR #198 · Preview /qa/agencies
+금지: 로고/탐색/플래너 리디자인 · 예약 대행 카피
+작업: 로고 패널 「방문한 여행사」접힘 · 펼치면 목록 · 탐색창 칩 명칭 · 방문 기록 회귀
+```
+
+---
+
+### 릴리스 노트 푸터
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `6dcd5b93` · PR [#191](https://github.com/catgeot/Days/pull/191) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/updates-0e16` |
+| **tip** | `6dcd5b93` |
+| **PR** | [#191](https://github.com/catgeot/Days/pull/191) |
+| **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
+| **Preview** | `/qa/updates` → git Preview `/` |
+| **소유** | `SiteUpdateBanner`(배포 새로고침만) · FooterModal Updates · `releaseNotes.js` |
+| **금지** | 릴리스 노트 홈 팝업 재도입 · UI 리디자인 · 버그픽스/미세 UI를 Updates에 넣기 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:release-notes-footer` · `vite build` |
+
+**다음 제시어**:
+
+```
+릴리스 노트 푸터 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/updates-0e16 · PR #191 · Preview /qa/updates
+금지: 릴리스 노트 홈 팝업 재도입 · UI 리디자인 · 버그픽스/미세 UI를 Updates에 넣기
+작업: 홈 진입 시 공지 모달 없음 · 로고 패널 푸터 Updates에 기존 내역 · 배포 새로고침 안내는 PROD만
+```
+
+---
+
+### 갤러리 연관 스크롤 — main 병합 ✅
+
+| | |
+|--|--|
+| **상태** | **#1 merge ✅** · main `6b6d7b12` · PR [#190](https://github.com/catgeot/Days/pull/190) |
+| **브랜치** | `cursor/gallery-scroll-76a6` · merge `6b6d7b12` |
+| **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
+| **PROD** | `https://www.gateo.kr/place/paris/gallery` |
+| **VERIFY** | `smoke:gallery-related-scroll` · `vite build` PASS |
+
+**다음 제시어 없음** (주제 종료). 연관 칩 전환 시 갤러리 상단 리셋은 PROD. PC 좌측 패널 공간은 [`갤러리 좌측 패널`](#갤러리-좌측-패널).
+
+---
+
+### 갤러리 캐시 신선도
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `b7ee61e5` · PR [#189](https://github.com/catgeot/Days/pull/189) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/gallery-swr-6b36` |
+| **tip** | `b7ee61e5` |
+| **PR** | [#189](https://github.com/catgeot/Days/pull/189) |
+| **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
+| **Preview** | `/qa/gallery-fresh` → git Preview `/place/paris/gallery` |
+| **소유** | `usePlaceGallery` · `galleryCachePolicy.js` · 검색 카드 thumbnailOnly |
+| **금지** | `image_url` SWR 덮어쓰기 · Tour 우세 갤러리 스톡 치환 · 더보기 DB upsert · UI 리디자인 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:gallery-cache-policy` · `smoke:place-gallery-pexels` · `smoke:gallery-portrait-filter` · `smoke:gallery-photo-manage` · `vite build` |
+
+**다음 제시어**:
+
+```
+갤러리 캐시 신선도 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-06-project-log.md
+브랜치 cursor/gallery-swr-6b36 · PR #189 · Preview /qa/gallery-fresh
+금지: image_url SWR 덮어쓰기 · Tour 우세 스톡 치환 · 더보기 DB upsert · UI 리디자인
+작업: 파리 갤러리 즉시 표시 · 대표 사진 유지 · 새 장이 뒤에 붙는지 · 검색/버킷 썸네일 흔들림 없음
+```
+
+---
+
+### 갤러리 사진 관리 — main 병합 ✅
+
+| | |
+|--|--|
+| **상태** | **#1 merge ✅** · main `d575c9a7` · PR [#188](https://github.com/catgeot/Days/pull/188) |
+| **브랜치** | `cursor/gallery-manage-173f` · merge `d575c9a7` |
+| **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
+| **PROD** | `https://www.gateo.kr/place/paris/gallery` |
+| **VERIFY** | `smoke:gallery-photo-manage` · `vite build` PASS |
+
+**다음 제시어 없음** (주제 종료). 모바일 길게 누르기 제거는 PROD. `/qa/gallery`는 관리 Preview(구 브랜치) — 신선도 QA는 `/qa/gallery-fresh`.
+
+---
+
+### 갤러리 인물 제외 — main 병합 ✅
+
+| | |
+|--|--|
+| **상태** | **#2 merge ✅** · main `4e748b4b` · PR [#194](https://github.com/catgeot/Days/pull/194) |
+| **브랜치** | `cursor/gallery-2-c260` · merge `4e748b4b` |
+| **일지** | [`2026-09-06-project-log.md`](./2026-09-06-project-log.md) |
+| **PROD** | `https://www.gateo.kr/` — 자킨토스 갤러리 |
+| **VERIFY** | `smoke:gallery-portrait-filter` · `smoke:place-gallery-pexels` · `vite build` PASS |
+
+**다음 제시어 없음** (주제 종료). DB 인물 고착 시 LIVE 재조회는 PROD.
+
+---
+
 ### 팔경 활용 — 검색·리스트 (A)
 
 | | |
@@ -43,30 +341,38 @@
 
 ---
 
-### 팔경 contentId — 오케 (B)
+### 팔경 contentId — main 병합 완료 ✅
 
 | | |
 |--|--|
-| **상태** | R01–R06 ✅ · 다음 ⬜ **R07** · membersWithContentId 93/876 · A와 **동시 OK** |
-| **브랜치** | `cursor/palgyeong-cid` · tip `6b2aa715` |
-| **PR** | [#185](https://github.com/catgeot/Days/pull/185) |
-| **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§3·§9 B** · method **§5.7** |
-| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — S0–R06 ✅ · R07 ⬜ |
+| **상태** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **브랜치** | `cursor/palgyeong-cid` · merge commit `53b21b00` |
+| **PR** | [#185](https://github.com/catgeot/Days/pull/185) (MERGED) |
+| **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) · method **§5.7** |
+| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — P0·P1·P2 전 라운드 종결 · 잔여 51건 terminal |
 | **일지** | [`2026-09-04-project-log.md`](./2026-09-04-project-log.md) |
-| **소유** | JSON `contentId` · fill · audit · **UI 금지** |
-| **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · feature에 `plans/**` 커밋 |
+| **종결 성과** | P0 멤버 579/876 HIT, P1 허브 68 HIT, P2 820/871(94.1%) 충족 · 양구 수목원 자체 큐레이션 반영 완료 |
 
-**다음 제시어**:
+**다음 제시어 없음** (주제 종료). 후속 자체 큐레이션 작업은 아래 '명소 자체 큐레이션' 트랙에서 이어감.
 
-```
-오케스트레이터 팔경contentId
-@plans/orchestrator-method.md
-@plans/korea-local-scenic-contentid-queue.md
-@plans/feature-handoff-index.md
-브랜치 cursor/palgyeong-cid · PR #185
-금지: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 재호출 · P1/P2 월권
-작업: R07 DB-only 워커A3+B3 → VERIFY → R08 또는 Task 이관
-```
+---
+
+### 명소 자체 큐레이션 — TourAPI 미등재 명소 보강
+
+| | |
+|--|--|
+| **상태** | **#3 완료 (PR [#207](https://github.com/catgeot/Days/pull/207) open)** · tip `a62f7123` · **51건 전수 자체 큐레이션 100% 종결** (R00 1건, R01 14건, R02 16건, R03 20건) · 사람 PR 검토 및 병합 대기 |
+| **브랜치** | `cursor/curated-scenic` |
+| **tip** | `a62f7123` |
+| **PR** | [#207](https://github.com/catgeot/Days/pull/207) |
+| **가이드** | [`korea-curated-spots-guide.md`](./korea-curated-spots-guide.md) |
+| **큐** | [`curated-scenic-spots-queue.md`](./curated-scenic-spots-queue.md) (전체 51건 중 51건 100% 완료, 잔여 0건) |
+| **도구** | `scripts/report-curated-scenic-candidates.mjs` · `scripts/search-tourapi-photos.mjs` |
+| **소유** | `korea-scenic-spots-overrides.mjs` · `korea-scenic-spot-images.json` · `koreaScenicSpots.json` |
+| **금지** | AI 허구 본문 창작 금지(공식 팩트 기반 요약) · 저작권 미확인 블로그 사진 금지 · JSON 직접 편집 금지 |
+| **VERIFY** | `npm run audit:korea-scenic-spots` · `npm run smoke:korea-scenic-spots` · `npm run build` |
+
+**다음 제시어 없음** (51건 전수 자체 큐레이션 완료 종결, PR #207 검토 및 병합 대기).
 
 ---
 
@@ -142,35 +448,34 @@ PROD https://www.gateo.kr/
 
 ---
 
-### 세계 행사·축제 일정 연동
+### 세계 행사·축제 일정 연동 — 리스트 사진 영문 검색 (#54d)
 
 | | |
 |--|--|
-| **상태** | **#51 QA 피드백** · tip `ea03ce2b` · 사람 Preview 대기 |
-| **브랜치** | `cursor/world-events-wave3` · tip `ea03ce2b` |
-| **PR** | [#166](https://github.com/catgeot/Days/pull/166) |
-| **main** | docs sync — Wave3 사람 Preview QA |
-| **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **F-0.5 D5-b-3** · **F-0.6** · §9 |
-| **Q&A** | [`world-events-qa-index.md`](./world-events-qa-index.md) (Q15 추가) |
-| **운영** | [`world-events-management.md`](./world-events-management.md) §6.1·§6.1.1·§8.1 |
-| **샘플** | [`world-events-sample-log.md`](./world-events-sample-log.md) |
-| **일지** | [`2026-08-27-project-log.md`](./2026-08-27-project-log.md) |
-| **PROD QA** | §6.1.1 6건 공식 pill — 에이전트 PASS · 사람 모바일 탭 1줄씩 |
-| **Preview** | `/qa/world-events` → `/world-events/rome-carnevale-2027` · `?region=europe` |
-| **VERIFY** | `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` |
+| **상태** | **#54c** 영문 Unsplash **push** · tip `665f2b7d` · PR [#206](https://github.com/catgeot/Days/pull/206) · **#54d** 사람 Preview QA |
+| **브랜치** | `cursor/world-events-wave3` · tip `665f2b7d` |
+| **PR** | [#206](https://github.com/catgeot/Days/pull/206) · [#205](https://github.com/catgeot/Days/pull/205) merge ✅ (16:10 카드) |
+| **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **§9** · [`world-events-management.md`](./world-events-management.md) |
+| **일지** | [`2026-09-09-project-log.md`](./2026-09-09-project-log.md) |
+| **Preview** | `/qa/world-events` → `/world-events` |
+| **소유** | `worldEventMedia.js` · `fetchWorldEventListPhotos.js` · `fetchEventHeroGallery.js` · `worldEventHeroGalleryMerge.js` |
+| **금지** | worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · 허브에 플래너·숙소 칩 복구 |
+| **VERIFY** | `smoke:world-events-hub` · `smoke:world-events-detail` · `audit:world-events` · `build` PASS |
 
-**게이트**: Wave3 **4/4 D5-b 에이전트 PASS ✅** · **#52** 사람 Preview QA
+**게이트**: #54c 사람 Prod QA — 썸네일·본문이 행사와 무관 · 한글 Unsplash가 폴백을 막음 → 영문 쿼리로 재호출. **사람 Preview** 전 merge 금지.
 
-**다음 제시어** (#52 사람 Preview QA):
+**#55 (속도, 별 PR)**: LIVE `event_hero_gallery` 위키만이면 상세 캐시는 Unsplash를 다시 받음(이번 #54c `force`). 리스트 첫 로딩은 여전히 Unsplash 검색. 갤러리 12장에 리스트 검색 섞지 말 것.
+
+**다음 제시어** (#54d Preview QA):
 
 ```
-세계행사 일정 #52, Wave3 사람 Preview QA
+세계행사 일정 #54d, 영문 사진 Preview QA
 @plans/feature-handoff-index.md
-@plans/2026-08-27-project-log.md
+@plans/2026-09-09-project-log.md
 @plans/world-events-management.md
-브랜치 cursor/world-events-wave3 · PR #166 · https://www.gateo.kr/qa/world-events
-금지: worldEvents.json 직편집 · UI 리디자인 · Wave1 KO 본문 일괄 En 번역
-작업: Wave3 4건 모바일 Preview — paris·los-angeles·london·rome · OK 시 PR #166 merge
+브랜치 cursor/world-events-wave3 · PR #206 · https://www.gateo.kr/qa/world-events
+금지: worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · 허브에 플래너·숙소 칩 복구
+작업: 로즈 퍼레이드·빈 오페라·뗏 카드가 행사 장면인지 · 상세 본문 무관/같은컷 아닌지 · 16:10 · 이동 칩 없음 · 카드 탭 상세
 ```
 
 ---

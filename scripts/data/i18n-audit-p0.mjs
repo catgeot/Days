@@ -71,7 +71,7 @@ export const I18N_AUDIT_P0 = [
   {
     tier: 'C',
     path: 'src/shared/components/SiteUpdateBanner.jsx',
-    note: '배포·시스템 공지',
+    note: '배포 새로고침 안내',
   },
   {
     tier: 'C',

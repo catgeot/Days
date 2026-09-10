@@ -16,13 +16,10 @@
     },
     "siteNotice": {
       "refreshHeader": "업데이트 안내",
-      "systemHeader": "시스템 공지",
       "refreshTitle": "새 버전이 배포되었습니다",
       "refreshBody": "새로고침하면 최신 기능을 사용할 수 있어요.",
       "close": "닫기",
-      "reload": "새로고침",
-      "pastNotices": "지난 공지 보기",
-      "dismissPermanent": "다시 보지 않기"
+      "reload": "새로고침"
     },
     "auth": {
       "signIn": "로그인",
@@ -205,19 +202,20 @@
       "recentVisitedCount": "최근 방문지 {{count}}",
       "keywordVisits": "키워드 방문 기록",
       "keywordVisitsCount": "키워드 방문 기록 {{count}}",
+      "agenciesVisitedCount": "방문한 여행사 {{count}}",
       "recentSearch": "최근 검색",
       "removeItem": "{{item}} 삭제",
       "removeRecord": "{{keyword}} 기록 삭제",
       "collectionCount": "컬렉션 여행지 {{count}}건",
-      "aiExploreTitle": "<query>{{query}}</query> AI 전 세계 탐색",
-      "aiExploreHint": "검색바 아래 제안에서 고르거나, <strong>엔터(Enter)</strong>로 AI·지도 검색을 이어갈 수 있어요.",
+      "aiExploreTitle": "<query>{{query}}</query> 지도 탐색",
+      "aiExploreHint": "검색바 아래 제안에서 고르거나, <strong>엔터(Enter)</strong>로 지도 검색을 이어갈 수 있어요. 지명을 못 찾으면 AI가 이어서 찾아요.",
       "spotCount": "{{count}}개의 여행지",
-      "aiLoadingTitle": "AI가 목적지를 탐색하고 있습니다",
-      "aiLoadingBody": "유사 지명 및 오타를 검증 중입니다...",
+      "aiLoadingTitle": "목적지를 찾고 있습니다",
+      "aiLoadingBody": "지도에서 지명을 확인하는 중...",
       "suggestionsTitle": "'{{query}}' 도시·명소·여행지",
       "suggestionsDefault": "'{{query}}' 제안",
       "suggestionsLoading": "불러오는 중",
-      "suggestionsEmpty": "제안이 없습니다. Enter로 AI·지도 검색을 이어갈 수 있어요.",
+      "suggestionsEmpty": "제안이 없습니다. Enter로 지도 검색을 이어갈 수 있어요.",
       "disambiguationTitle": "원하는 장소를 선택하세요",
       "disambiguationBody": "위치가 여러 곳일 수 있어요. 카드를 누르면 해당 장소로 이동합니다.",
       "more": "더 찾아보기",
@@ -402,6 +400,29 @@
       "signIn": "로그인",
       "signOut": "로그아웃"
     },
+    "agencies": {
+      "title": "방문한 여행사",
+      "visitedTitle": "내가 방문한 여행사",
+      "visitedEmpty": "아직 이 기기에서 연 여행사가 없습니다. 숙소·투어를 열면 여기에 남습니다.",
+      "catalogTitle": "연결된 여행사",
+      "hint": "예약한 사이트를 저장하지 않았어도, 게이트오에서 열었던 여행사로 바로 돌아갈 수 있습니다. 예약 확인은 해당 사이트 로그인이 필요할 수 있습니다.",
+      "clearVisits": "방문 기록 지우기",
+      "removeVisit": "{{name}} 방문 기록 삭제",
+      "kind": {
+        "stay": "숙소",
+        "tour": "투어",
+        "package": "패키지",
+        "flight": "항공",
+        "rental": "렌터카",
+        "esim": "eSIM",
+        "ferry": "페리",
+        "transfer": "픽업",
+        "tickets": "티켓",
+        "luggage": "짐보관",
+        "scooter": "스쿠터",
+        "browse": "둘러보기"
+      }
+    },
     "footerModal": {
       "tab": {
         "about": "About Us",
@@ -555,6 +576,16 @@
       "plannerCta": "행사 맞춤 플래너",
       "stayCta": "{{keyword}} 숙소",
       "official": "공식 일정"
+    },
+    "scenicGateway": {
+      "badgeHeritage": "국가지정 명승",
+      "badgeHub": "지역 명소 컬렉션",
+      "badgeTheme": "한국의 명승 · 테마 명소",
+      "actionHub": "명소 목록 보기",
+      "actionSpot": "명소 본문 보기",
+      "titleSuffix": "상세 해설 & 스토리",
+      "tagStory": "개요 & 사진",
+      "tagSurroundings": "주변 맛집·숙소"
     },
     "planner": {
       "title": "스마트 트래블 툴킷",
@@ -829,7 +860,11 @@
       "refreshTitle": "Unsplash·Pexels에서 추가 사진 불러오기",
       "sourcesRateLimit": "Unsplash · Pexels · {{seconds}}초에 한 번",
       "enlargeImage": "{{alt}} 확대하기",
-      "imageFallback": "갤러리 이미지"
+      "imageFallback": "갤러리 이미지",
+      "manageTitle": "관련 없는 사진인가요?",
+      "manageBody": "이 사진을 갤러리에서 제거합니다. 저장된 목록에서도 빠집니다.",
+      "manageRemove": "갤러리에서 제거",
+      "manageCancel": "취소"
     },
     "video": {
       "loading": "관련 영상을 불러오는 중...",
@@ -1506,7 +1541,7 @@
     "title": "세계 행사 일정",
     "seoTitle": "세계 행사 일정 — GATEO",
     "seoDescription": "유럽·아시아·아메리카·오세아니아·니치 도시의 대표 축제·시즌 행사를 모아 보고, 여행지 카드·행사 맞춤 플래너로 이어갑니다.",
-    "intro": "Wave 1 큐레이션 도시의 대표 행사입니다. 카드를 눌러 행사 상세·여행지·플래너·숙소로 이어가세요.",
+    "intro": "Wave 1 큐레이션 도시의 대표 행사입니다. 카드를 눌러 행사 상세로 이어가세요.",
     "koreaLink": "한국의 축제",
     "regionChipsAria": "지역 필터",
     "headlineAll": "전체 {{count}}건",
