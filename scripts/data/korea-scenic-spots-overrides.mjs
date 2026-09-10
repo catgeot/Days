@@ -8921,7 +8921,17 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       attractionName: '양구 수목원',
       contentId: null,
       overview:
-        '강원 양구 동면의 공립 수목원(옛 양구자연생태공원). 생태식물원·DMZ 야생화 분재원 일대를 산책하는 명소로, 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
+        '대암산 자락 해발 400~450m 분통골에 위치한 강원특별자치도 제1호 공립수목원이자 양구9경 제1경이다. DMZ 인근 청정 자연생태를 보존한 14만 9천㎡ 규모로, 천연기념물 제372호 개느삼 서식지와 금강초롱꽃 등 희귀 고산식물을 만날 수 있는 생태식물원, DMZ 야생화 분재원, 야생동물생태관, 목재문화체험관, 독스하우스 등 다채로운 숲 테마 시설을 갖추고 있다. 사계절 야생화 군락과 솔숲 힐링 산책로를 걸으며 평화 생태의 가치를 느낄 수 있다.',
+      addr1: '강원특별자치도 양구군 동면 숨골로310번길 131',
+      homepage: 'https://www.yanggu.go.kr/arboretum/',
+      imageUrl: 'https://tong.visitkorea.or.kr/cms2/website/21/3407821.jpg',
+      galleryUrls: [
+        'https://tong.visitkorea.or.kr/cms2/website/21/3407821.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/22/3407822.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/23/3407823.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/28/3407828.jpg',
+        'https://tong.visitkorea.or.kr/cms2/website/29/3407829.jpg',
+      ],
     },
     {
       order: 8710,

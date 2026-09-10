@@ -56,6 +56,7 @@
     "fill:korea-hub-attraction-content-ids": "node scripts/fill-korea-hub-attraction-content-ids.mjs",
     "audit:korea-scenic-spots": "node scripts/audit-korea-scenic-spots.mjs",
     "report:korea-scenic-empty-hubs": "node scripts/report-korea-scenic-empty-hubs.mjs",
+    "report:curated-scenic-candidates": "node scripts/report-curated-scenic-candidates.mjs",
     "draft:korea-scenic-hub-batch": "node scripts/draft-korea-scenic-hub-batch.mjs",
     "smoke:korea-scenic-spots": "node scripts/smoke-korea-scenic-spots.mjs",
     "smoke:korea-scenic-hub-fill": "node scripts/smoke-korea-scenic-hub-fill.mjs",
