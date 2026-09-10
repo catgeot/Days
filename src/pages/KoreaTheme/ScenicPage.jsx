@@ -1065,7 +1065,7 @@ export default function KoreaThemeScenicPage() {
       if (cancelled) return;
       applyImageEntries([...dbMap.entries()]);
 
-      const liveTargets = palgyeongIds.filter((id) => {
+      const liveTargets = uniqueIds.filter((id) => {
         const key = String(id || '').trim();
         return key && !peeked.get(key) && !dbMap.get(key);
       });
@@ -1095,6 +1095,7 @@ export default function KoreaThemeScenicPage() {
         curatedImageByContentId.get(contentId) ||
         peeked.get(contentId) ||
         spot.firstImage ||
+        spot.imageUrl ||
         null;
       if (!firstImage) return spot;
       return { ...spot, firstImage, imageUrl: spot.imageUrl || firstImage };
@@ -2527,7 +2528,11 @@ export default function KoreaThemeScenicPage() {
     const curated = CURATED_ALL.find((s) => s.id === selectedId);
     if (curated) {
       const contentId = String(curated.contentId || '').trim();
-      const firstImage = curatedImageByContentId.get(contentId) || null;
+      const firstImage =
+        curatedImageByContentId.get(contentId) ||
+        curated.firstImage ||
+        curated.imageUrl ||
+        null;
       setSelectedSpot(
         firstImage
           ? { ...curated, firstImage, imageUrl: firstImage }

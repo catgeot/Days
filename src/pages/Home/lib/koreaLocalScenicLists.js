@@ -491,6 +491,66 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     ],
     addr1: '강원특별자치도 홍천군 두촌면 가리산길 260-9',
   },
+  'local-scenic:sokcho-palgyeong:조도': {
+    overview:
+      '속초 8경 중 제6경으로 꼽히는 조도(鳥島)는 새들이 많이 찾는 섬이라 하여 붙여진 이름입니다. 속초해수욕장 정면 바다에 떠 있는 무인도로, 소나무 숲이 우거져 푸른 동해와 어우러지며 백사장과 조도 너머로 붉게 타오르는 아침 일출이 장관을 이룹니다.',
+    addr1: '강원특별자치도 속초시 조양동 (속초해수욕장 앞 해상)',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms2/website/30/1692430.jpg',
+    firstImage: 'https://tong.visitkorea.or.kr/cms2/website/30/1692430.jpg',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms2/website/30/1692430.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/32/1692432.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/52/1692452.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/84/1692484.jpg',
+    ],
+  },
+  'local-scenic:samcheok-sipgyeong:새천년해안유원지': {
+    contentId: '2610236',
+    overview:
+      '삼척 10경 중 하나로, 삼척항에서 삼척해수욕장까지 약 4.6km에 걸쳐 푸른 동해를 따라 이어지는 명품 해안도로이자 유원지입니다. ‘한국의 아름다운 길 100선’에 선정될 만큼 깎아지른 기암절벽과 푸른 바다가 어우러지는 비경을 자랑하며, 비치조각공원과 소망의 탑, 해안 산책로가 조성되어 있어 사계절 동해 일출과 산책 명소로 각광받고 있습니다.',
+    addr1: '강원특별자치도 삼척시 새천년도로 61-18 (정하동)',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/07/3503607_image2_1.jpg',
+    firstImage: 'https://tong.visitkorea.or.kr/cms/resource/07/3503607_image2_1.jpg',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms/resource/07/3503607_image2_1.jpg',
+    ],
+  },
+  'local-scenic:wonju-palgyeong:비로봉': {
+    contentId: '125587',
+    overview:
+      '원주 8경 중 제3경으로 지정된 해발 1,288m의 치악산 국립공원 최고봉입니다. 정상에는 용왕탑·산신탑·칠성탑이라 불리는 거대한 세 기의 돌탑(원주 미륵불탑)이 우뚝 솟아 있어 신비로운 자태를 뽐내며, 사방으로 막힘없이 펼쳐지는 웅장한 백두대간 능선 파노라마와 사계절 운해·설경이 장관을 이룹니다.',
+    addr1: '강원특별자치도 원주시 소초면 무쇠점2길 26 (치악산국립공원 비로봉)',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/26/4057126_image2_1.jpg',
+    firstImage: 'https://tong.visitkorea.or.kr/cms/resource/26/4057126_image2_1.jpg',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms/resource/26/4057126_image2_1.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/78/1528578.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/89/1528589.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/35/1528835.jpg',
+    ],
+  },
+  'local-scenic:hongcheon-palgyeong:살둔계곡': {
+    contentId: '802670',
+    overview:
+      '정감록에서 난을 피할 수 있는 명당으로 꼽은 삼둔사거리 중 하나로, 홍천 9경 가운데 제8경에 속하는 청정 계곡입니다. 내린천 상류의 맑고 차가운 물줄기가 원시림과 기암괴석 사이를 굽이쳐 흐르며, 고즈넉한 한국 전통 귀틀집 양식의 살둔분교와 어우러져 오지 속 힐링과 계곡 트레킹 명소로 유명합니다.',
+    addr1: '강원특별자치도 홍천군 내면 살둔길 일원 / 내린천로 638',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/80/3043180_image2_1.jpg',
+    firstImage: 'https://tong.visitkorea.or.kr/cms/resource/80/3043180_image2_1.jpg',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms/resource/80/3043180_image2_1.jpg',
+    ],
+  },
+  'local-scenic:hongcheon-palgyeong:삼봉약수': {
+    contentId: '1837460',
+    overview:
+      '홍천 9경 중 제9경으로, 2011년 천연기념물로 지정된 유서 깊은 탄산약수입니다. 가칠봉·응복산·사삼봉 세 봉우리의 정기가 모인 곳에서 솟아나며, 철분과 탄산이 풍부하여 톡 쏘는 상쾌함과 청량감을 자랑합니다. 주변 삼봉자연휴양림의 울창한 전나무·주목 숲과 깨끗한 계곡이 어우러져 사계절 휴양 명소로 꼽힙니다.',
+    addr1: '강원특별자치도 홍천군 내면 삼봉휴양길 276',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/86/1732286_image2_1.jpg',
+    firstImage: 'https://tong.visitkorea.or.kr/cms/resource/86/1732286_image2_1.jpg',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms/resource/86/1732286_image2_1.jpg',
+    ],
+  },
 };
 
 function lookupLocalScenicMemberOverlay(spotId) {
