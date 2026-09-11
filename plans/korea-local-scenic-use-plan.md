@@ -90,7 +90,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | #13 push `ae857dd7` · PR [#216](https://github.com/catgeot/Days/pull/216) · **사람 Preview QA** (광양9경 6건·하동10경 7건 오버레이) | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | #13 push `e29213bb` · PR [#216](https://github.com/catgeot/Days/pull/216) · **사람 Preview QA** (광양·하동 오버레이 · 검색 하동→십경) | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · AI가 ID 기입 |
 
@@ -110,8 +110,8 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | 10 | `팔경 활용 #10, 팔경 번호` | A | **완료** · PR [#213](https://github.com/catgeot/Days/pull/213) merge ✅ `d28b4733` |
 | 11 | `팔경 활용 #11, 사람 Preview QA` | A 사람 | **완료** · #213 merge 후 #12 축제 인근 |
 | 12 | `팔경 활용 #12, 축제 인근 썸네일·번호` | A | **완료** · tip `a5b683e1` · PR [#215](https://github.com/catgeot/Days/pull/215) merge ✅ `b929e7fd` |
-| 13 | `팔경 활용 #13, 광양·하동 결손 오버레이` | A | **완료** · tip `ae857dd7` · PR [#216](https://github.com/catgeot/Days/pull/216) · 광양 6건·하동 7건 |
-| 14 | `팔경 활용 #14, 사람 Preview QA` | A 사람 | **열기 가능** · 광양9경 결손 6행 · 하동10경 결손 7행 썸네일·개요 |
+| 13 | `팔경 활용 #13, 광양·하동 결손 오버레이` | A | **완료** · tip `e29213bb` · PR [#216](https://github.com/catgeot/Days/pull/216) · 광양 6·하동 7 · 검색 하동→십경 |
+| 14 | `팔경 활용 #14, 사람 Preview QA` | A 사람 | **열기 가능** · 검색 하동 십경 · 광양 결손 6행 · 하동 결손 7행 |
 | — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
 | — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |
 | — | `팔경contentId #P2-L10, 잔여 null 분석 및 전략` | B | **완료** · tip `fb4c5513` 27/32 |
@@ -246,7 +246,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · PR #216 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: /korea/theme/scenic?hub=gwangyang 결손 6행·?hub=hadong 결손 7행에 썸네일·개요가 있는지 · 행마다 사진이 다른지 · 본문이 경승과 맞는지
+작업: /korea/theme/scenic 검색 하동·하동 십경에 그룹 하동 십경 10행이 있는지 · ?hub=gwangyang 결손 6행·?hub=hadong 결손 7행 썸네일·개요 · 행마다 사진이 다른지
 ```
 
 
