@@ -23,6 +23,7 @@ import {
   isUnsplashListPhoto,
   pickMappedUnsplashListPhoto,
   pickWorldEventListPhoto,
+  isLikelyGrayscaleColor,
 } from '../src/utils/worldEventListPhoto.js';
 import {
   compareWorldEventsForList,
@@ -88,13 +89,25 @@ const unsplashThumb = {
   url: 'https://images.unsplash.com/photo-example?w=400',
   source: 'unsplash',
   photographer: 'Ada',
+  color: '#8cc0d9',
+};
+const unsplashBw = {
+  url: 'https://images.unsplash.com/photo-bw?w=400',
+  source: 'unsplash',
+  captionEn: 'a black and white photo of a crowd',
+  color: '#c0c0c0',
 };
 assert.equal(isUnsplashListPhoto(wikiSeed), false, 'wikimedia seed is not a list photo');
 assert.equal(isUnsplashListPhoto(unsplashThumb), true, 'unsplash source is a list photo');
 assert.equal(
-  pickWorldEventListPhoto([wikiSeed, unsplashThumb])?.url,
+  pickWorldEventListPhoto([wikiSeed, unsplashBw, unsplashThumb])?.url,
   unsplashThumb.url,
-  'list picker skips Wikimedia and takes Unsplash',
+  'list picker skips Wikimedia and black-and-white Unsplash',
+);
+assert.equal(
+  pickWorldEventListPhoto([wikiSeed, unsplashBw]),
+  null,
+  'list picker does not use black-and-white Unsplash thumbs',
 );
 assert.equal(
   pickWorldEventListPhoto([wikiSeed]),
@@ -118,7 +131,30 @@ const scored = pickMappedUnsplashListPhoto(
 assert.equal(scored?.url, 'https://images.unsplash.com/photo-parade', 'list photo prefers caption matching event keywords');
 
 const listPhotoCacheSrc = readFileSync(join(root, 'src/utils/worldEventListPhoto.js'), 'utf8');
-assert.match(listPhotoCacheSrc, /list-photo-v2-en/, 'list photo session cache bumped for English queries');
+assert.match(listPhotoCacheSrc, /list-photo-v3-color/, 'list photo session cache bumped to skip black-and-white thumbs');
+
+const bwMapped = pickMappedUnsplashListPhoto(
+  [
+    {
+      urls: { regular: 'https://images.unsplash.com/photo-bw-macy' },
+      alt_description: 'a black and white photo of macy\'s at night',
+      color: '#262626',
+    },
+    {
+      urls: { regular: 'https://images.unsplash.com/photo-color-parade' },
+      alt_description: 'Rose Parade floral float Pasadena',
+      color: '#8cc0d9',
+    },
+  ],
+  ['rose', 'parade'],
+);
+assert.equal(
+  bwMapped?.url,
+  'https://images.unsplash.com/photo-color-parade',
+  'list photo skips black-and-white Unsplash when a color photo exists',
+);
+assert.equal(isLikelyGrayscaleColor('#c0c0c0'), true, 'gray Unsplash swatch is treated as black-and-white');
+assert.equal(isLikelyGrayscaleColor('#8cc0d9'), false, 'tinted Unsplash swatch is treated as color');
 
 const rose = allEvents.find((item) => item.id === 'los-angeles-rose-parade-2027');
 assert.ok(rose, 'rose parade exists');

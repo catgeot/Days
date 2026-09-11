@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 56,
-  sessionPhase: '상세 갤러리 축제 분위기 QA',
+  sessionNo: 57,
+  sessionPhase: '리스트 썸네일 컬러 우선',
   branch: 'cursor/world-events-wave3',
   previewPath: '/world-events',
   qaShareSlug: 'world-events',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-11-world-events-57-color-thumbs',
+    session: '세계행사 일정 #57, 리스트 썸네일 컬러 우선',
+    title: '허브 리스트 흑백 썸네일을 컬러로',
+    detail:
+      '이스탄불 마라톤·추수감사절 카드가 빈티지 흑백 Unsplash를 쓰고 있었습니다. 캡션·대표색이 회색인 컷은 건너뛰고 컬러 사진을 고릅니다. Preview /qa/world-events — 이스탄불·뉴욕 카드가 컬러인지.',
+    at: '2026-09-11T22:00:00.000Z',
+  },
   {
     id: '2026-09-11-world-events-56-atmosphere-gallery',
     session: '세계행사 일정 #56, 상세 갤러리 축제 분위기 QA',

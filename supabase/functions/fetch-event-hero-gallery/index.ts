@@ -15,6 +15,7 @@ type GalleryImage = {
   captionKo?: string;
   captionEn?: string;
   source?: string;
+  color?: string;
 };
 
 function normalizeImageUrl(raw: unknown): string {
@@ -38,6 +39,8 @@ const ATMOSPHERE_POS =
   /\b(festival|parade|carnival|crowd|celebration|lantern|firework|concert|performance|audience|orchestra|stage|auditorium|theater|theatre|tent|beer|costume|dancer|illuminat|sakura|blossom|marathon|running|runner|yoga|fitness|fairground|ferris|carousel|samba|mask|ballet|chandelier|float|interior|group exercise|cycling|peloton)\b/i;
 const ATMOSPHERE_NEG =
   /\b(skyline|cityscape|facade|aerial view|camel|traffic|office tower|empty street|concrete building|stamp of|libretto|title page)\b/i;
+const BLACK_AND_WHITE_CAPTION =
+  /\b(black and white|black-and-white|b&w|b\/w|monochrome|grayscale|greyscale)\b/i;
 
 function isHangulQuery(value: string): boolean {
   return /[\uAC00-\uD7A3]/.test(value);
@@ -109,12 +112,34 @@ function mergeImages(seed: GalleryImage[], fetched: GalleryImage[]): GalleryImag
   return rankImages([...unsplash, ...others]);
 }
 
+function isCaptionBlackAndWhite(image: GalleryImage): boolean {
+  const text = `${image.captionEn || ""} ${image.captionKo || ""}`;
+  return BLACK_AND_WHITE_CAPTION.test(text);
+}
+
+function isLikelyGrayscaleColor(hex: string | undefined): boolean {
+  const match = /^#?([0-9a-f]{6})$/i.exec(String(hex || "").trim());
+  if (!match) return false;
+  const value = Number.parseInt(match[1], 16);
+  const red = ((value >> 16) & 255) / 255;
+  const green = ((value >> 8) & 255) / 255;
+  const blue = (value & 255) / 255;
+  const max = Math.max(red, green, blue);
+  const min = Math.min(red, green, blue);
+  const delta = max - min;
+  if (delta === 0) return true;
+  const lightness = (max + min) / 2;
+  const saturation = delta / (1 - Math.abs(2 * lightness - 1));
+  return saturation < 0.12;
+}
+
 function scoreAtmosphere(image: GalleryImage): number {
   const text = `${image.captionEn || ""} ${image.captionKo || ""} ${image.url || ""}`;
   let score = 0;
   if (isUnsplashImage(image)) score += 2;
   if (ATMOSPHERE_POS.test(text)) score += 6;
   if (ATMOSPHERE_NEG.test(text)) score -= 6;
+  if (isCaptionBlackAndWhite(image) || isLikelyGrayscaleColor(image.color)) score -= 8;
   return score;
 }
 
@@ -144,11 +169,13 @@ function mapUnsplashPhoto(photo: Record<string, unknown>): GalleryImage | null {
   const url = normalizeImageUrl(urls.regular || urls.small);
   if (!url.startsWith("http")) return null;
   const caption = String(photo.alt_description || photo.description || "").trim();
+  const color = String(photo.color || "").trim();
   return {
     url,
     captionKo: caption,
     captionEn: caption,
     source: "unsplash",
+    color: color || undefined,
   };
 }
 

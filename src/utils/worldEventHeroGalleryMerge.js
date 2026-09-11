@@ -1,4 +1,5 @@
 import { isHangulPhotoQuery } from './worldEventMedia.js';
+import { isBlackAndWhitePhoto } from './worldEventListPhoto.js';
 
 const REJECTED_GALLERY_CAPTION =
   /\b(pdf|svg|djvu|manuscript|document|letterhead|commission to|coat of arms|flag of|map of|logo of|scan of|libretto|title page|stamp of)\b/i;
@@ -75,6 +76,7 @@ export function mergeWorldEventHeroGalleryImages(seed, fetched) {
       captionKo: image.captionKo,
       captionEn: image.captionEn,
       source: image.source || (isUnsplashGalleryImage(image) ? 'unsplash' : undefined),
+      color: image.color,
     };
     if (isUnsplashGalleryImage(item)) {
       unsplash.push(item);
@@ -104,6 +106,7 @@ export function scoreHeroGalleryAtmosphere(image) {
   if (isUnsplashGalleryImage(image)) score += 2;
   if (ATMOSPHERE_POS.test(text)) score += 6;
   if (ATMOSPHERE_NEG.test(text)) score -= 6;
+  if (isBlackAndWhitePhoto(image)) score -= 8;
   return score;
 }
 
@@ -270,11 +273,13 @@ export function mapUnsplashPhotosToGalleryImages(photos) {
       const url = String(urls.regular || urls.small || '').trim();
       if (!url.startsWith('http')) return null;
       const caption = String(photo.alt_description || photo.description || '').trim();
+      const color = String(photo.color || '').trim();
       return {
         url,
         captionKo: caption,
         captionEn: caption,
         source: 'unsplash',
+        color: color || undefined,
       };
     })
     .filter(Boolean);
