@@ -35,6 +35,7 @@ const i18nHubPaths = [
   '/korea/theme/regions',
   '/blog',
   '/blog/curation',
+  '/world-events',
 ];
 
 function buildLocalePageUrl(path = '/', locale = 'ko') {
@@ -127,6 +128,13 @@ function generateSitemap() {
   });
   urls.push({
     loc: `${baseUrl}/blog/curation`,
+    lastmod: today,
+    changefreq: 'weekly',
+    priority: '0.85',
+  });
+
+  urls.push({
+    loc: `${baseUrl}/world-events`,
     lastmod: today,
     changefreq: 'weekly',
     priority: '0.85',

@@ -1,0 +1,214 @@
+import { isHangulPhotoQuery } from './worldEventMedia.js';
+
+const REJECTED_GALLERY_CAPTION =
+  /\b(pdf|svg|djvu|manuscript|document|letterhead|commission to|coat of arms|flag of|map of|logo of|scan of)\b/i;
+const REJECTED_GALLERY_FILE = /\.(pdf|svg|tif|tiff|djvu)$/i;
+
+/**
+ * Wikimedia/Unsplash filler often includes scans, documents, or near-identical crops.
+ * @param {{ url?: string, captionKo?: string, captionEn?: string } | null | undefined} image
+ */
+export function isRejectedGalleryFillerImage(image) {
+  const url = String(image?.url || '').trim().toLowerCase();
+  const caption = `${image?.captionEn || ''} ${image?.captionKo || ''}`.trim();
+  if (REJECTED_GALLERY_FILE.test(url) || REJECTED_GALLERY_FILE.test(caption)) return true;
+  if (REJECTED_GALLERY_CAPTION.test(caption)) return true;
+  return false;
+}
+
+/**
+ * Collapse same-file crops (…20120906a / _93 / (1)) so consecutive thumbs are not the same shot.
+ * @param {string} url
+ */
+export function galleryNearDupKey(url) {
+  try {
+    const parsed = new URL(url);
+    let file = decodeURIComponent(parsed.pathname.split('/').pop() || '');
+    file = file.replace(/^\d+px-/i, '').replace(/\.[a-z0-9]+$/i, '');
+    file = file.replace(/(\d)[a-z]$/i, '$1');
+    file = file.replace(/[_-][a-z]$/i, '');
+    file = file.replace(/[_-]\d{1,3}$/i, '');
+    file = file.replace(/[_-]\(\d+\)$/i, '');
+    return `${parsed.hostname}/${file}`.toLowerCase();
+  } catch {
+    return String(url || '').toLowerCase();
+  }
+}
+
+/**
+ * @param {Array<{ url?: string, captionKo?: string, captionEn?: string, source?: string }>} seed
+ * @param {Array<{ url?: string, captionKo?: string, captionEn?: string, source?: string }>} fetched
+ */
+export function mergeWorldEventHeroGalleryImages(seed, fetched) {
+  const seen = new Set();
+  const nearSeen = new Set();
+  const merged = [];
+
+  const push = (image, { allowRejected = false, nearDup = false } = {}) => {
+    const url = String(image?.url || '').trim();
+    if (!url.startsWith('http')) return;
+    const key = imageDedupeKey(url);
+    if (seen.has(key)) return;
+    if (!allowRejected && isRejectedGalleryFillerImage(image)) return;
+    const nearKey = galleryNearDupKey(url);
+    if (nearDup && nearSeen.has(nearKey)) return;
+    seen.add(key);
+    nearSeen.add(nearKey);
+    merged.push({
+      url,
+      captionKo: image.captionKo,
+      captionEn: image.captionEn,
+      source: image.source,
+    });
+  };
+
+  for (const image of Array.isArray(seed) ? seed : []) {
+    push(image, { allowRejected: true, nearDup: false });
+  }
+  for (const image of Array.isArray(fetched) ? fetched : []) {
+    push(image, { allowRejected: false, nearDup: true });
+  }
+
+  return merged;
+}
+
+/**
+ * @param {string} url
+ */
+export function heroGalleryImageKey(url) {
+  try {
+    const parsed = new URL(url);
+    const path = parsed.pathname
+      .replace(/\/thumb\//, '/')
+      .replace(/\/\d+px-[^/]+$/, '')
+      .replace(/\/\d+x\d+\//, '/')
+      .replace(/w=\d+/, 'w=0');
+    return `${parsed.hostname}${path}`.toLowerCase();
+  } catch {
+    return String(url || '').toLowerCase();
+  }
+}
+
+/**
+ * @param {Array<{ url?: string }>} cachedImages
+ * @param {Array<{ url?: string }>} seedImages
+ */
+export function heroGallerySeedCacheMatches(cachedImages, seedImages) {
+  if (!Array.isArray(seedImages) || seedImages.length === 0) return true;
+  if (!Array.isArray(cachedImages) || cachedImages.length < seedImages.length) return false;
+
+  return seedImages.every((seed, index) => {
+    const cachedUrl = String(cachedImages[index]?.url || '').trim();
+    const seedUrl = String(seed?.url || '').trim();
+    if (!cachedUrl || !seedUrl) return false;
+    return heroGalleryImageKey(cachedUrl) === heroGalleryImageKey(seedUrl);
+  });
+}
+
+/**
+ * @param {Array<{ url?: string, captionKo?: string, captionEn?: string, source?: string }>} seedImages
+ * @param {Array<{ url?: string, captionKo?: string, captionEn?: string, source?: string }>} cachedImages
+ * @param {number} [limit]
+ */
+export function buildHeroGalleryFromCache(seedImages, cachedImages, limit = 12) {
+  return mergeWorldEventHeroGalleryImages(seedImages, cachedImages).slice(0, limit);
+}
+
+/**
+ * @param {string} url
+ */
+function imageDedupeKey(url) {
+  return heroGalleryImageKey(url);
+}
+
+const WIKIMEDIA_API = 'https://commons.wikimedia.org/w/api.php';
+
+/**
+ * @param {string} searchQuery
+ * @param {number} [limit]
+ */
+export async function fetchWikimediaGalleryImages(searchQuery, limit = 10) {
+  const q = String(searchQuery || '').trim();
+  if (!q) return [];
+
+  const params = new URLSearchParams({
+    action: 'query',
+    format: 'json',
+    origin: '*',
+    generator: 'search',
+    gsrsearch: `${q} filetype:bitmap`,
+    gsrnamespace: '6',
+    gsrlimit: String(Math.min(20, limit + 4)),
+    prop: 'imageinfo',
+    iiprop: 'url',
+    iiurlwidth: '1280',
+  });
+
+  const response = await fetch(`${WIKIMEDIA_API}?${params.toString()}`);
+  if (!response.ok) {
+    throw new Error(`Wikimedia API ${response.status}`);
+  }
+
+  const data = await response.json();
+  const pages = data?.query?.pages;
+  if (!pages || typeof pages !== 'object') return [];
+
+  const images = [];
+  for (const page of Object.values(pages)) {
+    const info = Array.isArray(page.imageinfo) ? page.imageinfo[0] : null;
+    const url = String(info?.thumburl || info?.url || '').trim();
+    if (!url.startsWith('http')) continue;
+    const title = String(page.title || '').replace(/^File:/, '').replace(/_/g, ' ').trim();
+    const candidate = {
+      url,
+      captionKo: title,
+      captionEn: title,
+      source: 'wikimedia',
+    };
+    if (isRejectedGalleryFillerImage(candidate)) continue;
+    images.push(candidate);
+    if (images.length >= limit) break;
+  }
+
+  return images;
+}
+
+/**
+ * @param {string[]} queries
+ * @param {number} [limit]
+ */
+export async function fetchWikimediaGalleryFromQueries(queries, limit = 10) {
+  const fetched = [];
+  for (const query of queries) {
+    if (fetched.length >= limit) break;
+    if (isHangulPhotoQuery(query)) continue;
+    try {
+      const batch = await fetchWikimediaGalleryImages(query, limit - fetched.length);
+      fetched.push(...batch);
+    } catch (err) {
+      console.warn('[fetchWikimediaGalleryFromQueries]', query, err?.message || err);
+    }
+  }
+  return fetched;
+}
+
+/**
+ * @param {Array<Record<string, unknown>>} photos
+ */
+export function mapUnsplashPhotosToGalleryImages(photos) {
+  if (!Array.isArray(photos)) return [];
+  return photos
+    .map((photo) => {
+      const urls = photo.urls && typeof photo.urls === 'object' ? photo.urls : {};
+      const url = String(urls.regular || urls.small || '').trim();
+      if (!url.startsWith('http')) return null;
+      const caption = String(photo.alt_description || photo.description || '').trim();
+      return {
+        url,
+        captionKo: caption,
+        captionEn: caption,
+        source: 'unsplash',
+      };
+    })
+    .filter(Boolean);
+}

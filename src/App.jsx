@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
 import { HelmetProvider } from 'react-helmet-async';
 
@@ -33,6 +33,7 @@ import UpdatePassword from './shared/Auth/UpdatePassword';
 import CloudPreviewWorkLog from './shared/cloudPreview/CloudPreviewWorkLog.jsx';
 import SeaExploreDebugPanel from './shared/cloudPreview/SeaExploreDebugPanel.jsx';
 import CurationHandoffDebugPanel from './shared/cloudPreview/CurationHandoffDebugPanel.jsx';
+import TravelAgencyVisitCapture from './components/travelAgencies/TravelAgencyVisitCapture.jsx';
 import { LocaleProvider } from './i18n/LocaleProvider';
 
 function RouteTracker() {
@@ -47,6 +48,13 @@ function RouteTracker() {
   }, [location]);
 
   return null;
+}
+
+function EnWorldEventDetailRedirect() {
+  const { eventId } = useParams();
+  return (
+    <Navigate to={`/world-events/${encodeURIComponent(String(eventId || ''))}?lang=en`} replace />
+  );
 }
 
 function App() {
@@ -70,6 +78,7 @@ function App() {
           <CloudPreviewWorkLog />
           <SeaExploreDebugPanel />
           <CurationHandoffDebugPanel />
+          <TravelAgencyVisitCapture />
           <Routes>
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />}>
@@ -102,6 +111,8 @@ function App() {
               <Route path="/korea" element={<KoreaFestivalHub />} />
               <Route path="/world-events" element={<WorldEventsHub />} />
               <Route path="/world-events/:eventId" element={<EventDetailPage />} />
+              <Route path="/en/world-events" element={<Navigate to="/world-events?lang=en" replace />} />
+              <Route path="/en/world-events/:eventId" element={<EnWorldEventDetailRedirect />} />
               <Route path="/qa/:slug" element={<QaShareRedirect />} />
               <Route path="/qa" element={<QaShareIndex />} />
             </Route>

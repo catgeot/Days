@@ -143,4 +143,420 @@
 - **산출** `EventExecutionStrip`(Klook 렌터카·GYG 투어·PKC 더보기) · bali `actionChips` shop(사롱·Klook) · schema kind `rental|tour|shop`
 - **VERIFY** `smoke:world-events-detail` · `smoke:world-events` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `build` PASS
 - **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026` — 실행·예약 스트립·사롱 칩
-- **다음** 사람 Preview D5 QA → **#30 Wave2** singapore·dubai
+- **다음** **#29 D5-b** 본문 UX (glossary 모달·인라인 링크·히어로 갤러리)
+
+## 세계행사 일정 #29 — D5-b 계획 확정 (docs)
+
+- **세션** `세계행사 일정 #29, Wave1.5 D5-b 본문 UX` — **계획만** (구현·검증은 다음 세션)
+- **피드백** 바로가기 칩·실행 스트립 흐름 단절 → 본문 glossary 모달 · 하이라이트 인라인 어필리에이트 · 히어로 갤러리
+- **문서** [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) F-0.5 **D5-b** 통합 (별도 plan 아티팩트 SSOT 아님)
+- **다음** feature `cursor/world-events-wave2` — D5-b 구현 · smoke · build · Preview QA → OK 시 **#30 Wave2**
+
+## 세계행사 일정 #29 — Wave1.5 D5-b 본문 UX
+
+- **세션** `세계행사 일정 #29, Wave1.5 D5-b 본문 UX`
+- **브랜치** `cursor/world-events-wave2` · PR [#154](https://github.com/catgeot/Days/pull/154) · tip `a78fb520`
+- **산출** `glossaryTerms`·`heroImages`·`highlightContextLinks` · `EventRichText`·`EventTermExplainModal` · 히어로 썸네일 갤러리 · `EventExecutionStrip`·바로가기 칩 제거(bali)
+- **VERIFY** `generate:world-events` · `smoke:world-events-detail` · `smoke:world-events` · `smoke:event-travel-guide` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026` — 본문 용어 클릭 모달 · 하이라이트 인라인 링크 · 히어로 3장
+- **다음** 사람 Preview D5-b QA → OK 시 **#31 Wave2** singapore·dubai
+
+## 세계행사 일정 #30 — Wave1.5 D5-b Preview QA
+
+- **세션** `세계행사 일정 #30, Wave1.5 D5-b Preview QA`
+- **브랜치** `cursor/world-events-wave2` · PR [#154](https://github.com/catgeot/Days/pull/154) · tip `f66a87b9`
+- **피드백** glossary 동일 단어 문단 내 반복 링크(가독성·중복 API) · 히어로 썸네일 2·3장 404 · summary 카드가 히어로와 중복·축소감
+- **수정** `EventRichText` 문단 내 첫 등장만 링크 · bali `heroImages` Wikimedia URL 교체 · 히어로·summary 원복 · 썸네일 히어로 카드 밖 분리
+- **VERIFY** `generate:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026`
+- **다음** 사람 재QA → OK 시 **#31 Wave2** singapore·dubai
+
+## 세계행사 일정 #30 — Wave1.5 D5-b Preview 재QA (2차)
+
+- **세션** `세계행사 일정 #30, Wave1.5 D5-b Preview 재QA`
+- **브랜치** `cursor/world-events-wave2` · PR [#154](https://github.com/catgeot/Days/pull/154) · tip `9f66dac5`
+- **피드백** 히어로·썸네일 동일 영역 분할로 축소감 · 하이라이트 간 glossary 링크 반복 · 어필리에이트 버튼 시인성 부족
+- **수정** 히어로(4:3~16:9) 단독 + 썸네일 갤러리 카드 분리 · D5-b summary 숨김·메타 스트립 · 패널 전체 glossary 첫 등장만 · amber 버튼 강조
+- **VERIFY** `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026`
+- **다음** 사람 Preview 재QA → OK 시 **#31 Wave2** singapore·dubai
+
+## 세계행사 일정 #30 — Wave1.5 D5-b Preview 3차
+
+- **세션** `세계행사 일정 #30, Wave1.5 D5-b Preview 재QA 확인`
+- **브랜치** `cursor/world-events-wave2` · PR [#154](https://github.com/catgeot/Days/pull/154) · tip `14a8bf42`
+- **피드백** 히어로 사진 스와이프·갤러리 모달 요청 · 사롱 Klook 영문·Google Maps 이탈 · 영상 키워드 로케일
+- **수정** 히어로 스와이프·더보기 모달 · `highlightContextLinks` Google/Klook 로케일 SSOT · YouTube 검색 버튼
+- **VERIFY** `generate:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026`
+- **다음** 사람 Preview QA → OK 시 **#31 Wave2** singapore·dubai
+
+## 세계행사 일정 #30 — Wave1.5 D5-b Preview QA (4차)
+
+- **세션** `세계행사 일정 #30, Wave1.5 D5-b Preview QA`
+- **브랜치** `cursor/world-events-wave2` · PR [#154](https://github.com/catgeot/Days/pull/154) · tip `2b4e890f`
+- **피드백** 히어로 내 「행사 하이라이트」오버레이 · 갤러리 모달 동일 사진 3장 · glossary 무니 매클릭 API · YouTube 영문 리스트
+- **수정** 히어로 텍스트 오버레이 제거 · `fetch-event-hero-gallery`+`event_hero_gallery` DB · `explain-event-term`+`event_term_glossary_cache` · YouTube ko fetch+리스트 더보기
+- **VERIFY** `smoke:world-events-detail` · `smoke:world-events` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026`
+- **배포** migration `20260828120000_event_hero_gallery` · Edge `fetch-event-hero-gallery` · `explain-event-term` (Secrets·DB 적용 후 캐시 동작)
+- **다음** 사람 Preview 재QA → OK 시 **#31 Wave2** singapore·dubai
+
+## 세계행사 일정 #30 — Edge 배포·히어로 문구 (#30 후속)
+
+- **브랜치** `cursor/world-events-wave2` · tip `021eab6a`
+- **배포 완료** Edge `fetch-event-hero-gallery` · `explain-event-term` · DB migration 적용
+- **수정** 히어로 「행사 하이라이트」·제목·캡션 — 이미지 **하단 흰 영역** 배치(오버레이 아님)
+- **다음** Preview 재QA — 갤러리 확장·glossary 재클릭·YouTube ko
+
+## 세계행사 일정 #30 — 히어로 문구 시즌 파트 복원
+
+- **브랜치** `cursor/world-events-wave2` · tip `8c0e8f94`
+- **수정** 「행사 하이라이트」·제목 — **시즌 메타 스트립**(type·일정·장소 카드) 상단 · 히어로는 사진만
+- **다음** Preview 재QA
+
+## 세계행사 일정 #30 — 갤러리 Wikimedia 다중 폴백
+
+- **세션** `세계행사 일정 #30, Wave1.5 D5-b Preview 재QA`
+- **브랜치** `cursor/world-events-wave2` · PR [#154](https://github.com/catgeot/Days/pull/154) · tip `ad875626`
+- **피드백** Unsplash에 「갈룽안·사원 축제 시즌」사진 많음 · 모달 추가 사진 없음
+- **원인** Supabase Secrets에 `UNSPLASH_ACCESS_KEY` 없음 · Wikimedia 폴백 쿼리(`Galungan & Temple…`) 0건 · 3장만 DB 캐시
+- **수정** glossary en·짧은 en 다중 Wikimedia 쿼리 · Edge·클라이언트 폴백 · 6장 미만 캐시 저장 금지 · `fetch-event-hero-gallery` 재배포
+- **VERIFY** Edge live 11장(시드3+wikimedia8) · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026` — 사진 더보기 6장+
+- **선택** Supabase Secrets에 `UNSPLASH_ACCESS_KEY`(=Vercel `VITE_UNSPLASH_ACCESS_KEY`) 등록 시 Unsplash 우선
+- **다음** 사람 Preview 재QA → OK 시 **#31 Wave2** singapore·dubai
+
+## 세계행사 일정 #30 — Wave1.5 D5-b Preview 재QA (locale·영상)
+
+- **세션** `세계행사 일정 #30, Wave1.5 D5-b Preview 재QA`
+- **브랜치** `cursor/world-events-wave2` · PR [#154](https://github.com/catgeot/Days/pull/154) · tip `a6c91f6e`
+- **피드백** 영상 더보기가 본문 길이 확장 · glossary 재클릭 로딩 · en/ko YouTube·검색 locale 혼선
+- **수정** YouTube 10개 패널 내부 스크롤(더보기 제거) · glossary 메모리 캐시 · `place_videos` locale 분리 · en에서 네이버 숨김
+- **VERIFY** `smoke:world-events-detail` · `smoke:world-events` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/bali-galungan-season-2026` — ko/en 무니·검색·YouTube·갤러리 6장+
+- **다음** 사람 Preview 재QA OK → **#31 Wave2** singapore·dubai
+
+## 세계행사 일정 #31 — Wave1.5 main 병합
+
+- **세션** `세계행사 일정 #31, Wave2 singapore·dubai` (요청: Wave2 전 main 병합·테스트)
+- **병합** PR [#154](https://github.com/catgeot/Days/pull/154) → `main` `c7de9736`
+- **VERIFY** (feature·main) `audit:event-travel-guide` · `smoke:world-events-detail` · `smoke:world-events` · `smoke:event-travel-guide` · `build` PASS
+- **PROD QA** `https://www.gateo.kr/world-events` · 파일럿 3상세(edinburgh·munich·bali) — Vercel 배포 후
+- **다음** 사람 PROD QA OK → **#32 Wave2** singapore·dubai (`cursor/world-events-wave2` 재개)
+
+## 세계행사 일정 #31 — PROD QA 피드백·D5-b-2 착수
+
+- **세션** `세계행사 일정 #31, PROD QA — Wave1.5 D5-b`
+- **피드백** main `73f4ccdc` 병합 후 bali만 D5-b 본문 틀(glossary·갤러리·인라인 링크) · edinburgh·munich는 D2 바로가기 칩 잔존
+- **원인** D5-b overrides는 bali pilot만 · 플랜 F-0.5 **D5-b-2**(파일럿 3건 패턴화)가 Wave2 전 게이트
+- **수정** feature `3bd88e99` — edinburgh·munich `glossaryTerms`·`heroImages`·`highlightContextLinks` · smoke assert
+- **다음** feature→main 재병합 → PROD 파일럿 3건 §6.1.1 → OK 시 **#33 Wave2** singapore·dubai
+
+## 세계행사 일정 #32 — PROD QA 히어로 썸네일 404
+
+- **세션** `세계행사 일정 #32, PROD QA — D5-b 파일럿 3건`
+- **피드백** edinburgh·munich 히어로 썸네일 2·3장 깨짐(위키 URL 404) · bali는 정상
+- **원인** overrides `heroImages` 2·3번 Wikimedia 경로 만료 · 갤러리 fetch는 모달 열 때만 동작
+- **수정** `b5c352dc` — edinburgh·munich 위키 URL 교체 · `EventDetailHero` 마운트 시 `fetch-event-hero-gallery`(Unsplash→위키)로 썸네일·히어로 갱신 · smoke HEAD 검증
+- **VERIFY** `generate:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `https://www.gateo.kr/qa/world-events` → `/world-events/edinburgh-fringe-2026` · munich · bali — 썸네일 3장
+- **다음** 사람 Preview 히어로 재QA → PR [#156](https://github.com/catgeot/Days/pull/156) merge → PROD §6.1.1
+
+## 세계행사 일정 #32 — 히어로 stale 캐시 (재수정)
+
+- **피드백** Preview 재QA 후에도 edinburgh 썸네일 2·3번 깨짐(1/12·4·5번은 정상)
+- **원인** `event_hero_gallery` DB 캐시에 **예전 404 URL**이 남아 클라이언트가 캐시를 그대로 반환 · overrides URL 교체만으로는 미반영
+- **수정** `6df63661` — 시드 URL 불일치 시 `force` 재fetch · 캐시 hit 시 현재 시드 재병합 · `img onError` 제거 · Edge 동일 로직
+- **VERIFY** `smoke:world-events-detail` · `build` PASS
+- **배포** Edge `fetch-event-hero-gallery` 재배포 필요(Supabase link 없으면 사람)
+- **Preview** `/qa/world-events` → edinburgh — 썸네일 1~3 모두 로드 확인
+
+## 세계행사 일정 #32 — Wave1 12건 히어로 추가
+
+- **피드백** 빈·하노이·뉴욕 등 비파일럿 상세에 히어로 없음 · 뮌헨 PROD는 D2 바로가기 칩( D5-b-2 미병합)
+- **원인** `hasWorldEventD3Media`가 파일럿 3 ID만 허용 · 나머지 12건 `heroImage` 미설정
+- **수정** `e0e6e22b` — Wave1 15건 전체 `heroImage` · D3 게이트=데이터 보유 시 표시
+- **VERIFY** `generate:world-events`(15) · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → vienna·hanoi·new-york-thanksgiving 등 히어로 1장
+- **다음** PR #156 merge → PROD 파일럿 3건 D5-b §6.1.1 → OK 시 #33 Wave2
+
+## 세계행사 일정 #32 — PR #156 main 병합
+
+- **병합** PR [#156](https://github.com/catgeot/Days/pull/156) → `main` `b2ac6888`
+- **포함** D5-b-2(edinburgh·munich·bali) · 히어로 stale 캐시 fix · Wave1 15건 heroImage · D3 게이트 데이터화
+- **VERIFY** (병합 전) `smoke:world-events-detail` · `build` PASS · Vercel CI SUCCESS
+- **PROD QA** `https://www.gateo.kr/world-events` — Vercel 배포 후
+- **다음** 사람 PROD 테스트 → OK 시 **#33 Wave2** singapore·dubai
+
+## 세계행사 일정 #32 — Edge fetch-event-hero-gallery 배포
+
+- **배포** `npx supabase functions deploy fetch-event-hero-gallery --project-ref phdjnbfitvmrguqzverm --no-verify-jwt` ✅
+- **LIVE** invoke edinburgh `force:true` → 12장 · `fromCache:false`
+- **다음** PROD 갤러리·썸네일 재QA
+
+## 세계행사 일정 — 중간점검·로드맵 (docs)
+
+- **세션** 중간점검 (계획서 갱신만)
+- **결정** 갈룽안 D5-b = **표준 상세** · Wave1 15건 중 **3/15만** D5-b · 12건은 #34~#37 배치
+- **영문** Q10 — MVP = 15건 D5-b KO 후 **#38 i18n-1** ([`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) F-0.6)
+- **문서** `world-events-detail-ux-plan` F-0.5 D5-b-3·F-0.6 · `world-events-plan` §9 · `management` §8.1 · qa-index Q15
+- **다음** **#33** PROD §6.1.1 → Wave2 singapore·dubai
+
+## 세계행사 일정 #33 — PROD QA · Wave2 singapore·dubai
+
+- **세션** `세계행사 일정 #33, PROD QA · Wave2 singapore·dubai`
+- **브랜치** `cursor/world-events-wave2` · PR [#157](https://github.com/catgeot/Days/pull/157) · tip `37bac1fe`
+- **에이전트 VERIFY** PROD 파일럿 3 URL HTTP 200 · `smoke:world-events` · `smoke:world-events-detail` · `audit:event-travel-guide` · `build` PASS
+- **산출** `singapore-gp-2026` · `dubai-fitness-challenge-2026` D5-b overrides · 허브 지역 singapore/dubai · 17건
+- **Preview** `/qa/world-events` → `/world-events/singapore-gp-2026` · `/world-events/dubai-fitness-challenge-2026`
+- **사람 QA** PROD 파일럿 3 §6.1.1(edinburgh·munich·bali) · Wave2 Preview D5-b
+- **다음** Preview OK + PROD §6.1.1 OK → PR #157 merge → **#34** D5-b 배치 A(vienna·amsterdam·prague·marrakech)
+
+## 세계행사 일정 #33 — Preview QA · Wave2 merge · #34 배치 A
+
+- **세션** `세계행사 일정 #33, Preview QA · Wave2 merge`
+- **PROD §6.1.1** 파일럿 3 HTTP 200 · bundle `glossaryTerms`·galungan·Theresienwiese 확인
+- **PR #157 merged** → main `4caf5b1c` — Wave2 singapore·dubai PROD 배포 대기
+- **#34** D5-b 배치 A — vienna·amsterdam·prague·marrakech overrides · tip `541e5dbe` · PR [#158](https://github.com/catgeot/Days/pull/158)
+- **VERIFY** `generate:world-events` · `smoke:world-events-detail` · `smoke:world-events` · `audit:event-travel-guide` · `build` PASS
+- **Preview** `/qa/world-events` → singapore·dubai · vienna·amsterdam·prague·marrakech
+- **다음** 사람 Preview 배치 A QA → **#35** D5-b 배치 B(tokyo·kyoto·bangkok)
+
+## 세계행사 일정 #34 — D5-b 배치 A Preview QA
+
+- **세션** `세계행사 일정 #34, D5-b 배치 A Preview QA`
+- **브랜치** `cursor/world-events-wave2` · PR [#158](https://github.com/catgeot/Days/pull/158) · tip `24ab4d6f`
+- **에이전트 VERIFY** `generate:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `audit:event-travel-guide` · `build` PASS
+- **배치 A** vienna·amsterdam·prague·marrakech — glossary 4 · heroImages 3 · highlightContextLinks 2 · actionChips 없음
+- **Preview** 4 URL HTTP **200** · `/qa/world-events` → 4건 상세
+- **사람 QA** D5-b 본문(용어 모달·갤러리·인라인 링크) · 바로가기/실행 스트립 없음 · vienna/amsterdam Tier3 AI 패널
+- **다음** Preview OK → **#35** D5-b 배치 B(tokyo·kyoto·bangkok)
+
+## 세계행사 일정 #34 — glossary 무니 답변 끊김 핫픽스
+
+- **이슈** vienna `stehplatz` MOONi 모달 — 답변이 「입석 티」에서 중간 끊김
+- **원인** Gemini 2.5 Flash thinking 토큰 + 잘린 응답 `event_term_glossary_cache` 영구 캐시
+- **수정** Edge `explain-event-term` — thought 파트 제외 · `thinkingBudget:0` · 잘림 검증·재시도 · 클라 `force` 재호출 · tip `bbed5c49`
+- **배포** Edge `explain-event-term` LIVE · force 재생성 144자 완전 문장 확인
+- **Preview** `/qa/world-events` → vienna 스탠딩석 재QA
+
+## 세계행사 일정 #35 — D5-b 배치 B overrides
+
+- **세션** `세계행사 일정 #35, D5-b 배치 B overrides`
+- **브랜치** `cursor/world-events-wave2` · PR [#158](https://github.com/catgeot/Days/pull/158) · tip `a3cfba49`
+- **산출** tokyo·kyoto·bangkok D5-b overrides — glossary 4 · heroImages 3 · highlightContextLinks 2 · mooniChips · actionChips 없음
+- **VERIFY** `generate:world-events` · `smoke:world-events` · `smoke:world-events-detail`(D5_B_BATCH_B assert) · `audit:event-travel-guide` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/tokyo-sakura-season-2027` · kyoto-gion-matsuri-2027 · bangkok-songkran-2027
+- **사람 QA** D5-b 본문(용어 모달·갤러리·인라인 링크) · 바로가기/실행 스트립 없음
+- **다음** Preview OK → **#36** D5-b 배치 C(rio·new-york·iceland·sydney)
+
+## 세계행사 일정 #35 — glossary 참고 링크 KO (#35 QA)
+
+- **피드백** tokyo `우에노 공원` MOONi 모달 「참고 링크」→ `en.wikipedia.org/wiki/Ueno_Park`
+- **원인** `referenceUrl`만 EN Wikipedia SSOT · 로케일 분기 없음
+- **수정** `referenceUrlKo` + `getGlossaryTermReferenceUrl` · overrides KO URL(우에노 공원 등) · tip `df61ed3c`
+- **Preview** `/qa/world-events` → tokyo 상세 · 우에노 공원 참고 링크 `ko.wikipedia.org/wiki/우에노_공원` 재QA
+
+## 세계행사 일정 #36 — D5-b 배치 C overrides
+
+- **세션** `세계행사 일정 #36, D5-b 배치 C overrides`
+- **브랜치** `cursor/world-events-wave2` · PR [#158](https://github.com/catgeot/Days/pull/158) · tip `74bced2a`
+- **산출** rio·new-york·iceland·sydney D5-b overrides — glossary 4 · heroImages 3 · highlightContextLinks 2 · mooniChips · actionChips 없음
+- **VERIFY** `generate:world-events` · `smoke:world-events` · `smoke:world-events-detail`(D5_B_BATCH_C assert) · `audit:event-travel-guide` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/rio-carnival-2027` · new-york-thanksgiving-season-2026 · iceland-midnight-sun-2027 · sydney-vivid-2027
+- **사람 QA** D5-b 본문(용어 모달·갤러리·인라인 링크) · 바로가기/실행 스트립 없음
+- **다음** Preview OK → **#37** D5-b 배치 D(hanoi + 15건 회귀)
+
+## 세계행사 일정 #37 — D5-b 배치 D overrides
+
+- **세션** `세계행사 일정 #37, D5-b 배치 D overrides`
+- **브랜치** `cursor/world-events-wave2` · tip `2ec65536` · PR [#158](https://github.com/catgeot/Days/pull/158)
+- **산출** hanoi-tet-2027 D5-b overrides — glossary 4 · heroImages 3 · highlightContextLinks 2 · mooniChips · actionChips 없음
+- **VERIFY** `generate:world-events` · `smoke:world-events`(15건 회귀) · `smoke:world-events-detail`(D5_B_BATCH_D assert) · `audit:event-travel-guide` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/hanoi-tet-2027` · Wave1 15건 D5-b KO **완성**(Preview)
+- **사람 QA** D5-b 본문(용어 모달·갤러리·인라인 링크) · 바로가기/실행 스트립 없음
+- **다음** Preview OK → **#38** i18n-1(En 본문 스키마·파일럿 3)
+
+## 세계행사 일정 #37 — Preview QA 피드백 (무니 모달·뗏 링크)
+
+- **피드백** 무니 용어 모달 하단 여백 부족(모바일 크롬 버튼 오탭) · 본문 가독성 · 「뗏 연휴 여행 안내」vietnam.travel 404
+- **수정** `EventTermExplainModal` safe-area 하단 패딩·15px/leading-7 · hanoi 링크→구글 검색 · sourceUrl Wikipedia Tet · tip `131352c1`
+- **사람 재QA** hanoi 상세 · 용어 모달 하단·「뗏 연휴 여행 안내」구글 검색 열림
+
+## 세계행사 일정 #38 — i18n-1 En 본문 스키마
+
+- **세션** `세계행사 일정 #38, i18n-1 En 본문 스키마`
+- **브랜치** `cursor/world-events-wave2` · PR [#158](https://github.com/catgeot/Days/pull/158) · tip `a67ba91f`
+- **산출** `detailOverviewEn`·`highlightsEn` 스키마·audit · 파일럿 3(edinburgh·munich·bali) En 본문 · `getWorldEventDetailOverview`·`getWorldEventHighlights` locale 분기
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → EN locale 파일럿 3 상세 — 개요·하이라이트 En 표시(ko 폴백 없음)
+- **다음** 사람 Preview i18n-1 QA → OK 시 **#39** i18n-2
+
+## 세계행사 일정 #38 — i18n-1 Preview QA 한글 잔여 수정
+
+- **피드백** EN locale — 허브·상세 `recurrenceNote`·국가명(ko) · 숙소 권역(ko) · AI 가이드 패널(ko)
+- **수정** `recurrenceNoteEn`(17건) · `travelSpots-list` `country_en` · 파일럿 3 `stayArea` En · EventTravelGuide `*_en` fixture · tip `cac341e2`
+- **VERIFY** `audit:world-events` · `audit:event-travel-guide` · `smoke:world-events` · `build` PASS
+- **다음** Preview 재QA — EN edinburgh·munich·bali · 허브 카드 국가·시즌 메타
+
+## 세계행사 일정 #38 — i18n-1 Preview QA
+
+- **세션** `세계행사 일정 #38, i18n-1 Preview QA`
+- **브랜치** `cursor/world-events-wave2` · PR [#158](https://github.com/catgeot/Days/pull/158) · tip `cac341e2`
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events?lang=en` → edinburgh·munich·bali — `detailOverviewEn`·`highlightsEn`·`recurrenceNoteEn`·stayArea En · HTTP 200
+- **게이트** i18n-1 Preview QA **PASS** → **#39** i18n-2(En 허브·모달 전면 분기)
+
+## 세계행사 일정 #39 — i18n-2 En 허브·모달 분기
+
+- **세션** `세계행사 일정 #39, i18n-2 En 허브·모달 분기`
+- **브랜치** `cursor/world-events-wave2` · PR [#158](https://github.com/catgeot/Days/pull/158) · tip `7ea0d0b1`
+- **산출** EN locale KO 본문·bookingHints·stayAreas(nameEn 없음) 폴백 차단 · glossary 모달 EN 필드 필수 · `getWorldEventBookingHints` · `/world-events` I18N_HUB·sitemap·crawler meta · `/en/world-events` 리다이렉트
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events?lang=en` → 허브·edinburgh·singapore(비파일럿 staticFallback)·bali glossary
+- **다음** **#40** i18n-2 Preview QA
+
+## 세계행사 일정 #40 — i18n-2 Preview QA 피드백·보정
+
+- **피드백** EN singapore — 명소 카드 구분 한글(명소·공원) · Flight+hotel → Trip `kr.trip.com` 한글 IBU
+- **수정** `bdfd968f` — `getKindLabel(kind, locale)` · Trip `locale=en-US`+`curr=USD` · EventStayStrip locale SSOT
+- **수정** `7cafc78a` — EN packages/hotels → `www.trip.com` (kr 호스트·쿠키 한국 IBU 고정)
+- **VERIFY** `smoke-tripcom-flight-locale` · `smoke:world-events-detail` · `build` PASS
+
+## 세계행사 일정 #40 — i18n-2 Preview QA
+
+- **세션** `세계행사 일정 #40, i18n-2 Preview QA`
+- **브랜치** `cursor/world-events-wave2` · PR [#158](https://github.com/catgeot/Days/pull/158) · tip `7cafc78a`
+- **사람 QA PASS** — EN 허브·singapore 명소 En 라벨 · Trip Flight+hotel `www.trip.com` 영문
+- **다음** **#41** PR #158 merge → PROD i18n-2 QA
+
+## 세계행사 일정 #41 — i18n-2 main 병합·PROD QA
+
+- **세션** `세계행사 일정 #41, i18n-2 main 병합·PROD QA`
+- **merge** PR [#158](https://github.com/catgeot/Days/pull/158) → **main** `d7216431`
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `smoke-tripcom-flight-locale` · `build` PASS
+- **PROD** bundle `index-DFeajkMU.js` · URL 6건 HTTP **200** (`?lang=en` 허브·singapore·edinburgh·bali · `/en/world-events`→`?lang=en`)
+- **PROD crawler** `?lang=en` 허브 title 「World events」·canonical·hreflang · JS `www.trip.com` packages 분기
+- **사람 QA** EN singapore 명소 라벨(Park/Museum) · Flight+hotel `www.trip.com` — Preview #40과 동일 경로 PROD 재확인
+- **다음** **#42** Wave2 barcelona·istanbul overrides
+
+## 세계행사 일정 #41 — Tier3 AI PROD 패널 hotfix
+
+- **이슈** PROD 배포본 — edinburgh·munich·bali 「행사 맞춤 여행 가이드」AI 섹션 없음
+- **원인** `shouldShowEventTravelGuidePanel` → `isCloudPreviewSurface()` Preview 전용 · fixture는 PROD 로드되지만 UI 숨김
+- **수정** `93872cdf` — 파일럿 3건 guide 있을 때 PROD·Preview 공통 표시 · PR [#162](https://github.com/catgeot/Days/pull/162) merge
+- **VERIFY** `smoke:event-travel-guide` · `smoke:world-events-detail` · `build` PASS
+- **PROD QA** edinburgh·munich·bali 상세 — Tier3 AI 패널 재확인
+
+## 세계행사 일정 #42 — Wave2 barcelona·istanbul
+
+- **세션** `세계행사 일정 #42, Wave2 barcelona·istanbul`
+- **브랜치** `cursor/world-events-wave2` · tip `115b620d`
+- **산출** `barcelona-la-merce-2026` · `istanbul-marathon-2026` D5-b overrides · 허브 europe(barcelona)·niche(istanbul) · **19건**
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/barcelona-la-merce-2026` · `/world-events/istanbul-marathon-2026`
+- **다음** 사람 Preview D5-b QA → OK 시 PR merge
+
+## 세계행사 일정 #42 — istanbul Preview QA 후속
+
+- **피드백** glossary 모달 하단 링크 모바일 클리핑 · `maraton.istanbul/en/` 로고만 · `event.spor.istanbul` 로그인 벽 · 하이라이트 버튼 과다
+- **수정** `ce9a647f`~`1acee381` — 모달 footer shrink-0 · 공식 `https://maraton.istanbul/` + 코스지도 1개씩 단순화
+- **결정** 공식 URL = 위키·공식 홈 루트 우선 · 등록 포털 직링크 금지(로그인)
+- **다음** **#44** barcelona Preview · **19건 sourceUrl·하이라이트 공식 링크** 일괄 점검
+
+## 세계행사 일정 #43 — 공식 사이트 URL SSOT
+
+- **세션** `세계행사 일정 #43, 공식 사이트 URL SSOT 점검`
+- **브랜치** `cursor/world-events-wave2` · PR [#165](https://github.com/catgeot/Days/pull/165) · tip `4d0913fd`
+- **산출** 19건 `sourceUrl`·하이라이트 공식 `href` — amsterdam·tokyo·bangkok·rio 위키/루트 · singapore 티켓 · dubai 공식 루트 · galungan·hanoi 유지 · edinburgh·macys·prague 정규화
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → amsterdam · tokyo · singapore · dubai · bali · hanoi 상세 공식 링크
+- **다음** 사람 Preview·PROD §6.1.1 (#44) barcelona·istanbul + URL 회귀
+
+## 세계행사 일정 #44 — Wave2 barcelona·istanbul PROD QA
+
+- **세션** `세계행사 일정 #44, Wave2 barcelona·istanbul PROD QA`
+- **상태** 사람 PROD §6.1.1 **완료** — barcelona·istanbul D5-b · 허브 europe/niche 회귀
+- **다음** PR [#165](https://github.com/catgeot/Days/pull/165) merge → PROD URL SSOT (#45)
+
+## 세계행사 일정 #45 — PR #165 merge·PROD URL SSOT
+
+- **세션** `세계행사 일정 #45, PR #165 merge·PROD URL SSOT`
+- **merge** PR [#165](https://github.com/catgeot/Days/pull/165) → **main** `43a3768c`
+- **PROD** bundle `index-BRKeheKG.js` · URL 11건 HTTP **200** (허브·6 상세·barcelona·istanbul)
+- **PROD SSOT** amsterdam·tokyo·singapore·dubai·galungan·hanoi 공식 `sourceUrl`·bundle needle **PASS**
+- **허브** `?region=europe`·`?region=niche` 200 · barcelona·amsterdam·istanbul·dubai·hanoi 카드 SSOT
+- **다음** 사람 모바일 §6.1.1 공식 링크 탭 QA · Wave3 후보 합의
+
+## 세계행사 일정 #46 — PROD 공식 링크 모바일 QA
+
+- **세션** `세계행사 일정 #46, PROD 공식 링크 모바일 QA`
+- **에이전트 VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` PASS
+- **PROD** bundle `index-BRKeheKG.js` · 6 상세 HTTP **200** · 공식 `href` needle **PASS** · 외부 URL 7건 HTTP **200**
+- **§6.1.1 공식 탭** (하이라이트 pill): amsterdam `Koningsdag` · tokyo `japan.travel/spot/23` · singapore `singaporegp.sg/en/tickets` · dubai `dubaifitnesschallenge.com` ×2 · galungan `wikipedia/Galungan` · hanoi `vietnam.travel`
+- **Wave3 합의** 1차 4 slug 4건 — `paris`·`los-angeles`·`london`·`rome` (§management §8.2) · 허브 europe 재편 선행
+- **사람 QA** iPhone/Android — 6 URL 하이라이트 pill 탭·새 탭·로그인 벽 없음 1줄씩
+- **다음** **#47** Wave3 `paris` 1건 overrides
+
+## 세계행사 일정 #47 — Wave3 paris overrides
+
+- **세션** `세계행사 일정 #47, Wave3 paris overrides`
+- **브랜치** `cursor/world-events-wave3` · PR [#166](https://github.com/catgeot/Days/pull/166) · tip `9d14aba0`
+- **산출** europe 허브 재편(`prague`→europe·`paris` 추가) · `paris-nuit-blanche-2027` D5-b · **20건**
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/paris-nuit-blanche-2027` · `?region=europe`
+- **다음** **#48** Wave3 `los-angeles` 1건 overrides
+
+## 세계행사 일정 #47 — /qa Preview wave3 리다이렉트 수정
+
+- **이슈** `/qa/world-events`가 구 wave2 Preview(19건) → 파리 행사 리스트 미표시
+- **조치** `main` `vercel.json` `/qa/world-events` → `cursor/world-events-wave3` git Preview
+- **확인** `/qa/world-events` · `?region=europe` — **뉘 블랑쉬** 20건 중 표시
+
+## 세계행사 일정 #48 — Wave3 los-angeles overrides
+
+- **세션** `세계행사 일정 #48, Wave3 los-angeles overrides`
+- **브랜치** `cursor/world-events-wave3` · PR [#166](https://github.com/catgeot/Days/pull/166) · tip `aae6eb3d`
+- **산출** americas 허브 `los-angeles` 추가 · `los-angeles-rose-parade-2027` D5-b · **21건**
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/los-angeles-rose-parade-2027` · `?region=americas`
+- **다음** **#49** Wave3 `london` 1건 overrides
+
+## 세계행사 일정 #49 — Wave3 london overrides
+
+- **세션** `세계행사 일정 #49, Wave3 london overrides`
+- **브랜치** `cursor/world-events-wave3` · PR [#166](https://github.com/catgeot/Days/pull/166) · tip `a7abe8d7`
+- **산출** europe 허브 `london` 추가 · `london-notting-hill-2026` D5-b · **22건**
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/london-notting-hill-2026` · `?region=europe`
+- **다음** **#50** Wave3 `rome` 1건 overrides
+
+## 세계행사 일정 #50 — Wave3 rome overrides
+
+- **세션** `세계행사 일정 #50, Wave3 rome overrides`
+- **브랜치** `cursor/world-events-wave3` · PR [#166](https://github.com/catgeot/Days/pull/166) · tip `dcdc0d95`
+- **산출** europe 허브 `rome` 추가 · `rome-carnevale-2027` D5-b · **23건**
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → `/world-events/rome-carnevale-2027` · `?region=europe`
+- **다음** **#51** Wave3 4건 Preview D5-b QA
+
+## 세계행사 일정 #51 — Wave3 D5-b Preview QA
+
+- **세션** `세계행사 일정 #51, Wave3 Preview QA`
+- **브랜치** `cursor/world-events-wave3` · PR [#166](https://github.com/catgeot/Days/pull/166) · tip `981f66fd`
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Wave3 4건** paris·los-angeles·london·rome — glossary 4 · hero 3(HTTP 200) · highlightContextLinks 2 · actionChips 없음 · 공식 URL SSOT
+- **Preview** `/qa/world-events` → 4상세 · `?region=europe`·`?region=americas`
+- **다음** 사람 Preview QA → OK 시 PR #166 merge
+
+## 세계행사 일정 #51 — Wave3 QA 피드백 (헤더·glossary·무니칩)
+
+- **세션** `세계행사 일정 #51, Wave3 Preview QA` (피드백 반영)
+- **브랜치** `cursor/world-events-wave3` · PR [#166](https://github.com/catgeot/Days/pull/166) · tip `ea03ce2b`
+- **UI** 상세 헤더 `World`→도시명 · PC 행사명 옆 기간 · 모바일 도시명만
+- **데이터** 패서디나 glossary 구글검색 `패서디나 로즈 퍼레이드` · 노팅힐 glossary 13종·무니칩 · 로마 glossary 9종·무니칩
+- **로직** `mooniChips` 데이터 있으면 D5-b 전 행사 노출
+- **VERIFY** `generate:world-events` · `audit:world-events` · `smoke:world-events` · `smoke:world-events-detail` · `build` PASS
+- **Preview** `/qa/world-events` → paris·los-angeles·london·rome
+- **다음** 사람 Preview 재QA → OK 시 PR #166 merge

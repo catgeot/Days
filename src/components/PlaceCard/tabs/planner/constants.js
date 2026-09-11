@@ -31,7 +31,7 @@ export const OFFICIAL_VISA_LINKS = [
     { keywords: ['MDAC', '말레이시아', '코타키나발루', '쿠알라룸푸르', '페낭', '랑카위'], url: 'https://imigresen-online.imi.gov.my/mdac/main', label: '말레이시아 MDAC 등록', labelEn: 'Malaysia MDAC registration' },
     { keywords: ['Visit Japan', 'VJW', '일본', '도쿄', '오사카', '후쿠오카', '삿포로', '오키나와', '교토', '나고야', '홋카이도'], url: 'https://vjw-lp.digital.go.jp/ko/', label: 'Visit Japan Web (빠른 입국)', labelEn: 'Visit Japan Web (fast track)' },
     { keywords: ['e-Visa', '베트남', '다낭', '나트랑', '하노이', '호치민', '푸꾸옥', '사파', '달랏', '무이네'], url: 'https://evisa.xuatnhapcanh.gov.vn/', label: '베트남 e-Visa 공식 신청', labelEn: 'Vietnam e-Visa — official application' },
-    { keywords: ['e-VOA', '인도네시아', '발리', '자카르타', '롬복', '길리', '족자카르타'], url: 'https://molina.imigresi.go.id/', label: '인도네시아 e-VOA 공식 신청', labelEn: 'Indonesia e-VOA — official application' },
+    { keywords: ['e-VOA', 'e-Visa', '인도네시아', '발리', '자카르타', '롬복', '길리', '족자카르타'], url: 'https://evisa.imigrasi.go.id/', label: '인도네시아 e-VOA 공식 신청', labelEn: 'Indonesia e-VOA — official application' },
     { keywords: ['eTravel', '이트래블', '필리핀', '세부', '보라카이', '마닐라', '보홀', '팔라완', '클락'], url: 'https://etravel.gov.ph/', label: '필리핀 eTravel (필수)', labelEn: 'Philippines eTravel (required)' },
     { keywords: ['대만', '타이완', '타이베이', '가오슝', '온라인 입국신고서', '타이중', '타이난', '화롄'], url: 'https://niaspeedy.immigration.gov.tw/webacard/', label: '대만 온라인 입국신고서', labelEn: 'Taiwan online arrival card' },
     { keywords: ['e-Arrival', '캄보디아', '씨엠립', '프놈펜'], url: 'https://www.arrival.gov.kh/', label: '캄보디아 e-Arrival (도착비자)', labelEn: 'Cambodia e-Arrival (visa on arrival)' },

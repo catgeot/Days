@@ -252,6 +252,48 @@ export default {
       ]
     }
   },
+  "/world-events": {
+    "ko": {
+      "title": "세계 행사 일정 — GATEO",
+      "description": "유럽·아시아·아메리카·오세아니아·니치 도시의 대표 축제·시즌 행사를 모아 보고, 여행지 카드·행사 맞춤 플래너로 이어갑니다.",
+      "keywords": "여행, AI 도슨트, 3D 지구본, 여행 기록, 여행 계획, GATEO, 게이트제로, 국내 축제, 한국의 명승, 명승지, 푸켓 여행, 갈라파고스, 앙코르 와트",
+      "canonicalUrl": "https://www.gateo.kr/world-events",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/world-events"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/world-events?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/world-events"
+        }
+      ]
+    },
+    "en": {
+      "title": "World events — GATEO",
+      "description": "Browse flagship festivals and seasonal events across Europe, Asia-Pacific, the Americas, Oceania, and niche cities — then open place cards and event-tailored planners.",
+      "keywords": "travel, AI docent, 3D globe, trip planner, GATEO, Korea festivals, scenic spots, Phuket travel, Galapagos photos, Angkor Wat photos, world destinations",
+      "canonicalUrl": "https://www.gateo.kr/world-events?lang=en",
+      "hreflangAlternates": [
+        {
+          "hreflang": "ko",
+          "href": "https://www.gateo.kr/world-events"
+        },
+        {
+          "hreflang": "en",
+          "href": "https://www.gateo.kr/world-events?lang=en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://www.gateo.kr/world-events"
+        }
+      ]
+    }
+  },
   "/explore/asia/paradise": {
     "ko": {
       "title": "아시아 휴양·호캉스 여행지",

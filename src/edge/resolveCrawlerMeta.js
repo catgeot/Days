@@ -6,7 +6,7 @@ import {
 } from '../pages/Home/lib/exploreCategorySeo.js';
 
 const PLACE_TABS = new Set(['gallery', 'planner', 'wiki']);
-const HUB_PATHS = new Set(['/', '/korea', '/korea/theme/scenic', '/explore', '/blog', '/blog/curation']);
+const HUB_PATHS = new Set(['/', '/korea', '/korea/theme/scenic', '/explore', '/blog', '/blog/curation', '/world-events']);
 
 function normalizePath(pathname) {
   const raw = String(pathname || '').trim();
@@ -102,6 +102,7 @@ export function getCrawlerMetaKind(pathname) {
     if (parsed.path === '/explore') return 'explore';
     if (parsed.path === '/blog') return 'blog';
     if (parsed.path === '/blog/curation') return 'curation';
+    if (parsed.path === '/world-events') return 'world-events';
     return 'hub';
   }
   if (parsed.kind === 'place-base') return 'tier1-place-base';

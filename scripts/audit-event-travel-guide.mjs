@@ -13,6 +13,7 @@ import { fileURLToPath } from 'url';
 import {
   auditEventTravelGuideAgainstFacts,
   buildWorldEventTier0Facts,
+  EVENT_TRAVEL_GUIDE_PILOT_EVENT_IDS,
   normalizeEventTravelGuide,
 } from './lib/event-travel-guide-schema.mjs';
 import { getWorldEventById } from '../src/utils/worldEvents.js';
@@ -63,6 +64,17 @@ function auditFixture(path) {
   assert(guide.trip_presets.length >= 2, `${eventId}: trip_presets >= 2`);
   assert(guide.sections.length >= 2, `${eventId}: sections >= 2`);
   assert(guide.booking_tips.length >= 1, `${eventId}: booking_tips >= 1`);
+  assert(
+    EVENT_TRAVEL_GUIDE_PILOT_EVENT_IDS.includes(eventId),
+    `${eventId}: pilot fixture roster`,
+  );
+
+  const raw = JSON.parse(readFileSync(path, 'utf8'));
+  if (EVENT_TRAVEL_GUIDE_PILOT_EVENT_IDS.includes(eventId)) {
+    assert(Array.isArray(raw.trip_presets_en) && raw.trip_presets_en.length >= 2, `${eventId}: trip_presets_en`);
+    assert(Array.isArray(raw.sections_en) && raw.sections_en.length >= 2, `${eventId}: sections_en`);
+    assert(Array.isArray(raw.booking_tips_en) && raw.booking_tips_en.length >= 1, `${eventId}: booking_tips_en`);
+  }
 }
 
 function listFixturePaths() {

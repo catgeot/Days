@@ -29,8 +29,9 @@
 | 5 | `bookingHints` — MRT/Trip 검색어·시즌 메모 | 권장 |
 | 6 | `npm run generate:world-events` | ✅ |
 | 7 | `npm run audit:world-events` PASS | ✅ |
-| 8 | PlaceCard에서 해당 slug QA | ✅ |
-| 9 | (D5+) `actionChips` 실행 링크 — `rental`/`tour`/`shop` · Klook·GYG·PKC·큐레이션 URL | 권장 |
+| 8 | PlaceCard·상세 `/world-events/{id}` QA | ✅ |
+| 9 | **D5-b** `glossaryTerms` 3~5 · `heroImages` 3 · `highlightContextLinks` 1~2 | **표준 상세 필수** (#34~) |
+| 10 | D2 `actionChips` | **신규 추가 금지** — D5-b가 대체(bali 패턴) |
 
 **금지**: `worldEvents.json` 직접 편집 · 존재하지 않는 slug · **신규 `plans/*-plan.md`** (D5는 [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) F-0.5만)
 
@@ -110,12 +111,49 @@ npm run build
 | `/world-events` **에든버러 프린지** | 유럽 칩 → 「여행지 카드」 URL에 `fromEvent=edinburgh-fringe-2026` · `checkIn`/`checkOut`(행사 전후 1일 버퍼, 진행 중이면 checkIn=오늘) · 플래너 CTA 동일 날짜 |
 | **홈** 좌상단 바로가기 | 「한국의 축제」 아래 **「세계의 행사」** → `/world-events` |
 
-### 6.1.1 v2 상세 페이지 — Wave1 15건 (PR #153 · main)
+### 6.1.1 v2 상세 페이지 — Wave1 15건 (main `b2ac6888`+)
+
+**표준 상세 (D5-b)** = 발리 [`bali-galungan-season-2026`](https://www.gateo.kr/world-events/bali-galungan-season-2026) 패턴. **Preview D5-b: 15/15**(파일럿 3 + Wave2 2 + 배치 A 4 + 배치 B 3 + 배치 C 4 + 배치 D 1).
 
 **PROD 진입**: `https://www.gateo.kr/world-events`  
-**상세 직링크**: `https://www.gateo.kr/world-events/{eventId}`
+**Preview 진입**: `https://www.gateo.kr/qa/world-events`  
+**상세 직링크**: `https://www.gateo.kr/world-events/{eventId}` (Preview는 git URL 동일 path)
 
-**#19~#20 재확인 (PROD 우선)**
+**배치 A D5-b Preview (#34 · PR #158)**
+
+| eventId | Preview path | D5-b 확인 |
+|---------|--------------|-----------|
+| `vienna-staatsoper-season-2026` | `/world-events/vienna-staatsoper-season-2026` | glossary 4 · 갤러리 3 · Tier3 AI 패널 |
+| `amsterdam-kings-day-2027` | `/world-events/amsterdam-kings-day-2027` | glossary 4 · 갤러리 3 · Tier3 AI 패널 |
+| `prague-spring-festival-2027` | `/world-events/prague-spring-festival-2027` | glossary 4 · 갤러리 3 · 인라인 링크 |
+| `marrakech-rose-festival-2027` | `/world-events/marrakech-rose-festival-2027` | glossary 4 · 갤러리 3 · 인라인 링크 |
+
+**배치 B D5-b Preview (#35 · PR #158)**
+
+| eventId | Preview path | D5-b 확인 |
+|---------|--------------|-----------|
+| `tokyo-sakura-season-2027` | `/world-events/tokyo-sakura-season-2027` | glossary 4 · 갤러리 3 · 인라인 링크 |
+| `kyoto-gion-matsuri-2027` | `/world-events/kyoto-gion-matsuri-2027` | glossary 4 · 갤러리 3 · 야사카 공식 링크 |
+| `bangkok-songkran-2027` | `/world-events/bangkok-songkran-2027` | glossary 4 · 갤러리 3 · 방수 Klook 링크 |
+
+**배치 C D5-b Preview (#36 · PR #158)**
+
+| eventId | Preview path | D5-b 확인 |
+|---------|--------------|-----------|
+| `rio-carnival-2027` | `/world-events/rio-carnival-2027` | glossary 4 · 갤러리 3 · 삼바드롬 공식 링크 |
+| `new-york-thanksgiving-season-2026` | `/world-events/new-york-thanksgiving-season-2026` | glossary 4 · 갤러리 3 · 메이시스 퍼레이드 공식 |
+| `iceland-midnight-sun-2027` | `/world-events/iceland-midnight-sun-2027` | glossary 4 · 갤러리 3 · 골든서클 렌터카 |
+| `sydney-vivid-2027` | `/world-events/sydney-vivid-2027` | glossary 4 · 갤러리 3 · 비비드 공식 링크 |
+
+**배치 D D5-b Preview (#37 · PR #158)**
+
+| eventId | Preview path | D5-b 확인 |
+|---------|--------------|-----------|
+| `hanoi-tet-2027` | `/world-events/hanoi-tet-2027` | glossary 4 · 갤러리 3 · vietnam.travel 뗏 안내 링크 |
+
+**공통 D5-b 체크**: 상단 바로가기 칩·실행 스트립 **없음** · 본문 용어 첫 등장 클릭→MOONi 모달 · 하이라이트 인라인 링크 · 히어로+썸네일 갤러리
+
+**파일럿 3건 D5-b (#32 병합 후 · PROD)**
 
 | 대상 | PROD URL | 확인 |
 |------|----------|------|
@@ -133,7 +171,7 @@ npm run build
 | 무니 FAB | 우하단 Mooni 버튼 · 행사 맥락 대화 진입 |
 | 허브 회귀 | `/world-events` 카드 「행사 상세」→ 동일 URL · 「여행지 카드」→ `/place/:slug?fromEvent&checkIn&checkOut` |
 
-**Tier3 AI fixture (#1~#4만)** — 「행사 맞춤 여행 가이드」패널 · DB 없으면 **번들 fixture** 폴백(PROD·Preview 공통) · LIVE Edge 배포 후 DB 우선
+**Tier3 AI fixture (#1~#4만 · 파일럿 3건)** — 「행사 맞춤 여행 가이드」패널 · DB 없으면 **번들 fixture** 폴백(PROD·Preview) · `#41 hotfix` Preview 전용 게이트 제거
 
 > **PROD QA 힌트 (#22, 수정 보류)** — Tier3 요약·섹션이 Tier0~2(행사 소개·하이라이트·예약 팁)와 **겹쳐 보일 수 있음**. Wave1 fixture는 Tier0 기반 샘플이라 중복 가능. 차별화(액션형 조언·일정 시나리오·Tier0에 없는 fact만)는 **Tier3 iterate / Wave2+** 에서 검토 — 지금 코드·카피 수정 **하지 않음**.
 
@@ -155,11 +193,33 @@ npm run build
 | 14 | `marrakech-rose-festival-2027` | 2 | 단기 |
 | 15 | `hanoi-tet-2027` | 4 | 연휴 윈도 · #18 마감 샘플 |
 
-**에이전트 VERIFY**: `smoke:world-events` · `smoke:world-events-detail` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `smoke:korea-festival-stay-url` · `smoke:korea-festival-personal` · `build` PASS · PROD URL 18건 HTTP 200 (#22)
+**Wave2 D5-b Preview (#42~#43 · PR #163 merged)**
+
+| eventId | Preview path | D5-b 확인 |
+|---------|--------------|-----------|
+| `barcelona-la-merce-2026` | `/world-events/barcelona-la-merce-2026` | glossary 4 · 갤러리 3 · 공식 일정·코레포크 링크 |
+| `istanbul-marathon-2026` | `/world-events/istanbul-marathon-2026` | glossary 4 · 갤러리 3 · `maraton.istanbul` 공식 |
+
+**에이전트 VERIFY**: `smoke:world-events` · `smoke:world-events-detail` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `smoke:korea-festival-stay-url` · `smoke:korea-festival-personal` · `build` PASS · PROD URL **19건** HTTP 200
 
 **Wave2 착수 게이트** (G1~G4 · [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) F-0): 본 §6.1·§6.1.1 **사람 PROD OK** → 브랜치 `cursor/world-events-wave2` **합의** → overrides 착수
 
 **금지**: `worldEvents.json` 직편집 · Wave2·EN·`/events` 통합(세션 #9 범위 밖) · PROD QA 전 Wave2 overrides.
+
+### 6.1.2 공식 링크 PROD QA (#46)
+
+**에이전트 VERIFY** (main `8382089c`+): bundle `index-BRKeheKG.js` · 6 상세 HTTP 200 · 공식 `href` needle PASS · 외부 URL HTTP 200.
+
+| eventId | PROD path | 탭할 pill (하이라이트) | 공식 `href` |
+|---------|-----------|------------------------|-------------|
+| `amsterdam-kings-day-2027` | `/world-events/amsterdam-kings-day-2027` | 킹스데이 안내 | `en.wikipedia.org/wiki/Koningsdag` |
+| `tokyo-sakura-season-2027` | `/world-events/tokyo-sakura-season-2027` | 도쿄 벚꽃 안내 | `japan.travel/en/spot/23/` |
+| `singapore-gp-2026` | `/world-events/singapore-gp-2026` | 공식 티켓 | `singaporegp.sg/en/tickets` |
+| `dubai-fitness-challenge-2026` | `/world-events/dubai-fitness-challenge-2026` | Dubai Ride·Run 안내 | `dubaifitnesschallenge.com/en/` |
+| `bali-galungan-season-2026` | `/world-events/bali-galungan-season-2026` | 갈룽안 안내 | `en.wikipedia.org/wiki/Galungan` |
+| `hanoi-tet-2027` | `/world-events/hanoi-tet-2027` | 뗏 연휴 여행 안내 | `vietnam.travel/` |
+
+**사람 모바일 QA** (iPhone/Android): 각 상세 → 하이라이트 pill 탭 → 새 탭·로그인 벽 없음 1줄.
 
 ---
 
@@ -182,6 +242,48 @@ npm run build
 
 ## 8. 기타 미정 (P0–P2)
 
-- i18n: `titleEn` 필수 여부 (Q10 — KO MVP 후)
 - 감사 스크립트: 중복 id · 과거 행사 만료 정책
 - 상용 API (Ticketmaster 등): P3-b — 비용·약관
+
+## 8.1 i18n (Q10 — 세션 #38)
+
+| 단계 | 시점 | 내용 |
+|------|------|------|
+| **i18n-0** | 현재 | `titleEn`·chip/glossary En·외부 링크 locale — 부분 EN |
+| **i18n-1** | **#38 ✅** | `detailOverviewEn`·`highlightsEn` 스키마 · audit · 파일럿 3 En · Preview QA PASS |
+| **i18n-2** | **#39~#41 ✅ PROD** | EN 허브·glossary·비파일럿 폴백 · `/en/world-events` SEO · PR #158 merge `d7216431` · PROD `?lang=en`·Trip `www.trip.com` |
+
+**MVP 정의**: Wave1 **15건 D5-b KO 완성** 후 i18n-1. 상세: [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **F-0.6**.
+
+## 8.2 Wave3 후보 (#46 합의)
+
+**전제**: Wave2 4/4·19건 URL SSOT·§6.1.1 에이전트 PASS 완료. 브랜치 **`cursor/world-events-wave3`** (신규).
+
+| 축 | 내용 | 세션 |
+|----|------|------|
+| **1차 4건** | 새 slug 4 · D5-b 표준 | #47~#50 (1건/세션 권장) |
+| **허브** | `europe` 5칩 포화 → **paris·london·rome** 추가 전 재편 | #47 선행 |
+| **2차 백로그** | slug당 2번째 행사(munich·edinburgh·sydney) | #51+ |
+| **P3-a** | ICS/RSS POC(edinburgh·munich·sydney) — **Wave3 데이터와 별 트랙** | 합의 후 |
+
+**Wave3 1차 eventId (합의)**:
+
+| slug | eventId (제안) | 허브 | 공식 URL 방향 |
+|------|----------------|------|---------------|
+| `paris` | `paris-nuit-blanche-2027` | europe | `paris.fr` / Nuit Blanche 공식 |
+| `los-angeles` | `los-angeles-rose-parade-2027` | americas | `tournamentofroses.com` |
+| `london` | `london-notting-hill-2026` | europe | `nhcarnival.org` |
+| `rome` | `rome-carnevale-2027` | europe | `carnevale.roma.it` |
+
+**허브 재편 (#47)**: `prague` niche→europe · `paris` europe 추가 · niche=`marrakech`·`hanoi`·`dubai`·`istanbul`
+
+**Wave3 D5-b Preview (#47~#51 · `cursor/world-events-wave3` · 에이전트 PASS #51)**
+
+| eventId | Preview path | D5-b 확인 |
+|---------|--------------|-----------|
+| `paris-nuit-blanche-2027` | `/world-events/paris-nuit-blanche-2027` | glossary 4 · 갤러리 3 · `paris.fr/nuit-blanche` 공식 |
+| `los-angeles-rose-parade-2027` | `/world-events/los-angeles-rose-parade-2027` | glossary 4 · 갤러리 3 · `tournamentofroses.com` 공식 |
+| `london-notting-hill-2026` | `/world-events/london-notting-hill-2026` | glossary 4 · 갤러리 3 · `nhcarnival.org` 공식 |
+| `rome-carnevale-2027` | `/world-events/rome-carnevale-2027` | glossary 4 · 갤러리 3 · `carnevale.roma.it` 공식 |
+
+**금지**: Wave1 KO 일괄 En · `worldEvents.json` 직편집 · 로그인 포털 직링크(istanbul 교훈).

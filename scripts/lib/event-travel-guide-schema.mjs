@@ -1,4 +1,4 @@
-/** @typedef {'0.1'} EventTravelGuideSchemaVersion */
+/** @typedef {'0.2'} EventTravelGuideSchemaVersion */
 
 /**
  * @typedef {{
@@ -19,11 +19,10 @@
  */
 
 /**
+ * v0.2 — Tier3 only. summary/recommended_nights live in static Tier0~0.5.
  * @typedef {{
  *   schema_version: EventTravelGuideSchemaVersion,
  *   event_id: string,
- *   summary: string,
- *   recommended_nights: number,
  *   trip_presets: EventTravelGuideTripPreset[],
  *   sections: EventTravelGuideSection[],
  *   booking_tips: string[],
@@ -31,9 +30,15 @@
  * }} EventTravelGuide
  */
 
-export const EVENT_TRAVEL_GUIDE_SCHEMA_VERSION = '0.1';
-export const MAX_RECOMMENDED_NIGHTS = 10;
+export const EVENT_TRAVEL_GUIDE_SCHEMA_VERSION = '0.2';
 export const MAX_PRESET_NIGHTS = 10;
+
+/** Wave1.5 pilot — Preview QA only until G2 freeze. */
+export const EVENT_TRAVEL_GUIDE_PILOT_EVENT_IDS = [
+  'edinburgh-fringe-2026',
+  'munich-oktoberfest-2026',
+  'bali-galungan-season-2026',
+];
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -49,43 +54,36 @@ export function normalizeEventTravelGuide(raw, ctx = {}) {
     throw new Error(`[event-travel-guide] ${label}: must be object`);
   }
 
-  const schemaVersion = String(raw.schema_version ?? '').trim();
+  const row = raw;
+  const schemaVersion = String(row.schema_version ?? '').trim();
   if (schemaVersion !== EVENT_TRAVEL_GUIDE_SCHEMA_VERSION) {
     throw new Error(
       `[event-travel-guide] ${label}: schema_version must be ${EVENT_TRAVEL_GUIDE_SCHEMA_VERSION}`,
     );
   }
 
-  const eventId = String(raw.event_id ?? '').trim();
+  if (row.summary != null && String(row.summary).trim()) {
+    throw new Error(`[event-travel-guide] ${label}: summary forbidden in v0.2 (use static detailOverview)`);
+  }
+  if (row.recommended_nights != null) {
+    throw new Error(
+      `[event-travel-guide] ${label}: recommended_nights forbidden in v0.2 (use static recommendedNights)`,
+    );
+  }
+
+  const eventId = String(row.event_id ?? '').trim();
   if (!eventId) {
     throw new Error(`[event-travel-guide] ${label}: event_id required`);
   }
 
-  const summary = String(raw.summary ?? '').trim();
-  if (!summary) {
-    throw new Error(`[event-travel-guide] ${label}: summary required`);
-  }
-
-  const recommendedNights = Number(raw.recommended_nights);
-  if (!Number.isFinite(recommendedNights) || recommendedNights < 1) {
-    throw new Error(`[event-travel-guide] ${label}: recommended_nights must be >= 1`);
-  }
-  if (recommendedNights > MAX_RECOMMENDED_NIGHTS) {
-    throw new Error(
-      `[event-travel-guide] ${label}: recommended_nights must be <= ${MAX_RECOMMENDED_NIGHTS}`,
-    );
-  }
-
-  const tripPresets = normalizeTripPresets(raw.trip_presets, label);
-  const sections = normalizeSections(raw.sections, label);
-  const bookingTips = normalizeStringList(raw.booking_tips, `${label}.booking_tips`, 1);
-  const cautions = normalizeStringList(raw.cautions, `${label}.cautions`, 0, true);
+  const tripPresets = normalizeTripPresets(row.trip_presets, label);
+  const sections = normalizeSections(row.sections, label);
+  const bookingTips = normalizeStringList(row.booking_tips, `${label}.booking_tips`, 1);
+  const cautions = normalizeStringList(row.cautions, `${label}.cautions`, 0, true);
 
   return {
     schema_version: EVENT_TRAVEL_GUIDE_SCHEMA_VERSION,
     event_id: eventId,
-    summary,
-    recommended_nights: recommendedNights,
     trip_presets: tripPresets,
     sections,
     booking_tips: bookingTips,
@@ -236,40 +234,44 @@ export function auditEventTravelGuideAgainstFacts(guide, facts) {
     throw new Error(`event_id mismatch: guide=${guide.event_id} facts=${facts.event_id}`);
   }
 
-  if (
-    facts.recommended_nights != null &&
-    Math.abs(guide.recommended_nights - facts.recommended_nights) > 2
-  ) {
-    warnings.push(
-      `recommended_nights drift: guide=${guide.recommended_nights} facts=${facts.recommended_nights}`,
-    );
-  }
-
   const spanNights = nightsBetween(facts.start_date, facts.end_date);
-  if (spanNights > 7 && guide.recommended_nights >= spanNights) {
-    warnings.push(
-      `long event (${spanNights}d span) but recommended_nights=${guide.recommended_nights} — should suggest short visit`,
-    );
-  }
 
   for (const preset of guide.trip_presets) {
     if (preset.nights > spanNights && spanNights > 0) {
       warnings.push(`preset ${preset.id} nights=${preset.nights} exceeds event span ${spanNights}d`);
     }
-  }
-
-  const factStayNames = new Set(
-    (facts.stay_areas ?? []).map((a) => a.name.toLowerCase()).filter(Boolean),
-  );
-  const guideText = JSON.stringify(guide).toLowerCase();
-  for (const name of factStayNames) {
-    if (!guideText.includes(name)) {
-      warnings.push(`stay area not referenced in guide: ${name}`);
+    if (
+      facts.recommended_nights != null &&
+      preset.nights > facts.recommended_nights + 2
+    ) {
+      warnings.push(
+        `preset ${preset.id} nights=${preset.nights} drifts from static recommendedNights=${facts.recommended_nights}`,
+      );
     }
   }
 
-  if (facts.venue_name && !guideText.includes(facts.venue_name.toLowerCase().slice(0, 12))) {
-    warnings.push(`venue may be missing from guide: ${facts.venue_name}`);
+  const staticText = [
+    facts.detail_overview,
+    facts.booking_hints,
+    ...(facts.highlights ?? []),
+    ...(facts.stay_areas ?? []).flatMap((a) => [a.name, a.note]),
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+
+  for (const tip of guide.booking_tips) {
+    const normalized = String(tip).trim().toLowerCase();
+    if (normalized.length >= 24 && staticText.includes(normalized.slice(0, 24))) {
+      warnings.push(`booking_tip may duplicate static Tier0~0.5: ${tip.slice(0, 40)}…`);
+    }
+  }
+
+  if (facts.venue_name) {
+    const guideText = JSON.stringify(guide).toLowerCase();
+    if (!guideText.includes(facts.venue_name.toLowerCase().slice(0, 12))) {
+      warnings.push(`venue may be missing from guide: ${facts.venue_name}`);
+    }
   }
 
   return warnings;

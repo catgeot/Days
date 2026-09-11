@@ -31,6 +31,12 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
+/* 홈 지구본 캔버스 — 브라우저 페이지 핀치 금지, Mapbox 제스처만 */
+.gateo-globe-map,
+.gateo-mapbox-map {
+  touch-action: none;
+}
+
 @keyframes mooni-float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-6px); }

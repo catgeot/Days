@@ -6,9 +6,9 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 20,
-  sessionPhase: '국내 FestivalStayStrip · merge 준비',
-  branch: 'cursor/world-events-efa3',
+  sessionNo: 54,
+  sessionPhase: '리스트 사진 영문 검색',
+  branch: 'cursor/world-events-wave3',
   previewPath: '/world-events',
   qaShareSlug: 'world-events',
 };
@@ -23,6 +23,486 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-11-palgyeong-use-14-hadong-group',
+    session: '팔경 활용 #14, 검색 그룹 묶기',
+    title: '하동 검색에서 십경과 대표 명소가 섞이지 않게',
+    detail:
+      '명승 검색 「하동」결과가 시·군·이름 정렬 때문에 하동 십경과 지역 대표 명소가 한 줄씩 엇갈리며 소제목이 반복됐습니다. 팔경 groupTitle은 한 덩어리로 모으고, 그룹 없는 대표 명소만 그 뒤에 둡니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색창에 하동 · 하동 십경.',
+    at: '2026-09-11T07:50:00.000Z',
+  },
+  {
+    id: '2026-09-11-palgyeong-use-13-hadong-search',
+    session: '팔경 활용 #13, 광양·하동 결손 오버레이',
+    title: '하동 검색에 십경 멤버가 나오게',
+    detail:
+      '명승 페이지에서 하동을 검색하면 JSON에 없는 십경 멤버가 0건으로 떨어져 하동 십경 그룹이 안 보였습니다. 표시명(하동 십경) exact 매칭과 명소 검색 풀에 지자체 리스트 멤버 주입을 넣었습니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색창에 하동 · 하동 십경.',
+    at: '2026-09-11T06:10:00.000Z',
+  },
+  {
+    id: '2026-09-11-palgyeong-use-13-gwangyang-hadong-overlays',
+    session: '팔경 활용 #13, 광양·하동 결손 오버레이',
+    title: '광양9경 6건·하동10경 7건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 광양9경 결손 6건(백운산 4대 계곡·자연휴양림·이순신대교·광양만 야경·옥룡사지 동백·읍수와 이팝나무)과 하동10경 결손 7건(화개장터 십리벚꽃·금오산 일출·쌍계사 가을·형제봉 철쭉·청학동 삼성궁·하동포구·섬호정 섬진강)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 광양시 문화관광 9경 사진, 한국관광공사 동곡·옥룡사지·유당공원·십리벚꽃·쌍계사·삼성궁·하동송림 사진을 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gwangyang · ?hub=hadong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-11T04:30:00.000Z',
+  },
+  {
+    id: '2026-09-11-scenic-stay-2-position-google',
+    session: '명승 숙소 #2, 숙소 위치·구글 링크',
+    title: '숙소를 개요·사진 다음으로 올리고 구글 상세 버튼을 추가',
+    detail:
+      '여행자가 장소를 확인한 뒤 바로 숙박을 고를 수 있게, 숙소 섹션을 본문 맨 아래(주변 맛집·축제 다음)에서 개요·주소·사진 다음·주변 맛집 위로 옮겼습니다. 추가 정보 확인용 네이버 버튼 옆에 같은 쿼리의 구글 상세정보 버튼을 넣었습니다. Preview /qa/scenic-stay — 경복궁 본문에서 사진 아래·맛집 위에 숙소 카드, 네이버·구글 칩이 나란히 있는지 확인.',
+    at: '2026-09-11T04:20:00.000Z',
+  },
+  {
+    id: '2026-09-11-scenic-stay-1-modal-strip',
+    session: '명승 숙소 #1, 본문 숙소 섹션',
+    title: '명승 명소 본문에 축제와 같은 숙소 섹션',
+    detail:
+      '한국의 명승 홈에서 숙소를 보려면 지구본 장소 카드를 열어야 했던 문제를 고쳤습니다. 명소 본문(ThemeSpotDetailModal)에 축제 FestivalStayStrip과 같은 EventStayStrip을 넣었습니다. 행사 프리셋 없이 MRT 기본 일정(+14일·3박)으로 근처 숙소를 조회합니다. Preview /qa/scenic-stay — /korea/theme/scenic?spot=gyeongbokgung 본문 하단 숙소 카드·일정·MRT 목록.',
+    at: '2026-09-11T03:50:00.000Z',
+  },
+  {
+    id: '2026-09-11-palgyeong-use-12-festival-nearby-thumbs-rank',
+    session: '팔경 활용 #12, 축제 인근 썸네일·번호',
+    title: '축제 인근 명소·팔경 행에 썸네일과 1경 번호',
+    detail:
+      '축제 상세 「인근 명소」에 GATEO 선정 썸네일을 붙이고, 「주변 관광지」 팔경 그룹 행은 명소 페이지와 같이 원주 1경 부제와 Tour/큐레이션 사진을 보여 줍니다. Preview /qa/palgyeong-use — /korea 원주 축제 상세에서 인근 명소 사진·원주 팔경 1경~8경을 확인해 주세요.',
+    at: '2026-09-11T03:50:00.000Z',
+  },
+  {
+    id: '2026-09-11-palgyeong-use-10-member-rank-blurb',
+    session: '팔경 활용 #10, 팔경 번호',
+    title: '팔경 행 부제에 1경·2경 번호 — 그룹 칩은 N경 유지',
+    detail:
+      '명승 리스트에서 멤버 행 부제가 모두 같은 「의성 팔경」이던 문제를 고쳤습니다. 행 부제는 의성 1경~8경처럼 순번을 붙이고, 그룹 칩은 의성 팔경·문경 팔경을 그대로 둡니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=uiseong 8행 부제가 서로 다른지 확인.',
+    at: '2026-09-11T02:20:00.000Z',
+  },
+  {
+    id: '2026-09-11-palgyeong-use-8-binggye-distinct-photos',
+    session: '팔경 활용 #8, 빙계 팔경 사진 다양화',
+    title: '의성 빙계팔경 8행 썸네일·본문 갤러리를 경승별 다른 공식 사진으로 교체',
+    detail:
+      '같은 VisitKorea 계곡 항공 사진이 빙혈·풍혈·인암·의각·수대·불정·용추에 반복되던 문제를 고쳤습니다. 의성군 문화관광(빙혈 입구·절벽 계류·인암 각자·출렁다리·석탑 단풍)과 TourAPI 빙계계곡·빙계서원 갤러리에서 경승마다 다른 대표·본문 사진을 넣었습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=uiseong 8행 썸네일·상세 갤러리가 서로 다른지 확인.',
+    at: '2026-09-11T00:30:00.000Z',
+  },
+  {
+    id: '2026-09-10-palgyeong-use-6-uiseong-muju-overlays',
+    session: '팔경 활용 #6, 의성·무주 결손 허브 런타임 오버레이 보강',
+    title: '의성 빙계팔경 8건·무주 구천동33경 결손 28건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 의성 빙계팔경 8건(빙혈·풍혈·인암·의각·수대·빙산사지 오층석탑·불정·용추)과 무주 구천동33경 결손 28건의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 의성군 문화관광·국가유산청 보물 석탑 사진, 무주군 문화관광·디지털무주문화대전·명승 일사대·파회·수심대 일원 사진을 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=uiseong · ?hub=muju 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-10T22:45:00.000Z',
+  },
+  {
+    id: '2026-09-10-planner-empty-1-scroll-pad',
+    session: '플래너 실행 전 여유 #1, 하단 여유·여행사 펼침 스크롤',
+    title: '실행 전 플래너 하단 여유 · 연결된 여행사 펼침 후 상단 스크롤',
+    detail:
+      '양구 수목원처럼 툴킷 실행 전 기본 정보 페이지가 overflow에 막혀 하단이 잘리고, 「연결된 여행사」를 펼쳐도 스크롤되지 않던 문제를 고쳤습니다. 실행 전 화면도 툴킷 있는 플래너와 같은 세로 스크롤·하단 패딩을 쓰고, 목록을 펼치면 해당 섹션이 위로 올라갑니다. Preview /qa/planner-empty — /place/yanggu-arboretum/planner 하단 여유·펼침 스크롤.',
+    at: '2026-09-10T22:10:00.000Z',
+  },
+  {
+    id: '2026-09-10-palgyeong-use-5-pr210-merged-and-overlay-plan',
+    session: '팔경 활용 #5, PR #210 main 병합 및 후속 허브 오버레이 확장 검토',
+    title: 'PR #210 main 병합 완료 및 의성·무주 결손 허브 오버레이 확장 계획 수립',
+    detail:
+      'PR #210(문경·단양 팔경 런타임 오버레이 및 ScenicPage 팔경 그룹 분리)이 main(33776ccb)에 성공적으로 병합되었습니다. 후속 작업으로 지자체 팔경 결손 상위 허브인 의성 빙계팔경(8건 전수) 및 무주 구천동33경(28건 결손)에 대한 공식 팩트 기반 런타임 오버레이(LOCAL_SCENIC_MEMBER_OVERLAYS) 보강 계획을 수립했습니다.',
+    at: '2026-09-10T22:00:00.000Z',
+  },
+  {
+    id: '2026-09-10-palgyeong-use-4-preview-qa-passed',
+    session: '팔경 활용 #4, 사람 Preview QA',
+    title: '문경·단양 리스트 팔경 그룹 분리 및 상세 모달 사람 Preview QA 통과',
+    detail:
+      '문경 및 단양 테마 명승 페이지에서 지자체 팔경 전용 앰버 배지·디바이더 분리 표시와 지역 대표 명소 구분선, 그리고 문경 4건(새재계곡·쌍용계곡·운달계곡·봉암사백운대) 및 단양 2건(하선암·옥순봉)의 상세 모달 사진·공식 개요 본문 노출에 대해 사람 Preview QA 검증을 최종 통과했습니다.',
+    at: '2026-09-10T21:40:00.000Z',
+  },
+  {
+    id: '2026-09-10-palgyeong-use-3-mungyeong-danyang-overlays-and-group-ui',
+    session: '팔경 활용 #3, 누락 허브 본문 선별 및 팔경 전용 그룹 UI 준비',
+    title: '문경·단양 팔경 사진·개요 보강 및 리스트 전용 소제목 바 분리',
+    detail:
+      '94개 지자체 팔경(876명) 누락 현황을 분석하고, 문경(새재계곡·쌍용계곡·운달계곡·봉암사백운대) 및 단양(옥순봉·하선암)의 런타임 오버레이(LOCAL_SCENIC_MEMBER_OVERLAYS)를 보강하여 상세 모달과 썸네일을 완전 연결했습니다. 또한 ScenicPage에서 지자체 팔경 그룹 헤더와 기존 GATEO 선정 명소(지역 대표 명소) 구분을 명확한 배지·디바이더 UI로 분리 렌더링했습니다.',
+    at: '2026-09-10T14:30:00.000Z',
+  },
+  {
+    id: '2026-09-10-palgyeong-use-2-garisan-geumhaksan-photos-detail',
+    session: '팔경 활용 #2, 사람 Preview QA',
+    title: '홍천 가리산·금학산 사진 누락 및 본문 부재 해결',
+    detail:
+      '가리산(125593)은 TourAPI firstimage가 비어있던 문제를 searchPhoto 공식 사진 및 갤러리/개요 연동으로 해결했습니다. 금학산은 순수 지자체 팔경(홍천 4경, 수태극 조망)으로 런타임 오버레이를 통해 개요 본문과 홍천 남노일강변 공식 갤러리 및 썸네일을 제공하여 리스트·상세 모달·써머리 갤러리에서 정상 노출되도록 보강했습니다.',
+    at: '2026-09-10T12:20:00.000Z',
+  },
+  {
+    id: '2026-09-10-palgyeong-use-2-tour-contentid-photos',
+    session: '팔경 활용 #2, 사람 Preview QA',
+    title: '팔경 멤버 contentId 런타임 할당 — 리스트·써머리 사진',
+    detail:
+      'JSON에 contentId를 쓰지 않고, 팔경 행은 기존 id·tourapi_attraction 제목 조회·Tour firstimage로 사진을 붙입니다. 가리산(125593)은 핀·써머리 갤러리에 id가 전달되고, 금학산처럼 JSON에 id가 없어도 DB에 있으면 같은 경로로 상세·썸네일을 엽니다. GATEO 선정 분류칩은 scenic 승격 없이 koreaScenicSpots만 셉니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hongcheon 가리산·금학산 사진.',
+    at: '2026-09-10T12:10:00.000Z',
+  },
+  {
+    id: '2026-09-10-palgyeong-use-2-empty-thumb-click',
+    session: '팔경 활용 #2, 사진 없는 행 클릭',
+    title: '팔경 멤버 클릭 — 합성 id 상세·무사진 행 열기',
+    detail:
+      '사진 없는 팔경 행을 누르면 local-scenic:… id가 제목으로 나오거나 클릭이 막히던 문제를 고쳤습니다. 합성 id를 멤버 이름·contentId로 풀고, Tour id가 없어도 GATEO 안내 본문으로 엽니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hongcheon 가리산·금학산.',
+    at: '2026-09-10T11:20:00.000Z',
+  },
+  {
+    id: '2026-09-04-palgyeong-use-2-thumbs',
+    session: '팔경 활용 #2, Preview QA',
+    title: '팔경 리스트 썸네일 — GATEO 선정·contentId 연동',
+    detail:
+      '팔경 멤버 행에 GATEO 선정 명소(koreaScenicSpots) imageUrl을 매칭하고, contentId가 있으면 tourapi_attraction 캐시로 썸네일을 보강합니다. 명승 ul·축제 인근 그룹·홈 검색 suggestion에 적용. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=mungyeong 에서 진남교반 등 사진 확인.',
+    at: '2026-09-04T21:20:00.000Z',
+  },
+  {
+    id: '2026-09-04-palgyeong-use-2-festival-crash',
+    session: '팔경 활용 #2, Preview QA',
+    title: '축제 리스트 클릭 크래시 — nearbyPlaceLabel 복원',
+    detail:
+      '팔경 활용 #1에서 nearbyAttractionRow 추가 시 nearbyPlaceLabel이 삭제되어 축제 상세 시트가 ReferenceError로 크래시하던 문제를 고쳤습니다. Preview /qa/palgyeong-use — /korea에서 축제 카드 클릭→상세 열림·인근 관광지 로드 확인.',
+    at: '2026-09-04T20:10:00.000Z',
+  },
+  {
+    id: '2026-09-04-palgyeong-use-1-search-list',
+    session: '팔경 활용 #1, 검색·리스트',
+    title: '탐색창 문경 팔경 소제목 · 명소 ul 상단 N경 · 축제 인근 그룹',
+    detail:
+      '홈 검색 「문경」에 소제목 문경 팔경+멤버를 여행지·지명보다 앞에 붙였습니다. 명승 같은 ul 상단에 N경 멤버(contentId 없으면 이름만). 축제 상세 인근 관광지 목록 안에만 소제목 그룹. Tour LIVE·scenic 승격·축제 홈 파드 없음. Preview /qa/palgyeong-use — 홈 검색 문경 · /korea/theme/scenic?hub=mungyeong · 축제 상세 인근 목록.',
+    at: '2026-09-04T10:00:00.000Z',
+  },
+  {
+    id: '2026-09-09-world-events-54c-en-photos',
+    session: '세계행사 일정 #54c, 리스트 사진 확대 Prod QA',
+    title: '행사 사진 Unsplash 영문 검색',
+    detail:
+      '리스트·상세 사진 호출을 영문 행사명으로 바꿨습니다. 한글 Unsplash는 무관 사진이 나와 폴백이 안 됐습니다. 위키만 있는 갤러리 캐시는 다시 받고, 문서·같은 컷 연속은 걸러집니다. Preview /qa/world-events — 로즈 퍼레이드·빈 오페라 카드가 행사 장면인지.',
+    at: '2026-09-09T10:20:00.000Z',
+  },
+  {
+    id: '2026-09-09-world-events-54b-list-thumb-size',
+    session: '세계행사 일정 #54b, 리스트 썸네일 Preview QA',
+    title: '리스트 카드 사진 확대 · 이동 링크 제거',
+    detail:
+      '/world-events 카드에서 플래너·숙소·여행지·공식 링크 칩을 빼고 16:10 사진을 키웠습니다. 제목·사진 탭은 행사 상세로 갑니다. 첫 진입은 event_hero_gallery Unsplash를 먼저 그리고, 없는 건 Unsplash 검색입니다. Preview /qa/world-events — 큰 썸네일·칩 없음·지역 칩 전환 후 사진 유지.',
+    at: '2026-09-09T03:50:00.000Z',
+  },
+  {
+    id: '2026-09-08-world-events-53-list-unsplash',
+    session: '세계행사 일정 #53, 리스트 Unsplash 사진',
+    title: '세계의 행사 리스트 썸네일 — Unsplash',
+    detail:
+      '/world-events 카드에 Unsplash 썸네일을 붙였습니다. 위키 시드는 쓰지 않고, 상세에서 쌓인 event_hero_gallery의 Unsplash 장을 읽고 없으면 검색합니다. Preview /qa/world-events — 리스트 사진이 행사 장면인지, 위키 옛 사진이 아닌지.',
+    at: '2026-09-08T12:20:00.000Z',
+  },
+  {
+    id: '2026-09-07-globe-frame-zoom-1-page-lock',
+    session: '지구본 프레임 줌 #1, 페이지 줌 복귀',
+    title: '지구본 밖 프레임 확대 후 복귀 불가 차단',
+    detail:
+      '홈에서 지구본 밖 기본 프레임을 핀치하면 페이지가 확대되고 지구본이 화면을 채운 뒤 축소할 프레임이 사라져 복귀가 막혔습니다. 홈·탐색만 페이지 줌을 잠그고, 이미 확대된 배율은 되돌리며, 우주 버튼도 페이지 줌을 리셋합니다. /place 본문 핀치는 유지. Preview /qa/globe-frame-zoom — 프레임 핀치 후 지구본이 화면을 채워도 우주 버튼·핀치로 기본 화면 복귀.',
+    at: '2026-09-07T21:20:00.000Z',
+  },
+  {
+    id: '2026-09-07-summary-close-1-android-ghost',
+    session: '써머리 닫기 #1, Android Chrome 고스트 클릭',
+    title: '써머리 X 닫기 후 지구본 클릭 관통 차단',
+    detail:
+      'Android Chrome에서 써머리 X가 pointerdown으로 카드를 벗기면 남은 클릭이 Mapbox로 뚫려 다른 여행지 써머리가 열렸습니다. 닫기는 유지하고, 닫는 순간 500ms 지구본 클릭 가드를 겁니다. Preview /qa/summary-close — 장소카드 X → 닫힘 · 다른 써머리 안 열림.',
+    at: '2026-09-07T05:50:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-12-stale-visit-row',
+    session: '자킨토스 검색 #12, Preview QA',
+    title: '한글 방문 행(0,0·인물)은 검색에 안 씀',
+    detail:
+      '자킨토스만 place_stats에 한글 place_id·좌표 0,0·인물 갤러리가 남아 지도 검색을 가로챘다. 그 행은 방문 카드로 쓰지 않고, 갤러리는 라틴 zakynthos 해변 행을 고른다. Preview /qa/zakynthos — 재검색 시 그리스·해변 사진 · Explore 아님.',
+    at: '2026-09-06T20:40:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-11-greece-label',
+    session: '자킨토스 검색 #11, Preview QA',
+    title: '방문 카드 — GLOBAL 대신 그리스',
+    detail:
+      '#10이 Explore를 비우면서 헤더가 Global로 떨어짐. Search Box 객체 context에서 나라를 읽고, 방문 좌표를 역지오해서 그리스·Zakynthos를 카드에 붙인다. 인물 image_url은 그리드에 쓰지 않음. Preview /qa/zakynthos — 드롭다운·써머리·장소 헤더가 그리스 자킨토스인지.',
+    at: '2026-09-06T20:00:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-10-visited-country',
+    session: '자킨토스 검색 #10, 방문 요약 카드 QA',
+    title: '방문 카드 — 그리스 표기 · 사진 호출',
+    detail:
+      '방문 place_stats 카드가 국가 없이 Explore로 떨어지고 한글 name_en이라 사진을 안 불렀음. 지도 히트의 그리스·Zakynthos를 겹치고, 탐색 그리드는 저장 썸네일·한 장 조회를 쓴다. SSOT 사바는 방문 카드가 가리지 않음. Preview /qa/zakynthos — 자킨토스 재검색 요약에 그리스·해변 사진.',
+    at: '2026-09-06T15:20:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-9-visited-summary',
+    session: '자킨토스 검색 #9, Preview QA',
+    title: '검색은 지도 우선 · 방문한 지명은 요약 카드',
+    detail:
+      'Enter 로딩이 「AI 탐색」으로 보이던 것은 지오코딩 실패가 아님. 문구를 지도 검색으로 바꿨다. 장소카드를 열어 방문이 쌓이면 place_stats에 한글·영문·좌표를 남기고, 다음 검색부터 드롭다운·탐색 그리드·Enter 선택 카드에 그 지명 요약이 뜬다. AI는 지도를 못 찾았을 때만. Preview /qa/zakynthos — 자킨토스 방문 후 다시 검색.',
+    at: '2026-09-06T14:50:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-8-unseen-geocode',
+    session: '자킨토스 검색 #8, Preview QA',
+    title: '미등록 한글 지명은 Search Box 공백이면 Geocoding으로 보강',
+    detail:
+      '자킨토스·사바 별칭이 아니라 검색 성능. Search Box ko 공백이면 en을 건너뛰던 .every 구멍 수정. 한글 쿼리를 해외 지명이 못 덮으면 Mapbox Geocoding(ko+en)을 드롭다운 앞에 붙임. Preview /qa/zakynthos — 케팔로니아·시프노스·포르멘테라·파로스 등 미등록 지명.',
+    at: '2026-09-06T12:20:00.000Z',
+  },
+  {
+    id: '2026-09-06-gallery-panel-1-info-dock',
+    session: '갤러리 좌측 패널 #1, 공간 조정',
+    title: 'PC 정보 패널 — 연관 검색어가 무니 위에 보이게',
+    detail:
+      '본문 써머리가 길어지면 400px 안쪽 스크롤에 연관 칩이 숨고, 무니 입력창 위 공간은 비어 있었음. 써머리만 남은 높이를 쓰고 연관 칩은 스크롤 밖(무니 바로 위)에 둠. Preview /qa/gallery-panel — 파리 갤러리 PC 좌측에서 스크롤 없이 하단 연관 칩이 보이는지.',
+    at: '2026-09-06T12:30:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-7-restore-dropdown',
+    session: '자킨토스 검색 #7, Preview QA',
+    title: '자킨토스 타이핑 드롭다운을 다시 연다',
+    detail:
+      '왼쪽 자킨토스 카드는 맞았고 드롭다운이 사라진 것은 과교정. #6이 Enter 뒤 선택 카드가 있으면 검색바 재오픈을 막아 자동완성이 안 됨. 포커스·클릭·타이핑은 다시 열고, Enter 선택 카드와 드롭다운은 같은 핀(Zakynthos)을 쓴다. Preview /qa/zakynthos — 자킨토스 타이핑 자동완성 · 좌측 카드 해변.',
+    at: '2026-09-06T12:05:00.000Z',
+  },
+  {
+    id: '2026-09-06-agencies-3-collapsed',
+    session: '여행사 목록 #3, Preview QA',
+    title: '로고 패널 — 방문한 여행사 접힘 기본',
+    detail:
+      '로고 패널을 여행사 리스트가 가득 채우던 문제를 접힌 「방문한 여행사」로 바꿈. 탐색창 칩 명칭도 「방문한 여행사」(기록 있으면 개수). Preview /qa/agencies — 로고 열어 접힘 확인 후 펼침, 탐색 칩 명칭.',
+    at: '2026-09-06T11:50:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-6-dropdown-latin',
+    session: '자킨토스 검색 #6, 사바섬 Preview QA',
+    title: '자킨토스 드롭다운과 선택 카드를 같은 핀으로',
+    detail:
+      '타이핑 드롭다운은 Search Box 한글 도시, Enter 카드는 지오코딩 Zakynthos라 클릭 경로가 갈라짐. 한글 place_id로 열리면 인물 갤러리 고착. ko/en을 좌표로도 붙이고, 드롭다운 선택 전에 retrieve(en)로 라틴 name_en·slug를 넣음. Enter 후 선택 카드가 떠 있으면 검색바가 다른 키워드 드롭다운을 다시 열지 않음. Preview /qa/zakynthos — 자킨토스 드롭다운·좌측 카드 모두 (Zakynthos) 해변 · 사바섬 회귀.',
+    at: '2026-09-06T11:45:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-5-caribbean-saba',
+    session: '자킨토스 검색 #5, 사바섬 Preview QA',
+    title: '사바섬 — 말레이시아 사바 앞 · 카리브 Saba 둘째 고정',
+    detail:
+      'Preview QA에서 사바(말레이시아)만 나옴. Mapbox ko 표기「사바」가 SSOT와 이름 충돌해 카리브 카드가 사라짐. 네덜란드령 Saba를 고정 동명으로 Enter·제안 둘째에 유지. 한국 사원 아님. Preview /qa/zakynthos — 사바섬 → 사바(말레이시아) · 사바섬(Saba, 네덜란드).',
+    at: '2026-09-06T11:30:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-4-sabah-homonym',
+    session: '자킨토스 검색 #4, 사바섬 Preview QA',
+    title: '사바섬 — 말레이시아 사바 여행지 + 카리브 사바 동명',
+    detail:
+      '여행 프로「사바섬」은 말레이시아 사바주(코타키나발루·BKI). Mapbox만 쓰면 카리브 네덜란드 Saba 한 장만 나옴. SSOT 사바를 앞에 두고, 멀리 떨어진 카리브 사바는 선택 카드로 유지. 한국 시크 사원·사보섬은 1순위 아님. Preview /qa/zakynthos — 탐색창 사바섬 → 사바(말레이시아) 여행지 · (있으면) Saba 카리브.',
+    at: '2026-09-06T11:20:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-2-uiplace-en',
+    session: '자킨토스 검색 #2, Preview QA',
+    title: '검색 uiPlace — 맵박스 영문명으로 갤러리·영상 연결',
+    detail:
+      '자킨토스는 SSOT가 아님. Mapbox ko가 name_en에 한글을 넣던 구멍을 ko+en으로 메움. 라틴 지명으로 카드 부제·Unsplash·YouTube가 붙고, 캐시된 한글 name_en은 역지오로 치유. Preview /qa/zakynthos — 탐색창 자킨토스 → (Zakynthos) · 해변 갤러리 · 영상·플래너.',
+    at: '2026-09-06T10:10:00.000Z',
+  },
+  {
+    id: '2026-09-06-zakynthos-1-ssot',
+    session: '자킨토스 검색 #1, SSOT 등록',
+    title: '자킨토스 — 영문명 있는 여행지 카드',
+    detail:
+      '배포본 탐색창「자킨토스」가 Mapbox 한글 도시(영문 없음·인물 갤러리)로 열림. SSOT 여행지 등록 + 자킨토시/잔테/Zante 별칭. Preview /qa/zakynthos — 탐색창 자킨토스·자킨토시 → (Zakynthos) 영문·여행지 뱃지·해변 갤러리.',
+    at: '2026-09-06T08:50:00.000Z',
+  },
+  {
+    id: '2026-09-06-pickup-1-onelink-web',
+    session: '공항픽업 링크 #1, OneLink 우회',
+    title: '클룩 공항 픽업 — 웹 직행 (앱 열기 경고 없음)',
+    detail:
+      'affiliate.klook.com/redirect 가 klook.onelink.me + klook:// 로 가서 iOS가 「다른 애플리케이션을 열려고 합니다」를 띄움. Preview(vercel.app)에서 더 잘 드러남. klook.com?aid=118544 웹 직행. Preview /qa/pickup — 후쿠오카 플래너 공항 픽업 → 클룩 웹(GATEO) · 앱 열기 경고 없는지.',
+    at: '2026-09-06T06:40:00.000Z',
+  },
+  {
+    id: '2026-09-06-gallery-2-db-portrait-refetch',
+    session: '갤러리 인물 제외 #2, DB 고착 수정',
+    title: 'DB에 쌓인 단일 인물도 걸러 LIVE 재조회',
+    detail:
+      '자킨토스처럼 place_stats에 인물만 있으면 빈 갤러리 방지 가드가 원본을 그대로 보여 줌. 장소 태그 island/travel만으로는 전경으로 보지 않음. 필터 후 0장이면 DB를 건너뛰고 Unsplash/Pexels를 다시 받음. Preview /qa/gallery-portrait — 자킨토스 갤러리에서 셀카·얼굴 클로즈업이 빠지는지.',
+    at: '2026-09-06T06:31:00.000Z',
+  },
+  {
+    id: '2026-09-06-agencies-2-gyg-iframe',
+    session: '여행사 목록 #2, Preview QA',
+    title: '겟유어가이드 위젯 방문도 기록',
+    detail:
+      'MRT·트립닷컴은 <a>라 방문이 남았는데, 겟유어가이드는 iframe 위젯이라 투어를 눌러도 기록이 안 남았음. 위젯 포커스 시 제휴 검색/홈 URL을 저장. Preview /qa/agencies — 파리 플래너·투어 찾기에서 겟유어가이드 투어를 연 뒤 로고 패널 방문 기록.',
+    at: '2026-09-06T05:50:00.000Z',
+  },
+  {
+    id: '2026-09-06-agencies-1-reentry',
+    session: '여행사 목록 #1, 재접속 경로',
+    title: '로고패널·탐색·플래너에 여행사 목록',
+    detail:
+      'MRT 등 제휴 사이트를 북마크하지 않고 이탈해도, 로고 패널·탐색「여행사」칩·플래너에서 방문 기록(마지막 URL)과 연결된 여행사 홈으로 다시 들어갈 수 있음. 기록은 이 기기 localStorage. Preview /qa/agencies — 로고 열어 마이리얼트립 확인, 탐색 칩, /place/paris/planner 접힌 목록.',
+    at: '2026-09-06T04:30:00.000Z',
+  },
+  {
+    id: '2026-09-06-updates-1-no-popup',
+    session: '릴리스 노트 푸터 #1, 자동 팝업 제거',
+    title: '홈 진입 시 릴리스 노트 모달 없음',
+    detail:
+      '신규·Preview 방문마다 뜨던 릴리스 노트 팝업을 제거. 내역은 로고 패널 푸터 Updates에만 둠. 배포 후 새로고침 안내는 유지. Preview /qa/updates — 홈에 공지 모달이 안 뜨고, 로고→Updates에 기존 목록이 있는지.',
+    at: '2026-09-06T04:15:00.000Z',
+  },
+  {
+    id: '2026-09-06-gallery-related-1-scroll-top',
+    session: '갤러리 연관 스크롤 #1, 여행지 전환 상단',
+    title: '연관 여행지 탭 — 새 갤러리 상단부터',
+    detail:
+      '갤러리를 내려보다 하단 연관 여행지를 누르면 이전 스크롤 위치에서 다음 지역이 열려 중간부터 보임. 전환 시 중첩 스크롤을 즉시 맨 위로 맞추고 갤러리 탭을 유지. Preview /qa/gallery-related — 파리 갤러리 중간까지 스크롤 후 하단 칩 → 새 여행지 상단(소개·첫 사진)인지.',
+    at: '2026-09-06T03:40:00.000Z',
+  },
+  {
+    id: '2026-09-06-gallery-manage-1-long-press',
+    session: '갤러리 사진 관리 #1, 모바일 길게 누르기',
+    title: '모바일 갤러리 — 길게 눌러 관련 없는 사진 제거',
+    detail:
+      'PC는 Ctrl(⌘)+더블클릭으로 DB에서 빼는 기능이 있었는데 모바일에는 없었음. 그리드·확대 사진을 길게 누르면 확인 시트가 뜨고, 제거 시 place_stats 갤러리에서 빠짐. Preview /qa/gallery — 모바일에서 사진 꾹 → 제거 → 목록에서 사라지는지.',
+    at: '2026-09-06T02:40:00.000Z',
+  },
+  {
+    id: '2026-09-06-gallery-1-no-portrait',
+    session: '갤러리 인물 제외 #1, 단일 인물 필터',
+    title: '스톡 갤러리에서 단일 인물 사진 제외',
+    detail:
+      'Unsplash/Pexels에 인물 제외 파라미터가 없어 orientation=landscape는 쓰지 않음(세로 전경 유지). 설명·태그·비율로 셀카·헤드샷·세로 인물만 빼고, 전경 속 사람은 유지. Preview /qa/gallery — 파리 갤러리에 단일 인물 사진이 줄었는지, 거리·랜드마크 전경은 남는지.',
+    at: '2026-09-06T00:48:00.000Z',
+  },
+  {
+    id: '2026-09-03-globe-labels-3-safari-first-load',
+    session: '홈 지구본 지명 #3, 사파리 첫 진입 지명',
+    title: '사파리 첫 진입 — 자전 hold 중 지명 pump',
+    detail:
+      '증상: 사파리 홈 첫 진입 시 대륙·대양 지명이 간헐적으로 없음. EN 토글만 복구. 원인: locale 패치가 mapReady 전에 no-op, 320ms 후 jumpTo가 CJK continuePlacement를 끊음, Safari isMoving이 자전 없이도 남아 overlay가 return. 적용: mapReady 후 EN 토글과 같은 text-field 강제 적용, 페인트/1.6s까지 자전 hold·pump. Preview /qa/globe-labels — 사파리 첫 진입(EN 없이) 지명.',
+    at: '2026-09-03T10:30:00.000Z',
+  },
+  {
+    id: '2026-09-02-globe-labels-1-first-load',
+    session: '홈 지구본 지명 #1, 첫 로딩 지명',
+    title: '모바일 첫 로딩 — 자전 hold 후 지명 페인트',
+    detail:
+      '증상: 모바일 홈 첫 로딩 후 gateo 지명이 없음. EN 토글·재실행·새로고침만 복구. 원인: 마운트 즉시 jumpTo 자전이 Mapbox continuePlacement·idle을 끊어 overlay가 visibility:none에 고착. 첫 overlay 페인트+320ms 뒤에만 자전 재개·GeoJSON 직접 setData. Preview /qa/globe-labels — 모바일 첫 진입 시 지구본 여행지명이 EN 없이 보이는지.',
+    at: '2026-09-02T20:30:00.000Z',
+  },
+  {
+    id: '2026-09-02-home-festival-chip-4-merge',
+    session: '홈 축제칩 #4, main 병합',
+    title: '사람 Preview QA PASS — PR #177 main 병합',
+    detail:
+      '모바일: 지명 탭 후 접힘 유지. PC: 접힌 칩 라벨 전부 보임 · 테마 카테고리와 겹침 없음. 작업 로그·/qa/home-chip 종료(PROD `/`).',
+    at: '2026-09-02T14:50:00.000Z',
+  },
+  {
+    id: '2026-09-02-home-festival-chip-pc-width',
+    session: '홈 축제칩 #3, PC 접힘 너비',
+    title: 'PC 접힌 칩 너비 — 짧은 라벨 전부 표시',
+    detail:
+      'PC max-w-[14rem]+truncate로 「축제 · 행사 · 명승 · 추천」이 잘림. md:max-w-none · 말줄임 해제. 모바일 14rem 유지. Preview /qa/home-chip — PC 접힌 칩 문구가 잘리지 않는지.',
+    at: '2026-09-02T14:25:00.000Z',
+  },
+  {
+    id: '2026-09-02-home-festival-chip-pc-collapse',
+    session: '홈 축제칩 #2, PC 접힘',
+    title: 'PC 좌상단 바로가기도 접힌 칩',
+    detail:
+      'PC는 축제·행사·명승·큐레이션이 항상 펼쳐져 테마 카테고리(top 17rem)와 겹침. 모바일과 같은 접힌 버튼·탭 펼침으로 통일. Preview /qa/home-chip — PC 홈에서 한 줄 접힘·카테고리와 겹침 없는지·펼침/접힘 확인.',
+    at: '2026-09-02T14:20:00.000Z',
+  },
+  {
+    id: '2026-09-02-home-festival-chip-keep-collapsed',
+    session: '홈 축제칩 #1, 써머리 펼침 방지',
+    title: '써머리 장소 카드 열 때 축제 칩 접힘 유지',
+    detail:
+      '모바일 지구본 지명 클릭 → 써머리 카드가 hideExploreChrome을 켜며 좌상단 바로가기가 축제·행사 목록으로 펼쳐지던 문제. 접힘 표시를 장소 카드와 분리하고, 카드 열림 시 자동 접힘. Preview /qa/home-chip — 지명 클릭 후 좌측 칩이 한 줄 접힘인지 확인.',
+    at: '2026-09-02T14:10:00.000Z',
+  },
+  {
+    id: '2026-09-02-search-locale-hit-3-merge',
+    session: '홈 검색바 히트 #3, main 병합',
+    title: '사람 Preview QA PASS — PR #175 main 병합',
+    detail:
+      '모바일: 검색→/explore · EN 토글 독립 클릭 · 바로가기 2행 OK. 작업 로그·/qa/search-hit 종료(PROD `/`).',
+    at: '2026-09-02T13:50:00.000Z',
+  },
+  {
+    id: '2026-09-02-search-locale-hit-2-homeui-flex',
+    session: '홈 검색바 히트 #2, HomeUI flex',
+    title: '모바일 헤더 [로고+EN | 검색 flex-1] · 바로가기 2행',
+    detail:
+      '고정 left-[7.75rem] 검색바 제거. 모바일 1행 flex [로고+EN | 검색 flex-1] · 바로가기 칩 2행. chrome 실드가 검색 클릭을 가로채지 않음. HomeGlobeMapbox·LocaleProvider 미변경. Preview /qa/search-hit — EN 토글·검색 각각 클릭.',
+    at: '2026-09-02T13:45:00.000Z',
+  },
+  {
+    id: '2026-09-02-search-locale-hit-1-prep',
+    session: '홈 검색바 히트 #1, 브랜치·핸드오프 준비',
+    title: '모바일 검색바·EN 토글 히트 겹침 — 세션 준비',
+    detail:
+      '증상: 모바일 검색바(left-[7.75rem])와 EN/KO chrome 실드(z-110) 겹침 → 검색 클릭 무력화. #173 flex는 Mapbox 연쇄와 함께 롤백됨 · #174 지구본 locale은 main. 다음: HomeUI만 flex [로고+EN | 검색 flex-1] · HomeGlobeMapbox 금지. Preview /qa/search-hit.',
+    at: '2026-09-02T13:15:00.000Z',
+  },
+  {
+    id: '2026-09-02-home-locale-9-mobile-labels',
+    session: '홈 locale #9, 모바일 지구본 지명',
+    title: '모바일 EN 토글 — 지명 고착 수정',
+    detail:
+      '모바일: UI EN은 되나 Mapbox 지명·핀이 KO 유지. 원인: 레이어 ID 미갱신 no-op에도 echo suppress 120ms → styledata 실적용 차단·idle 적어 고착. refresh 후 갱신 수>0일 때만 suppress·재시도·자전 잠시 정지·핀 setData 강제. Preview 모바일 EN 토글 → 국가·대륙·핀 영문·KO 복귀.',
+    at: '2026-09-02T13:30:00.000Z',
+  },
+  {
+    id: '2026-09-02-home-locale-6-double-flash',
+    session: '홈 locale #6, 사람 Preview QA',
+    title: 'EN 토글 이중 깜박임 — satellite setLanguage 제거',
+    detail:
+      '사람 QA: 검게→한글 지명→영문 2단 플래시. deep/neon에서 setLanguage+text-field 이중 적용이 원인. 위성은 coalesce만 1회·styledata 에코 120ms 무시. Preview /qa/en · EN 토글 시 지구본 지명이 한 번에 EN인지·KO 복귀 확인.',
+    at: '2026-09-02T13:00:00.000Z',
+  },
+  {
+    id: '2026-08-27-world-events-d4-opening-preset',
+    session: '세계행사 일정 #27, Wave1.5 D4 숙소·파일럿 회귀',
+    title: '개막 3박 프리셋·초기값·중복 API 방지',
+    detail:
+      '내 여행 일정: 개막 3박=행사 전날 체크인 · tripWindow↔opening 프리셋 SSOT · 활성 칩 ring+disabled · 동일 날짜 클릭 시 MRT 재호출 생략. Preview /qa/world-events → munich·bali 상세 「내 여행 일정」개막 3박 강조·재클릭 무API 확인.',
+    at: '2026-08-27T20:00:00.000Z',
+  },
+  {
+    id: '2026-08-27-world-events-d3-reqa-hotfix',
+    session: '세계행사 일정 #26, Wave1.5 D3 재QA',
+    title: '갈룽안 en위키·펜jor 검색·무니 칩 chatDraft',
+    detail:
+      'D3 재QA: ko위키 갈룽안(없음)→en.wikipedia/Galungan · 펜jor Google en 쿼리 · MOONi 대화칩 chatDraft 대기 후 전송·FAB 재오픈 최소화. Preview /qa/world-events → /world-events/bali-galungan-season-2026 — 갈룽안 안내·펜져 검색·무니 칩 3종·주제 칩 재확인.',
+    at: '2026-08-27T13:30:00.000Z',
+  },
+  {
+    id: '2026-08-27-world-events-d3-media-attractions',
+    session: '세계행사 일정 #26, Wave1.5 D3 미디어·명소',
+    title: 'heroImage·YouTube·검색·명소 허브 브릿지',
+    detail:
+      'D3 QA 피드백 반영: heroImage Wikimedia URL 수정 · 갈룽안 안내→위키백과 · 펜져 검색 한글 · Google 검색 쿼리 ko·무니 칩 재전송. Preview /qa/world-events → /world-events/bali-galungan-season-2026 재확인.',
+    at: '2026-08-27T12:30:00.000Z',
+  },
+  {
+    id: '2026-08-27-world-events-d2-qa-redirect',
+    session: '세계행사 일정 #25, Wave1.5 D2 무니 행사칩',
+    title: '/qa/world-events → wave2 Preview 고정',
+    detail:
+      '/qa/world-events·cloudQaShareLinks가 구 efa3 Preview를 가리키던 문제 수정 → cursor/world-events-wave2. Preview /qa/world-events → /world-events/edinburgh-fringe-2026 — 「행사 바로가기」3칩·무니 질문 칩·FAB 행사 맥락 시드 확인.',
+    at: '2026-08-27',
+  },
   {
     id: '2026-08-27-world-events-festival-mooni-fab-fix',
     session: '세계행사 일정 #20, QA 재확인 · 국내 FestivalStayStrip',

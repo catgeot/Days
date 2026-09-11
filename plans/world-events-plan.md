@@ -1,16 +1,19 @@
 # 세계 축제·행사 기반 여행 일정 — 마스터 플랜
 
-**세션 표기**: `세계행사 일정 #2, P0-a — 스키마·generate·audit`  
-**브랜치**: `cursor/world-events-efa3`  
-**상태**: 🚀 **구현 착수** — Q&A 확정 · 세션 #2부터 코드  
+**세션 표기**: `세계행사 일정 #33, …`  
+**브랜치**: `cursor/world-events-wave2` (고정)  
+**상태**: **Wave 1.5 D5-b-2 main 병합** — P0~P2·v2 15건 URL ✅ · **D5-b 표준화 진행 중** (3/15)  
+**상세 SSOT**: [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) F-0.5·F-0.6  
 **관련**: [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) · [`travel-spots-management.md`](./travel-spots-management.md) · [`world-events-qa-index.md`](./world-events-qa-index.md)
 
 | Phase | 내용 | 상태 |
 |-------|------|------|
-| **P0** | 공통 Event 스키마 · generate/audit · `tripWindow` | ✅ P0-b 완료 · P1 대기 |
-| **P1** | 국내 `/korea` ↔ 숙소·플래너·항공 날짜 브리지 | 세션 #4–#5 |
-| **P2** | 해외 SSOT · PlaceCard · `/world-events` | 세션 #6–#8 |
-| **P3** | **공식 피드(ICS/RSS) POC** · 통합 `/events` · 기타 API | 세션 #9 이후 · **§5.1** |
+| **P0** | 공통 Event 스키마 · generate/audit · `tripWindow` | ✅ |
+| **P1** | 국내 `/korea` ↔ 숙소·플래너·항공 날짜 브리지 | ✅ |
+| **P2** | 해외 SSOT · PlaceCard · `/world-events` | ✅ main |
+| **Wave1.5** | D5-b 표준 상세 · 파일럿 3 → 15건 확장 | **진행** (#33~#37) |
+| **Wave2** | singapore·dubai·barcelona·istanbul | #33~ 대기 |
+| **P3** | 공식 피드(ICS/RSS) POC · `/events` 통합 | #39+ · **§5.1** |
 
 ---
 
@@ -319,32 +322,30 @@ flowchart LR
 
 **인덱스**: [`feature-handoff-index.md`](./feature-handoff-index.md)
 
-**상태 (2026-08-27)**: **Wave1.5 D1** PR [#154](https://github.com/catgeot/Days/pull/154) · `cursor/world-events-wave2` · EventTravelGuide v0.2 · PROD Tier3 suppress
+**상태 (2026-08-29)**: PR [#156](https://github.com/catgeot/Days/pull/156) **merged** `b2ac6888` · D5-b-2 파일럿 3 · 중간점검 로드맵 반영
 
 | Phase | 결과 |
 |-------|------|
-| **P0** | `tripWindow` · generate/audit PASS |
-| **P1** | `/korea` 축제 → FestivalStayStrip · Mooni FAB (플래너 링크 제거) |
-| **P2** | Wave1 15건 · PlaceCard · `/world-events` · 홈 · TripWindow 프리셋 — **main** |
-| **v2 B~D** | #12~#18 — 15건 Tier0.5 · EventStayStrip · Mooni FAB · AI fixture #1~#4 |
-| **v2 #19~#22** | QA fix · FestivalStayStrip · PR #153 merged · PROD §6.1 QA |
-| **Wave1.5 D1 #23** | AI v0.2 정적 분리 · pilot fixture 3건 · PR **#154** draft |
+| **P0~P2** | main 반영 완료 |
+| **v2 #12~#18** | 15건 상세 URL · Tier0.5 · 위젯 |
+| **Wave1.5 D1~D5-b-2** | 파일럿 3 D5-b 표준 · PR #156 |
+| **다음** | #33 PROD QA + Wave2 · #34~#37 D5-b 12건 · #38 i18n |
 
-**v2 (#12~#21)**: [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) · 샘플 로그 [`world-events-sample-log.md`](./world-events-sample-log.md)  
-**세션 번호**: Cloud 채팅 `#12`~ (main 일지 #11=PR150 병합과 별도)
+**세션 번호 SSOT**: Cloud `#12`~ = [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) (본 문서 §10 구 로드맵과 혼동 금지)
 
-**다음 제시어** (#24 — D1 QA):
+**다음 제시어** (#33):
 
 ```
-세계행사 일정 #24, Wave1.5 D1 Preview QA
+세계행사 일정 #33, PROD QA · Wave2 singapore·dubai
 @plans/feature-handoff-index.md
 @plans/2026-08-27-project-log.md
 @plans/world-events-detail-ux-plan.md
-브랜치 cursor/world-events-wave2 · PR #154 · www.gateo.kr/qa/world-events · /world-events/edinburgh-fringe-2026
-금지: D2 구현 · 새 feature 브랜치 · Wave1 브랜치 · worldEvents.json 직편집 · feature에 plans 커밋 · Wave2 overrides
-작업: Preview·PROD QA — PROD AI 패널 없음 · Preview pilot 3건 AI v0.2 · 정적 Tier0~0.5 분리 · non-pilot AI 없음 · §6.1.1
+@plans/world-events-management.md
+브랜치 cursor/world-events-wave2 · main b2ac6888 · https://www.gateo.kr/world-events
+금지: worldEvents.json 직편집 · PROD §6.1.1 OK 전 Wave2 merge
+작업: PROD 파일럿 3건 D5-b §6.1.1 → OK 시 singapore·dubai · F-0.5 D5-b-3 로드맵
 ```
 
-**읽을 것**: [`world-events-management.md`](./world-events-management.md) **§6.1·§6.1.1 QA 체크리스트**
+**읽을 것**: [`world-events-management.md`](./world-events-management.md) **§6.1·§6.1.1** · detail-ux-plan **F-0.5 중간점검·D5-b-3**
 
 **VERIFY**: `smoke:world-events` · `smoke:world-events-detail` · `smoke:event-travel-guide` · `audit:event-travel-guide` · `build` PASS

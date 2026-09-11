@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { resolveAffiliateHomeFromBrandText } from '../../../utils/affiliateBrandMatch';
+import { openPartnerExternalUrl } from './partnerNavigation';
 import { isMobileDevice } from './device';
 
 export const CopyableWord = ({ word, koreanName, locationName, type }) => {
@@ -15,7 +16,7 @@ export const CopyableWord = ({ word, koreanName, locationName, type }) => {
         e.stopPropagation();
 
         if (affiliateHomeUrl) {
-            window.open(affiliateHomeUrl, isMobileDevice() ? '_self' : '_blank');
+            openPartnerExternalUrl(affiliateHomeUrl, { placeLabel: locationName });
             return;
         }
 

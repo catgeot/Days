@@ -19,6 +19,7 @@ import TripcomFlightBannerWidget from './planner/components/TripcomFlightBannerW
 import FlightCinemaPlannerNotice from './planner/components/FlightCinemaPlannerNotice';
 import { TripcomFlightSearchProvider } from './planner/TripcomFlightSearchContext';
 import RelatedTravelSpots from '../RelatedTravelSpots';
+import TravelAgencyDirectory from '../../travelAgencies/TravelAgencyDirectory';
 import { getEssentialGuide, isToolkitLocationMismatch } from '../../../utils/toolkitPlaceIdResolve';
 import { shouldShowFerryCard } from '../../../utils/ferryBookingMatch';
 import { mergeCanonicalTravelSpot, getPlaceStableKey } from '../../../utils/travelSpotResolve';
@@ -332,15 +333,23 @@ const PlannerTab = ({
         );
     }
 
+    const plannerBodyScrollClass = `flex-1 min-h-0 w-full flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar bg-[#f8f9fa] px-3 sm:px-4 ${mobilePlaceFooterScrollPadding} md:p-6 md:pt-10 md:pb-8 ${plannerScrollSurfaceClass}`;
+
     if (!guideData && !isLoading) {
         return (
-            <div className="w-full h-full flex flex-col bg-[#f8f9fa]">
+            <div className="w-full h-full relative flex flex-col min-h-0 bg-[#f8f9fa]">
+                <div className={mobilePlaceHeaderSpacerClass} aria-hidden="true" />
+                <div
+                    ref={scrollContainerRef}
+                    data-planner-scroll-root=""
+                    className={plannerBodyScrollClass}
+                >
                 {mobileSecondaryNav && (
-                    <div className={`md:hidden shrink-0 border-b border-gray-200/90 bg-[#f8f9fa] px-2 pb-2 ${mobilePlaceHeaderScrollPadding}`}>
+                    <div className={`md:hidden shrink-0 -mx-3 sm:-mx-4 px-2 pb-2 mb-1 border-b border-gray-200/90 bg-[#f8f9fa] ${mobileLandscapeChromeHidden}`}>
                         {mobileSecondaryNav}
                     </div>
                 )}
-                <div className="flex flex-1 flex-col items-center justify-center p-6 text-center min-h-0">
+                <div className="w-full max-w-lg mx-auto flex flex-col items-center text-center pt-6 md:pt-0">
                 <Briefcase size={48} className="text-gray-300 mb-4" />
                 <h3 className="text-lg font-bold text-gray-800 mb-2">{t('place.planner.emptyTitle')}</h3>
                 <p className="text-sm text-gray-500 mb-2 max-w-sm">
@@ -379,6 +388,10 @@ const PlannerTab = ({
                         {t('place.planner.refreshSaved')}
                     </button>
                 ) : null}
+                <div className="mt-8 w-full text-left">
+                    <TravelAgencyDirectory variant="planner" />
+                </div>
+                </div>
                 </div>
             </div>
         );
@@ -390,7 +403,8 @@ const PlannerTab = ({
             <div className={mobilePlaceHeaderSpacerClass} aria-hidden="true" />
             <div
                 ref={scrollContainerRef}
-                className={`flex-1 min-h-0 w-full flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar bg-[#f8f9fa] px-3 sm:px-4 ${mobilePlaceFooterScrollPadding} md:p-6 md:pt-10 md:pb-8 ${plannerScrollSurfaceClass}`}
+                data-planner-scroll-root=""
+                className={plannerBodyScrollClass}
             >
                 {mobileSecondaryNav && (
                     <div className={`md:hidden shrink-0 -mx-3 sm:-mx-4 px-2 pb-2 mb-1 border-b border-gray-200/90 bg-[#f8f9fa] ${mobileLandscapeChromeHidden}`}>
@@ -464,6 +478,8 @@ const PlannerTab = ({
                     </div>
 
                     <RelatedTravelSpots location={location} className="mb-5 shrink-0" />
+
+                    <TravelAgencyDirectory variant="planner" className="mb-5 shrink-0" />
 
                 {/* 체크리스트(항공·숙소·픽업) — 툴킷 있으면 상시 · 타임라인은 있을 때만 */}
                 {guideData && (

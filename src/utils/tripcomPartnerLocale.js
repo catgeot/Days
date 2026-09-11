@@ -8,7 +8,23 @@ export function resolveTripcomPartnerLocale(value) {
   return locale === 'en' ? 'en-US' : 'ko-KR';
 }
 
-/** KR 제휴(Alliance/SID) — 호스트는 kr 고정. EN UI는 `locale=en-US`(partners/ad QA와 동일). www 전환 시 기존 kr 쿠키와 충돌해 홈 경유 지연이 날 수 있음 */
-export function resolveTripcomSiteOrigin(_partnerLocale) {
+/** Trip.com `curr` — en-US+KRW면 packages 등 IBU 페이지가 한글로 뜨는 회귀 방지 (GYG en=USD와 동일) */
+export function resolveTripcomCurrency(partnerLocale) {
+  return partnerLocale === 'en-US' ? 'USD' : 'KRW';
+}
+
+/**
+ * Trip.com 호스트 — KR 제휴(Alliance/SID)는 동일.
+ * - flights/partners/ad: kr + locale=en-US (iframe QA)
+ * - packages·hotels EN: www (kr 호스트·쿠키는 한국 IBU 고정)
+ *
+ * @param {'ko-KR' | 'en-US'} partnerLocale
+ * @param {{ surface?: 'default' | 'packages' | 'hotels' }} [options]
+ */
+export function resolveTripcomSiteOrigin(partnerLocale, options = {}) {
+  const { surface = 'default' } = options;
+  if (partnerLocale === 'en-US' && (surface === 'packages' || surface === 'hotels')) {
+    return 'https://www.trip.com';
+  }
   return 'https://kr.trip.com';
 }

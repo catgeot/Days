@@ -1,7 +1,16 @@
 /**
  * /korea/theme/scenic 텍스트 검색 — name·addr·지역 부분 일치.
+ * 지자체 팔경·구경: 기본은 curated 멤버 필터. 명소 풀은 injectLocalScenic로 결손 멤버 주입.
  * (호출측: 전국 풀에서 매칭한 뒤 권역·종목 칩으로 분해)
  */
+import { resolveCityAttractionHub } from './cityAttractionHubs.js';
+import {
+  listsForHub,
+  matchLocalScenicListForScenicSearch,
+  mergeLocalScenicMembersIntoScenicSpots,
+  resolveLocalScenicList,
+  spotMatchesLocalScenicListMember,
+} from './koreaLocalScenicLists.js';
 
 /**
  * @param {string} value
@@ -102,10 +111,41 @@ function spotMatchesScenicQuery(spot, normalizedQuery) {
 /**
  * @param {object[]} items
  * @param {string} query
+ * @param {{ injectLocalScenic?: boolean }} [opts]
+ *   명소(GATEO 선정) 풀에만 true — 명승(유산) 풀에는 넣지 않음.
  */
-export function filterScenicSpotsByQuery(items, query) {
+export function filterScenicSpotsByQuery(items, query, opts = {}) {
   const q = normalizeScenicQuery(query);
   if (!q) return Array.isArray(items) ? items : [];
+
+  if (opts.injectLocalScenic) {
+    const exactList = resolveLocalScenicList(query);
+    if (exactList?.list) {
+      const curatedMembers = (items || []).filter((item) =>
+        spotMatchesLocalScenicListMember(item, exactList.list),
+      );
+      return mergeLocalScenicMembersIntoScenicSpots(
+        curatedMembers,
+        exactList.list.hubId,
+      ).filter((spot) => spot.localScenicListId === exactList.list.listId);
+    }
+
+    const hub = resolveCityAttractionHub(query);
+    if (hub?.hubId && listsForHub(hub.hubId).length) {
+      const pooled = (items || []).filter(
+        (item) => String(item.hubId || '').trim() === hub.hubId,
+      );
+      return mergeLocalScenicMembersIntoScenicSpots(pooled, hub.hubId);
+    }
+  }
+
+  const listMatch = matchLocalScenicListForScenicSearch(query);
+  if (listMatch) {
+    return (items || []).filter((item) =>
+      spotMatchesLocalScenicListMember(item, listMatch),
+    );
+  }
+
   return (items || []).filter((item) => spotMatchesScenicQuery(item, q));
 }
 

@@ -39,6 +39,11 @@ export const TRAVEL_SPOT_PLACE_ID_ALIASES = {
   // 파타야→phuket · 시엠립→angkor-wat 금지. 다윈섬→galapagos 금지.
   '쿠알라셀랑고르': 'kuala-lumpur',
   '앙코르 와트': 'angkor-wat',
+  '사바섬': 'sabah',
+  '사바 섬': 'sabah',
+  '사바주': 'sabah',
+  'Sabah': 'sabah',
+  'Sabah Island': 'sabah',
 
   // —— 에티오피아·보홀 등 ——
   // 아디스아바바 → lalibela 금지(citiesData addis-ababa, ~335km). 공항 placeIds-only ADD.
@@ -184,6 +189,7 @@ export const TRAVEL_SPOT_TOOLKIT_SYNONYMS = {
   'okinawa': ['오키나와', '오키나와현', 'Okinawa'],
   'ishigaki': ['이시가키', 'Ishigaki'],
   'kuala-lumpur': ['쿠알라셀랑고르'],
+  sabah: ['사바', '사바섬', '사바주', 'Sabah'],
   'bohol': ['보홀', 'Bohol'],
   'seattle': ['Seattle', 'seattle'],
   'antarctica': ['남극해'],

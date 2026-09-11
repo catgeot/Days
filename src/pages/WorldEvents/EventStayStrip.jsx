@@ -17,14 +17,18 @@ import {
 } from '../Home/components/stayDateControls';
 import {
   canShowMrtStayStrip,
+  buildMrtStayListUrl,
   fetchMrtStaysForLocation,
+  filterBookableMrtStays,
+  isMrtDomesticLocation,
   mrtStayNights,
   normalizeMrtGuestCounts,
   normalizeMrtStayDates,
 } from '../../utils/fetchMrtStays';
+import { MRT_HOME_MYLINK_ID } from '../Home/data/mrtPackageThemeLinks';
 import { resolveFlightDepartureIataForTrip } from '../Home/lib/flightOriginPreference.js';
 import { resolveTripcomPartnerLocale } from '../../utils/tripcomPartnerLocale.js';
-import { getWorldEventPlaceMeta } from '../../utils/worldEvents';
+import { getWorldEventPlaceMeta, getWorldEventStayAreas } from '../../utils/worldEvents';
 
 function todayYmd() {
   const d = new Date();
@@ -48,9 +52,11 @@ function EventFlightHotelCta({
   adultCount,
   childCount,
   departureIata,
+  locale = 'ko',
   className = '',
 }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const partnerLocale = resolveTripcomPartnerLocale(locale);
   const packageUrl = useMemo(() => {
     if (!location) return null;
     const depart = departureIata
@@ -66,9 +72,9 @@ function EventFlightHotelCta({
       checkOut,
       adultCount,
       childCount,
-      partnerLocale: resolveTripcomPartnerLocale(i18n.language),
+      partnerLocale,
     });
-  }, [location, checkIn, checkOut, adultCount, childCount, departureIata, i18n.language]);
+  }, [location, checkIn, checkOut, adultCount, childCount, departureIata, partnerLocale]);
 
   if (!location || !packageUrl) return null;
 
@@ -129,6 +135,8 @@ function StayCard({ item, price }) {
  *   onDatesChange?: (next: { checkIn: string, checkOut: string }) => void,
  *   locale?: string,
  *   placeLabel?: string,
+ *   title?: string,
+ *   hint?: string,
  * }} props
  */
 export default function EventStayStrip({
@@ -140,6 +148,8 @@ export default function EventStayStrip({
   onDatesChange,
   locale = 'ko',
   placeLabel: placeLabelOverride,
+  title,
+  hint,
 }) {
   const { t, i18n } = useTranslation();
   const rootRef = useRef(null);
@@ -154,10 +164,25 @@ export default function EventStayStrip({
   const placeMeta = placeLabelOverride
     ? { label: placeLabelOverride }
     : getWorldEventPlaceMeta(event?.slug, locale);
+  const stayAreas = useMemo(
+    () =>
+      getWorldEventStayAreas(event, locale).filter(
+        (area) => area?.name && (area.mrtKeyword || area.name),
+      ),
+    [event, locale],
+  );
+  const [selectedAreaIndex, setSelectedAreaIndex] = useState(0);
+  const selectedArea = stayAreas[selectedAreaIndex] ?? null;
+  const stayKeyword = selectedArea?.mrtKeyword || selectedArea?.name || '';
   const eligible = canShowMrtStayStrip(location);
   const nights = mrtStayNights(checkIn, checkOut);
   const datesKey = `${checkIn}|${checkOut}|a${guests.adultCount}c${guests.childCount}`;
-  const fetchKey = `${event?.id}|${datesKey}`;
+  const fetchKey = `${event?.id}|${stayKeyword}|${datesKey}`;
+  const [mrtListMeta, setMrtListMeta] = useState(null);
+
+  useEffect(() => {
+    setSelectedAreaIndex(0);
+  }, [event?.id]);
 
   useEffect(() => {
     setDraftIn(checkIn);
@@ -167,12 +192,13 @@ export default function EventStayStrip({
   const applyDates = useCallback(
     (nextIn, nextOut) => {
       const synced = normalizeMrtStayDates(nextIn, nextOut);
+      if (synced.checkIn === checkIn && synced.checkOut === checkOut) return;
       setDraftIn(synced.checkIn);
       setDraftOut(synced.checkOut);
       setCalendarOpen(false);
       onDatesChange?.(synced);
     },
-    [onDatesChange],
+    [onDatesChange, checkIn, checkOut],
   );
 
   const handleCalendarPick = useCallback(
@@ -205,26 +231,46 @@ export default function EventStayStrip({
     if (!eligible) {
       setStatus('idle');
       setItems(null);
+      setMrtListMeta(null);
       return undefined;
     }
     if (fetchedKeyRef.current === fetchKey) return undefined;
 
     let cancelled = false;
     setStatus('loading');
+    setMrtListMeta(null);
 
     (async () => {
       const result = await fetchMrtStaysForLocation(location, {
         checkIn,
         checkOut,
         ...guests,
+        keywordOverride: stayKeyword || undefined,
       });
       if (cancelled) return;
       fetchedKeyRef.current = fetchKey;
-      if (result?.items?.length) {
-        setItems(result.items.slice(0, 12));
+      const listed = Array.isArray(result?.items) ? result.items : [];
+      const bookable = filterBookableMrtStays(listed);
+      const displayItems = (bookable.length > 0 ? bookable : listed).slice(0, 12);
+      if (displayItems.length > 0 && bookable.length > 0) {
+        setItems(displayItems);
+        setMrtListMeta({
+          regionId: result.region?.regionId ?? null,
+          keyword: result.usedKeyword || stayKeyword || placeMeta.label,
+          isDomestic: isMrtDomesticLocation(location),
+        });
         setStatus('ready');
       } else {
         setItems([]);
+        setMrtListMeta(
+          stayKeyword
+            ? {
+                regionId: result?.region?.regionId ?? null,
+                keyword: result?.usedKeyword || stayKeyword,
+                isDomestic: isMrtDomesticLocation(location),
+              }
+            : null,
+        );
         setStatus('empty');
       }
     })();
@@ -232,11 +278,25 @@ export default function EventStayStrip({
     return () => {
       cancelled = true;
     };
-  }, [eligible, fetchKey, location, checkIn, checkOut, guests]);
+  }, [eligible, fetchKey, location, checkIn, checkOut, guests, stayKeyword, placeMeta.label]);
 
   const flightArrivalIata = getPlannerFlightArrivalIata(location);
   const departureIata = resolveFlightDepartureIataForTrip('ICN');
   const showFlightCta = Boolean(location && flightArrivalIata);
+  const staysTitlePlace = selectedArea?.name || placeMeta.label;
+  const mrtStayListUrl =
+    mrtListMeta?.keyword
+      ? buildMrtStayListUrl({
+          keyword: mrtListMeta.keyword,
+          regionId: mrtListMeta.regionId,
+          isDomestic: mrtListMeta.isDomestic,
+          checkIn,
+          checkOut,
+          adultCount: guests.adultCount,
+          childCount: guests.childCount,
+          mylinkId: MRT_HOME_MYLINK_ID,
+        })
+      : null;
 
   if (!eligible) return null;
 
@@ -246,9 +306,13 @@ export default function EventStayStrip({
     <section className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
       <div className="flex items-center gap-2">
         <CalendarDays size={16} className="text-amber-700" aria-hidden />
-        <h2 className="text-sm font-extrabold text-stone-900">{t('worldEventDetail.stayStrip.title')}</h2>
+        <h2 className="text-sm font-extrabold text-stone-900">
+          {title || t('worldEventDetail.stayStrip.title')}
+        </h2>
       </div>
-      <p className="mt-1 text-xs text-stone-500">{t('worldEventDetail.stayStrip.hint')}</p>
+      <p className="mt-1 text-xs text-stone-500">
+        {hint || t('worldEventDetail.stayStrip.hint')}
+      </p>
 
       {visitPresets.length > 1 ? (
         <div className="mt-3 flex flex-wrap gap-1.5">
@@ -258,10 +322,12 @@ export default function EventStayStrip({
               <button
                 key={preset.id}
                 type="button"
+                disabled={active}
+                aria-pressed={active}
                 onClick={() => applyDates(preset.checkIn, preset.checkOut)}
-                className={`rounded-full border px-2.5 py-1 text-[11px] font-bold transition-colors ${
+                className={`rounded-full border px-2.5 py-1 text-[11px] font-bold transition-colors disabled:cursor-default ${
                   active
-                    ? 'border-amber-400 bg-amber-100 text-amber-950'
+                    ? 'border-amber-400 bg-amber-100 text-amber-950 ring-2 ring-amber-300/60'
                     : 'border-stone-200 bg-stone-50 text-stone-700 hover:border-amber-300 hover:bg-amber-50'
                 }`}
               >
@@ -272,6 +338,44 @@ export default function EventStayStrip({
               </button>
             );
           })}
+        </div>
+      ) : null}
+
+      {stayAreas.length === 1 && selectedArea?.note ? (
+        <p className="mt-3 text-[11px] leading-relaxed text-stone-500">{selectedArea.note}</p>
+      ) : null}
+
+      {stayAreas.length > 1 ? (
+        <div className="mt-3">
+          <p className="text-[11px] font-bold text-stone-600">{t('worldEventDetail.stayStrip.areasTitle')}</p>
+          <div className="mt-1.5 flex flex-wrap gap-1.5">
+            {stayAreas.map((area, index) => {
+              const active = index === selectedAreaIndex;
+              return (
+                <button
+                  key={`${area.name}-${area.mrtKeyword || ''}`}
+                  type="button"
+                  disabled={active}
+                  aria-pressed={active}
+                  onClick={() => {
+                    if (active) return;
+                    fetchedKeyRef.current = '';
+                    setSelectedAreaIndex(index);
+                  }}
+                  className={`rounded-full border px-2.5 py-1 text-[11px] font-bold transition-colors disabled:cursor-default ${
+                    active
+                      ? 'border-amber-400 bg-amber-100 text-amber-950 ring-2 ring-amber-300/60'
+                      : 'border-stone-200 bg-stone-50 text-stone-700 hover:border-amber-300 hover:bg-amber-50'
+                  }`}
+                >
+                  {area.name}
+                </button>
+              );
+            })}
+          </div>
+          {selectedArea?.note ? (
+            <p className="mt-1.5 text-[11px] leading-relaxed text-stone-500">{selectedArea.note}</p>
+          ) : null}
         </div>
       ) : null}
 
@@ -331,6 +435,7 @@ export default function EventStayStrip({
                 adultCount={guests.adultCount}
                 childCount={guests.childCount}
                 departureIata={departureIata}
+                locale={locale}
               />
             </span>
           ) : null}
@@ -338,11 +443,23 @@ export default function EventStayStrip({
       </div>
 
       <div className="mt-3">
-        <div className="mb-2 flex items-center gap-1.5">
-          <BedDouble size={14} className="text-amber-700" aria-hidden />
-          <h3 className="text-xs font-extrabold text-stone-800">
-            {t('worldEventDetail.stayStrip.staysTitle', { place: placeMeta.label })}
-          </h3>
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-1.5">
+            <BedDouble size={14} className="shrink-0 text-amber-700" aria-hidden />
+            <h3 className="text-xs font-extrabold text-stone-800">
+              {t('worldEventDetail.stayStrip.staysTitle', { place: staysTitlePlace })}
+            </h3>
+          </div>
+          {mrtStayListUrl ? (
+            <a
+              href={mrtStayListUrl}
+              target="_blank"
+              rel="noopener noreferrer sponsored"
+              className="shrink-0 text-[11px] font-bold text-amber-800 hover:text-amber-900"
+            >
+              {t('worldEventDetail.stayStrip.moreOnMrt')}
+            </a>
+          ) : null}
         </div>
 
         {status === 'loading' ? (

@@ -7,19 +7,19 @@
 |---|---------|------|---------|-----|------|
 | 1 | `edinburgh-fringe-2026` | #11~#13, #23, #25 | ✅ overview·highlights·stayAreas·4박 | ✅ v0.2 pilot fixture | D2 action+mooni chips |
 | 2 | `munich-oktoberfest-2026` | #14, #23, #25 | ✅ overview·highlights·stayAreas·3박 | ✅ v0.2 pilot fixture | D2 action+mooni chips |
-| 3 | `vienna-staatsoper-season-2026` | #14 | ✅ overview·highlights·stayAreas·3박 | ✅ v0.1 fixture | Tier0~2+AI v0.1 |
-| 4 | `amsterdam-kings-day-2027` | #14 | ✅ overview·highlights·stayAreas·2박 | ✅ v0.1 fixture | Tier0~2+AI v0.1 |
-| 5 | `tokyo-sakura-season-2027` | #15 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2 |
-| 6 | `kyoto-gion-matsuri-2027` | #15 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2 |
-| 7 | `bangkok-songkran-2027` | #15 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2 |
+| 3 | `vienna-staatsoper-season-2026` | #14, #34 | ✅ overview·highlights·stayAreas·3박 | ✅ v0.1 fixture | **D5-b** (#34) |
+| 4 | `amsterdam-kings-day-2027` | #14, #34 | ✅ overview·highlights·stayAreas·2박 | ✅ v0.1 fixture | **D5-b** (#34) |
+| 5 | `tokyo-sakura-season-2027` | #15, #35 | ✅ overview·highlights·stayAreas·4박 | — | **D5-b** (#35) |
+| 6 | `kyoto-gion-matsuri-2027` | #15, #35 | ✅ overview·highlights·stayAreas·3박 | — | **D5-b** (#35) |
+| 7 | `bangkok-songkran-2027` | #15, #35 | ✅ overview·highlights·stayAreas·3박 | — | **D5-b** (#35) |
 | 8 | `bali-galungan-season-2026` | #15, #23, #25 | ✅ overview·highlights·stayAreas·4박 | ✅ v0.2 pilot fixture | D2 action+mooni chips |
-| 9 | `rio-carnival-2027` | #16 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2+위젯 |
-| 10 | `new-york-thanksgiving-season-2026` | #16 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2+위젯 |
-| 11 | `iceland-midnight-sun-2027` | #16 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2+위젯 |
-| 12 | `sydney-vivid-2027` | #16 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2+위젯 |
-| 13 | `prague-spring-festival-2027` | #18 | ✅ overview·highlights·stayAreas·3박 | — | Tier0~2+위젯 |
-| 14 | `marrakech-rose-festival-2027` | #18 | ✅ overview·highlights·stayAreas·2박 | — | Tier0~2+위젯 |
-| 15 | `hanoi-tet-2027` | #18 | ✅ overview·highlights·stayAreas·4박 | — | Tier0~2+위젯 |
+| 9 | `rio-carnival-2027` | #16, #36 | ✅ overview·highlights·stayAreas·4박 | — | **D5-b** (#36) |
+| 10 | `new-york-thanksgiving-season-2026` | #16, #36 | ✅ overview·highlights·stayAreas·3박 | — | **D5-b** (#36) |
+| 11 | `iceland-midnight-sun-2027` | #16, #36 | ✅ overview·highlights·stayAreas·4박 | — | **D5-b** (#36) |
+| 12 | `sydney-vivid-2027` | #16, #36 | ✅ overview·highlights·stayAreas·3박 | — | **D5-b** (#36) |
+| 13 | `prague-spring-festival-2027` | #18, #34 | ✅ overview·highlights·stayAreas·3박 | — | **D5-b** (#34) |
+| 14 | `marrakech-rose-festival-2027` | #18, #34 | ✅ overview·highlights·stayAreas·2박 | — | **D5-b** (#34) |
+| 15 | `hanoi-tet-2027` | #18, #37 | ✅ overview·highlights·stayAreas·4박 | — | **D5-b** (#37) |
 
 ---
 
@@ -271,8 +271,114 @@
 - **Preview** `/world-events/bali-galungan-season-2026` — Klook·GYG·PKC·사롱 칩
 - **다음** 사람 Preview D5 QA → D5-b 파일럿 3건 패턴화 → **#30 Wave2**
 
+## #1 edinburgh — D5-b-2 (#31)
+
+- **산출** glossary 4종(fringe·royal-mile·old-town·new-town) · heroImages 3장 · highlightContextLinks(0·1) · feature `3bd88e99`
+- **다음** main 병합 후 PROD QA
+
+## #2 munich — D5-b-2 (#31)
+
+- **산출** glossary 4종(theresienwiese·beer-tent·oktoberfest·hackerbruecke) · heroImages 3장 · highlightContextLinks(0·1)
+- **다음** main 병합 후 PROD QA
+
+## #8 bali — D5-b Preview QA 피드백·계획 (#29)
+
+- **피드백** `EventActionChips`(갈룽안 안내·우붓 사원·펜져·사롱) 본문과 중복 · `EventExecutionStrip`(Klook·GYG) 상업적·흐름 단절
+- **결정** D5-b — glossary 클릭→무니 모달(채팅 아님) · `highlightContextLinks` 인라인 · `heroImages` 갤러리 · Google `hl` locale SSOT
+- **제거** 바로가기 섹션 · 실행·예약 스트립(bali) — SSOT [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) F-0.5 D5-b
+- **다음** #29 구현 세션 — bali pilot → OK 시 #30 Wave2
+
+## #9 bali — D5-b 본문 UX 구현 (#29)
+
+- **산출** glossary 5종(galungan·kuningan·penjor·사례 복장·사롱) · heroImages 3장 · highlightContextLinks(0·2) · `a78fb520`
+- **UI** 본문 용어→MOONi 모달(채팅 아님) · 하이라이트 인라인 렌터카·투어·사롱 링크 · EventExecutionStrip 제거
+- **VERIFY** smoke·build PASS
+- **다음** 사람 Preview QA → OK 시 **#31 Wave2** singapore·dubai
+
+## #9 bali — D5-b Preview 3차 (#30)
+
+- **피드백** 히어로 스와이프·갤러리 모달 · 사롱 Klook 영문·Maps 이탈 · YouTube 키워드 로케일
+- **수정** `EventHeroGalleryModal` · `searchTarget` google/klook · `youtubeSearchQueryKo/En` · `14a8bf42`
+- **VERIFY** smoke·build PASS
+- **다음** 사람 Preview QA → OK 시 **#31 Wave2** singapore·dubai
+
+## #9 bali — D5-b Preview 4차 (#30)
+
+- **피드백** 히어로 「행사 하이라이트」오버레이 · 갤러리 모달 동일 3장 · glossary 무니 매클릭 API · YouTube 영문 리스트
+- **수정** 히어로 텍스트 제거 · `event_hero_gallery`+Wikimedia Edge · `event_term_glossary_cache` · YouTube ko fetch·리스트 더보기 · `2b4e890f`
+- **VERIFY** smoke·audit·build PASS
+- **다음** 사람 Preview 재QA → OK 시 **#31 Wave2** singapore·dubai
+
 ## v2 pivot — Preview QA 피드백 (#12 전)
 
 - **일시**: 2026-08-26
 - **피드백**: 장기 행사 TripWindow → 30박 숙소·항공 · 플래너에 행사 맥락 없음 · 상세 페이지 필요
 - **결정**: main 병합 **#18** · v2 플랜 착수 · **#12**부터 구현 (docs `main` 동기화 완료)
+
+## #3 vienna — D5-b-3 배치 A (#34)
+
+- **산출** glossary 4종(staatsoper·stehplatz·musikverein·innere-stadt) · heroImages 3장 · highlightContextLinks(0·1) · `541e5dbe`
+- **VERIFY** smoke D5-b batch A assert PASS
+- **Preview** `/world-events/vienna-staatsoper-season-2026` — Tier3 AI 패널 유지
+
+## #4 amsterdam — D5-b-3 배치 A (#34)
+
+- **산출** glossary 4종(kings-day·jordaan·vondelpark·orange-tradition) · heroImages 3장 · highlightContextLinks(0·1)
+- **Preview** `/world-events/amsterdam-kings-day-2027` — Tier3 AI 패널 유지
+
+## #13 prague — D5-b-3 배치 A (#34)
+
+- **산출** glossary 4종(prague-spring·rudolfinum·old-town·mala-strana) · heroImages 3장 · highlightContextLinks(0·1)
+- **Preview** `/world-events/prague-spring-festival-2027`
+
+## #14 marrakech — D5-b-3 배치 A (#34)
+
+- **산출** glossary 4종(rose-festival·kelaat-mgouna·medina·gueliz) · heroImages 3장 · highlightContextLinks(0·1)
+- **Preview** `/world-events/marrakech-rose-festival-2027`
+- **다음** 사람 Preview 배치 A QA → **#35** 배치 B(tokyo·kyoto·bangkok)
+
+## #5 tokyo — D5-b-3 배치 B (#35)
+
+- **산출** glossary 4종(sakura·hanami·ueno-park·chidorigafuchi) · heroImages 3장 · highlightContextLinks(0·2) · mooniChips
+- **VERIFY** smoke D5-b batch B assert PASS
+- **Preview** `/world-events/tokyo-sakura-season-2027`
+
+## #6 kyoto — D5-b-3 배치 B (#35)
+
+- **산출** glossary 4종(yoi-yama·yamaboko·gion·yasaka-jinja) · heroImages 3장 · highlightContextLinks(0·2) · 야사카 공식 href
+- **Preview** `/world-events/kyoto-gion-matsuri-2027`
+
+## #7 bangkok — D5-b-3 배치 B (#35)
+
+- **산출** glossary 4종(songkran·silom·khao-san·water-proof) · heroImages 3장 · highlightContextLinks(0·1) · 방수 Klook 링크
+- **Preview** `/world-events/bangkok-songkran-2027`
+- **다음** 사람 Preview 배치 B QA → **#36** 배치 C(rio·new-york·iceland·sydney)
+
+## #9 rio — D5-b-3 배치 C (#36)
+
+- **산출** glossary 4종(sambadrome·bloco·samba-school·copacabana) · heroImages 3장 · highlightContextLinks(0·2) · 삼바드롬 공식 href
+- **VERIFY** smoke D5-b batch C assert PASS
+- **Preview** `/world-events/rio-carnival-2027`
+
+## #10 new-york — D5-b-3 배치 C (#36)
+
+- **산출** glossary 4종(macys-parade·thanksgiving·black-friday·herald-square) · heroImages 3장 · highlightContextLinks(0·2) · 메이시스 공식 href
+- **Preview** `/world-events/new-york-thanksgiving-season-2026`
+
+## #11 iceland — D5-b-3 배치 C (#36)
+
+- **산출** glossary 4종(midnight-sun·secret-solstice·golden-circle·reykjavik) · heroImages 3장 · highlightContextLinks(0·1) · 골든서클 렌터카
+- **Preview** `/world-events/iceland-midnight-sun-2027`
+
+## #12 sydney — D5-b-3 배치 C (#36)
+
+- **산출** glossary 4종(vivid-sydney·circular-quay·opera-house·darling-harbour) · heroImages 3장 · highlightContextLinks(0·1) · 비비드 공식 href
+- **Preview** `/world-events/sydney-vivid-2027`
+- **다음** 사람 Preview 배치 C QA → **#37** 배치 D(hanoi + 15건 회귀)
+
+## #15 hanoi-tet-2027 — D5-b-3 배치 D (#37)
+
+- **산출** glossary 4종(tet·old-quarter·hoan-kiem·flower-market) · heroImages 3장 · highlightContextLinks(0·2) · vietnam.travel 뗏 안내 href
+- **VERIFY** smoke D5-b batch D assert · `smoke:world-events`(15건 회귀) PASS
+- **Preview** `/world-events/hanoi-tet-2027`
+- **다음** 사람 Preview 배치 D QA → **#38** i18n-1

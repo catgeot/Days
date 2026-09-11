@@ -19,7 +19,8 @@
 | **Q6** | 오페라·시즌형 표현 | **A+C 병행** — 시즌 start/end + `sourceUrl` 링크아웃 | 2026-08-25 | |
 | **Q7** | 국내·해외 UI | **B + `/world-events`** | 2026-08-25 | |
 | **Q8** | P1 항공 연동 | **B** — 숙소 + 플래너 + 항공 위젯 날짜 | 2026-08-25 | |
-| **Q10** | 영문 UI | **한국어 MVP 이후** | 2026-08-25 | |
+| **Q10** | 영문 UI | **한국어 MVP 이후** — MVP = Wave1 15건 **D5-b KO** (#38 i18n-1) | 2026-08-25 · 2026-08-29 |
+| **Q15** | 15건 전건 D5-b 표준화? | **예** — 파일럿 3 완료 · 나머지 12건 #34~#37 배치 | 2026-08-29 | |
 | **Q3** | 해외 Wave1 slug | **§4.1 제안 12 slug 승인** | 2026-08-25 | |
 | **Q9** | 즐겨찾기 다건 TripWindow | **B** — P1.5 (단일 축제 CTA 먼저) | 2026-08-25 | 세션 #10·선택 |
 | **Q11** | Preview `/qa/…` | **`/qa/world-events`** — P2 허브 세션(#8)에서 등록 | 2026-08-25 | |
@@ -65,6 +66,7 @@
 
 ## 다음 액션
 
-1. **세션 #3** `P0-b` — `tripWindow` · TourAPI 어댑터 초안 · smoke
-2. 이후 [`world-events-plan.md`](./world-events-plan.md) §10 표 순서
-3. 세션 종료마다 일지 2~5줄 · `feature-handoff-index` 행 갱신
+1. **#33** — PROD §6.1.1 파일럿 3 · Wave2 singapore·dubai
+2. **#34~#37** — Wave1 12건 D5-b 배치 ([`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) F-0.5 D5-b-3)
+3. **#38** — i18n-1 (Q10)
+4. 세션 종료마다 일지 2~5줄 · `feature-handoff-index` 행 갱신

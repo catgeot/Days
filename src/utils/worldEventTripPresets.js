@@ -13,8 +13,17 @@ import {
  */
 export function tripWindowPresetsFromEvent(event, opts = {}) {
   const maxNights = opts.maxNights ?? eventCtaMaxNights(event);
-  const tripWindow = tripWindowFromEvent(event, { ...opts, maxNights });
+  const baseTripWindow = tripWindowFromEvent(event, { ...opts, maxNights });
   const visitPresets = visitWindowPresetsFromEvent(event, { ...opts, maxNights });
+  const defaultPreset = visitPresets[0];
+  const tripWindow =
+    defaultPreset && visitPresets.length > 1
+      ? {
+          ...baseTripWindow,
+          checkIn: defaultPreset.checkIn,
+          checkOut: defaultPreset.checkOut,
+        }
+      : baseTripWindow;
   const slug = String(event?.slug || '').trim().toLowerCase();
   const eventId = tripWindow.eventId || event?.id || '';
   const windowArgs = {

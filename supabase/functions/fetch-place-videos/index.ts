@@ -29,6 +29,16 @@ serve(async (req) => {
       typeof body.pageToken === 'string' && body.pageToken.trim()
         ? body.pageToken.trim()
         : '';
+    const relevanceLanguage =
+      typeof body.relevanceLanguage === 'string' && body.relevanceLanguage.trim()
+        ? body.relevanceLanguage.trim()
+        : 'ko';
+    const regionCode =
+      typeof body.regionCode === 'string' && body.regionCode.trim()
+        ? body.regionCode.trim()
+        : relevanceLanguage === 'en'
+          ? 'US'
+          : 'KR';
 
     if (!query || !placeId) {
       throw new Error('query and placeId are required');
@@ -50,8 +60,8 @@ serve(async (req) => {
       q: primaryQ,
       maxResults: String(maxResults),
       type: 'video',
-      relevanceLanguage: 'ko',
-      regionCode: 'KR',
+      relevanceLanguage,
+      regionCode,
       key: youtubeApiKey,
     });
     if (pageToken) params.set('pageToken', pageToken);

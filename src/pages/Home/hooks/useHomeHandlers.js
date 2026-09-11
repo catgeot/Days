@@ -12,7 +12,7 @@ import {
   collectKoHomonymPlaceCandidates,
   isKoHomonymPlaceSearchQuery,
 } from '../lib/koHomonymRiSearch';
-import { formatUrlName, pickUrlSafeEnglishName } from '../lib/formatUrlName';
+import { formatUrlName, pickUrlSafeEnglishName, isUrlSafeEnglishLabel, isEphemeralSlug } from '../lib/formatUrlName';
 import { resolveGlobeLabelPinFields } from '../lib/resolveGlobeLabelPin';
 import { supabase } from '../../../shared/api/supabase';
 import { TRAVEL_SPOTS } from '../data/travelSpots';
@@ -48,12 +48,22 @@ import {
   buildLocalSearchSuggestions,
   ensureDisambiguation,
   locationToChoiceCandidate,
+  prependLocalScenicToHubCandidates,
 } from '../lib/searchSuggestions.js';
-import { searchBoxForward } from '../lib/mapboxSearchBox.js';
+import { searchBoxForward, searchBoxTypesForQuery } from '../lib/mapboxSearchBox.js';
+import {
+  overlayGeocodeLatinOnHits,
+  samePlaceCenter,
+} from '../lib/uiPlaceAssetQuery.js';
 import {
   ensurePlaceChatIntroForLocation,
   needsPlaceChatIntroHydration,
 } from '../lib/placeChatIntro.js';
+import { lookupVisitedPlacesForSearch } from '../lib/visitedPlaceSearchLookup.js';
+import {
+  overlayGeoFieldsOnVisitedSpots,
+  visitedSpotNeedsGeoCountry,
+} from '../lib/visitedPlaceSearch.js';
 
 const prepareLocation = (loc) =>
   enrichLocationWithRentalAirport(healPlaceholderCountry(mergeCanonicalTravelSpot(loc)));
@@ -436,29 +446,43 @@ export function useHomeHandlers({
       category: loc.category || category
     });
 
-    /** SSOT 미등록(살타 등) + 구즐겨찾기 Explore — 역지오코딩으로 국가 자가치유 */
-    const scheduleCountryHeal = (pin) => {
-      if (!isPlaceholderCountry(pin?.country) && !isPlaceholderCountry(pin?.country_en)) return;
+    /** SSOT 미등록(살타·자킨토스 등) — 역지오로 국가·라틴 name_en 자가치유 */
+    const scheduleUiPlaceHeal = (pin) => {
+      const needsCountry =
+        isPlaceholderCountry(pin?.country) || isPlaceholderCountry(pin?.country_en);
+      const needsLatinName = !isUrlSafeEnglishLabel(pin?.name_en) && !isUrlSafeEnglishLabel(pin?.name);
+      if (!needsCountry && !needsLatinName) return;
       const lat = Number(pin?.lat);
       const lng = Number(pin?.lng);
       if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
 
       getAddressFromCoordinates(lat, lng).then((address) => {
-        if (!address?.country || isPlaceholderCountry(address.country)) return;
+        if (!address) return;
+        const healedCountry = address.country && !isPlaceholderCountry(address.country);
+        const healedNameEn = isUrlSafeEnglishLabel(address.name_en) ? String(address.name_en).trim() : '';
+        if (!healedCountry && !healedNameEn) return;
         setSelectedLocation((prev) => {
           if (!prev) return prev;
           const samePlace =
             isSameCanonicalPlace(prev, pin) ||
             (Number(prev.lat) === lat && Number(prev.lng) === lng);
           if (!samePlace) return prev;
-          if (!isPlaceholderCountry(prev.country) && !isPlaceholderCountry(prev.country_en)) {
-            return prev;
+          const stillNeedsCountry =
+            isPlaceholderCountry(prev.country) || isPlaceholderCountry(prev.country_en);
+          const stillNeedsName = !isUrlSafeEnglishLabel(prev.name_en);
+          if (!stillNeedsCountry && !stillNeedsName) return prev;
+          const next = { ...prev };
+          if (stillNeedsCountry && healedCountry) {
+            next.country = address.country;
+            next.country_en = address.country_en || address.country;
           }
-          const healed = prepareResolvedLocation({
-            ...prev,
-            country: address.country,
-            country_en: address.country_en || address.country,
-          });
+          if (stillNeedsName && healedNameEn) {
+            next.name_en = healedNameEn;
+            if (!next.slug || isEphemeralSlug(next.slug)) {
+              next.slug = formatUrlName(healedNameEn) || next.slug;
+            }
+          }
+          const healed = prepareResolvedLocation(next);
           addScoutPin(healed);
           return healed;
         });
@@ -509,7 +533,7 @@ export function useHomeHandlers({
       setSelectedLocation(unified);
       setIsPlaceCardOpen(true);
       setIsCardExpanded(false);
-      scheduleCountryHeal(unified);
+      scheduleUiPlaceHeal(unified);
       scheduleIntroHydrate(unified);
       return;
     }
@@ -525,7 +549,7 @@ export function useHomeHandlers({
     setSelectedLocation(finalLoc);
     setIsPlaceCardOpen(true);
     setIsCardExpanded(false);
-    scheduleCountryHeal(finalLoc);
+    scheduleUiPlaceHeal(finalLoc);
     scheduleIntroHydrate(finalLoc);
   }, [selectedLocation, category, moveToLocation, addScoutPin, processSearchKeywords, setSelectedLocation, setIsPlaceCardOpen, setIsCardExpanded]);
 
@@ -801,6 +825,7 @@ export function useHomeHandlers({
         if (spotDesc && candidates[0]) {
           candidates = [{ ...candidates[0], desc: spotDesc, badge: '여행지', kind: 'spot', slug: spot.slug || candidates[0].slug }, ...candidates.slice(1)];
         }
+        candidates = prependLocalScenicToHubCandidates(hubHit, candidates);
         return makeDisambiguationResult(query, candidates, {
           title: `'${hubHit.name}' → 도시와 명소를 골라주세요`,
         });
@@ -1071,6 +1096,44 @@ export function useHomeHandlers({
       return commitLocation(seaSpotBeforeGeocode);
     }
 
+    if (!shouldSkipGeocodeForMood(query)) {
+      try {
+        const visitedHits = await lookupVisitedPlacesForSearch(query);
+        if (visitedHits.length >= 1) {
+          let mergedVisited = visitedHits;
+          try {
+            const remoteHits = await searchBoxForward(query, {
+              limit: 5,
+              types: searchBoxTypesForQuery(query),
+            });
+            mergedVisited = overlayGeoFieldsOnVisitedSpots(visitedHits, remoteHits);
+          } catch {
+            mergedVisited = visitedHits;
+          }
+          if (mergedVisited.some(visitedSpotNeedsGeoCountry)) {
+            try {
+              const coords = await getCoordinatesFromAddress(query);
+              if (coords) {
+                mergedVisited = overlayGeoFieldsOnVisitedSpots(mergedVisited, [coords]);
+              }
+            } catch {
+              // keep visited names
+            }
+          }
+          const readyVisited = mergedVisited.filter((spot) => !visitedSpotNeedsGeoCountry(spot));
+          if (readyVisited.length >= 1) {
+            return requireChoice || readyVisited.length >= 2
+              ? makeDisambiguationResult(query, readyVisited, {
+                  title: `'${query}' → 원하는 장소를 선택하세요`,
+                })
+              : commitLocation(readyVisited[0]);
+          }
+        }
+      } catch {
+        // 방문 DB 실패 시 지오코딩으로 진행
+      }
+    }
+
     const coords = shouldSkipGeocodeForMood(query)
       ? null
       : await getCoordinatesFromAddress(query);
@@ -1089,7 +1152,7 @@ export function useHomeHandlers({
         try {
           const remoteHits = await searchBoxForward(query, {
             limit: 5,
-            types: 'place,city,poi',
+            types: searchBoxTypesForQuery(query),
           });
           const seenNames = new Set();
           const distinct = [];
@@ -1117,8 +1180,17 @@ export function useHomeHandlers({
             if (requireChoice || (distinct.length >= 2 && ambiguous)) {
               const geoName = String(coords.name || query).trim();
               const geoKey = geoName.toLowerCase().replace(/\s+/g, '');
-              if (!seenNames.has(geoKey)) {
-                distinct.unshift({
+              const withLatin = overlayGeocodeLatinOnHits(distinct, coords);
+              const sameAsGeocode = withLatin.some(
+                (hit) =>
+                  samePlaceCenter(hit, coords) ||
+                  String(hit?.name || '')
+                    .trim()
+                    .toLowerCase()
+                    .replace(/\s+/g, '') === geoKey,
+              );
+              if (!sameAsGeocode && !seenNames.has(geoKey)) {
+                withLatin.unshift({
                   id: `geocode-${coords.lat}-${coords.lng}`,
                   kind: 'city',
                   badge: '도시',
@@ -1133,7 +1205,7 @@ export function useHomeHandlers({
                   desc: `${geoName} (${coords.country || 'Explore'})`,
                 });
               }
-              return makeDisambiguationResult(query, distinct.slice(0, 8), {
+              return makeDisambiguationResult(query, withLatin.slice(0, 8), {
                 title: `'${query}' → 원하는 장소를 선택하세요`,
               });
             }

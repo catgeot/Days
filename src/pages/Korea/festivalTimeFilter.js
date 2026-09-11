@@ -29,6 +29,17 @@ export function todayYmd(now = new Date()) {
 }
 
 /**
+ * 오늘 ~ +30일 — 「이번 달」 칩(달력 월말 수렴 방지).
+ * @param {Date} [now]
+ */
+export function rolling30DayRangeYmd(now = new Date()) {
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const end = new Date(start);
+  end.setDate(end.getDate() + 30);
+  return { eventStartDate: toYmd(start), eventEndDate: toYmd(end) };
+}
+
+/**
  * 다가오는 금~일 (이미 일요일이면 오늘까지).
  * @param {Date} [now]
  * @returns {{ startYmd: string, endYmd: string }}
@@ -211,7 +222,7 @@ export function filterByTimeTab(timeId, items, now = new Date()) {
   }
 
   if (timeId === 'thisMonth') {
-    const range = monthRangeYmd(now.getFullYear(), now.getMonth());
+    const range = rolling30DayRangeYmd(now);
     return list.filter((item) =>
       rangesOverlap(
         item?.eventStartDate,
@@ -248,4 +259,82 @@ export function filterByTimeTab(timeId, items, now = new Date()) {
   }
 
   return list;
+}
+
+/** 장기 상설·야간개장 등 — 개막 임박·단기 축제보다 목록 하단 */
+const LONG_TERM_FESTIVAL_DAYS = 60;
+
+/**
+ * @param {string} startYmd
+ * @param {string} endYmd
+ */
+function festivalSpanDays(startYmd, endYmd) {
+  const sy = Number(startYmd.slice(0, 4));
+  const sm = Number(startYmd.slice(4, 6)) - 1;
+  const sd = Number(startYmd.slice(6, 8));
+  const ey = Number(endYmd.slice(0, 4));
+  const em = Number(endYmd.slice(4, 6)) - 1;
+  const ed = Number(endYmd.slice(6, 8));
+  const start = new Date(sy, sm, sd);
+  const end = new Date(ey, em, ed);
+  const ms = end.getTime() - start.getTime();
+  if (!Number.isFinite(ms) || ms < 0) return 0;
+  return Math.floor(ms / 86400000) + 1;
+}
+
+/**
+ * 0=미개막 · 1=단기 진행중 · 2=장기 진행중 · 3=종료
+ * @param {object} item
+ * @param {string} today
+ */
+export function festivalOpenSortTier(item, today) {
+  const start = String(item?.eventStartDate || '');
+  const endRaw = String(item?.eventEndDate || '');
+  const end = /^\d{8}$/.test(endRaw) ? endRaw : start;
+  if (!/^\d{8}$/.test(start)) return 3;
+  if (start > today) return 0;
+  if (end < today) return 3;
+  if (festivalSpanDays(start, end) > LONG_TERM_FESTIVAL_DAYS) return 2;
+  return 1;
+}
+
+/**
+ * 여행 계획용 — 미개막 → 단기 진행 → 장기 상설, 각각 eventStartDate 오름차순.
+ * @param {object} a
+ * @param {object} b
+ * @param {Date} [now]
+ */
+export function compareFestivalsByOpenDate(a, b, now = new Date()) {
+  const today = todayYmd(now);
+  const tierA = festivalOpenSortTier(a, today);
+  const tierB = festivalOpenSortTier(b, today);
+  if (tierA !== tierB) return tierA - tierB;
+  const as = String(a?.eventStartDate || '');
+  const bs = String(b?.eventStartDate || '');
+  const dateCmp = as.localeCompare(bs);
+  if (dateCmp !== 0) return dateCmp;
+  return String(a?.title || '').localeCompare(String(b?.title || ''), 'ko');
+}
+
+/**
+ * 그룹 내·그룹 간 모두 오픈일 순 (개막 임박 그룹이 위).
+ * @param {{ id: string, label: string, items: object[] }[]} groups
+ * @param {Date} [now]
+ */
+export function sortFestivalGroupsByOpenDate(groups, now = new Date()) {
+  const sorted = (groups || []).map((g) => ({
+    ...g,
+    items: [...(g.items || [])].sort((a, b) =>
+      compareFestivalsByOpenDate(a, b, now),
+    ),
+  }));
+  sorted.sort((a, b) => {
+    const cmp = compareFestivalsByOpenDate(
+      a.items[0] || {},
+      b.items[0] || {},
+      now,
+    );
+    return cmp !== 0 ? cmp : a.label.localeCompare(b.label, 'ko');
+  });
+  return sorted;
 }

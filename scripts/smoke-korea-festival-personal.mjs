@@ -224,9 +224,12 @@ assert.equal(mem.get(VIEWED_KEY) != null, true);
 
 const {
   buildFestivalTimeTabs,
+  compareFestivalsByOpenDate,
   currentSeasonIndex,
   filterByTimeTab,
+  rolling30DayRangeYmd,
   seasonRangeById,
+  sortFestivalGroupsByOpenDate,
 } = await import('../src/pages/Korea/festivalTimeFilter.js');
 const july = new Date(2026, 6, 29);
 assert.equal(currentSeasonIndex(july), 1);
@@ -246,5 +249,133 @@ const seasonItems = [
 ];
 assert.equal(filterByTimeTab('summer', seasonItems, july).length, 1);
 assert.equal(filterByTimeTab('winter', seasonItems, july)[0].title, '겨울');
+
+const aug31 = new Date(2026, 7, 31);
+const rolling30 = rolling30DayRangeYmd(aug31);
+assert.equal(rolling30.eventStartDate, '20260831');
+assert.equal(rolling30.eventEndDate, '20260930');
+const septFest = {
+  title: '9월축제',
+  eventStartDate: '20260915',
+  eventEndDate: '20260917',
+};
+const octFest = {
+  title: '10월축제',
+  eventStartDate: '20261005',
+  eventEndDate: '20261007',
+};
+assert.equal(filterByTimeTab('thisMonth', [septFest, octFest], aug31).length, 1);
+assert.equal(
+  filterByTimeTab('thisMonth', [septFest, octFest], aug31)[0].title,
+  '9월축제',
+);
+
+const aug20 = new Date(2026, 7, 20);
+const soonOpening = {
+  contentId: '301',
+  title: '개막임박축제',
+  eventStartDate: '20260905',
+};
+const laterOpening = {
+  contentId: '302',
+  title: '다음달축제',
+  eventStartDate: '20261010',
+};
+const shortOngoing = {
+  contentId: '303',
+  title: '단기축제',
+  eventStartDate: '20260814',
+  eventEndDate: '20260830',
+};
+const longOngoing = {
+  contentId: '304',
+  title: '장기상설',
+  eventStartDate: '20260418',
+  eventEndDate: '20261215',
+};
+assert.ok(
+  compareFestivalsByOpenDate(soonOpening, shortOngoing, aug20) < 0,
+  'upcoming before short ongoing',
+);
+assert.ok(
+  compareFestivalsByOpenDate(soonOpening, longOngoing, aug20) < 0,
+  'upcoming before long ongoing',
+);
+assert.ok(
+  compareFestivalsByOpenDate(shortOngoing, longOngoing, aug20) < 0,
+  'short ongoing before long ongoing',
+);
+assert.ok(
+  compareFestivalsByOpenDate(soonOpening, laterOpening, aug20) < 0,
+  'earlier upcoming first',
+);
+const suwonSorted = [
+  longOngoing,
+  {
+    contentId: '305',
+    title: '화성행궁야간',
+    eventStartDate: '20260501',
+    eventEndDate: '20261101',
+  },
+  shortOngoing,
+].sort((a, b) => compareFestivalsByOpenDate(a, b, aug20));
+assert.equal(suwonSorted[0].contentId, '303', 'short ongoing above long-term');
+const openGroups = sortFestivalGroupsByOpenDate(
+  [
+    { id: 'b', label: '부산', items: [laterOpening] },
+    { id: 'a', label: '강원', items: [soonOpening] },
+  ],
+  aug20,
+);
+assert.equal(openGroups[0].id, 'a', 'group with sooner festival first');
+
+const {
+  inferFestivalTasteIds,
+  buildTasteTags,
+  filterByTaste,
+  tasteLabel,
+  FESTIVAL_TASTE_THEMES,
+} = await import('../src/pages/Korea/festivalTasteTags.js');
+
+assert.ok(FESTIVAL_TASTE_THEMES.length >= 18, 'theme taxonomy breadth');
+assert.ok(
+  inferFestivalTasteIds({ title: '춘천 술 페스타' }).has('drink'),
+  '술 페스타 → drink',
+);
+assert.ok(
+  inferFestivalTasteIds({ title: '제38회 춘천인형극제' }).has('performance'),
+  '인형극제 → performance',
+);
+assert.ok(
+  inferFestivalTasteIds({ title: '한강수계 걷기행사' }).has('sports'),
+  '걷기행사 → sports',
+);
+assert.ok(
+  inferFestivalTasteIds({ title: '2026 창작 실경뮤지컬' }).has('performance'),
+  '뮤지컬 → performance',
+);
+assert.ok(
+  inferFestivalTasteIds({
+    title: '일반 축제',
+    cat3: 'A02070100',
+  }).has('culture'),
+  'TourAPI 문화관광축제 cat3',
+);
+const tastePool = [
+  { title: '춘천 술 페스타' },
+  { title: '제38회 춘천인형극제' },
+  { title: '한강수계 걷기행사' },
+  { title: '2026 창작 실경뮤지컬' },
+];
+const tasteChips = buildTasteTags(tastePool);
+assert.ok(tasteChips.some((t) => t.id === 'drink'), 'pool shows drink chip');
+assert.ok(tasteChips.some((t) => t.id === 'performance'), 'pool shows performance chip');
+assert.ok(tasteChips.some((t) => t.id === 'sports'), 'pool shows sports chip');
+assert.equal(
+  filterByTaste(tastePool, 'performance').length,
+  2,
+  'performance filter count',
+);
+assert.equal(tasteLabel('music'), '음악');
 
 console.log('smoke-korea-festival-personal: PASS');

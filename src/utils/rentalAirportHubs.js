@@ -57,7 +57,7 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'KUL', officialKo: '쿠알라룸푸르국제공항', lat: 2.7456, lng: 101.7099, radiusKm: 200, aliases: ['kuala lumpur', '쿠알라룸푸르', 'kl', 'kul'] },
   { iata: 'PEN', officialKo: '페낭국제공항', lat: 5.2971, lng: 100.2767, radiusKm: 120, aliases: ['penang', '페낭'] },
   { iata: 'LGK', officialKo: '랑카위국제공항', lat: 6.3297, lng: 99.7287, radiusKm: 100, aliases: ['langkawi', '랑카위', 'lgk'] },
-  { iata: 'BKI', officialKo: '코타키나발루공항', lat: 5.9372, lng: 116.0512, radiusKm: 160, aliases: ['kota kinabalu', '코타키나발루', 'bki', 'borneo', '보르네오', 'kinabalu', '키나발루'] },
+  { iata: 'BKI', officialKo: '코타키나발루공항', lat: 5.9372, lng: 116.0512, radiusKm: 160, aliases: ['kota kinabalu', '코타키나발루', 'bki', 'borneo', '보르네오', 'kinabalu', '키나발루', 'sabah', '사바', '사바섬'] },
   {
     iata: 'KCH',
     officialKo: '쿠칭국제공항',
@@ -330,6 +330,14 @@ export const RENTAL_AIRPORT_HUBS = [
     lng: 25.4793,
     radiusKm: 80,
     aliases: ['santorini', '산토리니', 'thira', '티라', 'jtr']
+  },
+  {
+    iata: 'ZTH',
+    officialKo: '자킨토스 국제공항',
+    lat: 37.7509,
+    lng: 20.8843,
+    radiusKm: 80,
+    aliases: ['zakynthos', '자킨토스', '자킨토시', 'zante', '잔테', 'zth']
   },
   {
     iata: 'HER',
@@ -853,6 +861,7 @@ export const RENTAL_AIRPORT_HUBS = [
   { iata: 'GOH', officialKo: '누크 공항', lat: 64.1814, lng: -51.6781, radiusKm: 200, aliases: ['nuuk', 'greenland', '그린란드', 'goh'] },
   { iata: 'NYU', officialKo: '냥우 공항', lat: 21.1789, lng: 94.9303, radiusKm: 80, aliases: ['nyaung u', 'nyaung-u', 'nyu', '냥우', 'bagan airport', 'bagan', '바간', 'bagan airport myanmar'] },
   { iata: 'MDL', officialKo: '만달레이 국제공항', lat: 21.7022, lng: 95.9779, radiusKm: 160, aliases: ['mandalay', '만달레이', 'mdl'] },
+  { iata: 'RGN', officialKo: '양곤 국제공항', lat: 16.9073, lng: 96.1332, radiusKm: 200, aliases: ['yangon', '양곤', 'rgn', 'mingaladon'] },
   { iata: 'GUA', officialKo: '라아우로레 공항', lat: 14.5833, lng: -90.5275, radiusKm: 180, aliases: ['guatemala city', '과테말라', 'gua'] },
   { iata: 'FRS', officialKo: '문도 마야 국제공항', lat: 17.0694, lng: -89.7383, radiusKm: 80, aliases: ['flores', '플로레스', 'frs', 'tikal', '티칼', 'mundo maya'] },
   { iata: 'PUQ', officialKo: '카를로스 이바녜스 델 캄포 공항', lat: -53.0026, lng: -70.8545, radiusKm: 200, aliases: ['punta arenas', '푼타아레나스', 'puq', 'torres del paine', '토레스델파이네'] },

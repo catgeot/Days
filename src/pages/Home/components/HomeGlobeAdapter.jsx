@@ -37,6 +37,7 @@ const HomeGlobeAdapter = forwardRef((props, ref) => {
     pauseRotation: () => childRef.current?.pauseRotation?.(),
     resumeRotation: () => childRef.current?.resumeRotation?.(),
     wakeAfterOverlay: () => childRef.current?.wakeAfterOverlay?.(),
+    markCameraBusy: () => childRef.current?.markCameraBusy?.(),
     flyToAndPin: (lat, lng, name, category, options) => childRef.current?.flyToAndPin?.(lat, lng, name, category, options),
     flyToRegion: (lat, lng, zoom) => childRef.current?.flyToRegion?.(lat, lng, zoom) ?? false,
     clearRegionFocus: () => childRef.current?.clearRegionFocus?.(),
@@ -58,7 +59,8 @@ const HomeGlobeAdapter = forwardRef((props, ref) => {
     waitForFlightCinemaReady: (options) => childRef.current?.waitForFlightCinemaReady?.(options) ?? Promise.resolve(false),
     isGlobeFocusReady: () => childRef.current?.isGlobeFocusReady?.() ?? false,
     whenGlobeFocusReady: (options) => childRef.current?.whenGlobeFocusReady?.(options) ?? Promise.resolve(false),
-    getGlobeMode: () => childRef.current?.getGlobeMode?.()
+    getGlobeMode: () => childRef.current?.getGlobeMode?.(),
+    suppressOverlayClick: (ms) => childRef.current?.suppressOverlayClick?.(ms)
     };
     globeApiRef.current = api;
     registerGlobeApi(api);

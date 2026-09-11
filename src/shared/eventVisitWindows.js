@@ -78,6 +78,18 @@ function clampWindowToEvent(checkIn, checkOut, eventStart, eventEnd, today) {
   return { checkIn: inYmd, checkOut: outYmd };
 }
 
+/** Opening stay — allow check-in up to 1 day before eventStart (개막 전날). */
+function clampOpeningWindow(checkIn, checkOut, eventStart, eventEnd, today) {
+  let inYmd = checkIn;
+  let outYmd = checkOut;
+  const earliestIn = addDaysYmd(eventStart, -1);
+  if (inYmd < earliestIn) inYmd = earliestIn;
+  if (inYmd < today) inYmd = today;
+  if (outYmd > addDaysYmd(eventEnd, 1)) outYmd = addDaysYmd(eventEnd, 1);
+  if (outYmd <= inYmd) outYmd = addDaysYmd(inYmd, 1);
+  return { checkIn: inYmd, checkOut: outYmd };
+}
+
 /**
  * @typedef {{ id: string, checkIn: string, checkOut: string, nights: number }} VisitWindowPreset
  */
@@ -117,8 +129,9 @@ export function visitWindowPresetsFromEvent(event, opts = {}) {
   /** @type {VisitWindowPreset[]} */
   const presets = [];
 
-  const openingIn = eventStart < today ? today : eventStart;
-  const opening = clampWindowToEvent(
+  const desiredOpeningIn = addDaysYmd(eventStart, -1);
+  const openingIn = desiredOpeningIn < today ? today : desiredOpeningIn;
+  const opening = clampOpeningWindow(
     openingIn,
     addDaysYmd(openingIn, 3),
     eventStart,

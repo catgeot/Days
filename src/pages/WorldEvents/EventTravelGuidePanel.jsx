@@ -2,13 +2,14 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Sparkles } from 'lucide-react';
 import { isCloudPreviewSurface } from '../../shared/cloudPreview/isCloudPreviewSurface';
+import { localizeEventTravelGuide } from '../../utils/eventTravelGuideLocale';
 
 function isDevQaSurface() {
   return isCloudPreviewSurface() || import.meta.env.DEV;
 }
 
 /**
- * Tier3 AI EventTravelGuide — parsed sections for users; raw JSON in dev/Preview QA.
+ * Tier3 AI EventTravelGuide v0.2 — trip presets + event advice only (static Tier0~0.5 separate).
  *
  * @param {{
  *   guide: Record<string, unknown> | null,
@@ -20,19 +21,18 @@ export default function EventTravelGuidePanel({ guide, rawRow = null, locale = '
   const { t } = useTranslation();
 
   const parsed = useMemo(() => {
-    if (!guide || typeof guide !== 'object') return null;
+    const localized = localizeEventTravelGuide(guide, locale);
+    if (!localized || typeof localized !== 'object') return null;
 
-    const summary = String(guide.summary ?? '').trim();
-    const recommendedNights = guide.recommended_nights;
-    const tripPresets = Array.isArray(guide.trip_presets) ? guide.trip_presets : [];
-    const sections = Array.isArray(guide.sections) ? guide.sections : [];
-    const bookingTips = Array.isArray(guide.booking_tips) ? guide.booking_tips : [];
-    const cautions = Array.isArray(guide.cautions) ? guide.cautions : [];
+    const tripPresets = Array.isArray(localized.trip_presets) ? localized.trip_presets : [];
+    const sections = Array.isArray(localized.sections) ? localized.sections : [];
+    const bookingTips = Array.isArray(localized.booking_tips) ? localized.booking_tips : [];
+    const cautions = Array.isArray(localized.cautions) ? localized.cautions : [];
 
-    if (!summary && sections.length === 0) return null;
+    if (tripPresets.length === 0 && sections.length === 0) return null;
 
-    return { summary, recommendedNights, tripPresets, sections, bookingTips, cautions };
-  }, [guide]);
+    return { tripPresets, sections, bookingTips, cautions };
+  }, [guide, locale]);
 
   if (!parsed) return null;
 
@@ -51,17 +51,9 @@ export default function EventTravelGuidePanel({ guide, rawRow = null, locale = '
           </span>
         </div>
 
-        {parsed.summary ? (
-          <p className="mt-2 text-sm leading-relaxed text-stone-700">{parsed.summary}</p>
-        ) : null}
-
-        {parsed.recommendedNights != null ? (
-          <p className="mt-2 rounded-xl border border-violet-200 bg-white/80 px-3 py-2 text-sm text-violet-950">
-            {t('worldEventDetail.aiGuide.recommendedNights', {
-              nights: parsed.recommendedNights,
-            })}
-          </p>
-        ) : null}
+        <p className="mt-2 text-xs leading-relaxed text-violet-900/80">
+          {t('worldEventDetail.aiGuide.staticSeparationNote')}
+        </p>
 
         {parsed.tripPresets.length > 0 ? (
           <div className="mt-3 space-y-2">
@@ -138,7 +130,7 @@ export default function EventTravelGuidePanel({ guide, rawRow = null, locale = '
           </pre>
           {rawRow?.model ? (
             <p className="mt-2 text-stone-400">
-              model: {rawRow.model} · {rawRow.guide_updated_at || ''}
+              model: {rawRow.model} · {rawRow.guide_updated_at || rawRow.schema_version || ''}
             </p>
           ) : null}
         </section>

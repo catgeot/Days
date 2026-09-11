@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-05-22T12:42:51.842Z",
-    "spotCount": 34
+    "generatedAt": "2026-09-06T10:05:53.011Z",
+    "spotCount": 36
   },
   "spots": {
     "santorini": {
@@ -208,6 +208,11 @@
           ]
         }
       ]
+    },
+    "antarctica": {
+      "tier": "cruise_only",
+      "source": "cruise-only",
+      "confidence": "medium"
     },
     "barcelona": {
       "tier": "common",
@@ -639,6 +644,27 @@
       "confidence": "high",
       "summary": "코모도 일대는 리브어보드·보트 투어(크루즈형)가 흔합니다.",
       "rationale": "Trip.com 크루즈·현지 보트 투어 — 페리 카드 미노출"
+    },
+    "costa-rica": {
+      "tier": "required",
+      "source": "required-keyword",
+      "confidence": "medium",
+      "routes": [
+        {
+          "id": "costa-rica-ferry",
+          "label": "페리·쾌속선 예약",
+          "directFerries": false,
+          "bookings": [
+            {
+              "provider": "klook_ferry",
+              "name": "Klook 페리"
+            }
+          ]
+        }
+      ],
+      "fallbacks": [
+        "klook_ferry"
+      ]
     },
     "ibiza": {
       "tier": "common",

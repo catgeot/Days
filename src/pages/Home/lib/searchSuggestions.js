@@ -4,6 +4,7 @@
  * 명소 exact/단일허브 prefix → 부모 hub+형제 명소 역펼침 (정착지 제외).
  * 정착지 exact → 허브형 역펼침 (부모 hub + 히트 지역 + 명소 + 형제 지역).
  * 큐레이션·SSOT는 동기 즉시, Mapbox는 허브/명소/정착지 exact가 아닐 때만 보강.
+ * 방문 place_stats 히트는 Mapbox 앞에 붙인다 (요약 카드·썸네일).
  */
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve.js';
@@ -25,11 +26,27 @@ import {
   resolveSettlement,
 } from './mapboxSettlementPlaces';
 import {
+  resolveLocalScenicList,
+  buildLocalScenicListHubCluster,
+  listsForHub,
+  localScenicMemberToSuggestion,
+  localScenicListDisplayTitle,
+} from './koreaLocalScenicLists';
+import {
   findCityBySearchQuery,
   cityToSuggestion,
   matchCitiesPrefix,
 } from './citiesSearch';
-import { searchBoxForward } from './mapboxSearchBox';
+import { searchBoxForward, searchBoxTypesForQuery } from './mapboxSearchBox';
+import { lookupVisitedPlacesForSearch } from './visitedPlaceSearchLookup.js';
+import { overlayGeoFieldsOnVisitedSpots } from './visitedPlaceSearch.js';
+import { buildMapboxSearchQueries } from './exploreSearchAliases';
+import {
+  collectKnownTravelHomonyms,
+  homonymIdentityKey,
+  isDistinctTravelPlace,
+  relabelHomonymDisplay,
+} from './travelSearchHomonyms';
 
 const normalizeKey = (s) =>
   String(s ?? '')
@@ -64,6 +81,52 @@ function pushUnique(out, seen, item) {
   if (!k || seen.has(k)) return;
   seen.add(k);
   out.push(item);
+}
+
+/**
+ * SSOT 여행지 Enter 카드에, 멀리 떨어진 동명을 붙인다 (사바↔카리브 사바).
+ * 고정 동명이 먼저 — Mapbox ko 표기가 SSOT와 같은 한글명이면 둘째 카드가 사라진다.
+ * @param {string} query
+ * @param {object[]} ssotCandidates
+ */
+export async function collectDistinctMapboxHomonyms(query, ssotCandidates) {
+  const anchors = (ssotCandidates || []).filter(Boolean);
+  if (!anchors.length) return [];
+
+  const extras = collectKnownTravelHomonyms(query, anchors).map((item) =>
+    relabelHomonymDisplay(item, anchors),
+  );
+  const distinctAnchors = [...anchors, ...extras];
+  const seenIds = new Set(distinctAnchors.map(homonymIdentityKey).filter(Boolean));
+  const seenNames = new Set(
+    distinctAnchors.map((item) => normalizeKey(item?.name)).filter(Boolean),
+  );
+
+  try {
+    const queries = buildMapboxSearchQueries(query);
+    const searchBoxTypes = searchBoxTypesForQuery(query);
+    for (const mq of queries) {
+      const remote = await searchBoxForward(mq, {
+        limit: 5,
+        types: searchBoxTypes,
+      });
+      for (const item of remote || []) {
+        const idKey = homonymIdentityKey(item);
+        if (!idKey || seenIds.has(idKey)) continue;
+        if (!isDistinctTravelPlace(item, distinctAnchors)) continue;
+        const labeled = relabelHomonymDisplay(item, distinctAnchors);
+        const nameKey = normalizeKey(labeled.name);
+        if (nameKey && seenNames.has(nameKey)) continue;
+        seenIds.add(idKey);
+        if (nameKey) seenNames.add(nameKey);
+        extras.push(labeled);
+        distinctAnchors.push(labeled);
+      }
+    }
+  } catch {
+    return extras.slice(0, 3);
+  }
+  return extras.slice(0, 3);
 }
 
 /**
@@ -138,6 +201,23 @@ function uniqueHubFromAttractionHits(attractionHits) {
 }
 
 /**
+ * hub 클러스터 앞에 팔경 멤버(소제목 groupTitle). 멤버명은 seen으로 일반 명소와 중복 제거.
+ * @param {object} hub
+ * @param {object[]} out
+ * @param {Set<string>} seen
+ * @param {object[]} [lists]
+ */
+function pushLocalScenicMembersFirst(hub, out, seen, lists) {
+  const rows = lists || (hub?.hubId ? listsForHub(hub.hubId) : []);
+  for (const list of rows) {
+    for (const member of list.members || []) {
+      const item = localScenicMemberToSuggestion(list, hub, member);
+      if (item) pushUnique(out, seen, item);
+    }
+  }
+}
+
+/**
  * 로컬만 (SSOT + 큐레이션 허브) — 동기·즉시.
  * @param {string} query
  * @param {{ spotLimit?: number }} [opts]
@@ -151,6 +231,36 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
   const key = normalizeKey(q);
   const out = [];
   const seen = new Set();
+
+  const exactListHit = resolveLocalScenicList(q);
+  const exactHub = exactListHit
+    ? exactListHit.hub || resolveCityAttractionHub(exactListHit.list.hubId)
+    : resolveCityAttractionHub(q);
+  const scenicLists = exactListHit
+    ? [exactListHit.list]
+    : exactHub
+      ? listsForHub(exactHub.hubId)
+      : [];
+  const exactAttraction =
+    exactHub || exactListHit ? null : resolveHubAttraction(q);
+  const exactSettlement =
+    exactHub || exactListHit || exactAttraction ? null : resolveSettlement(q);
+  const { hubs, attractions } = matchCityAttractionHubsPrefix(q, { limit: 6 });
+
+  if (exactHub) {
+    pushLocalScenicMembersFirst(exactHub, out, seen, scenicLists);
+  } else if (scenicLists.length) {
+    for (const list of scenicLists) {
+      const h = resolveCityAttractionHub(list.hubId);
+      pushLocalScenicMembersFirst(h, out, seen, [list]);
+    }
+  }
+
+  const officialSpot = resolveTravelSpotFromSearchQuery(q);
+  if (officialSpot) pushUnique(out, seen, spotToSuggestion(officialSpot));
+  for (const extra of collectKnownTravelHomonyms(q, officialSpot ? [officialSpot] : [])) {
+    pushUnique(out, seen, extra);
+  }
 
   const spotHits = TRAVEL_SPOTS.filter((spot) => {
     const name = (spot.name || '').toLowerCase();
@@ -175,25 +285,24 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
     pushUnique(out, seen, cityToSuggestion(city));
   }
 
-  const exactHub = resolveCityAttractionHub(q);
-  const exactAttraction = exactHub ? null : resolveHubAttraction(q);
-  const exactSettlement =
-    exactHub || exactAttraction ? null : resolveSettlement(q);
-  const { hubs, attractions } = matchCityAttractionHubsPrefix(q, { limit: 6 });
-
   if (exactHub) {
-    // hub exact: 도시 + 명소 + 정착지(≤3)
     pushHubAttractionCluster(exactHub, out, seen, { includeSettlements: true });
+  } else if (exactListHit) {
+    for (const item of buildLocalScenicListHubCluster(
+      exactListHit.list,
+      exactListHit.hub,
+    )) {
+      pushUnique(out, seen, item);
+    }
   } else if (exactAttraction) {
-    // 명소 exact: 부모 도시 + 형제 명소만 (정착지 비포함)
     pushHubAttractionCluster(exactAttraction.hub, out, seen, {
       preferAttraction: exactAttraction.attraction,
       includeSettlements: false,
     });
   } else if (exactSettlement) {
-    // 정착지 exact: 허브형 역펼침 (도시 + 히트 지역 + 명소 + 형제 지역)
     const parentHub = resolveCityAttractionHub(exactSettlement.row.hubId);
     if (parentHub) {
+      pushLocalScenicMembersFirst(parentHub, out, seen);
       pushHubAttractionCluster(parentHub, out, seen, {
         preferSettlement: exactSettlement.settlement,
         includeSettlements: true,
@@ -207,7 +316,6 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
     }
   } else {
     const singleHubHit = uniqueHubFromAttractionHits(attractions);
-    // hub 이름 prefix 없이 명소만 한 도시로 모이면 동일 역펼침
     if (singleHubHit && hubs.length === 0) {
       pushHubAttractionCluster(singleHubHit.hub, out, seen, {
         preferAttraction: singleHubHit.prefers[0],
@@ -224,7 +332,7 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
     }
   }
 
-  return out.slice(0, 16);
+  return out.slice(0, 24);
 }
 
 /**
@@ -238,31 +346,62 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
 
   const local = buildLocalSearchSuggestions(q, { spotLimit: opts.spotLimit ?? 5 });
   const includeMapbox = opts.includeMapbox !== false;
-  const exactHub = resolveCityAttractionHub(q);
-  const exactAttraction = exactHub ? null : resolveHubAttraction(q);
+  const exactListHit = resolveLocalScenicList(q);
+  const exactHub = exactListHit
+    ? exactListHit.hub || resolveCityAttractionHub(exactListHit.list.hubId)
+    : resolveCityAttractionHub(q);
+  const exactAttraction =
+    exactHub || exactListHit ? null : resolveHubAttraction(q);
   const exactSettlement =
-    exactHub || exactAttraction ? null : resolveSettlement(q);
+    exactHub || exactListHit || exactAttraction ? null : resolveSettlement(q);
 
-  // 허브/명소/정착지 exact는 큐레이션만 — Mapbox 대기로 지연시키지 않음
-  if (!includeMapbox || exactHub || exactAttraction || exactSettlement) {
+  // 허브/명소/정착지/지자체리스트 exact는 큐레이션만 — Mapbox 대기로 지연시키지 않음
+  if (
+    !includeMapbox ||
+    exactHub ||
+    exactListHit ||
+    exactAttraction ||
+    exactSettlement
+  ) {
     return local;
   }
 
   const out = [...local];
   const seen = new Set(local.map(dedupeKey).filter(Boolean));
   const mapboxLimit = opts.mapboxLimit ?? 6;
+  const mapboxQueries = local.length < 3 ? buildMapboxSearchQueries(q) : [q];
+  const searchBoxTypes = searchBoxTypesForQuery(q);
 
+  const visitedPromise = lookupVisitedPlacesForSearch(q);
   try {
-    const remote = await searchBoxForward(q, {
-      limit: mapboxLimit,
-      types: 'place,city,poi',
-    });
-    for (const item of remote) pushUnique(out, seen, item);
+    for (const mq of mapboxQueries) {
+      const remote = await searchBoxForward(mq, {
+        limit: mapboxLimit,
+        types: searchBoxTypes,
+        language: /[\uAC00-\uD7A3]/.test(mq) ? 'ko' : 'en',
+      });
+      for (const item of remote) pushUnique(out, seen, item);
+      if (out.length >= 8) break;
+    }
   } catch {
     // degrade: local only
   }
 
-  return out.slice(0, 16);
+  try {
+    const visited = await visitedPromise;
+    const overlaid = overlayGeoFieldsOnVisitedSpots(visited || [], out);
+    const localKeys = new Set(local.map(dedupeKey).filter(Boolean));
+    const withVisited = [];
+    const visitedSeen = new Set();
+    for (const item of overlaid) {
+      if (localKeys.has(dedupeKey(item))) continue;
+      pushUnique(withVisited, visitedSeen, item);
+    }
+    for (const item of out) pushUnique(withVisited, visitedSeen, item);
+    return withVisited.slice(0, 24);
+  } catch {
+    return out.slice(0, 24);
+  }
 }
 
 /**
@@ -271,6 +410,19 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
  */
 export async function buildHubCandidatesForEnter(hub) {
   return buildHubDisambiguationCandidates(hub, []);
+}
+
+/**
+ * 선택 카드·Enter 후보 앞에 팔경 멤버.
+ * @param {object} hub
+ * @param {object[]} candidates
+ */
+export function prependLocalScenicToHubCandidates(hub, candidates) {
+  const out = [];
+  const seen = new Set();
+  pushLocalScenicMembersFirst(hub, out, seen);
+  for (const item of candidates || []) pushUnique(out, seen, item);
+  return out;
 }
 
 /** 선택 카드용 — 여행지 SSOT */
@@ -339,14 +491,14 @@ export async function buildCuratedEnterDisambiguation(query) {
   const q = String(query || '').trim();
   if (!q) return null;
 
-  const hubHit = resolveCityAttractionHub(q);
+  const listHit = resolveLocalScenicList(q);
+  const hubHit = listHit?.hub || resolveCityAttractionHub(q);
   if (hubHit) {
     let candidates = await buildHubCandidatesForEnter(hubHit);
     const spot =
       resolveTravelSpotFromSearchQuery(q) ||
       TRAVEL_SPOTS.find((s) => s.slug === hubHit.hubId);
     if (spot) {
-      // 동명 hub 카드에 SSOT 설명 이식 후, 여행지 카드를 앞에 두면 dedupe로 hub가 떨어져도 desc 유지
       const spotDesc = String(spot.desc || '').trim();
       if (spotDesc && candidates[0] && normalizeKey(candidates[0].name) === normalizeKey(hubHit.name)) {
         candidates = [{ ...candidates[0], desc: spotDesc, badge: '여행지', kind: 'spot', slug: spot.slug || candidates[0].slug }, ...candidates.slice(1)];
@@ -354,7 +506,11 @@ export async function buildCuratedEnterDisambiguation(query) {
         candidates = [spotToSuggestion(spot), ...candidates];
       }
     }
-    return ensureDisambiguation(q, candidates, `'${hubHit.name}' → 도시와 명소를 골라주세요`);
+    candidates = prependLocalScenicToHubCandidates(hubHit, candidates);
+    const titleName = listHit
+      ? localScenicListDisplayTitle(listHit.list, hubHit)
+      : hubHit.name;
+    return ensureDisambiguation(q, candidates, `'${titleName}' → 도시와 명소를 골라주세요`);
   }
 
   const attractionHit = resolveHubAttraction(q);
@@ -394,7 +550,16 @@ export async function buildCuratedEnterDisambiguation(query) {
 
   const querySpot = resolveTravelSpotFromSearchQuery(q);
   if (querySpot) {
-    return ensureDisambiguation(q, [spotToSuggestion(querySpot)], `'${querySpot.name}' → 이 여행지로 갈까요?`);
+    const ssot = [spotToSuggestion(querySpot)];
+    const extras = await collectDistinctMapboxHomonyms(q, ssot);
+    if (extras.length) {
+      return ensureDisambiguation(
+        q,
+        [...ssot, ...extras],
+        `'${q}' → 원하는 장소를 선택하세요`,
+      );
+    }
+    return ensureDisambiguation(q, ssot, `'${querySpot.name}' → 이 여행지로 갈까요?`);
   }
 
   const seaHit = resolveSeaBasinFromQuery(q);

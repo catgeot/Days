@@ -1,6 +1,7 @@
 import worldEventsData from '../pages/Home/data/worldEvents.json' with { type: 'json' };
 import travelSpotsList from '../pages/Home/data/travelSpots-list.json' with { type: 'json' };
 import { resolveWorldEventHubRegionId } from '../pages/WorldEvents/worldEventHubRegions.js';
+import { compareWorldEventsForList } from '../shared/worldEventTimeline.js';
 
 /** @typedef {import('../../scripts/lib/world-event-schema.mjs').WorldEventOverride} WorldEvent */
 
@@ -13,6 +14,7 @@ for (const spot of travelSpotsList ?? []) {
     name: spot.name || '',
     name_en: spot.name_en || '',
     country: spot.country || '',
+    country_en: spot.country_en || '',
   });
 }
 
@@ -32,12 +34,7 @@ for (const event of worldEventsData.events ?? []) {
 }
 
 for (const [slug, list] of eventsBySlug) {
-  list.sort((a, b) => {
-    const pa = Number(a.priority ?? 99);
-    const pb = Number(b.priority ?? 99);
-    if (pa !== pb) return pa - pb;
-    return String(a.startDate).localeCompare(String(b.startDate));
-  });
+  list.sort(compareWorldEventsForList);
   eventsBySlug.set(slug, list);
 }
 
@@ -72,6 +69,90 @@ export function getWorldEventTitle(event, locale = 'ko') {
 }
 
 /**
+ * @param {string} [locale]
+ */
+function isEnLocale(locale) {
+  return locale === 'en';
+}
+
+/**
+ * @param {WorldEvent} event
+ * @param {string} [locale]
+ */
+export function getWorldEventDetailOverview(event, locale = 'ko') {
+  if (!event) return '';
+  if (isEnLocale(locale)) {
+    return event.detailOverviewEn ? String(event.detailOverviewEn).trim() : '';
+  }
+  return event.detailOverview ? String(event.detailOverview).trim() : '';
+}
+
+/**
+ * @param {WorldEvent} event
+ * @param {string} [locale]
+ * @returns {string[]}
+ */
+export function getWorldEventHighlights(event, locale = 'ko') {
+  if (!event) return [];
+  if (isEnLocale(locale)) {
+    if (!Array.isArray(event.highlightsEn) || event.highlightsEn.length === 0) return [];
+    return event.highlightsEn.map((item) => String(item).trim()).filter(Boolean);
+  }
+  if (!Array.isArray(event.highlights)) return [];
+  return event.highlights.map((item) => String(item).trim()).filter(Boolean);
+}
+
+/**
+ * @param {WorldEvent} event
+ * @param {string} [locale]
+ */
+export function getWorldEventRecurrenceNote(event, locale = 'ko') {
+  if (!event) return '';
+  if (isEnLocale(locale)) {
+    return event.recurrenceNoteEn ? String(event.recurrenceNoteEn).trim() : '';
+  }
+  return event.recurrenceNote ? String(event.recurrenceNote).trim() : '';
+}
+
+/**
+ * @param {WorldEvent} event
+ * @param {string} [locale]
+ */
+export function getWorldEventBookingHints(event, locale = 'ko') {
+  if (!event?.bookingHints || isEnLocale(locale)) return '';
+  return String(event.bookingHints).trim();
+}
+
+/**
+ * @param {WorldEvent} event
+ * @param {string} [locale]
+ */
+export function getWorldEventStayAreas(event, locale = 'ko') {
+  if (!Array.isArray(event?.stayAreas)) return [];
+  return event.stayAreas
+    .map((area) => {
+      if (isEnLocale(locale)) {
+        const name = String(area.nameEn || '').trim();
+        if (!name) return null;
+        const note = area.noteEn != null ? String(area.noteEn).trim() : undefined;
+        return {
+          ...area,
+          name,
+          ...(note ? { note } : {}),
+        };
+      }
+      const name = String(area.name || '').trim();
+      const note = area.note != null ? String(area.note).trim() : undefined;
+      return {
+        ...area,
+        name,
+        ...(note ? { note } : {}),
+      };
+    })
+    .filter(Boolean);
+}
+
+/**
  * @param {string} ymd
  * @param {string} [locale]
  */
@@ -103,12 +184,7 @@ export function formatWorldEventDateRange(event, locale = 'ko') {
 
 /** @returns {WorldEvent[]} */
 export function getAllWorldEvents() {
-  return [...(worldEventsData.events ?? [])].sort((a, b) => {
-    const pa = Number(a.priority ?? 99);
-    const pb = Number(b.priority ?? 99);
-    if (pa !== pb) return pa - pb;
-    return String(a.startDate).localeCompare(String(b.startDate));
-  });
+  return [...(worldEventsData.events ?? [])].sort(compareWorldEventsForList);
 }
 
 /**
@@ -133,9 +209,11 @@ export function getWorldEventPlaceMeta(slug, locale = 'ko') {
   if (!spot) {
     return { label: key, country: '' };
   }
+  const country =
+    locale === 'en' && spot.country_en ? spot.country_en : spot.country || '';
   return {
     label: getWorldEventPlaceLabel(key, locale),
-    country: spot.country || '',
+    country,
   };
 }
 
@@ -154,6 +232,7 @@ export function getWorldEventLocation(slug) {
     name: spot.name || key,
     name_en: spot.name_en || spot.name || key,
     country: spot.country || '',
+    country_en: spot.country_en || spot.country || '',
   };
 }
 
