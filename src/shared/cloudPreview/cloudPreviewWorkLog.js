@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 4,
-  sessionPhase: '사람 Preview QA 통과 및 병합 대기',
+  sessionNo: 8,
+  sessionPhase: '빙계 팔경 사진 다양화',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=mungyeong',
+  previewPath: '/korea/theme/scenic?hub=uiseong',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,30 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-11-palgyeong-use-8-binggye-distinct-photos',
+    session: '팔경 활용 #8, 빙계 팔경 사진 다양화',
+    title: '의성 빙계팔경 8행 썸네일·본문 갤러리를 경승별 다른 공식 사진으로 교체',
+    detail:
+      '같은 VisitKorea 계곡 항공 사진이 빙혈·풍혈·인암·의각·수대·불정·용추에 반복되던 문제를 고쳤습니다. 의성군 문화관광(빙혈 입구·절벽 계류·인암 각자·출렁다리·석탑 단풍)과 TourAPI 빙계계곡·빙계서원 갤러리에서 경승마다 다른 대표·본문 사진을 넣었습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=uiseong 8행 썸네일·상세 갤러리가 서로 다른지 확인.',
+    at: '2026-09-11T00:30:00.000Z',
+  },
+  {
+    id: '2026-09-10-palgyeong-use-6-uiseong-muju-overlays',
+    session: '팔경 활용 #6, 의성·무주 결손 허브 런타임 오버레이 보강',
+    title: '의성 빙계팔경 8건·무주 구천동33경 결손 28건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 의성 빙계팔경 8건(빙혈·풍혈·인암·의각·수대·빙산사지 오층석탑·불정·용추)과 무주 구천동33경 결손 28건의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 의성군 문화관광·국가유산청 보물 석탑 사진, 무주군 문화관광·디지털무주문화대전·명승 일사대·파회·수심대 일원 사진을 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=uiseong · ?hub=muju 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-10T22:45:00.000Z',
+  },
+  {
+    id: '2026-09-10-palgyeong-use-5-pr210-merged-and-overlay-plan',
+    session: '팔경 활용 #5, PR #210 main 병합 및 후속 허브 오버레이 확장 검토',
+    title: 'PR #210 main 병합 완료 및 의성·무주 결손 허브 오버레이 확장 계획 수립',
+    detail:
+      'PR #210(문경·단양 팔경 런타임 오버레이 및 ScenicPage 팔경 그룹 분리)이 main(33776ccb)에 성공적으로 병합되었습니다. 후속 작업으로 지자체 팔경 결손 상위 허브인 의성 빙계팔경(8건 전수) 및 무주 구천동33경(28건 결손)에 대한 공식 팩트 기반 런타임 오버레이(LOCAL_SCENIC_MEMBER_OVERLAYS) 보강 계획을 수립했습니다.',
+    at: '2026-09-10T22:00:00.000Z',
+  },
   {
     id: '2026-09-10-palgyeong-use-4-preview-qa-passed',
     session: '팔경 활용 #4, 사람 Preview QA',

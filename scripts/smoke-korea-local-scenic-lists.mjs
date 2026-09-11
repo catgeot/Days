@@ -283,6 +283,62 @@ const mungyeongSaejae = resolveLocalScenicListSpotById('local-scenic:mungyeong-p
 assert.ok(mungyeongSaejae?.contentId === '126017', '문경 새재계곡 overlay contentId');
 assert.ok(mungyeongSaejae?.imageUrl, '문경 새재계곡 overlay imageUrl');
 
+const uiseongBinghyeol = resolveLocalScenicListSpotById(
+  'local-scenic:uiseong-binggye-palgyeong:빙계빙혈',
+);
+assert.ok(uiseongBinghyeol?.imageUrl, '의성 빙혈 overlay imageUrl');
+assert.ok(uiseongBinghyeol?.overview?.includes('빙혈'), '의성 빙혈 overlay overview');
+assert.ok(!uiseongBinghyeol?.contentId, '의성 빙혈 JSON contentId 없음 유지');
+
+const uiseongPagoda = resolveLocalScenicListSpotById(
+  'local-scenic:uiseong-binggye-palgyeong:빙산사지오층석탑',
+);
+assert.ok(uiseongPagoda?.imageUrl, '의성 빙산사지 오층석탑 overlay imageUrl');
+assert.ok(uiseongPagoda?.overview?.includes('보물'), '의성 빙산사지 오층석탑 overlay overview');
+
+const uiseongMerged = mergeLocalScenicMembersIntoScenicSpots([], 'uiseong');
+const uiseongPalgyeong = uiseongMerged.filter(
+  (s) => s.localScenicListId === 'uiseong-binggye-palgyeong',
+);
+assert.equal(uiseongPalgyeong.length, 8, '의성 빙계팔경 8명');
+assert.ok(
+  uiseongPalgyeong.every((s) => s.overview && s.imageUrl),
+  '의성 빙계팔경 8명 overlay 사진·개요',
+);
+assert.equal(
+  new Set(uiseongPalgyeong.map((s) => s.imageUrl)).size,
+  8,
+  '의성 빙계팔경 썸네일 8장 서로 다름',
+);
+const uiseongGalleryUrls = uiseongPalgyeong.flatMap((s) => s.galleryUrls || []);
+assert.ok(
+  uiseongPalgyeong.every((s) => (s.galleryUrls || []).length >= 2),
+  '의성 빙계팔경 본문 갤러리 2장 이상',
+);
+assert.equal(
+  new Set(uiseongGalleryUrls).size,
+  uiseongGalleryUrls.length,
+  '의성 빙계팔경 갤러리 URL 중복 없음',
+);
+
+const mujuEunguam = resolveLocalScenicListSpotById('local-scenic:muju-other:은구암');
+assert.ok(mujuEunguam?.imageUrl, '무주 은구암 overlay imageUrl');
+assert.ok(mujuEunguam?.overview?.includes('은구암'), '무주 은구암 overlay overview');
+
+const mujuIlsadae = resolveLocalScenicListSpotById('local-scenic:muju-other:일사대');
+assert.ok(mujuIlsadae?.overview?.includes('명승'), '무주 일사대 overlay overview');
+assert.ok(mujuIlsadae?.imageUrl?.includes('1629007'), '무주 일사대 KHS 사진');
+
+const mujuMerged = mergeLocalScenicMembersIntoScenicSpots([], 'muju');
+const mujuGucheon = mujuMerged.filter((s) => s.localScenicListId === 'muju-other');
+assert.equal(mujuGucheon.length, 33, '무주 구천동33경 33명');
+const mujuDeficit = mujuGucheon.filter((s) => !s.contentId);
+assert.equal(mujuDeficit.length, 28, '무주 구천동 결손 28명');
+assert.ok(
+  mujuDeficit.every((s) => s.overview && s.imageUrl),
+  '무주 결손 28명 overlay 사진·개요',
+);
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
