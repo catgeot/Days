@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 8,
-  sessionPhase: '빙계 팔경 사진 다양화',
+  sessionNo: 10,
+  sessionPhase: '팔경 번호',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic?hub=uiseong',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-11-palgyeong-use-10-member-rank-blurb',
+    session: '팔경 활용 #10, 팔경 번호',
+    title: '팔경 행 부제에 1경·2경 번호 — 그룹 칩은 N경 유지',
+    detail:
+      '명승 리스트에서 멤버 행 부제가 모두 같은 「의성 팔경」이던 문제를 고쳤습니다. 행 부제는 의성 1경~8경처럼 순번을 붙이고, 그룹 칩은 의성 팔경·문경 팔경을 그대로 둡니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=uiseong 8행 부제가 서로 다른지 확인.',
+    at: '2026-09-11T02:20:00.000Z',
+  },
   {
     id: '2026-09-11-palgyeong-use-8-binggye-distinct-photos',
     session: '팔경 활용 #8, 빙계 팔경 사진 다양화',

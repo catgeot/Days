@@ -155,6 +155,39 @@ export function localScenicListDisplayTitle(list, hub, locale = 'ko') {
   return `${city} ${kind}`;
 }
 
+function memberIndexInList(list, member) {
+  const key = normalizeKey(member?.attractionName);
+  if (!key) return 0;
+  const idx = (list?.members || []).findIndex(
+    (m) => normalizeKey(m.attractionName) === key,
+  );
+  return idx >= 0 ? idx + 1 : 0;
+}
+
+/**
+ * 행 부제 `{시군} {N}경` · 구곡은 `{N}곡`. 그룹 칩(groupTitle)은 바꾸지 않음.
+ * @param {object} list
+ * @param {object} [hub]
+ * @param {object} member
+ * @param {string} [locale]
+ */
+export function localScenicMemberRankBlurb(list, hub, member, locale = 'ko') {
+  const fallback = localScenicListDisplayTitle(list, hub, locale);
+  const rank = memberIndexInList(list, member);
+  if (!rank) return fallback;
+  const h = hub || resolveCityAttractionHub(list?.hubId);
+  const isEn = String(locale || '').toLowerCase().startsWith('en');
+  const city = isEn
+    ? String(h?.name_en || h?.name || list?.hubId || '').trim()
+    : String(h?.name || list?.hubId || '').trim();
+  if (isEn) {
+    const unit = list?.listKind === 'gugok' ? 'Valley' : 'View';
+    return city ? `${city} ${unit} ${rank}` : `${unit} ${rank}`;
+  }
+  const unit = list?.listKind === 'gugok' ? '곡' : '경';
+  return city ? `${city} ${rank}${unit}` : `${rank}${unit}`;
+}
+
 /**
  * 리스트 exact(title/alias) 우선 · 아니면 hub exact의 리스트들.
  * @param {string} query
@@ -904,6 +937,7 @@ export function memberToScenicListSpot(list, member, hub, locale = 'ko') {
   const areaCode = scenicAreaCodeForHubId(list.hubId);
   const region = scenicRegionForAreaCode(areaCode) || '';
   const title = localScenicListDisplayTitle(list, h, locale);
+  const rankBlurb = localScenicMemberRankBlurb(list, h, member, locale);
   const contentId = memberContentId(member, attraction) || fromCurated.contentId;
   const spotId = localScenicMemberSpotId(list.listId, member.attractionName);
   const overlay = lookupLocalScenicMemberOverlay(spotId);
@@ -912,7 +946,7 @@ export function memberToScenicListSpot(list, member, hub, locale = 'ko') {
   return {
     id: spotId,
     name: member.attractionName,
-    blurb: title,
+    blurb: rankBlurb,
     region,
     hubId: list.hubId,
     attractionName: member.attractionName,
@@ -962,11 +996,13 @@ export function mergeLocalScenicMembersIntoScenicSpots(spots, hubId, locale = 'k
       if (!k || used.has(k)) continue;
       used.add(k);
       const hit = byKey.get(k);
+      const rankBlurb = localScenicMemberRankBlurb(list, hub, member, locale);
       if (hit) {
         const spotId = localScenicMemberSpotId(list.listId, member.attractionName);
         const overlay = lookupLocalScenicMemberOverlay(spotId);
         front.push({
           ...hit,
+          blurb: rankBlurb,
           groupTitle: title,
           localScenicListId: list.listId,
           contentId: overlay?.contentId || hit.contentId,
