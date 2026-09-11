@@ -507,9 +507,9 @@ PROD https://www.gateo.kr/
 
 | | |
 |--|--|
-| **상태** | **#55** 상세 갤러리 Unsplash 우선 배치 **push** · tip `a4d45fff` · PR [#206](https://github.com/catgeot/Days/pull/206) · 사람 Preview QA |
-| **브랜치** | `cursor/world-events-wave3` · tip `a4d45fff` |
-| **PR** | [#206](https://github.com/catgeot/Days/pull/206) · [#205](https://github.com/catgeot/Days/pull/205) merge ✅ (16:10 카드) |
+| **상태** | **#55** 상세 갤러리 Unsplash 우선 배치 **push** · tip `b52f148b` · PR [#218](https://github.com/catgeot/Days/pull/218) · 사람 Preview QA |
+| **브랜치** | `cursor/world-events-wave3` · tip `b52f148b` |
+| **PR** | [#218](https://github.com/catgeot/Days/pull/218) (OPEN) · [#206](https://github.com/catgeot/Days/pull/206) merge ✅ · [#205](https://github.com/catgeot/Days/pull/205) merge ✅ |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **§9** · [`world-events-management.md`](./world-events-management.md) |
 | **일지** | [`2026-09-11-project-log.md`](./2026-09-11-project-log.md) |
 | **Preview** | `/qa/world-events` → `/world-events` |
@@ -526,7 +526,7 @@ PROD https://www.gateo.kr/
 @plans/feature-handoff-index.md
 @plans/2026-09-11-project-log.md
 @plans/world-events-management.md
-브랜치 cursor/world-events-wave3 · PR #206 · https://www.gateo.kr/qa/world-events
+브랜치 cursor/world-events-wave3 · PR #218 · https://www.gateo.kr/qa/world-events
 금지: worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · 허브에 플래너·숙소 칩 복구
 작업: /world-events/munich-oktoberfest-2026 등 상세 본문 갤러리 1~3번에 생생한 축제 사진이 나오는지 · 지하철 비상레버 등 무관 사진이 없는지 확인
 ```

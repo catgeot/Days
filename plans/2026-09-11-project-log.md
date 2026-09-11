@@ -183,7 +183,7 @@
 ## 세계행사 일정 #55 — 상세 갤러리 Unsplash 우선 배치 및 시드 정비 (Cloud)
 
 - **세션** `세계행사 일정 #55, 상세 갤러리 Unsplash 우선 배치`
-- **브랜치** `cursor/world-events-wave3` · tip `a4d45fff` · PR [#206](https://github.com/catgeot/Days/pull/206) (OPEN)
+- **브랜치** `cursor/world-events-wave3` · tip `b52f148b` · PR [#218](https://github.com/catgeot/Days/pull/218) (OPEN)
 - **완료**:
   1. 상세 히어로 갤러리(`EventDetailHero`)에서 생생한 축제 분위기의 Unsplash 사진을 최상단 슬롯(0~N)에 우선 배치하도록 머지 유틸(`mergeWorldEventHeroGalleryImages`) 및 Edge Function(`fetch-event-hero-gallery`) 로직을 개선.
   2. Unsplash 고유 ID가 `galleryNearDupKey`에서 과잉 축약되어 탈락하지 않도록 unplash 도메인 예외 가드 추가.
@@ -198,7 +198,7 @@
 @plans/feature-handoff-index.md
 @plans/2026-09-11-project-log.md
 @plans/world-events-management.md
-브랜치 cursor/world-events-wave3 · PR #206 · https://www.gateo.kr/qa/world-events
+브랜치 cursor/world-events-wave3 · PR #218 · https://www.gateo.kr/qa/world-events
 금지: worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · 허브에 플래너·숙소 칩 복구
 작업: /world-events/munich-oktoberfest-2026 등 상세 본문 갤러리 1~3번에 생생한 축제 사진이 나오는지 · 지하철 비상레버 등 무관 사진이 없는지 확인
 ```
