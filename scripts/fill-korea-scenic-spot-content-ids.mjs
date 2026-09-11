@@ -18,6 +18,7 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { createClient } from '@supabase/supabase-js';
 import { loadEnvFile } from './lib/load-env-file.mjs';
+import { looksLikeSigunguDisambiguator } from './lib/tour-content-id-match.mjs';
 
 loadEnvFile();
 
@@ -96,6 +97,54 @@ const KEYWORD_ALIASES = {
   원남저수지: ['원남저수지', '원남저수지(원남제)', '원남제'],
   금성산: ['금성산·비봉산(의성)', '금성산'],
   금오랜드: ['금오랜드 놀이동산', '금오랜드'],
+  '동해 논골담길': ['동해 논골담길', '논골담길', '동해 논골담길(등대 담화마을)'],
+  '동해 망상해수욕장': ['망상해변'],
+  삼척해수욕장: ['삼척해변'],
+  화개장터: ['하동 화개장터', '화개장터'],
+  단풍생태공원: ['내장산 단풍생태공원', '단풍생태공원'],
+  궁남지: ['서동공원과 궁남지', '궁남지'],
+  부소산성: ['관북리유적과 부소산성', '부소산성'],
+  율포해수욕장: ['율포해수욕장', '율포해변', '율포해수욕장(솔밭해변)'],
+  '악양 대봉감마을': ['악양대봉감 정보화마을', '악양 대봉감마을'],
+  '영천 보현산천문대': ['보현산 천문대', '보현산천문대'],
+  삼성현역사문화공원: ['삼성현 역사문화관', '삼성현'],
+  '마산 가고파꼬부랑길': ['가고파 꼬부랑길 벽화마을', '가고파 꼬부랑길'],
+  서산동부시장: ['서산동부전통시장', '서산 동부전통시장'],
+  육거리시장: ['육거리종합시장', '청주 육거리종합시장'],
+  마량리동백숲: ['서천 마량리 동백나무 숲', '마량리 동백나무 숲'],
+  '홍성 남당리 해안': ['남당항'],
+  분천역: ['분천 산타마을'],
+  구룡포일본인가옥거리: ['구룡포 일본인 가옥거리'],
+  '산청 한방테마파크': ['산청 동의보감촌', '동의보감촌'],
+  가평레일파크: ['가평 레일바이크'],
+  '군포 산본시장': ['산본전통시장', '산본시장'],
+  '의령 전통시장': ['의령전통시장', '의령시장'],
+  모란시장: ['모란민속5일장', '모란민속장', '모란시장'],
+  '5.18민주광장': ['5·18 민주광장', '5.18 민주광장', '518민주광장'],
+  광주호호수생태원: ['광주호 호수생태원', '광주호생태원', '호수생태원'],
+  '의령 곽재우기념관': ['충익사(의령)', '충익사 의병탑', '충익사'],
+  '영덕 신재생에너지전시관': ['영덕풍력발전단지', '신재생에너지전시관'],
+  '군위 휘파람숲': ['사유원'],
+  '영천 별빛테마공원': ['보현산별빛테마마을', '영천보현산천문과학관'],
+  '거창 월성리 계곡': ['월성계곡', '월성리계곡'],
+  '거창 가조온천': ['가조 백두산천지온천', '가조온천'],
+  '의령 남강 전망': ['정암루(솥바위)', '정암루', '솥바위'],
+  예산성지: ['여사울성지', '예산성당'],
+  '영덕 블루로드': ['[영덕 블루로드] 3코스 바람의 언덕', '[해파랑길] 20코스(영덕 블루로드 3코스)'],
+  '고하도 해안산책로': ['고하도 전망대', '고하도 해안데크'],
+  '성남 탄천': ['탄천민물고기습지생태원', '탄천'],
+  '청풍문화재단지': ['청풍문화유산단지'],
+  '군위 삼국유사테마파크': ['군위 삼국유사 테마파크'],
+  '문경석탄박물관': ['문경에코월드', '에코랄라'],
+  '양림동역사문화마을': ['양림동 펭귄마을공예거리', '양림동 펭귄마을'],
+  '하남 덕풍시장': ['덕풍전통시장'],
+  '연기 고복자연공원': ['고복자연공원'],
+  '향목전망대': ['태하향목관광모노레일'],
+  '군위 위천': ['위천수변 테마파크', '위천수변테마파크'],
+  '오시리아 관광단지': ['오시리아 해안산책로'],
+  '화순온천': ['도곡온천단지', '도곡온천'],
+  '김제 구도심': ['김제동헌'],
+
 };
 
 function sleep(ms) {
@@ -130,6 +179,7 @@ function hubHints(hub) {
   const token = hubToken(hub);
   const hints = new Set();
   if (token && token.length >= 2) hints.add(token);
+  if (hub?.hubId === 'yeongi') hints.add('세종');
   const region = token.match(/^(경기|경남|경북|전남|전북|충남|충북|강원|제주)(.+)$/);
   if (region?.[2]?.length >= 2) hints.add(region[2]);
   for (const a of hub?.aliases || []) {
@@ -196,7 +246,8 @@ function scoreHit(query, item, hub, spot) {
   const hubNorms = hubHints(hub).map((h) => norm(h)).filter(Boolean);
   if (hubNorms.includes(q)) return 0;
 
-  const isMarket = /시장|마켓/.test(title) || /시장|마켓/.test(query);
+  const isMarket =
+    /시장|마켓|장터|5일장|오일장/.test(title) || /시장|마켓|장터|5일장|오일장/.test(query);
   if (type && !['12', '14', '28'].includes(type) && !(type === '38' && isMarket)) {
     return 0;
   }
@@ -257,6 +308,7 @@ function scoreHit(query, item, hub, spot) {
     if (
       inside &&
       token &&
+      looksLikeSigunguDisambiguator(inside) &&
       !inside.includes(norm(token).slice(0, 2)) &&
       !q.includes(inside)
     ) {
@@ -298,6 +350,18 @@ function spotQueries(spot, hub) {
         queries.add(tail);
       }
     }
+  }
+  // Tour titles are often "단양 고수동굴"; 본명-only includes-match dies at weakGeneric.
+  const token = hubToken(hub);
+  if (token) {
+    for (const q of [...queries]) {
+      if (!String(q).startsWith(token)) queries.add(`${token} ${q}`);
+    }
+  }
+  // strip parens from aliases (e.g. "동해 논골담길(등대 담화마을)" -> "동해 논골담길")
+  for (const q of [...queries]) {
+    const unparen = stripAnnotations(q);
+    if (unparen && unparen !== q) queries.add(unparen);
   }
   return [...queries];
 }
@@ -416,15 +480,11 @@ async function loadDbRows(sb) {
   return all;
 }
 
-/** overrides.mjs 블록에서 contentId null인 spot id 목록 */
-function nullIdsFromOverrides(source) {
+/** overrides 모듈에서 contentId === null 인 spot id */
+function nullIdsFromOverrides(overrides) {
   const ids = new Set();
-  const blocks = source.split(/\n\s*\{\n/);
-  for (const block of blocks) {
-    const idM = block.match(/^\s*order:\s*\d+,\s*\n\s*id:\s*'([^']+)'/);
-    if (!idM) continue;
-    const cidM = block.match(/contentId:\s*(null|'[^']*')\s*,/);
-    if (cidM && cidM[1] === 'null') ids.add(idM[1]);
+  for (const spot of overrides.spots || []) {
+    if (spot?.id && spot.contentId === null) ids.add(spot.id);
   }
   return ids;
 }
@@ -451,6 +511,7 @@ function applyOverrides(source, hitsById) {
 }
 
 async function main() {
+  const isDryRun = process.argv.slice(2).includes('--dry-run');
   const scenic = JSON.parse(readFileSync(SCENIC_PATH, 'utf8'));
   const sigungu = JSON.parse(readFileSync(SIGUNGU_PATH, 'utf8'));
   const hubsJson = JSON.parse(readFileSync(HUBS_PATH, 'utf8'));
@@ -458,7 +519,10 @@ async function main() {
   const hubById = new Map(hubList.map((h) => [String(h.hubId).toLowerCase(), h]));
   const byHubSig = sigungu.byHubId || {};
   const overridesSrc = readFileSync(OVERRIDES_PATH, 'utf8');
-  const nullOverrideIds = nullIdsFromOverrides(overridesSrc);
+  const { KOREA_SCENIC_SPOTS_OVERRIDES: currentOverrides } = await import(
+    `./data/korea-scenic-spots-overrides.mjs?t=${Date.now()}`
+  );
+  const nullOverrideIds = nullIdsFromOverrides(currentOverrides);
 
   const nulls = (scenic.spots || [])
     .filter((s) => nullOverrideIds.has(s.id) || !s.contentId)
@@ -598,7 +662,7 @@ async function main() {
   console.log(
     `\nsummary hits=${hits.size}/${targets.length} (remain null ≈ ${nulls.length - hits.size})`,
   );
-  if (dryRun) {
+  if (isDryRun) {
     console.log('dry-run: overrides not written');
     for (const [id, h] of hits) {
       console.log(`  ${id} ${h.contentId} ${h.tourTitle} [${h.src}]`);

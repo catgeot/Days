@@ -32,6 +32,159 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-11T10:00:00.000Z',
   },
   {
+    id: '2026-09-11-palgyeong-use-14-hadong-group',
+    session: '팔경 활용 #14, 검색 그룹 묶기',
+    title: '하동 검색에서 십경과 대표 명소가 섞이지 않게',
+    detail:
+      '명승 검색 「하동」결과가 시·군·이름 정렬 때문에 하동 십경과 지역 대표 명소가 한 줄씩 엇갈리며 소제목이 반복됐습니다. 팔경 groupTitle은 한 덩어리로 모으고, 그룹 없는 대표 명소만 그 뒤에 둡니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색창에 하동 · 하동 십경.',
+    at: '2026-09-11T07:50:00.000Z',
+  },
+  {
+    id: '2026-09-11-palgyeong-use-13-hadong-search',
+    session: '팔경 활용 #13, 광양·하동 결손 오버레이',
+    title: '하동 검색에 십경 멤버가 나오게',
+    detail:
+      '명승 페이지에서 하동을 검색하면 JSON에 없는 십경 멤버가 0건으로 떨어져 하동 십경 그룹이 안 보였습니다. 표시명(하동 십경) exact 매칭과 명소 검색 풀에 지자체 리스트 멤버 주입을 넣었습니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색창에 하동 · 하동 십경.',
+    at: '2026-09-11T06:10:00.000Z',
+  },
+  {
+    id: '2026-09-11-palgyeong-use-13-gwangyang-hadong-overlays',
+    session: '팔경 활용 #13, 광양·하동 결손 오버레이',
+    title: '광양9경 6건·하동10경 7건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 광양9경 결손 6건(백운산 4대 계곡·자연휴양림·이순신대교·광양만 야경·옥룡사지 동백·읍수와 이팝나무)과 하동10경 결손 7건(화개장터 십리벚꽃·금오산 일출·쌍계사 가을·형제봉 철쭉·청학동 삼성궁·하동포구·섬호정 섬진강)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 광양시 문화관광 9경 사진, 한국관광공사 동곡·옥룡사지·유당공원·십리벚꽃·쌍계사·삼성궁·하동송림 사진을 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gwangyang · ?hub=hadong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-11T04:30:00.000Z',
+  },
+  {
+    id: '2026-09-11-scenic-stay-2-position-google',
+    session: '명승 숙소 #2, 숙소 위치·구글 링크',
+    title: '숙소를 개요·사진 다음으로 올리고 구글 상세 버튼을 추가',
+    detail:
+      '여행자가 장소를 확인한 뒤 바로 숙박을 고를 수 있게, 숙소 섹션을 본문 맨 아래(주변 맛집·축제 다음)에서 개요·주소·사진 다음·주변 맛집 위로 옮겼습니다. 추가 정보 확인용 네이버 버튼 옆에 같은 쿼리의 구글 상세정보 버튼을 넣었습니다. Preview /qa/scenic-stay — 경복궁 본문에서 사진 아래·맛집 위에 숙소 카드, 네이버·구글 칩이 나란히 있는지 확인.',
+    at: '2026-09-11T04:20:00.000Z',
+  },
+  {
+    id: '2026-09-11-scenic-stay-1-modal-strip',
+    session: '명승 숙소 #1, 본문 숙소 섹션',
+    title: '명승 명소 본문에 축제와 같은 숙소 섹션',
+    detail:
+      '한국의 명승 홈에서 숙소를 보려면 지구본 장소 카드를 열어야 했던 문제를 고쳤습니다. 명소 본문(ThemeSpotDetailModal)에 축제 FestivalStayStrip과 같은 EventStayStrip을 넣었습니다. 행사 프리셋 없이 MRT 기본 일정(+14일·3박)으로 근처 숙소를 조회합니다. Preview /qa/scenic-stay — /korea/theme/scenic?spot=gyeongbokgung 본문 하단 숙소 카드·일정·MRT 목록.',
+    at: '2026-09-11T03:50:00.000Z',
+  },
+  {
+    id: '2026-09-11-palgyeong-use-12-festival-nearby-thumbs-rank',
+    session: '팔경 활용 #12, 축제 인근 썸네일·번호',
+    title: '축제 인근 명소·팔경 행에 썸네일과 1경 번호',
+    detail:
+      '축제 상세 「인근 명소」에 GATEO 선정 썸네일을 붙이고, 「주변 관광지」 팔경 그룹 행은 명소 페이지와 같이 원주 1경 부제와 Tour/큐레이션 사진을 보여 줍니다. Preview /qa/palgyeong-use — /korea 원주 축제 상세에서 인근 명소 사진·원주 팔경 1경~8경을 확인해 주세요.',
+    at: '2026-09-11T03:50:00.000Z',
+  },
+  {
+    id: '2026-09-11-palgyeong-use-10-member-rank-blurb',
+    session: '팔경 활용 #10, 팔경 번호',
+    title: '팔경 행 부제에 1경·2경 번호 — 그룹 칩은 N경 유지',
+    detail:
+      '명승 리스트에서 멤버 행 부제가 모두 같은 「의성 팔경」이던 문제를 고쳤습니다. 행 부제는 의성 1경~8경처럼 순번을 붙이고, 그룹 칩은 의성 팔경·문경 팔경을 그대로 둡니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=uiseong 8행 부제가 서로 다른지 확인.',
+    at: '2026-09-11T02:20:00.000Z',
+  },
+  {
+    id: '2026-09-11-palgyeong-use-8-binggye-distinct-photos',
+    session: '팔경 활용 #8, 빙계 팔경 사진 다양화',
+    title: '의성 빙계팔경 8행 썸네일·본문 갤러리를 경승별 다른 공식 사진으로 교체',
+    detail:
+      '같은 VisitKorea 계곡 항공 사진이 빙혈·풍혈·인암·의각·수대·불정·용추에 반복되던 문제를 고쳤습니다. 의성군 문화관광(빙혈 입구·절벽 계류·인암 각자·출렁다리·석탑 단풍)과 TourAPI 빙계계곡·빙계서원 갤러리에서 경승마다 다른 대표·본문 사진을 넣었습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=uiseong 8행 썸네일·상세 갤러리가 서로 다른지 확인.',
+    at: '2026-09-11T00:30:00.000Z',
+  },
+  {
+    id: '2026-09-10-palgyeong-use-6-uiseong-muju-overlays',
+    session: '팔경 활용 #6, 의성·무주 결손 허브 런타임 오버레이 보강',
+    title: '의성 빙계팔경 8건·무주 구천동33경 결손 28건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 의성 빙계팔경 8건(빙혈·풍혈·인암·의각·수대·빙산사지 오층석탑·불정·용추)과 무주 구천동33경 결손 28건의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 의성군 문화관광·국가유산청 보물 석탑 사진, 무주군 문화관광·디지털무주문화대전·명승 일사대·파회·수심대 일원 사진을 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=uiseong · ?hub=muju 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-10T22:45:00.000Z',
+  },
+  {
+    id: '2026-09-10-planner-empty-1-scroll-pad',
+    session: '플래너 실행 전 여유 #1, 하단 여유·여행사 펼침 스크롤',
+    title: '실행 전 플래너 하단 여유 · 연결된 여행사 펼침 후 상단 스크롤',
+    detail:
+      '양구 수목원처럼 툴킷 실행 전 기본 정보 페이지가 overflow에 막혀 하단이 잘리고, 「연결된 여행사」를 펼쳐도 스크롤되지 않던 문제를 고쳤습니다. 실행 전 화면도 툴킷 있는 플래너와 같은 세로 스크롤·하단 패딩을 쓰고, 목록을 펼치면 해당 섹션이 위로 올라갑니다. Preview /qa/planner-empty — /place/yanggu-arboretum/planner 하단 여유·펼침 스크롤.',
+    at: '2026-09-10T22:10:00.000Z',
+  },
+  {
+    id: '2026-09-10-palgyeong-use-5-pr210-merged-and-overlay-plan',
+    session: '팔경 활용 #5, PR #210 main 병합 및 후속 허브 오버레이 확장 검토',
+    title: 'PR #210 main 병합 완료 및 의성·무주 결손 허브 오버레이 확장 계획 수립',
+    detail:
+      'PR #210(문경·단양 팔경 런타임 오버레이 및 ScenicPage 팔경 그룹 분리)이 main(33776ccb)에 성공적으로 병합되었습니다. 후속 작업으로 지자체 팔경 결손 상위 허브인 의성 빙계팔경(8건 전수) 및 무주 구천동33경(28건 결손)에 대한 공식 팩트 기반 런타임 오버레이(LOCAL_SCENIC_MEMBER_OVERLAYS) 보강 계획을 수립했습니다.',
+    at: '2026-09-10T22:00:00.000Z',
+  },
+  {
+    id: '2026-09-10-palgyeong-use-4-preview-qa-passed',
+    session: '팔경 활용 #4, 사람 Preview QA',
+    title: '문경·단양 리스트 팔경 그룹 분리 및 상세 모달 사람 Preview QA 통과',
+    detail:
+      '문경 및 단양 테마 명승 페이지에서 지자체 팔경 전용 앰버 배지·디바이더 분리 표시와 지역 대표 명소 구분선, 그리고 문경 4건(새재계곡·쌍용계곡·운달계곡·봉암사백운대) 및 단양 2건(하선암·옥순봉)의 상세 모달 사진·공식 개요 본문 노출에 대해 사람 Preview QA 검증을 최종 통과했습니다.',
+    at: '2026-09-10T21:40:00.000Z',
+  },
+  {
+    id: '2026-09-10-palgyeong-use-3-mungyeong-danyang-overlays-and-group-ui',
+    session: '팔경 활용 #3, 누락 허브 본문 선별 및 팔경 전용 그룹 UI 준비',
+    title: '문경·단양 팔경 사진·개요 보강 및 리스트 전용 소제목 바 분리',
+    detail:
+      '94개 지자체 팔경(876명) 누락 현황을 분석하고, 문경(새재계곡·쌍용계곡·운달계곡·봉암사백운대) 및 단양(옥순봉·하선암)의 런타임 오버레이(LOCAL_SCENIC_MEMBER_OVERLAYS)를 보강하여 상세 모달과 썸네일을 완전 연결했습니다. 또한 ScenicPage에서 지자체 팔경 그룹 헤더와 기존 GATEO 선정 명소(지역 대표 명소) 구분을 명확한 배지·디바이더 UI로 분리 렌더링했습니다.',
+    at: '2026-09-10T14:30:00.000Z',
+  },
+  {
+    id: '2026-09-10-palgyeong-use-2-garisan-geumhaksan-photos-detail',
+    session: '팔경 활용 #2, 사람 Preview QA',
+    title: '홍천 가리산·금학산 사진 누락 및 본문 부재 해결',
+    detail:
+      '가리산(125593)은 TourAPI firstimage가 비어있던 문제를 searchPhoto 공식 사진 및 갤러리/개요 연동으로 해결했습니다. 금학산은 순수 지자체 팔경(홍천 4경, 수태극 조망)으로 런타임 오버레이를 통해 개요 본문과 홍천 남노일강변 공식 갤러리 및 썸네일을 제공하여 리스트·상세 모달·써머리 갤러리에서 정상 노출되도록 보강했습니다.',
+    at: '2026-09-10T12:20:00.000Z',
+  },
+  {
+    id: '2026-09-10-palgyeong-use-2-tour-contentid-photos',
+    session: '팔경 활용 #2, 사람 Preview QA',
+    title: '팔경 멤버 contentId 런타임 할당 — 리스트·써머리 사진',
+    detail:
+      'JSON에 contentId를 쓰지 않고, 팔경 행은 기존 id·tourapi_attraction 제목 조회·Tour firstimage로 사진을 붙입니다. 가리산(125593)은 핀·써머리 갤러리에 id가 전달되고, 금학산처럼 JSON에 id가 없어도 DB에 있으면 같은 경로로 상세·썸네일을 엽니다. GATEO 선정 분류칩은 scenic 승격 없이 koreaScenicSpots만 셉니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hongcheon 가리산·금학산 사진.',
+    at: '2026-09-10T12:10:00.000Z',
+  },
+  {
+    id: '2026-09-10-palgyeong-use-2-empty-thumb-click',
+    session: '팔경 활용 #2, 사진 없는 행 클릭',
+    title: '팔경 멤버 클릭 — 합성 id 상세·무사진 행 열기',
+    detail:
+      '사진 없는 팔경 행을 누르면 local-scenic:… id가 제목으로 나오거나 클릭이 막히던 문제를 고쳤습니다. 합성 id를 멤버 이름·contentId로 풀고, Tour id가 없어도 GATEO 안내 본문으로 엽니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=hongcheon 가리산·금학산.',
+    at: '2026-09-10T11:20:00.000Z',
+  },
+  {
+    id: '2026-09-04-palgyeong-use-2-thumbs',
+    session: '팔경 활용 #2, Preview QA',
+    title: '팔경 리스트 썸네일 — GATEO 선정·contentId 연동',
+    detail:
+      '팔경 멤버 행에 GATEO 선정 명소(koreaScenicSpots) imageUrl을 매칭하고, contentId가 있으면 tourapi_attraction 캐시로 썸네일을 보강합니다. 명승 ul·축제 인근 그룹·홈 검색 suggestion에 적용. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=mungyeong 에서 진남교반 등 사진 확인.',
+    at: '2026-09-04T21:20:00.000Z',
+  },
+  {
+    id: '2026-09-04-palgyeong-use-2-festival-crash',
+    session: '팔경 활용 #2, Preview QA',
+    title: '축제 리스트 클릭 크래시 — nearbyPlaceLabel 복원',
+    detail:
+      '팔경 활용 #1에서 nearbyAttractionRow 추가 시 nearbyPlaceLabel이 삭제되어 축제 상세 시트가 ReferenceError로 크래시하던 문제를 고쳤습니다. Preview /qa/palgyeong-use — /korea에서 축제 카드 클릭→상세 열림·인근 관광지 로드 확인.',
+    at: '2026-09-04T20:10:00.000Z',
+  },
+  {
+    id: '2026-09-04-palgyeong-use-1-search-list',
+    session: '팔경 활용 #1, 검색·리스트',
+    title: '탐색창 문경 팔경 소제목 · 명소 ul 상단 N경 · 축제 인근 그룹',
+    detail:
+      '홈 검색 「문경」에 소제목 문경 팔경+멤버를 여행지·지명보다 앞에 붙였습니다. 명승 같은 ul 상단에 N경 멤버(contentId 없으면 이름만). 축제 상세 인근 관광지 목록 안에만 소제목 그룹. Tour LIVE·scenic 승격·축제 홈 파드 없음. Preview /qa/palgyeong-use — 홈 검색 문경 · /korea/theme/scenic?hub=mungyeong · 축제 상세 인근 목록.',
+    at: '2026-09-04T10:00:00.000Z',
+>>>>>>> origin/cursor/world-events-wave3
+  },
+  {
     id: '2026-09-09-world-events-54c-en-photos',
     session: '세계행사 일정 #54c, 리스트 사진 확대 Prod QA',
     title: '행사 사진 Unsplash 영문 검색',

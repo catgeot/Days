@@ -577,6 +577,16 @@
       "stayCta": "{{keyword}} 숙소",
       "official": "공식 일정"
     },
+    "scenicGateway": {
+      "badgeHeritage": "국가지정 명승",
+      "badgeHub": "지역 명소 컬렉션",
+      "badgeTheme": "한국의 명승 · 테마 명소",
+      "actionHub": "명소 목록 보기",
+      "actionSpot": "명소 본문 보기",
+      "titleSuffix": "상세 해설 & 스토리",
+      "tagStory": "개요 & 사진",
+      "tagSurroundings": "주변 맛집·숙소"
+    },
     "planner": {
       "title": "스마트 트래블 툴킷",
       "subtitle": "{{name}} 여행을 위한 생존 정보 및 핵심 큐레이션",
@@ -1288,6 +1298,7 @@
       "scenicCuratedDisclaimer": "많이 찾는 인기 관광지를 골랐습니다.",
       "scenicHeritageDisclaimer": "국가유산청 지정 명승 목록입니다.",
       "scenicSectionCurated": "GATEO 선정 명소",
+      "scenicSectionCuratedRest": "지역 대표 명소",
       "scenicSectionHeritage": "국가유산 명승",
       "spotCount": "{{count}}곳",
       "nationwideSuffix": " · 전국 {{count}}",
@@ -1335,6 +1346,8 @@
         "festivalsInArea": "이 지역 축제",
         "coursesInArea": "이 지역 여행코스",
         "stayKeyword": "숙소 · {{keyword}}",
+        "stayStripTitle": "내 여행 일정",
+        "stayStripHint": "선택한 숙박 일정으로 이 명소 근처 숙소를 조회합니다.",
         "tourKeyword": "투어 · {{keyword}}",
         "packageCtaFallback": "패키지 보기",
         "loadingDetail": "상세를 불러오는 중…",
@@ -1355,6 +1368,8 @@
         "heritageManager": "관리",
         "naverSearch": "네이버 상세정보 보기",
         "naverSearchAria": "네이버 상세정보 보기 · 새 탭에서 열기",
+        "googleSearch": "구글 상세정보 보기",
+        "googleSearchAria": "구글 상세정보 보기 · 새 탭에서 열기",
         "heroExpandSwipe": "사진 확대보기 · 좌우로 쓸어 넘기기",
         "heroExpand": "사진 확대보기",
         "expandView": "확대보기",

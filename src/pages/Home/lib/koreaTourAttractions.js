@@ -18,6 +18,11 @@ import {
   scenicRegionForAreaCode,
 } from './koreaTourAttractionMap';
 import { sanitizeScenicDbSearchQuery } from './scenicSearch';
+import { resolveTourAreaForHub } from './koreaSigunguByHub';
+import { resolveCityAttractionHub } from './cityAttractionHubs';
+import { pickTourAttractionRowForTitle } from './koreaTourAttractionTitleMatch';
+
+export { pickTourAttractionRowForTitle } from './koreaTourAttractionTitleMatch';
 
 export {
   labelScenicAreaCode,
@@ -31,7 +36,7 @@ export {
 };
 
 const LIST_SELECT =
-  'content_id, title, addr1, addr2, area_code, mapx, mapy, first_image, active, cat1, cat2, cat3, modified_time';
+  'content_id, title, addr1, addr2, area_code, sigungu_code, mapx, mapy, first_image, active, cat1, cat2, cat3, modified_time';
 
 /**
  * hub 시·군명 → addr1 ilike 패턴 (보령 / 보령시 / 보령군).
@@ -597,4 +602,47 @@ export async function fetchKoreaTourAttractionFirstImagesByIds(contentIds) {
   if (!ids.length) return new Map();
   await loadMissingTourAttractionFirstImages(ids);
   return peekKoreaTourAttractionFirstImagesByIds(ids);
+}
+
+function hubNameHints(hubId) {
+  const hub = resolveCityAttractionHub(hubId);
+  const out = [];
+  const raw = String(hub?.name || '').trim();
+  const bare = raw.replace(/(특별자치시|광역시|특별시|자치시|시|군|구)$/u, '').trim();
+  if (bare.length >= 2) out.push(bare);
+  if (raw.length >= 2 && raw !== bare) out.push(raw);
+  return out;
+}
+
+/**
+ * 팔경 멤버명 → tourapi_attraction 1건 (area/sigungu 우선). JSON contentId 기입 아님.
+ * @param {{ title?: string, hubId?: string }} opts
+ */
+export async function lookupKoreaTourAttractionByTitle(opts = {}) {
+  const title = sanitizeScenicDbSearchQuery(opts.title);
+  if (title.length < 2) return null;
+  const hubId = String(opts.hubId || '').trim();
+  const area = resolveTourAreaForHub(hubId);
+  const hints = hubNameHints(hubId);
+
+  const run = async (useSigungu) => {
+    let q = supabase
+      .from('tourapi_attraction')
+      .select(LIST_SELECT)
+      .eq('active', true)
+      .ilike('title', `%${title}%`)
+      .limit(24);
+    if (area?.areaCode) q = q.eq('area_code', area.areaCode);
+    if (useSigungu && area?.sigunguCode) q = q.eq('sigungu_code', area.sigunguCode);
+    const { data, error } = await q;
+    if (error) {
+      console.warn('[koreaTourAttractions] lookupByTitle', error.message || error);
+      return [];
+    }
+    return (data || []).map(mapTourAttractionRow).filter(Boolean);
+  };
+
+  let rows = await run(true);
+  if (!rows.length) rows = await run(false);
+  return pickTourAttractionRowForTitle(rows, title, hints);
 }

@@ -2,6 +2,200 @@
 
 직전: [`2026-09-08-project-log.md`](./2026-09-08-project-log.md)
 
+## 팔경 contentId — P2-END 잔여 51건 종결 및 main 병합 검토 (Cloud)
+
+- **세션** `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토`
+- **브랜치** `cursor/palgyeong-cid` · PR [#185](https://github.com/catgeot/Days/pull/185) (Ready for Review)
+- **완료** P2 테마 선정 명소 Tour contentId 수집 작업 전면 종결 확정
+  - 최종 충족률: 820/871 (94.1%) · 잔여 null 51/871
+  - 잔여 51건 6대 원인별(상업/리조트 8, 축제 1, 특수지 4, 단순지형/하천 15, 소규모공원/산단 10, 미등재사찰/시장 13) terminal 종결 재확인
+  - PR #185 검토: DRAFT 해제(Ready for Review 전환) · P0(579/876)+P1(68)+P2(820/871) 전체 contentId SSOT 정합성 검증 완료
+- **VERIFY** `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `audit:docs-handoff-sync` · `build` ALL PASS
+- **다음** 팔경 contentId PR #185 사람 최종 확인 및 main 병합
+
+```
+팔경contentId PR #185 main 병합 검토
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P0/P1/P2 contentId 수집·종결 완료(820/871 충족, 94.1%) · PR #185 최종 사람 승인 및 main 병합
+```
+
+## 팔경 contentId — P2-L10 잔여 null 분석 및 전략 (Cloud)
+
+- **세션** `팔경contentId #P2-L10, 잔여 null 분석 및 전략`
+- **브랜치** `cursor/palgyeong-cid` · tip `fb4c5513` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** P2 scenic null 78건 전수 분석 및 시설명 alias 발굴 · 18 hub 27건 LIVE HIT 반영 · P2 null **78→51**/871 (충족 820/871, 94.1%) · 잔여 51건 6대 원인별 종결 분류 완료 · 429 없음
+- **HIT (27건)**
+  - 제천 청풍문화재단지 `126004`(청풍문화유산단지)
+  - 군위 삼국유사테마파크 `2703799`(군위 삼국유사 테마파크) · 위천 `2743782`(위천수변 테마파크) · 휘파람숲 `2815446`(사유원)
+  - 문경 문경석탄박물관 `2599737`(문경에코월드)
+  - 광주 5.18민주광장 `1621360`(5·18 민주광장) · 광주호호수생태원 `129443`(광주호 호수생태원) · 양림동역사문화마을 `2603494`(양림동 펭귄마을공예거리)
+  - 하남 하남 덕풍시장 `2770756`(덕풍전통시장)
+  - 성남 모란시장 `132266`(모란민속5일장) · 성남 탄천 `2760806`(탄천민물고기습지생태원)
+  - 연기 연기 고복자연공원 `125875`(고복자연공원)
+  - 울릉 향목전망대 `778402`(태하향목관광모노레일)
+  - 기장 오시리아 관광단지 `2782658`(오시리아 해안산책로)
+  - 군포 군포 산본시장 `1750106`(산본전통시장)
+  - 예산 예산성지 `2771833`(여사울성지)
+  - 화순 화순온천 `3013448`(도곡온천단지)
+  - 김제 김제 구도심 `1599176`(김제동헌)
+  - 거창 가조온천 `127956`(가조 백두산천지온천) · 월성리 계곡 `127137`(월성계곡)
+  - 영천 별빛테마공원 `606248`(보현산별빛테마마을)
+  - 의령 곽재우기념관 `127296`(충익사(의령)) · 남강 전망 `126193`(정암루(솥바위)) · 전통시장 `132279`(의령전통시장)
+  - 영덕 블루로드 `1041317`([영덕 블루로드] 3코스 바람의 언덕) · 신재생에너지전시관 `128765`(영덕풍력발전단지)
+  - 목포 고하도 해안산책로 `2706019`(고하도 전망대)
+- **잔여 51건 종결 분류 (Terminal)**
+  - 상업 리조트/숙박(type 32)/단일 POI 부재 (8건): 알펜시아, 용평(모나용평 32), 에덴밸리(32), 통도환타지아(폐업), 스타필드 하남(쇼핑몰), 여주아울렛(상업 38), 별빛정원우주(사설), 공주한옥마을(숙박 32)
+  - 축제/행사 type 15 (1건): 창원 진해군항제
+  - 특수지/접안시설/무역항 (4건): 독도접안시설, 독도 서도(동도 중복 방지), 당진항, 보산동 외국인거리
+  - 도심 하천/미등재 산책로/생태섬/단순 지형 (15건): 오산천, 미호천생태공원, 충주 비내섬, 평택 미르섬, 울진 금강소나무숲길, 상주보, 군위 위천(하천 본체), 고령 낙동강전망, 광양 구봉산케이블카(미개통), 영양 외씨버선길, 보성 은행나무숲, 정읍천, 임실 성수산, 음성 수정산림욕장, 장성 산수유마을
+  - 소규모 근린공원/지식산업단지 (10건): 안산문화광장, 광명 안양천생태공원, 하남교산근린공원, 시흥 능곡동유적공원, 시흥 소프트타운, 과천 맑은누리공원, 세종 대통령기록관, 의성마늘테마공원, 판교테크노밸리, 칠곡 숭산정원
+  - TourAPI 미등재 사찰/소규모 시장/온천/수목원 (13건): 음성 금왕온천, 양평 들꽃수목원, 계룡산 자연사박물관, 곡성 심청한옥마을, 영광 백사장, 익산 웅포관광지, 영암 구림마을, 거창 고제 산수유마을, 청도 운문사, 예천 용궁시장, 고령 개진시장, 경산 환성사, 의령 토요애랜드, 양구 수목원
+- **VERIFY** `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `build` PASS
+- **다음** P2 종결 정리 및 팔경 contentId 후속 (또는 main 병합 검토)
+
+```
+팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3~L9 hub 본명 단순 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic 820/871 충족(94.1%) · 잔여 51건 terminal 종결 확정 및 PR #185 검토
+```
+
+## 팔경 contentId — P2-L9 hub-batch keyword (Cloud)
+
+- **세션** `팔경contentId #P2-L9, hub-batch keyword`
+- **브랜치** `cursor/palgyeong-cid` · tip `fa6d58b8` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** 지정 10 hub 중 10건 실행 **3/10** LIVE HIT · P2 null **81→78**/871 · 429 없음
+- **HIT** 산청 산청 한방테마파크 `2620990`(산청 동의보감촌) · 포항 구룡포일본인가옥거리 `1909659`(구룡포 일본인 가옥거리) · 가평 가평레일파크 `2361081`(가평 레일바이크)
+- **MISS** 광양(구봉산 케이블카), 영양(영양 외씨버선길), 목포(고하도 해안산책로), 울릉(향목전망대), 공주(공주한옥마을), 제천(청풍문화재단지), 양구(양구 수목원) 미등재/산책로 등 MISS 유지
+- **VERIFY** `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `build` PASS
+- **다음** P2-L10 미등재/MISS hub 분석 또는 남은 null(78건) 대상 후속 전략
+
+```
+팔경contentId #P2-L10, 잔여 null 분석 및 전략
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3~L9 hub 본명 단순 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 78건 분석 — Tour 미등재/시설명 alias 발굴 또는 종결 정리
+```
+
+## 팔경 contentId — P2-L8 hub-batch keyword (Cloud)
+
+- **세션** `팔경contentId #P2-L8, hub-batch keyword`
+- **브랜치** `cursor/palgyeong-cid` · tip `699ac841` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** 지정 29 hub 중 20건 실행 **0/20** LIVE (유효 HIT 없음) · P2 null **81**/871 유지 · 429 없음
+- **MISS** 상주(상주보: 캠핑장만 2건), 계룡(계룡산 자연사박물관), 문경(문경석탄박물관), 연기(연기 고복자연공원), 예산(예산성지), 곡성(곡성 심청한옥마을), 화순(화순온천), 임실(성수산: 수산물 상호만 검색), 장성(장성산수유마을), 영광(백사장해수욕장: 태안 백사장만 검색), 김제(김제 구도심), 익산(웅포관광지: 캠핑장만 검색), 영암(구림마을), 청도(청도 운문사: 캠핑장만 검색), 기장(오시리아 관광단지), 의성(의성마늘테마공원), 예천(용궁시장), 칠곡(숭산정원), 독도(독도접안시설), 독도(서도) 미등재/캠핑장/타지자체 등 MISS 유지
+- **VERIFY** `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:tour-content-id-match` · `audit:korea-local-scenic-lists` · `smoke:korea-local-scenic-lists` · `build` PASS
+- **다음** P2-L9 잔여 10 hub (광양, 산청, 영양, 포항, 목포, 울릉, 가평, 공주, 제천, 양구)
+
+```
+팔경contentId #P2-L9, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5/L6/L7/L8 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 81 — --hubs=gwangyang,sancheong,yeongyang,pohang,mokpo,ulleung,gapyeong,gongju,jecheon,yanggu --keyword-only --limit=20
+```
+
+## 팔경 contentId — P2-L7 hub-batch keyword (Cloud)
+
+- **세션** `팔경contentId #P2-L7, hub-batch keyword`
+- **브랜치** `cursor/palgyeong-cid` · tip `699ac841` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** 지정 32 hub 중 20건 실행 **3/20** LIVE HIT · P2 null **84→81**/871 · 429 없음
+- **HIT** 봉화 분천역 `2649976` · 홍성 남당리 해안 `228856` · 서천 마량리동백숲 `126010`
+- **코드·매칭** KEYWORD_ALIASES 6건 보강 ('마량리동백숲', '홍성 남당리 해안', '분천역', '구룡포일본인가옥거리', '산청 한방테마파크', '가평레일파크')
+- **MISS** 상주(상주보), 계룡(계룡산 자연사박물관), 문경(문경석탄박물관), 연기(연기 고복자연공원), 예산(예산성지), 곡성(곡성 심청한옥마을), 화순(화순온천), 임실(성수산), 장성(장성산수유마을), 영광(백사장해수욕장), 김제(김제 구도심), 익산(웅포관광지), 영암(구림마을), 청도(청도 운문사), 기장(오시리아 관광단지), 의성(의성마늘테마공원), 예천(용궁시장) 미등재/캠핑장/타지자체 등 MISS 유지
+- **VERIFY** `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:tour-content-id-match` · `audit:korea-local-scenic-lists` · `smoke:korea-local-scenic-lists` · `build` PASS
+
+```
+팔경contentId #P2-L8, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5/L6/L7 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 81 — --hubs=sangju,gyeryong,mungyeong,yeongi,yesan,gokseong,hwasun,imsil,jangseong,yeonggwang,gimje,iksan,yeongam,cheongdo,gijang,uiseong,yecheon,chilgok,dokdo,gwangyang,sancheong,yeongyang,pohang,mokpo,ulleung,gapyeong,gongju,jecheon,yanggu --keyword-only --limit=20
+```
+
+## 팔경 contentId — P2-L6 hub-batch keyword (Cloud)
+
+- **세션** `팔경contentId #P2-L6, hub-batch keyword`
+- **브랜치** `cursor/palgyeong-cid` · tip `b21da98a` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** 지정 18 hub **3/18** LIVE HIT · P2 null **87→84**/871 · 429 없음
+- **HIT** 서산 서산동부시장 `2489840` · 부안 직소폭포 `126260` · 청주 육거리시장 `132548`
+- **코드·매칭** KEYWORD_ALIASES 2건 보강 ('서산동부시장', '육거리시장') · `isMarket` 시장/장터 type 38 매칭 연동
+- **MISS** 안산(안산문화광장), 광명(안양천생태공원), 양평(들꽃수목원), 군포(산본시장), 과천(맑은누리공원), 오산(오산천), 진천(미호천생태공원), 여주(여주프리미엄아울렛), 동두천(보산동 외국인거리), 이천(별빛정원우주), 평택(미르섬), 울진(금강소나무숲길), 충주(비내섬), 세종(대통령기록관), 당진(당진항) 미등재/상업/산책로 등 MISS 유지
+- **VERIFY** `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `build` PASS
+
+```
+팔경contentId #P2-L7, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5/L6 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 84 — --hubs=sangju,gyeryong,mungyeong,bonghwa,hongseong,yeongi,yesan,gokseong,seocheon,hwasun,imsil,jangseong,yeonggwang,gimje,iksan,yeongam,cheongdo,gijang,uiseong,yecheon,chilgok,dokdo,gwangyang,sancheong,yeongyang,pohang,mokpo,ulleung,gapyeong,gongju,jecheon,yanggu --keyword-only --limit=20
+```
+
+## 팔경 contentId — P2-L5 hub-batch keyword (Cloud)
+
+- **세션** `팔경contentId #P2-L5, hub-batch keyword`
+- **브랜치** `cursor/palgyeong-cid` · tip `90c2966d` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** 지정 9 hub **3/18** LIVE HIT · P2 null **90→87**/871 · 429 없음
+- **HIT** 창원 마산 가고파꼬부랑길 `2019720` · 영천 보현산천문대 `127293` · 경산 삼성현역사문화공원 `1999964`
+- **코드·매칭** KEYWORD_ALIASES 3건 보강 ('마산 가고파꼬부랑길', '영천 보현산천문대', '삼성현역사문화공원') · fill 스크립트 overrides dynamic import 반영
+- **MISS** 평창(알펜시아·용평 리조트), 양산(에덴밸리·통도환타지아) 등 상업/리조트 및 미등재 항목은 MISS 유지
+- **VERIFY** `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:tour-content-id-match` · `audit:korea-local-scenic-lists` · `smoke:korea-local-scenic-lists` · `build` PASS
+
+```
+팔경contentId #P2-L6, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 87 — --hubs=buan,cheongju,ansan,gwangmyeong,yangpyeong,gunpo,gwacheon,osan,jincheon,yeoju,dongducheon,icheon,pyeongtaek,uljin,chungju,sejong,seosan,dangjin --keyword-only --limit=20
+```
+
+## 팔경 contentId — P2-L4 hub-batch keyword (Cloud)
+
+- **세션** `팔경contentId #P2-L4, hub-batch keyword`
+- **브랜치** `cursor/palgyeong-cid` · tip `19bd21ee` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** 지정 7 hub **11/13** LIVE HIT · P2 null **101→90**/871 · 429 없음
+- **HIT** 동해 논골담길 `1223212` · 동해 망상해수욕장 `125713` · 삼척해수욕장 `125705` · 죽서루 `125799` · 부여 궁남지 `125984` · 부여 부소산성 `125988` · 보성 율포해수욕장 `2022601` · 남원 교룡산성 `1607157` · 하동 악양 대봉감마을 `2784697` · 하동 화개장터 `132146` · 정읍 단풍생태공원 `2715684`
+- **코드·매칭** KEYWORD_ALIASES 확장(논골담길·망상·삼척·화개장터·단풍생태공원·궁남지·부소산성·율포·악양) · `isMarket`에 `장터` 추가 · alias 괄호 제거 `stripAnnotations` · `looksLikeSigunguDisambiguator` 연동
+- **MISS** 보성군립은행나무숲 · 정읍천 (TourAPI 미등재 0건)
+- **VERIFY** `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:tour-content-id-match` · `audit:korea-local-scenic-lists` · `smoke:korea-local-scenic-lists` PASS
+
+```
+팔경contentId #P2-L5, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 90 — --hubs=pyeongchang,siheung,eumseong,yangsan,changwon,yeongcheon,goryeong,gyeongsan,yeongdeok --keyword-only --limit=20
+```
+
+## 팔경 contentId — P2-L3 hub-batch keyword (Cloud)
+
+- **세션** `팔경contentId #P2-L3, hub-batch keyword`
+- **브랜치** `cursor/palgyeong-cid` · tip `cf0482cd` · PR [#185](https://github.com/catgeot/Days/pull/185)
+- **완료** 지정 7 hub **3/22** LIVE HIT · P2 null **104→101**/871 · 429 없음
+- **HIT** 단양 고수동굴 `125861` · 구담봉 `127568`(단양 구담봉·옥순봉) · 사인암 `129648` — fill `spotQueries`에 시군 접두 추가(본명-only는 Tour 제목 `단양 고수동굴`에서 weakGeneric 0점)
+- **MISS** 하남·거창·군위·의령·광주·성남 상업·시장·미등재 유지 · L3 hub 본명 재시도 금지
+- **VERIFY** `audit:korea-scenic-spots` · `smoke:korea-scenic-spots` · `smoke:tour-content-id-match` PASS
+
+```
+팔경contentId #P2-L4, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 101 — --hubs=samcheok,hadong,buyeo,namwon,boseong,jeongeup,donghae --keyword-only --limit=20
+```
+
 ## 세계행사 일정 #54c — 리스트·상세 사진 영문 검색 (Cloud)
 
 - **세션** `세계행사 일정 #54c, 리스트 사진 확대 Prod QA`

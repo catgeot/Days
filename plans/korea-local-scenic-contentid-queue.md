@@ -1,6 +1,6 @@
 # 팔경·명소 Tour contentId 큐
 
-**상태**: R01–R16 ✅ · **P0·P1 F 소진** · membersWithContentId **579**/876 · hub+P1 **68** · P2 **null 104**/871(78 hub) · **P2-L2** ✅ 0/104 · **P0-L** ✅ 109/584 · **P0-L02·L03·L05** ✅ 0/100(동일 본명 keyword **폐기**) · **P0-L06 폐기** · **P0-L07++** ✅ 2/100 · **P0-L07+++ 폐기**(같은 100명 로또) · **P0-K01** ✅ 10/40 · **P0-K02** ✅ 4/40 · **P0-K03** ✅ 4/23 · **P0-K04** ✅ 5/41 · **P0-K05** ✅ 8/40 · **P0-K06** ✅ 3/40 · **P0-K07** ✅ 8/40 · **P0-K08** ✅ 4/40 · **P0-K09** ✅ 8/21 · **P0-K10** ✅ 5/22 · **P0-K11** ✅ 0/2 · **P0-K12** ✅ 0/1 · **P0-A02** ✅ 6/48 · **P0-C01** ✅ 소진 · **P0-A03** ✅ 11/41 · **P0-A04** ✅ 8/29 · **P0-A05** ✅ 4/21 · **P0-A06** ✅ 4/12 · **P0-A07** ✅ 2/8 · **P0-P01** ✅ prefix ambiguous 2/2 · **P0-A08** ✅ siho_wait 0/6 · **P0-P02** ✅ short 옥정호 ambiguous **1/1** · **P0-P03** ✅ 칠선시류 ambiguous **1/1** · **P0 키워드 종결 소진** · Tour API **운영 승인 ~10만/일**  
+**상태**: R01–R16 ✅ · **P0·P1 F 소진** · membersWithContentId **579**/876 · hub+P1 **68** · P2 **null 78**/871 · **P2-L9** ✅ 3/10 · **P2-L8** ✅ 0/20 · **P2-L7** ✅ 3/20 · **P2-L6** ✅ 3/18 · **P2-L5** ✅ 3/18 · **P2-L4** ✅ 11/13 · **P2-L3** ✅ 3/22 · **P2-L2** ✅ 0/104 · **P0-L** ✅ 109/584 · **P0-L02·L03·L05** ✅ 0/100(동일 본명 keyword **폐기**) · **P0-L06 폐기** · **P0-L07++** ✅ 2/100 · **P0-L07+++ 폐기**(같은 100명 로또) · **P0-K01** ✅ 10/40 · **P0-K02** ✅ 4/40 · **P0-K03** ✅ 4/23 · **P0-K04** ✅ 5/41 · **P0-K05** ✅ 8/40 · **P0-K06** ✅ 3/40 · **P0-K07** ✅ 8/40 · **P0-K08** ✅ 4/40 · **P0-K09** ✅ 8/21 · **P0-K10** ✅ 5/22 · **P0-K11** ✅ 0/2 · **P0-K12** ✅ 0/1 · **P0-A02** ✅ 6/48 · **P0-C01** ✅ 소진 · **P0-A03** ✅ 11/41 · **P0-A04** ✅ 8/29 · **P0-A05** ✅ 4/21 · **P0-A06** ✅ 4/12 · **P0-A07** ✅ 2/8 · **P0-P01** ✅ prefix ambiguous 2/2 · **P0-A08** ✅ siho_wait 0/6 · **P0-P02** ✅ short 옥정호 ambiguous **1/1** · **P0-P03** ✅ 칠선시류 ambiguous **1/1** · **P0 키워드 종결 소진** · Tour API **운영 승인 ~10만/일**  
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) **§5.7** · 플랜 [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md)  
 **브랜치**: `cursor/palgyeong-cid` (A UI `cursor/palgyeong-use-e744`와 **분리** · 수집 `cursor/palgyeong` 금지)  
 **금지**: UI · scenic 승격 · 워커 병렬 LIVE · 429 후 같은 날 재호출 · P1/P2를 P0 전에
@@ -54,7 +54,7 @@ S0 PASS 후에만 아래 F. 라운드 표는 `listKoreaLocalScenicLists()` verif
 | 순위 | 대상 | 상태 |
 |------|------|------|
 | P1 | hub `attractions[]` 중 `contentId` 없는 KR 명소 | **P1-R01–R10** ✅ 68/197 · **P1 F 소진** |
-| P2 | 테마 선정 `contentId: null` **142**/871 (78 hub) — 구 ~75·429 백로그 포함 | **P2-R01** ⬜ |
+| P2 | 테마 선정 `contentId: null` **142**/871 (78 hub) — 구 ~75·429 백로그 포함 | **P2 종료** null **51**/871 (충족 820/871, 94.1%) · 잔여 51건 terminal 종결 |
 
 ### P1 F (워커A 3 hub + 워커B 3 hub) — hub attraction DB-only
 
@@ -108,7 +108,14 @@ DB-only 종료 후 overrides에 `contentId: null`이 남은 hub만. 라운드는
 |---|------|------|------|------|
 | **P2-L01+** | 메인 직렬 `--keyword-only` (전수 또는 `--limit`) · 잔여는 `areaBased`+`keyword` | 쿼터 ~10만/일 | LIVE | **P2-L keyword** ✅ 2026-09-07 **38/142** · null **104** · tip `768b1635` |
 | **P2-L2** | 메인 직렬 **플래그 없음** — DB(잔여) → `areaBased` → `keyword` | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-07 **0/104** · null **104** 유지 · tip `4c141c27` |
-| **P2-L3** | hub-batch `--hubs=uiryeong,hanam,geochang,gunwi,gwangju,seongnam,danyang` `--keyword-only --limit=20` | 쿼터 ~10만/일 | LIVE | ⬜ **다음** |
+| **P2-L3** | hub-batch `--hubs=uiryeong,hanam,geochang,gunwi,gwangju,seongnam,danyang` `--keyword-only` (+ danyang 잔여 2) · **시군 접두 쿼리** | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-09 **3/22** · 고수동굴 `125861` · 구담봉 `127568` · 사인암 `129648` · null **101** · tip `cf0482cd` |
+| **P2-L4** | hub-batch `--hubs=samcheok,hadong,buyeo,namwon,boseong,jeongeup,donghae` `--keyword-only --limit=20` | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-09 **11/13** · 논골담길 `1223212` · 망상 `125713` · 삼척 `125705` · 죽서루 `125799` · 궁남지 `125984` · 부소산성 `125988` · 율포 `2022601` · 교룡산성 `1607157` · 악양 `2784697` · 화개장터 `132146` · 단풍생태공원 `2715684` · null **90** · tip `19bd21ee` |
+| **P2-L5** | hub-batch `--hubs=pyeongchang,siheung,eumseong,yangsan,changwon,yeongcheon,goryeong,gyeongsan,yeongdeok` `--keyword-only --limit=20` | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-09 **3/18** · 마산 가고파꼬부랑길 `2019720` · 보현산천문대 `127293` · 삼성현역사문화공원 `1999964` · null **87** · tip `90c2966d` |
+| **P2-L6** | hub-batch `--hubs=buan,cheongju,ansan,gwangmyeong,yangpyeong,gunpo,gwacheon,osan,jincheon,yeoju,dongducheon,icheon,pyeongtaek,uljin,chungju,sejong,seosan,dangjin` `--keyword-only --limit=20` | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-09 **3/18** · 서산동부시장 `2489840` · 직소폭포 `126260` · 육거리시장 `132548` · null **84** · tip `b21da98a` |
+| **P2-L7** | hub-batch `--hubs=sangju,gyeryong,mungyeong,bonghwa,hongseong,yeongi,yesan,gokseong,seocheon,hwasun,imsil,jangseong,yeonggwang,gimje,iksan,yeongam,cheongdo,gijang,uiseong,yecheon,chilgok,dokdo,gwangyang,sancheong,yeongyang,pohang,mokpo,ulleung,gapyeong,gongju,jecheon,yanggu` `--keyword-only --limit=20` | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-09 **3/20** · 분천역 `2649976` · 홍성 남당리 해안 `228856` · 마량리동백숲 `126010` · null **81** · tip `699ac841` |
+| **P2-L8** | hub-batch `--hubs=sangju,gyeryong,mungyeong,yeongi,yesan,gokseong,hwasun,imsil,jangseong,yeonggwang,gimje,iksan,yeongam,cheongdo,gijang,uiseong,yecheon,chilgok,dokdo,gwangyang,sancheong,yeongyang,pohang,mokpo,ulleung,gapyeong,gongju,jecheon,yanggu` `--keyword-only --limit=20` | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-09 **0/20** · 상주보·자연사박물관·석탄박물관 등 미등재/캠핑장 MISS · null **81** 유지 · tip `699ac841` |
+| **P2-L9** | hub-batch `--hubs=gwangyang,sancheong,yeongyang,pohang,mokpo,ulleung,gapyeong,gongju,jecheon,yanggu` `--keyword-only --limit=20` | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-09 **3/10** · 산청 한방테마파크 `2620990` · 구룡포 가옥거리 `1909659` · 가평레일파크 `2361081` · null **78** · tip `fa6d58b8` |
+| **P2-L10** | 잔여 null 78건 분석 및 시설명 alias 발굴 · LIVE 반영 | 쿼터 ~10만/일 | LIVE/분석 | ✅ 2026-09-09 **27/32** · 청풍·삼국유사·문경석탄·덕풍·모란·고복·향목 등 27 HIT · null **51**/871 (94.1%) · 잔여 51건 terminal 종결 · tip `fb4c5513` |
 | **P0-L** | `fill-korea-local-scenic-content-ids.mjs --keyword-only` (멤버 null **584**) | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-07 **109/584** · members **400/876** · hub 72 |
 | **P0-L02** | `--keyword-only --limit=100` (null **476** · resume 전부 소진 → **--resume 없이** 재시도) | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-07 **0/100** · null **476** · 429 없음 |
 | **P0-L03** | `--keyword-only --limit=100` (null **476** · P0-L02 동일 100건 재시도) | 쿼터 ~10만/일 | LIVE | ✅ 2026-09-07 **0/100** · null **476** · 429 없음 |
@@ -210,27 +217,27 @@ P0-L02·L03·L05는 **같은 앞 100멤버**에 JSON `attractionName` **한 단�
 | **P0-L07** | S01 후 `--keyword-only` 잔여 null · **본명-only 재시도 금지** · `--resume`은 새 쿼리 집합일 때만 | 쿼터 ~10만/일 · 세션 `--limit` | LIVE | ✅ 2026-09-07 **11/100** · tip `6212fab3` |
 | **P0-A01** | 시호·별칭 MISS만 공식 출처/웹으로 후보 → `KEYWORD_ALIASES` → LIVE 1~2회 검증 | 소수 건 | 혼합 | ✅ 2026-09-08 **8/16** L07 cohort · tip `dc608b4b` |
 
-### 다음 세션 (복붙) — 1순위 P2-L3
+### 다음 세션 (복붙) — P2 종결 및 PR #185 검토
 
-**채팅명** `팔경contentId #P2-L3, hub-batch keyword`
+**채팅명** `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토`
 
 | | |
 |--|--|
-| **브랜치** | `cursor/palgyeong-cid` · tip `505733e2` · PR [#185](https://github.com/catgeot/Days/pull/185) |
-| **스냅샷** | P0 **종료** members **579/876** null **297**(terminal) · P2 scenic null **104**/871(73 hub) · P2-L01+ **38** · P2-L2 **0/104** |
-| **1순위** | `fill:korea-scenic-spot-content-ids --hubs=uiryeong,hanam,geochang,gunwi,gwangju,seongnam,danyang --keyword-only --limit=20` → generate · audit/smoke scenic |
+| **브랜치** | `cursor/palgyeong-cid` · tip `fb4c5513` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **스냅샷** | P0 **종료** members **579/876** null **297**(terminal) · P2 **종료** null **51**/871 (충족 820/871, 94.1%) · P2-L10 **27/32** 실행 · 잔여 51건 6대 원인별 terminal 종결 완료 |
+| **1순위** | P2 scenic 820/871 충족(94.1%) 및 잔여 51건 terminal 종결 확정 · PR #185 최종 검토 |
 | **읽기** | index 팔경 contentId 행 · 본 큐 「P2 LIVE」· method **§5.7** |
-| **금지** | UI · scenic 승격 · 워커 병렬 LIVE · AI가 contentId 기입 · feature에 `plans/**` |
+| **금지** | UI · scenic 승격 · 워커 병렬 LIVE · L3~L9 hub 본명 단순 재시도 · AI가 contentId 기입 · feature에 `plans/**` |
 
 **이어질 제시어**:
 
 ```
-팔경contentId #P2-L3, hub-batch keyword
+팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토
 @plans/feature-handoff-index.md
 @plans/korea-local-scenic-contentid-queue.md
 브랜치 cursor/palgyeong-cid · PR #185
-금지: UI · scenic 승격 · 워커 병렬 LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
-작업: P2 scenic null 104 — --hubs=uiryeong,hanam,geochang,gunwi,gwangju,seongnam,danyang --keyword-only --limit=20
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3~L9 hub 본명 단순 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic 820/871 충족(94.1%) · 잔여 51건 terminal 종결 확정 및 PR #185 검토
 ```
 
 **Auth**: `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` (Edge `tourapi-proxy`) — inventory만이면 불필요. K·A LIVE 필요.
