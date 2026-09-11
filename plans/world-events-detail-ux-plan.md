@@ -813,14 +813,14 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#55** 상세 갤러리 Unsplash 우선 배치 **push** · tip `b52f148b` · PR [#218](https://github.com/catgeot/Days/pull/218) (OPEN) · 사람 Preview QA |
-| **브랜치** | `cursor/world-events-wave3` · tip `b52f148b` |
-| **플랜** | F-0.5 **D5-b-3 ✅** · **Wave3 4/4 ✅** · 리스트 사진 **Unsplash 영문** · 허브 카드 **사진 확대 ✅** · **상세 갤러리 Unsplash 우선 배치 ✅** |
+| **상태** | **#56** 상세 갤러리 축제 분위기 QA **push** · tip `bc7ff714` · PR [#218](https://github.com/catgeot/Days/pull/218) (OPEN) · 사람 Preview QA |
+| **브랜치** | `cursor/world-events-wave3` · tip `bc7ff714` |
+| **플랜** | F-0.5 **D5-b-3 ✅** · **Wave3 4/4 ✅** · 리스트 사진 **Unsplash 영문** · 허브 카드 **사진 확대 ✅** · **상세 갤러리 분위기 검색·랭킹 ✅** |
 | **Preview** | `/qa/world-events` |
 | **VERIFY** | `smoke:world-events-hub` · `smoke:world-events-detail` · `audit:world-events` · `build` PASS |
 
-**마일스톤**: … → M19 **#54 main 병합 ✅** → M20 **#54b 썸네일 폴백 ✅** → M21 **#54c 사진 확대 ✅**(PR #205) → M22 **#54c 영문 검색** → M23 **#55 상세 갤러리 Unsplash 우선 배치 ✅** · M24 **#56 Preview QA**
+**마일스톤**: … → M23 **#55 Unsplash 우선 배치 ✅** → M24 **#56 분위기 검색·시드·폴백 ✅** · M25 **#57 Preview QA**
 
-**#55**: 상세 히어로 갤러리(`EventDetailHero`)에서 생생한 축제 분위기의 Unsplash 사진을 최상단 슬롯(0~N)에 우선 배치하도록 머지 유틸(`mergeWorldEventHeroGalleryImages`) 및 Edge Function 개선. 옥토버페스트 시드의 지하철 비상레버 및 빈 오페라 중복 외관을 실제 축제 개막/텐트 내부/대극장 객석 사진으로 정비.
+**#56**: 사람 Preview에서 빈 오페라·두바이가 시드 3장(건물·스카이라인)만 남던 문제를 고침. `heroGallerySearchQueryEn`을 JSON에 통과시키고, Edge 타임아웃 뒤 Unsplash 폴백, 군중·객석·마라톤 컷을 스카이라인보다 앞에 랭킹. 두바이 시드는 마라톤·사이클링.
 
-**다음**: 사람 Preview — /world-events/munich-oktoberfest-2026 등 상세 본문 갤러리 1~3번에 생생한 축제 사진이 나오는지. merge는 QA 후.
+**다음**: 사람 Preview — 빈 오페라 객석/무대 · 두바이 러닝·사이클링 · 옥토버페스트 텐트. merge는 QA 후.

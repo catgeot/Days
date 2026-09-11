@@ -503,12 +503,12 @@ PROD https://www.gateo.kr/
 
 ---
 
-### 세계 행사·축제 일정 연동 — 상세 갤러리 Unsplash 우선 배치 (#55)
+### 세계 행사·축제 일정 연동 — 상세 갤러리 축제 분위기 (#56)
 
 | | |
 |--|--|
-| **상태** | **#55** 상세 갤러리 Unsplash 우선 배치 **push** · tip `b52f148b` · PR [#218](https://github.com/catgeot/Days/pull/218) · 사람 Preview QA |
-| **브랜치** | `cursor/world-events-wave3` · tip `b52f148b` |
+| **상태** | **#56** 상세 갤러리 축제 분위기 QA **push** · tip `bc7ff714` · PR [#218](https://github.com/catgeot/Days/pull/218) · 사람 Preview QA |
+| **브랜치** | `cursor/world-events-wave3` · tip `bc7ff714` |
 | **PR** | [#218](https://github.com/catgeot/Days/pull/218) (OPEN) · [#206](https://github.com/catgeot/Days/pull/206) merge ✅ · [#205](https://github.com/catgeot/Days/pull/205) merge ✅ |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **§9** · [`world-events-management.md`](./world-events-management.md) |
 | **일지** | [`2026-09-11-project-log.md`](./2026-09-11-project-log.md) |
@@ -517,18 +517,18 @@ PROD https://www.gateo.kr/
 | **금지** | worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · 허브에 플래너·숙소 칩 복구 |
 | **VERIFY** | `smoke:world-events-hub` · `smoke:world-events-detail` · `audit:world-events` · `build` PASS |
 
-**게이트**: #55 사람 Preview QA — 상세 갤러리 1~3번 및 히어로에 Unsplash 축제 분위기 사진 우선 노출 · 옥토버페스트 지하철 비상레버/빈 오페라 중복 외관 제거 확인. **사람 Preview** 전 merge 금지.
+**게이트**: #56 사람 Preview QA — 빈 오페라 객석/무대 · 두바이 마라톤·사이클링 · 옥토버페스트 텐트/관람차. 건물 외관·마리나 스카이라인·시드 3장만 남는 상태 없는지. **사람 Preview** 전 merge 금지.
 
-**다음 제시어** (#56 Preview QA):
+**다음 제시어** (#57 Preview QA):
 
 ```
-세계행사 일정 #56, 상세 갤러리 Preview QA
+세계행사 일정 #57, 상세 갤러리 분위기 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-11-project-log.md
 @plans/world-events-management.md
 브랜치 cursor/world-events-wave3 · PR #218 · https://www.gateo.kr/qa/world-events
 금지: worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · 허브에 플래너·숙소 칩 복구
-작업: /world-events/munich-oktoberfest-2026 등 상세 본문 갤러리 1~3번에 생생한 축제 사진이 나오는지 · 지하철 비상레버 등 무관 사진이 없는지 확인
+작업: /world-events/vienna-staatsoper-season-2026 · /world-events/dubai-fitness-challenge-2026 · /world-events/munich-oktoberfest-2026 갤러리 1~3번이 객석·마라톤·축제 현장인지 · 시드 3장(건물/스카이라인)만 남았는지
 ```
 
 ---
