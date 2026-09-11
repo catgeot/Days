@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 1,
-    "generatedAt": "2026-09-01T13:45:58.919Z",
+    "generatedAt": "2026-09-11T20:06:34.538Z",
     "eventCount": 23,
     "source": "scripts/data/world-event-overrides.mjs"
   },
@@ -43,22 +43,22 @@
         }
       ],
       "recommendedNights": 3,
-      "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Staatsoper_Wien_DSC_5273w.jpg/1280px-Staatsoper_Wien_DSC_5273w.jpg",
+      "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Wien_-_Staatsoper%2C_Zuschauerraum_mit_B%C3%BChne.JPG/1280px-Wien_-_Staatsoper%2C_Zuschauerraum_mit_B%C3%BChne.JPG",
       "heroImages": [
         {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Staatsoper_Wien_DSC_5273w.jpg/1280px-Staatsoper_Wien_DSC_5273w.jpg",
-          "captionKo": "빈 국립오페라",
-          "captionEn": "Vienna State Opera"
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Wien_-_Staatsoper%2C_Zuschauerraum_mit_B%C3%BChne.JPG/1280px-Wien_-_Staatsoper%2C_Zuschauerraum_mit_B%C3%BChne.JPG",
+          "captionKo": "국립오페라 대극장과 무대",
+          "captionEn": "Vienna State Opera auditorium and stage"
         },
         {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Wien_-_Haus_des_Wiener_Musikvereins_%281%29.JPG/1280px-Wien_-_Haus_des_Wiener_Musikvereins_%281%29.JPG",
-          "captionKo": "빈 뮤직페어라인",
-          "captionEn": "Musikverein Vienna"
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Vienna_Opera_House_Interior.JPG/1280px-Vienna_Opera_House_Interior.JPG",
+          "captionKo": "국립오페라 객석 내부",
+          "captionEn": "Vienna opera house interior"
         },
         {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Wiener_Staatsoper_Front.jpg/1280px-Wiener_Staatsoper_Front.jpg",
-          "captionKo": "국립오페라 정면",
-          "captionEn": "State Opera front"
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Vienna_State_Opera_Stage.jpg/1280px-Vienna_State_Opera_Stage.jpg",
+          "captionKo": "국립오페라 무대",
+          "captionEn": "Vienna State Opera stage"
         }
       ],
       "glossaryTerms": [
@@ -142,6 +142,7 @@
       ],
       "youtubeSearchQueryKo": "빈 국립오페라",
       "youtubeSearchQueryEn": "Vienna State Opera",
+      "heroGallerySearchQueryEn": "opera house interior audience",
       "mooniChips": [
         {
           "id": "stehplatz-tips",
@@ -329,6 +330,7 @@
       ],
       "youtubeSearchQueryKo": "발리 갈룽안 축제",
       "youtubeSearchQueryEn": "Bali Galungan festival",
+      "heroGallerySearchQueryEn": "Galungan penjor temple festival",
       "actionChips": [
         {
           "id": "galungan-guide",
@@ -511,6 +513,7 @@
       ],
       "youtubeSearchQueryKo": "바르셀로나 라 메르세",
       "youtubeSearchQueryEn": "Barcelona La Mercè",
+      "heroGallerySearchQueryEn": "La Merce festival parade",
       "mooniChips": [
         {
           "id": "best-nights",
@@ -577,22 +580,22 @@
         }
       ],
       "recommendedNights": 3,
-      "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Oktoberfest_2015_-_Impression_5.JPG/1280px-Oktoberfest_2015_-_Impression_5.JPG",
+      "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/O%27zapft_is%21_M%C3%BCnchens_5_Jahreszeit_hat_begonnen_-_O%27zapft_is%21_Munich_5_season%2C_the_Oktoberfest_has_begun_%289855483374%29.jpg/1280px-O%27zapft_is%21_M%C3%BCnchens_5_Jahreszeit_hat_begonnen_-_O%27zapft_is%21_Munich_5_season%2C_the_Oktoberfest_has_begun_%289855483374%29.jpg",
       "heroImages": [
         {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/O%27zapft_is%21_M%C3%BCnchens_5_Jahreszeit_hat_begonnen_-_O%27zapft_is%21_Munich_5_season%2C_the_Oktoberfest_has_begun_%289855483374%29.jpg/1280px-O%27zapft_is%21_M%C3%BCnchens_5_Jahreszeit_hat_begonnen_-_O%27zapft_is%21_Munich_5_season%2C_the_Oktoberfest_has_begun_%289855483374%29.jpg",
+          "captionKo": "옥토버페스트 개막 현장",
+          "captionEn": "Oktoberfest opening celebration"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Hofbraudedans.jpg/1280px-Hofbraudedans.jpg",
+          "captionKo": "호프브로이 텐트 내부",
+          "captionEn": "Hofbräu beer tent interior"
+        },
+        {
           "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Oktoberfest_2015_-_Impression_5.JPG/1280px-Oktoberfest_2015_-_Impression_5.JPG",
-          "captionKo": "옥토버페스트 현장",
+          "captionKo": "옥토버페스트 축제장",
           "captionEn": "Oktoberfest grounds"
-        },
-        {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Oktoberfest_Schaugeschaeft_2007_Richard_Bartz.jpg/1280px-Oktoberfest_Schaugeschaeft_2007_Richard_Bartz.jpg",
-          "captionKo": "옥토버페스트 현장",
-          "captionEn": "Oktoberfest fairground"
-        },
-        {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/U-Bahnhof_Theresienwiese_03.jpg/1280px-U-Bahnhof_Theresienwiese_03.jpg",
-          "captionKo": "테레지엔비제",
-          "captionEn": "Theresienwiese"
         }
       ],
       "glossaryTerms": [
@@ -678,6 +681,7 @@
           "titleEn": "Inside Oktoberfest"
         }
       ],
+      "heroGallerySearchQueryEn": "Oktoberfest Munich beer tent",
       "actionChips": [
         {
           "id": "official-site",
@@ -845,6 +849,7 @@
       ],
       "youtubeSearchQueryKo": "싱가포르 그랑프리",
       "youtubeSearchQueryEn": "Singapore Grand Prix",
+      "heroGallerySearchQueryEn": "Singapore Grand Prix night race",
       "mooniChips": [
         {
           "id": "ticket-types",
@@ -901,22 +906,22 @@
         }
       ],
       "recommendedNights": 4,
-      "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Dubai_Marina_Skyline.jpg/1280px-Dubai_Marina_Skyline.jpg",
+      "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Joshua_Cheptegei_wins_at_Burj2Burj_Half_Marathon_in_Dubai_February_2026.jpg/1280px-Joshua_Cheptegei_wins_at_Burj2Burj_Half_Marathon_in_Dubai_February_2026.jpg",
       "heroImages": [
         {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Dubai_Marina_Skyline.jpg/1280px-Dubai_Marina_Skyline.jpg",
-          "captionKo": "두바이 마리나 스카이라인",
-          "captionEn": "Dubai Marina skyline"
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Joshua_Cheptegei_wins_at_Burj2Burj_Half_Marathon_in_Dubai_February_2026.jpg/1280px-Joshua_Cheptegei_wins_at_Burj2Burj_Half_Marathon_in_Dubai_February_2026.jpg",
+          "captionKo": "두바이 하프마라톤 피니시",
+          "captionEn": "Dubai half marathon finish"
         },
         {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Dubai_Marina_Skyline_93.jpg/1280px-Dubai_Marina_Skyline_93.jpg",
-          "captionKo": "두바이 야경",
-          "captionEn": "Dubai skyline at night"
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Duba%C3%AF_Tour_%28A%29.jpg/1280px-Duba%C3%AF_Tour_%28A%29.jpg",
+          "captionKo": "두바이 투어 사이클링",
+          "captionEn": "Dubai Tour cycling peloton"
         },
         {
-          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Burj_Khalifa_Dubai%2C_UAE_at_Sunset_001_by_Eric_Chamchoum.jpg/1280px-Burj_Khalifa_Dubai%2C_UAE_at_Sunset_001_by_Eric_Chamchoum.jpg",
-          "captionKo": "부르즈 할리파 일대",
-          "captionEn": "Burj Khalifa area"
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Haile_Gebrselassie_Dubai_Marathon_2010.jpg/1280px-Haile_Gebrselassie_Dubai_Marathon_2010.jpg",
+          "captionKo": "두바이 마라톤",
+          "captionEn": "Dubai Marathon"
         }
       ],
       "glossaryTerms": [
@@ -987,6 +992,7 @@
       ],
       "youtubeSearchQueryKo": "두바이 피트니스 챌린지",
       "youtubeSearchQueryEn": "Dubai Fitness Challenge",
+      "heroGallerySearchQueryEn": "city marathon runners crowd",
       "mooniChips": [
         {
           "id": "register-flagship",
@@ -1132,6 +1138,7 @@
       ],
       "youtubeSearchQueryKo": "이스탄불 마라톤",
       "youtubeSearchQueryEn": "Istanbul Marathon",
+      "heroGallerySearchQueryEn": "Istanbul Marathon runners crowd",
       "mooniChips": [
         {
           "id": "register-deadline",
@@ -1280,6 +1287,7 @@
       ],
       "youtubeSearchQueryKo": "뉴욕 메이시스 추수감사절 퍼레이드",
       "youtubeSearchQueryEn": "Macy's Thanksgiving Day Parade New York",
+      "heroGallerySearchQueryEn": "Macy's Thanksgiving parade floats",
       "mooniChips": [
         {
           "id": "parade-view",
@@ -1424,6 +1432,7 @@
       ],
       "youtubeSearchQueryKo": "로스앤젤레스 로즈 퍼레이드",
       "youtubeSearchQueryEn": "Rose Parade Pasadena",
+      "heroGallerySearchQueryEn": "Rose Parade flower floats",
       "mooniChips": [
         {
           "id": "parade-view",
@@ -1572,6 +1581,7 @@
       ],
       "youtubeSearchQueryKo": "하노이 뗏 설 연휴",
       "youtubeSearchQueryEn": "Hanoi Tet holiday",
+      "heroGallerySearchQueryEn": "Tet festival Vietnam lantern",
       "mooniChips": [
         {
           "id": "tet-timing",
@@ -1765,6 +1775,7 @@
       ],
       "youtubeSearchQueryKo": "로마 카니발 Carnevale Romano",
       "youtubeSearchQueryEn": "Rome Carnival Carnevale Romano",
+      "heroGallerySearchQueryEn": "Rome Carnival costume parade",
       "mooniChips": [
         {
           "id": "beginner-intro",
@@ -1917,6 +1928,7 @@
       ],
       "youtubeSearchQueryKo": "리우 카니발 삼바드롬",
       "youtubeSearchQueryEn": "Rio Carnival Sambadrome",
+      "heroGallerySearchQueryEn": "Rio Carnival samba parade",
       "mooniChips": [
         {
           "id": "sambadrome-nights",
@@ -2063,6 +2075,7 @@
       ],
       "youtubeSearchQueryKo": "도쿄 벚꽃 시즌",
       "youtubeSearchQueryEn": "Tokyo cherry blossom season",
+      "heroGallerySearchQueryEn": "cherry blossom festival Tokyo",
       "mooniChips": [
         {
           "id": "bloom-timing",
@@ -2209,6 +2222,7 @@
       ],
       "youtubeSearchQueryKo": "방콕 송크란",
       "youtubeSearchQueryEn": "Bangkok Songkran",
+      "heroGallerySearchQueryEn": "Songkran water festival crowd",
       "mooniChips": [
         {
           "id": "silom-vs-khaosan",
@@ -2354,6 +2368,7 @@
       ],
       "youtubeSearchQueryKo": "프라하 봄 축제",
       "youtubeSearchQueryEn": "Prague Spring Festival",
+      "heroGallerySearchQueryEn": "Prague concert orchestra hall",
       "mooniChips": [
         {
           "id": "opening-week",
@@ -2497,6 +2512,7 @@
       ],
       "youtubeSearchQueryKo": "암스테르담 킹스데이",
       "youtubeSearchQueryEn": "Amsterdam King's Day",
+      "heroGallerySearchQueryEn": "King's Day Amsterdam orange crowd",
       "mooniChips": [
         {
           "id": "what-to-wear",
@@ -2641,6 +2657,7 @@
       ],
       "youtubeSearchQueryKo": "마라케시 로즈 페스티벌",
       "youtubeSearchQueryEn": "Marrakech Rose Festival",
+      "heroGallerySearchQueryEn": "Rose Festival Morocco parade",
       "mooniChips": [
         {
           "id": "day-tour",
@@ -2811,6 +2828,7 @@
       ],
       "youtubeSearchQueryKo": "시드니 비비드 오페라 하우스",
       "youtubeSearchQueryEn": "Vivid Sydney Opera House lights",
+      "heroGallerySearchQueryEn": "Vivid Sydney light festival",
       "mooniChips": [
         {
           "id": "opening-weekend",
@@ -2956,6 +2974,7 @@
       ],
       "youtubeSearchQueryKo": "아이슬란드 백야 골든서클",
       "youtubeSearchQueryEn": "Iceland midnight sun Golden Circle",
+      "heroGallerySearchQueryEn": "Secret Solstice festival concert",
       "mooniChips": [
         {
           "id": "solstice-timing",
@@ -3100,6 +3119,7 @@
       ],
       "youtubeSearchQueryKo": "파리 뉘 블랑쉬",
       "youtubeSearchQueryEn": "Paris Nuit Blanche",
+      "heroGallerySearchQueryEn": "Nuit Blanche night art festival",
       "mooniChips": [
         {
           "id": "best-nights",
@@ -3248,6 +3268,7 @@
       ],
       "youtubeSearchQueryKo": "교토 기온마츠리",
       "youtubeSearchQueryEn": "Kyoto Gion Matsuri",
+      "heroGallerySearchQueryEn": "Gion Matsuri parade float",
       "mooniChips": [
         {
           "id": "yoiyama-nights",
@@ -3419,6 +3440,7 @@
           "titleEn": "Before you go to the Fringe"
         }
       ],
+      "heroGallerySearchQueryEn": "Edinburgh Fringe street performance",
       "actionChips": [
         {
           "id": "official-tickets",
@@ -3672,6 +3694,7 @@
       ],
       "youtubeSearchQueryKo": "런던 노팅힐 카니발",
       "youtubeSearchQueryEn": "Notting Hill Carnival London",
+      "heroGallerySearchQueryEn": "Notting Hill Carnival parade",
       "mooniChips": [
         {
           "id": "beginner-intro",

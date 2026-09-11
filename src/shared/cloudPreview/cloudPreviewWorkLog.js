@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 54,
-  sessionPhase: '리스트 사진 영문 검색',
+  sessionNo: 57,
+  sessionPhase: '리스트 썸네일 컬러 우선',
   branch: 'cursor/world-events-wave3',
   previewPath: '/world-events',
   qaShareSlug: 'world-events',
@@ -23,6 +23,30 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-11-world-events-57-color-thumbs',
+    session: '세계행사 일정 #57, 리스트 썸네일 컬러 우선',
+    title: '허브 리스트 흑백 썸네일을 컬러로',
+    detail:
+      '이스탄불 마라톤·추수감사절 카드가 빈티지 흑백 Unsplash를 쓰고 있었습니다. 캡션·대표색이 회색인 컷은 건너뛰고 컬러 사진을 고릅니다. Preview /qa/world-events — 이스탄불·뉴욕 카드가 컬러인지.',
+    at: '2026-09-11T22:00:00.000Z',
+  },
+  {
+    id: '2026-09-11-world-events-56-atmosphere-gallery',
+    session: '세계행사 일정 #56, 상세 갤러리 축제 분위기 QA',
+    title: '상세 갤러리 — 분위기 검색·랭킹·시드 보강',
+    detail:
+      '사람 Preview에서 빈 오페라·두바이가 시드 3장(건물·스카이라인)만 남던 문제를 고쳤습니다. Edge 타임아웃 뒤에도 Unsplash를 이어 받고, 객석·마라톤·군중 컷을 건물·스카이라인보다 앞에 둡니다. Preview /qa/world-events — 옥토버페스트·빈 오페라·두바이 피트니스 상세 1~3번.',
+    at: '2026-09-11T20:00:00.000Z',
+  },
+  {
+    id: '2026-09-11-world-events-55-vibrant-gallery',
+    session: '세계행사 일정 #55, 상세 갤러리 Unsplash 우선 배치',
+    title: '상세 갤러리 Unsplash 우선 배치 및 시드 정비',
+    detail:
+      '상세 히어로 갤러리에서 생생한 축제 분위기의 Unsplash 사진을 최상단 슬롯에 우선 배치하도록 머지 로직을 개선했습니다. 옥토버페스트 시드의 지하철 비상레버 및 빈 오페라 중복 외관을 실제 축제 개막/텐트 내부/대극장 객석 사진으로 교체했습니다. Preview /qa/world-events — 옥토버페스트·빈 오페라 상세 진입 시 생생한 축제 사진이 첫 장으로 노출되는지 확인.',
+    at: '2026-09-11T10:00:00.000Z',
+  },
   {
     id: '2026-09-11-palgyeong-use-14-hadong-group',
     session: '팔경 활용 #14, 검색 그룹 묶기',

@@ -23,6 +23,9 @@ import {
   isRejectedGalleryFillerImage,
   galleryNearDupKey,
   mergeWorldEventHeroGalleryImages,
+  rankWorldEventHeroGalleryImages,
+  galleryNeedsAtmosphereRefresh,
+  scoreHeroGalleryAtmosphere,
 } from '../src/utils/worldEventHeroGalleryMerge.js';
 import { addDaysYmd } from '../src/shared/tripWindow.js';
 import {
@@ -751,7 +754,9 @@ assert.match(fetchHeroGallerySrc, /fetchWikimediaGalleryFromQueries/, 'fetchEven
 assert.match(fetchHeroGallerySrc, /heroGallerySeedCacheMatches/, 'fetchEventHeroGallery stale cache detection');
 assert.match(fetchHeroGallerySrc, /buildHeroGalleryFromCache/, 'fetchEventHeroGallery cache re-merge');
 assert.match(fetchHeroGallerySrc, /galleryCacheHasUnsplash/, 'fetchEventHeroGallery skips wiki-only cache');
-assert.match(fetchHeroGallerySrc, /!cacheHasUnsplash/, 'fetchEventHeroGallery forces English Unsplash when cache has no Unsplash');
+assert.match(fetchHeroGallerySrc, /galleryNeedsAtmosphereRefresh/, 'fetchEventHeroGallery refreshes bland skyline caches');
+assert.match(fetchHeroGallerySrc, /unsplashQueries/, 'fetchEventHeroGallery searches extra English atmosphere queries');
+assert.match(fetchHeroGallerySrc, /invoke:/, 'fetchEventHeroGallery continues after Edge timeout');
 
 const heroGalleryMergeSrc = readFileSync(join(root, 'src/utils/worldEventHeroGalleryMerge.js'), 'utf8');
 assert.match(heroGalleryMergeSrc, /mergeWorldEventHeroGalleryImages/, 'hero gallery merge util');
@@ -767,6 +772,39 @@ assert.ok(
 assert.ok(
   baliGalleryQueries.wikimediaQueries.every((query) => !/[\uAC00-\uD7A3]/.test(query)),
   'bali wikimedia queries are English-only',
+);
+
+const viennaGalleryQueries = buildWorldEventHeroGalleryQueries(
+  getWorldEventById('vienna-staatsoper-season-2026'),
+  'ko',
+);
+assert.match(
+  viennaGalleryQueries.primary,
+  /opera house interior/i,
+  'vienna unsplash primary is auditorium atmosphere not building facade',
+);
+assert.doesNotMatch(
+  viennaGalleryQueries.primary,
+  /season/i,
+  'vienna unsplash primary drops Season filler',
+);
+
+const dubaiGalleryQueries = buildWorldEventHeroGalleryQueries(
+  getWorldEventById('dubai-fitness-challenge-2026'),
+  'ko',
+);
+assert.match(
+  dubaiGalleryQueries.primary,
+  /marathon|running|fitness class/i,
+  'dubai unsplash primary is running/fitness not marina skyline',
+);
+assert.ok(
+  getWorldEventById('vienna-staatsoper-season-2026')?.heroGallerySearchQueryEn,
+  'vienna heroGallerySearchQueryEn survives generate',
+);
+assert.ok(
+  getWorldEventById('dubai-fitness-challenge-2026')?.heroGallerySearchQueryEn,
+  'dubai heroGallerySearchQueryEn survives generate',
 );
 
 assert.equal(
@@ -807,6 +845,69 @@ assert.equal(mergedGallery.length, 2, 'merge keeps seed + one near-dup filler');
 assert.ok(
   mergedGallery.every((image) => !/commission/i.test(image.captionEn || '')),
   'merge drops document filler',
+);
+assert.equal(
+  isRejectedGalleryFillerImage({
+    url: 'https://upload.wikimedia.org/wikipedia/commons/x.jpg',
+    captionEn: 'Caldara Venceslao libretto title page Vienna',
+  }),
+  true,
+  'rejects libretto title-page fillers',
+);
+
+const rankedGallery = rankWorldEventHeroGalleryImages([
+  {
+    url: 'https://upload.wikimedia.org/wikipedia/commons/skyline.jpg',
+    captionEn: 'Dubai Marina skyline',
+    source: 'wikimedia',
+  },
+  {
+    url: 'https://images.unsplash.com/photo-marathon',
+    captionEn: 'A large group of people running a marathon',
+    source: 'unsplash',
+  },
+  {
+    url: 'https://upload.wikimedia.org/wikipedia/commons/facade.jpg',
+    captionEn: 'brown concrete building facade',
+    source: 'wikimedia',
+  },
+]);
+assert.match(
+  rankedGallery[0]?.captionEn || '',
+  /marathon/i,
+  'atmosphere rank puts marathon crowd before skyline',
+);
+assert.equal(
+  galleryNeedsAtmosphereRefresh([
+    { url: 'https://upload.wikimedia.org/wikipedia/commons/a.jpg', captionEn: 'Dubai Marina skyline' },
+    { url: 'https://upload.wikimedia.org/wikipedia/commons/b.jpg', captionEn: 'cityscape at night' },
+    { url: 'https://upload.wikimedia.org/wikipedia/commons/c.jpg', captionEn: 'office tower facade' },
+  ]),
+  true,
+  'bland skyline galleries need Unsplash refresh',
+);
+assert.equal(
+  galleryNeedsAtmosphereRefresh([
+    {
+      url: 'https://images.unsplash.com/photo-oktoberfest',
+      captionEn: 'A crowd of people standing around a carnival beer tent',
+      source: 'unsplash',
+    },
+  ]),
+  false,
+  'festive Unsplash cache is kept',
+);
+assert.ok(
+  scoreHeroGalleryAtmosphere({
+    url: 'https://images.unsplash.com/photo-x',
+    captionEn: 'opera house interior audience',
+    source: 'unsplash',
+  }) >
+    scoreHeroGalleryAtmosphere({
+      url: 'https://upload.wikimedia.org/wikipedia/commons/x.jpg',
+      captionEn: 'concrete building facade',
+    }),
+  'interior/audience scores above facade',
 );
 
 const fetchWorldVideosSrc = readFileSync(join(root, 'src/utils/fetchWorldEventVideos.js'), 'utf8');

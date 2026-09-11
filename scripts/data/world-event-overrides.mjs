@@ -51,24 +51,25 @@ export const WORLD_EVENT_OVERRIDES = [
     ],
     recommendedNights: 3,
     heroImage:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Staatsoper_Wien_DSC_5273w.jpg/1280px-Staatsoper_Wien_DSC_5273w.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Wien_-_Staatsoper%2C_Zuschauerraum_mit_B%C3%BChne.JPG/1280px-Wien_-_Staatsoper%2C_Zuschauerraum_mit_B%C3%BChne.JPG',
     heroImages: [
       {
-        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Staatsoper_Wien_DSC_5273w.jpg/1280px-Staatsoper_Wien_DSC_5273w.jpg',
-        captionKo: '빈 국립오페라',
-        captionEn: 'Vienna State Opera',
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Wien_-_Staatsoper%2C_Zuschauerraum_mit_B%C3%BChne.JPG/1280px-Wien_-_Staatsoper%2C_Zuschauerraum_mit_B%C3%BChne.JPG',
+        captionKo: '국립오페라 대극장과 무대',
+        captionEn: 'Vienna State Opera auditorium and stage',
       },
       {
-        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Wien_-_Haus_des_Wiener_Musikvereins_%281%29.JPG/1280px-Wien_-_Haus_des_Wiener_Musikvereins_%281%29.JPG',
-        captionKo: '빈 뮤직페어라인',
-        captionEn: 'Musikverein Vienna',
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Vienna_Opera_House_Interior.JPG/1280px-Vienna_Opera_House_Interior.JPG',
+        captionKo: '국립오페라 객석 내부',
+        captionEn: 'Vienna opera house interior',
       },
       {
-        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Wiener_Staatsoper_Front.jpg/1280px-Wiener_Staatsoper_Front.jpg',
-        captionKo: '국립오페라 정면',
-        captionEn: 'State Opera front',
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Vienna_State_Opera_Stage.jpg/1280px-Vienna_State_Opera_Stage.jpg',
+        captionKo: '국립오페라 무대',
+        captionEn: 'Vienna State Opera stage',
       },
     ],
+    heroGallerySearchQueryEn: "opera house interior audience",
     glossaryTerms: [
       {
         id: 'staatsoper',
@@ -221,24 +222,25 @@ export const WORLD_EVENT_OVERRIDES = [
     ],
     recommendedNights: 3,
     heroImage:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Oktoberfest_2015_-_Impression_5.JPG/1280px-Oktoberfest_2015_-_Impression_5.JPG',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/O%27zapft_is%21_M%C3%BCnchens_5_Jahreszeit_hat_begonnen_-_O%27zapft_is%21_Munich_5_season%2C_the_Oktoberfest_has_begun_%289855483374%29.jpg/1280px-O%27zapft_is%21_M%C3%BCnchens_5_Jahreszeit_hat_begonnen_-_O%27zapft_is%21_Munich_5_season%2C_the_Oktoberfest_has_begun_%289855483374%29.jpg',
     heroImages: [
       {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/O%27zapft_is%21_M%C3%BCnchens_5_Jahreszeit_hat_begonnen_-_O%27zapft_is%21_Munich_5_season%2C_the_Oktoberfest_has_begun_%289855483374%29.jpg/1280px-O%27zapft_is%21_M%C3%BCnchens_5_Jahreszeit_hat_begonnen_-_O%27zapft_is%21_Munich_5_season%2C_the_Oktoberfest_has_begun_%289855483374%29.jpg',
+        captionKo: '옥토버페스트 개막 현장',
+        captionEn: 'Oktoberfest opening celebration',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Hofbraudedans.jpg/1280px-Hofbraudedans.jpg',
+        captionKo: '호프브로이 텐트 내부',
+        captionEn: 'Hofbräu beer tent interior',
+      },
+      {
         url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Oktoberfest_2015_-_Impression_5.JPG/1280px-Oktoberfest_2015_-_Impression_5.JPG',
-        captionKo: '옥토버페스트 현장',
+        captionKo: '옥토버페스트 축제장',
         captionEn: 'Oktoberfest grounds',
       },
-      {
-        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Oktoberfest_Schaugeschaeft_2007_Richard_Bartz.jpg/1280px-Oktoberfest_Schaugeschaeft_2007_Richard_Bartz.jpg',
-        captionKo: '옥토버페스트 현장',
-        captionEn: 'Oktoberfest fairground',
-      },
-      {
-        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/U-Bahnhof_Theresienwiese_03.jpg/1280px-U-Bahnhof_Theresienwiese_03.jpg',
-        captionKo: '테레지엔비제',
-        captionEn: 'Theresienwiese',
-      },
     ],
+    heroGallerySearchQueryEn: "Oktoberfest Munich beer tent",
     glossaryTerms: [
       {
         id: 'theresienwiese',
@@ -435,6 +437,7 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Edinburgh Old Town',
       },
     ],
+    heroGallerySearchQueryEn: "Edinburgh Fringe street performance",
     glossaryTerms: [
       {
         id: 'fringe',
@@ -622,6 +625,7 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Vondelpark',
       },
     ],
+    heroGallerySearchQueryEn: "King's Day Amsterdam orange crowd",
     glossaryTerms: [
       {
         id: 'kings-day',
@@ -769,6 +773,7 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Chidorigafuchi night lights',
       },
     ],
+    heroGallerySearchQueryEn: "cherry blossom festival Tokyo",
     glossaryTerms: [
       {
         id: 'sakura',
@@ -919,6 +924,7 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Yasaka Shrine',
       },
     ],
+    heroGallerySearchQueryEn: "Gion Matsuri parade float",
     glossaryTerms: [
       {
         id: 'yoi-yama',
@@ -1071,6 +1077,7 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Khao San Road',
       },
     ],
+    heroGallerySearchQueryEn: "Songkran water festival crowd",
     glossaryTerms: [
       {
         id: 'songkran',
@@ -1232,6 +1239,7 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Galungan season temple decor',
       },
     ],
+    heroGallerySearchQueryEn: "Galungan penjor temple festival",
     glossaryTerms: [
       {
         id: 'galungan',
@@ -1446,6 +1454,7 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Copacabana Beach',
       },
     ],
+    heroGallerySearchQueryEn: "Rio Carnival samba parade",
     glossaryTerms: [
       {
         id: 'sambadrome',
@@ -1597,6 +1606,7 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Rockefeller Center Christmas tree',
       },
     ],
+    heroGallerySearchQueryEn: "Macy's Thanksgiving parade floats",
     glossaryTerms: [
       {
         id: 'macys-parade',
@@ -1748,6 +1758,7 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Gullfoss waterfall',
       },
     ],
+    heroGallerySearchQueryEn: "Secret Solstice festival concert",
     glossaryTerms: [
       {
         id: 'midnight-sun',
@@ -1898,6 +1909,7 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Darling Harbour',
       },
     ],
+    heroGallerySearchQueryEn: "Vivid Sydney light festival",
     glossaryTerms: [
       {
         id: 'vivid-sydney',
@@ -2072,6 +2084,7 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Prague Old Town',
       },
     ],
+    heroGallerySearchQueryEn: "Prague concert orchestra hall",
     glossaryTerms: [
       {
         id: 'prague-spring',
@@ -2221,6 +2234,7 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Jemaa el-Fnaa square',
       },
     ],
+    heroGallerySearchQueryEn: "Rose Festival Morocco parade",
     glossaryTerms: [
       {
         id: 'rose-festival',
@@ -2369,6 +2383,7 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Hoan Kiem Lake',
       },
     ],
+    heroGallerySearchQueryEn: "Tet festival Vietnam lantern",
     glossaryTerms: [
       {
         id: 'tet',
@@ -2521,6 +2536,7 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Marina Bay skyline',
       },
     ],
+    heroGallerySearchQueryEn: "Singapore Grand Prix night race",
     glossaryTerms: [
       {
         id: 'marina-bay-circuit',
@@ -2651,24 +2667,25 @@ export const WORLD_EVENT_OVERRIDES = [
     ],
     recommendedNights: 4,
     heroImage:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Dubai_Marina_Skyline.jpg/1280px-Dubai_Marina_Skyline.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Joshua_Cheptegei_wins_at_Burj2Burj_Half_Marathon_in_Dubai_February_2026.jpg/1280px-Joshua_Cheptegei_wins_at_Burj2Burj_Half_Marathon_in_Dubai_February_2026.jpg',
     heroImages: [
       {
-        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Dubai_Marina_Skyline.jpg/1280px-Dubai_Marina_Skyline.jpg',
-        captionKo: '두바이 마리나 스카이라인',
-        captionEn: 'Dubai Marina skyline',
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Joshua_Cheptegei_wins_at_Burj2Burj_Half_Marathon_in_Dubai_February_2026.jpg/1280px-Joshua_Cheptegei_wins_at_Burj2Burj_Half_Marathon_in_Dubai_February_2026.jpg',
+        captionKo: '두바이 하프마라톤 피니시',
+        captionEn: 'Dubai half marathon finish',
       },
       {
-        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Dubai_Marina_Skyline_93.jpg/1280px-Dubai_Marina_Skyline_93.jpg',
-        captionKo: '두바이 야경',
-        captionEn: 'Dubai skyline at night',
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Duba%C3%AF_Tour_%28A%29.jpg/1280px-Duba%C3%AF_Tour_%28A%29.jpg',
+        captionKo: '두바이 투어 사이클링',
+        captionEn: 'Dubai Tour cycling peloton',
       },
       {
-        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Burj_Khalifa_Dubai%2C_UAE_at_Sunset_001_by_Eric_Chamchoum.jpg/1280px-Burj_Khalifa_Dubai%2C_UAE_at_Sunset_001_by_Eric_Chamchoum.jpg',
-        captionKo: '부르즈 할리파 일대',
-        captionEn: 'Burj Khalifa area',
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Haile_Gebrselassie_Dubai_Marathon_2010.jpg/1280px-Haile_Gebrselassie_Dubai_Marathon_2010.jpg',
+        captionKo: '두바이 마라톤',
+        captionEn: 'Dubai Marathon',
       },
     ],
+    heroGallerySearchQueryEn: "city marathon runners crowd",
     glossaryTerms: [
       {
         id: '30x30',
@@ -2815,6 +2832,7 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'La Mercè 2024 castell diada',
       },
     ],
+    heroGallerySearchQueryEn: "La Merce festival parade",
     glossaryTerms: [
       {
         id: 'la-merce',
@@ -2964,6 +2982,7 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Istanbul skyline',
       },
     ],
+    heroGallerySearchQueryEn: "Istanbul Marathon runners crowd",
     glossaryTerms: [
       {
         id: 'continental-marathon',
@@ -3113,6 +3132,7 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Hôtel de Ville at Nuit Blanche',
       },
     ],
+    heroGallerySearchQueryEn: "Nuit Blanche night art festival",
     glossaryTerms: [
       {
         id: 'nuit-blanche',
@@ -3257,6 +3277,7 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Rose Bowl Stadium in Pasadena',
       },
     ],
+    heroGallerySearchQueryEn: "Rose Parade flower floats",
     glossaryTerms: [
       {
         id: 'rose-parade',
@@ -3412,6 +3433,7 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Mas band costumes',
       },
     ],
+    heroGallerySearchQueryEn: "Notting Hill Carnival parade",
     glossaryTerms: [
       {
         id: 'notting-hill-carnival',
@@ -3661,6 +3683,7 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Carnival costumes and street events',
       },
     ],
+    heroGallerySearchQueryEn: "Rome Carnival costume parade",
     glossaryTerms: [
       {
         id: 'carnevale-romano',
