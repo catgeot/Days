@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '명승 숙소',
-  sessionNo: 2,
-  sessionPhase: '숙소 위치·구글 링크',
-  branch: 'cursor/scenic-stay-692c',
-  previewPath: '/korea/theme/scenic?spot=gyeongbokgung',
-  qaShareSlug: 'scenic-stay',
+  title: '팔경 활용',
+  sessionNo: 14,
+  sessionPhase: '검색 그룹 묶기',
+  branch: 'cursor/palgyeong-use-e744',
+  previewPath: '/korea/theme/scenic',
+  qaShareSlug: 'palgyeong-use',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,30 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-11-palgyeong-use-14-hadong-group',
+    session: '팔경 활용 #14, 검색 그룹 묶기',
+    title: '하동 검색에서 십경과 대표 명소가 섞이지 않게',
+    detail:
+      '명승 검색 「하동」결과가 시·군·이름 정렬 때문에 하동 십경과 지역 대표 명소가 한 줄씩 엇갈리며 소제목이 반복됐습니다. 팔경 groupTitle은 한 덩어리로 모으고, 그룹 없는 대표 명소만 그 뒤에 둡니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색창에 하동 · 하동 십경.',
+    at: '2026-09-11T07:50:00.000Z',
+  },
+  {
+    id: '2026-09-11-palgyeong-use-13-hadong-search',
+    session: '팔경 활용 #13, 광양·하동 결손 오버레이',
+    title: '하동 검색에 십경 멤버가 나오게',
+    detail:
+      '명승 페이지에서 하동을 검색하면 JSON에 없는 십경 멤버가 0건으로 떨어져 하동 십경 그룹이 안 보였습니다. 표시명(하동 십경) exact 매칭과 명소 검색 풀에 지자체 리스트 멤버 주입을 넣었습니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색창에 하동 · 하동 십경.',
+    at: '2026-09-11T06:10:00.000Z',
+  },
+  {
+    id: '2026-09-11-palgyeong-use-13-gwangyang-hadong-overlays',
+    session: '팔경 활용 #13, 광양·하동 결손 오버레이',
+    title: '광양9경 6건·하동10경 7건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 광양9경 결손 6건(백운산 4대 계곡·자연휴양림·이순신대교·광양만 야경·옥룡사지 동백·읍수와 이팝나무)과 하동10경 결손 7건(화개장터 십리벚꽃·금오산 일출·쌍계사 가을·형제봉 철쭉·청학동 삼성궁·하동포구·섬호정 섬진강)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 광양시 문화관광 9경 사진, 한국관광공사 동곡·옥룡사지·유당공원·십리벚꽃·쌍계사·삼성궁·하동송림 사진을 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gwangyang · ?hub=hadong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-11T04:30:00.000Z',
+  },
   {
     id: '2026-09-11-scenic-stay-2-position-google',
     session: '명승 숙소 #2, 숙소 위치·구글 링크',

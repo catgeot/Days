@@ -885,7 +885,9 @@ export default function KoreaThemeScenicPage() {
 
   const curatedSearchPool = useMemo(() => {
     if (!searchActive) return null;
-    return filterScenicSpotsByQuery(CURATED_ALL, searchFilter);
+    return filterScenicSpotsByQuery(CURATED_ALL, searchFilter, {
+      injectLocalScenic: true,
+    });
   }, [searchActive, searchFilter]);
 
   const heritageSearchPool = useMemo(() => {
@@ -1771,7 +1773,9 @@ export default function KoreaThemeScenicPage() {
     if (q) {
       setRecentSearches(pushRecentSearch(SCENIC_RECENT_SEARCH_KEY, q));
       clearNear();
-      const curatedMatches = filterScenicSpotsByQuery(CURATED_ALL, q);
+      const curatedMatches = filterScenicSpotsByQuery(CURATED_ALL, q, {
+        injectLocalScenic: true,
+      });
       const heritageMatches = filterScenicSpotsByQuery(
         listKoreaHeritageScenic(),
         q,
