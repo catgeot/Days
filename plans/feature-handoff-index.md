@@ -370,28 +370,28 @@
 
 | | |
 |--|--|
-| **상태** | **#12 push** · tip `a5b683e1` · PR [#215](https://github.com/catgeot/Days/pull/215) · **#13 사람 Preview QA** |
+| **상태** | **#13 push** · tip `ae857dd7` · PR [#216](https://github.com/catgeot/Days/pull/216) · **#14 사람 Preview QA** (광양·하동) |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `a5b683e1` |
-| **PR** | [#215](https://github.com/catgeot/Days/pull/215) (OPEN) · [#213](https://github.com/catgeot/Days/pull/213) merge ✅ `d28b4733` |
+| **tip** | `ae857dd7` |
+| **PR** | [#216](https://github.com/catgeot/Days/pull/216) (OPEN) · [#215](https://github.com/catgeot/Days/pull/215) merge ✅ `b929e7fd` |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-11-project-log.md`](./2026-09-11-project-log.md) |
-| **Preview** | `/qa/palgyeong-use` → git Preview `/korea` 원주 축제 상세 |
+| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=gwangyang` · `?hub=hadong` |
 | **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` PASS · `npm run build` PASS |
-| **성과** | #10 행 부제 번호(#213 merge). **#12** 축제 인근 명소 썸네일 · 팔경 행 `원주 1경`. 결손 오버레이는 **#14** 광양·하동 |
+| **성과** | #10 행 부제 번호(#213 merge). **#12** 축제 인근 썸네일·`원주 1경`(#215 merge). **#13** 광양9경 결손 6건·하동10경 결손 7건 런타임 오버레이 |
 
 **다음 제시어**:
 
 ```
-팔경 활용 #13, 사람 Preview QA
+팔경 활용 #14, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-11-project-log.md
 @plans/korea-local-scenic-use-plan.md
-브랜치 cursor/palgyeong-use-e744 · PR #215 · Preview /qa/palgyeong-use
+브랜치 cursor/palgyeong-use-e744 · PR #216 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: /korea 원주 축제 상세 — 인근 명소 썸네일 · 원주 팔경 행이 원주 1경~8경인지 · 그룹 제목이 원주 팔경인지
+작업: /korea/theme/scenic?hub=gwangyang 결손 6행·?hub=hadong 결손 7행에 썸네일·개요가 있는지 · 행마다 사진이 다른지 · 본문이 경승과 맞는지
 ```
 
 ---
