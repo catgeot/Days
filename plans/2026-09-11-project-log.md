@@ -158,13 +158,26 @@
 - **잔여**: 사진/개요 순수 누락 **211**/876. 다음 허브 **함안9경 7** · 사천9경 6
 - **다음** 사람 Preview QA — `?hub=yeongdong` 한천·양산 결손 13행 썸네일·개요 · 행마다 다른 사진
 
+## 팔경 활용 #16 — 사람 Preview QA 피드백 반영 (Cloud)
+
+- **세션** `팔경 활용 #16, 사람 Preview QA 피드백 반영`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `64e018c8`
+- **완료**:
+  1. `scenicSearch.js`: 검색창에 「한천」입력 시 `matchLocalScenicListForScenicSearch`와 연계하여 한천팔경 8행이 GATEO 명소 풀에 정상 주입되도록 수정 (기존 월류봉 1건 단독 노출 문제 해결).
+  2. `koreaLocalScenicLists.js`: 허브 지명(고성·양산 등) 단독 검색 시 팔경 리스트 오매칭 가드 추가.
+  3. `LOCAL_SCENIC_MEMBER_OVERLAYS`: 경남 양산 12경(`yangsan-other`)의 사진 누락 멤버인 **내원사 계곡(3경)** 과 **황산공원(9경)** 에 한국관광공사 공공 팩트 개요·주소·공식 사진을 보강. 영동 양산팔경 제2경 **강선대**도 실사진을 보강하여 영동 2개 팔경 16행 썸네일이 모두 고유하게 노출되도록 보장.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run build` PASS
+- **잔여**: 사진/개요 순수 누락 **208**/876. 다음 허브 **함안9경 7** · 사천9경 6
+- **다음** 사람 Preview QA — 영동 16행 및 「한천」검색 8행, 「양산」검색 내원사계곡·황산공원 썸네일·개요 확인
+
 ```
-팔경 활용 #16, 사람 Preview QA
+팔경 활용 #17, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-11-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: /korea/theme/scenic?hub=yeongdong 한천팔경 결손 7행·양산팔경 결손 6행 썸네일·개요 · 행마다 사진이 다른지
+작업: /korea/theme/scenic?hub=yeongdong 16행 사진·개요 고유한지 · 검색창 「한천」입력 시 한천팔경 8행 주입되는지 · 「양산」검색 시 내원사계곡·황산공원 썸네일·개요 뜨는지
 ```
+
 

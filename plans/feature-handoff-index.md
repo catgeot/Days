@@ -370,9 +370,9 @@
 
 | | |
 |--|--|
-| **상태** | **#15 push** · tip `4b354407` · **#16 사람 Preview QA** (영동 한천 7·양산 6) |
+| **상태** | **#16 push** · tip `64e018c8` · **#17 사람 Preview QA** (한천 검색 8행·양산 12경 오버레이) |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `4b354407` |
+| **tip** | `64e018c8` |
 | **PR** | [#216](https://github.com/catgeot/Days/pull/216) merge ✅ `210d8a56` |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-11-project-log.md`](./2026-09-11-project-log.md) |
@@ -380,18 +380,18 @@
 | **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run build` |
-| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15** 영동 한천 7·양산 6 오버레이. 순수 사진/개요 누락 **211**/876. 다음 허브 **함안 7** · 사천 6 |
+| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15** 영동 한천 7·양산 6 오버레이. **#16** 한천 검색 8행 주입·양산 12경 내원사계곡·황산공원 오버레이. 영동 16행 썸네일 고유화. 순수 사진/개요 누락 **208**/876. 다음 허브 **함안 7** · 사천 6 |
 
 **다음 제시어**:
 
 ```
-팔경 활용 #16, 사람 Preview QA
+팔경 활용 #17, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-11-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: /korea/theme/scenic?hub=yeongdong 한천팔경 결손 7행·양산팔경 결손 6행 썸네일·개요 · 행마다 사진이 다른지
+작업: /korea/theme/scenic?hub=yeongdong 16행 사진·개요 고유한지 · 검색창 「한천」입력 시 한천팔경 8행 주입되는지 · 「양산」검색 시 내원사계곡·황산공원 썸네일·개요 뜨는지
 ```
 
 ---
