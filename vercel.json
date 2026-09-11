@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/scenic-stay",
+      "destination": "https://days-git-cursor-scenic-stay-692c-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung",
+      "permanent": false
+    },
+    {
       "source": "/qa/planner-empty",
       "destination": "https://days-git-cursor-planner-empty-pad-6089-catgeots-projects.vercel.app/place/yanggu-arboretum/planner",
       "permanent": false
