@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 12,
-  sessionPhase: '축제 인근 썸네일·번호',
+  sessionNo: 13,
+  sessionPhase: '광양·하동 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea',
+  previewPath: '/korea/theme/scenic?hub=gwangyang',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-11-palgyeong-use-13-gwangyang-hadong-overlays',
+    session: '팔경 활용 #13, 광양·하동 결손 오버레이',
+    title: '광양9경 6건·하동10경 7건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 광양9경 결손 6건(백운산 4대 계곡·자연휴양림·이순신대교·광양만 야경·옥룡사지 동백·읍수와 이팝나무)과 하동10경 결손 7건(화개장터 십리벚꽃·금오산 일출·쌍계사 가을·형제봉 철쭉·청학동 삼성궁·하동포구·섬호정 섬진강)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 광양시 문화관광 9경 사진, 한국관광공사 동곡·옥룡사지·유당공원·십리벚꽃·쌍계사·삼성궁·하동송림 사진을 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gwangyang · ?hub=hadong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-11T04:30:00.000Z',
+  },
   {
     id: '2026-09-11-palgyeong-use-12-festival-nearby-thumbs-rank',
     session: '팔경 활용 #12, 축제 인근 썸네일·번호',

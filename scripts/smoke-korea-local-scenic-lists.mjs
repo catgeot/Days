@@ -394,6 +394,87 @@ assert.ok(
   '무주 결손 28명 overlay 사진·개요',
 );
 
+const gwangyangMerged = mergeLocalScenicMembersIntoScenicSpots([], 'gwangyang');
+const gwangyangNine = gwangyangMerged.filter(
+  (s) => s.localScenicListId === 'gwangyang-gugyeong',
+);
+assert.equal(gwangyangNine.length, 9, '광양9경 9명');
+assert.equal(gwangyangNine[0]?.groupTitle, '광양 구경');
+assert.equal(gwangyangNine[0]?.blurb, '광양 1경');
+const gwangyangDeficitNames = [
+  '백운산 4대 계곡',
+  '백운산 자연휴양림',
+  '광양이순신대교',
+  '광양만 야경',
+  '옥룡사지 동백나무 숲',
+  '광양읍수와 이팝나무',
+];
+const gwangyangDeficit = gwangyangNine.filter((s) =>
+  gwangyangDeficitNames.includes(s.attractionName),
+);
+assert.equal(gwangyangDeficit.length, 6, '광양9경 결손 6명');
+assert.ok(
+  gwangyangDeficit.every((s) => s.overview && s.imageUrl),
+  '광양 결손 6명 overlay 사진·개요',
+);
+assert.ok(
+  gwangyangDeficit.every((s) => !s.contentId),
+  '광양 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(gwangyangDeficit.map((s) => s.imageUrl)).size,
+  6,
+  '광양 결손 6명 썸네일 서로 다름',
+);
+const gyValleys = resolveLocalScenicListSpotById(
+  'local-scenic:gwangyang-gugyeong:백운산4대계곡',
+);
+assert.ok(gyValleys?.overview?.includes('성불'), '광양 4대 계곡 overlay overview');
+const gyEupsu = resolveLocalScenicListSpotById(
+  'local-scenic:gwangyang-gugyeong:광양읍수와이팝나무',
+);
+assert.ok(gyEupsu?.overview?.includes('천연기념물'), '광양 읍수 overlay overview');
+
+const hadongMerged = mergeLocalScenicMembersIntoScenicSpots([], 'hadong');
+const hadongTen = hadongMerged.filter((s) => s.localScenicListId === 'hadong-sipgyeong');
+assert.equal(hadongTen.length, 10, '하동10경 10명');
+assert.equal(hadongTen[0]?.groupTitle, '하동 십경');
+assert.equal(hadongTen[0]?.blurb, '하동 1경');
+const hadongDeficitNames = [
+  '화개장터십리벚꽃',
+  '금오산 일출과 다도해',
+  '쌍계사의 가을',
+  '형제봉 철쭉',
+  '청학동 삼성궁',
+  '하동포구 백사청송',
+  '섬호정에서 바라본 섬진강',
+];
+const hadongDeficit = hadongTen.filter((s) =>
+  hadongDeficitNames.includes(s.attractionName),
+);
+assert.equal(hadongDeficit.length, 7, '하동10경 결손 7명');
+assert.ok(
+  hadongDeficit.every((s) => s.overview && s.imageUrl),
+  '하동 결손 7명 overlay 사진·개요',
+);
+assert.ok(
+  hadongDeficit.every((s) => !s.contentId),
+  '하동 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(hadongDeficit.map((s) => s.imageUrl)).size,
+  7,
+  '하동 결손 7명 썸네일 서로 다름',
+);
+const hdCherry = resolveLocalScenicListSpotById(
+  'local-scenic:hadong-sipgyeong:화개장터십리벚꽃',
+);
+assert.ok(hdCherry?.overview?.includes('혼례길'), '하동 십리벚꽃 overlay overview');
+const hdSeomho = resolveLocalScenicListSpotById(
+  'local-scenic:hadong-sipgyeong:섬호정에서바라본섬진강',
+);
+assert.ok(hdSeomho?.overview?.includes('섬호정'), '하동 섬호정 overlay overview');
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

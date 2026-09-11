@@ -574,6 +574,42 @@ const GUCHEONDONG_SEOLCHEON_ADDR =
 const GUCHEONDONG_TRAIL_ADDR =
   '전북특별자치도 무주군 설천면 삼공리 (덕유산국립공원 구천동 탐방로)';
 
+const GY_SCENIC_BASE = 'https://gwangyang.go.kr/tour/images/sub';
+const GY_SCENIC_VALLEYS = `${GY_SCENIC_BASE}/scenic01.jpg`;
+const GY_SCENIC_FOREST = `${GY_SCENIC_BASE}/scenic03.jpg`;
+const GY_SCENIC_BRIDGE = `${GY_SCENIC_BASE}/scenic04.jpg`;
+const GY_SCENIC_BAY_NIGHT = `${GY_SCENIC_BASE}/scenic06.jpg`;
+const GY_SCENIC_CAMELLIA = `${GY_SCENIC_BASE}/scenic07.jpg`;
+const GY_SCENIC_EUPSU = `${GY_SCENIC_BASE}/scenic09.jpg`;
+const VISITKOREA_DONGGOK =
+  'https://tong.visitkorea.or.kr/cms/resource/10/3027110_image2_1.jpg';
+const VISITKOREA_SEONGBUL =
+  'https://tong.visitkorea.or.kr/cms/resource/97/3520297_image2_1.jpg';
+const VISITKOREA_EOCHI =
+  'https://tong.visitkorea.or.kr/cms/resource/64/1606764_image2_1.jpg';
+const VISITKOREA_BAEGUNSAN_GY =
+  'https://tong.visitkorea.or.kr/cms/resource/57/3345057_image2_1.JPG';
+const VISITKOREA_YISUNSIN =
+  'https://tong.visitkorea.or.kr/cms2/website/68/1287568.jpg';
+const VISITKOREA_OKRYONG =
+  'https://tong.visitkorea.or.kr/cms/resource/03/3520303_image2_1.jpg';
+const VISITKOREA_YUDANG =
+  'https://tong.visitkorea.or.kr/cms/resource/58/4082858_image2_1.jpg';
+const VISITKOREA_HWAGAE_CHERRY =
+  'https://tong.visitkorea.or.kr/cms2/website/91/1540691.jpg';
+const VISITKOREA_GEUMOSAN_CABLE =
+  'https://tong.visitkorea.or.kr/cms/resource/30/3530930_image2_1.jpg';
+const VISITKOREA_SSANGGYESA =
+  'https://tong.visitkorea.or.kr/cms/resource/55/4075655_image2_1.jpg';
+const VISITKOREA_PYEONGSARI =
+  'https://tong.visitkorea.or.kr/cms2/website/89/1022589.jpg';
+const VISITKOREA_SAMSUNGGUNG =
+  'https://tong.visitkorea.or.kr/cms/resource/06/4065606_image2_1.jpg';
+const VISITKOREA_HADONG_SONGRIM =
+  'https://tong.visitkorea.or.kr/cms/resource_photo/88/3312688_image2_1.jpg';
+const VISITKOREA_HADONG_PARK =
+  'https://tong.visitkorea.or.kr/cms/resource/48/3549648_image2_1.jpg';
+
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
   return {
@@ -941,6 +977,127 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     GUCHEONDONG_TRAIL_ADDR,
     VISITKOREA_GUCHEONDONG,
     [VISITKOREA_DEOGYUSAN],
+  ),
+  'local-scenic:gwangyang-gugyeong:백운산4대계곡': localScenicPhotoOverlay(
+    '광양9경 제1경 백운산 4대 계곡은 성불·동곡·어치·금천입니다. 광양시에 따르면 백운산(1,222m)은 전남에서 가장 높은 산이며, 상봉에서 매봉·따리봉·도솔봉·형제봉으로 이어지는 능선 아래 네 계곡이 유리처럼 맑고 차갑게 흐릅니다. 동곡은 약 10km로 가장 길고 용소·선유대·병암폭포를 품으며, 어치는 구시폭포와 오로대, 성불은 성불사 풍경소리, 금천은 옥녀봉에서 내려와 섬진강과 만납니다.',
+    '전라남도 광양시 백운산 성불·동곡·어치·금천계곡 일원',
+    GY_SCENIC_VALLEYS,
+    [VISITKOREA_DONGGOK, VISITKOREA_SEONGBUL, VISITKOREA_EOCHI],
+  ),
+  'local-scenic:gwangyang-gugyeong:백운산자연휴양림': localScenicPhotoOverlay(
+    '광양9경 제3경 백운산 자연휴양림은 옥룡면 백계로 337에 있습니다. 광양시는 잘 보존된 원시림과 삼나무·편백 인공림이 융단처럼 어우러진다고 소개하며, 산막·황토방·오토캠핑장·황톳길과 치유의 숲 센터(건강측정·요가명상·피톤치드 북카페·족욕)를 갖추었습니다. 숲속의 집·캐빈하우스·목재체험관이 있어 하루 묵으며 백운산 숲을 걷는 휴양지입니다.',
+    '전라남도 광양시 옥룡면 백계로 337',
+    GY_SCENIC_FOREST,
+    [VISITKOREA_BAEGUNSAN_GY],
+  ),
+  'local-scenic:gwangyang-gugyeong:광양이순신대교': localScenicPhotoOverlay(
+    '광양9경 제4경 광양이순신대교는 광양과 여수를 잇는 현수교입니다. 광양시에 따르면 총연장 2,260m, 주탑 사이 1,545m는 이순신 장군 탄생 연도를 기리고, 주탑 높이 270m는 콘크리트 주탑으로는 세계 최고 수준입니다. 노량해전이 시작된 바다 위에 놓여 광양항 야경과 함께 드라이브·조망 명소로 꼽힙니다.',
+    '전라남도 광양시 제철로 (금호동)',
+    GY_SCENIC_BRIDGE,
+    [
+      VISITKOREA_YISUNSIN,
+      'https://tong.visitkorea.or.kr/cms2/website/66/1914666.jpg',
+      'https://tong.visitkorea.or.kr/cms/resource/63/3520963_image2_1.jpg',
+    ],
+  ),
+  'local-scenic:gwangyang-gugyeong:광양만야경': localScenicPhotoOverlay(
+    '광양9경 제6경 광양만 야경은 광양시와 여수시 사이 내해의 밤 풍경입니다. 광양시는 포스코 광양제철소·이순신대교·광양항·여수국가산업단지의 불빛이 파노라마로 펼쳐지며, 구봉산 전망대가 야경 포인트라고 적습니다. 묘도·송도·장도가 떠 있고 한려해상 서쪽 끝이자 노량해전 유적과 맞닿은 항구 야경입니다.',
+    '전라남도 광양시 광양만 일원 (구봉산 전망대)',
+    GY_SCENIC_BAY_NIGHT,
+    [
+      'https://tong.visitkorea.or.kr/cms/resource/53/3534653_image2_1.jpg',
+      'https://tong.visitkorea.or.kr/cms/resource/54/3534654_image2_1.jpg',
+    ],
+  ),
+  'local-scenic:gwangyang-gugyeong:옥룡사지동백나무숲': localScenicPhotoOverlay(
+    '광양9경 제7경 옥룡사지 동백나무 숲은 천연기념물 제489호입니다. 광양시에 따르면 통일신라 말 선각국사 도선이 백계산(505m) 남쪽 옥룡사 땅의 기운을 보강하려고 동백을 심었고, 864년부터 35년간 주석하다 입적했습니다. 수령 100년 이상 동백 1만여 그루가 절터 주변에 군락을 이루며, 매년 2~4월 빨간 동백꽃이 핍니다.',
+    '전라남도 광양시 옥룡면 백계1길 71 일원',
+    GY_SCENIC_CAMELLIA,
+    [
+      VISITKOREA_OKRYONG,
+      'https://tong.visitkorea.or.kr/cms/resource/04/3520304_image2_1.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/39/723539.jpg',
+    ],
+  ),
+  'local-scenic:gwangyang-gugyeong:광양읍수와이팝나무': localScenicPhotoOverlay(
+    '광양9경 제9경 광양읍수와 이팝나무는 천연기념물 제235호입니다. 광양시·국가유산청에 따르면 1528년 광양현감 박세후가 읍성을 쌓은 뒤 바다 쪽에서 성이 보이지 않도록 팽나무·이팝나무를 심고 연못을 파 비보림을 만들었습니다. 성은 사라졌어도 유당공원 숲이 남았고, 입하 무렵 흰 꽃이 쌀밥처럼 피면 풍년을 점쳤던 이팝나무가 읍수와 함께 지정되어 있습니다.',
+    '전라남도 광양시 광양읍 인동리 193-1 (유당공원)',
+    GY_SCENIC_EUPSU,
+    [
+      VISITKOREA_YUDANG,
+      'https://tong.visitkorea.or.kr/cms/resource/57/4082857_image2_1.jpg',
+      'https://tong.visitkorea.or.kr/cms/resource/59/4082859_image2_1.jpg',
+    ],
+  ),
+  'local-scenic:hadong-sipgyeong:화개장터십리벚꽃': localScenicPhotoOverlay(
+    '하동10경 제1경 화개장터십리벚꽃은 화개장터에서 쌍계사로 이어지는 벚꽃길입니다. 하동군은 꽃샘추위가 끝난 3월이면 화개에 벚꽃이 십리에 날리며, 청춘 남녀가 손을 잡고 걸으면 백년해로한다고 하여 혼례길이라고도 부른다고 적습니다. 지방도 1023 화개로를 따라 화개동천과 함께 봄 터널이 이어집니다.',
+    '경상남도 하동군 화개면 삼신리 672 (지방도 1023)',
+    VISITKOREA_HWAGAE_CHERRY,
+    [
+      'https://tong.visitkorea.or.kr/cms2/website/92/1540692.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/95/1540695.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/08/1540708.jpg',
+    ],
+  ),
+  'local-scenic:hadong-sipgyeong:금오산일출과다도해': localScenicPhotoOverlay(
+    '하동10경 제2경 금오산 일출과 다도해는 지리산 줄기가 남해로 건너가기 전 우뚝 솟은 산의 해돋이입니다. 하동군에 따르면 높이 849m 정상에서 남으로 한려해상 국립공원의 바다와 섬이, 북으로 지리산 주능선이 펼쳐집니다. 금남면 경충로 해맞이공원까지 차량으로 오를 수 있어, 다도해 아침을 맞는 하동의 일출 명소입니다.',
+    '경상남도 하동군 금남면 경충로 493-223',
+    VISITKOREA_GEUMOSAN_CABLE,
+    [
+      'https://tong.visitkorea.or.kr/cms/resource/26/3530926_image2_1.jpg',
+      'https://tong.visitkorea.or.kr/cms/resource/32/3530932_image2_1.jpg',
+      'https://tong.visitkorea.or.kr/cms/resource/34/3530934_image2_1.jpg',
+    ],
+  ),
+  'local-scenic:hadong-sipgyeong:쌍계사의가을': localScenicPhotoOverlay(
+    '하동10경 제3경 쌍계사의 가을은 화개골 천년고찰의 단풍입니다. 하동군에 따르면 신라 성덕왕 21년 삼법스님이 혜능의 사리를 모시고 와 창건했고, 문성왕 2년(840) 진감선사 혜소가 옥천사라 하였다가 정강왕 때 쌍계사로 바뀌었습니다. 국보 진감선사 대공탑비와 보물 등 문화재 29점을 보유한 지리산 고찰의 가을 경승입니다.',
+    '경상남도 하동군 화개면 쌍계사길 59',
+    VISITKOREA_SSANGGYESA,
+    [
+      'https://tong.visitkorea.or.kr/cms2/website/91/1497791.jpg',
+      'https://tong.visitkorea.or.kr/cms/resource/47/4075647_image2_1.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/61/3311961.jpg',
+    ],
+  ),
+  'local-scenic:hadong-sipgyeong:형제봉철쭉': localScenicPhotoOverlay(
+    '하동10경 제5경 형제봉 철쭉은 지리산 남부 능선 끝자락이 섬진강에 잠기기 전에 솟은 봉우리의 봄 경관입니다. 하동군은 봄이면 연분홍 꽃자수가 능선을 따라 그림 같은 비경을 빚고, 악양 너른 들판과 섬진강이 어우러진다고 적습니다. 화개·악양 형제봉 활공장 일대에서 능선과 들녘을 함께 조망합니다.',
+    '경상남도 하동군 악양면·화개면 (형제봉 활공장 일대)',
+    VISITKOREA_PYEONGSARI,
+    [
+      'https://tong.visitkorea.or.kr/cms2/website/18/1022618.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/05/1022705.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/13/1022713.jpg',
+    ],
+  ),
+  'local-scenic:hadong-sipgyeong:청학동삼성궁': localScenicPhotoOverlay(
+    '하동10경 제6경 청학동 삼성궁은 환인·환웅·단군을 모신 성전입니다. 하동군에 따르면 우리 고유 선도의 도량이며, 이 고장 출신 한풀선사가 1983년 고조선 소도를 복원했습니다. 청암면 묵계리 해발 850m 골짜기에 여러 모양의 돌탑이 솟아 있고, 완만한 산길을 따라 청학동으로 듭니다.',
+    '경상남도 하동군 청암면 삼성궁길 86-15',
+    VISITKOREA_SAMSUNGGUNG,
+    [
+      'https://tong.visitkorea.or.kr/cms/resource/25/3535225_image2_1.jpg',
+      'https://tong.visitkorea.or.kr/cms/resource/94/4065594_image2_1.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/77/3021077.jpg',
+    ],
+  ),
+  'local-scenic:hadong-sipgyeong:하동포구백사청송': localScenicPhotoOverlay(
+    '하동10경 제8경 하동포구 백사청송은 섬진강 변 흰 모래와 푸른 소나무입니다. 하동군에 따르면 조선 영조 21년(1745) 강바람과 모래바람을 막으려고 소나무를 심어 오늘날 노송 숲이 되었고, 숲 면적 약 41,000㎡에 노송 900여 그루가 우거져 있습니다. 유유히 흐르는 강과 백사장이 한 폭처럼 어우러진 하동읍 목도리의 쉼터입니다.',
+    '경상남도 하동군 하동읍 목도리',
+    VISITKOREA_HADONG_SONGRIM,
+    [
+      'https://tong.visitkorea.or.kr/cms/resource/83/3501083_image2_1.jpg',
+      'https://tong.visitkorea.or.kr/cms/resource/85/3501085_image2_1.jpg',
+      'https://tong.visitkorea.or.kr/cms/resource_photo/78/3312678_image2_1.jpg',
+    ],
+  ),
+  'local-scenic:hadong-sipgyeong:섬호정에서바라본섬진강': localScenicPhotoOverlay(
+    '하동10경 제10경 섬호정에서 바라본 섬진강은 하동공원 정상 2층 누각의 조망입니다. 하동군은 섬호정(蟾湖亭)에 오르면 동으로 하동 읍내가, 남으로 섬진강이 유유히 흐르며, 강이 호수같이 보여 이름 붙였다고 적습니다. 군내에서 경관이 가장 아름다운 정자로 꼽히는 하동읍 향교 옆 강변 누각입니다.',
+    '경상남도 하동군 하동읍 향교2길 23',
+    VISITKOREA_HADONG_PARK,
+    [
+      'https://tong.visitkorea.or.kr/cms/resource/41/3549641_image2_1.jpg',
+      'https://tong.visitkorea.or.kr/cms/resource/44/3549644_image2_1.jpg',
+      'https://tong.visitkorea.or.kr/cms2/website/80/1342380.jpg',
+    ],
   ),
 };
 
