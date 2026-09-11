@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 54,
-  sessionPhase: '리스트 사진 영문 검색',
+  sessionNo: 55,
+  sessionPhase: '상세 갤러리 Unsplash 우선 배치',
   branch: 'cursor/world-events-wave3',
   previewPath: '/world-events',
   qaShareSlug: 'world-events',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-11-world-events-55-vibrant-gallery',
+    session: '세계행사 일정 #55, 상세 갤러리 Unsplash 우선 배치',
+    title: '상세 갤러리 Unsplash 우선 배치 및 시드 정비',
+    detail:
+      '상세 히어로 갤러리에서 생생한 축제 분위기의 Unsplash 사진을 최상단 슬롯에 우선 배치하도록 머지 로직을 개선했습니다. 옥토버페스트 시드의 지하철 비상레버 및 빈 오페라 중복 외관을 실제 축제 개막/텐트 내부/대극장 객석 사진으로 교체했습니다. Preview /qa/world-events — 옥토버페스트·빈 오페라 상세 진입 시 생생한 축제 사진이 첫 장으로 노출되는지 확인.',
+    at: '2026-09-11T10:00:00.000Z',
+  },
   {
     id: '2026-09-09-world-events-54c-en-photos',
     session: '세계행사 일정 #54c, 리스트 사진 확대 Prod QA',

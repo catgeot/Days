@@ -23,6 +23,9 @@ export function isRejectedGalleryFillerImage(image) {
 export function galleryNearDupKey(url) {
   try {
     const parsed = new URL(url);
+    if (parsed.hostname.includes('unsplash.com')) {
+      return `${parsed.hostname}${parsed.pathname}`.toLowerCase();
+    }
     let file = decodeURIComponent(parsed.pathname.split('/').pop() || '');
     file = file.replace(/^\d+px-/i, '').replace(/\.[a-z0-9]+$/i, '');
     file = file.replace(/(\d)[a-z]$/i, '$1');
@@ -35,6 +38,13 @@ export function galleryNearDupKey(url) {
   }
 }
 
+export function isUnsplashGalleryImage(image) {
+  if (!image) return false;
+  if (String(image.source || '').toLowerCase() === 'unsplash') return true;
+  const url = String(image.url || '').toLowerCase();
+  return url.includes('images.unsplash.com');
+}
+
 /**
  * @param {Array<{ url?: string, captionKo?: string, captionEn?: string, source?: string }>} seed
  * @param {Array<{ url?: string, captionKo?: string, captionEn?: string, source?: string }>} fetched
@@ -42,7 +52,8 @@ export function galleryNearDupKey(url) {
 export function mergeWorldEventHeroGalleryImages(seed, fetched) {
   const seen = new Set();
   const nearSeen = new Set();
-  const merged = [];
+  const unsplash = [];
+  const others = [];
 
   const push = (image, { allowRejected = false, nearDup = false } = {}) => {
     const url = String(image?.url || '').trim();
@@ -54,12 +65,17 @@ export function mergeWorldEventHeroGalleryImages(seed, fetched) {
     if (nearDup && nearSeen.has(nearKey)) return;
     seen.add(key);
     nearSeen.add(nearKey);
-    merged.push({
+    const item = {
       url,
       captionKo: image.captionKo,
       captionEn: image.captionEn,
-      source: image.source,
-    });
+      source: image.source || (isUnsplashGalleryImage(image) ? 'unsplash' : undefined),
+    };
+    if (isUnsplashGalleryImage(item)) {
+      unsplash.push(item);
+    } else {
+      others.push(item);
+    }
   };
 
   for (const image of Array.isArray(seed) ? seed : []) {
@@ -69,7 +85,7 @@ export function mergeWorldEventHeroGalleryImages(seed, fetched) {
     push(image, { allowRejected: false, nearDup: true });
   }
 
-  return merged;
+  return [...unsplash, ...others];
 }
 
 /**
@@ -97,11 +113,16 @@ export function heroGallerySeedCacheMatches(cachedImages, seedImages) {
   if (!Array.isArray(seedImages) || seedImages.length === 0) return true;
   if (!Array.isArray(cachedImages) || cachedImages.length < seedImages.length) return false;
 
-  return seedImages.every((seed, index) => {
-    const cachedUrl = String(cachedImages[index]?.url || '').trim();
+  const cachedKeys = new Set(
+    cachedImages
+      .map((image) => heroGalleryImageKey(String(image?.url || '')))
+      .filter(Boolean),
+  );
+
+  return seedImages.every((seed) => {
     const seedUrl = String(seed?.url || '').trim();
-    if (!cachedUrl || !seedUrl) return false;
-    return heroGalleryImageKey(cachedUrl) === heroGalleryImageKey(seedUrl);
+    if (!seedUrl) return false;
+    return cachedKeys.has(heroGalleryImageKey(seedUrl));
   });
 }
 

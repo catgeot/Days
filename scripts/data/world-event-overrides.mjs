@@ -64,11 +64,12 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Musikverein Vienna',
       },
       {
-        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Wiener_Staatsoper_Front.jpg/1280px-Wiener_Staatsoper_Front.jpg',
-        captionKo: '국립오페라 정면',
-        captionEn: 'State Opera front',
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Wien_-_Staatsoper%2C_Zuschauerraum.JPG/1280px-Wien_-_Staatsoper%2C_Zuschauerraum.JPG',
+        captionKo: '국립오페라 대극장 객석',
+        captionEn: 'Vienna State Opera main auditorium',
       },
     ],
+    heroGallerySearchQueryEn: 'Vienna State Opera',
     glossaryTerms: [
       {
         id: 'staatsoper',
@@ -221,22 +222,22 @@ export const WORLD_EVENT_OVERRIDES = [
     ],
     recommendedNights: 3,
     heroImage:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Oktoberfest_2015_-_Impression_5.JPG/1280px-Oktoberfest_2015_-_Impression_5.JPG',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/O%27zapft_is%21_M%C3%BCnchens_5_Jahreszeit_hat_begonnen_-_O%27zapft_is%21_Munich_5_season%2C_the_Oktoberfest_has_begun_%289855483374%29.jpg/1280px-O%27zapft_is%21_M%C3%BCnchens_5_Jahreszeit_hat_begonnen_-_O%27zapft_is%21_Munich_5_season%2C_the_Oktoberfest_has_begun_%289855483374%29.jpg',
     heroImages: [
       {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/O%27zapft_is%21_M%C3%BCnchens_5_Jahreszeit_hat_begonnen_-_O%27zapft_is%21_Munich_5_season%2C_the_Oktoberfest_has_begun_%289855483374%29.jpg/1280px-O%27zapft_is%21_M%C3%BCnchens_5_Jahreszeit_hat_begonnen_-_O%27zapft_is%21_Munich_5_season%2C_the_Oktoberfest_has_begun_%289855483374%29.jpg',
+        captionKo: '옥토버페스트 개막 현장',
+        captionEn: 'Oktoberfest opening celebration',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Hofbraudedans.jpg/1280px-Hofbraudedans.jpg',
+        captionKo: '호프브로이 텐트 내부',
+        captionEn: 'Hofbräu beer tent interior',
+      },
+      {
         url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Oktoberfest_2015_-_Impression_5.JPG/1280px-Oktoberfest_2015_-_Impression_5.JPG',
-        captionKo: '옥토버페스트 현장',
+        captionKo: '옥토버페스트 축제장',
         captionEn: 'Oktoberfest grounds',
-      },
-      {
-        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Oktoberfest_Schaugeschaeft_2007_Richard_Bartz.jpg/1280px-Oktoberfest_Schaugeschaeft_2007_Richard_Bartz.jpg',
-        captionKo: '옥토버페스트 현장',
-        captionEn: 'Oktoberfest fairground',
-      },
-      {
-        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/U-Bahnhof_Theresienwiese_03.jpg/1280px-U-Bahnhof_Theresienwiese_03.jpg',
-        captionKo: '테레지엔비제',
-        captionEn: 'Theresienwiese',
       },
     ],
     glossaryTerms: [
@@ -769,6 +770,7 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Chidorigafuchi night lights',
       },
     ],
+    heroGallerySearchQueryEn: 'Tokyo Sakura',
     glossaryTerms: [
       {
         id: 'sakura',
@@ -2369,6 +2371,7 @@ export const WORLD_EVENT_OVERRIDES = [
         captionEn: 'Hoan Kiem Lake',
       },
     ],
+    heroGallerySearchQueryEn: 'Tet Hanoi',
     glossaryTerms: [
       {
         id: 'tet',

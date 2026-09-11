@@ -49,6 +49,9 @@ function isRejectedFiller(image: GalleryImage): boolean {
 function nearDupKey(url: string): string {
   try {
     const parsed = new URL(url);
+    if (parsed.hostname.includes("unsplash.com")) {
+      return `${parsed.hostname}${parsed.pathname}`.toLowerCase();
+    }
     let file = decodeURIComponent(parsed.pathname.split("/").pop() || "");
     file = file.replace(/^\d+px-/i, "").replace(/\.[a-z0-9]+$/i, "");
     file = file.replace(/(\d)[a-z]$/i, "$1");
@@ -61,10 +64,18 @@ function nearDupKey(url: string): string {
   }
 }
 
+function isUnsplashImage(image: GalleryImage): boolean {
+  if (!image) return false;
+  if (String(image.source ?? "").toLowerCase() === "unsplash") return true;
+  const url = normalizeImageUrl(image.url).toLowerCase();
+  return url.includes("images.unsplash.com");
+}
+
 function mergeImages(seed: GalleryImage[], fetched: GalleryImage[]): GalleryImage[] {
   const seen = new Set<string>();
   const nearSeen = new Set<string>();
-  const merged: GalleryImage[] = [];
+  const unsplash: GalleryImage[] = [];
+  const others: GalleryImage[] = [];
 
   const push = (image: GalleryImage, allowRejected: boolean, skipNear: boolean) => {
     const url = normalizeImageUrl(image?.url);
@@ -76,13 +87,22 @@ function mergeImages(seed: GalleryImage[], fetched: GalleryImage[]): GalleryImag
     if (skipNear && nearSeen.has(near)) return;
     seen.add(key);
     nearSeen.add(near);
-    merged.push({ ...image, url });
+    const item: GalleryImage = {
+      ...image,
+      url,
+      source: image.source || (isUnsplashImage(image) ? "unsplash" : undefined),
+    };
+    if (isUnsplashImage(item)) {
+      unsplash.push(item);
+    } else {
+      others.push(item);
+    }
   };
 
   for (const image of seed) push(image, true, false);
   for (const image of fetched) push(image, false, true);
 
-  return merged;
+  return [...unsplash, ...others];
 }
 
 function mapUnsplashPhoto(photo: Record<string, unknown>): GalleryImage | null {
@@ -199,11 +219,14 @@ function seedCacheMatches(cachedImages: GalleryImage[], seedImages: GalleryImage
   if (!seedImages.length) return true;
   if (!cachedImages.length || cachedImages.length < seedImages.length) return false;
 
-  return seedImages.every((seed, index) => {
-    const cachedUrl = normalizeImageUrl(cachedImages[index]?.url);
+  const cachedKeys = new Set(
+    cachedImages.map((img) => imageKey(normalizeImageUrl(img?.url))).filter(Boolean)
+  );
+
+  return seedImages.every((seed) => {
     const seedUrl = normalizeImageUrl(seed?.url);
-    if (!cachedUrl || !seedUrl) return false;
-    return imageKey(cachedUrl) === imageKey(seedUrl);
+    if (!seedUrl) return false;
+    return cachedKeys.has(imageKey(seedUrl));
   });
 }
 
@@ -251,6 +274,19 @@ serve(async (req) => {
       if (cached && Array.isArray(cached.images) && cached.images.length >= MIN_CACHE_COUNT) {
         if (seedCacheMatches(cached.images as GalleryImage[], normalizedSeed)) {
           const images = mergeImages(normalizedSeed, cached.images as GalleryImage[]).slice(0, TARGET_COUNT);
+          if (
+            images.length >= MIN_CACHE_COUNT &&
+            images[0]?.source === "unsplash" &&
+            (cached.images as GalleryImage[])[0]?.source !== "unsplash"
+          ) {
+            void supabaseAdmin
+              .from("event_hero_gallery")
+              .update({
+                images,
+                gallery_updated_at: new Date().toISOString(),
+              })
+              .eq("event_id", eventId);
+          }
           return new Response(
             JSON.stringify({ success: true, images, fromCache: true }),
             { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 },
