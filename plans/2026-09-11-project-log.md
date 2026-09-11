@@ -2,6 +2,24 @@
 
 직전: [`2026-09-10-project-log.md`](./2026-09-10-project-log.md)
 
+## 명승 숙소 #1 — 명소 본문 숙소 섹션 (Cloud)
+
+- **세션** `명승 숙소 #1, 본문 숙소 섹션`
+- **브랜치** `cursor/scenic-stay-692c` · tip `31c92c70` · PR [#214](https://github.com/catgeot/Days/pull/214) (OPEN)
+- **완료**: 명승 홈에서 숙소를 보려면 지구본 장소 카드를 열어야 했던 흐름을, 축제 `FestivalStayStrip`과 같은 `EventStayStrip`으로 명소 본문(`ThemeSpotDetailModal`)에 넣음. 행사 프리셋 없이 MRT 기본 일정(+14일·3박). 맛집·레포츠·문화 중첩 모달에는 숨김.
+- **VERIFY** `smoke:korea-scenic-stay` PASS · `smoke:korea-festival-stay-url` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/scenic-stay → `/korea/theme/scenic?spot=gyeongbokgung`
+- **다음** 사람 Preview QA — 본문 숙소 카드·일정·MRT 목록
+
+```
+명승 숙소 #2, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-11-project-log.md
+브랜치 cursor/scenic-stay-692c · PR #214 · Preview /qa/scenic-stay
+금지: UI 리디자인 · 축제 시트 리팩터 · feature에 plans/** 커밋
+작업: /korea/theme/scenic?spot=gyeongbokgung 본문에 축제와 같은 숙소 카드·일정·MRT 목록이 있는지
+```
+
 ## 팔경 활용 #8 — 빙계팔경 경승별 사진 다양화 (Cloud)
 
 - **세션** `팔경 활용 #8, 빙계 팔경 사진 다양화`
