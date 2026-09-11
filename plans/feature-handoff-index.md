@@ -370,9 +370,9 @@
 
 | | |
 |--|--|
-| **상태** | **#216 merge ✅** `210d8a56` · **#15 영동 결손 오버레이** (한천 7·양산 6) |
+| **상태** | **#15 push** · tip `4b354407` · **#16 사람 Preview QA** (영동 한천 7·양산 6) |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `210d8a56` (main) |
+| **tip** | `4b354407` |
 | **PR** | [#216](https://github.com/catgeot/Days/pull/216) merge ✅ `210d8a56` |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-11-project-log.md`](./2026-09-11-project-log.md) |
@@ -380,18 +380,18 @@
 | **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run build` |
-| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동 오버레이·검색 그룹(#216 merge). 순수 사진/개요 누락 **224**/876. 다음 허브 **영동**(한천 7+양산 6) · 그다음 함안 7 |
+| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15** 영동 한천 7·양산 6 오버레이. 순수 사진/개요 누락 **211**/876. 다음 허브 **함안 7** · 사천 6 |
 
 **다음 제시어**:
 
 ```
-팔경 활용 #15, 영동 결손 오버레이
+팔경 활용 #16, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-11-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 영동 한천팔경 사진·개요 없는 7건(화헌악·용연대·산양벽·청학굴·법존암·사군봉·냉천정)과 양산팔경 6건(비봉산·봉황대·함벽정·여의정·자풍서당·용암)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=yeongdong
+작업: /korea/theme/scenic?hub=yeongdong 한천팔경 결손 7행·양산팔경 결손 6행 썸네일·개요 · 행마다 사진이 다른지
 ```
 
 ---
