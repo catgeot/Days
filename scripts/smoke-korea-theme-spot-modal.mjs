@@ -90,6 +90,8 @@ assert(modalSrc.includes('Escape'), 'modal Esc close');
 assert(modalSrc.includes('fetchNearbyFestivals'), 'modal loads nearby festivals');
 assert(modalSrc.includes("t('korea.theme.spotDetail.nearFestivals')"), 'modal has nearby festivals section');
 assert(modalSrc.includes('resolveThemeCrossLinks'), 'modal wires cross-links matcher');
+assert(modalSrc.includes('ScenicStayStrip'), 'modal renders ScenicStayStrip like festival stay');
+assert(modalSrc.includes('hideStayStrip={isApiPoiCross}'), 'nested POI modals hide stay strip');
 assert(modalSrc.includes("t('korea.theme.spotDetail.crossThemeTitle')"), 'modal cross rail membership section');
 assert(modalSrc.includes("t('korea.theme.spotDetail.festivalsInArea')"), 'modal cross rail festival deep-link');
 assert(modalSrc.includes("t('korea.theme.spotDetail.coursesInArea')"), 'modal cross rail courses deep-link');

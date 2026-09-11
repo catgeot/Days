@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'scenic-stay',
+    label: '명승 본문 숙소 섹션',
+    branch: 'cursor/scenic-stay-692c',
+    destination:
+      'https://days-git-cursor-scenic-stay-692c-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung',
+    active: true,
+  },
+  {
     slug: 'planner-empty',
     label: '플래너 실행 전 하단 여유·여행사 펼침',
     branch: 'cursor/planner-empty-pad-6089',

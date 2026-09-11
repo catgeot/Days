@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 12,
-  sessionPhase: '축제 인근 썸네일·번호',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea',
-  qaShareSlug: 'palgyeong-use',
+  title: '명승 숙소',
+  sessionNo: 2,
+  sessionPhase: '숙소 위치·구글 링크',
+  branch: 'cursor/scenic-stay-692c',
+  previewPath: '/korea/theme/scenic?spot=gyeongbokgung',
+  qaShareSlug: 'scenic-stay',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,22 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-11-scenic-stay-2-position-google',
+    session: '명승 숙소 #2, 숙소 위치·구글 링크',
+    title: '숙소를 개요·사진 다음으로 올리고 구글 상세 버튼을 추가',
+    detail:
+      '여행자가 장소를 확인한 뒤 바로 숙박을 고를 수 있게, 숙소 섹션을 본문 맨 아래(주변 맛집·축제 다음)에서 개요·주소·사진 다음·주변 맛집 위로 옮겼습니다. 추가 정보 확인용 네이버 버튼 옆에 같은 쿼리의 구글 상세정보 버튼을 넣었습니다. Preview /qa/scenic-stay — 경복궁 본문에서 사진 아래·맛집 위에 숙소 카드, 네이버·구글 칩이 나란히 있는지 확인.',
+    at: '2026-09-11T04:20:00.000Z',
+  },
+  {
+    id: '2026-09-11-scenic-stay-1-modal-strip',
+    session: '명승 숙소 #1, 본문 숙소 섹션',
+    title: '명승 명소 본문에 축제와 같은 숙소 섹션',
+    detail:
+      '한국의 명승 홈에서 숙소를 보려면 지구본 장소 카드를 열어야 했던 문제를 고쳤습니다. 명소 본문(ThemeSpotDetailModal)에 축제 FestivalStayStrip과 같은 EventStayStrip을 넣었습니다. 행사 프리셋 없이 MRT 기본 일정(+14일·3박)으로 근처 숙소를 조회합니다. Preview /qa/scenic-stay — /korea/theme/scenic?spot=gyeongbokgung 본문 하단 숙소 카드·일정·MRT 목록.',
+    at: '2026-09-11T03:50:00.000Z',
+  },
   {
     id: '2026-09-11-palgyeong-use-12-festival-nearby-thumbs-rank',
     session: '팔경 활용 #12, 축제 인근 썸네일·번호',
