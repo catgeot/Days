@@ -20,6 +20,24 @@
 작업: /korea/theme/scenic?spot=gyeongbokgung 본문에 축제와 같은 숙소 카드·일정·MRT 목록이 있는지
 ```
 
+## 명승 숙소 #2 — 숙소 위치·구글 링크 (Cloud)
+
+- **세션** `명승 숙소 #2, 사람 Preview QA`
+- **브랜치** `cursor/scenic-stay-692c` · tip `37097755` · PR [#214](https://github.com/catgeot/Days/pull/214) (OPEN)
+- **완료**: 숙소 섹션을 본문 하단(주변 맛집·축제 다음)에서 **개요·주소·사진 다음 · 주변 맛집 위**로 옮김. 네이버 상세정보 옆에 같은 검색어의 구글 버튼 추가. 맛집·레포츠·문화 중첩 모달에는 스트립 없음.
+- **VERIFY** `smoke:korea-scenic-stay` PASS · `smoke:korea-festival-stay-url` PASS · `smoke:korea-theme-cross-links` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/scenic-stay → `/korea/theme/scenic?spot=gyeongbokgung`
+- **다음** 사람 Preview QA — 숙소 위치 · 네이버·구글 칩
+
+```
+명승 숙소 #3, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-11-project-log.md
+브랜치 cursor/scenic-stay-692c · PR #214 · Preview /qa/scenic-stay
+금지: UI 리디자인 · 축제 시트 리팩터 · feature에 plans/** 커밋
+작업: 경복궁 본문에서 숙소가 개요·사진 아래·맛집 위인지 · 네이버·구글 칩이 나란히 열리는지
+```
+
 ## 팔경 활용 #8 — 빙계팔경 경승별 사진 다양화 (Cloud)
 
 - **세션** `팔경 활용 #8, 빙계 팔경 사진 다양화`
