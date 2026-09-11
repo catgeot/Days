@@ -90,7 +90,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | #6 push `f1367c6f` · PR [#212](https://github.com/catgeot/Days/pull/212) · **사람 Preview QA** (의성 빙계팔경 8건·무주 구천동 결손 28건 오버레이) | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | #8 push `b0f0766e` · PR [#212](https://github.com/catgeot/Days/pull/212) · **사람 Preview QA** (빙계팔경 8행 경승별 사진) | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · AI가 ID 기입 |
 
@@ -104,7 +104,9 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | 4 | `팔경 활용 #4, 사람 Preview QA` | A 사람 | **완료** · 사람 Preview QA PASS ✅ · PR #210 검토 및 병합 대기 |
 | 5 | `팔경 활용 #5, PR #210 main 병합 및 후속 허브 오버레이 확장 검토` | A | **완료** · PR #210 main 병합 확인(`33776ccb`) 및 의성·무주 오버레이 확장 계획 수립 |
 | 6 | `팔경 활용 #6, 의성·무주 결손 허브 런타임 오버레이 보강` | A | **완료** · tip `f1367c6f` · PR [#212](https://github.com/catgeot/Days/pull/212) |
-| 7 | `팔경 활용 #7, 사람 Preview QA` | A 사람 | **열기 가능** · PR #212 검토 |
+| 7 | `팔경 활용 #7, 사람 Preview QA` | A 사람 | **완료** · 빙계 8행 동일 썸네일 피드백 → #8 |
+| 8 | `팔경 활용 #8, 빙계 팔경 사진 다양화` | A | **완료** · tip `b0f0766e` · PR [#212](https://github.com/catgeot/Days/pull/212) |
+| 9 | `팔경 활용 #9, 사람 Preview QA` | A 사람 | **열기 가능** · 빙계 8행 서로 다른 썸네일·본문 갤러리 |
 | — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
 | — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |
 | — | `팔경contentId #P2-L10, 잔여 null 분석 및 전략` | B | **완료** · tip `fb4c5513` 27/32 |
@@ -204,6 +206,18 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 브랜치 cursor/palgyeong-use-e744 · PR #212 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
 작업: /korea/theme/scenic?hub=uiseong 빙계팔경 8행 썸네일·상세 개요 · /korea/theme/scenic?hub=muju 구천동33경 결손 행(은구암·일사대 등) 사진·개요
+```
+
+### §1.2 A #9 다음 제시어
+
+```
+팔경 활용 #9, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-11-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · PR #212 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: /korea/theme/scenic?hub=uiseong 빙계팔경 8행 썸네일이 서로 다른지 · 행을 열어 본문 갤러리가 경승(빙혈 입구·절벽·바위·서원·다리·석탑·봉우리·용소)에 맞는지
 ```
 
 

@@ -343,28 +343,28 @@
 
 | | |
 |--|--|
-| **상태** | **#6 push** · tip `f1367c6f` · PR [#212](https://github.com/catgeot/Days/pull/212) · **#7 사람 Preview QA** |
+| **상태** | **#8 push** · tip `b0f0766e` · PR [#212](https://github.com/catgeot/Days/pull/212) · **#9 사람 Preview QA** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `f1367c6f` |
+| **tip** | `b0f0766e` |
 | **PR** | [#212](https://github.com/catgeot/Days/pull/212) (OPEN) · [#210](https://github.com/catgeot/Days/pull/210) merge ✅ `33776ccb` |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
-| **일지** | [`2026-09-10-project-log.md`](./2026-09-10-project-log.md) |
+| **일지** | [`2026-09-11-project-log.md`](./2026-09-11-project-log.md) |
 | **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=uiseong` · `?hub=muju` |
 | **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` PASS · `npm run build` PASS |
-| **성과** | 의성 빙계팔경 8건 전수·무주 구천동33경 결손 28건 런타임 오버레이(`LOCAL_SCENIC_MEMBER_OVERLAYS`) — 사진/본문 조회 가능 의성 8/8 · 무주 33/33. JSON contentId는 채우지 않음 |
+| **성과** | 의성 빙계팔경 8건 전수·무주 구천동33경 결손 28건 런타임 오버레이. **#8** 빙계 8행 썸네일·본문 갤러리를 경승별 다른 공식 사진으로 교체(중복 없음). JSON contentId는 채우지 않음 |
 
 **다음 제시어**:
 
 ```
-팔경 활용 #7, 사람 Preview QA
+팔경 활용 #9, 사람 Preview QA
 @plans/feature-handoff-index.md
-@plans/2026-09-10-project-log.md
+@plans/2026-09-11-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · PR #212 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: /korea/theme/scenic?hub=uiseong 빙계팔경 8행 썸네일·상세 개요 · /korea/theme/scenic?hub=muju 구천동33경 결손 행(은구암·일사대 등) 사진·개요
+작업: /korea/theme/scenic?hub=uiseong 빙계팔경 8행 썸네일이 서로 다른지 · 행을 열어 본문 갤러리가 경승(빙혈 입구·절벽·바위·서원·다리·석탑·봉우리·용소)에 맞는지
 ```
 
 ---
