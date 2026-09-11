@@ -51,7 +51,12 @@ import { listKoreaScenicSpots } from '../Home/lib/koreaScenicSpots';
 import {
   groupNearbySpotsWithLocalScenic,
   hasTourContentId,
+  missingNearbyThumbContentIds,
 } from '../Home/lib/koreaLocalScenicLists';
+import {
+  fetchKoreaTourAttractionFirstImagesByIds,
+  peekKoreaTourAttractionFirstImagesByIds,
+} from '../Home/lib/koreaTourAttractions';
 import { scenicRegionForAreaCode } from '../Home/lib/koreaTourAttractionMap';
 import {
   festivalMapTitle,
@@ -237,27 +242,100 @@ function nearbyPlaceLabel(spot) {
   return String(spot?.locality || spot?.region || '').trim();
 }
 
-function nearbyAttractionRow(spot, { onSelect }) {
-  const thumb = toHttps(spot.firstImage);
+function nearbyThumbUrls(spot, extraThumb) {
+  const out = [];
+  const seen = new Set();
+  for (const raw of [spot?.firstImage, spot?.imageUrl, extraThumb]) {
+    const url = toHttps(raw);
+    if (!url || seen.has(url)) continue;
+    seen.add(url);
+    out.push(url);
+  }
+  return out;
+}
+
+function NearbyRowThumb({ spot, extraThumb }) {
+  const urls = nearbyThumbUrls(spot, extraThumb);
+  const [thumbIndex, setThumbIndex] = useState(0);
+  const thumb = urls[thumbIndex] || '';
+  if (!thumb) {
+    return (
+      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800">
+        <Landmark size={18} aria-hidden="true" />
+      </div>
+    );
+  }
+  return (
+    <img
+      key={thumb}
+      src={thumb}
+      alt=""
+      loading="lazy"
+      decoding="async"
+      onError={() => setThumbIndex((i) => i + 1)}
+      className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
+    />
+  );
+}
+
+function NearbyAttractionRow({ spot, extraThumb, onSelect }) {
   const dist = formatDistKm(spot.distKm);
   const place = nearbyPlaceLabel(spot);
+  const rankBlurb = String(spot?.rankBlurb || '').trim();
   const clickable = hasTourContentId(spot.contentId);
   const Inner = clickable ? 'button' : 'div';
   const innerProps = clickable
     ? { type: 'button', onClick: () => onSelect?.(spot) }
     : {};
   return (
-    <li key={spot.contentId || spot.id}>
+    <li>
       <Inner
         {...innerProps}
         className={`flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left ${
           clickable ? 'hover:bg-amber-50 hover:border-amber-300 transition-colors' : ''
         }`}
       >
+        <NearbyRowThumb spot={spot} extraThumb={extraThumb} />
+        <span className="min-w-0 flex-1">
+          <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+            <span className="text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
+              {spot.name}
+            </span>
+            {rankBlurb ? (
+              <span className="text-[11px] font-semibold text-stone-500 break-keep">
+                {rankBlurb}
+              </span>
+            ) : null}
+          </span>
+          <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
+            {[rankBlurb ? null : place, dist].filter(Boolean).join(' · ')}
+          </span>
+        </span>
+      </Inner>
+    </li>
+  );
+}
+
+function FestivalNearScenicRow({ spot, km, locale, onSelect }) {
+  const distanceLabel = formatDistanceKm(km);
+  const urls = nearbyThumbUrls(spot);
+  const [thumbIndex, setThumbIndex] = useState(0);
+  const thumb = urls[thumbIndex] || '';
+  return (
+    <li>
+      <button
+        type="button"
+        onClick={() => onSelect(spot)}
+        className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
+      >
         {thumb ? (
           <img
+            key={thumb}
             src={thumb}
             alt=""
+            loading="lazy"
+            decoding="async"
+            onError={() => setThumbIndex((i) => i + 1)}
             className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
           />
         ) : (
@@ -266,14 +344,26 @@ function nearbyAttractionRow(spot, { onSelect }) {
           </div>
         )}
         <span className="min-w-0 flex-1">
-          <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
-            {spot.name}
+          <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+            <span className="text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
+              {spot.name}
+            </span>
+            {distanceLabel ? (
+              <span className="shrink-0 rounded-full bg-stone-100 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-stone-600">
+                {distanceLabel}
+              </span>
+            ) : null}
           </span>
-          <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
-            {[place, dist].filter(Boolean).join(' · ')}
+          <span className="mt-0.5 block text-[11px] text-stone-500 break-keep">
+            {[
+              localizedScenicMajorRegion(locale, spot.region) || spot.region,
+              spot.blurb,
+            ]
+              .filter(Boolean)
+              .join(' · ')}
           </span>
         </span>
-      </Inner>
+      </button>
     </li>
   );
 }
@@ -392,6 +482,7 @@ export default function FestivalDetailSheet({
   const [mooniOpen, setMooniOpen] = useState(false);
   const [nearbySpots, setNearbySpots] = useState([]);
   const [nearbyStatus, setNearbyStatus] = useState('idle');
+  const [nearbyThumbById, setNearbyThumbById] = useState(() => new Map());
   const [nearbyFood, setNearbyFood] = useState([]);
   const [nearbyFoodStatus, setNearbyFoodStatus] = useState('idle');
   const [nearbyLeports, setNearbyLeports] = useState([]);
@@ -474,6 +565,35 @@ export default function FestivalDetailSheet({
     });
   }, [nearbySpots, nearestHub?.hubId, item?.mapx, item?.mapy, locale]);
   const nearbyHasLocalScenic = nearbyGrouped.groups.some((g) => g.items.length);
+  const nearbyMissingThumbIds = useMemo(
+    () => missingNearbyThumbContentIds(nearbyGrouped),
+    [nearbyGrouped],
+  );
+
+  useEffect(() => {
+    const ids = nearbyMissingThumbIds;
+    if (!ids.length) return undefined;
+    let cancelled = false;
+    const peeked = peekKoreaTourAttractionFirstImagesByIds(ids);
+    if (peeked.size) {
+      setNearbyThumbById((prev) => {
+        const next = new Map(prev);
+        for (const [key, url] of peeked) next.set(key, url);
+        return next;
+      });
+    }
+    fetchKoreaTourAttractionFirstImagesByIds(ids).then((dbMap) => {
+      if (cancelled || !dbMap?.size) return;
+      setNearbyThumbById((prev) => {
+        const next = new Map(prev);
+        for (const [key, url] of dbMap) next.set(key, url);
+        return next;
+      });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [nearbyMissingThumbIds]);
   const tnaDisplayKeyword =
     localizedHubLabel(locale, {
       hubId: nearestHub?.hubId,
@@ -1328,43 +1448,15 @@ export default function FestivalDetailSheet({
                         region: scenicRegionLabel || scenicRegion,
                       })}
                     >
-                      {scenicSpotsRanked.map(({ spot, km }) => {
-                        const distanceLabel = formatDistanceKm(km);
-                        return (
-                          <li key={spot.id || spot.contentId}>
-                            <button
-                              type="button"
-                              onClick={() => setSelectedScenic(spot)}
-                              className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
-                            >
-                              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800">
-                                <Landmark size={18} aria-hidden="true" />
-                              </div>
-                              <span className="min-w-0 flex-1">
-                                <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                                  <span className="text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
-                                    {spot.name}
-                                  </span>
-                                  {distanceLabel ? (
-                                    <span className="shrink-0 rounded-full bg-stone-100 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-stone-600">
-                                      {distanceLabel}
-                                    </span>
-                                  ) : null}
-                                </span>
-                                <span className="mt-0.5 block text-[11px] text-stone-500 break-keep">
-                                  {[
-                                    localizedScenicMajorRegion(locale, spot.region) ||
-                                      spot.region,
-                                    spot.blurb,
-                                  ]
-                                    .filter(Boolean)
-                                    .join(' · ')}
-                                </span>
-                              </span>
-                            </button>
-                          </li>
-                        );
-                      })}
+                      {scenicSpotsRanked.map(({ spot, km }) => (
+                        <FestivalNearScenicRow
+                          key={spot.id || spot.contentId}
+                          spot={spot}
+                          km={km}
+                          locale={locale}
+                          onSelect={setSelectedScenic}
+                        />
+                      ))}
                     </ul>
                   )}
                   <button
@@ -1547,18 +1639,28 @@ export default function FestivalDetailSheet({
                               {group.title}
                             </p>
                           </li>
-                          {group.items.map((spot) =>
-                            nearbyAttractionRow(spot, {
-                              onSelect: setSelectedNearby,
-                            }),
-                          )}
+                          {group.items.map((spot) => (
+                            <NearbyAttractionRow
+                              key={spot.contentId || spot.id}
+                              spot={spot}
+                              extraThumb={nearbyThumbById.get(
+                                String(spot.contentId || '').trim(),
+                              )}
+                              onSelect={setSelectedNearby}
+                            />
+                          ))}
                         </React.Fragment>
                       ))}
-                      {nearbyGrouped.rest.map((spot) =>
-                        nearbyAttractionRow(spot, {
-                          onSelect: setSelectedNearby,
-                        }),
-                      )}
+                      {nearbyGrouped.rest.map((spot) => (
+                        <NearbyAttractionRow
+                          key={spot.contentId || spot.id}
+                          spot={spot}
+                          extraThumb={nearbyThumbById.get(
+                            String(spot.contentId || '').trim(),
+                          )}
+                          onSelect={setSelectedNearby}
+                        />
+                      ))}
                     </ul>
                   )}
                 </div>

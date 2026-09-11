@@ -18,9 +18,9 @@
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `31c92c70` · PR [#214](https://github.com/catgeot/Days/pull/214) · **#2 사람 Preview QA** |
+| **상태** | **#2 push** · tip `37097755` · PR [#214](https://github.com/catgeot/Days/pull/214) · **#3 사람 Preview QA** |
 | **브랜치** | `cursor/scenic-stay-692c` |
-| **tip** | `31c92c70` |
+| **tip** | `37097755` |
 | **PR** | [#214](https://github.com/catgeot/Days/pull/214) |
 | **일지** | [`2026-09-11-project-log.md`](./2026-09-11-project-log.md) |
 | **Preview** | `/qa/scenic-stay` → git Preview `/korea/theme/scenic?spot=gyeongbokgung` |
@@ -31,12 +31,12 @@
 **다음 제시어**:
 
 ```
-명승 숙소 #2, 사람 Preview QA
+명승 숙소 #3, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-11-project-log.md
 브랜치 cursor/scenic-stay-692c · PR #214 · Preview /qa/scenic-stay
 금지: UI 리디자인 · 축제 시트 리팩터 · feature에 plans/** 커밋
-작업: /korea/theme/scenic?spot=gyeongbokgung 본문에 축제와 같은 숙소 카드·일정·MRT 목록이 있는지
+작업: 경복궁 본문에서 숙소가 개요·사진 아래·맛집 위인지 · 네이버·구글 칩이 나란히 열리는지
 ```
 
 ---

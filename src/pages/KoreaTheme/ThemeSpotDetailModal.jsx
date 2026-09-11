@@ -42,7 +42,12 @@ import { fetchNearbyTourAttractions } from '../../utils/fetchNearbyTourAttractio
 import {
   groupNearbySpotsWithLocalScenic,
   hasTourContentId,
+  missingNearbyThumbContentIds,
 } from '../Home/lib/koreaLocalScenicLists';
+import {
+  fetchKoreaTourAttractionFirstImagesByIds,
+  peekKoreaTourAttractionFirstImagesByIds,
+} from '../Home/lib/koreaTourAttractions';
 import {
   fetchNearbyTourRestaurants,
   RESTAURANT_CONTENT_TYPE_ID,
@@ -478,6 +483,42 @@ function toHttps(url) {
   return s;
 }
 
+function nearbyThumbUrls(spot, extraThumb) {
+  const out = [];
+  const seen = new Set();
+  for (const raw of [spot?.firstImage, spot?.imageUrl, extraThumb]) {
+    const url = toHttps(raw);
+    if (!url || seen.has(url)) continue;
+    seen.add(url);
+    out.push(url);
+  }
+  return out;
+}
+
+function NearbyPoiRowThumb({ spot, extraThumb }) {
+  const urls = nearbyThumbUrls(spot, extraThumb);
+  const [thumbIndex, setThumbIndex] = useState(0);
+  const thumb = urls[thumbIndex] || '';
+  if (!thumb) {
+    return (
+      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800">
+        <Landmark size={18} aria-hidden="true" />
+      </div>
+    );
+  }
+  return (
+    <img
+      key={thumb}
+      src={thumb}
+      alt=""
+      loading="lazy"
+      decoding="async"
+      onError={() => setThumbIndex((i) => i + 1)}
+      className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
+    />
+  );
+}
+
 function cleanUrlCandidate(raw) {
   return String(raw || '')
     .replace(/&amp;/gi, '&')
@@ -622,40 +663,37 @@ function foodPlaceLabel(spot) {
   return String(spot?.locality || spot?.region || '').trim();
 }
 
-function nearbyPoiAttractionRow(spot, { onSelect }) {
-  const thumb = toHttps(spot.firstImage);
+function NearbyPoiAttractionRow({ spot, extraThumb, onSelect }) {
   const dist = formatDistKm(spot.distKm);
   const place = foodPlaceLabel(spot);
+  const rankBlurb = String(spot?.rankBlurb || '').trim();
   const clickable = hasTourContentId(spot.contentId);
   const Inner = clickable ? 'button' : 'div';
   const innerProps = clickable
     ? { type: 'button', onClick: () => onSelect?.(spot) }
     : {};
   return (
-    <li key={spot.contentId || spot.id}>
+    <li>
       <Inner
         {...innerProps}
         className={`flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left ${
           clickable ? 'hover:bg-amber-50 hover:border-amber-300 transition-colors' : ''
         }`}
       >
-        {thumb ? (
-          <img
-            src={thumb}
-            alt=""
-            className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
-          />
-        ) : (
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800">
-            <Landmark size={18} aria-hidden="true" />
-          </div>
-        )}
+        <NearbyPoiRowThumb spot={spot} extraThumb={extraThumb} />
         <span className="min-w-0 flex-1">
-          <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
-            {spot.name}
+          <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+            <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
+              {spot.name}
+            </span>
+            {rankBlurb ? (
+              <span className="text-[11px] font-semibold text-stone-500 break-keep">
+                {rankBlurb}
+              </span>
+            ) : null}
           </span>
           <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
-            {[place, dist].filter(Boolean).join(' · ')}
+            {[rankBlurb ? null : place, dist].filter(Boolean).join(' · ')}
           </span>
         </span>
       </Inner>
@@ -858,6 +896,7 @@ export default function ThemeSpotDetailModal({
   const [nearbyCultureStatus, setNearbyCultureStatus] = useState('idle');
   const [nearbyAttractions, setNearbyAttractions] = useState([]);
   const [nearbyAttractionsStatus, setNearbyAttractionsStatus] = useState('idle');
+  const [nearbyThumbById, setNearbyThumbById] = useState(() => new Map());
   const [nearbyFestivals, setNearbyFestivals] = useState([]);
   const [nearbyFestivalsStatus, setNearbyFestivalsStatus] = useState('idle');
   const [selectedFood, setSelectedFood] = useState(null);
@@ -897,6 +936,35 @@ export default function ThemeSpotDetailModal({
   const nearbyAttractionsHasLocalScenic = nearbyAttractionsGrouped.groups.some(
     (g) => g.items.length,
   );
+  const nearbyMissingThumbIds = useMemo(
+    () => missingNearbyThumbContentIds(nearbyAttractionsGrouped),
+    [nearbyAttractionsGrouped],
+  );
+
+  useEffect(() => {
+    const ids = nearbyMissingThumbIds;
+    if (!ids.length) return undefined;
+    let cancelled = false;
+    const peeked = peekKoreaTourAttractionFirstImagesByIds(ids);
+    if (peeked.size) {
+      setNearbyThumbById((prev) => {
+        const next = new Map(prev);
+        for (const [key, url] of peeked) next.set(key, url);
+        return next;
+      });
+    }
+    fetchKoreaTourAttractionFirstImagesByIds(ids).then((dbMap) => {
+      if (cancelled || !dbMap?.size) return;
+      setNearbyThumbById((prev) => {
+        const next = new Map(prev);
+        for (const [key, url] of dbMap) next.set(key, url);
+        return next;
+      });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [nearbyMissingThumbIds]);
   const nestedChildZ =
     overlayZClass === 'z-50' || overlayZClass === 'z-[50]'
       ? 'z-[55]'
@@ -2190,18 +2258,28 @@ export default function ThemeSpotDetailModal({
                               {group.title}
                             </p>
                           </li>
-                          {group.items.map((attr) =>
-                            nearbyPoiAttractionRow(attr, {
-                              onSelect: setSelectedAttraction,
-                            }),
-                          )}
+                          {group.items.map((attr) => (
+                            <NearbyPoiAttractionRow
+                              key={attr.contentId || attr.id}
+                              spot={attr}
+                              extraThumb={nearbyThumbById.get(
+                                String(attr.contentId || '').trim(),
+                              )}
+                              onSelect={setSelectedAttraction}
+                            />
+                          ))}
                         </React.Fragment>
                       ))}
-                      {nearbyAttractionsGrouped.rest.map((attr) =>
-                        nearbyPoiAttractionRow(attr, {
-                          onSelect: setSelectedAttraction,
-                        }),
-                      )}
+                      {nearbyAttractionsGrouped.rest.map((attr) => (
+                        <NearbyPoiAttractionRow
+                          key={attr.contentId || attr.id}
+                          spot={attr}
+                          extraThumb={nearbyThumbById.get(
+                            String(attr.contentId || '').trim(),
+                          )}
+                          onSelect={setSelectedAttraction}
+                        />
+                      ))}
                     </ul>
                   )}
                 </section>

@@ -40,6 +40,14 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-11T03:50:00.000Z',
   },
   {
+    id: '2026-09-11-palgyeong-use-12-festival-nearby-thumbs-rank',
+    session: '팔경 활용 #12, 축제 인근 썸네일·번호',
+    title: '축제 인근 명소·팔경 행에 썸네일과 1경 번호',
+    detail:
+      '축제 상세 「인근 명소」에 GATEO 선정 썸네일을 붙이고, 「주변 관광지」 팔경 그룹 행은 명소 페이지와 같이 원주 1경 부제와 Tour/큐레이션 사진을 보여 줍니다. Preview /qa/palgyeong-use — /korea 원주 축제 상세에서 인근 명소 사진·원주 팔경 1경~8경을 확인해 주세요.',
+    at: '2026-09-11T03:50:00.000Z',
+  },
+  {
     id: '2026-09-11-palgyeong-use-10-member-rank-blurb',
     session: '팔경 활용 #10, 팔경 번호',
     title: '팔경 행 부제에 1경·2경 번호 — 그룹 칩은 N경 유지',
