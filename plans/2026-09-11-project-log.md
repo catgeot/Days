@@ -133,3 +133,19 @@
 작업: /korea/theme/scenic 검색 하동 — 하동 십경 10행이 한 덩어리인지, 그 다음 지역 대표 명소인지 · 소제목이 반복되지 않는지 · ?hub=gwangyang 결손 6행·?hub=hadong 결손 7행 썸네일·개요 · 행마다 사진이 다른지
 ```
 
+## 팔경 활용 #14 — PR #216 main 병합 · 다음 결손 영동
+
+- **세션** `팔경 활용 #14` Preview QA PASS · PR [#216](https://github.com/catgeot/Days/pull/216) merge ✅ `210d8a56`
+- **잔여**: 사진/개요 순수 누락 **224**/876. 큐 다음 허브 **영동**(한천팔경 7 + 양산팔경 6) · 그다음 함안9경 7 · 사천9경 6
+- **다음** 영동 한천·양산 결손 오버레이
+
+```
+팔경 활용 #15, 영동 결손 오버레이
+@plans/feature-handoff-index.md
+@plans/2026-09-11-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: 영동 한천팔경 사진·개요 없는 7건(화헌악·용연대·산양벽·청학굴·법존암·사군봉·냉천정)과 양산팔경 6건(비봉산·봉황대·함벽정·여의정·자풍서당·용암)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=yeongdong
+```
+
