@@ -73,6 +73,10 @@ assert.ok(
   'scenicSearch imports local scenic bridge',
 );
 assert.ok(
+  scenicSrc.includes('mergeLocalScenicMembersIntoScenicSpots'),
+  'scenicSearch injects palgyeong members into curated search',
+);
+assert.ok(
   scenicSrc.includes('spotMatchesLocalScenicListMember'),
   'scenicSearch filters curated members',
 );
@@ -474,6 +478,35 @@ const hdSeomho = resolveLocalScenicListSpotById(
   'local-scenic:hadong-sipgyeong:섬호정에서바라본섬진강',
 );
 assert.ok(hdSeomho?.overview?.includes('섬호정'), '하동 섬호정 overlay overview');
+
+assert.ok(
+  resolveLocalScenicList('하동 십경')?.list?.listId === 'hadong-sipgyeong',
+  '표시명 하동 십경 resolve',
+);
+assert.ok(
+  matchLocalScenicListForScenicSearch('하동 십경')?.listId === 'hadong-sipgyeong',
+  '표시명 하동 십경 scenic search exact',
+);
+const hadongSearch = filterScenicSpotsByQuery(listKoreaScenicSpots(), '하동', {
+  injectLocalScenic: true,
+});
+assert.equal(hadongSearch.length >= 10, true, '하동 검색 십경 10명 주입');
+assert.equal(hadongSearch[0]?.groupTitle, '하동 십경');
+assert.equal(
+  hadongSearch.filter((s) => s.localScenicListId === 'hadong-sipgyeong').length,
+  10,
+  '하동 검색 십경 10행',
+);
+const hadongSipgyeongSearch = filterScenicSpotsByQuery(
+  listKoreaScenicSpots(),
+  '하동 십경',
+  { injectLocalScenic: true },
+);
+assert.equal(hadongSipgyeongSearch.length, 10, '하동 십경 검색 10명');
+assert.ok(
+  hadongSipgyeongSearch.every((s) => s.groupTitle === '하동 십경'),
+  '하동 십경 검색 그룹 제목',
+);
 
 const extra = process.argv.slice(2);
 for (const q of extra) {

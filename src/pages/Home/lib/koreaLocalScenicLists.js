@@ -67,10 +67,15 @@ for (const list of LISTS) {
       listsByHubId.get(hid).push(list);
     }
   }
+  const hubForKeys = list.hubId ? resolveCityAttractionHub(list.hubId) : null;
+  const cityKo = String(hubForKeys?.name || list.hubId || '').trim();
+  const kindKo = KIND_LABEL_KO[list.listKind] || KIND_LABEL_KO.other;
+  const displayKo = cityKo ? `${cityKo} ${kindKo}` : kindKo;
   const keys = [
     list.listId,
     list.title,
     list.title_en,
+    displayKo,
     ...(list.aliases || []),
   ];
   for (const k of keys) {

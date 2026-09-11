@@ -24,6 +24,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  */
 export const cloudPreviewWorkLog = [
   {
+    id: '2026-09-11-palgyeong-use-13-hadong-search',
+    session: '팔경 활용 #13, 광양·하동 결손 오버레이',
+    title: '하동 검색에 십경 멤버가 나오게',
+    detail:
+      '명승 페이지에서 하동을 검색하면 JSON에 없는 십경 멤버가 0건으로 떨어져 하동 십경 그룹이 안 보였습니다. 표시명(하동 십경) exact 매칭과 명소 검색 풀에 지자체 리스트 멤버 주입을 넣었습니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색창에 하동 · 하동 십경.',
+    at: '2026-09-11T06:10:00.000Z',
+  },
+  {
     id: '2026-09-11-palgyeong-use-13-gwangyang-hadong-overlays',
     session: '팔경 활용 #13, 광양·하동 결손 오버레이',
     title: '광양9경 6건·하동10경 7건 런타임 오버레이',
