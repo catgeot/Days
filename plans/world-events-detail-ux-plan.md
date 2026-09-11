@@ -813,14 +813,14 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#56** 상세 갤러리 축제 분위기 QA **push** · tip `bc7ff714` · PR [#218](https://github.com/catgeot/Days/pull/218) (OPEN) · 사람 Preview QA |
-| **브랜치** | `cursor/world-events-wave3` · tip `bc7ff714` |
-| **플랜** | F-0.5 **D5-b-3 ✅** · **Wave3 4/4 ✅** · 리스트 사진 **Unsplash 영문** · 허브 카드 **사진 확대 ✅** · **상세 갤러리 분위기 검색·랭킹 ✅** |
+| **상태** | **#57** 리스트 썸네일 컬러 우선 **push** · tip `e824c37d` · PR [#218](https://github.com/catgeot/Days/pull/218) (OPEN) · 사람 Preview QA |
+| **브랜치** | `cursor/world-events-wave3` · tip `e824c37d` |
+| **플랜** | F-0.5 **D5-b-3 ✅** · **Wave3 4/4 ✅** · 리스트 사진 **Unsplash 영문·컬러 우선 ✅** · 허브 카드 **사진 확대 ✅** · **상세 갤러리 분위기 검색·랭킹 ✅** |
 | **Preview** | `/qa/world-events` |
 | **VERIFY** | `smoke:world-events-hub` · `smoke:world-events-detail` · `audit:world-events` · `build` PASS |
 
-**마일스톤**: … → M23 **#55 Unsplash 우선 배치 ✅** → M24 **#56 분위기 검색·시드·폴백 ✅** · M25 **#57 Preview QA**
+**마일스톤**: … → M23 **#55 Unsplash 우선 배치 ✅** → M24 **#56 분위기 검색·시드·폴백 ✅** → M25 **#57 리스트 컬러 썸네일 ✅** · M26 **#58 Preview QA**
 
-**#56**: 사람 Preview에서 빈 오페라·두바이가 시드 3장(건물·스카이라인)만 남던 문제를 고침. `heroGallerySearchQueryEn`을 JSON에 통과시키고, Edge 타임아웃 뒤 Unsplash 폴백, 군중·객석·마라톤 컷을 스카이라인보다 앞에 랭킹. 두바이 시드는 마라톤·사이클링.
+**#57**: 허브 리스트가 Unsplash 빈티지 흑백(이스탄불 거리 스캔, 흑백 Macy's)을 고르던 문제를 고침. 캡션 B&W·회색 스와치는 건너뛰고 컬러를 고름. 세션 캐시 `list-photo-v3-color`.
 
-**다음**: 사람 Preview — 빈 오페라 객석/무대 · 두바이 러닝·사이클링 · 옥토버페스트 텐트. merge는 QA 후.
+**다음**: 사람 Preview — `/world-events` 이스탄불·추수감사절 카드가 컬러인지. merge는 QA 후.
