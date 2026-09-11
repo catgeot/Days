@@ -203,5 +203,27 @@
 작업: /world-events/munich-oktoberfest-2026 등 상세 본문 갤러리 1~3번에 생생한 축제 사진이 나오는지 · 지하철 비상레버 등 무관 사진이 없는지 확인
 ```
 
+## 세계행사 일정 #56 — 상세 갤러리 축제 분위기 QA (Cloud)
+
+- **세션** `세계행사 일정 #56, 상세 갤러리 축제 분위기 QA`
+- **브랜치** `cursor/world-events-wave3` · tip `bc7ff714` · PR [#218](https://github.com/catgeot/Days/pull/218) (OPEN)
+- **완료**:
+  1. 사람 Preview: 빈 오페라·두바이가 시드 3장(건물·스카이라인)만 표시. `heroGallerySearchQueryEn`이 generate에서 빠져 JSON에 없었고, Edge 타임아웃 시 Unsplash 폴백이 끊김.
+  2. 분위기 영문 검색어를 스키마·23개 행사 JSON에 통과. 갤러리 랭킹으로 군중·객석·마라톤을 스카이라인·파사드보다 앞에 둠.
+  3. 빈 오페라 시드를 대극장·무대로, 두바이 시드를 마라톤·사이클링으로 교체.
+- **VERIFY**: `smoke:world-events-hub` PASS · `audit:world-events` PASS · `smoke:world-events-detail` PASS · `build` PASS
+- **Preview** https://www.gateo.kr/qa/world-events → 빈 오페라 · 두바이 피트니스 · 옥토버페스트
+- **다음** 사람 Preview QA — 갤러리 1~3번이 객석·러닝·축제 현장인지, 시드 3장만 남았는지
+
+```
+세계행사 일정 #57, 상세 갤러리 분위기 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-11-project-log.md
+@plans/world-events-management.md
+브랜치 cursor/world-events-wave3 · PR #218 · https://www.gateo.kr/qa/world-events
+금지: worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · 허브에 플래너·숙소 칩 복구
+작업: /world-events/vienna-staatsoper-season-2026 · /world-events/dubai-fitness-challenge-2026 · /world-events/munich-oktoberfest-2026 갤러리 1~3번이 객석·마라톤·축제 현장인지 · 시드 3장(건물/스카이라인)만 남았는지
+```
+
 
 
