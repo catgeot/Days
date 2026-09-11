@@ -14,6 +14,33 @@
 
 ## 활성 목록
 
+### 명승 숙소
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `31c92c70` · PR [#214](https://github.com/catgeot/Days/pull/214) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/scenic-stay-692c` |
+| **tip** | `31c92c70` |
+| **PR** | [#214](https://github.com/catgeot/Days/pull/214) |
+| **일지** | [`2026-09-11-project-log.md`](./2026-09-11-project-log.md) |
+| **Preview** | `/qa/scenic-stay` → git Preview `/korea/theme/scenic?spot=gyeongbokgung` |
+| **소유** | `ScenicStayStrip` · `ThemeSpotDetailModal` · `EventStayStrip` |
+| **금지** | UI 리디자인 · 축제 시트 리팩터 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:korea-scenic-stay` · `smoke:korea-festival-stay-url` · `vite build` |
+
+**다음 제시어**:
+
+```
+명승 숙소 #2, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-11-project-log.md
+브랜치 cursor/scenic-stay-692c · PR #214 · Preview /qa/scenic-stay
+금지: UI 리디자인 · 축제 시트 리팩터 · feature에 plans/** 커밋
+작업: /korea/theme/scenic?spot=gyeongbokgung 본문에 축제와 같은 숙소 카드·일정·MRT 목록이 있는지
+```
+
+---
+
 ### 플래너 실행 전 여유
 
 | | |
