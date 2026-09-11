@@ -1,6 +1,6 @@
 # 팔경 활용 — 검색·리스트 · Tour contentId
 
-**상태**: A #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · B R01–R02 ✅ · **A/B 동시 세션 OK**  
+**상태**: A #2 push `6b666ad3` · PR [#209](https://github.com/catgeot/Days/pull/209) · **#186 main 병합** · **사람 Preview QA** · B 종료  
 **수집 플랜**(열지 않음): [`korea-local-scenic-lists-plan.md`](./korea-local-scenic-lists-plan.md) — 오케 재개 금지  
 **SSOT**: [`koreaLocalScenicLists.json`](../src/pages/Home/data/koreaLocalScenicLists.json) (lists **94** · members **876**)
 
@@ -75,7 +75,7 @@ method **§5.7** · 큐 [`korea-local-scenic-contentid-queue.md`](./korea-local-
 |------|------|
 | **P0** | 팔경 멤버 (~876) — 이번 목표 |
 | P1 | hub attractions 잔여 |
-| P2 | 테마 선정 `contentId: null` **142**/871 (78 hub) — P0·P1 소진 후 | **P2-R01–R13** DB-only · P2-L LIVE |
+| P2 | 테마 선정 `contentId: null` **142**/871 (78 hub) — P0·P1 소진 후 | **P2 종료** null **51**/871 (충족 820/871, 94.1%) · 잔여 51건 terminal 종결 |
 
 DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만 · 워커 **병렬 LIVE 금지** · **2026-09-07** Tour API 홈 **운영 계정 승인** · 쿼터 **~10만/일** · 429 → `blocked: quota` · 같은 날 재시도 금지. HIT → 멤버+hub attraction `contentId`. scenic 승격 금지.
 
@@ -90,17 +90,40 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | #1 push `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 Preview QA** | P0 inv ✅ · members **579/876** null **297**(terminal) · P2 null **104** · tip `505733e2` · **다음 P2-L3** |
-| **index 행** | 팔경 활용 | 팔경 contentId |
-| **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · 워커 병렬 LIVE · 본명-only keyword 재시도 · AI가 ID 기입 |
+| **지금** | **#15 push** `4b354407` · **#16 사람 Preview QA** (영동 한천 7·양산 6) | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
+| **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · AI가 ID 기입 |
 
 ### 채팅명 복붙표 (`#N` 리셋 금지)
 
 | #N | 채팅명 한 줄 | 갈래 | 상태 |
 |----|--------------|------|------|
 | 1 | `팔경 활용 #1, 검색·리스트` | A | **완료** · tip `e8da2987` |
-| 2 | `팔경 활용 #2, Preview QA` | A 사람 | **다음** |
-| — | `팔경contentId #P2-L3, hub-batch keyword` | B | **다음** |
+| 2 | `팔경 활용 #2, 사람 Preview QA` | A 사람 | **완료** · PR #209 MERGED · 속초·삼척·원주·홍천 사진·상세 보강 및 main 병합 |
+| 3 | `팔경 활용 #3, 누락 허브 본문 선별 및 팔경 전용 그룹 UI 준비` | A | **완료** · tip `16eb2aee` · PR [#210](https://github.com/catgeot/Days/pull/210) |
+| 4 | `팔경 활용 #4, 사람 Preview QA` | A 사람 | **완료** · 사람 Preview QA PASS ✅ · PR #210 검토 및 병합 대기 |
+| 5 | `팔경 활용 #5, PR #210 main 병합 및 후속 허브 오버레이 확장 검토` | A | **완료** · PR #210 main 병합 확인(`33776ccb`) 및 의성·무주 오버레이 확장 계획 수립 |
+| 6 | `팔경 활용 #6, 의성·무주 결손 허브 런타임 오버레이 보강` | A | **완료** · tip `f1367c6f` · PR [#212](https://github.com/catgeot/Days/pull/212) |
+| 7 | `팔경 활용 #7, 사람 Preview QA` | A 사람 | **완료** · 빙계 8행 동일 썸네일 피드백 → #8 |
+| 8 | `팔경 활용 #8, 빙계 팔경 사진 다양화` | A | **완료** · tip `b0f0766e` · PR [#212](https://github.com/catgeot/Days/pull/212) merge ✅ `25ea5579` |
+| 9 | `팔경 활용 #9, 사람 Preview QA` | A 사람 | **완료** · 빙계 사진 QA 후 #212 merge · 동일 「의성 팔경」 부제 피드백 → #10 |
+| 10 | `팔경 활용 #10, 팔경 번호` | A | **완료** · PR [#213](https://github.com/catgeot/Days/pull/213) merge ✅ `d28b4733` |
+| 11 | `팔경 활용 #11, 사람 Preview QA` | A 사람 | **완료** · #213 merge 후 #12 축제 인근 |
+| 12 | `팔경 활용 #12, 축제 인근 썸네일·번호` | A | **완료** · tip `a5b683e1` · PR [#215](https://github.com/catgeot/Days/pull/215) merge ✅ `b929e7fd` |
+| 13 | `팔경 활용 #13, 광양·하동 결손 오버레이` | A | **완료** · tip `e29213bb` · PR [#216](https://github.com/catgeot/Days/pull/216) · 광양 6·하동 7 · 검색 하동→십경 |
+| 14 | `팔경 활용 #14, 하동 검색 그룹 묶기` | A | **완료** · PR [#216](https://github.com/catgeot/Days/pull/216) merge ✅ `210d8a56` |
+| 15 | `팔경 활용 #15, 영동 결손 오버레이` | A | **완료** · tip `4b354407` · 한천 7·양산 6 |
+| 16 | `팔경 활용 #16, 사람 Preview QA` | A 사람 | **열기 가능** · `?hub=yeongdong` · 그다음 함안9경 7 |
+| — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
+| — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |
+| — | `팔경contentId #P2-L10, 잔여 null 분석 및 전략` | B | **완료** · tip `fb4c5513` 27/32 |
+| — | `팔경contentId #P2-L9, hub-batch keyword` | B | **완료** · tip `fa6d58b8` 3/10 |
+| — | `팔경contentId #P2-L8, hub-batch keyword` | B | **완료** · tip `699ac841` 0/20 |
+| — | `팔경contentId #P2-L7, hub-batch keyword` | B | **완료** · tip `699ac841` 3/20 |
+| — | `팔경contentId #P2-L6, hub-batch keyword` | B | **완료** · tip `b21da98a` 3/18 |
+| — | `팔경contentId #P2-L5, hub-batch keyword` | B | **완료** · tip `90c2966d` 3/18 |
+| — | `팔경contentId #P2-L4, hub-batch keyword` | B | **완료** · tip `19bd21ee` 11/13 |
+| — | `팔경contentId #P2-L3, hub-batch keyword` | B | **완료** · tip `cf0482cd` 3/22 |
 | — | `팔경contentId #P0 inv, 키워드 종결 소진` | B | **완료** · closed **394** open **0** |
 | — | `팔경contentId #P0-P03, 칠선시류 ambiguous` | B | **완료** · tip `505733e2` 1/1 |
 | — | `팔경contentId #P0-P02, 옥정호 ambiguous` | B | **완료** · tip `3392e61e` 1/1 |
@@ -147,16 +170,185 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 ### §1.2 A #2 Preview QA
 
 ```
-팔경 활용 #2, Preview QA
+팔경 활용 #2, 사람 Preview QA
 @plans/feature-handoff-index.md
-@plans/2026-09-04-project-log.md
+@plans/2026-09-10-project-log.md
 @plans/korea-local-scenic-use-plan.md
-브랜치 cursor/palgyeong-use-e744 · PR #186 · Preview /qa/palgyeong-use
+브랜치 cursor/palgyeong-use-e744 · PR #209 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
-작업: 홈 검색 문경 · /korea/theme/scenic 문경 hub · 축제 상세 인근 목록 소제목
+작업: /korea/theme/scenic?hub=hongcheon 가리산·금학산 클릭 — 제목 정상 · 리스트/상세/써머리 Tour 사진
 ```
 
-### §1.2 B 다음 (#P2-L3) — 1순위
+### §1.2 A #4 Preview QA 통과 및 #5 병합 완료
+
+```
+팔경 활용 #5, PR #210 main 병합 및 후속 허브 오버레이 확장 검토
+@plans/feature-handoff-index.md
+@plans/2026-09-10-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · PR #210
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: PR #210 main 병합 확인 및 다음 결손 허브(무주 28건, 의성 8건 등) 런타임 오버레이 보강 계획 수립
+```
+
+### §1.2 A #6 오버레이 보강 완료
+
+```
+팔경 활용 #6, 의성·무주 결손 허브 런타임 오버레이 보강
+@plans/feature-handoff-index.md
+@plans/2026-09-10-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · PR #212
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: 의성 빙계팔경(8건) 및 무주 구천동33경(28건 결손) 순수 지자체 팔경 공공 공식 팩트 기반 런타임 오버레이(LOCAL_SCENIC_MEMBER_OVERLAYS) 보강
+```
+
+### §1.2 A #7 다음 제시어
+
+```
+팔경 활용 #7, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-10-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · PR #212 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: /korea/theme/scenic?hub=uiseong 빙계팔경 8행 썸네일·상세 개요 · /korea/theme/scenic?hub=muju 구천동33경 결손 행(은구암·일사대 등) 사진·개요
+```
+
+### §1.2 A #9 다음 제시어
+
+```
+팔경 활용 #9, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-11-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · PR #212 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: /korea/theme/scenic?hub=uiseong 빙계팔경 8행 썸네일이 서로 다른지 · 행을 열어 본문 갤러리가 경승(빙혈 입구·절벽·바위·서원·다리·석탑·봉우리·용소)에 맞는지
+```
+
+### §1.2 A #13 광양·하동 오버레이 (실행됨)
+
+```
+팔경 활용 #13, 광양·하동 결손 오버레이
+@plans/feature-handoff-index.md
+@plans/2026-09-11-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · PR #216 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: 광양9경 사진·개요 없는 6건(백운산 4대 계곡·자연휴양림·이순신대교·광양만 야경·옥룡사지 동백·읍수와 이팝나무)과 하동10경 7건(화개장터 십리벚꽃·금오산 일출·쌍계사 가을·형제봉 철쭉·청학동 삼성궁·하동포구·섬호정 섬진강)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=gwangyang · ?hub=hadong
+```
+
+### §1.2 A #14 하동 검색 그룹 묶기 (실행됨)
+
+```
+팔경 활용 #14, 하동 검색 그룹 묶기
+@plans/feature-handoff-index.md
+@plans/2026-09-11-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · PR #216 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: 명승 검색 하동에서 하동 십경과 지역 대표 명소가 섞여 소제목이 반복되지 않게 groupTitle 한 덩어리로 묶기
+```
+
+### §1.2 A #15 영동 결손 오버레이 (실행됨)
+
+```
+팔경 활용 #15, 영동 결손 오버레이
+@plans/feature-handoff-index.md
+@plans/2026-09-11-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: 영동 한천팔경 사진·개요 없는 7건(화헌악·용연대·산양벽·청학굴·법존암·사군봉·냉천정)과 양산팔경 6건(비봉산·봉황대·함벽정·여의정·자풍서당·용암)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=yeongdong
+```
+
+### §1.2 A #16 다음 제시어
+
+```
+팔경 활용 #16, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-11-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: /korea/theme/scenic?hub=yeongdong 한천팔경 결손 7행·양산팔경 결손 6행 썸네일·개요 · 행마다 사진이 다른지
+```
+
+
+### §1.2 B 다음 (#P2-END) — P2 종결 및 PR #185 검토
+
+```
+팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3~L9 hub 본명 단순 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic 820/871 충족(94.1%) · 잔여 51건 terminal 종결 확정 및 PR #185 검토
+```
+
+### §1.2 B #P2-L9
+
+```
+팔경contentId #P2-L9, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5/L6/L7/L8 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 81 — --hubs=gwangyang,sancheong,yeongyang,pohang,mokpo,ulleung,gapyeong,gongju,jecheon,yanggu --keyword-only --limit=20
+```
+
+### §1.2 B #P2-L8
+
+```
+팔경contentId #P2-L8, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5/L6/L7 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 81 — --hubs=sangju,gyeryong,mungyeong,yeongi,yesan,gokseong,hwasun,imsil,jangseong,yeonggwang,gimje,iksan,yeongam,cheongdo,gijang,uiseong,yecheon,chilgok,dokdo,gwangyang,sancheong,yeongyang,pohang,mokpo,ulleung,gapyeong,gongju,jecheon,yanggu --keyword-only --limit=20
+```
+
+### §1.2 B #P2-L7
+
+```
+팔경contentId #P2-L7, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4/L5/L6 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 84 — --hubs=sangju,gyeryong,mungyeong,bonghwa,hongseong,yeongi,yesan,gokseong,seocheon,hwasun,imsil,jangseong,yeonggwang,gimje,iksan,yeongam,cheongdo,gijang,uiseong,yecheon,chilgok,dokdo,gwangyang,sancheong,yeongyang,pohang,mokpo,ulleung,gapyeong,gongju,jecheon,yanggu --keyword-only --limit=20
+```
+
+### §1.2 B #P2-L5
+
+```
+팔경contentId #P2-L5, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3/L4 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 90 — --hubs=pyeongchang,siheung,eumseong,yangsan,changwon,yeongcheon,goryeong,gyeongsan,yeongdeok --keyword-only --limit=20
+```
+
+### §1.2 B #P2-L4
+
+```
+팔경contentId #P2-L4, hub-batch keyword
+@plans/feature-handoff-index.md
+@plans/korea-local-scenic-contentid-queue.md
+@plans/orchestrator-method.md
+브랜치 cursor/palgyeong-cid · PR #185
+금지: UI · scenic 승격 · 워커 병렬 LIVE · L3 hub 본명 재시도 · AI가 contentId 기입 · feature에 plans/** 커밋
+작업: P2 scenic null 101 — --hubs=samcheok,hadong,buyeo,namwon,boseong,jeongeup,donghae --keyword-only --limit=20
+```
+
+### §1.2 B #P2-L3
 
 ```
 팔경contentId #P2-L3, hub-batch keyword

@@ -13,6 +13,7 @@ import { citiesData } from '../../../pages/Home/data/citiesData';
 import { supabase } from '../../../shared/api/supabase';
 import { buildPlaceDbIdCandidates, getPlaceStableKey, getPlaceStatsId } from '../../../utils/travelSpotResolve';
 import { isDomesticKoreaLocation, resolveTourApiPlace } from '../../../utils/tourApiMatch';
+import { lookupKoreaTourAttractionByTitle } from '../../../pages/Home/lib/koreaTourAttractions';
 import { fetchTourApiGallery } from '../../../utils/fetchTourApiGallery';
 import { filterOutSinglePersonPortraits, pickPlaceStatsGalleryRow } from '../../../utils/galleryPortraitFilter';
 import { resolveGalleryStockQuery, isLatinPlaceName } from '../../../pages/Home/lib/uiPlaceAssetQuery.js';
@@ -457,7 +458,34 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         typeof locationSource === 'object' && locationSource ? locationSource : null,
       ) ||
       Boolean(resolvedTourMapping?.curated);
-    const tourMapping = isDomesticKorea ? resolvedTourMapping : null;
+    let tourMapping = isDomesticKorea ? resolvedTourMapping : null;
+    if (isDomesticKorea && !tourMapping?.contentId) {
+      const loc =
+        (typeof targetSpot === 'object' && targetSpot) ||
+        (typeof locationSource === 'object' && locationSource) ||
+        null;
+      const hubId = String(loc?.hubId || '').trim();
+      const placeName = String(loc?.name || koreanName || '').trim();
+      if (hubId && placeName) {
+        const row = await lookupKoreaTourAttractionByTitle({
+          title: placeName,
+          hubId,
+        });
+        const foundId = String(row?.contentId || '').trim();
+        if (/^\d{1,32}$/.test(foundId)) {
+          tourMapping = {
+            slug: tourMapping?.slug || null,
+            photoKeyword: tourMapping?.photoKeyword || placeName.slice(0, 80),
+            photoKeywords: tourMapping?.photoKeywords || [
+              `${placeName} 전경`.slice(0, 80),
+            ],
+            contentId: foundId,
+            title: tourMapping?.title || placeName,
+            curated: Boolean(tourMapping?.curated),
+          };
+        }
+      }
+    }
     const hasOfficialTourContentId = Boolean(tourMapping?.contentId);
 
     const clearSafety = () => {

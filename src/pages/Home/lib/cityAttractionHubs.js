@@ -190,8 +190,14 @@ export function hubToSuggestion(hub) {
   };
 }
 
+function attractionTourContentId(attraction) {
+  const id = String(attraction?.contentId || '').trim();
+  return /^\d{1,32}$/.test(id) ? id : null;
+}
+
 export function attractionToSuggestion(hub, attraction) {
   const kindLabel = getKindLabel(attraction.kind);
+  const contentId = attractionTourContentId(attraction);
   return {
     id: `hub-attr-${hub.hubId}-${normalizeKey(attraction.name)}`,
     kind: 'attraction',
@@ -209,7 +215,7 @@ export function attractionToSuggestion(hub, attraction) {
     source: 'hub',
     uiPlace: true,
     parentCity: hub.name,
-    // 선택 카드: 위치 줄·뱃지로 충분 — 합성「도시 · 종류」desc는 중복이라 생략
+    ...(contentId ? { contentId } : {}),
   };
 }
 
@@ -233,6 +239,7 @@ export function hubToPlacePin(hub) {
 
 export function attractionToPlacePin(hub, attraction) {
   const kindLabel = getKindLabel(attraction.kind);
+  const contentId = attractionTourContentId(attraction);
   return {
     id: `hub-attr-${hub.hubId}-${normalizeKey(attraction.name)}`,
     slug: placeUrlSlug(attraction.name_en, attraction.name),
@@ -249,6 +256,7 @@ export function attractionToPlacePin(hub, attraction) {
     hubId: hub.hubId,
     parentCity: hub.name,
     desc: `${hub.name}의 ${kindLabel} · ${attraction.name}`,
+    ...(contentId ? { contentId } : {}),
   };
 }
 

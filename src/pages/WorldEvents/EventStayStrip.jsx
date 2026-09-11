@@ -135,6 +135,8 @@ function StayCard({ item, price }) {
  *   onDatesChange?: (next: { checkIn: string, checkOut: string }) => void,
  *   locale?: string,
  *   placeLabel?: string,
+ *   title?: string,
+ *   hint?: string,
  * }} props
  */
 export default function EventStayStrip({
@@ -146,6 +148,8 @@ export default function EventStayStrip({
   onDatesChange,
   locale = 'ko',
   placeLabel: placeLabelOverride,
+  title,
+  hint,
 }) {
   const { t, i18n } = useTranslation();
   const rootRef = useRef(null);
@@ -302,9 +306,13 @@ export default function EventStayStrip({
     <section className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
       <div className="flex items-center gap-2">
         <CalendarDays size={16} className="text-amber-700" aria-hidden />
-        <h2 className="text-sm font-extrabold text-stone-900">{t('worldEventDetail.stayStrip.title')}</h2>
+        <h2 className="text-sm font-extrabold text-stone-900">
+          {title || t('worldEventDetail.stayStrip.title')}
+        </h2>
       </div>
-      <p className="mt-1 text-xs text-stone-500">{t('worldEventDetail.stayStrip.hint')}</p>
+      <p className="mt-1 text-xs text-stone-500">
+        {hint || t('worldEventDetail.stayStrip.hint')}
+      </p>
 
       {visitPresets.length > 1 ? (
         <div className="mt-3 flex flex-wrap gap-1.5">

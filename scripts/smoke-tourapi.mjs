@@ -147,6 +147,16 @@ async function mappingGuards() {
   assert(soft?.curated === false, 'soft KR curated=false');
   assert(soft?.contentId == null, 'soft KR no contentId');
 
+  const explicit = resolveTourApiPlace({
+    name: '가리산',
+    country: '대한민국',
+    contentId: '125593',
+    hubId: 'hongcheon',
+  });
+  assert(explicit?.contentId === '125593', 'explicit contentId on uiPlace');
+  assert(explicit?.photoKeyword === '가리산', 'explicit contentId keeps name keyword');
+  assert(explicit?.curated === false, 'explicit contentId is not travelSpotTourApi curated');
+
   assert(
     isDomesticKoreaLocation({ country: '한국' }),
     'isDomesticKoreaLocation 한국',

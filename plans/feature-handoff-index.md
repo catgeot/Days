@@ -14,6 +14,60 @@
 
 ## 활성 목록
 
+### 명승 숙소
+
+| | |
+|--|--|
+| **상태** | **#2 push** · tip `37097755` · PR [#214](https://github.com/catgeot/Days/pull/214) · **#3 사람 Preview QA** |
+| **브랜치** | `cursor/scenic-stay-692c` |
+| **tip** | `37097755` |
+| **PR** | [#214](https://github.com/catgeot/Days/pull/214) |
+| **일지** | [`2026-09-11-project-log.md`](./2026-09-11-project-log.md) |
+| **Preview** | `/qa/scenic-stay` → git Preview `/korea/theme/scenic?spot=gyeongbokgung` |
+| **소유** | `ScenicStayStrip` · `ThemeSpotDetailModal` · `EventStayStrip` |
+| **금지** | UI 리디자인 · 축제 시트 리팩터 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:korea-scenic-stay` · `smoke:korea-festival-stay-url` · `vite build` |
+
+**다음 제시어**:
+
+```
+명승 숙소 #3, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-11-project-log.md
+브랜치 cursor/scenic-stay-692c · PR #214 · Preview /qa/scenic-stay
+금지: UI 리디자인 · 축제 시트 리팩터 · feature에 plans/** 커밋
+작업: 경복궁 본문에서 숙소가 개요·사진 아래·맛집 위인지 · 네이버·구글 칩이 나란히 열리는지
+```
+
+---
+
+### 플래너 실행 전 여유
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `93168a4e` · PR [#211](https://github.com/catgeot/Days/pull/211) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/planner-empty-pad-6089` |
+| **tip** | `93168a4e` |
+| **PR** | [#211](https://github.com/catgeot/Days/pull/211) |
+| **일지** | [`2026-09-10-project-log.md`](./2026-09-10-project-log.md) |
+| **Preview** | `/qa/planner-empty` → git Preview `/place/yanggu-arboretum/planner` |
+| **소유** | `PlannerTab` 실행 전 빈 상태 · `TravelAgencyDirectory` planner details · `placePlannerFocus` |
+| **금지** | UI 리디자인 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `smoke:planner-empty-scroll` · `smoke:travel-agencies` · `vite build` |
+
+**다음 제시어**:
+
+```
+플래너 실행 전 여유 #2, Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-10-project-log.md
+브랜치 cursor/planner-empty-pad-6089 · PR #211 · Preview /qa/planner-empty
+금지: UI 리디자인 · feature에 plans/** 커밋
+작업: 양구 수목원 플래너 실행 전 하단 여유 · 연결된 여행사 펼침 후 상단 스크롤
+```
+
+---
+
 ### 지구본 프레임 줌 — main 병합 ✅
 
 | | |
@@ -25,6 +79,32 @@
 | **VERIFY** | `smoke:globe-page-zoom-lock` · `vite build` PASS |
 
 **다음 제시어 없음** (주제 종료). 홈 프레임 핀치 후 복귀는 PROD. `/qa/globe-frame-zoom`은 구 Preview — 확인은 `www.gateo.kr`.
+
+---
+
+### 장소카드 갤러리-명소 본문 연계
+
+| | |
+|--|--|
+| **상태** | **#2 push** · tip `ff60a606` · PR [#208](https://github.com/catgeot/Days/pull/208) · **#2 사람 Preview QA** |
+| **브랜치** | `cursor/scenic-gateway-2ced` |
+| **tip** | `ff60a606` |
+| **PR** | [#208](https://github.com/catgeot/Days/pull/208) |
+| **일지** | [`2026-09-10-project-log.md`](./2026-09-10-project-log.md) |
+| **소유** | `PlaceScenicGateway.jsx` · `placeScenicGateway.js` · `GalleryInfoView.jsx` · `PlaceGalleryView.jsx` · `ScenicPage.jsx` · `ThemeModuleBackButton.jsx` |
+| **금지** | UI 리디자인 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `npm run smoke:place-scenic-gateway` (21 passed) · `npm run build` |
+
+**다음 제시어**:
+
+```
+장소카드 갤러리-명소 본문 연계 #2, 사람 Preview QA 및 병합 대기
+@plans/feature-handoff-index.md
+@plans/2026-09-10-project-log.md
+브랜치 cursor/scenic-gateway-2ced · PR #208
+금지: UI 임의 리디자인 · feature에 plans/** 커밋
+작업: 장소카드 갤러리에서 명소 본문 진입 후 모달 닫기 시 원래 갤러리로 정확히 복귀하는지 확인
+```
 
 ---
 
@@ -290,54 +370,64 @@
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `e8da2987` · PR [#186](https://github.com/catgeot/Days/pull/186) · **#2 사람 Preview QA** · B와 **동시 OK** |
+| **상태** | **#15 push** · tip `4b354407` · **#16 사람 Preview QA** (영동 한천 7·양산 6) |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `e8da2987` |
-| **PR** | [#186](https://github.com/catgeot/Days/pull/186) |
+| **tip** | `4b354407` |
+| **PR** | [#216](https://github.com/catgeot/Days/pull/216) merge ✅ `210d8a56` |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
-| **일지** | [`2026-09-04-project-log.md`](./2026-09-04-project-log.md) |
-| **Preview** | `/qa/palgyeong-use` → git Preview `/` · `/korea/theme/scenic?hub=mungyeong` |
+| **일지** | [`2026-09-11-project-log.md`](./2026-09-11-project-log.md) |
+| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=yeongdong` |
 | **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `smoke:korea-local-scenic-lists` · `audit:korea-local-scenic-lists` · `vite build` |
+| **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run build` |
+| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15** 영동 한천 7·양산 6 오버레이. 순수 사진/개요 누락 **211**/876. 다음 허브 **함안 7** · 사천 6 |
 
 **다음 제시어**:
 
 ```
-팔경 활용 #2, Preview QA
+팔경 활용 #16, 사람 Preview QA
 @plans/feature-handoff-index.md
-@plans/2026-09-04-project-log.md
+@plans/2026-09-11-project-log.md
 @plans/korea-local-scenic-use-plan.md
-브랜치 cursor/palgyeong-use-e744 · PR #186 · Preview /qa/palgyeong-use
-금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드
-작업: 홈 검색 문경 · /korea/theme/scenic 문경 hub · 축제 상세 인근 목록 소제목
+브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: /korea/theme/scenic?hub=yeongdong 한천팔경 결손 7행·양산팔경 결손 6행 썸네일·개요 · 행마다 사진이 다른지
 ```
 
 ---
 
-### 팔경 contentId — 오케 (B)
+### 팔경 contentId — main 병합 완료 ✅
 
 | | |
 |--|--|
-| **상태** | R01–R16 ✅ · **P0 종료** members **579/876** null **297**(terminal) · P2 **null 104** · **P0 inv** ✅ · **다음 P2-L3** · A와 **동시 OK** |
-| **브랜치** | `cursor/palgyeong-cid` · tip `505733e2` |
-| **PR** | [#185](https://github.com/catgeot/Days/pull/185) |
-| **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§3·§9 B** · method **§5.7** |
-| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — **P2-L3** hub-batch keyword |
-| **일지** | [`2026-09-09-project-log.md`](./2026-09-09-project-log.md) |
-| **소유** | JSON `contentId` · fill · audit · **UI 금지** |
-| **금지** | JSX · scenic 승격 · 워커 병렬 LIVE · 본명-only keyword 재시도 · `--limit=100` 로또 · AI가 ID 기입 · feature에 `plans/**` 커밋 |
+| **상태** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **브랜치** | `cursor/palgyeong-cid` · merge commit `53b21b00` |
+| **PR** | [#185](https://github.com/catgeot/Days/pull/185) (MERGED) |
+| **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) · method **§5.7** |
+| **큐** | [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) — P0·P1·P2 전 라운드 종결 · 잔여 51건 terminal |
+| **일지** | [`2026-09-04-project-log.md`](./2026-09-04-project-log.md) |
+| **종결 성과** | P0 멤버 579/876 HIT, P1 허브 68 HIT, P2 820/871(94.1%) 충족 · 양구 수목원 자체 큐레이션 반영 완료 |
 
-**다음 제시어**:
+**다음 제시어 없음** (주제 종료). 후속 자체 큐레이션 작업은 아래 '명소 자체 큐레이션' 트랙에서 이어감.
 
-```
-팔경contentId #P2-L3, hub-batch keyword
-@plans/feature-handoff-index.md
-@plans/korea-local-scenic-contentid-queue.md
-브랜치 cursor/palgyeong-cid · PR #185
-금지: UI · scenic 승격 · 워커 병렬 LIVE · AI가 contentId 기입 · feature에 plans/** 커밋
-작업: P2 scenic null 104 — --hubs=uiryeong,hanam,geochang,gunwi,gwangju,seongnam,danyang --keyword-only --limit=20
-```
+---
+
+### 명소 자체 큐레이션 — TourAPI 미등재 명소 보강
+
+| | |
+|--|--|
+| **상태** | **#3 완료 (PR [#207](https://github.com/catgeot/Days/pull/207) open)** · tip `a62f7123` · **51건 전수 자체 큐레이션 100% 종결** (R00 1건, R01 14건, R02 16건, R03 20건) · 사람 PR 검토 및 병합 대기 |
+| **브랜치** | `cursor/curated-scenic` |
+| **tip** | `a62f7123` |
+| **PR** | [#207](https://github.com/catgeot/Days/pull/207) |
+| **가이드** | [`korea-curated-spots-guide.md`](./korea-curated-spots-guide.md) |
+| **큐** | [`curated-scenic-spots-queue.md`](./curated-scenic-spots-queue.md) (전체 51건 중 51건 100% 완료, 잔여 0건) |
+| **도구** | `scripts/report-curated-scenic-candidates.mjs` · `scripts/search-tourapi-photos.mjs` |
+| **소유** | `korea-scenic-spots-overrides.mjs` · `korea-scenic-spot-images.json` · `koreaScenicSpots.json` |
+| **금지** | AI 허구 본문 창작 금지(공식 팩트 기반 요약) · 저작권 미확인 블로그 사진 금지 · JSON 직접 편집 금지 |
+| **VERIFY** | `npm run audit:korea-scenic-spots` · `npm run smoke:korea-scenic-spots` · `npm run build` |
+
+**다음 제시어 없음** (51건 전수 자체 큐레이션 완료 종결, PR #207 검토 및 병합 대기).
 
 ---
 
