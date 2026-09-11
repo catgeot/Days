@@ -460,6 +460,71 @@ export function resolveLocalScenicListSpotById(id, locale = 'ko') {
   return memberToScenicListSpot(list, member, undefined, locale);
 }
 
+const USC_BINGHYEOL_FRONT =
+  'https://www.usc.go.kr/upload/contents/20240321/DA406CB9AFE3484383F4A34ABC5D3332.jpg';
+const USC_BINGHYEOL_TREES =
+  'https://www.usc.go.kr/upload/contents/20240321/1E5203EEE5204E6AA97DCC4FD2B1F229.jpg';
+const USC_CLIFF_STREAM =
+  'https://www.usc.go.kr/upload/contents/20240321/F4444D586A6840ABB9375AA2BFC7E195.jpg';
+const USC_INAM_INSCRIPTION =
+  'https://www.usc.go.kr/upload/contents/20240331/C84BAAD7A0754ACCBB6A6F9DBACFD18C.jpg';
+const USC_INAM_STREAM_ROCK =
+  'https://www.usc.go.kr/upload/contents/20240331/20CC56FCB3D64648BA18938F22CDE063.jpg';
+const USC_SEOWON_BINGWOLRU =
+  'https://www.usc.go.kr/upload/contents/20240321/45306B3FD633427F9CA36FE3C7C55635.jpg';
+const USC_SEOWON_HALL =
+  'https://www.usc.go.kr/upload/contents/20240321/B6C3DA5800874BB19D09FFF26728F480.jpg';
+const USC_BRIDGE =
+  'https://www.usc.go.kr/upload/contents/20240321/D727AF913F294667B9543FA2FB1F2119.jpg';
+const USC_STREAM_ROAD =
+  'https://www.usc.go.kr/upload/contents/20240321/9A8628466C9D419A819EE3750416EA44.jpg';
+const USC_PAGODA_AUTUMN =
+  'https://www.usc.go.kr/upload/contents/20240331/B479016F2590494F8F79E3115234A62A.jpg';
+const USC_PAGODA_SKY =
+  'https://www.usc.go.kr/upload/contents/20240331/942CD7641A86489EB4D011E3AA0C1E32.jpg';
+const USC_PAGODA_GINKGO =
+  'https://www.usc.go.kr/upload/contents/20240331/B08D438E5E7E47EB99DAF08880FFA7CF.jpg';
+const VISITKOREA_BINGGYE_VALLEY =
+  'https://tong.visitkorea.or.kr/cms/resource/62/3542362_image2_1.jpg';
+const VISITKOREA_BINGGYE_PEAK =
+  'https://tong.visitkorea.or.kr/cms/resource/63/3542363_image2_1.jpg';
+const VISITKOREA_BINGGYE_RAINBOW =
+  'https://tong.visitkorea.or.kr/cms/resource/64/3542364_image2_1.jpg';
+const VISITKOREA_BINGGYE_TALUS =
+  'https://tong.visitkorea.or.kr/cms/resource/66/3542366_image2_1.jpg';
+const VISITKOREA_BINGGYE_MEANDER =
+  'https://tong.visitkorea.or.kr/cms/resource/68/3542368_image2_1.jpg';
+const VISITKOREA_BINGGYE_GORGE =
+  'https://tong.visitkorea.or.kr/cms/resource/69/3542369_image2_1.jpg';
+const VISITKOREA_BINGGYE_SEOWON =
+  'https://tong.visitkorea.or.kr/cms/resource/93/3407093_image2_1.jpg';
+const VISITKOREA_GUCHEONDONG =
+  'https://tong.visitkorea.or.kr/cms/resource/33/3304433_image2_1.jpg';
+const VISITKOREA_DEOGYUSAN =
+  'https://tong.visitkorea.or.kr/cms/resource/44/3533344_image2_1.jpg';
+const KHS_ILSADAE = 'https://www.khs.go.kr/unisearch/images/scenic_site/1629007.jpg';
+const KHS_PAHOE_SUSIMDAE =
+  'https://www.khs.go.kr/unisearch/images/scenic_site/1629008.jpg';
+const KHS_BINGSANSA_PAGODA =
+  'https://www.khs.go.kr/unisearch/images/treasure/2021070217141301.jpg';
+
+const BINGGYE_PARK_ADDR = '경상북도 의성군 춘산면 빙계리 896 (빙계군립공원)';
+const GUCHEONDONG_SEOLCHEON_ADDR =
+  '전북특별자치도 무주군 설천면 구천동 계곡 일원';
+const GUCHEONDONG_TRAIL_ADDR =
+  '전북특별자치도 무주군 설천면 삼공리 (덕유산국립공원 구천동 탐방로)';
+
+function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
+  const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
+  return {
+    overview,
+    addr1,
+    imageUrl,
+    firstImage: imageUrl,
+    galleryUrls,
+  };
+}
+
 /**
  * 지자체 팔경 멤버별 런타임 오버레이 — JSON contentId 직접 기입·scenic 승격 없이
  * TourAPI 미등재 또는 사진 누락 멤버의 썸네일·개요·갤러리 보강.
@@ -622,6 +687,201 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
       'https://tong.visitkorea.or.kr/cms2/website/88/1120888.jpg',
     ],
   },
+  'local-scenic:uiseong-binggye-palgyeong:빙계빙혈': localScenicPhotoOverlay(
+    '빙계팔경 제1경 빙혈(氷穴)은 춘산면 서원마을 뒷산 기슭 바위 아래, 너덧 명이 들어설 수 있는 방 한 칸 넓이의 얼음 구멍입니다. 의성군에 따르면 입춘이면 찬 기운이 나고 한여름에는 얼음이 얼며, 입추가 지나면 녹아 동지에는 훈훈한 바람이 나옵니다. 경사면 암괴(애추)가 만드는 이 현상으로 빙계리 일대는 2011년 천연기념물 제527호 의성 빙계리 얼음골로 지정되었습니다.',
+    BINGGYE_PARK_ADDR,
+    USC_BINGHYEOL_FRONT,
+    [USC_BINGHYEOL_TREES],
+  ),
+  'local-scenic:uiseong-binggye-palgyeong:빙계풍혈': localScenicPhotoOverlay(
+    '빙계팔경 제2경 풍혈(風穴)은 마을 동구 도로변 바위와 바위 사이에 뚫린 좁고 깊은 바람 구멍입니다. 의성군 공식 소개에 여름에는 찬바람이, 겨울철에는 훈훈한 더운 바람이 일며, 근방 크고 작은 바위 틈에서도 같은 현상이 나타납니다. 제1경 빙혈과 함께 천연기념물 의성 빙계리 얼음골을 이루는 대표 지점입니다.',
+    BINGGYE_PARK_ADDR,
+    USC_CLIFF_STREAM,
+    [VISITKOREA_BINGGYE_TALUS],
+  ),
+  'local-scenic:uiseong-binggye-palgyeong:빙계인암': localScenicPhotoOverlay(
+    '빙계팔경 제3경 인암(仁岩)은 옛 빙계서원 터 앞에 있는 너비 1.2m, 높이 2.4m가 넘는 큰 바위입니다. 의성군에 따르면 정오 햇살에 바위 전면에 어질 인(仁)자 모양의 그늘이 나타나 세상 인심을 선도하는 듯하다고 전합니다. 1933년 경북팔승 중 하나로 뽑힌 빙계계곡 암반 경관의 한 축입니다.',
+    BINGGYE_PARK_ADDR,
+    USC_INAM_INSCRIPTION,
+    [USC_INAM_STREAM_ROCK],
+  ),
+  'local-scenic:uiseong-binggye-palgyeong:빙계의각': localScenicPhotoOverlay(
+    '빙계팔경 제4경 의각(義閣)은 임진왜란 때 윤은보(尹殷甫)가 모재·회재 두 분의 위패를 청송 주왕산으로 모셔 7년 동안 삭망 향화를 이어 피난시킨 공적을 기리는 전각입니다. 의성군은 그 의리를 기려 비와 전각을 세워 의사각(義士閣)이라 불렀다고 적습니다. 빙계서원과 맞물린 유교 충의의 현장입니다.',
+    BINGGYE_PARK_ADDR,
+    VISITKOREA_BINGGYE_SEOWON,
+    [USC_SEOWON_BINGWOLRU, USC_SEOWON_HALL],
+  ),
+  'local-scenic:uiseong-binggye-palgyeong:빙계수대': localScenicPhotoOverlay(
+    '빙계팔경 제5경 수대(水碓)는 시냇물을 이용해 매일 많은 곡식을 찧던 규모 큰 물레방아가 있던 자리입니다. 의성군에 따르면 물레방아는 오래전 자취를 감췄고, 그 빈터 가까이 대한불교법화종 소속 빙계정사(氷溪精舍)가 자리합니다. 계곡 살림과 신앙이 겹친 빙계 마을의 생활 경관입니다.',
+    BINGGYE_PARK_ADDR,
+    USC_BRIDGE,
+    [VISITKOREA_BINGGYE_RAINBOW],
+  ),
+  'local-scenic:uiseong-binggye-palgyeong:빙산사지오층석탑': localScenicPhotoOverlay(
+    '빙계팔경 제6경이자 보물로 지정된 의성 빙산사지 오층석탑은 높이 8.15m의 모전석탑입니다. 의성군·국가유산청에 따르면 돌을 벽돌 크기로 다듬어 쌓았으며, 국보 의성 탑리 오층석탑을 본뜬 통일신라 말~고려 초 형식으로 보입니다. 1층 몸돌 정면에는 불상을 모시던 감실이 있고, 상륜부는 노반만 남아 있습니다.',
+    '경상북도 의성군 춘산면 빙계계곡길 127 (빙계리 산70)',
+    USC_PAGODA_AUTUMN,
+    [USC_PAGODA_SKY, USC_PAGODA_GINKGO, KHS_BINGSANSA_PAGODA],
+  ),
+  'local-scenic:uiseong-binggye-palgyeong:빙계불정': localScenicPhotoOverlay(
+    '빙계팔경 제7경 불정(佛頂)은 불정봉 꼭대기가 움푹 파인 지점입니다. 의성군은 그 옛날 부처가 용과 싸울 때 찍은 쇠스랑 자국이라는 설을 전합니다. 병풍처럼 둘러선 빙계 절벽과 함께 경북팔승지일(八勝地一) 비석이 있는 계곡 암봉 경관의 일부입니다.',
+    BINGGYE_PARK_ADDR,
+    VISITKOREA_BINGGYE_PEAK,
+    [VISITKOREA_BINGGYE_MEANDER],
+  ),
+  'local-scenic:uiseong-binggye-palgyeong:빙계용추': localScenicPhotoOverlay(
+    '빙계팔경 제8경 용추(龍湫·용소)는 깎아지른 절벽 밑 시냇물이 굽이치는 곳의 깊은 웅덩이입니다. 의성군에 따르면 부처와 싸운 용의 머리가 부딪쳐 파인 데라 전하나, 현재는 거의 메워진 상태입니다. 불정과 짝을 이루는 빙계 창세 설화의 물길 경승입니다.',
+    BINGGYE_PARK_ADDR,
+    VISITKOREA_BINGGYE_VALLEY,
+    [VISITKOREA_BINGGYE_GORGE, USC_STREAM_ROAD],
+  ),
+  'local-scenic:muju-other:은구암': localScenicPhotoOverlay(
+    '구천동33경 제2경 은구암(隱龜岩)은 라제통문에서 약 2.9km, 설천면 두길리 구산마을 남쪽 계곡 운장대 앞에 있습니다. 무주군은 거북 형상의 바위가 숨어 있는 듯하다 하여 이름 붙였고, 선녀가 내려와 목욕하던 곳이라 하여 강선대(降仙臺)라고도 불렀습니다.',
+    '전북특별자치도 무주군 설천면 두길리 구산마을 남쪽 계곡',
+    VISITKOREA_GUCHEONDONG,
+  ),
+  'local-scenic:muju-other:청금대': localScenicPhotoOverlay(
+    '구천동33경 제3경 청금대(聽琴臺)는 은구암에서 남쪽으로 약 0.5km 지점입니다. 무주군 공식 소개에 흐르는 개울 물소리에 귀를 기울이면 탄금(彈琴) 소리처럼 신비롭다고 하여 붙여진 이름입니다. 외구천동 드라이브 구간의 계류 청취 명소입니다.',
+    '전북특별자치도 무주군 설천면 두길리 일원',
+    VISITKOREA_GUCHEONDONG,
+  ),
+  'local-scenic:muju-other:와룡담': localScenicPhotoOverlay(
+    '구천동33경 제4경 와룡담(臥龍潭)은 청금대에서 물길을 따라 약 1.9km, 일사대 하류의 반석 소입니다. 무주군은 물이 누워 있는 용 같은 바위 주변을 맴돌며 담을 이룬다고 적으며, 용이 등천하려고 10년을 머물렀다는 전설이 전합니다. 위치가 궁벽해 발길은 드물지만 독특한 정취를 지닌 외구천동 경승입니다.',
+    '전북특별자치도 무주군 설천면 두길리 (일사대 하류)',
+    VISITKOREA_GUCHEONDONG,
+  ),
+  'local-scenic:muju-other:학소대': localScenicPhotoOverlay(
+    '구천동33경 제5경 학소대(鶴巢臺)는 와룡담에서 약 0.6km, 서벽정 동쪽 계곡입니다. 무주군에 따르면 학이 둥지를 틀고 살던 노송이 있던 명소로, 지금은 어린 소나무가 그 자리를 잇습니다. 제6경 일사대·서벽정과 맞닿은 외구천동의 기암 소나무 경관입니다.',
+    '전북특별자치도 무주군 설천면 두길리 서벽정 동쪽 계곡',
+    VISITKOREA_GUCHEONDONG,
+  ),
+  'local-scenic:muju-other:일사대': localScenicPhotoOverlay(
+    '구천동33경 제6경 일사대(一士臺)는 명승으로 지정된 원당천 하식애입니다. 국가유산청은 고종 때 학자 연재 송병선이 서벽정을 짓고 은거한 곳으로, 고을 선비들이 그를 동방일사(東方一士)라 한 데서 이름이 비롯되었다고 적습니다. 서벽정 서쪽 기암이 배의 돛대처럼 솟아 구천동 3대 경승 중 하나로 꼽힙니다.',
+    '전북특별자치도 무주군 설천면 구천동로 1868-30 (두길리)',
+    KHS_ILSADAE,
+    [VISITKOREA_GUCHEONDONG],
+  ),
+  'local-scenic:muju-other:함벽소': localScenicPhotoOverlay(
+    '구천동33경 제7경 함벽소(涵碧沼)는 일사대에서 약 0.4km 지점입니다. 무주군은 늦은 봄 철쭉과 가을 단풍으로 붉은 골짜기를 이루고, 여름 남벽수색(藍碧水色)이 마음을 씻어 주는 듯하다고 소개합니다. 일사대 일원과 이어지는 외구천동의 맑은 소입니다.',
+    '전북특별자치도 무주군 설천면 두길리 일원',
+    VISITKOREA_GUCHEONDONG,
+  ),
+  'local-scenic:muju-other:가의암': localScenicPhotoOverlay(
+    '구천동33경 제8경 가의암(可意巖)은 함벽소에서 약 0.3km, 인공으로 다듬은 듯한 흰 반석이 층층을 이룬 자리입니다. 무주군에 따르면 맑은 물이 차례로 굴러 넘기고, 함벽소를 거쳐 온 노인이 쉴 곳이 마땅찮다 하자 지나던 고승이 그 뜻을 받아 반석을 만들어 주었다는 전설에서 이름이 왔습니다.',
+    '전북특별자치도 무주군 설천면 두길리 일원',
+    VISITKOREA_GUCHEONDONG,
+  ),
+  'local-scenic:muju-other:추월담': localScenicPhotoOverlay(
+    '구천동33경 제9경 추월담(秋月潭)은 가의암에서 약 2.0km 지점입니다. 무주군은 가을밤 달빛이 소에 담기면 기암이 선경을 이룬다고 적으며, 임진왜란 때 김천일 장군의 장인 양도사가 마전 부락에서 매일 밤 바위에 앉아 공을 드리다가 소에 비친 달을 보고 도를 깨워 이름을 붙였다고 전합니다.',
+    '전북특별자치도 무주군 설천면 구천동 계곡 (마전 일원)',
+    VISITKOREA_GUCHEONDONG,
+  ),
+  'local-scenic:muju-other:만조탄': localScenicPhotoOverlay(
+    '구천동33경 제10경 만조탄(晩釣灘)은 추월담에서 약 0.6km의 여울 낚시터입니다. 무주군에 따르면 석양빛 여울에 낚시를 드리우는 풍정이 으뜸이고 송병선도 자주 찾았으며, 구천 승려가 쌀을 씻던 뜨물이 여기까지 흘렀다 하여 뜨물재라고도 불렀습니다.',
+    GUCHEONDONG_SEOLCHEON_ADDR,
+    VISITKOREA_GUCHEONDONG,
+  ),
+  'local-scenic:muju-other:수심대': localScenicPhotoOverlay(
+    '구천동33경 제12경 수심대(水心臺)는 파회와 함께 명승으로 지정된 기암 절벽입니다. 국가유산청은 신라 일지대사가 맑은 물에 비친 그림자를 보고 도를 깨쳤다 하여 수심대, 물이 돌아 나간다 하여 수회(水回)라 불렀다고 적습니다. 병풍처럼 중첩된 절벽을 금강봉·소금강이라 부르며 파회와 짝을 이루는 구천동 3대 경승입니다.',
+    '전북특별자치도 무주군 설천면 심곡리 산13-2 일원',
+    KHS_PAHOE_SUSIMDAE,
+    [VISITKOREA_GUCHEONDONG],
+  ),
+  'local-scenic:muju-other:세심대': localScenicPhotoOverlay(
+    '구천동33경 제13경 세심대(洗心臺)는 수심대에서 약 1.8km, 설천면 삼공리로 드는 소머리고개 비탈 아래입니다. 무주군은 큰 바위와 아름다운 담이 있어, 덕유산 아래 사찰이 성할 때 불공·수도하러 가는 이가 몸과 마음을 먼저 씻고 갔다고 전합니다. 외구천동에서 내구천동으로 넘어가는 문턱입니다.',
+    '전북특별자치도 무주군 설천면 삼공리 소머리고개 아래',
+    VISITKOREA_GUCHEONDONG,
+  ),
+  'local-scenic:muju-other:수경대': localScenicPhotoOverlay(
+    '구천동33경 제14경 수경대(水鏡臺)는 세심대에서 약 0.5km, 삼공리를 가르는 계곡의 다리 위쪽입니다. 무주군에 따르면 병풍 암벽 아래로 비단결 같은 암반을 미끄러진 물이 거울처럼 맑은 담을 이룹니다. 외구천동의 마지막 경승으로, 여기서부터 내구천동은 걸어서 듭니다.',
+    '전북특별자치도 무주군 설천면 삼공리',
+    VISITKOREA_GUCHEONDONG,
+  ),
+  'local-scenic:muju-other:월하탄': localScenicPhotoOverlay(
+    '구천동33경 제15경 월하탄(月下灘)은 수경대에서 약 3.0km, 인월담으로 이어지는 긴 여울목입니다. 무주군은 기암을 타고 여러 갈래로 쏟아지는 폭포수가 달빛에 은빛으로 빛난다고 소개하며, 내구천동 탐방의 들머리로 구천동 관광단지와 맞닿아 있습니다.',
+    GUCHEONDONG_TRAIL_ADDR,
+    VISITKOREA_GUCHEONDONG,
+    [VISITKOREA_DEOGYUSAN],
+  ),
+  'local-scenic:muju-other:사자담': localScenicPhotoOverlay(
+    '구천동33경 제17경 사자담(獅子潭)은 인월담에서 약 0.2km 지점입니다. 무주군에 따르면 사자목에 살던 사자가 내려와 목욕하던 곳이며, 사자 형상의 기암이 소를 이룹니다. 인월담·청류동·비파담으로 이어지는 내구천동 중류의 암반 담입니다.',
+    GUCHEONDONG_TRAIL_ADDR,
+    VISITKOREA_GUCHEONDONG,
+  ),
+  'local-scenic:muju-other:청류동': localScenicPhotoOverlay(
+    '구천동33경 제18경 청류동(淸流洞)은 사자담과 비파담 사이 약 0.2km의 직통 계곡입니다. 무주군은 홈 진 암반 위로 맑은 물이 얇게 깔려 흐르고, 가을 단풍이 짙으면 물이 붉게 물들어 별천지가 된다고 적습니다.',
+    GUCHEONDONG_TRAIL_ADDR,
+    VISITKOREA_GUCHEONDONG,
+  ),
+  'local-scenic:muju-other:비파담': localScenicPhotoOverlay(
+    '구천동33경 제19경 비파담(琵琶潭)은 속칭 대접소로, 비파 모양의 소입니다. 무주군은 선녀가 내려와 비파를 타며 놀았다는 전설을 전하며, 다연대 암반을 타고 쏟아진 폭포수가 담을 이뤄 천연 수영장이 되었다가 청류동으로 흘러든다고 소개합니다.',
+    GUCHEONDONG_TRAIL_ADDR,
+    VISITKOREA_GUCHEONDONG,
+  ),
+  'local-scenic:muju-other:다연대': localScenicPhotoOverlay(
+    '구천동33경 제20경 다연대(茶煙臺)는 비파담 위쪽의 연계 암반입니다. 무주군에 따르면 구천동을 탐승하던 선인들이 비파담으로 미끄러지는 옥류에 감탄하고 차를 끓여 마시며 피로를 풀던 자리입니다. 비파담과 한 세트로 읽는 내구천동의 차 향 대입니다.',
+    GUCHEONDONG_TRAIL_ADDR,
+    VISITKOREA_GUCHEONDONG,
+  ),
+  'local-scenic:muju-other:구월담': localScenicPhotoOverlay(
+    '구천동33경 제21경 구월담(九月潭)은 다연대에서 약 0.3km, 월음령 계곡과 백련사 계곡 물이 합류해 폭포수를 쏟는 담입니다. 무주군은 형형색색 무늬의 암반이 맑은 물에 잠기고, 가을 단풍이 곱게 물들면 더욱 아름답다고 적습니다.',
+    GUCHEONDONG_TRAIL_ADDR,
+    VISITKOREA_GUCHEONDONG,
+  ),
+  'local-scenic:muju-other:금포탄': localScenicPhotoOverlay(
+    '구천동33경 제22경 금포탄(琴浦灘)은 구월담에서 약 0.9km의 여울입니다. 무주군에 따르면 바위 사이를 굽는 여울 소리와 심산유곡의 바람 소리가 어우러져 탄금 소리 같다 하여 이름이 붙었습니다. 내구천동 중·상류를 잇는 청각의 경승입니다.',
+    GUCHEONDONG_TRAIL_ADDR,
+    VISITKOREA_GUCHEONDONG,
+  ),
+  'local-scenic:muju-other:호탄암': localScenicPhotoOverlay(
+    '구천동33경 제23경 호탄암(虎灘巖)은 금포탄에서 약 0.7km, 구천 계곡에서 향적봉을 볼 수 있는 고개 아래입니다. 무주군은 밀림 사이로 쏟아지는 물소리와 산대나무 숲, 겹쳐 솟은 큰 바위를 적으며, 산신을 모시던 호랑이가 안개 속 바위에서 미끄러져 소에 빠졌다는 전설을 전합니다.',
+    GUCHEONDONG_TRAIL_ADDR,
+    VISITKOREA_GUCHEONDONG,
+    [VISITKOREA_DEOGYUSAN],
+  ),
+  'local-scenic:muju-other:청류계': localScenicPhotoOverlay(
+    '구천동33경 제24경 청류계(淸流溪)는 호탄암과 안심대 사이 약 1.1km 계곡입니다. 무주군은 산책로에서 훤히 보이는 울창한 수림과 기암괴석 사이로 흐르는 맑은 물이 비경을 이룬다고 소개합니다. 백련사로 오르는 탐방로와 나란한 내구천동 상류 물길입니다.',
+    GUCHEONDONG_TRAIL_ADDR,
+    VISITKOREA_GUCHEONDONG,
+  ),
+  'local-scenic:muju-other:안심대': localScenicPhotoOverlay(
+    '구천동33경 제25경 안심대(安心臺)는 청류계와 이어진 다리 위쪽의 여울목입니다. 무주군에 따르면 구천동과 백련사를 오가는 행인이 계곡물을 안심하고 건너던 곳이며, 기암 사이 폭포수와 맑은 물이 덕유산 등산객의 쉼터가 됩니다.',
+    GUCHEONDONG_TRAIL_ADDR,
+    VISITKOREA_GUCHEONDONG,
+  ),
+  'local-scenic:muju-other:신양담': localScenicPhotoOverlay(
+    '구천동33경 제26경 신양담(新陽潭)은 안심대에서 약 0.2km, 속칭 새암골입니다. 무주군은 숲 터널 구천동 계곡 중 유일하게 햇빛을 볼 수 있는 지점으로, 옛 신양사(新陽寺) 터만 남았다고 적습니다. 길 아래 기암과 양쪽 계곡에서 흘러내리는 물이 비경을 이룹니다.',
+    GUCHEONDONG_TRAIL_ADDR,
+    VISITKOREA_GUCHEONDONG,
+  ),
+  'local-scenic:muju-other:명경담': localScenicPhotoOverlay(
+    '구천동33경 제27경 명경담(明鏡潭)은 신양담에서 약 0.3km, 백련사로 오르는 오르막 여울목입니다. 무주군에 따르면 잠긴 물이 거울같이 맑다 하여 이름이 붙었고, 절로 향하는 이가 담수에 자신을 비쳐 심신을 가다듬던 곳입니다.',
+    GUCHEONDONG_TRAIL_ADDR,
+    VISITKOREA_GUCHEONDONG,
+  ),
+  'local-scenic:muju-other:구천폭포': localScenicPhotoOverlay(
+    '구천동33경 제28경 구천폭포(九千瀑布)는 명경담에서 약 0.2km의 층암 폭포입니다. 무주군은 산책로 오른쪽에서는 2단, 계곡 건너 왼쪽에서는 3단으로 보이며, 선녀가 무지개를 타고 내려와 놀았다는 전설을 전합니다. 백련사 직전 내구천동의 대표 폭포입니다.',
+    GUCHEONDONG_TRAIL_ADDR,
+    VISITKOREA_GUCHEONDONG,
+    [VISITKOREA_DEOGYUSAN],
+  ),
+  'local-scenic:muju-other:백련담': localScenicPhotoOverlay(
+    '구천동33경 제29경 백련담(白蓮潭)은 구천폭포에서 약 0.2km, 백련사를 지척에 둔 못입니다. 무주군은 덕유산 상봉 못봉의 못과 연관이 있다고 하며, 연화폭을 거친 맑은 물이 담겨 흘러간다고 소개합니다.',
+    GUCHEONDONG_TRAIL_ADDR,
+    VISITKOREA_GUCHEONDONG,
+  ),
+  'local-scenic:muju-other:연화폭': localScenicPhotoOverlay(
+    '구천동33경 제30경 연화폭(蓮華瀑)은 백련담과 이속대 사이 약 0.3km 계곡입니다. 무주군에 따르면 흘러내리는 물이 층층 암반과 기암에 부딪치며 여러 개의 작은 폭포와 물보라를 이룹니다. 백련사 골짜기의 연꽃 같은 다단 폭포입니다.',
+    GUCHEONDONG_TRAIL_ADDR,
+    VISITKOREA_GUCHEONDONG,
+    [VISITKOREA_DEOGYUSAN],
+  ),
+  'local-scenic:muju-other:이속대': localScenicPhotoOverlay(
+    '구천동33경 제31경 이속대(離俗臺)는 연화폭과 이어지고 백련사와 지척입니다. 무주군은 기암의 좁은 홈을 타고 미끄러지듯 쏟아지는 한줄기 폭포수를 적으며, 사바세계를 떠나는 중생이 속세와의 연을 끊는 곳이라 하여 이름 지었다고 전합니다. 제32경 백련사로 드는 마지막 속세의 대입니다.',
+    GUCHEONDONG_TRAIL_ADDR,
+    VISITKOREA_GUCHEONDONG,
+    [VISITKOREA_DEOGYUSAN],
+  ),
 };
 
 function lookupLocalScenicMemberOverlay(spotId) {

@@ -90,8 +90,8 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | #5 main 병합 완료 ✅ · merge commit `33776ccb` · PR [#210](https://github.com/catgeot/Days/pull/210) (MERGED) · 의성·무주 등 후속 오버레이 보강 계획 수립 완료 | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
-| **index 행** | 팔경 활용 (main 병합 ✅) | 팔경 contentId (종료) → 명소 자체 큐레이션 |
+| **지금** | #10 push `6e3c4f4b` · PR [#213](https://github.com/catgeot/Days/pull/213) · **사람 Preview QA** (행 부제 1경~8경) | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · AI가 ID 기입 |
 
 ### 채팅명 복붙표 (`#N` 리셋 금지)
@@ -103,7 +103,12 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | 3 | `팔경 활용 #3, 누락 허브 본문 선별 및 팔경 전용 그룹 UI 준비` | A | **완료** · tip `16eb2aee` · PR [#210](https://github.com/catgeot/Days/pull/210) |
 | 4 | `팔경 활용 #4, 사람 Preview QA` | A 사람 | **완료** · 사람 Preview QA PASS ✅ · PR #210 검토 및 병합 대기 |
 | 5 | `팔경 활용 #5, PR #210 main 병합 및 후속 허브 오버레이 확장 검토` | A | **완료** · PR #210 main 병합 확인(`33776ccb`) 및 의성·무주 오버레이 확장 계획 수립 |
-| 6 | `팔경 활용 #6, 의성·무주 결손 허브 런타임 오버레이 보강` | A | **다음 대기** |
+| 6 | `팔경 활용 #6, 의성·무주 결손 허브 런타임 오버레이 보강` | A | **완료** · tip `f1367c6f` · PR [#212](https://github.com/catgeot/Days/pull/212) |
+| 7 | `팔경 활용 #7, 사람 Preview QA` | A 사람 | **완료** · 빙계 8행 동일 썸네일 피드백 → #8 |
+| 8 | `팔경 활용 #8, 빙계 팔경 사진 다양화` | A | **완료** · tip `b0f0766e` · PR [#212](https://github.com/catgeot/Days/pull/212) merge ✅ `25ea5579` |
+| 9 | `팔경 활용 #9, 사람 Preview QA` | A 사람 | **완료** · 빙계 사진 QA 후 #212 merge · 동일 「의성 팔경」 부제 피드백 → #10 |
+| 10 | `팔경 활용 #10, 팔경 번호` | A | **완료** · tip `6e3c4f4b` · PR [#213](https://github.com/catgeot/Days/pull/213) |
+| 11 | `팔경 활용 #11, 사람 Preview QA` | A 사람 | **열기 가능** · 의성 1경~8경 행 부제 · 그룹 칩 의성 팔경 |
 | — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
 | — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |
 | — | `팔경contentId #P2-L10, 잔여 null 분석 및 전략` | B | **완료** · tip `fb4c5513` 27/32 |
@@ -181,17 +186,54 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 작업: PR #210 main 병합 확인 및 다음 결손 허브(무주 28건, 의성 8건 등) 런타임 오버레이 보강 계획 수립
 ```
 
-### §1.2 A #6 다음 제시어
+### §1.2 A #6 오버레이 보강 완료
 
 ```
 팔경 활용 #6, 의성·무주 결손 허브 런타임 오버레이 보강
 @plans/feature-handoff-index.md
 @plans/2026-09-10-project-log.md
 @plans/korea-local-scenic-use-plan.md
-브랜치 cursor/palgyeong-use-e744
+브랜치 cursor/palgyeong-use-e744 · PR #212
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
 작업: 의성 빙계팔경(8건) 및 무주 구천동33경(28건 결손) 순수 지자체 팔경 공공 공식 팩트 기반 런타임 오버레이(LOCAL_SCENIC_MEMBER_OVERLAYS) 보강
 ```
+
+### §1.2 A #7 다음 제시어
+
+```
+팔경 활용 #7, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-10-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · PR #212 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: /korea/theme/scenic?hub=uiseong 빙계팔경 8행 썸네일·상세 개요 · /korea/theme/scenic?hub=muju 구천동33경 결손 행(은구암·일사대 등) 사진·개요
+```
+
+### §1.2 A #9 다음 제시어
+
+```
+팔경 활용 #9, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-11-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · PR #212 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: /korea/theme/scenic?hub=uiseong 빙계팔경 8행 썸네일이 서로 다른지 · 행을 열어 본문 갤러리가 경승(빙혈 입구·절벽·바위·서원·다리·석탑·봉우리·용소)에 맞는지
+```
+
+### §1.2 A #11 다음 제시어
+
+```
+팔경 활용 #11, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-11-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · PR #213 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: /korea/theme/scenic?hub=uiseong 8행 부제가 의성 1경~8경으로 서로 다른지 · 그룹 칩이 의성 팔경인지
+```
+
 
 ### §1.2 B 다음 (#P2-END) — P2 종결 및 PR #185 검토
 
