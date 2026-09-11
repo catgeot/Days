@@ -98,11 +98,11 @@
 ## 팔경 활용 #13 — 광양·하동 결손 오버레이 (Cloud)
 
 - **세션** `팔경 활용 #13, 광양·하동 결손 오버레이`
-- **브랜치** `cursor/palgyeong-use-e744` · tip `ae857dd7` · PR [#216](https://github.com/catgeot/Days/pull/216) (OPEN)
-- **완료**: `LOCAL_SCENIC_MEMBER_OVERLAYS`에 광양9경 결손 6건(백운산 4대 계곡·자연휴양림·이순신대교·광양만 야경·옥룡사지 동백·읍수와 이팝나무)·하동10경 결손 7건(화개장터 십리벚꽃·금오산 일출·쌍계사 가을·형제봉 철쭉·청학동 삼성궁·하동포구·섬호정 섬진강) 공공 공식 팩트 개요·주소·사진. JSON contentId·scenic 승격 없음. 금오산 일출은 하동케이블카, 형제봉 철쭉은 평사리들판 조망(의도적 근사).
+- **브랜치** `cursor/palgyeong-use-e744` · tip `e29213bb` · PR [#216](https://github.com/catgeot/Days/pull/216) (OPEN)
+- **완료**: `LOCAL_SCENIC_MEMBER_OVERLAYS`에 광양9경 결손 6건·하동10경 결손 7건 공공 공식 팩트 개요·주소·사진. JSON contentId·scenic 승격 없음. 금오산 일출은 하동케이블카, 형제봉 철쭉은 평사리들판 조망(의도적 근사). **검색**: 명승 검색 `하동`/`하동 십경`에 십경 10행 주입(표시명 exact + 명소 풀 멤버 주입).
 - **VERIFY** `smoke:korea-local-scenic-lists` PASS · `npm run build` PASS
-- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=gwangyang` · `?hub=hadong`
-- **다음** 사람 Preview QA — 결손 13행 썸네일·개요 · 행마다 다른 사진
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic` 검색 하동 · `?hub=gwangyang` · `?hub=hadong`
+- **다음** 사람 Preview QA — 검색 하동 십경 · 결손 13행 썸네일·개요 · 행마다 다른 사진
 
 ```
 팔경 활용 #14, 사람 Preview QA
@@ -111,6 +111,6 @@
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · PR #216 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: /korea/theme/scenic?hub=gwangyang 결손 6행·?hub=hadong 결손 7행에 썸네일·개요가 있는지 · 행마다 사진이 다른지 · 본문이 경승과 맞는지
+작업: /korea/theme/scenic 검색 하동·하동 십경에 그룹 하동 십경 10행이 있는지 · ?hub=gwangyang 결손 6행·?hub=hadong 결손 7행 썸네일·개요 · 행마다 사진이 다른지
 ```
 
