@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 14,
-  sessionPhase: '검색 그룹 묶기',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'palgyeong-use',
+  title: '세계행사 일정',
+  sessionNo: 54,
+  sessionPhase: '리스트 사진 영문 검색',
+  branch: 'cursor/world-events-wave3',
+  previewPath: '/world-events',
+  qaShareSlug: 'world-events',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -174,6 +174,14 @@ export const cloudPreviewWorkLog = [
     detail:
       '홈 검색 「문경」에 소제목 문경 팔경+멤버를 여행지·지명보다 앞에 붙였습니다. 명승 같은 ul 상단에 N경 멤버(contentId 없으면 이름만). 축제 상세 인근 관광지 목록 안에만 소제목 그룹. Tour LIVE·scenic 승격·축제 홈 파드 없음. Preview /qa/palgyeong-use — 홈 검색 문경 · /korea/theme/scenic?hub=mungyeong · 축제 상세 인근 목록.',
     at: '2026-09-04T10:00:00.000Z',
+  },
+  {
+    id: '2026-09-09-world-events-54c-en-photos',
+    session: '세계행사 일정 #54c, 리스트 사진 확대 Prod QA',
+    title: '행사 사진 Unsplash 영문 검색',
+    detail:
+      '리스트·상세 사진 호출을 영문 행사명으로 바꿨습니다. 한글 Unsplash는 무관 사진이 나와 폴백이 안 됐습니다. 위키만 있는 갤러리 캐시는 다시 받고, 문서·같은 컷 연속은 걸러집니다. Preview /qa/world-events — 로즈 퍼레이드·빈 오페라 카드가 행사 장면인지.',
+    at: '2026-09-09T10:20:00.000Z',
   },
   {
     id: '2026-09-09-world-events-54b-list-thumb-size',

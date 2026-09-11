@@ -60,78 +60,110 @@ function uniqueNonEmptyStrings(values) {
   return out;
 }
 
-/**
- * Hero gallery modal — Unsplash primary (ko title), short en + glossary for Wikimedia.
- * @param {import('./worldEvents').WorldEvent | null | undefined} event
- * @param {string} [locale]
- */
-export function buildWorldEventHeroGalleryQueries(event, locale = 'ko') {
-  if (!event) return { primary: '', fallbackEn: '', wikimediaQueries: [] };
+const PHOTO_KEYWORD_STOP = new Set([
+  'the',
+  'and',
+  'with',
+  'from',
+  'for',
+  'season',
+  'window',
+  'holiday',
+  'city',
+  'week',
+  'annual',
+  'event',
+  'tour',
+]);
 
-  const title = getWorldEventTitle(event, locale);
+/**
+ * Unsplash/Wikimedia index English captions. Hangul queries return unrelated hits and skip EN fallbacks.
+ * @param {string} value
+ */
+export function isHangulPhotoQuery(value) {
+  return /[\uAC00-\uD7A3]/.test(String(value || ''));
+}
+
+/**
+ * @param {string} value
+ */
+function normalizePhotoQuery(value) {
+  return String(value || '')
+    .replace(/[·•]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * @param {import('./worldEvents').WorldEvent | null | undefined} event
+ */
+function englishPhotoQueryCandidates(event) {
+  if (!event) return [];
+
   const titleEn = getWorldEventTitle(event, 'en');
   const placeMeta = getWorldEventPlaceMeta(event.slug, 'en');
   const placeEn = placeMeta?.label ? String(placeMeta.label).trim() : '';
-  const glossaryTerms = Array.isArray(event.glossaryTerms) ? event.glossaryTerms : [];
-
-  const primary = String(event.heroGallerySearchQueryKo || title || '').trim();
-  const primaryAlt = primary.replace(/[·•]/g, ' ').replace(/\s+/g, ' ').trim();
-
-  const glossaryEnQueries = glossaryTerms
-    .map((term) => term.searchQueryEn || term.termEn)
+  const glossaryEnTerms = (Array.isArray(event.glossaryTerms) ? event.glossaryTerms : [])
+    .map((term) => normalizePhotoQuery(term.termEn))
     .filter(Boolean);
+  const shortTitleEn = normalizePhotoQuery(String(titleEn || '').split(/[·&]/)[0]);
 
-  const shortTitleEn = String(titleEn || '')
-    .split(/[·&]/)[0]
-    .trim();
-
-  const fallbackEn = String(
-    event.heroGallerySearchQueryEn ||
-      glossaryEnQueries[0] ||
-      [shortTitleEn, placeEn].filter(Boolean).join(' ') ||
-      titleEn,
-  ).trim();
-
-  const wikimediaQueries = uniqueNonEmptyStrings([
+  return uniqueNonEmptyStrings([
     event.heroGallerySearchQueryEn,
-    ...glossaryEnQueries.slice(0, 3),
     shortTitleEn && placeEn ? `${shortTitleEn} ${placeEn}` : '',
-    placeEn ? `${placeEn} temple festival` : '',
-    fallbackEn,
-  ]);
+    titleEn,
+    shortTitleEn,
+    ...glossaryEnTerms.slice(0, 3),
+  ]).filter((query) => !isHangulPhotoQuery(query));
+}
+
+/**
+ * Words used to prefer Unsplash hits whose caption matches the event.
+ * @param {import('./worldEvents').WorldEvent | null | undefined} event
+ * @returns {string[]}
+ */
+export function buildWorldEventPhotoSearchKeywords(event) {
+  if (!event) return [];
+  const queries = englishPhotoQueryCandidates(event);
+  const words = [];
+  for (const query of queries) {
+    for (const raw of String(query).toLowerCase().split(/[^a-z0-9]+/i)) {
+      const word = raw.trim();
+      if (word.length < 3) continue;
+      if (PHOTO_KEYWORD_STOP.has(word)) continue;
+      words.push(word);
+    }
+  }
+  return uniqueNonEmptyStrings(words);
+}
+
+/**
+ * Hero gallery — Unsplash/Wikimedia queries are English-only (UI locale ignored).
+ * @param {import('./worldEvents').WorldEvent | null | undefined} event
+ * @param {string} [_locale]
+ */
+export function buildWorldEventHeroGalleryQueries(event, _locale = 'ko') {
+  if (!event) return { primary: '', fallbackEn: '', wikimediaQueries: [] };
+
+  const candidates = englishPhotoQueryCandidates(event);
+  const primary = candidates[0] || '';
+  const fallbackEn = candidates.find((query) => query !== primary) || '';
 
   return {
-    primary: primaryAlt || primary,
+    primary,
     fallbackEn,
-    wikimediaQueries,
+    wikimediaQueries: uniqueNonEmptyStrings(candidates),
   };
 }
 
 /**
- * Hub list thumbs — ordered Unsplash queries (ko title → en fallbacks → glossary/wiki terms).
+ * Hub list thumbs — English Unsplash queries only.
  * @param {import('./worldEvents').WorldEvent | null | undefined} event
- * @param {string} [locale]
+ * @param {string} [_locale]
  * @returns {string[]}
  */
-export function buildWorldEventListPhotoQueries(event, locale = 'ko') {
-  if (!event) return [];
-
-  const { primary, fallbackEn, wikimediaQueries } = buildWorldEventHeroGalleryQueries(event, locale);
-  const titleEn = getWorldEventTitle(event, 'en');
-  const placeMeta = getWorldEventPlaceMeta(event.slug, 'en');
-  const placeEn = placeMeta?.label ? String(placeMeta.label).trim() : '';
-  const shortTitleEn = String(titleEn || '')
-    .split(/[·&]/)[0]
-    .trim();
-
-  return uniqueNonEmptyStrings([
-    primary,
-    fallbackEn,
-    shortTitleEn && placeEn ? `${shortTitleEn} ${placeEn}` : '',
-    shortTitleEn,
-    titleEn,
-    ...(wikimediaQueries || []),
-  ]);
+export function buildWorldEventListPhotoQueries(event, _locale = 'ko') {
+  return englishPhotoQueryCandidates(event);
 }
 
 /**

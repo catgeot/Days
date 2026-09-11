@@ -1,4 +1,4 @@
-const LIST_PHOTO_CACHE_KEY = 'gateo-world-event-list-photo-v1';
+const LIST_PHOTO_CACHE_KEY = 'gateo-world-event-list-photo-v2-en';
 
 /**
  * @param {{ url?: string, source?: string } | null | undefined} image
@@ -32,6 +32,45 @@ export function pickWorldEventListPhoto(images) {
   }
 
   return null;
+}
+
+/**
+ * @param {{ captionKo?: string, captionEn?: string } | null | undefined} image
+ * @param {string[]} keywords
+ */
+export function scoreListPhotoRelevance(image, keywords) {
+  if (!image || !Array.isArray(keywords) || keywords.length === 0) return 0;
+  const text = `${image.captionEn || ''} ${image.captionKo || ''}`.toLowerCase();
+  if (!text.trim()) return 0;
+  let score = 0;
+  for (const keyword of keywords) {
+    if (keyword && text.includes(String(keyword).toLowerCase())) score += 1;
+  }
+  return score;
+}
+
+/**
+ * Prefer a caption that mentions the event; otherwise keep Unsplash relevance order.
+ * @param {Array<Record<string, unknown>>} photos
+ * @param {string[]} [keywords]
+ */
+export function pickMappedUnsplashListPhoto(photos, keywords = []) {
+  const mapped = Array.isArray(photos)
+    ? photos.map(mapUnsplashPhotoToListImage).filter(Boolean)
+    : [];
+  if (!mapped.length) return null;
+  if (!keywords.length) return mapped[0];
+
+  let best = mapped[0];
+  let bestScore = scoreListPhotoRelevance(best, keywords);
+  for (const image of mapped.slice(1)) {
+    const score = scoreListPhotoRelevance(image, keywords);
+    if (score > bestScore) {
+      best = image;
+      bestScore = score;
+    }
+  }
+  return best;
 }
 
 /**
