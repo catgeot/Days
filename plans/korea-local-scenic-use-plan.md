@@ -113,7 +113,8 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | 13 | `팔경 활용 #13, 광양·하동 결손 오버레이` | A | **완료** · tip `e29213bb` · PR [#216](https://github.com/catgeot/Days/pull/216) · 광양 6·하동 7 · 검색 하동→십경 |
 | 14 | `팔경 활용 #14, 하동 검색 그룹 묶기` | A | **완료** · PR [#216](https://github.com/catgeot/Days/pull/216) merge ✅ `210d8a56` |
 | 15 | `팔경 활용 #15, 영동 결손 오버레이` | A | **완료** · tip `4b354407` · 한천 7·양산 6 |
-| 16 | `팔경 활용 #16, 사람 Preview QA` | A 사람 | **열기 가능** · `?hub=yeongdong` · 그다음 함안9경 7 |
+| 16 | `팔경 활용 #16, 사람 Preview QA 피드백 반영` | A | **완료** · tip `64e018c8` · 한천 검색 8행 주입 · 양산 12경 내원사계곡·황산공원 오버레이 |
+| 17 | `팔경 활용 #17, 사람 Preview QA` | A 사람 | **열기 가능** · 영동 16행 및 양산/한천 검색 확인 · 그다음 함안9경 7 |
 | — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
 | — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |
 | — | `팔경contentId #P2-L10, 잔여 null 분석 및 전략` | B | **완료** · tip `fb4c5513` 27/32 |

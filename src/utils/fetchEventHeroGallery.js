@@ -3,7 +3,9 @@ import { apiClient } from '../pages/Home/lib/apiClient';
 import { getWorldEventHeroImages } from './worldEventGlossary';
 import {
   buildWorldEventHeroGalleryQueries,
+  isHangulPhotoQuery,
 } from './worldEventMedia';
+import { isUnsplashListPhoto } from './worldEventListPhoto';
 import {
   mapUnsplashPhotosToGalleryImages,
   mergeWorldEventHeroGalleryImages,
@@ -35,16 +37,22 @@ function withTimeout(promise, ms, label) {
 }
 
 /**
- * @param {string} primary
- * @param {string} fallbackEn
+ * @param {Array<{ url?: string, source?: string }>} images
  */
+function galleryCacheHasUnsplash(images) {
+  return Array.isArray(images) && images.some((image) => isUnsplashListPhoto(image));
+}
+
 async function fetchClientUnsplashGallery(primary, fallbackEn) {
   const accessKey = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
-  if (!accessKey || !primary) return [];
+  const queries = [primary, fallbackEn]
+    .map((query) => String(query || '').trim())
+    .filter((query, index, list) => query && !isHangulPhotoQuery(query) && list.indexOf(query) === index);
+  if (!accessKey || !queries.length) return [];
 
-  let photos = await apiClient.fetchUnsplashImages(accessKey, primary, 1);
-  if (photos.length < MIN_GALLERY_COUNT && fallbackEn && fallbackEn !== primary) {
-    const more = await apiClient.fetchUnsplashImages(accessKey, fallbackEn, 1);
+  let photos = await apiClient.fetchUnsplashImages(accessKey, queries[0], 1);
+  if (photos.length < MIN_GALLERY_COUNT && queries[1]) {
+    const more = await apiClient.fetchUnsplashImages(accessKey, queries[1], 1);
     const seen = new Set(photos.map((photo) => photo.id));
     photos = [...photos, ...more.filter((photo) => !seen.has(photo.id))];
   }
@@ -76,8 +84,9 @@ export async function fetchEventHeroGallery(event, locale = 'ko') {
     const cachedImages = Array.isArray(cached?.images) ? cached.images : [];
     const cacheUsable = cachedImages.length >= MIN_GALLERY_COUNT;
     const cacheSeedsMatch = heroGallerySeedCacheMatches(cachedImages, seedImages);
+    const cacheHasUnsplash = galleryCacheHasUnsplash(cachedImages);
 
-    if (cacheUsable && cacheSeedsMatch) {
+    if (cacheUsable && cacheSeedsMatch && cacheHasUnsplash) {
       return {
         ok: true,
         images: buildHeroGalleryFromCache(seedImages, cachedImages, TARGET_GALLERY_COUNT),
@@ -93,7 +102,7 @@ export async function fetchEventHeroGallery(event, locale = 'ko') {
           fallbackSearchQuery: fallbackEn,
           wikimediaQueries,
           seedImages,
-          force: cacheUsable && !cacheSeedsMatch,
+          force: cacheUsable && (!cacheSeedsMatch || !cacheHasUnsplash),
         },
       }),
       INVOKE_TIMEOUT_MS,
