@@ -114,3 +114,22 @@
 작업: /korea/theme/scenic 검색 하동·하동 십경에 그룹 하동 십경 10행이 있는지 · ?hub=gwangyang 결손 6행·?hub=hadong 결손 7행 썸네일·개요 · 행마다 사진이 다른지
 ```
 
+## 팔경 활용 #14 — 하동 검색 십경·대표 명소 그룹 분리 (Cloud)
+
+- **세션** `팔경 활용 #14, 하동 검색 그룹 묶기`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `91c3301d` · PR [#216](https://github.com/catgeot/Days/pull/216) (OPEN)
+- **완료**: 사람 Preview QA에서 검색 「하동」리스트가 십경·대표 명소가 한 줄씩 엇갈리며 소제목이 반복됨. `sortScenicSpotsByPlaceCluster`가 `groupTitle`을 깨서, 팔경 그룹은 1경→10경 한 덩어리·대표 명소는 그 뒤로. JSON contentId·scenic 승격 없음.
+- **VERIFY** `smoke:korea-local-scenic-lists` PASS · `smoke:korea-scenic-place-cluster` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic` 검색 하동 · `?hub=gwangyang` · `?hub=hadong`
+- **다음** 사람 Preview QA — 검색 하동 십경 한 덩어리 · 소제목 반복 없음 · 결손 13행 썸네일·개요
+
+```
+팔경 활용 #15, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-11-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · PR #216 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: /korea/theme/scenic 검색 하동 — 하동 십경 10행이 한 덩어리인지, 그 다음 지역 대표 명소인지 · 소제목이 반복되지 않는지 · ?hub=gwangyang 결손 6행·?hub=hadong 결손 7행 썸네일·개요 · 행마다 사진이 다른지
+```
+

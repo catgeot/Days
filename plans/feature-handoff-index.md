@@ -370,28 +370,28 @@
 
 | | |
 |--|--|
-| **상태** | **#13 push** · tip `e29213bb` · PR [#216](https://github.com/catgeot/Days/pull/216) · **#14 사람 Preview QA** (광양·하동 · 검색 하동) |
+| **상태** | **#14 push** · tip `91c3301d` · PR [#216](https://github.com/catgeot/Days/pull/216) · **#15 사람 Preview QA** (하동 검색 그룹) |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `e29213bb` |
+| **tip** | `91c3301d` |
 | **PR** | [#216](https://github.com/catgeot/Days/pull/216) (OPEN) · [#215](https://github.com/catgeot/Days/pull/215) merge ✅ `b929e7fd` |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-11-project-log.md`](./2026-09-11-project-log.md) |
 | **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic` 검색 `하동` · `?hub=gwangyang` · `?hub=hadong` |
 | **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `npm run smoke:korea-local-scenic-lists` PASS · `npm run build` PASS |
-| **성과** | #10 행 부제 번호(#213 merge). **#12** 축제 인근 썸네일·`원주 1경`(#215 merge). **#13** 광양9경 결손 6건·하동10경 결손 7건 오버레이 · 명승 검색 `하동`에 십경 10행 |
+| **VERIFY** | `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-place-cluster` PASS · `npm run build` PASS |
+| **성과** | #10 행 부제 번호(#213 merge). **#12** 축제 인근 썸네일·`원주 1경`(#215 merge). **#13** 광양9경 결손 6건·하동10경 결손 7건 오버레이 · 명승 검색 `하동`에 십경 10행. **#14** 검색 십경·대표 명소 그룹이 섞이지 않게 |
 
 **다음 제시어**:
 
 ```
-팔경 활용 #14, 사람 Preview QA
+팔경 활용 #15, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-11-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · PR #216 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: /korea/theme/scenic 검색 하동·하동 십경에 그룹 하동 십경 10행이 있는지 · ?hub=gwangyang 결손 6행·?hub=hadong 결손 7행 썸네일·개요 · 행마다 사진이 다른지
+작업: /korea/theme/scenic 검색 하동 — 하동 십경 10행이 한 덩어리인지, 그 다음 지역 대표 명소인지 · 소제목이 반복되지 않는지 · ?hub=gwangyang 결손 6행·?hub=hadong 결손 7행 썸네일·개요 · 행마다 사진이 다른지
 ```
 
 ---
