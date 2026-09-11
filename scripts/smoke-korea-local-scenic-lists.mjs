@@ -183,6 +183,7 @@ assert.ok(
 const merged = mergeLocalScenicMembersIntoScenicSpots([], 'mungyeong');
 assert.ok(merged.length >= 8, 'scenic ul injects 문경 팔경 members without scenic JSON');
 assert.equal(merged[0].groupTitle, '문경 팔경');
+assert.equal(merged[0].blurb, '문경 1경');
 assert.ok(
   merged.every((s) => s.source === 'localScenicList' || s.groupTitle === '문경 팔경'),
   'injected rows are list members not koreaScenicSpots writes',
@@ -320,6 +321,35 @@ assert.equal(
   uiseongGalleryUrls.length,
   '의성 빙계팔경 갤러리 URL 중복 없음',
 );
+assert.ok(
+  uiseongPalgyeong.every((s) => s.groupTitle === '의성 팔경'),
+  '의성 groupTitle 의성 팔경',
+);
+const uiseongRankBlurbs = [
+  '의성 1경',
+  '의성 2경',
+  '의성 3경',
+  '의성 4경',
+  '의성 5경',
+  '의성 6경',
+  '의성 7경',
+  '의성 8경',
+];
+assert.deepEqual(
+  uiseongPalgyeong.map((s) => s.blurb),
+  uiseongRankBlurbs,
+  '의성 빙계팔경 행 부제 1경~8경',
+);
+assert.equal(
+  new Set(uiseongPalgyeong.map((s) => s.blurb)).size,
+  8,
+  '의성 빙계팔경 행 부제 서로 다름',
+);
+const uiseongEn = mergeLocalScenicMembersIntoScenicSpots([], 'uiseong', 'en').filter(
+  (s) => s.localScenicListId === 'uiseong-binggye-palgyeong',
+);
+assert.equal(uiseongEn[0]?.blurb, 'Uiseong View 1');
+assert.equal(uiseongEn[0]?.groupTitle, 'Uiseong Eight Views');
 
 const mujuEunguam = resolveLocalScenicListSpotById('local-scenic:muju-other:은구암');
 assert.ok(mujuEunguam?.imageUrl, '무주 은구암 overlay imageUrl');
@@ -332,6 +362,9 @@ assert.ok(mujuIlsadae?.imageUrl?.includes('1629007'), '무주 일사대 KHS 사�
 const mujuMerged = mergeLocalScenicMembersIntoScenicSpots([], 'muju');
 const mujuGucheon = mujuMerged.filter((s) => s.localScenicListId === 'muju-other');
 assert.equal(mujuGucheon.length, 33, '무주 구천동33경 33명');
+assert.equal(mujuGucheon[0]?.groupTitle, '무주 명소');
+assert.equal(mujuGucheon[0]?.blurb, '무주 1경');
+assert.equal(mujuGucheon[32]?.blurb, '무주 33경');
 const mujuDeficit = mujuGucheon.filter((s) => !s.contentId);
 assert.equal(mujuDeficit.length, 28, '무주 구천동 결손 28명');
 assert.ok(
