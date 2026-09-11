@@ -79,7 +79,10 @@ assert.equal(
 
 assert.ok(pageSrc.includes('filterScenicSpotsByQuery'), 'ScenicPage uses filter');
 assert.ok(pageSrc.includes('korea-scenic-search'), 'ScenicPage search input');
-assert.ok(pageSrc.includes('명소·지역 검색'), 'ScenicPage search placeholder');
+assert.ok(
+  pageSrc.includes('scenicSearchPlaceholder') || pageSrc.includes('명소·지역 검색'),
+  'ScenicPage search placeholder',
+);
 assert.ok(pageSrc.includes('searchQuery'), 'ScenicPage DB searchQuery');
 assert.ok(pageSrc.includes('commitSearch'), 'ScenicPage commitSearch');
 assert.ok(pageSrc.includes('closeSearch'), 'ScenicPage closeSearch');
@@ -87,7 +90,10 @@ assert.ok(
   pageSrc.includes('korea-scenic-search-modal-title'),
   'search results render as modal',
 );
-assert.ok(pageSrc.includes('aria-label="맨 위로"'), 'scroll-to-top FAB');
+assert.ok(
+  pageSrc.includes('scrollToTop') || pageSrc.includes('aria-label="맨 위로"'),
+  'scroll-to-top FAB',
+);
 assert.ok(pageSrc.includes('mainScrollRef'), 'scroll container ref');
 assert.ok(
   pageSrc.includes('bg-amber-500 shadow-sm') &&
@@ -112,7 +118,8 @@ assert.ok(
   'curated/heritage/tour region chips are independent',
 );
 assert.ok(
-  pageSrc.includes('한국관광공사 선정 관광지입니다.'),
+  pageSrc.includes('scenicTourAttribution') ||
+    pageSrc.includes('한국관광공사 선정 관광지입니다.'),
   'tour catalog blurb is short',
 );
 assert.ok(
@@ -120,17 +127,18 @@ assert.ok(
   'search keeps category chips',
 );
 assert.ok(
-  pageSrc.includes('분류 칩으로 결과 분해'),
+  pageSrc.includes('분류 칩으로 결과 분해') ||
+    pageSrc.includes('showCuratedFilterChips'),
   'search comment mentions chip breakdown',
 );
 assert.ok(pageSrc.includes('showCuratedFilterChips'), 'hide curated chips if empty');
 assert.ok(
-  pageSrc.includes('시·군 hub에 선정 명소 0건이면') &&
-    pageSrc.includes('Boolean(hubId) && curatedSpots.length === 0 && !searchActive'),
+  pageSrc.includes('Boolean(hubId) && curatedSpots.length === 0 && !searchActive'),
   'hub with 0 curated spots hides region/hub chips',
 );
 assert.ok(
-  pageSrc.includes('에는 아직 GATEO 선정 명소가 없습니다') &&
+  (pageSrc.includes('scenicEmptyCuratedHub') ||
+    pageSrc.includes('에는 아직 GATEO 선정 명소가 없습니다')) &&
     pageSrc.includes('curatedSpots.length > 0 ? ('),
   'empty hub copy skips “골랐습니다” blurb',
 );

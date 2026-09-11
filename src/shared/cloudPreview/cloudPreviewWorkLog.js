@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 15,
-  sessionPhase: '영동 결손 오버레이',
+  sessionNo: 16,
+  sessionPhase: '사람 Preview QA 피드백 반영',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-11-palgyeong-use-16-search-and-yangsan',
+    session: '팔경 활용 #16, 사람 Preview QA 피드백 반영',
+    title: '「한천」검색 8행 주입 · 양산 12경 내원사계곡·황산공원 오버레이',
+    detail:
+      '검색창에 「한천」입력 시 한천팔경 8행이 GATEO 명소에 주입되지 않던 문제를 고치고, 경남 양산 12경의 결손 멤버인 내원사 계곡(3경)과 황산공원(9경)에 한국관광공사 공식 사진·개요·갤러리를 보강했습니다. 영동 양산팔경 제2경 강선대도 실사진을 보강해 영동 16행 썸네일이 모두 고유하게 표시됩니다. Preview /qa/palgyeong-use 확인.',
+    at: '2026-09-11T09:15:00.000Z',
+  },
   {
     id: '2026-09-11-palgyeong-use-15-yeongdong-overlays',
     session: '팔경 활용 #15, 영동 결손 오버레이',

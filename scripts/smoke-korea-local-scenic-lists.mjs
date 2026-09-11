@@ -600,6 +600,55 @@ const ydNaengcheon = resolveLocalScenicListSpotById(
 );
 assert.ok(ydNaengcheon?.overview?.includes('냉천정'), '영동 냉천정 overlay overview');
 
+const yeongdongAll = mergeLocalScenicMembersIntoScenicSpots([], 'yeongdong');
+assert.equal(yeongdongAll.length, 16, '영동 2개 팔경 16행');
+assert.equal(
+  new Set(yeongdongAll.map((s) => s.imageUrl).filter(Boolean)).size,
+  16,
+  '영동 16행 썸네일 16장 모두 고유',
+);
+
+const hancheonSearch = filterScenicSpotsByQuery(
+  listKoreaScenicSpots(),
+  '한천',
+  { injectLocalScenic: true },
+);
+assert.equal(hancheonSearch.length, 8, '한천 검색 시 한천팔경 8행 주입');
+assert.ok(
+  hancheonSearch.every((s) => s.localScenicListId === 'yeongdong-hancheon-palgyeong'),
+  '한천 검색 결과 전원 한천팔경',
+);
+assert.equal(
+  new Set(hancheonSearch.map((s) => s.imageUrl)).size,
+  8,
+  '한천 검색 8행 썸네일 서로 다름',
+);
+
+const ysNaewonsa = resolveLocalScenicListSpotById(
+  'local-scenic:yangsan-other:내원사계곡',
+);
+assert.ok(ysNaewonsa?.imageUrl, '양산 내원사계곡 overlay imageUrl');
+assert.ok(ysNaewonsa?.overview?.includes('내원사'), '양산 내원사계곡 overlay overview');
+assert.equal(ysNaewonsa?.contentId, '126073', '양산 내원사계곡 overlay contentId');
+
+const ysHwangsan = resolveLocalScenicListSpotById(
+  'local-scenic:yangsan-other:황산공원',
+);
+assert.ok(ysHwangsan?.imageUrl, '양산 황산공원 overlay imageUrl');
+assert.ok(ysHwangsan?.overview?.includes('황산공원'), '양산 황산공원 overlay overview');
+assert.equal(ysHwangsan?.contentId, '2784326', '양산 황산공원 overlay contentId');
+
+const yangsanSearch = filterScenicSpotsByQuery(
+  listKoreaScenicSpots(),
+  '양산',
+  { injectLocalScenic: true },
+);
+assert.equal(yangsanSearch.length, 15, '양산 검색 시 양산 허브 15곳');
+const yangsanSearchNaewon = yangsanSearch.find((s) => s.name === '내원사 계곡');
+assert.ok(yangsanSearchNaewon?.imageUrl, '양산 검색 내원사 계곡 사진 있음');
+const yangsanSearchHwangsan = yangsanSearch.find((s) => s.name === '황산공원');
+assert.ok(yangsanSearchHwangsan?.imageUrl, '양산 검색 황산공원 사진 있음');
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

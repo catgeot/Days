@@ -253,16 +253,39 @@ export function resolveLocalScenicList(query) {
   return { list, hub };
 }
 
+const GENERIC_SCENIC_QUERY_TERMS = new Set([
+  '팔경',
+  '8경',
+  '구경',
+  '9경',
+  '십경',
+  '10경',
+  '십이경',
+  '12경',
+  '경',
+  '명승',
+  '명소',
+  'scenic',
+]);
+
 /**
  * 명승 페이지 검색 — title/alias exact 또는 includes.
  * @param {string} query
  */
 export function matchLocalScenicListForScenicSearch(query) {
   const q = normalizeKey(query);
-  if (!q) return null;
+  if (!q || GENERIC_SCENIC_QUERY_TERMS.has(q)) return null;
 
   const exact = listByKey.get(q);
   if (exact) return exact;
+
+  const hub = resolveCityAttractionHub(query);
+  if (hub?.hubId) {
+    const hubNameKey = normalizeKey(hub.name);
+    if (q === hubNameKey || q === normalizeKey(hub.hubId)) {
+      return null;
+    }
+  }
 
   for (const list of LISTS) {
     const keys = [list.title, list.title_en, ...(list.aliases || [])].filter(Boolean);
@@ -1213,6 +1236,37 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     YD_HANCHEON,
     [YD_HANCHEON_4, YD_MULHAN],
   ),
+  'local-scenic:yeongdong-yangsan-palgyeong:강선대': localScenicPhotoOverlay(
+    '양산팔경 제2경 강선대는 금강 상류 물가 절벽 위에 홀로 우뚝 선 육각 정자입니다. 멀리서 보면 강물 위에 떠 있는 바위 위에 정자가 앉아 있는 듯하며, 옛날 하늘에서 선녀들이 내려와 목욕을 하고 놀았다는 아름다운 전설이 전해집니다. 주변의 노송과 맑은 금강 물줄기가 어우러진 풍광이 양산팔경 중에서도 으뜸 절경으로 꼽힙니다.',
+    '충청북도 영동군 양산면 봉곡리 756-1',
+    YD_GANGSEON_3,
+    [YD_GANGSEON, YD_GANGSEON_2],
+  ),
+  'local-scenic:yangsan-other:내원사계곡': {
+    contentId: '126073',
+    overview:
+      '양산 12경 제3경 내원사 계곡은 천성산 기슭에 자리한 유서 깊은 청정 계곡입니다. 예부터 소금강이라 불릴 정도로 자연경관이 빼어나며, 사시사철 맑고 깨끗한 계류가 기암괴석과 첩첩이 선 삼층바위, 병풍바위 사이를 굽이쳐 흐릅니다. 여름철 피서와 봄·가을 등산 및 단풍 명소로 널리 알려져 있습니다.',
+    addr1: '경상남도 양산시 하북면 용연리 (내원사 계곡 일원)',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/40/3489340_image2_1.JPG',
+    firstImage: 'https://tong.visitkorea.or.kr/cms/resource/40/3489340_image2_1.JPG',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms/resource/40/3489340_image2_1.JPG',
+      'https://tong.visitkorea.or.kr/cms/resource/25/3489425_image2_1.JPG',
+      'https://tong.visitkorea.or.kr/cms/resource/37/3532137_image2_1.jpg',
+    ],
+  },
+  'local-scenic:yangsan-other:황산공원': {
+    contentId: '2784326',
+    overview:
+      '양산 12경 제9경 황산공원은 물금읍 낙동강변에 187만㎡ 규모로 조성된 대규모 수변문화공원입니다. 드넓은 억새 생태탐방로와 사계절 야생화 단지, 캠핑장, 산책로, 자전거길, 파크골프장 등 다양한 휴식·레저 공간을 갖추고 있습니다. 시원한 강바람과 낙동강을 붉게 물들이는 저녁 낙조가 아름다운 양산의 대표 힐링 명소입니다.',
+    addr1: '경상남도 양산시 물금읍 물금리 162-1 (황산문화체육공원)',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/15/2784415_image2_1.JPG',
+    firstImage: 'https://tong.visitkorea.or.kr/cms/resource/15/2784415_image2_1.JPG',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms/resource/15/2784415_image2_1.JPG',
+      'https://tong.visitkorea.or.kr/cms/resource/82/2731482_image2_1.jpg',
+    ],
+  },
 };
 
 function lookupLocalScenicMemberOverlay(spotId) {

@@ -137,6 +137,17 @@ export function filterScenicSpotsByQuery(items, query, opts = {}) {
       );
       return mergeLocalScenicMembersIntoScenicSpots(pooled, hub.hubId);
     }
+
+    const listMatch = matchLocalScenicListForScenicSearch(query);
+    if (listMatch) {
+      const curatedMembers = (items || []).filter((item) =>
+        spotMatchesLocalScenicListMember(item, listMatch),
+      );
+      return mergeLocalScenicMembersIntoScenicSpots(
+        curatedMembers,
+        listMatch.hubId,
+      ).filter((spot) => spot.localScenicListId === listMatch.listId);
+    }
   }
 
   const listMatch = matchLocalScenicListForScenicSearch(query);
