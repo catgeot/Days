@@ -370,26 +370,26 @@
 
 | | |
 |--|--|
-| **상태** | **#10 merge ✅** · `d28b4733` · PR [#213](https://github.com/catgeot/Days/pull/213) · **다음 #12 광양·하동 결손 오버레이** |
+| **상태** | **#12 push** · PR [#215](https://github.com/catgeot/Days/pull/215) · **다음 #13 광양·하동 결손 오버레이** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `d28b4733` |
-| **PR** | [#213](https://github.com/catgeot/Days/pull/213) merge ✅ `d28b4733` · [#212](https://github.com/catgeot/Days/pull/212) merge ✅ `25ea5579` |
+| **tip** | `a5b683e1` |
+| **PR** | [#215](https://github.com/catgeot/Days/pull/215) (OPEN) · [#213](https://github.com/catgeot/Days/pull/213) merge ✅ `d28b4733` |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-11-project-log.md`](./2026-09-11-project-log.md) |
-| **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=gwangyang` · `?hub=hadong` |
+| **Preview** | `/qa/palgyeong-use` → git Preview `/korea` · 다음 배치 `/korea/theme/scenic?hub=gwangyang` · `?hub=hadong` |
 | **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run build` |
-| **성과** | #10 행 부제 번호(#213 merge). 사진·개요 없는 순수 결손 **237명**. 다음 배치 광양9경 6건·하동10경 7건. 그다음 영동 한천·함안 |
+| **성과** | #10 행 부제 번호(#213 merge). #12 축제 인근 썸네일·1경(PR #215). 사진·개요 없는 순수 결손 **237명** → 다음 광양9경 6건·하동10경 7건. 그다음 영동 한천·함안 |
 
 **다음 제시어**:
 
 ```
-팔경 활용 #12, 광양·하동 결손 오버레이
+팔경 활용 #13, 광양·하동 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-11-project-log.md
 @plans/korea-local-scenic-use-plan.md
-브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
+브랜치 cursor/palgyeong-use-e744 · PR #215 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
 작업: 광양9경 사진·개요 없는 6건(백운산 4대 계곡·자연휴양림·이순신대교·광양만 야경·옥룡사지 동백·읍수와 이팝나무)과 하동10경 7건(화개장터 십리벚꽃·금오산 일출·쌍계사 가을·형제봉 철쭉·청학동 삼성궁·하동포구·섬호정 섬진강)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=gwangyang · ?hub=hadong
 ```
