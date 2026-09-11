@@ -503,34 +503,32 @@ PROD https://www.gateo.kr/
 
 ---
 
-### 세계 행사·축제 일정 연동 — 리스트 사진 영문 검색 (#54d)
+### 세계 행사·축제 일정 연동 — 상세 갤러리 Unsplash 우선 배치 (#55)
 
 | | |
 |--|--|
-| **상태** | **#54c** 영문 Unsplash **push** · tip `665f2b7d` · PR [#206](https://github.com/catgeot/Days/pull/206) · **#54d** 사람 Preview QA |
-| **브랜치** | `cursor/world-events-wave3` · tip `665f2b7d` |
+| **상태** | **#55** 상세 갤러리 Unsplash 우선 배치 **push** · tip `a4d45fff` · PR [#206](https://github.com/catgeot/Days/pull/206) · 사람 Preview QA |
+| **브랜치** | `cursor/world-events-wave3` · tip `a4d45fff` |
 | **PR** | [#206](https://github.com/catgeot/Days/pull/206) · [#205](https://github.com/catgeot/Days/pull/205) merge ✅ (16:10 카드) |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **§9** · [`world-events-management.md`](./world-events-management.md) |
-| **일지** | [`2026-09-09-project-log.md`](./2026-09-09-project-log.md) |
+| **일지** | [`2026-09-11-project-log.md`](./2026-09-11-project-log.md) |
 | **Preview** | `/qa/world-events` → `/world-events` |
 | **소유** | `worldEventMedia.js` · `fetchWorldEventListPhotos.js` · `fetchEventHeroGallery.js` · `worldEventHeroGalleryMerge.js` |
 | **금지** | worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · 허브에 플래너·숙소 칩 복구 |
 | **VERIFY** | `smoke:world-events-hub` · `smoke:world-events-detail` · `audit:world-events` · `build` PASS |
 
-**게이트**: #54c 사람 Prod QA — 썸네일·본문이 행사와 무관 · 한글 Unsplash가 폴백을 막음 → 영문 쿼리로 재호출. **사람 Preview** 전 merge 금지.
+**게이트**: #55 사람 Preview QA — 상세 갤러리 1~3번 및 히어로에 Unsplash 축제 분위기 사진 우선 노출 · 옥토버페스트 지하철 비상레버/빈 오페라 중복 외관 제거 확인. **사람 Preview** 전 merge 금지.
 
-**#55 (속도, 별 PR)**: LIVE `event_hero_gallery` 위키만이면 상세 캐시는 Unsplash를 다시 받음(이번 #54c `force`). 리스트 첫 로딩은 여전히 Unsplash 검색. 갤러리 12장에 리스트 검색 섞지 말 것.
-
-**다음 제시어** (#54d Preview QA):
+**다음 제시어** (#56 Preview QA):
 
 ```
-세계행사 일정 #54d, 영문 사진 Preview QA
+세계행사 일정 #56, 상세 갤러리 Preview QA
 @plans/feature-handoff-index.md
-@plans/2026-09-09-project-log.md
+@plans/2026-09-11-project-log.md
 @plans/world-events-management.md
 브랜치 cursor/world-events-wave3 · PR #206 · https://www.gateo.kr/qa/world-events
 금지: worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · 허브에 플래너·숙소 칩 복구
-작업: 로즈 퍼레이드·빈 오페라·뗏 카드가 행사 장면인지 · 상세 본문 무관/같은컷 아닌지 · 16:10 · 이동 칩 없음 · 카드 탭 상세
+작업: /world-events/munich-oktoberfest-2026 등 상세 본문 갤러리 1~3번에 생생한 축제 사진이 나오는지 · 지하철 비상레버 등 무관 사진이 없는지 확인
 ```
 
 ---

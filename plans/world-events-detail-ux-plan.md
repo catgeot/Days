@@ -813,16 +813,14 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#54c** 영문 Unsplash **push** · tip `665f2b7d` · PR [#206](https://github.com/catgeot/Days/pull/206) · **#54d** 사람 Preview QA |
-| **브랜치** | `cursor/world-events-wave3` · tip `665f2b7d` |
-| **플랜** | F-0.5 **D5-b-3 ✅** · **Wave3 4/4 ✅** · 리스트 사진 **Unsplash 영문** · 허브 카드 **사진 확대 ✅** |
+| **상태** | **#55** 상세 갤러리 Unsplash 우선 배치 **push** · tip `a4d45fff` · PR [#206](https://github.com/catgeot/Days/pull/206) · 사람 Preview QA |
+| **브랜치** | `cursor/world-events-wave3` · tip `a4d45fff` |
+| **플랜** | F-0.5 **D5-b-3 ✅** · **Wave3 4/4 ✅** · 리스트 사진 **Unsplash 영문** · 허브 카드 **사진 확대 ✅** · **상세 갤러리 Unsplash 우선 배치 ✅** |
 | **Preview** | `/qa/world-events` |
 | **VERIFY** | `smoke:world-events-hub` · `smoke:world-events-detail` · `audit:world-events` · `build` PASS |
 
-**마일스톤**: … → M19 **#54 main 병합 ✅** → M20 **#54b 썸네일 폴백 ✅** → M21 **#54c 사진 확대 ✅**(PR #205) → M22 **#54c 영문 검색** → M23 **#54d Preview QA** · M24 **#55 리스트 Edge 캐시(선택)**
+**마일스톤**: … → M19 **#54 main 병합 ✅** → M20 **#54b 썸네일 폴백 ✅** → M21 **#54c 사진 확대 ✅**(PR #205) → M22 **#54c 영문 검색** → M23 **#55 상세 갤러리 Unsplash 우선 배치 ✅** · M24 **#56 Preview QA**
 
-**#54c Prod QA**: 한글 Unsplash가 무관 사진으로 “성공”해 영문 폴백이 안 돌아감. 리스트·상세는 `titleEn`·장소·`termEn`만. 위키-only 갤러리 캐시는 `force`. 문서 캡션·a/b 컷 연속 제거.
+**#55**: 상세 히어로 갤러리(`EventDetailHero`)에서 생생한 축제 분위기의 Unsplash 사진을 최상단 슬롯(0~N)에 우선 배치하도록 머지 유틸(`mergeWorldEventHeroGalleryImages`) 및 Edge Function 개선. 옥토버페스트 시드의 지하철 비상레버 및 빈 오페라 중복 외관을 실제 축제 개막/텐트 내부/대극장 객석 사진으로 정비.
 
-**#55**: 리스트 첫 로딩은 여전히 Unsplash 검색. 갤러리 12장에 리스트 검색 섞지 말 것. Edge `fetch-event-hero-gallery` 재배포는 선택.
-
-**다음**: 사람 Preview — 로즈 퍼레이드·빈 오페라·뗏이 행사 장면인지. merge는 QA 후.
+**다음**: 사람 Preview — /world-events/munich-oktoberfest-2026 등 상세 본문 갤러리 1~3번에 생생한 축제 사진이 나오는지. merge는 QA 후.

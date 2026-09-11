@@ -180,4 +180,28 @@
 작업: /korea/theme/scenic?hub=yeongdong 16행 사진·개요 고유한지 · 검색창 「한천」입력 시 한천팔경 8행 주입되는지 · 「양산」검색 시 내원사계곡·황산공원 썸네일·개요 뜨는지
 ```
 
+## 세계행사 일정 #55 — 상세 갤러리 Unsplash 우선 배치 및 시드 정비 (Cloud)
+
+- **세션** `세계행사 일정 #55, 상세 갤러리 Unsplash 우선 배치`
+- **브랜치** `cursor/world-events-wave3` · tip `a4d45fff` · PR [#206](https://github.com/catgeot/Days/pull/206) (OPEN)
+- **완료**:
+  1. 상세 히어로 갤러리(`EventDetailHero`)에서 생생한 축제 분위기의 Unsplash 사진을 최상단 슬롯(0~N)에 우선 배치하도록 머지 유틸(`mergeWorldEventHeroGalleryImages`) 및 Edge Function(`fetch-event-hero-gallery`) 로직을 개선.
+  2. Unsplash 고유 ID가 `galleryNearDupKey`에서 과잉 축약되어 탈락하지 않도록 unplash 도메인 예외 가드 추가.
+  3. `heroGallerySeedCacheMatches`가 순서에 의존하지 않고 Set 기반으로 시드 유효성을 체크하도록 개선하여 기존 DB 캐시와 신규 Unsplash 우선 순서가 모두 안정적으로 동작하도록 처리.
+  4. 옥토버페스트 시드에 포함되어 있던 지하철역 에스컬레이터 비상레버 사진을 실제 축제 개막(`O'zapft is!`) 및 텐트 내부(`Hofbraudedans`) 사진으로 교체하고, 빈 국립오페라 중복 외관 시드를 대극장 객석(`Zuschauerraum`) 사진으로 정비.
+- **VERIFY**: `smoke:world-events-hub` PASS · `audit:world-events` PASS · `smoke:world-events-detail` PASS · `build` PASS
+- **Preview** https://www.gateo.kr/qa/world-events → `/world-events/munich-oktoberfest-2026`
+- **다음** 사람 Preview QA — 옥토버페스트 및 세계행사 상세 진입 시 생생한 축제 사진이 첫 화면과 썸네일 전면에 나오는지 확인
+
+```
+세계행사 일정 #56, 상세 갤러리 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-11-project-log.md
+@plans/world-events-management.md
+브랜치 cursor/world-events-wave3 · PR #206 · https://www.gateo.kr/qa/world-events
+금지: worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · 허브에 플래너·숙소 칩 복구
+작업: /world-events/munich-oktoberfest-2026 등 상세 본문 갤러리 1~3번에 생생한 축제 사진이 나오는지 · 지하철 비상레버 등 무관 사진이 없는지 확인
+```
+
+
 
