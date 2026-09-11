@@ -460,8 +460,44 @@ export function resolveLocalScenicListSpotById(id, locale = 'ko') {
   return memberToScenicListSpot(list, member, undefined, locale);
 }
 
+const USC_BINGHYEOL_FRONT =
+  'https://www.usc.go.kr/upload/contents/20240321/DA406CB9AFE3484383F4A34ABC5D3332.jpg';
+const USC_BINGHYEOL_TREES =
+  'https://www.usc.go.kr/upload/contents/20240321/1E5203EEE5204E6AA97DCC4FD2B1F229.jpg';
+const USC_CLIFF_STREAM =
+  'https://www.usc.go.kr/upload/contents/20240321/F4444D586A6840ABB9375AA2BFC7E195.jpg';
+const USC_INAM_INSCRIPTION =
+  'https://www.usc.go.kr/upload/contents/20240331/C84BAAD7A0754ACCBB6A6F9DBACFD18C.jpg';
+const USC_INAM_STREAM_ROCK =
+  'https://www.usc.go.kr/upload/contents/20240331/20CC56FCB3D64648BA18938F22CDE063.jpg';
+const USC_SEOWON_BINGWOLRU =
+  'https://www.usc.go.kr/upload/contents/20240321/45306B3FD633427F9CA36FE3C7C55635.jpg';
+const USC_SEOWON_HALL =
+  'https://www.usc.go.kr/upload/contents/20240321/B6C3DA5800874BB19D09FFF26728F480.jpg';
+const USC_BRIDGE =
+  'https://www.usc.go.kr/upload/contents/20240321/D727AF913F294667B9543FA2FB1F2119.jpg';
+const USC_STREAM_ROAD =
+  'https://www.usc.go.kr/upload/contents/20240321/9A8628466C9D419A819EE3750416EA44.jpg';
+const USC_PAGODA_AUTUMN =
+  'https://www.usc.go.kr/upload/contents/20240331/B479016F2590494F8F79E3115234A62A.jpg';
+const USC_PAGODA_SKY =
+  'https://www.usc.go.kr/upload/contents/20240331/942CD7641A86489EB4D011E3AA0C1E32.jpg';
+const USC_PAGODA_GINKGO =
+  'https://www.usc.go.kr/upload/contents/20240331/B08D438E5E7E47EB99DAF08880FFA7CF.jpg';
 const VISITKOREA_BINGGYE_VALLEY =
   'https://tong.visitkorea.or.kr/cms/resource/62/3542362_image2_1.jpg';
+const VISITKOREA_BINGGYE_PEAK =
+  'https://tong.visitkorea.or.kr/cms/resource/63/3542363_image2_1.jpg';
+const VISITKOREA_BINGGYE_RAINBOW =
+  'https://tong.visitkorea.or.kr/cms/resource/64/3542364_image2_1.jpg';
+const VISITKOREA_BINGGYE_TALUS =
+  'https://tong.visitkorea.or.kr/cms/resource/66/3542366_image2_1.jpg';
+const VISITKOREA_BINGGYE_MEANDER =
+  'https://tong.visitkorea.or.kr/cms/resource/68/3542368_image2_1.jpg';
+const VISITKOREA_BINGGYE_GORGE =
+  'https://tong.visitkorea.or.kr/cms/resource/69/3542369_image2_1.jpg';
+const VISITKOREA_BINGGYE_SEOWON =
+  'https://tong.visitkorea.or.kr/cms/resource/93/3407093_image2_1.jpg';
 const VISITKOREA_GUCHEONDONG =
   'https://tong.visitkorea.or.kr/cms/resource/33/3304433_image2_1.jpg';
 const VISITKOREA_DEOGYUSAN =
@@ -654,43 +690,50 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
   'local-scenic:uiseong-binggye-palgyeong:빙계빙혈': localScenicPhotoOverlay(
     '빙계팔경 제1경 빙혈(氷穴)은 춘산면 서원마을 뒷산 기슭 바위 아래, 너덧 명이 들어설 수 있는 방 한 칸 넓이의 얼음 구멍입니다. 의성군에 따르면 입춘이면 찬 기운이 나고 한여름에는 얼음이 얼며, 입추가 지나면 녹아 동지에는 훈훈한 바람이 나옵니다. 경사면 암괴(애추)가 만드는 이 현상으로 빙계리 일대는 2011년 천연기념물 제527호 의성 빙계리 얼음골로 지정되었습니다.',
     BINGGYE_PARK_ADDR,
-    VISITKOREA_BINGGYE_VALLEY,
+    USC_BINGHYEOL_FRONT,
+    [USC_BINGHYEOL_TREES],
   ),
   'local-scenic:uiseong-binggye-palgyeong:빙계풍혈': localScenicPhotoOverlay(
     '빙계팔경 제2경 풍혈(風穴)은 마을 동구 도로변 바위와 바위 사이에 뚫린 좁고 깊은 바람 구멍입니다. 의성군 공식 소개에 여름에는 찬바람이, 겨울철에는 훈훈한 더운 바람이 일며, 근방 크고 작은 바위 틈에서도 같은 현상이 나타납니다. 제1경 빙혈과 함께 천연기념물 의성 빙계리 얼음골을 이루는 대표 지점입니다.',
     BINGGYE_PARK_ADDR,
-    VISITKOREA_BINGGYE_VALLEY,
+    USC_CLIFF_STREAM,
+    [VISITKOREA_BINGGYE_TALUS],
   ),
   'local-scenic:uiseong-binggye-palgyeong:빙계인암': localScenicPhotoOverlay(
     '빙계팔경 제3경 인암(仁岩)은 옛 빙계서원 터 앞에 있는 너비 1.2m, 높이 2.4m가 넘는 큰 바위입니다. 의성군에 따르면 정오 햇살에 바위 전면에 어질 인(仁)자 모양의 그늘이 나타나 세상 인심을 선도하는 듯하다고 전합니다. 1933년 경북팔승 중 하나로 뽑힌 빙계계곡 암반 경관의 한 축입니다.',
     BINGGYE_PARK_ADDR,
-    VISITKOREA_BINGGYE_VALLEY,
+    USC_INAM_INSCRIPTION,
+    [USC_INAM_STREAM_ROCK],
   ),
   'local-scenic:uiseong-binggye-palgyeong:빙계의각': localScenicPhotoOverlay(
     '빙계팔경 제4경 의각(義閣)은 임진왜란 때 윤은보(尹殷甫)가 모재·회재 두 분의 위패를 청송 주왕산으로 모셔 7년 동안 삭망 향화를 이어 피난시킨 공적을 기리는 전각입니다. 의성군은 그 의리를 기려 비와 전각을 세워 의사각(義士閣)이라 불렀다고 적습니다. 빙계서원과 맞물린 유교 충의의 현장입니다.',
     BINGGYE_PARK_ADDR,
-    VISITKOREA_BINGGYE_VALLEY,
+    VISITKOREA_BINGGYE_SEOWON,
+    [USC_SEOWON_BINGWOLRU, USC_SEOWON_HALL],
   ),
   'local-scenic:uiseong-binggye-palgyeong:빙계수대': localScenicPhotoOverlay(
     '빙계팔경 제5경 수대(水碓)는 시냇물을 이용해 매일 많은 곡식을 찧던 규모 큰 물레방아가 있던 자리입니다. 의성군에 따르면 물레방아는 오래전 자취를 감췄고, 그 빈터 가까이 대한불교법화종 소속 빙계정사(氷溪精舍)가 자리합니다. 계곡 살림과 신앙이 겹친 빙계 마을의 생활 경관입니다.',
     BINGGYE_PARK_ADDR,
-    VISITKOREA_BINGGYE_VALLEY,
+    USC_BRIDGE,
+    [VISITKOREA_BINGGYE_RAINBOW],
   ),
   'local-scenic:uiseong-binggye-palgyeong:빙산사지오층석탑': localScenicPhotoOverlay(
     '빙계팔경 제6경이자 보물로 지정된 의성 빙산사지 오층석탑은 높이 8.15m의 모전석탑입니다. 의성군·국가유산청에 따르면 돌을 벽돌 크기로 다듬어 쌓았으며, 국보 의성 탑리 오층석탑을 본뜬 통일신라 말~고려 초 형식으로 보입니다. 1층 몸돌 정면에는 불상을 모시던 감실이 있고, 상륜부는 노반만 남아 있습니다.',
     '경상북도 의성군 춘산면 빙계계곡길 127 (빙계리 산70)',
-    KHS_BINGSANSA_PAGODA,
-    [VISITKOREA_BINGGYE_VALLEY],
+    USC_PAGODA_AUTUMN,
+    [USC_PAGODA_SKY, USC_PAGODA_GINKGO, KHS_BINGSANSA_PAGODA],
   ),
   'local-scenic:uiseong-binggye-palgyeong:빙계불정': localScenicPhotoOverlay(
     '빙계팔경 제7경 불정(佛頂)은 불정봉 꼭대기가 움푹 파인 지점입니다. 의성군은 그 옛날 부처가 용과 싸울 때 찍은 쇠스랑 자국이라는 설을 전합니다. 병풍처럼 둘러선 빙계 절벽과 함께 경북팔승지일(八勝地一) 비석이 있는 계곡 암봉 경관의 일부입니다.',
     BINGGYE_PARK_ADDR,
-    VISITKOREA_BINGGYE_VALLEY,
+    VISITKOREA_BINGGYE_PEAK,
+    [VISITKOREA_BINGGYE_MEANDER],
   ),
   'local-scenic:uiseong-binggye-palgyeong:빙계용추': localScenicPhotoOverlay(
     '빙계팔경 제8경 용추(龍湫·용소)는 깎아지른 절벽 밑 시냇물이 굽이치는 곳의 깊은 웅덩이입니다. 의성군에 따르면 부처와 싸운 용의 머리가 부딪쳐 파인 데라 전하나, 현재는 거의 메워진 상태입니다. 불정과 짝을 이루는 빙계 창세 설화의 물길 경승입니다.',
     BINGGYE_PARK_ADDR,
     VISITKOREA_BINGGYE_VALLEY,
+    [VISITKOREA_BINGGYE_GORGE, USC_STREAM_ROAD],
   ),
   'local-scenic:muju-other:은구암': localScenicPhotoOverlay(
     '구천동33경 제2경 은구암(隱龜岩)은 라제통문에서 약 2.9km, 설천면 두길리 구산마을 남쪽 계곡 운장대 앞에 있습니다. 무주군은 거북 형상의 바위가 숨어 있는 듯하다 하여 이름 붙였고, 선녀가 내려와 목욕하던 곳이라 하여 강선대(降仙臺)라고도 불렀습니다.',

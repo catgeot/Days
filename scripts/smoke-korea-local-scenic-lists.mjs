@@ -305,6 +305,21 @@ assert.ok(
   uiseongPalgyeong.every((s) => s.overview && s.imageUrl),
   '의성 빙계팔경 8명 overlay 사진·개요',
 );
+assert.equal(
+  new Set(uiseongPalgyeong.map((s) => s.imageUrl)).size,
+  8,
+  '의성 빙계팔경 썸네일 8장 서로 다름',
+);
+const uiseongGalleryUrls = uiseongPalgyeong.flatMap((s) => s.galleryUrls || []);
+assert.ok(
+  uiseongPalgyeong.every((s) => (s.galleryUrls || []).length >= 2),
+  '의성 빙계팔경 본문 갤러리 2장 이상',
+);
+assert.equal(
+  new Set(uiseongGalleryUrls).size,
+  uiseongGalleryUrls.length,
+  '의성 빙계팔경 갤러리 URL 중복 없음',
+);
 
 const mujuEunguam = resolveLocalScenicListSpotById('local-scenic:muju-other:은구암');
 assert.ok(mujuEunguam?.imageUrl, '무주 은구암 overlay imageUrl');
