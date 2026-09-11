@@ -388,6 +388,7 @@ export function localScenicMemberToNearbyItem(list, member, hub, nearbyHit, loca
     overlay?.contentId ||
     fromCurated.contentId;
   const name = member.attractionName;
+  const rankBlurb = localScenicMemberRankBlurb(list, h, member, locale);
   const thumb =
     nearbyHit?.firstImage ||
     overlay?.firstImage ||
@@ -412,7 +413,33 @@ export function localScenicMemberToNearbyItem(list, member, hub, nearbyHit, loca
     source: nearbyHit?.source || 'localScenicList',
     groupTitle: localScenicListDisplayTitle(list, h, locale),
     localScenicListId: list.listId,
+    rankBlurb,
+    blurb: rankBlurb,
   };
+}
+
+/**
+ * 팔경 그룹 행 중 사진이 없고 Tour contentId만 있는 id — DB first_image 조회용.
+ * @param {{ groups?: { items?: object[] }[] } | null | undefined} grouped
+ * @returns {string[]}
+ */
+export function missingNearbyThumbContentIds(grouped) {
+  /** @type {string[]} */
+  const ids = [];
+  const seen = new Set();
+  for (const group of grouped?.groups || []) {
+    for (const item of group.items || []) {
+      const hasThumb = Boolean(
+        String(item?.firstImage || item?.imageUrl || '').trim(),
+      );
+      if (hasThumb) continue;
+      const id = String(item?.contentId || '').trim();
+      if (!hasTourContentId(id) || seen.has(id)) continue;
+      seen.add(id);
+      ids.push(id);
+    }
+  }
+  return ids;
 }
 
 /**

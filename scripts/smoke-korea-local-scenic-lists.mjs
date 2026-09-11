@@ -25,6 +25,7 @@ import {
   localScenicMemberSpotId,
   mergeLocalScenicMembersIntoScenicSpots,
   groupNearbySpotsWithLocalScenic,
+  missingNearbyThumbContentIds,
   hasTourContentId,
   resolveLocalScenicListSpotById,
   listLocalScenicMemberJobs,
@@ -248,9 +249,30 @@ assert.ok(
   groupedNearby.groups[0].items.some((i) => i.name === '새재계곡'),
   'nearby injects SSOT member',
 );
+const nearbySaejae = groupedNearby.groups[0].items.find((i) => i.name === '새재계곡');
+assert.equal(nearbySaejae?.rankBlurb, '문경 1경', 'nearby 팔경 행 부제 문경 1경');
+assert.ok(nearbySaejae?.imageUrl, 'nearby 새재계곡 curated/overlay thumb');
 assert.ok(
   groupedNearby.rest.some((i) => i.name === '문경새재'),
   'non-member nearby stays in rest',
+);
+
+const wonjuNearby = groupNearbySpotsWithLocalScenic([], { hubId: 'wonju' });
+const wonjuGroup = wonjuNearby.groups.find((g) => g.listId === 'wonju-palgyeong');
+assert.ok(wonjuGroup?.title === '원주 팔경', '원주 nearby group title');
+assert.equal(wonjuGroup?.items?.[0]?.name, '구룡사');
+assert.equal(wonjuGroup?.items?.[0]?.rankBlurb, '원주 1경', '원주 1경 행 부제');
+assert.ok(wonjuGroup?.items?.[0]?.imageUrl, '원주 구룡사 nearby thumb');
+const wonjuRanks = (wonjuGroup?.items || []).map((i) => i.rankBlurb);
+assert.deepEqual(
+  wonjuRanks.slice(0, 3),
+  ['원주 1경', '원주 2경', '원주 3경'],
+  '원주 팔경 nearby 1~3경',
+);
+assert.equal(
+  missingNearbyThumbContentIds(wonjuNearby).every((id) => /^\d+$/.test(id)),
+  true,
+  'missing nearby thumbs are Tour ids',
 );
 
 // curated 멤버 필터 (리스트 있을 때만)
