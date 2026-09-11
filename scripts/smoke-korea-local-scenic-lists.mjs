@@ -540,6 +540,66 @@ assert.ok(
 );
 assert.equal(hadongGrouped[0]?.blurb, '하동 1경', '하동 검색 선두가 1경');
 
+const yeongdongMerged = mergeLocalScenicMembersIntoScenicSpots([], 'yeongdong');
+const yeongdongYangsan = yeongdongMerged.filter(
+  (s) => s.localScenicListId === 'yeongdong-yangsan-palgyeong',
+);
+const yeongdongHancheon = yeongdongMerged.filter(
+  (s) => s.localScenicListId === 'yeongdong-hancheon-palgyeong',
+);
+assert.equal(yeongdongYangsan.length, 8, '양산팔경 8명');
+assert.equal(yeongdongHancheon.length, 8, '한천팔경 8명');
+const yeongdongYangsanDeficitNames = [
+  '비봉산',
+  '봉황대',
+  '함벽정',
+  '여의정',
+  '자풍서당',
+  '용암',
+];
+const yeongdongHancheonDeficitNames = [
+  '화헌악',
+  '용연대',
+  '산양벽',
+  '청학굴',
+  '법존암',
+  '사군봉',
+  '냉천정',
+];
+const yeongdongYangsanDeficit = yeongdongYangsan.filter((s) =>
+  yeongdongYangsanDeficitNames.includes(s.attractionName),
+);
+const yeongdongHancheonDeficit = yeongdongHancheon.filter((s) =>
+  yeongdongHancheonDeficitNames.includes(s.attractionName),
+);
+assert.equal(yeongdongYangsanDeficit.length, 6, '양산팔경 결손 6명');
+assert.equal(yeongdongHancheonDeficit.length, 7, '한천팔경 결손 7명');
+assert.ok(
+  [...yeongdongYangsanDeficit, ...yeongdongHancheonDeficit].every(
+    (s) => s.overview && s.imageUrl,
+  ),
+  '영동 결손 13명 overlay 사진·개요',
+);
+assert.ok(
+  [...yeongdongYangsanDeficit, ...yeongdongHancheonDeficit].every((s) => !s.contentId),
+  '영동 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(
+    [...yeongdongYangsanDeficit, ...yeongdongHancheonDeficit].map((s) => s.imageUrl),
+  ).size,
+  13,
+  '영동 결손 13명 썸네일 서로 다름',
+);
+const ydBibong = resolveLocalScenicListSpotById(
+  'local-scenic:yeongdong-yangsan-palgyeong:비봉산',
+);
+assert.ok(ydBibong?.overview?.includes('양산팔경'), '영동 비봉산 overlay overview');
+const ydNaengcheon = resolveLocalScenicListSpotById(
+  'local-scenic:yeongdong-hancheon-palgyeong:냉천정',
+);
+assert.ok(ydNaengcheon?.overview?.includes('냉천정'), '영동 냉천정 overlay overview');
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);

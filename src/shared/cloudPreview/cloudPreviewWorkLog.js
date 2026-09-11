@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 14,
-  sessionPhase: '검색 그룹 묶기',
+  sessionNo: 15,
+  sessionPhase: '영동 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-11-palgyeong-use-15-yeongdong-overlays',
+    session: '팔경 활용 #15, 영동 결손 오버레이',
+    title: '영동 한천·양산 팔경 결손 13건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 한천팔경 결손 7건(화헌악·용연대·산양벽·청학굴·법존암·사군봉·냉천정)과 양산팔경 결손 6건(비봉산·봉황대·함벽정·여의정·자풍서당·용암)의 영동군 공식 팩트 개요·주소·한국관광공사 사진을 보강했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=yeongdong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-11T08:15:00.000Z',
+  },
   {
     id: '2026-09-11-palgyeong-use-14-hadong-group',
     session: '팔경 활용 #14, 검색 그룹 묶기',
