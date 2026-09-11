@@ -50,6 +50,18 @@ assert.match(
   /!showStayStrip && cross\.stay\?\.keyword/,
   'stay keyword chip only when strip is hidden',
 );
+{
+  const stayJsx = modalSrc.indexOf('<ScenicStayStrip');
+  const foodKey = modalSrc.indexOf("korea.theme.spotDetail.nearFood");
+  assert.ok(stayJsx >= 0, 'stay strip JSX is in ThemeSpotDetailModal');
+  assert.ok(
+    stayJsx < foodKey,
+    'stay strip is above nearby food (before nearby rails)',
+  );
+}
+assert.match(modalSrc, /GoogleOutboundButton/, 'Google outbound button next to Naver');
+assert.match(modalSrc, /spotGoogleSearchUrl/, 'Google search URL uses the same query as Naver');
+assert.match(koSrc, /"googleSearchAria"/, 'ko i18n has scenic Google search aria');
 assert.doesNotMatch(
   stripSrc,
   /tripWindowPresetsFromEvent/,

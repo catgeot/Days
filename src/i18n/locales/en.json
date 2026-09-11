@@ -1605,6 +1605,8 @@
         "heritageManager": "Manager",
         "naverSearch": "Naver details",
         "naverSearchAria": "Open Naver details in a new tab",
+        "googleSearch": "Google details",
+        "googleSearchAria": "Open Google details in a new tab",
         "heroExpandSwipe": "Expand photo · swipe left or right",
         "heroExpand": "Expand photo",
         "expandView": "Expand",

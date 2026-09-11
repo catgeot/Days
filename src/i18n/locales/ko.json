@@ -1368,6 +1368,8 @@
         "heritageManager": "관리",
         "naverSearch": "네이버 상세정보 보기",
         "naverSearchAria": "네이버 상세정보 보기 · 새 탭에서 열기",
+        "googleSearch": "구글 상세정보 보기",
+        "googleSearchAria": "구글 상세정보 보기 · 새 탭에서 열기",
         "heroExpandSwipe": "사진 확대보기 · 좌우로 쓸어 넘기기",
         "heroExpand": "사진 확대보기",
         "expandView": "확대보기",

@@ -159,8 +159,36 @@ function CrossTextButton({ onClick, children }) {
   );
 }
 
+function themeSpotCrossInput(spot, detail) {
+  if (!spot) return null;
+  const fromDetailLat = Number(detail?.mapy);
+  const fromDetailLng = Number(detail?.mapx);
+  const lat = Number(spot.lat);
+  const lng = Number(spot.lng);
+  const addr1 = String(detail?.addr1 || spot.addr1 || '').trim();
+  const addr2 = String(detail?.addr2 || spot.addr2 || '').trim();
+  return {
+    hubId: spot.hubId,
+    placeSlug: spot.placeSlug,
+    name: spot.name,
+    nameEn: spot.nameEn,
+    region: spot.region,
+    areaCode: spot.areaCode,
+    areaLabel: spot.areaLabel,
+    locality: spot.locality,
+    addr1: addr1 || undefined,
+    addr2: addr2 || undefined,
+    lat: Number.isFinite(lat) ? lat : fromDetailLat,
+    lng: Number.isFinite(lng) ? lng : fromDetailLng,
+    mapx: detail?.mapx,
+    mapy: detail?.mapy,
+    contentId: spot.contentId,
+  };
+}
+
 /**
  * §2.5.4 모달 하단 크로스 레일 — 매처는 koreaThemeCrossLinks만 사용.
+ * 숙소 스트립은 본문(개요·주소 다음, 주변 맛집 위)에서 렌더.
  * 맛집·레포츠·문화 본문에서는 hub「인근 여행지」대신 DB 주변 관광지로 크로스.
  */
 function ThemeSpotCrossRail({
@@ -176,32 +204,10 @@ function ThemeSpotCrossRail({
   const { locale } = useLocale();
   const navigate = useNavigate();
 
-  const crossSpot = useMemo(() => {
-    if (!spot) return null;
-    const fromDetailLat = Number(detail?.mapy);
-    const fromDetailLng = Number(detail?.mapx);
-    const lat = Number(spot.lat);
-    const lng = Number(spot.lng);
-    const addr1 = String(detail?.addr1 || spot.addr1 || '').trim();
-    const addr2 = String(detail?.addr2 || spot.addr2 || '').trim();
-    return {
-      hubId: spot.hubId,
-      placeSlug: spot.placeSlug,
-      name: spot.name,
-      nameEn: spot.nameEn,
-      region: spot.region,
-      areaCode: spot.areaCode,
-      areaLabel: spot.areaLabel,
-      locality: spot.locality,
-      addr1: addr1 || undefined,
-      addr2: addr2 || undefined,
-      lat: Number.isFinite(lat) ? lat : fromDetailLat,
-      lng: Number.isFinite(lng) ? lng : fromDetailLng,
-      mapx: detail?.mapx,
-      mapy: detail?.mapy,
-      contentId: spot.contentId,
-    };
-  }, [spot, detail]);
+  const crossSpot = useMemo(
+    () => themeSpotCrossInput(spot, detail),
+    [spot, detail],
+  );
 
   const cross = useMemo(
     () => resolveThemeCrossLinks(crossSpot),
@@ -291,7 +297,6 @@ function ThemeSpotCrossRail({
     moduleChips.length > 0 ||
     cross.sameHub.length > 0 ||
     showNearbyHubs ||
-    showStayStrip ||
     stayHref ||
     tnaHref ||
     cross.deepLinks?.festivals ||
@@ -302,10 +307,6 @@ function ThemeSpotCrossRail({
 
   return (
     <div className="space-y-4" aria-label={t('korea.theme.spotDetail.crossRailAria')}>
-      {showStayStrip ? (
-        <ScenicStayStrip spot={crossSpot} stay={cross.stay} locale={locale} />
-      ) : null}
-
       {moduleChips.length > 0 ? (
         <CrossRailSection title={t('korea.theme.spotDetail.crossThemeTitle')}>
           <div className="flex flex-wrap gap-1.5">
@@ -663,7 +664,7 @@ function nearbyPoiAttractionRow(spot, { onSelect }) {
 }
 
 /**
- * 네이버 검색 URL.
+ * 외부 검색 쿼리.
  * 맛집(동명 많음)만 지역+상호 · 관광지·명소·명승·레포츠·문화는 고유명만
  * (지역을 붙이면 본문/플레이스 직행이 깨지기 쉬움).
  * @param {{
@@ -675,14 +676,12 @@ function nearbyPoiAttractionRow(spot, { onSelect }) {
  * } | null} spot
  * @param {{ addr1?: string, addr2?: string } | null} [detail]
  */
-function spotNaverSearchUrl(spot, detail) {
+function spotOutboundSearchQuery(spot, detail) {
   const name = String(spot?.name || '').trim();
   if (!name) return '';
   const isFood =
     String(spot?.contentTypeId || '') === RESTAURANT_CONTENT_TYPE_ID;
-  if (!isFood) {
-    return `https://search.naver.com/search.naver?query=${encodeURIComponent(name)}`;
-  }
+  if (!isFood) return name;
   const locality = String(spot?.locality || '').trim();
   const areaLabel = String(spot?.areaLabel || '').trim();
   const region = String(spot?.region || '').trim();
@@ -692,8 +691,20 @@ function spotNaverSearchUrl(spot, detail) {
     .slice(0, 2)
     .join(' ');
   const place = locality || areaLabel || addrHint || region;
-  const q = [place, name].filter(Boolean).join(' ');
+  return [place, name].filter(Boolean).join(' ');
+}
+
+function spotNaverSearchUrl(spot, detail) {
+  const q = spotOutboundSearchQuery(spot, detail);
+  if (!q) return '';
   return `https://search.naver.com/search.naver?query=${encodeURIComponent(q)}`;
+}
+
+function spotGoogleSearchUrl(spot, detail, locale = 'ko') {
+  const q = spotOutboundSearchQuery(spot, detail);
+  if (!q) return '';
+  const hl = String(locale || '').startsWith('en') ? 'en' : 'ko';
+  return `https://www.google.com/search?q=${encodeURIComponent(q)}&hl=${hl}`;
 }
 
 function NaverOutboundButton({ href }) {
@@ -717,6 +728,42 @@ function NaverOutboundButton({ href }) {
       {t('korea.theme.spotDetail.naverSearch')}
       <ExternalLink size={12} aria-hidden="true" />
     </a>
+  );
+}
+
+function GoogleOutboundButton({ href }) {
+  const { t } = useTranslation();
+  const url = String(href || '').trim();
+  if (!url) return null;
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={t('korea.theme.spotDetail.googleSearchAria')}
+      className="inline-flex items-center gap-1.5 rounded-full border border-[#4285F4]/40 bg-[#E8F0FE] px-2.5 py-1.5 text-xs font-bold text-[#174EA6] transition-colors hover:border-[#4285F4]/70 hover:bg-[#D2E3FC]"
+    >
+      <span
+        className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] bg-[#4285F4] text-[9px] font-black leading-none text-white"
+        aria-hidden="true"
+      >
+        G
+      </span>
+      {t('korea.theme.spotDetail.googleSearch')}
+      <ExternalLink size={12} aria-hidden="true" />
+    </a>
+  );
+}
+
+function SpotOutboundSearchButtons({ naverHref, googleHref }) {
+  const naver = String(naverHref || '').trim();
+  const google = String(googleHref || '').trim();
+  if (!naver && !google) return null;
+  return (
+    <div className="flex min-w-0 flex-wrap gap-1.5">
+      {naver ? <NaverOutboundButton href={naver} /> : null}
+      {google ? <GoogleOutboundButton href={google} /> : null}
+    </div>
   );
 }
 
@@ -1447,6 +1494,21 @@ export default function ThemeSpotDetailModal({
     [spot, detail],
   );
 
+  const googleSearchUrl = useMemo(
+    () => spotGoogleSearchUrl(spot, detail, locale),
+    [spot, detail, locale],
+  );
+
+  const stayCrossInput = useMemo(
+    () => (isApiPoiCross ? null : themeSpotCrossInput(spot, detail)),
+    [isApiPoiCross, spot, detail],
+  );
+  const stayCross = useMemo(
+    () => (stayCrossInput ? resolveThemeCrossLinks(stayCrossInput) : null),
+    [stayCrossInput],
+  );
+  const showStayStrip = Boolean(stayCross?.stay?.location);
+
   const tel = String(detail?.tel || '').trim();
 
   const introRows = useMemo(() => {
@@ -1763,10 +1825,11 @@ export default function ThemeSpotDetailModal({
                     <span {...koText}>{overview}</span>
                   </DetailRow>
                 ) : null}
-                {naverSearchUrl ? (
-                  <div className="min-w-0">
-                    <NaverOutboundButton href={naverSearchUrl} />
-                  </div>
+                {naverSearchUrl || googleSearchUrl ? (
+                  <SpotOutboundSearchButtons
+                    naverHref={naverSearchUrl}
+                    googleHref={googleSearchUrl}
+                  />
                 ) : null}
                 {Array.isArray(detail.heritageMeta)
                   ? detail.heritageMeta.map((row) => (
@@ -1824,8 +1887,11 @@ export default function ThemeSpotDetailModal({
               </dl>
             ) : null}
 
-            {(detailLoading || !detail) && naverSearchUrl ? (
-              <NaverOutboundButton href={naverSearchUrl} />
+            {(detailLoading || !detail) && (naverSearchUrl || googleSearchUrl) ? (
+              <SpotOutboundSearchButtons
+                naverHref={naverSearchUrl}
+                googleHref={googleSearchUrl}
+              />
             ) : null}
 
             {galleryList.length > 0 ? (
@@ -1855,6 +1921,16 @@ export default function ThemeSpotDetailModal({
                     </button>
                   ))}
                 </div>
+              </div>
+            ) : null}
+
+            {showStayStrip ? (
+              <div className="border-t border-stone-200/80 pt-4">
+                <ScenicStayStrip
+                  spot={stayCrossInput}
+                  stay={stayCross.stay}
+                  locale={locale}
+                />
               </div>
             ) : null}
 
