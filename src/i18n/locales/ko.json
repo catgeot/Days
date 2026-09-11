@@ -1346,6 +1346,8 @@
         "festivalsInArea": "이 지역 축제",
         "coursesInArea": "이 지역 여행코스",
         "stayKeyword": "숙소 · {{keyword}}",
+        "stayStripTitle": "내 여행 일정",
+        "stayStripHint": "선택한 숙박 일정으로 이 명소 근처 숙소를 조회합니다.",
         "tourKeyword": "투어 · {{keyword}}",
         "packageCtaFallback": "패키지 보기",
         "loadingDetail": "상세를 불러오는 중…",

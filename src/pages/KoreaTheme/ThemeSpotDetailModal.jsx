@@ -71,6 +71,7 @@ import { localizedHubLabel, localizedScenicMajorRegion } from '../../i18n/koreaR
 import { localizedPackageCtaLabel } from '../../i18n/exploreUi';
 import { fetchNearbyFestivals } from '../../utils/fetchNearbyFestivals';
 import { detectSidoCode } from '../Korea/festivalRegionTags';
+import ScenicStayStrip from './ScenicStayStrip';
 
 function localizedSpotModalSubtitle(spot, locale) {
   const place = formatScenicSpotPlaceLabel(spot, locale);
@@ -169,6 +170,7 @@ function ThemeSpotCrossRail({
   onClose,
   onOpenSameHub,
   hideNearbyHubs = false,
+  hideStayStrip = false,
 }) {
   const { t } = useTranslation();
   const { locale } = useLocale();
@@ -257,9 +259,11 @@ function ThemeSpotCrossRail({
     })
     .filter(Boolean);
 
-  const stayHref = cross.stay?.keyword
-    ? getMrtAccommodationSearchUrl(cross.stay.keyword, { isDomestic: true })
-    : '';
+  const showStayStrip = !hideStayStrip && Boolean(cross.stay?.location);
+  const stayHref =
+    !showStayStrip && cross.stay?.keyword
+      ? getMrtAccommodationSearchUrl(cross.stay.keyword, { isDomestic: true })
+      : '';
   const tnaHref = cross.tna?.keyword
     ? buildMrtTnaSearchMoreUrl(cross.tna.keyword)
     : '';
@@ -287,6 +291,7 @@ function ThemeSpotCrossRail({
     moduleChips.length > 0 ||
     cross.sameHub.length > 0 ||
     showNearbyHubs ||
+    showStayStrip ||
     stayHref ||
     tnaHref ||
     cross.deepLinks?.festivals ||
@@ -297,6 +302,10 @@ function ThemeSpotCrossRail({
 
   return (
     <div className="space-y-4" aria-label={t('korea.theme.spotDetail.crossRailAria')}>
+      {showStayStrip ? (
+        <ScenicStayStrip spot={crossSpot} stay={cross.stay} locale={locale} />
+      ) : null}
+
       {moduleChips.length > 0 ? (
         <CrossRailSection title={t('korea.theme.spotDetail.crossThemeTitle')}>
           <div className="flex flex-wrap gap-1.5">
@@ -2212,6 +2221,7 @@ export default function ThemeSpotDetailModal({
               onClose={onClose}
               onOpenSameHub={setSelectedSameHub}
               hideNearbyHubs={isApiPoiCross}
+              hideStayStrip={isApiPoiCross}
             />
           </div>
         </div>

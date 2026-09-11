@@ -1583,6 +1583,8 @@
         "festivalsInArea": "Festivals in this area",
         "coursesInArea": "Travel courses in this area",
         "stayKeyword": "Stays · {{keyword}}",
+        "stayStripTitle": "Your trip dates",
+        "stayStripHint": "Search stays near this scenic site for the nights you pick.",
         "tourKeyword": "Tours · {{keyword}}",
         "packageCtaFallback": "View packages",
         "loadingDetail": "Loading details…",
