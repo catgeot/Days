@@ -58,12 +58,22 @@
 - 사진·개요 없는 순수 결손 **237명**. 다음 오버레이 허브: 광양9경 6건 · 하동10경 7건. 그다음 영동 한천팔경·함안9경.
 - `#12`는 축제 인근 썸네일·번호(PR [#215](https://github.com/catgeot/Days/pull/215))가 이미 씀 → 결손 오버레이는 **#13**
 
+## 팔경 활용 #12 — 축제 인근 명소 썸네일·팔경 번호 (Cloud)
+
+- **세션** `팔경 활용 #12, 축제 인근 썸네일·번호`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `a5b683e1` · PR [#215](https://github.com/catgeot/Days/pull/215) (OPEN)
+- **완료**: 축제 상세 「인근 명소」에 GATEO 선정 썸네일. 「주변 관광지」 팔경 행에 명소 페이지와 같은 `{시군} N경` 부제(`원주 1경`)와 Tour/큐레이션 사진. 그룹 칩은 `원주 팔경` 유지. 광양·하동 결손 오버레이는 **#14**로 미룸.
+- **VERIFY** `smoke:korea-local-scenic-lists` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea` 원주 축제 상세
+- **다음** 사람 Preview QA — 인근 명소 사진 · 원주 팔경 1경~8경
+
 ```
-팔경 활용 #13, 광양·하동 결손 오버레이
+팔경 활용 #13, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-11-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · PR #215 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 광양9경 사진·개요 없는 6건(백운산 4대 계곡·자연휴양림·이순신대교·광양만 야경·옥룡사지 동백·읍수와 이팝나무)과 하동10경 7건(화개장터 십리벚꽃·금오산 일출·쌍계사 가을·형제봉 철쭉·청학동 삼성궁·하동포구·섬호정 섬진강)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=gwangyang · ?hub=hadong
+작업: /korea 원주 축제 상세 — 인근 명소 썸네일 · 원주 팔경 행이 원주 1경~8경인지 · 그룹 제목이 원주 팔경인지
 ```
+
