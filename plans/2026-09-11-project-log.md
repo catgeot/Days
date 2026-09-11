@@ -47,18 +47,33 @@
 ## 팔경 활용 #10 — 팔경 행 부제 번호 (Cloud)
 
 - **세션** `팔경 활용 #10, 팔경 번호`
-- **브랜치** `cursor/palgyeong-use-e744` · tip `6e3c4f4b` · PR [#213](https://github.com/catgeot/Days/pull/213) (OPEN)
+- **브랜치** `cursor/palgyeong-use-e744` · tip `6e3c4f4b` · PR [#213](https://github.com/catgeot/Days/pull/213) merge ✅ `d28b4733`
 - **완료**: 멤버 행 부제를 `의성 1경`~`의성 8경`으로 붙임. 그룹 칩은 `의성 팔경` 유지. JSON contentId 없음.
 - **VERIFY** `smoke:korea-local-scenic-lists` PASS · `npm run build` PASS
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=uiseong`
-- **다음** 사람 Preview QA — 행 부제 번호 · 그룹 칩 유지
+
+## 팔경 활용 #11 — #213 merge 후 결손 큐 정리
+
+- PR [#213](https://github.com/catgeot/Days/pull/213) squash merge `d28b4733`
+- 사진·개요 없는 순수 결손 **237명**. 다음 오버레이 허브: 광양9경 6건 · 하동10경 7건. 그다음 영동 한천팔경·함안9경.
+- `#12`는 축제 인근 썸네일·번호(PR [#215](https://github.com/catgeot/Days/pull/215))가 이미 씀 → 결손 오버레이는 **#13**
+
+## 팔경 활용 #12 — 축제 인근 명소 썸네일·팔경 번호 (Cloud)
+
+- **세션** `팔경 활용 #12, 축제 인근 썸네일·번호`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `a5b683e1` · PR [#215](https://github.com/catgeot/Days/pull/215) (OPEN)
+- **완료**: 축제 상세 「인근 명소」에 GATEO 선정 썸네일. 「주변 관광지」 팔경 행에 명소 페이지와 같은 `{시군} N경` 부제(`원주 1경`)와 Tour/큐레이션 사진. 그룹 칩은 `원주 팔경` 유지. 광양·하동 결손 오버레이는 **#14**로 미룸.
+- **VERIFY** `smoke:korea-local-scenic-lists` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea` 원주 축제 상세
+- **다음** 사람 Preview QA — 인근 명소 사진 · 원주 팔경 1경~8경
 
 ```
-팔경 활용 #11, 사람 Preview QA
+팔경 활용 #13, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-11-project-log.md
 @plans/korea-local-scenic-use-plan.md
-브랜치 cursor/palgyeong-use-e744 · PR #213 · Preview /qa/palgyeong-use
+브랜치 cursor/palgyeong-use-e744 · PR #215 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: /korea/theme/scenic?hub=uiseong 8행 부제가 의성 1경~8경으로 서로 다른지 · 그룹 칩이 의성 팔경인지
+작업: /korea 원주 축제 상세 — 인근 명소 썸네일 · 원주 팔경 행이 원주 1경~8경인지 · 그룹 제목이 원주 팔경인지
 ```
+
