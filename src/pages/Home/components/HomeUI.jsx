@@ -10,6 +10,7 @@ import {
   CalendarDays,
   Globe2,
   Map,
+  ChevronDown,
   ChevronUp,
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -283,17 +284,29 @@ const HomeUI = React.memo(({
                       onFaceRegionsDismiss?.();
                       setMobileQuickLinksExpanded(true);
                     }}
-                    className="group relative flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border border-white/25 bg-[#101010] px-2.5 py-1.5 shadow-[0_0_14px_rgba(255,255,255,0.08)] transition-colors hover:border-white/40 hover:bg-[#161616] touch-manipulation"
+                    className="quick-links-banner-breathe group relative flex w-auto max-w-[15.5rem] md:max-w-[17rem] items-center gap-2 rounded-xl border border-white/25 bg-[#101010]/95 px-2 py-1.5 backdrop-blur-sm transition-all hover:border-amber-400/60 hover:bg-[#161616] touch-manipulation active:scale-[0.98]"
                     aria-label={`${t('home.quickLinks.expandMenu')} — ${mobileQuickLinks.map((item) => item.label).join(', ')}`}
                     title={t('home.quickLinks.expandMenu')}
                   >
-                    <span
-                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-sky-400/35 bg-sky-500/15 text-sky-300"
-                      aria-hidden="true"
-                    >
-                      <Sparkles size={12} />
+                    <span className="flex shrink-0 items-center -space-x-1.5 pl-0.5" aria-hidden="true">
+                      {mobileQuickLinks.map((linkItem) => {
+                        const ItemIcon = linkItem.icon;
+                        return (
+                          <span
+                            key={linkItem.key}
+                            className={`relative flex h-5 w-5 items-center justify-center rounded-full border border-[#101010] shadow-sm ${linkItem.iconWrapClass}`}
+                          >
+                            <ItemIcon size={10} strokeWidth={2.2} />
+                          </span>
+                        );
+                      })}
                     </span>
                     <QuickLinksCollapsedLabel label={mobileQuickLinksCollapsedLabel} />
+                    <ChevronDown
+                      size={13}
+                      className="shrink-0 text-white/40 transition-transform duration-200 group-hover:translate-y-0.5 group-hover:text-white/75"
+                      aria-hidden="true"
+                    />
                   </button>
                 ) : (
                   <div className="flex flex-col items-start gap-2">
