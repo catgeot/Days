@@ -182,7 +182,6 @@ export const cloudPreviewWorkLog = [
     detail:
       '홈 검색 「문경」에 소제목 문경 팔경+멤버를 여행지·지명보다 앞에 붙였습니다. 명승 같은 ul 상단에 N경 멤버(contentId 없으면 이름만). 축제 상세 인근 관광지 목록 안에만 소제목 그룹. Tour LIVE·scenic 승격·축제 홈 파드 없음. Preview /qa/palgyeong-use — 홈 검색 문경 · /korea/theme/scenic?hub=mungyeong · 축제 상세 인근 목록.',
     at: '2026-09-04T10:00:00.000Z',
->>>>>>> origin/cursor/world-events-wave3
   },
   {
     id: '2026-09-09-world-events-54c-en-photos',
