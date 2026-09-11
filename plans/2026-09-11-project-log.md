@@ -20,3 +20,27 @@
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
 작업: /korea/theme/scenic?hub=uiseong 빙계팔경 8행 썸네일이 서로 다른지 · 행을 열어 본문 갤러리가 경승(빙혈 입구·절벽·바위·서원·다리·석탑·봉우리·용소)에 맞는지
 ```
+
+## 팔경 활용 #9 — Preview QA 후 PR #212 merge
+
+- 사람 Preview QA 후 PR [#212](https://github.com/catgeot/Days/pull/212) squash merge `25ea5579`
+- 피드백: 8행 부제가 모두 「의성 팔경」이라 번호가 필요 → #10
+
+## 팔경 활용 #10 — 팔경 행 부제 번호 (Cloud)
+
+- **세션** `팔경 활용 #10, 팔경 번호`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `6e3c4f4b` · PR [#213](https://github.com/catgeot/Days/pull/213) (OPEN)
+- **완료**: 멤버 행 부제를 `의성 1경`~`의성 8경`으로 붙임. 그룹 칩은 `의성 팔경` 유지. JSON contentId 없음.
+- **VERIFY** `smoke:korea-local-scenic-lists` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → `/korea/theme/scenic?hub=uiseong`
+- **다음** 사람 Preview QA — 행 부제 번호 · 그룹 칩 유지
+
+```
+팔경 활용 #11, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-11-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · PR #213 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: /korea/theme/scenic?hub=uiseong 8행 부제가 의성 1경~8경으로 서로 다른지 · 그룹 칩이 의성 팔경인지
+```
