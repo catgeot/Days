@@ -143,10 +143,52 @@ export function compareScenicSpotsByPlaceCluster(a, b) {
 }
 
 /**
+ * 팔경 groupTitle끼리 한 덩어리로 모은다. 헤더는 인접 행만 보므로
+ * 시·군·이름 정렬이 십경·대표 명소를 섞으면 소제목이 반복된다.
+ * 그룹 안은 입력 순(리스트 1경→N경). 그룹 없는 행만 장소 클러스터 정렬.
+ *
+ * @template T
+ * @param {T[]} spots
+ * @param {(a: T, b: T) => number} [compareRest]
+ * @returns {T[]}
+ */
+export function clusterScenicSpotsByGroupTitle(
+  spots,
+  compareRest = compareScenicSpotsByPlaceCluster,
+) {
+  const groups = new Map();
+  const rest = [];
+  const order = [];
+  for (const spot of spots || []) {
+    const title = String(spot?.groupTitle || '').trim();
+    if (!title) {
+      rest.push(spot);
+      continue;
+    }
+    if (!groups.has(title)) {
+      groups.set(title, []);
+      order.push(title);
+    }
+    groups.get(title).push(spot);
+  }
+  if (!order.length) {
+    return (spots || []).slice().sort(compareRest);
+  }
+  const grouped = order.flatMap((title) => groups.get(title) || []);
+  rest.sort(compareRest);
+  return [...grouped, ...rest];
+}
+
+/**
  * @template T
  * @param {T[]} spots
  * @returns {T[]}
  */
 export function sortScenicSpotsByPlaceCluster(spots) {
-  return (spots || []).slice().sort(compareScenicSpotsByPlaceCluster);
+  const list = spots || [];
+  const hasGroups = list.some((spot) => String(spot?.groupTitle || '').trim());
+  if (!hasGroups) {
+    return list.slice().sort(compareScenicSpotsByPlaceCluster);
+  }
+  return clusterScenicSpotsByGroupTitle(list);
 }

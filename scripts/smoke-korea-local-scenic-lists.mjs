@@ -36,6 +36,7 @@ import {
   normalizeScenicQuery,
 } from '../src/pages/Home/lib/scenicSearch.js';
 import { listKoreaScenicSpots } from '../src/pages/Home/lib/koreaScenicSpots.js';
+import { sortScenicSpotsByPlaceCluster } from '../src/pages/Home/lib/sortScenicSpotsByPlaceCluster.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const searchSrc = readFileSync(
@@ -507,6 +508,37 @@ assert.ok(
   hadongSipgyeongSearch.every((s) => s.groupTitle === '하동 십경'),
   '하동 십경 검색 그룹 제목',
 );
+
+const hadongTenFromSearch = hadongSearch.filter(
+  (s) => s.localScenicListId === 'hadong-sipgyeong',
+);
+const hadongRestFromSearch = hadongSearch.filter(
+  (s) => s.localScenicListId !== 'hadong-sipgyeong',
+);
+const hadongInterleaved = [];
+const hadongMixMax = Math.max(
+  hadongTenFromSearch.length,
+  hadongRestFromSearch.length,
+);
+for (let i = 0; i < hadongMixMax; i += 1) {
+  if (hadongTenFromSearch[i]) hadongInterleaved.push(hadongTenFromSearch[i]);
+  if (hadongRestFromSearch[i]) hadongInterleaved.push(hadongRestFromSearch[i]);
+}
+const hadongGrouped = sortScenicSpotsByPlaceCluster(hadongInterleaved);
+const hadongGroupedTitles = hadongGrouped.map((s) =>
+  String(s.groupTitle || '').trim(),
+);
+const hadongFirstRest = hadongGroupedTitles.findIndex((title) => !title);
+assert.equal(hadongFirstRest, 10, '하동 검색 정렬 후 십경 10행이 선두 연속');
+assert.ok(
+  hadongGroupedTitles.slice(0, 10).every((title) => title === '하동 십경'),
+  '하동 검색 십경 그룹이 한 덩어리',
+);
+assert.ok(
+  hadongGroupedTitles.slice(10).every((title) => !title),
+  '하동 검색 대표 명소는 십경 뒤에만',
+);
+assert.equal(hadongGrouped[0]?.blurb, '하동 1경', '하동 검색 선두가 1경');
 
 const extra = process.argv.slice(2);
 for (const q of extra) {

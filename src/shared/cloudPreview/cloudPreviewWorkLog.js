@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 13,
-  sessionPhase: '광양·하동 결손 오버레이',
+  sessionNo: 14,
+  sessionPhase: '검색 그룹 묶기',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=gwangyang',
+  previewPath: '/korea/theme/scenic',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-11-palgyeong-use-14-hadong-group',
+    session: '팔경 활용 #14, 검색 그룹 묶기',
+    title: '하동 검색에서 십경과 대표 명소가 섞이지 않게',
+    detail:
+      '명승 검색 「하동」결과가 시·군·이름 정렬 때문에 하동 십경과 지역 대표 명소가 한 줄씩 엇갈리며 소제목이 반복됐습니다. 팔경 groupTitle은 한 덩어리로 모으고, 그룹 없는 대표 명소만 그 뒤에 둡니다. Preview /qa/palgyeong-use — /korea/theme/scenic 검색창에 하동 · 하동 십경.',
+    at: '2026-09-11T07:50:00.000Z',
+  },
   {
     id: '2026-09-11-palgyeong-use-13-hadong-search',
     session: '팔경 활용 #13, 광양·하동 결손 오버레이',
