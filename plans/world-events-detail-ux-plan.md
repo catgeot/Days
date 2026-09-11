@@ -813,8 +813,8 @@ flowchart LR
 
 | | |
 |--|--|
-| **상태** | **#55** 상세 갤러리 Unsplash 우선 배치 **push** · tip `a4d45fff` · PR [#206](https://github.com/catgeot/Days/pull/206) · 사람 Preview QA |
-| **브랜치** | `cursor/world-events-wave3` · tip `a4d45fff` |
+| **상태** | **#55** 상세 갤러리 Unsplash 우선 배치 **push** · tip `b52f148b` · PR [#218](https://github.com/catgeot/Days/pull/218) (OPEN) · 사람 Preview QA |
+| **브랜치** | `cursor/world-events-wave3` · tip `b52f148b` |
 | **플랜** | F-0.5 **D5-b-3 ✅** · **Wave3 4/4 ✅** · 리스트 사진 **Unsplash 영문** · 허브 카드 **사진 확대 ✅** · **상세 갤러리 Unsplash 우선 배치 ✅** |
 | **Preview** | `/qa/world-events` |
 | **VERIFY** | `smoke:world-events-hub` · `smoke:world-events-detail` · `audit:world-events` · `build` PASS |
