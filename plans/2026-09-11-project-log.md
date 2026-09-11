@@ -149,3 +149,22 @@
 작업: 영동 한천팔경 사진·개요 없는 7건(화헌악·용연대·산양벽·청학굴·법존암·사군봉·냉천정)과 양산팔경 6건(비봉산·봉황대·함벽정·여의정·자풍서당·용암)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=yeongdong
 ```
 
+## 팔경 활용 #15 — 영동 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #15, 영동 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `4b354407`
+- **완료**: `LOCAL_SCENIC_MEMBER_OVERLAYS`에 한천팔경 결손 7건·양산팔경 결손 6건 영동군 공식 팩트 개요·주소·한국관광공사 공개 사진. JSON contentId·scenic 승격 없음. 사군봉·용암 등 일부는 지역 근사 Tour 사진(의도적 근사).
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` · `npm run build` PASS
+- **잔여**: 사진/개요 순수 누락 **211**/876. 다음 허브 **함안9경 7** · 사천9경 6
+- **다음** 사람 Preview QA — `?hub=yeongdong` 한천·양산 결손 13행 썸네일·개요 · 행마다 다른 사진
+
+```
+팔경 활용 #16, 사람 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-11-project-log.md
+@plans/korea-local-scenic-use-plan.md
+브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
+금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
+작업: /korea/theme/scenic?hub=yeongdong 한천팔경 결손 7행·양산팔경 결손 6행 썸네일·개요 · 행마다 사진이 다른지
+```
+
