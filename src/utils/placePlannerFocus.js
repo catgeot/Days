@@ -15,6 +15,7 @@ export const PLANNER_FOCUS_ID = {
   ARRIVAL: 'planner-arrival',
   ARRIVAL_TRANSFER: 'planner-arrival-transfer',
   LOCAL_TRANSPORT: 'planner-local-transport',
+  CONNECTED_AGENCIES: 'planner-connected-agencies',
 };
 
 /**
@@ -279,5 +280,28 @@ export function scrollPlannerFocusIntoView(scrollRoot, focusId, options = {}) {
   }
 
   el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  return true;
+}
+
+/**
+ * 플래너 「연결된 여행사」 details 펼침 → 스크롤 컨테이너 상단으로 이동.
+ * @param {Event & { currentTarget?: HTMLDetailsElement }} event
+ */
+export function handlePlannerConnectedAgenciesToggle(event) {
+  const details = event?.currentTarget;
+  if (!details?.open) return false;
+  if (typeof document === 'undefined') return false;
+  const root = details.closest('[data-planner-scroll-root]');
+  const run = () =>
+    scrollPlannerFocusIntoView(root, PLANNER_FOCUS_ID.CONNECTED_AGENCIES, {
+      headerOffset: 16,
+    });
+  if (typeof requestAnimationFrame === 'function') {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(run);
+    });
+  } else {
+    run();
+  }
   return true;
 }

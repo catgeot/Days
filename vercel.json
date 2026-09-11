@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/planner-empty",
+      "destination": "https://days-git-cursor-planner-empty-pad-6089-catgeots-projects.vercel.app/place/yanggu-arboretum/planner",
+      "permanent": false
+    },
+    {
       "source": "/qa/globe-frame-zoom",
       "destination": "https://days-git-cursor-globe-frame-zoom-7106-catgeots-projects.vercel.app/",
       "permanent": false

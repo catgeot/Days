@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 8,
-  sessionPhase: '빙계 팔경 사진 다양화',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=uiseong',
-  qaShareSlug: 'palgyeong-use',
+  title: '플래너 실행 전 여유',
+  sessionNo: 1,
+  sessionPhase: '하단 여유·여행사 펼침 스크롤',
+  branch: 'cursor/planner-empty-pad-6089',
+  previewPath: '/place/yanggu-arboretum/planner',
+  qaShareSlug: 'planner-empty',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -38,6 +38,14 @@ export const cloudPreviewWorkLog = [
     detail:
       'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 의성 빙계팔경 8건(빙혈·풍혈·인암·의각·수대·빙산사지 오층석탑·불정·용추)과 무주 구천동33경 결손 28건의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 의성군 문화관광·국가유산청 보물 석탑 사진, 무주군 문화관광·디지털무주문화대전·명승 일사대·파회·수심대 일원 사진을 연결했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=uiseong · ?hub=muju 팔경 행 썸네일·상세 개요.',
     at: '2026-09-10T22:45:00.000Z',
+  },
+  {
+    id: '2026-09-10-planner-empty-1-scroll-pad',
+    session: '플래너 실행 전 여유 #1, 하단 여유·여행사 펼침 스크롤',
+    title: '실행 전 플래너 하단 여유 · 연결된 여행사 펼침 후 상단 스크롤',
+    detail:
+      '양구 수목원처럼 툴킷 실행 전 기본 정보 페이지가 overflow에 막혀 하단이 잘리고, 「연결된 여행사」를 펼쳐도 스크롤되지 않던 문제를 고쳤습니다. 실행 전 화면도 툴킷 있는 플래너와 같은 세로 스크롤·하단 패딩을 쓰고, 목록을 펼치면 해당 섹션이 위로 올라갑니다. Preview /qa/planner-empty — /place/yanggu-arboretum/planner 하단 여유·펼침 스크롤.',
+    at: '2026-09-10T22:10:00.000Z',
   },
   {
     id: '2026-09-10-palgyeong-use-5-pr210-merged-and-overlay-plan',

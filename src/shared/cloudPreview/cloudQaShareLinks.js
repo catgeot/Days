@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'planner-empty',
+    label: '플래너 실행 전 하단 여유·여행사 펼침',
+    branch: 'cursor/planner-empty-pad-6089',
+    destination:
+      'https://days-git-cursor-planner-empty-pad-6089-catgeots-projects.vercel.app/place/yanggu-arboretum/planner',
+    active: true,
+  },
+  {
     slug: 'palgyeong-use',
     label: '팔경 활용 검색·리스트',
     branch: 'cursor/palgyeong-use-e744',
