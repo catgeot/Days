@@ -225,5 +225,27 @@
 작업: /world-events/vienna-staatsoper-season-2026 · /world-events/dubai-fitness-challenge-2026 · /world-events/munich-oktoberfest-2026 갤러리 1~3번이 객석·마라톤·축제 현장인지 · 시드 3장(건물/스카이라인)만 남았는지
 ```
 
+## 세계행사 일정 #57 — 리스트 썸네일 컬러 우선 (Cloud)
+
+- **세션** `세계행사 일정 #57, 리스트 썸네일 컬러 우선`
+- **브랜치** `cursor/world-events-wave3` · tip `e824c37d` · PR [#218](https://github.com/catgeot/Days/pull/218) (OPEN)
+- **완료**:
+  1. 사람 Preview: 이스탄불 마라톤·추수감사절 카드가 Unsplash 빈티지 흑백. CSS 필터가 아니라 검색이 흑백 컷을 고른 것.
+  2. 리스트 픽커가 캡션 B&W·회색 대표색을 건너뛰고 컬러 Unsplash를 고름. 세션 캐시 `list-photo-v3-color`.
+  3. 갤러리 머지·Edge도 흑백 점수 −8. 야간 컬러의 회색 평균은 컬러 후보가 없을 때만 유지.
+- **VERIFY**: `smoke:world-events-hub` PASS · `smoke:world-events-detail` PASS · `build` PASS
+- **Preview** https://www.gateo.kr/qa/world-events → `/world-events` 이스탄불 · 추수감사절
+- **다음** 사람 Preview QA — 두 카드가 컬러인지 (구 캐시면 하드 리프레시)
+
+```
+세계행사 일정 #58, 리스트 컬러 썸네일 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-11-project-log.md
+@plans/world-events-management.md
+브랜치 cursor/world-events-wave3 · PR #218 · https://www.gateo.kr/qa/world-events
+금지: worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · 허브에 플래너·숙소 칩 복구
+작업: /world-events 이스탄불 마라톤·추수감사절 카드가 컬러인지 (필요하면 하드 리프레시)
+```
+
 
 

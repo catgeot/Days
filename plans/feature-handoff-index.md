@@ -503,32 +503,32 @@ PROD https://www.gateo.kr/
 
 ---
 
-### 세계 행사·축제 일정 연동 — 상세 갤러리 축제 분위기 (#56)
+### 세계 행사·축제 일정 연동 — 리스트 썸네일 컬러 (#57)
 
 | | |
 |--|--|
-| **상태** | **#56** 상세 갤러리 축제 분위기 QA **push** · tip `bc7ff714` · PR [#218](https://github.com/catgeot/Days/pull/218) · 사람 Preview QA |
-| **브랜치** | `cursor/world-events-wave3` · tip `bc7ff714` |
+| **상태** | **#57** 리스트 썸네일 컬러 우선 **push** · tip `e824c37d` · PR [#218](https://github.com/catgeot/Days/pull/218) · 사람 Preview QA |
+| **브랜치** | `cursor/world-events-wave3` · tip `e824c37d` |
 | **PR** | [#218](https://github.com/catgeot/Days/pull/218) (OPEN) · [#206](https://github.com/catgeot/Days/pull/206) merge ✅ · [#205](https://github.com/catgeot/Days/pull/205) merge ✅ |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **§9** · [`world-events-management.md`](./world-events-management.md) |
 | **일지** | [`2026-09-11-project-log.md`](./2026-09-11-project-log.md) |
 | **Preview** | `/qa/world-events` → `/world-events` |
-| **소유** | `worldEventMedia.js` · `fetchWorldEventListPhotos.js` · `fetchEventHeroGallery.js` · `worldEventHeroGalleryMerge.js` |
+| **소유** | `worldEventListPhoto.js` · `fetchWorldEventListPhotos.js` · `worldEventHeroGalleryMerge.js` · `fetch-event-hero-gallery` |
 | **금지** | worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · 허브에 플래너·숙소 칩 복구 |
 | **VERIFY** | `smoke:world-events-hub` · `smoke:world-events-detail` · `audit:world-events` · `build` PASS |
 
-**게이트**: #56 사람 Preview QA — 빈 오페라 객석/무대 · 두바이 마라톤·사이클링 · 옥토버페스트 텐트/관람차. 건물 외관·마리나 스카이라인·시드 3장만 남는 상태 없는지. **사람 Preview** 전 merge 금지.
+**게이트**: #57 사람 Preview QA — `/world-events` 이스탄불 마라톤·추수감사절 카드가 **컬러**인지 (구 세션 캐시면 하드 리프레시). #56 갤러리 분위기도 같이 보면 됨. **사람 Preview** 전 merge 금지.
 
-**다음 제시어** (#57 Preview QA):
+**다음 제시어** (#58 Preview QA):
 
 ```
-세계행사 일정 #57, 상세 갤러리 분위기 Preview QA
+세계행사 일정 #58, 리스트 컬러 썸네일 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-11-project-log.md
 @plans/world-events-management.md
 브랜치 cursor/world-events-wave3 · PR #218 · https://www.gateo.kr/qa/world-events
 금지: worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · 허브에 플래너·숙소 칩 복구
-작업: /world-events/vienna-staatsoper-season-2026 · /world-events/dubai-fitness-challenge-2026 · /world-events/munich-oktoberfest-2026 갤러리 1~3번이 객석·마라톤·축제 현장인지 · 시드 3장(건물/스카이라인)만 남았는지
+작업: /world-events 이스탄불 마라톤·추수감사절 카드가 컬러인지 (필요하면 하드 리프레시)
 ```
 
 ---
