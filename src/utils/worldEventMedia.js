@@ -97,6 +97,38 @@ function normalizePhotoQuery(value) {
 /**
  * @param {import('./worldEvents').WorldEvent | null | undefined} event
  */
+function eventPhotoTitleEn(event) {
+  const titleEn = getWorldEventTitle(event, 'en');
+  return normalizePhotoQuery(
+    String(titleEn || '')
+      .replace(/\s+(Season|Window)$/i, '')
+      .split(/[·&]/)[0],
+  );
+}
+
+function atmospherePhotoQueries(event, titleEn, placeEn) {
+  const blob = `${event?.id || ''} ${titleEn} ${event?.type || ''} ${placeEn}`;
+  if (/opera|staatsoper/i.test(blob)) {
+    return ['opera house interior audience', 'orchestra concert hall', 'opera performance stage'];
+  }
+  if (/fitness|marathon|run/i.test(blob)) {
+    return ['city marathon runners crowd', 'outdoor group fitness class', 'running event crowd city'];
+  }
+  if (/sakura|cherry blossom/i.test(blob)) {
+    return ['cherry blossom festival lantern', 'sakura night tokyo'];
+  }
+  if (/\btet\b/i.test(blob)) {
+    return ['Tet festival Vietnam lantern', 'lunar new year flower market'];
+  }
+  if (event?.type === 'festival') {
+    return [`${titleEn} festival crowd`, `${titleEn} parade celebration`].filter(Boolean);
+  }
+  if (event?.type === 'season' || event?.type === 'concert') {
+    return [`${titleEn} celebration`, placeEn ? `${placeEn} festival night` : ''];
+  }
+  return [];
+}
+
 function englishPhotoQueryCandidates(event) {
   if (!event) return [];
 
@@ -106,10 +138,11 @@ function englishPhotoQueryCandidates(event) {
   const glossaryEnTerms = (Array.isArray(event.glossaryTerms) ? event.glossaryTerms : [])
     .map((term) => normalizePhotoQuery(term.termEn))
     .filter(Boolean);
-  const shortTitleEn = normalizePhotoQuery(String(titleEn || '').split(/[·&]/)[0]);
+  const shortTitleEn = eventPhotoTitleEn(event);
 
   return uniqueNonEmptyStrings([
     event.heroGallerySearchQueryEn,
+    ...atmospherePhotoQueries(event, shortTitleEn, placeEn),
     shortTitleEn && placeEn ? `${shortTitleEn} ${placeEn}` : '',
     titleEn,
     shortTitleEn,

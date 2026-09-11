@@ -32,8 +32,12 @@ function imageKey(url: string): string {
 }
 
 const REJECTED_GALLERY_CAPTION =
-  /\b(pdf|svg|djvu|manuscript|document|letterhead|commission to|coat of arms|flag of|map of|logo of|scan of)\b/i;
+  /\b(pdf|svg|djvu|manuscript|document|letterhead|commission to|coat of arms|flag of|map of|logo of|scan of|libretto|title page|stamp of)\b/i;
 const REJECTED_GALLERY_FILE = /\.(pdf|svg|tif|tiff|djvu)$/i;
+const ATMOSPHERE_POS =
+  /\b(festival|parade|carnival|crowd|celebration|lantern|firework|concert|performance|audience|orchestra|stage|auditorium|theater|theatre|tent|beer|costume|dancer|illuminat|sakura|blossom|marathon|running|runner|yoga|fitness|fairground|ferris|carousel|samba|mask|ballet|chandelier|float|interior|group exercise|cycling|peloton)\b/i;
+const ATMOSPHERE_NEG =
+  /\b(skyline|cityscape|facade|aerial view|camel|traffic|office tower|empty street|concrete building|stamp of|libretto|title page)\b/i;
 
 function isHangulQuery(value: string): boolean {
   return /[\uAC00-\uD7A3]/.test(value);
@@ -102,7 +106,35 @@ function mergeImages(seed: GalleryImage[], fetched: GalleryImage[]): GalleryImag
   for (const image of seed) push(image, true, false);
   for (const image of fetched) push(image, false, true);
 
-  return [...unsplash, ...others];
+  return rankImages([...unsplash, ...others]);
+}
+
+function scoreAtmosphere(image: GalleryImage): number {
+  const text = `${image.captionEn || ""} ${image.captionKo || ""} ${image.url || ""}`;
+  let score = 0;
+  if (isUnsplashImage(image)) score += 2;
+  if (ATMOSPHERE_POS.test(text)) score += 6;
+  if (ATMOSPHERE_NEG.test(text)) score -= 6;
+  return score;
+}
+
+function rankImages(images: GalleryImage[]): GalleryImage[] {
+  return images
+    .map((image, index) => ({ image, index, score: scoreAtmosphere(image) }))
+    .sort((left, right) => right.score - left.score || left.index - right.index)
+    .map((item) => item.image);
+}
+
+function needsAtmosphereRefresh(images: GalleryImage[]): boolean {
+  if (!images.length) return true;
+  let positive = 0;
+  let negative = 0;
+  for (const image of images) {
+    const score = scoreAtmosphere(image);
+    if (score >= 6) positive += 1;
+    if (score < 0) negative += 1;
+  }
+  return positive === 0 && negative >= 2;
 }
 
 function mapUnsplashPhoto(photo: Record<string, unknown>): GalleryImage | null {
@@ -272,12 +304,12 @@ serve(async (req) => {
         .maybeSingle();
 
       if (cached && Array.isArray(cached.images) && cached.images.length >= MIN_CACHE_COUNT) {
-        if (seedCacheMatches(cached.images as GalleryImage[], normalizedSeed)) {
-          const images = mergeImages(normalizedSeed, cached.images as GalleryImage[]).slice(0, TARGET_COUNT);
+        const cachedImages = cached.images as GalleryImage[];
+        if (seedCacheMatches(cachedImages, normalizedSeed) && !needsAtmosphereRefresh(cachedImages)) {
+          const images = mergeImages(normalizedSeed, cachedImages).slice(0, TARGET_COUNT);
           if (
             images.length >= MIN_CACHE_COUNT &&
-            images[0]?.source === "unsplash" &&
-            (cached.images as GalleryImage[])[0]?.source !== "unsplash"
+            images[0]?.url !== cachedImages[0]?.url
           ) {
             void supabaseAdmin
               .from("event_hero_gallery")
@@ -297,20 +329,15 @@ serve(async (req) => {
 
     const need = Math.max(8, TARGET_COUNT - normalizedSeed.length);
     const fetched: GalleryImage[] = [];
+    const unsplashQueries = [searchQuery, fallbackSearchQuery, ...wikimediaQueries]
+      .filter((query, index, list) => query && list.indexOf(query) === index);
 
-    if (searchQuery) {
+    for (const query of unsplashQueries) {
+      if (fetched.length >= need) break;
       try {
-        fetched.push(...await fetchUnsplashImages(searchQuery, need));
+        fetched.push(...await fetchUnsplashImages(query, need - fetched.length));
       } catch (err) {
-        console.warn("Unsplash primary failed:", err);
-      }
-    }
-
-    if (fetched.length < need && fallbackSearchQuery && fallbackSearchQuery !== searchQuery) {
-      try {
-        fetched.push(...await fetchUnsplashImages(fallbackSearchQuery, need - fetched.length));
-      } catch (err) {
-        console.warn("Unsplash fallback failed:", err);
+        console.warn("Unsplash query failed:", query, err);
       }
     }
 
@@ -318,6 +345,7 @@ serve(async (req) => {
       const wikiQueries = [
         ...wikimediaQueries,
         fallbackSearchQuery,
+        searchQuery,
       ].filter((query, index, list) => query && list.indexOf(query) === index);
 
       if (wikiQueries.length) {

@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 55,
-  sessionPhase: '상세 갤러리 Unsplash 우선 배치',
+  sessionNo: 56,
+  sessionPhase: '상세 갤러리 축제 분위기 QA',
   branch: 'cursor/world-events-wave3',
   previewPath: '/world-events',
   qaShareSlug: 'world-events',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-11-world-events-56-atmosphere-gallery',
+    session: '세계행사 일정 #56, 상세 갤러리 축제 분위기 QA',
+    title: '상세 갤러리 — 분위기 검색·랭킹·시드 보강',
+    detail:
+      '사람 Preview에서 빈 오페라·두바이가 시드 3장(건물·스카이라인)만 남던 문제를 고쳤습니다. Edge 타임아웃 뒤에도 Unsplash를 이어 받고, 객석·마라톤·군중 컷을 건물·스카이라인보다 앞에 둡니다. Preview /qa/world-events — 옥토버페스트·빈 오페라·두바이 피트니스 상세 1~3번.',
+    at: '2026-09-11T20:00:00.000Z',
+  },
   {
     id: '2026-09-11-world-events-55-vibrant-gallery',
     session: '세계행사 일정 #55, 상세 갤러리 Unsplash 우선 배치',

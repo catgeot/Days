@@ -126,6 +126,7 @@
  *   youtubeVideos?: WorldEventYoutubeVideo[],
  *   youtubeSearchQueryKo?: string,
  *   youtubeSearchQueryEn?: string,
+ *   heroGallerySearchQueryEn?: string,
  *   actionChips?: WorldEventActionChip[],
  *   mooniChips?: WorldEventMooniChip[],
  *   priority?: number,
@@ -653,6 +654,14 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
     raw.youtubeSearchQueryEn != null ? String(raw.youtubeSearchQueryEn).trim() : undefined;
   if (youtubeSearchQueryKo) event.youtubeSearchQueryKo = youtubeSearchQueryKo;
   if (youtubeSearchQueryEn) event.youtubeSearchQueryEn = youtubeSearchQueryEn;
+  const heroGallerySearchQueryEn =
+    raw.heroGallerySearchQueryEn != null ? String(raw.heroGallerySearchQueryEn).trim() : undefined;
+  if (heroGallerySearchQueryEn) {
+    if (/[\uAC00-\uD7A3]/.test(heroGallerySearchQueryEn)) {
+      throw new Error(`[world-events] ${id}: heroGallerySearchQueryEn must be English`);
+    }
+    event.heroGallerySearchQueryEn = heroGallerySearchQueryEn;
+  }
   if (actionChips) event.actionChips = actionChips;
   if (mooniChips) event.mooniChips = mooniChips;
   if (priority != null) event.priority = priority;

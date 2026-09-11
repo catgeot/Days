@@ -1,7 +1,12 @@
 import { isHangulPhotoQuery } from './worldEventMedia.js';
 
 const REJECTED_GALLERY_CAPTION =
-  /\b(pdf|svg|djvu|manuscript|document|letterhead|commission to|coat of arms|flag of|map of|logo of|scan of)\b/i;
+  /\b(pdf|svg|djvu|manuscript|document|letterhead|commission to|coat of arms|flag of|map of|logo of|scan of|libretto|title page|stamp of)\b/i;
+
+const ATMOSPHERE_POS =
+  /\b(festival|parade|carnival|crowd|celebration|lantern|firework|concert|performance|audience|orchestra|stage|auditorium|theater|theatre|tent|beer|costume|dancer|illuminat|sakura|blossom|marathon|running|runner|yoga|fitness|fairground|ferris|carousel|samba|mask|ballet|chandelier|float|interior|group exercise|cycling|peloton)\b/i;
+const ATMOSPHERE_NEG =
+  /\b(skyline|cityscape|facade|aerial view|camel|traffic|office tower|empty street|concrete building|stamp of|libretto|title page)\b/i;
 const REJECTED_GALLERY_FILE = /\.(pdf|svg|tif|tiff|djvu)$/i;
 
 /**
@@ -85,7 +90,48 @@ export function mergeWorldEventHeroGalleryImages(seed, fetched) {
     push(image, { allowRejected: false, nearDup: true });
   }
 
-  return [...unsplash, ...others];
+  return rankWorldEventHeroGalleryImages([...unsplash, ...others]);
+}
+
+/**
+ * Higher = more event/festival atmosphere. Used so building/skyline fillers sink.
+ * @param {{ url?: string, captionKo?: string, captionEn?: string, source?: string } | null | undefined} image
+ */
+export function scoreHeroGalleryAtmosphere(image) {
+  if (!image) return 0;
+  const text = `${image.captionEn || ''} ${image.captionKo || ''} ${image.url || ''}`;
+  let score = 0;
+  if (isUnsplashGalleryImage(image)) score += 2;
+  if (ATMOSPHERE_POS.test(text)) score += 6;
+  if (ATMOSPHERE_NEG.test(text)) score -= 6;
+  return score;
+}
+
+/**
+ * @param {Array<{ url?: string, captionKo?: string, captionEn?: string, source?: string }>} images
+ */
+export function rankWorldEventHeroGalleryImages(images) {
+  if (!Array.isArray(images) || images.length < 2) return Array.isArray(images) ? images : [];
+  return images
+    .map((image, index) => ({ image, index, score: scoreHeroGalleryAtmosphere(image) }))
+    .sort((left, right) => right.score - left.score || left.index - right.index)
+    .map((item) => item.image);
+}
+
+/**
+ * Wiki-only city/building caches should be fetched again with atmosphere queries.
+ * @param {Array<{ url?: string, captionKo?: string, captionEn?: string, source?: string }>} images
+ */
+export function galleryNeedsAtmosphereRefresh(images) {
+  if (!Array.isArray(images) || images.length === 0) return true;
+  let positive = 0;
+  let negative = 0;
+  for (const image of images) {
+    const score = scoreHeroGalleryAtmosphere(image);
+    if (score >= 6) positive += 1;
+    if (score < 0) negative += 1;
+  }
+  return positive === 0 && negative >= 2;
 }
 
 /**
