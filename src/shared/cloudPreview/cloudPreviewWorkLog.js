@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 27,
-  sessionPhase: '구례 수목원 사진',
+  sessionNo: 28,
+  sessionPhase: '강진 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=gurye',
+  previewPath: '/korea/theme/scenic?hub=gangjin',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-12-palgyeong-use-28-gangjin-overlays',
+    session: '팔경 활용 #28, 강진 결손 오버레이',
+    title: '강진12경 결손 5건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 강진12경 결손 5건(월출산·가학산·백야김좌진기념관·남도별미식문화박물관·강진청자박물관)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 금릉경포대·경포대지구·고려청자박물관 사진을 연결했고, 가학산은 같은 능선 흑석산자연휴양림, 남도별미식은 사의재 공식 사진으로 근사했으며, 백야김좌진기념관은 백야기념관 공식 사진을 썼습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=gangjin 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T11:45:00.000Z',
+  },
   {
     id: '2026-09-12-palgyeong-use-27-gurye-arboretum-photos',
     session: '팔경 활용 #27, 구례 수목원 사진',

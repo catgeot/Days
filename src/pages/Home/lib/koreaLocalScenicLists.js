@@ -829,6 +829,21 @@ const GYE_SANDONG_3 = vkScenicImg('1ea3d24c-30a2-46e5-a025-26149136ae0d');
 const GYE_NOGO_SNOW = vkScenicImg('65f69570-fb78-4d74-9965-215ba64cf433');
 const GYE_NOGO_SNOW_2 = vkScenicImg('b08d8a75-4da7-4a47-82a6-f75347d43790');
 const GYE_NOGO_SNOW_3 = vkScenicImg('68714b1a-a7c2-4d34-bdb5-5cb71d4acea4');
+const GJ_WOLCHUL = 'https://tong.visitkorea.or.kr/cms/resource/81/3518681_image2_1.jpg';
+const GJ_WOLCHUL_2 = 'https://tong.visitkorea.or.kr/cms/resource/59/4057159_image2_1.jpg';
+const GJ_WOLCHUL_3 = 'https://tong.visitkorea.or.kr/cms/resource/82/3518682_image2_1.jpg';
+const GJ_GAHAK = 'https://tong.visitkorea.or.kr/cms/resource/09/3061309_image2_1.jpg';
+const GJ_GAHAK_2 = 'https://tong.visitkorea.or.kr/cms/resource/92/3061292_image2_1.jpg';
+const GJ_GAHAK_3 = 'https://tong.visitkorea.or.kr/cms/resource/01/3061301_image2_1.jpg';
+const GJ_BAEKYA = 'https://tong.visitkorea.or.kr/cms/resource/61/3340061_image2_1.jpg';
+const GJ_BAEKYA_2 = 'https://tong.visitkorea.or.kr/cms/resource/62/3340062_image2_1.jpg';
+const GJ_BAEKYA_3 = 'https://tong.visitkorea.or.kr/cms/resource/63/3340063_image2_1.jpg';
+const GJ_NAMDO = 'https://tong.visitkorea.or.kr/cms2/website/61/1676861.jpg';
+const GJ_NAMDO_2 = 'https://tong.visitkorea.or.kr/cms2/website/62/1676862.jpg';
+const GJ_NAMDO_3 = 'https://tong.visitkorea.or.kr/cms2/website/63/1676863.jpg';
+const GJ_CELADON = 'https://tong.visitkorea.or.kr/cms/resource/34/4101934_image2_1.jpg';
+const GJ_CELADON_2 = 'https://tong.visitkorea.or.kr/cms/resource/29/4101929_image2_1.jpg';
+const GJ_CELADON_3 = 'https://tong.visitkorea.or.kr/cms2/website/82/1676782.jpg';
 
 function localScenicPhotoOverlay(overview, addr1, imageUrl, extraGallery = []) {
   const galleryUrls = [imageUrl, ...extraGallery.filter((u) => u && u !== imageUrl)];
@@ -1691,6 +1706,36 @@ const LOCAL_SCENIC_MEMBER_OVERLAYS = {
     '전라남도 구례군 산동면 노고단로 1068 (노고단·성삼재)',
     GYE_NOGO_SNOW,
     [GYE_NOGO_SNOW_2, GYE_NOGO_SNOW_3],
+  ),
+  'local-scenic:gangjin-other:월출산': localScenicPhotoOverlay(
+    '강진12경 제6경 월출산은 강진군 성전면과 영암군 경계의 국립공원입니다. 강진군 문화관광은 호남의 소금강이라 부르며 해발 809m 천황봉과 구정봉·장군봉·사자봉이 이어지고, 산행 기점은 성전면 월남리 경포대라고 적습니다. 한국관광공사 금릉경포대 안내에 따르면 천황봉·구정봉에서 흘러내리는 물줄기가 무명베를 늘어놓은 듯하여 경포대라 하며, 주소는 성전면 백운로 148-4(경포대지구)입니다.',
+    '전라남도 강진군 성전면 백운로 148-4 (월출산국립공원 경포대지구)',
+    GJ_WOLCHUL,
+    [GJ_WOLCHUL_2, GJ_WOLCHUL_3],
+  ),
+  'local-scenic:gangjin-other:가학산': localScenicPhotoOverlay(
+    '강진12경 제7경 가학산은 해남·영암·강진 성전면이 맞닿는 575m 바위산입니다. 디지털해남문화대전은 산세가 학이 나는 모습이라 가학산이라 하며, 정상은 돔형 바위 봉이고 북동쪽으로 월출산이 보인다고 적습니다. 강진 쪽 들머리는 성전면 월평리 제전마을입니다. 사진은 같은 능선 흑석산자연휴양림(옛 가학산) 한국관광공사 공식 사진으로 근사했습니다.',
+    '전라남도 강진군 성전면 월평리 (제전마을·가학산 들머리)',
+    GJ_GAHAK,
+    [GJ_GAHAK_2, GJ_GAHAK_3],
+  ),
+  'local-scenic:gangjin-other:백야김좌진기념관': localScenicPhotoOverlay(
+    '강진12경 제8경 백야김좌진기념관은 독립운동가 백야 김좌진 장군을 기리는 기념관입니다. 한국관광공사에 따르면 백야기념관은 충남 홍성군 갈산면 백야로546번길 12에 있으며, 청산리 전투를 이끈 생애와 계몽·독립운동을 전시합니다. 사진은 한국관광공사 백야기념관 공식 사진입니다.',
+    '충청남도 홍성군 갈산면 백야로546번길 12 (백야기념관)',
+    GJ_BAEKYA,
+    [GJ_BAEKYA_2, GJ_BAEKYA_3],
+  ),
+  'local-scenic:gangjin-other:남도별미식문화박물관': localScenicPhotoOverlay(
+    '강진12경 제9경 남도별미식문화박물관은 남도 별미·식문화를 다루는 시설명입니다. 강진군은 사의재 한옥체험관과 저잣거리에서 전통 먹거리·체험을 안내하며, 사의재는 다산 정약용이 유배 초기 머문 집입니다. 주소는 강진읍 사의재길 27입니다. 사진은 같은 읍 사의재 공식 사진으로 근사했습니다.',
+    '전라남도 강진군 강진읍 사의재길 27 (사의재 저잣거리)',
+    GJ_NAMDO,
+    [GJ_NAMDO_2, GJ_NAMDO_3],
+  ),
+  'local-scenic:gangjin-other:강진청자박물관': localScenicPhotoOverlay(
+    '강진12경 제10경 강진청자박물관은 대구면 고려청자박물관입니다. 강진군 문화관광에 따르면 1997년 개관해 청자요지와 고려청자 문화유산을 보존·전시하며, 고려 500여 년 청자 생산지이자 2007년 태안 죽도 목간에 탐진(강진)이 확인되었습니다. 주소는 대구면 청자촌길 33입니다.',
+    '전라남도 강진군 대구면 청자촌길 33 (고려청자박물관)',
+    GJ_CELADON,
+    [GJ_CELADON_2, GJ_CELADON_3],
   ),
 };
 
