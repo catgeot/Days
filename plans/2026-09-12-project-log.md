@@ -137,6 +137,15 @@
 - **잔여**: 사진/개요 순수 누락 **162**/876. QA 후 다음 허브 **선유8경 5**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
+## 팔경 활용 #28 — 강진 12경 제목·청자단지 (Cloud QA)
+
+- **세션** `팔경 활용 #28, 강진 결손 오버레이` 사람 Preview 피드백
+- **브랜치** `cursor/palgyeong-use-e744` · tip `6391db8d` · PR [#228](https://github.com/catgeot/Days/pull/228)
+- **완료**: 강진 검색 소제목을 「강진 명소」에서 공식명 **강진 12경**으로 맞춤(`listKind other` + 제목 N경). 청자단지는 contentId만 있고 사진이 없어 고려청자촌 공식 사진 런타임 오버레이. JSON contentId 추가 없음. #226은 main 병합됨.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → 지구본·명승 「강진」검색 그룹명 · 청자단지 썸네일
+- **다음**: #29 선유8경 5. 사람은 같은 턴에 그룹명·청자단지 사진 확인.
+
 ## 팔경 활용 #29 다음 — 군산 결손 오버레이
 
 ```
