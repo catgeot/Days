@@ -166,10 +166,22 @@
 - **잔여**: 사진/개요 순수 누락 **152**/876. QA 후 다음 허브 **남해12경 5**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
-## 팔경 활용 #31 다음 — 남해 결손 오버레이
+## 팔경 활용 #31 — 금산 은행나무·빈 썸네일 (Cloud)
+
+- **세션** `팔경 활용 #31, 금산 은행나무·썸네일` — #30 Preview QA 피드백
+- **브랜치** `cursor/palgyeong-use-e744` · tip `6b5aaeae` · PR [#231](https://github.com/catgeot/Days/pull/231)
+- **완료**:
+  1. 태조태실 요광은행나무 상세 사진을 태실 석물에서 금산군·국가유산청 요광리 은행나무 공식 사진으로 교체.
+  2. TourAPI 사진이 없던 서대산 산꽃세상(127518)·진악산(126811)에 금산군 산꽃축제·진악산·개삼터 공식 사진 오버레이. 관광지 검색 행도 같은 contentId면 그 썸네일을 씀.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run smoke:korea-scenic-spots` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=geumsan`
+- **잔여**: 사진/개요 순수 누락 **152**/876. QA 후 다음 허브 **남해12경 5**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #32 다음 — 남해 결손 오버레이
 
 ```
-팔경 활용 #31, 남해 결손 오버레이
+팔경 활용 #32, 남해 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-local-scenic-use-plan.md
@@ -183,7 +195,7 @@
 - **적용**: [`AGENTS.md`](../AGENTS.md) Cloud · [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) **§5** · `.ai-context` **§4.1 13**
 - **기본**: 복잡 로직·토큰 과다 작업 **외에는** 작업 세션에서 QA 마무리. 다음 제시어 = 다음 작업. `{주제} #N, 사람 Preview QA`를 다음 에이전트 채팅으로 넘기지 않음.
 - **예외**: 복잡 로직·토큰 과다 세션만 별도 사람 Preview QA 채팅 허용. 피드백 → 수정 세션.
-- **팔경**: 다음 에이전트 = **#31 남해 결손 오버레이**
+- **팔경**: 다음 에이전트 = **#32 남해 결손 오버레이**
 
 
 ## 한국 투어티켓 #1 — 축제·명승 본문 투어·티켓 카드 섹션 (Cloud)
