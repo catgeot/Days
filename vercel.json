@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/qa/gemini",
+      "destination": "https://days-git-cursor-gemini-models-df4c-catgeots-projects.vercel.app/",
+      "permanent": false
+    },
+    {
       "source": "/qa/scenic-stay",
       "destination": "https://days-git-cursor-scenic-stay-692c-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung",
       "permanent": false

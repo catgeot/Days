@@ -5,6 +5,7 @@ import imageCompression from 'browser-image-compression';
 import { supabase } from '../../../shared/api/supabase';
 import { usePlaceReviews } from '../../../hooks/usePlaceReviews';
 import { apiClient } from '../../../pages/Home/lib/apiClient';
+import { GEMINI_MODELS } from '../../../utils/geminiModels';
 import { getReviewPrompt } from '../../../pages/Home/lib/prompts';
 import {
   MOBILE_TEXTAREA_CLASS,
@@ -154,7 +155,7 @@ const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSucces
         "사용자의 입력을 바탕으로 자연스럽고 매력적인 리뷰 초안을 작성하세요. 팩트를 왜곡하지 않습니다.",
         prompt,
         [],
-        "gemini-2.5-flash"
+        GEMINI_MODELS.QUALITY
       );
 
       setContent(resultText);

@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { parseGeminiJsonText } from "../_shared/parseGeminiJson.ts";
+import { GEMINI_QUALITY, GEMINI_WRITE } from "../_shared/geminiModels.ts";
 import { magazineStorageId } from "../_shared/magazinePrompts.ts";
 import { resolveCanonicalPlaceId } from "../_shared/resolveCanonicalPlaceId.ts";
 import { buildWatsonSystemPrompt, buildWatsonUserPrompt } from "../_shared/watsonPrompts.ts";
@@ -70,32 +71,44 @@ serve(async (req) => {
         const systemPrompt = buildWatsonSystemPrompt(locale);
         const userPrompt = buildWatsonUserPrompt(String(locationName), today, locale);
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${geminiApiKey}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        generationConfig: {
-          responseMimeType: "application/json"
-        },
-        contents: [
-          { role: 'user', parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }
-        ]
-      })
-    });
+    const modelsToTry = [GEMINI_WRITE, GEMINI_QUALITY];
+    let generatedText = '';
+    let lastError = '';
 
-    if (!response.ok) {
-      const errText = await response.text();
-      console.error('Gemini API Error Details:', errText);
-      throw new Error(`Gemini API 호출 실패: ${response.status} - ${errText}`);
+    for (const model of modelsToTry) {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            generationConfig: {
+              responseMimeType: "application/json"
+            },
+            contents: [
+              { role: 'user', parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }
+            ]
+          })
+        }
+      );
+
+      if (!response.ok) {
+        const errText = await response.text();
+        lastError = `${response.status} - ${errText}`;
+        console.error(`[update-place-wiki] Gemini ${model}:`, lastError);
+        continue;
+      }
+
+      const data = await response.json();
+      generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      if (generatedText) break;
+      lastError = `No content from ${model}`;
     }
 
-    const data = await response.json();
-    const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
     if (!generatedText) {
-      throw new Error('No content generated from Gemini');
+      throw new Error(`Gemini API 호출 실패: ${lastError || 'No content generated from Gemini'}`);
     }
 
     let parsedResult;
