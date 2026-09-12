@@ -35,6 +35,20 @@ export function sanitizeScenicDbSearchQuery(value) {
 }
 
 /**
+ * 시군 허브 별칭·발음 표기 → 공식명 (창령→창녕).
+ * 팔경 리스트 공식 제목(창녕구경)은 그대로 둔다.
+ * @param {string} query
+ */
+export function canonicalScenicSearchQuery(query) {
+  const raw = String(query || '').trim();
+  if (!raw) return raw;
+  if (resolveLocalScenicList(raw)?.list) return raw;
+  const hub = resolveCityAttractionHub(raw);
+  if (hub?.name) return String(hub.name).trim();
+  return raw;
+}
+
+/**
  * 짧은 쿼리 오탐 완화용 본명 코어.
  * 「창원 주남저수지」→ 주남저수지 (허브·선두 토큰 제거).
  * @param {object} spot
@@ -115,11 +129,12 @@ function spotMatchesScenicQuery(spot, normalizedQuery) {
  *   명소(GATEO 선정) 풀에만 true — 명승(유산) 풀에는 넣지 않음.
  */
 export function filterScenicSpotsByQuery(items, query, opts = {}) {
-  const q = normalizeScenicQuery(query);
+  const resolvedQuery = canonicalScenicSearchQuery(query);
+  const q = normalizeScenicQuery(resolvedQuery);
   if (!q) return Array.isArray(items) ? items : [];
 
   if (opts.injectLocalScenic) {
-    const exactList = resolveLocalScenicList(query);
+    const exactList = resolveLocalScenicList(resolvedQuery);
     if (exactList?.list) {
       const curatedMembers = (items || []).filter((item) =>
         spotMatchesLocalScenicListMember(item, exactList.list),
@@ -130,7 +145,7 @@ export function filterScenicSpotsByQuery(items, query, opts = {}) {
       ).filter((spot) => spot.localScenicListId === exactList.list.listId);
     }
 
-    const hub = resolveCityAttractionHub(query);
+    const hub = resolveCityAttractionHub(resolvedQuery);
     if (hub?.hubId && listsForHub(hub.hubId).length) {
       const pooled = (items || []).filter(
         (item) => String(item.hubId || '').trim() === hub.hubId,
@@ -138,7 +153,7 @@ export function filterScenicSpotsByQuery(items, query, opts = {}) {
       return mergeLocalScenicMembersIntoScenicSpots(pooled, hub.hubId);
     }
 
-    const listMatch = matchLocalScenicListForScenicSearch(query);
+    const listMatch = matchLocalScenicListForScenicSearch(resolvedQuery);
     if (listMatch) {
       const curatedMembers = (items || []).filter((item) =>
         spotMatchesLocalScenicListMember(item, listMatch),
@@ -150,7 +165,7 @@ export function filterScenicSpotsByQuery(items, query, opts = {}) {
     }
   }
 
-  const listMatch = matchLocalScenicListForScenicSearch(query);
+  const listMatch = matchLocalScenicListForScenicSearch(resolvedQuery);
   if (listMatch) {
     return (items || []).filter((item) =>
       spotMatchesLocalScenicListMember(item, listMatch),

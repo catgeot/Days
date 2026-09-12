@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 23,
-  sessionPhase: '창녕 검색 버그픽스',
+  sessionNo: 24,
+  sessionPhase: '창령→창녕 별칭',
   branch: 'cursor/palgyeong-use-e744',
   previewPath: '/korea/theme/scenic?hub=changnyeong',
   qaShareSlug: 'palgyeong-use',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-12-palgyeong-use-24-changnyeong-alias',
+    session: '팔경 활용 #24, 창령→창녕 별칭',
+    title: '창령·창령군을 창녕 발음 별칭으로 연결',
+    detail:
+      '한글 발음으로 구분이 어려운 창령을 창녕 허브 별칭(창령·창령군)으로 넣었습니다. 명승 홈 검색은 공식명 창녕으로 풀려 팔경·GATEO 선정·국가유산 명승·관광지(TourAPI 키워드)가 창녕과 같습니다. 창녕구경 리스트 제목은 그대로 둡니다. Preview /qa/palgyeong-use — 「창령」검색.',
+    at: '2026-09-12T09:40:00.000Z',
+  },
   {
     id: '2026-09-12-palgyeong-use-23-changnyeong-search-fix',
     session: '팔경 활용 #23, 창녕 검색 버그픽스',

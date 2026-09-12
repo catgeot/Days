@@ -16,6 +16,7 @@ import {
   pickBestRegionByCounts,
   sanitizeScenicDbSearchQuery,
   shouldMergeHubLocalScenic,
+  canonicalScenicSearchQuery,
 } from '../src/pages/Home/lib/scenicSearch.js';
 import { nextTourCatsWhenCountsZero } from '../src/pages/KoreaTheme/scenicDefaultChips.js';
 import { SCENIC_REGION_ORDER } from '../src/pages/Home/lib/koreaTourAttractionMap.js';
@@ -338,14 +339,36 @@ assert.equal(
   '창녕 국가유산 명승 2',
 );
 assert.equal(
-  filterScenicSpotsByQuery(curated, '창령', { injectLocalScenic: true }).length,
-  0,
-  '창령 검색은 창녕 팔경·선정을 넣지 않음',
+  canonicalScenicSearchQuery('창령'),
+  '창녕',
+  '창령 발음 별칭 → 창녕',
+);
+assert.equal(
+  canonicalScenicSearchQuery('창령군'),
+  '창녕',
+  '창령군 별칭 → 창녕',
+);
+assert.equal(
+  canonicalScenicSearchQuery('창녕구경'),
+  '창녕구경',
+  '팔경 리스트 제목은 공식명으로 바꾸지 않음',
+);
+const changnyeongAliasCurated = filterScenicSpotsByQuery(curated, '창령', {
+  injectLocalScenic: true,
+});
+assert.equal(
+  changnyeongAliasCurated.length,
+  changnyeongCurated.length,
+  '창령 검색 = 창녕 명소·팔경',
 );
 assert.equal(
   filterScenicSpotsByQuery(heritage, '창령').length,
-  0,
-  '창령 검색은 창녕 명승을 넣지 않음',
+  2,
+  '창령 검색 = 창녕 국가유산 명승 2',
+);
+assert.ok(
+  pageSrc.includes('canonicalScenicSearchQuery(searchFilter)'),
+  '관광지 DB 검색도 허브 공식명 사용',
 );
 assert.equal(
   shouldMergeHubLocalScenic({
