@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 19,
-  sessionPhase: '함안·사천 결손 오버레이',
+  sessionNo: 21,
+  sessionPhase: '이천 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic',
+  previewPath: '/korea/theme/scenic?hub=icheon',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-12-palgyeong-use-21-icheon-overlays',
+    session: '팔경 활용 #21, 이천 결손 오버레이',
+    title: '이천9경 결손 6건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 이천9경 결손 6건(노성산 말머리바위·도드람산 삼봉·반룡송·사기막골도예촌·설봉산 삼형제 바위·애련정)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 도드람산·반룡송·사기막골도예촌·설봉산·안흥유원지(애련정) 사진을 연결했고, 노성산 말머리바위는 같은 시 기암 공식 사진으로 근사했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=icheon 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T06:40:00.000Z',
+  },
   {
     id: '2026-09-12-palgyeong-use-19-haman-sacheon-overlays',
     session: '팔경 활용 #19, 함안·사천 결손 오버레이',
