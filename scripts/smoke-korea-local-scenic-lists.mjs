@@ -716,6 +716,85 @@ assert.ok(yangsanSearchNaewon?.imageUrl, '양산 검색 내원사 계곡 사진 
 const yangsanSearchHwangsan = yangsanSearch.find((s) => s.name === '황산공원');
 assert.ok(yangsanSearchHwangsan?.imageUrl, '양산 검색 황산공원 사진 있음');
 
+const hamanMerged = mergeLocalScenicMembersIntoScenicSpots([], 'haman');
+const hamanNine = hamanMerged.filter((s) => s.localScenicListId === 'haman-gugyeong');
+assert.equal(hamanNine.length, 9, '함안9경 9명');
+assert.equal(hamanNine[0]?.groupTitle, '함안 구경');
+assert.equal(hamanNine[0]?.blurb, '함안 1경');
+const hamanDeficitNames = [
+  '말이산고분군',
+  '악양의 꽃길과 노을',
+  '무진정의 사계',
+  '연꽃테마파크의 아라홍련',
+  '장춘사의 산사풍경',
+  '합강정과 반구정의 해돋이',
+  '대평늪의 늪지식물',
+];
+const hamanDeficit = hamanNine.filter((s) => hamanDeficitNames.includes(s.attractionName));
+assert.equal(hamanDeficit.length, 7, '함안9경 결손 7명');
+assert.ok(
+  hamanDeficit.every((s) => s.overview && s.imageUrl),
+  '함안 결손 7명 overlay 사진·개요',
+);
+assert.ok(
+  hamanDeficit.every((s) => !s.contentId),
+  '함안 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(hamanDeficit.map((s) => s.imageUrl)).size,
+  7,
+  '함안 결손 7명 썸네일 서로 다름',
+);
+const hamanMari = resolveLocalScenicListSpotById('local-scenic:haman-gugyeong:말이산고분군');
+assert.ok(hamanMari?.overview?.includes('말이산'), '함안 말이산 overlay overview');
+const hamanLotus = resolveLocalScenicListSpotById(
+  'local-scenic:haman-gugyeong:연꽃테마파크의아라홍련',
+);
+assert.ok(hamanLotus?.overview?.includes('아라홍련'), '함안 아라홍련 overlay overview');
+const hamanMarsh = resolveLocalScenicListSpotById(
+  'local-scenic:haman-gugyeong:대평늪의늪지식물',
+);
+assert.ok(hamanMarsh?.overview?.includes('천연기념물'), '함안 대평늪 overlay overview');
+
+const sacheonMerged = mergeLocalScenicMembersIntoScenicSpots([], 'sacheon');
+const sacheonNine = sacheonMerged.filter((s) => s.localScenicListId === 'sacheon-gugyeong');
+assert.equal(sacheonNine.length, 9, '사천9경 9명');
+assert.equal(sacheonNine[0]?.groupTitle, '사천 구경');
+assert.equal(sacheonNine[0]?.blurb, '사천 1경');
+const sacheonDeficitNames = [
+  '삼천포대교와 사천바다케이블카',
+  '남일대 코끼리바위',
+  '선진리성 벚꽃',
+  '봉명산 다솔사',
+  '비토섬 갯벌',
+  '용두공원과 청룡사 겹벚꽃',
+];
+const sacheonDeficit = sacheonNine.filter((s) =>
+  sacheonDeficitNames.includes(s.attractionName),
+);
+assert.equal(sacheonDeficit.length, 6, '사천9경 결손 6명');
+assert.ok(
+  sacheonDeficit.every((s) => s.overview && s.imageUrl),
+  '사천 결손 6명 overlay 사진·개요',
+);
+assert.ok(
+  sacheonDeficit.every((s) => !s.contentId),
+  '사천 결손 JSON contentId 없음 유지',
+);
+assert.equal(
+  new Set(sacheonDeficit.map((s) => s.imageUrl)).size,
+  6,
+  '사천 결손 6명 썸네일 서로 다름',
+);
+const sacheonCable = resolveLocalScenicListSpotById(
+  'local-scenic:sacheon-gugyeong:삼천포대교와사천바다케이블카',
+);
+assert.ok(sacheonCable?.overview?.includes('케이블카'), '사천 케이블카 overlay overview');
+const sacheonNamil = resolveLocalScenicListSpotById(
+  'local-scenic:sacheon-gugyeong:남일대코끼리바위',
+);
+assert.ok(sacheonNamil?.overview?.includes('코끼리'), '사천 남일대 overlay overview');
+
 const extra = process.argv.slice(2);
 for (const q of extra) {
   const hit = resolveLocalScenicList(q);
