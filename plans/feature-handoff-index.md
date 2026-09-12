@@ -370,9 +370,9 @@
 
 | | |
 |--|--|
-| **상태** | **#23** tip `251cd352` · PR [#221](https://github.com/catgeot/Days/pull/221) · **#24 진주 결손 오버레이** |
+| **상태** | **#24** tip `e601302f` · PR [#221](https://github.com/catgeot/Days/pull/221) · **#25 진주 결손 오버레이** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `251cd352` |
+| **tip** | `e601302f` |
 | **PR** | [#221](https://github.com/catgeot/Days/pull/221) |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-12-project-log.md`](./2026-09-12-project-log.md) |
@@ -380,12 +380,12 @@
 | **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 · **다음 세션을 Preview QA로 넘기기** |
 | **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run smoke:korea-scenic-search` · `npm run build` |
-| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22** 창녕 6 · **#23** 창령 오탐·관광지 빈 문구(#221). 순수 사진/개요 누락 **184**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **진주8경 6** |
+| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22** 창녕 6 · **#23** 검색 빈 문구 · **#24** 창령→창녕 별칭(#221). 순수 사진/개요 누락 **184**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **진주8경 6** |
 
 **다음 제시어**:
 
 ```
-팔경 활용 #24, 진주 결손 오버레이
+팔경 활용 #25, 진주 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-local-scenic-use-plan.md
