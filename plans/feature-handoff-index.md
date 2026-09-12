@@ -41,17 +41,30 @@ AI 모델 #3, Preview OK면 PR 병합
 
 ---
 
-### 한국 투어티켓 — main 병합 ✅
+### 한국 투어티켓
 
 | | |
 |--|--|
-| **상태** | **#5 merge ✅** · main `0071d2cb` · PR [#223](https://github.com/catgeot/Days/pull/223) |
-| **브랜치** | `cursor/korea-tna-strip-ef65` · merge `0071d2cb` |
+| **상태** | **#5 main 병합 완료** · **#6 클룩 즐길거리·렌터카 연계 준비** |
+| **브랜치** | `cursor/korea-tna-strip-ef65` |
+| **플랜** | [`korea-tna-strip-plan.md`](./korea-tna-strip-plan.md) |
 | **일지** | [`2026-09-12-project-log.md`](./2026-09-12-project-log.md) |
-| **PROD** | `https://www.gateo.kr/korea/theme/scenic?spot=gyeongbokgung` |
+| **Preview** | `/qa/korea-tna-strip` → git Preview `/korea/theme/scenic?spot=gyeongbokgung` |
+| **소유** | `EventTnaStrip.jsx` · `FestivalTnaStrip.jsx` · `ScenicTnaStrip.jsx` · `FestivalDetailSheet.jsx` · `ThemeSpotDetailModal.jsx` |
+| **금지** | UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 `plans/**` 커밋 |
 | **VERIFY** | `smoke:korea-tna-strip` · `smoke:korea-scenic-stay` · `vite build` PASS |
 
-**다음 제시어 없음** (주제 종료). 숙소·투어 본문 카드 20개 · 「크게」는 카드만 키우고 좌우 스크롤. `/qa/korea-tna-strip`은 구 Preview — 확인은 `www.gateo.kr`.
+**다음 제시어**:
+
+```
+한국 투어티켓 #6, 클룩 즐길거리·렌터카 연동
+@plans/feature-handoff-index.md
+@plans/2026-09-12-project-log.md
+@plans/korea-tna-strip-plan.md
+브랜치 cursor/korea-tna-strip-ef65 · Preview /qa/korea-tna-strip
+금지: UI 리디자인 · 마이리얼트립 카드 규격 파손 · feature에 plans/** 커밋
+작업: EventTnaStrip.jsx 하단에 getKlookSearchUrl('즐길거리 클룩에서 더보기') 및 getKlookRentalUrlByLocation('렌터카 최저가 비교') 아웃링크 칩 추가, i18n 반영 및 smoke 검증
+```
 
 ---
 
