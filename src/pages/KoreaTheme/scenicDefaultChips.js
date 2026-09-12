@@ -328,3 +328,36 @@ export function resolveDefaultTourCatChips(cat1, cat2, cat3, chipCounts) {
 
   return { cat2: nextCat2, cat3: nextCat3, changed };
 }
+
+/**
+ * 검색·내 주변: 현재 중·소분류 칩 건수가 0이면 한 단계 해제.
+ * (검색 전 기본칩이 URL에 남아 목록 0 + 다른 칩 건수 표시)
+ * @param {string | null | undefined} cat1
+ * @param {string | null | undefined} cat2
+ * @param {string | null | undefined} cat3
+ * @param {{
+ *   cat2Counts?: Record<string, number>,
+ *   cat3Counts?: Record<string, number>,
+ * }} [chipCounts]
+ * @returns {{ cat2: string | null, cat3: string | null, changed: boolean }}
+ */
+export function nextTourCatsWhenCountsZero(cat1, cat2, cat3, chipCounts) {
+  const cat2Counts = chipCounts?.cat2Counts || {};
+  const cat3Counts = chipCounts?.cat3Counts || {};
+  const midCodes = listTourAttractionCat2(cat1);
+  const subCodes = listTourAttractionCat3(cat1, cat2);
+  const cat2Loaded = midCodes.some((c) =>
+    Number.isFinite(Number(cat2Counts[c.code])),
+  );
+  const cat3Loaded = subCodes.some((c) =>
+    Number.isFinite(Number(cat3Counts[c.code])),
+  );
+
+  if (cat3 && cat3Loaded && (Number(cat3Counts[cat3]) || 0) === 0) {
+    return { cat2: cat2 || null, cat3: null, changed: true };
+  }
+  if (cat2 && cat2Loaded && (Number(cat2Counts[cat2]) || 0) === 0) {
+    return { cat2: null, cat3: null, changed: true };
+  }
+  return { cat2: cat2 || null, cat3: cat3 || null, changed: false };
+}

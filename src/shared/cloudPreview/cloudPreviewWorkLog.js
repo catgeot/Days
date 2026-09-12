@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 21,
-  sessionPhase: '이천 결손 오버레이',
+  sessionNo: 24,
+  sessionPhase: '창령→창녕 별칭',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=icheon',
+  previewPath: '/korea/theme/scenic?hub=changnyeong',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,30 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-12-palgyeong-use-24-changnyeong-alias',
+    session: '팔경 활용 #24, 창령→창녕 별칭',
+    title: '창령·창령군을 창녕 발음 별칭으로 연결',
+    detail:
+      '한글 발음으로 구분이 어려운 창령을 창녕 허브 별칭(창령·창령군)으로 넣었습니다. 명승 홈 검색은 공식명 창녕으로 풀려 팔경·GATEO 선정·국가유산 명승·관광지(TourAPI 키워드)가 창녕과 같습니다. 창녕구경 리스트 제목은 그대로 둡니다. Preview /qa/palgyeong-use — 「창령」검색.',
+    at: '2026-09-12T09:40:00.000Z',
+  },
+  {
+    id: '2026-09-12-palgyeong-use-23-changnyeong-search-fix',
+    session: '팔경 활용 #23, 창녕 검색 버그픽스',
+    title: '창령 팔경 오탐 · 창녕 관광지 빈 문구',
+    detail:
+      'hub=changnyeong에서 「창령」검색 시 URL hub가 남아 창녕구경이 주입되던 오탐을 막았습니다(검색 풀 0건이면 팔경 병합 안 함). 「창녕」관광지는 검색 전 종목 칩이 URL에 남아 목록 0건인데 분류칩만 보이던 빈 문구를, 0건 중·소분류 해제와 칩 건수 있을 때 빈 카피 숨김으로 고쳤습니다. Preview /qa/palgyeong-use — 창령은 팔경 없음, 창녕은 관광지 목록·칩 일치.',
+    at: '2026-09-12T09:30:00.000Z',
+  },
+  {
+    id: '2026-09-12-palgyeong-use-22-changnyeong-overlays',
+    session: '팔경 활용 #22, 창녕 결손 오버레이',
+    title: '창녕구경 결손 6건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 창녕구경 결손 6건(우포늪과 따오기·화왕산 억새와 진달래·낙동강유채축제와 남지개비리·만옥정공원과 신라진흥왕척경비, 술정리동삼층석탑·교동과 송현동고분군·3·1민속문화제와 영산만년교)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 우포늪·화왕산군립공원·낙동강유채축제·남지개비리길·만옥정공원·술정리 동 삼층석탑·교동·송현동 고분군·영산 만년교 사진을 연결했고, 만년교 쥐불놀이 공식 사진으로 민속제를 보탰습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=changnyeong 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T08:50:00.000Z',
+  },
   {
     id: '2026-09-12-palgyeong-use-21-icheon-overlays',
     session: '팔경 활용 #21, 이천 결손 오버레이',
