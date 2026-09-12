@@ -118,6 +118,15 @@
 - **잔여**: 사진/개요 순수 누락 **167**/876. QA 후 다음 허브 **강진12경 5**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
+## 팔경 활용 #27 — 구례 수목원 사진 (Cloud QA)
+
+- **세션** `팔경 활용 #27, 구례 결손 오버레이` 사람 Preview 피드백
+- **브랜치** `cursor/palgyeong-use-e744` · tip `fbc921de` · PR [#226](https://github.com/catgeot/Days/pull/226)
+- **완료**: GATEO 선정 구례 수목원(`gurye-arboretum`, TourAPI 3001143)은 개요만 있고 firstimage가 비어 목록·상세가 아이콘이었다. 한국관광공사 구석구석 공공 사진 6장을 대표 이미지·galleryUrls로 넣었다. palgyeong JSON contentId·scenic 승격 없음.
+- **VERIFY**: `npm run smoke:korea-scenic-spots` PASS · `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=gurye` 지역 대표 명소 구례 수목원
+- **다음**: #28 강진12경 5. 사람은 같은 턴에 수목원 썸네일·본문 갤러리 확인.
+
 ## 팔경 활용 #28 다음 — 강진 결손 오버레이
 
 ```

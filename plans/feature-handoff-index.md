@@ -424,17 +424,17 @@ AI 모델 #3, Preview OK면 PR 병합
 
 | | |
 |--|--|
-| **상태** | **#27** tip `2ed942ea` · PR [#226](https://github.com/catgeot/Days/pull/226) · **#28 강진 결손 오버레이** |
+| **상태** | **#27** tip `fbc921de` · PR [#226](https://github.com/catgeot/Days/pull/226) · 구례 수목원 사진 보강 · **#28 강진 결손 오버레이** |
 | **브랜치** | `cursor/palgyeong-use-e744` |
-| **tip** | `2ed942ea` |
+| **tip** | `fbc921de` |
 | **PR** | [#226](https://github.com/catgeot/Days/pull/226) · [#225](https://github.com/catgeot/Days/pull/225) merge ✅ |
 | **플랜** | [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) **§9 A** |
 | **일지** | [`2026-09-12-project-log.md`](./2026-09-12-project-log.md) |
 | **Preview** | `/qa/palgyeong-use` → git Preview `/korea/theme/scenic?hub=gurye` |
-| **소유** | js/jsx · 검색 스모크 · **JSON·fill 금지** |
+| **소유** | js/jsx · 검색 스모크 · **JSON palgyeong contentId·fill 금지** |
 | **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 `plans/**` 커밋 · **다음 세션을 Preview QA로 넘기기** |
-| **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run smoke:korea-scenic-search` · `npm run build` |
-| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). **#27** 구례 5(#226). 순수 사진/개요 누락 **167**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **강진12경 5** |
+| **VERIFY** | `npm run smoke:korea-local-scenic-lists` · `npm run smoke:korea-scenic-search` · `npm run smoke:korea-scenic-spots` · `npm run build` |
+| **성과** | #10 행 부제(#213). **#12** 축제 인근(#215). **#13–14** 광양·하동(#216). **#15–18** 영동 한천·양산·검색·부제(#217). **#19** 함안 7·사천 6(#219). **#21** 이천 6(#220). **#22–24** 창녕 6·검색·별칭(#221). **#25** 진주 6(#222). **#26** 상산 6(#225). **#27** 구례 5 + GATEO 선정 구례 수목원 공식 사진(#226). 순수 사진/개요 누락 **167**/876. 사람 Preview는 같은 턴 병행. 다음 허브 **강진12경 5** |
 
 **다음 제시어**:
 
