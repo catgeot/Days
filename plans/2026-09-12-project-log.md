@@ -98,16 +98,26 @@
 - **잔여**: 사진/개요 순수 누락 **178**/876. QA 후 다음 허브 **상산팔경 6**
 - **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
 
-## 팔경 활용 #26 다음 — 상산(진천) 결손 오버레이
+## 팔경 활용 #26 — 상산(진천) 결손 오버레이 (Cloud)
+
+- **세션** `팔경 활용 #26, 상산(진천) 결손 오버레이`
+- **브랜치** `cursor/palgyeong-use-e744` · tip `29c7bb3a` · PR [#225](https://github.com/catgeot/Days/pull/225)
+- **완료**: JSON contentId·scenic 승격 없이 `LOCAL_SCENIC_MEMBER_OVERLAYS`로 상산팔경 결손 6건(평사낙안·우담제월·금계완사·상산모운·어은계석·적대청람)의 개요·주소·공식 사진 보강. 한국관광공사 미호천 농다리·초평호 미르숲·진천 농교·보탑사·정송강사 사진을 연결했고, 금계완사는 같은 군 농교 물가, 상산모운은 만뢰산 보탑사, 우담제월·적대청람은 초평호·미르숲 공식 사진으로 근사했다.
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=jincheon`
+- **잔여**: 사진/개요 순수 누락 **172**/876. QA 후 다음 허브 **구례10경 5**
+- **QA 방식**: 사람은 **같은 턴** Preview QA. 다음 에이전트 세션을 `사람 Preview QA`로 넘기지 않음.
+
+## 팔경 활용 #27 다음 — 구례 결손 오버레이
 
 ```
-팔경 활용 #26, 상산(진천) 결손 오버레이
+팔경 활용 #27, 구례 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 상산팔경 사진·개요 없는 6건(평사낙안·우담제월·금계완사·상산모운·어은계석·적대청람)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=jincheon
+작업: 구례10경 사진·개요 없는 5건(노고단 운해·반야봉 낙조·피아골 단풍·산동 산수유꽃·노고단 설경)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=gurye
 ```
 
 ## 같은 세션 QA — AGENTS.md 전 주제 규칙
@@ -115,7 +125,7 @@
 - **적용**: [`AGENTS.md`](../AGENTS.md) Cloud · [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) **§5** · `.ai-context` **§4.1 13**
 - **기본**: 복잡 로직·토큰 과다 작업 **외에는** 작업 세션에서 QA 마무리. 다음 제시어 = 다음 작업. `{주제} #N, 사람 Preview QA`를 다음 에이전트 채팅으로 넘기지 않음.
 - **예외**: 복잡 로직·토큰 과다 세션만 별도 사람 Preview QA 채팅 허용. 피드백 → 수정 세션.
-- **팔경**: 다음 에이전트 = **#26 상산(진천) 결손 오버레이**
+- **팔경**: 다음 에이전트 = **#27 구례 결손 오버레이**
 
 ## 한국 투어티켓 #1 — 축제·명승 본문 투어·티켓 카드 섹션 (Cloud)
 
