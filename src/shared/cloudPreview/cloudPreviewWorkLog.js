@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '팔경 활용',
-  sessionNo: 29,
-  sessionPhase: '군산 결손 오버레이',
-  branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=gunsan',
-  qaShareSlug: 'palgyeong-use',
+  title: '갤러리 캐시 신선도',
+  sessionNo: 1,
+  sessionPhase: 'DB 즉시 + 스톡 SWR',
+  branch: 'cursor/gallery-swr-6b36',
+  previewPath: '/place/paris/gallery',
+  qaShareSlug: 'gallery-fresh',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-06-gallery-swr-1',
+    session: '갤러리 캐시 신선도 #1, DB 즉시 + 스톡 SWR',
+    title: 'DB로 바로 보고, 7일마다 최신 스톡만 뒤에서 병합',
+    detail:
+      '갤러리 탭은 place_stats/세션을 즉시 보여 주고 Unsplash는 7일에 한 번 백그라운드 병합한다. 대표 사진(image_url)은 바꾸지 않아 써머리·검색 카드가 흔들리지 않는다. 검색 카드는 썸네일만 DB에서 읽는다. Preview /qa/gallery-fresh — 파리 갤러리가 바로 뜨는지, 잠시 뒤 새 사진이 대표 사진 뒤에 붙는지.',
+    at: '2026-09-06T03:20:00.000Z',
+  },
   {
     id: '2026-09-12-palgyeong-use-29-gunsan-overlays',
     session: '팔경 활용 #29, 군산 결손 오버레이',

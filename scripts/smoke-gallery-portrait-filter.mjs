@@ -142,7 +142,7 @@ assert.doesNotMatch(
 );
 
 const gallerySrc = readFileSync(join(root, 'src/components/PlaceCard/hooks/usePlaceGallery.js'), 'utf8');
-assert.match(gallerySrc, /CACHE_VERSION = 'v1\.21'/, 'cache version after latin gallery query');
+assert.match(gallerySrc, /CACHE_VERSION = 'v1\.22'/, 'cache version after latin query + gallery SWR');
 assert.match(gallerySrc, /place_stats all portraits/, 'DB all-portrait miss falls through to live');
 assert.match(gallerySrc, /pickPlaceStatsGalleryRow/, 'prefer latin scenery row over hangul portraits');
 assert.match(gallerySrc, /filterOutSinglePersonPortraits\(rawImages\)/, 'cached galleries also drop portraits');
