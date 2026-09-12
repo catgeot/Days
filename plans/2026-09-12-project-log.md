@@ -129,3 +129,26 @@
 - **VERIFY**: `npm run smoke:korea-tna-strip` PASS · `npm run smoke:korea-scenic-stay` PASS · `npm run smoke:korea-festival-stay-url` PASS · `npm run smoke:mrt-tna` PASS · `npm run build` PASS
 - **Preview**: https://www.gateo.kr/qa/korea-tna-strip → git Preview `/korea/theme/scenic?spot=gyeongbokgung`
 - **다음**: 사람 Preview QA (경복궁 등 명승 상세 및 축제 상세 본문 TNA 카드 섹션 확인)
+
+## AI 모델 #1 — Gemini 2.5 Flash/Pro 교체 (Cloud)
+
+- **세션** `AI 모델 #1, 2.5 종료 교체`
+- **브랜치** `cursor/gemini-models-df4c` · tip `9a0dc58d` · PR [#224](https://github.com/catgeot/Days/pull/224)
+- **이유**: Vertex 2.5 Flash/Pro 퇴직 2026-10-20. Gemini API 일자는 철회됐으나 Vertex·신규키 제한이 남아 교체.
+- **매핑**: FAST `3.1-flash-lite`(유지) · QUALITY `2.5-flash`→`3.5-flash` · WRITE `2.5-pro`→`3.1-pro-preview`(폴백 `3.5-flash`)
+- **Edge 배포됨**: `gemini-proxy` · wiki · toolkit · magazine · event-travel-guide · explain-event-term
+- **LIVE ping**: 3.5-flash 200 · 2.5-flash→3.5-flash · 2.5-pro→3.1-pro-preview
+- **VERIFY**: `npm run smoke:gemini-models` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/gemini → git Preview `/`
+- **QA 체크**: 홈 무니 한 턴 · 예약/교통 질문 · (가능하면) 리뷰 AI
+- **다음**: 사람 같은 턴 Preview. 피드백 있으면 #2 수정, 없으면 PR 병합 후 index 행 삭제
+
+```
+AI 모델 #2, Preview 피드백 수정
+@plans/feature-handoff-index.md
+@plans/2026-09-12-project-log.md
+브랜치 cursor/gemini-models-df4c · PR #224 · Preview /qa/gemini
+금지: UI 리디자인 · 최신 Flash 추격 · feature에 plans/** 커밋
+작업: 사람 Preview 피드백이 있으면 모델 티어만 수정. 없으면 PR 병합 후 이 행 삭제
+```
+
