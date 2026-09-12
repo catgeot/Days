@@ -13,12 +13,21 @@
 - **Preview** https://www.gateo.kr/qa/palgyeong-use → git Preview `/korea/theme/scenic?hub=yeongdong`
 - **다음** 사람 Preview QA — 명승 「한천」그룹명 한천팔경 · 지구본 검색 한천팔경 · 영동 허브 두 팔경 분리
 
+## 팔경 활용 #18 — 한천 행 부제 공식명 (Cloud)
+
+- **세션** `팔경 활용 #18` Preview QA 피드백 — 리스트 제목과 행 부제 불일치
+- **브랜치** `cursor/palgyeong-use-e744` · tip `900d77af` · PR [#217](https://github.com/catgeot/Days/pull/217)
+- **완료**: 그룹명 한천팔경인데 행이 영동 N경이던 불일치. 같은 시군에 팔경이 둘이면 공식명 어간으로 번호(한천 1경·양산 1경).
+- **VERIFY**: `npm run smoke:korea-local-scenic-lists` PASS · `npm run smoke:korea-scenic-search` PASS · `npm run build` PASS
+- **Preview** https://www.gateo.kr/qa/palgyeong-use
+- **다음** 사람 Preview QA — 「한천」검색 그룹 한천팔경 · 행 한천 1경~8경
+
 ```
-팔경 활용 #18, 사람 Preview QA
+팔경 활용 #19, 사람 Preview QA
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · PR #217 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: 명승 검색 「한천」그룹명이 한천팔경인지 · 지구본 홈 「한천」에 한천팔경 행이 있는지 · ?hub=yeongdong 한천·양산이 따로 묶이는지
+작업: 명승 검색 「한천」그룹명 한천팔경 · 행 부제 한천 1경~8경인지 (영동 N경 아님)
 ```
