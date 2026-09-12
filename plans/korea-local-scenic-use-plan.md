@@ -65,6 +65,8 @@ index **행 2개**. A는 본 플랜 §9 A 블록만 · B는 큐·method §5.7만
 
 **VERIFY A**: 스모크 `문경` → 소제목 `문경 팔경` + 멤버 + 여행지 `문경`. `속초`/`낙산사` 회귀. 별도 파드 없음. `build`.
 
+**A 다음 제시어 (2026-09-12~)**: 사람은 **같은 턴**에서 Preview QA. 에이전트는 `팔경 활용 #N, 사람 Preview QA`를 **다음 세션으로 넘기지 않음**. 오버레이 종료 시 다음 제시어 = **다음 결손 허브**. 사람 피드백이 있으면 그때만 수정 세션을 연다.
+
 ---
 
 ## 3. 갈래 B — contentId 오케 (쿼터)
@@ -90,9 +92,11 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | | A | B |
 |--|--|--|
 | **브랜치** | `cursor/palgyeong-use-e744` | `cursor/palgyeong-cid` |
-| **지금** | **#21** tip `7903a22c` · PR [#220](https://github.com/catgeot/Days/pull/220) · **#22 사람 Preview QA** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
+| **지금** | **#21** tip `7903a22c` · PR [#220](https://github.com/catgeot/Days/pull/220) · **#22 창녕 결손 오버레이** | **main 병합 완료 ✅** · squash merge `53b21b00` · PR [#185](https://github.com/catgeot/Days/pull/185) |
 | **index 행** | 팔경 활용 | 팔경 contentId (종료) → 명소 자체 큐레이션 |
-| **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 | UI · scenic 승격 · AI가 ID 기입 |
+| **금지** | JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · **다음 세션을 Preview QA로 넘기기** | UI · scenic 승격 · AI가 ID 기입 |
+
+**A 다음 제시어**: 사람은 같은 턴 Preview QA. 다음 채팅 = **다음 결손 허브**. `사람 Preview QA` 세션 생략. 피드백이 있으면 그때만 수정 세션.
 
 ### 채팅명 복붙표 (`#N` 리셋 금지)
 
@@ -119,7 +123,7 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 | 19 | `팔경 활용 #19, 함안·사천 결손 오버레이` | A | **완료** · tip `13d69f11` · PR [#219](https://github.com/catgeot/Days/pull/219) merge ✅ `985bf7b7` · 함안 7·사천 6 |
 | 20 | `팔경 활용 #20, 사람 Preview QA` | A 사람 | **완료** · 함안·사천 Preview QA PASS ✅ |
 | 21 | `팔경 활용 #21, 이천 결손 오버레이` | A | **완료** · tip `7903a22c` · PR [#220](https://github.com/catgeot/Days/pull/220) · 이천 6 |
-| 22 | `팔경 활용 #22, 사람 Preview QA` | A 사람 | **열기 가능** · `?hub=icheon` 결손 행 · 그다음 창녕구경 6 |
+| 22 | `팔경 활용 #22, 창녕 결손 오버레이` | A | **열기 가능** · 창녕구경 6 · Preview QA는 사람 병행(세션 생략) |
 | — | `팔경contentId #P2-MERGE, 양구수목원 자체큐레이션 및 PR #185 main 병합` | B | **완료** · PR #185 main squash merge `53b21b00` |
 | — | `팔경contentId #P2-END, 잔여 51건 종결 및 main 병합 검토` | B | **완료** · P2 종결(94.1%) · PR #185 검토 |
 | — | `팔경contentId #P2-L10, 잔여 null 분석 및 전략` | B | **완료** · tip `fb4c5513` 27/32 |
@@ -341,16 +345,16 @@ DB(`tourapi_attraction`) 먼저 · LIVE `searchKeyword`/`areaBased`는 잔여만
 작업: 이천9경 사진·개요 없는 6건(노성산 말머리바위·도드람산 삼봉·반룡송·사기막골도예촌·설봉산 삼형제 바위·애련정)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=icheon
 ```
 
-### §1.2 A #22 Preview QA (다음)
+### §1.2 A #22 창녕 결손 오버레이 (다음)
 
 ```
-팔경 활용 #22, 사람 Preview QA
+팔경 활용 #22, 창녕 결손 오버레이
 @plans/feature-handoff-index.md
 @plans/2026-09-12-project-log.md
 @plans/korea-local-scenic-use-plan.md
 브랜치 cursor/palgyeong-use-e744 · Preview /qa/palgyeong-use
 금지: JSON contentId 기입 · scenic 승격 · 축제 홈 파드 · feature에 plans/** 커밋
-작업: Preview /korea/theme/scenic?hub=icheon 결손 행 썸네일·개요·행마다 다른 사진
+작업: 창녕구경 사진·개요 없는 6건(우포늪과 따오기·화왕산 억새와 진달래·낙동강유채축제와 남지개비리·만옥정공원과 신라진흥왕척경비, 술정리동삼층석탑·교동과 송현동고분군·3·1민속문화제와 영산만년교)을 LOCAL_SCENIC_MEMBER_OVERLAYS로 보강. Preview /korea/theme/scenic?hub=changnyeong
 ```
 
 
