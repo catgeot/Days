@@ -180,4 +180,72 @@
 작업: /korea/theme/scenic?hub=yeongdong 16행 사진·개요 고유한지 · 검색창 「한천」입력 시 한천팔경 8행 주입되는지 · 「양산」검색 시 내원사계곡·황산공원 썸네일·개요 뜨는지
 ```
 
+## 세계행사 일정 #55 — 상세 갤러리 Unsplash 우선 배치 및 시드 정비 (Cloud)
+
+- **세션** `세계행사 일정 #55, 상세 갤러리 Unsplash 우선 배치`
+- **브랜치** `cursor/world-events-wave3` · tip `b52f148b` · PR [#218](https://github.com/catgeot/Days/pull/218) (OPEN)
+- **완료**:
+  1. 상세 히어로 갤러리(`EventDetailHero`)에서 생생한 축제 분위기의 Unsplash 사진을 최상단 슬롯(0~N)에 우선 배치하도록 머지 유틸(`mergeWorldEventHeroGalleryImages`) 및 Edge Function(`fetch-event-hero-gallery`) 로직을 개선.
+  2. Unsplash 고유 ID가 `galleryNearDupKey`에서 과잉 축약되어 탈락하지 않도록 unplash 도메인 예외 가드 추가.
+  3. `heroGallerySeedCacheMatches`가 순서에 의존하지 않고 Set 기반으로 시드 유효성을 체크하도록 개선하여 기존 DB 캐시와 신규 Unsplash 우선 순서가 모두 안정적으로 동작하도록 처리.
+  4. 옥토버페스트 시드에 포함되어 있던 지하철역 에스컬레이터 비상레버 사진을 실제 축제 개막(`O'zapft is!`) 및 텐트 내부(`Hofbraudedans`) 사진으로 교체하고, 빈 국립오페라 중복 외관 시드를 대극장 객석(`Zuschauerraum`) 사진으로 정비.
+- **VERIFY**: `smoke:world-events-hub` PASS · `audit:world-events` PASS · `smoke:world-events-detail` PASS · `build` PASS
+- **Preview** https://www.gateo.kr/qa/world-events → `/world-events/munich-oktoberfest-2026`
+- **다음** 사람 Preview QA — 옥토버페스트 및 세계행사 상세 진입 시 생생한 축제 사진이 첫 화면과 썸네일 전면에 나오는지 확인
+
+```
+세계행사 일정 #56, 상세 갤러리 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-11-project-log.md
+@plans/world-events-management.md
+브랜치 cursor/world-events-wave3 · PR #218 · https://www.gateo.kr/qa/world-events
+금지: worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · 허브에 플래너·숙소 칩 복구
+작업: /world-events/munich-oktoberfest-2026 등 상세 본문 갤러리 1~3번에 생생한 축제 사진이 나오는지 · 지하철 비상레버 등 무관 사진이 없는지 확인
+```
+
+## 세계행사 일정 #56 — 상세 갤러리 축제 분위기 QA (Cloud)
+
+- **세션** `세계행사 일정 #56, 상세 갤러리 축제 분위기 QA`
+- **브랜치** `cursor/world-events-wave3` · tip `bc7ff714` · PR [#218](https://github.com/catgeot/Days/pull/218) (OPEN)
+- **완료**:
+  1. 사람 Preview: 빈 오페라·두바이가 시드 3장(건물·스카이라인)만 표시. `heroGallerySearchQueryEn`이 generate에서 빠져 JSON에 없었고, Edge 타임아웃 시 Unsplash 폴백이 끊김.
+  2. 분위기 영문 검색어를 스키마·23개 행사 JSON에 통과. 갤러리 랭킹으로 군중·객석·마라톤을 스카이라인·파사드보다 앞에 둠.
+  3. 빈 오페라 시드를 대극장·무대로, 두바이 시드를 마라톤·사이클링으로 교체.
+- **VERIFY**: `smoke:world-events-hub` PASS · `audit:world-events` PASS · `smoke:world-events-detail` PASS · `build` PASS
+- **Preview** https://www.gateo.kr/qa/world-events → 빈 오페라 · 두바이 피트니스 · 옥토버페스트
+- **다음** 사람 Preview QA — 갤러리 1~3번이 객석·러닝·축제 현장인지, 시드 3장만 남았는지
+
+```
+세계행사 일정 #57, 상세 갤러리 분위기 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-11-project-log.md
+@plans/world-events-management.md
+브랜치 cursor/world-events-wave3 · PR #218 · https://www.gateo.kr/qa/world-events
+금지: worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · 허브에 플래너·숙소 칩 복구
+작업: /world-events/vienna-staatsoper-season-2026 · /world-events/dubai-fitness-challenge-2026 · /world-events/munich-oktoberfest-2026 갤러리 1~3번이 객석·마라톤·축제 현장인지 · 시드 3장(건물/스카이라인)만 남았는지
+```
+
+## 세계행사 일정 #57 — 리스트 썸네일 컬러 우선 (Cloud)
+
+- **세션** `세계행사 일정 #57, 리스트 썸네일 컬러 우선`
+- **브랜치** `cursor/world-events-wave3` · tip `e824c37d` · PR [#218](https://github.com/catgeot/Days/pull/218) (OPEN)
+- **완료**:
+  1. 사람 Preview: 이스탄불 마라톤·추수감사절 카드가 Unsplash 빈티지 흑백. CSS 필터가 아니라 검색이 흑백 컷을 고른 것.
+  2. 리스트 픽커가 캡션 B&W·회색 대표색을 건너뛰고 컬러 Unsplash를 고름. 세션 캐시 `list-photo-v3-color`.
+  3. 갤러리 머지·Edge도 흑백 점수 −8. 야간 컬러의 회색 평균은 컬러 후보가 없을 때만 유지.
+- **VERIFY**: `smoke:world-events-hub` PASS · `smoke:world-events-detail` PASS · `build` PASS
+- **Preview** https://www.gateo.kr/qa/world-events → `/world-events` 이스탄불 · 추수감사절
+- **다음** 사람 Preview QA — 두 카드가 컬러인지 (구 캐시면 하드 리프레시)
+
+```
+세계행사 일정 #58, 리스트 컬러 썸네일 Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-09-11-project-log.md
+@plans/world-events-management.md
+브랜치 cursor/world-events-wave3 · PR #218 · https://www.gateo.kr/qa/world-events
+금지: worldEvents.json 직편집 · UI 리디자인 · 위키 시드를 리스트 사진으로 복구 · 허브에 플래너·숙소 칩 복구
+작업: /world-events 이스탄불 마라톤·추수감사절 카드가 컬러인지 (필요하면 하드 리프레시)
+```
+
+
 

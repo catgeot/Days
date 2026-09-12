@@ -10,6 +10,7 @@ import {
   CalendarDays,
   Globe2,
   Map,
+  ChevronDown,
   ChevronUp,
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -73,6 +74,31 @@ const CATEGORY_ACTIVE_MOBILE = {
   adventure: 'bg-red-500/25 border-red-400/50 shadow-[0_0_14px_rgba(248,113,113,0.35)]',
 };
 
+const QUICK_LINKS_TWINKLE_CYCLE_S = 5.6;
+
+function QuickLinksCollapsedLabel({ items = [] }) {
+  const step = QUICK_LINKS_TWINKLE_CYCLE_S / Math.max(items.length, 1);
+
+  return (
+    <span className="truncate text-[11px] md:text-[12px] font-bold tracking-tight text-white/95 break-keep">
+      {items.map((item, index) => {
+        const itemKeyClass = `quick-links-collapsed-item-${item.key}`;
+        return (
+          <React.Fragment key={item.key || index}>
+            {index > 0 ? <span className="text-white/35 font-normal"> · </span> : null}
+            <span
+              className={itemKeyClass}
+              style={{ animationDelay: `${index * step}s` }}
+            >
+              {item.shortLabel}
+            </span>
+          </React.Fragment>
+        );
+      })}
+    </span>
+  );
+}
+
 const HomeUI = React.memo(({
   onSearch: _onSearch, onTickerClick, externalInput, savedTrips: _savedTrips, onTripClick: _onTripClick, onTripDelete: _onTripDelete, onOpenChat, onLogoClick,
   relatedPlaces = [], isTagLoading = false, onRelatedPlaceClick,
@@ -120,9 +146,6 @@ const HomeUI = React.memo(({
       })),
     [t],
   );
-  const mobileQuickLinksCollapsedLabel = mobileQuickLinks
-    .map((item) => item.shortLabel)
-    .join(' · ');
   const categoryLabel = (id) => t(`home.category.${id}`, { defaultValue: CATEGORY_LABELS[id] || id });
   const [, setInputValue] = useState('');
   const navigate = useNavigate();
@@ -247,27 +270,16 @@ const HomeUI = React.memo(({
           onFaceRegionsDismiss?.();
           setMobileQuickLinksExpanded(true);
         }}
-        className="group relative flex w-auto max-w-[14rem] md:w-max md:max-w-none items-center gap-2 rounded-xl border border-white/25 bg-[#101010] px-2.5 py-1.5 shadow-[0_0_14px_rgba(255,255,255,0.08)] transition-colors hover:border-white/40 hover:bg-[#161616] touch-manipulation"
+        className="quick-links-banner-breathe group relative flex w-auto max-w-[15.5rem] md:w-max md:max-w-none items-center gap-1.5 rounded-xl border border-white/20 bg-[#101010]/95 px-2.5 py-1.5 backdrop-blur-sm transition-all hover:border-amber-400/60 hover:bg-[#161616] touch-manipulation active:scale-[0.98]"
         aria-label={`${t('home.quickLinks.expandMenu')} — ${mobileQuickLinks.map((item) => item.label).join(', ')}`}
         title={t('home.quickLinks.expandMenu')}
       >
-        <span className="flex items-center gap-1">
-          {mobileQuickLinks.map((item) => {
-            const Icon = item.icon;
-            return (
-              <span
-                key={item.to}
-                className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border ${item.iconWrapClass}`}
-                aria-hidden="true"
-              >
-                <Icon size={12} />
-              </span>
-            );
-          })}
-        </span>
-        <span className="truncate md:overflow-visible md:whitespace-nowrap md:shrink-0 text-[11px] font-bold tracking-tight text-white/95 break-keep">
-          {mobileQuickLinksCollapsedLabel}
-        </span>
+        <QuickLinksCollapsedLabel items={mobileQuickLinks} />
+        <ChevronDown
+          size={13}
+          className="shrink-0 text-white/40 transition-transform duration-200 group-hover:translate-y-0.5 group-hover:text-white/75"
+          aria-hidden="true"
+        />
       </button>
     ) : (
       <div className="flex flex-col items-start gap-2">
