@@ -6,10 +6,10 @@
 export const cloudPreviewProject = {
   active: true,
   title: '팔경 활용',
-  sessionNo: 25,
-  sessionPhase: '진주 결손 오버레이',
+  sessionNo: 26,
+  sessionPhase: '상산(진천) 결손 오버레이',
   branch: 'cursor/palgyeong-use-e744',
-  previewPath: '/korea/theme/scenic?hub=jinju',
+  previewPath: '/korea/theme/scenic?hub=jincheon',
   qaShareSlug: 'palgyeong-use',
 };
 
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-09-12-palgyeong-use-26-jincheon-overlays',
+    session: '팔경 활용 #26, 상산(진천) 결손 오버레이',
+    title: '상산팔경 결손 6건 런타임 오버레이',
+    detail:
+      'JSON contentId·scenic 승격 없이 LOCAL_SCENIC_MEMBER_OVERLAYS에 상산팔경 결손 6건(평사낙안·우담제월·금계완사·상산모운·어은계석·적대청람)의 공공 공식 팩트 개요·주소·공식 사진을 보강했습니다. 한국관광공사 미호천 농다리·초평호 미르숲·진천 농교·보탑사·정송강사 사진을 연결했고, 금계완사는 같은 군 농교 물가, 상산모운은 만뢰산 보탑사, 우담제월·적대청람은 초평호·미르숲 공식 사진으로 근사했습니다. Preview /qa/palgyeong-use — /korea/theme/scenic?hub=jincheon 팔경 행 썸네일·상세 개요.',
+    at: '2026-09-12T10:30:00.000Z',
+  },
   {
     id: '2026-09-12-palgyeong-use-25-jinju-overlays',
     session: '팔경 활용 #25, 진주 결손 오버레이',
