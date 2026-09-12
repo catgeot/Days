@@ -77,6 +77,7 @@ import { localizedPackageCtaLabel } from '../../i18n/exploreUi';
 import { fetchNearbyFestivals } from '../../utils/fetchNearbyFestivals';
 import { detectSidoCode } from '../Korea/festivalRegionTags';
 import ScenicStayStrip from './ScenicStayStrip';
+import ScenicTnaStrip from './ScenicTnaStrip';
 
 function localizedSpotModalSubtitle(spot, locale) {
   const place = formatScenicSpotPlaceLabel(spot, locale);
@@ -204,6 +205,7 @@ function ThemeSpotCrossRail({
   onOpenSameHub,
   hideNearbyHubs = false,
   hideStayStrip = false,
+  hideTnaStrip = false,
 }) {
   const { t } = useTranslation();
   const { locale } = useLocale();
@@ -275,9 +277,11 @@ function ThemeSpotCrossRail({
     !showStayStrip && cross.stay?.keyword
       ? getMrtAccommodationSearchUrl(cross.stay.keyword, { isDomestic: true })
       : '';
-  const tnaHref = cross.tna?.keyword
-    ? buildMrtTnaSearchMoreUrl(cross.tna.keyword)
-    : '';
+  const showTnaStrip = !hideTnaStrip && Boolean(cross.tna?.location);
+  const tnaHref =
+    !showTnaStrip && cross.tna?.keyword
+      ? buildMrtTnaSearchMoreUrl(cross.tna.keyword)
+      : '';
 
   const openNearbyScenicHome = (hub) => {
     const path =
@@ -1576,6 +1580,7 @@ export default function ThemeSpotDetailModal({
     [stayCrossInput],
   );
   const showStayStrip = Boolean(stayCross?.stay?.location);
+  const showTnaStrip = Boolean(stayCross?.tna?.location && stayCross?.tna?.keyword);
 
   const tel = String(detail?.tel || '').trim();
 
@@ -2002,6 +2007,16 @@ export default function ThemeSpotDetailModal({
               </div>
             ) : null}
 
+            {showTnaStrip ? (
+              <div className="border-t border-stone-200/80 pt-4">
+                <ScenicTnaStrip
+                  spot={stayCrossInput}
+                  tna={stayCross.tna}
+                  locale={locale}
+                />
+              </div>
+            ) : null}
+
             <section className="space-y-2 border-t border-stone-200/80 pt-4">
               <h3 className="text-[11px] font-bold uppercase tracking-[0.14em] text-stone-500">
                 {t('korea.theme.spotDetail.readMore')}
@@ -2376,6 +2391,7 @@ export default function ThemeSpotDetailModal({
               onOpenSameHub={setSelectedSameHub}
               hideNearbyHubs={isApiPoiCross}
               hideStayStrip={isApiPoiCross}
+              hideTnaStrip={isApiPoiCross}
             />
           </div>
         </div>

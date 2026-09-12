@@ -48,6 +48,38 @@ export const cloudPreviewWorkLog = [
     at: '2026-09-12T11:20:00.000Z',
   },
   {
+    id: '2026-09-12-korea-tna-strip-4-large-hscroll',
+    session: '한국 투어티켓 #4, 크게는 가로로 카드만',
+    title: '크게 보기 = 카드만 키우고 좌우 스크롤 유지',
+    detail:
+      '세로 그리드는 본문 스킵을 막아 뺐습니다. 「크게」는 숙소·투어 카드를 더 크게(220~252px) 만들고 가로 스크롤을 유지합니다. 아래로 스크롤하면 섹션을 바로 지나갈 수 있습니다. 5개씩 더보기는 MRT 더보기와 겹쳐 넣지 않았습니다. Preview /qa/korea-tna-strip.',
+    at: '2026-09-12T11:30:00.000Z',
+  },
+  {
+    id: '2026-09-12-korea-tna-strip-3-large-20',
+    session: '한국 투어티켓 #3, 20개·크게 보기',
+    title: '숙소·투어 기본 20개 · 크게 보기 세로 펼침',
+    detail:
+      '사람 Preview 피드백으로 숙소(EventStayStrip)와 투어(EventTnaStrip) 본문 카드를 기본 20개로 맞췄습니다. 「크게」를 누르면 가로 스크롤이 세로 그리드로 펼쳐져 본문을 아래로 스크롤하며 볼 수 있고, 「기본」으로 되돌립니다. 더보기는 마이리얼트립입니다. Preview /qa/korea-tna-strip.',
+    at: '2026-09-12T11:20:00.000Z',
+  },
+  {
+    id: '2026-09-12-korea-tna-strip-2-preview-qa',
+    session: '한국 투어티켓 #2, 사람 Preview QA',
+    title: '본문 투어 카드는 최대 10개',
+    detail:
+      '사람 Preview에서 경복궁 등 명승·축제 상세 투어·티켓 카드 노출을 확인했습니다. EventTnaStrip은 마이리얼트립에서 size 10을 요청하고 그 결과를 가로 스크롤로 나열합니다. 검색이 10개 미만이면 그만큼만 보이고, 더보기는 마이리얼트립 검색입니다. Preview /qa/korea-tna-strip.',
+    at: '2026-09-12T11:10:00.000Z',
+  },
+  {
+    id: '2026-09-12-korea-tna-strip-1-mvp',
+    session: '한국 투어티켓 #1, 본문 TNA 섹션',
+    title: '축제·명승 본문에 마이리얼트립 투어·티켓 카드 섹션 구현',
+    detail:
+      '축제 상세(FestivalDetailSheet)와 명승 상세(ThemeSpotDetailModal) 본문에 마이리얼트립 투어·티켓 카드 스트립(FestivalTnaStrip, ScenicTnaStrip, EventTnaStrip)을 신설했습니다. 숙소 카드와 조화로운 규격(148px~168px 가로 스크롤 카드, 썸네일, 카테고리, 평점, 가격, 딥링크)으로 주변 체험·액티비티를 노출하며, 우측 상단 더보기 링크를 함께 제공합니다. Preview /qa/korea-tna-strip — 경복궁 등 명승 상세 및 축제 상세 본문.',
+    at: '2026-09-12T10:00:00.000Z',
+  },
+  {
     id: '2026-09-12-palgyeong-use-26-jincheon-overlays',
     session: '팔경 활용 #26, 상산(진천) 결손 오버레이',
     title: '상산팔경 결손 6건 런타임 오버레이',

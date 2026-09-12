@@ -18,6 +18,15 @@
 /** @type {ReleaseNote[]} */
 export const RELEASE_NOTES = [
   {
+    id: '2026-09-12',
+    category: 'feature',
+    title: '축제·명승 본문에서 투어·티켓을 바로 볼 수 있어요',
+    items: [
+      '축제·명승 상세에 마이리얼트립 투어·티켓 카드가 숙소 아래에 나와요.',
+      '「크게」를 누르면 카드만 커지고, 목록은 좌우로 넘길 수 있어요.',
+    ],
+  },
+  {
     id: '2026-08-18',
     category: 'feature',
     title: '영어로 홈·장소·한국 투톱을 볼 수 있어요',
@@ -379,6 +388,13 @@ export const RELEASE_CATEGORY_LABELS_EN = {
 
 /** EN overlay — id → { title, items } */
 const RELEASE_NOTES_EN_BY_ID = {
+  '2026-09-12': {
+    title: 'See tours and tickets in Korea festival and scenic spot details',
+    items: [
+      'Festival and scenic spot pages now show MyRealTrip tour and ticket cards under stays.',
+      'Tap Large to enlarge the cards only; swipe the row left and right.',
+    ],
+  },
   '2026-08-18': {
     title: 'Browse home, places, and Korea hubs in English',
     items: [
